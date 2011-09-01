@@ -1235,8 +1235,10 @@ _JUMP_FIRST:
 
 _JUMP_NEXT:
 	{
-		static const void *jn_jump[] = { &&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT };
-		static const void *jn_test[] = { NULL, NULL, &&_JN_BYTE_TEST, &&_JN_SHORT_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST };
+		static const void *jn_jump[] = 
+			{ &&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT };
+		static const void *jn_test[] = 
+			{ NULL, NULL, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST };
 
 		VALUE * NO_WARNING(end);
 		VALUE * NO_WARNING(inc);
@@ -1251,6 +1253,9 @@ _JUMP_NEXT:
 	_JN_START:
 
 		type = val->type;
+		
+		if (type < T_BYTE || type > T_FLOAT)
+			THROW(E_TYPE, "Integer, Float or Long", TYPE_get_name(type));
 
 		// The step value must stay negative, even if the loop variable is a byte
 
@@ -1272,35 +1277,28 @@ _JUMP_NEXT:
 
 		val = &BP[PC[2] & 0xFF];
 		
-		if (type < T_BYTE || type > T_FLOAT)
-			THROW(E_TYPE, "Integer, Float or Long", TYPE_get_name(type));
-
 		*PC |= type;
 		goto *jn_test[type];
 		
 	_JN_BYTE:
 		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);
+		goto _JN_INTEGER_TEST;
 	
-	_JN_BYTE_TEST:
-		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-		
 	_JN_SHORT:
 		val->_integer.value = (short)(val->_integer.value + inc->_integer.value);
+		goto _JN_INTEGER_TEST;
 	
-	_JN_SHORT_TEST:
-		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
+	_JN_LONG:
+		val->_long.value += inc->_long.value;
+		goto _JN_LONG_TEST;
+		
+	_JN_SINGLE:
+		val->_single.value += inc->_single.value;
+		goto _JN_INTEGER_TEST;
+		
+	_JN_FLOAT:
+		val->_float.value += inc->_float.value;
+		goto _JN_LONG_TEST;
 		
 	_JN_INTEGER:
 		val->_integer.value += inc->_integer.value;
@@ -1314,34 +1312,7 @@ _JUMP_NEXT:
 		else
 			goto _JN_END;
 		
-	_JN_LONG:
-		val->_long.value += inc->_long.value;
-		
 	_JN_LONG_TEST:
-		if (MUST_CONTINUE_64(val->_long.value - end->_long.value, inc->_long.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-		
-	_JN_SINGLE:
-		val->_single.value += inc->_single.value;
-		
-	_JN_SINGLE_TEST:
-		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-	
-	_JN_FLOAT:
-		val->_float.value += inc->_float.value;
-		
-	_JN_FLOAT_TEST:
 		if (MUST_CONTINUE_64(val->_long.value - end->_long.value, inc->_long.value))
 		{
 			PC += 3;

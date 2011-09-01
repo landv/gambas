@@ -11,6 +11,7 @@ Private btnQuit As CCoolButton
 Private $iRecent As Integer
 Private $aExample As String[]
 Private $bExample As Boolean
+Private $hFirst As ProjectItem
 'Private $hPicture As Picture
 
 Private Const LIST_NONE As Integer = 0
@@ -152,15 +153,19 @@ Private Sub Toggle(iState As Integer)
     'btnQuit.Move(8, 216 + cvwRecent.H + 8)
     'cvwRecent.Move(360 - cvwRecent.W, 216)
     panList.Raise
-    svwRecent.Visible = $iRecent = LIST_RECENT
-    svwExample.Visible = $iRecent = LIST_EXAMPLE
+    lstRecent.Visible = $iRecent = LIST_RECENT
+    lstExample.Visible = $iRecent = LIST_EXAMPLE
     panList.Visible = True
     If $iRecent = LIST_RECENT Then
       lblList.Text = ("Recent projects")
+      panFilter.Show
+      txtFilter.SetFocus
     Else
       lblList.Text = ("Examples")
+      panFilter.Hide
     Endif
     lblList2.Text = lblList.Text
+    panList_Arrange
   Else
     panList.Visible = False
   Endif
@@ -171,14 +176,6 @@ Private Sub Toggle(iState As Integer)
   
 End
 
-
-Public Sub btnOpenRecent_Click()
-
-  $sPath = Last.Tag
-  Me.Close
-
-End
-
 Public Sub Form_KeyPress()
 
   If Key.Code = Key.Esc Then
@@ -187,79 +184,6 @@ Public Sub Form_KeyPress()
 
 End
 
-Private Sub FillExample()
-
-  Dim sLastDir As String
-  Dim sDir As String
-  Dim hButton As CCoolButton
-  'DIM hLabel AS Label
-  Dim hDrawingArea As DrawingArea
-  Dim iInd As Integer
-  Dim sPath As String
-  Dim iHeight, X, Y As Integer
-  Dim C As Integer
-  Dim hImage As Image
-  Dim hProjectInfo As CProjectInfo
-  
-  If $bExample Then Return
-
-  Inc Application.Busy
-
-  iHeight = Desktop.Scale * 4
-
-  ' If Not $hPicture Then 
-  '   hImage = New Image(16, iHeight)
-  '   'hImage.Fill(Color.SelectedBackground)
-  '   For Y = 0 To iHeight - 1
-  '     C = Color.SelectedBackground
-  '     C = Color.RGB(Color[C].Red, Color[C].Green, Color[C].Blue, Max(0, 320 * Y / iHeight - 64))
-  '     For X = 0 To 15
-  '       hImage[X, Y] = C
-  '       'hImage[X, iHeight - Y - 1] = C
-  '     Next 
-  '   Next
-  '   $hPicture = hImage.Picture
-  ' Endif
-
-  $aExample = Project.GetExamples()
-
-  sLastDir = ""
-  Y = 0
-
-  svwExample.Arrangement = Arrange.None
-
-  For iInd = 0 To $aExample.Count - 1
-    sPath = $aExample[iInd]
-    sDir = File.Dir(sPath)
-    If sDir <> sLastDir Then
-      sLastDir = sDir
-      hDrawingArea = New DrawingArea(svwExample) As "dwgExample"
-      'hLabel = NEW Label()
-      With hDrawingArea
-        .Move(0, Y, 64, iHeight)
-        .Tag = Project.ExampleTitle[sDir]
-        .Font = Font["Bold"]
-        .Foreground = Color.SelectedBackground
-        '.Background = Color.TextBackground
-        Y = Y + .H
-      End With
-    Endif
-    sPath = Project.EXAMPLES_DIR &/ sPath
-    hProjectInfo = New CProjectInfo(sPath)
-    hButton = New CCoolButton(svwExample, 0, Y, svwExample.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(hProjectInfo.Icon, 32).Picture) As "btnOpenRecent"
-    Y += Desktop.Scale * 6
-    hButton.Tag = sPath
-  Next
-
-  svwExample.Arrangement = Arrange.Vertical
-
-  $bExample = True
-
-'Finally
-
-  Dec Application.Busy
-
-End
 
 
 Public Sub Form_Close()
@@ -317,64 +241,6 @@ Private Sub GetTitle(hProjectInfo As CProjectInfo) As String
   With hProjectInfo
     Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"#404040\">" & .Title & "</font>"
   End With
-  
-End
-
-
-Private Sub FillRecent()
-
-  Dim aList As CRecentFile[]
-  Dim hChild As Control
-  Dim iInd As Integer
-  Dim hButton As CCoolButton
-  Dim hProjectInfo As CProjectInfo
-  Dim sTitle As String
-  Dim sLastTitle As String
-  Dim hDrawingArea As DrawingArea
-  Dim Y As Integer
-
-  Inc Application.Busy
-  
-  aList = CRecentFile.Get($iSort)
-  
-  svwRecent.Arrangement = Arrange.None
-  
-  For Each hChild In svwRecent.Children
-    hChild.Delete
-  Next
-  
-  For iInd = 0 To aList.Count - 1
-    
-    hProjectInfo = New CProjectInfo(aList[iInd].Path)
-    sTitle = aList[iInd].GetTitle($iSort)
-    
-    If sTitle <> sLastTitle Then
-      sLastTitle = sTitle
-      hDrawingArea = New DrawingArea(svwRecent) As "dwgExample"
-      'hLabel = NEW Label()
-      With hDrawingArea
-        .Move(0, Y, 64, Desktop.Scale * 4)
-        .Tag = sTitle
-        .Font = Font["Bold"]
-        .Foreground = Color.SelectedBackground
-        '.Background = Color.TextBackground
-        Y = Y + .H
-      End With
-    Endif
-    
-    With hProjectInfo
-      hButton = New CCoolButton(svwRecent, 0, Y, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
-      hButton.Tag = aList[iInd].Path
-      hButton.ToolTip = File.Dir(aList[iInd].Path)
-    End With
-    Y += Desktop.Scale * 6
-  Next
-
-  If aList.Count = 0 Then btnRecent.Enabled = False
-  
-  svwRecent.Arrangement = Arrange.Vertical
-  
-  Dec Application.Busy
   
 End
 
@@ -462,7 +328,7 @@ Public Sub lblWebSite_Leave()
 End
 
 
-Public Sub svwRecent_Menu()
+Public Sub lstRecent_Menu()
 
   mnuSort.Popup
 
@@ -482,6 +348,7 @@ End
 Public Sub mnuSort_Click()
   
   $iSort = Last.Tag
+  lstRecent.Clear
   FillRecent
   UpdateMenuSort
   
@@ -491,5 +358,192 @@ Public Sub panList_Arrange()
 
   lblList2.Move(lblList.X + 1, lblList.Y + 1, lblList.W, lblList.H)
   lblList2.Lower
+
+End
+
+Public Sub txtFilter_Click()
+
+  txtFilter.Clear
+
+End
+
+Public Sub txtFilter_Change()
+
+  FilterRecent
+
+End
+
+Private Sub FilterRecent()
+
+  Dim sFilter As String = Trim(txtFilter.Text)
+  Dim hCtrl, hLast As Control
+  Dim hFirst, hProjectItem As ProjectItem
+  
+  lstRecent.Lock
+  
+  If Not sFilter Then
+    sFilter = "*"
+  Else
+    sFilter = "*" & String.LCase(sFilter) & "*"
+  Endif
+  
+  For Each hCtrl In lstRecent.Children
+    
+    If hCtrl Is ProjectItem Then
+      hProjectItem = hCtrl
+      With hProjectItem.Info
+        If Not sFilter Or If .Name Like sFilter Or If String.LCase(.Title) Like sFilter Or If String.LCase(.Authors.Join(" ")) Like sFilter Then
+          hProjectItem.Show
+        Else
+          hProjectItem.Hide
+        Endif
+      End With
+      If hProjectItem.Visible Then 
+        If Not hFirst Then hFirst = hProjectItem
+      Endif
+    Endif
+    
+  Next
+  
+  For Each hCtrl In lstRecent.Children
+    
+    If hCtrl Is DrawingArea Then
+      If hLast Then hLast.Hide
+      hLast = hCtrl
+    Else If hCtrl Is ProjectItem And If hCtrl.Visible Then
+      If hLast Then hLast.Show
+      hLast = Null
+    Endif
+    
+  Next
+  
+  If hLast Then hLast.Hide
+  
+  $hFirst = hFirst
+  
+  'lstRecent.Select(hFirst)
+  lstRecent.Unlock
+  
+End
+
+Private Sub FillRecent()
+  
+  Dim hProjectItem As ProjectItem
+  Dim hFirst As ProjectItem
+  Dim aRecent As CRecentFile[]
+  Dim hRecent As CRecentFile
+  'Dim bHighlight As Boolean
+  Dim fTime As Float
+  Dim sTitle As String
+  Dim sLastTitle As String
+  Dim Y As Integer
+  Dim hDrawingArea As DrawingArea
+  
+  If lstRecent.Count And If Not CRecentFile.OutOfDate Then Return
+
+  Inc Application.Busy
+
+  'panRecent.Hide
+  lstRecent.Lock
+  Object.Lock(lstRecent)
+  lstRecent.Clear
+
+  aRecent = CRecentFile.Get($iSort)
+
+  For Each hRecent In aRecent
+    
+    sTitle = hRecent.GetTitle($iSort)
+    
+    If sTitle <> sLastTitle Then
+      hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
+      With hDrawingArea
+        .Enabled = False
+        .Tag = sTitle 
+        .Font = Font["Bold"]
+        .H = .Font.Height + If(sLastTitle, 16, 8)
+        .Foreground = Color.SelectedBackground
+        Y += .H
+      End With
+      sLastTitle = sTitle
+    Endif
+    
+    hProjectItem = New ProjectItem(lstRecent) As "ProjectItem"
+    hProjectItem.Y = Y
+    Y += hProjectItem.H
+    'If bHighlight Then hProjectItem.Background = Color.LightBackground
+    'bHighlight = Not bHighlight
+    If Not hFirst Then hFirst = hProjectItem
+    hProjectItem.Path = hRecent.Path
+    
+  Next
+  
+  ' Workaround a scrollview bug that does not show the scrollbars.
+  lstRecent.Unlock 
+  Object.Unlock(lstRecent)
+  'panRecent.Show
+  
+  Dec Application.Busy
+  
+End
+
+Private Sub FillExample()
+
+  Dim sExample As String
+  Dim sDir As String
+  Dim sLastDir As String
+  Dim hDrawingArea As DrawingArea
+  Dim hProjectItem As ProjectItem
+  Dim hLabel As Label
+  'Dim bHighlight As Boolean
+  
+  If lstExample.Children.Count Then Return
+
+  Inc Application.Busy
+  lstExample.Lock
+  Object.Lock(lstExample)
+
+  For Each sExample In Project.GetExamples()
+  
+    sDir = File.Dir(sExample)
+    If sDir <> sLastDir Then
+      hDrawingArea = New DrawingArea(lstExample) As "dwgExample"
+      With hDrawingArea
+        .Enabled = False
+        .Tag = Project.ExampleTitle[sDir]
+        .Font = Font["Bold"]
+        .H = .Font.Height + If(sLastDir, 16, 8)
+        .Foreground = Color.SelectedBackground
+      End With
+      'bHighlight = False
+      sLastDir = sDir
+    Endif
+    
+    hProjectItem = New ProjectItem(lstExample) As "ProjectItem"
+    'If bHighlight Then hProjectItem.Background = Color.LightBackground
+    'bHighlight = Not bHighlight
+    hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
+  
+  Next
+
+  'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
+  lstExample.Unlock
+  Object.Unlock(lstExample)
+
+  Dec Application.Busy
+
+End
+
+Public Sub ProjectItem_Click()
+
+  $sPath = Last.Path
+  Me.Close
+
+End
+
+Public Sub txtFilter_Activate()
+
+  If Not $hFirst Then Return
+  $sPath = $hFirst.Path
+  Me.Close
 
 End

@@ -180,7 +180,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
       oChild._SetChildGeometry(X, Y, W, fHeight, ContPage, bInfixed Or Me.fixed)
     Else
       hTItem._SetGeometry(Me.Padding._Left + oChild._Left, Me.Padding._Top + oChild._Top, hTItem.SizeHint.Width, hTItem.SizeHint.Height)
-      oChild._SetChildGeometry(Me.Padding._Left + oChild._Left, Me.Padding._Top + oChild._Top, hTItem.SizeHint.Width, hTItem.SizHint.Height, ContPage, bInfixed Or Me.fixed)
+      oChild._SetChildGeometry(Me.Padding._Left + oChild._Left, Me.Padding._Top + oChild._Top, hTItem.SizeHint.Width, hTItem.SizeHint.Height, ContPage, bInfixed Or Me.fixed)
     Endif
 
     If oChild Is ReportContainer Then

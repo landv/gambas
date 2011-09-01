@@ -2,7 +2,7 @@
 
 { Report Report
   #MoveScaled(0,0,65,62)
-  Padding = "2cm"
+  Padding = ReportPadding["2cm"]
   Spacing = "2cm"
   Count = 2
   Index = 0
@@ -66,7 +66,6 @@
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
           Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:0mm #000000"]
-          BackGround = ReportBrush["#BFBFBF"]
           Text = ("Name")
           Alignment = Align.Center
         }
@@ -75,9 +74,8 @@
           Width = "5 cm"
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
-          Padding = "0.2 mm"
+          Padding = ReportPadding["0.2 mm"]
           Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
-          BackGround = ReportBrush["#BFBFBF"]
           Text = ("FirstName")
           Alignment = Align.Center
         }
@@ -86,10 +84,9 @@
           Width = "5 cm"
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
-          Padding = "0.2 mm"
+          Padding = ReportPadding["0.2 mm"]
           Expand = True
           Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:0mm #000000;Right:1px #000000"]
-          BackGround = ReportBrush["#BFBFBF"]
           Text = ("Birth")
           Alignment = Align.Center
         }
@@ -102,7 +99,7 @@
           #MoveScaled(0,0,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
-          Padding = "0.2 mm"
+          Padding = ReportPadding["0.2 mm"]
           Border = ReportBorder["Right:1px #000000"]
           Key = "name"
           Alignment = Align.Center
@@ -112,7 +109,7 @@
           #MoveScaled(11,0,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
-          Padding = "0.2 mm"
+          Padding = ReportPadding["0.2 mm"]
           Border = ReportBorder["Right:1px #000000"]
           Key = "firstname"
           Alignment = Align.Center
@@ -121,7 +118,7 @@
           #MoveScaled(24,0,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
-          Padding = "2.2mm"
+          Padding = ReportPadding["2.2mm"]
           Expand = True
           Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
           Key = "birth"
@@ -134,7 +131,7 @@
     #MoveScaled(0,50,46,3)
     Height = "6mm"
     Fixed = True
-    Padding = "2mm"
+    Padding = ReportPadding["2mm"]
     AutoResize = True
     Text = ("$PAGE/$NPAGE")
     Alignment = Align.Right

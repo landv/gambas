@@ -2,6 +2,8 @@
 
 Inherits UserControl
 
+Event Click
+
 Property ShowPath As Boolean
 Property Path As String
 Property Highlight As Boolean
@@ -25,6 +27,7 @@ Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Focus = True
   
 End
 
@@ -103,6 +106,12 @@ Public Sub DrawingArea_Draw()
     
   End With
   
+  If $hDrawingArea.HasFocus Then
+    Draw.Foreground = Color.SelectedBackground
+    Draw.LineStyle = Line.Dot
+    Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+  Endif
+  
 End
 
 Public Sub DrawingArea_Enter()
@@ -122,6 +131,11 @@ Public Sub DrawingArea_Leave()
   
 End
 
+' Public Sub DrawingArea_KeyPress()
+' 
+'   If Key.Code = Key.Space Then 
+' 
+' End
 
 Private Function Background_Read() As Integer
 
@@ -189,7 +203,8 @@ Private Function IdealHeight_Read() As Integer
   X = ICON_SIZE + PADDING * 2
   If $hProjectInfo Then
     sTitle = GetTitle()
-    H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
+    'H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
+    H = $hDrawingArea.Font.Height * 2.5 + PADDING * 2
   Endif
 
   H = Max(H, X)
@@ -202,4 +217,10 @@ Private Function Info_Read() As CProjectInfo
 
   Return $hProjectInfo
 
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  If Mouse.Left Then Raise Click
+  
 End

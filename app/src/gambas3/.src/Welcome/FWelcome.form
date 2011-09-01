@@ -50,36 +50,45 @@
       Mouse = Mouse.Arrow
       Expand = True
       Arrangement = Arrange.Vertical
-      { lblList Label
-        MoveScaled(1,0,24,4)
-        Font = Font["Bold,+2"]
-        Foreground = &H3398C3&
-        Padding = 4
+      { Panel3 HBox
+        MoveScaled(0,0,27,4)
+        { lblList Label
+          MoveScaled(0,0,10,4)
+          Font = Font["Bold,+2"]
+          Foreground = &H3398C3&
+          Padding = 4
+          AutoResize = True
+        }
+        { Panel4 Panel
+          MoveScaled(14,0,2,4)
+        }
+        { panFilter Panel
+          MoveScaled(17,0,10,4)
+          Expand = True
+          Arrangement = Arrange.Fill
+          { txtFilter ButtonBox
+            MoveScaled(1,0,9,4)
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+          }
+        }
+        { lblList2 Label
+          MoveScaled(0,2,11,5)
+          Font = Font["Bold,+2"]
+          Foreground = &HDF6B00&
+          Ignore = True
+          Padding = 4
+        }
       }
-      { svwExample ScrollView
-        MoveScaled(1,7,23,18)
-        Background = Color.TextBackground
-        Foreground = Color.TextForeground
+      { lstRecent ListContainer
+        MoveScaled(4,8,17,20)
         Expand = True
-        Arrangement = Arrange.Vertical
         Border = False
-        ScrollBar = Scroll.Vertical
       }
-      { svwRecent ScrollView
-        MoveScaled(3,11,23,18)
-        Background = Color.TextBackground
-        Foreground = Color.TextForeground
+      { lstExample ListContainer
+        MoveScaled(8,9,17,20)
         Expand = True
-        Arrangement = Arrange.Vertical
         Border = False
-        ScrollBar = Scroll.Vertical
-      }
-      { lblList2 Label
-        MoveScaled(1,5,24,5)
-        Font = Font["Bold,+2"]
-        Foreground = &HDF6B00&
-        Ignore = True
-        Padding = 4
       }
     }
   }

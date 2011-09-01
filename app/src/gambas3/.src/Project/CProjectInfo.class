@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Public Name As String
+Public Path As String
 Public Title As String
 Public Version As String
 Public Description As String
@@ -34,6 +35,7 @@ Public Sub _new(sPath As String)
   If Not sPath Then Return
   
   Name = File.Name(sPath)
+  Path = sPath
   Components = New String[]
     
   hFile = Open sPath &/ ".project"
