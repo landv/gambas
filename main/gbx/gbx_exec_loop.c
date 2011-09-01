@@ -1238,7 +1238,7 @@ _JUMP_NEXT:
 		static const void *jn_jump[] = 
 			{ &&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT };
 		static const void *jn_test[] = 
-			{ NULL, NULL, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST };
+			{ NULL, NULL, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST };
 
 		VALUE * NO_WARNING(end);
 		VALUE * NO_WARNING(inc);
@@ -1294,11 +1294,11 @@ _JUMP_NEXT:
 		
 	_JN_SINGLE:
 		val->_single.value += inc->_single.value;
-		goto _JN_INTEGER_TEST;
+		goto _JN_SINGLE_TEST;
 		
 	_JN_FLOAT:
 		val->_float.value += inc->_float.value;
-		goto _JN_LONG_TEST;
+		goto _JN_FLOAT_TEST;
 		
 	_JN_INTEGER:
 		val->_integer.value += inc->_integer.value;
@@ -1320,6 +1320,32 @@ _JUMP_NEXT:
 		}
 		else
 			goto _JN_END;
+		
+	_JN_SINGLE_TEST:
+		{
+			union { float _single; int _integer; } temp;
+			temp._single = val->_single.value - end->_single.value;
+			if (MUST_CONTINUE_32(temp._integer, inc->_integer.value))
+			{
+				PC += 3;
+				goto _MAIN;
+			}
+			else
+				goto _JN_END;
+		}
+		
+	_JN_FLOAT_TEST:
+		{
+			union { double _float; int64_t _long; } temp;
+			temp._float =  val->_float.value - end->_float.value;
+			if (MUST_CONTINUE_64(temp._long, inc->_long.value))
+			{
+				PC += 3;
+				goto _MAIN;
+			}
+			else
+				goto _JN_END;
+		}
 		
 	_JN_END:
 		PC += (signed short)PC[1] + 2;
