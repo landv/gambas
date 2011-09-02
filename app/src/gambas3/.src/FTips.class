@@ -150,3 +150,40 @@ Public Sub btnPrev_Click()
   ShowNextTip(True)
 
 End
+
+Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Integer, R As Float)
+  
+  Dim fArcToBezier As Float = 0.55228475
+  Dim fRadiusX, fRadiusY, c1, c2 As Float
+  
+  fRadiusX = R
+  fRadiusY = R
+  
+  If fRadiusX > W - fRadiusX Then fRadiusX = W / 2
+  If fRadiusY > H - fRadiusY Then fRadiusY = H / 2
+  
+  '#approximate(quite Close )the arc using a bezier curve
+  c1 = fArcToBezier * fRadiusX
+  c2 = fArcToBezier * fRadiusY
+  
+  Paint.NewPath()
+  Paint.MoveTo(x + fRadiusX, y)
+  Paint.RelLineTo(w - 2 * fRadiusX, 0.0)
+  Paint.RelCurveTo(c1, 0.0, fRadiusX, c2, fRadiusX, fRadiusY)
+  Paint.RelLineTo(0, h - 2 * fRadiusY)
+  Paint.RelCurveTo(0.0, c2, c1 - fRadiusX, fRadiusY, - fRadiusX, fRadiusY)
+  Paint.RelLineTo(- w + 2 * fRadiusX, 0)
+  Paint.RelCurveTo(- c1, 0, - fRadiusX, - c2, - fRadiusX, - fRadiusY)
+  Paint.RelLineTo(0, - h + 2 * fRadiusY)
+  Paint.RelCurveTo(0.0, - c2, fRadiusX - c1, - fRadiusY, fRadiusX, - fRadiusY)
+  Paint.ClosePath()
+  
+End
+
+Public Sub dwgBackground_Draw()
+
+  Paint.Brush = Paint.Color(Color.LightBackground)
+  PaintRoundedRect(0, 0, dwgBackground.W, dwgBackground.H, 8)
+  Paint.Fill
+
+End

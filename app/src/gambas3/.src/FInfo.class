@@ -189,12 +189,6 @@ Public Sub Run(sKey As String)
   
 End
 
-Public Sub btnClose_Click()
-
-  Me.Close
-
-End
-
 Public Sub ShowInfo(sPath As String)
   
   GetInfo(sPath)
@@ -240,5 +234,11 @@ Public Sub tabInfo_Click()
       Endif
     Endif
   Endif
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
 
 End

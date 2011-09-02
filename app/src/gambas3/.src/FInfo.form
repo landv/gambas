@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,62,54)
+  MoveScaled(0,0,62,59)
   Text = ("Information")
   Icon = Picture["icon:/small/info"]
   Persistent = True
@@ -113,5 +113,22 @@
       Visible = False
     }
     Index = 0
+  }
+  { Panel1 Panel
+    MoveScaled(1,54,58,4)
+    { btnClose Button
+      MoveScaled(21,0,16,4)
+      Text = ("OK")
+      Default = True
+      Cancel = True
+    }
+    { Panel2 Panel
+      MoveScaled(10,0,2,4)
+      Expand = True
+    }
+    { Panel3 Panel
+      MoveScaled(45,0,2,4)
+      Expand = True
+    }
   }
 }

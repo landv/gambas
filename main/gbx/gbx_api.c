@@ -708,6 +708,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
   int kind;
   CLASS_DESC *desc;
   bool error;
+	const char *err;
 
   if (OBJECT_is_class(object))
   {
@@ -724,11 +725,17 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 	
   index = CLASS_find_symbol(class, name);
   if (index == NO_SYMBOL)
+	{
+		err = "Symbol not found";
     goto _NOT_FOUND;
+	}
 
   desc = class->table[index].desc;
   if (CLASS_DESC_get_type(desc) != kind)
+	{
+		err = kind == CD_METHOD ? "Not a method" : "Not a static method";
     goto _NOT_FOUND;
+	}
 
   if (sign)
   {
@@ -748,7 +755,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 
     if (error)
     {
-      GB_Error("Parameters do not match");
+      err = "Parameters do not match";
       goto _NOT_FOUND;
     }
   }
@@ -759,11 +766,11 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
   	if (tret != desc->method.type)
   	{
   		if (tret == T_VOID)
-  			GB_Error("Must be a procedure");
+  			err = "Must be a procedure";
 			else if (desc->method.type == T_VOID)
-  			GB_Error("Must be a function");
+  			err = "Must be a function";
 			else
-				GB_Error("Return type does not match");
+				err = "Return type does not match";
 
 			goto _NOT_FOUND;
   	}
@@ -779,6 +786,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 
 _NOT_FOUND:
 
+  GB_Error("Unable to find method &1 in class &2. &3", name, class->name, err);
   func->object = NULL;
   func->desc = NULL;
   return TRUE;

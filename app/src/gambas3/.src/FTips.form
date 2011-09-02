@@ -8,25 +8,25 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { Panel1 Panel
-    MoveScaled(1,1,75,5)
-    Background = Color.SelectedBackground
+  { dwgBackground DrawingArea
+    MoveScaled(1,1,80,6)
     Arrangement = Arrange.Horizontal
-    Spacing = True
+    Painted = True
     { PictureBox1 PictureBox
       MoveScaled(0,0,5,5)
       Picture = Picture["icon:/24/lamp"]
       Alignment = Align.Center
     }
     { lblTitle Label
-      MoveScaled(5,0,54,5)
+      MoveScaled(7,1,54,5)
       Font = Font["Bold,+3"]
       Foreground = Color.SelectedForeground
+      Expand = True
       Text = ("Tips of the day")
     }
   }
   { ScrollView1 ScrollView
-    MoveScaled(2,7,71,34)
+    MoveScaled(5,23,71,40)
     Expand = True
     Arrangement = Arrange.Vertical
     Border = False
@@ -38,7 +38,7 @@
     }
   }
   { panBottom Panel
-    MoveScaled(1,47,76,4)
+    MoveScaled(2,66,76,4)
     Arrangement = Arrange.Horizontal
     AutoResize = True
     Spacing = True
