@@ -307,6 +307,9 @@ které jsou zvykli programátoři z C/C++.</p>
 <p><tt>MyVariable += 2</tt> je ekvivalent
 <tt>MyVariable = MyVariable + 2</tt></p>
 
+<p><tt>MyVariable *= 4</tt> je ekvivalent
+<tt>MyVariable = MyVariable * 4</tt></p>
+
 <p><tt>MyVariable &= "Great"</tt> je ekvivalent
 <tt>MyVariable = MyVariable & "Great"</tt></p>
 
@@ -373,13 +376,17 @@ tak musí finally blok předcházet.</p>
 
 <pre>SUB ProcessFile(FileName AS STRING)
   ...
-  OPEN FileName FOR READ AS #hFile
+  Open FileName For Read As #hFile
   ...
-FINALLY ' Provedeno vždy, i když byla chyba vyvolána
-  CLOSE #hFile
-CATCH ' Vykonán pouze v případě, že se vyskytla chyba
-  PRINT "Cannot print file "; FileName
-END</pre>
+Finally ' Provedeno vždy, i když byla chyba vyvolána
+
+  Close #hFile
+  
+Catch ' Vykonán pouze v případě, že se vyskytla chyba
+  
+  Print "Cannot print file "; FileName
+  
+End</pre>
 
 
 [OPTIONAL]
@@ -431,7 +438,11 @@ a máte zde i například na výběr rozměr od 16x16 až po 128x128</p>
 
 <p>Například:</p>
 
-<pre>Image1.Picture = Picture["icon:/32/warning"]</pre>
+<pre>Image1.Picture = Picture["icon:/32/warning"]
+Image2.Picture = Picture["icon:/small/error"]
+</pre>
+
+<p><b>Pozor:</b> musíte mít zapnutou komponentu: <tt>gb.form</tt>.
 
 
 [SETTINGS]
@@ -500,14 +511,16 @@ Jako substituční znak se užívá <b>&1, &2, ...</b>, číslo je dle pořadí 
 'Nahrazeni za prvni a za druhou, dalsi</pre>
 
 
-[USEFUL]
+[EDITOR]
 
 <p>Několik typů v editoru:</p>
 
-<p>Komentáře:</p>
+<p>Dva typy komentářů:</p>
 
 <pre>'normální komentář</pre>
 <b><pre>''tučný komentář</pre></b>
+
+<p>Tučné komentáře jsou používány pro dokumentování kódu.</p>
 
 <p>Jak používat úryvky kodu:<br>
 
@@ -516,6 +529,8 @@ Jako substituční znak se užívá <b>&1, &2, ...</b>, číslo je dle pořadí 
 'a pak zmáčknete tabulátor, a doplní se útržek kódu,<br>
 'podle toho jak je v nastavení definován
 </p>
+
+<p>Úryvky kodu jsou zcela konfigurovatelné z globálního dialogu nastavení IDE.</p>
 
 
 [END]
