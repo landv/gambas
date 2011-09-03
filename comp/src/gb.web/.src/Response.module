@@ -39,7 +39,7 @@ Public Sub Redirect(URL As String)
   
 End
 
-Public Sub SetCookie(Cookie As String, Value As String, Optional Domain As String, Optional Path As String, Optional Expires As Date)
+Public Sub SetCookie(Cookie As String, Value As String, Optional Domain As String, Optional Path As String, Optional Expires As Date, Optional HttpOnly As Boolean)
   
   Dim sVal As String
   
@@ -47,6 +47,7 @@ Public Sub SetCookie(Cookie As String, Value As String, Optional Domain As Strin
   If Domain Then sVal &= ";domain=" & Domain
   If Expires Then sVal &= ";expires=" & CGI.FormatDate(Expires)
   If Path Then sVal &= ";path=" & Path
+  If HttpOnly Then sVal &= ";httponly"
   
   AddHeader("Set-Cookie", sVal)
   

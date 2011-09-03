@@ -834,20 +834,18 @@ __QUOTE:
 		{
 			STRING_make_char('\\');
 			if (c == '\n')
-				STRING_make_char('n');
+				c = 'n';
 			else if (c == '\r')
-				STRING_make_char('r');
+				c = 'r';
 			else if (c == '\t')
-				STRING_make_char('t');
-			else if (c == '"')
-				STRING_make_char('"');
-			else if (c == '\\')
-				STRING_make_char('\\');
-			else
+				c = 't';
+			else if (!(c == '"' || c == '\\'))
 			{
 				snprintf(buf, sizeof(buf), "x%02X", c);
 				STRING_make(buf, 3);
+				continue;
 			}
+			STRING_make_char(c);
 		}
 	}
 	
@@ -902,6 +900,8 @@ __HTML:
 			STRING_make("&gt;", 4);
 		else if (c == '"')
 			STRING_make("&quot;", 6);
+		else if (c == '\'')
+			STRING_make("&#x27;", 6);
 		else
 			STRING_make_char(c);
 	}

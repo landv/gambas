@@ -29,7 +29,6 @@ Static Public Sub _init()
 
 End
 
-
 Public Sub Form_Open()
 
   txtTip.Background = Me.Background
@@ -47,7 +46,6 @@ Private Sub ShowNextTip(Optional bPrev As Boolean)
   lblTitle.Text = Subst(("Tip of the day #&1"), CStr($iTip))
 
 End
-
 
 Private Function GetNextTip(Optional bPrev As Boolean) As String
 
@@ -120,9 +118,8 @@ Public Sub btnNext_Click()
 
 End
 
-
 ' PUBLIC SUB Form_Resize()
-' 
+'
 '   lblTitle.Width = Max(ME.ClientWidth, 512)
 '   panBottom.Y = ME.ClientH - panBottom.Height - 8
 '   panBottom.W = Max(256, ME.ClientW - 16)
@@ -130,12 +127,12 @@ End
 '   btnNext.X = btnClose.X - btnNext.W - 8
 '   btnPrev.X = btnNext.X - btnPrev.W - 8
 '   chkShowTip.W = btnPrev.X - chkShowTip.X - 8
-' 
+'
 '   txtTip.Resize(ME.ClientWidth - txtTip.X * 2, ME.ClientH - panBottom.H - txtTip.Y - 8)
-' 
-' 
+'
+'
 '   'imgCorner.Move(ME.ClientW - imgCorner.W,ME.ClientH - imgCorner.H)
-' 
+'
 ' END
 
 Public Sub btnClose_Click()
@@ -152,20 +149,20 @@ Public Sub btnPrev_Click()
 End
 
 Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Integer, R As Float)
-  
+
   Dim fArcToBezier As Float = 0.55228475
   Dim fRadiusX, fRadiusY, c1, c2 As Float
-  
+
   fRadiusX = R
   fRadiusY = R
-  
+
   If fRadiusX > W - fRadiusX Then fRadiusX = W / 2
   If fRadiusY > H - fRadiusY Then fRadiusY = H / 2
-  
+
   '#approximate(quite Close )the arc using a bezier curve
   c1 = fArcToBezier * fRadiusX
   c2 = fArcToBezier * fRadiusY
-  
+
   Paint.NewPath()
   Paint.MoveTo(x + fRadiusX, y)
   Paint.RelLineTo(w - 2 * fRadiusX, 0.0)
@@ -177,7 +174,7 @@ Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Inte
   Paint.RelLineTo(0, - h + 2 * fRadiusY)
   Paint.RelCurveTo(0.0, - c2, fRadiusX - c1, - fRadiusY, fRadiusX, - fRadiusY)
   Paint.ClosePath()
-  
+
 End
 
 Public Sub dwgBackground_Draw()

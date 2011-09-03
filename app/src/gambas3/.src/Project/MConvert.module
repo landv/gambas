@@ -46,7 +46,7 @@ Private Sub ConvertForm(sPath As String)
   $aLine = New String[]
   hFile = Open sPath 
   Line Input #hFile, sFullLine
-  'If sFullLine <> Project.FORM_MAGIC_2 Then Return
+  If sFullLine = Project.FORM_MAGIC Then Return
   $aLine.Add(Project.FORM_MAGIC)
   While Not Eof(hFile)
     Line Input #hFile, sFullLine

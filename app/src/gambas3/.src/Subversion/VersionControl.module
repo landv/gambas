@@ -6,11 +6,10 @@ Private $bEnd As Boolean
 Private $hEditor As Editor
 
 Public Sub Enabled() As Boolean
-  
-  Return $bSVN Or $bCVS
-  
-End
 
+  Return $bSVN Or $bCVS
+
+End
 
 Public Sub Refresh()
 
@@ -20,59 +19,55 @@ Public Sub Refresh()
 End
 
 Private Sub Insert(sText As String)
-  
-  If $hEditor Then 
+
+  If $hEditor Then
     $hEditor.Print(DConv(sText))
-  Else 
+  Else
     If Not Settings["/QuietExternalCommands", False] Then FOutput.Insert(sText)
   Endif
-  
-End
 
+End
 
 Private Sub Run(sCmd As String, Optional sRemove As String) As Integer
 
   $bEnd = False
   Shell sCmd & " 2>&1" For Read As "Process" 'TO sOutput
-  
+
   If sRemove Then sCmd = Replace(sCmd, sRemove, "")
-  
-  Insert(sCmd & "\n")  
-  
+
+  Insert(sCmd & "\n")
+
   Do
     Wait
     If $bEnd Then Break
-    Sleep 0.1 
+    Sleep 0.1
   Loop
-  
+
   Return Process.LastValue
-  
+
 End
 
 Public Sub Process_Read()
-  
+
   Dim sData As String
-  
+
   sData = Read #Last, -256
   Insert(sData)
-  
+
 End
 
-
 Public Sub Process_Kill()
-  
+
   $bEnd = True
-  
+
 End
 
 Private Sub SvnShell$(sPath As String) As String
-  
+
   If InStr(sPath, "@") Then sPath &= "@"
   Return Shell$(sPath)
-  
+
 End
-
-
 
 Public Sub AddFile(sPath As String, Optional bForce As Boolean)
 
@@ -110,7 +105,7 @@ Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
     Run("cvs remove " & Shell$(sPath))
   Endif
   UpdatePath([sPath])
-  
+
 End
 
 ' Must be called *after* the directory has been deleted
@@ -150,7 +145,7 @@ Public Sub MoveFile(sOld As String, sNew As String)
 End
 
 Private Sub UpdatePathFromStatus(sStatus As String)
-  
+
   Dim sFile As String
   Dim sExt As String
   Dim sPath As String
@@ -160,7 +155,7 @@ Private Sub UpdatePathFromStatus(sStatus As String)
 
     sFile = Mid$(sStatus, 9)
     sPath = Project.Dir &/ sFile
-  
+
     If Left(sStatus) = "D" Then
       Project.LockedPaths[sPath] = True
     Else If Left(sStatus) = "?" Then
@@ -176,41 +171,39 @@ Private Sub UpdatePathFromStatus(sStatus As String)
       '     Project.AddedPaths[Project.Dir &/ File.Dir(sFile) &/ sForm] = True
       '   Next
       ' Endif
-      
+
     Endif
-    
+
   Next
-  
+
 End
 
-
 Private Sub UpdatePath(aPath As String[])
-  
+
   Dim sStatus As String
   Dim sCmd As String
   Dim sPath As String
-  
+
   If $bSVN Then
-  
+
     ' svn status is automatically recursive!
     sCmd = "cd " & Shell$(Project.Dir) & "; svn status --no-ignore"
     For Each sPath In aPath
       sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
       Project.LockedPaths.Remove(sPath)
       Project.AddedPaths.Remove(sPath)
-    Next 
-  
+    Next
+
     Shell sCmd To sStatus
-    
+
     UpdatePathFromStatus(sStatus)
-  
+
   Endif
-  
+
 End
 
-
 Public Sub CheckPaths()
-  
+
   Dim sStatus As String
   Dim iPos As Integer
 
@@ -218,12 +211,12 @@ Public Sub CheckPaths()
   Project.AddedPaths = New Collection
 
   If $bSVN Then
-  
+
     Shell "cd " & Shell$(Project.Dir) & "; svn status --no-ignore" To sStatus
     UpdatePathFromStatus(sStatus)
-  
+
   Endif
-  
+
 End
 
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
@@ -246,39 +239,38 @@ Public Sub MoveDir(sOld As String, sNew As String) As Boolean
     'NB: make sure the file deleted AFTER
     RemoveFile(sOld)
   Endif
-  
+
   UpdatePath([sOld, sNew])
 
 End
 
 Public Sub Status() As String
-  
+
   Dim sStatus As String
-  
-  If $bSVN Then 
+
+  If $bSVN Then
     Shell "cd " & Shell$(Project.Dir) & "; svn status -q" To sStatus
     Return sStatus
   Endif
-  
+
   If $bCVS Then
     Shell "cd " & Shell$(Project.Dir) & "; cvs status" To sStatus
     Return sStatus
   Endif
-  
+
 End
 
-
 Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Boolean
-  
+
   Dim hFile As File
   Dim sCmd As String
-  
-  If $bSVN Then 
-    hFile = Open Temp$("commit") For Create 
+
+  If $bSVN Then
+    hFile = Open Temp$("commit") For Create
     Print #hFile, sChange;
     Close #hFile
-    sCmd = "svn commit --username " & Shell$(sUser) 
-    If sPassword Then 
+    sCmd = "svn commit --username " & Shell$(sUser)
+    If sPassword Then
       sPassword = " --password " & Shell$(sPassword)
       sCmd &= sPassword
     Endif
@@ -286,42 +278,39 @@ Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Bo
     sCmd &= " --non-interactive"
     Run(sCmd, sPassword)
     Return Process.LastValue
-  Endif    
-  
+  Endif
+
 End
 
-
 Public Sub Update() As Boolean
-  
-  If $bSVN Then 
+
+  If $bSVN Then
     Run("svn update --non-interactive " & SvnShell$(Project.Dir))
     Return Process.LastValue
   Endif
-  
+
 End
 
-
 Public Sub Revert() As Boolean
-  
-  If $bSVN Then 
+
+  If $bSVN Then
     Run("svn -R revert " & SvnShell$(Project.Dir))
     Return Process.LastValue
   Endif
-  
-End
 
+End
 
 Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Boolean
 
   $hEditor = hEditor
   Run("cd " & Shell$(sDir) & "; svn checkout " & SvnShell$(sPath))
   $hEditor = Null
-  
+
 End
 
 Public Sub InConflict(sPath As String) As Boolean
-  
-  If $bSVN Then 
+
+  If $bSVN Then
     'IF Exist(sPath & ".mine") THEN RETURN TRUE
     If Not Exist(sPath) Then
       Debug sPath; ": does not exist"
@@ -329,65 +318,63 @@ Public Sub InConflict(sPath As String) As Boolean
     Endif
     If Dir(File.Dir(sPath), File.Name(sPath) & ".r*").Count Then Return True
   Endif
-  
+
 End
 
 Public Sub Resolve(sPath As String) As Boolean
-  
-  If $bSVN Then 
+
+  If $bSVN Then
     Run("svn resolved " & SvnShell$(sPath))
     Return Process.LastValue
-  Endif  
-  
+  Endif
+
 End
 
 Public Sub HasConflict() As Boolean
 
   If $bSVN Then
-    If Dir(Project.Dir, "*.module.r*").Count Then Return True  
-    If Dir(Project.Dir, "*.class.r*").Count Then Return True  
-    If Dir(Project.Dir, "*.form.r*").Count Then Return True  
-  Endif  
- 
+    If Dir(Project.Dir, "*.module.r*").Count Then Return True
+    If Dir(Project.Dir, "*.class.r*").Count Then Return True
+    If Dir(Project.Dir, "*.form.r*").Count Then Return True
+  Endif
+
 End
 
-
 Public Sub GetVersion(sDir As String) As String
-  
+
   Dim sRes As String
-  
+
   If Exist(sDir &/ ".svn") Then
     Shell "cd " & Shell$(sDir) & "; LC_ALL=C svn info" To sRes
     Try sRes = Scan(sRes, "*\nRevision: *\n*")[1]
     Return sRes
   Endif
-  
+
 End
 
 Private Sub RemoveFirstLines(sStr As String, iCount As Integer) As String
-  
+
   Dim iPos As Integer
-  
+
   While iCount
     iPos = InStr(sStr, "\n", iPos + 1)
     If iPos = 0 Then Return
     Dec iCount
   Wend
-  
+
   Return Mid$(sStr, iPos + 1)
-  
+
 End
 
-
 Public Sub Diff(sPath As String) As String
-  
+
   Dim sDiff As String
-  
+
   If $bSVN Then
     Shell "svn diff " & SvnShell$(sPath) To sDiff
     Return sDiff
   Endif
-  
+
 End
 
 Public Sub CanControlProject() As Boolean
@@ -395,11 +382,11 @@ Public Sub CanControlProject() As Boolean
   If $bSVN Or $bCVS Then Return
   If Exist(Project.Dir &/ "../.svn") Then Return True
   If Exist(Project.Dir &/ "../CVS") Or Exist(Project.Dir &/ "../CVSROOT") Then Return True
-  
+
 End
 
 Public Sub ControlProject()
-  
+
   If Exist(Project.Dir &/ "../.svn") Then
     Project.CleanUp
     Try Kill Project.Dir &/ ".settings"
@@ -408,5 +395,5 @@ Public Sub ControlProject()
     Refresh
     Project.Refresh
   Endif
-  
+
 End
