@@ -457,7 +457,15 @@ void SUBR_write(ushort code)
 		int len;
 		int lenw;
 		
-		SUBR_get_string_len(&PARAM[1], &str, &len);
+		if (TYPE_is_pointer(PARAM[1].type))
+		{
+			len = 0;
+			str = (char *)PARAM[1]._pointer.value;
+		}
+		else
+		{
+			SUBR_get_string_len(&PARAM[1], &str, &len);
+		}
     
 		VALUE_conv_integer(&PARAM[2]);
 		lenw = PARAM[2]._integer.value;
