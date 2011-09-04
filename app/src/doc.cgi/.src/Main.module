@@ -572,7 +572,7 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
           Else If sMoreSuff = ">" Then
             sMoreSuff = " align=\"right\""
           Else
-            sMoreSuff = ""
+            sMoreSuff = " class=\"" & sMoreSuff & "\""
           Endif
         Endif
 
@@ -2251,30 +2251,36 @@ Private Sub DisplayPage()
   If $bImage Then
 
     Print "<img border=\"1\" src=\"/image" &/ $sUri; "\" />"
-
-  Else If $bShow Then
-
-    Print MakePageWithoutHeader(rPage)
-
+  
   Else
-
-    If bRefresh And Not $bNew Then
-      sPage = MakePageWithoutHeader(rPage)
-      If $cGotSpecial.Count = 0 Then
-        rPage!sHTML = sPage
-        rPage!bRefresh = False
-        rPage.Update
-      Endif
-    Endif
-
-    If $bNoCache Or IsNull(rPage!sHTML) Then
-      If Not sPage Then sPage = MakePageWithoutHeader(rPage)
-      Print sPage
-    Else
-      Print rPage!sHTML
-    Endif
-
+    
+    Print MakePageWithoutHeader(rPage)
+    
   Endif
+
+  ' Else If $bShow Then
+  ' 
+  '   Print MakePageWithoutHeader(rPage)
+  ' 
+  ' Else
+  ' 
+  '   If bRefresh And Not $bNew Then
+  '     sPage = MakePageWithoutHeader(rPage)
+  '     If $cGotSpecial.Count = 0 Then
+  '       rPage!sHTML = sPage
+  '       rPage!bRefresh = False
+  '       rPage.Update
+  '     Endif
+  '   Endif
+  ' 
+  '   If $bNoCache Or IsNull(rPage!sHTML) Then
+  '     If Not sPage Then sPage = MakePageWithoutHeader(rPage)
+  '     Print sPage
+  '   Else
+  '     Print rPage!sHTML
+  '   Endif
+  ' 
+  ' Endif
 
   MakeFooter(rPage!dDate)
 

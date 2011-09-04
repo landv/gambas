@@ -99,7 +99,7 @@ Public Sub Update()
   btnNew.Visible = bVisible
   btnRemove.Visible = bVisible
   
-  dvwBrowser.Refresh
+  dvwBrowser.Update
   
   If $hSrc And If Not bVisible Then btnFirst_Click
   

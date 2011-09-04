@@ -216,12 +216,12 @@ Public Function MoveLast() As Boolean
   
 End
 
-Public Function MoveTo(iIndex As Integer) As Boolean
+Public Function MoveTo(Index As Integer) As Boolean
   
   If CheckModified() Then Return True
-  If iIndex = $iIndex Then Return
+  If Index = $iIndex Then Return
 
-  $iIndex = iIndex
+  $iIndex = Index
   Redraw
   
 End
