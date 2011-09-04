@@ -92,11 +92,11 @@ static int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_obje
 	if (nmemb > 2)
 		*(char **)GB.Array.Add(THIS_HTTP->headers) = GB.NewString(buffer, (nmemb - 2) * size);
 	
-	if ( (THIS_STATUS==6) && THIS->async )
+	if ((THIS_STATUS == NET_CONNECTING) && THIS->async)
 	{
-		THIS_STATUS=4;
+		THIS_STATUS = NET_RECEIVING_DATA;
 		GB.Ref(THIS);
-		GB.Post(CCURL_raise_connect,(long)THIS);
+		GB.Post(CURL_raise_connect,(long)THIS);
 	}
 
 	return size * nmemb;
@@ -139,7 +139,7 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 	if (THIS->async)
 	{
 		GB.Ref(THIS);
-		GB.Post(CCURL_raise_read,(long)THIS);
+		GB.Post(CURL_raise_read,(long)THIS);
 	}
 	
 	return nmemb;
@@ -170,22 +170,22 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 {
 	if (THIS_CURL)
 	{
-		if (Adv_Comp ( THIS->user.userpwd,THIS->user.user,THIS->user.pwd))
+		if (CURL_check_userpwd(&THIS->user))
 		{
-			CCURL_stop(_object);
+			CURL_stop(_object);
 			http_reset(_object);
-			THIS_CURL=curl_easy_init();
+			THIS_CURL = curl_easy_init();
 		}
 	}
 	else
 	{
-		THIS_CURL=curl_easy_init();
+		THIS_CURL = curl_easy_init();
 	}
 	
 	if (!THIS->async)
 	{
 		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
-		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
+		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, THIS->debug);
@@ -203,15 +203,15 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 	else
 		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, NULL);
 
-	Adv_proxy_SET (&THIS->proxy.proxy,THIS_CURL);
-	Adv_user_SET  (&THIS->user, THIS_CURL);
+	CURL_proxy_set(&THIS->proxy.proxy,THIS_CURL);
+	CURL_user_set(&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
 	THIS_HTTP->return_code = 0;
 	GB.FreeString(&THIS_HTTP->return_string);
 
 	http_reset(_object);
-	THIS_STATUS=6;
+	THIS_STATUS = NET_CONNECTING;
 	
 	if (custom_headers)
 	{
@@ -220,7 +220,7 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		GB.Ref(custom_headers);
 	}
 	
-	CCURL_init_stream(THIS);
+	CURL_init_stream(THIS);
 }
 
 
@@ -282,7 +282,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 		}
 	}
 
-	THIS->iMethod=0;
+	THIS->method=0;
 	
 	http_initialize_curl_handle(_object, custom_headers);
 	
@@ -298,11 +298,11 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 
 	if (THIS->async)
 	{
-		CCURL_start_post(THIS);
+		CURL_start_post(THIS);
 		return;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
+	CURL_manage_error(_object,curl_easy_perform(THIS_CURL));
 }
 
 
@@ -336,7 +336,7 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	strcpy(THIS_HTTP->sContentType,"Content-Type: ");
 	strcat(THIS_HTTP->sContentType,sContent);
 	
-	THIS->iMethod=1;
+	THIS->method=1;
 	headers = curl_slist_append(headers,THIS_HTTP->sContentType );
 	
 	if (THIS_HTTP->sent_headers)
@@ -366,11 +366,11 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 
 	if (THIS->async)
 	{
-		CCURL_start_post(THIS);
+		CURL_start_post(THIS);
 		return;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
+	CURL_manage_error(_object,curl_easy_perform(THIS_CURL));
 }
 
 
@@ -406,11 +406,8 @@ BEGIN_PROPERTY(HttpClient_CookiesFile)
 		return;
 	}
 
-	if (THIS_STATUS > 0)
-	{
-		GB.Error("CookiesFile property can not be changed if the client is active");
+	if (CURL_check_active(THIS))
 		return;
-  	}
 
 	if (THIS_HTTP->cookiesfile)
 		GB.FreeString(&THIS_HTTP->cookiesfile);
@@ -423,9 +420,6 @@ BEGIN_PROPERTY(HttpClient_CookiesFile)
 END_PROPERTY
 
 
-/***********************************************
- HTTP authentication : Plain, GSS negotiation, Digest or NTLM
-************************************************/
 BEGIN_PROPERTY (HttpClient_Auth)
 
 	if (READ_PROPERTY)
@@ -434,16 +428,13 @@ BEGIN_PROPERTY (HttpClient_Auth)
 		return;
 	}
 
-	if (THIS_STATUS > 0)
-	{
-		GB.Error ("Auth property can not be changed while working");
+	if (CURL_check_active(THIS))
 		return;
-  	}
 
-	if (Adv_user_SETAUTH (&THIS->user,VPROP(GB_INTEGER)) )
+	if (CURL_user_set_auth(&THIS->user, VPROP(GB_INTEGER)))
 		GB.Error ("Unknown authentication method");
 	else
-		THIS_HTTP->auth=VPROP(GB_INTEGER);
+		THIS_HTTP->auth = VPROP(GB_INTEGER);
 
 
 END_PROPERTY
@@ -455,10 +446,10 @@ BEGIN_PROPERTY(HttpClient_UserAgent)
 		GB.ReturnString(THIS_HTTP->sUserAgent);
 	else
 	{
-		if (THIS_STATUS > 0)
-			GB.Error("UserAgent property can not be changed if the client is active");
-		else
-			GB.StoreString(PROP(GB_STRING), &THIS_HTTP->sUserAgent);
+		if (CURL_check_active(THIS))
+			return;
+		
+		GB.StoreString(PROP(GB_STRING), &THIS_HTTP->sUserAgent);
 	}
 
 END_PROPERTY
@@ -470,10 +461,10 @@ BEGIN_PROPERTY(HttpClient_Encoding)
 		GB.ReturnString(THIS_HTTP->encoding);
 	else
 	{
-		if (THIS_STATUS > 0)
-			GB.Error("Encoding property can not be changed if the client is active");
-		else
-			GB.StoreString(PROP(GB_STRING), &THIS_HTTP->encoding);
+		if (CURL_check_active(THIS))
+			return;
+		
+		GB.StoreString(PROP(GB_STRING), &THIS_HTTP->encoding);
 	}
 
 END_PROPERTY
@@ -510,7 +501,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(HttpClient_free)
 
-	CCURL_stop(_object);
+	CURL_stop(_object);
 	http_reset(THIS);
 	
 	GB.FreeString(&THIS_HTTP->sUserAgent);
@@ -544,7 +535,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(HttpClient_Stop)
 
-	CCURL_stop(THIS);
+	CURL_stop(THIS);
 	http_reset(_object);
 
 END_METHOD

@@ -39,10 +39,10 @@
 #include "CProxy.h"
 
 
-DECLARE_EVENT (CURL_FINISHED);
-DECLARE_EVENT (CURL_ERROR);
-DECLARE_EVENT (CURL_CONNECT);
-DECLARE_EVENT (CURL_READ);
+DECLARE_EVENT (EVENT_FINISHED);
+DECLARE_EVENT (EVENT_ERROR);
+DECLARE_EVENT (EVENT_CONNECT);
+DECLARE_EVENT (EVENT_READ);
 
 /*****************************************************
 CURLM : a pointer to use curl_multi interface,
@@ -50,12 +50,13 @@ allowing asynchrnous work without using threads
 in this class.
 ******************************************************/
 CURLM *CCURL_multicurl;
-int CCURL_pipe[2]={-1,-1};
+int CCURL_pipe[2] = {-1, -1};
 
 /******************************************************
 Events from this class
 ******************************************************/
-GB_STREAM_DESC CurlStream = {
+GB_STREAM_DESC CurlStream =
+{
 	open: CCURL_stream_open,
 	close: CCURL_stream_close,
 	read: CCURL_stream_read,
@@ -88,7 +89,7 @@ int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 	
 	*len = 0;
 
-	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) 
+	if ((THIS_STATUS != NET_RECEIVING_DATA ) && (THIS_STATUS != NET_INACTIVE)) 
 		return -1;
 		
 	*len = GB.StringLength(THIS->data);
@@ -99,7 +100,7 @@ int CCURL_stream_eof(GB_STREAM *stream)
 {
 	void *_object = STREAM_TO_OBJECT(stream);
 	
-	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
+	if ((THIS_STATUS != NET_RECEIVING_DATA ) && (THIS_STATUS != NET_INACTIVE)) return -1;
 	if (!GB.StringLength(THIS->data)) return -1;
 	return 0;
 }
@@ -110,7 +111,7 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	int len_data;
 	char *new_data;
 	
-	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
+	if ((THIS_STATUS != NET_RECEIVING_DATA ) && (THIS_STATUS != NET_INACTIVE)) return -1;
 	
 	len_data = GB.StringLength(THIS->data);
 	
@@ -131,59 +132,44 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	return 0;
 }
 
-
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
-
-/*******************************************************************
-####################################################################
-	POSTED FUNCTIONS TO RAISE EVENTS
-####################################################################
-********************************************************************/
-void CCURL_raise_finished(intptr_t lParam)
+static void raise_event(void *_object, int event)
 {
-	void *mythis;
-	mythis=(void*)lParam;
-	GB.Raise(mythis,CURL_FINISHED,0);
-	GB.Unref(&mythis);
+	GB.Raise(THIS, event, 0);
+	GB.Unref(POINTER(&_object));
 }
 
-void CCURL_raise_error(intptr_t lParam)
+void CURL_raise_finished(void *_object)
 {
-	void *mythis;
-	mythis=(void*)lParam;
-	GB.Raise(mythis,CURL_ERROR,0);
-	GB.Unref(&mythis);
+	raise_event(THIS, EVENT_FINISHED);
 }
 
-void CCURL_raise_connect(intptr_t lParam)
+void CURL_raise_error(void *_object)
 {
-	void *mythis;
-	mythis=(void*)lParam;
-	GB.Raise(mythis,CURL_CONNECT,0);
-	GB.Unref(&mythis);
+	raise_event(THIS, EVENT_ERROR);
 }
 
-void CCURL_raise_read(intptr_t lParam)
+void CURL_raise_connect(void *_object)
 {
-	void *mythis;
-	mythis=(void*)lParam;
-	GB.Raise(mythis,CURL_READ,0);
-	GB.Unref(&mythis);
+	raise_event(THIS, EVENT_CONNECT);
 }
 
+void CURL_raise_read(void *_object)
+{
+	raise_event(THIS, EVENT_READ);
+}
 
-void CCURL_Manage_ErrCode(void *_object, long ErrCode)
+void CURL_manage_error(void *_object, int error)
 {
 	if (THIS_FILE)
 	{
 		fclose(THIS_FILE);
-		THIS_FILE=NULL;
+		THIS_FILE = NULL;
 	}
 	
-	switch ( ErrCode )
+	switch (error)
 	{
 		case CURLE_OK:
+			
 			if (THIS->async) 
 			{
 				#if DEBUG
@@ -192,11 +178,13 @@ void CCURL_Manage_ErrCode(void *_object, long ErrCode)
 				curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			}
 			GB.Ref(THIS);
-			GB.Post(CCURL_raise_finished,(long)THIS);
-			CCURL_stop(THIS);
-			THIS_STATUS = 0;
+			GB.Post(CURL_raise_finished, (intptr_t)THIS);
+			CURL_stop(THIS);
+			THIS_STATUS = NET_INACTIVE;
 			break;
+			
 		default:
+			
 			if (THIS->async) 
 			{
 				#if DEBUG
@@ -205,9 +193,9 @@ void CCURL_Manage_ErrCode(void *_object, long ErrCode)
 				curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			}
 			GB.Ref(THIS);
-			GB.Post(CCURL_raise_error,(long)THIS);
-			CCURL_stop(THIS);
-			THIS_STATUS = -1*(1000+ErrCode);
+			GB.Post(CURL_raise_error, (intptr_t)THIS);
+			CURL_stop(THIS);
+			THIS_STATUS = (- (1000 + error));
 			break;
 	}
 	
@@ -215,7 +203,7 @@ void CCURL_Manage_ErrCode(void *_object, long ErrCode)
 		GB.Unref(POINTER(&_object));
 }
 
-void CCURL_init_stream(void *_object)
+void CURL_init_stream(void *_object)
 {
 	THIS->stream.desc = &CurlStream;
 	THIS->stream.tag = THIS;
@@ -263,7 +251,7 @@ static void CCURL_post_curl(intptr_t data)
 		{
 			curl_easy_getinfo(Msg->easy_handle,CURLINFO_PRIVATE,&tmp);
 			_object=(void*)tmp;
-			CCURL_Manage_ErrCode(THIS,Msg->data.result);
+			CURL_manage_error(THIS,Msg->data.result);
 		}
 	} 
 	while (nread);
@@ -272,12 +260,12 @@ static void CCURL_post_curl(intptr_t data)
 		stop_post();
 }
 
-void CCURL_stop(void *_object)
+void CURL_stop(void *_object)
 {
 	if (THIS_FILE)
 	{
 		fclose(THIS_FILE);
-		THIS_FILE=NULL;
+		THIS_FILE = NULL;
 	}
 	
 	if (THIS_CURL)
@@ -290,13 +278,13 @@ void CCURL_stop(void *_object)
 		fprintf(stderr, "-- [%p] curl_easycleanup(%p)\n", THIS, THIS_CURL);
 		#endif
 		curl_easy_cleanup(THIS_CURL);
-		THIS_CURL=NULL;
+		THIS_CURL = NULL;
 	}
 
-	THIS_STATUS = 0;
+	THIS_STATUS = NET_INACTIVE;
 }
 
-static void CCURL_init_post(void)
+static void Curl_init_post(void)
 {
 	if (CCURL_pipe[0]!=-1) return;
 	
@@ -311,108 +299,96 @@ static void CCURL_init_post(void)
 		fprintf(stderr, "gb.net.curl: warning: unable to write to the client watching pipe: %s\n", strerror(errno));
 }
 
-void CCURL_start_post(void *_object)
+void CURL_start_post(void *_object)
 {
-	CCURL_init_post();
+	Curl_init_post();
 	curl_multi_add_handle(CCURL_multicurl, THIS_CURL);
 	GB.Ref(THIS);
 }
 
-/*********************************************
-FTP User ( User:Password format )
-*********************************************/
-BEGIN_PROPERTY ( CCURL_sUser )
-
-	if (READ_PROPERTY)
-	{
-		GB.ReturnString(THIS->user.user);
-		return;
-	}
-
+bool CURL_check_active(void *_object)
+{
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("User property is read-only while working");
-		return;
-		}
-	
-
-	if ( THIS->user.user ) GB.FreeString ( &(THIS->user.user) );
-	GB.StoreString(PROP(GB_STRING), &(THIS->user.user) );
-	
-
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY( CCURL_Async )
-
-	if (READ_PROPERTY)
-	{
-		GB.ReturnBoolean(THIS->async);
-		return;
+		GB.Error("Property is read-only while client is active");
+		return TRUE;
 	}
-	
-	if (THIS_STATUS > 0)
-	{
-		GB.Error ("Async property is read-only while working");
-		return;
-		}
-	
-	THIS->async = VPROP(GB_BOOLEAN);
-
-END_PROPERTY
-
-BEGIN_PROPERTY( CCURL_TimeOut )
-
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(THIS->TimeOut);
-		return;
-	}
-	
-	if (THIS_STATUS > 0)
-	{
-		GB.Error ("Timeout property is read-only while working");
-		return;
-		}
-	
-	if (VPROP(GB_INTEGER)<0) 
-		THIS->TimeOut=0;
 	else
-		THIS->TimeOut=VPROP(GB_INTEGER);
+		return FALSE;
+}
 
-END_PROPERTY
-
-BEGIN_PROPERTY ( CCURL_Password )
-
+BEGIN_PROPERTY(Curl_User)
 
 	if (READ_PROPERTY)
+		GB.ReturnString(THIS->user.user);
+	else
 	{
-		GB.ReturnString(THIS->user.pwd);
-		return;
+		if (CURL_check_active(THIS))
+			return;
+
+		GB.StoreString(PROP(GB_STRING), &(THIS->user.user));
 	}
 
-	if (THIS_STATUS > 0)
-	{
-		GB.Error ("User property is read-only while working");
-		return;
-		}
-
-	
-	if ( THIS->user.pwd ) GB.FreeString ( &(THIS->user.pwd) );
-	GB.StoreString(PROP(GB_STRING), &(THIS->user.pwd) );
-
-	
 END_PROPERTY
 
-/*********************************************
-Status : inactive, working or Error code
-*********************************************/
-BEGIN_PROPERTY(CCURL_Status)
+
+BEGIN_PROPERTY(Curl_Async)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->async);
+	else
+	{
+		if (CURL_check_active(THIS))
+			return;
+	
+		THIS->async = VPROP(GB_BOOLEAN);
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Curl_Timeout)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->timeout);
+	else
+	{
+		int timeout;
+		
+		if (CURL_check_active(THIS))
+			return;
+	
+		timeout = VPROP(GB_INTEGER);
+		if (timeout < 0)
+			timeout = 0;
+		
+		THIS->timeout = timeout;
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Curl_Password)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->user.pwd);
+	else
+	{
+		if (CURL_check_active(THIS))
+			return;
+	
+		GB.StoreString(PROP(GB_STRING), &(THIS->user.pwd));
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Curl_Status)
 
 	GB.ReturnInteger(THIS_STATUS);
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Curl_ErrorText)
 
@@ -423,11 +399,8 @@ BEGIN_PROPERTY(Curl_ErrorText)
 
 END_PROPERTY
 
-/*****************************************************************
-URL to work with
-*****************************************************************/
 
-BEGIN_PROPERTY(CCURL_URL)
+BEGIN_PROPERTY(Curl_URL)
 
 	char *url, *tmp;
 	char *protocol;
@@ -437,12 +410,9 @@ BEGIN_PROPERTY(CCURL_URL)
 		GB.ReturnString(THIS_URL);
 		return;
 	}
-
-	if (THIS_STATUS > 0)
-	{
-		GB.Error ("URL is read-only while working");
+	
+	if (CURL_check_active(THIS))
 		return;
-	}
 
 	if (PLENGTH() == 0)
 		goto UNKNOWN_PROTOCOL;
@@ -482,39 +452,30 @@ UNKNOWN_PROTOCOL:
 	
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CCURL_new)
+BEGIN_METHOD_VOID(Curl_new)
 
 	#if DEBUG
-	fprintf(stderr, "CCURL_new: %p\n", THIS);
+	fprintf(stderr, "Curl_new: %p\n", THIS);
 	#endif
 
-	/*curlData *data=NULL;
-	
-	GB.Alloc(POINTER(&data),sizeof(curlData));
-	((void**)THIS->stream._free)[0]=(void*)data;*/
-
-	THIS->stream.desc = NULL;
-	THIS_CURL = NULL;
-	THIS_URL = NULL;
-	THIS_FILE = NULL;
-	THIS_STATUS = 0;
-	
-	Adv_user_NEW(&THIS->user);
-	Adv_proxy_NEW(&THIS->proxy.proxy);
+	CURL_user_init(&THIS->user);
+	CURL_proxy_init(&THIS->proxy.proxy);
 	
 	THIS->proxy.parent_status = (int*)&THIS_STATUS;
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CCURL_free)
+BEGIN_METHOD_VOID(Curl_free)
 	
 	#if DEBUG
-	fprintf(stderr, "CCURL_free: %p\n", THIS);
+	fprintf(stderr, "Curl_free: %p\n", THIS);
 	#endif
 	
 	GB.FreeString(&THIS_URL);
 	
-	if (THIS_FILE) fclose(THIS_FILE);
+	if (THIS_FILE)
+		fclose(THIS_FILE);
+	
 	if (THIS_CURL) 
 	{
 		#if DEBUG
@@ -522,21 +483,22 @@ BEGIN_METHOD_VOID(CCURL_free)
 		#endif
 		curl_easy_cleanup(THIS_CURL);
 	}
-	Adv_user_CLEAR  (&THIS->user);
-	Adv_proxy_CLEAR(&THIS->proxy.proxy);
+	
+	CURL_user_clear(&THIS->user);
+	CURL_proxy_clear(&THIS->proxy.proxy);
 	
 END_METHOD
 
-BEGIN_METHOD_VOID(CCURL_init)
+BEGIN_METHOD_VOID(Curl_init)
 
 	#if DEBUG
 	fprintf(stderr, "-- curl_multi_init()\n");
 	#endif
-	CCURL_multicurl=curl_multi_init();
+	CCURL_multicurl = curl_multi_init();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CCURL_exit)
+BEGIN_METHOD_VOID(Curl_exit)
 
 	#if DEBUG
 	fprintf(stderr, "-- curl_multi_cleanup()\n");
@@ -545,7 +507,7 @@ BEGIN_METHOD_VOID(CCURL_exit)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CCURL_Peek)
+BEGIN_METHOD_VOID(Curl_Peek)
 
 	GB.ReturnString(THIS->data);
 
@@ -569,27 +531,27 @@ GB_DESC CCurlDesc[] =
 
 	GB_INHERITS("Stream"),
 
-	GB_METHOD("_new", NULL, CCURL_new, NULL),
-	GB_METHOD("_free", NULL, CCURL_free, NULL),
-	GB_METHOD("Peek","s", CCURL_Peek, NULL),
+	GB_STATIC_METHOD("_init", NULL, Curl_init, NULL),
+	GB_STATIC_METHOD("_exit", NULL, Curl_exit, NULL),
+
+	GB_METHOD("_new", NULL, Curl_new, NULL),
+	GB_METHOD("_free", NULL, Curl_free, NULL),
+	GB_METHOD("Peek","s", Curl_Peek, NULL),
 	
-	GB_STATIC_METHOD("_init",NULL,CCURL_init, NULL),
-	GB_STATIC_METHOD("_exit",NULL,CCURL_exit, NULL),
-
-	GB_EVENT("Finished", NULL, NULL, &CURL_FINISHED),
-	GB_EVENT("Connect", NULL, NULL, &CURL_CONNECT),
-	GB_EVENT("Read", NULL, NULL, &CURL_READ),
-	GB_EVENT("Error", NULL,NULL, &CURL_ERROR),
-
-	GB_PROPERTY("URL", "s",CCURL_URL),
-	GB_PROPERTY("User","s",CCURL_sUser),
-	GB_PROPERTY("Password","s",CCURL_Password),  
-	GB_PROPERTY("Async","b",CCURL_Async),
-	GB_PROPERTY("Timeout","i",CCURL_TimeOut),
-	GB_PROPERTY_SELF("Proxy",".Curl.Proxy"),
-	GB_PROPERTY_READ("Status","i",CCURL_Status),
+	GB_PROPERTY("URL", "s", Curl_URL),
+	GB_PROPERTY("User", "s", Curl_User),
+	GB_PROPERTY("Password", "s", Curl_Password),  
+	GB_PROPERTY("Async", "b", Curl_Async),
+	GB_PROPERTY("Timeout", "i", Curl_Timeout),
+	GB_PROPERTY_SELF("Proxy", ".Curl.Proxy"),
+	GB_PROPERTY_READ("Status", "i", Curl_Status),
 	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
+
+	GB_EVENT("Finished", NULL, NULL, &EVENT_FINISHED),
+	GB_EVENT("Connect", NULL, NULL, &EVENT_CONNECT),
+	GB_EVENT("Read", NULL, NULL, &EVENT_READ),
+	GB_EVENT("Error", NULL,NULL, &EVENT_ERROR),
 
 	GB_END_DECLARE
 };

@@ -35,4 +35,12 @@ extern GB_DESC CNetDesc[];
 
 #endif
 
+enum
+{
+	NET_INACTIVE = 0,
+	NET_ACTIVE = 1,
+	NET_RECEIVING_DATA = 4,
+	NET_CONNECTING = 6,
+};
+
 #endif

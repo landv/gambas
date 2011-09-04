@@ -42,29 +42,24 @@
 #define EXEC_PUT 1
 #define EXEC_CMD 2
 
-/*******************************************************************
-####################################################################
-	CALLBACKS FROM CURL LIBRARY
-####################################################################
-********************************************************************/
 
 static int ftp_read_curl (void *buffer, size_t size, size_t nmemb, void *_object)
 {
-	/* BM */
 	FILE *file = THIS_FILE;
-	THIS_STATUS=4;
+	THIS_STATUS = NET_RECEIVING_DATA;
 	
 	if (!feof(file))
-		nmemb=fread(buffer,size,nmemb,file);
+		nmemb = fread(buffer, size, nmemb, file);
 	else
-		nmemb=0;
+		nmemb = 0;
 	
 	return nmemb;
 }
 
+
 static int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
-	THIS_STATUS=4;
+	THIS_STATUS = NET_RECEIVING_DATA;
 	nmemb *= size;
 
 	if (THIS_FILE)
@@ -79,11 +74,12 @@ static int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object
 	if (THIS->async)
 	{
 		GB.Ref(THIS);
-		GB.Post(CCURL_raise_read,(long)THIS);
+		GB.Post(CURL_raise_read,(long)THIS);
 	}
 	
 	return nmemb;
 }
+
 
 static void ftp_reset(void *_object)
 {
@@ -91,15 +87,16 @@ static void ftp_reset(void *_object)
 	GB.Unref(&THIS_FTP->commands);
 }
 
+
 static void ftp_initialize_curl_handle(void *_object)
 {
 	if (THIS_CURL)
 	{
-		if (Adv_Comp ( THIS->user.userpwd,THIS->user.user,THIS->user.pwd))
+		if (CURL_check_userpwd(&THIS->user))
 		{
-			CCURL_stop(_object);
+			CURL_stop(_object);
 			ftp_reset(_object);
-			THIS_CURL=curl_easy_init();
+			THIS_CURL = curl_easy_init();
 			#if DEBUG
 			fprintf(stderr, "-- [%p] curl_easy_init() -> %p\n", THIS, THIS_CURL);
 			#endif
@@ -107,7 +104,7 @@ static void ftp_initialize_curl_handle(void *_object)
 	}
 	else
 	{
-		THIS_CURL=curl_easy_init();
+		THIS_CURL = curl_easy_init();
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_easy_init() -> %p\n", THIS, THIS_CURL);
 		#endif
@@ -116,20 +113,20 @@ static void ftp_initialize_curl_handle(void *_object)
 	if (!THIS->async)
 	{
 		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
-		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
+		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 
-	Adv_proxy_SET (&THIS->proxy.proxy,THIS_CURL);
-	Adv_user_SET  (&THIS->user, THIS_CURL);
+	CURL_proxy_set(&THIS->proxy.proxy,THIS_CURL);
+	CURL_user_set(&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
 	ftp_reset(THIS_FTP);
-	THIS_STATUS=6;
+	THIS_STATUS = NET_CONNECTING;
 	
-	CCURL_init_stream(THIS);
+	CURL_init_stream(THIS);
 }
 
 
@@ -138,9 +135,10 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 	struct curl_slist *list;
 	int i;
 
-	if (THIS_STATUS > 0) return 1;
+	if (THIS_STATUS > 0)
+		return 1;
 
-	THIS->iMethod = what == EXEC_PUT ? 1 : 0;
+	THIS->method = what == EXEC_PUT ? 1 : 0;
 	
 	ftp_initialize_curl_handle(THIS);
 	
@@ -186,13 +184,14 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
 		#endif
-		CCURL_start_post(THIS);
+		CURL_start_post(THIS);
 		return 0;
 	}
 	
-	CCURL_Manage_ErrCode(_object, curl_easy_perform(THIS_CURL));
+	CURL_manage_error(_object, curl_easy_perform(THIS_CURL));
 	return 0;
 }
+
 
 BEGIN_METHOD(FtpClient_Get, GB_STRING target)
 
@@ -260,7 +259,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(FtpClient_Stop)
 
-	CCURL_stop(_object);
+	CURL_stop(_object);
 	ftp_reset(_object);
 	
 END_METHOD
@@ -274,7 +273,7 @@ BEGIN_METHOD_VOID(FtpClient_new)
 	THIS_URL=tmp;
 	strcpy(tmp,"ftp://127.0.0.1:21");
 
-	Adv_user_SETAUTH (&THIS->user, CURLAUTH_BASIC);
+	CURL_user_set_auth(&THIS->user, CURLAUTH_BASIC);
 	
 	THIS->user.user = GB.NewZeroString("anonymous");
 
@@ -283,15 +282,12 @@ END_METHOD
 
 BEGIN_METHOD_VOID(FtpClient_free)
 
-	CCURL_stop(_object);
+	CURL_stop(_object);
 	ftp_reset(THIS_FTP);
 
 END_METHOD
 
 
-//*************************************************************************
-//#################### GAMBAS INTERFACE ###################################
-//*************************************************************************
 GB_DESC CFtpClientDesc[] =
 {
   GB_DECLARE("FtpClient", sizeof(CFTPCLIENT)),

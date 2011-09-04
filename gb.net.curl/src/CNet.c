@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CNet.c
+	CNet.c
 
-  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -27,44 +27,42 @@
 #include <curl/curl.h>
 
 #include "CNet.h"
+
 #define GBCURL(x) (-(1000+x))
 
-/***************************************************************
- Here we declare the public interface of NetCode class
- ***************************************************************/
 GB_DESC CNetDesc[] =
 {
-  GB_DECLARE("Net", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE("Net", 0), GB_VIRTUAL_CLASS(),
 
 	// Net states used by curl
-  //GB_CONSTANT("Inactive", "i", 0),
-  //GB_CONSTANT("ReceivingData","i",4),
-  //GB_CONSTANT("Connecting", "i", 6),
+	//GB_CONSTANT("Inactive", "i", 0),
+	//GB_CONSTANT("ReceivingData","i",4),
+	//GB_CONSTANT("Connecting", "i", 6),
 
-  GB_CONSTANT ("Asynchronous","i",1),
-  GB_CONSTANT ("Synchronous","i",0),
-  /* net-curl proxies */
-  GB_CONSTANT ("ProxyHTTP","i",CURLPROXY_HTTP),
-  GB_CONSTANT ("ProxySocks5","i",CURLPROXY_SOCKS5),
-  /* net-curl autohorization */
-  #ifdef CURLAUTH_NONE
-  GB_CONSTANT("AuthNone", "i", CURLAUTH_NONE),
-  GB_CONSTANT("AuthBasic", "i", CURLAUTH_BASIC),
-  GB_CONSTANT("AuthNtlm", "i", CURLAUTH_NTLM),
-  GB_CONSTANT("AuthDigest", "i", CURLAUTH_DIGEST),
-  GB_CONSTANT("AuthDigestIE", "i", CURLAUTH_DIGEST_IE),
-  GB_CONSTANT("AuthGssNegotiate", "i", CURLAUTH_GSSNEGOTIATE),
-  GB_CONSTANT("AuthAny", "i", CURLAUTH_ANY),
-  #else
-  GB_CONSTANT("AuthNone", "i", 0),
-  GB_CONSTANT("AuthBasic", "i", 1),
-  GB_CONSTANT("AuthNtlm", "i", 2),
-  GB_CONSTANT("AuthDigest", "i", 3),
-  GB_CONSTANT("AuthDigestIE", "i", 4),
-  GB_CONSTANT("AuthGssNegotiate", "i", 5),
-  GB_CONSTANT("AuthAny", "i", 6),
-  #endif
-  
+	GB_CONSTANT ("Synchronous", "i", 0),
+	GB_CONSTANT ("Asynchronous", "i", 1),
+	/* net-curl proxies */
+	GB_CONSTANT ("ProxyHTTP", "i", CURLPROXY_HTTP),
+	GB_CONSTANT ("ProxySocks5", "i", CURLPROXY_SOCKS5),
+	/* net-curl autohorization */
+	#ifdef CURLAUTH_NONE
+	GB_CONSTANT("AuthNone", "i", CURLAUTH_NONE),
+	GB_CONSTANT("AuthBasic", "i", CURLAUTH_BASIC),
+	GB_CONSTANT("AuthNtlm", "i", CURLAUTH_NTLM),
+	GB_CONSTANT("AuthDigest", "i", CURLAUTH_DIGEST),
+	GB_CONSTANT("AuthDigestIE", "i", CURLAUTH_DIGEST_IE),
+	GB_CONSTANT("AuthGssNegotiate", "i", CURLAUTH_GSSNEGOTIATE),
+	GB_CONSTANT("AuthAny", "i", CURLAUTH_ANY),
+	#else
+	GB_CONSTANT("AuthNone", "i", 0),
+	GB_CONSTANT("AuthBasic", "i", 1),
+	GB_CONSTANT("AuthNtlm", "i", 2),
+	GB_CONSTANT("AuthDigest", "i", 3),
+	GB_CONSTANT("AuthDigestIE", "i", 4),
+	GB_CONSTANT("AuthGssNegotiate", "i", 5),
+	GB_CONSTANT("AuthAny", "i", 6),
+	#endif
+	
 	GB_CONSTANT("UnsupportedProtocol", "i", GBCURL(CURLE_UNSUPPORTED_PROTOCOL)),
 	GB_CONSTANT("FailedInit", "i", GBCURL(CURLE_FAILED_INIT)),
 	GB_CONSTANT("URLMalformat", "i", GBCURL(CURLE_URL_MALFORMAT)),
@@ -141,9 +139,5 @@ GB_DESC CNetDesc[] =
 	GB_CONSTANT("FTPBadFileList", "i", GBCURL(CURLE_FTP_BAD_FILE_LIST)),
 	GB_CONSTANT("ChunkFailed", "i", GBCURL(CURLE_CHUNK_FAILED)),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
-
-
-
-

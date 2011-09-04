@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CProxy.c
+	CProxy.c
 
-  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -29,137 +29,105 @@
 
 #include "CProxy.h"
 
+static bool check_active(CPROXY *proxy)
+{
+	if (*(proxy->parent_status) > 0)
+	{
+		GB.Error("Proxy cannot be modified while client is active");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
-/***************************************************************
-	PROPERTIES
-****************************************************************/
-BEGIN_PROPERTY (CProxy_Auth)
+BEGIN_PROPERTY(CurlProxy_Auth)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnInteger(THIS->proxy.auth);
-		return;
-	}
-
-	if (*(THIS->parent_status) > 0)
+	else
 	{
-		GB.Error ("Proxy Auth property can not be changed while working");
-		return;
-  	}
+		if (check_active(THIS))
+			return;
 
-	if (Adv_proxy_SETAUTH (&THIS->proxy,VPROP(GB_INTEGER)) )
-		GB.Error ("Unknown authentication method");
+		if (CURL_proxy_set_auth(&THIS->proxy, VPROP(GB_INTEGER)))
+			GB.Error("Unknown authentication method");
+	}
 
 END_PROPERTY
 
-BEGIN_PROPERTY (CProxy_TYPE)
+
+BEGIN_PROPERTY(CurlProxy_Type)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnInteger(THIS->proxy.type);
-		return;
-	}
-
-	if (*(THIS->parent_status) > 0)
+	else
 	{
-		GB.Error ("Proxy Type property can not be changed while working");
-		return;
-  	}
-	if (Adv_proxy_SETTYPE(&THIS->proxy,VPROP(GB_INTEGER)) )
-		GB.Error ("Unknown proxy type");
+		if (check_active(THIS))
+			return;
+
+		if (CURL_proxy_set_type(&THIS->proxy, VPROP(GB_INTEGER)))
+			GB.Error("Unknown proxy type");
+	}
 
 END_PROPERTY
 
-BEGIN_PROPERTY (CProxy_USER)
+
+BEGIN_PROPERTY(CurlProxy_User)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnString(THIS->proxy.user);
-		return;
-	}
-
-	if (*(THIS->parent_status) > 0)
+	else
 	{
-		GB.Error ("Proxy User property can not be changed while working");
-		return;
-  	}
+		if (check_active(THIS))
+			return;
 
-	if (THIS->proxy.user) GB.FreeString (&THIS->proxy.user);
-	GB.StoreString(PROP(GB_STRING), &THIS->proxy.user);
+		GB.StoreString(PROP(GB_STRING), &THIS->proxy.user);
+	}
 
 END_PROPERTY
 
-BEGIN_PROPERTY (CProxy_PASSWORD)
+
+BEGIN_PROPERTY(CurlProxy_Password)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnString(THIS->proxy.pwd);
-		return;
-	}
-
-	if (*(THIS->parent_status) > 0)
+	else
 	{
-		GB.Error ("Proxy Passwod property can not be changed while working");
-		return;
-  	}
+		if (check_active(THIS))
+			return;
 
-	if (THIS->proxy.pwd) GB.FreeString (&THIS->proxy.pwd);
-	GB.StoreString(PROP(GB_STRING), &THIS->proxy.pwd);
+		GB.StoreString(PROP(GB_STRING), &THIS->proxy.pwd);
+	}
 
 END_PROPERTY
 
-BEGIN_PROPERTY (CProxy_HOST)
+
+BEGIN_PROPERTY (CurlProxy_Host)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnString(THIS->proxy.host);
-		return;
-	}
-
-	if (*(THIS->parent_status) > 0)
+	else
 	{
-		GB.Error ("Proxy Host property can not be changed while working");
-		return;
-  	}
+		if (check_active(THIS))
+			return;
 
-	if (THIS->proxy.host) GB.FreeString (&THIS->proxy.host);
-	GB.StoreString(PROP(GB_STRING), &THIS->proxy.host);
-
+		GB.StoreString(PROP(GB_STRING), &THIS->proxy.host);
+	}
 
 END_PROPERTY
 
-/***************************************************************
-	METHODS
-****************************************************************/
-/*BEGIN_METHOD_VOID(CProxy_NEW)
 
-	Adv_proxy_NEW(&THIS->proxy);
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CProxy_FREE)
-
-	Adv_proxy_CLEAR(&THIS->proxy);
-
-END_METHOD*/
-
-/***************************************************************
- Here we declare the public interface of Proxy class
- ***************************************************************/
 GB_DESC CProxyDesc[] =
 {
-  GB_DECLARE(".Curl.Proxy", sizeof(CPROXY)), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Curl.Proxy", sizeof(CPROXY)), GB_VIRTUAL_CLASS(),
 
-  //GB_METHOD("_new", NULL, CProxy_NEW, NULL),
-  //GB_METHOD("_free", NULL, CProxy_FREE, NULL),
+	GB_PROPERTY("Host", "s", CurlProxy_Host),
+	GB_PROPERTY("User", "s", CurlProxy_User),
+	GB_PROPERTY("Password", "s", CurlProxy_Password),
+	GB_PROPERTY("Type", "i", CurlProxy_Type),
+	GB_PROPERTY("Auth", "i", CurlProxy_Auth),
 
-  GB_PROPERTY("Host", "s", CProxy_HOST),
-  GB_PROPERTY("User", "s", CProxy_USER),
-  GB_PROPERTY("Password", "s", CProxy_PASSWORD),
-  GB_PROPERTY("Type", "i", CProxy_TYPE),
-  GB_PROPERTY("Auth", "i", CProxy_Auth),
-
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 

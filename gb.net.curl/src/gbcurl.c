@@ -34,11 +34,16 @@
 
 static char *_protocols[] = { "ftp://", "http://", "https://", NULL };
 
-#ifndef CURLAUTH_NONE
-void Adv_WarningAuth(void)
+static void warning(const char *msg)
 {
-	printf("WARNING : This component was compiled without authentication support\n");
-	printf("          use libcurl version 7.10.7 or later\n");
+	fprintf(stderr, "gb.net.curl: warning: %s\n", msg);
+}
+
+#ifndef CURLAUTH_NONE
+static void warning_auth(void)
+{
+	warning("This component was compiled without authentication support.");
+	warning("Use libcurl version 7.10.7 or later.");
 }
 #define CURLAUTH_NONE 0
 #define LACKS_AUTH
@@ -48,10 +53,10 @@ void Adv_WarningAuth(void)
 #endif
 
 
-void Adv_WarningProxyAuth(void)
+static void warning_proxy_auth(void)
 {
-	printf("WARNING : This component was compiled without proxy authentication support\n");
-	printf("          use libcurl version 7.10.8 or later\n");
+	warning("This component was compiled without proxy authentication support.");
+	warning("Use libcurl version 7.10.8 or later.");
 }
 
 
@@ -73,6 +78,7 @@ char *CURL_get_protocol(char *url, char *default_protocol)
 	return default_protocol;
 }
 
+#if 0
 void Adv_correct_url(char **buf,char *protocol)
 {
 	char *buftmp;
@@ -143,183 +149,148 @@ void Adv_correct_url(char **buf,char *protocol)
 	strcat(*buf,buftmp+myok);
 	GB.Free((void**)POINTER(&buftmp));
 }
+#endif
 
-
-int Adv_Comp(char *str1,char *user, char *pwd)
+bool CURL_check_userpwd(CURL_USER *user)
 {
-	char *str2=NULL;
-	int len=2;
-
-	if (user || pwd)
+	char *tmp = NULL;
+	bool ret;
+	
+	if (user->user || user->pwd)
 	{
-		if (user) len+=strlen(user);
-		if (pwd) len+=strlen(pwd);
-		GB.Alloc ((void**)POINTER(&str2),len);
-		str2[0]=0;
-		if (user) strcat (str2,user);
-		strcat(str2,":");
-		if (pwd) strcat (str2,pwd);
-
+		GB.AddString(&tmp, user->user, 0);
+		GB.AddString(&tmp, ":", 1);
+		GB.AddString(&tmp, user->pwd, 0);
 	}
+	
+	if (tmp && user->userpwd)
+		ret = (strcmp(tmp, user->userpwd) != 0);
+	else
+		ret = (tmp == user->userpwd);
+	
+	GB.FreeString(&tmp);
+	return ret;
+}
 
-	if ( (!str1) && (!str2) ) return 0;
+/***************************************************************************/
 
-	if (!str1)
-	{
-		if ( strlen(str2) )
-		{
-			GB.Free((void**)POINTER(&str2));
-			return 1;
-		}
-		GB.Free((void**)POINTER(&str2));
-		return 0;
-	}
-
-	if (!str2)
-	{
-		if ( strlen(str1) ) return 1;
-		return 0;
-	}
-
-	if ( strcmp (str1,str2) )
-	{
-		GB.Free((void**)POINTER(&str2));
-		return 1;
-	}
-
-	GB.Free((void**)POINTER(&str2));
-	return 0;
+void CURL_proxy_init(CURL_PROXY *proxy)
+{
+	proxy->type = CURLPROXY_HTTP;
+	proxy->auth = CURLAUTH_NONE;
+	proxy->user = NULL;
+	proxy->pwd = NULL;
+	proxy->host = NULL;
+	proxy->userpwd = NULL;
 }
 
 
-/************************************************************************
- PROXY
- ************************************************************************/
-void Adv_proxy_NEW(Adv_proxy *proxy)
+void CURL_proxy_clear(CURL_PROXY *proxy)
 {
-	proxy->type=CURLPROXY_HTTP;
-	proxy->auth=CURLAUTH_NONE;
-	proxy->user=NULL;
-	proxy->pwd=NULL;
-	proxy->host=NULL;
-	proxy->userpwd=NULL;
+	GB.FreeString(&proxy->host);
+	GB.FreeString(&proxy->user);
+	GB.FreeString(&proxy->pwd);
+	GB.FreeString(&proxy->userpwd);
 }
 
 
-void Adv_proxy_CLEAR(Adv_proxy *proxy)
+void CURL_proxy_set(CURL_PROXY *proxy, CURL *curl)
 {
-	if (proxy->host) GB.FreeString(&proxy->host);
-	if (proxy->user) GB.FreeString(&proxy->user);
-	if (proxy->pwd)  GB.FreeString(&proxy->pwd);
-	if (proxy->userpwd) GB.Free((void**)POINTER(&proxy->userpwd));
-	proxy->user=NULL;
-	proxy->host=NULL;
-	proxy->pwd=NULL;
-	proxy->userpwd=NULL;
-}
-
-
-void Adv_proxy_SET(Adv_proxy *proxy,CURL *curl)
-{
-	int len=2;
-
-	if ( proxy->user ) len+=strlen(proxy->user);
-	if ( proxy->pwd )  len+=strlen(proxy->pwd);
-	if ( proxy->userpwd ) GB.Free ((void**)POINTER(&proxy->userpwd));
-
-	GB.Alloc ((void**)POINTER(&proxy->userpwd),sizeof(char)*len);
-	proxy->userpwd[0]=0;
-
-	if ( proxy->user ) strcat(proxy->userpwd,proxy->user);
-	strcat(proxy->userpwd,":");
-	if ( proxy->pwd ) strcat(proxy->userpwd,proxy->pwd);
-
-	if ( !proxy->host )
+	GB.FreeString(&proxy->userpwd);
+	
+	if (proxy->user || proxy->pwd)
 	{
-		curl_easy_setopt(curl,CURLOPT_PROXY,NULL);
+		GB.AddString(&proxy->userpwd, proxy->user, 0);
+		GB.AddString(&proxy->userpwd, ":", 1);
+		GB.AddString(&proxy->userpwd, proxy->pwd, 0);
+	}
+	
+	if (!proxy->host)
+	{
+		curl_easy_setopt(curl, CURLOPT_PROXY, NULL);
 		if ( LIBCURL_VERSION_NUM >= 0x070a08 )
-			curl_easy_setopt(curl,111,CURLAUTH_NONE);
+			curl_easy_setopt(curl, 111, CURLAUTH_NONE);
 		return;
 	}
 
-
-	curl_easy_setopt(curl,CURLOPT_PROXYTYPE,proxy->type);
-	curl_easy_setopt(curl,CURLOPT_PROXY,proxy->host);
+	curl_easy_setopt(curl, CURLOPT_PROXYTYPE, proxy->type);
+	curl_easy_setopt(curl, CURLOPT_PROXY, proxy->host);
 	if ( LIBCURL_VERSION_NUM >= 0x070a08 )
 	{
-		curl_easy_setopt(curl,CURLOPT_PROXYUSERPWD,proxy->userpwd);
-		curl_easy_setopt(curl,111,proxy->auth);
+		curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy->userpwd);
+		curl_easy_setopt(curl, 111, proxy->auth);
 	}
 	else
-		Adv_WarningProxyAuth();
-
-
-
+		warning_proxy_auth();
 }
 
-int Adv_proxy_SETAUTH(Adv_proxy *proxy,int auth)
+bool CURL_proxy_set_auth(CURL_PROXY *proxy, int auth)
 {
 	#ifdef LACKS_AUTH
-	return 0;
+	return FALSE;
 	#else
-	if ( LIBCURL_VERSION_NUM < 0x070a08 )
+	if (LIBCURL_VERSION_NUM < 0x070a08)
 	{
-		if (auth!=0) Adv_WarningProxyAuth();
-		return 0;
+		if (auth) 
+			warning_proxy_auth();
+		return FALSE;
 	}
+	
 	switch (auth)
 	{
 		case CURLAUTH_NONE:
 		case CURLAUTH_BASIC:
-		case CURLAUTH_NTLM:   proxy->auth=auth; return 0;
-		default: return -1;
+		case CURLAUTH_NTLM:
+			proxy->auth=auth; 
+			return FALSE;
+		default: 
+			return TRUE;
 	}
 	#endif
-
 }
 
-int Adv_proxy_SETTYPE(Adv_proxy *proxy,int type)
+bool CURL_proxy_set_type(CURL_PROXY *proxy, int type)
 {
 	switch (type)
 	{
 		case CURLPROXY_HTTP:
-		case CURLPROXY_SOCKS5:   proxy->type=type; return 0;
-		default: return -1;
+		case CURLPROXY_SOCKS5:
+			proxy->type = type; 
+			return FALSE;
+		default: 
+			return TRUE;
 	}
 }
 
+/***************************************************************************/
 
-
-/************************************************************************
- USERS
- ************************************************************************/
-void Adv_user_NEW(Adv_user *user)
+void CURL_user_init(CURL_USER *user)
 {
-	user->auth=CURLAUTH_NONE;
-	user->user=NULL;
-	user->pwd=NULL;
-	user->userpwd=NULL;
+	user->auth = CURLAUTH_NONE;
+	user->user = NULL;
+	user->pwd = NULL;
+	user->userpwd = NULL;
 }
 
 
-void Adv_user_CLEAR(Adv_user *user)
+void CURL_user_clear(CURL_USER *user)
 {
-	if (user->user) GB.FreeString(&user->user);
-	if (user->pwd)  GB.FreeString(&user->pwd);
-	if (user->userpwd) GB.FreeString(&user->userpwd);
+	GB.FreeString(&user->user);
+	GB.FreeString(&user->pwd);
+	GB.FreeString(&user->userpwd);
 }
 
 
-void Adv_user_SET(Adv_user *user,CURL *curl)
+void CURL_user_set(CURL_USER *user, CURL *curl)
 {
 	#ifdef LACKS_AUTH
 	return;
 	#else
 	
-	if (user->auth==CURLAUTH_NONE)
+	if (user->auth == CURLAUTH_NONE)
 	{
-		curl_easy_setopt(curl,CURLOPT_USERPWD,NULL);
-		curl_easy_setopt(curl,CURLOPT_HTTPAUTH,CURLAUTH_NONE);
+		curl_easy_setopt(curl, CURLOPT_USERPWD, NULL);
+		curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_NONE);
 		return;
 	}
 	
@@ -328,16 +299,18 @@ void Adv_user_SET(Adv_user *user,CURL *curl)
 	GB.AddString(&user->userpwd, ":", 1);
 	GB.AddString(&user->userpwd, user->pwd, 0);
 
-	curl_easy_setopt(curl,CURLOPT_USERPWD,user->userpwd);
-	curl_easy_setopt(curl,CURLOPT_HTTPAUTH,user->auth);
+	curl_easy_setopt(curl, CURLOPT_USERPWD, user->userpwd);
+	curl_easy_setopt(curl, CURLOPT_HTTPAUTH, user->auth);
+	
 	#endif
 }
 
-int Adv_user_SETAUTH(Adv_user *user,int auth)
+bool CURL_user_set_auth(CURL_USER *user, int auth)
 {
 	#ifdef LACKS_AUTH
-	if (auth!=0) Adv_WarningAuth();
-	return 0;
+	if (auth) 
+		warning_auth();
+	return FALSE;
 	#else
 	switch (auth)
 	{
@@ -345,8 +318,12 @@ int Adv_user_SETAUTH(Adv_user *user,int auth)
 		case CURLAUTH_BASIC:
 		case CURLAUTH_NTLM:
 		case CURLAUTH_GSSNEGOTIATE:
-		case CURLAUTH_DIGEST:         user->auth=auth; return 0;
-		default: return -1;
+		case CURLAUTH_DIGEST:
+			user->auth = auth;
+			return FALSE;
+			
+		default: 
+			return TRUE;
 	}
 	#endif
 }

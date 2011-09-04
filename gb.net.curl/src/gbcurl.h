@@ -27,50 +27,42 @@
 #include <curl/curl.h>
 #include "main.h"
 
-typedef void** Adv_ARRAY;
+typedef 
+	struct
+	{
+		int type;
+		int auth;
+		char *host;
+		char *user;
+		char *pwd;
+		char *userpwd;
+	}
+	CURL_PROXY;
 
-typedef struct
-{
-	int   type;
-	int   auth;
-	char *host;
-	char *user;
-	char *pwd;
-	char *userpwd;
-} Adv_proxy;
-
-typedef struct
-{
-	char *user;
-	char *pwd;
-	char *userpwd;
-	int auth;
-} Adv_user;
+typedef 
+	struct
+	{
+		char *user;
+		char *pwd;
+		char *userpwd;
+		int auth;
+	} 
+	CURL_USER;
 
 char *CURL_get_protocol(char *url, char *default_protocol);
-void Adv_correct_url(char **buf,char *protocol);
 
-void Adv_add_info      (Adv_ARRAY *Array, int *narray, void *Obj);
-void Adv_remove_info   (Adv_ARRAY *Array,int *narray,void *Obj);
+bool CURL_check_userpwd(CURL_USER *user);
 
-int Adv_Comp(char *str1,char *user, char *pwd);
+void CURL_proxy_init(CURL_PROXY *proxy);
+void CURL_proxy_clear(CURL_PROXY *proxy);
+void CURL_proxy_set(CURL_PROXY *proxy, CURL *curl);
+bool CURL_proxy_set_auth(CURL_PROXY *user, int auth);
+bool CURL_proxy_set_type(CURL_PROXY *proxy, int type);
 
-void Adv_proxy_NEW     (Adv_proxy *proxy);
-void Adv_proxy_CLEAR   (Adv_proxy *proxy);
-void Adv_proxy_SET     (Adv_proxy *proxy,CURL *curl);
-int  Adv_proxy_SETAUTH (Adv_proxy *user,int auth);
-int  Adv_proxy_SETTYPE (Adv_proxy *proxy,int type);
-
-void Adv_user_NEW      (Adv_user *user);
-void Adv_user_CLEAR    (Adv_user *user);
-void Adv_user_SET      (Adv_user *user,CURL *curl);
-int  Adv_user_SETAUTH  (Adv_user *user,int auth);
-
-enum {
-	STATUS_INACTIVE = 0,
-	STATUS_RECEIVING_DATA = 4,
-	STATUS_CONNECTING = 6
-};
+void CURL_user_init(CURL_USER *user);
+void CURL_user_clear(CURL_USER *user);
+void CURL_user_set(CURL_USER *user,CURL *curl);
+bool CURL_user_set_auth(CURL_USER *user,int auth);
 
 #endif
 
