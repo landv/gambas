@@ -408,9 +408,18 @@ END_PROPERTY
 /*********************************************
 Status : inactive, working or Error code
 *********************************************/
-BEGIN_PROPERTY ( CCURL_Status )
+BEGIN_PROPERTY(CCURL_Status)
 
 	GB.ReturnInteger(THIS_STATUS);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Curl_ErrorText)
+
+	if (THIS_STATUS >= 0)
+		GB.ReturnNull();
+	else
+		GB.ReturnConstZeroString(curl_easy_strerror((-THIS_STATUS) - 1000));
 
 END_PROPERTY
 
@@ -579,6 +588,7 @@ GB_DESC CCurlDesc[] =
 	GB_PROPERTY("Timeout","i",CCURL_TimeOut),
 	GB_PROPERTY_SELF("Proxy",".Curl.Proxy"),
 	GB_PROPERTY_READ("Status","i",CCURL_Status),
+	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
 
 	GB_END_DECLARE
