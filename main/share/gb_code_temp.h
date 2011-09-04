@@ -1131,7 +1131,7 @@ void CODE_call_byref(short nparam, uint64_t byref)
 	n = 0;
 	for (i = 0; i < nparam; i++)
 	{
-		if (byref & (1 << i))
+		if (byref & (1ULL << i))
 			n++;
 	}
 	use_stack(n);
