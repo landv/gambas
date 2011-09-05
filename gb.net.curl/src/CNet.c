@@ -30,6 +30,17 @@
 
 #define GBCURL(x) (-(1000+x))
 
+/* Fix building with old libcurl version */
+#ifndef CURLE_FTP_PRET_FAILED
+#define CURLE_FTP_PRET_FAILED		84
+#endif
+#ifndef CURLE_FTP_BAD_FILE_LIST
+#define CURLE_FTP_BAD_FILE_LIST		87
+#endif
+#ifndef CURLE_CHUNK_FAILED		88
+#endif
+/* */
+
 GB_DESC CNetDesc[] =
 {
 	GB_DECLARE("Net", 0), GB_VIRTUAL_CLASS(),
