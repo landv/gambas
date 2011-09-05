@@ -108,6 +108,19 @@ IF NOT LaMevaCadena THEN ...</pre>
 PRINT "Però no em traduïu!"</pre>
 
 
+[SUBST]
+
+<p>La substitució és molt útil per a la internacionalització de la vostra aplicació.
+Es fa amb l'instrucció <b>Subst()</b>.</p>
+
+<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució. Després hi són les vostres variables, a on la primera té el número <i>1</i>. S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
+
+<pre>Subst(("Substitució de &1, &2 i &3"), "primer", "segon", "tercer")
+
+'...retornarà això:
+'Substitució de primer, segon i tercer</pre>
+
+
 [EVENT]
 
 <p>Tots els controls i tots els objectes que poden rebre esdeveniments, tenen un <i>observador d'esdeveniments</i> i un <i>nom de grup</i> d'esdeveniment.</p>
@@ -128,6 +141,23 @@ Public Sub ElMeuBoto_Click()
 &nbsp;&nbsp;Print "Heu fet clic a ElMeuBoto!"
 End
 </pre>
+
+
+[GROUP]
+
+<p>Tot control te la propietat <i>(Group)</i>. Quan aquesta propietat es fa servir, el prefix del nom del gestor d'esdeveniments és el nom del grup i no el nom del control.</p>
+
+<p>Suposem que teniu un <i>Botó</i> anomenat <b>btnAction</b> amb el gestor d'esdeveniments <i>Click</i> següent :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>Si definiu la propietat <i>(Group)</i> de <b>btnAction</b> com a <i>ElMeuGrup</i>, llavors el gestor d'esdeveniments que rebrà els esdeveniments del botó serà el següent :</p>
+
+<pre>PUBLIC SUB ElMeuGrup_Click()</pre>
+
+<p>Aquesta propietat us permet gestionar els esdeveniments de diversos controls en una sola funció. I els controls del mateix grup no han de ser del mateix tipus !</p>
+
+<p><b>Nota :</b> Els veterans del vell <i>Visual Basic</i> reconeixeran el concepte de <i>control array</i>, però en una implementació més potent. :-)</p>
 
 
 [FORM]
@@ -156,23 +186,6 @@ hSuperControl.Move(8, 8, 128, 64)<br>
 </tt></p>
 
 <p>Aneu amb compte: un formulari incrustat dins d'un altre formulari segueix sent un formulari, i per tant el seu propi observador d'esdeveniments.</p>
-
-
-[GROUP]
-
-<p>Tot control te la propietat <i>(Group)</i>. Quan aquesta propietat es fa servir, el prefix del nom del gestor d'esdeveniments és el nom del grup i no el nom del control.</p>
-
-<p>Suposem que teniu un <i>Botó</i> anomenat <b>btnAction</b> amb el gestor d'esdeveniments <i>Click</i> següent :</p>
-
-<pre>PUBLIC SUB btnAction_Click()</pre>
-
-<p>Si definiu la propietat <i>(Group)</i> de <b>btnAction</b> com a <i>ElMeuGrup</i>, llavors el gestor d'esdeveniments que rebrà els esdeveniments del botó serà el següent :</p>
-
-<pre>PUBLIC SUB ElMeuGrup_Click()</pre>
-
-<p>Aquesta propietat us permet gestionar els esdeveniments de diversos controls en una sola funció. I els controls del mateix grup no han de ser del mateix tipus !</p>
-
-<p><b>Nota :</b> Els veterans del vell <i>Visual Basic</i> reconeixeran el concepte de <i>control array</i>, però en una implementació més potent. :-)</p>
 
 
 [TAG]
@@ -397,6 +410,38 @@ ME.X = Settings["win/x"]
 <p><b>Atenció:</b> heu d'incloure el component: <i>gb.settings</i></p>
 
 
+[EDITOR]
+
+<p>Alguns consells de l'editor...</p>
+
+<h3>Dues classes de comentaris</h3>
+
+<pre>' Comentari normal</pre>
+<b><pre>'' Comentari en negreta</pre></b>
+
+<p>Els comentaris en negreta es fan servir per a documentar el vostre codi.</p>
+
+<h3>Com utilitzar fragments de codi</h3>
+
+<p>Si escriviu <tt>main</tt> i després premeu la tecla <b>TAB</b>, s'insereix automàticament al vostre codi una funció d'inici <tt>Main</tt> estàtica pública.
+
+<p>Si escriviu <tt>ds</tt> i després premeu la tecla <b>TAB</b>, s'insereix automàticament una declaració de variable del tipus string, i seguidament ja podeu escriure el nom de la variable.
+
+<p>Els fragments de codi són totalment configurables des del diàleg de les opcions globals de l'IDE.
+
+
+[END]
+
+<p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert en <b>Gambas</b>! :-)</p>
+
+<p>Si voleu contribuir, envieu nous consells a l'adreça següent&nbsp;:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Gràcies per endavant !</p>
+
+
+
+
 [MESSAGE]
 
 <p>Per a informar als usuaris, podeu usar les classes del Gambas <b>Message</b> i <b>Balloon</b>. Message prové dels components (QT, GTK+)i el Balloon de <i>gb.form</i>.</p>
@@ -416,46 +461,3 @@ Opcionalment podeu definir el temps de mostra en ms, i la posició X,Y.</p>
 'Mostrarà el «ballon» dins el formulari principal
 
 'més reduït sense icona: Balloon("Bon dia món!", ME)</pre>
-
-
-[SUBST]
-
-<p>La substitució és molt útil per a la internacionalització de la vostra aplicació.
-Es fa amb l'instrucció <b>Subst()</b>.</p>
-
-<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució. Després hi són les vostres variables, a on la primera té el número <i>1</i>. S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
-
-<pre>Subst(("Substitució de &1, &2 i &3"), "primer", "segon", "tercer")
-
-'...retornarà això:
-'Substitució de primer, segon i tercer</pre>
-
-
-[USEFUL]
-
-<p>Alguns consells de l'editor:</p>
-
-<p>Comentaris:</p>
-
-<pre>'Comentari normal</pre>
-<b><pre>''Comentari en negreta</pre></b>
-
-<p>Com utilitzar fragments de codi:<br>
-
-'Si escrivim:
-<pre>main</pre>
-'I després premem la tecla tab, el fragment de codi ho completarà per tu<br>
-'per cert, tal com estan definits a les preferències</p>
-
-
-[END]
-
-<p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert en <b>Gambas</b>! :-)</p>
-
-<p>Si voleu contribuir, envieu nous consells a l'adreça següent&nbsp;:</p>
-<p><u>gambas@users.sourceforge.net</u></p>
-
-<p>Gràcies per endavant !</p>
-
-
-
