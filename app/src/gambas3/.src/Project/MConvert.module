@@ -154,6 +154,8 @@ Private Sub ConvertForm(sPath As String)
         sFullLine = "Spacing = True"
       Else If sClass = "WebBrowser" Then
         If ["Java", "JavaScript", "Path", "Plugins", "Zoom"].Exist(sProp) Then Continue
+      Else If sClass = "ValueBox" Then
+        If sProp = "MaxLength" Then Continue
       Endif
     Endif
     
