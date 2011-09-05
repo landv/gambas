@@ -1150,3 +1150,10 @@ Public Sub OnVisibilityChange()
   If IsSearchListVisible() Then FSearch.RefreshBrowse
   
 End
+
+Public Sub ShowConsole()
+
+  If FOutput.Parent Then tabDebug.Index = TAB_CONSOLE
+  FOutput.SetFocus
+
+End

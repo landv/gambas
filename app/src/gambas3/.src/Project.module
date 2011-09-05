@@ -425,17 +425,26 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Endif
   Endif
 
-  Try hLock = Lock sDir &/ ".lock"
-
-  If Not hLock Then
-    If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."),
-        ("Open after all"), ("Do not open")) = 2 Then
-      Return True
+  If bConvert Then
+  
+    If Exist(sDir &/ ".lock") Then
+      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."),
+          ("Open after all"), ("Do not open")) = 2 Then
+        Return True
+      Endif
     Endif
-  Endif
-
-  If Not $bTesting Then
-    If CloseProject() Then Return True
+    
+  Else
+  
+    Try hLock = Lock sDir &/ ".lock"
+  
+    If Not hLock Then
+      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."),
+          ("Open after all"), ("Do not open")) = 2 Then
+        Return True
+      Endif
+    Endif
+    
   Endif
 
   ReadOnly = Not Access(sDir, gb.Write)
@@ -443,15 +452,26 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     If Exist(sDir &/ ".startup") And If Not Access(sDir &/ ".startup", gb.Write) Then ReadOnly = True
   Endif
 
-  If bConvert And If ReadOnly Then
-    Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
-    Return True
+  If bConvert Then
+    
+    If ReadOnly Then
+      Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
+      Return True
+    Endif
+    
+  Endif
+
+  If Not $bTesting Then
+    If CloseProject() Then Return True
   Endif
 
   Project.Dir = sDir
 
   If bConvert Then
 
+    ' Create Gambas 2 lock file
+    Try File.Save(sDir &/ ".lock", "")
+    
     FConvert.Start(("Copying project inside a temporary directory..."))
     Project.Dir = Temp$()
     Shell "cp -R " & Shell$(sDir) & " " & Shell$(Project.Dir) Wait
@@ -513,6 +533,9 @@ _INIT_AGAIN:
       Try Move sDir & "~" To sDir
       Error.Raise(("Unable to apply conversion"))
     Endif
+    
+    ' Remove lock file from the backup project
+    Try Kill (sDir & "~") &/ ".lock"
 
     Project.Dir = sDir
 

@@ -1229,7 +1229,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case "console"
       If Action["console"].Value Then 
-        Try FOutput.SetFocus
+        FDebugInfo.ShowConsole
       Else
         Try Project.ActiveForm.SetFocus
       Endif
