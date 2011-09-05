@@ -437,7 +437,7 @@ Public Sub dwgHandle_MouseUp()
   $bPressed = False
   If $bInside Then 
     dwgHandle.Refresh
-    If ToolbarKey Then Action.ConfigureToolbar(Me.Parent)
+    If ToolbarKey Then Action._ConfigureToolbar(Me.Parent)
   Endif
   'SetHidden(NOT $bHidden)
 

@@ -391,13 +391,7 @@ Private Sub FilterRecent()
     
     If hCtrl Is ProjectItem Then
       hProjectItem = hCtrl
-      With hProjectItem.Info
-        If Not sFilter Or If .Name Like sFilter Or If String.LCase(.Title) Like sFilter Or If String.LCase(.Authors.Join(" ")) Like sFilter Then
-          hProjectItem.Show
-        Else
-          hProjectItem.Hide
-        Endif
-      End With
+      hProjectItem.Visible = hProjectItem.Match(sFilter)
       If hProjectItem.Visible Then 
         If Not hFirst Then hFirst = hProjectItem
       Endif

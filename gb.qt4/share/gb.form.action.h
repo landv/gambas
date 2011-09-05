@@ -46,7 +46,7 @@ static void init_action()
 		return;
 
 	klass = (void *)GB.FindClass("Action");
-	GB.GetFunction(&_action_register_func, klass, "Register", "oss", "");
+	GB.GetFunction(&_action_register_func, klass, "_Register", "oss", "");
 	GB.GetFunction(&_action_raise_func, klass, "Raise", "o", "");
 	//GB.GetFunction(&_action_get_func, klass, "Get", "o", "s");
 

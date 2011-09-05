@@ -102,7 +102,7 @@ Static Private Sub GetActiveWindow(hCtrl As Object) As Window
   
 End
 
-Static Public Sub Register(Control As Object, Old As String, Key As String)
+Static Public Sub _Register(Control As Object, Old As String, Key As String)
   
   Dim aCtrl As Object[]
   Dim hWin As Window

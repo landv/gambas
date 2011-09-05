@@ -26,17 +26,17 @@
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
-    Connection = Connections["Connection1"]
-    Table = "Client"
+    Connection = Connections["Connection2"]
+    Table = "test"
     { DataComboView1 DataComboView
       MoveScaled(2,6,29,4)
-      Table = "TypeClient"
+      Table = "test"
       Field = "idTypeClient"
-      Header = True
       Grid = True
     }
     { DataBrowser1 DataBrowser
       MoveScaled(2,11,52,18)
+      Visible = False
       Expand = True
       Labels = ["Identificateur", "Type", "Nom", "Téléphone"]
     }

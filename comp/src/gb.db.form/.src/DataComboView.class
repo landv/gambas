@@ -13,7 +13,6 @@ Property Table As String
 Property Field As String
 Property Filter As String
 Property Columns As String[]
-Property Display As String[] 
 
 Property Value As Variant
 'Property ReadOnly As Boolean
@@ -45,8 +44,6 @@ Private $hObsMenu As Observer
 
 Private $sField As String
 
-Private $aDisplay As String[]
-
 Private $bInside As Boolean
 Private $bInsideArrow As Boolean
 Private $bPressed As Boolean
@@ -74,6 +71,7 @@ Public Sub _new()
   $hView.Border = False
   $hView.Header = TableView.None
   $hView.View.ScrollBar = Scroll.Vertical
+  $hView.View.Tracking = True
   
   $hObserver = New Observer($hView.View) As "TableView"
 
@@ -169,6 +167,12 @@ End
 '    ColumnView_Select()
 ' End
 
+Public Sub TableView_MouseMove()
+
+  Try $hView.View.Rows[$hView.View.RowAt(Mouse.Y)].Selected = True
+
+End
+
 Public Sub TableView_MouseUp()
 
   If $hView.Current Then
@@ -203,18 +207,6 @@ Private Sub Table_Write(Value As String)
 
   $hSrc.Table = Value
 
-End
-
-Private Function Display_Read() As String[]
-
-  Return $aDisplay
-  
-End
-
-Private Sub Display_Write(Value As String[])
-
-  $aDisplay = Value
-  
 End
 
 Private Function Header_Read() As Boolean
@@ -385,7 +377,7 @@ Private Sub OpenPopup()
   
     $hView.Current = [$vCurrent]
     
-    $hPopup.Resize(Me.Width, Me.Font.Height * 12)
+    $hPopup.Resize(Me.Width, Min(8, $hView.Count) * (1 + $hView.View.Rows.Height) + $hView.View.Rows.HeaderHeight + 2)
     $hPopup.ShowPopup(Me.ScreenX, Me.ScreenY + Me.Height)
     
   Endif

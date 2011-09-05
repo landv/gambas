@@ -206,6 +206,7 @@ Private Sub RefreshView()
   Dim sPrefix As String
   Dim iSize As Integer
   Dim aSel As String[]
+  Dim aDir As New String[]
 
   Inc Application.Busy
 
@@ -226,7 +227,8 @@ Private Sub RefreshView()
   sDir = $sDir
   If Not sDir Then sDir = User.Home
 
-  For Each sFile In Dir(sDir, "*").Sort()
+  Try aDir = Dir(sDir, "*").Sort
+  For Each sFile In aDir
     If Not $bShowHidden And If Left(sFile) = "." Or Right(sFile) = "~" Then Continue
     With Stat(sDir &/ sFile)
       If .Type = gb.Directory Then

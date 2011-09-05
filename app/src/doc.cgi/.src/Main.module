@@ -4155,13 +4155,21 @@ Private Function GetToDo() As String
         
         sName = hSymbol.Name
         
-        If sName = "_free" Then Continue
-        If sName = "_new" Then
-          If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
-        Endif
+        If hSymbol.Kind = "C" Then
+          
+          If Left(sName) = "_" Then Continue
+          
+        Else
         
-        If InStr(sName, "_") Then
-          If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
+          If sName = "_free" Then Continue
+          If sName = "_new" Then
+            If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
+          Endif
+          
+          If InStr(sName, "_") Then
+            If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
+          Endif
+          
         Endif
   
         rPage = DB.Find("page", "sLang = &1 AND sPath = &2", DEFAULT_LANG, GetSymbolPath(hSymbol))

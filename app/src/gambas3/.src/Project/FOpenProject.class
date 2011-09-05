@@ -209,13 +209,7 @@ Private Sub FilterRecent()
     
     If hCtrl Is ProjectItem Then
       hProjectItem = hCtrl
-      With hProjectItem.Info
-        If Not sFilter Or If .Name Like sFilter Or If String.LCase(.Title) Like sFilter Or If String.LCase(.Authors.Join(" ")) Like sFilter Then
-          hProjectItem.Show
-        Else
-          hProjectItem.Hide
-        Endif
-      End With
+      hProjectItem.Visible = hProjectItem.Match(sFilter)
       If hProjectItem.Visible Then 
         If Not hFirst Then hFirst = hProjectItem
       Endif
@@ -282,7 +276,8 @@ Private Sub FillRecent()
       sLastTitle = sTitle
     Endif
     
-    hProjectItem = New ProjectItem(lstRecent)
+    hProjectItem = New ProjectItem(lstRecent) As "ProjectItem"
+    hProjectItem.ShowAuthors = True
     hProjectItem.Y = Y
     Y += hProjectItem.H
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
@@ -306,6 +301,7 @@ Public Sub tabProject_Click()
 
   If tabProject.Index = 1 Then 
     FillRecent
+    FilterRecent
     txtFilter.SetFocus
   Else If tabProject.Index = 2 Then 
     FillExample
@@ -350,9 +346,10 @@ Private Sub FillExample()
       sLastDir = sDir
     Endif
     
-    hProjectItem = New ProjectItem(lstExample)
+    hProjectItem = New ProjectItem(lstExample) As "ProjectItem"
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
+    hProjectItem.ShowAuthors = True
     hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
   
   Next
@@ -446,4 +443,12 @@ Public Sub txtFilter_KeyPress()
     Stop Event
   Endif
 
+End
+
+Public Sub ProjectItem_Click()
+  
+  Dim hListContainer As ListContainer = Last.Parent.Parent
+  
+  hListContainer.Select(Last)
+  
 End

@@ -9,6 +9,7 @@ Property Path As String
 Property Highlight As Boolean
 Property Background As Integer
 Property Read IdealHeight As Integer
+Property ShowAuthors As Boolean
 Property Read Info As CProjectInfo
 
 Private $hDrawingArea As DrawingArea
@@ -16,6 +17,7 @@ Private $sPath As String
 Private $hProjectInfo As CProjectInfo
 Private $hIcon As Picture
 Private $bShowPath As Boolean
+Private $bShowAuthors As Boolean
 
 Private Const ICON_SIZE As Integer = 32
 Private Const PADDING As Integer = 6
@@ -68,7 +70,7 @@ Private Sub GetTitle() As String
     If Not sTitle Then sTitle = .Name
     sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
     sTitle &= Subst("<br><font size=\"-1\" color=\"&1\">", If(bSelected, "white", "gray")) & .Title
-    If .Authors And If .Authors.Count Then
+    If $bShowAuthors And If .Authors And If .Authors.Count Then
       If .Title Then sTitle &= " - "
       sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
     Endif
@@ -101,6 +103,7 @@ Public Sub DrawingArea_Draw()
     X = ICON_SIZE + PADDING * 2
     W = Min(Me.W - X, Draw.RichTextWidth(sTitle))
     If bSelected Then Draw.Foreground = Color.SelectedForeground
+    
     H = Draw.RichTextHeight(sTitle, W)
     Draw.RichText(sTitle, X, PADDING, W, H, Align.TopLeft)
     
@@ -131,11 +134,11 @@ Public Sub DrawingArea_Leave()
   
 End
 
-' Public Sub DrawingArea_KeyPress()
-' 
-'   If Key.Code = Key.Space Then 
-' 
-' End
+Public Sub DrawingArea_KeyPress()
+
+  If Key.Code = Key.Space Then Raise Click
+
+End
 
 Private Function Background_Read() As Integer
 
@@ -204,7 +207,7 @@ Private Function IdealHeight_Read() As Integer
   If $hProjectInfo Then
     sTitle = GetTitle()
     'H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
-    H = $hDrawingArea.Font.Height * 2.5 + PADDING * 2
+    H = $hDrawingArea.Font.Height * 2 + PADDING * 2
   Endif
 
   H = Max(H, X)
@@ -222,5 +225,29 @@ End
 Public Sub DrawingArea_MouseDown()
   
   If Mouse.Left Then Raise Click
+  
+End
+
+Private Function ShowAuthors_Read() As Boolean
+
+  Return $bShowAuthors
+
+End
+
+Private Sub ShowAuthors_Write(Value As Boolean)
+
+  $bShowAuthors = Value
+  $hDrawingArea.Refresh
+
+End
+
+Public Sub Match(sFilter As String) As Boolean
+
+  If Not sFilter Then Return True
+  With $hProjectInfo
+    If .Name Like sFilter Then Return True
+    If String.LCase(.Title) Like sFilter Then Return True
+    If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
+  End With
   
 End
