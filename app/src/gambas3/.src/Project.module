@@ -5009,8 +5009,11 @@ Public Sub MakeDirectoryIcon(Optional sDir As String)
   Endif
 
   hDirIcon.Save(sDir &/ ".icon.png")
-
   File.Save(sDir &/ ".directory", "[Desktop Entry]\nIcon=./.icon.png\n")
+
+Catch
+
+  Error "gambas3: warning: unable to create project directory icon"
 
 End
 

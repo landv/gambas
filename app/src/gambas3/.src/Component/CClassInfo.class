@@ -68,7 +68,7 @@ Public Sub CopyFrom(hClass As CClassInfo, sType As String, sNewType As String)
     ParentComponent = .ParentComponent
     
     If .Properties Then
-      Error "Warning: cannot use "; hClass.Name; " as template class"
+      Error "gambas3: warning: cannot use "; hClass.Name; " as template class"
       Return
     Endif
   

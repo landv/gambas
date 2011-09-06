@@ -412,7 +412,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
         Endif
 
         If hCtrl.SetProperty(sProperty, vValue) Then
-          If Not $bNoWarning Then Print "Error: "; hCtrl.Kind; "."; sProperty; " = "; sValue
+          If Not $bNoWarning Then Print "gambas3: warning: cannot set property: "; hCtrl.Kind; "."; sProperty; " = "; sValue
         Endif
 
       Else If sLine Begins "Move(" Or If sLine Begins "#Move(" Then

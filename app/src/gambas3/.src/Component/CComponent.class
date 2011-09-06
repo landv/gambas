@@ -206,7 +206,7 @@ Static Private Sub InitComponent(sFile As String)
   
   Try hFic = Open sPath
   If Error Then
-    Error "Warning: cannot read "; sPath
+    Error "gambas3: warning: cannot read "; sPath
     Return
   Endif
   
@@ -459,7 +459,7 @@ Public Sub Load()
     Else
       sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
       If Not Exist(sPath) Then
-        Error "Warning: cannot find "; sPath
+        Error "gambas3: warning: cannot find "; sPath
         Return
       Endif
     Endif
@@ -468,7 +468,7 @@ Public Sub Load()
     
     Try aList = Split(File.Load(File.SetExt(sPath, "list")), "\n", "", True)
     If Error Then
-      Error "Warning: cannot read "; File.SetExt(sPath, "list")
+      Error "gambas3: warning: cannot read "; File.SetExt(sPath, "list")
       Return
     Endif
     
