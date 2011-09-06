@@ -75,6 +75,12 @@ void SUBR_leave_void(int nparam);
 
 #define SUBR_check_string(_value) (TYPE_is_string((_value)->type) ? ((_value)->_string.len == 0) : SUBR_check_string_real(_value))
 
+#define VOID_STRING(_value) \
+do { \
+	RELEASE_STRING(_value); \
+	STRING_void_value(_value); \
+} while(0);
+
 bool SUBR_check_string_real(VALUE *param);
 void SUBR_check_integer(VALUE *param);
 void SUBR_check_float(VALUE *param);

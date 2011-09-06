@@ -1815,8 +1815,7 @@ _SUBR_MID:
 			
 		if (UNLIKELY(start >= PARAM->_string.len))
 		{
-			RELEASE_STRING(PARAM);
-			STRING_void_value(PARAM);
+			VOID_STRING(PARAM);
 			goto _SUBR_MID_FIN;
 		}
 	

@@ -233,7 +233,7 @@ void SUBR_trim(ushort code)
 
 	if (SUBR_check_string(PARAM))
 	{
-		STRING_void_value(PARAM);
+		VOID_STRING(PARAM);
 		return;
 	}
 
