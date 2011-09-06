@@ -5209,6 +5209,7 @@ Private Sub ConvertProject() As Boolean
   For Each sPath In $cSourceDir
 
     If File.Ext(sPath) <> "form" Then Continue
+    If Stat(sPath).Type = gb.Link Then Continue
 
     MConvert.ConvertFile(sPath)
     Inc iStep
@@ -5219,6 +5220,7 @@ Private Sub ConvertProject() As Boolean
   For Each sPath In $cSourceDir
 
     If File.Ext(sPath) = "form" Then Continue
+    If Stat(sPath).Type = gb.Link Then Continue
 
     MConvert.ConvertFile(sPath)
     Inc iStep
