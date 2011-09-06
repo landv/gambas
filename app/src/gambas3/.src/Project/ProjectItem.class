@@ -39,18 +39,6 @@ Private Sub SetPath(sPath As String)
   $sPath = sPath
   $hProjectInfo = New CProjectInfo(sPath)
   
-  With $hProjectInfo
-    
-    $hIcon = Project.StretchIcon(.Icon, ICON_SIZE).Picture
-    
-    ' If .Icon.W = ICON_SIZE And If .Icon.H = ICON_SIZE Then
-    '   $hIcon = .Icon
-    ' Else
-    '   $hIcon = .Icon.Image.Stretch(ICON_SIZE, ICON_SIZE).Picture
-    ' Endif
-    
-  End With 
-  
   $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
   Me.H = Me.IdealHeight
   Refresh
@@ -96,6 +84,10 @@ Public Sub DrawingArea_Draw()
   bSelected = Me.Background = Color.SelectedBackground
   
   With $hProjectInfo
+    
+    If Not $hIcon Then
+      $hIcon = Project.StretchIcon(.Icon, ICON_SIZE).Picture
+    Endif
     
     Draw.Picture($hIcon, PADDING, PADDING)
     sTitle = GetTitle()
@@ -204,11 +196,11 @@ Private Function IdealHeight_Read() As Integer
   Dim sTitle As String
 
   X = ICON_SIZE + PADDING * 2
-  If $hProjectInfo Then
-    sTitle = GetTitle()
+  'If $hProjectInfo Then
+  '  sTitle = GetTitle()
     'H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
     H = $hDrawingArea.Font.Height * 2 + PADDING * 2
-  Endif
+  'Endif
 
   H = Max(H, X)
   If $bShowPath Then H += Desktop.Scale * 2

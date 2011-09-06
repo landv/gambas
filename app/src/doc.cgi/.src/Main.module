@@ -4555,6 +4555,8 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
   Dim sVirtual As String
   Dim sValue As String
   Dim iPos As Integer
+  Dim sSign As String
+  Dim sType As String
 
   sName = hSym.Class
   sVirtual = GetVirtualClass(sName)
@@ -4586,7 +4588,7 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
     Case "_put"
 
-      hSym = CComponent.All[hSym.Component][hSym.Class].Symbols["_get"]
+      sType = CComponent.All[hSym.Component][hSym.Class].Symbols["_get"].Type
 
       If hSym.IsStatic() Then
         sName = hSym.Class
@@ -4602,11 +4604,14 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
         Endif
       Endif
 
-      sValue = Replace(GetClassVariableName(hSym.Type), ".", "")
+      sValue = Replace(GetClassVariableName(sType), ".", "")
       If sValue = sVar Then sValue &= "2"
 
-      sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
-      sSyntax = sSyntax & sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
+      sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(sType) & "\n\n"
+      sSign = GetSignature(hSym.Signature)
+      iPos = InStr(sSign, ",")
+      If iPos Then sSign = Mid$(sSign, iPos + 1)
+      sSyntax = sSyntax & sName & " " & Keyword("[") & sSign & Keyword("]")
       sSyntax = sSyntax & " " & Keyword("=") & " " & sValue
 
     Case "_next"

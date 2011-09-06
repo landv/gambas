@@ -23,187 +23,103 @@ Public Sub TimerClk_Timer()
 
 End
 
-
-Public Sub ResizeDrawArea()
-
-  'One must use ME.ClientW and ME.CLientH, as Me.Width and ME.Height are
-  ' the size of the window WITH its borders !
-  'DEBUG ME.ClientW;; ME.ClientH
-  DwgArea.Resize(Me.ClientW, Me.ClientH)
-  
-End
-
-
-Public Sub Form_Resize()
-
-  ResizeDrawArea    'Resize the drawing area to match the form
-  DwgArea.Refresh
-  'TimerClk.Enabled = FALSE
-  'TimerClk.Enabled = TRUE
-
-End
-
+' Main routine that updates the clock
 
 Public Sub DrawClock()
 
-  '***********Main Routine that updates the clock**************
-  Dim X1 As Integer
-  Dim Y1 As Integer
-  Dim X2 As Integer
-  Dim Y2 As Integer
-  Dim LengthSeconds As Integer
   Dim angle As Float
-  Dim Hour12 As Float
-  Dim Width As Float
   Dim dNow As Date
-  Dim iNow As Float
   Dim eScale As Float
-  Dim eTrans As Float
   Dim sTime As String
-  Dim WT, HT As Integer
   
   eScale = Min(dwgArea.Width / W, dwgArea.Height / H)
 
-  If dwgArea.Width > dwgArea.Height Then 
-    Draw.Translate((dwgArea.Width - dwgArea.Height) / 2, 0)
-  Else
-    Draw.Translate(0, (dwgArea.Height - dwgArea.Width) / 2)
-  Endif 
-  
-  Draw.Scale(eScale, eScale)
+  Paint.Translate(dwgArea.W / 2, dwgArea.H / 2)
+  Paint.Scale(eScale, eScale)
 
   dNow = $dNow
   $iLast = Second(dNow)
 
-  LengthSeconds = Min(W / 2, H / 2)   'Length of seconds arm, also used to calculate other stuff.
-                                                                                      'As the whole clock is drawn inside (2*LengthSeconds X 2*LengthSeconds)
-  'Draw.Begin(DwgArea)
-
-  'Draw Clock circle
-  ' Draw.FillStyle = 0
-  ' Draw.Forecolor = &HDCDCDC&    'Light gray color
-  ' Width = CFloat(LengthSeconds) / 10  'Calculate width dynamically, so that we resize with form resizing
-  ' Draw.LineWidth = Width * eScale 'LineWidth does not use the transformation matrix
-  ' Draw.Ellipse(0.05 * LengthSeconds + (W / 2 - LengthSeconds), 0.05 * LengthSeconds + (H / 2 - LengthSeconds), 0.95 * LengthSeconds * 2, 0.95 * LengthSeconds * 2)
-  
-  Draw.FillStyle = Fill.Solid
-  Draw.LineStyle = Line.None
-  Draw.FillColor = &HDCDCDC&    'Light gray color
-  Draw.Ellipse(0, 0, W, H)
-  Draw.FillColor = Draw.Background
-  Draw.Ellipse(W * 0.05, H * 0.05, W * 0.9, H * 0.9)
+  Paint.Brush = Paint.Color(&HDCDCDC&)    'Light gray color
+  Paint.Arc(0, 0, W / 2)
+  Paint.Fill
+  Paint.Brush = Paint.Color(dwgArea.Background)
+  Paint.Arc(0, 0, W / 2 * 0.9)
+  Paint.Fill
   
   sTime = Format(dNow, "hh:nn:ss")
-  Draw.Font.Bold = True
-  Draw.Font.Size = 60 * eScale
-  Draw.Foreground = Color.Black
-  WT = Draw.TextWidth("MM:MM:MM") / eScale
-  HT = Draw.TextHeight("M") / eScale
-  Draw.Text(sTime, (W - WT) / 2, (H / 3 - HT) / 2, WT, HT, Align.Center)
+  
+  Paint.Font.Bold = True
+  Paint.Font.Size = 60
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Text(sTime, - W / 2, - H * 0.4, W, H * 0.1, Align.Top)
+  Paint.Fill
 
-  Draw.LineStyle = Line.Solid
-  Draw.FillColor = Color.Black
+  ' Draw seconds
+  angle = Second(dNow) / 60 * Pi(2) - Pi(0.5)   'The angle that the arm makes, with a line from clock center to 12O'clock
   
-  'Draw Seconds  arm
-  Draw.Foreground = Color.Red    'Duh
-  Width = CFloat(LengthSeconds) / 50  'Dynamic WIdth
-  Draw.LineWidth = Width * eScale
-  angle = CFloat(Second(dNow)) / 60 * 2 * Pi   'The angle that the arm makes, with a line from clock center to 12O'clock
-  X2 = W / 2 + LengthSeconds * Sin(angle) 'Calculate destination point from time data
-  Y2 = H / 2 - LengthSeconds * Cos(angle)
-  Draw.Line(W / 2, H / 2, X2, Y2)   'Draw the arm
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Red, 128))
+  Paint.LineWidth = 6
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(Cos(angle) * W / 2, Sin(angle) * H / 2)
+  Paint.Stroke
   
-  'Draw Minutes
-  Draw.fillstyle = 1
-  Draw.Foreground = Color.Black
-  Width = CFloat(LengthSeconds) / 10
-  Draw.LineWidth = 1    'Fixed line width as this arm is drawn as a filled polygon, to get the triangluar shaped arm. The line width is irrelevant here.
-  angle = CFloat(CFloat(Time(dNow)) * 24 * 60) / 60 * 2 * Pi
-  X1 = W / 2
-  Y1 = H / 2
-  X2 = W / 2 + LengthSeconds * 0.9 * Sin(angle)
-  Y2 = H / 2 - LengthSeconds * 0.9 * Cos(angle)
-  'Draw.Line(ME.width/2,ME.height/2,X2,Y2)    'If enabled (& lower line disabled) the minutes arm will be a rectangle, not a triangle (which looks better)
-  Draw.polygon([X1 + CInt(Width * Cos(angle)), Y1 + CInt(Width * Sin(angle)), X1 - CInt(Width * Cos(angle)), Y1 - CInt(Width * Sin(angle)), X2, Y2])  'Isn't this easy to imagine ;)
+  ' Draw minutes
+  angle = CFloat(Time(dNow)) * 24 * Pi(2) - Pi(0.5)
   
-  'Draw Hours
-  Draw.fillstyle = 1
-  Draw.Foreground = Color.Black
-  Width = CFloat(LengthSeconds) / 8
-  Draw.LineWidth = 1
-  Hour12 = CFloat(Time(dNow)) * 24
-  If hour12 > 12 Then hour12 = hour12 - 12     'Adjust 24h format to 12h format
-  'hour12 = hour12 + CFloat(Minute(dNow)) / 60  'Makes the hours arm move smoothly from hour to hour
-  angle = CFloat(hour12) / 12 * 2 * Pi
-  X1 = W / 2
-  Y1 = H / 2
-  X2 = W / 2 + LengthSeconds * 0.6 * Sin(angle)
-  Y2 = H / 2 - LengthSeconds * 0.6 * Cos(angle)
-  'Draw.Line(ME.width/2,ME.height/2,X2,Y2)
-  Draw.polygon([X1 + CInt(Width * Cos(angle)), Y1 + CInt(Width * Sin(angle)), X1 - CInt(Width * Cos(angle)), Y1 - CInt(Width * Sin(angle)), X2, Y2])
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
+  Paint.MoveTo(Cos(angle) * W * 0.45, Sin(angle) * H * 0.45)
+  Paint.LineTo(Sin(angle) * W * 0.05, - Cos(angle) * H * 0.05)
+  Paint.LineTo(- Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
+  Paint.Fill
   
-  'Draw Circle on the center of the clock to hide the arms intersection
-  Width = Width * 1.5
-  Draw.Ellipse(X1 - Width, Y1 - Width, Width * 2, Width * 2)
-
-_FRAME:
-
-  DrawFrame         'Draw the clock frame (The circular tick marks)
+  ' Draw hours
+  angle = CFloat(Time(dNow)) * 2 * Pi(2) - Pi(0.5)
   
-  'Draw.End
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
+  Paint.MoveTo(Cos(angle) * W * 0.35, Sin(angle) * H * 0.35)
+  Paint.LineTo(Sin(angle) * W * 0.05, - Cos(angle) * H * 0.05)
+  Paint.LineTo(- Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
+  Paint.Fill
+  
+  ' Draw circle on the center of the clock to hide the arms intersection
+  
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Arc(0, 0, 0.1 * W)
+  Paint.Fill
+  
+  DrawFrame
   
 End
 
+' Draw the clock frame
 
 Public Sub DrawFrame()
 
-  Dim X2 As Float
-  Dim Y2 As Float
-  Dim X1 As Float
-  Dim Y1 As Float
-  Dim i As Integer
+  Dim I As Integer
   Dim angle As Float
-  Dim length As Integer
-  Dim eScale As Float
   
-  eScale = Min(dwgArea.Width / W, dwgArea.Height / H)
-
-  'Draw.Scale(Draw.Width / W, Draw.Height / H)
-
-  Length = Min(W / 2, H / 2)
-
-  Draw.Foreground = Color.Black
-  Draw.LineWidth = 5 '* eScale
-  For i = 0 To 11
-  'Draw Big 12 Ticks
-  'This would have really been very easy if everything had fixed dimensions.
-  angle = CFloat(i) / 12 * 2 * Pi
-  X1 = W / 2 + 0.9 * length * Sin(angle) + 0.5
-  Y1 = H / 2 - 0.9 * length * Cos(angle) + 0.5
-  X2 = W / 2 + length * Sin(angle) + 0.5
-  Y2 = H / 2 - length * Cos(angle) + 0.5
-  Draw.Line(X1, Y1, X2, Y2)
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
+  
+  For I = 0 To 59
+    If I % 5 = 0 Then
+      Paint.LineWidth = 12
+    Else
+      Paint.LineWidth = 2
+    Endif
+    angle = Pi(2) * I / 60
+    Paint.MoveTo(Cos(angle) * 0.45 * W, Sin(angle) * 0.45 * H)
+    Paint.LineTo(Cos(angle) * W / 2, Sin(angle) * H / 2)
+    Paint.Stroke
   Next
 
-  Draw.Foreground = Color.Black
-  Draw.LineWidth = 0
-  For i = 0 To 59
-  'Draw small 60 Ticks
-  angle = CFloat(i) / 60 * 2 * Pi
-  X1 = W / 2 + 0.9 * length * Sin(angle) + 0.5
-  Y1 = H / 2 - 0.9 * length * Cos(angle) + 0.5
-  X2 = W / 2 + length * Sin(angle) + 0.5
-  Y2 = H / 2 - length * Cos(angle) + 0.5
-  Draw.Line(X1, Y1, X2, Y2)
-  Next
-  
 End
 
 
 Public Sub MenuAbout_Click()
 
   Dim AboutMessage As String
-  AboutMessage = "Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net>"
+  AboutMessage = "Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net> and Benoît Minisini"
   
   Message.info(AboutMessage)
 

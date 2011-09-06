@@ -1,8 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(52.3333,29,39,39)
+  MoveScaled(52.2857,29,39,39)
   Text = ("Analog clock")
+  Arrangement = Arrange.Fill
   { MenuPopUp Menu
     Text = ("File")
     Visible = False
@@ -11,7 +12,6 @@
       Shortcut = "F11"
     }
     { MenuSep Menu
-      Text = ("")
     }
     { MenuExit Menu
       Text = ("E&xit")
@@ -21,10 +21,10 @@
     MoveScaled(0,0,21,24)
     Background = Color.LightBackground
     ToolTip = ("Resize Window and the clock will follow \nRight click for a menu")
+    Painted = True
   }
   { TimerClk #Timer
-    #X = 120
-    #Y = 16
+    #MoveScaled(17.1429,2.2857)
     Enabled = True
     Delay = 250
   }

@@ -1,14 +1,25 @@
 ' Gambas class file
 
-Public Name As String
-Public Path As String
-Public Title As String
-Public Version As String
-Public Description As String
-Public Authors As New String[]
-Public Icon As String
-Public Startup As String
-Public Components As String[]
+Property Read Name As String
+Property Read Path As String
+Property Read Title As String
+Property Read Version As String
+Property Read Description As String
+Property Read Authors As String[]
+Property Read Icon As String
+Property Read Startup As String
+Property Read Components As String[]
+
+Private $sName As String
+Private $sPath As String
+Private $sTitle As String
+Private $sVersion As String
+Private $sDescription As String
+Private $aAuthors As New String[]
+Private $sIcon As String
+Private $sStartup As String
+Private $aComponents As New String[]
+Private $bRead As Boolean
 
 Private Sub GetProjectPath(sPath As String) As String
   
@@ -22,8 +33,8 @@ Catch
   
 End
 
-Public Sub _new(sPath As String)
-  
+Private Sub ReadProject()
+
   Dim hFile As File
   Dim sIcon As String
   Dim sLine As String
@@ -31,14 +42,14 @@ Public Sub _new(sPath As String)
   Dim sKey As String
   Dim sVal As String
   
-  sPath = GetProjectPath(sPath)
-  If Not sPath Then Return
+  If $bRead Then Return
+  $bRead = True
   
-  Name = File.Name(sPath)
-  Path = sPath
-  Components = New String[]
+  If Not $sPath Then Return
+  
+  $aComponents = New String[]
     
-  hFile = Open sPath &/ ".project"
+  hFile = Open $sPath &/ ".project"
   
   While Not Eof(hFile)
     Line Input #hFile, sLine
@@ -55,25 +66,25 @@ Public Sub _new(sPath As String)
     Select Case sKey
     
       Case "title"
-        Title = sVal
+        $sTitle = sVal
 
       Case "version"
-        Version = sVal
+        $sVersion = sVal
         
       Case "description"
-        Description = Unquote(sVal)
+        $sDescription = Unquote(sVal)
 
       Case "authors"
-        Authors = Split(Unquote(sVal), "\n")
+        $aAuthors = Split(Unquote(sVal), "\n")
 
       Case "icon"
         sIcon = sVal
         
       Case "startup"
-        Startup = sVal
+        $sStartup = sVal
         
       Case "component"
-        Components.Add(sVal)
+        $aComponents.Add(sVal)
 
     End Select
   
@@ -82,17 +93,24 @@ Public Sub _new(sPath As String)
   Close #hFile
 
   If sIcon Then
-    Icon = sPath &/ sIcon 'Project.StretchIcon(sPath &/ sIcon, 58)
+    $sIcon = $sPath &/ sIcon 'Project.StretchIcon(sPath &/ sIcon, 58)
   Else
-    Icon = "img/logo/logo-32.png"
-  Endif
+    $sIcon = "img/logo/logo-32.png"
+  Endif  
+
+End
+
+Public Sub _new(sPath As String)
+  
+  $sPath = GetProjectPath(sPath)
+  $sName = File.Name(sPath)
 
 End
 
 Public Sub GetTitle() As String
   
-  If Title Then Return Title
-  Return Name
+  If $sTitle Then Return $sTitle
+  Return $sName
   
 End
 
@@ -104,3 +122,64 @@ End
 '   Return hImage
 '   
 ' End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Function Title_Read() As String
+
+  ReadProject
+  Return $sTitle
+
+End
+
+Private Function Version_Read() As String
+
+  ReadProject
+  Return $sVersion
+
+End
+
+Private Function Description_Read() As String
+
+  ReadProject
+  Return $sDescription
+
+End
+
+Private Function Authors_Read() As String[]
+
+  ReadProject
+  Return $aAuthors
+
+End
+
+Private Function Icon_Read() As String
+
+  ReadProject
+  Return $sIcon
+
+End
+
+Private Function Startup_Read() As String
+
+  ReadProject
+  Return $sStartup
+
+End
+
+Private Function Components_Read() As String[]
+
+  ReadProject
+  Return $aComponents
+
+End

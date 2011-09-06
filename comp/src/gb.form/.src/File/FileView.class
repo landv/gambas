@@ -227,7 +227,7 @@ Private Sub RefreshView()
   sDir = $sDir
   If Not sDir Then sDir = User.Home
 
-  Try aDir = Dir(sDir, "*").Sort
+  Try aDir = Dir(sDir, "*").Sort()
   For Each sFile In aDir
     If Not $bShowHidden And If Left(sFile) = "." Or Right(sFile) = "~" Then Continue
     With Stat(sDir &/ sFile)
