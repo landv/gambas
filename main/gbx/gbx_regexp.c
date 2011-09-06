@@ -41,7 +41,7 @@
 static REGEXP_SCAN_FUNC _scan_cb = NULL;
 static CARRAY *_scan_array;
 
-bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string)
+int REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string)
 {
   unsigned char cp;
   unsigned char cs;

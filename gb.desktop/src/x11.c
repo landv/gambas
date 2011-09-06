@@ -360,10 +360,16 @@ void X11_find_windows(Window **window_list, int *count)
 
 // ### Do not forget to call XFree() on result once finished with it
 
+
 void X11_get_window_title(Window window, char **result, int *length)
 {
+	static Atom _net_wm_name = (Atom)0;
 	unsigned long n;
-	get_property(window, XA_WM_NAME, 256, (unsigned char **)result, &n);
+
+	if (!_net_wm_name)
+		_net_wm_name = XInternAtom(_display, "_NET_WM_NAME", True);
+
+	get_property(window, _net_wm_name, 512, (unsigned char **)result, &n);
 	*length = (int)n;
 }
 

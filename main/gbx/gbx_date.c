@@ -722,7 +722,7 @@ __ADD_DATE_TIME:
     new_date -= fix_date;
   }
 
-  if (new_time < INT32_MIN || new_time > INT32_MAX || new_date <= 0 || new_date > INT32_MAX)
+  if (new_time < INT32_MIN || new_time > INT32_MAX || new_date < 0 || new_date > INT32_MAX)
     THROW(E_OVERFLOW);
 
   date->_date.date = (int)new_date;

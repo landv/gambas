@@ -55,7 +55,6 @@ BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 		if (ltitle)
 		{
 			X11_get_window_title(win, &prop, &lprop);
-			//qDebug("title = %.*s", lprop, prop);
 			if (!GB.MatchString(title, ltitle, prop, lprop))
 				continue;
 		}
