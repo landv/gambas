@@ -232,7 +232,10 @@ void SUBR_trim(ushort code)
 	SUBR_GET_PARAM(1);
 
 	if (SUBR_check_string(PARAM))
+	{
+		STRING_void_value(PARAM);
 		return;
+	}
 
 	code &= 0x1F;
 	left = (code == 0 || code == 1);
