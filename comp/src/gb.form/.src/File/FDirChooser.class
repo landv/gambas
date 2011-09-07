@@ -269,12 +269,18 @@ Public Function GetShowHidden() As Boolean
 
 End
 
+Private Sub UpdateShowHidden()
+  
+  dvwChoose.ShowHidden = fvwChoose.ShowHidden
+  mnuShowHiddenFiles.Checked = fvwChoose.ShowHidden
+  
+End
+
 
 Public Sub mnuShowHiddenFiles_Click()
 
   fvwChoose.ShowHidden = Not fvwChoose.ShowHidden
-  dvwChoose.ShowHidden = fvwChoose.ShowHidden
-  mnuShowHiddenFiles.Checked = fvwChoose.ShowHidden
+  UpdateShowHidden
   Raise ShowHidden
 
 End
@@ -282,10 +288,8 @@ End
 
 Public Sub SetShowHidden(bShowHidden As Boolean)
 
-  mnuShowHiddenFiles.Checked = bShowHidden
+  If bShowHidden = fvwChoose.ShowHidden Then Return
   mnuShowHiddenFiles_Click
-
-  'IF fvwChoose.ShowHidden <> bShowHidden THEN btnShowHidden_Click
 
 End
 
@@ -598,9 +602,9 @@ End
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, fvwChoose.IconSize]
+    Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, Null, $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
   Else
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, GetFilterIndex(), fvwChoose.IconSize]
+    Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
   Endif 
 
 End
@@ -610,36 +614,53 @@ Public Sub SetSettings(aVar As Variant[])
   'Dim bBookmark As Boolean = True
   Dim iZoom As Integer = -1
   
-  If Not $bFile Then 
-  
-    'Try bBookmark = aVar[6]
-    Try SetRoot(aVar[0])
-    Try SetDir(aVar[1])
-    Try $bView = Not aVar[2]
-    If Not Error Then btnView_Click
-    splChoose.Layout = aVar[3]
-    Try fvwChoose.ShowHidden = aVar[4]
-    Try fvwChoose.Settings = aVar[5]
-    Try iZoom = $aIconSize.Find(aVar[6])
-    If iZoom >= 0 Then sldIconSize.Value = iZoom
+  If TypeOf(aVar[0]) = gb.Integer Then
     
-  Else
-  
-    'Try bBookmark = aVar[8]
-    Try SetRoot(aVar[0])
-    Try SetDir(aVar[1])
-    Try fvwChoose.Current = aVar[2]
-    Try $bView = Not aVar[3]
+    Try SetRoot(aVar[1])
+    Try SetDir(aVar[2])
+    If $bFile Then Try fvwChoose.Current = aVar[3]
+    Try $bView = Not aVar[4]
     If Not Error Then btnView_Click
-    Try splChoose.Layout = aVar[4]
-    Try fvwChoose.ShowHidden = aVar[5]
+    splChoose.Layout = aVar[5]
     Try fvwChoose.Settings = aVar[6]
     Try SetFilterIndex(aVar[7])
-    Try iZoom = $aIconSize.Find(aVar[8])
+    
+    Try iZoom = $aIconSize.Find(fvwChoose.IconSize)
     If iZoom >= 0 Then sldIconSize.Value = iZoom
+
+  Else
+  
+    If Not $bFile Then 
+    
+      'Try bBookmark = aVar[6]
+      Try SetRoot(aVar[0])
+      Try SetDir(aVar[1])
+      Try $bView = Not aVar[2]
+      If Not Error Then btnView_Click
+      splChoose.Layout = aVar[3]
+      Try fvwChoose.Settings = aVar[5]
+      Try iZoom = $aIconSize.Find(aVar[6])
+      If iZoom >= 0 Then sldIconSize.Value = iZoom
+      
+    Else
+    
+      'Try bBookmark = aVar[8]
+      Try SetRoot(aVar[0])
+      Try SetDir(aVar[1])
+      Try fvwChoose.Current = aVar[2]
+      Try $bView = Not aVar[3]
+      If Not Error Then btnView_Click
+      Try splChoose.Layout = aVar[4]
+      Try fvwChoose.Settings = aVar[6]
+      Try SetFilterIndex(aVar[7])
+      Try iZoom = $aIconSize.Find(aVar[8])
+      If iZoom >= 0 Then sldIconSize.Value = iZoom
+      
+    Endif
     
   Endif
 
+  UpdateShowHidden
   ShowBookmark($bShowBookmark)
   
 End

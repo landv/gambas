@@ -6,7 +6,6 @@
 
 Public Sub Button1_Click()
 
-  Print 1 / 0
-  DirChooser1.Root = "/home/benoit/gambas/3.0/trunk"
+  FileChooser1.ShowHidden = True
 
 End

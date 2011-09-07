@@ -20,6 +20,7 @@ Property Picture As Picture
 Property Border As Boolean
 Property Icon As Picture
 Property Read Renaming As Boolean
+Property Settings As Variant[]
 
 Private $sRoot As String
 Private $hTreeView As TreeView
@@ -494,5 +495,23 @@ End
 Private Function Renaming_Read() As Boolean
 
   Return $hTreeView.Renaming
+
+End
+
+Private Function Settings_Read() As Variant[]
+
+  Return [1, CVariant(ShowHidden_Read())]
+
+  'Return IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
+
+End
+
+Private Sub Settings_Write(Value As Variant[])
+
+  ShowHidden_Write(Value[1])
+
+Catch
+
+  Debug Error.Where; ": "; Error.Text
 
 End

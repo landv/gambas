@@ -597,7 +597,7 @@ End
 
 Private Function Settings_Read() As Variant[]
 
-  Return [CVariant(ShowDetailed_Read()), ShowHidden_Read(), $hColumnView.Settings]
+  Return [1, CVariant(ShowDetailed_Read()), ShowHidden_Read(), $hColumnView.Settings, $iIconSize]
 
   'Return IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
 
@@ -605,9 +605,16 @@ End
 
 Private Sub Settings_Write(Value As Variant[])
 
-  ShowDetailed_Write(Value[0])
-  ShowHidden_Write(Value[1])
-  $hColumnView.Settings = Value[2]
+  If TypeOf(Value[0]) = gb.Integer Then
+    ShowDetailed_Write(Value[1])
+    ShowHidden_Write(Value[2])
+    $hColumnView.Settings = Value[3]
+    IconSize_Write(Value[4])
+  Else
+    ShowDetailed_Write(Value[0])
+    ShowHidden_Write(Value[1])
+    $hColumnView.Settings = Value[2]
+  Endif
   
 Catch
 

@@ -47,7 +47,6 @@ Public Sub lstType_Click()
         txtName.Text = Project.GetNewName(sPrefix, $sDir)
       Case Else
         txtName.Text = Project.GetNewName(sPrefix)
-        fchExisting.ShowHidden = True
     End Select
     'txtName.SelectAll
     Object.Unlock(txtName)
@@ -56,6 +55,10 @@ Public Sub lstType_Click()
   iFilter = $aFilterType.Find(LCase(sPrefix))
   $iFilter = iFilter
   fchExisting.FilterIndex = $iFilter
+
+  If CModule.Ext.Exist(lstType.Current.Tag) Then 
+    fchExisting.ShowHidden = True
+  Endif  
   
   txtName.SelectAll
   txtName.SetFocus
@@ -74,6 +77,7 @@ Public Sub Form_Open()
   $bDoNotSetName = False
   
   Settings.Read(Me)
+  Settings.Read(fchExisting)
 
   $aFilterType = ["module", "class"]
   aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
@@ -409,17 +413,13 @@ End
 Public Sub Form_Close()
 
   Settings.Write(Me)  
-  If $bInit Then Settings.Write(fchExisting)  
+  Settings.Write(fchExisting)  
   
 End
 
 Public Sub tabFile_Click()
 
   If tabFile.Index = 1 Then 
-    If Not $bInit Then 
-      Settings.Read(fchExisting)
-      $bInit = True
-    Endif
     If $iFilter >= 0 Then 
       fchExisting.FilterIndex = $iFilter
       $iFilter = -1
