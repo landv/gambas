@@ -20,3 +20,21 @@ Public Sub Watcher_Move()
   
 End
 
+
+Public Sub Button2_Click()
+
+  Dim hForm As Form = New Form1
+  
+  Workspace1.Add(hForm)
+
+End
+
+Public Sub Button3_Click()
+
+  If Workspace1.Orientation = Align.Top Then
+    Workspace1.Orientation = Align.Bottom
+  Else
+    Workspace1.Orientation = Align.Top
+  Endif
+
+End

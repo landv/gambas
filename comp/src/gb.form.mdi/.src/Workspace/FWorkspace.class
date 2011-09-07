@@ -365,26 +365,25 @@ End
 
 Public Sub UpdateSize()
 
-  Dim Y, H, D As Integer
+  Dim Y, H As Integer
 
   If tabWorkspace.Visible Then
 
     'If $bLogo Then picLogo.Hide
     
     With tabWorkspace
-
-      D = .ClientY - .Y - 2
-      H = Me.ClientH - D
+      
       If .Orientation = Align.Top Then
-        Y = Me.ClientH - H
+        Y = .ClientY - 2 'H - .H + .ClientY * 2 + 2
+        H = Me.ClientH - Y
       Else
         Y = 0
+        H = .ClientY + .ClientH + 2
       Endif
     
-      ' panWorkspace.Move(.ScreenX + .ClientX - panWorkspace.Parent.ScreenX, .ScreenY + .ClientY - panWorkspace.Parent.ScreenY, .ClientW, .ClientH)
-      ' svwWorkspace.Move(.ScreenX + .ClientX - panWorkspace.Parent.ScreenX, .ScreenY + .ClientY - panWorkspace.Parent.ScreenY, .ClientW, .ClientH)
       panWorkspace.Move(0, Y, Me.ClientW, H)
       svwWorkspace.Move(0, Y, Me.ClientW, H)
+      
     End With
       
     panWorkspace.Background = Color.Background
