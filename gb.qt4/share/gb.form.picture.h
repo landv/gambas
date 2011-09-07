@@ -102,10 +102,10 @@ bool LOAD_IMAGE_FUNC(IMAGE_TYPE **p, const char *path, int lenp)
 			pos--;
   	}
   	path_theme = GB.NewString(path, pos >= 0 ? pos : lenp);
-  	GB.AddString(&path_theme, "_", 1);
-  	GB.AddString(&path_theme, APPLICATION_THEME, GB.StringLength(APPLICATION_THEME));
+  	path_theme = GB.AddChar(path_theme, '_');
+  	path_theme = GB.AddString(path_theme, APPLICATION_THEME, GB.StringLength(APPLICATION_THEME));
   	if (pos >= 0)
-  		GB.AddString(&path_theme, &path[pos], lenp - pos);
+  		path_theme = GB.AddString(path_theme, &path[pos], lenp - pos);
 		ok = !GB.LoadFile(path_theme, GB.StringLength(path_theme), &addr, &len);
 		GB.Error(NULL);
 		GB.FreeString(&path_theme);

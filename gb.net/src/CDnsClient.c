@@ -58,6 +58,18 @@ DECLARE_EVENT(EVENT_Finished);
  2) Action : '0' --> dns_get_name, '1' --> dns_get_ip
  3) Result : string finished with '\x10'
  *********************************************************/
+
+static bool read_dns_pipe(void *data, size_t length)
+{
+	if (read_dns_pipe( data, length) != length)
+	{
+		fprintf(stderr, "gb.net: cannot read DNS pipe: %s\n", strerror(errno));
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
 void dns_callback(intptr_t lParam)
 {
 	/***********************************************************
@@ -89,14 +101,14 @@ void dns_callback(intptr_t lParam)
 		mypoll.revents=0;
 		idata=poll(&mypoll,1,0);
 		if (!idata) break;
-		read (dns_r_pipe,&v_obj,sizeof(void*));
-		read (dns_r_pipe,&test_id,sizeof(int));
-		read (dns_r_pipe,Action,sizeof(char));
+		read_dns_pipe(&v_obj,sizeof(void*));
+		read_dns_pipe(&test_id,sizeof(int));
+		read_dns_pipe(Action,sizeof(char));
 		GB.Alloc(POINTER(&Buf),sizeof(char));
 
 		while (BufRead[0] != '\x10')
 		{
-			read(dns_r_pipe,BufRead,sizeof(char));
+			read_dns_pipe(BufRead,sizeof(char));
 			if (BufRead[0]!='\x10')
 			{
 				Buf[Position]=BufRead[0];
@@ -158,6 +170,12 @@ void dns_event(CDNSCLIENT *mythis)
     GB.Unref(POINTER(&mythis));
 }
 
+static void write_dns_pipe(void *data, size_t length)
+{
+	if (write(dns_w_pipe, data, length) != length)
+		fprintf(stderr, "gb.net: cannot write to DNS pipe: %s\n", strerror(errno));
+}
+
 void* dns_get_name(void* v_obj)
 {
 	/****************************************************************
@@ -192,11 +210,11 @@ void* dns_get_name(void* v_obj)
 	
 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
 	sem_wait(&dns_th_pipe);
-	write (dns_w_pipe,&v_obj,sizeof(void*)); /* object */
-	write (dns_w_pipe,&myid,sizeof(int));    /* id */
-	write (dns_w_pipe,Buf,sizeof(char));     /* Action */
-	if (!res) write (dns_w_pipe,host,strlen(host)*sizeof(char));
-	write (dns_w_pipe,"\x10",sizeof(char));
+	write_dns_pipe(&v_obj,sizeof(void*)); /* object */
+	write_dns_pipe(&myid,sizeof(int));    /* id */
+	write_dns_pipe(Buf,sizeof(char));     /* Action */
+	if (!res) write_dns_pipe(host,strlen(host)*sizeof(char));
+	write_dns_pipe("\x10",sizeof(char));
 	sem_post(&dns_th_pipe);
 	return NULL;
 }
@@ -207,6 +225,7 @@ This function will run in a thread different from main thread,
 and when it finish its proccess, it sends a message to the
 main thread using a pipe
 *****************************************************************/
+
 void* dns_get_ip(void* v_obj)
 {	
 	char Buf[1];
@@ -230,16 +249,18 @@ void* dns_get_ip(void* v_obj)
 
 	sem_wait(&dns_th_pipe);
 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
-	write (dns_w_pipe,&v_obj,sizeof(void*)); /* object */
-	write (dns_w_pipe,&myid,sizeof(int));    /* id */
-	write (dns_w_pipe,Buf,sizeof(char));     /* action */
+	
+	write_dns_pipe(&v_obj, sizeof(void*)); /* object */
+	write_dns_pipe(&myid, sizeof(int));    /* id */
+	write_dns_pipe(Buf, sizeof(char));     /* action */
+	
 	if (stHost!=NULL)
 	{
 		addr=(struct sockaddr_in*)stHost[0].ai_addr;
 		BufData=inet_ntoa(addr->sin_addr);
-		if (BufData) write (dns_w_pipe,BufData,strlen(BufData)*sizeof(char));
+		if (BufData) write_dns_pipe(BufData,strlen(BufData)*sizeof(char));
 	}
-	write (dns_w_pipe,"\x10",sizeof(char));
+	write_dns_pipe("\x10",sizeof(char));
 	sem_post(&dns_th_pipe);
 	return NULL;
 }

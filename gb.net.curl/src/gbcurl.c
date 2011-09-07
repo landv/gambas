@@ -158,9 +158,9 @@ bool CURL_check_userpwd(CURL_USER *user)
 	
 	if (user->user || user->pwd)
 	{
-		GB.AddString(&tmp, user->user, 0);
-		GB.AddString(&tmp, ":", 1);
-		GB.AddString(&tmp, user->pwd, 0);
+		tmp = GB.AddString(tmp, user->user, 0);
+		tmp = GB.AddChar(tmp, ':');
+		tmp = GB.AddString(tmp, user->pwd, 0);
 	}
 	
 	if (tmp && user->userpwd)
@@ -200,9 +200,9 @@ void CURL_proxy_set(CURL_PROXY *proxy, CURL *curl)
 	
 	if (proxy->user || proxy->pwd)
 	{
-		GB.AddString(&proxy->userpwd, proxy->user, 0);
-		GB.AddString(&proxy->userpwd, ":", 1);
-		GB.AddString(&proxy->userpwd, proxy->pwd, 0);
+		proxy->userpwd = GB.AddString(proxy->userpwd, proxy->user, 0);
+		proxy->userpwd = GB.AddChar(proxy->userpwd, ':');
+		proxy->userpwd = GB.AddString(proxy->userpwd, proxy->pwd, 0);
 	}
 	
 	if (!proxy->host)
@@ -295,9 +295,9 @@ void CURL_user_set(CURL_USER *user, CURL *curl)
 	}
 	
 	GB.FreeString(&user->userpwd);
-	GB.AddString(&user->userpwd, user->user, 0);
-	GB.AddString(&user->userpwd, ":", 1);
-	GB.AddString(&user->userpwd, user->pwd, 0);
+	user->userpwd = GB.AddString(user->userpwd, user->user, 0);
+	user->userpwd = GB.AddChar(user->userpwd, ':');
+	user->userpwd = GB.AddString(user->userpwd, user->pwd, 0);
 
 	curl_easy_setopt(curl, CURLOPT_USERPWD, user->userpwd);
 	curl_easy_setopt(curl, CURLOPT_HTTPAUTH, user->auth);

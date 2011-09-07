@@ -869,7 +869,7 @@ bool DBUS_error(DBusConnection *connection, DBusMessage *message, const char *ty
 	else
 	{
 		full_type = GB.NewZeroString("org.freedesktop.org.DBus.Error.");
-		GB.AddString(&full_type, type, 0);
+		full_type = GB.AddString(full_type, type, 0);
 	}
 	
 	reply = dbus_message_new_error(message, full_type, error);

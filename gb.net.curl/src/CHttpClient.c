@@ -133,7 +133,7 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 	}
 	else
 	{
-		GB.AddString(&THIS->data, buffer, nmemb);
+		THIS->data = GB.AddString(THIS->data, buffer, nmemb);
 	}
 
 	if (THIS->async)

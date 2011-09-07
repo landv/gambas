@@ -382,7 +382,7 @@ static void q_dump_temp(void)
 	if (!_temp_len)
 		return;
 		
-	GB.AddString(&_query, _temp, _temp_len);
+	_query = GB.AddString(_query, _temp, _temp_len);
 	_temp_len = 0;
 }
 
@@ -395,7 +395,7 @@ void q_add_length(const char *str, int len)
     q_dump_temp();
 	
 	if (len > TEMP_MAX)
-    GB.AddString(&_query, str, len);
+    _query = GB.AddString(_query, str, len);
 	else
 	{
 		memcpy(&_temp[_temp_len], str, len);

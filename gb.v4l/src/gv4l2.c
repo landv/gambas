@@ -66,12 +66,12 @@ int gv4l2_available(CWEBCAM * _object)
 //	
 //	Debugging routine for V4L2
 //
-void gv4l2_debug( char *s ) 
+void gv4l2_debug(const char *s) 
 {
-	if( ! gv4l2_debug_mode ) return;
-	printf("gambas v4l2: %s [%d]\n",s,errno);
-	fflush(stdout);
+	if (!gv4l2_debug_mode) return;
+	fprintf(stderr, "gb.v4l: v4l2: %s: %s\n", s, strerror(errno));
 }
+
 //=============================================================================
 //
 //	xioctl( fd,request,arg )
@@ -80,11 +80,11 @@ void gv4l2_debug( char *s )
 //	
 int gv4l2_xioctl( int fd,int request,void * arg)
 {
-        int r;
+	int r;
 
-        do r = ioctl (fd, request, arg);
-        while (-1 == r && EINTR == errno);
-        return r;
+	do r = ioctl (fd, request, arg);
+	while (-1 == r && EINTR == errno);
+	return r;
 }
 //
 //=============================================================================
@@ -595,8 +595,6 @@ void gv4l1_process_image (CWEBCAM * _object, void *start)
 void gv4l2_process_image (CWEBCAM * _object, void *start)
 {
 	struct v4l2_format dest = THIS->fmt;
-	int format,w,h;
-	int size;
 
 	if (THIS->format != GB_IMAGE_BGR)
 		gv4l2_debug("Destination format not supported");

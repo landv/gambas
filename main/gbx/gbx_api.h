@@ -158,8 +158,6 @@ char *GB_TempString(char *src, int len);
 void GB_FreeString(char **str);
 int GB_StringLength(const char *str);
 bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);
-void GB_AddString(char **ptr, const char *src, int len);
-void GB_ExtendString(char **ptr, int new_len);
 
 bool GB_Conv(GB_VALUE *, GB_TYPE);
 

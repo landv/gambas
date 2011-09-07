@@ -93,7 +93,7 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 					if (string)
 					{
 						if (i < len_s)
-							GB.AddString(&r, &c, 1);
+							r = GB.AddChar(r, c);
 							//r += c;
 						i++;
 						c = s[i];
@@ -103,7 +103,7 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 					{
 						i++;
 						if (i < len_s)
-							GB.AddString(&r, " ", 1);
+							r = GB.AddChar(r, ' ');
 							//r += ' ';
 						c = ' ', lc = 1;
 					}
@@ -117,9 +117,9 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 		}
 
 		if (lc == 1)
-			GB.AddString(&r, &c, 1);
+			r = GB.AddChar(r, c);
 		else
-			GB.AddString(&r, &s[i], lc);
+			r = GB.AddString(r, &s[i], lc);
 	}
 
 	GB.FreeString(&_purged_line);

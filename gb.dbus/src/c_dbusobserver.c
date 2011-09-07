@@ -36,21 +36,21 @@ void DBUS_raise_observer(CDBUSOBSERVER *_object)
 	GB.Raise(THIS, EVENT_MESSAGE, 0);
 }
 
-static void add_rule(char **match, const char *name, const char *rule)
+static char *add_rule(char *match, const char *name, const char *rule)
 {
 	if (!rule)
-		return;
+		return match;
 	
 	if (rule[0] == '*' && rule[1] == 0)
-		return;
+		return match;
 	
-	if (*match)
-		GB.AddString(match, ",", 1);
+	if (match)
+		match = GB.AddChar(match, ',');
 	
-	GB.AddString(match, name, 0);
-	GB.AddString(match, "='", 2);
-	GB.AddString(match, rule, 0);
-	GB.AddString(match, "'", 1);
+	match = GB.AddString(match, name, 0);
+	match = GB.AddString(match, "='", 2);
+	match = GB.AddString(match, rule, 0);
+	match = GB.AddChar(match, '\'');
 }
 
 static void set_filter(char **property, const char *str, int len)
@@ -74,16 +74,16 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 	DBusError error;
 
 	if (THIS->type >= 0 && THIS->type <= 3)
-		add_rule(&match, "type", type[THIS->type]);
+		match = add_rule(match, "type", type[THIS->type]);
 	
-	add_rule(&match, "path", THIS->object);
-	add_rule(&match, "member", THIS->member);
-	add_rule(&match, "interface", THIS->interface);
+	match = add_rule(match, "path", THIS->object);
+	match = add_rule(match, "member", THIS->member);
+	match = add_rule(match, "interface", THIS->interface);
 	
 	if (THIS->destination && *(THIS->destination))
-		add_rule(&match, "destination", THIS->destination);
+		match = add_rule(match, "destination", THIS->destination);
 	else
-		add_rule(&match, "destination", dbus_bus_get_unique_name(THIS->connection));
+		match = add_rule(match, "destination", dbus_bus_get_unique_name(THIS->connection));
 
 	dbus_error_init(&error);
 	

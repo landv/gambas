@@ -167,7 +167,7 @@ void yuv420p_to_rgb (unsigned char *image, unsigned char *image2, int x, int y, 
 
 // ++ V4L2 
 int 		gv4l2_available(CWEBCAM * _object);
-void 		gv4l2_debug( char *s );
+void 		gv4l2_debug(const char *s);
 int 		gv4l2_xioctl( int fd,int request,void * arg);
 int 		gv4l2_open_device( char* name );
 void 		gv4l2_close_device( int id );

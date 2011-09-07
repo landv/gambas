@@ -107,8 +107,8 @@ static char *FindDatabase(char *name, char *hostName)
 
 	/* Hostname contains home area */
 	fullpath = GB.NewZeroString(hostName);
-	GB.AddString(&fullpath, "/", 0);
-	GB.AddString(&fullpath, name, 0);
+	fullpath = GB.AddChar(fullpath, '/');
+	fullpath = GB.AddString(fullpath, name, 0);
 	if (IsDatabaseFile(fullpath))
 	{
 		return fullpath;
@@ -121,8 +121,8 @@ static char *FindDatabase(char *name, char *hostName)
 	if (dbhome != NULL)
 	{
 		fullpath = GB.NewZeroString(dbhome);
-		GB.AddString(&fullpath, "/", 0);
-		GB.AddString(&fullpath, name, 0);
+		fullpath = GB.AddChar(fullpath, '/');
+		fullpath = GB.AddString(fullpath, name, 0);
 
 		if (IsDatabaseFile(fullpath))
 		{
@@ -131,8 +131,8 @@ static char *FindDatabase(char *name, char *hostName)
 	}
 
 	fullpath = GB.NewZeroString(GB.TempDir());
-	GB.AddString(&fullpath, "/sqlite/", 0);
-	GB.AddString(&fullpath, name, 0);
+	fullpath = GB.AddString(fullpath, "/sqlite/", 0);
+	fullpath = GB.AddString(fullpath, name, 0);
 
 	if (IsDatabaseFile(fullpath))
 	{

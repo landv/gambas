@@ -312,8 +312,8 @@ void CWebDownload::readyRead()
 		if (!THIS->output->open(QIODevice::WriteOnly)) 
 		{
 			char *error = NULL;
-			GB.AddString(&error, "Unable to save file: ", 0);
-			GB.AddString(&error, TO_UTF8(THIS->output->errorString()), 0);
+			error = GB.AddString(error, "Unable to save file: ", 0);
+			error = GB.AddString(error, TO_UTF8(THIS->output->errorString()), 0);
 			abort_download(THIS, error);
 			return;
 		}

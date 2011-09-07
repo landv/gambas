@@ -49,8 +49,8 @@ static char *get_address(char *address)
 		return address;
 
 	_tmp = GB.NewString("<", 1);
-	GB.AddString(&_tmp, address, len);
-	GB.AddString(&_tmp, ">", 1);
+	_tmp = GB.AddString(_tmp, address, len);
+	_tmp = GB.AddChar(_tmp, '>');
 	return _tmp;
 }
 

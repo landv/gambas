@@ -224,7 +224,7 @@ static void flush_result(EVAL_ANALYZE *result)
 {
 	if (_analyze_buffer_pos > 0)
 	{
-		GB.AddString(&result->str, _analyze_buffer, _analyze_buffer_pos);
+		result->str = GB.AddString(result->str, _analyze_buffer, _analyze_buffer_pos);
 		_analyze_buffer_pos = 0;
 	}
 }
@@ -235,7 +235,7 @@ static void add_result(EVAL_ANALYZE *result, const char *str, int len)
 		flush_result(result);
 	
 	if (len > sizeof(_analyze_buffer))
-		GB.AddString(&result->str, str, len);
+		result->str = GB.AddString(result->str, str, len);
 	else
 	{
 		memcpy(&_analyze_buffer[_analyze_buffer_pos], str, len);
@@ -529,7 +529,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
 		EVAL_clear(EVAL, FALSE);
 		
 		EVAL->source = GB.NewString(src, len);
-		GB.AddString(&EVAL->source, "\0\0", 2);
+		EVAL->source = GB.AddString(EVAL->source, "\0\0", 2);
 		EVAL->len = len;
 		
 		EVAL->analyze = TRUE;
@@ -565,7 +565,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
 
   while (nspace > 0)
   {
-   	GB.AddString(&result->str, "        ", nspace > 8 ? 8 : nspace);
+   	result->str = GB.AddString(result->str, "        ", nspace > 8 ? 8 : nspace);
     nspace -= 8;
 	}
 }

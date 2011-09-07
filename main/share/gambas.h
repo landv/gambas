@@ -874,8 +874,9 @@ typedef
 		char *(*NewZeroString)(const char *);
 		char *(*TempString)(const char *, int);
 		void (*FreeString)(char **);
-		void (*ExtendString)(char **, int);
-		void (*AddString)(char **, const char *, int);
+		char *(*ExtendString)(char *, int);
+		char *(*AddString)(char *, const char *, int);
+		char *(*AddChar)(char *, char);
 		int (*StringLength)(char *);
 		char *(*ToZeroString)(GB_STRING *);
 		bool (*MatchString)(const char *, int, const char *, int);

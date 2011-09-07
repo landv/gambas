@@ -1464,8 +1464,8 @@ static int table_list_73(DB_DATABASE *db, char ***tables)
 			else
 			{
 				(*tables)[i] = GB.NewZeroString(schema);
-				GB.AddString(&((*tables)[i]), ".", 1);
-				GB.AddString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
+				(*tables)[i] = GB.AddChar((*tables)[i], '.');
+				(*tables)[i] = GB.AddString((*tables)[i], PQgetvalue(res, i, 0), 0);
 			}
 		}
 	}

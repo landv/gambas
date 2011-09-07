@@ -437,7 +437,7 @@ BEGIN_PROPERTY(Curl_URL)
 	if (strncmp(url, protocol, strlen(protocol)))
 	{
 		tmp = GB.NewZeroString(protocol);
-		GB.AddString(&tmp, url, GB.StringLength(url));
+		tmp = GB.AddString(tmp, url, GB.StringLength(url));
 		GB.FreeString(&url);
 		url = tmp;
 	}

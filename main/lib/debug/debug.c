@@ -914,7 +914,7 @@ void DEBUG_main(bool error)
 	    	break;
       if (!*cmdbuf)
         continue;
-			GB.AddString(&cmd, cmdbuf, 0);
+			cmd = GB.AddString(cmd, cmdbuf, 0);
 			if (cmd[GB.StringLength(cmd) - 1] == '\n')
 				break;
 		}

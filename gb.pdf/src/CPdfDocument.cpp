@@ -144,7 +144,7 @@ static void aux_return_unicode_string(Unicode *uni, int32_t  len)
 	char *ret=NULL;
 
 	for (bc=0; bc<len; bc++)
-		GB.AddString(&ret,(const char*)&uni[bc],0);
+		ret = GB.AddString(ret, (const char*)&uni[bc], 0);
 
 	GB.ReturnNewZeroString(ret);
 	GB.FreeString(&ret);
@@ -262,10 +262,10 @@ static char* aux_get_target_from_action(LinkAction *act)
 	if (tmp->hasUnicodeMarker())
 	{
 			GB.ConvString (&uni,tmp->getCString()+2,tmp->getLength()-2,"UTF-16BE","UTF-8");
-			GB.AddString (&vl,uni,0);	
+			vl = GB.AddString(vl, uni, 0);	
 	}	
 	else
-			GB.AddString(&vl,tmp->getCString(),tmp->getLength());
+			vl = GB.AddString(vl,tmp->getCString(),tmp->getLength());
 	
 
 	return vl;

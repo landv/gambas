@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "sqlitedataset.h"
 
@@ -438,8 +439,8 @@ static char *FindDatabase(const char *name, const char *hostName)
 
 	/* Hostname contains home area */
 	fullpath = GB.NewZeroString(hostName);
-	GB.AddString(&fullpath, "/", 0);
-	GB.AddString(&fullpath, name, 0);
+	fullpath = GB.AddChar(fullpath, '/');
+	fullpath = GB.AddString(fullpath, name, 0);
 	if (IsDatabaseFile(fullpath))
 	{
 		return fullpath;
@@ -452,8 +453,8 @@ static char *FindDatabase(const char *name, const char *hostName)
 	if (dbhome != NULL)
 	{
 		fullpath = GB.NewZeroString(dbhome);
-		GB.AddString(&fullpath, "/", 0);
-		GB.AddString(&fullpath, name, 0);
+		fullpath = GB.AddChar(fullpath, '/');
+		fullpath = GB.AddString(fullpath, name, 0);
 
 		if (IsDatabaseFile(fullpath))
 		{
@@ -472,8 +473,8 @@ static char *FindDatabase(const char *name, const char *hostName)
 #endif
 
 	fullpath = GB.NewZeroString(GB.TempDir());
-	GB.AddString(&fullpath, "/sqlite/", 0);
-	GB.AddString(&fullpath, name, 0);
+	fullpath = GB.AddString(fullpath, "/sqlite/", 0);
+	fullpath = GB.AddString(fullpath, name, 0);
 
 	if (IsDatabaseFile(fullpath))
 	{
@@ -519,40 +520,10 @@ static char *GetDatabaseHome()
 	return dbhome;
 }
 
-// BM: not used anymore
-#if 0
-/* Return Fullpath for database */
-char *FullPath(char *name)
-{
-	char *db_fullpath = NULL;
-	char *dbhome = NULL;
 
-	dbhome = GetDatabaseHome();
+// Internal function to walk a directory and list files
+// Used by database_list
 
-	if (!dbhome)
-		return NULL;
-
-	GB.Alloc((void **) &db_fullpath, strlen(name) + strlen(dbhome) + 2);	/* leave room
-																																				   for \0 and / */
-	/* start with an empty string */
-	db_fullpath[0] = '\0';
-
-	strcpy(db_fullpath, dbhome);
-	if (db_fullpath[strlen(db_fullpath) - 1] != '/')
-	{
-		strcat(db_fullpath, "/");
-	}
-
-	strcat(db_fullpath, name);
-
-	GB.Free((void **) &dbhome);
-	return db_fullpath;
-
-}
-#endif
-
-/* Internal function to walk a dirctory and list files */
-/* Used by database_list                               */
 static int WalkDirectory(const char *dir, char ***databases)
 {
 	DIR *dp;
@@ -561,32 +532,40 @@ static int WalkDirectory(const char *dir, char ***databases)
 	char cwd[MAX_PATH];
 
 	if ((dp = opendir(dir)) == NULL)
+		return -1;
+
+	if (getcwd(cwd, MAX_PATH) == NULL)
 	{
+		fprintf(stderr, "gb.db.sqlite3: warning: getcwd: %s\n", strerror(errno));
 		return -1;
 	}
 
-	getcwd(cwd, MAX_PATH);
+	if (chdir(dir))
+	{
+		fprintf(stderr, "gb.db.sqlite3: warning: chdir: %s\n", strerror(errno));
+		return -1;
+	}
 
-	chdir(dir);
-
-	while ((entry = readdir(dp)) != NULL)
+	while ((entry = readdir(dp)) != NULL) 
 	{
 		stat(entry->d_name, &statbuf);
 
-		if (S_ISREG(statbuf.st_mode))
+		if (S_ISREG(statbuf.st_mode)) 
 		{
 			if (IsDatabaseFile(entry->d_name))
-			{
 				*(char **)GB.Add(databases) = GB.NewZeroString(entry->d_name);
-			}
 		}
 	}
 
-	chdir(cwd);
 	// BM: you must call closedir()
 	closedir(dp);
+	
+	if (chdir(cwd))
+		fprintf(stderr, "gb.db.sqlite3: warning: chdir: %s\n", strerror(errno));
+	
 	return GB.Count(databases);
 }
+
 
 /* Internal function to check database version number */
 static int db_version()
@@ -2300,9 +2279,9 @@ static int database_create(DB_DATABASE * db, const char *name)
 	}
 
 	if (fullpath[strlen(fullpath) - 1] != '/')
-		GB.AddString(&fullpath, "/", 0);
+		fullpath = GB.AddChar(fullpath, '/');
 
-	GB.AddString(&fullpath, name, 0);
+	fullpath = GB.AddString(fullpath, name, 0);
 
 _CREATE_DATABASE:
 

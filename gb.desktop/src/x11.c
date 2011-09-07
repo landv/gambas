@@ -168,7 +168,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 		
 		//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld next offset = %ld\n", *format, size, count, after, offset);
 	
-		GB.AddString(&_property_value, (char *)data, count * size);
+		_property_value = GB.AddString(_property_value, (char *)data, count * size);
 		XFree(data);
 	}
 	
