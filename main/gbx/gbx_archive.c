@@ -559,8 +559,8 @@ void ARCHIVE_browse(ARCHIVE *arch, void (*found)(const char *path, int64_t size)
 			temp = path;
 			path = STRING_new(sym->name, sym->len);
 			if (path[sym->len - 1] != '/')
-				STRING_add(&path, "/", 1);
-			STRING_add(&path, strchr(temp, ':') + 1, 0);
+				path = STRING_add(path, "/", 1);
+			path = STRING_add(path, strchr(temp, ':') + 1, 0);
 			STRING_free(&temp);
 		}
 		

@@ -28,6 +28,7 @@ bool STRING_equal_ignore_case(const char *str1, int len1, const char *str2, int 
 int STRING_compare(const char *str1, int len1, const char *str2, int len2);
 int STRING_compare_ignore_case(const char *str1, int len1, const char *str2, int len2);
 
+// valgrind says that STRING_equal_same() is globally faster than memcmp_sse4, so...
 //#define STRING_equal_same(_str1, _str2, _len) (memcmp(_str1, _str2, _len) == 0)
 #define STRING_equal(_str1, _len1, _str2, _len2) ((_len1) == (_len2) && STRING_equal_same(_str1, _str2, _len1))
 

@@ -67,7 +67,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	STRING_add(&stream->string.buffer, buffer, len);
+	stream->string.buffer = STRING_add(stream->string.buffer, buffer, len);
   return FALSE;
 }
 

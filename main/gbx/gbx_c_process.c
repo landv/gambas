@@ -89,7 +89,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 		int n = read(fd, COMMON_buffer, 256);
 		if (n > 0)
 		{
-			STRING_add(&process->result, COMMON_buffer, n);
+			process->result = STRING_add(process->result, COMMON_buffer, n);
 			CSTREAM_stream(process)->process.read_something = TRUE;
 			//#ifdef DEBUG_ME
 			//fprintf(stderr, "callback_write: result = '%s'\n", process->result);

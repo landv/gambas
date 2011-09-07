@@ -379,37 +379,29 @@ void STRING_exit(void)
 }
 
 
-void STRING_extend(char **ptr, int new_len)
+char *STRING_extend(char *str, int new_len)
 {
-	STRING *str;
+	STRING *sstr;
 
-	if (!*ptr)
+	if (!str)
 	{
-		str = alloc_string(new_len);
+		sstr = alloc_string(new_len);
 		#ifdef DEBUG_ME
 			fprintf(stderr, "STRING_extend: NULL -> %p / %p\n", str, str->data);
 		#endif
 	}
 	else
 	{
-		str = realloc_string(STRING_from_ptr(*ptr), new_len);
+		sstr = realloc_string(STRING_from_ptr(str), new_len);
 		#ifdef DEBUG_ME
 			fprintf(stderr, "STRING_extend: %p / %p -> %p / %p\n", STRING_from_ptr(*ptr), *ptr, str, str->data);
 		#endif
 	}
 
-	*ptr = str ? str->data : NULL;
+	return sstr ? sstr->data : NULL;
 }
 
 
-void STRING_extend_end(char **ptr)
-{
-	if (*ptr)
-	{
-		(*ptr)[STRING_length(*ptr)] = 0;
-		STRING_free_later(*ptr);
-	}
-}
 
 
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
@@ -699,7 +691,7 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 }
 
 
-void STRING_add(char **ptr, const char *src, int len)
+char *STRING_add(char *str, const char *src, int len)
 {
 	int old_len;
 
@@ -707,32 +699,33 @@ void STRING_add(char **ptr, const char *src, int len)
 		len = strlen(src);
 
 	if (len <= 0)
-		return;
+		return str;
 
-	old_len = STRING_length(*ptr);
+	old_len = STRING_length(str);
 
-	STRING_extend(ptr, old_len + len);
+	str = STRING_extend(str, old_len + len);
 	if (src)
 	{
-		memcpy(&((*ptr)[old_len]), src, len);
-		(*ptr)[old_len + len] = 0;
+		memcpy(&str[old_len], src, len);
+		str[old_len + len] = 0;
 	}
+	
+	return str;
 }
 
 
-void STRING_add_char(char **ptr, char c)
+char *STRING_add_char(char *str, char c)
 {
-	int len = STRING_length(*ptr);
+	int len = STRING_length(str);
 	char *p;
 
-	//if (!(len & (SIZE_INC - 1)))
-	STRING_extend(ptr, len + 1);
-	//else
-	//STRING_from_ptr(*ptr)->len++;
+	str = STRING_extend(str, len + 1);
 		
-	p = *ptr + len;
+	p = str + len;
 	p[0] = c;
 	p[1] = 0;
+	
+	return str;
 }
 
 
@@ -803,7 +796,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 			#endif
 	
 			if (ret != (size_t)(-1) || errno == E2BIG)
-				STRING_add(result, COMMON_buffer, COMMON_BUF_MAX - out_len);
+				*result = STRING_add(*result, COMMON_buffer, COMMON_BUF_MAX - out_len);
 	
 			if (ret != (size_t)(-1))
 				break;
@@ -818,9 +811,9 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 		iconv_close(handle);
 	
 		if (unicode)
-			STRING_add(result, "\0\0\0", 3);
+			*result = STRING_add(*result, "\0\0\0", 3);
 	
-		STRING_extend_end(result);
+		STRING_extend_end(*result);
 	
 		if (err)
 			errcode = E_CONV;
@@ -900,7 +893,7 @@ char *STRING_conv_file_name(const char *name, int len)
 		{
 			user = STRING_new_zero(dir);
 			if (pos < len)
-				STRING_add(&user, &name[pos], len - pos);
+				user = STRING_add(user, &name[pos], len - pos);
 			name = user;
 			len = STRING_length(name);
 			STRING_free_later(user);
@@ -1140,7 +1133,7 @@ void STRING_make(const char *src, int len)
 		
 		//fprintf(stderr, "STRING_extend: %d\n", _max - STRING_length(SUBST_buffer));
 		pos = _make.ptr - _make.buffer;
-		STRING_extend(&_make.buffer, _make.max);
+		_make.buffer = STRING_extend(_make.buffer, _make.max);
 		_make.ptr = _make.buffer + pos;
 	}
 
@@ -1155,7 +1148,7 @@ char *STRING_end()
 	
 	if (_make.len)
 	{
-		STRING_extend(&_make.buffer, _make.len);
+		_make.buffer = STRING_extend(_make.buffer, _make.len);
 		_make.buffer[_make.len] = 0;
 	}
 	else

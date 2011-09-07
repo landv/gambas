@@ -472,24 +472,24 @@ static void return_path(void)
 	
 	if (len) 
 	{
-		STRING_add(&tmp, _dir, len);
+		tmp = STRING_add(tmp, _dir, len);
 		test = _basename ? _basename : _ext;
 		if (tmp[len - 1] != '/' && *test != '/')
-			STRING_add(&tmp, "/", 1);
+			tmp = STRING_add_char(tmp, '/');
 	}
 	
 	if (*_basename)
-		STRING_add(&tmp, _basename, 0);
+		tmp = STRING_add(tmp, _basename, 0);
 	
 	if (*_ext)
 	{
 		if (*_ext != '.')
-			STRING_add(&tmp, ".", 1);
+			tmp = STRING_add_char(tmp, '.');
 	
-		STRING_add(&tmp, _ext, 0);
+		tmp = STRING_add(tmp, _ext, 0);
 	}
 
-	STRING_extend_end(&tmp);
+	STRING_extend_end(tmp);
 
 	GB_ReturnString(tmp);
 }
@@ -608,7 +608,7 @@ BEGIN_METHOD(File_Load, GB_STRING path)
 			for(;;)
 			{
 				len = STREAM_read_max(&stream, buffer, sizeof(buffer));
-				if (len) STRING_add(&str, buffer, len);
+				if (len) str = STRING_add(str, buffer, len);
 				if (len < sizeof(buffer))
 					break;
 			}

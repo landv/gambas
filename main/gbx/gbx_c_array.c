@@ -1877,7 +1877,7 @@ static void add_char_real(const char *p)
 	if (_lptr)
 	{
 		//fprintf(stderr, "STRING_add: '%.*s'\n", _lptr, _ptr);
-		STRING_add(&_entry, _ptr, _lptr);
+		_entry = STRING_add(_entry, _ptr, _lptr);
 	}
 	
 	_ptr = p;

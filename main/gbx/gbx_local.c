@@ -162,9 +162,9 @@ static int my_setenv(const char *name, const char *value, char **ptr)
 {
 	char *str = NULL;
 
-	STRING_add(&str, name, 0);
-	STRING_add(&str, "=", 1);
-	STRING_add(&str, value, 0);
+	str = STRING_add(str, name, 0);
+	str = STRING_add_char(str, '=');
+	str = STRING_add(str, value, 0);
 
 	if (putenv(str))
 	{
@@ -327,15 +327,15 @@ static char *get_languages(void)
 
 	lang = STRING_new_temp_zero(LOCAL_get_lang());
 
-	STRING_add(&lang_list, lang, 0);
-	STRING_add(&lang_list, ":", 1);
+	lang_list = STRING_add(lang_list, lang, 0);
+	lang_list = STRING_add_char(lang_list, ':');
 
 	src = index(lang, '_');
 	if (src)
 	{
 		*src = 0;
-		STRING_add(&lang_list, lang, 0);
-		STRING_add(&lang_list, ":", 1);
+		lang_list = STRING_add(lang_list, lang, 0);
+		lang_list = STRING_add_char(lang_list, ':');
 	}
 
 	#ifdef DEBUG_LANG

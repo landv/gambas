@@ -84,10 +84,20 @@ int STRING_get_free_index(void);
 #define STRING_new_temp(_src, _len) STRING_free_later(STRING_new(_src, _len))
 #define STRING_new_temp_zero(_src) STRING_free_later(STRING_new_zero(_src))
 
-void STRING_extend(char **ptr, int new_len);
-void STRING_extend_end(char **ptr);
-void STRING_add(char **ptr, const char *src, int len);
-void STRING_add_char(char **ptr, char c);
+char *STRING_extend(char *str, int new_len);
+//void STRING_extend_end(char *str);
+char *STRING_add(char *str, const char *src, int len);
+char *STRING_add_char(char *str, char c);
+
+#define STRING_extend_end(_str) \
+do { \
+	if (_str) \
+	{ \
+		(_str)[STRING_length((_str))] = 0; \
+		STRING_free_later(_str); \
+	} \
+} while(0)
+
 
 #define STRING_copy_from_value(_value) \
 ({ \

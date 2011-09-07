@@ -636,9 +636,9 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 	for (i = 0; i < n; i++)
 	{
 		type = sign[i];
-		STRING_add(&res, TYPE_to_string(type), 0);
+		res = STRING_add(res, TYPE_to_string(type), 0);
 		if (TYPE_is_object(type))
-			STRING_add(&res, ";", 1);
+			res = STRING_add_char(res, ';');
 	}
 	
 	return res;

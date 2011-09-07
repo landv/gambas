@@ -426,10 +426,10 @@ void SUBR_read(ushort code)
 			{
 				if (STREAM_eff_read < len)
 				{
-					STRING_extend(&RETURN->_string.addr, STREAM_eff_read);
+					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, STREAM_eff_read);
 					RETURN->_string.len = STREAM_eff_read;
 				}
-				STRING_extend_end(&RETURN->_string.addr);
+				STRING_extend_end(RETURN->_string.addr);
 			}
 		}
 	}

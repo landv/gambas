@@ -152,8 +152,8 @@ void *GAMBAS_Api[] =
   (void *)GB_NewZeroString,
   (void *)GB_TempString,
   (void *)GB_FreeString,
-  (void *)STRING_extend,
-  (void *)STRING_add,
+  (void *)GB_ExtendString,
+  (void *)GB_AddString,
   (void *)GB_StringLength,
   (void *)GB_ToZeroString,
   (void *)REGEXP_match,
@@ -1981,4 +1981,14 @@ bool GB_ExistClass(const char *name)
 bool GB_ExistClassLocal(const char *name)
 {
 	return CLASS_look(name, strlen(name)) != NULL;
+}
+
+void GB_AddString(char **ptr, const char *src, int len)
+{
+	*ptr = STRING_add(*ptr, src, len);
+}
+
+void GB_ExtendString(char **ptr, int new_len)
+{
+	*ptr = STRING_extend(*ptr, new_len);
 }
