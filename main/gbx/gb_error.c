@@ -641,5 +641,5 @@ void ERROR_deprecated(const char *msg)
 void ERROR_exit(void)
 {
 	ERROR_reset(&ERROR_last);
-	FREE(&ERROR_backtrace, "ERROR_exit");
+	STACK_free_backtrace(&ERROR_backtrace);
 }

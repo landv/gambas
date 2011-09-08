@@ -402,6 +402,7 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 {
 	int i, n;
 	bool stop;
+	STACK_BACKTRACE *end;
 	//STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
 	
 	//fprintf(stderr, "0: %s\n", DEBUG_get_position(err->cp, err->fp, err->pc));
@@ -411,7 +412,8 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 		if (STACK_backtrace_is_end(&bt[i]))
 		{
 			stop = TRUE;
-			STACK_backtrace_remove_end(&bt[i]);
+			end = &bt[i];
+			STACK_backtrace_clear_end(end);
 		}
 		if (bt[i].pc)
 		{
@@ -419,12 +421,15 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 			fprintf(stderr, "%d: %s\n", n, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
 		}
 	}
+	
+	STACK_backtrace_set_end(end);
 }
 
 GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 {
 	GB_ARRAY array;
 	int i, n, size;
+	STACK_BACKTRACE *end;
 	
 	for (i = 0, size = 0;; i++)
 	{
@@ -432,7 +437,8 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 			size++;
 		if (STACK_backtrace_is_end(&bt[i]))
 		{
-			STACK_backtrace_remove_end(&bt[i]);
+			end = &bt[i];
+			STACK_backtrace_clear_end(end);
 			break;
 		}
 	}
@@ -448,6 +454,7 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 		n++;
 	}
 
+	STACK_backtrace_set_end(end);
 	return array;
 }
 

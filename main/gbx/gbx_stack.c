@@ -261,7 +261,7 @@ STACK_BACKTRACE *STACK_get_backtrace(void)
 	
 	// Mark the end of the backtrace
 	pbt--;
-	pbt->cp = (void *)(((intptr_t)(pbt->cp)) | 1); 
+	STACK_backtrace_set_end(pbt);
 	 
 	return bt;
 }

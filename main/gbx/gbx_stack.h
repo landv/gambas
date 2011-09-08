@@ -86,7 +86,8 @@ bool STACK_has_error_handler(void);
 STACK_BACKTRACE *STACK_get_backtrace(void);
 #define STACK_free_backtrace(_backtrace) FREE(_backtrace, "STRACK_free_backtrace")
 #define STACK_backtrace_is_end(_bt) ((((intptr_t)((_bt)->cp)) & 1) != 0)
-#define STACK_backtrace_remove_end(_bt) ((_bt)->cp = (void *)(((intptr_t)((_bt)->cp)) & ~1))
+#define STACK_backtrace_set_end(_bt) ((_bt)->cp = (void *)(((intptr_t)((_bt)->cp)) | 1))
+#define STACK_backtrace_clear_end(_bt) ((_bt)->cp = (void *)(((intptr_t)((_bt)->cp)) & ~1))
 
 
 STACK_CONTEXT *STACK_get_frame(int frame);
