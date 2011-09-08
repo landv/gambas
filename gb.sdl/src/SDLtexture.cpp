@@ -71,9 +71,9 @@ void SDLtexture::Select()
 	
 	hRenderBuffer->Bind(hTexinfo->Index);
 
-	glMatrixMode(GL_MODELVIEW);
+/*	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glViewport(0, 0, hSurface->GetWidth(), hSurface->GetHeight());
+	glViewport(0, 0, hSurface->GetWidth(), hSurface->GetHeight());*/
 }
 
 void SDLtexture::Unselect()
@@ -93,11 +93,11 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 		hTexinfo->State = TEXTURE_TO_UPLOAD;
 	}
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, hTexinfo->Index);
-
 	if (hTexinfo->State & TEXTURE_TO_UPLOAD)
 	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, hTexinfo->Index);
+
 		SDL_Surface *image;
 
 		if (!GLEW_ARB_texture_non_power_of_two)
@@ -160,14 +160,12 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 			SDL_FreeSurface(image); /* No longer needed */
 
 		hTexinfo->State = TEXTURE_OK;
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
 	}
 
 	if (tex)
 		std::memcpy(tex, hTexinfo, sizeof(texinfo));
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_TEXTURE_2D);
-
 }	
 
 int SDLtexture::GetPowerOfTwo(int size)

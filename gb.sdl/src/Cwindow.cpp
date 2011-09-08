@@ -232,7 +232,7 @@ GB_DESC CWindow[] =
   GB_METHOD("Update", NULL, CWINDOW_refresh, NULL),
 
   GB_PROPERTY("Caption", "s", CWINDOW_text),
-  GB_PROPERTY("Cursor", "Cursor;", CWINDOW_cursor),
+//  GB_PROPERTY("Cursor", "Cursor;", CWINDOW_cursor),
   GB_PROPERTY("Framerate", "f", CWINDOW_framerate),
   GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
   GB_PROPERTY("Height", "i", CWINDOW_height),

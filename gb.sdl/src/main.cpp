@@ -74,7 +74,7 @@ extern "C"
 		CDesktop,
 		CJoyInfos, CQueryJoys, CJoystick,
 		CKey,
-		CMouse, CCursor,
+		CMouse, // CCursor,
 		CImage,
 		CDraw,
 		CWindow,

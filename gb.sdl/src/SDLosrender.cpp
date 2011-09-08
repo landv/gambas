@@ -57,6 +57,7 @@ void FBOrender::Bind(GLuint texid)
 	if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
 		std::cerr << "FBO can't be completed : "<< std::hex << status << std::endl;
 	
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, hFbo);
 	

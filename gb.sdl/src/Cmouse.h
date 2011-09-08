@@ -44,7 +44,7 @@ typedef
 
 #ifndef __CMOUSE_CPP
 extern GB_DESC CMouse[];
-extern GB_DESC CCursor[];
+//extern GB_DESC CCursor[];
 extern CMOUSE_INFO CMOUSE_info;
 #else
 

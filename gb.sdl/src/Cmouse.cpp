@@ -224,7 +224,7 @@ BEGIN_PROPERTY(CMOUSE_normal)
 END_PROPERTY
 
 /***************************************************************************/
-
+/*
 GB_DESC CCursor[] =
 {
   GB_DECLARE("Cursor", sizeof(CCURSOR)),
@@ -237,7 +237,7 @@ GB_DESC CCursor[] =
 
   GB_END_DECLARE
 };
-
+*/
 GB_DESC CMouse[] =
 {
   GB_DECLARE("Mouse", 0), GB_VIRTUAL_CLASS(),
@@ -262,7 +262,7 @@ GB_DESC CMouse[] =
   GB_STATIC_PROPERTY_READ("Alt", "b", CMOUSE_alt),
   GB_STATIC_PROPERTY_READ("Meta", "b", CMOUSE_meta),
   GB_STATIC_PROPERTY_READ("Normal", "b", CMOUSE_normal),
-
+/*
   GB_CONSTANT("Default", "i", SDL::DefaultCursor),
   GB_CONSTANT("Custom", "i", SDL::CustomCursor),
   GB_CONSTANT("Blank", "i", SDL::BlankCursor),
@@ -286,7 +286,7 @@ GB_DESC CMouse[] =
   GB_CONSTANT("SplitH", "i", SDL::SplitHCursor),
   GB_CONSTANT("SplitV", "i", SDL::SplitVCursor),
   GB_CONSTANT("Pointing", "i", SDL::PointingHandCursor),
-
+*/
   GB_END_DECLARE
 };
 
