@@ -634,89 +634,122 @@ void EXEC_enter_quick(void)
 	#endif
 }
 
-
-#if 0
-void EXEC_enter_easy(void)
+static int exec_leave_byref(ushort *pc, int nparam)
 {
-	int i;
-	FUNCTION *func;;
-	int nparam = EXEC.nparam;
-	void *object = EXEC.object;
-	CLASS *class = EXEC.class;
-
-	#if DEBUG_STACK
-	printf("\n| >> EXEC_enter_quick(%s, %ld, %d)\n", EXEC.class->name, EXEC.index, EXEC.nparam);
-	print_register();
-	#endif
-
-	func = &class->load->func[EXEC.index];
-	#if DEBUG_STACK
-	if (func->debug)
-		printf(" | >> %s\n", func->debug->name);
-	#endif
-
-	for (i = 0; i < func->npmin; i++)
-	{
-		VALUE_conv(SP - nparam + i, func->param[i].type);
-	}
-
-/* save context & check stack */
-
-	STACK_push_frame(&EXEC_current, func->stack_usage);
-
-	/* enter function */
-
-	BP = SP;
-	PP = SP;
-	FP = func;
-	PC = func->code;
-	OP = object;
-	CP = class;
-	EP = NULL;
-
-	if (UNLIKELY(func->error))
-		EC = PC + func->error;
-	else
-		EC = NULL;
-
-	/* reference the object so that it is not destroyed during the function call */
-	OBJECT_REF(OP, "EXEC_enter_quick");
-
-	/* local variables initialization */
-
-	if (LIKELY(func->n_local != 0))
-		init_local_var(class, func);
-
-	/* control variables initialization */
-
-	if (LIKELY(func->n_ctrl != 0))
-	{
-		for (i = 0; i < func->n_ctrl; i++)
-		{
-			SP->type = T_VOID;
-			SP++;
-		}
-	}
-
-	RP->type = T_VOID;
-
-	#if DEBUG_STACK
-	printf("| << EXEC_enter()\n");
-	print_register();
-	#endif
-}
-#endif
-
-void EXEC_leave(bool drop)
-{
-	int n, nb, i, nparam;
-	bool keep_ret_value = FALSE;
-	VALUE ret;
-	ushort *pc;
-	VALUE *xp, *pp;
-	int bit, nbyref;
+	int nbyref;
 	ushort *pc_func;
 	int nbyref_func;
+	VALUE *xp, *pp;
+	int i, n, bit;
+	int nb;
+	
+	pc++;
+	nbyref = 1 + (*pc & 0xF);
+	pc_func = FP->code;
+
+	if (LIKELY(!PCODE_is(*pc_func, C_BYREF)))
+		return 0;
+
+	nbyref_func = 1 + (*pc_func & 0xF);
+	if (nbyref_func < nbyref)
+		return 0;
+
+	for (i = 1; i <= nbyref; i++)
+	{
+		if (pc[i] & ~pc_func[i])
+			return 0;
+	}
+	
+	xp = PP - nparam;
+	pp = xp;
+	
+	for (i = 0, n = 0, nb = 0; i < nparam; i++)
+	{
+		bit = i & 15;
+		if (bit == 0)
+			n++;
+		
+		if (n <= nbyref && (pc[n] & (1 << bit)))
+		{
+			xp[nb] = *pp;
+			nb++;
+		}
+		else
+		{
+			RELEASE(pp);
+		}
+		pp++;
+	}
+
+	pc--;
+	n = SP - PP;
+	RELEASE_MANY(SP, n);
+	SP -= nparam;
+	SP += nb;
+	OBJECT_UNREF(OP, "EXEC_leave");
+	SP -= nb;
+	STACK_pop_frame(&EXEC_current);
+	PC += nbyref + 1;
+	return nb;
+}
+
+#define EXEC_LEAVE_BYREF() \
+	pc++; \
+	nbyref = 1 + (*pc & 0xF); \
+	pc_func = FP->code; \
+	\
+	if (LIKELY(!PCODE_is(*pc_func, C_BYREF))) \
+		goto __LEAVE_NORMAL; \
+	 \
+	nbyref_func = 1 + (*pc_func & 0xF); \
+	if (nbyref_func < nbyref) \
+		goto __LEAVE_NORMAL; \
+	\
+	for (i = 1; i <= nbyref; i++) \
+	{ \
+		if (pc[i] & ~pc_func[i]) \
+			goto __LEAVE_NORMAL; \
+	} \
+	\
+	xp = PP - nparam; \
+	pp = xp; \
+	\
+	for (i = 0, n = 0; i < nparam; i++) \
+	{ \
+		bit = i & 15; \
+		if (bit == 0) \
+			n++; \
+		\
+		if (n <= nbyref && (pc[n] & (1 << bit))) \
+		{ \
+			xp[nb] = *pp; \
+			nb++; \
+		} \
+		else \
+		{ \
+			RELEASE(pp); \
+		} \
+		pp++; \
+	} \
+	\
+	pc--; \
+	n = SP - PP; \
+	RELEASE_MANY(SP, n); \
+	SP -= nparam; \
+	SP += nb; \
+	OBJECT_UNREF(OP, "EXEC_leave"); \
+	SP -= nb; \
+	STACK_pop_frame(&EXEC_current); \
+	PC += nbyref + 1; \
+	goto __RETURN_VALUE;
+
+
+void EXEC_leave_drop()
+{
+	int nparam;
+	VALUE ret;
+	ushort *pc;
+	int n, nb;
 
 #if DEBUG_STACK
 	printf("| >> EXEC_leave\n");
@@ -729,79 +762,65 @@ void EXEC_leave(bool drop)
 	VALUE_copy(&ret, RP);
 	
   pc = STACK_get_previous_pc();
-  nb = 0;
   nparam = FP->n_param;
   
 	/* ByRef arguments management */
 
-	if (LIKELY(!(pc && PCODE_is(pc[1], C_BYREF))))
-		goto __LEAVE_NORMAL;
-		
-	pc++;
-	nbyref = 1 + (*pc & 0xF);
-	pc_func = FP->code;
-	
-	if (LIKELY(!PCODE_is(*pc_func, C_BYREF)))
-		goto __LEAVE_NORMAL;
-	
-	nbyref_func = 1 + (*pc_func & 0xF);
-	if (nbyref_func < nbyref)
-		goto __LEAVE_NORMAL;
-		
-	for (i = 1; i <= nbyref; i++)
+	nb = (pc && PCODE_is(pc[1], C_BYREF)) ? exec_leave_byref(pc, nparam) : 0;
+	if (nb == 0)
 	{
-		if (pc[i] & ~pc_func[i])
-			goto __LEAVE_NORMAL;
+		n = nparam + (SP - PP);
+		RELEASE_MANY(SP, n);
+
+		OBJECT_UNREF(OP, "EXEC_leave");
+		STACK_pop_frame(&EXEC_current);
 	}
-	
-	xp = PP - nparam;
-	pp = xp;
-	
-	for (i = 0, n = 0; i < nparam; i++)
-	{
-		bit = i & 15;
-		if (bit == 0)
-			n++;
-		
-		if (n <= nbyref && (pc[n] & (1 << bit)))
-		{
-			//printf("pp[%d] -> pp[%d]\n", i, nb);
-			xp[nb] = *pp;
-			nb++;
-		}
-		else
-		{
-			//printf("pp[%d] release (%d)\n", i, pp->type);
-			RELEASE(pp);
-		}
-		pp++;
-	}		
 
-	pc--;
-	n = SP - PP;
-	#if DEBUG_STACK
-	printf("release = %d, nparam = %d, byref = %d\n", n, FP->n_param, nb);
-	#endif
-	RELEASE_MANY(SP, n);
-	SP -= nparam;
+	EXEC_release_return_value();
+
 	SP += nb;
-	OBJECT_UNREF(OP, "EXEC_leave");
-	SP -= nb;
-	STACK_pop_frame(&EXEC_current);
-	PC += nbyref + 1;
-	goto __RETURN_VALUE;
-
-__LEAVE_NORMAL:  	
 	
-	n = nparam + (SP - PP);
-	RELEASE_MANY(SP, n);
+#if DEBUG_STACK
+	printf("| << EXEC_leave()\n");
+	print_register();
+	printf("\n");
+#endif
+	return;
+}
 
-	OBJECT_UNREF(OP, "EXEC_leave");
-	STACK_pop_frame(&EXEC_current);
+void EXEC_leave_keep()
+{
+	int nparam;
+	VALUE ret;
+	ushort *pc;
+	int n, nb;
 
-__RETURN_VALUE:
+#if DEBUG_STACK
+	printf("| >> EXEC_leave\n");
+	print_register();
+#endif
 
-	if (pc && !drop)
+	/* Save the return value. It can be erased by OBJECT_UNREF() */
+
+	//ret = *RP;
+	VALUE_copy(&ret, RP);
+	
+  pc = STACK_get_previous_pc();
+  nparam = FP->n_param;
+  
+	/* ByRef arguments management */
+
+	nb = (pc && PCODE_is(pc[1], C_BYREF)) ? exec_leave_byref(pc, nparam) : 0;
+	if (nb == 0)
+	{
+		n = nparam + (SP - PP);
+		RELEASE_MANY(SP, n);
+
+		OBJECT_UNREF(OP, "EXEC_leave");
+		STACK_pop_frame(&EXEC_current);
+	}
+
+	if (pc)
 	{
 		//drop = PCODE_is_void(*pc);
 		if (SP[-1].type == T_FUNCTION)
@@ -809,24 +828,13 @@ __RETURN_VALUE:
 			SP--;
 			OBJECT_UNREF(SP->_function.object, "EXEC_leave");
 		}
-	}
-	else
-	{
-		drop = TRUE;
-		keep_ret_value = TRUE;
-	}
-
-	if (!drop)
-	{
-		//*SP = ret;
+		
 		COPY_VALUE(SP, &ret);
 		RP->type = T_VOID;
 		if (PCODE_is_variant(*PC) && SP->type != T_VOID)
 			VALUE_conv_variant(SP);
 		SP++;
 	}
-	else if (!keep_ret_value)
-		EXEC_release_return_value();
 
 	SP += nb;
 	

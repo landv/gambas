@@ -129,7 +129,7 @@ STRING_MAKE STRING_make_buffer;
 #define POOL_MAX_LEN   (POOL_SIZE * SIZE_INC)
 
 static STRING *_pool[POOL_SIZE] = { 0 };
-static int _pool_count[POOL_SIZE] = { 0 };
+static char _pool_count[POOL_SIZE] = { 0 };
 
 #ifdef DEBUG_ME
 
@@ -164,8 +164,7 @@ static STRING *alloc_string(_len) \
 #define alloc_string(_len) \
 ({ \
 	STRING *str; \
-	int size = REAL_SIZE((_len) + 1 + sizeof(STRING)); \
-	int pool = (size / SIZE_INC) - 1; \
+	int pool = (((_len) + 1 + sizeof(STRING) + (SIZE_INC - 1)) / SIZE_INC) - 1; \
 	\
 	MEMORY_count++; \
 	\
@@ -177,7 +176,7 @@ static STRING *alloc_string(_len) \
 	} \
 	else \
 	{ \
-		str = _my_malloc(size); \
+		str = _my_malloc(REAL_SIZE((_len) + 1 + sizeof(STRING))); \
 		if (!str) \
 			THROW_MEMORY(); \
 	} \
@@ -293,25 +292,27 @@ static void clear_pool(void)
 char *STRING_new(const char *src, int len)
 {
 	STRING *str;
+	char *data;
 
 	if (len == 0)
 		return NULL;
 
 	//ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
 	str = alloc_string(len);
+	data = str->data;
 
 	if (src)
-		memcpy(str->data, src, len);
+		memcpy(data, src, len);
 
-	str->data[len] = 0;
+	data[len] = 0;
 
 	#ifdef DEBUG_ME
 	DEBUG_where();
-	fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", str->data, len, src);
+	fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", data, len, src);
 	fflush(stderr);
 	#endif
 	
-	return str->data;
+	return data;
 }
 
 char *STRING_free_later(char *ptr)

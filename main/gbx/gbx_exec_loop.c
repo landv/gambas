@@ -61,6 +61,7 @@
 #define GET_XX()    ((signed char)code)
 #define GET_UX()    ((unsigned char)code)
 #define GET_3X()    (code & 0x3F)
+#define TEST_XX()   (code & 1)
 
 static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
@@ -852,7 +853,7 @@ _JUMP_IF_TRUE:
 
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;
-	if (UNLIKELY(SP->_boolean.value != 0))
+	if (UNLIKELY(SP->_boolean.value & 1))
 		PC += (signed short)PC[1];
 
 	PC += 2;
@@ -864,7 +865,7 @@ _JUMP_IF_FALSE:
 
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;
-	if (UNLIKELY(SP->_boolean.value == 0))
+	if (!UNLIKELY(SP->_boolean.value & 1))
 		PC += (signed short)PC[1];
 
 	PC += 2;
@@ -874,7 +875,7 @@ _JUMP_IF_FALSE:
 
 _RETURN:
 
-	if (LIKELY(GET_UX() != 0))
+	if (TEST_XX())
 	{
 		type = FP->type;
 		if (UNLIKELY(TYPE_is_pure_object(type) && ((CLASS *)type)->override))

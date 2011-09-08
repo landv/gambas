@@ -141,7 +141,9 @@ void EXEC_init(void);
 void EXEC_enter_check(bool defined);
 void EXEC_enter(void);
 void EXEC_enter_quick(void);
-void EXEC_leave(bool drop);
+void EXEC_leave_keep();
+void EXEC_leave_drop();
+#define EXEC_leave(_drop) (_drop ? EXEC_leave_drop() : EXEC_leave_keep())
 void EXEC_loop(void);
 
 #define EXEC_object(_val, _pclass, _pobject) \
