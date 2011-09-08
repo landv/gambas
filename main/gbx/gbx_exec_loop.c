@@ -74,7 +74,7 @@ static void _SUBR_div(ushort code);
 
 static void *SubrTable[] =
 {
-	/* 28 */  NULL,           _SUBR_compn,          SUBR_compi,           SUBR_compi,
+	/* 28 */  NULL,                 _SUBR_compn,          SUBR_compi,           SUBR_compi,
 	/* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
 	/* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
 	/* 34 */  SUBR_neg,             SUBR_quo,             SUBR_rem,             SUBR_pow,
@@ -906,9 +906,12 @@ _RETURN:
 _CALL:
 
 	{
-		static const void *call_jump[] =
-			{ &&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
-				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL };
+		static const void *call_jump[] = 
+		{
+			&&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
+			&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
+			&&__CALL_SUBR 
+		};
 
 		VALUE * NO_WARNING(val);
 
@@ -1057,6 +1060,13 @@ _CALL:
 
 		EXEC.index = val->_function.index;
 		EXTERN_call();
+		goto _NEXT;
+		
+	__CALL_SUBR:
+	
+		((EXEC_FUNC_CODE)(EXEC.class->table[val->_function.index].desc->method.exec))(code);
+		SP[-2] = SP[-1];
+		SP--;
 		goto _NEXT;
 	}
 

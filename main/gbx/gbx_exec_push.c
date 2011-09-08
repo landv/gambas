@@ -431,7 +431,12 @@ _PUSH_METHOD_2:
 	/*SP->_function.function = (int)&desc->method;*/
 
 	if (FUNCTION_is_native(&desc->method))
-		SP->_function.kind = FUNCTION_NATIVE;
+	{
+		if (desc->method.subr)
+			SP->_function.kind = FUNCTION_SUBR;
+		else
+			SP->_function.kind = FUNCTION_NATIVE;
+	}
 	else
 		SP->_function.kind =  FUNCTION_PUBLIC;
 

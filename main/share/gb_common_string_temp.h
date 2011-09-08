@@ -27,7 +27,7 @@ bool STRING_equal_same(const char *str1, const char *str2, int len)
 {
 	static const void *jump[8] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7 };
 	
-	return len == 0 || memcmp(str1, str2, len) == 0;
+	//return len == 0 || memcmp(str1, str2, len) == 0;
 	
 	#if defined(ARCH_X86_64) || defined(ARCH_X86)
 	while (len >= 8)

@@ -80,9 +80,9 @@ static void *_my_realloc(void *ptr, int size)
 }
 #else
 
-#define _my_malloc malloc
-#define _my_free free
-#define _my_realloc realloc
+#define _my_malloc my_malloc
+#define _my_free my_free
+#define _my_realloc my_realloc
 
 #endif
 
@@ -188,12 +188,17 @@ static STRING *alloc_string(_len) \
 
 #endif
 
+extern char *STRING_utf8_current;
+
 void STRING_free_real(char *ptr)
 {
 	STRING *str = STRING_from_ptr(ptr);
 	int size = REAL_SIZE(str->len + 1 + sizeof(STRING));
 	int pool = (size / SIZE_INC) - 1;
 
+	if (STRING_utf8_current == ptr)
+		STRING_utf8_current = NULL;
+	
 	MEMORY_count--;
 	
 	//fprintf(stderr, "STRING_free_real: %p\n", ptr);

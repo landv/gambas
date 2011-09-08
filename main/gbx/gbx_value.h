@@ -144,6 +144,7 @@ enum
   FUNCTION_EXTERN = 5,
   FUNCTION_UNKNOWN = 6,
   FUNCTION_CALL = 7,
+	FUNCTION_SUBR = 8
 };
 
 typedef

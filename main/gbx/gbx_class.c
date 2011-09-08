@@ -1075,14 +1075,18 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 	for (j = 0; j < n_desc; j++, i++)
 	{
 		class->table[i].desc = (CLASS_DESC *)&desc[j];
+		name = desc[j].gambas.name;
 
 		/* On saute le caractère de type de symbole */
 		if (CLASS_is_native(class))
-			class->table[i].name = &(desc[j].gambas.name[1]);
-		else
-			class->table[i].name = desc[j].gambas.name;
+		{
+			name++;
+			if (*name == '!')
+				name++;
+		}
 
-		class->table[i].len = strlen(class->table[i].name);
+		class->table[i].name = (char *)name;
+		class->table[i].len = strlen(name);
 	}
 	
 	#if DEBUG_DESC

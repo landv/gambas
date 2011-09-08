@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_c_string.c
+	gbx_c_string.c
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -38,98 +38,153 @@
 #include "gbx_string.h"
 #include "gbx_api.h"
 #include "gbx_exec.h"
+#include "gbx_subr.h"
 #include "gbx_compare.h"
 #include "gambas.h"
 
 #include "gbx_c_string.h"
 
-
-static const char *_str;
-static int _len;
-static int _pos;
-static int _clen;
+#define UNICODE_INVALID 0xFFFFFFFFU
 
 static const char _char_length[256] =
 {
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-  3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
 };
+
+/***************************************************************************/
+
+#define utf8_get_char_length(_c) (_char_length[(unsigned char)(_c)])
 
 int STRING_get_utf8_char_length(unsigned char c)
 {
-	return _char_length[c];
+	return utf8_get_char_length(c);
 }
 
-static void init_conv(const char *str, int len)
+static int utf8_get_length(const char *str, int len)
 {
-  _str = str;
-  _len = len;
-  _pos = 0;
-  _clen = -1;
-}
-
-#define get_char_length() (_char_length[(unsigned char)_str[_pos]])
-
-static int get_next_pos(void)
-{
-  if (_pos >= _len)
-    return 0;
-
-  //_pos += get_char_length(&_str[_pos]);
-  _pos += get_char_length();
-
-  return _pos;
-}
-
-
-static int get_pos(int index)
-{
+	int ulen;
 	int i;
 
-  for (i = 1; i < index; i++)
-    get_next_pos();
+	ulen = 0;
 
-	return _pos;
+	for (i = 0; i < len; i++)
+	{
+		if ((str[i] & 0xC0) != 0x80)
+			ulen++;
+	}
+
+	return ulen;
 }
 
-static int get_length(void)
+static uint utf8_get_unicode(char *str, int len)
 {
-  int len;
-  int i;
+	uint unicode;
+	
+	switch (len)
+	{
+		case 2:
+			unicode = (str[1] & 0x3F) + ((str[0] & 0x1F) << 6);
+			if (unicode < 0x80)
+				goto _INVALID;
+			break;
+			
+		case 3:
+			unicode = (str[2] & 0x3F) + ((str[1] & 0x3F) << 6) + ((str[0] & 0xF) << 12);
+			if (unicode < 0x800)
+				goto _INVALID;
+			break;
+		
+		case 4:
+			unicode = (str[3] & 0x3F) + ((str[2] & 0x3F) << 6) + ((str[1] & 0x3F) << 12) + ((str[0] & 0x7) << 18);
+			if (unicode < 0x10000)
+				goto _INVALID;
+			break;
+		
+		case 5:
+			unicode = (str[4] & 0x3F) + ((str[3] & 0x3F) << 6) + ((str[2] & 0x3F) << 12) + ((str[1] & 0x3F) << 18) + ((str[0] & 0x3) << 24);
+			if (unicode < 0x200000)
+				goto _INVALID;
+			break;
+		
+		case 6:
+			unicode = (str[5] & 0x3F) + ((str[4] & 0x3F) << 6) + ((str[3] & 0x3F) << 12) + ((str[2] & 0x3F) << 18) + ((str[1] & 0x3F) << 24) + ((str[0] & 0x1) << 30);
+			if (unicode < 0x4000000)
+				goto _INVALID;
+			break;
+			
+		default:
+			unicode = str[0];
+			break;
+	}
+	
+	return unicode;
+	
+_INVALID:
 
-  if (_clen >= 0)
-    return _clen;
-
-  len = 0;
-
-  for (i = 0; i < _len; i++)
-  {
-    if ((_str[i] & 0xC0) != 0x80)
-      len++;
-  }
-
-  _clen = len;
-
-  return len;
+	return UNICODE_INVALID;
 }
+
+/***************************************************************************/
+
+char *STRING_utf8_current = NULL;
+#define UTF8_POS_COUNT 256
+static short _utf8_pos[UTF8_POS_COUNT];
+static int _utf8_last_pos;
+
+static int utf8_get_pos(const char *str, int len, int index)
+{
+	int i, pos;
+	
+	if (index <= 0)
+		return 0;
+	
+	if (str != STRING_utf8_current)
+	{
+		STRING_utf8_current = (char *)str;
+		_utf8_last_pos = 0;
+		_utf8_pos[0] = 0;
+	}
+	
+	if (index > len)
+		index = len;
+	
+	if (index <= _utf8_last_pos)
+		return _utf8_pos[index];
+	
+	pos = _utf8_pos[_utf8_last_pos];
+	
+	while (_utf8_last_pos < (UTF8_POS_COUNT - 1))
+	{
+		pos += utf8_get_char_length(str[pos]);
+		_utf8_pos[++_utf8_last_pos] = pos;
+		if (index == _utf8_last_pos)
+			return pos;
+	}
+	
+	for (i = UTF8_POS_COUNT - 1; i < index; i++)
+		pos += utf8_get_char_length(str[pos]);
+	
+	return pos;
+}
+
+/***************************************************************************/
 
 static int byte_to_index(const char *str, int len, int byte)
 {
-  if (byte < 1)
-  	return 0;
+	if (byte <= 0)
+		return 0;
 
-  if (byte > len)
-    byte = len;
-
-  init_conv(str, byte);
-
-  return get_length();
+	if (byte > len)
+		byte = len;
+	
+	return utf8_get_length(str, byte);
 }
 
 static int index_to_byte(const char *str, int len, int index)
@@ -137,115 +192,165 @@ static int index_to_byte(const char *str, int len, int index)
 	if (index <= 0)
 		return 0;
 
-  init_conv(str, len);
-  return get_pos(index) + 1;
+	return utf8_get_pos(str, len, index) + 1;
 }
 
 
 BEGIN_METHOD(String_Pos, GB_STRING str; GB_INTEGER index)
 
-  GB_ReturnInteger(index_to_byte(STRING(str), LENGTH(str), VARG(index)));
+	GB_ReturnInteger(index_to_byte(STRING(str), LENGTH(str), VARG(index)));
 
 END_METHOD
 
 
 BEGIN_METHOD(String_Len, GB_STRING str)
 
-  init_conv(STRING(str), LENGTH(str));
-
-  GB_ReturnInteger(get_length());
+	GB_ReturnInteger(utf8_get_length(STRING(str), LENGTH(str)));
 
 END_METHOD
 
 
 BEGIN_METHOD(String_Index, GB_STRING str; GB_INTEGER pos)
 
-  GB_ReturnInteger(byte_to_index(STRING(str), LENGTH(str), VARG(pos)));
+	GB_ReturnInteger(byte_to_index(STRING(str), LENGTH(str), VARG(pos)));
 
 END_METHOD
 
 
-static void get_substring(int start, int len)
+static void String_Mid(ushort code)
 {
-  int i;
-  int pos;
+	char *str;
+	int start, length;
+	int len, ulen;
+	bool null;
 
-  if (len < 0)
-    len += get_length();
+	SUBR_ENTER();
 
-  if (len <= 0)
-  {
-    GB_ReturnNull();
-    return;
-  }
+	null = SUBR_check_string(PARAM);
 
-  for (i = 0; i < start; i++)
-  {
-    if (get_next_pos() <= 0)
-    {
-      GB_ReturnNull();
-      return;
-    }
-  }
+	VALUE_conv_integer(&PARAM[1]);
+	start = PARAM[1]._integer.value - 1;
 
-  pos = _pos;
+	if (start < 0)
+		THROW(E_ARG);
 
-  for (i = 0; i < len; i++)
-  {
-    if (get_next_pos() <= 0)
-      break;
-  }
-
-	if (_pos > _len)
-		_pos = _len;
+	if (null)
+		goto _SUBR_MID_FIN;
 	
-	if (_pos > pos)
-		GB_ReturnNewString(_str + pos, _pos - pos);
+	str = PARAM->_string.addr + PARAM->_string.start;
+	len = PARAM->_string.len;
+	
+	ulen = utf8_get_pos(str, len, start);
+	if (ulen >= len)
+	{
+		VOID_STRING(PARAM);
+		goto _SUBR_MID_FIN;
+	}
+	
+	PARAM->_string.start += ulen;
+	//str += ulen;
+	//len -= ulen;
+	
+	if (NPARAM == 2)
+	{
+		ulen = len - ulen;
+	}
 	else
-		GB_ReturnNull();
+	{
+		VALUE_conv_integer(&PARAM[2]);
+		length = PARAM[2]._integer.value;
+
+		if (length < 0)
+			length += utf8_get_length(str, len) - start;
+		
+		if (length == 1)
+			ulen = utf8_get_char_length(str[ulen]);
+		else
+			ulen = utf8_get_pos(str, len, start + length) - ulen;
+	}
+	
+	if (ulen <= 0)
+	{
+		VOID_STRING(PARAM);
+	}
+	else
+		PARAM->_string.len = ulen;
+
+_SUBR_MID_FIN:
+
+	SP -= NPARAM;
+	SP++;
 }
 
 
-BEGIN_METHOD(String_Mid, GB_STRING str; GB_INTEGER start; GB_INTEGER len)
+static void String_Left(ushort code)
+{
+	int val;
+	char *str;
+	int len, ulen;
 
-  int start = VARG(start);
-  int len = VARGOPT(len, LENGTH(str));
+	SUBR_ENTER();
 
-  if (start < 1)
-  {
-    GB_Error((char *)E_ARG);
-    return;
-  }
+	if (!SUBR_check_string(PARAM))
+	{
+		if (NPARAM == 1)
+			val = 1;
+		else
+		{
+			VALUE_conv_integer(&PARAM[1]);
+			val = PARAM[1]._integer.value;
+		}
+	
+		str = PARAM->_string.addr + PARAM->_string.start;
+		len = PARAM->_string.len;
+	
+		if (val < 0)
+			val += utf8_get_length(str, len);
+		
+		ulen = utf8_get_pos(str, len, val);
+		PARAM->_string.len = ulen;
+	}
 
-  init_conv(STRING(str), LENGTH(str));
-  get_substring(start - 1, len);
-
-END_METHOD
-
-
-BEGIN_METHOD(String_Left, GB_STRING str; GB_INTEGER len)
-
-  int len = VARGOPT(len, 1);
-
-  init_conv(STRING(str), LENGTH(str));
-
-  get_substring(0, len);
-
-END_METHOD
+	SP -= NPARAM;
+	SP++;
+}
 
 
-BEGIN_METHOD(String_Right, GB_STRING str; GB_INTEGER len)
+static void String_Right(ushort code)
+{
+	int val;
+	char *str;
+	int len, ulen;
 
-  int len = VARGOPT(len, 1);
+	SUBR_ENTER();
 
-  init_conv(STRING(str), LENGTH(str));
+	if (!SUBR_check_string(PARAM))
+	{
+		if (NPARAM == 1)
+			val = 1;
+		else
+		{
+			VALUE_conv_integer(&PARAM[1]);
+			val = PARAM[1]._integer.value;
+		}
+	
+		str = PARAM->_string.addr + PARAM->_string.start;
+		len = PARAM->_string.len;
+	
+		if (val < 0)
+			val = (-val);
+		else
+			val = utf8_get_length(str, len) - val;
+		
+		ulen = utf8_get_pos(str, len, val);
+		
+		PARAM->_string.start += ulen;
+		PARAM->_string.len -= ulen;
+	}
 
-  if (len < 0)
-    get_substring((-len), LENGTH(str));
-  else
-    get_substring(get_length() - len, len);
-
-END_METHOD
+	SP -= NPARAM;
+	SP++;
+}
 
 
 static bool convert_to_unicode(wchar_t **wstr, int *wlen, const char *str, int len, bool upper)
@@ -283,24 +388,25 @@ static bool convert_to_unicode(wchar_t **wstr, int *wlen, const char *str, int l
 	return FALSE;
 }
 
+
 static void convert_string(char *str, int len, bool upper)
 {
 	char *temp = NULL;
-  wchar_t *wtemp;
+	wchar_t *wtemp;
 	int ltemp;
 
-  if (len > 0)
-  {
+	if (len > 0)
+	{
 		if (convert_to_unicode(&wtemp, &ltemp, str, len, upper))
 			goto __ERROR;
 		
-    if (STRING_conv(&temp, (char *)wtemp, ltemp * sizeof(wchar_t), SC_UNICODE, "UTF-8", FALSE))
-    	goto __ERROR;
-  }
+		if (STRING_conv(&temp, (char *)wtemp, ltemp * sizeof(wchar_t), SC_UNICODE, "UTF-8", FALSE))
+			goto __ERROR;
+	}
 
-  GB_ReturnString(temp);
-  return;
-  
+	GB_ReturnString(temp);
+	return;
+	
 __ERROR:
 
 	if (len > 0)
@@ -312,14 +418,14 @@ __ERROR:
 
 BEGIN_METHOD(String_Lower, GB_STRING str)
 
-  convert_string(STRING(str), LENGTH(str), FALSE);
+	convert_string(STRING(str), LENGTH(str), FALSE);
 
 END_METHOD
 
 
 BEGIN_METHOD(String_Upper, GB_STRING str)
 
-  convert_string(STRING(str), LENGTH(str), TRUE);
+	convert_string(STRING(str), LENGTH(str), TRUE);
 
 END_METHOD
 
@@ -336,9 +442,8 @@ END_METHOD
 
 BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 
-	int index, pos, npos;
-	const char *charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
-	char *temp;
+	char *str;
+	int len, index, pos, lc;
 
 	index = VARGOPT(index, 1);
 	if (index < 1)
@@ -346,23 +451,14 @@ BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 		GB_ReturnInteger(0);
 		return;
 	}
-	//{
-	//	GB_Error((char *)E_ARG);
-	//	return;
-	//}
-
-  init_conv(STRING(str), LENGTH(str));
-  pos = get_pos(index);
-  npos = get_next_pos();
-  if (npos == 0)
-  {
-  	GB_ReturnInteger(0);
-  	return;
-	}
 	
-	STRING_conv(&temp, STRING(str) + pos, npos - pos, "UTF-8", charset, TRUE);
-	GB_ReturnInteger(*((int *)temp));
-
+	str = STRING(str);
+	len = LENGTH(str);
+	pos = utf8_get_pos(str, len, index - 1);
+	lc = utf8_get_char_length(str[pos]);
+	
+	GB_ReturnInteger(utf8_get_unicode(&str[pos], lc));
+	
 END_METHOD
 
 static void string_search(const char *str, int len, const char *pattern, int lenp, int start, bool right, bool nocase)
@@ -429,79 +525,45 @@ BEGIN_METHOD(String_Comp, GB_STRING str1; GB_STRING str2; GB_INTEGER mode)
 END_METHOD
 
 #define IS_VALID(_char)                        \
-    ((_char) < 0x110000 &&                     \
-     (((_char) & 0xFFFFF800) != 0xD800) &&     \
-     ((_char) < 0xFDD0 || (_char) > 0xFDEF) &&  \
-     ((_char) & 0xFFFE) != 0xFFFE)
+		((_char) < 0x110000 &&                     \
+		(((_char) & 0xFFFFF800) != 0xD800) &&     \
+		((_char) < 0xFDD0 || (_char) > 0xFDEF) &&  \
+		((_char) & 0xFFFE) != 0xFFFE)
 
 BEGIN_METHOD(String_IsValid, GB_STRING str)
 
-	int len;
+	const uchar *str;
+	int len, lc;
 	uint unicode;
 	bool valid = FALSE;
 	int i;
-	const uchar *str;
 	
-  init_conv(STRING(str), LENGTH(str));
-	while (_str[_pos])
+	str = (const uchar *)STRING(str);
+	len = LENGTH(str);
+	
+	while (len)
 	{
-		len = get_char_length();
-		if ((_pos + len) > _len)
+		lc = utf8_get_char_length(*str);
+		len -= lc;
+		if (len < 0)
 			goto _INVALID;
-		
-		str = (const uchar *)&_str[_pos];
 		
 		//for (i = 0; i < len; i++)
 		//	fprintf(stderr, "%02X ", str[i]);
 		
-		for (i = 1; i < len; i++)
+		for (i = 1; i < lc; i++)
 		{
 			if ((str[i] & 0xC0) != 0x80)
 				goto _INVALID;
 		}
 		
-		switch (len)
-		{
-			case 2:
-				unicode = (str[1] & 0x3F) + ((str[0] & 0x1F) << 6);
-				if (unicode < 0x80)
-					goto _INVALID;
-				break;
-				
-			case 3:
-				unicode = (str[2] & 0x3F) + ((str[1] & 0x3F) << 6) + ((str[0] & 0xF) << 12);
-				if (unicode < 0x800)
-					goto _INVALID;
-				break;
-			
-			case 4:
-				unicode = (str[3] & 0x3F) + ((str[2] & 0x3F) << 6) + ((str[1] & 0x3F) << 12) + ((str[0] & 0x7) << 18);
-				if (unicode < 0x10000)
-					goto _INVALID;
-				break;
-			
-			case 5:
-				unicode = (str[4] & 0x3F) + ((str[3] & 0x3F) << 6) + ((str[2] & 0x3F) << 12) + ((str[1] & 0x3F) << 18) + ((str[0] & 0x3) << 24);
-				if (unicode < 0x200000)
-					goto _INVALID;
-				break;
-			
-			case 6:
-				unicode = (str[5] & 0x3F) + ((str[4] & 0x3F) << 6) + ((str[3] & 0x3F) << 12) + ((str[2] & 0x3F) << 18) + ((str[1] & 0x3F) << 24) + ((str[0] & 0x1) << 30);
-				if (unicode < 0x4000000)
-					goto _INVALID;
-				break;
-				
-			default:
-				unicode = str[0];
-				break;
-		}
-		
+		unicode = utf8_get_unicode((char *)str, lc);
+		if (unicode == UNICODE_INVALID)
+			goto _INVALID;
 		if (!IS_VALID(unicode))
 			goto _INVALID;
 		
-		get_next_pos();
-		//fprintf(stderr, " . ");
+		str += lc;
 	}
 	
 	valid = TRUE;
@@ -517,40 +579,40 @@ END_METHOD
 
 GB_DESC NATIVE_String[] =
 {
-  GB_DECLARE("String", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE("String", 0),  GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("Len", "i", String_Len, "(String)s"),
+	GB_STATIC_METHOD("Len", "i", String_Len, "(String)s"),
 
-  GB_STATIC_METHOD("Mid", "s", String_Mid, "(String)s(Start)i[(Length)i]"),
-  GB_STATIC_METHOD("Mid$", "s", String_Mid, "(String)s(Start)i[(Length)i]"),
-  GB_STATIC_METHOD("Left", "s", String_Left, "(String)s[(Length)i]"),
-  GB_STATIC_METHOD("Left$", "s", String_Left, "(String)s[(Length)i]"),
-  GB_STATIC_METHOD("Right", "s", String_Right, "(String)s[(Length)i]"),
-  GB_STATIC_METHOD("Right$", "s", String_Right, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Mid", "s", String_Mid, "(String)s(Start)i[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Mid$", "s", String_Mid, "(String)s(Start)i[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Left", "s", String_Left, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Left$", "s", String_Left, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Right", "s", String_Right, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Right$", "s", String_Right, "(String)s[(Length)i]"),
 
-  GB_STATIC_METHOD("Upper", "s", String_Upper, "(String)s"),
-  GB_STATIC_METHOD("Upper$", "s", String_Upper, "(String)s"),
-  GB_STATIC_METHOD("UCase", "s", String_Upper, "(String)s"),
-  GB_STATIC_METHOD("UCase$", "s", String_Upper, "(String)s"),
-  GB_STATIC_METHOD("Lower", "s", String_Lower, "(String)s"),
-  GB_STATIC_METHOD("Lower$", "s", String_Lower, "(String)s"),
-  GB_STATIC_METHOD("LCase", "s", String_Lower, "(String)s"),
-  GB_STATIC_METHOD("LCase$", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("Upper", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("Upper$", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("UCase", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("UCase$", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("Lower", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("Lower$", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("LCase", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("LCase$", "s", String_Lower, "(String)s"),
 
-  GB_STATIC_METHOD("InStr", "i", String_Instr, "(String)s(Pattern)s[(From)i(Mode)i]"),
-  GB_STATIC_METHOD("RInStr", "i", String_RInstr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+	GB_STATIC_METHOD("InStr", "i", String_Instr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+	GB_STATIC_METHOD("RInStr", "i", String_RInstr, "(String)s(Pattern)s[(From)i(Mode)i]"),
 
-  GB_STATIC_METHOD("Comp", "i", String_Comp, "(String)s(String2)s[(Mode)i]"),
+	GB_STATIC_METHOD("Comp", "i", String_Comp, "(String)s(String2)s[(Mode)i]"),
 
-  GB_STATIC_METHOD("Byte", "i", String_Pos, "(String)s(Index)i"),
-  GB_STATIC_METHOD("Pos", "i", String_Pos, "(String)s(Index)i"),
-  GB_STATIC_METHOD("Index", "i", String_Index, "(String)s(Byte)i"),
+	GB_STATIC_METHOD("Byte", "i", String_Pos, "(String)s(Index)i"),
+	GB_STATIC_METHOD("Pos", "i", String_Pos, "(String)s(Index)i"),
+	GB_STATIC_METHOD("Index", "i", String_Index, "(String)s(Byte)i"),
 
-  GB_STATIC_METHOD("Chr", "s", String_Chr, "(Unicode)i"),
-  GB_STATIC_METHOD("Chr$", "s", String_Chr, "(Unicode)i"),
-  GB_STATIC_METHOD("Code", "i", String_Code, "(String)s[(Index)i]"),
+	GB_STATIC_METHOD("Chr", "s", String_Chr, "(Unicode)i"),
+	GB_STATIC_METHOD("Chr$", "s", String_Chr, "(Unicode)i"),
+	GB_STATIC_METHOD("Code", "i", String_Code, "(String)s[(Index)i]"),
 
-  GB_STATIC_METHOD("IsValid", "b", String_IsValid, "(String)s"),
+	GB_STATIC_METHOD("IsValid", "b", String_IsValid, "(String)s"),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };

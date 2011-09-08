@@ -400,6 +400,9 @@ typedef
 #define GB_STATIC_METHOD(symbol, type, exec, signature) \
 	{ "M" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
 
+#define GB_STATIC_FAST_METHOD(symbol, type, exec, signature) \
+	{ "M!" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
+
 #define GB_INHERITS(symbol) \
 	{ GB_INHERITS_ID, (intptr_t)symbol }
 	

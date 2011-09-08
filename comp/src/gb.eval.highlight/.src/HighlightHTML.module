@@ -52,6 +52,7 @@ Public Sub Run(iStyle As Integer)
   Dim iInd As Integer
   Dim J As Integer
   Dim sText As String
+  Dim sOrgText As String
   Dim sTextAfter As String
   Dim sCar As String
   Dim iPos As Integer
@@ -69,6 +70,7 @@ Public Sub Run(iStyle As Integer)
   iState = Highlight.State
   iTag = Highlight.Tag
   sText = Highlight.Text
+  sOrgText = sText
 
   'PRINT "Highlight:";; iState;; iTag;; sText
 
@@ -91,7 +93,9 @@ Public Sub Run(iStyle As Integer)
       For iInd = 1 To String.Len(sText)
     
         iNextState = iState
-        sCar = String.Mid$(sText, iInd, 1)
+        'sCar = String.Mid$(sText, iInd, 1)
+        sCar = String.Left(sText)
+        sText = String.Mid$(sText, 2)
     
         If bCode Then
         

@@ -49,10 +49,11 @@ typedef
 		TYPE type;                  // property datatype
 		void (*read)();             // read property function
 		void (*write)();            // write property function
-		char native;                // if the property is native
-		char _reserved[3];
+		unsigned native : 1;        // if the property is native
+		unsigned _reserved : 7;
+		char _reserved2[3];
 		#ifdef OS_64BITS
-		int _reserved2;
+		int _reserved3;
 		#endif
 		struct _CLASS *class;
 		}
@@ -83,9 +84,11 @@ typedef
 		char npmin;                 // minimum number of arguments
 		char npmax;                 // maximum number of arguments
 		char npvar;                 // if there is a variable number of arguments
-		char native;                // if the method is native
+		unsigned native : 1;        // if the method is native
+		unsigned subr : 1;          // static method called like a subr
+		unsigned _reserved : 6;
 		#ifdef OS_64BITS
-		int _reserved;
+		int _reserved2;
 		#endif
 		struct _CLASS *class;
 		}

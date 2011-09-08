@@ -40,47 +40,69 @@
 
 void SUBR_cat(ushort code)
 {
-	int i;
-	int len, len_cat;
-	char *str, *ptr;
-
 	SUBR_ENTER();
 
-	len_cat = 0;
-
-	for (i = 0; i < NPARAM; i++)
+	if (NPARAM == 2)
 	{
-		VALUE_conv_string(&PARAM[i]);
-		/*BORROW(&PARAM[i]);*/
-		len_cat += PARAM[i]._string.len;
-	}
-
-	str = STRING_new(NULL, len_cat);
-	ptr = str;
-
-	i = NPARAM;
-	while (i--)
-	{
-		len = PARAM->_string.len;
+		int len, len2;
+		char *str;
 		
-		if (len)
+		VALUE_conv_string(&PARAM[0]);
+		len = PARAM[0]._string.len ;
+		VALUE_conv_string(&PARAM[1]);
+		len2 = PARAM[1]._string.len;
+		str = STRING_new(NULL, len + len2);
+		memcpy(str, PARAM[0]._string.addr + PARAM[0]._string.start, len);
+		RELEASE_STRING(&PARAM[0]);
+		memcpy(&str[len], PARAM[1]._string.addr + PARAM[1]._string.start, len2);
+		RELEASE_STRING(&PARAM[1]);
+
+		SP -= 2;
+		SP->type = T_STRING;
+		SP->_string.addr = str;
+		SP->_string.start = 0;
+		SP->_string.len = len + len2;
+		SP++;
+	}
+	else
+	{
+		int i;
+		int len, len_cat;
+		char *str, *ptr;
+
+		len_cat = 0;
+
+		for (i = 0; i < NPARAM; i++)
 		{
-			memcpy(ptr, PARAM->_string.addr + PARAM->_string.start, len);
-			ptr += len;
+			VALUE_conv_string(&PARAM[i]);
+			len_cat += PARAM[i]._string.len;
 		}
-		
-		RELEASE_STRING(PARAM);
-		PARAM++;
+
+		str = STRING_new(NULL, len_cat);
+		ptr = str;
+
+		i = NPARAM;
+		while (i--)
+		{
+			len = PARAM->_string.len;
+			
+			if (len)
+			{
+				memcpy(ptr, PARAM->_string.addr + PARAM->_string.start, len);
+				ptr += len;
+			}
+			
+			RELEASE_STRING(PARAM);
+			PARAM++;
+		}
+
+		SP -= NPARAM;
+		SP->type = T_STRING;
+		SP->_string.addr = str;
+		SP->_string.start = 0;
+		SP->_string.len = len_cat;
+		SP++;
 	}
-
-	/*printf("\n");*/
-
-	SP -= NPARAM;
-	SP->type = T_STRING;
-	SP->_string.addr = str;
-	SP->_string.start = 0;
-	SP->_string.len = len_cat;
-	SP++;
 }
 
 

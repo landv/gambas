@@ -406,7 +406,8 @@ EXTERN CLASS *CLASS_SubCollection;
 #define CLASS_is_array(_class) ((_class)->is_array)
 
 #define FUNCTION_is_static(func) ((func)->type & TF_STATIC)
-#define FUNCTION_is_native(_desc) (((uintptr_t)(_desc)->exec >> 16) != 0)
+//#define FUNCTION_is_native(_desc) (((uintptr_t)(_desc)->exec >> 16) != 0)
+#define FUNCTION_is_native(_desc) ((_desc)->native)
 
 #define FUNC_INIT_STATIC   0
 #define FUNC_INIT_DYNAMIC  1

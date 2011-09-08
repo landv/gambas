@@ -192,6 +192,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
         //desc->method.help = (char *)desc->method.signature;
         desc->method.native = TRUE;
+				desc->method.subr = desc->gambas.name[1] == '!';
 
         if (desc->method.signature)
         {

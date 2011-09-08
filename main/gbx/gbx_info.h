@@ -62,6 +62,9 @@
 #undef GB_STATIC_METHOD
 #define GB_STATIC_METHOD(symbol, type, exec, signature) { "M" symbol, (intptr_t)type, 0, (intptr_t)signature }
 
+#undef GB_STATIC_FAST_METHOD
+#define GB_STATIC_FAST_METHOD(symbol, type, exec, signature) { "M" symbol, (intptr_t)type, 0, (intptr_t)signature }
+
 #endif
 
 #endif
