@@ -43,6 +43,7 @@ CMOUSE_INFO CMOUSE_info = { 0 };
 
 /***************************************************************************/
 
+#if 0
 BEGIN_METHOD(CURSOR_new, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y)
 
 /*	CIMAGE *img = (CIMAGE *)VARG(image);
@@ -83,6 +84,7 @@ BEGIN_PROPERTY(CURSOR_y)
 	GB.ReturnInteger(THIS->y);
 
 END_PROPERTY
+#endif
 
 BEGIN_METHOD(CMOUSE_move, GB_INTEGER x; GB_INTEGER y)
 

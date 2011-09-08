@@ -76,15 +76,12 @@ __LEN_1: if (LIKELY(str1[0] != str2[0])) return FALSE;
 __LEN_0: return TRUE;
 }
 
-bool STRING_equal_ignore_case(const char *str1, int len1, const char *str2, int len2)
+bool STRING_equal_ignore_case_same(const char *str1, const char *str2, int len)
 {
 	static const void *jump[8] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7 };
 	
-	if (LIKELY(len1 != len2))
-		return FALSE;
-		
 	#if defined(ARCH_X86_64) || defined(ARCH_X86)
-	while (len1 >= 8)
+	while (len >= 8)
 	{
 		if (*((int64_t *)str1) != *((int64_t *)str2))
 		{
@@ -108,10 +105,10 @@ bool STRING_equal_ignore_case(const char *str1, int len1, const char *str2, int 
 		
 		str1 += 8;
 		str2 += 8;
-		len1 -= 8;
+		len -= 8;
 	}
 	#else
-	while (len1 >= 8)
+	while (len >= 8)
 	{
 		if (str1[0] != str2[0] && LIKELY(toupper(str1[0]) != toupper(str2[0])))
 			return FALSE;
@@ -131,11 +128,11 @@ bool STRING_equal_ignore_case(const char *str1, int len1, const char *str2, int 
 			return FALSE;
 		str1 += 8;
 		str2 += 8;
-		len1 -= 8;
+		len -= 8;
 	}
 	#endif
 	
-	goto *jump[len1];
+	goto *jump[len];
 	
 __LEN_7: if (str1[6] != str2[6] && LIKELY(toupper(str1[6]) != toupper(str2[6]))) return FALSE;
 __LEN_6: if (str1[5] != str2[5] && LIKELY(toupper(str1[5]) != toupper(str2[5]))) return FALSE;
