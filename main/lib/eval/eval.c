@@ -161,7 +161,7 @@ bool EVAL_compile(EXPRESSION *expr, bool assign)
 		if (!PATTERN_is_end(*EVAL->current))
 			THROW(E_SYNTAX);
 		
-		CODE_return(2);
+		CODE_return(1);
 
     EVAL->stack_usage = CODE_stack_usage;
   }
