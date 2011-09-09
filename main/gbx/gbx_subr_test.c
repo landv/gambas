@@ -660,7 +660,6 @@ __END:
 
 	P1->_boolean.value = result - 1; // ? 0 : -1;
 }
-#endif
 
 #define sgn(_x) \
 ({ \
@@ -825,6 +824,7 @@ __LE:
 	P1->_boolean.value = result <= 0 ? -1 : 0;
 	return;
 }
+#endif
 
 void SUBR_strcomp(ushort code)
 {
@@ -867,6 +867,7 @@ void SUBR_strcomp(ushort code)
 
   SUBR_LEAVE();
 }
+
 
 
 void SUBR_is(ushort code)

@@ -260,6 +260,7 @@ Public Sub Main()
     CRecentFile.Load
     FMain.Load
     Project.Open(sPath)
+    FSearch.FindProject("else")
     Project.Close
     FMain.Close
     Project.Exit

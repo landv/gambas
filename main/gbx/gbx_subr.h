@@ -157,7 +157,7 @@ void SUBR_unquote(void);
 
 //void SUBR_comp(ushort code);
 //void SUBR_compn(ushort code);
-void SUBR_compi(ushort code);
+//void SUBR_compi(ushort code);
 void SUBR_case(ushort code);
 void SUBR_bit(ushort code);
 void SUBR_min_max(ushort code);

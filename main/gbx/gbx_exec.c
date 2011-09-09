@@ -790,8 +790,8 @@ void EXEC_leave_drop()
 
 void EXEC_leave_keep()
 {
-	int nparam;
 	VALUE ret;
+	int nparam;
 	ushort *pc;
 	int n, nb;
 
@@ -800,15 +800,13 @@ void EXEC_leave_keep()
 	print_register();
 #endif
 
-	/* Save the return value. It can be erased by OBJECT_UNREF() */
-
-	//ret = *RP;
+	// RP may be indirectly freed by OBJECT_UNREF()
 	VALUE_copy(&ret, RP);
 	
   pc = STACK_get_previous_pc();
   nparam = FP->n_param;
-  
-	/* ByRef arguments management */
+	
+	// ByRef arguments management
 
 	nb = (pc && PCODE_is(pc[1], C_BYREF)) ? exec_leave_byref(pc, nparam) : 0;
 	if (nb == 0)
@@ -822,7 +820,6 @@ void EXEC_leave_keep()
 
 	if (pc)
 	{
-		//drop = PCODE_is_void(*pc);
 		if (SP[-1].type == T_FUNCTION)
 		{
 			SP--;
@@ -891,7 +888,7 @@ void EXEC_function_loop()
 					#endif
 					ERROR_lock();
 					while (PC != NULL)
-						EXEC_leave(TRUE);
+						EXEC_leave_drop();
 					ERROR_unlock();
 
 					//STACK_pop_frame(&EXEC_current);
@@ -946,7 +943,7 @@ void EXEC_function_loop()
 							ERROR_lock();
 							while (BP > TP)
 							{
-								EXEC_leave(TRUE);
+								EXEC_leave_drop();
 								if (!PC)
 									STACK_pop_frame(&EXEC_current);
 							}
@@ -963,7 +960,7 @@ void EXEC_function_loop()
 					{
 						ERROR_lock();
 						while (PC != NULL && EC == NULL)
-							EXEC_leave(TRUE);
+							EXEC_leave_drop();
 						ERROR_unlock();
 
 						if (PC == NULL)

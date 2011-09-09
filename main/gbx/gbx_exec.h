@@ -143,7 +143,6 @@ void EXEC_enter(void);
 void EXEC_enter_quick(void);
 void EXEC_leave_keep();
 void EXEC_leave_drop();
-#define EXEC_leave(_drop) (_drop ? EXEC_leave_drop() : EXEC_leave_keep())
 void EXEC_loop(void);
 
 #define EXEC_object(_val, _pclass, _pobject) \
@@ -178,7 +177,7 @@ void EXEC_function_loop(void);
 void EXEC_public(CLASS *class, void *object, const char *name, int nparam);
 void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int nparam);
 
-bool EXEC_special(int spec, CLASS *class, void *object, int nparam, bool drop);
+bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop);
 
 void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop);
 

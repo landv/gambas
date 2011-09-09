@@ -402,7 +402,7 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 {
 	int i, n;
 	bool stop;
-	STACK_BACKTRACE *end;
+	STACK_BACKTRACE *NO_WARNING(end);
 	//STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
 	
 	//fprintf(stderr, "0: %s\n", DEBUG_get_position(err->cp, err->fp, err->pc));
