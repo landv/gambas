@@ -52,7 +52,7 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
     Me.Name = File.Name(Path)
   Endif
   
-  edtEditor.Flags[Editor.ShowCursorPosition] = True
+  'edtEditor.Flags[Editor.ShowCursorPosition] = True
   
 End
 
@@ -521,7 +521,7 @@ Private Sub InitEditor(hEditor As Editor)
     .Highlight = edtEditor.Highlight
     .Flags[Editor.HighlightCurrent] = edtEditor.Flags[Editor.HighlightCurrent]
     .Flags[Editor.HighlightBraces] = edtEditor.Flags[Editor.HighlightBraces]
-    .Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
+    '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
   End With 

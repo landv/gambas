@@ -23,7 +23,7 @@ Public Sub Form_Open()
   Endif 
   
   edtChange.ReadConfig
-  edtChange.Flags[Editor.ShowCursorPosition] = True
+  'edtChange.Flags[Editor.ShowCursorPosition] = True
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
   edtDiff.ReadConfig

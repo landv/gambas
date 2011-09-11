@@ -132,7 +132,7 @@ Public Sub _new(sPath As String)
 
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
-  edtEditor.Flags[Editor.ShowCursorPosition] = True
+  'edtEditor.Flags[Editor.ShowCursorPosition] = True
   edtEditor.Highlight = Highlight.Gambas
 
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
@@ -2983,7 +2983,7 @@ Private Sub InitEditor(hEditor As Editor)
     .Flags[Editor.HighlightCurrent] = True
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
-    .Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
+    '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
   End With
   ReadConfigEditor(hEditor)
 
