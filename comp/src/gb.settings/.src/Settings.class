@@ -427,26 +427,26 @@ Private Function Path_Read() As String
 
 End
 
-Static Public Function Array(...) As String[]
-  
-  Dim aVal As New String[]
-  Dim iInd As Integer
-  Dim sVal As String
-  Dim vVal As Variant
-  
-  For iInd = 0 To Param.Max
-    vVal = Param[iInd]
-    If IsBoolean(vVal) Then 
-      sVal = IIf(vVal, "1", "0")
-    Else
-      sVal = CStr(vVal)
-    Endif
-    aVal.Add(sVal)
-  Next
-  
-  Return aVal
-  
-End
+' Static Public Function Array(...) As String[]
+'   
+'   Dim aVal As New String[]
+'   Dim iInd As Integer
+'   Dim sVal As String
+'   Dim vVal As Variant
+'   
+'   For iInd = 0 To Param.Max
+'     vVal = Param[iInd]
+'     If IsBoolean(vVal) Then 
+'       sVal = IIf(vVal, "1", "0")
+'     Else
+'       sVal = CStr(vVal)
+'     Endif
+'     aVal.Add(sVal)
+'   Next
+'   
+'   Return aVal
+'   
+' End
 
 ' STATIC PUBLIC FUNCTION FromString(Value AS String) AS String[]
 '   

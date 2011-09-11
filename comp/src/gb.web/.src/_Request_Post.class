@@ -126,7 +126,7 @@ Private Sub Decode()
         bFirst = True    
         Do
           sLine = ReadLine()
-          If Left(sLine, Len(sType)) = sType Then Break
+          If sLine Begins sType Then Break
           If Not bFirst Then Print #hFile, "\r\n";
           Print #hFile, sLine;
           bFirst = False
@@ -136,7 +136,7 @@ Private Sub Decode()
       Else
         Do
           sLine = ReadLine()
-          If Left(sLine, Len(sType)) = sType Then Break
+          If sLine Begins sType Then Break
         Loop
       Endif
 
@@ -147,7 +147,7 @@ Private Sub Decode()
       sValue = ""
       Do
         sLine = ReadLine()
-        If Left(sLine, Len(sType)) = sType Then Break
+        If sLine Begins sType Then Break
         If sValue Then sValue &= "\r\n"
         sValue &= sLine
       Loop

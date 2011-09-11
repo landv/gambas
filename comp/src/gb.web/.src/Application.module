@@ -1,64 +1,66 @@
 ' Gambas module file
 
-EXPORT
+Export
 
-PROPERTY READ Host AS String
-PROPERTY READ Root AS String
-PROPERTY READ Request AS String
-PROPERTY LogFile AS String
-PROPERTY Protocol AS String
+Property Read Host As String
+Property Read Root As String
+Property Read Request As String
+Property LogFile As String
+Property Protocol As String
  
-PRIVATE $sLogFile AS String
-PRIVATE $hLogFile AS File
-PRIVATE $sProtocol AS String = "http"
+Private $sLogFile As String
+Private $hLogFile As File
+Private $sProtocol As String = "http"
 
-PRIVATE FUNCTION Host_Read() AS String
+Private Function Host_Read() As String
 
-  RETURN CGI["HTTP_HOST"]
+  Return CGI["HTTP_HOST"]
 
-END
+End
 
-PRIVATE FUNCTION Request_Read() AS String
+Private Function Request_Read() As String
 
-  DIM sReq AS String
+  Dim sReq As String
   
   sReq = $sProtocol & "://" & CGI["HTTP_HOST"] &/ CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
-  IF CGI["QUERY_STRING"] THEN sReq &= "?" & CGI["QUERY_STRING"]
-  RETURN sReq
+  If CGI["QUERY_STRING"] Then sReq &= "?" & CGI["QUERY_STRING"]
+  Return sReq
   
-END
+End
 
-PRIVATE FUNCTION Root_Read() AS String
+Private Function Root_Read() As String
 
-  RETURN CGI["SCRIPT_NAME"]
+  Return CGI["SCRIPT_NAME"]
 
-END
+End
 
 
-PRIVATE FUNCTION LogFile_Read() AS String
+Private Function LogFile_Read() As String
 
-  RETURN $sLogFile
+  Return $sLogFile
 
-END
+End
 
-PRIVATE SUB LogFile_Write(Value AS String)
+Private Sub LogFile_Write(Value As String)
 
-  IF $sLogFile THEN ERROR TO DEFAULT
+  If $sLogFile Then Error To Default
 
   $sLogFile = Value
-  $hLogFile = OPEN $sLogFile FOR APPEND 
-  ERROR TO #$hLogFile
+  If Value Then
+    $hLogFile = Open $sLogFile For Append 
+    Error To #$hLogFile
+  Endif
   
-END
+End
 
-PRIVATE FUNCTION Protocol_Read() AS String
+Private Function Protocol_Read() As String
 
-  RETURN $sProtocol  
+  Return $sProtocol  
 
-END
+End
 
-PRIVATE SUB Protocol_Write(Value AS String)
+Private Sub Protocol_Write(Value As String)
 
   $sProtocol = Value
 
-END
+End
