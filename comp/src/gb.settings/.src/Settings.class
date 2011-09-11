@@ -315,7 +315,7 @@ End
 ' 
 ' END
 
-Public Sub ReadWindow(hWindow As Window, sKey As String)
+Private Sub ReadWindow(hWindow As Window, sKey As String)
 
   Dim aPos As Integer[]
   Dim X, Y, W, H, S As Integer
@@ -364,7 +364,7 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
 End
 
 
-Public Sub WriteWindow(hWindow As Window, sKey As String)
+Private Sub WriteWindow(hWindow As Window, sKey As String)
 
   Dim X, Y, W, H, S As Integer
   

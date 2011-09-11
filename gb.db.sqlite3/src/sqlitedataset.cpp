@@ -647,7 +647,7 @@ void SqliteDataset::make_query(StringList & _sql)
 
 
 		if (db == NULL)
-			GB.Error("No Database Connection");
+			GB.Error("No database connection");
 
 		//close();
 
@@ -751,7 +751,7 @@ int SqliteDataset::exec(const string & sql)
 
 
 	if (!handle())
-		GB.Error("No Database Connection");
+		GB.Error("No database connection");
 
 	exec_res.record_header.clear();
 	exec_res.records.clear();
@@ -792,14 +792,14 @@ bool SqliteDataset::query(const char *query)
 
 	//try{
 	if (db == NULL)
-		GB.Error("Database is not Defined");
+		GB.Error("Database is not defined");
 	if (dynamic_cast < SqliteDatabase * >(db)->getHandle() == NULL)
-		GB.Error("No Database Connection");
+		GB.Error("No database connection");
 	if ((strncasecmp("select", query, 6) != 0)	/*&&
 																							   (strncasecmp("PRAGMA table",query,12) !=0) &&
 																							   (strncasecmp("PRAGMA index",query,12) !=0) */
 		)
-		GB.Error("MUST be select SQL or PRAGMA table or index!");
+		GB.Error("Syntax error in request: SELECT expected.");
 
 	//close();
 
