@@ -1066,7 +1066,7 @@ BEGIN_METHOD(CEDITOR_show_string, GB_STRING str; GB_BOOLEAN ignoreCase)
 
 END_METHOD
 
-BEGIN_METHOD(CEDITOR_show_word, GB_INTEGER line; GB_INTEGER col; GB_INTEGER len)
+/*BEGIN_METHOD(CEDITOR_show_word, GB_INTEGER line; GB_INTEGER col; GB_INTEGER len)
 
 	int line = VARGOPT(line, -1);
 	int col = VARGOPT(col, -1);
@@ -1074,7 +1074,7 @@ BEGIN_METHOD(CEDITOR_show_word, GB_INTEGER line; GB_INTEGER col; GB_INTEGER len)
 
 	WIDGET->showWord(line, col, len);
 
-END_METHOD
+END_METHOD*/
 
 BEGIN_PROPERTY(CEDITOR_border)
 
@@ -1220,14 +1220,14 @@ GB_DESC CEditorDesc[] =
   GB_CONSTANT("ShowLimits", "i", GEditor::ShowProcedureLimits),
   GB_CONSTANT("BlendedLimits", "i", GEditor::BlendedProcedureLimits),
   GB_CONSTANT("BackgroundLimits", "i", GEditor::ChangeBackgroundAtLimit),
-  GB_CONSTANT("DrawWithRelief", "i", GEditor::DrawWithRelief),
+  //GB_CONSTANT("DrawWithRelief", "i", GEditor::DrawWithRelief),
   GB_CONSTANT("ShowModifiedLines", "i", GEditor::ShowModifiedLines),
   GB_CONSTANT("ShowCurrentLine", "i", GEditor::ShowCurrentLine),
   GB_CONSTANT("ShowLineNumbers", "i", GEditor::ShowLineNumbers),
   GB_CONSTANT("HighlightBraces", "i", GEditor::HighlightBraces),
   GB_CONSTANT("HighlightCurrent", "i", GEditor::HighlightCurrent),
   GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
-  GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
+  //GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
 
   GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CEDITOR_free, NULL),
@@ -1277,7 +1277,7 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
   GB_PROPERTY("KeywordsUseUpperCase", "b", CEDITOR_keywords_ucase),
   GB_METHOD("ShowString", NULL, CEDITOR_show_string, "[(String)s(IgnoreCase)b]"),
-  GB_METHOD("ShowWord", NULL, CEDITOR_show_word, "[(Line)i(Column)i(Length)i]"),
+  //GB_METHOD("ShowWord", NULL, CEDITOR_show_word, "[(Line)i(Column)i(Length)i]"),
 
   GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
   GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),
