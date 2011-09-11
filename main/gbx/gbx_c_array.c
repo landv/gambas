@@ -1232,7 +1232,7 @@ BEGIN_METHOD(ByteArray_FromString, GB_STRING string)
 	int length = LENGTH(string);
 	
 	GB_ArrayNew((GB_ARRAY *)POINTER(&array), T_BYTE, length);
-	memcpy(THIS->data, string, length);
+	memcpy(array->data, string, length);
 	GB_ReturnObject(array);
 
 END_METHOD
