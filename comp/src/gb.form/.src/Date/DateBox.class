@@ -9,6 +9,8 @@ Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 
 Event Activate
+Event Click
+Event Change
 
 Property Value As Date
 Property ReadOnly As Boolean
@@ -150,6 +152,12 @@ Public Sub ButtonBox_Activate()
   
 End
 
+Public Sub ButtonBox_Change()
+  
+  Raise Change
+  
+End
+
 Public Sub PopupWindow_Open()
   
   $hChooser.SetFocus
@@ -185,6 +193,7 @@ Public Sub DateChooser_Activate()
   
   Me.Value = $hChooser.Value
   $hPopup.Close
+  Raise Click
   
 End
 

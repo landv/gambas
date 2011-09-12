@@ -1,14 +1,16 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,518,427)
+  Move(0,0,609,567)
   #Scaled = False
   Spacing = True
   Margin = True
-  { Button1 Button
-    Move(14,378,112,28)
+  { DateChooser1 DateChooser
+    Move(28,21,399,210)
+    Mode = DateChooser.DateTime
   }
-  { FileChooser1 FileChooser
-    Move(7,7,497,343)
+  { DateBox1 DateBox
+    Move(28,266,168,28)
+    Mode = DateChooser.DateTime
   }
 }

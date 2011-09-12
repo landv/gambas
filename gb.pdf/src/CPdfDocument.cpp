@@ -944,8 +944,7 @@ BEGIN_METHOD(PDFPAGE_select, GB_INTEGER X; GB_INTEGER Y; GB_INTEGER W; GB_INTEGE
 	h = VARGOPT(H, (int32_t)THIS->page->getMediaHeight());
 
 	dev = new TextOutputDev (NULL, gTrue, gFalse, gFalse);
-	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, \
-                                gFalse,THIS->doc->getCatalog (),NULL, NULL, NULL, NULL);
+	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, gFalse,THIS->doc->getCatalog (),NULL, NULL, NULL, NULL);
 	
 	THIS->page->display(gfx);
 	dev->endPage();
@@ -1148,7 +1147,6 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 	// TODO: Use UCS-4BE on big endian systems?
 	if (GB.ConvString ((char **)(void *)&block,STRING(Text),LENGTH(Text),"UTF-8",GB_SC_UNICODE))
 	{	
-		fprintf(stderr, "%d '%.*s'\n", LENGTH(Text), LENGTH(Text), STRING(Text));
 		GB.Error("Invalid UTF-8 string");
 		return;
 	}
@@ -1211,6 +1209,7 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 
 	delete textdev;
 
+	GB.ReturnBoolean(count == 0);
 
 END_METHOD
 

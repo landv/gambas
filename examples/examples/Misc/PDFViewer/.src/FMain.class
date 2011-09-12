@@ -80,6 +80,7 @@ Public Function AddIndex(nItem As Integer, pItem As String) As Integer
   Do
     iPage = 1
     Try iPage = hPdf.Index.Data.Page
+    If Error Then Print Error.Text
     pR = nItem & "-" & iPage
     tvIndex.Add(nItem & "-" & iPage, hPdf.Index.Title, Null, pItem)
     Inc nItem
