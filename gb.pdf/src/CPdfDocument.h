@@ -33,10 +33,10 @@
 
 #ifndef __CPDFDOCUMENT_C
 
+extern GB_DESC PdfRectDesc[];
 extern GB_DESC PdfDocumentDesc[];
 extern GB_DESC PdfPageDesc[];
 extern GB_DESC PdfResultDesc[];
-extern GB_DESC PdfResultItemDesc[];
 extern GB_DESC PdfLinkDesc[];
 extern GB_DESC PdfLinkDataDesc[];
 extern GB_DESC PdfIndexDesc[];
@@ -47,39 +47,54 @@ extern GB_DESC PdfModeDesc[];
 #else
 
 #define THIS ((CPDFDOCUMENT *)_object)
+#define THIS_RECT ((CPDFRECT *)_object)
 
 #endif
 
+typedef
+	struct {
+		GB_BASE ob;
+		double x, y, w, h;
+	}
+	CPDFRECT;
 
-typedef	struct
-{
-	GB_BASE ob;
+typedef 
+	struct {
+		double x0;
+		double y0;
+		double x1;
+		double y1;
+	} 
+	CPDFFIND;
 
-	char *buf;
-	int32_t len;
+typedef
+	struct {
+		GB_BASE ob;
 
-	PDFDoc *doc;
-	SplashOutputDev *dev;
-	Page *page;
-	uint32_t currpage;
-		
-	void **pindex;           // Parent of current index entries
-	GooList *index;          // Current entries
-	uint32_t currindex; // Current entry
- 	uint32_t *oldindex; // Parent entry
+		char *buf;
+		int len;
 
-	Links *links;            // Page bookmarks
-	uint32_t lcurrent;  // Current bookmark
+		PDFDoc *doc;
+		SplashOutputDev *dev;
+		Page *page;
+		uint currpage;
+			
+		void **pindex;       // Parent of current index entries
+		GooList *index;      // Current entries
+		uint currindex;      // Current entry
+		uint *oldindex;      // Parent entry
 
-	void *Found;             // Found text elements
-	uint32_t fcurrent;  // Current found text
+		Links *links;        // Page bookmarks
+		uint lcurrent;       // Current bookmark
 
-	LinkAction *action;      // Current link action 
+		CPDFFIND *Found;    // Found text elements
 
-	double scale;
-	int32_t rotation;
+		LinkAction *action;  // Current link action 
 
-} CPDFDOCUMENT;
+		double scale;
+		int rotation;
+	}
+	CPDFDOCUMENT;
 
 
 
