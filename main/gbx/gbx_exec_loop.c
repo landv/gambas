@@ -1556,14 +1556,10 @@ _ADD_QUICK:
 	
 		if (LIKELY(type <= T_POINTER))
 			goto *_aq_jump[type];
-		else
-			THROW(E_TYPE, "Number", TYPE_get_name(type));
 	
 	__AQ_BOOLEAN:
 		
-		ERROR_deprecated("Boolean incrementation");
-		P1->_integer.value ^= (value & 1) ? -1 : 0;
-		goto *jump_end;
+		THROW(E_TYPE, "Number", TYPE_get_name(type));
 	
 	__AQ_BYTE:
 		
