@@ -2473,8 +2473,10 @@ void GEditor::foldLine(int row, bool no_refresh)
 	if (end < 0)
 		end = numLines() - 1;
 	else
+		end--;
+	/*else
 	{
-		for(;;)
+		while (end > start)
 		{
 			end--;
 			l = doc->lines.at(end);
@@ -2482,7 +2484,7 @@ void GEditor::foldLine(int row, bool no_refresh)
 			if (!l->highlight || (l->highlight[0].state != GLine::Comment && l->highlight[0].state != GLine::Help))
 				break;
 		}
-	}
+	}*/
 	
 	pos = -1;
 	for (i = 0; i < fold.count(); i++)
