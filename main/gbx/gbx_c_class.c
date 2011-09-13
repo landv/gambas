@@ -859,13 +859,6 @@ BEGIN_METHOD(Object_New, GB_STRING class; GB_OBJECT params)
 
 END_METHOD
 
-BEGIN_PROPERTY(Object_LastEventName)
-
-	ERROR_deprecated("Object.LastEventName");
-	GB_ReturnConstZeroString(EVENT_Name);
-
-END_PROPERTY
-
 BEGIN_PROPERTY(Object_Address)
 
 	GB_ReturnPointer(VPROP(GB_OBJECT));
@@ -978,7 +971,6 @@ GB_DESC NATIVE_Object[] =
 	GB_STATIC_METHOD("Count", "i", Object_Count, "(Object)o"),
 	GB_STATIC_METHOD("SizeOf", "i", Object_SizeOf, "(Object)o"),
 	GB_STATIC_METHOD("Address", "p", Object_Address, "(Object)o"),
-	GB_STATIC_PROPERTY_READ("LastEventName", "s", Object_LastEventName),
 
 	GB_END_DECLARE
 };
