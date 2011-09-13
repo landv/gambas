@@ -633,10 +633,10 @@ void ERROR_warning(const char *warning, ...)
   putc('\n', stderr);
 }
 
-void ERROR_deprecated(const char *msg)
+/*void ERROR_deprecated(const char *msg)
 {
 	ERROR_warning("%s: %s is deprecated.", DEBUG_get_current_position(), msg);
-}
+}*/
 
 void ERROR_exit(void)
 {

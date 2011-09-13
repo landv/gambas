@@ -186,7 +186,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("IsPunct", "b", NULL, "(String)s"),
 
   GB_METHOD("TypeOf", "i", NULL, "(Value)v"),
-  GB_METHOD("SizeOf", "i", NULL, "(Value)v"),
+  GB_METHOD("SizeOf", "i", NULL, "(Type)i"),
 
   GB_METHOD("CBool", "b", NULL, "(Value)v"),
   GB_METHOD("CBoolean", "b", NULL, "(Value)v"),

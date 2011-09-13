@@ -159,7 +159,7 @@ void ERROR_reset(ERROR_INFO *info);
 void ERROR_lock(void);
 void ERROR_unlock(void);
 void ERROR_set_last(bool bt);
-void ERROR_deprecated(const char *msg);
+//void ERROR_deprecated(const char *msg);
 
 void ERROR_exit(void);
 
