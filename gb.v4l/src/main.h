@@ -25,6 +25,7 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb_common.h"
 #include "gb.image.h"
 
 #ifndef __MAIN_C

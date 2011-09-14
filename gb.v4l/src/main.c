@@ -39,7 +39,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
   CWebcamDesc,
   CTunerDesc,
-  CFeaturesDesc,
   NULL
 };
 

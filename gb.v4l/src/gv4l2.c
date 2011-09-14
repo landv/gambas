@@ -46,7 +46,7 @@
 #include "main.h"
 #include "CWebcam.h"
 //
-int gv4l2_debug_mode = 1;
+bool gv4l2_debug_mode = TRUE;
 //
 //=============================================================================
 //
@@ -407,12 +407,12 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 		return 0;
 	}
 	if (req.count < 2) {
-		gv4l2_debug("insifficient memory for mmap");
+		gv4l2_debug("not enough memory for mmap");
 		return 0;
 	}
 	GB.Alloc ( POINTER(&THIS->buffers),req.count * sizeof (*THIS->buffers));
 	if (!THIS->buffers) {
-		gv4l2_debug("insifficient memory for mmap");
+		gv4l2_debug("not memory for mmap");
 		return 0;
 		}
 	THIS->buffer_count = req.count;

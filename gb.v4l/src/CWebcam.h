@@ -37,7 +37,6 @@
 
 extern GB_DESC CWebcamDesc[];
 extern GB_DESC CTunerDesc[];
-extern GB_DESC CFeaturesDesc[];
 extern GB_STREAM_DESC VideoStream;
 
 #else
@@ -46,8 +45,9 @@ extern GB_STREAM_DESC VideoStream;
 #define DEVICE (THIS->dev)
 // ++ V4L2
 #define MCLEAR(x) memset (&(x), 0, sizeof (x))
-#define gv4l2_V4L 1
-#define gv4l2_V4L2 2
+#define MODE_ANY 0
+#define MODE_V4L 1
+#define MODE_V4L2 2
 // --
 #endif
 
@@ -85,67 +85,69 @@ typedef
 	VIDEO_STREAM;
 
 // ++ V4L2 
-typedef struct gv4l2_buffer
-{
-        void*   start;
-        size_t  length;
-
-} gv4l2_buffer_t;
+typedef 
+	struct gv4l2_buffer
+	{
+		void*   start;
+		size_t  length;
+	} 
+	gv4l2_buffer_t;
 //--
 
-typedef  struct
-{
-	GB_BASE ob;
-	GB_STREAM stream;
+typedef 
+	struct
+	{
+		GB_BASE ob;
+		GB_STREAM stream;
 
-	char *device;
-	video_device_t *dev;
-	unsigned char *membuf;
-	long gotframe;
-	long posframe;
+		char *device;
+		video_device_t *dev;
+		unsigned char *membuf;
+		int gotframe;
+		int posframe;
 
-	// ++ YUYV->RGB conversion
-        void*                   frame;		// "current" frame buffer
-	//--
-	// ++ V4L2 
-	//
-	// There is some duplication here but we really don't want to use
-	// the v4l video_device_t structure ...
-	//
-        struct  v4l2_capability cap;
-        struct  v4l2_cropcap    cropcap;
-        struct  v4l2_crop       crop;
-        struct  v4l2_format     fmt;
-        struct  gv4l2_buffer*   buffers;
-	//
-	int			is_v4l2;	// which version is this dev
-        int     		io;		// raw device handle for V2
-        int                     use_mmap;	// is MMAP available
-        int                     buffer_count;	// number of buffers
-	int			w,h;		// "current" dimensions
-	int format; // gb.image format
-	//
-	int			bright_max;
-	int			hue_max;
-	int			contrast_max;
-	int			whiteness_max;
-	int			color_max;
-	//
-	int			bright_min;
-	int			hue_min;
-	int			contrast_min;
-	int			whiteness_min;
-	int			color_min;
-	//
-	int			bright_def;
-	int			hue_def;
-	int			contrast_def;
-	int			whiteness_def;
-	int			color_def;
-	// --
-	struct v4lconvert_data *convert;
-	
-}  CWEBCAM;
+		// ++ YUYV->RGB conversion
+		void *frame;		// "current" frame buffer
+		//--
+		// ++ V4L2 
+		//
+		// There is some duplication here but we really don't want to use
+		// the v4l video_device_t structure ...
+		//
+		struct v4l2_capability cap;
+		struct v4l2_cropcap cropcap;
+		struct v4l2_crop crop;
+		struct v4l2_format fmt;
+		struct gv4l2_buffer *buffers;
+		//
+		int is_v4l2;	// which version is this dev
+		int io;		// raw device handle for V2
+		int use_mmap;	// is MMAP available
+		int buffer_count;	// number of buffers
+		int w, h;		// "current" dimensions
+		int format; // gb.image format
+		//
+		int bright_max;
+		int hue_max;
+		int contrast_max;
+		int whiteness_max;
+		int color_max;
+		//
+		int bright_min;
+		int hue_min;
+		int contrast_min;
+		int whiteness_min;
+		int color_min;
+		//
+		int bright_def;
+		int hue_def;
+		int contrast_def;
+		int whiteness_def;
+		int color_def;
+		// --
+		struct v4lconvert_data *convert;
+	}
+	CWEBCAM;
 
 
 int Video_stream_read(GB_STREAM *stream, char *buffer, int len);
