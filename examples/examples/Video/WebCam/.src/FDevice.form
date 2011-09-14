@@ -48,100 +48,100 @@
       #Move(224,175)
     }
     { tools Panel
-      Move(18,276,276,270)
+      Move(21,280,276,270)
       Visible = False
       Font = Font["-1"]
       Background = Color.Background
       Border = Border.Sunken
       { Label1 Label
-        Move(12,12,72,18)
+        Move(14,14,70,21)
         Text = ("Picture Size")
       }
       { picture_size ComboBox
-        Move(102,8,96,18)
-        Text = ("320 x 240")
+        Move(98,14,119,21)
         ReadOnly = True
         List = [("160 x 120"), ("320 x 240"), ("640 x 480")]
+        Text = ("320 x 240")
       }
       { slider_bright Slider
-        Move(102,36,108,18)
+        Move(98,35,112,21)
       }
       { Label2 Label
-        Move(12,36,72,18)
+        Move(14,35,70,21)
         Text = ("Brightness")
       }
       { slider_contrast Slider
-        Move(102,60,108,18)
+        Move(98,56,112,21)
       }
       { Label3 Label
-        Move(12,60,72,18)
+        Move(14,56,70,21)
         Text = ("Contrast")
       }
       { slider_colour Slider
-        Move(102,84,108,18)
+        Move(98,77,112,21)
       }
       { Label4 Label
-        Move(12,84,72,18)
+        Move(14,77,70,21)
         Text = ("Colour")
       }
       { slider_hue Slider
-        Move(102,108,108,18)
+        Move(98,98,112,21)
       }
       { Label5 Label
-        Move(12,108,72,18)
+        Move(14,98,70,21)
         Text = ("Hue")
       }
       { slider_whiteness Slider
-        Move(102,132,108,18)
+        Move(98,119,112,21)
       }
       { Label6 Label
-        Move(12,132,72,18)
+        Move(14,119,70,21)
         Text = ("Whiteness")
       }
       { button_hide Button
-        Move(12,198,66,26)
+        Move(14,189,70,28)
         Text = ("&Hide")
         Picture = Picture["icon:/16/apply"]
       }
       { button_close Button
-        Move(12,228,66,26)
+        Move(14,224,70,28)
         Text = ("&Close")
         Picture = Picture["icon:/16/close"]
       }
       { Label7 Label
-        Move(12,156,84,18)
+        Move(14,140,84,21)
         Text = ("Refresh Rate")
       }
       { refrate Slider
-        Move(102,156,108,18)
+        Move(98,140,112,21)
         MinValue = 20
         MaxValue = 1999
         Value = 200
       }
       { button_pause Button
-        Move(78,198,66,26)
+        Move(91,189,70,28)
         Text = ("&Pause")
         Picture = Picture["icon:/16/pause"]
       }
       { button_play Button
-        Move(78,198,66,26)
+        Move(91,189,70,28)
         Visible = False
         Text = ("&Play")
         Picture = Picture["icon:/16/play"]
       }
       { button_snap Button
-        Move(78,228,66,26)
+        Move(91,224,70,28)
         Text = ("&Snap")
         Picture = Picture["icon:/16/camera"]
       }
       { frame_rate Label
-        Move(102,174,96,18)
+        Move(105,161,96,18)
         Font = Font["-1"]
         Foreground = Color.SelectedBackground
         Text = ("0.00 fps")
       }
       { button_reset Button
-        Move(144,198,66,26)
+        Move(168,189,70,28)
         Text = ("&Reset")
         Picture = Picture["icon:/16/apply"]
         Default = True

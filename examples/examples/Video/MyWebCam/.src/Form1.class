@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Private hWebcam As VideoDevice
 Private OnSet As Boolean
 Private Fps As Date
@@ -70,7 +71,7 @@ Public Sub Button1_Click()
   OnSet = False
   Tmr.Delay = 10
   Tmr.Enabled = True
-  Me.Caption = hWebCam.Features.Name
+  Me.Caption = hWebCam.Name
   Fps = Now()
   nFps = 0
 
@@ -170,7 +171,7 @@ Public Sub Tmr_Timer()
     nFps = nFps + 1
     T1 = Now() - Fps
     If Second(T1) >= 1 Then
-      Me.Caption = hWebCam.Features.Name & " (" & nFps & " fps)"
+      Me.Caption = hWebCam.Name & " (" & nFps & " fps)"
       Fps = Now()
       nFps = 0
     End If
@@ -211,11 +212,11 @@ Public Sub Button2_Click()
 
   Dim sCad As String
 
-  sCad = "Device Bus: " & hWebCam.Features.Bus & "\n"
-  sCad = sCad & "Device Driver: " & hWebCam.Features.Driver & " Version: " & hWebCam.Features.Version & "\n"
-  sCad = sCad & "Device Name: " & hWebCam.Features.Name & "\n"
-  sCad = sCad & "Max.Resolution: " & hWebCam.Features.MaxWidth & "x" & hWebCam.Features.MaxHeight & "\n"
-  sCad = sCad & "Min. Resolution: " & hWebCam.Features.MinWidth & "x" & hWebCam.Features.MinHeight & "\n"
+  sCad = "Device Bus: " & hWebCam.Bus & "\n"
+  sCad = sCad & "Device Driver: " & hWebCam.Driver & " Version: " & hWebCam.Version & "\n"
+  sCad = sCad & "Device Name: " & hWebCam.Name & "\n"
+  sCad = sCad & "Max.Resolution: " & hWebCam.MaxWidth & "x" & hWebCam.MaxHeight & "\n"
+  sCad = sCad & "Min. Resolution: " & hWebCam.MinWidth & "x" & hWebCam.MinHeight & "\n"
 
   Message.Info(sCad)
 

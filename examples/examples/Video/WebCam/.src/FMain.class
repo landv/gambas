@@ -30,7 +30,7 @@ Public Sub ScanDevices()
       myWin = New FDevice(dev, count)
       $windows.Add(myWin)
       item = New Menu(tooltray_popup) As "Camera"
-      item.Text = dev.Features.Card
+      item.Text = dev.Card
       item.Picture = Picture["icon:/16/camera"]
       item.Tag = i
       count += 1

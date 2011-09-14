@@ -73,7 +73,7 @@ Public Sub Resize()
   pic.Left = 2
   pic.Top = title.top + title.Height + $spacing
     
-  devName.Text = $device.Features.Card
+  devName.Text = $device.Card
   currentTime.Text = Format(Now(), $date_format)
 
   outer.Left = 0
