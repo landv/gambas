@@ -1313,7 +1313,9 @@ void GEditor::cursorUp(bool shift, bool ctrl, bool alt)
 {
 	if (alt)
 	{
-		if (!ctrl)
+		if (ctrl)
+			movePreviousSameIndent(shift);
+		else
 		{
 			QString str;
 			int x1, y1, x2, y2;
@@ -1361,7 +1363,9 @@ void GEditor::cursorDown(bool shift, bool ctrl, bool alt)
 {
 	if (alt)
 	{
-		if (!ctrl)
+		if (ctrl)
+			moveNextSameIndent(shift);
+		else
 		{
 			QString str;
 			int x1, y1, x2, y2;
@@ -1404,24 +1408,25 @@ void GEditor::cursorDown(bool shift, bool ctrl, bool alt)
 		cursorGoto(doc->getNextLimit(y), xx, shift);
 }
 
-void GEditor::cursorHome(bool shift, bool ctrl, bool alt)
+void GEditor::movePreviousSameIndent(bool shift)
 {
-	if (alt)
+	int indent = doc->getIndent(y);
+	int i2, y2;
+	
+	for(y2 = y - 1; y2 >= 0; y2--)
 	{
-		int indent = doc->getIndent(y);
-		int i2, y2;
-		
-		for(y2 = y - 1; y2 >= 0; y2--)
+		i2 = doc->getIndent(y2);
+		if (i2 == indent && i2 < doc->lineLength(y2))
 		{
-			i2 = doc->getIndent(y2);
-			if (i2 == indent && i2 < doc->lineLength(y2))
-			{
-				cursorGoto(y2, x, shift);
-				break;
-			}
+			cursorGoto(y2, x, shift);
+			break;
 		}
 	}
-	else if (ctrl)
+}
+
+void GEditor::cursorHome(bool shift, bool ctrl, bool alt)
+{
+	if (ctrl)
 		cursorGoto(0, 0, shift);
 	else
 	{
@@ -1433,40 +1438,40 @@ void GEditor::cursorHome(bool shift, bool ctrl, bool alt)
 	}
 }
 
+void GEditor::moveNextSameIndent(bool shift)
+{
+	int indent = doc->getIndent(y);
+	int i2, y2;
+	
+	for(y2 = y + 1; y2 < numLines(); y2++)
+	{
+		i2 = doc->getIndent(y2);
+		if (i2 == indent && i2 < doc->lineLength(y2))
+		{
+			cursorGoto(y2, x, shift);
+			break;
+		}
+	}
+}
 
 void GEditor::cursorEnd(bool shift, bool ctrl, bool alt)
 {
-	if (alt)
-	{
-		int indent = doc->getIndent(y);
-		int i2, y2;
-		
-		for(y2 = y + 1; y2 < numLines(); y2++)
-		{
-			i2 = doc->getIndent(y2);
-			if (i2 == indent && i2 < doc->lineLength(y2))
-			{
-				cursorGoto(y2, x, shift);
-				break;
-			}
-		}
-	}
-	else if (ctrl)
+	if (ctrl)
 		cursorGoto(numLines() - 1, lineLength(numLines() - 1), shift);
 	else
 		cursorGoto(y, lineLength(y), shift);
 }
 
-void GEditor::cursorPageUp(bool mark)
+void GEditor::cursorPageUp(bool shift, bool alt)
 {
 	int page = visibleHeight() / _cellh;
-	cursorGoto(viewToReal(realToView(y) - page), 0, mark);
+	cursorGoto(viewToReal(realToView(y) - page), 0, shift);
 }
 
-void GEditor::cursorPageDown(bool mark)
+void GEditor::cursorPageDown(bool shift, bool alt)
 {
 	int page = visibleHeight() / _cellh;
-	cursorGoto(viewToReal(realToView(y) + page), 0, mark);
+	cursorGoto(viewToReal(realToView(y) + page), 0, shift);
 }
 
 void GEditor::newLine()
@@ -1720,9 +1725,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_End:
 				cursorEnd(shift, ctrl, alt); return;
 			case Qt::Key_Prior:
-				cursorPageUp(shift); return;
+				cursorPageUp(shift, alt); return;
 			case Qt::Key_Next:
-				cursorPageDown(shift); return;
+				cursorPageDown(shift, alt); return;
 		}
 
 		if (!ctrl)
@@ -1779,9 +1784,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_Delete:
 				del(ctrl); return;
 			case Qt::Key_Prior:
-				cursorPageUp(shift); return;
+				cursorPageUp(shift, alt); return;
 			case Qt::Key_Next:
-				cursorPageDown(shift); return;
+				cursorPageDown(shift, alt); return;
 			case Qt::Key_Tab:
 				tab(false); return;
 			case Qt::Key_BackTab:
@@ -2461,7 +2466,6 @@ void GEditor::foldLine(int row, bool no_refresh)
 	int start, end;
 	GFoldedProc *fp;
 	int ny;
-	GLine *l;
 	
 	if (!doc->hasLimit(row))
 		row = doc->getPreviousLimit(row);

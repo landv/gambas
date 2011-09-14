@@ -209,8 +209,8 @@ public:
 	void cursorRight(bool shift, bool ctrl);
 	void cursorUp(bool shift, bool ctrl, bool alt);
 	void cursorDown(bool shift, bool ctrl, bool alt);
-	void cursorPageUp(bool mark);
-	void cursorPageDown(bool mark);
+	void cursorPageUp(bool shift, bool alt);
+	void cursorPageDown(bool shift, bool alt);
 	void cursorHome(bool shift, bool ctrl, bool alt);
 	void cursorEnd(bool shift, bool ctrl, bool alt);
 	void newLine();
@@ -225,6 +225,8 @@ public:
 	void redo();
 	void tab(bool back);
 	void selectAll();
+	void movePreviousSameIndent(bool shift);
+	void moveNextSameIndent(bool shift);
 	
 	bool getInsertMode() const { return _insertMode; }
 	void setInsertMode(bool mode);
