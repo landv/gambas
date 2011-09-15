@@ -10,6 +10,7 @@ Private $iLast As Integer
 Private $sLast As String
 Private $sFocus As String
 'Private $sFocusForm As String
+Private $sClass As String
 Private $sType As String
 Private $sOption As String
 Private $hEditor As Object
@@ -133,6 +134,8 @@ Public Sub RefreshAll()
   UpdateLabel
 
   If bDiff Then sClass = "Control"
+  
+  $sClass = sClass
 
   'If Not $bDisableIntegratedHelp Then
   MHelp.InitWebViewWith($hWebView, MHelp.TYPE_CLASS, sClass,, "noimage")
@@ -911,9 +914,17 @@ Public Sub btnProperty_Click()
       $hEditor.Text = sDest
 
     Case "Path"
-      Dialog.Path = $sOldVal
-      If Dialog.OpenFile() Then Goto _EXIT
-      $hEditor.Text = Dialog.Path
+      
+      If $sClass = "MovieBox" Then
+        sDest = FSelectIcon.Run($sOldVal, True) 'GetPicture()
+        If Not sDest Then Goto _EXIT
+        $hEditor.Text = sDest
+      Else
+        Dialog.Path = $sOldVal
+        Dialog.Title = ("Select a file")
+        If Dialog.OpenFile() Then Goto _EXIT
+        $hEditor.Text = Dialog.Path
+      Endif
 
     Case "Table"
 

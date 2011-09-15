@@ -13,6 +13,8 @@ Public Sub _new()
   
   Dim sLang As String
   Dim hMenu As Menu
+  Dim aLangName As New String[]
+  Dim aLang As String[]
   
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
@@ -22,12 +24,20 @@ Public Sub _new()
   hMenu.Text = ("Default language")
   
   For Each sLang In $aLang
+    aLangName.Add(Language.ToName(sLang) & ":" & sLang)
+  Next
+  aLangName.Sort(gb.Language)
+  
+  For Each sLang In aLangName
+    aLang = Split(sLang, ":")
     hMenu = New Menu(mnuLang) As "mnuSelectLanguage"
-    hMenu.Text = Language.ToName(sLang)
-    hMenu.Tag = sLang
+    hMenu.Text = aLang[0]
+    hMenu.Tag = aLang[1]
   Next
   
   btnHome.Menu = "mnuLang"
+  
+  movWaiting.Resize(64, 64)
   
 End
 
@@ -136,6 +146,8 @@ End
 
 Public Sub webHelp_Error()
   
+  ShowWaiting(False)
+  
   If $sLastUrl Begins "gambas://" Then 
     webHelp.Stop
     MHelp.ManageSpecialLink(webHelp, $sLastUrl)
@@ -149,6 +161,7 @@ End
 
 Public Sub webHelp_Load()
   
+  ShowWaiting(False)
   $bError = False
   btnModify.Enabled = webHelp.Url Begins "http://gambasdoc.org"
   
@@ -233,7 +246,7 @@ Public Sub tvwClasses_MouseUp()
   Dim ars As String[]
   Dim iType As Integer
   Dim sKey As String
-  
+
   sKey = tvwClasses.Current.Key
   If sKey = "$" Then Return
   
@@ -296,5 +309,34 @@ End
 Public Sub webHelp_NewWindow(Modal As Boolean)
 
   Project.OpenWebPage($sLastUrl)
+
+End
+
+Private Sub ShowWaiting(bShow As Boolean)
+
+  If movWaiting.Visible = bShow Then Return
+
+  movWaiting.Visible = bShow
+  movWaiting.Playing = bShow
+
+End
+
+Public Sub webHelp_Progress()
+
+  ShowWaiting(webHelp.Progress < 1)
+
+End
+
+Public Sub Form_Arrange()
+
+  With webHelp
+    movWaiting.Move(.ScreenX - Me.ScreenX + (.W - movWaiting.W) \ 2, .ScreenY - Me.ScreenY + (.H - movWaiting.H) \ 2)
+  End With
+
+End
+
+Public Sub movWaiting_MouseDown()
+
+  ShowWaiting(False)
 
 End

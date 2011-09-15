@@ -343,7 +343,8 @@ Public Sub GetHelpURL() As String
     'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
     'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
     sPath &/= LCase(sComp)
-    sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
+    'sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
+    sPath &/= LCase(Name)
     
     Return sPath & "?help&v3&" & MHelp.GetLanguage()
     

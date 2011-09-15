@@ -57,6 +57,7 @@
     { HPanel1 HPanel
       MoveScaled(1,12,84,48)
       Expand = True
+      AutoResize = True
       Spacing = True
       { Label10 Label
         MoveScaled(0,0,16,4)
@@ -95,17 +96,17 @@
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,10,60,19)
+        MoveScaled(18,10,60,17)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,29,16,4)
+        MoveScaled(0,28,16,4)
         Font = Font["Bold"]
         Text = ("Author(s)")
       }
       { txtAuthor TextArea
-        MoveScaled(18,29,57,19)
+        MoveScaled(18,28,57,20)
         Expand = True
         Wrap = True
       }

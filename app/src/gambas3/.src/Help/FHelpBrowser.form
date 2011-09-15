@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,72,23)
+  MoveScaled(0,0,52,20)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -106,6 +106,13 @@
       #Public = True
       Expand = True
     }
+  }
+  { movWaiting MovieBox
+    MoveScaled(19,5,9,8)
+    Visible = False
+    Ignore = True
+    Path = "img/waiting.gif"
+    Alignment = Align.Center
   }
 }
 
