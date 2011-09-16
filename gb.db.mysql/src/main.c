@@ -597,6 +597,8 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 {
 	MYSQL *conn;
 	char *name;
+	char *host;
+	char *socket;
 
 	conn = mysql_init(NULL);
 
@@ -611,9 +613,17 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	//fprintf(stderr, "mysql_real_connect: host = '%s'\n", desc->host);
 
-	if (!mysql_real_connect( conn, desc->host, desc->user, desc->password,
-			name, desc->port == NULL ? 0 : atoi(desc->port), NULL, /*unix_socket: if not null the
-	string specifies the socket  or named pipe that should be used */
+	host = desc->host;
+	if (host && *host == '/')
+	{
+		socket = host;
+		host = NULL;
+	}
+	else
+		socket = NULL;
+		
+	if (!mysql_real_connect( conn, host, desc->user, desc->password,
+			name, desc->port == NULL ? 0 : atoi(desc->port), socket,
 			CLIENT_MULTI_RESULTS /*client flag */)){
 		mysql_close(conn);
 		GB.Error("Cannot open database: &1", mysql_error(conn));
