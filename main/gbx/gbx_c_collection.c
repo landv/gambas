@@ -364,7 +364,7 @@ void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
   }
 }
 
-int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
+bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
   VARIANT *val = collection_get_key((CCOLLECTION *)col, key, len);
 	
@@ -383,7 +383,7 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
   }
 }
 
-int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len)
+bool GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len)
 {
 	static HASH_ENUM iter;
   VARIANT *val;

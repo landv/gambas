@@ -27,22 +27,22 @@
 
 #include "gambas.h"
 
-int GB_GetInterface(const char *library, int version, void *iface);
+bool GB_GetInterface(const char *library, int version, void *iface);
 void *GB_Hook(int type, void *hook);
 
-int GB_LoadComponent(const char *name);
+bool GB_LoadComponent(const char *name);
 const char *GB_CurrentComponent(void);
 
 void GB_Push(int nval, ...);
-int GB_CanRaise(void *object, int event_id);
-int GB_Raise(void *object, int event_id, int nparam, ...);
+bool GB_CanRaise(void *object, int event_id);
+bool GB_Raise(void *object, int event_id, int nparam, ...);
 int GB_GetEvent(void *class, char *name);
 char *GB_GetLastEventName();
-int GB_Stopped(void);
+bool GB_Stopped(void);
 
 int GB_NParam(void);
 const char *GB_GetUnknown(void);
-int GB_IsProperty(void);
+bool GB_IsProperty(void);
 
 void GB_Error(const char *msg, ...);
 
@@ -53,7 +53,7 @@ void GB_UnrefKeep(void **object, int);
 void GB_StopEnum(void);
 void *GB_GetEnum(void);
 void GB_ListEnum(void *);
-int GB_NextEnum(void);
+bool GB_NextEnum(void);
 void GB_StopAllEnum(void *);
 
 void GB_Return(GB_TYPE type, ...);
@@ -77,17 +77,15 @@ void GB_ReturnNewZeroString(const char *src);
 void *GB_GetClass(void *object);
 char *GB_GetClassName(void *object);
 void *GB_FindClass(const char *name);
-int GB_ExistClass(const char *name);
-int GB_ExistClassLocal(const char *name);
+bool GB_ExistClass(const char *name);
+bool GB_ExistClassLocal(const char *name);
 
 char *GB_ToZeroString(GB_STRING *src);
 
-int GB_LoadFile(const char *path, int lenp, char **addr, int *len);
+bool GB_LoadFile(const char *path, int lenp, char **addr, int *len);
 void GB_ReleaseFile(char **addr, int len);
 char *GB_GetTempDir(void);
 char *GB_RealFileName(const char *path, int len);
-
-int GB_IsMissing(int param);
 
 void GB_Attach(void *object, void *parent, const char *name);
 void GB_Detach(void *object);
@@ -99,11 +97,11 @@ void GB_StoreVariant(GB_VARIANT *src, void *dst);
 
 void GB_Watch(int fd, int flag, void *callback, intptr_t param);
 
-int GB_New(void **object, void *class_name, const char *name, void *parent);
-int GB_CheckObject(void *object);
-int GB_Is(void *object, void *class);
+bool GB_New(void **object, void *class_name, const char *name, void *parent);
+bool GB_CheckObject(void *object);
+bool GB_Is(void *object, void *class);
 
-int GB_GetFunction(GB_FUNCTION *func, void *object, const char *name, const char *sign, const char *type);
+bool GB_GetFunction(GB_FUNCTION *func, void *object, const char *name, const char *sign, const char *type);
 GB_VALUE *GB_Call(GB_FUNCTION *func, int nparam, int release);
 void *GB_GetClassInterface(void *class, const char *name);
 
@@ -126,8 +124,8 @@ void *GB_ArrayGet(GB_ARRAY array, int index);
 void GB_CollectionNew(GB_COLLECTION *col, int mode);
 int GB_CollectionCount(GB_COLLECTION col);
 void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
-int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
-int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
+bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
+bool GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
 
 void GB_Alloc(void **addr, int len);
 void GB_Free(void **addr);
@@ -135,16 +133,16 @@ void GB_Realloc(void **addr, int len);
 
 void GB_FreeString(char **str);
 int GB_StringLength(const char *str);
-int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);
+bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);
 
-int GB_Conv(GB_VALUE *, GB_TYPE);
+bool GB_Conv(GB_VALUE *, GB_TYPE);
 
-int GB_NumberToString(int flag, double value, const char *format, char **str, int *len);
+bool GB_NumberToString(int flag, double value, const char *format, char **str, int *len);
 
 void GB_HashTableNew(GB_HASHTABLE *hash, int mode);
 void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *data);
 void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len);
-int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data);
+bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data);
 void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func);
 
 void GB_NewArray(void *pdata, int size, int count);

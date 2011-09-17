@@ -271,7 +271,7 @@ bool GAMBAS_StopEvent = FALSE;
 
 static bool _event_stopped = FALSE;
 
-int GB_GetInterface(const char *name, int version, void *iface)
+bool GB_GetInterface(const char *name, int version, void *iface)
 {
   if (LIBRARY_get_interface_by_name(name, version, iface))
     ERROR_panic("Cannot find interface of library '%s'", name);
@@ -296,7 +296,7 @@ void *GB_Hook(int type, void *hook)
 }
 
 
-int GB_LoadComponent(const char *name)
+bool GB_LoadComponent(const char *name)
 {
   int ret = 0;
 
@@ -415,7 +415,7 @@ static void call_method(void *object, CLASS_DESC_METHOD *desc, int nparam)
 
 
 
-int GB_CanRaise(void *object, int event_id)
+bool GB_CanRaise(void *object, int event_id)
 {
   ushort *event_tab;
   int func_id;
@@ -507,11 +507,11 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 // If nparam < 0, the args are already on the stack
 
-int GB_Raise(void *object, int event_id, int nparam, ...)
+bool GB_Raise(void *object, int event_id, int nparam, ...)
 {
   OBJECT *parent;
   int func_id;
-  int result;
+  bool result;
   va_list args;
   bool arg;
   COBSERVER *obs;
@@ -632,7 +632,7 @@ __RETURN:
 }
 
 
-int GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
+bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
 {
   GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
   char len_min, nparam, npvar;
@@ -710,13 +710,13 @@ int GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const cha
   if (!func->desc)
   	abort();
 
-  return 0;
+  return FALSE;
 
 _NOT_FOUND:
 
   func->object = NULL;
   func->desc = NULL;
-  return 1;
+  return TRUE;
 }
 
 void *GB_GetClassInterface(void *_class, const char *_name)
@@ -795,7 +795,7 @@ char *GB_GetLastEventName()
 }
 
 
-int GB_Stopped(void)
+bool GB_Stopped(void)
 {
 	return _event_stopped;
 }
@@ -807,7 +807,7 @@ int GB_NParam(void)
 }
 
 
-int GB_IsProperty(void)
+bool GB_IsProperty(void)
 {
   return EXEC.property;
 }
@@ -940,7 +940,7 @@ void GB_ListEnum(void *enum_object)
 }
 
 
-int GB_NextEnum(void)
+bool GB_NextEnum(void)
 {
   for(;;)
   {
@@ -1188,7 +1188,7 @@ char *GB_GetClassName(void *object)
 }
 
 
-int GB_Is(void *object, void *class)
+bool GB_Is(void *object, void *class)
 {
   CLASS *ob_class;
 
@@ -1201,9 +1201,9 @@ int GB_Is(void *object, void *class)
 }
 
 
-int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
+bool GB_LoadFile(const char *path, int lenp, char **addr, int *len)
 {
-  int ret = 0;
+  bool ret = FALSE;
 
   //fprintf(stderr, "GB_LoadFile: %.*s\n", lenp ? lenp : strlen(path), path);
 
@@ -1219,7 +1219,7 @@ int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
       GB_ReleaseFile(addr, *len);
 
     GAMBAS_Error = TRUE;
-    ret = 1;
+    ret = TRUE;
   }
   END_TRY
 
@@ -1315,7 +1315,7 @@ void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 }
 
 
-int GB_New(void **object, void *class, const char *name, void *parent)
+bool GB_New(void **object, void *class, const char *name, void *parent)
 {
   if (name && !parent)
   {
@@ -1336,7 +1336,7 @@ int GB_New(void **object, void *class, const char *name, void *parent)
 }
 
 
-int GB_CheckObject(void *object)
+bool GB_CheckObject(void *object)
 {
   CLASS *class;
   
@@ -1410,9 +1410,9 @@ void GB_Realloc(void **addr, int len)
 }
 
 
-int GB_Conv(GB_VALUE *arg, GB_TYPE type)
+bool GB_Conv(GB_VALUE *arg, GB_TYPE type)
 {
-  int ret = 0;
+  bool ret = FALSE;
 
   TRY
   {
@@ -1420,7 +1420,7 @@ int GB_Conv(GB_VALUE *arg, GB_TYPE type)
   }
   CATCH
   {
-    ret = 1;
+    ret = TRUE;
     GAMBAS_Error = TRUE;
   }
   END_TRY
@@ -1435,7 +1435,7 @@ int GB_StringLength(const char *str)
 }
 
 
-int GB_NumberToString(int local, double value, const char *format, char **str, int *len)
+bool GB_NumberToString(int local, double value, const char *format, char **str, int *len)
 {
   return
     LOCAL_format_number
@@ -1470,7 +1470,7 @@ void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len)
   HASH_TABLE_remove((HASH_TABLE *)hash, key, len);
 }
 
-int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
+bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 {
   void **pdata;
 
@@ -1481,10 +1481,10 @@ int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
   if (pdata)
   {
     *data = *pdata;
-    return 0;
+    return FALSE;
   }
   else
-    return 1;
+    return TRUE;
 }
 
 
@@ -1530,7 +1530,7 @@ void GB_FreeString(char **str)
   *str = NULL;
 }
 
-int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
+bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
   bool err = FALSE;
 
@@ -1720,13 +1720,13 @@ void *GB_DebugGetExec(void)
 }
 
 
-int GB_ExistClass(const char *name)
+bool GB_ExistClass(const char *name)
 {
 	return CLASS_look_global(name, strlen(name)) != NULL;
 }
 
 
-int GB_ExistClassLocal(const char *name)
+bool GB_ExistClassLocal(const char *name)
 {
 	return CLASS_look(name, strlen(name)) != NULL;
 }

@@ -53,13 +53,13 @@ typedef
 		void (*SaveError)(void *);
 		void (*RestoreError)(void *);
 		void (*ToString)(GB_VALUE *value, char **addr, int *len);
-		int (*FormatDate)(GB_DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
-		int (*FormatNumber)(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local);
+		bool (*FormatDate)(GB_DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
+		bool (*FormatNumber)(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local);
 		bool (*GetValue)(const char *sym, int len, GB_VARIANT *ret);
 		void (*GetArrayValue)(GB_ARRAY array, int index, GB_VALUE *value);
-		int (*EnumCollection)(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
+		bool (*EnumCollection)(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
 		void *(*GetNextSortedSymbol)(void *klass, int *index);
-		int (*CanBeUsedLikeAnArray)(void *object, CLASS *klass);
+		bool (*CanBeUsedLikeAnArray)(void *object, CLASS *klass);
 		GB_CLASS (*FindClass)(const char *name);
 		}
 	GB_DEBUG_INTERFACE;

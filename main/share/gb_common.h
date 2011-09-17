@@ -98,19 +98,16 @@
 
 #if !defined(__cplusplus)
 
-  #ifndef FALSE
-    enum
-    {
-      FALSE = 0,
-      TRUE = 1
-    };
-  #endif
+	#ifndef FALSE
+		enum
+		{
+			FALSE = 0,
+			TRUE = 1
+		};
+	#endif
 
-  typedef
-    char boolean;
-
-  typedef
-    char bool;
+	#define bool char
+	#define boolean char
 
 #endif
 
