@@ -139,8 +139,8 @@ GB_DESC NATIVE_Gambas[] =
 	GB_CONSTANT("Binary", "i", GB_COMP_BINARY),
 	GB_CONSTANT("IgnoreCase", "i", GB_COMP_NOCASE),
 	GB_CONSTANT("Language", "i", GB_COMP_LANG),
-	GB_CONSTANT("Like","i",GB_COMP_LIKE),
-	GB_CONSTANT("Natural","i",GB_COMP_NATURAL),
+	GB_CONSTANT("Like", "i", GB_COMP_LIKE),
+	GB_CONSTANT("Natural", "i", GB_COMP_NATURAL),
 
 	GB_CONSTANT("Ascent", "i", GB_COMP_ASCENT),
 	GB_CONSTANT("Descent", "i", GB_COMP_DESCENT),
@@ -194,10 +194,6 @@ GB_DESC NATIVE_Gambas[] =
 	GB_CONSTANT("Read", "i", R_OK),
 	GB_CONSTANT("Write", "i", W_OK),
 	GB_CONSTANT("Exec", "i", X_OK),
-
-	//GB_CONSTANT("User", "i", GB_STAT_USER),
-	//GB_CONSTANT("Group", "i", GB_STAT_GROUP),
-	//GB_CONSTANT("Other", "i", GB_STAT_OTHER),
 
 	GB_CONSTANT("Sunday", "i", 0),
 	GB_CONSTANT("Monday", "i", 1),

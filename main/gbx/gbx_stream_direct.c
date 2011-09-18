@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_stream_direct.c
+	gbx_stream_direct.c
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -27,6 +27,7 @@
 #include "gb_error.h"
 #include "gbx_value.h"
 #include "gb_limit.h"
+#include "gbx_number.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -43,58 +44,78 @@
 
 static int stream_open(STREAM *stream, const char *path, int mode)
 {
-  int fd;
-  struct stat info;
-  int fmode;
+	int fd;
+	struct stat info;
+	int fmode;
 
-  if (mode & ST_CREATE)
-    fmode = O_CREAT | O_TRUNC;
-  else if (mode & ST_APPEND)
-    fmode = O_APPEND | O_CREAT;
-  else
-    fmode = 0;
+	if (mode & ST_CREATE)
+		fmode = O_CREAT | O_TRUNC;
+	else if (mode & ST_APPEND)
+		fmode = O_APPEND | O_CREAT;
+	else
+		fmode = 0;
 
-  switch (mode & ST_MODE)
-  {
-    case ST_READ: fmode |= O_RDONLY; break;
-    case ST_WRITE: fmode |= O_WRONLY; break;
-    case ST_READ_WRITE: fmode |= O_RDWR; break;
-    default: fmode |= O_RDONLY;
-  }
-
-  fd = open(path, fmode, 0666);
-  if (fd < 0)
-    return TRUE;
-
-  if (fstat(fd, &info) < 0)
-    return TRUE;
-
-  if (S_ISDIR(info.st_mode))
-  {
-    errno = EISDIR;
-    return TRUE;
-  }
-
-	if (!S_ISREG(info.st_mode))
+	switch (mode & ST_MODE)
 	{
-		stream->common.available_now = FALSE;
-		fcntl(fd, F_SETFL, O_NONBLOCK);
+		case ST_READ: fmode |= O_RDONLY; break;
+		case ST_WRITE: fmode |= O_WRONLY; break;
+		case ST_READ_WRITE: fmode |= O_RDWR; break;
+		default: fmode |= O_RDONLY;
+	}
+
+	if (path[0] == '.' && isdigit(path[1]))
+	{
+		VALUE val;
+		if (NUMBER_from_string(NB_READ_INTEGER, &path[1], strlen(path) - 1, &val) || val._integer.value < 0)
+		{
+			errno = ENOENT;
+			return TRUE;
+		}
+		
+		fd = val._integer.value;
+		stream->direct.watch = TRUE;
 	}
 	else
-		stream->common.available_now = TRUE;
+	{
+		stream->direct.watch = FALSE;
+		
+		fd = open(path, fmode, 0666);
+		if (fd < 0)
+			return TRUE;
 
-  FD = fd;
-  return FALSE;
+		if (fstat(fd, &info) < 0)
+			return TRUE;
+
+		if (S_ISDIR(info.st_mode))
+		{
+			errno = EISDIR;
+			return TRUE;
+		}
+
+		if (!S_ISREG(info.st_mode))
+		{
+			stream->common.available_now = FALSE;
+			fcntl(fd, F_SETFL, O_NONBLOCK);
+		}
+		else
+			stream->common.available_now = TRUE;
+	}
+
+	FD = fd;
+	return FALSE;
 }
 
 
 static int stream_close(STREAM *stream)
 {
-  if (close(FD) < 0)
-    return TRUE;
+	if (!stream->direct.watch)
+	{
+		if (close(FD) < 0)
+			return TRUE;
+	}
 
-  FD = -1;
-  return FALSE;
+	FD = -1;
+	return FALSE;
 }
 
 
@@ -117,32 +138,23 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 
 static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  return (lseek(FD, pos, whence) < 0);
+	return (lseek(FD, pos, whence) < 0);
 }
 
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {
-  *pos = lseek(FD, 0, SEEK_CUR);
-  return (*pos < 0);
+	*pos = lseek(FD, 0, SEEK_CUR);
+	return (*pos < 0);
 }
 
 
 static int stream_flush(STREAM *stream)
 {
-  return FALSE;
+	return FALSE;
 }
 
 
-/*static int stream_eof(STREAM *stream)
-{
-  int ilen;
-
-  if (STREAM_get_readable(FD, &ilen))
-    return TRUE;
-
-  return (ilen == 0);
-}*/
 #define stream_eof NULL
 
 
@@ -157,12 +169,13 @@ static int stream_lof(STREAM *stream, int64_t *len)
 		return TRUE;
 	
 	*len = info.st_size;
-  return FALSE;
+	return FALSE;
 }
+
 
 static int stream_handle(STREAM *stream)
 {
-  return FD;
+	return FD;
 }
 
 

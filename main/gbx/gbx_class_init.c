@@ -36,6 +36,7 @@
 #include "gbx_c_error.h"
 #include "gbx_c_collection.h"
 #include "gbx_c_file.h"
+#include "gbx_c_system.h"
 #include "gbx_c_application.h"
 #include "gbx_c_array.h"
 #include "gbx_c_process.h"

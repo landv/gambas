@@ -84,6 +84,7 @@ typedef
     STREAM_COMMON common;
     int64_t size;
     int fd;
+		unsigned watch : 1;
     }
   PACKED
   STREAM_DIRECT;

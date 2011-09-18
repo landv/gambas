@@ -63,6 +63,7 @@ gbx3_SOURCES = \
  gbx_c_gambas.h gbx_c_gambas.c \
  gbx_c_file.h gbx_c_file.c \
  gbx_c_application.h gbx_c_application.c \
+ gbx_c_system.h gbx_c_system.c \
  gbx_c_array.h gbx_c_array.c \
  gbx_c_process.h gbx_c_process.c \
  gbx_c_subcollection.h gbx_c_subcollection.c \
@@ -84,6 +85,7 @@ gb_la_SOURCES = \
  gbx_c_gambas.h gbx_c_gambas.c \
  gbx_c_file.h gbx_c_file.c \
  gbx_c_application.h gbx_c_application.c \
+ gbx_c_system.h gbx_c_system.c \
  gbx_c_array.h gbx_c_array.c \
  gbx_c_process.h gbx_c_process.c \
  gbx_c_string.h gbx_c_string.c \

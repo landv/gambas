@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gbx_c_application.h
+  gbx_c_system.h
 
   (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,15 +21,14 @@
 
 ***************************************************************************/
 
-#ifndef __GBX_C_APPLICATION_H
-#define __GBX_C_APPLICATION_H
+#ifndef __GBX_C_SYSTEM_H
+#define __GBX_C_SYSTEM_H
 
 #include "gambas.h"
 
-#ifndef __GBX_C_APPLICATION_C
-extern GB_DESC NATIVE_AppEnv[];
-extern GB_DESC NATIVE_AppArgs[];
-extern GB_DESC NATIVE_App[];
+#ifndef __GBX_C_SYSTEM_C
+extern GB_DESC NATIVE_User[];
+extern GB_DESC NATIVE_System[];
 #endif
 
 #endif
