@@ -415,9 +415,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     If sMore Then sUrl &= "&" & sMore
     sMore &= "&" & GetLanguage() ' ??
-    'If hWebView.Url = sUrl Then Return
-  
-    hWebView.Url = sUrl
+    If hWebView.Url <> sUrl Then hWebView.Url = sUrl
     
   Else
     hWebView.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"

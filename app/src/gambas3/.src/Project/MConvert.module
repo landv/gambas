@@ -232,12 +232,17 @@ Private Sub CheckOpen(sLine As String) As String
   Dim aSym As String[]
   Dim iPos As Integer
   Dim sVar As String
+  Dim sTry As String
   
   aSym = Highlight.Analyze(sLine, True)
   
   If aSym.Count < 5 Then Return
   
-  If UCase(aSym[iPos]) = "TRY" Then Inc iPos
+  If UCase(aSym[iPos]) = "TRY" Then 
+    sLine = Trim(Mid$(sLine, 4))
+    sTry = "Try "
+    Inc iPos
+  Endif
   If UCase(aSym[iPos]) <> "OPEN" Then Return
   
   iPos = InStr(sLine, " AS ", 1, gb.IgnoreCase)
@@ -245,7 +250,7 @@ Private Sub CheckOpen(sLine As String) As String
   
   sVar = Mid$(sLine, iPos + 4)
   If Left(sVar) = "#" Then sVar = Trim(Mid$(sVar, 2))
-  sLine = sVar & " = " & Left(sLine, iPos - 1)
+  sLine = sTry & sVar & " = " & Left(sLine, iPos - 1)
   
   $sId = "OPEN"
   Return sLine

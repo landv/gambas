@@ -785,7 +785,6 @@ void MyTable::setNumCols(int newCols)
 		b = signalsBlocked();
 		blockSignals(true);
 		Q3Table::setNumCols(newCols);
-		blockSignals(b);
 
 		if (newCols > _cols)
 		{
@@ -806,6 +805,7 @@ void MyTable::setNumCols(int newCols)
 
 		clearSelection();
 		layoutColumns();
+		blockSignals(b);
 	}
 	END_NO_REPAINT
 
