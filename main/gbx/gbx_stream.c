@@ -159,17 +159,21 @@ static int default_eof(STREAM *stream)
 
 void STREAM_open(STREAM *stream, const char *path, int mode)
 {
+	STREAM_CLASS *sclass;
+	
+	stream->type = NULL;
+	
 	if (mode & ST_PIPE)
 	{
-		stream->type = &STREAM_pipe;
+		sclass = &STREAM_pipe;
 	}
 	else if (mode & ST_MEMORY)
 	{
-		stream->type = &STREAM_memory;
+		sclass = &STREAM_memory;
 	}
 	else if (mode & ST_STRING)
 	{
-		stream->type = &STREAM_string;
+		sclass = &STREAM_string;
 	}
 	else
 	{
@@ -186,7 +190,7 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 			
 			if ((arch && arch->name) || EXEC_arch) // || !FILE_exist_real(path)) - Why that test ?
 			{
-				stream->type = &STREAM_arch;
+				sclass = &STREAM_arch;
 				goto _OPEN;
 			}
 
@@ -195,9 +199,9 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 		}
 
 		if (mode & ST_DIRECT)
-			stream->type = &STREAM_direct;
+			sclass = &STREAM_direct;
 		else
-			stream->type = &STREAM_buffer;
+			sclass = &STREAM_buffer;
 	}
 
 _OPEN:
@@ -217,11 +221,10 @@ _OPEN:
 	stream->common.redirected = FALSE;
 	stream->common.redirect = NULL;
 
-	if ((*(stream->type->open))(stream, path, mode, NULL))
-	{
-		stream->type = NULL;
+	if ((*(sclass->open))(stream, path, mode, NULL))
 		THROW_SYSTEM(errno, path);
-	}
+	
+	stream->type = sclass;
 	
 	#if DEBUG_STREAM
 	_tag++;

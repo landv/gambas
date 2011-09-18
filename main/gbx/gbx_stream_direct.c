@@ -47,7 +47,8 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	int fd;
 	struct stat info;
 	int fmode;
-
+	VALUE val;
+	
 	if (mode & ST_CREATE)
 		fmode = O_CREAT | O_TRUNC;
 	else if (mode & ST_APPEND)
@@ -65,7 +66,9 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 
 	if (path[0] == '.' && isdigit(path[1]))
 	{
-		VALUE val;
+		if ((mode & ST_CREATE) || (mode & ST_APPEND))
+			THROW(E_ACCESS);
+		
 		if (NUMBER_from_string(NB_READ_INTEGER, &path[1], strlen(path) - 1, &val) || val._integer.value < 0)
 		{
 			errno = ENOENT;
@@ -73,6 +76,10 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 		}
 		
 		fd = val._integer.value;
+		
+		if ((fcntl(fd, F_GETFL, NULL) & O_RDWR) != (fmode & O_RDWR))
+			THROW(E_ACCESS);
+		
 		stream->direct.watch = TRUE;
 	}
 	else
