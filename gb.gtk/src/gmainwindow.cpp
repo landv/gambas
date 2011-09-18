@@ -484,17 +484,20 @@ void gMainWindow::setVisible(bool vl)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			}
 			
+			// Thanks for Ubuntu's GTK+ patching :-(
 			#if GTK_CHECK_VERSION(3,0,0)
 			gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
 			#else
 			if (g_object_class_find_property(G_OBJECT_GET_CLASS(border), "has-resize-grip"))
 				g_object_set(G_OBJECT(border), "has-resize-grip", false, (char *)NULL);
 			#endif
+				
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			if (isPopup())
 				gtk_widget_show_now(border);
 			else
 				gtk_window_present(GTK_WINDOW(border));
+			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 		}
 		else 
 		{
@@ -580,10 +583,10 @@ void gMainWindow::center()
 	
 	if (!isTopLevel()) return;
 	
-	myx=(gDesktop::width()/2)-(width()/2);
-	myy=(gDesktop::height()/2)-(height()/2);
+	myx = (gDesktop::width() - width()) / 2;
+	myy = (gDesktop::height() - height()) / 2;
 	
-	move(myx,myy);
+	move(myx, myy);
 }
 
 bool gMainWindow::isModal() const

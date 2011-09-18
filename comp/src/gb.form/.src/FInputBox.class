@@ -22,14 +22,12 @@ End
 
 Public Sub Form_Open()
 
-  Me.Center
-  
   lblMessage.Text = $sPrompt
   txtValue.Text = $sValue
   
   Me.Title = $sTitle
   
-  panBox.W = lblMessage.W
+  panBox.W = Max(Desktop.Scale * 24, lblMessage.W)
   panBox.Arrangement = Arrange.Vertical
   
   txtValue.SelectAll
@@ -52,6 +50,6 @@ End
 
 Public Sub Form_Arrange()
 
-  Me.Resize(btnOK.Parent.X + btnOK.W + Me.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + Me.Padding)
+  Me.Resize(btnOK.Parent.X + btnOK.W + Desktop.Scale, Max(btnOK.Parent.Y + btnCancel.Y + btnCancel.H, txtValue.Parent.Y + txtValue.Y + txtValue.H) + Desktop.Scale)
 
 End

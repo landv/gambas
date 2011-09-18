@@ -2,27 +2,27 @@
 
 { Form Form
   MoveScaled(0,0,51,16)
-  Text = ("")
   Resizable = False
   Arrangement = Arrange.Horizontal
-  Spacing = 16
-  Padding = 8
+  Spacing = True
+  Margin = True
   { panBox Panel
     MoveScaled(1,1,27,12)
-    Spacing = 8
+    Spacing = True
     { lblMessage TextLabel
       MoveScaled(0,0,27,7)
       AutoResize = True
-      Text = ("")
     }
     { txtValue TextBox
       MoveScaled(0,8,15,4)
-      Text = ("")
     }
   }
+  { Panel1 Panel
+    MoveScaled(30,1,2,10)
+  }
   { VBox2 VBox
-    MoveScaled(31,1,14,10)
-    Spacing = 8
+    MoveScaled(34,1,14,9)
+    Spacing = True
     { btnOK Button
       MoveScaled(0,0,14,4)
       Text = ("OK")
