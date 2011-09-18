@@ -46,7 +46,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 {
 	int fd;
 	struct stat info;
-	int fmode;
+	int fmode, omode;
 	VALUE val;
 	
 	if (mode & ST_CREATE)
@@ -76,8 +76,11 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 		}
 		
 		fd = val._integer.value;
+		omode = fcntl(fd, F_GETFL, NULL);
+		if (omode < 0)
+			return TRUE;
 		
-		if ((fcntl(fd, F_GETFL, NULL) & O_RDWR) != (fmode & O_RDWR))
+		if ((omode & O_RDWR) != (fmode & O_RDWR))
 			THROW(E_ACCESS);
 		
 		stream->direct.watch = TRUE;
