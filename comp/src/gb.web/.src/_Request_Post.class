@@ -61,6 +61,8 @@ Private Sub Decode()
   Dim bFirst As Boolean
   Dim hFile As File
   Dim iMethod As Integer
+  Dim iPos As Integer
+  Dim sCharset As String
   
   If $cVal Then Return
 
@@ -74,10 +76,17 @@ Private Sub Decode()
   sType = CGI["CONTENT_TYPE"]
   $iMaxLength = 0
   Try $iMaxLength = CInt(CGI["CONTENT_LENGTH"])
-  'DEBUG sType
+  
+  iPos = InStr(sType, ";")
+  If iPos Then
+    sElt = Trim(Mid$(sType, iPos + 1))
+    sType = Left$(sType, iPos - 1)
+    If sElt Begins "charset=" Then sCharset = Mid$(sElt, 9)
+  Endif
   
   If sType = "application/x-www-form-urlencoded" Then 
     sStr = Read $iMaxLength
+    If sCharset Then Try sStr = Conv(sStr, sCharset, "UTF-8")
     'LINE INPUT sStr
     Main.DecodeURL(sStr, $aField, $cVal)
     Return
