@@ -15,7 +15,7 @@ Public Sub Form_Open()
   Dim hAction As CAction
 
   '$hSettings = New Settings("gb.form.mdi")
-  Settings.ReadWindow(Me, "gb.form.mdi/FShortcut")
+  Settings.Read(Me, "gb.form.mdi/FShortcut")
 
   $aAction = New CAction[]
   For Each hAction In MAction.Actions
@@ -95,7 +95,7 @@ End
 
 Public Sub Form_Close()
 
-  Settings.WriteWindow(Me, "gb.form.mdi/FShortcut")
+  Settings.Write(Me, "gb.form.mdi/FShortcut")
   
 End
 

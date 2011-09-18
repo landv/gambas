@@ -1237,6 +1237,9 @@ void  gGridView::setCursor(int row,int col)
 	if (row == cursor_row && col == cursor_col)
 		return;
 	
+	if (col < 0 && row >= 0)
+		col == 0;
+	
 	getItemSpan(row, col, &rowspan, &colspan);
 	if (rowspan < 0)
 		row += rowspan;

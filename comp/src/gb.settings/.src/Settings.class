@@ -397,7 +397,7 @@ Public Sub Read(hObject As Object, Optional sKey As String, Optional vDefault As
   Dim aVal As String[]
 
   If Object.Is(hObject, "Window") Then
-    sKey = Object.Type(hObject) &/ sKey
+    If Not sKey Then sKey = Object.Type(hObject) 
     ReadWindow(hObject, sKey)
   Else
     If Not sKey Then Try sKey = hObject.Name
@@ -410,7 +410,7 @@ End
 Public Sub Write(hObject As Object, Optional sKey As String)
 
   If Object.Is(hObject, "Window") Then
-    sKey = Object.Type(hObject) &/ sKey
+    If Not sKey Then sKey = Object.Type(hObject) 
     WriteWindow(hObject, sKey)
   Else 'IF Object.Is(hObject, "SidePanel") THEN
     If Not sKey Then Try sKey = hObject.Name

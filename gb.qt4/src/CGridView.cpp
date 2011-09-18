@@ -894,11 +894,18 @@ void MyTable::setCurrentCell(int row, int col)
 	_no_row = row < 0 || row >= numRows();
 	_no_col = col < 0 || col >= numCols();
 	
+	if (_no_col && !_no_row)
+	{
+		_no_col = false;
+		col = 0;
+	}
+	
 	if (_no_row || _no_col)
 	{
 		clearSelection();
 		return;
 	}
+	
 	
 	if (selectionMode() != MultiRow)
 	{
