@@ -58,6 +58,8 @@ typedef
 		CWIDGET widget;
 		int row;
 		int col;
+		int last_row;
+		int last_col;
 		unsigned scroll_event : 1;
 		}
 	CGRIDVIEW;
@@ -186,8 +188,6 @@ public:
 	virtual QRect cellGeometry(int row, int col) const;
 	
 	void setDefaultRowHeight(int h) { _default_row_height = h; }
-	
-	//virtual QRect cellRect(int row, int col) const
 
 Q_SIGNALS:
 		void scrolled(void);
@@ -220,8 +220,6 @@ private:
 	int _rows;
 	int _cols;
 	int _default_row_height;
-	bool _no_row;
-	bool _no_col;
 	bool _layouting_columns;
 	bool _layout_columns_later;
 	bool _autoresize;

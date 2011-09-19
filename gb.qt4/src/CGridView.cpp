@@ -463,8 +463,6 @@ Q3Table(0, 0, parent)
 	_header = 0;
 	_rows = 0;
 	_cols = 0;
-	_no_row = true;
-	_no_col = true;
 	_layouting_columns = false;
 	_autoresize = true;
 	_layout_columns_later = false;
@@ -782,8 +780,7 @@ void MyTable::setNumCols(int newCols)
 	
 	BEGIN_NO_REPAINT
 	{
-		b = signalsBlocked();
-		blockSignals(true);
+		b = blockSignals(true);
 		Q3Table::setNumCols(newCols);
 
 		if (newCols > _cols)
@@ -812,7 +809,7 @@ void MyTable::setNumCols(int newCols)
 	setCurrentCell(row, col);
 	if (row >= 0 && col >= 0)
 	{
-		emit currentChanged(-1, -1); 
+		//emit currentChanged(-1, -1); 
 		emit selectionChanged();
 	}
 }
@@ -832,8 +829,7 @@ void MyTable::setNumRows(int newRows)
 		_rows = newRows;
 		_item->invalidate();
 		
-		b = signalsBlocked();
-		blockSignals(true);
+		b = blockSignals(true);
 		Q3Table::setNumRows(newRows);
 		
 		clearSelection();
@@ -844,7 +840,7 @@ void MyTable::setNumRows(int newRows)
 	setCurrentCell(row, col);
 	if (row >= 0 && col >= 0)
 	{
-		emit currentChanged(-1, -1); 
+		//emit currentChanged(-1, -1); 
 		emit selectionChanged();
 	}
 }
@@ -891,21 +887,15 @@ void MyTable::setCurrentCell(int row, int col)
 {
 	int rowspan, colspan;
 	
-	_no_row = row < 0 || row >= numRows();
-	_no_col = col < 0 || col >= numCols();
-	
-	if (_no_col && !_no_row)
-	{
-		_no_col = false;
-		col = 0;
-	}
-	
-	if (_no_row || _no_col)
+	if (row < 0)
 	{
 		clearSelection();
+		emit currentChanged(-1, -1);
 		return;
 	}
 	
+	if (col < 0)
+		col = 0;
 	
 	if (selectionMode() != MultiRow)
 	{
@@ -922,26 +912,21 @@ void MyTable::setCurrentCell(int row, int col)
 
 void MyTable::updateCurrentCell()
 {
+	bool b = blockSignals(true);
 	setCurrentCell(currentRow(), currentColumn());
+	blockSignals(b);
 }
 
 void MyTable::getCurrentCell(int *row, int *col)
 {
-	if (row)
+	if (selectionMode() == SingleRow && !isRowReallySelected(currentRow()))
 	{
-		if (_no_row)
-			*row = -1;
-		else
-			*row = currentRow();
+		*row = *col = -1;
+		return;
 	}
 	
-	if (col)
-	{
-		if (_no_col)
-			*col = -1;
-		else
-			*col = currentColumn();
-	}
+	*row = currentRow();
+	*col = currentColumn();
 }
 
 int MyTable::findSelection(int row)
@@ -1148,6 +1133,18 @@ void MyTable::setContentsPos(int x, int y)
 
 
 /** GridView *****************************************************************/
+
+static void raise_change(void *_object)
+{
+	int row, col;
+	
+	WIDGET->getCurrentCell(&row, &col);
+	if (row == THIS->last_row && col == THIS->last_col)
+		return;
+	THIS->last_row = row;
+	THIS->last_col = col;
+	GB.Raise(THIS, EVENT_Change, NULL);
+}
 
 static MyTableItem *get_item(void *_object, bool create)
 {
@@ -1905,6 +1902,8 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
 
 	THIS->row = -1;
 	THIS->col = -1;
+	THIS->last_row = -1;
+	THIS->last_col = -1;
 	
 END_METHOD
 
@@ -1918,7 +1917,8 @@ END_METHOD
 
 static void set_current_cell(CGRIDVIEW *_object, int row, int col)
 {
-	WIDGET->clearSelection();
+	if (WIDGET->selectionMode() == Q3Table::MultiRow)
+		WIDGET->clearSelection();
 	WIDGET->setCurrentCell(row, col);
 }
 
@@ -2484,18 +2484,18 @@ bool CGridView::check(Q3Table *table, int row, int col)
 
 void CGridView::changed(void)
 {
-	int row, col;
+	//int row, col;
 	
 	GET_SENDER();
-	MyTable *w = (MyTable *)sender();
+	//MyTable *w = (MyTable *)sender();
 
-	w->updateCurrentCell();
-	w->getCurrentCell(&row, &col);
+	WIDGET->updateCurrentCell();
+	//WIDGET->getCurrentCell(&row, &col);
 
 	//if (row < 0 || col < 0)
 	//	return;
 
-	GB.Raise(THIS, EVENT_Change, 0);
+	raise_change(THIS);
 }
 
 void CGridView::activated(void)
@@ -2508,11 +2508,12 @@ void CGridView::selected(void)
 {
 	GET_SENDER();
 	if (WIDGET->selectionMode() == Q3Table::SingleRow)
+	{
+		raise_change(THIS);
 		GB.Raise(THIS, EVENT_Select, 0);
+	}
 	else
 	{
-		//QRect r(WIDGET->contentsToViewport(QPoint(WIDGET->contentsX(), WIDGET->contentsY())), QSize(WIDGET->contentsWidth(), WIDGET->contentsHeight()));
-		//WIDGET->viewport()->update();
 		GB.RaiseLater(THIS, EVENT_Select);
 	}
 }

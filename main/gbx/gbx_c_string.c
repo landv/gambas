@@ -192,7 +192,7 @@ static int index_to_byte(const char *str, int len, int index)
 	if (index <= 0)
 		return 0;
 
-	return utf8_get_pos(str, len, index) + 1;
+	return utf8_get_pos(str, len, index - 1) + 1;
 }
 
 
