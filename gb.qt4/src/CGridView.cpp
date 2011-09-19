@@ -791,6 +791,7 @@ void MyTable::setNumCols(int newCols)
 			for (i = _cols; i < newCols; i++)
 			{
 				horizontalHeader()->setLabel(i, "");
+				_columns[i].width = columnWidth(i);
 				_columns[i].expand = _expand;
 			}
 
@@ -1042,33 +1043,36 @@ void MyTable::layoutColumns()
 	w = nx = 0;
 	for (i = 0; i <= n; i++)
 	{
-		w += _columns[i].width;
 		if (_columns[i].expand)
-			nx++;
-	}
-
-	if (w < visibleWidth())
-	{
-		if (nx == 0)
 		{
-			Q3Table::setColumnWidth(n, _columns[n].width + visibleWidth() - w);
+			w += _columns[i].width;
+			nx++;
 		}
 		else
+			w += columnWidth(i);
+	}
+
+	if (nx == 0)
+	{
+		w = columnWidth(n) + visibleWidth() - w;
+		if (w > 0)
+			Q3Table::setColumnWidth(n, w);
+	}
+	else if (w < visibleWidth())
+	{
+		for (i = 0; i <= n; i++)
 		{
-			for (i = 0; i <= n; i++)
+			if (_columns[i].expand)
 			{
-				if (_columns[i].expand)
-				{
-					wx = (visibleWidth() - w) / nx;
-					Q3Table::setColumnWidth(i, _columns[i].width + wx);
-					w += wx;
-					nx--;
-					if (nx <= 0)
-						break;
-				}
-				else
-					Q3Table::setColumnWidth(i, _columns[i].width);
+				wx = (visibleWidth() - w) / nx;
+				Q3Table::setColumnWidth(i, _columns[i].width + wx);
+				w += wx;
+				nx--;
+				if (nx <= 0)
+					break;
 			}
+			//else
+			//	Q3Table::setColumnWidth(i, _columns[i].width);
 		}
 	}
 	
