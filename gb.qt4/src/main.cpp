@@ -1064,13 +1064,11 @@ const char *GB_INCLUDE EXPORT = "gb.draw";
 
 int EXPORT GB_INIT(void)
 {
-	//char *env;
-	
 	// Do not disable GLib support
 	
-	/*env = getenv("KDE_FULL_SESSION");
+	char *env = getenv("KDE_FULL_SESSION");
 	if (env && !strcasecmp(env, "true"))
-		putenv((char *)"QT_NO_GLIB=1");*/
+		putenv((char *)"QT_NO_GLIB=1");
 	
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 

@@ -45,6 +45,8 @@ typedef
   struct {
     CWIDGET widget;
 		int length;
+		int align;
+		unsigned no_change : 1;
     }
   CTEXTAREA;
 

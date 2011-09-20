@@ -35,7 +35,7 @@
 #include "CContainer.h"
 #include "CConst.h"
 
-int _alignment[] =
+static int _alignment[] =
 {
 	ALIGN_NORMAL, Qt::AlignVCenter + Qt::AlignLeft,
 	ALIGN_LEFT, Qt::AlignVCenter + Qt::AlignLeft + Qt::AlignAbsolute,
@@ -53,7 +53,17 @@ int _alignment[] =
 	CONST_MAGIC
 };
 
-int _line_style[] =
+static int _horizontal_alignment[] =
+{
+	ALIGN_NORMAL, Qt::AlignLeft,
+	ALIGN_LEFT, Qt::AlignLeft + Qt::AlignAbsolute,
+	ALIGN_RIGHT, Qt::AlignRight + Qt::AlignAbsolute,
+	ALIGN_CENTER, Qt::AlignHCenter,
+	ALIGN_JUSTIFY, Qt::AlignJustify,
+	CONST_MAGIC
+};
+
+static int _line_style[] =
 {
 	LINE_NONE, Qt::NoPen,
 	LINE_SOLID, Qt::SolidLine,
@@ -64,7 +74,7 @@ int _line_style[] =
 	CONST_MAGIC
 };
 
-int _fill_style[] =
+static int _fill_style[] =
 {
 	FILL_NONE, Qt::NoBrush,
 	FILL_SOLID, Qt::SolidPattern,
@@ -120,6 +130,11 @@ int CCONST_convert(int *tab, int value, int def, bool to_qt)
 int CCONST_alignment(int value, int def, bool to_qt)
 {
 	return CCONST_convert(_alignment, value, def, to_qt);
+}
+
+int CCONST_horizontal_alignment(int value, int def, bool to_qt)
+{
+	return CCONST_convert(_horizontal_alignment, value, def, to_qt);
 }
 
 int CCONST_line_style(int value, int def, bool to_qt)

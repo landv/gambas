@@ -39,6 +39,7 @@ extern GB_DESC CSelectDesc[];
 
 int CCONST_convert(int *tab, int value, int def, bool to_qt);
 int CCONST_alignment(int value, int def, bool to_qt);
+int CCONST_horizontal_alignment(int value, int def, bool to_qt);
 int CCONST_line_style(int value, int def, bool to_qt);
 int CCONST_fill_style(int value, int def, bool to_qt);
 
