@@ -277,17 +277,23 @@ static int get_current_year(void)
 
 void DATE_from_time(time_t time, int usec, VALUE *val)
 {
-	struct tm *tm;
+	static struct tm tm;
+	static time_t last_time = (time_t)-1;
+	
 	DATE_SERIAL date;
 
-	tm = localtime(&time);
+	if (time != last_time)
+	{
+		localtime_r(&time, &tm);
+		last_time = time;
+	}
 
-	date.year = tm->tm_year + 1900;
-	date.month = tm->tm_mon + 1;
-	date.day = tm->tm_mday;
-	date.hour = tm->tm_hour;
-	date.min = tm->tm_min;
-	date.sec = tm->tm_sec;
+	date.year = tm.tm_year + 1900;
+	date.month = tm.tm_mon + 1;
+	date.day = tm.tm_mday;
+	date.hour = tm.tm_hour;
+	date.min = tm.tm_min;
+	date.sec = tm.tm_sec;
 	date.msec = usec / 1000;
 
 	if (DATE_make(&date, val))

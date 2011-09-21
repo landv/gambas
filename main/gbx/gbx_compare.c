@@ -323,7 +323,7 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 				break;
 			}
 			ca = a[ai];
-			if (!isspace(ca))
+			if (ca > ' ')
 				break;
 			ai++;
 		}
@@ -336,7 +336,7 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 				break;
 			}
 			cb = b[bi];
-			if (!isspace(cb))
+			if (cb > ' ')
 				break;
 			bi++;
 		}

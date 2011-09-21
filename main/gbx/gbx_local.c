@@ -1122,6 +1122,32 @@ static void add_strftime(const char *format, struct tm *tm)
 }
 
 
+static void add_number(int value, int pad)
+{
+	static char temp[8] = { 0 };
+	int i, n;
+	
+	n = 0;
+	for (i = 7; i >= 0; i--)
+	{
+		n++;
+		if (value < 10)
+		{
+			temp[i] = value + '0';
+			value = 0;
+			if (n >= pad)
+				break;
+		}
+		else
+		{
+			temp[i] = (value % 10) + '0';
+			value /= 10;
+		}
+	}
+	
+	add_string(&temp[i], n, NULL);
+}
+
 static void add_date_token(DATE_SERIAL *date, char *token, int count)
 {
 	struct tm tm = {0};
@@ -1137,8 +1163,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
 			if (count <= 2)
 			{
-				n = snprintf(buf, sizeof(buf), (count == 1 ? "%d" : "%02d"), date->day);
-				add_string(buf, n, NULL);
+				add_number(date->day, (count == 1 ? 0 : 2));
 			}
 			else if (count >= 3)
 			{
@@ -1152,8 +1177,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
 			if (count <= 2)
 			{
-				n = snprintf(buf, sizeof(buf), (count == 1 ? "%d" : "%02d"), date->month);
-				add_string(buf, n, NULL);
+				add_number(date->month, (count == 1 ? 0 : 2));
 			}
 			else if (count >= 3)
 			{
@@ -1166,11 +1190,9 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 		case 'y':
 
 			if (count <= 2 && date->year >= 1939 && date->year <= 2038)
-				n = snprintf(buf, sizeof(buf), "%02d", date->year - (date->year >= 2000 ? 2000 : 1900));
+				add_number(date->year - (date->year >= 2000 ? 2000 : 1900), 2);
 			else
-				n = snprintf(buf, sizeof(buf), "%d", date->year);
-
-			add_string(buf, n, NULL);
+				add_number(date->year, 0);
 
 			break;
 
@@ -1178,25 +1200,23 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 		case 'n':
 		case 's':
 
-			n = snprintf(buf, sizeof(buf), (count == 1) ? "%d" : "%02d",
-				(*token == 'h') ? date->hour : ((*token == 'n') ? date->min : date->sec));
-
-			add_string(buf, n, NULL);
-
+			add_number((*token == 'h') ? date->hour : ((*token == 'n') ? date->min : date->sec), (count == 1 ? 0 : 2));
 			break;
 
 		case 'u':
 
 			if (date->msec || count == 2)
 			{
-				n = snprintf(buf, sizeof(buf), "%03d", date->msec);
-				if (count == 1)
+				if (count == 2)
+					add_number(date->msec, 3);
+				else
 				{
+					n = snprintf(buf, sizeof(buf), "%03d", date->msec);
 					while (buf[n - 1] == '0')
 						n--;
+					buf[n] = 0;
+					add_string(buf, n, NULL);
 				}
-				buf[n] = 0;
-				add_string(buf, n, NULL);
 			}
 
 			break;
@@ -1328,7 +1348,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 			continue;
 		}
 
-		if (index("dmyhnsu", c) != NULL)
+		if (c == 'd' || c == 'm' || c == 'y' || c == 'h' || c == 'n' || c == 's' || c == 'u')
 		{
 			if (c != token)
 			{

@@ -64,20 +64,7 @@ static void clear(CCOLLECTION *col)
 #define get_key(_col, _key, _len) HASH_TABLE_lookup((_col)->hash_table, (_key), (_len))
 
 
-static void *add_key(CCOLLECTION *col, const char *key, int len)
-{
-	if (len == 0)
-	{
-		GB_Error((char *)E_VKEY);
-		return NULL;
-	}
-
-	if (len <= 0)
-		len = strlen(key);
-
-	return HASH_TABLE_insert(col->hash_table, key, len);
-}
-
+#define add_key(_col, _key, _len) ((_len) == 0 ? (GB_Error((char *)E_VKEY), NULL) : HASH_TABLE_insert(((CCOLLECTION *)(_col))->hash_table, (_key), (_len)))
 
 static void remove_key(CCOLLECTION *col, const char *key, int len)
 {
@@ -89,9 +76,6 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 		GB_Error((char *)E_VKEY);
 		return;
 	}
-
-	if (len < 0)
-		len = strlen(key);
 
 	value = HASH_TABLE_lookup(col->hash_table, key, len);
 	if (value == NULL)
