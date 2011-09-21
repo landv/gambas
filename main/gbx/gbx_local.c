@@ -584,7 +584,7 @@ void LOCAL_set_lang(const char *lang)
 	}
 	else
 	{
-		ERROR_warning("cannot switch to language '%s'. Did you install the corresponding locale packages?", lang);
+		ERROR_warning("cannot switch to language '%s'. Did you install the corresponding locale packages?", lang ? lang : LOCAL_get_lang());
 		setlocale(LC_ALL, "C");
 	}
 

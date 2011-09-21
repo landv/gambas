@@ -1369,7 +1369,7 @@ Private Procedure AddDir(Optional sDir As String)
       If Not IsDir(sDir &/ sFile) Then aFile.Add("F" & sFile)
     Next
 
-    aFile.Sort(gb.Natural)
+    aFile.Sort(gb.Language + gb.Natural)
 
     For Each sFile In aFile
 

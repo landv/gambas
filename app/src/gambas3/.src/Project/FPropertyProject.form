@@ -276,12 +276,12 @@
         Text = ("Arguments")
       }
       { tvwArg TableView
-        MoveScaled(2,10,46,16)
+        MoveScaled(2,6,46,16)
         Expand = True
         Header = GridView.Vertical
       }
       { HBox2 HBox
-        MoveScaled(2,28,53,4)
+        MoveScaled(2,24,53,4)
         Spacing = True
         { btnInsertArg Button
           MoveScaled(0,0,17,4)
@@ -303,21 +303,20 @@
         }
       }
       { Separator1 Separator
-        MoveScaled(7,34,42,1)
+        MoveScaled(7,30,42,1)
       }
       { Label18 Label
-        MoveScaled(2,37,24,3)
+        MoveScaled(2,32,24,3)
         Font = Font["Bold"]
         Text = ("Environment variables")
       }
       { tvwEnv TableView
-        MoveScaled(2,41,68,16)
+        MoveScaled(2,36,68,16)
         Expand = True
         Header = GridView.Horizontal
-        Scrollbar = Scroll.Vertical
       }
       { HBox3 HBox
-        MoveScaled(2,57,40,4)
+        MoveScaled(2,53,40,4)
         Spacing = True
         { btnInsertEnv MenuButton
           MoveScaled(0,0,19,4)

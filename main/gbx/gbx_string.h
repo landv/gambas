@@ -61,6 +61,7 @@ typedef
 
 // NOTE: Defined in gambas.h too
 #define SC_UNICODE ((char *)-1)
+#define SC_UTF8 ((char *)-2)
 
 #ifndef __STRING_C
 extern STRING_MAKE STRING_make_buffer;

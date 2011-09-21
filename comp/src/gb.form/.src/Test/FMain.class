@@ -2,23 +2,22 @@
 
 ' A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment 
 
+Private $iCol As Integer
 
 
+Public Sub Button1_Click()
 
-Public Sub DateBox1_Activate()
-
-  Debug
-
-End
-
-Public Sub DateBox1_Click()
-
-  Debug
+  $iCol = ($iCol + 1) Mod 4
+  txtArea.Foreground = Choose($iCol + 1, Color.Red, Color.Blue, Color.Green, Color.Default)
 
 End
 
-Public Sub DateBox1_Change()
+Public Sub Button2_Click()
 
-  Debug
+  If txtArea.Alignment = Align.Right Then
+    txtArea.Alignment = Align.Left
+  Else
+    txtArea.Alignment = Align.Right
+  Endif
 
 End

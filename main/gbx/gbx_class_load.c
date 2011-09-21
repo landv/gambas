@@ -519,6 +519,8 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
   short n_desc, n_class_ref, n_unknown, n_array, n_struct;
 	CLASS_STRUCT *structure = NULL;
 	int size;
+	char *name;
+	int len;
 	
   ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");
 
@@ -651,6 +653,27 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
   for (i = 0; i < n_class_ref; i++)
   {
   	offset = (int)(intptr_t)class->load->class_ref[i];
+		
+		// The compiler does not know if an array class is global or not, we must check now.
+		
+		if (offset >= 0)
+		{
+			name = &class->string[offset];
+			len = strlen(name);
+			
+			if (len >= 3 && name[len - 2] == '[')
+			{
+				do
+				{
+					len -= 2;
+				}
+				while (len >= 3 && name[len - 2] == '[');
+			
+				if (CLASS_look_global(name, len))
+					offset = (- offset);
+			}
+		}
+		
   	if (offset >= 0)
     	class->load->class_ref[i] = CLASS_find(&class->string[offset]);
 		else if (offset < -1)

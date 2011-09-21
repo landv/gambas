@@ -1861,7 +1861,7 @@ int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const 
 			{
 				if (!LOCAL_is_UTF8)
 				{
-					if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, "UTF-8", FALSE))
+					if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, SC_UTF8, FALSE))
 						STRING_new(&str, pattern, len_pattern);
 					else
 						STRING_ref(str);

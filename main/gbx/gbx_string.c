@@ -112,7 +112,9 @@ static int _index = 0;
 STRING_MAKE STRING_make_buffer;
 #define _make STRING_make_buffer
 
-//static HASH_TABLE *_intern = NULL;
+static iconv_t _conv_unicode_utf8 = (iconv_t)-1;
+static iconv_t _conv_utf8_unicode = (iconv_t)-1;
+
 
 /****************************************************************************
 
@@ -382,6 +384,11 @@ void STRING_exit(void)
 	_index = 0;
 	
 	clear_pool();
+	
+	if (_conv_unicode_utf8 != ((iconv_t)-1))
+		iconv_close(_conv_unicode_utf8);
+	if (_conv_utf8_unicode != ((iconv_t)-1))
+		iconv_close(_conv_utf8_unicode);
 }
 
 
@@ -735,191 +742,6 @@ char *STRING_add_char(char *str, char c)
 }
 
 
-int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw)
-{
-	iconv_t handle;
-	bool err;
-	const char *in;
-	char *out;
-	size_t in_len;
-	size_t out_len;
-	size_t ret;
-	int errcode = 0;
-	bool unicode;
-
-	*result = NULL;
-
-	in = str;
-	in_len = len;
-
-	if (len == 0)
-		return errcode;
-
-	if (dst == SC_UNICODE)
-	{
-		dst = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
-		unicode = TRUE;
-	}
-	else
-	{
-		unicode = FALSE;
-
-		if (!dst || *dst == 0)
-			dst = "ASCII";
-	}
-
-	if (src == SC_UNICODE)
-	{
-		src = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
-	}
-	else
-	{
-		if (!src || *src == 0)
-			src = "ASCII";
-	}
-
-	handle = iconv_open(dst, src);
-	if (handle == (iconv_t)(-1))
-	{
-		if (errno == EINVAL)
-			errcode = E_UCONV;
-		else
-			errcode = E_CONV;
-	}
-	else
-	{
-		err = FALSE;
-	
-		for(;;)
-		{
-			out = COMMON_buffer;
-			out_len = COMMON_BUF_MAX;
-	
-			#if defined(OS_SOLARIS) || defined(OS_FREEBSD) || defined(OS_OPENBSD)
-			ret = iconv(handle, &in, &in_len, &out, &out_len);
-			#else
-			ret = iconv(handle, (char **)&in, &in_len, &out, &out_len);
-			#endif
-	
-			if (ret != (size_t)(-1) || errno == E2BIG)
-				*result = STRING_add(*result, COMMON_buffer, COMMON_BUF_MAX - out_len);
-	
-			if (ret != (size_t)(-1))
-				break;
-	
-			if (errno != E2BIG)
-			{
-				err = TRUE;
-				break;
-			}
-		}
-		
-		iconv_close(handle);
-	
-		if (unicode)
-			*result = STRING_add(*result, "\0\0\0", 3);
-	
-		STRING_extend_end(*result);
-	
-		if (err)
-			errcode = E_CONV;
-	}
-	
-	if (throw && errcode)
-		THROW(errcode);
-
-	return errcode;
-}
-
-
-char *STRING_conv_to_UTF8(const char *name, int len)
-{
-	char *result = NULL;
-
-	if (!name)
-		return "";
-
-	if (LOCAL_is_UTF8)
-	{
-		if (len <= 0)
-			result = (char *)name;
-		else
-			result = STRING_new_temp(name, len);
-	}
-	else
-	{
-		if (len <= 0)
-			len = strlen(name);
-
-		STRING_conv(&result, name, len, LOCAL_encoding, "UTF-8", TRUE);
-	}
-
-	if (result)
-		return result;
-	else
-		return "";
-}
-
-
-char *STRING_conv_file_name(const char *name, int len)
-{
-	char *result = NULL;
-	int pos;
-	struct passwd *info;
-	char *dir;
-	char *user;
-
-	if (!name)
-		return "";
-
-	if (len <= 0)
-		len = strlen(name);
-
-	if (len > 0 && *name == '~')
-	{
-		for (pos = 0; pos < len; pos++)
-		{
-			if (name[pos] == '/')
-				break;
-		}
-
-		if (pos <= 1)
-			dir = PROJECT_get_home();
-		else
-		{
-			user = STRING_new_temp(&name[1], pos - 1);
-			info = getpwnam(user);
-			if (info)
-				dir = info->pw_dir;
-			else
-				dir = NULL;
-		}
-
-		if (dir)
-		{
-			user = STRING_new_zero(dir);
-			if (pos < len)
-				user = STRING_add(user, &name[pos], len - pos);
-			name = user;
-			len = STRING_length(name);
-			STRING_free_later(user);
-		}
-	}
-
-	if (LOCAL_is_UTF8)
-		result = STRING_new_temp(name, len);
-	else
-		STRING_conv(&result, name, len, "UTF-8", LOCAL_encoding, TRUE);
-
-	//fprintf(stderr, "STRING_conv_file_name: %s\n", result);
-
-	if (result)
-		return result;
-	else
-		return "";
-}
-
-
 int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
 {
 	int pos, ip;
@@ -1008,7 +830,10 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 		{
 			for (; is >= 0; is--, ps--)
 			{
-				for (ip = 0; ip < lp; ip++)
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_RN;
+				
+				for (ip = 1; ip < lp; ip++)
 				{
 					if (tolower(ps[ip]) != tolower(pp[ip]))
 						goto __NEXT_RN;
@@ -1025,7 +850,10 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 		{
 			for (; is >= 0; is--, ps--)
 			{
-				for (ip = 0; ip < lp; ip++)
+				if (ps[0] != pp[0])
+					goto __NEXT_R;
+				
+				for (ip = 1; ip < lp; ip++)
 				{
 					if (ps[ip] != pp[ip])
 						goto __NEXT_R;
@@ -1045,7 +873,10 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 		{
 			for (; is < ls; is++, ps++)
 			{
-				for (ip = 0; ip < lp; ip++)
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_LN;
+				
+				for (ip = 1; ip < lp; ip++)
 				{
 					if (tolower(ps[ip]) != tolower(pp[ip]))
 						goto __NEXT_LN;
@@ -1062,7 +893,10 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 		{
 			for (; is < ls; is++, ps++)
 			{
-				for (ip = 0; ip < lp; ip++)
+				if (ps[0] != pp[0])
+					goto __NEXT_L;
+				
+				for (ip = 1; ip < lp; ip++)
 				{
 					if (ps[ip] != pp[ip])
 						goto __NEXT_L;
@@ -1172,6 +1006,232 @@ char *STRING_end_temp()
 	
 	return _make.buffer;
 }
+
+/****************************************************************************
+
+	Charset conversion routines
+
+****************************************************************************/
+
+static iconv_t my_iconv_open(const char *dst, const char *src)
+{
+	const char *osrc, *odst;
+	iconv_t *cache;
+	iconv_t handle;
+	
+	osrc = src;
+	odst = dst;
+	
+	if (dst == SC_UNICODE)
+		dst = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+	else if (dst == SC_UTF8)
+		dst = "UTF-8";
+	else if (!dst || *dst == 0)
+		dst = "ASCII";
+		
+	if (src == SC_UNICODE)
+		src = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+	else if (src == SC_UTF8)
+		src = "UTF-8";
+	else if (!src || *src == 0)
+		src = "ASCII";
+
+	if (osrc == SC_UNICODE && odst == SC_UTF8)
+		cache = &_conv_unicode_utf8;
+	else if (osrc == SC_UTF8 && odst == SC_UNICODE)
+		cache = &_conv_utf8_unicode;
+	else
+		cache = NULL;
+	
+	if (cache && *cache != ((iconv_t)-1))
+		return *cache;
+	
+	//fprintf(stderr, "iconv_open: %s -> %s\n", src, dst);
+	handle = iconv_open(dst, src);
+	if (cache)
+		*cache = handle;
+	return handle;
+}
+
+
+static void my_iconv_close(iconv_t handle)
+{
+	if (handle == _conv_unicode_utf8 || handle == _conv_utf8_unicode)
+		return;
+	
+	iconv_close(handle);
+}
+
+
+int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw)
+{
+	iconv_t handle;
+	bool err;
+	const char *in;
+	char *out;
+	size_t in_len;
+	size_t out_len;
+	size_t ret;
+	int errcode = 0;
+	bool unicode;
+
+	*result = NULL;
+
+	in = str;
+	in_len = len;
+
+	if (len == 0)
+		return errcode;
+
+	unicode = (dst == SC_UNICODE);
+	
+	handle = my_iconv_open(dst, src);
+	if (handle == (iconv_t)(-1))
+	{
+		if (errno == EINVAL)
+			errcode = E_UCONV;
+		else
+			errcode = E_CONV;
+	}
+	else
+	{
+		err = FALSE;
+	
+		for(;;)
+		{
+			out = COMMON_buffer;
+			out_len = COMMON_BUF_MAX;
+	
+			#if defined(OS_SOLARIS) || defined(OS_FREEBSD) || defined(OS_OPENBSD)
+			ret = iconv(handle, &in, &in_len, &out, &out_len);
+			#else
+			ret = iconv(handle, (char **)&in, &in_len, &out, &out_len);
+			#endif
+	
+			if (ret != (size_t)(-1) || errno == E2BIG)
+				*result = STRING_add(*result, COMMON_buffer, COMMON_BUF_MAX - out_len);
+	
+			if (ret != (size_t)(-1))
+				break;
+	
+			if (errno != E2BIG)
+			{
+				err = TRUE;
+				break;
+			}
+		}
+		
+		my_iconv_close(handle);
+	
+		if (unicode)
+			*result = STRING_add(*result, "\0\0\0", 3);
+	
+		STRING_extend_end(*result);
+	
+		if (err)
+			errcode = E_CONV;
+	}
+	
+	if (throw && errcode)
+		THROW(errcode);
+
+	return errcode;
+}
+
+
+char *STRING_conv_to_UTF8(const char *name, int len)
+{
+	char *result = NULL;
+
+	if (!name)
+		return "";
+
+	if (LOCAL_is_UTF8)
+	{
+		if (len <= 0)
+			result = (char *)name;
+		else
+			result = STRING_new_temp(name, len);
+	}
+	else
+	{
+		if (len <= 0)
+			len = strlen(name);
+
+		STRING_conv(&result, name, len, LOCAL_encoding, "UTF-8", TRUE);
+	}
+
+	if (result)
+		return result;
+	else
+		return "";
+}
+
+
+char *STRING_conv_file_name(const char *name, int len)
+{
+	char *result = NULL;
+	int pos;
+	struct passwd *info;
+	char *dir;
+	char *user;
+
+	if (!name)
+		return "";
+
+	if (len <= 0)
+		len = strlen(name);
+
+	if (len > 0 && *name == '~')
+	{
+		for (pos = 0; pos < len; pos++)
+		{
+			if (name[pos] == '/')
+				break;
+		}
+
+		if (pos <= 1)
+			dir = PROJECT_get_home();
+		else
+		{
+			user = STRING_new_temp(&name[1], pos - 1);
+			info = getpwnam(user);
+			if (info)
+				dir = info->pw_dir;
+			else
+				dir = NULL;
+		}
+
+		if (dir)
+		{
+			user = STRING_new_zero(dir);
+			if (pos < len)
+				user = STRING_add(user, &name[pos], len - pos);
+			name = user;
+			len = STRING_length(name);
+			STRING_free_later(user);
+		}
+	}
+
+	if (LOCAL_is_UTF8)
+		result = STRING_new_temp(name, len);
+	else
+		STRING_conv(&result, name, len, "UTF-8", LOCAL_encoding, TRUE);
+
+	//fprintf(stderr, "STRING_conv_file_name: %s\n", result);
+
+	if (result)
+		return result;
+	else
+		return "";
+}
+
+
+/****************************************************************************
+
+	Common string routines
+
+****************************************************************************/
 
 #include "gb_common_string_temp.h"
 

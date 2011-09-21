@@ -37,6 +37,7 @@
 #include "gbx_class.h"
 #include "gbx_event.h"
 #include "gbx_exec.h"
+#include "gbx_c_array.h"
 #include "gbx_c_gambas.h"
 
 
@@ -73,6 +74,25 @@ BEGIN_METHOD(Param_get, GB_INTEGER index)
 	//VALUE_conv(&TEMP, T_VARIANT);
 
 END_METHOD
+
+
+BEGIN_PROPERTY(Param_All)
+
+	GB_ARRAY all;
+	int nparam = nvararg();
+	int i;
+	
+	GB_ArrayNew(POINTER(&all), T_VARIANT, nparam);
+	
+	for (i = 0; i < nparam; i++)
+	{
+		VALUE_conv(&PP[i], T_VARIANT);
+		GB_StoreVariant((GB_VARIANT *)&PP[i], GB_ArrayGet(all, i));
+	}
+	
+	GB_ReturnObject(all);
+
+END_PROPERTY
 
 
 BEGIN_METHOD_VOID(Param_next)
@@ -118,7 +138,7 @@ GB_DESC NATIVE_Param[] =
 
 	GB_STATIC_PROPERTY_READ("Count", "i", Param_Count),
 	GB_STATIC_PROPERTY_READ("Max", "i", Param_Max),
-	GB_STATIC_PROPERTY_READ("Length", "i", Param_Count),
+	GB_STATIC_PROPERTY_READ("All", "Variant[]", Param_All),
 
 	GB_STATIC_PROPERTY_READ("Name", "s", Param_Name),
 	GB_STATIC_PROPERTY_READ("EventName", "s", Param_EventName),

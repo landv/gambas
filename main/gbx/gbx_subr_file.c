@@ -580,7 +580,7 @@ void SUBR_dir(ushort code)
   {
     if (!LOCAL_is_UTF8)
     {
-      if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, "UTF-8", FALSE))
+      if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, SC_UTF8, FALSE))
 	      str = STRING_new(pattern, len_pattern);
 	    else
       	STRING_ref(str);
@@ -611,7 +611,7 @@ static void found_file(const char *path)
 
   if (!LOCAL_is_UTF8)
   {
-    if (STRING_conv(&str, path, len, LOCAL_encoding, "UTF-8", FALSE))
+    if (STRING_conv(&str, path, len, LOCAL_encoding, SC_UTF8, FALSE))
 	    str = STRING_new(path, len);
 	  else
   	  STRING_ref(str);

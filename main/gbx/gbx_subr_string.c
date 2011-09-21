@@ -698,11 +698,11 @@ void SUBR_sconv(ushort code)
 	if (code & 0xF)
 	{
 		src = LOCAL_encoding;
-		dst = "UTF-8";
+		dst = SC_UTF8;
 	}
 	else
 	{
-		src = "UTF-8";
+		src = SC_UTF8;
 		dst = LOCAL_encoding;
 	}
 
@@ -882,7 +882,7 @@ __SHELL:
 	if (!LOCAL_is_UTF8)
 	{
 		char *conv;
-  	STRING_conv(&conv, str, lstr, "UTF-8", LOCAL_encoding, FALSE);
+  	STRING_conv(&conv, str, lstr, SC_UTF8, LOCAL_encoding, FALSE);
   	str = conv;
 		lstr = str ? strlen(str) : 0;
 	}
