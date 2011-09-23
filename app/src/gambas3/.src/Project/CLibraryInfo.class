@@ -2,6 +2,7 @@
 
 Public Name As String
 Public Path As String
+Public NotFound As Boolean
 Public Version As String
 Public Classes As String[]
 Public Libraries As String[]
@@ -22,7 +23,10 @@ Public Sub _new(sPath As String)
   Name = File.Name(sPath)
   Classes = New String[]
     
-  If Not sPath Or If Not Exist(sPath) Then Return
+  If Not sPath Or If Not Exist(sPath) Then 
+    NotFound = True
+    Return
+  Endif
   
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".startup"] To sData
   aData = Split(sData, "\n")

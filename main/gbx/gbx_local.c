@@ -513,8 +513,13 @@ static void fill_local_info(void)
 	LOCAL_local.currency_symbol = info->currency_symbol;
 	LOCAL_local.intl_currency_symbol = info->int_curr_symbol;
 
-	sprintf(LOCAL_local.general_currency, "($#,##0.%.*s)", Min(8, info->frac_digits), "########");
-	sprintf(LOCAL_local.intl_currency, "($$#,##0.%.*s)", Min(8, info->int_frac_digits), "########");
+	strcpy(LOCAL_local.general_currency, "($#,##0.");
+	strncat(LOCAL_local.general_currency, "########", Min(8, info->frac_digits));
+	strcat(LOCAL_local.general_currency, ")");
+	
+	strcpy(LOCAL_local.intl_currency, "($$#,##0.");
+	strncat(LOCAL_local.intl_currency, "########", Min(8, info->int_frac_digits));
+	strcat(LOCAL_local.intl_currency, ")");
 
 	init_currency_flag(info);
 	

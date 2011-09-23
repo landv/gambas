@@ -376,8 +376,28 @@
     }
     Index = 4
     Text = ("Libraries")
+    { Panel4 Panel
+      MoveScaled(2,1,80,9)
+      Background = Color.TextBackground
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      Margin = True
+      Border = Border.Plain
+      { PictureBox1 PictureBox
+        MoveScaled(1,1,9,8)
+        Picture = Picture["icon:/48/warning"]
+        AutoResize = True
+        Alignment = Align.Left
+      }
+      { TextLabel1 TextLabel
+        MoveScaled(11,1,66,6)
+        Expand = True
+        Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
+        Alignment = Align.Left
+      }
+    }
     { lstLibraries ListContainer
-      MoveScaled(1,1,81,55)
+      MoveScaled(1,12,81,44)
       Expand = True
     }
     { HBox18 HBox

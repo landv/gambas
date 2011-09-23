@@ -342,7 +342,7 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 		}
 		
 		/* process run of digits */
-		if (isdigit(ca) && isdigit(cb)) 
+		if (ca >= '0' && ca <= '9' && cb >= '0' && cb <= '9') 
 		{
 			fractional = (ca == '0' || cb == '0');
 

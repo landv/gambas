@@ -136,6 +136,9 @@ static CPICTURE *get_picture(const char *path, int len)
   GB_VALUE *value;
   IMAGE_TYPE *img;
 
+	if (len <= 0)
+		return NULL;
+	
   snprintf(key, sizeof(key), "%s\n%.*s", GB.CurrentComponent(), len, path);
 
 	pict = GET_FROM_CACHE(key);

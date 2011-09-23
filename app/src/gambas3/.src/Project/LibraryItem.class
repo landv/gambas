@@ -20,7 +20,7 @@ Property Background As Integer
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
-  '$hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Mouse = Mouse.Pointing
   Me.H = Max(ICON_SIZE, Desktop.Scale * 12) + PADDING * 2
   
 End
@@ -55,9 +55,13 @@ Public Sub DrawingArea_Draw()
     $sText &= "<font size=\"+1\"><b>" & .Name & "</b> " & .Version & "</font>"
     '$sText &= Subst("<font size=\"-1\" color=\"&1\"><b>", If(IsSelected(), "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
     $sText &= "<hr><font size=\"-1\"><b>" & ("Location") & "&nbsp;:&nbsp;</b>" & Replace($sPath, System.User.Home, "~") & "</font>"
-    $sText &= "<br><font size=\"-1\"><b>" & ("Provides") & "&nbsp;:&nbsp;</b>" & .Classes.Join(", ") & "</font>"
-    If .Libraries.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Depends on") & "&nbsp;:&nbsp;</b>" & .Libraries.Join(", ") & "</font>"
-    $sText &= "<br></font>"
+    If .NotFound Then
+      $sText &= "<p><b><font color=\"red\">" & ("WARNING! Library not found.") & "</font></b>"
+    Else
+      $sText &= "<br><font size=\"-1\"><b>" & ("Provides") & "&nbsp;:&nbsp;</b>" & .Classes.Join(", ") & "</font>"
+      If .Libraries.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Depends on") & "&nbsp;:&nbsp;</b>" & .Libraries.Join(", ") & "</font>"
+      $sText &= "<br></font>"
+    Endif
 
     $iTextW = Draw.RichTextWidth($sText)
 
