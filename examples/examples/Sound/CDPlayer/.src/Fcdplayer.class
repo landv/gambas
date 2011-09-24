@@ -1,4 +1,5 @@
 ' Gambas class file
+
 ' Simple CDplayer
 ' Carlier Laurent - (c) 2005
 ' Under GNU GPL V2 or Later
@@ -10,16 +11,20 @@ Static mycd As CDRom
 Static HaveCD As Boolean
 
 Public Sub Form_open()
-  
-  Try mycd = New CDRom
-  If Not IsNull(mycd) Then
-    Volume.Value = Abs(mycd.Volume - Volume.MaxValue)
-    TrackPos.Value = 0
-    Me.Center
-    Timer1.Enabled = True
+  If CDRoms.Count > 0 Then
+    Try mycd = New CDRom
+    If Not IsNull(mycd) Then
+      Volume.Value = Abs(mycd.Volume - Volume.MaxValue)
+      TrackPos.Value = 0
+      Me.Center
+      Timer1.Enabled = True
+        Else
+      Message.Warning(("I Could not load cd-rom drive"))
+      Me.Close
+    Endif
       Else
-        Message.Warning(("I Could not load cd-rom drive"))
-        Me.Close
+    Message.Warning(("Your PC doen not have cd-rom drive"))
+    Me.Close
   Endif
   
 End
