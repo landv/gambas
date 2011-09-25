@@ -1,13 +1,13 @@
 ' Gambas module file
 
+' Pour récupérer les icônes manquantes depuis subversion :
+' $ for i in `svn status | grep "! " | cut -b 9-`; do svn revert $i; done
+
 Private Sub Copy(sSrc As String, sDest As String) As Boolean
 
-  Print sSrc; " ==> "; sDest
   Try Copy sSrc To sDest
-  If Error Then
-    Print "*ERROR*"
-    Return True
-  Endif
+  If Error Then Return True
+  Print sSrc; " ==> "; sDest
 
 End
 
@@ -23,8 +23,11 @@ Public Sub Main()
   Dim sTemplate As String
   Dim sExt As String
   Dim sSrc As String
+  Dim sFullPath As String
+  Dim hImage As Image
+  Dim hSvgImage As SvgImage
   
-  hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/gnome.map"
+  hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form.stock/.hidden/map"
   
   Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/16"
   Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/22"
@@ -44,24 +47,40 @@ Public Sub Main()
     
     Print sIcon
     
-    For Each sSize In ["16", "22", "32", "scalable"]
+    For Each sSize In ["scalable", "16", "22", "32"]
       
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".png"
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".svg"
       
-      For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "gnome/&1/&2", "hicolor/&1/&2"]
+      For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "Humanity/&2/&1", "gnome/&1/&2", "hicolor/&1/&2"]
     
         sTemplate = "/usr/share/icons" &/ sTheme
     
         If sSize = "scalable" Then
           sExt = ".svg"
           If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
-            Copy(Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+            If Copy(Subst(sTemplate, "32", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+              If Copy(Subst(sTemplate, "24", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+                Copy(Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+              Endif
+            Endif
           Endif
         Else
           sExt = ".png"
           If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
-            Copy(Subst(sTemplate, sSize & "x" & sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+            If Copy(Subst(sTemplate, sSize & "x" & sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+              sFullPath = Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+              If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "24", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+              If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+              If Exist(sFullPath) Then
+                hSvgImage = SvgImage.Load(sFullPath)
+                hImage = New Image(CInt(sSize), CInt(sSize), Color.Transparent)
+                Paint.Begin(hImage)
+                hSvgImage.Paint
+                Paint.End
+                hImage.Save("~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+              Endif
+            Endif
           Endif
         Endif
     
