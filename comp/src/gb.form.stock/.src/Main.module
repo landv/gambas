@@ -76,6 +76,7 @@ Public Sub Main()
                 hSvgImage = SvgImage.Load(sFullPath)
                 hImage = New Image(CInt(sSize), CInt(sSize), Color.Transparent)
                 Paint.Begin(hImage)
+                hSvgImage.Resize(CInt(sSize), CInt(sSize))
                 hSvgImage.Paint
                 Paint.End
                 hImage.Save("~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)

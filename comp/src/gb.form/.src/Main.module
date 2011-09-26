@@ -40,6 +40,8 @@ End
 
 Public Sub Main()
   
-  Print InputBox("Test", "Titre")
+  Application.Theme = "gambas"
+  
+  Print Picture["icon:/48/package"]
   
 End

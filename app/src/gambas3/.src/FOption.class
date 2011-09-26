@@ -57,7 +57,7 @@ Public Sub _new()
 
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
-  cmbIconTheme.List = [("Desktop"), "Gnome", "KDE"]
+  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE"]
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
   cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
@@ -95,7 +95,7 @@ Public Sub _new()
   
   $bNoChange = True
   ReadConfig
-  cmbIconTheme.Index = ["gnome", "kde"].Find(Settings["/Theme"]) + 1
+  cmbIconTheme.Index = ["gambas", "gnome", "kde"].Find(Settings["/Theme"]) + 1
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1

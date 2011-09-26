@@ -108,7 +108,7 @@ Static Private Sub InitTheme()
   
   SearchDesktop
   
-  Select Case Application.Theme
+  Select Case LCase(Application.Theme)
       
     Case "gnome"
       
@@ -234,6 +234,8 @@ Static Private Sub InitTheme()
       Endif 
       
       AddPath("gnome", "/usr/share/icons/gnome")
+      
+    Case "gambas"
       
   End Select 
   
