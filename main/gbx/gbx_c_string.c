@@ -405,7 +405,7 @@ bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int
 	int i, lc;
 	wchar_t *wstr;
 	
-	result = STRING_new_temp(str, wlen * sizeof(wchar_t));
+	result = STRING_new_temp(str, wlen * sizeof(wchar_t) + 3);
 	wstr = (wchar_t *)result;
 	
 	for (i = 0; i < wlen; i++)
@@ -417,6 +417,7 @@ bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int
 		str += lc;
 	}
 	
+	wstr[wlen] = 0;
 	*pwstr = wstr;
 	*pwlen = wlen;
 	return FALSE;

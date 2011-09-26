@@ -961,6 +961,8 @@ static int find_string(CARRAY *_object, int mode, const char *value, int len_val
 	int i;
 	int len;
 	
+	//fprintf(stderr, "find_string: %p %d: %.*s | %s\n", THIS, THIS->count, len_value, value, DEBUG_get_current_position());
+	
 	if (start < 0)
 		start = 0;
 	else if (start >= THIS->count)
