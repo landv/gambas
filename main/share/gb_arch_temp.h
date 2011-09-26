@@ -271,12 +271,32 @@ static bool get_absolute_path(const char *path, int len_path, char *abs_path, in
 	return err;
 }
 
+static int strint(char *str, int value)
+{
+	char buffer[16];
+	char *p;
+	int len;
+	
+	p = &buffer[15];
+	while (value >= 10)
+	{
+		*p-- = '0' + value % 10;
+		value /= 10;
+	}
+	*p = '0' + value;
+	
+	len = buffer + sizeof(buffer) - p;
+	memcpy(str, p, len);
+	return len;
+}
+
 bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 {
   int ind;
   ARCH_SYMBOL *sym;
   char tpath[PATH_MAX];
   int len_tpath;
+	int n;
 
   if (len_path <= 0)
     len_path = strlen(path);
@@ -309,8 +329,13 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 				break;
 
 			sym = &arch->symbol[ind];
-			len_tpath = snprintf(tpath2, sizeof(tpath2),"/%d:%s", ind, p + 1);
-			strcpy(tpath, tpath2);
+			tpath2[0] = '/';
+			n = strint(&tpath2[1], ind);
+			tpath2[n + 1] = ':';
+			strcpy(&tpath2[n + 2], p + 1);
+			len_tpath = n + 2 + strlen(p + 1);
+			memcpy(tpath, tpath2, len_tpath);
+			tpath[len_tpath] = 0;
 		}
 		
   	ind = SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0);

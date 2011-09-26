@@ -30,15 +30,44 @@ bool STRING_equal_same(const char *str1, const char *str2, int len)
 	//return len == 0 || memcmp(str1, str2, len) == 0;
 	
 	#if defined(ARCH_X86_64) || defined(ARCH_X86)
-	while (len >= 8)
+	
+	for(;;)
 	{
+		if (len < 8) break;
+	
+		if (*((int64_t *)str1) != *((int64_t *)str2))
+			return FALSE;
+		str1 += 8;
+		str2 += 8;
+		len -= 8;
+
+		if (len < 8) break;
+	
+		if (*((int64_t *)str1) != *((int64_t *)str2))
+			return FALSE;
+		str1 += 8;
+		str2 += 8;
+		len -= 8;
+		
+		if (len < 8) break;
+	
+		if (*((int64_t *)str1) != *((int64_t *)str2))
+			return FALSE;
+		str1 += 8;
+		str2 += 8;
+		len -= 8;
+		
+		if (len < 8) break;
+	
 		if (*((int64_t *)str1) != *((int64_t *)str2))
 			return FALSE;
 		str1 += 8;
 		str2 += 8;
 		len -= 8;
 	}
+	
 	#else
+	
 	while (len >= 8)
 	{
 		if (LIKELY(str1[0] != str2[0]))
@@ -61,6 +90,7 @@ bool STRING_equal_same(const char *str1, const char *str2, int len)
 		str2 += 8;
 		len -= 8;
 	}
+	
 	#endif
 	
 	//if (UNLIKELY(len < 8))
