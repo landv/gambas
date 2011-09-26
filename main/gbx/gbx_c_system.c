@@ -103,7 +103,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(System_Charset)
 
-	GB_ReturnString(LOCAL_encoding);
+	if (LOCAL_is_UTF8)
+		GB_ReturnConstZeroString("UTF-8");
+	else
+		GB_ReturnString(LOCAL_encoding);
 
 END_PROPERTY
 

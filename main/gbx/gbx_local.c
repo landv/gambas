@@ -370,16 +370,19 @@ static void fill_local_info(void)
 	free_local_info();
 
 	/* local encoding */
-
-	STRING_free(&LOCAL_encoding);
+	
+	if (!LOCAL_is_UTF8)
+		STRING_free(&LOCAL_encoding);
 
 	codeset = nl_langinfo(CODESET);
 	if (!codeset || !*codeset)
 		codeset = "US-ASCII";
 
-	LOCAL_encoding = STRING_new_zero(codeset);
-
-	LOCAL_is_UTF8 = (strcasecmp(LOCAL_encoding, "UTF-8") == 0);
+	LOCAL_is_UTF8 = (strcasecmp(codeset, "UTF-8") == 0);
+	if (LOCAL_is_UTF8)
+		LOCAL_encoding = SC_UTF8;
+	else
+		LOCAL_encoding = STRING_new_zero(codeset);
 
 	#ifdef DEBUG_LANG
 	fprintf(stderr, "LOCAL_encoding = %s\n", LOCAL_encoding);
@@ -540,7 +543,8 @@ void LOCAL_exit(void)
 	STRING_free(&env_LANG);
 	STRING_free(&env_LC_ALL);
 	STRING_free(&env_LANGUAGE);
-	STRING_free(&LOCAL_encoding);
+	if (!LOCAL_is_UTF8)
+		STRING_free(&LOCAL_encoding);
 	STRING_free(&_lang);
 	free_local_info();
 }

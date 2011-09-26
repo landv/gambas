@@ -103,6 +103,8 @@ static void init(const char *file)
 	PROJECT_init(file);
 	DEBUG_init();
 
+	LOCAL_init();
+
 	if (file)
 	{
 		if (PROJECT_load()) // Call STACK_init()
@@ -116,8 +118,6 @@ static void init(const char *file)
 	else
 		STACK_init();
 		
-	LOCAL_init();
-
 	if (EXEC_debug)
 	{
 		DEBUG.Welcome();

@@ -954,6 +954,54 @@ static int find(CARRAY *_object, int mode, void *value, int start)
 	return (-1);
 }
 
+static int find_string(CARRAY *_object, int mode, const char *value, int len_value, int start)
+{
+	char **data;
+	char *str;
+	int i;
+	int len;
+	
+	if (start < 0)
+		start = 0;
+	else if (start >= THIS->count)
+		return (-1);
+	
+	data = ((char **)THIS->data);
+	
+	if (mode == GB_COMP_BINARY)
+	{
+		for (i = start; i < THIS->count; i++)
+		{
+			str = data[i];
+			len = STRING_length(str);
+			if (STRING_equal(str, len, value, len_value))
+				return i;
+		}
+	}
+	else if (mode == GB_COMP_NOCASE)
+	{
+		for (i = start; i < THIS->count; i++)
+		{
+			str = data[i];
+			len = STRING_length(str);
+			if (STRING_equal_ignore_case(str, len, value, len_value))
+				return i;
+		}
+	}
+	else
+	{
+		COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
+		
+		for (i = start; i < THIS->count; i++)
+		{
+			if ((*compare)(&data[i], &value) == 0)
+				return i;
+		}
+	}
+
+	return (-1);
+}
+
 #define IMPLEMENT_find(_type, _gtype) \
 BEGIN_METHOD(CARRAY_##_type##_find, _gtype value; GB_INTEGER start) \
 \
@@ -1008,17 +1056,13 @@ END_METHOD
 
 BEGIN_METHOD(CARRAY_string_find, GB_STRING value; GB_INTEGER mode; GB_INTEGER start)
 
-	char *str = GB_ToZeroString(ARG(value));
-
-	GB_ReturnInteger(find(THIS, VARGOPT(mode, 0), &str, VARGOPT(start, 0)));
+	GB_ReturnInteger(find_string(THIS, VARGOPT(mode, GB_COMP_BINARY), STRING(value), LENGTH(value), VARGOPT(start, 0)));
 
 END_METHOD
 
 BEGIN_METHOD(CARRAY_string_exist, GB_STRING value; GB_INTEGER mode)
 
-	char *str = GB_ToZeroString(ARG(value));
-
-	GB_ReturnBoolean(find(THIS, VARGOPT(mode, 0), &str, 0) >= 0);
+	GB_ReturnBoolean(find_string(THIS, VARGOPT(mode, GB_COMP_BINARY), STRING(value), LENGTH(value), 0) >= 0);
 
 END_METHOD
 

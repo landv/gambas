@@ -1158,7 +1158,7 @@ char *STRING_conv_to_UTF8(const char *name, int len)
 		if (len <= 0)
 			len = strlen(name);
 
-		STRING_conv(&result, name, len, LOCAL_encoding, "UTF-8", TRUE);
+		STRING_conv(&result, name, len, LOCAL_encoding, SC_UTF8, TRUE);
 	}
 
 	if (result)
@@ -1216,7 +1216,7 @@ char *STRING_conv_file_name(const char *name, int len)
 	if (LOCAL_is_UTF8)
 		result = STRING_new_temp(name, len);
 	else
-		STRING_conv(&result, name, len, "UTF-8", LOCAL_encoding, TRUE);
+		STRING_conv(&result, name, len, SC_UTF8, LOCAL_encoding, TRUE);
 
 	//fprintf(stderr, "STRING_conv_file_name: %s\n", result);
 

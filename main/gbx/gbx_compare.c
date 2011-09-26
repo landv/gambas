@@ -189,13 +189,15 @@ int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool noc
 	else if (l2 == 0)
 		return 1;
 
-	if (STRING_conv((char **)(void *)&t1, s1, l1, SC_UTF8, SC_UNICODE, throw)
-		  || STRING_conv((char **)(void *)&t2, s2, l2, SC_UTF8, SC_UNICODE, throw))
-		goto __FAILED;
-	
-	lt1 = STRING_length((char *)t1) / sizeof(wchar_t);
-	lt2 = STRING_length((char *)t2) / sizeof(wchar_t);
-	
+	if (STRING_convert_to_unicode(&t1, &lt1, s1, l1)
+		  || STRING_convert_to_unicode(&t2, &lt2, s2, l2))
+	{
+		if (throw)
+			THROW(E_CONV);
+		else
+			goto __FAILED;
+	}
+
 	if (nocase)
 	{
 		for (i = 0; i < lt1; i++)

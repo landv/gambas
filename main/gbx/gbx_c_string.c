@@ -84,7 +84,7 @@ static int utf8_get_length(const char *str, int len)
 	return ulen;
 }
 
-static uint utf8_to_unicode(char *str, int len)
+static uint utf8_to_unicode(const char *str, int len)
 {
 	uint unicode;
 	
@@ -398,9 +398,32 @@ static void String_Right(ushort code)
 }
 
 
+bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int len)
+{
+	char *result;
+	int wlen = utf8_get_length(str, len);
+	int i, lc;
+	wchar_t *wstr;
+	
+	result = STRING_new_temp(str, wlen * sizeof(wchar_t));
+	wstr = (wchar_t *)result;
+	
+	for (i = 0; i < wlen; i++)
+	{
+		lc = utf8_get_char_length(*str);
+		wstr[i] = (wchar_t)utf8_to_unicode(str, lc);
+		if (wstr[i] == UNICODE_INVALID)
+			return TRUE;
+		str += lc;
+	}
+	
+	*pwstr = wstr;
+	*pwlen = wlen;
+	return FALSE;
+}
+
 static bool convert_to_unicode(wchar_t **wstr, int *wlen, const char *str, int len, bool upper)
 {
-	char *temp;
 	wchar_t *wtemp;
 	int i, l;
 	
@@ -411,11 +434,8 @@ static bool convert_to_unicode(wchar_t **wstr, int *wlen, const char *str, int l
 		return FALSE;
 	}
 	
-	if (STRING_conv(&temp, str, len, SC_UTF8, SC_UNICODE, FALSE))
+	if (STRING_convert_to_unicode(&wtemp, &l, str, len))
 		return TRUE;
-	
-	wtemp = (wchar_t *)temp;
-	l = wcslen(wtemp);
 	
 	if (upper)
 	{
@@ -432,7 +452,6 @@ static bool convert_to_unicode(wchar_t **wstr, int *wlen, const char *str, int l
 	*wlen = l;
 	return FALSE;
 }
-
 
 static void convert_string(char *str, int len, bool upper)
 {
@@ -502,31 +521,7 @@ static void convert_string(char *str, int len, bool upper)
 		}
 	}
 	
-	
 	GB_ReturnString(result);
-	
-	/*char *temp = NULL;
-	wchar_t *wtemp;
-	int ltemp;
-
-	if (len > 0)
-	{
-		if (convert_to_unicode(&wtemp, &ltemp, str, len, upper))
-			goto __ERROR;
-		
-		if (STRING_conv(&temp, (char *)wtemp, ltemp * sizeof(wchar_t), SC_UNICODE, SC_UTF8, FALSE))
-			goto __ERROR;
-	}
-
-	GB_ReturnString(temp);
-	return;
-	
-__ERROR:
-
-	if (len > 0)
-		GB_ReturnNewString(str, len);
-	else
-		GB_ReturnNull();*/
 }
 
 
