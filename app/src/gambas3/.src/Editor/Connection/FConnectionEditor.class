@@ -755,6 +755,7 @@ Public Sub btnNewField_Click()
 
   Dim hField As CField
   Dim iInd As Integer
+  Dim iRow As Integer
 
   If $bReadOnly Then Return
 
@@ -775,13 +776,14 @@ Public Sub btnNewField_Click()
 
   End With
 
-  $aField.Add(hField, tbvField.Row + 1)
+  iRow = tbvField.Row
+  $aField.Add(hField, iRow + 1)
   Inc tbvField.Rows.Count
   tbvField.Rows[tbvField.Rows.Count - 1].H = -1
 
   Modify
 
-  tbvField.MoveTo(tbvField.Row + 1, 1)
+  tbvField.MoveTo(iRow + 1, 1)
   tbvField_Click
 
 End

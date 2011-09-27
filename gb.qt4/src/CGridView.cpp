@@ -472,6 +472,8 @@ Q3Table(0, 0, parent)
 	_resizable = true;
 	_expand = false;
 	
+	setHScrollBarMode(Q3ScrollView::Auto);
+	setVScrollBarMode(Q3ScrollView::Auto);
 	/*viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
 	viewport()->setAttribute(Qt::WA_PaintOnScreen, true);*/
 	
@@ -908,7 +910,13 @@ void MyTable::setCurrentCell(int row, int col)
 			col += colspan;
 	}
 
-	Q3Table::setCurrentCell(row, col);
+	if (selectionMode() == SingleRow && row == currentRow() && !isRowReallySelected(row))
+	{
+		setSelectionMode(NoSelection);
+		setSelectionMode(SingleRow);
+	}
+	else
+		Q3Table::setCurrentCell(row, col);
 }
 
 void MyTable::updateCurrentCell()
@@ -957,13 +965,13 @@ void MyTable::selectRow(int row, bool update)
 		
 	if (selectionMode() == SingleRow)
 	{
-		if (row == currentRow() && !isRowReallySelected(row))
+		/*if (row == currentRow() && !isRowReallySelected(row))
 		{
 			setSelectionMode(NoSelection);
 			setSelectionMode(SingleRow);
 		}
-		else
-			setCurrentCell(row, currentColumn());
+		else*/
+		setCurrentCell(row, currentColumn());
 		return;
 	}
 	
@@ -1138,11 +1146,14 @@ void MyTable::setContentsPos(int x, int y)
 
 /** GridView *****************************************************************/
 
-static void raise_change(void *_object)
+static void raise_change(void *_object, bool accept_unselected)
 {
 	int row, col;
 	
 	WIDGET->getCurrentCell(&row, &col);
+	if (row < 0 && !accept_unselected)
+		return;
+	
 	if (row == THIS->last_row && col == THIS->last_col)
 		return;
 	THIS->last_row = row;
@@ -2499,7 +2510,7 @@ void CGridView::changed(void)
 	//if (row < 0 || col < 0)
 	//	return;
 
-	raise_change(THIS);
+	raise_change(THIS, true);
 }
 
 void CGridView::activated(void)
@@ -2513,7 +2524,7 @@ void CGridView::selected(void)
 	GET_SENDER();
 	if (WIDGET->selectionMode() == Q3Table::SingleRow)
 	{
-		raise_change(THIS);
+		raise_change(THIS, false);
 		GB.Raise(THIS, EVENT_Select, 0);
 	}
 	else

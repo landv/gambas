@@ -26,6 +26,7 @@ Public Sub Main()
   Dim sFullPath As String
   Dim hImage As Image
   Dim hSvgImage As SvgImage
+  Dim bOK As Boolean
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form.stock/.hidden/map"
   
@@ -47,6 +48,8 @@ Public Sub Main()
     
     Print sIcon
     
+    If sIcon = "hardware" Then Stop
+    
     For Each sSize In ["scalable", "16", "22", "32"]
       
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".png"
@@ -58,15 +61,20 @@ Public Sub Main()
     
         If sSize = "scalable" Then
           sExt = ".svg"
+          bOK = True
           If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
             If Copy(Subst(sTemplate, "32", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
               If Copy(Subst(sTemplate, "24", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
-                Copy(Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+                If Copy(Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+                  bOK = False
+                Endif
               Endif
             Endif
           Endif
+          If bOK Then Break
         Else
           sExt = ".png"
+          bOK = True
           If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
             If Copy(Subst(sTemplate, sSize & "x" & sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
               sFullPath = Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
@@ -80,9 +88,12 @@ Public Sub Main()
                 hSvgImage.Paint
                 Paint.End
                 hImage.Save("~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+              Else
+                bOK = False
               Endif
             Endif
           Endif
+          If bOK Then Break
         Endif
     
       Next

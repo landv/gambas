@@ -829,7 +829,7 @@ Private Sub MakeExportedIcon(hImage As Image)
       ' End With
       ' Print Mid$(" .,-~+=oOINS8&%@", iGray \ 16 + 1, 1);
 
-      If Color.GetAlpha(iCol) = 255 Then Continue
+      If Color.GetAlpha(iCol) > 192 Then Continue
       If X = 0 Or If X = (hImage.W - 1) Or If Y = 0 Or If Y = (hImage.H - 1) Or If Color[hImage[X - 1, Y]].Alpha = 255 Or If Color[hImage[X + 1, Y]].Alpha = 255 Or If Color[hImage[X, Y - 1]].Alpha = 255 Or If Color[hImage[X, Y + 1]].Alpha = 255 Then
         hColorInfo = Color[Color.Darker(iCol)]
         hColorInfo.Alpha = hColorInfo.Alpha \ 2

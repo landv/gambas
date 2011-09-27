@@ -86,6 +86,8 @@ Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
   
   Dim bCancel As Boolean
   
+  'Debug System.Backtrace.Join("\n")
+  
   If $hEditor And If Not $bDoNotHideEditor Then
     If Not bNoSave Then 
       bCancel = SaveEditor()
