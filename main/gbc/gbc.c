@@ -422,10 +422,10 @@ int main(int argc, char **argv)
 	MEMORY_init();
 	COMMON_init();
 
-	get_arguments(argc, argv);
-
 	TRY
 	{
+		get_arguments(argc, argv);
+
 		COMPILE_init();
 
 		// Remove information files if we are compiling everything

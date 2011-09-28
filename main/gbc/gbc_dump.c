@@ -33,10 +33,12 @@
 #include "gb_error.h"
 
 #include "gb_table.h"
+#include "gb_str.h"
 #include "gbc_compile.h"
 #include "gb_code.h"
 #include "gb_file.h"
 #include "gbc_chown.h"
+#include "gbc_output.h"
 
 
 static FILE *_finfo;
@@ -359,6 +361,14 @@ static void close_file_and_rename(FILE *f, const char *file, const char *dest)
 	}
 }
 
+static bool exist_bytecode_file(char *name)
+{
+	char *output = OUTPUT_get_file(name);
+	bool exist = FILE_exist(output);
+	STR_free(output);
+	return exist;
+}
+
 static void class_update_exported(CLASS *class)
 {
 	FILE *fw = NULL;
@@ -366,6 +376,7 @@ static void class_update_exported(CLASS *class)
 	char *name;
 	int len;
 	bool inserted = FALSE;
+	bool optional;
 	int cmp;
 	
 	fr = fopen(".list", "r");
@@ -376,22 +387,18 @@ static void class_update_exported(CLASS *class)
 	for(;;)
 	{
 		name = read_line(fr, &len);
-			
+		optional = FALSE;
+
 		if (!name)
-		{
 			cmp = 1;
-		}
 		else
 		{
 			if (name[len - 1] == '?')
 			{
-				char cname[strlen(class->name) + 2];
-				strcpy(cname, class->name);
-				strcat(cname, "?");
-				cmp = strcmp(name, cname);
+				optional = TRUE;
+				name[len - 1] = 0;
 			}
-			else
-				cmp = strcmp(name, class->name);
+			cmp = strcmp(name, class->name);
 		}
 		
 		if (cmp == 0)
@@ -415,11 +422,22 @@ static void class_update_exported(CLASS *class)
 		if (!name)
 			break;
 		
-		if (JOB->verbose)
-			printf("Copy '%s' in .list file\n", name);
-		create_file(&fw, ".list#");		
-		fputs(name, fw);
-		fputc('\n', fw);
+		if (exist_bytecode_file(name))
+		{
+			if (JOB->verbose)
+				printf("Copy '%s' in .list file\n", name);
+		
+			create_file(&fw, ".list#");		
+			fputs(name, fw);
+			if (optional)
+				fputc('?', fw);
+			fputc('\n', fw);
+		}
+		else
+		{
+			if (JOB->verbose)
+				printf("Remove '%s' from .list file\n", name);
+		}
 	}
 	
 	if (fr)
@@ -633,16 +651,30 @@ void CLASS_export(void)
 		
 		// copying class information
 		
-		if (JOB->verbose)
-			printf("Copy '%s' information in .info file\n", &line[1]);
-		for(;;)
+		if (exist_bytecode_file(&line[1]))
 		{
-			create_file(&fw, ".info#");
-			fputs(line, fw);
-			fputc('\n', fw);
-			line = read_line(fr, NULL);
-			if (!line || *line == '#')
-				break;
+			if (JOB->verbose)
+				printf("Copy '%s' information in .info file\n", &line[1]);
+			for(;;)
+			{
+				create_file(&fw, ".info#");
+				fputs(line, fw);
+				fputc('\n', fw);
+				line = read_line(fr, NULL);
+				if (!line || *line == '#')
+					break;
+			}
+		}
+		else
+		{
+			if (JOB->verbose)
+				printf("Remove '%s' information from .info file\n", &line[1]);
+			for(;;)
+			{
+				line = read_line(fr, NULL);
+				if (!line || *line == '#')
+					break;
+			}
 		}
 	}
 	
