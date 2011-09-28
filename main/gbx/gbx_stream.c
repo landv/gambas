@@ -179,7 +179,7 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 	{
 		// ".99" is used for opening a file descriptor in direct mode
 		
-		if (FILE_is_relative(path) && !((mode & ST_DIRECT) && path[0] == "." && isdigit(path[1])))
+		if (FILE_is_relative(path) && !((mode & ST_DIRECT) && path[0] == '.' && isdigit(path[1])))
 		{
 			ARCHIVE *arch = NULL;
 			

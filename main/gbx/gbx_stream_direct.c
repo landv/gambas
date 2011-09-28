@@ -80,7 +80,9 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 		if (omode < 0)
 			return TRUE;
 		
-		if (((omode & O_ACCMODE) != (fmode & O_ACCMODE)))
+		if (((mode & ST_MODE) == ST_READ && (omode & O_ACCMODE) == O_WRONLY)
+			  || ((mode & ST_MODE) == ST_WRITE && (omode & O_ACCMODE) == O_RDONLY)
+			  || ((mode & ST_MODE) == ST_READ_WRITE && (omode & O_ACCMODE) != O_RDWR))
 			THROW(E_ACCESS);
 		
 		stream->direct.watch = TRUE;
