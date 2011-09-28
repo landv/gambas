@@ -96,7 +96,7 @@ Private Function Cookies_Read() As Collection
     For Each sCookie In Split(CGI["HTTP_COOKIE"], ";")
       sCookie = Trim(sCookie)
       aCookie = Split(sCookie, "=")
-      $cCookies[aCookie[0]] = aCookie[1]
+      Try $cCookies[aCookie[0]] = aCookie[1]
     Next
  
   Endif
