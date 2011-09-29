@@ -271,7 +271,8 @@ static void init_child_tty(int fd)
 	
 	terminal.c_oflag |= OPOST;
 	
-	terminal.c_lflag |= ISIG | ICANON | IEXTEN | ECHO;
+	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
+	terminal.c_lflag &= ~ECHO;
 
 	if (tcsetattr(fd, TCSADRAIN, &terminal))
 		exit(127);

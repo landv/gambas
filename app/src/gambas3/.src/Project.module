@@ -3728,6 +3728,8 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   If sExt Then
     Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
     If Not Error Then bRecompile = True
+    'Try Kill Project.Dir &/ ".list"
+    'Try Kill Project.Dir &/ ".info"
     'Debug sDir &/ ".gambas" &/ UCase(sName); ": "; Exist(sDir &/ ".gambas" &/ UCase(sName))
   Endif
 

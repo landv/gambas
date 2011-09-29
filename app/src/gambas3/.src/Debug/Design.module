@@ -837,7 +837,7 @@ Private Sub Start(sCmd As String)
   If sProg Then
     $hProcess = Exec aExec With Project.Environment As "Process"
   Else
-    $hProcess = Exec aExec With Project.Environment For Read Write As "Process"
+    $hProcess = Exec aExec With Project.Environment For Input Output As "Process"
   Endif  
   
   SetState(STATE_STARTING)
