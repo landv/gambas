@@ -48,7 +48,7 @@ CAIRO_DRAW *_current = NULL;
 
 static void free_image(GB_IMG *img, void *image)
 {
-	fprintf(stderr, "free_image: %p %p (%d)\n", img, image, cairo_surface_get_reference_count((cairo_surface_t *)image));
+	//fprintf(stderr, "free_image: %p %p (%d)\n", img, image, cairo_surface_get_reference_count((cairo_surface_t *)image));
 	cairo_surface_destroy((cairo_surface_t *)image);
 }
 
@@ -62,7 +62,7 @@ static void *temp_image(GB_IMG *img)
 		image = cairo_image_surface_create_for_data(img->data, CAIRO_FORMAT_ARGB32, img->width, img->height, 
 		                                            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, img->width));
 		
-	fprintf(stderr, "temp_image: %p -> %p (%d)\n", img, image, cairo_surface_get_reference_count(image));
+	//fprintf(stderr, "temp_image: %p -> %p (%d)\n", img, image, cairo_surface_get_reference_count(image));
 	return image;
 }
 
