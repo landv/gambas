@@ -1719,7 +1719,7 @@ bool GB_ConvString(char **result, const char *str, int len, const char *src, con
 
 char *GB_SystemCharset(void)
 {
-  return LOCAL_encoding;
+  return LOCAL_is_UTF8 ? "UTF-8" : LOCAL_encoding;
 }
 
 char *GB_SystemDomainName(void)
