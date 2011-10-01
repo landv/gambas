@@ -221,7 +221,8 @@ End
 Public Sub OnProjectDebug()
   
   btnAbove.Visible = Project.Running And btnUndock.Value
-  Me.Stacking = If(Project.Running And btnAbove.Value, Window.Above, Window.Normal)
+  If btnUndock.Value Then Me.Stacking = If(Project.Running And btnAbove.Value, Window.Above, Window.Normal)
+  'panControl.Visible = Project.Running
   
 End
 
@@ -322,5 +323,18 @@ Public Sub btnSearch_Click()
 
   edtOutput.SetFocus
   FSearch.WakeUp(False)
+
+End
+
+
+Public Sub btnControl_Click()
+
+  Design.Send(Chr$(Asc(Right$(Last.Text)) - 64))
+
+End
+
+Public Sub btnCtrlD_Click()
+
+  Print #Design.GetProcess(), Chr$(4);
 
 End

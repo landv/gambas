@@ -107,25 +107,27 @@ Static Private Function Normalize(sStr As String) As String
   Dim iCar As Integer
   Dim bEsc As Boolean
 
-  For iInd = 1 To Len(sStr)
-
-    iCar = Asc(sStr, iInd)
-
-    If iCar = 27 Then
-      bEsc = True
-      Continue
-    Endif
-
-    If bEsc Then
-      If iCar < 32 Then bEsc = False
-      Continue
-    Endif
-
-    If iCar < 32 And iCar <> 10 Then iCar = 32
-
-    sNorm = sNorm & Chr$(iCar)
-
-  Next
+  ' For iInd = 1 To Len(sStr)
+  ' 
+  '   iCar = Asc(sStr, iInd)
+  ' 
+  '   If iCar = 27 Then
+  '     bEsc = True
+  '     Continue
+  '   Endif
+  ' 
+  '   If bEsc Then
+  '     If iCar < 32 Then bEsc = False
+  '     Continue
+  '   Endif
+  ' 
+  '   If iCar < 32 And iCar <> 10 Then iCar = 32
+  ' 
+  '   sNorm = sNorm & Chr$(iCar)
+  ' 
+  ' Next
+  
+  sNorm = sStr
   
   If System.Charset = Desktop.Charset Then 
     Return sNorm

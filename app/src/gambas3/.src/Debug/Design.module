@@ -995,6 +995,11 @@ Public Function IsRunning() As Boolean
 
 End
 
+Public Sub GetProcess() As Process
+  
+  Return $hProcess
+  
+End
 
 Public Sub Send(sStr As String)
 

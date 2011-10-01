@@ -466,6 +466,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim hPict As Picture
   Dim hStartup As Picture
   Dim sKey As String
+  Dim sCacheKey As String
   Dim bLink As Boolean
   Dim sIcon As String
   Dim sExt As String
@@ -483,6 +484,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim bAdded As Boolean
   Dim hProject As CProjectInfo
   Dim sLink As String
+  Dim bExported As Boolean
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
@@ -515,7 +517,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   
     Else
     
-      bConflict = VersionControl.InConflict(sPath)
+      'bConflict = VersionControl.InConflict(sPath)
       sIcon = sPrefix &/ "file"
     
       sExt = File.Ext(sPath)
@@ -526,6 +528,9 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
             sModule = sExt
             sIcon = sExt & "-" & iSize
             bStartup = File.BaseName(sPath) = $hInfo.Startup And Not bNoStartup
+            If sExt = "class" Or If sExt = "module" Then
+              bExported = Project.IsExported(sPath)
+            Endif
           Endif
         
         Case "jpg", "jpeg", "xpm", "bmp", "png", "gif"
@@ -567,13 +572,13 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   End With
   
   If Left$(sIcon) = "/" Then
-    
+
     Try hImage = Image.Load(sIcon)
     If hImage Then
 
-      If iSize Then 
-         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-      Else 
+      If iSize Then
+        hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+      Else
         iSize = 32
         If hImage.Height > iSize Then
           hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
@@ -581,10 +586,10 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
         If hImage.Width > iSize Then
           hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width)
         Endif
-      Endif 
-      
+      Endif
+
       'hPict = hImage.Picture
-    Else  
+    Else
       hImage = Picture[sPrefix &/ "image"].Image
     Endif
 
@@ -592,29 +597,33 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
     If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
 
-    If bLink Then 
+    If bLink Then
       hImage = AddLinkEmblem(hImage)
     Endif
-    
+
     hPict = hImage.Picture
 
   Else
 
-    sKey = sIcon
-    If bLink Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-link" & ".png"
-    If bStartup Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
-    If bConflict Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-conflict" & ".png"
-    If bLocked Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-locked" & ".png"
-    If bAdded Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-added" & ".png"
-    
+    sKey = File.Dir(sIcon) &/ File.BaseName(sIcon) & "-"
+    If bLink Then sKey &= "l"
+    If bStartup Then sKey &= "s"
+    If bConflict Then sKey &= "c"
+    If bLocked Then sKey &= "k"
+    If bAdded Then sKey &= "a"
+    If bExported Then sKey &= "x"
+    If Right(sKey) = "-" Then sKey = Left(sKey, -1)
+    sKey &= ".png"
+
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
-    
-    Try hPict = Picture[sKey]
-    If Not hPict Then 
-    
+
+    sCacheKey = Replace(sKey, "icon:/", "$/")
+    Try hPict = Picture[sCacheKey]
+    If Not hPict Then
+
       If sModule Then
-        hImage = Project.MakeModuleIcon(sModule, iSize)
+        hImage = Project.MakeModuleIcon(sModule, iSize, bStartup, bExported)
       Else
         Try hImage = Picture[sIcon].Image
         If Error Then hImage = Picture[sPrefix &/ "file"].Image
@@ -622,26 +631,26 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       'If Not hPict Then hPict = Picture[sPrefix &/ "file"]
       'If Not hPict Then hPict = Picture["img/16/unknown.png"]
       'hPict = hPict.Copy()
-      
-      If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
+
+      'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
       If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
       If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
       If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
 
-      If iSize Then 
-         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-      Endif      
+      If iSize Then
+        hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+      Endif
 
-      If bLink Then 
+      If bLink Then
         hImage = AddLinkEmblem(hImage)
       Endif
-      
-      hPict = hImage.Picture
-      
-      If Not bNoStartup Then Picture[sKey] = hPict
 
-    Endif  
-  
+      hPict = hImage.Picture
+
+      If Not bNoStartup Then Picture[sCacheKey] = hPict
+
+    Endif
+
   Endif
 
   Return hPict

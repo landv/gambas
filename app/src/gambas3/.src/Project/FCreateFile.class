@@ -216,11 +216,12 @@ Private Sub CreateFile() As Boolean
       Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
-              "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n" &   
-              "  MoveScaled(0,0,68,64)\n"
+              "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n"
       
       If sType = "form" Then
       
+        sTemp &= "  MoveScaled(0,0,64,64)\n"
+        
         If chkDialog.Value Then
           sTemp &= "  Resizable = False\n"
                    "  Arrangement = Arrange.Vertical\n"
@@ -245,6 +246,10 @@ Private Sub CreateFile() As Boolean
                    "  }\n"
                    "}\n"
         Endif
+        
+      Else If sType = "report" Then
+        
+        sTemp &= "  #MoveScaled(0,0,64,64)\n"
         
       Endif
       

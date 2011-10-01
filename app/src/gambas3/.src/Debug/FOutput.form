@@ -109,11 +109,36 @@
     }
     { sepCharset Separator
       MoveScaled(40,0,1,4)
+      Visible = False
     }
     { chkCharset CheckBox
-      MoveScaled(41,0,28,4)
+      MoveScaled(41,0,19,4)
+      Visible = False
       Expand = True
+      AutoResize = True
       Text = ("Use system charset")
+    }
+    { panControl HBox
+      MoveScaled(64,0,14,4)
+      Visible = False
+      { sepControl Separator
+        MoveScaled(0,0,1,4)
+        Visible = False
+      }
+      { btnCtrlC ToolButton btnControl
+        Name = "btnCtrlC"
+        MoveScaled(1,0,4,4)
+        Text = ("^C")
+      }
+      { btnCtrlZ ToolButton btnControl
+        Name = "btnCtrlZ"
+        MoveScaled(5,0,4,4)
+        Text = ("^Z")
+      }
+      { btnCtrlD ToolButton
+        MoveScaled(9,0,4,4)
+        Text = ("^D")
+      }
     }
   }
   { edtOutput Editor
