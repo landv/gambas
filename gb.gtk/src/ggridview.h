@@ -177,6 +177,7 @@ public:
 	guint scroll_timer;
 	int mouse_pos;
 	bool _layouting_columns;
+	bool _configuring;
 	bool _autoresize;
 	int _show_headers;
 	bool _show_footers;

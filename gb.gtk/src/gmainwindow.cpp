@@ -95,7 +95,6 @@ static gboolean resize_later(gMainWindow *data)
 static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainWindow *data)
 {
 	gint x, y;
-	//fprintf(stderr, "cb_configure: %s\n", data->name());
 	
 	if (data->opened)
 	{
@@ -115,7 +114,6 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 		
 		if ((event->width != data->bufW) || (event->height != data->bufH) || (data->_resized) || !event->window)
 		{
-			//fprintf(stderr, "cb_configure: %d %d\n", event->width, event->height);
 			data->_next_w = event->width;
 			data->_next_h = event->height;
 /*			data->bufW=event->width;

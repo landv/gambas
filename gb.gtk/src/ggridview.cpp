@@ -804,6 +804,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	vdata=NULL;
 	scroll_timer = 0;
 	_layouting_columns = false;
+	_configuring = false;
 	_autoresize = true;
 	_show_headers = 0;
 	_show_footers = false;
@@ -816,15 +817,15 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	//gtk_container_set_border_width  (GTK_CONTAINER(widget),1);
 
 	//gtk_container_add(GTK_CONTAINER(border),widget);
-	hbar=gtk_hscrollbar_new(NULL);
-	vbar=gtk_vscrollbar_new(NULL);
+	hbar = gtk_hscrollbar_new(NULL);
+	vbar = gtk_vscrollbar_new(NULL);
 	
 	contents = gtk_drawing_area_new();
 	gtk_widget_add_events(contents, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
 	
-	header=gtk_drawing_area_new();
-	footer=gtk_drawing_area_new();
-	lateral=gtk_drawing_area_new();
+	header = gtk_drawing_area_new();
+	footer = gtk_drawing_area_new();
+	lateral = gtk_drawing_area_new();
 	//gtk_widget_set_size_request(header,0,20);
 	//gtk_widget_set_size_request(footer,0,20);
 	//gtk_widget_set_size_request(lateral,16,0);
@@ -887,9 +888,12 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	
 	//g_signal_connect(G_OBJECT(contents),"event",G_CALLBACK(gridview_release),this);
 
-	g_object_set(G_OBJECT(vbar),"visible",FALSE,(void *)NULL);
-	g_object_set(G_OBJECT(hbar),"visible",FALSE,(void *)NULL);
-	g_object_set(G_OBJECT(footer),"visible",FALSE,(void *)NULL);
+	gtk_widget_hide(vbar);
+	gtk_widget_hide(hbar);
+	gtk_widget_hide(footer);
+	//g_object_set(G_OBJECT(vbar),"visible",FALSE,(void *)NULL);
+	//g_object_set(G_OBJECT(hbar),"visible",FALSE,(void *)NULL);
+	//g_object_set(G_OBJECT(footer),"visible",FALSE,(void *)NULL);
 	g_object_set(G_OBJECT(widget),"can-focus",TRUE,(void *)NULL);
 
 	gtk_widget_realize(header);
@@ -969,11 +973,18 @@ void gGridView::calculateBars()
 	obh = bh = GTK_WIDGET_VISIBLE(hbar);
 	obv = bv = GTK_WIDGET_VISIBLE(vbar);
 	
-	vw = render->visibleWidth(); // + (obh ? px : 0);
-	vh = render->visibleHeight(); // + (obv ? py : 0);
+	//vw = render->visibleWidth();
+	//vh = render->visibleHeight();
+	
+	vw = width() - getFrameWidth() - (obv ? px : 0);
+	if (lateralWidth()) vw -= lateralWidth() + 2; // Why "+ 2" ?
+	vh = height() - getFrameWidth() - (obh ? py : 0);
+	if (headerHeight()) vh -= headerHeight() + 2;
 		
 	rw = render->width();
 	rh = render->height();
+	
+	//fprintf(stderr, "calculateBars: %d %d : %d %d : bh = %d bv = %d\n", vw, vh, px, py, bh, bv);
 	
 	if (vw > 1 && vh > 1)
 	{
@@ -990,22 +1001,16 @@ void gGridView::calculateBars()
 			vw = ovw - (obv ? px : 0);
 			vh = ovh - (obh ? py : 0);
 			
+			bh = vw < rw && rw > 0 && (scroll & SCROLL_HORIZONTAL);
+			bv = vh < rh && rh > 0 && (scroll & SCROLL_VERTICAL);
+			
 			//fprintf(stderr, "rw = %d rh = %d / vw = %d vh = %d / bh = %d bv = %d\n", rw, rh, vw, vh, bh, bv);
 			
-			bh = vw < rw && rw > 0 && (scroll & SCROLL_HORIZONTAL);
-			if (bh != obh)
-			{
-				obh = bh;
-				continue;
-			}
-				
-			bv = vh < rh && rh > 0 && (scroll & SCROLL_VERTICAL);
-			if (bv != obv)
-			{
-				obv = bv;
-				continue;
-			}	
-			break;
+			if (bh == obh && bv == obv)
+				break;
+			
+			obh = bh;
+			obv = bv;
 		}
 	}
 	else
@@ -1014,15 +1019,23 @@ void gGridView::calculateBars()
 		bv = false;
 	}
 	
+	//fprintf(stderr, "-> bh = %d bv = %d\n", bh, bv);
+	
 	if (bh != GTK_WIDGET_VISIBLE(hbar))
 	{
-		g_object_set(G_OBJECT(hbar),"visible",bh,(void *)NULL);
+		if (bh)
+			gtk_widget_show(hbar);
+		else
+			gtk_widget_hide(hbar);
 		if (!bh)
 			setScrollX(0);
 	}
 	if (bv != GTK_WIDGET_VISIBLE(vbar))
 	{
-		g_object_set(G_OBJECT(vbar),"visible",bv,(void *)NULL);
+		if (bv)
+			gtk_widget_show(vbar);
+		else
+			gtk_widget_hide(vbar);
 		if (!bv)
 			setScrollY(0);
 	}
@@ -1986,7 +1999,7 @@ void gGridView::setForeground(gColor color)
 void gGridView::layoutColumns()
 {
 	int n = columnCount() - 1;
-	int vw = clientWidth();
+	int vw;
 	int i, w, nx, wx;
 	
 	if (n < 0)
@@ -1997,6 +2010,7 @@ void gGridView::layoutColumns()
 		
 	_layouting_columns = true;
 	
+	vw = clientWidth();
 	w = nx = 0;
 	for (i = 0; i <= n; i++)
 	{
