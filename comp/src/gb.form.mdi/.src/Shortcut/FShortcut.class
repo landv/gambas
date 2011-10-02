@@ -9,22 +9,31 @@ Public Sub Run() As Boolean
   
 End
 
+Public Sub _new()
+  
+  $hEditor = New FShortcutEditor(Me)
+  $hEditor.Hide
+  $hEditor.Ignore = True
+
+End
+
+
 Public Sub Form_Open()
 
   Dim iInd As Integer
   Dim hAction As CAction
-
-  '$hSettings = New Settings("gb.form.mdi")
-  Settings.Read(Me, "gb.form.mdi/FShortcut")
-
+  
   $aAction = New CAction[]
   For Each hAction In MAction.Actions
     If hAction.HasShortcut Then $aAction.Add(hAction)
   Next
   $aAction.Sort
 
+  Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Rows.Count = $aAction.Count
+  Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Columns.Count = 2
+  Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Columns[0].Text = ("Action")
   tvwShortcut.Columns[1].Text = ("Shortcut")
   
@@ -43,9 +52,8 @@ Public Sub Form_Open()
   tvwShortcut.Columns[0].Width = tvwShortcut.Width - Desktop.Scale * 24
   tvwShortcut.Rows.Height = -1
 
-  $hEditor = New FShortcutEditor(Me)
-  $hEditor.Hide
-  $hEditor.Ignore = True
+  '$hSettings = New Settings("gb.form.mdi")
+  Settings.Read(Me, "gb.form.mdi/FShortcut")
 
 End
 

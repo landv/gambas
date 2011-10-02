@@ -1927,6 +1927,12 @@ BEGIN_METHOD_VOID(CGRIDVIEW_clear)
 
 	WIDGET->clear();
 
+	THIS->row = -1;
+	THIS->col = -1;
+	THIS->last_row = -1;
+	THIS->last_col = -1;
+	
+
 END_METHOD
 
 
@@ -2504,7 +2510,7 @@ void CGridView::changed(void)
 	GET_SENDER();
 	//MyTable *w = (MyTable *)sender();
 
-	WIDGET->updateCurrentCell();
+	//WIDGET->updateCurrentCell();
 	//WIDGET->getCurrentCell(&row, &col);
 
 	//if (row < 0 || col < 0)

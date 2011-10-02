@@ -46,7 +46,7 @@ Private $bHighlight As Boolean
 
 Private $hObserver As Observer
 Private $iLastSize As Integer
-Private $hTimer As Timer
+'Private $hTimer As Timer
 Private $hCreateTimer As Timer
 
 Private $bTimer As Boolean
@@ -62,12 +62,14 @@ Private $aNewRecord As Variant[]
 Private $bNewRecordModified As Boolean
 Private $iRowNewRecord As Integer = -1
 
+Private $bNoRefresh As Boolean
+
 Public Sub _new()
   
   $hCtrl = New TableView(Me) As "TableView"
   Me.Proxy = $hCtrl
   
-  $hTimer = New Timer As "TableView"
+  '$hTimer = New Timer As "TableView"
   $hCreateTimer = New Timer As "CreateTimer"
   $hCtrl.Header = TableView.Both
   $hCtrl.Grid = False
@@ -193,6 +195,7 @@ Private Sub Load()
 
   If Not $hTable Then Return
   
+  $bNoRefresh = True
   'Object.Lock($hCtrl)
   $bNoActivate = True
   $hCtrl.Rows.Count = $hTable.Count
@@ -218,6 +221,9 @@ Private Sub Load()
   Try $hCtrl.Rows[$iRowNewRecord].Text = $iRowNewRecord + 1
   $iRowNewRecord = -1
   If CanEdit() Then CreateNewRecord
+
+  $bNoRefresh = False
+  $hCtrl.Refresh
 
   EnsureRowVisible($hCtrl.Row)
 
@@ -311,38 +317,38 @@ End
 ' End
 
 
-Public Sub TableView_Timer()
-  
-  Dim iRow As Integer
-  Dim iHeight As Integer
-  Dim bVisible As Boolean
-  
-  $hTimer.Stop
-
-  Try bVisible = IsRowVisible($hCtrl.Row)
-  'Debug $hCtrl.Row;; bVisible
-  
-  If bVisible Then
-    $aAdjust.Push($hCtrl.Row)
-  Endif
-  
-  $bAdjust = True
-  While $aAdjust.Count
-    iRow = $aAdjust.Pop()
-    ' TODO: gb.gtk does not auto adjusting row height => the timer is raised again and again!
-    Try $hCtrl.Rows[iRow].H = -1
-    If Not Error Then
-      iHeight = Min(256, $hCtrl.Rows[iRow].H)
-      $hCtrl.Rows[iRow].H = iHeight
-    Endif
-  Wend
-  
-  If bVisible Then EnsureRowVisible($hCtrl.Row)
-  
-  $bAdjust = False
-  $bTimer = False
-  
-End
+' Public Sub TableView_Timer()
+'   
+'   Dim iRow As Integer
+'   Dim iHeight As Integer
+'   Dim bVisible As Boolean
+'   
+'   $hTimer.Stop
+' 
+'   Try bVisible = IsRowVisible($hCtrl.Row)
+'   'Debug $hCtrl.Row;; bVisible
+'   
+'   If bVisible Then
+'     $aAdjust.Push($hCtrl.Row)
+'   Endif
+'   
+'   $bAdjust = True
+'   While $aAdjust.Count
+'     iRow = $aAdjust.Pop()
+'     ' TODO: gb.gtk does not auto adjusting row height => the timer is raised again and again!
+'     Try $hCtrl.Rows[iRow].H = -1
+'     If Not Error Then
+'       iHeight = Min(256, $hCtrl.Rows[iRow].H)
+'       $hCtrl.Rows[iRow].H = iHeight
+'     Endif
+'   Wend
+'   
+'   If bVisible Then EnsureRowVisible($hCtrl.Row)
+'   
+'   $bAdjust = False
+'   $bTimer = False
+'   
+' End
 
 Public Sub TableView_Data(Row As Integer, Column As Integer)
   
@@ -351,10 +357,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   Dim sText As String
   Dim H As Integer
   
-  'If Column = 0 And If Row = 0 Then
-  '  Error System.Backtrace.Join("\n")
-  '  Error "-------------------------------"
-  'Endif
+  If $bNoRefresh Then Return
   
   With $hCtrl.Data
     .Padding = 1

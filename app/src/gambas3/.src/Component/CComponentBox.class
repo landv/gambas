@@ -220,6 +220,10 @@ Private Sub Expanded_Write(Value As Boolean)
       
     If Not $sInfo Then 
     
+      ' Don't load the component. We won't have all the information, but
+      ' we won't mismatch the automatic completion
+      ' hComp.Load
+      
       AddInfo(hComp.Authors, ("Authors"))
       
       aInfo = hComp.Need.Copy()
@@ -253,7 +257,7 @@ Private Sub Expanded_Write(Value As Boolean)
       
     Endif
     
-    txtDesc.Text = $sDesc & "<p>" & $sInfo
+    txtDesc.Text = $sDesc & "<br><font size=\"-2\" color=\"#404040\">" & $sInfo & "</font>"
     
   Else
     
