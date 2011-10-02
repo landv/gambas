@@ -934,7 +934,7 @@ End
 
 Public Sub Form_KeyPress()
 
-  If Key.Code = Key.Esc Then 
+  If Key.Code = Key.Escape Then 
     If InBrowse Then
       Cancel
     Else

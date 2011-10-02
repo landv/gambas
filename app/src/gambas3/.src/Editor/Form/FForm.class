@@ -834,12 +834,6 @@ Public Sub Control_Resize()
 
 End
 
-'PUBLIC SUB Form_KeyPress(Ascii AS String, Code AS Integer, State AS Integer)
-'
-'  Project.Shortcut(Code, Ascii, State)
-'
-'END
-
 Private $bInFormMove As Boolean
 
 ' PUBLIC SUB Form_Move()
@@ -878,6 +872,7 @@ Public Sub Control_MouseDown()
 
   Me.SetFocus
   Project.SetCurrentPopup(mnuForm)
+  'DrawControlFrame(Null)
 
   X = Mouse.X
   Y = Mouse.Y
@@ -1020,6 +1015,9 @@ Public Sub Control_MouseMove()
       $hCurrent.Move($X, $Y)
       $hCurrent.Resize(MIN_WIDTH, MIN_HEIGHT)
       $hCurrent.Control.Mouse = Mouse.Cross
+      
+      UnselectAll
+      SelectCurrent(True)
 
       FFormStack.RefreshAll
 
@@ -1102,11 +1100,11 @@ Public Sub Control_MouseUp()
 
     'LAST.Mouse = Mouse.Arrow
 
-    UnSelectAll
+    'UnSelectAll
 
     If Last.Mouse = Mouse.Cross Then
       $hCurrent.Control.Mouse = Mouse.Arrow
-      SelectCurrent(True)
+      'SelectCurrent(True)
       sFocus = "Name"
     Endif
 
@@ -1432,6 +1430,40 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
 End
 
+' Private Sub DrawControlFrame(hCtrl As Control)
+'   
+'   Dim X, Y, W, H As Integer
+'   Dim aFrame As Control[] = [panSelectN, panSelectS, panSelectW, panSelectE]
+'   Dim hFrame As Control
+'   
+'   Debug hCtrl
+'   
+'   If Not hCtrl Then
+'     If panSelectN.Visible Then 
+'       For Each hFrame In aFrame
+'         hFrame.Hide
+'       Next
+'     Endif
+'     Return
+'   Endif
+'   
+'   X = hCtrl.ScreenX - panBorder.ScreenX - 2
+'   Y = hCtrl.ScreenY - panBorder.ScreenY - 2
+'   W = hCtrl.Width + 4
+'   H = hCtrl.Height + 4
+'   
+'   panSelectN.Move(X, Y, W, 2)
+'   panSelectS.Move(X, Y + H - 2, W, 2)
+'   panSelectW.Move(X, Y + 2, 2, H - 4)
+'   panSelectE.Move(X + W - 2, Y + 2, 2, H - 4)
+'   For Each hFrame In aFrame
+'     hFrame.Raise
+'     hFrame.Show
+'   Next
+'   
+' End
+
+
 Private Sub DrawRectSelect(W As Integer, H As Integer)
 
   Dim X As Integer
@@ -1457,18 +1489,33 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
       H = - H
     Endif
 
-    panSelectN.Move(X, Y, W, 2)
-    panSelectS.Move(X, Y + H - 2, W, 2)
-    panSelectW.Move(X, Y, 2, H)
-    panSelectE.Move(X + W - 2, Y, 2, H)
-    panSelectN.Raise
-    panSelectS.Raise
-    panSelectW.Raise
-    panSelectE.Raise
-    panSelectN.Show
-    panSelectS.Show
-    panSelectW.Show
-    panSelectE.Show
+    If W <= 6 Or H <= 6 Then
+      panSelectN.Move(X, Y, W, H)
+      panSelectN.Raise
+      panSelectN.Show
+      panSelectS.Hide
+      panSelectW.Hide
+      panSelectE.Hide
+    Else
+      panSelectN.Move(X, Y, W, 3)
+      panSelectS.Move(X, Y + H - 3, W, 3)
+      panSelectW.Move(X, Y + 3, 3, H - 6)
+      panSelectE.Move(X + W - 3, Y + 3, 3, H - 6)
+      panSelectN.Raise
+      panSelectS.Raise
+      panSelectW.Raise
+      panSelectE.Raise
+      panSelectN.Show
+      panSelectS.Show
+      panSelectW.Show
+      panSelectE.Show
+    Endif
+    ' panSelectN.Move(X, Y, W, H)
+    ' panSelectN.Raise
+    ' panSelectN.Show
+    ' panSelectS.Hide
+    ' panSelectW.Hide
+    ' panSelectE.Hide
 
   Else
 
@@ -2245,6 +2292,8 @@ Public Sub Control_Enter()
   If Not hCCtrl Then Return
 
   $hFamily.EnterControl(RootControl.Control, hCCtrl)
+  
+  'If hCtrl.Hovered Then DrawControlFrame(hCtrl)
 
 End
 
@@ -2252,14 +2301,30 @@ Public Sub Control_Leave()
 
   Dim hCtrl As Control = Last
   Dim hCCtrl As CControl
+  Dim bHovered As Boolean
 
   'If Not hCtrl Is DrawingArea Then Return
 
   hCCtrl = Control[hCtrl.Tag]
   If Not hCCtrl Then Return
 
+  'If hCCtrl = RootControl Then DrawControlFrame(Null)
   $hFamily.LeaveControl(RootControl.Control, hCCtrl)
-
+  
+  ' Do
+  '   hCtrl = hCtrl.Parent
+  '   If Not hCtrl Then Break
+  '   If hCtrl.Hovered Then bHovered = True
+  '   hCCtrl = Control[hCtrl.Tag]
+  '   If Not hCCtrl Then Continue
+  '   If bHovered Then
+  '     DrawControlFrame(hCtrl)
+  '     Return
+  '   Endif
+  ' Loop
+  ' 
+  ' DrawControlFrame(Null)
+  
 End
 
 Public Sub Control_Draw(Optional iIndex As Integer)
@@ -2546,6 +2611,11 @@ Public Sub Form_KeyPress()
   Dim D As Integer
   Dim bFree As Boolean
 
+  ' If Key.Code = 0 And If Key.Shift Then
+  '   $bShowControlFrame = True
+  '   DrawControlFrame
+  ' Endif
+
   If Key.Shift Then
     D = 1
     bFree = True
@@ -2586,6 +2656,16 @@ Public Sub Form_KeyPress()
   End Select
 
 End
+
+' Public Sub Form_KeyRelease()
+'   
+'   If Key.Code = 0 And If Key.Shift Then
+'     $bShowControlFrame = False
+'     DrawControlFrame
+'   Endif
+' 
+' End
+
 
 Public Sub UpdateBorder()
 
@@ -3378,3 +3458,18 @@ End
 '   Next
 ' 
 ' End
+
+
+Public Sub panSelect_Draw()
+
+  If $iMode = MODE_SELECT Then
+    Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 192))
+    Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    Paint.Fill
+  ' Else
+  '   Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+  '   Paint.Rectangle(0, 0, Paint.W, Paint.H)
+  '   Paint.Fill
+  Endif
+
+End

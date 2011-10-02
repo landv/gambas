@@ -19,7 +19,7 @@ End
 
 Public Sub glaPresentation_KeyPress()
 
-  If Key.code = Key.Esc Then Me.Close()
+  If Key.code = Key.Escape Then Me.Close()
   
   If Key.Code = key["f"] Then 
     Me.FullScreen = Not Me.Fullscreen

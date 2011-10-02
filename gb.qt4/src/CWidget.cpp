@@ -2088,6 +2088,21 @@ void CWIDGET_handle_focus(CWIDGET *control, bool on)
 	handle_focus_change();
 }
 
+static bool raise_key_event_to_parent_window(void *control, int event)
+{
+	for(;;)
+	{
+		control = CWIDGET_get_parent(control);
+		if (!control)
+			break;
+		control = CWidget::getWindow((CWIDGET *)control);
+		if (GB.Raise(control, event, 0))
+			return true;
+	}
+	
+	return false;
+}
+
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
 {
 	CWIDGET *control;
@@ -2399,12 +2414,6 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto _DESIGN;
 		#endif
 
-		/*qDebug("QKeyEvent: %s: (%s %s) window:%d -> %d %s",
-			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
-			GB.GetClassName(control), control->name,
-			((QWidget *)widget)->isWindow(),  
-			kevent->key(), (const char *)kevent->text().toLatin1());*/
-
 		event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
 		cancel = false;
 
@@ -2413,44 +2422,47 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto _DESIGN; //_ACCEL;
 		#endif
 
-		if (type == QEvent::KeyPress && GB.Is(control, CLASS_Window))
-			goto _DESIGN; //_ACCEL;
-			
-		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
+		/*qDebug("QKeyEvent: %s: (%s %s) window:%d -> %d %s",
+			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
+			GB.GetClassName(control), control->name,
+			((QWidget *)widget)->isWindow(),  
+			kevent->key(), (const char *)kevent->text().toLatin1());*/
 
+		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
+			
 	__KEY_TRY_PROXY:
 			
-		if (GB.CanRaise(control, event_id))
+		CKEY_clear(true);
+
+		GB.FreeString(&CKEY_info.text);
+		CKEY_info.text = GB.NewZeroString(TO_UTF8(kevent->text()));
+		CKEY_info.state = kevent->modifiers();
+		CKEY_info.code = kevent->key();
+		CKEY_info.release = type == QEvent::KeyRelease;
+		
+		#ifndef NO_X_WINDOW
+		if (type == QEvent::KeyPress && CKEY_info.code)
+			_x11_to_qt_keycode.insert(MAIN_x11_last_key_code, CKEY_info.code);
+		else if (type == QEvent::KeyRelease && CKEY_info.code == 0)
 		{
-			CKEY_clear(true);
-
-			GB.FreeString(&CKEY_info.text);
-			CKEY_info.text = GB.NewZeroString(TO_UTF8(kevent->text()));
-			CKEY_info.state = kevent->modifiers();
-			CKEY_info.code = kevent->key();
-			CKEY_info.release = type == QEvent::KeyRelease;
-			
-			#ifndef NO_X_WINDOW
-			if (type == QEvent::KeyPress && CKEY_info.code)
-				_x11_to_qt_keycode.insert(MAIN_x11_last_key_code, CKEY_info.code);
-			else if (type == QEvent::KeyRelease && CKEY_info.code == 0)
+			if (_x11_to_qt_keycode.contains(MAIN_x11_last_key_code))
 			{
-				if (_x11_to_qt_keycode.contains(MAIN_x11_last_key_code))
-				{
-					CKEY_info.code = _x11_to_qt_keycode[MAIN_x11_last_key_code];
-					_x11_to_qt_keycode.remove(MAIN_x11_last_key_code);
-				}
+				CKEY_info.code = _x11_to_qt_keycode[MAIN_x11_last_key_code];
+				_x11_to_qt_keycode.remove(MAIN_x11_last_key_code);
 			}
-			#endif
-			
-			if (!cancel)
-				cancel = GB.Raise(control, event_id, 0);
-
-			CKEY_clear(false);
-
-			if (cancel && (type != QEvent::KeyRelease))
-				return true;
 		}
+		#endif
+		
+		if (!cancel)
+			cancel = raise_key_event_to_parent_window(control, event_id);
+		
+		if (!cancel)
+			cancel = GB.Raise(control, event_id, 0);
+
+		CKEY_clear(false);
+
+		if (cancel && (type != QEvent::KeyRelease))
+			return true;
 
 		if (control->proxy_for)
 		{

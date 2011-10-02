@@ -43,7 +43,7 @@ End
 
 Public Sub TXT_KeyPress()
   If Not (Key.code = Key.BackSpace Or Key.code = Key.Delete Or Key.Code = Key.F10) Then 
-    If Not IsDigit(Key.Text) Then Stop Event
+    If InStr("12345678", Key.Text) = 0 Then Stop Event
   End If
 End
 

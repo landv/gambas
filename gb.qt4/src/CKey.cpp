@@ -113,7 +113,6 @@ void CKEY_clear(int valid)
   }
 }
 
-
 BEGIN_METHOD_VOID(CKEY_exit)
 
   GB.FreeString(&CKEY_info.text);
@@ -151,7 +150,19 @@ END_PROPERTY
 BEGIN_PROPERTY(CKEY_code)
 
   CHECK_VALID();
-  GB.ReturnInteger(CKEY_info.code);
+	
+	switch(CKEY_info.code)
+	{
+		case Qt::Key_Shift:
+		case Qt::Key_Control:
+		case Qt::Key_Alt:
+		case Qt::Key_Meta:
+			GB.ReturnInteger(0);
+			break;
+		
+		default:
+			GB.ReturnInteger(CKEY_info.code);
+	}
 
 END_PROPERTY
 
@@ -236,10 +247,11 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Down", "i", Qt::Key_Down),
   GB_CONSTANT("PageUp", "i", Qt::Key_PageUp),
   GB_CONSTANT("PageDown", "i", Qt::Key_PageDown),
-  //GB_CONSTANT("Shift", "i", Qt::Key_Shift),
-  //GB_CONSTANT("Control", "i", Qt::Key_Control),
-  //GB_CONSTANT("Meta", "i", Qt::Key_Meta),
-  //GB_CONSTANT("Alt", "i", Qt::Key_Alt),
+  /*GB_CONSTANT("ShiftKey", "i", Qt::Key_Shift),
+  GB_CONSTANT("ControlKey", "i", Qt::Key_Control),
+  GB_CONSTANT("MetaKey", "i", Qt::Key_Meta),
+  GB_CONSTANT("AltKey", "i", Qt::Key_Alt),
+  GB_CONSTANT("AltGr", "i", Qt::Key_AltGr),*/
   GB_CONSTANT("CapsLock", "i", Qt::Key_CapsLock),
   GB_CONSTANT("NumLock", "i", Qt::Key_NumLock),
   GB_CONSTANT("ScrollLock", "i", Qt::Key_ScrollLock),

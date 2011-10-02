@@ -1294,7 +1294,7 @@ End
 
 Public Sub RenameBox_KeyPress()
   
-  If Key.Code = Key.Esc Then
+  If Key.Code = Key.Escape Then
     ExitRename
     Raise Cancel
   Else If Key.Code = Key.Enter Or If Key.Code = Key.Return Then

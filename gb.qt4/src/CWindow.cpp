@@ -2153,13 +2153,12 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 	CWINDOW *_object = (CWINDOW *)CWidget::getReal(this);
 	QPushButton *test = 0;
 	CWIDGET *ob;
-	bool cancel;
 	
 	e->ignore();
 
 	//qDebug("MyMainWindow::keyPressEvent: (%p '%s' %s)", this, this ? this->caption().latin1() : 0, GB.GetClassName(CWidget::get(this)));
 	
-	if (GB.CanRaise(THIS, EVENT_KeyPress))
+	/*if (GB.CanRaise(THIS, EVENT_KeyPress))
 	{
 		CKEY_clear(true);
 
@@ -2174,7 +2173,7 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 
 		if (cancel)
 			return;
-	}
+	}*/
 	
 	if ((e->modifiers() == Qt::NoModifier || (e->modifiers() & Qt::KeypadModifier && e->key() == Qt::Key_Enter )))
 	{
