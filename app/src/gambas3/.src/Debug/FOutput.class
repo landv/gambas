@@ -327,14 +327,14 @@ Public Sub btnSearch_Click()
 End
 
 
-Public Sub btnControl_Click()
-
-  Design.Send(Chr$(Asc(Right$(Last.Text)) - 64))
-
-End
-
-Public Sub btnCtrlD_Click()
-
-  Print #Design.GetProcess(), Chr$(4);
-
-End
+' Public Sub btnControl_Click()
+' 
+'   Design.Send(Chr$(Asc(Right$(Last.Text)) - 64))
+' 
+' End
+' 
+' Public Sub btnCtrlD_Click()
+' 
+'   Print #Design.GetProcess(), Chr$(4);
+' 
+' End

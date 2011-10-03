@@ -26,9 +26,16 @@ Public Sub btnOK_Click()
     txtName.SelectAll
     Balloon.Warning(sMsg, txtName)
     Return
-  Endif  
+  Endif
   
   sDir &/= sName
+
+  If sDir Begins (Project.Dir & "/") Then
+    dchProject.SetFocus
+    Balloon.Warning(("Cannot save a project inside its own directory."), txtName)
+    Return
+  Endif
+  
   Inc Application.Busy
   Project.Save
   Project.CopyProject(Project.Dir, sDir)
