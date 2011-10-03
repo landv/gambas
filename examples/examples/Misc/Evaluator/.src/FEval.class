@@ -1,46 +1,53 @@
 ' Gambas class file
 
-PRIVATE $hExpr AS NEW Expression
-PRIVATE $cEnv AS NEW Collection
+Private $hExpr As New Expression
+Private $cEnv As New Collection
 
-STATIC PUBLIC SUB Main()
+Static Public Sub Main()
   
-  DIM hForm AS Form
+  Dim hForm As Form
   
-  hForm = NEW FEval
+  hForm = New FEval
   hForm.Show
   
-END
+End
 
 
-PUBLIC SUB btnUpdate_Click()
+Public Sub btnUpdate_Click()
 
-  DIM cCol AS NEW Collection
+  Dim cCol As New Collection
 
-  IF $hExpr.Text <> txtExpr.Text THEN
+  If $hExpr.Text <> txtExpr.Text Then
     $hExpr.Text = txtExpr.Text
-  ENDIF
+  Endif
   
   'cEnv.Compare = gb.Case
   
-  $cEnv["a"] = Val(txtValueA.Text)
-  $cEnv["b"] = Val(txtValueB.Text)
-  $cEnv["x"] = Val(txtValueX.Text)
-  $cEnv["y"] = Val(txtValueY.Text)
+  $cEnv["a"] = CFloat(Val(txtValueA.Text))
+  $cEnv["b"] = CFloat(Val(txtValueB.Text))
+  $cEnv["x"] = CFloat(Val(txtValueX.Text))
+  $cEnv["y"] = CFloat(Val(txtValueY.Text))
   
   $hExpr.Compile
   $hExpr.Environment = $cEnv
   
   txtResult.Text = Str($hExpr.Value)
   
-CATCH
+Catch
 
   txtResult.Text = Error.Text
 
-END
+End
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
+
+Public Sub Form_Open()
+
+  txtValueA.Text = Str(0.5)
+  txtValueB.Text = Str(1)
+
+End

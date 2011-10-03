@@ -128,25 +128,8 @@
         List = []
       }
     }
-    { HBox10 HBox
-      MoveScaled(0,30,66,4)
-      Spacing = True
-      { Label16 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Quiet external commands")
-      }
-      { cmbOutput ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel12 Panel
-        MoveScaled(59,0,7,4)
-      }
-    }
     { HBox26 HBox
-      MoveScaled(0,35,66,4)
+      MoveScaled(0,30,66,4)
       Spacing = True
       { Label15 Label
         MoveScaled(0,0,47,4)
@@ -163,7 +146,7 @@
       }
     }
     { HBox28 HBox
-      MoveScaled(0,40,66,4)
+      MoveScaled(0,35,66,4)
       Spacing = True
       { Label9 Label
         MoveScaled(0,0,47,4)
@@ -456,6 +439,23 @@
         MoveScaled(48,0,18,4)
         ReadOnly = True
         List = []
+      }
+    }
+    { HBox10 HBox
+      MoveScaled(0,15,66,4)
+      Spacing = True
+      { Label16 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Quiet external commands")
+      }
+      { cmbOutput ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel12 Panel
+        MoveScaled(59,0,7,4)
       }
     }
     Index = 4
