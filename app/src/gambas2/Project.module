@@ -1698,7 +1698,11 @@ PUBLIC SUB SaveAs()
     RETURN
   ENDIF
   
-  INC Application.Busy
+  IF InStr(sDir, Project.Dir & "/") = 1 THEN
+    FGambas.Warning(("Cannot save a project inside its own directory."))
+    RETURN
+  ENDIF
+  
   Project.Save
   CopyProject(Project.Dir, sDir)
   DEC Application.Busy
