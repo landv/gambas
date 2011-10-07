@@ -69,14 +69,16 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 	img = gdk_pixbuf_loader_get_pixbuf(loader);
 	g_object_ref(G_OBJECT(img));
 	
-	/*if (gdk_pixbuf_get_n_channels(img) == 3)
+	// Rowstride breaks gb.image (it is rounded up so that a line is always a four bytes multiple).
+	if (gdk_pixbuf_get_n_channels(img) == 3)
 	{
-		// BM: convert to 4 bytes per pixels
 		GdkPixbuf *aimg;
 		aimg = gdk_pixbuf_add_alpha(img, FALSE, 0, 0, 0);
 		g_object_unref(G_OBJECT(img));
   	img = aimg;
-	}*/
+	}
+	
+	//fprintf(stderr, "nchannels = %d size = %d x %d rowstride = %d\n", gdk_pixbuf_get_n_channels(img), gdk_pixbuf_get_width(img), gdk_pixbuf_get_height(img), gdk_pixbuf_get_rowstride(img));
 	
 	switch (gdk_pixbuf_get_n_channels(img))
 	{

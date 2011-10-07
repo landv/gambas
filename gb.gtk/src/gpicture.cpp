@@ -68,11 +68,12 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 	
 	if (gdk_pixbuf_get_n_channels(*img) == 3)
 	{
-// 		GdkPixbuf *aimg;
-// 		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
-// 		g_object_unref(G_OBJECT(*img));
-//   	g_object_ref(G_OBJECT(aimg));
-// 		*img = aimg;
+		// Rowstride breaks gb.image (it is rounded up so that a line is always a four bytes multiple).
+ 		GdkPixbuf *aimg;
+ 		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
+ 		g_object_unref(G_OBJECT(*img));
+   	g_object_ref(G_OBJECT(aimg));
+ 		*img = aimg;
 		*trans = false;
 	}
 	else
