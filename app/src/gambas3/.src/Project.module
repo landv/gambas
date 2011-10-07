@@ -2665,26 +2665,33 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
   Dim sExec As String
   Dim sPath As String
+  Dim sExecPath As String
   Dim bOK As Boolean
 
   If CheckStartupClass() Then Return True
 
   DisableRefresh
 
-  sPath = Project.Dir &/ Project.Name & ".gambas"
+  sExecPath = Project.Dir &/ Project.Name & ".gambas"
 
   If Not bSilent Then
 
-    If Exist(File.Dir(ExecPath)) Then sPath = ExecPath
+    sExecPath = GetExecPath()
+    If Not Exist(File.Dir(sExecPath)) Then sExecPath = Project.Dir &/ File.Name(sExecPath)
 
     'IF Dialog.SaveFile() THEN RETURN TRUE
-    sPath = FMakeExecutable.Run(sPath)
-    If Not sPath Then
+    sExecPath = FMakeExecutable.Run(sExecPath)
+    If Not sExecPath Then
       EnableRefresh
       Return
     Endif
 
-    ExecPath = File.SetExt(sPath, "gambas")
+    sExecPath = File.SetExt(sExecPath, "gambas")
+    If sExecPath Begins (Project.Dir & "/") Then
+      ExecPath = Mid$(sExecPath, Len(Project.Dir) + 2)
+    Else
+      ExecPath = sExecPath
+    Endif
 
   Endif
 
@@ -2703,7 +2710,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
     GetVersion()
 
-    sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(ExecPath) & " " & Shell$(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1"
+    sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(sExecPath) & " " & Shell$(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1"
     Shell sExec Wait
     If Process.LastValue Then Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
@@ -2712,7 +2719,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     WriteProject(True, True)
 
     If RunAfterMakingExec Then
-      Shell Replace(RunAfterMakingExec, "$(FILE)", Shell$(ExecPath)) Wait
+      Shell Replace(RunAfterMakingExec, "$(FILE)", Shell$(sExecPath)) Wait
     Endif
 
     UpdateTitle
@@ -2847,7 +2854,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Prefix = False
   UseRelease = False
   PackageName = ""
-  ExecPath = Project.Dir &/ Project.Name & ".gambas"
+  ExecPath = Project.Name & ".gambas"
   SourcePath = ""
   CreateComponent = False
   ComponentState = CComponent.STABLE
@@ -3185,7 +3192,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If CreateComponent Then Print #hFic, "MakeComponent=1"
   If ControlPublic Then Print #hFic, "ControlPublic=1"
   If ModulePublic Then Print #hFic, "ModulePublic=1"
-  If ExecPath <> (Project.Dir &/ Project.Name & ".gambas") Then
+  If ExecPath <> (Project.Name & ".gambas") Then
     Print #hFic, "ExecPath="; ExecPath
   Endif
   If SourcePath Then Print #hFic, "SourcePath="; SourcePath
@@ -3289,6 +3296,17 @@ Catch
 
 End
 
+Public Sub GetExecPath() As String
+  
+  If Left(ExecPath) = "/" Then
+    Return ExecPath
+  Else
+    Return Project.Dir &/ ExecPath
+  Endif
+  
+End
+
+
 Public Sub MakeShortcut(Optional bForce As Boolean)
 
   Dim sDesktopPath As String
@@ -3305,7 +3323,7 @@ Public Sub MakeShortcut(Optional bForce As Boolean)
 
   sShortcut = File.Load("shortcut.desktop")
   sShortcut = Replace(sShortcut, "$(NAME)", If(Title, Title, Name))
-  sShortcut = Replace(sShortcut, "$(EXEC)", ExecPath)
+  sShortcut = Replace(sShortcut, "$(EXEC)", GetExecPath())
 
   sPath = ""
   If Icon And If Exist(Project.Dir &/ Icon) Then
