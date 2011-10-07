@@ -10,7 +10,7 @@ AC_PROG_LIBTOOL
 GB_COMPONENT_PKG_CONFIG(
   smtp,
   SMTP,
-  [STMP client],
+  [SMTP client],
   [src],
   glib-2.0)
 
