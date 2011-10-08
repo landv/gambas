@@ -486,6 +486,9 @@ static bool do_loop(struct timeval *wait)
 		ret = do_select(&rfd, &wfd, &tv);
 		something_done = TRUE;
 	}
+	
+	if (ret < 0 && errno != EINTR)
+		THROW_SYSTEM(errno, NULL);
 
 	#ifdef DEBUG_TIMER
 	fprintf(stderr, "do_loop: now = %.7g\n", time_to_double(time_now()));
@@ -498,10 +501,8 @@ static bool do_loop(struct timeval *wait)
 		raise_callback(&rfd, &wfd);
 		something_done = TRUE;
 	}
-	else if (ret < 0)
+	else if (ret < 0) // errno == EINTR there
 	{
-		if (errno != EINTR)
-			THROW_SYSTEM(errno, NULL);
 		something_done = TRUE;
 	}
 
