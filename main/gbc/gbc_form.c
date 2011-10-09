@@ -53,28 +53,6 @@ static int form_parent_level;
 
 static bool _no_trim = FALSE;
 
-#if 0
-static void print_fmt(const char *fmt, ...)
-{
-	va_list args;
-	int len;
-	char buffer[256];
-
-	va_start(args, fmt);
-
-	if (JOB->verbose)
-	{
-		vprintf(fmt, args);
-		va_start(args, fmt);
-	}
-
-	len = vsnprintf(buffer, sizeof(buffer), fmt, args);
-	if (len < 0)
-		ERROR_panic("FORM_do: too short buffer");
-
-	BUFFER_add(&JOB->source, buffer, len);
-}
-#endif
 
 static void print_len(const char *buffer, int len)
 {
@@ -100,6 +78,22 @@ static void print_fmt(const char *before, const char *word, int len, const char 
 	print_len(word, len);
 	print(after);
 }
+
+
+static void print_var(const char *before, const char *word, int len, const char *after)
+{
+	print(before);
+	if (!word)
+		print("Me");
+	else
+	{
+		print("{");
+		print_len(word, len);
+		print("}");
+	}
+	print(after);
+}
+
 
 static bool read_line(const char **str, int *len)
 {
@@ -213,8 +207,9 @@ static void parent_get(char **str, int *len, int add)
 	}
 	else
 	{
-		*str = form_parent[form_parent_level - add].name;
-		*len = form_parent[form_parent_level - add].len;
+		FORM_PARENT *fp = &form_parent[form_parent_level - add];
+		*str = fp->name;
+		*len = fp->len;
 	}
 }
 
@@ -380,9 +375,9 @@ void FORM_do(bool ctrl_public)
 					public = FALSE;
 				
 				if (ctrl_public || public)
-					print("PUBLIC");
+					print("Public");
 				else
-					print("PRIVATE");
+					print("Private");
 
 				//print_fmt(" {%.*s} ", len, word);
 				print_fmt(" {", word, len, "} ");
@@ -406,7 +401,7 @@ void FORM_do(bool ctrl_public)
 					len--;
 				}
 				//print_fmt("AS %.*s\n", len, word);
-				print_fmt("AS ", word, len, "\n");
+				print_fmt("As ", word, len, "\n");
 			}
 
 			if (twin == NULL)
@@ -415,7 +410,7 @@ void FORM_do(bool ctrl_public)
 				len_twin = len;
 
 				//print_fmt("INHERITS %.*s\n\n", len_twin, twin);
-				print_fmt("INHERITS ", twin, len_twin, "\n\n");
+				print_fmt("Inherits ", twin, len_twin, "\n\n");
 			}
 		}
 		else if (*line == '}')
@@ -438,7 +433,7 @@ void FORM_do(bool ctrl_public)
 	print("%sPrivate _%.*sId As Integer\n\n", stat, len_win, win);
 	*/
 
-	print("\nPUBLIC SUB {$load}()\n\n");
+	print("\nPublic Sub {$load}()\n\n");
 
 	_current = pos_rewind;
 	form_parent_level = 0;
@@ -458,8 +453,8 @@ void FORM_do(bool ctrl_public)
 
 			if (form_parent_level == 0)
 			{
-				parent_enter("ME", 2);
-				print("  WITH ME\n");
+				parent_enter(NULL, 0);
+				print("  With Me\n");
 			}
 			else
 			{
@@ -470,7 +465,7 @@ void FORM_do(bool ctrl_public)
 					len--;
 				}
 				
-				print_fmt("  {", word, len, "} = NEW ");
+				print_fmt("  {", word, len, "} = New ");
 				parent_enter(word, len);
 
 				word = get_word(&line, &len);
@@ -492,8 +487,7 @@ void FORM_do(bool ctrl_public)
 				if (!virtual)
 				{
 					get_container(&word, &len);
-					//print_fmt("(%.*s)", len, word);
-					print_fmt("(", word, len, ")");
+					print_var("(", word, len, ")");
 				}
 
 				word = get_word(&line, &len);
@@ -501,16 +495,15 @@ void FORM_do(bool ctrl_public)
 					get_current(&word, &len);
 
 				//print_fmt(" AS \"%.*s\"\n", len, word);
-				print_fmt(" AS \"", word, len, "\"\n");
+				print_fmt(" As \"", word, len, "\"\n");
 
 				get_current(&word, &len);
-				//print_fmt("  WITH {%.*s}\n", len, word);
-				print_fmt("  WITH {", word, len, "}\n");
+				print_var("  With ", word, len, "\n");
 			}
 		}
 		else if (*line == '}')
 		{
-			print("  END WITH\n");
+			print("  End With\n");
 			parent_leave();
 			if (form_parent_level == 0)
 				break;
@@ -528,7 +521,7 @@ void FORM_do(bool ctrl_public)
 	if (form_parent_level > 0)
 		goto _ERROR;
 
-	print("\nEND\n\n");
+	print("\nEnd\n\n");
 
 	// Create or delete the action file if needed
 	
