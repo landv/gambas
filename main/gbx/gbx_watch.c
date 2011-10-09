@@ -563,6 +563,9 @@ static bool do_loop(struct timeval *wait)
 		something_done = TRUE;
 	}
 
+	if (ret < 0 && errno != EINTR)
+		THROW_SYSTEM(errno, NULL);
+	
 	#ifdef DEBUG_TIMER
 	fprintf(stderr, "do_loop: now = %.7g: timers (%d)\n", time_to_double(time_now()), something_done);
 	#endif
@@ -580,8 +583,6 @@ static bool do_loop(struct timeval *wait)
 	}
 	else if (ret < 0)
 	{
-		if (errno != EINTR)
-			THROW_SYSTEM(errno, NULL);
 		something_done = TRUE;
 	}
 

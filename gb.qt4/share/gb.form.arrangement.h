@@ -332,6 +332,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 					sexp -= spacing;
 					sexp = (swap ? hc : wc) - sexp;
+					if (sexp < 0)
+						sexp = 0;
 
 					RESET_CHILDREN_LIST();
 					wid = 0;
@@ -363,6 +365,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								h = sexp / nexp;
 								sexp -= h;
 								nexp--;
+								if (h <= 0)
+									MOVE_WIDGET(ob, wid, -GET_WIDGET_W(wid), GET_WIDGET_Y(wid));
 							}
 							else
 								h = GET_WIDGET_H(wid);
@@ -386,6 +390,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								w = sexp / nexp;
 								sexp -= w;
 								nexp--;
+								if (w <= 0)
+									MOVE_WIDGET(ob, wid, GET_WIDGET_X(wid), -GET_WIDGET_H(wid));
 							}
 							else
 								w = GET_WIDGET_W(wid);

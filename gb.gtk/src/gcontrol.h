@@ -70,7 +70,7 @@ public:
 	virtual int top();
 	int y() { return top(); }
 	virtual int width();
-	virtual bool isVisible();
+	bool isVisible() const { return visible; }
 	bool isReallyVisible();
 	bool acceptDrops() { return _accept_drops; }
 	char *name() { return _name; }

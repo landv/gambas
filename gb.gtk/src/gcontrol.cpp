@@ -330,11 +330,6 @@ bool gControl::enabled()
 	return GTK_WIDGET_SENSITIVE(border);
 }
 
-bool gControl::isVisible()
-{
-	return visible; //GTK_WIDGET_VISIBLE(border) || visible;
-}
-
 bool gControl::isReallyVisible()
 {
 	return GTK_WIDGET_MAPPED(border);
