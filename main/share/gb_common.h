@@ -107,7 +107,9 @@
 	#endif
 
 	#define bool char
+	#ifndef DO_NOT_DEFINE_BOOLEAN
 	#define boolean char
+	#endif
 
 #endif
 

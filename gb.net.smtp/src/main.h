@@ -26,6 +26,7 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#define DO_NOT_DEFINE_BOOLEAN
 #include "gb_common.h"
 
 #ifndef __MAIN_C
