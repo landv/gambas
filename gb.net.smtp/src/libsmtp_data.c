@@ -24,12 +24,6 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  U
 Kevin Read <obsidian@berlios.de>
 Thu Aug 16 2001 */
 
-#include "gb_common.h"
-
-#include <glib.h>
-
-//#include "../config.h"
-
 #include "libsmtp.h"
 
 

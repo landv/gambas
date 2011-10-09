@@ -1,7 +1,9 @@
 
 #ifndef LIB_SMTP_H
-
 #define LIB_SMTP_H
+
+#define DO_NOT_DEFINE_BOOLEAN
+#include "gb_common.h"
 
 #ifndef __G_LIB_H__
   #include <glib.h>
