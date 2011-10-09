@@ -454,9 +454,10 @@
     }
   }
   { lblWatch TextLabel
-    MoveScaled(55,74,20,5)
+    MoveScaled(56,74,20,5)
     Visible = False
-    Background = &HFFFFBF&
+    Background = Color.ToolTipBackground
+    Foreground = Color.ToolTipForeground
     Ignore = True
     Padding = 2
     AutoResize = True

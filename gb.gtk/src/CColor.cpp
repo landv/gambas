@@ -89,6 +89,18 @@ BEGIN_PROPERTY(CCOLOR_light_foreground)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Color_TooltipBackground)
+
+	GB.ReturnInteger(gDesktop::tooltipBackground());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Color_TooltipForeground)
+
+	GB.ReturnInteger(gDesktop::tooltipForeground());
+
+END_PROPERTY
+
 GB_DESC CColorDesc[] =
 {
   GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
@@ -98,12 +110,14 @@ GB_DESC CColorDesc[] =
   GB_STATIC_PROPERTY("LightBackground", "i", CCOLOR_light_background),
   GB_STATIC_PROPERTY("TextBackground", "i", CCOLOR_text_background),
   GB_STATIC_PROPERTY("ButtonBackground", "i", CCOLOR_button_background),
+  GB_STATIC_PROPERTY("TooltipBackground", "i", Color_TooltipBackground),
 
   GB_STATIC_PROPERTY("Foreground", "i", CCOLOR_foreground),
   GB_STATIC_PROPERTY("SelectedForeground", "i", CCOLOR_selected_foreground),
   GB_STATIC_PROPERTY("LightForeground", "i", CCOLOR_light_foreground),
   GB_STATIC_PROPERTY("TextForeground", "i", CCOLOR_text_foreground),
   GB_STATIC_PROPERTY("ButtonForeground", "i", CCOLOR_button_foreground),
+  GB_STATIC_PROPERTY("TooltipForeground", "i", Color_TooltipForeground),
 
   GB_END_DECLARE
 };

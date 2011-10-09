@@ -167,6 +167,22 @@ gColor gDesktop::selbgColor()
 	return get_gdk_color(&st->base[GTK_STATE_SELECTED]);
 }
 
+gColor gDesktop::tooltipForeground()
+{
+	GtkStyle *st = gt_get_widget_style("gtk-tooltip");
+
+	if (!st) return fgColor();
+	return get_gdk_color(&st->fg[GTK_STATE_NORMAL]);
+}
+
+gColor gDesktop::tooltipBackground()
+{
+	GtkStyle *st = gt_get_widget_style("gtk-tooltip");
+
+	if (!st) return bgColor();
+	return get_gdk_color(&st->bg[GTK_STATE_NORMAL]);
+}
+
 gColor gDesktop::lightbgColor()
 {
 	uint col = IMAGE.MergeColor(gDesktop::selbgColor(), gDesktop::selfgColor(), 0.2);

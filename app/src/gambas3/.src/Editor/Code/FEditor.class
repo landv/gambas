@@ -2712,7 +2712,7 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
     sStr = Design.MakeErrorMessage(sStr)
     iColor = Color.HSV(0, 64, 255)
   Else
-    iColor = Color.HSV(64, 64, 255)
+    iColor = Color.TooltipBackground
   Endif
 
   ShowMessageLabel(Html(sStr), X, Y, iColor)

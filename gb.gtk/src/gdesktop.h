@@ -45,6 +45,8 @@ public:
 	static gColor selbgColor();
 	static gColor lightbgColor();
 	static gColor lightfgColor();
+	static gColor tooltipForeground();
+	static gColor tooltipBackground();
 
 	static gFont* font();
 	static void setFont(gFont *vl);

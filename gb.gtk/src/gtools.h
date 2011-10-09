@@ -66,6 +66,7 @@ double gt_from_alignment(int align, bool vertical = false);
 // Gets a style associated with a specified class, or else the default style
 
 GtkStyle *gt_get_style(const char *name, int type);
+GtkStyle *gt_get_widget_style(const char *name);
 
 // Global signal handlers
 

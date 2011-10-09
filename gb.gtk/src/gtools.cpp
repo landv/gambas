@@ -1157,6 +1157,14 @@ GtkStyle *gt_get_style(const char *name, int type)
 	return st;
 }
 
+GtkStyle *gt_get_widget_style(const char *name)
+{
+	GtkSettings *set = gtk_settings_get_default();
+	GtkStyle* st = gtk_rc_get_style_by_paths(set, name, NULL, G_TYPE_NONE);
+	if (!st) st = gtk_widget_get_default_style();
+	return st;
+}
+
 
 void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc)
 {

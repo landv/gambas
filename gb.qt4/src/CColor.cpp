@@ -57,49 +57,49 @@ static void return_color(QPalette::ColorRole role)
   GB.ReturnInteger(QApplication::palette().color(role).rgb() & 0xFFFFFF);
 }
 
-BEGIN_PROPERTY(CCOLOR_background)
+BEGIN_PROPERTY(Color_Background)
 
   return_color(QPalette::Window);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_foreground)
+BEGIN_PROPERTY(Color_Foreground)
 
   return_color(QPalette::WindowText);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_text_background)
+BEGIN_PROPERTY(Color_TextBackground)
 
   return_color(QPalette::Base);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_text_foreground)
+BEGIN_PROPERTY(Color_TextForeground)
 
   return_color(QPalette::Text);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_selected_background)
+BEGIN_PROPERTY(Color_SelectedBackground)
 
   return_color(QPalette::Highlight);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_selected_foreground)
+BEGIN_PROPERTY(Color_SelectedForeground)
 
   return_color(QPalette::HighlightedText);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_button_background)
+BEGIN_PROPERTY(Color_ButtonBackground)
 
   return_color(QPalette::Button);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_button_foreground)
+BEGIN_PROPERTY(Color_ButtonForeground)
 
   return_color(QPalette::ButtonText);
 
@@ -119,21 +119,35 @@ BEGIN_PROPERTY(Color_LightForeground)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Color_TooltipBackground)
+
+  return_color(QPalette::ToolTipBase);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Color_TooltipForeground)
+
+  return_color(QPalette::ToolTipText);
+
+END_PROPERTY
+
 GB_DESC CColorDesc[] =
 {
   GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY("Background", "i", CCOLOR_background),
-  GB_STATIC_PROPERTY("SelectedBackground", "i", CCOLOR_selected_background),
+  GB_STATIC_PROPERTY("Background", "i", Color_Background),
+  GB_STATIC_PROPERTY("SelectedBackground", "i", Color_SelectedBackground),
   GB_STATIC_PROPERTY("LightBackground", "i", Color_LightBackground),
-  GB_STATIC_PROPERTY("TextBackground", "i", CCOLOR_text_background),
-  GB_STATIC_PROPERTY("ButtonBackground", "i", CCOLOR_button_background),
+  GB_STATIC_PROPERTY("TextBackground", "i", Color_TextBackground),
+  GB_STATIC_PROPERTY("ButtonBackground", "i", Color_ButtonBackground),
+  GB_STATIC_PROPERTY("TooltipBackground", "i", Color_TooltipBackground),
 
-  GB_STATIC_PROPERTY("Foreground", "i", CCOLOR_foreground),
+  GB_STATIC_PROPERTY("Foreground", "i", Color_Foreground),
   GB_STATIC_PROPERTY("LightForeground", "i", Color_LightForeground),
-  GB_STATIC_PROPERTY("SelectedForeground", "i", CCOLOR_selected_foreground),
-  GB_STATIC_PROPERTY("TextForeground", "i", CCOLOR_text_foreground),
-  GB_STATIC_PROPERTY("ButtonForeground", "i", CCOLOR_button_foreground),
+  GB_STATIC_PROPERTY("SelectedForeground", "i", Color_SelectedForeground),
+  GB_STATIC_PROPERTY("TextForeground", "i", Color_TextForeground),
+  GB_STATIC_PROPERTY("ButtonForeground", "i", Color_ButtonForeground),
+  GB_STATIC_PROPERTY("TooltipForeground", "i", Color_TooltipForeground),
 
   GB_END_DECLARE
 };
