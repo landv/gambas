@@ -98,6 +98,20 @@ static void print_fmt(const char *before, const char *word, int len, const char 
   print(after);
 }
 
+static void print_var(const char *before, const char *word, int len, const char *after)
+{
+	print(before);
+	if (!word)
+		print("ME");
+	else
+	{
+		print("{");
+		print_len(word, len);
+		print("}");
+	}
+	print(after);
+}
+
 static boolean read_line(const char **str, int *len)
 {
   const char *start;
@@ -361,7 +375,7 @@ PUBLIC void FORM_do(bool ctrl_public)
 
       if (form_parent_level == 0)
       {
-        parent_enter("ME", 2);
+        parent_enter(NULL, 0);
         print("  WITH ME\n");
       }
       else
@@ -390,7 +404,7 @@ PUBLIC void FORM_do(bool ctrl_public)
         {
           get_container(&word, &len);
           //print_fmt("(%.*s)", len, word);
-          print_fmt("(", word, len, ")");
+          print_var("(", word, len, ")");
         }
 
         word = get_word(&line, &len);
@@ -402,7 +416,7 @@ PUBLIC void FORM_do(bool ctrl_public)
 
         get_current(&word, &len);
         //print_fmt("  WITH {%.*s}\n", len, word);
-        print_fmt("  WITH {", word, len, "}\n");
+        print_var("  WITH ", word, len, "\n");
       }
     }
     else if (*line == '}')
