@@ -26,14 +26,6 @@ Thu Aug 16 2001 */
 
 /* This will only be included when MIME is enabled */
 
-#include "gb_common.h"
-
-/* #ifndef __G_LIB_H__ */
-  #include <glib.h>
-/* #endif */
-
-//#include "../config.h"
-
 #include "libsmtp.h"
 #include "libsmtp_mime.h"
 

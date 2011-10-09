@@ -29,12 +29,6 @@ Thu Aug 16 2001 */
 
 /* This will only be included when MIME is enabled */
 
-#include "gb_common.h"
-
-/* #ifndef __G_LIB_H__ */
-  #include <glib.h>
-/* #endif */
-
 #define LINELEN 72		      /* Encoded line length (max 76) */
 
 //#include "../config.h"

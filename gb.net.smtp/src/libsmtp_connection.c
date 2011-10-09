@@ -23,16 +23,12 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  U
 Kevin Read <obsidian@berlios.de>
 Thu Aug 16 2001 */
 
-#include "gb_common.h"
-#include "main.h"
-
-#include <glib.h>
 #include <sys/socket.h>
 #include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
 
-//#include "../config.h"
+#include "main.h"
 #include "libsmtp.h"
 
 int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned int libsmtp_flags, struct libsmtp_session_struct *libsmtp_session)
