@@ -9,6 +9,7 @@
   { ReportVBox2 ReportVBox
     #MoveScaled(4,4,80,42)
     Fixed = True
+    Expand = True
     { ReportLabel9 ReportLabel
       #MoveScaled(0,0,68,7)
       Fixed = True
@@ -28,9 +29,9 @@
         Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
         Expand = True
         { ReportSvgImage1 ReportSvgImage
-          #MoveScaled(1,1,20,19)
-          Width = "5cm"
-          Height = "5cm"
+          #MoveScaled(3,2,25,14)
+          Width = "50mm"
+          Height = "50mm"
           Image = SvgImage.Load("img/logo.svg")
         }
       }

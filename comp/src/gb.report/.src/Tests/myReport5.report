@@ -2,6 +2,7 @@
 
 { Report Report
   #MoveScaled(0,0,90,76)
+  Tag = "*"
   Index = 0
   Text = ("")
   { ReportHBox2 ReportHBox
@@ -35,6 +36,7 @@
     #MoveScaled(0,15,87,56)
     Expand = True
     Border = ReportBorder["Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    Background = ReportBrush["#FF007F"]
     { ReportVBox1 ReportVBox
       #MoveScaled(1,1,25,47)
       Width = "6cm"
@@ -44,37 +46,18 @@
       #MoveScaled(27,1,56,54)
       Expand = True
       Border = ReportBorder["Left:1mm #000000"]
-      Background = ReportBrush["#FFFFFF"]
+      Background = ReportBrush["#FF7F00"]
       { RVBCont ReportVBox
-        #MoveScaled(5,4,39,33)
-        Expand = True
-        Tag = "*"
-        { ReportLabel4 ReportLabel
-          #MoveScaled(1,11,36,19)
-          Left = "1mm"
-          Top = "5cm"
-          Brush = ReportBrush["LinearGradient(0,0,1,0,[#FFFF00,#FFFFDF],[0,0.99])"]
-          Fixed = True
-          Font = Font["DejaVu Sans,Bold,+14"]
-          Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
-          Ignore = True
-          Text = ("Gambas")
-          Alignment = Align.Left
-        }
-        { ReportLabel1 ReportLabel
-          #MoveScaled(2,3,44,9)
-          Font = Font["+3"]
-          Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm"]
-          Text = ("Gambas Report Demo")
-          Alignment = Align.Center
-        }
+        #MoveScaled(4,2,45,36)
+        Background = ReportBrush["#FFFF00"]
       }
       { ReportLabel2 ReportLabel
-        #MoveScaled(7,47,47,5)
+        #MoveScaled(18,44,47,5)
         Brush = ReportBrush["#FFFFFF"]
         Fixed = True
         Font = Font["Bold,+1"]
         Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm;Right:2mm"]
+        Expand = True
         AutoResize = True
         Border = ReportBorder["Top:1mm #000000"]
         Background = ReportBrush["#3398C3"]

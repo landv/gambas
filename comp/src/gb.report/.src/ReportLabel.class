@@ -139,13 +139,14 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
   'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-  Paint.save
+  'Paint.save
   Paint.Rectangle(iX, iY, iW, iH)
-  Paint.Clip
+  Paint.Clip()
 
   Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
   Paint.Fill
-  Paint.Restore
+  Paint.ResetClip
+  'Paint.Restore
   'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False
 
