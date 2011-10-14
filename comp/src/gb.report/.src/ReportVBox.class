@@ -25,9 +25,11 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim hChild As ReportControl         ''Enfants
   Dim fHeight As Float
   Dim i, j As Integer
+
   'On définit la taille au besoins des enfants
   For i = Me._CurItem To Me.Children.Max
     hChild = Me.Children[i]
+    If hChild.Ignore Then Continue
     htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH)
     'si l 'élément est fixe on retient la hauteur
     If hChild.Fixed Then
@@ -80,9 +82,11 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   Dim fExp As Float
   Dim iNExp As Integer
   Dim O As Object
-  Dim i, j As Integer
+  Dim i, j, itmpItem As Integer
   Dim hTItem As TControl
-  Dim bPass As Boolean
+  'Dim bPass As Boolean
+  Dim iX, iY As Integer
+  'If Me.Tag = "*" Then Stop
   'Initialisation des variables
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
@@ -106,10 +110,10 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
       'Print "Ajout de :" & Object.Type(hChild)
       'si l'index courant est inférieur a l'objet en cour du conteneur alors
       'on l'ajoute a la page et on incrémente la place des objet étendu si il est étendu
-      If Me._CurItem = 0 And i = 0 Then Continue
 
       TH = TH - hChildHints.Height - fspc
       If i < Me._CurItem Then
+        'If Me._CurItem = 0 Then itmpItem = i
         hTItem = New TControl
         hTItem.Ctrl = hChild
         hTItem.SizeHint = hChildHints
@@ -125,7 +129,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
     Endif
 
   Next
-
+  'If Me._CurItem = 0 Then Me._CurItem = itmpItem
   For i = Me._CurItem To Me.Children.Max
 
     hChild = Me.Children[i]
@@ -135,7 +139,8 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
 
       Break
     Endif
-    TH = TH - hChildHints.Height - fspc
+    'Si on ne l'a pas déja compté
+    If Not hChild.Fixed And If Not hChild.Ignore Then TH = TH - hChildHints.Height - fspc
     hTItem = New TControl
     hTItem.Ctrl = hChild
     hTItem.SizeHint = hChildHints
@@ -156,6 +161,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   For i = Max(Me._CurItem, 0) To Me.Children.Max
     hChild = Me.Children[i]
     If hChild.Fixed And Not hChild.Ignore Then
+      hChildHints = hChild._GetSizeHints(W, TH, W, H)
       hTItem = New TControl
       hTItem.Ctrl = hChild
       hTItem.SizeHint = hChildHints
@@ -179,7 +185,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
 
     oChild = hTItem.Ctrl
     'Si l'élément est étendu on lui applique la taille répartie
-    If oChild.Expand Then
+    If oChild.Expand And Not oChild.Ignore Then
       'If Me.Tag = "*" Then Stop
       fHeight = fExp
     Else
@@ -188,9 +194,16 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
     Endif
 
     'Print Object.Type(hChild) & "  " & fHeight
-    hTItem._SetGeometry(X, Y, W, fHeight)
-    oChild._SetChildGeometry(X, Y, W, fHeight, ContPage, bInFixed Or Me.Fixed)
-    Y += fHeight + fspc
+    If Not oChild.Ignore Then
+      hTItem._SetGeometry(X, Y, W, fHeight)
+      oChild._SetChildGeometry(X, Y, W, fHeight, ContPage, bInFixed Or Me.Fixed)
+      Y += fHeight + fspc
+    Else
+      iX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
+      iY = Y + IIf(oChild._RelativeTop, H * oChild._Top / 100, oChild._Top)
+      hTItem._SetGeometry(iX, iY, hTItem.SizeHint.Width, fHeight)
+      oChild._SetChildGeometry(iX, iY, hTItem.SizeHint.Width, fHeight, ContPage, bInFixed Or Me.Fixed)
+    Endif
 
     If oChild Is ReportContainer Then
 
