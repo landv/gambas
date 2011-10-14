@@ -7,7 +7,7 @@
   Text = ("")
   { ReportHBox2 ReportHBox
     #MoveScaled(0,0,77,14)
-    Height = "5cm"
+    Height = "4cm"
     Fixed = True
     Padding = ReportPadding["Top:7mm;Bottom:7mm;Left:7mm;Right:7mm"]
     Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
@@ -26,7 +26,6 @@
       Fixed = True
       Font = Font["DejaVu Sans,Bold,+14"]
       Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
-      Ignore = True
       Expand = True
       Text = ("Gambas")
       Alignment = Align.Left
@@ -45,28 +44,8 @@
     { ReportVBox2 ReportVBox
       #MoveScaled(27,1,56,54)
       Expand = True
-      Tag = "*"
       Border = ReportBorder["Left:1mm #000000"]
       Background = ReportBrush["#FF7F00"]
-      { RVBCont ReportPanel
-        #MoveScaled(7,9,45,36)
-        Expand = True
-        Background = ReportBrush["#FFFF00"]
-        Arrangement = Arrange.None
-        { ReportLabel1 ReportLabel
-          #MoveScaled(-1,5,46,23)
-          Left = "25%"
-          Top = "5cm"
-          Width = "27%"
-          Height = "5cm"
-          Brush = ReportBrush["LinearGradient(0.21,0.91,0.81,0.11,[#FF000000,#FFFFFF],[0,1])"]
-          Font = Font["Bold,+15"]
-          Ignore = True
-          Background = ReportBrush["#FF1F57"]
-          Text = ("gambas")
-          Alignment = Align.Center
-        }
-      }
       { ReportLabel2 ReportLabel
         #MoveScaled(9,47,47,5)
         Brush = ReportBrush["#FFFFFF"]
@@ -79,6 +58,26 @@
         Text = ("Page $PAGE on $NPAGE")
         Alignment = Align.Right
         UseField = True
+      }
+      { RVBCont ReportPanel
+        #MoveScaled(3,5,45,36)
+        Expand = True
+        Tag = "*"
+        Background = ReportBrush["#FFFF00"]
+        Arrangement = Arrange.None
+        { ReportLabel1 ReportLabel
+          #MoveScaled(-1,5,46,23)
+          Left = "25%"
+          Top = "5cm"
+          Width = "50%"
+          Height = "5cm"
+          Brush = ReportBrush["LinearGradient(0.21,0.91,0.81,0.11,[#FF000000,#FFFFFF],[0,1])"]
+          Font = Font["Bold,+15"]
+          Ignore = True
+          Background = ReportBrush["#FF1F57"]
+          Text = ("gambas")
+          Alignment = Align.Center
+        }
       }
     }
   }
