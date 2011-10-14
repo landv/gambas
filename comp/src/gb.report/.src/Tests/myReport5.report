@@ -46,25 +46,11 @@
       Expand = True
       Border = ReportBorder["Left:1mm #000000"]
       Background = ReportBrush["#FF7F00"]
-      { ReportLabel2 ReportLabel
-        #MoveScaled(9,47,47,5)
-        Brush = ReportBrush["#FFFFFF"]
-        Fixed = True
-        Font = Font["Bold,+1"]
-        Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm;Right:2mm"]
-        AutoResize = True
-        Border = ReportBorder["Top:1mm #000000"]
-        Background = ReportBrush["#3398C3"]
-        Text = ("Page $PAGE on $NPAGE")
-        Alignment = Align.Right
-        UseField = True
-      }
       { RVBCont ReportPanel
         #MoveScaled(3,5,45,36)
         Expand = True
         Tag = "*"
         Background = ReportBrush["#FFFF00"]
-        Arrangement = Arrange.None
         { ReportLabel1 ReportLabel
           #MoveScaled(-1,5,46,23)
           Left = "25%"
@@ -78,6 +64,19 @@
           Text = ("gambas")
           Alignment = Align.Center
         }
+      }
+      { ReportLabel2 ReportLabel
+        #MoveScaled(9,47,47,5)
+        Brush = ReportBrush["#FFFFFF"]
+        Fixed = True
+        Font = Font["Bold,+1"]
+        Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm;Right:2mm"]
+        AutoResize = True
+        Border = ReportBorder["Top:1mm #000000"]
+        Background = ReportBrush["#3398C3"]
+        Text = ("Page $PAGE on $NPAGE")
+        Alignment = Align.Right
+        UseField = True
       }
     }
   }

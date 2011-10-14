@@ -439,8 +439,7 @@ End
 
 Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, bInFixed As Boolean)
   'If Me.Tag = "*" Then Stop
-
-  Print "Geopmetry " & Object.Type(Me)
+  'Print "Geometry " & Object.Type(Me)
 
   Select Case _Arrangement
     Case Arrange.Vertical
@@ -518,12 +517,14 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     hChild = Me.Children[i]
     hChildHints = hChild._GetSizeHints(W, TH, W, H)
 
-    If TH - hChildHints.Height < 0 Then
-
-      Break
+    'Si on ne l'a pas déja compté comme fixé
+    If Not hChild.Fixed And If Not hChild.Ignore Then
+      If (TH - hChildHints.Height + fspc) < 0 Then
+        Break
+      Endif
+      TH = TH - hChildHints.Height - fspc
     Endif
-    'Si on ne l'a pas déja compté
-    If Not hChild.Fixed And If Not hChild.Ignore Then TH = TH - hChildHints.Height - fspc
+
     hTItem = New TControl
     hTItem.Ctrl = hChild
     hTItem.SizeHint = hChildHints
