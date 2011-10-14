@@ -2705,14 +2705,17 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
 
   Dim iColor As Integer
 
+  iColor = Color.TooltipBackground
+  
   If Left(sStr) = "!" Then
     sStr = Mid$(sStr, 2)
     If sStr = "Syntax error" Or If sStr = "Non terminated string" Or If sStr = "Unknown symbol" Then Return
     If sStr Begins "Unexpected " Then Return
     sStr = Design.MakeErrorMessage(sStr)
-    iColor = Color.HSV(0, 64, 255)
-  Else
-    iColor = Color.TooltipBackground
+    With Color[iColor]
+      .Hue = 60
+      iColor = .Color
+    End With
   Endif
 
   ShowMessageLabel(Html(sStr), X, Y, iColor)
