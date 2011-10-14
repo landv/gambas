@@ -487,13 +487,13 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
   For i = 0 To Me.Children.Max
     hChild = Me.Children[i]
-    If hChild.Fixed And Not hChild.Ignore Then
+    If hChild.Fixed Then
       hChildHints = hChild._GetSizeHints(W, TH, W, H)
       'Print "Ajout de :" & Object.Type(hChild)
       'si l'index courant est inférieur a l'objet en cour du conteneur alors
       'on l'ajoute a la page et on incrémente la place des objet étendu si il est étendu
 
-      TH = TH - hChildHints.Height - fspc
+      If Not hchild.Ignore Then TH = TH - hChildHints.Height - fspc
       If i < Me._CurItem Then
         'If Me._CurItem = 0 Then itmpItem = i
         hTItem = New TControl
@@ -502,7 +502,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         'On l'ajoute a la page
         aPageItems.Add(hTItem)
         'Si l'enfant est étendu alors on en tien compte :
-        If hChild.Expand Then
+        If hChild.Expand And Not hchild.Ignore Then
           fExp += hChildHints.Height
           Inc iNexp
         Endif
@@ -544,7 +544,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
   For i = Max(Me._CurItem, 0) To Me.Children.Max
     hChild = Me.Children[i]
-    If hChild.Fixed And Not hChild.Ignore Then
+    If hChild.Fixed Then
       hChildHints = hChild._GetSizeHints(W, TH, W, H)
       hTItem = New TControl
       hTItem.Ctrl = hChild
@@ -552,7 +552,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'On l'ajoute a la page
       aPageItems.Add(hTItem)
       'Si l'enfant est étendu alors on en tien compte :
-      If hChild.Expand Then
+      If hChild.Expand And Not ochild.Ignore Then
         fExp += hChildHints.Height
         Inc iNexp
       Endif
