@@ -64,7 +64,7 @@ Vertical
 C
 i
 2
-Full
+Fill
 C
 i
 5
@@ -498,14 +498,10 @@ _GenerateClones
 m
 
 
-_SetChildGeometry
+pause
 m
 
-(X)f(Y)f(W)f(H)f(ContPage)i(bInFixed)b
-_SetVerticalChildGeometry
-m
-f
-(X)f(Y)f(W)f(H)f(ContPage)i
+
 _GetSizeHints
 m
 TSizeHint
@@ -518,6 +514,10 @@ _Reset
 m
 
 
+_SetChildGeometry
+m
+
+(X)f(Y)f(W)f(H)f(ContPage)i(bInFixed)b
 #ReportControl
 
 
@@ -775,14 +775,6 @@ _Free
 m
 
 
-_GetSizeHints
-m
-TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_SetChildGeometry
-m
-
-(X)f(Y)f(W)f(H)f(ContPage)i(bInFixed)b
 #ReportImage
 ReportFrame
 C
@@ -927,6 +919,25 @@ _Get
 M
 ReportPadding
 (Value)s
+#ReportPanel
+ReportContainer
+C
+_Properties
+C
+s
+*,Arrangement{Arrange.None;Vertical;Horizontal;Fill}=Vertical
+_Similar
+C
+s
+ReportVBox
+Arrangement
+p
+i
+
+_new
+m
+
+
 #ReportSection
 ReportVBox
 C
@@ -1015,14 +1026,6 @@ _Free
 m
 
 
-_GetSizeHints
-m
-TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_SetChildGeometry
-m
-
-(X)f(Y)f(W)f(H)f(ContPage)i(bInFixed)b
 #_ReportBorderSide
 
 C

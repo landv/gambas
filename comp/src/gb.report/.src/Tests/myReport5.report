@@ -48,13 +48,15 @@
       Tag = "*"
       Border = ReportBorder["Left:1mm #000000"]
       Background = ReportBrush["#FF7F00"]
-      { RVBCont ReportVBox
+      { RVBCont ReportPanel
         #MoveScaled(7,9,45,36)
         Expand = True
         Background = ReportBrush["#FFFF00"]
+        Arrangement = Arrange.None
         { ReportLabel1 ReportLabel
-          #MoveScaled(0,0,46,23)
+          #MoveScaled(-1,5,46,23)
           Left = "25%"
+          Top = "5cm"
           Width = "27%"
           Height = "5cm"
           Brush = ReportBrush["LinearGradient(0.21,0.91,0.81,0.11,[#FF000000,#FFFFFF],[0,1])"]

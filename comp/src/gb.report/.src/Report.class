@@ -153,7 +153,6 @@ Public Sub _Layout(Optional iPage As Integer = -1)
 
       If CSection._CurItem > CSection.Children.Max Then Break
 
-      Print CSection._CurItem & " / " & CSection.Children.Max
       Inc $iCurPage
       $iPageCount = $iCurPage
       If iPage > -1 And If $iCurPage > iPage Then

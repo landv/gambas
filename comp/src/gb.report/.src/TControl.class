@@ -1,6 +1,5 @@
 ' Gambas class file
 
-'PUBLIC Ctrl AS Object
 Private $iCtrl As Integer
 Public RealPage As Integer
 Public RelPage As Integer = -1
@@ -14,31 +13,21 @@ Public _SkipPainting As Boolean = False
 Public Index As Integer
 Property Ctrl As ReportControl
 
-
 Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As Float
-  
+
   Dim X1, Y1, X2, Y2 As Float
-  'Print ReportControl._ObjectFromId[$iCtrl].Id
+
   X1 = MTools.UnitsToPixels(X)
   Y1 = MTools.UnitsToPixels(Y)
   X2 = MTools.UnitsToPixels(X + W)
   Y2 = MTools.UnitsToPixels(Y + H)
-  
-  
+
   Me.RealLeft = X1
   Me.RealTop = Y1
   Me.RealWidth = X2 - X1
   Me.RealHeight = Y2 - Y1
-  
-  'Return Me.ctrl._SetChildGeometry(X, Y, W, H, RealPage)
-  
-End
 
-' Public Sub _free()
-'  
-'   
-'   
-' End
+End
 
 Private Function Ctrl_Read() As ReportControl
 
@@ -48,6 +37,6 @@ End
 
 Private Sub Ctrl_Write(Value As ReportControl)
 
- $iCtrl = Value.id
+  $iCtrl = Value.id
 
 End
