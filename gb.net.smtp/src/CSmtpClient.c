@@ -192,7 +192,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 	CSMTPPART *p;
 	struct libsmtp_part_struct *main_part;
 	struct libsmtp_part_struct *part;
-	int parent;
+	//int parent;
 	struct libsmtp_part_struct *parent_part;
 	int i;
 	char buffer[24];
@@ -265,7 +265,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 		#endif
 		
 		main_part->Tag = -1;
-		parent = -1;
+		//parent = -1;
 		
 		for (i = 0; i < npart; i++)
 		{

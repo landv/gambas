@@ -599,7 +599,6 @@ static void add_identifier()
 	PATTERN last_pattern, last_last_pattern;
 	bool not_first;
 	bool can_be_reserved;
-	bool is_type;
 	bool last_identifier, last_type, last_class, last_pub;
 	
 	last_pattern = get_last_pattern();
@@ -724,7 +723,6 @@ static void add_identifier()
 			{
 				len += 2;
 				source_ptr += 2;
-				is_type = FALSE;
 				can_be_reserved = FALSE;
 			}
 			else

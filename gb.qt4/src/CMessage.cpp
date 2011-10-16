@@ -118,7 +118,7 @@ static int make_message(int type, int nbmax, void *_param)
 	QString msg = QSTRING_ARG(msg);
 	QPushButton *button[3];
 	int ret, nbutton;
-	QMessageBox::ButtonRole role;
+	//QMessageBox::ButtonRole role;
 	//QMessageBox::StandardButton std;
 	QMessageBox::Icon icon;
 	const char *stock;
@@ -170,12 +170,12 @@ static int make_message(int type, int nbmax, void *_param)
 		}
 		else
 		{*/
-			if (n == 0)
+			/*if (n == 0)
 				role = QMessageBox::AcceptRole;
 			else if (n == (nbutton - 1))
 				role = QMessageBox::RejectRole;
 			else
-				role = QMessageBox::ActionRole;
+				role = QMessageBox::ActionRole;*/
 		
 			button[n] = mb->addButton(QSTRING_ARG(btn[i]), QMessageBox::ActionRole);
 		//}

@@ -73,7 +73,7 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
   /* These are the input buffer and the output buffer */
   char libsmtp_int_ogroup[2056], libsmtp_int_obuffer[4];
   unsigned char libsmtp_int_char;
-  unsigned char libsmtp_int_last_char;
+  //unsigned char libsmtp_int_last_char;
   int libsmtp_int_finished=0, libsmtp_int_outbytes=0, libsmtp_int_width=0;
   int libsmtp_int_newline=0;
   /* This points into the data stream to the byte we are reading ATM */
@@ -88,7 +88,7 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
   while (!libsmtp_int_finished)
   {
     /* We fetch a character from the input buffer */
-    libsmtp_int_last_char = libsmtp_int_char;
+    //libsmtp_int_last_char = libsmtp_int_char;
     libsmtp_int_char = libsmtp_int_data[libsmtp_int_data_ptr++];
 
     /* Lets check that we don't read over the end of the input buffer */
@@ -248,7 +248,7 @@ int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, 
   /* These are the input buffer and the output buffer */
   char libsmtp_int_ogroup[2056], libsmtp_int_obuffer[4];
   unsigned char libsmtp_int_char;
-  unsigned char libsmtp_int_last_char;
+  //unsigned char libsmtp_int_last_char;
   int libsmtp_int_finished=0, libsmtp_int_outbytes=0, libsmtp_int_width=0;
   /* This points into the data stream to the byte we are reading ATM */
   unsigned int libsmtp_int_data_ptr=0;
@@ -267,7 +267,7 @@ int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, 
   while (!libsmtp_int_finished)
   {
     /* We fetch a character from the input buffer */
-    libsmtp_int_last_char = libsmtp_int_char;
+    //libsmtp_int_last_char = libsmtp_int_char;
     libsmtp_int_char = libsmtp_int_data[libsmtp_int_data_ptr++];
 
 		libsmtp_int_obuffer[0] = 0;

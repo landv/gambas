@@ -1086,9 +1086,7 @@ void GDocument::highlightGambas(GEditor *editor, uint &state, bool &alternate, i
   const char *src;
   EVAL_ANALYZE result;
   int i;
-  uint ls;
 
-  ls = s.length();
   src = (const char *)s.utf8();
 
   EVAL.Analyze(src, strlen(src), state == GLine::Comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END, &result, TRUE);

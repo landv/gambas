@@ -642,7 +642,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	int before, before_zero;
 	int after, after_zero;
 	char exposant;
-	char exp_sign;
+	//char exp_sign;
 	int exp_digit;
 	int exp_zero;
 
@@ -760,7 +760,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	after = 0;
 	after_zero = 0;
 	exposant = 0;
-	exp_sign = 0;
+	//exp_sign = 0;
 	exp_zero = 0;
 	_currency = FALSE;
 	intl_currency = FALSE;
@@ -880,7 +880,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (fmt[pos] == 'e' || fmt[pos] == 'E')
 	{
 		exposant = fmt[pos];
-		exp_sign = ' ';
+		//exp_sign = ' ';
 
 		pos++;
 		if (pos >= len_fmt)
@@ -892,7 +892,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 		}
 		else if (fmt[pos] == '+')
 		{
-			exp_sign = '+';
+			//exp_sign = '+';
 			pos++;
 		}
 

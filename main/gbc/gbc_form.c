@@ -325,7 +325,7 @@ void FORM_do(bool ctrl_public)
 	char *win = NULL;
 	char *twin = NULL;
 
-	int len, len_win, len_twin;
+	int len, len_twin;
 	const char *pos_rewind;
 	bool virtual;
 	bool public;
@@ -386,7 +386,6 @@ void FORM_do(bool ctrl_public)
 			if (win == NULL)
 			{
 				win = word;
-				len_win = len;
 			}
 
 			word = get_word(&line, &len);
@@ -420,18 +419,6 @@ void FORM_do(bool ctrl_public)
 				break;
 		}
 	}
-
-	/*
-	if (type != FT_NORMAL)
-		stat = "Static ";
-	else
-		stat = "";
-
-	if (type != FT_NORMAL)
-		print("Static Private _%.*s As %s\n", len_win, win, JOB->class->name);
-
-	print("%sPrivate _%.*sId As Integer\n\n", stat, len_win, win);
-	*/
 
 	print("\nPublic Sub {$load}()\n\n");
 

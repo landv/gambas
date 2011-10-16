@@ -819,7 +819,6 @@ END_METHOD
 
 BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 
-	PAINT_BRUSH *pb;
 	GB_BRUSH brush;
 
 	CHECK_DEVICE();
@@ -828,7 +827,7 @@ BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 		return;
 	
 	PAINT->Brush.Image(&brush, (GB_IMAGE)VARG(image));
-	pb = make_brush(THIS, brush);
+	make_brush(THIS, brush);
 	
 	if (!MISSING(x) || !MISSING(y))
 	{

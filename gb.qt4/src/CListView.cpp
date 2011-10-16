@@ -183,11 +183,11 @@ void MyTreeWidgetItem::startRename(int col)
 }
 #endif
 
-static void post_cancel_event(void *_object)
+/*static void post_cancel_event(void *_object)
 {
   GB.Raise(THIS, EVENT_Cancel, 0);
   GB.Unref(&_object);
-}
+}*/
 
 /*
 void MyTreeWidgetItem::cancelRename(int col)

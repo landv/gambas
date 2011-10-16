@@ -514,7 +514,7 @@ void SUBR_replace(ushort code)
 	char *pp;
 	char *pr;
 	int ls, lp, lr;
-	int is, pos;
+	int pos;
 	bool nocase = FALSE;
 
 	SUBR_ENTER();
@@ -538,8 +538,6 @@ void SUBR_replace(ushort code)
 		
 	if (ls > 0 && lp > 0)
 	{
-		is = 0;
-	
 		for(;;)
 		{
 			pos = STRING_search(ps, ls, pp, lp, 1, FALSE, nocase);

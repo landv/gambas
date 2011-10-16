@@ -87,7 +87,7 @@ static bool TRANS_local(void)
   int sym_index;
   TRANS_DECL decl;
   PATTERN *sym;
-  bool many;
+  //bool many;
   int f;
 
   if (!TRANS_is(RS_DIM))
@@ -98,7 +98,7 @@ static bool TRANS_local(void)
 
 	for(;;)
 	{
-		many = FALSE;
+		//many = FALSE;
 		sym = JOB->current;
 
 		for(;;)
@@ -108,7 +108,7 @@ static bool TRANS_local(void)
 			JOB->current++;
 			if (!TRANS_is(RS_COMMA))
 				break;
-			many = TRUE;
+			//many = TRUE;
 		}
 
 		f = TT_DO_NOT_CHECK_AS | TT_CAN_ARRAY | TT_CAN_NEW;
@@ -482,9 +482,6 @@ static void trans_call(const char *name, int nparam)
 void TRANS_code(void)
 {
   int i;
-  bool debug;
-
-  debug = JOB->debug;
 
   for (i = 0; i < ARRAY_count(JOB->class->function); i++)
   {

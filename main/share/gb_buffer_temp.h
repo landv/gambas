@@ -103,7 +103,6 @@ offset_t BUFFER_add(void *p_data, const void *string, int len)
 bool BUFFER_load_file(void *p_data, const char *name)
 {
   void **data;
-  BUFFER *buffer;
 
   int fd;
   struct stat info;
@@ -126,7 +125,6 @@ bool BUFFER_load_file(void *p_data, const char *name)
 	BUFFER_need(p_data, len);
 	
   data = (void **)p_data;
-  buffer = DATA_TO_BUFFER(*data);
 
 	p = *data + old_len;
 	

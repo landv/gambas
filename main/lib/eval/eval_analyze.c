@@ -254,7 +254,6 @@ static void add_result_char(EVAL_ANALYZE *result, char c)
 static void analyze(EVAL_ANALYZE *result)
 {
   PATTERN *pattern;
-  const char *src;
   int nspace;
   bool empty = FALSE;
   int type, old_type, next_type;
@@ -265,7 +264,6 @@ static void analyze(EVAL_ANALYZE *result)
 	bool preprocessor;
 
   pattern = EVAL->pattern;
-  src = EVAL->source;
   colors_len = 0;
 	nspace = 0;
 	preprocessor = FALSE;

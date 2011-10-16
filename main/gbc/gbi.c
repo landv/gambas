@@ -684,7 +684,6 @@ int main(int argc, char **argv)
 	int i;
 	char *name;
 	int opt;
-	int save_fd;
 	int ind = 0;
 
 	/*#ifdef __FreeBSD__
@@ -693,7 +692,7 @@ int main(int argc, char **argv)
 	optind = 0;
 	#endif*/
 
-	save_fd = dup(STDOUT_FILENO);
+	//dup(STDOUT_FILENO);
 
 	//_verbose = TRUE;
 

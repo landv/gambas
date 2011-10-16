@@ -596,10 +596,7 @@ BEGIN_PROPERTY(CTAB_picture)
 	}
 	else if (index >= 0)
 	{
-		CPICTURE *pict;
-
 		GB.StoreObject(PROP(GB_OBJECT), POINTER(&(WIDGET->stack.at(index))->icon));
-		pict = (CPICTURE *)VPROP(GB_OBJECT);
 		WIDGET->stack.at(index)->updateIcon();
 	}
 

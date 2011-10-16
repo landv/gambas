@@ -201,7 +201,6 @@ void TRANS_error(void)
 static int trans_binary_type(void)
 {
 	int index;
-	bool string = FALSE;
 	int nparam = 0;
 
 	if (PATTERN_is_class(*JOB->current))
@@ -223,7 +222,6 @@ static int trans_binary_type(void)
 		{
 			index = RES_get_type(PATTERN_index(*JOB->current));
 			CODE_push_number(index);
-			string = (index == T_STRING);
 		}
 	}
 	else

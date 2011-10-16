@@ -314,7 +314,6 @@ static void gambas_handle_event(GdkEvent *event)
   GtkWidget *grab;
 	gControl *control;
 	int x, y, xc, yc;
-	bool real;
 	bool cancel;
 	int type;
 	
@@ -374,14 +373,14 @@ static void gambas_handle_event(GdkEvent *event)
 			widget = grab;
 	}
 	
-	real = true;
+	//real = true;
 	while (widget)
 	{
 		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
 		if (control)
 			break;
 		widget = widget->parent;
-		real = false;
+		//real = false;
 	}
 
 	/*if (event->type == GDK_BUTTON_PRESS)

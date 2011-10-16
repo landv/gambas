@@ -1814,11 +1814,11 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 void MyMainWindow::showModal(void)
 {
-	Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
+	//Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	CWINDOW *save = CWINDOW_Current;
-	QPoint p = pos();
+	//QPoint p = pos();
 	QEventLoop *old;
 	QEventLoop eventLoop;
 
@@ -2282,7 +2282,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	bool cancel = false;
-	bool modal;
+	//bool modal;
 
 	e->ignore();
 
@@ -2314,7 +2314,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	if (cancel)
 		goto IGNORE;
 
-	modal = isModal(); //testWFlags(Qt::WShowModal); // && THIS->opened;
+	//modal = isModal(); //testWFlags(Qt::WShowModal); // && THIS->opened;
 
 	CWIDGET_set_flag(THIS, WF_CLOSED);
 	//qApp->sendEvent(WIDGET, new QEvent(EVENT_CLOSE));

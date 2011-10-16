@@ -1315,7 +1315,7 @@ static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 	}
 	else
 	{
-		if (do_query(db, "Unable to get primary index: &1", &res, qindex, 2, table, schema))
+		if (do_query(db, "Unable to get primary index: &1", &res, qindex_schema, 2, table, schema))
 			return TRUE;
 	}
 

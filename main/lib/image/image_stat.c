@@ -524,7 +524,8 @@ static int php_read_APP(IMAGE_STREAM * stream, unsigned int marker, zval *info)
 static int handle_jpeg (IMAGE_STREAM * stream, IMAGE_INFO *result) //, zval *info) 
 {
 	unsigned int marker = M_PSEUDO;
-	unsigned short length, ff_read=1;
+	//unsigned short length;
+	unsigned short ff_read=1;
 	int ret = 1;
 
 	for (;;) {
@@ -548,7 +549,7 @@ static int handle_jpeg (IMAGE_STREAM * stream, IMAGE_INFO *result) //, zval *inf
 				if (ret == 1) {
 				#endif
 					/* handle SOFn block */
-					length = php_read2(stream);
+					//length = php_read2(stream);
 					stream_getc(stream);
 					result->height   = php_read2(stream);
 					result->width    = php_read2(stream);

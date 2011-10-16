@@ -368,8 +368,8 @@ static void fill_files(const char *root, bool recursive)
 		{
 			ext = FILE_get_ext(file);
 
-			if ((strcmp(FILE_get_ext(file), "module") == 0)
-					|| (strcmp(FILE_get_ext(file), "class") == 0))
+			if ((strcmp(ext, "module") == 0)
+					|| (strcmp(ext, "class") == 0))
 			{
 				*((char **)ARRAY_add(&_files)) = STR_copy(file);
 				// Add the class to the list of classes

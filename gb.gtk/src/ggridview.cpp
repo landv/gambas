@@ -189,7 +189,6 @@ static gboolean tbheader_move(GtkWidget *wid, GdkEventMotion *e, gGridView *data
 static void tblateral_select(gGridView *data, int bcurrent, bool move)
 {
 	int bc, col;
-	bool sel_changed;
 	
 	data->getCursor(NULL, &col);
 	
@@ -236,13 +235,11 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 					{
 						for (bc = bcurrent; bc <= data->sel_current; bc++)
 							data->setRowSelected(bc, true);
-						sel_changed = true;
 					}
 					else
 					{
 						for (bc = data->sel_current; bc < bcurrent; bc++)
 							data->setRowSelected(bc, false);
-						sel_changed = true;
 					}
 				}
 				else
@@ -1741,11 +1738,11 @@ void gGridView::setHeaderText(int col, const char *value)
 		hdata=g_hash_table_new_full(g_direct_hash,g_direct_equal,NULL, 
 		(GDestroyNotify)gridheader_destroy);
 
-	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)col);
+	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)(intptr_t)col);
 	if (!head) 
 	{
 		head=new gGridHeader();
-		g_hash_table_insert(hdata,(gpointer)col,(gpointer)head);
+		g_hash_table_insert(hdata,(gpointer)(intptr_t)col,(gpointer)head);
 	}
 	head->setHeader(value);
 
@@ -1764,11 +1761,11 @@ void gGridView::setFooterText(int col, const char *value)
 		hdata=g_hash_table_new_full(g_direct_hash,g_direct_equal,NULL, 
 		(GDestroyNotify)gridheader_destroy);
 
-	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)col);
+	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)(intptr_t)col);
 	if (!head) 
 	{
 		head=new gGridHeader();
-		g_hash_table_insert(hdata,(gpointer)col,(gpointer)head);
+		g_hash_table_insert(hdata,(gpointer)(intptr_t)col,(gpointer)head);
 	}
 	head->setFooter(value);
 
@@ -1780,7 +1777,7 @@ char* gGridView::headerText(int col)
 	gGridHeader *head;
 
 	if (!hdata) return NULL;
-	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)col);
+	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)(intptr_t)col);
 	if (!head) return NULL;
 	return head->header;
 }
@@ -1790,7 +1787,7 @@ char* gGridView::footerText(int col)
 	gGridHeader *head;
 
 	if (!hdata) return NULL;
-	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)col);
+	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)(intptr_t)col);
 	if (!head) return NULL;
 	return head->footer;
 }
@@ -1800,7 +1797,7 @@ bool gGridView::columnResizable(int index)
 	gGridHeader *head;
 
 	if (!hdata) return true;
-	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)index);
+	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)(intptr_t)index);
 	if (!head) return true;
 	return head->resizable;
 }
@@ -1813,11 +1810,11 @@ void gGridView::setColumnResizable(int col,bool value)
 		hdata=g_hash_table_new_full(g_direct_hash,g_direct_equal,NULL, 
 		(GDestroyNotify)gridheader_destroy);
 
-	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)col);
+	head=(gGridHeader*)g_hash_table_lookup(hdata,(gpointer)(intptr_t)col);
 	if (!head) 
 	{
 		head=new gGridHeader();
-		g_hash_table_insert(hdata,(gpointer)col,(gpointer)head);
+		g_hash_table_insert(hdata,(gpointer)(intptr_t)col,(gpointer)head);
 	}
 	head->resizable=value;
 	if (!value)
@@ -1833,7 +1830,7 @@ char* gGridView::rowText(int col)
 
 	if (vdata)
 	{
-		head = (gGridRow*)g_hash_table_lookup(vdata,(gpointer)col);
+		head = (gGridRow*)g_hash_table_lookup(vdata,(gpointer)(intptr_t)col);
 		if (head) 
 			return head->text;
 	}
@@ -1850,11 +1847,11 @@ void gGridView::setRowText(int col, const char *value)
 		vdata=g_hash_table_new_full(g_direct_hash,g_direct_equal,NULL, 
 		(GDestroyNotify)gridrow_destroy);
 
-	head=(gGridRow*)g_hash_table_lookup(vdata,(gpointer)col);
+	head=(gGridRow*)g_hash_table_lookup(vdata,(gpointer)(intptr_t)col);
 	if (!head) 
 	{
 		head=new gGridRow();
-		g_hash_table_insert(vdata,(gpointer)col,(gpointer)head);
+		g_hash_table_insert(vdata,(gpointer)(intptr_t)col,(gpointer)head);
 	}
 	head->setText(value);
 	
@@ -1867,7 +1864,7 @@ bool gGridView::rowResizable(int index)
 	gGridRow *head;
 
 	if (!vdata) return true;
-	head=(gGridRow*)g_hash_table_lookup(vdata,(gpointer)index);
+	head=(gGridRow*)g_hash_table_lookup(vdata,(gpointer)(intptr_t)index);
 	if (!head) return true;
 	return head->resizable;
 }
@@ -1880,11 +1877,11 @@ void gGridView::setRowResizable(int col,bool value)
 		vdata=g_hash_table_new_full(g_direct_hash,g_direct_equal,NULL, 
 		(GDestroyNotify)gridrow_destroy);
 
-	head=(gGridRow*)g_hash_table_lookup(vdata,(gpointer)col);
+	head=(gGridRow*)g_hash_table_lookup(vdata,(gpointer)(intptr_t)col);
 	if (!head) 
 	{
 		head=new gGridRow();
-		g_hash_table_insert(vdata,(gpointer)col,(gpointer)head);
+		g_hash_table_insert(vdata,(gpointer)(intptr_t)col,(gpointer)head);
 	}
 	head->resizable=value;
 	if (!value) gdk_window_set_cursor(lateral->window,NULL);

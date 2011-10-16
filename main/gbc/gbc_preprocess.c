@@ -256,7 +256,7 @@ int PREP_analyze(PATTERN *line)
 	}
 	else if (PATTERN_is(*line, RS_P_ELSE))
 	{
-		bool else_if = FALSE;
+		//bool else_if = FALSE;
 		
 		if (!_level)
 			THROW_UNEXPECTED(line);
@@ -280,7 +280,7 @@ int PREP_analyze(PATTERN *line)
 					_current = line;
 					test = get_expression();
 					
-					else_if = TRUE;
+					//else_if = TRUE;
 				}
 			}
 			

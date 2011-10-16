@@ -216,7 +216,7 @@ BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INT
 
 	int x, y, w, h, sx, sy, sw, sh, src_w, src_h;
 	CIMAGE *image = (CIMAGE *)VARG(img);
-	Imlib_Image src, dst;
+	Imlib_Image src;
 
 	if (GB.CheckObject(image))
 		return;
@@ -224,7 +224,8 @@ BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INT
 	src = check_image(image);
 	src_w = imlib_image_get_width();
 	src_h = imlib_image_get_height();
-	dst = check_image(THIS);
+	
+	check_image(THIS);
 
 	x = VARGOPT(x, 0);
 	y = VARGOPT(y, 0);

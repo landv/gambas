@@ -826,13 +826,10 @@ void TRANS_return(void)
 
 void TRANS_for(void)
 {
-	PATTERN *loop_var;
 	short local;
 	bool downto = FALSE;
 
 	control_enter(RS_FOR);
-
-	loop_var = JOB->current;
 
 	TRANS_affectation(FALSE);
 

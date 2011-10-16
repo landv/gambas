@@ -30,7 +30,7 @@
 
 #define GET_ROW_SPAN(_span) ((int)(short)(((intptr_t)_span) & 0xFFFF))
 #define GET_COL_SPAN(_span) ((int)(short)((((intptr_t)_span) >> 16) & 0xFFFF))
-#define MAKE_SPAN(_rowspan, _colspan) ((gpointer)(((uint)(unsigned short)(_rowspan)) | (((uint)(unsigned short)(_colspan)) << 16)))
+#define MAKE_SPAN(_rowspan, _colspan) ((gpointer)(intptr_t)(((uint)(unsigned short)(_rowspan)) | (((uint)(unsigned short)(_colspan)) << 16)))
 
 //***********************************
 // gTableData
@@ -226,9 +226,9 @@ void gTable::setRowCount(int number)
 			rowpos = g_renew(int, rowpos, number);
 		}
 		
-		g_hash_table_foreach_remove(data, (GHRFunc)gTable_remove_row, (gpointer)number);
-		g_hash_table_foreach_remove(seldata, (GHRFunc)gTable_remove_row, (gpointer)number);
-		g_hash_table_foreach_remove(spanHash, (GHRFunc)gTable_remove_row, (gpointer)number);
+		g_hash_table_foreach_remove(data, (GHRFunc)gTable_remove_row, (gpointer)(intptr_t)number);
+		g_hash_table_foreach_remove(seldata, (GHRFunc)gTable_remove_row, (gpointer)(intptr_t)number);
+		g_hash_table_foreach_remove(spanHash, (GHRFunc)gTable_remove_row, (gpointer)(intptr_t)number);
 	}
 	
 	rows = number;
@@ -275,9 +275,9 @@ void gTable::setColumnCount(int number)
 			colpos = g_renew(int, colpos, number);
 		}
 
-		g_hash_table_foreach_remove(data, (GHRFunc)gTable_remove_col, (gpointer)number);
-		g_hash_table_foreach_remove(seldata, (GHRFunc)gTable_remove_col, (gpointer)number);
-		g_hash_table_foreach_remove(spanHash, (GHRFunc)gTable_remove_col, (gpointer)number);
+		g_hash_table_foreach_remove(data, (GHRFunc)gTable_remove_col, (gpointer)(intptr_t)number);
+		g_hash_table_foreach_remove(seldata, (GHRFunc)gTable_remove_col, (gpointer)(intptr_t)number);
+		g_hash_table_foreach_remove(spanHash, (GHRFunc)gTable_remove_col, (gpointer)(intptr_t)number);
 	}
 	
 	columns = number;
@@ -490,7 +490,7 @@ void gTable::setRowSelected(int row,bool value)
 		
 	}
 	
-	if (!value) g_hash_table_foreach_remove(seldata,(GHRFunc)gTable_ecol,(gpointer)row);
+	if (!value) g_hash_table_foreach_remove(seldata,(GHRFunc)gTable_ecol,(gpointer)(intptr_t)row);
 }
 
 bool gTable::getFieldSelected (int row, int col)

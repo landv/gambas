@@ -108,8 +108,6 @@ static short date_from_julian_year(short year)
 
 void DATE_init(void)
 {
-	time_t t = (time_t)0L;
-	struct tm *tm;
 	struct timeval tv;
 
 	if (gettimeofday(&tv, NULL) == 0)
@@ -117,11 +115,13 @@ void DATE_init(void)
 	else
 		_start_time = 0.0;
 
-	tm = localtime(&t);
-
 	#if defined(OS_FREEBSD) || defined(OS_MACOSX) || defined(OS_OPENBSD)
-	date_timezone = tm->tm_gmtoff;
-	date_daylight = tm->tm_isdst;
+	{
+		time_t t = (time_t)0L;
+		struct tm *tm = localtime(&t);
+		date_timezone = tm->tm_gmtoff;
+		date_daylight = tm->tm_isdst;
+	}
 	#else
 	date_timezone = timezone;
 	date_daylight = daylight;
@@ -459,7 +459,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 	int nbr, nbr2;
 	int c, i;
 	bool has_date = FALSE;
-	bool has_time = FALSE;
+	//bool has_time = FALSE;
 
 	if (!len)
 	{
@@ -523,7 +523,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 
 	if (c == info->time_sep)
 	{
-		has_time = TRUE;
+		//has_time = TRUE;
 
 		if (read_integer(&nbr2))
 			return TRUE;

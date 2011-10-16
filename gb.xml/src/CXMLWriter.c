@@ -21,8 +21,6 @@
 
 ***************************************************************************/
 
-
-
 #define __CXMLWRITER_C
 
 #include <stdio.h>
@@ -371,16 +369,14 @@ BEGIN_METHOD (CXmlWriter_DTDInternalEntity,GB_STRING Name;GB_STRING Content;GB_B
 END_METHOD
 
 
-BEGIN_METHOD (CXmlWriter_DTDAttList,GB_STRING Name;GB_STRING Content;GB_BOOLEAN IsParameter;)
+BEGIN_METHOD (CXmlWriter_DTDAttList,GB_STRING Name;GB_STRING Content;)
 
 	char *name,*content;
-	int isparameter=0;
 	
 	if (Check_Writer(THIS)) return;
 	
 	name=GB.ToZeroString(ARG(Name));
 	content=GB.ToZeroString(ARG(Content));
-	if (!MISSING(IsParameter)) isparameter=VARG(IsParameter);
 	Resul_Writer(THIS,xmlTextWriterWriteDTDAttlist(THIS->writer,(xmlChar *)name,(xmlChar *)content));
 
 	

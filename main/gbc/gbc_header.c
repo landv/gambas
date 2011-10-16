@@ -60,7 +60,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 {
   PATTERN *look = JOB->current;
   TRANS_PARAM *param;
-  bool is_output;
+  //bool is_output;
   bool is_optional = FALSE;
   TRANS_DECL ttyp;
   uint64_t byref_mask = 1;
@@ -117,7 +117,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
       break;
     }
 
-    is_output = FALSE;
+    //is_output = FALSE;
 
     if (!(flag & HF_NO_OPT))
     {

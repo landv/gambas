@@ -53,7 +53,7 @@
 static bool read_integer(int base, int64_t *result, bool local)
 {
 	uint64_t nbr2, nbr;
-	int d, n, c, nmax;
+	int d, n, c; //, nmax;
 	char thsep;
 	int ndigit_thsep;
 	bool first_thsep;
@@ -65,13 +65,13 @@ static bool read_integer(int base, int64_t *result, bool local)
 	n = 0;
 	nbr = 0;
 	
-	switch (base)
+	/*switch (base)
 	{
 		case 2: nmax = 64; break;
 		case 8: nmax = 21; break;
 		case 10: nmax = 19; break;
 		case 16: nmax = 16; break;
-	}
+	}*/
 
 	c = last_char();
 

@@ -157,10 +157,8 @@ const char *TYPE_get_short_desc(TYPE type)
     };
 
   TYPE_ID id;
-  int value;
 
   id = TYPE_get_id(type);
-  value = TYPE_get_value(type);
 
   if (id == T_ARRAY)
     return "?";

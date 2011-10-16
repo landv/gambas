@@ -73,7 +73,7 @@ static void push_number(int index)
 {
   TRANS_NUMBER number;
   CLASS_CONST cst;
-  SYMBOL *sym;
+  //SYMBOL *sym;
 
   if (TRANS_get_number(index, &number))
     THROW(E_SYNTAX);
@@ -84,7 +84,7 @@ static void push_number(int index)
     return;
   }
 
-  sym = TABLE_get_symbol(EVAL->table, index);
+  //sym = TABLE_get_symbol(EVAL->table, index);
 
 	cst.type = number.type;
 	if (cst.type == T_FLOAT)
@@ -250,7 +250,7 @@ static void trans_expr_from_tree(PATTERN *tree)
   int i;
   short nparam;
   int count;
-  PATTERN pattern, next_pattern, prev_pattern;
+  PATTERN pattern, prev_pattern; //, next_pattern
 
   count = ARRAY_count(tree) - 1;
   pattern = NULL_PATTERN;
@@ -259,10 +259,10 @@ static void trans_expr_from_tree(PATTERN *tree)
   {
     prev_pattern = pattern;
     pattern = tree[i];
-    if (i < count)
+    /*if (i < count)
       next_pattern = tree[i + 1];
     else
-      next_pattern = NULL_PATTERN;
+      next_pattern = NULL_PATTERN;*/
 
     if (PATTERN_is_number(pattern))
       push_number(PATTERN_index(pattern));
