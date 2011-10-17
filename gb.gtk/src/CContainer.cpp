@@ -117,11 +117,16 @@ END_PROPERTY
 BEGIN_METHOD_VOID(ContainerChildren_Clear)
 
 	gContainer *cont = WIDGET->proxyContainer();
-	int i;
+	gControl *child;
 	
-	for (i = 0; i < cont->childCount(); i++)
-		cont->child(i)->destroy();
-
+	for(;;)
+	{
+		child = cont->child(0);
+		if (!child)
+			break;
+		child->destroy();
+	}
+	
 END_METHOD
 
 
