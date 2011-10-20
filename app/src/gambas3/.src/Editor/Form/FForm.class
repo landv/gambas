@@ -3427,7 +3427,7 @@ Private Sub EmbedIntoContainer()
 
   sChildren = GetSelection(True)
   
-  hParent = CreateControl("Panel", Master.Parent)
+  hParent = CreateControl($hFamily.EmbedContainer, Master.Parent)
   hParent.MoveAndResize(X1, Y1, X2 - X1 + Desktop.Scale, Y2 - Y1 + Desktop.Scale)
   
   DeleteSelection

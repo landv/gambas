@@ -99,7 +99,7 @@ fi
 
 echo "[System]"
 echo "OperatingSystem=$OS"
-echo "KernelRelease=$KERNEL"
+echo "Kernel=$KERNEL"
 echo "Architecture=$ARCH"
 echo "Memory=$RAM"
 echo "DistributionVendor=$vendor"
