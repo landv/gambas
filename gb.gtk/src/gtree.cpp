@@ -364,8 +364,7 @@ char *gTreeRow::child()
 char *gTreeRow::last()
 {
 	GtkTreePath* path;
-	GtkTreeIter iter;
-	int count;
+	GtkTreeIter iter, save_iter;
 	
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree->store), dataiter);
 	if (!path)
@@ -376,11 +375,19 @@ char *gTreeRow::last()
 		
 	gtk_tree_path_free(path);
 		
-	count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(tree->store), NULL);
-	if (!count) return NULL;
+	//count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(tree->store), NULL);
+	//if (!count) return NULL;
 	
-	while (--count)
-		gtk_tree_model_iter_next(GTK_TREE_MODEL(tree->store), &iter);
+	//while (--count)
+	for(;;)
+	{
+		save_iter = iter;
+		if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(tree->store), &iter))
+		{
+			iter = save_iter;
+			break;
+		}
+	}
 	
 	return tree->iterToKey(&iter);
 }
@@ -835,7 +842,9 @@ char *gTree::firstRow()
 {
 	GtkTreeIter iter;
 	
-	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL(store),&iter)) return NULL;
+	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL(store), &iter))
+		return NULL;
+	
 	return iterToKey(&iter);
 }
 
@@ -850,8 +859,11 @@ char *gTree::lastRow()
 	count = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(store), NULL);
 	if (!count) return NULL;
 	
-	while (--count)
-		gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
+	if (!gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(store), &iter, NULL, count - 1))
+		return NULL;
+	
+	//while (--count)
+	//	gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
 	
 	return iterToKey(&iter);
 }
@@ -1193,7 +1205,7 @@ int gTree::columnWidth(int ind)
 	if (!col) 
 		return 0;
 	else
-		return gtk_tree_view_column_get_fixed_width(col);
+		return gtk_tree_view_column_get_width(col);
 }
 
 void gTree::setColumnWidth(int ind, int w)
