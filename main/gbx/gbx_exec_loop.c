@@ -1249,18 +1249,13 @@ _JUMP_NEXT:
 	{
 		static const void *jn_jump[] = 
 			{ 
-				&&_JN_START, NULL, NULL, NULL, &&_JN_BYTE_POS, &&_JN_BYTE_NEG, &&_JN_SHORT_POS, &&_JN_SHORT_NEG, 
-				&&_JN_INTEGER_POS, &&_JN_INTEGER_NEG, &&_JN_LONG_POS, &&_JN_LONG_NEG, 
-				&&_JN_SINGLE_POS, &&_JN_SINGLE_NEG, &&_JN_FLOAT_POS, &&_JN_FLOAT_NEG 
+				&&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT
 			};
+			
 		static const void *jn_test[] = 
 			{ 
-				NULL, NULL, NULL, NULL, &&_JN_INTEGER_TEST_POS, &&_JN_INTEGER_TEST_NEG,
-				&&_JN_INTEGER_TEST_POS, &&_JN_INTEGER_TEST_NEG,
-				&&_JN_INTEGER_TEST_POS, &&_JN_INTEGER_TEST_NEG,
-				&&_JN_LONG_TEST_POS, &&_JN_LONG_TEST_NEG,
-				&&_JN_SINGLE_TEST_POS, &&_JN_SINGLE_TEST_NEG, 
-				&&_JN_FLOAT_TEST_POS, &&_JN_FLOAT_TEST_NEG,
+				NULL, NULL, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST,
+				&&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST
 			};
 
 		VALUE * NO_WARNING(end);
@@ -1300,39 +1295,23 @@ _JUMP_NEXT:
 
 		val = &BP[PC[2] & 0xFF];
 		
-		if (TYPE_is_integer(type))
-			*PC |= (inc->_integer.value < 0);
-		else if (TYPE_is_long(type))
-			*PC |= (inc->_long.value < 0);
-		else if (TYPE_is_single(type))
-			*PC |= (inc->_single.value < 0);
-		else if (TYPE_is_float(type))
-			*PC |= (inc->_float.value < 0);
+		*PC |= type;
+		goto *jn_test[type];
 		
-		*PC |= (type << 1);
-		goto *jn_test[*PC & 0xF];
-		
-	_JN_BYTE_POS:
+	_JN_BYTE:
 		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);
-		goto _JN_INTEGER_TEST_POS;
+		goto _JN_INTEGER_TEST;
 	
-	_JN_BYTE_NEG:
-		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);
-		goto _JN_INTEGER_TEST_NEG;
-	
-	_JN_SHORT_POS:
+	_JN_SHORT:
 		val->_integer.value = (short)(val->_integer.value + inc->_integer.value);
-		goto _JN_INTEGER_TEST_POS;
+		goto _JN_INTEGER_TEST;
 	
-	_JN_SHORT_NEG:
-		val->_integer.value = (short)(val->_integer.value + inc->_integer.value);
-		goto _JN_INTEGER_TEST_NEG;
-	
-	_JN_INTEGER_POS:
+	_JN_INTEGER:
 		val->_integer.value += inc->_integer.value;
 	
-	_JN_INTEGER_TEST_POS:
-		if (val->_integer.value <= end->_integer.value)
+	_JN_INTEGER_TEST:
+		if ((inc->_integer.value > 0 && val->_integer.value <= end->_integer.value)
+			  || (inc->_integer.value < 0 && val->_integer.value >= end->_integer.value))
 		{
 			PC += 3;
 			goto _MAIN;
@@ -1340,23 +1319,12 @@ _JUMP_NEXT:
 		else
 			goto _JN_END;
 		
-	_JN_INTEGER_NEG:
-		val->_integer.value += inc->_integer.value;
-	
-	_JN_INTEGER_TEST_NEG:
-		if (val->_integer.value >= end->_integer.value)
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-		
-	_JN_LONG_POS:
+	_JN_LONG:
 		val->_long.value += inc->_long.value;
 		
-	_JN_LONG_TEST_POS:
-		if (val->_long.value <= end->_long.value)
+	_JN_LONG_TEST:
+		if ((inc->_long.value > 0 && val->_long.value <= end->_long.value)
+			  || (inc->_long.value < 0 && val->_long.value >= end->_long.value))
 		{
 			PC += 3;
 			goto _MAIN;
@@ -1364,23 +1332,12 @@ _JUMP_NEXT:
 		else
 			goto _JN_END;
 		
-	_JN_LONG_NEG:
-		val->_long.value += inc->_long.value;
-		
-	_JN_LONG_TEST_NEG:
-		if (val->_long.value >= end->_long.value)
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-		
-	_JN_SINGLE_POS:
+	_JN_SINGLE:
 		val->_single.value += inc->_single.value;
 		
-	_JN_SINGLE_TEST_POS:
-		if (val->_single.value <= end->_single.value)
+	_JN_SINGLE_TEST:
+		if ((inc->_single.value > 0 && val->_single.value <= end->_single.value)
+			  || (inc->_single.value < 0 && val->_single.value >= end->_single.value))
 		{
 			PC += 3;
 			goto _MAIN;
@@ -1388,35 +1345,12 @@ _JUMP_NEXT:
 		else
 			goto _JN_END;
 		
-	_JN_SINGLE_NEG:
-		val->_single.value += inc->_single.value;
-
-	_JN_SINGLE_TEST_NEG:
-		if (val->_single.value >= end->_single.value)
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-		
-	_JN_FLOAT_POS:
+	_JN_FLOAT:
 		val->_float.value += inc->_float.value;
 		
-	_JN_FLOAT_TEST_POS:
-		if (val->_float.value <= end->_float.value)
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-		else
-			goto _JN_END;
-		
-	_JN_FLOAT_NEG:
-		val->_float.value += inc->_float.value;
-		
-	_JN_FLOAT_TEST_NEG:
-		if (val->_float.value >= end->_float.value)
+	_JN_FLOAT_TEST:
+		if ((inc->_float.value > 0 && val->_float.value <= end->_float.value)
+			  || (inc->_float.value < 0 && val->_float.value >= end->_float.value))
 		{
 			PC += 3;
 			goto _MAIN;
