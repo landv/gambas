@@ -164,8 +164,6 @@ private:
 	bool _utility;
 	int _type;
 
-	void doReparent(QWidget *, Qt::WFlags, const QPoint &);
-
 protected:
 
 	virtual void showEvent(QShowEvent *);
@@ -197,13 +195,13 @@ public:
 	void showPopup(QPoint &pos);
 	void afterShow();
 	//bool isModal() { return testWFlags(WShowModal); }
-	void doReparent(QWidget *w, const QPoint &p) { doReparent(w, windowFlags(), p); }
+	void doReparent(QWidget *w, const QPoint &p);
 
-	bool hasBorder(void) { return _border; }
-	void setBorder(bool, bool = false);
+	bool hasBorder(void) const { return _border; }
+	void setBorder(bool);
 	
-	bool isResizable(void) { return _resizable; }
-	void setResizable(bool, bool = false);
+	bool isResizable(void) const { return _resizable; }
+	void setResizable(bool);
 	
 	#ifdef NO_X_WINDOW
 	#else

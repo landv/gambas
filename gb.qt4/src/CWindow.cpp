@@ -291,7 +291,6 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 	{
 		//qDebug("reparent_window: -> %s %p", parent ? ((CWIDGET *)parent)->name : "", parent);
 		WINDOW->doReparent(newParentWidget, p);
-		WINDOW->setResizable(WINDOW->isResizable(), true);
 	}
 	else
 		CWIDGET_move(THIS, p.x(), p.y());
@@ -1725,7 +1724,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 			if (newParentWidget && parentWidget() != newParentWidget)
 			{
 				//qDebug("showActivate");
-				doReparent(newParentWidget, windowFlags(), pos());
+				doReparent(newParentWidget, pos());
 			}
 		}
 	}
@@ -1980,22 +1979,26 @@ void MyMainWindow::setSizeGrip(bool on)
 	}
 }
 
-void MyMainWindow::setBorder(bool b, bool force)
+void MyMainWindow::setBorder(bool b)
 {
-	Qt::WindowFlags flags;
-	
-	if (_border == b && !force)
+	if (_border == b)
 		return;
 		
 	_border = b;
-	flags = windowFlags();
-	
-	if (b)
-		flags &= ~(Qt::FramelessWindowHint); //|Qt::ToolTip);
-	else
-		flags |= Qt::FramelessWindowHint; //|Qt::ToolTip;
-	
-	doReparent(parentWidget(), flags, pos());
+	if (!isWindow())
+		return;
+	doReparent(parentWidget(), pos());
+}
+
+void MyMainWindow::setResizable(bool b)
+{
+	if (_resizable == b)
+		return;
+		
+	_resizable = b;
+	if (!isWindow())
+		return;
+	doReparent(parentWidget(), pos());
 }
 
 void MyMainWindow::setUtility(bool b)
@@ -2006,33 +2009,8 @@ void MyMainWindow::setUtility(bool b)
 		return;
 		
 	_utility = b;
-	flags = windowFlags() & ~Qt::WindowType_Mask;
 	
-	if (b)
-		flags |= Qt::Tool; //|Qt::ToolTip);
-	else
-		flags |= Qt::Window; //|Qt::ToolTip;
-	
-	doReparent(parentWidget(), flags, pos());
-}
-
-void MyMainWindow::setResizable(bool b, bool force)
-{
-	if (_resizable == b && !force)
-		return;
-		
-	_resizable = b;
-	
-	if (!b && isWindow())
-	{
-		setMinimumSize(width(), height());
-		setMaximumSize(width(), height());
-	}
-	else
-	{
-		setMinimumSize(0, 0);
-		setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-	}
+	doReparent(parentWidget(), pos());
 }
 
 #ifdef NO_X_WINDOW
@@ -2379,12 +2357,13 @@ void MyMainWindow::setPersistent(bool pers)
 	setAttribute(Qt::WA_DeleteOnClose, !pers);
 }
 
-void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &pos)
+void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QIcon icon;
 	bool old_toplevel;
 	bool hidden;
+	Qt::WindowFlags f = windowFlags();
 	#ifndef NO_X_WINDOW
 	bool active = qApp->activeWindow() == this;
 	#endif
@@ -2395,15 +2374,25 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	THIS->toplevel = !parent || parent->isWindow();
 	THIS->embedded = !THIS->toplevel;
 
+	f &= ~Qt::WindowType_Mask;
+	
 	if (THIS->toplevel)
 	{
-		f |= Qt::Window;
+		if (_utility)
+			f |= Qt::Tool;
+		else
+			f |= Qt::Window;
+		
+		if (_border)
+			f &= ~(Qt::FramelessWindowHint);
+		else
+			f |= Qt::FramelessWindowHint;
+		
 		if (!old_toplevel)
 			CWindow::insertTopLevel(THIS);
 	}
 	else	
 	{
-		f &= ~Qt::WindowType_Mask;
 		if (old_toplevel)
 		{
 			THIS->toplevel = true;
@@ -2418,7 +2407,9 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	//hide();
 	hidden = THIS->hidden;
 	//qDebug("doReparent: %s %p: hidden = %d", THIS->widget.name, THIS, hidden);
-	setParent(parent, f);
+	if (parent != parentWidget() || f != windowFlags())
+		setParent(parent, f);
+	
 	move(pos);
 	//qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
 	
@@ -2433,6 +2424,17 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		setWindowIcon(icon);
 	}
 	
+	if (!_resizable && _border && isWindow())
+	{
+		setMinimumSize(width(), height());
+		setMaximumSize(width(), height());
+	}
+	else
+	{
+		setMinimumSize(0, 0);
+		setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+	}
+		
 	//qDebug("--> isVisible = %d isHidden = %d", isVisible(), isHidden());
 	
 	/*if (THIS->embedded && !THIS->hidden)
@@ -2523,7 +2525,7 @@ void MyMainWindow::resize(int w, int h)
 {
 	bool save = _resizable;
 	
-	if (!_resizable)
+	if (!_resizable && _border)
 		setResizable(true);
 		
 	QWidget::resize(w, h);
@@ -2536,7 +2538,7 @@ void MyMainWindow::setGeometry(int x, int y, int w, int h)
 {
 	bool save = _resizable;
 	
-	if (!_resizable)
+	if (!_resizable && _border)
 		setResizable(true);
 		
 	QWidget::setGeometry(x, y, w, h);
