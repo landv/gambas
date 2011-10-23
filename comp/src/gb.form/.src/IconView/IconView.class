@@ -1093,7 +1093,7 @@ End
 
 Private Function Key_Read() As String
 
-  If $iCurrent >= 0 Then Return $aItems[$iCurrent].Key
+  If $iCurrent >= 0 And If $iCurrent < $aItems.Count Then Return $aItems[$iCurrent].Key
 
 End
 
