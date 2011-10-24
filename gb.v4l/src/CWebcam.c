@@ -1506,8 +1506,8 @@ Features
 ***************************************************************************/
 void return_array(char *array,long mmax)
 {
-	long bucle;
-	long max=mmax;
+	int bucle;
+	int max=mmax;
 
 	for (bucle=0;bucle<max;bucle++)
 	{
@@ -1537,7 +1537,7 @@ BEGIN_PROPERTY(VideoDevice_Driver)
 	else	dev = DEVICE->dev;
 	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 	return_array((char*)vcap.driver,16);
@@ -1557,7 +1557,7 @@ BEGIN_PROPERTY(VideoDevice_Bus)
 
 	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 
@@ -1580,7 +1580,7 @@ BEGIN_PROPERTY(VideoDevice_Card)
 
 	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 	return_array((char*)vcap.driver,16);
@@ -1602,7 +1602,7 @@ BEGIN_PROPERTY(VideoDevice_Version)
 
 	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 
@@ -1677,7 +1677,7 @@ BEGIN_PROPERTY(CTUNER_name)
 
 	if (vd_ioctl (DEVICE, VIDIOCGTUNER, &vtuner)!=0)
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 

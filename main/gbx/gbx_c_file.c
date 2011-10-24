@@ -201,7 +201,7 @@ BEGIN_PROPERTY(Stat_Link)
 	if (THIS_STAT->info.type == GB_STAT_LINK)
 		GB_ReturnNewZeroString(FILE_readlink(THIS_STAT->path));
 	else
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 
 END_PROPERTY
 

@@ -393,7 +393,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Curl_ErrorText)
 
 	if (THIS_STATUS >= 0)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnConstZeroString(curl_easy_strerror((-THIS_STATUS) - 1000));
 

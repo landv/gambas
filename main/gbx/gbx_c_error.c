@@ -86,7 +86,7 @@ BEGIN_PROPERTY(CERROR_text)
 		}
   }
 	else
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 
 END_PROPERTY
 
@@ -106,7 +106,7 @@ BEGIN_PROPERTY(CERROR_where)
 	if (ERROR_last.code)
   	GB_ReturnNewZeroString(DEBUG_get_position(ERROR_last.cp, ERROR_last.fp, ERROR_last.pc));
 	else
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 
 END_PROPERTY
 
@@ -136,10 +136,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CERROR_backtrace)
 
-	if (!ERROR_backtrace)
-		GB_ReturnNull();
-	else
+	if (ERROR_backtrace)
 		GB_ReturnObject(DEBUG_get_string_array_from_backtrace(ERROR_backtrace));
+	else
+		GB_ReturnNull();
 	
 END_PROPERTY
 

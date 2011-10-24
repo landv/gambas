@@ -47,7 +47,7 @@ BEGIN_METHOD(GLGETPROGRAMINFOLOG, GB_INTEGER program)
 	
 	if (!length)
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 	else

@@ -96,7 +96,7 @@ BEGIN_METHOD (CCOMPRESS_String,GB_STRING Source;GB_INTEGER Level;GB_BOOLEAN Allo
 	
 	THIS->driver->Compress.String(&target,&lent,STRING(Source),LENGTH(Source),level);
 		
-	if (!lent) { GB.ReturnNull(); return; }
+	if (!lent) { GB.ReturnVoidString(); return; }
 	if ( (!allow) && (LENGTH(Source)<=lent) ) 
 	{
 		if (target) GB.Free(POINTER(&target)); 
@@ -165,7 +165,7 @@ BEGIN_PROPERTY ( COMPRESS_Type )
 
 	if (READ_PROPERTY)
 	{
-		if (!THIS->driver) { GB.ReturnNull(); return; }
+		if (!THIS->driver) { GB.ReturnVoidString(); return; }
 		GB.ReturnNewZeroString(THIS->driver->name);
 		return;
 	}

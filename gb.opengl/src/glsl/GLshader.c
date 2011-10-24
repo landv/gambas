@@ -93,7 +93,7 @@ BEGIN_METHOD(GLGETSHADERINFOLOG, GB_INTEGER shader)
 	
 	if (!length)
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 	else
@@ -127,7 +127,7 @@ BEGIN_METHOD(GLGETSHADERSOURCE, GB_INTEGER shader)
 	
 	if (!length)
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 	else

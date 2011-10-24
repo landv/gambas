@@ -1247,7 +1247,7 @@ BEGIN_METHOD(ByteArray_ToString, GB_INTEGER start; GB_INTEGER length)
 
 	if (start >= count)
 	{
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 		return;
 	}
 

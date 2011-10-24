@@ -427,7 +427,7 @@ BEGIN_PROPERTY(Symbol_Signature)
 	if (sign)
 		GB_ReturnString(sign);
 	else
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 
 END_METHOD
 

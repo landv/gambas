@@ -401,7 +401,7 @@ BEGIN_PROPERTY(CUDPSOCKET_SourceHost)
 	if (THIS->addr.a.sa_family == PF_INET)
 		GB.ReturnNewZeroString(inet_ntoa(THIS->addr.in.sin_addr));
 	else
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 
 END_PROPERTY
 
@@ -419,7 +419,7 @@ BEGIN_PROPERTY(CUDPSOCKET_SourcePath)
 	if (THIS->addr.a.sa_family == PF_UNIX)
 		GB.ReturnNewZeroString(THIS->addr.un.sun_path);
 	else
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 
 END_PROPERTY
 
@@ -527,7 +527,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 			CUdpSocket_stream_close(&SOCKET->stream);
 			SOCKET->status = NET_CANNOT_READ;
 			GB.Raise(THIS,CUDPSOCKET_SocketError,0);
-			GB.ReturnNull();
+			GB.ReturnVoidString();
 			return;
 		}
 		//NoBlock++;
@@ -535,12 +535,12 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 		if (retval>0)
 			GB.ReturnNewString(sData,retval);
 		else
-			GB.ReturnNull();
+			GB.ReturnVoidString();
 		GB.Free(POINTER(&sData));
 	}
 	else
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	}
 
 END_METHOD

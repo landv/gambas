@@ -740,7 +740,7 @@ Returns current foreing host IP (only when connected via TCP)
 BEGIN_PROPERTY(Socket_RemoteHost)
 
 	if (SOCKET->status != NET_CONNECTED || THIS->conn_type != NET_TYPE_INTERNET)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnString(THIS->sRemoteHostIP);
 
@@ -752,7 +752,7 @@ Returns current local host IP (only when connected via TCP)
 BEGIN_PROPERTY(Socket_LocalHost)
 
 	if (SOCKET->status != NET_CONNECTED || THIS->conn_type != NET_TYPE_INTERNET)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnString(THIS->sLocalHostIP);
 
@@ -804,14 +804,14 @@ BEGIN_METHOD_VOID(Socket_Peek)
 	{
 		/* An error happened while trying to receive data : SOCKET ERROR */
 		if (buf) GB.Free(POINTER(&buf));
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 
 	if (retval > 0)
 		GB.ReturnNewString(buf, retval);
 	else
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 
 	if (buf) GB.Free(POINTER(&buf));
 

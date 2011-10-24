@@ -129,7 +129,7 @@ BEGIN_PROPERTY(Collection_Key)
 	int len;
 
 	if (HASH_TABLE_get_last_key(THIS->hash_table, &key, &len))
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 	else
 		GB_ReturnNewString(key, len);
 

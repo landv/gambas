@@ -346,7 +346,7 @@ BEGIN_METHOD(CTEXTAREA_line_get, int line)
 	int line = PARAM(line);
 
 	if (line < 0 || line >= WIDGET->numLines())
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnNewZeroString(WIDGET->textLine(PARAM(line)));
 

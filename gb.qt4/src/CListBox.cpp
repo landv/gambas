@@ -203,7 +203,7 @@ BEGIN_PROPERTY(CLISTBOX_text)
 	QListWidgetItem *item = WIDGET->currentItem();
 
 	if (!item)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnNewZeroString(TO_UTF8(item->text()));
 

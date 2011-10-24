@@ -140,7 +140,7 @@ BEGIN_METHOD(Application_Args_get, GB_INTEGER index)
   }
 
   if (index >= PROJECT_argc)
-    GB_ReturnNull();
+    GB_ReturnVoidString();
   else
     GB_ReturnConstZeroString(PROJECT_argv[index]);
 
@@ -201,7 +201,7 @@ BEGIN_METHOD_VOID(Application_Env_next)
     key = environ[*index];
     pos = strchr(key, '=');
     if (!pos)
-      GB_ReturnNull();
+      GB_ReturnVoidString();
     else
       GB_ReturnConstString(key, pos - key);
     (*index)++;

@@ -118,7 +118,6 @@ BEGIN_PROPERTY(CGRIDVIEW_data)
 	if (!THIS->data)
 	{
 		GB.Error("No data event");
-		GB.ReturnNull();
 		return;
 	}
 
@@ -452,7 +451,6 @@ BEGIN_METHOD(CGRIDVIEW_columns_get,GB_INTEGER Column;)
 	if ( (VARG(Column)<0) || (VARG(Column)>=WIDGET->columnCount() ) )
 	{
 		GB.Error("Bad column index");
- 		GB.ReturnNull();
 		return;
 	}
 
@@ -576,7 +574,6 @@ BEGIN_METHOD(CGRIDVIEW_rows_get,GB_INTEGER Row;)
 	if ( (VARG(Row)<0) || (VARG(Row)>=WIDGET->rowCount() ) )
 	{
 		GB.Error("Bad row index");
-		GB.ReturnNull();
 		return;
 	}
 
@@ -843,14 +840,12 @@ BEGIN_METHOD(CGRIDVIEW_get, GB_INTEGER Key; GB_INTEGER Column;)
 	if ( (VARG(Key)<0) || (VARG(Key)>=WIDGET->rowCount()) )
 	{
 		GB.Error("Bad row index");
-		GB.ReturnNull();
 		return;
 	}
 
 	if ( (VARG(Column)<0) || (VARG(Column)>=WIDGET->columnCount()) )
 	{
 		GB.Error("Bad column index");
-		GB.ReturnNull();
 		return;
 	}
 

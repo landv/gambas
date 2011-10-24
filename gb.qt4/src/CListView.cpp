@@ -695,7 +695,7 @@ BEGIN_PROPERTY(TreeView_key)
   //THIS->item = item;
 
   if (item == 0)
-    GB.ReturnNull();
+    GB.ReturnVoidString();
   else
     GB.ReturnString(item->key);
 
@@ -888,7 +888,7 @@ END_METHOD
 BEGIN_PROPERTY(TreeViewItem_key)
 
 	if (!THIS->item)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnString(THIS->item->key);
 

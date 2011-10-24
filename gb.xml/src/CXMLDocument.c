@@ -123,7 +123,7 @@ BEGIN_METHOD(CXMLDocument_ToString, GB_STRING Encoding)
 
 	if (!THIS->doc) 
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 

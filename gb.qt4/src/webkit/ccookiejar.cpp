@@ -46,7 +46,7 @@ BEGIN_PROPERTY(Cookie_ExpirationDate)
 	{
 		if (COOKIE->isSessionCookie())
 		{
-			GB.ReturnNull();
+			GB.ReturnDate(NULL);
 			return;
 		}
 		

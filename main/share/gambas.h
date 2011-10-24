@@ -868,6 +868,7 @@ typedef
 		void (*ReturnSelf)(void *);
 
 		void (*ReturnString)(char *);
+		void (*ReturnVoidString)(void);
 		void (*ReturnConstString)(const char *, int);
 		void (*ReturnConstZeroString)(const char *);
 		void (*ReturnNewString)(const char *, int);

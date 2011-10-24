@@ -471,7 +471,7 @@ BEGIN_PROPERTY(CMENU_shortcut)
   if (CMENU_is_toplevel(THIS) || THIS->menu)
   {
     if (READ_PROPERTY)
-      GB.ReturnNull();
+      GB.ReturnVoidString();
 
     return;
   }

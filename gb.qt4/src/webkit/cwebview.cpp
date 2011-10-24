@@ -352,7 +352,7 @@ BEGIN_PROPERTY(WebViewAuth_Url)
 	if (THIS->reply)
 		GB.ReturnNewZeroString(TO_UTF8(THIS->reply->url().toString()));
 	else
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 
 END_PROPERTY
 
@@ -361,7 +361,7 @@ BEGIN_PROPERTY(WebViewAuth_Realm)
 	if (THIS->authenticator)
 		GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->realm()));
 	else
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 
 END_PROPERTY
 
@@ -372,7 +372,7 @@ BEGIN_PROPERTY(WebViewAuth_User)
 		if (THIS->authenticator)
 			GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->user()));
 		else
-			GB.ReturnNull();
+			GB.ReturnVoidString();
 	}
 	else
 	{
@@ -391,7 +391,7 @@ BEGIN_PROPERTY(WebViewAuth_Password)
 		if (THIS->authenticator)
 			GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->password()));
 		else
-			GB.ReturnNull();
+			GB.ReturnVoidString();
 	}
 	else
 	{

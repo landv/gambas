@@ -164,7 +164,7 @@ END_PROPERTY
 BEGIN_PROPERTY(RegExp_Text)
 
 	if (THIS->count == 0)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		return_match(THIS, 0);
 

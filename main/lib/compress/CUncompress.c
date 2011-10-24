@@ -80,11 +80,11 @@ BEGIN_METHOD (CUNCOMPRESS_String,GB_STRING Source;)
 	unsigned int lent=0;
 
 	Check_Driver();
-	if (!LENGTH(Source)) { GB.ReturnNull(); return; }
+	if (!LENGTH(Source)) { GB.ReturnVoidString(); return; }
 	
 	THIS->driver->Uncompress.String(&target,&lent,STRING(Source),LENGTH(Source));
 	
-	if (!lent) GB.ReturnNull();
+	if (!lent) { GB.ReturnVoidString(); return; }
 	GB.ReturnNewString (target,lent);
 	GB.Free(POINTER(&target));
 

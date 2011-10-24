@@ -871,7 +871,7 @@ BEGIN_PROPERTY(CBLOB_data)
 		if (BLOB->length)
 			GB.ReturnConstString(BLOB->data, BLOB->length);
 		else
-			GB.ReturnNull();
+			GB.ReturnVoidString();
 	}
 	else
 	{

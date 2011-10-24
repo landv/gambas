@@ -292,7 +292,7 @@ BEGIN_METHOD_VOID(CXmlWriter_EndDocument)
 	THIS->writer=NULL;
 	if (!THIS->buffer)
 	{
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 		return;
 	}
 	GB.ReturnNewZeroString((char *)THIS->buffer->content);

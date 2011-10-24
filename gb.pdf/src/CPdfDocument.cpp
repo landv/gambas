@@ -165,13 +165,15 @@ static void aux_return_date_info(void *_object, const char *key)
 	char *datestr=NULL,*tofree=NULL;
 	int nnum;
 
+	GB.ReturnDate(NULL);
+	
 	THIS->doc->getDocInfo (&obj);
-	if (!obj.isDict()) { GB.ReturnNull(); return; }
+	if (!obj.isDict()) return;
 
 	info_dict=obj.getDict();
 	info_dict->lookup ((char *)key, &dst);
-	if (!dst.isString ()) { GB.ReturnNull(); }
-	else {
+	if (dst.isString ())
+	{
 		goo = dst.getString();
 		if (goo->hasUnicodeMarker())
 			GB.ConvString (&datestr,goo->getCString()+2,goo->getLength()-2,"UTF-16BE","UTF-8");
@@ -181,18 +183,14 @@ static void aux_return_date_info(void *_object, const char *key)
 			tofree=datestr;		
 		}
 
-		if (!datestr) { GB.ReturnNull(); }
-		else
+		if (datestr)
 		{
 			if (datestr[0] == 'D' && datestr[1] == ':') datestr += 2;
 			nnum=sscanf(datestr, "%4hd%2hd%2hd%2hd%2hd%2hd",&ds.year, &ds.month, \
 			                                          &ds.day, &ds.hour, &ds.min, &ds.sec);	
-			if (nnum != 6) { GB.ReturnNull(); }
-			else
+			if (nnum == 6)
 			{
-				if (GB.MakeDate(&ds,&ret))
-					GB.ReturnNull();
-				else
+				if (!GB.MakeDate(&ds,&ret))
 					GB.ReturnDate(&ret);
 			}		
 		}
@@ -507,7 +505,6 @@ BEGIN_METHOD(PDFDOCUMENT_get,GB_INTEGER index;)
 	if (!THIS->doc || (VARG(index)<1) || ( VARG(index)>THIS->doc->getNumPages() ) )
 	{
 		GB.Error("Invalid page number");
-		GB.ReturnNull();
 		return;
 	}
 
@@ -1007,7 +1004,7 @@ BEGIN_METHOD (PDFPAGELINKS_get,GB_INTEGER ind;)
 		}
 	}
 
-	if (!pok) { GB.Error("Out of bounds"); GB.ReturnNull(); return; }
+	if (!pok) { GB.Error("Out of bounds"); return; }
 
 	THIS->lcurrent=VARG(ind);
 	THIS->action=THIS->links->getLink(THIS->lcurrent)->getAction();

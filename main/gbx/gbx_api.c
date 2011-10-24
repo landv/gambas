@@ -143,6 +143,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ReturnSelf,
 
   (void *)GB_ReturnString,
+  (void *)GB_ReturnVoidString,
   (void *)GB_ReturnConstString,
   (void *)GB_ReturnConstZeroString,
   (void *)GB_ReturnNewString,
@@ -1197,8 +1198,16 @@ void GB_ReturnFloat(double val)
 void GB_ReturnDate(GB_DATE *date)
 {
 	TEMP.type = T_DATE;
-	TEMP._date.date = date->value.date;
-	TEMP._date.time = date->value.time;
+	if (date)
+	{
+		TEMP._date.date = date->value.date;
+		TEMP._date.time = date->value.time;
+	}
+	else
+	{
+		TEMP._date.date = 0;
+		TEMP._date.time = 0;
+	}
 }
 
 
