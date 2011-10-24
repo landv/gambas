@@ -495,6 +495,7 @@ BEGIN_METHOD_VOID(HttpClient_new)
 
 	THIS_URL = GB.NewZeroString("http://127.0.0.1:80");
 	THIS_HTTP->sUserAgent = GB.NewZeroString("Gambas/" GAMBAS_FULL_VERSION_STRING " (gb.net.curl; " SYSTEM ")");
+	THIS->async = TRUE;
 	
 END_METHOD
 

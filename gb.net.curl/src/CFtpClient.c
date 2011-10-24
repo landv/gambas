@@ -273,6 +273,8 @@ BEGIN_METHOD_VOID(FtpClient_new)
 	THIS_URL=tmp;
 	strcpy(tmp,"ftp://127.0.0.1:21");
 
+	THIS->async = TRUE;
+	
 	CURL_user_set_auth(&THIS->user, CURLAUTH_BASIC);
 	
 	THIS->user.user = GB.NewZeroString("anonymous");

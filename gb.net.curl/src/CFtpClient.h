@@ -49,6 +49,6 @@ typedef
 	}
 	CFTPCLIENT;
 
-#define FTP_PROPERTIES "URL=127.0.0.1:21,Async=TRUE,Timeout=0,User,Password"
+#define FTP_PROPERTIES "URL=127.0.0.1:21,Async=True,Timeout=0,User,Password"
 
 #endif
