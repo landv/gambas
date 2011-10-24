@@ -96,7 +96,7 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
   EVAL = expr;
 
   #ifdef DEBUG
-  printf("EVAL: %s\n", EVAL->source);
+  fprintf(stderr, "EVAL: %s\n", EVAL->source);
   #endif
 
 	nvar = EVAL->nvar;

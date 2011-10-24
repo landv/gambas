@@ -77,6 +77,7 @@ void GB_ReturnSelf(void *object);
 void GB_ReturnVariant(GB_VARIANT_VALUE *value);
 
 void GB_ReturnString(char *str);
+void GB_ReturnVoidString(void);
 void GB_ReturnConstString(const char *str, int len);
 void GB_ReturnConstZeroString(const char *str);
 void GB_ReturnNewString(const char *src, int len);

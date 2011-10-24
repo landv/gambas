@@ -405,7 +405,7 @@ bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int
 	int i, lc;
 	wchar_t *wstr;
 	
-	result = STRING_new_temp(str, wlen * sizeof(wchar_t) + 3);
+	result = STRING_new_temp(NULL, wlen * sizeof(wchar_t) + 3);
 	wstr = (wchar_t *)result;
 	
 	for (i = 0; i < wlen; i++)
@@ -464,7 +464,7 @@ static void convert_string(char *str, int len, bool upper)
 	
 	if (len <= 0)
 	{
-		GB_ReturnNull();
+		GB_ReturnVoidString();
 		return;
 	}
 	

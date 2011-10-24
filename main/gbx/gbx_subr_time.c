@@ -104,7 +104,7 @@ void SUBR_date(ushort code)
     date.sec = 0;
     date.msec = 0;
   }
-  else
+  else if (NPARAM >= 3)
   {
     VALUE_conv_integer(PARAM);
     VALUE_conv_integer(&PARAM[1]);
@@ -133,6 +133,8 @@ void SUBR_date(ushort code)
       date.sec = PARAM[5]._integer.value;
     }
   }
+  else
+		THROW(E_NEPARAM);
 
   if (DATE_make(&date, RETURN))
     THROW(E_DATE);

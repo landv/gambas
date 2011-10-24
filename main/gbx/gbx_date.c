@@ -346,11 +346,10 @@ static bool read_integer(int *number)
 	int nbr = 0;
 	int nbr2;
 	int c;
-	//bool minus = FALSE;
+	bool minus = FALSE;
 
 	c = get_char();
 
-	/*
 	if (c == '-')
 	{
 		minus = TRUE;
@@ -358,7 +357,6 @@ static bool read_integer(int *number)
 	}
 	else if (c == '+')
 		c = get_char();
-	*/
 
 	if ((c < 0) || !isdigit(c))
 		return TRUE;
@@ -376,6 +374,9 @@ static bool read_integer(int *number)
 
 		buffer_pos++;
 	}
+	
+	if (minus)
+		nbr = (-nbr);
 
 	*number = nbr;
 	return FALSE;

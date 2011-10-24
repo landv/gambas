@@ -1323,7 +1323,7 @@ void GB_ReturnNewString(const char *src, int len)
 		}
 		else
 		{
-			GB_ReturnNull();
+			GB_ReturnVoidString();
 			return;
 		}
 	}
@@ -1341,6 +1341,11 @@ void GB_ReturnNewZeroString(const char *src)
 void GB_ReturnNull(void)
 {
   TEMP.type = T_NULL;
+}
+
+void GB_ReturnVoidString(void)
+{
+  STRING_void_value(&TEMP);
 }
 
 
