@@ -1135,6 +1135,13 @@ static void add_number(int value, int pad)
 {
 	static char temp[8] = { 0 };
 	int i, n;
+	bool minus = FALSE;
+	
+	if (value < 0)
+	{
+		value = (-value);
+		minus = TRUE;
+	}
 	
 	n = 0;
 	for (i = 7; i >= 0; i--)
@@ -1152,6 +1159,13 @@ static void add_number(int value, int pad)
 			temp[i] = (value % 10) + '0';
 			value /= 10;
 		}
+	}
+	
+	if (minus)
+	{
+		i--;
+		temp[i] = '-';
+		n++;
 	}
 	
 	add_string(&temp[i], n, NULL);
