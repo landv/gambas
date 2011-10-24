@@ -233,6 +233,13 @@ Public Sub tvwProject_Menu()
   If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
     mnuDatabase.Popup
   Else
+    
+    If Left($sKey) <> "$" And If Not Exist($sKey) Then
+      Message.Warning($sKey & "\n\n" & ("File or directory does not exist anymore."))
+      Project.Refresh
+      Return
+    Endif
+    
     mnuPopup.Popup
   Endif
   'mnuPopup.Enabled = FALSE
@@ -757,7 +764,9 @@ Private Function CanEdit(sPath As String) As Boolean
   If Not sPath Then Return
   If Left$(sPath) = "$" Then Return
   Return Not IsDir(sPath)
-  
+
+Catch
+
 End
 
 Private Function CanDelete(sPath As String) As Boolean
@@ -767,6 +776,8 @@ Private Function CanDelete(sPath As String) As Boolean
   If Stat(sPath).Type = gb.Link Then Return True
   If Project.IsReadOnly(sPath) Then Return False
   If tvwProject[sPath].Count = 0 Then Return True
+
+Catch
   
 End
 
