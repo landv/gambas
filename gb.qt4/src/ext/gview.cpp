@@ -2470,6 +2470,9 @@ void GEditor::foldLine(int row, bool no_refresh)
 	if (!doc->hasLimit(row))
 		row = doc->getPreviousLimit(row);
 	
+	if (row < 0 || row >= numLines())
+		return;
+	
 	//fprintf(stderr, "foldLine %d\n", row);
 	
 	start = row;
