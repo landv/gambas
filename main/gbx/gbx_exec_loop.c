@@ -1273,7 +1273,7 @@ _JUMP_NEXT:
 		type = val->type;
 		
 		if (type < T_BYTE || type > T_FLOAT)
-			THROW(E_TYPE, "Integer, Float or Long", TYPE_get_name(type));
+			THROW(E_TYPE, "Number", TYPE_get_name(type));
 
 		// The step value must stay negative, even if the loop variable is a byte
 
