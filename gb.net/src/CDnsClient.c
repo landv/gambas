@@ -61,7 +61,7 @@ DECLARE_EVENT(EVENT_Finished);
 
 static bool read_dns_pipe(void *data, size_t length)
 {
-	if (read_dns_pipe( data, length) != length)
+	if (read(dns_r_pipe, data, length) != length)
 	{
 		fprintf(stderr, "gb.net: cannot read DNS pipe: %s\n", strerror(errno));
 		return TRUE;
