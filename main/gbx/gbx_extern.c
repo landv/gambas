@@ -621,6 +621,8 @@ static void prepare_cif_from_gambas(EXTERN_CALLBACK *cb, FUNCTION *func)
 
 void *EXTERN_make_callback(VALUE_FUNCTION *value)
 {
+	EXEC_GLOBAL exec;
+	FUNCTION *func;
 	EXTERN_CALLBACK *cb;	
 	union {
 		char key[sizeof(void *)];
@@ -639,7 +641,40 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	
 	//ALLOC(&cb, sizeof(EXTERN_CALLBACK), "EXTERN_make_callback");
 	
-	cb_key.addr = PC;
+	// See gbx_exec_loop.c, at the _CALL label, to understand the following.
+	
+	if (value->kind == FUNCTION_PRIVATE)
+	{
+		exec.object = value->object;
+		exec.class = value->class;
+		exec.native = FALSE;
+		exec.index = value->index;
+	}
+	else if (value->kind == FUNCTION_PUBLIC)
+	{
+		exec.object = value->object;
+		exec.native = FALSE;
+		exec.desc = &value->class->table[value->index].desc->method;
+		exec.index = (int)(intptr_t)(exec.desc->exec);
+		exec.class = exec.desc->class;
+	}
+	/*else if (value->kind == FUNCTION_NATIVE)
+	{
+		cb->exec.object = value->object;
+		cb->exec.class = value->class;
+		cb->exec.native = TRUE;
+		cb->exec.index = value->index;
+		cb->exec.desc = &value->class->table[value->index].desc->method;
+		//cb->desc = &value->class->table[value->index].desc->method;
+		
+		prepare_cif_from_native(cb, cb->exec.desc);
+	}*/
+	else
+		THROW(E_EXTCB, "Not supported");
+	
+	func = &exec.class->load->func[exec.index];
+	cb_key.addr = func;
+	
 	cb = (EXTERN_CALLBACK *)HASH_TABLE_insert(_callbacks, cb_key.key, sizeof(void *));
 	if (cb->code)
 	{
@@ -656,41 +691,9 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		OBJECT_REF(value->object, "EXTERN_make_callback");
 	}*/
 	
-	// See gbx_exec_loop.c, at the _CALL label, to understand the following.
+	cb->exec = exec;
+	prepare_cif_from_gambas(cb, func);
 	
-	if (value->kind == FUNCTION_PRIVATE)
-	{
-		cb->exec.object = value->object;
-		cb->exec.class = value->class;
-		cb->exec.native = FALSE;
-		cb->exec.index = value->index;
-		
-		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
-	}
-	else if (value->kind == FUNCTION_PUBLIC)
-	{
-		cb->exec.object = value->object;
-		cb->exec.native = FALSE;
-		cb->exec.desc = &value->class->table[value->index].desc->method;
-		cb->exec.index = (int)(intptr_t)(cb->exec.desc->exec);
-		cb->exec.class = cb->exec.desc->class;
-		
-		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
-	}
-	/*else if (value->kind == FUNCTION_NATIVE)
-	{
-		cb->exec.object = value->object;
-		cb->exec.class = value->class;
-		cb->exec.native = TRUE;
-		cb->exec.index = value->index;
-		cb->exec.desc = &value->class->table[value->index].desc->method;
-		//cb->desc = &value->class->table[value->index].desc->method;
-		
-		prepare_cif_from_native(cb, cb->exec.desc);
-	}*/
-	else
-		THROW(E_EXTCB, "Function must be public, private or native");
-		
 	cb->exec.nparam = cb->nparam;
 	
 	prepare_cif(&cb->info, cb->nparam, cb->sign, cb->ret);
