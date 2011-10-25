@@ -1885,15 +1885,12 @@ void MyMainWindow::showPopup(QPoint &pos)
 	}*/
 
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
-	
+
 	move(0, 0);
 	move(pos);
+	setFocus();
 	show();
 	raise();
-	if (THIS->focus)
-		handle_focus(THIS);
-	else
-		setFocus();
 	afterShow();
 	//QTimer::singleShot(50, this, SLOT(activateLater()));
 	

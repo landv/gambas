@@ -1045,7 +1045,7 @@ static void set_focus(void *_object)
 	}
 	else if ((CWIDGET *)win != THIS)
 	{
-		//qDebug("delayed focus on %s", THIS->name);
+		//qDebug("delayed focus on %s for %s", THIS->name, ((CWIDGET *)win)->name);
 		GB.Unref(POINTER(&win->focus));
 		win->focus = THIS;
 		GB.Ref(THIS);
