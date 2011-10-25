@@ -263,8 +263,7 @@ void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
 void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
 {
 	HASH_NODE **node;
-
-	hash_table_resize(hash_table);
+	void *value;
 
 	node = hash_table_lookup_node(hash_table, key, len);
 
@@ -272,12 +271,12 @@ void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
 		return NODE_value(*node);
 
 	*node = hash_node_new(hash_table, key, len);
-
 	hash_table->nnodes++;
-
 	/*if (!hash_table->frozen)*/
 
-	return NODE_value(*node);
+	value = NODE_value(*node);
+	hash_table_resize(hash_table);
+	return value;
 }
 
 
@@ -395,21 +394,18 @@ static void hash_table_resize(HASH_TABLE *hash_table)
 	HASH_NODE *node;
 	HASH_NODE *next;
 	HASH_KEY *node_key;
-	double nodes_per_list;
 	int hash_val;
 	int new_size;
 	int i;
 	HASH_FUNC hash_func = get_hash_func(hash_table);
 
-	nodes_per_list = hash_table->nnodes / hash_table->size;
-
-	if ((nodes_per_list > 0.3 || hash_table->size <= HASH_TABLE_MIN_SIZE) &&
-			(nodes_per_list < 3.0 || hash_table->size >= HASH_TABLE_MAX_SIZE))
+	if (!((hash_table->size >= 3 * hash_table->nnodes && hash_table->size > HASH_TABLE_MIN_SIZE) ||
+	      (3 * hash_table->size <= hash_table->nnodes && hash_table->size < HASH_TABLE_MAX_SIZE)))
 		return;
+	
+	new_size = MinMax(spaced_primes_closest(hash_table->nnodes), HASH_TABLE_MIN_SIZE, HASH_TABLE_MAX_SIZE);
 
-	new_size = MinMax(spaced_primes_closest(hash_table->size), HASH_TABLE_MIN_SIZE, HASH_TABLE_MAX_SIZE);
-
-	//fprintf(stderr, "**** hash_table_resize %p: %d -> %d\n", hash_table, hash_table->size, new_size);
+	//fprintf(stderr, "**** hash_table_resize %p %d: %d -> %d\n", hash_table, hash_table->nnodes, hash_table->size, new_size);
 	
 	//fprintf(stderr, "BEFORE:\n");
 	//dump_hash_table(hash_table);
