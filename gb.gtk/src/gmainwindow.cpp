@@ -492,7 +492,10 @@ void gMainWindow::setVisible(bool vl)
 				
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			if (isPopup())
+			{
 				gtk_widget_show_now(border);
+				gtk_widget_grab_focus(border);
+			}
 			else
 				gtk_window_present(GTK_WINDOW(border));
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);

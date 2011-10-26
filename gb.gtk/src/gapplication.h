@@ -72,11 +72,16 @@ public:
 	static int getScrollbarSpacing();
 	static int getFrameWidth();
 	static int getTextBoxFrameWidth();
+	
+	static void grabPopup();
+	static void ungrabPopup();
 
 	//"Private"
 	static bool _busy;
 	static char *_title;
 	static int _loopLevel;
+	static int _in_popup;
+	static GdkWindow *_popup_grab_window;
 	static void *_loop_owner;
 	static GtkWindowGroup *_group;
 	static GtkWindowGroup *currentGroup();
