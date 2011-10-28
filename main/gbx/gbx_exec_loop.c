@@ -636,15 +636,8 @@ _POP_UNKNOWN:
 
 _POP_OPTIONAL:
 
-	/*
-	if (ind >= 0)
-		val = &BP[ind];
-	else
-		val = &PP[ind];
-	*/
-
 	{
-		VALUE *val = &BP[GET_XX()];
+		VALUE *val = &PP[GET_XX()];
 
 		if (LIKELY(val->type == T_VOID))
 		{
@@ -652,7 +645,7 @@ _POP_OPTIONAL:
 				VALUE_default(&SP[-1], val->_void.ptype);
 			else
 				VALUE_conv(&SP[-1], val->_void.ptype);
-			/* RELEASE(val); Pas n�essaire */
+			
 			SP--;
 			*val = *SP;
 		}

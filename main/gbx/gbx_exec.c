@@ -424,14 +424,6 @@ void EXEC_enter(void)
 	print_register();
 	#endif
 
-	/*
-	func_id = value->index;
-
-	if (value->kind & FUNCTION_PUBLIC)
-		func_id = (int)(class->table[func_id].desc.method->exec;
-
-	*/
-
 	func = &class->load->func[EXEC.index];
 	#if DEBUG_STACK
 	if (func->debug)
@@ -443,39 +435,33 @@ void EXEC_enter(void)
 		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
 	#endif
 		
-	/* check number of arguments */
+	// Check number of arguments
 
 	if (UNLIKELY(nparam < func->npmin))
 		THROW(E_NEPARAM);
 	else if (UNLIKELY(nparam > func->n_param && !func->vararg))
 		THROW(E_TMPARAM);
 
-	/* mandatory arguments */
+	// Mandatory arguments
 
 	for (i = 0; i < func->npmin; i++)
-	{
 		VALUE_conv(SP - nparam + i, func->param[i].type);
-		/*BORROW(SP - nparam + i);*/
-	}
 
-	if (UNLIKELY(func->npmin < func->n_param))
+	if (func->npmin < func->n_param)
 	{
-		/* optional arguments */
+		// Optional arguments
 
-		for (i = func->npmin; i < nparam; i++)
+		for (i = func->npmin; i < Min(func->n_param, nparam); i++)
 		{
 			if (SP[- nparam + i].type == T_VOID)
 				SP[- nparam + i]._void.ptype = func->param[i].type;
 			else
-			{
 				VALUE_conv(SP - nparam + i, func->param[i].type);
-				/*BORROW(SP - nparam + i);*/
-			}
 		}
 
-		/* missing optional arguments */
+		// Missing optional arguments
 
-		if (UNLIKELY(nparam < func->n_param))
+		if (nparam < func->n_param)
 		{
 			STACK_check(func->n_param - nparam);
 
@@ -490,25 +476,24 @@ void EXEC_enter(void)
 		}
 	}
 
-	/* save context & check stack*/
+	// Save context & check stack
 
 	STACK_push_frame(&EXEC_current, func->stack_usage);
 
-	/* enter function */
+	// Enter function
 
 	BP = SP;
-	if (UNLIKELY(func->vararg))
-		PP = SP - (nparam - func->n_param);
+	if (func->vararg)
+		PP = SP - (EXEC.nparam - func->n_param);
 	else
 		PP = SP;
 	FP = func;
 	PC = func->code;
 	OP = object;
 	CP = class;
-	//AP = ARCH_from_class(CP);
 	EP = NULL;
 
-	if (UNLIKELY(func->error))
+	if (func->error)
 	{
 		#if DEBUG_ERROR
 			printf("EXEC_enter: EC = PC + %d\n", func->error);
@@ -518,19 +503,17 @@ void EXEC_enter(void)
 	else
 		EC = NULL;
 
-	/* reference the object so that it is not destroyed during the function call */
+	// Reference the object so that it is not destroyed during the function call
 	OBJECT_REF(OP, "EXEC_enter");
 
-	/*printf("PC = %p  nparam = %d\n", PC, FP->n_param);*/
+	// Local variables initialization
 
-	/* local variables initialization */
-
-	if (LIKELY(func->n_local > 0))
+	if (func->n_local > 0)
 		init_local_var(class, func);
 
-	/* control variables initialization */
+	// Control variables initialization
 
-	if (LIKELY(func->n_ctrl > 0))
+	if (func->n_ctrl > 0)
 	{
 		for (i = 0; i < func->n_ctrl; i++)
 		{
@@ -538,8 +521,6 @@ void EXEC_enter(void)
 			SP++;
 		}
 	}
-
-	/*printf("EXEC_enter: nparam = %d  nlocal = %d  nctrl = %d\n", func->n_param, func->n_local, func->n_ctrl);*/
 
 	RP->type = T_VOID;
 

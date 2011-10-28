@@ -104,30 +104,30 @@ EXTERN EXEC_GLOBAL EXEC;
 
 #endif
 
-/* Local variables base pointer */
+// Local variables base pointer
 #define BP EXEC_current.bp
-/* Current class */
-#define CP EXEC_current.cp
-/* Current object */
-#define OP EXEC_current.op
-/* Paramters base pointer */
+// Arguments base pointer
 #define PP EXEC_current.pp
-/* Save stack pointer for a TRY */
+// Current class
+#define CP EXEC_current.cp
+// Current object
+#define OP EXEC_current.op
+// Save stack pointer for a TRY
 #define EP EXEC_current.ep
-/* Current function */
+// Current function
 #define FP EXEC_current.fp
-/* Program counter */
+// Program counter
 #define PC EXEC_current.pc
-/* Where to go if there is an error */
+// Where to go if there is an error
 #define EC EXEC_current.ec
-/* Save register for TRY */
+// Save register for TRY
 #define ET EXEC_current.et
-/* Last break in the function */
+// Last break in the function
 #define TC EXEC_current.tc
-/* Stack at the last break in the function */
+// Stack at the last break in the function
 #define TP EXEC_current.tp
 
-/* Function return value pointer */
+// Function return value pointer
 #define RP (&RET)
 
 #define HOOK(func) (!EXEC_Hook.func) ? 0 : (*EXEC_Hook.func)
