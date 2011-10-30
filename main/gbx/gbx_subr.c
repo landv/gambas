@@ -230,7 +230,7 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 		break;
 	}
 	
-	if (type > T_VARIANT)
+	if (type > T_VARIANT && type < T_OBJECT)
 		THROW(E_TYPE, "Standard type", TYPE_get_name(type));
 	
 	return type;
