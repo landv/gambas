@@ -626,9 +626,14 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 
 static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 {
+	//static GtkWidget *widget = NULL;
+	
 	GtkStateType st = get_state(state);
 	GtkStyle *style = DR(d)->style("GtkEntry", GTK_TYPE_ENTRY);
 
+	//if (!widget)
+		//widget = gtk_entry_new();
+	
 	gtk_paint_shadow(style, DR(d)->drawable(), st,
 		GTK_SHADOW_IN, get_area(d), NULL, "entry", x, y, w, h);
 	if (DR(d)->mask())

@@ -52,12 +52,12 @@
   { CmbAuth ComboBox
     MoveScaled(66,11,29,4)
     Enabled = False
-    Text = (" ")
     ReadOnly = True
     List = [("Basic"), ("NTLM"), ("DIGEST"), ("GSS")]
+    Text = (" ")
   }
   { MyHttp #HttpClient
-    #MoveScaled(29,36)
+    #MoveScaled(27,36)
   }
   { mnuOptions Button
     MoveScaled(66,1,29,4)

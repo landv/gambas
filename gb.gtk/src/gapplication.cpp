@@ -383,7 +383,8 @@ static void gambas_handle_event(GdkEvent *event)
 		{
 			//fprintf(stderr, "Check popup grab\n");
 			gApplication::grabPopup();
-			return;
+			// Must continue, otherwise things are broken by some styles
+			//return;
 		}
 			
 		goto __HANDLE_EVENT;

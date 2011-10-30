@@ -134,7 +134,7 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
-  $hBackground.Padding = If(Value, Max(3, Style.TextBoxFrameWidth), 0)
+  $hBackground.Padding = If(Value, Max(2, Style.TextBoxFrameWidth), 0)
   $hBackground.Margin = Value
   'Background_Arrange
   Me.Refresh
@@ -158,8 +158,12 @@ End
 
 Public Sub Background_Draw()
   
+  'Dim iFlag As Integer
+  
   If $bBorder Then 
-    Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
+    'If $hTextBox.Hovered Then iFlag += Draw.Hover
+    'If $hTextBox.HasFocus Then iFlag += Draw.Focus
+    Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H) ', iFlag)
   Endif
   
 End
@@ -206,3 +210,27 @@ Public Sub TextBox_Change()
   Raise Change
   
 End
+
+' Public Sub TextBox_GotFocus()
+'   
+'   $hBackground.Refresh
+'   
+' End
+' 
+' Public Sub TextBox_LostFocus()
+'   
+'   $hBackground.Refresh
+'   
+' End
+' 
+' Public Sub Background_Enter()
+'   
+'   $hBackground.Refresh
+'   
+' End
+' 
+' Public Sub Background_Leave()
+'   
+'   $hBackground.Refresh
+'   
+' End
