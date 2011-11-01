@@ -93,9 +93,9 @@ Public Sub Run(iStyle As Integer)
       For iInd = 1 To String.Len(sText)
     
         iNextState = iState
-        'sCar = String.Mid$(sText, iInd, 1)
-        sCar = String.Left(sText)
-        sText = String.Mid$(sText, 2)
+        sCar = String.Mid$(sText, iInd, 1)
+        'sCar = String.Left(sText)
+        'sText = String.Mid$(sText, 2)
     
         If bCode Then
         
