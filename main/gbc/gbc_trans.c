@@ -88,7 +88,7 @@ static bool read_integer(char *number, int base, bool minus, int64_t *result)
 			{
 				nbr2 = nbr * 10 + d;
 			
-				if ((nbr2 / 10) != nbr || nbr2 > (LLONG_MAX + minus))
+				if ((nbr2 / 10) != nbr || nbr2 > ((uint64_t)LLONG_MAX + minus))
 					return TRUE;
 			
 				nbr = nbr2;

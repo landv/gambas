@@ -50,7 +50,7 @@
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
 
-static bool read_integer(int base, int64_t *result, bool local)
+static bool read_integer(int base, bool minus, int64_t *result, bool local)
 {
 	uint64_t nbr2, nbr;
 	int d, n, c; //, nmax;
@@ -105,15 +105,12 @@ static bool read_integer(int base, int64_t *result, bool local)
 
 		n++;
 		
-		nbr2 = nbr * base;
+		nbr2 = nbr * base + d;
 		
-		//if (n >= nmax)
-		//{
-			if (((int64_t)nbr2 / base) != (int64_t)nbr)
-				return TRUE;
-		//}
+		if ((nbr2 / base) != nbr || nbr2 > ((uint64_t)LLONG_MAX + minus))
+			return TRUE;
 		
-		nbr = nbr2 + d;
+		nbr = nbr2;
 
 		c = get_char();
 		if (c < 0)
@@ -361,7 +358,7 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
 	errno = 0;
 	pos = COMMON_pos - 1;
 
-	if (!read_integer(base, &val, (option & NB_LOCAL) != 0))
+	if (!read_integer(base, minus, &val, (option & NB_LOCAL) != 0))
 	{
 		if (minus) val = (-val);
 		

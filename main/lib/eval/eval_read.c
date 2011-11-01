@@ -383,7 +383,7 @@ END:
 
 	last_pattern = get_last_pattern();
 
-	if (sign && (!PATTERN_is_reserved(last_pattern) || PATTERN_is(last_pattern, RS_RBRA) || PATTERN_is(last_pattern, RS_RSQR)))
+	if (sign && !PATTERN_is_null(last_pattern) && (!PATTERN_is_reserved(last_pattern) || PATTERN_is(last_pattern, RS_RBRA) || PATTERN_is(last_pattern, RS_RSQR)))
 	{
 		add_pattern(RT_RESERVED, RESERVED_find_word(&sign, 1));
 		TABLE_add_symbol(EVAL->table, start + 1, source_ptr - start - 1, &index);
