@@ -58,7 +58,7 @@ Public Sub CheckErrorMessage(hEditor As FEditor)
   
   If Not $sError Then Return
   If hEditor Then
-    If hEditor.Name = $sPosClass And If hEditor.Editor.Line = ($iPosLine - 1) Then
+    If hEditor.Name == $sPosClass And If hEditor.Editor.Line = ($iPosLine - 1) Then
       hEditor.ShowErrorMessage($sError, "error")
     Else If $iPosLine > hEditor.Editor.Lines.Count Then
       sPath = Project.FindForm(hEditor.Name)
