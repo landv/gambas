@@ -1729,17 +1729,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 		}
 	}
 
-	#ifndef NO_X_WINDOW
-	if (isUtility())
-	{
-		if (!newParentWidget && CWINDOW_Main && THIS != CWINDOW_Main)
-			newParentWidget = CWINDOW_Main->widget.widget;
-		
-		if (newParentWidget)
-			X11_set_transient_for(winId(), newParentWidget->winId());
-	}
-	#endif
-
 	//qDebug("showActivate %p", _object);
 
 	//CWIDGET_clear_flag(THIS, WF_CLOSED);
@@ -1809,6 +1798,17 @@ void MyMainWindow::showActivate(QWidget *transient)
 	}
 
 	afterShow();
+
+	#ifndef NO_X_WINDOW
+	if (isUtility())
+	{
+		if (!newParentWidget && CWINDOW_Main && THIS != CWINDOW_Main)
+			newParentWidget = CWidget::getTopLevel((CWIDGET *)CWINDOW_Main)->widget.widget;
+		
+		if (newParentWidget)
+			X11_set_transient_for(winId(), newParentWidget->winId());
+	}
+	#endif
 }
 
 void MyMainWindow::showModal(void)
@@ -1827,11 +1827,6 @@ void MyMainWindow::showModal(void)
 	old = MyApplication::eventLoop;
 	MyApplication::eventLoop = &eventLoop;
 
-	#ifndef NO_X_WINDOW
-	if (CWINDOW_Active)
-		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
-	#endif
-
 	setWindowModality(Qt::ApplicationModal);
 
 	if (_resizable && _border)
@@ -1845,6 +1840,14 @@ void MyMainWindow::showModal(void)
 	show();
 	afterShow();
 	
+	#ifndef NO_X_WINDOW
+	if (CWINDOW_Active)
+	{
+		//qDebug("Active = %p X11_set_transient_for(0x%08x, 0x%08x)", CWINDOW_Active, winId(), CWINDOW_Active->widget.widget->winId());
+		X11_set_transient_for(winId(), CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget->winId());
+	}
+	#endif
+
 	THIS->loopLevel++;
 	CWINDOW_Current = THIS;
 	
