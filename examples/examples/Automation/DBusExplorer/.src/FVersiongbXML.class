@@ -4,7 +4,7 @@ Private $cArgs As New Collection
 Private $cType As New Collection
 
 Public Sub _new()
-  
+
   $cType["i"] = "Integer"
   $cType["u"] = "Integer"
   $cType["s"] = "String"
@@ -23,14 +23,14 @@ Public Sub _new()
 End
 
 Public Sub Form_Open()
-  
+
   btnRefresh_Click
   'HSplit1.Layout = [1, 1]
-  
+
 End
 
 Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As String)
-  
+
   Dim xmlDoc As New XmlDocument
   Dim sInterface, sFullDbusPath, s, sAppPath As String
   Dim hattr, hattr2, hNode, hNode2 As XmlNode
@@ -40,24 +40,24 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
   Dim sIntr As String
 
   'Dim haArgs As New Object[]
-  
+
   sIntr = DBus[sBus & sApplication]._Introspect(sPath)
   Print sIntr
   Try xmlDoc.FromString(sIntr)
-  
+
   If Error Then Return
-  
+
   For i = 0 To xmlDoc.Root.Children.Count - 1
     hNode = xmlDoc.Root.Children[i]
     If hNode.Name = "interface" Then
       For Each hattr In hNode.Attributes
         sFullDbusPath = [sBus, sApplication, sPath, CStr(hattr.Value)].Join("|")
-        If Not tvDbus.Exist(sBus & "|" & sApplication & "|" & sPath) Then 
+        If Not tvDbus.Exist(sBus & "|" & sApplication & "|" & sPath) Then
           tvDbus.Add(sFullDbusPath, hattr.Value)
         Else
           tvDbus.Add(sFullDbusPath, hattr.Value,, sBus & "|" & sApplication & "|" & sPath)
         Endif
-        
+
         For j = 0 To hNode.Children.Count - 1
           hNode2 = hNode.Children[j]
           If hNode2.Name = "method" Or hNode2.Name = "property" Or hNode2.Name = "signal" Then
@@ -68,30 +68,30 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
             If Error Then Continue
             For k = 0 To hNode2.Children.Count - 1
               If hNode2.Children[k].Name = "arg" Then
-                
+
                 For Each hattr2 In hNode2.Children[k].Attributes
-                  
+
                   aArgs.Add(hattr2.Name & "=" & hattr2.Value)
-                  
+
                 Next
-                
+
                 $cArgs[sFullDbusPath & "|" & hattr.Value] &= aArgs.Join()
-                
+
                 If k < hNode2.Children.Count - 2 Then $cArgs[sFullDbusPath & "|" & hattr.Value] &= "|"
                 aArgs.Clear
               Endif
             Next
-            
+
           Endif
-          
-        Next 
+
+        Next
       Next
     Endif
   Next
-  
+
   For Each s In DBus[sBus & sApplication][sPath].Children
     sAppPath = [sBus, sApplication, sPath].join("|")
-    
+
     If tvDbus.Exist(sAppPath) Then
       tvDbus.Add(sAppPath &/ s, s,, sAppPath)
     Else
@@ -99,9 +99,9 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
     Endif
     tvDbus.Add(sAppPath &/ s & "|child", "child",, sAppPath &/ s)
     tvDbus[sAppPath &/ s].Picture = Picture["icon:/small/directory"]
-    
+
   Next
-  
+
 Catch
   Print Error.Where; ": "; Error.Text
 
@@ -112,7 +112,7 @@ Public Sub lstb_activate()
   tvDbus.Clear
   $cArgs.Clear
   ShowPathContent("/", Last.Tag & "://", Last.current.text)
-  
+
 End
 
 Public Sub tvDbus_Expand()
@@ -123,13 +123,13 @@ Public Sub tvDbus_Expand()
   tvDbus.Remove(tvDbus.item.Key & "|" & "child")
   ars = Split(tvDbus.Item.Key, "|")
   ShowPathContent(ars[2], ars[0], ars[1])
-  
+
 End
 
 Private Sub RemoveIds(aList As String[])
-  
+
   Dim iInd As Integer
-  
+
   While iInd < aList.Count
     If Left(aList[iInd]) = ":" Then
       aList.Remove(iInd)
@@ -137,44 +137,42 @@ Private Sub RemoveIds(aList As String[])
       Inc iInd
     Endif
   Wend
-  
+
 End
 
-
 Public Sub btnRefresh_Click()
-  
+
   Dim aList As String[]
-  
+
   lstbSystem.Clear
   lstbSession.Clear
   $cArgs.Clear
   tvDbus.Clear
-  
+
   aList = DBus.Session.Applications.Sort(gb.Natural)
   If Not btnShowId.Value Then RemoveIds(aList)
   lstbSession.List = aList
   aList = DBus.System.Applications.Sort(gb.Natural)
   If Not btnShowId.Value Then RemoveIds(aList)
   lstbSystem.List = aList
-  
+
 End
 
 Public Sub lstb_DblClick()
-  
+
   Try Print DBus[Last.current.text]._Introspect("/")
-  
+
 End
 
 Private Sub GetType(sType As String) As String
-  
-  If $cType.Exist(sType) Then Return $cType[sType]
-  
-  If Left(sType) = "a" Then Return GetType(Mid$(sType, 2)) & "[]"
-  
-  Return "Variant"
-  
-End
 
+  If $cType.Exist(sType) Then Return $cType[sType]
+
+  If Left(sType) = "a" Then Return GetType(Mid$(sType, 2)) & "[]"
+
+  Return "Variant"
+
+End
 
 Public Function MakeSignature(sKey As String) As String
 
@@ -188,18 +186,18 @@ Public Function MakeSignature(sKey As String) As String
   Dim aOut As New String[]
 
   ars = Split(skey, "|")
-  If Not $cArgs.Exist(skey) Then 
-    If ars.Max = 4 Then 
+  If Not $cArgs.Exist(skey) Then
+    If ars.Max = 4 Then
       Return ars[ars.Max] & "()"
     Else
       Return
     Endif
   Endif
-  
+
   For Each s In Split($cArgs[sKey], "|")
-    
+
     Inc iArg
-    
+
     sName = "Arg" & CStr(iArg)
     For Each t In Split(s)
       aArg = Scan(t, "*=*")
@@ -212,17 +210,17 @@ Public Function MakeSignature(sKey As String) As String
     Next
 
     If InStr(s, "=out") Then
-      
+
       aOut.Add(sName & " As " & sType)
-      
+
     Else
-      
+
       aIn.Add(sName & " As " & sType)
-      
+
     Endif
-    
+
   Next
-  
+
   s = ars[ars.Max] & "(" & aIn.Join(", ") & ")"
   If aOut.Count Then
     s &= " As "
@@ -232,15 +230,15 @@ Public Function MakeSignature(sKey As String) As String
       s &= "[" & aOut.Join(", ") & "]"
     Endif
   Endif
-  
+
   Return s
-  
+
 End
 
 Public Sub tvDbus_Select()
-  
+
   MakeSignature(Last.item.key)
-  
+
 End
 
 Public Sub tvDbus_MouseMove()
@@ -248,15 +246,15 @@ Public Sub tvDbus_MouseMove()
   Dim s As String
   Dim ix, iy As Integer
   Dim hcont As Object
-  
-  If Not tvDbus.Find(Mouse.x, Mouse.y) Then 
-    
+
+  If Not tvDbus.Findat(Mouse.x, Mouse.y) Then
+
     s = MakeSignature(tvDbus.item.key)
-    
+
     hcont = tvDbus.Parent
     ix = tvDbus.Item.X + tvDbus.Item.w / 2
     iy = tvDbus.Item.Y
-    
+
     'lblsignature.Text = s
     'lblsignature.Left = Min(iX, tvDbus.Width - lblsignature.Width)
     'lblsignature.Y = iY
@@ -266,7 +264,7 @@ Public Sub tvDbus_MouseMove()
     'lblsignature.Visible = False
   Endif
   lblsignature.Text = s
-  
+
 End
 
 Public Sub btnShowId_Click()
