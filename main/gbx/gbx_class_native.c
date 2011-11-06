@@ -74,7 +74,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   int size_dynamic;
 
   #if DEBUG_LOAD
-    printf("Registering native class %s (%p)...\n", class->name, class);
+		fprintf(stderr, "Registering native class %s (%p)...\n", class->name, class);
   #endif
 
   if (gambas->type != GB_VERSION)
@@ -241,6 +241,8 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   {
     desc = class->table[i].desc;
 
+		//fprintf(stderr, "[%.*s]\n", class->table[i].len, class->table[i].name);
+		
     switch (CLASS_DESC_get_type(desc))
     {
       case CD_METHOD:

@@ -287,10 +287,16 @@ TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int npmax)
   TYPE *tsign;
   int i;
 
+	//fprintf(stderr, "TYPE_transform_signature: %s\n", sign);
+	
   tsign = *signature;
 
   for (i = 0; i < npmax; i++)
+	{
     tsign[i] = TYPE_from_string(&sign);
+		//fprintf(stderr, "%p ", (void *)tsign[i]);
+	}
+	//fputc('\n', stderr);
 
   *signature += npmax;
 
@@ -302,6 +308,16 @@ bool TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2)
 {
   int i;
 
+	/*fprintf(stderr, "TYPE_compare_signature\n");
+	
+	for (i = 0; i < np1; i++)
+		fprintf(stderr, " %p", (void *)sign1[i]);
+	fputc('\n', stderr);
+	
+	for (i = 0; i < np2; i++)
+		fprintf(stderr, " %p", (void *)sign2[i]);
+	fputc('\n', stderr);*/
+	
   if (np1 != np2)
     return TRUE;
 

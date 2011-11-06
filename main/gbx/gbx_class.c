@@ -896,7 +896,7 @@ const char *CLASS_DESC_get_type_name(const CLASS_DESC *desc)
 		case CD_EVENT_ID: return ":";
 		case CD_EXTERN_ID: return "X";
 		default: 
-			fprintf(stderr, "CLASS_DESC_get_type_name: %s: %ld\n", desc->gambas.name, desc->gambas.val4);
+			//fprintf(stderr, "CLASS_DESC_get_type_name: %s: %ld\n", desc->gambas.name, desc->gambas.val4);
 			return "?";
 	}
 }
@@ -963,6 +963,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 	CLASS *parent;
 	char type, parent_type;
 	CLASS_DESC_SYMBOL *cds;
+	bool check;
 	
 	#if DEBUG_DESC
 	fprintf(stderr, "\n---- %s\n", class->name);
@@ -1010,6 +1011,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 
 			// An inherited symbol has two or more entries in the table. Only the first one
 			// will be used, and so it must point at the new description, not the inherited one.
+			check = FALSE;
 			parent = class;
 			while ((parent = parent->parent))
 			{
@@ -1020,8 +1022,9 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 				cds = &parent->table[ind];
 					
 				// The parent class public symbols of non-native classes were replaced by the symbol kind returned by CLASS_DESC_get_type_name()
+				// Only the first inheritance level is tested against signature compatibility
 				
-				if (cds->desc)
+				if (cds->desc && !check)
 				{
 					parent_type = CLASS_DESC_get_type(cds->desc);
 					
@@ -1033,8 +1036,14 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 					}
 					
-					if (!CLASS_is_native(class) && strcasecmp(name, "_new") && check_signature(type, &desc[j], cds->desc))
-						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
+					if (!CLASS_is_native(class) && strcasecmp(name, "_new"))
+					{
+						//fprintf(stderr, "check_signature: %s\n", name);
+						if (check_signature(type, &desc[j], cds->desc))
+							THROW(E_OVERRIDE, parent->name, cds->name, class->name);
+					}
+					
+					check = TRUE;
 				}
 				
 				cds = &class->table[ind];
