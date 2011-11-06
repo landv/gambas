@@ -479,7 +479,7 @@ void gMainWindow::setVisible(bool vl)
 				gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
 				active = gDesktop::activeWindow();
 				if (isModal() && active && active != this)
-					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
+					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->topLevel()->border));
 			}
 			
 			// Thanks for Ubuntu's GTK+ patching :-(

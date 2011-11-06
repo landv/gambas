@@ -1201,11 +1201,16 @@ void gTree::setColumnAlignment(int ind, int align)
 int gTree::columnWidth(int ind)
 {
 	GtkTreeViewColumn *col = gt_tree_view_find_column(GTK_TREE_VIEW(widget), ind);
+	int w;
 	
 	if (!col) 
 		return 0;
-	else
-		return gtk_tree_view_column_get_width(col);
+	
+	w = gtk_tree_view_column_get_width(col);
+	if (w == 0)
+		w = gtk_tree_view_column_get_fixed_width(col);
+	
+	return w;
 }
 
 void gTree::setColumnWidth(int ind, int w)
@@ -1222,6 +1227,8 @@ void gTree::setColumnWidth(int ind, int w)
 	}
 	else
 		gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	
+	setColumnResizable(ind, isResizable());
 }
 
 bool gTree::headers()

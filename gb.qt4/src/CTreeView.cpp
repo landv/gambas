@@ -1371,7 +1371,8 @@ BEGIN_PROPERTY(CLISTVIEW_column_width)
     {
     	WIDGET->setColumnWidth(WIDGET->_column, w);
     }
-		WIDGET->setColumnWidthMode(WIDGET->_column, Q3ListView::Maximum);
+    if (WIDGET->isAutoResize())
+			WIDGET->setColumnWidthMode(WIDGET->_column, Q3ListView::Maximum);
     
     WIDGET->setResizeMode(mode);
   }

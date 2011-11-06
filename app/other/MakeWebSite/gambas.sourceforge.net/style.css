@@ -4,7 +4,7 @@ html {
 }
 
 body.left {
-  border: solid 6px black;
+  border: none;
   background: #DF6B00;
   margin: 0px;
   padding: 0px;
@@ -16,8 +16,9 @@ body.left {
 }
 
 body {
+  position: absolute;
   background: white; /*#96BBD8;*/
-  padding: 8px;
+  padding: 8px 0px 0px 8px;
   margin: 0px;
   /*background-image: url("background.jpg");
   background-repeat: no-repeat;
@@ -25,6 +26,8 @@ body {
   background-position: -184px 0px;*/
   max-width: 860px;
   font-family: sans-serif;
+  top: 0px;
+  bottom: 0px;
 }
 
 body.none {
@@ -287,10 +290,17 @@ img.screenshot {
 
 #top-menu {
   text-shadow: 1px 1px 2px #808080;
-  padding: 8px;
+  padding: 12px;
+  border: solid 1px #21647F;
   background: #3398c3;
-  border-bottom: solid 6px black;
-  margin-bottom: 8px;
+}
+
+#bottom-menu {
+  height: 100%;
+  padding: 12px 8px;
+  background: #DF6B00;
+  border: solid 1px #BF5C00;
+  /*box-shadow: #DF6B00 0px 0px 8px 8px;*/
 }
 
 #presentation {
@@ -299,9 +309,9 @@ img.screenshot {
   /*border: solid black 2px;*/
   /*background: #FFBF7F;*/
   padding: 0px 16px 16px 8px;
-  border-bottom: dotted black 6px;
+  /*border-bottom: dotted black 6px;*/
   margin-left: -8px;
-  background: white;
+  /*background: white;*/
   margin-top: 0px;
   /*border-right: dotted black 6px;*/
   /*border-radius: 0px 0px 12px;*/
@@ -411,8 +421,6 @@ a.download-blue:hover {
   background-image: url('home.jpeg');
   background-repeat: no-repeat;
   background-position: bottom center;
-  margin-left: -8px;
-  margin-top: 8px;
   position: absolute;
   z-index: -1;
   width: 868px;
@@ -421,12 +429,14 @@ a.download-blue:hover {
 }
 
 #formula {
-  border: solid 2px black;
+  margin-top: 8px;
+  border-radius: 8px;
+  box-shadow: white 0px 0px 8px 8px;
   }
 
 #news {
-  float: right;
-  position: relative;
+  position: absolute;
+  right: 0px;
   width: 320px;
   height: 340px;
   margin: 32px 24px;
@@ -437,10 +447,11 @@ a.download-blue:hover {
   width: 100%;
   height: 100%;
   background: white;
-  border: solid 6px black;
+  border: solid 1px #BF5C00;
   /*-moz-box-shadow:    3px 3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);
   -webkit-box-shadow: 3px  3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);
   box-shadow:         3px 3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);*/
+  /*box-shadow: #DF6B00 0px 0px 8px 8px;*/
 }
 
 #news-shadow {
