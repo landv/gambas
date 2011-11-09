@@ -87,6 +87,7 @@ Private Sub Count_Write(iCount As Integer)
   Dim hToolbar As _IconPanelContainer
   Dim hCont As Container
   Dim sText As String
+  Dim iCurrent As Integer
 
   If iCount < 1 Then Error.Raise("Bad argument")
   If iCount = $aCont.Count Then Return
@@ -98,16 +99,19 @@ Private Sub Count_Write(iCount As Integer)
       If hToolbar.Children.Count Then Error.Raise("IconPanel container is not empty")
     Next
 
+    iCurrent = $iCurrent
+    
     For iInd = $aCont.Max To iCount Step -1
       $aCont[iInd].Delete
       $hIconView.Remove(iInd)
-      If iInd <= $iCurrent Then Dec $iCurrent
+      If iInd <= iCurrent Then Dec iCurrent
     Next
 
     $aCont.Remove(iCount, -1)
     
-    UpdateContainer
-
+    $iCurrent = -1
+    Index_Write(iCurrent)
+    
   Else
 
     For iInd = $aCont.Count To iCount - 1
@@ -248,6 +252,7 @@ End
 
 Public Sub IconView_Select()
   
+  If Not $hIconView.Key Then Return
   Index_Write(CInt($hIconView.Key))
   
 End
