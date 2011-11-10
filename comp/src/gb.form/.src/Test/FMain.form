@@ -18,15 +18,12 @@
     Move(63,70,168,28)
     Border = False
   }
-  { IconPanel1 IconPanel
-    Move(77,189,469,343)
-    Index = 0
-    Text = ("Item 0")
-    Index = 0
+  { TextBox2 TextBox
+    Move(70,231,168,28)
+    Text = ("A lot of garbage")
   }
-  { SpinBox1 SpinBox
-    Move(294,126,63,28)
-    MinValue = 1
-    Value = 1
+  { MaskBox1 MaskBox
+    Move(70,266,168,28)
+    Mask = "!99-999-999"
   }
 }

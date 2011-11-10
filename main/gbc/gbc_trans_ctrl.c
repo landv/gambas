@@ -684,6 +684,9 @@ void TRANS_case(void)
 	short local;
 
 	control_check(RS_SELECT, "CASE without SELECT", "CASE");
+	
+	if (current_ctrl->state)
+		THROW("Default case must be the last one");
 
 	trans_select_break(FALSE);
 
@@ -759,9 +762,13 @@ void TRANS_default(void)
 {
 	control_check(RS_SELECT, "DEFAULT without SELECT", "DEFAULT");
 
+	if (current_ctrl->state)
+		THROW("Default case already defined");
+
 	trans_select_break(FALSE);
 
 	current_ctrl->value = 0; /*CODE_get_current_pos();*/
+	current_ctrl->state = 1;
 }
 
 

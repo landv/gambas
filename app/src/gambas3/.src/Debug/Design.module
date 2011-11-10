@@ -143,6 +143,18 @@ Public Sub MakeErrorMessage(sErr As String) As String
     If InStr(aErr[iInd], "&1") Then
       aErr[iInd] = Subst(Tr$(aErr[iInd]), aErr[iInd + 1], aErr[iInd + 2], aErr[iInd + 3], aErr[iInd + 4])
     Endif
+    If Left(aErr[iInd]) = "#" Then
+      Select Case Mid(aErr[iInd], 2)
+        Case "1"
+          aErr[iInd] = ("first")
+        Case "2"
+          aErr[iInd] = ("second")
+        Case "3"
+          aErr[iInd] = ("third")
+        Case Else
+          Try aErr[iInd] = CInt(Mid(aErr[iInd], 2))
+      End Select
+    Endif
   Next
   
   Return aErr[0]
