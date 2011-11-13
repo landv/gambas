@@ -142,7 +142,17 @@ End
 
 Public Sub Main()
 
+  Dim dWindow As DesktopWindow
+  
   Print Desktop.Path
+  
+  For Each dWindow In Desktop.Windows
+    If dWindow.SkipTaskbar = True Then
+      Print "skip"
+    Else
+      Print dWindow.Name
+    Endif
+  Next
   
 End
 

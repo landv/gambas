@@ -165,6 +165,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 	int i, count;
 	char *name;
 	Window window;
+	GB_VARIANT_VALUE ret;
 	
 	if (X11_init())
 		return;
@@ -172,7 +173,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 	prop = X11_intern_atom(GB.ToZeroString(ARG(name)), FALSE);
 	if (prop == None)
 	{
-		GB.ReturnNull();
+		GB.ReturnVariant(NULL);
 		return;
 	}
 	
@@ -181,7 +182,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 	value = X11_get_property(window, prop, &type, &format, &count);
 	if (!value)
 	{
-		GB.ReturnNull();
+		GB.ReturnVariant(NULL);
 		return;
 	}
 	
@@ -194,7 +195,10 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 			*(char **)GB.Array.Get(array, i) = GB.NewZeroString(name);
 			XFree(name);
 		}
-		GB.ReturnObject(array);
+		
+		ret.type = GB_T_OBJECT;
+		ret.value._object = array;
+		GB.ReturnVariant(&ret);
 	}
 	else if (type == X11_UTF8_STRING && format == 8)
 	{
@@ -213,7 +217,9 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 			value += i;
 			count -= i;
 		}
-		GB.ReturnObject(array);
+		ret.type = GB_T_OBJECT;
+		ret.value._object = array;
+		GB.ReturnVariant(&ret);
 	}
 	else
 	{
@@ -225,7 +231,11 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 				/*for (i = 0; i < count; i++)
 					*((short *)GB.Array.Get(array, i)) = *((short *)value + i);*/
 				memcpy(GB.Array.Get(array, 0), value, sizeof(short) * count);
-				GB.ReturnObject(array);
+
+				ret.type = GB_T_OBJECT;
+				ret.value._object = array;
+				GB.ReturnVariant(&ret);
+				
 				break;
 				
 			case 32: // A "long", not necessarily 32 bits!!
@@ -233,11 +243,18 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 				GB.Array.New(&array, GB_T_INTEGER, count);
 				for (i = 0; i < count; i++)
 					*((int *)GB.Array.Get(array, i)) = *((long *)value + i);
-				GB.ReturnObject(array);
+				
+				ret.type = GB_T_OBJECT;
+				ret.value._object = array;
+				GB.ReturnVariant(&ret);
+				
 				break;
 				
 			default:
-				GB.ReturnString(value);
+				
+				ret.type = GB_T_STRING;
+				ret.value._string = value;
+				GB.ReturnVariant(&ret);
 		}
 	}
 

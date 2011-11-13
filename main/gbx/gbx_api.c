@@ -139,6 +139,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ReturnObject,
   (void *)GB_ReturnNull,
   (void *)GB_ReturnFloat,
+  (void *)GB_ReturnVariant,
   (void *)GB_ReturnPtr,
   (void *)GB_ReturnSelf,
 

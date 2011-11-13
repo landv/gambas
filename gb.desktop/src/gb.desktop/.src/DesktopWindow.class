@@ -119,7 +119,7 @@ Private Sub Desktop_Write(Value As Integer)
 
 End
 
-Private Function GetState() As Integer[]
+Private Function GetState() As String[]
 
   Return _Desktop.GetWindowProperty(Atom["_NET_WM_STATE"], $iId)
 
@@ -175,10 +175,10 @@ End
 
 Private Function Maximized_Read() As Boolean
 
-  Dim aState As Integer[] = GetState()
+  Dim aState As String[] = GetState()
 
   If aState Then
-    Return aState.Find(Atom["_NET_WM_STATE_MAXIMIZED_VERT"]) >= 0 And aState.Find(Atom["_NET_WM_STATE_MAXIMIZED_HORZ"]) >= 0
+    Return aState.Find("_NET_WM_STATE_MAXIMIZED_VERT") >= 0 And aState.Find("_NET_WM_STATE_MAXIMIZED_HORZ") >= 0
   Endif
 
 End
@@ -195,10 +195,10 @@ End
 
 Private Function FullScreen_Read() As Boolean
 
-  Dim aState As Integer[] = GetState()
+  Dim aState As String[] = GetState()
 
   If aState Then
-    Return aState.Find(Atom["_NET_WM_STATE_FULLSCREEN"]) >= 0 
+    Return aState.Find("_NET_WM_STATE_FULLSCREEN") >= 0 
   Endif
 
 End
@@ -215,10 +215,10 @@ End
 
 Private Function SkipTaskbar_Read() As Boolean
 
-  Dim aState As Integer[] = GetState()
+  Dim aState As String[] = GetState()
 
   If aState Then
-    Return aState.Find(Atom["_NET_WM_STATE_SKIP_TASKBAR"]) >= 0 
+    Return aState.Find("_NET_WM_STATE_SKIP_TASKBAR") >= 0 
   Endif  
 
 End
@@ -235,10 +235,10 @@ End
 
 Private Function Sticky_Read() As Boolean
 
-  Dim aState As Integer[] = GetState()
+  Dim aState As String[] = GetState()
 
   If aState Then
-    Return aState.Find(Atom["_NET_WM_STATE_STICKY"]) >= 0 
+    Return aState.Find("_NET_WM_STATE_STICKY") >= 0 
   Endif  
 
 End
