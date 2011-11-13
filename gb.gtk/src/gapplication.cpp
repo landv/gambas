@@ -513,7 +513,10 @@ static void gambas_handle_event(GdkEvent *event)
 				}
 				
 				if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
-					control->onMouseEvent(control, gEvent_MouseMenu);
+				{
+					if (control->onMouseEvent(control, gEvent_MouseMenu))
+						return;
+				}
 			}
 			
 			if (type == gEvent_MousePress && control->isTopLevel())

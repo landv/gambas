@@ -4,7 +4,7 @@ Export
 
 Inherits TextBox
 
-Public Const _Properties As String = "*,Action,Mask"
+Public Const _Properties As String = "*,-Password,-MaxLength,Action,Mask"
 'Public Const _DefaultEvent As String = "Click"
 'Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -542,3 +542,10 @@ Public Sub TextBox_GotFocus()
   GotoCursor($iPosFocus)
   
 End
+
+Public Sub TextBox_Menu()
+  
+  Stop Event
+  
+End
+
