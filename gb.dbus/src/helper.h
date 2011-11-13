@@ -37,6 +37,7 @@ char *DBUS_introspect(DBusConnection *connection, const char *dest, const char *
 
 bool DBUS_register(DBusConnection *connection, const char *name, bool unique);
 bool DBUS_unregister(DBusConnection *connection, const char *name);
+bool DBUS_watch(DBusConnection *connection, bool on);
 
 bool DBUS_validate_path(const char *path, int len);
 bool DBUS_validate_interface (const char *interface, int len);

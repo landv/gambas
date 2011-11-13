@@ -103,6 +103,8 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 
 	dbus_error_init(&error);
 	
+	DBUS_watch(THIS->connection, THIS->enabled);
+	
 	if (THIS->enabled)
 	{
 		if (DBUS_Debug)
@@ -112,6 +114,7 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 		{
 			if (!noerr) GB.Error("Cannot enable observer");
 			THIS->enabled = FALSE;
+			DBUS_watch(THIS->connection, FALSE);
 		}
 	}
 	else
@@ -123,6 +126,7 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 		{
 			if (!noerr) GB.Error("Cannot disable observer");
 			THIS->enabled = TRUE;
+			DBUS_watch(THIS->connection, TRUE);
 		}
 	}
 	

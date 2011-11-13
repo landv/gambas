@@ -57,44 +57,12 @@ Public Sub _GetPath() As String
 End
 
 
-Static Private Sub Normalize(sName As String) As String
-  
-  Dim sRes As String
-  Dim iInd As Integer
-  Dim sCar As String
-  
-  sRes = "."
-  For iInd = 1 To Len(sName)
-    sCar = Mid$(sName, iInd, 1)
-    If IsLetter(sCar) Then
-      sCar = LCase(sCar)
-    Else If IsDigit(sCar) Then
-    Else
-      If Right(sRes) <> "." Then
-        sCar = "."
-      Else
-        sCar = ""
-      Endif
-    Endif
-    sRes &= sCar
-  Next
-  
-  If Right(sRes) = "." Then sRes = Left(sRes, -1)
-  
-  Return sRes
-  
-End
-
-
 Public Sub _Register(hConnection As DBusConnection, sPath As String)
   
   Dim hParent As DBusObject
   Dim sParent As String
   
-  If Not $sName Then
-    $sName = "org.gambas" & Normalize(Application.Name)
-    hConnection._RequestName($sName)
-  Endif
+  If Not $sName Then $sName = DBus._RegisterApplication(hConnection)
   
   If Left(sPath) <> "/" Then sPath = "/" & sPath
   
@@ -135,7 +103,7 @@ Public Sub _Unregister(hConnection As DBusConnection)
   _ObjectCache[$sPath] = Null
   $sPath = ""
   If _ObjectCache.Count = 0 Then 
-    hConnection._ReleaseName($sName)
+    DBus._UnregisterApplication(hConnection)
     $sName = ""
   Endif
   
@@ -200,7 +168,7 @@ Public Sub _Introspect() As String
   Endif
   
   If bHasMethod Then
-    sRes &= "  <interface name=\"" & $sName & Normalize(hClass.Name) & "\">\n"
+    sRes &= "  <interface name=\"" & $sName & DBus._Normalize(hClass.Name) & "\">\n"
     For Each sSymbol In hClass.Symbols
       With hClass[sSymbol]
         If InStr(sSymbol, "_") Then Continue
@@ -294,7 +262,7 @@ Private Sub GetProperty()
     sInterface = .Arguments[0]
     sProperty = .Arguments[1]
     
-    If sInterface And If sInterface <> ($sName & Normalize(Object.Class(Me).Name)) Then Return
+    If sInterface And If sInterface <> ($sName & DBus._Normalize(Object.Class(Me).Name)) Then Return
     If InStr(sProperty, "_") Then Return
     
     $hObserver.Reply("v", [Object.GetProperty(Me, sProperty)])
@@ -318,7 +286,7 @@ Private Sub GetAllProperties()
   
     sInterface = .Arguments[0]
     
-    If Not sInterface Or If sInterface = ($sName & Normalize(Object.Class(Me).Name)) Then
+    If Not sInterface Or If sInterface = ($sName & DBus._Normalize(Object.Class(Me).Name)) Then
       
       hClass = Object.Class(Me)
       
@@ -356,7 +324,7 @@ Private Sub SetProperty()
     sProperty = .Arguments[1]
     vValue = .Arguments[2]
     
-    If sInterface And If sInterface <> ($sName & Normalize(Object.Class(Me).Name)) Then Return
+    If sInterface And If sInterface <> ($sName & DBus._Normalize(Object.Class(Me).Name)) Then Return
     If InStr(sProperty, "_") Then Return
     
     Object.SetProperty(Me, sProperty, vValue)

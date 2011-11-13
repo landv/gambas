@@ -89,6 +89,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(DBusConnection_free)
 
+	GB.StoreVariant(NULL, &THIS->tag);
 	dbus_connection_unref(THIS->connection);
 
 END_METHOD
@@ -211,6 +212,16 @@ BEGIN_METHOD(DBusConnection_Unregister, GB_OBJECT object)
 
 END_METHOD
 
+BEGIN_PROPERTY(DBusConnection_Tag)
+
+	if (READ_PROPERTY)
+		GB.ReturnPtr(GB_T_VARIANT, &THIS->tag);
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), POINTER(&(THIS->tag)));
+
+END_METHOD
+
+
 GB_DESC CDBusConnectionDesc[] =
 {
   GB_DECLARE("DBusConnection", sizeof(CDBUSCONNECTION)), GB_NOT_CREATABLE(),
@@ -227,6 +238,7 @@ GB_DESC CDBusConnectionDesc[] =
 	GB_PROPERTY_READ("_Name", "s", DBusConnection_Name),
 	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s"),
 	GB_METHOD("Unregister", NULL, DBusConnection_Unregister, "(Object)DBusObject"),
+	GB_PROPERTY("Tag", "v", DBusConnection_Tag),
 
   GB_END_DECLARE
 };

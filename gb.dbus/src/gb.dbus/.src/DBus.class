@@ -7,6 +7,7 @@ Inherits _DBus
 Static Public _ApplicationCache As New Collection
 
 Static Private $iApp As Integer
+Static Private $iRegisterCount As Integer
 
 Static Public Sub _get(Application As String) As DBusApplication
   
@@ -33,4 +34,57 @@ Static Public Sub _get(Application As String) As DBusApplication
   
 End
 
+Static Public Sub _Normalize(sName As String) As String
+  
+  Dim sRes As String
+  Dim iInd As Integer
+  Dim sCar As String
+  
+  sRes = "."
+  For iInd = 1 To Len(sName)
+    sCar = Mid$(sName, iInd, 1)
+    If IsLetter(sCar) Then
+      sCar = LCase(sCar)
+    Else If IsDigit(sCar) Then
+    Else
+      If Right(sRes) <> "." Then
+        sCar = "."
+      Else
+        sCar = ""
+      Endif
+    Endif
+    sRes &= sCar
+  Next
+  
+  If Right(sRes) = "." Then sRes = Left(sRes, -1)
+  
+  Return sRes
+  
+End
+
+
+Static Public Sub _RegisterApplication(hConnection As DBusConnection) As String
+  
+  Dim sName As String
+  
+  sName = hConnection.Tag
+  If Not sName Then
+    sName = "org.gambas" & _Normalize(Application.Name)
+    hConnection._RequestName(sName)
+    hConnection.Tag = sName
+  Endif
+  Inc $iRegisterCount
+  Return sName
+  
+End
+
+Static Public Sub _UnregisterApplication(hConnection As DBusConnection)
+  
+  Dec $iRegisterCount
+  If $iRegisterCount > 0 Then Return
+  If Not hConnection.Tag Then Return
+  hConnection._ReleaseName(hConnection.Tag)
+  hConnection.Tag = ""
+  
+End
 

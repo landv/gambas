@@ -4,6 +4,8 @@ Export
 
 Event Signal(Signal As String, Arguments As Variant[])
 
+Property Enabled As Boolean
+
 Private $hObserver As DBusObserver
 
 Public Sub _new(Connection As DBusConnection, Interface As String, Optional Every As Boolean)
@@ -16,4 +18,16 @@ Public Sub DBusObserver_Message()
   
   Raise Signal($hObserver.Message.Member, $hObserver.Message.Arguments)
   
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $hObserver.Enabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $hObserver.Enabled = Value
+
 End

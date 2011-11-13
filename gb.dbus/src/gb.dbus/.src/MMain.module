@@ -32,7 +32,7 @@ Public Sub Main()
   ' Debug DBus.Session.Applications.Join("\n")
   ' 
   DBus.Debug = True
-  DBus.Session.Register(CTest, "/Test")
+  'DBus.Session.Register(CTest, "/Test")
   
   'Wait 10
   '
@@ -44,14 +44,16 @@ Public Sub Main()
   'hSignal = New DBusSignal(DBus.Session, "org.freedesktop.DBus") As "MySignal"
   hSignal = New DBusSignal(DBus.Session, "", True) As "MySignal"
 
-  Wait 10
+  Wait 3
+  
+  hSignal.Enabled = False
 
-  DBus.Session.Unregister(CTest)
+  'DBus.Session.Unregister(CTest)
   
 End
 
 Public Sub MySignal_Signal(Method As String, Arguments As Variant[])
   
-  Debug Method;; Arguments[0]
+  Debug Method
   
 End

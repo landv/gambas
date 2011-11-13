@@ -40,6 +40,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		DBusConnection *connection;
+		GB_VARIANT_VALUE tag;
 	}
 	CDBUSCONNECTION;
 

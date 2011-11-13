@@ -28,8 +28,6 @@
 #include "dbus_print_message.h"
 #include "helper.h"
 
-bool DBUS_Debug = FALSE;
-
 typedef
 	void (*RETRIEVE_CALLBACK)(GB_TYPE type, void *data, void *param);
 
@@ -39,7 +37,11 @@ typedef
 		char *key;
 	}
 	COLLECTION_ADD;
-	
+
+bool DBUS_Debug = FALSE;
+
+static int _watch_count = 0;
+
 static void handle_message(int fd, int type, DBusConnection *connection)
 {
 	//fprintf(stdout, "handle_message\n");
@@ -1010,20 +1012,50 @@ static bool get_socket(DBusConnection *connection, int *socket)
 		return FALSE;
 }
 
-bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
+bool DBUS_watch(DBusConnection *connection, bool on)
 {
-	DBusError error;
-	int ret, socket;
-
+	int socket;
+	
 	if (get_socket(connection, &socket))
 		return TRUE;
 	
-	if (!dbus_connection_add_filter(connection, filter_func, NULL, NULL))
+	if (on)
 	{
-		GB.Error("Unable to watch the DBus connection");
-		return TRUE;
-	}
+		if (_watch_count == 0)
+		{
+			if (!dbus_connection_add_filter(connection, filter_func, NULL, NULL))
+			{
+				GB.Error("Unable to watch the DBus connection");
+				return TRUE;
+			}
 		
+			if (DBUS_Debug)
+				fprintf(stderr, "gb.dbus: start watching connection\n");
+			
+			GB.Watch(socket, GB_WATCH_READ, (void *)handle_message, (intptr_t)connection);
+			check_message(connection);
+		}
+		_watch_count++;
+	}
+	else
+	{
+		_watch_count--;
+		if (_watch_count == 0)
+		{
+			if (DBUS_Debug)
+				fprintf(stderr, "gb.dbus: stop watching connection\n");
+			GB.Watch(socket, GB_WATCH_NONE, (void *)handle_message, (intptr_t)connection);
+		}
+	}
+	
+	return FALSE;
+}
+
+bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
+{
+	DBusError error;
+	int ret;
+
 	dbus_error_init(&error);
 	
 	ret = dbus_bus_request_name(connection, name, unique ? DBUS_NAME_FLAG_DO_NOT_QUEUE : 0, &error);
@@ -1037,16 +1069,7 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 	if (unique && ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
 		return TRUE;
 	
-	/*if (add_match(connection, "type='signal'")) goto ERROR_MATCH;
-	if (add_match(connection, "type='method_call'")) goto ERROR_MATCH;
-	//if (add_match(connection, "type='method_return'") goto ERROR_MATCH;
-	if (add_match(connection, "type='error'")) goto ERROR_MATCH;*/
-
-	GB.Watch(socket, GB_WATCH_READ, (void *)handle_message, (intptr_t)connection);
-	
-	check_message(connection);
-		
-	return FALSE;
+	return DBUS_watch(connection, TRUE);
 }
 
 bool DBUS_unregister(DBusConnection *connection, const char *name)
@@ -1064,11 +1087,7 @@ bool DBUS_unregister(DBusConnection *connection, const char *name)
 		return TRUE;
 	}
 
-	if (get_socket(connection, &socket))
-		return TRUE;
-	
-	GB.Watch(socket, GB_WATCH_NONE, (void *)handle_message, (intptr_t)connection);
-	return FALSE;
+	return DBUS_watch(connection, FALSE);
 }
 
 
