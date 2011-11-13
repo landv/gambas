@@ -3,6 +3,8 @@
 Public Sub Main()
 
   Dim aVal As Variant[]
+  Dim hSignal As DBusSignal
+  
 
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768] '.Get("", "rect")
   'aRect = DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1", "com.trolltech.Qt.QWidget"].geometry
@@ -24,20 +26,32 @@ Public Sub Main()
   'Print DBus.Session._Name
   'Dim hTest As CTest = CTest
   
-  Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
-  DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
-  
-  'Debug DBus.Session.Applications.Join("\n")
-  
+  ' Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
+  ' DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
+  ' 
+  ' Debug DBus.Session.Applications.Join("\n")
+  ' 
   DBus.Debug = True
   DBus.Session.Register(CTest, "/Test")
   
   'Wait 10
   '
-  'DBus.Session.Unregister(CTest)
     
   'aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
   'Print aVal[0];; aVal[1];; aVal[2]
   'Print DBus["system://org.freedesktop.UDisks"]["/"].Children
+  
+  'hSignal = New DBusSignal(DBus.Session, "org.freedesktop.DBus") As "MySignal"
+  hSignal = New DBusSignal(DBus.Session, "", True) As "MySignal"
 
+  Wait 10
+
+  DBus.Session.Unregister(CTest)
+  
+End
+
+Public Sub MySignal_Signal(Method As String, Arguments As Variant[])
+  
+  Debug Method;; Arguments[0]
+  
 End

@@ -1730,17 +1730,17 @@ Private Sub IsTextFile(sPath As String) As Boolean
 
   While sStr
     sCar = String.Left(sStr)
+    sStr = Mid$(sStr, Len(sCar) + 1)
     If Not sCar Then Break
     If Len(sCar) = 1 Then
       iCode = Asc(sCar)
       If iCode = &HFE Then Return False
       If iCode = &HFF Then Return False
-      If iCode < 32 And If iCode <> 10 And If iCode <> 7 Then Return False
-    Else
+      If iCode < 32 And If iCode <> 10 And If iCode <> 9 Then Return False
+    Else If sStr Then
       Try sTest = Conv(sCar, "UTF-8", "UCS-4LE")
     Endif
     If Error Then Return False
-    sStr = Mid$(sStr, Len(sCar) + 1)
   Wend
 
   Return True

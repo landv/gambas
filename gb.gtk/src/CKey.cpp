@@ -108,7 +108,7 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Esc", "i", GDK_Escape),
   GB_CONSTANT("Escape", "i", GDK_Escape),
   GB_CONSTANT("Tab", "i", GDK_Tab),
-  GB_CONSTANT("BackTab", "i", GDK_3270_BackTab),
+  GB_CONSTANT("BackTab", "i", GDK_KEY_ISO_Left_Tab),
   GB_CONSTANT("BackSpace", "i", GDK_BackSpace),
   GB_CONSTANT("Return", "i", GDK_Return),
   GB_CONSTANT("Enter", "i", GDK_KP_Enter),

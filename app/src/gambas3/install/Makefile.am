@@ -27,10 +27,10 @@ install-exec-local:
 	 echo "Installing $(PACKAGE).list in $(GBINFO_path)"; \
 	 $(INSTALL) .list $(DESTDIR)$(prefix)/$(GBINFO_path)/$(PACKAGE).list; \
 	 chmod a-x $(DESTDIR)$(prefix)/$(GBINFO_path)/$(PACKAGE).list; \
-	 if test -d control; then \
+	 if test -d .hidden/control; then \
 	  echo "Installing controls in $(GBCONTROL_path)"; \
 	  $(INSTALL) -d $(DESTDIR)$(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
-	  $(INSTALL) control/*.png $(DESTDIR)$(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
+	  $(INSTALL) .hidden/control/*.png $(DESTDIR)$(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
 	  chmod a-x $(DESTDIR)$(prefix)/$(GBCONTROL_path)/$(PACKAGE)/*.png; \
 	 fi \
 	else \

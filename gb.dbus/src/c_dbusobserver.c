@@ -73,8 +73,24 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 	char *match = NULL;
 	DBusError error;
 
-	if (THIS->type >= 0 && THIS->type <= 3)
-		match = add_rule(match, "type", type[THIS->type]);
+	switch(THIS->type)
+	{
+		case DBUS_MESSAGE_TYPE_METHOD_CALL: 
+			match = add_rule(match, "type", "method_call");
+			break;
+		case DBUS_MESSAGE_TYPE_METHOD_RETURN: 
+			match = add_rule(match, "type", "method_return");
+			break;
+		case DBUS_MESSAGE_TYPE_SIGNAL: 
+			match = add_rule(match, "type", "signal");
+			break;
+		case DBUS_MESSAGE_TYPE_ERROR: 
+			match = add_rule(match, "type", "error");
+			break;
+		default:
+			GB.Error("Invalid message type");
+			return;
+	}
 	
 	match = add_rule(match, "path", THIS->object);
 	match = add_rule(match, "member", THIS->member);
@@ -89,6 +105,8 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 	
 	if (THIS->enabled)
 	{
+		if (DBUS_Debug)
+			fprintf(stderr, "gb.dbus: add match: %s\n", match);
 		dbus_bus_add_match(THIS->connection, match, &error);
 		if (dbus_error_is_set(&error))
 		{
@@ -98,6 +116,8 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 	}
 	else
 	{
+		if (DBUS_Debug)
+			fprintf(stderr, "gb.dbus: remove match: %s\n", match);
 		dbus_bus_remove_match(THIS->connection, match, &error);
 		if (dbus_error_is_set(&error))
 		{
@@ -106,7 +126,7 @@ static void update_match(CDBUSOBSERVER *_object, bool noerr)
 		}
 	}
 	
-	dbus_bus_flush_connection(THIS->connection);
+	dbus_connection_flush(THIS->connection);
 	
 	GB.FreeString(&match);
 }
@@ -132,6 +152,9 @@ BEGIN_METHOD(DBusObserver_new, GB_OBJECT connection; GB_INTEGER type; GB_STRING 
 		DBUS_observers->prev = THIS;
 	
 	DBUS_observers = THIS;
+	
+	THIS->enabled = TRUE;
+	update_match(THIS, FALSE);
 	
 END_METHOD
 

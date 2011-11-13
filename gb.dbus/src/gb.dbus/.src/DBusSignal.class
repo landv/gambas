@@ -6,9 +6,9 @@ Event Signal(Signal As String, Arguments As Variant[])
 
 Private $hObserver As DBusObserver
 
-Public Sub _new(Connection As DBusConnection, Interface As String)
+Public Sub _new(Connection As DBusConnection, Interface As String, Optional Every As Boolean)
 
-  $hObserver = New DBusObserver(Connection, DBus.Signal, "", "", Interface) As "DBusObserver"
+  $hObserver = New DBusObserver(Connection, DBus.Signal, "", "", Interface, If(Every, "*", "")) As "DBusObserver"
   
 End
 
