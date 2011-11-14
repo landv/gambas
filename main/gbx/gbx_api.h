@@ -75,6 +75,7 @@ void GB_ReturnPtr(GB_TYPE type, void *value);
 void GB_ReturnDate(GB_DATE *date);
 void GB_ReturnSelf(void *object);
 void GB_ReturnVariant(GB_VARIANT_VALUE *value);
+void GB_ReturnConvVariant(void);
 
 void GB_ReturnString(char *str);
 void GB_ReturnVoidString(void);

@@ -865,6 +865,7 @@ typedef
 		void (*ReturnNull)(void);
 		void (*ReturnFloat)(double);
 		void (*ReturnVariant)(GB_VARIANT_VALUE *);
+		void (*ReturnConvVariant)();
 		void (*ReturnPtr)(GB_TYPE, void *);
 		void (*ReturnSelf)(void *);
 

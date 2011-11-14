@@ -114,6 +114,8 @@ BEGIN_METHOD_VOID(GL_unknown)
 		GB.ReturnInteger(same_value[same_index]);
 	else 
 		GB.GetProperty(klass, name);
+	
+	GB.ReturnConvVariant();
 
 END_METHOD
 

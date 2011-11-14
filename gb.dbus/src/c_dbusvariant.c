@@ -26,7 +26,7 @@
 #include "helper.h"
 #include "c_dbusvariant.h"
 
-BEGIN_METHOD(dbusvariant_call, GB_VARIANT value; GB_STRING signature)
+BEGIN_METHOD(DBusVariant_call, GB_VARIANT value; GB_STRING signature)
 
 	_object = GB.New(GB.FindClass("DBusVariant"), NULL, NULL);
 	GB.StoreVariant(ARG(value), (void *)&THIS->value);
@@ -36,7 +36,7 @@ BEGIN_METHOD(dbusvariant_call, GB_VARIANT value; GB_STRING signature)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(dbusvariant_free)
+BEGIN_METHOD_VOID(DBusVariant_free)
 
 	GB.StoreVariant(NULL, (void *)&THIS->value);
 	GB.StoreString(NULL, &THIS->signature);
@@ -44,13 +44,13 @@ BEGIN_METHOD_VOID(dbusvariant_free)
 
 END_METHOD
 
-BEGIN_PROPERTY(dbusvariant_Value)
+BEGIN_PROPERTY(DBusVariant_Value)
 
-	GB.ReturnPtr(GB_T_VARIANT, &THIS->value);
+	GB.ReturnVariant(&THIS->value);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(dbusvariant_Signature)
+BEGIN_PROPERTY(DBusVariant_Signature)
 
 	GB.ReturnString(THIS->signature);
 
@@ -60,10 +60,10 @@ GB_DESC CDBusVariantDesc[] =
 {
   GB_DECLARE("DBusVariant", sizeof(CDBUSVARIANT)), GB_NOT_CREATABLE(),
 
-	GB_STATIC_METHOD("_call", "DBusVariant", dbusvariant_call, "(Value)v(Signature)s"),
-	GB_METHOD("_free", NULL, dbusvariant_free, NULL),
-	GB_PROPERTY_READ("Value", "v", dbusvariant_Value),
-	GB_PROPERTY_READ("Signature", "s", dbusvariant_Signature),
+	GB_STATIC_METHOD("_call", "DBusVariant", DBusVariant_call, "(Value)v(Signature)s"),
+	GB_METHOD("_free", NULL, DBusVariant_free, NULL),
+	GB_PROPERTY_READ("Value", "v", DBusVariant_Value),
+	GB_PROPERTY_READ("Signature", "s", DBusVariant_Signature),
 
   GB_END_DECLARE
 };

@@ -4,8 +4,14 @@ Count=0
 [DebugWindow]
 Count=0
 
+[DebugWindow/$cAtom]
+Geometry=[0,0,260,210]
+
 [DebugWindow/_Desktop.GetWindowProperty("_NET_CURRENT_DESKTOP", _Desktop.RootWindow)]
 Geometry=[-6,0,210,210]
+
+[DebugWindow/_Desktop.GetWindowProperty(Atom["_NET_WM_STATE"], $iId)]
+Geometry=[0,0,429,210]
 
 [FFind]
 SearchIn="Project"
@@ -15,9 +21,12 @@ SearchComment=False
 SearchString=True
 
 [OpenFile]
-Active=1
 File[1]=".src/_Desktop_Passwords.class:0.0"
-Count=1
+File[2]=".src/DesktopWindow.class:120.0"
+File[3]=".src/Atom.class:8.14"
+Active=4
+File[4]=".src/Main.module:149.25"
+Count=4
 
 [Watches]
 Count=0

@@ -43,6 +43,8 @@ BEGIN_METHOD(CVB_val, GB_STRING str)
     GB.ReturnFloat(((GB_FLOAT *)(void *)&result)->value);
   else
     GB.ReturnInteger(0);
+	
+	GB.ReturnConvVariant();
 
 END_METHOD
 

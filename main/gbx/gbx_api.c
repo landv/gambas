@@ -140,6 +140,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ReturnNull,
   (void *)GB_ReturnFloat,
   (void *)GB_ReturnVariant,
+  (void *)GB_ReturnConvVariant,
   (void *)GB_ReturnPtr,
   (void *)GB_ReturnSelf,
 
@@ -1248,6 +1249,12 @@ void GB_ReturnVariant(GB_VARIANT_VALUE *val)
 
 		VARIANT_copy_value(&TEMP._variant, (VARIANT *)val);
 	}
+}
+
+
+void GB_ReturnConvVariant(void)
+{
+	VALUE_conv(&TEMP, T_VARIANT);
 }
 
 

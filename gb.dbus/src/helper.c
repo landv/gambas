@@ -762,7 +762,7 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	
 	if (dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_INVALID)
 	{
-		GB.ReturnNull();
+		GB.ReturnVariant(NULL);
 		ret = FALSE;
 	}
 	else if (!dbus_message_iter_has_next(&iter))
@@ -793,6 +793,9 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 __RETURN:
 	
 	dbus_message_unref(message);
+	
+	GB.ReturnConvVariant();
+	
 	return ret;
 }
 

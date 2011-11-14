@@ -43,7 +43,7 @@ typedef
 		LIST list;
 		ushort *event;
 		void *object;
-		void *tag;
+		GB_VARIANT_VALUE tag;
 		unsigned after : 1;
 		unsigned locked : 1;
 	}

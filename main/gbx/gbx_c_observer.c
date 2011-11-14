@@ -136,7 +136,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Observer_Tag)
 
 	if (READ_PROPERTY)
-		GB_ReturnPtr(GB_T_VARIANT, &THIS->tag);
+		GB_ReturnVariant(&THIS->tag);
 	else
 		GB_StoreVariant(PROP(GB_VARIANT), &THIS->tag);
 	

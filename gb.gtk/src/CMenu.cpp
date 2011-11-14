@@ -336,7 +336,7 @@ END_METHOD
 BEGIN_PROPERTY(CMENU_tag)
 
 	if (READ_PROPERTY)
-		GB.ReturnPtr(GB_T_VARIANT, &THIS->tag);
+		GB.ReturnVariant(&THIS->tag);
 	else
     GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
   

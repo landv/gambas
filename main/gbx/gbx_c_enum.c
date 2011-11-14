@@ -107,7 +107,7 @@ BEGIN_PROPERTY(CENUM_index)
       #ifdef DEBUG_ME
       fprintf(stderr, "CENUM_index: %p <%p>: -> NULL\n", THIS, THIS->enum_object);
       #endif  
-      GB_ReturnNull();
+      GB_ReturnVariant(NULL);
     }
     else
     {

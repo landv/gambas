@@ -36,7 +36,7 @@
 static CEXPRESSION *_current;
 
 
-BEGIN_METHOD_VOID(CEXPRESSION_new)
+BEGIN_METHOD_VOID(Expression_new)
 
   THIS->compiled = FALSE;
   CLEAR(&THIS->expr);
@@ -44,7 +44,7 @@ BEGIN_METHOD_VOID(CEXPRESSION_new)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CEXPRESSION_free)
+BEGIN_METHOD_VOID(Expression_free)
 
   EVAL_clear(&THIS->expr, FALSE);
   GB.FreeString(&THIS->text);
@@ -54,7 +54,7 @@ BEGIN_METHOD_VOID(CEXPRESSION_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(CEXPRESSION_text)
+BEGIN_PROPERTY(Expression_Text)
 
   if (READ_PROPERTY)
     GB.ReturnString(THIS->text);
@@ -70,7 +70,7 @@ BEGIN_PROPERTY(CEXPRESSION_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CEXPRESSION_environment)
+BEGIN_PROPERTY(Expression_Environment)
 
   if (READ_PROPERTY)
     GB.ReturnObject(THIS->env);
@@ -90,7 +90,7 @@ static void prepare(CEXPRESSION *_object)
   }
 }
 
-BEGIN_METHOD_VOID(CEXPRESSION_prepare)
+BEGIN_METHOD_VOID(Expression_Prepare)
 
 	prepare(THIS);
 
@@ -114,15 +114,16 @@ static void execute(CEXPRESSION *_object)
 
   if (!THIS->compiled)
   {
-    GB.ReturnNull();
+    GB.ReturnVariant(NULL);
     return;
   }
 
   _current = THIS;
   EVAL_expression(&THIS->expr, (EVAL_FUNCTION)get_variable);
+	GB.ReturnConvVariant();
 }
 
-BEGIN_PROPERTY(CEXPRESSION_value)
+BEGIN_PROPERTY(Expression_Value)
 
 	execute(THIS);
 
@@ -132,18 +133,18 @@ GB_DESC CExpressionDesc[] =
 {
   GB_DECLARE("Expression", sizeof(CEXPRESSION)),
 
-  //GB_STATIC_METHOD("_init", NULL, CEXPRESSION_init, NULL),
-  //GB_STATIC_METHOD("_exit", NULL, CEXPRESSION_exit, NULL),
+  //GB_STATIC_METHOD("_init", NULL, Expression_init, NULL),
+  //GB_STATIC_METHOD("_exit", NULL, Expression_exit, NULL),
 
-  GB_METHOD("_new", NULL, CEXPRESSION_new, NULL),
-  GB_METHOD("_free", NULL, CEXPRESSION_free, NULL),
+  GB_METHOD("_new", NULL, Expression_new, NULL),
+  GB_METHOD("_free", NULL, Expression_free, NULL),
 
-  GB_PROPERTY("Text", "s", CEXPRESSION_text),
-  GB_PROPERTY("Environment", "Collection;", CEXPRESSION_environment),
+  GB_PROPERTY("Text", "s", Expression_Text),
+  GB_PROPERTY("Environment", "Collection;", Expression_Environment),
 
-  GB_METHOD("Compile", NULL, CEXPRESSION_prepare, NULL),
+  GB_METHOD("Compile", NULL, Expression_Prepare, NULL),
 
-  GB_PROPERTY_READ("Value", "v", CEXPRESSION_value),
+  GB_PROPERTY_READ("Value", "v", Expression_Value),
 
   GB_END_DECLARE
 };

@@ -181,7 +181,7 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 		format = GB.ToZeroString(ARG(format));
 		if (!exist_format(format))
 		{
-			GB.ReturnNull();
+			GB.ReturnVariant(NULL);
 			return;
 		}
 	}
@@ -201,6 +201,8 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 		default:
 			GB.ReturnNull();
 	}
+	
+	GB.ReturnConvVariant();
 	 
 END_METHOD
 
@@ -378,7 +380,7 @@ static void paste_drag(char *format)
 	{
 		if (!exist_format(format, true))
 		{
-			GB.ReturnNull();
+			GB.ReturnVariant(NULL);
 			return;
 		}
 	}
@@ -397,7 +399,8 @@ static void paste_drag(char *format)
 		default:
 			GB.ReturnNull();
 	}
-
+	
+	GB.ReturnConvVariant();
 }
 
 BEGIN_PROPERTY(CDRAG_data)

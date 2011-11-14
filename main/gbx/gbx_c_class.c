@@ -438,7 +438,7 @@ BEGIN_PROPERTY(Symbol_Value)
 
 	if (CLASS_DESC_get_type(desc) != CD_CONSTANT)
 	{
-		GB_ReturnNull();
+		GB_ReturnVariant(NULL);
 		return;
 	}
 
@@ -446,6 +446,8 @@ BEGIN_PROPERTY(Symbol_Value)
 		GB_ReturnConstZeroString(desc->constant.value._string);
 	else
 		GB_ReturnPtr(desc->constant.type, (void *)&desc->constant.value);
+	
+	GB_ReturnConvVariant();
 
 END_PROPERTY
 
@@ -535,6 +537,8 @@ BEGIN_METHOD(Object_GetProperty, GB_OBJECT object; GB_STRING property)
 			RP->type = T_VOID;
 		}
 	}
+	
+	GB_ReturnConvVariant();
 
 END_METHOD
 

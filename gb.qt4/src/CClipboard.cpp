@@ -116,7 +116,7 @@ static void paste(const QMimeData *data, const char *fmt)
 		
 	if (!data->hasFormat(format))
 	{
-		GB.ReturnNull();
+		GB.ReturnVariant(NULL);
 		return;
 	}
 
@@ -138,6 +138,8 @@ static void paste(const QMimeData *data, const char *fmt)
 		default:
 			GB.ReturnNull();
 	}
+	
+	GB.ReturnConvVariant();
 }
 
 
@@ -647,7 +649,7 @@ BEGIN_PROPERTY(CDRAG_data)
 
 	if (!CDRAG_info.valid)
 	{
-		GB.ReturnNull();
+		GB.ReturnVariant(NULL);
 		return;
 	}
 
@@ -660,7 +662,7 @@ BEGIN_METHOD(CDRAG_paste, GB_STRING format)
 
 	if (!CDRAG_info.valid)
 	{
-		GB.ReturnNull();
+		GB.ReturnVariant(NULL);
 		return;
 	}
 

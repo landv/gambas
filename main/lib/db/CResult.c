@@ -440,7 +440,7 @@ BEGIN_METHOD(CRESULT_get, GB_STRING field)
 	if (type == DB_T_BLOB)
 		check_blob(THIS, index);
 
-	GB.ReturnPtr(GB_T_VARIANT, &THIS->buffer[index]);
+	GB.ReturnVariant(&THIS->buffer[index]);
 
 END_METHOD
 

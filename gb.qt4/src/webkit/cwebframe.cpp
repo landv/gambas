@@ -104,6 +104,8 @@ void CWEBFRAME_eval(QWebFrame *frame, const QString &javascript)
 			GB.ReturnNull();
 			break;
 	}
+	
+	GB.ReturnConvVariant();
 }
 
 BEGIN_METHOD_VOID(WebFrame_free)

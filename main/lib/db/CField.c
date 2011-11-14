@@ -213,7 +213,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CFIELD_default)
 
-  GB.ReturnPtr(GB_T_VARIANT, &THIS->info.def);
+  GB.ReturnVariant(&THIS->info.def);
 
 END_PROPERTY
 

@@ -165,7 +165,7 @@ BEGIN_METHOD_VOID(COPTIONS_rest)
 END_METHOD
 
 BEGIN_METHOD ( COPTIONS_get, GB_STRING option )
-{
+
 	int i;
 	char *str=NULL;
 	for ( i=0; i<GB.Count(THIS->opt_found); i++ )
@@ -179,14 +179,14 @@ BEGIN_METHOD ( COPTIONS_get, GB_STRING option )
 			else
 			{
 				GB.ReturnInteger(TRUE);
-				return;
+				goto _RETURN;
 			}
 		}
 	}
 	if(str!=NULL)
 	{
 		GB.ReturnNewZeroString(str);
-		return;
+		goto _RETURN;
 	}
 	
 
@@ -205,8 +205,11 @@ BEGIN_METHOD ( COPTIONS_get, GB_STRING option )
 	*/
 	
 	GB.ReturnInteger(FALSE);
-	return;
-}
+
+_RETURN:
+
+	GB.ReturnConvVariant();
+
 END_METHOD
 
 BEGIN_METHOD ( COPTIONS_getarg ,GB_STRING option)

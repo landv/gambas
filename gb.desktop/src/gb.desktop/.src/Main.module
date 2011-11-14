@@ -147,6 +147,7 @@ Public Sub Main()
   Print Desktop.Path
   
   For Each dWindow In Desktop.Windows
+    Print Hex(dWindow.Id);;
     If dWindow.SkipTaskbar = True Then
       Print "skip"
     Else

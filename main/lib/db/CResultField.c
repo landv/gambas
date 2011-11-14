@@ -200,7 +200,6 @@ GB_DESC CResultFieldDesc[] =
   GB_PROPERTY_READ("Name", "s", CRESULTFIELD_name),
   GB_PROPERTY_READ("Type", "i", CRESULTFIELD_type),
   GB_PROPERTY_READ("Length", "i", CRESULTFIELD_length),
-  //GB_PROPERTY_READ("Default", "v", CRESULTFIELD_default),
 
   GB_PROPERTY_READ("Result", "Result", CRESULTFIELD_result),
 

@@ -1062,7 +1062,7 @@ END_METHOD
 BEGIN_PROPERTY(Control_Tag)
 
 	if (READ_PROPERTY)
-		GB.ReturnPtr(GB_T_VARIANT, &OBJECT(CWIDGET)->tag);
+		GB.ReturnVariant(&OBJECT(CWIDGET)->tag);
 	else
 		GB.StoreVariant(PROP(GB_VARIANT), (void *)&(OBJECT(CWIDGET)->tag));
 

@@ -71,6 +71,7 @@ BEGIN_METHOD(Param_get, GB_INTEGER index)
 		THROW(E_BOUND);
 
 	TEMP = PP[index];
+	GB_ReturnConvVariant();
 	//VALUE_conv(&TEMP, T_VARIANT);
 
 END_METHOD
@@ -105,6 +106,7 @@ BEGIN_METHOD_VOID(Param_next)
 	{
 		TEMP = PP[*index];
 		(*index)++;
+		GB_ReturnConvVariant();
 		//VALUE_conv(&TEMP, T_VARIANT);
 	}
 
