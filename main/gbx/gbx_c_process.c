@@ -487,7 +487,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		sigprocmask(SIG_SETMASK, &old, &sig);
 		
 		if (mode & PM_SHELL)
-			setpgrp();
+			setpgid(0, 0);
 
 		if (mode & PM_TERM)
 		{
