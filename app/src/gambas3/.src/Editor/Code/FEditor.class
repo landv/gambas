@@ -1767,7 +1767,7 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
     If $hSymbol Then
       ' A private symbol that is a method or an event cannot be followed by a point
       ' So it must be a static class.
-      If Not (InStr("m:", $hSymbol.Kind) And bPoint) Then
+      If Not bPoint Or If InStr("Mm:", $hSymbol.Kind) = 0 Then
         ' This must be a private symbol, and so we must ignore inheritance
         If $hSymbol.Class = Me.Name And If Not $hSymbol.Component Then
           '$bLastStatic = $hSymbol.IsStatic()

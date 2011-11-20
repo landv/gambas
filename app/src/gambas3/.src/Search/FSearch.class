@@ -240,12 +240,12 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
   Dim aGrep As String[]
   Dim aResult As New CFindResult[]
   Dim sFind As String
-  Dim aFind As String[]
   Dim hResult As CFindResult
   Dim sTemp As String
   Dim iAge As Integer
   Dim hGrepResult As CGrepResult
   Dim sPath As String
+  Dim iPos As Integer
 
   Try sText = hFile.GetText()
   If Error Then Return aResult
@@ -298,8 +298,9 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
   ' Until hProcess.State <> Process.Running
 
   For Each sFind In Split($sGrep, "\n", "", True)
-    aFind = Split(sFind, ":")
+    
     hResult = New CFindResult
+    
     If hFile Is FOutput Then
       hResult.Path = ""
       hResult.File = "Console"
@@ -307,11 +308,23 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
       hResult.Path = hFile.Path
       hResult.File = hFile.Name
     Endif
-    hResult.Line = CInt(aFind[0])
-    hResult.Pos = CInt(aFind[1])
-    hResult.Bytes = Len(aFind[2])
-    hResult.Length = String.Len(aFind[2])
+
+    iPos = InStr(sFind, ":")
+    If iPos = 0 Then Continue
+    
+    hResult.Line = CInt(Left(sFind, iPos - 1))
+    sFind = Mid$(sFind, iPos + 1)
+    
+    iPos = InStr(sFind, ":")
+    If iPos = 0 Then Continue
+    
+    hResult.Pos = CInt(Left(sFind, iPos - 1))
+    sFind = Mid$(sFind, iPos + 1)
+
+    hResult.Bytes = Len(sFind)
+    hResult.Length = String.Len(sFind)
     aResult.Add(hResult)
+    
   Next
   
   Try iAge = hFile.Age
