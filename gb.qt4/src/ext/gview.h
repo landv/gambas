@@ -150,8 +150,8 @@ private slots:
 
 	void blinkTimerTimeout();
 	void scrollTimerTimeout();
-	void baptizeVisible();
-	void baptizeVisible(int x, int y);
+	//void baptizeVisible();
+	//void baptizeVisible(int x, int y);
 	void unflash();
 	void docTextChangedLater();
 	void ensureCursorVisible();

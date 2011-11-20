@@ -67,9 +67,8 @@ public:
 	unsigned changed : 1;
 	unsigned flag : 2;
 	unsigned proc : 1;
-	unsigned baptized : 1;
 	unsigned unicode : 1;
-	unsigned _reserved : 3;
+	unsigned _reserved : 4;
 	signed tag : 16;
 
 	GLine();
@@ -104,7 +103,7 @@ private:
 	GEditor *selector;
 	int xs, ys, xs2, ys2;
 	int tabWidth;
-	int baptismLimit;
+	int colorizeFrom;
 
 	void init();
 	void clearUndo();
@@ -166,7 +165,7 @@ public:
 	int getNextLimit(int y);
 	int getPreviousLimit(int y);
 
-	void insert(int y, int x, const GString &str);
+	void insert(int y, int x, const GString &str, bool doNotMove = false);
 	void remove(int y, int x, int y2, int x2);
 
 	bool undo();
@@ -182,7 +181,6 @@ public:
 	
 	void colorize(int y);
 	void colorizeAll();
-	void baptizeUntil(int y);
 	void invalidate(int y);
 
 	int getIndent(int y, bool *empty = NULL);
@@ -207,6 +205,7 @@ private:
 	void updateLineWidth(int y);
 	void insertLine(int y);
 	void removeLine(int y);
+	void modifyLine(GLine *l, int y);
 };
 
 #endif

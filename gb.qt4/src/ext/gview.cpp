@@ -197,7 +197,7 @@ GEditor::GEditor(QWidget *parent)
 	scrollTimer = new QTimer(this);
 	connect(scrollTimer, SIGNAL(timeout()), this, SLOT(scrollTimerTimeout()));
 
-	connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(baptizeVisible(int, int)));
+	//connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(baptizeVisible(int, int)));
 }
 
 GEditor::~GEditor()
@@ -2042,7 +2042,7 @@ void GEditor::mouseReleaseEvent(QMouseEvent *e)
 void GEditor::resizeEvent(QResizeEvent *e)
 {
 	Q3ScrollView::resizeEvent(e);
-	baptizeVisible();
+	//baptizeVisible();
 	updateWidth();
 }
 
@@ -2254,6 +2254,7 @@ void GEditor::docTextChanged()
 		docTextChangedLater();
 }
 
+#if 0
 void GEditor::baptizeVisible()
 {
 	doc->baptizeUntil(lastVisibleRow());
@@ -2264,6 +2265,7 @@ void GEditor::baptizeVisible(int x, int y)
 	doc->baptizeUntil(lastVisibleRow(y));
 	//viewport()->update();
 }
+#endif
 
 void GEditor::inputMethodEvent(QInputMethodEvent *e)
 {
