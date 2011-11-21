@@ -877,8 +877,13 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		//if (!l->flag)
 		//	p.fillRect(0, 0, margin, _cellh, color); //styles[GLine::Background].color);
 
-		if (getFlag(ShowModifiedLines) && l->changed)
-			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
+		if (getFlag(ShowModifiedLines))
+		{
+			if (l->changed)
+				p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
+			//if (l->modified)
+			//	p.fillRect((margin - 2) / 2, _cellh / 2, 1, 1, styles[GLine::Breakpoint].color);
+		}
 		//else
 		//	p.fillRect(0, 0, margin - 2, _cellh, odd ? _oddBackground : styles[GLine::Background].color);
 		/*else if (getFlag(ShowCurrentLine))
@@ -1178,7 +1183,8 @@ void GEditor::leaveCurrentLine()
 	if (y < 0 || y >= numLines())
 		return;
 	
-	doc->colorize(y);
+	doc->colorize(y, true);
+	
 	if (!_insertMode && x > lineLength(y))
 		x = lineLength(y);
 }

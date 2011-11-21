@@ -32,6 +32,13 @@
 #define GMAX(x, y) ((x) > (y) ? (x) : (y))
 #define GMIN(x, y) ((x) < (y) ? (x) : (y))
 
+#define COLORIZE_FROM(_y) \
+	if (colorizeFrom > (_y)) \
+	{ \
+		colorizeFrom = (_y); \
+		/*fprintf(stderr, "colorizeFrom -> %d\n", (_y));*/ \
+	}
+
 /**---- GLine -----------------------------------------------------------*/
 
 GLine::GLine()
@@ -56,7 +63,6 @@ GLine::~GLine()
 void GLine::insert(uint pos, const GString &text)
 {
 	s.insert(pos, text);
-	modified = changed = true;
 	if (text.hasUnicode())
 		unicode = true;
 }
@@ -340,10 +346,11 @@ int GDocument::getIndent(int y, bool *empty)
 
 void GDocument::modifyLine(GLine *l, int y)
 {
+	//if (!l->modified)
+	//	fprintf(stderr, "modifyLine: %d\n", y);
 	l->modified = l->changed = true;
 	updateLineWidth(y);
-	if (colorizeFrom > y)
-		colorizeFrom = y;
+	COLORIZE_FROM(y);
 }
 
 void GDocument::updateLineWidth(int y)
@@ -358,8 +365,6 @@ void GDocument::insertLine(int y)
 {
 	lines.insert(y, new GLine());
 	modifyLine(lines.at(y), y);
-	//if (colorizeFrom > y)
-	//	colorizeFrom++;
 	FOR_EACH_VIEW(v) { v->lineInserted(y); }
 }
 
@@ -405,7 +410,7 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 		for (i = 0; i < ns; i++)
 			str.append(' ');
 		
-		insert(y, x - ns, str);
+		insert(y, x - ns, str, doNotMove);
 	}
 
 	xs = x;
@@ -422,9 +427,10 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 		if (pos2 > pos)
 		{
 			l->insert(x, text.mid(pos, pos2 - pos));
+			modifyLine(l, y);
 
 			//maxLength = GMAX(maxLength, (int)l->s.length());
-			updateLineWidth(y);
+			//updateLineWidth(y);
 
 			FOR_EACH_VIEW(v)
 			{
@@ -467,8 +473,9 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 	if (n < 0 && rest.length())
 	{
 		l->insert(x, rest);
+		modifyLine(l, y);
 		//maxLength = GMAX(maxLength, (int)l->s.length());
-		updateLineWidth(y);
+		//updateLineWidth(y);
 	}
 
 	FOR_EACH_VIEW(v)
@@ -497,8 +504,7 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 void GDocument::removeLine(int y)
 {
 	lines.remove(y);
-	if (colorizeFrom > y)
-		colorizeFrom = y;
+	COLORIZE_FROM(y);
 	FOR_EACH_VIEW(v) { v->lineRemoved(y); }
 }
 
@@ -556,9 +562,8 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 			l->state = 0; // force highlighting of next line.
 			modifyLine(l, y1);
 		}
-
-		//maxLength = GMAX(maxLength, (int)l->s.length());
-		updateLineWidth(y1);
+		else
+			updateLineWidth(y1);
 
 		for (y = y1 + 1; y < y2; y++)
 			text += lines.at(y)->s + '\n';
@@ -1176,12 +1181,11 @@ void GDocument::invalidate(int y)
 	if (y >= 0 && y < numLines())
 	{
 		lines.at(y)->modified = true;
-		if (y < colorizeFrom)
-			colorizeFrom = y;
+		COLORIZE_FROM(y);
 	}
 }
 
-void GDocument::colorize(int y)
+void GDocument::colorize(int y, bool force)
 {
 	GLine *l;
 	//bool modif;
@@ -1198,10 +1202,18 @@ void GDocument::colorize(int y)
 	if (highlightMode == None)
 		return;
 
-	if (y < 0 || y < colorizeFrom)
+	if (y < 0)
 		return;
 
 	//fprintf(stderr, "--------------------\ncolorize: %d\n", y);
+	if (force)
+	{
+		if (colorizeFrom > y)
+			colorizeFrom = y;
+	}
+	
+	if (y < colorizeFrom)
+		return;
 	
 	//fprintf(stderr, "colorizeFrom = %d\n", colorizeFrom);
 	yy = colorizeFrom;
@@ -1209,10 +1221,9 @@ void GDocument::colorize(int y)
 	
 	while (yy < numLines())
 	{
-		//fprintf(stderr, "yy = %d\n", yy);
 		l = lines.at(yy);
 
-		if (!l->modified)
+		if (!l->modified) // || ( isLineEditedSomewhere(yy)))
 		{
 			if (yy < y)
 			{
@@ -1222,13 +1233,21 @@ void GDocument::colorize(int y)
 			else
 				break;
 		}
-
+		
 		//qDebug("colorize: %d: %s", y, l->s.utf8());
 
 		if (updateFrom < 0)
 			updateFrom = yy;
 		//modif = false;
 
+		if (!force && l->baptized && isLineEditedSomewhere(yy))
+		{
+			yy++;
+			continue;
+		}
+
+		//fprintf(stderr, "colorize %d\n", yy);
+		
 		getState(yy, false, state, tag, alternate);
 
 		if (l->s.length())
@@ -1266,7 +1285,9 @@ void GDocument::colorize(int y)
 		if (yy == 0)
 			l->proc = true;
 
+		//fprintf(stderr, "unmodifyLine: %d\n", yy);
 		l->modified = false;
+		l->baptized = true;
 
 		state &= 0x1F;
 		tag &= 0xFFFF;
@@ -1288,10 +1309,19 @@ void GDocument::colorize(int y)
 		
 		yy++;
 		if (yy < numLines())
+		{
+			//if (!lines.at(yy)->modified) 
+			//	fprintf(stderr, "modifyLine: %d\n", yy);
 			lines.at(yy)->modified = true;
+		}
 	}
 
-	colorizeFrom = yy + 1;
+	//if (yedit < 0 || yy < yedit)
+		colorizeFrom = yy + 1;
+	//else
+	//	colorizeFrom = yedit;
+		
+	//fprintf(stderr, "colorizeFrom -> %d\n", colorizeFrom);
 	
 	if (changed)
 		emitTextChanged();

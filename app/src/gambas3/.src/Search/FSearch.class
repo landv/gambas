@@ -35,7 +35,7 @@ Private Const DO_REPLACE As Integer = 2
 Private Const DO_ALL As Integer = 4
 
 Public Sub _new()
-  
+
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
   gvwFind = FDebugInfo.GetSearchList()

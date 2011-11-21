@@ -68,7 +68,8 @@ public:
 	unsigned flag : 2;
 	unsigned proc : 1;
 	unsigned unicode : 1;
-	unsigned _reserved : 4;
+	unsigned baptized : 1;
+	unsigned _reserved : 3;
 	signed tag : 16;
 
 	GLine();
@@ -179,7 +180,7 @@ public:
 	void setKeywordsUseUpperCase(bool v);
 	bool isKeywordsUseUpperCase() const { return keywordsUseUpperCase; }
 	
-	void colorize(int y);
+	void colorize(int y, bool force = false);
 	void colorizeAll();
 	void invalidate(int y);
 

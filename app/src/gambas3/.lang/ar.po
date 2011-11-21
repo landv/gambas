@@ -606,7 +606,7 @@ msgstr "الاتصالات"
 msgid "Data"
 msgstr "البيانات"
 
-#: CRecentFile.class:69 FMain.class:535
+#: CRecentFile.class:69 FMain.class:542
 msgid "Today"
 msgstr "اليوم"
 
@@ -628,7 +628,7 @@ msgstr ""
 
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
 #: FConflict.class:191 FConnectionEditor.class:284 FCreateFile.form:436
-#: FDebugInfo.form:216 FEditor.class:2378 FExportData.class:126
+#: FDebugInfo.form:216 FEditor.class:2379 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3003
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1413
 #: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:369
@@ -637,7 +637,7 @@ msgstr ""
 #: FPasteTable.form:107 FPropertyComponent.form:230 FPropertyProject.form:127
 #: FReportBorderChooser.form:45 FReportBrushChooser.form:34
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
-#: FSaveProjectAs.form:59 FSearch.class:821 FSelectExtraFile.form:40
+#: FSaveProjectAs.form:59 FSearch.class:834 FSelectExtraFile.form:40
 #: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
 #: FTextEditor.class:495 FTranslate.class:636 Project.module:423
 msgid "Cancel"
@@ -649,11 +649,23 @@ msgid ""
 "the GNU General Public License."
 msgstr ""
 
-#: Design.module:229 Project.module:2068
+#: Design.module:149 Project.module:2008
+msgid "first"
+msgstr ""
+
+#: Design.module:151 Project.module:2010
+msgid "second"
+msgstr ""
+
+#: Design.module:153 Project.module:2012
+msgid "third"
+msgstr ""
+
+#: Design.module:241 Project.module:2068
 msgid "in &1:&2."
 msgstr ""
 
-#: Design.module:334
+#: Design.module:346
 msgid ""
 "The program has stopped unexpectedly\n"
 "by raising signal #&1.\n"
@@ -662,13 +674,13 @@ msgid ""
 "gambas@users.sourceforge.net."
 msgstr ""
 
-#: Design.module:338
+#: Design.module:350
 msgid ""
 "The program has returned\n"
 "the value: &1"
 msgstr ""
 
-#: Design.module:396 FColorChooser.form:54 FCommit.form:223
+#: Design.module:408 FColorChooser.form:54 FCommit.form:223
 #: FConnectionEditor.class:441 FCreateFile.form:430 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
 #: FMain.form:1313 FMenu.form:364 FNewConnection.form:237 FNewTable.form:80
@@ -681,11 +693,11 @@ msgstr ""
 msgid "OK"
 msgstr " الموافقة"
 
-#: Design.module:786
+#: Design.module:798
 msgid "Output terminal"
 msgstr ""
 
-#: Design.module:813
+#: Design.module:825
 msgid "No terminal emulator found."
 msgstr ""
 
@@ -1110,7 +1122,7 @@ msgstr ""
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.form:213 FMain.class:1805
+#: FConnectionEditor.form:213 FMain.class:1816
 msgid "Add"
 msgstr "أضف"
 
@@ -1541,7 +1553,7 @@ msgstr "إ&عادة تعيين"
 msgid "Show search window"
 msgstr "ا&غلق الجميع"
 
-#: FDebugInfo.form:280 FSearch.class:452 FTranslate.class:597
+#: FDebugInfo.form:280 FSearch.class:465 FTranslate.class:597
 msgid "Search string cannot be found."
 msgstr "المتغير الحرفي لا يمكن أن يُوجَد ."
 
@@ -1549,14 +1561,14 @@ msgstr "المتغير الحرفي لا يمكن أن يُوجَد ."
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2378 FIconEditor.class:2046 FTextEditor.class:495
+#: FEditor.class:2379 FIconEditor.class:2046 FTextEditor.class:495
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2806
+#: FEditor.class:2810
 msgid "(Declarations)"
 msgstr ""
 
@@ -2415,34 +2427,39 @@ msgstr " هل تريد حذف هذا الملفّ فعلاً ؟"
 msgid "Cannot delete file or directory"
 msgstr " لا يمكن أن يحذف الملفّ أو الدّليل"
 
-#: FMain.class:556
+#: FMain.class:238
+#, fuzzy
+msgid "File or directory does not exist anymore."
+msgstr "هذا المشروع غير موجود."
+
+#: FMain.class:563
 #, fuzzy
 msgid "Sort history"
 msgstr "&حذف التاريخ"
 
-#: FMain.class:560 FOpenProject.form:111 FWelcome.form:35
+#: FMain.class:567 FOpenProject.form:111 FWelcome.form:35
 #, fuzzy
 msgid "Sort by date"
 msgstr "ترتيب حسب المسار"
 
-#: FMain.class:560 FOpenProject.form:120 FWelcome.form:42
+#: FMain.class:567 FOpenProject.form:120 FWelcome.form:42
 #, fuzzy
 msgid "Sort by name"
 msgstr "ترتيب حسب المسار"
 
-#: FMain.class:560 FOpenProject.form:128 FWelcome.form:48
+#: FMain.class:567 FOpenProject.form:128 FWelcome.form:48
 msgid "Sort by path"
 msgstr "ترتيب حسب المسار"
 
-#: FMain.class:571
+#: FMain.class:578
 msgid "&Clear history"
 msgstr "&حذف التاريخ"
 
-#: FMain.class:740
+#: FMain.class:747
 msgid "New folder"
 msgstr "مجلد جديد"
 
-#: FMain.class:807
+#: FMain.class:818
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
@@ -2452,24 +2469,24 @@ msgstr ""
 "\n"
 "الرجاء تنصيب هذه الأدوات حتى تتمكن من الترجمة."
 
-#: FMain.class:1401
+#: FMain.class:1412
 #, fuzzy
 msgid "Unable to drop file into the project."
 msgstr "لا يمكن حفظ المشروع."
 
-#: FMain.class:1521
+#: FMain.class:1532
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "جميع النسخ الاحتياطية والملفات المنشأة ستزال من دليل المشروع."
 
-#: FMain.class:1521
+#: FMain.class:1532
 msgid "Clean"
 msgstr "تنظيف"
 
-#: FMain.class:1703
+#: FMain.class:1714
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr ""
 
-#: FMain.class:1805
+#: FMain.class:1816
 msgid "Do you really want to add this file to the repository?"
 msgstr ""
 
@@ -4139,15 +4156,15 @@ msgstr "لا يمكن حفظ المشروع."
 msgid "Project name"
 msgstr "نوع المشروع"
 
-#: FSearch.class:454
+#: FSearch.class:467
 msgid "Search string replaced once."
 msgstr "المتغير الحرفي استبدل مرّة واحدة."
 
-#: FSearch.class:456
+#: FSearch.class:469
 msgid "Search string replaced &1 times."
 msgstr "المتغير الحرفي استبدل &1 مره."
 
-#: FSearch.class:821
+#: FSearch.class:834
 #, fuzzy
 msgid "Do you really want to replace every string?"
 msgstr " هل تريد حذف هذا الملفّ فعلاً ؟"
@@ -5071,551 +5088,559 @@ msgid "Component not found: &1"
 msgstr ""
 
 #: MErrorMessage.module:77
-msgid "Device is full"
+msgid "Default case already defined"
 msgstr ""
 
 #: MErrorMessage.module:78
-msgid "Division by zero"
+msgid "Default case must be the last one"
 msgstr ""
 
 #: MErrorMessage.module:79
-msgid "Dynamic symbols cannot be used in static function"
+msgid "Device is full"
 msgstr ""
 
 #: MErrorMessage.module:80
-msgid "Embedded array"
+msgid "Division by zero"
 msgstr ""
 
 #: MErrorMessage.module:81
-msgid "Embedded arrays are forbidden here"
+msgid "Dynamic symbols cannot be used in static function"
 msgstr ""
 
 #: MErrorMessage.module:82
-msgid "End of file"
+msgid "Embedded array"
 msgstr ""
 
 #: MErrorMessage.module:83
-msgid "Equality or inequality operator expected"
+msgid "Embedded arrays are forbidden here"
 msgstr ""
 
 #: MErrorMessage.module:84
-msgid "Expression too complex"
+msgid "End of file"
 msgstr ""
 
 #: MErrorMessage.module:85
-msgid "Expression too complex. Too many operands"
+msgid "Equality or inequality operator expected"
 msgstr ""
 
 #: MErrorMessage.module:86
-msgid "File already exists"
-msgstr "الملف موجود من قبل"
+msgid "Expression too complex"
+msgstr ""
 
 #: MErrorMessage.module:87
-msgid "File is a directory"
+msgid "Expression too complex. Too many operands"
 msgstr ""
 
 #: MErrorMessage.module:88
-msgid "File is locked"
-msgstr ""
+msgid "File already exists"
+msgstr "الملف موجود من قبل"
 
 #: MErrorMessage.module:89
-msgid "File name is too long"
+msgid "File is a directory"
 msgstr ""
 
 #: MErrorMessage.module:90
-msgid "File or directory does not exist"
+msgid "File is locked"
 msgstr ""
 
 #: MErrorMessage.module:91
-msgid "Forbidden GOTO"
+msgid "File name is too long"
 msgstr ""
 
 #: MErrorMessage.module:92
-msgid "Illegal instruction"
+msgid "File or directory does not exist"
 msgstr ""
 
 #: MErrorMessage.module:93
-msgid "Internal compiler error: Bad stack usage computed!"
+msgid "Forbidden GOTO"
 msgstr ""
 
 #: MErrorMessage.module:94
-msgid "Invalid assignment"
+msgid "Illegal instruction"
 msgstr ""
 
 #: MErrorMessage.module:95
-msgid "Invalid date"
-msgstr "تاريخ غير صحيح"
+msgid "Internal compiler error: Bad stack usage computed!"
+msgstr ""
 
 #: MErrorMessage.module:96
-msgid "Invalid object"
+msgid "Invalid assignment"
 msgstr ""
 
 #: MErrorMessage.module:97
-msgid "Invalid path"
-msgstr "مسار غير صحيح"
+msgid "Invalid date"
+msgstr "تاريخ غير صحيح"
 
 #: MErrorMessage.module:98
-msgid "Label '&1' not declared"
+msgid "Invalid object"
 msgstr ""
 
 #: MErrorMessage.module:99
-msgid "Library name must be a string"
-msgstr ""
+msgid "Invalid path"
+msgstr "مسار غير صحيح"
 
 #: MErrorMessage.module:100
-msgid "Loop variable already in use"
+msgid "Label '&1' not declared"
 msgstr ""
 
 #: MErrorMessage.module:101
-msgid "Loop variable must be local"
+msgid "Library name must be a string"
 msgstr ""
 
 #: MErrorMessage.module:102
-msgid "ME cannot be used in a static function"
+msgid "Loop variable already in use"
 msgstr ""
 
 #: MErrorMessage.module:103
-msgid "Mathematic error"
+msgid "Loop variable must be local"
 msgstr ""
 
 #: MErrorMessage.module:104
-msgid "Missing #Endif"
+msgid "ME cannot be used in a static function"
 msgstr ""
 
 #: MErrorMessage.module:105
-msgid "Missing &1"
+msgid "Mathematic error"
 msgstr ""
 
 #: MErrorMessage.module:106
-msgid "Missing operator"
+msgid "Missing #Endif"
 msgstr ""
 
 #: MErrorMessage.module:107
-msgid "Missing right brace"
+msgid "Missing &1"
 msgstr ""
 
 #: MErrorMessage.module:108
-msgid "NEW cannot have arguments passed by reference"
+msgid "Missing operator"
 msgstr ""
 
 #: MErrorMessage.module:109
-msgid "No instantiation method"
+msgid "Missing right brace"
 msgstr ""
 
 #: MErrorMessage.module:110
-msgid "No parent class"
+msgid "NEW cannot have arguments passed by reference"
 msgstr ""
 
 #: MErrorMessage.module:111
-msgid "No return value"
+msgid "No instantiation method"
 msgstr ""
 
 #: MErrorMessage.module:112
-msgid "No startup method"
+msgid "No parent class"
 msgstr ""
 
 #: MErrorMessage.module:113
-msgid "Non terminated string"
+msgid "No return value"
 msgstr ""
 
 #: MErrorMessage.module:114
-msgid "Not a directory: &1"
+msgid "No startup method"
 msgstr ""
 
 #: MErrorMessage.module:115
-msgid "Not a function"
+msgid "Non terminated string"
 msgstr ""
 
 #: MErrorMessage.module:116
-msgid "Not an array"
+msgid "Not a directory: &1"
 msgstr ""
 
 #: MErrorMessage.module:117
-msgid "Not an enumeration"
+msgid "Not a function"
 msgstr ""
 
 #: MErrorMessage.module:118
-msgid "Not an object"
+msgid "Not an array"
 msgstr ""
 
 #: MErrorMessage.module:119
-msgid "Not enough argument to New()"
+msgid "Not an enumeration"
 msgstr ""
 
 #: MErrorMessage.module:120
-msgid "Not enough arguments"
+msgid "Not an object"
 msgstr ""
 
 #: MErrorMessage.module:121
-msgid "Not enough arguments to &1()"
+msgid "Not enough argument to New()"
 msgstr ""
 
 #: MErrorMessage.module:122
-msgid "Null object"
+msgid "Not enough arguments"
 msgstr ""
 
 #: MErrorMessage.module:123
-msgid "Out of bounds"
+msgid "Not enough arguments to &1()"
 msgstr ""
 
 #: MErrorMessage.module:124
-msgid "Out of memory"
+msgid "Null object"
 msgstr ""
 
 #: MErrorMessage.module:125
-msgid "Out of range"
+msgid "Out of bounds"
 msgstr ""
 
 #: MErrorMessage.module:126
-msgid "Overflow"
+msgid "Out of memory"
 msgstr ""
 
 #: MErrorMessage.module:127
-msgid "Read error"
+msgid "Out of range"
 msgstr ""
 
 #: MErrorMessage.module:128
-msgid "Return value datatype not specified in function declaration"
+msgid "Overflow"
 msgstr ""
 
 #: MErrorMessage.module:129
-msgid "STOP instruction encountered"
+msgid "Read error"
 msgstr ""
 
 #: MErrorMessage.module:130
-msgid "SUPER cannot be used alone"
+msgid "Return value datatype not specified in function declaration"
 msgstr ""
 
 #: MErrorMessage.module:131
-msgid "Serialization error"
+msgid "STOP instruction encountered"
 msgstr ""
 
 #: MErrorMessage.module:132
-msgid "Stack overflow"
-msgstr "فيضان المكدّس"
+msgid "SUPER cannot be used alone"
+msgstr ""
 
 #: MErrorMessage.module:133
-msgid "Stream is closed"
+msgid "Serialization error"
 msgstr ""
 
 #: MErrorMessage.module:134
-msgid "String expected"
-msgstr ""
+msgid "Stack overflow"
+msgstr "فيضان المكدّس"
 
 #: MErrorMessage.module:135
-msgid "Structures must be public"
+msgid "Stream is closed"
 msgstr ""
 
 #: MErrorMessage.module:136
-msgid "Subroutine arguments cannot be passed by reference"
+msgid "String expected"
 msgstr ""
 
 #: MErrorMessage.module:137
-msgid "Syntax error"
-msgstr "خطأ صياغي"
+msgid "Structures must be public"
+msgstr ""
 
 #: MErrorMessage.module:138
-msgid "Syntax error at function declaration"
+msgid "Subroutine arguments cannot be passed by reference"
 msgstr ""
 
 #: MErrorMessage.module:139
-msgid "Syntax error in event name"
-msgstr ""
+msgid "Syntax error"
+msgstr "خطأ صياغي"
 
 #: MErrorMessage.module:140
-msgid "Syntax error in file open mode"
+msgid "Syntax error at function declaration"
 msgstr ""
 
 #: MErrorMessage.module:141
-msgid "Syntax error in return type"
+msgid "Syntax error in event name"
 msgstr ""
 
 #: MErrorMessage.module:142
-msgid "Syntax error. &1 expected"
+msgid "Syntax error in file open mode"
 msgstr ""
 
 #: MErrorMessage.module:143
-msgid "Syntax error. '...' must be the last argument"
+msgid "Syntax error in return type"
 msgstr ""
 
 #: MErrorMessage.module:144
-msgid "Syntax error. Bad property type"
+msgid "Syntax error. &1 expected"
 msgstr ""
 
 #: MErrorMessage.module:145
-msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+msgid "Syntax error. '...' must be the last argument"
 msgstr ""
 
 #: MErrorMessage.module:146
-msgid "Syntax error. CLASS needs an identifier"
+msgid "Syntax error. Bad property type"
 msgstr ""
 
 #: MErrorMessage.module:147
-msgid "Syntax error. Cannot use this syntax in assignment"
+msgid "Syntax error. CASE or DEFAULT expected after SELECT"
 msgstr ""
 
 #: MErrorMessage.module:148
-msgid "Syntax error. INHERITS needs a class name"
+msgid "Syntax error. CLASS needs an identifier"
 msgstr ""
 
 #: MErrorMessage.module:149
-msgid "Syntax error. Identifier expected."
+msgid "Syntax error. Cannot use this syntax in assignment"
 msgstr ""
 
 #: MErrorMessage.module:150
-msgid "Syntax error. Invalid identifier in function name"
+msgid "Syntax error. INHERITS needs a class name"
 msgstr ""
 
 #: MErrorMessage.module:151
-msgid "Syntax error. Invalid identifier in property name"
+msgid "Syntax error. Identifier expected."
 msgstr ""
 
 #: MErrorMessage.module:152
-msgid "Syntax error. Invalid optional parameter"
+msgid "Syntax error. Invalid identifier in function name"
 msgstr ""
 
 #: MErrorMessage.module:153
-msgid "Syntax error. Invalid return type"
+msgid "Syntax error. Invalid identifier in property name"
 msgstr ""
 
 #: MErrorMessage.module:154
-msgid "Syntax error. Invalid type description of &1 argument"
+msgid "Syntax error. Invalid optional parameter"
 msgstr ""
 
 #: MErrorMessage.module:155
-msgid "Syntax error. Invalid type description of &1 field"
+msgid "Syntax error. Invalid return type"
 msgstr ""
 
 #: MErrorMessage.module:156
-msgid "Syntax error. Missing &1"
+msgid "Syntax error. Invalid type description of &1 argument"
 msgstr ""
 
 #: MErrorMessage.module:157
-msgid "Syntax error. Needless arguments"
+msgid "Syntax error. Invalid type description of &1 field"
 msgstr ""
 
 #: MErrorMessage.module:158
-msgid "Syntax error. Point syntax used outside of WITH / END WITH"
+msgid "Syntax error. Missing &1"
 msgstr ""
 
 #: MErrorMessage.module:159
-msgid "Syntax error. STRUCT needs an identifier"
+msgid "Syntax error. Needless arguments"
 msgstr ""
 
 #: MErrorMessage.module:160
-msgid "Syntax error. The &1 argument is not a valid identifier"
+msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr ""
 
 #: MErrorMessage.module:161
-msgid "Syntax error. The &1 field is not a valid identifier"
+msgid "Syntax error. STRUCT needs an identifier"
 msgstr ""
 
 #: MErrorMessage.module:162
-msgid "Syntax error. VarPtr() takes only one identifier"
+msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr ""
 
 #: MErrorMessage.module:163
-msgid "System error #&1: &2"
+msgid "Syntax error. The &1 field is not a valid identifier"
 msgstr ""
 
 #: MErrorMessage.module:164
-msgid "The '!' operator must be followed by an identifier"
+msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr ""
 
 #: MErrorMessage.module:165
-msgid "The '.' operator must be followed by an identifier"
+msgid "System error #&1: &2"
 msgstr ""
 
 #: MErrorMessage.module:166
-msgid "The special method &1 cannot be a function"
+msgid "The '!' operator must be followed by an identifier"
 msgstr ""
 
 #: MErrorMessage.module:167
-msgid "The special method &1 cannot be implemented"
+msgid "The '.' operator must be followed by an identifier"
 msgstr ""
 
 #: MErrorMessage.module:168
-msgid "The special method &1 cannot be static"
+msgid "The special method &1 cannot be a function"
 msgstr ""
 
 #: MErrorMessage.module:169
-msgid "The special method &1 must be a function"
+msgid "The special method &1 cannot be implemented"
 msgstr ""
 
 #: MErrorMessage.module:170
-msgid "The special method &1 must be public"
+msgid "The special method &1 cannot be static"
 msgstr ""
 
 #: MErrorMessage.module:171
-msgid "The special method &1 must be static"
+msgid "The special method &1 must be a function"
 msgstr ""
 
 #: MErrorMessage.module:172
-msgid "The special method &1 must return a boolean"
+msgid "The special method &1 must be public"
 msgstr ""
 
 #: MErrorMessage.module:173
-msgid "The special method &1 must take a variable number of arguments only"
+msgid "The special method &1 must be static"
 msgstr ""
 
 #: MErrorMessage.module:174
-msgid "The special method &1 must take at least one argument"
+msgid "The special method &1 must return a boolean"
 msgstr ""
 
 #: MErrorMessage.module:175
-msgid "The special method &1 takes no arguments"
+msgid "The special method &1 must take a variable number of arguments only"
 msgstr ""
 
 #: MErrorMessage.module:176
-msgid "The special method must return an integer"
+msgid "The special method &1 must take at least one argument"
 msgstr ""
 
 #: MErrorMessage.module:177
-msgid "The special method must take exactly one argument"
+msgid "The special method &1 takes no arguments"
 msgstr ""
 
 #: MErrorMessage.module:178
-msgid "The special method must take exactly two arguments"
+msgid "The special method must return an integer"
 msgstr ""
 
 #: MErrorMessage.module:179
-msgid "The special method signature is incorrect"
+msgid "The special method must take exactly one argument"
 msgstr ""
 
 #: MErrorMessage.module:180
-msgid "This expression cannot be a statement"
+msgid "The special method must take exactly two arguments"
 msgstr ""
 
 #: MErrorMessage.module:181
-msgid "This expression cannot be passed by reference"
+msgid "The special method signature is incorrect"
 msgstr ""
 
 #: MErrorMessage.module:182
-msgid "Too many arguments"
+msgid "This expression cannot be a statement"
 msgstr ""
 
 #: MErrorMessage.module:183
-msgid "Too many arguments to &1()"
+msgid "This expression cannot be passed by reference"
 msgstr ""
 
 #: MErrorMessage.module:184
-msgid "Too many array declarations"
+msgid "Too many arguments"
 msgstr ""
 
 #: MErrorMessage.module:185
-msgid "Too many constants"
+msgid "Too many arguments to &1()"
 msgstr ""
 
 #: MErrorMessage.module:186
-msgid "Too many different classes used"
+msgid "Too many array declarations"
 msgstr ""
 
 #: MErrorMessage.module:187
-msgid "Too many dimensions"
+msgid "Too many constants"
 msgstr ""
 
 #: MErrorMessage.module:188
-msgid "Too many dynamic variables"
+msgid "Too many different classes used"
 msgstr ""
 
 #: MErrorMessage.module:189
-msgid "Too many events"
+msgid "Too many dimensions"
 msgstr ""
 
 #: MErrorMessage.module:190
-msgid "Too many expressions in CASE"
+msgid "Too many dynamic variables"
 msgstr ""
 
 #: MErrorMessage.module:191
-msgid "Too many external functions"
+msgid "Too many events"
 msgstr ""
 
 #: MErrorMessage.module:192
-msgid "Too many functions"
+msgid "Too many expressions in CASE"
 msgstr ""
 
 #: MErrorMessage.module:193
-msgid "Too many imbricated #If...#Endif"
+msgid "Too many external functions"
 msgstr ""
 
 #: MErrorMessage.module:194
-msgid "Too many nested control structures."
+msgid "Too many functions"
 msgstr ""
 
 #: MErrorMessage.module:195
-msgid "Too many simultaneous new strings"
+msgid "Too many imbricated #If...#Endif"
 msgstr ""
 
 #: MErrorMessage.module:196
-msgid "Too many static variables"
+msgid "Too many nested control structures."
 msgstr ""
 
 #: MErrorMessage.module:197
-msgid "Too many unknown symbols"
+msgid "Too many simultaneous new strings"
 msgstr ""
 
 #: MErrorMessage.module:198
-msgid "Type mismatch"
+msgid "Too many static variables"
 msgstr ""
 
 #: MErrorMessage.module:199
-msgid "Type mismatch: wanted &1, got &2 instead"
+msgid "Too many unknown symbols"
 msgstr ""
 
 #: MErrorMessage.module:200
-msgid "Unexpected &1"
+msgid "Type mismatch"
 msgstr ""
 
 #: MErrorMessage.module:201
+msgid "Type mismatch: wanted &1, got &2 instead"
+msgstr ""
+
+#: MErrorMessage.module:202
+msgid "Unexpected &1"
+msgstr ""
+
+#: MErrorMessage.module:203
 #, fuzzy
 msgid "Unexpected end of line"
 msgstr "نهاية السطر"
 
-#: MErrorMessage.module:202
+#: MErrorMessage.module:204
 msgid "Unexpected string"
 msgstr ""
 
-#: MErrorMessage.module:203
+#: MErrorMessage.module:205
 msgid "Unknown error"
 msgstr "خطأ مجهول"
 
-#: MErrorMessage.module:204
+#: MErrorMessage.module:206
 msgid "Unknown event"
 msgstr ""
 
-#: MErrorMessage.module:205
+#: MErrorMessage.module:207
 msgid "Unknown file extension"
 msgstr ""
 
-#: MErrorMessage.module:206
+#: MErrorMessage.module:208
 msgid "Unknown identifier: &1"
 msgstr ""
 
-#: MErrorMessage.module:207
+#: MErrorMessage.module:209
 msgid "Unknown operator"
 msgstr ""
 
-#: MErrorMessage.module:208
+#: MErrorMessage.module:210
 msgid "Unknown symbol '&1' in class '&2'"
 msgstr ""
 
-#: MErrorMessage.module:209
+#: MErrorMessage.module:211
 msgid "Unsupported string conversion"
 msgstr ""
 
-#: MErrorMessage.module:210
+#: MErrorMessage.module:212
 msgid "Useless LOCK"
 msgstr ""
 
-#: MErrorMessage.module:211
+#: MErrorMessage.module:213
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr ""
 
-#: MErrorMessage.module:212
+#: MErrorMessage.module:214
 msgid "Void key"
 msgstr ""
 
-#: MErrorMessage.module:213
+#: MErrorMessage.module:215
 msgid "Write error"
 msgstr ""
 
@@ -5963,18 +5988,6 @@ msgstr "لا يمكن فتح الملف."
 msgid "File not found!"
 msgstr "الملف غير موجود!"
 
-#: Project.module:2008
-msgid "first"
-msgstr ""
-
-#: Project.module:2010
-msgid "second"
-msgstr ""
-
-#: Project.module:2012
-msgid "third"
-msgstr ""
-
 #: Project.module:2014
 msgid "&1th"
 msgstr ""
@@ -6152,74 +6165,74 @@ msgstr "المؤلف"
 msgid "Cannot save file !"
 msgstr "لا يمكن حفظ الملف!"
 
-#, fuzzy
-#~ msgid "Delete menu"
-#~ msgstr " احذف"
+#~ msgid "About"
+#~ msgstr "حوْل"
 
-#~ msgid "Find"
-#~ msgstr " أوجد"
+#~ msgid "&Watch expression..."
+#~ msgstr "-"
 
-#~ msgid "Find Next"
-#~ msgstr " أوجد بعد ذلك"
+#~ msgid "Column"
+#~ msgstr "العامود"
 
-#~ msgid "Find Previous"
-#~ msgstr " أوجد سابق"
+#~ msgid "&Sort by path"
+#~ msgstr "ترتيب بالمسار"
 
-#~ msgid "&Find && replace"
-#~ msgstr "بحث &واستبدال"
+#~ msgid "Do you really want to update all forms?"
+#~ msgstr "هل تريد حقا تحديث جميع النوافذ؟"
 
-#~ msgid "Find & replace"
-#~ msgstr "بحث و استبدال"
+#~ msgid "Update"
+#~ msgstr "حدّث"
 
-#~ msgid "Linking a directory is forbidden."
-#~ msgstr "ربط الدليل ممنوع."
+#~ msgid "Run &until"
+#~ msgstr "تشغيل حتى"
 
-#~ msgid "Unable to uninstall component."
-#~ msgstr "لا يمكن إزالة المكوّن."
+#~ msgid "&Toggle breakpoint"
+#~ msgstr "تبديل نقطة التوقف"
 
-#~ msgid "Find a string in translation"
-#~ msgstr " أوجد حرفي في التّرجمة"
+#~ msgid "&Toolbox"
+#~ msgstr "&صندوق الأدوات"
 
-#~ msgid "Untranslated"
-#~ msgstr "غير مترجم"
-
-#, fuzzy
-#~ msgid "Browse"
-#~ msgstr "استعرض"
-
-#~ msgid "Execution"
-#~ msgstr "تنفيذ"
+#~ msgid "&Update all forms"
+#~ msgstr "تحديث جميع النوافذ"
 
 #, fuzzy
 #~ msgid "Search & replace"
 #~ msgstr "المتغير الحرفي استبدل مرّة واحدة."
 
-#~ msgid "&Update all forms"
-#~ msgstr "تحديث جميع النوافذ"
+#~ msgid "Execution"
+#~ msgstr "تنفيذ"
 
-#~ msgid "&Toolbox"
-#~ msgstr "&صندوق الأدوات"
+#, fuzzy
+#~ msgid "Browse"
+#~ msgstr "استعرض"
 
-#~ msgid "&Toggle breakpoint"
-#~ msgstr "تبديل نقطة التوقف"
+#~ msgid "Untranslated"
+#~ msgstr "غير مترجم"
 
-#~ msgid "Run &until"
-#~ msgstr "تشغيل حتى"
+#~ msgid "Find a string in translation"
+#~ msgstr " أوجد حرفي في التّرجمة"
 
-#~ msgid "Update"
-#~ msgstr "حدّث"
+#~ msgid "Unable to uninstall component."
+#~ msgstr "لا يمكن إزالة المكوّن."
 
-#~ msgid "Do you really want to update all forms?"
-#~ msgstr "هل تريد حقا تحديث جميع النوافذ؟"
+#~ msgid "Linking a directory is forbidden."
+#~ msgstr "ربط الدليل ممنوع."
 
-#~ msgid "&Sort by path"
-#~ msgstr "ترتيب بالمسار"
+#~ msgid "Find & replace"
+#~ msgstr "بحث و استبدال"
 
-#~ msgid "Column"
-#~ msgstr "العامود"
+#~ msgid "&Find && replace"
+#~ msgstr "بحث &واستبدال"
 
-#~ msgid "&Watch expression..."
-#~ msgstr "-"
+#~ msgid "Find Previous"
+#~ msgstr " أوجد سابق"
 
-#~ msgid "About"
-#~ msgstr "حوْل"
+#~ msgid "Find Next"
+#~ msgstr " أوجد بعد ذلك"
+
+#~ msgid "Find"
+#~ msgstr " أوجد"
+
+#, fuzzy
+#~ msgid "Delete menu"
+#~ msgstr " احذف"

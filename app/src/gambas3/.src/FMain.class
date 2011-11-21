@@ -1611,14 +1611,23 @@ End
 
 Public Sub Form_KeyPress()
   
+  Dim hEditor As FEditor
+  
   If Key.Code = Key.Escape Then 
+
+    ' Top-level forms get key event before now.
+    Try hEditor = Project.ActiveForm
+    If hEditor And If FCompletion.VisibleFrom(hEditor.Editor) Then Return
+    
     If FSearch.InBrowse Then
       FSearch.Cancel
       Return
     Endif
+    
     HidePanels
     FProperty.HideProperty
     Try Project.ActiveForm.SetFocus
+    
   Else If Key.Code = Key["M"] And If Key.Control And If Key.Alt Then
     If Me.Menus.Visible Then
       mnuHideMenu_Click
