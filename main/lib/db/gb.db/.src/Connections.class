@@ -86,6 +86,9 @@ Static Public Sub _get(Name As String) As Connection
   
   If bPassword Then
     Try hConn.Password = Desktop.Passwords[Application.Name &/ Name]
+    If Error Then
+      Error "gb.db: warning: unable to retrieve connection password: "; Application.Name &/ Name & ": "; Error.Text
+    Endif
   Endif
   
   $cConn[Name] = hConn
