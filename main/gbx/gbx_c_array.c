@@ -1161,22 +1161,24 @@ BEGIN_METHOD_VOID(CARRAY_reverse)
 	char *pi, *pj;
 
 	count = THIS->count;
-	if (count <= 1)
-		return;
-
-	size = THIS->size;
-	pi = get_data(THIS, 0);
-	pj = get_data(THIS, count - 1);
-
-	do
+	if (count > 1)
 	{
-		memcpy(buffer, pi, size);
-		memcpy(pi, pj, size);
-		memcpy(pj, buffer, size);
-		pi += size;
-		pj -= size;
+		size = THIS->size;
+		pi = get_data(THIS, 0);
+		pj = get_data(THIS, count - 1);
+
+		do
+		{
+			memcpy(buffer, pi, size);
+			memcpy(pi, pj, size);
+			memcpy(pj, buffer, size);
+			pi += size;
+			pj -= size;
+		}
+		while (pi < pj);
 	}
-	while (pi < pj);
+	
+	GB_ReturnObject(THIS);
 
 END_METHOD
 
@@ -1441,7 +1443,6 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Remove", NULL, CARRAY_remove, "(Index)i[(Length)i]"),
 	GB_METHOD("Clear", NULL, CARRAY_clear, NULL),
 	GB_METHOD("Resize", NULL, CARRAY_resize, "(Size)i"),
-	GB_METHOD("Reverse", NULL, CARRAY_reverse, NULL),
 
 	GB_METHOD("Add", NULL, CARRAY_add, "(Value)v[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_push, "(Value)v"),
@@ -1488,6 +1489,7 @@ GB_DESC NATIVE_BooleanArray[] =
 	GB_METHOD("Extract", "Boolean[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Boolean[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Boolean[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Boolean[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)b[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1518,6 +1520,7 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Extract", "Byte[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Byte[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Byte[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Byte[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)c[(Start)i(Length)i]"),
 
 	GB_METHOD("ToString", "s", ByteArray_ToString, "[(Start)i(Length)i]"),
@@ -1552,6 +1555,7 @@ GB_DESC NATIVE_ShortArray[] =
 	GB_METHOD("Extract", "Short[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Short[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Short[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Short[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)h[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1583,6 +1587,7 @@ GB_DESC NATIVE_IntegerArray[] =
 	GB_METHOD("Extract", "Integer[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Integer[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Integer[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Integer[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)i[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1615,6 +1620,7 @@ GB_DESC NATIVE_LongArray[] =
 	GB_METHOD("Extract", "Long[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Long[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Long[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Long[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)l[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1660,6 +1666,7 @@ GB_DESC NATIVE_PointerArray[] =
 	GB_METHOD("Extract", "Pointer[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Pointer[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Pointer[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Pointer[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)p[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1691,6 +1698,7 @@ GB_DESC NATIVE_StringArray[] =
 	GB_METHOD("Extract", "String[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "String[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "String[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "String[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)s[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1723,6 +1731,7 @@ GB_DESC NATIVE_FloatArray[] =
 	GB_METHOD("Extract", "Float[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Float[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Float[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Float[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)f[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1755,6 +1764,7 @@ GB_DESC NATIVE_SingleArray[] =
 	GB_METHOD("Extract", "Single[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Single[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Single[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Single[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)g[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1787,6 +1797,7 @@ GB_DESC NATIVE_DateArray[] =
 	GB_METHOD("Extract", "Date[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Date[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Date[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "Date[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)d[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
@@ -1816,6 +1827,7 @@ GB_DESC NATIVE_ObjectArray[] =
 	GB_METHOD("Extract", "Object[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Object[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)o[(Start)i(Length)i]"),
+	GB_METHOD("Reverse", "Object[]", CARRAY_reverse, NULL),
 	GB_METHOD("Sort", "Object[]", CARRAY_sort, "[(Mode)i]"),
 
 	GB_END_DECLARE
@@ -1842,6 +1854,7 @@ GB_DESC NATIVE_VariantArray[] =
 	GB_METHOD("Extract", "Variant[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Variant[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)v[(Start)i(Length)i]"),
+	GB_METHOD("Reverse", "Variant[]", CARRAY_reverse, NULL),
 
 	GB_END_DECLARE
 };
@@ -1872,6 +1885,7 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 	GB_METHOD("Delete", "*[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)*;[(Start)i(Length)i]"),
 	GB_METHOD("Sort", "*[]", CARRAY_sort, "[(Mode)i]"),
+	GB_METHOD("Reverse", "*[]", CARRAY_reverse, NULL),
 
 	GB_END_DECLARE
 };
