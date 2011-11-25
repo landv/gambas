@@ -302,9 +302,15 @@ Public Sub Run(iStyle As Integer)
 
         Select Case iState
         
-          Case Highlight.Normal, Highlight.String
-            If sCar = "." Or If sCar = "#" Then 
+          Case Highlight.Normal, Highlight.String, Highlight.Function, Highlight.Operator
+            If sCar = "." Then 
               iState = Highlight.String
+              iNextState = iState
+            Else If sCar = "#" Then 
+              iState = Highlight.Function
+              iNextState = iState
+            Else If sCar = ":" Then
+              iState = Highlight.Operator
               iNextState = iState
             Else If sCar = " " Then 
               iState = Highlight.Normal

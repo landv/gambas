@@ -310,6 +310,13 @@ Public Sub _put(Value As Variant, Key As String)
     
 End
 
+Public Sub Modify()
+  
+  $bModify = True
+  
+End
+
+
 Private Function Id_Read() As String
 
   Return $sId  

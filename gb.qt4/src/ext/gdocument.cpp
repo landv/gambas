@@ -1198,6 +1198,7 @@ void GDocument::colorize(int y, bool force)
 	bool updateAll = false;
 	int yy;
 	int updateFrom;
+	bool undo;
 
 	if (highlightMode == None)
 		return;
@@ -1218,6 +1219,8 @@ void GDocument::colorize(int y, bool force)
 	//fprintf(stderr, "colorizeFrom = %d\n", colorizeFrom);
 	yy = colorizeFrom;
 	updateFrom = -1;
+	
+	undo = false;
 	
 	while (yy < numLines())
 	{
@@ -1262,11 +1265,14 @@ void GDocument::colorize(int y, bool force)
 
 			if (old != l->s)
 			{
-				begin(true);
+				if (!undo)
+				{
+					undo = true;
+					begin();
+				}
 				addUndo(new GDeleteCommand(yy, 0, yy, old.length(), old));
 				if (l->s.length())
 					addUndo(new GInsertCommand(yy, 0, yy, l->s.length(), l->s));
-				end(true);
 				
 				//maxLength = GMAX(maxLength, (int)l->s.length());
 				updateLineWidth(yy);
@@ -1316,6 +1322,9 @@ void GDocument::colorize(int y, bool force)
 		}
 	}
 
+	if (undo)
+		end();
+	
 	//if (yedit < 0 || yy < yedit)
 		colorizeFrom = yy + 1;
 	//else
