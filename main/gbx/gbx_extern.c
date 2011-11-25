@@ -383,6 +383,17 @@ void EXTERN_call(void)
 			
 		case T_VOID:
 		default:
+			
+			if (TYPE_is_pure_object(ext->type))
+			{
+				CLASS *class = (CLASS *)(ext->type);
+				if (CLASS_is_struct(class))
+				{
+					GB_ReturnObject(CSTRUCT_create_static(STRUCT_CONST, class, rvalue._pointer));
+					break;
+				}
+			}
+			
 			TEMP.type = T_VOID;
 			break;
 	}	
