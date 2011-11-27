@@ -16,3 +16,19 @@ Public Sub _Free()
   Super._Free
 
 End
+
+' Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+'
+'   'Print Me.Tag
+'   If Me.tag Then Print "Besoins de " & Me.Tag & ": ", AvailableW, AvailableH
+'   Return Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+'
+'
+' End
+'
+'
+' Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, bInFixed As Boolean)
+'   If Me.Tag Then Print "Disponibilité pour " & Me.Tag & ": H= " & H & "    W= " & W
+'   Super._SetChildGeometry(x, y, w, h, ContPage, bInFixed)
+'
+' End

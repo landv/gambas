@@ -24,6 +24,8 @@ Private $aChildCopy As TControl[]
 
 Private $iIndex As Integer
 Private $hData As Object
+Private $fFixedSize As Integer
+
 Property Read Children As ReportControl[]
 'Property Read Index As Integer
 Property Spacing As String
@@ -294,7 +296,7 @@ Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Dim hMyHints As New TSizeHint
   Dim fSpacing As Float
   Dim fPadding As Float
-  'If Me.Tag = "*" Then Stop
+
   fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
   hMyHints.Height = Me._Height
   For Each hChild In Me.Children
@@ -322,9 +324,10 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Dim htmpInts As TSizeHint
   Dim fFix As Float                ''Taille des éléments fixes (non basculable sur une autre page)
   Dim hChild As ReportControl         ''Enfants
-  Dim fHeight As Float
+  Dim fHeight, fSpacing As Float
   Dim i, j As Integer
-
+  'If Me.Tag = "ListeElements" Then Stop
+  fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
   'On définit la taille au besoins des enfants
   For i = Me._CurItem To Me.Children.Max
     hChild = Me.Children[i]
@@ -332,11 +335,11 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH)
     'si l 'élément est fixe on retient la hauteur
     If hChild.Fixed Then
-      fFix += htmpInts.Height
+      fFix += htmpInts.Height + fSpacing
     Endif
     'on ajoute la hauteur aux besoins
-    hSizeInt.Height += htmpInts.Height
-    If hSizeInt.Height > AvailableH Then
+    hSizeInt.Height += htmpInts.Height + fSpacing
+    If hSizeInt.Height - fSpacing > AvailableH Then
       Break
     Endif
 
@@ -344,6 +347,15 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     If hSizeInt.Width < htmpInts.Width Then hSizeInt.Width = htmpInts.Width
   Next
 
+  'On ajoute la taille des objets fixes précédents
+  hSizeInt.Height += $fFixedSize
+
+  'On enregistre La taille nécéssaire aux objets fixes
+  $fFixedSize += fFix
+
+  'on enlève le dernier espace
+  If hSizeInt.Height > 0 Then hSizeInt.Height -= fSpacing
+  hSizeInt.Height += 0.01
   'Si la place disponible est moins importante
   'On l'impose
   If AvailableH < hSizeInt.Height Then hSizeInt.Height = AvailableH
@@ -468,7 +480,12 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim hTItem As TControl
   'Dim bPass As Boolean
   Dim fX, fY, fTmpY As Float
-  'If Me.Tag = "*" Then Stop
+
+  ' If Me.Tag = "*" Then
+  '   Print H
+  '   Stop
+  ' Endif
+  'If Me.tag = "Contenu1" Then Print "H= " & H
   'Initialisation des variables
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
@@ -482,9 +499,9 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
   'On initialise la hauteur total avec la hauteur disponible
   TH = H
-
+  'If Me.Tag = "Contenu1" Then Print TH
   'On va retirer a la hauteur totale les éléments fixes
-
+  'If Me.Tag = "ListeElements" Then Stop
   For i = 0 To Me.Children.Max
     hChild = Me.Children[i]
     If hChild.Fixed Then
@@ -494,6 +511,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'on l'ajoute a la page et on incrémente la place des objet étendu si il est étendu
 
       If Not hchild.Ignore Then TH = TH - hChildHints.Height - fspc
+
       If i < Me._CurItem Then
         'If Me._CurItem = 0 Then itmpItem = i
         hTItem = New TControl
@@ -511,10 +529,13 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     Endif
 
   Next
+
   'If Me._CurItem = 0 Then Me._CurItem = itmpItem
   For i = Me._CurItem To Me.Children.Max
 
     hChild = Me.Children[i]
+    'If hChild.Tag = "Contenu1" Then Stop
+    'If hChild.Tag = "Contenu1" Then Stop
     hChildHints = hChild._GetSizeHints(W, TH, W, H)
 
     'Si on ne l'a pas déja compté comme fixé
@@ -552,7 +573,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'On l'ajoute a la page
       aPageItems.Add(hTItem)
       'Si l'enfant est étendu alors on en tien compte :
-      If hChild.Expand And Not ochild.Ignore Then
+      If hChild.Expand And Not hchild.Ignore Then
         fExp += hChildHints.Height
         Inc iNexp
       Endif
@@ -582,6 +603,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     'Print Object.Type(hChild) & "  " & fHeight
     If Not oChild.Ignore Then
       hTItem._SetGeometry(X, fTmpY, W, fHeight)
+
       oChild._SetChildGeometry(X, fTmpY, W, fHeight, ContPage, bInFixed Or Me.Fixed)
       fTmpY += fHeight + fspc
     Else
@@ -594,6 +616,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     If oChild Is ReportContainer Then
 
       If oChild._CurItem <= oChild.Children.max Then
+        'Print "il reste des éléments dans " & oChild.Tag & " a la page " & ContPage
+        'Print ochild.Children.max - ochild._CurItem
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(Me._CurItem, j)
       Endif
