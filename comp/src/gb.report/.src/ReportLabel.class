@@ -5,6 +5,7 @@ Inherits ReportFrame
 
 Public Const _Properties As String = "*,Text,Format,Alignment{Align.*},UseField" '"*,Text,Key,Format,Alignment{Align.*},UseField"
 Public Const _Similar As String = "ReportTextLabel"
+Public Const _DefaultEvent As String = "Data"
 Private $sText As String
 Private $iAlignment As Integer = Align.Normal
 Private $bIsSpecial As Boolean
@@ -19,6 +20,8 @@ Property IsSpecial As Boolean
 'Property Key As String
 Property {Format} As String
 Property UseField As Boolean
+Public Data As String
+Event Data(Index As Integer)
 
 Private Function Text_Read() As String
 
@@ -64,7 +67,12 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   If $sKey Then
     sText = Me.Parent._GetData($sKey)
   Else
-    sText = $sText
+    If Not $sText Then
+      Raise Data(Me.Parent._Index)
+      sText = Data
+    Else
+      sText = $sText
+    Endif
   Endif
 
   hExt = Paint.TextExtents(sText)
@@ -106,7 +114,12 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   If $sKey Then
     sTempText = Me.Parent._GetData($sKey)
   Else
-    sTempText = $sText
+    If $sText Then
+      sTempText = $sText
+    Else
+      Raise Data(Me.Parent._Index)
+      sTempText = Data
+    Endif
   Endif
   If $sFormat Then
     Try sTempText = Format(sTempText, $sFormat)

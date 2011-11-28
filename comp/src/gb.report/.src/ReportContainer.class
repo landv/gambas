@@ -9,7 +9,7 @@ Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Spacing{ReportCoord}"
 'Public Const _DefaultEvent As String = "Data"
 Private $bDataIsResult As Boolean
-
+'Private $iCount As Integer
 Public _PageChildren As New Collection
 Public _CurItem As Integer
 
@@ -25,6 +25,8 @@ Private $aChildCopy As TControl[]
 Private $iIndex As Integer
 Private $hData As Object
 Private $fFixedSize As Integer
+
+Property DataCount As Integer
 
 Property Read Children As ReportControl[]
 'Property Read Index As Integer
@@ -326,25 +328,42 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Dim hChild As ReportControl         ''Enfants
   Dim fHeight, fSpacing As Float
   Dim i, j As Integer
+  Dim bExitLoop As Boolean
   'If Me.Tag = "ListeElements" Then Stop
   fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
+
+  ' Si ce n'est pas fait on enregistre la place nécéssaire a tout les éléments fixes
+  If Not $fFixedSize Then
+    For i = 0 To Me.Children.Max
+      hChild = Me.Children[i]
+      htmpInts = hChild._GetSizeHints(AvailableW, AvailableH, AvailableW, AvailableH)
+      If hchild.Fixed Then $fFixedSize += htmpInts.Height + fSpacing
+    Next
+
+  Endif
   'On définit la taille au besoins des enfants
   For i = Me._CurItem To Me.Children.Max
     hChild = Me.Children[i]
-    If hChild.Ignore Then Continue
-    htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH)
-    'si l 'élément est fixe on retient la hauteur
-    If hChild.Fixed Then
-      fFix += htmpInts.Height + fSpacing
-    Endif
-    'on ajoute la hauteur aux besoins
-    hSizeInt.Height += htmpInts.Height + fSpacing
-    If hSizeInt.Height - fSpacing > AvailableH Then
-      Break
-    Endif
+    For j = hchild._DataIndex To hchild._Count - 1
+      Me._Index = j
+      If hChild.Ignore Then Continue
+      If hChild.Fixed Then Continue
+      htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH)
+      'si l 'élément est fixe on retient la hauteur
 
-    'On récupère la largeur de l'enfant le plus large
-    If hSizeInt.Width < htmpInts.Width Then hSizeInt.Width = htmpInts.Width
+      'fFix += htmpInts.Height + fSpacing
+      'Endif
+      'on ajoute la hauteur aux besoins
+      hSizeInt.Height += htmpInts.Height + fSpacing
+      If hSizeInt.Height - fSpacing > AvailableH Then
+        Break
+        bExitLoop = True
+      Endif
+
+      'On récupère la largeur de l'enfant le plus large
+      If hSizeInt.Width < htmpInts.Width Then hSizeInt.Width = htmpInts.Width
+    Next
+    If bExitLoop Then Break
   Next
 
   'On ajoute la taille des objets fixes précédents
@@ -480,6 +499,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim hTItem As TControl
   'Dim bPass As Boolean
   Dim fX, fY, fTmpY As Float
+  Dim bExitLoop As Boolean
 
   ' If Me.Tag = "*" Then
   '   Print H
@@ -534,28 +554,34 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   For i = Me._CurItem To Me.Children.Max
 
     hChild = Me.Children[i]
-    'If hChild.Tag = "Contenu1" Then Stop
-    'If hChild.Tag = "Contenu1" Then Stop
-    hChildHints = hChild._GetSizeHints(W, TH, W, H)
+    For j = hchild._DataIndex To hchild._Count - 1
+      'If hChild.Tag = "Contenu1" Then Stop
+      'If hChild.Tag = "Contenu1" Then Stop
+      hChildHints = hChild._GetSizeHints(W, TH, W, H)
 
-    'Si on ne l'a pas déja compté comme fixé
-    If Not hChild.Fixed And If Not hChild.Ignore Then
-      If (TH - hChildHints.Height + fspc) < 0 Then
-        Break
+      'Si on ne l'a pas déja compté comme fixé
+      If Not hChild.Fixed And If Not hChild.Ignore Then
+        If (TH - hChildHints.Height + fspc) < 0 Then
+          hchild._DataIndex = j
+          bExitLoop = True
+          Break
+        Endif
+        TH = TH - hChildHints.Height - fspc
       Endif
-      TH = TH - hChildHints.Height - fspc
-    Endif
 
-    hTItem = New TControl
-    hTItem.Ctrl = hChild
-    hTItem.SizeHint = hChildHints
-    'On l'ajoute a la page
-    aPageItems.Add(hTItem)
-    'Si l'enfant est étendu alors on en tien compte :
-    If hChild.Expand Then
-      fExp += hChildHints.Height
-      Inc iNexp
-    Endif
+      hTItem = New TControl
+      hTItem.Ctrl = hChild
+      hTItem.SizeHint = hChildHints
+      hTItem.Index = j
+      'On l'ajoute a la page
+      aPageItems.Add(hTItem)
+      'Si l'enfant est étendu alors on en tien compte :
+      If hChild.Expand Then
+        fExp += hChildHints.Height
+        Inc iNexp
+      Endif
+    Next
+    If bExitLoop Then Break
     Inc Me._CurItem
   Next
 
@@ -823,5 +849,17 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
   'On ajoute la page a la collection de page du conteneur
   Me._PageChildren[ContPage] = aPageItems
+
+End
+
+Private Function DataCount_Read() As Integer
+
+  Return Me._Count
+
+End
+
+Private Sub DataCount_Write(Value As Integer)
+
+  Me._Count = Value
 
 End
