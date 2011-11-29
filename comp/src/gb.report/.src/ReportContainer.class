@@ -306,9 +306,9 @@ Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     hChildHints = hchild._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
 
     hMyHints.Width += hChildHints.Width + fSpacing
-
-    If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
-
+    If Me.Autoresize Then
+      If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
+    Endif
   Next
 
   hMyHints.Width -= fSpacing
@@ -764,6 +764,7 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
   H = H - Me.Padding._Top - Me.Padding._Bottom - Me.Border._Top - Me.Border._Bottom
+  Print H
   'on retire a la largeur les paddings (et les bordure ?)
   W = W - Me.Padding._Left - Me.Padding._Right - Me.Border._Left - Me.Border._Right
 
@@ -861,5 +862,15 @@ End
 Private Sub DataCount_Write(Value As Integer)
 
   Me._Count = Value
+
+End
+
+Public Function _GetIndex() As Integer
+
+  If Me._Count > 0 Then
+    Return Me._Index
+  Else
+    Try Return Me.Parent._GetIndex
+  Endif
 
 End

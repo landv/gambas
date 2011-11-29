@@ -68,7 +68,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     sText = Me.Parent._GetData($sKey)
   Else
     If Not $sText Then
-      Raise Data(Me.Parent._Index)
+      Raise Data(Me.Parent._GetIndex())
       sText = Data
     Else
       sText = $sText
@@ -86,7 +86,10 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
-
+  If Not Me.Autoresize Then
+    If hMyHints.Height > AvailableH Then hMyHints.Height = AvailableH
+    'Print AvailableH
+  Endif
   If Me._Width > 0 And Not Me.Autoresize Then
     hMyHints.Width = Me._Width
   Else
@@ -117,7 +120,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     If $sText Then
       sTempText = $sText
     Else
-      Raise Data(Me.Parent._Index)
+      Raise Data(Me.Parent._GetIndex())
       sTempText = Data
     Endif
   Endif
