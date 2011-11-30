@@ -32,6 +32,11 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     Else
       Raise Data(Me.Parent._GetIndex())
       hpic = Data
+      If Not hpic Then
+        hMyHints.Width = w
+        hMyHints.Height = h
+        Return hMyHints
+      Endif
     Endif
     hMyHints.Width = Me.Padding._Left + Units.UnitToCm(hpic.Width, "px") + Me.Padding._Right
     hMyHints.Height = Me.Padding._Top + Units.UnitToCm(hpic.Height, "px") + Me.Padding._Bottom
@@ -45,8 +50,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     '   hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
     ' Endif
   Else
-    hMyHints.Width = w + Me.Padding._Top + Me.Padding._Bottom
-    hMyHints.Height = h + AvailableW + Me.Padding._Left + Me.Padding._Right
+    hMyHints.Width = w
+    hMyHints.Height = h
   Endif
 
   Return hMyHints
@@ -65,6 +70,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   If Not $hpic Then
     Raise Data(Me.Parent._GetIndex())
     hpic = Data
+    If Not hPic Then Return
   Else
     hPic = $hpic
   Endif
