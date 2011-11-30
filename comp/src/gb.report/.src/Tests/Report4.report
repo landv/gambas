@@ -54,8 +54,14 @@
       { ReportHBox4 ReportHBox
         #MoveScaled(1,1,44,5)
         Height = "6mm"
+        AutoResize = True
+        { ReportImage1 ReportImage
+          #MoveScaled(1,0,5,4)
+          Width = "15mm"
+          AutoResize = True
+        }
         { lblCpte ReportLabel
-          #MoveScaled(1,0,18,4)
+          #MoveScaled(8,0,18,4)
           Width = "20%"
           Padding = ReportPadding["Left:3mm"]
         }

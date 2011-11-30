@@ -37,3 +37,9 @@ Public Sub lblDate_Data(Index As Integer)
   Last.data = Format(Now(), "dddd dd mmmm yyyy")
 
 End
+
+Public Sub ReportImage1_Data(Index As Integer)
+
+  Last.Data = Picture["icon:/32/directory"].Image
+
+End
