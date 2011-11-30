@@ -764,7 +764,7 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
   H = H - Me.Padding._Top - Me.Padding._Bottom - Me.Border._Top - Me.Border._Bottom
-  Print H
+  'Print H
   'on retire a la largeur les paddings (et les bordure ?)
   W = W - Me.Padding._Left - Me.Padding._Right - Me.Border._Left - Me.Border._Right
 

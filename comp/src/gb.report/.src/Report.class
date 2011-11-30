@@ -131,11 +131,11 @@ Public Sub _Layout(Optional iPage As Integer = -1)
     Me.Width = Int((Paint.Width / $fScale)) & "px"
     Me.Height = Int((Paint.Height / $fScale)) & "px"
   Endif
-  Print "Paint.width: " & Ceil(Paint.Width)
-  Print "Paint.Height: " & Ceil(Paint.Height)
-  Print "Paint.ResolutionX: " & Paint.ResolutionX
-  Print "Paint.ResolutionY: " & Paint.ResolutionY
-  Print
+  ' Debug "Paint.width: " & Ceil(Paint.Width)
+  ' Debug "Paint.Height: " & Ceil(Paint.Height)
+  ' Debug "Paint.ResolutionX: " & Paint.ResolutionX
+  ' Debug "Paint.ResolutionY: " & Paint.ResolutionY
+
   $sOldHeight = Me.Height
   $sOldWidth = Me.Width
 
