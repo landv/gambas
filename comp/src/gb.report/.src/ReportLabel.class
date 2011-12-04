@@ -93,7 +93,9 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   'If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
 
   If Not Me.Autoresize Then
-    If hMyHints.Height > AvailableH Then hMyHints.Height = AvailableH
+    If Me.Expand Then
+      If hMyHints.Height > AvailableH Then hMyHints.Height = AvailableH
+    Endif
     'Print AvailableH
   Endif
 

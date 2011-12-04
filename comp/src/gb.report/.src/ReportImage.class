@@ -63,7 +63,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Dim ix, iy As Float
   Dim hBrush As PaintBrush
   Dim hPic As Image
-
+  'Dim w, h As Float
   ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left)
   iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top)
 
