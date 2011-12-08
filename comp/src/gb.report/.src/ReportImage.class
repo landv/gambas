@@ -18,13 +18,13 @@ Event Data(Index As Integer)
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
   Dim hMyHints As New TSizeHint
-  Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
-  Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
+  'Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
+  'Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
   Dim Scale As Float
   Dim hPic As Image
 
-  If h = 0 Then H = AvailableH
-  If w = 0 Then w = AvailableW
+  'If h = 0 Then H = AvailableH
+  'If w = 0 Then w = AvailableW
 
   If Me.Autoresize Then
     If $hpic Then
@@ -50,8 +50,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     '   hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
     ' Endif
   Else
-    hMyHints.Width = w
-    hMyHints.Height = h
+    hMyHints.Width = Me.Border._Left + Me.Padding._Left + w + Me.Padding._Right + Me.Border._Right
+    hMyHints.Height = Me.Border._Top + Me.Padding._Top + h + Me.Padding._Bottom + Me.Border._Bottom
   Endif
 
   Return hMyHints
