@@ -40,7 +40,7 @@
         Alignment = Align.Center
       }
       { ReportLabel2 ReportLabel
-        #MoveScaled(18,0,14,4)
+        #MoveScaled(20,0,14,4)
         Font = Font["Bold,12"]
         Expand = True
         Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
@@ -50,15 +50,17 @@
     }
     { VCont ReportVBox
       #MoveScaled(1,20,45,39)
+      AutoResize = True
       Tag = "ListeElements"
       { ReportHBox4 ReportHBox
         #MoveScaled(1,1,44,5)
-        Height = "6mm"
-        AutoResize = True
+        Height = "5mm"
         { ReportImage1 ReportImage
           #MoveScaled(1,0,5,4)
           Width = "15mm"
           AutoResize = True
+          StretchMode = ReportImage.Proportional
+          Alignment = Align.Center
         }
         { lblCpte ReportLabel
           #MoveScaled(8,0,18,4)

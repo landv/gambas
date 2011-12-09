@@ -3,16 +3,20 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,Stretch,Image{Image}"
+Public Const _Properties As String = "*,StretchMode{ReportImage.None;Proportional;Full},Alignment{Align.*},Image{Image}"
 Public Const _Similar As String = "ReportTextLabel"
 Public Const _DefaultEvent As String = "Data"
 
+Private $iAlignment As Integer = Align.Normal
 Private $hPic As Image
-Private $bStretch As Boolean
+Private $iStretchMode As Integer
 
+Property Alignment As Integer
 Property Image As Image
-Property Stretch As Boolean
+Property StretchMode As Integer
 Public Data As Image
+Public Enum None, Proportional, Full
+
 Event Data(Index As Integer)
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
@@ -22,7 +26,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim Scale As Float
   Dim hPic As Image
 
-  hMyHints = Super.GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
   If Me.Autoresize Then
     If $hpic Then
@@ -48,9 +52,12 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Dim ix, iy As Float
   Dim hBrush As PaintBrush
   Dim hPic As Image
-  'Dim w, h As Float
-  ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left)
-  iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top)
+  Dim fScale As Integer
+  Dim w, h As Float
+  Dim fTemp As Float
+
+  ix = x + hControl.RealLeft '+ MTools.UnitsToPixels(Me.Padding._Left)
+  iy = y + hControl.RealTop '+ MTools.UnitsToPixels(Me.Padding._Top)
 
   If Not $hpic Then
     Raise Data(Me.Parent._GetIndex())
@@ -63,18 +70,73 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
 
   hBrush = Paint.Image(hpic)
-  hBrush.Translate(ix, iy - 1)
-  If Me.Stretch Then
+
+  If Me.StretchMode = ReportImage.Full Then
+    hBrush.Translate(ix, iy - 1)
     hBrush.Scale(hControl.RealWidth / hPic.Width, hControl.RealHeight / hPic.Height)
     Paint.Brush = hBrush
     Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
   Else
+
+    If Me.StretchMode = ReportImage.Proportional Then
+      'on détermine la partie prédominante
+      If hpic.Width >= hpic.Height
+        'C'est la largeur
+        'on détermine une hauteur en fonction de la largeur connue
+        w = hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Width)
+        h = hPic.H / hpic.W * w
+        'si h> a la place disponible alors on adapte en fonction de h en faite
+        If h > (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Height)) Then
+          h = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Height))
+          w = hpic.w / hpic.H * h
+        Endif
+
+      Else
+        'C'est la hauteur
+        h = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Height))
+        w = hpic.w / hpic.H * h
+        'si w>  la place disponible alors on adapte en fonction de w en faite
+        If w > (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Width)) Then
+          w = hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Width)
+          h = hPic.H / hpic.W * w
+        Endif
+      Endif
+
+    Else
+      w = hpic.Width
+      h = hpic.H
+
+    Endif
+
+    Select Case $iAlignment
+      Case Align.Normal, Align.TopLeft, Align.Left, Align.BottomLeft
+        'Gauche
+        ix += MTools.UnitsToPixels(Me.Padding._Left)
+      Case Align.Bottom, Align.Center, Align.Top
+        'centrée
+        ix += (hControl.RealWidth - w) / 2
+
+      Case Align.TopRight, Align.Right, Align.BottomRight
+        'Droite
+        ix += hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Right) - w
+    End Select
+
+    Select Case $iAlignment
+      Case Align.TopLeft, Align.Top, Align.TopRight
+        'Haut
+        iy += MTools.UnitsToPixels(Me.Padding._Top)
+      Case Align.Left, Align.Center, Align.Right
+        'Milieu
+        iy += (hControl.RealHeight - h) / 2
+      Case Align.BottomLeft, Align.Bottom, Align.BottomRight
+        iY += hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Bottom) - h
+    End Select
+    hBrush.Translate(ix, iy - 1)
+    hBrush.Scale(w / hpic.Width, h / hpic.H)
     Paint.Brush = hBrush
-    Paint.Rectangle(ix, iy, hPic.Width, hPic.Height - 1)
+    Paint.Rectangle(ix, iy, w, h - 1)
   Endif
   Paint.Fill
-
-  'Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
 
 End
 
@@ -87,19 +149,31 @@ End
 Private Sub Image_Write(Value As Image)
 
   $hPic = Value
-  If Left(Me.Width, 1) = "0" Then Me.Width = $hpic.Width & " px"
-  If Left(Me.Height, 1) = "0" Then Me.Height = $hpic.Height & " px"
+  'If Left(Me.Width, 1) = "0" Then Me.Width = $hpic.Width & " px"
+  'If Left(Me.Height, 1) = "0" Then Me.Height = $hpic.Height & " px"
 
 End
 
-Private Function Stretch_Read() As Boolean
+Private Function StretchMode_Read() As Integer
 
-  Return $bStretch
+  Return $iStretchMode
 
 End
 
-Private Sub Stretch_Write(Value As Boolean)
+Private Sub StretchMode_Write(Value As Integer)
 
-  $bStretch = Value
+  $iStretchMode = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlignment = Value
 
 End

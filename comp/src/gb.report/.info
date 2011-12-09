@@ -785,7 +785,7 @@ C
 _Properties
 C
 s
-*,Stretch,Image{Image}
+*,StretchMode{ReportImage.None;Proportional;Full},Alignment{Align.*},Image{Image}
 _Similar
 C
 s
@@ -798,14 +798,30 @@ Image
 p
 Image
 
-Stretch
+Alignment
 p
-b
+i
+
+StretchMode
+p
+i
 
 Data
 v
 Image
 
+None
+C
+i
+0
+Proportional
+C
+i
+1
+Full
+C
+i
+2
 :Data
 :
 
@@ -941,6 +957,14 @@ f
 
 _Bottom
 v
+f
+
+_Width
+r
+f
+
+_Height
+r
 f
 
 _Get
