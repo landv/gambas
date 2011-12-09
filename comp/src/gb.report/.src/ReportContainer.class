@@ -280,10 +280,10 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       Return GetHSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
     Case Arrange.Fill, Arrange.None
-      hMyHints.Width = AvailableW
-      hMyHints.Height = AvailableH
+      hMyHints.Width = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+      'hMyHints.Height = AvailableH
       'Me._SizeInt.StoreSize = True
-      Me._SizeInt = hMyHints
+      'Me._SizeInt = hMyHints
       Return hMyHints
 
   End Select
@@ -293,29 +293,27 @@ End
 Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
   Dim hChild As ReportControl
-  Dim fHeight As Float
+  Dim fHeight, fWidth As Float
   Dim hChildHints As TSizeHint
   Dim hMyHints As New TSizeHint
   Dim fSpacing As Float
-  Dim fPadding As Float
 
-  fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
-  hMyHints.Height = Me._Height
-  For Each hChild In Me.Children
+  'D'abord utiliser la méthode du controle pour définir la taille
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
-    hChildHints = hchild._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
+  'Puis si besoins voir le besoin des enfants
+  If Me.Autoresize Then
+    fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
+    For Each hChild In Me.Children
+      hChildHints = hchild._GetSizeHints(AvailableW - fWidth, AvailableH, AvailableW, AvailableH)
+      fWidth += hChildHints.Width + fSpacing
+      If fHeight < hChildHints.Height Then fHeight = hChildHints.Height
+    Next
+    fWidth -= fSpacing
+    hMyHints.Height = fHeight
+    hMyHints.Width = fWidth
+  Endif
 
-    hMyHints.Width += hChildHints.Width + fSpacing
-    If Me.Autoresize Then
-      If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
-    Endif
-  Next
-
-  hMyHints.Width -= fSpacing
-  'hMyHints.Width += Me.Padding._Left + Me.Padding._Right + Me.Border._Right + Me.Border._Left
-  'hMyHints.Height += Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._bottom
-  If hMyHints.Width < Me._Width Then hMyHints.Width = Me._Width
-  If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
   Return hMyHints
 
 End
@@ -324,12 +322,14 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
 
   Dim hSizeInt As New TSizeHint
   Dim htmpInts As TSizeHint
-  Dim fFix As Float                ''Taille des éléments fixes (non basculable sur une autre page)
   Dim hChild As ReportControl         ''Enfants
-  Dim fHeight, fSpacing As Float
+  Dim fHeight, fSpacing, fWidth As Float
   Dim i, j As Integer
   Dim bExitLoop As Boolean
-  'If Me.Tag = "ListeElements" Then Stop
+
+  'D'abord utiliser la méthode du controle pour définir la taille
+  hSizeInt = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+
   fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
 
   ' Si ce n'est pas fait on enregistre la place nécéssaire a tout les éléments fixes
@@ -341,61 +341,47 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     Next
 
   Endif
-  'On définit la taille au besoins des enfants
-  For i = Me._CurItem To Me.Children.Max
-    hChild = Me.Children[i]
-    For j = hchild._DataIndex To hchild._Count - 1
-      Me._Index = j
-      If hChild.Ignore Then Continue
-      If hChild.Fixed Then Continue
-      htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH)
-      'si l 'élément est fixe on retient la hauteur
 
-      'fFix += htmpInts.Height + fSpacing
-      'Endif
-      'on ajoute la hauteur aux besoins
-      hSizeInt.Height += htmpInts.Height + fSpacing
-      If hSizeInt.Height - fSpacing > AvailableH Then
-        Break
-        bExitLoop = True
-      Endif
-
-      'On récupère la largeur de l'enfant le plus large
-      If hSizeInt.Width < htmpInts.Width Then hSizeInt.Width = htmpInts.Width
-    Next
-    If bExitLoop Then Break
-  Next
+  'La taille ne peut être inférieur a celle de tout les éléments fixes
+  hSizeInt.Height = Max(hSizeInt.Height, $fFixedSize)
 
   'On ajoute la taille des objets fixes précédents
-  hSizeInt.Height += $fFixedSize
+  fHeight = $fFixedSize
 
-  'On enregistre La taille nécéssaire aux objets fixes
-  $fFixedSize += fFix
+  If Me.Autoresize Then
+    'On définit la taille au besoins des enfants
+    For i = Me._CurItem To Me.Children.Max
+      hChild = Me.Children[i]
+      For j = hchild._DataIndex To hchild._Count - 1
+        Me._Index = j
+        If hChild.Ignore Then Continue
+        If hChild.Fixed Then Continue
+        htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH)
+        'on ajoute la hauteur aux besoins
+        fHeight += htmpInts.Height + fSpacing
+        If fHeight - fSpacing > AvailableH Then
+          Break
+          bExitLoop = True
+        Endif
+        'On récupère la largeur de l'enfant le plus large
+        If fWidth < htmpInts.Width Then fWidth = htmpInts.Width
+      Next
+      If bExitLoop Then Break
+    Next
 
-  'on enlève le dernier espace
-  If hSizeInt.Height > 0 Then hSizeInt.Height -= fSpacing
-  hSizeInt.Height += 0.01
-  'Si la place disponible est moins importante
-  'On l'impose
-  If AvailableH < hSizeInt.Height Then hSizeInt.Height = AvailableH
-  'si height est définit alors on l'impose !
-  If Me._Height > 0 And Not Me.Autoresize Then hSizeInt.Height = Me._Height
-  'Mais si les éléments fixes dépassent cette taille on doit la leur fournir
-  If hSizeInt.Height < fFix Then hSizeInt.Height = fFix
+    'on enlève le dernier espace
+    If fHeight > 0 Then fHeight -= fSpacing
+    'bogue bizzard
+    fHeight += 0.01
 
-  'A présent, un élément ne peut jamais faire 0 sous peine de disparaitre donc
-  hSizeInt.Height = Max(hSizeInt.Height, 0.1)
-
-  'If hSizeInt.Width > AvailableW Then hSizeInt.Width = AvailableW
-  'si on est pas en mode autoresize
-  If Not Me.Autoresize Then
-    If Me._RelativeWidth Then
-      hSizeInt.Width = AvailableW * Me._Width / 100
-    Else
-      hSizeInt.Width = Me._Width
-    Endif
-
+    'On indique la place nécéssaire aux enfants+les éléments fixes
+    hSizeInt.Height = fHeight
+    hSizeInt.Width = fWidth
   Endif
+
+  'On ne peut pas dépasser la taille disponible (report sur prochaine page)
+  hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+
   Me._SizeInt = hSizeInt
 
   Return hSizeInt
@@ -420,12 +406,6 @@ Public Function _GetData(sKey As String) As Variant
   Return Null
 
 End
-
-' Private Function Index_Read() As Integer
-'
-'   Return $iIndex
-'
-' End
 
 Private Function Data_Read() As Object
 

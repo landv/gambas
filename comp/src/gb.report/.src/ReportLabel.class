@@ -58,17 +58,10 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim $sTempText As String
   Dim sText As String
 
-  If Me._RelativeHeight Then
-    hMyHints.Height = TotalHeight * Me._Height / 100
-  Else
-    hMyHints.Height = Me._Height + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
-  Endif
+  'On Récupère la taille standard
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
   'if the size choosed by the user is less than the font height, set the object to the font height
-
-  'If $sKey Then
-  '  sText = Me.Parent._GetData($sKey)
-  'Else
 
   If Me.Autoresize Then
     If Not IsNull(Me.Font) Then Paint.Font = Me.Font
@@ -78,39 +71,14 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     Else
       sText = $sText
     Endif
+
     hExt = Paint.TextExtents(sText)
-    fTextWidth = MTools.PixelsToUnits(hExt.Width)
-    fTextHeight = MTools.PixelsToUnits(Paint.Font.Height)
+    fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnits(hExt.Width) + Me.Padding._Right + Me.Border._Right
+    fTextHeight = MTools.PixelsToUnits(Paint.Font.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
 
-    If hMyHints.Height < (fTextHeight + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom) Then hMyHints.Height = fTextHeight + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+    hMyHints.Height = Max(hMyHints.Height, fTextHeight)
+    hMyHints.Width = Max(hMyHints.Width, fTextWidth)
   Endif
-  'Endif
-
-  ' Paint.DrawText aligns according to the font height, not the text extents
-
-  'Debug "'" & sText & "'";; Paint.Font.Height;; hExt.Width
-
-  'If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
-
-  ' If Not Me.Autoresize Then
-  '   If Me.Expand Then
-  '     If hMyHints.Height > AvailableH Then hMyHints.Height = AvailableH
-  '   Endif
-  '   'Print AvailableH
-  ' Endif
-
-  If Me._Width > 0 And Not Me.Autoresize Then
-    hMyHints.Width = Me._Width
-  Else
-
-    hMyHints.Width = fTextWidth + Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right
-
-    'IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
-  Endif
-  If Me._RelativeWidth Then
-    hMyHints.Width = TotalWidth * Me._Width / 100
-  Endif
-  If hMyHints.Width > AvailableW Then hMyHints.Width = AvailableW
 
   Return hMyHints
 

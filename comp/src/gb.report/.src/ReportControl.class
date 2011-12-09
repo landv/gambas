@@ -186,7 +186,24 @@ End
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
-  Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
+  'Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
+  'Implementaion standart du sizeInt hors autoresize et hbox
+  '
+
+  Dim hMyHints As New TSizeHint
+
+  If Me._RelativeHeight Then
+    hMyHints.Height = TotalHeight * Me._Height / 100
+  Else
+    hMyHints.Height = Me._Height
+  Endif
+
+  If Me._RelativeWidth Then
+    hMyHints.Width = TotalWidth * Me._Width / 100
+  Else
+    hMyHints.Width = Me._Width
+  Endif
+  Return hMyHints
 
 End
 

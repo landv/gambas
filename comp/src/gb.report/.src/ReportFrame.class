@@ -158,16 +158,18 @@ End
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
-  Dim hMyHints As New TSizeHint
+  Dim hMyHints As TSizeHint
 
-  hMyHints.Height = Me._Height
-  hMyHints.Width = Me._Width
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+
+  If hMyHints.Height <= 0 Then
+    hMyHints.Height = Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+  Endif
+
+  If hMyHints.Width <= 0 Then
+    hMyHints.Width = Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right
+  Endif
+
   Return hMyHints
 
 End
-
-' Private Function _BorderWidth_Read() As Float
-'
-'   'Return $fBorderWidth
-'
-' End

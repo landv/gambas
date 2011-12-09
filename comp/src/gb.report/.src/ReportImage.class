@@ -18,13 +18,11 @@ Event Data(Index As Integer)
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
   Dim hMyHints As New TSizeHint
-  'Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
-  'Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
+
   Dim Scale As Float
   Dim hPic As Image
 
-  'If h = 0 Then H = AvailableH
-  'If w = 0 Then w = AvailableW
+  hMyHints = Super.GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
   If Me.Autoresize Then
     If $hpic Then
@@ -32,26 +30,13 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     Else
       Raise Data(Me.Parent._GetIndex())
       hpic = Data
-      If Not hpic Then
-        hMyHints.Width = w
-        hMyHints.Height = h
-        Return hMyHints
-      Endif
     Endif
-    hMyHints.Width = Me.Padding._Left + Units.UnitToCm(hpic.Width, "px") + Me.Padding._Right
-    hMyHints.Height = Me.Padding._Top + Units.UnitToCm(hpic.Height, "px") + Me.Padding._Bottom
-    ' If h < w Then
-    '   Scale = hpic.Width / hpic.Height
-    '   hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
-    '   hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
-    ' Else
-    '   Scale = hpic.Height / hpic.Width
-    '   hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
-    '   hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
-    ' Endif
-  Else
-    hMyHints.Width = Me.Border._Left + Me.Padding._Left + w + Me.Padding._Right + Me.Border._Right
-    hMyHints.Height = Me.Border._Top + Me.Padding._Top + h + Me.Padding._Bottom + Me.Border._Bottom
+
+    If hpic Then
+      hMyHints.Width = Max(hMyHints.Width, Me.Padding._Left + Units.UnitToCm(hpic.Width, "px") + Me.Padding._Right)
+      hMyHints.Height = Max(hMyHints.Width, Me.Padding._Top + Units.UnitToCm(hpic.Height, "px") + Me.Padding._Bottom)
+    Endif
+
   Endif
 
   Return hMyHints

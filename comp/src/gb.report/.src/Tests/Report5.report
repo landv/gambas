@@ -4,8 +4,25 @@
   #MoveScaled(0,0,64,95)
   Index = 0
   Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(4,2,56,6)
+    Height = "12mm"
+    Expand = True
+    { ReportLabel9 ReportLabel
+      #MoveScaled(2,1,20,5)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Background = ReportBrush["#FFFF00"]
+    }
+    { ReportHBox2 ReportHBox
+      #MoveScaled(30,2,24,8)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Background = ReportBrush["#FFFF00"]
+    }
+  }
   { ReportLabel1 ReportLabel
-    #MoveScaled(2,3,59,8)
+    #MoveScaled(2,9,59,8)
     Height = "7cm"
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["#00FF00"]
@@ -36,7 +53,7 @@
   }
   { ReportLabel6 ReportLabel
     #MoveScaled(2,52,59,8)
-    Height = "5cm"
+    Height = "10cm"
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["#00FF00"]
   }

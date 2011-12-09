@@ -19,24 +19,20 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
   Dim Scale As Float
 
-  If h = 0 Then H = AvailableH
-  If w = 0 Then w = AvailableW
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalWidth)
 
-  If $bStretch Then
-    hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
-    hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
-  Else
+  If Me.Autoresize Then
     If h < w Then
       Scale = $hSvgImage.Width / $hSvgImage.Height
-      hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
-      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
+      hMyHints.Width = (hMyHints.Height * Scale)
+      hMyHints.Height = hMyHints.Height
     Else
       Scale = $hSvgImage.Height / $hSvgImage.Width
-      hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
-      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
+      hMyHints.Height = (hMyHints.Width * Scale)
+      hMyHints.Width = hMyHints.Width
     Endif
-  Endif
 
+  Endif
   Return hMyHints
 
 End
