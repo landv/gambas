@@ -17,7 +17,7 @@ Property StretchMode As Integer
 Public Data As Image
 Public Enum None, Proportional, Fill
 
-Event Data(Index As Integer)
+Event Data()
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
@@ -32,7 +32,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     If $hpic Then
       hpic = $hpic
     Else
-      Raise Data(Me.Parent._GetIndex())
+      Raise Data()
       hpic = Data
     Endif
 
@@ -60,7 +60,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   iy = y + hControl.RealTop '+ MTools.UnitsToPixels(Me.Padding._Top)
 
   If Not $hpic Then
-    Raise Data(Me.Parent._GetIndex())
+    Raise Data()
     hpic = Data
     If Not hPic Then Return
   Else
@@ -71,7 +71,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
   hBrush = Paint.Image(hpic)
 
-  If Me.StretchMode = ReportImage.Full Then
+  If Me.StretchMode = ReportImage.Fill Then
     hBrush.Translate(ix, iy - 1)
     hBrush.Scale(hControl.RealWidth / hPic.Width, hControl.RealHeight / hPic.Height)
     Paint.Brush = hBrush

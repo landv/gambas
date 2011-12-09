@@ -12,33 +12,33 @@ Public Sub _new()
 
 End
 
-Public Sub lblCpte_Data(Index As Integer)
+Public Sub lblCpte_Data()
 
-  $hres.MoveTo(Index)
+  $hres.MoveTo(Last.DataIndex)
   Last.data = $hres!compte
 
 End
 
-Public Sub lblcpteLab_Data(Index As Integer)
+Public Sub lblcpteLab_Data()
 
-  $hres.MoveTo(Index)
+  $hres.MoveTo(Last.DataIndex)
   Last.data = $hres!intitule
 
 End
 
-Public Sub lblSoc_Data(Index As Integer)
+Public Sub lblSoc_Data()
 
   Last.data = $hres!codesoc & " " & $hres!intsoc
 
 End
 
-Public Sub lblDate_Data(Index As Integer)
+Public Sub lblDate_Data()
 
   Last.data = Format(Now(), "dddd dd mmmm yyyy")
 
 End
 
-Public Sub ReportImage1_Data(Index As Integer)
+Public Sub ReportImage1_Data()
 
   Last.Data = Picture["icon:/32/directory"].Image
 

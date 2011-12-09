@@ -681,6 +681,10 @@ _ReportId
 p
 i
 
+DataIndex
+r
+i
+
 _New
 m
 
@@ -785,7 +789,7 @@ C
 _Properties
 C
 s
-*,StretchMode{ReportImage.None;Proportional;Full},Alignment{Align.*},Image{Image}
+*,StretchMode{ReportImage.None;Proportional;Fill},Alignment{Align.*},Image{Image}
 _Similar
 C
 s
@@ -818,14 +822,14 @@ Proportional
 C
 i
 1
-Full
+Fill
 C
 i
 2
 :Data
 :
 
-(Index)i
+
 _GetSizeHints
 m
 TSizeHint
@@ -876,7 +880,7 @@ s
 :Data
 :
 
-(Index)i
+
 _GetSizeHints
 m
 TSizeHint

@@ -86,6 +86,7 @@ Property Fixed As Boolean
 Property Autoresize As Boolean
 Property Read {Report} As Report
 Property _ReportId As Integer
+Property Read DataIndex As Integer
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
 
@@ -515,5 +516,11 @@ End
 Private Function _RelativeTop_Read() As Boolean
 
   Return $bRelativeTop
+
+End
+
+Private Function DataIndex_Read() As Integer
+
+  Return Me.Parent._GetIndex()
 
 End

@@ -21,7 +21,7 @@ Property IsSpecial As Boolean
 Property {Format} As String
 Property UseField As Boolean
 Public Data As String
-Event Data(Index As Integer)
+Event Data()
 
 Private Function Text_Read() As String
 
@@ -66,7 +66,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   If Me.Autoresize Then
     If Not IsNull(Me.Font) Then Paint.Font = Me.Font
     If Not $sText Then
-      Raise Data(Me.Parent._GetIndex())
+      Raise Data()
       sText = Data
     Else
       sText = $sText
@@ -97,7 +97,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     If $sText Then
       sTempText = $sText
     Else
-      Raise Data(Me.Parent._GetIndex())
+      Raise Data()
       sTempText = Data
     Endif
   Endif
