@@ -3,7 +3,7 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,StretchMode{ReportImage.None;Proportional;Full},Alignment{Align.*},Image{Image}"
+Public Const _Properties As String = "*,StretchMode{ReportImage.None;Proportional;Fill},Alignment{Align.*},Image{Image}"
 Public Const _Similar As String = "ReportTextLabel"
 Public Const _DefaultEvent As String = "Data"
 
@@ -15,7 +15,7 @@ Property Alignment As Integer
 Property Image As Image
 Property StretchMode As Integer
 Public Data As Image
-Public Enum None, Proportional, Full
+Public Enum None, Proportional, Fill
 
 Event Data(Index As Integer)
 
