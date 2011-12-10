@@ -60,11 +60,22 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
     Paint.Stroke
 
   Else
-
     If Me.BackGround = Null Then Return
+    If $hBorder.RoundCorner._Active Then
+      RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
+        [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
+        MTools.UnitsToPixels($hBorder.RoundCorner._TopRight1),
+        MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight1),
+        MTools.UnitsToPixels($hBorder.RoundCorner._BottomLeft1)],
+        [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft2),
+        MTools.UnitsToPixels($hBorder.RoundCorner._TopRight2),
+        MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2),
+        MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2)])
+    Else
+      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+    Endif
     paint.Brush = Me.BackGround._PaintBrush(X1, Y1, X2, Y2)
 
-    Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Paint.Fill
 
   Endif
@@ -86,41 +97,57 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
 
   Dim fTopWidth, fBottomWidth, fLeftWidth, fRighWidth As Float
 
-  fLeftWidth = MTools.UnitsToPixels($hBorder._Left)
-  fRighWidth = MTools.UnitsToPixels($hBorder._Right)
-  fTopWidth = MTools.UnitsToPixels($hBorder._Top)
-  fBottomWidth = MTools.UnitsToPixels($hBorder._Bottom)
-
-  'If $hBorder.Style <> Line.None Then
-
-  'fWidth = MTools.UnitsToPixels($fBorderWidth)
-
   X1 = (x + hControl.RealLeft)
   Y1 = (y + hControl.RealTop)
   X2 = (x + hControl.RealLeft + hControl.RealWidth)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
 
-  'Paint.Brush = Paint.Color($hBorder.Brush._iValue)
-
-  If fTopWidth > 0 Then
-    paint.Brush = $hBorder.Top.Brush._PaintBrush(X1, Y1, X2, Y2)
-    paint.Rectangle(X1, Y1, X2 - X1, fTopWidth)
-    paint.Fill
-  Endif
-  If fRighWidth > 0 Then
-    paint.Brush = $hBorder.Right.Brush._PaintBrush(X1, Y1, X2, Y2)
-    paint.Rectangle(X2 - fRighWidth, Y1, fRighWidth, Y2 - Y1)
-    paint.Fill
-  Endif
-  If fBottomWidth > 0 Then
-    paint.Brush = $hBorder.Bottom.Brush._PaintBrush(X1, Y1, X2, Y2)
-    paint.Rectangle(X1, Y2 - fBottomWidth, X2 - X1, fBottomWidth)
-    paint.Fill
-  Endif
-  If fLeftWidth > 0 Then
+  If $hBorder.RoundCorner._Active Then
+    fLeftWidth = MTools.UnitsToPixels($hBorder._Left)
     paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
-    paint.Rectangle(X1, Y1, fLeftWidth, Y2 - Y1)
-    paint.Fill
+    RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
+      [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
+      MTools.UnitsToPixels($hBorder.RoundCorner._TopRight1),
+      MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight1),
+      MTools.UnitsToPixels($hBorder.RoundCorner._BottomLeft1)],
+      [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft2),
+      MTools.UnitsToPixels($hBorder.RoundCorner._TopRight2),
+      MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2),
+      MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2)])
+    paint.Stroke
+
+  Else
+    fLeftWidth = MTools.UnitsToPixels($hBorder._Left)
+    fRighWidth = MTools.UnitsToPixels($hBorder._Right)
+    fTopWidth = MTools.UnitsToPixels($hBorder._Top)
+    fBottomWidth = MTools.UnitsToPixels($hBorder._Bottom)
+
+    'If $hBorder.Style <> Line.None Then
+
+    'fWidth = MTools.UnitsToPixels($fBorderWidth)
+
+    'Paint.Brush = Paint.Color($hBorder.Brush._iValue)
+
+    If fTopWidth > 0 Then
+      paint.Brush = $hBorder.Top.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y1, X2 - X1, fTopWidth)
+      paint.Fill
+    Endif
+    If fRighWidth > 0 Then
+      paint.Brush = $hBorder.Right.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X2 - fRighWidth, Y1, fRighWidth, Y2 - Y1)
+      paint.Fill
+    Endif
+    If fBottomWidth > 0 Then
+      paint.Brush = $hBorder.Bottom.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y2 - fBottomWidth, X2 - X1, fBottomWidth)
+      paint.Fill
+    Endif
+    If fLeftWidth > 0 Then
+      paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y1, fLeftWidth, Y2 - Y1)
+      paint.Fill
+    Endif
   Endif
   'Fin du clipping
   'paint.Restore
@@ -159,6 +186,7 @@ Public Sub _SetUnifiedValues()
   $hBorder._Top = hSizeParse.GetValue()
   hSizeParse = New TSizeParse($hBorder.Bottom.Width)
   $hBorder._Bottom = hSizeParse.GetValue()
+  $hBorder.RoundCorner._SetUnifiedValues()
 
 End
 
@@ -177,5 +205,67 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Endif
 
   Return hMyHints
+
+End
+
+Public Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+
+  Dim ARC_TO_BEZIER As Float = 0.55228475
+  Dim c1, c2 As Float
+  Dim i As Integer
+
+  For i = 0 To 3
+    If radius_x[i] > w - radius_x[i] Then
+      radius_x[i] = w / 2
+    Endif
+
+    If radius_y[i] > h - radius_y[i] Then
+      radius_y[i] = h / 2
+    Endif
+  Next
+  'approximate(quite Close )the arc using a bezier curve
+
+  '        A**********B
+  '       H            C
+  '       *            *
+  '       *            *
+  '       G            D
+  '        F**********E
+
+  '-->A
+  paint.moveto(x + radius_x[0], y)
+
+  '-->B
+  paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
+
+  '-->C
+  c1 = ARC_TO_BEZIER * radius_x[1]
+  c2 = ARC_TO_BEZIER * radius_y[1]
+  paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+
+  '-->D
+  paint.rellineto(0, h - radius_y[1] - radius_y[2])
+
+  '-->E
+  c1 = ARC_TO_BEZIER * radius_x[2]
+  c2 = ARC_TO_BEZIER * radius_y[2]
+  paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+
+  '-->F
+  paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
+
+  '-->G
+  c1 = ARC_TO_BEZIER * radius_x[3]
+  c2 = ARC_TO_BEZIER * radius_y[3]
+  paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  '-->H
+  paint.rellineto(0, - h + radius_y[3] + radius_y[0])
+
+  '-->A
+  c1 = ARC_TO_BEZIER * radius_x[0]
+  c2 = ARC_TO_BEZIER * radius_y[0]
+  paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+
+  paint.closepath()
 
 End
