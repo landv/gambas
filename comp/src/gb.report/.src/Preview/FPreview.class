@@ -14,23 +14,23 @@ Static Public Function Run(hReport As Report)
   Dim hFPreview As FPreview
 
   $hReport = hReport
-  
+
   hFpreview = New FPreview
   hFpreview.Show
-  
+
 End
 
 Public Sub _new()
-  
+
   Me.Center
-  
+
 End
 
 Public Sub dwgPreview_Draw()
   'Debug $fScale
   'Paint.Scale($fScale, $fScale)
   '$hReport.Layout
-  
+
   $hReport.Scale = $fScale
   If $iPage < 0 Then Inc Application.Busy
   $hReport._Layout($iPage)
@@ -42,9 +42,9 @@ Public Sub dwgPreview_Draw()
     spnPage.Value = $iPage
     Return
   Endif
-  
+
   $hReport.Paint($iPage)
-  
+
   If $hReport._LayoutNotFinished Then
     spnPage.MaxValue = $hReport.PageCount + 1
   Else
@@ -53,38 +53,38 @@ Public Sub dwgPreview_Draw()
     lblPageCount.Show
     'btnLast.Enabled = False
   Endif
-  
+
 End
 
 Public Sub Form_Open()
-  
+
   If $hReport = Null Then Me.Close
-  
+
   'Report.Debug = True
-  
+
   btnAdjust.Value = True
-  
+
   spnPage.SetFocus
-  
+
 End
 
 Public Sub sldZoom_Change()
-  
+
   btnAdjust.Value = False
   ResizeMe
-  
+
 End
 
 Private Sub ResizeMe()
 
   Dim iWidth, iHeight As Integer
   Dim fratio As Float
-  
+
   iWidth = Printer1.PaperWidth * Desktop.Resolution / 25.4
   iHeight = Printer1.PaperHeight * Desktop.Resolution / 25.4
-  
+
   If btnAdjust.Value Then
-    
+
     If Printer1.PaperWidth > Printer1.PaperHeight Then
       $fScale = svwPreview.W / iWidth
     Else
@@ -96,23 +96,23 @@ Private Sub ResizeMe()
   Else
     $fScale = sldZoom.Value / 100
   Endif
-  
+
   sldZoom.Tooltip = CStr(sldZoom.Value) & "%"
   Me.Title = ("Report preview") & " - " & sldZoom.Tooltip
-  
+
   dwgPreview.Resize(iWidth * $fScale, iHeight * $fScale)
   dwgPreview.Mouse = If(btnAdjust.Value, Mouse.Default, Mouse.SizeAll)
   dwgPreview.Refresh
-  
+
 End
 
 ' Public Sub ComboBox1_Click()
-'    
+'
 '   Printer1.Paper = A4 'Object.GetProperty(Printer, ComboBox1.Text)
-'   
-'   'If ComboBox1.Text = "Custom" Then 
+'
+'   'If ComboBox1.Text = "Custom" Then
 '   '  Frame3.Enabled = True
-'   'Else 
+'   'Else
 '   '  Frame3.Enabled = False
 '   '  txtWidth.Text = Int(Printer1.PaperWidth)
 '   '  txtHeight.Text = Int(Printer1.PaperHeight)
@@ -122,36 +122,36 @@ End
 ' End
 
 ' Public Sub ComboBox2_Click()
-' 
+'
 '   Printer1.Orientation = ComboBox2.Index
 '   ComboBox1_Click
 '   ResizeMe
-' 
+'
 ' End
 
 ' Public Sub txtWidth_Change()
-' 
+'
 '   Printer1.PaperWidth = txtWidth.Text
-' 
+'
 '   ResizeMe
-'   
+'
 '   Catch
-'   
-' 
+'
+'
 ' End
 
 ' Public Sub txtHeight_Change()
-' 
+'
 '     Printer1.PaperHeight = txtHeight.Text
 '   ResizeMe
-' 
+'
 ' End
 
 Public Sub btnZoomOut_Click()
 
   Dim I As Integer
   Dim iZoom As Integer
-  
+
   For I = $aZoom.Max DownTo 0
     iZoom = $aZoom[I]
     If iZoom < sldZoom.Value Then
@@ -159,60 +159,60 @@ Public Sub btnZoomOut_Click()
       Return
     Endif
   Next
-  
+
   sldZoom.Value = sldZoom.MinValue
-  
+
 End
 
 Public Sub btnZoomIn_Click()
-  
+
   Dim iZoom As Integer
-  
+
   For Each iZoom In $aZoom
     If iZoom > sldZoom.Value Then
       sldZoom.Value = iZoom
       Return
     Endif
   Next
-  
+
   sldZoom.Value = sldZoom.MaxValue
-  
+
 End
 
 Public Sub btnPrint_Click()
-  
+
   If Printer1.Configure() Then Return
   'Me.Enabled = False
   Printer1.Print()
   'Me.Enabled = True
-  
+
 End
 
 Public Sub Printer1_Draw()
-  
+
   $hPrint.Paint(Printer1.Page)
-  
+
 End
 
 Public Sub Printer1_Begin()
-  
+
   $hPrint = $hReport.Clone()
   'Debug Object.Type($hReport)
   $hPrint.Layout
   Printer1.Count = $hPrint.PageCount
-  
+
 End
 
 Public Sub Printer1_End()
-  
+
   $hPrint = Null
-  
+
 End
 
 Public Sub Form_Resize()
-  
+
   ResizeMe
-  
+
 End
 
 Public Sub btnAdjust_Click()
@@ -225,25 +225,25 @@ Public Sub btnZNorm_Click()
 
   btnAdjust.Value = False
   sldZoom.Value = 100
-  
+
 End
 
 Public Sub spnPage_Change()
-  
-  $iPage = Last.Value 
+
+  $iPage = Last.Value
   dwgPreview.Refresh
-  
+
 End
 
 Public Sub btnLast_Click()
-  
+
   If $hReport._LayoutNotFinished Then
     $iPage = -1
     dwgPreview.Refresh
   Else
     spnPage.Value = $hReport.PageCount
   Endif
-  
+
 End
 
 Public Sub btnFirst_Click()
@@ -279,12 +279,14 @@ End
 
 Public Sub dwgPreview_MouseWheel()
 
-  If Mouse.Delta > 0 Then
-    sldZoom.Value += 10
-  Else
-    sldZoom.Value -= 10
+  If Mouse.Control Then
+    If Mouse.Delta > 0 Then
+      sldZoom.Value += 10
+    Else
+      sldZoom.Value -= 10
+    Endif
+
+    Stop Event
   Endif
-  
-  Stop Event
-  
+
 End

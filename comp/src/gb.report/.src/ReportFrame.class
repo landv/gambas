@@ -3,7 +3,7 @@
 Export
 Create Private
 Inherits ReportControl
-
+Static Private iLevel As Integer
 Public Const _Properties As String = "*,Border,Background{ReportBrush}"
 
 ' Private $fLeftBorderWidth As Float
@@ -45,7 +45,10 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
   X2 = (x + hControl.RealLeft + hControl.RealWidth)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
   'Clipping
-  ' paint.save
+  'paint.save
+
+  ' Print String(iLevel, " ") & "sauvé"
+  ' Inc iLevel
   ' Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
   ' paint.Clip(True)
 
@@ -121,6 +124,9 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
   Endif
   'Fin du clipping
   'paint.Restore
+  'Dec iLevel
+  'Print String(iLevel, " ") & "restoré"
+
   'Endif
 
 End

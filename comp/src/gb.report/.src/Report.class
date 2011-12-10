@@ -163,6 +163,7 @@ Public Sub _Layout(Optional iPage As Integer = -1)
       If iPage > -1 And If $iCurPage > iPage Then
         Dec $iCurPage
         _LayoutNotFinished = True
+        $iCurSection = i
         _bInExec = False
         Return
 
