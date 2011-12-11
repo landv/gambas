@@ -72,10 +72,14 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   hBrush = Paint.Image(hpic)
 
   If Me.StretchMode = ReportImage.Fill Then
+    iX += MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left)
+    iY += MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top)
+    w = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+    h = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
     hBrush.Translate(ix, iy - 1)
-    hBrush.Scale(hControl.RealWidth / hPic.Width, hControl.RealHeight / hPic.Height)
+    hBrush.Scale(w / hPic.Width, h / hPic.Height)
     Paint.Brush = hBrush
-    Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
+    Paint.Rectangle(ix, iy, w, h)
   Else
 
     If Me.StretchMode = ReportImage.Proportional Then

@@ -4,7 +4,7 @@ Private $hres As Result
 
 Public Sub _new()
 
-  Report.Debug = True
+  'Report.Debug = True
 
   Try Connections["Connection2"].Open
   $hres = db.Exec("SELECT fc.cd_sc as codesoc, fc.int_sc as intsoc, fcc.compte_cc as compte, fcc.intitule_cc as intitule From Fiches_Comptes01 as fcc "

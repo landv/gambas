@@ -88,10 +88,10 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
   iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
 
-  Paint.Rectangle(iX, iY, iW, iH)
-  Paint.Clip
+  'Paint.Rectangle(iX, iY, iW, iH)
+  'Paint.Clip
   Paint.RichText(sTmp, iX, iY, iW, iH, $iAlignment)
   Paint.Fill
-  Paint.ResetClip
+  'Paint.ResetClip
 
 End

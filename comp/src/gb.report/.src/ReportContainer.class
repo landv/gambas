@@ -310,8 +310,8 @@ Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
       If fHeight < hChildHints.Height Then fHeight = hChildHints.Height
     Next
     fWidth -= fSpacing
-    hMyHints.Height = fHeight
-    hMyHints.Width = fWidth
+    hMyHints.Height = fHeight + Me.Padding._Height + Me.Border._Top + Me.Border._bottom
+    hMyHints.Width = fWidth + Me.Padding._Width + Me.Border._Left + Me.Border._Right
   Endif
 
   Return hMyHints
@@ -375,8 +375,8 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     fHeight += 0.01
 
     'On indique la place nécéssaire aux enfants+les éléments fixes
-    hSizeInt.Height = fHeight
-    hSizeInt.Width = fWidth
+    hSizeInt.Height = fHeight + Me.Padding._Height + Me.Border._Top + Me.Border._Bottom
+    hSizeInt.Width = fWidth + Me.Padding._Width + Me.Border._Left + Me.Border._Right
   Endif
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
@@ -765,7 +765,7 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
     hChildHints = hChild._GetSizeHints(w, h, w, h)
 
-    'Si l' éléments ne loge pas on quitte et on s'en moque
+    'Si l' éléments ne loge pas on quitte et on oublit
     If TW - hChildHints.Width < 0 Then Break
 
     'Si l'élément n'est pas ignoré

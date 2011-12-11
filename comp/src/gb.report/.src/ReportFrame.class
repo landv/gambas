@@ -45,7 +45,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
   X2 = (x + hControl.RealLeft + hControl.RealWidth)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
   'Clipping
-  'paint.save
+  paint.save
 
   ' Print String(iLevel, " ") & "sauvé"
   ' Inc iLevel
@@ -60,7 +60,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
     Paint.Stroke
 
   Else
-    If Me.BackGround = Null Then Return
+
     If $hBorder.RoundCorner._Active Then
       RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
         [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
@@ -73,6 +73,13 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2)])
     Else
       Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+    Endif
+
+    If Me.BackGround = Null Then
+      paint.Clip
+      Return
+    Else
+      paint.Clip(True)
     Endif
     paint.Brush = Me.BackGround._PaintBrush(X1, Y1, X2, Y2)
 
@@ -97,15 +104,19 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
 
   Dim fTopWidth, fBottomWidth, fLeftWidth, fRighWidth As Float
 
+  'Fin du clipping
+  paint.Restore
+
   X1 = (x + hControl.RealLeft)
   Y1 = (y + hControl.RealTop)
   X2 = (x + hControl.RealLeft + hControl.RealWidth)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
 
   If $hBorder.RoundCorner._Active Then
-    fLeftWidth = MTools.UnitsToPixels($hBorder._Left)
+    fLeftWidth = MTools.UnitsToPixels($hBorder._Left) / 2
+    paint.LineWidth = fLeftWidth * 2
     paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
-    RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
+    RoundRect(X1 + fLeftWidth, Y1 + fLeftWidth, hControl.RealWidth - fLeftWidth, hControl.RealHeight - fLeftWidth,
       [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
       MTools.UnitsToPixels($hBorder.RoundCorner._TopRight1),
       MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight1),
@@ -149,8 +160,6 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
       paint.Fill
     Endif
   Endif
-  'Fin du clipping
-  'paint.Restore
   'Dec iLevel
   'Print String(iLevel, " ") & "restoré"
 

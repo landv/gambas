@@ -53,24 +53,24 @@
       AutoResize = True
       Tag = "ListeElements"
       { ReportHBox4 ReportHBox
-        #MoveScaled(1,1,44,5)
+        #MoveScaled(1,2,44,7)
         Height = "5mm"
+        { ReportImage1 ReportImage
+          #MoveScaled(0,1,7,5)
+          Width = "2mm"
+        }
         { lblCpte ReportLabel
-          #MoveScaled(8,0,18,4)
+          #MoveScaled(8,1,18,4)
           Width = "20%"
           Padding = ReportPadding["Left:3mm"]
           Tag = "*"
-          Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
         }
         { lblcpteLab ReportLabel
-          #MoveScaled(23,0,18,4)
+          #MoveScaled(27,0,18,4)
           Width = "20%"
           Padding = ReportPadding["Left:3mm"]
           Expand = True
           Border = ReportBorder["Left:1px #000000"]
-        }
-        { ReportImage1 ReportImage
-          #MoveScaled(2,0,5,4)
         }
       }
     }
