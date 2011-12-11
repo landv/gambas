@@ -502,8 +502,6 @@ BEGIN_METHOD(CDESKTOP_get_window_geometry, GB_INTEGER window)
 
 	GB_ARRAY array;
 	int *data;
-	Window root;
-	uint ignore;
 
 	if (X11_init())
 		return;
@@ -511,7 +509,8 @@ BEGIN_METHOD(CDESKTOP_get_window_geometry, GB_INTEGER window)
 	GB.Array.New(&array, GB_T_INTEGER, 4);
 	data = (int *)GB.Array.Get(array, 0);
 	
-	XGetGeometry(X11_display, VARG(window), &root, &data[0], &data[1], (uint *)&data[2], (uint *)&data[3], &ignore, &ignore);
+	X11_get_window_geometry(VARG(window), &data[0], &data[1], &data[2], &data[3]);
+	//XGetGeometry(X11_display, VARG(window), &root, &data[0], &data[1], (uint *)&data[2], (uint *)&data[3], &ignore, &ignore);
 	GB.ReturnObject(array);
 
 END_METHOD

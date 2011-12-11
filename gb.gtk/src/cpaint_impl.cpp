@@ -623,7 +623,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	CFONT *font;
 	float tw, th, offx, offy;
 
-  layout = pango_cairo_create_layout(CONTEXT(d));
+	layout = pango_cairo_create_layout(CONTEXT(d));
   
 	if (rich)
 	{
@@ -637,6 +637,9 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	
 	_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font, d->resolutionY);
+	
+	if (align == GB_DRAW_ALIGN_DEFAULT)
+		align = ALIGN_TOP_NORMAL;
 	
 	if (w > 0 && h > 0)
 	{

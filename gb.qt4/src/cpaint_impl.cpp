@@ -196,6 +196,7 @@ static int Begin(GB_PAINT *d)
 static void End(GB_PAINT *d)
 {
 	void *device = d->device;
+	QT_PAINT_EXTRA *dx = EXTRA(d);
 
 	if (GB.Is(device, CLASS_DrawingArea))
 	{
@@ -216,19 +217,41 @@ static void End(GB_PAINT *d)
 		PAINTER(d)->end(); // ??
 	}
 
-	delete EXTRA(d)->path;
-	delete EXTRA(d)->clip;
-	delete EXTRA(d)->painter;
+	if (dx->clipStack)
+	{
+		while (!dx->clipStack->isEmpty())
+			delete dx->clipStack->takeLast();
+		delete dx->clipStack;
+	}
+	
+	delete dx->path;
+	delete dx->clip;
+	delete dx->painter;
 }
 
 static void Save(GB_PAINT *d)
 {
+	QT_PAINT_EXTRA *dx = EXTRA(d);
+	
 	PAINTER(d)->save();
+	if (!dx->clipStack)
+		dx->clipStack = new QList<QPainterPath *>;
+	dx->clipStack->append(new QPainterPath(*dx->clip));
 }
 
 static void Restore(GB_PAINT *d)
 {
+	QT_PAINT_EXTRA *dx = EXTRA(d);
+	
 	PAINTER(d)->restore();
+	
+	if (dx->clipStack && !dx->clipStack->isEmpty())
+	{
+		QPainterPath *path = dx->clipStack->takeLast();
+		delete dx->clip;
+		dx->clip = new QPainterPath(*path);
+		delete path;
+	}
 }
 		
 static void Antialias(GB_PAINT *d, int set, int *antialias)

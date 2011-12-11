@@ -525,7 +525,7 @@ void SUBR_replace(ushort code)
 	if (NPARAM == 4)
 		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_NOCASE;
 
-	if (lp == 0)
+	if (lp == 0 || ls == 0)
 	{
 		RELEASE(&PARAM[1]);
 		RELEASE(&PARAM[2]);
@@ -534,10 +534,26 @@ void SUBR_replace(ushort code)
 		return;
 	}
 
-	STRING_start_len(ls);
-		
-	if (ls > 0 && lp > 0)
+	if (lp == 1 && lr == 1)
 	{
+		char cp = *pp;
+		char cr = *pr;
+		
+		ps = STRING_new_temp(ps, ls);
+		
+		for (pos = 0; pos < ls; pos++)
+		{
+			if (ps[pos] == cp)
+				ps[pos] = cr;
+		}
+		
+		RETURN->_string.addr = ps;
+		RETURN->_string.len = ls;
+	}
+	else
+	{
+		STRING_start_len(ls);
+	
 		for(;;)
 		{
 			pos = STRING_search(ps, ls, pp, lp, 1, FALSE, nocase);
@@ -561,12 +577,12 @@ void SUBR_replace(ushort code)
 		}
 		
 		STRING_make(ps, ls);
+		RETURN->_string.addr = STRING_end_temp();
+		RETURN->_string.len = STRING_length(RETURN->_string.addr);
 	}
 
 	RETURN->type = T_STRING;
-	RETURN->_string.addr = STRING_end_temp();
 	RETURN->_string.start = 0;
-	RETURN->_string.len = STRING_length(RETURN->_string.addr);
 
 	SUBR_LEAVE();
 }

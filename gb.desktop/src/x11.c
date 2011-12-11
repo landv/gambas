@@ -776,3 +776,23 @@ void X11_event_filter(XEvent *e)
 		GB.Call(&_desktop_window_func, 5, FALSE);
 	}
 }
+
+void X11_get_window_geometry(Window win, int *wx, int *wy, int *ww, int *wh)
+{
+	Window p;
+	int transx, transy;
+	XWindowAttributes wattr;
+	
+	*wx = *wy = *ww = *wh = 0;
+	
+	if (!XTranslateCoordinates(_display, win, _root, 0, 0, &transx, &transy, &p))
+		return;
+	
+	if (!XGetWindowAttributes(_display, win, &wattr))
+		return;
+	
+	*wx = transx - wattr.border_width;
+	*wy = transy - wattr.border_width;
+	*ww = wattr.width + wattr.border_width * 2;
+	*wh = wattr.height + wattr.border_width * 2;
+}

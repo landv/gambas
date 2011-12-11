@@ -108,6 +108,7 @@ typedef
 		QPainterPath *path;
 		QPainterPath *clip;
 		int fillRule;
+		QList<QPainterPath *> *clipStack;
 	}
 	QT_PAINT_EXTRA;
 	

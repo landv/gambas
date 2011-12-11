@@ -142,17 +142,12 @@ End
 
 Public Sub Main()
 
-  Dim dWindow As DesktopWindow
+  Dim hWindow As DesktopWindow
   
-  Print Desktop.Path
+  'Print Desktop.Path
   
-  For Each dWindow In Desktop.Windows
-    Print Hex(dWindow.Id);;
-    If dWindow.SkipTaskbar = True Then
-      Print "skip"
-    Else
-      Print dWindow.Name
-    Endif
+  For Each hWindow In Desktop.Windows
+    Print Hex$(hWindow.Id, 8);; Quote(hWindow.Name); ": "; hWindow.X;; hWindow.Y;; hWindow.Height;; hWindow.Width
   Next
   
 End

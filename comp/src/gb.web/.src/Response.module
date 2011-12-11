@@ -91,9 +91,7 @@ End
 
 Private Sub ShouldCompress() As Boolean
   
-  If $sContentType = "image/jpeg" Then Return False
-  If $sContentType = "image/png" Then Return False
-  Return True
+  Return $sContentType Begins "text/"
   
 End
 

@@ -52,7 +52,7 @@
         Tag = "*"
         Background = ReportBrush["#FFFF00"]
         { ReportLabel1 ReportLabel
-          #MoveScaled(0,5,46,23)
+          #MoveScaled(3,5,43,23)
           Left = "25%"
           Top = "5cm"
           Width = "50%"
@@ -64,6 +64,10 @@
           Background = ReportBrush["#FF1F57"]
           Text = ("gambas")
           Alignment = Align.Center
+        }
+        { ReportImage1 ReportImage
+          #MoveScaled(8,24,14,8)
+          Image = Image.Load("printer1.png")
         }
       }
       { ReportLabel2 ReportLabel

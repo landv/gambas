@@ -137,7 +137,7 @@ Public Sub Save()
     Sleep 0.2
   Next
   
-  hFile = Open $sPath For Create 
+  hFile = Open $sPath & "#" For Create 
 
   If $sTitle Then
     Print #hFile, "# "; $sTitle
@@ -155,7 +155,11 @@ Public Sub Save()
   Next
 
   Close #hFile
+  Try Kill $sPath & "~"
+  Try Move $sPath To $sPath & "~"
+  Try Move $sPath & "#" To $sPath
   Try Kill $sPath & ".lock"
+  Try Kill $sPath & "~"
   Unlock #hLock
 
 'CATCH

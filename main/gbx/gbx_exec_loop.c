@@ -480,6 +480,7 @@ _MAIN:
 
 _SUBR_CODE:
 
+	//fprintf(stderr, "gbx3: %02X: %s\n", (code >> 8), DEBUG_get_current_position());
 	(*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
 
 	//if (UNLIKELY(PCODE_is_void(code)))

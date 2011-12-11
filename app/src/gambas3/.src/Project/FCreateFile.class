@@ -289,7 +289,7 @@ Private Sub CreateFile() As Boolean
   
 End
 
-Private Sub ImportDependencies(sName As String, sOrig As String, bLink As Boolean)
+Private Sub ImportDependencies(sName As String, sExt As String, sOrig As String, bLink As Boolean)
   
   Dim hIn As File
   Dim hOut As File
@@ -303,11 +303,13 @@ Private Sub ImportDependencies(sName As String, sOrig As String, bLink As Boolea
 
   Inc Application.Busy
   
-  sForm = Project.Dir &/ sName & ".form"
+  sForm = Project.Dir &/ File.SetExt(sName, sExt)
   sOrig = File.Dir(sOrig)
   
   hIn = Open sForm
-  hOut = Open Temp$("form") For Create 
+  hOut = Open Temp$(sExt) For Create 
+  
+  'TODO: Import Image.Load(*) and SvgImage.Load(*)
   
   While Not Eof(hIn)
   
@@ -346,7 +348,7 @@ NEXT_LINE:
   
   If bSave Then
     Kill sForm
-    Copy Temp$("form") To sForm
+    Copy Temp$(sExt) To sForm
     Project.RefreshKey(sForm)
   Endif
   
@@ -362,12 +364,14 @@ Private Sub ImportFile() As Boolean
   Dim sName As String
   Dim sTemp As String
   Dim sType As String
+  Dim sExt As String
   
   sTemp = fchExisting.Value
   sDir = File.Dir(fchExisting.Value)
   sName = File.Name(fchExisting.Value)
   
-  Select Case File.Ext(sTemp)
+  sExt = File.Ext(sTemp)
+  Select Case sExt
   
     Case "module"
       sName = File.BaseName(Project.GetUniqueSourceName(sName))
@@ -377,17 +381,17 @@ Private Sub ImportFile() As Boolean
       sName = File.BaseName(Project.GetUniqueSourceName(sName))
       Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
   
-    Case "form"
+    Case "form", "report"
       sName = File.BaseName(Project.GetUniqueSourceName(sName))
       Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, "form", $sDir, sTemp,, True, chkLink.Value)
-      ImportDependencies(sName, sTemp, chkLink.Value)
+      Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)
+      ImportDependencies(sName, sExt, sTemp, chkLink.Value)
       Project.OpenForm(sName)
           
     Case "webpage"
       sName = File.BaseName(Project.GetUniqueSourceName(sName))
       Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, "webpage", $sDir, sTemp,,, chkLink.Value)
+      Project.InsertSource(sName, "webpage", $sDir, sTemp, False, False, chkLink.Value)
   
     Default
       sName = Project.GetUniqueName($sDir, sName)

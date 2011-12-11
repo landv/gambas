@@ -17,6 +17,7 @@ Property Id As String
 Property Timeout As Float
 Property Prefix As String
 Property Unique As Boolean
+Property Modified As Boolean
 
 Private Sub LockSession() 
   
@@ -310,12 +311,6 @@ Public Sub _put(Value As Variant, Key As String)
     
 End
 
-Public Sub Modify()
-  
-  $bModify = True
-  
-End
-
 
 Private Function Id_Read() As String
 
@@ -379,5 +374,17 @@ Private Sub Unique_Write(Value As Boolean)
 
   $bUnique = Value
   CheckUnique
+
+End
+
+Private Function Modified_Read() As Boolean
+
+  Return $bModify
+
+End
+
+Private Sub Modified_Write(Value As Boolean)
+
+  $bModify = Value
 
 End

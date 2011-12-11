@@ -17,6 +17,7 @@ Public Sub Example11()
   Paint.Brush = hBrush
   Paint.Rectangle(X, Y, W, H)
   Paint.Fill
+  'Paint.DrawImage(hImage, X, Y, W, H)
   
   Paint.Brush = Paint.Color(Color.RGB(255, 127, 127, 153))
   Paint.Arc(X, Y, 10)

@@ -1064,6 +1064,7 @@ END_METHOD
 
 BEGIN_METHOD(CARRAY_string_exist, GB_STRING value; GB_INTEGER mode)
 
+	//fprintf(stderr, "%s\n", DEBUG_get_current_position());
 	GB_ReturnBoolean(find_string(THIS, VARGOPT(mode, GB_COMP_BINARY), STRING(value), LENGTH(value), 0) >= 0);
 
 END_METHOD

@@ -862,7 +862,11 @@ Public Sub WakeUp(bReplace As Boolean)
     cmbSearch.SetFocus
   Endif
   
-  If sFind Then cmbSearch.Text = sFind
+  If sFind Then
+    cmbSearch.Text = sFind
+    cmbSearch.SelectAll
+  Endif
+  
   ShowString
   
 End
