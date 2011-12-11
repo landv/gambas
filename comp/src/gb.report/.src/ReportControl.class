@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag"
+Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
 Public Const _Family As String = "Report"
 Public _SizeInt As TSizeHint
 Public _Count As Integer = 1
@@ -49,7 +49,7 @@ Private $bRelativeWidth As Boolean
 Private $bRelativeHeight As Boolean
 Private $bRelativePadding As Boolean
 Private $bIgnore As Boolean = False
-
+Private $sRange As String
 Property Read Id As Integer
 Property Read Parent As ReportContainer
 Property Tag As Variant
@@ -68,7 +68,7 @@ Property Read _RelativeTop As Boolean     ''Use percentage for Top Pos?
 Property Read _RelativeWidth As Boolean   ''Use percentage for width?
 Property Read _RelativeHeight As Boolean  ''Use percentage for height ?
 Property Read _RelativePadding As Boolean ''Use percentage for padding ?
-
+Property Range As String
 Property Left As String
 Property Top As String
 Property X As String
@@ -522,5 +522,17 @@ End
 Private Function DataIndex_Read() As Integer
 
   Return Me.Parent._GetIndex()
+
+End
+
+Private Function Range_Read() As String
+
+  Return $sRange
+
+End
+
+Private Sub Range_Write(Value As String)
+
+  $sRange = Value
 
 End

@@ -280,7 +280,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       Return GetHSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
     Case Arrange.Fill, Arrange.None
-      hMyHints.Width = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+      Return Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
       'hMyHints.Height = AvailableH
       'Me._SizeInt.StoreSize = True
       'Me._SizeInt = hMyHints

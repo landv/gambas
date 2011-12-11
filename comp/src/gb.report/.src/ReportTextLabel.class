@@ -5,26 +5,16 @@ Inherits ReportFrame
 
 Public Const _Properties As String = "*,Text,Alignment{Align.*}"
 Public Const _Similar As String = "ReportControl"
+Public Const _DefaultEvent As String = "Data"
 Property Text As String
 Property Alignment As Integer
-Property WordWrap As Boolean
 
-Private $bWordWrap As Boolean
 Private $sText As String
 Private $iAlignment As Integer = Align.TopNormal
 Private $fZoom As Float
 
-Private Function WordWrap_Read() As Boolean
-
-  Return $bWordWrap
-
-End
-
-Private Sub WordWrap_Write(Value As Boolean)
-
-  $bWordWrap = Value
-
-End
+Public Data As String
+Event Data()
 
 Private Function Text_Read() As String
 
@@ -54,15 +44,21 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   Dim hMyHints As New TSizeHint
   Dim fTextHeight As Float
+  Dim sTmp As String
 
   hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalWidth)
 
   If Me.Autoresize Then
-
+    If Not $sText Then
+      Raise Data
+      sTmp = Data
+    Else
+      sTmp = $sText
+    Endif
     'La largeur est fixée par l'utilisateur
     'Calcule de la hauteur
     If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-    fTextHeight = MTools.PixelsToUnits(Paint.RichTextHeight($sText, MTools.UnitsToPixels(hMyHints.Width)))
+    fTextHeight = MTools.PixelsToUnits(Paint.RichTextExtents(sTmp, MTools.UnitsToPixels(hMyHints.Width)).Height)
     hMyHints.Height = Max(hMyHints.Height, Me.Border._Top + Me.Padding._Top + fTextHeight + Me.Padding._Bottom + Me.Border._Bottom)
   Endif
 
@@ -73,9 +69,16 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
 
   Dim iX, iY, iW, iH As Integer
+  Dim sTmp As String
 
-  Paint.Brush = Paint.Color(Me.BorderColor)
-  If Me.Tag = "*" Then Stop
+  Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
+
+  If Not $sText Then
+    Raise Data
+    sTmp = Data
+  Else
+    sTmp = $sText
+  Endif
 
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
@@ -85,6 +88,10 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
   iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
 
-  Paint.RichText($sText, iX, iY, iW, iH, $iAlignment)
+  Paint.Rectangle(iX, iY, iW, iH)
+  Paint.Clip
+  Paint.RichText(sTmp, iX, iY, iW, iH, $iAlignment)
+  Paint.Fill
+  Paint.ResetClip
 
 End

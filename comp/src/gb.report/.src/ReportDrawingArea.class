@@ -1,0 +1,30 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+
+Event Draw
+Public Const _Properties As String = "*"
+Public Const _Similar As String = "ReportImage"
+Public Const _DefaultEvent As String = "Draw"
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+
+  Dim hRect As Rect
+  Dim iX, iY, iW, iH As Integer
+
+  iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+  iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+
+  hRect = New Rect(iX, iY, iW, iH)
+
+  Paint.ClipRect = hRect
+  'Paint.
+  Paint.Translate(iX, iY)
+  Raise Draw
+  Paint.Translate(- iX, - iY)
+  Paint.ResetClip
+
+End

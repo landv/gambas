@@ -266,6 +266,6 @@ Public Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Rad
   c2 = ARC_TO_BEZIER * radius_y[0]
   paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
 
-  paint.closepath()
+  'paint.closepath()
 
 End
