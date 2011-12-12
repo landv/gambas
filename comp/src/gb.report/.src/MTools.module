@@ -12,26 +12,29 @@ Private DashDot As Float[] = [2.0, 1.0, 1.0, 1.0]
 Private DashDotDot As Float[] = [2.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
 Public Function UnitsToPixels(Value As Float) As Float
-  
+
   Dim f As Float
-  
+
   f = Units.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
-  
-  Return Value * f 
+
+  Return Value * f
+
 End
 
-Public Function PixelsToUnits(Value As Integer) As Float
+Public Function PixelsToUnits(Value As Float) As Float
+
   Dim f As Float
-  
+
   f = Units.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
-    
+
   Return (Value) / f
+
 End
 
 Public Sub GetBorder(iStyle As Integer) As Float[]
-  
+
   Select Case iStyle
-  
+
     Case Line.Dash
       Return Dash
     Case Line.Dot
@@ -41,11 +44,11 @@ Public Sub GetBorder(iStyle As Integer) As Float[]
     Case Line.DashDotDot
       Return DashDotDot
   End Select
-  
+
 End
 
 ' Public Sub ToAlignment(iAlignment As Integer) As Integer
-'   
+'
 '   Select Case iAlignment
 '     Case ReportAlign.Normal
 '       Return Align.Normal
@@ -72,5 +75,5 @@ End
 '     Case ReportAlign.BottomCenter
 '       Return Align.BottomCenter
 '   End Select
-'   
+'
 ' End
