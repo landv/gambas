@@ -84,6 +84,9 @@ void gSlider::init()
 {
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 	
+	if (_min == _max)
+		_max = _min + 1;
+	
 	if (_value < _min)
 		_value = _min;
 	else if (_value > _max)

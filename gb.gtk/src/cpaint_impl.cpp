@@ -80,6 +80,7 @@ typedef
 	struct {
 		cairo_t *context;
 		CFONT *font;
+		CFONT **font_stack;
 		}
 	GB_PAINT_EXTRA;
 
@@ -88,6 +89,8 @@ typedef
 
 static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double h, int rx, int ry)
 {
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+	
 	d->width = w;
 	d->height = h;
 	d->resolutionX = rx; //device->physicalDpiX();
@@ -101,11 +104,12 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 	
 	if (target)
 	{
-		EXTRA(d)->context = cairo_create(target);
+		dx->context = cairo_create(target);
 		cairo_surface_destroy(target);
 	}
 	
-	EXTRA(d)->font = NULL;
+	dx->font = NULL;
+	dx->font_stack = NULL;
 	
 	return FALSE;
 }
@@ -222,10 +226,13 @@ static int Begin(GB_PAINT *d)
 static void End(GB_PAINT *d)
 {
 	void *device = d->device;
+	GB_PAINT_EXTRA *dx = EXTRA(d);
 
-	GB.Unref(POINTER(&EXTRA(d)->font));
+	if (dx->font_stack)
+		GB.FreeArray(POINTER(&dx->font_stack));
+	GB.Unref(POINTER(&dx->font));
 	
-	cairo_destroy(EXTRA(d)->context);
+	cairo_destroy(dx->context);
 
 	if (GB.Is(device, CLASS_DrawingArea))
 	{
@@ -242,12 +249,33 @@ static void End(GB_PAINT *d)
 
 static void Save(GB_PAINT *d)
 {
-	cairo_save(CONTEXT(d));
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+	CFONT **pfont;
+	
+	cairo_save(dx->context);
+	
+	if (!dx->font_stack)
+		GB.NewArray(POINTER(&dx->font_stack), sizeof(void *), 0);
+	
+	pfont = (CFONT **)GB.Add(POINTER(&dx->font_stack));
+	*pfont = dx->font;
+	if (*pfont)
+		GB.Ref(*pfont);
 }
 
 static void Restore(GB_PAINT *d)
 {
-	cairo_restore(CONTEXT(d));
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+	
+	cairo_restore(dx->context);
+	
+	if (dx->font_stack && GB.Count(dx->font_stack) > 0)
+	{
+		CFONT *font = dx->font_stack[GB.Count(dx->font_stack) - 1];
+		GB.Unref(POINTER(&dx->font));
+		dx->font = font;
+		GB.Remove(POINTER(&dx->font_stack), GB.Count(dx->font_stack) - 1, 1);
+	}
 }
 
 static void Antialias(GB_PAINT *d, int set, int *antialias)
