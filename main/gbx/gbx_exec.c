@@ -1142,8 +1142,6 @@ void EXEC_native(void)
 	printf("| >> EXEC_native: %s.%s (%p)\n", EXEC.class->name, desc->name, &desc);
 	#endif
 
-	//printf("EXEC_native: nparam = %d desc->npvar = %d\n", nparam, desc->npvar);
-
 	ON_ERROR(error_EXEC_native)
 	{
 		n = desc->npmin;
@@ -1677,7 +1675,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 {
 	CLASS *her[MAX_INHERITANCE];
 	int nher;
-	int i, np, npopt, nparam_opt;
+	int i, np, npopt, nparam_opt, save_nparam;
 	CLASS_DESC *desc;
 	short index;
 	int arg, opt;
@@ -1714,6 +1712,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 	if (UNLIKELY(np > nparam))
 		THROW(E_NEPARAM);
 
+	save_nparam = nparam;
 	arg = - nparam;
 	opt = arg + np;
 	nparam_opt = nparam - np;
@@ -1790,7 +1789,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 		EXEC_special(special, class, object, np + npopt, drop);
 	}
 	
-	SP -= nparam + nparam_opt;
+	SP -= save_nparam;
 }
 
 void *EXEC_create_object(CLASS *class, int np, char *event)
