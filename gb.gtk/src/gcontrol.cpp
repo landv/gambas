@@ -218,8 +218,9 @@ void gControl::initAll(gContainer *parent)
 	_drag_get_data = false;
 	frame_border = 0;
 	frame_padding = 0;
-	bg_set = false;
-	fg_set = false;
+	_bg_set = false;
+	_fg_set = false;
+	_font_set = false;
 	have_cursor = false;
 	use_base = false;
 	mous = CURSOR_DEFAULT;
@@ -686,11 +687,13 @@ void gControl::setFont(gFont *ft)
 	if (ft)
 	{
 		resolveFont(ft);
+		_font_set = true;
 	}
 	else if (fnt)
 	{
 		gFont::assign(&fnt);
 		gtk_widget_modify_font(widget, NULL);
+		_font_set = false;
 	}
 	
 	resize();
@@ -1451,7 +1454,7 @@ void gControl::setName(char *name)
 
 gColor gControl::realBackground()
 {
-	if (bg_set)
+	if (_bg_set)
 		return use_base ? get_gdk_base_color(widget) : get_gdk_bg_color(widget);
 	else if (pr)
 		return pr->realBackground();
@@ -1461,7 +1464,7 @@ gColor gControl::realBackground()
 
 gColor gControl::background()
 {
-	if (bg_set)
+	if (_bg_set)
 		return realBackground();
 	else
 		return COLOR_DEFAULT;
@@ -1486,9 +1489,9 @@ void gControl::setRealBackground(gColor color)
 
 void gControl::setBackground(gColor color)
 {
-	bg_set = color != COLOR_DEFAULT;
+	_bg_set = color != COLOR_DEFAULT;
 	
-	if (!bg_set)
+	if (!_bg_set)
 	{
 		if (pr && !use_base)
 			color = pr->realBackground();
@@ -1499,7 +1502,7 @@ void gControl::setBackground(gColor color)
 
 gColor gControl::realForeground()
 {
-	if (fg_set)
+	if (_fg_set)
 		return use_base ? get_gdk_text_color(widget) : get_gdk_fg_color(widget);
 	else if (pr)
 		return pr->realForeground();
@@ -1509,7 +1512,7 @@ gColor gControl::realForeground()
 
 gColor gControl::foreground()
 {
-	if (fg_set)
+	if (_fg_set)
 		return realForeground();
 	else
 		return COLOR_DEFAULT;
@@ -1534,9 +1537,9 @@ void gControl::setRealForeground(gColor color)
 
 void gControl::setForeground(gColor color)
 {
-	fg_set = color != COLOR_DEFAULT;
+	_fg_set = color != COLOR_DEFAULT;
 	
-	if (!fg_set)
+	if (!_fg_set)
 	{
 		if (pr)
 			color = pr->realForeground();

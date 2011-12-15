@@ -188,8 +188,9 @@ public:
 	unsigned _tracking : 1;       // If we are tracking mouse move even if no mouse button is pressed
 	unsigned _old_tracking : 1;   // real value when Tracking is false
 	
-	unsigned bg_set : 1;          // Have a private background
-	unsigned fg_set : 1;          // Have a private foreground
+	unsigned _bg_set : 1;          // Have a private background
+	unsigned _fg_set : 1;          // Have a private foreground
+	unsigned _font_set : 1;       // Have a private font
 	unsigned have_cursor : 1;     // If gApplication::setBusy() must update the cursor
 	unsigned use_base : 1;        // Use base and text color for foreground and background
 	unsigned visible : 1;         // A control can be hidden if its width or height is zero

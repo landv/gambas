@@ -493,10 +493,9 @@ void gContainer::insert(gControl *child, bool realize)
 		gtk_widget_show_all(child->border);
 	}
     
-	child->setBackground();
-	child->setForeground();
-  child->setFont(font());
-
+	if (hasBackground()) child->setBackground();
+	if (hasForeground()) child->setForeground();
+  if (hasFont()) child->setFont(font());
 }
 
 void gContainer::remove(gControl *child)
@@ -541,7 +540,7 @@ void gContainer::setBackground(gColor color)
 	while (iter)
 	{
 		child = (gControl *)iter->data;
-		if (!child->bg_set)
+		if (!child->_bg_set)
 			child->setBackground();
 		iter = iter->next;
 	}	
@@ -561,7 +560,7 @@ void gContainer::setForeground(gColor color)
 	while (iter)
 	{
 		child = (gControl *)iter->data;
-		if (!child->fg_set)
+		if (!child->_fg_set)
 			child->setForeground();
 		iter = iter->next;
 	}	
@@ -660,7 +659,7 @@ void gContainer::setFont(gFont *ft)
 	while (iter)
 	{
 		child = (gControl *)iter->data;
-		if (!child->bg_set)
+		if (!child->_font_set)
 			child->setFont(child->font());
 		iter = iter->next;
 	}	
@@ -674,4 +673,19 @@ void gContainer::moveChild(gControl *child, int x, int y)
 		gtk_layout_move(GTK_LAYOUT(parent), child->border, x, y);
 	else
 		gtk_fixed_move(GTK_FIXED(parent), child->border, x, y);
+}
+
+bool gContainer::hasBackground() const
+{
+	return _bg_set || (parent() && parent()->hasBackground());
+}
+
+bool gContainer::hasForeground() const
+{
+	return _fg_set || (parent() && parent()->hasForeground());
+}
+
+bool gContainer::hasFont() const
+{
+	return _font_set || (parent() && parent()->hasFont());
 }
