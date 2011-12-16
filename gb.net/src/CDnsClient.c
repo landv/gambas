@@ -86,7 +86,7 @@ void dns_callback(long lParam)
 		mypoll.events=POLLIN;
 		mypoll.revents=0;
 		idata=poll(&mypoll,1,0);
-		if (!idata) break;
+		if (idata <= 0) break;
 		read (dns_r_pipe,&v_obj,sizeof(void*));
 		read (dns_r_pipe,&test_id,sizeof(int));
 		read (dns_r_pipe,Action,sizeof(char));

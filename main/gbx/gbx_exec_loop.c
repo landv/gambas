@@ -686,15 +686,8 @@ _POP_UNKNOWN:
 
 _POP_OPTIONAL:
 
-  /*
-  if (ind >= 0)
-    val = &BP[ind];
-  else
-    val = &PP[ind];
-  */
-
   {
-    register VALUE *val = &BP[GET_XX()];
+    register VALUE *val = &PP[GET_XX()];
 
     if (val->type == T_VOID)
     {

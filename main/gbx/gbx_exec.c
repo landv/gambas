@@ -432,7 +432,7 @@ void EXEC_enter(void)
 
 	BP = SP;
 	if (func->vararg)
-		PP = SP - (nparam - func->n_param);
+		PP = SP - (Max(func->n_param, nparam) - func->n_param);
 	else
 		PP = SP;
 	FP = func;
