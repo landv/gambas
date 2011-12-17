@@ -4,15 +4,29 @@
   #MoveScaled(0,0,64,64)
   Index = 0
   Text = ("")
-  { ReportLabel1 ReportLabel
-    #MoveScaled(4,9,62,4)
-    Width = "8cm"
-    Font = Font["+5"]
-    Padding = ReportPadding["Top:7mm;Bottom:7mm;Left:7mm;Right:7mm"]
-    AutoResize = True
-    Text = ("Salut Benoit")
-    Alignment = Align.Center
-    Rotate = 25
+  { ReportPanel1 ReportVPanel
+    #MoveScaled(3,6,64,49)
+    Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:4mm;Right:4mm"]
+    Expand = True
+    Spacing = "7mm"
+    { ReportHBox1 ReportHBox
+      #MoveScaled(0,0,64,8)
+      Width = "2cm"
+      Height = "2cm"
+      AutoResize = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Background = ReportBrush["LinearGradient(0,0,1,1,[#3F1D00,#FF7F00],[0,1])"]
+      { ReportLabel1 ReportLabel
+        #MoveScaled(1,2,62,4)
+        Brush = ReportBrush["#FFFF00"]
+        Font = Font["+5"]
+        Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
+        Expand = True
+        AutoResize = True
+        Alignment = Align.Center
+        Rotate = 45
+      }
+    }
   }
   Index = 0
 }
