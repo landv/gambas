@@ -3,6 +3,7 @@
   main.c
 
   (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2011-2012 Bruce Bruen <bbruen@paddys-hill.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -570,6 +571,77 @@ static int db_version(DB_DATABASE *db)
 	}
 	return dbversion;
 }
+
+/* Internal function that fills field information from a schema request.
+
+   The result columns must be ordered that way (from the specified column index):
+     - atttypid::int
+     - atttypmod
+     - attnotnull
+     - adsrc
+     - atthasdef
+*/
+
+static void fill_field_info(DB_FIELD *info, PGresult *res, int row, int col)
+{
+	char *val;
+	Oid type;
+	GB_VARIANT def;
+	
+	info->name = NULL;
+
+	type = atoi(PQgetvalue(res, row, col));
+	info->type = conv_type(type);
+
+	info->length = 0;
+	if (info->type == GB_T_STRING)
+	{
+		info->length = atoi(PQgetvalue(res, row, col + 1));
+		if (info->length < 0)
+			info->length = 0;
+		else
+			info->length -= 4;
+	}
+
+	info->def.type = GB_T_NULL;
+
+	if (conv_boolean(PQgetvalue(res, row, col + 4)) && conv_boolean(PQgetvalue(res, row, col + 2)))
+	{
+		def.type = GB_T_VARIANT;
+		def.value.type = GB_T_NULL;
+
+		val = PQgetvalue(res, row, col + 3);
+		if (val && *val)
+		{
+			if (strncmp(val, "nextval(", 8) == 0)
+			{
+				if (info->type == GB_T_LONG)
+					info->type = DB_T_SERIAL;
+			}
+			else
+			{
+				switch(info->type)
+				{
+					case GB_T_BOOLEAN:
+						def.value.type = GB_T_BOOLEAN;
+						def.value.value._boolean = (val[1] == 't');
+						break;
+
+					default:
+
+						DB.Query.Init();
+						if (!unquote_string(val, PQgetlength(res, row, col + 3), DB.Query.AddLength))
+							val = DB.Query.Get();
+
+						conv_data(val, -1, &def.value, type);
+				}
+
+				GB.StoreVariant(&def, &info->def);
+			}
+		}
+	}	
+}
+
 
 
 /*****************************************************************************
@@ -1159,39 +1231,43 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-	char *qfield =
-		"select pg_attribute.attname, pg_attribute.atttypid::int,pg_attribute.atttypmod "
-			"from pg_class, pg_attribute "
-			"where pg_class.relname = '&1' "
-				"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
-				"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
-				"and pg_attribute.attrelid = pg_class.oid ";
-
-	char *qfield_schema =
-		"select pg_attribute.attname, pg_attribute.atttypid::int,pg_attribute.atttypmod "
-			"from pg_class, pg_attribute "
-			"where pg_class.relname = '&1' "
-				"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
-				"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
-				"and pg_attribute.attrelid = pg_class.oid ";
-
+	const char *qfield_all=
+			"SELECT col.attname, col.atttypid::int, col.atttypmod, "
+					"col.attnotnull, def.adsrc, col.atthasdef "
+			"FROM pg_catalog.pg_class tbl, pg_catalog.pg_attribute col "
+							"LEFT JOIN pg_catalog.pg_attrdef def ON (def.adnum = col.attnum AND def.adrelid = col.attrelid) "
+			"WHERE tbl.relname = '&1' AND "
+					"col.attrelid = tbl.oid AND "
+					"col.attnum > 0 AND "
+					"not col.attisdropped "
+			"ORDER BY col.attnum ASC;";
+        
+	char *qfield_schema_all =
+		"select pg_attribute.attname, pg_attribute.atttypid::int, pg_attribute.atttypmod, "
+						"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+				"from pg_class, pg_attribute "
+						"LEFT JOIN pg_catalog.pg_attrdef  ON (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) "
+				"where pg_class.relname = '&1' "
+						"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+						"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+						"and pg_attribute.attrelid = pg_class.oid ";
+                
 	PGresult *res;
 	int i, n;
 	DB_FIELD *f;
 	char *schema;
 
-	/* Nom de la table */
-
+	// Table name
 	info->table = GB.NewZeroString(table);
 	
 	if (get_table_schema(&table, &schema))
 	{
-		if (do_query(db, "Unable to get table fields: &1", &res, qfield, 1, table))
+		if (do_query(db,"Unable to get table fields: &1", &res, qfield_all, 1, table))
 			return TRUE;
 	}
 	else
 	{
-		if (do_query(db, "Unable to get table fields: &1", &res, qfield_schema, 2, table, schema))
+		if (do_query(db, "Unable to get table fields: &1", &res, qfield_schema_all, 2, table, schema))
 			return TRUE;
 	}
 
@@ -1207,25 +1283,10 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 	for (i = 0; i < n; i++)
 	{
 		f = &info->field[i];
-
-		if (field_info(db, info->table, PQgetvalue(res, i, 0), f))
-		{
-			PQclear(res);
-			return TRUE;
-		}
-
+		
+		fill_field_info(f, res, i, 1);
+		
 		f->name = GB.NewZeroString(PQgetvalue(res, i, 0));
-
-		/*f->type = conv_type(atol(PQgetvalue(res, i, 1)));
-		f->length = 0;
-		if (f->type == GB_T_STRING)
-		{
-			f->length = atoi(PQgetvalue(res, i, 2));
-			if (f->length < 0)
-				f->length = 0;
-			else
-				f->length -= 4;
-		}*/
 	}
 
 	PQclear(res);
@@ -1939,7 +2000,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 {
 	const char *query =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attrdef.atthasdef "
 		"from pg_class, pg_attribute "
 		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
 		"where pg_class.relname = '&1' "
@@ -1950,7 +2011,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	const char *query_schema =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attrdef.atthasdef "
 		"from pg_class, pg_attribute "
 		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
 		"where pg_class.relname = '&1' "
@@ -1960,9 +2021,6 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		"and pg_attribute.attrelid = pg_class.oid";
 
 	PGresult *res;
-	Oid type;
-	GB_VARIANT def;
-	char *val;
 	char *schema;
 	const char *fulltable = table;
 	
@@ -1983,59 +2041,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		return TRUE;
 	}
 
-	info->name = NULL;
-
-	type = atoi(PQgetvalue(res, 0, 1));
-	info->type = conv_type(type);
-
-	info->length = 0;
-	if (info->type == GB_T_STRING)
-	{
-		info->length = atoi(PQgetvalue(res, 0, 2));
-		if (info->length < 0)
-			info->length = 0;
-		else
-			info->length -= 4;
-	}
-
-	info->def.type = GB_T_NULL;
-
-	if (conv_boolean(PQgetvalue(res, 0, 3)))
-	{
-		def.type = GB_T_VARIANT;
-		def.value.type = GB_T_NULL;
-
-		val = PQgetvalue(res, 0, 4);
-		if (val && *val)
-		{
-			if (strncmp(val, "nextval(", 8) == 0)
-			{
-				if (info->type == GB_T_LONG)
-					info->type = DB_T_SERIAL;
-			}
-			else
-			{
-				switch(info->type)
-				{
-					case GB_T_BOOLEAN:
-						def.value.type = GB_T_BOOLEAN;
-						def.value.value._boolean = (val[1] == 't');
-						break;
-
-					default:
-
-						DB.Query.Init();
-						if (!unquote_string(val, PQgetlength(res, 0, 4), DB.Query.AddLength))
-							val = DB.Query.Get();
-
-						conv_data(val, -1, &def.value, type);
-				}
-
-				GB.StoreVariant(&def, &info->def);
-			}
-
-		}
-	}
+	fill_field_info(info, res, 0, 1);
 
 	PQclear(res);
 	return FALSE;
