@@ -278,7 +278,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     Case Arrange.Horizontal
       Return GetHSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight)
     Case Arrange.Column
-      Return GetCSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight)
+      Return GetVSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight)
     Case Arrange.Fill, Arrange.None
       Return Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
       'hMyHints.Height = AvailableH
@@ -378,27 +378,6 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     hSizeInt.Height = fHeight + Me.Padding._Height + Me.Border._Top + Me.Border._Bottom
     hSizeInt.Width = fWidth + Me.Padding._Width + Me.Border._Left + Me.Border._Right
   Endif
-
-  'On ne peut pas dépasser la taille disponible (report sur prochaine page)
-  hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
-
-  Me._SizeInt = hSizeInt
-
-  Return hSizeInt
-
-End
-
-Private Function GetCSizeInt(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
-
-  Dim hSizeInt As New TSizeHint
-  Dim htmpInts As TSizeHint
-  Dim hChild As ReportControl         ''Enfants
-  Dim fHeight, fSpacing, fWidth As Float
-  Dim i, j As Integer
-  Dim bExitLoop As Boolean
-
-  'D'abord utiliser la méthode du controle pour définir la taille
-  hSizeInt = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
   hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
