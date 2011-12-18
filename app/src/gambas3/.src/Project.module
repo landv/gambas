@@ -4298,7 +4298,7 @@ Public Function GetExamples(Optional sParent As String) As String[]
       'ENDIF
     Next
 
-  Else
+  Else If IsDir(EXAMPLES_DIR) Then
 
     For Each sFile In Dir(EXAMPLES_DIR, "*", gb.Directory)
       If Left(sFile) = "." Then Continue
