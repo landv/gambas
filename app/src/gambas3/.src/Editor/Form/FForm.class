@@ -2150,7 +2150,7 @@ End
 
 Private Sub FillShowTabMenu()
 
-  Dim hTabStrip As Object = Master.Control
+  Dim hTabStrip As Object = GetCurrentTabStrip()
   Dim hMenu As Menu
   Dim iIndex As Integer
 
@@ -2196,6 +2196,11 @@ Sub RefreshMenu()
 
   If Selection.Count = 1 And If Master.IsMultiContainer() Then
     If Master.Control.Count >= 2 Then
+      mnuShowTab.Show
+      mnuMoveTab.Show
+    Endif
+  Else If Not Master Then
+    If RootControl And If RootControl.IsMultiContainer() Then
       mnuShowTab.Show
       mnuMoveTab.Show
     Endif
@@ -3170,12 +3175,15 @@ End
 
 Private Sub MoveTab(hCtrl As CControl, iWhere As Integer)
 
-  Dim hTabStrip As Object = hCtrl.Control
+  Dim hTabStrip As Object
   Dim iIndex As Integer
   Dim hChild As Control
   Dim aChildSrc As New Control[]
   Dim aChildDest As New Control[]
 
+  If Not hCtrl Then hCtrl = RootControl
+  hTabStrip = hCtrl.Control
+  
   Select Case iWhere
     Case MOVE_FIRST
       'Object.Lock(hTabStrip)
@@ -3232,17 +3240,28 @@ Public Sub mnuShowTab_Show()
 
 End
 
+Private Sub GetCurrentTabStrip() As Object
+  
+  If Master Then
+    Return Master.Control
+  Else
+    Return RootControl.Control
+  Endif
+  
+End
+
+
 Public Sub mnuShowTab_Click()
 
-  Dim hTabStrip As Object = Master.Control
-
+  Dim hTabStrip As Object = GetCurrentTabStrip()
+  
   hTabStrip.Index = Last.Tag
 
 End
 
 Public Sub btnTabMenu_Click()
 
-  Dim hTabStrip As Object = Master.Control
+  Dim hTabStrip As Object = GetCurrentTabStrip()
 
   If hTabStrip.Count <= 1 Then Return
 

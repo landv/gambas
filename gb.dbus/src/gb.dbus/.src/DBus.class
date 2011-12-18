@@ -63,18 +63,15 @@ Static Public Sub _Normalize(sName As String) As String
 End
 
 
-Static Public Sub _RegisterApplication(hConnection As DBusConnection) As String
+Static Public Sub _RegisterApplication(hConnection As DBusConnection, Optional sName As String) As String
   
-  Dim sName As String
-  
-  sName = hConnection.Tag
-  If Not sName Then
-    sName = "org.gambas" & _Normalize(Application.Name)
+  If IsNull(hConnection.Tag) Then
+    If Not sName Then sName = "org.gambas" & _Normalize(Application.Name)
     hConnection._RequestName(sName)
     hConnection.Tag = sName
   Endif
   Inc $iRegisterCount
-  Return sName
+  Return hConnection.Tag
   
 End
 
