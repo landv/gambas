@@ -4,7 +4,9 @@ Create Static
 Export
 Inherits ReportSection
 
-Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count{Range:1;256}=1,Index,Text"
+Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count{Range:1;256}=1,Index,Text,"
+"Paper{Printer.A3;A4;A5;B5;Letter;Executive;Legal;Custom}=A4,"
+"Orientation{Printer.Portrait;Landscape}=Portrait"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame,ReportSection"
 Public Const _IsForm As Boolean = True
 Public Const _IsContainer As Boolean = True
@@ -30,8 +32,10 @@ Private $iIndex As Integer
 Private $iResolution As Integer = -1
 Private $iCurSection As Integer
 Private $iCurPage As Integer = -1
-Property Resolution As Integer
+Private $iPaper As Integer = 2
+Private $iOrientation As Integer
 
+Property Resolution As Integer
 Property Scale As Float
 Property Read PageCount As Integer
 Property Count As Integer
@@ -65,6 +69,9 @@ Property Data As Object
 
 'All ReportSection Properties
 Property Text As String
+
+Property Paper As Integer
+Property Orientation As Integer
 
 'EVENT Data()
 
@@ -128,8 +135,8 @@ Public Sub _Layout(Optional iPage As Integer = -1)
   '$sOldDeviceName = Paint.Device.Name"
   MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
   If Me.Parent = Null Then
-    Me.Width = Int((Paint.Width / $fScale)) & "px"
-    Me.Height = Int((Paint.Height / $fScale)) & "px"
+    SetWidth(Int((Paint.Width / $fScale)) & "px")
+    SetHeight(Int((Paint.Height / $fScale)) & "px")
   Endif
   ' Debug "Paint.width: " & Ceil(Paint.Width)
   ' Debug "Paint.Height: " & Ceil(Paint.Height)
@@ -245,6 +252,13 @@ End
 
 Private Sub Height_Write(Value As String)
 
+  SetHeight(Value)
+  $iPaper = Printer.Custom
+
+End
+
+Private Sub SetHeight(Value As String)
+
   Dim TSection As TControl
 
   If $aSections[0].Ctrl.Height <> Value Then
@@ -264,6 +278,13 @@ Private Function Width_Read() As String
 End
 
 Private Sub Width_Write(Value As String)
+
+  SetWidth(Value)
+  $iPaper = Printer.Custom
+
+End
+
+Private Sub SetWidth(Value As String)
 
   Dim TSection As TControl
 
@@ -648,5 +669,29 @@ Public Sub Clone() As Report
 
   'Return Object.New(Object.Type(Me))
   Return Object.Class(Me).New()
+
+End
+
+Private Function Paper_Read() As Integer
+
+  Return $iPaper
+
+End
+
+Private Sub Paper_Write(Value As Integer)
+
+  $iPaper = Value
+
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return $iOrientation
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  $iOrientation = Value
 
 End

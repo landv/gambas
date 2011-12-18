@@ -5,6 +5,7 @@
   Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Spacing = "2cm"
   Count = 2
+  Orientation = Printer.Landscape
   Index = 0
   Text = ("First Page")
   { ReportVBox2 ReportVBox
@@ -12,8 +13,9 @@
     Expand = True
   }
   { ReportLabel9 ReportLabel
-    #MoveScaled(4,17,49,11)
+    #MoveScaled(5,18,49,11)
     Font = Font["Bitstream Charter,Bold,+9"]
+    AutoResize = True
     Border = ReportBorder["Top:1mm LinearGradient(0.14,0.13,0.97,0.97,[#00FF00,#FFFFFF,#FF0000],[0,1,0.56]);Bottom:1mm LinearGradient(0.14,0.13,0.97,0.97,[#00FF00,#FFFFFF,#FF0000],[0,1,0.56]);Left:1mm LinearGradient(0.14,0.13,0.97,0.97,[#00FF00,#FFFFFF,#FF0000],[0,1,0.56]);Right:1mm LinearGradient(0.14,0.13,0.97,0.97,[#00FF00,#FFFFFF,#FF0000],[0,1,0.56])"]
     Text = ("Report About")
     Alignment = Align.Center
@@ -21,6 +23,7 @@
   { ReportLabel10 ReportLabel
     #MoveScaled(8,32,43,7)
     Font = Font["Bitstream Charter,+9"]
+    AutoResize = True
     Border = ReportBorder["Top:1mm #FFAF5F;Bottom:1mm #FFAF5F;Left:1mm #FFAF5F;Right:1mm #FFAF5F"]
     Text = ("All my friends")
     Alignment = Align.Center
@@ -101,7 +104,6 @@
           Font = Font["12"]
           Padding = ReportPadding["0.2 mm"]
           Border = ReportBorder["Right:1px #000000"]
-          Key = "name"
           Alignment = Align.Center
           UseField = True
         }
@@ -111,7 +113,6 @@
           Font = Font["12"]
           Padding = ReportPadding["0.2 mm"]
           Border = ReportBorder["Right:1px #000000"]
-          Key = "firstname"
           Alignment = Align.Center
         }
         { ReportLabel7 ReportLabel
@@ -121,7 +122,7 @@
           Padding = ReportPadding["2.2mm"]
           Expand = True
           Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
-          Key = "birth"
+          Format = "dd/mm/aaaa"
           Alignment = Align.Right
         }
       }

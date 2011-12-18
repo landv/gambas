@@ -22,6 +22,16 @@ End
 
 Public Sub _new()
 
+  Dim hSizeInt As TSizeParse
+
+  Printer1.Paper = $hReport.Paper
+  Printer1.Orientation = $hReport.Orientation
+  If $hReport.Paper = Printer.Custom Then
+    hSizeInt = New TSizeParse($hReport.Width)
+    Printer1.PaperWidth = hSizeInt.ToCm() / 10
+    hSizeInt = New TSizeParse($hReport.Height)
+    Printer1.PaperHeight = hSizeInt.ToCm() / 10
+  Endif
   Me.Center
 
 End
