@@ -210,6 +210,7 @@ Public Sub Printer1_Begin()
   'Debug Object.Type($hReport)
   $hPrint.Layout
   Printer1.Count = $hPrint.PageCount
+  Print Printer1.Count
 
 End
 

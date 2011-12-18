@@ -695,3 +695,9 @@ Private Sub Orientation_Write(Value As Integer)
   $iOrientation = Value
 
 End
+
+Public Sub Print()
+
+  CPrint.PrintReport(Me)
+
+End

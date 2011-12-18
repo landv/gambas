@@ -1,16 +1,19 @@
 ' Gambas module file
 
 Public Sub Main()
-  
-  Dim hReport As New Report
+
+  Dim hReport As New Report11
   Dim hLabel As ReportLabel
-  
-  hLabel = New ReportLabel(hReport)
-  hLabel.Padding = ReportPadding["1cm"]
-  
-  hLabel.Border.Width = "1mm"
-  hLabel.Text = "coucou"
-  
-  hReport.Preview
-  
+  'hReport.Padding = ReportPadding["2cm"]
+  '
+  ' hLabel = New ReportLabel(hReport)
+  ' 'hLabel.Padding = ReportPadding["1mm"]
+  '
+  ' hLabel.Border.Width = "1mm"
+  ' hLabel.Text = "coucou"
+  ' hLabel.Autoresize = True
+  '
+  ' hReport.Preview
+  hReport.Print
+
 End
