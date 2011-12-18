@@ -40,6 +40,11 @@
 #define SIGPWR -1
 #endif
 
+#ifndef OS_BSD
+typedef
+	struct siginfo siginfo_t;
+#endif
+
 // The -1 signal is used for ignored signal numbers
 
 /*#define DEBUG*/
@@ -175,7 +180,7 @@ static void add_handler(int num, struct sigaction *action)
 	}
 }
 
-static void handle_signal(int num, struct siginfo *info, void *context)
+static void handle_signal(int num, siginfo_t *info, void *context)
 {
 	char cnum = (char)num;
 	if (write(_pipe_signal[1], &cnum, 1) != 1)

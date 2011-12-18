@@ -245,7 +245,7 @@ void SUBR_ptr(ushort code)
   ptr = SUBR_get_pointer_or_string(PARAM);
 	
 	CHECK_enter();
-  if (setjmp(CHECK_jump) == 0)	
+  if (sigsetjmp(CHECK_jump, TRUE) == 0)	
 		VALUE_read(RETURN, ptr, code & 0xF);
 	CHECK_leave();
 	

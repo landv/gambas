@@ -8,6 +8,9 @@ Private $bInit As Boolean
 Private $iFilter As Integer 
 Private $aFilterType As String[]
 
+Private $bInitExistingTab As Boolean
+Private $bUpdateExistingTab As Boolean
+
 Public Sub Run(sPath As String, sDir As String, sType As String)
   
   $sPath = sPath
@@ -54,46 +57,65 @@ Public Sub lstType_Click()
   
   iFilter = $aFilterType.Find(LCase(sPrefix))
   $iFilter = iFilter
-  fchExisting.FilterIndex = $iFilter
-
-  If CModule.Ext.Exist(lstType.Current.Tag) Then 
-    fchExisting.ShowHidden = True
-  Endif  
+  $bUpdateExistingTab = True
   
   txtName.SelectAll
   txtName.SetFocus
   
+  UpdateExistingTab
+  
 End
 
-Public Sub Form_Open()
-
-  Dim hCtrl As Control
-  Dim sParent As String
-  Dim hModule As CModule
-  Dim aFilter As String[]
-  Dim hPanel As Container
-  Dim hPictureBox As PictureBox
-
-  $bDoNotSetName = False
+Public Sub InitExistingTab()
   
-  Settings.Read(Me)
-  Settings.Read(fchExisting)
+  Dim aFilter As String[]
+  Dim hModule As CModule
+  
+  If $bInitExistingTab Then Return
 
-  $aFilterType = ["module", "class"]
+  Settings.Read(fchExisting)
+  
   aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
   
   For Each hModule In CModule.All
   
-    $aFilterType.Add(hModule.Key)
     aFilter.Add("*." & hModule.Key)
     aFilter.Add(hModule.NameFilter)
   
   Next
   
   aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files"), "*.css", ("Cascading style sheets")])
-  $aFilterType.Insert(["image", "html", "css", "text"])
   
   fchExisting.Filter = aFilter
+  
+  $bInitExistingTab = True
+  $bUpdateExistingTab = True
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim hCtrl As Control
+  Dim sParent As String
+  Dim hModule As CModule
+  'Dim aFilter As String[]
+  Dim hPanel As Container
+  Dim hPictureBox As PictureBox
+
+  $bDoNotSetName = False
+  
+  Settings.Read(Me)
+
+  $aFilterType = ["module", "class"]
+  
+  For Each hModule In CModule.All
+  
+    $aFilterType.Add(hModule.Key)
+  
+  Next
+  
+  $aFilterType.Insert(["image", "html", "css", "text"])
   
   For Each hPanel In lstType.Children
     If Not hPanel.Tag Then Continue
@@ -426,13 +448,29 @@ Public Sub Form_Close()
   
 End
 
+Private Sub UpdateExistingTab()
+  
+  If tabFile.Index <> 1 Then Return
+  If Not $bUpdateExistingTab Then Return
+  
+  If $iFilter >= 0 Then
+    fchExisting.FilterIndex = $iFilter
+    $iFilter = -1
+  Endif
+  If CModule.Ext.Exist(lstType.Current.Tag) Then 
+    fchExisting.ShowHidden = True
+  Endif
+  
+  $bUpdateExistingTab = False
+  
+End
+
+
 Public Sub tabFile_Click()
 
   If tabFile.Index = 1 Then 
-    If $iFilter >= 0 Then 
-      fchExisting.FilterIndex = $iFilter
-      $iFilter = -1
-    Endif
+    InitExistingTab
+    UpdateExistingTab
   Endif
 
   fchExisting_Change

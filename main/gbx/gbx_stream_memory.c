@@ -77,7 +77,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 	
   CHECK_enter();
   
-  if (setjmp(CHECK_jump) == 0)
+  if (sigsetjmp(CHECK_jump, TRUE) == 0)
     memmove(buffer, stream->memory.addr + stream->memory.pos, len);
 
   CHECK_leave();  
@@ -104,7 +104,7 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 	
   CHECK_enter();
   
-  if (setjmp(CHECK_jump) == 0)
+  if (sigsetjmp(CHECK_jump, TRUE) == 0)
     memmove(stream->memory.addr + stream->memory.pos, buffer, len);
 
   CHECK_leave();  
