@@ -32,6 +32,9 @@ Public Sub _new()
     hSizeInt = New TSizeParse($hReport.Height)
     Printer1.PaperHeight = hSizeInt.ToCm() / 10
   Endif
+  
+  Debug Printer1.Orientation;; Printer1.PaperWidth;; Printer1.PaperHeight
+  
   Me.Center
 
 End

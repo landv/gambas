@@ -4,8 +4,10 @@ Export
 
 Inherits _DBus
 
+Static Property Name As String
 Static Public _ApplicationCache As New Collection
 
+Static Private $sAppName As String
 Static Private $iApp As Integer
 Static Private $iRegisterCount As Integer
 
@@ -63,10 +65,12 @@ Static Public Sub _Normalize(sName As String) As String
 End
 
 
-Static Public Sub _RegisterApplication(hConnection As DBusConnection, Optional sName As String) As String
+Static Public Sub _RegisterApplication(hConnection As DBusConnection) As String
+  
+  Dim sName As String
   
   If IsNull(hConnection.Tag) Then
-    If Not sName Then sName = "org.gambas" & _Normalize(Application.Name)
+    sName = Name_Read()
     hConnection._RequestName(sName)
     hConnection.Tag = sName
   Endif
@@ -85,3 +89,16 @@ Static Public Sub _UnregisterApplication(hConnection As DBusConnection)
   
 End
 
+
+Static Private Function Name_Read() As String
+
+  If $sAppName Then Return $sAppName
+  Return "org.gambas" & _Normalize(Application.Name)
+  
+End
+
+Static Private Sub Name_Write(Value As String)
+
+  $sAppName = _Normalize(Value)
+
+End
