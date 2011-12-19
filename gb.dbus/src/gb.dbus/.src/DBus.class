@@ -42,7 +42,6 @@ Static Public Sub _Normalize(sName As String) As String
   Dim iInd As Integer
   Dim sCar As String
   
-  sRes = "."
   For iInd = 1 To Len(sName)
     sCar = Mid$(sName, iInd, 1)
     If IsLetter(sCar) Then
@@ -93,7 +92,7 @@ End
 Static Private Function Name_Read() As String
 
   If $sAppName Then Return $sAppName
-  Return "org.gambas" & _Normalize(Application.Name)
+  Return "org.gambas." & _Normalize(Application.Name)
   
 End
 

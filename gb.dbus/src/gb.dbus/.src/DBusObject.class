@@ -168,7 +168,7 @@ Public Sub _Introspect() As String
   Endif
   
   If bHasMethod Then
-    sRes &= "  <interface name=\"" & $sName & DBus._Normalize(hClass.Name) & "\">\n"
+    sRes &= "  <interface name=\"" & $sName & "." & DBus._Normalize(hClass.Name) & "\">\n"
     For Each sSymbol In hClass.Symbols
       With hClass[sSymbol]
         If InStr(sSymbol, "_") Then Continue
@@ -262,7 +262,7 @@ Private Sub GetProperty()
     sInterface = .Arguments[0]
     sProperty = .Arguments[1]
     
-    If sInterface And If sInterface <> ($sName & DBus._Normalize(Object.Class(Me).Name)) Then Return
+    If sInterface And If sInterface <> ($sName & "." & DBus._Normalize(Object.Class(Me).Name)) Then Return
     If InStr(sProperty, "_") Then Return
     
     $hObserver.Reply("v", [Object.GetProperty(Me, sProperty)])
@@ -286,7 +286,7 @@ Private Sub GetAllProperties()
   
     sInterface = .Arguments[0]
     
-    If Not sInterface Or If sInterface = ($sName & DBus._Normalize(Object.Class(Me).Name)) Then
+    If Not sInterface Or If sInterface = ($sName & "." & DBus._Normalize(Object.Class(Me).Name)) Then
       
       hClass = Object.Class(Me)
       
@@ -324,7 +324,7 @@ Private Sub SetProperty()
     sProperty = .Arguments[1]
     vValue = .Arguments[2]
     
-    If sInterface And If sInterface <> ($sName & DBus._Normalize(Object.Class(Me).Name)) Then Return
+    If sInterface And If sInterface <> ($sName & "." & DBus._Normalize(Object.Class(Me).Name)) Then Return
     If InStr(sProperty, "_") Then Return
     
     Object.SetProperty(Me, sProperty, vValue)

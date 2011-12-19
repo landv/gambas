@@ -1059,6 +1059,8 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 
 	dbus_error_init(&error);
 	
+	//fprintf(stderr, "DBUS_register: %s\n", name);
+	
 	ret = dbus_bus_request_name(connection, name, unique ? DBUS_NAME_FLAG_DO_NOT_QUEUE : 0, &error);
 
 	if (dbus_error_is_set(&error))
