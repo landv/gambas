@@ -234,9 +234,11 @@ static void Save(GB_PAINT *d)
 	QT_PAINT_EXTRA *dx = EXTRA(d);
 	
 	PAINTER(d)->save();
+	
 	if (!dx->clipStack)
 		dx->clipStack = new QList<QPainterPath *>;
-	dx->clipStack->append(new QPainterPath(*dx->clip));
+	
+	dx->clipStack->append(dx->clip ? new QPainterPath(*dx->clip) : NULL);
 }
 
 static void Restore(GB_PAINT *d)
@@ -249,7 +251,7 @@ static void Restore(GB_PAINT *d)
 	{
 		QPainterPath *path = dx->clipStack->takeLast();
 		delete dx->clip;
-		dx->clip = new QPainterPath(*path);
+		dx->clip = path ? new QPainterPath(*path) : NULL;
 		delete path;
 	}
 }
