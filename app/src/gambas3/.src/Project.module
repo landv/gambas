@@ -4084,7 +4084,9 @@ Public Sub MakeSourcePackageTo(sPath As String)
   Dim sOpt As String
 
   Inc Application.Busy
-
+  
+  Save
+  
   If Right$(sPath, 3) = ".gz" Then
     sOpt = "z"
   Else If Right$(sPath, 4) = ".bz2" Then
