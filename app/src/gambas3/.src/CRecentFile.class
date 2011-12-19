@@ -29,12 +29,12 @@ End
 Public Sub _compare(hRecentFile As CRecentFile) As Integer
   
   Select Case Sort
-    Case SORT_BY_DATE
-      Return Sgn(hRecentFile.Date - {Date})
     Case SORT_BY_NAME
       Return Comp(File.Name(Path), File.Name(hRecentFile.Path), gb.Natural + gb.IgnoreCase)
     Case SORT_BY_PATH
       Return Comp(Path, hRecentFile.Path, gb.Natural + gb.IgnoreCase)
+    Case Else
+      Return Sgn(hRecentFile.Date - {Date})
   End Select
   
 End
@@ -49,12 +49,12 @@ End
 Public Sub GetTitle(iSort As Integer) As String
   
   Select Case iSort
-    Case SORT_BY_DATE
-      Return GetDateTitle()
     Case SORT_BY_NAME
       Return String.UCase(String.Left(File.Name(Path)))
     Case SORT_BY_PATH
       Return Replace(File.Dir(Path), User.Home, "~")
+    Case Else
+      Return GetDateTitle()
   End Select
   
 End

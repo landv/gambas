@@ -84,6 +84,8 @@ End
 
 Public Sub Form_Open()
 
+  Dim hCtrl As RadioButton
+
   $sLast = ""
   Settings.Read(Me)
   Settings.Read(dchProject)
@@ -95,16 +97,21 @@ Public Sub Form_Open()
 
   InAnotherWindow = False
   btnOther.Visible = $bAnother
-  radSortByPath.Value = Settings["/FOpenProjet/SortRecent", False]  
+  
+  $iSort = Settings["/FOpenProject/SortRecent", CRecentFile.SORT_BY_DATE]
+  
+  For Each hCtrl In [radSortByDate, radSortByName, radSortByPath]
+    If hCtrl.Tag = $iSort Then hCtrl.Value = True
+  Next
 
 End
 
 Public Sub Form_Close()
 
+  Settings["/FOpenProject/SortRecent"] = $iSort
   Settings.Write(Me)  
   Settings.Write(splProject)
   Settings.Write(dchProject)
-  Settings["/FOpenProject/SortRecent"] = radSortByPath.Value
   
 End
 
@@ -413,6 +420,7 @@ End
 Public Sub radSort_Click()
 
   $iSort = Last.Tag
+  
   If tabProject.Index = 1 Then
     lstRecent.Clear
     FillRecent
