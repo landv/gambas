@@ -76,7 +76,7 @@ public:
 
 	void setBackground();
 	void clearBackground();
-	QPixmap *background() const { return _background; }
+	Qt::HANDLE background() const { return _background; }
 	void refreshBackground();
 	void updateBackground();
 
@@ -97,6 +97,11 @@ public:
 	void setDrawEvent(int event) { _draw_event = event; }
 	bool inDrawEvent() const { return _in_draw_event; }
 	
+	void createBackground(int w, int h);
+	void deleteBackground();
+	
+	QPixmap *getBackgroundPixmap();
+	
 	//bool isTransparent() { return _transparent; }
 	//void setTransparent(bool on);
 
@@ -111,7 +116,9 @@ protected:
 
 private:
 
-	QPixmap *_background;
+	QPixmap _background_pixmap;
+	Qt::HANDLE _background;
+	int _background_w, _background_h;
 	bool _frozen;
 	bool _merge;
 	bool _focus;

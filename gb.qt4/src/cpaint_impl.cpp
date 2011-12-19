@@ -144,7 +144,7 @@ static int Begin(GB_PAINT *d)
 		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
 		if (wid->isCached())
-			target = wid->background();
+			target = wid->getBackgroundPixmap();
 		else if (wid->cache)
 			target = wid->cache;
 		else

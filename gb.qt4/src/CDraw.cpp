@@ -219,7 +219,10 @@ static int begin(GB_DRAW *d)
 		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 		
 		if (wid->isCached())
-			ret = init_drawing(d, wid->background(), wid->background()->width(), wid->background()->height());
+		{
+			QPixmap *p = wid->getBackgroundPixmap();
+			ret = init_drawing(d, p, p->width(), p->height());
+		}
 		else
 		{
 			if (!wid->inDrawEvent())
@@ -266,7 +269,7 @@ static void end(GB_DRAW *d)
 		if (wid)
 		{
 			if (wid->isCached())
-				wid->refreshBackground();
+				wid->setBackground();
 
 			wid->drawn--;
 		}

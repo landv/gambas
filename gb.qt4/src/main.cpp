@@ -700,13 +700,13 @@ static void hook_lang(char *lang, int rtl)
 	//locale = QTextCodec::locale();
 }
 
-#if 0
+#if 1
 static int (*_old_handler)(Display *d, XErrorEvent *e) = NULL;
 
 static int X11_error_handler(Display *d, XErrorEvent *e)
 {
 	qDebug("X11 ERROR");
-	BREAKPOINT();
+	//BREAKPOINT();
 
 	if (_old_handler)
 		return (*_old_handler)(d, e);
@@ -717,13 +717,13 @@ static int X11_error_handler(Display *d, XErrorEvent *e)
 
 static void hook_main(int *argc, char **argv)
 {
-	//QApplication::setGraphicsSystem("raster");
+	//QApplication::setGraphicsSystem("opengl");
 	new MyApplication(*argc, argv);
 	
 	QT_Init();
 	init_lang(GB.System.Language(), GB.System.IsRightToLeft());
 	
-	//_old_handler = XSetErrorHandler(X11_error_handler);
+	_old_handler = XSetErrorHandler(X11_error_handler);
 }
 
 
