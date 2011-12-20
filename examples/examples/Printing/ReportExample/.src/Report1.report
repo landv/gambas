@@ -43,6 +43,7 @@
         Brush = ReportBrush["#FFFFFF"]
         Fixed = True
         Font = Font["Bold"]
+        AutoResize = True
         Text = ("All friends list !")
       }
     }
@@ -71,12 +72,14 @@
         { ReportLabel1 ReportLabel
           #MoveScaled(0,0,44,9)
           Font = Font["Bitstream Charter,Bold,Italic,+2"]
+          AutoResize = True
           Text = ("Gambas Report Demo")
           Alignment = Align.Center
         }
         { ReportVBox3 ReportVBox
           #MoveScaled(0,11,38,4)
           Height = "1cm"
+          AutoResize = True
         }
       }
       { ReportLabel2 ReportLabel
@@ -85,6 +88,7 @@
         Fixed = True
         Font = Font["Bold,+1"]
         Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        AutoResize = True
         Border = ReportBorder["Top:1mm #000000"]
         Background = ReportBrush["#3398C3"]
         Text = ("Page $PAGE on $NPAGE  ")
