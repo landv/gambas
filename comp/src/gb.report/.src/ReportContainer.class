@@ -675,7 +675,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Si on ne l'a pas déja compté comme fixé
       If Not hChild.Fixed And If Not hChild.Ignore Then
         If (TH - hChildHints.Height + fspc) < 0 Then
-          Print "stop"
+          'Print "stop"
           hchild._DataIndex = j
           bExitLoop = True
           Break

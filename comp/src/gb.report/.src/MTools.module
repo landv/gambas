@@ -15,7 +15,8 @@ Public Function UnitsToPixels(Value As Float) As Float
 
   Dim f As Float
 
-  f = Units.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
+  f = 0.3937 * Paint.ResolutionX
+  'f = Units.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
 
   Return Value * f
 

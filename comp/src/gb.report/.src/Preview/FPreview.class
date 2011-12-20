@@ -26,15 +26,16 @@ Public Sub _new()
 
   Printer1.Paper = $hReport.Paper
   Printer1.Orientation = $hReport.Orientation
+  $hReport.Resolution = Printer1.Resolution
   If $hReport.Paper = Printer.Custom Then
     hSizeInt = New TSizeParse($hReport.Width)
     Printer1.PaperWidth = hSizeInt.ToCm() / 10
     hSizeInt = New TSizeParse($hReport.Height)
     Printer1.PaperHeight = hSizeInt.ToCm() / 10
   Endif
-  
+
   Debug Printer1.Orientation;; Printer1.PaperWidth;; Printer1.PaperHeight
-  
+
   Me.Center
 
 End
@@ -203,17 +204,20 @@ End
 
 Public Sub Printer1_Draw()
 
-  $hPrint.Paint(Printer1.Page)
+  $hReport.Scale = 1
+  $hReport.Paint(Printer1.Page)
 
 End
 
 Public Sub Printer1_Begin()
 
-  $hPrint = $hReport.Clone()
+  '$hPrint = $hReport.Clone()
   'Debug Object.Type($hReport)
-  $hPrint.Layout
-  Printer1.Count = $hPrint.PageCount
-  Print Printer1.Count
+
+  $hReport.Layout
+  Print "o " & Printer1.Orientation
+  Printer1.Count = $hReport.PageCount
+  'Print Printer1.Count
 
 End
 

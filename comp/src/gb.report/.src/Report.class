@@ -102,6 +102,8 @@ Public Sub _New()
   $aSections.Add(TSection)
 
   _Container = hSection
+  Me.paper = Printer.A4
+  'Me.Orientation = Printer.Landscape
 
 End
 
@@ -134,10 +136,10 @@ Public Sub _Layout(Optional iPage As Integer = -1)
   'If $sOldDeviceName = Paint.Device.Name Then Return
   '$sOldDeviceName = Paint.Device.Name"
   MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
-  If Me.Parent = Null Then
-    SetWidth(Int((Paint.Width / $fScale)) & "px")
-    SetHeight(Int((Paint.Height / $fScale)) & "px")
-  Endif
+  ' If Me.Parent = Null Then
+  '   SetWidth(Int((Paint.Width / $fScale)) & "px")
+  '   SetHeight(Int((Paint.Height / $fScale)) & "px")
+  ' Endif
   ' Debug "Paint.width: " & Ceil(Paint.Width)
   ' Debug "Paint.Height: " & Ceil(Paint.Height)
   ' Debug "Paint.ResolutionX: " & Paint.ResolutionX
@@ -681,6 +683,7 @@ End
 Private Sub Paper_Write(Value As Integer)
 
   $iPaper = Value
+  SetPaper
 
 End
 
@@ -693,11 +696,52 @@ End
 Private Sub Orientation_Write(Value As Integer)
 
   $iOrientation = Value
+  SetPaper
 
 End
 
 Public Sub Print()
 
   CPrint.PrintReport(Me)
+
+End
+
+Private Sub SetPaper()
+
+  Dim sPrev As String
+
+  Select Case $iPaper
+    Case Printer.A3
+      SetWidth("29.7cm")
+      SetHeight("42cm")
+    Case Printer.A4
+      SetWidth("21cm")
+      SetHeight("29.7cm")
+    Case Printer.A5
+      SetWidth("14.8cm")
+      SetHeight("21cm")
+    Case Printer.B5
+      SetWidth("18.7cm")
+      SetHeight("25.7cm")
+    Case Printer.Executive
+      SetWidth("19.1cm")
+      SetHeight("25.4cm")
+    Case Printer.Legal
+      SetWidth("21.6cm")
+      SetHeight("35.6cm")
+    Case Printer.Letter
+      SetWidth("21.6cm")
+      SetHeight("27.9cm")
+
+  End Select
+  'Print $iOrientation, $iPaper
+
+  If $iOrientation = Printer.Landscape And Not ($iPaper = Printer.Custom) Then
+    sPrev = Me.Height
+    SetHeight(Me.Width)
+    SetWidth(sPrev)
+    ' Print "width = " & Me.Width
+    ' Print "height = " & Me.Height
+  Endif
 
 End

@@ -3,29 +3,26 @@
 Private $iCtrl As Integer
 Public RealPage As Integer
 Public RelPage As Integer = -1
-Public RealLeft As Float
-Public RealTop As Float
-Public RealWidth As Float
-Public RealHeight As Float
+Property Read RealLeft As Float
+Property Read RealTop As Float
+Property Read RealWidth As Float
+Property Read RealHeight As Float
 Public SizeHint As TSizeHint
 Public _RealPadding As Float
 Public _SkipPainting As Boolean = False
 Public Index As Integer
 Property Ctrl As ReportControl
+Private fX As Float
+Private fY As Float
+Private fW As Float
+Private fH As Float
 
 Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As Float
 
-  Dim X1, Y1, X2, Y2 As Float
-
-  X1 = MTools.UnitsToPixels(X)
-  Y1 = MTools.UnitsToPixels(Y)
-  X2 = MTools.UnitsToPixels(X + W)
-  Y2 = MTools.UnitsToPixels(Y + H)
-
-  Me.RealLeft = X1
-  Me.RealTop = Y1
-  Me.RealWidth = X2 - X1
-  Me.RealHeight = Y2 - Y1
+  fX = X
+  fY = Y
+  fW = W
+  fH = H
 
 End
 
@@ -38,5 +35,29 @@ End
 Private Sub Ctrl_Write(Value As ReportControl)
 
   $iCtrl = Value.id
+
+End
+
+Private Function RealLeft_Read() As Float
+
+  Return MTools.UnitsToPixels(fX)
+
+End
+
+Private Function RealTop_Read() As Float
+
+  Return MTools.UnitsToPixels(fY)
+
+End
+
+Private Function RealWidth_Read() As Float
+
+  Return MTools.UnitsToPixels(fX + fW) - MTools.UnitsToPixels(fX)
+
+End
+
+Private Function RealHeight_Read() As Float
+
+  Return MTools.UnitsToPixels(fY + fH) - MTools.UnitsToPixels(fY)
 
 End
