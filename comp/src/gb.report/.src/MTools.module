@@ -32,6 +32,16 @@ Public Function PixelsToUnits(Value As Float) As Float
 
 End
 
+Public Function PixelsToUnitsPaint(Value As Float) As Float
+
+  Dim f As Float
+
+  f = Units.GetFactorUnitToInch("cm") * Paint.ResolutionX
+
+  Return (Value) / f
+
+End
+
 Public Sub GetBorder(iStyle As Integer) As Float[]
 
   Select Case iStyle

@@ -9,6 +9,7 @@ Public Sub _new()
 
     Rlbl = New ReportLabel(RVBCont)
     Rlbl.Text = "Ligne " & i
+    Rlbl.Autoresize = True
     Rlbl.Border.bottom.Width = "1px"
     Rlbl.Padding.Top = "3 mm"
     Rlbl.Padding.Bottom = "1mm"
