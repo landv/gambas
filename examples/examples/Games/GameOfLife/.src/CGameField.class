@@ -14,9 +14,9 @@ Public Function Init(bSmall As Boolean, iLife As Integer, bSymetryH As Boolean, 
   
   Randomize 
   
-  MaxX = 110 - 1
-  MaxY = 110 - 1
   $iZoom = 5
+  MaxX = dw.W \ $iZoom - 3
+  MaxY = dw.H \ $iZoom - 3
   
   'Game = NEW Boolean[MaxX + 1, MaxY + 1]
   Game = New Image(MaxX + 1, MaxY + 1)
@@ -91,7 +91,7 @@ Public Sub DrawGame(bBorder As Boolean)
   If bBorder Then
     Draw.LineStyle = Line.Solid
   Else
-    Draw.FillRect(0, 0, dw.W, dw.H, Color.Background)
+    'Draw.FillRect(0, 0, dw.W, dw.H, Color.Background)
     Draw.LineStyle = Line.None
   Endif
   

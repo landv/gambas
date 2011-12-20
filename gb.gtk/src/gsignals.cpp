@@ -82,12 +82,23 @@ gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 
 static void sg_drag_data_get(GtkWidget *widget,GdkDragContext *ct,GtkSelectionData *dt, guint i,guint t,gControl *data)
 {
+	char *text;
+	int len;
+	gPicture *pic;
 	//g_debug("sg_drag_data_get\n");
 	
-	if (gDrag::getText())
-		gtk_selection_data_set_text(dt, gDrag::getText(), -1);
-	else if (gDrag::getImage())
-		gtk_selection_data_set_pixbuf(dt, gDrag::getImage()->getPixbuf());
+	text = gDrag::getText(&len, NULL);
+	if (text)
+	{
+		gtk_selection_data_set_text(dt, text, len);
+		return;
+	}
+	
+	pic = gDrag::getImage();
+	if (pic)
+	{
+		gtk_selection_data_set_pixbuf(dt, pic->getPixbuf());
+	}
 }
 
 static void sg_drag_end(GtkWidget *widget,GdkDragContext *ct,gControl *data)

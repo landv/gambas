@@ -51,14 +51,16 @@ static CPICTURE *_picture = 0;
 static int _picture_x = -1;
 static int _picture_y = -1;
 
+enum { MIME_UNKNOWN, MIME_TEXT, MIME_IMAGE };
+
 static int get_type(const QMimeData *src)
 {
 	if (src->formats().indexOf(QRegExp("text/.*")) >= 0)
-		return 1;
+		return MIME_TEXT;
 	else if (src->hasImage())
-		return 2;
+		return MIME_IMAGE;
 	else
-		return 0;
+		return MIME_UNKNOWN;
 }
 
 static QString get_format(const QMimeData *src, int i = 0, bool charset = false)
@@ -105,14 +107,31 @@ static void get_formats(const QMimeData *src, GB_ARRAY array)
 	}
 }
 
+static QString get_first_format(const QMimeData *src)
+{
+	int i;
+	QString format;
+	
+	for (i = 0;; i++)
+	{
+		format = get_format(src, i);
+		if (format.length() && !format[0].isLower())
+			continue;
+		break;
+	}
+	
+	return format;
+}
+
 static void paste(const QMimeData *data, const char *fmt)
 {
 	QString format;
+	QByteArray ba;
 
 	if (fmt)
 		format = fmt;
 	else
-		format = get_format(data);
+		format = get_first_format(data);
 		
 	if (!data->hasFormat(format))
 	{
@@ -122,11 +141,15 @@ static void paste(const QMimeData *data, const char *fmt)
 
 	switch(get_type(data))
 	{
-		case 1:
-			GB.ReturnNewZeroString(data->data(format).data());
+		case MIME_TEXT:
+			ba = data->data(format);
+			if (ba.size())
+				GB.ReturnNewString(ba.constData(), ba.size());
+			else
+				GB.ReturnNull();
 			break;
 		
-		case 2:
+		case MIME_IMAGE:
 			{
 				QImage *image = new QImage();
 				*image = qvariant_cast<QImage>(data->imageData());
@@ -754,9 +777,9 @@ GB_DESC CDragDesc[] =
 {
 	GB_DECLARE("Drag", 0), GB_VIRTUAL_CLASS(),
 
-	GB_CONSTANT("None", "i", 0),
-	GB_CONSTANT("Text", "i", 1),
-	GB_CONSTANT("Image", "i", 2),
+	GB_CONSTANT("None", "i", MIME_UNKNOWN),
+	GB_CONSTANT("Text", "i", MIME_TEXT),
+	GB_CONSTANT("Image", "i", MIME_IMAGE),
 
 	GB_CONSTANT("Copy", "i", 0),
 	GB_CONSTANT("Link", "i", 1),

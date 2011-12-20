@@ -12,17 +12,14 @@ End
 
 Public Sub Form_Open()
 
-  Draw.Begin(dwgGame)
-  Draw.FillRect(0, 0, Draw.W, Draw.H, Color.White)
-  Draw.End
   Button1_Click
   
 End
 
 Public Sub Button1_Click()
 
-  Game.Init(chkSmall.Value, Slider2.Value, chkSymetryH.Value, chkSymetryV.Value)
   Game.SetDrawArea(dwgGame)
+  Game.Init(chkSmall.Value, Slider2.Value, chkSymetryH.Value, chkSymetryV.Value)
   DrawGame
 
 End

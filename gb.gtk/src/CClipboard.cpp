@@ -148,7 +148,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 				goto _BAD_FORMAT;
 		}
 		
-		gClipboard::setText(VARG(data).value._string, format);
+		gClipboard::setText(VARG(data).value._string, -1, format);
 		return;
 	}
 	
@@ -174,7 +174,9 @@ END_METHOD
 BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 
 	CIMAGE *img;
-	char *format;
+	char *format = NULL;
+	char *text;
+	int len;
 	
 	if (!MISSING(format))
 	{
@@ -189,7 +191,11 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 	switch(gClipboard::getType())
 	{
 		case gClipboard::Text:
-			GB.ReturnNewZeroString(gClipboard::getText());
+			text = gClipboard::getText(&len, format);
+			if (text)
+				GB.ReturnNewString(text, len);
+			else
+				GB.ReturnNull();
 			break;
 		
 		case gClipboard::Image:
@@ -370,6 +376,8 @@ END_PROPERTY
 static void paste_drag(char *format)
 {
 	CIMAGE *image;
+	char *text;
+	int len;
 
 	//if (format)
 	//	g_debug("format: %s drag: %s\n", format, gDrag::getFormat());
@@ -388,7 +396,11 @@ static void paste_drag(char *format)
 	switch(gDrag::getType())
 	{
 		case gDrag::Text:
-			GB.ReturnNewZeroString(gDrag::getText());
+			text = gDrag::getText(&len, format);
+			if (text)
+				GB.ReturnNewString(text, len);
+			else
+				GB.ReturnNull();
 			break;
 		
 		case gDrag::Image:
@@ -509,9 +521,9 @@ GB_DESC CDragDesc[] =
 {
   GB_DECLARE("Drag", 0), GB_VIRTUAL_CLASS(),
 
-  GB_CONSTANT("None", "i", 0),
-  GB_CONSTANT("Text", "i", 1),
-  GB_CONSTANT("Image", "i", 2),
+  GB_CONSTANT("None", "i", gDrag::Nothing),
+  GB_CONSTANT("Text", "i", gDrag::Text),
+  GB_CONSTANT("Image", "i", gDrag::Image),
 
   GB_CONSTANT("Copy", "i", 0),
   GB_CONSTANT("Link", "i", 1),

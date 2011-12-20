@@ -61,7 +61,7 @@ public:
 	
 	static int getType();
 	static char *getFormat(int n = 0);
-	static char *getText();
+	static char *getText(int *len, const char *format);
 	static gPicture *getImage();
 	
 	static int getDropX() { return _x; }
@@ -96,6 +96,7 @@ private:
 	static int _type;
 	static gPicture *_picture;
 	static char *_text;
+	static int _text_len;
 	static char *_format;
 	static int _enabled;
 	static int _x;

@@ -523,13 +523,14 @@ void gTextArea::ensureVisible()
 void gTextArea::paste()
 {
 	char *txt;
+	int len;
 
 	if (gClipboard::getType() != gClipboard::Text) 
 		return;
 	
-	txt = gClipboard::getText();
+	txt = gClipboard::getText(&len, NULL);
 	if (txt)
-		gtk_text_buffer_insert_at_cursor(_buffer, (const gchar *)txt, -1);
+		gtk_text_buffer_insert_at_cursor(_buffer, (const gchar *)txt, len);
 }
 
 void gTextArea::insert(const char *txt)

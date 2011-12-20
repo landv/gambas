@@ -39,8 +39,8 @@ public:
 	static void clear();
 	static char *getFormat(int n = 0);
 	static int getType();
-	static void setText(char *text, char *format = 0);
-	static char *getText();
+	static void setText(char *text, int len, char *format = 0);
+	static char *getText(int *len, const char *format);
 	static void setImage(gPicture *image);
 	static gPicture *getImage();
 };
