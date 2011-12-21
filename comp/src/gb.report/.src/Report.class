@@ -24,10 +24,6 @@ Private iCurPage As Integer = 0
 Private $iPageCount As Integer = -1
 Public $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
-'Private $hReportTControl As New TControl
-Private $sOldDeviceName As String
-Private $sOldWidth As String
-Private $sOldHeight As String
 Private $iIndex As Integer
 Private $iResolution As Integer = -1
 Private $iCurSection As Integer
@@ -72,8 +68,6 @@ Property Text As String
 
 Property Paper As Integer
 Property Orientation As Integer
-
-'EVENT Data()
 
 Static Public Sub Main()
 
@@ -122,37 +116,23 @@ Public Sub _Layout(Optional iPage As Integer = -1)
   Dim i As Integer
   'If iPage < 0 Then Return
   If Not $bLayoutIsDirty Then Return
+  If _bInExec Then Return
   If iPage > -1 Then
+    'La page a déja été calculée
     If iPage <= $iCurPage Then Return
   Else
+    'Mise a zéro
     $iCurPage = -1
     $iCurSection = 0
+    $iPageCount = 0
     Me._Reset
   Endif
-  If _bInExec Then Return
   'Set execution Flag to true
   _bInExec = True
   CBaseSection = $aSections[0].Ctrl
-  'If $sOldDeviceName = Paint.Device.Name Then Return
-  '$sOldDeviceName = Paint.Device.Name"
+
   MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
-  ' If Me.Parent = Null Then
-  '   SetWidth(Int((Paint.Width / $fScale)) & "px")
-  '   SetHeight(Int((Paint.Height / $fScale)) & "px")
-  ' Endif
-  ' Debug "Paint.width: " & Ceil(Paint.Width)
-  ' Debug "Paint.Height: " & Ceil(Paint.Height)
-  ' Debug "Paint.ResolutionX: " & Paint.ResolutionX
-  ' Debug "Paint.ResolutionY: " & Paint.ResolutionY
 
-  $sOldHeight = Me.Height
-  $sOldWidth = Me.Width
-
-  'Me._SetUnifiedValues()
-  'Me._GenerateClones()
-  '$hReportTControl.ctrl = Me
-  'Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
-  '$iCurPage = -1
   For i = $iCurSection To $aSections.Max
     Tsection = $aSections[i]
     CSection = TSection.Ctrl
@@ -743,5 +723,15 @@ Private Sub SetPaper()
     ' Print "width = " & Me.Width
     ' Print "height = " & Me.Height
   Endif
+
+End
+
+Public Sub _Reset()
+
+  Dim hSection As TControl
+
+  For Each hSection In $aSections
+    hSection.Ctrl._Reset
+  Next
 
 End

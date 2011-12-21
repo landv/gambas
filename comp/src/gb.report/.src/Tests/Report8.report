@@ -2,30 +2,21 @@
 
 { Report Report
   #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Paper = Printer.B5
   Index = 0
   Text = ("")
   { ReportPanel1 ReportVPanel
     #MoveScaled(2,5,64,49)
-    Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:4mm;Right:4mm"]
     AutoResize = True
     Spacing = "7mm"
-    { ReportLabel2 ReportLabel
-      #MoveScaled(4,3,52,9)
-      Width = "6cm"
-      Height = "5cm"
-      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-      Background = ReportBrush["#00FF00"]
-    }
     { ReportHBox1 ReportHBox
       #MoveScaled(3,16,64,8)
       Width = "5cm"
       Height = "5cm"
       Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-      Background = ReportBrush["LinearGradient(0,0,1,1,[#3F1D00,#FF7F00],[0,1])"]
       { ReportLabel1 ReportLabel
         #MoveScaled(1,2,62,4)
-        Brush = ReportBrush["#FFFF00"]
         Font = Font["+5"]
         Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
         Expand = True

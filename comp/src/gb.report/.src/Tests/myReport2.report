@@ -8,12 +8,12 @@
   Text = ("Section 1")
   { ReportVBox2 ReportVBox
     #MoveScaled(4,4,80,42)
-    Fixed = True
     Expand = True
     { ReportLabel9 ReportLabel
       #MoveScaled(0,0,68,7)
       Fixed = True
       Font = Font["Bitstream Charter,+11"]
+      AutoResize = True
       Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
       Background = ReportBrush["#007FFF"]
       Text = ("Facture")
@@ -22,14 +22,18 @@
     { ReportHBox1 ReportHBox
       #MoveScaled(1,9,72,25)
       Height = "2cm"
+      Fixed = True
       Expand = True
       Border = ReportBorder["Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
       { ReportHBox5 ReportHBox
-        #MoveScaled(2,1,34,15)
+        #MoveScaled(2,1,34,22)
+        Width = "5cm"
+        Height = "5cm"
+        Fixed = True
         Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
         Expand = True
         { ReportSvgImage1 ReportSvgImage
-          #MoveScaled(3,2,25,14)
+          #MoveScaled(3,2,25,17)
           Width = "50mm"
           Height = "50mm"
           Image = SvgImage.Load("img/logo.svg")
@@ -42,11 +46,9 @@
         AutoResize = True
         { Nom ReportLabel
           #MoveScaled(2,1,28,3)
-          Key = "nom"
         }
         { Adresse ReportLabel
           #MoveScaled(2,6,28,3)
-          Key = "adresse"
         }
         { ReportHBox6 ReportHBox
           #MoveScaled(1,9,30,5)
@@ -57,12 +59,10 @@
             #MoveScaled(2,1,10,2)
             Width = "25mm"
             Padding = ReportPadding["Right:1mm"]
-            Key = "CP"
           }
           { ville ReportLabel
             #MoveScaled(13,1,16,3)
             Expand = True
-            Key = "ville"
           }
         }
       }
@@ -122,45 +122,50 @@
     { ReportHBox3 ReportHBox
       #MoveScaled(2,7,86,5)
       Height = "8mm"
+      AutoResize = True
       Tag = "*"
-      { ReportLabel12 ReportLabel
+      { ReportLabel12 ReportLabel ligne
+        Name = "ReportLabel12"
         #MoveScaled(0,0,17,4)
         Width = "15mm"
         Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        AutoResize = True
         Border = ReportBorder["Left:1px #000000"]
-        Key = "id"
         Alignment = Align.Center
       }
-      { ReportLabel5 ReportLabel
+      { ReportLabel5 ReportLabel ligne
+        Name = "ReportLabel5"
         #MoveScaled(19,0,21,4)
         Width = "40%"
         Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
         Expand = True
+        Tag = "designation"
         Border = ReportBorder["Left:1px #000000"]
-        Key = "designation"
       }
-      { ReportLabel6 ReportLabel
+      { ReportLabel6 ReportLabel ligne
+        Name = "ReportLabel6"
         #MoveScaled(39,1,13,4)
         Width = "3cm"
         Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
+        Tag = "PU"
         Border = ReportBorder["Left:1px #000000"]
-        Key = "PU"
         Alignment = Align.Right
       }
-      { ReportLabel7 ReportLabel
+      { ReportLabel7 ReportLabel ligne
+        Name = "ReportLabel7"
         #MoveScaled(52,1,13,4)
         Width = "3cm"
         Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
+        Tag = "Q"
         Border = ReportBorder["Left:1px #000000"]
-        Key = "Q"
         Alignment = Align.Right
       }
-      { ReportLabel8 ReportLabel
+      { ReportLabel8 ReportLabel ligne
+        Name = "ReportLabel8"
         #MoveScaled(70,1,13,4)
         Width = "3cm"
         Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
         Border = ReportBorder["Left:1px #000000;Right:1px #000000"]
-        Key = "THT"
         Format = "#.00 €"
         Alignment = Align.Right
       }
@@ -182,8 +187,8 @@
         #MoveScaled(68,1,11,4)
         Width = "3cm"
         Padding = ReportPadding["Top:2mm;Bottom:2mm"]
-        Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
-        Key = "TOTALHT"
+        AutoResize = True
+        Border = ReportBorder["Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
         Format = "#.00 €"
         Alignment = Align.Right
       }

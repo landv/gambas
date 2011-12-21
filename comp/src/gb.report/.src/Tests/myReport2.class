@@ -17,7 +17,7 @@ Public Sub _new()
   cLine["ville"] = "Archiac"
   cLine["TOTALHT"] = 0
   cFactHead.Add(cLine)
-  Me.Data = cFactHead
+  'Me.Data = cFactHead
   For i = 0 To 12
     cLine = New Collection
     cLine["designation"] = "Patin a roulette"
@@ -50,7 +50,7 @@ Public Sub _new()
     cLine["Q"] = 3
     cList.Add(cLine)
   Next
-  ReportHBox3.Data = cList
+  'ReportHBox3.Data = cList
   'ReportHBox12.Data = cList
   'Compute Summaries
   i = 0
@@ -61,5 +61,13 @@ Public Sub _new()
     cFactHead[0]["TOTALHT"] += cLine["THT"]
 
   Next
+  ReportHBox3.DataCount = cList.Count
+
+End
+
+Public Sub ligne_Data()
+
+  If Not Last.tag Then Return
+  Last.data = cList[Last.dataIndex][Last.tag]
 
 End
