@@ -535,7 +535,7 @@ Private Sub SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         TH = H
       Endif
       TH = TH - hChildHints.Height - fspc
-      hTItem.Index = j
+      hTItem.Index = IIf(bInFixed, 0, j)
       aPageColumn.Add(hTItem)
 
       'On l'ajoute a la page
@@ -593,7 +593,8 @@ Private Sub SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
           j = Me.Children.Find(oChild)
           Me._CurItem = Min(Me._CurItem, j)
         Endif
-
+        'ne pas incrémenter la lecture des enfants si je suis dans un élément fixe
+        If bInFixed Then ochild._CurItem = 0
       Endif
 
     Next
@@ -621,7 +622,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   'Dim bPass As Boolean
   Dim fX, fY, fTmpY As Float
   Dim bExitLoop As Boolean
-
+  'If Me.Tag = "*" Then Stop
   'Initialisation des variables
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
@@ -701,6 +702,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       If hchild.Fixed Or hchild.Ignore Then Break
     Next
     If bExitLoop Then Break
+    hchild._DataIndex = 0
     Inc Me._CurItem
   Next
 
@@ -766,7 +768,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(Me._CurItem, j)
       Endif
-
+      'ne pas incrémenter la lecture des enfants si je suis dans un élément fixe
+      If bInFixed Then ochild._CurItem = 0
     Endif
 
   Next
@@ -809,7 +812,8 @@ Private Function SetFChildGeometry(X As Float, Y As Float, W As Float, H As Floa
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(j, Me._CurItem)
       Endif
-
+      'ne pas incrémenter la lecture des enfants si je suis dans un élément fixe
+      If bInFixed Then ochild._CurItem = 0
     End If
   Next
 
@@ -858,7 +862,8 @@ Private Function SetNChildGeometry(X As Float, Y As Float, W As Float, H As Floa
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(j, Me._CurItem)
       Endif
-
+      'ne pas incrémenterla lecture des enfants si je suis dans un élément fixe
+      If bInFixed Then ochild._CurItem = 0
     End If
   Next
   Me._PageChildren[ContPage] = aPageItems
@@ -958,11 +963,12 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     Endif
 
     If oChild Is ReportContainer Then
-
       If oChild._CurItem <= oChild.Children.max Then
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(Me._CurItem, j)
       Endif
+      'ne pas incrémenter la lecture des enfants si je suis dans un élément fixe
+      If bInFixed Then ochild._CurItem = 0
 
     Endif
   Next

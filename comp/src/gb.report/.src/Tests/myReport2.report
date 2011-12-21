@@ -3,19 +3,19 @@
 { Report Report
   #MoveScaled(0,0,106,113)
   Padding = ReportPadding["1cm"]
-  Spacing = "2cm"
+  Spacing = "1cm"
   Index = 0
   Text = ("Section 1")
   { ReportVBox2 ReportVBox
     #MoveScaled(4,4,80,42)
-    Expand = True
+    Fixed = True
+    AutoResize = True
     { ReportLabel9 ReportLabel
       #MoveScaled(0,0,68,7)
       Fixed = True
       Font = Font["Bitstream Charter,+11"]
       AutoResize = True
       Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
-      Background = ReportBrush["#007FFF"]
       Text = ("Facture")
       Alignment = Align.Center
     }
@@ -24,6 +24,7 @@
       Height = "2cm"
       Fixed = True
       Expand = True
+      AutoResize = True
       Border = ReportBorder["Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
       { ReportHBox5 ReportHBox
         #MoveScaled(2,1,34,22)
@@ -32,10 +33,11 @@
         Fixed = True
         Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
         Expand = True
+        AutoResize = True
         { ReportSvgImage1 ReportSvgImage
           #MoveScaled(3,2,25,17)
           Width = "50mm"
-          Height = "50mm"
+          Height = "30mm"
           Image = SvgImage.Load("img/logo.svg")
         }
       }
@@ -44,25 +46,38 @@
         Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:4mm;Right:4mm"]
         Expand = True
         AutoResize = True
-        { Nom ReportLabel
+        Tag = "*"
+        { Nom ReportLabel entete
+          Name = "Nom"
           #MoveScaled(2,1,28,3)
+          AutoResize = True
+          Tag = "nom"
         }
-        { Adresse ReportLabel
+        { Adresse ReportLabel entete
+          Name = "Adresse"
           #MoveScaled(2,6,28,3)
+          AutoResize = True
+          Tag = "adresse"
         }
         { ReportHBox6 ReportHBox
           #MoveScaled(1,9,30,5)
           AutoResize = True
           Tag = "*"
           Spacing = "2mm"
-          { CP ReportLabel
-            #MoveScaled(2,1,10,2)
+          { CP ReportLabel entete
+            Name = "CP"
+            #MoveScaled(2,1,10,3)
             Width = "25mm"
             Padding = ReportPadding["Right:1mm"]
+            AutoResize = True
+            Tag = "CP"
           }
-          { ville ReportLabel
+          { ville ReportLabel entete
+            Name = "ville"
             #MoveScaled(13,1,16,3)
             Expand = True
+            AutoResize = True
+            Tag = "ville"
           }
         }
       }
@@ -178,7 +193,6 @@
     { ReportHBox4 ReportHBox
       #MoveScaled(4,17,81,5)
       AutoResize = True
-      Tag = "***"
       { ReportHBox7 ReportHBox
         #MoveScaled(4,2,62,2)
         Expand = True
@@ -195,8 +209,9 @@
     }
   }
   { ReportHBox9 ReportHBox
-    #MoveScaled(1,102,101,4)
+    #MoveScaled(1,100,101,6)
     Fixed = True
+    AutoResize = True
     { ReportHBox10 ReportHBox
       #MoveScaled(2,1,31,3)
       Expand = True
@@ -206,15 +221,6 @@
       AutoResize = True
       Text = ("Page $PAGE")
       UseField = True
-    }
-  }
-  { ReportPanel1 ReportPanel
-    #MoveScaled(11,79,39,9)
-    { ReportLabel15 ReportLabel
-      #MoveScaled(21,0,17,6)
-    }
-    { ReportLabel13 ReportLabel
-      #MoveScaled(0,4,11,4)
     }
   }
   Index = 0
