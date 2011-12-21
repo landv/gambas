@@ -10,7 +10,7 @@
     Height = "2cm"
     Fixed = True
     Font = Font["Bold,+6"]
-    Border = ReportBorder["Top:2px #000000;Bottom:2px #000000;Left:2px #000000;Right:2px #000000"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
     Background = ReportBrush["LinearGradient(0.7,0,0.7,1,[#FFCFBF,#FFFFFF],[0,1])"]
     Text = ("IMPRESSION DU PLAN COMPTABLE")
     Alignment = Align.Center
@@ -55,12 +55,6 @@
       { ReportHBox4 ReportHBox
         #MoveScaled(1,2,44,7)
         Height = "5mm"
-        { ReportImage1 ReportImage
-          #MoveScaled(0,1,7,5)
-          Width = "2mm"
-          AutoResize = True
-          StretchMode = ReportImage.Fill
-        }
         { lblCpte ReportLabel
           #MoveScaled(8,1,18,4)
           Width = "20%"

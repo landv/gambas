@@ -66,7 +66,10 @@
           Alignment = Align.Center
         }
         { ReportImage1 ReportImage
-          #MoveScaled(8,24,14,8)
+          #MoveScaled(10,17,14,8)
+          Height = "3cm"
+          StretchMode = ReportImage.Proportional
+          Alignment = Align.Center
           Image = Image.Load("printer1.png")
         }
       }
