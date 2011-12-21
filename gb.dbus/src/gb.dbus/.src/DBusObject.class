@@ -36,6 +36,8 @@ Static Private $sInterface As String
 Private $sPath As String
 Private $aChildren As String[]
 Private $hObserver As DBusObserver
+Private $iRegister As Integer
+Private $bRegisterParent As Boolean
 
 Static Private Sub ConvType(sType As String) As String
   
@@ -62,6 +64,9 @@ Public Sub _Register(hConnection As DBusConnection, sPath As String)
   Dim hParent As DBusObject
   Dim sParent As String
   
+  Inc $iRegister
+  If $iRegister > 1 Then Return
+  
   If Not $sName Then $sName = DBus._RegisterApplication(hConnection)
   
   If Left(sPath) <> "/" Then sPath = "/" & sPath
@@ -69,12 +74,14 @@ Public Sub _Register(hConnection As DBusConnection, sPath As String)
   If _ObjectCache.Exist(sPath) Then Return
   
   $sPath = sPath
+  _ObjectCache[sPath] = Me
   
   If sPath <> "/" Then
     
     sParent = File.Dir(sPath)
     hParent = _ObjectCache[sParent]
     If Not hParent Then
+      $bRegisterParent = True
       hParent = New DBusObject
       hParent._Register(hConnection, sParent)
     Endif
@@ -91,6 +98,23 @@ Public Sub _Unregister(hConnection As DBusConnection)
   
   Dim sChild As String
   Dim hChild As DBusObject
+  Dim sParent As String
+  Dim hParent As DBusObject
+  
+  Dec $iRegister
+  If $iRegister > 0 Then Return
+  
+  If $bRegisterParent Then
+    
+    $bRegisterParent = False
+    sParent = File.Dir($sPath)
+    hParent = _ObjectCache[sParent]
+    If hParent Then
+      hParent._Unregister(hConnection)
+      Return
+    Endif
+    
+  Endif
   
   If $aChildren Then
     For Each sChild In $aChildren

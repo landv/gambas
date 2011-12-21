@@ -32,9 +32,9 @@ Public Sub Main()
   ' Debug DBus.Session.Applications.Join("\n")
   ' 
   DBus.Debug = True
-  'DBus.Session.Register(CTest, "/Test")
+  DBus.Session.Register(CTest, "/Test")
   
-  Debug DBus["system://org.freedesktop.UPower"]["/org/freedesktop/UPower"].SuspendAllowed()
+  'Debug DBus["system://org.freedesktop.UPower"]["/org/freedesktop/UPower"].SuspendAllowed()
 
   'Wait 10
   '
@@ -46,11 +46,11 @@ Public Sub Main()
   'hSignal = New DBusSignal(DBus.Session, "org.freedesktop.DBus") As "MySignal"
   ' hSignal = New DBusSignal(DBus.Session, "", True) As "MySignal"
   ' 
-  ' Wait 3
+  Wait 3
   ' 
   ' hSignal.Enabled = False
 
-  'DBus.Session.Unregister(CTest)
+  DBus.Session.Unregister(CTest)
   
 End
 
