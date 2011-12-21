@@ -335,8 +335,6 @@ void gPrinter::setOrientation(int v)
 		case GB_PRINT_PORTRAIT: default: orient = GTK_PAGE_ORIENTATION_PORTRAIT; break;
 	}
 	
-	fprintf(stderr, "gPrinter::setOrientation: landscape = %d\n", orient == GTK_PAGE_ORIENTATION_LANDSCAPE);
-	
 	gtk_print_settings_set_orientation(_settings, orient);
 	gtk_page_setup_set_orientation(_page, orient);
 }
