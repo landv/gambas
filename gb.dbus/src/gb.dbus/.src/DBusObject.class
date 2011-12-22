@@ -31,9 +31,9 @@ Static Private $cType As Collection = [
   "Variant[]": "av"]
   
 Static Private $sName As String
-Static Private $sInterface As String
 
 Private $sPath As String
+Private $sInterface As String
 Private $aChildren As String[]
 Private $hObserver As DBusObserver
 Private $iRegister As Integer
@@ -59,7 +59,7 @@ Public Sub _GetPath() As String
 End
 
 
-Public Sub _Register(hConnection As DBusConnection, sPath As String)
+Public Sub _Register(hConnection As DBusConnection, sPath As String, Optional sInterface As String)
   
   Dim hParent As DBusObject
   Dim sParent As String
@@ -74,6 +74,11 @@ Public Sub _Register(hConnection As DBusConnection, sPath As String)
   If _ObjectCache.Exist(sPath) Then Return
   
   $sPath = sPath
+  
+  If Not sInterface Then sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
+  $sInterface = sInterface
+  'Debug $sPath;; $sInterface
+  
   _ObjectCache[sPath] = Me
   
   If sPath <> "/" Then
@@ -192,7 +197,7 @@ Public Sub _Introspect() As String
   Endif
   
   If bHasMethod Then
-    sRes &= "  <interface name=\"" & $sName & "." & DBus._Normalize(hClass.Name) & "\">\n"
+    sRes &= "  <interface name=\"" & $sInterface & "\">\n"
     For Each sSymbol In hClass.Symbols
       With hClass[sSymbol]
         If InStr(sSymbol, "_") Then Continue
@@ -286,7 +291,7 @@ Private Sub GetProperty()
     sInterface = .Arguments[0]
     sProperty = .Arguments[1]
     
-    If sInterface And If sInterface <> ($sName & "." & DBus._Normalize(Object.Class(Me).Name)) Then Return
+    If sInterface And If sInterface <> $sInterface Then Return
     If InStr(sProperty, "_") Then Return
     
     $hObserver.Reply("v", [Object.GetProperty(Me, sProperty)])
@@ -310,7 +315,7 @@ Private Sub GetAllProperties()
   
     sInterface = .Arguments[0]
     
-    If Not sInterface Or If sInterface = ($sName & "." & DBus._Normalize(Object.Class(Me).Name)) Then
+    If Not sInterface Or If sInterface = $sInterface Then
       
       hClass = Object.Class(Me)
       
@@ -348,7 +353,7 @@ Private Sub SetProperty()
     sProperty = .Arguments[1]
     vValue = .Arguments[2]
     
-    If sInterface And If sInterface <> ($sName & "." & DBus._Normalize(Object.Class(Me).Name)) Then Return
+    If sInterface And If sInterface <> $sInterface Then Return
     If InStr(sProperty, "_") Then Return
     
     Object.SetProperty(Me, sProperty, vValue)

@@ -31,8 +31,8 @@ Public Sub Main()
   ' 
   ' Debug DBus.Session.Applications.Join("\n")
   ' 
-  DBus.Debug = True
-  DBus.Session.Register(CTest, "/Test")
+  'DBus.Debug = True
+  DBus.Session.Register(CTest, "/Test", "org.mpris.MediaPlayer2.Player")
   
   'Debug DBus["system://org.freedesktop.UPower"]["/org/freedesktop/UPower"].SuspendAllowed()
 
@@ -45,12 +45,9 @@ Public Sub Main()
   
   'hSignal = New DBusSignal(DBus.Session, "org.freedesktop.DBus") As "MySignal"
   ' hSignal = New DBusSignal(DBus.Session, "", True) As "MySignal"
-  ' 
-  Wait 3
-  ' 
-  ' hSignal.Enabled = False
+  'Wait 30
 
-  DBus.Session.Unregister(CTest)
+  'DBus.Session.Unregister(CTest)
   
 End
 
