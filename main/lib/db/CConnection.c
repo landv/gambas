@@ -149,6 +149,7 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 
   THIS->db.handle = NULL;
   THIS->db.ignore_case = FALSE; // Now case is sensitive by default!
+  THIS->db.timeout = 20; // Connection timeout is 20 seconds by default
 
   if (_current == NULL)
     _current = THIS;
@@ -191,7 +192,6 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 	}
 
 	THIS->desc.host = GB.NewZeroString(url);
-	
 	THIS->desc.name = GB.NewZeroString(name);
 
 __BAD_URL:
@@ -243,6 +243,16 @@ BEGIN_PROPERTY(CCONNECTION_version)
   CHECK_OPEN();
 
   GB.ReturnInteger(THIS->db.version);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Connection_Timeout)
+
+  if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->db.timeout);
+	else
+		THIS->db.timeout = VPROP(GB_INTEGER);
 
 END_PROPERTY
 
@@ -722,6 +732,7 @@ GB_DESC CConnectionDesc[] =
   GB_PROPERTY("Password", "s", CCONNECTION_password),
   GB_PROPERTY("Name", "s", CCONNECTION_name),
   GB_PROPERTY("Port", "s", CCONNECTION_port),
+  GB_PROPERTY("Timeout", "i", Connection_Timeout),
   GB_PROPERTY_READ("Charset", "s", CCONNECTION_charset),
   GB_PROPERTY_READ("Version", "i", CCONNECTION_version),
   GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),

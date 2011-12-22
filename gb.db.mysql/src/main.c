@@ -599,6 +599,8 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	char *name;
 	char *host;
 	char *socket;
+	my_bool reconnect = TRUE;
+	unsigned int timeout;
 
 	conn = mysql_init(NULL);
 
@@ -621,8 +623,14 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	}
 	else
 		socket = NULL;
-		
-	if (!mysql_real_connect( conn, host, desc->user, desc->password,
+	
+	mysql_options(conn, MYSQL_OPT_RECONNECT, &reconnect);
+	
+	timeout = db->timeout;
+	
+	mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
+	
+	if (!mysql_real_connect(conn, host, desc->user, desc->password,
 			name, desc->port == NULL ? 0 : atoi(desc->port), socket,
 			CLIENT_MULTI_RESULTS /*client flag */)){
 		mysql_close(conn);

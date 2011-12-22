@@ -171,7 +171,9 @@ void gPrinter::storeSettings()
 	
 	g_object_unref(G_OBJECT(_settings));
 	_settings = gtk_print_settings_copy(gtk_print_operation_get_print_settings(_operation));
+	#if DEBUG_ME
 	gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
+	#endif
 }
 
 void gPrinter::defineSettings()

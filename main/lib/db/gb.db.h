@@ -48,25 +48,26 @@ typedef
 
 typedef
 	struct {
-		void *handle;										/* Connection handle */
-		int version;										/* Version of the database system */
-		char *charset;									/* Charset used by the database */
-		void *data;											/* Can be used by the driver for storing its own private data */
+		void *handle;                   /* Connection handle */
+		int version;                    /* Version of the database system */
+		char *charset;                  /* Charset used by the database */
+		void *data;                     /* Can be used by the driver for storing its own private data */
 		int error;                      /* Last SQL error code raise by a query */
-		unsigned ignore_case : 1;			  /* If table, field and index names are case sensitive */
+		int timeout;                    /* Connection timeout */
+		unsigned ignore_case : 1;       /* If table, field and index names are case sensitive */
 		struct {
-			unsigned no_table_type : 1;		/* Tables do not have types */
-			unsigned no_serial : 1;				/* Serial fields are not supported */
-			unsigned no_blob : 1;					/* Blob fields are not supported */
-			unsigned no_seek : 1;					/* Cannot seek anywhere in a Result */
-			unsigned no_nest : 1;  				/* Cannot nest transactions */
-			unsigned no_case : 1;					/* If table, field and index names can be case sensitive or not */
+			unsigned no_table_type : 1;   /* Tables do not have types */
+			unsigned no_serial : 1;       /* Serial fields are not supported */
+			unsigned no_blob : 1;         /* Blob fields are not supported */
+			unsigned no_seek : 1;         /* Cannot seek anywhere in a Result */
+			unsigned no_nest : 1;         /* Cannot nest transactions */
+			unsigned no_case : 1;         /* If table, field and index names can be case sensitive or not */
 			unsigned schema : 1;          /* If table names can be prefixed by a schema name and a dot */
 			}
 			flags;
 		struct {
-			const char *keyword;					/* keyword for limiting the result of a query */
-			int pos;											/* position of 'limit' keyword */
+			const char *keyword;          /* keyword for limiting the result of a query */
+			int pos;                      /* position of 'limit' keyword */
 			}
 			limit;
 		const char *db_name_char;       /* These characters are allowed in a database name */

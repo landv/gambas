@@ -681,13 +681,20 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	PGresult *res;
 	int status;
 	char *name;
+	char dbname[512];
 
 	if (desc->name)
 		name = desc->name;
 	else
 		name = "template1";
 
-	conn = PQsetdbLogin(desc->host, desc->port, NULL, NULL, name, desc->user, desc->password);
+	if (snprintf(dbname, sizeof(dbname), "dbname='%s' timeout=%d", get_quote_string(name, strlen(name), '\''), db->timeout) >= sizeof(dbname))
+	{
+		GB.Error("Cannot open database: database name too long");
+		return TRUE;
+	}
+	
+	conn = PQsetdbLogin(desc->host, desc->port, NULL, NULL, dbname, desc->user, desc->password);
 
 	if (!conn)
 	{

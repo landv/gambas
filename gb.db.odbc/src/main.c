@@ -524,6 +524,7 @@ fflush(stderr);
 
 	}
 
+	SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_LOGIN_TIMEOUT, (SQLPOINTER)(intptr_t)db->timeout, 0);
 	/* Connect to Database (Data Source Name) */
 	retcode =SQLConnect(odbc->odbcHandle, (SQLCHAR *) desc->host, SQL_NTS, (SQLCHAR *) desc->user, SQL_NTS, (SQLCHAR *) desc->password, SQL_NTS);
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
@@ -575,7 +576,7 @@ fflush(stderr);
 
 static void close_database(DB_DATABASE *db)
 {
-  SQLRETURN retcode;
+  //SQLRETURN retcode;
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tclose_database\n");
@@ -584,37 +585,38 @@ fflush(stderr);
 	
 	ODBC_CONN *conn = (ODBC_CONN *)db->handle;
 
-	if (conn->odbcHandle != NULL){
-	retcode=SQLDisconnect(conn->odbcHandle);
-	}else 
-	{
-	GB.Error("ODBC module internal error");
-	}
+	if (conn->odbcHandle)
+		SQLDisconnect(conn->odbcHandle);
+	else
+		GB.Error("ODBC module internal error");
 
-
-	if (conn->odbcHandle != NULL){
-	retcode=SQLFreeHandle(SQL_HANDLE_DBC, conn->odbcHandle);
-	conn->odbcHandle=NULL;
-	}else 
+	if (conn->odbcHandle)
 	{
-	GB.Error("ODBC module internal error");
+		SQLFreeHandle(SQL_HANDLE_DBC, conn->odbcHandle);
+		conn->odbcHandle = NULL;
 	}
+	else 
+		GB.Error("ODBC module internal error");
 	
-	if (conn->odbcEnvHandle != NULL){
-	retcode=SQLFreeHandle(SQL_HANDLE_ENV, conn->odbcEnvHandle);
-	conn->odbcEnvHandle=NULL;
-	}else 
+	if (conn->odbcEnvHandle)
 	{
-	GB.Error("ODBC module internal error");
+		SQLFreeHandle(SQL_HANDLE_ENV, conn->odbcEnvHandle);
+		conn->odbcEnvHandle = NULL;
 	}
+	else 
+		GB.Error("ODBC module internal error");
 
-	if (conn->dsn_name != NULL)free(conn->dsn_name);
-	if (conn->user_name != NULL)free(conn->user_name);
-	if (conn != NULL){
-			SQL_Handle_free(conn);
-			db->handle=NULL;
+	if (conn->dsn_name)
+		free(conn->dsn_name);
+	
+	if (conn->user_name)
+		free(conn->user_name);
+	
+	if (conn)
+	{
+		SQL_Handle_free(conn);
+		db->handle = NULL;
 	}
-
 }
 
 
@@ -1082,14 +1084,12 @@ fflush(stderr);
 
 static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VALUE * buffer, 	int next)
 {
-
-
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
 	GB_VARIANT value;
 	SQLRETURN retcode2;
 	SQLINTEGER i;
 	ODBC_FIELDS *current;
-	SQLRETURN retcode;
+	//SQLRETURN retcode;
 	int nresultcols;
 	SQLINTEGER displaysize;
 	//int V_OD_erg=0;
@@ -1100,16 +1100,13 @@ fprintf(stderr,"\tquery_fill result %p,result->odbcStatHandle %p, pos %d\n",res,
 fflush(stderr);
 #endif
 	
-	
 	nresultcols = get_num_columns(res);
 
 	current = res->fields;
 	for (i = 0; i < nresultcols; i++)
 	{
-			
-		if(current->next != NULL)current = (ODBC_FIELDS *) current->next;
-		
-		
+		if(current->next != NULL)
+			current = (ODBC_FIELDS *) current->next;
 	}
 
 
@@ -1123,7 +1120,6 @@ fflush(stderr);
 		{
 			retcode2 = SQLFetchScroll(res->odbcStatHandle, SQL_FETCH_NEXT, pos + 1);
 		}
-
 	}
 	else
 	{
@@ -1176,7 +1172,7 @@ if (displaysize>0)
 	if (type != SQL_LONGVARCHAR && type != SQL_VARBINARY && type != SQL_LONGVARBINARY)
 	{
 		fieldata=malloc(sizeof(char)*(displaysize));
-		retcode=SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
+		SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
 	
 	} else
 	{
@@ -1237,20 +1233,19 @@ return FALSE;
 
 static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
 {
-
-
-int i;
-//int outlen;
-//int precision;
-//int scale;
-//int displaysize;
-//char * pointer;
-ODBC_RESULT * res= (ODBC_RESULT *) result;
-ODBC_FIELDS * cfield ;
-SQLLEN strlen;
-SQLRETURN retcode;
-i=0;
-cfield=res->fields;
+	int i;
+	//int outlen;
+	//int precision;
+	//int scale;
+	//int displaysize;
+	//char * pointer;
+	ODBC_RESULT * res= (ODBC_RESULT *) result;
+	ODBC_FIELDS * cfield ;
+	SQLLEN strlen;
+	SQLRETURN retcode;
+	
+	i = 0;
+	cfield = res->fields;
 
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1258,49 +1253,71 @@ fprintf(stderr,"\tblob_read DB_RESULT %p, dbresult->stathandle %p, pos %d , fiel
 fflush(stderr);
 #endif
 
-	while (i < field ){
-		
-		if (cfield->next== NULL){
+	while (i < field )
+	{
+		if (cfield->next== NULL)
+		{
 			GB.Error("ODBC module :Internal error1"); 
+			return;
 		}
-		cfield=(ODBC_FIELDS *) cfield->next;
-		if (cfield== NULL){
-			GB.Error("ODBC module :Internal error2"); 
-		}
-		i=i+1;
-	}
-	if(i>field) GB.Error("ODBC module : Internal error");
 		
-		blob->data=NULL;
-		if (cfield->outlen > 0) {
-		blob->data=malloc( sizeof(char)*cfield->outlen);
+		cfield=(ODBC_FIELDS *) cfield->next;
+		
+		if (cfield== NULL)
+		{
+			GB.Error("ODBC module :Internal error2"); 
+			return;
+		}
+		
+		i++;
+	}
+	
+	if (i > field)
+	{
+		GB.Error("ODBC module : Internal error");
+		return;
+	}
+		
+	blob->data=NULL;
+	if (cfield->outlen > 0) 
+	{
+		blob->data = malloc( sizeof(char)*cfield->outlen);
 		blob->length = cfield->outlen;
 
 		DB.Query.Init();
 
-		retcode=SQLGetData(res->odbcStatHandle,field+1,SQL_C_BINARY , blob->data,blob->length, &strlen);
-		}else
+		retcode = SQLGetData(res->odbcStatHandle,field+1,SQL_C_BINARY , blob->data,blob->length, &strlen);
+	
+		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO)
 		{
-			blob->data=NULL; // 
-			blob->length=0;
+			GB.Error("Unable to retrieve blob data");
+			free(blob->data);
+			blob->length = 0;
+			blob->data = NULL;
+			return;
 		}
+	}
+	else
+	{
+		blob->data = NULL; // 
+		blob->length = 0;
+		return;
+	}
 		
-
 	char *data;
 	int len;
 
-  	if (!unquote_blob(blob->data, blob->length, DB.Query.AddLength))
-  	{
-  		len = DB.Query.Length();
-  		data = DB.Query.GetNew();
+	if (!unquote_blob(blob->data, blob->length, DB.Query.AddLength))
+	{
+		len = DB.Query.Length();
+		data = DB.Query.GetNew();
 	}
 	else
 		blob->constant = TRUE;
+	
 	free(blob->data);//091107
-	blob->data=data;
-	blob->length=len;
-	
-	
+	blob->data = data;
+	blob->length = len;
 }
 
 
@@ -1415,9 +1432,13 @@ fflush(stderr);
 	retcode=SQLDescribeCol(res->odbcStatHandle, field + 1, colname, sizeof(colname),
 								 &colnamelen, &coltype, &precision, &scale, NULL);
 
-
-	return conv_type(coltype);
-
+	if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO)
+	{
+		GB.Error("Unable to retrieve field type");
+		return GB_T_NULL;
+	}
+	else
+		return conv_type(coltype);
 }
 
 
