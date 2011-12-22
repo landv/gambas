@@ -217,7 +217,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Public Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
 
   Dim ARC_TO_BEZIER As Float = 0.55228475
   Dim c1, c2 As Float

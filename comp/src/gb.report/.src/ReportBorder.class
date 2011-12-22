@@ -68,9 +68,14 @@ Static Public Function _get(sValue As String) As ReportBorder
         FillObject(hReportBorder.bottom, aScan[1])
       Case "top"
         FillObject(hReportBorder.Top, aScan[1])
-      Case "roundcorners"
-
-        GetCorners(hReportBorder, aScan[1])
+      Case "topleftcorner"
+        hReportBorder.RoundCorner.TopLeft = aScan[1]
+      Case "toprightcorner"
+        hReportBorder.RoundCorner.TopRight = aScan[1]
+      Case "bottomleftcorner"
+        hReportBorder.RoundCorner.BottomLeft = aScan[1]
+      Case "bottomrightcorner"
+        hReportBorder.RoundCorner.BottomRight = aScan[1]
 
     End Select
 
@@ -93,28 +98,6 @@ Static Private Sub FillObject(hObj As Object, sValue As String)
       Try hObj.Brush = ReportBrush[sBrush]
       If hObj.Brush = Null Then hObj.Brush = ReportBrush["&H0"]
     Endif
-  Next
-
-End
-
-Static Private Sub GetCorners(hReportBorder As ReportBorder, sValue As String)
-
-  Dim aPair As String[]
-  Dim i As Integer
-
-  aPair = Split(sValue, " ")
-  For i = 0 To aPair.Max
-    Select Case i
-      Case 0
-        hReportBorder.RoundCorner.TopLeft = aPair[0]
-      Case 1
-        hReportBorder.RoundCorner.TopRight = aPair[1]
-      Case 2
-        hReportBorder.RoundCorner.BottomRight = aPair[2]
-      Case 3
-        hReportBorder.RoundCorner.BottomLeft = aPair[3]
-    End Select
-
   Next
 
 End

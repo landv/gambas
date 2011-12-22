@@ -38,7 +38,8 @@ Property Read _RelativeSpacing As Boolean
 
 Public _RealSpacing As Integer
 Static Private $iLevel As Integer
-Event Data
+Event BeforeArrange
+Event AfterArrange
 
 Public Function _Add(cControl As ReportControl) 'As TControl
 
@@ -455,6 +456,8 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   'If Me.Tag = "*" Then Stop
   'Print "Geometry " & Object.Type(Me)
 
+  Raise BeforeArrange
+
   Select Case _Arrangement
     Case Arrange.Vertical
       SetVChildGeometry(X, Y, W, H, ContPage, bInFixed)
@@ -467,6 +470,8 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
     Case Arrange.None
       SetNChildGeometry(X, Y, W, H, ContPage, bInFixed)
   End Select
+
+  Raise AfterArrange
 
 End
 

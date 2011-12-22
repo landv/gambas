@@ -21,23 +21,23 @@
     }
     { ReportHBox1 ReportHBox
       #MoveScaled(1,9,72,25)
-      Height = "2cm"
+      Height = "4cm"
       Fixed = True
       Expand = True
-      AutoResize = True
       Border = ReportBorder["Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
       { ReportHBox5 ReportHBox
         #MoveScaled(2,1,34,22)
         Width = "5cm"
         Height = "5cm"
         Fixed = True
-        Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
         Expand = True
         AutoResize = True
         { ReportSvgImage1 ReportSvgImage
           #MoveScaled(3,2,25,17)
           Width = "50mm"
           Height = "30mm"
+          StretchMode = ReportImage.Proportional
+          Alignment = Align.Center
           Image = SvgImage.Load("img/logo.svg")
         }
       }

@@ -486,7 +486,11 @@ _RealSpacing
 v
 i
 
-:Data
+:BeforeArrange
+:
+
+
+:AfterArrange
 :
 
 
@@ -772,10 +776,6 @@ _PaintBefore
 m
 
 (Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
-RoundRect
-m
-
-(X)i(Y)i(w)i(h)i(Radius_X)Float[];(radius_y)Float[];
 _PaintFrame
 m
 
@@ -1043,18 +1043,30 @@ C
 _Properties
 C
 s
-*,Stretch,Image{SvgImage}
+*,StretchMode{ReportImage.None;Proportional;Fill},Alignment{Align.*},Image{SvgImage}
 _Similar
 C
 s
 ReportTextLabel
+Data
+v
+SvgImage
+
 Image
 p
 SvgImage
 
-Stretch
+StretchMode
 p
-b
+i
+
+Alignment
+p
+i
+
+:Data
+:
+
 
 _GetSizeHints
 m
