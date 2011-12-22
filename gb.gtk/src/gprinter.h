@@ -95,6 +95,7 @@ public:
 	GtkPrintSettings *_settings;
 	
 	static void fixPrintDialog(GtkPrintUnixDialog *dialog);
+	static gPrinter *_current;
 	
 private:
 	bool run(bool configure);
@@ -107,8 +108,6 @@ private:
 	bool _page_count_set;
 	int _paper_size;
 	bool _use_full_page;
-	
-	static gPrinter *_current;
 };
 
 #endif

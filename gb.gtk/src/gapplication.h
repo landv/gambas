@@ -92,6 +92,7 @@ public:
 	static gControl *_old_active_control;
 	static guint32 _event_time;
 	static bool _close_next_window;
+	static bool _fix_printer_dialog;
 };
 
 #endif

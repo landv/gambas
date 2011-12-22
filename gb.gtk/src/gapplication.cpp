@@ -317,7 +317,7 @@ static void gambas_handle_event(GdkEvent *event)
 	bool cancel;
 	int type;
 	
-	if (gApplication::_close_next_window)
+	if (gApplication::_fix_printer_dialog)
 	{
 		widget = gtk_get_event_widget(event);
 		if (widget)
@@ -331,11 +331,13 @@ static void gambas_handle_event(GdkEvent *event)
 					widget = gtk_window_get_default_widget(GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 					if (widget && GTK_IS_BUTTON(widget))
 					{
-						//GtkPrintUnixDialog *dialog = GTK_PRINT_UNIX_DIALOG(gtk_widget_get_toplevel(widget));
-						//gPrinter::fixPrintDialog(dialog);
-						gApplication::_close_next_window = false;
+						GtkPrintUnixDialog *dialog = GTK_PRINT_UNIX_DIALOG(gtk_widget_get_toplevel(widget));
+						gPrinter::fixPrintDialog(dialog);
+						gApplication::_fix_printer_dialog = false;
 						//fprintf(stderr, "gtk_button_clicked: %s\n", gtk_button_get_label(GTK_BUTTON(widget)));
-						gtk_button_clicked(GTK_BUTTON(widget));
+						if (gApplication::_close_next_window)
+							gtk_button_clicked(GTK_BUTTON(widget));
+						gApplication::_close_next_window = false;
 						//return;
 						//g_timeout_add(0, (GSourceFunc)close_dialog, GTK_BUTTON(widget));
 						goto __HANDLE_EVENT;
@@ -714,6 +716,7 @@ gControl *gApplication::_old_active_control = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;
 guint32 gApplication::_event_time = 0;
 bool gApplication::_close_next_window = false;
+bool gApplication::_fix_printer_dialog = false;
 
 void gApplication::grabPopup()
 {

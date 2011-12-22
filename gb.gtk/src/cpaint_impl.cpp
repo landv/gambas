@@ -79,6 +79,7 @@ static cairo_surface_t *check_image(void *img)
 typedef
 	struct {
 		cairo_t *context;
+		GtkPrintContext *print_context;
 		CFONT *font;
 		CFONT **font_stack;
 		}
@@ -121,6 +122,8 @@ static int Begin(GB_PAINT *d)
 	cairo_surface_t *target = NULL;
 	double w, h;
 	int rx = 96, ry = 96;
+	
+	EXTRA(d)->print_context = NULL;
 	
 	if (GB.Is(device, CLASS_Picture))
 	{
@@ -195,13 +198,19 @@ static int Begin(GB_PAINT *d)
 			return TRUE;
 		}
 		
+		EXTRA(d)->print_context = context;
 		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
+		
+		fprintf(stderr, "Paint.Begin: orientation = %d\n", gtk_page_setup_get_orientation(gtk_print_context_get_page_setup(context)));
+		
 		cairo_reference(CONTEXT(d));
 		
 		cairo_surface_set_fallback_resolution(cairo_get_target(CONTEXT(d)), 1200, 1200);
 		
 		w = gtk_print_context_get_width(context);
 		h = gtk_print_context_get_height(context);
+		fprintf(stderr, "Paint.Begin: w = %g h = %g\n", w, h);
+		
 		rx = (int)gtk_print_context_get_dpi_x(context);
 		ry = (int)gtk_print_context_get_dpi_y(context);
 	}
@@ -644,6 +653,16 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
 }
 
+static PangoLayout *create_pango_layout(GB_PAINT *d)
+{
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+	
+	if (dx->print_context)
+		return gtk_print_context_create_pango_layout(dx->print_context);
+	else
+		return pango_cairo_create_layout(dx->context);
+}
+
 static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align, bool draw)
 {
 	char *html = NULL;
@@ -651,7 +670,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	CFONT *font;
 	float tw, th, offx, offy;
 
-	layout = pango_cairo_create_layout(CONTEXT(d));
+	layout = create_pango_layout(d);
   
 	if (rich)
 	{
@@ -711,7 +730,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	PangoRectangle rect;
 	float x, y;
 	
-	layout = pango_cairo_create_layout(CONTEXT(d));
+	layout = create_pango_layout(d);
 	
 	if (rich)
 	{

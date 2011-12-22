@@ -32,7 +32,7 @@
 #include "gb.form.print.h"
 #include "gprinter.h"
 
-//#define DEBUG_ME 1
+#define DEBUG_ME 1
 
 static void cb_begin_cancel(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
@@ -173,6 +173,7 @@ void gPrinter::storeSettings()
 	_settings = gtk_print_settings_copy(gtk_print_operation_get_print_settings(_operation));
 	#if DEBUG_ME
 	gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
+	gtk_page_setup_to_file(_page, "/home/benoit/page.txt", NULL);
 	#endif
 }
 
@@ -182,6 +183,7 @@ void gPrinter::defineSettings()
 		return;
 	
 	gtk_print_operation_set_print_settings(_operation, _settings);
+	gtk_print_operation_set_default_page_setup(_operation, _page);
 }
 
 bool gPrinter::run(bool configure)
@@ -195,6 +197,7 @@ bool gPrinter::run(bool configure)
 	
 	#if DEBUG_ME
 	fprintf(stderr, "gPrinter::run: %d\n", configure);
+	fprintf(stderr, "orientation = %d\n", orientation());
 	#endif
 
 	operation = gtk_print_operation_new();
@@ -203,8 +206,8 @@ bool gPrinter::run(bool configure)
 	gtk_print_operation_set_embed_page_setup(operation, true);
 	gtk_print_operation_set_n_pages(operation, _page_count);
 	gtk_print_operation_set_use_full_page(operation, _use_full_page);
-	gtk_print_operation_set_default_page_setup(_operation, _page);
 	gtk_print_operation_set_print_settings(operation, _settings);
+	gtk_print_operation_set_default_page_setup(_operation, _page);
   
 	if (configure)
 	{
@@ -226,6 +229,14 @@ bool gPrinter::run(bool configure)
 	
 	active = gDesktop::activeWindow();
 	
+	if (isVirtual())
+	{
+		_current = this;
+		gApplication::_fix_printer_dialog = true;
+	}
+	else
+		gApplication::_fix_printer_dialog = false;
+	
 	action = GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG;
 	if (!configure)
 	{
@@ -234,13 +245,12 @@ bool gPrinter::run(bool configure)
 		{
 			unlink(file);
 			setOutputFileName(outputFileName());
-			gtk_print_operation_set_print_settings(operation, _settings);
+			defineSettings();
 		}
 		// GTK+ bug: GTK_PRINT_OPERATION_ACTION_PRINT does not work with virtual printers.
 		if (isVirtual())
 		{
 			gApplication::_close_next_window = true;
-			_current = this;
 		}
 		else
 			action = GTK_PRINT_OPERATION_ACTION_PRINT;
@@ -289,6 +299,8 @@ bool gPrinter::run(bool configure)
 	g_object_unref(G_OBJECT(operation));
 	_operation = NULL;
 	
+	fprintf(stderr, "orientation => %d\n", orientation());
+	
 	return res != GTK_PRINT_OPERATION_RESULT_APPLY;
 }
 
@@ -316,7 +328,7 @@ void gPrinter::setPageCount(int v)
 
 int gPrinter::orientation() const
 {
-	switch(gtk_print_settings_get_orientation(_settings))
+	switch (gtk_page_setup_get_orientation(_page))
 	{
 		case GTK_PAGE_ORIENTATION_LANDSCAPE: return GB_PRINT_LANDSCAPE;
 		case GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT: return GB_PRINT_PORTRAIT;
@@ -337,7 +349,7 @@ void gPrinter::setOrientation(int v)
 		case GB_PRINT_PORTRAIT: default: orient = GTK_PAGE_ORIENTATION_PORTRAIT; break;
 	}
 	
-	gtk_print_settings_set_orientation(_settings, orient);
+	//gtk_print_settings_set_orientation(_settings, orient);
 	gtk_page_setup_set_orientation(_page, orient);
 }
 
@@ -366,7 +378,7 @@ void gPrinter::setPaperModel(int v)
 	
 	_paper_size = v;
 	paper = getPaperSize();
-	gtk_print_settings_set_paper_size(_settings, paper);
+	//gtk_print_settings_set_paper_size(_settings, paper);
 	gtk_page_setup_set_paper_size(_page, paper);
 	gtk_paper_size_free(paper);
 }
@@ -375,8 +387,12 @@ void gPrinter::getPaperSize(double *width, double *height)
 {
 	if (_paper_size == GB_PRINT_CUSTOM)
 	{
-		*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
-		*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
+		//*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
+		//*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
+		*width = gtk_page_setup_get_paper_width(_page, GTK_UNIT_MM);
+		*height = gtk_page_setup_get_paper_height(_page, GTK_UNIT_MM);
+		
+		// orientation is taken into account
 	}
 	else
 	{
@@ -384,21 +400,35 @@ void gPrinter::getPaperSize(double *width, double *height)
 		*width = gtk_paper_size_get_width(paper, GTK_UNIT_MM);
 		*height = gtk_paper_size_get_height(paper, GTK_UNIT_MM);
 		gtk_paper_size_free(paper);
-	}
-	
-	if (orientation() == GB_PRINT_LANDSCAPE)
-	{
-		double swap = *width;
-		*width = *height;
-		*height = swap;
+		
+		if (orientation() == GB_PRINT_LANDSCAPE)
+		{
+			double swap = *width;
+			*width = *height;
+			*height = swap;
+		}
 	}
 }
 
 void gPrinter::setPaperSize(double width, double height)
 {
+	GtkPaperSize *paper;
+	
 	_paper_size = GB_PRINT_CUSTOM;
-	gtk_print_settings_set_paper_width(_settings, width, GTK_UNIT_MM);
-	gtk_print_settings_set_paper_height(_settings, height, GTK_UNIT_MM);
+	
+	paper = gtk_paper_size_new_custom("Custom", "Custom", width, height, GTK_UNIT_MM);
+	gtk_page_setup_set_paper_size(_page, paper);
+	gtk_paper_size_free(paper);
+
+	if (orientation() == GB_PRINT_LANDSCAPE)
+	{
+		double swap = width;
+		width = height;
+		height = swap;
+	}
+	
+	//gtk_print_settings_set_paper_width(_settings, width, GTK_UNIT_MM);
+	//gtk_print_settings_set_paper_height(_settings, height, GTK_UNIT_MM);
 }
 
 bool gPrinter::collateCopies() const
@@ -545,30 +575,30 @@ void gPrinter::setOutputFileName(const char *file)
 {
 	char *escaped;
 	char *uri = NULL; //[strlen(file) + 7];
-	const char *format;
+	//const char *format;
 	
 	escaped = g_uri_escape_string(file, "/", true);
 	g_stradd(&uri, "file://");
 	g_stradd(&uri, escaped);
 	g_free(escaped);
 	
-	if (g_str_has_suffix(uri, ".ps"))
+	/*if (g_str_has_suffix(uri, ".ps"))
 		format = "ps";
 	else if (g_str_has_suffix(uri, ".pdf"))
 		format = "pdf";
 	else if (g_str_has_suffix(uri, ".svg"))
 		format = "svg";
 	else
-		format = NULL;
+		format = NULL;*/
 
 	gtk_enumerate_printers((GtkPrinterFunc)find_file_printer, this, NULL, TRUE);
 	
-	// It does not work!!!
-	if (format)
-		gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
-
 	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
 	g_free(uri);
+
+	// It does not work!!!
+	//if (format)
+	//	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
 }
 
 
@@ -590,11 +620,55 @@ bool gPrinter::isVirtual()
 	return _is_virtual;
 }
 
+static int _dump_tree_radio_button;
+static int _dump_tree_entry;
+
+static void dump_tree(GtkWidget *wid, GtkPrintUnixDialog *dialog)
+{
+	//fprintf(stderr, "dump_tree: %s\n", G_OBJECT_TYPE_NAME(wid));
+	if (GTK_IS_RADIO_BUTTON(wid))
+	{
+		//fprintf(stderr, "dump_tree: radio button: %s\n", gtk_button_get_label(GTK_BUTTON(wid)));
+		_dump_tree_radio_button--;
+		if (_dump_tree_radio_button == 0)
+		{
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(wid), TRUE);
+		}
+	}
+	else if (GTK_IS_ENTRY(wid))
+	{
+		//fprintf(stderr, "dump_tree: entry: %s\n", gtk_entry_get_text(GTK_ENTRY(wid)));
+		_dump_tree_entry--;
+		if (_dump_tree_entry == 0)
+		{
+			const char *output = gtk_print_settings_get(gPrinter::_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
+			char *name;
+			
+			name = g_path_get_basename(output);
+			//fprintf(stderr, "name = %s\n", name);
+			gtk_entry_set_text(GTK_ENTRY(wid), name);
+			g_free(name);
+		}
+	}
+	else if (GTK_IS_CONTAINER(wid))
+		gtk_container_foreach(GTK_CONTAINER(wid), (GtkCallback)dump_tree, (gpointer)dialog);
+}
+
 void gPrinter::fixPrintDialog(GtkPrintUnixDialog *dialog)
 {
-	//GtkPrintSettings *settings = gtk_print_unix_dialog_get_settings(dialog);
-	//fprintf(stderr, "gPrinter::fixPrintDialog: '%s' '%s'\n", gtk_print_settings_get(settings, GTK_PRINT_SETTINGS_OUTPUT_URI), gtk_print_settings_get(settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT));
-	//fprintf(stderr, "-> '%s' '%s'\n", gtk_print_settings_get(_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI), gtk_print_settings_get(_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT));
-	gtk_print_unix_dialog_set_settings(dialog, _current->_settings);
+	const char *output = gtk_print_settings_get(gPrinter::_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
+	
+	_dump_tree_entry = 1;
+	
+	if (g_str_has_suffix(output, ".pdf"))
+		_dump_tree_radio_button = 0;
+	if (g_str_has_suffix(output, ".ps"))
+		_dump_tree_radio_button = 2;
+	else if (g_str_has_suffix(output, ".svg"))
+		_dump_tree_radio_button = 3;
+	else
+		_dump_tree_radio_button = 0;
+	
+	dump_tree(GTK_WIDGET(dialog), dialog);
 }
 
