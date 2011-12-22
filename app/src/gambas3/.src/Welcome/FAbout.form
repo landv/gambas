@@ -1,16 +1,16 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,6,82,64)
+  MoveScaled(3,6,82,65)
   Background = &HFFFFFF&
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
   { dwgWelcome DrawingArea
-    MoveScaled(0,0,82,20)
+    MoveScaled(0,0,82,21)
   }
   { svwAuthor ScrollView
-    MoveScaled(3,22,76,41)
+    MoveScaled(3,23,76,41)
     Arrangement = Arrange.Vertical
     Spacing = True
     Border = False
@@ -53,25 +53,25 @@
     }
   }
   { timAuthor #Timer
-    #MoveScaled(48,37)
+    #MoveScaled(48,38)
     Enabled = True
     Delay = 25
   }
   { btnGift Button
-    MoveScaled(43,22,36,8)
+    MoveScaled(43,23,36,8)
     Visible = False
     Font = Font["Bold,+1"]
     Text = ("Make a gift!")
     Picture = Picture["img/donate.png"]
   }
   { picGradientTop PictureBox
-    MoveScaled(1,22,80,7)
+    MoveScaled(1,23,80,7)
   }
   { picGradientBottom PictureBox
-    MoveScaled(1,56,80,7)
+    MoveScaled(1,57,80,7)
   }
   { Panel1 Panel
-    MoveScaled(0,20,82,1)
+    MoveScaled(0,21,82,1)
     Background = &H000000&
   }
 }

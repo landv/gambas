@@ -82,6 +82,7 @@ typedef
 		GtkPrintContext *print_context;
 		CFONT *font;
 		CFONT **font_stack;
+		cairo_matrix_t init;
 		}
 	GB_PAINT_EXTRA;
 
@@ -115,6 +116,54 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 	return FALSE;
 }
 
+#if 0
+static void _gtk_print_context_rotate_according_to_orientation (GtkPrintContext *context, cairo_t *cr)
+{
+  cairo_matrix_t matrix;
+  gdouble width, height;
+	GtkPageSetup *page = gtk_print_context_get_page_setup(context);
+
+  /*width = gtk_paper_size_get_width (paper_size, GTK_UNIT_INCH);
+  width = width * context->surface_dpi_x / context->pixels_per_unit_x;
+  height = gtk_paper_size_get_height (paper_size, GTK_UNIT_INCH);
+  height = height * context->surface_dpi_y / context->pixels_per_unit_y;*/
+	
+	width = gtk_print_context_get_width(context);
+	height = gtk_print_context_get_height(context);
+  
+  switch (gtk_page_setup_get_orientation (page))
+    {
+    default:
+    case GTK_PAGE_ORIENTATION_PORTRAIT:
+      break;
+    case GTK_PAGE_ORIENTATION_LANDSCAPE:
+			fprintf(stderr, "rotate landscape\n");
+      cairo_translate (cr, 0, height);
+      cairo_matrix_init (&matrix,
+			 0, -1,
+			 1,  0,
+			 0,  0);
+      cairo_transform (cr, &matrix);
+      break;
+    case GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT:
+      cairo_translate (cr, width, height);
+      cairo_matrix_init (&matrix,
+			 -1,  0,
+			  0, -1,
+			  0,  0);
+      cairo_transform (cr, &matrix);
+      break;
+    case GTK_PAGE_ORIENTATION_REVERSE_LANDSCAPE:
+      cairo_translate (cr, width, 0);
+      cairo_matrix_init (&matrix,
+			  0,  1,
+			 -1,  0,
+			  0,  0);
+      cairo_transform (cr, &matrix);
+      break;
+    }
+}
+#endif
 
 static int Begin(GB_PAINT *d)
 {
@@ -201,7 +250,12 @@ static int Begin(GB_PAINT *d)
 		EXTRA(d)->print_context = context;
 		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
 		
-		fprintf(stderr, "Paint.Begin: orientation = %d\n", gtk_page_setup_get_orientation(gtk_print_context_get_page_setup(context)));
+		//_gtk_print_context_rotate_according_to_orientation(context, CONTEXT(d));
+		
+		/*fprintf(stderr, "Paint.Begin: orientation = %d w = %g h = %g\n", gtk_page_setup_get_orientation(gtk_print_context_get_page_setup(context)),
+			gtk_page_setup_get_paper_width(gtk_print_context_get_page_setup(context), GTK_UNIT_MM),
+			gtk_page_setup_get_paper_height(gtk_print_context_get_page_setup(context), GTK_UNIT_MM)
+		);*/
 		
 		cairo_reference(CONTEXT(d));
 		
@@ -209,10 +263,15 @@ static int Begin(GB_PAINT *d)
 		
 		w = gtk_print_context_get_width(context);
 		h = gtk_print_context_get_height(context);
-		fprintf(stderr, "Paint.Begin: w = %g h = %g\n", w, h);
+		//fprintf(stderr, "Paint.Begin: w = %g h = %g\n", w, h);
 		
 		rx = (int)gtk_print_context_get_dpi_x(context);
 		ry = (int)gtk_print_context_get_dpi_y(context);
+		
+		cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
+		/*cairo_identity_matrix(CONTEXT(d));
+		cairo_get_matrix(CONTEXT(d), &t);
+		fprintf(stderr, "matrix: [%g %g %g]\n        [%g %g %g]\n", t.xx, t.xy, t.x0, t.yx, t.yy, t.y0);*/
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
@@ -657,9 +716,9 @@ static PangoLayout *create_pango_layout(GB_PAINT *d)
 {
 	GB_PAINT_EXTRA *dx = EXTRA(d);
 	
-	if (dx->print_context)
+	/*if (dx->print_context)
 		return gtk_print_context_create_pango_layout(dx->print_context);
-	else
+	else*/
 		return pango_cairo_create_layout(dx->context);
 }
 
@@ -778,7 +837,12 @@ static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 		if (t)
 			cairo_set_matrix(CONTEXT(d), t);
 		else
-			cairo_identity_matrix(CONTEXT(d));
+		{
+			if (EXTRA(d)->print_context)
+				cairo_set_matrix(CONTEXT(d), &EXTRA(d)->init);
+			else
+				cairo_identity_matrix(CONTEXT(d));
+		}
 	}
 	else
 		cairo_get_matrix(CONTEXT(d), t);

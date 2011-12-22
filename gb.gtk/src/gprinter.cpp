@@ -32,7 +32,7 @@
 #include "gb.form.print.h"
 #include "gprinter.h"
 
-#define DEBUG_ME 1
+//#define DEBUG_ME 1
 
 static void cb_begin_cancel(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
@@ -299,7 +299,9 @@ bool gPrinter::run(bool configure)
 	g_object_unref(G_OBJECT(operation));
 	_operation = NULL;
 	
+	#if DEBUG_ME
 	fprintf(stderr, "orientation => %d\n", orientation());
+	#endif
 	
 	return res != GTK_PRINT_OPERATION_RESULT_APPLY;
 }
@@ -329,6 +331,7 @@ void gPrinter::setPageCount(int v)
 int gPrinter::orientation() const
 {
 	switch (gtk_page_setup_get_orientation(_page))
+	//switch (gtk_print_settings_get_orientation(_settings))
 	{
 		case GTK_PAGE_ORIENTATION_LANDSCAPE: return GB_PRINT_LANDSCAPE;
 		case GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT: return GB_PRINT_PORTRAIT;
@@ -349,7 +352,7 @@ void gPrinter::setOrientation(int v)
 		case GB_PRINT_PORTRAIT: default: orient = GTK_PAGE_ORIENTATION_PORTRAIT; break;
 	}
 	
-	//gtk_print_settings_set_orientation(_settings, orient);
+	gtk_print_settings_set_orientation(_settings, orient);
 	gtk_page_setup_set_orientation(_page, orient);
 }
 
@@ -378,19 +381,32 @@ void gPrinter::setPaperModel(int v)
 	
 	_paper_size = v;
 	paper = getPaperSize();
-	//gtk_print_settings_set_paper_size(_settings, paper);
+	gtk_print_settings_set_paper_size(_settings, paper);
 	gtk_page_setup_set_paper_size(_page, paper);
 	gtk_paper_size_free(paper);
 }
 
 void gPrinter::getPaperSize(double *width, double *height)
 {
+	GtkPaperSize *paper = gtk_page_setup_get_paper_size(_page);
+	
+	*width = gtk_paper_size_get_width(paper, GTK_UNIT_MM);
+	*height = gtk_paper_size_get_height(paper, GTK_UNIT_MM);
+	
+	if (orientation() == GB_PRINT_LANDSCAPE)
+	{
+		double swap = *width;
+		*width = *height;
+		*height = swap;
+	}
+	
+#if 0
 	if (_paper_size == GB_PRINT_CUSTOM)
 	{
-		//*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
-		//*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
-		*width = gtk_page_setup_get_paper_width(_page, GTK_UNIT_MM);
-		*height = gtk_page_setup_get_paper_height(_page, GTK_UNIT_MM);
+		*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
+		*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
+		//*width = gtk_page_setup_get_paper_width(_page, GTK_UNIT_MM);
+		//*height = gtk_page_setup_get_paper_height(_page, GTK_UNIT_MM);
 		
 		// orientation is taken into account
 	}
@@ -401,13 +417,8 @@ void gPrinter::getPaperSize(double *width, double *height)
 		*height = gtk_paper_size_get_height(paper, GTK_UNIT_MM);
 		gtk_paper_size_free(paper);
 		
-		if (orientation() == GB_PRINT_LANDSCAPE)
-		{
-			double swap = *width;
-			*width = *height;
-			*height = swap;
-		}
 	}
+#endif
 }
 
 void gPrinter::setPaperSize(double width, double height)
@@ -416,16 +427,24 @@ void gPrinter::setPaperSize(double width, double height)
 	
 	_paper_size = GB_PRINT_CUSTOM;
 	
-	paper = gtk_paper_size_new_custom("Custom", "Custom", width, height, GTK_UNIT_MM);
-	gtk_page_setup_set_paper_size(_page, paper);
-	gtk_paper_size_free(paper);
-
 	if (orientation() == GB_PRINT_LANDSCAPE)
 	{
 		double swap = width;
 		width = height;
 		height = swap;
 	}
+	
+	paper = gtk_paper_size_new_custom("Custom", "Custom", width, height, GTK_UNIT_MM);
+	gtk_page_setup_set_paper_size(_page, paper);
+	gtk_print_settings_set_paper_size(_settings, paper);
+	gtk_paper_size_free(paper);
+
+	/*if (orientation() == GB_PRINT_LANDSCAPE)
+	{
+		double swap = width;
+		width = height;
+		height = swap;
+	}*/
 	
 	//gtk_print_settings_set_paper_width(_settings, width, GTK_UNIT_MM);
 	//gtk_print_settings_set_paper_height(_settings, height, GTK_UNIT_MM);
