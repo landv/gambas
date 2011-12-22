@@ -36,7 +36,7 @@ Static Public Sub _get(Application As String) As DBusApplication
   
 End
 
-Static Public Sub _Normalize(sName As String) As String
+Static Public Sub _Normalize(sName As String, Optional bKeepCase As Boolean) As String
   
   Dim sRes As String
   Dim iInd As Integer
@@ -45,7 +45,7 @@ Static Public Sub _Normalize(sName As String) As String
   For iInd = 1 To Len(sName)
     sCar = Mid$(sName, iInd, 1)
     If IsLetter(sCar) Then
-      sCar = LCase(sCar)
+      If Not bKeepCase Then sCar = LCase(sCar)
     Else If IsDigit(sCar) Then
     Else
       If Right(sRes) <> "." Then
@@ -97,6 +97,6 @@ End
 
 Static Private Sub Name_Write(Value As String)
 
-  $sAppName = _Normalize(Value)
+  $sAppName = _Normalize(Value, True)
 
 End
