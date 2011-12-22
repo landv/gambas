@@ -1496,19 +1496,23 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
       panSelectS.Hide
       panSelectW.Hide
       panSelectE.Hide
+      'panSelectInside.Hide
     Else
       panSelectN.Move(X, Y, W, 3)
       panSelectS.Move(X, Y + H - 3, W, 3)
       panSelectW.Move(X, Y + 3, 3, H - 6)
       panSelectE.Move(X + W - 3, Y + 3, 3, H - 6)
+      'panSelectInside.Move(X, Y, W, H)
       panSelectN.Raise
       panSelectS.Raise
       panSelectW.Raise
       panSelectE.Raise
+      'panSelectInside.Raise
       panSelectN.Show
       panSelectS.Show
       panSelectW.Show
       panSelectE.Show
+      'panSelectInside.Show
     Endif
     ' panSelectN.Move(X, Y, W, H)
     ' panSelectN.Raise
@@ -1523,6 +1527,7 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
     panSelectS.Hide
     panSelectW.Hide
     panSelectE.Hide
+    'panSelectInside.Hide
 
   Endif
 
@@ -3492,3 +3497,13 @@ Public Sub panSelect_Draw()
   Endif
 
 End
+
+' Public Sub panSelectInside_Draw()
+' 
+'   If $iMode = MODE_SELECT Then
+'     Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 240))
+'     Paint.Rectangle(0, 0, Paint.W, Paint.H)
+'     Paint.Fill
+'   Endif
+' 
+' End

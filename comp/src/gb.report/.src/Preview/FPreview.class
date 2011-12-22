@@ -102,13 +102,22 @@ Private Sub ResizeMe()
 
     If Printer1.PaperWidth > Printer1.PaperHeight Then
       $fScale = svwPreview.W / iWidth
+      If (iHeight * $fScale) > svwPreview.Height Then
+        $fScale = (svwPreview.W - Style.ScrollbarSize - 2) / iWidth
+      Endif
+      svwPreview.ScrollBar = Scroll.Vertical
     Else
-      $fScale = svwPreview.H / iHeight
+      $fScale = (svwPreview.H - Style.ScrollbarSize - 2) / iHeight
+      If (iWidth * $fScale) > svwPreview.Width Then
+        $fScale = (svwPreview.H - Style.ScrollbarSize - 2) / iHeight
+      Endif
+      svwPreview.ScrollBar = Scroll.Horizontal
     Endif
     Object.Lock(sldZoom)
     sldZoom.Value = $fScale * 100
     Object.Unlock(sldZoom)
   Else
+    svwPreview.ScrollBar = Scroll.Both
     $fScale = sldZoom.Value / 100
   Endif
 
@@ -197,6 +206,7 @@ End
 Public Sub btnPrint_Click()
 
   If Printer1.Configure() Then Return
+  'Printer1.OutputFile = "/home/benoit/gambas/3.0/trunk/comp/src/gb.report/test.pdf"
   'Me.Enabled = False
   Printer1.Print()
   'Me.Enabled = True
