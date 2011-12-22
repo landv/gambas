@@ -688,7 +688,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	else
 		name = "template1";
 
-	if (snprintf(dbname, sizeof(dbname), "dbname='%s' timeout=%d", get_quote_string(name, strlen(name), '\''), db->timeout) >= sizeof(dbname))
+	if (snprintf(dbname, sizeof(dbname), "dbname='%s' connect_timeout=%d", get_quote_string(name, strlen(name), '\''), db->timeout) >= sizeof(dbname))
 	{
 		GB.Error("Cannot open database: database name too long");
 		return TRUE;
