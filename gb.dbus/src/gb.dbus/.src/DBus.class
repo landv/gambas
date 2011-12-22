@@ -91,7 +91,7 @@ End
 Static Private Function Name_Read() As String
 
   If $sAppName Then Return $sAppName
-  Return "org.gambas." & _Normalize(Application.Name)
+  Return "org.gambas." & _Normalize(Application.Name, True)
   
 End
 
