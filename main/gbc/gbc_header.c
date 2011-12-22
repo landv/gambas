@@ -255,7 +255,7 @@ static bool header_event(TRANS_EVENT *event)
 		THROW("A module cannot raise events");
 
 	JOB->current++;
-	analyze_function_desc((TRANS_FUNC *)event, HF_VOID);
+	analyze_function_desc((TRANS_FUNC *)event, HF_VOID + HF_NO_BYREF + HF_NO_3PTS + HF_NO_OPT);
 
 	/*if (PATTERN_is(*JOB->current, RS_AS))
 	{

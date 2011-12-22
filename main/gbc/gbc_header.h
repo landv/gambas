@@ -36,7 +36,8 @@ enum {
   HF_NO_3PTS = 1,
   HF_EVENT = 2,
   HF_NO_OPT = 4,
-  HF_VOID = 8
+  HF_VOID = 8,
+	HF_NO_BYREF = 16
   };
 
 enum {
