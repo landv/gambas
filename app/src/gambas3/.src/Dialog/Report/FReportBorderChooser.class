@@ -4,26 +4,28 @@ Static Public Value As String
 
 'Private hBrush As CReportBrush = CReportBrush["&h00000000&"]
 
-Private Enum BORDER_TOP, BORDER_BOTTOM, BORDER_LEFT, BORDER_RIGHT
+Private Enum BORDER_TOP, BORDER_BOTTOM, BORDER_LEFT, BORDER_RIGHT, TOPLEFTCORNER, TOPLEFTCORNER2,
+  TOPRIGHTCORNER, TOPRIGHTCORNER2, BOTTOMRIGHTCORNER, BOTTOMRIGHTCORNER2, BOTTOMLEFTCORNER, BOTTOMLEFTCORNER2
 
-Private $aCoordBox As New CoordBox[4]
+Private $aCoordBox As New CoordBox[12]
 Private $aBrush As New CReportBrush[4]
 Private $aWidth As New String[4]
-Private $aBorder As String[] = ["Top", "Bottom", "Left", "Right"]
+Private $achkSynchro As New CheckBox[4]
+Private $aBorder As String[] = ["Top", "Bottom", "Left", "Right", "TopLeftCorner", "TopLeftCorner2",
+  "TopRightCorner", "TopRightCorner2", "BottomRightCorner", "BottomRightCorner2", "BottomLeftCorner", "BottomLeftCorner2"]
 
 Private $iCurBorder As Integer
 
 Public Sub Run(sBorder As String) As Boolean
-  
+
   Value = sBorder
   Return Not Me.ShowModal()
-  
-End
 
+End
 
 ' Public Sub RefreshImage()
 '   'Dim $hImg As Image
-' 
+'
 '   Paint.Begin($hImg)
 '   Paint.Brush = hBrush._PaintBrush(4, 4, Paint.Width - 6, Paint.Height - 6)
 '   Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
@@ -35,63 +37,80 @@ End
 '   paint.Brush = Paint.Color(Color.White)
 '   Paint.Rectangle(2, 2, Paint.Width - 4, Paint.Height - 4)
 '   Paint.Stroke
-'   
+'
 '   Paint.End
 '   Button1.Picture = $hImg.Picture
-' 
+'
 ' End
 
 ' Public Sub ButtonBox1_Click()
-'   
+'
 '   If Not FReportCoordChooser.Run(Last.Text) Then Last.Text = FReportCoordChooser.Coord
-'   
+'
 ' End
-' 
+'
 Public Sub dwgBorder_Draw()
-  
+
   Dim iBorder As Integer
   Dim fSize As Float
   Dim hBrush As CReportBrush
 
-  For iBorder = 0 To 3
-    
-    If Not $aCoordBox[iBorder].Value = Null Then Continue
-    
-    If chkSynchro.Value Then
-      hBrush = $aBrush[BORDER_TOP]
-      fSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
-    Else
-      hBrush = $aBrush[iBorder]
-      fSize = CFamilyReport.ToPixel($aCoordBox[iBorder].Value)
-    Endif
-    
+  If HaveRoundCorner() Then
+
+    fSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
+    paint.LineWidth = fSize
+    hBrush = $aBrush[BORDER_TOP]
     Paint.Brush = hBrush._PaintBrush(0, 0, Paint.Width, Paint.Height)
-    
-    Select Case iBorder
-      Case BORDER_TOP
-        Paint.Rectangle(0, 0, Paint.Width, fSize)
-      Case BORDER_RIGHT
-        Paint.Rectangle(Paint.Width - fSize, 0, fSize, Paint.Height)
-      Case BORDER_BOTTOM
-        Paint.Rectangle(0, Paint.Height - fSize, Paint.Width, fSize)
-      Case BORDER_LEFT
-        Paint.Rectangle(0, 0, fSize, Paint.Height)
-    End Select
-    
-    Paint.Fill
-    
-  Next
-  
+    RoundRect(fSize / 2, fSize / 2, paint.Width - fSize, paint.Height - fSize, [CFamilyReport.ToPixel(crdTopLeft1.Value),
+      CFamilyReport.ToPixel(crdTopRight1.Value),
+      CFamilyReport.ToPixel(crdBottomRight1.Value),
+      CFamilyReport.ToPixel(crdBottomLeft1.Value)], [CFamilyReport.ToPixel(crdTopLeft2.Value),
+      CFamilyReport.ToPixel(crdTopRight2.Value),
+      CFamilyReport.ToPixel(crdBottomRight2.Value),
+      CFamilyReport.ToPixel(crdBottomLeft2.Value)])
+    paint.Stroke
+
+  Else
+    For iBorder = 0 To 3
+
+      If Not $aCoordBox[iBorder].Value = Null Then Continue
+
+      If chkSynchro.Value Then
+        hBrush = $aBrush[BORDER_TOP]
+        fSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
+      Else
+        hBrush = $aBrush[iBorder]
+        fSize = CFamilyReport.ToPixel($aCoordBox[iBorder].Value)
+      Endif
+
+      Paint.Brush = hBrush._PaintBrush(0, 0, Paint.Width, Paint.Height)
+
+      Select Case iBorder
+        Case BORDER_TOP
+          Paint.Rectangle(0, 0, Paint.Width, fSize)
+        Case BORDER_RIGHT
+          Paint.Rectangle(Paint.Width - fSize, 0, fSize, Paint.Height)
+        Case BORDER_BOTTOM
+          Paint.Rectangle(0, Paint.Height - fSize, Paint.Width, fSize)
+        Case BORDER_LEFT
+          Paint.Rectangle(0, 0, fSize, Paint.Height)
+      End Select
+
+      Paint.Fill
+
+    Next
+  Endif
+
 End
-' 
+'
 ' Public Sub dwgBorder_MouseDown()
-'   
+'
 '   Dim fPosX, fPosY As Float
 '   Dim iPos As Integer
-'   
+'
 '   fPosX = Mouse.X / dwgBorder.Width
 '   fPosY = Mouse.Y / dwgBorder.Height
-'   
+'
 '   If fPosY > fPosX Then
 '     If fPosY > (1 - fPosX) Then
 '       iPos = 2
@@ -105,66 +124,66 @@ End
 '       iPos = 0
 '     Endif
 '   Endif
-'   
+'
 '   If Not $aBrushes[iPos] Then
 '     $aBrushes[iPos] = hBrush
 '   Else
-'     If $aWidth[iPos] = ButtonBox1.Text And If $aBrushes[iPos] = hBrush Then 
+'     If $aWidth[iPos] = ButtonBox1.Text And If $aBrushes[iPos] = hBrush Then
 '       $aBrushes[iPos] = Null
 '     Else
 '       $aBrushes[iPos] = hBrush
 '     Endif
-'     
+'
 '   Endif
 '   $aWidth[iPos] = ButtonBox1.Text
-'   
+'
 '   'SetBorder(sWhere, Not HasBorder(sWhere))
 '   dwgBorder.Refresh
-'   
+'
 ' End
-' 
+'
 ' Public Sub btnOK_Click()
-'   
+'
 '   Dim bAll As Boolean = True
 '   Dim prevhBrush, hBrush As CReportBrush
 '   Dim PrevW As String
 '   Dim i As Integer
-'   
+'
 '   Value = ""
 '   prevhBrush = $aBrushes[0]
 '   PrevW = $aWidth[0]
 '   For i = 0 To 3
 '     If $aBrushes[i] = Null Or If $aBrushes[i] <> prevhBrush Or If $aWidth[i] <> PrevW Then
-'       
+'
 '       bAll = False
 '       Break
 '     Endif
-'     
+'
 '     prevhBrush = $aBrushes[i]
 '     PrevW = $aWidth[i]
-'     
+'
 '   Next
-'   
-'   If bAll Then 
+'
+'   If bAll Then
 '     If $aBrushes[0] <> Null Then Value = "Border=" & $aWidth[0] & " " & $aBrushes[0].ToString() & ";"
-'     
+'
 '   Else
 '     For i = 0 To 3
-'       
+'
 '       If $aBrushes[i] Then
-'         
+'
 '         Value &= $aSide[i] & "=" & $aWidth[i] & " " & $aBrushes[i].ToString() & "; "
-'         
+'
 '       Endif
-'       
+'
 '     Next
 '   Endif
 '   Me.Close(True)
-'   
+'
 ' End
-' 
+'
 ' Public Sub Form_Open()
-'   
+'
 '   Dim ars As String[]
 '   Dim ars2 As String[]
 '   Dim iSide, i As Integer
@@ -173,14 +192,14 @@ End
 '     ars = Scan(sValue, "*=*")
 '     If ars.Count < 2 Then Return
 '     iSide = $aSide.Find(Trim(ars[0]))
-'     If iSide = -1 Then  
+'     If iSide = -1 Then
 '       If LCase(Trim(ars[0])) <> "border" Then Return
 '       For i = 0 To 3
 '         ars2 = Split(ars[1], " ")
 '         $aWidth[i] = ars2[0]
 '         Try $aBrushes[i] = CReportBrush[ars2[1]]
-'       Next 
-'       
+'       Next
+'
 '     Else
 '       ars2 = Split(ars[1], " ")
 '        $aWidth[iSide] = ars2[0]
@@ -188,9 +207,22 @@ End
 '     Endif
 '   Next
 '   dwgBorder.Refresh
-'   
+'
 ' End
-' 
+'
+
+Private Function HaveRoundCorner() As Boolean
+
+  Return Not (CFamilyReport.ToPixel(crdTopLeft1.Value) = 0 And
+    CFamilyReport.ToPixel(crdTopLeft2.Value) = 0 And
+    CFamilyReport.ToPixel(crdTopRight1.Value) = 0 And
+    CFamilyReport.ToPixel(crdTopRight2.Value) = 0 And
+    CFamilyReport.ToPixel(crdBottomRight1.Value) = 0 And
+    CFamilyReport.ToPixel(crdBottomRight2.Value) = 0 And
+    CFamilyReport.ToPixel(crdBottomLeft1.Value) = 0 And
+    CFamilyReport.ToPixel(crdBottomLeft2.Value) = 0)
+
+End
 
 Public Sub Form_Open()
 
@@ -198,39 +230,59 @@ Public Sub Form_Open()
   Dim aScan As String[]
   Dim iBorder As Integer
   Dim sBrush As String
-  Dim aComp As New String[4]
-  
+  Dim aComp As New String[12]
+  Dim achkSynchro As New CheckBox[8]
+
   $aCoordBox[BORDER_TOP] = crdTop
   $aCoordBox[BORDER_BOTTOM] = crdBottom
   $aCoordBox[BORDER_LEFT] = crdLeft
   $aCoordBox[BORDER_RIGHT] = crdRight
-  
+  $aCoordBox[TOPLEFTCORNER] = crdTopLeft1
+  $aCoordBox[TOPLEFTCORNER2] = crdTopLeft2
+  $aCoordBox[TOPRIGHTCORNER] = crdTopRight1
+  $aCoordBox[TOPRIGHTCORNER2] = crdTopRight2
+  $aCoordBox[BOTTOMRIGHTCORNER] = crdBottomRight1
+  $aCoordBox[BOTTOMRIGHTCORNER2] = crdBottomRight2
+  $aCoordBox[BOTTOMLEFTCORNER] = crdBottomLeft1
+  $aCoordBox[BOTTOMLEFTCORNER2] = crdBottomLeft2
+
+  achkSynchro[0] = chkTopLeft
+  achkSynchro[2] = chkTopRight
+  achkSynchro[4] = chkBottomRight
+  achkSynchro[6] = chkBottomLeft
+
   For iBorder = 0 To 3
     $aCoordBox[iBorder].Clear
     $aBrush[iBorder] = New CReportBrush
   Next
-  
+
   For Each sBorder In Split(Value, ";")
-    
+
     aScan = Scan(sBorder, "*:*")
     If aScan.Count <> 2 Then Continue
     iBorder = $aBorder.Find(aScan[0], gb.IgnoreCase)
     If iBorder < 0 Then Continue
-    
+
     aComp[iBorder] = aScan[1]
-    
+
     For Each sBrush In Split(aScan[1], " ")
-      
+
       If IsDigit(Left(sBrush)) Then
-        Try $aCoordBox[iBorder].Value = sBrush
+        If InStr(sBrush, "/") Then
+          Try $aCoordBox[iBorder].Value = Scan(sBrush, "*/*")[0]
+          Try $aCoordBox[iBorder + 1].Value = Scan(sBrush, "*/*")[1]
+          achkSynchro[iBorder - 4].Value = $aCoordBox[iBorder].Value = $aCoordBox[iBorder + 1].Value
+        Else
+          Try $aCoordBox[iBorder].Value = sBrush
+        Endif
       Else
         Try $aBrush[iBorder] = CReportBrush[sBrush]
       Endif
-      
+
     Next
-    
+
   Next
-  
+
   If aComp[0] = aComp[1] And If aComp[0] = aComp[2] And If aComp[0] = aComp[3] Then
     chkSynchro.Value = True
   Else
@@ -278,19 +330,174 @@ Public Sub btnOK_Click()
   Dim sBorder As String
   Dim iBorder As Integer
   Dim iUse As Integer
-  
+
   For iBorder = 0 To 3
-    
-    iUse = If(chkSynchro.Value, BORDER_TOP, iBorder)
-    
+
+    iUse = If(chkSynchro.Value Or HaveRoundCorner(), BORDER_TOP, iBorder)
+
     If Not $aCoordBox[iUse].Value Then Continue
     If sBorder Then sBorder &= ";"
     sBorder &= $aBorder[iBorder] & ":"
     sBorder &= $aCoordBox[iUse].Value & " " & $aBrush[iUse].ToString()
-    
+
   Next
-  
+  If sBorder Then
+    For iBorder = 4 To 11 Step 2
+      If $aCoordBox[iBorder].Value Then
+        sBorder &= ";"
+        sBorder &= $aBorder[iBorder] & ":" & $aCoordBox[iBorder].Value
+        If $aCoordBox[iBorder + 1].Value Then sBorder &= "/" & $aCoordBox[iBorder + 1].Value
+
+      Endif
+    Next
+  Endif
+
   Value = sBorder
+  Print sBorder
   Me.Close(True)
+
+End
+
+Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+
+  Dim ARC_TO_BEZIER As Float = 0.55228475
+  Dim c1, c2 As Float
+  Dim i As Integer
+
+  For i = 0 To 3
+    If radius_x[i] > w - radius_x[i] Then
+      radius_x[i] = w / 2
+    Endif
+
+    If radius_y[i] > h - radius_y[i] Then
+      radius_y[i] = h / 2
+    Endif
+  Next
+  'approximate(quite Close )the arc using a bezier curve
+
+  '        A**********B
+  '       H            C
+  '       *            *
+  '       *            *
+  '       G            D
+  '        F**********E
+
+  '-->A
+  paint.moveto(x + radius_x[0], y)
+
+  '-->B
+  paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
+
+  '-->C
+  c1 = ARC_TO_BEZIER * radius_x[1]
+  c2 = ARC_TO_BEZIER * radius_y[1]
+  paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+
+  '-->D
+  paint.rellineto(0, h - radius_y[1] - radius_y[2])
+
+  '-->E
+  c1 = ARC_TO_BEZIER * radius_x[2]
+  c2 = ARC_TO_BEZIER * radius_y[2]
+  paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+
+  '-->F
+  paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
+
+  '-->G
+  c1 = ARC_TO_BEZIER * radius_x[3]
+  c2 = ARC_TO_BEZIER * radius_y[3]
+  paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  '-->H
+  paint.rellineto(0, - h + radius_y[3] + radius_y[0])
+
+  '-->A
+  c1 = ARC_TO_BEZIER * radius_x[0]
+  c2 = ARC_TO_BEZIER * radius_y[0]
+  paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+
+  'paint.closepath()
+
+End
+
+Public Sub crdCorner_Change()
+
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdTopLeft1_Change()
+
+  If chkTopLeft.Value Then crdTopLeft2.Value = crdTopLeft1.Value
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdTopLeft2_Change()
+
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdTopRight1_Change()
+
+  If chkTopRight.Value Then crdTopRight2.Value = crdTopRight1.Value
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdTopRight2_Change()
+
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdBottomRight1_Change()
+
+  If chkBottomRight.Value Then crdBottomRight2.Value = crdBottomRight1.Value
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdBottomRight2_Change()
+
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdBottomLeft1_Change()
+
+  If chkBottomLeft.Value Then crdBottomLeft2.Value = crdBottomLeft1.Value
+  dwgBorder.Refresh
+
+End
+
+Public Sub crdBottomLeft2_Change()
+
+  dwgBorder.Refresh
+
+End
+
+Public Sub chkTopLeft_Click()
+
+  crdTopLeft2.Enabled = Not Last.Value
+
+End
+
+Public Sub chkTopRight_Click()
+
+  crdTopRight2.Enabled = Not Last.value
+
+End
+
+Public Sub chkBottomRight_Click()
+
+  crdBottomRight2.Enabled = Not Last.value
+
+End
+
+Public Sub chkBottomLeft_Click()
+
+  crdBottomLeft2.Enabled = Not Last.value
 
 End

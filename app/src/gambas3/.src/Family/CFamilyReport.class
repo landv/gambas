@@ -8,7 +8,7 @@ Public Const DropImageProperty As String = "Image"
 Public Const EmbedContainer As String = "ReportPanel"
 
 Static Private Function GetFactor(Unit As String) As Float
-  
+
   Select Case Unit
     Case "cm"
       Return 0.3937
@@ -25,98 +25,121 @@ Static Private Function GetFactor(Unit As String) As Float
     Case Else
       Return 1 / 96 '* (300 / 96) ' Trick to get a 300 DPI like
   End Select
-  
+
 End
 
 Static Public Function ToPixel(sSize As String) As Float
-  
+
   Dim fValue As Float
   Dim I As Integer
   Dim sCar As String
   Dim sUnit As String
   'Dim Size As String = Coord
   sSize = Trim(sSize)
-  
+
   If Not sSize Then
     Try sUnit = "px"
     Return
   Endif
-  
+
   For I = 1 To Len(sSize)
     sCar = Mid$(sSize, I, 1)
     If Not IsDigit(sCar) And If sCar <> "." Then Break
   Next
-  
+
   Try fValue = CFloat(Left$(sSize, I - 1))
   Try sUnit = Trim(Mid$(sSize, I))
-  
+
   Return fValue * GetFactor(sUnit) / GetFactor("px")
-  
+
 End
 
 Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
-  
+
   Dim aBorder As String[] = Split(LCase(sBorder))
   Dim sTest As String
   Dim bBorder As Boolean
-  
+
   For Each sTest In ["left", "right", "top", "bottom", "border"]
     If aBorder.Exist(sTest, gb.IgnoreCase) Then
       bBorder = True
       If UCase(sTest) = UCase(sSide) Then Return True
     Endif
   Next
-  
+
   Return Not bBorder
-  
+
 End
 
 Static Public Sub PaintBorder(sBorder As String) As Float
-  
+
   Dim sElt As String
-  Dim fWidth As Float 
+  Dim fWidth As Float
   Dim cBorder As New Collection
   Dim iColor As Integer
   Dim ars, ars2 As String[]
-  
+  Dim aX, aY As New Integer[4]
+
   If Not sBorder Then Return
-  
-  For Each sElt In Split(LCase(sBorder), ";")
-    ars = Scan(sElt, "*:*")
-    If ars.Count < 2 Then Return
-    ars2 = Split(ars[1], " ")
-    ars[0] = Trim(ars[0])
-    ' If Draw.Device Then
-    '   
-    '   Draw.LineStyle = Line.None
-    '   
-    '   If ars[0] = "left" Or If ars[0] = "border" Then 
-    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
-    '     Try iColor = CReportBrush[ars2[1]].Color
-    '     Draw.FillRect(0, 0, fWidth, Draw.Height, iColor)
-    '   Endif
-    '   
-    '   If ars[0] = "right" Or If ars[0] = "border" Then 
-    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
-    '     iColor = CReportBrush[ars2[1]].Color
-    '     Draw.FillRect(Draw.Width - fWidth, 0, fWidth, Draw.Height, iColor)
-    '   Endif
-    '   If ars[0] = "top" Or If ars[0] = "border" Then
-    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
-    '     iColor = CReportBrush[ars2[1]].Color
-    '     Draw.FillRect(0, 0, Draw.Width, fWidth, iColor)
-    '   Endif
-    '   If ars[0] = "bottom" Or If ars[0] = "border" Then
-    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
-    '     iColor = CReportBrush[ars2[1]].Color
-    '     Draw.FillRect(0, Draw.Height - fWidth, Draw.Width, fWidth, iColor)
-    '   Endif
-    '   
-    ' Else
-      
-      'Paint.Brush = Paint.Color(iColor)
-      
-      If ars[0] = "left" Or If ars[0] = "border" Then 
+  If InStr(LCase(sBorder), "corner") Then
+    For Each sElt In Split(LCase(sBorder), ";")
+      ars = Scan(sElt, "*:*")
+      If ars.Count < 2 Then Return
+      If ars[0] = "top" Or If ars[0] = "border" Then
+        ars2 = Split(ars[1], " ")
+        Try Paint.LineWidth = CFamilyReport.ToPixel(ars2[0])
+        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+      Endif
+      If ars[0] = "topleftcorner" Then
+        ars2 = Split(ars[1], "/")
+        Try aX[0] = (CFamilyReport.ToPixel(ars2[0]))
+        If ars2.Count = 2 Then
+          Try aY[0] = (CFamilyReport.ToPixel(ars2[1]))
+        Else
+          Try aY[0] = (CFamilyReport.ToPixel(ars2[0]))
+        Endif
+      Endif
+      If ars[0] = "toprightcorner" Then
+        ars2 = Split(ars[1], "/")
+        Try aX[1] = (CFamilyReport.ToPixel(ars2[0]))
+        If ars2.Count = 2 Then
+          Try aY[1] = (CFamilyReport.ToPixel(ars2[1]))
+        Else
+          Try aY[1] = (CFamilyReport.ToPixel(ars2[0]))
+        Endif
+      Endif
+      If ars[0] = "bottomleftcorner" Then
+        ars2 = Split(ars[1], "/")
+        Try aX[2] = (CFamilyReport.ToPixel(ars2[0]))
+        If ars2.Count = 2 Then
+          Try aY[2] = (CFamilyReport.ToPixel(ars2[1]))
+        Else
+          Try aY[2] = (CFamilyReport.ToPixel(ars2[0]))
+        Endif
+      Endif
+      If ars[0] = "bottomrightcorner" Then
+        ars2 = Split(ars[1], "/")
+        Try aX[3] = (CFamilyReport.ToPixel(ars2[0]))
+        If ars2.Count = 2 Then
+          Try aY[3] = (CFamilyReport.ToPixel(ars2[1]))
+        Else
+          Try aY[3] = (CFamilyReport.ToPixel(ars2[0]))
+        Endif
+      Endif
+
+    Next
+    RoundRect(paint.LineWidth / 2, paint.LineWidth / 2, paint.Width - paint.LineWidth, paint.Height - paint.LineWidth, aX, aY)
+    fWidth = paint.LineWidth
+    paint.Stroke
+
+  Else
+    For Each sElt In Split(LCase(sBorder), ";")
+      ars = Scan(sElt, "*:*")
+      If ars.Count < 2 Then Return
+      ars2 = Split(ars[1], " ")
+      ars[0] = Trim(ars[0])
+
+      If ars[0] = "left" Or If ars[0] = "border" Then
         Try fWidth = CFamilyReport.ToPixel(ars2[0])
         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, 0, fWidth, Paint.Height)
@@ -134,38 +157,38 @@ Static Public Sub PaintBorder(sBorder As String) As Float
         Paint.Rectangle(0, 0, Paint.Width, fWidth)
         Paint.Fill
       Endif
-      If ars[0] = "bottom" Or If ars[0] = "border" Then 
+      If ars[0] = "bottom" Or If ars[0] = "border" Then
         Try fWidth = CFamilyReport.ToPixel(ars2[0])
         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
         Paint.Fill
       Endif
-    'Endif
-    
-    If ars[0] = "border" Then Break
-  Next
-  
+      'Endif
+
+      If ars[0] = "border" Then Break
+    Next
+  Endif
   Return fWidth
-  
+
 End
 
 Public Sub _new()
-  
+
   Me.Background = Color.White
-  
+
 End
 
 Public Sub IsPainted(hCtrl As CControl) As Boolean
-  
+
   If hCtrl.Kind = "ReportLabel" Then Return True
   If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
   If hCtrl.Kind = "ReportSvgImage" Then Return True
-  
+
 End
 
 Public Sub IsTransparent(hCtrl As CControl) As Boolean
-  
+
   If hCtrl.Kind = "Report" Then Return False
   If hCtrl.Kind = "ReportHBox" Then Return False
   If hCtrl.Kind = "ReportVBox" Then Return False
@@ -173,85 +196,84 @@ Public Sub IsTransparent(hCtrl As CControl) As Boolean
   If hCtrl.Kind = "ReportLabel" Then Return True
   If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
-  
+
 End
 
 Private Sub GetBrush(hCtrl As CControl)
-  
+
   While hCtrl
-    
+
     If hCtrl["Brush"] Then
       Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
       Return
     Endif
-  
+
     hCtrl = hCtrl.Parent
-  
+
   Wend
-  
+
   Paint.Brush = Paint.Color(Color.Black)
-  
+
 End
 
-
 Public Sub DrawControl(hCtrl As CControl) As Boolean
-  
+
   Dim sAlign As String
   Dim X, Y, W, H, W2, H2 As Float
   Dim fVal As Float
   Dim sPath As String
   Dim hSvgImage As SvgImage
-  
+
   X = 0
   Y = 0
   W = hCtrl.Width
   H = hCtrl.Height
-  
+
   If Draw.Device Then Paint.Begin(Draw.Device)
-  
+
   If hCtrl["Background"] Then
     Paint.Brush = CReportBrush[hCtrl["Background"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
     Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
     Paint.Fill
   Endif
-  
+
   If hCtrl["Border"] Then
     fVal = PaintBorder(hCtrl["Border"])
   Endif
-  
+
   If Draw.Device Then Paint.End
-  
+
   If Not hCtrl.IsContainer() And If hCtrl["Padding"] Then
     fVal = Max(ToPixel(hCtrl["Padding"]), fVal)
   Endif
-  
+
   If fVal > 0 Then
     X += fVal
     Y += fVal
     W -= fVal * 2
     H -= fVal * 2
   Endif
-  
+
   If W <= 0 Or If H <= 0 Then Return
-  
+
   If Paint.Device Then GetBrush(hCtrl)
-  
+
   Select Case hCtrl.Kind
-      
+
     Case "ReportLabel"
-      
+
       Try Paint.Font = Font[hCtrl["Font"]]
       Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       Paint.Fill
-      
+
     Case "ReportTextLabel"
-      
+
       Try Paint.Font = Font[hCtrl["Font"]]
       Paint.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       'Paint.Fill
-      
+
     Case "ReportLine"
-      
+
       Paint.LineWidth = 1
       Paint.Brush = Paint.Color(Color.Black)
       Try Paint.LineWidth = hCtrl["LineWidth"]
@@ -289,21 +311,21 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
           Paint.LineTo(W, H)
       End Select
       Paint.Stroke
-      
+
     Case "ReportHBox"
-      
+
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-      
+
     Case "ReportVBox", "Report"
-      
+
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-      
+
     Case "ReportImage"
-      
+
       sPath = hCtrl["Image"]
       If Not sPath Then Return True
       If hCtrl["#Image"] <> sPath Then
@@ -311,9 +333,9 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
         hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
       Endif
       Try Draw.Image(hCtrl["#ImageObject"], X, Y, W, H)
-      
+
     Case "ReportSvgImage"
-      
+
       sPath = hCtrl["Image"]
       If Not sPath Then Return True
       If hCtrl["#Image"] <> sPath Then
@@ -324,29 +346,91 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
       hSvgImage.Resize(W, H)
       Paint.MoveTo(X, Y)
       hSvgImage.Paint
-      
+
     Case Else
-      
+
       Return True
-      
+
   End Select
-  
+
 End
 
 Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
-  
+
   Dim sImage As String
-  
+
   Select hCCtrl.Kind
-      
+
     Case "ReportHBox"
       sImage = "horizontal"
-      
+
     Case "ReportVBox"
       sImage = "vertical"
-      
+
   End Select
-  
+
   Me.DrawIcon(hCont, hCCtrl, sImage)
-  
+
+End
+
+Static Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+
+  Dim ARC_TO_BEZIER As Float = 0.55228475
+  Dim c1, c2 As Float
+  Dim i As Integer
+
+  For i = 0 To 3
+    If radius_x[i] > w - radius_x[i] Then
+      radius_x[i] = w / 2
+    Endif
+
+    If radius_y[i] > h - radius_y[i] Then
+      radius_y[i] = h / 2
+    Endif
+  Next
+  'approximate(quite Close )the arc using a bezier curve
+
+  '        A**********B
+  '       H            C
+  '       *            *
+  '       *            *
+  '       G            D
+  '        F**********E
+
+  '-->A
+  paint.moveto(x + radius_x[0], y)
+
+  '-->B
+  paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
+
+  '-->C
+  c1 = ARC_TO_BEZIER * radius_x[1]
+  c2 = ARC_TO_BEZIER * radius_y[1]
+  paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+
+  '-->D
+  paint.rellineto(0, h - radius_y[1] - radius_y[2])
+
+  '-->E
+  c1 = ARC_TO_BEZIER * radius_x[2]
+  c2 = ARC_TO_BEZIER * radius_y[2]
+  paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+
+  '-->F
+  paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
+
+  '-->G
+  c1 = ARC_TO_BEZIER * radius_x[3]
+  c2 = ARC_TO_BEZIER * radius_y[3]
+  paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  '-->H
+  paint.rellineto(0, - h + radius_y[3] + radius_y[0])
+
+  '-->A
+  c1 = ARC_TO_BEZIER * radius_x[0]
+  c2 = ARC_TO_BEZIER * radius_y[0]
+  paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+
+  'paint.closepath()
+
 End
