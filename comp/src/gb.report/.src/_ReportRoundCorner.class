@@ -80,7 +80,7 @@ Public Sub _SetUnifiedValues()
   Dim sValue As String
   Dim ars As String[]
 
-  ael = Split($sTopLeft, "/")
+  ael = Split($sTopLeft, " ")
   If ael.Count = 1 Then
     hSizeParse = New TSizeParse(ael[0])
     _TopLeft1 = hSizeParse.GetValue()
@@ -94,7 +94,7 @@ Public Sub _SetUnifiedValues()
     Endif
   Endif
 
-  ael = Split($sTopRight, "/")
+  ael = Split($sTopRight, " ")
   If ael.Count = 1 Then
     hSizeParse = New TSizeParse(ael[0])
     _TopRight1 = hSizeParse.GetValue()
@@ -107,7 +107,7 @@ Public Sub _SetUnifiedValues()
       _TopRight2 = hSizeParse.GetValue()
     Endif
   Endif
-  ael = Split($sBottomRight, "/")
+  ael = Split($sBottomRight, " ")
   If ael.Count = 1 Then
     hSizeParse = New TSizeParse(ael[0])
     _BottomRight1 = hSizeParse.GetValue()
@@ -120,7 +120,7 @@ Public Sub _SetUnifiedValues()
       _BottomRight2 = hSizeParse.GetValue()
     Endif
   Endif
-  ael = Split($sBottomLeft, "/")
+  ael = Split($sBottomLeft, " ")
   If ael.Count = 1 Then
     hSizeParse = New TSizeParse(ael[0])
     _BottomLeft1 = hSizeParse.GetValue()

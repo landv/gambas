@@ -7,6 +7,8 @@ Public Const DropImageClass As String = "ReportImage"
 Public Const DropImageProperty As String = "Image"
 Public Const EmbedContainer As String = "ReportPanel"
 
+Static Private $aBorderName As String[] = ["topleftcorner", "toprightcorner", "bottomleftcorner", "bottomrightcorner"]
+
 Static Private Function GetFactor(Unit As String) As Float
 
   Select Case Unit
@@ -79,9 +81,12 @@ Static Public Sub PaintBorder(sBorder As String) As Float
   Dim iColor As Integer
   Dim ars, ars2 As String[]
   Dim aX, aY As New Integer[4]
+  Dim B As Integer
 
   If Not sBorder Then Return
+  
   If InStr(LCase(sBorder), "corner") Then
+    
     For Each sElt In Split(LCase(sBorder), ";")
       ars = Scan(sElt, "*:*")
       If ars.Count < 2 Then Return
@@ -90,47 +95,25 @@ Static Public Sub PaintBorder(sBorder As String) As Float
         Try Paint.LineWidth = CFamilyReport.ToPixel(ars2[0])
         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
       Endif
-      If ars[0] = "topleftcorner" Then
-        ars2 = Split(ars[1], "/")
-        Try aX[0] = (CFamilyReport.ToPixel(ars2[0]))
-        If ars2.Count = 2 Then
-          Try aY[0] = (CFamilyReport.ToPixel(ars2[1]))
-        Else
-          Try aY[0] = (CFamilyReport.ToPixel(ars2[0]))
+      
+      For B = 0 To 3
+        
+        If ars[0] = $aBorderName[B] Then
+          ars2 = Split(ars[1], " ")
+          Try aX[B] = (CFamilyReport.ToPixel(ars2[0]))
+          If ars2.Count = 2 Then
+            Try aY[B] = (CFamilyReport.ToPixel(ars2[1]))
+          Else
+            aY[B] = aX[B]
+          Endif
         Endif
-      Endif
-      If ars[0] = "toprightcorner" Then
-        ars2 = Split(ars[1], "/")
-        Try aX[1] = (CFamilyReport.ToPixel(ars2[0]))
-        If ars2.Count = 2 Then
-          Try aY[1] = (CFamilyReport.ToPixel(ars2[1]))
-        Else
-          Try aY[1] = (CFamilyReport.ToPixel(ars2[0]))
-        Endif
-      Endif
-      If ars[0] = "bottomleftcorner" Then
-        ars2 = Split(ars[1], "/")
-        Try aX[2] = (CFamilyReport.ToPixel(ars2[0]))
-        If ars2.Count = 2 Then
-          Try aY[2] = (CFamilyReport.ToPixel(ars2[1]))
-        Else
-          Try aY[2] = (CFamilyReport.ToPixel(ars2[0]))
-        Endif
-      Endif
-      If ars[0] = "bottomrightcorner" Then
-        ars2 = Split(ars[1], "/")
-        Try aX[3] = (CFamilyReport.ToPixel(ars2[0]))
-        If ars2.Count = 2 Then
-          Try aY[3] = (CFamilyReport.ToPixel(ars2[1]))
-        Else
-          Try aY[3] = (CFamilyReport.ToPixel(ars2[0]))
-        Endif
-      Endif
+        
+      Next
 
     Next
-    RoundRect(paint.LineWidth / 2, paint.LineWidth / 2, paint.Width - paint.LineWidth, paint.Height - paint.LineWidth, aX, aY)
-    fWidth = paint.LineWidth
-    paint.Stroke
+    RoundRect(Paint.LineWidth / 2, Paint.LineWidth / 2, Paint.Width - Paint.LineWidth, Paint.Height - Paint.LineWidth, aX, aY)
+    fWidth = Paint.LineWidth
+    Paint.Stroke
 
   Else
     For Each sElt In Split(LCase(sBorder), ";")
@@ -139,27 +122,22 @@ Static Public Sub PaintBorder(sBorder As String) As Float
       ars2 = Split(ars[1], " ")
       ars[0] = Trim(ars[0])
 
+      Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+      Try fWidth = CFamilyReport.ToPixel(ars2[0])
+      
       If ars[0] = "left" Or If ars[0] = "border" Then
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, 0, fWidth, Paint.Height)
         Paint.Fill
       Endif
       If ars[0] = "right" Or If ars[0] = "border" Then
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(Paint.Width - fWidth, 0, fWidth, Paint.Height)
         Paint.Fill
       Endif
       If ars[0] = "top" Or If ars[0] = "border" Then
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, 0, Paint.Width, fWidth)
         Paint.Fill
       Endif
       If ars[0] = "bottom" Or If ars[0] = "border" Then
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
         Paint.Fill
       Endif
@@ -168,6 +146,7 @@ Static Public Sub PaintBorder(sBorder As String) As Float
       If ars[0] = "border" Then Break
     Next
   Endif
+  
   Return fWidth
 
 End
@@ -373,7 +352,7 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
 
 End
 
-Static Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Radius_X As Float[], radius_y As Float[])
 
   Dim ARC_TO_BEZIER As Float = 0.55228475
   Dim c1, c2 As Float
@@ -387,6 +366,7 @@ Static Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Inte
     If radius_y[i] > h - radius_y[i] Then
       radius_y[i] = h / 2
     Endif
+    
   Next
   'approximate(quite Close )the arc using a bezier curve
 
@@ -398,39 +378,40 @@ Static Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Inte
   '        F**********E
 
   '-->A
-  paint.moveto(x + radius_x[0], y)
+  Paint.MoveTo(x + radius_x[0], y)
 
   '-->B
-  paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
+  Paint.LineTo(x + w - radius_x[1], y)
 
   '-->C
   c1 = ARC_TO_BEZIER * radius_x[1]
   c2 = ARC_TO_BEZIER * radius_y[1]
-  paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+  Paint.RelCurveTo(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
 
   '-->D
-  paint.rellineto(0, h - radius_y[1] - radius_y[2])
+  Paint.LineTo(x + w, y + h - radius_y[2])
 
   '-->E
   c1 = ARC_TO_BEZIER * radius_x[2]
   c2 = ARC_TO_BEZIER * radius_y[2]
-  paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+  Paint.RelCurveTo(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
 
   '-->F
-  paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
+  Paint.LineTo(x + radius_x[3], y + h)
 
   '-->G
   c1 = ARC_TO_BEZIER * radius_x[3]
   c2 = ARC_TO_BEZIER * radius_y[3]
-  paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  Paint.RelCurveTo(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  
   '-->H
-  paint.rellineto(0, - h + radius_y[3] + radius_y[0])
+  Paint.LineTo(x, y + radius_y[0])
 
   '-->A
   c1 = ARC_TO_BEZIER * radius_x[0]
   c2 = ARC_TO_BEZIER * radius_y[0]
-  paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+  Paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
 
-  'paint.closepath()
+  'Paint.closepath()
 
 End

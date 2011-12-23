@@ -51,58 +51,10 @@ End
 '
 Public Sub dwgBorder_Draw()
 
-  Dim iBorder As Integer
-  Dim fSize As Float
-  Dim hBrush As CReportBrush
-
-  If HaveRoundCorner() Then
-
-    fSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
-    paint.LineWidth = fSize
-    hBrush = $aBrush[BORDER_TOP]
-    Paint.Brush = hBrush._PaintBrush(0, 0, Paint.Width, Paint.Height)
-    RoundRect(fSize / 2, fSize / 2, paint.Width - fSize, paint.Height - fSize, [CFamilyReport.ToPixel(crdTopLeft1.Value),
-      CFamilyReport.ToPixel(crdTopRight1.Value),
-      CFamilyReport.ToPixel(crdBottomRight1.Value),
-      CFamilyReport.ToPixel(crdBottomLeft1.Value)], [CFamilyReport.ToPixel(crdTopLeft2.Value),
-      CFamilyReport.ToPixel(crdTopRight2.Value),
-      CFamilyReport.ToPixel(crdBottomRight2.Value),
-      CFamilyReport.ToPixel(crdBottomLeft2.Value)])
-    paint.Stroke
-
-  Else
-    For iBorder = 0 To 3
-
-      If Not $aCoordBox[iBorder].Value = Null Then Continue
-
-      If chkSynchro.Value Then
-        hBrush = $aBrush[BORDER_TOP]
-        fSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
-      Else
-        hBrush = $aBrush[iBorder]
-        fSize = CFamilyReport.ToPixel($aCoordBox[iBorder].Value)
-      Endif
-
-      Paint.Brush = hBrush._PaintBrush(0, 0, Paint.Width, Paint.Height)
-
-      Select Case iBorder
-        Case BORDER_TOP
-          Paint.Rectangle(0, 0, Paint.Width, fSize)
-        Case BORDER_RIGHT
-          Paint.Rectangle(Paint.Width - fSize, 0, fSize, Paint.Height)
-        Case BORDER_BOTTOM
-          Paint.Rectangle(0, Paint.Height - fSize, Paint.Width, fSize)
-        Case BORDER_LEFT
-          Paint.Rectangle(0, 0, fSize, Paint.Height)
-      End Select
-
-      Paint.Fill
-
-    Next
-  Endif
+  CFamilyReport.PaintBorder(GetValue())
 
 End
-'
+
 ' Public Sub dwgBorder_MouseDown()
 '
 '   Dim fPosX, fPosY As Float
@@ -343,11 +295,12 @@ Public Sub crdBrush_Change()
 
 End
 
-Public Sub btnOK_Click()
-
+Private Sub GetValue() As String
+  
   Dim sBorder As String
   Dim iBorder As Integer
   Dim iUse As Integer
+  Dim sVal As String
 
   For iBorder = 0 To 3
 
@@ -361,17 +314,27 @@ Public Sub btnOK_Click()
   Next
   If sBorder Then
     For iBorder = 4 To 11 Step 2
-      If $aCoordBox[iBorder].Value Then
+      iUse = If(chkSynchro.Value, 4, iBorder)
+      If $aCoordBox[iUse].Value Then
         sBorder &= ";"
-        sBorder &= $aBorder[iBorder] & ":" & $aCoordBox[iBorder].Value
-        If $aCoordBox[iBorder + 1].Value Then sBorder &= "/" & $aCoordBox[iBorder + 1].Value
-
+        sBorder &= $aBorder[iBorder] & ":" & $aCoordBox[iUse].Value
+        If $aCoordBox[iUse + 1].Enabled Then
+          sVal = $aCoordBox[iUse + 1].Value 
+          If sVal And If sVal <> $aCoordBox[iUse].Value Then sBorder &= " " & sVal
+        Endif
       Endif
     Next
   Endif
 
-  Value = sBorder
-  Print sBorder
+  Return sBorder
+  
+End
+
+
+Public Sub btnOK_Click()
+
+  Value = GetValue()
+  Print Value
   Me.Close(True)
 
 End

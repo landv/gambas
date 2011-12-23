@@ -1,24 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,79,32)
+  MoveScaled(0,0,78,32)
   Text = ("Configure border")
   Resizable = False
   { btnCancel Button
-    MoveScaled(62,27,16,4)
+    MoveScaled(61,27,16,4)
     Text = ("Cancel")
     Cancel = True
   }
   { btnOK Button
-    MoveScaled(45,27,16,4)
+    MoveScaled(44,27,16,4)
     Text = ("OK")
     Default = True
-  }
-  { dwgBorder DrawingArea
-    MoveScaled(52,1,26,25)
-    Background = Color.SelectedForeground
-    Border = Border.Plain
-    Painted = True
   }
   { chkSynchro CheckBox
     MoveScaled(1,27,20,4)
@@ -154,5 +148,15 @@
       }
     }
     Index = 0
+  }
+  { Panel1 Panel
+    MoveScaled(52,1,25,25)
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { dwgBorder DrawingArea
+      MoveScaled(1,1,16,19)
+      Background = Color.SelectedForeground
+      Painted = True
+    }
   }
 }

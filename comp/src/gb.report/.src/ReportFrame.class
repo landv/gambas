@@ -116,7 +116,8 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
     fLeftWidth = MTools.UnitsToPixels($hBorder._Left) / 2
     paint.LineWidth = fLeftWidth * 2
     paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
-    RoundRect(X1 + fLeftWidth, Y1 + fLeftWidth, hControl.RealWidth - fLeftWidth, hControl.RealHeight - fLeftWidth,
+    ' RoundRect(Paint.LineWidth / 2, Paint.LineWidth / 2, Paint.Width - Paint.LineWidth, Paint.Height - Paint.LineWidth, aX, aY)
+    RoundRect(X1 + fLeftWidth, Y1 + fLeftWidth, hControl.RealWidth - fLeftWidth * 2, hControl.RealHeight - fLeftWidth * 2,
       [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
       MTools.UnitsToPixels($hBorder.RoundCorner._TopRight1),
       MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight1),
@@ -217,7 +218,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Radius_X As Float[], radius_y As Float[])
 
   Dim ARC_TO_BEZIER As Float = 0.55228475
   Dim c1, c2 As Float
@@ -231,6 +232,7 @@ Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Ra
     If radius_y[i] > h - radius_y[i] Then
       radius_y[i] = h / 2
     Endif
+    
   Next
   'approximate(quite Close )the arc using a bezier curve
 
@@ -242,39 +244,40 @@ Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Ra
   '        F**********E
 
   '-->A
-  paint.moveto(x + radius_x[0], y)
+  Paint.MoveTo(x + radius_x[0], y)
 
   '-->B
-  paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
+  Paint.LineTo(x + w - radius_x[1], y)
 
   '-->C
   c1 = ARC_TO_BEZIER * radius_x[1]
   c2 = ARC_TO_BEZIER * radius_y[1]
-  paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+  Paint.RelCurveTo(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
 
   '-->D
-  paint.rellineto(0, h - radius_y[1] - radius_y[2])
+  Paint.LineTo(x + w, y + h - radius_y[2])
 
   '-->E
   c1 = ARC_TO_BEZIER * radius_x[2]
   c2 = ARC_TO_BEZIER * radius_y[2]
-  paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+  Paint.RelCurveTo(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
 
   '-->F
-  paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
+  Paint.LineTo(x + radius_x[3], y + h)
 
   '-->G
   c1 = ARC_TO_BEZIER * radius_x[3]
   c2 = ARC_TO_BEZIER * radius_y[3]
-  paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  Paint.RelCurveTo(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  
   '-->H
-  paint.rellineto(0, - h + radius_y[3] + radius_y[0])
+  Paint.LineTo(x, y + radius_y[0])
 
   '-->A
   c1 = ARC_TO_BEZIER * radius_x[0]
   c2 = ARC_TO_BEZIER * radius_y[0]
-  paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+  Paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
 
-  'paint.closepath()
+  'Paint.closepath()
 
 End
