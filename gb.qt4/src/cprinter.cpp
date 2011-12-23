@@ -295,7 +295,7 @@ BEGIN_PROPERTY(Printer_PaperWidth)
 	QSizeF size = PRINTER->paperSize(QPrinter::Millimeter);
 	
 	if (READ_PROPERTY)
-		GB.ReturnFloat(size.width());
+		GB.ReturnFloat(floor((double)size.width() * 1E6) / 1E6);
 	else
 	{
 		size.setWidth((qreal)VPROP(GB_FLOAT));
@@ -309,7 +309,7 @@ BEGIN_PROPERTY(Printer_PaperHeight)
 	QSizeF size = PRINTER->paperSize(QPrinter::Millimeter);
 	
 	if (READ_PROPERTY)
-		GB.ReturnFloat(size.height());
+		GB.ReturnFloat(floor((double)size.height() * 1E6) / 1E6);
 	else
 	{
 		size.setHeight((qreal)VPROP(GB_FLOAT));

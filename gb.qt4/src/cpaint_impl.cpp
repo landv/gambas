@@ -92,6 +92,10 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	
 	EXTRA(d)->path = 0;
 	EXTRA(d)->clip = 0;
+	
+	EXTRA(d)->init = new QTransform();
+	*(EXTRA(d)->init) = PAINTER(d)->worldTransform();
+	
 	PAINTER(d)->setRenderHints(QPainter::Antialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::TextAntialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::SmoothPixmapTransform, true);
@@ -224,6 +228,7 @@ static void End(GB_PAINT *d)
 		delete dx->clipStack;
 	}
 	
+	delete dx->init;
 	delete dx->path;
 	delete dx->clip;
 	delete dx->painter;
@@ -793,7 +798,7 @@ static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 		if (t)
 			PAINTER(d)->setWorldTransform(*t);
 		else
-			PAINTER(d)->resetTransform();
+			PAINTER(d)->setWorldTransform(*EXTRA(d)->init);
 	}
 	else
 		*t = PAINTER(d)->worldTransform();

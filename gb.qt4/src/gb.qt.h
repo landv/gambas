@@ -40,6 +40,7 @@
 #include <QPainterPath>
 #include <QBrush>
 #include <QPen>
+#include <QTransform>
 
 #define QT_INTERFACE_VERSION 1
 
@@ -109,6 +110,7 @@ typedef
 		QPainterPath *clip;
 		int fillRule;
 		QList<QPainterPath *> *clipStack;
+		QTransform *init;
 	}
 	QT_PAINT_EXTRA;
 	
