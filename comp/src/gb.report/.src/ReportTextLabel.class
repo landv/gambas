@@ -14,7 +14,7 @@ Private $iAlignment As Integer = Align.TopNormal
 Private $fZoom As Float
 
 Public Data As String
-Event Data()
+Event Data(Index As Integer)
 
 Private Function Text_Read() As String
 
@@ -50,7 +50,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   If Me.Autoresize Then
     If Not $sText Then
-      Raise Data
+      Raise Data(Me._GetIndex())
       sTmp = Data
     Else
       sTmp = $sText
@@ -74,7 +74,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
 
   If Not $sText Then
-    Raise Data
+    Raise Data(Me._GetIndex())
     sTmp = Data
   Else
     sTmp = $sText

@@ -21,23 +21,23 @@ Public Sub _new()
 
 End
 
-Public Sub ReportLabel1_Data()
+Public Sub ReportLabel1_Data(Index As Integer)
 
-  hresult.MoveTo(Last.DataIndex)
+  hresult.MoveTo(Index)
   Last.data = hresult!name
 
 End
 
-Public Sub ReportLabel6_Data()
+Public Sub ReportLabel6_Data(Index As Integer)
 
-  hresult.MoveTo(Last.DataIndex)
+  hresult.MoveTo(Index)
   Last.data = hresult!firstname
 
 End
 
-Public Sub ReportLabel7_Data()
+Public Sub ReportLabel7_Data(Index As Integer)
 
-  hresult.MoveTo(Last.DataIndex)
+  hresult.MoveTo(Index)
   Last.data = hresult!birth
 
 End

@@ -62,7 +62,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
   Else
 
     If $hBorder.RoundCorner._Active Then
-      RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
+      RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight + 1,
         [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
         MTools.UnitsToPixels($hBorder.RoundCorner._TopRight1),
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight1),
@@ -72,7 +72,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2),
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2)])
     Else
-      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1 + 1)
     Endif
 
     If Me.BackGround = Null Then
@@ -232,7 +232,7 @@ Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Rad
     If radius_y[i] > h - radius_y[i] Then
       radius_y[i] = h / 2
     Endif
-    
+
   Next
   'approximate(quite Close )the arc using a bezier curve
 
@@ -269,7 +269,7 @@ Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Rad
   c1 = ARC_TO_BEZIER * radius_x[3]
   c2 = ARC_TO_BEZIER * radius_y[3]
   Paint.RelCurveTo(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
-  
+
   '-->H
   Paint.LineTo(x, y + radius_y[0])
 

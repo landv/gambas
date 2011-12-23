@@ -536,3 +536,9 @@ Private Sub Range_Write(Value As String)
   $sRange = Value
 
 End
+
+Public Function _GetIndex() As Integer
+
+  Return Me.Parent._GetIndex()
+
+End

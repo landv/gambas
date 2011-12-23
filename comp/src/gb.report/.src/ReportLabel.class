@@ -24,7 +24,7 @@ Property UseField As Boolean
 Property Rotate As Float
 
 Public Data As String
-Event Data()
+Event Data(Index As Integer)
 
 Private Function Text_Read() As String
 
@@ -69,7 +69,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   If Me.Autoresize Then
     If Not IsNull(Me.Font) Then Paint.Font = Me.Font
     If Not $sText Then
-      Raise Data()
+      Raise Data(Me._GetIndex())
       sText = Data
     Else
       sText = $sText
@@ -109,7 +109,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     If $sText Then
       sTempText = $sText
     Else
-      Raise Data()
+      Raise Data(Me._GetIndex())
       sTempText = Data
     Endif
   Endif
