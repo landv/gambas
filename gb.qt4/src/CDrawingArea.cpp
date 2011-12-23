@@ -542,7 +542,7 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 
 	int x, y, w, h;
 
-	if (WIDGET->isCached())
+	/*if (WIDGET->isCached())
 	{
 		QRect r;
 		
@@ -552,7 +552,7 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 			r.setRect(0, 0, WIDGET->width(), WIDGET->height());
 		
 		WIDGET->redraw(r, false);
-	}
+	}*/
 	
 	if (!MISSING(x) && !MISSING(y))
 	{
