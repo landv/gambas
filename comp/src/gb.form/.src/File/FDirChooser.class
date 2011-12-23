@@ -533,6 +533,7 @@ Public Sub mnuBookmark_Click()
   Dim hBookmark As CBookmark = $hBookmarkList.FindBookmark(sLink)
 
   SetBookmark(hBookmark)
+  btnBookmark_DblClick
   
 End
 
@@ -912,7 +913,7 @@ Public Sub mnuEditBookmark_Click()
   
 End
 
-Public Sub btnBookmark_Click()
+Public Sub btnBookmark_DblClick()
 
   If $hCurrentBookmark Then dvwChoose.Current = $hCurrentBookmark.Path
   dvwChoose.Reload

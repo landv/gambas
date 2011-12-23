@@ -119,6 +119,7 @@ End
 Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
   Dim hImage As Image
+  Dim hIcon As Image
   Dim sIcon As String
   
   $hPict = Null
@@ -142,7 +143,17 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
       Endif
     Endif
     
-    Return hImage.Picture
+    hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
+    Paint.Begin(hIcon)
+    Paint.AntiAlias = False
+    Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
+    Paint.Brush = Paint.Color(Color.Gray)
+    Paint.Stroke
+    Paint.End
+    hIcon.DrawImage(hImage, 2, 2)
+    
+    Return hIcon.Picture
+    
   Endif
   
   With Stat(sPath)

@@ -7,9 +7,11 @@
   Spacing = True
   { mnuPopup Menu
   }
-  { HBox3 HBox
+  { HBox3 Panel
     MoveScaled(0,0,79,50)
     Expand = True
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
     { VBox1 VBox
       MoveScaled(2,3,76,46)
       Expand = True
@@ -21,7 +23,9 @@
           ToolTip = ("Bookmarks")
           AutoResize = True
           Picture = Picture["icon:/small/home"]
+          Arrow = False
           Border = False
+          MenuOnly = True
         }
         { txtDir Label
           MoveScaled(10,0,11,4)
@@ -60,13 +64,13 @@
       }
       { Separator2 Separator
         MoveScaled(30,6,39,0)
-        Visible = False
       }
       { splChoose HSplit
         MoveScaled(6,7,56,37)
         Expand = True
         { dvwChoose DirView
           MoveScaled(2,3,25,33)
+          Border = False
           Picture = Picture["icon:/small/home"]
         }
         { panView Panel
@@ -75,6 +79,7 @@
           Arrangement = Arrange.Fill
           { fvwChoose FileView
             MoveScaled(1,1,23,31)
+            Border = False
           }
         }
       }

@@ -2685,14 +2685,17 @@ Public Sub Editors_MouseUp()
 
 End
 
-Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional iColor As Integer)
-
-  If iColor = 0 Then iColor = Color.HSV(64, 64, 255)
+Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
 
   X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
   Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
-
-  lblWatch.Background = iColor
+  
+  lblWatch.Foreground = Editor.Styles[Highlight.Normal].Foreground
+  If bError Then
+    lblWatch.Background = Editor.Styles[Highlight.Breakpoint].Foreground
+  Else
+    lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
+  Endif
   lblWatch.Move(X, Y)
   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
   lblWatch.Show
@@ -2704,22 +2707,17 @@ End
 
 Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
 
-  Dim iColor As Integer
+  Dim bError As Boolean
 
-  iColor = Color.TooltipBackground
-  
   If Left(sStr) = "!" Then
     sStr = Mid$(sStr, 2)
     If sStr = "Syntax error" Or If sStr = "Non terminated string" Or If sStr = "Unknown symbol" Then Return
     If sStr Begins "Unexpected " Then Return
     sStr = Design.MakeErrorMessage(sStr)
-    With Color[iColor]
-      .Hue = 60
-      iColor = .Color
-    End With
+    bError = True
   Endif
 
-  ShowMessageLabel(Html(sStr), X, Y, iColor)
+  ShowMessageLabel(Html(sStr), X, Y, bError)
 
 End
 
@@ -2774,7 +2772,7 @@ Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
   Wait ' If the cursor needs to move first
   ''ShowMessage(sMsg, "img/logo/logo-64.png", True)
   'ShowMessage(sMsg, "icon:/32/" & sIcon, True)
-  ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, Color.HSV(0, 64, 255))
+  ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
 
 End
 

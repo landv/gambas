@@ -491,6 +491,7 @@ Public Sub ScrollArea_Arrange()
   Dim FW As Integer
   
   If $aItems.Count = 0 Then 
+    $hView.ResizeContents(4, 4)
     $hView.Refresh
     Return
   Endif
