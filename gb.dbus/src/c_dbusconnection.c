@@ -176,7 +176,7 @@ BEGIN_PROPERTY(DBusConnection_Name)
 
 END_PROPERTY
 
-BEGIN_METHOD(DBusConnection_Register, GB_OBJECT object; GB_STRING path; GB_STRING interface)
+BEGIN_METHOD(DBusConnection_Register, GB_OBJECT object; GB_STRING path; GB_OBJECT interfaces)
 
 	GB_FUNCTION func;
 	void *object = VARG(object);
@@ -190,14 +190,14 @@ BEGIN_METHOD(DBusConnection_Register, GB_OBJECT object; GB_STRING path; GB_STRIN
 		return;
 	}
 	
-	if (MISSING(interface))
+	if (MISSING(interfaces))
 	{
 		GB.Push(2, GB_T_OBJECT, THIS, GB_T_STRING, STRING(path), LENGTH(path));
 		GB.Call(&func, 2, TRUE);
 	}
 	else
 	{
-		GB.Push(3, GB_T_OBJECT, THIS, GB_T_STRING, STRING(path), LENGTH(path), GB_T_STRING, STRING(interface), LENGTH(interface));
+		GB.Push(3, GB_T_OBJECT, THIS, GB_T_STRING, STRING(path), LENGTH(path), GB_T_OBJECT, VARG(interfaces));
 		GB.Call(&func, 3, TRUE);
 	}
 
@@ -246,7 +246,7 @@ GB_DESC CDBusConnectionDesc[] =
 	GB_METHOD("_RequestName", "b", DBusConnection_RequestName, "(Name)s[(Unique)b]"),
 	GB_METHOD("_ReleaseName", "b", DBusConnection_ReleaseName, "(Name)s"),
 	GB_PROPERTY_READ("_Name", "s", DBusConnection_Name),
-	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s[(Interface)s]"),
+	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s[(Interface)String[];]"),
 	GB_METHOD("Unregister", NULL, DBusConnection_Unregister, "(Object)DBusObject"),
 	GB_PROPERTY("Tag", "v", DBusConnection_Tag),
 

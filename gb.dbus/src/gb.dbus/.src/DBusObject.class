@@ -34,6 +34,7 @@ Static Private $sName As String
 
 Private $sPath As String
 Private $sInterface As String
+Private $aInterface As String[]
 Private $aChildren As String[]
 Private $hObserver As DBusObserver
 Private $iRegister As Integer
@@ -59,7 +60,7 @@ Public Sub _GetPath() As String
 End
 
 
-Public Sub _Register(hConnection As DBusConnection, sPath As String, Optional sInterface As String)
+Public Sub _Register(hConnection As DBusConnection, sPath As String, Optional aInterface As String[])
   
   Dim hParent As DBusObject
   Dim sParent As String
@@ -75,8 +76,8 @@ Public Sub _Register(hConnection As DBusConnection, sPath As String, Optional sI
   
   $sPath = sPath
   
-  If Not sInterface Then sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
-  $sInterface = sInterface
+  $sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
+  If aInterface Then $aInterface = aInterface.Copy()
   'Debug $sPath;; $sInterface
   
   _ObjectCache[sPath] = Me
@@ -152,6 +153,10 @@ Public Sub _Introspect() As String
   Dim sOne As String
   Dim iPos As Integer
   Dim iInd As Integer
+  Dim cDescInterface As New Collection
+  Dim sDesc As String
+  Dim sInterface As String
+  Dim sPrefix As String
   
   sRes &= "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
   sRes &= "<node>\n"
@@ -196,78 +201,98 @@ Public Sub _Introspect() As String
     sRes &= "  </interface>\n"
   Endif
   
-  If bHasMethod Then
-    sRes &= "  <interface name=\"" & $sInterface & "\">\n"
-    For Each sSymbol In hClass.Symbols
-      With hClass[sSymbol]
-        If InStr(sSymbol, "_") Then Continue
-        If .Static Then Continue
+  For Each sSymbol In hClass.Symbols
+    
+    With hClass[sSymbol]
+      
+      If .Static Then Continue
+    
+      sPrefix = ""
+      If $aInterface Then
+        For Each sInterface In $aInterface
+          sPrefix = LCase(Replace(sInterface, ".", "_") & "_")
+          If LCase(sSymbol) Begins sPrefix And RInStr(sSymbol, "_") <= Len(sPrefix) Then Break
+          sPrefix = ""
+        Next
+      Endif
+      
+      sSymbol = Mid$(sSymbol, Len(sPrefix) + 1)
+      If InStr(sSymbol, "_") Then Continue
+      
+      sDesc = ""
+      
+      sType = ""
+      
+      If .Type Then
+        sType = ConvType(.Type)
+        If Not sType Then Continue
+      Endif
+          
+      Select Case .Kind
 
-        sType = ""
-        
-        If .Type Then
-          sType = ConvType(.Type)
-          If Not sType Then Continue
-        Endif
+        Case Class.Method
+
+          sArg = ""
+          iInd = 0
             
-        Select Case .Kind
-
-          Case Class.Method
-
-            'Debug .Name;; .Type;; .Signature
-            
-            sArg = ""
-            iInd = 0
-              
-            sSign = .Signature
-            If sSign Then
-              While sSign
-                If IsLCase(Left(sSign)) Then
-                  sOne = ConvType(Left(sSign))
-                  sSign = Mid$(sSign, 2)
+          sSign = .Signature
+          If sSign Then
+            While sSign
+              If IsLCase(Left(sSign)) Then
+                sOne = ConvType(Left(sSign))
+                sSign = Mid$(sSign, 2)
+              Else
+                iPos = InStr(sSign, ";")
+                If iPos Then
+                  sOne = Left(sSign, iPos - 1)
+                  sSign = Mid$(sSign, iPos + 1)
                 Else
-                  iPos = InStr(sSign, ";")
-                  If iPos Then
-                    sOne = Left(sSign, iPos - 1)
-                    sSign = Mid$(sSign, iPos + 1)
-                  Else
-                    sOne = sSign
-                    sSign = ""
-                  Endif
-                  sOne = ConvType(sOne)
+                  sOne = sSign
+                  sSign = ""
                 Endif
-                If Not sOne Then
-                  sArg = ""
-                  Break
-                Endif
-                
-                Inc iInd
-                sArg &= "      <arg name=\"arg" & CStr(iInd) & "\" type=\"" & sOne & "\" direction=\"in\"/>\n"
-                
-              Wend
+                sOne = ConvType(sOne)
+              Endif
+              If Not sOne Then
+                sArg = ""
+                Break
+              Endif
               
-              If Not sArg Then Continue
-            Endif
+              Inc iInd
+              sArg &= "      <arg name=\"arg" & CStr(iInd) & "\" type=\"" & sOne & "\" direction=\"in\"/>\n"
+              
+            Wend
             
-            sRes &= "    <method name=\"" & sSymbol & "\">\n"
-            
-            If sArg Then sRes &= sArg
-            
-            If sType Then
-              sRes &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
-            Endif
-            
-            sRes &= "    </method>\n"
-            
-          Case Class.Property
-            
-            sRes &= "    <property name=\"" & sSymbol & "\" type=\"" & sType & "\" access=\"" & If(.ReadOnly, "read", "readwrite") & "\"/>\n"
+            If Not sArg Then Continue
+          Endif
+          
+          sDesc &= "    <method name=\"" & sSymbol & "\">\n"
+          
+          If sArg Then sDesc &= sArg
+          
+          If sType Then
+            sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
+          Endif
+          
+          sDesc &= "    </method>\n"
+          
+        Case Class.Property
+          
+          sDesc &= "    <property name=\"" & sSymbol & "\" type=\"" & sType & "\" access=\"" & If(.ReadOnly, "read", "readwrite") & "\"/>\n"
 
-        End Select
-      End With
-    Next
-    sRes &= "  </interface>\n"
-  Endif
+      End Select
+    End With
+    
+    If sPrefix Then
+      cDescInterface[sInterface] &= sDesc
+    Else
+      cDescInterface[$sInterface] &= sDesc
+    Endif
+      
+  Next
+  
+  For Each sDesc In cDescInterface
+    sRes &= "  <interface name=\"" & cDescInterface.Key & "\">\n" & sDesc & "  </interface>\n"
+  Next
   
   If $aChildren Then
     For Each sChild In $aChildren.Sort()
@@ -291,8 +316,11 @@ Private Sub GetProperty()
     sInterface = .Arguments[0]
     sProperty = .Arguments[1]
     
-    If sInterface And If sInterface <> $sInterface Then Return
-    If InStr(sProperty, "_") Then Return
+    If $aInterface And If sInterface <> $sInterface Then
+      sProperty = Replace(sInterface, ".", "_") & "_" & sProperty
+    Else
+      If InStr(sProperty, "_") Then Return
+    Endif
     
     $hObserver.Reply("v", [Object.GetProperty(Me, sProperty)])
     
@@ -307,30 +335,45 @@ End
 Private Sub GetAllProperties()
   
   Dim cVal As New Collection
-  Dim sInterface As String
+  Dim sWantInterface As String
   Dim hClass As Class
   Dim sSymbol As String
+  Dim sInterface As String
+  Dim sPrefix As String
   
   With $hObserver.Message
   
-    sInterface = .Arguments[0]
+    sWantInterface = .Arguments[0]
     
-    If Not sInterface Or If sInterface = $sInterface Then
-      
-      hClass = Object.Class(Me)
-      
-      For Each sSymbol In hClass.Symbols
-        With hClass[sSymbol]
-          If InStr(sSymbol, "_") Then Continue
-          If .Static Then Continue
-          If .Kind = Class.Property Then 
-            cVal[sSymbol] = Object.GetProperty(Me, sSymbol)
-          Endif
-        End With
-      Next
-      
-    Endif
+    hClass = Object.Class(Me)
     
+    For Each sSymbol In hClass.Symbols
+      With hClass[sSymbol]
+        
+        If .Kind <> Class.Property Then Continue
+        If .Static Then Continue
+      
+        sPrefix = ""
+        If $aInterface Then
+          For Each sInterface In $aInterface
+            sPrefix = LCase(Replace(sInterface, ".", "_") & "_")
+            If LCase(sSymbol) Begins sPrefix And RInStr(sSymbol, "_") <= Len(sPrefix) Then Break
+            sPrefix = ""
+          Next
+        Endif
+    
+        sSymbol = Mid$(sSymbol, Len(sPrefix) + 1)
+        If InStr(sSymbol, "_") Then Continue
+        
+        If Not sPrefix Then sInterface = $sInterface
+        
+        If sInterface <> sWantInterface Then Continue
+        
+        cVal[sSymbol] = Object.GetProperty(Me, sSymbol)
+        
+      End With
+    Next
+      
     $hObserver.Reply("a{sv}", [cVal])
     
   End With
@@ -353,8 +396,11 @@ Private Sub SetProperty()
     sProperty = .Arguments[1]
     vValue = .Arguments[2]
     
-    If sInterface And If sInterface <> $sInterface Then Return
-    If InStr(sProperty, "_") Then Return
+    If $aInterface And If sInterface <> $sInterface Then
+      sProperty = Replace(sInterface, ".", "_") & "_" & sProperty
+    Else
+      If InStr(sProperty, "_") Then Return
+    Endif
     
     Object.SetProperty(Me, sProperty, vValue)
     
@@ -398,6 +444,10 @@ Public Sub DBusObserver_Message()
       GetAllProperties()
       Return
     Endif
+  Endif
+  
+  If $aInterface And If sInterface <> $sInterface Then
+    sMethod = Replace(sInterface, ".", "_") & "_" & sMethod
   Endif
   
   vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)

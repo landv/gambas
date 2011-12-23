@@ -5,6 +5,7 @@ Inherits DBusObject
 Create Static
 
 Property Enabled As Boolean
+Property org_mpris_MediaPlayer2_Value As Integer
 
 Private $bEnabled As Boolean = True
 
@@ -22,6 +23,23 @@ Public Sub TestCollection(cCol As Collection) As Collection
   
 End
 
+Public Sub org_mpris_MediaPlayer2_Open() As String
+
+  Return "OK"
+  
+End
+
+Public Sub org_mpris_MediaPlayer2_Player_Stop() As String
+
+  Return "Hello !"
+  
+End
+
+Public Sub org_mpris_MediaPlayer2_PLayer_Rewind() As String
+  
+  Return "Oops !"
+  
+End
 
 
 Private Function Enabled_Read() As Boolean
@@ -33,5 +51,15 @@ End
 Private Sub Enabled_Write(Value As Boolean)
 
   $bEnabled = Value
+
+End
+
+Private Function org_mpris_MediaPlayer2_Value_Read() As Integer
+
+End
+
+Private Sub org_mpris_MediaPlayer2_Value_Write(Value As Integer)
+
+  
 
 End
