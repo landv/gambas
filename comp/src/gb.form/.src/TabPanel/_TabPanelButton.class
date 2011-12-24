@@ -1,0 +1,188 @@
+' Gambas class file
+
+Inherits UserControl
+
+Private $hDrawingArea As DrawingArea
+
+Property Text As String
+Property Selected As Boolean
+Property Orientation As Integer
+Property Picture As Picture
+
+Private $sText As String
+Private $bSelected As Boolean
+Private $iOrientation As Integer = Align.Top
+Private $hPicture As Picture
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Mouse = Mouse.Pointing
+  
+End
+
+Private Sub GetParent() As TabPanel
+  
+  Return Me.Parent.Parent
+  
+End
+
+Private Sub GetIndex() As Integer
+  
+  Return GetParent()._GetIndex(Me)
+  
+End
+
+
+Public Sub DrawingArea_Draw()
+  
+  Dim iFg As Integer
+  Dim X, W As Integer
+  
+  iFg = Me.Foreground
+  If iFg = Color.Default Then iFg = Color.Foreground
+  
+  If $bSelected Then
+    Draw.Foreground = iFg
+  Else If $hDrawingArea.Hovered Then
+    Draw.Foreground = Color.Gradient(iFg, Color.LightForeground)
+  Else
+    Draw.Foreground = Color.LightForeground
+  Endif
+  
+  X = 0
+  W = Me.W
+  
+  If $hPicture Then
+    X += $hPicture.W + 2
+    W = Me.W - X
+    Draw.Picture($hPicture, Desktop.Scale, (Me.H - $hPicture.H) / 2)
+  Endif
+  
+  Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
+  Draw.Foreground = Color.LightForeground
+  
+  Select Case $iOrientation
+  
+    Case Align.Top
+      If $bSelected Then
+        Draw.Line(0, Me.H - 1, 0, 0)
+        Draw.Line(0, 0, Me.W - 1, 0)
+        Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+      Else
+        Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+      Endif
+      
+    Case Align.Bottom
+      If $bSelected Then
+        Draw.Line(0, 0, 0, Me.H - 1)
+        Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+        Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+      Else
+        Draw.Line(0, 0, Me.W - 1, 0)
+      Endif
+      
+  End Select
+  
+End
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Public Sub UpdateLayout()
+
+  Dim S As Integer
+
+  Select Case $iOrientation
+    Case Align.Left, Align.Right
+      S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
+      If $hPicture Then S += $hPicture.W + 2
+      Me.H = S
+    Case Else
+      S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
+      If $hPicture Then S += $hPicture.W + 2
+      Me.W = S
+  End Select
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  UpdateLayout
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  $hDrawingArea.Mouse = If($bSelected, Mouse.Default, Mouse.Pointing)
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return $iOrientation
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  $iOrientation = Value
+  UpdateLayout
+
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  If $bSelected Then Return
+  If Mouse.Left Then GetParent().Index = GetIndex()
+  
+End
+
+Public Sub DrawingArea_MouseWheel()
+  
+  If Mouse.Delta > 0 Then
+    Try Dec GetParent().Index
+  Else
+    Try Inc GetParent().Index
+  Endif
+  
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+  UpdateLayout
+
+End
+
+Public Sub DrawingArea_Enter()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  $hDrawingArea.Refresh
+  
+End

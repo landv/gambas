@@ -1,0 +1,63 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Property Text As String
+Property Picture As Picture
+Property Read Container As Container
+
+Private Sub GetParent() As TabPanel
+  
+  Return Me.Parent.Parent
+  
+End
+
+Private Sub GetIndex() As Integer
+  
+  Return GetParent()._GetIndex(Me)
+  
+End
+
+Private Sub GetButton() As _TabPanelButton
+  
+  Return GetParent()._GetButton(GetIndex())
+  
+End
+
+
+Public Sub _new()
+
+End
+
+
+Private Function Text_Read() As String
+
+  Return GetButton().Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  GetButton().Text = sText
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return GetButton().Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  GetButton().Picture = hPict
+
+End
+
+Private Function Container_Read() As Container
+
+  Return Me
+
+End

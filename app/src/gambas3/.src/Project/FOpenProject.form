@@ -8,11 +8,10 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { tabProject TabStrip
+  { tabProject TabPanel
     MoveScaled(1,1,96,69)
     Expand = True
     Arrangement = Arrange.Fill
-    Margin = True
     Count = 3
     Index = 0
     Text = ("Open")
@@ -22,6 +21,7 @@
       { dchProject DirChooser
         MoveScaled(1,1,62,58)
         Expand = True
+        Border = False
         ShowFile = True
         ShowSplitter = False
       }
@@ -56,10 +56,10 @@
     { panRecent Panel
       MoveScaled(1,1,83,60)
       Arrangement = Arrange.Vertical
-      Spacing = True
       { HBox2 HBox
-        MoveScaled(1,1,78,4)
+        MoveScaled(1,1,78,6)
         Spacing = True
+        Margin = True
         { txtFilter ButtonBox
           MoveScaled(1,0,24,4)
           Foreground = Color.LightForeground
@@ -89,15 +89,20 @@
           Text = ("Sort by path")
         }
       }
+      { Separator2 Separator
+        MoveScaled(22,9,18,0)
+      }
       { lstRecent ListContainer
-        MoveScaled(1,6,49,46)
+        MoveScaled(3,19,49,38)
         Expand = True
+        Border = False
       }
     }
     Index = 2
     Text = ("Examples")
     { lstExample ListContainer
       MoveScaled(1,1,80,58)
+      Border = False
     }
     Index = 0
   }

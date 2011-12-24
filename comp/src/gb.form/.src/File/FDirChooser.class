@@ -1128,3 +1128,16 @@ Public Sub btnParent_MouseUp()
   If btnParent.Hovered Then btnParent_Click
 
 End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+

@@ -3,27 +3,28 @@
 { Form Form
   Move(0,0,609,567)
   #Scaled = False
+  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
-  { TextBox1 TextBox
-    Move(63,105,168,28)
-  }
-  { DateBox1 DateBox
-    Move(301,49,168,28)
-  }
-  { ButtonBox1 ButtonBox
-    Move(63,35,168,28)
-  }
-  { ButtonBox2 ButtonBox
-    Move(63,70,168,28)
-    Border = False
-  }
-  { TextBox2 TextBox
-    Move(70,231,168,28)
-    Text = ("A lot of garbage")
-  }
-  { MaskBox1 MaskBox
-    Move(70,266,168,35)
-    Mask = "!99-999-999"
+  { TabPanel1 TabPanel
+    Move(49,77,336,399)
+    Arrangement = Arrange.Fill
+    Margin = True
+    Count = 3
+    TextFont = Font["-1"]
+    Index = 0
+    Text = ("Test")
+    { ColorChooser1 ColorChooser
+      Move(14,21,357,308)
+    }
+    Index = 1
+    Text = ("Bonjour")
+    Picture = Picture["icon:/16/add"]
+    { DirChooser1 DirChooser
+      Move(21,14,378,336)
+    }
+    Index = 2
+    Text = ("Tintin")
+    Index = 0
   }
 }

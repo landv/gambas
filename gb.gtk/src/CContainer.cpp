@@ -448,6 +448,7 @@ GB_DESC CUserContainerDesc[] =
   GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
 
   GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
+	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
 
   GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),

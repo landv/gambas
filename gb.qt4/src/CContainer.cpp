@@ -1242,8 +1242,6 @@ GB_DESC CUserControlDesc[] =
 	GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
 	GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
 	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
-	//GB_PROPERTY("Foreground", "i", UserControl_Foreground),
-	//GB_PROPERTY("Background", "i", UserControl_Background),
 	
 	USERCONTROL_DESCRIPTION,
 	
@@ -1258,8 +1256,8 @@ GB_DESC CUserContainerDesc[] =
 
 	GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
 
-	//GB_PROPERTY("Container", "Container", CUSERCONTAINER_container),
 	GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
+	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
 
 	GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
 	GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),

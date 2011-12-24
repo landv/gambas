@@ -679,6 +679,7 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim iTab As Integer
   Dim sVal As String
   Dim vVal As Variant
+  Dim sArr As String
   Dim iArr As Integer
   Dim sText As String
   Dim sName As String
@@ -724,13 +725,16 @@ Private Sub SaveOne(hCtrl As CControl)
 
     If Not $bDoNotArrange Then
 
-      Try iArr = CComponent.Classes[hCtrl.Kind].Symbols["_Arrangement"].Value
+      Try sArr = CComponent.Classes[hCtrl.Kind].Symbols["_DefaultArrangement"].Value
 
       If Not Error Then
 
-        If iArr = Arrange.Fill Then
-          iArr = 0
+        iArr = 0
+        
+        If Left(sArr) = "F" Then
           Try iArr = CComponent.Classes["Arrange"].Symbols[hCtrl.GetProperty("Arrangement")].Value
+        Else
+          iArr = InStr("HVRC", Left$(sArr))
         Endif
 
         If iArr Then
