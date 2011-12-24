@@ -28,23 +28,35 @@ Public Function GetContainer() As Container
 
 End
 
-Public Sub SetTitle(sText As String, hPict As Picture)
-
+Private Sub UpdateTitle()
+  
   Dim H As Integer
+  Dim hPict As Picture
 
-  lblTitle.Text = sText
-  picTitle.Picture = hPict
-  picTitle.Visible = hPict
-
-  H = lblTitle.Height
+  H = panTitle.Font.Height
+  hPict = picTitle.Picture
 
   If hPict Then
     H = Max(H, hPict.Height)
     picTitle.Width = hPict.Width
+    panTitle.Indent = False
+  Else
+    panTitle.Indent = True
   Endif
 
   H += panTitle.Padding * 2
   panTitle.Height = H
+  
+End
+
+
+Public Sub SetTitle(sText As String, hPict As Picture)
+
+  lblTitle.Text = sText
+  picTitle.Picture = hPict
+  picTitle.Visible = hPict
+  
+  UpdateTitle
 
 End
 
@@ -77,13 +89,26 @@ End
 
 Public Sub SetBorder(bOn As Boolean)
   
-  panWizard.Border = If(bOn, Border.Sunken, Border.None)
+  panWizard.Border = If(bOn, Border.Plain, Border.None)
   
 End
 
 Public Sub GetBorder() As Boolean
   
   Return panWizard.Border <> Border.None
+  
+End
+
+Public Sub GetTextFont() As Font
+  
+  Return panTitle.Font
+  
+End
+
+Public Sub SetTextFont(hFont As Font)
+  
+  panTitle.Font = hFont
+  UpdateTitle
   
 End
 

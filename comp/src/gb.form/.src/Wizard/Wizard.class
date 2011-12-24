@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,Picture,ShowTitle=True,ShowIndex=False,Border=True"
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,Border=True"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TabStrip"
 Public Const _IsMultiContainer As Boolean = True
@@ -22,6 +22,7 @@ Property Picture As Picture
 Property ShowTitle As Boolean
 Property ShowIndex As Boolean
 Property Border As Boolean
+Property TextFont As Font
 
 Private $hWizard As FWizard
 Private $aStep As New _WizardContainer[]
@@ -296,5 +297,17 @@ Private Sub ShowIndex_Write(Value As Boolean)
 
   $bShowIndex = Value
   RefreshWizard
+
+End
+
+Private Function TextFont_Read() As Font
+
+  Return $hWizard.GetTextFont()
+
+End
+
+Private Sub TextFont_Write(Value As Font)
+
+  $hWizard.SetTextFont(Value)
 
 End

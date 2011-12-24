@@ -7,19 +7,17 @@
   Spacing = True
   { panTitle Panel
     MoveScaled(1,1,61,5)
-    Background = Color.LightBackground
     Arrangement = Arrange.Horizontal
     Spacing = True
     Margin = True
     Padding = 4
+    Border = Border.Plain
     { picTitle PictureBox
       MoveScaled(1,1,4,4)
       Alignment = Align.Center
     }
     { lblTitle Label
       MoveScaled(9,1,37,4)
-      Font = Font["Bold,+2"]
-      Foreground = Color.SelectedForeground
       Expand = True
       AutoResize = True
     }
@@ -29,7 +27,7 @@
     Expand = True
     Arrangement = Arrange.Fill
     Padding = 2
-    Border = Border.Sunken
+    Border = Border.Plain
   }
   { HBox1 HBox
     MoveScaled(1,40,59,4)
