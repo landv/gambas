@@ -62,7 +62,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
   Else
 
     If $hBorder.RoundCorner._Active Then
-      RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight + 1,
+      RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
         [MTools.UnitsToPixels($hBorder.RoundCorner._TopLeft1),
         MTools.UnitsToPixels($hBorder.RoundCorner._TopRight1),
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight1),
@@ -72,7 +72,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2),
         MTools.UnitsToPixels($hBorder.RoundCorner._BottomRight2)])
     Else
-      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1 + 1)
+      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Endif
 
     If Me.BackGround = Null Then
