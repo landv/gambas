@@ -18,15 +18,6 @@
       Shortcut = "Ctrl+PgDown"
     }
   }
-  { tabWorkspace TabStrip
-    MoveScaled(3,8,41,32)
-    Visible = False
-    Expand = True
-    Closable = True
-    Index = 0
-    Text = ("")
-    Index = 0
-  }
   { timCheck #Timer
     #MoveScaled(59,18)
     Delay = 0
@@ -65,6 +56,15 @@
     MoveScaled(39,43,28,25)
     Ignore = True
     Arrangement = Arrange.Fill
+  }
+  { tabWorkspace TabStrip
+    MoveScaled(3,8,40,32)
+    Visible = False
+    Expand = True
+    Closable = True
+    Index = 0
+    Text = ("")
+    Index = 0
   }
 }
 

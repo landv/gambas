@@ -1927,10 +1927,26 @@ Orientation
 p
 i
 
+Current
+r
+_TabPanelContainer
+
 _new
 m
 
 
+_EnsureCurrentVisible
+m
+
+
+TabBar_Arrange
+m
+
+
+Remove
+m
+
+(Index)i
 _get
 m
 _TabPanelContainer
@@ -1943,7 +1959,19 @@ _GetButton
 m
 _TabPanelButton
 (iIndex)i
+TabBarContainer_Draw
+m
+
+
 TabBar_Draw
+m
+
+
+TabBar_MouseDown
+m
+
+
+TabBar_DblClick
 m
 
 
@@ -2440,6 +2468,14 @@ r
 Container
 
 _new
+m
+
+
+_Delete
+m
+
+
+Delete
 m
 
 

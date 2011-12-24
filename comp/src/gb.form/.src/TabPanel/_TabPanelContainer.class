@@ -61,3 +61,16 @@ Private Function Container_Read() As Container
   Return Me
 
 End
+
+Public Sub _Delete()
+  
+  Super.Delete
+  
+End
+
+
+Public Sub Delete()
+  
+  GetParent().Remove(GetIndex())
+  
+End
