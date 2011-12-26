@@ -342,6 +342,7 @@ void MyDrawingArea::updateBackground()
 			wb = QMIN(w, _background_w);
 			hb = QMIN(h, _background_h);
 
+			_background = 0;
 			createBackground(w, h);
 
 			GC gc = XCreateGC(QX11Info::display(), old, 0, 0);
