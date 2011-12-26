@@ -385,6 +385,9 @@ void gMainWindow::resize(int w, int h)
 	{
 		//gdk_window_enable_synchronized_configure (border->window);
 		
+		bufW = w < 0 ? 0 : w;
+		bufH = h < 0 ? 0 : h;
+		
 		if (w < 1 || h < 1)
 		{
 			if (visible)
@@ -401,8 +404,6 @@ void gMainWindow::resize(int w, int h)
 			if (visible)
 				gtk_widget_show(border);
 			
-			bufW = w;
-			bufH = h;
 		}
 	}
 	else
