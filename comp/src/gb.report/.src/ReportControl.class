@@ -8,8 +8,10 @@ Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{R
 Public Const _Family As String = "Report"
 Public _SizeInt As TSizeHint
 Public _Count As Integer = 1
-Public _DataIndex As Integer
-Public _Index As Integer
+Private $iDataindex As Integer
+Property _DataIndex As Integer
+
+Private $iIndex As Integer
 
 Public Name As String
 'Object Management
@@ -68,6 +70,7 @@ Property Read _RelativeTop As Boolean     ''Use percentage for Top Pos?
 Property Read _RelativeWidth As Boolean   ''Use percentage for width?
 Property Read _RelativeHeight As Boolean  ''Use percentage for height ?
 Property Read _RelativePadding As Boolean ''Use percentage for padding ?
+Property _Index As Integer
 Property Range As String
 Property Left As String
 Property Top As String
@@ -313,7 +316,7 @@ Private Function _Padding_Read() As Float
 
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, bInFixed As Boolean)
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
 
 End
 
@@ -540,5 +543,31 @@ End
 Public Function _GetIndex() As Integer
 
   Return Me.Parent._GetIndex()
+
+End
+
+Private Function _Index_Read() As Integer
+
+  Return $iIndex
+
+End
+
+Private Sub _Index_Write(Value As Integer)
+
+  $iIndex = Value
+
+End
+
+Private Function _DataIndex_Read() As Integer
+
+  Return $iDataindex
+
+End
+
+Private Sub _DataIndex_Write(Value As Integer)
+
+  $iDataindex = Value
+  'Stop
+  'Print "_DataIndex " & Me.Tag & "  = " & $iDataindex
 
 End

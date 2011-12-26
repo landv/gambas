@@ -5,7 +5,6 @@
   Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Spacing = "2cm"
   Count = 2
-  Orientation = Printer.Landscape
   Index = 0
   Text = ("First Page")
   { ReportVBox2 ReportVBox
@@ -51,15 +50,16 @@
   }
   { ReportVBox1 ReportVBox
     #MoveScaled(5,12.5714,45,38)
-    Expand = True
     AutoResize = True
+    Tag = "Boite 1"
     { ReportVBox4 ReportVBox
       #MoveScaled(3,12,41,24)
       Expand = True
       AutoResize = True
-      Spacing = "2mm"
+      Tag = "Boite 2"
+      Spacing = "4mm"
       { ReportHBox2 ReportHBox
-        #MoveScaled(0,0.1429,37.7143,5.1429)
+        #MoveScaled(0,0,37.7143,5.1429)
         Height = "15mm"
         Fixed = True
         AutoResize = True
@@ -97,6 +97,7 @@
       { ReportHBox1 ReportHBox
         #MoveScaled(1,8,38,4)
         Height = "1.2cm"
+        Tag = "Boite 3"
         Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
         { ReportLabel1 ReportLabel
           #MoveScaled(0,0,10.2857,3.4286)

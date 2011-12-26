@@ -1,10 +1,12 @@
 ' Gambas class file
 
+Private $iA As Integer[] = [1, 2, 8, 4, 3, 5]
+
 Public Sub _new()
 
   Report.Debug = True
-
-  ReportHBox1.DataCount = 52
+  ReportPanel1.DataCount = $iA.Count
+  'ReportHBox1.DataCount = 4
   ReportHBox1.Border.RoundCorner.TopRight = "5mm 5mm"
   'ReportHBox1.Border.RoundCorner.BottomRight = "5mm/5mm"
 
@@ -13,5 +15,18 @@ End
 Public Sub ReportLabel1_Data(Index As Integer)
 
   Last.data = "Salut Benoit " & Last.DataIndex
+
+End
+
+Public Sub ReportPanel1_BeforeData()
+
+  'Print "Index = " & Last.Dataindex
+  ReportHBox1.DataCount = $iA[Last.DataIndex]
+
+End
+
+Public Sub ReportLabel2_Data(Index As Integer)
+
+  Last.data = Index
 
 End

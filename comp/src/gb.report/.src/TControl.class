@@ -10,6 +10,7 @@ Property Read RealHeight As Float
 Public SizeHint As TSizeHint
 Public _RealPadding As Float
 Public _SkipPainting As Boolean = False
+Public _PageChildren As New Collection
 Public Index As Integer
 Property Ctrl As ReportControl
 Private fX As Float

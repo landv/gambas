@@ -143,12 +143,13 @@ Public Sub _Layout(Optional iPage As Integer = -1)
     Inc $iCurPage
     Do
 
-      CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, $iCurPage, False)
+      CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, $iCurPage, TSection, False)
 
       If CSection._CurItem > CSection.Children.Max Then Break
 
       Inc $iCurPage
       $iPageCount = $iCurPage
+      Print "Fin Page " & $iCurPage
       If iPage > -1 And If $iCurPage > iPage Then
         Dec $iCurPage
         _LayoutNotFinished = True

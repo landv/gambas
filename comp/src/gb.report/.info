@@ -450,16 +450,16 @@ _Properties
 C
 s
 *,Spacing{ReportCoord}
-_PageChildren
-v
-Collection
-
 _CurItem
-v
+p
 i
 
 _Arrangement
 v
+i
+
+_Index
+p
 i
 
 DataCount
@@ -486,11 +486,11 @@ _RealSpacing
 v
 i
 
-:BeforeArrange
+:BeforeData
 :
 
 
-:AfterArrange
+:AfterData
 :
 
 
@@ -541,7 +541,7 @@ m
 _SetChildGeometry
 m
 
-(X)f(Y)f(W)f(H)f(ContPage)i(bInFixed)b
+(X)f(Y)f(W)f(H)f(ContPage)i(TCont)TControl;(bInFixed)b
 _GetIndex
 m
 i
@@ -570,11 +570,7 @@ v
 i
 
 _DataIndex
-v
-i
-
-_Index
-v
+p
 i
 
 Name
@@ -652,6 +648,10 @@ b
 _RelativePadding
 r
 b
+
+_Index
+p
+i
 
 Range
 p
@@ -744,7 +744,7 @@ m
 _SetChildGeometry
 m
 
-(X)f(Y)f(W)f(H)f(ContPage)i(bInFixed)b
+(X)f(Y)f(W)f(H)f(ContPage)i(TCont)TControl;(bInFixed)b
 _SetUnifiedValues
 m
 
