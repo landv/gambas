@@ -228,7 +228,8 @@ Public Sub Form_Open()
 
   ReadComponent
 
-  lblTitle.Text = Project.Name
+  'Me.Title = 
+  'lblTitle.Text = Project.Name
   
   Try aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True)
   If Not Error Then

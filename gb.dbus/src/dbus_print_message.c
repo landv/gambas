@@ -296,7 +296,7 @@ print_iter (DBusMessageIter *iter, dbus_bool_t literal, int depth)
 		break;
 	      }
 
-	    ffprintf(stderr, stderr, "array [\n");
+	    fprintf(stderr, "array [\n");
 	    while (current_type != DBUS_TYPE_INVALID)
 	      {
 		print_iter (&subiter, literal, depth+1);
@@ -308,7 +308,7 @@ print_iter (DBusMessageIter *iter, dbus_bool_t literal, int depth)
 		  fprintf(stderr, ",");
 	      }
 	    indent(depth);
-	    ffprintf(stderr, stderr, "]\n");
+	    fprintf(stderr, "]\n");
 	    break;
 	  }
 	case DBUS_TYPE_DICT_ENTRY:
@@ -317,12 +317,12 @@ print_iter (DBusMessageIter *iter, dbus_bool_t literal, int depth)
 
 	    dbus_message_iter_recurse (iter, &subiter);
 
-	    ffprintf(stderr, stderr, "dict entry(\n");
+	    fprintf(stderr, "dict entry(\n");
 	    print_iter (&subiter, literal, depth+1);
 	    dbus_message_iter_next (&subiter);
 	    print_iter (&subiter, literal, depth+1);
 	    indent(depth);
-	    ffprintf(stderr, stderr, ")\n");
+	    fprintf(stderr, ")\n");
 	    break;
 	  }
 	    
@@ -333,7 +333,7 @@ print_iter (DBusMessageIter *iter, dbus_bool_t literal, int depth)
 
 	    dbus_message_iter_recurse (iter, &subiter);
 
-	    ffprintf(stderr, stderr, "struct {\n");
+	    fprintf(stderr, "struct {\n");
 	    while ((current_type = dbus_message_iter_get_arg_type (&subiter)) != DBUS_TYPE_INVALID)
 	      {
 		print_iter (&subiter, literal, depth+1);
@@ -342,12 +342,12 @@ print_iter (DBusMessageIter *iter, dbus_bool_t literal, int depth)
 		  fprintf(stderr, ",");
 	      }
 	    indent(depth);
-	    ffprintf(stderr, stderr, "}\n");
+	    fprintf(stderr, "}\n");
 	    break;
 	  }
 	    
 	default:
-	  fprintf(stderr, " (dbus-monitor too dumb to decipher arg type '%c')\n", type);
+	  fprintf(stderr, " (too dumb to decipher arg type '%c')\n", type);
 	  break;
 	}
     } while (dbus_message_iter_next (iter));

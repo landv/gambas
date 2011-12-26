@@ -39,7 +39,7 @@ Public Sub _new()
   $hTimer.Delay = 80
 
   With $hScrollView
-    .Border = Border.Sunken
+    .Border = True
     .ScrollBar = Scroll.Vertical
     .Background = Color.TextBackground
     .Arrangement = Arrange.Vertical

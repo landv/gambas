@@ -211,6 +211,7 @@
       Text = ("Status bar")
       Toggle = True
       Checked = True
+      Visible = False
     }
     { mnuHideMenu Menu
       Action = "hide-menubar"
@@ -786,11 +787,11 @@
     MoveScaled(60,6,38,0)
   }
   { Panel1 Panel
-    MoveScaled(1,7,90,68)
+    MoveScaled(1,7,94,68)
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
-      MoveScaled(2,3,31,66)
+      MoveScaled(2,3,32,66)
       ToolTip = ("Project")
       Arrangement = Arrange.Vertical
       Action = "project"
@@ -861,20 +862,21 @@
       }
     }
     { panProperty SidePanel
-      MoveScaled(58,3,32,65)
+      MoveScaled(60,3,32,65)
       ToolTip = ("Properties")
       Arrangement = Arrange.Vertical
       Action = "property"
       Orientation = Align.Right
-      Hidden = True
+      Separator = True
       { panTabProperty Panel
-        MoveScaled(1,7,28,42)
+        MoveScaled(1,5,28,42)
         Expand = True
         Arrangement = Arrange.Vertical
         { tabProperty TabPanel
           MoveScaled(1,3,26,37)
           Expand = True
           Arrangement = Arrange.Fill
+          Border = False
           Count = 2
           Index = 0
           Text = ("Properties")
@@ -890,7 +892,7 @@
         Spacing = True
         Action = "control"
         Orientation = Align.Bottom
-        Hidden = True
+        Separator = True
       }
     }
   }
@@ -932,6 +934,7 @@
   }
   { panMessage Panel
     MoveScaled(1,84,53,5)
+    Visible = False
     Arrangement = Arrange.Vertical
     { Separator6 Separator
       MoveScaled(20,1,9,0)

@@ -81,6 +81,8 @@ Public Sub fchChoose_Activate()
   Dim sPath As String
 
   sPath = fchChoose.SelectedPath
+  If Not sPath Or If IsDir(sPath) Then Return
+  
   Dialog.AutoExt = chkAutoExt.Value
   If Dialog.AutoExt Then sPath = SetExtension(sPath)
   Dialog.Path = sPath

@@ -11,9 +11,15 @@
     Expand = True
     Arrangement = Arrange.Fill
     Margin = True
+    Border = False
     Count = 8
     Index = 0
     Text = ("Tintin")
+    { SidePanel1 SidePanel
+      Move(56,77,294,175)
+      Orientation = Align.Bottom
+      Separator = True
+    }
     Index = 1
     Text = ("Bonjour")
     Picture = Picture["icon:/16/add"]

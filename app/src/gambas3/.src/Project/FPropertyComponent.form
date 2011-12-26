@@ -1,35 +1,28 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,88,62)
+  MoveScaled(0,0,88,61)
   Text = ("Component properties")
   Icon = Picture["icon:/small/component"]
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { tabComponent TabStrip
-    MoveScaled(1,1,86,55)
+  { tabComponent TabPanel
+    MoveScaled(1,1,86,54)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
     Count = 2
     Index = 0
     Text = ("General")
-    { lblTitle Label
-      MoveScaled(1,1,83,5)
-      Font = Font["Bold,+2"]
-      Background = Color.SelectedBackground
-      Foreground = Color.SelectedForeground
-      Padding = 8
-    }
     { Label2 Label
-      MoveScaled(1,7,17,4)
+      MoveScaled(1,1,17,3)
       Font = Font["Bold"]
       Text = ("Options")
     }
     { HBox5 HBox
-      MoveScaled(1,11,83,4)
+      MoveScaled(1,5,83,4)
       Spacing = True
       Indent = True
       { Label26 Label
@@ -44,7 +37,7 @@
       }
     }
     { HBox6 HBox
-      MoveScaled(1,16,83,4)
+      MoveScaled(1,10,83,4)
       Spacing = True
       Indent = True
       { Label25 Label
@@ -58,12 +51,12 @@
       }
     }
     { Label1 Label
-      MoveScaled(1,21,17,4)
+      MoveScaled(1,18,17,3)
       Font = Font["Bold"]
       Text = ("Exported classes")
     }
     { lstExport ListBox
-      MoveScaled(1,26,83,23)
+      MoveScaled(1,22,83,27)
       Expand = True
       Mode = Select.None
     }
@@ -150,7 +143,7 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,57,85,4)
+    MoveScaled(1,56,85,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

@@ -7,6 +7,7 @@ Inherits UserControl
 Property Text As String
 Property Picture As Picture
 Property Read Container As Container
+Property Visible As Boolean
 
 Private Sub GetParent() As TabPanel
   
@@ -73,4 +74,16 @@ Public Sub Delete()
   
   GetParent().Remove(GetIndex())
   
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return GetParent()._IsVisible(GetIndex())
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  GetParent()._SetVisible(GetIndex(), Value)
+
 End

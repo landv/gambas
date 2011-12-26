@@ -18,11 +18,11 @@ Private $iSize As Integer
 
 Private $aOrder As New String[]
 
-Public Sub _new()
-  
-  Settings.Read(Me)
-  
-End
+' Public Sub _new()
+'   
+'   Settings.Read(Me)
+'   
+' End
 
 
 Public Sub Form_Open()
@@ -255,13 +255,13 @@ End
 
 
 
-Public Sub Form_Close()
-
-  'Config.SaveWindow(ME, "/FToolBox")
-  'DEBUG ME.x;; ME.y
-  Settings.Write(Me)
-
-End
+' Public Sub Form_Close()
+' 
+'   'Config.SaveWindow(ME, "/FToolBox")
+'   'DEBUG ME.x;; ME.y
+'   Settings.Write(Me)
+' 
+' End
 
 
 Private Sub SelectToolBar(sToolBar As String)

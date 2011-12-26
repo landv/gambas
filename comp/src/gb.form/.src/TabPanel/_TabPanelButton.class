@@ -38,6 +38,8 @@ Public Sub DrawingArea_Draw()
   
   Dim iFg As Integer
   Dim X, W As Integer
+  Dim bBorder As Boolean
+  Dim iIndex As Integer
   
   iFg = Me.Foreground
   If iFg = Color.Default Then iFg = Color.Foreground
@@ -62,22 +64,26 @@ Public Sub DrawingArea_Draw()
   Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
   Draw.Foreground = Color.LightForeground
   
+  bBorder = GetParent().Border
+  iIndex = GetIndex()
+  
+  
   Select Case $iOrientation
   
     Case Align.Top
       If $bSelected Then
-        Draw.Line(0, Me.H - 1, 0, 0)
-        Draw.Line(0, 0, Me.W - 1, 0)
-        Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+        If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
+        If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+        If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
       Else
         Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
       Endif
       
     Case Align.Bottom
       If $bSelected Then
-        Draw.Line(0, 0, 0, Me.H - 1)
-        Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
-        Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+        If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
+        If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+        If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
       Else
         Draw.Line(0, 0, Me.W - 1, 0)
       Endif
@@ -155,9 +161,9 @@ End
 Public Sub DrawingArea_MouseWheel()
   
   If Mouse.Delta > 0 Then
-    Try Dec GetParent().Index
+    Try GetParent()._MovePrevious()
   Else
-    Try Inc GetParent().Index
+    Try GetParent()._MoveNext()
   Endif
   
 End

@@ -32,14 +32,14 @@
 #include "CWidget.h"
 #include "CColor.h"
 
-QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, double factor)
+static uint get_light_foreground()
 {
-	return QColor(IMAGE.MergeColor(colorA.rgba(), colorB.rgba(), factor));
+	return IMAGE.MergeColor(qApp->palette().color(QPalette::Window).rgb() & 0xFFFFFF, qApp->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF, 0.3);
 }
 
 QColor CCOLOR_light_foreground()
 {
-	return CCOLOR_merge(qApp->palette().color(QPalette::Window), qApp->palette().color(QPalette::WindowText), 0.2);
+	return QColor((QRgb)get_light_foreground());
 }
 
 QColor CCOLOR_make(GB_COLOR color)
@@ -114,8 +114,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Color_LightForeground)
 
-	uint col = IMAGE.MergeColor(qApp->palette().color(QPalette::Window).rgb() & 0xFFFFFF, qApp->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF, 0.3);
-	GB.ReturnInteger(col);
+	GB.ReturnInteger(get_light_foreground());
 
 END_PROPERTY
 

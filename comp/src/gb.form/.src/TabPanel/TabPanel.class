@@ -212,6 +212,7 @@ Private Sub Index_Write(iIndex As Integer)
   If iIndex < 0 Or iIndex >= $aCont.Count Then Error.Raise("Bad index")
 
   If iIndex = $iCurrent Then Return
+  If Not $aButton[iIndex].Visible Then Return
 
   Me._Container = $aCont[iIndex]
   If $iCurrent >= 0 Then $aButton[$iCurrent].Selected = False
@@ -300,8 +301,14 @@ End
 
 Private Sub Border_Write(bBorder As Boolean)
 
+  Dim hButton As _TabPanelButton
+
   $bBorder = bBorder
   $hPanel.Refresh
+  
+  For Each hButton In $aButton
+    hButton.Refresh
+  Next
 
 End
 
@@ -359,7 +366,8 @@ Public Sub TabBarContainer_Draw()
   
   Dim hLast As _TabPanelButton
   
-  hLast = $aButton[$aButton.Max]
+  Try hLast = $aButton[GetLastIndex()]
+  If Error Then Return
   
   Draw.Foreground = Color.LightForeground
   Select Case $iOrientation
@@ -462,3 +470,61 @@ Public Sub Remove(Index As Integer)
   If $iCurrent > $aCont.Max Then Index_Write($aCont.Max)
   
 End
+
+Public Sub _SetVisible(Index As Integer, bVisible As Boolean)
+  
+  $aButton[Index].Visible = bVisible
+  If Not bVisible And If Index = $iCurrent Then
+    Try _MoveNext()
+    If Error Then Try _MovePrevious()
+  Endif
+  
+End
+
+Public Sub _IsVisible(Index As Integer) As Boolean
+  
+  Return $aButton[Index].Visible
+  
+End
+
+Private Sub GetPreviousIndex(iIndex As Integer) As Integer
+  
+  Dim I As Integer
+  
+  For I = iIndex - 1 DownTo 0
+    If $aButton[I].Visible Then Return I
+  Next
+  Return -1
+  
+End
+
+Private Sub GetNextIndex(iIndex As Integer) As Integer
+  
+  Dim I As Integer
+  
+  For I = iIndex + 1 To $aButton.Max
+    If $aButton[I].Visible Then Return I
+  Next
+  Return -1
+  
+End
+
+Private Sub GetLastIndex() As Integer
+  
+  Return GetPreviousIndex($aButton.Count)
+  
+End
+
+Public Sub _MovePrevious()
+  
+  Me.Index = GetPreviousIndex($iCurrent)
+  
+End
+
+Public Sub _MoveNext()
+  
+  Me.Index = GetNextIndex($iCurrent)
+  
+End
+
+

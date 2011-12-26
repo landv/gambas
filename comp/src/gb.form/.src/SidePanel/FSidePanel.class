@@ -17,6 +17,7 @@ Private $iMax As Integer
 Private $iColor As Integer
 Private $bOpened As Boolean
 Private $hArrow As Image
+Private $bSeparator As Boolean
 
 Private BUTTON_H As Integer = Desktop.Scale
 Private BUTTON_W As Integer = 48
@@ -181,7 +182,7 @@ Private Sub RefreshPanel()
       panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Bottom
-      sepSide.Move(0, Me.ClientH - 1, Me.ClientW, 1)
+      sepSide.Move(0, sepSide.Parent.ClientH - 1, Me.ClientW, 1)
       panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Left
@@ -189,11 +190,13 @@ Private Sub RefreshPanel()
       panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
     Case Align.Right
-      sepSide.Move(Me.ClientW - 1, 0, 1, Me.ClientH)
+      sepSide.Move(sepSide.Parent.ClientW - 1, 0, 1, Me.ClientH)
       panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
   End Select
-
+  
+  sepSide.Visible = $bSeparator And $bVisible
+  
   'IF $bVisible THEN panSide.Show
   
   'DEBUG $bVisible;; "(";; ME.X;; ME.Y;; ME.W;; ME.H;; ") (";; btnSide.X;; btnSide.Y;; btnSide.W;; btnSide.H;; btnSide.Visible;; ") (";; panSide.X;; panSide.Y;; panSide.W;; panSide.H;; panSide.Visible;; ")"
@@ -305,7 +308,7 @@ Private Sub TogglePanel()
     End With
     $bVisible = False
     RefreshAll
-    Action.Raise(Me.Parent)    
+    Action.Raise(Me.Parent)
 
   Else
 
@@ -580,15 +583,15 @@ End
 
 Public Sub HasSeparator() As Boolean
   
-  Return sepSide.Visible
+  Return $bSeparator
   
 End
 
 Public Sub SetSeparator(bVisible As Boolean)
   
-  If sepSide.Visible = bVisible Then Return
+  If $bSeparator = bVisible Then Return
   
-  sepSide.Visible = bVisible
+  $bSeparator = bVisible
   RefreshPanel
   
 End

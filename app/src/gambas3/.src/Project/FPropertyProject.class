@@ -756,10 +756,14 @@ Public Sub tabProject_Click()
       If $sVerCtrlStatus Then
         edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
         edtDiff.Show
-        lblNoDiff.Hide
+        lblDiff.Text = ("Changes since last commit")
+        lblDiff.Expand = False
+        'lblNoDiff.Hide
       Else
         edtDiff.Hide
-        lblNoDiff.Show
+        lblDiff.Text = ("There is no change to commit.")
+        lblDiff.Expand = True
+        'lblNoDiff.Show
       Endif
       btnCommit.Enabled = Len($sVerCtrlStatus)
       btnRevert.Enabled = btnCommit.Enabled

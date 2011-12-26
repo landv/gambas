@@ -8,37 +8,17 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { Panel4 Panel
-    MoveScaled(1,1,93,6)
-    Visible = False
-    Background = Color.SelectedBackground
-    Arrangement = Arrange.Horizontal
-    Spacing = True
-    Padding = 8
-    { PictureBox1 PictureBox
-      MoveScaled(1,1,5,5)
-      Picture = Picture["icon:/32/language"]
-    }
-    { Label2 Label
-      MoveScaled(7,1,31,4)
-      Font = Font["Bold,+2"]
-      Foreground = Color.SelectedForeground
-      AutoResize = True
-      Text = ("Project translation")
-    }
-  }
-  { tabTranslate TabStrip
-    MoveScaled(1,8,107,64)
+  { tabTranslate TabPanel
+    MoveScaled(1,1,107,72)
     Expand = True
     Arrangement = Arrange.Vertical
-    Spacing = True
-    Margin = True
     Count = 3
     Index = 0
     Text = ("Translation")
     { panTranslate VBox
-      MoveScaled(1,1,96,9)
+      MoveScaled(1,1,96,11)
       Spacing = True
+      Margin = True
       { HBox2 HBox
         MoveScaled(1,0,82,4)
         { cmbLangSource ComboBox
@@ -114,8 +94,11 @@
         }
       }
     }
+    { Separator2 Separator
+      MoveScaled(21,13,11,0)
+    }
     { VSplit1 VSplit
-      MoveScaled(1,11,98,41)
+      MoveScaled(1,17,98,44)
       Expand = True
       { cvwTranslate ColumnView
         MoveScaled(1,1,70,18)
@@ -123,44 +106,47 @@
         Sorted = True
         Header = False
         AutoResize = False
+        Border = False
         ScrollBar = Scroll.Vertical
       }
       { VBox2 VBox
-        MoveScaled(1,20,85,20)
+        MoveScaled(1,21,85,21)
         Expand = True
-        Spacing = True
-        { Panel5 Panel
-          MoveScaled(1,1,45,11)
+        { lblComment Label
+          MoveScaled(0,0,35,3)
+          Font = Font["Bold"]
+          Padding = 4
+        }
+        { Separator4 Separator
+          MoveScaled(0,4,15,0)
+        }
+        { txtOrig TextLabel
+          MoveScaled(1,5,24,6)
           Expand = True
-          Arrangement = Arrange.Vertical
-          Border = Border.Sunken
-          { lblComment Label
-            MoveScaled(0,0,35,3)
-            Font = Font["Bold"]
-            Padding = 4
-          }
-          { txtOrig TextLabel
-            MoveScaled(1,4,24,4)
-            Expand = True
-            Padding = 4
-          }
+          Padding = 4
+        }
+        { Separator5 Separator
+          MoveScaled(3,13,15,0)
         }
         { txtTranslate TextArea
-          MoveScaled(2,13,39,5)
+          MoveScaled(1,15,39,5)
           Expand = True
           Wrap = True
+          Border = False
         }
       }
     }
+    { Separator1 Separator
+      MoveScaled(15,62,15,0)
+    }
     { HBox6 Panel
-      MoveScaled(1,53,102,5)
+      MoveScaled(1,63,102,5)
       Background = Color.LightBackground
       Arrangement = Arrange.Horizontal
       AutoResize = True
       Spacing = True
       Margin = True
       Padding = 4
-      Border = Border.Plain
       { PictureBox3 PictureBox
         MoveScaled(0,0,4,4)
         Picture = Picture["icon:/medium/info"]
@@ -183,6 +169,7 @@
       Sorted = True
       Header = False
       Resizable = True
+      Border = False
       ScrollBar = Scroll.Vertical
     }
     Index = 2
@@ -190,13 +177,18 @@
     { dchImport DirChooser
       MoveScaled(2,1,100,48)
       Expand = True
+      Border = False
       ShowFile = True
       ShowDetailed = True
       ShowSplitter = False
     }
+    { Separator3 Separator
+      MoveScaled(19,51,16,0)
+    }
     { HBox4 HBox
-      MoveScaled(2,54,100,4)
+      MoveScaled(2,54,100,6)
       Spacing = True
+      Margin = True
       { chkBrowse CheckBox
         MoveScaled(0,0,47,4)
         Expand = True
@@ -213,7 +205,7 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,73,107,4)
+    MoveScaled(1,74,107,4)
     Spacing = True
     { btnNew Button
       MoveScaled(0,0,18,4)

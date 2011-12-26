@@ -6,13 +6,10 @@
   Icon = Picture["icon:/small/menu"]
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Margin = True
   { VBox2 Panel
-    MoveScaled(1,1,80,36)
+    MoveScaled(1,1,80,30)
     Expand = True
     Arrangement = Arrange.Vertical
-    Border = Border.Plain
     { HBox5 HBox
       MoveScaled(0,0,79,4)
       { btnInsert ToolButton
@@ -89,7 +86,7 @@
       MoveScaled(12,6,16,0)
     }
     { gvwMenu GridView
-      MoveScaled(7,12,54,21)
+      MoveScaled(7,7,54,21)
       Expand = True
       Mode = Select.Multiple
       Grid = False
@@ -97,9 +94,13 @@
       Border = False
     }
   }
+  { Separator5 Separator
+    MoveScaled(1,32,16,0)
+  }
   { VBox3 VBox
-    MoveScaled(1,38,73,37)
+    MoveScaled(1,33,75,37)
     Spacing = True
+    Margin = True
     { frmMenu HBox
       MoveScaled(0,0,72,37)
       Spacing = True
@@ -239,9 +240,13 @@
       Alignment = Align.TopNormal
     }
   }
+  { Separator6 Separator
+    MoveScaled(1,71,16,0)
+  }
   { HBox2 HBox
-    MoveScaled(1,76,55,4)
+    MoveScaled(1,74,55,6)
     Spacing = True
+    Margin = True
     { Panel2 Panel
       MoveScaled(3,0,4,4)
       Expand = True

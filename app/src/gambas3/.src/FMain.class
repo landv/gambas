@@ -997,20 +997,15 @@ Public Sub ReadConfig()
   wrkProject.Font = tabProperty.TextFont
   'wrkProject.Font = tvwProject.Font
   'tabProperty.Font = tvwProject.Font
-  panMessage.Height = lblMessage.Font.Height + lblMessage.Padding * 2 + 2
   '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
   'IF NOT $bCanShowBalloon THEN HideBalloon
-  bShow = Settings["/ShowMessages", True]
-  panMessage.Visible = bShow
-  mnuStatusBar.Value = bShow
+  
+  'panMessage.Height = lblMessage.Font.Height + lblMessage.Padding * 2 + 2
+  ' bShow = Settings["/ShowMessages", True]
+  ' panMessage.Visible = bShow
+  ' mnuStatusBar.Value = bShow
   
   Me.Menus.Visible = Settings["/ShowMenus", True]
-  'btnShowMenu.Visible = Not Me.Menus.Visible
-  
-  ' BUG: Changing tvwProject foreground does nothing!
-  'MTheme.InitControl(tvwProject)
-  
-  'panTabProperty.H = tabProperty.ClientY - 2
   
 End
 

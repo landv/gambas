@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,73)
+  MoveScaled(0,2,93,71)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -18,47 +18,33 @@
       Tag = "GB_GUI=gb.gtk"
     }
   }
-  { btnOK Button
-    MoveScaled(59,68,16,4)
-    Text = ("OK")
-    Default = True
-  }
-  { btnCancel Button
-    MoveScaled(76,68,16,4)
-    Text = ("Cancel")
-    Cancel = True
-  }
-  { tabProject TabStrip
-    MoveScaled(1,1,91,66)
+  { tabProject TabPanel
+    MoveScaled(1,1,91,64)
     Arrangement = Arrange.Vertical
-    Spacing = True
-    Margin = True
     Count = 6
     Index = 0
     Text = ("General")
     { Panel1 Panel
-      MoveScaled(1,1,84,10)
-      Background = Color.SelectedBackground
-      Arrangement = Arrange.Horizontal
-      Spacing = True
-      Margin = True
-      Padding = 4
+      MoveScaled(1,0,88,10)
       { btnIcon ToolButton
-        MoveScaled(0,0,9,9)
+        MoveScaled(1,1,8,8)
         Border = True
       }
       { txtName TextLabel
-        MoveScaled(10,0,74,9)
-        Foreground = Color.SelectedForeground
+        MoveScaled(10,1,77,8)
         Expand = True
         Alignment = Align.Left
       }
+    }
+    { Separator3 Separator
+      MoveScaled(53,11,29,0)
     }
     { HPanel1 HPanel
       MoveScaled(1,12,84,48)
       Expand = True
       AutoResize = True
       Spacing = True
+      Margin = True
       { Label10 Label
         MoveScaled(0,0,16,4)
         Font = Font["Bold"]
@@ -113,163 +99,169 @@
     }
     Index = 1
     Text = ("Options")
-    { Label7 Label
-      MoveScaled(1,1,84,3)
-      Font = Font["Bold"]
-      Text = ("Edition")
-      Alignment = Align.BottomNormal
-    }
-    { HBox13 HBox
-      MoveScaled(2,5,83,4)
+    { Panel6 VBox
+      MoveScaled(1,0,87,60)
       Spacing = True
-      Indent = True
-      { Label1 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Tab size")
+      Margin = True
+      { Label7 Label
+        MoveScaled(0,0,84,3)
+        Font = Font["Bold"]
+        Text = ("Edition")
+        Alignment = Align.BottomNormal
       }
-      { txtTabSize SpinBox
-        MoveScaled(47,0,8,4)
-        MinValue = 1
-        MaxValue = 16
-        Value = 2
+      { HBox13 HBox
+        MoveScaled(1,4,83,4)
+        Spacing = True
+        Indent = True
+        { Label1 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Tab size")
+        }
+        { txtTabSize SpinBox
+          MoveScaled(47,0,8,4)
+          MinValue = 1
+          MaxValue = 16
+          Value = 2
+        }
+        { Label5 Label
+          MoveScaled(59,0,22,4)
+          Text = ("space(s)")
+        }
       }
-      { Label5 Label
-        MoveScaled(59,0,22,4)
-        Text = ("space(s)")
-      }
-    }
-    { Label8 Label
-      MoveScaled(1,10,84,3)
-      Font = Font["Bold"]
-      Expand = True
-      Text = ("Compilation")
-      Alignment = Align.BottomNormal
-    }
-    { HBox12 HBox
-      MoveScaled(2,14,83,4)
-      Spacing = True
-      Indent = True
-      { Label21 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Module symbols are public by default")
-      }
-      { cmbModulePublic ComboBox
-        MoveScaled(47,0,10,4)
-        ReadOnly = True
-        List = [("Yes"), ("No")]
-      }
-    }
-    { HBox11 HBox
-      MoveScaled(2,19,83,4)
-      Spacing = True
-      Indent = True
-      { Label22 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Form controls are public")
-      }
-      { cmbControlPublic ComboBox
-        MoveScaled(47,0,10,4)
-        ReadOnly = True
-        List = [("Yes"), ("No")]
-      }
-    }
-    { HBox10 HBox
-      MoveScaled(2,24,83,4)
-      Spacing = True
-      Indent = True
-      { Label23 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Get version from program")
-      }
-      { txtVersionProg TextBox
-        MoveScaled(47,0,36,4)
+      { Label8 Label
+        MoveScaled(0,9,84,3)
+        Font = Font["Bold"]
         Expand = True
+        Text = ("Compilation")
+        Alignment = Align.BottomNormal
       }
-    }
-    { Label19 Label
-      MoveScaled(1,29,84,3)
-      Font = Font["Bold"]
-      Expand = True
-      Text = ("Translation")
-      Alignment = Align.BottomNormal
-    }
-    { HBox9 HBox
-      MoveScaled(2,33,83,4)
-      Spacing = True
-      Indent = True
-      { Label24 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Project is translatable")
+      { HBox12 HBox
+        MoveScaled(1,13,83,4)
+        Spacing = True
+        Indent = True
+        { Label21 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Module symbols are public by default")
+        }
+        { cmbModulePublic ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
       }
-      { cmbTranslate ComboBox
-        MoveScaled(47,0,10,4)
-        ReadOnly = True
-        List = [("Yes"), ("No")]
+      { HBox11 HBox
+        MoveScaled(1,18,83,4)
+        Spacing = True
+        Indent = True
+        { Label22 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Form controls are public")
+        }
+        { cmbControlPublic ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
       }
-    }
-    { HBox8 HBox
-      MoveScaled(2,38,83,4)
-      Spacing = True
-      Indent = True
-      { Label20 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Default language")
+      { HBox10 HBox
+        MoveScaled(1,23,83,4)
+        Spacing = True
+        Indent = True
+        { Label23 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Get version from program")
+        }
+        { txtVersionProg TextBox
+          MoveScaled(47,0,36,4)
+          Expand = True
+        }
       }
-      { cmbDefaultLanguage ComboBox
-        MoveScaled(47,0,36,4)
+      { Label19 Label
+        MoveScaled(0,28,84,3)
+        Font = Font["Bold"]
         Expand = True
-        ReadOnly = True
-        Sorted = True
+        Text = ("Translation")
+        Alignment = Align.BottomNormal
       }
-    }
-    { Label27 Label
-      MoveScaled(1,43,84,3)
-      Font = Font["Bold"]
-      Expand = True
-      Text = ("Debugging")
-      Alignment = Align.BottomNormal
-    }
-    { HBox17 HBox
-      MoveScaled(2,47,83,4)
-      Spacing = True
-      Indent = True
-      { Label28 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Use a terminal emulator")
+      { HBox9 HBox
+        MoveScaled(1,32,83,4)
+        Spacing = True
+        Indent = True
+        { Label24 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Project is translatable")
+        }
+        { cmbTranslate ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
       }
-      { cmbTerminal ComboBox
-        MoveScaled(47,0,10,4)
-        ReadOnly = True
-        List = [("Yes"), ("No")]
+      { HBox8 HBox
+        MoveScaled(1,37,83,4)
+        Spacing = True
+        Indent = True
+        { Label20 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Default language")
+        }
+        { cmbDefaultLanguage ComboBox
+          MoveScaled(47,0,36,4)
+          Expand = True
+          ReadOnly = True
+          Sorted = True
+        }
       }
-    }
-    { Label16 Label
-      MoveScaled(1,52,84,3)
-      Font = Font["Bold"]
-      Expand = True
-      Text = ("Component")
-      Alignment = Align.BottomNormal
-    }
-    { HBox6 HBox
-      MoveScaled(2,56,83,4)
-      Spacing = True
-      Indent = True
-      { Label25 Label
-        MoveScaled(0,0,46,4)
-        Text = ("This project is a component")
+      { Label27 Label
+        MoveScaled(0,42,84,3)
+        Font = Font["Bold"]
+        Expand = True
+        Text = ("Debugging")
+        Alignment = Align.BottomNormal
       }
-      { cmbComponent ComboBox
-        MoveScaled(47,0,10,4)
-        ReadOnly = True
-        List = [("Yes"), ("No")]
+      { HBox17 HBox
+        MoveScaled(1,46,83,4)
+        Spacing = True
+        Indent = True
+        { Label28 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Use a terminal emulator")
+        }
+        { cmbTerminal ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
+      }
+      { Label16 Label
+        MoveScaled(0,51,84,3)
+        Font = Font["Bold"]
+        Expand = True
+        Text = ("Component")
+        Alignment = Align.BottomNormal
+      }
+      { HBox6 HBox
+        MoveScaled(1,55,83,4)
+        Spacing = True
+        Indent = True
+        { Label25 Label
+          MoveScaled(0,0,46,4)
+          Text = ("This project is a component")
+        }
+        { cmbComponent ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
       }
     }
     Index = 2
     Text = ("Environment")
     { VBox1 VBox
-      MoveScaled(1,1,84,62)
+      MoveScaled(1,1,84,29)
       Expand = True
       Spacing = True
+      Margin = True
       { Label17 Label
         MoveScaled(3,2,24,3)
         Font = Font["Bold"]
@@ -302,21 +294,27 @@
           Picture = Picture["icon:/small/down"]
         }
       }
-      { Separator1 Separator
-        MoveScaled(7,30,42,1)
-      }
+    }
+    { Separator1 Separator
+      MoveScaled(6,31,42,0)
+    }
+    { Panel5 VBox
+      MoveScaled(1,33,85,26)
+      Expand = True
+      Spacing = True
+      Margin = True
       { Label18 Label
-        MoveScaled(2,32,24,3)
+        MoveScaled(0,0,24,3)
         Font = Font["Bold"]
         Text = ("Environment variables")
       }
       { tvwEnv TableView
-        MoveScaled(2,36,68,16)
+        MoveScaled(0,4,68,16)
         Expand = True
         Header = GridView.Horizontal
       }
       { HBox3 HBox
-        MoveScaled(2,53,40,4)
+        MoveScaled(0,21,40,4)
         Spacing = True
         { btnInsertEnv MenuButton
           MoveScaled(0,0,19,4)
@@ -333,21 +331,34 @@
     }
     Index = 3
     Text = ("Components")
-    { chkShowUsed CheckBox
-      MoveScaled(1,1,83,3)
-      Text = ("Show only components used in project")
+    { Panel7 Panel
+      MoveScaled(1,1,61,5)
+      Arrangement = Arrange.Fill
+      Margin = True
+      { chkShowUsed CheckBox
+        MoveScaled(0,0,57,3)
+        Text = ("Show only components used in project")
+      }
+      { chkShowBeta CheckBox
+        MoveScaled(0,3,56,4)
+        Visible = False
+        Text = ("Show components in beta version")
+      }
     }
-    { chkShowBeta CheckBox
-      MoveScaled(1,5,56,4)
-      Visible = False
-      Text = ("Show components in beta version")
+    { Separator4 Separator
+      MoveScaled(47,7,22,0)
     }
     { lstComponent ListContainer
-      MoveScaled(1,5,80,35)
+      MoveScaled(1,9,80,27)
       Expand = True
+      Border = False
+    }
+    { Separator2 Separator
+      MoveScaled(1,38,24,0)
     }
     { HBox14 HBox
-      MoveScaled(1,41,84,4)
+      MoveScaled(1,39,84,6)
+      Margin = True
       { btnHelp Button
         MoveScaled(0,0,35,4)
         Text = ("About &component...")
@@ -364,13 +375,15 @@
       }
     }
     { panAboutComponent Panel
-      MoveScaled(1,46,84,17)
+      MoveScaled(1,46,84,13)
       Visible = False
       Expand = True
       Arrangement = Arrange.Vertical
-      Border = Border.Plain
+      { Separator5 Separator
+        MoveScaled(24,1,24,0)
+      }
       { webAboutComponent WebView
-        MoveScaled(2,2,24,13)
+        MoveScaled(2,3,24,7)
         Expand = True
       }
     }
@@ -378,11 +391,9 @@
     Text = ("Libraries")
     { Panel4 Panel
       MoveScaled(2,1,80,9)
-      Background = Color.TextBackground
       Arrangement = Arrange.Horizontal
       Spacing = True
       Margin = True
-      Border = Border.Plain
       { PictureBox1 PictureBox
         MoveScaled(1,1,9,8)
         Picture = Picture["icon:/48/warning"]
@@ -396,13 +407,18 @@
         Alignment = Align.Left
       }
     }
+    { Separator6 Separator
+      MoveScaled(35,11,21,0)
+    }
     { lstLibraries ListContainer
-      MoveScaled(1,12,81,44)
+      MoveScaled(1,13,81,39)
       Expand = True
+      Border = False
     }
     { HBox18 HBox
-      MoveScaled(1,58,84,4)
+      MoveScaled(1,54,84,6)
       Spacing = True
+      Margin = True
       { btnInsertLib Button
         MoveScaled(0,0,17,4)
         Text = ("&Add...")
@@ -433,25 +449,29 @@
     }
     Index = 5
     Text = ("Versioning")
-    { Label4 Label
-      MoveScaled(1,1,75,3)
+    { lblDiff Label
+      MoveScaled(2,1,75,4)
       Font = Font["Bold"]
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Padding = 4
       Text = ("Changes since last commit")
-    }
-    { lblNoDiff TextLabel
-      MoveScaled(1,7,80,5)
-      Expand = True
-      Text = ("There is no change to commit.")
+      Alignment = Align.TopNormal
     }
     { edtDiff Editor
-      MoveScaled(4,17,43,11)
+      MoveScaled(3,22,43,11)
       Expand = True
+      Border = False
       Highlight = Highlight.Diff
       ReadOnly = True
     }
+    { Separator7 Separator
+      MoveScaled(32,51,37,0)
+    }
     { HBox15 HBox
-      MoveScaled(1,50,84,4)
+      MoveScaled(2,53,84,6)
       Spacing = True
+      Margin = True
       { btnUpdate Button
         MoveScaled(0,0,20,4)
         Text = ("&Update")
@@ -469,5 +489,15 @@
       }
     }
     Index = 0
+  }
+  { btnOK Button
+    MoveScaled(59,66,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(76,66,16,4)
+    Text = ("Cancel")
+    Cancel = True
   }
 }
