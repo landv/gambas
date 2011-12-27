@@ -28,6 +28,7 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QX11Info>
+#include <QColormap>
 
 #include "CDraw.h"
 #include "cpaint_impl.h"
@@ -193,14 +194,24 @@ void MyDrawingArea::createBackground(int w, int h)
 	QX11Info xinfo = x11Info();
 	QPixmap p;
 	Qt::HANDLE old = _background;
+	GC gc;
 	
 	_background = (Qt::HANDLE)XCreatePixmap(QX11Info::display(), RootWindow(QX11Info::display(), xinfo.screen()), w, h, xinfo.depth());
 	_background_w = w;
 	_background_h = h;
-	//qDebug("createBackground: %d x %d : %d -> %08X", w, h, xinfo.depth(), (int)_background);
-	p = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
-	p.fill(palette().color(backgroundRole()));
+	
+	//qDebug("createBackground: %d x %d : %d -> %08X / winId = %08X", w, h, xinfo.depth(), (int)_background, (int)winId());
+	//p = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
+	//qDebug("color = %06X -> %06X", palette().color(backgroundRole()).rgb(), QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
+	
+	gc = XCreateGC(QX11Info::display(), _background, 0, 0);
+	XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
+	XFillRectangle(QX11Info::display(), _background, gc, 0, 0, w, h);
+	XFreeGC(QX11Info::display(), gc);
+	
 	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
+	XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
+	
 	_cached = true;
 	
 	if (old)
@@ -311,7 +322,8 @@ void MyDrawingArea::clearBackground()
 {
 	if (_cached)
 		createBackground(width(), height());
-	XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
+	else
+		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
 }
 
 void MyDrawingArea::resizeEvent(QResizeEvent *e)
@@ -403,6 +415,8 @@ void MyDrawingArea::setCached(bool c)
 
 void MyDrawingArea::setPalette(const QPalette &pal)
 {
+	if (_cached)
+		return;
 	MyContainer::setPalette(pal);
 	repaint();
 }
@@ -451,7 +465,14 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->isCached());
 	else
+	{
+		if (THIS->widget.bg == COLOR_DEFAULT)
+		{
+			CWIDGET_set_color((CWIDGET *)THIS, THIS->widget.fg, WIDGET->palette().color(WIDGET->backgroundRole()).rgb() & 0xFFFFFF);
+			WIDGET->clearBackground();
+		}
 		WIDGET->setCached(VPROP(GB_BOOLEAN));
+	}
 
 END_PROPERTY
 

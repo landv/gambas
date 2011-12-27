@@ -112,10 +112,10 @@ End
 Public Sub DrawingArea_Enter()
   
   If $bCanHighlight Then
-    If Me.Background = Color.Default Then 
+    'If not $bHighlight Then 
       $hDrawingArea.Background = Color.LightBackground
       $bHighlight = True
-    Endif
+    'Endif
   Endif
   
 End

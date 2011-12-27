@@ -45,6 +45,7 @@ public:
 	void clear();
 	virtual void resize(int w, int h);
 	virtual void setEnabled(bool vl);
+	virtual void setRealBackground(gColor color);
 
 //"Events"
 	void (*onExpose)(gDrawingArea *sender,int x,int y,int w,int h);

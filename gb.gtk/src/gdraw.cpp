@@ -516,9 +516,7 @@ void gDraw::setForeground(gColor vl)
 	if (vl == COLOR_DEFAULT)
 		vl = _default_fg;	
 
-	//if ( foreground()==vl) return;
-			
-	cmap=gdk_drawable_get_colormap(dr);
+	cmap = gdk_drawable_get_colormap(dr);
 	fill_gdk_color(&gcol, vl, cmap);
 	gdk_gc_set_foreground(gc, &gcol);
 	
@@ -538,9 +536,7 @@ void gDraw::setBackground(gColor vl)
 	if (vl == COLOR_DEFAULT)
 		vl = _default_bg;
 	
-	//if ( background()==vl) return;
-		
-	cmap=gdk_drawable_get_colormap(dr);
+	cmap = gdk_drawable_get_colormap(dr);
 	fill_gdk_color(&gcol, vl, cmap);
 	gdk_gc_set_background(gc, &gcol);
 

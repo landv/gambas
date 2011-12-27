@@ -700,7 +700,7 @@ static void hook_lang(char *lang, int rtl)
 	//locale = QTextCodec::locale();
 }
 
-#if 1
+#if 0
 static int (*_old_handler)(Display *d, XErrorEvent *e) = NULL;
 
 static int X11_error_handler(Display *d, XErrorEvent *e)
@@ -723,7 +723,7 @@ static void hook_main(int *argc, char **argv)
 	QT_Init();
 	init_lang(GB.System.Language(), GB.System.IsRightToLeft());
 	
-	_old_handler = XSetErrorHandler(X11_error_handler);
+	//_old_handler = XSetErrorHandler(X11_error_handler);
 }
 
 

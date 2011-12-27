@@ -183,6 +183,8 @@ void gDrawingArea::resizeCache()
 	GdkPixmap *buf;
 	GdkGC *gc2;
 	GdkWindow *win;
+	GdkColormap *cmap;
+	GdkColor gcol;
 	
 	win = GTK_WIDGET(widget)->window;
 	if (!win)
@@ -201,7 +203,10 @@ void gDrawingArea::resizeCache()
 	{		
 		buf = gdk_pixmap_new(win, w, h, -1);
 		gc2 = gdk_gc_new(buf);
-		gdk_gc_set_foreground(gc2, &widget->style->bg[GTK_STATE_NORMAL]);
+		
+		cmap = gdk_drawable_get_colormap(buf);
+		fill_gdk_color(&gcol, realBackground(), cmap);
+		gdk_gc_set_foreground(gc2, &gcol);
 		
 		if (w > bw || h > bh || !buffer)
 			gdk_draw_rectangle(buf, gc2, true, 0, 0, w, h);
@@ -217,6 +222,9 @@ void gDrawingArea::resizeCache()
 		buffer = buf;
 		g_object_unref(gc2);
 	}	
+	
+	drawBorder(buffer);
+	refreshCache();
 }
 
 void gDrawingArea::setCache()
@@ -262,13 +270,9 @@ void gDrawingArea::clear()
 	
 	if (_cached && buffer) 
 	{
-		gc2=gdk_gc_new(buffer);
-		gdk_gc_set_foreground(gc2,&widget->style->bg[GTK_STATE_NORMAL]);
-		gdk_draw_rectangle(buffer,gc2,true,0,0,width(),height());
-		g_object_unref(G_OBJECT(gc2));
-		drawBorder(buffer);
-		refreshCache();
-		return;
+		g_object_unref(buffer);
+		buffer = NULL;
+		resizeCache();
 	}
 }
 
@@ -294,3 +298,8 @@ void gDrawingArea::setNoBackground(bool vl)
 		setBackground(background());
 }
 
+void gDrawingArea::setRealBackground(gColor color)
+{
+	gControl::setRealBackground(color);
+	clear();
+}

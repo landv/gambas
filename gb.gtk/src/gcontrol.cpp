@@ -1459,7 +1459,7 @@ gColor gControl::realBackground()
 	else if (pr)
 		return pr->realBackground();
 	else
-		return COLOR_DEFAULT;
+		return gDesktop::bgColor();
 }
 
 gColor gControl::background()
@@ -1507,7 +1507,7 @@ gColor gControl::realForeground()
 	else if (pr)
 		return pr->realForeground();
 	else
-		return COLOR_DEFAULT;
+		return gDesktop::fgColor();
 }
 
 gColor gControl::foreground()
