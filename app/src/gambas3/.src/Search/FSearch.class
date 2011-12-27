@@ -79,7 +79,9 @@ Public Sub ReadConfig()
   
   gvwFind.Font.Grade = - Settings["/TabStripFont", 0]
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-  $hFont.Grade = gvwFind.Font.Grade
+  While $hFont.Height > Application.Font.Height
+    Dec $hFont.Size
+  Wend
   gvwFind.Refresh
 
 End

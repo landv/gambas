@@ -34,7 +34,7 @@ Public Sub _new(hDrawingArea As DrawingArea)
     Y += Paint.Font.Height
     PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
     
-    Paint.Font = Font["Italic,+1"]
+    Paint.Font = Font["Italic,Bold"]
     Y += Paint.Font.Height + 16
     PaintText(("This program is published under\nthe GNU General Public License."), 12, Y, Color.SelectedForeground)
     Paint.End

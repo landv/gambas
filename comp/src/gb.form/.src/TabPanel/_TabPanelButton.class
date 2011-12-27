@@ -44,12 +44,9 @@ Public Sub DrawingArea_Draw()
   iFg = Me.Foreground
   If iFg = Color.Default Then iFg = Color.Foreground
   
-  If $bSelected Then
-    Draw.Foreground = iFg
-  Else If $hDrawingArea.Hovered Then
+  Draw.Foreground = iFg
+  If Not $bSelected And If $hDrawingArea.Hovered Then
     Draw.Foreground = Color.Gradient(iFg, Color.LightForeground)
-  Else
-    Draw.Foreground = Color.LightForeground
   Endif
   
   X = 0

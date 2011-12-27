@@ -327,6 +327,9 @@ Private Sub InitVersion()
   Version = aVer.Join(".")
 
   FullVersionWithRevision = FullVersion
+  If FullVersionWithRevision Ends ".0" Then
+    FullVersionWithRevision = Left$(FullVersionWithRevision, -2)
+  Endif
   sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
   If sVer Then
     'Version &= " (r" & sVer & ")"
