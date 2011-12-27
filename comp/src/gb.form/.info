@@ -1268,6 +1268,10 @@ MoveTo
 m
 b
 (Key)s
+_FindItem
+m
+i
+(hItem)_IconView_Item;
 MoveFirst
 m
 b
@@ -1284,10 +1288,6 @@ MoveBack
 m
 
 
-_FindItem
-m
-i
-(hItem)_IconView_Item;
 _UpdateIconSize
 m
 
@@ -1878,7 +1878,7 @@ C
 _Properties
 C
 s
-*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top
+*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Highlight
 _Similar
 C
 s
@@ -1895,11 +1895,15 @@ Click
 :
 
 
-Count
+:Close
+:
+
+(Index)i
+Index
 p
 i
 
-Index
+Count
 p
 i
 
@@ -1926,6 +1930,14 @@ b
 Orientation
 p
 i
+
+Highlight
+p
+b
+
+Closable
+p
+b
 
 Current
 r
@@ -1994,6 +2006,10 @@ m
 _IsVisible
 m
 b
+(Index)i
+_Close
+m
+
 (Index)i
 #TableView
 GridView

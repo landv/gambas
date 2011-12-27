@@ -97,7 +97,7 @@ void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
 
 #endif  // #ifndef __GBX_CLASS_INFO_C 
 
-#define ARRAY_TEMPLATE_NDESC 19
+#define ARRAY_TEMPLATE_NDESC 21
 #define ARRAY_OF_STRUCT_TEMPLATE_NDESC 13
 
 #endif

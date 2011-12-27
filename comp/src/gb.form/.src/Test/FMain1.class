@@ -1,0 +1,11 @@
+' Gambas class file
+
+Public Sub _new()
+
+  Dim i As Integer
+  
+  For i = 0 To 15
+    IconView1.Add(i, "", Picture["icon:/48/gambas"])
+  Next
+
+End

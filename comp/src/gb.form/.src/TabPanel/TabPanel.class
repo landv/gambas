@@ -3,12 +3,13 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top"
+Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Highlight"
 Public Const _Similar As String = "TabStrip"
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DefaultEvent As String = "Click"
 
 Event Click
+Event Close(Index As Integer)
 
 Property Count As Integer
 Property Index As Integer
@@ -18,6 +19,8 @@ Property Font As Font
 Property TextFont As Font
 Property Border As Boolean
 Property Orientation As Integer
+Property Highlight As Boolean
+Property Closable As Boolean
 Property Read Current As _TabPanelContainer
 
 Private $hTabBar As DrawingArea
@@ -31,7 +34,8 @@ Private $aCont As New _TabPanelContainer[]
 Private $aButton As New _TabPanelButton[]
 Private $iOrientation As Integer = Align.Top
 Private $bBorder As Boolean = True
-
+Private $bHighlight As Boolean
+Private $bClosable As Boolean
 Private $iCurrent As Integer = -1
 Private $hPanel As DrawingArea
 
@@ -122,6 +126,7 @@ Private Sub UpdateLayout()
   
   For Each hCtrl In $aButton
     hCtrl.Orientation = $iOrientation
+    hCtrl.UpdateLayout
   Next
   
   $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale
@@ -214,13 +219,15 @@ Private Sub Index_Write(iIndex As Integer)
   If iIndex = $iCurrent Then Return
   If Not $aButton[iIndex].Visible Then Return
 
-  Me._Container = $aCont[iIndex]
   If $iCurrent >= 0 Then $aButton[$iCurrent].Selected = False
   $iCurrent = iIndex
   If $iCurrent >= 0 Then $aButton[$iCurrent].Selected = True
 
   UpdateContainer
+
+  Me._Container = $aCont[$iCurrent]
   _EnsureCurrentVisible
+  
   Raise Click
 
 End
@@ -462,12 +469,18 @@ Public Sub Remove(Index As Integer)
   
   hTab = $aCont[Index]
   If hTab.Children.Count Then Error.Raise("TabPanel container is not empty")
-  hTab._Delete()
-  $aCont.Remove(Index)
   $aButton[Index].Delete
   $aButton.Remove(Index)
+  $aCont.Remove(Index)
+  If $iCurrent = Index Then
+    $iCurrent = -1
+    iCurrent = Min($aCont.Max, Index)
+    Index_Write(iCurrent)
+  Else If $iCurrent > Index Then
+    Dec $iCurrent
+  Endif
   UpdateLayout
-  If $iCurrent > $aCont.Max Then Index_Write($aCont.Max)
+  hTab._Delete()
   
 End
 
@@ -528,3 +541,34 @@ Public Sub _MoveNext()
 End
 
 
+Private Function Highlight_Read() As Boolean
+
+  Return $bHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bHighlight = Value
+  Try $aButton[$iCurrent].Refresh
+
+End
+
+Private Function Closable_Read() As Boolean
+
+  Return $bClosable
+
+End
+
+Private Sub Closable_Write(Value As Boolean)
+
+  $bClosable = True
+  UpdateLayout
+
+End
+
+Public Sub _Close(Index As Integer)
+  
+  Raise Close(Index)
+  
+End

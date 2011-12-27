@@ -634,6 +634,8 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   
   If Not bAgain Then
     If InitSearch() Then Return
+  Else
+    If Not SearchString Then Return
   Endif
   'OnlySource = bOnlySource
   

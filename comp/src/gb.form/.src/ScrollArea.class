@@ -335,7 +335,7 @@ Public Sub DrawingArea_MouseWheel()
   
   If Not Me.Enabled Or If Me.Design Then Return
   
-  If Mouse.Orientation = Mouse.Horizontal Then
+  If Mouse.Orientation = Mouse.Horizontal Or If $H <= $hDrawingArea.H Then
     $hHBar.Value -= Mouse.Delta * $hHBar.PageStep / 4
   Else
     $hVBar.Value -= Mouse.Delta * $hVBar.PageStep / 4

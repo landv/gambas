@@ -80,7 +80,8 @@ Public Sub Update()
   Dim bEnabled As Boolean  
   Dim bVisible As Boolean
   
-  $hSrc = Common.GetSource(Me)
+  If Not Me.Parent.Design Then $hSrc = Common.GetSource(Me)
+  
   If $hSrc Then
     bEnabled = True '$hSrc.Index >= 0
     bVisible = Not $hSrc.ReadOnly
@@ -123,10 +124,18 @@ Public Sub btnNew_Click()
 
 End
 
+Private Sub UpdateSeparator()
+  
+  sepBrowser.Visible = panBrowser.Visible And dvwBrowser.Visible
+  
+End
+
+
 Public Sub Form_Resize()
 
   dvwBrowser.Visible = Me.Height > 48
   panBrowser.Expand = Not dvwBrowser.Visible
+  UpdateSeparator
 
 End
 
@@ -155,27 +164,42 @@ Public Sub SetOrientation(iOrientation As Integer)
   
   If $iOrientation = iOrientation Then Return 
   
+  panBrowser.Arrangement = Arrange.None
+  panBorder.Arrangement = Arrange.None
+  
   Select Case iOrientation
     Case Align.Top
-      Me.Arrangement = Arrange.Vertical
-      panBrowser.Next = dvwBrowser
-      panBrowser.Arrangement = Arrange.Horizontal
+      sepBrowser.H = 1
+      panBrowser.Raise
+      sepBrowser.Raise
+      dvwBrowser.Raise
       panBrowser.H = $W
+      panBrowser.Arrangement = Arrange.Horizontal
+      panBorder.Arrangement = Arrange.Vertical
     Case Align.Bottom
-      Me.Arrangement = Arrange.Vertical
-      panBrowser.Previous = dvwBrowser
-      panBrowser.Arrangement = Arrange.Horizontal
+      sepBrowser.H = 1
+      dvwBrowser.Raise
+      sepBrowser.Raise
+      panBrowser.Raise
       panBrowser.H = $W
+      panBrowser.Arrangement = Arrange.Horizontal
+      panBorder.Arrangement = Arrange.Vertical
     Case Align.Left
-      Me.Arrangement = Arrange.Horizontal
-      panBrowser.Next = dvwBrowser
-      panBrowser.Arrangement = Arrange.Vertical
+      sepBrowser.W = 1
+      panBrowser.Raise
+      sepBrowser.Raise
+      dvwBrowser.Raise
       panBrowser.W = $W
+      panBrowser.Arrangement = Arrange.Vertical
+      panBorder.Arrangement = Arrange.Horizontal
     Case Align.Right
-      Me.Arrangement = Arrange.Horizontal
-      panBrowser.Previous = dvwBrowser
-      panBrowser.Arrangement = Arrange.Vertical
+      sepBrowser.W = 1
+      dvwBrowser.Raise
+      sepBrowser.Raise
+      panBrowser.Raise
       panBrowser.W = $W
+      panBrowser.Arrangement = Arrange.Vertical
+      panBorder.Arrangement = Arrange.Horizontal
     Default 
       Return
   End Select
@@ -183,3 +207,23 @@ Public Sub SetOrientation(iOrientation As Integer)
   $iOrientation = iOrientation
   
 End
+
+Public Sub SetControl(bVisible As Boolean)
+  
+  panBrowser.Visible = bVisible  
+  UpdateSeparator
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+

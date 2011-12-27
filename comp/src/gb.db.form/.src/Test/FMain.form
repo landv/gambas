@@ -17,7 +17,7 @@
     Connection = Connections["Connection2"]
     Table = "color"
     { DataBrowser2 DataBrowser
-      MoveScaled(7,3,54,14)
+      MoveScaled(7,2,54,16)
       Control = False
     }
     { DataSource1 DataSource
@@ -27,7 +27,7 @@
       Spacing = True
       Table = "test"
       { DataBrowser1 DataBrowser
-        MoveScaled(2,6,59,16)
+        MoveScaled(1,4,59,17)
         Font = Font["-2"]
         Expand = True
         Columns = ["id", "active", "color", "firstname", "salary", "comment"]
@@ -90,7 +90,6 @@
           }
           { DataControl2 DataControl
             MoveScaled(1,11,30,4)
-            Visible = False
             Field = "firstname"
           }
           { DataControl3 DataControl

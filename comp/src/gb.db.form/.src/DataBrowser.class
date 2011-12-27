@@ -11,8 +11,9 @@ Property Read View As TableView
 Property Header As Boolean
 Property Orientation As Integer
 Property Editable As Boolean
+Property Border As Boolean
 
-Public Const _Properties As String = "*,Control=True,Columns{Field[]},Labels,Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+Public Const _Properties As String = "*,Control=True,Columns{Field[]},Labels,Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom,Border=True"
 Public Const _Group As String = "Data"
 
 Private $hForm As FBrowser
@@ -63,7 +64,7 @@ End
 
 Private Sub Control_Write(bVisible As Boolean)
   
-  $hForm.ButtonPanel.Visible = bVisible
+  $hForm.SetControl(bVisible)
   
 End
 
@@ -137,5 +138,17 @@ End
 Private Sub Labels_Write(Value As String[])
 
   $hForm.DataView.Labels = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hForm.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hForm.SetBorder(Value)
 
 End

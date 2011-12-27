@@ -162,7 +162,7 @@ Public Function MoveTo(Key As String) As Boolean
   If Not $cItems.Exist(Key) Then 
     SetIntern(-1)
   Else
-    SetIntern($aItems.Find($cItems[Key]))
+    SetIntern(_FindItem($cItems[Key]))
   Endif
   Return $iIntern < 0
   
@@ -199,7 +199,7 @@ End
 Public Sub _FindItem(hItem As _IconView_Item) As Integer
   
   If hItem Then 
-    Return $aItems.Find(hItem)
+    Return $aItems.FindByRef(hItem)
   Else
     Return -1
   Endif
@@ -236,7 +236,7 @@ Public Function Add(Key As String, Text As String, Optional {Picture} As Picture
   $cItems[Key] = hItem
   
   If hAfter Then
-    iPos = $aItems.Find(hAfter) + 1
+    iPos = _FindItem(hAfter) + 1
     $aItems.Add(hItem, iPos)
   Else
     $aItems.Add(hItem)
@@ -266,7 +266,7 @@ Public Sub Remove(Key As String)
   If Not hItem Then Return
   
   hItem.Selected = False
-  iPos = $aItems.Find(hItem)
+  iPos = _FindItem(hItem)
   $aItems.Remove(iPos)
   $cItems.Remove(Key)
   RefreshIcon(iPos)
@@ -378,7 +378,7 @@ End
 
 Public Sub _GetItemGeometry(hItem As _IconView_Item, hRect As Rect)
   
-  GetIconGeometry($aItems.Find(hItem), hRect)
+  GetIconGeometry(_FindItem(hItem), hRect)
   
 End
 
@@ -1005,7 +1005,7 @@ End
 
 Public Sub _RefreshItem(hItem As _IconView_Item)
   
-  RefreshIcon($aItems.Find(hItem))
+  RefreshIcon(_FindItem(hItem))
   
 End
 

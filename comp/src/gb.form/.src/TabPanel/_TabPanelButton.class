@@ -13,6 +13,9 @@ Private $sText As String
 Private $bSelected As Boolean
 Private $iOrientation As Integer = Align.Top
 Private $hPicture As Picture
+Private btnClose As PictureBox
+
+Private Const BUTTON_SIZE As Integer = 12
 
 Public Sub _new()
   
@@ -40,6 +43,17 @@ Public Sub DrawingArea_Draw()
   Dim X, W As Integer
   Dim bBorder As Boolean
   Dim iIndex As Integer
+  Dim hTabPanel As TabPanel
+  Dim bClosable As Boolean
+  Dim bHighlight As Boolean
+  
+  hTabPanel = GetParent()
+  bHighlight = hTabPanel.Highlight And $bSelected
+  bClosable = hTabPanel.Closable
+  
+  If bHighlight Then
+    Draw.FillRect(0, 0, Me.W, Me.H, Color.Gradient(If(Me.Background = Color.Default, Color.Background, Me.Background), Color.LightForeground))
+  Endif
   
   iFg = Me.Foreground
   If iFg = Color.Default Then iFg = Color.Foreground
@@ -58,34 +72,38 @@ Public Sub DrawingArea_Draw()
     Draw.Picture($hPicture, Desktop.Scale, (Me.H - $hPicture.H) / 2)
   Endif
   
+  If bClosable Then W -= BUTTON_SIZE
   Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
   Draw.Foreground = Color.LightForeground
   
-  bBorder = GetParent().Border
+  bBorder = hTabPanel.Border
   iIndex = GetIndex()
   
+  'If Not bHighlight Then
   
-  Select Case $iOrientation
-  
-    Case Align.Top
-      If $bSelected Then
-        If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
-        If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
-        If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
-      Else
-        Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
-      Endif
-      
-    Case Align.Bottom
-      If $bSelected Then
-        If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
-        If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
-        If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
-      Else
-        Draw.Line(0, 0, Me.W - 1, 0)
-      Endif
-      
-  End Select
+    Select Case $iOrientation
+    
+      Case Align.Top
+        If $bSelected Then
+          If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
+          If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+          If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
+        Else
+          Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+        Endif
+        
+      Case Align.Bottom
+        If $bSelected Then
+          If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
+          If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+          If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+        Else
+          Draw.Line(0, 0, Me.W - 1, 0)
+        Endif
+        
+    End Select
+    
+  'Endif
   
 End
 
@@ -99,15 +117,18 @@ End
 Public Sub UpdateLayout()
 
   Dim S As Integer
+  Dim bClosable As Boolean = GetParent().Closable
 
   Select Case $iOrientation
     Case Align.Left, Align.Right
       S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
       If $hPicture Then S += $hPicture.W + 2
+      If bClosable Then S += BUTTON_SIZE
       Me.H = S
     Case Else
       S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
       If $hPicture Then S += $hPicture.W + 2
+      If bClosable Then S += BUTTON_SIZE
       Me.W = S
   End Select
 
@@ -155,6 +176,17 @@ Public Sub DrawingArea_MouseDown()
   
 End
 
+Private Sub CreateButton()
+
+  If btnClose Then Return
+  btnClose = New PictureBox($hDrawingArea) As "btnClose"
+  btnClose.Alignment = Align.Center
+  btnClose.Picture = Picture["img/delete.png"]
+  btnClose.Mouse = Mouse.Pointing
+  btnClose.Hide
+
+End
+
 Public Sub DrawingArea_MouseWheel()
   
   If Mouse.Delta > 0 Then
@@ -180,12 +212,42 @@ End
 
 Public Sub DrawingArea_Enter()
   
+  Dim X As Integer
+  
+  $hDrawingArea.Tracking = True
   $hDrawingArea.Refresh
+  
+  If GetParent().Closable Then
+    CreateButton
+    X = $hDrawingArea.W - $hDrawingArea.H
+    btnClose.Move(X, 0, $hDrawingArea.H, $hDrawingArea.H)
+    btnClose.Show
+  Endif
   
 End
 
 Public Sub DrawingArea_Leave()
   
+  If btnClose Then
+    Object.Lock($hDrawingArea)
+    btnClose.Delete ' Can raise Leave again!
+    btnClose = Null
+    Object.Unlock($hDrawingArea)
+  Endif
+  
+  $hDrawingArea.Tracking = False
   $hDrawingArea.Refresh
+  
+End
+
+Public Sub btnClose_MouseUp()
+  
+  GetParent()._Close(GetIndex())
+  
+End
+
+Public Sub btnClose_MouseWheel()
+  
+  DrawingArea_MouseWheel
   
 End

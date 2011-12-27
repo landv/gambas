@@ -81,6 +81,11 @@ Public Sub DrawingArea_Draw()
   
   If Not $hProjectInfo Then Return
   
+  If $bHighlight And If Not $hDrawingArea.Hovered Then
+    DrawingArea_Leave
+    Return
+  Endif
+  
   bSelected = Me.Background = Color.SelectedBackground
   
   With $hProjectInfo
@@ -122,7 +127,10 @@ End
 
 Public Sub DrawingArea_Leave()
   
-  If $bHighlight Then $hDrawingArea.Background = Color.Default
+  If $bHighlight Then 
+    $hDrawingArea.Background = Color.Default
+    $bHighlight = False
+  Endif
   
 End
 

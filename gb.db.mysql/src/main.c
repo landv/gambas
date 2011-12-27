@@ -627,12 +627,13 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	mysql_options(conn, MYSQL_OPT_RECONNECT, &reconnect);
 	
 	timeout = db->timeout;
-	
 	mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
+	/*timeout /= 3;
+	mysql_options(conn, MYSQL_OPT_READ_TIMEOUT, &timeout);*/
 	
 	if (!mysql_real_connect(conn, host, desc->user, desc->password,
 			name, desc->port == NULL ? 0 : atoi(desc->port), socket,
-			CLIENT_MULTI_RESULTS /*client flag */)){
+			CLIENT_MULTI_RESULTS | CLIENT_REMEMBER_OPTIONS /*client flag */)){
 		mysql_close(conn);
 		GB.Error("Cannot open database: &1", mysql_error(conn));
 		return TRUE;
