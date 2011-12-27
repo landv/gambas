@@ -2007,7 +2007,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 {
 	const char *query =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attrdef.atthasdef "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
 		"from pg_class, pg_attribute "
 		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
 		"where pg_class.relname = '&1' "
@@ -2018,7 +2018,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	const char *query_schema =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attrdef.atthasdef "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
 		"from pg_class, pg_attribute "
 		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
 		"where pg_class.relname = '&1' "
