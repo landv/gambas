@@ -131,6 +131,8 @@ Public Sub UpdateLayout()
       If bClosable Then S += BUTTON_SIZE
       Me.W = S
   End Select
+  
+  GetParent().TabBar_Arrange
 
 End
 
@@ -249,5 +251,17 @@ End
 Public Sub btnClose_MouseWheel()
   
   DrawingArea_MouseWheel
+  
+End
+
+Public Sub btnClose_Enter()
+  
+  btnClose.Picture = Picture["img/delete-h.png"]
+  
+End
+
+Public Sub btnClose_Leave()
+  
+  btnClose.Picture = Picture["img/delete.png"]
   
 End

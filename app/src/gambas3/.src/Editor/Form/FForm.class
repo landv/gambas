@@ -1214,6 +1214,14 @@ Public Sub Control_Click()
   Dim hCCtrl As CControl = Control[hCtrl.Tag]
 
   If hCCtrl And If hCCtrl.IsMultiContainer() Then
+    
+    If hCCtrl.Selected Then
+      SelectControl(hCCtrl.Name)
+    Else
+      UnSelectAll
+    Endif
+    RefreshProperty
+    
     UpdateMultiContainer(hCCtrl)
     If hCCtrl.HasIcon() Then $hFamily.EnterControl(RootControl.Control, hCCtrl)
   Endif

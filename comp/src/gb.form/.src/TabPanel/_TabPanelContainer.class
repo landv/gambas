@@ -6,7 +6,6 @@ Inherits UserControl
 
 Property Text As String
 Property Picture As Picture
-Property Read Container As Container
 Property Visible As Boolean
 
 Private Sub GetParent() As TabPanel
@@ -57,12 +56,12 @@ Private Sub Picture_Write(hPict As Picture)
 
 End
 
-Private Function Container_Read() As Container
-
-  Return Me
-
-End
-
+' Private Function Container_Read() As Container
+' 
+'   Return Me
+' 
+' End
+' 
 Public Sub _Delete()
   
   Super.Delete

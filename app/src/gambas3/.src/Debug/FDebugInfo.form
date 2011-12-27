@@ -8,7 +8,7 @@
   { splDebug HSplit
     MoveScaled(1,1,116,45)
     { tabDebug TabPanel
-      MoveScaled(1,2,92,41)
+      MoveScaled(2,2,92,41)
       Expand = True
       Arrangement = Arrange.Vertical
       Count = 6
@@ -25,9 +25,10 @@
       Picture = Picture["img/16/local.png"]
       { Separator4 Separator
         MoveScaled(7,7,24,0)
+        Visible = False
       }
       { tbvLocal TableView
-        MoveScaled(3,8,63,18)
+        MoveScaled(3,12,63,18)
         Expand = True
         Mode = Select.Single
         Grid = False
@@ -39,10 +40,11 @@
       Text = ("Current object")
       Picture = Picture["img/16/current.png"]
       { Separator2 Separator
-        MoveScaled(24,7,27,0)
+        MoveScaled(26,7,27,0)
+        Visible = False
       }
       { tbvObject TableView
-        MoveScaled(1,12,69,20)
+        MoveScaled(3,12,69,20)
         Expand = True
         Mode = Select.Single
         Grid = False

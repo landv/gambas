@@ -106,8 +106,10 @@ Public Sub _EnsureCurrentVisible()
     $bArrow = False
   Endif
     
-  $hTabBarContainer.Move($X, 0)
-  
+  W = Me.W - $X
+  If $bArrow Then W -= ARROW_WIDTH
+  $hTabBarContainer.Move($X, 0, W, $hTabBar.H)
+
 End
 
 
@@ -138,13 +140,7 @@ End
 
 Public Sub TabBar_Arrange()
   
-  Dim W As Integer
-  
   _EnsureCurrentVisible
-  
-  W = Me.W - $X
-  If $bArrow Then W -= ARROW_WIDTH
-  $hTabBarContainer.Move($X, 0, W, $hTabBar.H)
   
 End
 
@@ -199,6 +195,8 @@ Private Sub Count_Write(iCount As Integer)
     'ME.Container = hCont
 
   Endif
+  
+  UpdateLayout
 
   $iCurrent = -1
   If iCurrent < 0 Then iCurrent = $aCont.Max
@@ -242,9 +240,9 @@ Private Sub UpdateContainer()
 
     With $aCont[iInd]
       If iInd = $iCurrent Then
+        .Move(0, 0)
         .Ignore = False
         .Show
-        .Raise
       Else If .Visible Then
         .Hide
         .Ignore = True

@@ -103,11 +103,73 @@
           MoveScaled(2,2,71,35)
           Arrangement = Arrange.Fill
           Spacing = True
-          { tabTable TabStrip
+          { panRequest VBox
+            MoveScaled(10,9,61,24)
+            Visible = False
+            { tlbData2 ToolBar
+              MoveScaled(0,0,51,4)
+              Separator = True
+              { btnRunQuery ToolButton
+                MoveScaled(0,0,13,4)
+                AutoResize = True
+                Text = ("Run query")
+                Picture = Picture["icon:/small/play"]
+              }
+              { btnClear ToolButton
+                MoveScaled(13,0,4,4)
+                ToolTip = ("Cut")
+                Picture = Picture["icon:/small/clear"]
+              }
+              { btnCut ToolButton mnuCut
+                Name = "btnCut"
+                MoveScaled(17,0,4,4)
+                ToolTip = ("Cut")
+                Picture = Picture["icon:/small/cut"]
+              }
+              { btnCopy ToolButton mnuCopy
+                Name = "btnCopy"
+                MoveScaled(21,0,4,4)
+                ToolTip = ("Copy")
+                Picture = Picture["icon:/small/copy"]
+              }
+              { btnPaste ToolButton mnuPaste
+                Name = "btnPaste"
+                MoveScaled(25,0,4,4)
+                ToolTip = ("Paste")
+                Picture = Picture["icon:/small/paste"]
+              }
+              { btnUndo ToolButton mnuUndo
+                Name = "btnUndo"
+                MoveScaled(29,0,4,4)
+                ToolTip = ("Undo")
+                Picture = Picture["icon:/small/undo"]
+              }
+              { btnRedo ToolButton mnuRedo
+                Name = "btnRedo"
+                MoveScaled(33,0,4,4)
+                ToolTip = ("Redo")
+                Picture = Picture["icon:/small/redo"]
+              }
+              { ToolButton1 ToolButton
+                MoveScaled(38,0,9,4)
+                Visible = False
+              }
+            }
+            { edtRequest Editor
+              MoveScaled(3,9,18,5)
+              Expand = True
+              Border = False
+            }
+            { Separator9 Separator
+              MoveScaled(8,18,9,0)
+            }
+          }
+          { tabTable TabPanel
             MoveScaled(3,2,68,26)
             Visible = False
             Expand = True
             Arrangement = Arrange.Vertical
+            Border = False
             Count = 2
             Index = 0
             Text = ("Fields")
@@ -216,67 +278,6 @@
               Border = False
             }
             Index = 0
-          }
-          { panRequest VBox
-            MoveScaled(10,9,61,24)
-            Visible = False
-            { tlbData2 ToolBar
-              MoveScaled(0,0,51,4)
-              Separator = True
-              { btnRunQuery ToolButton
-                MoveScaled(0,0,13,4)
-                AutoResize = True
-                Text = ("Run query")
-                Picture = Picture["icon:/small/play"]
-              }
-              { btnClear ToolButton
-                MoveScaled(13,0,4,4)
-                ToolTip = ("Cut")
-                Picture = Picture["icon:/small/clear"]
-              }
-              { btnCut ToolButton mnuCut
-                Name = "btnCut"
-                MoveScaled(17,0,4,4)
-                ToolTip = ("Cut")
-                Picture = Picture["icon:/small/cut"]
-              }
-              { btnCopy ToolButton mnuCopy
-                Name = "btnCopy"
-                MoveScaled(21,0,4,4)
-                ToolTip = ("Copy")
-                Picture = Picture["icon:/small/copy"]
-              }
-              { btnPaste ToolButton mnuPaste
-                Name = "btnPaste"
-                MoveScaled(25,0,4,4)
-                ToolTip = ("Paste")
-                Picture = Picture["icon:/small/paste"]
-              }
-              { btnUndo ToolButton mnuUndo
-                Name = "btnUndo"
-                MoveScaled(29,0,4,4)
-                ToolTip = ("Undo")
-                Picture = Picture["icon:/small/undo"]
-              }
-              { btnRedo ToolButton mnuRedo
-                Name = "btnRedo"
-                MoveScaled(33,0,4,4)
-                ToolTip = ("Redo")
-                Picture = Picture["icon:/small/redo"]
-              }
-              { ToolButton1 ToolButton
-                MoveScaled(38,0,9,4)
-                Visible = False
-              }
-            }
-            { edtRequest Editor
-              MoveScaled(3,9,18,5)
-              Expand = True
-              Border = False
-            }
-            { Separator9 Separator
-              MoveScaled(8,18,9,0)
-            }
           }
         }
         { panData Panel

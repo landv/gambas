@@ -184,6 +184,7 @@ Public Sub Form_Open()
   Dim sBrush As String
   Dim aComp As New String[12]
   Dim achkSynchro As New CheckBox[8]
+  Dim bSynchro As Boolean
 
   $aCoordBox[BORDER_TOP] = crdTop
   $aCoordBox[BORDER_BOTTOM] = crdBottom
@@ -217,29 +218,43 @@ Public Sub Form_Open()
 
     aComp[iBorder] = aScan[1]
 
-    For Each sBrush In Split(aScan[1], " ")
+    If iBorder < 4 Then
 
-      If IsDigit(Left(sBrush)) Then
-        If InStr(sBrush, "/") Then
-          Try $aCoordBox[iBorder].Value = Scan(sBrush, "*/*")[0]
-          Try $aCoordBox[iBorder + 1].Value = Scan(sBrush, "*/*")[1]
-          achkSynchro[iBorder - 4].Value = $aCoordBox[iBorder].Value = $aCoordBox[iBorder + 1].Value
-        Else
+      For Each sBrush In Split(aScan[1], " ")
+  
+        If IsDigit(Left(sBrush)) Then
           Try $aCoordBox[iBorder].Value = sBrush
+        Else
+          Try $aBrush[iBorder] = CReportBrush[sBrush]
         Endif
+  
+      Next
+      
+    Else
+      
+      aScan = Split(aScan[1], " ")
+      If aScan.Count = 2 Then
+        Try $aCoordBox[iBorder].Value = aScan[0]
+        Try $aCoordBox[iBorder + 1].Value = aScan[1]
+        achkSynchro[iBorder].Value = $aCoordBox[iBorder].Value = $aCoordBox[iBorder + 1].Value
       Else
-        Try $aBrush[iBorder] = CReportBrush[sBrush]
+        Try $aCoordBox[iBorder].Value = sBrush
+        achkSynchro[iBorder - 4].Value = True
       Endif
-
-    Next
+      
+    Endif
 
   Next
 
   If aComp[0] = aComp[1] And If aComp[0] = aComp[2] And If aComp[0] = aComp[3] Then
-    chkSynchro.Value = True
-  Else
-    chkSynchro.Value = False
+    If Not aComp[5] And If Not aComp[7] And If Not aComp[9] And If Not aComp[11] Then
+      If aComp[4] = aComp[6] And If aComp[4] = aComp[8] And If aComp[4] = aComp[10] Then
+        bSynchro = True
+      Endif
+    Endif
   Endif
+  
+  chkSynchro.Value = bSynchro
 
 End
 

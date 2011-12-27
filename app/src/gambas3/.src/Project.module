@@ -3910,8 +3910,10 @@ Public Sub RenameFile(sPath As String, sNewName As String)
         If Exist(sDir &/ sName & "." & sFamily) Then RenameOneFile(sDir, sName, sNewName, sFamily)
       Next
     Endif
-
+    
   Else
+
+    If Project.IsConnectionPath(sPath) Then sNewName = File.SetExt(sNewName, ".connection")
 
     sName = File.Name(sPath)
     If sName = sNewName Then Return

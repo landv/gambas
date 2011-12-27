@@ -1548,3 +1548,12 @@ Public Sub btnExportRequest_Click()
   If datRequest.Count Then FExportData.Run(datRequest, dvwRequest)
 
 End
+
+Public Sub Rename(sNewName As String, sNewPath As String)
+
+  Me.Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
+  DrawTitle
+
+End
+
