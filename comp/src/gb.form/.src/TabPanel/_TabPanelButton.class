@@ -8,11 +8,13 @@ Property Text As String
 Property Selected As Boolean
 Property Orientation As Integer
 Property Picture As Picture
+'Property Visible As Boolean
 
 Private $sText As String
 Private $bSelected As Boolean
 Private $iOrientation As Integer = Align.Top
 Private $hPicture As Picture
+Private $bHidden As Boolean
 Private btnClose As PictureBox
 
 Private Const BUTTON_SIZE As Integer = 12
@@ -42,10 +44,10 @@ Public Sub DrawingArea_Draw()
   Dim iFg As Integer
   Dim X, W As Integer
   Dim bBorder As Boolean
-  Dim iIndex As Integer
   Dim hTabPanel As TabPanel
   Dim bClosable As Boolean
   Dim bHighlight As Boolean
+  Dim bFirst As Boolean
   
   hTabPanel = GetParent()
   bHighlight = hTabPanel.Highlight And $bSelected
@@ -77,7 +79,7 @@ Public Sub DrawingArea_Draw()
   Draw.Foreground = Color.LightForeground
   
   bBorder = hTabPanel.Border
-  iIndex = GetIndex()
+  bFirst = GetIndex() = hTabPanel._GetFirstIndex()
   
   'If Not bHighlight Then
   
@@ -85,8 +87,8 @@ Public Sub DrawingArea_Draw()
     
       Case Align.Top
         If $bSelected Then
-          If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
-          If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+          If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
+          If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
           If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
         Else
           Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
@@ -94,8 +96,8 @@ Public Sub DrawingArea_Draw()
         
       Case Align.Bottom
         If $bSelected Then
-          If iIndex Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
-          If iIndex Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+          If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
+          If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
           If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
         Else
           Draw.Line(0, 0, Me.W - 1, 0)
@@ -265,3 +267,16 @@ Public Sub btnClose_Leave()
   btnClose.Picture = Picture["img/delete.png"]
   
 End
+
+' Private Function Visible_Read() As Boolean
+' 
+'   Return Not $bHidden
+' 
+' End
+' 
+' Private Sub Visible_Write(Value As Boolean)
+' 
+'   $bHidden = Not Value
+'   Super.Visible = Value
+' 
+' End

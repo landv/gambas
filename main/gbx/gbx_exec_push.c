@@ -195,7 +195,7 @@ _PUSH_GENERIC:
 
 		case CD_STATIC_VARIABLE:
 
-			if (UNLIKELY(object != NULL))
+			if (object)
 				THROW(E_STATIC, class->name, name);
 
 			if (defined) *PC |= 3;
@@ -228,7 +228,7 @@ _PUSH_GENERIC:
 		case CD_STATIC_PROPERTY:
 		case CD_STATIC_PROPERTY_READ:
 
-			if (UNLIKELY(object != NULL))
+			if (object)
 				THROW(E_STATIC, class->name, name);
 
 			if (defined) *PC |= 4;

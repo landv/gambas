@@ -128,7 +128,7 @@ _POP_GENERIC:
 
     case CD_STATIC_VARIABLE:
 
-      if (UNLIKELY(object != NULL))
+      if (object)
         THROW(E_STATIC, class->name, name);
 
       if (defined) *PC |= 2;
@@ -159,7 +159,7 @@ _POP_GENERIC:
 
     case CD_STATIC_PROPERTY:
 
-      if (UNLIKELY(object != NULL))
+      if (object)
         THROW(E_STATIC, class->name, name);
 
       if (defined) *PC |= 3;

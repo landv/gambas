@@ -72,7 +72,10 @@ Public Sub _EnsureCurrentVisible()
   
   Dim X, W, M As Integer
   
-  If $iCurrent <= 0 Then
+  If $iCurrent < 0 Or If $iCurrent > $aButton.Max Then Return
+  If Not $aButton[$iCurrent].Visible Then Return
+  
+  If $iCurrent = 0 Then
     $X = 0
   Else
     With $aButton[$iCurrent]
@@ -144,10 +147,6 @@ Public Sub TabBar_Arrange()
   
 End
 
-
-
-
-
 Private Function Count_Read() As Integer
 
   Return $aCont.Count
@@ -217,7 +216,6 @@ Private Sub Index_Write(iIndex As Integer)
   If iIndex < 0 Or iIndex >= $aCont.Count Then Error.Raise("Bad index")
 
   If iIndex = $iCurrent Then Return
-  If Not $aButton[iIndex].Visible Then Return
 
   If $iCurrent >= 0 Then $aButton[$iCurrent].Selected = False
   $iCurrent = iIndex
@@ -539,6 +537,12 @@ Private Sub GetNextIndex(iIndex As Integer) As Integer
     If $aButton[I].Visible Then Return I
   Next
   Return -1
+  
+End
+
+Public Sub _GetFirstIndex() As Integer
+  
+  Return GetNextIndex(-1)
   
 End
 

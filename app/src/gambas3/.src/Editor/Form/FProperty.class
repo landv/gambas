@@ -650,10 +650,21 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Fields", "Field[]", "ReportPadding", "ReportBorder", "ReportBrush", "Field", "Table"
+    Case "String[]", "Fields", "Field[]", "ReportPadding", "ReportBorder", "ReportBrush"
 
       bButton = True
       txtProperty.ReadOnly = True
+
+    Case "Table"
+
+      If GetConnection() Then txtProperty.ReadOnly = True
+
+    Case "Field"
+
+      If GetConnection() And If GetTable($sOption) Then 
+        txtProperty.ReadOnly = True
+        bButton = True
+      Endif
 
     Case "Constant"
 
@@ -952,6 +963,9 @@ Public Sub btnProperty_Click()
       If sConnection And If sTable Then
         If FFieldChooser.Run(sConnection, sTable, True, $sOldVal) Then Goto _EXIT
         $hEditor.Text = FFieldChooser.Value
+      Else
+        If FText.Run($sOldVal) Then Goto _EXIT
+        $hEditor.Text = FText.Value
       Endif
 
     Case "ReportCoord"
