@@ -133,16 +133,26 @@ gTreeView::~gTreeView()
 }
 
 
+static gboolean fix_border(gTreeView *view)
+{
+	view->setBorder(false);
+	return FALSE;
+}
+
 bool gTreeView::add(char *key,char *text,gPicture *pic,char *after,char *parent, bool before)
 {
 	gTreeRow *row;
 	gTreeCell *cell;
+	
+	if (_scroll && count() == 0 && !hasBorder())
+		g_timeout_add(10, (GSourceFunc)fix_border, this);
 	
 	row = tree->addRow(key,parent,after,before);
 	
 	if (!row) return false;
 	
 	cell = row->get(0);
+
 	if (cell)
 	{
 		cell->setText(text);
@@ -391,7 +401,6 @@ void gTreeView::setItemText(char *key, int col, const char *text)
 	cell->setText(text);
 	if (col == getSortColumn())
 		tree->sortLater();
-	
 	row->update();
 }
 

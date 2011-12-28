@@ -993,7 +993,9 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 		gtk_tree_store_append (store, &iter, piter);
 	
 	buf = g_strdup(key); // Will be freed by ~gTreeRow()
+	
 	row = new gTreeRow(this, buf, gtk_tree_iter_copy(&iter));
+	
 	g_hash_table_insert(datakey, (gpointer)buf, (gpointer)row);
 	gtk_tree_store_set(store, &iter, view ? 0 : 1, buf, -1);
   

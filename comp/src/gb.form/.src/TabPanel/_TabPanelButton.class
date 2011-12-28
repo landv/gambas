@@ -15,7 +15,8 @@ Private $bSelected As Boolean
 Private $iOrientation As Integer = Align.Top
 Private $hPicture As Picture
 Private $bHidden As Boolean
-Private btnClose As PictureBox
+Private $bShowClose As Boolean
+Private $bInClose As Boolean
 
 Private Const BUTTON_SIZE As Integer = 12
 
@@ -38,7 +39,6 @@ Private Sub GetIndex() As Integer
   
 End
 
-
 Public Sub DrawingArea_Draw()
   
   Dim iFg, iBg As Integer
@@ -49,6 +49,7 @@ Public Sub DrawingArea_Draw()
   Dim bHighlight As Boolean
   Dim bFirst As Boolean
   Dim iIndex As Integer
+  Dim hPict As Picture
   
   hTabPanel = GetParent()
   iIndex = GetIndex()
@@ -83,34 +84,34 @@ Public Sub DrawingArea_Draw()
   bBorder = hTabPanel.Border
   bFirst = iIndex = hTabPanel._GetFirstIndex()
   
-  'If Not bHighlight Then
+  Select Case $iOrientation
   
-    Select Case $iOrientation
-    
-      Case Align.Top
-        If $bSelected Then
-          If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
-          If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
-          If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
-        Else
-          Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
-        Endif
-        
-      Case Align.Bottom
-        If $bSelected Then
-          If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
-          If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
-          If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
-        Else
-          Draw.Line(0, 0, Me.W - 1, 0)
-        Endif
-        
-    End Select
-    
-  'Endif
+    Case Align.Top
+      If $bSelected Then
+        If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
+        If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+        If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
+      Else
+        Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+      Endif
+      
+    Case Align.Bottom
+      If $bSelected Then
+        If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
+        If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+        If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+      Else
+        Draw.Line(0, 0, Me.W - 1, 0)
+      Endif
+      
+  End Select
+  
+  If $bShowClose Then
+    hPict = Picture[If($bInClose, "img/delete-h.png", "img/delete.png")]
+    Draw.Picture(hPict, Me.W - hPict.W, (Me.H - hPict.H) \ 2)
+  Endif
   
 End
-
 
 Private Function Text_Read() As String
 
@@ -157,7 +158,7 @@ End
 Private Sub Selected_Write(Value As Boolean)
 
   $bSelected = Value
-  $hDrawingArea.Mouse = If($bSelected, Mouse.Default, Mouse.Pointing)
+  SetMouse
   $hDrawingArea.Refresh
 
 End
@@ -177,20 +178,15 @@ End
 
 Public Sub DrawingArea_MouseDown()
   
-  If $bSelected Then Return
-  If Mouse.Left Then GetParent().Index = GetIndex()
+  If Mouse.Left Then 
+    If $bInClose Then
+      GetParent()._Close(GetIndex())
+    Else
+      If $bSelected Then Return
+      GetParent().Index = GetIndex()
+    Endif
+  Endif
   
-End
-
-Private Sub CreateButton()
-
-  If btnClose Then Return
-  btnClose = New PictureBox($hDrawingArea) As "btnClose"
-  btnClose.Alignment = Align.Center
-  btnClose.Picture = Picture["img/delete.png"]
-  btnClose.Mouse = Mouse.Pointing
-  btnClose.Hide
-
 End
 
 Public Sub DrawingArea_MouseWheel()
@@ -218,67 +214,38 @@ End
 
 Public Sub DrawingArea_Enter()
   
-  Dim X As Integer
-  
   $hDrawingArea.Tracking = True
+  $bShowClose = GetParent().Closable
   $hDrawingArea.Refresh
-  
-  If GetParent().Closable Then
-    CreateButton
-    X = $hDrawingArea.W - BUTTON_SIZE
-    btnClose.Move(X, 0, BUTTON_SIZE, $hDrawingArea.H)
-    btnClose.Show
-  Endif
   
 End
 
+Private Sub SetMouse()
+  
+  $hDrawingArea.Mouse = If($bSelected And Not $bInClose, Mouse.Default, Mouse.Pointing)
+  
+End
+
+
 Public Sub DrawingArea_Leave()
   
-  If btnClose Then
-    Object.Lock($hDrawingArea)
-    btnClose.Delete ' Can raise Leave again!
-    btnClose = Null
-    Object.Unlock($hDrawingArea)
-  Endif
-  
+  $bShowClose = False
+  $bInClose = False
+  SetMouse
   $hDrawingArea.Tracking = False
   $hDrawingArea.Refresh
   
 End
 
-Public Sub btnClose_MouseUp()
+Public Sub DrawingArea_MouseMove()
   
-  GetParent()._Close(GetIndex())
+  Dim bInClose As Boolean
   
-End
-
-Public Sub btnClose_MouseWheel()
-  
-  DrawingArea_MouseWheel
-  
-End
-
-Public Sub btnClose_Enter()
-  
-  btnClose.Picture = Picture["img/delete-h.png"]
+  bInClose = Mouse.X > (Me.W - BUTTON_SIZE) 
+  If bInClose <> $bInClose Then
+    $bInClose = bInClose
+    SetMouse
+    $hDrawingArea.Refresh
+  Endif
   
 End
-
-Public Sub btnClose_Leave()
-  
-  btnClose.Picture = Picture["img/delete.png"]
-  
-End
-
-' Private Function Visible_Read() As Boolean
-' 
-'   Return Not $bHidden
-' 
-' End
-' 
-' Private Sub Visible_Write(Value As Boolean)
-' 
-'   $bHidden = Not Value
-'   Super.Visible = Value
-' 
-' End

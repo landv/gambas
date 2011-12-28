@@ -10,21 +10,24 @@
     Move(14,7,560,399)
     Expand = True
     Arrangement = Arrange.Fill
-    Border = False
     Count = 8
+    Closable = True
     Highlight = True
     Index = 0
     Text = ("Tintin")
-    { SidePanel1 SidePanel
-      Move(56,77,294,175)
-      Orientation = Align.Bottom
-      Separator = True
+    { Panel1 Panel
+      Move(7,14,525,322)
+      { TreeView1 TreeView
+        Move(21,14,210,112)
+        Border = False
+      }
     }
     Index = 1
     Text = ("Bonjour")
     Picture = Picture["icon:/16/add"]
-    { DirChooser1 DirChooser
-      Move(21,14,378,336)
+    { FileChooser1 FileChooser
+      Move(14,14,525,350)
+      Border = False
     }
     Index = 2
     Text = ("Test")

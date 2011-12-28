@@ -318,7 +318,7 @@ BEGIN_METHOD(CTREEVIEW_add, GB_STRING key; GB_STRING text; GB_OBJECT picture; GB
 		pic = NULL;
 
 	add_item(THIS, key, text, pic, parent, after);
-
+	
 END_METHOD
 
 

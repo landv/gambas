@@ -186,8 +186,8 @@ public:
 	unsigned _drag_get_data : 1;  // If we got information on the dragged data
 	unsigned _drag_enter : 1;     // If we have entered the control for drag & drop
 	unsigned _tracking : 1;       // If we are tracking mouse move even if no mouse button is pressed
-	unsigned _old_tracking : 1;   // real value when Tracking is false
 	
+	unsigned _old_tracking : 1;   // real value when Tracking is false
 	unsigned _bg_set : 1;          // Have a private background
 	unsigned _fg_set : 1;          // Have a private foreground
 	unsigned _font_set : 1;       // Have a private font
@@ -195,18 +195,20 @@ public:
 	unsigned use_base : 1;        // Use base and text color for foreground and background
 	unsigned visible : 1;         // A control can be hidden if its width or height is zero
 	unsigned _destroyed : 1;      // If the control has already been added to the destroy list
-	unsigned _dirty_pos : 1;      // If the position of the widget has changed
-	unsigned _dirty_size : 1;     // If the size of the widget has changed
 	
 	unsigned _locked : 4;         // For locking events
 	unsigned frame_border : 4;
+
 	unsigned frame_padding : 8;
-	unsigned _scrolled_window : 1;
 	
+	unsigned _scrolled_window : 1;
+	unsigned _dirty_pos : 1;      // If the position of the widget has changed
+	unsigned _dirty_size : 1;     // If the size of the widget has changed
 	unsigned _no_delete : 1;               // Do not delete on destroy signal
 	unsigned no_input_method : 1;          // No input method management
 	unsigned _no_default_mouse_event : 1;  // No default mouse events
 	unsigned _grab : 1;                    // control is currently grabbing mouse and keyboard
+	unsigned _has_border : 1;              // if the control has a border
 	
 	
   void removeParent() { pr = NULL; }

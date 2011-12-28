@@ -132,6 +132,7 @@ Private Sub UpdateLayout()
   For Each hCtrl In $aButton
     hCtrl.Orientation = $iOrientation
     hCtrl.UpdateLayout
+    hCtrl.Refresh
   Next
   
   $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale
@@ -168,6 +169,8 @@ Private Sub Count_Write(iCount As Integer)
 
   iCurrent = $iCurrent
     
+  Object.Lock(Me)
+  
   If iCount < $aCont.Count Then
 
     For iInd = $aCont.Max To iCount Step -1
@@ -201,6 +204,9 @@ Private Sub Count_Write(iCount As Integer)
 
   $iCurrent = -1
   If iCurrent < 0 Then iCurrent = $aCont.Max
+  
+  Object.Unlock(Me)
+  
   Try Index_Write(iCurrent)
 
 End
@@ -580,7 +586,7 @@ End
 Private Sub Highlight_Write(Value As Boolean)
 
   $bHighlight = Value
-  Try $aButton[$iCurrent].Refresh
+  UpdateLayout
 
 End
 
@@ -592,7 +598,7 @@ End
 
 Private Sub Closable_Write(Value As Boolean)
 
-  $bClosable = True
+  $bClosable = Value
   UpdateLayout
 
 End

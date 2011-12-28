@@ -395,6 +395,8 @@ Public Function SaveProperty() As Boolean
   End Select
 
   $bIgnoreCancel = True
+  
+  CControl.LastError = ""
 
   If $bMany Then
 
@@ -417,13 +419,14 @@ Public Function SaveProperty() As Boolean
 _BAD:
 
   sMsg = ("Incorrect property value.")
+  If CControl.LastError Then sMsg &= "\n\n" & CControl.LastError
   $bIgnoreCancel = False
 
 _CANCEL:
 
   CancelProperty
   $hEditor.SetFocus
-  If sMsg Then Balloon.Warning(sMsg, grdProperty, $hEditor.X - grdProperty.X + $hEditor.W / 2, $hEditor.Y - grdProperty.Y + $hEditor.H / 2)
+  If sMsg Then Balloon.Warning(sMsg, grdProperty, panEditor.X - grdProperty.X + panEditor.W / 2, panEditor.Y - grdProperty.Y + panEditor.H / 2)
   Return True
 
 End

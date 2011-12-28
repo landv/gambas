@@ -10,18 +10,26 @@ End
 
 Public Sub Form_Open()
 
-  TabPanel1.Closable = True
-
 End
 
 Public Sub Button1_Click()
 
-  Print TabPanel1.ClientX;; TabPanel1.ClientY;; TabPanel1.ClientW;; TabPanel1.ClientH
+  'TreeView1.Border = False
+  Debug TreeView1.Border
+  TreeView1.Add(TreeView1.Count, "#0")
+  Wait 0.01
+  Debug TreeView1.Border
 
 End
 
 Public Sub TabPanel1_Click()
 
   
+
+End
+
+Public Sub TabPanel1_Close(Index As Integer)
+
+  TabPanel1.Remove(Index)
 
 End

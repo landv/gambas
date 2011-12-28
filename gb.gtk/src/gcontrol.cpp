@@ -1432,6 +1432,8 @@ void gControl::setBorder(bool vl)
 	}
 	else
 		setFrameBorder(vl ? BORDER_SUNKEN : BORDER_NONE);
+	
+	_has_border = vl;
 }
 
 
