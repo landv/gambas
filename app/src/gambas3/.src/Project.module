@@ -89,7 +89,7 @@ Public ComponentState As Integer
 'Public Stack As Integer
 'Public StackTrace As Boolean
 Public Authors As String
-Public VersionProgram As String
+Public VersionFile As Boolean
 Public UseTerminal As Boolean
 
 Public Running As Boolean
@@ -2231,6 +2231,8 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
 
   SetMessage(("Compiling project") & " " & Project.Name & "...")
 
+  GetVersion
+
   If bAll Then
     'CleanUp
     DeleteCompiledFiles
@@ -2406,7 +2408,7 @@ Private Sub GetAbsoluteLink(sPath As String, sLink As String) As String
 
 End
 
-Private Sub MakeRelativeLink(sLink As String, sPath As String) As String
+Public Sub MakeRelativeLink(sLink As String, sPath As String) As String
 
   Dim aPath As String[]
   Dim aLink As String[]
@@ -2637,30 +2639,34 @@ End
 
 Private Sub GetVersion()
 
+  Dim sDir As String
   Dim sVer As String
   Dim aVer As String[]
   Dim iMajor As Integer
   Dim iMinor As Integer
   Dim iRelease As Integer
 
-  If Not VersionProgram Then Return
+  If Not VersionFile Then Return
 
-  Shell VersionProgram To sVer
+  sDir = Project.Dir
+  Do
+    sDir = File.Dir(sDir)
+    If sDir = "/" Then Return
+    If Exist(sDir &/ "VERSION") Then Break
+  Loop
+
+  sVer = Trim(File.Load(sDir &/ "VERSION"))
 
   aVer = Split(Trim(sVer), ".")
 
   iMajor = aVer[0]
-  iMinor = aVer[1]
+  Try iMinor = aVer[1]
 
   MajorVersion = iMajor
   MinorVersion = iMinor
 
   Try iRelease = aVer[2]
   If Not Error Then ReleaseVersion = iRelease
-
-Catch
-
-  Debug "Unable to get version from: "; VersionProgram
 
 End
 
@@ -2718,7 +2724,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     If Process.LastValue Then Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
 
-    If Not VersionProgram And If Not bDoNotIncVersion Then Inc ReleaseVersion
+    If Not VersionFile And If Not bDoNotIncVersion Then Inc ReleaseVersion
     WriteProject(True, True)
 
     If RunAfterMakingExec Then
@@ -2864,7 +2870,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   CreateShortcut = False
   RunAfterMakingExec = ""
   Language = ""
-  VersionProgram = ""
+  VersionFile = False
   'Stack = 0
   'StackTrace = False
   UseTerminal = False
@@ -2934,8 +2940,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Try MinorVersion = Val(cVer[1])
         Try ReleaseVersion = Val(cVer[2])
 
-      Case "versionprogram"
-        VersionProgram = sVal
+      Case "versionfile"
+        VersionFile = Val(sVal) <> 0
 
       Case "localize", "translate"
         Localize = Val(sVal) <> 0
@@ -3168,7 +3174,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   GetVersion()
   Print #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
-  If VersionProgram Then Print #hFic, "VersionProgram="; VersionProgram
+  If VersionFile Then Print #hFic, "VersionFile=1"
 
   For Each hComp In CComponent.All
     If Components.Find(hComp.Key) >= 0 Then

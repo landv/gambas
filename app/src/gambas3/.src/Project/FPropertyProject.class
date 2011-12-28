@@ -75,7 +75,7 @@ Public Sub Form_Open()
     'cmbStackSize.Index = 0
     'If .Stack Then cmbStackSize.Text = .Stack & " K"
     'cmbStackTrace.Index = If(.StackTrace, 0, 1)
-    txtVersionProg.Text = .VersionProgram
+    chkGetVersionFromFile.Value = .VersionFile
     'chkVersion.Value = NOT IsNull(.VersionProgram)
     cmbTerminal.Index = If(.UseTerminal, 0, 1)
     $aLibraries = .Libraries.Copy()
@@ -203,11 +203,7 @@ Private Function DoApply() As Boolean
     .MajorVersion = txtMajor.Value
     .MinorVersion = txtMinor.Value
     .ReleaseVersion = txtRelease.Value
-    If Trim(txtVersionProg.Text) Then
-      .VersionProgram = Trim(txtVersionProg.Text)
-    Else 
-      .VersionProgram = ""
-    Endif
+    .VersionFile = chkGetVersionFromFile.Value
     '.SnapToGrid = chkSnap.Value
 
     'IF chkShowGrid.Value <> .ShowGrid OR .Snap <> txtGrid.Value THEN
@@ -1150,3 +1146,10 @@ Public Sub btnUndoLib_Click()
 
 End
 
+Public Sub chkGetVersionFromFile_Click()
+
+  txtMajor.Enabled = Not chkGetVersionFromFile.Value
+  txtMinor.Enabled = Not chkGetVersionFromFile.Value
+  txtRelease.Enabled = Not chkGetVersionFromFile.Value
+
+End
