@@ -16,7 +16,7 @@ Static Public Function Run(hReport As Report)
   $hReport = hReport
 
   hFpreview = New FPreview
-  hFpreview.Show
+  hFpreview.ShowModal()
 
 End
 
@@ -24,6 +24,7 @@ Public Sub _new()
 
   Dim hSizeInt As TSizeParse
 
+  $hReport.Refresh
   Printer1.Paper = $hReport.Paper
   Printer1.Orientation = $hReport.Orientation
   'Debug "Orientation avant impression : " & Printer1.Orientation

@@ -14,7 +14,7 @@ Public Sub _new()
   ' hCon.Type = "sqlite"
   ' hCon.Host = User.Home
   ' hCon.Name = "test"
-  hresult = db.Limit(50).Exec("SELECT * FROM test")
+  hresult = db.Exec("SELECT * FROM test")
   'Print hresult.Count
   ReportHBox1.DataCount = hresult.Count
   'ReportLabel1.Brush = ReportBrush["&h00FF00&"]

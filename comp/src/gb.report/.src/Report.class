@@ -22,7 +22,7 @@ Public _bInExec As Boolean
 Private $aSections As New TControl[]
 Private iCurPage As Integer = 0
 Private $iPageCount As Integer = -1
-Public $bLayoutIsDirty As Boolean = True
+Private $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
 Private $iIndex As Integer
 Private $iResolution As Integer = -1
@@ -367,6 +367,7 @@ End
 Public Sub Refresh()
 
   $bLayoutIsDirty = True
+  Me._Reset
 
 End
 
@@ -733,6 +734,11 @@ Public Sub _Reset()
 
   For Each hSection In $aSections
     hSection.Ctrl._Reset
+    hSection._PageChildren = New Collection
   Next
+
+  $iCurPage = -1
+  $iCurSection = 0
+  $iPageCount = 0
 
 End
