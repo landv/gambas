@@ -30,14 +30,17 @@
       Alignment = Align.Normal
     }
   }
-  { Separator1 Separator
-    MoveScaled(6,10,8,1)
-  }
-  { txtInfo TextArea
-    MoveScaled(1,13,62,35)
+  { Panel3 Panel
+    MoveScaled(5,13,57,36)
     Expand = True
-    ReadOnly = True
-    Border = False
+    Arrangement = Arrange.Fill
+    Margin = True
+    Border = Border.Plain
+    { txtInfo TextArea
+      MoveScaled(1,1,43,28)
+      ReadOnly = True
+      Border = False
+    }
   }
   { HBox1 HBox
     MoveScaled(1,55,66,4)

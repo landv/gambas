@@ -1,3 +1,5 @@
+' Gambas class file
+
 '***************************************************************************
 ' 
 ' RpcFunction.class
@@ -25,99 +27,99 @@
 ' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ' 
 '***************************************************************************
-EXPORT
+Export
 
-PRIVATE dTypes AS Integer[]
-PRIVATE rType AS Integer
-PRIVATE mName AS String
-PRIVATE Hlp AS String
+Private dTypes As Integer[]
+Private rType As Integer
+Private mName As String
+Private Hlp As String
 
-PROPERTY READ MethodName AS String
-PROPERTY READ Count AS Integer
-PROPERTY READ ReturnType AS Integer
-PROPERTY Help AS String
+Property Read MethodName As String
+Property Read Count As Integer
+Property Read ReturnType As Integer
+Property Help As String
 
-FUNCTION Help_read() AS String
+Function Help_read() As String
 
-  RETURN Hlp
+  Return Hlp
 
-END
+End
 
-SUB Help_Write(sCad AS String)
+Sub Help_Write(sCad As String)
 
   Hlp = sCad
 
-END
+End
 
 
 
-FUNCTION MethodName_Read() AS String
+Function MethodName_Read() As String
 
-  RETURN mName
+  Return mName
 
-END
+End
 
-FUNCTION Count_Read() AS Integer
+Function Count_Read() As Integer
 
-  RETURN dTypes.Count
+  Return dTypes.Count
 
-END
-
-
-PUBLIC FUNCTION _get(Index AS Integer) AS Integer
-
-  RETURN dTypes[Index]
-
-END
+End
 
 
+Public Function _get(Index As Integer) As Integer
 
-FUNCTION ReturnType_Read() AS Integer
+  Return dTypes[Index]
 
-  RETURN rType
-
-END
+End
 
 
 
-PUBLIC SUB _New(Name AS String, DataTypes AS Integer[], Ret AS Integer)
+Function ReturnType_Read() As Integer
 
-  DIM Ok AS Boolean
-  DIM Bucle AS Integer
+  Return rType
 
-  Ok = TRUE
+End
 
-  IF DataTypes <> NULL THEN
 
-    FOR Bucle = 0 TO Datatypes.Count - 1
 
-      IF Datatypes[Bucle] < 0 Or Datatypes[Bucle] > 7 THEN
-        Ok = FALSE
-        BREAK
-      END IF
+Public Sub _New(Name As String, DataTypes As Integer[], Ret As Integer)
 
-    NEXT
+  Dim Ok As Boolean
+  Dim Bucle As Integer
 
-  END IF
+  Ok = True
 
-  IF Ret < 0 Or Ret > 8 THEN Ok = FALSE
+  If DataTypes <> Null Then
 
-  IF Not Ok THEN
+    For Bucle = 0 To Datatypes.Count - 1
+
+      If Datatypes[Bucle] < 0 Or Datatypes[Bucle] > 7 Then
+        Ok = False
+        Break
+      End If
+
+    Next
+
+  End If
+
+  If Ret < 0 Or Ret > 8 Then Ok = False
+
+  If Not Ok Then
 
     Error.Raise("Invalid data types")
 
-  ELSE
+  Else
 
-      IF DataTypes <> NULL THEN
+      If DataTypes <> Null Then
         dTypes = DataTypes.Copy()
-      ELSE
-        dTypes = NEW Integer[]
-      END IF
+      Else
+        dTypes = New Integer[]
+      End If
 
       rType = Ret
       mName = Name
 
-  END IF
+  End If
 
 
-END
+End

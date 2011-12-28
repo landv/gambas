@@ -2637,7 +2637,7 @@ Public Sub Deactivate(hForm As Object)
 
 End
 
-Private Sub GetVersion()
+Private Sub GetVersion() As Boolean
 
   Dim sDir As String
   Dim sVer As String
@@ -2646,12 +2646,12 @@ Private Sub GetVersion()
   Dim iMinor As Integer
   Dim iRelease As Integer
 
-  If Not VersionFile Then Return
+  If Not VersionFile Then Return True
 
   sDir = Project.Dir
   Do
     sDir = File.Dir(sDir)
-    If sDir = "/" Then Return
+    If sDir = "/" Then Return True
     If Exist(sDir &/ "VERSION") Then Break
   Loop
 
@@ -3083,6 +3083,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
   Close hFic
 
+  VersionFile = Not GetVersion()
+  
   If aMissing.Count Then
     sMsg = Subst(("Some components are missing: &1"), aMissing.Join(", "))
     If Message.Error(sMsg, ("Continue"), ("Cancel")) = 2 Then

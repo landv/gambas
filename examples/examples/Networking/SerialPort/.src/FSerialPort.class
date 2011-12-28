@@ -1,121 +1,122 @@
 ' Gambas class file
+
 'PRIVATE Sport AS SerialPort
 'PUBLIC SUB Form_Open()
 '  Sport=NEW SerialPort AS "Sport"
 'END
-PUBLIC SUB Form_Close()
-  IF Sport.Status=Net.Active THEN CLOSE Sport
-END
+Public Sub Form_Close()
+  If Sport.Status = Net.Active Then Close Sport
+End
 
 
-PUBLIC SUB Check_Status()
+Public Sub Check_Status()
   
-  ChkDSR.Value=Sport.DSR
-  ChkDTR.Value=Sport.DTR
-  ChkCTS.Value=Sport.CTS
-  ChkRTS.Value=Sport.RTS
-  ChkDCD.Value=Sport.DCD
-  ChkRNG.Value=Sport.RNG
+  ChkDSR.Value = Sport.DSR
+  ChkDTR.Value = Sport.DTR
+  ChkCTS.Value = Sport.CTS
+  ChkRTS.Value = Sport.RTS
+  ChkDCD.Value = Sport.DCD
+  ChkRNG.Value = Sport.RNG
  
   
-END
+End
 
 
-PUBLIC SUB Button1_Click()
- IF Sport.Status=Net.Active THEN
-  CLOSE Sport
-  Button1.Text="Open"
+Public Sub Button1_Click()
+ If Sport.Status = Net.Active Then
+  Close Sport
+  Button1.Text = "Open"
  
- ELSE
+ Else
   ' Line parameters
-  Sport.PortName=TxtPort.Text
-  Sport.Speed=CmbSpeed.Text
-  Sport.Parity=CmbParity.Index
-  Sport.DataBits=CmbData.Text
-  Sport.StopBits=CmbStop.Text
+  Sport.PortName = TxtPort.Text
+  Sport.Speed = CmbSpeed.Text
+  Sport.Parity = CmbParity.Index
+  Sport.DataBits = CmbData.Text
+  Sport.StopBits = CmbStop.Text
   ' keep DTR on
-  Sport.FlowControl=ComboBox1.Index
+  Sport.FlowControl = ComboBox1.Index
   Sport.Open()
   Check_Status()
-  TextArea1.Text="Port Opened : " & Sport.PortName & " Settings : " &
+  TextArea1.Text = "Port Opened : " & Sport.PortName & " Settings : " &
 Sport.Speed & "," & Sport.Parity & "," & Sport.DataBits & "," &
 Sport.StopBits & Chr(13) & Chr(10)
-  Button1.Text="Close"
+  Button1.Text = "Close"
  
- END IF
+ End If
   
 
-END
+End
 
-PUBLIC SUB SPort_Read()
-  DIM s AS String
-  READ #Sport,s,Lof(Sport) 
-  TextArea1.Text=TextArea1.Text & s
-END
+Public Sub SPort_Read()
+  Dim s As String
+  Read #Sport, s, Lof(Sport) 
+  TextArea1.Text = TextArea1.Text & s
+End
 
-PUBLIC SUB SPort_RNGChange(iVal AS Boolean)
-  ChkRng.Value=iVal
-END
+Public Sub SPort_RNGChange(iVal As Boolean)
+  ChkRng.Value = iVal
+End
 
-PUBLIC SUB SPort_DTRChange(iVal AS Boolean)
-  ChkDTR.Value=iVal
-END
+Public Sub SPort_DTRChange(iVal As Boolean)
+  ChkDTR.Value = iVal
+End
 
-PUBLIC SUB SPort_DSRChange(iVal AS Boolean)
-  ChkDSR.Value=iVal
-END
+Public Sub SPort_DSRChange(iVal As Boolean)
+  ChkDSR.Value = iVal
+End
 
-PUBLIC SUB SPort_CTSChange(iVal AS Boolean)
-  ChkCTS.Value=iVal
-END
+Public Sub SPort_CTSChange(iVal As Boolean)
+  ChkCTS.Value = iVal
+End
 
-PUBLIC SUB SPort_DCDChange(iVal AS Boolean)
-  ChkDCD.Value=iVal
-END
+Public Sub SPort_DCDChange(iVal As Boolean)
+  ChkDCD.Value = iVal
+End
 
-PUBLIC SUB SPort_RTSChange(iVal AS Boolean)
-  ChkRTS.Value=iVal
-END
+Public Sub SPort_RTSChange(iVal As Boolean)
+  ChkRTS.Value = iVal
+End
 
-PUBLIC SUB Button2_Click()
+Public Sub Button2_Click()
 
-  IF Sport.Status = Net.Inactive THEN
-    Message ("Open port first!")
-  ELSE
+  If Sport.Status = Net.Inactive Then
+    Message("Open port first!")
+  Else
     'WRITE #Sport,TxtSend.Text & Chr(13) & Chr(10), txtSend.Length + 2
-    PRINT #Sport,txtSend.Text; Chr$(13); Chr$(10);
-  END IF
+    Print #Sport, txtSend.Text; Chr$(13); Chr$(10);
+  End If
 
-END
+End
 
 
 
-PUBLIC SUB ChkDTR_Click()
+Public Sub ChkDTR_Click()
 
-  Sport.DTR=ChkDTR.Value
+  Sport.DTR = ChkDTR.Value
   Check_Status
 
-END
+End
 
-PUBLIC SUB ChkRTS_Click()
+Public Sub ChkRTS_Click()
 
-  Sport.RTS=ChkRTS.Value
+  Sport.RTS = ChkRTS.Value
   Check_Status
 
-END
+End
 
 
 
-PUBLIC SUB ComboBox1_Click()
+Public Sub ComboBox1_Click()
  
-  Sport.FlowControl=ComboBox1.Index
+  Sport.FlowControl = ComboBox1.Index
 
-END
+End
 
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   cmbSpeed.Index = cmbSpeed.Find("19200")
 
-END
+End

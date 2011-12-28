@@ -7,8 +7,7 @@ Private $MY As Integer
 Public Sub Form_Open()
 
   Me.Font = Font["64"]
-  Me.Width = Me.Font.TextWidth("00:00:00") + 32
-  Me.Height = Me.Font.Height + 8
+  Me.Resize(Me.Font.TextWidth("00:00:00") + 64, Me.Font.Height + 16)
   Redraw
 End
 
@@ -20,28 +19,29 @@ End
 
 Private Sub Redraw()
 
-  Dim hPict As Picture
+  Dim hImage As Image
   Dim sText As String
   Dim iInd As Integer
 
   sText = Str(Time)
   If sText = $sLast Then Return
 
-  hPict = New Picture(Me.Width, Me.Height, True)
+  hImage = New Image(Me.Width, Me.Height, Color.Transparent)
 
-  Draw.Begin(hPict)
-  Draw.Font = Font["64"]
-  Draw.LineWidth = 4
+  Paint.Begin(hImage)
+  Paint.Font = Font["64"]
+  Paint.LineWidth = 4
 
   For iInd = 8 To 0 Step -1
-    Draw.Foreground = Color.RGB(&h43 - iInd * &h43 / 8, &hC7 - iInd * &hC7 / 8, &hFF - iInd * &HFF / 8)
-    Draw.Text(sText, 16 + iInd, iInd)
-    Draw.Rect(iInd + 4, iInd + 4, hPict.Width - 14, hPict.Height - 14)
+    Paint.Brush = Paint.Color(Color.RGB(&h43 - iInd * &h43 / 8, &hC7 - iInd * &hC7 / 8, &hFF - iInd * &HFF / 8))
+    Paint.DrawText(sText, iInd, iInd - 8, hImage.W, hImage.H, Align.Center)
+    Paint.Rectangle(iInd + 4, iInd + 4, hImage.Width - 14, hImage.Height - 14)
+    Paint.Stroke
   Next
 
-  Draw.End
+  Paint.End
 
-  Me.Picture = hPict
+  Me.Picture = hImage.Picture
 '   Me.Mask = True
   $sLast = sText
 
