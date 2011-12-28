@@ -25,7 +25,7 @@ Private $aChildCopy As TControl[]
 Private $bOnePiece As Boolean
 Private $iIndex As Integer
 Private $hData As Object
-Private $fFixedSize As Integer
+Private $fFixedSize As Float
 Property _Index As Integer
 
 Property DataCount As Integer
@@ -275,6 +275,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   'If Me._SizeInt.StoreSize Then Return Me._SizeInt
   'If Me.tag = "*" Then Stop
   If Me._CurItem > Me.Children.max Then
+
     '   If Me Is ReportSection Then Stop
     Me._CurItem = 0
     '   'Me._DataIndex = 0
@@ -336,18 +337,20 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Dim fHeight, fSpacing, fWidth As Float
   Dim i, j As Integer
   Dim bExitLoop As Boolean
-
+  'If Me.Tag = "Boite 2" Then Stop
   'D'abord utiliser la méthode du controle pour définir la taille
   hSizeInt = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
 
   fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
 
   ' Si ce n'est pas fait on enregistre la place nécéssaire a tout les éléments fixes
+
   If Not $fFixedSize Then
     For i = 0 To Me.Children.Max
       hChild = Me.Children[i]
       htmpInts = hChild._GetSizeHints(AvailableW, AvailableH, AvailableW, AvailableH)
       If hchild.Fixed Then $fFixedSize += htmpInts.Height + fSpacing
+
     Next
 
   Endif
@@ -370,6 +373,7 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
         'on ajoute la hauteur aux besoins
         fHeight += htmpInts.Height + fSpacing
         If fHeight - fSpacing > AvailableH Then
+          hSizeInt.NotFinished = True
           Break
           bExitLoop = True
         Endif
@@ -390,10 +394,15 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Endif
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
-  If Not Me.OnePiece Then hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+  If Not Me.OnePiece Then
+    hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+  Endif
 
   Me._SizeInt = hSizeInt
-
+  ' If Me.Tag = "Boite 2" Then
+  ' Print hSizeInt.Height
+  ' Stop
+  ' Endif
   Return hSizeInt
 
 End
@@ -689,6 +698,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
   'If Me._CurItem = 0 Then Me._CurItem = itmpItem
   'If ContPage = 2 Then Stop
+  'If Me.Tag = "Boite 1" Then Stop
   For i = Me._CurItem To Me.Children.Max
 
     hChild = Me.Children[i]
@@ -746,8 +756,10 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         fExp += hChildHints.Height
         Inc iNexp
       Endif
+      If hChildHints.NotFinished Then hchild._DataIndex = j
       'un élément fixe ou ignore ne peut être répété
       If hchild.Fixed Or hchild.Ignore Then Break
+
       bInLoop = True
     Next
     If bExitLoop Then Break
@@ -784,7 +796,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Endif
 
   fTmpY = Y
-
+  'Print Me.tag & " " & Me._CurItem & " / " & Me.Children.Max
   For Each hTItem In aPageItems
 
     oChild = hTItem.Ctrl
@@ -812,14 +824,13 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     If oChild Is ReportContainer Then
 
       If oChild._CurItem <= oChild.Children.max Then
-        'Print "il reste des éléments dans " & oChild.Tag & " a la page " & ContPage
-        'Print ochild.Children.max - ochild._CurItem
-        ' Print ochild.tag & " pas fini."
-        ' Print oChild._CurItem & "éléents sur " & ochild.Children.count
 
         j = Me.Children.Find(oChild)
+
         Me._CurItem = Min(Me._CurItem, j)
       Endif
+
+      'Print ochild._DataIndex & " / " & (ochild.DataCount - 1)
       'ne pas incrémenter la lecture des enfants si je suis dans un élément fixe
       If bInFixed Then ochild._CurItem = 0
     Endif
@@ -1076,7 +1087,8 @@ End
 
 Private Sub _CurItem_Write(Value As Integer)
   'Print "_CurItem = " & Value
-  'If Value = 0 Then Stop
+  'If Me.tag = "Boite 1" And Value = 0 Then Stop
+  'If Me.tag = "Boite 1" And ContPage = 1 Then Print "CurItem: " & Me._CurItem
 
   $iCurItem = Value
 
