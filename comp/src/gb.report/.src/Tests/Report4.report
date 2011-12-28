@@ -77,14 +77,15 @@
     AutoResize = True
     { lblDate ReportLabel
       #MoveScaled(0,1,16,4)
-      AutoResize = True
+      Width = "5cm"
     }
     { ReportHBox3 ReportHBox
-      #MoveScaled(21,1,24,4)
+      #MoveScaled(9,1,24,4)
       Expand = True
     }
     { ReportLabel4 ReportLabel
       #MoveScaled(47,1,13,3)
+      Width = "3cm"
       AutoResize = True
       Text = ("Page $PAGE")
       UseField = True

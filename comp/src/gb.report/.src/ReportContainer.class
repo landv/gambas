@@ -6,7 +6,7 @@ Inherits ReportFrame
 
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
-Public Const _Properties As String = "*,Spacing{ReportCoord}"
+Public Const _Properties As String = "*,Spacing{ReportCoord},OnePiece"
 'Public Const _DefaultEvent As String = "Data"
 Private $bDataIsResult As Boolean
 'Private $iCount As Integer
@@ -22,7 +22,7 @@ Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
 Private $bRepeat As Boolean
 Private $aChildCopy As TControl[]
-
+Private $bOnePiece As Boolean
 Private $iIndex As Integer
 Private $hData As Object
 Private $fFixedSize As Integer
@@ -37,7 +37,7 @@ Property Spacing As String
 
 Property Read _Spacing As Float
 Property Read _RelativeSpacing As Boolean
-
+Property OnePiece As Boolean
 Public _RealSpacing As Integer
 Static Private $iLevel As Integer
 Event BeforeData
@@ -274,11 +274,11 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   'If Me._SizeInt.StoreSize Then Return Me._SizeInt
   'If Me.tag = "*" Then Stop
-  ' If Me._CurItem > Me.Children.max Then
-  '   If Me Is ReportSection Then Stop
-  '   Me._CurItem = 0
-  '   'Me._DataIndex = 0
-  ' Endif
+  If Me._CurItem > Me.Children.max Then
+    '   If Me Is ReportSection Then Stop
+    Me._CurItem = 0
+    '   'Me._DataIndex = 0
+  Endif
   Raise BeforeData
   Select Case _Arrangement
 
@@ -390,7 +390,7 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Endif
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
-  hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+  If Not Me.OnePiece Then hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
 
   Me._SizeInt = hSizeInt
 
@@ -465,10 +465,10 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   'If Me.Tag = "*" Then Stop
   'Print "Geometry " & Object.Type(Me)
 
-  ' If Me._CurItem > Me.Children.max Then
-  '   If Me Is ReportSection Then Stop
-  '   Me._CurItem = 0
-  ' Endif
+  If Me._CurItem > Me.Children.max Then
+    '   If Me Is ReportSection Then Stop
+    Me._CurItem = 0
+  Endif
 
   If $bIndexChange Then
     Raise BeforeData
@@ -692,11 +692,11 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   For i = Me._CurItem To Me.Children.Max
 
     hChild = Me.Children[i]
-    If ContPage = 1 And Me.tag = "Boite 1" Then
-
-      'Stop
-      Print "DataIndex =" & hchild._DataIndex
-    Endif
+    ' If ContPage = 1 And Me.tag = "Boite 1" Then
+    '
+    '   'Stop
+    '   Print "DataIndex =" & hchild._DataIndex
+    ' Endif
     'bLastElement = False
     For j = hchild._DataIndex To Max(hchild._Count - 1, 0)
       'If j = Max(hchild._Count - 1, 0) Then bLastElement = True
@@ -719,8 +719,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Si on ne l'a pas déja compté comme fixé
       If Not hChild.Fixed And If Not hChild.Ignore Then
         If (TH - hChildHints.Height) < 0 Then
-          Print "manque : " & (TH - hChildHints.Height)
-          Print "sortie forcée, il reste : " & ((hchild._Count - 1) - j)
+          ' Print "manque : " & (TH - hChildHints.Height)
+          ' Print "sortie forcée, il reste : " & ((hchild._Count - 1) - j)
           hchild._DataIndex = j
           bExitLoop = True
           Break
@@ -1079,5 +1079,17 @@ Private Sub _CurItem_Write(Value As Integer)
   'If Value = 0 Then Stop
 
   $iCurItem = Value
+
+End
+
+Private Function OnePiece_Read() As Boolean
+
+  Return $bOnePiece
+
+End
+
+Private Sub OnePiece_Write(Value As Boolean)
+
+  $bOnePiece = Value
 
 End

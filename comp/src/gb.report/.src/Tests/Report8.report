@@ -5,6 +5,7 @@
   Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Tag = "\"toto\""
   Spacing = "1cm"
+  OnePiece = True
   Index = 0
   Text = ("")
   { ReportPanel2 ReportVBox
@@ -16,12 +17,13 @@
       #MoveScaled(4,4,64,49)
       AutoResize = True
       Tag = "Boite 2"
+      OnePiece = True
       { ReportLabel2 ReportLabel
         #MoveScaled(3,3,54,8)
         AutoResize = True
       }
       { ReportHBox1 ReportHBox
-        #MoveScaled(4,11,64,31)
+        #MoveScaled(6,6,64,31)
         Width = "5cm"
         Height = "1cm"
         Tag = "Boite 3"

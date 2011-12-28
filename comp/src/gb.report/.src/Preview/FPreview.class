@@ -26,7 +26,7 @@ Public Sub _new()
 
   Printer1.Paper = $hReport.Paper
   Printer1.Orientation = $hReport.Orientation
-  Debug "Orientation avant impression : " & Printer1.Orientation
+  'Debug "Orientation avant impression : " & Printer1.Orientation
   $hReport.Resolution = Printer1.Resolution
   If $hReport.Paper = Printer.Custom Then
     hSizeInt = New TSizeParse($hReport.Width)
@@ -35,7 +35,7 @@ Public Sub _new()
     Printer1.PaperHeight = hSizeInt.ToCm() / 10
   Endif
 
-  Debug Printer1.Orientation;; Printer1.PaperWidth;; Printer1.PaperHeight
+  'Debug Printer1.Orientation;; Printer1.PaperWidth;; Printer1.PaperHeight
 
   Me.Center
 
@@ -226,7 +226,7 @@ Public Sub Printer1_Begin()
   'Debug Object.Type($hReport)
 
   $hReport.Layout
-  Debug "Orientation a l'impression : " & Printer1.Orientation
+  'Debug "Orientation a l'impression : " & Printer1.Orientation
   Printer1.Count = $hReport.PageCount
   'Print Printer1.Count
 

@@ -149,7 +149,7 @@ Public Sub _Layout(Optional iPage As Integer = -1)
 
       Inc $iCurPage
       $iPageCount = $iCurPage
-      Print "Fin Page " & $iCurPage
+      'Print "Fin Page " & $iCurPage
       If iPage > -1 And If $iCurPage > iPage Then
         Dec $iCurPage
         _LayoutNotFinished = True

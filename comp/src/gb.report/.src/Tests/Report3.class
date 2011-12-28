@@ -6,15 +6,15 @@ Public Sub _new()
 
 End
 
-Public Sub ReportLabel1_Data()
+Public Sub ReportLabel1_Data(Index As Integer)
 
   'Print "coucou"
-  Last.data = Last.dataIndex
+  Last.data = Index
 
 End
 
-Public Sub ReportLabel2_Data()
+Public Sub ReportLabel2_Data(Index As Integer)
 
-  Last.data = Last.dataIndex
+  Last.data = Index
 
 End

@@ -2,6 +2,7 @@
 
 { Report Report
   #MoveScaled(0,0,64,64)
+  Paper = Printer.A3
   Index = 0
   Text = ("")
   { ReportHBox2 ReportHBox
@@ -23,6 +24,13 @@
       Expand = True
       Alignment = Align.Center
     }
+  }
+  { ReportPanel1 ReportPanel
+    #MoveScaled(1,16,60,4)
+    Fixed = True
+    Expand = True
+    Background = ReportBrush["#00FF00"]
+    Arrangement = Arrange.None
   }
   { ReportHBox3 ReportHBox
     #MoveScaled(0,21,61,7)
