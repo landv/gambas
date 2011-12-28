@@ -900,7 +900,10 @@ BEGIN_PROPERTY(CCONTAINER_border)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(w->frameStyle());
 	else
+	{
 		w->setFrameStyle(VPROP(GB_INTEGER));
+		arrange_now(CONTAINER);
+	}
 
 END_PROPERTY
 

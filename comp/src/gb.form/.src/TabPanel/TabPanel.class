@@ -401,8 +401,14 @@ Public Sub TabBar_Draw()
   Dim X As Integer
   
   If $bArrow Then
-    Draw.Foreground = Color.LightForeground
+
     X = $hTabBar.W - ARROW_WIDTH
+
+    If $bHighlight Then
+      Draw.FillRect(X, 0, ARROW_WIDTH, $hTabBar.H, _GetBackground())
+    Endif
+  
+    Draw.Foreground = Color.LightForeground
     Draw.Style.Arrow($hTabBar.W - 8, 0, 8, $hTabBar.H, Align.Right)
     Select Case $iOrientation
       Case Align.Top
@@ -594,5 +600,11 @@ End
 Public Sub _Close(Index As Integer)
   
   Raise Close(Index)
+  
+End
+
+Public Sub _GetBackground() As Integer
+  
+  Return Color.Gradient(If(Me.Background = Color.Default, Color.Background, Me.Background), Color.LightForeground)  
   
 End

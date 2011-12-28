@@ -17,7 +17,7 @@ Private $hWatcher As Watcher
 Private $iBackground As Integer = Color.Default
 Private $bNoClose As Boolean
 Private $iLock As Integer
-'Private $bLogo As Boolean
+Private $bBorder As Boolean = True
 
 Public Sub _new()
   
@@ -374,11 +374,11 @@ Public Sub UpdateSize()
     With tabWorkspace
       
       If .Orientation = Align.Top Then
-        Y = .ClientY - 2 'H - .H + .ClientY * 2 + 2
+        Y = .ClientY - If($bBorder, 1, 0) 'H - .H + .ClientY * 2 + 2
         H = Me.ClientH - Y
       Else
         Y = 0
-        H = .ClientY + .ClientH + 2
+        H = .ClientY + .ClientH + If($bBorder, 1, 0)
       Endif
     
       panWorkspace.Move(0, Y, Me.ClientW, H)
@@ -387,7 +387,7 @@ Public Sub UpdateSize()
     End With
       
     panWorkspace.Background = Color.Background
-    panWorkspace.Border = Border.Plain
+    panWorkspace.Border = If($bBorder, Border.Plain, Border.None)
 
   Else
 
@@ -750,4 +750,18 @@ Public Sub Form_Resize()
 
   UpdateSize
 
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  $bBorder = bBorder
+  tabWorkspace.Border = bBorder
+  UpdateSize
+  
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return $bBorder
+  
 End

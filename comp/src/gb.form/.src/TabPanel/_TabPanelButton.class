@@ -41,20 +41,22 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim iFg As Integer
+  Dim iFg, iBg As Integer
   Dim X, W As Integer
   Dim bBorder As Boolean
   Dim hTabPanel As TabPanel
   Dim bClosable As Boolean
   Dim bHighlight As Boolean
   Dim bFirst As Boolean
+  Dim iIndex As Integer
   
   hTabPanel = GetParent()
-  bHighlight = hTabPanel.Highlight And $bSelected
+  iIndex = GetIndex()
+  bHighlight = hTabPanel.Highlight And Not $bSelected
   bClosable = hTabPanel.Closable
   
   If bHighlight Then
-    Draw.FillRect(0, 0, Me.W, Me.H, Color.Gradient(If(Me.Background = Color.Default, Color.Background, Me.Background), Color.LightForeground))
+    Draw.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
   Endif
   
   iFg = Me.Foreground
@@ -79,7 +81,7 @@ Public Sub DrawingArea_Draw()
   Draw.Foreground = Color.LightForeground
   
   bBorder = hTabPanel.Border
-  bFirst = GetIndex() = hTabPanel._GetFirstIndex()
+  bFirst = iIndex = hTabPanel._GetFirstIndex()
   
   'If Not bHighlight Then
   
@@ -223,8 +225,8 @@ Public Sub DrawingArea_Enter()
   
   If GetParent().Closable Then
     CreateButton
-    X = $hDrawingArea.W - $hDrawingArea.H
-    btnClose.Move(X, 0, $hDrawingArea.H, $hDrawingArea.H)
+    X = $hDrawingArea.W - BUTTON_SIZE
+    btnClose.Move(X, 0, BUTTON_SIZE, $hDrawingArea.H)
     btnClose.Show
   Endif
   

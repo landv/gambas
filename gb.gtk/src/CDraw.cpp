@@ -356,6 +356,14 @@ static GdkRectangle *get_area(GB_DRAW *d)
 	return &area;
 }
 
+/*static GtkWidget *get_widget(GB_DRAW *d)
+{
+	if (!GB.Is(d->device, CLASS_DrawingArea))
+		return NULL;
+	
+	return ((gDrawingArea *)((CDRAWINGAREA *)d->device)->ob.widget)->border;
+}*/
+
 static void paint_focus(GB_DRAW *d, GtkStyle *style, int x, int y, int w, int h, GtkStateType state, const char *kind)
 {
 	gtk_paint_focus(style, DR(d)->drawable(),
@@ -386,11 +394,11 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 	}
 	
 	gtk_paint_arrow(style, DR(d)->drawable(), get_state(state), 
-		GTK_SHADOW_NONE, get_area(d), NULL, NULL, 
+		GTK_SHADOW_NONE, get_area(d), DR(d)->widget(), NULL, 
 		arrow, TRUE, x, y, w, h);
 	if (DR(d)->mask())
 		gtk_paint_arrow(style, DR(d)->mask(), get_state(state), 
-			GTK_SHADOW_NONE, get_area(d), NULL, NULL, 
+			GTK_SHADOW_NONE, get_area(d), DR(d)->widget(), NULL, 
 			arrow, TRUE, x, y, w, h);
 }
 

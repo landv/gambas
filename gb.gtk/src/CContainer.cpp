@@ -129,31 +129,59 @@ BEGIN_METHOD_VOID(ContainerChildren_Clear)
 	
 END_METHOD
 
+static void get_client_area(gContainer *cont, int *x, int *y, int *w, int *h)
+{
+	gContainer *proxy = cont->proxyContainer();
+	
+	if (x) *x = proxy->clientX();
+	if (y) *y = proxy->clientY();
+	if (w) *w = proxy->clientWidth();
+	if (h) *h = proxy->clientHeight();
+	
+	if (x || y)
+	{
+		while (proxy && proxy != cont)
+		{
+			if (x) *x += proxy->x();
+			if (y) *y += proxy->y();
+			proxy = proxy->parent();
+		}
+	}
+}
 
 BEGIN_PROPERTY(CCONTAINER_x)
 
-	GB.ReturnInteger(WIDGET->proxyContainer()->clientX());
+	int x;
+	get_client_area(WIDGET, &x, NULL, NULL, NULL);
+	GB.ReturnInteger(x);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_y)
 
-	GB.ReturnInteger(WIDGET->proxyContainer()->clientY());
+	int y;
+	get_client_area(WIDGET, NULL, &y, NULL, NULL);
+	GB.ReturnInteger(y);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_width)
 
-	GB.ReturnInteger(WIDGET->proxyContainer()->clientWidth());
+	int w;
+	get_client_area(WIDGET, NULL, NULL, &w, NULL);
+	GB.ReturnInteger(w);
+
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_height)
 
-	GB.ReturnInteger(WIDGET->proxyContainer()->clientHeight());
+	int h;
+	get_client_area(WIDGET, NULL, NULL, NULL, &h);
+	GB.ReturnInteger(h);
 	
 END_PROPERTY
 

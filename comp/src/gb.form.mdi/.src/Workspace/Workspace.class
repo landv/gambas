@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top"
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Border=True"
 Public Const _DefaultEvent As String = "Activate"
 Public Const _Group As String = "Special"
 
@@ -16,20 +16,21 @@ Property Read Windows As Window[]
 Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
+Property Border As Boolean
 
-Private hWorkspace As FWorkspace
+Private $hWorkspace As FWorkspace
 
 Public Sub _new()
   
   'SUPER.Background = Color.Yellow
-  hWorkspace = New FWorkspace(Me)
-  'ME.Container = hWorkspace.Container
+  $hWorkspace = New FWorkspace(Me)
+  'ME.Container = $hWorkspace.Container
   
 End
 
 Public Sub Add(hWindow As Window, Optional Resizable As Boolean) As Window
   
-  hWorkspace.Add(hWindow, Resizable)
+  $hWorkspace.Add(hWindow, Resizable)
   
   Return hWindow
   
@@ -37,38 +38,38 @@ End
 
 Public Sub Lock()
   
-  hWorkspace.Lock
+  $hWorkspace.Lock
   
 End
 
 Public Sub Unlock()
   
-  hWorkspace.UnLock
+  $hWorkspace.UnLock
   
 End
 
 ' PUBLIC SUB SetResizable(Window AS Window, Resizable AS Boolean, OPTIONAL Grid AS Integer)
 '   
-'   hWorkspace.SetResizable(Window, Resizable, Grid)
+'   $hWorkspace.SetResizable(Window, Resizable, Grid)
 '   
 ' END
 
 
 Private Function ActiveWindow_Read() As Window
 
-  Return hWorkspace.GetActiveWindow()
+  Return $hWorkspace.GetActiveWindow()
 
 End
 
 Private Sub ActiveWindow_Write(Value As Window)
 
-  hWorkspace.Activate(Value)
+  $hWorkspace.Activate(Value)
 
 End
 
 Private Function Windows_Read() As Window[]
 
-  Return hWorkspace.GetWindows()
+  Return $hWorkspace.GetWindows()
 
 End
 
@@ -80,48 +81,60 @@ End
 
 Private Function ShowTitle_Read() As Boolean
 
-  Return hWorkspace.IsShowTitle()
+  Return $hWorkspace.IsShowTitle()
 
 End
 
 Private Sub ShowTitle_Write(Value As Boolean)
 
-  hWorkspace.SetShowTitle(Value)
+  $hWorkspace.SetShowTitle(Value)
 
 End
 
 Private Function Font_Read() As Font
 
-  Return hWorkspace.TitleBar.Font  
+  Return $hWorkspace.TitleBar.Font  
 
 End
 
 Private Sub Font_Write(Value As Font)
 
-  hWorkspace.TitleBar.Font = Value
+  $hWorkspace.TitleBar.Font = Value
 
 End
 
 Private Function Background_Read() As Integer
 
-  Return hWorkspace.GetBackground()
+  Return $hWorkspace.GetBackground()
 
 End
 
 Private Sub Background_Write(Value As Integer)
 
-  hWorkspace.SetBackground(Value)
+  $hWorkspace.SetBackground(Value)
 
 End
 
 Private Function Orientation_Read() As Integer
 
-  Return hWorkspace.GetOrientation()  
+  Return $hWorkspace.GetOrientation()  
 
 End
 
 Private Sub Orientation_Write(Value As Integer)
 
-  If Value = Align.Top Or If Value = Align.Bottom Then hWorkspace.SetOrientation(Value)
+  If Value = Align.Top Or If Value = Align.Bottom Then $hWorkspace.SetOrientation(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hWorkspace.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hWorkspace.SetBorder(Value)
 
 End
