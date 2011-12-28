@@ -8,6 +8,7 @@ Public Sub _new()
   For i = 0 To 100
 
     Rlbl = New ReportLabel(RVBCont)
+    Rlbl.Autoresize = True
     Rlbl.Text = "Ligne " & i
     Rlbl.Border.bottom.Width = "1px"
     Rlbl.Padding.Top = "3 mm"

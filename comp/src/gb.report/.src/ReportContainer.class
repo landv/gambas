@@ -274,11 +274,11 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   'If Me._SizeInt.StoreSize Then Return Me._SizeInt
   'If Me.tag = "*" Then Stop
-  If Me._CurItem > Me.Children.max Then
-    If Me Is ReportSection Then Stop
-    Me._CurItem = 0
-    'Me._DataIndex = 0
-  Endif
+  ' If Me._CurItem > Me.Children.max Then
+  '   If Me Is ReportSection Then Stop
+  '   Me._CurItem = 0
+  '   'Me._DataIndex = 0
+  ' Endif
   Raise BeforeData
   Select Case _Arrangement
 
@@ -380,9 +380,9 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     Next
 
     'on enlève le dernier espace
-    'If fHeight > 0 Then fHeight -= fSpacing * 2
+    If fHeight > 0 Then fHeight -= fSpacing * 2
     'bogue bizzard
-    'fHeight += 0.01
+    fHeight += 0.01
 
     'On indique la place nécéssaire aux enfants+les éléments fixes
     hSizeInt.Height = fHeight + Me.Padding._Height + Me.Border._Top + Me.Border._Bottom
@@ -390,7 +390,7 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Endif
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
-  If Me.DataCount = 0 Then hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+  hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
 
   Me._SizeInt = hSizeInt
 
@@ -465,10 +465,10 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   'If Me.Tag = "*" Then Stop
   'Print "Geometry " & Object.Type(Me)
 
-  If Me._CurItem > Me.Children.max Then
-    If Me Is ReportSection Then Stop
-    Me._CurItem = 0
-  Endif
+  ' If Me._CurItem > Me.Children.max Then
+  '   If Me Is ReportSection Then Stop
+  '   Me._CurItem = 0
+  ' Endif
 
   If $bIndexChange Then
     Raise BeforeData
@@ -718,7 +718,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Endif
       'Si on ne l'a pas déja compté comme fixé
       If Not hChild.Fixed And If Not hChild.Ignore Then
-        If (TH - hChildHints.Height + 0.01) < 0 Then
+        If (TH - hChildHints.Height) < 0 Then
           Print "manque : " & (TH - hChildHints.Height)
           Print "sortie forcée, il reste : " & ((hchild._Count - 1) - j)
           hchild._DataIndex = j
@@ -814,8 +814,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       If oChild._CurItem <= oChild.Children.max Then
         'Print "il reste des éléments dans " & oChild.Tag & " a la page " & ContPage
         'Print ochild.Children.max - ochild._CurItem
-        Print ochild.tag & " pas fini."
-        Print oChild._CurItem & "éléents sur " & ochild.Children.count
+        ' Print ochild.tag & " pas fini."
+        ' Print oChild._CurItem & "éléents sur " & ochild.Children.count
 
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(Me._CurItem, j)

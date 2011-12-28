@@ -65,16 +65,16 @@ Public Sub _new()
 
 End
 
-Public Sub ligne_Data()
+Public Sub ligne_Data(Index As Integer)
 
   If Not Last.tag Then Return
-  Last.data = cList[Last.dataIndex][Last.tag]
+  Last.data = cList[Index][Last.tag]
 
 End
 
-Public Sub entete_Data()
+Public Sub entete_Data(Index As Integer)
 
-  Last.data = cFactHead[Last.dataIndex][Last.tag]
+  Last.data = cFactHead[Index][Last.tag]
 
 End
 

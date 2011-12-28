@@ -49,15 +49,14 @@
     Alignment = Align.Center
   }
   { ReportVBox1 ReportVBox
-    #MoveScaled(5,12.5714,45,38)
+    #MoveScaled(5,13,45,38)
+    Expand = True
     AutoResize = True
     Tag = "Boite 1"
     { ReportVBox4 ReportVBox
       #MoveScaled(3,12,41,24)
-      Expand = True
       AutoResize = True
       Tag = "Boite 2"
-      Spacing = "4mm"
       { ReportHBox2 ReportHBox
         #MoveScaled(0,0,37.7143,5.1429)
         Height = "15mm"
@@ -68,7 +67,7 @@
           Width = "5 cm"
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
-          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:0mm #000000"]
+          AutoResize = True
           Text = ("Name")
           Alignment = Align.Center
         }
@@ -78,7 +77,7 @@
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
           Padding = ReportPadding["0.2 mm"]
-          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          AutoResize = True
           Text = ("FirstName")
           Alignment = Align.Center
         }
@@ -89,22 +88,20 @@
           Font = Font["Bitstream Charter,Bold,16"]
           Padding = ReportPadding["0.2 mm"]
           Expand = True
-          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:0mm #000000;Right:1px #000000"]
+          AutoResize = True
           Text = ("Birth")
           Alignment = Align.Center
         }
       }
       { ReportHBox1 ReportHBox
         #MoveScaled(1,8,38,4)
-        Height = "1.2cm"
+        Height = "10mm"
         Tag = "Boite 3"
-        Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
         { ReportLabel1 ReportLabel
           #MoveScaled(0,0,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
           Padding = ReportPadding["0.2 mm"]
-          Border = ReportBorder["Right:1px #000000"]
           Alignment = Align.Center
           UseField = True
         }
@@ -113,7 +110,6 @@
           Width = "5 cm"
           Font = Font["12"]
           Padding = ReportPadding["0.2 mm"]
-          Border = ReportBorder["Right:1px #000000"]
           Alignment = Align.Center
         }
         { ReportLabel7 ReportLabel
@@ -122,7 +118,6 @@
           Font = Font["12"]
           Padding = ReportPadding["2.2mm"]
           Expand = True
-          Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
           Format = "dd/mm/aaaa"
           Alignment = Align.Right
         }
