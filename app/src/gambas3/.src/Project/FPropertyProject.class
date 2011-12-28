@@ -757,11 +757,15 @@ Public Sub tabProject_Click()
         edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
         edtDiff.Show
         lblDiff.Text = ("Changes since last commit")
+        lblDiff.Font.Italic = False
+        lblDiff.Font.Bold = True
         lblDiff.Expand = False
         'lblNoDiff.Hide
       Else
         edtDiff.Hide
         lblDiff.Text = ("There is no change to commit.")
+        lblDiff.Font.Italic = True
+        lblDiff.Font.Bold = False
         lblDiff.Expand = True
         'lblNoDiff.Show
       Endif

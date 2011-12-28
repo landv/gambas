@@ -79,7 +79,7 @@ private:
 	bool cursor;
 	QTimer *blinkTimer;
 	QTimer *scrollTimer;
-	int x1m, x2m, ym;
+	int x1m, x2m, y1m, y2m;
 	int margin;
 	int lineNumberLength;
 	bool center;
@@ -183,11 +183,12 @@ public:
 		ShowCurrentLine = 4,
 		ShowLineNumbers = 5,
 		HighlightBraces = 6,
-		HighlightCurrent = 7,
+		HighlightImmediately = 7,
 		BlendedProcedureLimits = 8,
 		ShowDots = 9,
 		ShowCursorPosition = 10,
-		ChangeBackgroundAtLimit = 11
+		ChangeBackgroundAtLimit = 11,
+		HideMargin = 12
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);

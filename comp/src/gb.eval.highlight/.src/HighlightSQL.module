@@ -1,0 +1,150 @@
+' Gambas module file
+
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+
+Private $cDatatype As Collection
+Private $cFunction As Collection
+Private $cKeyword As Collection
+Private $cOperator As Collection
+
+Private Sub LoadFile(sPath As String) As Collection
+  
+  Dim sWord As String
+  Dim cCol As New Collection(gb.IgnoreCase)
+  
+  For Each sWord In Split(File.Load(sPath), "\n", "", True)
+    cCol[sWord] = True
+  Next
+  Return cCol
+  
+End
+
+
+Public Sub _init()
+  
+  $cDatatype = LoadFile("sql/datatypes")
+  $cFunction = LoadFile("sql/functions")
+  $cKeyword = LoadFile("sql/keywords")
+  $cOperator = LoadFile("sql/operators")
+  
+End
+
+Private Sub CheckWord(sWord As String) As Integer
+  
+  If $cKeyword.Exist(sWord) Then Return Highlight.Keyword
+  If $cOperator.Exist(sWord) Then Return Highlight.Operator
+  If $cFunction.Exist(sWord) Then Return Highlight.Function
+  If $cDatatype.Exist(sWord) Then Return Highlight.DataType
+  Return Highlight.Normal
+  
+End
+
+
+
+Public Sub Run()
+  
+  Dim iState As Integer
+  Dim iTag As Integer
+  Dim sText As String
+  Dim iLenText As Integer
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim sWait As String
+  Dim iInd As Integer
+  Dim iLen As Integer
+  Dim iCheck As Integer
+  
+  iState = Highlight.State
+  iTag = Highlight.Tag
+  sText = Highlight.Text
+  iLenText = String.Len(sText)
+  
+  For iPos = 1 To iLenText
+    
+    sCar = String.Mid$(sText, iPos, 1)
+    
+    Select Case iState
+      
+      Case Highlight.Normal
+        
+        If Len(sCar) > 1 Then
+          Highlight.Add(Highlight.Error)
+        Else If Asc(sCar) < 33 Then
+          Highlight.Add(iState)
+        Else If sCar = "#" Or If String.Mid$(sText, iPos, 2) = "--" Then
+          Highlight.Add(Highlight.Comment, iLenText - iPos + 1)
+          Break
+        Else If String.Mid$(sText, iPos, 2) = "/*" Then
+          iState = Highlight.Comment
+          Highlight.Add(iState)
+        Else If sCar = "'" Or If sCar = "\"" Then
+          iState = Highlight.String
+          Highlight.Add(iState)
+          sWait = sCar
+        Else
+          iLen = Helper.ReadNumber(sText, iPos)
+          If iLen > 0 Then
+            Highlight.Add(Highlight.Number, iLen)
+            iPos += iLen - 1
+            Continue
+          Endif
+          
+          iLen = Helper.ReadIdentifier(sText, iPos, IDENT_CAR)
+          If InStr(IDENT_CAR, String.Mid$(sText, iPos, 1)) Then
+            iState = CheckWord(String.Mid$(sText, iPos, iLen))
+          Else
+            While iLen > 0
+              iState = CheckWord(String.Mid$(sText, iPos, iLen))
+              If iState <> Highlight.Normal Then Break
+              Dec iLen
+            Wend
+          Endif
+          
+          If iLen > 0 Then
+            If iState <> Highlight.Normal Then
+              Highlight.Add(iState, iLen)
+              iPos += iLen - 1
+              iState = Highlight.Normal
+              Continue
+            Else 
+              Highlight.Add(Highlight.Symbol, iLen)
+              iPos += iLen - 1
+              Continue
+            Endif
+          Endif
+          
+          Highlight.Add(Highlight.Error)
+            
+        Endif
+        
+      Case Highlight.Comment
+        
+        Highlight.Add(iState)
+        If String.Mid$(sText, iPos, 2) = "*/" Then
+          Highlight.Add(iState)
+          Inc iPos
+          iState = Highlight.Normal
+        Endif
+        
+      Case Highlight.String
+        
+        Highlight.Add(iState)
+        If sCar = "\\" Then
+          Highlight.Add(iState)
+          Inc iPos
+        Else If sCar = sWait Then
+          iState = Highlight.Normal
+        Endif
+        
+    End Select
+  
+  Next
+  
+  'If bTestShowLimit Then
+  '  Highlight.ShowLimit = LTrim(sText) Begins "function "
+  'Endif
+  
+  Highlight.State = iState
+  Highlight.Tag = iTag
+  
+End

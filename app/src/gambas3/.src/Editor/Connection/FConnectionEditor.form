@@ -1,10 +1,24 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,122,87)
+  MoveScaled(0,0,122,92)
   Arrangement = Arrange.Vertical
+  { HBox2 HBox
+    MoveScaled(1,0,102,4)
+    { btnTitle ToolButton
+      MoveScaled(0,0,4,4)
+      Picture = Picture["img/16/database.png"]
+    }
+    { lblTitle Label
+      MoveScaled(5,0,25,4)
+      Expand = True
+    }
+  }
+  { Separator4 Separator
+    MoveScaled(6,6,13,0)
+  }
   { panToolBar ToolBar
-    MoveScaled(2,0,75,4)
+    MoveScaled(3,6,75,4)
     Key = "connection"
     Text = ("Connection editor")
     Separator = True
@@ -22,32 +36,39 @@
       Action = ".reload"
       Picture = Picture["icon:/small/refresh"]
     }
+    { btnShowSystem ToolButton
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Show system tables")
+      Action = ".show-system"
+      Picture = Picture["img/16/system-table.png"]
+      Toggle = True
+    }
     { btnNewTable ToolButton
-      MoveScaled(10,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("New table")
       Picture = Picture["icon:/small/new"]
     }
     { btnKill ToolButton
-      MoveScaled(14,0,4,4)
+      MoveScaled(16,0,4,4)
       ToolTip = ("Delete table")
       Picture = Picture["icon:/small/delete"]
     }
     { btnRename ToolButton
-      MoveScaled(18,0,13,4)
+      MoveScaled(20,0,13,4)
       ToolTip = ("Rename table")
       AutoResize = True
       Text = ("Rename...")
       Picture = Picture["icon:/small/edit"]
     }
     { btnCopyTable ToolButton
-      MoveScaled(31,0,4,4)
+      MoveScaled(33,0,4,4)
       ToolTip = ("Copy table")
       AutoResize = True
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPasteTable ToolButton
-      MoveScaled(35,0,4,4)
+      MoveScaled(37,0,4,4)
       ToolTip = ("Paste table")
       AutoResize = True
       Text = ("Paste...")
@@ -69,20 +90,13 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(2,5,120,84)
+    MoveScaled(2,12,120,79)
     Expand = True
     { SidePanel1 SidePanel
       MoveScaled(1,1,37,73)
       Arrangement = Arrange.Vertical
       Orientation = Align.Left
       Separator = True
-      { btnTitle ToolButton
-        MoveScaled(0,0,27,4)
-        Picture = Picture["img/16/database.png"]
-      }
-      { Separator4 Separator
-        MoveScaled(5,7,13,0)
-      }
       { lvwTable TreeView
         MoveScaled(1,13,19,26)
         Expand = True
@@ -94,7 +108,7 @@
       MoveScaled(39,1,0,26)
     }
     { VBox1 VBox
-      MoveScaled(41,1,78,81)
+      MoveScaled(41,1,78,77)
       Expand = True
       { splTable VSplit
         MoveScaled(1,1,75,72)
@@ -103,69 +117,8 @@
           MoveScaled(2,2,71,35)
           Arrangement = Arrange.Fill
           Spacing = True
-          { panRequest VBox
-            MoveScaled(10,9,61,24)
-            Visible = False
-            { tlbData2 ToolBar
-              MoveScaled(0,0,51,4)
-              Separator = True
-              { btnRunQuery ToolButton
-                MoveScaled(0,0,13,4)
-                AutoResize = True
-                Text = ("Run query")
-                Picture = Picture["icon:/small/play"]
-              }
-              { btnClear ToolButton
-                MoveScaled(13,0,4,4)
-                ToolTip = ("Cut")
-                Picture = Picture["icon:/small/clear"]
-              }
-              { btnCut ToolButton mnuCut
-                Name = "btnCut"
-                MoveScaled(17,0,4,4)
-                ToolTip = ("Cut")
-                Picture = Picture["icon:/small/cut"]
-              }
-              { btnCopy ToolButton mnuCopy
-                Name = "btnCopy"
-                MoveScaled(21,0,4,4)
-                ToolTip = ("Copy")
-                Picture = Picture["icon:/small/copy"]
-              }
-              { btnPaste ToolButton mnuPaste
-                Name = "btnPaste"
-                MoveScaled(25,0,4,4)
-                ToolTip = ("Paste")
-                Picture = Picture["icon:/small/paste"]
-              }
-              { btnUndo ToolButton mnuUndo
-                Name = "btnUndo"
-                MoveScaled(29,0,4,4)
-                ToolTip = ("Undo")
-                Picture = Picture["icon:/small/undo"]
-              }
-              { btnRedo ToolButton mnuRedo
-                Name = "btnRedo"
-                MoveScaled(33,0,4,4)
-                ToolTip = ("Redo")
-                Picture = Picture["icon:/small/redo"]
-              }
-              { ToolButton1 ToolButton
-                MoveScaled(38,0,9,4)
-                Visible = False
-              }
-            }
-            { edtRequest Editor
-              MoveScaled(3,9,18,5)
-              Expand = True
-              Border = False
-            }
-            { Separator9 Separator
-              MoveScaled(8,18,9,0)
-            }
-          }
           { tabTable TabPanel
-            MoveScaled(3,2,68,26)
+            MoveScaled(4,5,68,26)
             Visible = False
             Expand = True
             Arrangement = Arrange.Vertical
@@ -218,7 +171,7 @@
               MoveScaled(19,6,8,0)
             }
             { tbvField TableView
-              MoveScaled(1,7,55,14)
+              MoveScaled(0,6,55,14)
               Expand = True
               Mode = Select.Single
               Header = GridView.Horizontal
@@ -278,6 +231,68 @@
               Border = False
             }
             Index = 0
+          }
+          { panRequest VBox
+            MoveScaled(6,12,61,24)
+            Visible = False
+            { tlbData2 ToolBar
+              MoveScaled(0,0,51,4)
+              Separator = True
+              { btnRunQuery ToolButton
+                MoveScaled(0,0,13,4)
+                AutoResize = True
+                Text = ("Run query")
+                Picture = Picture["icon:/small/play"]
+              }
+              { btnClear ToolButton
+                MoveScaled(13,0,4,4)
+                ToolTip = ("Cut")
+                Picture = Picture["icon:/small/clear"]
+              }
+              { btnCut ToolButton mnuCut
+                Name = "btnCut"
+                MoveScaled(17,0,4,4)
+                ToolTip = ("Cut")
+                Picture = Picture["icon:/small/cut"]
+              }
+              { btnCopy ToolButton mnuCopy
+                Name = "btnCopy"
+                MoveScaled(21,0,4,4)
+                ToolTip = ("Copy")
+                Picture = Picture["icon:/small/copy"]
+              }
+              { btnPaste ToolButton mnuPaste
+                Name = "btnPaste"
+                MoveScaled(25,0,4,4)
+                ToolTip = ("Paste")
+                Picture = Picture["icon:/small/paste"]
+              }
+              { btnUndo ToolButton mnuUndo
+                Name = "btnUndo"
+                MoveScaled(29,0,4,4)
+                ToolTip = ("Undo")
+                Picture = Picture["icon:/small/undo"]
+              }
+              { btnRedo ToolButton mnuRedo
+                Name = "btnRedo"
+                MoveScaled(33,0,4,4)
+                ToolTip = ("Redo")
+                Picture = Picture["icon:/small/redo"]
+              }
+              { ToolButton1 ToolButton
+                MoveScaled(38,0,9,4)
+                Visible = False
+              }
+            }
+            { edtRequest Editor
+              MoveScaled(3,9,40,7)
+              Expand = True
+              Border = False
+              Highlight = Highlight.SQL
+            }
+            { Separator9 Separator
+              MoveScaled(8,18,9,0)
+            }
           }
         }
         { panData Panel
@@ -364,12 +379,16 @@
     Text = "Save"
     Picture = "icon:/small/save"
   }
+  { Action show-system
+    Text = "Show system tables"
+    Picture = "img/16/system-table.png"
+  }
 }
 
 { Toolbars
   { Toolbar connection
     Text = "Connection editor"
-    List = "save,reload"
-    Default = "save,reload,$btnNewTable,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport,$btnRequest"
+    List = "save,reload,show-system"
+    Default = "save,reload,show-system,$btnNewTable,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport,$btnRequest"
   }
 }

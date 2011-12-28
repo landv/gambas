@@ -105,7 +105,7 @@ void GEditor::reset()
 {
 	x = y = xx = 0;
 	x1m = x2m = 0;
-	ym = -1;
+	y1m = y2m = -1;
 	lastx = -1;
 	cursor = false;
 	lineNumberLength = 0;
@@ -754,7 +754,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 	
 	// Colorize as soon as possible
-	highlight = (doc->getHighlightMode() != GDocument::None) && !doc->isLineEditedSomewhere(realRow); //(l->modified && realRow == y && !getFlag(HighlightCurrent)));
+	highlight = (doc->getHighlightMode() != GDocument::None) && (getFlag(HighlightImmediately) || !doc->isLineEditedSomewhere(realRow)); //(l->modified && realRow == y && !getFlag(HighlightCurrent)));
 	if (highlight)
 	{
 		painting = true;
@@ -903,12 +903,12 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 	
 	// Highlight braces
-	if (getFlag(HighlightBraces) && realRow == ym && x1m >= 0)
+	if (getFlag(HighlightBraces))
 	{
-		//highlight_text(p, x1m * charWidth + margin, fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		//highlight_text(p, x2m * charWidth + margin, fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x1m), fm.ascent(), lineWidth(ym, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x2m), fm.ascent(), lineWidth(ym, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+		if (realRow == y1m && x1m >= 0)
+			highlight_text(p, lineWidth(y1m, x1m), fm.ascent(), lineWidth(y1m, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
+		if (realRow == y2m && x2m >= 0)
+			highlight_text(p, lineWidth(y2m, x2m), fm.ascent(), lineWidth(y2m, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
 	}
@@ -1069,9 +1069,135 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 void GEditor::checkMatching()
 {
 	static GString look("()[]{}");
-
+	
+	GString str;
+	char c, match, search;
+	int pos, len;
+	bool backward;
+	int old_y1m, old_y2m, old_x1m, old_x2m;
+	int level;
+	bool ignore;
+	
+	old_y1m = y1m;
+	old_y2m = y2m;
+	old_x1m = x1m;
+	old_x2m = x2m;
+	
 	if (y < 0 || y >= (int)numLines())
-		return;
+		goto __NOT_FOUND;
+	
+	str = doc->lines.at(y)->s;
+	len = str.length();
+	
+	pos = -1;
+	
+	if (x > 0)
+	{
+		c = str.at(x - 1);
+		pos = look.find(c);
+		x1m = x - 1;
+	}
+	
+	if (pos < 0 && x < len)
+	{
+		c = str.at(x);
+		pos = look.find(c);
+		x1m = x;
+	}
+	
+	if (pos < 0)
+		goto __NOT_FOUND;
+	
+	y1m = y;
+	
+	backward = pos & 1;
+	match = c;
+	search = look.at(pos + (backward ? -1 : 1));
+	
+	//fprintf(stderr, "find '%c' at pos %d. Searching %s for '%c'\n", match, x1m, backward ? "backward" : "forward", search);
+	
+	y2m = y1m;
+	x2m = x1m;
+	level = 0;
+	ignore = false;
+	
+	for(;;)
+	{
+		if (backward)
+		{
+			x2m--;
+			if (x2m < 0)
+			{
+				y2m--;
+				if (y2m < 0)
+					goto __NOT_FOUND;
+				str = doc->lines.at(y2m)->s;
+				len = str.length();
+				x2m = len;
+				continue;
+			}
+		}
+		else
+		{
+			x2m++;
+			if (x2m >= len)
+			{
+				y2m++;
+				if (y2m >= (int)numLines())
+					goto __NOT_FOUND;
+				str = doc->lines.at(y2m)->s;
+				len = str.length();
+				x2m = -1;
+				continue;
+			}
+		}
+		
+		c = str.at(x2m);
+
+		if (ignore)
+		{
+			if (c == '"' && (x2m == 0 || str.at(x2m - 1) != '\\'))
+				ignore = false;
+			continue;
+		}
+		
+		if (c == search)
+		{
+			if (level <= 0)
+				goto __FOUND;
+			level--;
+		}
+		else if (c == match)
+		{
+			level++;
+		}
+		else if (c == '"')
+		{
+			ignore = true;
+		}
+	}
+	
+__NOT_FOUND:
+
+	y1m = y2m = -1;
+	x1m = x2m = -1;
+	
+__FOUND:
+
+	if (y1m != old_y1m || y2m != old_y2m || x1m != old_x1m || x2m != old_x2m)
+	{
+		if (old_y1m >= 0) updateLine(old_y1m);
+		if (old_y2m >= 0) updateLine(old_y2m);
+		if (y1m >= 0) updateLine(y1m);
+		if (y2m >= 0) updateLine(y2m);
+		//fprintf(stderr, "y1m = %d x1m = %d y2m = %d x2m = %d\n", y1m, x1m, y2m, x2m);
+	}
+}
+
+#if 0
+void GEditor::oldCheckMatching()
+{
+
 
 	GString str = doc->lines.at(y)->s;
 	int len = (int)str.length();
@@ -1177,6 +1303,7 @@ __OK:
 			updateLine(ym);
 	}
 }
+#endif
 
 void GEditor::leaveCurrentLine()
 {
@@ -2080,22 +2207,19 @@ void GEditor::ensureCursorVisible()
 	if (!isUpdatesEnabled())
 		return;
 	
-	if (true) // || !isCursorVisible())
-	{
-		xx = lineWidth(y, x); // + _charWidth['m'] / 2
-		yy = realToView(y) * _cellh + _cellh / 2;
-		
-		//qDebug("%p: xx = %d yy = %d vw = %d vh = %d", this, xx, yy, visibleWidth(), visibleHeight());
-		
-		if (xx < visibleWidth())
-			xx = margin;
-		
+	xx = lineWidth(y, x); // + _charWidth['m'] / 2
+	yy = realToView(y) * _cellh + _cellh / 2;
+	
+	//qDebug("%p: xx = %d yy = %d vw = %d vh = %d", this, xx, yy, visibleWidth(), visibleHeight());
+	
+	if (xx >= visibleWidth() || contentsX() > 0)
+		ensureVisible(xx, yy, visibleWidth() / 2, center ? (visibleHeight() / 2) : _cellh);
+	else
 		ensureVisible(xx, yy, margin + 2, center ? (visibleHeight() / 2) : _cellh);
-	}
+	
 	center = false;
 	_ensureCursorVisibleLater = false;
 }
-
 
 void GEditor::startBlink()
 {
@@ -2207,36 +2331,39 @@ void GEditor::setFlag(int f, bool v)
 void GEditor::updateMargin()
 {
 	int charWidth = _charWidth['m'];
-	int nm, lnl = 0;
+	int nm = 0, lnl = 0;
 	
-	nm = 2;
-	
-	if (doc->getHighlightMode() != GDocument::None)
+	if (!getFlag(HideMargin))
 	{
-		if (breakpoint && !breakpoint->isNull())
-			nm += breakpoint->width() + 2;
-		else
-			nm += 8;
-	}
-	else if (getFlag(ShowLineNumbers))
-		nm += 4;
+		nm = 2;
 	
-	if (getFlag(ShowLineNumbers))
-	{
-		int cnt = numLines();
-
-		while (cnt)
+		if (doc->getHighlightMode() != GDocument::None)
 		{
-			nm += charWidth;
-			lnl++;
-			cnt /= 10;
+			if (breakpoint && !breakpoint->isNull())
+				nm += breakpoint->width() + 2;
+			else
+				nm += 8;
+		}
+		else if (getFlag(ShowLineNumbers))
+			nm += 4;
+		
+		if (getFlag(ShowLineNumbers))
+		{
+			int cnt = numLines();
+
+			while (cnt)
+			{
+				nm += charWidth;
+				lnl++;
+				cnt /= 10;
+			}
+			
+			nm += 4;
 		}
 		
-		nm += 4;
+		if (getFlag(ShowModifiedLines) && nm < 6)
+			nm = 6;
 	}
-	
-	if (getFlag(ShowModifiedLines) && nm < 6)
-		nm = 6;
 
 	if (nm != margin)
 	{

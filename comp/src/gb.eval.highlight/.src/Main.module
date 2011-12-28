@@ -9,7 +9,9 @@ Private Const TAG_CODE As Integer = 1
 
 Public Sub Main()
 
-  'HighlightJavascript.Run
+  Highlight.Text = "select * from 'toto';"
+  Highlight.State = Highlight.Normal
+  HighlightSQL.Run
 
 End
 

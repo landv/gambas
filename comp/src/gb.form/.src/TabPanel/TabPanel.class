@@ -58,8 +58,8 @@ Public Sub _new()
 
   $hPanel = New DrawingArea(Me) As "Panel"
   $hPanel.Expand = True
-  $hPanel.Arrangement = Arrange.Fill
-  $hPanel.Padding = 1
+  '$hPanel.Arrangement = Arrange.Fill
+  '$hPanel.Padding = 1
 
   Me.Count = 1
   Me.Arrangement = Arrange.None
@@ -143,6 +143,8 @@ Public Sub TabBar_Arrange()
   _EnsureCurrentVisible
   
 End
+
+
 
 
 
@@ -230,6 +232,19 @@ Private Sub Index_Write(iIndex As Integer)
 
 End
 
+Private Sub UpdateCurrentContainer()
+  
+  If $iCurrent < 0 Then Return
+  
+  If $bBorder Then
+    $aCont[$iCurrent].Move(1, 0, $hPanel.W - 2, $hPanel.H - 1)
+  Else
+    $aCont[$iCurrent].Move(0, 0, $hPanel.W, $hPanel.H)
+  Endif
+  
+End
+
+
 Private Sub UpdateContainer()
 
   Dim hTab As _TabPanelContainer
@@ -240,13 +255,11 @@ Private Sub UpdateContainer()
 
     With $aCont[iInd]
       If iInd = $iCurrent Then
-        .Move(0, 0)
-        .Ignore = False
+        UpdateCurrentContainer
         .Show
       Else If .Visible Then
         .Hide
-        .Ignore = True
-        .Move(0, - .H)
+        .Move(0, - $hPanel.H)
       Endif
     End With
 
@@ -309,6 +322,7 @@ Private Sub Border_Write(bBorder As Boolean)
   Dim hButton As _TabPanelButton
 
   $bBorder = bBorder
+  '$hPanel.Padding = If(bBorder, 1, 0)
   $hPanel.Refresh
   
   For Each hButton In $aButton
@@ -437,6 +451,13 @@ Public Sub Panel_Draw()
   
 End
 
+Public Sub Panel_Arrange()
+  
+  UpdateCurrentContainer
+  
+End
+
+
 
 Private Function Orientation_Read() As Integer
 
@@ -484,11 +505,12 @@ End
 
 Public Sub _SetVisible(Index As Integer, bVisible As Boolean)
   
-  $aButton[Index].Visible = bVisible
   If Not bVisible And If Index = $iCurrent Then
     Try _MoveNext()
     If Error Then Try _MovePrevious()
   Endif
+  $aButton[Index].Visible = bVisible
+  UpdateLayout
   
 End
 

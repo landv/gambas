@@ -304,7 +304,7 @@ Finally
   
 End
 
-Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection)
+Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSystem As Boolean)
   
   Dim hTable As Table
   Dim sName As String
@@ -315,6 +315,9 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection)
   
   'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
   For Each hTable In hConn.Tables
+    
+    If hTable.System And If Not bShowSystem Then Continue
+    
     sName = hTable.Name
     iPos = InStr(sName, ".")
     If iPos Then

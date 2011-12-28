@@ -48,7 +48,8 @@ enum
 	HIGHLIGHT_DIFF,
 	HIGHLIGHT_JAVASCRIPT,
 	HIGHLIGHT_C,
-	HIGHLIGHT_CPLUSPLUS
+	HIGHLIGHT_CPLUSPLUS,
+	HIGHLIGHT_SQL
 };
 
 typedef
@@ -66,6 +67,7 @@ static HIGHLIGHT_NAME _highlight_name[] = {
 	{ HIGHLIGHT_JAVASCRIPT, "_DoJavascript" },
 	{ HIGHLIGHT_C, "_DoC" },
 	{ HIGHLIGHT_CPLUSPLUS, "_DoCPlusPlus" },
+	{ HIGHLIGHT_SQL, "_DoSQL" },
 	{ HIGHLIGHT_CUSTOM, NULL }
 };
 
@@ -1103,6 +1105,7 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("JavaScript", "i", HIGHLIGHT_JAVASCRIPT),
   GB_CONSTANT("C", "i", HIGHLIGHT_C),
   GB_CONSTANT("CPlusPlus", "i", HIGHLIGHT_CPLUSPLUS),
+  GB_CONSTANT("SQL", "i", HIGHLIGHT_SQL),
 
   GB_CONSTANT("Background", "i", HIGHLIGHT_BACKGROUND),
   GB_CONSTANT("Normal", "i", HIGHLIGHT_NORMAL),
@@ -1225,9 +1228,10 @@ GB_DESC CEditorDesc[] =
   GB_CONSTANT("ShowCurrentLine", "i", GEditor::ShowCurrentLine),
   GB_CONSTANT("ShowLineNumbers", "i", GEditor::ShowLineNumbers),
   GB_CONSTANT("HighlightBraces", "i", GEditor::HighlightBraces),
-  GB_CONSTANT("HighlightCurrent", "i", GEditor::HighlightCurrent),
+  GB_CONSTANT("HighlightImmediately", "i", GEditor::HighlightImmediately),
   GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
   //GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
+  GB_CONSTANT("HideMargin", "i", GEditor::HideMargin),
 
   GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CEDITOR_free, NULL),

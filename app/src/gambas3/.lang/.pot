@@ -327,7 +327,7 @@ msgstr ""
 msgid "Gambas reports"
 msgstr ""
 
-#: CProjectTree.class:290 FMain.form:938 FSearch.class:98 FSelectIcon.form:31
+#: CProjectTree.class:290 FMain.form:939 FSearch.class:98 FSelectIcon.form:31
 #: Project.module:1605
 msgid "Project"
 msgstr ""
@@ -365,7 +365,7 @@ msgid "This month"
 msgstr ""
 
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
-#: FConflict.class:191 FConnectionEditor.class:284 FCreateFile.form:436
+#: FConflict.class:191 FConnectionEditor.class:295 FCreateFile.form:436
 #: FDebugInfo.form:218 FEditor.class:2379 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3025
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1413
@@ -419,9 +419,9 @@ msgid ""
 msgstr ""
 
 #: Design.module:408 FColorChooser.form:54 FCommit.form:223
-#: FConnectionEditor.class:441 FCreateFile.form:430 FFieldChooser.form:132
+#: FConnectionEditor.class:452 FCreateFile.form:430 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
-#: FMain.form:1316 FMenu.form:373 FNewConnection.form:237 FNewTable.form:80
+#: FMain.form:1317 FMenu.form:373 FNewConnection.form:237 FNewTable.form:80
 #: FNewTranslation.form:15 FOpenProject.form:168 FPasteSpecial.form:71
 #: FPropertyComponent.form:215 FPropertyProject.form:696
 #: FReportBorderChooser.form:54 FReportBrushChooser.form:40
@@ -511,31 +511,31 @@ msgid ""
 "Some files are not versioned and should be added manually to the repository."
 msgstr ""
 
-#: FCommit.form:91 FConflict.form:53 FConnectionEditor.form:207
+#: FCommit.form:91 FConflict.form:53 FConnectionEditor.form:361
 #: FEditor.form:153 FForm.form:209 FIconEditor.form:102 FImageEditor.form:71
 #: FMenu.form:107 FOutput.form:58 FTextEditor.form:93
 msgid "Cut"
 msgstr ""
 
-#: FCommit.form:97 FConflict.form:59 FConnectionEditor.form:117
+#: FCommit.form:97 FConflict.form:59 FConnectionEditor.form:146
 #: FEditor.form:159 FForm.form:216 FIconEditor.form:110 FImageEditor.form:80
 #: FMenu.form:113 FOutput.form:65 FTextEditor.form:100
 msgid "Copy"
 msgstr ""
 
-#: FCommit.form:103 FConflict.form:65 FConnectionEditor.form:228
+#: FCommit.form:103 FConflict.form:65 FConnectionEditor.form:382
 #: FEditor.form:166 FForm.form:229 FIconEditor.form:118 FImageEditor.form:89
 #: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:107
 msgid "Paste"
 msgstr ""
 
-#: FCommit.form:109 FConflict.form:71 FConnectionEditor.form:235
+#: FCommit.form:109 FConflict.form:71 FConnectionEditor.form:389
 #: FEditor.form:137 FForm.form:470 FIconEditor.form:86 FImageEditor.form:99
 #: FOption.form:611 FOutput.form:41 FTextEditor.form:76
 msgid "Undo"
 msgstr ""
 
-#: FCommit.form:115 FConflict.form:77 FConnectionEditor.form:242
+#: FCommit.form:115 FConflict.form:77 FConnectionEditor.form:396
 #: FEditor.form:144 FForm.form:480 FImageEditor.form:107 FOutput.form:48
 #: FTextEditor.form:83
 msgid "Redo"
@@ -631,7 +631,7 @@ msgid ""
 "You must resolve the conflict in order to use the file."
 msgstr ""
 
-#: FConflict.class:25 FMain.form:613
+#: FConflict.class:25 FMain.form:614
 msgid "&Edit"
 msgstr ""
 
@@ -663,250 +663,254 @@ msgstr ""
 msgid "Conflict files"
 msgstr ""
 
-#: FConnectionEditor.form:74
+#: FConnectionEditor.form:95
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.form:80 FEditor.form:322 FForm.form:384
+#: FConnectionEditor.form:101 FEditor.form:322 FForm.form:384
 #: FIconEditor.form:71 FImageEditor.form:54 FMenu.class:64
 #: FTextEditor.form:219
 msgid "Save"
 msgstr ""
 
-#: FConnectionEditor.form:88 FEditor.form:316 FForm.form:378
+#: FConnectionEditor.form:109 FEditor.form:316 FForm.form:378
 #: FHelpBrowser.form:67 FIconEditor.form:78 FImageEditor.form:62
 #: FTextEditor.form:213 FTranslate.class:730
 msgid "Reload"
 msgstr ""
 
-#: FConnectionEditor.form:95 FNewTable.form:19
+#: FConnectionEditor.form:116
+msgid "Show system tables"
+msgstr ""
+
+#: FConnectionEditor.form:124 FNewTable.form:19
 msgid "New table"
 msgstr ""
 
-#: FConnectionEditor.form:101
+#: FConnectionEditor.form:130
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.form:107 FNewTable.class:30
+#: FConnectionEditor.form:136 FNewTable.class:30
 msgid "Rename table"
 msgstr ""
 
-#: FConnectionEditor.form:109
+#: FConnectionEditor.form:138
 msgid "Rename..."
 msgstr ""
 
-#: FConnectionEditor.form:115
+#: FConnectionEditor.form:144
 msgid "Copy table"
 msgstr ""
 
-#: FConnectionEditor.form:123 FPasteTable.form:22
+#: FConnectionEditor.form:152 FPasteTable.form:22
 msgid "Paste table"
 msgstr ""
 
-#: FConnectionEditor.form:125
+#: FConnectionEditor.form:154
 msgid "Paste..."
 msgstr ""
 
-#: FConnectionEditor.form:131
+#: FConnectionEditor.form:160
 msgid "Import text file"
 msgstr ""
 
-#: FConnectionEditor.form:133
+#: FConnectionEditor.form:162
 msgid "Import..."
 msgstr ""
 
-#: FConnectionEditor.form:139
+#: FConnectionEditor.form:168
 msgid "SQL request"
 msgstr ""
 
-#: FConnectionEditor.form:201
-msgid "Run query"
-msgstr ""
-
-#: FConnectionEditor.form:271
+#: FConnectionEditor.form:218
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.form:287 FMain.class:1820
+#: FConnectionEditor.form:234 FMain.class:1820
 msgid "Add"
 msgstr ""
 
-#: FConnectionEditor.form:294 FMakeInstall.class:959
+#: FConnectionEditor.form:241 FMakeInstall.class:959
 msgid "Remove"
 msgstr ""
 
-#: FConnectionEditor.form:301
+#: FConnectionEditor.form:248
 msgid "Down"
 msgstr ""
 
-#: FConnectionEditor.form:308
+#: FConnectionEditor.form:255
 msgid "Up"
 msgstr ""
 
-#: FConnectionEditor.form:316
+#: FConnectionEditor.form:263
 msgid "Copy field list"
 msgstr ""
 
-#: FConnectionEditor.form:333
+#: FConnectionEditor.form:280
 msgid "Indexes"
 msgstr ""
 
-#: FConnectionEditor.form:350
+#: FConnectionEditor.form:297
 msgid "New index"
 msgstr ""
 
-#: FConnectionEditor.form:427 FForm.form:236 FMain.class:200
+#: FConnectionEditor.form:355
+msgid "Run query"
+msgstr ""
+
+#: FConnectionEditor.form:448 FForm.form:236 FMain.class:200
 #: FNewConnection.class:317 FOption.class:765 FTranslate.class:636
 msgid "Delete"
 msgstr ""
 
-#: FConnectionEditor.form:433 FExportData.form:15
+#: FConnectionEditor.form:454 FExportData.form:15
 msgid "Export to CSV file"
 msgstr ""
 
-#: FConnectionEditor.form:435
+#: FConnectionEditor.form:456
 msgid "Export..."
 msgstr ""
 
-#: FConnectionEditor.class:32 FCreateFile.form:289 FCreateProject.form:371
+#: FConnectionEditor.class:34 FCreateFile.form:289 FCreateProject.form:371
 #: FDebugInfo.class:33 FNewConnection.form:58 FNewTable.form:33
 msgid "Name"
 msgstr ""
 
-#: FConnectionEditor.class:37 FCreateFile.form:340 FCreateProject.form:93
+#: FConnectionEditor.class:39 FCreateFile.form:340 FCreateProject.form:93
 #: FInfo.form:84 FNewConnection.form:72 FNewTable.form:48
 msgid "Type"
 msgstr ""
 
-#: FConnectionEditor.class:42
+#: FConnectionEditor.class:44
 msgid "Length"
 msgstr ""
 
-#: FConnectionEditor.class:47
+#: FConnectionEditor.class:49
 msgid "Default value"
 msgstr ""
 
-#: FConnectionEditor.class:58 FDebugExpr.class:463 FHelpBrowser.form:41
+#: FConnectionEditor.class:60 FDebugExpr.class:463 FHelpBrowser.form:41
 msgid "Index"
 msgstr ""
 
-#: FConnectionEditor.class:63
+#: FConnectionEditor.class:65
 msgid "Unique"
 msgstr ""
 
-#: FConnectionEditor.class:68 FImportTable.class:361
+#: FConnectionEditor.class:70 FImportTable.class:361
 msgid "Field"
 msgstr ""
 
-#: FConnectionEditor.class:198
+#: FConnectionEditor.class:204
 msgid "Unable to connect to database."
 msgstr ""
 
-#: FConnectionEditor.class:284
+#: FConnectionEditor.class:295
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:284
+#: FConnectionEditor.class:295
 msgid "Do not save"
 msgstr ""
 
-#: FConnectionEditor.class:398
+#: FConnectionEditor.class:409
 msgid "Unable to load table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:448
+#: FConnectionEditor.class:459
 msgid "Unable to run query."
 msgstr ""
 
-#: FConnectionEditor.class:480
+#: FConnectionEditor.class:491
 msgid "unlimited"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:94
+#: FConnectionEditor.class:571 MConnection.module:94
 msgid "Boolean"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:86
+#: FConnectionEditor.class:571 MConnection.module:86
 msgid "Integer"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:88
+#: FConnectionEditor.class:571 MConnection.module:88
 msgid "Long"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:98
+#: FConnectionEditor.class:571 MConnection.module:98
 msgid "Serial"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:90
+#: FConnectionEditor.class:571 MConnection.module:90
 msgid "Float"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:96
+#: FConnectionEditor.class:571 MConnection.module:96
 msgid "String"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:92
+#: FConnectionEditor.class:571 MConnection.module:92
 msgid "Date"
 msgstr ""
 
-#: FConnectionEditor.class:560 MConnection.module:100
+#: FConnectionEditor.class:571 MConnection.module:100
 msgid "Blob"
 msgstr ""
 
-#: FConnectionEditor.class:639
+#: FConnectionEditor.class:650
 msgid "This name is already in used."
 msgstr ""
 
-#: FConnectionEditor.class:664
+#: FConnectionEditor.class:675
 msgid "Please enter a number."
 msgstr ""
 
-#: FConnectionEditor.class:669
+#: FConnectionEditor.class:680
 msgid "The length must be greater than 1 and lower than 255."
 msgstr ""
 
-#: FConnectionEditor.class:693
+#: FConnectionEditor.class:704
 msgid "Type mismatch."
 msgstr ""
 
-#: FConnectionEditor.class:733
+#: FConnectionEditor.class:744
 msgid "This name already exists."
 msgstr ""
 
-#: FConnectionEditor.class:814
+#: FConnectionEditor.class:825
 msgid "This field is used in an index."
 msgstr ""
 
-#: FConnectionEditor.class:1165
+#: FConnectionEditor.class:1176
 msgid "The table '&1' has no primary key."
 msgstr ""
 
-#: FConnectionEditor.class:1252
+#: FConnectionEditor.class:1263
 msgid "Cannot write table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:1365
+#: FConnectionEditor.class:1376
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FConnectionEditor.class:1376
+#: FConnectionEditor.class:1387
 msgid "Cannot delete table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:1412
+#: FConnectionEditor.class:1423
 msgid "Select the CSV file to import"
 msgstr ""
 
-#: FConnectionEditor.class:1413 FExportData.class:21
+#: FConnectionEditor.class:1424 FExportData.class:21
 msgid "CSV files"
 msgstr ""
 
-#: FConnectionEditor.class:1413 FTranslate.class:1266
+#: FConnectionEditor.class:1424 FTranslate.class:1266
 msgid "All files"
 msgstr ""
 
-#: FConnectionEditor.class:1436
+#: FConnectionEditor.class:1447
 msgid "Do you really want to remove the selected rows?"
 msgstr ""
 
@@ -918,7 +922,7 @@ msgstr ""
 msgid "New file"
 msgstr ""
 
-#: FCreateFile.form:80 FMain.form:517
+#: FCreateFile.form:80 FMain.form:518
 msgid "New"
 msgstr ""
 
@@ -1019,7 +1023,7 @@ msgstr ""
 msgid "Cannot add file."
 msgstr ""
 
-#: FCreateProject.form:62 FMain.form:831
+#: FCreateProject.form:62 FMain.form:832
 msgid "New project"
 msgstr ""
 
@@ -1162,11 +1166,11 @@ msgstr ""
 msgid "Symbol"
 msgstr ""
 
-#: FDebugInfo.form:45 FMain.form:1214
+#: FDebugInfo.form:45 FMain.form:1215
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.form:58 FMain.form:966 FOption.form:568 FSearch.class:94
+#: FDebugInfo.form:58 FMain.form:967 FOption.form:568 FSearch.class:94
 msgid "Console"
 msgstr ""
 
@@ -1194,7 +1198,7 @@ msgstr ""
 msgid "Remove current expression"
 msgstr ""
 
-#: FDebugInfo.form:127 FMain.form:727 FMakeInstall.form:570 FOption.form:821
+#: FDebugInfo.form:127 FMain.form:728 FMakeInstall.form:570 FOption.form:821
 #: FPropertyComponent.form:190 FPropertyProject.form:444
 msgid "&Remove"
 msgstr ""
@@ -1317,7 +1321,7 @@ msgstr ""
 msgid "Open form"
 msgstr ""
 
-#: FEditor.form:128 FForm.form:141 FMain.form:680
+#: FEditor.form:128 FForm.form:141 FMain.form:681
 msgid "&Startup class"
 msgstr ""
 
@@ -1734,7 +1738,7 @@ msgid ""
 "All your changes will be lost."
 msgstr ""
 
-#: FFormStack.form:15 FMain.form:1243
+#: FFormStack.form:15 FMain.form:1244
 msgid "Hierarchy"
 msgstr ""
 
@@ -1762,7 +1766,7 @@ msgstr ""
 msgid "Go to line"
 msgstr ""
 
-#: FHelpBrowser.form:29 FMain.form:984
+#: FHelpBrowser.form:29 FMain.form:985
 msgid "Help browser"
 msgstr ""
 
@@ -2116,11 +2120,11 @@ msgstr ""
 msgid "Cl&ear"
 msgstr ""
 
-#: FList.form:92 FMain.form:640 FSystemInfo.form:72
+#: FList.form:92 FMain.form:641 FSystemInfo.form:72
 msgid "&Copy"
 msgstr ""
 
-#: FList.form:98 FMain.form:647
+#: FList.form:98 FMain.form:648
 msgid "&Paste"
 msgstr ""
 
@@ -2264,263 +2268,263 @@ msgstr ""
 msgid "&Properties"
 msgstr ""
 
-#: FMain.form:434
+#: FMain.form:435
 msgid "&Console"
 msgstr ""
 
-#: FMain.form:444
+#: FMain.form:445
 msgid "Status bar"
 msgstr ""
 
-#: FMain.form:452
+#: FMain.form:453
 msgid "Hide menubar"
 msgstr ""
 
-#: FMain.form:458
+#: FMain.form:459
 msgid "Close &all windows"
 msgstr ""
 
-#: FMain.form:464
+#: FMain.form:465
 msgid "&Tools"
 msgstr ""
 
-#: FMain.form:467
+#: FMain.form:468
 msgid "&Find..."
 msgstr ""
 
-#: FMain.form:473
+#: FMain.form:474
 msgid "&Replace..."
 msgstr ""
 
-#: FMain.form:483
+#: FMain.form:484
 msgid "&Browse project..."
 msgstr ""
 
-#: FMain.form:490
+#: FMain.form:491
 msgid "&Open a terminal..."
 msgstr ""
 
-#: FMain.form:500
+#: FMain.form:501
 msgid "&Shortcuts..."
 msgstr ""
 
-#: FMain.form:506
+#: FMain.form:507
 msgid "&Preferences..."
 msgstr ""
 
-#: FMain.form:521
+#: FMain.form:522
 msgid "&Directory"
 msgstr ""
 
-#: FMain.form:527
+#: FMain.form:528
 msgid "&Project link..."
 msgstr ""
 
-#: FMain.form:538
+#: FMain.form:539
 msgid "&Module..."
 msgstr ""
 
-#: FMain.form:546
+#: FMain.form:547
 msgid "&Class..."
 msgstr ""
 
-#: FMain.form:554
+#: FMain.form:555
 msgid "&Form..."
 msgstr ""
 
-#: FMain.form:562
+#: FMain.form:563
 msgid "&WebPage..."
 msgstr ""
 
-#: FMain.form:570
+#: FMain.form:571
 msgid "&Report..."
 msgstr ""
 
-#: FMain.form:581
+#: FMain.form:582
 msgid "&Image..."
 msgstr ""
 
-#: FMain.form:588
+#: FMain.form:589
 msgid "&HTML file..."
 msgstr ""
 
-#: FMain.form:595
+#: FMain.form:596
 msgid "&Style sheet..."
 msgstr ""
 
-#: FMain.form:603
+#: FMain.form:604
 msgid "&Other..."
 msgstr ""
 
-#: FMain.form:618
+#: FMain.form:619
 msgid "Edit &code"
 msgstr ""
 
-#: FMain.form:622
+#: FMain.form:623
 msgid "Edit with"
 msgstr ""
 
-#: FMain.form:633
+#: FMain.form:634
 msgid "&Cut"
 msgstr ""
 
-#: FMain.form:654
+#: FMain.form:655
 msgid "&Rename..."
 msgstr ""
 
-#: FMain.form:661
+#: FMain.form:662
 msgid "&Delete..."
 msgstr ""
 
-#: FMain.form:671
+#: FMain.form:672
 msgid "Copy file pat&h"
 msgstr ""
 
-#: FMain.form:688
+#: FMain.form:689
 msgid "&Add to repository"
 msgstr ""
 
-#: FMain.form:713
+#: FMain.form:714
 msgid "&New connection..."
 msgstr ""
 
-#: FMain.form:721
+#: FMain.form:722
 msgid "&Open"
 msgstr ""
 
-#: FMain.form:781
+#: FMain.form:782
 msgid "&?"
 msgstr ""
 
-#: FMain.form:790
+#: FMain.form:791
 msgid "&Help browser"
 msgstr ""
 
-#: FMain.form:798
+#: FMain.form:799
 msgid "&Tips of the day"
 msgstr ""
 
-#: FMain.form:806
+#: FMain.form:807
 msgid "&System informations..."
 msgstr ""
 
-#: FMain.form:812
+#: FMain.form:813
 msgid "&About Gambas..."
 msgstr ""
 
-#: FMain.form:838
+#: FMain.form:839
 msgid "Open project"
 msgstr ""
 
-#: FMain.form:847
+#: FMain.form:848
 msgid "Save project"
 msgstr ""
 
-#: FMain.form:854 FSaveProjectAs.form:15
+#: FMain.form:855 FSaveProjectAs.form:15
 msgid "Save project as"
 msgstr ""
 
-#: FMain.form:861 FPropertyProject.form:107
+#: FMain.form:862 FPropertyProject.form:107
 msgid "Project properties"
 msgstr ""
 
-#: FMain.form:868 FPropertyComponent.form:37
+#: FMain.form:869 FPropertyComponent.form:37
 msgid "Component properties"
 msgstr ""
 
-#: FMain.form:876
+#: FMain.form:877
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.form:883 FOption.form:147
+#: FMain.form:884 FOption.form:147
 msgid "Preferences"
 msgstr ""
 
-#: FMain.form:892
+#: FMain.form:893
 msgid "Shortcuts"
 msgstr ""
 
-#: FMain.form:903
+#: FMain.form:904
 msgid "Translate"
 msgstr ""
 
-#: FMain.form:911
+#: FMain.form:912
 msgid "Make source archive"
 msgstr ""
 
-#: FMain.form:918 FMakeExecutable.form:15
+#: FMain.form:919 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr ""
 
-#: FMain.form:926 FMakeInstall.form:99
+#: FMain.form:927 FMakeInstall.form:99
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.form:948
+#: FMain.form:949
 msgid "Properties sheet"
 msgstr ""
 
-#: FMain.form:957
+#: FMain.form:958
 msgid "Toolbox"
 msgstr ""
 
-#: FMain.form:975 FSearch.form:61
+#: FMain.form:976 FSearch.form:61
 msgid "Search"
 msgstr ""
 
-#: FMain.form:992
+#: FMain.form:993
 msgid "Compile"
 msgstr ""
 
-#: FMain.form:999
+#: FMain.form:1000
 msgid "Compile all"
 msgstr ""
 
-#: FMain.form:1006
+#: FMain.form:1007
 msgid "Run"
 msgstr ""
 
-#: FMain.form:1013
+#: FMain.form:1014
 msgid "Pause"
 msgstr ""
 
-#: FMain.form:1020
+#: FMain.form:1021
 msgid "Stop"
 msgstr ""
 
-#: FMain.form:1027
+#: FMain.form:1028
 msgid "Step"
 msgstr ""
 
-#: FMain.form:1034
+#: FMain.form:1035
 msgid "Forward"
 msgstr ""
 
-#: FMain.form:1041
+#: FMain.form:1042
 msgid "Finish current function"
 msgstr ""
 
-#: FMain.form:1049
+#: FMain.form:1050
 msgid "Run until current line"
 msgstr ""
 
-#: FMain.form:1056
+#: FMain.form:1057
 msgid "Browse project..."
 msgstr ""
 
-#: FMain.form:1166
+#: FMain.form:1167
 msgid "Reset filter"
 msgstr ""
 
-#: FMain.form:1172
+#: FMain.form:1173
 msgid "Show exported classes"
 msgstr ""
 
-#: FMain.form:1178
+#: FMain.form:1179
 msgid "Show added files"
 msgstr ""
 
-#: FMain.form:1223 FProperty.form:24 MHelp.module:571
+#: FMain.form:1224 FProperty.form:24 MHelp.module:571
 msgid "Properties"
 msgstr ""
 
@@ -2612,7 +2616,7 @@ msgstr ""
 msgid "Create a shortcut on the desktop"
 msgstr ""
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1053
+#: FMakeExecutable.class:18 FPropertyProject.class:1057
 msgid "Gambas applications"
 msgstr ""
 
@@ -2848,7 +2852,7 @@ msgstr ""
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:327 FPropertyProject.class:805 FSave.form:21
+#: FMakeInstall.class:327 FPropertyProject.class:809 FSave.form:21
 #: Project.module:3082
 msgid "Continue"
 msgstr ""
@@ -3695,31 +3699,31 @@ msgstr ""
 msgid "The &1 component needs the &2 component."
 msgstr ""
 
-#: FPropertyProject.class:764
+#: FPropertyProject.class:766
 msgid "There is no change to commit."
 msgstr ""
 
-#: FPropertyProject.class:796
+#: FPropertyProject.class:800
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FPropertyProject.class:798
+#: FPropertyProject.class:802
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FPropertyProject.class:805
+#: FPropertyProject.class:809
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: FPropertyProject.class:1052
+#: FPropertyProject.class:1056
 msgid "Select a Gambas application"
 msgstr ""
 
-#: FPropertyProject.class:1063
+#: FPropertyProject.class:1067
 msgid "<b>&1</b> is already used as a library."
 msgstr ""
 
-#: FPropertyProject.class:1069
+#: FPropertyProject.class:1073
 msgid "<b>&1</b> does not export any class."
 msgstr ""
 

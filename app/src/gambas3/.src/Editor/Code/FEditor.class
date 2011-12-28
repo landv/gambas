@@ -2982,7 +2982,7 @@ Private Sub InitEditor(hEditor As Editor)
     .Border = False
     .View = edtEditor
     .Highlight = edtEditor.Highlight
-    .Flags[Editor.HighlightCurrent] = True
+    .Flags[Editor.Highlight] = True
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]

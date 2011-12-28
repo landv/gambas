@@ -1206,7 +1206,6 @@ void GDocument::colorize(int y, bool force)
 	if (y < 0)
 		return;
 
-	//fprintf(stderr, "--------------------\ncolorize: %d\n", y);
 	if (force)
 	{
 		if (colorizeFrom > y)
@@ -1216,7 +1215,6 @@ void GDocument::colorize(int y, bool force)
 	if (y < colorizeFrom)
 		return;
 	
-	//fprintf(stderr, "colorizeFrom = %d\n", colorizeFrom);
 	yy = colorizeFrom;
 	updateFrom = -1;
 	
@@ -1237,8 +1235,6 @@ void GDocument::colorize(int y, bool force)
 				break;
 		}
 		
-		//qDebug("colorize: %d: %s", y, l->s.utf8());
-
 		if (updateFrom < 0)
 			updateFrom = yy;
 		//modif = false;
@@ -1335,7 +1331,7 @@ void GDocument::colorize(int y, bool force)
 	if (changed)
 		emitTextChanged();
 	
-	if (updateFrom > 0)
+	if (updateFrom >= 0)
 		updateViews(updateFrom, yy - updateFrom + 1);
 	
 	if (updateAll)
@@ -1507,7 +1503,7 @@ bool GDocument::isLineEditedSomewhere(int y)
 	FOR_EACH_VIEW(v)
 	{
 		//fprintf(stderr, "check with %d\n", v->y);
-		if (v->y == y)
+		if (v->y == y && !v->getFlag(GEditor::HighlightImmediately))
 		{
 			//fprintf(stderr, "--> true\n");
 			return true;

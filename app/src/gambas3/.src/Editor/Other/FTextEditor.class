@@ -519,7 +519,7 @@ Private Sub InitEditor(hEditor As Editor)
     .Border = False
     .View = edtEditor
     .Highlight = edtEditor.Highlight
-    .Flags[Editor.HighlightCurrent] = edtEditor.Flags[Editor.HighlightCurrent]
+    '.Flags[Editor.HighlightImmediately] = edtEditor.Flags[Editor.HighlightImmediately]
     .Flags[Editor.HighlightBraces] = edtEditor.Flags[Editor.HighlightBraces]
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
     .ReadOnly = edtEditor.ReadOnly

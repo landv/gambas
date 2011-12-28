@@ -9,6 +9,8 @@ Private $bModify As Boolean
 Private $sTable As String
 Private $sType As String
 Private $bReadOnly As Boolean
+Private $bShowSystem As Boolean
+Private $sTitle As String
 
 Private $aField As New CField[]
 Private $cFieldName As New Collection
@@ -79,14 +81,17 @@ Private Sub LoadList(Optional sTable As String)
   Dim hPict As Picture
   Dim sKey As String
   
-  MConnection.FillViewWithTables(lvwTable, $hConn)
+  MConnection.FillViewWithTables(lvwTable, $hConn, $bShowSystem)
   
-  If Not sTable Then 
-    btnRequest_Click
-  Else
-    $sTable = ""
-    LoadTable(sTable)
+  If sTable Then
+    If lvwTable.Exist("T" & sTable) Or If lvwTable.Exist("S" & sTable) Then
+      $sTable = ""
+      LoadTable(sTable)
+      Return
+    Endif
   Endif
+  
+  btnRequest_Click
 
 End
 
@@ -116,7 +121,7 @@ Private Sub SetReadOnly(bReadOnly As Boolean)
   
   btnKill.Enabled = Not bReadOnly
   btnRename.Enabled = Not bReadOnly
-  btnCopy.Enabled = Not bReadOnly
+  'btnCopy.Enabled = Not bReadOnly
   tlbField.Enabled = Not bReadOnly
   tlbIndex.Enabled = Not bReadOnly
   $bReadOnly = bReadOnly
@@ -139,7 +144,7 @@ End
 
 Public Sub GetDescription() As String
   
-  Return btnTitle.Tooltip
+  Return $sTitle
   
 End
 
@@ -178,8 +183,9 @@ Public Sub Reload() As Boolean
   Endif
   sTitle &= "/" & $hConn.Name
   
-  btnTitle.Text = "  " & sTitle & "  "
-  btnTitle.Tooltip = sTitle
+  $sTitle = sTitle
+  
+  lblTitle.Text = "  " & sTitle & "  "
   
   datData.Connection = $hConn
   datRequest.Connection = $hConn
@@ -259,6 +265,11 @@ Public Sub ReadConfig()
   Dim iGrade As Integer
   
   edtRequest.ReadConfig
+  edtRequest.Flags[Editor.ShowLimits] = False
+  edtRequest.Flags[Editor.ShowModifiedLines] = False
+  edtRequest.Flags[Editor.HighlightImmediately] = True
+  edtRequest.Flags[Editor.HideMargin] = True
+
   iGrade = - Settings["/TabStripFont", 0]
   For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData, dvwRequest]
     hCtrl.Font.Grade = iGrade
@@ -1554,6 +1565,14 @@ Public Sub Rename(sNewName As String, sNewPath As String)
   Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
   DrawTitle
+
+End
+
+
+Public Sub btnShowSystem_Click()
+
+  $bShowSystem = btnShowSystem.Value
+  LoadList($sTable)
 
 End
 
