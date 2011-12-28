@@ -600,7 +600,7 @@ Private Sub SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         'sinon il maintien sa taille
         fHeight = hTItem.SizeHint.Height
       Endif
-
+      oChild._Index = hTItem.Index
       'Print Object.Type(hChild) & "  " & fHeight
       If Not oChild.Ignore Then
         hTItem._SetGeometry(aColX[i], fTmpY, hTItem.SizeHint.Width, fHeight)
@@ -867,6 +867,7 @@ Private Function SetFChildGeometry(X As Float, Y As Float, W As Float, H As Floa
 
   Next
   For Each oChild In aPageItems
+    oChild._Index = hTItem.Index
     hTItem._SetGeometry(X, Y, W, H)
     hChild._SetChildGeometry(X, Y, W, H, ContPage, hTItem, bInFixed Or Me.Fixed)
     If oChild Is ReportContainer Then
@@ -916,7 +917,7 @@ Private Function SetNChildGeometry(X As Float, Y As Float, W As Float, H As Floa
     hChildHints = hTItem.SizeHint
     iX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
     iY = Y + IIf(oChild._RelativeTop, H * oChild._Top / 100, oChild._Top)
-
+    oChild._Index = hTItem.Index
     hTItem._SetGeometry(iX, iY, hChildHints.Width, hChildHints.Height)
     hChild._SetChildGeometry(iX, iY, hChildHints.Width, hChildHints.Height, ContPage, hTItem, bInFixed Or Me.Fixed)
 
@@ -1015,6 +1016,7 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'sinon il maintien sa taille
       fWidth = hTItem.SizeHint.Width
     Endif
+    oChild._Index = hTItem.Index
     If Not oChild.Ignore Then
       hTItem._SetGeometry(fTmpX, Y, fWidth, H)
       oChild._SetChildGeometry(fTmpX, Y, fWidth, H, ContPage, hTItem, bInFixed Or Me.Fixed)
