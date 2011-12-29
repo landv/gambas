@@ -261,9 +261,10 @@ Private Sub UpdateContainer()
       If iInd = $iCurrent Then
         UpdateCurrentContainer
         .Show
+        '.Raise
       Else If .Visible Then
         .Hide
-        .Move(0, - $hPanel.H)
+        '.Move(0, - $hPanel.H)
       Endif
     End With
 

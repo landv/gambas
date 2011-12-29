@@ -85,12 +85,25 @@ static void cb_remove(gTree *tree, char *key)
 		(*(view->onRemove))(view, key);
 }
 
+static gboolean cb_expose(GtkTreeView *widget, GdkEvent *event, gTreeView *view)
+{
+	if (view->_fix_border && view->hasBorder())
+	{
+		gtk_scrolled_window_set_shadow_type(view->_scroll, GTK_SHADOW_NONE);
+		view->_fix_border = false;
+	}
+	
+	return FALSE;
+}
+
+
 gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 {
 	GtkTreeSelection *sel;
 	
 	g_typ=Type_gTreeView;
 	use_base = true;
+	_fix_border = false;
 
 	tree = new gTree(this);
 	tree->addColumn();
@@ -125,6 +138,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	g_signal_connect(G_OBJECT(treeview),"row-expanded",G_CALLBACK(cb_expand),(gpointer)this);
 	g_signal_connect(G_OBJECT(treeview),"row-collapsed",G_CALLBACK(cb_collapse),(gpointer)this);
 	g_signal_connect(G_OBJECT(treeview),"cursor-changed",G_CALLBACK(cb_click),(gpointer)this);
+	g_signal_connect_after(G_OBJECT(treeview), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 }
 
 gTreeView::~gTreeView()
@@ -133,19 +147,18 @@ gTreeView::~gTreeView()
 }
 
 
-static gboolean fix_border(gTreeView *view)
+void gTreeView::setBorder(bool v)
 {
-	view->setBorder(false);
-	return FALSE;
+	gControl::setBorder(v);
+	_fix_border = !v;
+	//if (_fix_border)
+	//	fprintf(stderr, "%p: will fix border later\n", this);
 }
 
 bool gTreeView::add(char *key,char *text,gPicture *pic,char *after,char *parent, bool before)
 {
 	gTreeRow *row;
 	gTreeCell *cell;
-	
-	if (_scroll && count() == 0 && !hasBorder())
-		g_timeout_add(10, (GSourceFunc)fix_border, this);
 	
 	row = tree->addRow(key,parent,after,before);
 	

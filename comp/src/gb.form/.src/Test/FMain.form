@@ -15,18 +15,15 @@
     Highlight = True
     Index = 0
     Text = ("Tintin")
-    { Panel1 Panel
-      Move(7,14,525,322)
-      { TreeView1 TreeView
-        Move(21,14,210,112)
-        Border = False
-      }
+    { DirView1 DirView
+      Move(42,49,203,231)
+      Border = False
     }
     Index = 1
     Text = ("Bonjour")
     Picture = Picture["icon:/16/add"]
     { FileChooser1 FileChooser
-      Move(14,14,525,350)
+      Move(21,21,252,252)
       Border = False
     }
     Index = 2

@@ -14,11 +14,14 @@ End
 
 Public Sub Button1_Click()
 
-  'TreeView1.Border = False
-  Debug TreeView1.Border
-  TreeView1.Add(TreeView1.Count, "#0")
-  Wait 0.01
-  Debug TreeView1.Border
+  ' 'TreeView1.Border = False
+  ' Debug TreeView1.Border
+  ' TreeView1.Add(TreeView1.Count, "#0")
+  ' Wait 0.01
+  ' Debug TreeView1.Border
+  ' 
+  TreeView(DirView1.Proxy).Border = False
+  DirView1.Reload
 
 End
 

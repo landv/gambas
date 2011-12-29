@@ -57,6 +57,8 @@ public:
 	bool			headers() { return tree->headers(); }
 	void			setHeaders(bool vl) { tree->setHeaders(vl); }
 	
+	void setBorder(bool v);
+	
 	bool isEditable() { return tree->isEditable(); }
 	void setEditable(bool vl) { tree->setEditable(vl); }
 
@@ -128,6 +130,8 @@ public:
 //"Private"
 	char*     find(GtkTreePath *path) { return tree->pathToKey(path, false); }
 	void refreshExpanded(char *parent, bool ex);
+	
+	unsigned _fix_border : 1;
 
 protected:
 	gTree *tree;

@@ -41,6 +41,7 @@ Public Sub _new()
   $hTreeView.Editable = True
   $hTimerExpand = New Timer As "TimerExpand"
   Me.Proxy = $hTreeView
+  $hRootPict = Picture["icon:/small/directory"] 'open
   ClearView
 
 End
