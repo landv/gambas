@@ -856,13 +856,6 @@ BEGIN_METHOD_VOID(Array_Pop)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(Array_Pop_variant)
-
-	Array_Pop(_object, _param);
-	GB_ReturnConvVariant();
-
-END_METHOD
-
 
 BEGIN_METHOD(Array_get, GB_INTEGER index)
 
@@ -872,15 +865,6 @@ BEGIN_METHOD(Array_get, GB_INTEGER index)
 		GB_ReturnPtr(THIS->type, data);
 
 END_METHOD
-
-BEGIN_METHOD_VOID(Array_get_variant)
-
-	Array_get(_object, _param);
-	GB_ReturnConvVariant();
-
-END_METHOD
-
-
 
 #if 0
 BEGIN_PROPERTY(Array_Last)
@@ -931,14 +915,6 @@ BEGIN_METHOD_VOID(Array_next)
 	}
 
 END_METHOD
-
-BEGIN_METHOD_VOID(Array_next_variant)
-
-	Array_next(_object, _param);
-	GB_ReturnConvVariant();
-
-END_METHOD
-
 
 BEGIN_METHOD(Array_Sort, GB_INTEGER mode)
 
@@ -1493,19 +1469,19 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Clear", NULL, Array_Clear, NULL),
 	GB_METHOD("Resize", NULL, Array_Resize, "(Size)i"),
 
-	GB_METHOD("Add", NULL, Array_Add, "(Value)v[(Index)i]"),
-	GB_METHOD("Push", NULL, Array_Push, "(Value)v"),
-	GB_METHOD("_put", NULL, Array_put, "(Value)v(Index)i."),
+	//GB_METHOD("Add", NULL, Array_Add, "(Value)v[(Index)i]"),
+	//GB_METHOD("Push", NULL, Array_Push, "(Value)v"),
+	//GB_METHOD("_put", NULL, Array_put, "(Value)v(Index)i."),
 
-	GB_METHOD("Pop", "v", Array_Pop_variant, NULL),
-	GB_METHOD("_get", "v", Array_get_variant, "(Index)i."),
-	GB_METHOD("_next", "v", Array_next_variant, NULL),
+	//GB_METHOD("Pop", "v", Array_Pop_variant, NULL), // Does not work
+	//GB_METHOD("_get", "v", Array_get_variant, "(Index)i."),
+	//GB_METHOD("_next", "v", Array_next_variant, NULL),
 	//GB_PROPERTY_READ("Last", "v", Array_Last),
 
-	GB_METHOD("Copy", "Array", Array_Copy, "[(Start)i(Length)i]"),
+	/*GB_METHOD("Copy", "Array", Array_Copy, "[(Start)i(Length)i]"),
 	GB_METHOD("Extract", "Array", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Array", Array_Extract, "(Start)i[(Length)i]"),
-	GB_METHOD("Fill", NULL, Array_Fill, "(Value)v[(Start)i(Length)i]"),
+	GB_METHOD("Fill", NULL, Array_Fill, "(Value)v[(Start)i(Length)i]"),*/
 	
 	GB_INTERFACE("_convert", array_convert),
 

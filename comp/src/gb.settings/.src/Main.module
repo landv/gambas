@@ -120,7 +120,7 @@ Private Sub ReadArray() As Array
   Dim sKey As String
   Dim iInd As Integer
   Dim iType, iType2 As Integer
-  Dim aTypedArray As Array
+  Dim aTypedArray As Object
   
   Do
     sCar = ReadChar()
@@ -295,7 +295,7 @@ Private Sub WriteValue(vVal As Variant)
         $sStr &= "["
         For iPos = 0 To vVal.Max
           If iPos Then $sStr &= ","
-          WriteValue(aArray[iPos])
+          WriteValue(vVal[iPos])
         Next
         $sStr &= "]"
       Else If vVal Is Collection Then

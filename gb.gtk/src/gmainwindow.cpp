@@ -499,7 +499,7 @@ void gMainWindow::setVisible(bool vl)
 			}
 			else
 				gtk_window_present(GTK_WINDOW(border));
-			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
+			//gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 		}
 		else 
 		{
