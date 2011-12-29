@@ -63,6 +63,12 @@ End
 
 Static Public Sub {Open}(URL As String, Optional {Wait} As Boolean)
   
+  If URL = "~" Then
+    URL = User.Home
+  Else If URL Begins "~/" Then
+    URL = User.Home & Mid$(URL, 2)
+  Endif
+  
   Main.RunXdgUtil("xdg-open", [URL], {Wait})
   
 End
