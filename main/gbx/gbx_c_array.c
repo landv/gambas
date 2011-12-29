@@ -856,6 +856,13 @@ BEGIN_METHOD_VOID(Array_Pop)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Array_Pop_variant)
+
+	Array_Pop(_object, _param);
+	GB_ReturnConvVariant();
+
+END_METHOD
+
 
 BEGIN_METHOD(Array_get, GB_INTEGER index)
 
@@ -865,6 +872,14 @@ BEGIN_METHOD(Array_get, GB_INTEGER index)
 		GB_ReturnPtr(THIS->type, data);
 
 END_METHOD
+
+BEGIN_METHOD_VOID(Array_get_variant)
+
+	Array_get(_object, _param);
+	GB_ReturnConvVariant();
+
+END_METHOD
+
 
 
 #if 0
@@ -914,6 +929,13 @@ BEGIN_METHOD_VOID(Array_next)
 		GB_ReturnPtr(THIS->type, get_data(THIS, *index));
 		(*index)++;
 	}
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Array_next_variant)
+
+	Array_next(_object, _param);
+	GB_ReturnConvVariant();
 
 END_METHOD
 
@@ -1475,9 +1497,9 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Push", NULL, Array_Push, "(Value)v"),
 	GB_METHOD("_put", NULL, Array_put, "(Value)v(Index)i."),
 
-	GB_METHOD("Pop", "v", Array_Pop, NULL),
-	GB_METHOD("_get", "v", Array_get, "(Index)i."),
-	GB_METHOD("_next", "v", Array_next, NULL),
+	GB_METHOD("Pop", "v", Array_Pop_variant, NULL),
+	GB_METHOD("_get", "v", Array_get_variant, "(Index)i."),
+	GB_METHOD("_next", "v", Array_next_variant, NULL),
 	//GB_PROPERTY_READ("Last", "v", Array_Last),
 
 	GB_METHOD("Copy", "Array", Array_Copy, "[(Start)i(Length)i]"),
