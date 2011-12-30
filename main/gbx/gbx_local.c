@@ -623,24 +623,6 @@ void LOCAL_set_lang(const char *lang)
 	LOCAL_local.rtl = rtl;
 }
 
-// static void print_number(double number)
-// {
-// 	int power = (int)log10(number);
-// 	double exposant;
-// 	
-// 	exposant = 1;
-// 	while (power > 0)
-// 	{
-// 		if (power & 1)
-// 			exposant *= 10;
-// 		exposant *= exposant;
-// 		power >>= 1;
-// 	}
-// 	
-// 	
-// 	
-// }
-
 bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
 {
 	char c;
@@ -675,8 +657,6 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
 	bool intl_currency;
 	
-	//print_number(number);
-
 	if (local)
 		local_current = &LOCAL_local;
 	else
@@ -690,9 +670,9 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 		case LF_STANDARD:
 		case LF_GENERAL_NUMBER:
 			if ((number != 0.0) && ((fabs(number) < 1E-4) || (fabs(number) >= 1E10)))
-				fmt = "0.################E+#";
+				fmt = "0.##############E+#";
 			else
-				fmt = "0.################";
+				fmt = "0.##############";
 			break;
 
 		case LF_SHORT_NUMBER:
@@ -711,7 +691,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 			break;
 
 		case LF_SCIENTIFIC:
-			fmt = "0.#################E+#";
+			fmt = "0.################E+#";
 			break;
 
 		case LF_CURRENCY:
@@ -962,7 +942,7 @@ _FORMAT:
 
 	ndigit = after;
 	if (!exposant) ndigit += number_exp;
-	ndigit = MinMax(ndigit, 0, DBL_DIG);
+	ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
 	
 	power = pow(10, ndigit + 1);
 	mantisse = number_mant * power;

@@ -25,6 +25,7 @@
 
 #include "gb_common.h"
 #include "gb_error.h"
+#include "gb_limit.h"
 
 #include <ctype.h>
 #include <float.h>
@@ -48,7 +49,6 @@
 #define get_size_left COMMON_get_size_left
 
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
-
 
 static bool read_integer(int base, bool minus, int64_t *result, bool local)
 {
@@ -218,9 +218,9 @@ static bool read_float(double *result, bool local)
 		if (nozero)
 			n++;
 		
-		if (n > DBL_DIG)
+		if (n > MAX_FLOAT_DIGIT)
 		{
-			if (n == (DBL_DIG + 1) && (c >= '5'))
+			if (n == (MAX_FLOAT_DIGIT + 1) && (c >= '5'))
 				mantisse++;
 			if (!frac)
 				ndigit_frac--;
