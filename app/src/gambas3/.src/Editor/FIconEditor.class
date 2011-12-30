@@ -67,6 +67,8 @@ Private $iBeginUndo As Integer
 
 Private $bNoPreview As Boolean
 
+Static Private $hBackground As Picture
+
 Static Public Sub _init()
 
   Dim sColor As String
@@ -2068,3 +2070,23 @@ End
 '   IF svwPreview.Visible THEN splPreview.Layout = CStr(dwgPreview.W) & "," & CStr(ME.H - dwgPreview.W - 16)
 ' 
 ' END
+
+Public Sub svwIcon_Arrange()
+
+  Dim W, H As Integer
+  
+  dwgBackground.Lower
+  
+  W = Max(svwIcon.ClientW - 1, dwgIcon.W)
+  H = Max(svwIcon.ClientH - 1, dwgIcon.H)
+  
+  dwgIconBackground.Move(0, 0, W, H)
+
+End
+
+Public Sub dwgIconBackground_Draw()
+  
+  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
+  Draw.Tile($hBackground, 0, 0, dwgIconBackground.W, dwgIconBackground.H)
+  
+End
