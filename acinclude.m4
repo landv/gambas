@@ -407,16 +407,47 @@ AC_DEFUN([GB_MATH],
 
 
 ## ---------------------------------------------------------------------------
+## GB_CHECK_MATH_FUNC
+## Check a specific mathematical function
+##
+##   $1 = name of the function
+##   $2 = macro to define
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_CHECK_MATH_FUNC],
+[AC_CACHE_CHECK(for $1,
+  gb_cv_math_$1,
+[AC_TRY_COMPILE([
+#define _ISOC9X_SOURCE	1
+#define _ISOC99_SOURCE	1
+#define __USE_ISOC99	1
+#define __USE_ISOC9X	1
+#include <math.h>],
+[	int value = $1 (1.0) ; ], gb_cv_math_$1=yes, gb_cv_math_$1=no)])
+if test $gb_cv_math_$1 = yes; then
+  AC_DEFINE(HAVE_$2, 1,
+            [Define if you have $1 function.])
+fi
+])
+
+## ---------------------------------------------------------------------------
 ## GB_MATH_FUNC
 ## Detect which mathematical functions are available
 ## ---------------------------------------------------------------------------
 
 AC_DEFUN([GB_MATH_FUNC],
 [
-  dnl AC_CHECK_LIB(m, main, true)
   ac_save_LDFLAGS="$LDFLAGS"
-  LDFLAGS="$LDFLAGS -lm"
-  AC_CHECK_FUNCS(log10l fabsl powl modfl exp10 exp2 log2)
+  LDFLAGS="$LDFLAGS -$MATH_LIB"
+
+  GB_CHECK_MATH_FUNC(log10l, LOG10L)
+  GB_CHECK_MATH_FUNC(fabsl, FABSL)
+  GB_CHECK_MATH_FUNC(powl, POWL)
+  GB_CHECK_MATH_FUNC(modfl, MODFL)
+  GB_CHECK_MATH_FUNC(exp10, EXP10)
+  GB_CHECK_MATH_FUNC(exp2, EXP2)
+  GB_CHECK_MATH_FUNC(log2, LOG2)
+
   LDFLAGS=$ac_save_LDFLAGS
 ])
 
