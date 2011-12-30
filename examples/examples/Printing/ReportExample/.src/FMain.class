@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Private $hReport As Report1
+Private $hReport As Report
 
 Public Sub _new()
 
@@ -9,7 +9,9 @@ Public Sub _new()
 End
 
 Public Sub Form_Open()
+
   Me.Center
+
 End
 
 Public Sub btnReport_Click()
@@ -28,5 +30,12 @@ End
 Public Sub btnClose_Click()
 
   Me.Close
+
+End
+
+Public Sub btnReport2_Click()
+
+  $hReport = New Report3(LCase(cmbServer.Text))
+  $hReport.Preview()
 
 End
