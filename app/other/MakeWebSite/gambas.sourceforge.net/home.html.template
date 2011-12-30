@@ -8,18 +8,23 @@
 
 <body>
 
+<div id="home-background">
+</div>
+
+<div class="home">
+
 <div class="download">
   <div>
+    <a class="download-orange" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas3/gambas3-$(DEV_VERSION).tar.bz2/download">
+      {Download} <b>Gambas 3</b>
+    </a>
+    <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(DEV_VERSION)?view&amp;$(LANG)">{Release Notes}</a></div>
+  </div>
+  <div style="display:inline-table;">
     <a class="download-blue" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas2/$(STABLE_VERSION)/gambas2-$(STABLE_VERSION).tar.bz2/download">
       {Download} <b>Gambas $(STABLE_VERSION)</b>
     </a>
     <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(STABLE_VERSION)?view&amp;$(LANG)">{Release Notes}</a></div>
-  </div>
-  <div>
-    <a class="download-orange" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas3/gambas3-$(DEV_VERSION).tar.bz2/download">
-      {Download} <b>Gambas 3.0 RC7</b>
-    </a>
-    <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(DEV_VERSION)?view&amp;$(LANG)">{Release Notes}</a></div>
   </div>
 </div>
 
@@ -51,14 +56,13 @@
 <img src="home.png" style="margin-top:32px;">
 </div>
 
-<div id="home-background">
-</div>
-
 <div id="news">
   <div id="news-shadow"></div>
   <iframe id="news-frame" src="http://gambasdoc.org/help/doc/news?$(LANG)&amp;view" frameborder="0">
     Your browser must support frames.
   </iframe>
+</div>
+
 </div>
 
 <script type="text/javascript">

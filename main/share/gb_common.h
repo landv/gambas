@@ -152,13 +152,13 @@ typedef
 #define MinMax(v, a, b) ({ int _v = (v), _a = (a), _b = (b); _v < _a ? _a : (_v > _b ? _b : _v); })
 
 #if (defined (__i386__) || defined (__x86_64__)) && defined (__GNUC__) && __GNUC__ >= 2
-#  define BREAKPOINT()	{ __asm__ __volatile__ ("int $03"); }
+	#define BREAKPOINT()	{ __asm__ __volatile__ ("int $03"); }
 #elif (defined (_MSC_VER) || defined (__DMC__)) && defined (_M_IX86)
-#  define BREAKPOINT()	{ __asm int 3h }G_STMT_END
+	#define BREAKPOINT()	{ __asm int 3h }G_STMT_END
 #elif defined (__alpha__) && !defined(__osf__) && defined (__GNUC__) && __GNUC__ >= 2
-#  define BREAKPOINT()	{ __asm__ __volatile__ ("bpt"); }
+	#define BREAKPOINT()	{ __asm__ __volatile__ ("bpt"); }
 #else	/* !__i386__ && !__alpha__ */
-#  define BREAKPOINT()	{ raise (SIGTRAP); }
+	#define BREAKPOINT()	{ raise (SIGTRAP); }
 #endif	/* __i386__ */
 
 #define COPYRIGHT "(c) 2000-2011 Benoît Minisini\n\n" \
