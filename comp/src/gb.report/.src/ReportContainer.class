@@ -398,6 +398,8 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
   Endif
 
+  hSizeInt.Height = Min(TotalHeight, hSizeInt.Height)
+
   Me._SizeInt = hSizeInt
   ' If Me.Tag = "Boite 2" Then
   ' Print hSizeInt.Height
@@ -728,10 +730,10 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Endif
       'Si on ne l'a pas déja compté comme fixé
       If Not hChild.Fixed And If Not hChild.Ignore Then
-        If Me.Tag = "Boite 1" Then Print TH - hChildHints.Height
+        'If Me.Tag = "Boite 1" Then Print TH - hChildHints.Height
         If (TH - hChildHints.Height) < 0 Or TH <= 0 Then
 
-          Print "manque : " & (TH - hChildHints.Height)
+          'Print "manque : " & (TH - hChildHints.Height)
           ' Print "sortie forcée, il reste : " & ((hchild._Count - 1) - j)
           hchild._DataIndex = j
           bExitLoop = True
