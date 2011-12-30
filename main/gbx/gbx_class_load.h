@@ -54,6 +54,7 @@ typedef
   union {
     TYPE_32 type;
     struct { TYPE_32 type; double value; } PACKED _float;
+    struct { TYPE_32 type; float value; } PACKED _single;
     struct { TYPE_32 type; int value; } PACKED _integer;
     struct { TYPE_32 type; int64_t value; } PACKED _long;
     struct { TYPE_32 type; ptr32_t addr; int len; } PACKED _string;

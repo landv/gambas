@@ -64,6 +64,7 @@ typedef
 	union {
 		int type;
 		struct { int type; double value; } PACKED _float;
+		struct { int type; float value; } PACKED _single;
 		struct { int type; int value; } PACKED _integer;
 		struct { int type; int64_t value; } PACKED _long;
 		struct { int type; char *addr; int len; } PACKED _string;

@@ -138,6 +138,7 @@ typedef
 		union {
 			int _integer;
 			double _float;
+			float _single;
 			char *_string;
 			int64_t _long;
 			void *_pointer;

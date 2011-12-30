@@ -1074,7 +1074,10 @@ void CLASS_load_without_init(CLASS *class)
 	      cc->_string.addr += (intptr_t)class->string;
 				if (NUMBER_from_string(NB_READ_FLOAT, cc->_string.addr, strlen(cc->_string.addr), &value))
 					THROW(E_CLASS, ClassName, "Bad constant", "");
-	      cc->_float.value = value._float.value;
+				if (cc->type == T_SINGLE)
+					cc->_single.value = (float)value._float.value;
+				else
+					cc->_float.value = value._float.value;
 				break;
     }
   }
@@ -1145,6 +1148,8 @@ void CLASS_load_without_init(CLASS *class)
           desc->constant.value._float = cc->_float.value;
         else if (desc->constant.type == T_LONG)
           desc->constant.value._long = cc->_long.value;
+        else if (desc->constant.type == T_SINGLE)
+          desc->constant.value._single = cc->_single.value;
         else
         {
           desc->constant.type = T_CSTRING;
