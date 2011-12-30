@@ -475,7 +475,7 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 ({ \
 	static void *jump[] = \
 	{ \
-		&&__ILLEGAL, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, \
+		&&__ILLEGAL, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, \
 		&&__ILLEGAL, &&__STRING, &&__CSTRING, &&__POINTER, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL \
 	}; \
 	\
@@ -496,6 +496,12 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 		\
 		(_value)->type = T_LONG; \
 		(_value)->_long.value = cc->_long.value; \
+		break; \
+		\
+	__SINGLE: \
+		\
+		(_value)->type = T_SINGLE; \
+		(_value)->_single.value = cc->_single.value; \
 		break; \
 		\
 	__FLOAT: \
