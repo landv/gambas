@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Border=True"
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Picture,Border=True"
 Public Const _DefaultEvent As String = "Activate"
 Public Const _Group As String = "Special"
 
@@ -17,6 +17,7 @@ Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
 Property Border As Boolean
+Property Picture As Picture
 
 Private $hWorkspace As FWorkspace
 
@@ -136,5 +137,17 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $hWorkspace.SetBorder(Value)
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hWorkspace.GetPicture()
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hWorkspace.SetPicture(Value)
 
 End

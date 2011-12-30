@@ -1,12 +1,10 @@
 ' Gambas class file
 
 Static Private $hTile As Picture
-Static Private $hBackground As Picture
 
 Public TitleBar As Control
 
 Private $aWindow As New CWindow[]
-'PRIVATE $aWatcher AS NEW Object[]
 Private $hCurrent As CWindow
 Private $bMove As Boolean
 Private $X As Integer
@@ -19,6 +17,7 @@ Private $iBackground As Integer = Color.Default
 Private $bNoClose As Boolean
 Private $iLock As Integer
 Private $bBorder As Boolean = True
+Private $hPicture As Picture
 
 Public Sub _new()
   
@@ -771,7 +770,21 @@ End
 
 Public Sub imgBackground_Draw()
 
-  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
-  Draw.Tile($hBackground, 0, 0, imgBackground.W, imgBackground.H)
+  If Not $hPicture Then Return
+  Draw.Tile($hPicture, 0, 0, imgBackground.W, imgBackground.H)
 
 End
+
+Public Sub GetPicture() As Picture
+  
+  Return $hPicture
+  
+End
+
+Public Sub SetPicture(hPicture As Picture)
+  
+  $hPicture = hPicture
+  panWorkspace.Refresh
+  
+End
+
