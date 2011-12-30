@@ -127,8 +127,8 @@ double fix(double x)
     return -floor(fabs(x));
 }
 
-
-double frexp10(double x, int *exp)
+#if 0
+double frexp10_old(double x, int *exp)
 {
   long double l, f;
 
@@ -155,6 +155,30 @@ double frexp10(double x, int *exp)
 
   *exp = (int)f;
   return l;
+}
+#endif
+
+double frexp10(double x, int *exp)
+{
+	int p;
+	
+	if (x == 0.0)
+	{
+		*exp = 0;
+		return x;
+	}
+	
+	p = (int)log10(x);
+	x /= pow(10, p);
+
+	if (x >= 1)
+	{
+		x /= 10;
+		p++;
+	}
+	
+	*exp = p;
+	return x;
 }
 
 

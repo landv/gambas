@@ -623,6 +623,24 @@ void LOCAL_set_lang(const char *lang)
 	LOCAL_local.rtl = rtl;
 }
 
+// static void print_number(double number)
+// {
+// 	int power = (int)log10(number);
+// 	double exposant;
+// 	
+// 	exposant = 1;
+// 	while (power > 0)
+// 	{
+// 		if (power & 1)
+// 			exposant *= 10;
+// 		exposant *= exposant;
+// 		power >>= 1;
+// 	}
+// 	
+// 	
+// 	
+// }
+
 bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
 {
 	char c;
@@ -656,6 +674,8 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	int pos_first_digit;
 
 	bool intl_currency;
+	
+	//print_number(number);
 
 	if (local)
 		local_current = &LOCAL_local;
