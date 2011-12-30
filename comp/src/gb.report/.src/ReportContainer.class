@@ -320,7 +320,7 @@ Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
       fWidth += hChildHints.Width + fSpacing
       If fHeight < hChildHints.Height Then fHeight = hChildHints.Height
     Next
-    fWidth -= fSpacing
+    If fWidth Then fWidth -= fSpacing
     hMyHints.Height = fHeight + Me.Padding._Height + Me.Border._Top + Me.Border._bottom
     hMyHints.Width = fWidth + Me.Padding._Width + Me.Border._Left + Me.Border._Right
   Endif
@@ -384,7 +384,7 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
     Next
 
     'on enlève le dernier espace
-    If fHeight > 0 Then fHeight -= fSpacing * 2
+    If fHeight > 0 Then fHeight -= fSpacing
     'bogue bizzard
     fHeight += 0.01
 
@@ -728,8 +728,10 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Endif
       'Si on ne l'a pas déja compté comme fixé
       If Not hChild.Fixed And If Not hChild.Ignore Then
-        If (TH - hChildHints.Height) < 0 Then
-          ' Print "manque : " & (TH - hChildHints.Height)
+        If Me.Tag = "Boite 1" Then Print TH - hChildHints.Height
+        If (TH - hChildHints.Height) < 0 Or TH <= 0 Then
+
+          Print "manque : " & (TH - hChildHints.Height)
           ' Print "sortie forcée, il reste : " & ((hchild._Count - 1) - j)
           hchild._DataIndex = j
           bExitLoop = True

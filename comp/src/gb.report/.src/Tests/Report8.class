@@ -4,10 +4,10 @@ Private $iA As Integer[] = [1, 2, 8, 4, 3, 5]
 
 Public Sub _new()
 
-  Report.Debug = True
+  'Report.Debug = True
   ReportPanel1.DataCount = $iA.Count
   'ReportHBox1.DataCount = 4
-  ReportHBox1.Border.RoundCorner.TopRight = "5mm 5mm"
+  'ReportHBox1.Border.RoundCorner.TopRight = "5mm 5mm"
   'ReportHBox1.Border.RoundCorner.BottomRight = "5mm/5mm"
 
 End

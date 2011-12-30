@@ -5,37 +5,40 @@
   Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Tag = "\"toto\""
   Spacing = "1cm"
-  OnePiece = True
   Index = 0
   Text = ("")
   { ReportPanel2 ReportVBox
-    #MoveScaled(3,3,65,50)
+    #MoveScaled(1,3,65,50)
     Expand = True
     Tag = "Boite 1"
-    Spacing = "2mm"
+    Spacing = "1cm"
     { ReportPanel1 ReportVBox
-      #MoveScaled(4,4,64,49)
+      #MoveScaled(1,3,64,45)
       Width = "4cm"
-      Height = "4cm"
+      Height = "5cm"
       AutoResize = True
       Tag = "Boite 2"
+      Spacing = "4mm"
+      OnePiece = True
       { ReportLabel2 ReportLabel
         #MoveScaled(2,1,54,8)
         Fixed = True
         AutoResize = True
+        Background = ReportBrush["#1FFF8F"]
       }
       { ReportHBox1 ReportHBox
-        #MoveScaled(6,6,64,31)
+        #MoveScaled(2,11,71,31)
         Width = "5cm"
-        Height = "1cm"
+        Height = "2cm"
+        Padding = ReportPadding["Left:1cm"]
+        AutoResize = True
         Tag = "Boite 3"
-        Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
         { ReportLabel1 ReportLabel
-          #MoveScaled(-4,-8,62,4)
-          Font = Font["+5"]
+          #MoveScaled(5,5,47,17)
+          Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
           Expand = True
           AutoResize = True
-          Alignment = Align.Center
+          Background = ReportBrush["#DFDF6F"]
         }
       }
     }
