@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,616,462)
+  Move(0,0,616,476)
   #Scaled = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -10,40 +10,14 @@
     Move(14,7,560,399)
     Expand = True
     Arrangement = Arrange.Fill
-    Count = 8
     Closable = True
     Highlight = True
     Index = 0
-    Text = ("Tintin")
-    { DirView1 DirView
-      Move(42,49,203,231)
-      Border = False
-    }
-    Index = 1
-    Text = ("Bonjour")
-    Picture = Picture["icon:/16/add"]
-    { FileChooser1 FileChooser
-      Move(21,21,252,252)
-      Border = False
-    }
-    Index = 2
-    Text = ("Test")
-    { ColorChooser1 ColorChooser
-      Move(14,21,357,308)
-    }
-    Index = 3
-    Text = ("Retour")
-    Index = 4
-    Text = ("Contraction")
-    Index = 5
-    Text = ("Hindouisme")
-    Index = 6
-    Text = ("Présentation")
-    Index = 7
-    Text = ("Corporation")
+    Text = ("1")
     Index = 0
   }
   { Button1 Button
-    Move(21,420,112,28)
+    Move(21,420,63,28)
+    Text = ("+")
   }
 }

@@ -86,6 +86,8 @@ Private $bBorder As Boolean
 
 Private $hFamily As CFamily
 
+Private $hBackground As Picture
+
 Public Sub _new(sPath As String)
 
   'dim sFamily as string
@@ -3519,3 +3521,23 @@ End
 '   Endif
 ' 
 ' End
+
+Public Sub svwWorkspace_Arrange()
+
+  Dim W, H As Integer
+  
+  dwgBackground.Lower
+  
+  W = Max(svwWorkspace.ClientW - 1, panRightDown.X + panRightDown.W)
+  H = Max(svwWorkspace.ClientH - 1, panRightDown.Y + panRightDown.H)
+  
+  dwgBackground.Move(0, 0, W, H)
+
+End
+
+Public Sub dwgBackground_Draw()
+  
+  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
+  Draw.Tile($hBackground, 0, 0, dwgBackground.W, dwgBackground.H)
+  
+End

@@ -594,7 +594,9 @@ _DO_NOT_APPLY:
         
         If Not VirtualCoord Then
           If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
-            Object.SetProperty(Control, sProp, vVal)
+            If Not IsNull(Parent) Or If Len(sProp) > 1 Then
+              Object.SetProperty(Control, sProp, vVal)
+            Endif
             $cValue["#" & sProp] = vVal
             MoveAllHandle
           Endif

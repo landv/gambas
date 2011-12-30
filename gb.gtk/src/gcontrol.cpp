@@ -550,11 +550,11 @@ void gControl::resize(int w, int h)
 		#else
 		updateGeometry();
 		#endif
-		
-		if (pr)
-			pr->performArrange();
 	}
 		
+	if (pr)
+		pr->performArrange();
+	
 	send_configure(this);
 }
 
