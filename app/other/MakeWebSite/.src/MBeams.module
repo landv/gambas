@@ -10,12 +10,12 @@ Public Sub Main()
   
   For fAngle = 0 To Pi(2) Step 0.02
 
-    Paint.Brush = Paint.Color(Color.SetAlpha(&H3398C3&, &HE0))
+    Paint.Brush = Paint.Color(Color.SetAlpha(&H3398C3&, 245))
     
     For fWidth = 10 DownTo 7
       Paint.LineWidth = fWidth
     
-      Paint.MoveTo(hImage.W / 2, hImage.H - 250)
+      Paint.MoveTo(hImage.W / 2 - 700, hImage.H - 250)
       Paint.RelLineTo(hImage.W * Cos(fAngle), - hImage.W * Sin(fAngle))
       Paint.Stroke
     Next
@@ -28,7 +28,7 @@ Public Sub Main()
     Paint.Brush = Paint.Color(Color.SetAlpha(&HFFFFFF&, 192))
     Paint.LineWidth = 6
     
-    Paint.MoveTo(hImage.W / 2, hImage.H - 250)
+    Paint.MoveTo(hImage.W / 2 - 700, hImage.H - 250)
     Paint.RelLineTo(hImage.W * Cos(fAngle), - hImage.W * Sin(fAngle))
     Paint.Stroke
     

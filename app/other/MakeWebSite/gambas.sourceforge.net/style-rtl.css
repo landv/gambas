@@ -19,13 +19,9 @@ body.left {
 body {
   position: absolute;
   background: white; /*#96BBD8;*/
-  padding: 8px 8px 0px 0px;
+  padding: 0px;
   margin: 0px;
-  /*background-image: url("background-rtl.jpg");
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: top right;*/
-  max-width: 860px;
+  width: 100%;
   font-family: sans-serif;
   top: 0px;
   bottom: 0px;
@@ -38,16 +34,33 @@ body.none {
   margin: 0px;
 }
 
-frameset {
-  background: white /*#6e9bed;*/
-  /*background-image: url("background.png");
-  background-attachment: fixed;*/
-}
-
 frame {
   background: white; /*#6e9bed;*/
-  /*background-image: url("background.png");
-  background-attachment: fixed;*/
+}
+
+#main-table {
+  width: 100%;
+  height: 100%;
+}
+
+#main-menu {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 188px;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: 0 0 8px black;
+}
+
+#main-contents {
+  width: 100%;
+  height: 100%;
+}
+
+.home {
+  padding: 8px 16px 8px 8px;
+  max-width: 860px;
 }
 
 /*table.menu {
@@ -71,24 +84,6 @@ table.none {
   border: none;
   border-width: 0px;
   padding: 0px;
-}
-
-.news {
-  background: none; /*#0090C0;*/
-  border: solid;
-  border-width: 2px 2px 2px 2px;
-  border-color: #B0CEE6;
-  padding: 8px;
-  /*color: white;*/
-}
-
-.snow {
-  background-image: url('snow.png');
-  background-position: left bottom;
-  }
-
-.news-title {
-  background: #B0CEE6;
 }
 
 table {
@@ -188,6 +183,8 @@ a {
   padding-right: 1px;
   padding-left: 1px;
   text-shadow: 1px 1px 1px #808080;
+  -moz-transition: text-shadow 0.25s ease;
+  -webkit-transition: text-shadow 0.25s ease;
 }
 
 a.image:hover {
@@ -204,19 +201,9 @@ a.image:hover {
   margin-bottom: 8px;
 }
 
-.home a {
-  padding: 0px;
-  marging: 0px;
-  font-weight: bold;
-  font-size: x-large;
-  color: #3398c3;
-  /*text-shadow: 2px 2px 2px #FF7F00;*/
-  letter-spacing: 2px;
-}
-
-a.home:hover {
-  text-shadow: 2px 2px 2px #FF7F00;
-  background: none;
+a:hover {
+  text-shadow: 0 0 2px black,0px 0px 6px #FF7F00;
+  text-decoration: none;
 }
 
 /*a:before {
@@ -225,11 +212,6 @@ a.home:hover {
 
 a.image:before {
   content: "";
-}
-
-a:hover {
-  background: #C0C0E0; /*#FFE0C0;*/
-  text-decoration: none;
 }
 
 .header a:hover {
@@ -269,8 +251,9 @@ a[name]:before {
 
 .architecture-border {
   background: white;
-  border-top: dotted black 6px;
-  padding-top: 6px;
+  border: solid 1px gray;
+  box-shadow: 0 0 6px black;
+  padding: 6px;
 }
 
 .license {
@@ -431,10 +414,12 @@ p {
   transition:        box-shadow 0.2s ease-in-out;*/
   font-size: large;
   text-align: center;
+  -moz-transition: box-shadow 0.25s ease;
+  -webkit-transition: box-shadow 0.25s ease;
 }
 
 a.download-orange:hover {
-  background: orange;
+  box-shadow: 0 0 8px orange;
 }
 
 .download-blue {
@@ -461,12 +446,13 @@ a.download-orange:hover {
   transition:        box-shadow 0.2s ease-in-out;*/
   font-size: large;
   text-align: center;
+  -moz-transition: box-shadow 0.25s ease;
+  -webkit-transition: box-shadow 0.25s ease;
 }
 
 a.download-blue:hover {
-  background: #3398C3; /* old browsers */
+  box-shadow: 0 0 8px #3398C3;
 }
-
 
 .release-notes {
   font-size: small;
@@ -477,11 +463,11 @@ a.download-blue:hover {
 #home-background {
   background-image: url('home.jpeg');
   background-repeat: no-repeat;
-  background-position: bottom center;
-  position: absolute;
+  background-position: -700px bottom;
+  position: fixed;
   z-index: -1;
-  width: 868px;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   bottom: 0px;
 }
 
@@ -492,8 +478,8 @@ a.download-blue:hover {
   }
 
 #news {
-  position: absolute;
-  left: 0px;
+  float: left;
+  position: relative;
   width: 320px;
   height: 340px;
   margin: 32px 24px;
@@ -505,9 +491,7 @@ a.download-blue:hover {
   height: 100%;
   background: white;
   border: solid 1px #BF5C00;
-  /*-moz-box-shadow:    3px 3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);
-  -webkit-box-shadow: 3px  3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);
-  box-shadow:         3px 3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);*/
+  box-shadow: 0 0 8px black;
 }
 
 #news-shadow {

@@ -42,7 +42,7 @@
       Alignment = Align.Bottom
     }
     { txtAuthor TextEdit
-      MoveScaled(4,125,54,11)
+      MoveScaled(4,125,68,11)
       Background = &HFFFFFF&
       ReadOnly = True
       Border = False
@@ -56,13 +56,6 @@
     #MoveScaled(48,38)
     Enabled = True
     Delay = 25
-  }
-  { btnGift Button
-    MoveScaled(43,23,36,8)
-    Visible = False
-    Font = Font["Bold,+1"]
-    Text = ("Make a gift!")
-    Picture = Picture["img/donate.png"]
   }
   { picGradientTop PictureBox
     MoveScaled(1,23,80,7)

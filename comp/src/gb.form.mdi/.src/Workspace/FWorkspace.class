@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Private $hTile As Picture
+Static Private $hBackground As Picture
 
 Public TitleBar As Control
 
@@ -369,6 +370,7 @@ Public Sub UpdateSize()
 
   If tabWorkspace.Visible Then
 
+    imgBackground.Hide
     'If $bLogo Then picLogo.Hide
     
     With tabWorkspace
@@ -395,6 +397,7 @@ Public Sub UpdateSize()
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     
     panWorkspace.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground)
+    imgBackground.Show
     panWorkspace.Border = Border.None
 
     panWorkspace.Raise
@@ -764,4 +767,11 @@ Public Sub HasBorder() As Boolean
   
   Return $bBorder
   
+End
+
+Public Sub imgBackground_Draw()
+
+  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
+  Draw.Tile($hBackground, 0, 0, imgBackground.W, imgBackground.H)
+
 End
