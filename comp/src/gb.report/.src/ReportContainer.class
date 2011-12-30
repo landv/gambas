@@ -877,7 +877,7 @@ Private Function SetFChildGeometry(X As Float, Y As Float, W As Float, H As Floa
     If oChild Is ReportContainer Then
 
       If oChild._CurItem < oChild.Children.count Then
-        Print ochild.tag & " pas fini"
+        'Print ochild.tag & " pas fini"
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(j, Me._CurItem)
       Endif
@@ -1034,7 +1034,7 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
 
     If oChild Is ReportContainer Then
       If oChild._CurItem <= oChild.Children.max Then
-        Print ochild.tag & " pas fini"
+        'Print ochild.tag & " pas fini"
         j = Me.Children.Find(oChild)
         Me._CurItem = Min(Me._CurItem, j)
       Endif
