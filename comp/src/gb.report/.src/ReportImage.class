@@ -70,7 +70,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
   hBrush = Paint.Image(hpic)
 
-  If Me.StretchMode = Report.Fill Then
+  If Me.Stretch = Report.Fill Then
     iX += MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left)
     iY += MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top)
     w = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
@@ -81,7 +81,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     Paint.Rectangle(ix, iy, w, h)
   Else
 
-    If Me.StretchMode = Report.Proportional Then
+    If $iStretchMode = Report.Proportional Then
       'on détermine la partie prédominante
       If hpic.Width >= hpic.Height
         'C'est la largeur
