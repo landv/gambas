@@ -498,6 +498,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
     Case Arrange.None
       SetNChildGeometry(X, Y, W, H, ContPage, TCont, bInFixed)
   End Select
+  Raise AfterData
 
 End
 
