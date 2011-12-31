@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,65,31)
+  MoveScaled(0,0,66,32)
   Text = ("Report example")
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -27,9 +27,10 @@
   }
   { HBox2 HBox
     MoveScaled(1,8,63,15)
+    Expand = True
     Spacing = True
     { VBox1 VBox
-      MoveScaled(1,1,29,14)
+      MoveScaled(1,1,32,14)
       AutoResize = True
       { btnReport Button
         MoveScaled(0,0,31,7)
@@ -48,19 +49,20 @@
     }
   }
   { HBox3 HBox
-    MoveScaled(1,25,64,5)
+    MoveScaled(1,25,64,6)
+    Spacing = True
     { Panel1 Panel
-      MoveScaled(4,1,27,4)
+      MoveScaled(4,1,20,3)
       Expand = True
     }
     { btnAbout Button
-      MoveScaled(31,-1,15,7)
+      MoveScaled(31,0,15,6)
       AutoResize = True
       Text = ("About...")
       Picture = Picture["icon:/32/info"]
     }
     { btnClose Button
-      MoveScaled(47,-1,15,7)
+      MoveScaled(47,0,15,6)
       AutoResize = True
       Text = ("Close")
       Picture = Picture["icon:/32/close"]

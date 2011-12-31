@@ -105,6 +105,18 @@ C
 #Report
 ReportSection
 CA
+None
+C
+i
+0
+Proportional
+C
+i
+1
+Fill
+C
+i
+2
 _Properties
 C
 s
@@ -829,7 +841,7 @@ C
 _Properties
 C
 s
-*,StretchMode{ReportImage.None;Proportional;Fill},Alignment{Align.*},Image{Image}
+*,Stretch{Report.None;Proportional;Fill}=Proportional,Alignment{Align.*},Image{Image}
 _Similar
 C
 s
@@ -846,7 +858,7 @@ Alignment
 p
 i
 
-StretchMode
+Stretch
 p
 i
 
@@ -854,18 +866,6 @@ Data
 v
 Image
 
-None
-C
-i
-0
-Proportional
-C
-i
-1
-Fill
-C
-i
-2
 :Data
 :
 
@@ -1055,7 +1055,7 @@ C
 _Properties
 C
 s
-*,StretchMode{ReportImage.None;Proportional;Fill},Alignment{Align.*},Image{SvgImage}
+*,Stretch{Report.None;Proportional;Fill}=Proportional,Alignment{Align.*},Image{SvgImage}
 _Similar
 C
 s
@@ -1068,7 +1068,7 @@ Image
 p
 SvgImage
 
-StretchMode
+Stretch
 p
 i
 

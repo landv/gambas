@@ -4,7 +4,6 @@ Public Sub Main()
 
   Dim aVal As Variant[]
   Dim hSignal As DBusSignal
-  
 
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768] '.Get("", "rect")
   'aRect = DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1", "com.trolltech.Qt.QWidget"].geometry
@@ -32,9 +31,10 @@ Public Sub Main()
   ' Debug DBus.Session.Applications.Join("\n")
   ' 
   'DBus.Debug = True
-  DBus.Session.Register(CTest, "/Test", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player"])
+  'DBus.Session.Register(CTest, "/Test", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player"])
   
-  'Debug DBus["system://org.freedesktop.UPower"]["/org/freedesktop/UPower"].SuspendAllowed()
+  DBus.Name = "org.mpris.MediaPlayer2.xt7"
+  DBus.Session.Register(CTest2, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mrpris.MediaPlayer2.Player"])
 
   'Wait 10
   '

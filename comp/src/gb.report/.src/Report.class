@@ -4,6 +4,9 @@ Create Static
 Export
 Inherits ReportSection
 
+' For Stretch properties
+Public Enum None, Proportional, Fill
+
 Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count{Range:1;256}=1,Index,Text,"
 "Paper{Printer.A3;A4;A5;B5;Letter;Executive;Legal;Custom}=A4,"
 "Orientation{Printer.Portrait;Landscape}=Portrait"

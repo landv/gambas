@@ -4,14 +4,14 @@ Export
 Inherits ReportFrame
 
 Private $hPic As SvgImage
-Private $iStretchMode As Integer
+Private $iStretchMode As Integer = Report.Proportional
 Private $iAlignment As Integer = Align.Normal
 'Private $sPath As String
-Public Const _Properties As String = "*,StretchMode{ReportImage.None;Proportional;Fill},Alignment{Align.*},Image{SvgImage}"
+Public Const _Properties As String = "*,Stretch{Report.None;Proportional;Fill}=Proportional,Alignment{Align.*},Image{SvgImage}"
 Public Const _Similar As String = "ReportTextLabel"
 Public Data As SvgImage
 Property Image As SvgImage
-Property StretchMode As Integer
+Property Stretch As Integer
 Property Alignment As Integer
 Event Data(Index As Integer)
 
@@ -68,7 +68,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
   'hBrush = Paint.Image(hpic)
 
-  If Me.StretchMode = ReportImage.Fill Then
+  If $iStretchMode = Report.Fill Then
     iX += MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left)
     iY += MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top)
     w = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
@@ -83,7 +83,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     'Paint.Rectangle(ix, iy, w, h)
   Else
 
-    If Me.StretchMode = ReportImage.Proportional Then
+    If $iStretchMode = Report.Proportional Then
       'on détermine la partie prédominante
       If hPic.Width >= hPic.Height
         'C'est la largeur
@@ -160,13 +160,13 @@ Private Sub Image_Write(Value As SvgImage)
 
 End
 
-Private Function StretchMode_Read() As Integer
+Private Function Stretch_Read() As Integer
 
   Return $iStretchMode
 
 End
 
-Private Sub StretchMode_Write(Value As Integer)
+Private Sub Stretch_Write(Value As Integer)
 
   $iStretchMode = Value
 

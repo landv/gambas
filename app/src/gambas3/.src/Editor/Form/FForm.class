@@ -92,6 +92,8 @@ Public Sub _new(sPath As String)
 
   'dim sFamily as string
 
+  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
+  
   btnCloseWindow.Design = True
   btnMaxWindow.Design = True
 
@@ -3537,7 +3539,6 @@ End
 
 Public Sub dwgBackground_Draw()
   
-  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
   Draw.Tile($hBackground, 0, 0, dwgBackground.W, dwgBackground.H)
   
 End
