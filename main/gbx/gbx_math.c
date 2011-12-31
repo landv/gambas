@@ -260,9 +260,24 @@ long double modfl(long double x, long double *iptr)
 }
 #endif
 
+static int nbits(uint n)
+{
+  uint c;
+  for (c = 0; n; c++) 
+    n &= n - 1;
+  return c;
+}
+
 void MATH_init(void)
 {
+	uint seed;
+	
 	randomize(FALSE, 0);
+
 	// Internet condom
-	HASH_seed ^= GFSR_random();
+	do
+		seed = GFSR_random();
+	while (nbits(seed) < 16);
+		
+	HASH_seed = seed;
 }

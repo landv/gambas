@@ -77,7 +77,8 @@ static int spaced_primes_closest(int num)
 static uint key_hash_binary(const char *key, int len)
 {
 	static const void *jump[] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7, &&__LEN_8 };
-	uint hash = HASH_seed ^ len;
+	uint seed = HASH_seed;
+	uint hash = seed ^ len;
 
 	if (len > 8)
 	{
@@ -88,21 +89,21 @@ static uint key_hash_binary(const char *key, int len)
 	goto *jump[len];
 
 __LEN_8:
-	hash = hash * 101 + key[7];
+	hash = hash * seed + key[7];
 __LEN_7:
-	hash = hash * 101 + key[6];
+	hash = hash * seed + key[6];
 __LEN_6:
-	hash = hash * 101 + key[5];
+	hash = hash * seed + key[5];
 __LEN_5:
-	hash = hash * 101 + key[4];
+	hash = hash * seed + key[4];
 __LEN_4:
-	hash = hash * 101 + key[3];
+	hash = hash * seed + key[3];
 __LEN_3:
-	hash = hash * 101 + key[2];
+	hash = hash * seed + key[2];
 __LEN_2:
-	hash = hash * 101 + key[1];
+	hash = hash * seed + key[1];
 __LEN_1:
-	hash = hash * 101 + key[0];
+	hash = hash * seed + key[0];
 __LEN_0:
 
 	return hash;
@@ -111,7 +112,8 @@ __LEN_0:
 static uint key_hash_text(const char *key, int len)
 {
 	static const void *jump[] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7, &&__LEN_8 };
-	uint hash = HASH_seed ^ len;
+	uint seed = HASH_seed;
+	uint hash = seed ^ len;
 
 	if (len > 8)
 	{
@@ -122,21 +124,21 @@ static uint key_hash_text(const char *key, int len)
 	goto *jump[len];
 
 __LEN_8:
-	hash = hash * 101 + (key[7] & ~0x20);
+	hash = hash * seed + ((uint)key[7] & ~0x20U);
 __LEN_7:
-	hash = hash * 101 + (key[6] & ~0x20);
+	hash = hash * seed + ((uint)key[6] & ~0x20U);
 __LEN_6:
-	hash = hash * 101 + (key[5] & ~0x20);
+	hash = hash * seed + ((uint)key[5] & ~0x20U);
 __LEN_5:
-	hash = hash * 101 + (key[4] & ~0x20);
+	hash = hash * seed + ((uint)key[4] & ~0x20U);
 __LEN_4:
-	hash = hash * 101 + (key[3] & ~0x20);
+	hash = hash * seed + ((uint)key[3] & ~0x20U);
 __LEN_3:
-	hash = hash * 101 + (key[2] & ~0x20);
+	hash = hash * seed + ((uint)key[2] & ~0x20U);
 __LEN_2:
-	hash = hash * 101 + (key[1] & ~0x20);
+	hash = hash * seed + ((uint)key[1] & ~0x20U);
 __LEN_1:
-	hash = hash * 101 + (key[0] & ~0x20);
+	hash = hash * seed + ((uint)key[0] & ~0x20U);
 __LEN_0:
 
 	return hash;
