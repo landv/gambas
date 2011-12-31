@@ -87,6 +87,10 @@ typedef
 #define HASH_TABLE_MIN_SIZE 11
 #define HASH_TABLE_MAX_SIZE 13845163
 
+#ifndef __GB_HASH_C
+extern uint HASH_seed;
+#endif
+	
 void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode);
 void HASH_TABLE_delete(HASH_TABLE **hash);
 int HASH_TABLE_size(HASH_TABLE *hash_table);

@@ -28,6 +28,7 @@
 #include <sys/time.h>
 
 #include "gb_common.h"
+#include "gb_hash.h"
 #include "gbx_math.h"
 
 /* This is a twisted generalized feedback shift register
@@ -82,8 +83,6 @@ static uint GFSR_random(void)
 
 	return GFSR_temp;
 }
-
-//static long seed = 1;
 
 double frac(double x)
 {
@@ -264,4 +263,6 @@ long double modfl(long double x, long double *iptr)
 void MATH_init(void)
 {
 	randomize(FALSE, 0);
+	// Internet condom
+	HASH_seed ^= GFSR_random();
 }

@@ -46,6 +46,8 @@ static void hash_node_destroy(HASH_NODE *hash_node);
 static void hash_nodes_destroy(HASH_NODE *hash_node);
 #endif
 
+// Put a random number in that if you want to be safe on the Internet
+uint HASH_seed = 0x9A177BA5;
 
 static const int primes[] =
 {
@@ -75,7 +77,7 @@ static int spaced_primes_closest(int num)
 static uint key_hash_binary(const char *key, int len)
 {
 	static const void *jump[] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7, &&__LEN_8 };
-	uint hash = 0x9A177BA5 ^ len;
+	uint hash = HASH_seed ^ len;
 
 	if (len > 8)
 	{
@@ -109,7 +111,7 @@ __LEN_0:
 static uint key_hash_text(const char *key, int len)
 {
 	static const void *jump[] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7, &&__LEN_8 };
-	uint hash = 0x9A177BA5 ^ len;
+	uint hash = HASH_seed ^ len;
 
 	if (len > 8)
 	{
@@ -171,7 +173,7 @@ void HASH_TABLE_delete(HASH_TABLE **hash)
 
 	if (hash_table == NULL)
 		return;
-
+	
 	#ifdef KEEP_ORDER
 	HASH_NODE *node, *next;
 	
