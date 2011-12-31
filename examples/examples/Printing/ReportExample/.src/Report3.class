@@ -1,0 +1,45 @@
+' Gambas class file
+
+Private hResult1 As Result
+Private hResult2 As Result
+
+Public Sub _new(sType As String)
+
+  Dim hConn As Connection
+
+  hConn = Connections["Connection1"]
+  hConn.Type = sType
+  If hConn.Type = "sqlite" Then hConn.Host = User.Home
+  Try hConn.Open
+  If Not hConn.Opened Then
+    Message.Error(" You have to create the test database with the <b>Database</b> example.")
+    Return
+  Endif
+  'Report.Debug = True
+  hResult1 = db.Exec("select distinct firstname from test")
+
+  ReportPanel1.DataCount = hResult1.Count
+
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  hResult2.MoveTo(Index)
+  Last.data = hResult2!name
+
+End
+
+Public Sub ReportPanel1_BeforeData()
+
+  hResult1.MoveTo(Last.dataindex)
+  hResult2 = db.Exec("Select * From test where firstname=&1", hResult1!firstname)
+  ReportHBox1.DataCount = hResult2.Count
+
+End
+
+Public Sub ReportLabel2_Data(Index As Integer)
+
+  hResult1.MoveTo(Index)
+  Last.data = hResult1!firstname
+
+End
