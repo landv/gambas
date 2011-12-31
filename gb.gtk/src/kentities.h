@@ -2,7 +2,7 @@
 
   kentities.h
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-	MA 02110-1301, USA.
+  MA 02110-1301, USA.
 
 ***************************************************************************/
+
 /* ANSI-C code produced by gperf version 3.0.1 */
 /* Command-line: gperf -a -L ANSI-C -E -C -c -o -t -k '*' -Nkde_findEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf  */
 

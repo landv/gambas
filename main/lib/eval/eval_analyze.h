@@ -2,7 +2,7 @@
 
   eval_analyze.h
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,10 +17,9 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-	MA 02110-1301, USA.
+  MA 02110-1301, USA.
 
 ***************************************************************************/
-
 
 #ifndef __EVAL_ANALYZE_H
 #define __EVAL_ANALYZE_H
