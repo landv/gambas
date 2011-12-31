@@ -76,7 +76,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     Endif
     If $fAngle = 0.0 Then
       hExt = Paint.TextExtents(sText)
-      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnits(hExt.Width) + Me.Padding._Right + Me.Border._Right
+      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnitspaint(hExt.Width) + Me.Padding._Right + Me.Border._Right
       fTextHeight = MTools.PixelsToUnitsPaint(Paint.Font.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
       'Debug Paint.Font.Height * Paint.ResolutionX / Desktop.Resolution
 
