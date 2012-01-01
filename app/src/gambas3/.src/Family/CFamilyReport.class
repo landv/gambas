@@ -195,6 +195,60 @@ Private Sub GetBrush(hCtrl As CControl)
 
 End
 
+Private Sub AlignRect(hRect As Rect, hFrame As Rect, iAlign As Integer)
+  
+  Select Case iAlign
+    Case Align.TopNormal
+      iAlign = If(System.RightToLeft, Align.TopRight, Align.TopLeft)
+    Case Align.BottomNormal
+      iAlign = If(System.RightToLeft, Align.BottomRight, Align.BottomLeft)
+    Case Align.Normal
+      iAlign = If(System.RightToLeft, Align.Right, Align.Left)
+  End Select
+  
+  Select Case iAlign
+    Case Align.Top, Align.TopLeft, Align.TopRight, Align.TopNormal
+      hRect.Y = 0
+    Case Align.Bottom, Align.BottomLeft, Align.BottomRight, Align.BottomNormal
+      hRect.Y = hFrame.H - hRect.H
+    Case Else
+      hRect.Y = (hFrame.H - hRect.H) / 2
+  End Select
+  
+  Select Case iAlign
+    Case Align.Left, Align.TopLeft, Align.BottomLeft
+      hRect.X = 0
+    Case Align.Right, Align.TopRight, Align.BottomRight
+      hRect.X = hFrame.W - hRect.W
+    Case Else
+      hRect.X = (hFrame.W - hRect.W) / 2
+  End Select
+  
+End
+
+
+Private Sub StretchImage(hRect As Rect, sMode As String, iAlign As Integer, W As Integer, H As Integer)
+  
+  Dim fRatio As Float
+  Dim hFrame As Rect = hRect.Copy()
+  
+  Select Case sMode
+    Case "Fill"
+      Return
+    Case "None"
+      hRect.W = W
+      hRect.H = H
+    Case "Proportional"
+      fRatio = Min(hRect.W / W, hRect.H / H)
+      hRect.W = W * fRatio
+      hRect.H = H * fRatio
+  End Select
+  
+  AlignRect(hRect, hFrame, iAlign)
+  
+End
+
+
 Public Sub DrawControl(hCtrl As CControl) As Boolean
 
   Dim sAlign As String
@@ -202,6 +256,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   Dim fVal As Float
   Dim sPath As String
   Dim hSvgImage As SvgImage
+  Dim hRect As Rect
 
   X = 0
   Y = 0
@@ -311,7 +366,10 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
         hCtrl["#Image"] = sPath
         hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
       Endif
-      Try Draw.Image(hCtrl["#ImageObject"], X, Y, W, H)
+      
+      hRect = New Rect(X, Y, W, H)
+      StretchImage(hRect, hCtrl["Stretch"], Classes["Align"][hCtrl["Alignment"]].Value, hCtrl["#ImageObject"].W, hCtrl["#ImageObject"].H)
+      Try Draw.Image(hCtrl["#ImageObject"], hRect.X, hRect.Y, hRect.W, hRect.H)
 
     Case "ReportSvgImage"
 
@@ -320,10 +378,14 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
       If hCtrl["#Image"] <> sPath Then
         hCtrl["#Image"] = sPath
         hCtrl["#ImageObject"] = SvgImage.Load(Project.Dir &/ sPath)
+        hCtrl["#ImageW"] = hCtrl["#ImageObject"].Width
+        hCtrl["#ImageH"] = hCtrl["#ImageObject"].Height
       Endif
       hSvgImage = hCtrl["#ImageObject"]
-      hSvgImage.Resize(W, H)
-      Paint.MoveTo(X, Y)
+      hRect = New Rect(X, Y, W, H)
+      StretchImage(hRect, hCtrl["Stretch"], Classes["Align"][hCtrl["Alignment"]].Value, hCtrl["#ImageW"], hCtrl["#ImageH"])
+      hSvgImage.Resize(hRect.W, hRect.H)
+      Paint.MoveTo(hRect.X, hRect.Y)
       hSvgImage.Paint
 
     Case Else

@@ -18,7 +18,7 @@ Private $bHidden As Boolean
 Private $bShowClose As Boolean
 Private $bInClose As Boolean
 
-Private Const BUTTON_SIZE As Integer = 12
+Private Const BUTTON_SIZE As Integer = 14
 
 Public Sub _new()
   
@@ -72,9 +72,9 @@ Public Sub DrawingArea_Draw()
   W = Me.W
   
   If $hPicture Then
-    X += $hPicture.W + 2
+    X += $hPicture.W
     W = Me.W - X
-    Draw.Picture($hPicture, Desktop.Scale, (Me.H - $hPicture.H) / 2)
+    Draw.Picture($hPicture, 4, (Me.H - $hPicture.H) / 2)
   Endif
   
   If bClosable Then W -= BUTTON_SIZE
@@ -108,7 +108,7 @@ Public Sub DrawingArea_Draw()
   
   If $bShowClose Then
     hPict = Picture[If($bInClose, "img/delete-h.png", "img/delete.png")]
-    Draw.Picture(hPict, Me.W - hPict.W, (Me.H - hPict.H) \ 2)
+    Draw.Picture(hPict, Me.W - hPict.W - 2, (Me.H - hPict.H) \ 2)
   Endif
   
 End
@@ -126,13 +126,13 @@ Public Sub UpdateLayout()
 
   Select Case $iOrientation
     Case Align.Left, Align.Right
-      S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
-      If $hPicture Then S += $hPicture.W + 2
+      S = Me.Parent.Font.TextWidth($sText) + 8
+      If $hPicture Then S += $hPicture.W
       If bClosable Then S += BUTTON_SIZE
       Me.H = S
     Case Else
-      S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
-      If $hPicture Then S += $hPicture.W + 2
+      S = Me.Parent.Font.TextWidth($sText) + 8
+      If $hPicture Then S += $hPicture.W
       If bClosable Then S += BUTTON_SIZE
       Me.W = S
   End Select

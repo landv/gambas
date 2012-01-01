@@ -266,8 +266,6 @@ void gDrawingArea::updateCache()
 
 void gDrawingArea::clear()
 {
-	GdkGC *gc2;
-	
 	if (_cached && buffer) 
 	{
 		g_object_unref(buffer);

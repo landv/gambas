@@ -929,7 +929,10 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
       
     End Select
     
-    If .Level = 0 Then gvwMenu.Data.Background = Color.LightBackground
+    If .Level = 0 Then
+      gvwMenu.Data.Font.Bold = True
+      gvwMenu.Data.Font.Underline = True
+    Endif
     
   End With
 

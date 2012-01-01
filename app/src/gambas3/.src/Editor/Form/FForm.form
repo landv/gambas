@@ -456,7 +456,7 @@
     }
   }
   { svwWorkspace ScrollView
-    MoveScaled(2,8,60,39)
+    MoveScaled(2,8,58,39)
     Background = &H808080&
     Expand = True
     Border = False
@@ -485,48 +485,41 @@
       Border = Border.Plain
     }
     { panTitle Panel
-      MoveScaled(0,0,49,6)
-      Background = Color.Background
+      MoveScaled(0,0,49,5)
+      Background = Color.SelectedBackground
       Drop = True
+      Arrangement = Arrange.Fill
       AutoResize = True
-      { panInside Panel
-        MoveScaled(1,0,46,5)
-        Background = Color.SelectedBackground
-        Arrangement = Arrange.Vertical
-        Border = Border.Plain
-        { HBox1 HBox
-          MoveScaled(2,1,43,3)
-          Expand = True
-          { imgIcon PictureBox
-            MoveScaled(0,0,4,4)
-            Alignment = Align.Center
-          }
-          { lblTitle Label
-            MoveScaled(5,0,24,4)
-            Font = Font["Bold"]
-            Background = Color.SelectedBackground
-            Foreground = Color.SelectedForeground
-            Expand = True
-            Padding = 2
-          }
-          { btnMaxWindow PictureBox
-            MoveScaled(36,0,3,3)
-            Picture = Picture["img/16/max-window.png"]
-            Alignment = Align.Left
-          }
-          { btnCloseWindow PictureBox
-            MoveScaled(39,0,3,3)
-            Picture = Picture["img/16/close-window.png"]
-            Alignment = Align.Left
-          }
+      Padding = 2
+      { HBox1 HBox
+        MoveScaled(2,1,43,3)
+        Expand = True
+        { imgIcon PictureBox
+          MoveScaled(0,0,4,4)
+          Alignment = Align.Center
         }
-        { Panel2 Panel
-          MoveScaled(19,4,4,1)
+        { lblTitle Label
+          MoveScaled(5,0,24,3)
+          Font = Font["Bold"]
+          Foreground = Color.SelectedForeground
+          Expand = True
+          Padding = 2
+          Alignment = Align.Center
+        }
+        { btnMaxWindow PictureBox
+          MoveScaled(36,0,3,3)
+          Picture = Picture["img/16/max-window.png"]
+          Alignment = Align.Center
+        }
+        { btnCloseWindow PictureBox
+          MoveScaled(39,0,3,3)
+          Picture = Picture["img/16/close-window.png"]
+          Alignment = Align.Center
         }
       }
     }
     { panBorder DrawingArea
-      MoveScaled(22,12,24,24)
+      MoveScaled(23,12,24,24)
       Background = Color.Background
       { panSelectN DrawingArea panSelect
         Name = "panSelectN"

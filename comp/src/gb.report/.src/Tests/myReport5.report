@@ -15,7 +15,6 @@
     { ReportSvgImage1 ReportSvgImage
       #MoveScaled(2,2,11,11)
       Width = "4cm"
-      StretchMode = ReportImage.Proportional
       Image = SvgImage.Load("img/logo.svg")
     }
     { ReportLabel3 ReportLabel
@@ -69,7 +68,6 @@
         { ReportImage1 ReportImage
           #MoveScaled(10,17,14,8)
           Height = "3cm"
-          StretchMode = ReportImage.Proportional
           Alignment = Align.Center
           Image = Image.Load("printer1.png")
         }

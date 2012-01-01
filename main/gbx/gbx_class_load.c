@@ -164,39 +164,10 @@ static void conv_type_simple(CLASS *class, int *ptype)
 
 static void check_version(CLASS *class, int loaded)
 {
-	//static bool warning = FALSE;
-	//COMPONENT *comp = class->component;
-	
-  int current = GAMBAS_PCODE_VERSION;
-
-  /*if (GAMBAS_FULL_VERSION > 0x01090000 && GAMBAS_FULL_VERSION <= 0x0200FFFF)
-  {
-    if (loaded == current)
-      return;
-    
-    if ((comp && comp->warning) || warning)
-    	return;
-    
-    fprintf(stderr, "warning: ");
-    if (comp)
-    	fprintf(stderr, "%s: ", comp->name);
-    fprintf(stderr, "current bytecode version is ");
-    fprintf(stderr, "%X.%X.%X ", current >> 24, (current >> 16) & 0xFF, current & 0xFFFF);
-    fprintf(stderr, "and project bytecode version is ");
-    fprintf(stderr, "%X.%X.%X. You should recompile your project.\n", loaded >> 24, (loaded >> 16) & 0xFF, loaded & 0xFFFF);
-    
-    if (comp)
-    	comp->warning = TRUE;
-    else
-    	warning = TRUE;
-    	
-    return;
-  }*/
-  
-  if (loaded > current)
-    THROW(E_CLASS, ClassName, "Version too recent. Please upgrade Gambas.", "");
-  if (loaded < current)
-    THROW(E_CLASS, ClassName, "Version too old. Please recompile the project.", "");
+  if (loaded > GAMBAS_PCODE_VERSION)
+    THROW(E_CLASS, ClassName, "Bytecode too recent. Please upgrade Gambas.", "");
+  if (loaded < GAMBAS_PCODE_VERSION_MIN)
+    THROW(E_CLASS, ClassName, "Bytecode too old. Please recompile the project.", "");
 }
 
 

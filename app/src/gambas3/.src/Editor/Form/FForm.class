@@ -103,6 +103,7 @@ Public Sub _new(sPath As String)
   Family = File.Ext(sPath)
   Mid$(Family, 1, 1) = UCase(Left(Family))
   $hFamily = CFamily.Get(Family)
+  panBorder.Background = $hFamily.Background
 
   Container = panBorder
 
@@ -175,7 +176,7 @@ Public Sub UpdateSnap()
     Wend
 
     hPict = New Picture(Project.Snap * nPts, Project.Snap * nPts)
-    iColor = hCtrl.Control.Background
+    iColor = $hFamily.Background
     If iColor = Color.Default Then iColor = Color.Background
     hPict.Fill(iColor)
     Draw.Begin(hPict)
@@ -196,12 +197,13 @@ Public Sub UpdateSnap()
 
   Endif
 
-  If hCtrl.Control Is Form Then
-    hCtrl.Control.Picture = hPict
-  Else
-    hCtrl["#Grid"] = hPict
-    hCtrl.Control.Refresh
-  Endif
+  hCtrl["#Grid"] = hPict
+  panBorder.Refresh
+  ' If hCtrl.Control Is Form Then
+  '   hCtrl.Control.Picture = hPict
+  ' Else
+  '   hCtrl.Control.Refresh
+  ' Endif
 
 End
 
@@ -2361,12 +2363,6 @@ Public Sub Control_Draw(Optional iIndex As Integer)
 
   If Not hCCtrl Then Return
 
-  If Not hCCtrl.Parent And If hCCtrl["#Grid"] Then
-    Draw.FillX = 0
-    Draw.FillY = 0
-    Draw.Tile(hCCtrl["#Grid"], 0, 0, hCtrl.W, hCtrl.H)
-  Endif
-
   If $hFamily.DrawControl(hCCtrl) Then
 
     If Paint.Device Then Draw.Begin(Paint.Device)
@@ -2723,18 +2719,18 @@ Public Sub UpdateBorder()
 
     Else
 
-      H = lblTitle.Font.Height + 8 '+ 4
-      btnCloseWindow.W = 18 'H - 4
-      btnMaxWindow.W = 17 'H - 4
-      imgIcon.W = H - 4
+      H = lblTitle.Font.Height + 10 '+ 4
+      'btnCloseWindow.W = 18 'H - 4
+      'btnMaxWindow.W = 17 'H - 4
+      imgIcon.W = H ' - 4
       panBorder.Move(0, H + HM, .Width + 4, .Height + 2 - HM)
       $bBorder = True
       'panBorder.Border = Border.Raised
       panTitle.Resize(panBorder.W, H)
-      panInside.Move(0, 0, panTitle.W, panTitle.H + 8)
+      'panInside.Move(0, 0, panTitle.W, panTitle.H + 8)
       panTitle.Show
 
-      hCtrl.Control.Move(2, 0)
+      .Move(2, 0)
 
     Endif
 
@@ -3300,11 +3296,20 @@ End
 
 Public Sub panBorder_Draw()
 
+  Dim hCont As Container
+
   'If $bBorder Then
   '  Draw.Style.Panel(0, -4, panBorder.W, panBorder.H + 4, Border.Raised)
   'Else
-  Draw.Style.Panel(0, 0, panBorder.W, panBorder.H, Border.Plain)
   'Endif
+
+  If RootControl["#Grid"] Then
+    hCont = RootControl.Control
+    Draw.FillX = hCont.ClientX
+    Draw.FillY = hCont.ClientY
+    Draw.Tile(RootControl["#Grid"], 0, 0, Draw.W, Draw.H)
+  Endif
+  Draw.Style.Panel(0, -1, panBorder.W, panBorder.H + 1, Border.Plain)
 
 End
 

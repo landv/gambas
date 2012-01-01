@@ -351,13 +351,15 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
       hCtrl = New Form(hForm.Container)
     Else
       If hClass.MultiContainer Then
-        hCtrl = New TabStrip(hForm.Container)
+        hCtrl = New TabPanel(hForm.Container)
+        hCtrl.Border = False
+        hCtrl.Highlight = True
       Else
         hCtrl = New DrawingArea(hForm.Container)
       Endif
     Endif
     hCtrl.Drop = True
-    hCtrl.Background = CFamily.Get(hForm.Family).Background
+    'hCtrl.Background = CFamily.Get(hForm.Family).Background
     'hCtrl.Tracking = True
     
   Else If Kind = "Menu" Then

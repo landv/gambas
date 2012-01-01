@@ -179,7 +179,6 @@ pre {
 a {
   padding-left: 1px;
   padding-right: 1px;
-  text-shadow: 0 0 2px #808080;
   text-decoration: none;
   -moz-transition: text-shadow 0.25s ease;
   -webkit-transition: text-shadow 0.25s ease;
@@ -198,7 +197,7 @@ a.image:before {
 }
 
 a:hover {
-  text-shadow: 0 0 2px black,0px 0px 6px #FF7F00;
+  text-shadow: 0 0 2px black; /*,0px 0px 6px #FF7F00;*/
   text-decoration: none;
 }
 
@@ -287,7 +286,7 @@ img.screenshot {
 }
 
 #top-menu {
-  text-shadow: 1px 1px 2px #808080;
+  /*text-shadow: 1px 1px 2px #808080;*/
   padding: 12px;
   border: solid 1px #21647F;
   background: #3398c3;
@@ -303,7 +302,6 @@ img.screenshot {
 
 #presentation {
   /*letter-spacing: 1px;*/
-  text-shadow: 0 0 6px black;
   /*border: solid black 2px;*/
   /*background: #FFBF7F;*/
   padding: 0px 16px 16px 8px;
@@ -311,16 +309,30 @@ img.screenshot {
   margin-left: -8px;
   /*background: white;*/
   margin-top: 0px;
+  font-weight: bold;
   /*border-right: dotted black 6px;*/
   /*border-radius: 0px 0px 12px;*/
 }
 
-.title {
+#title-shadow {
+  /*left: 2px;
+  top: 2px;*/
+  padding: 0px;
+  font-weight: bold;
+  font-size: 250%;
+  color: #FF7F00;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+#title {
+  position: absolute;
+  margin-top: -2px;
+  margin-left: -2px;
   padding: 0px;
   font-weight: bold;
   font-size: 250%;
   color: #3398c3;
-  text-shadow: 0 0 6px #FF7F00,0 0 4px #3398C3;
   letter-spacing: 2px;
   margin-bottom: 16px;
 }

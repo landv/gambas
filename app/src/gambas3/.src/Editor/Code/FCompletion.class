@@ -515,7 +515,13 @@ Public Function ManageKey() As Boolean
 
       Endif
 
-      If Not lvwComp.Available Then lvwComp.MoveFirst
+      If Not lvwComp.Available Then 
+        If Key.Code = Key.Up Then
+          lvwComp.MoveLast
+        Else
+          lvwComp.MoveFirst
+        Endif
+      Endif
       If lvwComp.Available Then
         lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
@@ -533,7 +539,13 @@ Public Function ManageKey() As Boolean
 
       Endif
 
-      If Not lvwComp.Available Then lvwComp.MoveLast
+      If Not lvwComp.Available Then 
+        If Key.Code = Key.Down Then
+          lvwComp.MoveFirst
+        Else
+          lvwComp.MoveLast
+        Endif
+      Endif
       If lvwComp.Available Then
         lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible

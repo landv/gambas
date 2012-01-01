@@ -1,11 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,90,55)
+  MoveScaled(0,0,90,57)
   Text = ("Report preview")
+  Icon = Picture["icon:/small/zoom-fit"]
   Arrangement = Arrange.Vertical
   { Panel1 Panel
-    MoveScaled(1,0,88,4)
+    MoveScaled(0,0,88,4)
     Arrangement = Arrange.Horizontal
     { btnPrint ToolButton
       MoveScaled(0,0,9,4)
@@ -88,12 +89,8 @@
   { Separator2 Separator
     MoveScaled(11,6,14,0)
   }
-  { Printer1 #Printer
-    #MoveScaled(66,10)
-    FullPage = True
-  }
   { svwPreview ScrollView
-    MoveScaled(2,10,42,32)
+    MoveScaled(1,9,42,32)
     Background = Color.Background
     Expand = True
     Border = False
@@ -102,5 +99,9 @@
       Background = &HFFFFFF&
       Painted = True
     }
+  }
+  { Printer1 #Printer
+    #MoveScaled(66,10)
+    FullPage = True
   }
 }
