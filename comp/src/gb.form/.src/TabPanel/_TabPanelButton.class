@@ -178,12 +178,14 @@ End
 
 Public Sub DrawingArea_MouseDown()
   
+  Dim hTabPanel As TabPanel
   If Mouse.Left Then 
-    If $bInClose Then
-      GetParent()._Close(GetIndex())
+    hTabPanel = GetParent()
+    If $bInClose And If hTabPanel.Closable Then
+      hTabPanel._Close(GetIndex())
     Else
       If $bSelected Then Return
-      GetParent().Index = GetIndex()
+      hTabPanel.Index = GetIndex()
     Endif
   Endif
   
