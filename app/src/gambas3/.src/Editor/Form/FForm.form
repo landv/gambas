@@ -79,6 +79,20 @@
       Text = ("Unselect all")
       Shortcut = "Esc"
     }
+    { mnuSepUndo Menu
+    }
+    { mnuUndo Menu
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
     { Menu2 Menu
     }
     { mnuCut Menu
@@ -301,8 +315,6 @@
     { ToolButton17 ToolButton mnuUndo
       Name = "ToolButton17"
       MoveScaled(32,0,4,4)
-      Visible = False
-      Enabled = False
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
@@ -310,8 +322,6 @@
     { ToolButton18 ToolButton mnuRedo
       Name = "ToolButton18"
       MoveScaled(36,0,4,4)
-      Visible = False
-      Enabled = False
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
@@ -695,6 +705,7 @@
   }
   { Action redo
     Text = "Redo"
+    Shortcut = "Ctrl+Y"
     Picture = "icon:/small/redo"
   }
   { Action reload
@@ -736,6 +747,7 @@
   }
   { Action undo
     Text = "Undo"
+    Shortcut = "Ctrl+Z"
     Picture = "icon:/small/undo"
   }
   { Action unselect-all
@@ -748,6 +760,6 @@
   { Toolbar form
     Text = "Form"
     List = "save,reload,show-class,lock,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab"
-    Default = "save,reload,show-class,lock,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab"
+    Default = "save,reload,show-class,lock,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab"
   }
 }

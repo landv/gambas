@@ -511,6 +511,8 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
+  GetUndo().Add("SetControlProperty", [Me.Name, sProp, GetProperty(sProp), bDoNotApply])
+
   Try hProp = CComponent.Classes[Kind].Properties[sProp]
   'IF ERROR THEN STOP
   If IsNull(hProp) Then Return ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
@@ -582,7 +584,7 @@ _DO_NOT_APPLY:
       If VirtualCoord Then
         $cValue[sProp] = vVal
         Modify
-      Else
+      Else 
         SetProperty(Mid$(sProp, 2), vVal, bDoNotApply)
       Endif
       
@@ -597,7 +599,7 @@ _DO_NOT_APPLY:
         If Not VirtualCoord Then
           If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
             If Not IsNull(Parent) Or If Len(sProp) > 1 Then
-              Object.SetProperty(Control, sProp, vVal)
+              If Not IsNull(vVal) Then Object.SetProperty(Control, sProp, vVal)
             Endif
             $cValue["#" & sProp] = vVal
             MoveAllHandle
@@ -820,6 +822,13 @@ Public Function GetForm() As FForm
 
 End
 
+Private Sub GetUndo() As CUndo
+  
+  Return GetForm().GetUndo()
+  
+End
+
+
 Static Public Function CheckName(sName As String) As Boolean
 
   Dim iInd As Integer
@@ -921,6 +930,8 @@ Public Function Rename(sNewName As String) As Boolean
   If UCase(sNewName) <> UCase(Name) Then
     If hForm.Control.Exist(sNewName) Then Return True
   Endif
+
+  GetUndo().Add("RenameControl", [sNewName, Me.Name])
 
   ' Don't look in the class when renaming the form!
   If Parent Then
@@ -1108,6 +1119,8 @@ End
 
 Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
 
+  Dim hUndo As CUndo = GetUndo()
+
   If Not bFree Then
     X = Grid(X, Project.Snap)
     Y = Grid(Y, Project.Snap)
@@ -1129,8 +1142,10 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
 
   $bDoNotMoveHandle = True
 
+  hUndo.Begin
   SetProperty("#X", X)
   SetProperty("#Y", Y)
+  hUndo.End
 
   $bDoNotMoveHandle = False
   
@@ -1146,6 +1161,8 @@ End
 
 
 Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
+
+  Dim hUndo As CUndo = GetUndo()
 
   If Virtual Then Return
 
@@ -1163,8 +1180,10 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
 
   $bDoNotMoveHandle = True
 
+  hUndo.Begin
   SetProperty("#Width", W)
   SetProperty("#Height", H)
+  hUndo.End
 
   $bDoNotMoveHandle = False
 
@@ -1175,10 +1194,14 @@ End
 
 Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bFree As Boolean)
 
+  Dim hUndo As CUndo = GetUndo()
+
   If Virtual Then
     Move(X, Y, bFree)
     Return
   Endif
+
+  hUndo.Begin
 
   If Not bFree Then
     X = Grid(X, Project.Snap)
@@ -1209,6 +1232,8 @@ Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer,
 
   MoveAllHandle
 
+  hUndo.End
+  
 End
 
 
@@ -1220,6 +1245,7 @@ Public Procedure Panel_MouseDown()
   If GetForm().ReadOnly Then Return
   If Not Last.Tag Then Return
 
+  GetUndo().Begin
   $bMove = True
   $MX = Mouse.ScreenX
   $MY = Mouse.ScreenY
@@ -1243,50 +1269,14 @@ Public Procedure Panel_MouseMove()
 
   Dim iXP As Integer
   Dim iYP As Integer
+  
+  Dim bSomethingDone As Boolean
+  Dim hUndo As CUndo
 
-  ' If Mouse.Button = 0 Then
-  ' 
-  '   iX = Mouse.X
-  '   iY = Mouse.Y
-  ' 
-  '   If iY < PAN_H Then
-  '     If iX < PAN_W Then
-  '       hPanel.Mouse = Mouse.SizeNW
-  '       hPanel.Tag = "#NW"
-  '     Else If iX >= (hPanel.W - PAN_W) Then
-  '       hPanel.Mouse = Mouse.SizeNE
-  '       hPanel.Tag = "#NE"
-  '     Else
-  '       hPanel.Mouse = Mouse.SizeN
-  '       hPanel.Tag = "#N"
-  '     Endif
-  '   Else If iY >= (hPanel.H - PAN_H) Then
-  '     If iX < PAN_W Then
-  '       hPanel.Mouse = Mouse.SizeSW
-  '       hPanel.Tag = "#SW"
-  '     Else If iX >= (hPanel.W - PAN_W) Then
-  '       hPanel.Mouse = Mouse.SizeSE
-  '       hPanel.Tag = "#SE"
-  '     Else
-  '       hPanel.Mouse = Mouse.SizeS
-  '       hPanel.Tag = "#S"
-  '     Endif
-  '   Else If iX < PAN_W Then
-  '     hPanel.Mouse = Mouse.SizeW
-  '     hPanel.Tag = "#W"
-  '   Else If iX >= (hPanel.W - PAN_W) Then
-  '     hPanel.Mouse = Mouse.SizeE
-  '     hPanel.Tag = "#E"
-  '   Else
-  '     hPanel.Mouse = Mouse.Default
-  '     hPanel.Tag = Null
-  '   Endif
-  ' 
-  ' Endif
 
   If Not $bMove Then Return
 
-  'PRINT "Panel_MouseMove"
+  hUndo = GetUndo()
 
   CControl.SetGrid(Not Mouse.Shift)
 
@@ -1343,11 +1333,18 @@ Public Procedure Panel_MouseMove()
     If (iX <> hCtrl.X) Or (iY <> hCtrl.Y) Then
       If (iW <> hCtrl.W) Or (iH <> hCtrl.H) Then
         MoveAndResize(iX, iY, iW, iH)
+        bSomethingDone = True
       Else
         Move(iX, iY)
+        bSomethingDone = True
       Endif
     Else If (iW <> hCtrl.W) Or (iH <> hCtrl.H) Then
       Resize(iW, iH)
+      bSomethingDone = True
+    Endif
+    
+    If bSomethingDone And If Not hUndo.IsDisabled() Then
+      hUndo.Disable
     Endif
 
   Endif
@@ -1359,9 +1356,11 @@ End
 
 Public Procedure Panel_MouseUp()
 
-  'PRINT "Panel_Up"
+  Dim hUndo As CUndo = GetUndo()
 
   $bMove = False
+  If hUndo.IsDisabled() Then hUndo.Enable
+  hUndo.End
 
 End
 
@@ -1631,6 +1630,7 @@ End
 
 Public Sub Raise()
 
+  GetUndo().Add("LowerControl", [Name])
   Control.Raise
   MoveAllHandle
   Modify
@@ -1640,6 +1640,7 @@ End
 
 Public Sub Lower()
 
+  GetUndo().Add("RaiseControl", [Name])
   Control.Lower
   Modify
 

@@ -1,0 +1,166 @@
+' Gambas class file
+
+Public Struct UndoCommand
+  Command As String
+  Arg As Variant[]
+End Struct
+
+Private Const DEBUG_ME As Boolean = False
+
+Private $aUndo As New UndoCommand[]
+Private $aRedo As New UndoCommand[]
+Private $iDisabled As Integer
+Private $bInvert As Boolean
+
+Private Const CMD_BEGIN As String = "[["
+Private Const CMD_END As String = "]]"
+
+Private Sub Dump(hCmd As UndoCommand)
+  
+  Dim I As Integer
+
+  With hCmd
+    Print .Command; ": ";
+    If .Arg Then
+      For I = 0 To .Arg.Max
+        Print .Arg[I];;
+      Next
+    Endif
+  End With
+  
+  Print
+  
+End
+
+Public Sub Add(sCommand As String, Optional aArg As Variant[])
+  
+  Dim hCommand As New UndoCommand
+  
+  If $iDisabled Then Return
+  
+  hCommand.Command = sCommand
+  hCommand.Arg = aArg
+  
+  If $bInvert Then
+    $aRedo.Add(hCommand)
+    If DEBUG_ME Then Print "Redo: ";
+  Else
+    $aUndo.Add(hCommand)
+    If DEBUG_ME Then Print "Undo: ";
+  Endif
+  
+  If DEBUG_ME Then Dump(hCommand)
+  
+End
+
+Public Sub Begin()
+  
+  If $iDisabled Then Return
+  
+  Add(CMD_END)
+  
+End
+
+Public Sub End()
+  
+  Dim aCmd As UndoCommand[]
+
+  If $iDisabled Then Return
+  
+  If $bInvert Then
+    aCmd = $aRedo
+  Else
+    aCmd = $aUndo  
+  Endif
+  
+  If aCmd.Count And If aCmd[aCmd.Max].Command = CMD_END Then
+    aCmd.Remove(aCmd.Max)
+    If DEBUG_ME Then Print "Remove last command"
+    Return
+  Endif
+  
+  Add(CMD_BEGIN)
+  
+End
+
+
+Public Sub Undo(hEditor As Object, Optional bRedo As Boolean)
+  
+  Dim iLevel As Integer
+  Dim aCmd As UndoCommand[]
+  
+  If $iDisabled Then Return
+
+  If bRedo Then
+    aCmd = $aRedo
+  Else
+    aCmd = $aUndo  
+    $bInvert = Not $bInvert
+  Endif
+  
+  Begin()
+  
+  While aCmd.Count
+    
+    With aCmd[aCmd.Max]
+      
+      If .Command = CMD_BEGIN Then
+        Inc iLevel
+      Else If .Command = CMD_END Then
+        Dec iLevel
+      Else
+        With aCmd[aCmd.Max]
+          If DEBUG_ME Then 
+            Print "Exec ";
+            Dump(aCmd[aCmd.Max])
+          Endif
+          Object.Call(hEditor, .Command, .Arg)
+        End With
+      Endif
+      
+    End With
+    
+    aCmd.Remove(aCmd.Max)
+    If iLevel = 0 Then Break
+    
+  Wend
+  
+  End()
+  
+  If Not bRedo Then $bInvert = Not $bInvert
+  
+End
+
+Public Sub Redo(hEditor As Object)
+  
+  If $iDisabled Then Return
+  Undo(hEditor, True)
+  
+End
+
+
+Public Sub Clear()
+  
+  $aUndo.Clear
+  $aRedo.Clear
+  
+End
+
+Public Sub Disable()
+  
+  Inc $iDisabled
+  
+End
+
+Public Sub Enable()
+  
+  Dec $iDisabled
+  
+End
+
+Public Sub IsDisabled() As Boolean
+  
+  Return $iDisabled
+  
+End
+
