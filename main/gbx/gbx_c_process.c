@@ -45,10 +45,11 @@
 #endif
 
 #include "gb_replace.h"
+#include "gb_limit.h"
+#include "gb_array.h"
 #include "gbx_api.h"
 #include "gambas.h"
 #include "gbx_stream.h"
-#include "gb_array.h"
 #include "gbx_exec.h"
 #include "gbx_class.h"
 #include "gbx_watch.h"
@@ -77,6 +78,24 @@ static SIGNAL_HANDLER _SIGCHLD_handler;
 
 static void init_child(void);
 static void exit_child(void);
+
+enum {
+	CHILD_NO_ERROR,
+	CHILD_CANNOT_OPEN_TTY,
+	CHILD_CANNOT_INIT_TTY,
+	CHILD_CANNOT_PLUG_INPUT,
+	CHILD_CANNOT_PLUG_OUTPUT,
+	CHILD_CANNOT_EXEC,
+};
+	
+static const char *const _child_error[] = {
+	NULL,
+	"cannot open slave pseudo-terminal: ",
+	"cannot initialize pseudo-terminal: ",
+	"cannot plug standard input: ",
+	"cannot plug standard output and standard error: ",
+	"cannot exec program: "
+};
 
 static void callback_write(int fd, int type, CPROCESS *process)
 {
@@ -147,15 +166,6 @@ static void init_process(CPROCESS *process)
 
 static void exit_process(CPROCESS *_object)
 {
-	/* Normalement impossible */
-	/*
-	if (THIS->running)
-	{
-		fprintf(stderr, "WARNING: CPROCESS_free: running ?\n");
-		stop_process(THIS);
-	}
-	*/
-
 	#ifdef DEBUG_ME
 	fprintf(stderr, "exit_process: %p\n", _object);
 	#endif
@@ -186,6 +196,37 @@ static void exit_process(CPROCESS *_object)
 	STREAM_close(&THIS->ob.stream);
 }
 
+static void throw_child_error(CPROCESS *_object)
+{
+	int fd;
+	int child_error = -1;
+	int child_errno = -1;
+	char path[PATH_MAX];
+	
+	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getpid(), (int)THIS->pid);
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "throw_child_error: %p: %s\n", _object, path);
+	#endif
+
+	fd = open(path, O_RDONLY);
+	if (fd >= 0)
+	{
+		if (read(fd, &child_error, sizeof(int)) == sizeof(int)
+			  && read(fd, &child_errno, sizeof(int)) == sizeof(int))
+		{
+			THROW(E_CHILD, _child_error[child_error], strerror(errno));
+		}
+		else
+		{
+			THROW(E_CHILD, "unknown error", "");
+		}
+		
+		close(fd);
+	}
+	unlink(path);
+}
+
 static void stop_process_after(CPROCESS *_object)
 {
 	STREAM *stream;
@@ -194,6 +235,9 @@ static void stop_process_after(CPROCESS *_object)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "stop_process_after: %p\n", _object);
 	#endif
+
+	if (WIFEXITED(THIS->status) && WEXITSTATUS(THIS->status) == 255)
+		throw_child_error(THIS);
 
 	/* Vidage du tampon d'erreur */
 	if (THIS->err >= 0)
@@ -233,8 +277,6 @@ static void stop_process(CPROCESS *process)
 	fprintf(stderr, "stop_process: %p\n", process);
 	#endif
 
-	/*process->pid = -1;*/
-
 	/* Remove from running process list */
 
 	if (process->prev)
@@ -258,6 +300,30 @@ static void stop_process(CPROCESS *process)
 		exit_child();
 }
 
+static void abort_child(int error)
+{
+	int fd;
+	int save_errno;
+	char path[PATH_MAX];
+	
+	fflush(stdout);
+	fflush(stderr);
+	
+	save_errno = errno;
+	
+	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getppid(), (int)getpid());
+	
+	fd = open(path, O_CREAT | O_WRONLY, 0600);
+	if (fd >= 0)
+	{
+		write(fd, &error, sizeof(int)) == sizeof(int)
+		&& write(fd, &save_errno, sizeof(int)) == sizeof(int);
+		close(fd);
+	}
+	
+	exit(255);
+}
+
 static void init_child_tty(int fd)
 {
 	struct termios terminal = { 0 };
@@ -273,9 +339,20 @@ static void init_child_tty(int fd)
 	
 	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
 	terminal.c_lflag &= ~ECHO;
-
-	if (tcsetattr(fd, TCSADRAIN, &terminal))
-		exit(127);
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "init_child_tty: %s\n", isatty(fd) ? ttyname(fd) : "not a tty!");
+	#endif
+	
+	if (tcsetattr(fd, TCSANOW, &terminal))
+	{
+		#ifdef DEBUG_ME
+		int save_errno = errno;
+		fprintf(stderr, "init_child_tty: errno = %d\n", errno);
+		errno = save_errno;
+		#endif
+		abort_child(CHILD_CANNOT_INIT_TTY);
+	}
 }
 
 static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
@@ -310,10 +387,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		argv[2] = (char *)cmd;
 
 		if (argv[2] == NULL || *argv[2] == 0)
-		{
-			/*stop_process(process, FALSE);*/
 			return;
-		}
 		
 		process->process_group = TRUE;
 	}
@@ -323,10 +397,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		n = ARRAY_count(array->data);
 
 		if (n == 0)
-		{
-			/*stop_process(process, FALSE);*/
 			return;
-		}
 
 		ALLOC(&argv, sizeof(*argv) * (n + 1), "run_process");
 		memcpy(argv, array->data, sizeof(*argv) * n);
@@ -350,10 +421,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#endif
 	}
 
-	/*printf("** run_process\n");*/
-	OBJECT_REF(process, "run_process"); /* Process is running */
+	// Adding to the running process list
 
-	/* Adding to the running process list */
+	OBJECT_REF(process, "run_process");
 
 	if (RunningProcessList)
 		RunningProcessList->prev = process;
@@ -378,7 +448,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL)<0)
 			THROW_SYSTEM(errno, NULL);
 		#else
-		fd_master = getpt();
+		fd_master = posix_openpt(O_RDWR | O_NOCTTY);
 		if (fd_master < 0)
 			THROW_SYSTEM(errno, NULL);
 
@@ -386,6 +456,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		unlockpt(fd_master);
 		#endif
 		slave = ptsname(fd_master);
+		#ifdef DEBUG_ME
+		fprintf(stderr, "run_process: slave = %s\n", slave);
+		#endif
 	}
 	else
 	{
@@ -420,9 +493,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#ifdef DEBUG_ME
 		fprintf(stderr, "fork: pid = %d\n", pid);
 		#endif
-
-		/*printf("Running process %d\n", pid);
-		fflush(NULL);*/
 
 		if (mode & PM_TERM)
 		{
@@ -491,29 +561,37 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		if (mode & PM_TERM)
 		{
+			#ifdef DEBUG_ME
+			fprintf(stderr, "run_process (child): slave = %s\n", slave);
+			#endif
 			close(fd_master);
 			setsid();
 			fd_slave = open(slave, O_RDWR);
 			if (fd_slave < 0)
-				exit(127);
+				abort_child(CHILD_CANNOT_OPEN_TTY);
 			
 			if (mode & PM_WRITE)
 			{
 				if (dup2(fd_slave, STDIN_FILENO) == -1)
-					exit(127);
+					abort_child(CHILD_CANNOT_PLUG_INPUT);
+				
 			}
 
 			if (mode & PM_READ)
 			{
 				if ((dup2(fd_slave, STDOUT_FILENO) == -1)
 						|| (dup2(fd_slave, STDERR_FILENO) == -1))
-					exit(127);
+					abort_child(CHILD_CANNOT_PLUG_OUTPUT);
 			}
 
 			// Strange Linux behaviour ?
 			// Terminal initialization must be done on STDIN_FILENO after using dup2().
 			// If it is done on fd_slave, before using dup2(), it sometimes fails with no error.
-			init_child_tty(STDIN_FILENO);
+		
+			if (mode & PM_WRITE)
+				init_child_tty(STDIN_FILENO);
+			else if (mode & PM_READ)
+				init_child_tty(STDOUT_FILENO);
 			
 			/*puts("---------------------------------");
 			if (stdin_isatty) puts("STDIN is a tty");*/
@@ -531,7 +609,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 				close(fdin[1]);
 
 				if (dup2(fdin[0], STDIN_FILENO) == -1)
-					exit(127);
+					abort_child(CHILD_CANNOT_PLUG_INPUT);
 			}
 
 			if (mode & PM_READ)
@@ -541,7 +619,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 				if ((dup2(fdout[1], STDOUT_FILENO) == -1)
 						|| (dup2(fderr[1], STDERR_FILENO) == -1))
-					exit(127);
+					abort_child(CHILD_CANNOT_PLUG_OUTPUT);
 			}
 		}
 
@@ -562,7 +640,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		
 		execvp(argv[0], (char **)argv);
 		//execve(argv[0], (char **)argv, environ);
-		exit(127);
+		abort_child(CHILD_CANNOT_EXEC);
 	}
 
 	update_stream(process);

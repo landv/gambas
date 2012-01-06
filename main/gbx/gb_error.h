@@ -104,7 +104,8 @@ enum {
 	E_VKEY,
 	E_SARRAY,
 	E_EXTCB,
-	E_SERIAL
+	E_SERIAL,
+	E_CHILD
 	};
 
 #ifndef __GB_ERROR_C

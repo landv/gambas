@@ -46,7 +46,7 @@ int ERROR_depth = 0;
 
 static int _lock = 0;
 
-static const char *_message[67] =
+static const char *_message[69] =
 {
   /*  0 E_UNKNOWN */ "Unknown error",
   /*  1 E_MEMORY */ "Out of memory",
@@ -114,8 +114,9 @@ static const char *_message[67] =
   /* 63 E_OVERRIDE */ ".3'&1.&2' is incorrectly overridden in class '&3'",
 	/* 64 E_NKEY */ "Void key",
 	/* 65 E_SARRAY */ "Embedded array",
-	/* 66 E_EXTCB */ ".1Cannot create callback: &1"
-	/* 67 E_SERIAL */ "Serialization error"
+	/* 66 E_EXTCB */ ".1Cannot create callback: &1",
+	/* 67 E_SERIAL */ "Serialization error",
+	/* 68 E_CHILD */ ".2Cannot run child process: &1&2"
 };
 
 #if DEBUG_ERROR
