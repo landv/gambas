@@ -896,13 +896,18 @@ Public Sub Control_MouseDown()
 
   Me.SetFocus
   Project.SetCurrentPopup(mnuForm)
-  $hUndo.Begin
   'DrawControlFrame(Null)
 
   X = Mouse.X
   Y = Mouse.Y
-
+  
   $hCurrent = Control[Last.Tag]
+  
+  If $hCurrent = RootControl And If Y < RootControl.Control.ClientY Then
+    $hCurrent = Null
+    Return
+  Endif
+  
   $sTool = FToolBox.GetTool()
 
   $X = Last.X
@@ -910,6 +915,8 @@ Public Sub Control_MouseDown()
   $MX = Last.ScreenX + X
   $MY = Last.ScreenY + Y
 
+  $hUndo.Begin
+  
   'IF $hCurrent.Kind = "GridView" THEN
   '  PRINT "MouseDown: $X ="; $X; " $Y ="; $Y; " $MX ="; $MX; " $MY ="; $MY
   '  PRINT "X ="; X; " Y ="; Y
@@ -1002,6 +1009,7 @@ Public Sub Control_MouseMove()
   'Debug Last;; Mouse.ScreenX - hForm.Control.ScreenX;; Mouse.ScreenY - hForm.Control.ScreenY
 
   If Not Mouse.Left Then Return
+  If Not $hCurrent Then Return
   
   'PRINT "Control_MouseMove  Mode ="; $iMode
 
@@ -1123,6 +1131,8 @@ Public Sub Control_MouseUp()
   Dim hPrevious As CControl
   Dim sFocus As String
 
+  If Not $hCurrent Then Return
+  
   'PRINT "Control_MouseUp  Mode ="; $iMode
 
   If $iMode = MODE_CREATE Then
@@ -1375,7 +1385,7 @@ Public Sub RemoveControl(sName As String)
     $hUndo.Add("PutSelection", [sCtrl, hCCtrl.Parent.Name])
   Endif
   
-  Control[sName].Delete
+  hCCtrl.Delete
   Modify
   'PRINT "< RemoveControl "; sName; " "; Control[sName]
 
@@ -3700,4 +3710,16 @@ Public Sub Form_Close()
 
   $hUndo = Null
 
+End
+
+Public Sub ClearMenus()
+  
+  AllMenus.Clear
+  
+End
+
+Public Sub RestoreMenus()
+  
+  $hUndo.Add("ClearMenus")
+  
 End

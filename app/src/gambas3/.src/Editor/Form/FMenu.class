@@ -203,12 +203,13 @@ Private Sub SaveAllMenu()
   Dim iLevel As Integer
   Dim sText As String
 
+  $hForm.GetUndo().Begin
+
   For Each hCtrl In $hForm.AllMenus
-    'cDelete.Add(hCtrl)
-    hCtrl.Delete
+    $hForm.RemoveControl(hCtrl.Name)
   Next
   
-  If $hForm.AllMenus.Count Then $hForm.Modify
+  $hForm.GetUndo().Add("RestoreMenus")
   $hForm.AllMenus.Clear
 
   hCtrl = $hForm.Control[$hForm.Name]
@@ -255,6 +256,8 @@ Private Sub SaveAllMenu()
   
   $hForm.UpdateBorder
   
+  $hForm.GetUndo().End
+
   $bModified = False
 
 End

@@ -962,6 +962,7 @@ Public Sub Select(hForm As FForm, Optional bMaster As Boolean)
   Dim hPanel As Panel
 
   If IsNull(Parent) Then Return
+  If Kind = "Menu" Then Return
 
   If Selected Then
     UnSelect(hForm)

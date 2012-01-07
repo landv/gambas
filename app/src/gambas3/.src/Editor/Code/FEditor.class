@@ -678,11 +678,13 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
 
   sPublic = If(bPublic, "Public", "Private")
   sStatic = If(bStatic, "Static ", "")
+  
+  Editor.Goto(iLine, 0)
 
   If sType Then
-    Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n" & Space$(Project.TabSize) & "\n\nEND\n", iLine, 0)
+    Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n" & Space$(Project.TabSize) & "\n\nEND\n")
   Else
-    Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n" & Space$(Project.TabSize) & "\n\nEND\n", iLine, 0)
+    Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n" & Space$(Project.TabSize) & "\n\nEND\n")
   Endif
 
   Editor.End

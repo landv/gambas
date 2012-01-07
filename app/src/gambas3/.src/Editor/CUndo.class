@@ -7,10 +7,12 @@ End Struct
 
 Private Const DEBUG_ME As Boolean = False
 
+Private Enum CONTEXT_NONE, CONTEXT_UNDO, CONTEXT_REDO
+
 Private $aUndo As New UndoCommand[]
 Private $aRedo As New UndoCommand[]
 Private $iDisabled As Integer
-Private $bInvert As Boolean
+Private $iContext As Integer
 
 Private Const CMD_BEGIN As String = "[["
 Private Const CMD_END As String = "]]"
@@ -41,12 +43,13 @@ Public Sub Add(sCommand As String, Optional aArg As Variant[])
   hCommand.Command = sCommand
   hCommand.Arg = aArg
   
-  If $bInvert Then
+  If $iContext = CONTEXT_UNDO Then
     $aRedo.Add(hCommand)
     If DEBUG_ME Then Print "Redo: ";
   Else
     $aUndo.Add(hCommand)
     If DEBUG_ME Then Print "Undo: ";
+    If $iContext = CONTEXT_NONE Then $aRedo.Clear
   Endif
   
   If DEBUG_ME Then Dump(hCommand)
@@ -67,7 +70,7 @@ Public Sub End()
 
   If $iDisabled Then Return
   
-  If $bInvert Then
+  If $iContext = CONTEXT_UNDO Then
     aCmd = $aRedo
   Else
     aCmd = $aUndo  
@@ -90,12 +93,14 @@ Public Sub Undo(hEditor As Object, Optional bRedo As Boolean)
   Dim aCmd As UndoCommand[]
   
   If $iDisabled Then Return
+  If $iContext Then Return
 
   If bRedo Then
     aCmd = $aRedo
+    $iContext = CONTEXT_REDO
   Else
     aCmd = $aUndo  
-    $bInvert = Not $bInvert
+    $iContext = CONTEXT_UNDO
   Endif
   
   Begin()
@@ -127,13 +132,14 @@ Public Sub Undo(hEditor As Object, Optional bRedo As Boolean)
   
   End()
   
-  If Not bRedo Then $bInvert = Not $bInvert
+  $iContext = CONTEXT_NONE
   
 End
 
 Public Sub Redo(hEditor As Object)
   
   If $iDisabled Then Return
+  If $iContext Then Return
   Undo(hEditor, True)
   
 End

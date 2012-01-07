@@ -126,14 +126,14 @@ Public Sub UpdateLayout()
 
   Select Case $iOrientation
     Case Align.Left, Align.Right
-      S = Me.Parent.Font.TextWidth($sText) + 8
-      If $hPicture Then S += $hPicture.W
-      If bClosable Then S += BUTTON_SIZE
+      S = Me.Parent.Font.TextWidth($sText) + 16
+      If $hPicture Then S += $hPicture.W - 4
+      If bClosable Then S += BUTTON_SIZE - 4
       Me.H = S
     Case Else
-      S = Me.Parent.Font.TextWidth($sText) + 8
-      If $hPicture Then S += $hPicture.W
-      If bClosable Then S += BUTTON_SIZE
+      S = Me.Parent.Font.TextWidth($sText) + 16
+      If $hPicture Then S += $hPicture.W - 4
+      If bClosable Then S += BUTTON_SIZE - 4
       Me.W = S
   End Select
   
