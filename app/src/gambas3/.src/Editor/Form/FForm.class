@@ -1359,13 +1359,13 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
     Endif
     hCtrl.Resize(W, H)
   End With
+  $hUndo.End
 
   $hCurrent = hCtrl
   UnSelectAll
   SelectCurrent(True)
   RefreshProperty
   FProperty.FocusOn("Name")
-  $hUndo.End
 
   Return hCtrl
 
@@ -1385,8 +1385,14 @@ Public Sub RemoveControl(sName As String)
     $hUndo.Add("PutSelection", [sCtrl, hCCtrl.Parent.Name])
   Endif
   
+  If hCCtrl.Selected Then
+    hCCtrl.UnSelect(Me)
+    SelectionChange
+  Endif
+  
   hCCtrl.Delete
   Modify
+  RefreshProperty
   'PRINT "< RemoveControl "; sName; " "; Control[sName]
 
 End

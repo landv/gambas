@@ -11,6 +11,8 @@ Private Enum CONTEXT_NONE, CONTEXT_UNDO, CONTEXT_REDO
 
 Private $aUndo As New UndoCommand[]
 Private $aRedo As New UndoCommand[]
+Private $iLevelUndo As Integer
+Private $iLevelRedo As Integer
 Private $iDisabled As Integer
 Private $iContext As Integer
 
@@ -60,6 +62,14 @@ Public Sub Begin()
   
   If $iDisabled Then Return
   
+  If $iContext = CONTEXT_UNDO Then
+    Inc $iLevelRedo
+    If $iLevelRedo > 1 Then Return
+  Else
+    Inc $iLevelUndo
+    If $iLevelUndo > 1 Then Return
+  Endif
+  
   Add(CMD_END)
   
 End
@@ -71,8 +81,12 @@ Public Sub End()
   If $iDisabled Then Return
   
   If $iContext = CONTEXT_UNDO Then
+    Dec $iLevelRedo
+    If $iLevelRedo > 0 Then Return
     aCmd = $aRedo
   Else
+    Dec $iLevelUndo
+    If $iLevelUndo > 0 Then Return
     aCmd = $aUndo  
   Endif
   
@@ -149,6 +163,8 @@ Public Sub Clear()
   
   $aUndo.Clear
   $aRedo.Clear
+  $iLevelUndo = 0
+  $iLevelRedo = 0
   
 End
 

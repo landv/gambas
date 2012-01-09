@@ -503,6 +503,7 @@ End
 
 Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApply As Boolean) As Boolean
 
+  Dim hUndo As CUndo = GetUndo()
   Dim vDefault As Variant
   Dim hProp As CPropertyInfo
   Dim vRealVal As Variant
@@ -511,11 +512,12 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
-  GetUndo().Add("SetControlProperty", [Me.Name, sProp, GetProperty(sProp), bDoNotApply])
-
   Try hProp = CComponent.Classes[Kind].Properties[sProp]
   'IF ERROR THEN STOP
   If IsNull(hProp) Then Return ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
+
+  hUndo.Begin
+  hUndo.Add("SetControlProperty", [Me.Name, sProp, GetProperty(sProp), bDoNotApply])
 
   vDefault = hProp.DefaultValue
 
@@ -585,7 +587,9 @@ _DO_NOT_APPLY:
         $cValue[sProp] = vVal
         Modify
       Else 
+        hUndo.Disable()
         SetProperty(Mid$(sProp, 2), vVal, bDoNotApply)
+        hUndo.Enable()
       Endif
       
       MoveAllHandle
@@ -632,7 +636,9 @@ _DO_NOT_APPLY:
   Endif
 
 
-  Return
+Finally
+  
+  hUndo.End
 
 Catch
 
