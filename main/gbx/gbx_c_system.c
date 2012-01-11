@@ -204,7 +204,7 @@ GB_DESC NATIVE_System[] =
 
 	GB_STATIC_PROPERTY_READ("Path", "s", System_Path),
 	GB_CONSTANT("Version", "s", GAMBAS_VERSION_STRING),
-	GB_CONSTANT("FullVersion", "s", GAMBAS_FULL_VERSION_STRING),
+	GB_CONSTANT("FullVersion", "s", VERSION),
 	GB_STATIC_PROPERTY_READ("Backtrace", "String[]", System_Backtrace),
 
 	GB_STATIC_PROPERTY("Language", "s", System_Language),

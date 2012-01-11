@@ -1525,7 +1525,7 @@ _ADD_QUICK:
 
 	{
 		static void *_aq_jump[] = {
-			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, 
+			&&__AQ_VOID, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, 
 			&&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING, &&__AQ_POINTER
 			};
 	
@@ -1549,6 +1549,10 @@ _ADD_QUICK:
 	
 		if (LIKELY(type <= T_POINTER))
 			goto *_aq_jump[type];
+		
+	__AQ_VOID:
+	
+		THROW(E_NRETURN);
 	
 	__AQ_BOOLEAN:
 		
@@ -1995,6 +1999,8 @@ _SUBR_COMP:
 				type = T_OBJECT;
 			else if (TYPE_is_object(type))
 				THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+			else if (TYPE_is_void(type))
+				THROW(E_NRETURN);
 
 			if (!variant)
 				*PC |= type;
@@ -2299,6 +2305,8 @@ __VARIANT:
 			type = T_OBJECT;
 		else if (TYPE_is_object(type))
 			THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+		else if (TYPE_is_void(type))
+			THROW(E_NRETURN);
 
 		if (!variant)
 			*PC |= type;
@@ -2447,6 +2455,8 @@ __VARIANT:
 		}
 		else if (TYPE_is_object(type))
 			goto __ERROR;
+		else if (TYPE_is_void(type))
+			THROW(E_NRETURN);
 
 		if (!variant)
 			*PC |= type;
@@ -2495,6 +2505,8 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 #define MANAGE_VARIANT(_func) \
 ({ \
 	type = Max(P1->type, P2->type); \
+	if (TYPE_is_void(P1->type) || TYPE_is_void(P2->type)) \
+		THROW(E_NRETURN); \
 	\
 	if (TYPE_is_number_date(type)) \
 	{ \
@@ -2527,6 +2539,8 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 #define MANAGE_VARIANT_POINTER(_func) \
 ({ \
 	type = Max(P1->type, P2->type); \
+	if (TYPE_is_void(P1->type) || TYPE_is_void(P2->type)) \
+		THROW(E_NRETURN); \
 	\
 	if (TYPE_is_number_date(type) || TYPE_is_pointer(type)) \
 	{ \

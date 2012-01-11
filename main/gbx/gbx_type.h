@@ -76,6 +76,7 @@ EXTERN const size_t TYPE_sizeof_memory_tab[];
 #define TYPE_is_null(type)         ((type) == T_NULL)
 #define TYPE_is_object_null(type)  ((type) >= T_OBJECT || (type) == T_NULL)
 #define TYPE_is_pointer(type)      ((type) == T_POINTER)
+#define TYPE_is_void(type)         ((type) == T_VOID)
 
 size_t TYPE_sizeof(TYPE type);
 #define TYPE_sizeof_memory(_type) (TYPE_is_object(_type) ? sizeof(void *) : TYPE_sizeof_memory_tab[_type])
