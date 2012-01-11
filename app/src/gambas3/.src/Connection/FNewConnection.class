@@ -23,6 +23,7 @@ Private Sub LoadConnection()
   sType = LCase(hConfig["Connection/Type"])
 
   txtHost.Text = hConfig["Connection/Host"] 
+  txtPort.Text = hConfig["Connection/Port"] 
   txtUser.Text = hConfig["Connection/User"] 
   txtPath.Text = hConfig["Connection/Path"] 
   chkRememberPassword.Value = If(hConfig["Connection/RememberPassword"], 1, 0)
@@ -46,6 +47,7 @@ Private Sub FillConfig(hConfig As Object, Optional bPassword As Boolean)
   
   hConfig["Connection/Type"] = LCase(cmbType.Text)
   hConfig["Connection/Host"] = txtHost.Text
+  hConfig["Connection/Port"] = txtPort.Text
   hConfig["Connection/User"] = txtUser.Text
   hConfig["Connection/Path"] = txtPath.Text
   hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
@@ -260,6 +262,12 @@ Public Sub lvwDatabase_Select()
 End
 
 Public Sub txtHost_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub txtPort_Change()
 
   ResetDatabase
 

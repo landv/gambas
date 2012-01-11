@@ -370,7 +370,7 @@ msgstr ""
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3135
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
 #: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:378
-#: FNewConnection.form:243 FNewTable.form:86 FNewTranslation.form:21
+#: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:174 FOption.class:618 FPasteSpecial.form:77
 #: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:690
 #: FReportBorderChooser.form:48 FReportBrushChooser.form:34
@@ -421,7 +421,7 @@ msgstr ""
 #: Design.module:408 FColorChooser.form:54 FCommit.form:223
 #: FConnectionEditor.class:452 FCreateFile.form:430 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
-#: FMain.form:1340 FMenu.form:373 FNewConnection.form:237 FNewTable.form:80
+#: FMain.form:1340 FMenu.form:373 FNewConnection.form:249 FNewTable.form:80
 #: FNewTranslation.form:15 FOpenProject.form:168 FPasteSpecial.form:71
 #: FPropertyComponent.form:215 FPropertyProject.form:684
 #: FReportBorderChooser.form:54 FReportBrushChooser.form:40
@@ -559,15 +559,15 @@ msgstr ""
 msgid "Authentification"
 msgstr ""
 
-#: FCommit.form:169 FNewConnection.form:121
+#: FCommit.form:169 FNewConnection.form:133
 msgid "User"
 msgstr ""
 
-#: FCommit.form:184 FNewConnection.form:135
+#: FCommit.form:184 FNewConnection.form:147
 msgid "Password"
 msgstr ""
 
-#: FCommit.form:197 FNewConnection.form:155
+#: FCommit.form:197 FNewConnection.form:167
 msgid "Remember password"
 msgstr ""
 
@@ -756,7 +756,7 @@ msgid "Run query"
 msgstr ""
 
 #: FConnectionEditor.form:448 FForm.form:255 FMain.class:200
-#: FNewConnection.class:317 FOption.class:765 FTranslate.class:636
+#: FNewConnection.class:325 FOption.class:765 FTranslate.class:636
 msgid "Delete"
 msgstr ""
 
@@ -769,12 +769,12 @@ msgid "Export..."
 msgstr ""
 
 #: FConnectionEditor.class:34 FCreateFile.form:289 FCreateProject.form:371
-#: FDebugInfo.class:33 FNewConnection.form:58 FNewTable.form:33
+#: FDebugInfo.class:33 FNewConnection.form:60 FNewTable.form:33
 msgid "Name"
 msgstr ""
 
 #: FConnectionEditor.class:39 FCreateFile.form:340 FCreateProject.form:93
-#: FInfo.form:84 FNewConnection.form:72 FNewTable.form:48
+#: FInfo.form:84 FNewConnection.form:74 FNewTable.form:48
 msgid "Type"
 msgstr ""
 
@@ -822,35 +822,35 @@ msgstr ""
 msgid "unlimited"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:94
+#: FConnectionEditor.class:571 MConnection.module:95
 msgid "Boolean"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:86
+#: FConnectionEditor.class:571 MConnection.module:87
 msgid "Integer"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:88
+#: FConnectionEditor.class:571 MConnection.module:89
 msgid "Long"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:98
+#: FConnectionEditor.class:571 MConnection.module:99
 msgid "Serial"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:90
+#: FConnectionEditor.class:571 MConnection.module:91
 msgid "Float"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:96
+#: FConnectionEditor.class:571 MConnection.module:97
 msgid "String"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:92
+#: FConnectionEditor.class:571 MConnection.module:93
 msgid "Date"
 msgstr ""
 
-#: FConnectionEditor.class:571 MConnection.module:100
+#: FConnectionEditor.class:571 MConnection.module:101
 msgid "Blob"
 msgstr ""
 
@@ -1464,7 +1464,7 @@ msgstr ""
 msgid ";"
 msgstr ""
 
-#: FExportData.form:37 FImportTable.form:103
+#: FExportData.form:37 FImportTable.form:103 FNewConnection.form:100
 msgid ":"
 msgstr ""
 
@@ -2977,79 +2977,79 @@ msgstr ""
 msgid "modified"
 msgstr ""
 
-#: FNewConnection.form:79
+#: FNewConnection.form:81
 msgid "MySQL"
 msgstr ""
 
-#: FNewConnection.form:79
+#: FNewConnection.form:81
 msgid "PostgreSQL"
 msgstr ""
 
-#: FNewConnection.form:79
+#: FNewConnection.form:81
 msgid "SQLite"
 msgstr ""
 
-#: FNewConnection.form:79
+#: FNewConnection.form:81
 msgid "Firebird"
 msgstr ""
 
-#: FNewConnection.form:79
+#: FNewConnection.form:81
 msgid "ODBC"
 msgstr ""
 
-#: FNewConnection.form:88
+#: FNewConnection.form:90
 msgid "Host"
 msgstr ""
 
-#: FNewConnection.form:103
+#: FNewConnection.form:115
 msgid "Path"
 msgstr ""
 
-#: FNewConnection.form:165 Project.module:186
+#: FNewConnection.form:177 Project.module:186
 msgid "Database"
 msgstr ""
 
-#: FNewConnection.form:222
+#: FNewConnection.form:234
 msgid "Ignore database charset"
 msgstr ""
 
-#: FNewConnection.class:84
+#: FNewConnection.class:86
 msgid "Please enter the name of the database."
 msgstr ""
 
-#: FNewConnection.class:125
+#: FNewConnection.class:127
 msgid "Please enter password"
 msgstr ""
 
-#: FNewConnection.class:127
+#: FNewConnection.class:129
 msgid "Connection properties"
 msgstr ""
 
-#: FNewConnection.class:139
+#: FNewConnection.class:141
 msgid "New connection"
 msgstr ""
 
-#: FNewConnection.class:158
+#: FNewConnection.class:160
 msgid "Select a directory"
 msgstr ""
 
-#: FNewConnection.class:193
+#: FNewConnection.class:195
 msgid "&Create database '&1'"
 msgstr ""
 
-#: FNewConnection.class:197
+#: FNewConnection.class:199
 msgid "&Delete database '&1'"
 msgstr ""
 
-#: FNewConnection.class:308
+#: FNewConnection.class:316
 msgid "Unable to create database."
 msgstr ""
 
-#: FNewConnection.class:317
+#: FNewConnection.class:325
 msgid "Do you really want to delete the database '&1'?"
 msgstr ""
 
-#: FNewConnection.class:328
+#: FNewConnection.class:336
 msgid "Unable to delete database."
 msgstr ""
 
@@ -3061,7 +3061,7 @@ msgstr ""
 msgid "Please enter the name of the new table."
 msgstr ""
 
-#: FNewTable.class:59 MConnection.module:272
+#: FNewTable.class:59 MConnection.module:273
 msgid "Table '&1' already exists."
 msgstr ""
 
@@ -3209,7 +3209,7 @@ msgstr ""
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.form:382 FProperty.class:738
+#: FOption.form:382 FProperty.class:741
 msgid "None"
 msgstr ""
 
@@ -3508,7 +3508,7 @@ msgid ""
 "existence at runtime."
 msgstr ""
 
-#: FProperty.class:938
+#: FProperty.class:941
 msgid "Select a file"
 msgstr ""
 
@@ -4471,7 +4471,7 @@ msgstr ""
 msgid "Depends on"
 msgstr ""
 
-#: MConnection.module:285
+#: MConnection.module:286
 msgid "Cannot create table '&1'."
 msgstr ""
 

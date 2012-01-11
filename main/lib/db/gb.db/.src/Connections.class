@@ -66,6 +66,9 @@ Static Public Sub _get(Name As String) As Connection
       Case "path", "host"
         hConn.Host = Unquote(aLine[1])
         
+      Case "port"
+        hConn.Port = Unquote(aLine[1])
+        
       Case "database"
         hConn.Name = Unquote(aLine[1])
         

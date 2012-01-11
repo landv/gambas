@@ -660,7 +660,10 @@ Private Sub ShowProperty(Optional sFocus As String)
 
     Case "Table"
 
-      If GetConnection() Then txtProperty.ReadOnly = True
+      If GetConnection() Then
+        txtProperty.ReadOnly = True
+        bButton = True
+      Endif
 
     Case "Field"
 

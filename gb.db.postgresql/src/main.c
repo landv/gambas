@@ -694,6 +694,8 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 		return TRUE;
 	}
 	
+	//fprintf(stderr, "gb.db.postgresql: host = `%s` port = `%s` dbnname = `%s` user = `%s` password = `%s`\n", desc->host, desc->port, dbname, desc->user, desc->password);
+	
 	conn = PQsetdbLogin(desc->host, desc->port, NULL, NULL, dbname, desc->user, desc->password);
 
 	if (!conn)

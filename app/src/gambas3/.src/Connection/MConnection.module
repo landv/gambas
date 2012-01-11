@@ -11,6 +11,7 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
     hConn.Host = hConfig["Connection/Path"]
   Else
     hConn.Host = hConfig["Connection/Host"]
+    hConn.Port = hConfig["Connection/Port"]
     hConn.User = hConfig["Connection/User"]
     hConn.Password = LoadPassword(sName, hConfig["Connection/RememberPassword"])
   Endif

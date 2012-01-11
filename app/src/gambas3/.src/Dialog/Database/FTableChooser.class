@@ -56,7 +56,7 @@ Public Sub Form_Open()
   $hConn.Close
   MConnection.InitFrom($hConn, hConfig, $sConnection, True)
   $hConn.Open
-  MConnection.FillViewWithTables(lvwTable, $hConn)
+  MConnection.FillViewWithTables(lvwTable, $hConn, False)
   Try lvwTable["T" & Table].Selected = True 
   Try lvwTable["S" & Table].Selected = True 
   Try lvwTable.Current.EnsureVisible

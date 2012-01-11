@@ -14,6 +14,7 @@ Public Sub btnConnect_Click()
   With $hConn
     .Type = cmbType.Text
     .Host = txtHost.Text
+    .Port = txtPort.Text
     .Login = txtUser.Text
     .Password = txtPassword.Text
     .Name = ""
