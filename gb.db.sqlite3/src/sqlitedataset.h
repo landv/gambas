@@ -168,11 +168,7 @@ protected:
 	virtual void make_edit();
 /* Delete SQL */
 	virtual void make_deletion();
-
-	//static int sqlite3_callback(void* res_ptr,int ncol, char** reslt, char** cols);
-
-/* This function works only with MySQL database
-  Filling the fields information from select statement */
+/* Filling the fields information from select statement */
 	virtual void fill_fields();
 /* Changing field values during dataset navigation */
 

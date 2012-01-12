@@ -248,12 +248,7 @@ class field_value
 		}
 		#endif
 
-		void set_isNull(fType f)
-		{
-			is_null = true;
-			field_type = f;
-			str_value = "";
-		}
+		void set_isNull(fType f);
 		void set_asString(const char *s, fType type);
 		void set_asString(const string & s, fType type);
 		void set_asBlob(const char *s, int l);	//BM

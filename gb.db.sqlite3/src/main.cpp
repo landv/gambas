@@ -926,23 +926,17 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
   <blob> points at a DB_BLOB structure that will receive a pointer to the
   data and its length.
 
-  NOTE: this function is always called after query_fill() with the same
-  value of <pos>.
-
 *****************************************************************************/
 
 static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB * blob)
 {
 	Dataset *res = (Dataset *) result;
-	//field_value val;
 
-	//val = res->fv(res->fieldName(field));
+	res->seek(pos);
 
 	blob->data = res->fv(field).get_asBlob();
 	blob->length = res->fv(field).get_len();
 	blob->constant = TRUE;
-
-	//fprintf(stderr, "blob_read: %ld: %p\n", blob->length, blob->data);
 }
 
 

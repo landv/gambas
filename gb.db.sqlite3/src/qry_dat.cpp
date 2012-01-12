@@ -418,7 +418,9 @@ field_value & field_value::operator=(const field_value & fv)
 		return *this;
 
 	if (fv.get_isNull())
+	{
 		set_isNull(fv.get_fType());
+	}
 	else
 	{
 		switch (fv.get_fType())
@@ -488,6 +490,15 @@ field_value & field_value::operator=(const field_value & fv)
 
 
 //Set functions
+void field_value::set_isNull(fType type)
+{
+	is_null = true;
+	field_type = type;
+	str_value = "";
+	if (type == ft_Blob)
+		set_asBlob(NULL, 0);
+}
+
 void field_value::set_asString(const char *s, fType type)
 {
 	str_value = s;
