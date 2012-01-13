@@ -140,6 +140,7 @@ void CWatcher::Add(int fd, int type, void *callback, intptr_t param)
 	{
 		GB.Free(POINTER(&data));
 		GB.Remove(&watch, i, 1);
+		MAIN_check_quit();
 	}
 }
 

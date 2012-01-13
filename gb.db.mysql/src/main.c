@@ -887,9 +887,6 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	<blob> points at a DB_BLOB structure that will receive a pointer to the
 	data and its length.
 
-	NOTE: this function is always called after query_fill() with the same
-	value of <pos>.
-
 *****************************************************************************/
 
 static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)

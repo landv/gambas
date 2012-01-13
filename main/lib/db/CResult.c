@@ -823,7 +823,7 @@ static CBLOB *make_blob(CRESULT *result, int field)
 	if (result->handle && result->pos >= 0)
 		result->driver->Result.Blob(result->handle, result->pos, field, BLOB);
 
-	//fprintf(stderr, "make_blob: %d (%ld) -> %p\n", field, BLOB->length, BLOB);
+	//fprintf(stderr, "make_blob: [%d] %d (%d) -> %p\n", result->pos, field, BLOB->length, BLOB);
 
 	//GB.UnrefKeep(POINTER(&_object), FALSE);
 	return BLOB;

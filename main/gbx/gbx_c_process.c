@@ -37,10 +37,11 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+
+#ifdef OS_OPENBSD
 /* granpt(), unlockpt() and ptsname() unavailable under OpenBSD
 	and are replaced with openpty() implementation because of security
 	issues */
-#ifdef OS_OPENBSD
 #include <util.h>
 #endif
 
@@ -110,9 +111,6 @@ static void callback_write(int fd, int type, CPROCESS *process)
 		{
 			process->result = STRING_add(process->result, COMMON_buffer, n);
 			CSTREAM_stream(process)->process.read_something = TRUE;
-			//#ifdef DEBUG_ME
-			//fprintf(stderr, "callback_write: result = '%s'\n", process->result);
-			//#endif
 		}
 	}
 	else if (!STREAM_is_closed(CSTREAM_stream(process)) && !STREAM_eof(CSTREAM_stream(process))) //process->running &&
@@ -122,7 +120,6 @@ static void callback_write(int fd, int type, CPROCESS *process)
 
 static int callback_error(int fd, int type, CPROCESS *process)
 {
-	/*fprintf(stderr, ">> Write\n"); fflush(stderr);*/
 	char buffer[256];
 	int n;
 
@@ -336,6 +333,7 @@ static void init_child_tty(int fd)
 	#endif
 	
 	terminal.c_oflag |= OPOST;
+	terminal.c_oflag &= ~ONLCR;
 	
 	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
 	terminal.c_lflag &= ~ECHO;
@@ -561,20 +559,20 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		if (mode & PM_TERM)
 		{
-			#ifdef DEBUG_ME
-			fprintf(stderr, "run_process (child): slave = %s\n", slave);
-			#endif
 			close(fd_master);
 			setsid();
 			fd_slave = open(slave, O_RDWR);
 			if (fd_slave < 0)
 				abort_child(CHILD_CANNOT_OPEN_TTY);
 			
+			#ifdef DEBUG_ME
+			fprintf(stderr, "run_process (child): slave = %s isatty = %d\n", slave, isatty(fd_slave));
+			#endif
+
 			if (mode & PM_WRITE)
 			{
 				if (dup2(fd_slave, STDIN_FILENO) == -1)
 					abort_child(CHILD_CANNOT_PLUG_INPUT);
-				
 			}
 
 			if (mode & PM_READ)
@@ -865,9 +863,9 @@ void CPROCESS_wait_for(CPROCESS *process)
 
 
 
-BEGIN_METHOD_VOID(CPROCESS_exit)
+BEGIN_METHOD_VOID(Process_exit)
 
-	//fprintf(stderr, "CPROCESS_exit\n");
+	//fprintf(stderr, "Process_exit\n");
 
 	while (RunningProcessList)
 		stop_process(RunningProcessList);
@@ -877,17 +875,17 @@ BEGIN_METHOD_VOID(CPROCESS_exit)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CPROCESS_new)
+BEGIN_METHOD_VOID(Process_new)
 
 	init_process(THIS);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CPROCESS_free)
+BEGIN_METHOD_VOID(Process_free)
 
 	#ifdef DEBUG_ME
-	printf("CPROCESS_free %p\n", THIS);
+	printf("Process_free %p\n", THIS);
 	#endif
 
 	exit_process(THIS);
@@ -895,14 +893,14 @@ BEGIN_METHOD_VOID(CPROCESS_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(CPROCESS_id)
+BEGIN_PROPERTY(Process_Id)
 
 	GB_ReturnInt(THIS->pid);
 
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CPROCESS_kill)
+BEGIN_METHOD_VOID(Process_Kill)
 
 	if (!THIS->running)
 		return;
@@ -916,7 +914,7 @@ BEGIN_METHOD_VOID(CPROCESS_kill)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CPROCESS_signal)
+BEGIN_METHOD_VOID(Process_Signal)
 
 	if (!THIS->running)
 		return;
@@ -940,7 +938,7 @@ BEGIN_METHOD(CPROCESS_send, GB_STRING text)
 END_METHOD
 #endif
 
-BEGIN_PROPERTY(CPROCESS_state)
+BEGIN_PROPERTY(Process_State)
 
 	if (THIS->running)
 		GB_ReturnInteger(1);
@@ -955,7 +953,7 @@ BEGIN_PROPERTY(CPROCESS_state)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CPROCESS_value)
+BEGIN_PROPERTY(Process_Value)
 
 	int status;
 
@@ -976,7 +974,7 @@ BEGIN_PROPERTY(CPROCESS_value)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CPROCESS_last_state)
+BEGIN_PROPERTY(Process_LastState)
 
 	if (WIFEXITED(_last_status))
 		GB_ReturnInteger(0);
@@ -986,7 +984,7 @@ BEGIN_PROPERTY(CPROCESS_last_state)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CPROCESS_last_value)
+BEGIN_PROPERTY(Process_LastValue)
 
 	int status;
 
@@ -1001,7 +999,7 @@ BEGIN_PROPERTY(CPROCESS_last_value)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CPROCESS_wait)
+BEGIN_METHOD_VOID(Process_Wait)
 
 	CPROCESS_wait_for(THIS);
 
@@ -1019,21 +1017,21 @@ GB_DESC NATIVE_Process[] =
 	GB_CONSTANT("Crashed", "i", 2),
 	GB_CONSTANT("Signaled", "i", 2),
 
-	GB_STATIC_PROPERTY_READ("LastState", "i", CPROCESS_last_state),
-	GB_STATIC_PROPERTY_READ("LastValue", "i", CPROCESS_last_value),
+	GB_STATIC_PROPERTY_READ("LastState", "i", Process_LastState),
+	GB_STATIC_PROPERTY_READ("LastValue", "i", Process_LastValue),
 	
-	GB_PROPERTY_READ("Id", "i", CPROCESS_id),
-	GB_PROPERTY_READ("Handle", "i", CPROCESS_id),
-	GB_PROPERTY_READ("State", "i", CPROCESS_state),
-	GB_PROPERTY_READ("Value", "i", CPROCESS_value),
+	GB_PROPERTY_READ("Id", "i", Process_Id),
+	GB_PROPERTY_READ("Handle", "i", Process_Id),
+	GB_PROPERTY_READ("State", "i", Process_State),
+	GB_PROPERTY_READ("Value", "i", Process_Value),
 
-	GB_STATIC_METHOD("_exit", NULL, CPROCESS_exit, NULL),
-	GB_METHOD("_new", NULL, CPROCESS_new, NULL),
-	GB_METHOD("_free", NULL, CPROCESS_free, NULL),
+	GB_STATIC_METHOD("_exit", NULL, Process_exit, NULL),
+	GB_METHOD("_new", NULL, Process_new, NULL),
+	GB_METHOD("_free", NULL, Process_free, NULL),
 
-	GB_METHOD("Kill", NULL, CPROCESS_kill, NULL),
-	GB_METHOD("Signal", NULL, CPROCESS_signal, NULL),
-	GB_METHOD("Wait", NULL, CPROCESS_wait, NULL),
+	GB_METHOD("Kill", NULL, Process_Kill, NULL),
+	GB_METHOD("Signal", NULL, Process_Signal, NULL),
+	GB_METHOD("Wait", NULL, Process_Wait, NULL),
 
 	//GB_METHOD("Send", NULL, CPROCESS_send, "(Input)s"),
 	//GB_METHOD("_print", NULL, CPROCESS_send, "(Input)s"),

@@ -1899,7 +1899,7 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 	GB_METHOD("_put", NULL, Array_Object_put, "(Value)*;(Index)i."),
 	GB_METHOD("Find", "i", Array_Object_Find, "(Value)*;[(Start)i]"),
 	GB_METHOD("FindByRef", "i", Array_Object_FindByRef, "(Value)*;[(Start)i]"),
-	GB_METHOD("Exist", "b", Array_Object_Exist, "(Value)*;[(ByRef)b];"),
+	GB_METHOD("Exist", "b", Array_Object_Exist, "(Value)*;"),
 	GB_METHOD("ExistByRef", "b", Array_Object_ExistByRef, "(Value)*;"),
 
 	GB_METHOD("Pop", "*", Array_Pop, NULL),
