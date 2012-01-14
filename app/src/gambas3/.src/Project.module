@@ -117,8 +117,6 @@ Public Files As New Collection
 
 Public AboutToQuit As Boolean
 
-Public Positions As New String[]
-
 Public Const MAX_ICON_SIZE As Integer = 32768
 
 Public EXAMPLES_DIR As String
@@ -592,8 +590,6 @@ _INIT_AGAIN:
 
   CRecentFile.Add(sDir)
 
-  Positions.Clear
-
   If Not $bTesting
     FMain.OnProjectChange
     FSearch.OnProjectChange
@@ -613,6 +609,7 @@ _INIT_AGAIN:
   If bStopConvert Then FConvert.Stop
 
   LastOpenedFiles
+  CPosition.Clear
 
   If ReadOnly Then FMain.ShowWarning(("This project is read-only."))
 
@@ -745,6 +742,7 @@ Private Function CloseProject() As Boolean
     'FFind.WriteConfig
     Try Config = Null
 
+    CPosition.Clear
     Files.Clear
     ActiveForm = Null
 
@@ -1939,6 +1937,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
     hForm.GotoCenter(iLine - 1, iColumn)
   Endif
 
+  CPosition.SaveCurrent
+
   Return hForm
 
 End
@@ -2602,9 +2602,9 @@ Public Sub Activate(hForm As Object)
   bEditor = sType = "FEditor"
   bTextEditor = sType = "FTextEditor"
 
-  Action["break"].Visible = bEditor
-  Action["watch"].Visible = bEditor
-  Action["until"].Visible = bEditor
+  Action["break"].Enabled = bEditor
+  Action["watch"].Enabled = bEditor
+  Action["until"].Enabled = bEditor
 
   'FFind.OnProjectActivate
   FToolBox.OnProjectActivate
@@ -2614,7 +2614,9 @@ Public Sub Activate(hForm As Object)
   FMain.HideDebug(sType = "FConnectionEditor")
 
   FSearch.Update
-
+  
+  CPosition.SaveCurrent
+  
 End
 
 Public Sub Deactivate(hForm As Object)
@@ -4966,50 +4968,7 @@ End
 '
 ' END
 
-Public Sub LastPosition()
 
-  Dim aPos As String[]
-  Dim iPos As Integer
-  Dim hForm As Object
-
-  With Positions
-
-    If .Count = 0 Then Return
-
-    aPos = Split(.Pop(), "\n")
-    '     IF aPos[0] = Path AND (Val(aPos[1]) = edtEditor.Line) AND (Val(aPos[2]) = edtEditor.Column) THEN
-    '       LastPosition
-    '       RETURN
-    '     ENDIF
-
-    'PRINT "-> "; aPos.Join(" ")
-    hForm = OpenFile(aPos[0])
-    If hForm Then hForm.GotoCenter(Val(aPos[1]), Val(aPos[2]))
-
-  End With
-
-End
-
-Public Sub SavePosition()
-
-  Dim hEditor As FEditor
-  Dim sPos As String
-
-  Try hEditor = ActiveForm
-  If Error Then Return
-
-  sPos = hEditor.Path & "\n" & hEditor.Editor.Line & "\n" & hEditor.Editor.Column
-
-  If Positions.Count > 0 Then
-    If Positions[Positions.Max] = sPos Then
-      Return
-    Endif
-  Endif
-
-  Positions.Push(sPos)
-  'PRINT "Save: "; Project.Positions[Project.Positions.Count - 1]
-
-End
 
 Public Sub GetPicture(sPict As String) As Picture
 

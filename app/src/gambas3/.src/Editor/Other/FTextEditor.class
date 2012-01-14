@@ -208,10 +208,10 @@ End
 Public Sub Editors_KeyPress()
   
   If Key.Code = Key.Escape Then 
+    
     Action["find"].Value = False
-  Endif
   
-  If Key.Code = Key.Insert Then
+  Else If Key.Code = Key.Insert Then
 
     If Key.Shift Then
       If Not Editor.ReadOnly Then
@@ -246,6 +246,16 @@ Public Sub Editors_KeyPress()
       
     Endif
     
+  Else If Key.Code = Key.Home Then
+
+    Goto(0, 0)
+    Stop Event
+
+  Else If Key.Code = Key.End Then
+
+    Goto(Editor.Lines.Count)
+    Stop Event
+
   Endif 
 
 End
@@ -273,6 +283,7 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
   'DEC iLine
   If iColumn < 0 Then iColumn = Editor.Column
   Editor.Goto(iLine, iColumn, True)
+  CPosition.SaveCurrent
 
 End
 

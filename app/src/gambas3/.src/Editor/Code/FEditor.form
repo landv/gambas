@@ -20,12 +20,6 @@
       Picture = Picture["icon:/small/info"]
       Shortcut = "F2"
     }
-    { mnuLastPosition Menu
-      Action = ".go-back"
-      Text = ("Go back")
-      Picture = Picture["icon:/16/left"]
-      Shortcut = "Shift+F2"
-    }
     { mnuForm Menu
       Action = ".code-form"
       Text = ("Open form")
@@ -405,7 +399,7 @@
     }
   }
   { Panel1 Panel
-    MoveScaled(14,8,38,63)
+    MoveScaled(6,7,38,63)
     Background = Color.Background
     Expand = True
     Arrangement = Arrange.Fill
@@ -513,7 +507,6 @@
   }
   { Action go-back
     Text = "Go back"
-    Shortcut = "Shift+F2"
     Picture = "icon:/16/left"
   }
   { Action goto-line

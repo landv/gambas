@@ -1193,7 +1193,6 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.Run(False, 1)
     Case "return"
       Project.Run(False, 3)
-      
     Case "new-project"
       NewProject
     Case "open-project"
@@ -1253,6 +1252,12 @@ Public Sub Action_Activate(Key As String) As Boolean
       If Not Error Then hEditor.RunUntil
     Case "info"
       FInfo.Run(tvwProject.Key)
+      
+    Case "go-back"
+      CPosition.MovePrevious
+      
+    Case "go-forward"
+      CPosition.MoveNext
       
     Case "menu-file"
       mnuFile.Popup(btnMnuFile.ScreenX, btnMnuFile.ScreenY + btnMnuFile.H)

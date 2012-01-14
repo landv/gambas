@@ -474,22 +474,18 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1, Optional bCe
     iLine = 0
   Else If iLine >= Editor.Lines.Count Then
     iLine = Editor.Lines.Count - 1
+    iColumn = Editor.Lines[iLine].Length
   Endif
 
   If Not Editor.Lines[iLine].Limit Then Editor.Lines[iLine].Expanded = True
   Editor.Goto(iLine, iColumn, bCenter)
 
+  CPosition.SaveCurrent
+
 End
 
-Public Sub GotoCenter(iLine As Integer, Optional iColumn As Integer = -1, Optional bSave As Boolean)
+Public Sub GotoCenter(iLine As Integer, Optional iColumn As Integer = -1)
 
-  Dim hEditor As Editor = {Editor}
-
-  If bSave Then Project.SavePosition
-  'If iColumn = -2 Then
-  '  iColumn = -1
-  '  Try iColumn = hEditor.Lines[iLine].Length - String.Len(LTrim(hEditor.Lines[iLine].Text))
-  'Endif
   Me.Goto(iLine, iColumn, True)
 
 End
@@ -944,16 +940,13 @@ Public Sub Editors_KeyPress()
 
     ToggleProcList
     Stop Event
-
+    
   Else If Key.Code = Key.F2 Then
-
-    If Key.Shift Then
-      Project.LastPosition
-    Else If Key.Normal Then
-      FindDefinition
+    
+    If Key.Shift Then 
+      CPosition.MovePrevious
+      Stop Event
     Endif
-
-    Stop Event
 
   Else If Key.Code = Key.Pause Then
 
@@ -1000,9 +993,15 @@ Public Sub Editors_KeyPress()
       '   GotoNextProc
       '   Stop Event
 
-    Else If Key.Code = Key.Home Or Key.Code = Key.End Then
+    Else If Key.Code = Key.Home Then
 
-      Project.SavePosition()
+      Me.Goto(0, 0)
+      Stop Event
+
+    Else If Key.Code = Key.End Then
+
+      Me.Goto(Editor.Lines.Count)
+      Stop Event
 
     Else If Key.Code = Key.Return Then
 
@@ -1482,7 +1481,7 @@ Public Sub mnuGotoLine_Click()
 
   iLine = FGotoLine.Run(Editor.Line + 1)
   If iLine <= 0 Then Return
-  GotoCenter(iLine - 1, 0, True)
+  GotoCenter(iLine - 1, 0)
 
 End
 
@@ -1503,8 +1502,6 @@ Private Sub GotoPreviousProc()
 
   Dim iInd As Integer
 
-  Project.SavePosition
-
   For iInd = Editor.Line - 2 To 0 Step -1
     If IsProc(Editor.Lines[iInd].Text) Then
       Me.Goto(iInd, Editor.Column, True)
@@ -1519,8 +1516,6 @@ End
 Private Sub GotoNextProc()
 
   Dim iInd As Integer
-
-  Project.SavePosition
 
   For iInd = Editor.Line + 1 To Editor.Lines.Count - 1
 
@@ -2444,7 +2439,7 @@ Private Function IsKeyword(iCpt As Integer) As Boolean
 
 End
 
-Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Optional iY As Integer)
+Private Sub FindDefinition() As Boolean
 
   Dim sLig As String
   Dim iCol As Integer
@@ -2455,19 +2450,13 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   Dim sKeyword2 As String
   Dim iLine As Integer
 
-  If Not bPopupHelp Then
-    iLine = Editor.Line
-    iCol = Editor.Column
-    If Editor.Selected Then
-      If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
-      iCol = Editor.Selection.EndColumn
-    Else
-      iCol = Editor.Column
-    Endif
+  iLine = Editor.Line
+  iCol = Editor.Column
+  If Editor.Selected Then
+    If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
+    iCol = Editor.Selection.EndColumn
   Else
-    iCol = Editor.PosToColumn(iX, iY)
-    iLine = Editor.PosToLine(iY)
-    If iLine < 0 Or If iCol < 0 Then Return
+    iCol = Editor.Column
   Endif
 
   sLig = Highlight.Purge(Editor.Lines[iLine].Text)
@@ -2545,7 +2534,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   'PRINT hSymbol.Class
 
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
-    Project.SavePosition()
+    CPosition.SaveCurrent
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   Else
     MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
@@ -2932,7 +2921,7 @@ Public Sub GotoProc(iLine As Integer)
 
   iCol = String.Len(Editor.Lines[iLine].Text) - String.Len(LTrim(Editor.Lines[iLine].Text))
 
-  Me.GotoCenter(iLine, iCol, True)
+  Me.GotoCenter(iLine, iCol) ', True)
   Editor.SetFocus
 
 End
@@ -3063,13 +3052,13 @@ End
 
 Public Sub mnuDefinition_Click()
 
-  FindDefinition(False)
+  FindDefinition
 
 End
 
 Public Sub mnuLastPosition_Click()
 
-  Project.LastPosition
+  CPosition.MovePrevious
 
 End
 
@@ -3140,20 +3129,6 @@ Public Sub panToolBar_Configure()
   Endif
 
 End
-
-' Public Sub Editors_DblClick()
-'
-'   If Mouse.Control Then FindDefinition(False)
-'
-' End
-
-' Public Sub timShowHelp_Timer()
-'   'Print $X, $Y, Editor.PosToColumn($X, $Y)
-'   If FHelp.MouseOver Then Return
-'   If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
-'   timShowHelp.Enabled = False
-'
-' End
 
 Private Sub ResizeProcList()
 

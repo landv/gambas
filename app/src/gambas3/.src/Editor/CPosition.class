@@ -1,0 +1,85 @@
+' Gambas class file
+
+Static Private $aPositions As New CPosition[]
+Static Private $iCurrent As Integer
+Static Private $bDisable As Boolean
+
+Public Path As String
+Public {Line} As Integer
+Public Column As Integer
+
+Static Public Sub Clear()
+  
+  $aPositions.Clear
+  $iCurrent = 0
+  
+End
+
+
+Static Public Sub SaveCurrent()
+
+  Dim hForm As Object
+  Dim hEditor As Editor
+  Dim sPos As String
+  Dim hPos As CPosition
+
+  If $bDisable Then Return
+
+  hForm = Project.ActiveForm
+  If Not hForm Then Return
+
+  hPos = New CPosition
+  With hForm
+    hPos.Path = .Path
+    Try hEditor = hForm.Editor
+    If hEditor Then
+      hPos.Line = hEditor.Line
+      hPos.Column = hEditor.Column
+    Else
+      hPos.Line = -1
+      hPos.Column = -1
+    Endif
+  End With
+
+  If $iCurrent > 0 Then
+    If $aPositions[$iCurrent - 1].IsEqual(hPos) Then Return
+  Endif
+
+  $aPositions.Resize($iCurrent)
+  $aPositions.Add(hPos)
+  Inc $iCurrent
+  
+End
+
+Static Public Sub MovePrevious()
+  
+  If $iCurrent <= 1 Then Return
+  
+  Dec $iCurrent
+  $aPositions[$iCurrent - 1].Move
+  
+End
+
+Static Public Sub MoveNext()
+  
+  If $iCurrent > $aPositions.Max Then Return
+  
+  $aPositions[$iCurrent].Move
+  Inc $iCurrent
+  
+End
+
+Public Sub IsEqual(hPos As CPosition) As Boolean
+  
+  If Path = hPos.Path And If {Line} = hPos.Line And If Column = hPos.Column Then Return True
+  
+End
+
+Public Sub Move()
+  
+  $bDisable = True
+  Project.OpenFile(Path, {Line} + 1, Column)
+  $bDisable = False
+  
+End
+
