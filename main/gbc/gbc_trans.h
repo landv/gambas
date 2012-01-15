@@ -95,6 +95,9 @@ enum {
   TS_SUBR_LEFT,
   TS_SUBR_MID,
 	TS_SUBR_OPEN_MEMORY,
+	TS_SUBR_CHMOD,
+	TS_SUBR_CHOWN,
+	TS_SUBR_CHGRP
   };
 
 enum {
@@ -214,6 +217,9 @@ void TRANS_wait(void);
 void TRANS_sleep(void);
 void TRANS_kill(void);
 void TRANS_move(void);
+void TRANS_chmod(void);
+void TRANS_chown(void);
+void TRANS_chgrp(void);
 void TRANS_inc(void);
 void TRANS_dec(void);
 void TRANS_swap(void);

@@ -55,7 +55,8 @@ static void trans_subr(int subr, int nparam)
 		{ ".Move" }, { ".Mkdir" }, { ".Rmdir" }, { ".Array" }, {".Collection" }, 
 		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
 		{ ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" }, { ".Randomize" }, 
-		{ ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" }
+		{ ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" }, { ".Chmod" },
+		{ ".Chown" }, { ".Chgrp" }
 	};
 
 	TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -742,6 +743,33 @@ void TRANS_link(void)
 	TRANS_want(RS_TO, NULL);
 	TRANS_expression(FALSE);
 	trans_subr(TS_SUBR_LINK, 2);
+	CODE_drop();
+}
+
+void TRANS_chmod(void)
+{
+	TRANS_expression(FALSE);
+	TRANS_want(RS_TO, NULL);
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_CHMOD, 2);
+	CODE_drop();
+}
+
+void TRANS_chown(void)
+{
+	TRANS_expression(FALSE);
+	TRANS_want(RS_TO, NULL);
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_CHOWN, 2);
+	CODE_drop();
+}
+
+void TRANS_chgrp(void)
+{
+	TRANS_expression(FALSE);
+	TRANS_want(RS_TO, NULL);
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_CHGRP, 2);
 	CODE_drop();
 }
 

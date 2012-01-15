@@ -139,6 +139,9 @@ COMP_INFO COMP_res_info[] =
 	{ "Randomize"                                                 },
 	{ "ByRef"                                                     },
 	{ "Memory"                                                    },
+	{ "Chmod"                                                     },
+	{ "Chown"                                                     },
+	{ "Chgrp"                                                     },
 	
 	{ "#If"                                                       },
 	{ "#Else"                                                     },
@@ -448,11 +451,14 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Seek",              68,  0,  1,  3 },
 #ifndef __EVAL_RESERVED_C
 	{ ".Kill",             69,  0,  1     },
-	{ ".Mkdir",            70,  0,  1     },
-	{ ".Rmdir",            71,  0,  1     },
+	{ ".Mkdir",            69,  1,  1     },
+	{ ".Rmdir",            69,  2,  1     },
 	{ ".Move",             72,  0,  2     },
-	{ ".Copy",             73,  0,  2     },
-	{ ".Link",             74,  0,  2     },
+	{ ".Copy",             72,  1,  2     },
+	{ ".Link",             72,  2,  2     },
+	{ ".Chmod",            72,  3,  2     },
+	{ ".Chown",            72,  4,  2     },
+	{ ".Chgrp",            72,  5,  2     },
 #endif
 	{ "Exist",             75,  0,  1,  2 },
 	{ "Access",            76,  0,  1,  2 },

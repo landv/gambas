@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_subr_file.c
+	gbx_subr_file.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -36,11 +36,11 @@
 #include "gbx_c_file.h"
 
 typedef
-  struct _stream {
-    struct _stream *next;
-    CSTREAM *stream;
-    }
-  CSTREAM_NODE;
+	struct _stream {
+		struct _stream *next;
+		CSTREAM *stream;
+		}
+	CSTREAM_NODE;
 
 static void *_default_in = NULL;
 static void *_default_out = NULL;
@@ -56,62 +56,62 @@ static STREAM *_stream;
 
 static void push_stream(void **list, CSTREAM *stream)
 {
-  CSTREAM_NODE *slot;
+	CSTREAM_NODE *slot;
 
-  ALLOC(&slot, sizeof(CSTREAM_NODE), "push_stream");
-  slot->stream = stream;
-  //OBJECT_REF(stream, "push_stream");
+	ALLOC(&slot, sizeof(CSTREAM_NODE), "push_stream");
+	slot->stream = stream;
+	//OBJECT_REF(stream, "push_stream");
 
-  slot->next = *list;
-  *list = slot;
+	slot->next = *list;
+	*list = slot;
 }
 
 
 static CSTREAM *pop_stream(void **list)
 {
-  CSTREAM *stream;
-  CSTREAM_NODE *slot;
+	CSTREAM *stream;
+	CSTREAM_NODE *slot;
 
-  if (!*list)
-    return NULL;
+	if (!*list)
+		return NULL;
 
-  stream = ((CSTREAM_NODE *)*list)->stream;
-  slot = *list;
-  *list = slot->next;
-  FREE(&slot, "pop_stream");
+	stream = ((CSTREAM_NODE *)*list)->stream;
+	slot = *list;
+	*list = slot->next;
+	FREE(&slot, "pop_stream");
 
-  return stream;
+	return stream;
 }
 
 static STREAM *get_default(intptr_t val)
 {
-  STREAM *stream;
+	STREAM *stream;
 
-  switch(val)
-  {
-    case 0:
-      if (_default_in)
-        stream = CSTREAM_stream(((CSTREAM_NODE *)_default_in)->stream);
-      else
-        stream = CSTREAM_stream(CFILE_in);
-      break;
-    case 1:
-      if (_default_out)
-        stream = CSTREAM_stream(((CSTREAM_NODE *)_default_out)->stream);
-      else
-        stream = CSTREAM_stream(CFILE_out);
-      break;
-    case 2:
-    	if (_default_err)
-        stream = CSTREAM_stream(((CSTREAM_NODE *)_default_err)->stream);
+	switch(val)
+	{
+		case 0:
+			if (_default_in)
+				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_in)->stream);
 			else
-      	stream = CSTREAM_stream(CFILE_err);
-      break;
+				stream = CSTREAM_stream(CFILE_in);
+			break;
+		case 1:
+			if (_default_out)
+				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_out)->stream);
+			else
+				stream = CSTREAM_stream(CFILE_out);
+			break;
+		case 2:
+			if (_default_err)
+				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_err)->stream);
+			else
+				stream = CSTREAM_stream(CFILE_err);
+			break;
 		default:
 			stream = NULL;
-  }
+	}
 
-  return stream;
+	return stream;
 }
 
 #define get_stream(_value, _can_default) \
@@ -145,32 +145,32 @@ static STREAM *get_default(intptr_t val)
 
 static char *get_path(VALUE *param)
 {
-  char *name;
-  int len;
+	char *name;
+	int len;
 
-  SUBR_get_string_len(param, &name, &len);
+	SUBR_get_string_len(param, &name, &len);
 
-  return STRING_conv_file_name(name, len);
+	return STRING_conv_file_name(name, len);
 }
 
 void SUBR_open(ushort code)
 {
-  CFILE *file;
-  STREAM stream;
-  int mode;
+	CFILE *file;
+	STREAM stream;
+	int mode;
 	void *addr;
 
-  SUBR_ENTER_PARAM(2);
+	SUBR_ENTER_PARAM(2);
 
-  SUBR_check_integer(&PARAM[1]);
-  mode = PARAM[1]._integer.value;
+	SUBR_check_integer(&PARAM[1]);
+	mode = PARAM[1]._integer.value;
 
 	if (code & 0x3F)
 	{
 		if (TYPE_is_pointer(PARAM->type))
 			addr = (void *)PARAM->_pointer.value;
 		else
-      THROW(E_TYPE, "Pointer", TYPE_get_name(PARAM->type));
+			THROW(E_TYPE, "Pointer", TYPE_get_name(PARAM->type));
 		
 		STREAM_open(&stream, (char *)addr, mode | ST_MEMORY);
 	}
@@ -179,85 +179,85 @@ void SUBR_open(ushort code)
 		STREAM_open(&stream, get_path(PARAM), mode);
 	}
 
-  file = CFILE_create(&stream, mode);
+	file = CFILE_create(&stream, mode);
 
-  OBJECT_put(RETURN, file);
+	OBJECT_put(RETURN, file);
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_close(void)
 {
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
-  STREAM_close(get_stream(PARAM, FALSE));
+	STREAM_close(get_stream(PARAM, FALSE));
 
-  SUBR_LEAVE_VOID();
+	SUBR_LEAVE_VOID();
 }
 
 
 void SUBR_flush(void)
 {
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
-  STREAM_flush(get_stream(PARAM, TRUE));
+	STREAM_flush(get_stream(PARAM, TRUE));
 
-  SUBR_LEAVE_VOID();
+	SUBR_LEAVE_VOID();
 }
 
 
 /*static void print_it(char *addr, long len)
 {
-  STREAM_write(_stream, addr, len);
+	STREAM_write(_stream, addr, len);
 }*/
 
 void SUBR_print(ushort code)
 {
-  int i;
-  char *addr;
-  int len;
+	int i;
+	char *addr;
+	int len;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM < 1)
-    THROW(E_NEPARAM);
+	if (NPARAM < 1)
+		THROW(E_NEPARAM);
 
-  _stream = get_stream(PARAM, TRUE);
+	_stream = get_stream(PARAM, TRUE);
 
-  //PRINT_init(print_it, FALSE);
+	//PRINT_init(print_it, FALSE);
 
-  for (i = 1; i < NPARAM; i++)
-  {
-    PARAM++;
-    //PRINT_value(PARAM);
-    VALUE_to_string(PARAM, &addr, &len);
-    if (len == 1 && *addr == '\n')
-    	STREAM_write_eol(_stream);
+	for (i = 1; i < NPARAM; i++)
+	{
+		PARAM++;
+		//PRINT_value(PARAM);
+		VALUE_to_string(PARAM, &addr, &len);
+		if (len == 1 && *addr == '\n')
+			STREAM_write_eol(_stream);
 		else
-		  STREAM_write(_stream, addr, len);
-  }
+			STREAM_write(_stream, addr, len);
+	}
 
-  SUBR_LEAVE_VOID();
+	SUBR_LEAVE_VOID();
 }
 
 
 void SUBR_linput(void)
 {
-  STREAM *stream;
-  char *addr;
+	STREAM *stream;
+	char *addr;
 
-  stream = get_stream(&SP[-1], TRUE);
+	stream = get_stream(&SP[-1], TRUE);
 
-  addr = STREAM_line_input(stream, NULL);
+	addr = STREAM_line_input(stream, NULL);
 
 	SP--;
 	RELEASE_OBJECT(SP);
 	
-  SP->type = T_STRING;
-  SP->_string.addr = addr;
-  SP->_string.start = 0;
-  SP->_string.len = STRING_length(addr);
+	SP->type = T_STRING;
+	SP->_string.addr = addr;
+	SP->_string.start = 0;
+	SP->_string.len = STRING_length(addr);
 	
 	STRING_ref(addr);
 	SP++;
@@ -266,17 +266,17 @@ void SUBR_linput(void)
 
 void SUBR_input(ushort code)
 {
-  static STREAM *stream = NULL;
-  char *addr;
+	static STREAM *stream = NULL;
+	char *addr;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
 	if (NPARAM == 1)
-  	stream = get_stream(PARAM, TRUE);
+		stream = get_stream(PARAM, TRUE);
 
 	if (stream)
 	{
-  	addr = STREAM_input(stream);
+		addr = STREAM_input(stream);
 
 		VALUE_from_string(RETURN, addr, STRING_length(addr));
 
@@ -291,7 +291,7 @@ void SUBR_input(ushort code)
 	else
 		RETURN->type = T_NULL;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
@@ -323,78 +323,78 @@ void SUBR_eof(ushort code)
 
 void SUBR_lof(ushort code)
 {
-  STREAM *stream;
+	STREAM *stream;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM == 1)
-    stream = get_stream(PARAM, FALSE);
-  else
-    stream = get_default(0);
+	if (NPARAM == 1)
+		stream = get_stream(PARAM, FALSE);
+	else
+		stream = get_default(0);
 
-  RETURN->type = T_LONG;
-  STREAM_lof(stream, &(RETURN->_long.value));
+	RETURN->type = T_LONG;
+	STREAM_lof(stream, &(RETURN->_long.value));
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_seek(ushort code)
 {
-  STREAM *stream;
-  int64_t pos;
-  int64_t len;
-  int whence = SEEK_SET;
+	STREAM *stream;
+	int64_t pos;
+	int64_t len;
+	int whence = SEEK_SET;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  stream = get_stream(PARAM, FALSE);
+	stream = get_stream(PARAM, FALSE);
 
-  if (NPARAM >= 2)
-  {
-    VALUE_conv(&PARAM[1], T_LONG);
-    pos = PARAM[1]._long.value;
+	if (NPARAM >= 2)
+	{
+		VALUE_conv(&PARAM[1], T_LONG);
+		pos = PARAM[1]._long.value;
 
-    if (NPARAM == 3)
-    {
-      VALUE_conv_integer(&PARAM[2]);
-      whence = PARAM[2]._integer.value;
-      if (whence != SEEK_SET && whence != SEEK_CUR && whence != SEEK_END)
-        THROW(E_ARG);
-    }
-    else
-    {
-      if (pos < 0)
-      {
-        STREAM_lof(stream, &len);
-        pos += len;
-      }
-    }
+		if (NPARAM == 3)
+		{
+			VALUE_conv_integer(&PARAM[2]);
+			whence = PARAM[2]._integer.value;
+			if (whence != SEEK_SET && whence != SEEK_CUR && whence != SEEK_END)
+				THROW(E_ARG);
+		}
+		else
+		{
+			if (pos < 0)
+			{
+				STREAM_lof(stream, &len);
+				pos += len;
+			}
+		}
 
-    STREAM_seek(stream, pos, (int)whence);
-    RETURN->type = T_VOID;
-  }
-  else
-  {
-    RETURN->type = T_LONG;
-    RETURN->_long.value = STREAM_tell(stream);
-  }
+		STREAM_seek(stream, pos, (int)whence);
+		RETURN->type = T_VOID;
+	}
+	else
+	{
+		RETURN->type = T_LONG;
+		RETURN->_long.value = STREAM_tell(stream);
+	}
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 void SUBR_read(ushort code)
 {
-  STREAM *stream;
-  int len = 0;
+	STREAM *stream;
+	int len = 0;
 
-  SUBR_ENTER_PARAM(2);
+	SUBR_ENTER_PARAM(2);
 
-  stream = get_stream(PARAM, TRUE);
+	stream = get_stream(PARAM, TRUE);
 	
 	if (code & 0x3F)
 	{
-    VALUE_conv_integer(&PARAM[1]);
+		VALUE_conv_integer(&PARAM[1]);
 		len = PARAM[1]._integer.value;
 		
 		if (len == 0)
@@ -436,7 +436,7 @@ void SUBR_read(ushort code)
 	else
 	{
 		TYPE type = SUBR_get_type(&PARAM[1]);
-    STREAM_read_type(stream, type, RETURN);
+		STREAM_read_type(stream, type, RETURN);
 	}
 
 	SUBR_LEAVE();
@@ -445,11 +445,11 @@ void SUBR_read(ushort code)
 
 void SUBR_write(ushort code)
 {
-  STREAM *stream;
+	STREAM *stream;
 
-  SUBR_ENTER_PARAM(3);
+	SUBR_ENTER_PARAM(3);
 
-  stream = get_stream(PARAM, TRUE);
+	stream = get_stream(PARAM, TRUE);
 
 	if (code & 0x3F)
 	{
@@ -490,45 +490,45 @@ void SUBR_write(ushort code)
 		STREAM_write_type(stream, type, &PARAM[1]);
 	}
 	
-  SUBR_LEAVE_VOID();
+	SUBR_LEAVE_VOID();
 }
 
 
 void SUBR_stat(ushort code)
 {
-  const char *path;
-  CSTAT *cstat;
-  FILE_STAT info;
-  bool follow = FALSE;
+	const char *path;
+	CSTAT *cstat;
+	FILE_STAT info;
+	bool follow = FALSE;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  path = get_path(PARAM);
+	path = get_path(PARAM);
 
 	if (NPARAM == 2)
 		follow = SUBR_get_boolean(&PARAM[1]);
 	
-  FILE_stat(path, &info, follow);
+	FILE_stat(path, &info, follow);
 
-  cstat = OBJECT_new(CLASS_Stat, NULL, NULL);
-  OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
-  cstat->info = info;
-  cstat->path = STRING_new_zero(path);
+	cstat = OBJECT_new(CLASS_Stat, NULL, NULL);
+	OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
+	cstat->info = info;
+	cstat->path = STRING_new_zero(path);
 
 	RETURN->_object.class = CLASS_Stat;
-  RETURN->_object.object = cstat;
+	RETURN->_object.object = cstat;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_exist(ushort code)
 {
-  bool exist;
-  const char *path;
-  bool follow = FALSE;
+	bool exist;
+	const char *path;
+	bool follow = FALSE;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 	
 	if (!NPARAM)
 	{
@@ -536,259 +536,302 @@ void SUBR_exist(ushort code)
 		PARAM--;
 	}
 
-  path = get_path(PARAM);
+	path = get_path(PARAM);
 
 	if (NPARAM == 2)
 		follow = SUBR_get_boolean(&PARAM[1]);
 
 	exist = FILE_exist_follow(path, follow);
 
-  RETURN->type = T_BOOLEAN;
-  RETURN->_integer.value = exist ? -1 : 0;
+	RETURN->type = T_BOOLEAN;
+	RETURN->_integer.value = exist ? -1 : 0;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_dir(ushort code)
 {
-  GB_ARRAY array;
-  const char *path;
-  char *pattern;
-  int len_pattern;
-  char *str;
-  int attr = 0;
+	GB_ARRAY array;
+	const char *path;
+	char *pattern;
+	int len_pattern;
+	char *str;
+	int attr = 0;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  path = get_path(PARAM);
+	path = get_path(PARAM);
 
-  if (NPARAM >= 2)
-  {
-    pattern = SUBR_get_string(&PARAM[1]);
-    if (NPARAM == 3)
-      attr = SUBR_get_integer(&PARAM[2]);
-  }
-  else
-    pattern = NULL;
+	if (NPARAM >= 2)
+	{
+		pattern = SUBR_get_string(&PARAM[1]);
+		if (NPARAM == 3)
+			attr = SUBR_get_integer(&PARAM[2]);
+	}
+	else
+		pattern = NULL;
 
-  FILE_dir_first(path, pattern, attr);
+	FILE_dir_first(path, pattern, attr);
 
-  GB_ArrayNew(&array, T_STRING, 0);
+	GB_ArrayNew(&array, T_STRING, 0);
 
-  while (!FILE_dir_next(&pattern, &len_pattern))
-  {
-    if (!LOCAL_is_UTF8)
-    {
-      if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, SC_UTF8, FALSE))
-	      str = STRING_new(pattern, len_pattern);
-	    else
-      	STRING_ref(str);
-    }
-    else
-      str = STRING_new(pattern, len_pattern);
+	while (!FILE_dir_next(&pattern, &len_pattern))
+	{
+		if (!LOCAL_is_UTF8)
+		{
+			if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, SC_UTF8, FALSE))
+				str = STRING_new(pattern, len_pattern);
+			else
+				STRING_ref(str);
+		}
+		else
+			str = STRING_new(pattern, len_pattern);
 
-    *((char **)GB_ArrayAdd(array)) = str;
-  }
+		*((char **)GB_ArrayAdd(array)) = str;
+	}
 
-  RETURN->_object.class = OBJECT_class(array);
-  RETURN->_object.object = array;
+	RETURN->_object.class = OBJECT_class(array);
+	RETURN->_object.object = array;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 static void found_file(const char *path)
 {
-  char *str;
-  int len;
+	char *str;
+	int len;
 
-  path += _ignore;
-  len = strlen(path);
+	path += _ignore;
+	len = strlen(path);
 
-  if (_pattern && !REGEXP_match(_pattern, _len_pattern, path, len))
-    return;
+	if (_pattern && !REGEXP_match(_pattern, _len_pattern, path, len))
+		return;
 
-  if (!LOCAL_is_UTF8)
-  {
-    if (STRING_conv(&str, path, len, LOCAL_encoding, SC_UTF8, FALSE))
-	    str = STRING_new(path, len);
-	  else
-  	  STRING_ref(str);
-  }
-  else
-    str = STRING_new(path, len);
+	if (!LOCAL_is_UTF8)
+	{
+		if (STRING_conv(&str, path, len, LOCAL_encoding, SC_UTF8, FALSE))
+			str = STRING_new(path, len);
+		else
+			STRING_ref(str);
+	}
+	else
+		str = STRING_new(path, len);
 
-  *((char **)GB_ArrayAdd(_result)) = str;
+	*((char **)GB_ArrayAdd(_result)) = str;
 }
 
 void SUBR_rdir(ushort code)
 {
-  const char *path;
-  int attr = 0;
+	const char *path;
+	int attr = 0;
 	bool follow = FALSE;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  path = get_path(PARAM);
+	path = get_path(PARAM);
 
-  if (NPARAM >= 2)
-  {
-    SUBR_get_string_len(&PARAM[1], &_pattern, &_len_pattern);
-    if (NPARAM >= 3)
+	if (NPARAM >= 2)
+	{
+		SUBR_get_string_len(&PARAM[1], &_pattern, &_len_pattern);
+		if (NPARAM >= 3)
 		{
-      attr = SUBR_get_integer(&PARAM[2]);
+			attr = SUBR_get_integer(&PARAM[2]);
 			if (NPARAM == 4)
 				follow = SUBR_get_boolean(&PARAM[3]);
 		}
-  }
-  else
-    _pattern = NULL;
+	}
+	else
+		_pattern = NULL;
 
-  GB_ArrayNew(&_result, T_STRING, 0);
+	GB_ArrayNew(&_result, T_STRING, 0);
 
 	if (!path || *path == 0)
 		path = ".";
-  _ignore = strlen(path);
-  if (_ignore > 0 && path[_ignore - 1] != '/')
-    _ignore++;
+	_ignore = strlen(path);
+	if (_ignore > 0 && path[_ignore - 1] != '/')
+		_ignore++;
 
-  FILE_recursive_dir(path, found_file, NULL, attr, follow);
+	FILE_recursive_dir(path, found_file, NULL, attr, follow);
 
-  RETURN->_object.class = OBJECT_class(_result);
-  RETURN->_object.object = _result;
+	RETURN->_object.class = OBJECT_class(_result);
+	RETURN->_object.object = _result;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
-void SUBR_kill(void)
+void SUBR_kill(ushort code)
 {
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
-  FILE_unlink(get_path(PARAM));
+	switch(code & 0xFF)
+	{
+		case 0:
+			FILE_unlink(get_path(PARAM));
+			break;
+			
+		case 1:
+			FILE_mkdir(get_path(PARAM));
+			break;
+			
+		case 2:
+			FILE_rmdir(get_path(PARAM));
+			break;
 
-  SUBR_LEAVE_VOID();
+		default:
+			THROW_ILLEGAL();
+	}
+
+	SUBR_LEAVE_VOID();
 }
 
 
 void SUBR_mkdir(void)
 {
-  SUBR_ENTER_PARAM(1);
-
-  FILE_mkdir(get_path(PARAM));
-
-  SUBR_LEAVE_VOID();
+	SUBR_kill(1);
 }
 
 
 void SUBR_rmdir(void)
 {
-  SUBR_ENTER_PARAM(1);
-
-  FILE_rmdir(get_path(PARAM));
-
-  SUBR_LEAVE_VOID();
+	SUBR_kill(2);
 }
 
 
-void SUBR_rename(void)
+void SUBR_move(ushort code)
 {
-  SUBR_ENTER_PARAM(2);
+	char *path;
+	char *auth;
+	FILE_STAT info;
+	
+	SUBR_ENTER_PARAM(2);
 
-  FILE_rename(get_path(&PARAM[0]), get_path(&PARAM[1]));
+	path = get_path(&PARAM[0]);
+	
+	switch (code & 0xFF)
+	{
+		case 0: // Move
+			
+			FILE_rename(path, get_path(&PARAM[1]));
+			break;
+			
+		case 1: // Copy
+			
+			FILE_copy(path, get_path(&PARAM[1]));
+			break;
+			
+		case 2: // Link
+			
+			/* Parameters are NOT inverted ANYMORE! */
+			FILE_link(path, get_path(&PARAM[1]));
+			break;
+			
+		case 3: // Chmod
+			
+			auth = SUBR_get_string(&PARAM[1]);
+			FILE_stat(path, &info, TRUE);
+			FILE_chmod(path, FILE_mode_from_string(info.mode, auth));
+			break;
+			
+		case 4: // Chown
+			
+			auth = SUBR_get_string(&PARAM[1]);
+			FILE_chown(path, auth);
+			break;
+			
+		case 5: // Chgrp
+			
+			auth = SUBR_get_string(&PARAM[1]);
+			FILE_chgrp(path, auth);
+			break;
+			
+		default:
+			THROW_ILLEGAL();
+	}
 
-  SUBR_LEAVE_VOID();
-}
-
-
-void SUBR_temp(ushort code)
-{
-  char *temp;
-  int len;
-
-  SUBR_ENTER();
-
-  if (NPARAM == 0)
-    temp = FILE_make_temp(&len, NULL);
-  else
-    temp = FILE_make_temp(&len, SUBR_get_string(PARAM));
-
-  STRING_new_temp_value(RETURN, temp, len);
-
-  SUBR_LEAVE();
-}
-
-
-void SUBR_isdir(void)
-{
-  bool isdir;
-  const char *path;
-
-  SUBR_ENTER_PARAM(1);
-
-  path = get_path(PARAM);
-
-  isdir = FILE_is_dir(path);
-
-  RETURN->type = T_BOOLEAN;
-  RETURN->_integer.value = isdir ? -1 : 0;
-
-  SUBR_LEAVE();
+	SUBR_LEAVE_VOID();
 }
 
 
 void SUBR_copy(void)
 {
-  SUBR_ENTER_PARAM(2);
+	SUBR_move(1);
+}
 
-  FILE_copy(get_path(&PARAM[0]), get_path(&PARAM[1]));
 
-  SUBR_LEAVE_VOID();
+void SUBR_link(void)
+{
+	SUBR_move(2);
+}
+
+
+void SUBR_temp(ushort code)
+{
+	char *temp;
+	int len;
+
+	SUBR_ENTER();
+
+	if (NPARAM == 0)
+		temp = FILE_make_temp(&len, NULL);
+	else
+		temp = FILE_make_temp(&len, SUBR_get_string(PARAM));
+
+	STRING_new_temp_value(RETURN, temp, len);
+
+	SUBR_LEAVE();
+}
+
+
+void SUBR_isdir(void)
+{
+	bool isdir;
+	const char *path;
+
+	SUBR_ENTER_PARAM(1);
+
+	path = get_path(PARAM);
+
+	isdir = FILE_is_dir(path);
+
+	RETURN->type = T_BOOLEAN;
+	RETURN->_integer.value = isdir ? -1 : 0;
+
+	SUBR_LEAVE();
 }
 
 
 void SUBR_access(ushort code)
 {
-  int access;
+	int access;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM == 1)
-    access = R_OK;
-  else
-  {
-    VALUE_conv_integer(&PARAM[1]);
-    access = PARAM[1]._integer.value;
-  }
+	if (NPARAM == 1)
+		access = R_OK;
+	else
+	{
+		VALUE_conv_integer(&PARAM[1]);
+		access = PARAM[1]._integer.value;
+	}
 
-  RETURN->type = T_BOOLEAN;
-  RETURN->_integer.value = FILE_access(get_path(PARAM), access) ? -1 : 0;
+	RETURN->type = T_BOOLEAN;
+	RETURN->_integer.value = FILE_access(get_path(PARAM), access) ? -1 : 0;
 
-  SUBR_LEAVE();
-}
-
-
-
-void SUBR_link(void)
-{
-  SUBR_ENTER_PARAM(2);
-
-  /* Parameters are NOT inverted ANYMORE! */
-  FILE_link(get_path(&PARAM[0]), get_path(&PARAM[1]));
-
-  SUBR_LEAVE_VOID();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_lock(ushort code)
 {
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
 	if (code & 0x1F)
 	{
-	  STREAM_close(get_stream(PARAM, FALSE));
-	  SUBR_LEAVE_VOID();
+		STREAM_close(get_stream(PARAM, FALSE));
+		SUBR_LEAVE_VOID();
 	}
 	else
 	{
@@ -799,88 +842,88 @@ void SUBR_lock(ushort code)
 		if (FILE_is_relative(path))
 			THROW(E_BADPATH);
 
-	  STREAM_open(&stream, path, ST_WRITE | ST_CREATE | ST_DIRECT);
-	  STREAM_lock(&stream);
-	  
-  	file = CFILE_create(&stream, ST_WRITE | ST_CREATE | ST_DIRECT);
-  	OBJECT_put(RETURN, file);
-  	SUBR_LEAVE();
+		STREAM_open(&stream, path, ST_WRITE | ST_CREATE | ST_DIRECT);
+		STREAM_lock(&stream);
+		
+		file = CFILE_create(&stream, ST_WRITE | ST_CREATE | ST_DIRECT);
+		OBJECT_put(RETURN, file);
+		SUBR_LEAVE();
 	}
 }
 
 
 void SUBR_inp_out(ushort code)
 {
-  CSTREAM *stream;
-  void **where;
+	CSTREAM *stream;
+	void **where;
 
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
 	switch(code & 0x1F)
 	{
 		case 0: where = &_default_in; break;
 		case 1: where = &_default_out; break;
 		default: where = &_default_err; break;
-  }
+	}
 
-  if (VALUE_is_null(PARAM))
-  {
-    stream = pop_stream(where);
-    if (stream)
-      OBJECT_UNREF(stream, "SUBR_inp_out");
-    return;
-  }
+	if (VALUE_is_null(PARAM))
+	{
+		stream = pop_stream(where);
+		if (stream)
+			OBJECT_UNREF(stream, "SUBR_inp_out");
+		return;
+	}
 
-  VALUE_conv_object(PARAM, (TYPE)CLASS_Stream);
+	VALUE_conv_object(PARAM, (TYPE)CLASS_Stream);
 
-  stream = PARAM->_object.object;
-  OBJECT_REF(stream, "SUBR_inp_out");
+	stream = PARAM->_object.object;
+	OBJECT_REF(stream, "SUBR_inp_out");
 
-  push_stream(where, stream);
+	push_stream(where, stream);
 
-  SUBR_LEAVE_VOID();
+	SUBR_LEAVE_VOID();
 }
 
 static void free_list(void **list)
 {
-  CSTREAM *stream;
+	CSTREAM *stream;
 
-  for(;;)
-  {
-    stream = pop_stream(list);
-    if (!stream)
-      return;
-    OBJECT_UNREF(stream, "free_list");
-  }
+	for(;;)
+	{
+		stream = pop_stream(list);
+		if (!stream)
+			return;
+		OBJECT_UNREF(stream, "free_list");
+	}
 }
 
 void SUBR_exit_inp_out(void)
 {
-  free_list((void **)&_default_in);
-  free_list((void **)&_default_out);
-  free_list((void **)&_default_err);
+	free_list((void **)&_default_in);
+	free_list((void **)&_default_out);
+	free_list((void **)&_default_err);
 }
 
 
 void SUBR_dfree(void)
 {
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
-  RETURN->type = T_LONG;
-  RETURN->_long.value = FILE_free(get_path(PARAM));
+	RETURN->type = T_LONG;
+	RETURN->_long.value = FILE_free(get_path(PARAM));
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 void SUBR_debug(void)
 {
-  const int NPARAM = 0;
-  STREAM *stream = get_default(2);
-  const char *s = DEBUG_get_current_position();
-  
-  STREAM_write(stream, (void *)s, strlen(s));
-  STREAM_write(stream, ": ", 2);
-  
-  SUBR_LEAVE();
+	const int NPARAM = 0;
+	STREAM *stream = get_default(2);
+	const char *s = DEBUG_get_current_position();
+	
+	STREAM_write(stream, (void *)s, strlen(s));
+	STREAM_write(stream, ": ", 2);
+	
+	SUBR_LEAVE();
 }
 

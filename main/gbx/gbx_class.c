@@ -853,6 +853,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 		THROW(E_CLASS, class->name, "Multiple inheritance", "");
 
 	class->parent = parent;
+	parent->has_child = TRUE;
 
 	TRY
 	{

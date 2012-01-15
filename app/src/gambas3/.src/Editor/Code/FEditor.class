@@ -993,16 +993,6 @@ Public Sub Editors_KeyPress()
       '   GotoNextProc
       '   Stop Event
 
-    Else If Key.Code = Key.Home Then
-
-      Me.Goto(0, 0)
-      Stop Event
-
-    Else If Key.Code = Key.End Then
-
-      Me.Goto(Editor.Lines.Count)
-      Stop Event
-
     Else If Key.Code = Key.Return Then
 
       If Key.Shift Then

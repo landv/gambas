@@ -206,15 +206,15 @@ void SUBR_inp_out(ushort code);
 void SUBR_stat(ushort code);
 void SUBR_exist(ushort code);
 void SUBR_dir(ushort code);
-void SUBR_kill(void);
+void SUBR_kill(ushort code);
 void SUBR_mkdir(void);
 void SUBR_rmdir(void);
-void SUBR_rename(void);
+void SUBR_move(ushort code);
 void SUBR_copy(void);
+void SUBR_link(void);
 void SUBR_temp(ushort code);
 void SUBR_isdir(void);
 void SUBR_access(ushort code);
-void SUBR_link(void);
 void SUBR_rdir(ushort code);
 void SUBR_dfree();
 

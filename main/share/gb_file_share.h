@@ -126,6 +126,13 @@ void FILE_make_path_dir(const char *path);
 
 int64_t FILE_free(const char *path);
 
+char *FILE_mode_to_string(mode_t mode);
+mode_t FILE_mode_from_string(mode_t mode, const char *str);
+
+void FILE_chmod(const char *path, mode_t mode);
+void FILE_chown(const char *path, const char *user);
+void FILE_chgrp(const char *path, const char *group);
+
 #else
 
 bool FILE_exist(const char *path);

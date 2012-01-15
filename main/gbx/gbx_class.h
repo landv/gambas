@@ -269,7 +269,8 @@ typedef
 		unsigned is_array_of_struct : 1;  //          This class is an array of struct
 		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
 		unsigned must_check : 1;          //          The class has a check function
-		unsigned _reserved : 6;           //  24  36 
+		unsigned has_child : 1;           //          The class has an inherited child class
+		unsigned _reserved : 5;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events

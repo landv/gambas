@@ -192,6 +192,9 @@ typedef
 		RS_RANDOMIZE,
 		RS_BYREF,
 		RS_MEMORY,
+		RS_CHMOD,
+		RS_CHOWN,
+		RS_CHGRP,
 		
 		RS_P_IF,
 		RS_P_ELSE,

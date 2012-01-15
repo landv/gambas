@@ -334,6 +334,15 @@ BEGIN_PROPERTY(Stat_Sticky)
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(Stat_Auth)
+
+	char *auth = FILE_mode_to_string(THIS_STAT->info.mode);
+
+	GB_ReturnNewString(auth, FILE_buffer_length());
+
+END_PROPERTY
+
 #if 0
 BEGIN_METHOD(CFILE_access, GB_INTEGER who; GB_INTEGER access)
 
@@ -839,6 +848,7 @@ GB_DESC NATIVE_Stat[] =
 	GB_PROPERTY_READ("Sticky", "b", Stat_Sticky),
 	GB_PROPERTY_READ("Path", "s", Stat_Path),
 	GB_PROPERTY_READ("Link", "s", Stat_Link),
+	GB_PROPERTY_READ("Auth", "s", Stat_Auth),
 
 	GB_END_DECLARE
 };

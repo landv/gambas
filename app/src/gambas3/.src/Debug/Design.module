@@ -134,13 +134,13 @@ Public Sub MakeErrorMessage(sErr As String) As String
   Dim aErr As String[]
   Dim iInd As Integer
   
-  ' Subsitution can be recursive in error messages!
+  ' Substitution can be recursive in error messages!
   
   aErr = Split(sErr, "|")
   aErr.Resize(aErr.Count + 4)
   
   For iInd = aErr.Max - 4 DownTo 0
-    If InStr(aErr[iInd], "&1") Then
+    If iInd = 0 Or If InStr(aErr[iInd], "&1") Then
       aErr[iInd] = Subst(Tr$(aErr[iInd]), aErr[iInd + 1], aErr[iInd + 2], aErr[iInd + 3], aErr[iInd + 4])
     Endif
     If Left(aErr[iInd]) = "#" Then

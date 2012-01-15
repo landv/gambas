@@ -105,7 +105,9 @@ enum {
 	E_SARRAY,
 	E_EXTCB,
 	E_SERIAL,
-	E_CHILD
+	E_CHILD,
+	E_USER,
+	E_NEMPTY
 	};
 
 #ifndef __GB_ERROR_C

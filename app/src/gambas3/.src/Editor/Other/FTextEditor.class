@@ -246,16 +246,6 @@ Public Sub Editors_KeyPress()
       
     Endif
     
-  Else If Key.Code = Key.Home Then
-
-    Goto(0, 0)
-    Stop Event
-
-  Else If Key.Code = Key.End Then
-
-    Goto(Editor.Lines.Count)
-    Stop Event
-
   Endif 
 
 End

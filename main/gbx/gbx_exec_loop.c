@@ -153,11 +153,11 @@ static void *SubrTable[] =
 	SUBR_lof,        /* 67 83 */
 	SUBR_seek,       /* 68 84 */
 	SUBR_kill,       /* 69 85 */
-	SUBR_mkdir,      /* 70 86 */
-	SUBR_rmdir,      /* 71 87 */
-	SUBR_rename,     /* 72 88 */
-	SUBR_copy,       /* 73 89 */
-	SUBR_link,       /* 74 8A */
+	SUBR_mkdir,      /* 70 86 */ // deprecated
+	SUBR_rmdir,      /* 71 87 */ // deprecated
+	SUBR_move,       /* 72 88 */
+	SUBR_copy,       /* 73 89 */ // deprecated
+	SUBR_link,       /* 74 8A */ // deprecated
 	SUBR_exist,      /* 75 8B */
 	SUBR_access,     /* 76 8C */
 	SUBR_stat,       /* 77 8D */
@@ -319,10 +319,10 @@ void EXEC_loop(void)
 		/* 82 Eof             */  &&_SUBR_CODE,
 		/* 83 Lof             */  &&_SUBR_CODE,
 		/* 84 Seek            */  &&_SUBR_CODE,
-		/* 85 Kill            */  &&_SUBR,
+		/* 85 Kill            */  &&_SUBR_CODE,
 		/* 86 Mkdir           */  &&_SUBR,
 		/* 87 Rmdir           */  &&_SUBR,
-		/* 88 Move            */  &&_SUBR,
+		/* 88 Move            */  &&_SUBR_CODE,
 		/* 89 Copy            */  &&_SUBR,
 		/* 8A Link            */  &&_SUBR,
 		/* 8B Exist           */  &&_SUBR_CODE,

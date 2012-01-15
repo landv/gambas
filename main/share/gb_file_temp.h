@@ -44,6 +44,10 @@
 #include <sys/statfs.h>
 #endif
 
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+
 #endif
 
 #include "gb_file.h"
@@ -81,6 +85,13 @@ typedef
 		}
 	FILE_PATH;
 
+typedef
+	struct {
+		unsigned int mask;
+		unsigned char test[4];
+		unsigned int mode[4];
+	}
+	FILE_MODE_DECODE;
 
 static void push_path(void **list, const char *path)
 {
@@ -489,6 +500,128 @@ void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 	info->gid = buf.st_gid;
 }
 
+char *FILE_mode_to_string(mode_t mode)
+{
+	char *str = file_buffer;
+	
+  str[0] = mode & S_IRUSR ? 'r' : '-';
+  str[1] = mode & S_IWUSR ? 'w' : '-';
+  str[2] = (mode & S_ISUID
+            ? (mode & S_IXUSR ? 's' : 'S')
+            : (mode & S_IXUSR ? 'x' : '-'));
+  str[3] = mode & S_IRGRP ? 'r' : '-';
+  str[4] = mode & S_IWGRP ? 'w' : '-';
+  str[5] = (mode & S_ISGID
+            ? (mode & S_IXGRP ? 's' : 'S')
+            : (mode & S_IXGRP ? 'x' : '-'));
+  str[6] = mode & S_IROTH ? 'r' : '-';
+  str[7] = mode & S_IWOTH ? 'w' : '-';
+  str[8] = (mode & S_ISVTX
+            ? (mode & S_IXOTH ? 't' : 'T')
+            : (mode & S_IXOTH ? 'x' : '-'));
+	str[9] = 0;
+	
+	file_buffer_length = 9;
+	
+	return str;
+}
+
+mode_t FILE_mode_from_string(mode_t mode, const char *str)
+{
+	static FILE_MODE_DECODE decode[] = {
+		{ S_IRUSR, { '-', 'r' }, { 0, S_IRUSR } },
+		{ S_IWUSR, { '-', 'w' }, { 0, S_IWUSR } },
+		{ S_IXUSR | S_ISUID, { '-', 'x', 'S', 's' }, { 0, S_IXUSR, S_ISUID, S_IXUSR | S_ISUID } },
+		{ S_IRGRP, { '-', 'r' }, { 0, S_IRGRP } },
+		{ S_IWGRP, { '-', 'w' }, { 0, S_IWGRP } },
+		{ S_IXGRP | S_ISGID, { '-', 'x', 'S', 's' }, { 0, S_IXGRP, S_ISGID, S_IXGRP | S_ISGID } },
+		{ S_IROTH, { '-', 'r' }, { 0, S_IROTH } },
+		{ S_IWOTH, { '-', 'w' }, { 0, S_IWOTH } },
+		{ S_IXOTH | S_ISVTX, { '-', 'x', 'T', 't' }, { 0, S_IXOTH, S_ISVTX, S_IXOTH | S_ISVTX } },
+		{ 0 }
+	};
+	
+	unsigned char c, test;
+	FILE_MODE_DECODE *d = decode;
+	int i;
+	
+	while (d->mask)
+	{
+		c = *str++;
+		if (!c)
+			break;
+		
+		for (i = 0; i < 3; i++)
+		{
+			test = d->test[i];
+			if (!test)
+				break;
+			if (c == test)
+			{
+				mode = (mode & ~(d->mask)) | d->mode[i];
+				break;
+			}
+		}
+		
+		d++;
+	}
+	
+	return mode;
+}
+
+
+void FILE_chmod(const char *path, mode_t mode)
+{
+	if (chmod(path, mode))
+		THROW_SYSTEM(errno, path);
+}
+
+
+void FILE_chown(const char *path, const char *user)
+{
+	struct passwd *pwd;
+	uid_t uid;
+	
+	if (!strcmp(user, "root"))
+		uid = (uid_t)0;
+	else
+	{
+		errno = 0;
+		pwd = getpwnam(user);
+		if (errno)
+			THROW_SYSTEM(errno, path);
+		if (!pwd)
+			THROW(E_USER);
+		uid = pwd->pw_uid;
+	}
+	
+	if (chown(path, uid, (gid_t)-1))
+		THROW_SYSTEM(errno, path);
+}
+
+
+void FILE_chgrp(const char *path, const char *group)
+{
+	struct group *grp;
+	gid_t gid;
+	
+	if (!strcmp(group, "root"))
+		gid = (gid_t)0;
+	else
+	{
+		errno = 0;
+		grp = getgrnam(group);
+		if (errno)
+			THROW_SYSTEM(errno, path);
+		if (!grp)
+			THROW(E_USER);
+		gid = grp->gr_gid;
+	}
+	
+	if (chown(path, (uid_t)-1, gid))
+		THROW_SYSTEM(errno, path);
+}
+
 
 void FILE_dir_first(const char *path, const char *pattern, int attr)
 {
@@ -704,7 +837,12 @@ void FILE_rmdir(const char *path)
 		THROW(E_ACCESS);
 
 	if (rmdir(path) != 0)
-		THROW_SYSTEM(errno, path);
+	{
+		if (errno == ENOTEMPTY || errno == EEXIST)
+			THROW(E_NEMPTY);
+		else
+			THROW_SYSTEM(errno, path);
+	}
 }
 
 
