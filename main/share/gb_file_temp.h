@@ -572,6 +572,9 @@ mode_t FILE_mode_from_string(mode_t mode, const char *str)
 
 void FILE_chmod(const char *path, mode_t mode)
 {
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
+
 	if (chmod(path, mode))
 		THROW_SYSTEM(errno, path);
 }
@@ -582,6 +585,9 @@ void FILE_chown(const char *path, const char *user)
 	struct passwd *pwd;
 	uid_t uid;
 	
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
+
 	if (!strcmp(user, "root"))
 		uid = (uid_t)0;
 	else
@@ -605,6 +611,9 @@ void FILE_chgrp(const char *path, const char *group)
 	struct group *grp;
 	gid_t gid;
 	
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
+
 	if (!strcmp(group, "root"))
 		gid = (gid_t)0;
 	else
