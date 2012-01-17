@@ -35,6 +35,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 	if (data->cached())
 	{
 		gdk_window_clear(GTK_WIDGET(wid)->window);
+		data->drawBorder();
 	}
 	else
 	{
@@ -223,7 +224,7 @@ void gDrawingArea::resizeCache()
 		g_object_unref(gc2);
 	}	
 	
-	drawBorder(buffer);
+	//drawBorder(buffer);
 	refreshCache();
 }
 
@@ -235,7 +236,7 @@ void gDrawingArea::setCache()
 	if (!win)
 		return;
 	
-	drawBorder(buffer);
+	//drawBorder(buffer);
 	gdk_window_set_back_pixmap(win, buffer, FALSE);
 	//gdk_window_set_back_pixmap(border->window, buffer, FALSE);
 	//gdk_window_set_back_pixmap(widget->window, NULL, TRUE);
