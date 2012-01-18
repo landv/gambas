@@ -625,6 +625,9 @@ static void QT_Init(void)
 		X11_init(QX11Info::display(), QX11Info::appRootWindow());
 	#endif
 
+	/*QX11Info::setAppDpiX(0, 92);
+	QX11Info::setAppDpiY(0, 92);*/
+		
 	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
 	
 	//Q3MimeSourceFactory::addFactory(&myMimeSourceFactory);

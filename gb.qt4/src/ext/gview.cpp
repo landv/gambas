@@ -401,6 +401,8 @@ void GEditor::redrawContents()
 
 void GEditor::updateFont()
 {
+	QFont f;
+	
 	fm = fontMetrics();
 	for (int i = 0; i < 256; i++)
 		_charWidth[i] = fm.width(QChar(i));
@@ -415,8 +417,12 @@ void GEditor::updateFont()
 		}
 	}
 	
+	normalFont = font();
+	normalFont.setKerning(false);
 	italicFont = font();
+	italicFont.setKerning(false);
 	italicFont.setItalic(true);
+	
 	updateMargin();
 	updateWidth();
 	updateHeight();
@@ -480,6 +486,32 @@ static QColor merge_color(const QColor &ca, const QColor &cb)
 	return QColor(r, g, b);
 }
 
+/*static QColor blend_color(const QColor &ca, const QColor &cb)
+{
+	return QColor((ca.red() + cb.red()) / 2, (ca.green() + cb.green()) / 2, (ca.blue() + cb.blue()) / 2);
+}*/
+
+static QColor calc_color(QColor ca, QColor cb, QColor cd)
+{
+	int r = 1, g = 1, b = 1, n = 0;
+
+	if (!ca.isValid() && !cb.isValid())
+		return cd;
+	
+	if (!ca.isValid())
+		return cb;
+	
+	if (!cb.isValid())
+		return ca;
+	
+	#define test(x) r *= x.red(); g *= x.green(); b *= x.blue(); n++;
+
+	test(ca);
+	test(cb);
+	n = (n == 2) ? 255 : (n == 3) ? 255*255 : 1;
+	return QColor(r / n, g / n, b / n);
+}
+
 void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row, QColor &fbg)
 {
 	int i;
@@ -519,7 +551,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		return;
 	}
 	
-	p.setFont(font());
+	p.setFont(normalFont);
 
 	pos = 0;
 	ps = find_last_non_space(l->s.getString()) + 1;
@@ -575,8 +607,6 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 					p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
 			}
 			
-			p.setPen(st->color);
-			
 			if (ps >= 0 && pos >= ps)
 			{
 				if (show_dots)
@@ -587,12 +617,19 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 				if (st->italic != italic)
 				{
 					italic = st->italic;
-					p.setFont(italic ? italicFont : font());
+					p.setFont(italic ? italicFont : normalFont);
 				}
 
-				p.drawText(x, y, sd);
 				if (st->bold)
+				{
+					QColor c = st->color;
+					c.setAlpha(160);
+					p.setPen(c);
 					p.drawText(x + 1, y, sd);
+				}
+				
+				p.setPen(st->color);
+				p.drawText(x, y, sd);
 			}
 			
 			if (st->underline)
@@ -685,27 +722,6 @@ static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 	#define f(c) ((a.c()*r.c() + (255 - a.c())*(255 - r.c())) * b.c() / 255 / 255)
 	return QColor(f(red), f(green), f(blue));
 }*/
-
-static QColor calc_color(QColor ca, QColor cb, QColor cd)
-{
-	int r = 1, g = 1, b = 1, n = 0;
-
-	if (!ca.isValid() && !cb.isValid())
-		return cd;
-	
-	if (!ca.isValid())
-		return cb;
-	
-	if (!cb.isValid())
-		return ca;
-	
-	#define test(x) r *= x.red(); g *= x.green(); b *= x.blue(); n++;
-
-	test(ca);
-	test(cb);
-	n = (n == 2) ? 255 : (n == 3) ? 255*255 : 1;
-	return QColor(r / n, g / n, b / n);
-}
 
 static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s, QColor color)
 {
@@ -828,7 +844,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		drawSep = false;
 	}
 	
-	p.setFont(font());
+	p.setFont(normalFont);
 	//p.setFont(painter->font());
 	//p.translate(-ur.left(), 0);
 

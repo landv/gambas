@@ -104,6 +104,7 @@ private:
 	bool left;
 	GArray<GFoldedProc> fold;
 		
+	QFont normalFont;
 	QFont italicFont;
 	GHighlightStyle styles[GLine::NUM_STATE];
 	int flags;
