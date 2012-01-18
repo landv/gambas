@@ -44,7 +44,7 @@ Public Sub FromString(sStyle As String)
   
   For Each sStr In Split(sStyle)
     If Left(sStr) = "#" Then 
-      iColor = Val("&H" & Mid$(sStr, 2) & "&")
+      iColor = Val("&H" & Mid$(sStr, 2) & "&") 
       If Foreground = Color.Default Then 
         Foreground = iColor
       Else 
@@ -54,7 +54,7 @@ Public Sub FromString(sStyle As String)
       Bold = True
     Else If sStr = "Italic" Then 
       Italic = True
-    Else If sStr = "Underline" Then 
+    Else If sStr = "Underline" Then
       Underline = True
     Endif
   Next
