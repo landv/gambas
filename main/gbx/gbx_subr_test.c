@@ -285,50 +285,23 @@ __LEAVE:
 
 void SUBR_if(ushort code)
 {
-	TYPE type;
+	int i;
+	
   SUBR_ENTER_PARAM(3);
 
   VALUE_conv_boolean(PARAM);
 
-	switch (code & 0x1F)
+	code &= 0x1F;
+	
+	if (!code)
 	{
-		case 0:
-		
-			type = SUBR_check_good_type(&PARAM[1], 2);
-			if (type != T_VARIANT)
-			{
-				*PC |= 1;
-				goto __TYPE;
-			}
-			else 
-			{
-				*PC |= 2;
-				goto __VARIANT;
-			}
-		
-		case 1:
-		__TYPE:
-		
-			*RETURN = PARAM->_boolean.value ? PARAM[1] : PARAM[2];
-			
-			break;
-			
-		case 2:
-		__VARIANT:
-		
-			if (PARAM->_boolean.value)
-			{
-				VALUE_conv_variant(&PARAM[1]);
-				*RETURN = PARAM[1];
-			}
-			else
-			{
-				VALUE_conv_variant(&PARAM[2]);
-				*RETURN = PARAM[2];
-			}
-			
-			break;
+		code = SUBR_check_good_type(&PARAM[1], 2);
+		*PC |= code;
 	}
+	
+	i = PARAM->_boolean.value ? 1 : 2;
+	VALUE_conv(&PARAM[i], code);
+	*RETURN =  PARAM[i];
 
   SUBR_LEAVE();
 }
