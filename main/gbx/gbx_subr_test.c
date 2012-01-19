@@ -260,7 +260,7 @@ __END:
 		goto __END_VARIANT;
   	
 	__END_SHORT:
-		RETURN->_integer.value = (int)val & 0xFFFF;
+		RETURN->_integer.value = (int)(short)val;
 		goto __END_VARIANT;
 	
 	__END_INTEGER:
