@@ -223,10 +223,12 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 		}
 		
 		if (TYPE_is_object(type) && TYPE_is_object(type2))
+		{
 			type = T_OBJECT;
-		else
-			type = T_VARIANT;
+			continue;
+		}
 		
+		type = T_VARIANT;
 		break;
 	}
 	
