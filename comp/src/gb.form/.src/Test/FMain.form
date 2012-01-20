@@ -9,11 +9,17 @@
   { TabPanel1 TabPanel
     Move(14,7,560,399)
     Expand = True
-    Arrangement = Arrange.Fill
     Closable = True
     Highlight = True
     Index = 0
     Text = ("1")
+    { ValueBox1 ValueBox
+      Move(56,42,161,28)
+      Type = ValueBox.Time
+    }
+    { TextBox1 TextBox
+      Move(56,84,154,28)
+    }
     Index = 0
   }
   { Button1 Button

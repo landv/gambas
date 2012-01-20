@@ -1066,7 +1066,7 @@ void gApplication::updateLastEventTime(GdkEvent *e)
 
 static void post_focus_change(void *)
 {
-	gControl *current;
+	gControl *current, *control;
 	
 	//fprintf(stderr, "post_focus_change\n");
 	
@@ -1076,14 +1076,24 @@ static void post_focus_change(void *)
 		if (current == gApplication::_old_active_control)
 			break;
 
-		if (gApplication::_old_active_control && gApplication::_old_active_control->onFocusEvent)
-			gApplication::_old_active_control->onFocusEvent(gApplication::_old_active_control, gEvent_FocusOut);
+		control = gApplication::_old_active_control;
+		while (control)
+		{
+			if (control->onFocusEvent)
+				control->onFocusEvent(control, gEvent_FocusOut);
+			control = control->_proxy_for;
+		}
 		
 		gApplication::_old_active_control = current;
 		gMainWindow::setActiveWindow(current);
 		
-		if (current && current->onFocusEvent)
-			current->onFocusEvent(current, gEvent_FocusIn);
+		control = current;
+		while (control)
+		{
+			if (control->onFocusEvent)
+				control->onFocusEvent(control, gEvent_FocusIn);
+			control = control->_proxy_for;
+		}
 	}
 	
 	_focus_change = FALSE;

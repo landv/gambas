@@ -103,6 +103,8 @@ Private Sub UpdateType()
   
   End Select
   
+  If Me.Design Then $hCtrl.Design = True
+  
   Me.Proxy = $hCtrl
   
   Border_Write(bBorder)

@@ -2036,7 +2036,7 @@ void CWidget::destroy()
 
 static void post_focus_change(void *)
 {
-	CWIDGET *current;
+	CWIDGET *current, *control;
 	
 	//qDebug("post_focus_change");
 
@@ -2046,25 +2046,23 @@ static void post_focus_change(void *)
 		if (current == _old_active_control)
 			break;
 
-		if (_old_active_control)
+		control = _old_active_control;
+		while (control)
 		{
-			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
-			// TODO: follow proxy chain
-			if (_old_active_control->proxy_for)
-				GB.Raise(_old_active_control->proxy_for, EVENT_LostFocus, 0);
+			GB.Raise(control, EVENT_LostFocus, 0);
+			control = (CWIDGET *)control->proxy_for;
 		}
 		
 		_old_active_control = current;
 		CWINDOW_activate(_old_active_control);
 		
-		if (current)
+		control = current;
+		while (control)
 		{
-			GB.Raise(current, EVENT_GotFocus, 0);
-			// TODO: follow proxy chain
-			if (current->proxy_for)
-				GB.Raise(current->proxy_for, EVENT_GotFocus, 0);
+			GB.Raise(control, EVENT_GotFocus, 0);
+			control = (CWIDGET *)control->proxy_for;
 		}
-}
+	}
 	
 	_focus_change = FALSE;
 }
@@ -2247,9 +2245,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			return true;
 		}
 
-		if (control->proxy)
+		if (control->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy;
+			control = (CWIDGET *)control->proxy_for;
 			goto __MENU_TRY_PROXY;
 		}
 		
