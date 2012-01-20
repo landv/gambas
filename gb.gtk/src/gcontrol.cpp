@@ -378,11 +378,13 @@ void gControl::getScreenPos(int *x, int *y)
 	
 	gdk_window_get_origin(border->window, x, y);
 	
+	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
 	if (!gtk_widget_get_has_window(border))
 	{
 		*x += border->allocation.x;
 		*y += border->allocation.y;
 	}
+	#endif
 }
 
 int gControl::screenX()
@@ -1771,7 +1773,13 @@ bool gControl::grab(bool showIt)
 	
 	win = border->window;
 	
-	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, gdk_window_get_cursor(win), gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
+	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, 
+	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
+	    gdk_window_get_cursor(win),
+	#else
+		  NULL,
+	#endif
+      gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		fprintf(stderr, "gb.gtk: warning: cannot grab pointer\n");
 		return true;
