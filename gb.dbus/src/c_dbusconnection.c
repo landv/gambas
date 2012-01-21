@@ -139,7 +139,7 @@ BEGIN_METHOD(DBusConnection_CallMethod, GB_STRING application; GB_STRING object;
 	}
 	
 	if (DBUS_call_method(THIS->connection, application, object, interface, method, input_signature, output_signature, VARG(arguments)))
-		GB.Error("Unable to call method");
+		return;
 
 	GB.ReturnConvVariant();
 	

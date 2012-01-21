@@ -70,8 +70,8 @@ BEGIN_METHOD(Param_get, GB_INTEGER index)
 	if (index < 0 || index >= nvararg())
 		THROW(E_BOUND);
 
+	VALUE_conv(&PP[index], T_VARIANT);
 	TEMP = PP[index];
-	GB_ReturnConvVariant();
 	//VALUE_conv(&TEMP, T_VARIANT);
 
 END_METHOD

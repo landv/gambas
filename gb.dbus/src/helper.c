@@ -735,24 +735,26 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	if (define_arguments(message, signature_in, arguments))
 		goto __RETURN;
 	
-	if (!signature_out || !*signature_out)
+	// Do not use asynchronous call, otherwise error message is lost.
+	
+	/*if (!signature_out || !*signature_out)
 	{
 		dbus_connection_send(connection, message, NULL);
 		dbus_connection_flush(connection);
 		reply = NULL;
 		ret = FALSE;
-	}
-	else
-	{
-		dbus_error_init(&error);
-		reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
-		check_message(connection);
+	}*/
+	
+	dbus_error_init(&error);
+	reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
+	check_message(connection);
 
-		if (dbus_error_is_set(&error))
-		{
-			GB.Error("&1: &2", error.name, error.message);
-			goto __RETURN;
-		}
+	if (dbus_error_is_set(&error))
+	{
+		GB.Error("&1: &2", error.name, error.message);
+		if (reply)
+			dbus_message_unref(reply);
+		goto __RETURN;
 	}
 
 	if (!reply)

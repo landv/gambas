@@ -202,7 +202,7 @@ void STRING_free_real(char *ptr)
 	
 	MEMORY_count--;
 	
-	//fprintf(stderr, "STRING_free_real: %p\n", ptr);
+	//fprintf(stderr, "STRING_free_real: %p '%s'\n", ptr, ptr);
 	
 	if (pool < POOL_SIZE)
 	{

@@ -25,16 +25,14 @@ Public Sub Main()
   'Print DBus.Session._Name
   'Dim hTest As CTest = CTest
   
-  ' Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
-  ' DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
   ' 
   ' Debug DBus.Session.Applications.Join("\n")
   ' 
   'DBus.Debug = True
   'DBus.Session.Register(CTest, "/Test", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player"])
   
-  DBus.Name = "org.mpris.MediaPlayer2.xt7"
-  DBus.Session.Register(CTest2, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mrpris.MediaPlayer2.Player"])
+  'DBus.Name = "org.mpris.MediaPlayer2.xt7"
+  'DBus.Session.Register(CTest2, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mrpris.MediaPlayer2.Player"])
 
   'Wait 10
   '
@@ -48,6 +46,41 @@ Public Sub Main()
   'Wait 30
 
   'DBus.Session.Unregister(CTest)
+  
+  Dim o As Object
+  Dim s As String
+  'Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
+  
+  'DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
+
+  'Print "BUG 1"
+  'Print "Try DBus[\"system://org.freedesktop.UDisks\"][\"/org/freedesktop/UDisks\"].Uninhibit(\"fake_cookie\")"
+  's = "AuxArmes!"
+  Error "---------------------------"
+  Try Print DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("AuxArmes!")
+  Error "---------------------------"
+  Print Error.Text
+  'Try DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("fake_cookie")
+  Return
+  
+  ' If Error Then
+  '   Print "NO BUG. Error message:";; Error.Text
+  ' Else
+  '   Print "BUG! No error message"
+  ' End If
+  ' 
+  ' Print "BUG 2"
+  ' Print "Try DBus[\"system://org.freedesktop.UDisks\"][\"/org/freedesktop/UDisks\"].FindDeviceByDeviceFile(\"/fake_device\")"
+  ' Try o = DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].FindDeviceByDeviceFile("/fake_device")
+  ' If Error Then
+  '   If Error.Text = "Unable to call method" Then
+  '     Print "BUG! No detailed error message: ";; Error.Text
+  '   Else
+  '     Print "NO BUG. Error message is detailed:";; Error.Text
+  '   End If
+  ' Else
+  '   Print "No error. Strange"
+  ' End If
   
 End
 

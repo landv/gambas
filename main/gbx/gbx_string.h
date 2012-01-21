@@ -170,7 +170,9 @@ void STRING_unref(char **ptr);
 ({ \
   char *ptr = _p; \
   if (LIKELY(ptr != NULL)) \
+	{ \
     STRING_from_ptr(ptr)->ref++; \
+  } \
 })
 
 #define STRING_unref(_p) \
