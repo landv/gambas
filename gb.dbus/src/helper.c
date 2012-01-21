@@ -754,6 +754,7 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 		GB.Error("&1: &2", error.name, error.message);
 		if (reply)
 			dbus_message_unref(reply);
+		dbus_error_free(&error);
 		goto __RETURN;
 	}
 
@@ -939,6 +940,7 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 	if (dbus_error_is_set(&error))
 	{
 		GB.Error("&1: &2", error.name, error.message);
+		dbus_error_free(&error);
 		goto __RETURN;
 	}
 
@@ -1068,6 +1070,7 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 	if (dbus_error_is_set(&error))
 	{
 		GB.Error("Unable to register application name");
+		dbus_error_free(&error);
 		return TRUE;
 	}
 
@@ -1089,6 +1092,7 @@ bool DBUS_unregister(DBusConnection *connection, const char *name)
 	if (dbus_error_is_set(&error))
 	{
 		GB.Error("Unable to unregister application name");
+		dbus_error_free(&error);
 		return TRUE;
 	}
 

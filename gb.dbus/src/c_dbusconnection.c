@@ -32,10 +32,8 @@ static CDBUSCONNECTION *_session = NULL;
 static DBusConnection *get_bus(DBusBusType type)
 {
 	DBusConnection *conn;
-  DBusError error;
 	
-	dbus_error_init (&error);
-	conn = dbus_bus_get(type, &error);
+	conn = dbus_bus_get(type, NULL);
 	if (!conn)
 		GB.Error("Cannot connect to the &1 bus", type == DBUS_BUS_SYSTEM ? "system" : "session");
 	else
