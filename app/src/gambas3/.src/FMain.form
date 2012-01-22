@@ -526,6 +526,10 @@
       Picture = Picture["icon:/16/gambas"]
     }
   }
+  { mnuBackward Menu
+    { Menu6 Menu
+    }
+  }
   { sepMenu Separator
     MoveScaled(0,0,13,0)
   }
@@ -739,27 +743,29 @@
         Action = "find-project"
         Picture = Picture["icon:/small/find"]
       }
-      { btnBackward ToolButton
-        MoveScaled(126,0,4,4)
+      { btnBackward MenuButton
+        MoveScaled(126,0,6,4)
         ToolTip = ("Go back")
         Action = "go-back"
         Picture = Picture["icon:/small/left"]
+        Border = False
+        Menu = "mnuBackward"
       }
       { btnBackward2 ToolButton
-        MoveScaled(129,0,4,4)
+        MoveScaled(131,0,4,4)
         ToolTip = ("Go forward")
         Action = "go-forward"
         Picture = Picture["icon:/small/right"]
       }
       { ToolButton6 ToolButton
-        MoveScaled(131,0,4,4)
+        MoveScaled(134,0,4,4)
         Visible = False
         ToolTip = ("Browse project")
         Action = "browse-project"
         Picture = Picture["icon:/small/file-manager"]
       }
       { ToolButton11 ToolButton
-        MoveScaled(133,0,4,4)
+        MoveScaled(136,0,4,4)
         Visible = False
         ToolTip = ("Open a terminal")
         Action = "open-terminal"

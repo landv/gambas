@@ -154,7 +154,10 @@ Public Sub FillStack(aPos As String[]) As Boolean
     Inc iInd
   Next
   
-  Try lvwStack[sKey].Selected = True
+  If lvwStack.Exist(sKey) Then
+    lvwStack[sKey].Selected = True
+    lvwStack[sKey].EnsureVisible
+  Endif
   Object.Unlock(lvwStack)
   
   Return lvwStack.Key = "0"

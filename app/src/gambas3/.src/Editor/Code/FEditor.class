@@ -441,6 +441,8 @@ End
 
 Public Sub Editors_Cursor()
 
+  CPosition.SaveCurrent
+
   If RefreshLineInfo() Then
     HideMessage
     HideCompletion
@@ -479,8 +481,6 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1, Optional bCe
 
   If Not Editor.Lines[iLine].Limit Then Editor.Lines[iLine].Expanded = True
   Editor.Goto(iLine, iColumn, bCenter)
-
-  CPosition.SaveCurrent
 
 End
 

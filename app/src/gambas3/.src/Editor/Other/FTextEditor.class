@@ -29,6 +29,7 @@ Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage
 
 Private $bNoHighlight As Boolean
 Private $bModify As Boolean
+Private $iLastLine As Integer = -1
 
 Private $iViewMode As Integer
 Private Const VIEWMODE_NORMAL As Integer = 0 
@@ -273,7 +274,6 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
   'DEC iLine
   If iColumn < 0 Then iColumn = Editor.Column
   Editor.Goto(iLine, iColumn, True)
-  CPosition.SaveCurrent
 
 End
 
@@ -712,6 +712,7 @@ End
 
 Public Sub Editors_Cursor()
 
+  CPosition.SaveCurrent
   lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
 
 End

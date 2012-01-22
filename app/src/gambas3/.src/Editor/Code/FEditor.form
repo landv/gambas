@@ -274,7 +274,6 @@
       Action = ".color"
       Picture = Picture["icon:/small/color"]
       Border = False
-      Menu = "mnuColor"
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
@@ -371,14 +370,6 @@
       ToolTip = ("Find definition")
       Action = ".find-definition"
       Picture = Picture["icon:/16/info"]
-    }
-    { btnLastPosition ToolButton mnuLastPosition
-      Name = "btnLastPosition"
-      MoveScaled(77,0,4,4)
-      Visible = False
-      ToolTip = ("Go back")
-      Action = ".go-back"
-      Picture = Picture["icon:/16/left"]
     }
     { Separator2 Separator
       MoveScaled(81,0,1,4)
@@ -505,10 +496,6 @@
     Shortcut = "Shift+F3"
     Picture = "icon:/small/up"
   }
-  { Action go-back
-    Text = "Go back"
-    Picture = "icon:/16/left"
-  }
   { Action goto-line
     Text = "Go to line..."
     Shortcut = "Ctrl+G"
@@ -625,7 +612,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,find-definition,go-back,proc"
+    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,find-definition,proc"
     Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
   }
 }

@@ -359,6 +359,7 @@ Private Sub ReloadTable()
   'tbvField.Columns.Width = -1
   tbvField.Rows.H = -1
   tbvField.MoveTo(0, 1)
+  UpdateFieldToolbar
 
   tbvIndex.Rows.Count = $aIndexField.Count
   tbvIndex.Refresh
@@ -381,7 +382,7 @@ Private Sub ReloadTable()
   tlbData.Show
   
   SetReadOnly(hTable.System)
-
+  
 End
 
 
@@ -1474,7 +1475,7 @@ End
 
 Public Sub tbvField_Change()
 
-  'Debug tbvField.Row
+  Debug tbvField.Row
   UpdateFieldToolbar
 
 End

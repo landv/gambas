@@ -941,6 +941,11 @@ __HTML:
 			STRING_make("&quot;", 6);
 		else if (c == '\'')
 			STRING_make("&#x27;", 6);
+		else if (c == 0xC2 && str[i + 1] == 0xA0)
+		{
+			STRING_make("&nbsp;", 6);
+			i++;
+		}
 		else
 			STRING_make_char(c);
 	}

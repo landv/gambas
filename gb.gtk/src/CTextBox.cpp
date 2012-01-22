@@ -61,6 +61,13 @@ static void txt_raise_activate(gTextBox *sender)
 
 ***************************************************************************/
 
+#define CHECK_COMBOBOX() \
+	if (!TEXTBOX->hasEntry()) \
+	{ \
+		GB.Error("ComboBox is read-only"); \
+		return; \
+	}
+
 BEGIN_METHOD(CTEXTBOX_new, GB_OBJECT parent)
 
 	InitControl(new gTextBox(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
@@ -79,6 +86,7 @@ END_METHOD
 
 BEGIN_METHOD(CTEXTBOX_insert, GB_STRING text)
 
+	CHECK_COMBOBOX();
 	TEXTBOX->insert(STRING(text),LENGTH(text));
 
 END_METHOD
@@ -111,6 +119,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTBOX_pos)
 
+	CHECK_COMBOBOX();
 	if (READ_PROPERTY) { GB.ReturnInteger(TEXTBOX->position()); return; }
 	TEXTBOX->setPosition(VPROP(GB_INTEGER));
 
@@ -135,6 +144,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTBOX_password)
 
+	CHECK_COMBOBOX();
 	if (READ_PROPERTY) { GB.ReturnBoolean(TEXTBOX->password()); return; }
 	TEXTBOX->setPassword(VPROP(GB_BOOLEAN));
 
@@ -143,21 +153,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTBOX_max_length)
 
+	CHECK_COMBOBOX();
 	if (READ_PROPERTY) { GB.ReturnInteger(TEXTBOX->maxLength()); return; }
 	TEXTBOX->setMaxLength(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTEXTBOX_selection)
-
-	RETURN_SELF();
-
-END_PROPERTY
-
-
 BEGIN_METHOD_VOID(CTEXTBOX_selected)
 
+	CHECK_COMBOBOX();
   GB.ReturnBoolean(TEXTBOX->isSelected());
 
 END_METHOD
@@ -171,6 +176,8 @@ END_METHOD
 BEGIN_PROPERTY(CTEXTBOX_sel_text)
 
 	char *buf;
+	
+	CHECK_COMBOBOX();
 	
 	if (READ_PROPERTY)
 	{
@@ -188,6 +195,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTBOX_sel_length)
 
+	CHECK_COMBOBOX();
 	GB.ReturnInteger(TEXTBOX->selLength());
 
 END_PROPERTY
@@ -195,6 +203,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTBOX_sel_start)
 
+	CHECK_COMBOBOX();
 	GB.ReturnInteger(TEXTBOX->selStart());
 
 END_PROPERTY
@@ -202,18 +211,21 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CTEXTBOX_sel_clear)
 
+	CHECK_COMBOBOX();
 	TEXTBOX->selClear();
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CTEXTBOX_sel_all)
 
+	CHECK_COMBOBOX();
 	TEXTBOX->selectAll();
 
 END_METHOD
 
 BEGIN_METHOD(CTEXTBOX_sel_select, GB_INTEGER start; GB_INTEGER length)
 
+	CHECK_COMBOBOX();
 	TEXTBOX->select(VARG(start),VARG(length));
 
 END_METHOD

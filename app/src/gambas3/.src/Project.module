@@ -1925,6 +1925,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   hForm = Files[sPath]
   If Not hForm Then Return
 
+  CPosition.Disable
+
   ShowFile(hForm)
 
   'hForm.Show
@@ -1936,6 +1938,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   If iLine Then
     hForm.GotoCenter(iLine - 1, iColumn)
   Endif
+
+  CPosition.Enable
 
   CPosition.SaveCurrent
 

@@ -203,13 +203,6 @@ BEGIN_PROPERTY(CTEXTBOX_max_length)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTEXTBOX_selection)
-
-	RETURN_SELF();
-
-END_PROPERTY
-
-
 /***************************************************************************
 
 	.TextBox.Selection

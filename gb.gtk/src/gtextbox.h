@@ -58,6 +58,7 @@ public:
 	void selClear();
 	void select(int start,int len);
 	void selectAll();
+	bool hasEntry() const { return entry != 0; }
 
 //"Signals"
 	void (*onChange)(gTextBox *sender);

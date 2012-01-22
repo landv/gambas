@@ -2,11 +2,12 @@
 
 Static Private $aPositions As New CPosition[]
 Static Private $iCurrent As Integer
-Static Private $bDisable As Boolean
+Static Private $iDisable As Integer
 
 Public Path As String
 Public {Line} As Integer
 Public Column As Integer
+Public Weak As Boolean
 
 Static Public Sub Clear()
   
@@ -23,7 +24,7 @@ Static Public Sub SaveCurrent()
   Dim sPos As String
   Dim hPos As CPosition
 
-  If $bDisable Then Return
+  If $iDisable Then Return
 
   hForm = Project.ActiveForm
   If Not hForm Then Return
@@ -42,7 +43,18 @@ Static Public Sub SaveCurrent()
   End With
 
   If $iCurrent > 0 Then
-    If $aPositions[$iCurrent - 1].IsEqual(hPos) Then Return
+    With $aPositions[$iCurrent - 1]
+      If .IsEqual(hPos) Then Return
+      If .IsNear(hPos) Then
+        If .Weak Then 
+          .Line = hPos.Line
+          .Column = hPos.Column
+          Return
+        Else
+          hPos.Weak = True
+        Endif
+      Endif
+    End With
   Endif
 
   $aPositions.Resize($iCurrent)
@@ -75,11 +87,73 @@ Public Sub IsEqual(hPos As CPosition) As Boolean
   
 End
 
-Public Sub Move()
+Public Sub IsNear(hPos As CPosition) As Boolean
   
-  $bDisable = True
-  Project.OpenFile(Path, {Line} + 1, Column)
-  $bDisable = False
+  If Abs({Line} - hPos.Line) <= 1 Then Return Path = hPos.Path 
   
 End
 
+Public Sub Move()
+  
+  Dim hForm As Object
+  
+  Inc $iDisable
+  hForm = Project.OpenFile(Path)
+  If {Line} >= 0 Then hForm.Goto({Line}, Column)
+  Dec $iDisable
+  
+End
+
+Static Public Sub Disable()
+  
+  Inc $iDisable
+  
+End
+
+Static Public Sub Enable()
+  
+  If $iDisable <= 0 Then Return
+  Dec $iDisable
+  
+End
+
+Public Sub GetDesc() As String
+  
+  Dim sDesc As String
+  
+  sDesc = File.Name(Path)
+  If {Line} >= 0 Then sDesc &= " " & CStr(Column + 1) & ":" & CStr({Line} + 1)
+  
+  Return sDesc
+  
+End
+
+
+Static Public Sub FillMenu(mnuParent As Menu)
+  
+  Dim I As Integer
+  Dim hMenu As Menu
+  
+  mnuParent.Children.Clear
+  
+  For I = $aPositions.Max DownTo 0
+    hMenu = New Menu(mnuParent) As "mnuBackward"
+    With $aPositions[I]
+      hMenu.Text = .GetDesc()
+      hMenu.Picture = Project.GetFileIcon(.Path)
+      hMenu.Tag = I
+      If I = ($iCurrent - 1) Then hMenu.Checked = True
+    End With
+  Next
+  
+End
+
+Static Public Sub mnuBackward_Click()
+  
+  Dim I As Integer = Last.Tag
+  
+  $iCurrent = I + 1
+  $aPositions[I].Move
+  
+  
+End

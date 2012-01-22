@@ -144,13 +144,4 @@ void
 gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus);
 #endif
 
-#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 16
-#else
-void
-gtk_style_get (GtkStyle    *style,
-               GType        widget_type,
-               const gchar *first_property_name,
-               ...);
-#endif
-
 #endif
