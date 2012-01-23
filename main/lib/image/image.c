@@ -1126,17 +1126,22 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	int r, g, b;
 	int hcol, scol, vcol;
 	int format = img->format;
+	uchar vcolmul[256];
+	int i;
 	
 	SYNCHRONIZE(img);
 
 	col = GB_COLOR_to_BGRA(color);
 	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &hcol, &scol, &vcol);
+	
+	for (i = 0; i < 256; i++)
+		vcolmul[i] = vcol * i / 255;
 
 	while (p != pm) 
 	{
 		col = BGRA_from_format(*p, format);
 		COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &h, &s, &v);
-		COLOR_hsv_to_rgb(hcol, scol, v, &r, &g, &b);
+		COLOR_hsv_to_rgb(hcol, scol, vcolmul[v], &r, &g, &b);
 		*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), img->format);
 	}
 	
