@@ -4,6 +4,8 @@ Static Private $aPositions As New CPosition[]
 Static Private $iCurrent As Integer
 Static Private $iDisable As Integer
 
+Private Const MAX_POS As Integer = 40
+
 Public Path As String
 Public {Line} As Integer
 Public Column As Integer
@@ -55,6 +57,11 @@ Static Public Sub SaveCurrent()
         Endif
       Endif
     End With
+  Endif
+
+  If $iCurrent > MAX_POS Then
+    $aPositions.Remove(0)
+    Dec $iCurrent
   Endif
 
   $aPositions.Resize($iCurrent)

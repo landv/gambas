@@ -2,6 +2,11 @@
 
 ' Pour récupérer les icônes manquantes depuis subversion :
 ' $ for i in `svn status | grep "! " | cut -b 9-`; do svn revert $i; done
+' 
+Class Image 
+Class SvgImage 
+Class Color
+Class Paint
 
 Private Sub Copy(sSrc As String, sDest As String) As Boolean
 
@@ -27,6 +32,8 @@ Public Sub Main()
   Dim hImage As Image
   Dim hSvgImage As SvgImage
   Dim bOK As Boolean
+  
+  Component.Load("gb.gtk")
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form.stock/.hidden/map"
   
