@@ -32,8 +32,8 @@
 #define CARRANGEMENT_PROPERTY "Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill}"
 #define CPADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63},Indent"
 #define CWINDOW_PADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"
-#define CARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CPADDING_PROPERTIES
-#define CWINDOW_ARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CWINDOW_PADDING_PROPERTIES
+#define CARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CPADDING_PROPERTIES ",Invert"
+#define CWINDOW_ARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CWINDOW_PADDING_PROPERTIES ",Invert"
 #define CUSERCONTROL_PROPERTIES "*"
 #define CUSERCONTAINER_PROPERTIES "*," CARRANGEMENT_PROPERTIES
 
@@ -46,7 +46,7 @@
 #define CEDITOR_PROPERTIES "*,Font{Font:Fixed},Border=True,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly=False,TabSize{Range:1;16}=2"
 #define CFRAME_PROPERTIES "*,Text"
 #define CGRIDVIEW_PROPERTIES "*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Vertical;Horizontal;Both}=None,Scrollbar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
-#define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
+#define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES ",Invert"
 #define CHSPLIT_PROPERTIES "*"
 #define CICONVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
 #define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
@@ -74,7 +74,7 @@
 #define CTOOLBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
 #define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture"
 #define CTREEVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
-#define CVBOX_PROPERTIES CHBOX_PROPERTIES
+#define CVBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
 #define CVSPLIT_PROPERTIES "*"
 #define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Utility,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100," CWINDOW_ARRANGEMENT_PROPERTIES
 

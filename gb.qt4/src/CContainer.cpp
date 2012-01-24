@@ -1022,6 +1022,32 @@ BEGIN_PROPERTY(CUSERCONTAINER_spacing)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Container_Invert)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(THIS_ARRANGEMENT->invert);
+  else
+  {
+  	bool val = VPROP(GB_BOOLEAN);
+  	if (val != THIS_ARRANGEMENT->invert)
+  	{
+    	THIS_ARRANGEMENT->invert = val;
+			arrange_now(CONTAINER);
+		}
+  }
+
+END_PROPERTY
+
+BEGIN_PROPERTY(UserContainer_Invert)
+
+	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
+	Container_Invert(cont, _param);
+	if (!READ_PROPERTY)
+		THIS_USERCONTAINER->save = cont->arrangement;
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CCONTAINER_padding)
 
   if (READ_PROPERTY)
@@ -1268,6 +1294,7 @@ GB_DESC CUserContainerDesc[] =
 	GB_PROPERTY("Spacing", "b", CUSERCONTAINER_spacing),
 	GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
 	GB_PROPERTY("Indent", "b", CUSERCONTAINER_indent),
+	GB_PROPERTY("Invert", "b", UserContainer_Invert),
 	
 	GB_PROPERTY("Design", "b", CUSERCONTAINER_design),
 

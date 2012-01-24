@@ -44,10 +44,11 @@ typedef
 		unsigned margin : 1;
 		unsigned spacing : 1;
 		unsigned padding : 8;
+		unsigned indent : 4;
 		unsigned dirty : 1;
 		unsigned autoresize : 1;
-		unsigned indent : 4;
-		unsigned _reserved: 10;
+		unsigned invert : 1;
+		unsigned _reserved: 9;
 		}
 	CARRANGEMENT;
 
@@ -70,10 +71,11 @@ typedef
 		unsigned margin : 1;
 		unsigned spacing : 1;
 		unsigned padding : 8;
+		unsigned indent : 4;
 		unsigned dirty : 1;
 		unsigned autoresize : 1;
-		unsigned indent : 4;
-		unsigned _reserved: 10;
+		unsigned invert : 1;
+		unsigned _reserved: 9;
 		}
 	CCONTAINER_ARRANGEMENT;
 
@@ -101,6 +103,7 @@ DECLARE_PROPERTY(CCONTAINER_spacing);
 DECLARE_PROPERTY(CCONTAINER_margin);
 DECLARE_PROPERTY(CCONTAINER_indent);
 DECLARE_PROPERTY(CCONTAINER_border);
+DECLARE_PROPERTY(Container_Invert);
 
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);

@@ -605,6 +605,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),

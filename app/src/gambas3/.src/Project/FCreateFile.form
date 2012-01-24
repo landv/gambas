@@ -12,8 +12,6 @@
     MoveScaled(1,1,80,63)
     Expand = True
     Arrangement = Arrange.Vertical
-    Spacing = True
-    Margin = True
     Count = 2
     Index = 0
     Text = ("New")
@@ -21,6 +19,7 @@
       MoveScaled(1,1,77,56)
       Expand = True
       Spacing = True
+      Margin = True
       { lstType ListContainer
         MoveScaled(1,1,32,52)
         Mouse = Mouse.Pointing
@@ -290,33 +289,39 @@
     Index = 1
     Text = ("Existing")
     { fchExisting FileChooser
-      MoveScaled(1,1,76,50)
+      MoveScaled(1,1,76,48)
       Expand = True
+      Border = False
       Filter = []
+      ShowFile = False
       ReadOnly = True
     }
-    { chkLink CheckBox
-      MoveScaled(1,54,56,3)
-      Text = ("Create a symbolic link")
+    { Separator1 Separator
+      MoveScaled(25,52,16,0)
+    }
+    { Panel4 VBox
+      MoveScaled(1,53,77,5)
+      Margin = True
+      { chkLink CheckBox
+        MoveScaled(1,1,56,3)
+        Text = ("Create a symbolic link")
+      }
     }
     Index = 0
   }
   { HBox6 HBox
-    MoveScaled(11,67,60,4)
+    MoveScaled(10,68,60,4)
     Spacing = True
-    { Panel1 Panel
-      MoveScaled(11,0,4,4)
-      Expand = True
+    Invert = True
+    { btnCancel Button
+      MoveScaled(45,0,15,4)
+      Text = ("Cancel")
+      Cancel = True
     }
     { btnOK Button
       MoveScaled(29,0,15,4)
       Text = ("OK")
       Default = True
-    }
-    { btnCancel Button
-      MoveScaled(45,0,15,4)
-      Text = ("Cancel")
-      Cancel = True
     }
   }
 }

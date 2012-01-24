@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CTabStrip.cpp
+	CTabStrip.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -53,7 +53,7 @@ static void handle_close(gTabStrip *sender, int index)
 
 /***************************************************************************
 
-  TabStrip
+	TabStrip
 
 ***************************************************************************/
 
@@ -132,30 +132,30 @@ BEGIN_PROPERTY(CTABSTRIP_orientation)
 	if (READ_PROPERTY)
 		switch (TABSTRIP->orientation())
 		{ 
-		  case GTK_POS_TOP: GB.ReturnInteger(ALIGN_TOP); break;
-		  case GTK_POS_BOTTOM: GB.ReturnInteger(ALIGN_BOTTOM); break;
-		  case GTK_POS_LEFT: GB.ReturnInteger(ALIGN_LEFT); break;
-		  case GTK_POS_RIGHT: GB.ReturnInteger(ALIGN_RIGHT); break;
-		  default: GB.ReturnInteger(ALIGN_NORMAL); break;
+			case GTK_POS_TOP: GB.ReturnInteger(ALIGN_TOP); break;
+			case GTK_POS_BOTTOM: GB.ReturnInteger(ALIGN_BOTTOM); break;
+			case GTK_POS_LEFT: GB.ReturnInteger(ALIGN_LEFT); break;
+			case GTK_POS_RIGHT: GB.ReturnInteger(ALIGN_RIGHT); break;
+			default: GB.ReturnInteger(ALIGN_NORMAL); break;
 		}
 		
 	else 
-	      switch (VPROP(GB_INTEGER))
-	      {
+				switch (VPROP(GB_INTEGER))
+				{
 		case ALIGN_TOP: TABSTRIP->setOrientation(GTK_POS_TOP); break;
 		case ALIGN_BOTTOM: TABSTRIP->setOrientation(GTK_POS_BOTTOM); break;
 		case ALIGN_LEFT: TABSTRIP->setOrientation(GTK_POS_LEFT); break;
 		case ALIGN_RIGHT: TABSTRIP->setOrientation(GTK_POS_RIGHT); break;
 		
-	      }
-	      
+				}
+				
 END_PROPERTY
 
 
 
 /***************************************************************************
 
-  .Tab
+	.Tab
 
 ***************************************************************************/
 
@@ -176,9 +176,9 @@ BEGIN_PROPERTY(TabStrip_TextFont)
 	else
 	{
 		GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->textFont));
-    CFONT *font = (CFONT *)THIS->textFont;
-    if (font)
-    	TABSTRIP->setTextFont(font->font);
+		CFONT *font = (CFONT *)THIS->textFont;
+		if (font)
+			TABSTRIP->setTextFont(font->font);
 		else
 			TABSTRIP->setTextFont(0);
 	}
@@ -305,73 +305,70 @@ END_PROPERTY
 
 /***************************************************************************
 
-  Descriptions
+	Descriptions
 
 ***************************************************************************/
 
 GB_DESC CTabChildrenDesc[] =
 {
-  GB_DECLARE(".Tab.Children", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Tab.Children", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CTAB_next, NULL),
-  GB_PROPERTY_READ("Count", "i", CTAB_count),
-  GB_METHOD("_get", "Control", CTAB_next, "(Index)i"),
+	GB_METHOD("_next", "Control", CTAB_next, NULL),
+	GB_PROPERTY_READ("Count", "i", CTAB_count),
+	GB_METHOD("_get", "Control", CTAB_next, "(Index)i"),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CTabDesc[] =
 {
-  GB_DECLARE(".Tab", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Tab", 0), GB_VIRTUAL_CLASS(),
 
-  GB_PROPERTY("Text", "s", CTAB_text),
-  GB_PROPERTY("Picture", "Picture", CTAB_picture),
-  GB_PROPERTY("Caption", "s", CTAB_text),
-  GB_PROPERTY("Enabled", "b", CTAB_enabled),
-  GB_PROPERTY("Visible", "b", CTAB_visible),
-  GB_PROPERTY_SELF("Children", ".Tab.Children"),
-  GB_METHOD("Delete", 0, CTAB_delete, 0),
+	GB_PROPERTY("Text", "s", CTAB_text),
+	GB_PROPERTY("Picture", "Picture", CTAB_picture),
+	GB_PROPERTY("Caption", "s", CTAB_text),
+	GB_PROPERTY("Enabled", "b", CTAB_enabled),
+	GB_PROPERTY("Visible", "b", CTAB_visible),
+	GB_PROPERTY_SELF("Children", ".Tab.Children"),
+	GB_METHOD("Delete", 0, CTAB_delete, 0),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CTabStripDesc[] =
 {
-  GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
+	GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, TabStrip_free, NULL),
+	GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
+	GB_METHOD("_free", NULL, TabStrip_free, NULL),
 
-  GB_PROPERTY("Count", "i", CTABSTRIP_tabs),
-  GB_PROPERTY("Text", "s", CTABSTRIP_text),
-  GB_PROPERTY("TextFont", "Font", TabStrip_TextFont),
-  GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
-  GB_PROPERTY("Closable", "b", TabStrip_Closable),
-  GB_PROPERTY("Caption", "s", CTABSTRIP_text),
-  GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
-  GB_PROPERTY("Index", "i", CTABSTRIP_index),
-  GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
-  
-  GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Count", "i", CTABSTRIP_tabs),
+	GB_PROPERTY("Text", "s", CTABSTRIP_text),
+	GB_PROPERTY("TextFont", "Font", TabStrip_TextFont),
+	GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
+	GB_PROPERTY("Closable", "b", TabStrip_Closable),
+	GB_PROPERTY("Caption", "s", CTABSTRIP_text),
+	GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
+	GB_PROPERTY("Index", "i", CTABSTRIP_index),
+	GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
+	
+	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Invert", "b", Container_Invert),
 
-  GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
+	GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Close", NULL, "(Index)i", &EVENT_Close),
-  
-  TABSTRIP_DESCRIPTION,
+	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("Close", NULL, "(Index)i", &EVENT_Close),
+	
+	TABSTRIP_DESCRIPTION,
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
-
-
-
-
 

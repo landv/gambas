@@ -107,18 +107,26 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
 
-  $aFilterType = ["module", "class"]
+  If Project.IsSourcePath($sDir &/ "/") Then
+
+    $aFilterType = ["module", "class"]
+    
+    For Each hModule In CModule.All
+    
+      $aFilterType.Add(hModule.Key)
+    
+    Next
+    
+  Else
   
-  For Each hModule In CModule.All
-  
-    $aFilterType.Add(hModule.Key)
-  
-  Next
-  
-  $aFilterType.Insert(["image", "html", "css", "text"])
+    $aFilterType = ["image", "html", "css", "text"]
+    
+  Endif
   
   For Each hPanel In lstType.Children
     If Not hPanel.Tag Then Continue
+    hPanel.Visible = $aFilterType.Exist(hPanel.Tag)
+    If Not hPanel.Visible Then Continue
     hPictureBox = hPanel.Children[0]
     'hPictureBox.W = hPictureBox.H
     hModule = CModule[hPanel.Tag]
@@ -144,6 +152,8 @@ Public Sub Form_Open()
     Endif
   Next
   
+  fchExisting_Change
+
 End
 
 Public Sub txtWidth_Change()

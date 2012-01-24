@@ -234,6 +234,8 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   
   If Not sImage Then Return
   
+  If hCCtrl.GetProperty("Invert") Then sImage &= "-invert"
+  
   hIcon = hCCtrl["#icon"]
   
   If hIcon Then 

@@ -839,6 +839,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
 	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 
 	//GB_PROPERTY("Type", "i", CWINDOW_type),
 	GB_PROPERTY("Utility", "b", Window_Utility),

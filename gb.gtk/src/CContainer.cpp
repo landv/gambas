@@ -236,6 +236,16 @@ BEGIN_PROPERTY(CCONTAINER_indent)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Container_Invert)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->invert());
+	else
+		WIDGET->setInvert(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
 BEGIN_METHOD(CCONTAINER_find, GB_INTEGER x; GB_INTEGER y)
 
 	gControl *child = WIDGET->find(VARG(x), VARG(y));
@@ -453,6 +463,19 @@ BEGIN_PROPERTY(CUSERCONTAINER_indent)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(UserContainer_Invert)
+	
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET_CONT->invert());
+	else
+	{
+		WIDGET_CONT->setInvert(VPROP(GB_BOOLEAN));
+		THIS_UC->save = WIDGET_CONT->fullArrangement();
+	}
+	
+END_PROPERTY
+
+
 GB_DESC CUserControlDesc[] =
 {
   GB_DECLARE("UserControl", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
@@ -484,6 +507,7 @@ GB_DESC CUserContainerDesc[] =
   GB_PROPERTY("Spacing", "b", CUSERCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
   GB_PROPERTY("Indent", "b", CUSERCONTAINER_indent),
+  GB_PROPERTY("Invert", "b", UserContainer_Invert),
 
 	USERCONTAINER_DESCRIPTION,
 

@@ -623,6 +623,7 @@ GB_DESC CScrollViewDesc[] =
 	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
 	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 
 	GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),
 

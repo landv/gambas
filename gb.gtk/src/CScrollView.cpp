@@ -146,6 +146,7 @@ GB_DESC CScrollViewDesc[] =
 	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
 	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 	
 	GB_METHOD("Scroll", 0, CSCROLLVIEW_scroll, "(X)i(Y)i"),
 	GB_METHOD("EnsureVisible", 0, CSCROLLVIEW_ensure_visible, "(X)i(Y)i(Width)i(Height)i"),

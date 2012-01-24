@@ -170,6 +170,7 @@ void gContainer::initialize()
 	arrangement.user = false;
 	arrangement.margin = false;
 	arrangement.indent = 0;
+	arrangement.invert = false;
 }
 
 gContainer::gContainer() 
@@ -219,11 +220,6 @@ gControl* gContainer::child(int index)
 	return (gControl*)iter->data;
 }
 
-int gContainer::arrange()
-{
-	return arrangement.mode;
-}
-
 void gContainer::setArrange(int vl)
 {
 	switch(vl)
@@ -244,11 +240,6 @@ void gContainer::setArrange(int vl)
 	}
 }
 
-int gContainer::padding()
-{
-	return arrangement.padding;
-}
-
 void gContainer::setPadding(int vl)
 {
 	if (vl >= 0 && vl <= 255 && vl != arrangement.padding) 
@@ -256,11 +247,6 @@ void gContainer::setPadding(int vl)
 		arrangement.padding = vl;
 		performArrange();
 	}
-}
-
-bool gContainer::spacing()
-{
-	return arrangement.spacing;
 }
 
 void gContainer::setSpacing(bool vl)
@@ -272,11 +258,6 @@ void gContainer::setSpacing(bool vl)
 	}
 }
 
-bool gContainer::margin()
-{
-	return arrangement.margin;
-}
-
 void gContainer::setMargin(bool vl)
 {
 	if (vl != arrangement.margin)
@@ -284,11 +265,6 @@ void gContainer::setMargin(bool vl)
 		arrangement.margin = vl;
 		performArrange();
 	}
-}
-
-int gContainer::indent()
-{
-	return arrangement.indent;
 }
 
 void gContainer::setIndent(int vl)
@@ -300,11 +276,6 @@ void gContainer::setIndent(int vl)
 		arrangement.indent = vl;
 		performArrange();
 	}
-}
-
-bool gContainer::autoResize()
-{
-	return arrangement.autoresize;
 }
 
 void gContainer::setAutoResize(bool vl)
@@ -321,6 +292,15 @@ void gContainer::setUser(bool vl)
 	if (vl != arrangement.user)
 	{
 		arrangement.user = vl;
+		performArrange();
+	}
+}
+
+void gContainer::setInvert(bool vl)
+{
+	if (vl != arrangement.invert)
+	{
+		arrangement.invert = vl;
 		performArrange();
 	}
 }

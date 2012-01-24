@@ -121,7 +121,7 @@ Public Sub dvwChoose_Click()
   '   $sActivate = ""
   ' ENDIF
 
-  If txtFile.Visible And If txtFile.ReadOnly Then
+  If txtFile.ReadOnly Then
     txtFile.Text = ""
   Endif
 
@@ -763,7 +763,7 @@ Public Sub UpdateFilterPanel()
   Object.Lock(panFilter)
   
   cmbFilter.Enabled = cmbFilter.Count > 1
-  cmbFilter.Visible = txtFile.Visible
+  'cmbFilter.Visible = txtFile.Visible
   If Not cmbFilter.Enabled And If Not panButton.Visible Then cmbFilter.Hide
 
   If panButton.Visible Then
@@ -1140,4 +1140,18 @@ Public Sub HasBorder() As Boolean
   Return panBorder.Border <> Border.None
   
 End
+
+Public Sub SetShowFile(bShow As Boolean)
+
+  txtFile.Visible = bShow
+  UpdateFilterPanel
+
+End
+
+Public Function GetShowFile() As Boolean
+
+  Return txtFile.Visible
+
+End
+
 

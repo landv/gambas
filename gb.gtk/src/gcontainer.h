@@ -34,10 +34,11 @@ struct gContainerArrangement
 	unsigned margin : 1;
 	unsigned spacing : 1;
 	unsigned padding : 8;
+	unsigned indent : 4;
 	unsigned dirty : 1;
 	unsigned autoresize : 1;
-	unsigned indent : 4;
-	unsigned _reserved: 10;
+	unsigned invert : 1;
+	unsigned _reserved: 9;
 }; 
 
 class gContainer : public gControl
@@ -47,13 +48,15 @@ public:
 	gContainer(gContainer *parent);
 	~gContainer();
 
-	int arrange();
-	bool autoResize();
-	bool isUser() { return arrangement.user; }
-	int padding();
-	bool spacing();
-	bool margin();
-	int indent();
+	int arrange() const { return arrangement.mode; }
+	bool autoResize() const { return arrangement.autoresize; }
+	bool isUser() const { return arrangement.user; }
+	int padding() const { return arrangement.padding; }
+	bool spacing() const { return arrangement.spacing; }
+	bool margin() const { return arrangement.margin; }
+	int indent() const { return arrangement.indent; }
+	bool invert() const { return arrangement.invert; }
+	
 	virtual int clientWidth();
 	virtual int clientHeight();
 	virtual int clientX();
@@ -68,6 +71,7 @@ public:
 	void setSpacing(bool vl);
 	void setMargin(bool vl);
 	void setIndent(int vl);
+	void setInvert(bool vl);
 
 	virtual int childCount();
 	virtual gControl* child(int index);

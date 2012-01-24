@@ -73,6 +73,7 @@ DECLARE_PROPERTY(CCONTAINER_padding);
 DECLARE_PROPERTY(CCONTAINER_spacing);
 DECLARE_PROPERTY(CCONTAINER_margin);
 DECLARE_PROPERTY(CCONTAINER_indent);
+DECLARE_PROPERTY(Container_Invert);
 
 void CCONTAINER_cb_arrange(gContainer *sender);
 void CCONTAINER_cb_before_arrange(gContainer *sender);

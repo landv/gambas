@@ -144,8 +144,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	bool redo;
 	bool first;
 	void *ob;
-	bool rtl = IS_RIGHT_TO_LEFT();
-	int rtlm = rtl ? -1 : 1;
+	bool rtl;
+	int rtlm;
 	int padding;
 	int spacing;
 	int indent;
@@ -200,6 +200,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
 
+		rtl = IS_RIGHT_TO_LEFT() ^ arr->invert;
+		rtlm = rtl ? -1 : 1;
 		swap = (arr->mode & 1) == 0; // means "vertical"
 
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
