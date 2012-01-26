@@ -94,6 +94,8 @@ Public Sub _new(sPath As String)
 
   'dim sFamily as string
 
+  $hUndo = New CUndo ''(Me) TODO: BUG! No error if there is too many arguments!
+
   If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
   
   btnCloseWindow.Design = True
@@ -109,8 +111,6 @@ Public Sub _new(sPath As String)
 
   Container = panBorder
   
-  $hUndo = New CUndo ''(Me) TODO: BUG! No error if there is too many arguments!
-
 End
 
 Public Sub Reload()

@@ -1972,7 +1972,7 @@ End
 Public Sub OpenForm(sName As String, Optional sModule As String = "form", Optional sControl As String)
 
   Dim sPath As String
-  Dim hForm As FForm
+  Dim hForm As Object
 
   sPath = $cSourceDir[sName & "." & sModule]
   If Exist(sPath) Then

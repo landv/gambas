@@ -6,6 +6,7 @@ Private $sType As String
 Private $bDoNotSetName As Boolean
 Private $bInit As Boolean
 Private $iFilter As Integer 
+Private $aFilter As String[]
 Private $aFilterType As String[]
 
 Private $bInitExistingTab As Boolean
@@ -75,18 +76,7 @@ Public Sub InitExistingTab()
 
   Settings.Read(fchExisting)
   
-  aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
-  
-  For Each hModule In CModule.All
-  
-    aFilter.Add("*." & hModule.Key)
-    aFilter.Add(hModule.NameFilter)
-  
-  Next
-  
-  aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files"), "*.css", ("Cascading style sheets")])
-  
-  fchExisting.Filter = aFilter
+  fchExisting.Filter = $aFilter
   
   $bInitExistingTab = True
   $bUpdateExistingTab = True
@@ -117,9 +107,21 @@ Public Sub Form_Open()
     
     Next
     
+    $aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
+  
+    For Each hModule In CModule.All
+    
+      If Not hModule.Used Then Continue
+    
+      $aFilter.Add("*." & hModule.Key)
+      $aFilter.Add(hModule.NameFilter)
+    
+    Next
+  
   Else
   
     $aFilterType = ["image", "html", "css", "text"]
+    $aFilter = ["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files"), "*.css", ("Cascading style sheets")]
     
   Endif
   
@@ -142,6 +144,9 @@ Public Sub Form_Open()
   If Project.IsSourcePath($sPath) Then
     cmbParent.Text = Project.GetParentClass($sPath)
   Endif
+  
+  $bInitExistingTab = False
+  UpdateExistingTab
   
   lstType.Select(Null)
   If Not $sType Then $sType = "module"
@@ -234,15 +239,16 @@ Private Sub CreateFile() As Boolean
       sTemp = "' Gambas class file\n\n"
       
       If chkDialog.Value Then 
-        sTemp &= "PUBLIC SUB Run() AS Boolean\n\n"
-                 "  RETURN NOT ME.ShowModal()\n\n"
-                 "END\n\n"
-                 "PUBLIC SUB btnOK_Click()\n\n"
-                 "  ME.Close(TRUE)\n\n"
-                 "END\n\n"
-                 "PUBLIC SUB btnCancel_Click()\n\n"
-                 "  ME.Close\n\n"
-                 "END\n\n" 
+        sTemp &= "Public Sub Run() As Boolean\n\n"
+                 "\tReturn Not Me.ShowModal()\n\n"
+                 "End\n\n"
+                 "Public Sub btnOK_Click()\n\n"
+                 "\tMe.Close(TRUE)\n\n"
+                 "End\n\n"
+                 "Public Sub btnCancel_Click()\n\n"
+                 "\tMe.Close\n\n"
+                 "End\n\n" 
+        sTemp = Replace(sTemp, "\t", Project.TabSize)
       Endif
       
       Project.InsertSource(sName, "class", $sDir, sTemp, True, True)

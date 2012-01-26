@@ -718,6 +718,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
       
     Case "String[]", "Fields", "Field[]"
     
+      If IsNull(vVal) Then Return Null
       Return vVal.Join("\n")
 
     Case "Color"
@@ -1449,7 +1450,7 @@ Static Public Sub StringArrayPropertyToString(aVal As String[], bTranslate As Bo
   Dim iInd As Integer
   Dim sVal As String
   
-  If Not aVal Then
+  If Not aVal Or If aVal.Count = 0 Then
   
     sLine = "Null"
     
@@ -1548,9 +1549,9 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
         
       Case "String[]", "Fields", "Field[]"
       
-        aVal = vVal.Copy()
+        'aVal = vVal.Copy()
         
-        sLine &= StringArrayPropertyToString(aVal, hProp.Translate)
+        sLine &= StringArrayPropertyToString(vVal, hProp.Translate)
 
       Case "Font"
         sLine = sLine & "Font[" & Quote(vVal) & "]"

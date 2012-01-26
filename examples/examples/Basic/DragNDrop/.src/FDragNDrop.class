@@ -24,7 +24,7 @@ Public Sub TreeView1_DragMove()
   'IF Drag.Type <> Drag.Image THEN STOP EVENT
 
   With TreeView1
-    If Not .Find(Drag.X, Drag.Y) Then
+    If Not .FindAt(Drag.X, Drag.Y) Then
       Drag.Show(TreeView1, .Item.X, .Item.Y, .Item.W, .Item.H)
     Else 
       Drag.Show(TreeView1)
@@ -39,7 +39,7 @@ Public Sub TreeView1_Drop()
 
   With TreeView1
 
-    If Not .Find(Drag.X, Drag.Y) Then
+    If Not .FindAt(Drag.X, Drag.Y) Then
       sKey = .Item.Key
     Endif
     
@@ -62,7 +62,7 @@ Public Sub TreeView1_MouseDrag()
   If Not Mouse.Left Then Return
 
   With TreeView1
-    If .Find(Mouse.X, Mouse.Y) Then Return
+    If .FindAt(Mouse.X, Mouse.Y) Then Return
     If Not .Key Then Return
 
     hImage = New Image(32 + 8 + .Font.TextWidth(.Current.Text), 32, Color.Transparent)

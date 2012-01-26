@@ -3940,14 +3940,16 @@ Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
   Dim aSplit As String[]
   Dim sPath As String
   Dim sTitle As String
+  Dim sDisplay As String
   Dim sOldTitle As String
 
   aSplit = Split(aPath[iInd], "\n")
   sTitle = aSplit[0]
-  sPath = aSplit[1]
+  sDisplay = aSplit[1]
+  sPath = aSplit[2]
   If iInd Then
     aSplit = Split(aPath[iInd - 1], "\n")
-    sOldTitle = asPlit[0]
+    sOldTitle = aSplit[0]
   Endif
 
   If String.UCase(String.Left(sTitle)) <> String.UCase(String.Left(sOldTitle)) Then
@@ -3961,7 +3963,7 @@ Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
     sRes = "<td></td>\n"
   Endif
 
-  sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath, UCaseTitle(sTitle), True, "arrow") & "</td>\n"
+  sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath, UCaseTitle(sDisplay), True, "arrow") & "</td>\n"
   Return sRes
 
 End
@@ -3977,13 +3979,20 @@ Private Function GetIndex2(sRoot As String) As String
   Dim sTitle As String
   Dim iPos As Integer
   Dim sPrefix As String
+  Dim aArg As String[]
+  Dim sDisplay As String
+  Dim bKeepPrefix As Boolean
 
   If Not sRoot Then Error.Raise("@index needs an argument")
 
-  iPos = InStr(sRoot, " ")
-  If iPos Then
-    sPrefix = Trim(Mid$(sRoot, iPos + 1)) & "*"
-    sRoot = Left$(sRoot, iPos - 1)
+  aArg = Split(sRoot, " ")
+  sRoot = aArg[0]
+  If aArg.Count >= 2 Then 
+    sPrefix = aArg[1]
+    If Left(sPrefix) = "(" And If Right(sPrefix) = ")" Then
+      sPrefix = Mid$(sPrefix, 2, -1)
+      bKeepPrefix = True
+    Endif
   Endif
 
   rPage = DB.Find("page", "sLang = &1 AND sPath LIKE &2", DEFAULT_LANG, sRoot &/ "%") ' $Lang
@@ -3994,14 +4003,20 @@ Private Function GetIndex2(sRoot As String) As String
     If Left(rPage!sTitle) = "@" Then
       If sPath Like (Replace(sRoot, "[", "[[]") &/ "*") Then Continue
     Endif
+    
     sTitle = GetTitle(sPath, True)
     If Not sTitle Then Continue
     
-    If sTitle Like Replace(sPrefix, "[", "[[]") Then
-      sTitle = LTrim(Mid$(sTitle, Len(sPrefix)))
+    sDisplay = sTitle
+    
+    If sPrefix Then
+      If sTitle Like (Replace(sPrefix, "[", "[[]") & "*") Then
+        sTitle = LTrim(Mid$(sTitle, Len(sPrefix) + 1))
+        If Not bKeepPrefix Then sDisplay = sTitle
+      Endif
     Endif
     
-    aPath.Add(sTitle & "\n" & rPage!sPath)
+    aPath.Add(sTitle & "\n" & sDisplay & "\n" & rPage!sPath)
   Next
 
   aPath.Sort(gb.Text)

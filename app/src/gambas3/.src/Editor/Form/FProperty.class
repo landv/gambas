@@ -194,6 +194,7 @@ Public Sub RefreshAll()
 
     grdProperty[iRow, 0].Text = sProp
 
+    If sProp = "Filter" Then Stop
     sVal = GetProperty(sProp)
 
     grdProperty[iRow, 0].Font = grdProperty.Font

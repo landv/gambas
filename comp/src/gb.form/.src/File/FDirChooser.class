@@ -759,20 +759,23 @@ End
 Public Sub UpdateFilterPanel()
 
   Dim H As Integer
+  Dim M As Integer
 
   Object.Lock(panFilter)
   
   cmbFilter.Enabled = cmbFilter.Count > 1
-  'cmbFilter.Visible = txtFile.Visible
+  cmbFilter.Show 'Visible = txtFile.Visible
   If Not cmbFilter.Enabled And If Not panButton.Visible Then cmbFilter.Hide
 
+  If panFilter.Margin Then M = Desktop.Scale * 2
+
   If panButton.Visible Then
-    panFilter.H = Max(panButton.H, GetHeight(panExtension))
+    panFilter.H = Max(panButton.H, GetHeight(panExtension)) + M
     panFilter.Show
   Else
     H = GetHeight(panExtension)
     If H Then
-      panFilter.H = H
+      panFilter.H = H + M
       panFilter.Show
     Else
       panFilter.Hide
@@ -1154,4 +1157,16 @@ Public Function GetShowFile() As Boolean
 
 End
 
+Public Sub HasMargin() As Boolean
+  
+  Return panFilter.Margin
+  
+End
+
+Public Sub SetMargin(bMargin As Boolean)
+  
+  panFilter.Margin = bMargin
+  Me.Spacing = Not bMargin
+  
+End
 

@@ -607,6 +607,11 @@ Public Sub Load()
   
   ClassList.Sort
   
+  If Key = "gb.web" Then
+    Family = "webpage"
+    CModule.Activate(Family)
+  Endif
+  
   'PRINT "OK"
   
   Loaded = True
