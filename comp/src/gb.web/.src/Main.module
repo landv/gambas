@@ -60,8 +60,13 @@ End
 
 Public Sub Main()
 
-  Dim hURL As New URL("http://labs.apache.org/webarch/uri/rfc/rfc3986.html#authority")
+  Dim sURL As String = "http://labs.apache.org/webarch/uri/rfc/rfc3986.html#authority"
 
-  Print hURL.ToString()
+  sURL = URL.SetQuery(sURL, "rename", "now")
+  sURL = URL.SetQuery(sURL, "step", "&")
+  sURL = URL.SetQuery(sURL, "rename", "")
+  sURL = URL.ClearQuery(sUrl, "step")
+  sURL = URL.ClearQuery(sUrl, "rename")
+  Print sUrl
   
 End

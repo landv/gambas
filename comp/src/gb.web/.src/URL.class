@@ -2,28 +2,28 @@
 
 Export
 
-Property Protocol As String
-Property User As String
-Property Password As String
-Property Host As String
-Property Port As Integer
-Property Path As String
-Property Read Query As _URL_Query
-Property EncodedQuery As String
-Property Fragment As String
-
-Private $sProtocol As String
-Private $sUser As String
-Private $sPassword As String
-Private $sHost As String
-Private $iPort As Integer
-Private $sPath As String
-Private $sEncodedQuery As String
-'Private $cQuery As Collection
-'Private $cVoidQuery As Collection
-Private $sFragment As String
-
-Public _Dirty As Boolean
+' Property Protocol As String
+' Property User As String
+' Property Password As String
+' Property Host As String
+' Property Port As Integer
+' Property Path As String
+' Property Read Query As _URL_Query
+' Property EncodedQuery As String
+' Property Fragment As String
+' 
+' Private $sProtocol As String
+' Private $sUser As String
+' Private $sPassword As String
+' Private $sHost As String
+' Private $iPort As Integer
+' Private $sPath As String
+' Private $sEncodedQuery As String
+' 'Private $cQuery As Collection
+' 'Private $cVoidQuery As Collection
+' Private $sFragment As String
+' 
+' Public _Dirty As Boolean
 
 Static Public Sub Encode(Path As String) As String
   
@@ -67,202 +67,256 @@ Static Public Sub Decode(Path As String) As String
   
 End
 
-Public Sub _new(Optional URL As String)
+Static Private Sub HandleQuery(URL As String, bClear As Boolean, Field As String, Value As String) As String
   
-  Dim sAuthority As String
-  Dim sUser As String
-  Dim iPos As Integer
-  
-  iPos = InStr(URL, ":")
-  If iPos Then
-    $sProtocol = Left$(URL, iPos - 1)
-    URL = Mid$(URL, iPos + 1)
-  Else
-    $sProtocol = "file"
-  Endif
-  
-  iPos = InStr(URL, "#")
-  If iPos Then
-    $sFragment = Decode(Mid$(URL, iPos + 1))
-    URL = Left$(URL, iPos - 1)
-  Endif
+  Dim I, iPos As Integer
+  Dim sElt As String
+  Dim aQuery As String[]
   
   iPos = InStr(URL, "?")
-  If iPos Then
-    $sEncodedQuery = Mid$(URL, iPos + 1)
-    URL = Left$(URL, iPos - 1)
-  Endif
+  If iPos = 0 Then Return URL & "?" & Encode(Field) & "=" & Encode(Value)
   
-  If URL Begins "//" Then
+  aQuery = Split(Mid$(URL, iPos + 1), "&")
+  URL = Left$(URL, iPos - 1)
   
-    URL = Mid$(URL, 3)
-    iPos = InStr(URL, "/")
-    If iPos = 0 Then
-      sAuthority = URL
-      URL = ""
+  Field = Encode(Field)
+  Value = Encode(Value)
+  
+  For I = 0 To aQuery.Max
+    sElt = aQuery[I]
+    If sElt = Field Or If sElt Begins Field & "=" Then
+      aQuery.Remove(I)
+      Break
+    Endif
+  Next
+  
+  If Not bClear Then
+    If Value Then
+      aQuery.Add(Field & "=" & Value)
     Else
-      sAuthority = Left$(URL, iPos - 1)
-      URL = Mid$(URL, iPos + 1)
+      aQuery.Add(Field)
     Endif
-    
-    iPos = InStr(sAuthority, "@")
-    If iPos Then
-      sUser = Left$(sAuthority, iPos - 1)
-      sAuthority = Mid$(sAuthority, iPos + 1)
-      iPos = InStr(sUser, ":")
-      If iPos Then
-        $sUser = Decode(Left$(sUser, iPos - 1))
-        $sPassword = Decode(Mid$(sUser, iPos + 1))
-      Else
-        $sUser = Decode(sUser)
-        $sPassword = ""
-      Endif
-    Endif
-    
-    iPos = RInStr(sAuthority, ":")
-    If iPos And If IsDigit(Mid$(sAuthority, iPos + 1)) Then
-      $sHost = Decode(Left$(sAuthority, iPos - 1))
-      $iPort = CInt(Mid$(sAuthority, iPos + 1))
-      If $iPort < 0 Or If $iPort > 65535 Then $sHost = ""
-    Endif
-    
-    If Not $sHost Then
-      $sHost = Decode(sAuthority)
-      $iPort = -1
-    Endif
-    
   Endif
   
-  $sPath = Decode(URL)
-  _Dirty = True
-  
-End
-
-Public Sub ToString() As String
-  
-  Dim sUrl As String
-  
-  If $sProtocol Then sUrl = $sProtocol & ":"
-  
-  If $sUser Or If $sPassword Or If $sHost Or If $iPort >= 0 Then sUrl &= "//"
-  
-  If $sUser Then sUrl &= Encode($sUser)
-  If $sPassword Then sUrl &= ":" & Encode($sPassword)
-  If $sHost Then
-    If $sUser Or If $sPassword Then sUrl &= "@"
-    sUrl &= Encode($sHost)
-    If $iPort >= 0 Then sUrl &= ":" & CStr($iPort)
+  If aQuery.Count Then
+    Return URL & "?" & aQuery.Join("&")
+  Else
+    Return URL
   Endif
   
-  sUrl &= $sPath
-  If $sEncodedQuery Then sUrl &= "?" & $sEncodedQuery
-  If $sFragment Then sUrl &= "#" & $sFragment
+End
+
+
+Static Public Sub SetQuery(URL As String, Field As String, Value As String) As String
   
-  Return sUrl
+  Return HandleQuery(URL, False, Field, Value)
+  
+End
+
+Static Public Sub UnsetQuery(URL As String, Field As String) As String
+  
+  Return HandleQuery(URL, True, Field, "")
   
 End
 
 
-Private Function Protocol_Read() As String
 
-  Return $sProtocol
-
-End
-
-Private Sub Protocol_Write(Value As String)
-
-  $sProtocol = Value
-
-End
-
-Private Function User_Read() As String
-
-  Return $sUser
-
-End
-
-Private Sub User_Write(Value As String)
-
-  $sUser = Value
-
-End
-
-Private Function Password_Read() As String
-
-  Return $sPassword
-
-End
-
-Private Sub Password_Write(Value As String)
-
-  $sPassword = Value
-
-End
-
-Private Function Host_Read() As String
-
-  Return $sHost
-
-End
-
-Private Sub Host_Write(Value As String)
-
-  $sHost = Value
-
-End
-
-Private Function Port_Read() As Integer
-
-  Return $iPort
-
-End
-
-Private Sub Port_Write(Value As Integer)
-
-  $iPort = Value
-
-End
-
-Private Function Path_Read() As String
-
-  Return $sPath
-
-End
-
-Private Sub Path_Write(Value As String)
-
-  $sPath = Value
-
-End
-
-Private Function Fragment_Read() As String
-
-  Return $sFragment
-
-End
-
-Private Sub Fragment_Write(Value As String)
-
-  $sFragment = Value
-
-End
-
-Private Function EncodedQuery_Read() As String
-
-  Return $sEncodedQuery
-
-End
-
-Private Sub EncodedQuery_Write(Value As String)
-
-  $sEncodedQuery = Value
-  _Dirty = True
-
-End
-
-Private Function Query_Read() As _URL_Query
-
-  _URL_Query._Url = Me
-  Return _URL_Query
-
-End
+' Public Sub _new(Optional URL As String)
+'   
+'   Dim sAuthority As String
+'   Dim sUser As String
+'   Dim iPos As Integer
+'   
+'   iPos = InStr(URL, ":")
+'   If iPos Then
+'     $sProtocol = Left$(URL, iPos - 1)
+'     URL = Mid$(URL, iPos + 1)
+'   Else
+'     $sProtocol = "file"
+'   Endif
+'   
+'   iPos = InStr(URL, "#")
+'   If iPos Then
+'     $sFragment = Decode(Mid$(URL, iPos + 1))
+'     URL = Left$(URL, iPos - 1)
+'   Endif
+'   
+'   iPos = InStr(URL, "?")
+'   If iPos Then
+'     $sEncodedQuery = Mid$(URL, iPos + 1)
+'     URL = Left$(URL, iPos - 1)
+'   Endif
+'   
+'   If URL Begins "//" Then
+'   
+'     URL = Mid$(URL, 3)
+'     iPos = InStr(URL, "/")
+'     If iPos = 0 Then
+'       sAuthority = URL
+'       URL = ""
+'     Else
+'       sAuthority = Left$(URL, iPos - 1)
+'       URL = Mid$(URL, iPos + 1)
+'     Endif
+'     
+'     iPos = InStr(sAuthority, "@")
+'     If iPos Then
+'       sUser = Left$(sAuthority, iPos - 1)
+'       sAuthority = Mid$(sAuthority, iPos + 1)
+'       iPos = InStr(sUser, ":")
+'       If iPos Then
+'         $sUser = Decode(Left$(sUser, iPos - 1))
+'         $sPassword = Decode(Mid$(sUser, iPos + 1))
+'       Else
+'         $sUser = Decode(sUser)
+'         $sPassword = ""
+'       Endif
+'     Endif
+'     
+'     iPos = RInStr(sAuthority, ":")
+'     If iPos And If IsDigit(Mid$(sAuthority, iPos + 1)) Then
+'       $sHost = Decode(Left$(sAuthority, iPos - 1))
+'       $iPort = CInt(Mid$(sAuthority, iPos + 1))
+'       If $iPort < 0 Or If $iPort > 65535 Then $sHost = ""
+'     Endif
+'     
+'     If Not $sHost Then
+'       $sHost = Decode(sAuthority)
+'       $iPort = -1
+'     Endif
+'     
+'   Endif
+'   
+'   $sPath = Decode(URL)
+'   _Dirty = True
+'   
+' End
+' 
+' Public Sub ToString() As String
+'   
+'   Dim sUrl As String
+'   
+'   If $sProtocol Then sUrl = $sProtocol & ":"
+'   
+'   If $sUser Or If $sPassword Or If $sHost Or If $iPort >= 0 Then sUrl &= "//"
+'   
+'   If $sUser Then sUrl &= Encode($sUser)
+'   If $sPassword Then sUrl &= ":" & Encode($sPassword)
+'   If $sHost Then
+'     If $sUser Or If $sPassword Then sUrl &= "@"
+'     sUrl &= Encode($sHost)
+'     If $iPort >= 0 Then sUrl &= ":" & CStr($iPort)
+'   Endif
+'   
+'   sUrl &= $sPath
+'   If $sEncodedQuery Then sUrl &= "?" & $sEncodedQuery
+'   If $sFragment Then sUrl &= "#" & $sFragment
+'   
+'   Return sUrl
+'   
+' End
+' 
+' 
+' Private Function Protocol_Read() As String
+' 
+'   Return $sProtocol
+' 
+' End
+' 
+' Private Sub Protocol_Write(Value As String)
+' 
+'   $sProtocol = Value
+' 
+' End
+' 
+' Private Function User_Read() As String
+' 
+'   Return $sUser
+' 
+' End
+' 
+' Private Sub User_Write(Value As String)
+' 
+'   $sUser = Value
+' 
+' End
+' 
+' Private Function Password_Read() As String
+' 
+'   Return $sPassword
+' 
+' End
+' 
+' Private Sub Password_Write(Value As String)
+' 
+'   $sPassword = Value
+' 
+' End
+' 
+' Private Function Host_Read() As String
+' 
+'   Return $sHost
+' 
+' End
+' 
+' Private Sub Host_Write(Value As String)
+' 
+'   $sHost = Value
+' 
+' End
+' 
+' Private Function Port_Read() As Integer
+' 
+'   Return $iPort
+' 
+' End
+' 
+' Private Sub Port_Write(Value As Integer)
+' 
+'   $iPort = Value
+' 
+' End
+' 
+' Private Function Path_Read() As String
+' 
+'   Return $sPath
+' 
+' End
+' 
+' Private Sub Path_Write(Value As String)
+' 
+'   $sPath = Value
+' 
+' End
+' 
+' Private Function Fragment_Read() As String
+' 
+'   Return $sFragment
+' 
+' End
+' 
+' Private Sub Fragment_Write(Value As String)
+' 
+'   $sFragment = Value
+' 
+' End
+' 
+' Private Function EncodedQuery_Read() As String
+' 
+'   Return $sEncodedQuery
+' 
+' End
+' 
+' Private Sub EncodedQuery_Write(Value As String)
+' 
+'   $sEncodedQuery = Value
+'   _Dirty = True
+' 
+' End
+' 
+' Private Function Query_Read() As _URL_Query
+' 
+'   _URL_Query._Url = Me
+'   Return _URL_Query
+' 
+' End
