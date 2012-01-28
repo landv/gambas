@@ -29,6 +29,7 @@
 #include <QPainter>
 #include <QX11Info>
 #include <QColormap>
+#include <QTimer>
 
 #include "CDraw.h"
 #include "cpaint_impl.h"
@@ -74,6 +75,18 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 MyDrawingArea::~MyDrawingArea()
 {
 	deleteBackground();
+}
+
+void MyDrawingArea::setVisible(bool visible)
+{
+	MyContainer::setVisible(visible);
+	if (_cached)
+	{
+		if (visible)
+			QTimer::singleShot(10, this, SLOT(setBackground()));
+		else
+			parentWidget()->update();
+	}
 }
 
 void MyDrawingArea::setAllowFocus(bool f)
@@ -209,6 +222,7 @@ void MyDrawingArea::createBackground(int w, int h)
 	XFillRectangle(QX11Info::display(), _background, gc, 0, 0, w, h);
 	XFreeGC(QX11Info::display(), gc);
 	
+	//qDebug("XSetWindowBackgroundPixmap: %08X %08X", (int)winId(), (int)_background);
 	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
 	XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
 	
@@ -222,6 +236,7 @@ void MyDrawingArea::deleteBackground()
 {
 	if (_cached && _background)
 	{
+		//qDebug("XSetWindowBackgroundPixmap: %08X None", (int)winId());
 		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
 		XFreePixmap(QX11Info::display(), (Pixmap)_background);
 		_cached = false;
@@ -246,7 +261,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		#ifndef NO_X_WINDOW
 		if (_set_background)
 		{
-			//qDebug("set_background: %08X %08X", (int)winId(), (int)_background);
+			//qDebug("XSetWindowBackgroundPixmap: %08X %08X (paint)", (int)winId(), (int)_background);
 			XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
 			_set_background = false;
 		}
@@ -306,13 +321,7 @@ void MyDrawingArea::refreshBackground()
 		update();
 		#else
 		int fw = frameWidth();
-		if (fw == 0)
-			XClearWindow(QX11Info::display(), winId());
-		else
-		{
-			XClearArea(QX11Info::display(), winId(), fw, fw, width() - fw * 2, height() - fw * 2, False);
-			repaint();
-		}
+		XClearArea(QX11Info::display(), winId(), fw, fw, width() - fw * 2, height() - fw * 2, False);
 		#endif
 	}
 }
@@ -381,6 +390,7 @@ void MyDrawingArea::updateCache()
 	{
 		setAttribute(Qt::WA_DontCreateNativeAncestors, true);
 		setAttribute(Qt::WA_NativeWindow, true);
+		
 		setAttribute(Qt::WA_PaintOnScreen, true);
 		setAttribute(Qt::WA_OpaquePaintEvent, true);
 		setAttribute(Qt::WA_StaticContents, true);

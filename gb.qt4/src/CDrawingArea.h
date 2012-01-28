@@ -65,6 +65,8 @@ public:
 	int drawn;
 	QPixmap *cache;
 	
+	virtual void setVisible(bool visible);
+	
 	//void setTransparent(bool);
 	//bool isTransparent(void) { return transparent; }
 
@@ -74,7 +76,6 @@ public:
 	//QPixmap *getCache(void) { return cache; }
 	//void refreshCache(void) { if (cache) setBackgroundPixmap(*cache); }
 
-	void setBackground();
 	void clearBackground();
 	Qt::HANDLE background() const { return _background; }
 	void refreshBackground();
@@ -101,7 +102,10 @@ public:
 	void deleteBackground();
 	
 	QPixmap *getBackgroundPixmap();
+
+public slots:
 	
+	void setBackground();
 	//bool isTransparent() { return _transparent; }
 	//void setTransparent(bool on);
 
