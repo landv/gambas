@@ -17,13 +17,6 @@ fi
 
 echo "Creating component directory $1..."
 cp -R template ../$1
-pushd . > /dev/null
-cd ../$1
-rm -f `find . -name \*~`
-for i in ../acinclude.m4 ../component.am ../main/share/gambas.h ../main/share/gb_common.h ../reconf ../INSTALL ../COPYING ../missing; do
-	ln -s $i;
-done
-popd > /dev/null
 
 echo "Applying template..."
 for i in ../$1/* ../$1/*/*; do
@@ -51,6 +44,15 @@ for i in `cat ../$1/SOURCES`; do
 	mv $SOURCE.tmp $SOURCE;
 done
 rm -f ../$1/SOURCES
+
+echo "Creating symbolic links..."
+pushd . > /dev/null
+cd ../$1
+rm -f `find . -name \*~`
+for i in ../acinclude.m4 ../component.am ../main/share/gambas.h ../main/share/gb_common.h ../reconf ../INSTALL ../COPYING ../missing ../m4; do
+	ln -s $i;
+done
+popd > /dev/null
 
 pushd . > /dev/null
 cd ../$1

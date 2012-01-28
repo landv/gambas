@@ -1,6 +1,7 @@
 dnl ---- configure.ac for __COMPONENT
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(__COMPONENT)
 AC_PROG_LIBTOOL
 
@@ -65,3 +66,5 @@ AC_OUTPUT( \
 Makefile \
 src/Makefile \
 )
+
+GB_PRINT_MESSAGES
