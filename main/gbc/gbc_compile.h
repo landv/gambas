@@ -34,6 +34,7 @@
 #include "gb_limit.h"
 #include "gb_reserved.h"
 #include "gbc_read.h"
+#include "gbc_form.h"
 
 #include "gbc_class.h"
 
@@ -66,6 +67,7 @@ typedef
 		FUNCTION *func;                    /* current function being compiled */
 		CLASS *class;                      /* current class being compiled */
 		char *form;                        /* form file name */
+		const FORM_FAMILY *family;         /* form file family */
 		char *tname;                       /* translation file name */
 		int default_library;               /* default library name for extern declarations */
 		}
@@ -78,8 +80,8 @@ EXTERN char *COMP_root;
 EXTERN char *COMP_project;
 EXTERN char *COMP_project_name;
 EXTERN char *COMP_info_path;
-EXTERN const char *COMP_form_families[];
-EXTERN bool COMP_family_allowed[];
+EXTERN FORM_FAMILY COMP_form_families[];
+//EXTERN bool COMP_family_allowed[];
 
 #endif
 

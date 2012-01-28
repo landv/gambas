@@ -24,6 +24,18 @@
 #ifndef __GBC_FORM_H
 #define __GBC_FORM_H
 
+enum {
+	FORM_NORMAL = 0,
+	FORM_WEBPAGE = 1
+};
+
+typedef
+	struct {
+		char *ext;
+		int type;
+	}
+	FORM_FAMILY;
+
 typedef
   struct {
     char *name;
@@ -35,6 +47,6 @@ typedef
 #define FORM_FIRST_LINE_STRING "100000"
 	
 void FORM_do(bool ctrl_public);
-char *FORM_get_file(const char *file);
+char *FORM_get_file_family(const char *file, const FORM_FAMILY **family);
 
 #endif

@@ -277,19 +277,19 @@ static void save_action(bool delete)
 	STR_free(name);
 }
 
-char *FORM_get_file(const char *file)
+char *FORM_get_file_family(const char *file, const FORM_FAMILY **family)
 {
 	char *form;
-	const char **p;
+	const FORM_FAMILY *p;
 
 	if (strcmp(FILE_get_ext(file), "class"))
 		return NULL;
 
 	p = COMP_form_families;
 	
-	while (*p)
+	while (p->ext)
 	{
-		form = STR_copy(FILE_set_ext(file, *p));
+		form = STR_copy(FILE_set_ext(file, p->ext));
 		if (FILE_exist(form))
 			break;
 		STR_free(form);
@@ -297,6 +297,7 @@ char *FORM_get_file(const char *file)
 		p++;
 	}
 
+	if (form) *family= p;
 	return form;
 }
 

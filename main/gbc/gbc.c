@@ -286,7 +286,19 @@ static void compile_file(const char *file)
 	{
 		JOB->first_line = FORM_FIRST_LINE;
 		BUFFER_add(&JOB->source, "#Line " FORM_FIRST_LINE_STRING "\n", -1);
-		FORM_do(main_public);
+		
+		switch (JOB->family->type)
+		{
+			case FORM_WEBPAGE:
+				fprintf(stderr, "gbc: warning: WebPage not implemented yet\n");
+				break;
+				
+			case FORM_NORMAL:
+			default:
+				FORM_do(main_public);
+				break;
+		}
+				
 		BUFFER_add(&JOB->source, "#Line 1\n", -1);
 	}
 	

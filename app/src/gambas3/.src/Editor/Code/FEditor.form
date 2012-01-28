@@ -21,7 +21,7 @@
       Shortcut = "F2"
     }
     { mnuForm Menu
-      Action = ".code-form"
+      Action = ".show-form"
       Text = ("Open form")
       Picture = Picture["img/16/form.png"]
       Shortcut = "F12"
@@ -458,11 +458,6 @@
     Shortcut = "F9"
     Picture = "icon:/small/halt"
   }
-  { Action code-form
-    Text = "Open form"
-    Shortcut = "F12"
-    Picture = "img/16/form.png"
-  }
   { Action color
     Text = "Insert color..."
     Shortcut = ""
@@ -560,7 +555,8 @@
     Shortcut = "Ctrl+A"
   }
   { Action show-form
-    Text = "Form"
+    Text = "Open form"
+    Shortcut = "F12"
     Picture = "img/16/form.png"
   }
   { Action startup-class

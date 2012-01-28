@@ -2067,7 +2067,7 @@ Private Sub CompileError(sMsg As String)
 
     sErr = TranslateMessage(sMsg)
 
-    If hForm And If iLine >= hForm.Editor.Lines.Count Then
+    If hForm And If iLine > hForm.Editor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
       sMsg = "<b>" & sErr & "</b> " & ("in form definition")
     Else If iLine >= 1 Then

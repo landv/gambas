@@ -1174,7 +1174,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   For Each sFamily In CFamily.List
     sPath = Project.FindPath(sClass & "." & sFamily)
     If Exist(sPath) Then 
-      hPForm = Project.LoadFile(sPath)
+      Try hPForm = Project.LoadFile(sPath)
       Break
     Endif
   Next

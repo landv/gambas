@@ -3111,7 +3111,7 @@ End
 Public Sub panToolBar_Configure()
 
   If $sModule Then
-    btnForm.Picture = Picture["img/16/" & $sModule & ".png"]
+    Action[".show-form"].Picture = Picture["img/16/" & $sModule & ".png"]
     btnForm.ToolTip = CModule[$sModule].Name
     btnForm.Show
   Else
@@ -3356,6 +3356,7 @@ Public Sub mnuPretty_Click()
   Y = Editor.Line
   Editor.Begin
   If Not bSelected Then Editor.SelectAll
+  Print Editor.Selection.Text
   Editor.Insert(sNewText)
   Editor.Goto(Y, X)
   Editor.End

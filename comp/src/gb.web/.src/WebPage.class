@@ -5,7 +5,11 @@ Create Static
 
 Static Public Sub Main()
   
-  
+  Dim hObject As Object
+
+  hObject = Application.Startup.AutoCreate()
+  If Not hObject Is WebPage Then Return
+  hObject.Render
   
 End
 

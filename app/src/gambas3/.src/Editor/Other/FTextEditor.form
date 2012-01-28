@@ -12,6 +12,12 @@
       Text = ("Go to line...")
       Shortcut = "Ctrl+G"
     }
+    { mnuShowCode Menu
+      Action = ".show-code"
+      Text = ("Open code")
+      Picture = Picture["img/16/class.png"]
+      Shortcut = "F12"
+    }
     { Menu3 Menu
     }
     { mnuUndo Menu
@@ -356,6 +362,11 @@
   }
   { Action show-class
     Text = "Code"
+    Picture = "img/16/class.png"
+  }
+  { Action show-code
+    Text = "Open code"
+    Shortcut = "F12"
     Picture = "img/16/class.png"
   }
   { Action ucase

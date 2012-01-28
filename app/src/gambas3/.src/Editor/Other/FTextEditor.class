@@ -47,9 +47,11 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
   
   If bModule Then
     btnShowCode.Visible = True
+    mnuShowCode.Show
     Me.Name = File.BaseName(Path)
   Else
     btnShowCode.Visible = False
+    mnuShowCode.Hide
     Me.Name = File.Name(Path)
   Endif
   

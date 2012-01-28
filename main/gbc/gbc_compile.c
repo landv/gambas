@@ -63,8 +63,13 @@ static char *COMP_classes = NULL;
 
 COMPILE COMP_current;
 
-const char *COMP_form_families[] = { "form", "report", NULL };
-bool COMP_family_allowed[2] = { FALSE, FALSE };
+const FORM_FAMILY COMP_form_families[] =
+{
+	{ "form", FORM_NORMAL },
+	{ "report", FORM_NORMAL },
+	{ "webpage", FORM_WEBPAGE },
+	{ NULL }
+};
 
 static bool read_line(FILE *f, char *dir, int max)
 {
@@ -319,7 +324,7 @@ void COMPILE_begin(const char *file, bool trans)
 	CLEAR(JOB);
 
 	JOB->name = STR_copy(file);
-	JOB->form = FORM_get_file(JOB->name);
+	JOB->form = FORM_get_file_family(JOB->name, &JOB->family);
 	JOB->output = OUTPUT_get_file(JOB->name);
 
 	if (trans)
