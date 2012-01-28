@@ -191,7 +191,7 @@ GEditor::GEditor(QWidget *parent)
 	updateFont();
 
 	blinkTimer = new QTimer(this);
-	connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blinkTimerTimeout()));
+	//connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blinkTimerTimeout()));
 	//startBlink();
 
 	scrollTimer = new QTimer(this);
@@ -1356,7 +1356,10 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		else if (!_insertMode && nx > lineLength(ny) && ny < (numLines() - 1))
 		{
 			ny = viewToReal(realToView(y) + 1);
-			nx = 0;
+			if (ny >= numLines())
+				ny = y;
+			else
+				nx = 0;
 		}
 	}
 	
@@ -1365,13 +1368,13 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		nx = QMAX(0, nx);
 		ny = 0;
 	}
-	else if (ny > (numLines() - 1))
+	else if (ny >= numLines())
 	{
 		ny = numLines() - 1;
 		nx = QMIN(nx, lineLength(ny));
 	}
-	
-	ny = checkFolded(ny);
+	else
+		ny = checkFolded(ny);
 	
 	if (nx < 0)
 		nx = 0;
@@ -1552,7 +1555,7 @@ void GEditor::cursorDown(bool shift, bool ctrl, bool alt)
 		}
 	}
 	else if (!ctrl)
-		cursorGoto(viewToReal(realToView(y) + 1), xx, shift);
+		cursorGoto(QMIN(numLines() - 1, viewToReal(realToView(y) + 1)), xx, shift);
 	else
 		cursorGoto(doc->getNextLimit(y), xx, shift);
 }
@@ -1606,7 +1609,7 @@ void GEditor::moveNextSameIndent(bool shift)
 void GEditor::cursorEnd(bool shift, bool ctrl, bool alt)
 {
 	if (ctrl)
-		cursorGoto(numLines() - 1, lineLength(numLines() - 1), shift);
+		cursorGoto(numLines(), 0, shift);
 	else
 		cursorGoto(y, lineLength(y), shift);
 }
@@ -1846,7 +1849,7 @@ void GEditor::redo()
 void GEditor::selectAll()
 {
 	cursorGoto(0, 0, false);
-	cursorGoto(numLines() - 1, lineLength(numLines() - 1), true);
+	cursorGoto(numLines(), 0, true);
 }
 
 void GEditor::keyPressEvent(QKeyEvent *e)
@@ -2703,17 +2706,16 @@ int GEditor::viewToReal(int row) const
 	uint i;
 	GFoldedProc *fp;
 	
-	//fprintf(stderr, "viewToReal: %d -> ", row);
-	
 	for (i = 0; i < fold.count(); i++)
 	{
 		fp = fold.at(i);
 		if (row <= fp->start)
 			break;
-		row += fp->end - fp->start;
+		if (fp->end < (numLines() - 1))
+			row += fp->end - fp->start;
+		else
+			row = numLines();
 	}
-	
-	//fprintf(stderr, "%d\n", row);
 	
 	return row;
 }

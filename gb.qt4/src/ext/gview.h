@@ -189,7 +189,8 @@ public:
 		ShowDots = 9,
 		ShowCursorPosition = 10,
 		ChangeBackgroundAtLimit = 11,
-		HideMargin = 12
+		HideMargin = 12,
+		BlinkCursor = 13
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);

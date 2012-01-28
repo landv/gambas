@@ -39,6 +39,8 @@ DECLARE_EVENT(EVENT_Scroll);
 DECLARE_EVENT(EVENT_Highlight);
 DECLARE_EVENT(EVENT_Margin);
 
+enum { LIMIT_NONE, LIMIT_LINE, LIMIT_BLEND, LIMIT_BACKGROUND };
+
 enum
 {
 	HIGHLIGHT_CUSTOM = GDocument::Custom,
@@ -819,7 +821,7 @@ END_METHOD
 
 BEGIN_METHOD(CEDITOR_flags_get, GB_INTEGER flag)
 
-  GB.ReturnInteger(WIDGET->getFlag(VARG(flag)));
+  GB.ReturnBoolean(WIDGET->getFlag(VARG(flag)));
 
 END_METHOD
 
@@ -1088,6 +1090,74 @@ BEGIN_PROPERTY(CEDITOR_border)
 
 END_PROPERTY
 
+#if 0
+BEGIN_PROPERTY(Editor_ShowLimits)
+
+	int limit;
+
+	if (READ_PROPERTY)
+	{
+		if (!WIDGET->getFlag(GEditor::ShowProcedureLimits))
+			limit = LIMIT_NONE;
+		else if (WIDGET->getFlag(GEditor::BlendedProcedureLimits))
+			limit = LIMIT_BLEND;
+		else if (WIDGET->getFlags(GEditor::ChangeBackgroundAtLimit))
+			limit = LIMIT_BACKGROUND;
+		else
+			limit = LIMIT_LINE;
+		
+		GB.ReturnInteger(limit);
+	}
+	else
+	{
+		limit = VPROP(GB_INTEGER);
+		
+		WIDGET->setFlag(GEditor::ShowProcedureLimits, limit != LIMIT_NONE);
+		switch(limit)
+		{
+			case LIMIT_BLEND:
+				WIDGET->setFlag(GEditor::BlendedProcedureLimits, true);
+				WIDGET->setFlag(GEditor::ChangeBackgroundAtLimit, false);
+				break;
+			case LIMIT_BACKGROUND:
+				WIDGET->setFlag(GEditor::BlendedProcedureLimits, false);
+				WIDGET->setFlag(GEditor::ChangeBackgroundAtLimit, true);
+				break;
+			default:
+				WIDGET->setFlag(GEditor::BlendedProcedureLimits, false);
+				WIDGET->setFlag(GEditor::ChangeBackgroundAtLimit, false);
+				break;
+		}
+	}
+
+END_PROPERTY
+
+#define IMPLEMENT_FLAG_PROPERTY(_name, _constant) \
+BEGIN_PROPERTY(Editor_##_name) \
+\
+	if (READ_PROPERTY) \
+		GB.ReturnBoolean(WIDGET->getFlag(GEditor::_constant)); \
+	else \
+		WIDGET->setFlag(GEditor::_constant, VPROP(GB_BOOLEAN)); \
+\
+END_PROPERTY
+
+IMPLEMENT_FLAG_PROPERTY(ShowLimits, ShowProcedureLimits)
+
+  GB_CONSTANT("ShowLimits", "i", GEditor::ShowProcedureLimits),
+  GB_CONSTANT("BlendedLimits", "i", GEditor::BlendedProcedureLimits),
+  GB_CONSTANT("BackgroundLimits", "i", GEditor::ChangeBackgroundAtLimit),
+  //GB_CONSTANT("DrawWithRelief", "i", GEditor::DrawWithRelief),
+  GB_CONSTANT("ShowModifiedLines", "i", GEditor::ShowModifiedLines),
+  GB_CONSTANT("ShowCurrentLine", "i", GEditor::ShowCurrentLine),
+  GB_CONSTANT("ShowLineNumbers", "i", GEditor::ShowLineNumbers),
+  GB_CONSTANT("HighlightBraces", "i", GEditor::HighlightBraces),
+  GB_CONSTANT("HighlightImmediately", "i", GEditor::HighlightImmediately),
+  GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
+  //GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
+  GB_CONSTANT("HideMargin", "i", GEditor::HideMargin),
+  Gb_CONSTANT("BlinkCursor", "i", GEditor::BlinkCursor),
+#endif
 
 /***************************************************************************/
 
@@ -1232,6 +1302,7 @@ GB_DESC CEditorDesc[] =
   GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
   //GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
   GB_CONSTANT("HideMargin", "i", GEditor::HideMargin),
+  //GB_CONSTANT("BlinkCursor", "i", GEditor::BlinkCursor),
 
   GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CEDITOR_free, NULL),
@@ -1246,6 +1317,21 @@ GB_DESC CEditorDesc[] =
   GB_METHOD("Goto", NULL, CEDITOR_goto, "(Line)i(Column)i[(Center)b]"),
 
   GB_PROPERTY_SELF("Flags", ".Editor.Flags"),
+  
+  GB_CONSTANT("NoLimit", "i", LIMIT_NONE),
+  GB_CONSTANT("LineLimit", "i", LIMIT_LINE),
+  GB_CONSTANT("BlendLimit","i", LIMIT_BLEND),
+  GB_CONSTANT("BackgroundLimit", "i", LIMIT_BACKGROUND),
+  
+  /*GB_PROPERTY("ShowLimits", "i", Editor_ShowLimits),
+  GB_PROPERTY("ShowModifiedLines", "b", Editor_ShowModifiedLines),
+  GB_PROPERTY("ShowCurrentLine", "b", Editor_ShowCurrentLines),
+  GB_PROPERTY("ShowLineNumbers", "b", Editor_ShowLineNumbers),
+  GB_PROPERTY("HighlightBraces", "b", Editor_HighlightBraces),
+  GB_PROPERTY("HighlightImmediately", "b", Editor_HighlightImmediately),
+  GB_PROPERTY("ShowDots", "b", Editor_ShowDots),
+  GB_PROPERTY("HideMargin", "b", Editor_HideMargin),
+  GB_PROPERTY("BlinkCursor", "b", Editor_BlinkCursor),*/
 
   GB_METHOD("Indent", NULL, CEDITOR_indent, NULL),
   GB_METHOD("Unindent", NULL, CEDITOR_unindent, NULL),
