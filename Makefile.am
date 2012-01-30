@@ -25,6 +25,7 @@ SUBDIRS = \
  @imageio_dir@ \
  @imageimlib_dir@ \
  @dbus_dir@ \
+ @gsl_dir@ \
  comp \
  app \
  examples \
