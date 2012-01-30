@@ -1,13 +1,11 @@
-COMPONENT = __COMPONENT
+COMPONENT = gb.gsl
 include $(top_srcdir)/component.am
 
-INCLUDES = #@#__UNAME##_INC@
+INCLUDES = @GSL_INC@
 
-gblib_LTLIBRARIES = __COMPONENT.la
+gblib_LTLIBRARIES = gb.gsl.la
 
-__COMPONENT_UNDERSCORE##_la_LIBADD = #@#__UNAME##_LIB@
-__COMPONENT_UNDERSCORE##_la_LDFLAGS = -module @LD_FLAGS@ #@#__UNAME##_LDFLAGS@
+gb_gsl_la_LIBADD = @GSL_LIB@
+gb_gsl_la_LDFLAGS = -module @LD_FLAGS@ @GSL_LDFLAGS@
 
-__COMPONENT_UNDERSCORE##_la_SOURCES = __SOURCES
-
-
+gb_gsl_la_SOURCES = main.c main.h c_gsl.c c_gsl.h
