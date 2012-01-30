@@ -191,7 +191,7 @@ GEditor::GEditor(QWidget *parent)
 	updateFont();
 
 	blinkTimer = new QTimer(this);
-	//connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blinkTimerTimeout()));
+	connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blinkTimerTimeout()));
 	//startBlink();
 
 	scrollTimer = new QTimer(this);
