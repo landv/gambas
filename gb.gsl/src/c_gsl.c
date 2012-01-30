@@ -30,6 +30,7 @@
 #include "gb_common.h"
 #include "c_gsl.h"
 //#include "/usr/local/include/gsl/gsl_math.h"
+#include <gsl/gsl_math.h>
 #include <gsl/gsl_sf.h>
 
 #endif
@@ -37,20 +38,26 @@
 /*-----------------------------------------------
  Small Integer Power Functions
 -----------------------------------------------*/
-BEGIN_METHOD(GSL_INTPOW2, GB_INTEGER x;)
+
+BEGIN_METHOD(Gsl_IntPow2, GB_FLOAT x)
+
    // Return x^2 using a small int safe method
    // call gsl native function double gsl_pow_2(int x)
+
    GB.ReturnFloat(gsl_pow_2(VARG(x)));
+	 
 END_METHOD
+
 
 /**************************************************
   Describe Class properties and methods to Gambas
 **************************************************/
+
 GB_DESC CGslDesc[] =
 {
-    GB_DECLARE("GSL",0), GB_NOT_CREATABLE(),
+    GB_DECLARE("Gsl",0), GB_NOT_CREATABLE(),
 
-    GB_METHOD("IntPow", "f", GSL_INTPOW2, "(x)f"),
+    GB_STATIC_METHOD("IntPow2", "f", Gsl_IntPow2, "(X)f"),
 
     GB_END_DECLARE
 };
