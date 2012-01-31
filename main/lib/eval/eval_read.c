@@ -292,6 +292,23 @@ static bool add_number()
 	{
 		sign = car;
 		car = next_char();
+		
+		if (car == 'I' || car == 'i')
+		{
+			car = next_char();
+			if (car == 'N' || car == 'n')
+			{
+				car = next_char();
+				if (car == 'F' || car == 'f')
+				{
+					car = next_char();
+					add_pattern(RT_RESERVED, RESERVED_find_word(start, 4));
+					return FALSE;
+				}
+			}
+			
+			goto NOT_A_NUMBER;
+		}
 	}
 	else
 		sign = 0;

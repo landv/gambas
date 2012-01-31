@@ -74,6 +74,8 @@
 #define CPM_TRUE         3
 #define CPM_LAST         4
 #define CPM_STRING       5
+#define CPM_PINF         6
+#define CPM_MINF         7
 
 #define C_TRY                   0x1600
 #define C_END_TRY               0x1700

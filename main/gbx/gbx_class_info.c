@@ -312,6 +312,9 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("Unquote", "s", NULL, "(String)s"),
 	GB_METHOD("Unquote$", "s", NULL, "(String)s"),
 	
+	GB_METHOD("IsNan", "b", NULL, "(Value)f"),
+	GB_METHOD("IsInf", "i", NULL, "(Value)f"),
+	
 	GB_END_DECLARE
 };
 

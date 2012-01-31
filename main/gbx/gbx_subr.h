@@ -125,6 +125,8 @@ void SUBR_randomize(ushort code);
 void SUBR_rnd(ushort code);
 void SUBR_round(ushort code);
 
+void SUBR_isnan(ushort code);
+
 /* subr_string.c */
 
 void SUBR_cat(ushort code);
@@ -152,6 +154,7 @@ void SUBR_is_chr(ushort code);
 void SUBR_tr(void);
 void SUBR_quote(ushort code);
 void SUBR_unquote(void);
+void SUBR_swap(ushort code);
 
 /* subr_test.c */
 
@@ -210,8 +213,7 @@ void SUBR_kill(ushort code);
 void SUBR_mkdir(void);
 void SUBR_rmdir(void);
 void SUBR_move(ushort code);
-void SUBR_copy(void);
-void SUBR_link(void);
+void SUBR_link(ushort code);
 void SUBR_temp(ushort code);
 void SUBR_isdir(void);
 void SUBR_access(ushort code);

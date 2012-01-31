@@ -29,6 +29,7 @@
 #include "gb_type_common.h"
 #include "gb_file.h"
 #include "gbx_date.h"
+#include "gbx_exec.h"
 
 #ifndef GBX_INFO
 
@@ -36,7 +37,6 @@
 #include "gbx_api.h"
 #include "gbx_class.h"
 #include "gbx_event.h"
-#include "gbx_exec.h"
 #include "gbx_c_array.h"
 #include "gbx_c_gambas.h"
 
@@ -236,8 +236,8 @@ GB_DESC NATIVE_Gambas[] =
 	GB_CONSTANT("Quarter", "i", DP_QUARTER),
 	GB_CONSTANT("Year", "i", DP_YEAR),
 
-	GB_CONSTANT("LittleEndian", "i", 0),
-	GB_CONSTANT("BigEndian", "i", 1),
+	GB_CONSTANT("LittleEndian", "i", GB_LITTLE_ENDIAN),
+	GB_CONSTANT("BigEndian", "i", GB_BIG_ENDIAN),
 
 	GB_CONSTANT("Unix", "i", 0),
 	GB_CONSTANT("Windows", "i", 1),

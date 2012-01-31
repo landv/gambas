@@ -105,6 +105,8 @@ COMP_INFO COMP_res_info[] =
 	{ "Super",        0,                        0,          1     },
 	{ "Enum",         0,                        0,          6     },
 	{ "Let"                                                       },
+	{ "+Inf"                                                      },
+	{ "-Inf"                                                      },
 
 	{ "Print"                                                     },
 	{ "Input"                                                     },
@@ -460,6 +462,12 @@ SUBR_INFO COMP_subr_info[] =
 	{ ".Chown",            72,  4,  2     },
 	{ ".Chgrp",            72,  5,  2     },
 #endif
+	{ "Swap",              73,  1,  1,  2 }, // at least one argument, because 73 is a deprecated Copy() too.
+	{ "Swap$",             73,  1,  1,  2 },
+	
+	{ "IsNan",             74,  1,  1     },
+	{ "IsInf",             74,  2,  1     },
+	
 	{ "Exist",             75,  0,  1,  2 },
 	{ "Access",            76,  0,  1,  2 },
 	{ "Stat",              77,  0,  1,  2 },
@@ -505,6 +513,29 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Unquote",           93,  0,  1     },
 	{ "Unquote$",          93,  0,  1     },
 	
+	{ "MkBool",            94,  1,  1     },
+	{ "MkBool$",           94,  1,  1     },
+	{ "MkBoolean",         94,  1,  1     },
+	{ "MkBoolean$",        94,  1,  1     },
+	{ "MkByte",            94,  2,  1     },
+	{ "MkByte$",           94,  2,  1     },
+	{ "MkShort",           94,  3,  1     },
+	{ "MkShort$",          94,  3,  1     },
+	{ "MkInt",             94,  4,  1     },
+	{ "MkInt$",            94,  4,  1     },
+	{ "MkInteger",         94,  4,  1     },
+	{ "MkInteger$",        94,  4,  1     },
+	{ "MkLong",            94,  5,  1     },
+	{ "MkLong$",           94,  5,  1     },
+	{ "MkSingle",          94,  6,  1     },
+	{ "MkSingle$",         94,  6,  1     },
+	{ "MkFloat",           94,  7,  1     },
+	{ "MkFloat$",          94,  7,  1     },
+	{ "MkDate",            94,  8,  1     },
+	{ "MkDate$",           94,  8,  1     },
+	{ "MkPointer",         94, 11,  1     },
+	{ "MkPointer$",        94, 11,  1     },
+
 	{ "Bool@",             95,  1,  1     },
 	{ "Boolean@",          95,  1,  1     },
 	{ "Byte@",             95,  2,  1     },
@@ -515,7 +546,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Single@",           95,  6,  1     },
 	{ "Float@",            95,  7,  1     },
 	{ "Date@",             95,  8,  1     },
-	{ "Pointer@",          95,  11, 1     },
+	{ "Pointer@",          95, 11,  1     },
 	
 	{ NULL }
 };

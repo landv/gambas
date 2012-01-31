@@ -37,6 +37,7 @@
 
 #include "gbx_c_enum.h"
 
+enum { GB_LITTLE_ENDIAN, GB_BIG_ENDIAN };
 
 typedef
 	void (*EXEC_FUNC)();

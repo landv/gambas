@@ -30,8 +30,6 @@
 
 #ifdef PROJECT_EXEC
 
-#ifndef GBX_INFO
-
 typedef
   struct {
     short type;
@@ -46,8 +44,6 @@ typedef
     }
   PACKED
   FILE_STAT;
-
-#endif
 
 /* Constants for Stat() function */
 

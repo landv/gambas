@@ -235,7 +235,8 @@ static void add_string(const char *src, int len, int *before)
 		put_char(*src++);
 		len--;
 
-		add_thousand_sep(before);
+		if (before)
+			add_thousand_sep(before);
 	}
 }
 
@@ -935,157 +936,166 @@ _FORMAT:
 			put_char(' ');
 	}
 
-
-	/* the number */
-
-	number_mant = frexp10(fabs(number), &number_exp);
-
-	ndigit = after;
-	if (!exposant) ndigit += number_exp;
-	ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
-	
-	power = pow(10, ndigit + 1);
-	mantisse = number_mant * power;
-	if ((mantisse % 10) >= 5)
-		mantisse += 10;
-	
-	if (mantisse >= power)
-	{
-		ndigit = sprintf(buf, ".%" PRId64, mantisse);
-		buf[0] = buf[1];
-		buf[1] = '.';
-	}
-	else
-	{
-		ndigit = sprintf(buf, "0.%" PRId64, mantisse);
-	}
-	
-	ndigit--;
-	buf[ndigit] = 0;
-
-	/* 0.0 <= number_mant < 1.0 */
-
-	//number_exp++; /* simplifie les choses */
-
-	number_real_exp = number_exp;
-	if (exposant)
-		number_exp = number != 0.0;
-
-	// should return "0[.]...", or "1[.]..." if the number is rounded up.
-
-	buf_start = buf;
-
-	if (buf_start[0] == '1') // the number has been rounded up.
-	{
-		if (exposant)
-			number_real_exp++;
-		else
-			number_exp++;
-	}
-
-	if (ndigit > 1) // so there is a point
-	{
-		if (buf_start[0] == '0')
-		{
-			buf_start += 2;
-			ndigit -= 2;
-		}
-		else
-		{
-			buf_start[1] = buf_start[0];
-			ndigit--;
-			buf_start++;
-		}
-
-		while (ndigit > 0 && buf_start[ndigit - 1] == '0')
-			ndigit--;
-	}
-
 	/* We note where the first digit will be printed */
 
 	pos_first_digit = buffer_pos;
 
-	/* les chiffres avant la virgule */
+	/* the number */
 
-	thousand = Max(before, Max(before_zero, number_exp));
-	thousand_ptr = comma ? &thousand : NULL;
-
-	if (number_exp > 0)
+	if (isfinite(number))
 	{
-		add_char(' ', before - Max(before_zero, number_exp), thousand_ptr);
-		add_zero(before_zero - number_exp, thousand_ptr);
+		number_mant = frexp10(fabs(number), &number_exp);
 
-		add_string(buf_start, Min(number_exp, ndigit), thousand_ptr);
-
-		if (number_exp > ndigit)
-			add_zero(number_exp - ndigit, thousand_ptr);
-	}
-	else
-	{
-		add_char(' ', before - before_zero, thousand_ptr);
-		add_zero(before_zero, thousand_ptr);
-	}
-
-	/* la virgule */
-
-	if (point)
-		put_char(local_current->decimal_point);
-
-	/* les chiffres apr� la virgule */
-
-	if ((ndigit - number_exp) > 0)
-	{
-		if (number_exp < 0)
+		ndigit = after;
+		if (!exposant) ndigit += number_exp;
+		ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
+		
+		power = pow(10, ndigit + 1);
+		mantisse = number_mant * power;
+		if ((mantisse % 10) >= 5)
+			mantisse += 10;
+		
+		if (mantisse >= power)
 		{
-			n = Min(after, (- number_exp));
-			if (n == after)
+			ndigit = sprintf(buf, ".%" PRId64, mantisse);
+			buf[0] = buf[1];
+			buf[1] = '.';
+		}
+		else
+		{
+			ndigit = sprintf(buf, "0.%" PRId64, mantisse);
+		}
+		
+		ndigit--;
+		buf[ndigit] = 0;
+
+		/* 0.0 <= number_mant < 1.0 */
+
+		//number_exp++; /* simplifie les choses */
+
+		number_real_exp = number_exp;
+		if (exposant)
+			number_exp = number != 0.0;
+
+		// should return "0[.]...", or "1[.]..." if the number is rounded up.
+
+		buf_start = buf;
+
+		if (buf_start[0] == '1') // the number has been rounded up.
+		{
+			if (exposant)
+				number_real_exp++;
+			else
+				number_exp++;
+		}
+
+		if (ndigit > 1) // so there is a point
+		{
+			if (buf_start[0] == '0')
 			{
-				add_zero(after_zero, NULL);
-				goto _EXPOSANT;
+				buf_start += 2;
+				ndigit -= 2;
 			}
 			else
 			{
-				add_zero(n, NULL);
-				after -= n;
-				after_zero -= n;
+				buf_start[1] = buf_start[0];
+				ndigit--;
+				buf_start++;
 			}
+
+			while (ndigit > 0 && buf_start[ndigit - 1] == '0')
+				ndigit--;
 		}
+
+		/* les chiffres avant la virgule */
+
+		thousand = Max(before, Max(before_zero, number_exp));
+		thousand_ptr = comma ? &thousand : NULL;
 
 		if (number_exp > 0)
 		{
-			buf_start += number_exp;
-			ndigit -= number_exp;
-		}
+			add_char(' ', before - Max(before_zero, number_exp), thousand_ptr);
+			add_zero(before_zero - number_exp, thousand_ptr);
 
-		n = Min(ndigit, after);
-		if (n > 0)
+			add_string(buf_start, Min(number_exp, ndigit), thousand_ptr);
+
+			if (number_exp > ndigit)
+				add_zero(number_exp - ndigit, thousand_ptr);
+		}
+		else
 		{
-			add_string(buf_start, n, NULL);
-			after -= n;
-			after_zero -= n;
+			add_char(' ', before - before_zero, thousand_ptr);
+			add_zero(before_zero, thousand_ptr);
 		}
 
-		if (after_zero > 0)
+		/* decimal point */
+
+		if (point)
+			put_char(local_current->decimal_point);
+
+		/* digits after the decimal point */
+
+		if ((ndigit - number_exp) > 0)
+		{
+			if (number_exp < 0)
+			{
+				n = Min(after, (- number_exp));
+				if (n == after)
+				{
+					add_zero(after_zero, NULL);
+					goto _EXPOSANT;
+				}
+				else
+				{
+					add_zero(n, NULL);
+					after -= n;
+					after_zero -= n;
+				}
+			}
+
+			if (number_exp > 0)
+			{
+				buf_start += number_exp;
+				ndigit -= number_exp;
+			}
+
+			n = Min(ndigit, after);
+			if (n > 0)
+			{
+				add_string(buf_start, n, NULL);
+				after -= n;
+				after_zero -= n;
+			}
+
+			if (after_zero > 0)
+				add_zero(after_zero, NULL);
+		}
+		else
 			add_zero(after_zero, NULL);
+
+	_EXPOSANT:
+
+		/* The decimal point is removed if it is located at the end */
+
+		buffer_pos--;
+		if (look_char() != local_current->decimal_point)
+			buffer_pos++;
+
+		/* exponant */
+
+		if (exposant != 0) // && number != 0.0)
+		{
+			put_char(exposant);
+			n = snprintf(buf, sizeof(buf), "%+.*d", exp_zero, number_real_exp - 1);
+			add_string(buf, n, NULL);
+		}
 	}
-	else
-		add_zero(after_zero, NULL);
-
-_EXPOSANT:
-
-	/* On enl�e la virgule si elle se trouve �la fin */
-
-	buffer_pos--;
-	if (look_char() != local_current->decimal_point)
-		buffer_pos++;
-
-	/* exposant */
-
-	if (exposant != 0) // && number != 0.0)
+	else // isfinite
 	{
-		put_char(exposant);
-		n = snprintf(buf, sizeof(buf), "%+.*d", exp_zero, number_real_exp - 1);
-		add_string(buf, n, NULL);
+		if (isnan(number))
+			add_string("NaN", 3, NULL);
+		else if (isinf(number))
+			add_string("Inf", 3, NULL);
 	}
 
 	/* currency (after) */
@@ -1097,12 +1107,12 @@ _EXPOSANT:
 		add_currency(intl_currency ? local_current->intl_currency_symbol : local_current->currency_symbol);
 	}
 
-	/* On ignore la parenth�e finale dans le format */
+	/* The last format brace is ignored */
 
 	if (sign == '(' && fmt[pos] == ')')
 		pos++;
 
-	/* Le signe apr� */
+	/* The sign after */
 
 	add_sign(sign, number_sign, TRUE);
 

@@ -156,8 +156,8 @@ static void *SubrTable[] =
 	SUBR_mkdir,      /* 70 86 */ // deprecated
 	SUBR_rmdir,      /* 71 87 */ // deprecated
 	SUBR_move,       /* 72 88 */
-	SUBR_copy,       /* 73 89 */ // deprecated
-	SUBR_link,       /* 74 8A */ // deprecated
+	SUBR_swap,       /* 73 89 */ // support for Copy()
+	SUBR_link,       /* 74 8A */ // deprecated -> IsNan() & IsInf()
 	SUBR_exist,      /* 75 8B */
 	SUBR_access,     /* 76 8C */
 	SUBR_stat,       /* 77 8D */
@@ -177,7 +177,7 @@ static void *SubrTable[] =
 	SUBR_tr,         /* 91 9B */
 	SUBR_quote,      /* 92 9C */
 	SUBR_unquote,    /* 93 9D */
-	NULL,            /* 94 9E */
+	SUBR_make,       /* 94 9E */
 	SUBR_ptr,        /* 95 9F */
 };
 
@@ -323,8 +323,8 @@ void EXEC_loop(void)
 		/* 86 Mkdir           */  &&_SUBR,
 		/* 87 Rmdir           */  &&_SUBR,
 		/* 88 Move            */  &&_SUBR_CODE,
-		/* 89 Copy            */  &&_SUBR,
-		/* 8A Link            */  &&_SUBR,
+		/* 89 Copy            */  &&_SUBR_CODE,
+		/* 8A Link            */  &&_SUBR_CODE,
 		/* 8B Exist           */  &&_SUBR_CODE,
 		/* 8C Access          */  &&_SUBR_CODE,
 		/* 8D Stat            */  &&_SUBR_CODE,
@@ -747,7 +747,7 @@ _PUSH_MISC:
 
 	{
 		static const void *_jump[] =
-			{ &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING }; //, &&__POP_LAST };
+			{ &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING, &&__PUSH_PINF, &&__PUSH_MINF }; //, &&__POP_LAST };
 
 		goto *_jump[GET_UX()];
 
@@ -791,6 +791,20 @@ _PUSH_MISC:
 		SP->type = T_STRING;
 		SP->_string.addr = NULL;
 		SP->_string.start = SP->_string.len = 0;
+		SP++;
+		goto _NEXT;
+		
+	__PUSH_PINF:
+	
+		SP->type = T_FLOAT;
+		SP->_float.value = INFINITY;
+		SP++;
+		goto _NEXT;
+		
+	__PUSH_MINF:
+	
+		SP->type = T_FLOAT;
+		SP->_float.value = -INFINITY;
 		SP++;
 		goto _NEXT;
 		

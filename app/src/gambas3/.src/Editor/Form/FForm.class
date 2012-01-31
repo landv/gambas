@@ -3436,8 +3436,8 @@ Public Sub panBorder_Draw()
 
   If RootControl["#Grid"] Then
     hCont = RootControl.Control
-    Draw.FillX = hCont.ClientX
-    Draw.FillY = hCont.ClientY
+    Draw.FillX = hCont.ClientX + hCont.X
+    Draw.FillY = hCont.ClientY + hCont.Y
     Draw.Tile(RootControl["#Grid"], 0, 0, Draw.W, Draw.H)
   Endif
   Draw.Style.Panel(0, -1, panBorder.W, panBorder.H + 1, Border.Plain)

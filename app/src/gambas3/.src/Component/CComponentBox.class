@@ -67,7 +67,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   If hComp.ThirdParty Then
     Me.Background = IIf(bDark, Color.Lighter(Color.Pink), Color.Lighter(Color.Lighter(Color.Pink)))
   Else
-    If bDark Then Me.Background = Color.LightBackground
+    If bDark Then Me.Background = Color.Merge(Color.LightBackground, Color.TextBackground)
   Endif
   
   Me._Arrangement = Arrange.None

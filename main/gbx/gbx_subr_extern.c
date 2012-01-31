@@ -255,7 +255,6 @@ void SUBR_ptr(ushort code)
 	SUBR_LEAVE();
 }
 
-/*
 void SUBR_make(ushort code)
 {
   static void *jump[] = {
@@ -325,4 +324,5 @@ __END:
 
 	SUBR_LEAVE();
 }
-*/
+
+

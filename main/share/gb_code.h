@@ -118,6 +118,7 @@ void CODE_push_last(void);
 void CODE_push_null(void);
 void CODE_push_void_string();
 void CODE_push_boolean(bool value);
+void CODE_push_inf(bool neg);
 
 void CODE_dup(void);
 

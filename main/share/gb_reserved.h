@@ -158,6 +158,8 @@ typedef
 		RS_SUPER,
 		RS_ENUM,
 		RS_LET,
+		RS_PINF,
+		RS_MINF,
 
 		RS_PRINT,
 		RS_INPUT,

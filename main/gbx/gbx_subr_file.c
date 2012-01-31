@@ -755,15 +755,31 @@ void SUBR_move(ushort code)
 }
 
 
-void SUBR_copy(void)
+void SUBR_link(ushort code)
 {
-	SUBR_move(1);
-}
+	SUBR_ENTER_PARAM(1);
+	
+	switch (code & 0xFF)
+	{
+		case 0:
+			SUBR_move(2);
+			return;
+			
+		case 1:
+			VALUE_conv(PARAM, T_FLOAT);
+			PARAM->type = GB_T_BOOLEAN;
+			PARAM->_boolean.value = isnan(PARAM->_float.value) ? -1 : 0;
+			break;
 
-
-void SUBR_link(void)
-{
-	SUBR_move(2);
+		case 2:
+			VALUE_conv(PARAM, T_FLOAT);
+			PARAM->type = GB_T_INTEGER;
+			PARAM->_integer.value = isinf(PARAM->_float.value);
+			break;
+		
+		default:
+			THROW_ILLEGAL();
+	}
 }
 
 

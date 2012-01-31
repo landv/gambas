@@ -69,6 +69,8 @@ static int is_me_last(PATTERN pattern)
          || PATTERN_is(pattern, RS_OPTIONAL)
          || PATTERN_is(pattern, RS_TRUE)
          || PATTERN_is(pattern, RS_FALSE)
+         || PATTERN_is(pattern, RS_PINF)
+         || PATTERN_is(pattern, RS_MINF)
          || PATTERN_is(pattern, RS_NULL)
          || PATTERN_is(pattern, RS_BYREF);
 }

@@ -1303,8 +1303,6 @@ void CODE_new(ushort nparam, bool array, bool event)
 
 #endif
 
-
-
 void CODE_push_boolean(bool value)
 {
   LAST_CODE;
@@ -1317,6 +1315,18 @@ void CODE_push_boolean(bool value)
   #endif
 }
 
+void CODE_push_inf(bool neg)
+{
+  LAST_CODE;
+
+  use_stack(1);
+
+  #ifdef DEBUG
+  printf("PUSH cINF\n", neg ? '-' : '+');
+  #endif
+
+  write_ZZxx(C_PUSH_MISC, neg ? CPM_MINF : CPM_PINF);
+}
 
 #ifdef CODE_DUMP
 

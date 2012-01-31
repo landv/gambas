@@ -409,6 +409,14 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			{
 				CODE_push_void();
 			}
+			else if (PATTERN_is(pattern, RS_PINF))
+			{
+				CODE_push_inf(FALSE);
+			}
+			else if (PATTERN_is(pattern, RS_MINF))
+			{
+				CODE_push_inf(TRUE);
+			}
 			else
 			{
 				op = PATTERN_index(pattern);

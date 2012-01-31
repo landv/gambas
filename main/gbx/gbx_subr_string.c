@@ -1032,3 +1032,44 @@ void SUBR_unquote(void)
 	
 	SUBR_LEAVE();
 }
+
+void SUBR_swap(ushort code)
+{
+	if (!(code & 0xFF))
+	{
+		SUBR_move(1);
+		return;
+	}
+	
+	SUBR_ENTER();
+	
+	if (NPARAM == 1 || (SUBR_get_integer(&PARAM[2]) == GB_BIG_ENDIAN) != EXEC_big_endian)
+	{
+		char *src, *dst;
+		int len, i, j;
+		
+		if (SUBR_check_string(PARAM))
+			STRING_void_value(RETURN);
+		else
+		{
+			len = PARAM->_string.len;
+			if (len > 0)
+			{
+				src = PARAM->_string.addr + PARAM->_string.start;
+				dst = STRING_new_temp(NULL, PARAM->_string.len);
+			
+				for (i = 0, j = len - 1; i < len; i++,j--)
+					dst[i] = src[j];
+				
+				RETURN->type = T_STRING;
+				RETURN->_string.addr = dst;
+				RETURN->_string.start = 0;
+				RETURN->_string.len = len;
+			}
+		}
+	}
+	
+	SUBR_LEAVE();
+}
+
+
