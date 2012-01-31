@@ -442,21 +442,21 @@ bool gDialog::openFile(bool multi)
 	GtkFileChooserDialog *msg;
 
 	msg = (GtkFileChooserDialog*)gtk_file_chooser_dialog_new(
-		DIALOG_title ? DIALOG_title : "Open",
+		DIALOG_title ? DIALOG_title : "Open file",
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_OPEN,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		GTK_STOCK_OPEN, GTK_RESPONSE_OK,
 		(void *)NULL);
 
-	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
-	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,multi);
+	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
+	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, multi);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
 	if (DIALOG_path)
 	{
-		gtk_file_chooser_select_filename ((GtkFileChooser*)msg, DIALOG_path);
+		gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
 			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
 	}
@@ -469,22 +469,20 @@ bool gDialog::saveFile()
 	GtkFileChooserDialog *msg;
 
 	msg = (GtkFileChooserDialog*)gtk_file_chooser_dialog_new(
-		DIALOG_title ? DIALOG_title : "Save",
+		DIALOG_title ? DIALOG_title : "Save file",
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_SAVE,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		GTK_STOCK_SAVE, GTK_RESPONSE_OK,
 		(void *)NULL);
 	 
-	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
-	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,false);
+	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
+	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, false);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
 	if (DIALOG_path)
-	{
-		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
-	}
+		gtk_file_chooser_set_filename ((GtkFileChooser*)msg, DIALOG_path);
 		
 	return run_file_dialog(msg);
 }
@@ -494,19 +492,24 @@ bool gDialog::selectFolder()
 	GtkFileChooserDialog *msg;
 
 	msg = (GtkFileChooserDialog*)gtk_file_chooser_dialog_new(
-		DIALOG_title ? DIALOG_title : "Find directory",
+		DIALOG_title ? DIALOG_title : "Select directory",
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		GTK_STOCK_OPEN, GTK_RESPONSE_OK, 
 		(void *)NULL);
 	 
-	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
-	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,false);
+	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
+	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, false);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	if (DIALOG_path)
-		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
+	{
+		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
+			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
+		else
+			gtk_file_chooser_set_filename((GtkFileChooser*)msg, DIALOG_path);
+	}
 	
 	return run_file_dialog(msg);
 
