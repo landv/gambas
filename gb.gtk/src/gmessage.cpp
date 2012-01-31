@@ -462,7 +462,6 @@ bool gDialog::openFile(bool multi)
 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, multi);
-	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
@@ -473,6 +472,8 @@ bool gDialog::openFile(bool multi)
 		else
 			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 	}
+	
+	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	
 	return run_file_dialog(msg);
 }
@@ -492,7 +493,6 @@ bool gDialog::saveFile()
 	gtk_file_chooser_set_do_overwrite_confirmation((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, false);
-	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
@@ -504,6 +504,8 @@ bool gDialog::saveFile()
 			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 	}
 		
+	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
+
 	return run_file_dialog(msg);
 }
 
@@ -521,7 +523,6 @@ bool gDialog::selectFolder()
 	 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, false);
-	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	if (DIALOG_path)
@@ -532,8 +533,9 @@ bool gDialog::selectFolder()
 			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 	}
 	
-	return run_file_dialog(msg);
+	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 
+	return run_file_dialog(msg);
 }
 	
 bool gDialog::selectFont()
