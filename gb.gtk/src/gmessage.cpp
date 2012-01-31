@@ -40,6 +40,7 @@ static char *DIALOG_path=NULL;
 static char **DIALOG_paths=NULL;
 static char *DIALOG_title=NULL;
 static gFont *DIALOG_font=NULL;
+static bool _dialog_show_hidden = false;
 
 static int run_dialog(GtkDialog *window)
 {
@@ -226,7 +227,7 @@ gDialog
 
 GPtrArray *gDialog::_filter = NULL;
 
-static void gDialog_filters(GtkFileChooser* ch)
+static void set_filters(GtkFileChooser* ch)
 {	
 	char **filters;
 	int nfilters;
@@ -277,7 +278,7 @@ static bool run_file_dialog(GtkFileChooserDialog *msg)
 	char *buf;
 	long b=0;
 	
-	gDialog_filters((GtkFileChooser*)msg);
+	set_filters((GtkFileChooser*)msg);
 	
 	if (run_dialog(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
  	{
@@ -404,6 +405,16 @@ void gDialog::setPath(char *vl)
 	strcpy(DIALOG_path,vl);
 }
 
+bool gDialog::showHidden()
+{
+	return _dialog_show_hidden;
+}
+
+void gDialog::setShowHidden(bool v)
+{
+	_dialog_show_hidden = v;
+}
+
 char** gDialog::filter(int *nfilter)
 {
   if (!_filter)
@@ -451,14 +462,16 @@ bool gDialog::openFile(bool multi)
 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, multi);
+	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
 	if (DIALOG_path)
 	{
-		gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
 			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
+		else
+			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 	}
 	
 	return run_file_dialog(msg);
@@ -475,14 +488,21 @@ bool gDialog::saveFile()
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		GTK_STOCK_SAVE, GTK_RESPONSE_OK,
 		(void *)NULL);
-	 
+	
+	gtk_file_chooser_set_do_overwrite_confirmation((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, false);
+	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
 	if (DIALOG_path)
-		gtk_file_chooser_set_filename ((GtkFileChooser*)msg, DIALOG_path);
+	{
+		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
+			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
+		else
+			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
+	}
 		
 	return run_file_dialog(msg);
 }
@@ -501,6 +521,7 @@ bool gDialog::selectFolder()
 	 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, false);
+	gtk_file_chooser_set_show_hidden((GtkFileChooser*)msg, _dialog_show_hidden);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	if (DIALOG_path)
@@ -508,7 +529,7 @@ bool gDialog::selectFolder()
 		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
 			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
 		else
-			gtk_file_chooser_set_filename((GtkFileChooser*)msg, DIALOG_path);
+			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);
 	}
 	
 	return run_file_dialog(msg);

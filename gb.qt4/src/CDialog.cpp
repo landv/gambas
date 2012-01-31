@@ -40,6 +40,7 @@ static GB_ARRAY dialog_filter = NULL;
 static QString dialog_path;
 static GB_ARRAY dialog_paths = NULL;
 static CFONT *dialog_font = NULL;
+static bool dialog_show_hidden = false;
 
 static unsigned int dialog_color = 0;
 
@@ -81,7 +82,7 @@ BEGIN_METHOD_VOID(CDIALOG_exit)
 END_METHOD
 
 
-BEGIN_PROPERTY(CDIALOG_title)
+BEGIN_PROPERTY(Dialog_Title)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(dialog_title));
@@ -91,7 +92,7 @@ BEGIN_PROPERTY(CDIALOG_title)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_filter)
+BEGIN_PROPERTY(Dialog_Filter)
 
   if (READ_PROPERTY)
     GB.ReturnObject(dialog_filter);
@@ -101,7 +102,17 @@ BEGIN_PROPERTY(CDIALOG_filter)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_path)
+BEGIN_PROPERTY(Dialog_ShowHidden)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(dialog_show_hidden);
+	else
+		dialog_show_hidden = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Dialog_Path)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(dialog_path));
@@ -111,14 +122,14 @@ BEGIN_PROPERTY(CDIALOG_path)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_paths)
+BEGIN_PROPERTY(Dialog_Paths)
 
   GB.ReturnObject(dialog_paths);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_font)
+BEGIN_PROPERTY(Dialog_Font)
 
   if (READ_PROPERTY)
 		GB.ReturnObject(dialog_font);
@@ -137,7 +148,7 @@ BEGIN_PROPERTY(CDIALOG_font)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_color)
+BEGIN_PROPERTY(Dialog_Color)
 
   if (READ_PROPERTY)
     GB.ReturnInteger(dialog_color);
@@ -147,13 +158,70 @@ BEGIN_PROPERTY(CDIALOG_color)
 END_PROPERTY
 
 
-BEGIN_METHOD(CDIALOG_open_file, GB_BOOLEAN multi)
+static QString my_getOpenFileName()
+{
+	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+	
+	dialog.setMode(QFileDialog::ExistingFile);
+	dialog.setOption(QFileDialog::DontUseNativeDialog);
+	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
+	
+	if (dialog.exec() == QDialog::Accepted)
+		return dialog.selectedFiles().value(0);
+	else
+		return QString();
+}
+
+static QStringList my_getOpenFileNames()
+{
+	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+	
+	dialog.setMode(QFileDialog::ExistingFiles);
+	dialog.setOption(QFileDialog::DontUseNativeDialog);
+	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
+	
+	if (dialog.exec() == QDialog::Accepted)
+		return dialog.selectedFiles();
+	else
+		return QStringList();
+}
+
+static QString my_getSaveFileName()
+{
+	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+	
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+	dialog.setMode(QFileDialog::AnyFile);
+	dialog.setOption(QFileDialog::DontUseNativeDialog);
+	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
+
+	if (dialog.exec() == QDialog::Accepted) 
+		return dialog.selectedFiles().value(0);
+	else
+		return QString();
+}
+
+static QString my_getExistingDirectory()
+{
+	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path);
+	
+	dialog.setMode(QFileDialog::Directory);
+	dialog.setOption(QFileDialog::DontUseNativeDialog);
+
+	if (dialog.exec() == QDialog::Accepted) 
+		return dialog.selectedFiles().value(0);
+	else
+		return QString();
+}
+
+
+BEGIN_METHOD(Dialog_OpenFile, GB_BOOLEAN multi)
 
   if (!VARGOPT(multi, false))
   {
     QString file;
   
-    file = QFileDialog::getOpenFileName(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+    file = my_getOpenFileName();
 
     if (file.isNull())
       GB.ReturnBoolean(true);
@@ -170,7 +238,7 @@ BEGIN_METHOD(CDIALOG_open_file, GB_BOOLEAN multi)
     GB_OBJECT ob;
     int i;
 
-    files = QFileDialog::getOpenFileNames(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+    files = my_getOpenFileNames();
 
     if (files.isEmpty())
     {
@@ -195,11 +263,11 @@ BEGIN_METHOD(CDIALOG_open_file, GB_BOOLEAN multi)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_save_file)
+BEGIN_METHOD_VOID(Dialog_SaveFile)
 
   QString file;
 
-  file = QFileDialog::getSaveFileName(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+  file = my_getSaveFileName();
 
   if (file.isNull())
     GB.ReturnBoolean(true);
@@ -214,11 +282,11 @@ BEGIN_METHOD_VOID(CDIALOG_save_file)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_get_directory)
+BEGIN_METHOD_VOID(Dialog_SelectDirectory)
 
   QString file;
 
-  file = QFileDialog::getExistingDirectory(qApp->activeWindow(), dialog_title, dialog_path);
+  file = my_getExistingDirectory();
 
   if (file.isNull())
     GB.ReturnBoolean(true);
@@ -233,7 +301,7 @@ BEGIN_METHOD_VOID(CDIALOG_get_directory)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_get_color)
+BEGIN_METHOD_VOID(Dialog_SelectColor)
 
   QColor color;
 
@@ -250,7 +318,7 @@ BEGIN_METHOD_VOID(CDIALOG_get_color)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_select_font)
+BEGIN_METHOD_VOID(Dialog_SelectFont)
 
   QFont qfont;
   bool ok;
@@ -301,18 +369,19 @@ GB_DESC CDialogDesc[] =
   //GB_STATIC_METHOD("_init", NULL, CDIALOG_init, NULL),
   GB_STATIC_METHOD("_exit", NULL, CDIALOG_exit, NULL),
 
-  GB_STATIC_METHOD("OpenFile", "b", CDIALOG_open_file, "[(Multi)b]"),
-  GB_STATIC_METHOD("SaveFile", "b", CDIALOG_save_file, NULL),
-  GB_STATIC_METHOD("SelectDirectory", "b", CDIALOG_get_directory, NULL),
-  GB_STATIC_METHOD("SelectColor", "b", CDIALOG_get_color, NULL),
-  GB_STATIC_METHOD("SelectFont", "b", CDIALOG_select_font, NULL),
+  GB_STATIC_METHOD("OpenFile", "b", Dialog_OpenFile, "[(Multi)b]"),
+  GB_STATIC_METHOD("SaveFile", "b", Dialog_SaveFile, NULL),
+  GB_STATIC_METHOD("SelectDirectory", "b", Dialog_SelectDirectory, NULL),
+  GB_STATIC_METHOD("SelectColor", "b", Dialog_SelectColor, NULL),
+  GB_STATIC_METHOD("SelectFont", "b", Dialog_SelectFont, NULL),
 
-  GB_STATIC_PROPERTY("Title", "s", CDIALOG_title),
-  GB_STATIC_PROPERTY("Path", "s", CDIALOG_path),
-  GB_STATIC_PROPERTY_READ("Paths", "String[]", CDIALOG_paths),
-  GB_STATIC_PROPERTY("Filter", "String[]", CDIALOG_filter),
-  GB_STATIC_PROPERTY("Color", "i", CDIALOG_color),
-  GB_STATIC_PROPERTY("Font", "Font", CDIALOG_font),
+  GB_STATIC_PROPERTY("Title", "s", Dialog_Title),
+  GB_STATIC_PROPERTY("Path", "s", Dialog_Path),
+  GB_STATIC_PROPERTY_READ("Paths", "String[]", Dialog_Paths),
+  GB_STATIC_PROPERTY("Filter", "String[]", Dialog_Filter),
+  GB_STATIC_PROPERTY("Color", "i", Dialog_Color),
+  GB_STATIC_PROPERTY("Font", "Font", Dialog_Font),
+  GB_STATIC_PROPERTY("ShowHidden", "b", Dialog_ShowHidden),
 
   GB_END_DECLARE
 };

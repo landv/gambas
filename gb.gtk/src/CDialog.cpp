@@ -36,7 +36,7 @@ BEGIN_METHOD_VOID(CDIALOG_exit)
 END_METHOD
 
 
-BEGIN_PROPERTY(CDIALOG_title)
+BEGIN_PROPERTY(Dialog_Title)
 
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(gDialog::title());
@@ -46,7 +46,7 @@ BEGIN_PROPERTY(CDIALOG_title)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_filter)
+BEGIN_PROPERTY(Dialog_Filter)
 
   char **filters;
   char *filter;
@@ -81,7 +81,7 @@ BEGIN_PROPERTY(CDIALOG_filter)
 END_PROPERTY
 
 #if 0
-BEGIN_PROPERTY(CDIALOG_filter)
+BEGIN_PROPERTY(Dialog_Filter)
 
 	GB_ARRAY Array=NULL;
 	char **buf=NULL;
@@ -153,7 +153,7 @@ BEGIN_PROPERTY(CDIALOG_filter)
 END_PROPERTY
 #endif
 
-BEGIN_PROPERTY(CDIALOG_paths)
+BEGIN_PROPERTY(Dialog_Paths)
 
 	GB_ARRAY Array=NULL;
 	char **buf=NULL;
@@ -176,15 +176,28 @@ BEGIN_PROPERTY(CDIALOG_paths)
 	
 END_PROPERTY
 
-BEGIN_PROPERTY(CDIALOG_path)
 
-	if (READ_PROPERTY) { GB.ReturnNewZeroString( gDialog::path()); return; }
-	gDialog::setPath(GB.ToZeroString(PROP(GB_STRING)));
+BEGIN_PROPERTY(Dialog_Path)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString( gDialog::path());
+	else
+		gDialog::setPath(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_font)
+BEGIN_PROPERTY(Dialog_ShowHidden)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(gDialog::showHidden());
+	else
+		gDialog::setShowHidden(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Dialog_Font)
 
 	CFONT *ft;
 	
@@ -207,7 +220,7 @@ BEGIN_PROPERTY(CDIALOG_font)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDIALOG_color)
+BEGIN_PROPERTY(Dialog_Color)
 
 	if (READ_PROPERTY) { GB.ReturnInteger( gDialog::color() ); return; }
 	gDialog::setColor(VPROP(GB_INTEGER));
@@ -215,7 +228,7 @@ BEGIN_PROPERTY(CDIALOG_color)
 END_PROPERTY
 
 
-BEGIN_METHOD(CDIALOG_open_file,GB_BOOLEAN Multi;)
+BEGIN_METHOD(Dialog_OpenFile,GB_BOOLEAN Multi;)
 
 	bool Multi=false;
 	
@@ -226,28 +239,28 @@ BEGIN_METHOD(CDIALOG_open_file,GB_BOOLEAN Multi;)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_save_file)
+BEGIN_METHOD_VOID(Dialog_SaveFile)
 
  	GB.ReturnBoolean( gDialog::saveFile() );
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_get_directory)
+BEGIN_METHOD_VOID(Dialog_SelectDirectory)
 
  	GB.ReturnBoolean( gDialog::selectFolder() );
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_get_color)
+BEGIN_METHOD_VOID(Dialog_SelectColor)
 
 	GB.ReturnBoolean ( gDialog::selectColor() );
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CDIALOG_select_font)
+BEGIN_METHOD_VOID(Dialog_SelectFont)
 
 	GB.ReturnBoolean ( gDialog::selectFont() );
 
@@ -260,19 +273,20 @@ GB_DESC CDialogDesc[] =
 
   GB_STATIC_METHOD("_exit", 0, CDIALOG_exit, 0),
 
-  GB_STATIC_METHOD("OpenFile", "b", CDIALOG_open_file, "[(Multi)b]"),
-  GB_STATIC_METHOD("SaveFile", "b", CDIALOG_save_file, 0),
-  GB_STATIC_METHOD("SelectDirectory", "b", CDIALOG_get_directory, 0),
-  GB_STATIC_METHOD("SelectColor", "b", CDIALOG_get_color, 0),
-  GB_STATIC_METHOD("SelectFont", "b", CDIALOG_select_font, 0),
+  GB_STATIC_METHOD("OpenFile", "b", Dialog_OpenFile, "[(Multi)b]"),
+  GB_STATIC_METHOD("SaveFile", "b", Dialog_SaveFile, 0),
+  GB_STATIC_METHOD("SelectDirectory", "b", Dialog_SelectDirectory, 0),
+  GB_STATIC_METHOD("SelectColor", "b", Dialog_SelectColor, 0),
+  GB_STATIC_METHOD("SelectFont", "b", Dialog_SelectFont, 0),
 
-  GB_STATIC_PROPERTY_READ("Paths", "String[]", CDIALOG_paths),
+  GB_STATIC_PROPERTY_READ("Paths", "String[]", Dialog_Paths),
   
-  GB_STATIC_PROPERTY("Title", "s", CDIALOG_title),
-  GB_STATIC_PROPERTY("Path", "s", CDIALOG_path),
-  GB_STATIC_PROPERTY("Filter", "String[]", CDIALOG_filter),
-  GB_STATIC_PROPERTY("Color", "i", CDIALOG_color),
-  GB_STATIC_PROPERTY("Font", "Font", CDIALOG_font),
+  GB_STATIC_PROPERTY("Title", "s", Dialog_Title),
+  GB_STATIC_PROPERTY("Path", "s", Dialog_Path),
+  GB_STATIC_PROPERTY("Filter", "String[]", Dialog_Filter),
+  GB_STATIC_PROPERTY("Color", "i", Dialog_Color),
+  GB_STATIC_PROPERTY("Font", "Font", Dialog_Font),
+  GB_STATIC_PROPERTY("ShowHidden", "b", Dialog_ShowHidden),
   
   GB_END_DECLARE
 };

@@ -37,12 +37,14 @@ public:
 	static char* path();
 	static char* title();
 	static gFont* font();
+	static bool showHidden();
 
 	static void setColor(gColor col);
 	static void setFilter(char **filter, int nfilter);
 	static void setPath(char *vl);
 	static void setTitle(char *title);
 	static void setFont(gFont *ft);
+	static void setShowHidden(bool v);
 
 	static bool selectColor();
 	static bool selectFolder();
