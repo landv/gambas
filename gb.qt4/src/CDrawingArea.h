@@ -72,7 +72,7 @@ public:
 
 	void updateCache();
 	void setCached(bool);
-	bool isCached() const { return _background != 0; }
+	bool isCached() const { return _cached; }
 	//QPixmap *getCache(void) { return cache; }
 	//void refreshCache(void) { if (cache) setBackgroundPixmap(*cache); }
 
