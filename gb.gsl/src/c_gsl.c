@@ -157,7 +157,7 @@ BEGIN_METHOD(GSL_FCMPB, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
 
     c = gsl_fcmp (VARG(x), VARG(y), VARG(e));
 
-    GB.ReturnBoolean((c == 1 ? -1: 0));
+    GB.ReturnBoolean((c == 0 ? -1: 0));
 
 END_METHOD
 
