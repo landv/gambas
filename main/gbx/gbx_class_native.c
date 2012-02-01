@@ -72,6 +72,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 	TYPE *sign;
 	int first;
 	int size_dynamic;
+	VALUE value;
 
 	#if DEBUG_LOAD
 		fprintf(stderr, "Registering native class %s (%p)...\n", class->name, class);
@@ -171,6 +172,15 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
 				if (desc->constant.type == T_STRING)
 					desc->constant.type = T_CSTRING;
+				else if (desc->constant.type == T_FLOAT || desc->constant.type == T_SINGLE)
+				{
+					if (NUMBER_from_string(NB_READ_FLOAT, desc->constant.value._string, strlen(desc->constant.value._string), &value))
+						THROW(E_CLASS, class->name, "Bad constant", "");
+					if (desc->constant.type == T_SINGLE)
+						desc->constant.value._single = (float)value._float.value;
+					else
+						desc->constant.value._float = value._float.value;
+				}
 				break;
 
 			case CD_PROPERTY:
