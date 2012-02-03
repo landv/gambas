@@ -215,7 +215,7 @@ BEGIN_METHOD(GSL_HYPOT3, GB_FLOAT x; GB_FLOAT y; GB_FLOAT z;)
     // This function computes the value of \sqrt{x^2 + y^2 + z^2}
     // in a way that avoids overflow.
     // Call GSL function double gsl_hypot3 (const double x, const double y, const double z)
-    GB.ReturnFloat(gsl_hypot3(VARG(x), VARG(y), VARG(z)));
+    GB.ReturnFloat(gsl_hypot3(VARG(x), VARG(y), ARG(z)));
 
 END_METHOD
 */
@@ -266,6 +266,18 @@ END_METHOD
 /*-----------------------------------------------
  Small Integer Power Functions
 -----------------------------------------------*/
+BEGIN_METHOD(GSL_INTPOW, GB_FLOAT x; GB_INTEGER i;)
+    // A common complaint about the standard C library is its lack 
+    // of a function for calculating (small) integer powers. GSL 
+    // provides some simple functions to fill this gap. For reasons
+    // of efficiency, these functions do not check for overflow or
+    // underflow conditions. 
+    GB.ReturnFloat(gsl_pow_int(VARG(x), VARG(i)));
+
+END_METHOD
+
+
+
 BEGIN_METHOD(GSL_INTPOW2, GB_FLOAT x;)
    // Return x^2 using a small int safe method
    // call gsl native function double gsl_pow_2(double x)
@@ -349,6 +361,7 @@ GB_DESC CGslDesc[] =
     //GB_STATIC_METHOD("Frexp", "f", GSL_FREXP, "[(x)f(e)p]"),
     
     // Return x^y using a small int safe method
+    GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(x)f(i)i]"),
     GB_STATIC_METHOD("IntPow2", "f", GSL_INTPOW2, "(x)f"),
     GB_STATIC_METHOD("IntPow3", "f", GSL_INTPOW3, "(x)f"),    
     GB_STATIC_METHOD("IntPow4", "f", GSL_INTPOW4, "(x)f"),

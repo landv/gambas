@@ -27,6 +27,8 @@
 
 #include "main.h"
 #include "c_gsl.h"
+//#include "c_complex.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,18 +36,20 @@ extern "C" {
 
 GB_INTERFACE GB EXPORT;
 
+
 GB_CLASS GSL;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   CGslDesc, /* The Elementary math functions */
+  CGslComplexDesc,
   /* Other classes go here as completed */
   NULL // Must have a null entry for the end of the structure
 };
 
 int EXPORT GB_INIT(void)
 {
-	//CLASS_DBusVariant = GB.FindClass("DBusVariant");
+	//Complex = GB.FindClass("Complex");
 	return 0;
 }
 
