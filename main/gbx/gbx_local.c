@@ -1186,11 +1186,14 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 	struct tm tm = {0};
 	char buf[8];
 	int n;
+	bool date_token;
 
 	if (*token == 0)
 		return FALSE;
 
-	if (((*token == 'd' || *token == 'm' || *token == 'y') && DATE_SERIAL_has_no_date(date)) || DATE_SERIAL_has_no_time(date))
+	date_token = *token == 'd' || *token == 'm' || *token == 'y';
+	
+	if ((date_token && DATE_SERIAL_has_no_date(date)) || (!date_token && DATE_SERIAL_has_no_time(date)))
 	{
 		*token = 0;
 		return TRUE;
