@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gtree.cpp
+	gtree.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -89,8 +89,8 @@ static int gt_tree_view_find_index(GtkTreeView *tree, GtkTreeViewColumn *column)
 
 /************************************************************
 
- gTreeCell
- 
+gTreeCell
+
 *************************************************************/
 
 gTreeCell::gTreeCell()
@@ -101,27 +101,27 @@ gTreeCell::gTreeCell()
 
 gTreeCell::~gTreeCell()
 {
-  setText(NULL);
-  setPicture(NULL);
+	setText(NULL);
+	setPicture(NULL);
 }
 
 void gTreeCell::setText(const char *vl)
 {
-  if (_text)
-    g_free(_text);
-  
-  _text = vl ? g_strdup(vl) : NULL;
+	if (_text)
+		g_free(_text);
+	
+	_text = vl ? g_strdup(vl) : NULL;
 }
 
 void gTreeCell::setPicture(gPicture *vl)
 {
-  gPicture::assign(&_picture, vl);
+	gPicture::assign(&_picture, vl);
 }
 
 /************************************************************
 
- gTreeRow
- 
+gTreeRow
+
 *************************************************************/
 
 gTreeRow::gTreeRow(gTree *tr, char *key, GtkTreeIter *iter)
@@ -320,7 +320,7 @@ void gTreeRow::ensureVisible()
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree->store),dataiter);
 	if (path)
 	{
-	  gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tree->widget), path, NULL, false, 0.0, 0.0);
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(tree->widget), path, NULL, false, 0.0, 0.0);
 		gtk_tree_path_free(path);			
 	}
 }
@@ -490,7 +490,7 @@ void gTreeRow::rect(int *x, int *y, int *w, int *h)
 	depth = gtk_tree_path_get_depth(path);
 	gtk_tree_path_free(path);
 
-  gtk_widget_style_get (tree->widget,
+	gtk_widget_style_get (tree->widget,
 			"expander-size", &size,
 			"vertical-separator", &margin,
 			(void *)NULL);
@@ -568,8 +568,8 @@ void gTreeRow::startRename()
 
 /************************************************************
 
- gTree
- 
+gTree
+
 *************************************************************/
 
 static gboolean gTree_equal(char *a,char *b)
@@ -699,6 +699,7 @@ gTree::gTree(gTreeView *v)
 	_init_sort = false;
 	_sort_dirty = false;
 	_expander = false;
+	_no_click = 0;
 	
 	if (view)
 	{
@@ -746,14 +747,14 @@ void gTree::clear()
 	lock();
 	
 	while ((key = firstRow()))
-    removeRow(key);
-  for (int i = 0; i < columnCount(); i++)
-  {
-  	setColumnWidth(i, 16);
-  	setColumnWidth(i, -1);
-  }
-  
-  unlock();
+		removeRow(key);
+	for (int i = 0; i < columnCount(); i++)
+	{
+		setColumnWidth(i, 16);
+		setColumnWidth(i, -1);
+	}
+	
+	unlock();
 }
 
 void gTree::clear(char *parent)
@@ -779,7 +780,7 @@ int gTree::visibleWidth()
 	
 	gtk_tree_view_get_visible_rect (GTK_TREE_VIEW(widget),&rect);
 	gtk_tree_view_convert_bin_window_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
-    return w;
+		return w;
 }
 
 int gTree::visibleHeight()
@@ -789,7 +790,7 @@ int gTree::visibleHeight()
 	
 	gtk_tree_view_get_visible_rect (GTK_TREE_VIEW(widget),&rect);
 	gtk_tree_view_convert_bin_window_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
-    return h;
+		return h;
 }
 
 char *gTree::iterToKey(GtkTreeIter *iter)
@@ -888,15 +889,18 @@ bool gTree::rowSelected(char *key)
 void gTree::setRowSelected(char *key,bool vl)
 {
 	GtkTreeSelection *sel;
-	gTreeRow *row=(gTreeRow*)g_hash_table_lookup(datakey,(gconstpointer)key);
+	gTreeRow *row = (gTreeRow*)g_hash_table_lookup(datakey, (gconstpointer)key);
 	if (!row) return;
 	
-	sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
+	sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 	if (!sel) return;
+	
+	_no_click++;
 	if (vl)
 		gtk_tree_selection_select_iter(sel,row->dataiter);
 	else
 		gtk_tree_selection_unselect_iter(sel,row->dataiter);
+	_no_click--;
 }
 
 bool gTree::isRowEditable(char *key)
@@ -998,13 +1002,13 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 	
 	g_hash_table_insert(datakey, (gpointer)buf, (gpointer)row);
 	gtk_tree_store_set(store, &iter, view ? 0 : 1, buf, -1);
-  
-  if (parent)
-  {
-  	getRow(parent)->setExpanded();
-  	showExpanders();
-  }
-  
+	
+	if (parent)
+	{
+		getRow(parent)->setExpanded();
+		showExpanders();
+	}
+	
 	return row;
 }
 
@@ -1267,24 +1271,25 @@ void gTree::setAutoResize(bool vl)
 
 void gTree::selectAll()
 {
-	GtkTreeSelection *sel;
+	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 	
-	sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 	if (!sel) 
 		return;
 	
+	_no_click++;
 	gtk_tree_selection_select_all(sel);
+	_no_click--;
 }
 
 void gTree::unselectAll()
 {
-	GtkTreeSelection *sel;
-	
-	sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
+	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 	if (!sel) 
 		return;
 	
+	_no_click++;
 	gtk_tree_selection_unselect_all(sel);
+	_no_click--;
 }
 
 void gTree::setSorted(bool v)

@@ -102,6 +102,8 @@ public:
 	bool isSortAscending() { return tree->isSortAscending(); }
 	void setSortAscending(bool v) { tree->setSortAscending(v); }
 
+	bool doNotClick() const { return tree->_no_click; }
+	
 //"Methods"
 	bool      add(char *key,char *text,gPicture *pic=NULL,char *after=NULL,char *parent=NULL,bool before=false);
 	bool      remove(char *key);
@@ -133,6 +135,7 @@ public:
 	void refreshExpanded(char *parent, bool ex);
 	
 	unsigned _fix_border : 1;
+	int _last_click_time;
 
 protected:
 	gTree *tree;

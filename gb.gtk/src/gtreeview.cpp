@@ -47,13 +47,27 @@ static void cb_select(GtkTreeSelection *selection, gTreeView *control)
 
 static void cb_click(GtkWidget *widget, gTreeView *control)
 {
-	control->emit(SIGNAL(control->onClick));
+	//control->emit(SIGNAL(control->onClick));
 }
 
 static bool cb_button_press(GtkWidget *widget, GdkEventButton *e, gTreeView *control)
 {
-	if (e->button != 1)
-		control->setCurrent(control->find((int)e->x, (int)e->y));
+	char *key;
+	
+	if (e->type == GDK_BUTTON_PRESS)
+	{
+		key = control->find((int)e->x, (int)e->y);
+		
+		if (key)
+		{
+			control->setCurrent(key);
+			if ((e->time - control->_last_click_time) >= 500)
+				control->emit(SIGNAL(control->onClick));
+			control->_last_click_time = e->time;
+			return true;
+		}
+	}
+	
 	return false;
 }
 
@@ -104,6 +118,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	g_typ=Type_gTreeView;
 	use_base = true;
 	_fix_border = false;
+	_last_click_time = 0;
 
 	tree = new gTree(this);
 	tree->addColumn();

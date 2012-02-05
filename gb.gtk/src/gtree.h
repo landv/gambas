@@ -117,6 +117,7 @@ public:
 	unsigned _ascending : 1;
 	unsigned _init_sort : 1;
 	unsigned _sort_dirty : 1;
+	int _no_click;
 	int _sort_column;
 	
 	gTree(gTreeView *v);
