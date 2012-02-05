@@ -485,7 +485,7 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 	if (!GB.CanRaise(control, EVENT_Drag))
 	{
-		if (!GB.CanRaise(control, EVENT_DragMove) && GB.CanRaise(control, EVENT_Drop))
+		if (GB.CanRaise(control, EVENT_DragMove) || GB.CanRaise(control, EVENT_Drop))
 			e->acceptProposedAction();
 		else
 			e->ignore();
