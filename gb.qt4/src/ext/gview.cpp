@@ -2223,18 +2223,20 @@ void GEditor::ensureCursorVisible()
 {
 	int xx, yy;
 	
-	if (!isUpdatesEnabled())
+	if (!isUpdatesEnabled() || !hasFocus())
 		return;
 	
 	xx = lineWidth(y, x); // + _charWidth['m'] / 2
 	yy = realToView(y) * _cellh + _cellh / 2;
 	
-	//qDebug("%p: xx = %d yy = %d vw = %d vh = %d", this, xx, yy, visibleWidth(), visibleHeight());
+	//fprintf(stderr, "%p: xx = %d yy = %d vw = %d vh = %d center = %d contentX() = %d", this, xx, yy, visibleWidth(), visibleHeight(), center, contentsX());
 	
 	if (xx >= visibleWidth() || contentsX() > 0)
-		ensureVisible(xx, yy, visibleWidth() / 2, center ? (visibleHeight() / 2) : _cellh);
-	else
 		ensureVisible(xx, yy, margin + 2, center ? (visibleHeight() / 2) : _cellh);
+	else
+		ensureVisible(0, yy, margin + 2, center ? (visibleHeight() / 2) : _cellh);
+	
+	//fprintf(stderr, " -> %d\n", contentsX());
 	
 	center = false;
 	_ensureCursorVisibleLater = false;
@@ -2266,7 +2268,7 @@ void GEditor::blinkTimerTimeout()
 void GEditor::focusInEvent(QFocusEvent *e)
 {
 	startBlink();
-	//ensureCursorVisible();
+	ensureCursorVisible();
 	Q3ScrollView::focusInEvent(e);
 }
 

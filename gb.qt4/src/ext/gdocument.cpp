@@ -53,6 +53,7 @@ GLine::GLine()
 	proc = false;
 	unicode = false;
 	highlight = NULL;
+	nobreak = false;
 }
 
 GLine::~GLine()
