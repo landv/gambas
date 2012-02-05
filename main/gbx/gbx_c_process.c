@@ -63,6 +63,8 @@
 
 //#define DEBUG_ME
 
+char *CPROCESS_shell = NULL;
+
 extern char **environ;
 
 DECLARE_EVENT(EVENT_Read);
@@ -355,7 +357,7 @@ static void init_child_tty(int fd)
 
 static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 {
-	static const char *shell[] = { "sh", "-c", NULL, NULL };
+	static const char *shell[] = { "/bin/sh", "-c", NULL, NULL };
 
 	int fdin[2], fdout[2], fderr[2];
 	pid_t pid;
@@ -382,6 +384,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		argv = (char **)shell;
 
+		if (CPROCESS_shell)
+			argv[0] = CPROCESS_shell;
+		
 		argv[2] = (char *)cmd;
 
 		if (argv[2] == NULL || *argv[2] == 0)

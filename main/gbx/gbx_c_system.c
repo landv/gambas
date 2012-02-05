@@ -46,6 +46,7 @@
 #include "gbx_extern.h"
 #include "gbx_object.h"
 
+#include "gbx_c_process.h"
 #include "gbx_c_system.h"
 
 BEGIN_PROPERTY(User_Home)
@@ -184,6 +185,21 @@ BEGIN_METHOD(System_GetExternSymbol, GB_STRING library; GB_STRING name)
 
 END_METHOD
 
+
+BEGIN_PROPERTY(System_Shell)
+
+	if (READ_PROPERTY)
+	{
+		if (!CPROCESS_shell)
+			GB_ReturnConstZeroString("/bin/sh");
+		else
+			GB_ReturnString(CPROCESS_shell);
+	}
+	else
+		GB_StoreString(PROP(GB_STRING), &CPROCESS_shell);
+
+END_PROPERTY
+
 #endif
 
 GB_DESC NATIVE_User[] =
@@ -209,6 +225,7 @@ GB_DESC NATIVE_System[] =
 
 	GB_STATIC_PROPERTY("Language", "s", System_Language),
 	GB_STATIC_PROPERTY("FirstDayOfWeek", "i", System_FirstDayOfWeek),
+	GB_STATIC_PROPERTY("Shell", "s", System_Shell),
 	GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_RightToLeft),
 	GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),
 	GB_STATIC_PROPERTY_READ("Host", "s", System_Host),

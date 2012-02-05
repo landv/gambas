@@ -1431,19 +1431,9 @@ bool GB_ExistFile(const char *path)
 void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst)
 {
   if (src != NULL)
-  {
-    /* Ne marche que parce que value->type == type apr� un VALUE_read()
-       Sinon il y'aurait des probl�es de r��ences - VALUE_write faisant
-       appel �VALUE_conv() (ceci est un ancien commentaire)
-
-       => src->type doit �re �al �type
-    */
     VALUE_write((VALUE *)src, dst, type);
-  }
   else
-  {
     VALUE_free(dst, type);
-  }
 }
 
 

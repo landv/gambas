@@ -34,6 +34,7 @@
 
 #ifndef __GBX_C_PROCESS_C
 extern GB_DESC NATIVE_Process[];
+extern char *CPROCESS_shell;
 #else
 
 #define THIS ((CPROCESS *)_object)
