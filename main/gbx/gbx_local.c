@@ -1181,15 +1181,21 @@ static void add_number(int value, int pad)
 	add_string(&temp[i], n, NULL);
 }
 
-static void add_date_token(DATE_SERIAL *date, char *token, int count)
+static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 {
 	struct tm tm = {0};
 	char buf[8];
 	int n;
 
 	if (*token == 0)
-		return;
+		return FALSE;
 
+	if (((*token == 'd' || *token == 'm' || *token == 'y') && DATE_SERIAL_has_no_date(date)) || DATE_SERIAL_has_no_time(date))
+	{
+		*token = 0;
+		return TRUE;
+	}
+	
 	switch (*token)
 	{
 		case 'd':
@@ -1257,6 +1263,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 	}
 
 	*token = 0;
+	return FALSE;
 }
 
 
@@ -1282,7 +1289,15 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		case LF_STANDARD:
 		case LF_GENERAL_DATE:
 			if (date->year == 0)
+			{
+				if (date->hour == 0 && date->min == 0 && date->sec == 0)
+				{
+					*str = NULL;
+					*len_str = 0;
+					return FALSE;
+				}
 				fmt = local_current->long_time;
+			}
 			else if (date->hour == 0 && date->min == 0 && date->sec == 0)
 				fmt = local_current->short_date;
 			else
@@ -1385,9 +1400,10 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		{
 			if (c != token)
 			{
-				add_date_token(&vdate, &token, token_count);
 				if (token == 'h' && c == 'm')
 					c = 'n';
+				
+				add_date_token(&vdate, &token, token_count);
 
 				token = c;
 				token_count = 0;
@@ -1397,13 +1413,15 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		}
 		else
 		{
-			add_date_token(&vdate, &token, token_count);
-			if (c == '/')
-				put_char(local_current->date_sep);
-			else if (c == ':')
-				put_char(local_current->time_sep);
-			else
-				put_char(c);
+			if (!add_date_token(&vdate, &token, token_count))
+			{
+				if (c == '/')
+					put_char(local_current->date_sep);
+				else if (c == ':')
+					put_char(local_current->time_sep);
+				else
+					put_char(c);
+			}
 		}
 	}
 

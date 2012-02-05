@@ -320,6 +320,9 @@ int DATE_to_string(char *buffer, VALUE *value)
 	DATE_SERIAL *date;
 	int len;
 
+	if (value->_date.date == 0 && value->_date.time == 0)
+		return 0;
+	
 	date = DATE_split(value);
 
 	if (value->_date.date == 0)
