@@ -70,6 +70,8 @@ Private Function GetNextTip(Optional bPrev As Boolean) As String
   Endif
 
   sLang = System.Language
+  iPos = RInStr(sLang, ".")
+  If iPos Then sLang = Left(sLang, iPos - 1)
 
   sFile = "tips/tips." & sLang
   If Not Exist(sFile) Then

@@ -678,9 +678,9 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
   Editor.Goto(iLine, 0)
 
   If sType Then
-    Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n" & Space$(Project.TabSize) & "\n\nEND\n")
+    Editor.Insert("\n" & sStatic & sPublic & " Function " & sProc & "(" & sSign & ") As " & sType & "\n\n" & Space$(Project.TabSize) & "\n\nEnd\n")
   Else
-    Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n" & Space$(Project.TabSize) & "\n\nEND\n")
+    Editor.Insert("\n" & sStatic & sPublic & " Sub " & sProc & "(" & sSign & ")\n\n" & Space$(Project.TabSize) & "\n\nEnd\n")
   Endif
 
   Editor.End
@@ -894,7 +894,7 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
       If Not bUnindent And If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
     Endif
     Editor.End
-    Editor.Goto(iLine + 1, 2 + Len(sIndent))
+    Editor.Goto(iLine + 1, Project.TabSize + Len(sIndent))
     Stop Event
     Return True
   Endif

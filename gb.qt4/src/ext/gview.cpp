@@ -2223,7 +2223,7 @@ void GEditor::ensureCursorVisible()
 {
 	int xx, yy;
 	
-	if (!isUpdatesEnabled() || !hasFocus())
+	if (!isUpdatesEnabled() || !isVisible())
 		return;
 	
 	xx = lineWidth(y, x); // + _charWidth['m'] / 2

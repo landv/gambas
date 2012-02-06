@@ -35,6 +35,7 @@ Public Sub Form_Open()
   fchChoose.Multi = $bMulti
   'fchChoose.Root = "/"
   fchChoose.Filter = Dialog.Filter
+  fchChoose.ShowHidden = Dialog.ShowHidden
   If Dialog.Path Then fchChoose.SelectedPath = Dialog.Path
   
   If fchChoose.Filter.Count > 1 Then

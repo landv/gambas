@@ -1,0 +1,442 @@
+[WELCOME]
+
+<p>    歡迎使用<b>Gambas</b>！</p>
+
+<p><b>    Gambas</b>是一個基於高級<b>Basic</b>語言直譯器的圖形界面的開發環境。</p>
+
+<p><b>    Gambas</b>的目標是使您能輕易而快速地開發出功能強大的程式。但是高效而簡潔的程式還得靠您<b>自己</b>的努力...</p>
+
+<p>    希望您會喜歡！</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+English:<u>gambas@users.sourceforge.net</u><br>
+中文：<u>yizhou.he@gmail.com</u></p>
+
+[STARTUP]
+
+<p>    每一個專案都需要有一個<b>啟動類別</b>，這個啟動類別必須定義一個名爲<b>Main</b>的無參數靜態公用方法，它將成爲您的程式的進入點。</p>
+
+<p>定義啟動類別的方法是，用鼠標右鍵點擊工程目錄樹中要設爲啟動類別的類別，並在彈出的右鍵菜單中選中<b>啟動類別</b>。</p>
+
+<p>您不需要在啟動視窗中定義一個<b>Main</b>方法，因爲<b>Gambas</b>己經預定義好了。</p>
+
+<p>這個預定義的啟動方法創建並顯示視窗, 就像<b>Visual Basic&trade;</b>一樣。</p>
+
+
+[OPEN]
+
+<p>    <b>Gambas</b>的<b>OPEN</b>函數和<b>Visual Basic</b>的不太一樣，它並不回傳整數，而是回傳一個<b>檔案</b>物件。</p>
+
+<p>所以，不要使用：</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>而應該使用：</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>    您知道嗎？您可以使用<b><tt>&/</tt></b>來連接資料夾和檔案名稱，這個運算子會自動處理路徑結尾的<b><tt>/</tt></b>以免重複。</p>
+
+<p>例如：</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>怎麼樣？好用吧！</p>
+
+
+[EXEC]
+
+<p>    可以將您的整個專案生成一個可執行檔，在<b>專案</b>選單中選擇<b>生成可執行檔</b>。</p>
+
+<p>當<b>Gambas</b>生成可執行檔時，預設會將產生的可執行檔放到您的專案目錄下，可執行檔名和您的專案名稱相同。</p>
+
+
+[PATH]
+<p>
+    相對路徑在<b>Gambas</b>中有特殊含義，它們總是指向您專案內的文件。
+<p>
+這裏沒有<b>當前目錄</b>的概念，沒有<b>CHDIR</b>之類的關鍵字來改變它。
+<p>
+<b>注意：</b>您只能用相對路徑存取專案中的檔案，因爲絕對路徑在您生成可執行檔後就不再可靠了。
+
+
+[GLOBAL]
+
+    <b>Gambas</b>裏不再有<b>全域變數</b>了！
+<p>
+新的處理方法是，在您的主模組中宣告它們爲<b>PUBLIC</b>(公用類型)。
+<p>
+如果您的專案中沒有主模組，只有主視窗，那麼宣告它們爲<b>STATIC PUBLIC</b>(靜態公用類型)。
+<p>
+要存取這些變數，您必須使用主模組名或主視窗名：<tt>MyMainModule.MyGlobalVariable</tt>或
+<tt>MyMainForm.MyGlobalVariable</tt>。
+
+
+[EMPTY]
+
+<p>    要知道一個字串是否爲空，並不需要使用<b>Len()</b>函數，您可以直接測試它，因爲空字串爲<b>FALSE</b>非空字串爲<b>TRUE</b>。</p>
+
+<p>例如，您不需要寫：</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>您只需寫：</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+[TRANSLATE]
+
+<p>    <b>Gambas</b>應用程式是可完全翻譯的，條件是您應指定哪些字串是必須要翻譯的。 </p>
+<p>用括號將字串括起來就表示該字串是可以被翻譯的。<p>
+
+<pre>PRINT ("我可以被翻譯！")
+PRINT "我不能被翻譯！"</pre>
+
+[EVENT]
+
+<p>    每個控制項和每個物件都可以產生事件，都有一個<b>event observer</b>(事件觀察器)和一個事件 <b>group name</b>(組名)。</p>
+
+<p>事件觀察器捕捉物件產生的每一個事件，事件組名將是您用來處理事件的類別名稱的前綴。</p>
+
+<p>預設的事件觀察器是您創建的控制項的容器物件，事件組名是控制項名。</p>
+
+<p>在這種狀況下，一個視窗會接收您在它上面創建的所有控制項發生的事件。</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+<p>    在<b>Gambas</b>中，一個視窗是它自己的事件觀察器，所以您可以直接在它自己的類代碼中管理它的事件(像<b>Resize</b>， 
+<b>Activate</b>， ...)。 </p>
+
+<p>這樣，從<b>Visual Basic</b>轉來的新手們就不會迷失方向:-)。</p>
+
+
+[EMBED]
+
+<p>    在<b>Gambas</b>中，您可以在視窗中嵌入視窗！</p>
+
+<p>    要實現如此強大的功能,只要在初始化視窗物件時將父容器做爲最後一個參數傳給視窗構建函數。</p>
+
+<p>例如：</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' 創建一個對話框<br>
+hForm = NEW MyDialog<br>
+' 在此對話框中插入一個視窗<br>
+' 注意此視窗需要三個參數,最後一個參數是容器物件<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' 移動並改變視窗的大小<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>小心：嵌入後的視窗還是個視窗，它還是它自己的事件觀察器。</p>
+
+
+[GROUP]
+
+<p>    每個控制項都有一個<b>Group</b>(組)屬性，當此屬性被設置，事件處理名稱的前綴就將是組名而不是控制項名。</p>
+
+<p>    假定您有一個<b>Button</b>(按鈕)名叫<b>btnAction</b>
+有一個<b>Click</b>事件處理：</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>    如果您將<b>btnAction</b>的<b>(Group)</b>屬性設爲<b>MyGroup</b>，那麼事件處理從按鈕收到的事件將是：</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>    此屬性讓您在一個函數中處理不同的控制項的事件，同組中的控制項不需要有相同的類型！</p>
+
+<p><b>註釋：</b> <b>Visual Basic</b>老手可能會認為這個屬性和VB中的<b>控制項陣列</b>相似，但更為強大。:-)</p>
+
+
+[TAG]
+
+<p>    每一個控制項都有<b>Tag</b>屬性，此屬性是爲編程者設計的，可以是任何您想要的<b>VARIANT</b>(可變類型)數據。</p>
+
+<p>這在使用同組的公用事件處理中區別控制項時非常有用。</p>
+
+
+
+[LAST]
+
+<p>    <b>LAST</b>關鍵字回傳最近一次發生事件的控制項，當您要寫一個獨立於控制項名的事件處理函式就非常有用。</p>
+
+<p>例如，假設您要寫一個計算器程式。
+您定義了十個按鈕，每個數字一個，它們都在一個名叫"Digit"的<b>群組</b>，每個控制項的<b>Tag</b>屬性都被設爲相應的數字。
+您的處理程序將會是：</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>    大名鼎鼎的<b>BASIC</b>函數<b>Left$</b>、<b>Right$</b>
+和<b>Mid$</b>在<b>Gambas</b>中有了新功能。</p>
+
+<p><b>Left$</b>和<b>Right$</b>的第二個參數是可選的，預設值爲1。</p>
+
+<p><tt>Left$("Gambas")</tt> 回傳<tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> 回傳<tt>"s"</tt></p>
+
+<p>第二個參數可以是負數，它的用途是指定反方向上將被切掉的字元個數。</p>
+
+<p><tt>Left$("Gambas", -2)</tt> 回傳<tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> 回傳<tt>"mbas"</tt></p>
+
+<p>相同的，<b>Mid$</b>的第三個參數也可以是負數，指定字串末端將被切掉的字元的個數。</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> 回傳<tt>"amb"</tt>
+
+[OBSERVER]
+
+<p>    <b>Observer</b>類別允許您在物件發出事件之前先攔截它。 </p>
+
+<pre>MyTextBox = NEW TextBox(ME) AS "MyTextBox"
+MyObserver = NEW Observer(MyTextBox) AS "MyObserver"
+...
+PUBLIC SUB MyObserver_KeyPress()
+  DEBUG "Got it first"
+END
+
+PUBLIC SUB MyTextBox_KeyPress()
+  DEBUG "Got it next"
+END</pre>
+
+    <b>Observer</b>能取消事件，防止物件對外發出事件。
+
+
+[STRING]
+
+<p>    <b>Gambas</b>使用<b>UTF-8</b>字元編碼在記憶體中描述字串。</p>
+
+<p>但是所有的標準<b>Gambas</b>字串函數只處理<b>ASCII</b>碼: 
+<b>Left</b>、<b>Mid</b>、<b>Right</b>、<b>UCase</b>...
+
+<p>如果想處理UTF-8編碼的字串，必須使用<b>String</b>靜態類別的方法，它們的名字和標準字串處理函數完全相同。
+
+<pre>PRINT Len("bébé");; Left$("bébé", 3)
+6 bé
+PRINT String.Len("bébé");; String.Left("bébé", 3)
+4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<p>    <b>Gambas</b>實現了<b>C/C++</b>程序員常用的快捷賦值。 
+
+<p><tt>MyVariable += 2</tt> 等價於 <tt>MyVariable = MyVariable + 2</tt>
+
+<p><tt>MyVariable &= "Great"</tt> 等價於 <tt>MyVariable = MyVariable & "Great"</tt>
+
+<p>諸如此類...
+
+
+[DEBUG]
+
+<p>    可以使用<b>DEBUG</b>語句列印除錯信息到控制台(也就是stderr)，用法和<b>PRINT</b>語句完全一樣。
+
+<p>除錯信息前綴有類別名稱，方法名稱和<b>DEBUG</b>語句所在的行號。 
+
+<p>除錯信息在生成不包含除錯信息的可執行檔時會被自動刪除。
+
+
+[TRY]
+
+<p>    Gambas使用下面的語句實現錯誤管理： 
+<b>TRY</b>，<b>ERROR</b>，<b>CATCH</b>和<b>FINALLY</b>。
+
+<p><b>TRY</b>嘗試執行一個語句而不引發錯誤，隨後使用<b>ERROR</b>語句檢測語句執行中是否發生錯誤。
+
+<pre>TRY MyFile = OPEN "/etc/password" FOR WRITE
+IF ERROR THEN PRINT "I cannot do what I want!"</pre>
+
+
+[CATCH]
+
+<p>    Gambas使用下面的語句實現錯誤管理： 
+<b>TRY</b>，<b>ERROR</b>，<b>CATCH</b>和<b>FINALLY</b>。
+
+<p><b>CATCH</b>標明函數或者過程中錯誤管理部分(錯誤處理常式)的程式碼的開頭。
+
+<p>當錯誤發生於函數執行的起始到終止之間時，會跳去執行錯誤處理常式的部分。
+
+<p>如果錯誤發生於執行錯誤處理常式期間，會繼續向下一層傳送。錯誤處理常式不保護自己！
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+  CLOSE #hFile
+CATCH ' 只在發生錯誤時執行
+  PRINT "Cannot process file "; FileName
+END</pre>
+
+
+[FINALLY]
+
+<p>    Gambas使用下面的語句實現錯誤管理： 
+<b>TRY</b>，<b>ERROR</b>，<b>CATCH</b>和<b>FINALLY</b>。
+
+<p>在函數的尾部，<b>FINALLY</b>語句引領的代碼被執行，即使在其執行期間有錯誤發生。
+
+<b>FINALLY</b>部分是非必要的。如果函數中有錯誤處理常式，<b>FINALLY</b>部分必須位於處理常式之前。
+
+
+<p><b>FINALLY</b>部分是非必要的。如果函數中有錯誤處理常式，<b>FINALLY</b>部分必須位於處理常式之前。
+ 
+<p>如果錯誤發生於<b>FINALLY</b>部分執行期間，錯誤會正常傳送。
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+FINALLY ' 即使有錯誤發生也會被執行
+  CLOSE #hFile
+CATCH ' 只在錯誤發生時執行
+  PRINT "Cannot print file "; FileName
+END</pre>
+
+
+[OPTIONAL]
+
+<h3>Optional</h3>
+
+<p>在<b>Gambas</b>裡面，函數和程序的參數可以含有選擇性的參數。</p>
+
+<p>定義選擇性參數的方法是在參數名稱面加上 <b><tt>Optional</tt></b> 關鍵字。</p>
+
+<p>您也可以在選擇性參數後面加上預設值，例如：</p>
+
+<pre>Private Sub MyFunction(Param AS String, Optional Optim AS String = "Default")
+  ...
+  Print "Required: "; param; ", Optional: "; optim
+  ...
+End</pre>
+
+
+[ARRAY]
+
+<h3>For Each</h3>
+
+<p>在 <b>Gambas</b> 裡面，您可以輕易地用迴圈跑過陣列、集合以及其他支援 <b><tt>For Each</tt></b> 的可列舉類別。</p>
+
+<p>例如:</p>
+
+<pre>Dim Xml As New XmlDocument
+Dim Node As XmlNode
+Dim I As Integer
+
+' Open XML file
+Xml.Open("pokus.xml")
+' Children is indexed via [i], since it's an array
+For I = 0 To Xml.Root.Children.Count - 1
+  'Attributes are looped via For Each, since it's a collection
+  For Each Node In Xml.Root.Children[i].Attributes
+    Print Node.Name;; Node.Value
+  Next
+Next</pre>
+
+
+[ICON]
+
+<h3>預設圖示</h3>
+
+<p>您可以使用內建的圖示來建構更美觀的圖形程式。這些內建圖示提供多種大小 (<tt>"small"</tt>, <tt>"medium"</tt>, <tt>"large"</tt>,...)，您也可以使用絕對大小 (從 16x16 到 256x256)。</p>
+
+<p>例如:
+
+<pre>Image1.Picture = Picture["icon:/32/warning"]
+Image2.Picture = Picture["icon:/small/error"]
+</pre>
+
+<p><b>警告:</b> 這個功能需要 <tt>gb.form</tt> 元件.
+
+
+[SETTINGS]
+
+<h3>設定</h3>
+
+<p>如果您需要在程式中儲存一些設定值 (如視窗位置、大小)，您很幸運，在 <b>Gambas</b>
+中做到這個是易如反掌。 :-)
+
+<p>儲存視窗位置:
+<pre>Settings.Write(TheForm)</pre>
+
+<p>回復視窗位置:
+<pre>Settings.Read(TheForm)</pre>
+
+儲存設定的方法:
+<pre>Settings["Slot/Key"] = Value</pre>
+
+讀取設定的方法:
+<pre>Value = Settings["Slot/Key", DefaultValue]</pre>
+
+這些設定將被儲存在 <tt>~/.config/gambas3/&lt;MyApplication&gt;.conf</tt> 中,
+<tt>&lt;MyApplication&gt;</tt> 是您的專案名稱。
+
+<p><b>警告:</b> 這個功能需要 <tt>gb.settings</tt> 元件。
+
+
+[EDITOR]
+
+<p>來點編輯器的提示...</p>
+
+<h3>兩種註解類型</h3>
+
+<pre>' 普通註解</pre>
+<b><pre>'' 粗體註解</pre></b>
+
+<p>粗體註解可以用來替程式碼撰寫文件.</p>
+
+<h3>如何使用程式碼片段</h3>
+
+<p>輸入 <tt>main</tt> 然後按下 <b>TAB</b> 鍵. 編輯器將自動插入 static public <tt>Main</tt>
+到程式碼中.
+
+<p>輸入 <tt>ds</tt> 然後按下 <b>TAB</b> 鍵. 編輯器將自動插入區域字串變數的宣告, 之後可以立即輸入變數名稱.
+
+<p>程式碼片段可以在開發環境的選項中設定.
+
+
+[END]
+
+<p>    您己讀完所有的每日提示提示。我希望您己經是 <b>Gambas</b> 的專家了！:-)</p>
+
+<p>如果您想爲Gambas貢獻一份力量，請用電子郵件發送新提示到：</p>
+英文:<p><u>gambas@users.sourceforge.net</u></p>
+中文:<p><u>yizhou.he@gmail.com</u></p>
+
+<p>預先感謝！</p>
+
+
+

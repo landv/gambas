@@ -15,7 +15,7 @@ Public Sub _init()
     $cKeyword[sStr] = 0
   Next
 
-  For Each sStr In ["false", "null", "this", "true"]
+  For Each sStr In ["false", "null", "this", "true", "undefined"]
     $cKeyword[sStr] = 1
   Next
 

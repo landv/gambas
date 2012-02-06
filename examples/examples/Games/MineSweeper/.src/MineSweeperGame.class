@@ -1,0 +1,194 @@
+' Gambas class file
+
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read Status As Integer
+Property Read FlagCount As Integer
+
+Event OnStart()
+Event OnEnd()
+Event OnRefresh()
+
+Public Enum BLOCK_COVERED, BLOCK_FLAGGED, BLOCK_REVEALED
+Public Enum GAME_READY, GAME_STARTED, GAME_WIN, GAME_LOSE
+Public Enum NUM_MINE = 9
+
+Private $width As Integer
+Private $height As Integer
+Private $blocks As New Integer[]
+Private $status As New Integer[]
+Private $mine_count As Integer
+Private $flag_count As Integer
+Private $covered_block_count As Integer
+Private $game_state As Integer
+
+Public Sub _new(w As Integer, h As Integer, n As Integer)
+   $width = w
+   $height = h
+   $mine_count = n
+   $covered_block_count = 0
+   $blocks = New Integer[w, h]
+   $status = New Integer[w, h]
+   Reset()
+End
+
+Public Function Reset()
+   Dim x, y As Integer
+   For x = 0 To $width - 1
+      For y = 0 To $height - 1
+         $status[x, y] = BLOCK_COVERED
+         $blocks[x, y] = 0
+      Next
+   Next
+   $game_state = GAME_READY
+   $covered_block_count = $width * $height
+   $flag_count = $mine_count
+   Raise OnRefresh()
+End
+
+Public Function GetBlockNumber(x As Integer, y As Integer) As Integer
+   Return $blocks[x, y]
+End
+
+Public Function GetBlockStatus(x As Integer, y As Integer) As Integer
+   Return $status[x, y]
+End
+
+Public Sub OpenBlock(x As Integer, y As Integer)
+   If $game_state = GAME_READY Then
+      $game_state = GAME_STARTED
+      GenerateRandomMines($mine_count, x, y)
+      Raise OnStart()
+   Endif
+   
+   If $game_state = GAME_STARTED And $status[x, y] = BLOCK_COVERED
+      If $blocks[x, y] = NUM_MINE Then  ' stepped on a mine
+         $game_state = GAME_LOSE
+         Raise OnEnd()   
+      Else
+         RecursiveOpen(x, y)
+         If AllMinesFound() Then
+            FlagAllMines() 
+            $game_state = GAME_WIN
+            Raise OnEnd()
+         Endif
+      Endif
+   Endif
+   
+   Raise OnRefresh()
+End
+
+Public Sub ToggleFlag(x As Integer, y As Integer)
+   If $game_state = GAME_STARTED Then
+      If $status[x, y] = BLOCK_COVERED Then
+         $status[x, y] = BLOCK_FLAGGED
+         $flag_count -= 1
+      Else If $status[x, y] = BLOCK_FLAGGED Then
+         $status[x, y] = BLOCK_COVERED
+         $flag_count += 1
+      Else
+         Return
+      Endif
+      Raise OnRefresh()
+   Endif
+End
+
+
+Private Function Width_Read() As Integer
+   Return $width
+End
+
+Private Function Height_Read() As Integer
+   Return $height
+End
+
+Private Function Status_Read() As Integer
+   Return $game_state
+End
+
+Private Function FlagCount_Read() As Integer
+   Return $flag_count
+End
+
+' Generate n mines in the field and guarantee that (nx, ny) does not contain a mine.
+Private Sub GenerateRandomMines(n As Integer, nx As Integer, ny As Integer)
+   Dim i As Integer
+   Dim x, y As Integer
+   Dim x2, y2 As Integer
+   Dim count As Integer = $width * $height
+   Dim index As Integer
+   
+   ' check if the range is correct
+   ' note that the field should contain at most (w*h-1) mines, not w*h
+   If n >= count Then Error.Raise("Index out of bounds")
+   
+   ' put n mines into the first blocks, and fill in zero in the rest
+   For i = 0 To count - 1
+      x = i Mod $width
+      y = i / $width
+      $blocks[x, y] = IIf(i < n, NUM_MINE, 0)
+   Next
+   
+   ' if a mine is located in (nx, ny), then move the mine to the last block
+   If $blocks[nx, ny] = NUM_MINE Then Swap $blocks[nx, ny], $blocks[$width - 1, $height - 1]
+   
+   ' shuffle
+   For i = 0 To count - 1
+      x = i Mod $width
+      y = i / $width
+      x2 = Int(Rnd(0, $width))
+      y2 = Int(Rnd(0, $height))
+      If (x = nx And y = ny) Or (x2 = nx And y2 = ny) Then Continue  ' skip (nx, ny)
+      Swap $blocks[x, y], $blocks[x2, y2]
+   Next
+   
+   ' generate the numbers
+   For x = 0 To $width - 1
+      For y = 0 To $height - 1
+         If $blocks[x, y] = NUM_MINE Then
+            For x2 = x - 1 To x + 1
+               For y2 = y - 1 To y + 1
+                  Try IncrementBlockMineCount(x2, y2)
+               Next
+            Next
+         Endif
+      Next
+   Next
+End
+
+Private Sub IncrementBlockMineCount(x As Integer, y As Integer)
+   If $blocks[x, y] <> NUM_MINE Then $blocks[x, y] += 1
+End
+
+Private Sub RecursiveOpen(x As Integer, y As Integer)
+   Dim x2, y2 As Integer
+   If $status[x, y] = BLOCK_COVERED Then
+      $status[x, y] = BLOCK_REVEALED
+      $covered_block_count -= 1
+      If $blocks[x, y] = 0 Then
+         For x2 = x - 1 To x + 1
+            For y2 = y - 1 To y + 1
+               RecursiveOpen(x2, y2)
+            Next
+         Next
+      Endif
+   Endif
+Catch
+   
+End
+
+Private Function AllMinesFound() As Boolean
+   Return $covered_block_count = $mine_count
+End
+
+' Automatically mark all mines as flag
+Private Sub FlagAllMines()
+   Dim x, y As Integer
+   For x = 0 To $width - 1
+      For y = 0 To $height - 1
+         If $blocks[x, y] = NUM_MINE Then
+            $status[x, y] = BLOCK_FLAGGED
+         Endif
+      Next
+   Next
+End

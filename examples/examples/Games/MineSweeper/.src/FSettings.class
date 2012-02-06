@@ -1,0 +1,66 @@
+' Gambas class file
+
+Property FieldWidth As Integer
+Property FieldHeight As Integer
+Property MineCount As Integer
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub spinWidth_Change()
+   UpdateMineRange()
+   spinMines.Value = spinWidth.Value * spinHeight.Value / 10
+End
+
+Public Sub spinHeight_Change()
+   UpdateMineRange()
+   spinMines.Value = spinWidth.Value * spinHeight.Value / 10
+End
+
+Public Sub Form_Open()
+   UpdateMineRange()
+End
+
+Private Sub UpdateMineRange()
+   spinMines.MinValue = 1
+   spinMines.MaxValue = spinWidth.Value * spinHeight.Value - 1
+End
+
+Private Function FieldWidth_Read() As Integer
+   Return spinWidth.Value
+End
+
+Private Sub FieldWidth_Write(Value As Integer)
+   spinWidth.Value = Value
+End
+
+Private Function FieldHeight_Read() As Integer
+   Return spinHeight.Value
+End
+
+Private Sub FieldHeight_Write(Value As Integer)
+   spinHeight.Value = Value
+End
+
+Private Function MineCount_Read() As Integer
+   Return spinMines.Value
+End
+
+Private Sub MineCount_Write(Value As Integer)
+   spinMines.Value = Value
+End

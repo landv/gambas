@@ -17,6 +17,7 @@ Public Sub Form_Open()
 
   Me.Title = Dialog.Title
   dchChoose.Root = "/"
+  dchChoose.ShowHidden = Dialog.ShowHidden
   If Not Dialog.Path Then 
     dchChoose.SelectedPath = "~"
   Else
