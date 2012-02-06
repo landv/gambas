@@ -350,7 +350,7 @@ GB_DESC CGslDesc[] =
     GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "[(x)f(y)f(e)f]"),
 
     // Elementary Functions
-    GB_STATIC_METHOD("Log1P", "f", GSL_LOG1P, "(x)f"),
+    GB_STATIC_METHOD("Log1p", "f", GSL_LOG1P, "(x)f"),
     GB_STATIC_METHOD("Expm1", "f", GSL_EXPM1, "(x)f"),
     GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "[(x)f(y)f]"),
     //GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "[(x)f(y)f(z)f]"),
