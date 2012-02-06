@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_gsl.h
 
   gb.gsl component
 
@@ -23,42 +23,32 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __C_GSL_COMPLEX_H
+#define __C_GSL_COMPLEX_H
 
-#include "main.h"
-#include "c_gsl.h"
-#include "c_complex.h"
+#include "gambas.h"
+#include <gsl/gsl_complex.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define THIS ((GSLCOMPLEX *)_object)
 
 GB_INTERFACE GB EXPORT;
 
+extern GB_DESC CGslComplexDesc[];
 
-GB_CLASS GSL;
+typedef
+    struct __GSLCOMPLEXNUM
+    {
+        double real;
+        double imagined;
+    }
+    GSLCOMPLEXNUM;
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CGslDesc, /* The Elementary math functions */
-  CGslComplexDesc,
-  /* Other classes go here as completed */
-  NULL // Must have a null entry for the end of the structure
-};
+typedef
+    struct __GSLCOMPLEX
+    {
+        GB_BASE ob;
+        GSLCOMPLEXNUM number;
+    }
+    GSLCOMPLEX;
 
-int EXPORT GB_INIT(void)
-{
-	//Complex = GB.FindClass("Complex");
-	return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-}
-
-
-
-#ifdef _cpluscplus
-}
-#endif
+#endif /* __C_GSL_COMPLEX_H */
