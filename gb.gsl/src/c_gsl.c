@@ -43,7 +43,7 @@ BEGIN_METHOD(GSL_ISNAN, GB_FLOAT x;)
     // This function returns 1 if x is not-a-number.
     // Call GSL Function int gsl_isnan(const double x)
     int c;
-    
+
     c = gsl_isnan(VARG(x));
 
     GB.ReturnBoolean((c==1?-1:0));
@@ -78,37 +78,37 @@ END_METHOD
 
 
 BEGIN_METHOD(GSL_ISPOSITIVE, GB_FLOAT x;)
-   // This method returns the sign of x. 
-   // It is defined as ((x) >= 0 ? 1 : -1). 
-   // Note that with this definition the sign of 
-   // zero is positive (regardless of its ieee sign bit). 
+   // This method returns the sign of x.
+   // It is defined as ((x) >= 0 ? 1 : -1).
+   // Note that with this definition the sign of
+   // zero is positive (regardless of its ieee sign bit).
    GB.ReturnBoolean((VARG(x) >= 0 ? -1 : 0));
 
 END_METHOD
 
 
 BEGIN_METHOD(GSL_SIGNF, GB_FLOAT x;)
-   // This method returns the sign of x. 
-   // It is defined as ((x) >= 0 ? 1 : -1). 
-   // Note that with this definition the sign of 
-   // zero is positive (regardless of its ieee sign bit). 
+   // This method returns the sign of x.
+   // It is defined as ((x) >= 0 ? 1 : -1).
+   // Note that with this definition the sign of
+   // zero is positive (regardless of its ieee sign bit).
    GB.ReturnInteger((VARG(x) >= 0 ? 1 : 0));
 
 END_METHOD
 
 
 BEGIN_METHOD(GSL_ISODD, GB_INTEGER x;)
-   // This method evaluates to -1 if n is odd and 0 
+   // This method evaluates to -1 if n is odd and 0
    // if n is even. The argument n must be of integer type.
-   GB.ReturnBoolean((VARG(x)%2 ? -1:0)); 
+   GB.ReturnBoolean((VARG(x)%2 ? -1:0));
 
 END_METHOD
 
 
 BEGIN_METHOD(GSL_ISEVEN, GB_INTEGER x;)
-   // This method evaluates to -1 if n is even and 0 
+   // This method evaluates to -1 if n is even and 0
    // if n is odd. The argument n must be of integer type.
-   GB.ReturnBoolean((VARG(x)%2 ? 0:-1)); 
+   GB.ReturnBoolean((VARG(x)%2 ? 0:-1));
 
 END_METHOD
 
@@ -142,16 +142,16 @@ END_METHOD
 
 BEGIN_METHOD(GSL_FCMPB, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
     // Function: int gsl_fcmp (double x, double y, double epsilon)
-    // This function determines whether x and y are approximately 
+    // This function determines whether x and y are approximately
     // equal to a relative accuracy epsilon.
-    // The relative accuracy is measured using an interval of size 2 \delta, 
-    // where \delta = 2^k \epsilon and k is the maximum base-2 exponent of x 
+    // The relative accuracy is measured using an interval of size 2 \delta,
+    // where \delta = 2^k \epsilon and k is the maximum base-2 exponent of x
     // and y as computed by the function frexp.
-    // If x and y lie within this interval, they are considered approximately 
+    // If x and y lie within this interval, they are considered approximately
     // equal and the function returns 0. Otherwise if x < y, the function returns
     // -1, or if x > y, the function returns +1.
-    // Note that x and y are compared to relative accuracy, so this function is 
-    // not suitable for testing whether a value is approximately zero. 
+    // Note that x and y are compared to relative accuracy, so this function is
+    // not suitable for testing whether a value is approximately zero.
 
     int c;
 
@@ -164,16 +164,16 @@ END_METHOD
 
 BEGIN_METHOD(GSL_FCMPI, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
     // Function: int gsl_fcmp (double x, double y, double epsilon)
-    // This function determines whether x and y are approximately 
+    // This function determines whether x and y are approximately
     // equal to a relative accuracy epsilon.
-    // The relative accuracy is measured using an interval of size 2 \delta, 
-    // where \delta = 2^k \epsilon and k is the maximum base-2 exponent of x 
+    // The relative accuracy is measured using an interval of size 2 \delta,
+    // where \delta = 2^k \epsilon and k is the maximum base-2 exponent of x
     // and y as computed by the function frexp.
-    // If x and y lie within this interval, they are considered approximately 
+    // If x and y lie within this interval, they are considered approximately
     // equal and the function returns 0. Otherwise if x < y, the function returns
     // -1, or if x > y, the function returns +1.
-    // Note that x and y are compared to relative accuracy, so this function is 
-    // not suitable for testing whether a value is approximately zero. 
+    // Note that x and y are compared to relative accuracy, so this function is
+    // not suitable for testing whether a value is approximately zero.
 
     GB.ReturnInteger(gsl_fcmp (VARG(x), VARG(y), VARG(e)));
 
@@ -185,7 +185,7 @@ END_METHOD
  Elementary Functions
 -----------------------------------------------*/
 
-BEGIN_METHOD(GSL_LOGLP, GB_FLOAT x;)
+BEGIN_METHOD(GSL_LOG1P, GB_FLOAT x;)
     // This function computes the value of \log(1+x)
     // in a way that is accurate for small x.
     // Call GSL Function int gsl_isnan(const double x)
@@ -194,7 +194,7 @@ BEGIN_METHOD(GSL_LOGLP, GB_FLOAT x;)
 END_METHOD
 
 
-BEGIN_METHOD(GSL_EXPML, GB_FLOAT x;)
+BEGIN_METHOD(GSL_EXPM1, GB_FLOAT x;)
     // This function computes the value of \exp(x)-1
     // in a way that is accurate for small x.
     GB.ReturnFloat(gsl_expm1 (VARG(x)));
@@ -229,34 +229,34 @@ END_METHOD
 
 BEGIN_METHOD(GSL_ASINH, GB_FLOAT x;)
     // Function: double gsl_asinh (const double x)
-    // This function computes the value of arcsinh(x). 
+    // This function computes the value of arcsinh(x).
     // It provides an alternative to the standard math function asinh(x).
-    GB.ReturnFloat(gsl_asinh(VARG(x))); 
+    GB.ReturnFloat(gsl_asinh(VARG(x)));
 END_METHOD
 
 BEGIN_METHOD(GSL_ATANH, GB_FLOAT x;)
     // Function: double gsl_atanh (const double x)
-    // This function computes the value of \arctanh(x). 
-    // It provides an alternative to the standard math function atanh(x). 
+    // This function computes the value of \arctanh(x).
+    // It provides an alternative to the standard math function atanh(x).
     GB.ReturnFloat(gsl_atanh(VARG(x)));
 END_METHOD
 
 BEGIN_METHOD(GSL_LDEXP, GB_FLOAT x; GB_INTEGER e;)
     // Function: double gsl_ldexp (double x, int e)
-    // This function computes the value of x * 2^e. 
+    // This function computes the value of x * 2^e.
     // It provides an alternative to the standard math function ldexp(x,e).
-    GB.ReturnFloat(gsl_ldexp(VARG(x), VARG(e))); 
+    GB.ReturnFloat(gsl_ldexp(VARG(x), VARG(e)));
 END_METHOD
 
 /*
 BEGIN_METHOD(GSL_FREXP, GB_FLOAT x; GB_POINTER e;)
     // Function: double gsl_frexp (double x, int * e)
-    // This function splits the number x into its normalized fraction f 
-    // and exponent e, such that x = f * 2^e and 0.5 <= f < 1. The function 
-    // returns f and stores the exponent in e. If x is zero, both f and e 
+    // This function splits the number x into its normalized fraction f
+    // and exponent e, such that x = f * 2^e and 0.5 <= f < 1. The function
+    // returns f and stores the exponent in e. If x is zero, both f and e
     // are set to zero. This function provides an alternative to the
     // standard math function frexp(x, e).
-    GB.ReturnFloat(gsl_frexp(VARG(x), VARG(e))); 
+    GB.ReturnFloat(gsl_frexp(VARG(x), VARG(e)));
 END_METHOD
 */
 
@@ -267,11 +267,11 @@ END_METHOD
  Small Integer Power Functions
 -----------------------------------------------*/
 BEGIN_METHOD(GSL_INTPOW, GB_FLOAT x; GB_INTEGER i;)
-    // A common complaint about the standard C library is its lack 
-    // of a function for calculating (small) integer powers. GSL 
+    // A common complaint about the standard C library is its lack
+    // of a function for calculating (small) integer powers. GSL
     // provides some simple functions to fill this gap. For reasons
     // of efficiency, these functions do not check for overflow or
-    // underflow conditions. 
+    // underflow conditions.
     GB.ReturnFloat(gsl_pow_int(VARG(x), VARG(i)));
 
 END_METHOD
@@ -350,8 +350,8 @@ GB_DESC CGslDesc[] =
     GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "[(x)f(y)f(e)f]"),
 
     // Elementary Functions
-    GB_STATIC_METHOD("LogLP", "f", GSL_LOGLP, "(x)f"),
-    GB_STATIC_METHOD("Expml", "f", GSL_EXPML, "(x)f"),
+    GB_STATIC_METHOD("Log1P", "f", GSL_LOG1P, "(x)f"),
+    GB_STATIC_METHOD("Expm1", "f", GSL_EXPM1, "(x)f"),
     GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "[(x)f(y)f]"),
     //GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "[(x)f(y)f(z)f]"),
     GB_STATIC_METHOD("Acosh", "f", GSL_ACOSH, "(x)f"),
@@ -359,11 +359,11 @@ GB_DESC CGslDesc[] =
     GB_STATIC_METHOD("Atanh", "f", GSL_ATANH, "(x)f"),
     GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "[(x)f(e)i]"),
     //GB_STATIC_METHOD("Frexp", "f", GSL_FREXP, "[(x)f(e)p]"),
-    
+
     // Return x^y using a small int safe method
     GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(x)f(i)i]"),
     GB_STATIC_METHOD("IntPow2", "f", GSL_INTPOW2, "(x)f"),
-    GB_STATIC_METHOD("IntPow3", "f", GSL_INTPOW3, "(x)f"),    
+    GB_STATIC_METHOD("IntPow3", "f", GSL_INTPOW3, "(x)f"),
     GB_STATIC_METHOD("IntPow4", "f", GSL_INTPOW4, "(x)f"),
     GB_STATIC_METHOD("IntPow5", "f", GSL_INTPOW5, "(x)f"),
     GB_STATIC_METHOD("IntPow6", "f", GSL_INTPOW6, "(x)f"),
@@ -373,7 +373,7 @@ GB_DESC CGslDesc[] =
 
     // Class Constants
     // Appears that GSL Macros cannot be used in GB_CONSTANT
-    // So we must define them here ourselves. 
+    // So we must define them here ourselves.
     //GB_CONSTANT("M_E", "f", "2.7182818284590"), 		  /* e 4523536028747135 */
     //GB_CONSTANT("M_LOGE", "f", "1.44269504088896340735992468100"),	  /* LOG_E */
     //GB_CONSTANT("M_LOG10E", "f", "0.43429448190325182765112891892"), 	  /* log_10 (e) */

@@ -32,6 +32,4 @@ GB_INTERFACE GB EXPORT;
 
 extern GB_DESC CGslDesc[];
 
-//extern GSL_INTPOW2;
-
 #endif /* __C_GSL_H */
