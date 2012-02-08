@@ -335,8 +335,8 @@ GB_DESC CGslDesc[] =
     GB_DECLARE("GSL",0), GB_NOT_CREATABLE(),
 
     // Number testing functions
-    GB_STATIC_METHOD("IsNAN", "b", GSL_ISNAN, "(x)f"),
-    GB_STATIC_METHOD("IsINF", "b", GSL_ISINF, "(x)f"),
+    GB_STATIC_METHOD("IsNan", "b", GSL_ISNAN, "(x)f"),
+    GB_STATIC_METHOD("IsInf", "b", GSL_ISINF, "(x)f"),
     GB_STATIC_METHOD("IsFinite", "b", GSL_ISFINITE, "(x)f"),
     GB_STATIC_METHOD("IsPos", "b", GSL_ISPOSITIVE, "(x)f"),
     GB_STATIC_METHOD("Sign", "i", GSL_SIGNF, "(x)i"),
