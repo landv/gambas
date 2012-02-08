@@ -263,7 +263,7 @@ void COMPONENT_load(COMPONENT *comp)
 	}
 	
   if (comp->archive)
-    ARCHIVE_load(comp->archive, comp->user);
+    ARCHIVE_load(comp->archive);
 
 	comp->loading = FALSE;
   comp->loaded = TRUE;

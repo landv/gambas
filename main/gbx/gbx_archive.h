@@ -65,7 +65,7 @@ void ARCHIVE_load_main(void);
 
 ARCHIVE *ARCHIVE_create(const char *name, const char *path);
 void ARCHIVE_delete(ARCHIVE *arch);
-void ARCHIVE_load(ARCHIVE *arch, bool dep);
+void ARCHIVE_load(ARCHIVE *arch);
 
 bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 

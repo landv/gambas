@@ -149,7 +149,7 @@ static void load_component(char *name)
 	COMPONENT_load(comp);
 }
 
-static void load_dependencies(ARCHIVE *arch)
+/*static void load_dependencies(ARCHIVE *arch)
 {
 	char *buffer;
 	int len;
@@ -157,14 +157,14 @@ static void load_dependencies(ARCHIVE *arch)
 	STREAM_load(".startup", &buffer, &len);
 	PROJECT_analyze_startup(buffer, len, load_component);
 	FREE(&buffer, "load_dependencies");
-}
+}*/
 
-static void load_archive(ARCHIVE *arch, const char *path, bool dep)
+static void load_archive(ARCHIVE *arch, const char *path) //, bool dep)
 {
 	arch->arch = ARCH_open(path);
 	load_exported_class(arch);
-	if (dep)
-		load_dependencies(arch);
+	//if (dep)
+	//	load_dependencies(arch);
 }
 
 static char *exist_library(const char *dir, const char *name)
@@ -178,7 +178,7 @@ static char *exist_library(const char *dir, const char *name)
 		return NULL;
 }
 
-void ARCHIVE_load(ARCHIVE *arch, bool dep)
+void ARCHIVE_load(ARCHIVE *arch) //, bool dep)
 {
   char *path;
 
@@ -202,7 +202,7 @@ void ARCHIVE_load(ARCHIVE *arch, bool dep)
 		sprintf(path, ARCH_PATTERN, COMPONENT_path, arch->name);
 	}
 
-	load_archive(arch, path, dep);
+	load_archive(arch, path); //, dep);
 }
 
 
