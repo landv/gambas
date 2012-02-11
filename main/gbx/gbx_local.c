@@ -1193,7 +1193,7 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 
 	date_token = *token == 'd' || *token == 'm' || *token == 'y';
 	
-	if ((date_token && DATE_SERIAL_has_no_date(date)) || (!date_token && DATE_SERIAL_has_no_time(date)))
+	if ((date_token && DATE_SERIAL_has_no_date(date))) // || (!date_token && DATE_SERIAL_has_no_time(date)))
 	{
 		*token = 0;
 		return TRUE;
@@ -1301,8 +1301,6 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 				}
 				fmt = local_current->long_time;
 			}
-			else if (date->hour == 0 && date->min == 0 && date->sec == 0)
-				fmt = local_current->short_date;
 			else
 				fmt = local_current->general_date;
 			break;
