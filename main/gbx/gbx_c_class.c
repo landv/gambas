@@ -765,6 +765,7 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 	}
 
 	GB_Call(&func, np, FALSE);
+	GB_ReturnConvVariant();
 
 END_METHOD
 
