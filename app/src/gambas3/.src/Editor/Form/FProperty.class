@@ -329,6 +329,7 @@ Public Function SaveProperty() As Boolean
   Dim vVal As Variant
   Dim hCtrl As CControl
   Dim sMsg As String
+  Dim sOldVal As String
 
   If Not $hForm Or If Not Object.IsValid($hForm) Then Return
   If $hForm.ReadOnly Then Return
@@ -336,6 +337,7 @@ Public Function SaveProperty() As Boolean
 
   vVal = $hEditor.Text
   If vVal = $sOldVal Then Return False
+  sOldVal = vVal
 
   Select $sType
 
@@ -413,7 +415,7 @@ Public Function SaveProperty() As Boolean
 
   $bIgnoreCancel = False
 
-  $sOldVal = $hEditor.Text
+  $sOldVal = sOldVal
   'DEBUG "$sOldVal =";; $sOldVal
   Return
 
