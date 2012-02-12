@@ -292,8 +292,6 @@
       MoveScaled(2,1,76,48)
       Expand = True
       Border = False
-      ShowFile = False
-      Margin = True
       ReadOnly = True
     }
     { Separator1 Separator
@@ -312,16 +310,15 @@
   { HBox6 HBox
     MoveScaled(13,68,60,4)
     Spacing = True
-    Invert = True
-    { btnCancel Button
-      MoveScaled(45,0,15,4)
-      Text = ("Cancel")
-      Cancel = True
-    }
     { btnOK Button
       MoveScaled(29,0,15,4)
       Text = ("OK")
       Default = True
+    }
+    { btnCancel Button
+      MoveScaled(45,0,15,4)
+      Text = ("Cancel")
+      Cancel = True
     }
   }
 }
