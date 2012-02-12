@@ -321,7 +321,7 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 	gControl *test;
 	int count;
 	int bucle;
-	bool ok=false;
+	bool ok = false;
 	
 	if (READ_PROPERTY)
 	{
@@ -335,6 +335,7 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 	{
 		THIS_UC->container = THIS;
 		WIDGET->setProxyContainer(NULL);
+		WIDGET->setProxy(NULL);
 		return;
 	}
 	
@@ -343,17 +344,17 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 	
 	count = PANEL->childCount();
 	
-	for (bucle=0;bucle<count;bucle++)
+	for (bucle = 0; bucle < count; bucle++)
 	{
-		test=PANEL->child(bucle);
+		test = PANEL->child(bucle);
 		do 
 		{
-			if (test->parent()==WIDGET )
+			if (test->parent() == WIDGET)
 			{
-				ok=true;
+				ok = true;
 				break;
 			}
-			test=test->parent();
+			test = test->parent();
 		} while (test);
 	}
 	
@@ -365,6 +366,7 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 	
 	THIS_UC->container = (CCONTAINER *)GetObject(((gContainer *)ct->ob.widget)->proxyContainer());
 	WIDGET->setProxyContainer(WIDGET_CONT->proxyContainer());
+	WIDGET->setProxy(THIS_UC->container->ob.widget);
 	WIDGET_CONT->performArrange();
 
 END_PROPERTY
