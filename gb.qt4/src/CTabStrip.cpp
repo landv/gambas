@@ -39,8 +39,8 @@
 #include "CTabStrip.h"
 
 
-DECLARE_METHOD(CCONTAINER_x);
-DECLARE_METHOD(CCONTAINER_y);
+DECLARE_METHOD(Container_X);
+DECLARE_METHOD(Container_Y);
 
 DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Close);
@@ -771,17 +771,17 @@ BEGIN_PROPERTY(TabStrip_Closable)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(CTABSTRIP_client_x)
 
-	CCONTAINER_x(_object, _param);
+	Container_X(_object, _param);
 
 END_PROPERTY
 
 
-
 BEGIN_PROPERTY(CTABSTRIP_client_y)
 
-	CCONTAINER_y(_object, _param);
+	Container_Y(_object, _param);
 
 END_PROPERTY
 
@@ -894,12 +894,12 @@ GB_DESC CTabStripDesc[] =
 	GB_PROPERTY_READ("ClientH", "i", CTABSTRIP_client_height),
 	GB_PROPERTY_READ("ClientHeight", "i", CTABSTRIP_client_height),
 
-	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+	GB_PROPERTY("Padding", "i", Container_Padding),
+	GB_PROPERTY("Spacing", "b", Container_Spacing),
+	GB_PROPERTY("Margin", "b", Container_Margin),
+	GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
 	GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),

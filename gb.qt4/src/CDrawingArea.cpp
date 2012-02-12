@@ -519,7 +519,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_border)
 
-	CCONTAINER_border(_object, _param);
+	Container_Border(_object, _param);
 
 	if (!READ_PROPERTY)
 	{
@@ -609,12 +609,12 @@ GB_DESC CDrawingAreaDesc[] =
 
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
 	
-	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+	GB_PROPERTY("Spacing", "b", Container_Spacing),
+	GB_PROPERTY("Margin", "b", Container_Margin),
+	GB_PROPERTY("Padding", "i", Container_Padding),
+	GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),

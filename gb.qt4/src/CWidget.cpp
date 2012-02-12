@@ -219,7 +219,7 @@ static bool is_visible(void *_object)
 	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
 }
 
-static void register_proxy(void *_object, void *proxy)
+void CWIDGET_register_proxy(void *_object, void *proxy)
 {
 	void *check = proxy;
 
@@ -1452,7 +1452,7 @@ BEGIN_PROPERTY(Control_Proxy)
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->proxy);
 	else
-		register_proxy(THIS, VPROP(GB_OBJECT));
+		CWIDGET_register_proxy(THIS, VPROP(GB_OBJECT));
 
 END_PROPERTY
 

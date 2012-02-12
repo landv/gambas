@@ -1496,11 +1496,11 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("Visible", "b", CWINDOW_visible),
 	GB_PROPERTY("Opacity", "i", Window_Opacity),
 	
-	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+	GB_PROPERTY("Padding", "i", Container_Padding),
+	GB_PROPERTY("Spacing", "b", Container_Spacing),
+	GB_PROPERTY("Margin", "b", Container_Margin),
+	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
   GB_PROPERTY("Invert", "b", Container_Invert),
 	
 	//GB_PROPERTY("Type", "i", CWINDOW_type),
