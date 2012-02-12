@@ -852,6 +852,7 @@ Public Sub Control_Resize()
 
   With RootControl
     If hCtrl <> .Control Then Return
+    If Not $hUndo Then Return
     $hUndo.Begin
     If hCtrl.Width <> .GetProperty("#Width") Then .SetProperty("#Width", hCtrl.Width)
     If hCtrl.Height <> .GetProperty("#Height") Then .SetProperty("#Height", hCtrl.Height)

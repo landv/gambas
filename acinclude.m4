@@ -971,7 +971,7 @@ AC_DEFUN([GB_COMPONENT],
 ## ---------------------------------------------------------------------------
 ## GB_COMPONENT_SEARCH
 ## Component detection macro that uses GB_COMPONENT_PKG_CONFIG first, and
-## then GB_COMPONENT then.
+## then GB_COMPONENT.
 ##
 ##   $1  = Component key in lower case (ex: postgresql)
 ##   $2  = Component key in upper case (ex: POSTGRESQL)

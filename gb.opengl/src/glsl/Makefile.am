@@ -12,6 +12,6 @@ gb_opengl_glsl_la_SOURCES = \
  GLprogram.h GLprogram.c \
  GLshader.h GLshader.c \
  GLuniform.h GLuniform.c \
-GLattributes.h GLattributes.c \
+ GLattributes.h GLattributes.c \
  GL.h GL.c
 

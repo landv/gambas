@@ -296,7 +296,7 @@ Public Function Save(Optional bReset As Boolean) As Boolean
 
   Editor.Begin
 
-  If Editor.Lines[0].Text <> sHeader Then
+  If RTrim(Editor.Lines[0].Text) <> sHeader Then
     Editor.Insert(sHeader & "\n", 0, 0)
   Endif
 

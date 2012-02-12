@@ -440,10 +440,6 @@ Public Sub Load()
   ClassList = New String[]
   Controls = New String[]
   
-  For Each sLig In Require
-    All[sLig].Load
-  Next
-  
   If {Library} Then
     
     hLibraryInfo = New CLibraryInfo(Path)
@@ -452,8 +448,17 @@ Public Sub Load()
     File.Save(sPath, hLibraryInfo.Info)
     aList = hLibraryInfo.Classes
     
+    Require = hLibraryInfo.Require
+    For Each sLig In Require
+      All[sLig].Load
+    Next
+  
   Else
     
+    For Each sLig In Require
+      All[sLig].Load
+    Next
+  
     If Key = PROJECT_NAME Then
       sPath = Project.Dir &/ ".info"
       If Not Exist(sPath) Then Return
@@ -1252,9 +1257,22 @@ Static Public Sub AddLibrary(sPath As String)
   hComp.Library = True
   hComp.Path = sPath
   
+  Libraries.Add(hComp.Key)
   All[hComp.Key] = hComp
   
   hComp.Load
+  
+End
+
+Static Public Sub RemoveLibrary(sPath As String)
+  
+  Dim sKey As String = File.Name(sPath)
+  Dim iPos As Integer = Libraries.Find(sKey)
+  
+  If iPos < 0 Then Return
+  
+  Libraries.Remove(iPos)
+  All[sKey] = Null
   
 End
 

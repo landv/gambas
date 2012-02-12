@@ -7,6 +7,7 @@ Public Version As String
 Public Classes As String[]
 Public Libraries As String[]
 Public Info As String
+Public Require As String[]
 
 Public Sub _new(sPath As String)
   
@@ -45,6 +46,12 @@ Public Sub _new(sPath As String)
     
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".list"] To sData
   Classes = Split(sData, "\n", "", True)
+  
+  Require = New String[]
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".component"] To sData
+  For Each sLine In Split(sData, "\n", "", True)
+    If Trim(sLine) Begins "Requires=" Then Require.Add(Trim(Mid$(sLine, InStr(sLine, "=") + 1)))
+  Next
     
 End
 

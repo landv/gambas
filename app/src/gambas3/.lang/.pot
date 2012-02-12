@@ -274,7 +274,7 @@ msgstr ""
 msgid "Authors"
 msgstr ""
 
-#: CComponentBox.class:234 FPropertyComponent.form:106
+#: CComponentBox.class:234 FPropertyComponent.form:106 LibraryItem.class:63
 msgid "Requires"
 msgstr ""
 
@@ -371,7 +371,7 @@ msgstr ""
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
 #: FConflict.class:191 FConnectionEditor.class:295 FCreateFile.form:437
 #: FDebugInfo.form:218 FEditor.class:2366 FExportData.class:126
-#: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3143
+#: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3144
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
 #: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:378
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
@@ -1723,11 +1723,11 @@ msgstr ""
 msgid "Bad form file"
 msgstr ""
 
-#: FForm.class:1298
+#: FForm.class:1299
 msgid "Component missing for control &1"
 msgstr ""
 
-#: FForm.class:3143
+#: FForm.class:3144
 msgid ""
 "The form has been modified.\n"
 "\n"
@@ -2624,7 +2624,7 @@ msgstr ""
 msgid "Create a shortcut on the desktop"
 msgstr ""
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1053
+#: FMakeExecutable.class:18 FPropertyProject.class:1068
 msgid "Gambas applications"
 msgstr ""
 
@@ -2860,7 +2860,7 @@ msgstr ""
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:327 FPropertyProject.class:805 FSave.form:21
+#: FMakeInstall.class:327 FPropertyProject.class:820 FSave.form:21
 #: Project.module:3096
 msgid "Continue"
 msgstr ""
@@ -3621,7 +3621,7 @@ msgid "Component"
 msgstr ""
 
 #: FPropertyProject.form:389
-msgid "This project is a component"
+msgid "This project is a component or a library"
 msgstr ""
 
 #: FPropertyProject.form:400
@@ -3695,43 +3695,43 @@ msgstr ""
 msgid "Snapping value is incorrect."
 msgstr ""
 
-#: FPropertyProject.class:441
+#: FPropertyProject.class:456
 msgid "These components are incompatible:<br>&1."
 msgstr ""
 
-#: FPropertyProject.class:454
+#: FPropertyProject.class:469
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr ""
 
-#: FPropertyProject.class:461
+#: FPropertyProject.class:476
 msgid "The &1 component needs the &2 component."
 msgstr ""
 
-#: FPropertyProject.class:762
+#: FPropertyProject.class:777
 msgid "There is no change to commit."
 msgstr ""
 
-#: FPropertyProject.class:796
+#: FPropertyProject.class:811
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FPropertyProject.class:798
+#: FPropertyProject.class:813
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FPropertyProject.class:805
+#: FPropertyProject.class:820
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: FPropertyProject.class:1052
+#: FPropertyProject.class:1067
 msgid "Select a Gambas application"
 msgstr ""
 
-#: FPropertyProject.class:1063
+#: FPropertyProject.class:1078
 msgid "<b>&1</b> is already used as a library."
 msgstr ""
 
-#: FPropertyProject.class:1069
+#: FPropertyProject.class:1084
 msgid "<b>&1</b> does not export any class."
 msgstr ""
 
@@ -4477,10 +4477,6 @@ msgstr ""
 
 #: LibraryItem.class:59
 msgid "WARNING! Library not found."
-msgstr ""
-
-#: LibraryItem.class:62
-msgid "Depends on"
 msgstr ""
 
 #: MConnection.module:286

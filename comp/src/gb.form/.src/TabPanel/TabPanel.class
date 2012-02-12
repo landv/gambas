@@ -135,7 +135,7 @@ Private Sub UpdateLayout()
     hCtrl.Refresh
   Next
   
-  $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale
+  $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale + 2
   
   $hTabBarContainer.Arrangement = Arrange.Horizontal
   _EnsureCurrentVisible

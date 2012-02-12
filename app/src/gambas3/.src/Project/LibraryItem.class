@@ -59,7 +59,8 @@ Public Sub DrawingArea_Draw()
       $sText &= "<p><b><font color=\"red\">" & ("WARNING! Library not found.") & "</font></b>"
     Else
       $sText &= "<br><font size=\"-1\"><b>" & ("Provides") & "&nbsp;:&nbsp;</b>" & .Classes.Join(", ") & "</font>"
-      If .Libraries.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Depends on") & "&nbsp;:&nbsp;</b>" & .Libraries.Join(", ") & "</font>"
+      'If .Libraries.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Depends on") & "&nbsp;:&nbsp;</b>" & .Libraries.Join(", ") & "</font>"
+      If .Require.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Requires") & "&nbsp;:&nbsp;</b>" & .Require.Join(", ") & "</font>"
       $sText &= "<br></font>"
     Endif
 

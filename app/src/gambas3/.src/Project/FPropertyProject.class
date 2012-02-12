@@ -332,6 +332,7 @@ Private Sub RefreshComponents()
   Dim bDark As Boolean
   Dim hOld As ListContainer
   Dim iUser As Integer
+  Dim hLibInfo As CLibraryInfo
 
   'If Not $bCanInitLibrary Then Return
 
@@ -353,9 +354,9 @@ Private Sub RefreshComponents()
   For Each sLib In aComp
     hComp = CComponent.All[sLib]
     If hComp.Hidden Then Continue
-    If $bShowUsed Then
-      If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
-    Endif
+    'If $bShowUsed Then
+    '  If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
+    'Endif
     hCompBox = New CComponentBox(lstComponent, hComp, bDark) As "Component"
     bDark = Not bDark
     $cComp[hComp.Key] = hCompBox 
@@ -368,7 +369,21 @@ Private Sub RefreshComponents()
       $cComp[sDep].Check(sLib)
     Next
   Next
+  
+  For Each sLib In $aLibraries
+    hLibInfo = New CLibraryInfo(sLib)
+    For Each sDep In hLibInfo.Require
+      $cComp[sDep].Check(sLib)
+    Next
+  Next
+  
   $cComp["gb"].Check("") 
+  
+  If $bShowUsed Then
+    For Each hCompBox In lstComponent.Children
+      If Not hCompBox.Value Then hCompBox.Hide
+    Next
+  Endif
   
   CComponentBox.ResizeNames(lstComponent)
   
@@ -1071,7 +1086,9 @@ Public Sub btnInsertLib_Click()
   Endif
   
   $aLibraries.Add(sPath)
+  
   RefreshLibraries
+  RefreshComponents
 
 End
 
@@ -1103,6 +1120,7 @@ Public Sub btnRemoveLib_Click()
   If iPos >= 0 Then
     $aLibraries.Remove(iPos)
     RefreshLibraries
+    RefreshComponents
   Endif
   
 End
@@ -1143,6 +1161,7 @@ Public Sub btnUndoLib_Click()
 
   $aLibraries = Project.Libraries.Copy()
   RefreshLibraries
+  RefreshComponents
 
 End
 

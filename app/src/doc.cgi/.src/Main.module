@@ -3985,7 +3985,7 @@ Private Function GetIndex2(sRoot As String) As String
 
   If Not sRoot Then Error.Raise("@index needs an argument")
 
-  aArg = Split(sRoot, " ")
+  aArg = Split(sRoot, " ", Chr$(34))
   sRoot = aArg[0]
   If aArg.Count >= 2 Then 
     sPrefix = aArg[1]

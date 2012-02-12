@@ -63,7 +63,7 @@ static struct option Long_options[] =
 static char **path_list;
 static int path_current;
 
-static const char *allowed_hidden_files[] = { ".gambas", ".info", ".list", ".lang", ".action", ".connection", NULL };
+static const char *allowed_hidden_files[] = { ".gambas", ".info", ".list", ".lang", ".action", ".connection", ".component", NULL };
 //static const char *remove_ext_root[] = { "module", "class", "form", "gambas", NULL };
 static const char *remove_ext_lang[] = { "pot", "po", NULL };
 
