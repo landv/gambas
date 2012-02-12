@@ -49,7 +49,7 @@ void EXEC_push_unknown(ushort code)
 		&&_PUSH_METHOD_AUTO,           // 9
 		&&_PUSH_EXTERN,                // 10
 		&&_PUSH_STRUCT_FIELD,          // 11
-		&&_PUSH_TCONSTANT,             // 12
+		&&_PUSH_CONST_STRING,          // 12
 		};
 
 	const char *name;
@@ -114,7 +114,7 @@ _PUSH_GENERIC:
 	{
 		case CD_CONSTANT:
 
-			if (TYPE_is_string(desc->constant.type) && desc->constant.translate)
+			if (TYPE_is_string(desc->constant.type))
 			{
 				if (defined)
 				{
@@ -122,7 +122,7 @@ _PUSH_GENERIC:
 					PC[1] = index;
 				}
 				
-				goto _PUSH_TCONSTANT_2;
+				goto _PUSH_CONST_STRING_2;
 			}
 			else
 			{
@@ -292,7 +292,7 @@ _PUSH_GENERIC:
 			THROW(E_NSYMBOL, name, class->name);
 	}
 
-
+	
 _PUSH_CONSTANT:
 
 	desc = class->table[PC[1]].desc;
@@ -303,15 +303,20 @@ _PUSH_CONSTANT_2:
 	goto _FIN_DEFINED;
 
 
-_PUSH_TCONSTANT:
+_PUSH_CONST_STRING:
 
 	desc = class->table[PC[1]].desc;
 
-_PUSH_TCONSTANT_2:
+_PUSH_CONST_STRING_2:
 
 	SP--;
 	SP->type = T_CSTRING;
-	SP->_string.addr = (char *)LOCAL_gettext(desc->constant.value._string);;
+	
+	if (desc->constant.translate)
+		SP->_string.addr = (char *)LOCAL_gettext(desc->constant.value._string);
+	else
+		SP->_string.addr = (char *)desc->constant.value._string;
+	
 	SP->_string.start = 0;
 	SP->_string.len = strlen(SP->_string.addr);
 	SP++;
