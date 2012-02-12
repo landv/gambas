@@ -1036,7 +1036,7 @@ void GB_Attach(void *object, void *parent, const char *name)
 
 void GB_StopEnum(void)
 {
-  /* Do not forget than event if we stop the enumeration, the return value
+  /* Do not forget than even if we stop the enumeration, the return value
      of _next will be converted
   */
   //VALUE_default(&TEMP, *GAMBAS_ReturnType);
