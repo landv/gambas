@@ -292,13 +292,15 @@
       MoveScaled(2,1,76,48)
       Expand = True
       Border = False
+      Margin = True
       ReadOnly = True
     }
     { Separator1 Separator
-      MoveScaled(25,52,16,0)
+      MoveScaled(26,50,9,0)
     }
-    { Panel4 VBox
-      MoveScaled(1,53,77,5)
+    { Panel1 Panel
+      MoveScaled(2,53,70,5)
+      Arrangement = Arrange.Fill
       Margin = True
       { chkLink CheckBox
         MoveScaled(1,1,56,3)
@@ -308,17 +310,18 @@
     Index = 0
   }
   { HBox6 HBox
-    MoveScaled(13,68,60,4)
+    MoveScaled(9,68,60,4)
     Spacing = True
-    { btnOK Button
-      MoveScaled(29,0,15,4)
-      Text = ("OK")
-      Default = True
-    }
+    Invert = True
     { btnCancel Button
       MoveScaled(45,0,15,4)
       Text = ("Cancel")
       Cancel = True
+    }
+    { btnOK Button
+      MoveScaled(29,0,15,4)
+      Text = ("OK")
+      Default = True
     }
   }
 }
