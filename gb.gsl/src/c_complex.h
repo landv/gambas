@@ -36,18 +36,10 @@ GB_INTERFACE GB EXPORT;
 extern GB_DESC CGslComplexDesc[];
 
 typedef
-    struct __GSLCOMPLEXNUM
-    {
-        double real;
-        double imagined;
-    }
-    GSLCOMPLEXNUM;
-
-typedef
     struct __GSLCOMPLEX
     {
         GB_BASE ob;
-        GSLCOMPLEXNUM number;
+        gsl_complex number;
     }
     GSLCOMPLEX;
 
