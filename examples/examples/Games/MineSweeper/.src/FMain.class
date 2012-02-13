@@ -76,7 +76,8 @@ Public Sub Block_MouseUp()
    Endif
    
    ' Skip the event if the mouse button is released outside the block it is pressed
-   If Mouse.X > blocks[0, 0].Width Or Mouse.y > blocks[0, 0].Height Then Return 
+   If Mouse.X > blocks[0, 0].Width Or Mouse.y > blocks[0, 0].Height Then Return
+   If Mouse.X < 0 Or Mouse.y < 0 Then Return
 
    If Mouse.Right Then
       game.ToggleFlag(x, y)
