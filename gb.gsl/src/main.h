@@ -29,8 +29,10 @@
 #include "gambas.h"
 
 #include "c_gsl.h"
+#include "c_complex.h"
 
 #ifndef __MAIN_C
+extern GB_INTERFACE GB;
 extern GB_CLASS CGslDesc[];
 #endif
 

@@ -26,9 +26,6 @@
 #define __MAIN_C
 
 #include "main.h"
-#include "c_gsl.h"
-#include "c_complex.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,15 +46,12 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-	//Complex = GB.FindClass("Complex");
 	return 0;
 }
 
 void EXPORT GB_EXIT()
 {
 }
-
-
 
 #ifdef _cpluscplus
 }
