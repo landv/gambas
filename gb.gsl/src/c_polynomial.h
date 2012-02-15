@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.h
+  c_polynomial.h
 
   gb.gsl component
 
@@ -23,18 +23,22 @@
 
 ***************************************************************************/
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __C_GSL_POLYNOMIAL_H
+#define __C_GSL_POLYNOMIAL_H
 
 #include "gambas.h"
-
-#include "c_gsl.h"
+#include <gsl/gsl_poly.h>
 #include "c_complex.h"
-#include "c_polynomial.h"
 
-#ifndef __MAIN_C
-extern GB_INTERFACE GB;
-extern GB_CLASS CGslDesc[];
-#endif
+GB_INTERFACE GB EXPORT;
 
-#endif /* __MAIN_H */
+extern GB_DESC CGslPolynomialDesc[];
+
+typedef
+    struct __GSLPOLY
+    {
+        GB_BASE ob;
+    }
+    GSLPOLY;
+
+#endif /* __C_GSL_POLYNOMIAL_H */
