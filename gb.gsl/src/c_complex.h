@@ -29,8 +29,6 @@
 #include "gambas.h"
 #include <gsl/gsl_complex.h>
 
-#define THIS ((GSLCOMPLEX *)_object)
-
 GB_INTERFACE GB EXPORT;
 
 extern GB_DESC CGslComplexDesc[];
@@ -42,5 +40,8 @@ typedef
         gsl_complex number;
     }
     GSLCOMPLEX;
+
+static GSLCOMPLEX *create_complex();
+
 
 #endif /* __C_GSL_COMPLEX_H */

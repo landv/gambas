@@ -35,6 +35,10 @@
 #include <gsl/gsl_sf.h>
 #include <stdio.h>
 
+
+#define THIS ((GSLCOMPLEX *)_object)
+
+
 /***********************************
       Complex Utility Methods
 ***********************************/
@@ -43,6 +47,33 @@ static GSLCOMPLEX *create_complex()
 	return (GSLCOMPLEX *)GB.New(GB.FindClass("Complex"), NULL,  NULL);
 }
 
+BEGIN_METHOD(GslComplex_new, GB_FLOAT real; GB_FLOAT imag)
+
+	THIS->number.dat[0] = VARGOPT(real, 0.0);
+	THIS->number.dat[1] = VARGOPT(imag, 0.0);
+
+END_METHOD
+
+
+BEGIN_METHOD(GslComplex_call, GB_FLOAT real; GB_FLOAT imag)
+
+	GSLCOMPLEX *c = create_complex();
+	
+	c->number.dat[0] = VARG(real);
+	c->number.dat[1] = VARG(imag);
+	GB.ReturnObject(c);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(GslComplex_Copy)
+
+	GSLCOMPLEX *c = create_complex();
+	
+	c->number = THIS->number;
+	GB.ReturnObject(c);
+
+END_METHOD
 
 BEGIN_METHOD_VOID(GslComplex_ToString)
 
@@ -94,34 +125,30 @@ BEGIN_METHOD_VOID(GslComplex_ToString)
 END_METHOD
 
 
-BEGIN_METHOD(GslComplex_new, GB_FLOAT real; GB_FLOAT imag)
-
-	THIS->number.dat[0] = VARGOPT(real, 0.0);
-	THIS->number.dat[1] = VARGOPT(imag, 0.0);
-
-END_METHOD
-
-
-BEGIN_METHOD(GslComplex_call, GB_FLOAT real; GB_FLOAT imag)
-
-	GSLCOMPLEX *c = create_complex();
+BEGIN_METHOD(GslComplex_Set, GB_FLOAT real; GB_FLOAT imag)
 	
-	c->number.dat[0] = VARG(real);
-	c->number.dat[1] = VARG(imag);
-	GB.ReturnObject(c);
+	THIS->number.dat[0] = VARG(real);
+	THIS->number.dat[1] = VARG(imag);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(GslComplex_Copy)
+BEGIN_METHOD(GslComplex_Rect, GB_FLOAT real; GB_FLOAT imag)
 
-	GSLCOMPLEX *c = create_complex();
-	
-	c->number = THIS->number;
-	GB.ReturnObject(c);
+	THIS->number = gsl_complex_rect(VARG(real), VARG(imag));
 
-END_METHOD
+	//GB.ReturnObject(THIS);
 
+END_METHOD 
+
+
+BEGIN_METHOD(GslComplex_Polar, GB_FLOAT real; GB_FLOAT imag)
+
+	THIS->number = gsl_complex_polar(VARG(real), VARG(imag));
+
+	//GB.ReturnObject(THIS);
+
+END_METHOD 
 
 /******************************
       Property Methods
@@ -889,6 +916,9 @@ GB_DESC CGslComplexDesc[] =
 	GB_STATIC_METHOD("_call", "Complex", GslComplex_call, "[(Real)f(Imag)f]"),
 	GB_METHOD("ToString", "s", GslComplex_ToString, NULL),
 	GB_METHOD("Copy", "Complex", GslComplex_Copy, NULL),
+	GB_METHOD("Set", NULL, GslComplex_Set, "[(real)f(imag)f]"),
+	GB_METHOD("Rect", NULL, GslComplex_Rect, "[(real)f(imag)f]"),
+	GB_METHOD("Polar", NULL, GslComplex_Polar, "[(real)f(imag)f]"),
 
 	// Properties
 	GB_PROPERTY("Real", "f", GslComplex_Real),
