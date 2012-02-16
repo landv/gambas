@@ -510,6 +510,26 @@ BEGIN_METHOD(GslComplex_Log_b, GB_OBJECT x;)
 END_METHOD
 
 
+BEGIN_METHOD(GslComplex_Frexp, GB_FLOAT x; GB_POINTER e)
+	// Function: double gsl_frexp (double x, int * e)
+	// This function splits the number x into its normalized 
+	// fraction f and exponent e, such that x = f * 2^e and
+	// 0.5 <= f < 1. The function returns f and stores the 
+	// exponent in e. If x is zero, both f and e are set to
+	// zero. This function provides an alternative to the
+	// standard math function frexp(x, e).
+	int *b;
+	double r;
+
+	b = VARG(e);
+
+	//printf("b: %x\n", (int)b);
+
+	r = gsl_frexp(VARG(x), (int *)VARG(e));
+
+	GB.ReturnFloat(r);
+	
+END_METHOD
 
 /**************************************************
           Complex Trigonometric Functions
@@ -907,7 +927,7 @@ END_METHOD
 /**************************************************
   Describe Class properties and methods to Gambas
 **************************************************/
-GB_DESC CGslComplexDesc[] =
+GB_DESC CComplexDesc[] =
 {
 	GB_DECLARE("Complex", sizeof(GSLCOMPLEX)),
 	
@@ -952,6 +972,7 @@ GB_DESC CGslComplexDesc[] =
     GB_METHOD("Log", "Complex", GslComplex_Log, NULL),
     GB_METHOD("Log10", "Complex", GslComplex_Log10, NULL),
     GB_METHOD("Logb", "Complex", GslComplex_Log_b, "(x)Complex"),
+	GB_METHOD("Frexp", "f", GslComplex_Frexp, "(x)f(e)p"),
 
 	// Complex Trigonometric Functions
     GB_METHOD("Sin", "Complex", GslComplex_Sin, NULL),

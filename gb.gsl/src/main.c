@@ -39,8 +39,8 @@ GB_CLASS GSL;
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   CGslDesc, /* The Elementary math functions */
-  CGslComplexDesc,
-  CGslPolynomialDesc,
+  CComplexDesc,
+  CPolynomialDesc,
   /* Other classes go here as completed */
   NULL // Must have a null entry for the end of the structure
 };

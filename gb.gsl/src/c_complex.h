@@ -31,7 +31,7 @@
 
 GB_INTERFACE GB EXPORT;
 
-extern GB_DESC CGslComplexDesc[];
+extern GB_DESC CComplexDesc[];
 
 typedef
     struct __GSLCOMPLEX
