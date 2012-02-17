@@ -523,8 +523,6 @@ BEGIN_METHOD(GslComplex_Frexp, GB_FLOAT x; GB_POINTER e)
 
 	b = VARG(e);
 
-	//printf("b: %x\n", (int)b);
-
 	r = gsl_frexp(VARG(x), (int *)VARG(e));
 
 	GB.ReturnFloat(r);
@@ -972,7 +970,7 @@ GB_DESC CComplexDesc[] =
     GB_METHOD("Log", "Complex", GslComplex_Log, NULL),
     GB_METHOD("Log10", "Complex", GslComplex_Log10, NULL),
     GB_METHOD("Logb", "Complex", GslComplex_Log_b, "(x)Complex"),
-	GB_METHOD("Frexp", "f", GslComplex_Frexp, "(x)f(e)p"),
+	GB_STATIC_METHOD("Frexp", "f", GslComplex_Frexp, "(x)f(e)p"),
 
 	// Complex Trigonometric Functions
     GB_METHOD("Sin", "Complex", GslComplex_Sin, NULL),
