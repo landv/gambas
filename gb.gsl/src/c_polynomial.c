@@ -47,7 +47,7 @@ static CPOLYNOMIAL *create_plynomial()
 
 BEGIN_METHOD_VOID(CPolynomial_new)
 	// May change to take init array of floats
-	
+	THIS->alloc_size = 32;
 END_METHOD
 
 
@@ -80,13 +80,32 @@ BEGIN_PROPERTY(CPolynomial_Length)
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(CPolynomial_MaxCoef)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger((THIS->max));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CPolynomial_AllocSize)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger((THIS->alloc_size));
+	else
+		THIS->alloc_size = (VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+
 BEGIN_METHOD_VOID(CPolynomial_ToString)
 	// Currently using this method to print debugging info
 	// Will emplement real functionality later...
 	int i = 0;
 
 	printf("Initial Count: %d \n", THIS->len);
-	printf("Address: %x = %f \n", (int)&THIS->c, THIS->c);
+	printf("Address: %x = %f \n", (int)&THIS->c, THIS->c[0]);
 	
 	for(i=0; i< THIS->len; i++)
 	{	
@@ -102,21 +121,50 @@ END_METHOD
                   Data Methods
 **************************************************/
 
-BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
-
-	// Initializes the coeficent array	
-	if(THIS->len == 0)
+BEGIN_METHOD_VOID(CPolynomial_Alloc)
+	// Allocate 32 doubles at a time for coeficient storage
+	if(THIS->len == 0 && THIS->max == 0)
 	{
-		GB.Alloc(POINTER(&THIS->c), sizeof(double));
-		THIS->c[THIS->len] = VARG(x);
-		THIS->len++;		
-		return GB.ReturnInteger(THIS->len);
+		GB.Alloc(POINTER(&THIS->c), sizeof(double)*THIS->alloc_size);
+	}
+	else
+	{
+		GB.Realloc(POINTER(&THIS->c), (sizeof(double)*(THIS->len + THIS->alloc_size)));	
+	}
+
+	// Check for error
+	if(THIS->c == NULL)
+	{
+		THIS->len = 0;
+		THIS->max = 0;
+		GB.Error("Could not allocate coeficient storage"); // Do I really need this? 
+		return 0;
+	}
+	else
+	{
+		THIS->max += THIS->alloc_size;
+		return -1;
+	}		
+	
+END_METHOD
+
+
+BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
+	
+	// Create and resize coeficent
+	// array if needed	
+	if(THIS->len == THIS->max)
+	{
+		CPolynomial_Alloc(THIS, NULL);
+		if(!THIS->max)		
+		{
+			return;
+		}
 	}
 
 	// Add a value to coeficent array
-	if(THIS->len > 0)
+	if(THIS->max > 0)
 	{
-		GB.Realloc(POINTER(&THIS->c), (sizeof(double)*(THIS->len+1)));
 		THIS->c[THIS->len] = VARG(x);
 		THIS->len++;		
 		return GB.ReturnInteger(THIS->len);
@@ -140,7 +188,6 @@ BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
 	// This function evaluates a polynomial with real 
 	// coefficients for the real variable x.
 	double r;
-	int i;
 	double b = VARG(x);
 
 	r = gsl_poly_eval(THIS->c, THIS->len, b);
@@ -166,10 +213,12 @@ GB_DESC CPolynomialDesc[] =
 
 	// Property Methods
 	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
-	GB_METHOD("ToString", "s", CPolynomial_ToString, NULL),
+	GB_PROPERTY_READ("MaxCoef", "i", CPolynomial_MaxCoef),
+	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),	
 	
 	// Data Methods
 	GB_METHOD("Add", "i", CPolynomial_Add, "(x)f"),
+	GB_METHOD("ToString", "s", CPolynomial_ToString, NULL),
 
 	// Implementation Methods
 	GB_METHOD("Eval", "f", CPolynomial_Eval, "(x)f"),

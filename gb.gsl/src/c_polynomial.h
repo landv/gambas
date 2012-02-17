@@ -41,6 +41,8 @@ typedef
     GB_BASE ob;
     double *c; // coefficients
     int len;
+	int max;
+	int alloc_size;
     }
   CPOLYNOMIAL;
 
