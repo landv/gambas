@@ -29,16 +29,19 @@
 #include "gambas.h"
 #include <gsl/gsl_poly.h>
 #include "c_complex.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+ 
 GB_INTERFACE GB EXPORT;
 
-extern GB_DESC CGslPolynomialDesc[];
+extern GB_DESC CPolynomialDesc[];
 
 typedef
-    struct __GSLPOLY
-    {
-        GB_BASE ob;
+  struct {
+    GB_BASE ob;
+    double *c; // coefficients
+    int len;
     }
-    GSLPOLY;
+  CPOLYNOMIAL;
 
 #endif /* __C_GSL_POLYNOMIAL_H */

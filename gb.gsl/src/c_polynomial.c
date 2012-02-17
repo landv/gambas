@@ -32,47 +32,149 @@
 #include "c_polynomial.h"
 
 
-#define THIS ((GSLPOLY *)_object)
+#define THIS ((CPOLYNOMIAL *)_object)
 
 
-BEGIN_METHOD(GSLPOLY_Eval, GB_OBJECT array; GB_FLOAT x;)
+/**************************************************
+                 Utility Methods
+**************************************************/
+
+static CPOLYNOMIAL *create_plynomial()
+{
+	return (CPOLYNOMIAL *)GB.New(GB.FindClass("Polynomial"), NULL,  NULL);
+}
+
+
+BEGIN_METHOD_VOID(CPolynomial_new)
+	// May change to take init array of floats
+	
+END_METHOD
+
+
+BEGIN_METHOD_VOID(CPolynomial_call)
+	// May be changed to take init array of floats
+	CPOLYNOMIAL *c = create_polynomial();
+	
+	GB.ReturnObject(c);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(CPolynomial_free)
+
+	if(THIS->c != NULL && THIS->c != 0)
+		GB.Free(POINTER(THIS->c));
+
+END_METHOD
+
+
+
+/**************************************************
+                Property Methods
+**************************************************/
+
+BEGIN_PROPERTY(CPolynomial_Length)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger((THIS->len));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(CPolynomial_ToString)
+	// Currently using this method to print debugging info
+	// Will emplement real functionality later...
+	int i = 0;
+
+	printf("Initial Count: %d \n", THIS->len);
+	printf("Address: %x = %f \n", (int)&THIS->c, THIS->c);
+	
+	for(i=0; i< THIS->len; i++)
+	{	
+		printf("i = %d, Address: %x = %f \n", i, (int)&THIS->c[i], THIS->c[i]);	
+	}
+		
+ 
+END_METHOD
+
+
+
+/**************************************************
+                  Data Methods
+**************************************************/
+
+BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
+
+	// Initializes the coeficent array	
+	if(THIS->len == 0)
+	{
+		GB.Alloc(POINTER(&THIS->c), sizeof(double));
+		THIS->c[THIS->len] = VARG(x);
+		THIS->len++;		
+		return GB.ReturnInteger(THIS->len);
+	}
+
+	// Add a value to coeficent array
+	if(THIS->len > 0)
+	{
+		GB.Realloc(POINTER(&THIS->c), (sizeof(double)*(THIS->len+1)));
+		THIS->c[THIS->len] = VARG(x);
+		THIS->len++;		
+		return GB.ReturnInteger(THIS->len);
+	}
+	else
+	{
+		return GB.ReturnInteger(THIS->len);
+	}
+
+END_METHOD
+
+
+
+/**************************************************
+             Implementation Methods
+**************************************************/
+
+BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
 	// Function: 
 	// double gsl_poly_eval (const double c[], const int len, const double x)	
 	// This function evaluates a polynomial with real 
 	// coefficients for the real variable x.
-	GB_ARRAY arr = (GB_ARRAY) VARG(array);	
 	double r;
 	int i;
-	int count = GB.Array.Count(arr);
-	double a[count];
 	double b = VARG(x);
 
+	r = gsl_poly_eval(THIS->c, THIS->len, b);
 	
-	for (i=0; i<count; i++)
-	{
-		a[i] = *((double *)GB.Array.Get(arr,i));
-		//printf("a[%i] = %f; ", i, *((double *)GB.Array.Get(arr,i)));
-	}
-	
-	//printf("\n");
-	
-
-	r = gsl_poly_eval(a, count, b);
-	
-	GB.ReturnFloat(r);
+	return GB.ReturnFloat(r);
 
 END_METHOD
+
 
 
 /**************************************************
   Describe Class properties and methods to Gambas
 **************************************************/
-GB_DESC CGslPolynomialDesc[] =
-{
-	GB_DECLARE("Polynomial", sizeof(GSLPOLY)),
 
-	GB_METHOD("Eval", "f", GSLPOLY_Eval, "(a)Float[];(x)f"),
+GB_DESC CPolynomialDesc[] =
+{
+	GB_DECLARE("Polynomial", sizeof(CPOLYNOMIAL)),
+
+	// Util;ity Methods 
+	GB_METHOD("_new", NULL, CPolynomial_new, NULL),
+	GB_METHOD("_call", "Polynomial", CPolynomial_call, NULL),
+	GB_METHOD("_free", NULL, CPolynomial_free, NULL),
+
+	// Property Methods
+	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
+	GB_METHOD("ToString", "s", CPolynomial_ToString, NULL),
+	
+	// Data Methods
+	GB_METHOD("Add", "i", CPolynomial_Add, "(x)f"),
+
+	// Implementation Methods
+	GB_METHOD("Eval", "f", CPolynomial_Eval, "(x)f"),
 
 	GB_END_DECLARE
 };
+
 
