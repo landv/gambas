@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	gsl.c
+	c_complex.c
 
 	gb.gsl component
 
@@ -41,7 +41,7 @@
 /***********************************
       Complex Utility Methods
 ***********************************/
-static GSLCOMPLEX *create_complex()
+GSLCOMPLEX *GSLComplex_create()
 {
 	return (GSLCOMPLEX *)GB.New(GB.FindClass("Complex"), NULL,  NULL);
 }
@@ -56,7 +56,7 @@ END_METHOD
 
 BEGIN_METHOD(GslComplex_call, GB_FLOAT real; GB_FLOAT imag)
 
-	GSLCOMPLEX *c = create_complex();
+	GSLCOMPLEX *c = GSLComplex_create();
 	
 	c->number.dat[0] = VARG(real);
 	c->number.dat[1] = VARG(imag);
@@ -67,7 +67,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(GslComplex_Copy)
 
-	GSLCOMPLEX *c = create_complex();
+	GSLCOMPLEX *c = GSLComplex_create();
 	
 	c->number = THIS->number;
 	GB.ReturnObject(c);
@@ -136,17 +136,12 @@ BEGIN_METHOD(GslComplex_Rect, GB_FLOAT real; GB_FLOAT imag)
 
 	THIS->number = gsl_complex_rect(VARG(real), VARG(imag));
 
-	//GB.ReturnObject(THIS);
-
 END_METHOD 
 
 
 BEGIN_METHOD(GslComplex_Polar, GB_FLOAT real; GB_FLOAT imag)
 
 	THIS->number = gsl_complex_polar(VARG(real), VARG(imag));
-    //GSL_SET_COMPLEX(&a, 10.0, 12.0);
-
-	//GB.ReturnObject(THIS);
 
 END_METHOD 
 
@@ -186,7 +181,7 @@ BEGIN_METHOD(GslComplex_Add, GB_OBJECT x)
 		return;
 	
 	// Create new object
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	// Add two complex numbers
 	obj->number = gsl_complex_add(THIS->number, x->number);
@@ -204,7 +199,7 @@ BEGIN_METHOD(GslComplex_Sub, GB_OBJECT x)
 	if (GB.CheckObject(x))
 		return;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sub(THIS->number, x->number);
 
@@ -221,7 +216,7 @@ BEGIN_METHOD(GslComplex_Mul, GB_OBJECT x)
 	if (GB.CheckObject(x))
 		return;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_mul(THIS->number, x->number);
 
@@ -238,7 +233,7 @@ BEGIN_METHOD(GslComplex_Div, GB_OBJECT x)
 	if (GB.CheckObject(x))
 		return;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_div(THIS->number, x->number);
 
@@ -254,8 +249,7 @@ BEGIN_METHOD(GslComplex_Add_Real, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
-    //int r;
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_add_real(THIS->number, VARG(x));
 
@@ -268,7 +262,7 @@ BEGIN_METHOD(GslComplex_Sub_Real, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sub_real(THIS->number, VARG(x));
 
@@ -281,7 +275,7 @@ BEGIN_METHOD(GslComplex_Mul_Real, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_mul_real(THIS->number, VARG(x));
 
@@ -294,7 +288,7 @@ BEGIN_METHOD(GslComplex_Div_Real, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_div_real(THIS->number, VARG(x));
 
@@ -310,7 +304,7 @@ BEGIN_METHOD(GslComplex_Add_Imag, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_add_imag(THIS->number, VARG(x));
 
@@ -323,7 +317,7 @@ BEGIN_METHOD(GslComplex_Sub_Imag, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sub_imag(THIS->number, VARG(x));
 
@@ -336,7 +330,7 @@ BEGIN_METHOD(GslComplex_Mul_Imag, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_mul_imag(THIS->number, VARG(x));
 
@@ -349,7 +343,7 @@ BEGIN_METHOD(GslComplex_Div_Imag, GB_FLOAT x)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_div_imag(THIS->number, VARG(x));
 
@@ -362,7 +356,7 @@ BEGIN_METHOD_VOID(GslComplex_Conjugate)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_conjugate(THIS->number);
 
@@ -374,7 +368,7 @@ BEGIN_METHOD_VOID(GslComplex_Inverse)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_inverse(THIS->number);
 
@@ -387,7 +381,7 @@ BEGIN_METHOD_VOID(GslComplex_Negative)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_negative(THIS->number);
 
@@ -403,7 +397,7 @@ BEGIN_METHOD_VOID(GslComplex_Sqrt)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sqrt(THIS->number);
 
@@ -416,7 +410,7 @@ BEGIN_METHOD(GslComplex_SqrtReal, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sqrt_real(VARG(x));
 
@@ -433,7 +427,7 @@ BEGIN_METHOD(GslComplex_Pow, GB_OBJECT x;)
 	if (GB.CheckObject(x))
 		return;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_pow(THIS->number, x->number);
 
@@ -446,7 +440,7 @@ BEGIN_METHOD(GslComplex_PowReal, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_pow_real(THIS->number, VARG(x));
 
@@ -459,7 +453,7 @@ BEGIN_METHOD_VOID(GslComplex_Exp)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_exp(THIS->number);
 
@@ -472,7 +466,7 @@ BEGIN_METHOD_VOID(GslComplex_Log)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_log(THIS->number);
 
@@ -485,7 +479,7 @@ BEGIN_METHOD_VOID(GslComplex_Log10)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_log10(THIS->number);
 
@@ -502,7 +496,7 @@ BEGIN_METHOD(GslComplex_Log_b, GB_OBJECT x;)
 	if (GB.CheckObject(x))
 		return;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_log_b(THIS->number, x->number);
 
@@ -520,7 +514,7 @@ BEGIN_METHOD_VOID(GslComplex_Sin)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sin(THIS->number);
 
@@ -533,7 +527,7 @@ BEGIN_METHOD_VOID(GslComplex_Cos)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_cos(THIS->number);
 
@@ -546,7 +540,7 @@ BEGIN_METHOD_VOID(GslComplex_Tan)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_tan(THIS->number);
 
@@ -559,7 +553,7 @@ BEGIN_METHOD_VOID(GslComplex_Sec)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sec(THIS->number);
 
@@ -572,7 +566,7 @@ BEGIN_METHOD_VOID(GslComplex_Csc)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_csc(THIS->number);
 
@@ -585,7 +579,7 @@ BEGIN_METHOD_VOID(GslComplex_Cot)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_cot(THIS->number);
 
@@ -602,7 +596,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arcsin)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arcsin(THIS->number);
 
@@ -615,7 +609,7 @@ BEGIN_METHOD(GslComplex_Arcsin_Real, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arcsin_real(VARG(x));
 
@@ -627,7 +621,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arccos)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccos(THIS->number);
 
@@ -640,7 +634,7 @@ BEGIN_METHOD(GslComplex_Arccos_Real, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccos_real(VARG(x));
 
@@ -652,7 +646,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arctan)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arctan(THIS->number);
 
@@ -664,7 +658,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arcsec)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arcsec(THIS->number);
 
@@ -677,7 +671,7 @@ BEGIN_METHOD(GslComplex_Arcsec_Real, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arcsec_real(VARG(x));
 
@@ -689,7 +683,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arccsc)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccsc(THIS->number);
 
@@ -702,7 +696,7 @@ BEGIN_METHOD(GslComplex_Arccsc_Real, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccsc_real(VARG(x));
 
@@ -714,7 +708,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arccot)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccot(THIS->number);
 
@@ -731,7 +725,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Sinh)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sinh(THIS->number);
 
@@ -743,7 +737,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Cosh)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_cosh(THIS->number);
 
@@ -755,7 +749,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Tanh)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_tanh(THIS->number);
 
@@ -767,7 +761,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Sech)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_sech(THIS->number);
 
@@ -779,7 +773,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Csch)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_csch(THIS->number);
 
@@ -791,7 +785,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Coth)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_coth(THIS->number);
 
@@ -808,7 +802,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arcsinh)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arcsinh(THIS->number);
 
@@ -820,7 +814,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arccosh)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccosh(THIS->number);
 
@@ -833,7 +827,7 @@ BEGIN_METHOD(GslComplex_Arccosh_Real, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccosh_real(VARG(x));
 
@@ -845,7 +839,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arctanh)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arctanh(THIS->number);
 
@@ -858,7 +852,7 @@ BEGIN_METHOD(GslComplex_Arctanh_Real, GB_FLOAT x;)
 	
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arctanh_real(VARG(x));
 
@@ -871,7 +865,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arcsech)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arcsech(THIS->number);
 
@@ -883,7 +877,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arccsch)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccsch(THIS->number);
 
@@ -895,7 +889,7 @@ END_METHOD
 BEGIN_METHOD_VOID(GslComplex_Arccoth)
 	GSLCOMPLEX *obj;
 	
-	obj = create_complex();
+	obj = GSLComplex_create();
 
 	obj->number = gsl_complex_arccoth(THIS->number);
 

@@ -28,6 +28,7 @@
 
 #include "gambas.h"
 #include <gsl/gsl_poly.h>
+#include <gsl/gsl_sf_result.h>
 #include "c_complex.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,6 +44,7 @@ typedef
     int len;
 	int max;
 	int alloc_size;
+	gsl_sf_result_e10 error;
     }
   CPOLYNOMIAL;
 

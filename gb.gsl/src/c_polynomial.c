@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	gsl.c
+	c_polynomial.c
 
 	gb.gsl component
 
@@ -89,13 +89,29 @@ BEGIN_PROPERTY(CPolynomial_MaxCoef)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CPolynomial_Error)
+
+	if (READ_PROPERTY)
+		GB.ReturnFloat((THIS->error.err));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CPolynomial_E10)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger((THIS->error.e10));
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CPolynomial_AllocSize)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger((THIS->alloc_size));
 	else
 		THIS->alloc_size = (VPROP(GB_INTEGER));
-
+	
 END_PROPERTY
 
 
@@ -116,6 +132,14 @@ BEGIN_METHOD_VOID(CPolynomial_ToString)
 END_METHOD
 
 
+BEGIN_METHOD_VOID(CPolynomial_ClearResult)
+	// Clear out error results
+	// Call before using any gsl_sf_xxx_e functions
+	THIS->error.val = 0.0;
+	THIS->error.err = 0.0;
+	THIS->error.e10 = 0;
+
+END_METHOD
 
 /**************************************************
                   Data Methods
@@ -176,6 +200,10 @@ BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 
 END_METHOD
 
+// From array method
+
+
+// From csv file method
 
 
 /**************************************************
@@ -183,8 +211,8 @@ END_METHOD
 **************************************************/
 
 BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
-	// Function: 
-	// double gsl_poly_eval (const double c[], const int len, const double x)	
+	// Function: double gsl_poly_eval 
+	// (const double c[], const int len, const double x)	
 	// This function evaluates a polynomial with real 
 	// coefficients for the real variable x.
 	double r;
@@ -214,7 +242,9 @@ GB_DESC CPolynomialDesc[] =
 	// Property Methods
 	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
 	GB_PROPERTY_READ("MaxCoef", "i", CPolynomial_MaxCoef),
-	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),	
+	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),
+	GB_PROPERTY_READ("Len", "f", CPolynomial_Error),
+	GB_PROPERTY_READ("Len", "i", CPolynomial_E10),	
 	
 	// Data Methods
 	GB_METHOD("Add", "i", CPolynomial_Add, "(X)f"),

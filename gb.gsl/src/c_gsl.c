@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gsl.c
+  c_gsl.c
 
   gb.gsl component
 
@@ -249,7 +249,7 @@ BEGIN_METHOD(GSL_LDEXP, GB_FLOAT x; GB_INTEGER e;)
 END_METHOD
 
 
-BEGIN_METHOD(GSL_Frexp, GB_FLOAT x; GB_POINTER e)
+BEGIN_METHOD(GSL_FREXP, GB_FLOAT x; GB_POINTER e)
 	// Function: double gsl_frexp (double x, int * e)
 	// This function splits the number x into its normalized 
 	// fraction f and exponent e, such that x = f * 2^e and
@@ -260,7 +260,7 @@ BEGIN_METHOD(GSL_Frexp, GB_FLOAT x; GB_POINTER e)
 	int *b;
 	double r;
 
-	b = VARG(e);
+	b = (int *)VARG(e);
 
 	r = gsl_frexp(VARG(x), (int *)VARG(e));
 
