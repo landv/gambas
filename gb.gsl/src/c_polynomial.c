@@ -217,11 +217,11 @@ GB_DESC CPolynomialDesc[] =
 	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),	
 	
 	// Data Methods
-	GB_METHOD("Add", "i", CPolynomial_Add, "(x)f"),
+	GB_METHOD("Add", "i", CPolynomial_Add, "(X)f"),
 	GB_METHOD("ToString", "s", CPolynomial_ToString, NULL),
 
 	// Implementation Methods
-	GB_METHOD("Eval", "f", CPolynomial_Eval, "(x)f"),
+	GB_METHOD("Eval", "f", CPolynomial_Eval, "(X)f"),
 
 	GB_END_DECLARE
 };

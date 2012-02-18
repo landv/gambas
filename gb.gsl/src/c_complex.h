@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_gsl.h
+  c_complex.h
 
   gb.gsl component
 
@@ -27,7 +27,12 @@
 #define __C_GSL_COMPLEX_H
 
 #include "gambas.h"
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_cblas.h>
 #include <gsl/gsl_complex.h>
+#include <gsl/gsl_complex_math.h>
+
+//GSLCOMPLEX GslComplex_Add_Real(GB_FLOAT x);
 
 GB_INTERFACE GB EXPORT;
 
@@ -38,6 +43,8 @@ typedef
     {
         GB_BASE ob;
         gsl_complex number;
+        //double real;
+        //double imagined;
     }
     GSLCOMPLEX;
 

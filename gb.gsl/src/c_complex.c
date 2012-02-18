@@ -22,17 +22,16 @@
 	MA 02110-1301, USA.
 
 ***************************************************************************/
-
+#ifndef __C_GSL_COMPLEX_C
 #define __C_GSL_COMPLEX_C
+#endif
 
 #include "c_complex.h"
-#include "gambas.h"
+#include "../gambas.h"
 #include "gb_common.h"
 #include "c_gsl.h"
 #include <gsl/gsl_math.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
-#include <gsl/gsl_sf.h>
+#include <gsl/gsl_cblas.h>
 #include <stdio.h>
 
 
@@ -145,6 +144,7 @@ END_METHOD
 BEGIN_METHOD(GslComplex_Polar, GB_FLOAT real; GB_FLOAT imag)
 
 	THIS->number = gsl_complex_polar(VARG(real), VARG(imag));
+    //GSL_SET_COMPLEX(&a, 10.0, 12.0);
 
 	//GB.ReturnObject(THIS);
 
@@ -255,6 +255,7 @@ BEGIN_METHOD(GslComplex_Add_Real, GB_FLOAT x)
 	GSLCOMPLEX *obj;
 	
 	obj = create_complex();
+    //int r;
 
 	obj->number = gsl_complex_add_real(THIS->number, VARG(x));
 
@@ -510,24 +511,6 @@ BEGIN_METHOD(GslComplex_Log_b, GB_OBJECT x;)
 END_METHOD
 
 
-BEGIN_METHOD(GslComplex_Frexp, GB_FLOAT x; GB_POINTER e)
-	// Function: double gsl_frexp (double x, int * e)
-	// This function splits the number x into its normalized 
-	// fraction f and exponent e, such that x = f * 2^e and
-	// 0.5 <= f < 1. The function returns f and stores the 
-	// exponent in e. If x is zero, both f and e are set to
-	// zero. This function provides an alternative to the
-	// standard math function frexp(x, e).
-	int *b;
-	double r;
-
-	b = VARG(e);
-
-	r = gsl_frexp(VARG(x), (int *)VARG(e));
-
-	GB.ReturnFloat(r);
-	
-END_METHOD
 
 /**************************************************
           Complex Trigonometric Functions
@@ -934,9 +917,9 @@ GB_DESC CComplexDesc[] =
 	GB_STATIC_METHOD("_call", "Complex", GslComplex_call, "[(Real)f(Imag)f]"),
 	GB_METHOD("ToString", "s", GslComplex_ToString, NULL),
 	GB_METHOD("Copy", "Complex", GslComplex_Copy, NULL),
-	GB_METHOD("Set", NULL, GslComplex_Set, "[(real)f(imag)f]"),
-	GB_METHOD("Rect", NULL, GslComplex_Rect, "[(real)f(imag)f]"),
-	GB_METHOD("Polar", NULL, GslComplex_Polar, "[(real)f(imag)f]"),
+	GB_METHOD("Set", NULL, GslComplex_Set, "[(Real)f(Imag)f]"),
+	GB_METHOD("Rect", NULL, GslComplex_Rect, "[(Real)f(Imag)f]"),
+	GB_METHOD("Polar", NULL, GslComplex_Polar, "[(Real)f(Imag)f]"),
 
 	// Properties
 	GB_PROPERTY("Real", "f", GslComplex_Real),
@@ -965,12 +948,11 @@ GB_DESC CComplexDesc[] =
 
 	// Elementary Complex Functions
     GB_METHOD("Sqrt", "Complex", GslComplex_Sqrt, NULL),
-    GB_METHOD("SqrtReal", "Complex", GslComplex_SqrtReal, "(x)f"),
+    GB_METHOD("SqrtReal", "Complex", GslComplex_SqrtReal, "(X)f"),
     GB_METHOD("Exp", "Complex", GslComplex_Exp, NULL),
     GB_METHOD("Log", "Complex", GslComplex_Log, NULL),
     GB_METHOD("Log10", "Complex", GslComplex_Log10, NULL),
-    GB_METHOD("Logb", "Complex", GslComplex_Log_b, "(x)Complex"),
-	GB_STATIC_METHOD("Frexp", "f", GslComplex_Frexp, "(x)f(e)p"),
+    GB_METHOD("Logb", "Complex", GslComplex_Log_b, "(X)Complex"),
 
 	// Complex Trigonometric Functions
     GB_METHOD("Sin", "Complex", GslComplex_Sin, NULL),
@@ -982,14 +964,14 @@ GB_DESC CComplexDesc[] =
 
     // Inverse Complex Trigonometric Functions
     GB_METHOD("Arcsin", "Complex", GslComplex_Arcsin, NULL),
-    GB_STATIC_METHOD("ArcsinReal", "Complex", GslComplex_Arcsin_Real, "(x)f"),
+    GB_STATIC_METHOD("ArcsinReal", "Complex", GslComplex_Arcsin_Real, "(X)f"),
     GB_METHOD("Arccos", "Complex", GslComplex_Arccos, NULL),
-    GB_STATIC_METHOD("ArccosReal", "Complex", GslComplex_Arccos_Real, "(x)f"),
+    GB_STATIC_METHOD("ArccosReal", "Complex", GslComplex_Arccos_Real, "(X)f"),
     GB_METHOD("Arctan", "Complex", GslComplex_Arctan, NULL),
     GB_METHOD("Arcsec", "Complex", GslComplex_Arcsec, NULL),
-    GB_STATIC_METHOD("ArcsecReal", "Complex", GslComplex_Arcsec_Real, "(x)f"),
+    GB_STATIC_METHOD("ArcsecReal", "Complex", GslComplex_Arcsec_Real, "(X)f"),
     GB_METHOD("Arccsc", "Complex", GslComplex_Arccsc, NULL),
-    GB_STATIC_METHOD("ArccscReal", "Complex", GslComplex_Arccsc_Real, "(x)f"),
+    GB_STATIC_METHOD("ArccscReal", "Complex", GslComplex_Arccsc_Real, "(X)f"),
     GB_METHOD("Arccot", "Complex", GslComplex_Arccot, NULL),
 
     // Complex Hyperbolic Functions
@@ -1003,9 +985,9 @@ GB_DESC CComplexDesc[] =
     // Inverse Complex Hyperbolic Functions
     GB_METHOD("Arcsinh", "Complex", GslComplex_Arcsinh, NULL),
     GB_METHOD("Arccosh", "Complex", GslComplex_Arccosh, NULL),
-    GB_METHOD("ArccoshReal", "Complex", GslComplex_Arccosh_Real, "(x)f"),
+    GB_METHOD("ArccoshReal", "Complex", GslComplex_Arccosh_Real, "(X)f"),
     GB_METHOD("Arctanh", "Complex", GslComplex_Arctanh, NULL),
-    GB_METHOD("ArctanhReal", "Complex", GslComplex_Arctanh_Real, "(x)f"),
+    GB_METHOD("ArctanhReal", "Complex", GslComplex_Arctanh_Real, "(X)f"),
     GB_METHOD("Arcsech", "Complex", GslComplex_Arcsech, NULL),
     GB_METHOD("Arccsch", "Complex", GslComplex_Arccsch, NULL),
     GB_METHOD("Arccoth", "Complex", GslComplex_Arccoth, NULL),

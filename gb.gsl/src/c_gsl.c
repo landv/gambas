@@ -248,18 +248,25 @@ BEGIN_METHOD(GSL_LDEXP, GB_FLOAT x; GB_INTEGER e;)
     GB.ReturnFloat(gsl_ldexp(VARG(x), VARG(e)));
 END_METHOD
 
-/*
-BEGIN_METHOD(GSL_FREXP, GB_FLOAT x; GB_POINTER e;)
-    // Function: double gsl_frexp (double x, int * e)
-    // This function splits the number x into its normalized fraction f
-    // and exponent e, such that x = f * 2^e and 0.5 <= f < 1. The function
-    // returns f and stores the exponent in e. If x is zero, both f and e
-    // are set to zero. This function provides an alternative to the
-    // standard math function frexp(x, e).
-    GB.ReturnFloat(gsl_frexp(VARG(x), VARG(e)));
-END_METHOD
-*/
 
+BEGIN_METHOD(GSL_Frexp, GB_FLOAT x; GB_POINTER e)
+	// Function: double gsl_frexp (double x, int * e)
+	// This function splits the number x into its normalized 
+	// fraction f and exponent e, such that x = f * 2^e and
+	// 0.5 <= f < 1. The function returns f and stores the 
+	// exponent in e. If x is zero, both f and e are set to
+	// zero. This function provides an alternative to the
+	// standard math function frexp(x, e).
+	int *b;
+	double r;
+
+	b = VARG(e);
+
+	r = gsl_frexp(VARG(x), (int *)VARG(e));
+
+	GB.ReturnFloat(r);
+	
+END_METHOD
 
 
 
@@ -277,18 +284,19 @@ BEGIN_METHOD(GSL_INTPOW, GB_FLOAT x; GB_INTEGER i;)
 END_METHOD
 
 
-
 BEGIN_METHOD(GSL_INTPOW2, GB_FLOAT x;)
    // Return x^2 using a small int safe method
    // call gsl native function double gsl_pow_2(double x)
    GB.ReturnFloat(gsl_pow_2(VARG(x)));
 END_METHOD
 
+
 BEGIN_METHOD(GSL_INTPOW3, GB_FLOAT x;)
    // Return x^3 using a small int safe method
    // call gsl native function double gsl_pow_3(double x)
    GB.ReturnFloat(gsl_pow_3(VARG(x)));
 END_METHOD
+
 
 BEGIN_METHOD(GSL_INTPOW4, GB_FLOAT x;)
    // Return x^4 using a small int safe method
@@ -302,11 +310,13 @@ BEGIN_METHOD(GSL_INTPOW5, GB_FLOAT x;)
    GB.ReturnFloat(gsl_pow_5(VARG(x)));
 END_METHOD
 
+
 BEGIN_METHOD(GSL_INTPOW6, GB_FLOAT x;)
    // Return x^6 using a small int safe method
    // call gsl native function double gsl_pow_3(double x)
    GB.ReturnFloat(gsl_pow_6(VARG(x)));
 END_METHOD
+
 
 BEGIN_METHOD(GSL_INTPOW7, GB_FLOAT x;)
    // Return x^7 using a small int safe method
@@ -314,11 +324,13 @@ BEGIN_METHOD(GSL_INTPOW7, GB_FLOAT x;)
    GB.ReturnFloat(gsl_pow_7(VARG(x)));
 END_METHOD
 
+
 BEGIN_METHOD(GSL_INTPOW8, GB_FLOAT x;)
    // Return x^8 using a small int safe method
    // call gsl native function double gsl_pow_3(double x)
    GB.ReturnFloat(gsl_pow_8(VARG(x)));
 END_METHOD
+
 
 BEGIN_METHOD(GSL_INTPOW9, GB_FLOAT x;)
    // Return x^9 using a small int safe method
@@ -335,41 +347,41 @@ GB_DESC CGslDesc[] =
     GB_DECLARE("GSL",0), GB_NOT_CREATABLE(),
 
     // Number testing functions
-    GB_STATIC_METHOD("IsNan", "b", GSL_ISNAN, "(x)f"),
-    GB_STATIC_METHOD("IsInf", "b", GSL_ISINF, "(x)f"),
-    GB_STATIC_METHOD("IsFinite", "b", GSL_ISFINITE, "(x)f"),
-    GB_STATIC_METHOD("IsPos", "b", GSL_ISPOSITIVE, "(x)f"),
-    GB_STATIC_METHOD("Sign", "i", GSL_SIGNF, "(x)i"),
-    GB_STATIC_METHOD("IsOdd", "b", GSL_ISODD, "(x)i"),
-    GB_STATIC_METHOD("IsEven", "b", GSL_ISEVEN, "(x)i"),
-    GB_STATIC_METHOD("MaxFloat", "f", GSL_MAXFLOAT, "[(x)f(y)f"),
-    GB_STATIC_METHOD("MinFLoat", "f", GSL_MINFLOAT, "[(x)f(y)f]"),
-    GB_STATIC_METHOD("MaxInt", "i", GSL_MAXINT, "[(x)i(y)i]"),
-    GB_STATIC_METHOD("MinInt", "i", GSL_MININT, "[(x)i(y)i"),
-    GB_STATIC_METHOD("Fcmpb", "b", GSL_FCMPB, "[(x)f(y)f(e)f]"),
-    GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "[(x)f(y)f(e)f]"),
+    GB_STATIC_METHOD("IsNan", "b", GSL_ISNAN, "(X)f"),
+    GB_STATIC_METHOD("IsInf", "b", GSL_ISINF, "(X)f"),
+    GB_STATIC_METHOD("IsFinite", "b", GSL_ISFINITE, "(X)f"),
+    GB_STATIC_METHOD("IsPos", "b", GSL_ISPOSITIVE, "(X)f"),
+    GB_STATIC_METHOD("Sign", "i", GSL_SIGNF, "(X)i"),
+    GB_STATIC_METHOD("IsOdd", "b", GSL_ISODD, "(X)i"),
+    GB_STATIC_METHOD("IsEven", "b", GSL_ISEVEN, "(X)i"),
+    GB_STATIC_METHOD("MaxFloat", "f", GSL_MAXFLOAT, "[(X)f(Y)f"),
+    GB_STATIC_METHOD("MinFLoat", "f", GSL_MINFLOAT, "[(X)f(Y)f]"),
+    GB_STATIC_METHOD("MaxInt", "i", GSL_MAXINT, "[(X)i(Y)i]"),
+    GB_STATIC_METHOD("MinInt", "i", GSL_MININT, "[(X)i(Y)i"),
+    GB_STATIC_METHOD("Fcmpb", "b", GSL_FCMPB, "[(X)f(Y)f(E)f]"),
+    GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "[(X)f(Y)f(E)f]"),
 
     // Elementary Functions
-    GB_STATIC_METHOD("Log1p", "f", GSL_LOG1P, "(x)f"),
-    GB_STATIC_METHOD("Expm1", "f", GSL_EXPM1, "(x)f"),
-    GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "[(x)f(y)f]"),
+    GB_STATIC_METHOD("Log1p", "f", GSL_LOG1P, "(X)f"),
+    GB_STATIC_METHOD("Expm1", "f", GSL_EXPM1, "(X)f"),
+    GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "[(X)f(Y)f]"),
     //GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "[(x)f(y)f(z)f]"),
-    GB_STATIC_METHOD("Acosh", "f", GSL_ACOSH, "(x)f"),
-    GB_STATIC_METHOD("Asinh", "f", GSL_ASINH, "(x)f"),
-    GB_STATIC_METHOD("Atanh", "f", GSL_ATANH, "(x)f"),
-    GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "[(x)f(e)i]"),
-    //GB_STATIC_METHOD("Frexp", "f", GSL_FREXP, "[(x)f(e)p]"),
+    GB_STATIC_METHOD("Acosh", "f", GSL_ACOSH, "(X)f"),
+    GB_STATIC_METHOD("Asinh", "f", GSL_ASINH, "(X)f"),
+    GB_STATIC_METHOD("Atanh", "f", GSL_ATANH, "(X)f"),
+    GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "[(X)f(E)i]"),
+    GB_STATIC_METHOD("Frexp", "f", GSL_FREXP, "[(X)f(E)p]"),
 
     // Return x^y using a small int safe method
-    GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(x)f(i)i]"),
-    GB_STATIC_METHOD("IntPow2", "f", GSL_INTPOW2, "(x)f"),
-    GB_STATIC_METHOD("IntPow3", "f", GSL_INTPOW3, "(x)f"),
-    GB_STATIC_METHOD("IntPow4", "f", GSL_INTPOW4, "(x)f"),
-    GB_STATIC_METHOD("IntPow5", "f", GSL_INTPOW5, "(x)f"),
-    GB_STATIC_METHOD("IntPow6", "f", GSL_INTPOW6, "(x)f"),
-    GB_STATIC_METHOD("IntPow7", "f", GSL_INTPOW7, "(x)f"),
-    GB_STATIC_METHOD("IntPow8", "f", GSL_INTPOW8, "(x)f"),
-    GB_STATIC_METHOD("IntPow9", "f", GSL_INTPOW9, "(x)f"),
+    GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(X)f(I)i]"),
+    GB_STATIC_METHOD("IntPow2", "f", GSL_INTPOW2, "(X)f"),
+    GB_STATIC_METHOD("IntPow3", "f", GSL_INTPOW3, "(X)f"),
+    GB_STATIC_METHOD("IntPow4", "f", GSL_INTPOW4, "(X)f"),
+    GB_STATIC_METHOD("IntPow5", "f", GSL_INTPOW5, "(X)f"),
+    GB_STATIC_METHOD("IntPow6", "f", GSL_INTPOW6, "(X)f"),
+    GB_STATIC_METHOD("IntPow7", "f", GSL_INTPOW7, "(X)f"),
+    GB_STATIC_METHOD("IntPow8", "f", GSL_INTPOW8, "(X)f"),
+    GB_STATIC_METHOD("IntPow9", "f", GSL_INTPOW9, "(X)f"),
 
     // Class Constants
     // Appears that GSL Macros cannot be used in GB_CONSTANT
