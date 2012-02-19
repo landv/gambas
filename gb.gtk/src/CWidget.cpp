@@ -856,6 +856,16 @@ BEGIN_PROPERTY(Control_PopupMenu)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Control_NoTabFocus)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(CONTROL->isNoTabFocus());
+	else
+		CONTROL->setNoTabFocus(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
 GB_DESC CWidgetDesc[] =
 {
 	GB_DECLARE("Control", sizeof(CWIDGET)),
@@ -920,6 +930,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Action", "s", CCONTROL_action),
 	GB_PROPERTY("PopupMenu", "s", Control_PopupMenu),
 	GB_PROPERTY("Proxy", "Control", Control_Proxy),
+	GB_PROPERTY("NoTabFocus", "b", Control_NoTabFocus),
 
 	GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
 	GB_PROPERTY_READ("Window", "Window", CWIDGET_window),

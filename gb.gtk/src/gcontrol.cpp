@@ -236,6 +236,7 @@ void gControl::initAll(gContainer *parent)
 	no_input_method = false;
 	_no_default_mouse_event = false;
 	_proxy = _proxy_for = NULL;
+	_no_tab_focus = false;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -603,11 +604,6 @@ void gControl::updateGeometry()
 APPEARANCE
 
 ******************************************************************/
-bool gControl::expand()
-{
-	return expa;
-}
-
 
 
 void gControl::setExpand (bool vl)
@@ -619,12 +615,6 @@ void gControl::setExpand (bool vl)
 	
 	if (pr) pr->performArrange();
 }
-
-bool gControl::ignore()
-{
-	return igno;
-}
-
 
 
 void gControl::setIgnore (bool vl)
@@ -1835,4 +1825,14 @@ bool gControl::setProxy(gControl *proxy)
 		_proxy->_proxy_for = this;
 	
 	return false;
+}
+
+void gControl::setNoTabFocus(bool v)
+{
+	if (_no_tab_focus == v)
+		return;
+	
+	_no_tab_focus = v;
+	if (pr)
+		pr->updateFocusChain();
 }

@@ -69,8 +69,6 @@
 static QMap<int, int> _x11_to_qt_keycode;
 #endif
 
-/* Control class */
-
 CWIDGET *CWIDGET_active_control = 0;
 static bool _focus_change = false;
 static CWIDGET *_old_active_control = 0;
@@ -78,10 +76,24 @@ static CWIDGET *_old_active_control = 0;
 static CWIDGET *_hovered = 0;
 static CWIDGET *_official_hovered = 0;
 
-#define HANDLE_PROXY(_ob) \
-	while (((CWIDGET *)_ob)->proxy) \
-		_ob = (typeof _ob)((CWIDGET *)_ob)->proxy;
+#define EXT(_ob) (((CWIDGET *)_ob)->ext)
 
+#define ENSURE_EXT(_ob) (EXT(_ob) ? EXT(_ob) : alloc_ext((CWIDGET *)(_ob)))
+	
+#define HANDLE_PROXY(_ob) \
+	while (EXT(_ob) && EXT(_ob)->proxy) \
+		_ob = (typeof _ob)(EXT(_ob)->proxy);
+
+static CWIDGET_EXT *alloc_ext(CWIDGET *_object)
+{
+	GB.Alloc(POINTER(&(THIS->ext)), sizeof(CWIDGET_EXT));
+	CLEAR(THIS->ext);
+	THIS_EXT->bg = COLOR_DEFAULT;
+	THIS_EXT->fg = COLOR_DEFAULT;
+	THIS_EXT->tag.type = GB_T_NULL;
+	return THIS->ext;
+}
+	
 static void set_mouse(QWidget *w, int mouse, void *cursor)
 {
 	QObjectList children;
@@ -230,16 +242,19 @@ void CWIDGET_register_proxy(void *_object, void *proxy)
 			GB.Error("Circular proxy chain");	
 			return;
 		}
-		check = ((CWIDGET *)check)->proxy;
+		check = EXT(check) ? EXT(check)->proxy : NULL;
 	}
 	
-	if (THIS->proxy)
-		((CWIDGET *)THIS->proxy)->proxy_for = NULL;
+	if (THIS_EXT && THIS_EXT->proxy && EXT(THIS_EXT->proxy))
+		EXT(THIS_EXT->proxy)->proxy_for = NULL;
 	
-	THIS->proxy = proxy;
+	if (proxy)
+		ENSURE_EXT(THIS)->proxy = proxy;
+	else if (EXT(THIS))
+		EXT(THIS)->proxy = NULL;
 	
-	if (THIS->proxy)
-		((CWIDGET *)THIS->proxy)->proxy_for = THIS;
+	if (proxy)
+		ENSURE_EXT(proxy)->proxy_for = THIS;
 }
 
 int CWIDGET_check(void *_object)
@@ -288,14 +303,8 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	THIS->level = MAIN_loop_level;
 
 	if (!no_init)
-	{
-		THIS->tag.type = GB_T_NULL;
 		CWIDGET_init_name(THIS);	
-	}
 
-	THIS->bg = COLOR_DEFAULT;
-	THIS->fg = COLOR_DEFAULT;
-	
 	if (qobject_cast<QAbstractScrollArea *>(w) || qobject_cast<Q3ScrollView *>(w))
 		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
 
@@ -323,15 +332,15 @@ QString CWIDGET_Utf8ToQString(GB_STRING *str)
 }
 
 
-void CWIDGET_destroy(CWIDGET *object)
+void CWIDGET_destroy(CWIDGET *_object)
 {
-	if (!object || !object->widget)
+	if (!THIS || !WIDGET)
 		return;
 
-	if (CWIDGET_test_flag(object, WF_DELETED))
+	if (CWIDGET_test_flag(THIS, WF_DELETED))
 		return;
 	
-	if (object->flag.dragging)
+	if (THIS->flag.dragging)
 	{
 		GB.Error("Control is being dragged");
 		return;
@@ -340,14 +349,13 @@ void CWIDGET_destroy(CWIDGET *object)
 	//qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
 	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
 
+	CWIDGET_set_flag(THIS, WF_DELETED);
+	CWIDGET_set_visible(THIS, false);
 
-	CWIDGET_set_flag(object, WF_DELETED);
-	CWIDGET_set_visible(object, false);
-
-	if (qobject_cast<QProgressBar *>(object->widget))
-		CPROGRESS_style_hack(object);
+	if (qobject_cast<QProgressBar *>(WIDGET))
+		CPROGRESS_style_hack(THIS);
 	
-	object->widget->deleteLater();
+	WIDGET->deleteLater();
 }
 
 
@@ -740,8 +748,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_HasFocus)
 
-	while (THIS->proxy)
-		_object = THIS->proxy;
+	HANDLE_PROXY(_object);
 	
 	GB.ReturnBoolean(WIDGET->hasFocus());
 
@@ -1062,9 +1069,17 @@ END_METHOD
 BEGIN_PROPERTY(Control_Tag)
 
 	if (READ_PROPERTY)
-		GB.ReturnVariant(&OBJECT(CWIDGET)->tag);
+	{
+		if (THIS_EXT)
+			GB.ReturnVariant(&THIS_EXT->tag);
+		else
+		{
+			GB.ReturnNull();
+			GB.ReturnConvVariant();
+		}
+	}
 	else
-		GB.StoreVariant(PROP(GB_VARIANT), (void *)&(OBJECT(CWIDGET)->tag));
+		GB.StoreVariant(PROP(GB_VARIANT), POINTER(&(ENSURE_EXT(THIS)->tag)));
 
 END_METHOD
 
@@ -1092,7 +1107,7 @@ BEGIN_PROPERTY(Control_Mouse)
 			GB.ReturnInteger(CMOUSE_DEFAULT);
 	}
 	else
-		set_mouse(wid, VPROP(GB_INTEGER), THIS->cursor);
+		set_mouse(wid, VPROP(GB_INTEGER), THIS_EXT ? THIS_EXT->cursor : NULL);
 
 END_METHOD
 
@@ -1102,15 +1117,56 @@ BEGIN_PROPERTY(Control_Cursor)
 	HANDLE_PROXY(_object);
 	
 	if (READ_PROPERTY)
-		GB.ReturnObject(THIS->cursor);
+		GB.ReturnObject(THIS_EXT ? THIS_EXT->cursor : NULL);
 	else
 	{
-		GB.StoreObject(PROP(GB_OBJECT), &THIS->cursor);
-		set_mouse(WIDGET, CMOUSE_CUSTOM, THIS->cursor);
+		GB.StoreObject(PROP(GB_OBJECT), &(ENSURE_EXT(THIS)->cursor));
+		set_mouse(WIDGET, CMOUSE_CUSTOM, THIS_EXT->cursor);
 	}
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(Control_NoTabFocus)
+
+	HANDLE_PROXY(_object);
+	
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->flag.noTabFocus);
+	else
+	{
+		bool v = VPROP(GB_BOOLEAN);
+		Qt::FocusPolicy policy;
+			
+		
+		if (THIS->flag.noTabFocus == v)
+			return;
+
+		THIS->flag.noTabFocus = v;
+		
+		if (v)
+		{
+			policy = WIDGET->focusPolicy();
+			
+			ENSURE_EXT(THIS)->focusPolicy = (int)policy;
+		
+			switch (policy)
+			{
+				case Qt::TabFocus: policy = Qt::NoFocus; break;
+				case Qt::StrongFocus: policy = Qt::ClickFocus; break;
+				case Qt::WheelFocus: policy = Qt::ClickFocus; break;
+				default: break;
+			}
+		}
+		else
+		{
+			policy = (Qt::FocusPolicy)THIS_EXT->focusPolicy;
+		}
+
+		WIDGET->setFocusPolicy(policy);
+	}
+
+END_PROPERTY
 
 #if 0
 
@@ -1239,7 +1295,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	
 	w = get_color_widget(WIDGET);
 	
-	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
+	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
 		//CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 		//if (parent)
@@ -1251,8 +1307,8 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	else
 	{
 		palette = QPalette(); //w->palette());
-		bg = THIS->bg;
-		fg = THIS->fg;
+		bg = THIS_EXT->bg;
+		fg = THIS_EXT->fg;
 		
 		if (bg != COLOR_DEFAULT)
 			palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
@@ -1272,7 +1328,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		//WIDGET->setPalette(palette);
 	}	
 	
-	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || (THIS->bg != COLOR_DEFAULT && w->backgroundRole() == QPalette::Window)));
+	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));
 	//w->setAutoFillBackground(THIS->bg != COLOR_DEFAULT);
 	
 	if (GB.Is(THIS, CLASS_TextArea))
@@ -1287,15 +1343,17 @@ void CWIDGET_reset_color(CWIDGET *_object)
 
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 {
-	THIS->bg = bg;
-	THIS->fg = fg;
+	ENSURE_EXT(THIS);
+	THIS_EXT->bg = bg;
+	THIS_EXT->fg = fg;
+	
 	CWIDGET_reset_color(THIS);
 }
 
 
 int CWIDGET_get_background(CWIDGET *_object)
 {
-	return THIS->bg;
+	return THIS_EXT ? THIS_EXT->bg : COLOR_DEFAULT;
 	/*
 	QWidget *w = get_color_widget(WIDGET);
 	
@@ -1308,7 +1366,7 @@ int CWIDGET_get_background(CWIDGET *_object)
 	
 int CWIDGET_get_foreground(CWIDGET *_object)
 {
-	return THIS->fg;
+	return THIS_EXT ? THIS_EXT->fg : COLOR_DEFAULT;
 	/*
 	QWidget *w = get_color_widget(WIDGET);
 	
@@ -1321,12 +1379,12 @@ int CWIDGET_get_foreground(CWIDGET *_object)
 	
 BEGIN_PROPERTY(Control_Background)
 
-	if (THIS->proxy)
+	if (THIS_EXT && THIS_EXT->proxy)
 	{
 		if (READ_PROPERTY)
-			GB.GetProperty(THIS->proxy, "Background");
+			GB.GetProperty(THIS_EXT->proxy, "Background");
 		else
-			GB.SetProperty(THIS->proxy, "Background", GB_T_INTEGER, VPROP(GB_INTEGER));
+			GB.SetProperty(THIS_EXT->proxy, "Background", GB_T_INTEGER, VPROP(GB_INTEGER));
 		
 		return;
 	}
@@ -1345,12 +1403,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_Foreground)
 
-	if (THIS->proxy)
+	if (THIS_EXT && THIS_EXT->proxy)
 	{
 		if (READ_PROPERTY)
-			GB.GetProperty(THIS->proxy, "Foreground");
+			GB.GetProperty(THIS_EXT->proxy, "Foreground");
 		else
-			GB.SetProperty(THIS->proxy, "Foreground", GB_T_INTEGER, VPROP(GB_INTEGER));
+			GB.SetProperty(THIS_EXT->proxy, "Foreground", GB_T_INTEGER, VPROP(GB_INTEGER));
 		
 		return;
 	}
@@ -1434,14 +1492,21 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_Action)
 
+	char *current = THIS_EXT ? THIS_EXT->action : NULL;
+
 	if (READ_PROPERTY)
-		GB.ReturnString(THIS->action);
+		GB.ReturnString(current);
 	else
 	{
 		char *action = PLENGTH() ? GB.NewString(PSTRING(), PLENGTH()) : NULL;
-		CACTION_register(THIS, THIS->action, action);
-		GB.FreeString(&THIS->action);
-		THIS->action = action;
+		
+		CACTION_register(THIS, current, action);
+		
+		if (THIS_EXT)
+			GB.FreeString(&THIS_EXT->action);
+		
+		if (action)
+			ENSURE_EXT(THIS)->action = action;
 	}
 
 END_PROPERTY
@@ -1450,7 +1515,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Control_Proxy)
 
 	if (READ_PROPERTY)
-		GB.ReturnObject(THIS->proxy);
+		GB.ReturnObject(THIS_EXT ? THIS_EXT->proxy : NULL);
 	else
 		CWIDGET_register_proxy(THIS, VPROP(GB_OBJECT));
 
@@ -1460,9 +1525,9 @@ END_PROPERTY
 BEGIN_PROPERTY(Control_PopupMenu)
 
 	if (READ_PROPERTY)
-		GB.ReturnString(THIS->popup);
+		GB.ReturnString(THIS_EXT ? THIS_EXT->popup : NULL);
 	else
-		GB.StoreString(PROP(GB_STRING), &(THIS->popup));
+		GB.StoreString(PROP(GB_STRING), &(ENSURE_EXT(THIS)->popup));
 
 END_PROPERTY
 
@@ -1984,48 +2049,60 @@ void CWidget::setName(CWIDGET *object, const char *name)
 }
 #endif
 
+void CWIDGET_free_ext(void *_object)
+{
+}
+
 void CWidget::destroy()
 {
 	QWidget *w = (QWidget *)sender();
-	CWIDGET *ob = CWidget::get(w);
+	CWIDGET *_object = CWidget::get(w);
 
-	if (ob == NULL)
+	if (!THIS)
 		return;
 
 	//qDebug("CWidget::destroy: (%s %p) %s", GB.GetClassName(ob), ob, ob->name);
 	
-	if (CWIDGET_active_control == ob)
+	if (CWIDGET_active_control == THIS)
 		CWIDGET_active_control = NULL;
-	if (_old_active_control == ob)
+	
+	if (_old_active_control == THIS)
 		_old_active_control = NULL;
-	if (_hovered == ob)
+	
+	if (_hovered == THIS)
 		_hovered = NULL;
-	if (_official_hovered == ob)
+	
+	if (_official_hovered == THIS)
 		_official_hovered = NULL;
 	
-	CACTION_register(ob, ob->action, NULL);
-	GB.FreeString(&ob->action);
+	if (THIS_EXT)
+	{
+		CACTION_register(THIS, THIS_EXT->action, NULL);
+		GB.FreeString(&THIS_EXT->action);
 	
-	if (ob->proxy)
-		((CWIDGET *)ob->proxy)->proxy_for = NULL;
-	if (ob->proxy_for)
-		((CWIDGET *)ob->proxy_for)->proxy = NULL;
+		if (THIS_EXT->proxy)
+			EXT(THIS_EXT->proxy)->proxy_for = NULL;
+		if (THIS_EXT->proxy_for)
+			EXT(THIS_EXT->proxy_for)->proxy = NULL;
 	
-	set_name(ob, 0);
+		GB.Unref(POINTER(&THIS_EXT->cursor));
+		GB.FreeString(&THIS_EXT->popup);
+		GB.StoreVariant(NULL, &THIS_EXT->tag);
+		GB.Free(POINTER(&THIS->ext));
+	}
+	
+	set_name(THIS, 0);
 
 	dict.remove(w);
 
-	QWIDGET(ob) = NULL;
-	GB.StoreVariant(NULL, &ob->tag);
-	GB.Unref(POINTER(&ob->cursor));
-	GB.Unref(POINTER(&ob->font));
-	GB.FreeString(&ob->popup);
+	QWIDGET(THIS) = NULL;
+	GB.Unref(POINTER(&THIS->font));
 	
 	//qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 	//if (!CWIDGET_test_flag(ob, WF_NODETACH))
-	GB.Detach(ob);
-
-	GB.Unref(POINTER(&ob));
+	GB.Detach(THIS);
+	
+	GB.Unref(POINTER(&_object));
 }
 
 /*static void post_dblclick_event(void *control)
@@ -2050,7 +2127,7 @@ static void post_focus_change(void *)
 		while (control)
 		{
 			GB.Raise(control, EVENT_LostFocus, 0);
-			control = (CWIDGET *)control->proxy_for;
+			control = (CWIDGET *)(EXT(control) ? EXT(control)->proxy_for : NULL);
 		}
 		
 		_old_active_control = current;
@@ -2060,7 +2137,7 @@ static void post_focus_change(void *)
 		while (control)
 		{
 			GB.Raise(control, EVENT_GotFocus, 0);
-			control = (CWIDGET *)control->proxy_for;
+			control = (CWIDGET *)(EXT(control) ? EXT(control)->proxy_for : NULL);
 		}
 	}
 	
@@ -2223,8 +2300,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   
 	__CONTEXT_MENU:
 	{
-		while (control->proxy_for)
-			control = (CWIDGET *)control->proxy_for;
+		while (EXT(control) && EXT(control)->proxy_for)
+			control = (CWIDGET *)(EXT(control)->proxy_for);
 
 	__MENU_TRY_PROXY:
 	
@@ -2236,18 +2313,18 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			GB.Raise(control, EVENT_Menu, 0);
 			return true;
 		}
-		if (control->popup)
+		if (EXT(control) && EXT(control)->popup)
 		{
 			CWINDOW *window = CWidget::getWindow(control);
-			CMENU *menu = CWindow::findMenu(window, control->popup);
+			CMENU *menu = CWindow::findMenu(window, EXT(control)->popup);
 			if (menu)
 				CMENU_popup(menu, QCursor::pos());
 			return true;
 		}
 
-		if (control->proxy_for)
+		if (EXT(control) && EXT(control)->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy_for;
+			control = (CWIDGET *)(EXT(control)->proxy_for);
 			goto __MENU_TRY_PROXY;
 		}
 		
@@ -2378,9 +2455,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (cancel)
 			return true;
 		
-		if (control->proxy_for)
+		if (EXT(control) && EXT(control)->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy_for;
+			control = (CWIDGET *)(EXT(control)->proxy_for);
 			goto __MOUSE_TRY_PROXY;
 		}
 		
@@ -2462,9 +2539,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (cancel && (type != QEvent::KeyRelease))
 			return true;
 
-		if (control->proxy_for)
+		if (EXT(control) && EXT(control)->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy_for;
+			control = (CWIDGET *)(EXT(control)->proxy_for);
 			goto __KEY_TRY_PROXY;
 		}
 		
@@ -2505,8 +2582,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				CKEY_info.state = 0;
 				CKEY_info.code = 0;
 	
-				if (control->proxy_for)
-					cancel = GB.Raise(control->proxy_for, event_id, 0);
+				if (EXT(control) && EXT(control)->proxy_for)
+					cancel = GB.Raise(EXT(control)->proxy_for, event_id, 0);
 				if (!cancel)
 					cancel = GB.Raise(control, event_id, 0);
 	
@@ -2516,9 +2593,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 					return true;
 			}
 
-			if (control->proxy_for)
+			if (EXT(control) && EXT(control)->proxy_for)
 			{
-				control = (CWIDGET *)control->proxy_for;
+				control = (CWIDGET *)(EXT(control)->proxy_for);
 				goto __IM_TRY_PROXY;
 			}
 		}
@@ -2564,9 +2641,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				return true;
 		}
 		
-		if (control->proxy_for)
+		if (EXT(control) && EXT(control)->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy_for;
+			control = (CWIDGET *)(EXT(control)->proxy_for);
 			goto __MOUSE_WHEEL_TRY_PROXY;
 		}
 		
@@ -2781,6 +2858,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Action", "s", Control_Action),
 	GB_PROPERTY("PopupMenu", "s", Control_PopupMenu),
 	GB_PROPERTY("Proxy", "Control", Control_Proxy),
+	GB_PROPERTY("NoTabFocus", "b", Control_NoTabFocus),
 
 	GB_PROPERTY_READ("Parent", "Container", Control_Parent),
 	GB_PROPERTY_READ("Window", "Window", Control_Window),

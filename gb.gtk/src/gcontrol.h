@@ -54,8 +54,8 @@ public:
 	gCursor* cursor();
 	bool design();
 	virtual bool enabled();
-	bool expand();
-	bool ignore();
+	bool expand() const { return expa; }
+	bool ignore() const { return igno; }
 	bool hovered();
 	virtual int handle();
 	virtual int height();
@@ -95,8 +95,12 @@ public:
 	virtual void setWidth(int w);
 	void setPrevious(gControl *prev);
 	void setNext(gControl *next);
-	void setTracking(bool vl);
+	
 	bool isTracking() { return _tracking; }
+	void setTracking(bool vl);
+	
+	bool isNoTabFocus() const { return _no_tab_focus; }
+	void setNoTabFocus(bool v);
 
 	gColor background();
 	gColor foreground();
@@ -210,6 +214,7 @@ public:
 	unsigned _no_default_mouse_event : 1;  // No default mouse events
 	unsigned _grab : 1;                    // control is currently grabbing mouse and keyboard
 	unsigned _has_border : 1;              // if the control has a border
+	unsigned _no_tab_focus : 1;            // Don't put inside focus chain
 	
 	
   void removeParent() { pr = NULL; }

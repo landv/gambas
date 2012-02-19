@@ -136,7 +136,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 {
 	QPainter *p;
 	void *_object = CWidget::get(this);
-	int fw;
+	int fw, bg;
 	
 	if (!_object)
 		return;
@@ -165,9 +165,10 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	
 	fw = frameWidth();
 	
-	if (THIS->widget.bg != COLOR_DEFAULT)
+	bg = CWIDGET_get_background((CWIDGET *)THIS); 
+	if (bg != COLOR_DEFAULT)
 	{
-		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, QColor((QRgb)THIS->widget.bg));
+		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, QColor((QRgb)bg));
 	}
 	
 	if (!_use_paint)
@@ -476,9 +477,12 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 		GB.ReturnBoolean(WIDGET->isCached());
 	else
 	{
-		if (THIS->widget.bg == COLOR_DEFAULT)
+		int bg = CWIDGET_get_background((CWIDGET *)THIS);
+		int fg = CWIDGET_get_foreground((CWIDGET *)THIS);
+		
+		if (bg == COLOR_DEFAULT)
 		{
-			CWIDGET_set_color((CWIDGET *)THIS, THIS->widget.fg, WIDGET->palette().color(WIDGET->backgroundRole()).rgb() & 0xFFFFFF);
+			CWIDGET_set_color((CWIDGET *)THIS, fg, WIDGET->palette().color(WIDGET->backgroundRole()).rgb() & 0xFFFFFF);
 			WIDGET->clearBackground();
 		}
 		WIDGET->setCached(VPROP(GB_BOOLEAN));

@@ -114,11 +114,12 @@ static void update_alignment(void *_object)
 static void set_text_color(void *_object)
 {
 	QBrush col;
+	int fg = CWIDGET_get_foreground((CWIDGET *)THIS);
 	
-	if (THIS->widget.fg == COLOR_DEFAULT)
+	if (fg == COLOR_DEFAULT)
 		col = WIDGET->palette().text();
 	else
-		col = QColor((QRgb)THIS->widget.fg);
+		col = QColor((QRgb)fg);
 	
 	WIDGET->setTextColor(col);
 }

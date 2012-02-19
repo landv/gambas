@@ -51,6 +51,7 @@ static char *add_rule(char *match, const char *name, const char *rule)
 	match = GB.AddString(match, "='", 2);
 	match = GB.AddString(match, rule, 0);
 	match = GB.AddChar(match, '\'');
+	return match;
 }
 
 static void set_filter(char **property, const char *str, int len)

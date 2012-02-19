@@ -614,8 +614,8 @@ void gContainer::updateFocusChain()
 	while (iter)
 	{
 		child = (gControl*)(iter->data);
-		//fprintf(stderr, "%s\n", child->name());	
-	  chain = g_list_prepend(chain, child->border);
+		if (!child->isNoTabFocus())
+			chain = g_list_prepend(chain, child->border);
 		iter = iter->next;
 	}
 	

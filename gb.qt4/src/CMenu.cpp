@@ -310,7 +310,6 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 	set_menu_visible(THIS, !VARGOPT(hidden, FALSE));
 
 	THIS->parent = parent;
-  THIS->widget.tag.type = GB_T_NULL;
   THIS->widget.name = NULL;
   THIS->picture = NULL;
   THIS->deleted = false;
@@ -347,8 +346,12 @@ BEGIN_METHOD_VOID(CMENU_free)
   qDebug("*** CMENU_free: free tag");
 #endif
 
-  GB.StoreVariant(NULL, &THIS->widget.tag);
-
+	if (THIS->widget.ext)
+	{
+		GB.StoreVariant(NULL, &THIS->widget.ext->tag);
+		GB.Free(POINTER(&THIS->widget.ext));
+	}
+	
 	//qDebug("free_name: %s %p (CMENU_free)", THIS->widget.name, THIS->widget.name);
 	//if (!strcmp(THIS->widget.name, "mnuCut"))
 	//	BREAKPOINT();

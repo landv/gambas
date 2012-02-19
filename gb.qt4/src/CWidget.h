@@ -35,9 +35,24 @@
 #include <QHash>
 
 typedef
+	struct {
+		int fg;
+		int bg;
+		GB_VARIANT_VALUE tag;
+		void *cursor;
+		char *popup;
+		void *proxy;
+		void *proxy_for;
+		char *action;
+		int focusPolicy;
+	}
+	CWIDGET_EXT;
+
+typedef
 	struct CWIDGET {
 		GB_BASE ob;
 		QWidget *widget;
+		CWIDGET_EXT *ext;
 		struct {
 			unsigned short f;
 			unsigned expand : 1;
@@ -51,19 +66,12 @@ typedef
 			unsigned old_tracking : 1;
 			unsigned grab : 1;
 			unsigned dragging: 1;
-			unsigned _reserved : 5;
+			unsigned noTabFocus : 1;
+			unsigned _reserved : 4;
 			} flag;
-		GB_VARIANT_VALUE tag;
-		char *name;
-		void *cursor;
-		void *font;
-		char *popup;
-		void *proxy;
-		void *proxy_for;
-		char *action;
 		int level;
-		int fg;
-		int bg;
+		char *name;
+		void *font;
 		}
 	CWIDGET; // BEWARE: gb.qt.h MUST be updated accordingly!
 
@@ -99,6 +107,7 @@ extern CWIDGET *CWIDGET_active_control;
 #else
 
 #define THIS (((CWIDGET *)_object))
+#define THIS_EXT (((CWIDGET *)_object)->ext)
 #define WIDGET QWIDGET(_object)
 
 #endif
