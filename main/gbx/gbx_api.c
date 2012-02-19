@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_api.c
+	gbx_api.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -60,210 +60,210 @@
 #include "gbx_api.h"
 
 typedef
-  struct {
-    OBJECT *object;
-    CLASS_DESC_METHOD *desc;
-    }
-  GB_API_FUNCTION;
+	struct {
+		OBJECT *object;
+		CLASS_DESC_METHOD *desc;
+		}
+	GB_API_FUNCTION;
 
 void *GAMBAS_Api[] =
 {
-  (void *)GB_VERSION,
+	(void *)GB_VERSION,
 
-  (void *)GB_GetInterface,
+	(void *)GB_GetInterface,
 
-  (void *)GB_Hook,
+	(void *)GB_Hook,
 
-  (void *)GB_LoadComponent,
-  (void *)COMPONENT_exist,
-  (void *)GB_CurrentComponent,
-  (void *)COMPONENT_get_info,
+	(void *)GB_LoadComponent,
+	(void *)COMPONENT_exist,
+	(void *)GB_CurrentComponent,
+	(void *)COMPONENT_get_info,
 
-  (void *)GB_Push,
-  (void *)GB_GetFunction,
-  (void *)GB_Call,
-  (void *)GB_GetClassInterface,
-  (void *)GB_GetProperty,
-  (void *)GB_SetProperty,
+	(void *)GB_Push,
+	(void *)GB_GetFunction,
+	(void *)GB_Call,
+	(void *)GB_GetClassInterface,
+	(void *)GB_GetProperty,
+	(void *)GB_SetProperty,
 
-  (void *)WATCH_one_loop,
-  (void *)EVENT_post,
-  (void *)EVENT_post2,
-  (void *)CTIMER_every,
-  (void *)GB_Raise,
-  (void *)EVENT_post_event,
-  (void *)EVENT_check_post,
-  (void *)GB_CanRaise,
-  (void *)GB_GetEvent,
-  (void *)GB_GetLastEventName,
-  (void *)CTIMER_raise,
-  (void *)GB_Stopped,
-  (void *)COMPONENT_signal,
+	(void *)WATCH_one_loop,
+	(void *)EVENT_post,
+	(void *)EVENT_post2,
+	(void *)CTIMER_every,
+	(void *)GB_Raise,
+	(void *)EVENT_post_event,
+	(void *)EVENT_check_post,
+	(void *)GB_CanRaise,
+	(void *)GB_GetEvent,
+	(void *)GB_GetLastEventName,
+	(void *)CTIMER_raise,
+	(void *)GB_Stopped,
+	(void *)COMPONENT_signal,
 
-  (void *)GB_NParam,
-  (void *)GB_Conv,
-  (void *)GB_GetUnknown,
+	(void *)GB_NParam,
+	(void *)GB_Conv,
+	(void *)GB_GetUnknown,
 
-  (void *)GB_Error,
-  (void *)ERROR_propagate,
+	(void *)GB_Error,
+	(void *)ERROR_propagate,
 
-  (void *)GB_GetClass,
-  (void *)GB_GetClassName,
-  (void *)GB_ExistClass,
-  (void *)CLASS_find_global,
-  (void *)GB_ExistClassLocal,
-  (void *)CLASS_find,
-  (void *)GB_Is,
-  (void *)GB_Ref,
-  (void *)GB_Unref,
-  (void *)GB_UnrefKeep,
-  (void *)GB_Detach,
-  (void *)GB_Attach,
-  (void *)OBJECT_parent,
-  (void *)GB_New,
-  (void *)CLASS_auto_create,
-  (void *)GB_CheckObject,
+	(void *)GB_GetClass,
+	(void *)GB_GetClassName,
+	(void *)GB_ExistClass,
+	(void *)CLASS_find_global,
+	(void *)GB_ExistClassLocal,
+	(void *)CLASS_find,
+	(void *)GB_Is,
+	(void *)GB_Ref,
+	(void *)GB_Unref,
+	(void *)GB_UnrefKeep,
+	(void *)GB_Detach,
+	(void *)GB_Attach,
+	(void *)OBJECT_parent,
+	(void *)GB_New,
+	(void *)CLASS_auto_create,
+	(void *)GB_CheckObject,
 
-  (void *)GB_GetEnum,
-  (void *)GB_StopEnum,
-  (void *)GB_ListEnum,
-  (void *)GB_NextEnum,
-  (void *)GB_StopAllEnum,
+	(void *)GB_GetEnum,
+	(void *)GB_StopEnum,
+	(void *)GB_ListEnum,
+	(void *)GB_NextEnum,
+	(void *)GB_StopAllEnum,
 
-  (void *)GB_Return,
-  (void *)GB_ReturnInteger,
-  (void *)GB_ReturnLong,
-  (void *)GB_ReturnPointer,
-  (void *)GB_ReturnBoolean,
-  (void *)GB_ReturnDate,
-  (void *)GB_ReturnObject,
-  (void *)GB_ReturnNull,
-  (void *)GB_ReturnFloat,
-  (void *)GB_ReturnVariant,
-  (void *)GB_ReturnConvVariant,
-  (void *)GB_ReturnPtr,
-  (void *)GB_ReturnSelf,
+	(void *)GB_Return,
+	(void *)GB_ReturnInteger,
+	(void *)GB_ReturnLong,
+	(void *)GB_ReturnPointer,
+	(void *)GB_ReturnBoolean,
+	(void *)GB_ReturnDate,
+	(void *)GB_ReturnObject,
+	(void *)GB_ReturnNull,
+	(void *)GB_ReturnFloat,
+	(void *)GB_ReturnVariant,
+	(void *)GB_ReturnConvVariant,
+	(void *)GB_ReturnPtr,
+	(void *)GB_ReturnSelf,
 
-  (void *)GB_ReturnString,
-  (void *)GB_ReturnVoidString,
-  (void *)GB_ReturnConstString,
-  (void *)GB_ReturnConstZeroString,
-  (void *)GB_ReturnNewString,
-  (void *)GB_ReturnNewZeroString,
+	(void *)GB_ReturnString,
+	(void *)GB_ReturnVoidString,
+	(void *)GB_ReturnConstString,
+	(void *)GB_ReturnConstZeroString,
+	(void *)GB_ReturnNewString,
+	(void *)GB_ReturnNewZeroString,
 
-  (void *)STRING_new,
-  (void *)GB_NewZeroString,
-  (void *)GB_TempString,
-  (void *)GB_FreeString,
-  (void *)STRING_extend,
-  (void *)STRING_add,
-  (void *)STRING_add_char,
-  (void *)GB_StringLength,
-  (void *)GB_ToZeroString,
-  (void *)REGEXP_match,
-  (void *)NUMBER_from_string,
-  (void *)GB_NumberToString,
-  (void *)LOCAL_gettext,
-  
-  (void *)STRING_subst,
-  (void *)STRING_subst_add,
-  (void *)STRING_make,
-  (void *)GB_ConvString,
-  (void *)STRING_conv_file_name,
-  (void *)GB_RealFileName,
+	(void *)STRING_new,
+	(void *)GB_NewZeroString,
+	(void *)GB_TempString,
+	(void *)GB_FreeString,
+	(void *)STRING_extend,
+	(void *)STRING_add,
+	(void *)STRING_add_char,
+	(void *)GB_StringLength,
+	(void *)GB_ToZeroString,
+	(void *)REGEXP_match,
+	(void *)NUMBER_from_string,
+	(void *)GB_NumberToString,
+	(void *)LOCAL_gettext,
+	
+	(void *)STRING_subst,
+	(void *)STRING_subst_add,
+	(void *)STRING_make,
+	(void *)GB_ConvString,
+	(void *)STRING_conv_file_name,
+	(void *)GB_RealFileName,
 
-  (void *)GB_LoadFile,
-  (void *)STREAM_unmap,
-  (void *)GB_TempDir,
-  (void *)GB_TempFile,
-  (void *)GB_CopyFile,
-  (void *)GB_BrowseProject,
+	(void *)GB_LoadFile,
+	(void *)STREAM_unmap,
+	(void *)GB_TempDir,
+	(void *)GB_TempFile,
+	(void *)GB_CopyFile,
+	(void *)GB_BrowseProject,
 
-  (void *)GB_Store,
-  (void *)GB_StoreString,
-  (void *)GB_StoreObject,
-  (void *)GB_StoreVariant,
+	(void *)GB_Store,
+	(void *)GB_StoreString,
+	(void *)GB_StoreObject,
+	(void *)GB_StoreVariant,
 	(void *)VALUE_read,
 	(void *)GB_BorrowValue,
 	(void *)GB_ReleaseValue,
 
-  (void *)DATE_split,
-  (void *)DATE_make,
-  (void *)DATE_from_time,
-  (void *)DATE_timer,
+	(void *)DATE_split,
+	(void *)DATE_make,
+	(void *)DATE_from_time,
+	(void *)DATE_timer,
 
-  (void *)GB_Watch,
+	(void *)GB_Watch,
 
-  (void *)GB_Eval,
+	(void *)GB_Eval,
 
-  (void *)GB_Alloc,
-  (void *)GB_Free,
-  (void *)GB_Realloc,
+	(void *)GB_Alloc,
+	(void *)GB_Free,
+	(void *)GB_Realloc,
 
-  (void *)GB_NewArray,
-  (void *)ARRAY_delete,
-  (void *)GB_CountArray,
-  (void *)GB_Add,
-  (void *)ARRAY_insert_many,
-  (void *)ARRAY_remove_many,
+	(void *)GB_NewArray,
+	(void *)ARRAY_delete,
+	(void *)GB_CountArray,
+	(void *)GB_Add,
+	(void *)ARRAY_insert_many,
+	(void *)ARRAY_remove_many,
 
-  (void *)GB_SubCollectionNew,
-  (void *)GB_SubCollectionAdd,
-  (void *)GB_SubCollectionRemove,
-  (void *)GB_SubCollectionGet,
-  (void *)GB_SubCollectionContainer,
+	(void *)GB_SubCollectionNew,
+	(void *)GB_SubCollectionAdd,
+	(void *)GB_SubCollectionRemove,
+	(void *)GB_SubCollectionGet,
+	(void *)GB_SubCollectionContainer,
 
-  (void *)GB_tolower,
-  (void *)GB_toupper,
-  (void *)strcasecmp,
-  (void *)strncasecmp,
+	(void *)GB_tolower,
+	(void *)GB_toupper,
+	(void *)strcasecmp,
+	(void *)strncasecmp,
 
-  (void *)GB_AppName,
-  (void *)GB_AppTitle,
-  (void *)GB_AppVersion,
-  (void *)GB_AppPath,
-  (void *)GB_AppStartupClass,
+	(void *)GB_AppName,
+	(void *)GB_AppTitle,
+	(void *)GB_AppVersion,
+	(void *)GB_AppPath,
+	(void *)GB_AppStartupClass,
 
-  (void *)GB_SystemCharset,
-  (void *)LOCAL_get_lang,
-  (void *)GB_SystemDomainName,
-  (void *)GB_IsRightToLeft,
-  (void *)GB_SystemPath,
+	(void *)GB_SystemCharset,
+	(void *)LOCAL_get_lang,
+	(void *)GB_SystemDomainName,
+	(void *)GB_IsRightToLeft,
+	(void *)GB_SystemPath,
 
-  (void *)GB_ArrayNew,
-  (void *)GB_ArrayCount,
-  (void *)GB_ArrayAdd,
-  (void *)GB_ArrayGet,
-  (void *)GB_ArrayType,
+	(void *)GB_ArrayNew,
+	(void *)GB_ArrayCount,
+	(void *)GB_ArrayAdd,
+	(void *)GB_ArrayGet,
+	(void *)GB_ArrayType,
 
-  (void *)GB_CollectionNew,
-  (void *)GB_CollectionCount,
-  (void *)GB_CollectionSet,
-  (void *)GB_CollectionGet,
-  (void *)GB_CollectionEnum,
+	(void *)GB_CollectionNew,
+	(void *)GB_CollectionCount,
+	(void *)GB_CollectionSet,
+	(void *)GB_CollectionGet,
+	(void *)GB_CollectionEnum,
 
-  (void *)GB_HashTableNew,
-  (void *)HASH_TABLE_delete,
-  (void *)HASH_TABLE_size,
-  (void *)GB_HashTableAdd,
-  (void *)GB_HashTableRemove,
-  (void *)GB_HashTableGet,
-  (void *)GB_HashTableEnum,
+	(void *)GB_HashTableNew,
+	(void *)HASH_TABLE_delete,
+	(void *)HASH_TABLE_size,
+	(void *)GB_HashTableAdd,
+	(void *)GB_HashTableRemove,
+	(void *)GB_HashTableGet,
+	(void *)GB_HashTableEnum,
 
 	(void *)GB_StreamGet,
-  (void *)GB_StreamSetBytesRead,
-  (void *)GB_StreamSetSwapping,
-  (void *)GB_StreamBlock,
-  (void *)GB_StreamRead,
-  (void *)GB_StreamWrite,
+	(void *)GB_StreamSetBytesRead,
+	(void *)GB_StreamSetSwapping,
+	(void *)GB_StreamBlock,
+	(void *)GB_StreamRead,
+	(void *)GB_StreamWrite,
 
-  (void *)STRING_start_len,
-  (void *)STRING_end,
-  (void *)STRING_make,
-  
-  (void *)DEBUG_get_current_position,
+	(void *)STRING_start_len,
+	(void *)STRING_end,
+	(void *)STRING_make,
+	
+	(void *)DEBUG_get_current_position,
 
-  NULL
+	NULL
 };
 
 void *GAMBAS_DebugApi[] =
@@ -294,135 +294,135 @@ bool GAMBAS_StopEvent = FALSE;
 static bool _event_stopped = FALSE;
 
 #define CATCH_ERROR \
-  bool ret = FALSE; \
-  TRY
-  
+	bool ret = FALSE; \
+	TRY
+	
 #define END_CATCH_ERROR \
-  CATCH \
-  { \
-    ret = TRUE; \
-    EXEC_set_native_error(TRUE); \
-  } \
-  END_TRY \
-  return ret;
+	CATCH \
+	{ \
+		ret = TRUE; \
+		EXEC_set_native_error(TRUE); \
+	} \
+	END_TRY \
+	return ret;
 
 #define CATCH_ERROR_INT \
-  int ret = 0; \
-  TRY
-  
+	int ret = 0; \
+	TRY
+	
 #define END_CATCH_ERROR_INT \
-  CATCH \
-  { \
-    ret = -1; \
-    EXEC_set_native_error(TRUE); \
-  } \
-  END_TRY \
-  return ret;
+	CATCH \
+	{ \
+		ret = -1; \
+		EXEC_set_native_error(TRUE); \
+	} \
+	END_TRY \
+	return ret;
 
 bool GB_GetInterface(const char *name, int version, void *iface)
 {
 	GB_LoadComponent(name);
 	
-  if (LIBRARY_get_interface_by_name(name, version, iface))
-    ERROR_panic("Cannot find interface of library '%s'", name);
+	if (LIBRARY_get_interface_by_name(name, version, iface))
+		ERROR_panic("Cannot find interface of library '%s'", name);
 
-  return FALSE;
+	return FALSE;
 }
 
 
 void *GB_Hook(int type, void *hook)
 {
-  void *old_hook;
-  void **phook = (void **)(void *)&EXEC_Hook;
+	void *old_hook;
+	void **phook = (void **)(void *)&EXEC_Hook;
 
-  if ((type < 0) || (type > GB_HOOK_MAX))
-    return NULL;
+	if ((type < 0) || (type > GB_HOOK_MAX))
+		return NULL;
 
-  type--;
-  old_hook = phook[type];
-  if (hook)
-  	phook[type] = hook;
+	type--;
+	old_hook = phook[type];
+	if (hook)
+		phook[type] = hook;
 
-  return old_hook;
+	return old_hook;
 }
 
 
 bool GB_LoadComponent(const char *name)
 {
-  CATCH_ERROR
-  {
-    COMPONENT *comp = COMPONENT_create(name);
-    COMPONENT_load(comp);
-  }
-  END_CATCH_ERROR
+	CATCH_ERROR
+	{
+		COMPONENT *comp = COMPONENT_create(name);
+		COMPONENT_load(comp);
+	}
+	END_CATCH_ERROR
 }
 
 
 static void push(int nval, va_list args)
 {
-  TYPE type;
+	TYPE type;
 
-  STACK_check(nval);
+	STACK_check(nval);
 
-  while (nval)
-  {
-    type = va_arg(args, int);
-    SP->type = type;
+	while (nval)
+	{
+		type = va_arg(args, int);
+		SP->type = type;
 
-    switch(type)
-    {
-      case T_INTEGER:
-      case T_BOOLEAN:
-        SP->_integer.value = va_arg(args, int);
-        break;
+		switch(type)
+		{
+			case T_INTEGER:
+			case T_BOOLEAN:
+				SP->_integer.value = va_arg(args, int);
+				break;
 
-      case T_LONG:
-        SP->_long.value = va_arg(args, int64_t);
-        break;
+			case T_LONG:
+				SP->_long.value = va_arg(args, int64_t);
+				break;
 
-      case T_STRING:
-        SP->type = T_CSTRING;
-        SP->_string.addr = va_arg(args, char *);
-        SP->_string.start = 0;
-        SP->_string.len = va_arg(args, int);
-        if (SP->_string.len <= 0 && SP->_string.addr)
-          SP->_string.len = strlen(SP->_string.addr);
-        break;
+			case T_STRING:
+				SP->type = T_CSTRING;
+				SP->_string.addr = va_arg(args, char *);
+				SP->_string.start = 0;
+				SP->_string.len = va_arg(args, int);
+				if (SP->_string.len <= 0 && SP->_string.addr)
+					SP->_string.len = strlen(SP->_string.addr);
+				break;
 
-      case T_FLOAT:
-        SP->_float.value = va_arg(args, double);
-        break;
+			case T_FLOAT:
+				SP->_float.value = va_arg(args, double);
+				break;
 
-      case T_OBJECT:
-        SP->_object.object = va_arg(args, void *);
-        OBJECT_REF(SP->_object.object, "push");
-        break;
+			case T_OBJECT:
+				SP->_object.object = va_arg(args, void *);
+				OBJECT_REF(SP->_object.object, "push");
+				break;
 
-      default:
-        ERROR_panic("GB.Push: unknown datatype");
-        break;
-    }
+			default:
+				ERROR_panic("GB.Push: unknown datatype");
+				break;
+		}
 
-    SP++;
-    nval--;
-  }
+		SP++;
+		nval--;
+	}
 }
 
 
 void GB_Push(int nval, ...)
 {
-  va_list args;
+	va_list args;
 
-  va_start(args, nval);
-  push(nval, args);
-  va_end(args);
+	va_start(args, nval);
+	push(nval, args);
+	va_end(args);
 }
 
 
 void GB_GetProperty(void *object, const char *property)
 {
 	static bool init = FALSE;
-  static GB_FUNCTION func;
+	static GB_FUNCTION func;
 	
 	if (!init)
 	{
@@ -437,9 +437,9 @@ void GB_GetProperty(void *object, const char *property)
 void GB_SetProperty(void *object, const char *property, ...)
 {
 	static bool init = FALSE;
-  static GB_FUNCTION func;
+	static GB_FUNCTION func;
 	
-  va_list args;
+	va_list args;
 	
 	if (!init)
 	{
@@ -449,9 +449,9 @@ void GB_SetProperty(void *object, const char *property, ...)
 	
 	GB_Push(2, GB_T_OBJECT, object, GB_T_STRING, property, strlen(property));
 
-  va_start(args, property);
-  push(1, args);
-  va_end(args);
+	va_start(args, property);
+	push(1, args);
+	va_end(args);
 	
 	GB_Call(&func, 3, TRUE);
 }
@@ -459,26 +459,26 @@ void GB_SetProperty(void *object, const char *property, ...)
 
 bool GB_CanRaise(void *object, int event_id)
 {
-  ushort *event_tab;
-  int func_id;
-  COBSERVER *obs;
+	ushort *event_tab;
+	int func_id;
+	COBSERVER *obs;
 
-  if (!object || !OBJECT_has_events(object))
-    return FALSE;
+	if (!object || !OBJECT_has_events(object))
+		return FALSE;
 
 	LIST_for_each(obs, OBJECT_event(object)->observer)
 	{
 		if (OBJECT_active_parent(obs) && obs->event && obs->event[event_id])
-	  	return TRUE;
+			return TRUE;
 	}
-  
-  if (!OBJECT_active_parent(object))
-  	return FALSE;
-  
-  event_tab = OBJECT_event(object)->event;
-  func_id = event_tab[event_id];
+	
+	if (!OBJECT_active_parent(object))
+		return FALSE;
+	
+	event_tab = OBJECT_event(object)->event;
+	func_id = event_tab[event_id];
 
-  return (func_id != 0);
+	return (func_id != 0);
 }
 
 
@@ -498,11 +498,11 @@ static int get_event_func_id(ushort *event_tab, int event_id)
 
 static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 {
-  bool stop_event;
+	bool stop_event;
 	CLASS *class;
-  CLASS_DESC_METHOD *desc;
-  void *old_last;
-  bool result;
+	CLASS_DESC_METHOD *desc;
+	void *old_last;
+	bool result;
 	
 	func_id--;
 
@@ -564,20 +564,20 @@ static void error_GB_Raise()
 
 bool GB_Raise(void *object, int event_id, int nparam, ...)
 {
-  OBJECT *parent;
-  int func_id;
-  int result;
-  va_list args;
-  bool arg;
-  COBSERVER *obs;
+	OBJECT *parent;
+	int func_id;
+	int result;
+	va_list args;
+	bool arg;
+	COBSERVER *obs;
 	void *save_GB_Raise_unref;
 	int save_GB_Raise_nparam;
 
-  if (GAMBAS_DoNotRaiseEvent)
-    return FALSE;
+	if (GAMBAS_DoNotRaiseEvent)
+		return FALSE;
 
-  if (!OBJECT_is_valid(object) || !OBJECT_has_events(object))
-    return FALSE;
+	if (!OBJECT_is_valid(object) || !OBJECT_has_events(object))
+		return FALSE;
 
 	save_GB_Raise_unref = _GB_Raise_unref;
 	save_GB_Raise_nparam = _GB_Raise_nparam;
@@ -703,103 +703,103 @@ __RETURN:
 
 bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
 {
-  GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
-  char len_min, nparam, npvar;
-  TYPE *tsign;
-  TYPE tret;
-  int index;
-  CLASS *class;
-  int kind;
-  CLASS_DESC *desc;
-  bool error;
+	GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
+	char len_min, nparam, npvar;
+	TYPE *tsign;
+	TYPE tret;
+	int index;
+	CLASS *class;
+	int kind;
+	CLASS_DESC *desc;
+	bool error;
 	const char *err;
 
-  if (OBJECT_is_class(object))
-  {
-    class = (CLASS *)object;
-    kind = CD_STATIC_METHOD;
-  }
-  else
-  {
-    class = OBJECT_class(object);
-    kind = CD_METHOD;
-  }
+	if (OBJECT_is_class(object))
+	{
+		class = (CLASS *)object;
+		kind = CD_STATIC_METHOD;
+	}
+	else
+	{
+		class = OBJECT_class(object);
+		kind = CD_METHOD;
+	}
 
 	CLASS_load(class);
 	
-  index = CLASS_find_symbol(class, name);
-  if (index == NO_SYMBOL)
+	index = CLASS_find_symbol(class, name);
+	if (index == NO_SYMBOL)
 	{
 		err = "Symbol not found";
-    goto _NOT_FOUND;
+		goto _NOT_FOUND;
 	}
 
-  desc = class->table[index].desc;
-  if (CLASS_DESC_get_type(desc) != kind)
+	desc = class->table[index].desc;
+	if (CLASS_DESC_get_type(desc) != kind)
 	{
 		err = kind == CD_METHOD ? "Not a method" : "Not a static method";
-    goto _NOT_FOUND;
+		goto _NOT_FOUND;
 	}
 
-  if (sign)
-  {
-    TYPE_signature_length(sign, &len_min, &nparam, &npvar);
-    tsign = NULL;
+	if (sign)
+	{
+		TYPE_signature_length(sign, &len_min, &nparam, &npvar);
+		tsign = NULL;
 
-    if (nparam)
-    {
-      ALLOC(&tsign, nparam * sizeof(TYPE), "GB_GetFunction");
-      tsign = TYPE_transform_signature(&tsign, sign, nparam);
-    }
+		if (nparam)
+		{
+			ALLOC(&tsign, nparam * sizeof(TYPE), "GB_GetFunction");
+			tsign = TYPE_transform_signature(&tsign, sign, nparam);
+		}
 
-    error = TYPE_compare_signature(desc->method.signature, desc->method.npmax, tsign, nparam);
+		error = TYPE_compare_signature(desc->method.signature, desc->method.npmax, tsign, nparam);
 
 		if (nparam)
 			FREE(&tsign, "GB_GetFunction");
 
-    if (error)
-    {
-      err = "Parameters do not match";
-      goto _NOT_FOUND;
-    }
-  }
+		if (error)
+		{
+			err = "Parameters do not match";
+			goto _NOT_FOUND;
+		}
+	}
 
 	if (type)
 	{
-  	tret = TYPE_from_string(&type);
-  	if (tret != desc->method.type)
-  	{
-  		if (tret == T_VOID)
-  			err = "Must be a procedure";
+		tret = TYPE_from_string(&type);
+		if (tret != desc->method.type)
+		{
+			if (tret == T_VOID)
+				err = "Must be a procedure";
 			else if (desc->method.type == T_VOID)
-  			err = "Must be a function";
+				err = "Must be a function";
 			else
 				err = "Return type does not match";
 
 			goto _NOT_FOUND;
-  	}
+		}
 	}
 
-  func->object = object;
-  func->desc = &desc->method;
+	func->object = object;
+	func->desc = &desc->method;
 
-  if (!func->desc)
-  	abort();
+	if (!func->desc)
+		abort();
 
-  return FALSE;
+	return FALSE;
 
 _NOT_FOUND:
 
-  GB_Error("Unable to find method &1 in class &2. &3", name, class->name, err);
-  func->object = NULL;
-  func->desc = NULL;
-  return TRUE;
+	GB_Error("Unable to find method &1 in class &2. &3", name, class->name, err);
+	func->object = NULL;
+	func->desc = NULL;
+	return TRUE;
 }
 
 
 void *GB_GetClassInterface(void *_class, const char *_name)
 {
-  CLASS_DESC *desc;
+	CLASS_DESC *desc;
 	int index;
 	CLASS *class = (CLASS *)_class;
 	int len = strlen(_name);
@@ -810,13 +810,13 @@ void *GB_GetClassInterface(void *_class, const char *_name)
 	strcpy(name, "_@");
 	strcat(name, _name);
 
-  index = CLASS_find_symbol(class, name);
-  if (index == NO_SYMBOL)
-    goto __NOT_FOUND;
+	index = CLASS_find_symbol(class, name);
+	if (index == NO_SYMBOL)
+		goto __NOT_FOUND;
 
-  desc = class->table[index].desc;
-  if (CLASS_DESC_get_type(desc) != CD_CONSTANT)
-    goto __NOT_FOUND;
+	desc = class->table[index].desc;
+	if (CLASS_DESC_get_type(desc) != CD_CONSTANT)
+		goto __NOT_FOUND;
 
 	if (desc->constant.type != T_POINTER)
 		goto __NOT_FOUND;
@@ -830,8 +830,8 @@ __NOT_FOUND:
 
 GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 {
-  GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
-  bool stop_event;
+	GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
+	bool stop_event;
 
 	if (!func || !func->desc)
 		GB_Error("Unknown function call");
@@ -853,19 +853,19 @@ GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 		}
 	}
 
-  return (GB_VALUE *)&TEMP;
+	return (GB_VALUE *)&TEMP;
 }
 
 
 int GB_GetEvent(void *class, char *name)
 {
-  CLASS_DESC_EVENT *cd;
+	CLASS_DESC_EVENT *cd;
 
-  cd = CLASS_get_event_desc((CLASS *)class, name);
-  if (!cd)
-    return (-1);
-  else
-    return *cd->index;
+	cd = CLASS_get_event_desc((CLASS *)class, name);
+	if (!cd)
+		return (-1);
+	else
+		return *cd->index;
 }
 
 
@@ -883,41 +883,41 @@ bool GB_Stopped(void)
 
 int GB_NParam(void)
 {
-  return EXEC_unknown_nparam;
+	return EXEC_unknown_nparam;
 }
 
 
 /*bool GB_IsProperty(void)
 {
-  return FALSE; //EXEC_unknown_property;
+	return FALSE; //EXEC_unknown_property;
 }*/
 
 
 const char *GB_GetUnknown(void)
 {
-  return EXEC_unknown_name;
+	return EXEC_unknown_name;
 }
 
 
 void GB_Error(const char *error, ...)
 {
-  va_list args;
-  char *arg[4];
-  int i;
+	va_list args;
+	char *arg[4];
+	int i;
 
-  if (!error)
-  {
-    EXEC_set_native_error(FALSE);
-    return;
-  }
+	if (!error)
+	{
+		EXEC_set_native_error(FALSE);
+		return;
+	}
 
-  va_start(args, error);
+	va_start(args, error);
 
-  for (i = 0; i < 4; i++)
-    arg[i] = va_arg(args, char *);
+	for (i = 0; i < 4; i++)
+		arg[i] = va_arg(args, char *);
 
-  ERROR_define(error, arg);
-  EXEC_set_native_error(TRUE);
+	ERROR_define(error, arg);
+	EXEC_set_native_error(TRUE);
 }
 
 #if DEBUG_REF
@@ -942,112 +942,112 @@ static void print_stack_backtrace()
 
 void GB_Ref(void *object)
 {
-  #if TRACE_MEMORY
-  CLASS *save = CP;
-  CP = NULL;
-  #endif
+	#if TRACE_MEMORY
+	CLASS *save = CP;
+	CP = NULL;
+	#endif
 
-  if (object)
+	if (object)
 	{
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-    OBJECT_REF(object, "GB_Ref");
+		OBJECT_REF(object, "GB_Ref");
 	}
 
-  #if TRACE_MEMORY
-  CP = save;
-  #endif
+	#if TRACE_MEMORY
+	CP = save;
+	#endif
 }
 
 
 void GB_Unref(void **object)
 {
-  #if TRACE_MEMORY
-  CLASS *save = CP;
-  CP = NULL;
-  #endif
+	#if TRACE_MEMORY
+	CLASS *save = CP;
+	CP = NULL;
+	#endif
 
-  if (*object)
+	if (*object)
 	{
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-    OBJECT_UNREF(*object, "GB_Unref");
+		OBJECT_UNREF(*object, "GB_Unref");
 	}
 	
-  #if TRACE_MEMORY
-  CP = save;
-  #endif
+	#if TRACE_MEMORY
+	CP = save;
+	#endif
 }
 
 
 void GB_UnrefKeep(void **object, int delete)
 {
-  #if TRACE_MEMORY
-  CLASS *save = CP;
-  CP = NULL;
-  #endif
+	#if TRACE_MEMORY
+	CLASS *save = CP;
+	CP = NULL;
+	#endif
 
-  if (*object != NULL)
-  {
+	if (*object != NULL)
+	{
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-    if (delete)
-    {
-      OBJECT_UNREF(*object, "GB_UnrefKeep");
-    }
-    else
-    {
-      OBJECT_UNREF_KEEP(*object, "GB_UnrefKeep");
-    }
-  }
+		if (delete)
+		{
+			OBJECT_UNREF(*object, "GB_UnrefKeep");
+		}
+		else
+		{
+			OBJECT_UNREF_KEEP(*object, "GB_UnrefKeep");
+		}
+	}
 
-  #if TRACE_MEMORY
-  CP = save;
-  #endif
+	#if TRACE_MEMORY
+	CP = save;
+	#endif
 }
 
 
 void GB_Detach(void *object)
 {
-  if (object)
+	if (object)
 	{
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-    OBJECT_detach(object);
+		OBJECT_detach(object);
 	}
 }
 
 
 void GB_Attach(void *object, void *parent, const char *name)
 {
-  if (object)
+	if (object)
 	{
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-    OBJECT_attach(object, parent, name);
+		OBJECT_attach(object, parent, name);
 	}
 }
 
 
 void GB_StopEnum(void)
 {
-  /* Do not forget than even if we stop the enumeration, the return value
-     of _next will be converted
-  */
-  //VALUE_default(&TEMP, *GAMBAS_ReturnType);
-  TEMP.type = T_VOID;
-  EXEC_enum->stop = TRUE;
+	/* Do not forget than even if we stop the enumeration, the return value
+		of _next will be converted
+	*/
+	//VALUE_default(&TEMP, *GAMBAS_ReturnType);
+	TEMP.type = T_VOID;
+	EXEC_enum->stop = TRUE;
 }
 
 
 void *GB_GetEnum(void)
 {
-  return (void *)&EXEC_enum->data;
+	return (void *)&EXEC_enum->data;
 }
 
 
@@ -1055,103 +1055,103 @@ static void *_enum_object;
 
 void GB_ListEnum(void *enum_object)
 {
-  EXEC_enum = NULL;
-  _enum_object = enum_object;
+	EXEC_enum = NULL;
+	_enum_object = enum_object;
 }
 
 
 bool GB_NextEnum(void)
 {
-  for(;;)
-  {
-    EXEC_enum = CENUM_get_next(EXEC_enum);
-    if (!EXEC_enum)
-      return TRUE;
-    if (EXEC_enum->enum_object == _enum_object)
-      return FALSE;
-  }
+	for(;;)
+	{
+		EXEC_enum = CENUM_get_next(EXEC_enum);
+		if (!EXEC_enum)
+			return TRUE;
+		if (EXEC_enum->enum_object == _enum_object)
+			return FALSE;
+	}
 }
 
 void GB_StopAllEnum(void *enum_object)
 {
-  GB_ListEnum(enum_object);
-  while (!GB_NextEnum())
-    GB_StopEnum();
+	GB_ListEnum(enum_object);
+	while (!GB_NextEnum())
+		GB_StopEnum();
 }
 
 
 void GB_Return(GB_TYPE type, ...)
 {
-  static void *jump[16] = {
-    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL
-    };
+	static void *jump[16] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL
+		};
 
-  VALUE *ret = &TEMP;
-  va_list args;
+	VALUE *ret = &TEMP;
+	va_list args;
 
-  va_start(args, type);
+	va_start(args, type);
 
-  ret->type = type;
-  if (TYPE_is_object(type))
-    goto __OBJECT;
-  else
-    goto *jump[type];
+	ret->type = type;
+	if (TYPE_is_object(type))
+		goto __OBJECT;
+	else
+		goto *jump[type];
 
 __BOOLEAN:
 
-  ret->_integer.value = va_arg(args, int) ? (-1) : 0;
-  goto __CONV;
+	ret->_integer.value = va_arg(args, int) ? (-1) : 0;
+	goto __CONV;
 
 __BYTE:
 
-  ret->_integer.value = va_arg(args, int);
-  goto __CONV;
+	ret->_integer.value = va_arg(args, int);
+	goto __CONV;
 
 __SHORT:
 
-  ret->_integer.value = va_arg(args, int);
-  goto __CONV;
+	ret->_integer.value = va_arg(args, int);
+	goto __CONV;
 
 __INTEGER:
 
-  ret->_integer.value = va_arg(args, int);
-  goto __CONV;
+	ret->_integer.value = va_arg(args, int);
+	goto __CONV;
 
 __LONG:
 
-  ret->_long.value = va_arg(args, int64_t);
-  goto __CONV;
+	ret->_long.value = va_arg(args, int64_t);
+	goto __CONV;
 
 __SINGLE:
 
-  ret->_single.value = va_arg(args, double);
-  goto __CONV;
+	ret->_single.value = va_arg(args, double);
+	goto __CONV;
 
 __FLOAT:
 
-  ret->_float.value = va_arg(args, double);
-  goto __CONV;
+	ret->_float.value = va_arg(args, double);
+	goto __CONV;
 
 __DATE:
 
-  ret->_date.date = va_arg(args, int);
-  ret->_date.time = va_arg(args, int);
-  goto __CONV;
+	ret->_date.date = va_arg(args, int);
+	ret->_date.time = va_arg(args, int);
+	goto __CONV;
 
 __OBJECT:
 
-  ret->_object.object = va_arg(args, void *);
-  goto __CONV;
+	ret->_object.object = va_arg(args, void *);
+	goto __CONV;
 
 __POINTER:
 
-  ret->_pointer.value = va_arg(args, void *);
-  goto __CONV;
+	ret->_pointer.value = va_arg(args, void *);
+	goto __CONV;
 
 __CLASS:
-  ret->_class.class = va_arg(args, CLASS *);
-  goto __CONV;
+	ret->_class.class = va_arg(args, CLASS *);
+	goto __CONV;
 
 __CONV:
 __STRING:
@@ -1159,14 +1159,14 @@ __VOID:
 __VARIANT:
 __FUNCTION:
 __NULL:
-  return;
+	return;
 }
 
 
 void GB_ReturnInteger(int val)
 {
 	TEMP.type = T_INTEGER;
-  TEMP._integer.value = val;
+	TEMP._integer.value = val;
 }
 
 
@@ -1187,13 +1187,13 @@ void GB_ReturnPointer(void *val)
 void GB_ReturnSingle(float val)
 {
 	TEMP.type = T_SINGLE;
-  TEMP._single.value = val;
+	TEMP._single.value = val;
 }
 
 void GB_ReturnFloat(double val)
 {
 	TEMP.type = T_FLOAT;
-  TEMP._float.value = val;
+	TEMP._float.value = val;
 }
 
 
@@ -1216,15 +1216,15 @@ void GB_ReturnDate(GB_DATE *date)
 void GB_ReturnBoolean(int val)
 {
 	TEMP.type = T_BOOLEAN;
-  TEMP._boolean.value = val ? -1 : 0;
+	TEMP._boolean.value = val ? -1 : 0;
 }
 
 
 void GB_ReturnObject(void *val)
 {
-  if (val == NULL)
-    GB_ReturnNull();
-  else
+	if (val == NULL)
+		GB_ReturnNull();
+	else
 	{
 		TEMP.type = T_OBJECT; //OBJECT_class(val);
 		TEMP._object.object = val;
@@ -1242,7 +1242,7 @@ void GB_ReturnVariant(GB_VARIANT_VALUE *val)
 	}
 	else
 	{
-  	//VALUE_read(&TEMP, value, type);
+		//VALUE_read(&TEMP, value, type);
 		TEMP._variant.vtype = val->type;
 		if (TEMP._variant.vtype == T_VOID)
 			TEMP._variant.vtype = T_NULL;
@@ -1260,72 +1260,75 @@ void GB_ReturnConvVariant(void)
 
 void GB_ReturnPtr(GB_TYPE type, void *value)
 {
-  if (type == T_VOID)
-    return;
+	if (type == T_VOID)
+		return;
 
 	if (!value)
 		VALUE_default(&TEMP, type);
 	else
-  	VALUE_read(&TEMP, value, type);
+		VALUE_read(&TEMP, value, type);
 }
 
 
 void GB_ReturnSelf(void *object)
 {
-  if (object)
-    GB_ReturnObject(object);
-  else
-    GB_Return(T_CLASS, NULL);
+	if (object)
+		GB_ReturnObject(object);
+	else
+	{
+		TEMP.type = T_CLASS;
+		TEMP._class.class = NULL;
+	}
 }
 
 
 char *GB_ToZeroString(GB_STRING *src)
 {
-  char *str;
+	char *str;
 
-  str = STRING_new_temp(src->value.addr + src->value.start, src->value.len);
+	str = STRING_new_temp(src->value.addr + src->value.start, src->value.len);
 
-  if (str == NULL)
-    return "";
-  else
-    return str;
+	if (str == NULL)
+		return "";
+	else
+		return str;
 }
 
 
 void GB_ReturnString(char *str)
 {
-  TEMP.type = T_STRING;
-  TEMP._string.addr = str;
-  TEMP._string.start = 0;
-  TEMP._string.len = STRING_length(str);
+	TEMP.type = T_STRING;
+	TEMP._string.addr = str;
+	TEMP._string.start = 0;
+	TEMP._string.len = STRING_length(str);
 
-  if (TEMP._string.len == 0)
-    TEMP._string.addr = 0;
+	if (TEMP._string.len == 0)
+		TEMP._string.addr = 0;
 }
 
 
 void GB_ReturnConstString(const char *str, int len)
 {
-  TEMP.type = T_CSTRING;
-  TEMP._string.addr = (char *)str;
-  TEMP._string.start = 0;
-  TEMP._string.len = len;
+	TEMP.type = T_CSTRING;
+	TEMP._string.addr = (char *)str;
+	TEMP._string.start = 0;
+	TEMP._string.len = len;
 
-  if (TEMP._string.len == 0)
-    TEMP._string.addr = 0;
+	if (TEMP._string.len == 0)
+		TEMP._string.addr = 0;
 }
 
 
 void GB_ReturnConstZeroString(const char *str)
 {
-  int len;
+	int len;
 
-  if (str)
-    len = strlen(str);
-  else
-    len = 0;
+	if (str)
+		len = strlen(str);
+	else
+		len = 0;
 
-  GB_ReturnConstString(str, len);
+	GB_ReturnConstString(str, len);
 }
 
 
@@ -1345,80 +1348,80 @@ void GB_ReturnNewString(const char *src, int len)
 		}
 	}
 
-  GB_ReturnString(STRING_new_temp(src, len));
+	GB_ReturnString(STRING_new_temp(src, len));
 }
 
 
 void GB_ReturnNewZeroString(const char *src)
 {
-  GB_ReturnString(STRING_new_temp_zero(src));
+	GB_ReturnString(STRING_new_temp_zero(src));
 }
 
 
 void GB_ReturnNull(void)
 {
-  TEMP.type = T_NULL;
+	TEMP.type = T_NULL;
 }
 
 void GB_ReturnVoidString(void)
 {
-  STRING_void_value(&TEMP);
+	STRING_void_value(&TEMP);
 }
 
 
 void *GB_GetClass(void *object)
 {
-  if (object)
-    return OBJECT_class(object);
-  else
-    return EXEC.class;
+	if (object)
+		return OBJECT_class(object);
+	else
+		return EXEC.class;
 }
 
 
 char *GB_GetClassName(void *object)
 {
-  CLASS *class = GB_GetClass(object);
-  return class->name;
+	CLASS *class = GB_GetClass(object);
+	return class->name;
 }
 
 
 bool GB_Is(void *object, void *class)
 {
-  CLASS *ob_class;
+	CLASS *ob_class;
 
-  if (!object)
-    return FALSE;
+	if (!object)
+		return FALSE;
 
-  ob_class = OBJECT_class(object);
+	ob_class = OBJECT_class(object);
 
-  return ((ob_class == class) || CLASS_inherits(ob_class, class));
+	return ((ob_class == class) || CLASS_inherits(ob_class, class));
 }
 
 
 bool GB_LoadFile(const char *path, int lenp, char **addr, int *len)
 {
-  bool ret = FALSE;
+	bool ret = FALSE;
 
-  //fprintf(stderr, "GB_LoadFile: %.*s\n", lenp ? lenp : strlen(path), path);
+	//fprintf(stderr, "GB_LoadFile: %.*s\n", lenp ? lenp : strlen(path), path);
 
-  TRY
-  {
-    *addr = 0;
-    *len = 0;
+	TRY
+	{
+		*addr = 0;
+		*len = 0;
 
-    STREAM_map(STRING_conv_file_name(path, lenp), addr, len);
-  }
-  CATCH
-  {
-    if (*addr)
-      STREAM_unmap(*addr, *len);
+		STREAM_map(STRING_conv_file_name(path, lenp), addr, len);
+	}
+	CATCH
+	{
+		if (*addr)
+			STREAM_unmap(*addr, *len);
 
-    EXEC_set_native_error(TRUE);
-    ret = TRUE;
-  }
-  END_TRY
+		EXEC_set_native_error(TRUE);
+		ret = TRUE;
+	}
+	END_TRY
 
-  return ret;
+	return ret;
 }
 
 
@@ -1430,56 +1433,56 @@ bool GB_ExistFile(const char *path)
 
 void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst)
 {
-  if (src != NULL)
-    VALUE_write((VALUE *)src, dst, type);
-  else
-    VALUE_free(dst, type);
+	if (src != NULL)
+		VALUE_write((VALUE *)src, dst, type);
+	else
+		VALUE_free(dst, type);
 }
 
 
 void GB_StoreString(GB_STRING *src, char **dst)
 {
-  STRING_unref(dst);
-  if (src)
-  {
-    *dst = STRING_new(src->value.addr + src->value.start, src->value.len);
-  }
-  else
-    *dst = NULL;
+	STRING_unref(dst);
+	if (src)
+	{
+		*dst = STRING_new(src->value.addr + src->value.start, src->value.len);
+	}
+	else
+		*dst = NULL;
 }
 
 void GB_StoreObject(GB_OBJECT *src, void **dst)
 {
-  void *object;
+	void *object;
 
-  if (src)
-    object = src->value;
-  else
-    object = NULL;
+	if (src)
+		object = src->value;
+	else
+		object = NULL;
 
-  if (object)
-    OBJECT_REF(object, "GB_StoreObject");
+	if (object)
+		OBJECT_REF(object, "GB_StoreObject");
 
-  OBJECT_UNREF(*dst, "GB_StoreObject");
-  *dst = object;
+	OBJECT_UNREF(*dst, "GB_StoreObject");
+	*dst = object;
 }
 
 void GB_StoreVariant(GB_VARIANT *src, void *dst)
 {
-  /*GB_Store(GB_T_VARIANT, (GB_VALUE *)src, dst);*/
-  if (src)
-  {
-    VALUE_write((VALUE *)src, dst, T_VARIANT);
+	/*GB_Store(GB_T_VARIANT, (GB_VALUE *)src, dst);*/
+	if (src)
+	{
+		VALUE_write((VALUE *)src, dst, T_VARIANT);
 
-    /*VARIANT_keep((VARIANT *)&src->value);
-    VARIANT_free((VARIANT *)dst);
-    *((VARIANT *)dst) = *((VARIANT *)&src->value);*/
-  }
-  else
-  {
-    VARIANT_free((VARIANT *)dst);
-    ((VARIANT *)dst)->type = T_NULL;
-  }
+		/*VARIANT_keep((VARIANT *)&src->value);
+		VARIANT_free((VARIANT *)dst);
+		*((VARIANT *)dst) = *((VARIANT *)&src->value);*/
+	}
+	else
+	{
+		VARIANT_free((VARIANT *)dst);
+		((VARIANT *)dst)->type = T_NULL;
+	}
 }
 
 void GB_BorrowValue(GB_VALUE *value)
@@ -1494,7 +1497,7 @@ void GB_ReleaseValue(GB_VALUE *value)
 
 void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 {
-  HOOK_DEFAULT(watch, WATCH_watch)(fd, flag, callback, param);
+	HOOK_DEFAULT(watch, WATCH_watch)(fd, flag, callback, param);
 }
 
 
@@ -1502,81 +1505,81 @@ void *GB_New(void *class, const char *name, void *parent)
 {
 	void *object;
 	
-  if (name && !parent)
-  {
-    parent = OP;
-    if (!parent)
-      parent = CP;
-  }
+	if (name && !parent)
+	{
+		parent = OP;
+		if (!parent)
+			parent = CP;
+	}
 
-  if (!((CLASS *)class)->no_create)
-    object = OBJECT_create(class, name, parent, 0);
-  else
-  {
-    object = OBJECT_new(class, name, parent);
-    OBJECT_UNREF_KEEP(object, "GB_New");
-  }
-  
-  return object;
+	if (!((CLASS *)class)->no_create)
+		object = OBJECT_create(class, name, parent, 0);
+	else
+	{
+		object = OBJECT_new(class, name, parent);
+		OBJECT_UNREF_KEEP(object, "GB_New");
+	}
+	
+	return object;
 }
 
 
 bool GB_CheckObject(void *object)
 {
-  CLASS *class;
-  
-  if (object == NULL)
-  {
-    GB_Error((char *)E_NULL);
-    return TRUE;
-  }
+	CLASS *class;
+	
+	if (object == NULL)
+	{
+		GB_Error((char *)E_NULL);
+		return TRUE;
+	}
 
-  class = OBJECT_class(object);
+	class = OBJECT_class(object);
 
-  if (class->check && (*(class->check))(object))
-  {
-    GB_Error((char *)E_IOBJECT);
-    return TRUE;
-  }
+	if (class->check && (*(class->check))(object))
+	{
+		GB_Error((char *)E_IOBJECT);
+		return TRUE;
+	}
 
-  return FALSE;
+	return FALSE;
 }
 
 
 const char *GB_AppName(void)
 {
-  return PROJECT_name;
+	return PROJECT_name;
 }
 
 const char *GB_AppPath(void)
 {
-  return PROJECT_path;
+	return PROJECT_path;
 }
 
 const char *GB_AppTitle(void)
 {
-  return LOCAL_gettext(PROJECT_title);
+	return LOCAL_gettext(PROJECT_title);
 }
 
 const char *GB_AppVersion(void)
 {
-  return PROJECT_version;
+	return PROJECT_version;
 }
 
 void *GB_AppStartupClass(void)
 {
-  return PROJECT_class;
+	return PROJECT_class;
 }
 
 
 void *GB_Eval(void *expr, void *func)
 {
 	bool err = EVAL_expression((EXPRESSION *)expr, (EVAL_FUNCTION)func);
-  
+	
 	EXEC_set_native_error(err);
-  
+	
 	if (err)
-  	return NULL;
+		return NULL;
 	else
 		return &TEMP;
 }
@@ -1584,123 +1587,123 @@ void *GB_Eval(void *expr, void *func)
 
 void GB_Alloc(void **addr, int len)
 {
-  ALLOC(addr, len, "GB_Alloc");
+	ALLOC(addr, len, "GB_Alloc");
 }
 
 void GB_Free(void **addr)
 {
-  FREE(addr, "GB_Free");
+	FREE(addr, "GB_Free");
 }
 
 void GB_Realloc(void **addr, int len)
 {
-  REALLOC(addr, len, "GB_Realloc");
+	REALLOC(addr, len, "GB_Realloc");
 }
 
 
 bool GB_Conv(GB_VALUE *arg, GB_TYPE type)
 {
-  CATCH_ERROR
-  {
-    VALUE_conv((VALUE *)arg, (GB_TYPE)type);
-  }
-  END_CATCH_ERROR
+	CATCH_ERROR
+	{
+		VALUE_conv((VALUE *)arg, (GB_TYPE)type);
+	}
+	END_CATCH_ERROR
 }
 
 
 int GB_StringLength(const char *str)
 {
-  return STRING_length(str);
+	return STRING_length(str);
 }
 
 
 bool GB_NumberToString(int local, double value, const char *format, char **str, int *len)
 {
-  return
-    LOCAL_format_number
-    (
-      value,
-      format ? LF_USER : LF_GENERAL_NUMBER,
-      format,
-      format ? strlen(format) : 0,
-      str, len, local != 0
-    );
+	return
+		LOCAL_format_number
+		(
+			value,
+			format ? LF_USER : LF_GENERAL_NUMBER,
+			format,
+			format ? strlen(format) : 0,
+			str, len, local != 0
+		);
 }
 
 
 void GB_HashTableNew(GB_HASHTABLE *hash, int mode)
 {
-  HASH_TABLE_create((HASH_TABLE **)hash, sizeof(void *), mode);
+	HASH_TABLE_create((HASH_TABLE **)hash, sizeof(void *), mode);
 }
 
 void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *data)
 {
-  if (len <= 0)
-    len = strlen(key);
+	if (len <= 0)
+		len = strlen(key);
 
-  *((void **)HASH_TABLE_insert((HASH_TABLE *)hash, key, len)) = data;
+	*((void **)HASH_TABLE_insert((HASH_TABLE *)hash, key, len)) = data;
 }
 
 void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len)
 {
-  if (len <= 0)
-    len = strlen(key);
+	if (len <= 0)
+		len = strlen(key);
 
-  HASH_TABLE_remove((HASH_TABLE *)hash, key, len);
+	HASH_TABLE_remove((HASH_TABLE *)hash, key, len);
 }
 
 bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 {
-  void **pdata;
+	void **pdata;
 
-  if (len <= 0)
-    len = strlen(key);
+	if (len <= 0)
+		len = strlen(key);
 
-  pdata = (void **)HASH_TABLE_lookup((HASH_TABLE *)hash, key, len);
-  if (pdata)
-  {
-    *data = *pdata;
-    return FALSE;
-  }
-  else
-    return TRUE;
+	pdata = (void **)HASH_TABLE_lookup((HASH_TABLE *)hash, key, len);
+	if (pdata)
+	{
+		*data = *pdata;
+		return FALSE;
+	}
+	else
+		return TRUE;
 }
 
 
 void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
 {
-  HASH_ENUM iter;
-  void **data;
+	HASH_ENUM iter;
+	void **data;
 
-  CLEAR(&iter);
+	CLEAR(&iter);
 
-  for(;;)
-  {
-    data = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter);
-    if (!data)
-      break;
+	for(;;)
+	{
+		data = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter);
+		if (!data)
+			break;
 
-    (*func)(*data);
-  }
+		(*func)(*data);
+	}
 }
 
 void GB_NewArray(void *pdata, int size, int count)
 {
-  ARRAY_create_with_size(pdata, size, 16);
-  if (count)
+	ARRAY_create_with_size(pdata, size, 16);
+	if (count)
 		ARRAY_add_data(pdata, count, TRUE);
 }
 
 
 int GB_CountArray(void *data)
 {
-  return ARRAY_count(data);
+	return ARRAY_count(data);
 }
 
 
 void *GB_Add(void *pdata)
 {
-  return ARRAY_add_void_size(pdata);
+	return ARRAY_add_void_size(pdata);
 }
 
 char *GB_NewZeroString(char *src)
@@ -1710,28 +1713,28 @@ char *GB_NewZeroString(char *src)
 
 char *GB_TempString(char *src, int len)
 {
-  return STRING_new_temp(src, len);
+	return STRING_new_temp(src, len);
 }
 
 void GB_FreeString(char **str)
 {
-  STRING_unref(str);
-  *str = NULL;
+	STRING_unref(str);
+	*str = NULL;
 }
 
 bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
-  CATCH_ERROR
-  {
-    STRING_conv(result, str, len, src, dst, TRUE);
-  }
-  END_CATCH_ERROR
+	CATCH_ERROR
+	{
+		STRING_conv(result, str, len, src, dst, TRUE);
+	}
+	END_CATCH_ERROR
 }
 
 
 char *GB_SystemCharset(void)
 {
-  return LOCAL_is_UTF8 ? "UTF-8" : LOCAL_encoding;
+	return LOCAL_is_UTF8 ? "UTF-8" : LOCAL_encoding;
 }
 
 char *GB_SystemDomainName(void)
@@ -1760,7 +1763,7 @@ char *GB_SystemDomainName(void)
 
 bool GB_IsRightToLeft(void)
 {
-  return LOCAL_local.rtl;
+	return LOCAL_local.rtl;
 }
 
 char *GB_SystemPath(void)
@@ -1770,10 +1773,10 @@ char *GB_SystemPath(void)
 
 /*void GB_StreamInit(GB_STREAM *stream, int fd)
 {
-  STREAM *s = (STREAM *)stream;
+	STREAM *s = (STREAM *)stream;
 
-  s->type = &STREAM_direct;
-  s->direct.fd = fd;
+	s->type = &STREAM_direct;
+	s->direct.fd = fd;
 }*/
 
 GB_STREAM *GB_StreamGet(void *object)
@@ -1826,17 +1829,17 @@ int GB_StreamWrite(GB_STREAM *stream, void *addr, int len)
 
 int GB_tolower(int c)
 {
-  return tolower(c);
+	return tolower(c);
 }
 
 int GB_toupper(int c)
 {
-  return toupper(c);
+	return toupper(c);
 }
 
 char *GB_TempDir(void)
 {
-  return FILE_make_temp(NULL, NULL);
+	return FILE_make_temp(NULL, NULL);
 }
 
 char *GB_TempFile(const char *pattern)
@@ -1917,32 +1920,32 @@ int GB_StatFile(const char *path, GB_FILE_STAT *info, int follow)
 
 char *GB_RealFileName(const char *name, int len)
 {
-  char *path = STRING_conv_file_name(name, len);
-  char *real;
-  char *temp;
+	char *path = STRING_conv_file_name(name, len);
+	char *real;
+	char *temp;
 
-  if (!STREAM_in_archive(path))
-    return path;
+	if (!STREAM_in_archive(path))
+		return path;
 
-  temp = FILE_make_temp(NULL, NULL);
-  real = STRING_new_temp(NULL, strlen(temp) + strlen(path) + strlen("/data/"));
-  snprintf(real, strlen(temp) + strlen(path) + strlen("/data/") + 1, "%s/data/%s", temp, path);
+	temp = FILE_make_temp(NULL, NULL);
+	real = STRING_new_temp(NULL, strlen(temp) + strlen(path) + strlen("/data/"));
+	snprintf(real, strlen(temp) + strlen(path) + strlen("/data/") + 1, "%s/data/%s", temp, path);
 
-  if (!FILE_exist(real))
-  {
-    TRY
-    {
-      FILE_make_path_dir(real);
-      FILE_copy(path, real);
-    }
-    CATCH
-    {
-      real = path;
-    }
-    END_TRY
-  }
+	if (!FILE_exist(real))
+	{
+		TRY
+		{
+			FILE_make_path_dir(real);
+			FILE_copy(path, real);
+		}
+		CATCH
+		{
+			real = path;
+		}
+		END_TRY
+	}
 
-  return real;
+	return real;
 }
 
 static GB_BROWSE_CALLBACK _browse_project_func;
@@ -1972,10 +1975,10 @@ void GB_BrowseProject(GB_BROWSE_CALLBACK func)
 
 const char *GB_CurrentComponent()
 {
-  ARCHIVE *arch;
+	ARCHIVE *arch;
 
-  ARCHIVE_get_current(&arch);
-  return arch->name ? arch->name : "";
+	ARCHIVE_get_current(&arch);
+	return arch->name ? arch->name : "";
 }
 
 

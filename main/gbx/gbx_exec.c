@@ -1239,14 +1239,6 @@ void EXEC_native(void)
 	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 	
-	/* Lib�ation des arguments */
-
-	/*while (nparam > 0)
-	{
-		nparam--;
-		POP();
-	}*/
-	
 	if (UNLIKELY(error))
 	{
 		RELEASE_MANY(SP, nparam);
@@ -1286,10 +1278,10 @@ void EXEC_native(void)
 		{
 			SP--;
 			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
-		}
 		
-		if (PCODE_is_variant(*PC) && ret.type != T_VOID)
-			VALUE_conv_variant(&ret);
+			if (PCODE_is_variant(*PC) && ret.type != T_VOID)
+				VALUE_conv_variant(&ret);
+		}
 	
 		COPY_VALUE(SP, &ret);
 		SP++;
