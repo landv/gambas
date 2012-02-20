@@ -60,6 +60,7 @@ Public Sub Form_Open()
 
   txtName.Text = Project.Name
   txtName.SelectAll
+  txtName.SetFocus
   
   Settings.Read(Me)
   Settings.Read(dchProject, "dchProject")
@@ -71,4 +72,16 @@ Public Sub Form_Close()
   Settings.Write(Me)
   Settings.Write(dchProject, "dchProject")
   
+End
+
+Public Sub txtName_Change()
+
+  lblFinalDir.Text = dchProject.Value &/ Trim(txtName.Text)
+
+End
+
+Public Sub dchProject_Change()
+
+  txtName_Change
+
 End

@@ -246,74 +246,90 @@
       }
     }
     Index = 1
-    Text = ("Project directory")
+    Text = ("Project parent directory")
     { dchProject DirChooser
-      MoveScaled(1,1,79,50)
+      MoveScaled(0,0,82,56)
       Expand = True
       Root = "/"
     }
     Index = 2
     Text = ("Project information")
-    { panIdent HPanel
-      MoveScaled(0,0,80,18)
+    { panIdent VBox
+      MoveScaled(0,0,80,31)
       AutoResize = True
       Spacing = True
       { Label10 Label
-        MoveScaled(0,0,25,4)
+        MoveScaled(0,0,25,3)
         Font = Font["Bold"]
-        Expand = True
-        Text = ("Identification")
-      }
-      { Label2 Label
-        MoveScaled(1,4,14,4)
-        Text = ("Name")
+        Text = ("Project name")
+        Alignment = Align.BottomNormal
       }
       { txtName TextBox
-        MoveScaled(16,4,49,4)
-        Expand = True
+        MoveScaled(0,4,49,4)
+      }
+      { Label2 Label
+        MoveScaled(0,8,76,2)
+        Font = Font["Italic,-1"]
+        Text = ("The project name is the name of the project directory.")
+      }
+      { Panel1 HBox
+        MoveScaled(0,11,74,2)
+        Spacing = True
+        { Label16 Label
+          MoveScaled(0,0,23,2)
+          Font = Font["Italic,-1"]
+          AutoResize = True
+          Text = ("The project final directory is :")
+        }
+        { lblFinalDir Label
+          MoveScaled(24,0,39,2)
+          Font = Font["Bold,-1"]
+          Expand = True
+        }
       }
       { Label3 Label
-        MoveScaled(1,8,14,4)
-        Text = ("Title")
+        MoveScaled(1,15,25,3)
+        Font = Font["Bold"]
+        Text = ("Project title")
+        Alignment = Align.BottomNormal
       }
       { txtTitle TextBox
-        MoveScaled(16,8,51,4)
-        Expand = True
+        MoveScaled(1,19,51,4)
+      }
+      { Label14 Label
+        MoveScaled(1,23,76,2)
+        Font = Font["Italic,-1"]
+        Text = ("The project title is the true name of the application.")
       }
       { chkOther CheckBox
-        MoveScaled(1,13,43,4)
-        Expand = True
+        MoveScaled(1,27,43,4)
         Text = ("Open in another window")
       }
     }
     { panRepository VBox
-      MoveScaled(0,19,81,22)
+      MoveScaled(0,32,81,25)
       Expand = True
       Spacing = True
       { Label7 Label
-        MoveScaled(0,0,25,4)
+        MoveScaled(0,0,25,3)
         Font = Font["Bold"]
         Text = ("Repository")
+        Alignment = Align.BottomNormal
       }
       { txtRepository TextBox
         MoveScaled(0,4,51,4)
       }
+      { Label15 Label
+        MoveScaled(0,8,76,2)
+        Font = Font["Italic,-1"]
+        Text = ("The project repository is directly sent to the 'svn checkout' command.")
+      }
       { edtOutput Editor
-        MoveScaled(0,9,79,12)
+        MoveScaled(0,12,79,12)
         Font = Font["Monospace,-1"]
         Expand = True
         ReadOnly = True
       }
-    }
-    { Panel1 Panel
-      MoveScaled(0,41,17,1)
-    }
-    { TextLabel9 TextLabel
-      MoveScaled(0,45,78,12)
-      Visible = False
-      Font = Font["Italic"]
-      AutoResize = True
-      Text = ("Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }
     Index = 0
   }

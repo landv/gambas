@@ -358,7 +358,7 @@ Private Sub RefreshComponents()
     '  If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
     'Endif
     hCompBox = New CComponentBox(lstComponent, hComp, bDark) As "Component"
-    bDark = Not bDark
+    'bDark = Not bDark
     $cComp[hComp.Key] = hCompBox 
     hCompBox.Locked = sLib = "gb" Or $bShowUsed
   Next

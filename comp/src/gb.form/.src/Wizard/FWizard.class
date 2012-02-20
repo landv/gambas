@@ -90,6 +90,7 @@ End
 Public Sub SetBorder(bOn As Boolean)
   
   panWizard.Border = If(bOn, Border.Plain, Border.None)
+  panWizard.Padding = If(bOn, 2, 0)
   
 End
 

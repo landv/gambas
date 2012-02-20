@@ -15,6 +15,7 @@ Static Private $iMaxWidth As Integer
 Private picCheck As PictureBox
 Private txtName As Label
 Private txtDesc As TextLabel
+Private sepComp As Separator
 'Private panInfo As Panel
 'Private txtInfo As TextLabel
 'Private panVBox As VBox
@@ -79,6 +80,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   
   txtName = New Label(Me)
   txtName.Padding = 2
+  txtName.Font.Bold = True
   txtName.Text = hComp.Key
   txtName.Alignment = Align.TopNormal
   'txtName.Background = Color.Yellow
@@ -90,6 +92,8 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   txtDesc.Alignment = Align.TopNormal
   'txtDesc.Background = Color.Yellow
   txtDesc.AutoResize = True
+  
+  sepComp = New Separator(Me)
   
   Expanded_Write(False)
 
@@ -257,7 +261,7 @@ Private Sub Expanded_Write(Value As Boolean)
       
     Endif
     
-    txtDesc.Text = $sDesc & "<br><font size=\"-2\" color=\"#404040\">" & $sInfo & "</font>"
+    txtDesc.Text = $sDesc & "<br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
     
   Else
     
@@ -294,7 +298,8 @@ Public Sub Watcher_Arrange()
   picCheck.Move(0, 4, 24, 16)
   txtName.Move(24, 0, $iMaxWidth, txtName.H)
   txtDesc.Move(24 + $iMaxWidth, 0, Me.W - 24 - $iMaxWidth)
-  Me.H = Max(24, Max(txtName.H, txtDesc.H))
+  Me.H = Max(24, Max(txtName.H, txtDesc.H)) + 2
+  sepComp.Move(0, Me.H - 1, Me.W, 2)
 
   ' If txtDesc.W = $iLastW Then Return
   ' txtDesc.Adjust

@@ -212,6 +212,7 @@ Public Sub wizProject_BeforeChange()
       txtRepository.SetFocus
     Else 
       txtName.SetFocus
+      txtName_Change
     Endif
   Endif
   
@@ -269,5 +270,11 @@ Public Sub lstType_Click()
 
   $bRepository = Left(lstType.Current.Tag) = "!"
   svwOption.Enabled = Not $bRepository
+
+End
+
+Public Sub txtName_Change()
+
+  lblFinalDir.Text = dchProject.SelectedPath &/ Trim(txtName.Text)
 
 End

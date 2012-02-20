@@ -38,7 +38,7 @@ msgstr ""
 msgid "MD5/DES crypting"
 msgstr ""
 
-#: CComponent.class:83 FCreateProject.form:289
+#: CComponent.class:83 FCreateProject.form:292
 msgid "Database access"
 msgstr ""
 
@@ -150,7 +150,7 @@ msgstr ""
 msgid "MySQL specific routines"
 msgstr ""
 
-#: CComponent.class:111 FCreateProject.form:295
+#: CComponent.class:111 FCreateProject.form:298
 msgid "Network programming"
 msgstr ""
 
@@ -262,31 +262,31 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponentBox.class:213
+#: CComponentBox.class:217
 msgid "Experimental"
 msgstr ""
 
-#: CComponentBox.class:215 FPropertyComponent.form:73
+#: CComponentBox.class:219 FPropertyComponent.form:73
 msgid "Not finished but stable"
 msgstr ""
 
-#: CComponentBox.class:227 ProjectItem.class:63
+#: CComponentBox.class:231 ProjectItem.class:63
 msgid "Authors"
 msgstr ""
 
-#: CComponentBox.class:234 FPropertyComponent.form:106 LibraryItem.class:63
+#: CComponentBox.class:238 FPropertyComponent.form:106 LibraryItem.class:63
 msgid "Requires"
 msgstr ""
 
-#: CComponentBox.class:236
+#: CComponentBox.class:240
 msgid "Excludes"
 msgstr ""
 
-#: CComponentBox.class:242
+#: CComponentBox.class:246
 msgid "Implements"
 msgstr ""
 
-#: CComponentBox.class:255 LibraryItem.class:61
+#: CComponentBox.class:259 LibraryItem.class:61
 msgid "Provides"
 msgstr ""
 
@@ -376,10 +376,10 @@ msgstr ""
 #: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:378
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:174 FOption.class:618 FPasteSpecial.form:77
-#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:690
+#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:691
 #: FReportBorderChooser.form:48 FReportBrushChooser.form:34
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
-#: FSaveProjectAs.form:59 FSearch.class:838 FSelectExtraFile.form:40
+#: FSaveProjectAs.form:76 FSearch.class:838 FSelectExtraFile.form:40
 #: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
 #: FTextEditor.class:498 FTranslate.class:636 Project.module:424
 msgid "Cancel"
@@ -427,11 +427,11 @@ msgstr ""
 #: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
 #: FMain.form:1409 FMenu.form:373 FNewConnection.form:249 FNewTable.form:80
 #: FNewTranslation.form:15 FOpenProject.form:168 FPasteSpecial.form:71
-#: FPropertyComponent.form:215 FPropertyProject.form:684
+#: FPropertyComponent.form:215 FPropertyProject.form:685
 #: FReportBorderChooser.form:54 FReportBrushChooser.form:40
 #: FReportCoordChooser.form:32 FReportPaddingChooser.form:69
-#: FSaveProjectAs.form:53 FSelectExtraFile.form:34 FSelectIcon.form:82
-#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
+#: FSelectExtraFile.form:34 FSelectIcon.form:82 FSnippet.form:51
+#: FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr ""
 
@@ -612,7 +612,7 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: FConflict.form:172
+#: FConflict.form:172 FSaveProjectAs.form:82
 msgid "&Save"
 msgstr ""
 
@@ -772,12 +772,12 @@ msgstr ""
 msgid "Export..."
 msgstr ""
 
-#: FConnectionEditor.class:34 FCreateFile.form:289 FCreateProject.form:371
-#: FDebugInfo.class:33 FNewConnection.form:60 FNewTable.form:33
+#: FConnectionEditor.class:34 FCreateFile.form:289 FDebugInfo.class:33
+#: FNewConnection.form:60 FNewTable.form:33
 msgid "Name"
 msgstr ""
 
-#: FConnectionEditor.class:39 FCreateFile.form:340 FCreateProject.form:93
+#: FConnectionEditor.class:39 FCreateFile.form:340 FCreateProject.form:96
 #: FInfo.form:84 FNewConnection.form:74 FNewTable.form:48
 msgid "Type"
 msgstr ""
@@ -942,7 +942,7 @@ msgstr ""
 msgid "Style sheet"
 msgstr ""
 
-#: FCreateFile.form:299 FCreateProject.form:269 FImportTable.form:51
+#: FCreateFile.form:299 FCreateProject.form:272 FImportTable.form:51
 #: FPropertyComponent.form:56 FPropertyProject.form:227 FSearch.form:99
 msgid "Options"
 msgstr ""
@@ -1023,107 +1023,114 @@ msgstr ""
 msgid "Cannot add file."
 msgstr ""
 
-#: FCreateProject.form:62 FMain.form:869
+#: FCreateProject.form:65 FMain.form:869
 msgid "New project"
 msgstr ""
 
-#: FCreateProject.form:77
+#: FCreateProject.form:80
 msgid "Project type"
 msgstr ""
 
-#: FCreateProject.form:118
+#: FCreateProject.form:121
 msgid "Graphical application"
 msgstr ""
 
-#: FCreateProject.form:140
+#: FCreateProject.form:143
 msgid "QT graphical application"
 msgstr ""
 
-#: FCreateProject.form:162
+#: FCreateProject.form:165
 msgid "GTK+ graphical application"
 msgstr ""
 
-#: FCreateProject.form:184
+#: FCreateProject.form:187
 msgid "Command-line application"
 msgstr ""
 
-#: FCreateProject.form:206
+#: FCreateProject.form:209
 msgid "SDL application"
 msgstr ""
 
-#: FCreateProject.form:228
+#: FCreateProject.form:231
 msgid "CGI Web application"
 msgstr ""
 
-#: FCreateProject.form:254
+#: FCreateProject.form:257
 msgid ""
 "Application stored in a\n"
 "Subversion repository"
 msgstr ""
 
-#: FCreateProject.form:283
+#: FCreateProject.form:286
 msgid "Internationalization"
 msgstr ""
 
-#: FCreateProject.form:301
+#: FCreateProject.form:304
 msgid "Settings files management"
 msgstr ""
 
-#: FCreateProject.form:307
+#: FCreateProject.form:310
 msgid "Regular expressions"
 msgstr ""
 
-#: FCreateProject.form:313
+#: FCreateProject.form:316
 msgid "XML / XSLT programming"
 msgstr ""
 
-#: FCreateProject.form:319
+#: FCreateProject.form:322
 msgid "OpenGL programming"
 msgstr ""
 
-#: FCreateProject.form:325
+#: FCreateProject.form:328
 msgid "Image processing"
 msgstr ""
 
-#: FCreateProject.form:331
+#: FCreateProject.form:334
 msgid "Visual Basic™ conversion help"
 msgstr ""
 
-#: FCreateProject.form:341
+#: FCreateProject.form:344
 msgid "Component programming"
 msgstr ""
 
-#: FCreateProject.form:347
-msgid "Project directory"
+#: FCreateProject.form:350
+msgid "Project parent directory"
 msgstr ""
 
-#: FCreateProject.form:355
+#: FCreateProject.form:358
 msgid "Project information"
 msgstr ""
 
-#: FCreateProject.form:366
-msgid "Identification"
+#: FCreateProject.form:368
+msgid "Project name"
 msgstr ""
 
-#: FCreateProject.form:381 FPropertyProject.form:194
-msgid "Title"
+#: FCreateProject.form:379 FSaveProjectAs.form:48
+msgid "The project name is the name of the project directory."
 msgstr ""
 
-#: FCreateProject.form:392 FOpenProject.form:163
+#: FCreateProject.form:390 FSaveProjectAs.form:59
+msgid "The project final directory is :"
+msgstr ""
+
+#: FCreateProject.form:403
+msgid "Project title"
+msgstr ""
+
+#: FCreateProject.form:414
+msgid "The project title is the true name of the application."
+msgstr ""
+
+#: FCreateProject.form:419 FOpenProject.form:163
 msgid "Open in another window"
 msgstr ""
 
-#: FCreateProject.form:404
+#: FCreateProject.form:431
 msgid "Repository"
 msgstr ""
 
-#: FCreateProject.form:428
-msgid ""
-"Once the information entered, you can\n"
-"click on the <b>OK</b> button to create the project.\n"
-"<p>Click on the <b>Previous</b> button if you had made a mistake.\n"
-"<p>Click on the <b>Cancel</b> button to cancel the operation.\n"
-"\n"
+#: FCreateProject.form:442
+msgid "The project repository is directly sent to the 'svn checkout' command."
 msgstr ""
 
 #: FCreateProject.class:125
@@ -1134,11 +1141,11 @@ msgstr ""
 msgid "Cannot create project!"
 msgstr ""
 
-#: FCreateProject.class:229
+#: FCreateProject.class:230
 msgid "Please enter the location of the repository."
 msgstr ""
 
-#: FCreateProject.class:254
+#: FCreateProject.class:255
 msgid "The project has been successfully created."
 msgstr ""
 
@@ -2036,7 +2043,7 @@ msgstr ""
 msgid "Directory"
 msgstr ""
 
-#: FInfo.form:147 FPropertyProject.form:632
+#: FInfo.form:147 FPropertyProject.form:633
 msgid "Versioning"
 msgstr ""
 
@@ -2420,7 +2427,7 @@ msgstr ""
 msgid "Save project"
 msgstr ""
 
-#: FMain.form:892 FSaveProjectAs.form:15
+#: FMain.form:892 FSaveProjectAs.form:18
 msgid "Save project as"
 msgstr ""
 
@@ -3576,6 +3583,10 @@ msgstr ""
 msgid "Get from 'VERSION' file"
 msgstr ""
 
+#: FPropertyProject.form:194
+msgid "Title"
+msgstr ""
+
 #: FPropertyProject.form:217
 msgid "Author(s)"
 msgstr ""
@@ -3656,30 +3667,30 @@ msgstr ""
 msgid "Libraries"
 msgstr ""
 
-#: FPropertyProject.form:578
+#: FPropertyProject.form:579
 msgid ""
 "<b>WARNING!</b> The project executable and the libraries it depends on must "
 "be stored inside the same directory. Otherwise the libraries will not be "
 "found."
 msgstr ""
 
-#: FPropertyProject.form:600
+#: FPropertyProject.form:601
 msgid "&Add..."
 msgstr ""
 
-#: FPropertyProject.form:640
+#: FPropertyProject.form:641
 msgid "Changes since last commit"
 msgstr ""
 
-#: FPropertyProject.form:663
+#: FPropertyProject.form:664
 msgid "&Update"
 msgstr ""
 
-#: FPropertyProject.form:669
+#: FPropertyProject.form:670
 msgid "&Revert..."
 msgstr ""
 
-#: FPropertyProject.form:675
+#: FPropertyProject.form:676
 msgid "&Commit..."
 msgstr ""
 
@@ -3871,8 +3882,12 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: FSaveProjectAs.form:28
-msgid "Project name"
+#: FSaveProjectAs.form:27
+msgid "New project parent directory"
+msgstr ""
+
+#: FSaveProjectAs.form:38
+msgid "New project name"
 msgstr ""
 
 #: FSaveProjectAs.class:35
