@@ -145,6 +145,48 @@ BEGIN_METHOD(GslComplex_Polar, GB_FLOAT real; GB_FLOAT imag)
 
 END_METHOD 
 
+
+BEGIN_METHOD_VOID(GslComplex_Arg)
+
+	double r;
+	
+	r = gsl_complex_arg(THIS->number);
+
+	GB.ReturnFloat(r);
+END_METHOD
+
+
+BEGIN_METHOD_VOID(GslComplex_Abs)
+
+	double r;
+	
+	r = gsl_complex_abs(THIS->number);
+
+	GB.ReturnFloat(r);
+END_METHOD
+
+
+BEGIN_METHOD_VOID(GslComplex_Abs2)
+
+	double r;
+	
+	r = gsl_complex_abs2(THIS->number);
+
+	GB.ReturnFloat(r);
+END_METHOD
+ 
+
+BEGIN_METHOD_VOID(GslComplex_LogAbs)
+
+	double r;
+	
+	r = gsl_complex_logabs(THIS->number);
+
+	GB.ReturnFloat(r);
+END_METHOD
+
+
+
 /******************************
       Property Methods
 ******************************/
@@ -914,12 +956,16 @@ GB_DESC CComplexDesc[] =
 	GB_METHOD("Set", NULL, GslComplex_Set, "[(Real)f(Imag)f]"),
 	GB_METHOD("Rect", NULL, GslComplex_Rect, "[(Real)f(Imag)f]"),
 	GB_METHOD("Polar", NULL, GslComplex_Polar, "[(Real)f(Imag)f]"),
+	GB_METHOD("Arg", "f", GslComplex_Arg, NULL),
+	GB_METHOD("Abs", "f", GslComplex_Abs, NULL),
+	GB_METHOD("Abs2", "f", GslComplex_Abs2, NULL),
+	GB_METHOD("LogAbs", "f", GslComplex_LogAbs, NULL),
+
 
 	// Properties
 	GB_PROPERTY("Real", "f", GslComplex_Real),
 	GB_PROPERTY("Imag", "f", GslComplex_Imagined),
-	GB_PROPERTY("X", "f", GslComplex_Real),
-	GB_PROPERTY("Y", "f", GslComplex_Imagined),
+	
 
 	/* Operations on gsl_complex */
 	// Elementary Math Functions

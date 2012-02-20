@@ -145,49 +145,10 @@ END_METHOD
                   Data Methods
 **************************************************/
 
-BEGIN_METHOD_VOID(CPolynomial_Alloc)
-	// Allocate 32 doubles at a time for coeficient storage
-	if(THIS->len == 0 && THIS->max == 0)
-	{
-		GB.Alloc(POINTER(&THIS->c), sizeof(double)*THIS->alloc_size);
-	}
-	else
-	{
-		GB.Realloc(POINTER(&THIS->c), (sizeof(double)*(THIS->len + THIS->alloc_size)));	
-	}
-
-	// Check for error
-	if(THIS->c == NULL)
-	{
-		THIS->len = 0;
-		THIS->max = 0;
-		GB.Error("Could not allocate coeficient storage"); // Do I really need this? 
-		return 0;
-	}
-	else
-	{
-		THIS->max += THIS->alloc_size;
-		return -1;
-	}		
-	
-END_METHOD
-
-
 BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 	
-	// Create and resize coeficent
-	// array if needed	
-	if(THIS->len == THIS->max)
-	{
-		CPolynomial_Alloc(THIS, NULL);
-		if(!THIS->max)		
-		{
-			return;
-		}
-	}
-
 	// Add a value to coeficent array
-	if(THIS->max > 0)
+	if(THIS->max)
 	{
 		THIS->c[THIS->len] = VARG(x);
 		THIS->len++;		
@@ -243,8 +204,8 @@ GB_DESC CPolynomialDesc[] =
 	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
 	GB_PROPERTY_READ("MaxCoef", "i", CPolynomial_MaxCoef),
 	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),
-	GB_PROPERTY_READ("Len", "f", CPolynomial_Error),
-	GB_PROPERTY_READ("Len", "i", CPolynomial_E10),	
+	GB_PROPERTY_READ("Error", "f", CPolynomial_Error),
+	GB_PROPERTY_READ("E10", "i", CPolynomial_E10),	
 	
 	// Data Methods
 	GB_METHOD("Add", "i", CPolynomial_Add, "(X)f"),
