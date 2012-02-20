@@ -50,7 +50,7 @@ Public Sub _new(sPath As String)
   Require = New String[]
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".component"] To sData
   For Each sLine In Split(sData, "\n", "", True)
-    If Trim(sLine) Begins "Requires=" Then Require.Add(Trim(Mid$(sLine, InStr(sLine, "=") + 1)))
+    If Trim(sLine) Begins "Requires=" Then Require.Insert(Split(Trim(Mid$(sLine, InStr(sLine, "=") + 1))))
   Next
     
 End
