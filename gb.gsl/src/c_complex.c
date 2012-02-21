@@ -989,7 +989,7 @@ GB_DESC CComplexDesc[] =
 	// Elementary Complex Functions
     GB_METHOD("Sqrt", "Complex", GslComplex_Sqrt, NULL),
     GB_METHOD("SqrtReal", "Complex", GslComplex_SqrtReal, "(X)f"),
-    GB_METHOD("Pow", "Complex", GslComplex_Pow, NULL),
+    GB_METHOD("Pow", "Complex", GslComplex_Pow, "(X)Complex"),
     GB_METHOD("PowReal", "Complex", GslComplex_PowReal, "(X)f"),
     GB_METHOD("Exp", "Complex", GslComplex_Exp, NULL),
     GB_METHOD("Log", "Complex", GslComplex_Log, NULL),
