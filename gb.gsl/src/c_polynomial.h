@@ -44,7 +44,6 @@ typedef
     int len;
 	int max;
 	int alloc_size;
-	gsl_sf_result_e10 error;
     }
   CPOLYNOMIAL;
 

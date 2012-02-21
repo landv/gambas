@@ -210,15 +210,16 @@ BEGIN_METHOD(GSL_HYPOT, GB_FLOAT x; GB_FLOAT y;)
 
 END_METHOD
 
-/*
+
 BEGIN_METHOD(GSL_HYPOT3, GB_FLOAT x; GB_FLOAT y; GB_FLOAT z;)
     // This function computes the value of \sqrt{x^2 + y^2 + z^2}
     // in a way that avoids overflow.
     // Call GSL function double gsl_hypot3 (const double x, const double y, const double z)
-    GB.ReturnFloat(gsl_hypot3(VARG(x), VARG(y), ARG(z)));
+	
+    GB.ReturnFloat(gsl_hypot3(VARG(x), VARG(y), VARG(z)));
 
 END_METHOD
-*/
+
 
 BEGIN_METHOD(GSL_ACOSH, GB_FLOAT x;)
     // This function computes the value of \arccosh(x).
@@ -249,7 +250,7 @@ BEGIN_METHOD(GSL_LDEXP, GB_FLOAT x; GB_INTEGER e;)
 END_METHOD
 
 
-BEGIN_METHOD(GSL_FREXP, GB_FLOAT x; GB_POINTER e)
+BEGIN_METHOD(GSL_FREXP, GB_FLOAT x;)
 	// Function: double gsl_frexp (double x, int * e)
 	// This function splits the number x into its normalized 
 	// fraction f and exponent e, such that x = f * 2^e and
@@ -257,18 +258,35 @@ BEGIN_METHOD(GSL_FREXP, GB_FLOAT x; GB_POINTER e)
 	// exponent in e. If x is zero, both f and e are set to
 	// zero. This function provides an alternative to the
 	// standard math function frexp(x, e).
-	int *b;
+	int b;
 	double r;
+	GB_VARIANT v;
+	GB_VARIANT q;
+	GB_ARRAY arr;
 
-	b = (int *)VARG(e);
+	b = 0.0;
 
-	r = gsl_frexp(VARG(x), (int *)VARG(e));
+	r = gsl_frexp(VARG(x), &b);
+	printf("r: %d \te: %i", r, b);
 
-	GB.ReturnFloat(r);
+	GB.Array.New(&arr , GB_T_VARIANT , r);
+	if(arr != NULL && arr != 0)
+	{
+	
+		v.value.value._float = r;
+		*((GB_VARIANT *)GB.Array.Get(arr, 0)) = v;
+		
+		q.value.value._integer = b;	
+		*((GB_VARIANT *)GB.Array.Get(arr, 1)) = q;	
+	}	
+	GB.ReturnObject(arr);
 	
 END_METHOD
-
-
+/*
+GB.Array.New(&iArray , GB_T_INTEGER , 1);
+	*((int *)GB.Array.Get(iArray, 0)) = value;
+	GB.ReturnObject(iArray);
+*/
 
 /*-----------------------------------------------
  Small Integer Power Functions
@@ -365,12 +383,12 @@ GB_DESC CGslDesc[] =
     GB_STATIC_METHOD("Log1p", "f", GSL_LOG1P, "(X)f"),
     GB_STATIC_METHOD("Expm1", "f", GSL_EXPM1, "(X)f"),
     GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "[(X)f(Y)f]"),
-    //GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "[(x)f(y)f(z)f]"),
+    GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "[(X)f(Y)f(Z)f]"),
     GB_STATIC_METHOD("Acosh", "f", GSL_ACOSH, "(X)f"),
     GB_STATIC_METHOD("Asinh", "f", GSL_ASINH, "(X)f"),
     GB_STATIC_METHOD("Atanh", "f", GSL_ATANH, "(X)f"),
     GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "[(X)f(E)i]"),
-    GB_STATIC_METHOD("Frexp", "f", GSL_FREXP, "[(X)f(E)p]"),
+    //GB_STATIC_METHOD("Frexp", "a", GSL_FREXP, "(X)f"),
 
     // Return x^y using a small int safe method
     GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(X)f(I)i]"),

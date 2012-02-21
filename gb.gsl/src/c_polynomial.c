@@ -22,10 +22,6 @@
 	MA 02110-1301, USA.
 
 ***************************************************************************/
-/*=========================================================================
-		=== NOTE THIS IS SIMPLE LEARNING CODE === 
-            AND NOTHING USEFUL EXISTS HERE YET
-==========================================================================*/
 
 #define __C_GSL_POLYNOMIAL_C
 
@@ -46,8 +42,13 @@ static CPOLYNOMIAL *create_plynomial()
 
 
 BEGIN_METHOD_VOID(CPolynomial_new)
+
 	// May change to take init array of floats
 	THIS->alloc_size = 32;
+	THIS->max = 32;
+	GB.NewArray((void *)&THIS->c, sizeof(double), THIS->alloc_size);
+	THIS->len = 0;
+
 END_METHOD
 
 
@@ -63,7 +64,15 @@ END_METHOD
 BEGIN_METHOD_VOID(CPolynomial_free)
 
 	if(THIS->c != NULL && THIS->c != 0)
-		GB.Free(POINTER(THIS->c));
+		GB.FreeArray((void *)&THIS->c);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(CPolynomial_exit)
+
+	if(THIS->c != NULL && THIS->c != 0)
+		GB.FreeArray((void *)&THIS->c);
 
 END_METHOD
 
@@ -85,22 +94,6 @@ BEGIN_PROPERTY(CPolynomial_MaxCoef)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger((THIS->max));
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CPolynomial_Error)
-
-	if (READ_PROPERTY)
-		GB.ReturnFloat((THIS->error.err));
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CPolynomial_E10)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger((THIS->error.e10));
 
 END_PROPERTY
 
@@ -132,14 +125,6 @@ BEGIN_METHOD_VOID(CPolynomial_ToString)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CPolynomial_ClearResult)
-	// Clear out error results
-	// Call before using any gsl_sf_xxx_e functions
-	THIS->error.val = 0.0;
-	THIS->error.err = 0.0;
-	THIS->error.e10 = 0;
-
-END_METHOD
 
 /**************************************************
                   Data Methods
@@ -147,8 +132,10 @@ END_METHOD
 
 BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 	
+	double *elm;
+
 	// Add a value to coeficent array
-	if(THIS->max)
+	if(THIS->max > THIS->len)
 	{
 		THIS->c[THIS->len] = VARG(x);
 		THIS->len++;		
@@ -156,15 +143,19 @@ BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 	}
 	else
 	{
+		if(THIS->c != NULL && THIS->c != 0)
+		{
+			elm = (double *)GB.Add((void *)&THIS->c);
+			THIS->max++;
+			// *elm = VARG(x);
+			THIS->c[THIS->len] = VARG(x);
+			THIS->len++;			
+		}
 		return GB.ReturnInteger(THIS->len);
 	}
 
 END_METHOD
 
-// From array method
-
-
-// From csv file method
 
 
 /**************************************************
@@ -172,10 +163,6 @@ END_METHOD
 **************************************************/
 
 BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
-	// Function: double gsl_poly_eval 
-	// (const double c[], const int len, const double x)	
-	// This function evaluates a polynomial with real 
-	// coefficients for the real variable x.
 	double r;
 	double b = VARG(x);
 
@@ -183,6 +170,92 @@ BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
 	
 	return GB.ReturnFloat(r);
 
+END_METHOD
+
+
+BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
+	GSLCOMPLEX *z = VARG(z);
+	GSLCOMPLEX *obj;
+
+	if (GB.CheckObject(z))
+		return;
+
+	obj = GSLComplex_create();
+
+	obj->number = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
+
+	GB.ReturnObject(obj);
+	
+END_METHOD
+
+
+BEGIN_METHOD(CPolynomial_SolveQuadratic, GB_FLOAT a; GB_FLOAT b; GB_FLOAT c)
+	double x0 = 0.0;
+	double x1 = 0.0;
+	int r = 0;
+	int i = 0;
+	GB_ARRAY arr;
+		
+	r = gsl_poly_solve_quadratic(VARG(a), VARG(b), VARG(c), &x0, &x1);
+
+	GB.Array.New(&arr, GB_T_FLOAT, (long)r);
+
+	for(i=0; i<r; i++)
+	{
+		switch(i)
+		{
+			case 1:
+			{
+				*((double *)GB.Array.Get(arr, i)) = x0;
+			}break;
+
+			case 2:
+			{
+				*((double *)GB.Array.Get(arr, i)) = x1;
+			}break;
+		}
+	}
+
+	GB.ReturnObject(arr);
+		
+END_METHOD
+
+
+BEGIN_METHOD(CPolynomial_SolveCubic, GB_FLOAT a; GB_FLOAT b; GB_FLOAT c)
+	double x0 = 0.0;
+	double x1 = 0.0;
+	double x2 = 0.0;
+	int r = 0;
+	int i = 0;
+	GB_ARRAY arr;
+		
+	r = gsl_poly_solve_quadratic(VARG(a), VARG(b), VARG(c), &x0, &x1);
+
+	GB.Array.New(&arr, GB_T_FLOAT, (long)r);
+
+	for(i=0; i<r; i++)
+	{
+		switch(i)
+		{
+			case 1:
+			{
+				*((double *)GB.Array.Get(arr, i)) = x0;
+			}break;
+
+			case 2:
+			{
+				*((double *)GB.Array.Get(arr, i)) = x1;
+			}break;
+
+			case 3:
+			{
+				*((double *)GB.Array.Get(arr, i)) = x2;
+			}break;
+		}
+	}
+
+	GB.ReturnObject(arr);
+		
 END_METHOD
 
 
@@ -195,7 +268,7 @@ GB_DESC CPolynomialDesc[] =
 {
 	GB_DECLARE("Polynomial", sizeof(CPOLYNOMIAL)),
 
-	// Util;ity Methods 
+	// Utility Methods 
 	GB_METHOD("_new", NULL, CPolynomial_new, NULL),
 	GB_METHOD("_call", "Polynomial", CPolynomial_call, NULL),
 	GB_METHOD("_free", NULL, CPolynomial_free, NULL),
@@ -204,8 +277,6 @@ GB_DESC CPolynomialDesc[] =
 	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
 	GB_PROPERTY_READ("MaxCoef", "i", CPolynomial_MaxCoef),
 	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),
-	GB_PROPERTY_READ("Error", "f", CPolynomial_Error),
-	GB_PROPERTY_READ("E10", "i", CPolynomial_E10),	
 	
 	// Data Methods
 	GB_METHOD("Add", "i", CPolynomial_Add, "(X)f"),
@@ -213,6 +284,9 @@ GB_DESC CPolynomialDesc[] =
 
 	// Implementation Methods
 	GB_METHOD("Eval", "f", CPolynomial_Eval, "(X)f"),
+	GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
+	GB_METHOD("SolveQuadratic", "a", CPolynomial_SolveQuadratic, "[(A)f(B)f(C)f]"),
+	GB_METHOD("SolveCubic", "a", CPolynomial_SolveCubic, "[(A)f(B)f(C)f]"),
 
 	GB_END_DECLARE
 };
