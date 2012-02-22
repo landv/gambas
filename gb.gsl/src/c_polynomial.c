@@ -25,7 +25,9 @@
 
 #define __C_GSL_POLYNOMIAL_C
 
+#include <gsl/gsl_poly.h>
 #include "c_polynomial.h"
+#include "c_complex.h"
 
 
 #define THIS ((CPOLYNOMIAL *)_object)
@@ -109,19 +111,43 @@ END_PROPERTY
 
 
 BEGIN_METHOD_VOID(CPolynomial_ToString)
-	// Currently using this method to print debugging info
-	// Will emplement real functionality later...
-	int i = 0;
 
-	printf("Initial Count: %d \n", THIS->len);
-	printf("Address: %x = %f \n", (int)&THIS->c, THIS->c[0]);
-	
-	for(i=0; i< THIS->len; i++)
-	{	
-		printf("i = %d, Address: %x = %f \n", i, (int)&THIS->c[i], THIS->c[i]);	
-	}
-		
- 
+    // Do we have anything to print
+    if(THIS->len == 0)
+    {
+        // P(x) = c[0] + c[1] x + c[2] x^2 + \dots + c[len-1] x^{len-1}
+        GB.ReturnConstZeroString("c[0] = NULL");
+		return;
+    }
+    else
+    {
+        // TODO Improve memory mangement of string
+        // We have coefficiants to display.
+        // P(x) = c[0] + c[1] x + c[2] x^2 + ... + c[len-1] x^{len-1}
+        char buffer[(32*THIS->len)]; // A bit wasteful but it works for now....
+    	char *p;
+    	int i, len = 0;
+        
+        p = buffer;
+        
+        for(i = 0; i < THIS->len; i++)
+        {
+            if(i == 0)
+            {
+                len = sprintf(p , "c[%d] = %f", i, THIS->c[i]);
+                p+=len;
+            }
+            else
+            {
+                len = sprintf(p , ", c[%d] = %f", i, THIS->c[i]);
+                p+=len;
+            }
+                
+        }
+        
+        return GB.ReturnNewZeroString(buffer);
+    }
+
 END_METHOD
 
 
@@ -174,7 +200,7 @@ END_METHOD
 
 
 BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
-	GSLCOMPLEX *z = VARG(z);
+	GSLCOMPLEX *z = (GSLCOMPLEX *)VARG(z);
 	GSLCOMPLEX *obj;
 
 	if (GB.CheckObject(z))
@@ -182,9 +208,11 @@ BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
 
 	obj = GSLComplex_create();
 
-	obj->number = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
+    
+    // TODO Figure out error when compiling gsl_poly_complex_eval()
+    obj = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
 
-	GB.ReturnObject(obj);
+    GB.ReturnObject(obj);
 	
 END_METHOD
 
@@ -229,7 +257,7 @@ BEGIN_METHOD(CPolynomial_SolveCubic, GB_FLOAT a; GB_FLOAT b; GB_FLOAT c)
 	int i = 0;
 	GB_ARRAY arr;
 		
-	r = gsl_poly_solve_quadratic(VARG(a), VARG(b), VARG(c), &x0, &x1);
+	r = gsl_poly_solve_cubic(VARG(a), VARG(b), VARG(c), &x0, &x1, &x2);
 
 	GB.Array.New(&arr, GB_T_FLOAT, (long)r);
 
@@ -272,6 +300,7 @@ GB_DESC CPolynomialDesc[] =
 	GB_METHOD("_new", NULL, CPolynomial_new, NULL),
 	GB_METHOD("_call", "Polynomial", CPolynomial_call, NULL),
 	GB_METHOD("_free", NULL, CPolynomial_free, NULL),
+    GB_METHOD("_exit", NULL, CPolynomial_exit, NULL),
 
 	// Property Methods
 	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
@@ -285,8 +314,8 @@ GB_DESC CPolynomialDesc[] =
 	// Implementation Methods
 	GB_METHOD("Eval", "f", CPolynomial_Eval, "(X)f"),
 	GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
-	GB_METHOD("SolveQuadratic", "a", CPolynomial_SolveQuadratic, "[(A)f(B)f(C)f]"),
-	GB_METHOD("SolveCubic", "a", CPolynomial_SolveCubic, "[(A)f(B)f(C)f]"),
+	GB_METHOD("SolveQuadratic", "f[];", CPolynomial_SolveQuadratic, "[(A)f(B)f]"),
+	GB_METHOD("SolveCubic", "f[];", CPolynomial_SolveCubic, "[(A)f(B)f(C)f]"),
 
 	GB_END_DECLARE
 };
