@@ -210,7 +210,7 @@ BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
 
     
     // TODO Figure out error when compiling gsl_poly_complex_eval()
-    obj = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
+    // obj = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
 
     GB.ReturnObject(obj);
 	
