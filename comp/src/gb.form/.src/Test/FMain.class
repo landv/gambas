@@ -2,43 +2,45 @@
 
 ' A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment 
 
-Private tabPanel As TabPanel
+Private gvwView As MyGridView
 
 Public Sub _new()
   
-End
-
-Public Sub Form_Open()
-
-End
-
-Public Sub Button1_Click()
-
-  Inc TabPanel1.Count
-  TabPanel1[TabPanel1.Count - 1].Text = TabPanel1.Count
-
-End
-
-Public Sub TabPanel1_Click()
-
+  Dim I As Integer
   
-
+  gvwView = New MyGridView(Me) As "MyGridView"
+  gvwView.Columns.Count = 4
+  gvwView.Rows.Count = 1000000
+  gvwView.Border = False
+  'gvwView.Font.Grade = -1
+  
+  For I = 0 To gvwView.Columns.Count - 1
+    gvwView.Columns[I].Text = "Column #" & CStr(I)
+    gvwView.Columns[I].Width = 120
+  Next
+  
+  gvwView.Rows[0].Height = 60
+  For I = 1 To 10
+    gvwView.Rows[Int(Rnd(0, gvwView.Rows.Count))].Height = 60
+  Next
+  
 End
 
-Public Sub TabPanel1_Close(Index As Integer)
-
-  TabPanel1.Remove(Index)
-
+Private Sub GetCellKey(iRow As Integer, iCol As Integer) As Long
+  
+  If iRow >= iCol Then
+    Return CLong(iRow) * iRow + iCol * 2
+  Else
+    Return CLong(iCol) * iCol + iRow * 2 + 1
+  Endif
+  
 End
 
-Public Sub ValueBox1_GotFocus()
-
-  Debug
-
-End
-
-Public Sub ValueBox1_LostFocus()
-
-  Debug
-
+Public Sub MyGridView_Data(Row As Integer, Column As Integer)
+  
+  gvwView.Data.Text = GetCellKey(Row, Column)
+  gvwView.Data.Padding = 2
+  
+  If Row Mod 10 = 0 Then gvwView.Data.Foreground = Color.Red
+  
 End

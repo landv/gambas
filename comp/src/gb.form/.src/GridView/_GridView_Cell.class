@@ -1,0 +1,105 @@
+' Gambas class file
+
+Export
+
+' 	GB_PROPERTY("Picture", "Picture", CGRIDITEM_picture),
+' 	GB_PROPERTY("Font", "Font", CGRIDITEM_font),
+' 	GB_PROPERTY("Text", "s", CGRIDITEM_text),
+' 	GB_PROPERTY("RichText", "s", CGRIDITEM_rich_text),
+' 	GB_PROPERTY("Alignment", "i", CGRIDITEM_alignment),
+' 	GB_PROPERTY("Background", "i", CGRIDITEM_background),
+' 	GB_PROPERTY("Foreground", "i", CGRIDITEM_foreground),
+' 	GB_PROPERTY("Padding", "i", CGRIDITEM_padding),
+' 	GB_PROPERTY("WordWrap","b",CGRIDITEM_word_wrap),
+' 
+' 	GB_PROPERTY_READ("X", "i", CGRIDITEM_x),
+' 	GB_PROPERTY_READ("Y", "i", CGRIDITEM_y),
+' 	GB_PROPERTY_READ("Left", "i", CGRIDITEM_x),
+' 	GB_PROPERTY_READ("Top", "i", CGRIDITEM_y),
+' 	GB_PROPERTY_READ("Width", "i", CGRIDITEM_width),
+' 	GB_PROPERTY_READ("Height", "i", CGRIDITEM_height),
+' 	GB_PROPERTY_READ("W", "i", CGRIDITEM_width),
+' 	GB_PROPERTY_READ("H", "i", CGRIDITEM_height),
+' 
+'   GB_PROPERTY("RowSpan", "i", CGRIDITEM_row_span),
+'   GB_PROPERTY("ColumnSpan", "i", CGRIDITEM_column_span),
+' 
+' 	GB_METHOD("Clear", NULL, CGRIDITEM_clear, NULL),
+' 	GB_METHOD("EnsureVisible", NULL, CGRIDITEM_ensure_visible, NULL),
+' 	GB_METHOD("Refresh", NULL, CGRIDITEM_refresh, NULL),
+' 
+
+Property Text As String
+Property Picture As Picture
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read W As Integer
+Property Read H As Integer
+
+Public _Row As Integer
+Public _Column As Integer
+
+
+Private Function Text_Read() As String
+
+  
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  
+
+End
+
+Private Function Picture_Read() As Picture
+
+  
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  
+
+End
+
+
+Private Function X_Read() As Integer
+
+  
+
+End
+
+Private Function Y_Read() As Integer
+
+  
+
+End
+
+Private Function Width_Read() As Integer
+
+  
+
+End
+
+Private Function W_Read() As Integer
+
+  
+
+End
+
+Private Function Height_Read() As Integer
+
+  
+
+End
+
+Private Function H_Read() As Integer
+
+  
+
+End
+

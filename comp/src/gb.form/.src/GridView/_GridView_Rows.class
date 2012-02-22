@@ -1,0 +1,169 @@
+' Gambas class file
+
+Export
+
+Property Count As Integer
+Property Read Width As Integer
+
+Event _Refresh
+
+'Private $aRows As New _GridView_Row[]
+Private $nRows As Integer
+Private $cHeight As Collection
+Private $aHeight As Integer[]
+
+Private Sub GetView() As MyGridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $nRows
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  If Value = $nRows Then Return
+  
+  $nRows = Value
+  GetView()._ResizeContents()
+  GetView().Refresh
+
+End
+
+Public Sub _get(Row As Integer) As _GridView_Row
+  
+  Dim hRow As _GridView_Row
+  
+  hRow = New _GridView_Row As "Row"
+  hRow._Row = Row
+  Return hRow
+  
+End
+
+Public Sub _GetDefaultRowHeight() As Integer
+  
+  Return GetView().Font.Height + 4
+  
+End
+
+Public Sub _GetRowY(iRow As Integer) As Integer
+  
+  Dim Y As Integer
+  Dim DH As Integer = _GetDefaultRowHeight()
+  Dim I As Integer
+  
+  Y = iRow * DH
+  
+  If $cHeight Then
+    
+    For Each I In $aHeight
+      If I < iRow Then Y += $cHeight[I] - DH
+    Next
+  Endif
+  
+  Return Y
+  
+End
+
+
+Public Sub _GetRowHeight(iRow As Integer) As Integer
+  
+  Try Return $cHeight[iRow]
+  Return _GetDefaultRowHeight()
+  
+End
+
+Private Sub AddSorted(iRow As Integer)
+  
+  Dim I, J As Integer
+  
+  I = 0
+  J = $aHeight.Max
+  
+  If J < 0 Or If iRow > $aHeight[J] Then
+    $aHeight.Add(iRow)
+    Return
+  Endif
+  
+  '' TODO: Binary search
+  $aHeight.Add(iRow)
+  $aHeight.Sort
+  
+End
+
+
+Public Sub _SetRowHeight(iRow As Integer, H As Integer)
+  
+  Dim DH As Integer = _GetDefaultRowHeight()
+  
+  If H < 4 Then Return
+  If H > 1024 Then Return
+  
+  If Not $cHeight Then 
+    $cHeight = New Collection
+    $aHeight = New Integer[]
+  Endif
+  
+  If H = DH Then
+    If $cHeight.Exist(iRow) Then
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Find(iRow))
+    Endif
+  Else If H > 0 Then
+    If Not $cHeight.Exist(iRow) Then AddSorted(iRow)
+    $cHeight[iRow] = H
+  Endif
+  
+  GetView()._ResizeContents()
+  
+End
+
+Private Function Width_Read() As Integer
+
+  Return GetView().Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+
+End
+
+Public Sub _GetHeight() As Integer
+  
+  Dim H, DH, HR As Integer
+  
+  DH = _GetDefaultRowHeight()
+  H = DH * $nRows
+  If $cHeight Then
+    H -= DH * $cHeight.Count
+    For Each HR In $cHeight
+      H += HR
+    Next 
+  Endif
+  
+  Return H
+  
+End
+
+Public Sub _FindRowFromPos(Y As Integer) As Integer
+  
+  Dim iRow, YY, H As Integer
+  Dim DH As Integer = _GetDefaultRowHeight()
+  
+  If $cHeight Then
+    For Each iRow In $aHeight
+      YY = iRow * DH
+      If Y < YY Then Break
+      H = $cHeight[iRow]
+      If Y < (YY + H) Then Return iRow
+      Y -= H - DH
+    Next
+  Endif
+  
+  iRow = Y / DH
+  If iRow < 0 Or If iRow >= $nRows Then iRow = -1
+  Return iRow
+  
+End
+

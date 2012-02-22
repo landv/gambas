@@ -1,0 +1,60 @@
+' Gambas class file
+
+Export
+
+Property Read X As Integer
+Property Width As Integer
+Property Text As String
+
+Event _Refresh
+
+Public _X As Integer
+
+Private $W As Integer
+Private $sText As String
+
+Private Sub GetView() As MyGridView
+  
+  Return Object.Parent(Object.Parent(Me))
+  
+End
+
+Public Sub _new()
+  
+  $W = Desktop.Scale * 8
+  
+End
+
+Private Function Width_Read() As Integer
+
+  Return $W
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  If Value < 4 Or If Value > 1024 Then Return
+  $W = Value
+  Raise _Refresh
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  $W = Max($W, GetView().Font.TextWidth($sText) + 8)
+  Raise _Refresh
+
+End
+
+Private Function X_Read() As Integer
+
+  Return _X
+
+End

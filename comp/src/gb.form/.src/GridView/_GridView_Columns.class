@@ -1,0 +1,85 @@
+' Gambas class file
+
+Export
+
+Property Count As Integer
+Property Read Height As Integer
+
+Event _Refresh
+
+Private $aColumns As New _GridView_Column[]
+Private $iWidth As Integer
+
+Private Sub GetView() As MyGridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $aColumns.Count
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  Dim iOldCount As Integer = $aColumns.Count
+  Dim I As Integer
+  
+  If Value = iOldCount Then Return
+  
+  Try $aColumns.Resize(Value)
+  If Error Then Error.Raise("Bad argument")
+  
+  If Value > iOldCount Then
+    For I = iOldCount To Value - 1
+      $aColumns[I] = New _GridView_Column As "Column"
+    Next
+  Endif
+  
+  Column__Refresh
+
+End
+
+Public Sub Column__Refresh()
+  
+  Dim hCol As _GridView_Column
+  Dim X As Integer
+  
+  For Each hCol In $aColumns
+    hCol._X = X
+    X += hCol.Width
+  Next
+  $iWidth = X
+  
+  GetView()._ResizeContents
+  GetView().Refresh
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return GetView().Font.Height + 8
+
+End
+
+Public Sub _get(Index As Integer) As _GridView_Column
+  
+  Return $aColumns[Index]
+  
+End
+
+Public Sub _GetWidth() As Integer
+  
+  Return $iWidth
+  
+End
+
+Public Sub _FindColumnFromPos(X As Integer) As Integer
+  
+  
+  
+End
+

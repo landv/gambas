@@ -1,0 +1,27 @@
+' Gambas class file
+
+Export
+
+Event _Refresh
+
+Property Height As Integer
+
+Public _Row As Integer
+
+Private Sub GetRows() As _GridView_Rows
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Function Height_Read() As Integer
+
+  Return GetRows()._GetRowHeight(_Row)
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  GetRows()._SetRowHeight(_Row, Value)
+
+End
