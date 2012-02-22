@@ -45,7 +45,7 @@ static GB_PAINT *_current = NULL;
 
 static bool check_device()
 {
-	if (!_current)
+	if (!_current || !_current->opened)
 	{
 		GB.Error("No current device");
 		return TRUE;

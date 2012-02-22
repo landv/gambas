@@ -1510,7 +1510,7 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 	CLASS_DESC *desc;
 	short index = class->special[special];
 
-	if (UNLIKELY(index == NO_SYMBOL))
+	if (index == NO_SYMBOL)
 		return TRUE;
 
 	desc = CLASS_get_desc(class, index);
@@ -1573,99 +1573,10 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 }
 
 
-/* static void dump(int np) */
-/* { */
-/*   int i; */
-/*  */
-/*   for (i = 1; i <= np; i++) */
-/*     printf("SP[%d] = %d  ", -i, SP[-i].type); */
-/*  */
-/*   printf("\n"); */
-/* } */
-/*  */
-
 /*
 	The highest parent method is called first, but get only the parameters
 	not consumed by the child methods.
 */
-
-#if 0
-void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop)
-{
-	CLASS *her[MAX_INHERITANCE];
-	int npher[MAX_INHERITANCE];
-	int nher;
-	int i, np;
-	CLASS_DESC *desc;
-	short index;
-
-	if (!class->parent)
-	{
-		if (special == SPEC_NEW && !CLASS_is_native(class))
-		{
-			EXEC.class = class;
-			EXEC.object = object;
-			EXEC.index = FUNC_INIT_DYNAMIC;
-			EXEC.native = FALSE;
-			EXEC.nparam = 0;
-			EXEC_function();
-		}
-		EXEC_special(special, class, object, nparam, drop);
-		return;
-	}
-
-	nher = CLASS_get_inheritance(class, her);
-
-	for(i = 0, np = 0; i < nher; i++)
-	{
-		class = her[i];
-		npher[i] = np;
-
-		index = class->special[special];
-		if (index == NO_SYMBOL)
-			continue;
-		desc = CLASS_get_desc(class, index); //class->special[special];
-
-		np += desc->method.npmax;
-	}
-
-	for(;;)
-	{
-		nher--;
-		if (nher < 0)
-			break;
-		class = her[nher];
-
-		if (special == SPEC_NEW)
-		{
-			if (!CLASS_is_native(class))
-			{
-				EXEC.class = class;
-				EXEC.object = object;
-				EXEC.index = FUNC_INIT_DYNAMIC;
-				//EXEC.func = &class->load->func[FUNC_INIT_DYNAMIC];
-				EXEC.native = FALSE;
-				EXEC.nparam = 0;
-
-				EXEC_function();
-			}
-		}
-
-		index = class->special[special];
-		if (index == NO_SYMBOL)
-			continue;
-
-		desc = CLASS_get_desc(class, index); // class->special[special];
-
-		/*np = Min(nparam, desc->method.npmax);*/
-
-		np = Max(0, nparam - npher[nher]);
-
-		EXEC_special(special, class, object, np, drop);
-		nparam -= np;
-	}
-}
-#endif
 
 void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop)
 {
@@ -1688,7 +1599,13 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 			EXEC.nparam = 0;
 			EXEC_function();
 		}
-		EXEC_special(special, class, object, nparam, drop);
+		
+		if (EXEC_special(special, class, object, nparam, drop))
+		{
+			if (nparam)
+				THROW(E_TMPARAM);
+		}
+		
 		return;
 	}
 
