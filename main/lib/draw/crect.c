@@ -321,7 +321,7 @@ GB_DESC RectDesc[] =
 	GB_DECLARE("Rect", sizeof(CRECT)),
 
 	GB_METHOD("_new", NULL, Rect_new, "[(X)i(Y)i(Width)i(Height)i]"),
-	GB_METHOD("_call", NULL, Rect_call, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_METHOD("_call", "Rect", Rect_call, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_PROPERTY("X", "i", Rect_X),
 	GB_PROPERTY("Y", "i", Rect_Y),
