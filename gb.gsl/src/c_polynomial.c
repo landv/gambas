@@ -28,6 +28,7 @@
 #include <gsl/gsl_poly.h>
 #include "c_polynomial.h"
 #include "c_complex.h"
+#include <gsl/gsl_blas.h>
 
 
 #define THIS ((CPOLYNOMIAL *)_object)
@@ -37,7 +38,7 @@
                  Utility Methods
 **************************************************/
 
-static CPOLYNOMIAL *create_plynomial()
+static CPOLYNOMIAL *create_polynomial()
 {
 	return (CPOLYNOMIAL *)GB.New(GB.FindClass("Polynomial"), NULL,  NULL);
 }
@@ -73,8 +74,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CPolynomial_exit)
 
-	if(THIS->c != NULL && THIS->c != 0)
-		GB.FreeArray((void *)&THIS->c);
+	if(THIS->c != NULL)
+		GB.FreeArray((GB_FLOAT *)&THIS->c);
 
 END_METHOD
 
@@ -163,7 +164,7 @@ BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 	// Add a value to coeficent array
 	if(THIS->max > THIS->len)
 	{
-		THIS->c[THIS->len] = VARG(x);
+		THIS->c[THIS->len] = (double)VARG(x);
 		THIS->len++;		
 		return GB.ReturnInteger(THIS->len);
 	}
@@ -174,7 +175,7 @@ BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 			elm = (double *)GB.Add((void *)&THIS->c);
 			THIS->max++;
 			// *elm = VARG(x);
-			THIS->c[THIS->len] = VARG(x);
+			THIS->c[THIS->len] = (double)VARG(x);
 			THIS->len++;			
 		}
 		return GB.ReturnInteger(THIS->len);
@@ -190,9 +191,15 @@ END_METHOD
 
 BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
 	double r;
-	double b = VARG(x);
 
-	r = gsl_poly_eval(THIS->c, THIS->len, b);
+	if(3 > THIS->len)
+	{
+		GB.Error(GB_ERR_BOUND);
+		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
+		return GB.ReturnFloat(0);
+	}
+
+	r = gsl_poly_eval(THIS->c, THIS->len, VARG(x));
 	
 	return GB.ReturnFloat(r);
 
@@ -210,80 +217,97 @@ BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
 
     
     // TODO Figure out error when compiling gsl_poly_complex_eval()
-    // obj = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
+	// It seems this function is not in the library or linker is linking
+	// to an older version of the library that does not have this method.
+    //obj = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
 
     GB.ReturnObject(obj);
 	
 END_METHOD
 
 
-BEGIN_METHOD(CPolynomial_SolveQuadratic, GB_FLOAT a; GB_FLOAT b; GB_FLOAT c)
-	double x0 = 0.0;
-	double x1 = 0.0;
+BEGIN_METHOD_VOID(CPolynomial_SolveQuadratic)
+	double x[2];
 	int r = 0;
 	int i = 0;
 	GB_ARRAY arr;
-		
-	r = gsl_poly_solve_quadratic(VARG(a), VARG(b), VARG(c), &x0, &x1);
 
-	GB.Array.New(&arr, GB_T_FLOAT, (long)r);
+	x[0] = 0.0;
+	x[1] = 0.0;
 
-	for(i=0; i<r; i++)
+	GB.Array.New(&arr, GB_T_FLOAT, (long)2);
+
+	*((double *)GB.Array.Get(arr, 0)) = x[0];
+	*((double *)GB.Array.Get(arr, 1)) = x[1];
+
+	if(3 == THIS->len)
 	{
-		switch(i)
-		{
-			case 1:
-			{
-				*((double *)GB.Array.Get(arr, i)) = x0;
-			}break;
 
-			case 2:
-			{
-				*((double *)GB.Array.Get(arr, i)) = x1;
-			}break;
+		r = gsl_poly_solve_quadratic(THIS->c[0], THIS->c[1], THIS->c[2], &x[0], &x[1]);
+
+		if(0 <= r)
+		{
+			for(i=0; i<r; i++)
+				*((double *)GB.Array.Get(arr, i)) = x[i];
+
+			return GB.ReturnObject(arr);
 		}
+		else
+		{
+			//GB.Error(GB_ERR_ARG);
+			return GB.ReturnObject(arr);;
+		}
+
+	}
+	else
+	{
+		GB.Error(GB_ERR_BOUND);
+		return GB.ReturnObject(arr);
 	}
 
-	GB.ReturnObject(arr);
 		
 END_METHOD
 
 
-BEGIN_METHOD(CPolynomial_SolveCubic, GB_FLOAT a; GB_FLOAT b; GB_FLOAT c)
-	double x0 = 0.0;
-	double x1 = 0.0;
-	double x2 = 0.0;
+BEGIN_METHOD_VOID(CPolynomial_SolveCubic)
+	double x[3];
 	int r = 0;
 	int i = 0;
 	GB_ARRAY arr;
-		
-	r = gsl_poly_solve_cubic(VARG(a), VARG(b), VARG(c), &x0, &x1, &x2);
 
-	GB.Array.New(&arr, GB_T_FLOAT, (long)r);
+	x[0] = 0.0;
+	x[1] = 0.0;
+	x[2] = 0.0;
 
-	for(i=0; i<r; i++)
+	GB.Array.New(&arr, GB_T_FLOAT, (long)3);
+
+	*((double *)GB.Array.Get(arr, 0)) = x[0];
+	*((double *)GB.Array.Get(arr, 1)) = x[1];
+	*((double *)GB.Array.Get(arr, 2)) = x[2];
+
+	if(3 == THIS->len)
 	{
-		switch(i)
+		r = gsl_poly_solve_cubic(THIS->c[0], THIS->c[1], THIS->c[2], &x[0], &x[1], &x[2]);
+
+		if(0 <= r)
 		{
-			case 1:
-			{
-				*((double *)GB.Array.Get(arr, i)) = x0;
-			}break;
+			for(i=0; i<r; i++)
+				*((double *)GB.Array.Get(arr, i)) = x[i];
 
-			case 2:
-			{
-				*((double *)GB.Array.Get(arr, i)) = x1;
-			}break;
-
-			case 3:
-			{
-				*((double *)GB.Array.Get(arr, i)) = x2;
-			}break;
+			return GB.ReturnObject(arr);
+		}
+		else
+		{
+			//GB.Error(GB_ERR_ARG);
+			return GB.ReturnObject(arr);
 		}
 	}
+	else
+	{
+		GB.Error(GB_ERR_BOUND);
+		return GB.ReturnObject(arr);
+	}
 
-	GB.ReturnObject(arr);
-		
 END_METHOD
 
 
@@ -313,9 +337,9 @@ GB_DESC CPolynomialDesc[] =
 
 	// Implementation Methods
 	GB_METHOD("Eval", "f", CPolynomial_Eval, "(X)f"),
-	GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
-	GB_METHOD("SolveQuadratic", "f[];", CPolynomial_SolveQuadratic, "[(A)f(B)f]"),
-	GB_METHOD("SolveCubic", "f[];", CPolynomial_SolveCubic, "[(A)f(B)f(C)f]"),
+	//GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
+	GB_METHOD("SolveQuadratic", "f[];", CPolynomial_SolveQuadratic, NULL),
+	GB_METHOD("SolveCubic", "f[];", CPolynomial_SolveCubic, NULL),
 
 	GB_END_DECLARE
 };
