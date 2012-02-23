@@ -1,0 +1,105 @@
+' Gambas class file
+
+Private $aSel As New Integer[]
+
+Private Sub Dump()
+  
+  Dim I As Integer
+  
+  Print "Selection = ";
+  For I = 0 To $aSel.Max Step 2
+    Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
+  Next
+  Print
+  
+End
+
+
+Public Sub Select(iStart As Integer, Optional iLength As Integer = 1)
+  
+  Dim I, S, L As Integer
+  
+  For I = 0 To $aSel.Max Step 2
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If iStart >= S And If iStart <= (S + L) Then
+      $aSel[I + 1] = iStart + iLength - S
+      Dump
+      Return
+    Else If (iStart + iLength) >= S And If (iStart + iLength) <= (S + L) Then
+      $aSel[I + 1] += $aSel[I] - iStart
+      $aSel[I] = iStart
+      Dump
+      Return
+    Endif
+    
+  Next
+  
+  $aSel.Add(iStart)
+  $aSel.Add(iLength)
+  Dump
+  
+End
+
+Public Sub UnSelect(iStart As Integer, Optional iLength As Integer = 1)
+  
+  Dim I, S, L As Integer
+  
+  I = 0
+  While I < $aSel.Count
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If (iStart + iLength) > S And If iStart < (S + L) Then 
+    
+      If iStart <= S And If (iStart + iLength) >= (S + L) Then
+        $aSel.Remove(I, 2)
+        Continue
+      Endif
+      
+      If iStart <= S Then
+        $aSel[I + 1] -= iStart + iLength - S
+        $aSel[I] = iStart + iLength
+      Else If (iStart + iLength) >= (S + L) Then
+        $aSel[I + 1] = iStart - S
+      Else
+        $aSel[I + 1] = iStart - S
+        $aSel.Add(iStart + iLength)
+        $aSel.Add(S + L - iStart - iLength)
+      Endif
+      
+    Endif
+    
+    I += 2
+  Wend
+  Dump
+  
+End
+
+Public Sub UnSelectAll()
+  
+  $aSel.Clear
+  Dump
+  
+End
+
+Public Sub IsSelected(iIndex As Integer) As Boolean
+
+  Dim I, S, L As Integer  
+  
+  For I = 0 To $aSel.Max Step 2
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If iIndex >= S And iIndex < (S + L) Then Return True
+    
+  Next
+  
+End
+
+
+

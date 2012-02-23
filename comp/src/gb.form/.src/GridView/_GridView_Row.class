@@ -2,15 +2,32 @@
 
 Export
 
+' 	GB_PROPERTY_READ("Top", "i", CGRIDITEM_y),
+' 	GB_PROPERTY("Text", "s", CGRIDROWS_text),
+' 	GB_PROPERTY("Title", "s", CGRIDROWS_text),
+' 	GB_PROPERTY("Selected", "b", CGRIDROWS_selected),
+' 	GB_METHOD("Refresh", NULL, CGRIDROWS_refresh, NULL),
+' 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
+' 
+
 Event _Refresh
 
-Property Height As Integer
+Property Read Y As Integer
+Property Height, H As Integer
+Property Selected As Boolean
+Property Text As String
 
 Public _Row As Integer
 
 Private Sub GetRows() As _GridView_Rows
   
   Return Object.Parent(Me)
+  
+End
+
+Private Sub GetView() As MyGridView
+  
+  Return Object.Parent(Object.Parent(Me))
   
 End
 
@@ -23,5 +40,35 @@ End
 Private Sub Height_Write(Value As Integer)
 
   GetRows()._SetRowHeight(_Row, Value)
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return GetRows()._GetRowY(_Row)
+
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return GetView()._IsRowSelected(_Row)
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  GetView()._SelectRow(_Row, Value)
+
+End
+
+Private Function Text_Read() As String
+
+  Return GetRows()._GetRowText(_Row)
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  GetRows()._SetRowText(_Row, Value)
 
 End

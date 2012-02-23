@@ -2,8 +2,20 @@
 
 Export
 
+' 	GB_PROPERTY("Height", "i", CGRIDROWS_height),
+' 	GB_PROPERTY("H", "i", CGRIDROWS_height),
+' 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
+' 	//GB_PROPERTY("Moveable", "b", CGRIDROWS_moveable),
+' 	GB_METHOD("Select", NULL, CGRIDROWS_select, "[(Start)i(Length)i]"),
+' 	GB_METHOD("SelectAll", NULL, GridViewRows_SelectAll, NULL),
+' 	GB_METHOD("UnselectAll", NULL, GridViewRows_UnselectAll, NULL),
+' 	GB_METHOD("Remove", NULL, CGRIDROWS_remove, "(Start)i[(Length)i]"),
+' 	GB_METHOD("Insert", NULL, CGRIDROWS_insert, "(Start)i[(Length)i]"),
+' 
+
 Property Count As Integer
-Property Read Width As Integer
+Property Read Width, W As Integer
+Property Resizable As Boolean
 
 Event _Refresh
 
@@ -11,6 +23,17 @@ Event _Refresh
 Private $nRows As Integer
 Private $cHeight As Collection
 Private $aHeight As Integer[]
+Private $bResizable As Boolean = True
+Private $cText As Collection
+
+Private $hSel As New GridViewSelection
+
+Public Sub _GetSel() As GridViewSelection
+  
+  Return $hSel
+  
+End
+
 
 Private Sub GetView() As MyGridView
   
@@ -125,7 +148,9 @@ End
 
 Private Function Width_Read() As Integer
 
-  Return GetView().Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+  With GetView()
+    If .Header = .Horizontal Or If .Header = .Both Then Return .Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+  End With
 
 End
 
@@ -167,3 +192,81 @@ Public Sub _FindRowFromPos(Y As Integer) As Integer
   
 End
 
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Public Sub _GetRowText(iRow As Integer) As String
+  
+  Dim sText As String
+  
+  If $cText Then sText = $cText[iRow]
+  If Not sText Then sText = CStr(iRow + 1)
+  Return sText
+  
+End
+
+Public Sub _SetRowText(iRow As Integer, sText As String)
+  
+  If Not $cText Then $cText = New Collection
+  $cText[iRow] = sText
+  
+End
+
+Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = -1)
+  
+  If GetView().Mode <> Select.Multiple Then Return
+  
+  If Start < 0 Then Return
+  If Start >= $nRows Then Return
+  If Length < 0 Then Length = $nRows - Start
+  
+  $hSel.Select(Start, Length)
+  GetView()._RaiseSelect
+  
+End
+
+Public Sub UnSelect(Optional Start As Integer = 0, Optional Length As Integer = -1)
+  
+  If GetView().Mode <> Select.Multiple Then Return
+  
+  If Start < 0 Then Return
+  If Start >= $nRows Then Return
+  If Length < 0 Then Length = $nRows - Start
+  
+  $hSel.UnSelect(Start, Length)
+  GetView()._RaiseSelect
+  
+End
+
+Public Sub SelectAll()
+  
+  If GetView().Mode <> Select.Multiple Then Return
+
+  $hSel.UnSelectAll
+  Select()
+  
+End
+
+Public Sub UnSelectAll()
+  
+  If GetView().Mode <> Select.Multiple Then Return
+
+  $hSel.UnSelectAll
+  GetView()._RaiseSelect
+  
+End
+
+Public Sub _IsSelected(iRow As Integer) As Boolean
+  
+  Return $hSel.IsSelected(iRow)
+  
+End

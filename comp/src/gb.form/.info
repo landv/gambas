@@ -1674,6 +1674,34 @@ i
 #MyGridView
 UserControl
 C
+_Properties
+C
+s
+*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True
+_Group
+C
+s
+View
+_DefaultEvent
+C
+s
+Click
+None
+C
+i
+0
+Horizontal
+C
+i
+1
+Vertical
+C
+i
+2
+Both
+C
+i
+3
 Rows
 r
 _GridView_Rows
@@ -1706,22 +1734,134 @@ Column
 p
 i
 
+Resizable
+p
+b
+
+Scrollbar
+p
+i
+
+AutoResize
+p
+b
+
+Header
+p
+i
+
+ScrollX
+p
+i
+
+ScrollY
+p
+i
+
+ScrollW
+r
+i
+
+ScrollWidth
+r
+i
+
+ScrollH
+r
+i
+
+ScrollHeight
+r
+i
+
+ClientX
+r
+i
+
+ClientY
+r
+i
+
+ClientW
+r
+i
+
+ClientWidth
+r
+i
+
+ClientH
+r
+i
+
+ClientHeight
+r
+i
+
 :Data
 :
 
 (Row)i(Column)i
+:Change
+:
+
+
+:Select
+:
+
+
+:Click
+:
+
+
+:Activate
+:
+
+
+:Scroll
+:
+
+
+:ColumnClick
+:
+
+(Column)i
+:RowClick
+:
+
+(Row)i
+:ColumnResize
+:
+
+(Column)i
+:RowResize
+:
+
+(Row)i
 _new
 m
 
 
+_IsRowSelected
+m
+b
+(iRow)i
+Select
+m
+
+[(Start)i(Length)i]
 ScrollArea_Draw
+m
+
+
+Clear
 m
 
 
 _GetCellData
 m
 _GridView_Data
-(iRow)i(iColumn)i
+(iRow)i(iColumn)i[(bCreate)b]
 _ResizeContents
 m
 
@@ -1730,10 +1870,14 @@ ScrollArea_MouseMove
 m
 
 
-_SelectRow
+MoveTo
 m
 
-(iRow)i
+(Row)i(Column)i
+UnSelectAll
+m
+
+
 TimerScroll_Timer
 m
 
@@ -1746,10 +1890,38 @@ ScrollArea_MouseUp
 m
 
 
+ScrollArea_DblClick
+m
+
+
 _get
 m
 _GridView_Cell
 (Row)i(Column)i
+_EnsureVisible
+m
+
+(iRow)i(iCol)i
+_SelectRow
+m
+
+(iRow)i(bSelect)b
+_ClearCell
+m
+
+(iRow)i(iCol)i
+ScrollArea_Scroll
+m
+
+
+_RaiseSelect
+m
+
+
+SelectAll
+m
+
+
 #ScrollArea
 UserContainer
 C
@@ -2468,13 +2640,45 @@ i
 #_GridView_Cell
 
 C
+:_Foo
+:
+
+
 Text
+p
+s
+
+RichText
 p
 s
 
 Picture
 p
 Picture
+
+Font
+p
+Font
+
+Alignment
+p
+i
+
+WordWrap
+p
+b
+
+Background
+p
+i
+
+Foreground
+p
+i
+
+Padding
+p
+i
 
 X
 r
@@ -2488,11 +2692,11 @@ Width
 r
 i
 
-Height
+W
 r
 i
 
-W
+Height
 r
 i
 
@@ -2508,6 +2712,22 @@ _Column
 v
 i
 
+_View
+v
+MyGridView
+
+Refresh
+m
+
+
+Clear
+m
+
+
+EnsureVisible
+m
+
+
 #_GridView_Column
 
 C
@@ -2516,6 +2736,10 @@ r
 i
 
 Width
+p
+i
+
+W
 p
 i
 
@@ -2546,6 +2770,14 @@ Height
 r
 i
 
+H
+r
+i
+
+Resizable
+p
+b
+
 :_Refresh
 :
 
@@ -2570,27 +2802,39 @@ i
 
 C
 Text
-p
+v
 s
 
+RichText
+v
+s
+
+Font
+v
+Font
+
 Picture
-p
+v
 Picture
 
 Alignment
-p
+v
 i
 
 Padding
-p
+v
 i
 
+WordWrap
+v
+b
+
 Foreground
-p
+v
 i
 
 Background
-p
+v
 i
 
 #_GridView_Row
@@ -2600,9 +2844,25 @@ C
 :
 
 
+Y
+r
+i
+
 Height
 p
 i
+
+H
+p
+i
+
+Selected
+p
+b
+
+Text
+p
+s
 
 _Row
 v
@@ -2619,9 +2879,21 @@ Width
 r
 i
 
+W
+r
+i
+
+Resizable
+p
+b
+
 :_Refresh
 :
 
+
+_GetSel
+m
+GridViewSelection
 
 _get
 m
@@ -2651,6 +2923,34 @@ _FindRowFromPos
 m
 i
 (Y)i
+_GetRowText
+m
+s
+(iRow)i
+_SetRowText
+m
+
+(iRow)i(sText)s
+Select
+m
+
+[(Start)i(Length)i]
+UnSelect
+m
+
+[(Start)i(Length)i]
+SelectAll
+m
+
+
+UnSelectAll
+m
+
+
+_IsSelected
+m
+b
+(iRow)i
 #_IconPanelContainer
 UserControl
 C

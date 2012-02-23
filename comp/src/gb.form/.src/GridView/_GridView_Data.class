@@ -2,88 +2,12 @@
 
 Export
 
-Property Text As String
-Property Picture As Picture
-Property Alignment As Integer
-Property Padding As Integer
-Property Foreground As Integer
-Property Background As Integer
-
-Private $sText As String
-Private $hPict As Picture
-Private $iAlign As Integer = Align.Normal
-Private $iPadding As Integer
-Private $iForeground As Integer = Color.Default
-Private $iBackground As Integer = Color.Default
-
-Private Function Text_Read() As String
-
-  Return $sText
-
-End
-
-Private Sub Text_Write(Value As String)
-
-  $sText = Value
-
-End
-
-Private Function Picture_Read() As Picture
-
-  Return $hPict
-
-End
-
-Private Sub Picture_Write(Value As Picture)
-
-  $hPict = Value
-
-End
-
-Private Function Alignment_Read() As Integer
-
-  Return $iAlign
-
-End
-
-Private Sub Alignment_Write(Value As Integer)
-
-  $iAlign = Value
-
-End
-
-Private Function Padding_Read() As Integer
-
-  Return $iPadding
-
-End
-
-Private Sub Padding_Write(Value As Integer)
-
-  $iPadding = Value
-
-End
-
-Private Function Foreground_Read() As Integer
-
-  Return $iForeground
-
-End
-
-Private Sub Foreground_Write(Value As Integer)
-
-  $iForeground = Value
-
-End
-
-Private Function Background_Read() As Integer
-
-  Return $iBackground
-
-End
-
-Private Sub Background_Write(Value As Integer)
-
-  $iBackground = Value
-
-End
+Public Text As String
+Public RichText As String
+Public Font As Font
+Public Picture As Picture
+Public Alignment As Integer = Align.Normal
+Public Padding As Integer
+Public WordWrap As Boolean
+Public Foreground As Integer = Color.Default
+Public Background As Integer = Color.Default

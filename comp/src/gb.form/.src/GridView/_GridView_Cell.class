@@ -2,104 +2,187 @@
 
 Export
 
-' 	GB_PROPERTY("Picture", "Picture", CGRIDITEM_picture),
-' 	GB_PROPERTY("Font", "Font", CGRIDITEM_font),
-' 	GB_PROPERTY("Text", "s", CGRIDITEM_text),
-' 	GB_PROPERTY("RichText", "s", CGRIDITEM_rich_text),
-' 	GB_PROPERTY("Alignment", "i", CGRIDITEM_alignment),
-' 	GB_PROPERTY("Background", "i", CGRIDITEM_background),
-' 	GB_PROPERTY("Foreground", "i", CGRIDITEM_foreground),
-' 	GB_PROPERTY("Padding", "i", CGRIDITEM_padding),
-' 	GB_PROPERTY("WordWrap","b",CGRIDITEM_word_wrap),
-' 
-' 	GB_PROPERTY_READ("X", "i", CGRIDITEM_x),
-' 	GB_PROPERTY_READ("Y", "i", CGRIDITEM_y),
-' 	GB_PROPERTY_READ("Left", "i", CGRIDITEM_x),
-' 	GB_PROPERTY_READ("Top", "i", CGRIDITEM_y),
-' 	GB_PROPERTY_READ("Width", "i", CGRIDITEM_width),
-' 	GB_PROPERTY_READ("Height", "i", CGRIDITEM_height),
-' 	GB_PROPERTY_READ("W", "i", CGRIDITEM_width),
-' 	GB_PROPERTY_READ("H", "i", CGRIDITEM_height),
-' 
+Event _Foo
+
 '   GB_PROPERTY("RowSpan", "i", CGRIDITEM_row_span),
 '   GB_PROPERTY("ColumnSpan", "i", CGRIDITEM_column_span),
 ' 
-' 	GB_METHOD("Clear", NULL, CGRIDITEM_clear, NULL),
-' 	GB_METHOD("EnsureVisible", NULL, CGRIDITEM_ensure_visible, NULL),
-' 	GB_METHOD("Refresh", NULL, CGRIDITEM_refresh, NULL),
-' 
 
 Property Text As String
+Property RichText As String
 Property Picture As Picture
+Property Font As Font
+Property Alignment As Integer
+Property WordWrap As Boolean
+Property Background As Integer
+Property Foreground As Integer
+Property Padding As Integer
+
 Property Read X As Integer
 Property Read Y As Integer
-Property Read Width As Integer
-Property Read Height As Integer
-Property Read W As Integer
-Property Read H As Integer
+Property Read Width, W As Integer
+Property Read Height, H As Integer
 
 Public _Row As Integer
 Public _Column As Integer
+Public _View As MyGridView
+
+Private Sub GetData(bCreate As Boolean) As _GridView_Data
+
+  If bCreate Then _View.Refresh  
+  Return _View._GetCellData(_Row, _Column, bCreate)
+  
+End
 
 
 Private Function Text_Read() As String
 
-  
+  Return GetData(False).Text
 
 End
 
 Private Sub Text_Write(Value As String)
 
-  
+  GetData(True).Text = Value
 
 End
 
 Private Function Picture_Read() As Picture
 
-  
+  Return GetData(False).Picture
 
 End
 
 Private Sub Picture_Write(Value As Picture)
 
-  
+  GetData(True).Picture = Value
 
 End
 
 
 Private Function X_Read() As Integer
 
-  
+  Return _View.Columns[_Column].X
 
 End
 
 Private Function Y_Read() As Integer
 
-  
+  Return _View.Rows[_Row].Y
 
 End
 
 Private Function Width_Read() As Integer
 
-  
-
-End
-
-Private Function W_Read() As Integer
-
-  
+  Return _View.Columns[_Column].Width
 
 End
 
 Private Function Height_Read() As Integer
 
-  
+  Return _View.Rows[_Row].Height
 
 End
 
-Private Function H_Read() As Integer
+Private Function RichText_Read() As String
 
-  
+  Return GetData(False).RichText
 
 End
 
+Private Sub RichText_Write(Value As String)
+
+  GetData(True).RichText = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return GetData(False).Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  GetData(True).Font = Font
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return GetData(False).Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  GetData(True).Alignment = Value
+
+End
+
+Private Function WordWrap_Read() As Boolean
+
+  Return GetData(False).WordWrap
+
+End
+
+Private Sub WordWrap_Write(Value As Boolean)
+
+  GetData(True).WordWrap = Value
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return GetData(False).Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  GetData(True).Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return GetData(False).Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  GetData(True).Foreground = Value
+
+End
+
+Public Sub Clear()
+  
+  _View._ClearCell(_Row, _Column)
+  
+End
+
+Public Sub EnsureVisible()
+  
+  _View._EnsureVisible(_Row, _Column)
+  
+End
+
+Public Sub Refresh()
+  
+  _View.Refresh
+  
+End
+
+
+Private Function Padding_Read() As Integer
+
+  Return GetData(False).Padding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  GetData(True).Padding = Value
+
+End

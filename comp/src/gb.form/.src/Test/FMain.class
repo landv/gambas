@@ -1,18 +1,11 @@
 ' Gambas class file
 
-' A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment A very long comment 
-
-Private gvwView As MyGridView
-
 Public Sub _new()
   
   Dim I As Integer
   
-  gvwView = New MyGridView(Me) As "MyGridView"
   gvwView.Columns.Count = 4
   gvwView.Rows.Count = 1000000
-  gvwView.Border = False
-  'gvwView.Font.Grade = -1
   
   For I = 0 To gvwView.Columns.Count - 1
     gvwView.Columns[I].Text = "Column #" & CStr(I)
@@ -23,6 +16,15 @@ Public Sub _new()
   For I = 1 To 10
     gvwView.Rows[Int(Rnd(0, gvwView.Rows.Count))].Height = 60
   Next
+  
+  With gvwView[2, 2]
+    .Text = "Bonjour\ntout le\nmonde !"
+    .Background = Color.Yellow
+    .Padding = 10
+    .Alignment = Align.Right
+  End With
+  
+  gvwView.Rows[gvwView.Rows.Count - 1].Text = "*"
   
 End
 
@@ -36,11 +38,62 @@ Private Sub GetCellKey(iRow As Integer, iCol As Integer) As Long
   
 End
 
-Public Sub MyGridView_Data(Row As Integer, Column As Integer)
+Public Sub gvwView_Data(Row As Integer, Column As Integer)
   
   gvwView.Data.Text = GetCellKey(Row, Column)
   gvwView.Data.Padding = 2
   
   If Row Mod 10 = 0 Then gvwView.Data.Foreground = Color.Red
   
+End
+
+Public Sub gvwView_Change()
+  
+  Debug
+  
+End
+
+Public Sub gvwView_Select()
+  
+  Debug
+  
+End
+
+Public Sub gvwView_Scroll()
+  
+  Debug
+  
+End
+
+
+Public Sub gvwView_Click()
+  
+  Debug gvwView.Row;; gvwView.Column
+  
+End
+
+Public Sub gvwView_Activate()
+  
+  Debug
+  
+End
+
+
+Public Sub gvwView_ColumnClick(Column As Integer)
+  
+  Debug Column
+  
+End
+
+Public Sub gvwView_RowClick(Row As Integer)
+  
+  Debug Row
+  
+End
+
+
+Public Sub Button1_Click()
+
+  gvwView.Clear
+
 End

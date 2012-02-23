@@ -3,12 +3,14 @@
 Export
 
 Property Count As Integer
-Property Read Height As Integer
+Property Read Height, H As Integer
+Property Resizable As Boolean
 
 Event _Refresh
 
 Private $aColumns As New _GridView_Column[]
 Private $iWidth As Integer
+Private $bResizable As Boolean = True
 
 Private Sub GetView() As MyGridView
   
@@ -61,7 +63,9 @@ End
 
 Private Function Height_Read() As Integer
 
-  Return GetView().Font.Height + 8
+  With GetView()
+    If .Header = .Vertical Or If .Header = .Both Then Return GetView().Font.Height + 8
+  End With
 
 End
 
@@ -79,7 +83,28 @@ End
 
 Public Sub _FindColumnFromPos(X As Integer) As Integer
   
+  Dim I As Integer
   
+  If X < 0 Then Return -1
+  
+  For I = 0 To $aColumns.Max
+    With $aColumns[I]
+      If X >= .X And If X < (.X + .Width) Then Return I
+    End With
+  Next
+  
+  Return -1
   
 End
 
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End

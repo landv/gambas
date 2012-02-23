@@ -345,15 +345,17 @@ End
 
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
-  Dim PW, PH, CX, CY, CW, CH As Integer
+  Dim PW, PH, CX, CY, CW, CH, FW As Integer
   
   W = (W + 1) / 2
   H = (H + 1) / 2
   X = X + W
   Y = Y + H
 
-  PW = $hDrawingArea.W
-  PH = $hDrawingArea.H
+  If $bBorder Then FW = Style.FrameWidth
+  
+  PW = $hDrawingArea.W - FW * 2
+  PH = $hDrawingArea.H - FW * 2
 
   CX = - Me.ScrollX
   CY = - Me.ScrollY
