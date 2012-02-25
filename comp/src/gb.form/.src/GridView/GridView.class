@@ -151,32 +151,17 @@ End
 
 Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W As Integer, H As Integer, A As Integer)
   
-  Select Case A
-    Case Align.Top, Align.TopLeft, Align.TopRight, Align.TopNormal
-    Case Align.Bottom, Align.BottomLeft, Align.BottomRight, Align.BottomNormal
+  If Align.IsBottom(A) Then
       Y = H - hPict.H
-    Case Align.Center, Align.Left, Align.Right, Align.Normal
+  Else If Align.IsMiddle(A) Then
       Y = Y + (H - hPict.H) / 2
-  End Select
-  
-  If System.RightToLeft Then
-    Select Case A
-      Case Align.TopNormal
-        A = Align.TopRight
-      Case Align.Normal
-        A = Align.Right
-      Case Align.BottomNormal
-        A = Align.BottomRight
-    End Select
   Endif
   
-  Select Case A
-    Case Align.Left, Align.TopLeft, Align.BottomLeft
-    Case Align.Right, Align.TopRight, Align.BottomRight
-      X = W - hPict.W
-    Case Align.Top, Align.Bottom, Align.Center
-      X = X + (W - hPict.W) / 2
-  End Select
+  If Align.IsRight(A) Then
+    X = W - hPict.W
+  Else If Align.IsCenter(A) Then
+    X = X + (W - hPict.W) / 2
+  Endif
   
   Draw.Picture(hPict, X, Y)
   
@@ -212,20 +197,19 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
   
       If hPict Then
       
-        If Not .Text Then
+        If Not .Text And If Not .RichText Then
           
           DrawAlignedPicture(hPict, X, Y, W, H, .Alignment)
           
         Else
           
-          Select Case .Alignment
-            Case Align.Left, Align.Right, Align.Center, Align.Normal
-              A = Align.Normal
-            Case Align.TopLeft, Align.TopRight, Align.Top, Align.TopNormal
-              A = Align.TopNormal
-            Case Align.BottomLeft, Align.BottomRight, Align.Bottom, Align.BottomNormal
-              A = Align.BottomNormal
-          End Select
+          If Align.IsMiddle(A) Then
+            A = Align.Normal
+          Else If Align.IsTop(A) Then
+            A = Align.TopNormal
+          Else If Align.IsBottom(A) Then
+            A = Align.BottomNormal
+          End If
         
           DrawAlignedPicture(hPict, X, Y, W, H, A)
           
@@ -245,7 +229,22 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
       Endif
       
       If .Font Then Draw.Font = .Font
-      Draw.Text(.Text, X, Y, W, H, .Alignment)
+      If .Text Then
+        Draw.Text(.Text, X, Y, W, H, .Alignment)
+      Else If .RichText Then
+        If .WordWrap Then
+          Draw.RichText(.RichText, X, Y, W, H, .Alignment)
+        Else
+          A = .Alignment
+          If Align.IsLeft(A) Then
+            Draw.RichText(.RichText, X, Y, 4096, H, .Alignment)
+          Else If Align.IsRight(A) Then
+            Draw.RichText(.RichText, X + W - 4096, Y, 4096, H, .Alignment)
+          Else
+            Draw.RichText(.RichText, X + W \ 2 - 4096, Y, 4096, H, .Alignment)
+          Endif
+        Endif
+      Endif
           
     Endif
     
@@ -556,6 +555,7 @@ Public Sub ScrollArea_MouseMove()
   Dim iMouse As Integer
   Dim F As Integer = GetFrameWidth()
 
+  If Not Me.Enabled Then Return
   If $bIgnoreMove Then Return
   If $hRows.Count = 0 And If $hColumns.Count = 0 Then Return
   
@@ -687,6 +687,7 @@ End
 
 Public Sub ScrollArea_MouseDrag()
   
+  If Not Me.Enabled Then Return
   $bIgnoreMove = False
   If $bResize Then Return
   If Not $hTimerScroll Then
@@ -705,6 +706,8 @@ Public Sub ScrollArea_MouseDown()
   
   $MX = Mouse.X - F
   $MY = Mouse.Y - F
+  
+  If Not Me.Enabled Then Return
   
   ScrollArea_MouseMove
   

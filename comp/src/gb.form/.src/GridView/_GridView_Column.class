@@ -45,7 +45,7 @@ End
 
 Private Sub Width_Write(Value As Integer)
 
-  If Value < 4 Or If Value > 1024 Or If Value = $W Then Return
+  If Value < 1 Or If Value > 1024 Or If Value = $W Then Return
   $W = Value
   Raise _Refresh
 

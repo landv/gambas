@@ -613,7 +613,7 @@ Public Sub ResetBrowse()
   
   gvwFind.Rows.Count = 0
   gvwFind.Clear
-  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height)
+  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height) + 4
   $aBrowse.Clear
   gvwFind.Hide
   ClearCache
@@ -923,7 +923,9 @@ Public Sub gvwFind_Data(Row As Integer, Column As Integer)
     '   Endif
     ' Endif 
     
-    .Background = If($aBrowse[Row].Dark, Color.LightBackground, Color.TextBackground)
+    If $aBrowse[Row].Dark Then
+      .Background = Color.Merge(Color.TextBackground, Color.LightForeground, 0.2)
+    Endif
     
   End With 
 

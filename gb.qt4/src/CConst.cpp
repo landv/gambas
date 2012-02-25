@@ -147,6 +147,19 @@ int CCONST_fill_style(int value, int def, bool to_qt)
 	return CCONST_convert(_fill_style, value, def, to_qt);
 }
 
+#define IMPLEMENT_ALIGN(_method, _code) \
+BEGIN_METHOD(_method, GB_INTEGER align) \
+	int a = VARG(align); \
+	GB.ReturnBoolean(_code); \
+END_METHOD
+
+IMPLEMENT_ALIGN(Align_IsTop, ALIGN_IS_TOP(a))
+IMPLEMENT_ALIGN(Align_IsBottom, ALIGN_IS_BOTTOM(a))
+IMPLEMENT_ALIGN(Align_IsMiddle, ALIGN_IS_MIDDLE(a))
+IMPLEMENT_ALIGN(Align_IsLeft, ALIGN_IS_LEFT(a))
+IMPLEMENT_ALIGN(Align_IsRight, ALIGN_IS_RIGHT(a))
+IMPLEMENT_ALIGN(Align_IsCenter, ALIGN_IS_CENTER(a))
+
 GB_DESC CAlignDesc[] =
 {
   GB_DECLARE("Align", 0), GB_VIRTUAL_CLASS(),
@@ -167,6 +180,13 @@ GB_DESC CAlignDesc[] =
   GB_CONSTANT("Bottom", "i", ALIGN_BOTTOM),
   
   GB_CONSTANT("Justify", "i", ALIGN_JUSTIFY),
+  
+  GB_STATIC_METHOD("IsTop", "b", Align_IsTop, "(Alignment)i"),
+  GB_STATIC_METHOD("IsBottom", "b", Align_IsBottom, "(Alignment)i"),
+  GB_STATIC_METHOD("IsMiddle", "b", Align_IsMiddle, "(Alignment)i"),
+  GB_STATIC_METHOD("IsLeft", "b", Align_IsLeft, "(Alignment)i"),
+  GB_STATIC_METHOD("IsCenter", "b", Align_IsCenter, "(Alignment)i"),
+  GB_STATIC_METHOD("IsRight", "b", Align_IsRight, "(Alignment)i"),
 
   GB_END_DECLARE
 };
