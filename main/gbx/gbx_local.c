@@ -1262,7 +1262,16 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 			}
 
 			break;
-
+			
+		case 't':
+			
+			if (count <= 2)
+			{
+				time_t t = (time_t)0L;
+				localtime_r(&t, &tm);
+				add_strftime(count == 2 ? "%z" : "%Z", &tm);
+			}
+			break;
 	}
 
 	*token = 0;
@@ -1397,13 +1406,10 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 			continue;
 		}
 
-		if (c == 'd' || c == 'm' || c == 'y' || c == 'h' || c == 'n' || c == 's' || c == 'u')
+		if (c == 'd' || c == 'm' || c == 'y' || c == 'h' || c == 'n' || c == 's' || c == 'u' || c == 't')
 		{
 			if (c != token)
 			{
-				if (token == 'h' && c == 'm')
-					c = 'n';
-				
 				add_date_token(&vdate, &token, token_count);
 
 				token = c;
