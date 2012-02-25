@@ -477,6 +477,7 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
       .Columns[1].Text = ("Value")
   
     Endif
+    .Columns[0].Width = Desktop.Scale * 10
     
   End With
 

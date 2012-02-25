@@ -13,7 +13,7 @@ Public Sub _new()
   
   ButtonPanel = panBrowser
   DataView = dvwBrowser
-  dvwBrowser.Header = GridView.Horizontal
+  dvwBrowser.Header = GridView.Both
   $W = btnNew.W
   SetOrientation(Align.Bottom)
   Update
@@ -110,6 +110,7 @@ Public Sub btnReload_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
+  dvwBrowser.Cancel
   $hSrc.Cancel
 
 End
@@ -118,8 +119,8 @@ Public Sub btnNew_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
-  $hSrc.Create
   dvwBrowser.Create
+  $hSrc.Create
   '$iIndex = -1
 
 End
@@ -141,6 +142,7 @@ End
 
 Public Sub dvwBrowser_Activate()
 
+  'Debug dvwBrowser.Index
   If $hSrc.MoveTo(dvwBrowser.Index) Then
     dvwBrowser.MoveTo($hSrc.Index)
   Endif

@@ -319,7 +319,6 @@ static void set_foreground(GB_DRAW *d, int col)
 	
 	if (DPM(d))
 		DPM(d)->setPen(QPen(MASK_COLOR(col), pen.width(), pen.style()));
-		
 }
 
 static void apply_font(QFont &font, void *object = 0)
@@ -338,7 +337,15 @@ static GB_FONT get_font(GB_DRAW *d)
 
 static void set_font(GB_DRAW *d, GB_FONT font)
 {
-	apply_font(*((CFONT*)font)->font);
+	if (font)
+		apply_font(*((CFONT*)font)->font);
+	/*else
+	{
+		QFont f;
+		QWidget *w = get_widget(d);
+		if (w) f = w->font();
+		apply_font(font);
+	}*/
 }
 
 static int is_inverted(GB_DRAW *d)

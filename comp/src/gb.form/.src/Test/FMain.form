@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,462,315)
+  Move(0,0,392,427)
   #Scaled = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -12,11 +12,20 @@
       Move(0,0,112,28)
       Text = ("Clear")
     }
+    { Button2 Button
+      Move(119,0,112,28)
+      Text = ("Bug")
+    }
+    { Button3 Button
+      Move(238,0,112,28)
+      Text = ("EnsureVisible")
+    }
   }
-  { gvwView MyGridView
-    Move(7,49,441,245)
+  { gvwView GridView
+    Move(42,63,224,168)
     Expand = True
     Mode = Select.Multiple
-    Header = GridView.Horizontal
+    ShowCursor = True
+    Header = GridView.Both
   }
 }

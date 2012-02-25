@@ -80,6 +80,10 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   
   txtName = New Label(Me)
   txtName.Padding = 2
+
+  If hComp.State = CComponent.UNSTABLE Then
+    txtName.Foreground = Color.LightForeground
+  Endif
   txtName.Font.Bold = True
   txtName.Text = hComp.Key
   txtName.Alignment = Align.TopNormal

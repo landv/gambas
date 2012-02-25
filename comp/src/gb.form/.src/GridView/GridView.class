@@ -1,0 +1,1379 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
+Public Const _Group As String = "View"
+Public Const _DefaultEvent As String = "Click"
+
+Public Enum None, Horizontal, Vertical, Both
+
+Property Read Rows As _GridView_Rows
+Property Read Columns As _GridView_Columns
+Property Border As Boolean
+Property Grid As Boolean
+Property Mode As Integer
+Property Read Data As _GridView_Data
+Property Row As Integer
+Property Column As Integer
+Property Resizable As Boolean
+Property Scrollbar As Integer
+Property AutoResize As Boolean
+Property Header As Integer
+Property ShowCursor As Boolean
+Property Read Current As _GridView_Cell
+'Property RowCount As Integer
+'Property ColumnCount As Integer
+
+Property ScrollX As Integer
+Property ScrollY As Integer
+Property Read ScrollW, ScrollWidth As Integer
+Property Read ScrollH, ScrollHeight As Integer
+
+Property Read ClientX As Integer
+Property Read ClientY As Integer
+Property Read ClientW, ClientWidth As Integer
+Property Read ClientH, ClientHeight As Integer
+
+Event Data(Row As Integer, Column As Integer)
+Event Change
+Event Select
+Event Click
+Event Activate
+Event Scroll
+Event ColumnClick(Column As Integer)
+Event RowClick(Row As Integer)
+Event ColumnResize(Column As Integer)
+Event RowResize(Row As Integer)
+
+Private $hView As ScrollArea
+Private $bGrid As Boolean = True
+Private $iMode As Integer
+Private $iHeader As Integer
+Private $bShowCursor As Boolean
+Private $bAutoResize As Boolean = True
+
+Private $iRow As Integer
+Private $iCol As Integer
+
+Private $hRows As _GridView_Rows
+Private $hColumns As _GridView_Columns
+
+Private $iFirstRow As Integer
+Private $aRowY As New Integer[]
+
+Private $cCells As New Collection
+Private $hData As _GridView_Data
+
+Private $cSpan As New Collection
+
+Private $bResize As Boolean
+Private $iRowResize As Integer = -1
+Private $iColResize As Integer = -1
+Private $iDimResize As Integer
+
+Private $bMoveSelect As Boolean
+Private $bMoveUnSelect As Boolean
+Private $iMoveSelectRow As Integer
+Private $hMoveOldSelection As GridViewSelection
+Private $bKeyEvent As Boolean
+Private $bIgnoreMove As Boolean
+
+Private $MX As Integer
+Private $MY As Integer
+Private $SX As Integer
+Private $SY As Integer
+Private $hTimerScroll As Timer
+
+Private $bInCell As Boolean
+Private $bInRow As Boolean
+
+Private $hTimerEnsureVisible As Timer
+Private $iRowEV As Integer = -1
+Private $iColEV As Integer = -1
+
+Public Sub _new()
+  
+  $hRows = New _GridView_Rows As "Rows"
+  $hColumns = New _GridView_Columns As "Columns"
+  
+  $hView = New ScrollArea(Me) As "ScrollArea"
+  $hView.Background = Color.TextBackground
+  $hView.Focus = True
+  $hView.Tracking = True
+  $hView.ScrollBar = Scroll.Both
+  
+  $bGrid = True
+  $iRow = -1
+  $iCol = 0
+  
+  Me.Proxy = $hView
+  
+End
+
+Private Sub GetCellKey(iRow As Integer, iCol As Integer) As String
+  
+  If iRow >= iCol Then
+    Return CLong(iRow) * iRow + iCol * 2
+  Else
+    Return CLong(iCol) * iCol + iRow * 2 + 1
+  Endif
+  
+End
+
+
+Private Function Rows_Read() As _GridView_Rows
+
+  Return $hRows
+
+End
+
+Private Function Columns_Read() As _GridView_Columns
+
+  Return $hColumns
+
+End
+
+Public Sub _IsRowSelected(iRow As Integer) As Boolean
+  
+  Select Case $iMode
+    Case Select.None
+      Return
+    Case Select.Single
+      Return iRow = $iRow
+    Case Select.Multiple
+      Return $hRows._IsSelected(iRow)
+  End Select
+  
+End
+
+Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W As Integer, H As Integer, A As Integer)
+  
+  Select Case A
+    Case Align.Top, Align.TopLeft, Align.TopRight, Align.TopNormal
+    Case Align.Bottom, Align.BottomLeft, Align.BottomRight, Align.BottomNormal
+      Y = H - hPict.H
+    Case Align.Center, Align.Left, Align.Right, Align.Normal
+      Y = Y + (H - hPict.H) / 2
+  End Select
+  
+  If System.RightToLeft Then
+    Select Case A
+      Case Align.TopNormal
+        A = Align.TopRight
+      Case Align.Normal
+        A = Align.Right
+      Case Align.BottomNormal
+        A = Align.BottomRight
+    End Select
+  Endif
+  
+  Select Case A
+    Case Align.Left, Align.TopLeft, Align.BottomLeft
+    Case Align.Right, Align.TopRight, Align.BottomRight
+      X = W - hPict.W
+    Case Align.Top, Align.Bottom, Align.Center
+      X = X + (W - hPict.W) / 2
+  End Select
+  
+  Draw.Picture(hPict, X, Y)
+  
+End
+
+
+Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRow As Integer, iCol As Integer, hData As _GridView_Data)
+
+  Dim hRect As Rect = Rect(X, Y, W, H)
+  Dim hPict As Picture
+  Dim A As Integer
+
+  Draw.Save
+  
+  With hData
+
+    If .Background <> Color.Default Then
+      Draw.FillRect(X, Y, W, H, .Background)
+    Else
+      Draw.FillRect(X, Y, W, H, Color.TextBackground)
+    Endif
+    
+    If .Padding Then
+      X += .Padding
+      Y += .Padding
+      W -= .Padding * 2
+      H -= .Padding * 2
+    Endif
+    
+    If W > 0 And If H > 0 Then
+      
+      hPict = .Picture
+  
+      If hPict Then
+      
+        If Not .Text Then
+          
+          DrawAlignedPicture(hPict, X, Y, W, H, .Alignment)
+          
+        Else
+          
+          Select Case .Alignment
+            Case Align.Left, Align.Right, Align.Center, Align.Normal
+              A = Align.Normal
+            Case Align.TopLeft, Align.TopRight, Align.Top, Align.TopNormal
+              A = Align.TopNormal
+            Case Align.BottomLeft, Align.BottomRight, Align.Bottom, Align.BottomNormal
+              A = Align.BottomNormal
+          End Select
+        
+          DrawAlignedPicture(hPict, X, Y, W, H, A)
+          
+          W -= hPict.W + .Padding
+          If Not System.RightToLeft Then X += hPict.W + .Padding
+          
+        Endif
+        
+        If W <= 0 Then Goto DRAW_GRID
+        
+      Endif
+        
+      If .Foreground = Color.Default Then
+        Draw.Foreground = Me.Foreground
+      Else
+        Draw.Foreground = .Foreground
+      Endif
+      
+      If .Font Then Draw.Font = .Font
+      Draw.Text(.Text, X, Y, W, H, .Alignment)
+          
+    Endif
+    
+  End With
+  
+DRAW_GRID:
+
+  If $bGrid Then
+    Draw.Foreground = Color.Merge(Color.LightForeground, $hView.Background)
+    Draw.Line(hRect.X + hRect.W - 1, hRect.Y, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
+    Draw.Line(hRect.X, hRect.Y + hRect.H - 1, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
+  Endif
+  
+  Draw.Restore
+
+End
+
+Public Sub ScrollArea_Draw()
+  
+  Dim I, J, R, C As Integer
+  Dim XO, YO, XX, YY, X, Y, W, H As Integer
+  Dim iRow, iRow2, iCol, iCol2 As Integer
+  Dim hClip As Rect
+  Dim hRect As Rect
+  Dim hData As _GridView_Data
+  Dim F As Integer = GetFrameWidth()
+  Dim iGrid As Integer
+  Dim aSpan As Short[]
+  Dim bHasSpan As Boolean
+  Dim iRowSpan, iColSpan As Integer
+  Dim hSpan, hCursor As Rect
+  Dim XS, YS As Integer
+  
+  If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
+  
+  iCol = $hColumns._FindColumnFromPos($hView.ScrollX)
+  iRow = $hRows._FindRowFromPos($hView.ScrollY)
+  iCol2 = -1
+  iRow2 = -1
+  
+  XO = $hRows.Width - $hView.ScrollX + F
+  XX = XO + $hColumns[iCol].X
+  YO = $hColumns.Height - $hView.ScrollY + F
+  YY = YO + $hRows._GetRowY(iRow)
+  
+  iGrid = Color.Merge(Color.LightForeground, $hView.Background)
+  
+  hClip = Draw.ClipRect
+  
+  ' Vertical header
+  
+  H = $hColumns.Height + F
+  If $iHeader And Horizontal Then Draw.FillRect(0, 0, Draw.W, H, Color.ButtonBackground)
+  X = XX
+  For I = iCol To $hColumns.Count - 1
+    If X >= $hView.ClientW Then Break
+    iCol2 = I
+    With $hColumns[I]
+      If $iHeader And Horizontal Then
+        Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+        Draw.ClipRect = hClip.Intersection(Rect(X, F, .Width, H - F))
+        Draw.Text(.Text, X + 2, F, .Width - 2, H - F, Align.Center)
+      Endif
+      X += .Width
+    End With
+  Next
+
+  If $iHeader And Horizontal Then 
+    Draw.ClipRect = hClip
+    Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+  Endif
+    
+  ' Horizontal header
+
+  $iFirstRow = iRow
+  $aRowY.Clear
+
+  W = $hRows.Width + F
+  If $iHeader And Vertical Then Draw.FillRect(0, 0, W, Draw.H, Color.ButtonBackground)
+  Y = YY
+  For I = iRow To $hRows.Count - 1
+    If Y >= $hView.ClientH Then Break
+    $aRowY.Add(Y - F)
+    iRow2 = I
+    'Draw.Style.Separator(F, Y, W - F, 2)
+    H = $hRows._GetRowHeight(I)
+
+    If $iHeader And Vertical Then
+      Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
+      Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
+      If I = $iRow Then Draw.Font.Bold = True
+      Draw.Text($hRows._GetRowText(I), F, Y + 2, W - F, H - 2, Align.Center)
+      If I = $iRow Then Draw.Font.Bold = False
+    Endif
+    
+    'Draw.Style.Handle(W - 2, Y, 2, H, True)
+    Y += H
+  Next
+
+  $aRowY.Add(Y - F)
+  If $iHeader And Vertical Then 
+    Draw.ClipRect = hClip
+    Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
+  Endif
+
+  ' Top-left frame
+  
+  If $iHeader = Both Then Draw.FillRect(0, 0, $hRows.Width + F, $hColumns.Height + F, Color.ButtonBackground)
+  
+  ' Header limits
+  
+  If $iHeader And Horizontal Then Draw.FillRect(0, $hColumns.Height + F - 1, $hView.ClientW, 1, iGrid)
+  If $iHeader And Vertical Then Draw.FillRect($hRows.Width + F - 1, 0, 1, $hView.ClientH, iGrid)
+  
+  If $hColumns.Count = 0 Or If $hRows.Count = 0 Then Return
+  
+  ' Cells
+  
+  hRect = New Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
+  hRect.Adjust(F)
+  hRect.Adjust($hRows.Width, $hColumns.Height, 0, 0)
+  hClip = hRect.Intersection(Draw.ClipRect)
+  
+  If Not hClip Then Return
+  
+  Draw.ClipRect = hClip
+  
+  Y = YY
+  
+  For I = iRow To iRow2
+
+    H = $aRowY[I - iRow + 1] + F - Y
+    X = XX
+    
+    For J = iCol To iCol2
+      
+      W = $hColumns[J].Width
+      
+      R = I
+      C = J
+      
+      bHasSpan = HasSpan(I, J)
+      
+      
+      If bHasSpan Then
+        
+        aSpan = _GetSpan(I, J)
+        iRowSpan = aSpan[0]
+        iColSpan = aSpan[1]
+        
+        ' Draw.ClipRect = hClip
+        ' Draw.Foreground = Color.Green
+        ' Draw.Text(iRowSpan & " / " & iColSpan, X, Y, $hColumns[J].Width, H, Align.Center)
+        
+        If iRowSpan < 0 Then R += iRowSpan
+        If iColSpan < 0 Then C += iColSpan
+
+        If (iRowSpan < 0 Or iColSpan < 0) And If R >= iRow And If C >= iCol Then Goto NEXT_CELL
+
+        aSpan = _GetSpan(R, C)
+        iRowSpan = aSpan[0]
+        iColSpan = aSpan[1]
+        
+      ' Else
+      '   
+      '   iRowSpan = 0
+      '   iColSpan = 0
+        
+        ' Draw.ClipRect = hClip
+        ' Draw.Foreground = Color.Green
+        ' Draw.Text(iRowSpan & " / " & iColSpan, X, Y, $hColumns[J].Width, H, Align.Center)
+        
+      Endif
+      
+      hData = _GetCellData(R, C)
+      
+      If bHasSpan Then
+      
+        XS = XO + $hColumns[C].X
+        YS = YO + $hRows._GetRowY(R)
+        hSpan = Rect(XS, YS, XO + $hColumns[C + iColSpan].X + $hColumns[C + iColSpan].W - XS, YO + $hRows._GetRowY(R + iRowSpan) + $hRows._GetRowHeight(R + iRowSpan) - YS)
+        
+      Else
+      
+        hSpan = Rect(X, Y, W, H)
+        
+      Endif
+      
+      Draw.ClipRect = hClip.Intersection(hSpan)
+      DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
+      
+    NEXT_CELL:
+      
+      If $bShowCursor And If I = $iRow And If J = $iCol Then
+        hCursor = Rect(X, Y, W - 1, H - 1)
+        ' Paint.Begin(Draw.Device)
+        ' Paint.ClipRect = hClip
+        ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+        ' Paint.Rectangle(X, Y, W, H)
+        ' Paint.Stroke
+        ' Paint.End
+      Endif
+      
+      X += W
+      
+    Next
+    
+    Y += H
+    
+  Next
+  
+  If hCursor Then
+    Draw.ClipRect = hClip
+    Draw.Foreground = iGrid 'Color.LightForeground
+    Draw.Rect(hCursor.X, hCursor.Y, hCursor.W, hCursor.H)
+  Endif
+  
+  $hData = Null
+
+  ' Row selection
+
+  If $iMode Then
+
+    Y = YY
+    X = XX
+    
+    Paint.Begin(Draw.Device)
+    Paint.ClipRect = hClip
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+    
+    For I = iRow To iRow2
+  
+      H = $aRowY[I - iRow + 1] + F - Y
+      
+      If _IsRowSelected(I) Then
+        Paint.Rectangle(X, Y, $hColumns._GetWidth(), H)
+        Paint.Fill
+      Endif
+      
+      Y += H
+      
+    Next
+    
+    Paint.End
+    
+  Endif
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = Value
+
+End
+
+Private Sub GetFrameWidth() As Integer
+  
+  If $hView.Border Then Return Style.FrameWidth
+  
+End
+
+
+Public Sub _ResizeContents()
+  
+  Dim F As Integer = GetFrameWidth()
+  
+  $hView.ResizeContents($hColumns._GetWidth() + $hRows.Width + F * 2, $hRows._GetHeight() + $hColumns.Height + F * 2)
+  
+End
+
+Private Function Grid_Read() As Boolean
+
+  Return $bGrid
+
+End
+
+Private Sub Grid_Write(Value As Boolean)
+
+  $bGrid = Value
+  $hView.Refresh
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $iMode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  Select Case Value
+    Case Select.None, Select.Multiple, Select.Single
+      $iMode = Value
+  End Select
+
+End
+
+Public Sub ScrollArea_MouseMove()
+  
+  Dim I, MX, MY, X, Y, iRow, iCol As Integer
+  Dim iMouse As Integer
+  Dim F As Integer = GetFrameWidth()
+
+  If $bIgnoreMove Then Return
+  If $hRows.Count = 0 And If $hColumns.Count = 0 Then Return
+  
+  MX = Mouse.X - F
+  MY = Mouse.Y - F
+  
+  $bInCell = False
+  $bInRow = False
+  
+  If $bResize Then
+    If $iRowResize >= 0 Then
+      $hRows._SetRowHeight($iRowResize, $iDimResize + Mouse.Y - $MY)
+    Else If $iColResize >= 0 Then
+      $hColumns[$iColResize].Width = $iDimResize + Mouse.X - $MX
+    Endif
+    Return
+  Endif
+  
+  iMouse = Mouse.Default
+  
+  $iRowResize = -1
+  $iColResize = -1
+  
+  If MX < $hRows.Width Then
+    
+    If $hRows.Resizable Then
+      For I = 0 To $aRowY.Max
+        If MY >= ($aRowY[I] - 1) And If MY <= ($aRowY[I] + 2) Then
+          If I + $iFirstRow Then
+            iMouse = Mouse.SizeS
+            $iRowResize = I + $iFirstRow - 1
+            $iDimResize = $hRows._GetRowHeight($iRowResize)
+          Endif
+          Break
+        Endif
+      Next
+    Endif
+    
+  Else If MY < $hColumns.Height Then
+    
+    If $hColumns.Resizable Then
+      X = MX + $hView.ScrollX - $hRows.Width
+      For I = 1 To $hColumns.Count - 1
+        With $hColumns[I]
+          If $hColumns[I - 1].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
+            iMouse = Mouse.SizeE
+            $iColResize = I - 1
+            $iDimResize = $hColumns[$iColResize].Width
+            Break
+          Endif
+        End With
+      Next
+      If $iColResize < 0 And If $hColumns[$hColumns.Count - 1].Resizable And If X >= ($hColumns._GetWidth() - 1) And If X <= ($hColumns._GetWidth() + 2) Then
+        iMouse = Mouse.SizeE
+        $iColResize = $hColumns.Count - 1
+        $iDimResize = $hColumns[$iColResize].Width
+      Endif
+    Endif
+    
+  Endif
+    
+  If Not Mouse.Left And If $hView.Mouse <> iMouse Then $hView.Mouse = iMouse
+  
+  If $iRowResize >= 0 Or If $iColResize >= 0 Then Return
+  
+  iRow = -1
+  iCol = -1
+  
+  If Mouse.Left Then
+    
+    X = MX
+    Y = MY
+    $SX = X
+    $SY = Y
+  
+    If Y >= $hColumns.Height Then
+      For I = 1 To $aRowY.Max
+        If Y < $aRowY[I] Then
+          iRow = I + $iFirstRow - 1
+          Break
+        Endif
+      Next
+      If iRow < 0 Then iRow = $hRows._FindRowFromPos(Y - $hColumns.Height + $hView.ScrollY)
+    Endif
+    
+    If X >= $hRows.W Then
+      X += $hView.ScrollX - $hRows.Width
+      iCol = $hColumns._FindColumnFromPos(X)
+    Endif
+    
+  Endif
+  
+  If iRow >= 0 Then
+    
+    $bInRow = True
+    
+    If iCol >= 0 Then $bInCell = True
+    
+    MoveTo(iRow, iCol)
+
+  Endif
+    
+End
+
+Public Sub TimerScroll_Timer()
+  
+  Dim X As Integer = $SX - $hRows.W + $hView.ScrollX
+  Dim Y As Integer = $SY - $hColumns.Height + $hView.ScrollY
+  Dim iCol As Integer
+  Dim iRow As Integer 
+  
+  If $SX < $hRows.W Then
+    iCol = -1
+  Else
+    iCol = $hColumns._FindColumnFromPos(X)
+    If iCol < 0 Then iCol = $hColumns.Count - 1
+  Endif
+  
+  If Y < 0 Then
+    iRow = 0
+  Else
+    iRow = $hRows._FindRowFromPos(Y)
+    If iRow < 0 Then iRow = $hRows.Count - 1
+  Endif
+  
+  MoveTo(iRow, iCol)
+  
+End
+
+Public Sub ScrollArea_MouseDrag()
+  
+  $bIgnoreMove = False
+  If $bResize Then Return
+  If Not $hTimerScroll Then
+    $hTimerScroll = New Timer As "TimerScroll"
+    $hTimerScroll.Delay = 50
+    $hTimerScroll.Start
+  Endif
+  
+End
+
+
+Public Sub ScrollArea_MouseDown()
+  
+  Dim I As Integer
+  Dim F As Integer = GetFrameWidth()
+  
+  $MX = Mouse.X - F
+  $MY = Mouse.Y - F
+  
+  ScrollArea_MouseMove
+  
+  $bIgnoreMove = True
+
+  If $iRowResize >= 0 Or If $iColResize >= 0 Then
+    $bResize = True
+    Return
+  Endif
+  
+  If $bInRow Then
+    If $iMode = Select.Multiple Then
+      If Mouse.Control Then
+        If $hRows._IsSelected($iRow) Then
+          $hRows.UnSelect($iRow, 1)
+          $iMoveSelectRow = $iRow
+          $hMoveOldSelection = $hRows._SaveSelection()
+          $bMoveUnSelect = True
+        Else
+          $hRows.Select($iRow, 1)
+          $iMoveSelectRow = $iRow
+          $hMoveOldSelection = $hRows._SaveSelection()
+          $bMoveSelect = True
+        Endif
+      Else
+        $hRows._GetSel().UnSelectAll
+        $hRows.Select($iRow, 1)
+        $iMoveSelectRow = $iRow
+        $hMoveOldSelection = $hRows._SaveSelection()
+        $bMoveSelect = True
+      Endif
+    Endif
+  Endif
+  
+  If $bInCell Then
+    Raise Click
+    Stop Event
+  Else If Mouse.X < $hRows.Width And If Mouse.Y > $hColumns.H Then
+    I = $hRows._FindRowFromPos(Mouse.Y - $hColumns.Height + $hView.ScrollY)
+    If I >= 0 Then 
+      Raise RowClick(I)
+      Stop Event
+    Endif
+  Else If Mouse.Y < $hColumns.Height And If Mouse.X > $hRows.W Then
+    I = $hColumns._FindColumnFromPos(Mouse.X - $hRows.Width + $hView.ScrollX)
+    If I >= 0 Then 
+      Raise ColumnClick(I)
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub ScrollArea_MouseUp()
+  
+  $bResize = False
+  $bMoveSelect = False
+  $bMoveUnSelect = False
+  $hMoveOldSelection = Null
+  $bIgnoreMove = False
+  
+  If $hTimerScroll Then
+    $hTimerScroll.Stop
+    $hTimerScroll = Null
+  Endif
+  
+End
+
+Public Sub ScrollArea_DblClick()
+  
+  If $bInCell Then Raise Activate
+  
+End
+
+
+Private Function Data_Read() As _GridView_Data
+
+  Return $hData
+
+End
+
+Public Sub _CheckCell(iRow As Integer, iColumn As Integer) 
+  
+  If iRow < 0 Or If iRow >= $hRows.Count Then Error.Raise("Bad row index")
+  If iColumn < 0 Or If iColumn >= $hColumns.Count Then Error.Raise("Bad column index")
+  
+End
+
+Public Sub _CheckCurrent()
+  
+  $iRow = Min($iRow, $hRows.Count - 1)
+  $iCol = Min($iCol, $hColumns.Count - 1)
+  
+End
+
+
+Public Sub _GetCellData(iRow As Integer, iColumn As Integer, Optional bCreate As Boolean) As _GridView_Data
+
+  Dim hData As _GridView_Data
+
+  hData = $cCells[GetCellKey(iRow, iColumn)]
+  If Not hData Then
+    If bCreate Then
+      hData = New _GridView_Data
+      hData.Font = Me.Font
+      $cCells[GetCellKey(iRow, iColumn)] = hData
+    Else
+      $hData = New _GridView_Data
+      $hData.Font = Me.Font
+      Raise Data(iRow, iColumn)
+      hData = $hData
+    Endif
+  Endif
+  
+  Return hData
+  
+End
+
+
+Public Sub _get(Row As Integer, Column As Integer) As _GridView_Cell
+  
+  Dim hCell As _GridView_Cell
+  
+  hCell = New _GridView_Cell
+  hCell._Row = Row
+  hCell._Column = Column
+  hCell._View = Me
+  Return hCell
+  
+End
+
+Public Sub MoveTo(Row As Integer, Column As Integer)
+  
+  Dim S, L As Integer
+  
+  If Column < 0 Then Column = $iCol
+  
+  If Row < 0 Then
+    If $iRow < 0 Then Return
+    Row = -1
+  Else If Row = $iRow And If Column = $iCol Then
+    Return
+  Else If Row >= $hRows.Count Or If Column < 0 Or If Column >= $hColumns.Count Then
+    Return
+  Endif
+  
+  $iRow = Row
+  $iCol = Column
+  
+  If $iRow >= 0 And If $iCol < 0 Then $iCol = 0
+  
+  If $iRow >= 0 And If $iCol >= 0 Then _EnsureVisible($iRow, $iCol)
+  $hView.Refresh
+
+  Raise Change
+  If $iMode = Select.Single Then 
+    Raise Select
+  Else If $bMoveSelect Or $bMoveUnSelect Then
+    $hRows._RestoreSelection($hMoveOldSelection)
+    S = Min($iRow, $iMoveSelectRow)
+    L = Max($iRow, $iMoveSelectRow) - Min($iRow, $iMoveSelectRow) + 1
+    If $bMoveSelect Then
+      $hRows.Select(S, L)
+    Else
+      $hRows.UnSelect(S, L)
+    Endif
+  Else If $bKeyEvent And If $iMode = Select.Multiple Then
+    $hRows._GetSel().UnSelectAll
+    $hRows.Select($iRow, 1)
+  Endif
+  
+End
+
+Private Function Row_Read() As Integer
+
+  Return $iRow
+
+End
+
+Private Sub Row_Write(Value As Integer)
+
+  MoveTo(Value, $iCol)
+
+End
+
+Private Function Column_Read() As Integer
+
+  If $iRow < 0 Then Return -1
+  Return $iCol
+
+End
+
+Private Sub Column_Write(Value As Integer)
+
+  MoveTo($iRow, Value)
+
+End
+
+
+Private Sub EnsureRowVisible(iRow As Integer)
+  
+  'Debug iRow; ": "; $hView.ScrollX, $hRows._GetRowY(iRow), $hView.ClientW, $hRows._GetRowHeight(iRow)
+  Dim F As Integer = GetFrameWidth()
+  
+  $hView.EnsureVisible($hView.ScrollX - F, $hRows._GetRowY(iRow) - F, $hView.ClientW + F * 2, $hRows._GetRowHeight(iRow) + $hColumns.Height + F * 2)
+  
+End
+
+Public Sub _EnsureVisible(iRow As Integer, iCol As Integer)
+  
+  'Debug iRow;; iCol
+  If Not $hTimerEnsureVisible Then $hTimerEnsureVisible = New Timer As "TimerEnsureVisible"
+  If $iRowEV < 0 Then $hTimerEnsureVisible.Trigger
+  
+  $iRowEV = iRow
+  $iColEV = iCol
+  
+  'Debug iRow;; iCol
+  
+End
+
+Public Sub TimerEnsureVisible_Timer()
+  
+  Dim iRowEV As Integer = $iRowEV
+  
+  $iRowEV = -1
+
+  With $hColumns[$iColEV]
+    $hView.EnsureVisible(.X, $hRows._GetRowY(iRowEV), .Width + $hRows.Width, $hRows._GetRowHeight(iRowEV) + $hColumns.Height)
+  End With
+  
+Catch
+  
+End
+
+
+
+Public Sub _SelectRow(iRow As Integer, bSelect As Boolean)
+  
+  If $iMode = Select.Single Then
+    If bSelect Then
+      If $iRow <> iRow Then
+        Row_Write(iRow)
+      Endif
+    Else If $iRow >= 0 Then
+      Row_Write(-1)
+    Endif
+  Endif
+  
+End
+
+Public Sub Clear()
+  
+  $cCells.Clear
+  $iRow = -1
+  $iCol = 0
+  $hView.Refresh
+  
+End
+
+Public Sub _ClearCell(iRow As Integer, iCol As Integer)
+  
+  $cCells.Remove(GetCellKey(iRow, iCol))
+  
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $hColumns.Resizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $hColumns.Resizable = Value
+
+End
+
+Private Function ScrollX_Read() As Integer
+
+  Return $hView.ScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $hView.ScrollX = Value
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $hView.ScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $hView.ScrollY = Value
+
+End
+
+
+Private Function ScrollW_Read() As Integer
+
+  Return $hView.ScrollW
+
+End
+
+Private Function ScrollH_Read() As Integer
+
+  Return $hView.ScrollH
+
+End
+
+Private Function ClientX_Read() As Integer
+
+  Return $hView.ClientX + GetFrameWidth()
+
+End
+
+Private Function ClientY_Read() As Integer
+
+  Return $hView.ClientY + GetFrameWidth()
+
+End
+
+Private Function ClientW_Read() As Integer
+
+  Return $hView.ClientW - GetFrameWidth() * 2
+
+End
+
+Private Function ClientH_Read() As Integer
+
+  Return $hView.ClientH - GetFrameWidth() * 2
+
+End
+
+Public Sub ScrollArea_Scroll()
+  
+  Raise Scroll
+  
+End
+
+Public Sub _RaiseSelect()
+  
+  $hView.Refresh
+  Raise Select
+  
+End
+
+Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = -1)
+  
+  $hRows.Select(Start, Length)
+  
+End
+
+Public Sub SelectAll()
+  
+  $hRows.SelectAll
+  
+End
+
+Public Sub UnSelectAll()
+  
+  $hRows.UnSelectAll
+  
+End
+
+Private Function Scrollbar_Read() As Integer
+
+  Return $hView.ScrollBar
+
+End
+
+Private Sub Scrollbar_Write(Value As Integer)
+
+  $hView.ScrollBar = Value
+
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $bAutoResize
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  $bAutoResize = True
+  $hColumns._Layout
+
+End
+
+Private Function Header_Read() As Integer
+
+  Return $iHeader
+
+End
+
+Private Sub Header_Write(Value As Integer)
+
+  $iHeader = Value
+  $hColumns._Layout
+  $hView.Refresh
+
+End
+
+Public Sub ScrollArea_KeyPress()
+  
+  Dim iRow As Integer
+  
+  $bKeyEvent = True
+  
+  Select Key.Code
+    
+    Case Key.Up
+      If $iRow > 0 Then MoveTo($iRow - 1, $iCol)
+      Stop Event
+      
+    Case Key.Down
+      If $iRow < ($hRows.Count - 1) Then MoveTo($iRow + 1, $iCol)
+      Stop Event
+      
+    Case Key.Left
+      If $iRow >= 0 Then
+        If $iCol > 0 Then
+          MoveTo($iRow, $iCol - 1)
+        Else If $iRow > 0 Then
+          MoveTo($iRow - 1, $hColumns.Count - 1)
+        Endif
+      Endif
+      Stop Event
+    
+    Case Key.Right
+      If $iRow >= 0 Then
+        If $iCol < ($hColumns.Count - 1) Then 
+          MoveTo($iRow, $iCol + 1)
+        Else If $iRow < ($hRows.Count - 1) Then
+          MoveTo($iRow + 1, 0)
+        Endif
+      Endif
+      Stop Event
+    
+    Case Key.Home
+      If Key.Control Then
+        MoveTo(0, 0)
+      Else
+        MoveTo($iRow, 0)
+      Endif
+      Stop Event
+    
+    Case Key.End
+      If Key.Control Then
+        MoveTo($hRows.Count - 1, $hColumns.Count - 1)
+      Else
+        MoveTo($iRow, $hColumns.Count - 1)
+      Endif
+      Stop Event
+      
+    Case Key.PageUp
+      iRow = $hRows._FindRowFromPos($hRows._GetRowY($iRow) + $hRows._GetRowHeight($iRow) - ($hView.ClientH - $hColumns.H - GetFrameWidth() * 2))
+      If iRow >= 0 Then 
+        MoveTo(iRow, $iCol)
+      Else
+        MoveTo(0, $iCol)
+      Endif
+      Stop Event
+      
+    Case Key.PageDown
+      iRow = $hRows._FindRowFromPos($hRows._GetRowY($iRow) + $hView.ClientH - $hColumns.H - GetFrameWidth() * 2)
+      If iRow >= 0 Then 
+        MoveTo(iRow, $iCol)
+      Else
+        MoveTo($hRows.Count - 1, $iCol)
+      Endif
+      Stop Event
+    
+  End Select
+  
+  $bKeyEvent = False
+  
+End
+
+Private Sub MakeSpan(iRowSpan As Integer, iColSpan As Integer) As Integer
+  
+  Return Lsl(iRowSpan, 16) Or (iColSpan And &HFFFF&)
+  
+End
+
+Private Sub UnmakeSpan(iSpan As Integer) As Short[]
+  
+  Return [CShort(Lsr(iSpan, 16)), CShort(iSpan And &HFFFF&)]
+  
+End
+
+
+Public Sub _SetSpan(iRow As Integer, iCol As Integer, iRowSpan As Integer, iColSpan As Integer)
+  
+  Dim aOldSpan As Short[]
+  Dim iOldRowSpan As Integer
+  Dim iOldColSpan As Integer
+  Dim I, J As Integer
+  
+  If iRow < 0 Or If iCol < 0 Or If iRow >= $hRows.Count Or If iCol >= $hColumns.Count Then Return
+  
+  If iRowSpan < -32768 Or If iRowSpan > 32767 Then Return
+  If iColSpan < -32768 Or If iColSpan > 32767 Then Return
+
+  If iRowSpan > 0 And If iColSpan < 0 Then iColSpan = 0
+  If iColSpan > 0 And If iRowSpan < 0 Then iRowSpan = 0
+  
+  aOldSpan = _GetSpan(iRow, iCol)
+  iOldRowSpan = aOldSpan[0]
+  iOldColSpan = aOldSpan[1]
+  
+  If (iOldRowSpan < 0 Or iOldColSpan < 0) And If (iRowSpan <> 0 Or iColSpan <> 0) Then Return
+  
+  $cSpan.Remove(GetCellKey(iRow, iCol))
+  
+  If iOldColSpan > 0 Or If iOldRowSpan > 0 Then
+    
+    I = 1
+    J = 0
+    Do
+      If I > iOldColSpan Then
+        I = 0
+        Inc J
+        If J > iOldRowSpan Then Break
+      Endif
+      _SetSpan(iCol + I, iRow + J, 0, 0)
+      Inc I
+    Loop
+    
+  Endif
+
+  If iRowSpan = 0 And If iColSpan = 0 Then Return
+  
+  $cSpan[GetCellKey(iRow, iCol)] = MakeSpan(iRowSpan, iColSpan)
+  
+  If iRowSpan >= 0 And If iColSpan >= 0 Then
+    
+    For I = 0 To iRowSpan
+      For J = 0 To iColSpan
+        If I = 0 And If J = 0 Then Continue
+        _SetSpan(iRow + I, iCol + J, - I, - J)
+      Next
+    Next
+    
+  Endif
+  
+End
+
+Private Sub HasSpan(iRow As Integer, iCol As Integer) As Boolean
+  
+  Return $cSpan.Exist(GetCellKey(iRow, iCol))
+  
+End
+
+
+Public Sub _GetSpan(iRow As Integer, iCol As Integer) As Short[]
+  
+  Dim aSpan As New Short[2]
+  Dim iSpan As Integer
+  
+  If iRow < 0 Or If iCol < 0 Or If iRow >= $hRows.Count Or If iCol >= $hColumns.Count Then Return aSpan
+  Try iSpan = $cSpan[GetCellKey(iRow, iCol)]
+  If iSpan = 0 Then Return aSpan
+  aSpan = UnmakeSpan(iSpan)
+  aSpan[0] = Min(aSpan[0], $hRows.Count - iRow - 1)
+  aSpan[1] = Min(aSpan[1], $hColumns.Count - iCol - 1)
+  Return aSpan
+  
+End
+
+
+Private Function ShowCursor_Read() As Boolean
+
+  Return $bShowCursor
+
+End
+
+Private Sub ShowCursor_Write(Value As Boolean)
+
+  $bShowCursor = True
+  $hView.Refresh
+
+End
+
+Public Sub _GetCellWidth(iRow As Integer, iCol As Integer) As Integer
+  
+  Dim W, I As Integer
+
+  If Not HasSpan(iRow, iCol) Then Return $hColumns[iCol].Width
+
+  For I = iCol To iCol + Max(0, _GetSpan(iRow, iCol)[1])
+    W += $hColumns[I].Width
+  Next
+  
+  Return W
+  
+End
+
+Public Sub _GetCellHeight(iRow As Integer, iCol As Integer) As Integer
+  
+  Dim H, I As Integer
+
+  If Not HasSpan(iRow, iCol) Then Return $hRows._GetRowHeight(iRow)
+
+  For I = iRow To iRow + Max(0, _GetSpan(iRow, iCol)[0])
+    H += $hRows._GetRowHeight(I)
+  Next
+  
+  Return H
+  
+End
+
+Private Function Current_Read() As _GridView_Cell
+
+  If $iRow < 0 Or If $iCol < 0 Then Return
+  Return _get($iRow, $iCol)
+
+End
+
+Public Sub RowAt(Y As Integer) As Integer
+  
+  Return $hRows._FindRowFromPos(Y + $hView.ScrollY)
+  
+End
+
+Public Sub ColumnAt(X As Integer) As Integer
+  
+  Return $hColumns._FindColumnFromPos(X + $hView.ScrollX)
+  
+End
+
+Public Sub _GetVisibleWidth() As Integer
+  
+  Return $hView.ClientW - GetFrameWidth() * 2 - $hRows.Width
+  
+End
+
+Public Sub ScrollArea_Arrange()
+  
+  $hColumns.Column__Refresh
+  
+End
+
+' Private Function RowCount_Read() As Integer
+' 
+'   Return $hRows.Count
+' 
+' End
+' 
+' Private Sub RowCount_Write(Value As Integer)
+' 
+'   $hRows.Count = Value
+' 
+' End
+' 
+' Private Function ColumnCount_Read() As Integer
+' 
+'   Return $hColumns.Count
+' 
+' End
+' 
+' Private Sub ColumnCount_Write(Value As Integer)
+' 
+'   $hColumns.Count = Value
+' 
+' End

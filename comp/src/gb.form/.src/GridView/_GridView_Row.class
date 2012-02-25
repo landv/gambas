@@ -25,7 +25,7 @@ Private Sub GetRows() As _GridView_Rows
   
 End
 
-Private Sub GetView() As MyGridView
+Private Sub GetView() As GridView
   
   Return Object.Parent(Object.Parent(Me))
   
@@ -71,4 +71,10 @@ Private Sub Text_Write(Value As String)
 
   GetRows()._SetRowText(_Row, Value)
 
+End
+
+Public Sub Refresh()
+  
+  GetView().Refresh
+  
 End

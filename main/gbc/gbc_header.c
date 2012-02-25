@@ -325,6 +325,18 @@ static bool header_property(TRANS_PROPERTY *prop)
 
 	prop->index = PATTERN_index(*JOB->current);
 	JOB->current++;
+	
+	prop->nsynonymous = 0;
+	
+	while (TRANS_is(RS_COMMA))
+	{
+		if (prop->nsynonymous == 3)
+			THROW("Too many property synonymous");
+		if (!PATTERN_is_identifier(*JOB->current))
+			THROW("Syntax error. Invalid identifier in property name");
+		prop->synonymous[prop->nsynonymous++] = PATTERN_index(*JOB->current);
+		JOB->current++;
+	}
 
 	if (!TRANS_type(TT_NOTHING, &ptype))
 		THROW("Syntax error. Bad property type");

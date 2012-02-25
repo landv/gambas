@@ -38,6 +38,8 @@ const char *GB_CurrentComponent(void);
 void GB_Push(int nval, ...);
 bool GB_CanRaise(void *object, int event_id);
 bool GB_Raise(void *object, int event_id, int nparam, ...);
+void GB_RaiseBegin(GB_RAISE_HANDLER *handler);
+void GB_RaiseEnd(GB_RAISE_HANDLER *handler);
 int GB_GetEvent(void *class, char *name);
 char *GB_GetLastEventName();
 bool GB_Stopped(void);

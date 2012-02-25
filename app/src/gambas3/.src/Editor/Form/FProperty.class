@@ -198,8 +198,8 @@ Public Sub RefreshAll()
     sVal = GetProperty(sProp)
 
     grdProperty[iRow, 0].Font = grdProperty.Font
-    grdProperty[iRow, 0].Alignment = Align.TopNormal
-    grdProperty[iRow, 1].Alignment = Align.TopNormal
+    grdProperty[iRow, 0].Alignment = Align.Normal
+    grdProperty[iRow, 1].Alignment = Align.Normal
 
     If CControl.WasDefaultValue Then
       grdProperty[iRow, 0].Background = grdProperty.Background 'Color.Default 'Color.TextBackground

@@ -103,7 +103,6 @@ void MyDrawingArea::setAllowFocus(bool f)
 	}
 }
 
-
 void MyDrawingArea::setFrozen(bool f)
 {
 	if (f == _frozen)
@@ -132,11 +131,20 @@ void MyDrawingArea::setFrozen(bool f)
 	_frozen = f;
 }
 
+static void cleanup_drawing(intptr_t _object)
+{
+	if (WIDGET->isPaint())
+		PAINT_end();
+	else
+		DRAW_end();
+}
+
 void MyDrawingArea::redraw(QRect &r, bool frame)
 {
 	QPainter *p;
 	void *_object = CWidget::get(this);
 	int fw, bg;
+	GB_RAISE_HANDLER handler;
 	
 	if (!_object)
 		return;
@@ -181,9 +189,14 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	
 	//p->setClipRegion(event->region().intersect(contentsRect()));
 	//p->setBrushOrigin(-r.x(), -r.y());
-	
-	GB.Raise(THIS, _draw_event, 0);
+
+	handler.callback = cleanup_drawing;
+	handler.data = (intptr_t)THIS;
 		
+	GB.RaiseBegin(&handler);
+	GB.Raise(THIS, _draw_event, 0);
+	GB.RaiseEnd(&handler);
+	
 	//p->restore();
 	
 	if (frame)

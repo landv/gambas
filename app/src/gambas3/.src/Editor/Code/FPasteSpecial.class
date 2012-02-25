@@ -32,7 +32,7 @@ Public Sub Run(hEditor As Editor, Optional iMode As Integer = MODE_NORMAL) As Bo
       Case MODE_COMMENT
         PasteComment(sFormat)
     End Select
-     Return
+    Return
   Endif
   
   Return Not Me.ShowModal()
@@ -157,8 +157,9 @@ Public Sub PasteComment(sText As String)
   Dim sLine As String
   Dim sIndent As String
   
-  'sText = Trim(sText)
   If Not sText Then Return
+  
+  sText = Replace(sText, "\t", Space$(Project.TabSize))
   
   sLine = $hEditor.Lines[$hEditor.Line].Text
   sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))

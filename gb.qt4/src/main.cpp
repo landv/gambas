@@ -1017,7 +1017,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	//CListView2ItemDesc, CListView2Desc,
 	//CTreeView2ItemDesc, CTreeView2Desc,
 	//CColumnView2ItemDesc, CColumnView2ColumnDesc, CColumnView2ColumnsDesc, CColumnView2Desc,
-	CGridItemDesc, CGridRowDesc, CGridColumnDesc, CGridRowsDesc, CGridColumnsDesc, CGridViewDataDesc, CGridViewDesc,
+	//CGridItemDesc, CGridRowDesc, CGridColumnDesc, CGridRowsDesc, CGridColumnsDesc, CGridViewDataDesc, CGridViewDesc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
 	CHSplitDesc, CVSplitDesc,
 	CTabChildrenDesc, CTabDesc, CTabStripDesc,

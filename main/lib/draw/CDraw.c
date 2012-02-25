@@ -391,7 +391,11 @@ BEGIN_PROPERTY(CDRAW_font)
 	if (READ_PROPERTY)
 		GB.ReturnObject(DRAW->GetFont(THIS));
 	else
+	{
+		if (GB.CheckObject(VPROP(GB_OBJECT)))
+			return;
 		DRAW->SetFont(THIS, VPROP(GB_OBJECT));
+	}
 
 END_PROPERTY
 
@@ -1278,8 +1282,10 @@ GB_DESC CDrawDesc[] =
 	GB_STATIC_METHOD("Polygon", NULL, CDRAW_polygon, "(Points)Integer[]"),
 	
 	GB_STATIC_METHOD("Picture", NULL, CDRAW_picture, "(Picture)Picture;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+	//GB_STATIC_METHOD("AlignedPicture", NULL, CDRAW_picture, "(Picture)Picture;(X)i(Y)i(Width)i(Height)i(Alignment)i"),
 	GB_STATIC_METHOD("Tile", NULL, CDRAW_tile, "(Picture)Picture;(X)i(Y)i(Width)i(Height)i"),
 	GB_STATIC_METHOD("Image", NULL, CDRAW_image, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+	//GB_STATIC_METHOD("AlignedImage", NULL, CDRAW_picture, "(Image)Image;(X)i(Y)i(Width)i(Height)i(Alignment)i"),
 	GB_STATIC_METHOD("Zoom", NULL, CDRAW_zoom, "(Image)Image;(Zoom)i(X)i(Y)i[(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 	
 	GB_STATIC_METHOD("Reset", NULL, CDRAW_reset, NULL),

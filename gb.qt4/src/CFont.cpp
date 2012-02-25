@@ -372,6 +372,12 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Font_Copy)
+
+	GB.ReturnObject(CFONT_create(*THIS->font));
+
+END_METHOD
+
 
 BEGIN_PROPERTY(Font_Ascent)
 
@@ -572,6 +578,7 @@ GB_DESC CFontDesc[] =
   GB_STATIC_METHOD("_exit", NULL, CFONT_exit, NULL),
   GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
   GB_METHOD("_free", NULL, CFONT_free, NULL),
+  GB_METHOD("Copy", "Font", Font_Copy, NULL),
 
   GB_PROPERTY("Name", "s", CFONT_name),
   GB_PROPERTY("Size", "f", CFONT_size),

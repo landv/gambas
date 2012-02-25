@@ -88,13 +88,13 @@ Private $bBorder As Boolean
 
 Private $hFamily As CFamily
 
-Private $hUndo As CUndo
+Private $hUndo As New CUndo
 
 Public Sub _new(sPath As String)
 
   'dim sFamily as string
 
-  $hUndo = New CUndo ''(Me) TODO: BUG! No error if there is too many arguments!
+  '$hUndo = New CUndo
 
   If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
   

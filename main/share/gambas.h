@@ -784,6 +784,15 @@ typedef
 		}
 	GB_TIMER;
 
+/* Structure for GB.RaiseCatch handler */
+
+typedef
+	struct {
+		void (*callback)(intptr_t);
+		intptr_t data;
+		void *old;
+	}
+	GB_RAISE_HANDLER;
 
 /* A macro for preventing gcc from warning about breaks in the
    strict aliasing rules */
@@ -817,6 +826,8 @@ typedef
 		void (*Post2)(GB_CALLBACK, intptr_t, intptr_t);
 		GB_TIMER *(*Every)(int, GB_TIMER_CALLBACK, intptr_t);
 		bool (*Raise)(void *, int, int, ...);
+		void (*RaiseBegin)(GB_RAISE_HANDLER *handler);
+		void (*RaiseEnd)(GB_RAISE_HANDLER *handler);
 		void (*RaiseLater)(void *, int);
 		void (*CheckPost)(void);
 		bool (*CanRaise)(void *, int);

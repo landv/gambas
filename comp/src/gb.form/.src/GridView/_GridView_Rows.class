@@ -14,8 +14,10 @@ Export
 ' 
 
 Property Count As Integer
+Property Read Max As Integer
 Property Read Width, W As Integer
 Property Resizable As Boolean
+Property Height, H As Integer
 
 Event _Refresh
 
@@ -25,6 +27,7 @@ Private $cHeight As Collection
 Private $aHeight As Integer[]
 Private $bResizable As Boolean = True
 Private $cText As Collection
+Private $iDefaultHeight As Integer 
 
 Private $hSel As New GridViewSelection
 
@@ -35,7 +38,7 @@ Public Sub _GetSel() As GridViewSelection
 End
 
 
-Private Sub GetView() As MyGridView
+Private Sub GetView() As GridView
   
   Return Object.Parent(Me)
   
@@ -53,8 +56,11 @@ Private Sub Count_Write(Value As Integer)
   If Value = $nRows Then Return
   
   $nRows = Value
-  GetView()._ResizeContents()
-  GetView().Refresh
+  With GetView()
+    ._ResizeContents()
+    ._CheckCurrent()
+    .Refresh
+  End With
 
 End
 
@@ -70,7 +76,8 @@ End
 
 Public Sub _GetDefaultRowHeight() As Integer
   
-  Return GetView().Font.Height + 4
+  If $iDefaultHeight > 0 Then Return $iDefaultHeight
+  Return GetView().Font.Height + 6
   
 End
 
@@ -123,8 +130,8 @@ End
 Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   
   Dim DH As Integer = _GetDefaultRowHeight()
+  Dim OH As Integer
   
-  If H < 4 Then Return
   If H > 1024 Then Return
   
   If Not $cHeight Then 
@@ -132,24 +139,30 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
     $aHeight = New Integer[]
   Endif
   
-  If H = DH Then
+  If H = DH Or If H <= 0 Then
     If $cHeight.Exist(iRow) Then
       $cHeight.Remove(iRow)
       $aHeight.Remove($aHeight.Find(iRow))
+      GetView()._ResizeContents()
     Endif
   Else If H > 0 Then
-    If Not $cHeight.Exist(iRow) Then AddSorted(iRow)
-    $cHeight[iRow] = H
+    Try OH = $cHeight[iRow]
+    If H <> OH Then
+      If OH = 0 Then AddSorted(iRow)
+      $cHeight[iRow] = H
+      GetView()._ResizeContents()
+    Endif
   Endif
   
-  GetView()._ResizeContents()
   
 End
 
 Private Function Width_Read() As Integer
 
   With GetView()
-    If .Header = .Horizontal Or If .Header = .Both Then Return .Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+    If $nRows Then
+      If .Header = .Vertical Or If .Header = .Both Then Return .Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+    Endif
   End With
 
 End
@@ -269,4 +282,35 @@ Public Sub _IsSelected(iRow As Integer) As Boolean
   
   Return $hSel.IsSelected(iRow)
   
+End
+
+Public Sub _SaveSelection() As GridViewSelection
+  
+  Return $hSel.Copy()
+  
+End
+
+Public Sub _RestoreSelection(hSel As GridViewSelection)
+  
+  $hSel = hSel.Copy()
+  
+End
+
+Private Sub Height_Read() As Integer
+  
+  Return _GetDefaultRowHeight()
+  
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  $iDefaultHeight = Value
+  
+End
+
+
+Private Function Max_Read() As Integer
+
+  Return $nRows - 1
+
 End

@@ -145,6 +145,7 @@ typedef
 		int name;                      // Property name index
 		int line;                      // The line where the property is declared
 		int comment;                   // Property string description, added to datatype
+		int synonymous;                // Synonymous property index (-1 if not a synonymous)
 		short read;                    // Read function
 		short write;                   // Write function
 		}

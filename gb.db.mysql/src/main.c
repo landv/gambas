@@ -1474,7 +1474,7 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 	static char buffer[16];
 
 	const char *query =
-			"show table status like '&1'";
+		"show table status like '&1'";
 
 	const char *update =
 		"alter table `&1` type = &2";
@@ -1496,6 +1496,8 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 		GB.Error("Unable to check table for: &1", table);
 		return NULL;
 	}
+	
+	if (!row[1]) return "VIEW"; // the table is a view
 
 	strcpy(buffer, row[1]);
 	mysql_free_result(res);

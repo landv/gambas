@@ -316,12 +316,16 @@ void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 {
 	PROPERTY *prop;
 	CLASS_SYMBOL *sym;
+	int index;
+	int i;
 
+	index = ARRAY_count(class->prop);
 	prop = ARRAY_add_void(&class->prop);
 	TYPE_clear(&prop->type);
 	prop->name = NO_SYMBOL;
 	prop->read = TRUE;
 	prop->write = decl->read == 0;
+	prop->synonymous = -1;
 
 	sym = CLASS_declare(class, decl->index, TRUE);
 	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
@@ -333,6 +337,28 @@ void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 	prop->name = decl->index;
 	prop->line = decl->line;
 	prop->comment = decl->comment;
+	
+	for (i = 0; i < decl->nsynonymous; i++)
+	{
+		prop = ARRAY_add_void(&class->prop);
+		TYPE_clear(&prop->type);
+		prop->name = NO_SYMBOL;
+		prop->read = TRUE;
+		prop->write = decl->read == 0;
+		prop->synonymous = index;
+
+		sym = CLASS_declare(class, decl->synonymous[i], TRUE);
+		/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
+
+		sym->global.type = decl->type;
+		sym->global.value = ARRAY_count(class->prop) - 1;
+
+		prop->type = decl->type;
+		prop->name = decl->synonymous[i];
+		prop->line = decl->line;
+		prop->comment = decl->comment;
+	}
+	
 }
 
 
@@ -784,12 +810,19 @@ void CLASS_check_properties(CLASS *class)
 	for (i = 0; i < ARRAY_count(class->prop); i++)
 	{
 		prop = &class->prop[i];
-
-		prop->read = check_one_property_func(class, prop, FALSE);
-		if (prop->write)
-			prop->write = check_one_property_func(class, prop, TRUE);
+		if (prop->synonymous >= 0)
+		{
+			prop->read = class->prop[prop->synonymous].read;
+			prop->write = class->prop[prop->synonymous].write;
+		}
 		else
-			prop->write = NO_SYMBOL;
+		{
+			prop->read = check_one_property_func(class, prop, FALSE);
+			if (prop->write)
+				prop->write = check_one_property_func(class, prop, TRUE);
+			else
+				prop->write = NO_SYMBOL;
+		}
 	}
 }
 

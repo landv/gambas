@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CFont.cpp
+	CFont.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -47,129 +47,129 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 		font->setTag(new gGambasTag((void *)fnt));
 	}
 	
-  fnt->func = func;
-  fnt->object = object;
-  if (object)
-    GB.Ref(object);
+	fnt->func = func;
+	fnt->object = object;
+	if (object)
+		GB.Ref(object);
 	
 	return fnt;
 }
 
 BEGIN_METHOD(CFONT_new, GB_STRING font)
 
-  if (!MISSING(font))
-    FONT = new gFont(GB.ToZeroString(ARG(font)));
-  else
-    FONT = gDesktop::font()->copy();
+	if (!MISSING(font))
+		FONT = new gFont(GB.ToZeroString(ARG(font)));
+	else
+		FONT = gDesktop::font()->copy();
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CFONT_free)
 
-  GB.Unref(POINTER(&THIS->object));
-  gFont::assign(&THIS->font);
+	GB.Unref(POINTER(&THIS->object));
+	gFont::assign(&THIS->font);
 
 END_METHOD
 
 static void CFONT_manage(int prop, CFONT *_object, void *_param)
 {
-  gFont *f = FONT;
-  
+	gFont *f = FONT;
+	
 	if (!f)
 	{
 		THIS->font = ((CWIDGET *)THIS->object)->widget->font()->copy();
 		f = FONT;
 	}
 	
-  if (READ_PROPERTY)
-  {
-    switch(prop)
-    {
-      case CFONT::Name: GB.ReturnNewZeroString(f->name()); break;
-      case CFONT::Size: GB.ReturnFloat(f->size()); break;
-      case CFONT::Grade: GB.ReturnInteger(f->grade()); break;
-      case CFONT::Bold: GB.ReturnBoolean(f->bold()); break;
-      case CFONT::Italic: GB.ReturnBoolean(f->italic()); break;
-      case CFONT::Underline: GB.ReturnBoolean(f->underline()); break;
-      case CFONT::Strikeout: GB.ReturnBoolean(f->strikeout()); break;
-    }
-  }
-  else
-  {
-    switch (prop)
-    {
-      case CFONT::Name: f->setName(GB.ToZeroString(PROP(GB_STRING))); break;
-      case CFONT::Size: f->setSize(VPROP(GB_FLOAT)); break;
-      case CFONT::Grade: f->setGrade(VPROP(GB_INTEGER)); break;
-      case CFONT::Bold: f->setBold(VPROP(GB_BOOLEAN)); break;
-      case CFONT::Italic: f->setItalic(VPROP(GB_BOOLEAN)); break;
-      case CFONT::Underline: f->setUnderline(VPROP(GB_BOOLEAN)); break;
-      case CFONT::Strikeout: f->setStrikeout(VPROP(GB_BOOLEAN)); break;
-    }
+	if (READ_PROPERTY)
+	{
+		switch(prop)
+		{
+			case CFONT::Name: GB.ReturnNewZeroString(f->name()); break;
+			case CFONT::Size: GB.ReturnFloat(f->size()); break;
+			case CFONT::Grade: GB.ReturnInteger(f->grade()); break;
+			case CFONT::Bold: GB.ReturnBoolean(f->bold()); break;
+			case CFONT::Italic: GB.ReturnBoolean(f->italic()); break;
+			case CFONT::Underline: GB.ReturnBoolean(f->underline()); break;
+			case CFONT::Strikeout: GB.ReturnBoolean(f->strikeout()); break;
+		}
+	}
+	else
+	{
+		switch (prop)
+		{
+			case CFONT::Name: f->setName(GB.ToZeroString(PROP(GB_STRING))); break;
+			case CFONT::Size: f->setSize(VPROP(GB_FLOAT)); break;
+			case CFONT::Grade: f->setGrade(VPROP(GB_INTEGER)); break;
+			case CFONT::Bold: f->setBold(VPROP(GB_BOOLEAN)); break;
+			case CFONT::Italic: f->setItalic(VPROP(GB_BOOLEAN)); break;
+			case CFONT::Underline: f->setUnderline(VPROP(GB_BOOLEAN)); break;
+			case CFONT::Strikeout: f->setStrikeout(VPROP(GB_BOOLEAN)); break;
+		}
 
-    if (THIS->func)
-      (*(THIS->func))(f, THIS->object);
-    else if (THIS->object)
-    {
-      // THIS->control->widget->setFont(*f); - Not needed anymore
-      // TODO Make a Gambas API to call SetProperty faster
-  
-  		//fprintf(stderr, "applying font to (%s %p)\n", GB.GetClassName(THIS->object), THIS->object);
-  
-      GB_FUNCTION func;
-  
-      GB.GetFunction(&func, (void *)GB.FindClass("Object"), "SetProperty", NULL, NULL);
-      GB.Push(3,
-        GB_T_OBJECT, THIS->object,
-        GB_T_STRING, "Font", 4,
-        GB_T_OBJECT, THIS
-      );
-      GB.Call(&func, 3, TRUE);
-    }
-  }
+		if (THIS->func)
+			(*(THIS->func))(f, THIS->object);
+		else if (THIS->object)
+		{
+			// THIS->control->widget->setFont(*f); - Not needed anymore
+			// TODO Make a Gambas API to call SetProperty faster
+	
+			//fprintf(stderr, "applying font to (%s %p)\n", GB.GetClassName(THIS->object), THIS->object);
+	
+			GB_FUNCTION func;
+	
+			GB.GetFunction(&func, (void *)GB.FindClass("Object"), "SetProperty", NULL, NULL);
+			GB.Push(3,
+				GB_T_OBJECT, THIS->object,
+				GB_T_STRING, "Font", 4,
+				GB_T_OBJECT, THIS
+			);
+			GB.Call(&func, 3, TRUE);
+		}
+	}
 }
 
 
 BEGIN_PROPERTY(CFONT_name)
 
-  CFONT_manage(CFONT::Name, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Name, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_size)
 
-  CFONT_manage(CFONT::Size, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Size, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_grade)
 
-  CFONT_manage(CFONT::Grade, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Grade, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_bold)
 
-  CFONT_manage(CFONT::Bold, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Bold, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_italic)
 
-  CFONT_manage(CFONT::Italic, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Italic, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_underline)
 
-  CFONT_manage(CFONT::Underline, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Underline, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_strikeout)
 
-  CFONT_manage(CFONT::Strikeout, OBJECT(CFONT), _param);
+	CFONT_manage(CFONT::Strikeout, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
@@ -186,12 +186,18 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 	CFONT *font;
 	gFont *fnt;
 	
-  fnt = new gFont(GB.ToZeroString(ARG(str)));
+	fnt = new gFont(GB.ToZeroString(ARG(str)));
 	font = CFONT_create(fnt);
 	//gFont::assign(&fnt);
 	
 	GB.ReturnObject(font);
-  
+	
+END_METHOD
+
+BEGIN_METHOD_VOID(Font_Copy)
+
+	GB.ReturnObject(CFONT_create(FONT));
+
 END_METHOD
 
 
@@ -269,7 +275,7 @@ BEGIN_METHOD_VOID(CFONTS_next)
 	}
 	
 	GB.ReturnNewZeroString ( gFont::familyItem(pos[0]++));
-  
+	
 END_METHOD
 
 
@@ -311,52 +317,53 @@ END_PROPERTY
 
 GB_DESC CFontsDesc[] =
 {
-  GB_DECLARE("Fonts", 0), 
-  GB_NOT_CREATABLE(),
+	GB_DECLARE("Fonts", 0), 
+	GB_NOT_CREATABLE(),
 
-  GB_STATIC_METHOD("_next", "s", CFONTS_next, 0),
-  GB_STATIC_PROPERTY_READ("Count", "i", CFONTS_count),
-  
-  GB_END_DECLARE
+	GB_STATIC_METHOD("_next", "s", CFONTS_next, 0),
+	GB_STATIC_PROPERTY_READ("Count", "i", CFONTS_count),
+	
+	GB_END_DECLARE
 };
 
 
 GB_DESC CFontDesc[] =
 {
-  GB_DECLARE("Font", sizeof(CFONT)), 
+	GB_DECLARE("Font", sizeof(CFONT)), 
 
-  GB_METHOD("_new", 0, CFONT_new, "[(Font)s]"),
-  GB_METHOD("_free", 0, CFONT_free, 0),
-  
-  GB_PROPERTY("Name", "s", CFONT_name),
-  GB_PROPERTY("Size", "f", CFONT_size),
-  GB_PROPERTY("Bold", "b", CFONT_bold),
-  GB_PROPERTY("Italic", "b", CFONT_italic),
-  GB_PROPERTY("Underline", "b", CFONT_underline),
-  GB_PROPERTY("Strikeout", "b", CFONT_strikeout),
-  GB_PROPERTY("Grade", "i", CFONT_grade),
+	GB_METHOD("_new", 0, CFONT_new, "[(Font)s]"),
+	GB_METHOD("_free", 0, CFONT_free, 0),
+	GB_METHOD("Copy", "Font", Font_Copy, NULL),
+	
+	GB_PROPERTY("Name", "s", CFONT_name),
+	GB_PROPERTY("Size", "f", CFONT_size),
+	GB_PROPERTY("Bold", "b", CFONT_bold),
+	GB_PROPERTY("Italic", "b", CFONT_italic),
+	GB_PROPERTY("Underline", "b", CFONT_underline),
+	GB_PROPERTY("Strikeout", "b", CFONT_strikeout),
+	GB_PROPERTY("Grade", "i", CFONT_grade),
 
-  GB_METHOD("ToString", "s", CFONT_to_string, 0),
+	GB_METHOD("ToString", "s", CFONT_to_string, 0),
 
-  GB_METHOD("TextWidth", "i", Font_TextWidth, "(Text)s"),
-  GB_METHOD("TextHeight", "i", Font_TextHeight, "(Text)s"),
+	GB_METHOD("TextWidth", "i", Font_TextWidth, "(Text)s"),
+	GB_METHOD("TextHeight", "i", Font_TextHeight, "(Text)s"),
 
-  GB_METHOD("RichTextWidth", "i", Font_RichTextWidth, "(Text)s"),
-  GB_METHOD("RichTextHeight", "i", Font_RichTextHeight, "(Text)s[(Width)i]"),
+	GB_METHOD("RichTextWidth", "i", Font_RichTextWidth, "(Text)s"),
+	GB_METHOD("RichTextHeight", "i", Font_RichTextHeight, "(Text)s[(Width)i]"),
 
-  GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
-  #if 0
-  GB_STATIC_PROPERTY("Resolution", "i", CFONT_resolution),
-  #endif
-  GB_PROPERTY_READ("Ascent", "i", Font_Ascent),
-  GB_PROPERTY_READ("Descent", "i", Font_Descent),
-  GB_PROPERTY_READ("Height", "i", Font_Height),
+	GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
+	#if 0
+	GB_STATIC_PROPERTY("Resolution", "i", CFONT_resolution),
+	#endif
+	GB_PROPERTY_READ("Ascent", "i", Font_Ascent),
+	GB_PROPERTY_READ("Descent", "i", Font_Descent),
+	GB_PROPERTY_READ("Height", "i", Font_Height),
 
-  GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
-  GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),
-  GB_PROPERTY_READ("Styles", "String[]", CFONT_styles),
+	GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
+	GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),
+	GB_PROPERTY_READ("Styles", "String[]", CFONT_styles),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 

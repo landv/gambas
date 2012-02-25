@@ -45,25 +45,28 @@ Private $H As Integer
 
 Public Sub _new()
   
+  'Debug ">>>>>"
+  
   Me.Arrangement = Arrange.None
   
   '$hBorder = New DrawingArea(Me) As "Border"
   '$hBorder.Arrangement = Arrange.Fill
 
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
-
+  $hObserver = New Observer(Me) As "ScrollArea"
+  
   $hHBar = New ScrollBar(Me) As "Scrollbar"
   $hHBar.Step = Desktop.Scale
   $hVBar = New ScrollBar(Me) As "Scrollbar"
   $hVBar.Step = Desktop.Scale
   
-  $hObserver = New Observer(Me) As "ScrollArea"
-  
   Me.Proxy = $hDrawingArea
   Me._Container = $hDrawingArea
-  
+
   Border_Write(True)
   'ScrollArea_Arrange
+  '
+  'Debug "<<<<<"
   
 End
 
@@ -71,6 +74,11 @@ Public Sub ScrollArea_Arrange()
   
   Dim SB, SP, FW, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
+  
+  'Debug "ScrollArea:";; Me.W;; Me.H
+  'Debug "DrawingArea:";; $hDrawingArea.W;; $hDrawingArea.H
+  
+  'Error "\t" & System.Backtrace.Join("\n\t")
   
   SB = Style.ScrollbarSize
   SP = Style.ScrollbarSpacing
@@ -155,6 +163,8 @@ Public Sub ScrollArea_Arrange()
   If $hHBar.Visible Then $hHBar.Move(0, H + SP, W, SB)
   If $hVBar.Visible Then $hVBar.Move(W + SP, 0, SB, H)
   
+  'Debug "DrawingArea: -> ";; $hDrawingArea.W;; $hDrawingArea.H
+  
 End
 
 Public Sub ResizeContents(Width As Integer, Height As Integer)
@@ -198,6 +208,8 @@ Public Sub Scroll(X As Integer, Y As Integer)
   If $hHBar.Value = X And If $hVBar.Value = Y Then Return
   $hHBar.Value = X
   $hVBar.Value = Y
+  'Debug X;; Y
+  'Error "\t" & System.Backtrace.Join("\n\t")
   $hDrawingArea.Refresh
   
 End
@@ -346,6 +358,8 @@ End
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   Dim PW, PH, CX, CY, CW, CH, FW As Integer
+  
+  'Debug X;; Y;; W;; H;; "[";; $hDrawingArea.W;; $hDrawingArea.H;; "]"
   
   W = (W + 1) / 2
   H = (H + 1) / 2

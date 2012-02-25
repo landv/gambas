@@ -767,14 +767,15 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim bPublic As Boolean
   Dim sKind As String
   Dim iInd As Integer
-  Dim hSymbol As CSymbolInfo
-  Dim aSymbol As CSymbolInfo[]
+  Dim hSymbol, hSymbol2 As CSymbolInfo
+  'Dim aSymbol As CSymbolInfo[]
   Dim iStart As Integer
   Dim iEnd As Integer
   Dim iSign As Integer
   Dim cClassSymbol As Collection
   Dim hClass As CClassInfo
-  Dim sName As String
+  Dim sName, sName2 As String
+  Dim aName As String[]
   Dim sLine As String
   Dim iPos As Integer
   Dim sSign As String
@@ -942,6 +943,31 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       If aSym[iInd + 1] = "}" Then Inc iInd
     Endif
     
+    aName = Null
+    
+    If InStr("pr", sKind) And If (iInd + 2) <= aSym.Max And If aSym[iInd + 1] = "," Then
+      
+      aName = [sName]
+      iInd += 2
+      
+      Do
+        sName2 = aSym[iInd]
+        If Left(sName2) = "{" Then
+          If iInd + 2 > aSym.Max Then Break
+          Inc iInd
+          sName2 = aSym[iInd]
+          If aSym[iInd + 1] = "}" Then Inc iInd
+        Endif
+        
+        aName.Add(sName2)
+        
+        If (iInd + 2) <= aSym.Max And If aSym[iInd + 1] <> "," Then Break
+        iInd += 2
+        
+      Loop
+      
+    Endif
+    
     hSymbol = New CSymbolInfo
     With hSymbol
       .Name = sName
@@ -990,17 +1016,20 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         
         .Type = FEditor.ReadSymbolType(aSym, iInd)
         
-        If aSymbol Then
-          For Each hSymbol In aSymbol
-            hSymbol.Type = .Type
-          Next
-        Endif
-        
       Endif
       
       If bStatic Then .Kind = UCase(.Kind)
       
       cSymbol[.Name] = hSymbol
+
+      If aName Then
+        For Each sName In aName
+          hSymbol2 = hSymbol.Copy("", "")
+          hSymbol2.Name = sName
+          cSymbol[sName] = hSymbol2
+        Next
+      Endif
+
       bCanInherit = False
       
     End With

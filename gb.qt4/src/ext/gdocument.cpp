@@ -54,6 +54,7 @@ GLine::GLine()
 	unicode = false;
 	highlight = NULL;
 	nobreak = false;
+	baptized = false;
 }
 
 GLine::~GLine()

@@ -713,6 +713,7 @@ Private Sub InsertProperty()
   Dim bStatic As Boolean
   Dim bRead As Boolean
   Dim sName As String
+  Dim sName2 As String
   Dim sType As String
   Dim iLine As Integer
   Dim iCol As Integer
@@ -729,6 +730,8 @@ Private Sub InsertProperty()
     Inc iPos
   Endif
 
+ANOTHER_SYMBOL:
+
   sName = Highlight.Symbols[iPos]
   If sName = "{" Then
     Inc iPos
@@ -739,8 +742,17 @@ Private Sub InsertProperty()
   Else
     If Highlight.Types[iPos] <> Highlight.Symbol Then Return
   Endif
+  If Not sName2 Then sName2 = sName
 
   Inc iPos
+  
+  If Highlight.Symbols[iPos] = "," Then
+    Inc iPos
+    Goto ANOTHER_SYMBOL
+  Endif
+  
+  sName = sName2
+  
   If Highlight.Symbols[iPos] <> "AS" Then Return
   Inc iPos
   sType = Highlight.Symbols[iPos]

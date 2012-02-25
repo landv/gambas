@@ -28,10 +28,10 @@
       Table = "test"
       { DataBrowser1 DataBrowser
         MoveScaled(2,5,59,17)
-        Font = Font["-2"]
         Expand = True
         Columns = ["id", "active", "color", "firstname", "salary", "comment"]
         Editable = True
+        Grid = True
       }
       { HBox1 HBox
         MoveScaled(2,23,59,43)
@@ -94,28 +94,23 @@
           }
           { DataControl3 DataControl
             MoveScaled(1,15,30,4)
-            Visible = False
             Field = "name"
           }
           { DataControl4 DataControl
             MoveScaled(1,19,30,4)
-            Visible = False
             Field = "birth"
           }
           { DataControl5 DataControl
             MoveScaled(1,23,30,4)
-            Visible = False
             Field = "active"
           }
           { DataControl7 DataControl
             MoveScaled(1,27,42,4)
-            Visible = False
             Expand = True
             Field = "comment"
           }
           { DataControl6 DataControl
             MoveScaled(1,31,30,4)
-            Visible = False
             Field = "salary"
           }
         }

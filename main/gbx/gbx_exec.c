@@ -884,13 +884,14 @@ void EXEC_function_loop()
 					#endif
 					ERROR_set_last(FALSE);
 					
+					// The stack is popped until reaching the stack position before the TRY
 					while (SP > EP)
 						POP();
 
+					// We go directly to the END TRY
 					PC = EC;
 					EP = NULL;
 					retry = TRUE;
-					/* On va directement sur le END TRY */
 				}
 				// There is a CATCH in the function
 				else if (EC != NULL)
@@ -901,6 +902,11 @@ void EXEC_function_loop()
 					#endif
 
 					ERROR_set_last(TRUE);
+					
+					// The stack is popped until reaching the stack position at the function start
+					while (SP > BP)
+						POP();
+					
 					PC = EC;
 					EC = NULL;
 					retry = TRUE;

@@ -350,8 +350,9 @@ Public Sub _EditCurrent() As Result
   Dim sKey As String
   Dim iPos As Integer
 
-  aKey = $hTable.Keys
   aVal = Me.Current
+  If Not aVal Then Return
+  aKey = $hTable.Keys
   
   hSrc = Common.GetSource(Me)
   If hSrc Then
@@ -465,7 +466,10 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
     ' rData = _GetDB().Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
     ' 'rData = $hTable[$iIndex]
     rData = _EditCurrent()
-    If Not rData.Available Then Return True
+    If Not rData Or If Not rData.Available Then 
+      Dec Application.Busy
+      Return True
+    Endif
 
     For Each hChild In GetChildren()
       If Common.IsControl(hChild) Then
@@ -502,8 +506,10 @@ Public Sub _DeleteCurrent()
   Dim iPos As Integer
   Dim sReq As String
 
-  aKey = $hTable.Keys
   aVal = Me.Current
+  If Not aVal Then Return
+  
+  aKey = $hTable.Keys
   
   hSrc = Common.GetSource(Me)
   If hSrc Then
@@ -525,8 +531,12 @@ Public Function Remove() As Boolean
     Return
   Endif
   
-  _DeleteCurrent()
-  Create(True)
+  If $iIndex >= 0 And $iIndex < $hTable.Count Then
+    _DeleteCurrent()
+    Create(True)
+  Else
+    Create()
+  Endif
   
 End
 
@@ -613,7 +623,7 @@ End
 
 Private Function Current_Read() As Variant[]
 
-  If $iIndex >= 0 Then
+  If $iIndex >= 0 And If $iIndex < $hTable.Count Then
     Return $hTable.GetKeys($iIndex).Copy()
   Endif
   

@@ -23,6 +23,7 @@ Property Read Count As Integer
 Property Read Index As Integer
 Property Read View As TableView
 Property Font As Font
+Property Background As Integer
 
 'Public _DataComboView As DataComboView
 
@@ -62,7 +63,7 @@ Private $aNewRecord As Variant[]
 Private $bNewRecordModified As Boolean
 Private $iRowNewRecord As Integer = -1
 
-Private $bNoRefresh As Boolean
+Private $iNoRefresh As Integer
 
 Public Sub _new()
   
@@ -78,13 +79,23 @@ Public Sub _new()
   Create()
   
   $bHighlight = True
-  $iHighlight = Color.LightBackground
+  UpdateHighlightColor
   
 End
 
+Private Sub UpdateHighlightColor()
+  
+  $iHighlight = Me.Background
+  If $iHighlight = Color.Default Then $iHighlight = Color.TextBackground
+  $iHighlight = Color.Merge(Color.LightForeground, $iHighlight, 0.9)
+  $hCtrl.Refresh
+  
+End
+
+
 Private Sub GetDefaultRowHeight() As Integer
 
-  Return $hCtrl.Font.Height + 6
+  Return $hCtrl.Rows.Height
 
 End
 
@@ -195,7 +206,7 @@ Private Sub Load()
 
   If Not $hTable Then Return
   
-  $bNoRefresh = True
+  Inc $iNoRefresh 
   'Object.Lock($hCtrl)
   $bNoActivate = True
   $hCtrl.Rows.Count = $hTable.Count
@@ -222,10 +233,11 @@ Private Sub Load()
   $iRowNewRecord = -1
   If CanEdit() Then CreateNewRecord
 
-  $bNoRefresh = False
+  Dec $iNoRefresh 
   $hCtrl.Refresh
 
   EnsureRowVisible($hCtrl.Row)
+  UpdateCurrentRowHeight
 
 End
 
@@ -357,21 +369,22 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   Dim sText As String
   Dim H As Integer
   
-  If $bNoRefresh Then Return
+  If $iNoRefresh Then Return
   
   With $hCtrl.Data
-    .Padding = 1
     iIndex = $aColumnsIndex[Column]
 
     Select Case $aType[Column].Type
+      
       Case db.Blob
         .Text = "BLOB"
-        .Font.Bold = True
-        If $bHighlight And If Row And 1 Then 
-          .Background = Color.Merge($iHighlight, Color.LightGray)
-        Else
-          .Background = Color.Merge(Color.TextBackground, Color.LightGray)
-        Endif
+        .Foreground = Color.LightForeground
+        ' If $bHighlight And If Row And 1 Then 
+        '   .Background = Color.Merge($iHighlight, Color.LightGray)
+        ' Else
+        '   .Background = Color.Merge(Color.TextBackground, Color.LightGray)
+        ' Endif
+
       Case db.String
         If Row = $iRowNewRecord Then
           sText = $aNewRecord[Column]
@@ -383,7 +396,8 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
         Else
           Try .Text = Conv$(Left(sText, 1024), $sCharset, Desktop.Charset)
         Endif
-        If $bHighlight And If Row And 1 Then .Background = $iHighlight
+        If $aType[Column].Length = 0 Then .Alignment = Align.TopNormal
+
       Case Else
         If Row = $iRowNewRecord Then
           sText = Str($aNewRecord[Column])
@@ -391,19 +405,12 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
           sText = Str($hTable[Row][iIndex])
         Endif
         Try .Text = Left(sText, 1024)
-        If $bHighlight And If Row And 1 Then .Background = $iHighlight
+        
     End Select
     
-    .Alignment = Align.TopNormal
+    If $bHighlight And If Row And 1 Then .Background = $iHighlight
     
   End With
-  
-  If $bEditable And If Row = $hCtrl.Row And If $hCtrl.Rows[Row].Selected Then
-    H = Min(256, $hCtrl.Font.TextHeight($hCtrl.Data.Text) + 8)
-  Else
-    H = GetDefaultRowHeight()
-  Endif
-  If $hCtrl.Rows[Row].H <> H Then $hCtrl.Rows[Row].H = H
   
   ' If Not $bAdjust Then
   '   If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
@@ -483,14 +490,41 @@ Public Sub TableView_Click()
   
 End 
 
+Private Sub UpdateCurrentRowHeight()
+
+  Dim I, H As Integer
+  
+  If $bEditable Then
+    For I = 0 To $hCtrl.Columns.Count - 1
+      H = Max(H, $hCtrl.Font.TextHeight($hCtrl[$hCtrl.Row, I].Text))
+    Next
+    H += 4
+    If H > $hCtrl.Rows.H Then
+      $hCtrl.Rows[$hCtrl.Row].H = H
+    Else
+      $hCtrl.Rows[$hCtrl.Row].H = -1
+    Endif
+  Endif
+  
+End
+
 
 Public Sub TableView_Change()
 
+  Dim I, H As Integer
+
   If $bNoActivate Then Return
 
-  'Balloon.Hide($hCtrl)
   $bCreate = False
-  'AdjustRow
+  
+  If $hCtrl.Row <> $iLastRow Then
+    
+    If $iLastRow >= 0 Then $hCtrl.Rows[$iLastRow].H = -1
+    UpdateCurrentRowHeight
+    $iLastRow = $hCtrl.Row
+    
+  Endif
+  
   Raise Activate
   
 End
@@ -499,8 +533,8 @@ Private Sub Warning(sMsg As String, Optional bError As Boolean)
   
   Dim X, Y As Integer
   
-  X = Me.Rows.Width - Me.ScrollX + Me.ClientX
-  Y = Me.Columns.Height - Me.ScrollY + Me.ClientY
+  X = $hCtrl.Rows.Width - $hCtrl.ScrollX + $hCtrl.ClientX
+  Y = $hCtrl.Columns.Height - $hCtrl.ScrollY + $hCtrl.ClientY
   
   With $hCtrl[$hCtrl.Row, $hCtrl.Column]
     If bError Then
@@ -512,6 +546,7 @@ Private Sub Warning(sMsg As String, Optional bError As Boolean)
 
 Catch
   
+  'Debug Error.Where; ": "; Error.Text
   Error "gb.db.form: "; Me.Name; ": warning: "; Replace(sMsg, "\n", " ")
   
 End
@@ -524,15 +559,19 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
   Dim vVal As Variant
   Dim hField As DataField
   Dim bPrintError As Boolean
+  Dim iRow, iCol As Integer
   
   If Not CanEdit() Then Return
   
   hSrc = GetSource()
   If Not hSrc Then Return
   
-  If hSrc.MoveTo($hCtrl.Row) Then Return
+  iRow = $hCtrl.Row
+  iCol = $hCtrl.Column
   
-  If $hCtrl.Row <> $iRowNewRecord Then
+  If hSrc.MoveTo(Row) Then Return
+  
+  If Row <> $iRowNewRecord Then
     rData = hSrc._EditCurrent()
     If Not rData.Available Then Return
   Endif
@@ -570,7 +609,7 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
   
   bPrintError = True
   
-  If $hCtrl.Row = $iRowNewRecord Then
+  If Row = $iRowNewRecord Then
     $aNewRecord[Column] = vVal
     $bNewRecordModified = True
   Else
@@ -578,6 +617,9 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
     hSrc._UpdateCurrent(rData)
   Endif
 
+  $hCtrl.MoveTo(iRow, iCol)
+  UpdateCurrentRowHeight
+   
 Catch
 
   If bPrintError Then
@@ -699,8 +741,8 @@ Private Sub ShowNewRecord()
     $bNoActivate = False
     $iRowNewRecord = $hCtrl.Rows.Count - 1
     $hCtrl.Rows[$iRowNewRecord].Text = NEW_RECORD
-  'Else
-  '  $hCtrl.Rows[$iRowNewRecord].Refresh
+  Else
+    $hCtrl.Refresh
   Endif
   
 End
@@ -795,13 +837,24 @@ Public Sub Create()
   CreateNewRecord()
   $bCreate = False
   $hCtrl.MoveTo($hCtrl.Rows.Count - 1, 0)
+  $hCtrl.Current.EnsureVisible
 
 _EDIT:
 
-  Wait
+  'Wait
   $hCreateTimer.Trigger
   
 End
+
+Public Sub Cancel()
+  
+  $hCtrl.Cancel
+  If InNewRecord() Then
+    CreateNewRecord()
+  Endif
+  
+End
+
 
 Public Sub TableView_Insert()
   
@@ -980,6 +1033,7 @@ Private Sub Editable_Write(Value As Boolean)
 
   If $bEditable = Value Then Return
   $bEditable = Value
+  $hCtrl.ShowCursor = $bEditable
   If Value Then 
     'CreateNewRecord
     Me.Create
@@ -1019,5 +1073,18 @@ Private Sub Labels_Write(Value As String[])
     $aLabels = Null
   Endif
   RefreshLabels
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  If $bHighlight Then UpdateHighlightColor
 
 End

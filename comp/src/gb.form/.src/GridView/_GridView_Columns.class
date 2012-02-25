@@ -3,6 +3,7 @@
 Export
 
 Property Count As Integer
+Property Read Max As Integer
 Property Read Height, H As Integer
 Property Resizable As Boolean
 
@@ -11,8 +12,9 @@ Event _Refresh
 Private $aColumns As New _GridView_Column[]
 Private $iWidth As Integer
 Private $bResizable As Boolean = True
+Private $bLayouting As Boolean
 
-Private Sub GetView() As MyGridView
+Private Sub GetView() As GridView
   
   Return Object.Parent(Me)
   
@@ -41,30 +43,24 @@ Private Sub Count_Write(Value As Integer)
     Next
   Endif
   
-  Column__Refresh
+  GetView()._CheckCurrent
+  
+  _Layout
 
 End
 
 Public Sub Column__Refresh()
   
-  Dim hCol As _GridView_Column
-  Dim X As Integer
+  _Layout
   
-  For Each hCol In $aColumns
-    hCol._X = X
-    X += hCol.Width
-  Next
-  $iWidth = X
-  
-  GetView()._ResizeContents
-  GetView().Refresh
-
 End
 
 Private Function Height_Read() As Integer
 
   With GetView()
-    If .Header = .Vertical Or If .Header = .Both Then Return GetView().Font.Height + 8
+    If $aColumns.Count Then
+      If .Header = .Horizontal Or If .Header = .Both Then Return GetView().Font.Height + 8
+    Endif
   End With
 
 End
@@ -106,5 +102,80 @@ End
 Private Sub Resizable_Write(Value As Boolean)
 
   $bResizable = Value
+
+End
+
+Public Sub _Layout()
+
+  Dim hView As GridView = GetView()
+  Dim I, W, WX, N, NX, VW As Integer
+  Dim hCol As _GridView_Column
+  Dim X As Integer
+  
+  N = $aColumns.Count - 1
+
+  'Debug N
+  
+  If N >= 0 And If hView.AutoResize And If Not $bLayouting Then 
+
+    $bLayouting = True
+  
+    For I = 0 To N
+      
+      With $aColumns[I]
+        If .Expand Then
+          W += ._GetExplicitWidth()
+          Inc NX
+        Else
+          W += .Width
+        Endif
+      End With
+      
+    Next
+    
+    VW = hView._GetVisibleWidth()
+    
+    If NX = 0 Then
+      
+      W = $aColumns[N].Width + VW - W
+      If W > 0 Then
+        $aColumns[N]._W = W
+      Endif
+      
+    Else If W < hView.ClientW Then
+      
+      For I = 0 To N
+        If $aColumns[I].Expand Then
+          WX = (VW - W) / NX
+          $aColumns[I]._W = $aColumns[I]._GetExplicitWidth() + WX
+          W += WX
+          Dec NX
+          If NX <= 0 Then Break
+        Endif
+      Next
+      
+    Endif
+  
+    $bLayouting = False
+    
+  Endif
+  
+  For Each hCol In $aColumns
+    hCol._X = X
+    X += hCol.Width
+  Next
+  
+  If X <> $iWidth Then
+    $iWidth = X
+    hView._ResizeContents
+  Endif
+  
+  hView.Refresh
+     
+End
+
+Private Function Max_Read() As Integer
+
+  Return $aColumns.Max
 
 End

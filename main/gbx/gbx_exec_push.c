@@ -591,8 +591,9 @@ __PUSH_QUICK_ARRAY:
 		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
 	}
 	
-	if (UNLIKELY(data == NULL))
+	if (!data)
 		PROPAGATE();
+	
 	VALUE_read(val, data, ((CARRAY *)object)->type);
 	
 	goto __PUSH_QUICK_END;

@@ -91,6 +91,8 @@ void *GAMBAS_Api[] =
 	(void *)EVENT_post2,
 	(void *)CTIMER_every,
 	(void *)GB_Raise,
+	(void *)GB_RaiseBegin,
+	(void *)GB_RaiseEnd,
 	(void *)EVENT_post_event,
 	(void *)EVENT_check_post,
 	(void *)GB_CanRaise,
@@ -554,12 +556,30 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 // If nparam < 0, the args are already on the stack
 
 static void *_GB_Raise_unref = NULL;
-static int _GB_Raise_nparam = 0;
+static char _GB_Raise_nparam = 0;
+static GB_RAISE_HANDLER *_GB_Raise_handler = NULL;
 
 static void error_GB_Raise()
 {
 	RELEASE_MANY(SP, _GB_Raise_nparam);
 	OBJECT_UNREF(_GB_Raise_unref, "error_GB_Raise");
+	
+	if (_GB_Raise_handler)
+	{
+		(*_GB_Raise_handler->callback)(_GB_Raise_handler->data);
+		_GB_Raise_handler = _GB_Raise_handler->old;
+	}
+}
+
+void GB_RaiseBegin(GB_RAISE_HANDLER *handler)
+{
+	handler->old = _GB_Raise_handler;
+	_GB_Raise_handler = handler;
+}
+
+void GB_RaiseEnd(GB_RAISE_HANDLER *handler)
+{
+	_GB_Raise_handler = handler->old;
 }
 
 bool GB_Raise(void *object, int event_id, int nparam, ...)
@@ -571,7 +591,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 	bool arg;
 	COBSERVER *obs;
 	void *save_GB_Raise_unref;
-	int save_GB_Raise_nparam;
+	char save_GB_Raise_nparam;
 
 	if (GAMBAS_DoNotRaiseEvent)
 		return FALSE;

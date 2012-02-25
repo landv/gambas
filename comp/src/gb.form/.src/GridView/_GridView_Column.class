@@ -5,15 +5,20 @@ Export
 Property Read X As Integer
 Property Width, W As Integer
 Property Text As String
+Property Resizable As Boolean
+Property Expand As Boolean
 
 Event _Refresh
 
 Public _X As Integer
+Public _W As Integer
 
 Private $W As Integer
 Private $sText As String
+Private $bResizable As Boolean = True
+Private $bExpand As Boolean
 
-Private Sub GetView() As MyGridView
+Private Sub GetView() As GridView
   
   Return Object.Parent(Object.Parent(Me))
   
@@ -27,13 +32,20 @@ End
 
 Private Function Width_Read() As Integer
 
-  Return $W
+  Return Max(_W, $W)
 
 End
 
+Public Sub _GetExplicitWidth() As Integer
+  
+  Return $W
+  
+End
+
+
 Private Sub Width_Write(Value As Integer)
 
-  If Value < 4 Or If Value > 1024 Then Return
+  If Value < 4 Or If Value > 1024 Or If Value = $W Then Return
   $W = Value
   Raise _Refresh
 
@@ -56,5 +68,30 @@ End
 Private Function X_Read() As Integer
 
   Return _X
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  $bExpand = Value
+  Raise _Refresh
 
 End

@@ -1,15 +1,18 @@
 ' Gambas class file
 
+Private $aArr As String[] = ["a", "b"]
+Private $bBug As Boolean
+
 Public Sub _new()
   
   Dim I As Integer
   
   gvwView.Columns.Count = 4
-  gvwView.Rows.Count = 1000000
+  gvwView.Rows.Count = 100 '0000
   
   For I = 0 To gvwView.Columns.Count - 1
     gvwView.Columns[I].Text = "Column #" & CStr(I)
-    gvwView.Columns[I].Width = 120
+    gvwView.Columns[I].Width = 100
   Next
   
   gvwView.Rows[0].Height = 60
@@ -21,10 +24,18 @@ Public Sub _new()
     .Text = "Bonjour\ntout le\nmonde !"
     .Background = Color.Yellow
     .Padding = 10
-    .Alignment = Align.Right
+    .Picture = Picture["icon:/32/warning"]
+    .RowSpan = 2
+    .ColumnSpan = 2
+    .Alignment = Align.Center
+    .Font = Font["Bold"]
   End With
   
+  gvwView.Rows[2].Height = 80
+  
   gvwView.Rows[gvwView.Rows.Count - 1].Text = "*"
+  
+  Button3_Click
   
 End
 
@@ -44,6 +55,8 @@ Public Sub gvwView_Data(Row As Integer, Column As Integer)
   gvwView.Data.Padding = 2
   
   If Row Mod 10 = 0 Then gvwView.Data.Foreground = Color.Red
+  
+  If $bBug And If Row = 4 And If Column = 2 Then gvwView.Data.Text = $aArr[3]
   
 End
 
@@ -95,5 +108,20 @@ End
 Public Sub Button1_Click()
 
   gvwView.Clear
+
+End
+
+Public Sub Button2_Click()
+
+  $bBug = True
+
+End
+
+Public Sub Button3_Click()
+
+  'Debug "**** "; gvwView.W;; gvwView.H;; ":";; gvwView.ClientX;; gvwView.ClientY;; gvwView.ClientW;; gvwView.ClientH
+  gvwView[gvwView.Rows.Count - 1, 0].EnsureVisible
+  'gvwView[0, 0].EnsureVisible
+  'Debug "**** ScrollX = "; gvwView.ScrollX
 
 End
