@@ -42,14 +42,28 @@ DECLARE_EVENT(EVENT_draw);
 
 ***************************************************************************/
 
+static void cleanup_drawing(intptr_t _object)
+{
+	if (THIS->painted)
+		PAINT_end();
+	else
+		DRAW_end();
+}
+
 static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h) 
 {
 	CWIDGET *_object = GetObject(sender);
+	GB_RAISE_HANDLER handler;
 	
 	//fprintf(stderr, "expose: %d %d %d %d\n", x, y, w, h);
 	
 	if (GB.CanRaise(THIS, EVENT_draw))
 	{
+		handler.callback = cleanup_drawing;
+		handler.data = (intptr_t)THIS;
+			
+		GB.RaiseBegin(&handler);
+		
 		if (THIS->painted)
 		{
 			PAINT_begin(THIS);
@@ -68,6 +82,8 @@ static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h)
 			
 			DRAW_end();
 		}
+		
+		GB.RaiseEnd(&handler);
 	}
 }
 

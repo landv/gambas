@@ -484,6 +484,8 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		__BUTTON_TRY_PROXY:
 		
+			cancel = false;
+		
 			if (control->onMouseEvent)
 			{
 				if (control->canRaise(control, type))
@@ -499,28 +501,22 @@ static void gambas_handle_event(GdkEvent *event)
 					switch ((int)event->type)
 					{
 						case GDK_BUTTON_PRESS: 
-							control->onMouseEvent(control, gEvent_MousePress);
+							cancel = control->onMouseEvent(control, gEvent_MousePress);
 							break;
 						
 						case GDK_2BUTTON_PRESS: 
-							control->onMouseEvent(control, gEvent_MouseDblClick); 
+							cancel = control->onMouseEvent(control, gEvent_MouseDblClick); 
 							break;
 						
 						case GDK_BUTTON_RELEASE: 
-							control->onMouseEvent(control, gEvent_MouseRelease); 
+							cancel = control->onMouseEvent(control, gEvent_MouseRelease); 
 							break;
 					}
 					
 					gMouse::invalidate();
 				}
-				
-				if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
-				{
-					if (control->onMouseEvent(control, gEvent_MouseMenu))
-						return;
-				}
 			}
-			
+				
 			if (type == gEvent_MousePress && control->isTopLevel())
 			{
 				gMainWindow *win = ((gMainWindow *)control);
@@ -537,6 +533,15 @@ static void gambas_handle_event(GdkEvent *event)
 			else if (type == gEvent_MouseRelease && control->_grab)
 			{
 				gApplication::exitLoop(control);
+			}
+			
+			if (cancel)
+				return;
+				
+			if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
+			{
+				if (control->onMouseEvent(control, gEvent_MouseMenu))
+					return;
 			}
 			
 			if (control->_proxy_for)
@@ -560,7 +565,7 @@ static void gambas_handle_event(GdkEvent *event)
 				
 				gMouse::validate();
 				gMouse::setMouse(x, y, 0, event->motion.state);
-				control->onMouseEvent(control, gEvent_MouseMove);
+				cancel = control->onMouseEvent(control, gEvent_MouseMove);
 				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
 				if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
 						//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
@@ -569,6 +574,9 @@ static void gambas_handle_event(GdkEvent *event)
 					control->onMouseEvent(control, gEvent_MouseDrag);
 				}
 				gMouse::invalidate();
+				
+				if (cancel)
+					return;
 			}
 
 			if (control->_proxy_for)
