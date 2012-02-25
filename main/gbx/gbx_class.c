@@ -646,23 +646,40 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 
 // The _free method can be called during a conversion, so we must save the EXEC structure
 
+static void *_CLASS_free_object;
+static EXEC_GLOBAL *_CLASS_free_exec;
+
+static void error_CLASS_free()
+{
+	void *object = _CLASS_free_object;
+	((OBJECT *)object)->ref = 0;
+	OBJECT_release(OBJECT_class(object), object);
+	EXEC = *_CLASS_free_exec;
+}
+
 void CLASS_free(void *object)
 {
 	CLASS *class = OBJECT_class(object);
 	EXEC_GLOBAL save = EXEC;
 
-	//fprintf(stderr, "> CLASS_free: %s %p\n", class->name, object);
+	void *save_object = _CLASS_free_object;
+	void *save_exec = _CLASS_free_exec;
 	
-	((OBJECT *)object)->ref = 1; /* Prevents anybody from freeing the object ! */
-	//fprintf(stderr, "CLASS_free: %s %p\n", class->name, object);
-	EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
-	((OBJECT *)object)->ref = 0;
+	_CLASS_free_object = object;
+	_CLASS_free_exec = &save;
 	
-	EXEC = save;
-
-	OBJECT_release(class, object);
-
-	//fprintf(stderr, "< CLASS_free: %s %p\n", class->name, object);
+	ON_ERROR(error_CLASS_free)
+	{
+		((OBJECT *)object)->ref = 1; /* Prevents anybody from freeing the object ! */
+		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
+		((OBJECT *)object)->ref = 0;
+		EXEC = save;
+		OBJECT_release(class, object);
+	}
+	END_ERROR
+	
+	_CLASS_free_object = save_object;
+	_CLASS_free_exec = save_exec;
 }
 
 #if DEBUG_REF
