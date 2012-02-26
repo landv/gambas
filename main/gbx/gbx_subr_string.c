@@ -195,15 +195,21 @@ void SUBR_space(void)
 
 	if (len == 0)
 	{
-		STRING_void_value(RETURN);
+		STRING_void_value(&SP[-1]);
 	}
 	else
 	{
-		STRING_new_temp_value(RETURN, NULL, len);
-		memset(RETURN->_string.addr, ' ', len);
+		char *str = STRING_new(NULL, len);
+		memset(str, ' ', len);
+		SP--;
+		SP->type = T_STRING;
+		SP->_string.addr = str;
+		SP->_string.start = 0;
+		SP->_string.len = len;
+		SP++;
 	}
 
-	SUBR_LEAVE();
+	//SUBR_LEAVE();
 }
 
 
@@ -295,13 +301,13 @@ void SUBR_upper(ushort code)
 	SUBR_ENTER_PARAM(1);
 	
 	if (SUBR_check_string(PARAM))
-		STRING_void_value(RETURN);
+		STRING_void_value(&SP[-1]);
 	else
 	{
 		len = PARAM->_string.len;
 		if (len > 0)
 		{
-			str = STRING_new_temp(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
+			str = STRING_new(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
 		
 			if (code & 0x3F)
 			{
@@ -314,14 +320,15 @@ void SUBR_upper(ushort code)
 					str[i] = toupper(str[i]);
 			}
 			
-			RETURN->type = T_STRING;
-			RETURN->_string.addr = str;
-			RETURN->_string.start = 0;
-			RETURN->_string.len = len;
+			SP--;
+			RELEASE_STRING(SP);
+			SP->type = T_STRING;
+			SP->_string.addr = str;
+			SP->_string.start = 0;
+			SP->_string.len = len;
+			SP++;
 		}
 	}
-	
-	SUBR_LEAVE();
 }
 
 void SUBR_lower(void)
@@ -900,6 +907,8 @@ __SHELL:
   	str = conv;
 		lstr = str ? strlen(str) : 0;
 	}
+	
+	// TODO: The following works with bash, but not with dash!
 	
 	for (i = 0; i < lstr; i++)
 	{

@@ -189,21 +189,25 @@ void SUBR_exec(ushort code)
 	{
 		if (process->to_string)
 		{
-			RETURN->type = T_STRING;
-			RETURN->_string.addr = process->result;
-			RETURN->_string.start = 0;
-			RETURN->_string.len = STRING_length(process->result);
-
-			STRING_unref_keep(&process->result);
+			char *result = process->result;
 			process->result = NULL;
+			
+			RELEASE_MANY(SP, NPARAM);
+			
+			SP->type = T_STRING;
+			SP->_string.addr = result;
+			SP->_string.start = 0;
+			SP->_string.len = STRING_length(result);
+			SP++;
+
 			OBJECT_UNREF(process, "subr_exec");
 		}
 		else
 		{
 			RETURN->_object.class = CLASS_Process;
 			RETURN->_object.object = process;
+			SUBR_LEAVE();
 		}
-		SUBR_LEAVE();
 	}
 	else
 	{

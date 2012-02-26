@@ -252,7 +252,8 @@ void SUBR_linput(void)
 	addr = STREAM_line_input(stream, NULL);
 
 	SP--;
-	RELEASE_OBJECT(SP);
+	if (!TYPE_is_integer(SP->type))
+		RELEASE_OBJECT(SP);
 	
 	SP->type = T_STRING;
 	SP->_string.addr = addr;

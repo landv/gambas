@@ -200,6 +200,12 @@ BEGIN_PROPERTY(System_Shell)
 
 END_PROPERTY
 
+/*BEGIN_METHOD_VOID(System_ClearMemoryCache)
+
+	MEMORY_clear_cache();
+
+END_METHOD*/
+
 #endif
 
 GB_DESC NATIVE_User[] =
@@ -237,6 +243,7 @@ GB_DESC NATIVE_System[] =
 	GB_CONSTANT("Architecture", "s", ARCHITECTURE),
 	
 	GB_STATIC_METHOD("GetExternSymbol", "p", System_GetExternSymbol, "(Library)s(Symbol)s"),
+	//GB_STATIC_METHOD("ClearMemoryCache", NULL, System_ClearMemoryCache, NULL),
 	
 	GB_STATIC_PROPERTY_SELF("User", "User"),
 

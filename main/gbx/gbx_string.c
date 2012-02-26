@@ -333,6 +333,9 @@ char *STRING_free_later(char *ptr)
 		}
 		#endif
 
+		//if (STRING_last[_index] && STRING_length(STRING_last[_index]) >= 1024)
+		//	fprintf(stderr, "STRING_free_later: free [%d] %d\n", _index, STRING_length(STRING_last[_index]));
+		
 		STRING_unref(&STRING_last[_index]);
 
 		#ifdef DEBUG_ME
@@ -341,6 +344,8 @@ char *STRING_free_later(char *ptr)
 		#endif
 
 		STRING_last[_index] = ptr;
+		//if (STRING_length(ptr) >= 1024)
+		//	fprintf(stderr, "STRING_free_later: [%d] = %d\n", _index, STRING_length(ptr));
 
 		_index++;
 
@@ -358,19 +363,10 @@ int STRING_get_free_index(void)
 }
 
 
-
-/*void STRING_init(void)
-{
-	HASH_TABLE_create(&_intern, 0, GB_COMP_NOCASE);
-}*/
-
-void STRING_exit(void)
+void STRING_clear_cache(void)
 {
 	int i;
-
-	#ifdef DEBUG_ME
-	fprintf(stderr, "STRING_exit\n");
-	#endif
+	
 	for (i = 0; i < STRING_last_count; i++)
 	{
 		#ifdef DEBUG_ME
@@ -384,6 +380,16 @@ void STRING_exit(void)
 	_index = 0;
 	
 	clear_pool();
+}
+
+
+void STRING_exit(void)
+{
+	STRING_clear_cache();
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "STRING_exit\n");
+	#endif
 	
 	if (_conv_unicode_utf8 != ((iconv_t)-1))
 		iconv_close(_conv_unicode_utf8);

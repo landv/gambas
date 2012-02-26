@@ -39,9 +39,11 @@ int MEMORY_count = 0;
 
 //#define DEBUG_ME
 
-#if DEBUG_MEMORY
+#if defined(DEBUG_ME) || DEBUG_MEMORY
+size_t MEMORY_size = 0;
+#endif
 
-int MEMORY_size = 0;
+#if DEBUG_MEMORY
 
 static int _id = 0;
 ALLOC *_alloc = NULL;
@@ -79,11 +81,12 @@ void MEMORY_init(void)
 	#endif
 }
 
-void MEMORY_exit(void)
+void MEMORY_clear_cache()
 {
 #if OPTIMIZE_MEMORY
 	int i;
 	void *ptr, *next;
+	size_t size = 0;
 	
 	for (i = 0; i < POOL_SIZE; i++)
 	{
@@ -91,11 +94,27 @@ void MEMORY_exit(void)
 		while (ptr)
 		{
 			next = *((void **)ptr);
+			size += (i + 1) * SIZE_INC;
+			#if DEBUG_ME
+			MEMORY_size -= (i + 1) * SIZE_INC;
+			#endif
 			free(ptr);
 			ptr = next;
 		}
+		_pool[i] = NULL;
+		_pool_count[i] = 0;
 	}
+	
+	#if DEBUG_ME
+	fprintf(stderr, "free %ld bytes [%ld / %p]\n", size, MEMORY_size, sbrk(0));
+	#endif
+	
 #endif
+}
+
+void MEMORY_exit(void)
+{
+	MEMORY_clear_cache();
 
 #if DEBUG_MEMORY
   if (MEMORY_count)
@@ -307,7 +326,7 @@ void *my_malloc(size_t len)
 		{
 			ptr = _pool[pool];
 			#ifdef DEBUG_ME
-			fprintf(stderr, "my_malloc: %d bytes from pool #%d -> %p\n", size, pool, ptr + 1);
+			fprintf(stderr, "my_malloc: %d bytes from pool #%d -> %p [%ld / %p]\n", size, pool, ptr + 1, MEMORY_size, sbrk(0));
 			#endif
 			_pool[pool] = *((void **)ptr);
 			_pool_count[pool]--;
@@ -316,11 +335,14 @@ void *my_malloc(size_t len)
 		}
 	}
 	
+	#ifdef DEBUG_ME
+  MEMORY_size += size;
+	#endif
 	ptr = malloc(size);
 	if (!ptr)
 		THROW_MEMORY();
 	#ifdef DEBUG_ME
-	fprintf(stderr, "my_malloc: %d bytes from malloc -> %p\n", size, ptr + 1);
+	fprintf(stderr, "my_malloc: %d bytes from malloc -> %p [%ld / %p]\n", size, ptr + 1, MEMORY_size, sbrk(0));
 	#endif
 	*ptr++ = size;
 	return ptr;
@@ -348,7 +370,7 @@ void my_free(void *alloc)
 		if (_pool_count[pool] < POOL_MAX)		
 		{
 			#ifdef DEBUG_ME
-			fprintf(stderr, "my_free: (%p) %d bytes to pool #%d\n", alloc, size, pool);
+			fprintf(stderr, "my_free: (%p) %d bytes to pool #%d [%ld / %p]\n", alloc, size, pool, MEMORY_size, sbrk(0));
 			#endif
 			*((void **)ptr) = _pool[pool];
 			_pool[pool] = ptr;
@@ -358,7 +380,8 @@ void my_free(void *alloc)
 	}
 	
 	#ifdef DEBUG_ME
-	fprintf(stderr, "my_free: (%p) %d bytes freed\n", alloc, size);
+  MEMORY_size -= size;
+	fprintf(stderr, "my_free: (%p) %d bytes freed [%ld / %p]\n", alloc, size, MEMORY_size, sbrk(0));
 	#endif
 	free(ptr);
 }
@@ -388,6 +411,10 @@ void *my_realloc(void *alloc, size_t new_len)
 	}
 	else if (size > POOL_MAX_LEN && new_size > POOL_MAX_LEN)
 	{
+		#ifdef DEBUG_ME
+		MEMORY_size += new_size - size;
+		fprintf(stderr, "my_realloc: (%p) %d bytes reallocated to %d [%ld / %p]\n", alloc, size, new_size, MEMORY_size, sbrk(0));
+		#endif
 		ptr = realloc(ptr, new_size);
 		if (!ptr)
 			THROW_MEMORY();

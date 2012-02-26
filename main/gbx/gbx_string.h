@@ -70,6 +70,7 @@ extern const char STRING_char_string[];
 
 void STRING_init(void);
 void STRING_exit(void);
+void STRING_clear_cache(void);
 
 char *STRING_new(const char *src, int len);
 #define STRING_new_zero(_src) \
