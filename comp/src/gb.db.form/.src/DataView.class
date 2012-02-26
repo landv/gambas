@@ -229,14 +229,14 @@ Private Sub Load()
     $hCtrl.Rows[$hCtrl.Row].Selected = True
   Endif
   
-  Try $hCtrl.Rows[$iRowNewRecord].Text = $iRowNewRecord + 1
+  Try $hCtrl.Rows[$iRowNewRecord].Text = "" '$iRowNewRecord + 1
   $iRowNewRecord = -1
   If CanEdit() Then CreateNewRecord
 
   Dec $iNoRefresh 
   $hCtrl.Refresh
 
-  EnsureRowVisible($hCtrl.Row)
+  EnsureRowVisible(Max(0, $hCtrl.Row))
   UpdateCurrentRowHeight
 
 End
@@ -493,6 +493,8 @@ End
 Private Sub UpdateCurrentRowHeight()
 
   Dim I, H As Integer
+  
+  If $hCtrl.Row < 0 Then Return
   
   If $bEditable Then
     For I = 0 To $hCtrl.Columns.Count - 1

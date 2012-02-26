@@ -234,7 +234,6 @@ Private Sub Redraw(Optional bUpdate As Boolean)
   SetCreateMode($iIndex < 0)
 
   For Each hChild In GetChildren()
-    'DEBUG hChild.Name
     If Common.IsControl(hChild) Or If hChild Is DataSource Then
       hChild.Update
     Else If hChild Is DataBrowser Or If hChild Is DataView Then

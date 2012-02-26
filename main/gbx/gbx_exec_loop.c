@@ -1663,6 +1663,8 @@ _CATCH:
 
 _BREAK:
 
+	//DEBUG_where(); fputc('\n', stderr);
+
 	if (EXEC_debug && CP && CP->component == COMPONENT_main)
 	{
 		//TRACE.ec = PC + 1;

@@ -51,10 +51,12 @@
     { btnKill ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Delete table")
+      AutoResize = True
+      Text = ("Remove")
       Picture = Picture["icon:/small/delete"]
     }
     { btnRename ToolButton
-      MoveScaled(20,0,13,4)
+      MoveScaled(24,0,9,4)
       ToolTip = ("Rename table")
       AutoResize = True
       Text = ("Rename...")
