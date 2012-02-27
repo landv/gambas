@@ -904,14 +904,14 @@ void EXEC_function_loop()
 					ERROR_set_last(TRUE);
 					
 					// The stack is popped until reaching the stack position at the function start
-					while (SP > BP)
+					while (SP > (BP + FP->n_local))
 						POP();
 					
 					PC = EC;
 					EC = NULL;
 					retry = TRUE;
 				}
-				// There is no event handler in the function
+				// There is no error handler in the function
 				else
 				{
 					#if DEBUG_ERROR
@@ -945,11 +945,16 @@ void EXEC_function_loop()
 					}
 					else
 					{
+						// We leave stack frames until we find either:
+						// - A stack frame that has an error handler.
+						// - A void stack frame created by EXEC_enter_real()
+						
 						ERROR_lock();
 						while (PC != NULL && EC == NULL)
 							EXEC_leave_drop();
 						ERROR_unlock();
 
+						// If we got the void stack frame, then we remove it and raise the error again
 						if (PC == NULL)
 						{
 							/*printf("try to propagate\n");*/
@@ -960,6 +965,7 @@ void EXEC_function_loop()
 							PROPAGATE();
 						}
 
+						// We have a TRY too, handle it.
 						if (EP != NULL)
 						{
 							#if DEBUG_ERROR
@@ -975,6 +981,18 @@ void EXEC_function_loop()
 							/* On va directement sur le END TRY */
 						}
 
+						// Now we can handle the CATCH
+						
+						// The stack is popped until reaching the stack position at the function start
+						ERROR_lock();
+						#if DEBUG_ERROR
+						DEBUG_where();
+						fprintf(stderr, "#5 BP + local = %d  SP = %d\n", BP + FP->n_local - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+						#endif
+						while (SP > (BP + FP->n_local))
+							POP();
+						ERROR_unlock();
+					
 						PC = EC;
 						EC = NULL;
 
