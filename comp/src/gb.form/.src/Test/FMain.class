@@ -8,7 +8,7 @@ Public Sub _new()
   Dim I As Integer
   
   gvwView.Columns.Count = 4
-  gvwView.Rows.Count = 100 '0000
+  gvwView.Rows.Count = 1000000
   
   For I = 0 To gvwView.Columns.Count - 1
     gvwView.Columns[I].Text = "Column #" & CStr(I)
@@ -20,20 +20,20 @@ Public Sub _new()
     gvwView.Rows[Int(Rnd(0, gvwView.Rows.Count))].Height = 60
   Next
   
-  With gvwView[2, 2]
+  With gvwView[2, 1]
     .Text = "Bonjour\ntout le\nmonde !"
     .Background = Color.Yellow
     .Padding = 10
     .Picture = Picture["icon:/32/warning"]
-    .RowSpan = 2
+    .RowSpan = 4
     .ColumnSpan = 2
     .Alignment = Align.Center
-    .Font = Font["Bold"]
+    .Font = Font["0,Bold"]
   End With
   
   gvwView.Rows[2].Height = 80
   
-  gvwView.Rows[gvwView.Rows.Count - 1].Text = "*"
+  gvwView.Rows[gvwView.Rows.Count - 1].Text = "Création"
   
   Button3_Click
   

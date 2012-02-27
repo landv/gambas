@@ -15,7 +15,7 @@ Export
 
 Property Count As Integer
 Property Read Max As Integer
-Property Read Width, W As Integer
+Property Width, W As Integer
 Property Resizable As Boolean
 Property Height, H As Integer
 
@@ -28,6 +28,7 @@ Private $aHeight As Integer[]
 Private $bResizable As Boolean = True
 Private $cText As Collection
 Private $iDefaultHeight As Integer 
+Private $iWidth As Integer
 
 Private $hSel As New GridViewSelection
 
@@ -161,7 +162,13 @@ Private Function Width_Read() As Integer
 
   With GetView()
     If $nRows Then
-      If .Header = .Vertical Or If .Header = .Both Then Return .Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+      If .Header = .Vertical Or If .Header = .Both Then 
+        If $iWidth Then
+          Return $iWidth
+        Else
+          Return .Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8
+        Endif
+      Endif
     Endif
   End With
 
@@ -229,8 +236,14 @@ End
 
 Public Sub _SetRowText(iRow As Integer, sText As String)
   
+  Dim W As Integer
+  
   If Not $cText Then $cText = New Collection
   $cText[iRow] = sText
+  If sText Then
+    W = GetView().Font.TextWidth(sText) + 16
+    If W > Width_Read() Then $iWidth = W
+  Endif
   
 End
 
@@ -312,5 +325,11 @@ End
 Private Function Max_Read() As Integer
 
   Return $nRows - 1
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  $iWidth = Max(0, Value)
 
 End
