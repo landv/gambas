@@ -904,7 +904,7 @@ void EXEC_function_loop()
 					ERROR_set_last(TRUE);
 					
 					// The stack is popped until reaching the stack position at the function start
-					while (SP > (BP + FP->n_local))
+					while (SP > (BP + FP->n_local + FP->n_ctrl))
 						POP();
 					
 					PC = EC;
@@ -987,9 +987,9 @@ void EXEC_function_loop()
 						ERROR_lock();
 						#if DEBUG_ERROR
 						DEBUG_where();
-						fprintf(stderr, "#5 BP + local = %d  SP = %d\n", BP + FP->n_local - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+						fprintf(stderr, "#5 BP + local + ctrl = %d  SP = %d\n", BP + FP->n_local + FP->n_ctrl - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
 						#endif
-						while (SP > (BP + FP->n_local))
+						while (SP > (BP + FP->n_local + FP->n_ctrl))
 							POP();
 						ERROR_unlock();
 					
