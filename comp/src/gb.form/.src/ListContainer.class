@@ -61,13 +61,13 @@ Private Sub AttachRec(hItem As Control)
   'Object.Attach(hItem, ME, "Child")
   hObs = New Observer(hItem) As "Child"
   
-  'Try hCont = hItem
-  'If Not hCont Then Return
-  'If hCont Is UserControl Then Return
+  Try hCont = hItem
+  If Not hCont Then Return
+  If hCont Is UserControl Then Return
 
-  'FOR EACH hItem IN hCont.Children
-  '  AttachRec(hItem)
-  'NEXT
+  For Each hItem In hCont.Children
+    AttachRec(hItem)
+  Next
 
 End
 
@@ -83,7 +83,13 @@ End
 
 Public Sub ScrollView_NewChild(Child As Control)
 
-  'Debug Me.Name
+  If Me.Design Then Return 
+  AttachRec(Child)
+  
+End
+
+Public Sub Child_NewChild(Child As Control)
+
   If Me.Design Then Return 
   AttachRec(Child)
   
