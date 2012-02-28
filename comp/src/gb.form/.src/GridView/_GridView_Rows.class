@@ -333,3 +333,15 @@ Private Sub Width_Write(Value As Integer)
   $iWidth = Max(0, Value)
 
 End
+
+Public Sub Remove(Start As Integer, Optional Length As Integer = 1)
+  
+  GetView()._RemoveRows(Start, Length)
+  
+End
+
+Public Sub Insert(Start As Integer, Optional Length As Integer = 1)
+  
+  GetView()._InsertRows(Start, Length)
+  
+End

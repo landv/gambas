@@ -41,12 +41,6 @@ typedef
 		void *(*GetPicture)(GdkPixbuf *buf);
 		void *(*GetImage)(GdkPixbuf *buf);
 		struct {
-			void (*FooterProperty)(void *, void *);
-			void (*ColumnFooterTextProperty)(void *, void *);
-			void (*ColumnsGetMethod)(void *, void *);
-			}
-			GridView;
-		struct {
 			void* (*GetDrawable)(void *);
 			void* (*GetStyle)(void *);
 			int   (*GetState)(void *);

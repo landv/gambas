@@ -8,7 +8,7 @@ Public Sub _new()
   Dim I As Integer
   
   gvwView.Columns.Count = 4
-  gvwView.Rows.Count = 1000000
+  gvwView.Rows.Count = 10000
   
   For I = 0 To gvwView.Columns.Count - 1
     gvwView.Columns[I].Text = "Column #" & CStr(I)
@@ -34,8 +34,6 @@ Public Sub _new()
   gvwView.Rows[2].Height = 80
   
   gvwView.Rows[gvwView.Rows.Count - 1].Text = "Création"
-  
-  Button3_Click
   
 End
 
@@ -113,7 +111,7 @@ End
 
 Public Sub Button2_Click()
 
-  $bBug = True
+  gvwView.Rows.Insert(0, 1)
 
 End
 
@@ -123,5 +121,11 @@ Public Sub Button3_Click()
   gvwView[gvwView.Rows.Count - 1, 0].EnsureVisible
   'gvwView[0, 0].EnsureVisible
   'Debug "**** ScrollX = "; gvwView.ScrollX
+
+End
+
+Public Sub Button4_Click()
+
+  gvwView.Rows.Remove(0, 1)
 
 End

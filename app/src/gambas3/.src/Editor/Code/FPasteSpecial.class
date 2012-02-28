@@ -32,6 +32,7 @@ Public Sub Run(hEditor As Editor, Optional iMode As Integer = MODE_NORMAL) As Bo
       Case MODE_COMMENT
         PasteComment(sFormat)
     End Select
+    $hEditor.SetFocus
     Return
   Endif
   
@@ -59,6 +60,7 @@ Public Sub btnOK_Click()
   Else If radPasteStringSplit.Value Then 
     PasteStringSplit(sFormat)
   Endif
+  $hEditor.SetFocus
 
   Me.Close(True)
   

@@ -81,10 +81,12 @@ Public Sub DrawingArea_Draw()
   
   If Not $hProjectInfo Then Return
   
-  If $bHighlight And If Not $hDrawingArea.Hovered Then
-    DrawingArea_Leave
-    Return
-  Endif
+  'If $bHighlight And If Not $hDrawingArea.Hovered Then
+  '  DrawingArea_Leave
+  '  Return
+  'Endif
+  
+  If $bHighlight Then Draw.FillRect(0, 0, Draw.W, Draw.H, Color.LightBackground)
   
   bSelected = Me.Background = Color.SelectedBackground
   
@@ -107,10 +109,17 @@ Public Sub DrawingArea_Draw()
   End With
   
   If $hDrawingArea.HasFocus Then
-    Draw.Foreground = Color.SelectedBackground
-    Draw.LineStyle = Line.Dot
-    Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+    Paint.Begin(Draw.Device)
+    Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+    Paint.Fill
+    Paint.End
   Endif
+  ' If $hDrawingArea.HasFocus Then
+  '   Draw.Foreground = Color.SelectedBackground
+  '   Draw.LineStyle = Line.Dot
+  '   Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+  ' Endif
   
 End
 
@@ -118,8 +127,9 @@ Public Sub DrawingArea_Enter()
   
   If $bCanHighlight Then
     'If not $bHighlight Then 
-      $hDrawingArea.Background = Color.LightBackground
+      '$hDrawingArea.Background = Color.LightBackground
       $bHighlight = True
+      $hDrawingArea.Refresh
     'Endif
   Endif
   
@@ -128,8 +138,9 @@ End
 Public Sub DrawingArea_Leave()
   
   If $bHighlight Then 
-    $hDrawingArea.Background = Color.Default
+    '$hDrawingArea.Background = Color.Default
     $bHighlight = False
+    $hDrawingArea.Refresh
   Endif
   
 End

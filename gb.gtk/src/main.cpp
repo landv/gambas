@@ -66,7 +66,6 @@
 #include "CSpinBox.h"
 #include "CSplitter.h"
 #include "CStock.h"
-#include "CGridView.h"
 #include "CSeparator.h"
 #include "cprinter.h"
 #include "csvgimage.h"
@@ -190,13 +189,6 @@ extern "C"
 		CScrollViewDesc,
 		CSpinBoxDesc,
 		CSeparatorDesc,
-		/*CGridViewItemDesc,
-		CGridViewDataDesc,
-		CGridViewColumnDesc,
-		CGridViewRowDesc,
-		CGridViewColumnsDesc,
-		CGridViewRowsDesc,
-		CGridViewDesc,*/
 		CStockDesc,
 		PrinterDesc,
 		SvgImageDesc,
@@ -209,9 +201,6 @@ extern "C"
 		(void *)my_main,
 		(void *)GTK_GetPicture,
 		(void *)GTK_GetImage,
-		(void *)CGRIDVIEW_footer,
-		(void *)CGRIDVIEW_column_footer_text,
-		(void *)CGRIDVIEW_columns_get,
 		(void *)DRAW_get_drawable,
 		(void *)DRAW_get_style,
 		(void *)DRAW_get_state,

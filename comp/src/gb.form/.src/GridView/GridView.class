@@ -395,9 +395,9 @@ Public Sub ScrollArea_Draw()
         iRowSpan = aSpan[0]
         iColSpan = aSpan[1]
         
-        ' Draw.ClipRect = hClip
-        ' Draw.Foreground = Color.Green
-        ' Draw.Text(iRowSpan & " / " & iColSpan, X, Y, $hColumns[J].Width, H, Align.Center)
+        'Draw.ClipRect = hClip
+        'Draw.Foreground = Color.Green
+        'Draw.Text(iRowSpan & " / " & iColSpan, X, Y, $hColumns[J].Width, H, Align.Center)
         
         If iRowSpan < 0 Then R += iRowSpan
         If iColSpan < 0 Then C += iColSpan
@@ -1357,26 +1357,62 @@ Public Sub ScrollArea_Arrange()
   
 End
 
-' Private Function RowCount_Read() As Integer
+Private Sub MoveCell(iRowSrc As Integer, iColSrc As Integer, iRowDst As Integer, iColDst As Integer)
+  
+  Dim S, D As String
+  Dim aSpan As String[]
+  
+  S = GetCellKey(iRowSrc, iColSrc)
+  D = GetCellKey(iRowDst, iColDst)
+  
+  $cCells[D] = $cCells[S]
+  $cCells[S] = Null
+  
+  ' If HasSpan(iRowSrc, iColSrc) Then
+  '   aSpan = _GetSpan(iRowSrc, iColSrc)
+  '   _SetSpan(iRowSrc, iColSrc, 0, 0)
+  '   _SetSpan(iRowDst, iColDst, aSpan[0], aSpan[1])
+  ' Endif
+  
+End
+
+
+Public Sub _RemoveRows(Start As Integer, Length As Integer)
+  
+  Dim I, J, D As Integer
+  
+  If Start < 0 Or If Start >= $hRows.Count Or Length <= 0 Or (Start + Length) > $hRows.Count Then Error.Raise("Bad argument")
+  
+  D = Start
+  
+  'For J = 0 To $hColumns.Max
+  '  _SetSpan(D, J, 0, 0)
+  'Next
+  
+  For I = Start + Length To $hRows.Max
+    For J = 0 To $hColumns.Max
+      MoveCell(I, J, D, J)
+    Next
+    Inc D
+  Next
+  
+  $hRows.Count -= Length
+  
+End
+
+Public Sub _InsertRows(Start As Integer, Length As Integer)
+  
+  Dim I, J As Integer
+  
+  If Start < 0 Or If Length <= 0 Or If Start > $hRows.Count Then Error.Raise("Bad argument")
+  
+  For I = $hRows.Max DownTo Start
+    For J = 0 To $hColumns.Max
+      MoveCell(I, J, I + Length, J)
+    Next
+  Next
+  
+  $hRows.Count += Length
+  
+End
 ' 
-'   Return $hRows.Count
-' 
-' End
-' 
-' Private Sub RowCount_Write(Value As Integer)
-' 
-'   $hRows.Count = Value
-' 
-' End
-' 
-' Private Function ColumnCount_Read() As Integer
-' 
-'   Return $hColumns.Count
-' 
-' End
-' 
-' Private Sub ColumnCount_Write(Value As Integer)
-' 
-'   $hColumns.Count = Value
-' 
-' End

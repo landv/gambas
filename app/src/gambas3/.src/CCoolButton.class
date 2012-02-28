@@ -14,7 +14,7 @@ Private $iColor As Integer
 Private $bInside As Boolean
 Private $iHighlight As Integer = Color.SelectedBackground
 
-Event Click()
+Event Click
 
 
 Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Integer, H As Integer, sText As String, vIcon As Variant, Optional sFont As String)
@@ -24,7 +24,6 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
   $hPanel.Mouse = Mouse.Pointing
   $hPanel.Arrangement = Arrange.Horizontal
   $hPanel.Spacing = True
-  '$hPanel.Margin = True
   $hPanel.Focus = True
 
   If TypeOf(vIcon) = gb.String Then
@@ -36,21 +35,6 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
   $sText = sText
 
   If sFont Then $hPanel.Font = Font[sFont]
-  ' $hImage = New PictureBox($hPanel) As "Panel"
-  ' If hPict Then
-  '   $hImage.Resize(hPict.Width + 8, H - Desktop.Scale * 2)
-  '   $hImage.Alignment = Align.Right
-  '   $hImage.Picture = hPict
-  ' Else
-  '   $hImage.Resize(32, H - Desktop.Scale * 2)
-  ' Endif
-  ' 
-  ' $hLabel = New TextLabel($hPanel) As "Panel"
-  ' $hLabel.Expand = True
-  ' $hLabel.Wrap = False
-  ' $hLabel.Alignment = Align.Normal
-  ' If sFont Then $hLabel.Font = Font[sFont]
-  ' $hLabel.Text = sText
 
 End
 
@@ -63,13 +47,17 @@ End
 
 Public Sub Panel_Draw()
   
+  If $bInside Then Draw.FillRect(0, 0, Draw.W, Draw.H, $iHighlight)
+  
   Draw.Picture($hPict, 8, ($hPanel.H - $hPict.H) \ 2)
   Draw.Text($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
   
   If $hPanel.HasFocus Then
-    Draw.Foreground = $iHighlight '$hPanel.Background
-    Draw.LineStyle = Line.Dot
-    Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+    Paint.Begin(Draw.Device)
+    Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    Paint.Brush = Paint.Color(Color.SetAlpha($iHighlight, 192))
+    Paint.Fill
+    Paint.End
   Endif
   
 End
@@ -77,15 +65,7 @@ End
 
 Public Sub Panel_Enter()
 
-  Dim hPanel As DrawingArea
-
-  Try hPanel = Last
-  If Not hPanel Then Return
-
-  '$iColor = hPanel.Foreground
-  hPanel.Background = $iHighlight 'Color.LightBackground '&88D5FF&
-  '$hLabel.Foreground = Color.SelectedForeground
-  'hPanel.Foreground = Color.Foreground '&88D5FF&
+  '$hPanel.Background = $iHighlight 'Color.LightBackground '&88D5FF&
   $bInside = True
   UpdateBorder
 
@@ -93,14 +73,7 @@ End
 
 Public Sub Panel_Leave()
 
-  Dim hPanel As DrawingArea
-
-  Try hPanel = Last
-  If Not hPanel Then Return
-
-  hPanel.Background = Color.Default 'Last.Parent.Background
-  'hPanel.Foreground = $iColor
-  '$hLabel.Foreground = Color.Default
+  '$hPanel.Background = Color.Default 'Last.Parent.Background
   $bInside = False
   UpdateBorder
 
@@ -135,19 +108,6 @@ Public Sub Panel_KeyRelease()
 End
 
 
-Private Function GetPanel() As DrawingArea
-
-  Dim hPanel As DrawingArea
-
-  Try hPanel = Last
-  If Error Then
-    hPanel = Last.Parent
-  Endif
-
-  Return hPanel
-
-End
-
 Private Sub Pressed(bOff As Boolean)
   
   ' If bOff Then
@@ -174,7 +134,6 @@ End
 
 Public Sub Panel_MouseUp()
 
-  Dim hPanel As DrawingArea
   Dim X As Integer
   Dim Y As Integer
 
@@ -182,22 +141,11 @@ Public Sub Panel_MouseUp()
 
   Pressed(False)
 
-  hPanel = GetPanel()
-
   X = Mouse.X
   Y = Mouse.Y
 
-  If Last <> hPanel Then
-    X = X + Last.X
-    Y = Y + Last.Y
-  Endif
-
-  If X >= 0 And If Y >= 0 And If X < hPanel.W And If Y < hPanel.H Then
-
-    Raise Click
-    Stop Event
-
-  Endif
+  Raise Click
+  Stop Event
 
 End
 

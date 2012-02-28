@@ -3368,7 +3368,6 @@ Public Sub mnuPretty_Click()
   Y = Editor.Line
   Editor.Begin
   If Not bSelected Then Editor.SelectAll
-  Print Editor.Selection.Text
   Editor.Insert(sNewText)
   Editor.Goto(Y, X)
   Editor.End

@@ -1357,6 +1357,14 @@ ScrollArea_Arrange
 m
 
 
+_RemoveRows
+m
+
+(Start)i(Length)i
+_InsertRows
+m
+
+(Start)i(Length)i
 #IconPanel
 UserContainer
 C
@@ -3027,6 +3035,10 @@ _SetRowHeight
 m
 
 (iRow)i(H)i
+Remove
+m
+
+(Start)i[(Length)i]
 _GetHeight
 m
 i
@@ -3071,6 +3083,10 @@ _RestoreSelection
 m
 
 (hSel)GridViewSelection;
+Insert
+m
+
+(Start)i[(Length)i]
 #_IconPanelContainer
 UserControl
 C
