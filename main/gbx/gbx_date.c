@@ -715,6 +715,12 @@ void DATE_add(VALUE *date, int period, int val)
 
 		case DP_YEAR:
 			ds.year += val;
+			if (ds.month == 2 && ds.day == 29)
+			{
+				d = days_in_months[date_is_leap_year(ds.year)][ds.month];
+				if (ds.day > d)
+					ds.day = d;
+			}
 			goto __MAKE_DATE;
 
 		default:
