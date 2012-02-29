@@ -415,6 +415,9 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		desc[i].variable.class = sclass;
 		
 		var[i].type = ctype;
+
+		size = CLASS_sizeof_ctype(class, ctype);
+		pos = align_pos(pos, size);
 		var[i].pos = pos;
 		
 		if (sclass->debug)
@@ -433,8 +436,6 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		sclass->table[i].name = field;
 		sclass->table[i].len = len;
 
-		size = CLASS_sizeof_ctype(class, ctype);
-		pos = align_pos(pos, size);
 		pos += size; //sizeof_ctype(class, var->type);
 	}
 	
