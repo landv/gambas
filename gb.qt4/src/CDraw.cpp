@@ -964,7 +964,7 @@ static void rich_text_size(GB_DRAW *d, char *text, int len, int sw, int *w, int 
 	if (sw > 0)
 		rt.setTextWidth(sw);
 	
-	if (w) *w = rt.idealWidth();
+	if (w) *w = ceil(rt.idealWidth());
 	if (h) *h = rt.size().height();
 }
 
