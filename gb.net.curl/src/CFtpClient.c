@@ -267,11 +267,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(FtpClient_new)
 
-	char *tmp;
-	
-	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("ftp://127.0.0.1:21")));
-	THIS_URL=tmp;
-	strcpy(tmp,"ftp://127.0.0.1:21");
+	THIS_URL = GB.NewZeroString("ftp://127.0.0.1:21");
 
 	THIS->async = TRUE;
 	
