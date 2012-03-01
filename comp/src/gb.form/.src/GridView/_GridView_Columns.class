@@ -6,6 +6,7 @@ Property Count As Integer
 Property Read Max As Integer
 Property Read Height, H As Integer
 Property Resizable As Boolean
+Property Width, W As Integer
 
 Event _Refresh
 
@@ -177,5 +178,25 @@ End
 Private Function Max_Read() As Integer
 
   Return $aColumns.Max
+
+End
+
+Private Function Width_Read() As Integer
+
+  If $aColumns.Count Then Return $aColumns[0].Width
+  Return -1
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  Dim hCol As _GridView_Column
+  
+  For Each hCol In $aColumns
+    Object.Lock(hCol)
+    hCol.Width = Value
+    Object.Unlock(hCol)
+  Next
+  _Layout
 
 End

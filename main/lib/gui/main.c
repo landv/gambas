@@ -49,6 +49,8 @@ int EXPORT GB_INIT(void)
 			return FALSE;
 	}
 	
+	comp = "gb.gtk";
+	
 	env = getenv("KDE_FULL_SESSION");
 	
 	if (env && !strcmp(env, "true"))
@@ -56,11 +58,7 @@ int EXPORT GB_INIT(void)
 		env = getenv("KDE_SESSION_VERSION");
 		if (env && !strcmp(env, "4"))
 			comp = "gb.qt4";
-		else
-			comp = "gb.qt";
 	}
-	else
-		comp = "gb.gtk";
 		
 	if (GB.LoadComponent(comp))
 		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);

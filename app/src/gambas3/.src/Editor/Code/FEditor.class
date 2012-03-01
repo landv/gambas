@@ -1081,7 +1081,9 @@ Public Sub Editors_KeyPress()
 
     If aSymbol.Count >= 4 Then
       If aSymbol[0] = "PROPERTY" Or If aSymbol[0] = "STATIC" And aSymbol[1] = "PROPERTY" Then
+        Editor.Insert("\n")
         InsertProperty
+        Stop Event
         Return
       Endif
     Endif

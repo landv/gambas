@@ -48,7 +48,7 @@ typedef
   PACKED
   ALLOC;
 
-EXTERN int MEMORY_size;
+EXTERN size_t MEMORY_size;
 EXTERN FILE *MEMORY_log;
 
 #define ALLOC(_ptr, _size, _src)        MEMORY_alloc((void *)_ptr, _size, _src)
