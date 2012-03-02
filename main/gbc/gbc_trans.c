@@ -44,6 +44,7 @@
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
 int TRANS_in_affectation = 0;
+bool TRANS_in_try = FALSE;
 
 void TRANS_reset(void)
 {

@@ -150,6 +150,14 @@ static bool TRANS_local(void)
 	return TRUE;
 }
 
+void TRANS_stop(void)
+{
+	if (TRANS_is(RS_EVENT))
+		CODE_stop_event();
+	else
+		CODE_stop();
+}
+
 
 void TRANS_statement(void)
 {

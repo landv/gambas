@@ -115,6 +115,7 @@ enum {
 
 #ifndef __GBC_TRANS_C
 EXTERN int TRANS_in_affectation;
+EXTERN bool TRANS_in_try;
 //EXTERN int TRANS_in_expression;
 #endif
 
@@ -190,6 +191,7 @@ void TRANS_with(void);
 void TRANS_use_with(void);
 void TRANS_end_with(void);
 void TRANS_raise(void);
+void TRANS_stop(void);
 
 /* trans_subr.c */
 
@@ -209,7 +211,6 @@ void TRANS_unlock(void);
 void TRANS_seek(void);
 void TRANS_line_input(void);
 void TRANS_flush(void);
-void TRANS_stop(void);
 void TRANS_quit(void);
 void TRANS_exec(void);
 void TRANS_shell(void);

@@ -274,6 +274,17 @@ static void control_check_loop_var(short var)
 	current_ctrl->loop_var = var;
 }
 
+static void check_try(const char *name)
+{
+	if (TRANS_in_try)
+	{
+		TRANS_in_try = FALSE;
+		if (name)
+			THROW("Cannot use TRY with &1", name);
+		else
+			THROW("Cannot use TRY twice");
+	}
+}
 
 void TRANS_control_init()
 {
@@ -557,6 +568,8 @@ void TRANS_goto()
 {
 	int index;
 
+	check_try("GOTO");
+	
 	if (!PATTERN_is_identifier(*JOB->current))
 		THROW(E_SYNTAX);
 
@@ -793,6 +806,8 @@ void TRANS_break(void)
 {
 	TRANS_CTRL *ctrl_inner = control_get_inner();
 
+	check_try("BREAK");
+
 	if (!ctrl_inner)
 		THROW(E_UNEXPECTED, "BREAK");
 
@@ -805,6 +820,8 @@ void TRANS_continue(void)
 {
 	TRANS_CTRL *ctrl_inner = control_get_inner();
 
+	check_try("CONTINUE");
+	
 	if (!ctrl_inner)
 		THROW(E_UNEXPECTED, "CONTINUE");
 
@@ -984,21 +1001,16 @@ void TRANS_next(void)
 
 void TRANS_try(void)
 {
-	static int no_try = 0;
 	ushort pos;
 
-	if (no_try)
-	{
-		no_try = 0;
-		THROW("Cannot use TRY twice");
-	}
+	check_try(NULL);
 
 	pos = CODE_get_current_pos();
 	CODE_try();
 
-	no_try++;
+	TRANS_in_try = TRUE;
 	TRANS_statement();
-	no_try--;
+	TRANS_in_try = FALSE;
 
 	CODE_jump_length(pos, CODE_get_current_pos());
 	CODE_end_try();

@@ -57,7 +57,7 @@ typedef
 		unsigned public_module : 1;        /* modules symbols are public by default */
 		unsigned trans_error : 1;          /* display error messages in a translatable form */
 		unsigned no_old_read_syntax : 1;   /* do not compile the old read syntax */
-		unsigned column : 1;               /* search column when there is an error */
+		unsigned column : 1;               /* search column where there is an error */
 		unsigned _reserved : 18;           /* reserved*/
 		char *output;                      /* output file */
 		PATTERN *pattern;                  /* lexical analyze */
