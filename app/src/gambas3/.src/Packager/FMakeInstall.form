@@ -142,20 +142,18 @@
     }
     Index = 2
     Text = ("Target distribution")
-    { PanSystem ScrollView
-      MoveScaled(0,0,88,68)
+    { panSystem ScrollView
+      MoveScaled(1,0,88,66)
       Expand = True
       Arrangement = Arrange.Vertical
       Border = False
       ScrollBar = Scroll.Vertical
-      { HBox10 HBox
+      { HBox10 HBox panDistro
+        Name = "HBox10"
         MoveScaled(0,0,83,8)
         Tag = "archlinux"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton7 ToolButton
-          MoveScaled(0,0,7,7)
+          MoveScaled(0,0,9,8)
           Picture = Picture["img/logo/archlinux.png"]
           Toggle = True
         }
@@ -166,14 +164,12 @@
           Text = ("Archlinux")
         }
       }
-      { HBox15 HBox
+      { HBox15 HBox panDistro
+        Name = "HBox15"
         MoveScaled(0,8,83,8)
         Tag = "autotools"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton8 ToolButton
-          MoveScaled(0,0,7,7)
+          MoveScaled(0,0,8,8)
           Picture = Picture["img/logo/package-gnu.png"]
           Toggle = True
         }
@@ -184,14 +180,12 @@
           Text = ("Autotools")
         }
       }
-      { HBox5 HBox
+      { HBox5 HBox panDistro
+        Name = "HBox5"
         MoveScaled(0,16,83,8)
         Tag = "debian"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton3 ToolButton
-          MoveScaled(0,0,7,7)
+          MoveScaled(0,0,8,8)
           Picture = Picture["img/logo/debian.png"]
           Toggle = True
         }
@@ -202,14 +196,12 @@
           Text = ("Debian")
         }
       }
-      { HBox6 HBox
+      { HBox6 HBox panDistro
+        Name = "HBox6"
         MoveScaled(0,24,83,8)
         Tag = "fedora"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton4 ToolButton
-          MoveScaled(0,0,7,7)
+          MoveScaled(0,0,8,7)
           Picture = Picture["img/logo/fedora.png"]
           Toggle = True
         }
@@ -220,30 +212,26 @@
           Text = ("Fedora")
         }
       }
-      { HBox3 HBox
+      { HBox3 HBox panDistro
+        Name = "HBox3"
         MoveScaled(0,32,83,8)
         Tag = "mandriva"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton2 ToolButton
-          MoveScaled(0,0,7,7)
-          Picture = Picture["img/logo/mandriva.png"]
+          MoveScaled(0,0,8,8)
+          Picture = Picture["img/logo/mageia.png"]
           Toggle = True
         }
         { chkMandriva CheckBox chkDistro
           Name = "chkMandriva"
-          MoveScaled(9,1,26,4)
+          MoveScaled(9,1,33,4)
           Expand = True
-          Text = ("Mandriva Linux")
+          Text = ("Mandriva / Mageia")
         }
       }
-      { HBox7 HBox
+      { HBox7 HBox panDistro
+        Name = "HBox7"
         MoveScaled(0,40,83,8)
         Tag = "suse"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton5 ToolButton
           MoveScaled(0,0,7,7)
           Picture = Picture["img/logo/suse.png"]
@@ -256,12 +244,10 @@
           Text = ("OpenSUSE")
         }
       }
-      { HBox4 HBox
+      { HBox4 HBox panDistro
+        Name = "HBox4"
         MoveScaled(0,48,83,8)
         Tag = "slackware"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton1 ToolButton
           MoveScaled(0,0,7,7)
           Picture = Picture["img/logo/slackware.png"]
@@ -274,12 +260,10 @@
           Text = ("Slackware")
         }
       }
-      { HBox9 HBox
+      { HBox9 HBox panDistro
+        Name = "HBox9"
         MoveScaled(0,56,83,8)
         Tag = "ubuntu"
-        Spacing = True
-        Margin = True
-        Padding = 4
         { ToolButton6 ToolButton
           MoveScaled(0,0,7,7)
           Picture = Picture["img/logo/ubuntu.png"]

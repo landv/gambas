@@ -155,6 +155,7 @@ typedef
 	struct {
 		RESERVED_ID id;
 		void (*func)();
+		bool no_try;
 		}
 	TRANS_STATEMENT;
 

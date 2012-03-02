@@ -197,6 +197,7 @@ Private Sub InitSystemControls()
   Dim hLabel As TextLabel
   Dim hTool As ToolButton
   Dim hCheckBox As CheckBox
+  Dim hSpace As Panel
 
   Inc Application.Busy
   
@@ -212,7 +213,7 @@ Private Sub InitSystemControls()
         hTool = hCtrl
       Else If hCtrl Is CheckBox Then 
         hCheckBox = hCtrl
-      Else If hCtrl Is Panel Then 
+      Else If hCtrl Is Panel And If Panel(hCtrl).Border Then 
         hPanel = hCtrl
       Endif 
     Next
@@ -220,8 +221,8 @@ Private Sub InitSystemControls()
     If Not hPanel Then 
     
       hPanel = New Panel(hCont)
-      hPanel.Border = Border.Plain
-      hPanel.Background = &HFFFFDF
+      'hPanel.Border = Border.Plain
+      'hPanel.Background = &HFFFFDF
       hPanel.Arrangement = Arrange.Horizontal
       hPanel.Margin = True
       hPanel.Spacing = True
@@ -232,11 +233,18 @@ Private Sub InitSystemControls()
       hPict = New PictureBox(hPanel)
       hPict.Picture = Picture["icon:/32/warning"]
       hPict.Width = 32
+      hPict.Alignment = Align.Center
       
       hLabel = New TextLabel(hPanel)
       hLabel.Text = sMsg
+      hLabel.Alignment = Align.Normal
+      hLabel.Font.Italic = True
       hLabel.Expand = True
-
+      
+      hSpace = New Panel(hCont)
+      hSpace.Resize(16, 4)
+      hSpace.Previous = hTool
+      
     Endif
 
     hCheckBox.Enabled = Not sMsg
@@ -244,7 +252,8 @@ Private Sub InitSystemControls()
 
     hTool.Design = True
     hTool.Enabled = hCheckBox.Value
-    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2).Picture
+    hTool.Width = hTool.Height
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 4, hTool.Height - 4).Picture
     
     hPanel.Visible = sMsg
 
@@ -822,7 +831,7 @@ End
 Public Sub chkDistro_Click()
 
   Dim hCheckBox As CheckBox = Last
-  Dim hButton As ToolButton = hCheckBox.Previous
+  Dim hButton As Control = hCheckBox.Previous
   
   hButton.Enabled = hCheckBox.Value
   
@@ -1101,5 +1110,13 @@ Public Sub tvwFile_Save(Row As Integer, Column As Integer, Value As String)
   aRow[Column] = Value
   $aFile[Row] = aRow.Join(":")
   SaveExtraFiles
+
+End
+
+Public Sub panDistro_Arrange()
+
+  With Last.Children[0]
+    .Width = .Height
+  End With
 
 End

@@ -370,10 +370,10 @@ msgstr ""
 
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
 #: FConflict.class:191 FConnectionEditor.class:295 FCreateFile.form:437
-#: FDebugInfo.form:218 FEditor.class:2380 FExportData.class:126
+#: FDebugInfo.form:218 FEditor.class:2390 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3144
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
-#: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:378
+#: FList.form:121 FMain.class:200 FMakeInstall.class:336 FMenu.form:378
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:174 FOption.class:618 FPasteSpecial.form:77
 #: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:691
@@ -621,7 +621,7 @@ msgid "Sol&ve"
 msgstr ""
 
 #: FConflict.form:184 FIconEditor.class:1428 FImportTable.form:218
-#: FMakeInstall.class:276 FSystemInfo.form:81 FTips.form:84
+#: FMakeInstall.class:285 FSystemInfo.form:81 FTips.form:84
 msgid "Close"
 msgstr ""
 
@@ -691,7 +691,7 @@ msgstr ""
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.form:132 FMakeInstall.class:959
+#: FConnectionEditor.form:132 FMakeInstall.class:968
 msgid "Remove"
 msgstr ""
 
@@ -1197,7 +1197,7 @@ msgstr ""
 msgid "Add expression"
 msgstr ""
 
-#: FDebugInfo.form:119 FMakeInstall.form:564 FPropertyComponent.form:184
+#: FDebugInfo.form:119 FMakeInstall.form:548 FPropertyComponent.form:184
 msgid "&Add"
 msgstr ""
 
@@ -1205,7 +1205,7 @@ msgstr ""
 msgid "Remove current expression"
 msgstr ""
 
-#: FDebugInfo.form:127 FMain.form:759 FMakeInstall.form:570 FOption.form:821
+#: FDebugInfo.form:127 FMain.form:759 FMakeInstall.form:554 FOption.form:821
 #: FPropertyComponent.form:190 FPropertyProject.form:432
 msgid "&Remove"
 msgstr ""
@@ -1440,14 +1440,14 @@ msgstr ""
 msgid "Procedure list"
 msgstr ""
 
-#: FEditor.class:2380 FIconEditor.class:2048 FTextEditor.class:498
+#: FEditor.class:2390 FIconEditor.class:2048 FTextEditor.class:498
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2803
+#: FEditor.class:2815
 msgid "(Declarations)"
 msgstr ""
 
@@ -2115,11 +2115,11 @@ msgstr ""
 msgid "&Delete"
 msgstr ""
 
-#: FList.form:70 FMakeInstall.form:576
+#: FList.form:70 FMakeInstall.form:560
 msgid "&Up"
 msgstr ""
 
-#: FList.form:76 FMakeInstall.form:582
+#: FList.form:76 FMakeInstall.form:566
 msgid "&Down"
 msgstr ""
 
@@ -2711,117 +2711,117 @@ msgstr ""
 msgid "Target distribution"
 msgstr ""
 
-#: FMakeInstall.form:291
+#: FMakeInstall.form:289
 msgid "Archlinux"
 msgstr ""
 
-#: FMakeInstall.form:312
+#: FMakeInstall.form:308
 msgid "Autotools"
 msgstr ""
 
-#: FMakeInstall.form:333
+#: FMakeInstall.form:327
 msgid "Debian"
 msgstr ""
 
-#: FMakeInstall.form:354
+#: FMakeInstall.form:346
 msgid "Fedora"
 msgstr ""
 
-#: FMakeInstall.form:375
-msgid "Mandriva Linux"
+#: FMakeInstall.form:365
+msgid "Mandriva / Mageia"
 msgstr ""
 
-#: FMakeInstall.form:396
+#: FMakeInstall.form:384
 msgid "OpenSUSE"
 msgstr ""
 
-#: FMakeInstall.form:417
+#: FMakeInstall.form:403
 msgid "Slackware"
 msgstr ""
 
-#: FMakeInstall.form:438
+#: FMakeInstall.form:422
 msgid "Ubuntu"
 msgstr ""
 
-#: FMakeInstall.form:443
+#: FMakeInstall.form:427
 msgid "Package group"
 msgstr ""
 
-#: FMakeInstall.form:463
+#: FMakeInstall.form:447
 msgid "Menu entry"
 msgstr ""
 
-#: FMakeInstall.form:485
+#: FMakeInstall.form:469
 msgid "Categories"
 msgstr ""
 
-#: FMakeInstall.form:494
+#: FMakeInstall.form:478
 msgid "Desktop configuration file"
 msgstr ""
 
-#: FMakeInstall.form:500
+#: FMakeInstall.form:484
 msgid "Mimetypes"
 msgstr ""
 
-#: FMakeInstall.form:507
+#: FMakeInstall.form:491
 msgid ""
 "Enter the mimetypes handled by your application there.<br>\n"
 "Please enter one mimetype by line.\n"
 msgstr ""
 
-#: FMakeInstall.form:519
+#: FMakeInstall.form:503
 msgid "Additional configuration"
 msgstr ""
 
-#: FMakeInstall.form:526
+#: FMakeInstall.form:510
 msgid ""
 "The following will be added to the end of the desktop configuration file."
 msgstr ""
 
-#: FMakeInstall.form:534
+#: FMakeInstall.form:518
 msgid "Extra dependencies"
 msgstr ""
 
-#: FMakeInstall.form:538
+#: FMakeInstall.form:522
 msgid "Same dependencies for all targets"
 msgstr ""
 
-#: FMakeInstall.form:588
+#: FMakeInstall.form:572
 msgid "&Clear"
 msgstr ""
 
-#: FMakeInstall.form:594
+#: FMakeInstall.form:578
 msgid "Extra files"
 msgstr ""
 
-#: FMakeInstall.form:598
+#: FMakeInstall.form:582
 msgid "Same files for all targets"
 msgstr ""
 
-#: FMakeInstall.form:655
+#: FMakeInstall.form:639
 msgid "Extra autoconf tests"
 msgstr ""
 
-#: FMakeInstall.form:660
+#: FMakeInstall.form:644
 msgid ""
 "Add extra tests for the configuration process.\n"
 "<p><b>Leave this blank if you don't need it, or if you don't know anything "
 "about <i>autoconf</i> scripts.</b>"
 msgstr ""
 
-#: FMakeInstall.form:668
+#: FMakeInstall.form:652
 msgid "Destination directory"
 msgstr ""
 
-#: FMakeInstall.form:677
+#: FMakeInstall.form:661
 msgid "Create directories for each distribution"
 msgstr ""
 
-#: FMakeInstall.form:680
+#: FMakeInstall.form:664
 msgid "Create package"
 msgstr ""
 
-#: FMakeInstall.form:685
+#: FMakeInstall.form:669
 msgid ""
 "All needed information have been collected. You can now create the "
 "installation packages for your application...\n"
@@ -2847,84 +2847,84 @@ msgstr ""
 msgid "File name"
 msgstr ""
 
-#: FMakeInstall.class:276 Package.module:188
+#: FMakeInstall.class:285 Package.module:188
 msgid "The packages have been successfully created."
 msgstr ""
 
-#: FMakeInstall.class:276
+#: FMakeInstall.class:285
 msgid "Retry"
 msgstr ""
 
-#: FMakeInstall.class:310
+#: FMakeInstall.class:319
 msgid "Please enter your name."
 msgstr ""
 
-#: FMakeInstall.class:315
+#: FMakeInstall.class:324
 msgid "Please enter your e-mail address."
 msgstr ""
 
-#: FMakeInstall.class:327
+#: FMakeInstall.class:336
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:327 FPropertyProject.class:820 FSave.form:21
+#: FMakeInstall.class:336 FPropertyProject.class:820 FSave.form:21
 #: Project.module:3097
 msgid "Continue"
 msgstr ""
 
-#: FMakeInstall.class:334
+#: FMakeInstall.class:343
 msgid "Please enter the first CHANGELOG entry."
 msgstr ""
 
-#: FMakeInstall.class:344
+#: FMakeInstall.class:353
 msgid "Please choose at least one target distribution."
 msgstr ""
 
-#: FMakeInstall.class:370
+#: FMakeInstall.class:379
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:372
+#: FMakeInstall.class:381
 msgid "Please choose a package group."
 msgstr ""
 
-#: FMakeInstall.class:381
+#: FMakeInstall.class:390
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:383
+#: FMakeInstall.class:392
 msgid "Please choose a menu location."
 msgstr ""
 
-#: FMakeInstall.class:403
+#: FMakeInstall.class:412
 msgid "The package cannot be stored inside the project directory."
 msgstr ""
 
-#: FMakeInstall.class:441
+#: FMakeInstall.class:450
 msgid "Initial release"
 msgstr ""
 
-#: FMakeInstall.class:695
+#: FMakeInstall.class:704
 msgid "Menus"
 msgstr ""
 
-#: FMakeInstall.class:763
+#: FMakeInstall.class:772
 msgid "Groups"
 msgstr ""
 
-#: FMakeInstall.class:887
+#: FMakeInstall.class:896
 msgid "Incorrect characters"
 msgstr ""
 
-#: FMakeInstall.class:959
+#: FMakeInstall.class:968
 msgid "Do you really want to remove all extra dependencies?"
 msgstr ""
 
-#: FMakeInstall.class:1010
+#: FMakeInstall.class:1019
 msgid "Select the destination directory"
 msgstr ""
 
-#: FMakeInstall.class:1084
+#: FMakeInstall.class:1093
 msgid "Do you really want to remove all extra files?"
 msgstr ""
 

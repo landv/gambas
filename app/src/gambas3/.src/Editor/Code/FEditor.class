@@ -927,6 +927,7 @@ Public Sub Editors_KeyPress()
   Dim iIndent As Integer
   Dim sIndent As String
   Dim sClose, sClose2 As String
+  Dim aScan As String[]
 
   If Not Editor.ReadOnly Then
 
@@ -1017,6 +1018,15 @@ Public Sub Editors_KeyPress()
         Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
       Endif
       Stop Event
+      
+    Else If Key.Code = Key.F12 Then
+      
+      For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
+        If InStr(sLine, "[heap]") Then
+          aScan = Scan(sLine, "*-* *")
+          Message("Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes.")
+        Endif
+      Next
 
     Endif
 
@@ -2691,8 +2701,11 @@ Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optiona
   Else
     lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
   Endif
-  lblWatch.Move(X, Y)
   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
+
+  If (Y + lblWatch.H) > lblWatch.Parent.ClientH Then Y -= lblWatch.H + Editor.LineHeight
+  lblWatch.Move(X, Y)
+  
   lblWatch.Show
   lblWatch.Raise
   timWatch.Start
@@ -2764,9 +2777,8 @@ End
 
 Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
 
-  Wait ' If the cursor needs to move first
-  ''ShowMessage(sMsg, "img/logo/logo-64.png", True)
-  'ShowMessage(sMsg, "icon:/32/" & sIcon, True)
+  Editor.SetFocus
+  Wait
   ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
 
 End

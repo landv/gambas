@@ -76,7 +76,7 @@ Private $iDimResize As Integer
 
 Private $bMoveSelect As Boolean
 Private $bMoveUnSelect As Boolean
-Private $iMoveSelectRow As Integer
+Private $iMoveSelectRow As Integer = -1
 Private $hMoveOldSelection As GridViewSelection
 Private $bKeyEvent As Boolean
 Private $bIgnoreMove As Boolean
@@ -701,13 +701,15 @@ End
 
 Public Sub ScrollArea_MouseDown()
   
-  Dim I As Integer
+  Dim I, iOldRow As Integer
   Dim F As Integer = GetFrameWidth()
   
   $MX = Mouse.X - F
   $MY = Mouse.Y - F
   
   If Not Me.Enabled Then Return
+  
+  iOldRow = $iRow
   
   ScrollArea_MouseMove
   
@@ -732,6 +734,14 @@ Public Sub ScrollArea_MouseDown()
           $hMoveOldSelection = $hRows._SaveSelection()
           $bMoveSelect = True
         Endif
+      Else If Mouse.Shift And iOldRow >= 0 Then 
+        $hRows._GetSel().UnSelectAll
+        $hRows.Select(iOldRow, 1)
+        $iMoveSelectRow = iOldRow
+        $hMoveOldSelection = $hRows._SaveSelection()
+        $bMoveSelect = True
+        Dec $iRow
+        MoveTo($iRow + 1, -1)
       Else
         $hRows._GetSel().UnSelectAll
         $hRows.Select($iRow, 1)
@@ -767,6 +777,7 @@ Public Sub ScrollArea_MouseUp()
   $bMoveSelect = False
   $bMoveUnSelect = False
   $hMoveOldSelection = Null
+  $iMoveSelectRow = -1
   $bIgnoreMove = False
   
   If $hTimerScroll Then
@@ -1122,6 +1133,14 @@ Public Sub ScrollArea_KeyPress()
   Dim iRow As Integer
   
   $bKeyEvent = True
+  
+  If $iMode = Select.Multiple Then
+    $bMoveSelect = Key.Shift
+    If $bMoveSelect And If $iMoveSelectRow < 0 Then
+      $iMoveSelectRow = $iRow
+      $hMoveOldSelection = $hRows._SaveSelection()
+    Endif
+  Endif
   
   Select Key.Code
     
