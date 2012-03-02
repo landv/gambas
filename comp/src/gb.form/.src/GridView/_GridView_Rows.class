@@ -318,6 +318,7 @@ End
 Private Sub Height_Write(Value As Integer)
   
   $iDefaultHeight = Value
+  GetView()._ResizeContents()
   
 End
 
