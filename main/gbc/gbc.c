@@ -303,7 +303,7 @@ static void compile_file(const char *file)
 	}
 	
 	COMPILE_load();
-	BUFFER_add(&JOB->source, "\n\n\n\0", 4);
+	BUFFER_add(&JOB->source, "\n\0", 2);
 	
 	#if 0
 	fprintf(stderr, "-----------------\n");
@@ -470,6 +470,8 @@ int main(int argc, char **argv)
 			const char *name = FILE_get_name(JOB->name);
 			if (JOB->line)
 			{
+				if (JOB->line > JOB->max_line)
+					JOB->line = JOB->max_line;
 				
 				if (JOB->column)
 					fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());

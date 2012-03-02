@@ -1173,6 +1173,8 @@ __BREAK:
 	// We add end markers to simplify the compiler job, when it needs to look 
 	// at many patterns in one shot.
 	
+	JOB->max_line = JOB->line - 1;
+	
 	add_newline();
 	add_end();
 	add_end();
