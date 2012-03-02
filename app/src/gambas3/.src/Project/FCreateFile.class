@@ -248,7 +248,7 @@ Private Sub CreateFile() As Boolean
                  "Public Sub btnCancel_Click()\n\n"
                  "\tMe.Close\n\n"
                  "End\n\n" 
-        sTemp = Replace(sTemp, "\t", Project.TabSize)
+        sTemp = Replace(sTemp, "\t", Space$(Project.TabSize))
       Endif
       
       Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
