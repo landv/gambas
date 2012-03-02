@@ -1108,10 +1108,12 @@ END_METHOD
 
 BEGIN_PROPERTY(UserControl_Container)
 
-	CCONTAINER *current = (CCONTAINER *)CWidget::get(CONTAINER);
+	void *current = (CCONTAINER *)CWidget::get(CONTAINER);
 
 	if (READ_PROPERTY)
+	{
 		GB.ReturnObject(current);
+	}
 	else
 	{
 		CCONTAINER *cont = (CCONTAINER *)VPROP(GB_OBJECT);
@@ -1119,9 +1121,11 @@ BEGIN_PROPERTY(UserControl_Container)
 		QWidget *p;
 
 		// sanity checks
-
+		
 		if (!cont)
 		{
+			if (current)
+				CWIDGET_container_for(current, NULL);
 			THIS->container = WIDGET;
 			CWIDGET_register_proxy(THIS, NULL);
 			return;
@@ -1144,6 +1148,10 @@ BEGIN_PROPERTY(UserControl_Container)
 			GB.Error("Container must be a child control");
 		else
 		{
+			if (current)
+				CWIDGET_container_for(current, NULL);
+			CWIDGET_container_for(cont, THIS);
+			
 			THIS->container = w;
 
 			CWIDGET_update_design((CWIDGET *)THIS);

@@ -290,6 +290,34 @@ void CWIDGET_init_name(CWIDGET *_object)
 	set_name(THIS, name);
 }
 
+bool CWIDGET_container_for(void *_object, void *container_for)
+{
+	if (THIS_EXT)
+	{
+		if (container_for)
+		{
+			if (!THIS_EXT->container_for)
+			{
+				THIS_EXT->container_for = container_for;
+				return false;
+			}
+		}
+		else
+		{
+			THIS_EXT->container_for = NULL;
+			return false;
+		}
+	}
+	else
+	{
+		if (container_for)
+			ENSURE_EXT(THIS)->container_for = container_for;
+		return false;
+	}
+	
+	return true;
+}
+
 void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
 	//QAbstractScrollArea *sa;
@@ -2084,6 +2112,12 @@ void CWidget::destroy()
 			EXT(THIS_EXT->proxy)->proxy_for = NULL;
 		if (THIS_EXT->proxy_for)
 			EXT(THIS_EXT->proxy_for)->proxy = NULL;
+		
+		if (THIS_EXT->container_for)
+		{
+			((CCONTAINER *)THIS_EXT->container_for)->container = ((CWIDGET *)THIS_EXT->container_for)->widget;
+			THIS_EXT->container_for = NULL;
+		}
 	
 		GB.Unref(POINTER(&THIS_EXT->cursor));
 		GB.FreeString(&THIS_EXT->popup);

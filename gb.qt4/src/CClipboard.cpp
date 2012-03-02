@@ -325,9 +325,9 @@ static void show_frame(CWIDGET *control, int x, int y, int w, int h)
 	int i;
 	
 	if (GB.Is(control, CLASS_Container))
-	wid = QCONTAINER(control);
-else
-	wid = QWIDGET(control);
+		wid = QCONTAINER(control);
+	else
+		wid = QWIDGET(control);
 	
 	if (w <= 0 || h <= 0)
 	{

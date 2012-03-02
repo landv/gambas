@@ -241,7 +241,7 @@ Public Sub _SetRowText(iRow As Integer, sText As String)
   If Not $cText Then $cText = New Collection
   $cText[iRow] = sText
   If sText Then
-    W = GetView().Font.TextWidth(sText) + 16
+    W = GetView().Font.TextWidth(sText) + 8
     If W > Width_Read() Then $iWidth = W
   Endif
   

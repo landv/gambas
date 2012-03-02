@@ -63,6 +63,7 @@ Private Sub Count_Write(iCount As Integer)
     Next
 
     $aToolBar.Remove(iCount, -1)
+    Index_Write(Min($iCurrent, iCount - 1))
 
   Else
 
