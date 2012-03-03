@@ -2,20 +2,12 @@
 
 Export
 
-' 	GB_PROPERTY_READ("Top", "i", CGRIDITEM_y),
-' 	GB_PROPERTY("Text", "s", CGRIDROWS_text),
-' 	GB_PROPERTY("Title", "s", CGRIDROWS_text),
-' 	GB_PROPERTY("Selected", "b", CGRIDROWS_selected),
-' 	GB_METHOD("Refresh", NULL, CGRIDROWS_refresh, NULL),
-' 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
-' 
-
 Event _Refresh
 
 Property Read Y As Integer
 Property Height, H As Integer
 Property Selected As Boolean
-Property Text As String
+Property Text, Title As String
 
 Public _Row As Integer
 
@@ -57,7 +49,17 @@ End
 
 Private Sub Selected_Write(Value As Boolean)
 
-  GetView()._SelectRow(_Row, Value)
+  Dim hView As GridView = GetView()
+  
+  If hView.Mode = Select.Single Then
+    hView._SelectRow(_Row, Value)
+  Else If hView.Mode = Select.Multiple Then
+    If Value Then
+      GetRows().Select(_Row)
+    Else
+      GetRows().UnSelect(_Row)
+    Endif
+  Endif
 
 End
 
