@@ -59,7 +59,7 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 	{
 		case C_PUSH_UNKNOWN: case C_POP_UNKNOWN:
 		case C_PUSH_INTEGER:
-		case C_JUMP: case C_JUMP_IF_TRUE: case C_JUMP_IF_FALSE:
+		case C_JUMP: case C_JUMP_IF_TRUE: case C_JUMP_IF_FALSE: case C_GOSUB:
 		case C_NEXT: case C_JUMP_NEXT:
 		case C_TRY:
 
@@ -313,6 +313,11 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 					value = code[1];
 					fprintf(out, "%04d ", (short)(addr + value + 2));
 
+					break;
+
+				case C_GOSUB:
+					value = code[1];
+					fprintf(out, "GOSUB %04d", (short)(addr + value + 2));
 					break;
 
 				case C_FIRST:

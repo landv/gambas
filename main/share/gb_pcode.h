@@ -92,6 +92,7 @@
 #define C_JUMP                  0x2000
 #define C_JUMP_IF_TRUE          0x2100
 #define C_JUMP_IF_FALSE         0x2200
+#define C_GOSUB                 0x2300
 
 #define C_JUMP_FIRST            0x2400
 #define C_JUMP_NEXT             0x2500

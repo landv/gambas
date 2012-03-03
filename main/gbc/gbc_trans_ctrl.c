@@ -158,7 +158,7 @@ static TRANS_CTRL *control_get_inner_with(void)
 }
 
 
-static void add_goto(int index)
+static void add_goto(int index, bool gosub)
 {
 	TRANS_GOTO *info;
 
@@ -175,7 +175,10 @@ static void add_goto(int index)
 		printf("add_goto: ctrl_id = %d (%ld)\n", info->ctrl_id, ARRAY_count(goto_info));
 	#endif
 
-	CODE_jump();
+	if (gosub)
+		CODE_gosub();
+	else
+		CODE_jump();
 }
 
 
@@ -576,7 +579,22 @@ void TRANS_goto()
 	index = PATTERN_index(*JOB->current);
 	JOB->current++;
 
-	add_goto(index);
+	add_goto(index, FALSE);
+}
+
+void TRANS_gosub()
+{
+	int index;
+
+	check_try("GOSUB");
+	
+	if (!PATTERN_is_identifier(*JOB->current))
+		THROW(E_SYNTAX);
+
+	index = PATTERN_index(*JOB->current);
+	JOB->current++;
+
+	add_goto(index, TRUE);
 }
 
 

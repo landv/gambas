@@ -203,6 +203,7 @@ void TRANS_statement(void)
 		{ RS_CHMOD, TRANS_chmod },
 		{ RS_CHOWN, TRANS_chown },
 		{ RS_CHGRP, TRANS_chgrp },
+		{ RS_GOSUB, TRANS_gosub },
 
 		{ RS_NONE, NULL }
 	};
@@ -533,7 +534,7 @@ void TRANS_code(void)
 
 		translate_body();
 
-		CODE_return(0);
+		CODE_return(2); // Return from function, ignore Gosub stack
 
 		CODE_end_function(func);
 		FUNCTION_add_pos_line();

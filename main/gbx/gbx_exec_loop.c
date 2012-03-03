@@ -24,6 +24,7 @@
 #define __GBX_EXEC_LOOP_C
 
 #include "gb_common.h"
+#include "gb_common_check.h"
 #include "gb_error.h"
 #include "gbx_type.h"
 #include "gbx_debug.h"
@@ -54,7 +55,6 @@
 
 #define SUBR_beep EXEC_ILLEGAL
 
-
 #define GET_XXX()   (((signed short)(code << 4)) >> 4)
 #define GET_UXX()   (code & 0xFFF)
 #define GET_7XX()   (code & 0x7FF)
@@ -72,7 +72,6 @@ static void _SUBR_add(ushort code);
 static void _SUBR_sub(ushort code);
 static void _SUBR_mul(ushort code);
 static void _SUBR_div(ushort code);
-
 
 static void *SubrTable[] =
 {
@@ -221,7 +220,7 @@ void EXEC_loop(void)
 		/* 20 JUMP            */  &&_JUMP,
 		/* 21 JUMP IF TRUE    */  &&_JUMP_IF_TRUE,
 		/* 22 JUMP IF FALSE   */  &&_JUMP_IF_FALSE,
-		/* 23                 */  &&_ILLEGAL,
+		/* 23 GOSUB           */  &&_GOSUB,
 		/* 24 JUMP FIRST      */  &&_JUMP_FIRST,
 		/* 25 JUMP NEXT       */  &&_JUMP_NEXT,
 		/* 26 FIRST           */  &&_ENUM_FIRST,
@@ -446,8 +445,6 @@ void EXEC_loop(void)
 
 	int NO_WARNING(ind);
 	ushort code;
-	/*ushort uind;*/
-	TYPE type;
 	
 	void _pop_ctrl(int ind)
 	{
@@ -850,6 +847,24 @@ _NEW:
 
 /*-----------------------------------------------*/
 
+_GOSUB:
+	
+	if (!GP)
+	{
+		ALLOC_ZERO(&GP, sizeof(STACK_GOSUB), "EXEC_loop");
+	}
+	
+	if (GP->level == MAX_GOSUB_LEVEL)
+	{
+		ALLOC_ZERO(&GP->next, sizeof(STACK_GOSUB), "EXEC_loop");
+		GP->next->prev = GP;
+		GP = GP->next;
+	}
+	
+	GP->pc[GP->level++] = PC - FP->code;
+
+/*-----------------------------------------------*/
+
 _JUMP:
 
 	PC += (signed short)PC[1] + 2;
@@ -884,33 +899,57 @@ _JUMP_IF_FALSE:
 
 _RETURN:
 
-	if (TEST_XX())
 	{
-		type = FP->type;
-		if (UNLIKELY(TYPE_is_pure_object(type) && ((CLASS *)type)->override))
+		static const void *return_jump[] = { &&__RETURN_GOSUB, &&__RETURN_VALUE, &&__RETURN_VOID };
+		
+		TYPE type;
+		
+		goto *return_jump[GET_UX()];
+		
+	__RETURN_GOSUB:
+		
+		if (!GP)
+			goto __RETURN_VOID;
+
+		if (GP->level == 0)
 		{
-			type = (TYPE)(((CLASS *)type)->override);
-			//FP->type = type;
+			STACK_GOSUB *prev = GP->prev;
+			IFREE(GP, "EXEC_loop");
+			GP = prev;
+			if (!prev)
+				goto __RETURN_VOID;
 		}
+			
+		GP->level--;
+		PC = FP->code + GP->pc[GP->level] + 2;
+		goto _MAIN;
+
+	__RETURN_VALUE:
+	
+		type = FP->type;
+		if (TYPE_is_pure_object(type) && ((CLASS *)type)->override)
+			type = (TYPE)(((CLASS *)type)->override);
 		
 		VALUE_conv(&SP[-1], type);
 		SP--;
 		*RP = *SP;
-		//ERROR_clear();
-		EXEC_leave_keep();
-	}
-	else
-	{
+		
+		goto __RETURN_LEAVE;
+	
+	__RETURN_VOID:
+
 		VALUE_default(RP, FP->type);
-		//ERROR_clear();
+		
+	__RETURN_LEAVE:
+	
 		EXEC_leave_keep();
+
+		if (UNLIKELY(PC == NULL))
+			return;
+
+		goto _NEXT;
 	}
-
-	if (UNLIKELY(PC == NULL))
-		return;
-
-	goto _NEXT;
-
+	
 /*-----------------------------------------------*/
 
 _CALL:
@@ -1266,6 +1305,7 @@ _JUMP_NEXT:
 				&&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST
 			};
 
+		TYPE type;
 		VALUE * NO_WARNING(end);
 		VALUE * NO_WARNING(inc);
 		VALUE * NO_WARNING(val);
@@ -1657,7 +1697,7 @@ _CATCH:
 	if (UNLIKELY(EC == NULL))
 		goto _NEXT;
 	else
-		goto _RETURN;
+		goto __RETURN_VOID;
 
 /*-----------------------------------------------*/
 

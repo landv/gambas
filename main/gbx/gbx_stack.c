@@ -265,3 +265,15 @@ STACK_BACKTRACE *STACK_get_backtrace(void)
 	 
 	return bt;
 }
+
+void STACK_free_gosub_stack(STACK_GOSUB *gosub)
+{
+	STACK_GOSUB *p;
+	
+	while (gosub)
+	{
+		p = gosub;
+		gosub = gosub->next;
+		IFREE(p, "STACK_free_gosub_stack");
+	}
+}

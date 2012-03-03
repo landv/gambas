@@ -84,6 +84,7 @@ COMP_INFO COMP_res_info[] =
 	{ "Break"                                                     },
 	{ "Continue"                                                  },
 	{ "Goto"                                                      },
+	{ "GoSub"                                                     },
 	{ "Me",           0,                        0,          1     },
 	{ "Last",         0,                        0,          1     },
 	{ "Try"                                                       },

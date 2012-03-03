@@ -492,6 +492,7 @@ void EXEC_enter(void)
 	OP = object;
 	CP = class;
 	EP = NULL;
+	GP = NULL;
 
 	if (func->error)
 	{
@@ -582,8 +583,9 @@ void EXEC_enter_quick(void)
 	OP = object;
 	CP = class;
 	EP = NULL;
+	GP = NULL;
 
-	if (UNLIKELY(func->error))
+	if (func->error)
 		EC = PC + func->error;
 	else
 		EC = NULL;

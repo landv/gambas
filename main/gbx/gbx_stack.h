@@ -36,6 +36,17 @@ typedef
 	PACKED
 	STACK_BACKTRACE;
 
+#define MAX_GOSUB_LEVEL 119
+
+typedef
+	struct _STACK_GOSUB {
+		ushort level;
+		ushort pc[MAX_GOSUB_LEVEL];
+		struct _STACK_GOSUB *next;
+		struct _STACK_GOSUB *prev;
+	}
+	PACKED
+	STACK_GOSUB;
 
 typedef
   struct _stack_context {
@@ -51,6 +62,7 @@ typedef
     PCODE *et;        /* TRY save */
     PCODE *tc;        /* Last break in the function */
     VALUE *tp;        /* Stack at the last break in the function */
+    STACK_GOSUB *gp;  /* GOSUB pointer */
     }
   PACKED STACK_CONTEXT;
 
@@ -92,6 +104,8 @@ STACK_BACKTRACE *STACK_get_backtrace(void);
 
 STACK_CONTEXT *STACK_get_frame(int frame);
 void STACK_grow(void);
+
+void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
 #define STACK_get_previous_pc() ((STACK_frame_count <= 0) ? NULL : STACK_frame->pc)
 
@@ -135,6 +149,7 @@ void STACK_grow(void);
 
 #define STACK_pop_frame(_context) \
 ({ \
+  if ((_context)->gp) STACK_free_gosub_stack((_context)->gp); \
   STACK_copy(_context, STACK_frame); \
   STACK_frame++; \
   STACK_frame_count--; \

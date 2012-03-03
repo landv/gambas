@@ -612,7 +612,17 @@ void CODE_jump()
   printf("JUMP\n");
   #endif
   write_short(C_JUMP);
-  /**pos = CODE_get_current_pos();*/
+  write_short(0);
+}
+
+void CODE_gosub()
+{
+  LAST_CODE;
+
+  #ifdef DEBUG
+  printf("GOSUB\n");
+  #endif
+  write_short(C_GOSUB);
   write_short(0);
 }
 
@@ -922,16 +932,13 @@ void CODE_return(int return_value)
 {
   LAST_CODE;
 
-  if (return_value)
-  {
+  if (return_value == 1)
     use_stack(-1);
-    write_ZZxx(C_RETURN, return_value);
-  }
-  else
-    write_ZZxx(C_RETURN, 0);
+	
+  write_ZZxx(C_RETURN, return_value);
 
   #ifdef DEBUG
-  printf("RETURN (%d)\n", return_value ? 1 : 0);
+  printf("RETURN (%d)\n", return_value);
   #endif
 }
 

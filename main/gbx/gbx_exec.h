@@ -127,6 +127,8 @@ EXTERN EXEC_GLOBAL EXEC;
 #define TC EXEC_current.tc
 // Stack at the last break in the function
 #define TP EXEC_current.tp
+// GoSub stack
+#define GP EXEC_current.gp
 
 // Function return value pointer
 #define RP (&RET)
