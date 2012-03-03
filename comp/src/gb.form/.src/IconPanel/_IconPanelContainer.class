@@ -14,9 +14,9 @@ Private Sub GetIconPanel() As IconPanel
   
 End
 
-Private Sub GetIconView() As IconView
+Private Sub GetView() As GridView
   
-  Return GetIconPanel()._GetIconView()
+  Return GetIconPanel()._GetView()
   
 End
 
@@ -34,26 +34,26 @@ End
 
 Private Function Text_Read() As String
 
-  Try Return GetIconView()[GetIndex()].Text
+  Try Return GetView()[GetIndex(), 0].Text
 
 End
 
 Private Sub Text_Write(sText As String)
 
-  Try GetIconView()[GetIndex()].Text = sText
+  Try GetView()[GetIndex(), 0].Text = sText
   GetIconPanel()._UpdateIconViewWidth
 
 End
 
 Private Function Picture_Read() As Picture
 
-  Try Return GetIconView()[GetIndex()].Picture
+  Try Return GetView()[GetIndex(), 0].Picture
 
 End
 
 Private Sub Picture_Write(hPict As Picture)
 
-  Try GetIconView()[GetIndex()].Picture = hPict
+  Try GetView()[GetIndex(), 0].Picture = hPict
   GetIconPanel()._UpdateIconViewWidth
 
 End

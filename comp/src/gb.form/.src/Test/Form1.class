@@ -1,20 +1,9 @@
 ' Gambas class file
 
+Private icwView As IconPanel
 
 Public Sub Form_Open()
 
-  Dim I As Integer
-  Dim hPanel As Panel
-  Dim hLabel As Label
-  
-  For I = 1 To 5
-    hPanel = New Panel(ListContainer1)
-    hPanel.H = 40
-    hPanel.Arrangement = Arrange.Fill
-    hPanel.Padding = 4
-    hPanel.Name = "Label" & I
-    hLabel = New Label(hPanel)
-    hLabel.Text = "Label #" & I
-  Next
+  icwView = New IconPanel(Me)
 
 End

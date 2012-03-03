@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,57)
+  MoveScaled(0,0,92,56)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -31,10 +31,10 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(1,1,90,55)
+    MoveScaled(1,1,90,54)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 7
+    Count = 8
     Index = 0
     Text = ("Interface")
     Picture = Picture["icon:/large/menu"]
@@ -125,7 +125,6 @@
       { cmbIconTheme ComboBox
         MoveScaled(48,0,18,4)
         ReadOnly = True
-        List = []
       }
     }
     { HBox26 HBox
@@ -410,7 +409,6 @@
       { cmbBrowser ComboBox
         MoveScaled(48,0,18,4)
         ReadOnly = True
-        List = []
       }
     }
     { HBox2 HBox
@@ -424,7 +422,6 @@
       { cmbTerminal ComboBox
         MoveScaled(48,0,18,4)
         ReadOnly = True
-        List = []
       }
     }
     { HBox9 HBox
@@ -438,7 +435,6 @@
       { cmbImageEditor ComboBox
         MoveScaled(48,0,18,4)
         ReadOnly = True
-        List = []
       }
     }
     { HBox10 HBox
@@ -537,7 +533,6 @@
         MoveScaled(0,0,33,46)
         Expand = True
         Mode = Select.Single
-        Scrollbar = Scroll.Vertical
       }
       { VBox2 VBox
         MoveScaled(46,1,17,45)
@@ -652,6 +647,44 @@
       }
       { Panel19 Panel
         MoveScaled(59,0,7,4)
+      }
+    }
+    Index = 7
+    Text = ("Packages")
+    Picture = Picture["icon:/32/archive"]
+    { Label33 Label
+      MoveScaled(0,1,66,3)
+      Text = ("Ignore these files in source packages")
+    }
+    { HBox34 HBox
+      MoveScaled(1,6,65,46)
+      Expand = True
+      Spacing = True
+      { tvwIgnore TableView
+        MoveScaled(2,2,39,41)
+        Expand = True
+      }
+      { VBox1 VBox
+        MoveScaled(46,1,17,41)
+        Spacing = True
+        { btnInsertIgnore Button
+          MoveScaled(0,0,17,4)
+          AutoResize = True
+          Text = ("&Add")
+          Picture = Picture["icon:/small/new"]
+        }
+        { btnRemoveIgnore Button
+          MoveScaled(0,5,17,4)
+          AutoResize = True
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/delete"]
+        }
+        { btnResetIgnore Button
+          MoveScaled(0,10,17,4)
+          AutoResize = True
+          Text = ("Re&set")
+          Picture = Picture["icon:/small/undo"]
+        }
       }
     }
     Index = 0

@@ -213,7 +213,11 @@ static int utf8_get_pos(const char *str, int len, int index)
 	}
 	
 	for (i = UTF8_POS_COUNT - 1; i < index; i++)
+	{
+		if (pos >= len)
+			return len;
 		pos += utf8_get_char_length(str[pos]);
+	}
 	
 	return pos;
 }
@@ -266,7 +270,7 @@ static void String_Mid(ushort code)
 {
 	char *str;
 	int start, length;
-	int len, ulen;
+	int len, ulen, upos;
 	bool null;
 
 	SUBR_ENTER();
@@ -311,7 +315,12 @@ static void String_Mid(ushort code)
 		if (length == 1)
 			ulen = utf8_get_char_length(str[ulen]);
 		else
-			ulen = utf8_get_pos(str, len, start + length) - ulen;
+		{
+			upos = utf8_get_pos(str, len, start + length);
+			if (upos > len)
+				upos = len;
+			ulen = upos - ulen;
+		}
 	}
 	
 	if (ulen <= 0)

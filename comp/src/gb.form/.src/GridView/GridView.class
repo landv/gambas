@@ -24,6 +24,9 @@ Property AutoResize As Boolean
 Property Header As Integer
 Property ShowCursor As Boolean
 Property Read Current As _GridView_Cell
+Property Font As Font
+Property Mouse As Integer
+
 'Property RowCount As Integer
 'Property ColumnCount As Integer
 
@@ -54,6 +57,7 @@ Private $iMode As Integer
 Private $iHeader As Integer
 Private $bShowCursor As Boolean
 Private $bAutoResize As Boolean = True
+Private $iDefaultMouse As Integer = Mouse.Default
 
 Private $iRow As Integer
 Private $iCol As Integer
@@ -356,8 +360,8 @@ Public Sub ScrollArea_Draw()
   
   ' Header limits
   
-  If $iHeader And Horizontal Then Draw.FillRect(0, $hColumns.Height + F - 1, $hView.ClientW, 1, iGrid)
-  If $iHeader And Vertical Then Draw.FillRect($hRows.Width + F - 1, 0, 1, $hView.ClientH, iGrid)
+  If $iHeader And Horizontal Then Draw.FillRect(0, $hColumns.Height + F - 1, $hView.ClientW, 1, Color.LightForeground)
+  If $iHeader And Vertical Then Draw.FillRect($hRows.Width + F - 1, 0, 1, $hView.ClientH, Color.LightForeground)
   
   If $hColumns.Count = 0 Or If $hRows.Count = 0 Then Return
   
@@ -574,7 +578,7 @@ Public Sub ScrollArea_MouseMove()
     Return
   Endif
   
-  iMouse = Mouse.Default
+  iMouse = $iDefaultMouse 'Mouse.Default
   
   $iRowResize = -1
   $iColResize = -1
@@ -1435,3 +1439,29 @@ Public Sub _InsertRows(Start As Integer, Length As Integer)
   
 End
 ' 
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Super.Font = Value
+  _ResizeContents
+
+End
+
+Private Function Mouse_Read() As Integer
+
+  Return Super.Mouse
+
+End
+
+Private Sub Mouse_Write(Value As Integer)
+
+  Super.Mouse = Value
+  $iDefaultMouse = Value
+
+End

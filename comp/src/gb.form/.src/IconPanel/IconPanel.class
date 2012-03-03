@@ -18,7 +18,7 @@ Property Font As Font
 Property TextFont As Font
 Property Border As Boolean
 
-Private $hIconView As IconView
+Private $hView As GridView
 Private $aCont As New _IconPanelContainer[]
 
 Private $iCurrent As Integer = -1
@@ -31,12 +31,15 @@ Public Sub _new()
   Me.Arrangement = Arrange.Horizontal
   Me.Spacing = True
 
-  $hIconView = New IconView(Me) As "IconView"
-  $hIconView.Orientation = Arrange.Horizontal
-  $hIconView.IconLines = 2
-  $hIconView.Width = Desktop.Scale * MIN_WIDTH_PANEL
-  $hIconView.Mouse = Mouse.Pointing
-  $hIconView.ScrollBar = Scroll.None
+  $hView = New GridView(Me) As "View"
+  '$hView.Orientation = Arrange.Horizontal
+  '$hView.IconLines = 2
+  $hView.Width = Desktop.Scale * MIN_WIDTH_PANEL
+  $hView.Mouse = Mouse.Pointing
+  $hView.Columns.Count = 1
+  $hView.Mode = Select.Single
+  $hView.Grid = False
+  '$hView.ScrollBar = Scroll.None
   
   $hPanel = New Panel(Me) As "Panel"
   $hPanel.Expand = True
@@ -60,17 +63,26 @@ End
 Public Sub _UpdateIconViewWidth()
   
   Dim iInd As Integer
-  Dim W As Integer
+  Dim W, H, WC As Integer
   
   W = Desktop.Scale * MIN_WIDTH_PANEL
   
   For iInd = 0 To $aCont.Max
     
-    W = Max(W, $hIconView.Font.TextWidth($hIconView[iInd].Text) + $hIconView.IconSize + Desktop.Scale * 4)
+    WC = $hView.Font.TextWidth($hView[iInd, 0].Text) + Desktop.Scale * 4
+    If $hView[iInd, 0].Picture Then WC += $hView[iInd, 0].Picture.Width + Desktop.Scale
+    W = Max(W, WC)
+    
+    H = Max(H, $hView.Font.TextHeight($hView[iInd, 0].Text))
+    If $hView[iInd, 0].Picture Then H = Max(H, $hView[iInd, 0].Picture.Height)
+    
+    $hView[iInd, 0].Padding = Desktop.Scale
     
   Next
   
-  $hIconView.W = Min(W, Me.Width / 2)
+  $hView.Rows.H = H + Desktop.Scale * 2
+  
+  $hView.W = Min(W, Me.Width / 2)
   
 End
 
@@ -103,7 +115,7 @@ Private Sub Count_Write(iCount As Integer)
     
     For iInd = $aCont.Max To iCount Step -1
       $aCont[iInd].Delete
-      $hIconView.Remove(iInd)
+      $hView.Rows.Remove(iInd)
       If iInd <= iCurrent Then Dec iCurrent
     Next
 
@@ -114,11 +126,16 @@ Private Sub Count_Write(iCount As Integer)
     
   Else
 
+    $hView.Rows.Count = iCount
+
     For iInd = $aCont.Count To iCount - 1
       hToolbar = New _IconPanelContainer($hPanel) As "_IconPanelContainer"
       'hToolbar.Text = "Toolbar " & CInt(iInd)
       $aCont.Add(hToolbar)
-      $hIconView.Add(iInd, "Item " & CStr(iInd))
+      '$hView.Add(iInd, "Item " & CStr(iInd))
+      With $hView[iInd, 0]
+        .Text = "Item " & CStr(iInd)
+      End With
       _UpdateIconViewWidth
     Next
     'ME.Container = hCont
@@ -144,7 +161,7 @@ Private Sub Index_Write(iIndex As Integer)
 
   Me._Container = $aCont[iIndex]
   $iCurrent = iIndex
-  $hIconView[$iCurrent].Selected = True
+  $hView.Rows[$iCurrent].Selected = True
 
   UpdateContainer
   Raise Click
@@ -228,19 +245,19 @@ End
 
 Private Function TextFont_Read() As Font
 
-  Return $hIconView.Font
+  Return $hView.Font
 
 End
 
 Private Sub TextFont_Write(Value As Font)
 
-  $hIconView.Font = Value
+  $hView.Font = Value
   
 End
 
-Public Sub _GetIconView() As IconView
+Public Sub _GetView() As GridView
   
-  Return $hIconView
+  Return $hView
   
 End
 
@@ -250,14 +267,13 @@ Public Sub _GetIndex(hCont As _IconPanelContainer) As Integer
   
 End
 
-Public Sub IconView_Select()
+Public Sub View_Select()
   
-  If Not $hIconView.Key Then Return
-  Index_Write(CInt($hIconView.Key))
+  Index_Write($hView.Row)
   
 End
 
-Public Sub IconView_MouseWheel()
+Public Sub View_MouseWheel()
   
   If Mouse.Delta < 0 And If $iCurrent < $aCont.Max Then
     Index_Write($iCurrent + 1)

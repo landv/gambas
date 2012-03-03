@@ -139,11 +139,12 @@ Public Sub _Layout()
     If NX = 0 Then
       
       W = $aColumns[N].Width + VW - W
+      
       If W > 0 Then
         $aColumns[N]._W = W
       Endif
       
-    Else If W < hView.ClientW Then
+    Else If W < VW Then
       
       For I = 0 To N
         If $aColumns[I].Expand Then

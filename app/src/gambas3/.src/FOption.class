@@ -47,6 +47,19 @@ Private Sub ReadConfig()
   
 End
 
+Private Sub LoadIgnoreFiles()
+
+  Dim aIgnore As String[]
+  Dim iInd As Integer
+
+  aIgnore = Project.GetIgnoreFiles()
+  tvwIgnore.Rows.Count = aIgnore.Count
+  For iInd = 0 To aIgnore.Max
+    tvwIgnore[iInd, 0].Text = aIgnore[iInd]
+  Next
+  
+
+End
 
 Public Sub _new()
 
@@ -121,6 +134,9 @@ Public Sub _new()
   
   gvwSnippet.Columns.Count = 2
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
+  
+  tvwIgnore.Columns.Count = 1
+  LoadIgnoreFiles
   
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
@@ -822,5 +838,85 @@ End
 Public Sub cmbFormatOnLoad_Click()
 
   Settings["/FormatCode/FormatOnLoad"] = cmbFormatOnLoad.Index = 1
+
+End
+
+Public Sub tvwIgnore_Click()
+
+  tvwIgnore.Edit
+
+End
+
+Public Sub tvwIgnore_Save(Row As Integer, Column As Integer, Value As String)
+
+  Value = Trim(Value)
+  If Not Value Then
+    tvwIgnore.Rows.Remove(Row)
+  Else
+    tvwIgnore[Row, Column].Text = Value
+  Endif
+  SaveIgnoreFiles
+
+End
+
+Public Sub tvwIgnore_Insert()
+
+  btnInsertIgnore_Click
+
+End
+
+Public Sub btnInsertIgnore_Click()
+
+  If tvwIgnore.Rows.Count = 0 Or If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Then 
+    Inc tvwIgnore.Rows.Count
+  Endif
+  
+  tvwIgnore.MoveTo(tvwIgnore.Rows.Max, 0)
+  tvwIgnore.Edit
+
+End
+
+Public Sub btnRemoveIgnore_Click()
+
+  If tvwIgnore.Row < 0 Then Return
+  tvwIgnore.Save
+  tvwIgnore.Rows.Remove(tvwIgnore.Row)
+  SaveIgnoreFiles
+  tvwIgnore.Edit
+
+End
+
+Public Sub tvwIgnore_Change()
+
+  While tvwIgnore.Rows.Count 
+    If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Or tvwIgnore.Row = tvwIgnore.Rows.Max Then Return
+    Dec tvwIgnore.Rows.Count
+  Wend
+
+End
+
+Private Sub SaveIgnoreFiles()
+  
+  Dim aIgnore As New String[]
+  Dim I As Integer
+  Dim sIgnore As String
+  
+  For I = 0 To tvwIgnore.Rows.Max
+    sIgnore = Trim(tvwIgnore[I, 0].Text)
+    If Not sIgnore Then Continue
+    aIgnore.Add(sIgnore)
+  Next
+  
+  Settings["/IgnoreFiles"] = aIgnore
+  
+End
+
+
+Public Sub btnResetIgnore_Click()
+
+  If Message.Warning(("Do you really want to reset the list to its default value?"), ("Cancel"), ("Reset")) = 1 Then Return
+
+  Settings["/IgnoreFiles"] = ""
+  LoadIgnoreFiles
 
 End

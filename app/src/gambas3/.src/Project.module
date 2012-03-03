@@ -4102,6 +4102,7 @@ Public Sub MakeSourcePackageTo(sPath As String)
 
   Dim sCmd As String
   Dim sOpt As String
+  Dim sIgnore As String
 
   Inc Application.Busy
   
@@ -4124,7 +4125,9 @@ Public Sub MakeSourcePackageTo(sPath As String)
   sCmd &= " --exclude=" & Shell$(".lang/*.pot")
   sCmd &= " --exclude=" & Shell$(".lang/.pot")
   sCmd &= " --exclude=" & Shell$(".xvpics")
-  sCmd &= " --exclude=" & Shell$(".svn")
+  For Each sIgnore In GetIgnoreFiles()
+    sCmd &= " --exclude=" & Shell$(sIgnore)
+  Next
   sCmd &= " " & Shell$(File.Name(Project.Dir)) & " > /dev/null"
 
   Shell sCmd Wait
@@ -5240,4 +5243,10 @@ Catch
   Message.Error("<b>" & Subst(("Unable to convert &1"), File.Name(sPath)) & "</b><p>" & Error.Text & "<br>" & Error.Where)
   Return True
 
+End
+
+Public Sub GetIgnoreFiles() As String[]
+  
+  Return Settings["/IgnoreFiles", [".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"]]
+  
 End
