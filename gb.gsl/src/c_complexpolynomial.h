@@ -26,9 +26,13 @@
 #ifndef __C_GSL_COMPLEXPOLYNOMIAL_H
 #define __C_GSL_COMPLEXPOLYNOMIAL_H
 
-#include "gambas.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "../gambas.h"
+#include "gb_common.h"
 #include <gsl/gsl_poly.h>
 #include "c_complex.h"
+
  
 GB_INTERFACE GB EXPORT;
 
@@ -39,8 +43,10 @@ extern GB_DESC CComplexPolynomialDesc[];
 typedef
   struct {
     GB_BASE ob;
-    gsl_complex *c; // coefficients
+    gsl_complex *c; // complex coefficients
     int len;
+	int max;
+	int alloc_size;
     }
   CCOMPLEXPOLYNOMIAL;
 

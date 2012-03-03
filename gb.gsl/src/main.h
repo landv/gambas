@@ -31,6 +31,7 @@
 #include "c_gsl.h"
 #include "c_complex.h"
 #include "c_polynomial.h"
+#include "c_complexpolynomial.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;

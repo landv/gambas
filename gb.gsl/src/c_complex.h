@@ -32,7 +32,6 @@
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 
-//GSLCOMPLEX GslComplex_Add_Real(GB_FLOAT x);
 
 GB_INTERFACE GB EXPORT;
 
@@ -43,8 +42,6 @@ typedef
     {
         GB_BASE ob;
         gsl_complex number;
-        //double real;
-        //double imagined;
     }
     GSLCOMPLEX;
 

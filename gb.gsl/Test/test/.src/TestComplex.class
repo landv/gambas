@@ -1,0 +1,67 @@
+' Gambas class file
+
+Inherits Test
+
+Public Sub IsEqual(z1 As Complex, z2 As Complex) As Boolean
+  
+  If (z1.Real = z2.Real) And z1.Imag = z2.Imag Then
+    Return True
+  Else
+    Return False
+  Endif
+  
+End
+
+
+Public Sub Run(func As String, result As Variant, expected As Variant, Optional note As String) As Boolean
+  Dim err As Boolean = False
+  
+  Me.Name = func
+  Me.Note = note
+  
+  Me.Expected = expected
+  Me.ExpType = Me.getTypeString(expected)
+
+  
+  Me.Result = result
+  Me.ResType = Me.getTypeString(result)
+  
+  If TypeOf(result) <> gb.Object And TypeOf(expected) <> gb.Object Then
+    ' Not an object so run parent code
+    If TypeOf(result) <> TypeOf(expected) Then
+      Me.AddError(Me.TypeError(Me.ResType, Me.ExpType))
+      err = True
+    Else
+      If result <> expected Then
+        Me.AddError(Me.ValueError(Me.Result, Me.Expected))
+        err = True
+      Endif
+    Endif
+  Else 
+    'We have objects that need special processing
+    If TypeOf(result) <> TypeOf(expected) Then
+     Me.AddError(Me.TypeError(Me.ResType, Me.ExpType))
+      err = True
+    Else
+      If result Is Complex And expected Is Complex Then
+        If IsEqual(result, expected) Then
+          Me.Result = result.ToString()
+          Me.ResType = "Complex Object"
+          Me.Expected = expected.ToString()
+          Me.ExpType = "Complex Object"
+        Else
+          Me.AddError(Me.ValueError(result.ToString, expected.ToString))
+          err = True
+        Endif
+      Endif
+    Endif
+  
+  Endif
+  
+  Return Me.hasError
+
+  
+  
+End
+
+

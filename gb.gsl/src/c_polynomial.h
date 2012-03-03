@@ -27,6 +27,7 @@
 #define __C_GSL_POLYNOMIAL_H
 
 #include "gambas.h"
+#include "gb_common.h"
 #include <gsl/gsl_poly.h>
 #include <gsl/gsl_sf_result.h>
 #include "c_complex.h"

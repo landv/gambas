@@ -43,7 +43,12 @@
 ***********************************/
 GSLCOMPLEX *GSLComplex_create()
 {
-	return (GSLCOMPLEX *)GB.New(GB.FindClass("Complex"), NULL,  NULL);
+	GSLCOMPLEX *c;
+	c = (GSLCOMPLEX *)GB.New(GB.FindClass("Complex"), NULL,  NULL);
+	c->number.dat[0] = 0.0;
+	c->number.dat[1] = 0.0;
+
+	return c;
 }
 
 BEGIN_METHOD(GslComplex_new, GB_FLOAT real; GB_FLOAT imag)
@@ -104,11 +109,15 @@ BEGIN_METHOD_VOID(GslComplex_ToString)
 	{
 		if (imag < 0.0)
 		{
+            *p++ = ' ';
 			*p++ = '-';
+            *p++ = ' ';
 			imag = (-imag);
 		}
 		else if (p != buffer)
+            *p++ = ' ';
 			*p++ = '+';
+            *p++ = ' ';
 		
 		if (imag != 1.0)
 		{

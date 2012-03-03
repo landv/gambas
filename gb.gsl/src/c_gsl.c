@@ -127,14 +127,14 @@ BEGIN_METHOD(GSL_MINFLOAT, GB_FLOAT x; GB_FLOAT y;)
 END_METHOD
 
 
-BEGIN_METHOD(GSL_MAXINT, GB_FLOAT x; GB_FLOAT y;)
+BEGIN_METHOD(GSL_MAXINT, GB_INTEGER x; GB_INTEGER y;)
 
     GB.ReturnInteger((VARG(x) > VARG(y) ? VARG(x) : VARG(y)));
 
 END_METHOD
 
 
-BEGIN_METHOD(GSL_MININT, GB_FLOAT x; GB_FLOAT y;)
+BEGIN_METHOD(GSL_MININT, GB_INTEGER x; GB_INTEGER y;)
 
     GB.ReturnInteger((VARG(x) < VARG(y) ? VARG(x) : VARG(y)));
 
@@ -267,20 +267,33 @@ BEGIN_METHOD(GSL_FREXP, GB_FLOAT x;)
 	b = 0.0;
 
 	r = gsl_frexp(VARG(x), &b);
-	printf("r: %d \te: %i", r, b);
+	printf("r: %d \te: %i\n", r, b);
 
-	GB.Array.New(&arr , GB_T_VARIANT , r);
-	if(arr != NULL && arr != 0)
+	GB_ARRAY result;
+	GB.Array.New(POINTER(&result), GB_T_VARIANT, 0);
+
+	GB.Array.New(&arr , GB_T_VARIANT , 2);
+	if(arr != NULL)
 	{
-	
+		//GB_FLOAT f;
+		//GB_INTEGER i;
+
+		//f.value = r;
+		//i.value = b;
+
 		v.value.value._float = r;
-		*((GB_VARIANT *)GB.Array.Get(arr, 0)) = v;
-		
-		q.value.value._integer = b;	
-		*((GB_VARIANT *)GB.Array.Get(arr, 1)) = q;	
-	}	
-	GB.ReturnObject(arr);
+		v.type = GB_T_FLOAT;
+		//*((GB_VARIANT *)GB.Array.Get(arr, 0)) = v;
+		GB.StoreVariant(&v, GB.Array.Add(result));
+
+		q.value.value._integer = b;
+		q.type = GB_T_INTEGER;
+		//*((GB_VARIANT *)GB.Array.Get(arr, 1)) = q;
+		GB.StoreVariant(&q, GB.Array.Add(result));
+	}
 	
+	GB.ReturnObject(arr);
+
 END_METHOD
 /*
 GB.Array.New(&iArray , GB_T_INTEGER , 1);
@@ -372,10 +385,10 @@ GB_DESC CGslDesc[] =
     GB_STATIC_METHOD("Sign", "i", GSL_SIGNF, "(X)i"),
     GB_STATIC_METHOD("IsOdd", "b", GSL_ISODD, "(X)i"),
     GB_STATIC_METHOD("IsEven", "b", GSL_ISEVEN, "(X)i"),
-    GB_STATIC_METHOD("MaxFloat", "f", GSL_MAXFLOAT, "[(X)f(Y)f"),
+    GB_STATIC_METHOD("MaxFloat", "f", GSL_MAXFLOAT, "[(X)f(Y)f]"),
     GB_STATIC_METHOD("MinFLoat", "f", GSL_MINFLOAT, "[(X)f(Y)f]"),
     GB_STATIC_METHOD("MaxInt", "i", GSL_MAXINT, "[(X)i(Y)i]"),
-    GB_STATIC_METHOD("MinInt", "i", GSL_MININT, "[(X)i(Y)i"),
+    GB_STATIC_METHOD("MinInt", "i", GSL_MININT, "[(X)i(Y)i]"),
     GB_STATIC_METHOD("Fcmpb", "b", GSL_FCMPB, "[(X)f(Y)f(E)f]"),
     GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "[(X)f(Y)f(E)f]"),
 
@@ -388,7 +401,7 @@ GB_DESC CGslDesc[] =
     GB_STATIC_METHOD("Asinh", "f", GSL_ASINH, "(X)f"),
     GB_STATIC_METHOD("Atanh", "f", GSL_ATANH, "(X)f"),
     GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "[(X)f(E)i]"),
-    //GB_STATIC_METHOD("Frexp", "a", GSL_FREXP, "(X)f"),
+    GB_STATIC_METHOD("Frexp", "v[];", GSL_FREXP, "(X)f"),
 
     // Return x^y using a small int safe method
     GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(X)f(I)i]"),

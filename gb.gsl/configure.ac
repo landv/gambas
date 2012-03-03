@@ -10,5 +10,14 @@ GB_COMPONENT_PKG_CONFIG(
   [GNU Scientific Library component],
   [src],
   gsl)
+GB_COMPONENT_SEARCH(
+   gslcblas,
+   GSLCBLAS,
+   [GSL BLAS],
+   [src],
+    libgsl libgslcblas,
+   [GB_FIND(gsl/gsl_cblas.h gsl/gsl_math.h, /usr /usr/local `gsl-config --prefix`, include include/gsl)],
+   [GB_FIND(libgslcblas.$SHLIBEXT libgsl.$SHLIBEXT, /usr/lib /usr/local /usr/local/lib `gsl-config --prefix`, lib)],
+   [$X_LIBS -llibgsl -llibgslcblas])
 AC_OUTPUT( Makefile src/Makefile )
 GB_PRINT_MESSAGES

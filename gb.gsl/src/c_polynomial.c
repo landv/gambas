@@ -194,8 +194,8 @@ BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
 
 	if(3 > THIS->len)
 	{
-		GB.Error(GB_ERR_BOUND);
 		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
+		GB.Error(GB_ERR_BOUND);
 		return GB.ReturnFloat(0);
 	}
 
@@ -215,11 +215,16 @@ BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
 
 	obj = GSLComplex_create();
 
-    
-    // TODO Figure out error when compiling gsl_poly_complex_eval()
-	// It seems this function is not in the library or linker is linking
-	// to an older version of the library that does not have this method.
-    //obj = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
+	if(1 <= THIS->len)
+	{
+		obj->number = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
+	}
+	else
+	{
+		//GB.Error("Method takes a minimum of 1 coefficients &1 given.", THIS->len);
+		GB.Error(GB_ERR_BOUND);
+		return GB.ReturnObject(obj);
+	}
 
     GB.ReturnObject(obj);
 	
@@ -261,6 +266,7 @@ BEGIN_METHOD_VOID(CPolynomial_SolveQuadratic)
 	}
 	else
 	{
+		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
 		GB.Error(GB_ERR_BOUND);
 		return GB.ReturnObject(arr);
 	}
@@ -304,6 +310,7 @@ BEGIN_METHOD_VOID(CPolynomial_SolveCubic)
 	}
 	else
 	{
+		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
 		GB.Error(GB_ERR_BOUND);
 		return GB.ReturnObject(arr);
 	}
@@ -311,6 +318,7 @@ BEGIN_METHOD_VOID(CPolynomial_SolveCubic)
 END_METHOD
 
 
+// Maybe should be in complexpolynomial....
 
 /**************************************************
   Describe Class properties and methods to Gambas
@@ -337,9 +345,10 @@ GB_DESC CPolynomialDesc[] =
 
 	// Implementation Methods
 	GB_METHOD("Eval", "f", CPolynomial_Eval, "(X)f"),
-	//GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
+	GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
 	GB_METHOD("SolveQuadratic", "f[];", CPolynomial_SolveQuadratic, NULL),
 	GB_METHOD("SolveCubic", "f[];", CPolynomial_SolveCubic, NULL),
+//	GB_METHOD("ComplexSolve", "Complex[];", CPolynomial_ComplexSolve, NULL),
 
 	GB_END_DECLARE
 };
