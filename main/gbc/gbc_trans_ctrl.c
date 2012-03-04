@@ -1111,8 +1111,6 @@ void TRANS_label(void)
 			return;
 		}
 	}
-	
-	THROW("Forbidden GOSUB");
 }
 
 
