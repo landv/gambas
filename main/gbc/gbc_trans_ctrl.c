@@ -170,6 +170,7 @@ static void add_goto(int index, bool gosub)
 	info->pos = CODE_get_current_pos();
 	info->ctrl_id = (ctrl_level == 0) ? 0 : current_ctrl->id;
 	info->line = JOB->line;
+	info->gosub = gosub;
 
 	#ifdef DEBUG_GOTO
 		printf("add_goto: ctrl_id = %d (%ld)\n", info->ctrl_id, ARRAY_count(goto_info));
@@ -333,19 +334,27 @@ void TRANS_control_exit()
 			label = &label_info[sym->local.value];
 
 			id = goto_info[i].ctrl_id;
-
-			for(;;)
+			
+			if (goto_info[i].gosub)
 			{
-				if (label->ctrl_id == id)
-					break;
+				if (label->ctrl_id || goto_info[i].pos > label->pos)
+					THROW("Forbidden GOSUB");
+			}
+			else
+			{
+				for(;;)
+				{
+					if (label->ctrl_id == id)
+						break;
 
-				if (id == 0)
-					THROW("Forbidden GOTO");
+					if (id == 0)
+						THROW("Forbidden GOTO");
 
-				#ifdef DEBUG_GOTO
-					printf("id = %d ctrl_parent[id - 1] = %d (%ld)\n", id, ctrl_parent[id - 1], ARRAY_count(ctrl_parent));
-				#endif
-				id = ctrl_parent[id - 1];
+					#ifdef DEBUG_GOTO
+						printf("id = %d ctrl_parent[id - 1] = %d (%ld)\n", id, ctrl_parent[id - 1], ARRAY_count(ctrl_parent));
+					#endif
+					id = ctrl_parent[id - 1];
+				}
 			}
 
 			CODE_jump_length(goto_info[i].pos, label->pos);
@@ -1065,7 +1074,7 @@ void TRANS_catch(void)
 void TRANS_label(void)
 {
 	CLASS_SYMBOL *sym;
-	int sym_index;
+	int sym_index, i;
 	TRANS_LABEL *label;
 
 	sym_index = PATTERN_index(*JOB->current);
@@ -1091,6 +1100,19 @@ void TRANS_label(void)
 
 	/* on saute le ':' */
 	JOB->current++;
+	
+	// A new set of control stack slots must be used for a GOSUB subroutine
+	
+	for (i = 0; i < ARRAY_count(goto_info); i++)
+	{
+		if (goto_info[i].gosub && goto_info[i].index == sym_index)
+		{
+			ctrl_local = JOB->func->nctrl + JOB->func->nlocal;
+			return;
+		}
+	}
+	
+	THROW("Forbidden GOSUB");
 }
 
 
