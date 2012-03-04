@@ -36,16 +36,13 @@ typedef
 	PACKED
 	STACK_BACKTRACE;
 
-#define MAX_GOSUB_LEVEL 119
+//#define MAX_GOSUB_LEVEL 119
 
 typedef
 	struct _STACK_GOSUB {
-		ushort level;
-		ushort pc[MAX_GOSUB_LEVEL];
-		struct _STACK_GOSUB *next;
-		struct _STACK_GOSUB *prev;
+		ushort pc;
+		VALUE *ctrl;
 	}
-	PACKED
 	STACK_GOSUB;
 
 typedef

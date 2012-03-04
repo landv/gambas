@@ -337,7 +337,7 @@ void TRANS_control_exit()
 			
 			if (goto_info[i].gosub)
 			{
-				if (label->ctrl_id || goto_info[i].pos > label->pos)
+				if (label->ctrl_id)
 					THROW("Forbidden GOSUB");
 			}
 			else
@@ -1074,7 +1074,7 @@ void TRANS_catch(void)
 void TRANS_label(void)
 {
 	CLASS_SYMBOL *sym;
-	int sym_index, i;
+	int sym_index;
 	TRANS_LABEL *label;
 
 	sym_index = PATTERN_index(*JOB->current);
@@ -1101,6 +1101,7 @@ void TRANS_label(void)
 	/* on saute le ':' */
 	JOB->current++;
 	
+	/*
 	// A new set of control stack slots must be used for a GOSUB subroutine
 	
 	for (i = 0; i < ARRAY_count(goto_info); i++)
@@ -1111,6 +1112,7 @@ void TRANS_label(void)
 			return;
 		}
 	}
+	*/
 }
 
 

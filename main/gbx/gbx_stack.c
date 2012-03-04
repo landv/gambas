@@ -268,12 +268,19 @@ STACK_BACKTRACE *STACK_get_backtrace(void)
 
 void STACK_free_gosub_stack(STACK_GOSUB *gosub)
 {
+	int i, j;
 	STACK_GOSUB *p;
 	
-	while (gosub)
+	if (FP->n_ctrl)
 	{
-		p = gosub;
-		gosub = gosub->next;
-		IFREE(p, "STACK_free_gosub_stack");
+		for (i = 0, p = gosub; i < ARRAY_count(gosub); i++, p++)
+		{
+			for (j = 0; j < FP->n_ctrl; j++)
+				RELEASE(&p->ctrl[j]);
+			
+			FREE(&p->ctrl, "STACK_free_gosub_stack");
+		}
 	}
+	
+	ARRAY_delete(&gosub);
 }

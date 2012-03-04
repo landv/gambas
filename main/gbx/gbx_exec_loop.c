@@ -849,19 +849,29 @@ _NEW:
 
 _GOSUB:
 	
-	if (!GP)
 	{
-		ALLOC_ZERO(&GP, sizeof(STACK_GOSUB), "EXEC_loop");
-	}
+		STACK_GOSUB *gp;
+		VALUE *ctrl;
+		int i;
+		
+		if (!GP)
+			ARRAY_create(&GP);
 	
-	if (GP->level == MAX_GOSUB_LEVEL)
-	{
-		ALLOC_ZERO(&GP->next, sizeof(STACK_GOSUB), "EXEC_loop");
-		GP->next->prev = GP;
-		GP = GP->next;
+		gp = ARRAY_add(&GP);
+		gp->pc = PC - FP->code;
+		if (FP->n_ctrl)
+		{
+			ALLOC(&gp->ctrl, sizeof(VALUE) * FP->n_ctrl, "EXEC_loop._GOSUB");
+			ctrl = &BP[FP->n_local];
+			for (i = 0; i < FP->n_ctrl; i++)
+			{
+				gp->ctrl[i] = ctrl[i];
+				ctrl[i].type = T_NULL;
+			}
+		}
+		else
+			gp->ctrl = NULL;
 	}
-	
-	GP->pc[GP->level++] = PC - FP->code;
 
 /*-----------------------------------------------*/
 
@@ -903,6 +913,9 @@ _RETURN:
 		static const void *return_jump[] = { &&__RETURN_GOSUB, &&__RETURN_VALUE, &&__RETURN_VOID };
 		
 		TYPE type;
+		STACK_GOSUB *gp;
+		VALUE *ctrl;
+		int i, n;
 		
 		goto *return_jump[GET_UX()];
 		
@@ -910,18 +923,29 @@ _RETURN:
 		
 		if (!GP)
 			goto __RETURN_VOID;
+		
+		n = ARRAY_count(GP);
+		if (n == 0)
+			goto __RETURN_VOID;
 
-		if (GP->level == 0)
+		gp = &GP[n - 1];
+		PC = FP->code + gp->pc + 2;
+		if (FP->n_ctrl)
 		{
-			STACK_GOSUB *prev = GP->prev;
-			IFREE(GP, "EXEC_loop");
-			GP = prev;
-			if (!prev)
-				goto __RETURN_VOID;
+			ctrl = &BP[FP->n_local];
+			for (i = 0; i < FP->n_ctrl; i++)
+			{
+				RELEASE(&ctrl[i]);
+				ctrl[i] = gp->ctrl[i];
+			}
+			FREE(&gp->ctrl, "EXEC_loop._RETURN");
 		}
-			
-		GP->level--;
-		PC = FP->code + GP->pc[GP->level] + 2;
+		
+		if (n == 1)
+			ARRAY_delete(&GP);
+		else
+			ARRAY_remove_last(&GP);
+		
 		goto _MAIN;
 
 	__RETURN_VALUE:
