@@ -1197,10 +1197,10 @@ void EXEC_native(void)
 
 				n = nm - nparam;
 
-				if (UNLIKELY(STACK_check(n)))
+				/*if (UNLIKELY(STACK_check(n)))
 				{
 					STACK_RELOCATE(value);
-				}
+				}*/
 				
 				SP += n;
 				nparam = nm;
@@ -1230,10 +1230,10 @@ void EXEC_native(void)
 
 					n = nm - nparam;
 
-					if (UNLIKELY(STACK_check(n)))
+					/*if (UNLIKELY(STACK_check(n)))
 					{
 						STACK_RELOCATE(value);
-					}
+					}*/
 					
 					SP += n;
 					nparam = nm;

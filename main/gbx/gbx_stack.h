@@ -68,7 +68,7 @@ typedef
 EXTERN char *STACK_base;
 EXTERN size_t STACK_size;
 EXTERN char *STACK_limit;
-EXTERN size_t STACK_relocate;
+//EXTERN size_t STACK_relocate;
 
 EXTERN int STACK_frame_count;
 EXTERN STACK_CONTEXT *STACK_frame;
@@ -83,7 +83,13 @@ void STACK_exit(void);
 #if DEBUG_STACK
 bool STACK_check(int need);
 #else
-#define STACK_check(_need) (((char *)(SP + (_need) + 8) >= STACK_limit) ? STACK_grow(), 1 : 0)
+
+#define STACK_check(_need) \
+do { \
+	if ((char *)(SP + (_need) + 8) >= STACK_limit) \
+		THROW_STACK(); \
+	} \
+while (0);
 
 #endif
 
@@ -100,7 +106,7 @@ STACK_BACKTRACE *STACK_get_backtrace(void);
 
 
 STACK_CONTEXT *STACK_get_frame(int frame);
-void STACK_grow(void);
+//void STACK_grow(void);
 
 void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
@@ -124,17 +130,17 @@ void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
 #define STACK_copy(_dst, _src) *(_dst) = *(_src)
 
-#define STACK_RELOCATE(_ptr) if (_ptr) _ptr = (void *)((char *)_ptr + STACK_relocate)
+//#define STACK_RELOCATE(_ptr) if (_ptr) _ptr = (void *)((char *)_ptr + STACK_relocate)
 	
 #define STACK_push_frame(_context, _need) \
 ({ \
 	int stack; \
 	\
 	if ((uintptr_t)&stack < STACK_process_stack_limit) \
-		THROW(E_STACK); \
+		THROW_STACK(); \
 	\
 	if ((char *)(SP + (_need) + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) \
-		STACK_grow(); \
+		THROW_STACK(); \
 	\
   STACK_frame--; \
   \

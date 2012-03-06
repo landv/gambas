@@ -47,6 +47,7 @@ COMP_INFO COMP_res_info[] =
 	{ "Private",      RSF_IDENT|RSF_PUB,                          },
 	{ "Public",       RSF_IDENT|RSF_PUB,                          },
 	{ "Static",       RSF_PUB                                     },
+	{ "Fast",         RSF_PUB                                     },
 	{ "Property",     RSF_IDENT                                   },
 	{ "Event",        RSF_IDENT|RSF_EVENT                         },
 	{ "Inherits",     RSF_CLASS|RSF_AS                            },

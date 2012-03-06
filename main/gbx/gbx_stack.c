@@ -24,6 +24,7 @@
 #define __GBX_STACK_C
 
 #include <sys/resource.h>
+#include <sys/mman.h>
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -36,12 +37,12 @@
 // The stack grows by 4K slot (8K on 64 bits CPU)
 #define STACK_INC 256 * sizeof(VALUE)
 
-size_t STACK_size = STACK_INC;
 char *STACK_base = NULL;
+size_t STACK_size;
 char *STACK_limit = NULL;
 STACK_CONTEXT *STACK_frame;
 int STACK_frame_count;
-size_t STACK_relocate = 0;
+//size_t STACK_relocate = 0;
 
 uintptr_t STACK_process_stack_limit;
 
@@ -56,17 +57,22 @@ void STACK_init(void)
 		ERROR_panic("Cannot get stack size limit");
 	
 	if (limit.rlim_cur == RLIM_INFINITY)
-		max = 128 << 20; // 128 Mb if there is no limit.
+		max = 64 << 20; // 64 Mb if there is no limit.
 	else
 		max = (uintptr_t)limit.rlim_cur;
 	
-	max -= STACK_INC * 8; // 32 Kb security (64 Kb on 64 bits OS)
+	STACK_size = max;
+	STACK_base = mmap(NULL, STACK_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+	
+	//fprintf(stderr, "Stack = %p %ld\n", STACK_base, STACK_size);
+
+	max -= sizeof(VALUE) * 256; // some security
 	
 	STACK_process_stack_limit = (uintptr_t)&stack - max;
 	
 	//fprintf(stderr, "STACK_size = %ld\n", STACK_size);
-  ALLOC_ZERO(&STACK_base, STACK_size, "STACK_init");
-
+  //ALLOC_ZERO(&STACK_base, STACK_size, "STACK_init");
+	
   STACK_limit = (STACK_base + STACK_size);
   STACK_frame = (STACK_CONTEXT *)STACK_limit;
   STACK_frame_count = 0;
@@ -78,7 +84,10 @@ void STACK_init(void)
 void STACK_exit(void)
 {
   if (STACK_base)
-    FREE(&STACK_base, "STACK_exit");
+	{
+		munmap(STACK_base, STACK_size);
+    STACK_base = NULL;
+	}
 }
 
 #if DEBUG_STACK
@@ -94,7 +103,7 @@ bool STACK_check(int need)
 	
   if ((char *)(SP + need + 8) >= STACK_limit)
 	{
-    STACK_grow();
+    THROW_STACK(); //STACK_grow();
 		return TRUE;
 	}
 	else
@@ -169,6 +178,7 @@ STACK_CONTEXT *STACK_get_frame(int frame)
 		return NULL;
 }
 
+#if 0
 static void relocate(STACK_CONTEXT *context)
 {
 	STACK_RELOCATE(context->next);
@@ -237,6 +247,7 @@ void STACK_grow(void)
 	fprintf(stderr, "STACK_grow: after STACK_frame = %d\n", (STACK_CONTEXT *)STACK_frame - (STACK_CONTEXT *)STACK_base);
 	#endif
 }
+#endif
 
 STACK_BACKTRACE *STACK_get_backtrace(void)
 {

@@ -470,6 +470,11 @@ void THROW_ILLEGAL()
 	THROW(E_ILLEGAL);
 }
 
+void THROW_STACK()
+{
+	THROW(E_STACK);
+}
+
 void THROW_SYSTEM(int err, const char *path)
 {
 	char buf[6];
