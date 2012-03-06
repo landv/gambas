@@ -60,6 +60,7 @@ Private Sub Count_Write(Value As Integer)
   With GetView()
     ._ResizeContents()
     ._CheckCurrent()
+    $hSel.UnSelectAll
     .Refresh
   End With
 
@@ -247,7 +248,7 @@ Public Sub _SetRowText(iRow As Integer, sText As String)
   
 End
 
-Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = -1)
+Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = 1)
   
   If GetView().Mode <> Select.Multiple Then Return
   
@@ -260,7 +261,7 @@ Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = -1
   
 End
 
-Public Sub UnSelect(Optional Start As Integer = 0, Optional Length As Integer = -1)
+Public Sub UnSelect(Optional Start As Integer = 0, Optional Length As Integer = 1)
   
   If GetView().Mode <> Select.Multiple Then Return
   

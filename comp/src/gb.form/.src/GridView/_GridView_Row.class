@@ -50,14 +50,15 @@ End
 Private Sub Selected_Write(Value As Boolean)
 
   Dim hView As GridView = GetView()
+  Dim hRows As _GridView_Rows = GetRows()
   
   If hView.Mode = Select.Single Then
     hView._SelectRow(_Row, Value)
   Else If hView.Mode = Select.Multiple Then
     If Value Then
-      GetRows().Select(_Row)
+      If Not hRows._IsSelected(_Row) Then hRows.Select(_Row)
     Else
-      GetRows().UnSelect(_Row)
+      If hRows._IsSelected(_Row) Then hRows.UnSelect(_Row)
     Endif
   Endif
 

@@ -275,6 +275,10 @@ End
 
 Public Sub txtName_Change()
 
-  lblFinalDir.Text = dchProject.SelectedPath &/ Trim(txtName.Text)
+  If Trim(txtName.Text) Then
+    lblFinalDir.Text = dchProject.SelectedPath &/ Trim(txtName.Text)
+  Else
+    lblFinalDir.Text = dchProject.SelectedPath &/ "..."
+  Endif
 
 End
