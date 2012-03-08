@@ -12,6 +12,7 @@ Event _Refresh
 
 Public _X As Integer
 Public _W As Integer
+Public _Column As Integer
 
 Private $W As Integer
 Private $sText As String
@@ -44,7 +45,8 @@ End
 
 
 Private Sub Width_Write(Value As Integer)
-
+  
+  If Value < 0 Then Value = GetView()._GetPreferredWidth(_Column)
   If Value < 1 Or If Value > 1024 Or If Value = $W Then Return
   $W = Value
   Raise _Refresh

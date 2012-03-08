@@ -695,7 +695,7 @@ static char *input(STREAM *stream, bool line, char *escape)
 		//add_string(addr, &len_str, stream->common.buffer + start, len);
 		addr = STRING_add(addr, buffer + start, len);
 
-	STRING_extend_end(addr);
+	//STRING_extend_end(addr);
 	
 	stream->common.buffer = buffer;
 	stream->common.buffer_pos = buffer_pos;

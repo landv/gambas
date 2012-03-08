@@ -192,7 +192,7 @@ Private Sub InitSystemControls()
   Dim hCtrl As Control
   Dim hCont As Container
   Dim sMsg As String
-  Dim hPanel As Panel
+  Dim hPanel, hPanel2 As Panel
   Dim hPict As PictureBox
   Dim hLabel As TextLabel
   Dim hTool As ToolButton
@@ -213,7 +213,7 @@ Private Sub InitSystemControls()
         hTool = hCtrl
       Else If hCtrl Is CheckBox Then 
         hCheckBox = hCtrl
-      Else If hCtrl Is Panel And If Panel(hCtrl).Border Then 
+      Else If hCtrl Is Panel And If Panel(hCtrl).Tag Then 
         hPanel = hCtrl
       Endif 
     Next
@@ -221,25 +221,33 @@ Private Sub InitSystemControls()
     If Not hPanel Then 
     
       hPanel = New Panel(hCont)
-      'hPanel.Border = Border.Plain
-      'hPanel.Background = &HFFFFDF
-      hPanel.Arrangement = Arrange.Horizontal
-      hPanel.Margin = True
-      hPanel.Spacing = True
-      hPanel.Padding = 4
+      hPanel.Arrangement = Arrange.Vertical
       hPanel.Width = Desktop.Scale * 48
-      'hPanel.Expand = True
+      hPanel.Tag = True
       
-      hPict = New PictureBox(hPanel)
-      hPict.Picture = Picture["icon:/32/warning"]
-      hPict.Width = 32
-      hPict.Alignment = Align.Center
+      hSpace = New Panel(hPanel)
+      hSpace.Resize(4, 4)
       
-      hLabel = New TextLabel(hPanel)
-      hLabel.Text = sMsg
-      hLabel.Alignment = Align.Normal
-      hLabel.Font.Italic = True
-      hLabel.Expand = True
+      hPanel2 = New Panel(hPanel)
+      hPanel2.Arrangement = Arrange.Horizontal
+      hPanel2.Expand = True
+      hPanel2.Border = Border.Plain
+      hPanel2.Spacing = True
+      hPanel2.Margin = True
+      
+        hPict = New PictureBox(hPanel2)
+        hPict.Picture = Picture["icon:/24/warning"]
+        hPict.Width = 24
+        hPict.Alignment = Align.Center
+        
+        hLabel = New TextLabel(hPanel2)
+        hLabel.Text = sMsg
+        hLabel.Alignment = Align.Normal
+        hLabel.Font.Italic = True
+        hLabel.Expand = True
+      
+      hSpace = New Panel(hPanel)
+      hSpace.Resize(4, 4)
       
       hSpace = New Panel(hCont)
       hSpace.Resize(16, 4)
@@ -831,7 +839,7 @@ End
 Public Sub chkDistro_Click()
 
   Dim hCheckBox As CheckBox = Last
-  Dim hButton As Control = hCheckBox.Previous
+  Dim hButton As ToolButton = hCheckBox.Parent.Children[0]
   
   hButton.Enabled = hCheckBox.Value
   

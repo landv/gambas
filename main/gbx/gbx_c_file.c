@@ -738,12 +738,15 @@ END_METHOD
 BEGIN_METHOD(Stream_ReadLine, GB_STRING escape)
 
 	char *escape;
+	char *str;
 	
 	escape = GB_ToZeroString(ARG(escape));
 	if (!*escape)
 		escape = NULL;
 
-	GB_ReturnString(STREAM_line_input(CSTREAM_stream(THIS_STREAM), escape));
+	str = STREAM_line_input(CSTREAM_stream(THIS_STREAM), escape);
+	STRING_free_later(str);
+	GB_ReturnString(str);
 
 END_METHOD
 
@@ -767,10 +770,16 @@ END_METHOD
 
 BEGIN_METHOD_VOID(StreamLines_next)
 
+	char *str;
+
 	if (STREAM_eof(CSTREAM_stream(THIS_STREAM)))
 		GB_StopEnum();
 	else
-		GB_ReturnString(STREAM_line_input(CSTREAM_stream(THIS_STREAM), NULL));
+	{
+		str = STREAM_line_input(CSTREAM_stream(THIS_STREAM), NULL);
+		STRING_free_later(str);
+		GB_ReturnString(str);
+	}
 
 END_METHOD
 

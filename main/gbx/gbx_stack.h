@@ -36,8 +36,6 @@ typedef
 	PACKED
 	STACK_BACKTRACE;
 
-//#define MAX_GOSUB_LEVEL 119
-
 typedef
 	struct _STACK_GOSUB {
 		ushort pc;
@@ -106,7 +104,6 @@ STACK_BACKTRACE *STACK_get_backtrace(void);
 
 
 STACK_CONTEXT *STACK_get_frame(int frame);
-//void STACK_grow(void);
 
 void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
@@ -114,24 +111,8 @@ void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
 #define STACK_get_current() ((STACK_frame_count > 0) ? STACK_frame : NULL)
 
-/*#define STACK_copy(_dst, _src) \
-  (_dst)->next = (_src)->next; \
-	(_dst)->bp = (_src)->bp; \
-	(_dst)->pp = (_src)->pp; \
-	(_dst)->cp = (_src)->cp; \
-	(_dst)->op = (_src)->op; \
-	(_dst)->ep = (_src)->ep; \
-	(_dst)->fp = (_src)->fp; \
-	(_dst)->pc = (_src)->pc; \
-	(_dst)->ec = (_src)->ec; \
-	(_dst)->et = (_src)->et; \
-	(_dst)->tc = (_src)->tc; \
-	(_dst)->tp = (_src)->tp;*/
-
 #define STACK_copy(_dst, _src) *(_dst) = *(_src)
 
-//#define STACK_RELOCATE(_ptr) if (_ptr) _ptr = (void *)((char *)_ptr + STACK_relocate)
-	
 #define STACK_push_frame(_context, _need) \
 ({ \
 	int stack; \

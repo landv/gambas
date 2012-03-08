@@ -322,8 +322,13 @@ char *STRING_free_later(char *ptr)
 	/*if (NLast >= MAX_LAST_STRING)
 		THROW(E_STRING);*/
 
+	//static int nfl = 0;
+	
 	if (ptr)
 	{
+		//nfl++;
+		//fprintf(stderr, "% 8d % 6d\n", nfl, STRING_length(ptr));
+		
 		#ifdef DEBUG_ME
 		if (STRING_last[_index])
 		{

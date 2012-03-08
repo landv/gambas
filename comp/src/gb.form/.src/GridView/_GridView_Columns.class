@@ -41,6 +41,7 @@ Private Sub Count_Write(Value As Integer)
   If Value > iOldCount Then
     For I = iOldCount To Value - 1
       $aColumns[I] = New _GridView_Column As "Column"
+      $aColumns[I]._Column = I
     Next
   Endif
   

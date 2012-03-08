@@ -571,9 +571,9 @@ Public Sub ScrollArea_MouseMove()
   
   If $bResize Then
     If $iRowResize >= 0 Then
-      $hRows._SetRowHeight($iRowResize, $iDimResize + Mouse.Y - $MY)
+      $hRows._SetRowHeight($iRowResize, $iDimResize + MY - $MY)
     Else If $iColResize >= 0 Then
-      $hColumns[$iColResize].Width = $iDimResize + Mouse.X - $MX
+      $hColumns[$iColResize].Width = Max(1, $iDimResize + MX - $MX)
     Endif
     Return
   Endif
@@ -793,7 +793,11 @@ End
 
 Public Sub ScrollArea_DblClick()
   
-  If $bInCell Then Raise Activate
+  If $bInCell Then 
+    Raise Activate
+  Else If $iColResize >= 0 Then
+    $hColumns[$iColResize].Width = -1
+  Endif
   
 End
 
@@ -1464,4 +1468,56 @@ Private Sub Mouse_Write(Value As Integer)
   Super.Mouse = Value
   $iDefaultMouse = Value
 
+End
+
+Public Sub _GetPreferredWidth(iCol As Integer) As Integer
+  
+  Dim PW, W, I As Integer
+  Dim hData As _GridView_Data
+  Dim hFont As Font
+  Dim iColSpan As Integer
+  Dim D As Integer
+  
+  PW = Me.Font.TextWidth($hColumns[iCol].Text) + 8
+  
+  For I = 0 To Min(999, $hRows.Max)
+    
+    hData = _GetCellData(I, iCol)
+    
+    If HasSpan(I, iCol) Then
+      iColSpan = _GetSpan(I, iCol)[1]
+      If iColSpan < 0 Then
+        hData = _GetCellData(I, iCol + iColSpan)
+        iColSpan = _GetSpan(I, iCol + iColSpan)[1]
+      Endif
+      D = iColSpan + 1
+    Else
+      D = 1
+    Endif
+    
+    With hData
+      
+      W = Max(8, .Padding * 2)
+      hFont = .Font
+      If Not hFont Then hFont = Me.Font
+      
+      If .RichText Then
+        If Not .WordWrap Then W += hFont.RichTextWidth(.RichText)
+      Else If .Text Then
+        W += hFont.TextWidth(.Text)
+      Endif
+      
+      If .Picture Then
+        W += .Picture.Width
+        If .Text Or If .RichText Then W += .Padding
+      Endif
+      
+      PW = Max(PW, (W + D - 1) \ D)
+      
+    End With
+    
+  Next
+  
+  Return PW
+  
 End

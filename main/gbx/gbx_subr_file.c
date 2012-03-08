@@ -260,7 +260,6 @@ void SUBR_linput(void)
 	SP->_string.start = 0;
 	SP->_string.len = STRING_length(addr);
 	
-	STRING_ref(addr);
 	SP++;
 }
 
