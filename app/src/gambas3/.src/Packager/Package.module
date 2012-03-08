@@ -518,7 +518,7 @@ Private Function MakeDebPackage(sSys As String)
 
   AddLog(("Making build directory.")) 
   sPackagePath = Path &/ Subst("&1-&2", $sPackageName, $sVersion)
-  Try Shell "mkdir -p " & sPackagePath &/ "src" Wait
+  Try Shell "mkdir -p " & Shell$(sPackagePath &/ "src") Wait
   
   sArch = sPackagePath &/ "src/raw.tar.gz"
   Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)
@@ -531,7 +531,7 @@ Private Function MakeDebPackage(sSys As String)
   ' Rename the source archive project directory to the package name
   'TRY MOVE Path &/ (sPrefix & Subst("&1", Project.Name)) TO sPackagePath
   Try Kill sArch
-  Try Shell "cp -Rf " & sPackagePath & " " & sPackagePath & ".orig" Wait
+  Try Shell "cp -Rf " & Shell(sPackagePath) & " " & Shell(sPackagePath & ".orig") Wait
 
   Try Mkdir sPackagePath &/ "debian"
 
@@ -687,7 +687,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "binary: binary-indep binary-arch"
   Print #hFile, ".PHONY: build clean binary-indep binary-arch binary install"
   Close #hFile
-  Try Shell "chmod +x " & sPackagePath &/ "debian/rules" Wait
+  Try Shell "chmod +x " & Shell(sPackagePath &/ "debian/rules") Wait
 
   ' Step 4. Build package
 
@@ -1160,7 +1160,7 @@ Private Sub MakeTgzPackage(sSys As String)
   AddLog(("Making build directory."))
 
   sBuildDir = File.SetExt(Temp$("slackware"), "")
-  Shell "rm -rf " & sBuildDir Wait
+  Shell "rm -rf " & Shell(sBuildDir) Wait
   Mkdir sBuildDir
 
   If Project.CreateComponent Then 
@@ -1304,14 +1304,15 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   Inc Application.Busy
 
   sBuildDir = File.SetExt(Temp$("autotools"), "")
-  Shell "rm -rf " & sBuildDir Wait
+  Shell "rm -rf " & Shell(sBuildDir) Wait
   Mkdir sBuildDir
   
   ' 2. Copy needed files 
 
   Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False), "*/bin/gbc" & System.Version & " *")[1]
 
-  Shell "cp -r " & Project.Dir & " " & sBuildDir &/ Project.Name Wait 
+  'Mkdir sBuildDir &/ Project.Name
+  Shell "cp -r " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
   sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
   sFile = Replace(sFile, "$(EXTRA_TEST)", Project.ExtraAutoconfTest)
@@ -1359,7 +1360,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   AddLog(sPackage)
   
   ' Remove build dir
-  Shell "rm -rf " & sBuildDir Wait
+  Shell "rm -rf " & Shell(sBuildDir) Wait
   
 End
 
@@ -1387,7 +1388,7 @@ Private Function MakeArchPackage(sSys As String)
   AddLog(("Making build directory."))
 
   sBuildDir = File.SetExt(Temp$("archlinux"), "")
-  Shell "rm -rf " & sBuildDir Wait
+  Shell "rm -rf " & Shell$(sBuildDir) Wait
   Mkdir sBuildDir
 
   ' 2. Copy needed files 
@@ -1484,7 +1485,7 @@ Private Function MakeArchPackage(sSys As String)
   RunCommand("cp " & String.LCase$($sName) & "-" & $sVersion & "-1*.tar.* " & Path &/ "", sBuildDir)
 
   ' Remove build dir
-  Shell "rm -rf " & sBuildDir Wait
+  Shell "rm -rf " & Shell(sBuildDir) Wait
 
   Dec Application.Busy
 
