@@ -2275,7 +2275,7 @@ void GEditor::focusInEvent(QFocusEvent *e)
 void GEditor::focusOutEvent(QFocusEvent *e)
 {
 	stopBlink();
-	leaveCurrentLine();
+	//leaveCurrentLine();
 	Q3ScrollView::focusOutEvent(e);
 }
 

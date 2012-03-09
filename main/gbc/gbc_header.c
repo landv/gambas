@@ -443,7 +443,7 @@ static bool header_declaration(TRANS_DECL *decl)
 	bool is_static = FALSE;
 	bool is_public = FALSE;
 	bool is_const = FALSE;
-	/*bool other = FALSE;*/
+	bool has_static = FALSE;
 
 	/* static ! */
 
@@ -454,6 +454,7 @@ static bool header_declaration(TRANS_DECL *decl)
 	else if (PATTERN_is(*look, RS_STATIC))
 	{
 		is_static = TRUE;
+		has_static = TRUE;
 		look++;
 	}
 
@@ -465,7 +466,8 @@ static bool header_declaration(TRANS_DECL *decl)
 
 	if (PATTERN_is(*look, RS_CONST))
 	{
-		/* static const <=> const */
+		if (has_static)
+			THROW("Unexpected &1", "STATIC");
 
 		is_const = TRUE;
 		look++;

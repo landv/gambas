@@ -116,7 +116,7 @@ Static Public Sub _init()
   $cStructClose["DEFAULT"] = "<"
   $cStructClose["CATCH"] = "<"
   $cStructClose["FINALLY"] = "<"
-
+  
 End
 
 Public Sub _new(sPath As String)
@@ -224,7 +224,7 @@ Public Function Save(Optional bReset As Boolean) As Boolean
   Endif
 
   Editors_Scroll
-
+  
   Save.Begin(Path)
 
   '   IF $bCleanOnSave THEN
@@ -441,7 +441,7 @@ End
 
 Public Sub Editors_Cursor()
 
-  CPosition.SaveCurrent
+  Dim iButton As Integer
 
   If RefreshLineInfo() Then
     HideMessage
@@ -450,6 +450,8 @@ Public Sub Editors_Cursor()
   Endif
 
   If Editor.Lines[Editor.Line].Current Then Design.CheckErrorMessage(Me)
+
+  CPosition.SaveCurrent
 
 End
 
@@ -2673,9 +2675,19 @@ End
 '
 ' End
 
+Public Sub Editors_MouseDown()
+  
+  CPosition.Disable
+  
+End
+
+
 Public Sub Editors_MouseUp()
 
   'HideMessage
+  
+  CPosition.Enable
+  CPosition.SaveCurrent
 
   If Not Editor.Selected Or If Editor.Selection.StartLine < Editor.Selection.EndLine Then
     Return

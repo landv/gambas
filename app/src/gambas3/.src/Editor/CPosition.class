@@ -7,6 +7,7 @@ Static Private $iDisable As Integer
 Private Const MAX_POS As Integer = 40
 
 Public Path As String
+Public Method As String
 Public {Line} As Integer
 Public Column As Integer
 Public Weak As Boolean
@@ -38,6 +39,7 @@ Static Public Sub SaveCurrent()
     If hEditor Then
       hPos.Line = hEditor.Line
       hPos.Column = hEditor.Column
+      Try hPos.Method = hForm.GetProcAt(hEditor.Line)
     Else
       hPos.Line = -1
       hPos.Column = -1
@@ -129,7 +131,8 @@ Public Sub GetDesc() As String
   Dim sDesc As String
   
   sDesc = File.Name(Path)
-  If {Line} >= 0 Then sDesc &= " " & CStr(Column + 1) & ":" & CStr({Line} + 1)
+  If Method Then sDesc &= "." & Method
+  If {Line} >= 0 Then sDesc &= "." & CStr({Line} + 1)
   
   Return sDesc
   
