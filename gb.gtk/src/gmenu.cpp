@@ -90,6 +90,8 @@ static int get_menu_pos(GtkWidget *menu)
 static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 {
 	int x, y, w, h;
+	gint indicator_size;
+	static GtkWidget *check_menu_item = NULL;
 	
 	if (menu->checked())
 	{
@@ -97,20 +99,26 @@ static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 		y = wid->allocation.y;
 		w = wid->allocation.width;
 		h = wid->allocation.height;
-		if (h > w)
-		{
-			y += (h - w) / 2;
-			h = w;
-		}
-		else if (w > h)
-		{
-			x += (w - h) / 2;
-			w = h;
-		}
 		
-		gtk_paint_check(wid->style, wid->window, (GtkStateType)GTK_WIDGET_STATE(wid), GTK_SHADOW_IN, 
-			&e->area, NULL, NULL, 
-			x + 1, y + 1, w - 2, h - 2); 
+		indicator_size = 15;
+		if (w < indicator_size) indicator_size = w;
+		if (h < indicator_size) indicator_size = h;
+		
+		x += (w - indicator_size) / 2;
+		y += (h - indicator_size) / 2;
+		w = indicator_size;
+		h = indicator_size;
+
+		if (!check_menu_item)
+			check_menu_item = gtk_check_menu_item_new();
+		
+		gtk_widget_set_state(check_menu_item, (GtkStateType)GTK_WIDGET_STATE(wid));
+		
+		gtk_paint_check(wid->style, wid->window,
+					(GtkStateType)GTK_WIDGET_STATE(wid), GTK_SHADOW_IN,
+					&e->area, check_menu_item, "check",
+					x + 1, y + 1, w - 2, h - 2);
+		
 	}
 	
 	return false;
