@@ -206,6 +206,8 @@ static int utf8_get_pos(const char *str, int len, int index)
 	
 	while (_utf8_last_pos < (UTF8_POS_COUNT - 1))
 	{
+		if (pos >= len)
+			return len;
 		pos += utf8_get_char_length(str[pos]);
 		_utf8_pos[++_utf8_last_pos] = pos;
 		if (index == _utf8_last_pos)
