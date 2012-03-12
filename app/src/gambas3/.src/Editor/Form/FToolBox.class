@@ -310,7 +310,7 @@ Public Sub ReadConfig()
 
   Dim iSize As Integer
 
-  tabTool.TextFont = Font[CStr(- Settings["/TabStripFont", 0])]
+  tabTool.TextFont = Project.GetSmallFont()
 
   If Settings["/ToolboxSize", 0] Then
     iSize = 24

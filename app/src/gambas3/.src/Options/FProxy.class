@@ -1,0 +1,55 @@
+' Gambas class file
+
+Static Public Type As Integer
+Static Public Host As String
+Static Public Port As Integer
+Static Public User As String
+'Static Public Password As String
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Type = cmbType.Index
+  Host = Trim(txtHost.Text)
+  Port = txtPort.Value
+  User = Trim(txtUser.Text)
+  
+  If User Then Desktop.Passwords["/Proxy" &/ User] = txtPassword.Text
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub cmbType_Click()
+
+  txtHost.Enabled = cmbType.Index > 1
+  txtPassword.Enabled = cmbType.Index > 1
+  txtPort.Enabled = cmbType.Index > 1
+  txtUser.Enabled = cmbType.Index > 1
+
+End
+
+Public Sub Form_Open()
+
+  cmbType.Index = Type
+  txtHost.Text = Host
+  txtPort.Value = Port
+  txtUser.Text = User
+  
+  If User Then
+    txtPassword.Text = Desktop.Passwords["/Proxy" &/ User]
+  Endif
+  
+End

@@ -27,6 +27,9 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
   gvwProc.Rows.Count = aProc.Count
   gvwProc.Rows.UnselectAll
   gvwProc.Columns.Count = 1
+  Project.SetNormalFont(gvwProc)
+  gvwProc.Rows.H = gvwProc.Font.Height + 4
+
   Me.Resize(W, Min(H, gvwProc.Rows.Count * gvwProc.Rows.Height + 2))
   Try gvwProc[$iCurrent, 0].EnsureVisible
   

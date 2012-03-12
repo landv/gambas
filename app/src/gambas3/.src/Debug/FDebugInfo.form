@@ -55,9 +55,8 @@
       Index = 3
       Text = ("Watch")
       Picture = Picture["icon:/small/watch"]
-      { HBox1 HBox
+      { panWatch HBox
         MoveScaled(1,1,84,4)
-        Font = Font["-2"]
         { cmbWatch ComboBox
           MoveScaled(0,0,27,4)
           Expand = True
@@ -110,9 +109,8 @@
       Index = 4
       Text = ("Breakpoints")
       Picture = Picture["icon:/small/flag"]
-      { VBox1 HBox
+      { panBreakpoint HBox
         MoveScaled(0,0,55,4)
-        Font = Font["-2"]
         { btnRemoveBreak ToolButton
           MoveScaled(0,0,27,4)
           ToolTip = ("Remove current breakpoint")
@@ -144,9 +142,8 @@
       Index = 5
       Text = ("Search list")
       Picture = Picture["icon:/small/find"]
-      { VBox2 HBox
+      { panSearch HBox
         MoveScaled(1,0,83,4)
-        Font = Font["-2"]
         { btnCancelSearch ToolButton
           MoveScaled(0,0,10,4)
           Visible = False

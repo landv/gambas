@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,52,20)
+  Visible = False
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -11,22 +12,22 @@
   { panToolbar HBox
     MoveScaled(0,0,107,4)
     Font = Font["-2"]
-    { btnHome MenuButton
-      MoveScaled(0,0,16,4)
-      ToolTip = ("Index")
-      AutoResize = True
-      Picture = Picture["icon:/small/home"]
-      Border = False
-    }
     { btnBack ToolButton
-      MoveScaled(15,0,4,4)
+      MoveScaled(0,0,4,4)
       ToolTip = ("Go back")
       Picture = Picture["icon:/small/left"]
     }
     { btnForward ToolButton
-      MoveScaled(19,0,4,4)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Go forward")
       Picture = Picture["icon:/small/right"]
+    }
+    { btnHome MenuButton
+      MoveScaled(6,0,16,4)
+      ToolTip = ("Index")
+      AutoResize = True
+      Picture = Picture["icon:/small/home"]
+      Border = False
     }
     { btnStop ToolButton
       MoveScaled(23,0,4,4)

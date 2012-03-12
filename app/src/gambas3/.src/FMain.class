@@ -991,9 +991,9 @@ Public Sub ReadConfig()
   '
   '   tvwProject.Font = hFont
   
-  tvwProject.Font.Grade = - Settings["/GlobalFont", 0]
+  Project.SetNormalFont(tvwProject)
   lblMessage.Font = tvwProject.Font
-  tabProperty.TextFont = Font[CStr(- Settings["/TabStripFont", 0])]
+  tabProperty.TextFont = Project.GetSmallFont()
   wrkProject.Font = tabProperty.TextFont
   'wrkProject.Font = tvwProject.Font
   'tabProperty.Font = tvwProject.Font

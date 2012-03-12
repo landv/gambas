@@ -71,6 +71,8 @@ Public Sub ReadConfig()
   edtOutput.Flags[Editor.ShowCurrentLine] = False
   edtOutput.Flags[Editor.ShowModifiedLines] = False
   edtOutput.Flags[Editor.ShowLineNumbers] = False
+  
+  Project.SetSmallFont(tlbOutput)
 
 End
 

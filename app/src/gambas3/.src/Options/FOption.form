@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,92,56)
+  Visible = False
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -44,7 +45,7 @@
       { Label11 Label
         MoveScaled(0,0,47,4)
         Expand = True
-        Text = ("Font size")
+        Text = ("Default font size")
       }
       { cmbGlobalFont ComboBox
         MoveScaled(48,0,18,4)
@@ -58,9 +59,9 @@
       { Label19 Label
         MoveScaled(0,0,47,4)
         Expand = True
-        Text = ("Tabstrip font size")
+        Text = ("Small font size")
       }
-      { cmbTabStripFont ComboBox
+      { cmbSmallFont ComboBox
         MoveScaled(48,0,18,4)
         ReadOnly = True
         List = [("Normal"), ("Small"), ("Tiny")]
@@ -516,6 +517,16 @@
         AutoResize = True
         Text = ("Clear documentation cache")
         Picture = Picture["icon:/medium/trash"]
+      }
+    }
+    { HBox35 HBox
+      MoveScaled(0,22,66,6)
+      Spacing = True
+      { btnProxy Button
+        MoveScaled(0,0,39,6)
+        AutoResize = True
+        Text = ("Proxy configuration...")
+        Picture = Picture["icon:/medium/internet"]
       }
     }
     Index = 5

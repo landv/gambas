@@ -82,7 +82,7 @@ Public Sub _new()
     [txtEditorFont, "/Editor/Font", Project.DEFAULT_FONT],
     [txtConsoleFont, "/ConsoleFont", Project.DEFAULT_FONT],
     [cmbGlobalFont, "/GlobalFont", 0],
-    [cmbTabStripFont, "/TabStripFont", 0],
+    [cmbSmallFont, "/SmallFont", 0],
     [cmbToolbox, "/ToolboxSize", 0],
     [cmbSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
@@ -242,6 +242,7 @@ Private Sub RefreshWindow()
   FFormStack.ReadConfig
   FToolBox.ReadConfig
   FDebugExpr.ReadConfig
+  FOutput.ReadConfig
   For Each hFile In Project.Files
     Try hFile.ReadConfig
   Next
@@ -255,9 +256,9 @@ Public Sub cmbGlobalFont_Click()
 
 End
 
-Public Sub cmbTabStripFont_Click()
+Public Sub cmbSmallFont_Click()
 
-  Settings["/TabStripFont"] = cmbTabStripFont.Index
+  Settings["/SmallFont"] = cmbSmallFont.Index
   RefreshWindow
 
 End
@@ -918,5 +919,27 @@ Public Sub btnResetIgnore_Click()
 
   Settings["/IgnoreFiles"] = ""
   LoadIgnoreFiles
+
+End
+
+Public Sub btnProxy_Click()
+
+  With FProxy
+    .Type = Settings["/Proxy/Type", 0]
+    .Host = Settings["/Proxy/Host"]
+    .Port = Settings["/Proxy/Port", 0]
+    .User = Settings["/Proxy/User"]
+  End With
+
+  If FProxy.Run() Then Return
+
+  With FProxy
+     Settings["/Proxy/Type"] = .Type
+     Settings["/Proxy/Host"] = .Host
+     Settings["/Proxy/Port"] = .Port
+     Settings["/Proxy/User"] = .User
+  End With
+
+  MHelp.LoadProxyConfig
 
 End

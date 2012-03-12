@@ -293,7 +293,9 @@ End
 
 Public Sub WebView_Click(Frame As WebFrame)
   
-  Debug Frame.Name;; Frame.Url
+  Dim sName As String = Frame.Name
+  If sName Then sName &= ": "
+  Debug sName; Frame.Url
   
 End
 
@@ -453,7 +455,7 @@ Private Sub UpdateIcon()
   If hIcon Then
     Me.Icon = hIcon
   Else
-    Me.Icon = Picture["icon:/16/earth"]
+    Me.Icon = Picture["icon:/16/internet"]
   Endif
 
 End

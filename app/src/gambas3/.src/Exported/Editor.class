@@ -114,7 +114,7 @@ Public Sub ReadConfig()
 
   Dim iLimit As Integer
   
-  Me.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+  Project.SetEditorFont(Me)
 
   MTheme.InitEditor(Me)
 

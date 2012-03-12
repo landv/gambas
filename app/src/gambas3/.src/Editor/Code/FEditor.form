@@ -208,7 +208,6 @@
   }
   { panToolBar ToolBar
     MoveScaled(0,0,141,4)
-    Font = Font["-2"]
     Key = "editor"
     Text = ("Editor")
     Separator = True
@@ -421,23 +420,6 @@
   { timWatch #Timer
     #MoveScaled(96,64)
     Delay = 5000
-  }
-  { panProc Panel
-    MoveScaled(81,9,31,39)
-    Visible = False
-    Background = Color.TextBackground
-    Ignore = True
-    Arrangement = Arrange.Fill
-    Border = Border.Plain
-    { gvwProc GridView
-      MoveScaled(2,2,25,30)
-      Tracking = True
-      Mouse = Mouse.Pointing
-      Mode = Select.Single
-      Grid = False
-      Scrollbar = Scroll.Vertical
-      Border = False
-    }
   }
   { lblWatch TextLabel
     MoveScaled(56,74,20,5)

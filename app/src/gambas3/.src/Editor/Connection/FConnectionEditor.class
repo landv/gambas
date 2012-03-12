@@ -270,11 +270,10 @@ Public Sub ReadConfig()
   edtRequest.Flags[Editor.HighlightImmediately] = True
   edtRequest.Flags[Editor.HideMargin] = True
 
-  iGrade = - Settings["/TabStripFont", 0]
   For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData, dvwRequest]
-    hCtrl.Font.Grade = iGrade
+    Project.SetSmallFont(hCtrl)
   Next
-  lvwTable.Font.Grade = - Settings["/GlobalFont", 0]
+  Project.SetNormalFont(lvwTable)
   
 End
 

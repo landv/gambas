@@ -92,7 +92,7 @@ End
 
 Public Sub IsEqual(hPos As CPosition) As Boolean
   
-  If Path = hPos.Path And If {Line} = hPos.Line And If Column = hPos.Column Then Return True
+  If Path = hPos.Path And If {Line} = hPos.Line Then Return True 'And If Column = hPos.Column Then Return True
   
 End
 

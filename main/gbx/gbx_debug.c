@@ -355,7 +355,7 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
   	//fprintf(stderr, "No Count symbol\n");		
 		goto __NORMAL;
 	}
-		
+	
 	desc = class->table[index].desc;
 	type = CLASS_DESC_get_type(desc);
 	
@@ -392,6 +392,13 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 
 	VALUE_conv_integer(&TEMP);
 	*count = TEMP._integer.value;
+	
+	// For collection-like objects, check _next and Key property
+	
+	/*if (access == GB_DEBUG_ACCESS_COLLECTION)
+	{
+	}*/
+	
 	return access;
 
 __NORMAL:

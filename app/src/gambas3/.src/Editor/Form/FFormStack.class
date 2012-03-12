@@ -264,7 +264,7 @@ End
 
 Public Sub ReadConfig()
 
-  tvwControl.Font.Grade = - Settings["/GlobalFont", 0]
+  Project.SetNormalFont(tvwControl)
   MTheme.InitControl(tvwControl)
   RefreshAll
 

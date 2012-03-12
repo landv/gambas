@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Private $hEditor As Editor
+Static Private $hEditor As Editor
 Private $bUseHelp As Boolean
 Private $bShowHelp As Boolean
 
@@ -227,7 +227,7 @@ End
 
 Public Sub webHelp_GotFocus()
 
-  $hEditor.SetFocus
+  Try $hEditor.SetFocus
 
 End
 

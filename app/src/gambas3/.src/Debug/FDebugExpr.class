@@ -702,8 +702,8 @@ End
 
 Public Sub UpdateConfig()
   
-  gvwExpr.Font.Grade = - Settings["/TabStripFont", 0]
-  lblVoid.Font.Grade = gvwExpr.Font.Grade 
+  Project.SetSmallFont(gvwExpr)
+  Project.SetSmallFont(lblVoid)
 
 End
 

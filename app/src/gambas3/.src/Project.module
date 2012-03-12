@@ -5250,3 +5250,28 @@ Public Sub GetIgnoreFiles() As String[]
   Return Settings["/IgnoreFiles", [".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"]]
   
 End
+
+Public Sub GetSmallFont() As Font
+  
+  Return Font[CStr(- Settings["/SmallFont", 0])]
+  
+End
+
+
+Public Sub SetSmallFont(hCtrl As Control)
+  
+  hCtrl.Font.Grade = - Settings["/SmallFont", 0]
+  
+End
+
+Public Sub SetNormalFont(hCtrl As Control)
+  
+  hCtrl.Font.Grade = - Settings["/GlobalFont", 0]
+  
+End
+
+Public Sub SetEditorFont(hCtrl As Control)
+  
+  hCtrl.Font = Font[Settings["/Editor/Font", DEFAULT_FONT]]  
+  
+End

@@ -61,6 +61,8 @@ Public Sub Form_Open()
   '  webHelp.TextZoom = 0.8
   'Endif
   
+  MHelp.LoadProxyConfig
+  
   OnProjectChange
   
 End
@@ -75,6 +77,7 @@ End
 
 Private Function GetHomeURL() As String
 
+  'Debug MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
   Return MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
 
 End
@@ -285,6 +288,7 @@ Private Sub SetLang(sLang As String)
   sUrl = webHelp.Url
   If sUrl Begins "http://gambasdoc.org/" Then
     sUrl = Replace(sUrl, "&" & sOldLang, "")
+    'Debug sUrl & "&" & sLang
     webHelp.Url = sUrl & "&" & sLang
   Endif
   
@@ -301,8 +305,12 @@ Public Sub OnProjectChange()
   
   MHelp.Clear
   If Me.Closed Then Return
+  
   If btnShowPanel.Value Then FillTree
-  If webHelp.Url <> GetHomeURL() Then btnHome_Click
+  
+  If webHelp.Url <> GetHomeURL() Then
+    btnHome_Click
+  Endif
   
 End
 
@@ -340,3 +348,4 @@ Public Sub movWaiting_MouseDown()
   ShowWaiting(False)
 
 End
+

@@ -195,8 +195,7 @@ Public Sub ReadConfig()
 
   $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
 
-  panProc.Font.Grade = - Settings["/GlobalFont", 0]
-  gvwProc.Rows.H = panProc.Font.Height + 1
+  Project.SetSmallFont(panToolbar)
 
   RefreshBackground
 
@@ -390,7 +389,7 @@ Public Sub Form_Arrange()
   '     splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
   ' End Select
 
-  ResizeProcList
+  'ResizeProcList
 
 End
 
@@ -3158,11 +3157,11 @@ Public Sub panToolBar_Configure()
 
 End
 
-Private Sub ResizeProcList()
-
-  panProc.Resize(btnProc.W, Min(panProc.Parent.ClientH - panProc.Y + 1, gvwProc.Rows.Count * gvwProc.Rows.H + 2))
-
-End
+' Private Sub ResizeProcList()
+' 
+'   panProc.Resize(btnProc.W, Min(panProc.Parent.ClientH - panProc.Y + 1, gvwProc.Rows.Count * gvwProc.Rows.H + 2))
+' 
+' End
 
 Private Sub ToggleProcList()
 

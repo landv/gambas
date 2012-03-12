@@ -460,8 +460,8 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 		GB.Post((void (*)())show_later, (intptr_t)THIS);
 		//WIDGET->show();
 	}
-	else
-		THIS->hidden = TRUE;
+	//else
+	//	THIS->hidden = TRUE;
 	
 	THIS->showMenuBar = true;
 
@@ -480,7 +480,7 @@ BEGIN_METHOD_VOID(CFORM_main)
 
 	CWINDOW *form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
 	//if (!((MyMainWindow *)form->widget.widget)->isHidden())
-	//if (!form->hidden)
+	if (!form->hidden)
 		CWINDOW_show(form, NULL);
 		
 END_METHOD
@@ -2364,6 +2364,7 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	QIcon icon;
 	bool old_toplevel;
 	bool hidden;
+	bool reparented = false;
 	Qt::WindowFlags f = windowFlags();
 	#ifndef NO_X_WINDOW
 	bool active = qApp->activeWindow() == this;
@@ -2406,10 +2407,13 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	//				THIS->widget.name, THIS, THIS->widget.flag.visible, THIS->opened, THIS->hidden, isVisible(), isHidden(), THIS->widget.flag.shown);
 	//if (!THIS->hidden) showIt = true;
 	//hide();
-	hidden = THIS->hidden;
+	hidden = THIS->hidden || !WIDGET->isVisible();
 	//qDebug("doReparent: %s %p: hidden = %d", THIS->widget.name, THIS, hidden);
 	if (parent != parentWidget() || f != windowFlags())
+	{
+		reparented = true;
 		setParent(parent, f);
+	}
 	
 	move(pos);
 	//qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
@@ -2455,8 +2459,11 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	else
 		qDebug("doReparent (%s %p): new parent = 0", THIS->widget.name, THIS);*/
 	
-	if (!hidden)
-		CWINDOW_show(THIS, NULL);
+	if (reparented)
+	{
+		if (!hidden)
+			CWINDOW_show(THIS, NULL);
+	}
 }
 
 

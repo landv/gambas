@@ -572,14 +572,20 @@ End
 Public Sub ReadConfig()
 
   Dim hButton As ToolButton
+  Dim hCtrl As Control
 
   Settings.Read(splDebug,, [4, 1])
-  tabDebug.TextFont = Font[CStr(- Settings["/TabStripFont", 0])]
-  tbvLocal.Font.Grade = - Settings["/GlobalFont", 0]
+  tabDebug.TextFont = Project.GetSmallFont()
+  
+  Project.SetNormalFont(tbvLocal)
   tbvObject.Font = tbvLocal.Font
   lvwStack.Font = tbvLocal.Font
   cvwWatch.Font = tbvLocal.Font
   cvwBreak.Font = tbvLocal.Font
+  
+  For Each hCtrl In [panBreakpoint, panSearch, panWatch]
+    Project.SetSmallFont(hCtrl)
+  Next
 
   For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowMe, btnWatch]
     hButton.AutoResize = False

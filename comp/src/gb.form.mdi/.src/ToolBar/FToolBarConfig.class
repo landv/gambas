@@ -5,7 +5,12 @@ Private $hForm As FToolBar
 Private $aDefault As String[]
 Private $hInside As DrawingArea
 Private $hPopupToolbar As ToolBar
-Private $aDeleteLater As New Control[]
+Static Private $aDeleteLater As New Control[]
+
+Public Sub _new()
+  
+End
+
 
 Public Sub Run(hToolbar As ToolBar) 
 
@@ -454,7 +459,7 @@ Public Sub mnuConfigure_Click()
   
 End
 
-Public Sub WillBeDeleted(hCtrl As Control) As Boolean
+Static Public Sub WillBeDeleted(hCtrl As Control) As Boolean
   
   Return $aDeleteLater.Exist(hCtrl)
   

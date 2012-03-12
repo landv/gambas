@@ -315,7 +315,7 @@ BEGIN_PROPERTY(WebSettingsProxy_Type)
 	else
 	{
 		int type = VPROP(GB_INTEGER);
-		if (type == QNetworkProxy::NoProxy || type == QNetworkProxy::Socks5Proxy || type == QNetworkProxy::HttpProxy)
+		if (type == QNetworkProxy::DefaultProxy || type == QNetworkProxy::NoProxy || type == QNetworkProxy::Socks5Proxy || type == QNetworkProxy::HttpProxy)
 		{
 			proxy.setType((QNetworkProxy::ProxyType)type);
 			nam->setProxy(proxy);
@@ -409,6 +409,7 @@ GB_DESC CWebSettingsDesc[] =
 	GB_CONSTANT("OfflineWebApplicationCacheEnabled", "i", QWebSettings::OfflineWebApplicationCacheEnabled),
 	GB_CONSTANT("LocalStorageDatabaseEnabled", "i", QWebSettings::LocalStorageDatabaseEnabled),
 	
+	GB_CONSTANT("DefaultProxy", "i", QNetworkProxy::DefaultProxy),
 	GB_CONSTANT("NoProxy", "i", QNetworkProxy::NoProxy),
 	GB_CONSTANT("Socks5Proxy", "i", QNetworkProxy::Socks5Proxy),
 	GB_CONSTANT("HttpProxy", "i", QNetworkProxy::HttpProxy),

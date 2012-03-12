@@ -1092,7 +1092,7 @@ End
 Public Sub ReadConfig()
 
   $bSort = Settings["/SortProperties", True]
-  grdProperty.Font.Grade = - Settings["/GlobalFont", 0]
+  Project.SetNormalFont(grdProperty)
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font

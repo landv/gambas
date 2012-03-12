@@ -415,7 +415,10 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     If sMore Then sUrl &= "&" & sMore
     sMore &= "&" & GetLanguage() ' ??
-    If hWebView.Url <> sUrl Then hWebView.Url = sUrl
+    If hWebView.Url <> sUrl Then 
+      'Debug sUrl
+      hWebView.Url = sUrl
+    Endif
     
   Else
     hWebView.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
@@ -703,3 +706,33 @@ Public Sub Clear()
   Try Shell "rm -rf " & Shell$(File.Dir(Temp$()) &/ "help")
   
 End
+
+Public Sub LoadProxyConfig()
+  
+  Return
+  
+  With WebSettings.Proxy
+    
+    Select Case Settings["/Proxy/Type", 0]
+      Case 0
+        .Type = WebSettings.DefaultProxy
+        Return
+      Case 1
+        .Type = WebSettings.NoProxy
+        Return
+      Case 2
+        .Type = WebSettings.HttpProxy
+      Case 3
+        .Type = WebSettings.Socks5Proxy
+    End Select
+    
+    .Host = Settings["/Proxy/Host"]
+    .Port = Settings["/Proxy/Port", 0]
+    .User = Settings["/Proxy/User"]
+    If .User Then .Password = Desktop.Passwords["/Proxy" &/ .User]
+    
+  End With
+  
+End
+
+
