@@ -275,23 +275,30 @@ void SUBR_input(ushort code)
 		stream = get_stream(PARAM, TRUE);
 
 	if (stream)
-	{
 		addr = STREAM_input(stream);
-
-		VALUE_from_string(RETURN, addr, STRING_length(addr));
-
-		if (RETURN->type == T_NULL)
-		{
-			RETURN->type = T_STRING;
-			RETURN->_string.addr = addr;
-			RETURN->_string.start = 0;
-			RETURN->_string.len = STRING_length(addr);
-		}
+	else
+		addr = NULL;
+		
+	if (NPARAM == 1)
+	{
+		SP--;
+		if (!TYPE_is_integer(SP->type))
+			RELEASE_OBJECT(SP);
+	}
+	
+	if (addr)
+	{
+		SP->type = T_STRING;
+		SP->_string.addr = addr;
+		SP->_string.start = 0;
+		SP->_string.len = STRING_length(addr);
 	}
 	else
-		RETURN->type = T_NULL;
-
-	SUBR_LEAVE();
+	{
+		SP->type = T_NULL;
+	}
+		
+	SP++;
 }
 
 
