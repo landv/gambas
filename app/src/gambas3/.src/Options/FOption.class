@@ -243,6 +243,7 @@ Private Sub RefreshWindow()
   FToolBox.ReadConfig
   FDebugExpr.ReadConfig
   FOutput.ReadConfig
+  FHelpBrowser.ReadConfig
   For Each hFile In Project.Files
     Try hFile.ReadConfig
   Next

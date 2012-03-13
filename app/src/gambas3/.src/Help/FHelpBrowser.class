@@ -41,6 +41,13 @@ Public Sub _new()
   
 End
 
+Public Sub ReadConfig()
+  
+  Project.SetSmallFont(panToolbar)
+  
+End
+
+
 Public Sub Form_Open()
   
   Dim sLang As String
@@ -48,6 +55,7 @@ Public Sub Form_Open()
   Settings.Read(Me)
   Settings.Read(splHelp)
   btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False]
+  ReadConfig
   
   sLang = MHelp.GetLanguage(True)
   If sLang Then
