@@ -290,8 +290,16 @@ void SUBR_input(ushort code)
 	
 	if (addr)
 	{
-		VALUE_from_string(SP, addr, STRING_length(addr)); 
-		STRING_free(&addr);
+		VALUE_from_string(SP, addr, STRING_length(addr));
+		if (SP->type == T_NULL)
+		{
+			SP->type = T_STRING;
+			SP->_string.addr = addr;
+			SP->_string.start = 0;
+			SP->_string.len = STRING_length(addr);
+		}
+		else
+			STRING_free(&addr);
 	}
 		
 	SP++;
