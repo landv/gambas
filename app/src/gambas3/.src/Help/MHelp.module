@@ -709,8 +709,6 @@ End
 
 Public Sub LoadProxyConfig()
   
-  Return
-  
   With WebSettings.Proxy
     
     Select Case Settings["/Proxy/Type", 0]
