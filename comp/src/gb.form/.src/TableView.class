@@ -104,14 +104,21 @@ End
 
 Private Sub MoveEditor()
   
-  Dim X, Y As Integer
+  Dim X, Y, W, H As Integer
+  Dim MX, MY, MW, MH As Integer
   
   If Not $hEditor Then Return 
   
   $bDoNotHideEditor = True
   
+  Me[$iRow, $iCol].EnsureVisible
+  Wait
+  
   X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
   Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY
+  
+  MX = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
+  MY = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY
   
   $bDoNotHideEditor = False
   
@@ -119,8 +126,16 @@ Private Sub MoveEditor()
     
     X += .X
     Y += .Y
+    W = Min(Me.ClientW - Me.Rows.W, .Width)
+    H = Min(Me.ClientH - Me.Columns.H, .Height)
     
-    $hEditor.Move(X, Y, .Width, .Height)
+    If W < 4 Or If H < 4 Then
+      HideEditor
+      Return
+    Endif
+    
+    
+    $hEditor.Move(X, Y, W, H)
     ' Else
     '   $hEditor.Move(X, Y, .Width + 1, .Height + 1)
     ' Endif
