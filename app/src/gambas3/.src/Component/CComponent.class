@@ -961,7 +961,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         
         aName.Add(sName2)
         
-        If (iInd + 2) <= aSym.Max And If aSym[iInd + 1] <> "," Then Break
+        If (iInd + 2) > aSym.Max Then Break
+        If aSym[iInd + 1] <> "," Then Break
         iInd += 2
         
       Loop
