@@ -775,8 +775,8 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 
 	STRING_free(&file_rdir_path);
 	file_rdir_path = STRING_new_zero(dir);
-
-	FILE_dir_first(dir, NULL, attr);
+	
+	FILE_dir_first(dir, NULL, attr != GB_STAT_DIRECTORY ? 0 : GB_STAT_DIRECTORY);
 	while (!FILE_dir_next(&file, &len))
 	{
 		temp = STRING_new_temp(file, len);
@@ -806,9 +806,9 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 
 		TRY
 		{
-			if (found) (*found)(path);
+			if (found && (!attr || (attr & GB_STAT_DIRECTORY))) (*found)(path);
 			FILE_recursive_dir(path, found, afterfound, attr, follow);
-			if (afterfound) (*afterfound)(path);
+			if (afterfound && (!attr || (attr & GB_STAT_DIRECTORY))) (*afterfound)(path);
 		}
 		CATCH
 		{
