@@ -15,6 +15,9 @@ Public Sub _new()
     gvwView.Columns[I].Width = 100
   Next
   
+  'gvwView.Columns[2].Background = &HF0F0F0&
+  gvwView.Columns[2].Alignment = Align.Right
+  
   gvwView.Rows[0].Height = 60
   For I = 1 To 10
     gvwView.Rows[Int(Rnd(0, gvwView.Rows.Count))].Height = 60
@@ -127,5 +130,11 @@ End
 Public Sub Button4_Click()
 
   gvwView.Rows.Remove(0, 1)
+
+End
+
+Public Sub gvwView_ColumnResize(Column As Integer)
+
+  Debug Column
 
 End

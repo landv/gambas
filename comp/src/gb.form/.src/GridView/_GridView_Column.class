@@ -7,6 +7,8 @@ Property Width, W As Integer
 Property Text, Title As String
 Property Resizable As Boolean
 Property Expand As Boolean
+Property Alignment As Integer
+Property Background As Integer
 
 Event _Refresh
 
@@ -18,6 +20,8 @@ Private $W As Integer
 Private $sText As String
 Private $bResizable As Boolean = True
 Private $bExpand As Boolean
+Private $iAlign As Integer
+Private $iBackground As Integer = Color.Default
 
 Private Sub GetView() As GridView
   
@@ -50,6 +54,7 @@ Private Sub Width_Write(Value As Integer)
   If Value < 0 Or If Value > 1024 Or If Value = $W Then Return
   $W = Max(1, Value)
   Raise _Refresh
+  GetView()._RaiseColumnResize(_Column)
 
 End
 
@@ -95,5 +100,39 @@ Private Sub Expand_Write(Value As Boolean)
 
   $bExpand = Value
   Raise _Refresh
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  Select Case Value
+    Case Align.Left, Align.Right, Align.Normal, Align.Center
+    Default
+      Return
+  End Select
+
+  If $iAlign = Value Then Return
+  $iAlign = Value
+  GetView().Refresh
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  If $iBackground = Value Then Return
+  $iBackground = Value
+  GetView().Refresh
 
 End

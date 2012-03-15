@@ -131,10 +131,11 @@ End
 
 Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   
+  Dim hView As GridView = GetView()
   Dim DH As Integer = _GetDefaultRowHeight()
   Dim OH As Integer
   
-  If H > 1024 Then Return
+  H = Min(1024, H)
   
   If Not $cHeight Then 
     $cHeight = New Collection
@@ -145,14 +146,16 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
     If $cHeight.Exist(iRow) Then
       $cHeight.Remove(iRow)
       $aHeight.Remove($aHeight.Find(iRow))
-      GetView()._ResizeContents()
+      hView._ResizeContents()
+      hView._RaiseRowResize(iRow)
     Endif
   Else If H > 0 Then
     Try OH = $cHeight[iRow]
     If H <> OH Then
       If OH = 0 Then AddSorted(iRow)
       $cHeight[iRow] = H
-      GetView()._ResizeContents()
+      hView._ResizeContents()
+      hView._RaiseRowResize(iRow)
     Endif
   Endif
   

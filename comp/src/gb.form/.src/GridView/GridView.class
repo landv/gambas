@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True,Sorted"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 
@@ -26,6 +26,8 @@ Property ShowCursor As Boolean
 Property Read Current As _GridView_Cell
 Property Font As Font
 Property Mouse As Integer
+Property Sorted As Boolean
+'Property HighlightSort As Boolean
 
 'Property RowCount As Integer
 'Property ColumnCount As Integer
@@ -97,6 +99,9 @@ Private $bInRow As Boolean
 Private $hTimerEnsureVisible As Timer
 Private $iRowEV As Integer = -1
 Private $iColEV As Integer = -1
+
+Private $bSorted As Boolean
+'Private $bHighlightSort As Boolean = True
 
 Public Sub _new()
   
@@ -177,16 +182,21 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
   Dim hRect As Rect = Rect(X, Y, W, H)
   Dim hPict As Picture
   Dim A As Integer
+  Dim iColor As Integer
 
   Draw.Save
   
   With hData
 
-    If .Background <> Color.Default Then
-      Draw.FillRect(X, Y, W, H, .Background)
-    Else
-      Draw.FillRect(X, Y, W, H, Color.TextBackground)
+    iColor = .Background
+    If iColor = Color.Default Then 
+      iColor = $hColumns[iCol].Background
+      If iColor = Color.Default Then
+        iColor = Color.TextBackground
+      Endif
     Endif
+    
+    Draw.FillRect(X, Y, W, H, iColor)
     
     If .Padding Then
       X += .Padding
@@ -268,10 +278,10 @@ End
 
 Public Sub ScrollArea_Draw()
   
-  Dim I, J, R, C As Integer
+  Dim I, J, R, C, WA As Integer
   Dim XO, YO, XX, YY, X, Y, W, H As Integer
   Dim iRow, iRow2, iCol, iCol2 As Integer
-  Dim hClip As Rect
+  Dim hClip, hSaveClip As Rect
   Dim hRect As Rect
   Dim hData As _GridView_Data
   Dim F As Integer = GetFrameWidth()
@@ -281,6 +291,8 @@ Public Sub ScrollArea_Draw()
   Dim iRowSpan, iColSpan As Integer
   Dim hSpan, hCursor As Rect
   Dim XS, YS As Integer
+  Dim iSort As Integer
+  Dim bAscent As Boolean
   
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
   
@@ -300,6 +312,9 @@ Public Sub ScrollArea_Draw()
   
   ' Vertical header
   
+  iSort = $hColumns.Sort
+  bAscent = $hColumns.Ascending
+  
   H = $hColumns.Height + F
   If $iHeader And Horizontal Then Draw.FillRect(0, 0, Draw.W, H, Color.ButtonBackground)
   X = XX
@@ -308,9 +323,16 @@ Public Sub ScrollArea_Draw()
     iCol2 = I
     With $hColumns[I]
       If $iHeader And Horizontal Then
+        Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
         Draw.FillRect(X - 1, F, 1, H - F, iGrid)
-        Draw.ClipRect = hClip.Intersection(Rect(X, F, .Width, H - F))
-        Draw.Text(.Text, X + 2, F, .Width - 2, H - F, Align.Center)
+        If iSort = I Then
+          WA = Min(16, H - F)
+          Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Top, Align.Bottom))
+          Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
+          If Draw.ClipRect Then Draw.Text(.Text, X + 2, F, .Width - WA - 4, H - F, .Alignment)
+        Else
+          Draw.Text(.Text, X + 2, F, .Width - 4, H - F, .Alignment)
+        Endif
       Endif
       X += .Width
     End With
@@ -370,6 +392,7 @@ Public Sub ScrollArea_Draw()
   hRect = New Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
   hRect.Adjust(F)
   hRect.Adjust($hRows.Width, $hColumns.Height, 0, 0)
+  hSaveClip = Draw.ClipRect
   hClip = hRect.Intersection(Draw.ClipRect)
   
   If Not hClip Then Return
@@ -391,7 +414,6 @@ Public Sub ScrollArea_Draw()
       C = J
       
       bHasSpan = HasSpan(I, J)
-      
       
       If bHasSpan Then
         
@@ -438,12 +460,12 @@ Public Sub ScrollArea_Draw()
       Endif
       
       Draw.ClipRect = hClip.Intersection(hSpan)
-      DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
+      If Draw.ClipRect Then DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
       
     NEXT_CELL:
       
       If $bShowCursor And If I = $iRow And If J = $iCol Then
-        hCursor = Rect(X, Y, W - 1, H - 1)
+        hCursor = Rect(X, Y, Max(0, W - 1), Max(0, H - 1))
         ' Paint.Begin(Draw.Device)
         ' Paint.ClipRect = hClip
         ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
@@ -468,6 +490,25 @@ Public Sub ScrollArea_Draw()
   
   $hData = Null
 
+  ' Sorted column
+  
+  If $bSorted And If iSort >= 0 And If iSort < $hColumns.Count Then
+    
+    Paint.Begin(Draw.Device)
+    Paint.ClipRect = hClip
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.LightForeground, 224))
+    
+    With $hColumns[iSort]
+    
+      Paint.Rectangle(XO + .X, $hColumns.H + F, .W, $hView.ClientH - $hColumns.H - F * 2)
+      Paint.Fill
+    
+    End With
+
+    Paint.End
+    
+  Endif
+
   ' Row selection
 
   If $iMode Then
@@ -476,7 +517,7 @@ Public Sub ScrollArea_Draw()
     X = XX
     
     Paint.Begin(Draw.Device)
-    Paint.ClipRect = hClip
+    Paint.ClipRect = hSaveClip
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
     
     For I = iRow To iRow2
@@ -484,7 +525,8 @@ Public Sub ScrollArea_Draw()
       H = $aRowY[I - iRow + 1] + F - Y
       
       If _IsRowSelected(I) Then
-        Paint.Rectangle(X, Y, $hColumns._GetWidth(), H)
+        'Paint.Rectangle(X, Y, $hColumns._GetWidth(), H)
+        Paint.Rectangle(F, Y, $hView.ClientW - F * 2, H)
         Paint.Fill
       Endif
       
@@ -769,6 +811,14 @@ Public Sub ScrollArea_MouseDown()
     I = $hColumns._FindColumnFromPos(Mouse.X - $hRows.Width + $hView.ScrollX)
     If I >= 0 Then 
       Raise ColumnClick(I)
+      If $bSorted Then
+        If $hColumns.Sort = I Then
+          $hColumns.Ascending = Not $hColumns.Ascending
+        Else
+          $hColumns.Sort = I
+          $hColumns.Ascending = False
+        Endif
+      Endif
       Stop Event
     Endif
   Endif
@@ -832,10 +882,12 @@ Public Sub _GetCellData(iRow As Integer, iColumn As Integer, Optional bCreate As
     If bCreate Then
       hData = New _GridView_Data
       hData.Font = Me.Font
+      hData.Alignment = $hColumns[iColumn].Alignment
       $cCells[GetCellKey(iRow, iColumn)] = hData
     Else
       $hData = New _GridView_Data
       $hData.Font = Me.Font
+      $hData.Alignment = $hColumns[iColumn].Alignment
       Raise Data(iRow, iColumn)
       hData = $hData
     Endif
@@ -1521,3 +1573,48 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Return PW
   
 End
+
+Public Sub _RaiseRowResize(iRow As Integer)
+  
+  Raise RowResize(iRow)
+  
+End
+
+Public Sub _RaiseColumnResize(iCol As Integer)
+  
+  Raise ColumnResize(iCol)
+  
+End
+
+Private Function Sorted_Read() As Boolean
+
+  Return $bSorted
+
+End
+
+Private Sub Sorted_Write(Value As Boolean)
+
+  $bSorted = Value
+  If Not $bSorted Then
+    $hColumns.Sort = -1
+  Else
+    $hColumns.Sort = 0
+    $hColumns.Ascending = False
+  Endif
+  
+  Me.Refresh
+
+End
+
+' Private Function HighlightSort_Read() As Boolean
+' 
+'   Return $bHighlightSort
+' 
+' End
+' 
+' Private Sub HighlightSort_Write(Value As Boolean)
+' 
+'   $bHighlightSort = Value
+'   Me.Refresh
+' 
+' End

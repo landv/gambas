@@ -7,6 +7,8 @@ Property Read Max As Integer
 Property Read Height, H As Integer
 Property Resizable As Boolean
 Property Width, W As Integer
+Property Sort As Integer
+Property Ascending As Boolean
 
 Event _Refresh
 
@@ -14,6 +16,8 @@ Private $aColumns As New _GridView_Column[]
 Private $iWidth As Integer
 Private $bResizable As Boolean = True
 Private $bLayouting As Boolean
+Private $iSort As Integer = -1
+Private $bAscent As Boolean
 
 Private Sub GetView() As GridView
   
@@ -200,5 +204,33 @@ Private Sub Width_Write(Value As Integer)
     Object.Unlock(hCol)
   Next
   _Layout
+
+End
+
+Private Function Sort_Read() As Integer
+
+  Return $iSort
+
+End
+
+Private Sub Sort_Write(Value As Integer)
+
+  If $iSort = Value Then Return
+  $iSort = Value
+  GetView().Refresh
+
+End
+
+Private Function Ascending_Read() As Boolean
+
+  Return $bAscent
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  If $bAscent = Value Then Return
+  $bAscent = Value
+  GetView().Refresh
 
 End

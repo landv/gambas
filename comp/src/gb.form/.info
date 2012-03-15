@@ -1052,7 +1052,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True
+*,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True,Sorted
 _Group
 C
 s
@@ -1140,6 +1140,10 @@ Font
 Mouse
 p
 i
+
+Sorted
+p
+b
 
 ScrollX
 p
@@ -1376,6 +1380,14 @@ m
 _GetPreferredWidth
 m
 i
+(iCol)i
+_RaiseRowResize
+m
+
+(iRow)i
+_RaiseColumnResize
+m
+
 (iCol)i
 #IconPanel
 UserContainer
@@ -2863,6 +2875,14 @@ Expand
 p
 b
 
+Alignment
+p
+i
+
+Background
+p
+i
+
 :_Refresh
 :
 
@@ -2917,6 +2937,14 @@ i
 W
 p
 i
+
+Sort
+p
+i
+
+Ascending
+p
+b
 
 :_Refresh
 :
