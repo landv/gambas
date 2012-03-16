@@ -26,6 +26,10 @@
 
 #include "config.h"
 
+#ifdef OS_FREEBSD
+#undef HAVE_EXP10
+#endif
+
 void MATH_init(void);
 
 int lsgn(int x);
