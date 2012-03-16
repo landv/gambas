@@ -286,34 +286,39 @@ __LEAVE:
 void SUBR_if(ushort code)
 {
 	int i;
+	unsigned char test;
 	TYPE type;
 	
   SUBR_ENTER_PARAM(3);
 
   VALUE_conv_boolean(PARAM);
 	i = PARAM->_boolean.value ? 1 : 2;
-
-	type = code & 0x1F;
 	
-	if (!type)
+	test = code & 0x1F;
+
+	if (!test)
 	{
-		if (PARAM[1].type == PARAM[2].type)
-			type = 0x1F;
+		type = PARAM[1].type;
+		if (PARAM[2].type == type && type <= T_VARIANT)
+		{
+			*PC |= 0x1F;
+		}
 		else
 		{
 			type = SUBR_check_good_type(&PARAM[1], 2);
 			if (TYPE_is_object(type))
 				type = T_OBJECT;
-	
+			*PC |= (unsigned char)type;
 		}
-		*PC |= type;
 	}
-	else if (type != 0x1F)
-		VALUE_conv(&PARAM[i], type);
-	
-	*RETURN =  PARAM[i];
+	else if (test != 0x1F)
+	{
+		VALUE_conv(&PARAM[i], (TYPE)test);
+	}
 
-  SUBR_LEAVE();
+	*PARAM = PARAM[i];
+	RELEASE(&PARAM[3 - i]);
+	SP -= 2;
 }
 
 

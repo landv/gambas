@@ -189,53 +189,56 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 	int i;
 	TYPE type, type2;
 	
-	type = conv_type(param[0].type);;
+	type = conv_type(param[0].type);
 	
-	for (i = 1; i < count; i++)
+	if (TYPE_is_value(type))
 	{
-		type2 = conv_type(param[i].type);
-		
-		if (type2 == type)
-			continue;
-		
-		if (type == T_NULL)
+		for (i = 1; i < count; i++)
 		{
-			if (type2 <= T_FLOAT)
-				goto __VARIANT;
+			type2 = conv_type(param[i].type);
 			
-			type = type2;
-			continue;
-		}
-		
-		if (type <= T_FLOAT && type2 <= T_FLOAT)
-		{
-			if (type2 > type)
-				type = type2;
-			continue;
-		}
-		
-		if (type2 == T_NULL)
-		{
-			if (type <= T_FLOAT)
-				goto __VARIANT;
-			else
+			if (type2 == type)
 				continue;
+			
+			if (type == T_NULL)
+			{
+				if (type2 <= T_FLOAT)
+					goto __VARIANT;
+				
+				type = type2;
+				continue;
+			}
+			
+			if (type <= T_FLOAT && type2 <= T_FLOAT)
+			{
+				if (type2 > type)
+					type = type2;
+				continue;
+			}
+			
+			if (type2 == T_NULL)
+			{
+				if (type <= T_FLOAT)
+					goto __VARIANT;
+				else
+					continue;
+			}
+			
+			if (TYPE_is_object(type) && TYPE_is_object(type2))
+			{
+				type = T_OBJECT;
+				continue;
+			}
+			
+			type = T_VARIANT;
+			break;
 		}
-		
-		if (TYPE_is_object(type) && TYPE_is_object(type2))
-		{
-			type = T_OBJECT;
-			continue;
-		}
-		
-		type = T_VARIANT;
-		break;
 	}
 	
 	if (type == T_VOID)
 		THROW(E_NRETURN);
-	else if (type > T_VARIANT && type < T_OBJECT)
-		THROW(E_TYPE, "Standard type", TYPE_get_name(type));
+	else if (!TYPE_is_value(type))
+		THROW(E_TYPE, "Variant", TYPE_get_name(type));
 	
 	return type;
 	

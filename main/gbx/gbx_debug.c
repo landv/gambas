@@ -312,8 +312,8 @@ __FOUND:
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 {
 	CLASS_DESC *desc;
+	CLASS_DESC_METHOD *dm;
   char type;
-  int index;
 	int access = GB_DEBUG_ACCESS_NORMAL;
 
 	//fprintf(stderr, "DEBUG_can_be_used_like_an_array: %p %s ?\n", object, class->name);
@@ -328,35 +328,30 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 		CLASS_load(class);
 	}
 
-  index = class->special[SPEC_GET];
-  if (index == NO_SYMBOL)
+	dm = CLASS_get_special_desc(class, SPEC_GET);
+  if (!dm)
   {
   	//fprintf(stderr, "No _get method\n");
 		goto __NORMAL;
   }
 
-	desc = class->table[index].desc;
-	if (desc->method.npmin != 1 || desc->method.npmax != 1)
+	if (dm->npmin != 1 || dm->npmax != 1)
 	{
   	//fprintf(stderr, "No _get(Arg AS Integer) method\n");
 		goto __NORMAL;
 	}
 
-	if (*desc->method.signature == T_INTEGER)
+	if (*dm->signature == T_INTEGER)
 		access = GB_DEBUG_ACCESS_ARRAY;
-	//else if (*desc->method.signature == T_STRING)
-	//	access = GB_DEBUG_ACCESS_COLLECTION;
+	else if (*dm->signature == T_STRING)
+		access = GB_DEBUG_ACCESS_COLLECTION;
 	else
 		goto __NORMAL;
 	
-	index = CLASS_find_symbol(class, "Count");
-	if (index == NO_SYMBOL)
-	{
-  	//fprintf(stderr, "No Count symbol\n");		
+	desc = CLASS_get_symbol_desc(class, "Count");
+	if (!desc)
 		goto __NORMAL;
-	}
 	
-	desc = class->table[index].desc;
 	type = CLASS_DESC_get_type(desc);
 	
 	// The two only possible cases:
@@ -395,9 +390,16 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 	
 	// For collection-like objects, check _next and Key property
 	
-	/*if (access == GB_DEBUG_ACCESS_COLLECTION)
+	if (access == GB_DEBUG_ACCESS_COLLECTION)
 	{
-	}*/
+		dm = CLASS_get_special_desc(class, SPEC_NEXT);
+		if (!dm)
+			goto __NORMAL;
+		
+		desc = CLASS_get_symbol_desc(class, "Key");
+		if (!desc || CLASS_DESC_get_type(desc) != type)
+			goto __NORMAL;
+	}
 	
 	return access;
 

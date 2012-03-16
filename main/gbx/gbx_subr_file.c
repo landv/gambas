@@ -286,21 +286,16 @@ void SUBR_input(ushort code)
 			RELEASE_OBJECT(SP);
 	}
 	
-	SP->type = T_NULL;
-	
 	if (addr)
 	{
-		VALUE_from_string(SP, addr, STRING_length(addr));
-		if (SP->type == T_NULL)
-		{
-			SP->type = T_STRING;
-			SP->_string.addr = addr;
-			SP->_string.start = 0;
-			SP->_string.len = STRING_length(addr);
-		}
-		else
-			STRING_free(&addr);
+		//VALUE_from_string(SP, addr, STRING_length(addr));
+		SP->type = T_STRING;
+		SP->_string.addr = addr;
+		SP->_string.start = 0;
+		SP->_string.len = STRING_length(addr);
 	}
+	else
+		SP->type = T_NULL;
 		
 	SP++;
 }

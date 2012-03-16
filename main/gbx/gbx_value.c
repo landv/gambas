@@ -43,28 +43,6 @@
 
 #include "gbx_value.h"
 
-/*
-VALUE_CONVERT_FUNC VALUE_jump[] = 
-{
-  VALUE_convert_void,
-  VALUE_convert_boolean,
-  VALUE_convert_byte,
-  VALUE_convert_short,
-  VALUE_convert_integer,
-  VALUE_convert_long,
-  VALUE_convert_single,
-  VALUE_convert_float,
-  VALUE_convert_date,
-  VALUE_convert_string,
-  VALUE_convert_string,
-  VALUE_convert_pointer,
-  VALUE_convert_variant,
-  VALUE_convert_function,
-  VALUE_convert_class,
-  VALUE_convert_null
-};
-*/
-
 #if 0
 static bool unknown_function(VALUE *value)
 {

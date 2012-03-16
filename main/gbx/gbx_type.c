@@ -40,7 +40,7 @@ void *TYPE_joker = NULL;
 const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0 };
 
 
-/* taille n�essaire au stockage des variables globales d'une classe */
+// Needed size for storing a class global variable
 
 size_t TYPE_sizeof(TYPE type)
 {
