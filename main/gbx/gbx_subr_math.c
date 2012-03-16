@@ -135,11 +135,19 @@ void SUBR_round(ushort code)
 
 void SUBR_math(ushort code)
 {
+#ifdef OS_FREEBSD
+	static void *jump[] = {
+		NULL, &&__FRAC, &&__LOG, &&__EXP, &&__SQRT, &&__SIN, &&__COS, &&__TAN, &&__ATAN, &&__ASIN, &&__ACOS,
+		&&__DEG, &&__RAD, &&__LOG10, &&__SINH, &&__COSH, &&__TANH, &&__ASINH, &&__ACOSH, &&__ATANH,
+		&&__EXP2 /*, &&__EXP10 */, &&__LOG2, &&__CBRT, &&__EXPM1, &&__LOG1P, &&__FLOOR, &&__CEIL
+	};
+#else
 	static void *jump[] = {
 		NULL, &&__FRAC, &&__LOG, &&__EXP, &&__SQRT, &&__SIN, &&__COS, &&__TAN, &&__ATAN, &&__ASIN, &&__ACOS,
 		&&__DEG, &&__RAD, &&__LOG10, &&__SINH, &&__COSH, &&__TANH, &&__ASINH, &&__ACOSH, &&__ATANH,
 		&&__EXP2, &&__EXP10, &&__LOG2, &&__CBRT, &&__EXPM1, &&__LOG1P, &&__FLOOR, &&__CEIL
 	};
+#endif
 	
 	
   SUBR_ENTER_PARAM(1);
@@ -167,7 +175,11 @@ __ASINH: PARAM->_float.value = __builtin_asinh(PARAM->_float.value); goto __END;
 __ACOSH: PARAM->_float.value = __builtin_acosh(PARAM->_float.value); goto __END;
 __ATANH: PARAM->_float.value = __builtin_atanh(PARAM->_float.value); goto __END;
 __EXP2: PARAM->_float.value = __builtin_exp2(PARAM->_float.value); goto __END;
+#ifdef OS_FREEBSD
+  /* code here the exp10() function manually */
+#else
 __EXP10: PARAM->_float.value = __builtin_exp10(PARAM->_float.value); goto __END;
+#endif
 __LOG2: PARAM->_float.value = __builtin_log2(PARAM->_float.value); goto __END;
 __CBRT: PARAM->_float.value = __builtin_cbrt(PARAM->_float.value); goto __END;
 __EXPM1: PARAM->_float.value = __builtin_expm1(PARAM->_float.value); goto __END;

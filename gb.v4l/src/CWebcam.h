@@ -27,11 +27,17 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
-#include <linux/types.h>
+#include "config.h"
 #include <linux/videodev2.h>
 #include <libv4lconvert.h>
 
-#include "videodev.h"
+#ifdef OS_FREEBSD
+  #include <linux/videodev.h>
+#else
+  #include <linux/types.h>
+  #include "videodev.h"
+#endif
+
 #include "gambas.h"
 
 #ifndef __CWEBCAM_C

@@ -37,7 +37,7 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
-#include <asm/types.h>
+
 
 #ifdef HAVE_STDLIB_H
 #undef HAVE_STDLIB_H
@@ -45,6 +45,13 @@
 
 #include "main.h"
 #include "CWebcam.h"
+
+#ifdef OS_FREEBSD
+  #include <stdint.h>
+#else
+  #include <asm/types.h>
+#endif
+
 //
 bool gv4l2_debug_mode = TRUE;
 //
