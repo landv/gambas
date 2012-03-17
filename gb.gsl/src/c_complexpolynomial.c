@@ -31,13 +31,16 @@
 #define THIS ((CCOMPLEXPOLYNOMIAL *)_object)
 
 
+
 /**************************************************
                  Utility Methods
 **************************************************/
 
-CCOMPLEXPOLYNOMIAL *create_complexplynomial()
+CCOMPLEXPOLYNOMIAL *CComplexPolynomial_create()
 {
-	return (CCOMPLEXPOLYNOMIAL *)GB.New(GB.FindClass("ComplexPolynomial"), NULL,  NULL);
+	CCOMPLEXPOLYNOMIAL *p;
+	p = (CCOMPLEXPOLYNOMIAL *)GB.New(GB.FindClass("ComplexPolynomial"), NULL,  NULL);
+	return p;
 }
 
 
@@ -54,7 +57,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CComplexPolynomial_call)
 	// May be changed to take init array of floats
-	CCOMPLEXPOLYNOMIAL *c = create_complexpolynomial();
+	CCOMPLEXPOLYNOMIAL *c = CComplexPolynomial_create();
 
 	GB.ReturnObject(c);
 
@@ -175,7 +178,7 @@ END_METHOD
 
 BEGIN_METHOD(CComplexPolynomial_AddFloats, GB_FLOAT real; GB_FLOAT imag)
 
-	double *elm;
+	//double *elm;
 
 	// Add a value to coeficent array
 	if(THIS->max > THIS->len)
@@ -211,12 +214,12 @@ BEGIN_METHOD_VOID(CComplexPolynomial_ComplexSolve)
 	int i;
 	gsl_complex z[THIS->len];
 	GB_ARRAY cArray;
-	GSLCOMPLEX *cx, *elt;
+	GSLCOMPLEX *cx;
 
 
 	gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(THIS->len);
 
-	gsl_poly_complex_solve((double *)THIS->c, THIS->len, w, z);
+	gsl_poly_complex_solve((double *)THIS->c, THIS->len, w, (gsl_complex_packed_ptr)z);
 
 	gsl_poly_complex_workspace_free(w);
 
@@ -228,6 +231,7 @@ BEGIN_METHOD_VOID(CComplexPolynomial_ComplexSolve)
 		cx = GSLComplex_create();
 		if(cx)
 		{
+			GSLCOMPLEX *elt;
 			cx->number.dat[0] = GSL_REAL(z[i]);
 			cx->number.dat[1] = GSL_IMAG(z[i]);
 			printf ("cx[%d] = %+.18f %+.18f\n", i, cx->number.dat[0], cx->number.dat[1]);
@@ -273,7 +277,7 @@ GB_DESC CComplexPolynomialDesc[] =
 	GB_METHOD("_new", NULL, CComplexPolynomial_new, NULL),
 	GB_METHOD("_call", "Polynomial", CComplexPolynomial_call, NULL),
 	GB_METHOD("_free", NULL, CComplexPolynomial_free, NULL),
-    GB_METHOD("_exit", NULL, CComplexPolynomial_exit, NULL),
+   GB_METHOD("_exit", NULL, CComplexPolynomial_exit, NULL),
 
 	// Property Methods
 	GB_PROPERTY_READ("Len", "i", CComplexPolynomial_Length),

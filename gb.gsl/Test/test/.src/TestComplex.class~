@@ -2,13 +2,40 @@
 
 Inherits Test
 
-Public Sub IsEqual(z1 As Complex, z2 As Complex) As Boolean
+Public Function getComplexTypeString(p As Variant) As String
+  Dim result As String
   
-  If (z1.Real = z2.Real) And z1.Imag = z2.Imag Then
-    Return True
-  Else
-    Return False
+  result = getTypeString(p)
+  
+  If result = "Unknown" Then
+    If result Is Complex Then
+      result = "Complex"
+    Endif
   Endif
+  
+  Return result
+  
+End
+
+
+Public Sub IsComplexEqual(result As Variant, expected As Variant) As Boolean
+  
+  If result Is Complex Or expected Is Complex Then
+    'We have objects that need special processing
+    If Me.IsEqual(result, expected) Then
+      Me.Result = result.ToString()
+      Me.ResType = "Complext"
+      Me.Expected = expected.ToString()
+      Me.ExpType = "Complex"
+    Else
+      Me.AddError(Me.ValueError(result.ToString, expected.ToString))
+      Me.hasError = True
+    Endif
+  Else
+    Me.hasError = Me.IsEqual(result, expected)
+  Endif
+  
+  Return Me.hasError
   
 End
 
@@ -17,6 +44,7 @@ Public Sub Run(func As String, result As Variant, expected As Variant, Optional 
   Dim err As Boolean = False
   
   Me.Name = func
+  Me.Note = note
   
   Me.Expected = expected
   Me.ExpType = Me.getTypeString(expected)
@@ -43,7 +71,7 @@ Public Sub Run(func As String, result As Variant, expected As Variant, Optional 
       err = True
     Else
       If result Is Complex And expected Is Complex Then
-        If IsEqual(result, expected) Then
+        If Me.IsEqual(result, expected) Then
           Me.Result = result.ToString()
           Me.ResType = "Complex Object"
           Me.Expected = expected.ToString()

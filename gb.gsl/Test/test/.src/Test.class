@@ -58,7 +58,7 @@ End
 '@Ver:0.01
 '@First: 03/01/2012
 '@Returns: Void
-'@Param msg - A string containing the error message 
+'@Param: msg - A string containing the error message 
 '-------------------------------------------------------------------
 Public Function ValueError(gotValue As Variant, expectedValue As Variant) As String
   
@@ -68,6 +68,24 @@ Public Function ValueError(gotValue As Variant, expectedValue As Variant) As Str
   Return msg
   
 End
+
+
+'-------------------------------------------------------------------
+'@Desc: This method simply adds the passed error string to the
+'error message array.
+'@Ver:0.01
+'@First: 03/17/2012
+'@Returns: Void
+'@Params: msg - A string contianing the error message.
+'-------------------------------------------------------------------
+Public Function LengthError(result As Integer, expected As Integer) As String
+  Dim msg As String
+  
+  msg = "Length error: <<< Expected a length of " & Str(expected) & " Got: " & Str(expected) & " >>>"
+  Return msg
+  
+End
+
 
 '-------------------------------------------------------------------
 '@Desc: This method simply adds the passed error string to the 
@@ -114,6 +132,43 @@ Public Function getTypeString(p As Variant) As String
 
 End
 
+
+'-------------------------------------------------------------------
+'Compare two value for equality
+'-------------------------------------------------------------------
+Public Function IsEqual(result As Variant, expected As Variant) As Boolean
+  Dim err As Boolean = False
+  Dim i As Integer = 0
+
+  If TypeOf(result) <> TypeOf(expected) Then
+    AddError(TypeError(Me.ResType, Me.ExpType))
+    Me.hasError = True
+  Else
+    If IsObject(result) And result Is Array And expected Is Array Then
+      If result.len <> expected.len Then
+       Me.hasError(LengthError(result.len, expected.len))
+      Else
+        For i = 0 To result.len - 1
+          If result[i] <> expected[i] Then
+            Me.hasError = True
+          Endif
+        Next
+      Endif
+      
+    Else
+      If result <> expected Then
+        AddError(ValueError(Me.Result, Me.Expected))
+        Me.hasError = True
+      Endif
+    Endif
+  Endif
+  
+  Return Me.hasError
+  
+End
+
+
+
 '-------------------------------------------------------------------
 '@Desc: This method tests the given values for equality in both
 ' type and value.
@@ -134,21 +189,11 @@ Public Sub Run(func As String, result As Variant, expected As Variant, Optional 
   Me.Note = note
   
   Me.Expected = expected
-  Me.ExpType = getTypeString(expected)
-
+  Me.ExpType = getTypeString(expected) 
   
   Me.Result = result
-  Me.ResType = getTypeString(result)
+  Me.ResType = Me.getTypeString(result)
   
-  If TypeOf(result) <> TypeOf(expected) Then
-    AddError(TypeError(Me.ResType, Me.ExpType))
-    err = True
-  Else
-    If result <> expected Then
-      AddError(ValueError(Me.Result, Me.Expected))
-      err = True
-    Endif
-  Endif
+  Return IsEqual(result, expected)
   
-  Return Me.hasError
 End

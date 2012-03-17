@@ -126,8 +126,8 @@ BEGIN_METHOD_VOID(CPolynomial_ToString)
         // We have coefficiants to display.
         // P(x) = c[0] + c[1] x + c[2] x^2 + ... + c[len-1] x^{len-1}
         char buffer[(32*THIS->len)]; // A bit wasteful but it works for now....
-    	char *p;
-    	int i, len = 0;
+    	  char *p;
+    	  int i, len = 0;
         
         p = buffer;
         
@@ -157,7 +157,7 @@ END_METHOD
                   Data Methods
 **************************************************/
 
-BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
+BEGIN_METHOD(CPolynomial_AddCoef, GB_FLOAT x;)
 	
 	double *elm;
 
@@ -183,6 +183,22 @@ BEGIN_METHOD(CPolynomial_Add, GB_FLOAT x;)
 
 END_METHOD
 
+
+BEGIN_METHOD(CPolynomial_GetCoef, GB_INTEGER i;)
+
+	int i = (int)VARG(i);
+
+	if(THIS->len <= i)
+	{
+		GB.Error("Index out of range", NULL, NULL);
+		return;
+	}
+	else
+	{
+		GB.ReturnFloat(THIS->c[i]);
+	}
+
+END_METHOD
 
 
 /**************************************************
@@ -332,7 +348,7 @@ GB_DESC CPolynomialDesc[] =
 	GB_METHOD("_new", NULL, CPolynomial_new, NULL),
 	GB_METHOD("_call", "Polynomial", CPolynomial_call, NULL),
 	GB_METHOD("_free", NULL, CPolynomial_free, NULL),
-    GB_METHOD("_exit", NULL, CPolynomial_exit, NULL),
+   GB_METHOD("_exit", NULL, CPolynomial_exit, NULL),
 
 	// Property Methods
 	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
@@ -340,7 +356,8 @@ GB_DESC CPolynomialDesc[] =
 	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),
 	
 	// Data Methods
-	GB_METHOD("Add", "i", CPolynomial_Add, "(X)f"),
+	GB_METHOD("AddCoef", "i", CPolynomial_AddCoef, "(X)f"),
+	GB_METHOD("GetCoef", "f", CPolynomial_GetCoef, "(I)i"),
 	GB_METHOD("ToString", "s", CPolynomial_ToString, NULL),
 
 	// Implementation Methods

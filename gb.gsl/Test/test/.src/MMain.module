@@ -19,13 +19,16 @@ End
 'Test All GSL Class Methods
 '-----------------------------------------------------------------
 Public Sub testGslMethods()
+  Dim result As Variant
+  
   AddTest("GSL.Acosh(45)", GSL.Acosh(45), ACosh(45))
   AddTest("GSL.Asinh(45)", GSL.Asinh(45), ASinh(45))
   AddTest("GSL.Atanh(0.45)", GSL.Atanh(0.45), ATanh(0.45))
   AddTest("GSL.Expm1(45)", GSL.Expm1(45), Expm(45))
   AddTest("GSL.Fcmpb(-0.3, 0.2, 0.1)", GSL.Fcmpb(-0.3, 0.2, 0.1), GSL.Fcmpb(-0.3, 0.2, 0.1))
   AddTest("GSL.Fcmpi(-0.3, 0.2, 0.1)", GSL.Fcmpi(1.3, 2.2, -1.1), 1)
-  'AddTest("GSL.Frexp(0.45)", GSL.Frexp(0.45), GSL.Frexp(0.45)  
+  result = GSL.Frexp(0.45)
+  AddTest("GSL.Frexp(0.45)", result, result)
   AddTest("GSL.Hypot(10.27, 7.45)", GSL.Hypot(10.27, 7.45), GSL.Hypot(10.27, 7.45))
   AddTest("GSL.Hypot3(10.27, 7.45, 6.78125)", GSL.Hypot3(10.27, 7.45, 6.78125), GSL.Hypot3(10.27, 7.45, 6.78125))
   AddTest("GSL.IntPow(2.0, 8)", GSL.IntPow(2.0, 8), 256.00)
@@ -170,6 +173,43 @@ Public Sub testComplexMethods()
 End
 
 
+'-------------------------------------------------------------------
+' Add Polynomial Tests
+'-------------------------------------------------------------------
+Public Sub AddPolynomialTest(name As String, result As Variant, expected As Variant, Optional note As String) 
+  
+  Dim t As New TestPolynomial
+  
+  ts.AddTest(t)
+  t.Run(name, result, expected, note)
+  
+End
+
+
+'-------------------------------------------------------------------
+' Polynomial Tests
+'-------------------------------------------------------------------
+Public Sub testPolynomialMethods()
+  Dim c As New Complex
+  Dim p1 As New Polynomial
+  Dim p2 As New Polynomial
+  Dim p3 As Polynomial
+  Dim f1 As Float
+  Dim f2 As Float
+  
+  p1.AddCoef(0.565)
+  p1.AddCoef(1.738)
+  p1.AddCoef(3.1465)
+  
+  AddPolynomialTest("p1.AddCoef(0.565)", p1.AddCoef(0.565), 1, p1.ToString())
+  AddPolynomialTest("p1.AddCoef(1.738)", p1.AddCoef(1.738), 2, p1.ToString())
+  AddPolynomialTest("p1.AddCoef(3.1465)", p1.AddCoef(3.1465), 3, p1.ToString())
+  
+
+End Sub
+
+
+
 
 
 
@@ -195,6 +235,10 @@ Public Sub Main()
   
   'Run Complex Class Test
   testComplexMethods()
+  
+  'Run Polynomial Class Test
+  testPolynomialMethods()
+  
   
   ' Finnish by showing test results
   ts.ShowTests()

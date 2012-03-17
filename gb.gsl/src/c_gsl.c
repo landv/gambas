@@ -35,6 +35,7 @@
 #endif
 
 
+
 /*--------------------------------
   Number testing functions
 --------------------------------*/
@@ -267,7 +268,7 @@ BEGIN_METHOD(GSL_FREXP, GB_FLOAT x;)
 	b = 0.0;
 
 	r = gsl_frexp(VARG(x), &b);
-	printf("r: %d \te: %i\n", r, b);
+	printf("r: %f \te: %i\n", r, b);
 
 	GB_ARRAY result;
 	GB.Array.New(POINTER(&result), GB_T_VARIANT, 0);
