@@ -281,7 +281,7 @@ void *GAMBAS_DebugApi[] =
 	(void *)DEBUG_get_value,
 	(void *)DEBUG_set_value,
 	(void *)CARRAY_get_value,
-	(void *)GB_CollectionEnum,
+	(void *)DEBUG_enum_keys,
 	(void *)CLASS_get_next_sorted_symbol,
 	(void *)DEBUG_get_object_access_type,
 	(void *)DEBUG_find_class,

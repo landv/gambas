@@ -32,6 +32,11 @@
 #define _GNU_SOURCE 500
 #define _FILE_OFFSET_BITS 64
 
+#define _ISOC9X_SOURCE	1
+#define _ISOC99_SOURCE	1
+#define __USE_ISOC99	1
+#define __USE_ISOC9X	1
+
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>

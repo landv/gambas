@@ -37,6 +37,7 @@
 #include "gbx_c_array.h"
 #include "gbx_project.h"
 #include "gbx_stack.h"
+#include "gbx_subr.h"
 
 #include "gbx_debug.h"
 
@@ -361,32 +362,41 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 	if (!((type == 'r' && object) || (type == 'R' && !object)))
 		goto __NORMAL;
 	
-  if (desc->property.native)
-  {
-    if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
-    {
-	  	//fprintf(stderr, "Count has failed\n");
-			goto __NORMAL;
-    }
-  }
-  else
-  {
-    EXEC.class = desc->property.class;
-    EXEC.object = object;
-    EXEC.nparam = 0;
-    EXEC.native = FALSE;
-    EXEC.index = (int)(intptr_t)desc->property.read;
-    //EXEC.func = &class->load->func[(int)desc->property.read];
+	TRY
+	{
+		if (desc->property.native)
+		{
+			if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
+				access = GB_DEBUG_ACCESS_NORMAL;
+		}
+		else
+		{
+			EXEC.class = desc->property.class;
+			EXEC.object = object;
+			EXEC.nparam = 0;
+			EXEC.native = FALSE;
+			EXEC.index = (int)(intptr_t)desc->property.read;
+			//EXEC.func = &class->load->func[(int)desc->property.read];
 
-    EXEC_function_keep();
+			EXEC_function_keep();
 
-    TEMP = *RP;
-    UNBORROW(RP);
-    RP->type = T_VOID;
-  }
+			TEMP = *RP;
+			UNBORROW(RP);
+			RP->type = T_VOID;
+		}
+		
+		if (access != GB_DEBUG_ACCESS_NORMAL)
+		{
+			VALUE_conv_integer(&TEMP);
+			*count = TEMP._integer.value;
+		}
+	}
+	CATCH
+	{
+		access = GB_DEBUG_ACCESS_NORMAL;
+	}
+	END_TRY
 
-	VALUE_conv_integer(&TEMP);
-	*count = TEMP._integer.value;
 	
 	// For collection-like objects, check _next and Key property
 	
@@ -483,3 +493,88 @@ GB_CLASS DEBUG_find_class(const char *name)
 	return (GB_CLASS)class;
 }
 
+void DEBUG_enum_keys(void *object, char **key)
+{
+	static CLASS_DESC *desc;
+	static CENUM *cenum = NULL;
+	
+	CENUM *old;
+	CLASS *class;
+	bool err = FALSE;
+	char *str;
+	int len;
+	
+	old = EXEC_enum;
+	
+	class = OBJECT_class(object);
+	if (class == CLASS_Class)
+	{
+		class = (CLASS *)object;
+		object = NULL;
+	}
+	
+	TRY
+	{
+		if (!cenum)
+		{
+			desc = CLASS_get_symbol_desc(class, "Key");
+			
+			cenum = CENUM_create(object ? object : class);
+			
+			EXEC_enum = cenum;
+			EXEC_special(SPEC_FIRST, class, object, 0, TRUE);
+			EXEC_enum = old;
+			
+			if (cenum->stop)
+			{
+				err = TRUE;
+				goto __END;
+			}
+		}
+		
+		EXEC_enum = cenum;
+		err = EXEC_special(SPEC_NEXT, class, object, 0, TRUE);
+		EXEC_enum = old;
+			
+		if (err || cenum->stop)
+		{
+			err = TRUE;
+			goto __END;
+		}
+			
+		if (desc->property.native)
+		{
+			EXEC_call_native(desc->property.read, object, desc->property.type, 0);
+			SUBR_get_string_len(&TEMP, &str, &len);
+		}
+		else
+		{
+			EXEC.class = desc->property.class;
+			EXEC.object = object;
+			EXEC.nparam = 0;
+			EXEC.native = FALSE;
+			EXEC.index = (int)(intptr_t)desc->property.read;
+
+			EXEC_function_keep();
+
+			SUBR_get_string_len(RP, &str, &len);
+		}
+		
+		STRING_free(key);
+		*key = STRING_new(str, len);
+		
+	__END:
+	
+		if (err)
+		{
+			OBJECT_UNREF(cenum, "DEBUG_enum_keys");
+			STRING_free(key);
+		}
+	}
+	CATCH
+	{
+		OBJECT_UNREF(cenum, "DEBUG_enum_keys");
+		STRING_free(key);
+	}
+	END_TRY
+}

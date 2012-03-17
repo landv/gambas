@@ -60,6 +60,7 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret);
 int DEBUG_set_value(const char *sym, int len, VALUE *value);
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count);
 GB_CLASS DEBUG_find_class(const char *name);
+void DEBUG_enum_keys(void *object, char **key);
 
 void DEBUG_print_backtrace(STACK_BACKTRACE *bt);
 GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt);

@@ -15,10 +15,10 @@
       Expand = True
       Border = False
     }
-    { btnHidden ToolButton
+    { btnShowAll ToolButton
       MoveScaled(22,0,4,4)
-      ToolTip = ("Show hidden symbols")
-      Picture = Picture["icon:/small/lamp"]
+      ToolTip = ("Show all symbols")
+      Picture = Picture["icon:/small/find"]
       Toggle = True
     }
   }
@@ -40,7 +40,6 @@
     Expand = True
     Mode = Select.Single
     Header = GridView.Horizontal
-    Scrollbar = Scroll.Vertical
     Border = False
     NoKeyboard = True
   }

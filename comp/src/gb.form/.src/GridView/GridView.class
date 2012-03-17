@@ -1033,6 +1033,7 @@ End
 Public Sub Clear()
   
   $cCells.Clear
+  $hRows._Clear
   $iRow = -1
   $iCol = 0
   $hView.Refresh

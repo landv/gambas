@@ -318,7 +318,7 @@ void PRINT_object(FILE *where, VALUE *value)
 {
 	VALUE conv;
 	void *object;
-	int i, index;
+	int index;
 	int count = 0;
 	CLASS *class, *real_class;
 	CLASS_DESC_SYMBOL *cd;
@@ -380,7 +380,9 @@ void PRINT_object(FILE *where, VALUE *value)
 	if (real_class) fprintf(_where, "%s", real_class->name);
 	fputc(' ', _where);
 	
-	if (GB.Is(object, GB.FindClass("Collection")))
+	access = GB_DEBUG.GetObjectAccessType(object, class, &count);
+	
+	/*if (GB.Is(object, GB.FindClass("Collection")))
 	{
 		GB_COLLECTION_ITER iter;
 		count = GB.Collection.Count(object);
@@ -398,18 +400,31 @@ void PRINT_object(FILE *where, VALUE *value)
 		
 		//fprintf(_where, "\n");
 		return;
+	}*/
+	
+	if (access == GB_DEBUG_ACCESS_COLLECTION)
+	{
+		char *key = NULL;
+		
+		fprintf(_where, "C: [%d]", count);
+		
+		GB_DEBUG.EnumKeys(object, &key);
+		while (key)
+		{
+			fprintf(_where, " ");
+			print_string(key, STRING_length(key));
+			GB_DEBUG.EnumKeys(object, &key);
+		}
+		fprintf(_where, " ");
 	}
-	
-	access = GB_DEBUG.GetObjectAccessType(object, class, &count);
-	
-	if (GB.Is(object, GB.FindClass("Array")))
+	else if (GB.Is(object, GB.FindClass("Array")))
 	{
 		dim = GB_DEBUG.GetArrayBounds(object);
 		if (!dim)
-			fprintf(_where, "A [%d]", count);
+			fprintf(_where, "A: [%d] ", count);
 		else
 		{
-			fprintf(_where, "A [");
+			fprintf(_where, "A: [");
 			for(;;)
 			{
 				len = *dim++;
@@ -421,20 +436,18 @@ void PRINT_object(FILE *where, VALUE *value)
 					break;
 				}
 			}
-			fprintf(_where, "]");
+			fprintf(_where, "] ");
 		}
-		return;
 	}
 	else if (access == GB_DEBUG_ACCESS_ARRAY)
 	{
-		fprintf(_where, "A [%d]", count);
-		return;
+		fprintf(_where, "A: [%d] ", count);
 	}
 	
 	if (!class->is_virtual && real_class)
 		class = real_class;
 	
-	fprintf(_where, "O S:");
+	fprintf(_where, "S:");
 	
 	index = 0;
 	

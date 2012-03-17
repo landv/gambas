@@ -74,7 +74,7 @@ Public Sub _new(sExpr As String, sInfo As String)
   $sInfo = sInfo
   
   'Project.Config.Read(ME, $sKey)
-  btnHidden.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False]
+  btnShowAll.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False]
   
   If sInfo = YW_DUMMY_INFO Then
     Me.Enabled = False
@@ -315,7 +315,7 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   Dim nRow As Integer
   Dim iSize As Integer
   Dim nRowAsArray As Integer = -1
-  Dim bShowHidden As Boolean = btnHidden.Value
+  Dim bShowHidden As Boolean = btnShowAll.Value
   Dim bHasHidden As Boolean
 
   $aSym = Split(sInfo, " ", Chr$(34))
@@ -328,18 +328,21 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   $sRealClass = $aSym[1]
   sType = $aSym[2]
   
-  $aSym.Remove(0, 3) ' Remove the class names and the data type
-
   $iRowStatic = -1
   $iRowDynamic = -1
   
-  If sType = "C" Then
+  If sType = "C:" And If Not bShowHidden Then
+
+    $aSym.Remove(0, 3) ' Remove the class names and the data type
 
     $bCollection = True
     $bArray = False
+    
     nRow = Val(Mid$($aSym[0], 2, -1))
     
-  Else If sType = "A"
+  Else If sType = "A:" And If Not bShowHidden Then
+    
+    $aSym.Remove(0, 3) ' Remove the class names and the data type
     
     $bCollection = False
     $bArray = True
@@ -359,6 +362,11 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
     Endif
     
   Else
+  
+    While $aSym.Count
+      If $aSym[0] = "S:" Or If $aSym[0] = "D:" Then Break
+      $aSym.Remove(0)
+    Wend
   
     $bCollection = False
     $bArray = False
@@ -423,15 +431,15 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
     
     nRow = $aSym.Count
     
-    If aStatic.Count = 1 And If aDynamic.Count = 0 And If aStatic[0] = "Count" And If nRowAsArray >= 0 Then 
-      nRow = nRowAsArray
-      $bArray = True
-      $aSym = Null
-    Else If aDynamic.Count = 1 And If aStatic.Count = 0 And If aDynamic[0] = "Count" And If nRowAsArray >= 0 Then 
-      nRow = nRowAsArray
-      $bArray = True
-      $aSym = Null
-    Endif
+    ' If aStatic.Count = 1 And If aDynamic.Count = 0 And If aStatic[0] = "Count" And If nRowAsArray >= 0 Then 
+    '   nRow = nRowAsArray
+    '   $bArray = True
+    '   $aSym = Null
+    ' Else If aDynamic.Count = 1 And If aStatic.Count = 0 And If aDynamic[0] = "Count" And If nRowAsArray >= 0 Then 
+    '   nRow = nRowAsArray
+    '   $bArray = True
+    '   $aSym = Null
+    ' Endif
     
   Endif
   
@@ -445,10 +453,10 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
     gvwExpr.Hide
     gvwExpr.Rows.Count = 0
     lblVoid.Show
-    btnHidden.Hide
     Return
   Endif
   
+  gvwExpr.Clear
   gvwExpr.Show
   lblVoid.Hide
 
@@ -486,8 +494,6 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   If $iRowDynamic >= 0 And If $iRowStatic >= 0 Then gvwExpr.Rows[$iRowDynamic].Height = 4
   
   If Not bNew Then Try gvwExpr.Columns[0].Width = -1
-
-  btnHidden.Visible = bHasHidden
 
 End
 
@@ -581,7 +587,7 @@ End
 Public Sub WriteSetting()
   
   Project.Config.Clear("DebugWindow" &/ $sKey)
-  If btnHidden.Value Then Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden"] = True  
+  If btnShowAll.Value Then Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden"] = True  
   Project.Config["DebugWindow" &/ $sKey &/ "Geometry"] = [Me.X, Me.Y, Me.W, Me.H]  
   
 End
@@ -708,7 +714,7 @@ Public Sub UpdateConfig()
 End
 
 
-Public Sub btnHidden_Click()
+Public Sub btnShowAll_Click()
 
   $cVal.Clear
   Init($sInfo, False)

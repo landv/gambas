@@ -350,3 +350,12 @@ Public Sub Insert(Start As Integer, Optional Length As Integer = 1)
   GetView()._InsertRows(Start, Length)
   
 End
+
+Public Sub _Clear()
+  
+  If $cHeight Then
+    $cHeight.Clear
+    $aHeight.Clear
+  Endif
+  
+End

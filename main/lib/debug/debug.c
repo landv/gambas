@@ -29,7 +29,6 @@
 #include "gb_common.h"
 #include "gambas.h"
 
-
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>

@@ -1446,6 +1446,7 @@ GB_DESC NATIVE_ArrayBounds[] =
 	GB_DECLARE(".Array.Bounds", sizeof(CARRAY)), GB_NOT_CREATABLE(),
 
 	GB_METHOD("_get", "i", Array_Bounds_get, "(Dimension)i"),
+	GB_PROPERTY_READ("Count", "i", Array_Dim),
 
 	GB_END_DECLARE
 };
