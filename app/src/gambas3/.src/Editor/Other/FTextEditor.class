@@ -759,3 +759,12 @@ Public Sub mnuUpperCase_Click()
   Editor.RecallSelection
   
 End
+
+Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
+
+  Editor.SetFocus
+  Wait
+  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
+
+End
+

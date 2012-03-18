@@ -30,7 +30,7 @@ gbc3_SOURCES = \
  gbc_trans_expr.c gbc_trans_tree.c gbc_trans_ctrl.c gbc_trans_subr.c \
  gbc_output.c gbc_pcode.c \
  gb_file.h gb_file.c \
- gbc_form.h gbc_form.c \
+ gbc_form.h gbc_form.c gbc_form_webpage.c \
  gb_str.h gb_str.c \
  gbc_chown.h gbc_chown.c \
  gb_common.c \

@@ -39,6 +39,7 @@ void BUFFER_delete(void *p_data);
 bool BUFFER_load_file(void *p_data, const char *name);
 offset_t BUFFER_add(void *p_data, const void *string, int len);
 bool BUFFER_need(void *p_data, size_t size);
+void BUFFER_add_char(void *p_data, char c);
 
 #define DATA_TO_BUFFER(_data) ((BUFFER *)(_data) - 1)
 #define BUFFER_TO_DATA(_buffer) ((char *)((BUFFER *)(_buffer) + 1))

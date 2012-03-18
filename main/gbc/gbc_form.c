@@ -54,7 +54,7 @@ static int form_parent_level;
 static bool _no_trim = FALSE;
 
 
-static void print_len(const char *buffer, int len)
+void FORM_print_len(const char *buffer, int len)
 {
 	if (JOB->verbose)
 		printf("%.*s", len, buffer);
@@ -63,7 +63,7 @@ static void print_len(const char *buffer, int len)
 }
 
 
-static void print(const char *buffer)
+void FORM_print(const char *buffer)
 {
 	if (JOB->verbose)
 		printf("%s", buffer);
@@ -72,26 +72,35 @@ static void print(const char *buffer)
 }
 
 
+void FORM_print_char(char c)
+{
+	if (JOB->verbose)
+		putchar(c);
+	
+	BUFFER_add_char(&JOB->source, c);
+}
+
+
 static void print_fmt(const char *before, const char *word, int len, const char *after)
 {
-	print(before);
-	print_len(word, len);
-	print(after);
+	FORM_print(before);
+	FORM_print_len(word, len);
+	FORM_print(after);
 }
 
 
 static void print_var(const char *before, const char *word, int len, const char *after)
 {
-	print(before);
+	FORM_print(before);
 	if (!word)
-		print("Me");
+		FORM_print("Me");
 	else
 	{
-		print("{");
-		print_len(word, len);
-		print("}");
+		FORM_print("{");
+		FORM_print_len(word, len);
+		FORM_print("}");
 	}
-	print(after);
+	FORM_print(after);
 }
 
 
@@ -301,8 +310,7 @@ char *FORM_get_file_family(const char *file, const FORM_FAMILY **family)
 	return form;
 }
 
-
-
+/*
 static bool FORM_init(void)
 {
 	BUFFER_create(&_source);
@@ -317,9 +325,9 @@ static void FORM_exit(void)
 {
 	BUFFER_delete(&_source);
 }
+*/
 
-
-void FORM_do(bool ctrl_public)
+void FORM_do(char *source, bool ctrl_public)
 {
 	const char *line;
 	char *word;
@@ -335,7 +343,8 @@ void FORM_do(bool ctrl_public)
 	if (JOB->form == NULL)
 		return;
 
-	FORM_init();
+	_source = source;
+	_current = _source;
 
 	/* version */
 
@@ -348,7 +357,7 @@ void FORM_do(bool ctrl_public)
 	pos_rewind = _current;
 	form_parent_level = 0;
 
-	//print("@SECTION\n");
+	//FORM_print("@SECTION\n");
 
 	while (!read_line(&line, &len))
 	{
@@ -376,9 +385,9 @@ void FORM_do(bool ctrl_public)
 					public = FALSE;
 				
 				if (ctrl_public || public)
-					print("Public");
+					FORM_print("Public");
 				else
-					print("Private");
+					FORM_print("Private");
 
 				//print_fmt(" {%.*s} ", len, word);
 				print_fmt(" {", word, len, "} ");
@@ -421,7 +430,7 @@ void FORM_do(bool ctrl_public)
 		}
 	}
 
-	print("\nPublic Sub {$load}()\n\n");
+	FORM_print("\nPublic Sub {$load}()\n\n");
 
 	_current = pos_rewind;
 	form_parent_level = 0;
@@ -442,7 +451,7 @@ void FORM_do(bool ctrl_public)
 			if (form_parent_level == 0)
 			{
 				parent_enter(NULL, 0);
-				print("  With Me\n");
+				FORM_print("  With Me\n");
 			}
 			else
 			{
@@ -470,7 +479,7 @@ void FORM_do(bool ctrl_public)
 					virtual = FALSE;
 
 				//print_fmt("%.*s", len, word);
-				print_len(word, len);
+				FORM_print_len(word, len);
 
 				if (!virtual)
 				{
@@ -491,7 +500,7 @@ void FORM_do(bool ctrl_public)
 		}
 		else if (*line == '}')
 		{
-			print("  End With\n");
+			FORM_print("  End With\n");
 			parent_leave();
 			if (form_parent_level == 0)
 				break;
@@ -499,17 +508,17 @@ void FORM_do(bool ctrl_public)
 		else
 		{
 			/*get_current(&word, &len_word);*/
-			/*print("  %.*s", len_word, word);*/
-			print("    .");
-			print_len(line, len);
-			print("\n");
+			/*FORM_print("  %.*s", len_word, word);*/
+			FORM_print("    .");
+			FORM_print_len(line, len);
+			FORM_print("\n");
 		}
 	}
 
 	if (form_parent_level > 0)
 		goto _ERROR;
 
-	print("\nEnd\n\n");
+	FORM_print("\nEnd\n\n");
 
 	// Create or delete the action file if needed
 	
@@ -528,7 +537,6 @@ void FORM_do(bool ctrl_public)
 	if (!action)
 		save_action(TRUE);
 
-	FORM_exit();
 	return;
 
 _ERROR:

@@ -46,7 +46,12 @@ typedef
 #define FORM_FIRST_LINE 100000
 #define FORM_FIRST_LINE_STRING "100000"
 	
-void FORM_do(bool ctrl_public);
+void FORM_do(char *source, bool ctrl_public);
 char *FORM_get_file_family(const char *file, const FORM_FAMILY **family);
+void FORM_print_len(const char *buffer, int len);
+void FORM_print(const char *buffer);
+void FORM_print_char(char c);
+
+void FORM_webpage(char *source);
 
 #endif

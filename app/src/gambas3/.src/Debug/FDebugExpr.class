@@ -392,6 +392,7 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
         If Left(sSym) = "_" Then 
           bHasHidden = True
           If Not bShowHidden Then Continue
+          If sSym Begins "_@" Then Continue
         Endif
         If Left(sSym) = "[" Then
           nRowAsArray = CInt(Mid$(sSym, 2, -1))

@@ -239,6 +239,7 @@ static void compile_file(const char *file)
 {
 	int i;
 	time_t time_src, time_form, time_pot, time_output;
+	char *source;
 
 	COMPILE_begin(file, main_trans);
 
@@ -287,18 +288,24 @@ static void compile_file(const char *file)
 		JOB->first_line = FORM_FIRST_LINE;
 		BUFFER_add(&JOB->source, "#Line " FORM_FIRST_LINE_STRING "\n", -1);
 		
+		BUFFER_create(&source);
+		BUFFER_load_file(&source, JOB->form);
+		BUFFER_add(&source, "\n\0", 2);
+
 		switch (JOB->family->type)
 		{
 			case FORM_WEBPAGE:
-				fprintf(stderr, "gbc: warning: WebPage not implemented yet\n");
+				FORM_webpage(source);
 				break;
 				
 			case FORM_NORMAL:
 			default:
-				FORM_do(main_public);
+				FORM_do(source, main_public);
 				break;
 		}
 				
+		BUFFER_delete(&source);
+		
 		BUFFER_add(&JOB->source, "#Line 1\n", -1);
 	}
 	
@@ -470,19 +477,25 @@ int main(int argc, char **argv)
 			const char *name = FILE_get_name(JOB->name);
 			if (JOB->line)
 			{
-				if (JOB->line > JOB->max_line)
-					JOB->line = JOB->max_line;
-				
-				if (JOB->column)
-					fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());
+				if (JOB->line > JOB->max_line && JOB->form)
+				{
+					name = FILE_get_name(JOB->form);
+					fprintf(stderr, "%s:%d: error: ", name, JOB->line - FORM_FIRST_LINE + 1);
+				}
 				else
-					fprintf(stderr, "%s:%d: error: ", name, JOB->line);
+				{
+					if (JOB->column)
+						fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());
+					else
+						fprintf(stderr, "%s:%d: error: ", name, JOB->line);
+				}
 			}
 			else
 				fprintf(stderr, "%s: error: ", name);
 		}
 		else
 			fprintf(stderr, "gbc: error: ");
+		
 		ERROR_print();
 		exit(1);
 	}

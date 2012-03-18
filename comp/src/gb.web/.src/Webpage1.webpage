@@ -1,12 +1,12 @@
-<%[Header]%> ==> OtherWebPage.Render
-
+<% Dim i As Integer%>
 <h2><%=Application.Name%></h2>
-
+<ul>
 <%
-Print "<h1>Gambas</h1>";
 For i = 1 To 10
-
+  Print "<li>"; i; "</li>"
 Next
 %>
-
-<%[Footer]%>
+</ul>
+<p>
+Bonjour le monde !<br>Comment va ?
+<div class="toto"></div>

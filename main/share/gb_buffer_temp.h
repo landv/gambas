@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gb_buffer_temp.h
+	gb_buffer_temp.h
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -39,112 +39,122 @@
 
 void BUFFER_create(void *p_data)
 {
-  BUFFER *buf;
+	BUFFER *buf;
 
-  ALLOC(&buf, sizeof(BUFFER), "BUFFER_create");
-  buf->max = 0;
-  buf->length = 0;
-  
-  *((void **)p_data) = BUFFER_TO_DATA(buf);
+	ALLOC(&buf, sizeof(BUFFER), "BUFFER_create");
+	buf->max = 0;
+	buf->length = 0;
+	
+	*((void **)p_data) = BUFFER_TO_DATA(buf);
 }
 
 
 void BUFFER_delete(void *p_data)
 {
-  void **data = (void **)p_data;
-  BUFFER *buf = DATA_TO_BUFFER(*data);
+	void **data = (void **)p_data;
+	BUFFER *buf = DATA_TO_BUFFER(*data);
 
-  FREE(&buf, "BUFFER_delete");
-  *data = NULL;
+	FREE(&buf, "BUFFER_delete");
+	*data = NULL;
 }
 
 
 bool BUFFER_need(void *p_data, size_t size)
 {
-  void **data = (void **)p_data;
-  BUFFER *buffer = DATA_TO_BUFFER(*data);
+	void **data = (void **)p_data;
+	BUFFER *buffer = DATA_TO_BUFFER(*data);
 
-  buffer->length += size;
+	buffer->length += size;
 	//fprintf(stderr, "BUFFER_need: %ld (%ld / %ld)\n", size, buffer->length, buffer->max);
 	
-  if (buffer->length > buffer->max)
-  {
-    while (buffer->length >= buffer->max)
-      buffer->max += BUFFER_INC;
-      
-    REALLOC(&buffer, sizeof(char) * buffer->max + sizeof(BUFFER), "BUFFER_need");
-    *data = BUFFER_TO_DATA(buffer);
-  }
+	if (buffer->length > buffer->max)
+	{
+		while (buffer->length >= buffer->max)
+			buffer->max += BUFFER_INC;
+			
+		REALLOC(&buffer, sizeof(char) * buffer->max + sizeof(BUFFER), "BUFFER_need");
+		*data = BUFFER_TO_DATA(buffer);
+	}
 
-  return FALSE;
+	return FALSE;
 }
 
 
 offset_t BUFFER_add(void *p_data, const void *string, int len)
 {
-  void **data = (void **)p_data;
-  BUFFER *buffer = DATA_TO_BUFFER(*data);
-  size_t pos;
+	void **data = (void **)p_data;
+	BUFFER *buffer = DATA_TO_BUFFER(*data);
+	size_t pos;
 
 	if (len < 0)
 		len = strlen((const char *)string);
 	
-  pos = buffer->length;
-  BUFFER_need(p_data, len);
+	pos = buffer->length;
+	BUFFER_need(p_data, len);
 
-  memcpy(*data + pos, string, len);
+	memcpy(*data + pos, string, len);
 
 	//fprintf(stderr, ">> BUFFER_add\n");
 	
-  return pos;
+	return pos;
 }
 
+void BUFFER_add_char(void *p_data, char c)
+{
+	void **data = (void **)p_data;
+	BUFFER *buffer = DATA_TO_BUFFER(*data);
+	size_t pos;
+
+	pos = buffer->length;
+	BUFFER_need(p_data, 1);
+	*(char *)(*data + pos) = c;
+}
 
 bool BUFFER_load_file(void *p_data, const char *name)
 {
-  void **data;
+	void **data;
 
-  int fd;
-  struct stat info;
+	int fd;
+	struct stat info;
 	int old_len;
 	int len, lenr;
-  void *p;
-  
-  fd = open(name, O_RDONLY);
-  if (fd < 0) 
-    return TRUE;
-  
-  if (fstat(fd, &info))
-		return TRUE;
-  
-  len = info.st_size;
+	void *p;
 	
-  data = (void **)p_data;
+	fd = open(name, O_RDONLY);
+	if (fd < 0) 
+		return TRUE;
+	
+	if (fstat(fd, &info))
+		return TRUE;
+	
+	len = info.st_size;
+	
+	data = (void **)p_data;
 	old_len = DATA_TO_BUFFER(*data)->length;
 	
 	BUFFER_need(p_data, len);
 	
-  data = (void **)p_data;
+	data = (void **)p_data;
 
 	p = *data + old_len;
 	
-  for(;;)
-  {
-    lenr = read(fd, p, len);
-    if (lenr < 0)
-    {
-      close(fd);
-      return TRUE;
-    }
-    
-    if (lenr == len)
-      break;
-      
-    p += lenr;
-    len -= lenr;
-  }
+	for(;;)
+	{
+		lenr = read(fd, p, len);
+		if (lenr < 0)
+		{
+			close(fd);
+			return TRUE;
+		}
+		
+		if (lenr == len)
+			break;
+			
+		p += lenr;
+		len -= lenr;
+	}
 
-  close(fd);
-  
-  return FALSE;
+	close(fd);
+	
+	return FALSE;
 }

@@ -2033,7 +2033,7 @@ Private Sub CompileError(sMsg As String)
   Dim sFile As String
   Dim iLine As Integer
   Dim iColumn As Integer
-  Dim hForm As FEditor
+  Dim hForm As Object
   Dim sErr As String
   Dim sInfo As String
   Dim aInfo As String[]

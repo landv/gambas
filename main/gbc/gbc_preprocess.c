@@ -314,6 +314,7 @@ int PREP_analyze(PATTERN *line)
 	}
 	else if (PATTERN_is(*line, RS_P_CONST))
 	{
+		// TODO
 	}
 	else
 		THROW(E_SYNTAX);

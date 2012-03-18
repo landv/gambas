@@ -2342,7 +2342,6 @@ Public Sub Editors_Scroll()
   HideCompletion
   HideSignature
   HideMessage
-  timWatch_Timer
 
 End
 
@@ -2701,28 +2700,28 @@ Public Sub Editors_MouseUp()
 
 End
 
-Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
-
-  X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
-  Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
-  
-  lblWatch.Foreground = Editor.Styles[Highlight.Normal].Foreground
-  If bError Then
-    lblWatch.Background = Editor.Styles[Highlight.Breakpoint].Foreground
-  Else
-    lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
-  Endif
-  lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
-
-  If (Y + lblWatch.H) > lblWatch.Parent.ClientH Then Y -= lblWatch.H + Editor.LineHeight
-  lblWatch.Move(X, Y)
-  
-  lblWatch.Show
-  lblWatch.Raise
-  timWatch.Start
-  Editor.SetFocus
-
-End
+' Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
+' 
+'   X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
+'   Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
+'   
+'   lblWatch.Foreground = Editor.Styles[Highlight.Normal].Foreground
+'   If bError Then
+'     lblWatch.Background = Editor.Styles[Highlight.Breakpoint].Foreground
+'   Else
+'     lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
+'   Endif
+'   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
+' 
+'   If (Y + lblWatch.H) > lblWatch.Parent.ClientH Then Y -= lblWatch.H + Editor.LineHeight
+'   lblWatch.Move(X, Y)
+'   
+'   lblWatch.Show
+'   lblWatch.Raise
+'   timWatch.Start
+'   Editor.SetFocus
+' 
+' End
 
 Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
 
@@ -2736,16 +2735,7 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
     bError = True
   Endif
 
-  ShowMessageLabel(Html(sStr), X, Y, bError)
-
-End
-
-Public Sub timWatch_Timer()
-
-  If lblWatch.Visible Then
-    lblWatch.Hide
-    timWatch.Stop
-  Endif
+  Editor.ShowMessageLabel(Html(sStr), X, Y, bError)
 
 End
 
@@ -2790,7 +2780,7 @@ Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
 
   Editor.SetFocus
   Wait
-  ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
+  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
 
 End
 
@@ -2799,7 +2789,7 @@ Private Sub HideMessage()
   If Balloon.Control = Editor Then
     Balloon.Hide
   Endif
-  timWatch_Timer
+  'timWatch_Timer
 
 End
 
@@ -3396,12 +3386,6 @@ Public Sub mnuPretty_Click()
   Editor.Insert(sNewText)
   Editor.Goto(Y, X)
   Editor.End
-
-End
-
-Public Sub lblWatch_MouseDown()
-
-  timWatch_Timer
 
 End
 
