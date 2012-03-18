@@ -46,7 +46,7 @@
 #include "gbc_preprocess.h"
 #include "gbc_read.h"
 
-#define DEBUG
+//#define DEBUG
 //#define BIG_COMMENT 1
 
 static bool is_init = FALSE;
