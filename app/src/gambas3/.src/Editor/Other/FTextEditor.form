@@ -253,16 +253,19 @@
       Border = False
       Menu = "mnuColor"
     }
+    { Separator1 Separator
+      MoveScaled(58,0,1,4)
+    }
     { btnCompress ToolButton mnuCompress
       Name = "btnCompress"
-      MoveScaled(58,0,4,4)
+      MoveScaled(60,0,4,4)
       ToolTip = ("Compress file")
       Action = ".compress"
       Picture = Picture["icon:/small/archive"]
     }
     { btnUncompress ToolButton mnuUncompress
       Name = "btnUncompress"
-      MoveScaled(62,0,4,4)
+      MoveScaled(64,0,4,4)
       ToolTip = ("Uncompress file")
       Action = ".uncompress"
       Picture = Picture["icon:/small/undo"]
@@ -409,6 +412,6 @@
   { Toolbar text
     Text = "Text editor"
     List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,color,compress,uncompress"
-    Default = "save,reload,show-class,undo,redo,indent,unindent,color,compress,uncompress,$lblInfo"
+    Default = "save,reload,show-class,undo,redo,indent,unindent,color,|,compress,uncompress,$lblInfo"
   }
 }

@@ -110,7 +110,7 @@ Private Sub InitMake(sSys As String)
     If Project.Vendor Then 
       $sPrefix = String.LCase(Project.Vendor) & "-"
     Else 
-      $sPrefix = "gambas-"
+      $sPrefix = "gambas" & System.Version & "-"
     Endif
   Else 
     $sPrefix = "" 
