@@ -40,7 +40,7 @@
 #define SIGPWR -1
 #endif
 
-#ifndef OS_BSD
+#if !defined(OS_BSD) && !defined(OS_CYGWIN)
 typedef
 	struct siginfo siginfo_t;
 #endif
@@ -286,7 +286,10 @@ GB_DESC CSignalDesc[] =
 	GB_CONSTANT("SIGILL", "i", SIGILL),
 	GB_CONSTANT("SIGTRAP", "i", SIGTRAP),
 	GB_CONSTANT("SIGABRT", "i", SIGABRT),
+#ifndef OS_CYGWIN
+	// Cygwin doesn't define this SIGNAL
 	GB_CONSTANT("SIGIOT", "i", SIGIOT),
+#endif
 	GB_CONSTANT("SIGBUS", "i", SIGBUS),
 	GB_CONSTANT("SIGFPE", "i", SIGFPE),
 	GB_CONSTANT("SIGKILL", "i", SIGKILL),

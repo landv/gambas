@@ -26,7 +26,13 @@
 #include "vb.h"
 #include "vbdate.h"
 #include <stdio.h>
-#include <strings.h>
+
+#ifdef OS_CYGWIN
+  #include <string.h>
+#else
+  #include <strings.h>
+#endif
+
 #include <math.h>
 
 BEGIN_METHOD(CVB_val, GB_STRING str)
