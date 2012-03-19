@@ -78,7 +78,7 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 	}
 }
 
-static bool cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
+static gboolean cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
 {
 	GdkGC        *gc;
 	GdkPixbuf    *img;

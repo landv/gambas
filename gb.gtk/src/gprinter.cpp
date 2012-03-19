@@ -71,7 +71,7 @@ static void cb_end(GtkPrintOperation *operation, GtkPrintContext *context, gPrin
 		(*printer->onEnd)(printer);
 }
 
-static bool cb_paginate(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
+static gboolean cb_paginate(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
 	#if DEBUG_ME
 	fprintf(stderr, "cb_paginate\n");

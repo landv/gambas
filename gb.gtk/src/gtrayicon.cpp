@@ -152,7 +152,7 @@ gTrayIcon
 
 **************************************************************************/
 
-static bool  tray_enterleave(GtkWidget *widget, GdkEventCrossing *e,gTrayIcon *data)
+static gboolean  tray_enterleave(GtkWidget *widget, GdkEventCrossing *e,gTrayIcon *data)
 {
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
 	if (e->type==GDK_ENTER_NOTIFY)

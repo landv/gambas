@@ -45,16 +45,11 @@ static void cb_select(GtkTreeSelection *selection, gTreeView *control)
 	control->emit(SIGNAL(control->onSelect));
 }
 
-static void cb_click(GtkWidget *widget, gTreeView *control)
-{
-	//control->emit(SIGNAL(control->onClick));
-}
-
-static bool cb_button_press(GtkWidget *widget, GdkEventButton *e, gTreeView *control)
+static gboolean cb_button_press(GtkWidget *widget, GdkEventButton *e, gTreeView *control)
 {
 	char *key;
 	
-	if (e->type == GDK_BUTTON_PRESS)
+	if (e->type == GDK_BUTTON_PRESS && e->window == gtk_tree_view_get_bin_window(GTK_TREE_VIEW(control->widget)))
 	{
 		key = control->find((int)e->x, (int)e->y);
 		
@@ -152,7 +147,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	g_signal_connect(G_OBJECT(sel),"changed",G_CALLBACK(cb_select),(gpointer)this);
 	g_signal_connect(G_OBJECT(treeview),"row-expanded",G_CALLBACK(cb_expand),(gpointer)this);
 	g_signal_connect(G_OBJECT(treeview),"row-collapsed",G_CALLBACK(cb_collapse),(gpointer)this);
-	g_signal_connect(G_OBJECT(treeview),"cursor-changed",G_CALLBACK(cb_click),(gpointer)this);
+	//g_signal_connect(G_OBJECT(treeview),"cursor-changed",G_CALLBACK(cb_click),(gpointer)this);
 	g_signal_connect_after(G_OBJECT(treeview), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 }
 

@@ -81,7 +81,7 @@ static void cb_click_check(GtkButton *object, gButton *data)
 }
 
 
-static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
+static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 {
 	GdkGC        *gc;
 	GdkPixbuf    *img;

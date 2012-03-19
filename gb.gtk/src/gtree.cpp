@@ -748,11 +748,11 @@ void gTree::clear()
 	
 	while ((key = firstRow()))
 		removeRow(key);
-	for (int i = 0; i < columnCount(); i++)
+	/*for (int i = 0; i < columnCount(); i++)
 	{
 		setColumnWidth(i, 16);
 		setColumnWidth(i, -1);
-	}
+	}*/
 	
 	unlock();
 }
@@ -986,6 +986,8 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 	else
 		piter = NULL;
 	
+	fprintf(stderr, "[0]: %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
+	
 	if (aft) 
 	{
 		if (before)
@@ -1003,6 +1005,8 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 	g_hash_table_insert(datakey, (gpointer)buf, (gpointer)row);
 	gtk_tree_store_set(store, &iter, view ? 0 : 1, buf, -1);
 	
+	fprintf(stderr, "[0]: -> %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
+
 	if (parent)
 	{
 		getRow(parent)->setExpanded();
@@ -1089,8 +1093,8 @@ void gTree::addColumn()
 		gtk_tree_view_column_set_cell_data_func(column,rgraph,(GtkTreeCellDataFunc)tree_cell_graph,(gpointer)this,NULL);
 		gtk_tree_view_column_set_cell_data_func(column,rtext,(GtkTreeCellDataFunc)tree_cell_text,(gpointer)this,NULL);
 		
-		gtk_tree_view_column_set_resizable(column, isResizable());
 		gtk_tree_view_column_set_sizing(column, isAutoResize() ? GTK_TREE_VIEW_COLUMN_AUTOSIZE : GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_tree_view_column_set_resizable(column, isResizable());
 			
 		gtk_tree_view_append_column(GTK_TREE_VIEW(widget),column);
 		g_signal_connect(G_OBJECT(column), "clicked", G_CALLBACK(cb_column_clicked), (gpointer)this);	
