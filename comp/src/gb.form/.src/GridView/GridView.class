@@ -768,6 +768,8 @@ Public Sub ScrollArea_MouseDown()
   
   If Not Me.Enabled Then Return
   
+  Me.SetFocus
+  
   iOldRow = $iRow
   
   ScrollArea_MouseMove

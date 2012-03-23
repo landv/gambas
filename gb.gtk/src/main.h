@@ -45,6 +45,7 @@ extern GB_CLASS CLASS_SvgImage;
 #endif
 
 void MAIN_do_iteration(bool do_not_block, bool do_not_sleep = false);
+void MAIN_do_iteration_just_events();
 void MAIN_check_quit();
 
 #endif

@@ -41,8 +41,11 @@ Public Sub Form_Open()
   
   ComboBoxCountry.Index = 0
   'DB.Debug = True
+  ButtonCountryMaintenance_Click
+  '
+Finally
+  
   Dec Application.Busy
-  'ButtonCountryMaintenance_Click
   
 Catch
   Message.Warning(ERROR.Text & "\n" & Error.Where)

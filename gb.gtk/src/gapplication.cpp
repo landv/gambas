@@ -901,7 +901,7 @@ void gApplication::setBusy(bool b)
     iter = g_list_next(iter);
   }
   
-  MAIN_do_iteration(true, true);
+  MAIN_do_iteration_just_events();
 }
 
 static bool _dirty = false;

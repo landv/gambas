@@ -45,7 +45,8 @@
 
 /*#define DEBUG*/
 
-//static char *_source;
+enum { TYPE_CODE, TYPE_HTML, TYPE_COMMENT };
+
 static const char *_start;
 
 static void print_quoted_string(const char *str, int len)
@@ -109,7 +110,7 @@ static void flush_html(const char *end)
 
 void FORM_webpage(char *source)
 {
-	bool html;
+	char type = TYPE_CODE;
 	char c;
 	const char *p;
 	int line;
@@ -158,11 +159,16 @@ __CODE:
 				
 	if (*p == '=')
 	{
-		html = TRUE;
+		type = TYPE_HTML;
 		p++;
 	}
+	else if (*p == '-' && p[1] == '-')
+	{
+		type = TYPE_COMMENT;
+		p += 2;
+	}
 	else
-		html = FALSE;
+		type = TYPE_CODE;
 	
 	_start = p;
 	
@@ -184,17 +190,24 @@ __END_STRING:
 		
 		if (c == '%' && *p == '>')
 		{
-			if (html)
+			switch (type)
 			{
-				FORM_print("Print Html$(");
-				FORM_print_len(_start, p - _start - 1);
-				FORM_print(");\n");
+				case TYPE_CODE:
+					FORM_print_len(_start, p - _start - 1);
+					FORM_print_char('\n');
+					break;
+					
+				case TYPE_HTML:
+					FORM_print("Print Html$(");
+					FORM_print_len(_start, p - _start - 1);
+					FORM_print(");\n");
+					break;
+					
+				case TYPE_COMMENT:
+				default:
+					break;
 			}
-			else
-			{
-				FORM_print_len(_start, p - _start - 1);
-				FORM_print_char('\n');
-			}
+			
 			p++;
 			if (*p == '\n')
 			{

@@ -483,6 +483,12 @@ static void my_lang(char *lang,int rtl)
 	}
 }
 
+void MAIN_do_iteration_just_events()
+{
+	if (gtk_events_pending ())
+		gtk_main_iteration_do (false);
+}
+
 void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 {
 	struct timespec mywait;

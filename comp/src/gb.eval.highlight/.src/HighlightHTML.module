@@ -66,6 +66,7 @@ Public Sub Run(iStyle As Integer)
   Dim iCodeStart As Integer
   Dim bScript, bStyle As Boolean
   Dim sMarkup As String
+  Dim bWebComment As Boolean
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -109,14 +110,19 @@ Public Sub Run(iStyle As Integer)
             Break
           Else If String.Mid$(sText, iInd, 2) = "%>" Then
             bCode = False
-            sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
-            Highlight.Add(Highlight.Keyword, 2)
-            sTextAfter &= "%>"
+            If bWebComment Then
+              sTextAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+              Highlight.Add(Highlight.Comment, iInd - iCodeStart + 2)
+            Else
+              sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
+              Highlight.Add(Highlight.Keyword, 2)
+              sTextAfter &= "%>"
+              'iNextState = iSaveNextState 'Highlight.Normal
+            Endif
             Inc iInd
             Highlight.AlternateState = False
             iState = iSaveState 'Highlight.Normal
             iNextState = iState
-            'iNextState = iSaveNextState 'Highlight.Normal
           Endif
           Continue
           
@@ -156,20 +162,27 @@ Public Sub Run(iStyle As Integer)
 
         Else If iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<%" Then
         
-          If String.Mid$(sText, iInd + 2, 1) = "=" Then
-            iCount = 3
-          Else 
-            iCount = 2
+          If String.Mid$(sText, iInd + 2, 2) = "--" Then
+            iCount = 4
+            bWebComment = True
+          Else
+            If String.Mid$(sText, iInd + 2, 1) = "=" Then
+              iCount = 3
+            Else 
+              iCount = 2
+            Endif
+            bWebComment = False
           Endif
+          
           Highlight.AlternateState = True
-          Highlight.Add(Highlight.Keyword, iCount)
+          Highlight.Add(If(bWebComment, Highlight.Comment, Highlight.Keyword), iCount)
           sTextAfter &= String.Mid$(sText, iInd, iCount)
           iInd += iCount - 1
           
           iSaveState = iState
           'iSaveNextState = iNextState
-          iState = Highlight.Normal
-          iNextState = Highlight.Normal
+          iState = If(bWebComment, Highlight.Comment, Highlight.Normal)
+          iNextState = iState
           
           bCode = True
           iCodeStart = iInd + 1

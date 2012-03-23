@@ -158,11 +158,13 @@ End
 
 Public Sub Background_Draw()
   
-  'Dim iFlag As Integer
+  Dim FW As Integer = If($bBorder, Style.FrameWidth, 0)
+  Dim iBg As Integer = Color.TextBackground
+  
+  If Me.Background <> Color.Default Then iBg = Me.Background
+  Draw.FillRect(FW, FW, Me.W - FW * 2, Me.H - FW * 2, iBg)
   
   If $bBorder Then 
-    'If $hTextBox.Hovered Then iFlag += Draw.Hover
-    'If $hTextBox.HasFocus Then iFlag += Draw.Focus
     Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H) ', iFlag)
   Endif
   
