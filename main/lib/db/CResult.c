@@ -608,6 +608,9 @@ BEGIN_METHOD_VOID(CRESULT_update)
 	{
 		case RESULT_CREATE:
 
+			if (BARRAY_is_void(THIS->changed, THIS->info.nfield))
+				break;
+			
 			q_add("INSERT INTO ");
 			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
 			q_add(" ( ");
@@ -661,6 +664,9 @@ BEGIN_METHOD_VOID(CRESULT_update)
 
 		case RESULT_EDIT:
 
+			if (BARRAY_is_void(THIS->changed, THIS->info.nfield))
+				break;
+			
 			q_add("UPDATE ");
 			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
 			q_add(" SET ");

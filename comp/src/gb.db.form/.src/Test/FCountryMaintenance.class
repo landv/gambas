@@ -1,0 +1,17 @@
+' Gambas class file
+
+Public Sub Form_Open()
+  FMain.Hide()
+  Me.Center()
+  FMain.ClearComboBoxCountry()
+  DataBrowserCountry.SetFocus()
+End
+
+Public Sub ButtonExit_Click()
+  FMain.PopulateComboBoxCountry()
+  Me.Hide()
+  FMain.Show()
+  FMain.ComboBoxCountry.SetFocus()
+  Me.Delete()
+End
+

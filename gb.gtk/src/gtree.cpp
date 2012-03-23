@@ -986,7 +986,7 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 	else
 		piter = NULL;
 	
-	fprintf(stderr, "[0]: %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
+	//fprintf(stderr, "[0]: %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
 	
 	if (aft) 
 	{
@@ -1005,7 +1005,7 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 	g_hash_table_insert(datakey, (gpointer)buf, (gpointer)row);
 	gtk_tree_store_set(store, &iter, view ? 0 : 1, buf, -1);
 	
-	fprintf(stderr, "[0]: -> %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
+	//fprintf(stderr, "[0]: -> %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
 
 	if (parent)
 	{

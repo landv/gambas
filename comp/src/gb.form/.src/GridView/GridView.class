@@ -25,7 +25,7 @@ Property Header As Integer
 Property ShowCursor As Boolean
 Property Read Current As _GridView_Cell
 Property Font As Font
-Property Mouse As Integer
+'Property Mouse As Integer
 Property Sorted As Boolean
 'Property HighlightSort As Boolean
 
@@ -59,7 +59,7 @@ Private $iMode As Integer
 Private $iHeader As Integer
 Private $bShowCursor As Boolean
 Private $bAutoResize As Boolean = True
-Private $iDefaultMouse As Integer = Mouse.Default
+Private $iDefaultMouse As Integer '= Mouse.Default
 
 Private $iRow As Integer
 Private $iCol As Integer
@@ -594,6 +594,19 @@ Private Sub Mode_Write(Value As Integer)
   End Select
 
 End
+
+Public Sub ScrollArea_Enter()
+  
+  $iDefaultMouse = Me.Mouse
+  
+End
+
+Public Sub ScrollArea_Leave()
+  
+  Me.Mouse = $iDefaultMouse
+  
+End
+
 
 Public Sub ScrollArea_MouseMove()
   

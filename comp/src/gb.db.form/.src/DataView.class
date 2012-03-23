@@ -799,7 +799,9 @@ End
 Public Sub Save() As Boolean
   
   If Not CanEdit() Then Return
+  
   If InNewRecord() Then
+    If $hCtrl.Save() Then Return True
     Return SaveNewRecord()
   Else
     Return $hCtrl.Save()

@@ -151,7 +151,7 @@ End
 
 Public Sub btnRemove_Click()
 
-  $hSrc.Remove
+  If Not dvwBrowser.Editable Then $hSrc.Remove
   dvwBrowser.Remove
 
 End

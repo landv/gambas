@@ -1355,11 +1355,11 @@ void GDocument::colorizeAll()
 	
 	FOR_EACH_VIEW(v)
 	{
-		if (v->viewport()->hasFocus())
-			v->leaveCurrentLine();
+		//if (v->viewport()->hasFocus())
+		v->leaveCurrentLine();
 	}
 
-	for (y = 0; y < numLines(); y++)
+	for (y = colorizeFrom; y < numLines(); y++)
 		colorize(y);
 }
 

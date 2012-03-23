@@ -45,4 +45,13 @@ typedef
 
 #define BARRAY_test(_data, _bit) (((_data)[(_bit) / BARRAY_NBITS] & (1 << ((_bit) & (BARRAY_NBITS - 1)))) != 0)
 
+#define BARRAY_is_void(_data, _size) \
+({ \
+	int i, v = 0; \
+	int size = ((_size) + BARRAY_NBITS - 1) / BARRAY_NBITS; \
+	for (i = 0; !v && i < size; i++) \
+		v |= (_data)[i]; \
+	v == 0; \
+})
+	
 #endif

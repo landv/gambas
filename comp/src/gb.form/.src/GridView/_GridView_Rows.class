@@ -105,6 +105,7 @@ End
 
 Public Sub _GetRowHeight(iRow As Integer) As Integer
   
+  'Debug iRow;; System.Backtrace.Join("|")
   Try Return $cHeight[iRow]
   Return _GetDefaultRowHeight()
   

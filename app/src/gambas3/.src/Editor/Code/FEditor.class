@@ -3300,7 +3300,7 @@ Public Sub GetHighlightedText(Optional bSelected As Boolean) As String
 
   Editor.HighlightAll
   If bSelected Then
-    Return Editor.Selection.Text
+    Return Editor.Selection.Text 
   Else
     Return Editor.Text
   Endif
