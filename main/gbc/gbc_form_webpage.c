@@ -45,7 +45,7 @@
 
 /*#define DEBUG*/
 
-enum { TYPE_CODE, TYPE_HTML, TYPE_COMMENT };
+enum { TYPE_CODE, TYPE_HTML, TYPE_COMMENT, TYPE_MARKUP, TYPE_ARG };
 
 static const char *_start;
 
@@ -88,6 +88,14 @@ static void print_quoted_string(const char *str, int len)
 	FORM_print_char('"');
 }
 
+static void print_lower_len(const char *str, int len)
+{
+	int i;
+	
+	for (i = 0; i < len; i++)
+		FORM_print_char(tolower(str[i]));
+}
+
 static void flush_html(const char *end)
 {
 	if (_start == end)
@@ -108,6 +116,115 @@ static void flush_html(const char *end)
 	_start = end;
 }
 
+static void print_markup(const char *str, int len)
+{
+	int l;
+	char c;
+	const char *p;
+	bool comma;
+	bool quote;
+	
+	if (len <= 0)
+		return;
+	
+	/*FORM_print_char('\'');
+	FORM_print_len(str, len);
+	FORM_print_char('\n');*/
+	
+	p = str;
+	while (len > 0)
+	{
+		c = *str++;
+		len--;
+		if (c == ' ')
+			break;
+	}
+	
+	l = str - p - (c == ' ');	
+	if (l <= 0)
+		THROW(E_SYNTAX);
+	
+	FORM_print_len(p, l);
+	FORM_print("._Render(");
+	
+	if (len > 0)
+	{
+		FORM_print_char('[');
+		
+		comma = FALSE;
+		
+		while (len > 0)
+		{
+			while (len > 0 && *str == ' ')
+			{
+				str++;
+				len--;
+			}
+			
+			p = str;
+			while (len > 0)
+			{
+				c = *str++;
+				len--;
+				if (c == '=' || c == ' ')
+					break;
+			}
+			
+			if (comma)
+				FORM_print(", ");
+			
+			FORM_print_char('"');
+			l = str - p - (c == '=');
+			print_lower_len(p, l);
+			FORM_print("\": ");
+			
+			comma = TRUE;
+			
+			if (len <= 0 || c == ' ')
+			{
+				FORM_print("True");
+				continue;
+			}
+		
+			p = str;
+			
+			if (*str == '"')
+			{
+				str++;
+				len--;
+				quote = TRUE;
+			}
+			else
+			{
+				quote = FALSE;
+			}
+			
+			while (len > 0)
+			{
+				c = *str++;
+				len--;
+				if ((quote && c == '"') || (!quote && c == ' '))
+					break;
+			}
+			
+			if (!quote && str == p)
+				FORM_print("True");
+			else
+			{
+				if (!quote)
+					FORM_print_char('"');
+				FORM_print_len(p, str - p);
+				if (!quote)
+					FORM_print_char('"');
+			}
+		}
+			
+		FORM_print_char(']');
+	}
+	
+	FORM_print(")\n");
+}
+
 void FORM_webpage(char *source)
 {
 	char type = TYPE_CODE;
@@ -119,7 +236,7 @@ void FORM_webpage(char *source)
 	line = FORM_FIRST_LINE;
 	
 	FORM_print("Inherits WebPage\n\n");
-	FORM_print("Public Sub Render()\n\n");
+	FORM_print("Public Sub _Render(Optional _Arg As Collection = New Collection)\n\n");
 	
 	p = source;
 	
@@ -162,6 +279,16 @@ __CODE:
 		type = TYPE_HTML;
 		p++;
 	}
+	else if (*p == ':')
+	{
+		type = TYPE_MARKUP;
+		p++;
+	}
+	else if (*p == '!')
+	{
+		type=TYPE_ARG;
+		p++;
+	}
 	else if (*p == '-' && p[1] == '-')
 	{
 		type = TYPE_COMMENT;
@@ -201,6 +328,17 @@ __END_STRING:
 					FORM_print("Print Html$(");
 					FORM_print_len(_start, p - _start - 1);
 					FORM_print(");\n");
+					break;
+					
+				case TYPE_MARKUP:
+					print_markup(_start, p - _start - 1);
+					FORM_print_char('\n');
+					break;
+					
+				case TYPE_ARG:
+					FORM_print("Print _Arg!");
+					print_lower_len(_start, p - _start - 1);
+					FORM_print(";\n");
 					break;
 					
 				case TYPE_COMMENT:

@@ -6,10 +6,7 @@ Public Const STYLE_HTML As Integer = 1
 Public Const STYLE_WEB As Integer = 2
 Public Const STYLE_CSS As Integer = 3
 
-Private Const TAG_HTML As Integer = 0
-Private Const TAG_CODE As Integer = 1
-Private Const TAG_SCRIPT As Integer = 2
-Private Const TAG_STYLE As Integer = 3
+Private Enum TAG_HTML, TAG_CODE, TAG_SCRIPT, TAG_STYLE, TAG_CODE_MARKUP, TAG_COMMENT, TAG_VARIABLE
 
 Private Sub AnalyzeCode(sText As String) As String
   
@@ -67,6 +64,7 @@ Public Sub Run(iStyle As Integer)
   Dim bScript, bStyle As Boolean
   Dim sMarkup As String
   Dim bWebComment As Boolean
+  Dim sStr As String
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -98,7 +96,7 @@ Public Sub Run(iStyle As Integer)
         'sCar = String.Left(sText)
         'sText = String.Mid$(sText, 2)
     
-        If bCode Then
+        If bCode And If Not bMarkup Then
         
           If bQuote Then
             If sCar = Chr$(34) Then 
@@ -110,15 +108,20 @@ Public Sub Run(iStyle As Integer)
             Break
           Else If String.Mid$(sText, iInd, 2) = "%>" Then
             bCode = False
-            If bWebComment Then
-              sTextAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
-              Highlight.Add(Highlight.Comment, iInd - iCodeStart + 2)
-            Else
-              sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
-              Highlight.Add(Highlight.Keyword, 2)
-              sTextAfter &= "%>"
-              'iNextState = iSaveNextState 'Highlight.Normal
-            Endif
+            
+            Select Case iTag
+              Case TAG_COMMENT
+                sTextAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+                Highlight.Add(Highlight.Comment, iInd - iCodeStart + 2)
+              Case TAG_VARIABLE
+                sTextAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+                Highlight.Add(Highlight.Datatype, iInd - iCodeStart + 2)
+              Case Else
+                sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
+                Highlight.Add(Highlight.Preprocessor, 2)
+                sTextAfter &= "%>"
+            End Select
+            
             Inc iInd
             Highlight.AlternateState = False
             iState = iSaveState 'Highlight.Normal
@@ -162,27 +165,40 @@ Public Sub Run(iStyle As Integer)
 
         Else If iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<%" Then
         
-          If String.Mid$(sText, iInd + 2, 2) = "--" Then
+          bWebComment = False
+          
+          If String.Mid$(sText, iInd + 2, 1) = ":" Then
+            bMarkup = True
+            sMarkup = ""
+            iCount = 3
+            iTag = TAG_CODE_MARKUP
+            iNextState = Highlight.Preprocessor
+          Else If String.Mid$(sText, iInd + 2, 2) = "--" Then
             iCount = 4
             bWebComment = True
-          Else
-            If String.Mid$(sText, iInd + 2, 1) = "=" Then
-              iCount = 3
-            Else 
-              iCount = 2
-            Endif
-            bWebComment = False
+            iTag = TAG_COMMENT
+            iNextState = Highlight.Comment
+          Else If String.Mid$(sText, iInd + 2, 1) = "=" Then
+            iCount = 3
+            iTag = TAG_CODE
+            iNextState = Highlight.Normal
+          Else If String.Mid$(sText, iInd + 2, 1) = "!" Then
+            iCount = 3
+            iTag = TAG_VARIABLE
+            iNextState = Highlight.Datatype
+          Else 
+            iCount = 2
+            iTag = TAG_CODE
+            iNextState = Highlight.Normal
           Endif
           
           Highlight.AlternateState = True
-          Highlight.Add(If(bWebComment, Highlight.Comment, Highlight.Keyword), iCount)
+          Highlight.Add(If(iTag = TAG_CODE, Highlight.Preprocessor, iNextState), iCount)
           sTextAfter &= String.Mid$(sText, iInd, iCount)
           iInd += iCount - 1
           
           iSaveState = iState
-          'iSaveNextState = iNextState
-          iState = If(bWebComment, Highlight.Comment, Highlight.Normal)
-          iNextState = iState
+          iState = iNextState
           
           bCode = True
           iCodeStart = iInd + 1
@@ -197,6 +213,10 @@ Public Sub Run(iStyle As Integer)
             Endif
           Else If sCar = ">" Then
             bMarkup = False
+            If bCode Then
+              bCode = False
+              Highlight.AlternateState = True
+            Endif
             If sMarkup Then
               Highlight.Add(Highlight.Keyword, 1)
               sTextAfter &= sCar
@@ -220,6 +240,16 @@ Public Sub Run(iStyle As Integer)
             iNextState = Highlight.String
           Else If sCar = Chr$(34) Then 
             bQuoteMarkup = True
+          Else If bCode And If sCar = "%" And If String.Mid$(sText, iInd + 1, 1) = ">" Then
+            bMarkup = False
+            bCode = False
+            Highlight.Add(Highlight.Preprocessor, 2)
+            Inc iInd
+            sTextAfter &= "%>"
+            Highlight.AlternateState = False
+            iState = iSaveState 'Highlight.Normal
+            iNextState = iState
+            Continue
           Endif
     
         Else
@@ -238,7 +268,8 @@ Public Sub Run(iStyle As Integer)
                   iNextState = Highlight.Keyword
                   bMarkup = True
                   sMarkup = ""
-                  If String.Mid$(sText, iInd, 5) = "<body" Or If String.Mid$(sText, iInd, 5) = "<head" Then 
+                  sStr = String.Mid$(sText, iInd, 5)
+                  If sStr = "<body" Or If sStr = "<head" Or If sStr = "<html" Then 
                     bLimit = True
                   Else If String.Mid$(sText, iInd, 7) = "<script" Then
                     sMarkup = "script"
@@ -287,8 +318,13 @@ Public Sub Run(iStyle As Integer)
       Next
     
       If bCode Then
-        sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart))
-        iTag = TAG_CODE
+        If bMarkup Then
+          iNextState = Highlight.Normal
+          iTag = TAG_HTML
+        Else
+          sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart))
+          iTag = TAG_CODE
+        Endif
       Else If bScript Then
         iTag = TAG_SCRIPT
       Else If bStyle Then
