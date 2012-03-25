@@ -54,14 +54,38 @@ void CCONTAINER_raise_insert(CCONTAINER *_object, CWIDGET *child)
 	GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);
 }
 
-static CWIDGET *get_child(gContainer *container, int index)
+static int get_child_count(gContainer *ct)
 {
-	gControl *child = container->child(index);
+	int i;
+	int n = 0;
 	
-	if (child)
-		return (CWIDGET *)child->hFree;
-	else
-		return NULL;
+	for (i = 0; i < ct->childCount(); i++)
+	{
+		if (ct->child(i)->hFree)
+			n++;
+	}
+	
+	return n;
+}
+
+static CWIDGET *get_child(gContainer *ct, int index)
+{
+	int i;
+	int n = 0;
+	gControl *ch;
+	
+	for (i = 0; i < ct->childCount(); i++)
+	{
+		ch = ct->child(i);
+		if (!ch->hFree)
+			continue;
+
+		if (n == index)
+			return (CWIDGET *)(ch->hFree);
+		n++;
+	}
+	
+	return NULL;
 }
 
 BEGIN_METHOD_VOID(ContainerChildren_next)
@@ -72,18 +96,14 @@ BEGIN_METHOD_VOID(ContainerChildren_next)
 	
 	ct = (int *)GB.GetEnum();
 	
-	for(;;)
-	{
-		if (*ct >= cont->childCount()) 
-		{ 
-			GB.StopEnum(); 
-			return; 
-		}
-		child = get_child(cont, *ct);
-		(*ct)++;
-		if (child)
-			break;
+	if (*ct >= get_child_count(cont)) 
+	{ 
+		GB.StopEnum(); 
+		return; 
 	}
+
+	child = get_child(cont, *ct);
+	(*ct)++;
 	
 	GB.ReturnObject(child);
 	
@@ -95,7 +115,7 @@ BEGIN_METHOD(ContainerChildren_get, GB_INTEGER index)
 	gContainer *cont = WIDGET->proxyContainer();	
 	int ct = VARG(index);
 	
-	if (ct < 0 || ct >= cont->childCount()) 
+	if (ct < 0 || ct >= get_child_count(cont)) 
 	{ 
 		GB.Error(GB_ERR_BOUND);
 		return; 
@@ -109,7 +129,7 @@ END_METHOD
 BEGIN_PROPERTY(ContainerChildren_Count)
 
 	gContainer *cont = WIDGET->proxyContainer();
-	GB.ReturnInteger(cont->childCount());
+	GB.ReturnInteger(get_child_count(cont));
 
 END_PROPERTY
 
@@ -380,7 +400,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_container)
 	{
 		CUSERCONTROL_container(_object, _param);
 
-		WIDGET_CONT->setFullArrangement(THIS_UC->save);
+		WIDGET_CONT->setFullArrangement(&THIS_UC->save);
 		//qDebug("(%s %p): arrangement = %08X", GB.GetClassName(THIS), THIS, after->arrangement);
 	}
 

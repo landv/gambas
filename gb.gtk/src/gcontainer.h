@@ -73,13 +73,16 @@ public:
 	void setIndent(int vl);
 	void setInvert(bool vl);
 
-	virtual int childCount();
-	virtual gControl* child(int index);
+	virtual int childCount() const;
+	virtual gControl *child(int index) const;
+	
+	int childIndex(gControl *ch) const;
+	
 	gControl *find(int x, int y);
 	
 	gContainerArrangement *getArrangement() { return &arrangement; }
 	gContainerArrangement fullArrangement() { return arrangement; }
-	void setFullArrangement(gContainerArrangement &arr) { arrangement = arr; performArrange(); }
+	void setFullArrangement(gContainerArrangement *arr);
 	
 	virtual void performArrange();
 
@@ -105,7 +108,7 @@ public:
 
 //"Private"
 	GtkWidget *radiogroup;
-	GList *ch_list;
+	GPtrArray *_children;
 	int _client_x, _client_y, _client_w, _client_h;
 	
 	virtual void insert(gControl *child, bool realize = false);

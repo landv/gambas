@@ -168,16 +168,16 @@ public:
 	gTabStripPage(gTabStrip *tab);
 	~gTabStripPage();
 
-	char *text();
+	char *text() const;
 	void setText(char *text);
-	gPicture *picture() { return _picture; }
+	gPicture *picture() const { return _picture; }
 	void setPicture(gPicture *picture);
-	bool isVisible() { return _visible; }
+	bool isVisible() const { return _visible; }
 	void setVisible(bool v);
-	bool enabled();
+	bool enabled() const;
 	void setEnabled(bool v);
-	int count();
-	gControl *child(int n);
+	int count() const;
+	gControl *child(int n) const;
 	void updateColors();
 	void updateFont();
 	void updateButton();
@@ -289,7 +289,7 @@ void gTabStripPage::setText(char *text)
 	g_free(buf);
 }
 
-char *gTabStripPage::text()
+char *gTabStripPage::text() const
 {
 	char *buf;
 
@@ -315,7 +315,7 @@ void gTabStripPage::setPicture(gPicture *picture)
 	}
 }
 
-bool gTabStripPage::enabled()
+bool gTabStripPage::enabled() const
 {
 	return GTK_WIDGET_SENSITIVE(hbox);
 }
@@ -364,46 +364,38 @@ void gTabStripPage::setVisible(bool v)
 	}
 }
 
-int gTabStripPage::count()
+int gTabStripPage::count() const
 {
+	int i;
+	gControl *ch;
 	int ct = 0;
-	GList *iter;
-	gControl *child;
 	
-	if (!parent->ch_list) return 0;
-	
-	iter = g_list_first(parent->ch_list);
-	while (iter)
+	for (i = 0; i < parent->childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (gtk_widget_get_parent(child->border) == widget)
+		ch = parent->child(i);
+		if (gtk_widget_get_parent(ch->border) == widget)
 			ct++;
-		iter=iter->next;
 	}
 	
 	return ct;
 }
 
 
-gControl *gTabStripPage::child(int n)
+gControl *gTabStripPage::child(int n) const
 {
+	int i;
+	gControl *ch;
 	int ct = 0;
-	GList *iter;
-	gControl *child;
 	
-	if (!parent->ch_list) return NULL;
-	
-	iter = g_list_first(parent->ch_list);
-	while (iter)
+	for (i = 0; i < parent->childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (gtk_widget_get_parent(child->border) == widget)
+		ch = parent->child(i);
+		if (gtk_widget_get_parent(ch->border) == widget)
 		{
 			if (ct == n)
-				return child;
+				return ch;
 			ct++;
 		}
-		iter=iter->next;
 	}
 	
 	return NULL;
@@ -484,7 +476,7 @@ gTabStrip::~gTabStrip()
 }
 
 
-int gTabStrip::getRealIndex(GtkWidget *page)
+int gTabStrip::getRealIndex(GtkWidget *page) const
 {
 	int i;
 	
@@ -497,7 +489,7 @@ int gTabStrip::getRealIndex(GtkWidget *page)
 	return -1;
 }
 
-int gTabStrip::index()
+int gTabStrip::index() const
 {
 	GtkWidget *page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), gtk_notebook_get_current_page(GTK_NOTEBOOK(widget)));
 	return getRealIndex(page);
@@ -514,7 +506,7 @@ void gTabStrip::setIndex(int vl)
 	//widget = get(vl)->widget;
 }
 
-int gTabStrip::orientation()
+int gTabStrip::orientation() const
 {
 	return gtk_notebook_get_tab_pos(GTK_NOTEBOOK(widget));
 }
@@ -594,7 +586,7 @@ void gTabStrip::setOrientation(int vl)
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget),GtkPositionType(vl));
 }
 
-gPicture* gTabStrip::tabPicture(int ind)
+gPicture* gTabStrip::tabPicture(int ind) const
 {
 	if ( (ind<0) || (ind>=count()) ) 
 		return NULL;
@@ -608,7 +600,7 @@ void gTabStrip::setTabPicture(int ind,gPicture *pic)
 	get(ind)->setPicture(pic);
 }
 
-bool gTabStrip::tabEnabled(int ind)
+bool gTabStrip::tabEnabled(int ind) const
 {
 	if ( (ind<0) || (ind>=count()) ) 
 		return FALSE;
@@ -622,7 +614,7 @@ void gTabStrip::setTabEnabled(int ind, bool vl)
 	get(ind)->setEnabled(vl);
 }
 
-bool gTabStrip::tabVisible(int ind)
+bool gTabStrip::tabVisible(int ind) const
 {
 	if ( (ind<0) || (ind>=count()) ) 
 		return FALSE;
@@ -636,7 +628,7 @@ void gTabStrip::setTabVisible(int ind, bool vl)
 	get(ind)->setVisible(vl);
 }
 
-char* gTabStrip::tabText(int ind)
+char* gTabStrip::tabText(int ind) const
 {
 	if ( (ind<0) || (ind>=count()) ) 
 		return NULL;
@@ -650,7 +642,7 @@ void gTabStrip::setTabText(int ind, char *txt)
 	get(ind)->setText(txt);
 }
 
-int gTabStrip::tabCount(int ind)
+int gTabStrip::tabCount(int ind) const
 {
 	if ( (ind<0) || (ind>=count()) ) 
 		return 0;
@@ -658,7 +650,7 @@ int gTabStrip::tabCount(int ind)
 		return get(ind)->count();
 }
 
-gControl *gTabStrip::tabChild(int ind, int n)
+gControl *gTabStrip::tabChild(int ind, int n) const
 {
 	if ( (ind<0) || (ind>=count()) ) 
 		return NULL;
@@ -666,17 +658,17 @@ gControl *gTabStrip::tabChild(int ind, int n)
 		return get(ind)->child(n);
 }
 
-int gTabStrip::childCount()
+int gTabStrip::childCount() const
 {
 	return tabCount(index());
 }
 
-gControl *gTabStrip::child(int ind)
+gControl *gTabStrip::child(int ind) const
 {
 	return tabChild(index(), ind);
 }
 
-GtkWidget *gTabStrip::getContainer()
+GtkWidget *gTabStrip::getContainer() const
 {
 	gTabStripPage *page = get(index());
 	
@@ -702,7 +694,7 @@ void gTabStrip::setRealForeground(gColor color)
 		get(i)->updateColors();
 }
 
-gTabStripPage *gTabStrip::get(int ind)
+gTabStripPage *gTabStrip::get(int ind) const
 {
 	if (ind < 0 || ind >= count())
 		return NULL;

@@ -172,9 +172,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	
 	arr->locked = true;
 
-	#ifdef RAISE_BEFORE_ARRANGE_EVENT
 	RAISE_BEFORE_ARRANGE_EVENT(_object);
-	#endif
 
 	if (arr->mode != ARRANGE_NONE)
 	{
@@ -630,9 +628,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 __RETURN:
 
-	#ifdef RAISE_ARRANGE_EVENT
 	RAISE_ARRANGE_EVENT(_object);
-	#endif
 
 	arr->locked = false;
 

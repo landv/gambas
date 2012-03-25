@@ -36,15 +36,15 @@ public:
 
 //"Properties"
 	int count() const { return _pages->len; }
-	int index();
-	int orientation();
+	int index() const;
+	int orientation() const;
 	void setOrientation(int vl);
-	bool tabEnabled(int ind);
-	gPicture* tabPicture(int ind);
-	bool tabVisible(int ind);
-	char *tabText(int ind);
-	int tabCount(int ind);
-	gControl *tabChild(int ind, int n);
+	bool tabEnabled(int ind) const;
+	gPicture* tabPicture(int ind) const;
+	bool tabVisible(int ind) const;
+	char *tabText(int ind) const;
+	int tabCount(int ind) const;
+	gControl *tabChild(int ind, int n) const;
 	
 	bool setCount(int vl);
 	void setIndex(int vl);
@@ -56,8 +56,8 @@ public:
 	void setClosable(bool v);
 	bool isClosable() const { return _button_pixbuf_normal != NULL; }
 
-	virtual int childCount();
-	virtual gControl *child(int index);
+	virtual int childCount() const;
+	virtual gControl *child(int index) const;
 
 	virtual void setRealBackground(gColor color);
 	virtual void setRealForeground(gColor color);
@@ -72,8 +72,8 @@ public:
 	void (*onClose)(gTabStrip *sender, int index);
 
 //"Private"
-	virtual GtkWidget *getContainer();
-	int getRealIndex(GtkWidget *page);
+	virtual GtkWidget *getContainer() const;
+	int getRealIndex(GtkWidget *page) const;
 
 	GdkPixbuf *_button_pixbuf_normal;
 	GdkPixbuf *_button_pixbuf_disabled;
@@ -81,7 +81,7 @@ public:
 private:
 	GPtrArray *_pages;
 	gFont *_textFont;
-	gTabStripPage *get(int ind);
+	gTabStripPage *get(int ind) const;
 	void updateFont();
 	void destroyTab(int ind);
 };

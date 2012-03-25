@@ -90,7 +90,6 @@ BEGIN_METHOD(CTOOLBUTTON_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(clicked()), &CButton::manager, SLOT(clickedTool()));
 
 	//wid->setToggleButton(TRUE);
-  wid->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
   wid->setAutoRaise(true);
   
   CWIDGET_new(wid, (void *)_object);
@@ -195,6 +194,10 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
     WIDGET_TOOL->setIcon(icon);
 		WIDGET->setIconSize(p.size());
     //WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
+		if (qtext.length())
+			WIDGET_TOOL->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+		else
+			WIDGET_TOOL->setToolButtonStyle(Qt::ToolButtonIconOnly);
     
 		THIS->last_size = size;
   }
@@ -202,6 +205,7 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
   {
     WIDGET_TOOL->setIcon(icon);
     WIDGET_TOOL->setText(qtext);
+		WIDGET_TOOL->setToolButtonStyle(Qt::ToolButtonTextOnly);
     //WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
   }
 

@@ -142,16 +142,17 @@ void gContainer::performArrange()
 	//if (!CAN_ARRANGE(this))
 	//	return;
 	
-	//fprintf(stderr, "gContainer::performArrange: %d: %s <<<\n", _arrangement_level, name());
+	//if (name() && !strcmp(name(), "panToolbar")) fprintf(stderr, ">>> gContainer::performArrange: %s %d\n", name(), arrangement.locked);
 	//_arrangement_level++;	
 	arrangeContainer((void*)this);
 	//_arrangement_level--;
-	//fprintf(stderr, ">>> gContainer::performArrange: %d: %s\n", _arrangement_level, name());
+	//if (name() && !strcmp(name(), "panToolbar")) fprintf(stderr, "<<< gContainer::performArrange: %s %d\n", name(), arrangement.locked);
 }
 
 void gContainer::initialize()
 {
-	ch_list = NULL;
+	_children = g_ptr_array_new();
+	
 	radiogroup = NULL;
 	onArrange = NULL;
 	onBeforeArrange = NULL;
@@ -187,37 +188,40 @@ gContainer::gContainer(gContainer *parent) : gControl(parent)
 
 gContainer::~gContainer()
 {
-	GList *iter;
+	int i;
 	
-  // BM: Remove references to me
-  
-	iter = g_list_first(ch_list);
-	while (iter)
-	{
-	  ((gControl*)iter->data)->removeParent();
-		iter = iter->next;
-	}
+	for (i = 0; i < childCount(); i++)
+		child(i)->removeParent();
+	
+	g_ptr_array_unref(_children);
 	
 	if (radiogroup) { g_object_unref(G_OBJECT(radiogroup)); radiogroup=NULL; }
 }
 
-int gContainer::childCount()
+int gContainer::childCount() const
 {
-	if (!ch_list) 
-		return 0;
-	else
-		return g_list_length(ch_list);
+	return _children->len;
 }
 
-gControl* gContainer::child(int index)
+gControl* gContainer::child(int index) const
 {
-	GList *iter;
-	
-	if ( !ch_list ) return NULL;
+	if (index < 0 || index >= (int)_children->len)
+		return NULL;
+	else
+		return (gControl *)g_ptr_array_index(_children, index);
+}
 
-	iter = g_list_nth(ch_list,index);
-	if (!iter) return NULL;
-	return (gControl*)iter->data;
+int gContainer::childIndex(gControl *ch) const
+{
+	int i;
+	
+	for (i = 0; i < childCount(); i++)
+	{
+		if (child(i) == ch)
+			return i;
+	}
+	
+	return -1;
 }
 
 void gContainer::setArrange(int vl)
@@ -454,13 +458,11 @@ void gContainer::insert(gControl *child, bool realize)
 		gtk_container_add(GTK_CONTAINER(getContainer()), child->border);
 	}
 	child->bufX = child->bufY = 0;
-		
-	ch_list = g_list_append(ch_list, child);
+	
+	g_ptr_array_add(_children, child);
 	
 	if (realize)
-	{
 		child->visible = true;
-	}
     
 	//g_debug("gContainer::insert: visible = %d", isReallyVisible());
 	//fprintf(stderr, "insert %s into %s\n", child->name(), name());
@@ -481,26 +483,21 @@ void gContainer::insert(gControl *child, bool realize)
 
 void gContainer::remove(gControl *child)
 {
-	ch_list = g_list_remove(ch_list, child);
+	g_ptr_array_remove(_children, child);
 	updateFocusChain();
 }
 
 
 gControl *gContainer::find(int x, int y)
 {
-	GList *iter;
-	gControl *child;
+	int i;
+	gControl *ch;
 	
-	if (!ch_list) 
-		return NULL;
-	
-	iter = g_list_first(ch_list);
-	while (iter)
+	for (i = 0; i < childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (x >= child->left() && y >= child->top() && x < (child->left() + child->width()) && y < (child->top() + child->height()))
-			return child;
-		iter = iter->next;
+		ch = child(i);
+		if (x >= ch->left() && y >= ch->top() && x < (ch->left() + ch->width()) && y < (ch->top() + ch->height()))
+			return ch;
 	}
 	
 	return NULL;
@@ -509,41 +506,31 @@ gControl *gContainer::find(int x, int y)
 
 void gContainer::setBackground(gColor color)
 {
-	GList *iter;
-	gControl *child;
+	int i;
+	gControl *ch;
 	
 	gControl::setBackground(color);
 	
-	if (!ch_list) 
-		return;
-	
-	iter = g_list_first(ch_list);
-	while (iter)
+	for (i = 0; i < childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (!child->_bg_set)
-			child->setBackground();
-		iter = iter->next;
+		ch = child(i);
+		if (!ch->_bg_set)
+			ch->setBackground();
 	}	
 }
 
 void gContainer::setForeground(gColor color)
 {
-	GList *iter;
-	gControl *child;
+	int i;
+	gControl *ch;
 	
 	gControl::setForeground(color);
 	
-	if (!ch_list) 
-		return;
-	
-	iter = g_list_first(ch_list);
-	while (iter)
+	for (i = 0; i < childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (!child->_fg_set)
-			child->setForeground();
-		iter = iter->next;
+		ch = child(i);
+		if (!ch->_bg_set)
+			ch->setForeground();
 	}	
 }
 
@@ -554,29 +541,23 @@ GtkWidget *gContainer::getContainer()
 
 gControl *gContainer::findFirstFocus()
 {
-	GList *iter;
-	gControl *child;
+	int i;
+	gControl *ch;
 	
-	if (!ch_list)
-		return NULL;
-	
-	iter = g_list_first(ch_list);
-	while (iter)
+	for (i = 0; i < childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (child->isContainer())
+		ch = child(i);
+		if (ch->isContainer())
 		{
-			child = ((gContainer *)child)->findFirstFocus();
-			if (child)
-				return child;
+			ch = ((gContainer *)ch)->findFirstFocus();
+			if (ch)
+				return ch;
 		}
 		else
 		{
-			if (GTK_WIDGET_CAN_FOCUS(child->widget) && !((child->getClass() == Type_gButton) && ((gButton *)child)->hasShortcut()))
-				return child;
+			if (GTK_WIDGET_CAN_FOCUS(ch->widget) && !((ch->getClass() == Type_gButton) && ((gButton *)ch)->hasShortcut()))
+				return ch;
 		}
-		
-		iter = iter->next;
 	}
 	
 	return NULL;
@@ -605,18 +586,16 @@ void gContainer::setVisible(bool vl)
 void gContainer::updateFocusChain()
 {
 	GList *chain = NULL;
-	GList *iter = ch_list;
-	gControl *child;
+	int i;
+	gControl *ch;
 	
 	//fprintf(stderr, "updateFocusChain()\n");
 	
-	iter = g_list_first(ch_list);
-	while (iter)
+	for (i = 0; i < childCount(); i++)
 	{
-		child = (gControl*)(iter->data);
-		if (!child->isNoTabFocus())
-			chain = g_list_prepend(chain, child->border);
-		iter = iter->next;
+		ch = child(i);
+		if (!ch->isNoTabFocus())
+			chain = g_list_prepend(chain, ch->border);
 	}
 	
 	chain = g_list_reverse(chain);
@@ -628,21 +607,16 @@ void gContainer::updateFocusChain()
 
 void gContainer::setFont(gFont *ft)
 {
-	GList *iter;
-	gControl *child;
+	int i;
+	gControl *ch;
 
 	gControl::setFont(ft);
 
-	if (!ch_list) 
-		return;
-	
-	iter = g_list_first(ch_list);
-	while (iter)
+	for (i = 0; i < childCount(); i++)
 	{
-		child = (gControl *)iter->data;
-		if (!child->_font_set)
-			child->setFont(child->font());
-		iter = iter->next;
+		ch = child(i);
+		if (!ch->_font_set)
+			ch->setFont(ch->font());
 	}	
 }
 
@@ -669,4 +643,13 @@ bool gContainer::hasForeground() const
 bool gContainer::hasFont() const
 {
 	return _font_set || (parent() && parent()->hasFont());
+}
+
+void gContainer::setFullArrangement(gContainerArrangement *arr)
+{
+	bool locked = arrangement.locked;
+	
+	arrangement = *arr;
+	arrangement.locked = locked;
+	performArrange();
 }

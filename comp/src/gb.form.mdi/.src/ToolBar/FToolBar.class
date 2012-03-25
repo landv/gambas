@@ -40,7 +40,7 @@ Private $aHidden As Control[]
 Public Sub _new()
   
   $iHandleSize = 1 'Max(4, Desktop.Scale)
-  $iButtonWidth = Desktop.Scale * 4
+  $iButtonWidth = Desktop.Scale * 2 + GetRealIconSize()
   dwgHandle.Width = $iHandleSize
   $hObserverParent = New Observer(Me.Parent.Parent) As "Container"
   $bAutoResize = True
@@ -202,7 +202,9 @@ Private Sub SetArrangement()
   
   If $bDesign Then Return
   hToolBar.Padding = 0
+  'Print panToolBar.H;; "["; hToolbar.Arrangement; "]";;
   hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
+  'Print "==>";; panToolBar.H;; "["; hToolbar.Arrangement; "]"
   
 End
 
@@ -319,7 +321,7 @@ Private Sub Update()
   Endif
   
   'Debug panToolBar.X;; panToolBar.Y;; panToolBar.W;; panToolBar.H;; "/";; W;; H
-  'If panToolBar.Children.Count Then Debug "=>";; panToolBar.Children[0].X;; panToolBar.Children[0].Y
+  'If panToolBar.Children.Count Then Debug "=>";; panToolBar.Children[0].X;; panToolBar.Children[0].Y;; panToolBar.Children[0].W;; panToolBar.Children[0].H
   
   If Not $bDesign Then 
     Me.Parent.Resize(W, H)
@@ -483,8 +485,8 @@ Private Sub InitToolbar()
   
   If Not ToolBarKey Then Return
   
-  Try aList = FindToolbar().DefaultConfig
-  If Error Then Return
+  aList = GetDefaultConfig()
+  If Not aList Then Return
   
   ' Debug panToolBar.Children.Count
   ' Debug System.Backtrace.Join("\n")
@@ -554,10 +556,56 @@ End
 
 Private Sub FindToolbar() As CToolbar
   
+  Dim hToolbar As CToolbar
+  
   MAction.InitAction
-  Return MAction.Toolbars[ToolbarKey]
+  
+  hToolbar = MAction.Toolbars[ToolbarKey]
+  
+  If Not hToolbar Then
+    hToolbar = New CToolbar(ToolBarKey, Null)
+    hToolbar.DefaultConfig = GetCurrentConfig()
+    MAction.Toolbars[ToolbarKey] = hToolbar
+  Endif
+  
+  Return hToolbar
   
 End
+
+Private Sub GetCurrentConfig() As String[]
+  
+  Dim aConfig As New String[]
+  Dim hCtrl As Control
+  Dim sAction As String
+  
+  For Each hCtrl In panToolBar.Children
+    If hCtrl.Action Then
+      sAction = hCtrl.Action
+      If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+      aConfig.Add(sAction)
+    Else If hCtrl Is Separator
+      aConfig.Add("|")
+    Else If hCtrl Is ToolBarExpander Then
+      aConfig.Add("~")
+    Else If hCtrl.Visible Then
+      aConfig.Add("$" & hCtrl.Name)
+    Endif
+  Next
+  
+  Return aConfig
+  
+End
+
+
+Private Sub GetDefaultConfig() As String[]
+  
+  Dim aConfig As String[]
+  
+  aConfig = FindToolbar().DefaultConfig
+  If aConfig Then Return aConfig
+  
+End
+
 
 
 Public Sub SetConfigureMode(bConfigure As Boolean)
@@ -1168,22 +1216,23 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Select Case Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"]
     Case "Medium"
       $iIconSize = ICON_MEDIUM
-      iDim = Desktop.Scale * 5
+      iDim = Desktop.Scale * 2
     Case "Large"
       $iIconSize = ICON_LARGE
-      iDim = Desktop.Scale * 7
+      iDim = Desktop.Scale * 3
     Case Else
       $iIconSize = ICON_SMALL
-      iDim = Desktop.Scale * 4
+      iDim = Desktop.Scale * 2
   End Select
+  iDim += GetRealIconSize()
   $iButtonWidth = iDim
   
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
   If Not aConfig Then 
-    If $iIconSize = ICON_SMALL Then
-      If bInit Then Goto RAISE_CONFIGURE
-    Endif
-    Try aConfig = FindToolbar().DefaultConfig
+    'If $iIconSize = ICON_SMALL Then
+    '  If bInit Then Goto RAISE_CONFIGURE
+    'Endif
+    aConfig = GetDefaultConfig()
     If Not aConfig Then Goto RAISE_CONFIGURE
   Endif
   
@@ -1264,27 +1313,16 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   Dim hForm As FToolBar
   Dim bChange As Boolean
   Dim sVal As String
+  Dim aDefaultConfig As String[]
   
   If Not ToolbarKey Then Return
   If $bDesign Then Return
   If Not Object.IsValid(Me.Parent.Parent) Then Return
 
   If Not bReset Then
-    aConfig = New String[]
-    For Each hCtrl In panToolBar.Children
-      If hCtrl.Action Then
-        sAction = hCtrl.Action
-        If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
-        aConfig.Add(sAction)
-      Else If hCtrl Is Separator
-        aConfig.Add("|")
-      Else If hCtrl Is ToolBarExpander Then
-        aConfig.Add("~")
-      Else If hCtrl.Visible Then
-        aConfig.Add("$" & hCtrl.Name)
-      Endif
-    Next
-    If aConfig.Join(",") = FindToolbar().DefaultConfig.Join(",") Then aConfig = Null
+    aConfig = GetCurrentConfig()
+    aDefaultConfig = GetDefaultConfig()
+    If aConfig.Join(",") = aDefaultConfig.Join(",") Then aConfig = Null
   Endif
   
   ' Print Me; ": Saving config for "; ToolbarKey; ": ";

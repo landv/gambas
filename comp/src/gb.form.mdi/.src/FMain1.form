@@ -1,0 +1,60 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,55,50)
+  { tlbrMain ToolBar
+    MoveScaled(7,1,45,6)
+    Background = &HFF0000&
+    Key = "tb_main"
+    { ToolButton1 ToolButton
+      MoveScaled(0,0,4,4)
+      Action = "a1"
+      Picture = Picture["70a017.png"]
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(4,0,4,4)
+      Action = "a2"
+      Picture = Picture["70a017.png"]
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(8,0,4,4)
+      Action = "a3"
+      AutoResize = True
+      Text = ("Help")
+      Picture = Picture["70a017.png"]
+    }
+  }
+  { Button1 Button
+    MoveScaled(1,9,16,4)
+    Text = ("Button1")
+  }
+  { Label1 Label
+    MoveScaled(1,1,5,6)
+    Border = Border.Plain
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action a1
+    Text = ""
+    Picture = "70a017.png"
+  }
+  { Action a2
+    Text = ""
+    Picture = "70a017.png"
+  }
+  { Action a3
+    Text = "Help"
+    Picture = "70a017.png"
+  }
+}
+
+{ Toolbars
+  { Toolbar tb_main
+    Text = ""
+    List = "a1,a2,a3"
+    Default = "a1,a2,a3"
+  }
+}

@@ -1188,7 +1188,9 @@ BEGIN_PROPERTY(UserContainer_Container)
 		UserControl_Container(_object, _param);
 
 		after = (CCONTAINER *)CWidget::get(THIS->container);
+		bool old_locked = ((CCONTAINER_ARRANGEMENT *)after)->locked;
 		after->arrangement = THIS_USERCONTAINER->save;
+		((CCONTAINER_ARRANGEMENT *)after)->locked = old_locked;
 		//qDebug("(%s %p): arrangement = %08X", GB.GetClassName(THIS), THIS, after->arrangement);
 		CCONTAINER_arrange(after);
 	}

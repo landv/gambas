@@ -935,37 +935,36 @@ bool gControl::hasFocus()
 
 gControl* gControl::next()
 {
-	GList *list;
+	int index;
 	
 	if (!pr)
 		return NULL;
-		
-	list = pr->ch_list;
-	list = g_list_next(g_list_find(list, (gpointer)this));
-	if (!list)
+	
+	index = pr->childIndex(this);
+	if (index < 0 || index >= pr->childCount())
 		return NULL;
 	else
-		return (gControl *)(list->data);
+		return pr->child(index + 1);
 }
 
 gControl* gControl::previous()
 {
-	GList *list;
+	int index;
 	
 	if (!pr)
 		return NULL;
-		
-	list = pr->ch_list;
-	list = g_list_previous(g_list_find(list, (gpointer)this));
-	if (!list)
+	
+	index = pr->childIndex(this);
+	if (index <= 0)
 		return NULL;
 	else
-		return (gControl *)(list->data);
+		return pr->child(index - 1);
 }
 
 
 void gControl::lower()
 {
+	gpointer *p;
 	GList *iter;
 	GList *chd;
 	GtkWidget *child;
@@ -975,7 +974,7 @@ void gControl::lower()
 	if (!pr) return;
 	if (pr->getClass()==Type_gSplitter) return;
 	
-	if (border->window)
+	if (gtk_widget_get_has_window(border))
 	{
 		gdk_window_lower(border->window);
 		if (widget->window)
@@ -1022,9 +1021,16 @@ void gControl::lower()
 			chd=g_list_next(chd);
 		}
 	}
-		
-	pr->ch_list = g_list_remove(pr->ch_list, this);
-	pr->ch_list = g_list_prepend(pr->ch_list, this);
+	
+	g_ptr_array_remove(pr->_children, this);
+	
+	g_ptr_array_add(pr->_children, NULL);
+	p = pr->_children->pdata;
+	g_memmove(&p[1], &p[0], (pr->_children->len - 1) * sizeof(gpointer));
+	p[0] = this;
+	
+	//pr->ch_list = g_list_remove(pr->ch_list, this);
+	//pr->ch_list = g_list_prepend(pr->ch_list, this);
 	pr->updateFocusChain();
 	pr->performArrange();
 }
@@ -1036,7 +1042,7 @@ void gControl::raise()
 	if (!pr) return;
 	if (pr->getClass()==Type_gSplitter) return;
 	
-	if (border->window)
+	if (gtk_widget_get_has_window(border))
 	{
 		gdk_window_raise(border->window);
 		if (widget->window)
@@ -1055,8 +1061,10 @@ void gControl::raise()
 		g_object_unref(G_OBJECT(border));
 	}
 	
-	pr->ch_list = g_list_remove(pr->ch_list, this);
-	pr->ch_list = g_list_append(pr->ch_list, this);
+	g_ptr_array_remove(pr->_children, this);
+	
+	g_ptr_array_add(pr->_children, this);
+	
 	pr->updateFocusChain();
 	pr->performArrange();
 }
@@ -1066,8 +1074,9 @@ void gControl::setNext(gControl *ctrl)
 	#ifdef GAMBAS_DIRECTFB
 	stub("DIRECTFB/gControl::setNext()");
 	#else
-	GList *next;
 	Window stack[2];
+	GPtrArray *ch;
+	uint i;
 	
 	if (!ctrl)
 	{
@@ -1078,14 +1087,28 @@ void gControl::setNext(gControl *ctrl)
 	if (ctrl == this || isTopLevel() || ctrl->parent() != parent())
 		return;
 	
-	stack[0] = GDK_WINDOW_XID(ctrl->border->window);
-	stack[1] = GDK_WINDOW_XID(border->window);
-	XRestackWindows(GDK_WINDOW_XDISPLAY(border->window), stack, 2 );
+	if (gtk_widget_get_has_window(ctrl->border) && gtk_widget_get_has_window(border))
+	{
+		stack[0] = GDK_WINDOW_XID(ctrl->border->window);
+		stack[1] = GDK_WINDOW_XID(border->window);
+		
+		XRestackWindows(GDK_WINDOW_XDISPLAY(border->window), stack, 2 );
+	}
 	
-	next = g_list_find(pr->ch_list, ctrl);
+	ch = pr->_children;
+	g_ptr_array_remove(ch, this);
+	g_ptr_array_add(ch, NULL);
 	
-	pr->ch_list = g_list_remove(pr->ch_list, this);
-	pr->ch_list = g_list_insert_before(pr->ch_list, next, this);
+	for (i = 0; i < ch->len; i++)
+	{
+		if (g_ptr_array_index(ch, i) == ctrl)
+		{
+			g_memmove(&ch->pdata[i + 1], &ch->pdata[i], (ch->len - i - 1) * sizeof(gpointer));
+			ch->pdata[i] = this;
+			break;
+		}
+	}
+	
 	pr->updateFocusChain();
 	pr->performArrange();
 	#endif
