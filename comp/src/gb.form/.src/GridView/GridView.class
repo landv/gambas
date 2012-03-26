@@ -676,14 +676,14 @@ Public Sub ScrollArea_MouseMove()
     
   Endif
     
-  If Not Mouse.Left And If $hView.Mouse <> iMouse Then $hView.Mouse = iMouse
+  If Mouse.Button = 0 And If $hView.Mouse <> iMouse Then $hView.Mouse = iMouse
   
   If $iRowResize >= 0 Or If $iColResize >= 0 Then Return
   
   iRow = -1
   iCol = -1
   
-  If Mouse.Left Then
+  If Mouse.Button Then
     
     X = MX
     Y = MY
@@ -839,6 +839,13 @@ Public Sub ScrollArea_MouseDown()
   Endif
   
 End
+
+' Public Sub ScrollArea_Menu()
+'   
+'   Debug
+'   
+' End
+
 
 Public Sub ScrollArea_MouseUp()
   

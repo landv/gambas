@@ -474,6 +474,9 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_BUTTON_PRESS:
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
+		{
+			bool menu = false;
+			gControl *save_control = control;
 			
 			switch ((int)event->type)
 			{
@@ -539,10 +542,7 @@ static void gambas_handle_event(GdkEvent *event)
 				return;
 				
 			if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
-			{
-				if (control->onMouseEvent(control, gEvent_MouseMenu))
-					return;
-			}
+				menu = true;
 			
 			if (control->_proxy_for)
 			{
@@ -550,7 +550,19 @@ static void gambas_handle_event(GdkEvent *event)
 				goto __BUTTON_TRY_PROXY;
 			}
 			
+			if (menu)
+			{
+				control = save_control;
+				while (control)
+				{
+					if (control->onMouseEvent(control, gEvent_MouseMenu))
+						break;
+					control = control->_proxy_for;
+				}
+			}
+			
 			break;
+		}
 			
 		case GDK_MOTION_NOTIFY:
 
