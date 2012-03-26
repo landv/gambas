@@ -176,8 +176,8 @@ public:
 	void setVisible(bool v);
 	bool enabled() const;
 	void setEnabled(bool v);
-	int count() const;
-	gControl *child(int n) const;
+	/*int count() const;
+	gControl *child(int n) const;*/
 	void updateColors();
 	void updateFont();
 	void updateButton();
@@ -364,8 +364,11 @@ void gTabStripPage::setVisible(bool v)
 	}
 }
 
+/*
 int gTabStripPage::count() const
 {
+	return parent->tabCount();
+	
 	int i;
 	gControl *ch;
 	int ct = 0;
@@ -400,7 +403,7 @@ gControl *gTabStripPage::child(int n) const
 	
 	return NULL;
 }
-
+*/
 
 void gTabStripPage::updateButton()
 {
@@ -521,7 +524,7 @@ bool gTabStrip::removeTab(int ind)
 {
 	gTabStripPage *page = get(ind);
 	
-	if (!page || page->count())
+	if (!page || tabCount(ind))
 		return true;
 	
 	destroyTab(ind);
@@ -565,7 +568,7 @@ bool gTabStrip::setCount(int vl)
 		
 		for (i = vl; i < count(); i++)
 		{
-			if (get(i)->count())
+			if (tabCount(i))
 				return true;
 		}
 		
@@ -644,18 +647,45 @@ void gTabStrip::setTabText(int ind, char *txt)
 
 int gTabStrip::tabCount(int ind) const
 {
-	if ( (ind<0) || (ind>=count()) ) 
+	int i;
+	gControl *ch;
+	int ct = 0;
+	
+	if ((ind < 0) || (ind >= count())) 
 		return 0;
-	else
-		return get(ind)->count();
+	
+	for (i = 0; i < gContainer::childCount(); i++)
+	{
+		ch = gContainer::child(i);
+		if (gtk_widget_get_parent(ch->border) == get(ind)->widget)
+			ct++;
+	}
+	
+	return ct;
 }
 
 gControl *gTabStrip::tabChild(int ind, int n) const
 {
-	if ( (ind<0) || (ind>=count()) ) 
+	int i;
+	gControl *ch;
+	int ct = 0;
+	
+	if ((ind < 0) || (ind >= count()))
 		return NULL;
-	else
-		return get(ind)->child(n);
+	
+	for (i = 0; i < gContainer::childCount(); i++)
+	{
+		ch = gContainer::child(i);
+		if (gtk_widget_get_parent(ch->border) == get(ind)->widget)
+		{
+			if (ct == n)
+				return ch;
+			ct++;
+		}
+	}
+	
+	return NULL;
+	
 }
 
 int gTabStrip::childCount() const
@@ -668,14 +698,14 @@ gControl *gTabStrip::child(int ind) const
 	return tabChild(index(), ind);
 }
 
-GtkWidget *gTabStrip::getContainer() const
+GtkWidget *gTabStrip::getContainer()
 {
 	gTabStripPage *page = get(index());
 	
 	if (page)
 		return page->widget;
 	else
-		return widget;
+		return NULL;
 }
 
 void gTabStrip::setRealBackground(gColor color)

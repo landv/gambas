@@ -882,8 +882,7 @@ End
 
 Public Sub _CheckCurrent()
   
-  $iRow = Min($iRow, $hRows.Count - 1)
-  $iCol = Min($iCol, $hColumns.Count - 1)
+  MoveTo(Min($iRow, $hRows.Count - 1), Min($iCol, $hColumns.Count - 1))
   
 End
 

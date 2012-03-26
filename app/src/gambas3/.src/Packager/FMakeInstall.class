@@ -938,6 +938,7 @@ End
 Public Sub btnRemoveDep_Click()
 
   If tvwDep.Row < 0 Then Return
+  tvwDep.Cancel
   $aDep.Remove(tvwDep.Row)
   SaveExtraDependencies
   Dec tvwDep.Rows.Count
@@ -1064,6 +1065,7 @@ End
 Public Sub btnRemoveFile_Click()
 
   If tvwFile.Row < 0 Then Return
+  tvwFile.Cancel
   $aFile.Remove(tvwFile.Row)
   SaveExtraFiles
   Dec tvwFile.Rows.Count

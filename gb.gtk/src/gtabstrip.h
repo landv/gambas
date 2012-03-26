@@ -72,7 +72,7 @@ public:
 	void (*onClose)(gTabStrip *sender, int index);
 
 //"Private"
-	virtual GtkWidget *getContainer() const;
+	virtual GtkWidget *getContainer();
 	int getRealIndex(GtkWidget *page) const;
 
 	GdkPixbuf *_button_pixbuf_normal;

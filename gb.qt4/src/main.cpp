@@ -668,6 +668,13 @@ static void init_lang(char *lang, bool rtl)
 	pos = locale.lastIndexOf(".");
 	if (pos >= 0) locale = locale.left(pos);
 	
+	if (_translator)
+	{
+		qApp->removeTranslator(_translator);
+		delete _translator;
+		_translator = NULL;
+	}
+	
 	_translator = new QTranslator();
 	
 	if (!try_to_load_translation(locale))
@@ -681,7 +688,12 @@ static void init_lang(char *lang, bool rtl)
 			goto __INSTALL_TRANSLATOR;
 	}
 
-	qDebug("gb.qt4: warning: unable to load Qt translation: %s", lang);
+	delete _translator;
+	_translator = NULL;
+	
+	if (strcmp(lang, "C"))
+		qDebug("gb.qt4: warning: unable to load Qt translation: %s", lang);
+	
 	goto __SET_DIRECTION;
 
 __INSTALL_TRANSLATOR:
