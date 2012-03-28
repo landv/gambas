@@ -54,7 +54,11 @@ Public Sub DecodeURL(sUrl As String, aField As String[], cVal As Collection)
     Endif
   
   Next  
- 
+  
+' Catch
+'   
+'   Error.Raise("Malformed URL:" & Error.Where & ": " & Error.Text)
+'  
 End
 
 

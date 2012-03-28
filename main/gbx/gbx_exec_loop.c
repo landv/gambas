@@ -460,6 +460,23 @@ void EXEC_loop(void)
 
 _MAIN:
 
+#if 0
+	{
+		FILE *f;
+		
+		f = fopen("/var/log/thttpd/pcode.log", "a");
+		if (f)
+		{
+			fprintf(f, "%s: ", DEBUG_get_current_position());
+			if (*PC >> 8)
+				PCODE_dump(f, PC - FP->code, PC);
+			else
+				fprintf(f, "\n");
+			fclose(f);
+		}
+	}
+#endif
+
 #if DEBUG_PCODE
 		DEBUG_where();
 		fprintf(stderr, "[%4d] ", (int)(intptr_t)(SP - (VALUE *)STACK_base));
@@ -489,6 +506,23 @@ _NEXT:
 
 	code = *(++PC);
 
+#if 0
+	{
+		FILE *f;
+		
+		f = fopen("/var/log/thttpd/pcode.log", "a");
+		if (f)
+		{
+			fprintf(f, "%s: ", DEBUG_get_current_position());
+			if (*PC >> 8)
+				PCODE_dump(f, PC - FP->code, PC);
+			else
+				fprintf(f, "\n");
+			fclose(f);
+		}
+	}
+#endif
+	
 #if DEBUG_PCODE
 		DEBUG_where();
 		fprintf(stderr, "[%4d] ", (int)(intptr_t)(SP - (VALUE *)STACK_base));

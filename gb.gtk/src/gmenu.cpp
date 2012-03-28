@@ -223,8 +223,8 @@ void gMenu::update()
 			{
 				gMainWindow *win = (gMainWindow *)pr;
 				
-				set_gdk_fg_color(GTK_WIDGET(menu), win->foreground());
-				set_gdk_bg_color(GTK_WIDGET(menu), win->background());	
+				//set_gdk_fg_color(GTK_WIDGET(menu), win->foreground());
+				//set_gdk_bg_color(GTK_WIDGET(menu), win->background());	
 				
 				//gtk_menu_shell_append(GTK_MENU_SHELL(win->menuBar), GTK_WIDGET(menu));
 				shell = GTK_MENU_SHELL(win->menuBar);
@@ -243,6 +243,8 @@ void gMenu::update()
 					gtk_widget_show_all(GTK_WIDGET(parent->child));
 					if (parent->style() == MENU)
 						gtk_menu_item_set_submenu(GTK_MENU_ITEM(parent->menu), GTK_WIDGET(parent->child));
+					
+					parent->setColor();
 					
 					//gtk_menu_shell_append(GTK_MENU_SHELL(parent->child), GTK_WIDGET(menu));
 					//g_debug("%p: add to new parent %p", this, parent->child);
@@ -798,13 +800,13 @@ void gMenu::setFont()
 void gMenu::setColor()
 {
 	gMainWindow *win = window();
-	if (child) 
+	/*if (child) 
 	{
-		set_gdk_bg_color(GTK_WIDGET(child), win->realBackground());
-		set_gdk_fg_color(GTK_WIDGET(child), win->realForeground());
-	}
-	if (label) set_gdk_fg_color(GTK_WIDGET(label), win->realForeground());
-	if (aclbl) set_gdk_fg_color(GTK_WIDGET(aclbl), win->realForeground());
+		set_gdk_bg_color(GTK_WIDGET(child), win->background());
+		set_gdk_fg_color(GTK_WIDGET(child), win->foreground());
+	}*/
+	if (label) set_gdk_fg_color(GTK_WIDGET(label), win->foreground());
+	if (aclbl) set_gdk_fg_color(GTK_WIDGET(aclbl), win->foreground());
 }
 
 void gMenu::updateColor(gMainWindow *win)
@@ -815,7 +817,7 @@ void gMenu::updateColor(gMainWindow *win)
 	if (!win->menuBar)
 		return;
 	
-	set_gdk_bg_color(GTK_WIDGET(win->menuBar), win->realBackground());
+	set_gdk_bg_color(GTK_WIDGET(win->menuBar), win->background());
 
 	if (!menus) 
 		return;
@@ -834,7 +836,7 @@ void gMenu::updateFont(gMainWindow *win)
 {
 	GList *item;
 	gMenu *mn;
-
+	
 	if (win->menuBar)
 	{
 		//fprintf(stderr, "set menu bar font\n");

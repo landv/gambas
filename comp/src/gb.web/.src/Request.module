@@ -16,6 +16,7 @@ Property Read Post As _Request_Post
 
 Private $cCookies As Collection
 Private $cVal As Collection
+Private $cKey As Collection
 Private $aField As String[]
 Private $iMaxLength As Integer
 Private $sBuffer As String
@@ -45,7 +46,7 @@ Public Sub _get(Key As String) As String
 
   Dim sVal As String
   
-  If $cVal And If $cVal.Exist(Key) Then Return $cVal[Key]
+  If $cKey And If $cKey.Exist(Key) Then Return $cVal[Key]
   
   Decode
   
@@ -60,8 +61,13 @@ End
 
 Public Sub _put(Value As String, Key As String)
   
-  If Not $cVal Then $cVal = New Collection
+  If Not $cVal Then
+    $cVal = New Collection
+    $cKey = New Collection
+  Endif
+  
   $cVal[Key] = Value
+  $cKey[Key] = True
   
 End
 

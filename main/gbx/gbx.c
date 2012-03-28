@@ -33,6 +33,8 @@
 
 #include <dlfcn.h>
 #include <stdarg.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "gbx_class.h"
 #include "gbx_exec.h"
@@ -185,6 +187,10 @@ int main(int argc, char **argv)
 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
 	//log_file = freopen(log_path, "w+", stderr);
 	//fprintf(stderr, "Fichier log Gambas\n");
+	
+	//struct rlimit rl = { 32000000, 32000000 };
+	//if (setrlimit(RLIMIT_CORE, &rl))
+	//	perror(strerror(errno));
 
 	MEMORY_init();
 	COMMON_init();
