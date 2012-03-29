@@ -707,24 +707,25 @@ static void signal_child(int sig, siginfo_t *info, void *context)
 	char buffer;
 	int save_errno;
 
-	if (!_init)
-		return;
-
-	//fprintf(stderr, "SIGCHLD\n");
-	
 	save_errno = errno;
-		
-	buffer = 42;
-	for(;;)
+			
+	if (_init)
 	{
-		if (write(_pipe_child[1], &buffer, 1) == 1)
-			break;
+		//fprintf(stderr, "SIGCHLD\n");
 		
-		if (errno != EINTR)
-			ERROR_panic("Cannot write into SIGCHLD pipe: %s", strerror(errno));
+		buffer = 42;
+		for(;;)
+		{
+			if (write(_pipe_child[1], &buffer, 1) == 1)
+				break;
+			
+			if (errno != EINTR)
+				ERROR_panic("Cannot write into SIGCHLD pipe: %s", strerror(errno));
+		}
 	}
 	
 	SIGNAL_previous(&_SIGCHLD_handler, sig, info, context);
+	
 	errno = save_errno;
 }
 

@@ -424,6 +424,8 @@ Public Sub radSort_Click()
   If tabProject.Index = 1 Then
     lstRecent.Clear
     FillRecent
+    FilterRecent
+    txtFilter.SetFocus
   Endif
 
 End

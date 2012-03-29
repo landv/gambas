@@ -34,10 +34,7 @@ void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, s
 	sigemptyset(&action.sa_mask);
 	action.sa_sigaction = callback;
 
-	if (sigaction(signum, NULL, &handler->old_action) != 0)
-		ERROR_panic("Cannot install signal handler: %s", strerror(errno));
-	
-	if (sigaction(signum, &action, NULL) != 0)
+	if (sigaction(signum, NULL, &handler->old_action) != 0 || sigaction(signum, &action, NULL) != 0)
 		ERROR_panic("Cannot install signal handler: %s", strerror(errno));
 	
 	handler->signum = signum;
