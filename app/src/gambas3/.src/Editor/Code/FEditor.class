@@ -1077,11 +1077,13 @@ Public Sub Editors_KeyPress()
 
       sLine = Trim(Editor.Lines[iLine].Text)
 
+      Editor.Begin
       If InStr(sLine, "(") = 0 Then Editor.Insert("()")
-      Editor.Insert(Replace("\n \n \n \nEND\n", " ", Space$(Project.TabSize)))
+      Editor.Insert(Replace("\n\t\n\t\n\t\nEnd\n", "\t", Space$(Project.TabSize)))
       'edtEditor.Line = iLine + 2
       'edtEditor.Column = 2
       Editor.Goto(iLine + 2, 2)
+      Editor.End
 
       Stop Event
       Return

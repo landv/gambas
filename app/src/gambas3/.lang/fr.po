@@ -371,7 +371,7 @@ msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 msgid "&1 translations were picked up."
 msgstr "&1 traductions ont été récupérées."
 
-#: FInfo.class:133
+#: FInfo.class:146
 msgid "&1, &2 line(s)"
 msgstr "&1, &2 ligne(s)"
 
@@ -1439,7 +1439,7 @@ msgstr "Transformer en"
 msgid "Changelog"
 msgstr "-"
 
-#: FInfo.class:108
+#: FInfo.class:119
 msgid "ChangeLog"
 msgstr "ChangeLog"
 
@@ -1471,7 +1471,7 @@ msgstr "Choisissez une table"
 msgid "Cl&ear"
 msgstr "&Effacer"
 
-#: FCreateFile.form:129 FDebugInfo.class:53 FInfo.class:85
+#: FCreateFile.form:129 FDebugInfo.class:53
 msgid "Class"
 msgstr "Classe"
 
@@ -1479,7 +1479,7 @@ msgstr "Classe"
 msgid "Class '&1' is not creatable"
 msgstr "La classe '&1' n'est pas instanciable"
 
-#: FInfo.class:68
+#: FInfo.class:69
 msgid "Classes"
 msgstr "Classes"
 
@@ -1795,7 +1795,7 @@ msgstr "Création du paquetage des sources."
 msgid "Croatian (Croatia)"
 msgstr "Croate (Croatie)"
 
-#: FInfo.class:101
+#: FInfo.class:109
 msgid "CSS file"
 msgstr "Feuille de style CSS"
 
@@ -2363,7 +2363,7 @@ msgstr "Champ_&1"
 msgid "Fields"
 msgstr "Champs"
 
-#: FDebugInfo.class:64 FInfo.class:111 FTranslate.class:68
+#: FDebugInfo.class:64 FInfo.class:122 FTranslate.class:68
 msgid "File"
 msgstr "Fichier"
 
@@ -2499,7 +2499,7 @@ msgstr "GOTO interdit"
 msgid "Foreground color..."
 msgstr "Avant-plan..."
 
-#: FInfo.class:89
+#: CModule.class:28 FCreateFile.form:150 FEditor.form:358 FForm.form:413
 msgid "Form"
 msgstr "Formulaire"
 
@@ -2515,7 +2515,7 @@ msgstr "Formater le code"
 msgid "Format on load & save"
 msgstr "Formater au chargement et à l'enregistrement"
 
-#: CModule.class:28 FInfo.class:69
+#: CModule.class:28 FInfo.class:70
 msgid "Forms"
 msgstr "Formulaires"
 
@@ -2559,6 +2559,10 @@ msgstr "Galicien (Espagne)"
 msgid "Gambas"
 msgstr "-"
 
+#: FInfo.class:85
+msgid "Gambas &1"
+msgstr "&1 Gambas"
+
 #: .project:1
 msgid "Gambas 3"
 msgstr "-"
@@ -2574,6 +2578,10 @@ msgstr "-"
 #: FMakeExecutable.class:18 FPropertyProject.class:1068
 msgid "Gambas applications"
 msgstr "Applications Gambas"
+
+#: FInfo.class:97
+msgid "Gambas class"
+msgstr "Classe Gambas"
 
 #: FCreateFile.class:110
 msgid "Gambas classes"
@@ -2595,11 +2603,15 @@ msgstr "Fichiers thèmes de coloration de Gambas"
 msgid "Gambas menu data"
 msgstr "Données de menus Gambas"
 
+#: FInfo.class:93
+msgid "Gambas module"
+msgstr "Module Gambas"
+
 #: FCreateFile.class:110
 msgid "Gambas modules"
 msgstr "Modules Gambas"
 
-#: FInfo.class:66
+#: FInfo.class:67
 msgid "Gambas project"
 msgstr "Projet Gambas"
 
@@ -2775,7 +2787,7 @@ msgstr "Séparation horizontale"
 msgid "Host"
 msgstr "Hôte"
 
-#: FCreateFile.form:255 FInfo.class:98
+#: FCreateFile.form:255 FInfo.class:106
 msgid "HTML file"
 msgstr "Fichier HTML"
 
@@ -3051,6 +3063,10 @@ msgstr "Élément &1"
 msgid "Japanese (Japan)"
 msgstr "Japonais (Japon)"
 
+#: FInfo.class:115
+msgid "Javascript file"
+msgstr "Fichier Javascript"
+
 #: FOutput.form:115
 msgid "Keep above"
 msgstr "Conserver au premier plan"
@@ -3139,7 +3155,7 @@ msgstr "Ligne(s)"
 msgid "Linear gradient"
 msgstr "Dégradé linéaire"
 
-#: FInfo.class:70
+#: FInfo.class:71
 msgid "Lines of code: &1"
 msgstr "Lignes de code : &1"
 
@@ -3331,7 +3347,7 @@ msgstr "modifié"
 msgid "Modify documentation..."
 msgstr "Modifier la documentation..."
 
-#: FCreateFile.form:108 FInfo.class:81
+#: FCreateFile.form:108
 msgid "Module"
 msgstr "Module"
 
@@ -3339,7 +3355,7 @@ msgstr "Module"
 msgid "Module symbols are public by default"
 msgstr "Les modules sont publics par défaut"
 
-#: FInfo.class:67
+#: FInfo.class:68
 msgid "Modules"
 msgstr "Modules"
 
@@ -3843,7 +3859,7 @@ msgstr "Expression rationnelles compatibles avec Perl"
 msgid "Pick a color"
 msgstr "Pipette"
 
-#: FInfo.class:93
+#: FInfo.class:101
 msgid "Picture"
 msgstr "Image"
 
@@ -5023,7 +5039,7 @@ msgstr "Texte"
 msgid "Text editor"
 msgstr "Éditeur de texte"
 
-#: FInfo.class:95
+#: FInfo.class:103
 msgid "Text file"
 msgstr "Fichier texte"
 
@@ -5291,7 +5307,7 @@ msgstr "Le champ est utilisé dans un index."
 msgid "This file already exists.\n\nDo you want to overwrite it?"
 msgstr "Ce fichier existe déjà.\n\nDésirez-vous le remplacer ?"
 
-#: FInfo.class:231
+#: FInfo.class:244
 msgid "This file has not been modified since the last commit."
 msgstr "Ce fichier est inchangé depuis le dernier envoi vers le réferentiel."
 
@@ -5299,11 +5315,11 @@ msgstr "Ce fichier est inchangé depuis le dernier envoi vers le réferentiel."
 msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
 msgstr "Ce fichier entre en conflit avec la révision #&1.\nVous devez résoudre le conflit pour pouvoir utiliser ce fichier de nouveau."
 
-#: FInfo.class:227
+#: FInfo.class:240
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr "Le fichier est verrouillé, et sera supprimé au prochain envoi."
 
-#: FInfo.class:229
+#: FInfo.class:242
 msgid "This file is not versioned, and must be added to the repository."
 msgstr "Le fichier n'est pas versionné, et doit être ajouté au référentiel."
 
@@ -5799,6 +5815,18 @@ msgstr "Utilisateur"
 msgid "UTF-8"
 msgstr "-"
 
+#: FInfo.class:87
+msgid "UTF-8 &1"
+msgstr "&1 encodé(e) en UTF-8"
+
+#: FInfo.class:99
+msgid "UTF-8 Gambas class"
+msgstr "Classe Gambas encodée en UTF-8"
+
+#: FInfo.class:95
+msgid "UTF-8 Gambas module"
+msgstr "Module Gambas encodé en UTF-8"
+
 #: Language.module:94
 msgid "Valencian (Valencian Community, Spain)"
 msgstr "Valencien (Communauté Valencienne, Espagne)"
@@ -5951,7 +5979,7 @@ msgstr "Erreur d'écriture"
 msgid "XML / XSLT programming"
 msgstr "Programmation XML / XSLT"
 
-#: FInfo.class:104
+#: FInfo.class:112
 msgid "XML file"
 msgstr "Fichier XML"
 

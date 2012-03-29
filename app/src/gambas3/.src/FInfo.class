@@ -37,6 +37,7 @@ Private Sub GetInfo(sPath As String)
   Dim sName As String
   Dim hPict As Picture
   Dim sFile As String
+  Dim hModule As CModule
   
   If Left(sPath) = "$" Then sPath = Project.Dir
   If Not sPath Then sPath = Project.Dir
@@ -76,41 +77,53 @@ Private Sub GetInfo(sPath As String)
         iSize += Stat(sPath &/ sFile).Size
       Next
     Else
-      Select Case File.Ext(sPath)
-        Case "module"
-          sType = ("Module")
-          bLine = True
-          sInfo = "UTF-8 Gambas module file"
-        Case "class"
-          sType = ("Class")
-          bLine = True
-          sInfo = "UTF-8 Gambas class file"
-        Case "form"
-          sType = ("Form")
-          bLine = True
-          sInfo = "UTF-8 Gambas form file"
-        Case "png", "jpg", "gif", "jpeg", "svg"
-          sType = ("Picture")
-        Case "txt"
-          sType = ("Text file")
-          bLine = True
-        Case "htm", "html"
-          sType = ("HTML file")
-          bLine = True
-        Case "css"
-          sType = ("CSS file")
-          bLine = True
-        Case "xml"
-          sType = ("XML file")
-          bLine = True
-        Case Else 
-          If UCase(File.Name(sPath)) = "CHANGELOG" Then
-            sType = ("ChangeLog")
+      
+      hModule = CModule.FromExt(File.Ext(sPath))
+      
+      If hModule Then
+        
+        sType = Subst(("Gambas &1"), hModule.Name)
+        bLine = True
+        sInfo = Subst(("UTF-8 &1"), sType)
+        
+      Else
+      
+        Select Case File.Ext(sPath)
+          Case "module"
+            sType = ("Gambas module")
             bLine = True
-          Else
-            sType = ("File")
-          Endif
-      End Select
+            sInfo = ("UTF-8 Gambas module")
+          Case "class"
+            sType = ("Gambas class")
+            bLine = True
+            sInfo = ("UTF-8 Gambas class")
+          Case "png", "jpg", "gif", "jpeg", "svg"
+            sType = ("Picture")
+          Case "txt"
+            sType = ("Text file")
+            bLine = True
+          Case "htm", "html"
+            sType = ("HTML file")
+            bLine = True
+          Case "css"
+            sType = ("CSS file")
+            bLine = True
+          Case "xml"
+            sType = ("XML file")
+            bLine = True
+          Case "js"
+            sType = ("Javascript file")
+            bLine = True
+          Case Else 
+            If UCase(File.Name(sPath)) = "CHANGELOG" Then
+              sType = ("ChangeLog")
+              bLine = True
+            Else
+              sType = ("File")
+            Endif
+        End Select
+        
+      Endif
   
       iSize = .Size
       If Not sInfo Then 

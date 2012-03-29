@@ -90,3 +90,15 @@ Static Public Sub FromTreeKey(sKey As String) As CModule
   Next
   
 End
+
+Static Public Sub FromExt(sExt As String) As CModule
+  
+  Dim hModule As CModule
+  
+  For Each hModule In All
+    If hModule.Key = LCase(sExt) Then Return hModule
+  Next
+  
+End
+
+

@@ -29,6 +29,8 @@
 #include "gview.h"
 #include "gdocument.h"
 
+//#define DEBUG_UNDO
+
 #define GMAX(x, y) ((x) > (y) ? (x) : (y))
 #define GMIN(x, y) ((x) < (y) ? (x) : (y))
 
@@ -211,6 +213,7 @@ void GDocument::init()
 {
 	selector = NULL;
 	colorizeFrom = 0;
+	_disableColorize = 0;
 }
 
 GDocument::GDocument()
@@ -395,6 +398,8 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 		v->ny = v->y;
 	}
 
+	disableColorize();
+	
 	while (y >= (int)lines.count())
 	{
 		yy = (int)lines.count();
@@ -485,7 +490,10 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 		v->foldInsert(ys, nl);
 	}
 	
+	begin();
 	addUndo(new GInsertCommand(ys, xs, y, x, text));
+	enableColorize();
+	end();
 
 	updateViews(ys, n);
 
@@ -527,6 +535,8 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 		v->nx = v->x;
 		v->ny = v->y;
 	}
+	
+	disableColorize();
 	
 	l = lines.at(y1);
 
@@ -592,7 +602,10 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 		updateViews(y1, -1);
 	}
 
+	begin();
 	addUndo(new GDeleteCommand(y1, x1, y2, x2, text));
+	enableColorize();
+	end();
 
 	FOR_EACH_VIEW(v)
 	{
@@ -877,18 +890,25 @@ bool GDocument::undo()
 	if (undoList.isEmpty() || isReadOnly() || blockUndo)
 		return true;
 
+	disableColorize();
+
 	blockUndo = true;
+
 	nest = 0;
 	begin();
 
-	//qDebug("BEGIN UNDO");
+	#ifdef DEBUG_UNDO
+	qDebug("BEGIN UNDO");
+	#endif
 
 	for(;;)
 	{
 		GCommand *c = undoList.take();
 		if (!c)
 			break;
-		//c->print();
+		#ifdef DEBUG_UNDO
+		c->print();
+		#endif
 		c->process(this, true);
 		nest += c->nest();
 		//if (d->undoList.isEmpty())
@@ -898,10 +918,16 @@ bool GDocument::undo()
 			break;
 	}
 
-	//qDebug("END UNDO: %d", nest);
-
 	end();
+	
+	#ifdef DEBUG_UNDO
+	qDebug("END UNDO: %d", nest);
+	#endif
+	
 	blockUndo = false;
+	
+	enableColorize();
+	
 	return false;
 }
 
@@ -912,15 +938,25 @@ bool GDocument::redo()
 	if (redoList.isEmpty() || isReadOnly() || blockUndo)
 		return true;
 
+	disableColorize();
+	
 	blockUndo = true;
+
 	nest = 0;
 	begin();
 
+	#ifdef DEBUG_UNDO
+	qDebug("BEGIN REDO");
+	#endif
+	
 	for(;;)
 	{
 		GCommand *c = redoList.take();
 		if (!c)
 			break;
+		#ifdef DEBUG_UNDO
+		c->print();
+		#endif
 		c->process(this, false);
 		nest += c->nest();
 
@@ -934,7 +970,15 @@ bool GDocument::redo()
 	}
 
 	end();
+	
+	#ifdef DEBUG_UNDO
+	qDebug("END REDO: %d", nest);
+	#endif
+
 	blockUndo = false;
+	
+	enableColorize();
+	
 	return false;
 }
 
@@ -1207,11 +1251,20 @@ void GDocument::colorize(int y, bool force)
 
 	if (y < 0)
 		return;
-
+	
 	if (force)
 	{
 		if (colorizeFrom > y)
 			colorizeFrom = y;
+	}
+	
+	if (_disableColorize)
+	{
+		if (_disableColorizeStart < 0)
+			_disableColorizeStart = y;
+		else if (_disableColorizeStart > y)
+			_disableColorizeStart = y;
+		return;
 	}
 	
 	if (y < colorizeFrom)
@@ -1541,5 +1594,22 @@ void GDocument::updateMargin()
 	FOR_EACH_VIEW(v)
 	{
 		v->updateMargin();
+	}
+}
+
+void GDocument::disableColorize()
+{
+	if (_disableColorize == 0)
+		_disableColorizeStart = -1;
+	_disableColorize++;
+}
+
+void GDocument::enableColorize()
+{
+	_disableColorize--;
+	if (_disableColorize == 0 && _disableColorizeStart >= 0)
+	{
+		colorize(_disableColorizeStart);
+		_disableColorizeStart = -1;
 	}
 }

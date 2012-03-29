@@ -106,6 +106,8 @@ private:
 	int xs, ys, xs2, ys2;
 	int tabWidth;
 	int colorizeFrom;
+	int _disableColorize;
+	int _disableColorizeStart;
 
 	void init();
 	void clearUndo();
@@ -208,6 +210,8 @@ private:
 	void insertLine(int y);
 	void removeLine(int y);
 	void modifyLine(GLine *l, int y);
+	void disableColorize();
+	void enableColorize();
 };
 
 #endif
