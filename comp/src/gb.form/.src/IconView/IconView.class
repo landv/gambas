@@ -93,6 +93,9 @@ Private $iCurrentBefore As Integer
 
 Private $hPicture As Picture
 
+Private $sFindItem As String
+Private $fFindTime As Float
+
 Public Sub _new()
   
   $hView = New ScrollArea(Me) As "ScrollArea"
@@ -717,6 +720,10 @@ Public Sub ScrollArea_KeyPress()
 
   Dim iCode As Integer
   Dim bShift As Boolean
+  Dim fNow As Float
+  Dim iInd As Integer
+  Dim iPos As Integer
+  Dim iStart As Integer
   
   If Not Me.Enabled Or If Me.Design Then Return
 
@@ -783,6 +790,37 @@ Public Sub ScrollArea_KeyPress()
         ScrollArea_DblClick
         
     End Select
+    
+    If Len(Key.Text) >= 2 Or If Asc(Key.Text) >= 32 Or If Key.Code = Key.Backspace Then
+      
+      fNow = Timer
+      iStart = $iCurrent
+      If (fNow - $fFindTime) >= 2 Or iStart < 0 Then
+        $sFindItem = ""
+        Inc iStart
+      Endif
+      $fFindTime = fNow
+      
+      If Key.Code = Key.Backspace Then
+        $sFindItem = String.Left$($sFindItem, -1)
+      Else
+        $sFindItem &= String.LCase(Key.Text)
+      Endif
+      
+      iPos = iStart
+      For iInd = 0 To $aItems.Max
+        With $aItems[iPos]
+          'Debug iInd;; .Text
+          If String.LCase(.Text) Begins $sFindItem Then
+            SetCurrentItem(iPos, True)
+            Break
+          Endif
+        End With
+        Inc iPos
+        If iPos > $aItems.Max Then iPos = 0
+      Next
+      
+    Endif
     
   Endif
   
