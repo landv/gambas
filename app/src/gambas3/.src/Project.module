@@ -2832,6 +2832,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Dim aMissing As New String[]
   Dim sMsg As String
   Dim hComp As CComponent
+  Dim bNewPackagerConfig As Boolean
 
   hFic = Open Path For Input
 
@@ -2987,49 +2988,81 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "icon"
         Icon = sVal
+        
+      Case "packager"
+        bNewPackagerConfig = CInt(sVal) <> 0
 
       Case "systems"
         Systems = Split(sVal, ",")
 
       Case "menus"
-        iElt = 0
-        For Each sElt In Split(sVal, ",")
-          If iElt >= Systems.Count Then Break
-          Menus[Systems[iElt]] = sElt
-          Inc iElt
-        Next
+        If bNewPackagerConfig Then
+          iPos = InStr(sVal, ":")
+          Menus[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+        Else
+          iElt = 0
+          For Each sElt In Split(sVal, ",")
+            If iElt >= Systems.Count Then Break
+            Menus[Systems[iElt]] = sElt
+            Inc iElt
+          Next
+        Endif
 
       Case "categories"
-        iElt = 0
-        For Each sElt In Split(sVal, ",")
-          If iElt >= Systems.Count Then Break
-          Categories[Systems[iElt]] = sElt
-          Inc iElt
-        Next
+        If bNewPackagerConfig Then
+          iPos = InStr(sVal, ":")
+          Categories[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+        Else
+          iElt = 0
+          For Each sElt In Split(sVal, ",")
+            If iElt >= Systems.Count Then Break
+            Categories[Systems[iElt]] = sElt
+            Inc iElt
+          Next
+        Endif
 
       Case "groups"
-        iElt = 0
-        For Each sElt In Split(sVal, ",")
-          If iElt >= Systems.Count Then Break
-          Groups[Systems[iElt]] = sElt
-          Inc iElt
-        Next
+        If bNewPackagerConfig Then
+          iPos = InStr(sVal, ":")
+          Groups[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+        Else
+          iElt = 0
+          For Each sElt In Split(sVal, ",")
+            If iElt >= Systems.Count Then Break
+            Groups[Systems[iElt]] = sElt
+            Inc iElt
+          Next
+        Endif
 
       Case "extradependencies"
-        iElt = 0
-        For Each sElt In Split(sVal, ",")
-          If iElt >= Systems.Count Then Break
-          ExtraDependencies[Systems[iElt]] = sElt
-          Inc iElt
-        Next
+        If bNewPackagerConfig Then
+          iPos = InStr(sVal, ":")
+          ExtraDependencies[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+        Else
+          iElt = 0
+          For Each sElt In Split(sVal, ",")
+            If iElt >= Systems.Count Then Break
+            sElt = Replace(sElt, ";", "\n")
+            sElt = Replace(sElt, ":", "\t")
+            ExtraDependencies[Systems[iElt]] = sElt
+            Inc iElt
+          Next
+        Endif
 
       Case "extrafiles"
-        iElt = 0
-        For Each sElt In Split(sVal, ",")
-          If iElt >= Systems.Count Then Break
-          ExtraFiles[Systems[iElt]] = sElt
-          Inc iElt
-        Next
+        If bNewPackagerConfig Then
+          iPos = InStr(sVal, ":")
+          ExtraFiles[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+        Else
+          iElt = 0
+          For Each sElt In Split(sVal, ",")
+            If iElt >= Systems.Count Then Break
+            sElt = Replace(sElt, ";", "\n")
+            sElt = Replace(sElt, ":", "\t")
+            ExtraFiles[Systems[iElt]] = sElt
+            Inc iElt
+          Next
+        Endif
 
       Case "extraautoconftest"
         ExtraAutoconfTest = Unquote(sVal)
@@ -3228,40 +3261,35 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Systems.Count Then
 
     Print #hFic, "Systems="; Systems.Join(",")
+    Print #hFic, "Packager=1"
 
     sElt = ""
     For Each sSys In Systems
-      sElt = sElt & "," & Menus[sSys]
+      Print #hFic, "Menus="; sSys; ":"; Quote(Menus[sSys])
     Next
-    Print #hFic, "Menus="; Mid$(sElt, 2)
 
     sElt = ""
     For Each sSys In Systems
-      sElt = sElt & "," & Categories[sSys]
+      Print #hFic, "Categories="; sSys; ":"; Quote(Categories[sSys])
     Next
-    Print #hFic, "Categories="; Mid$(sElt, 2)
 
     sElt = ""
     For Each sSys In Systems
-      sElt = sElt & "," & Groups[sSys]
+      Print #hFic, "Groups="; sSys; ":"; Quote(Groups[sSys])
     Next
-    Print #hFic, "Groups="; Mid$(sElt, 2)
-
-    aElt = New String[]
-    For Each sSys In Systems
-      aElt.Add(ExtraDependencies[sSys])
-    Next
-    Print #hFic, "ExtraDependencies="; aElt.Join(",")
 
     If SameDependencies Then Print #hFic, "SameDependencies=1"
 
-    aElt = New String[]
     For Each sSys In Systems
-      aElt.Add(ExtraFiles[sSys])
+      Print #hFic, "ExtraDependencies="; sSys; ":"; Quote(ExtraDependencies[sSys])
     Next
-    Print #hFic, "ExtraFiles="; aElt.Join(",")
 
     If SameFiles Then Print #hFic, "SameFiles=1"
+
+    aElt = New String[]
+    For Each sSys In Systems
+      Print #hFic, "ExtraFiles="; sSys; ":"; Quote(ExtraFiles[sSys])
+    Next
 
     If ExtraAutoconfTest Then Print #hFic, "ExtraAutoconfTest=" & Quote(ExtraAutoconfTest)
 

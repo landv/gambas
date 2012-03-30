@@ -316,6 +316,7 @@ Public Sub wizInstall_BeforeChange()
   Dim sDir As String
   Dim iSize As Integer
   Dim sFile As String
+  Dim aFile As String[]
 
   Select Case wizInstall.Index
 
@@ -422,7 +423,13 @@ Public Sub wizInstall_BeforeChange()
       
       tvwFile.Save
       For Each sFile In $aFile
-        If Right(sFile) = ":" Then
+        aFile = Scan(sFile, "*\t*")
+        If Not Exist(Project.Dir &/ ".hidden" &/ aFile[0]) Then
+          Message.Warning(Subst(("Cannot found extra file: &1"), aFile[0]))
+          Stop Event
+          Return
+        Endif
+        If aFile[1] = "" Then
           Message.Warning(("Please choose a target directory for each extra file."))
           Stop Event
           Return
@@ -849,7 +856,7 @@ Public Sub cmbDep_Click()
 
   $sDepSystem = GetSystemFromName(cmbDep.Text)
 
-  $aDep = Split(Project.ExtraDependencies[$sDepSystem], ";")
+  $aDep = Split(Project.ExtraDependencies[$sDepSystem], "\n")
   tvwDep.Rows.Count = $aDep.Count
   'txtGroup.Clear
   'lstDep.List = Split(Project.ExtraDependencies[$sDepSystem], ",")
@@ -891,20 +898,20 @@ End
 
 Public Sub tvwDep_Data(Row As Integer, Column As Integer)
 
-  Dim aRow As String[] = Split($aDep[Row], ":")
+  Dim aRow As String[] = Split($aDep[Row], "\t")
   Try tvwDep.Data.Text = aRow[Column]
 
 End
 
 Private Sub SaveExtraDependencies()
   
-  Project.ExtraDependencies[$sDepSystem] = $aDep.Join(";")
+  Project.ExtraDependencies[$sDepSystem] = $aDep.Join("\n")
   
 End
 
 Private Sub SaveExtraFiles()
   
-  Project.ExtraFiles[$sFileSystem] = $aFile.Join(";")
+  Project.ExtraFiles[$sFileSystem] = $aFile.Join("\n")
   
 End
 
@@ -926,21 +933,21 @@ Public Sub tvwDep_Save(Row As Integer, Column As Integer, Value As String)
     Return
   Next
   
-  aRow = Split($aDep[Row], ":")
+  aRow = Split($aDep[Row], "\t")
   
   While aRow.Count < 3
     aRow.Add("")
   Wend
   
   aRow[Column] = Value
-  $aDep[Row] = aRow.Join(":")
+  $aDep[Row] = aRow.Join("\t")
   SaveExtraDependencies
 
 End
 
 Public Sub btnAddDep_Click()
 
-  $aDep.Add("::")
+  $aDep.Add("\t\t")
   SaveExtraDependencies
   Inc tvwDep.Rows.Count
   tvwDep.Save
@@ -1020,7 +1027,7 @@ Public Sub cmbFile_Click()
 
    $sFileSystem = GetSystemFromName(cmbFile.Text)
 
-  $aFile = Split(Project.ExtraFiles[$sFileSystem], ";")
+  $aFile = Split(Project.ExtraFiles[$sFileSystem], "\n")
   tvwFile.Rows.Count = $aFile.Count
  
 End
@@ -1034,7 +1041,7 @@ End
 
 Public Sub tvwFile_Data(Row As Integer, Column As Integer)
 
-  Dim aRow As String[] = Split($aFile[Row], ":")
+  Dim aRow As String[] = Split($aFile[Row], "\t")
   Try tvwFile.Data.Text = aRow[Column]
 
 End
@@ -1046,7 +1053,7 @@ Public Sub btnAddFile_Click()
   sFic = FSelectExtraFile.Run("")
   If Not sFic Then Return
   
-  $aFile.Add(sFic & ":")
+  $aFile.Add(sFic & "\t")
   SaveExtraFiles
   Inc tvwFile.Rows.Count
   tvwFile.MoveTo($aFile.Max, 0)
@@ -1106,14 +1113,14 @@ End
 Public Sub tvwFile_Save(Row As Integer, Column As Integer, Value As String)
 
   Dim aRow As String[]
-  aRow = Split($aFile[Row], ":")
+  aRow = Split($aFile[Row], "\t")
   
   While aRow.Count < 2
     aRow.Add("")
   Wend
   
   aRow[Column] = Value
-  $aFile[Row] = aRow.Join(":")
+  $aFile[Row] = aRow.Join("\t")
   SaveExtraFiles
 
 End

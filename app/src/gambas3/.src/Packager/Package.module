@@ -258,9 +258,9 @@ Private Function GetExtraDependencies(sSys As String) As String
   
   'If Not sFormatMinMax Then sFormatMinMax = sFormatMin & sFormatMax
   
-  For Each sDep In Split(Project.ExtraDependencies[sSys], ";")
+  For Each sDep In Split(Project.ExtraDependencies[sSys], "\n")
     
-    aDep = Split(sDep, ":")
+    aDep = Split(sDep, "\t")
     aDep.Resize(3)
     
     If aDep[1] And If aDep[2] Then
@@ -290,8 +290,8 @@ Private Function GetExtraFiles(sSys As String, sFormat As String, Optional bList
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
-  For Each sFile In Split(Project.ExtraFiles[sSys], ";")
-    aFile = Split(sFile, ":")
+  For Each sFile In Split(Project.ExtraFiles[sSys], "\n")
+    aFile = Split(sFile, "\t")
     aFile.Resize(2)
     
     sRes &= Subst(sFormat, Shell$(aFile[0]), Shell$(aFile[1]), Shell$(Mid$(aFile[0], RInStr(aFile[0], "/") + 1)))
@@ -326,8 +326,8 @@ Private Function GetExtraFilesList(sSys As String, sPrefix As String, sFormat As
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
-  For Each sFile In Split(Project.ExtraFiles[sSys], ";")
-    aFile = Split(sFile, ":")
+  For Each sFile In Split(Project.ExtraFiles[sSys], "\n")
+    aFile = Split(sFile, "\t")
     aFile.Resize(2)
     
     sSrc = FormatFileInList(sPrefix &/ aFile[0], bDebian)
@@ -351,11 +351,11 @@ Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
-  For Each sFile In Split(Project.ExtraFiles[sSys], ";")
-    aFile = Split(sFile, ":")
-    aFile.Resize(2)
-    Project.MakeDir(File.Dir(sBuildDir &/ aFile[1] &/ aFile[0]))
-    Copy Project.Dir &/ ".hidden" &/ aFile[0] To sBuildDir &/ aFile[1] &/ aFile[0]
+  For Each sFile In Split(Project.ExtraFiles[sSys], "\n")
+    aFile = Split(sFile, "\t")
+    'aFile.Resize(2)
+    Project.MakeDir(File.Dir(sBuildDir &/ aFile[1] &/ File.Name(aFile[0])))
+    Copy Project.Dir &/ ".hidden" &/ aFile[0] To sBuildDir &/ aFile[1] &/ File.Name(aFile[0])
   Next
   
 End
@@ -369,9 +369,9 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
-  For Each sFile In Split(Project.ExtraFiles[sSys], ";")
+  For Each sFile In Split(Project.ExtraFiles[sSys], "\n")
     
-    aFile = Split(sFile, ":")
+    aFile = Split(sFile, "\t")
     aFile.Resize(2)
     
     sRes &= Subst(sFormat, Shell$(aFile[1]))
@@ -476,12 +476,14 @@ End
 
 Private Sub RunCommand(sCmd As String, Optional sDir As String)
   
-  AddLog(sCmd)
   $sOutput = ""
   $bEnd = False
   If sDir Then
+    AddLog("cd " & Shell$(sDir))
+    AddLog(sCmd)
     Shell "(cd " & SConv(Shell$(sDir)) & ";" & sCmd & ") 2>&1" For Read As "Process"
   Else
+    AddLog(sCmd)
     Shell sCmd & " 2>&1" For Read As "Process"
   Endif
   Repeat
@@ -1184,6 +1186,7 @@ Private Sub MakeTgzPackage(sSys As String)
   Dim sIcon As String
   Dim sData As String
   Dim sLib As String
+  Dim sTempPackage As String
   Dim sPackage As String
   Dim sFile As String 
   Dim aVer As String[]
@@ -1226,7 +1229,7 @@ Private Sub MakeTgzPackage(sSys As String)
   
     ' 2. Copy the library, the information files and the controls
   
-    Copy Project.ExecPath To sBuildDir &/ "/usr/lib/gambas" & System.Version &/ $sName & ".gambas"
+    Copy Project.GetExecPath() To sBuildDir &/ "/usr/lib/gambas" & System.Version &/ $sName & ".gambas"
     Copy Project.Dir &/ ".component" To sBuildDir &/ "/usr/lib/gambas" & System.Version &/ $sName & ".component"
     Copy Project.Dir &/ ".info" To sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".info"
     Copy Project.Dir &/ ".list" To sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".list"
@@ -1244,7 +1247,7 @@ Private Sub MakeTgzPackage(sSys As String)
     ' 2. Copy the executable
   
       'COPY Project.Dir &/ Project.Name & ".gambas" TO sBuildDir &/ "/usr/bin" &/ Project.Name
-      Copy Project.ExecPath To sBuildDir &/ "/usr/bin" &/ $sName
+      Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName
       Shell "chmod a+x " & Shell$(sBuildDir &/ "/usr/bin" &/ $sName) Wait
       
     ' 3. Copy the icon
@@ -1311,7 +1314,8 @@ Private Sub MakeTgzPackage(sSys As String)
   
   AddLog(("Creating package...") & "\n")
 
-  sCmd = TAR_1_13_PROG & " --exclude=slackware.tgz --owner=root --group=root -c -z -f slackware.tgz ."
+  sTempPackage = File.SetExt(Temp$("slackware"), "tgz")
+  sCmd = TAR_1_13_PROG & " --exclude=slackware.tgz --owner=root --group=root -c -z -f " & Shell$(sTempPackage) & " ."
   RunCommand(sCmd, sBuildDir)
   ' AddLog(sCmd)
   ' $sOutput = ""
@@ -1328,7 +1332,7 @@ Private Sub MakeTgzPackage(sSys As String)
 
   AddLog("")
   sPackage = sPrefix & Subst("&1-&2-noarch-1.tgz", $sPackageName, $sVersion)
-  MoveFile(sBuildDir &/ "slackware.tgz", Path &/ sPackage)
+  MoveFile(sTempPackage, Path &/ sPackage)
   AddLog(sPackage)
 
 End

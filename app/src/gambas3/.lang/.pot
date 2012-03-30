@@ -372,7 +372,7 @@ msgstr ""
 #: FDebugInfo.form:215 FEditor.class:2392 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3144
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
-#: FList.form:121 FMain.class:200 FMakeInstall.class:349 FMenu.form:378
+#: FList.form:121 FMain.class:200 FMakeInstall.class:350 FMenu.form:378
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:174 FOption.class:636 FPasteSpecial.form:77
 #: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:691
@@ -690,7 +690,7 @@ msgstr ""
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.form:132 FMakeInstall.class:997
+#: FConnectionEditor.form:132 FMakeInstall.class:1004
 msgid "Remove"
 msgstr ""
 
@@ -2893,80 +2893,84 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
-#: FMakeInstall.class:331
+#: FMakeInstall.class:332
 msgid "Please enter your name."
 msgstr ""
 
-#: FMakeInstall.class:336
+#: FMakeInstall.class:337
 msgid "Please enter your e-mail address."
 msgstr ""
 
-#: FMakeInstall.class:349
+#: FMakeInstall.class:350
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:349 FPropertyProject.class:820 FSave.form:21
-#: Project.module:3095
+#: FMakeInstall.class:350 FPropertyProject.class:820 FSave.form:21
+#: Project.module:3128
 msgid "Continue"
 msgstr ""
 
-#: FMakeInstall.class:356
+#: FMakeInstall.class:357
 msgid "Please enter the first CHANGELOG entry."
 msgstr ""
 
-#: FMakeInstall.class:367
+#: FMakeInstall.class:368
 msgid "Please choose at least one target distribution."
 msgstr ""
 
-#: FMakeInstall.class:394
+#: FMakeInstall.class:395
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:396
+#: FMakeInstall.class:397
 msgid "Please choose a package group."
 msgstr ""
 
-#: FMakeInstall.class:406
+#: FMakeInstall.class:407
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:408
+#: FMakeInstall.class:409
 msgid "Please choose a menu location."
 msgstr ""
 
-#: FMakeInstall.class:426
+#: FMakeInstall.class:428
+msgid "Cannot found extra file: &1"
+msgstr ""
+
+#: FMakeInstall.class:433
 msgid "Please choose a target directory for each extra file."
 msgstr ""
 
-#: FMakeInstall.class:440
+#: FMakeInstall.class:447
 msgid "The package cannot be stored inside the project directory."
 msgstr ""
 
-#: FMakeInstall.class:478
+#: FMakeInstall.class:485
 msgid "Initial release"
 msgstr ""
 
-#: FMakeInstall.class:732
+#: FMakeInstall.class:739
 msgid "Menus"
 msgstr ""
 
-#: FMakeInstall.class:800
+#: FMakeInstall.class:807
 msgid "Groups"
 msgstr ""
 
-#: FMakeInstall.class:924
+#: FMakeInstall.class:931
 msgid "Incorrect characters"
 msgstr ""
 
-#: FMakeInstall.class:997
+#: FMakeInstall.class:1004
 msgid "Do you really want to remove all extra dependencies?"
 msgstr ""
 
-#: FMakeInstall.class:1098
+#: FMakeInstall.class:1105
 msgid "Do you really want to remove all extra files?"
 msgstr ""
 
-#: FMakeInstall.class:1154
+#: FMakeInstall.class:1161
 msgid "Select the destination directory"
 msgstr ""
 
@@ -3034,7 +3038,7 @@ msgstr ""
 msgid "This menu is too deep !"
 msgstr ""
 
-#: FMenu.class:947 Project.module:5054
+#: FMenu.class:947 Project.module:5082
 msgid "modified"
 msgstr ""
 
@@ -5586,51 +5590,51 @@ msgstr ""
 msgid "Saving CHANGELOG file."
 msgstr ""
 
-#: Package.module:496
+#: Package.module:498
 msgid "Creating package for &1."
 msgstr ""
 
-#: Package.module:524
+#: Package.module:526
 msgid "The package build has failed."
 msgstr ""
 
-#: Package.module:559
+#: Package.module:561
 msgid "Making build directory."
 msgstr ""
 
-#: Package.module:580
+#: Package.module:582
 msgid "Creating desktop file..."
 msgstr ""
 
-#: Package.module:588
+#: Package.module:590
 msgid "Sources are being debianizated."
 msgstr ""
 
-#: Package.module:734
+#: Package.module:736
 msgid "Creating package..."
 msgstr ""
 
-#: Package.module:737
+#: Package.module:739
 msgid "'dpkg-buildpackage' has failed."
 msgstr ""
 
-#: Package.module:838
+#: Package.module:840
 msgid "Initializing ~/RPM directory."
 msgstr ""
 
-#: Package.module:858
+#: Package.module:860
 msgid "Creating source package."
 msgstr ""
 
-#: Package.module:882
+#: Package.module:884
 msgid "Creating .spec file."
 msgstr ""
 
-#: Package.module:1107
+#: Package.module:1109
 msgid "'rpmbuild' has returned the following error code:"
 msgstr ""
 
-#: Package.module:1327
+#: Package.module:1331
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
@@ -5826,120 +5830,120 @@ msgstr ""
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:3094
+#: Project.module:3127
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:3311
+#: Project.module:3339
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:3354
+#: Project.module:3382
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:3600
+#: Project.module:3628
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3617
+#: Project.module:3645
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3648
+#: Project.module:3676
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3652
+#: Project.module:3680
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3656
+#: Project.module:3684
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3660
+#: Project.module:3688
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3696
+#: Project.module:3724
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3744
+#: Project.module:3772
 msgid "Destination already exists"
 msgstr ""
 
-#: Project.module:3952
+#: Project.module:3980
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:4068
+#: Project.module:4096
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:4076
+#: Project.module:4104
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:4079
+#: Project.module:4107
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:4080
+#: Project.module:4108
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:4087
+#: Project.module:4115
 msgid "This project already exists."
 msgstr ""
 
-#: Project.module:4090
+#: Project.module:4118
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:4092
+#: Project.module:4120
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:4144
+#: Project.module:4172
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:4145
+#: Project.module:4173
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:4422
+#: Project.module:4450
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4471
+#: Project.module:4499
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4488
+#: Project.module:4516
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4556
+#: Project.module:4584
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:5205
+#: Project.module:5233
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5211
+#: Project.module:5239
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5241
+#: Project.module:5269
 msgid "Unable to convert &1"
 msgstr ""
 
