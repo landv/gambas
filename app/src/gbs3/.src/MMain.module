@@ -257,7 +257,7 @@ Private Sub GenerateFiles(Path As String)
       Continue 
     Endif
     
-    If aSym.Count = 2 And If aSym[0] = "END" And If aSym[1] = "CLASS" And If bInClass Then 
+    If aSym.Count = 2 And If aSym[0] = "END" And If aSym[1] == "CLASS" And If bInClass Then 
       Close #$hOutClass
       
       bInClass = False
@@ -266,6 +266,9 @@ Private Sub GenerateFiles(Path As String)
     
     If aSym.Count = 2 And If aSym[0] = "CLASS" And If Highlight.Types[1] = Highlight.Symbol Then 
       
+      If bInClass Then
+        CompileError(Path, iLine, "Unexpected CLASS declaration")
+      Endif
       sClass = aSym[1] 'Trim(Scan(sLine, "CLASS *")[0])
       If IsNull(sClass) Then 
         CompileError(Path, iLine, "Class name missing")
@@ -417,8 +420,8 @@ Private Sub GenerateFilesFromArgs(sLine As String)
     sCode &= s
     
   Next
-  scode = "PUBLIC SUB Main()\n" & sCode 
-  sCode &= "\nEND\n"
+  scode = "Public Sub Main()\n" & sCode 
+  sCode &= "\nEnd\n"
   
   Print #$hOutFile, sCode
   
