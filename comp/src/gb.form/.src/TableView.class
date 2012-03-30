@@ -240,6 +240,9 @@ Public Sub EditWith(Editor As Control)
   If $iCol < 0 Or $iRow < 0 Then Return
   
   $hEditor = Editor
+  $hEditor.Ignore = True
+  $hEditor.Reparent(Me.Window)
+  
   $bTextBox = False
   If Editor Is TextArea Or If Editor Is TextBox Or If Editor Is ButtonBox Then
     $bTextBox = True

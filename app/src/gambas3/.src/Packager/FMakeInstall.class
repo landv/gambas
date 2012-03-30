@@ -72,7 +72,7 @@ Public Sub Form_Open()
 
   txtDescribe.Text = Project.Description
 
-  Try txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
+  Try txtChangeLog.Text = File.Load(Project.Dir &/ ".hidden" &/ "CHANGELOG")
   txtTests.Text = Project.ExtraAutoconfTest
 
   chkPrefix.Value = Project.Prefix
@@ -107,6 +107,7 @@ Public Sub Form_Open()
   tvwFile.Columns[1].Text = ("Destination directory")
   tvwFile.Columns[0].Width = Desktop.Scale * 24
   tvwFile.Columns[1].Width = Desktop.Scale * 40
+  'tvwFile.Rows.H = Desktop.Scale * 4
  
   chkDep.Value = Project.SameDependencies
   chkFile.Value = Project.SameFiles
@@ -205,6 +206,7 @@ Private Sub InitSystemControls()
   
   For Each hCont In panSystem.Children
   
+    hCont.H = Desktop.Scale * 7
     sMsg = Package.CheckSystem(hCont.Tag)
     
     hPanel = Null
@@ -261,7 +263,7 @@ Private Sub InitSystemControls()
     hTool.Design = True
     hTool.Enabled = hCheckBox.Value
     hTool.Width = hTool.Height
-    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 4, hTool.Height - 4).Picture
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 12, hTool.Height - 12).Picture
     
     hPanel.Visible = sMsg
 
@@ -1011,31 +1013,6 @@ Public Sub tvwFile_Insert()
 
 End
 
-Public Sub tvwFile_DblClick()
-
-  Dim sFic As String
-
-  If tvwFile.Column = 0 Then
-    sFic = FSelectExtraFile.Run(tvwFile.Current.Text)
-    If Not sFic Then Return
-
-    'tvwFile.Current.Text = sFic
-    tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
-    tvwFile.Refresh
-    ' tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
-  Else If tvwFile.Column = 1 Then
-  
-    Dialog.Title = ("Select the destination directory")
-    Dialog.Path = tvwFile.Current.Text
-    If Dialog.SelectDirectory() Then Return
-    
-    'tvwFile.Current.Text = Dialog.Path
-    tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
-    tvwFile.Refresh
-    
-  Endif
-
-End
 
 Public Sub tvwFile_Data(Row As Integer, Column As Integer)
 
@@ -1130,3 +1107,51 @@ Public Sub panDistro_Arrange()
   End With
 
 End
+
+Public Sub tvwFile_Click()
+
+  tvwFile.EditWith(txtFileDest)
+
+End
+
+Public Sub txtFileDest_Click()
+
+  Dim sFic As String
+
+  If tvwFile.Column = 0 Then
+    
+    sFic = FSelectExtraFile.Run(tvwFile.Current.Text)
+    If Not sFic Then Return
+    
+    txtFileDest.Text = sFic
+    tvwFile.Save
+
+    'tvwFile.Current.Text = sFic
+    'tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
+    'tvwFile.Refresh
+    ' tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
+    
+  Else If tvwFile.Column = 1 Then
+  
+    Dialog.Title = ("Select the destination directory")
+    Dialog.Path = tvwFile.Current.Text
+    If Dialog.SelectDirectory() Then Return
+    
+    txtFileDest.Text = Dialog.Path
+    tvwFile.Save
+
+    'tvwFile.Current.Text = Dialog.Path
+    'tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
+    'tvwFile.Refresh
+    
+  Endif
+  
+
+End
+
+Public Sub ShowError(sMsg As String)
+  
+  Balloon.Error(sMsg, Me,, 0)
+  
+End
+

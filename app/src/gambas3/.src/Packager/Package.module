@@ -23,8 +23,8 @@ Private $sVersion As String
 Private $sDescription As String
 Private $sSavePath As String
 
-Private Const MIN_VERSION As String = "3.0.0"
-Private Const MAX_VERSION As String = "3.1.90"
+Private Const MIN_VERSION As String = "3.0.90"
+Private Const MAX_VERSION As String = "3.99.0"
 
 Private $sFormatSingle As String
 Private $sFormatMin As String
@@ -58,7 +58,7 @@ Public Sub CheckSystem(sSys As String) As String
   
   Select Case sSys
   
-    Case "mandriva", "fedora", "suse"
+    Case "mageia", "mandriva", "fedora", "suse"
       If Not RPMBUILD_PROG Then Return Subst(("'&1' is missing."), "rpmbuild")
       
     Case "debian", "ubuntu"
@@ -281,7 +281,7 @@ Private Function GetExtraDependencies(sSys As String) As String
   
 End
 
-Private Function GetExtraFiles(sSys As String, sFormat As String) As String
+Private Function GetExtraFiles(sSys As String, sFormat As String, Optional bList As Boolean) As String
   
   Dim iIndex As Integer
   Dim sFile As String
@@ -302,6 +302,46 @@ Private Function GetExtraFiles(sSys As String, sFormat As String) As String
   
 End
 
+Private Sub FormatFileInList(sFile As String, Optional bDebian As Boolean) As String
+  
+  If InStr(sFile, " ") Then
+    If bDebian Then
+      sFile = Replace(sFile, " ", "[!#-~.\"!]")
+    Else
+      sFile = Chr$(34) & Replace(sFile, Chr$(34), "\\\"") & Chr$(34)
+    Endif
+  Endif
+  Return sFile
+  
+End
+
+
+Private Function GetExtraFilesList(sSys As String, sPrefix As String, sFormat As String, Optional bDebian As Boolean) As String
+  
+  Dim iIndex As Integer
+  Dim sFile As String
+  Dim aFile As String[]
+  Dim sRes As String
+  Dim sSrc, sDest, sDestDir As String
+  
+  If Project.SameFiles Then sSys = Project.Systems[0]
+  
+  For Each sFile In Split(Project.ExtraFiles[sSys], ";")
+    aFile = Split(sFile, ":")
+    aFile.Resize(2)
+    
+    sSrc = FormatFileInList(sPrefix &/ aFile[0], bDebian)
+    sDest = FormatFileInList(aFile[1] &/ File.Name(aFile[0]), bDebian)
+    sDestDir = FormatFileInList(aFile[1], bDebian)
+    sRes &= Subst(sFormat, sSrc, sDest, sDestDir) & "\n"
+    
+  Next
+  
+  Return sRes
+  
+End
+
+
 Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   
   Dim iIndex As Integer
@@ -314,7 +354,8 @@ Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   For Each sFile In Split(Project.ExtraFiles[sSys], ";")
     aFile = Split(sFile, ":")
     aFile.Resize(2)
-   Copy Project.Dir &/ ".hidden" &/ aFile[0] To sBuildDir &/ aFile[1] &/ aFile[0]
+    Project.MakeDir(File.Dir(sBuildDir &/ aFile[1] &/ aFile[0]))
+    Copy Project.Dir &/ ".hidden" &/ aFile[0] To sBuildDir &/ aFile[1] &/ aFile[0]
   Next
   
 End
@@ -333,7 +374,7 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
     aFile = Split(sFile, ":")
     aFile.Resize(2)
     
-    sRes &= Shell$(Subst(sFormat, aFile[1]))
+    sRes &= Subst(sFormat, Shell$(aFile[1]))
     
   Next
   
@@ -458,7 +499,7 @@ Private Function MakePackage(sSys As String) As Boolean
   
   Select Case sSys
   
-    Case "mandriva", "fedora", "suse"
+    Case "mageia", "mandriva", "fedora", "suse"
       MakeRpmPackage(sSys)
   
     Case "debian", "ubuntu"
@@ -481,7 +522,7 @@ Private Function MakePackage(sSys As String) As Boolean
 Catch
 
   AddLog(("The package build has failed.") & "\n" & Error.Where & ": " & Error.Text)
-  FMain.ShowError(("The package build has failed."))
+  FMakeInstall.ShowError(("The package build has failed."))
   Application.Busy = 0
   Return True
 
@@ -597,7 +638,7 @@ Private Function MakeDebPackage(sSys As String)
     Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
     Print #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
   Endif
-  Print #hFile, GetExtraFiles(sSys, "\nsrc/" & $sName & ".hidden/&1 &2")
+  Print #hFile, GetExtraFilesList(sSys, "src/" & $sName & "/.hidden", "&1 &3", True)
   Close #hFile  
  
   'debian/control
@@ -753,7 +794,6 @@ Private Function MakeRpmPackage(sSys As String)
   Dim sOutput As String
   Dim sLang As String
   Dim sPackage As String
-  Dim sVersionSuffix As String
   Dim sIcon As String
   Dim sDistribution As String
   Dim sVendor As String
@@ -771,20 +811,25 @@ Private Function MakeRpmPackage(sSys As String)
 
   Select Case sSys
 
+    Case "mageia"
+      sDistribution = "Mageia"
+      sVendor = "Mageia"
+      sRelease = "1mga"
+
     Case "mandriva"
       sDistribution = "Mandriva"
       sVendor = "MandrivaSoft"
-      sVersionSuffix = "mdv"
+      sRelease = "1mdv"
 
     Case "fedora"
       sDistribution = "Fedora"
       sVendor = "Fedora"
-      sVersionSuffix = ""
+      sRelease = "1"
 
     Case "suse"
       sDistribution = "OpenSUSE"
       sVendor = "Novell"
-      sVersionSuffix = "suse"
+      sRelease = "1suse"
 
   End Select
   
@@ -840,7 +885,6 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "%define name " & $sPackageName
   Print #hFile, "%define version " & $sVersion
-  sRelease = "1" & sVersionSuffix
   Print #hFile, "%define release "; sRelease
   
   Print #hFile
@@ -851,7 +895,7 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "Source0: %{name}-%{version}.tar.bz2"
   Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
   Print #hFile, "Group: " & Project.Groups[sSys]
-  Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot"
+  Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
   Print #hFile, "Prefix: %{_prefix}"
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   Print #hFile, "BuildArch: noarch"
@@ -994,12 +1038,12 @@ Private Function MakeRpmPackage(sSys As String)
     If Exist(Project.Dir &/ ".hiddencontrol") Then 
       Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName); "/*.png"
     Endif
-    Print #hFile, GetExtraFiles(sSys, "&2/&3")
+    Print #hFile, GetExtraFilesList(sSys, "", "&2");
 
   Else
   
     Print #hFile, "%{_bindir}" &/ Shell$($sName)
-   Print #hFile, GetExtraFiles(sSys, "&2/&3")
+    Print #hFile, GetExtraFilesList(sSys, "", "&2");
   
     Select Case sSys
   

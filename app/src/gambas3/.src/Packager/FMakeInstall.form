@@ -216,22 +216,38 @@
       { HBox3 HBox panDistro
         Name = "HBox3"
         MoveScaled(0,32,83,8)
-        Tag = "mandriva"
+        Tag = "mageia"
         { ToolButton2 ToolButton
           MoveScaled(0,0,8,8)
           Picture = Picture["img/logo/mageia.png"]
+          Toggle = True
+        }
+        { chkMageia CheckBox chkDistro
+          Name = "chkMageia"
+          MoveScaled(9,1,33,4)
+          Expand = True
+          Text = ("Mageia")
+        }
+      }
+      { HBox17 HBox panDistro
+        Name = "HBox17"
+        MoveScaled(0,40,83,8)
+        Tag = "mandriva"
+        { ToolButton9 ToolButton
+          MoveScaled(0,0,8,8)
+          Picture = Picture["img/logo/mandriva.png"]
           Toggle = True
         }
         { chkMandriva CheckBox chkDistro
           Name = "chkMandriva"
           MoveScaled(9,1,33,4)
           Expand = True
-          Text = ("Mandriva / Mageia")
+          Text = ("Mandriva")
         }
       }
       { HBox7 HBox panDistro
         Name = "HBox7"
-        MoveScaled(0,40,83,8)
+        MoveScaled(0,48,83,8)
         Tag = "suse"
         { ToolButton5 ToolButton
           MoveScaled(0,0,7,7)
@@ -247,7 +263,7 @@
       }
       { HBox4 HBox panDistro
         Name = "HBox4"
-        MoveScaled(0,48,83,8)
+        MoveScaled(0,56,83,8)
         Tag = "slackware"
         { ToolButton1 ToolButton
           MoveScaled(0,0,7,7)
@@ -263,7 +279,7 @@
       }
       { HBox9 HBox panDistro
         Name = "HBox9"
-        MoveScaled(0,56,83,8)
+        MoveScaled(0,64,83,8)
         Tag = "ubuntu"
         { ToolButton6 ToolButton
           MoveScaled(0,0,7,7)
@@ -429,7 +445,7 @@
       Expand = True
       Spacing = True
       { tvwFile TableView
-        MoveScaled(7,5,41,29)
+        MoveScaled(7,4,41,29)
         Expand = True
         Mode = Select.Single
         Header = GridView.Horizontal
@@ -462,6 +478,12 @@
           Text = ("&Clear")
           Picture = Picture["icon:/small/trash"]
         }
+      }
+      { txtFileDest ButtonBox
+        MoveScaled(13,35,20,3)
+        Visible = False
+        Ignore = True
+        Border = False
       }
     }
     Index = 8

@@ -2,6 +2,7 @@
 
 Private Const ROUND_SIZE As Integer = 8
 Private Const PADDING As Integer = 8
+Private Const BACKGROUND_COLOR As Integer = &HFFFFDF&
 
 Static Private $iDelay As Integer = 5000
 Static Private $bQtBug As Boolean
@@ -39,7 +40,7 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   Draw.FillStyle = Fill.Solid
   Draw.LineStyle = Line.None
   
-  Draw.FillColor = Me.Background '&FFFFDF&
+  Draw.FillColor = BACKGROUND_COLOR
   Draw.Rect(X + ROUND_SIZE, Y, W - ROUND_SIZE * 2, ROUND_SIZE)
   Draw.Rect(X, Y + ROUND_SIZE, W, H - ROUND_SIZE * 2)
   Draw.Rect(X + ROUND_SIZE, Y + H - ROUND_SIZE, W - ROUND_SIZE * 2, ROUND_SIZE)
@@ -65,6 +66,72 @@ Private Sub GetTopLevel(hCtrl As Control) As Window
   
 End
 
+' Static Private Sub PaintRoundRect(x As Float, y As Float, w As Float, h As Float, Radius As Float)
+' 
+'   Dim ARC_TO_BEZIER As Float = 0.55228475
+'   Dim c1, c2 As Float
+'   Dim i As Integer
+'   Dim radius_x As Float[] = [Radius, Radius, Radius, Radius]
+'   Dim radius_y As Float[] = radius_x.Copy()
+' 
+'   For i = 0 To 3
+'     If radius_x[i] > w - radius_x[i] Then
+'       radius_x[i] = w / 2
+'     Endif
+' 
+'     If radius_y[i] > h - radius_y[i] Then
+'       radius_y[i] = h / 2
+'     Endif
+' 
+'   Next
+'   'approximate(quite Close )the arc using a bezier curve
+' 
+'   '        A**********B
+'   '       H            C
+'   '       *            *
+'   '       *            *
+'   '       G            D
+'   '        F**********E
+' 
+'   '-->A
+'   Paint.MoveTo(x + radius_x[0], y)
+' 
+'   '-->B
+'   Paint.LineTo(x + w - radius_x[1], y)
+' 
+'   '-->C
+'   c1 = ARC_TO_BEZIER * radius_x[1]
+'   c2 = ARC_TO_BEZIER * radius_y[1]
+'   Paint.RelCurveTo(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+' 
+'   '-->D
+'   Paint.LineTo(x + w, y + h - radius_y[2])
+' 
+'   '-->E
+'   c1 = ARC_TO_BEZIER * radius_x[2]
+'   c2 = ARC_TO_BEZIER * radius_y[2]
+'   Paint.RelCurveTo(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+' 
+'   '-->F
+'   Paint.LineTo(x + radius_x[3], y + h)
+' 
+'   '-->G
+'   c1 = ARC_TO_BEZIER * radius_x[3]
+'   c2 = ARC_TO_BEZIER * radius_y[3]
+'   Paint.RelCurveTo(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+' 
+'   '-->H
+'   Paint.LineTo(x, y + radius_y[0])
+' 
+'   '-->A
+'   c1 = ARC_TO_BEZIER * radius_x[0]
+'   c2 = ARC_TO_BEZIER * radius_y[0]
+'   Paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+' 
+'   'Paint.closepath()
+' 
+' End
+
 
 Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
@@ -75,6 +142,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   Dim hWin As Window
   Dim sNew As String
   Dim hCtrl As Control
+  Dim iColor As Integer
   
   $X = $hCtrl.ScreenX
   $Y = $hCtrl.ScreenY
@@ -156,7 +224,24 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
 
     'DEBUG sNew
     'ME.Hide
-
+    '
+    ' hImage = New Image(Me.W, Me.H, Color.Transparent)
+    ' Paint.Begin(hImage)
+    ' 
+    ' PaintRoundRect(0, ARROW_HEIGHT, Paint.W, Paint.H - ARROW_HEIGHT * 2, 12)
+    ' Paint.Brush = Paint.Color(Me.Background)
+    ' Paint.Fill
+    ' PaintRoundRect(0.5, ARROW_HEIGHT + 0.5, Paint.W - 1, Paint.H - ARROW_HEIGHT * 2 - 1, 12)
+    ' iColor = Color.Black 'Color.Merge(&H808080, Me.Background)
+    ' Paint.Brush = Paint.Color(iColor)
+    ' Paint.LineWidth = 1
+    ' Paint.Stroke
+    ' 
+    ' Paint.End
+    ' 
+    ' hPict = hImage.Picture
+    ' 
+    
     hPict = New Picture(Me.W, Me.H)
   
     Draw.Begin(hPict)
@@ -167,7 +252,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Draw.FillStyle = Fill.Solid
     Draw.LineStyle = Line.None
     
-    Draw.FillColor = &H808080& '&808070&
+    Draw.FillColor = iColor
     'DrawInternalRect(0, ARROW_HEIGHT, ME.W, ME.H - ARROW_HEIGHT * 2)
     Draw.Polygon([X1, Y1, X2, Y2, X3, Y3])
 
@@ -179,15 +264,16 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Draw.Foreground = Me.Background
     Draw.Line(X1, Y1, X2 + 1, Y4)
     Draw.Line(X1, Y1, X3 - 1, Y4)
-    Draw.Foreground = &H808080& '&808070&
+    Draw.Foreground = iColor
     Draw.Line(X1, Y1, X2, Y4)
     Draw.Line(X1, Y1, X3, Y4)
   
     Draw.End
     
     hImage = hPict.Image
-    hImage.Replace(Color.White, Color.Transparent)
-    'hImage.Transparent()
+    'hImage = hImage.Erase()
+    hImage.Replace(BACKGROUND_COLOR, Me.Background)
+    hImage.Replace(Color.TextBackground, Color.Transparent)
     hPict = hImage.Picture
   
     'Wait
@@ -383,4 +469,11 @@ Static Public Sub SetDelay(iDelay As Integer)
 
   $iDelay = iDelay
   
+End
+
+Public Sub _new()
+
+  Me.Background = Color.Merge(Color.TextBackground, Color.LightBackground)
+  
+
 End
