@@ -1936,9 +1936,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   '  hForm.Editor.SetFocus
   'ENDIF
 
-  If iLine Then
-    hForm.GotoCenter(iLine - 1, iColumn)
-  Endif
+  If iLine Then Try hForm.GotoCenter(iLine - 1, iColumn)
 
   CPosition.Enable
 

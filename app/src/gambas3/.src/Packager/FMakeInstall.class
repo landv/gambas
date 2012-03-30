@@ -315,10 +315,12 @@ Public Sub wizInstall_BeforeChange()
   Dim sName As String
   Dim sDir As String
   Dim iSize As Integer
+  Dim sFile As String
 
   Select Case wizInstall.Index
 
     Case 0
+      
       Project.Maintainer = Trim(txtName.Text)
       Project.Address = Trim(txtMail.Text)
       Project.Vendor = Trim(txtVendor.Text)
@@ -342,6 +344,7 @@ Public Sub wizInstall_BeforeChange()
       Project.PackageName = txtPackage.Text
 
     Case 1
+      
       If Not Trim(txtChange.Text) Then 
         If Message.Warning(("There is no CHANGELOG entry for this release."), ("Continue"), ("Cancel")) = 2 Then 
           Stop Event
@@ -358,6 +361,7 @@ Public Sub wizInstall_BeforeChange()
       InitSystemControls      
 
     Case 2
+      
       Project.Systems = GetSystems()
       If Project.Systems.Count = 0 Then
         Message.Warning(("Please choose at least one target distribution."))
@@ -384,6 +388,7 @@ Public Sub wizInstall_BeforeChange()
       Endif
       
     Case TAB_GROUP
+      
       If CheckSys(Project.Groups) Then
         If cmbGroup.Count > 1 Then
           Message.Warning(("Please choose the package group for each target distribution."))
@@ -395,6 +400,7 @@ Public Sub wizInstall_BeforeChange()
       Endif
 
     Case TAB_MENU
+      
       If CheckSys(Project.Menus) Then
         If cmbMenu.Count > 1 Then
           Message.Warning(("Please choose the menu location for each target distribution."))
@@ -406,17 +412,29 @@ Public Sub wizInstall_BeforeChange()
       Endif
       
     Case TAB_MIME
+      
       Project.MimeTypes = Split(Trim(txtMime.Text), "\n")
       Project.ExtraDesktop = Trim(txtDesktop.Text)
       
     Case TAB_DEP
     
     Case TAB_FILE
+      
+      tvwFile.Save
+      For Each sFile In $aFile
+        If Right(sFile) = ":" Then
+          Message.Warning(("Please choose a target directory for each extra file."))
+          Stop Event
+          Return
+        Endif
+      Next
     
     Case TAB_TEST
+      
       Project.ExtraAutoconfTest = txtTests.Text
     
     Case TAB_DIR
+      
       Package.Path = dchInstall.SelectedPath
       If Package.Path = Project.Dir Or If Package.Path Begins Project.Dir &/ "/" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
