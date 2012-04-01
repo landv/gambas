@@ -281,12 +281,13 @@ Private Function GetExtraDependencies(sSys As String) As String
   
 End
 
-Private Function GetExtraFiles(sSys As String, sFormat As String, Optional bList As Boolean) As String
+Private Function GetExtraFiles(sSys As String, sFormat As String, Optional sFormatDir As String) As String
   
   Dim iIndex As Integer
   Dim sFile As String
   Dim aFile As String[]
   Dim sRes As String
+  Dim sFmt As String
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
@@ -294,7 +295,8 @@ Private Function GetExtraFiles(sSys As String, sFormat As String, Optional bList
     aFile = Split(sFile, "\t")
     aFile.Resize(2)
     
-    sRes &= Subst(sFormat, Shell$(aFile[0]), Shell$(aFile[1]), Shell$(Mid$(aFile[0], RInStr(aFile[0], "/") + 1)))
+    sFmt = If(IsDir(Project.Dir &/ ".hidden" &/ aFile[0]), sFormatDir, sFormat)
+    sRes &= Subst(sFmt, Shell$(aFile[0]), Shell$(aFile[1]), Shell$(Mid$(aFile[0], RInStr(aFile[0], "/") + 1)))
     
   Next
   
@@ -348,14 +350,24 @@ Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   Dim sFile As String
   Dim aFile As String[]
   Dim sRes As String
+  Dim sSrc As String
+  Dim sDst As String
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
   For Each sFile In Split(Project.ExtraFiles[sSys], "\n")
     aFile = Split(sFile, "\t")
     'aFile.Resize(2)
-    Project.MakeDir(File.Dir(sBuildDir &/ aFile[1] &/ File.Name(aFile[0])))
-    Copy Project.Dir &/ ".hidden" &/ aFile[0] To sBuildDir &/ aFile[1] &/ File.Name(aFile[0])
+    sSrc = Project.Dir &/ ".hidden" &/ aFile[0]
+    sDst = File.Dir(sBuildDir &/ aFile[1] &/ File.Name(aFile[0]))
+
+    Project.MakeDir(sDst)
+    If IsDir(sSrc) Then
+      Shell "cp -R --preserve=timestamp " & Shell$(sSrc) & " " & Shell$(sDst) Wait
+    Else
+      Shell "cp --preserve=timestamp " & Shell$(sSrc) & " " & Shell$(sDst) Wait
+      'Copy sSrc To sBuildDir &/ aFile[1] &/ File.Name(aFile[0])
+    Endif
   Next
   
 End
@@ -734,14 +746,17 @@ Private Function MakeDebPackage(sSys As String)
   ' Step 4. Build package
 
   AddLog(("Creating package..."))
-  sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
-  Shell sCmd Wait
+  'sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
+  sCmd = "fakeroot dpkg-buildpackage -d"
+  'Shell sCmd Wait
+  RunCommand(sCmd, sPackagePath)
+  
+  Dec Application.Busy
+
   If Process.LastValue > 2 Then Error.Raise(("'dpkg-buildpackage' has failed."))
 
   Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
   Try Shell "rm -f " & Shell$(Path) &/ "*.dsc.asc" Wait 
-
-  Dec Application.Busy
 
 End
 
@@ -939,7 +954,7 @@ Private Function MakeRpmPackage(sSys As String)
      
     Print #hFile, "\n%install"
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
-    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1")
+    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1", "cp -R --preserve=timestamp .hidden/&1 %{buildroot}/&2/&1")
     Print #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version
     Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas" & System.Version; "/"; Shell$($sName); ".gambas"
     Print #hFile, "install -p .component %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"
@@ -964,7 +979,7 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
     
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
-    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&3")
+    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1", "cp -R --preserve=timestamp .hidden/&1 %{buildroot}/&2/&1")
     
     sIcon = Shell$($sName) & ".png"
   
@@ -1037,7 +1052,7 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
     Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
 
-    If Exist(Project.Dir &/ ".hiddencontrol") Then 
+    If Exist(Project.Dir &/ ".hidden/control") Then 
       Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName); "/*.png"
     Endif
     Print #hFile, GetExtraFilesList(sSys, "", "&2");
@@ -1234,7 +1249,7 @@ Private Sub MakeTgzPackage(sSys As String)
     Copy Project.Dir &/ ".info" To sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".info"
     Copy Project.Dir &/ ".list" To sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".list"
   
-    If Exist(Project.Dir &/ ".hiddencontrol") Then 
+    If Exist(Project.Dir &/ ".hidden/control") Then 
       Try Mkdir sBuildDir &/ "/usr/share/gambas" & System.Version & "/control"
       Try Mkdir sBuildDir &/ "/usr/share/gambas" & System.Version & "/control/" & $sName
       For Each sFile In Dir(Project.Dir &/ ".hidden/control", "*.png") 

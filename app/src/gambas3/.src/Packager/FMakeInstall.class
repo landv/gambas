@@ -73,6 +73,7 @@ Public Sub Form_Open()
   txtDescribe.Text = Project.Description
 
   Try txtChangeLog.Text = File.Load(Project.Dir &/ ".hidden" &/ "CHANGELOG")
+  txtChangeLog.Pos = 0
   txtTests.Text = Project.ExtraAutoconfTest
 
   chkPrefix.Value = Project.Prefix
@@ -103,7 +104,7 @@ Public Sub Form_Open()
   tvwDep.Columns[2].Width = Desktop.Scale * 16
 
   tvwFile.Columns.Count = 2
-  tvwFile.Columns[0].Text = ("File name")
+  tvwFile.Columns[0].Text = ("File or directory")
   tvwFile.Columns[1].Text = ("Destination directory")
   tvwFile.Columns[0].Width = Desktop.Scale * 24
   tvwFile.Columns[1].Width = Desktop.Scale * 40
