@@ -296,7 +296,7 @@ Private Function GetExtraFiles(sSys As String, sFormat As String, Optional sForm
     aFile.Resize(2)
     
     sFmt = If(IsDir(Project.Dir &/ ".hidden" &/ aFile[0]), sFormatDir, sFormat)
-    sRes &= Subst(sFmt, Shell$(aFile[0]), Shell$(aFile[1]), Shell$(Mid$(aFile[0], RInStr(aFile[0], "/") + 1)))
+    sRes &= Subst(sFmt, Shell$(aFile[0]), Shell$(aFile[1]), Shell$(Mid$(aFile[0], RInStr(aFile[0], "/") + 1))) & "\n"
     
   Next
   
