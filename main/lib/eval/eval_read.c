@@ -820,7 +820,7 @@ static void add_quoted_identifier(void)
 	{
 		source_ptr++;
 		car = get_char();
-		if (car == '\n')
+		if (!car || car == '\n')
 			break;
 		len++;
 		if (car == '}')
