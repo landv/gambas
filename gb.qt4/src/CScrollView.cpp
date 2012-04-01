@@ -449,13 +449,12 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 	//CWidget::removeFilter(wid->horizontalScrollBar());
 	//CWidget::removeFilter(wid->verticalScrollBar());
 
+	wid->setFrameStyle(QFrame::NoFrame);
+	wid->show();
+	
 	// Border.Sunken by default
 	wid->setLineWidth(2);
 	wid->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-
-	//THIS->arrangement.autoresize = true;
-
-	wid->show();
 
 END_METHOD
 
@@ -580,14 +579,19 @@ BEGIN_PROPERTY(CSCROLLVIEW_background)
 END_PROPERTY
 #endif
 
+BEGIN_PROPERTY(ScrollView_Border)
+
+	CWIDGET_border_simple(_object, _param);
+	if (!READ_PROPERTY)
+		THIS->container->autoResize();
+
+END_PROPERTY
 
 /***************************************************************************
 
 	Descriptions
 
 ***************************************************************************/
-
-DECLARE_METHOD(CWIDGET_border);
 
 GB_DESC CScrollViewDesc[] =
 {
@@ -597,7 +601,7 @@ GB_DESC CScrollViewDesc[] =
 
 	GB_PROPERTY("ScrollBar", "i", CSCROLLVIEW_scrollbar),
 
-	GB_PROPERTY("Border", "b", CWIDGET_border_simple),
+	GB_PROPERTY("Border", "b", ScrollView_Border),
 
 	GB_PROPERTY("ScrollX", "i", CSCROLLVIEW_scroll_x),
 	GB_PROPERTY("ScrollY", "i", CSCROLLVIEW_scroll_y),

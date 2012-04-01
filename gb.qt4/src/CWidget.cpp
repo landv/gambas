@@ -1691,17 +1691,18 @@ BEGIN_PROPERTY(CWIDGET_border_simple)
 
 		if (VPROP(GB_BOOLEAN))
 		{
-			wid->setFrameStyle(QFrame::StyledPanel + QFrame::Sunken);
+			wid->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 			//wid->setFrameStyle(QFrame::LineEditPanel);
-			//wid->setLineWidth(2);
+			wid->setLineWidth(2);
 		}
 		else
 		{
 			wid->setFrameStyle(QFrame::NoFrame);
+			wid->setLineWidth(0);
 		}
 
-		//qDebug("--> %d", wid->frameStyle());
-
+		//qDebug("--> %s %d %d %d %d", THIS->name, wid->contentsRect().x(), wid->contentsRect().y(), wid->contentsRect().width(), wid->contentsRect().height());
+		//wid->style()->polish(wid);
 		wid->update();
 	}
 

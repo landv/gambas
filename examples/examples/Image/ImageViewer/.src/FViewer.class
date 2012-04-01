@@ -8,8 +8,10 @@ Public Sub mnuOpen_Click()
   If Not Exist(Dialog.Path) Then
     Dialog.Path = User.Home
   Endif
+  
+  'Dialog.Path = Application.Path
 
-  Dialog.Filter = ["*.jpg; *.jpeg; *.png; *.bmp", "Picture files"]
+  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.bmp", "Picture files"]
 
   If Dialog.OpenFile() Then Return
 
@@ -24,7 +26,7 @@ Public Sub mnuOpen_Click()
   Draw.End
 
   dwgImage.Visible = True
-
+  
 Catch
 
   Message.Warning(Error.Text & " !")
@@ -102,8 +104,3 @@ Public Sub mnuAbout_Click()
 
 End
 
-Public Sub timUpdate_Timer()
-
-  dwgImage.Refresh
-
-End

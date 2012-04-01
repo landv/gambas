@@ -126,6 +126,7 @@ void MyDrawingArea::setFrozen(bool f)
 		XSelectInput(QX11Info::display(), winId(), _event_mask);
 		//qDebug("unfrozen");
 	}
+	XFlush(QX11Info::display());
 	#endif
 	
 	_frozen = f;
@@ -244,6 +245,8 @@ void MyDrawingArea::createBackground(int w, int h)
 	
 	if (old)
 		XFreePixmap(QX11Info::display(), (Pixmap)old);
+
+	XFlush(QX11Info::display());
 }
 
 void MyDrawingArea::deleteBackground()
@@ -253,6 +256,7 @@ void MyDrawingArea::deleteBackground()
 		//qDebug("XSetWindowBackgroundPixmap: %08X None", (int)winId());
 		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
 		XFreePixmap(QX11Info::display(), (Pixmap)_background);
+		XFlush(QX11Info::display());
 		_cached = false;
 		_background = 0;
 	}
@@ -277,12 +281,23 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		{
 			//qDebug("XSetWindowBackgroundPixmap: %08X %08X (paint)", (int)winId(), (int)_background);
 			XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
+			XFlush(QX11Info::display());
 			_set_background = false;
 		}
 		#endif
-		QPainter paint( this );
-		drawFrame(&paint);
-		//MyContainer::paintEvent(event);
+		
+		QPainter p(this);
+		
+		if (frameWidth())
+		{
+			QRegion r(0, 0, width(), height());
+			r = r.subtracted(QRegion(frameWidth(), frameWidth(), width() - frameWidth() * 2, height() - frameWidth() * 2));
+			p.setClipRegion(r);
+			p.setClipping(true);
+			//p.drawPixmap(0, 0, *getBackgroundPixmap());
+		}
+	
+		drawFrame(&p);
 	}
 	else
 	{
@@ -320,8 +335,9 @@ void MyDrawingArea::setBackground()
 		//if (isVisible())
 		//	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
 		//else
-		_set_background = true;
-		//XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
+		//_set_background = true;
+		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
+		XFlush(QX11Info::display());
 		refreshBackground();
 		#endif
 	}
@@ -336,6 +352,7 @@ void MyDrawingArea::refreshBackground()
 		#else
 		int fw = frameWidth();
 		XClearArea(QX11Info::display(), winId(), fw, fw, width() - fw * 2, height() - fw * 2, False);
+		XFlush(QX11Info::display());
 		#endif
 	}
 }
@@ -346,7 +363,10 @@ void MyDrawingArea::clearBackground()
 	if (_cached)
 		createBackground(width(), height());
 	else
+	{
 		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
+		XFlush(QX11Info::display());
+	}
 }
 
 void MyDrawingArea::resizeEvent(QResizeEvent *e)

@@ -393,7 +393,7 @@ static void jump_to_next_prep(void)
 			car = get_char();
 			if (!car)
 				return;
-			if (car == '\n' || !isspace(car))
+			if (car == '\n' || !car || !isspace(car))
 				break;
 			source_ptr++;
 		}

@@ -511,7 +511,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 		style = w->style();
 	else
 		style = QApplication::style();
-	
+
 	switch (frame)
 	{
 		case BORDER_PLAIN:

@@ -4,7 +4,7 @@
   MoveScaled(34.4286,25.4286,106,81)
   Text = ("Simple Image Viewer")
   Icon = Picture["image.png"]
-  Arrangement = Arrange.Fill
+  Arrangement = Arrange.Vertical
   { mnuFile Menu
     Text = ("&File")
     { mnuOpen Menu
@@ -30,10 +30,20 @@
       Text = ("&About...")
     }
   }
+  { Separator1 Separator
+    MoveScaled(42,1,33,0)
+  }
   { svwImage ScrollView
-    MoveScaled(5,2,39,38)
+    MoveScaled(1,4,52,46)
+    Background = Color.LightForeground
+    Expand = True
+    Border = False
+    { Panel1 Panel
+      MoveScaled(33,0,14,8)
+      Background = &HFF9F3F&
+    }
     { dwgImage DrawingArea
-      MoveScaled(0,0,31,25)
+      MoveScaled(0,0,29,27)
       Visible = False
       Background = &H00AA7F&
       Cached = True
