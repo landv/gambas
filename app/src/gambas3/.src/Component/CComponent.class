@@ -1165,7 +1165,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Dim bClass As Boolean
   Dim sName As String
   Dim sPath As String
-  Dim hPForm As FForm
+  Dim hPForm As Object
   Dim hPModule As FEditor
   Dim hPClass As FEditor
   'Dim hModule As Object
@@ -1238,11 +1238,11 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
       cSymbol = New Collection(gb.IgnoreCase)
       hPClass.Scan = cSymbol
       If hPForm Then
-        For Each hSymbol In CComponent.Classes[hPForm.Family].Symbols
+        For Each hSymbol In CComponent.Classes[sFamily].Symbols
           cSymbol[hSymbol.Name] = hSymbol
         Next
-        ScanForm(hPForm, cSymbol)
-        hPClass.ParentClass = hPForm.Family
+        hPClass.ParentClass = sFamily
+        If hPForm Is FForm Then ScanForm(hPForm, cSymbol)
       Endif
       ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
     Endif

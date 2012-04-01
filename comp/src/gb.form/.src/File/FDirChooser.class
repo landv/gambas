@@ -26,7 +26,6 @@ Private mnuShowDetailed As Menu
 Private mnuUncompress As Menu
 Private $iIconSize As Integer
 Private $hWatch As Watcher
-
 Private $bPressed As Boolean
 
 Static Private $aHistory As New String[]
@@ -313,12 +312,7 @@ Public Function GetPath() As String
   If GetMulti() Then Return
 
   If txtFile.Text Then 
-    sPath = dvwChoose.Current &/ txtFile.Text
-    ' If chkExt.Value Then 
-    '   Try sExt = Scan(Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True)[0], "\\*.*")[0]
-    '   If sExt Then sPath = File.SetExt(sPath, sExt)
-    ' Endif
-    Return sPath
+    Return dvwChoose.Current &/ txtFile.Text
   Endif
 
 End

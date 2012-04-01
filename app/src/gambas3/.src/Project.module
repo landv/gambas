@@ -177,6 +177,9 @@ Public AddedPaths As Collection
 ' I'm using the IDE to test the interpreter with valgrind!
 Private $bTesting As Boolean
 
+' All possible pacakger target systems
+Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "mageia", "mandriva", "slackware", "suse", "ubuntu"]
+
 Public Sub _init()
 
   ExampleTitle["Automation"] = ("Automation")
@@ -433,7 +436,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   If bConvert Then
   
     If Exist(sDir &/ ".lock") Then
-      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."),
+      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
           ("Open after all"), ("Do not open")) = 2 Then
         Return True
       Endif
@@ -444,7 +447,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Try hLock = Lock sDir &/ ".lock"
   
     If Not hLock Then
-      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."),
+      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
           ("Open after all"), ("Do not open")) = 2 Then
         Return True
       Endif
@@ -484,7 +487,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
 
   Endif
 
-_INIT_AGAIN:
+_INIT_AGAIN: 
 
   Path = Project.Dir &/ PROJECT_FILE
   Name = File.Name(Project.Dir)
@@ -625,7 +628,7 @@ Catch
     Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
   Endif
 
-_CANCEL:
+_CANCEL: 
 
   If hLock Then Try Unlock #hLock
 
@@ -944,9 +947,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
             sModule = sExt
             sIcon = sExt & "-" & iSize
             bStartup = File.BaseName(sPath) = Startup And Not bNoStartup
-            If sExt = "class" Or If sExt = "module" Then
-              bExported = IsExported(sPath)
-            Endif
+            bExported = IsExported(sPath)
           Endif
 
         Case "jpg", "jpeg", "xpm", "bmp", "png", "gif"
@@ -2141,7 +2142,7 @@ Public Sub Process_Read()
   Dim sLig As String
 
   sLig = Read #Last, -4096
-  Print sLig;
+  Print sLig; 
 
 End
 
@@ -2746,7 +2747,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
   If Error Then Debug Error.Text
 
-_ERROR:
+_ERROR: 
 
   EnableRefresh
   Return Not bOK
@@ -3258,42 +3259,19 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
   If ExtraDesktop Then Print #hFic, "ExtraDesktop=" & Quote(ExtraDesktop)
 
-  If Systems.Count Then
+  Print #hFic, "Packager=1"
+  If Systems.Count Then Print #hFic, "Systems="; Systems.Join(",")
+  If SameDependencies Then Print #hFic, "SameDependencies=1"
+  If SameFiles Then Print #hFic, "SameFiles=1"
+  If ExtraAutoconfTest Then Print #hFic, "ExtraAutoconfTest=" & Quote(ExtraAutoconfTest)
 
-    Print #hFic, "Systems="; Systems.Join(",")
-    Print #hFic, "Packager=1"
-
-    sElt = ""
-    For Each sSys In Systems
-      Print #hFic, "Menus="; sSys; ":"; Quote(Menus[sSys])
-    Next
-
-    sElt = ""
-    For Each sSys In Systems
-      Print #hFic, "Categories="; sSys; ":"; Quote(Categories[sSys])
-    Next
-
-    sElt = ""
-    For Each sSys In Systems
-      Print #hFic, "Groups="; sSys; ":"; Quote(Groups[sSys])
-    Next
-
-    If SameDependencies Then Print #hFic, "SameDependencies=1"
-
-    For Each sSys In Systems
-      Print #hFic, "ExtraDependencies="; sSys; ":"; Quote(ExtraDependencies[sSys])
-    Next
-
-    If SameFiles Then Print #hFic, "SameFiles=1"
-
-    aElt = New String[]
-    For Each sSys In Systems
-      Print #hFic, "ExtraFiles="; sSys; ":"; Quote(ExtraFiles[sSys])
-    Next
-
-    If ExtraAutoconfTest Then Print #hFic, "ExtraAutoconfTest=" & Quote(ExtraAutoconfTest)
-
-  Endif
+  For Each sSys In $aSystems
+    If Menus[sSys] Then Print #hFic, "Menus="; sSys; ":"; Quote(Menus[sSys])
+    If Categories[sSys] Then Print #hFic, "Categories="; sSys; ":"; Quote(Categories[sSys])
+    If Groups[sSys] Then Print #hFic, "Groups="; sSys; ":"; Quote(Groups[sSys])
+    If ExtraDependencies[sSys] Then Print #hFic, "ExtraDependencies="; sSys; ":"; Quote(ExtraDependencies[sSys])
+    If ExtraFiles[sSys] Then Print #hFic, "ExtraFiles="; sSys; ":"; Quote(ExtraFiles[sSys])
+  Next
 
   Close #hFic
 
@@ -3671,19 +3649,19 @@ Public Function CheckFileName(sName As String, Optional sDir As String) As Strin
 
   Return
 
-VOID_NAME:
+VOID_NAME: 
 
   Return ("Please type a name.")
 
-BAD_CHAR:
+BAD_CHAR: 
 
   Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]"
 
-BAD_START:
+BAD_START: 
 
   Return ("The name cannot begins with a dot.")
 
-ALREADY_EXIST:
+ALREADY_EXIST: 
 
   Return ("This name is already used. Choose another one.")
 
@@ -3714,16 +3692,16 @@ Public Function CheckClassName(sName As String, Optional bCheckNotExist As Boole
 
   Return
 
-VOID_NAME:
+VOID_NAME: 
 
   Return ("Please type a name.")
 
-BAD_CHAR:
+BAD_CHAR: 
 
-  Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]" & "\n\n" &
+  Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]" & "\n\n" & 
     ("A class name must begin with a letter or an underscore, followed by any letter or digit.")
 
-ALREADY_EXIST:
+ALREADY_EXIST: 
 
   Return ("This name is already used. Choose another one.")
 
@@ -3890,6 +3868,11 @@ End
 Public Sub RefreshKey(sKey As String, Optional sOld As String)
 
   If Not sKey Then Return
+
+  If Not ProjectTree.Exist(sKey) And If IsSourcePath(sKey) Then 
+    sKey = FindForm(File.BaseName(sKey))
+  Endif
+
   If Not sOld Then sOld = sKey
 
   EnsureKey(sOld)
@@ -5094,7 +5077,8 @@ Public Sub IsExported(sPath As String) As Boolean
   Dim sExt As String
 
   sExt = File.Ext(sPath)
-  If sExt <> "module" And If sExt <> "class" Then Return
+  If sExt <> "module" And If sExt <> "class" Then sPath = File.SetExt(sPath, "class")
+  If Not Exist(sPath) Then Return
 
   Try hFile = Open sPath
   If Error Then Return

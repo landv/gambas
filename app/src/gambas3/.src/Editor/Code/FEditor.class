@@ -731,7 +731,7 @@ Private Sub InsertProperty()
     Inc iPos
   Endif
 
-ANOTHER_SYMBOL:
+ANOTHER_SYMBOL: 
 
   sName = Highlight.Symbols[iPos]
   If sName = "{" Then
@@ -1706,7 +1706,9 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
   $bLastStatic = False
   $hSymbol = Null
 
-  If sSymbol = "ME" Then Return Me.Name
+  If sSymbol = "ME" Then
+    Return Me.Name
+  Endif
 
   If sSymbol = "SUPER" Then
     CComponent.GetClassSymbols(Me.Name)

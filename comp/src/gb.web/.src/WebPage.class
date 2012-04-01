@@ -3,6 +3,12 @@
 Export
 Create Static
 
+Static Private $iLevel As Integer
+
+Property Buffered As Boolean
+
+Private $bBuffered As Boolean
+
 Static Public Sub Main()
   
   Dim hObject As WebPage
@@ -22,6 +28,32 @@ End
 
 Public Sub Render()
   
+  If $iLevel = 0 Then
+    Response.Buffered = $bBuffered
+    Response.Begin
+  Endif
+  
+  Inc $iLevel
   _Render()
   
+Finally
+  
+  Dec $iLevel
+  
+  If $iLevel = 0 Then
+    Response.End
+  Endif
+  
+End
+
+Private Function Buffered_Read() As Boolean
+
+  Return $bBuffered
+
+End
+
+Private Sub Buffered_Write(Value As Boolean)
+
+  $bBuffered = Value
+
 End

@@ -2304,19 +2304,26 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	__ENTER:
 	{
+		QWidget *popup = qApp->activePopupWidget();
+		
 		_hovered = control;
-		if (real && !qApp->activePopupWidget())
+		
+		if (real && (!popup || CWidget::getReal(popup)))
 		{
 			_official_hovered = control;
 			GB.Raise(control, EVENT_Enter, 0);
 		}
+		
 		goto __NEXT;
 	}
 
 	__LEAVE:
 	{
-		if (real && !qApp->activePopupWidget())
+		QWidget *popup = qApp->activePopupWidget();
+		
+		if (real && (!popup || CWidget::getReal(popup)))
 			GB.Raise(control, EVENT_Leave, 0);
+		
 		goto __NEXT;
 	}
 	

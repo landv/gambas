@@ -973,7 +973,7 @@ Private Function MakeRpmPackage(sSys As String)
   
     Select Case sSys
   
-      Case "mandriva"
+      Case "mandriva", "mageia"
   
         Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
         Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
@@ -1049,7 +1049,7 @@ Private Function MakeRpmPackage(sSys As String)
   
     Select Case sSys
   
-      Case "mandriva"
+      Case "mandriva", "mageia"
   
         Print #hFile, "/%{_miconsdir}" &/ sIcon
         Print #hFile, "/%{_iconsdir}" &/ sIcon
