@@ -958,7 +958,7 @@ static void add_string()
 			p++;
 			len++;
 
-			if (car == '\n')
+			if (!car || car == '\n')
 				THROW("Non terminated string");
 
 			if (car == '\\')
