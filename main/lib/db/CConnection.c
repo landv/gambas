@@ -718,6 +718,15 @@ BEGIN_PROPERTY(CCONNECTION_debug)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Connection_Handle)
+
+  CHECK_DB();
+  CHECK_OPEN();
+	GB.ReturnPointer(THIS->db.handle);
+
+END_PROPERTY
+
+
 GB_DESC CConnectionDesc[] =
 {
   GB_DECLARE("Connection", sizeof(CCONNECTION)),
@@ -738,6 +747,7 @@ GB_DESC CConnectionDesc[] =
   GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_PROPERTY_READ("Error", "i", CCONNECTION_error),
   GB_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
+  GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
 
   GB_METHOD("Open", NULL, CCONNECTION_open, NULL),
   GB_METHOD("Close", NULL, CCONNECTION_close, NULL),
@@ -791,6 +801,7 @@ GB_DESC CDBDesc[] =
   GB_STATIC_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_STATIC_PROPERTY_READ("Error", "i", CCONNECTION_error),
   GB_STATIC_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
+  GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
 
   GB_STATIC_PROPERTY("Debug", "b", CCONNECTION_debug),
 

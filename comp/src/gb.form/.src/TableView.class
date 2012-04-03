@@ -106,13 +106,17 @@ Private Sub MoveEditor()
   
   Dim X, Y, W, H As Integer
   Dim MX, MY, MW, MH As Integer
+  Dim hEditor As Object
   
   If Not $hEditor Then Return 
   
   $bDoNotHideEditor = True
   
+  ' $bDoNotHideEditor can be set to FALSE during the WAIT instruction
+  hEditor = $hEditor
   Me[$iRow, $iCol].EnsureVisible
   Wait
+  If Not $hEditor Then $hEditor = hEditor
   
   X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
   Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY

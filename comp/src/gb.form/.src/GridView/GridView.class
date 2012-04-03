@@ -392,11 +392,10 @@ Public Sub ScrollArea_Draw()
   hRect = New Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
   hRect.Adjust(F)
   hRect.Adjust($hRows.Width, $hColumns.Height, 0, 0)
-  hSaveClip = Draw.ClipRect
   hClip = hRect.Intersection(Draw.ClipRect)
-  
   If Not hClip Then Return
   
+  hSaveClip = hClip.Copy()
   Draw.ClipRect = hClip
   
   Y = YY
