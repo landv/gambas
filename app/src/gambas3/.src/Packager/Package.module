@@ -1349,7 +1349,7 @@ Private Sub MakeTgzPackage(sSys As String)
   sPackage = sPrefix & Subst("&1-&2-noarch-1.tgz", $sPackageName, $sVersion)
   MoveFile(sTempPackage, Path &/ sPackage)
   AddLog(sPackage)
-
+  
 End
 
 Private Sub MakeAutotoolsPackage(sSys As String)
