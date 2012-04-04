@@ -1544,7 +1544,7 @@ Private Function MakeArchPackage(sSys As String)
      RunCommand(sCmd, sBuildDir)
   Next 
 
-  RunCommand("cp " & String.LCase$($sName) & "-" & $sVersion & "-1*.tar.* " & Path &/ "", sBuildDir)
+  RunCommand("cp " & String.LCase$($sName) & "-" & $sVersion & "-1*.tar.* " & Shell$(Path) &/ "", sBuildDir)
 
   ' Remove build dir
   Shell "rm -rf " & Shell(sBuildDir) Wait
