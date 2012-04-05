@@ -22,6 +22,7 @@ Private $bReadOnly As Boolean
 Private $bActivate As Boolean
 Private $bLocked As Boolean
 Private $bScaled As Boolean
+Private $bNoRefreshMenu As Boolean
 'PRIVATE $sType AS String
 
 ' Gestion de la souris
@@ -129,6 +130,8 @@ Public Sub Reload()
     Return
   Endif
 
+  $bNoRefreshMenu = True
+
   UnSelectAll
   RefreshProperty
 
@@ -165,6 +168,9 @@ Public Sub Reload()
   FFormStack.RefreshAll
 
   $bDoNotModify = False
+  $bNoRefreshMenu = False
+  
+  RefreshMenu
 
   $hUndo.Enable
 
@@ -2291,6 +2297,8 @@ Sub RefreshMenu()
   Dim bEnabled As Boolean
   Dim hCtrl As CControl
 
+  If $bNoRefreshMenu Then Return
+
   bOn = Not IsNull(Master)
 
   Action[".cut,.copy,.copy-same,.delete,.lower,.raise", Me].Enabled = bOn
@@ -3129,7 +3137,6 @@ End
 Public Sub Form_Activate()
 
   Project.SetCurrentPopup(mnuForm)
-  RefreshMenu
 
 End
 
@@ -3738,4 +3745,10 @@ Public Sub RestoreMenus()
   
   $hUndo.Add("ClearMenus")
   
+End
+
+Public Sub tlbForm_Configure()
+
+  RefreshMenu
+
 End
