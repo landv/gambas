@@ -1442,8 +1442,11 @@ Private Function MakeArchPackage(sSys As String)
   
   If sPkgDesc = "" Then sPkgDesc = "a software done with Gambas3"
   
-  $sFormatMinMax = "'&1>=&2' "
-  sDependencies = GetDependencies()
+  $sFormatMinMax = "'&1>=&2' '&1<=&3' "
+  $sFormatMin = "'&1>=&2' "
+  $sFormatMax = "'&1<=&3' "
+  $sFormatSingle = "'&1' "
+  sDependencies = GetDependencies() & GetExtraDependencies(sSys)
   
   ' 1. Create the temporary build directory
 
