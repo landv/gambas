@@ -571,12 +571,9 @@ void gPrinter::setName(const char *name)
 	gtk_print_settings_set_printer(_settings, name);
 }
 
-const char *gPrinter::outputFileName() const
+static char *unescape_uri(const char *uri)
 {
-	const char *uri;
 	char *path;
-	
-	uri = gtk_print_settings_get(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
 	
 	if (!uri)
 		return NULL;
@@ -588,6 +585,11 @@ const char *gPrinter::outputFileName() const
 	gt_free_later(path);
 	
 	return path;
+}
+
+const char *gPrinter::outputFileName() const
+{
+	return unescape_uri(gtk_print_settings_get(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI));
 }
 
 void gPrinter::setOutputFileName(const char *file)
@@ -660,13 +662,16 @@ static void dump_tree(GtkWidget *wid, GtkPrintUnixDialog *dialog)
 		_dump_tree_entry--;
 		if (_dump_tree_entry == 0)
 		{
-			const char *output = gtk_print_settings_get(gPrinter::_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
+			char *path;
 			char *name;
 			
-			name = g_path_get_basename(output);
-			//fprintf(stderr, "name = %s\n", name);
-			gtk_entry_set_text(GTK_ENTRY(wid), name);
-			g_free(name);
+			path = unescape_uri(gtk_print_settings_get(gPrinter::_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI));
+			if (path)
+			{
+				name = g_path_get_basename(path);
+				gtk_entry_set_text(GTK_ENTRY(wid), name);
+				g_free(name);
+			}
 		}
 	}
 	else if (GTK_IS_CONTAINER(wid))

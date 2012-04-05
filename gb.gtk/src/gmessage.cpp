@@ -227,6 +227,28 @@ gDialog
 
 GPtrArray *gDialog::_filter = NULL;
 
+static void free_path(void)
+{
+	if (DIALOG_path)
+	{
+		g_free(DIALOG_path);
+		DIALOG_path = NULL; 
+	}
+	
+	if (DIALOG_paths)
+	{
+		int i = 0;
+	
+		while (DIALOG_paths[i])
+		{
+			g_free(DIALOG_paths[i]);
+			i++;
+		}
+		g_free(DIALOG_paths);
+		DIALOG_paths=NULL;
+	}
+}
+
 static void set_filters(GtkFileChooser* ch)
 {	
 	char **filters;
@@ -287,17 +309,7 @@ static bool run_file_dialog(GtkFileChooserDialog *msg)
 		return true;
  	}
 	
-	if (DIALOG_path) { g_free(DIALOG_path); DIALOG_path=NULL; }
-	if (DIALOG_paths)
-	{
-		while (DIALOG_paths[b])
-		{
-			g_free(DIALOG_paths[b]);
-			b++;
-		}
-		g_free(DIALOG_paths);
-		DIALOG_paths=NULL;
-	}
+	free_path();
 	
 	names=gtk_file_chooser_get_filenames((GtkFileChooser*)msg);
 	
@@ -331,14 +343,7 @@ static bool run_file_dialog(GtkFileChooserDialog *msg)
 
 void gDialog::exit()
 {
-	long bucle=0;
-
-	gDialog::setPath(NULL);
-	if (DIALOG_paths)
-	{
-		while(DIALOG_paths[bucle]) g_free(DIALOG_paths[bucle++]);
-		g_free(DIALOG_paths);
-	}
+	free_path();
 	
 	gDialog::setFilter(NULL, 0);
 	gFont::assign(&DIALOG_font);
@@ -381,12 +386,12 @@ void gDialog::setTitle(char *vl)
 		DIALOG_title = g_strdup(vl);
 }
 
-char* gDialog::path()
+char *gDialog::path()
 {
 	return DIALOG_path;
 }
 
-char** gDialog::paths()
+char **gDialog::paths()
 {
 	return DIALOG_paths;
 }
