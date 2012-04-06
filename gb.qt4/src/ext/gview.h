@@ -36,6 +36,7 @@
 #include <QEvent>
 #include <QHash>
 #include <QStyle>
+#include <QTextOption>
 
 #include "gdocument.h"
 #include "../gb.qt.h"
@@ -73,6 +74,7 @@ private:
 
 	GDocument *doc;
 	QFontMetrics fm;
+	QTextOption textOption;
 	int largestLine;
 	int x, y, xx;
 	int nx, ny;

@@ -216,6 +216,7 @@ End
 
 Public Sub DrawingArea_Enter()
   
+  'Debug ">";; Me.Text
   $hDrawingArea.Tracking = True
   $bShowClose = GetParent().Closable
   $hDrawingArea.Refresh
@@ -231,6 +232,7 @@ End
 
 Public Sub DrawingArea_Leave()
   
+  'Debug "<";; Me.Text
   $bShowClose = False
   $bInClose = False
   SetMouse
@@ -243,7 +245,7 @@ Public Sub DrawingArea_MouseMove()
   
   Dim bInClose As Boolean
   
-  bInClose = Mouse.X > (Me.W - BUTTON_SIZE) 
+  bInClose = (Mouse.ScreenX - Me.ScreenX) > (Me.W - BUTTON_SIZE) 
   If bInClose <> $bInClose Then
     $bInClose = bInClose
     SetMouse

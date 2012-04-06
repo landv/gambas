@@ -359,6 +359,24 @@ QString CWIDGET_Utf8ToQString(GB_STRING *str)
 	return QString::fromUtf8((const char *)(str->value.addr + str->value.start), str->value.len);
 }
 
+static bool _post_check_hovered = false;
+static CWIDGET *_post_check_hovered_window = NULL;
+
+static void post_check_hovered(intptr_t)
+{
+	CWIDGET *_object = _post_check_hovered_window;
+	
+	if (THIS && WIDGET)
+	{
+		//qDebug("post_check_hovered");
+		const QPoint globalPos(QCursor::pos());
+		QPoint pos = WIDGET->mapFromGlobal(globalPos);
+		_hovered = CWidget::getRealExisting(WIDGET->childAt(pos));
+		CWIDGET_check_hovered();
+	}
+	
+	_post_check_hovered = false;
+}
 
 void CWIDGET_destroy(CWIDGET *_object)
 {
@@ -377,8 +395,8 @@ void CWIDGET_destroy(CWIDGET *_object)
 	//qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
 	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
 
-	CWIDGET_set_flag(THIS, WF_DELETED);
 	CWIDGET_set_visible(THIS, false);
+	CWIDGET_set_flag(THIS, WF_DELETED);
 
 	if (qobject_cast<QProgressBar *>(WIDGET))
 		CPROGRESS_style_hack(THIS);
@@ -646,10 +664,16 @@ void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
 
 void CWIDGET_check_hovered()
 {
+	//qDebug("CWIDGET_check_hovered: %p %s -> %p %s", _hovered, _hovered ? _hovered->name : 0, _official_hovered, _official_hovered ? _official_hovered->name : 0);
+	
 	if (_official_hovered != _hovered)
 	{
-		if (_official_hovered) GB.Raise(_official_hovered, EVENT_Leave, NULL);
-		if (_hovered) GB.Raise(_hovered, EVENT_Enter, NULL);
+		if (_official_hovered)
+			GB.Raise(_official_hovered, EVENT_Leave, NULL);
+		
+		if (_hovered)
+			GB.Raise(_hovered, EVENT_Enter, NULL);
+		
 		_official_hovered = _hovered;
 	}
 }
@@ -2078,10 +2102,6 @@ void CWidget::setName(CWIDGET *object, const char *name)
 }
 #endif
 
-void CWIDGET_free_ext(void *_object)
-{
-}
-
 void CWidget::destroy()
 {
 	QWidget *w = (QWidget *)sender();
@@ -2090,19 +2110,38 @@ void CWidget::destroy()
 	if (!THIS)
 		return;
 
-	//qDebug("CWidget::destroy: (%s %p) %s", GB.GetClassName(ob), ob, ob->name);
+	//qDebug("CWidget::destroy: (%s %p) %s [%p]", GB.GetClassName(THIS), THIS, THIS->name, _hovered);
 	
-	if (CWIDGET_active_control == THIS)
-		CWIDGET_active_control = NULL;
-	
-	if (_old_active_control == THIS)
-		_old_active_control = NULL;
+	if (!_post_check_hovered)
+	{
+		CWIDGET *top = (CWIDGET *)CWidget::getTopLevel(THIS);
+		if (top != THIS)
+		{
+			_post_check_hovered = true;
+			_post_check_hovered_window = top;
+			GB.Post((void (*)())post_check_hovered, NULL);
+		}
+	}
 	
 	if (_hovered == THIS)
 		_hovered = NULL;
 	
 	if (_official_hovered == THIS)
 		_official_hovered = NULL;
+	
+	if (_post_check_hovered_window == THIS)
+		_post_check_hovered_window = NULL;
+	/*if (!_check_enter_leave)
+	{
+		_check_enter_leave = true;
+		QTimer::singleShot(0, &CWidget::manager, SLOT(checkEnterLeave));
+	}*/
+	
+	if (CWIDGET_active_control == THIS)
+		CWIDGET_active_control = NULL;
+	
+	if (_old_active_control == THIS)
+		_old_active_control = NULL;
 	
 	if (THIS_EXT)
 	{
@@ -2307,12 +2346,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		QWidget *popup = qApp->activePopupWidget();
 		
-		_hovered = control;
-		
 		if (real && (!popup || CWidget::getReal(popup)))
 		{
-			_official_hovered = control;
-			GB.Raise(control, EVENT_Enter, 0);
+			_hovered = control;
+			CWIDGET_check_hovered();
+			//_official_hovered = control;
+			//GB.Raise(control, EVENT_Enter, 0);
 		}
 		
 		goto __NEXT;
@@ -2323,7 +2362,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		QWidget *popup = qApp->activePopupWidget();
 		
 		if (real && (!popup || CWidget::getReal(popup)))
-			GB.Raise(control, EVENT_Leave, 0);
+		{
+			if (_hovered == control)
+				_hovered = NULL;
+			CWIDGET_check_hovered();
+		}
 		
 		goto __NEXT;
 	}

@@ -408,6 +408,11 @@ void GEditor::updateFont()
 		_charWidth[i] = fm.width(QChar(i));
 	
 	_sameWidth = _charWidth[' '];
+	//_charWidth[9] = _sameWidth * 8;
+	
+	textOption.setTabStop(_sameWidth * 8);
+	textOption.setWrapMode(QTextOption::NoWrap);
+	
 	for (int i = 33; i < 256; i++)
 	{
 		if (_charWidth[i] != _sameWidth)
@@ -442,7 +447,7 @@ static int find_last_non_space(const QString &s)
 	
 	for (i = s.length() - 1; i >= 0; i--)
 	{
-		if (s[i].unicode() > 32)
+		if (s[i].unicode() > 32) // || s[i].unicode() == 9)
 			return i;
 	}
 	return -1;
@@ -979,7 +984,8 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		{
 			p.setPen(styles[GLine::Normal].color);
 			//p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
-			p.drawText(lineWidth(realRow, xmin), fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
+			//p.drawText(QRect(lineWidth(realRow, xmin), 1, visibleWidth(), _cellh), l->s.getString().mid(xmin, lmax), textOption);
+			p.drawText(lineWidth(realRow, xmin), 1 + fm.ascent(), l->s.getString().mid(xmin, lmax));
 			if (getFlag(ShowDots))
 			{
 				i = find_last_non_space(l->s.getString()) + 1;
@@ -1896,7 +1902,7 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 	else
 	{
 		QString t = e->text();
-		if (t.length() && t.at(0).isPrint()
+		if (t.length() && (t.at(0).isPrint() || (t.at(0).unicode() == 9 && ctrl))
 				&& e->key() != Qt::Key_Return
 				&& e->key() != Qt::Key_Enter
 				&& e->key() != Qt::Key_Delete
@@ -2004,9 +2010,9 @@ int GEditor::posToColumn(int y, int px)
 			continue;
 		}
 		
-		if (_sameWidth)
+		/*if (_sameWidth)
 			lw += _sameWidth;
-		else
+		else*/
 			lw = lineWidth(y, i + 1); //+= getStringWidth(s.mid(i, 1)); //fm.width(s[i]);
 		if (px >= lw)
 		{
