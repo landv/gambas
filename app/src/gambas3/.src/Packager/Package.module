@@ -1439,8 +1439,6 @@ Private Function MakeArchPackage(sSys As String)
   Dim sBuildDir As String
   Dim sPkgTgz As String
   Dim hFile As File
-  Dim sFile As String
-  Dim aFile As String[]
   Dim sLib As String
   Dim sCmd As String
   Dim sDependencies As String
@@ -1517,7 +1515,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, "build() {"
     Print #hFile, "  cd ${srcdir}/${_realname}"
     Print #hFile, ""
-    Print #hFile, Subst("  gbc&1 && gba&1", System.Version)
+    Print #hFile, Subst("  gbc&1 &&& gba&1", System.Version)
     Print #hFile, "}"
     Print #hFile, ""
     Print #hFile, "package() {"
@@ -1546,15 +1544,8 @@ Private Function MakeArchPackage(sSys As String)
       Print #hFile, "  install -D .." &/ $sPackageName & ".desktop \\"
       Print #hFile, "    ${pkgdir}/usr/share/applications" &/ $sPackageName & ".desktop"
     Endif
-    
-    'For Each sFile In Split(Project.ExtraFiles[sSys], "\n")
-    '  aFile = Split(sFile, "\t")
-    '  Print #hFile, "  install -D ${srcdir}/${_realname}/.hidden" &/ aFile[0] & " ${pkgdir}" &/ File.Dir(aFile[1] &/ File.Name(aFile[0]))
-    'Next
-    
-    Print #hFile, GetExtraFilesDir(sSys, "install -d ${pkgdir}/&1")
-    Print #hFile, GetExtraFiles(sSys, "install -p ${srcdir}/${_realname}/.hidden/&1 %{pkgdir}/&2/&1", "cp -R --preserve=timestamp ${srcdir}/${_realname}/.hidden/&1 %{pkgdir}/&2/&1")
-    
+    Print #hFile, GetExtraFilesDir(sSys, "  install -d ${pkgdir}&1\n");
+    Print #hFile, GetExtraFiles(sSys, "  install -p ${srcdir}/${_realname}/.hidden/&1 ${pkgdir}&2/&1", "  cp -R --preserve=timestamp ${srcdir}/${_realname}/.hidden/&1 ${pkgdir}&2/&1");
     Print #hFile, "  install -Dm644 ${srcdir}/license.txt ${pkgdir}/usr/share/licenses" &/ $sPackageName &/ "license.txt"
     Print #hFile, "}"
   Close #hFile
@@ -1563,7 +1554,7 @@ Private Function MakeArchPackage(sSys As String)
   
   AddLog(("Creating package...") & "\n")
   
-  For Each sCmd In ["makepkg --allsource", "makepkg"]
+  For Each sCmd In ["makepkg --allsource", "makepkg -d"]
      RunCommand(sCmd, sBuildDir)
   Next 
 
