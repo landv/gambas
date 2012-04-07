@@ -1924,7 +1924,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 		setWindowFlags(Qt::Window | flags);
 	}
 	
-	CWIDGET_check_hovered();
+	//CWIDGET_check_hovered();
 }
 
 #if 0

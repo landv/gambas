@@ -318,6 +318,24 @@ bool CWIDGET_container_for(void *_object, void *container_for)
 	return true;
 }
 
+static void CWIDGET_enter(void *_object)
+{
+	if (!THIS->flag.inside)
+	{
+		THIS->flag.inside = true;
+		GB.Raise(THIS, EVENT_Enter, 0);
+	}
+}
+
+static void CWIDGET_leave(void *_object)
+{
+	if (THIS->flag.inside)
+	{
+		THIS->flag.inside = false;
+		GB.Raise(THIS, EVENT_Leave, 0);
+	}
+}
+
 void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
 	//QAbstractScrollArea *sa;
@@ -372,7 +390,8 @@ static void post_check_hovered(intptr_t)
 		const QPoint globalPos(QCursor::pos());
 		QPoint pos = WIDGET->mapFromGlobal(globalPos);
 		_hovered = CWidget::getRealExisting(WIDGET->childAt(pos));
-		CWIDGET_check_hovered();
+		if (_hovered)
+			CWIDGET_enter(_hovered);
 	}
 	
 	_post_check_hovered = false;
@@ -2330,29 +2349,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	goto *jump;
 
-	/*if (type != QEvent::Enter)
-	{
-		if (_control_leave)
-		{
-			save = _control_leave;
-			_control_leave = NULL;
-			
-			if (type != QEvent::Leave || save != control)
-				GB.Raise(save, EVENT_Leave, 0);
-		}
-	}*/
-	
 	__ENTER:
 	{
 		QWidget *popup = qApp->activePopupWidget();
 		
 		if (real && (!popup || CWidget::getReal(popup)))
-		{
-			_hovered = control;
-			CWIDGET_check_hovered();
-			//_official_hovered = control;
-			//GB.Raise(control, EVENT_Enter, 0);
-		}
+			CWIDGET_enter(control);
 		
 		goto __NEXT;
 	}
@@ -2362,11 +2364,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		QWidget *popup = qApp->activePopupWidget();
 		
 		if (real && (!popup || CWidget::getReal(popup)))
-		{
-			if (_hovered == control)
-				_hovered = NULL;
-			CWIDGET_check_hovered();
-		}
+			CWIDGET_leave(control);
 		
 		goto __NEXT;
 	}

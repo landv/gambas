@@ -68,7 +68,8 @@ typedef
 			unsigned grab : 1;
 			unsigned dragging: 1;
 			unsigned noTabFocus : 1;
-			unsigned _reserved : 4;
+			unsigned inside : 1;
+			unsigned _reserved : 3;
 			} flag;
 		int level;
 		char *name;
