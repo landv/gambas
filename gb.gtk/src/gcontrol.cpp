@@ -237,6 +237,7 @@ void gControl::initAll(gContainer *parent)
 	_no_default_mouse_event = false;
 	_proxy = _proxy_for = NULL;
 	_no_tab_focus = false;
+	_inside = false;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -1858,4 +1859,22 @@ void gControl::setNoTabFocus(bool v)
 	_no_tab_focus = v;
 	if (pr)
 		pr->updateFocusChain();
+}
+
+void gControl::emitEnterEvent()
+{
+	if (_inside)
+		return;
+
+	emit(SIGNAL(onEnterLeave), gEvent_Enter);
+	_inside = true;
+}
+
+void gControl::emitLeaveEvent()
+{
+	if (!_inside)
+		return;
+
+	emit(SIGNAL(onEnterLeave), gEvent_Leave);
+	_inside = false;
 }

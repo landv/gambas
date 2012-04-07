@@ -40,6 +40,7 @@
 #include "gmainwindow.h"
 
 //#define DEBUG_IM 1
+//#define DEBUG_ENTER_LEAVE 1
 
 /*************************************************************************
 
@@ -308,6 +309,20 @@ static bool raise_key_event_to_parent_window(gControl *control, int type)
 	return false;
 }
 
+static bool check_crossing_event(GdkEvent *event)
+{
+	#if DEBUG_ENTER_LEAVE
+	fprintf(stderr, "check_crossing_event: %d / %d\n", event->crossing.detail, event->crossing.mode);
+	#endif
+	
+	if (event->crossing.detail != GDK_NOTIFY_INFERIOR 
+	    && (event->crossing.mode == GDK_CROSSING_NORMAL || event->crossing.mode == GDK_CROSSING_STATE_CHANGED))
+		// || event->crossing.mode == GDK_CROSSING_UNGRAB || event->crossing.mode == GDK_CROSSING_GTK_UNGRAB))
+		return true;
+	else
+		return false;
+}
+
 static void gambas_handle_event(GdkEvent *event)
 {
   GtkWidget *widget;
@@ -431,12 +446,20 @@ static void gambas_handle_event(GdkEvent *event)
 	//if (group != gApplication::currentGroup())
 	//	goto __HANDLE_EVENT;
 	
-	if (event->type != GDK_ENTER_NOTIFY)
+	if (!gdk_events_pending() && event->type != GDK_ENTER_NOTIFY && event->type != GDK_LEAVE_NOTIFY)
 	{
 		if (gApplication::_leave)
 		{
-			if (event->type != GDK_LEAVE_NOTIFY || gApplication::_leave != control)
-				gApplication::_leave->emit(SIGNAL(gApplication::_leave->onEnterLeave), gEvent_Leave);
+			//if () // || (gApplication::_leave != control && check_crossing_event(event)))
+			#if DEBUG_ENTER_LEAVE
+			fprintf(stderr, "post leave: %s\n", gApplication::_leave->name());
+			#endif
+			
+			if (gApplication::_enter == gApplication::_leave)
+				gApplication::_enter = NULL;
+			
+			gApplication::_leave->emitLeaveEvent();
+			
 			gApplication::_leave = NULL;
 		}
 	}
@@ -449,25 +472,53 @@ static void gambas_handle_event(GdkEvent *event)
 	{
 		case GDK_ENTER_NOTIFY:
 			
-			//gApplication::dispatchEnterLeave(control);
 			if (gApplication::_leave == control)
+			{
+				#if DEBUG_ENTER_LEAVE
+				fprintf(stderr, "enter ignored: %s\n", control->name());
+				#endif
 				gApplication::_leave = NULL;
+			}
 			else if (gApplication::_enter != control)
 			{
-				gApplication::_enter = control;
-				control->emit(SIGNAL(control->onEnterLeave), gEvent_Enter);
+				if (check_crossing_event(event))
+				{
+					#if DEBUG_ENTER_LEAVE
+					fprintf(stderr, "enter: %s\n", control->name());
+					#endif
+					gApplication::_enter = control;
+					control->emitEnterEvent();
+				}
 			}
 			break;
 		
 		case GDK_LEAVE_NOTIFY:
 			
-			if (gdk_events_pending())
-				gApplication::_leave = control;
-			else
+			if (gdk_events_pending() && gApplication::_leave == NULL)
 			{
-				if (gApplication::_enter == control)
-					gApplication::_enter = NULL;
-				control->emit(SIGNAL(control->onEnterLeave), gEvent_Leave);
+				if (check_crossing_event(event))
+				{
+					#if DEBUG_ENTER_LEAVE
+					fprintf(stderr, "leave later: %s\n", control->name());
+					#endif
+					gApplication::_leave = control;
+				}
+			}
+			else if (gApplication::_leave != control)
+			{
+				if (check_crossing_event(event))
+				{
+					if (gApplication::_enter == control)
+						gApplication::_enter = NULL;
+					
+					if (gApplication::_leave == control)
+						gApplication::_leave = NULL;
+			
+					#if DEBUG_ENTER_LEAVE
+					fprintf(stderr, "leave: %s\n", control->name());
+					#endif
+					control->emitLeaveEvent();
+				}
 			}
 			break;
 			
