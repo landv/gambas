@@ -4,11 +4,11 @@ include $(top_srcdir)/gb.qt.am
 
 SUBDIRS = html
 
-INCLUDES = @QT_INC@ @KDE_INC@
+INCLUDES = @QT_INC@ @KDE_INC@ @TRINITY_INC@
 
 gblib_LTLIBRARIES = gb.qt.kde.la
 
-gb_qt_kde_la_LIBADD = @QT_LIB@ @KDE_LIB@
+gb_qt_kde_la_LIBADD = @QT_LIB@ @KDE_LIB@ @TRINITY_LIB@
 gb_qt_kde_la_LDFLAGS = -module @LD_FLAGS@
 
 gb_qt_kde_la_SOURCES = \

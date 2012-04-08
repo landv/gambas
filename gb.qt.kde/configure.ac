@@ -20,15 +20,28 @@ GB_COMPONENT(
   [$THREAD_INC])
 
 if test x"$have_qt" != "x"; then
-  
-GB_COMPONENT(
-  kde,
-  KDE,
-  [KDE 3.x component],
-  [src],
-  [GB_FIND(kapplication.h, `kde-config --prefix 2> /dev/null`, include)],
-  [GB_FIND(libkdecore.$SHLIBEXT, `kde-config --prefix 2> /dev/null`, lib)],
-  [-lkdecore -lkdeui -lDCOP -lkio])
+
+  GB_COMPONENT(
+    trinity,
+    TRINITY,
+    [Trinity],
+    [src],
+    [GB_FIND(tqstring.h, /usr/local /usr /opt, include include/tqt tqt/include)],
+    [GB_FIND(libtqt.$SHLIBEXT, /usr/local /usr, lib lib/tqt tqt/lib)],
+    [-ltqt])
+
+  if test x"$have_trinity" != x; then
+    PATH=$PATH:/opt/trinity/bin
+  fi
+
+  GB_COMPONENT(
+    kde,
+    KDE,
+    [KDE 3.x component],
+    [src],
+    [GB_FIND(kapplication.h, `kde-config --prefix 2> /dev/null`, include)],
+    [GB_FIND(libkdecore.$SHLIBEXT, `kde-config --prefix 2> /dev/null`, lib)],
+    [-lkdecore -lkdeui -lDCOP -lkio])
 
 fi
   
