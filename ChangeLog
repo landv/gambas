@@ -1,4 +1,63 @@
 -------------------------------------------------------------------------------
+ gambas2-2.23.1 - 08 Apr 2012
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* NEW: Remove ltmain.sh symbolic links.
+* NEW: Switch to version 2.23.2.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Saving a project inside its own directory is now forbidden.
+* NEW: Lithuanian translation made by Regimantas Baublys.
+* NEW: Add support for latin language.
+
+[INTERPRETER]
+* BUG: Fix GB.MatchString() API return value.
+* BUG: DateAdd() does not raise an overflow error anymore when used on a
+  time value.
+* BUG: Fix interpreter API for 64 bits systems.
+* BUG: Try to not lose the value of 'errno' if the select() system call
+  fails inside the event loop.
+* BUG: Fix function calls for functions taking optional arguments and extra
+  arguments.
+
+[COMPILER]
+* BUG: Really support reserved words in form control names.
+
+[DB.FIREBIRD]
+* BUG: Fix building with gcc-4.6.0.
+
+[GB.DB.MYSQL]
+* BUG: When creating a table, use "ENGINE" keyword instead of "TYPE" with
+  MySQL >= 4.0.18.
+
+[GB.DB.ODBC]
+* BUG: Fix a stupid crash that occurs on 64 bits systems only.
+
+[GB.DESKTOP]
+* BUG: Fix Desktop.Find() when matching window titles.
+
+[GB.GTK]
+* BUG: Correctly raise Show and Hide events in the Watcher class.
+
+[GB.NET]
+* BUG: Correctly check system errors when using a asynchronous DnsClient.
+
+[GB.NET.SMTP]
+* BUG: gb.net.smtp now should compile correctly with header files that use
+  the "boolean" symbol.
+* BUG: Really fix compilation of gb.net.smtp.
+* BUG: Continue on trying to fix gb.net.smtp compilation.
+* BUG: Continue on trying to make gb.net.smtp compile.
+
+[GB.PDF]
+* BUG: Make gb.pdf compile with poppler 0.17.
+
+[GB.QT.KDE]
+* NEW: Support for Trinity.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.23.1 - 27 May 2011
 -------------------------------------------------------------------------------
 
