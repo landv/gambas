@@ -7,6 +7,14 @@ Private $iEndLine As Integer
 
 Private $hLabel As TextLabel
 Private $hLabelTimer As Timer
+Private $hObserver As Observer
+
+Public Sub _new()
+  
+  $hObserver = New Observer(Me) As "Editor"
+  
+End
+
 
 
 Public Sub GetPosition() As Integer
@@ -198,4 +206,10 @@ Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional
   $hLabelTimer.Start
   Me.SetFocus
 
+End
+
+Public Sub Editor_Scroll()
+  
+  Try $hLabel.Hide
+  
 End

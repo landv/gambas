@@ -96,14 +96,6 @@ table {
   /*color: white;*/
 }
 
-.news th {
-  background: #B0CEE6; /*#006080;*/
-  padding: 2px;
-  border-left: 1px solid #B0CEE6;
-  border-bottom: 1px solid #B0CEE6;
-  text-align: right;
-}
-
 th {
   background: #BDD4E6; /*#006080;*/
   border-left: 1px solid #95C1E6;
@@ -128,6 +120,10 @@ td.th {
 
 td {
   border-left: 1px solid #95C1E6;
+}
+
+.none td {
+  border: none;
 }
 
 tr.dark {
@@ -274,8 +270,8 @@ H3 {
 }
 
 .separator {
-  height: 6px;
-  background: orange;
+  height: 3px;
+  background: black;
   margin: 8px -8px 8px -8px;
 }
 
@@ -286,30 +282,6 @@ H3 {
   margin-right: 16px;
 }
 
-.top-left-corner {
-  float: left;
-}
-
-.top-right-corner {
-  float: right;
-}
-
-.bottom-left-corner {
-  float: left;
-}
-
-.bottom-right-corner {
-  float: right;
-}
-
-.top-corner {
-  height: 8px;
-  }
-  
-.bottom-corner {
-  height: 8px;
-  }
-  
 img {
   border: none;
 }
@@ -341,40 +313,19 @@ p {
 }
 
 #presentation {
-  /*letter-spacing: 1px;*/
-  /*border: solid black 2px;*/
-  /*background: #FFBF7F;*/
   padding: 0px 16px 16px 8px;
-  /*border-bottom: dotted black 6px;*/
   margin-right: -8px;
-  /*background: white;*/
   margin-top: 0px;
-  font-weight: bold;
-  /*border-right: dotted black 6px;*/
-  /*border-radius: 0px 0px 12px;*/
-}
-
-#title-shadow {
-  /*left: 2px;
-  top: 2px;*/
-  padding: 0px;
-  font-weight: bold;
-  font-size: 250%;
-  color: #FF7F00;
-  letter-spacing: 2px;
-  margin-bottom: 16px;
 }
 
 #title {
-  position: absolute;
-  margin-top: -2px;
-  margin-left: -2px;
   padding: 0px;
   font-weight: bold;
   font-size: 250%;
   color: #3398c3;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   margin-bottom: 16px;
+  text-shadow: 2px 2px 0px #DF6B00;
 }
 
 .title {
@@ -389,8 +340,6 @@ p {
 }
 
 .download {
-  float: left;
-  margin: 16px 32px 32px 0px;
 }
 
 .download-gray {
@@ -419,9 +368,6 @@ p {
   margin-left: 24px;
   margin-right: 24px;
   border: solid #BF5C00 1px;
-  /*-moz-box-shadow:    0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
-  box-shadow:         0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);*/
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -431,13 +377,10 @@ p {
   background: -moz-linear-gradient(top, orange 0%, #BF5C00 100%); /* firefox */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,orange), color-stop(100%,#BF5C00)); /* webkit */
   background: linear-gradient(top, orange 0%, #BF5C00 100%);
-  /*-moz-transition:   box-shadow 0.2s ease-in-out;
-  -webit-transition: box-shadow 0.2s ease-in-out;
-  transition:        box-shadow 0.2s ease-in-out;*/
   font-size: large;
   text-align: center;
-  -moz-transition: box-shadow 0.25s ease;
-  -webkit-transition: box-shadow 0.25s ease;
+  -moz-transition: box-shadow 0.25s ease,text-shadow 0.25s ease;
+  -webkit-transition: box-shadow 0.25s ease,text-shadow 0.25s ease;
 }
 
 a.download-orange:hover {
@@ -451,9 +394,6 @@ a.download-orange:hover {
   margin-left: 24px;
   margin-right: 24px;
   border: solid #21647F 1px;
-  /*-moz-box-shadow:    0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
-  box-shadow:         0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);*/
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -463,13 +403,10 @@ a.download-orange:hover {
   background: -moz-linear-gradient(top, #3398C3 0%, #21647F 100%); /* firefox */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3398C3), color-stop(100%,#21647F)); /* webkit */
   background: linear-gradient(top, #3398C3 0%, #21647F 100%);
-  /*-moz-transition:   box-shadow 0.2s ease-in-out;
-  -webit-transition: box-shadow 0.2s ease-in-out;
-  transition:        box-shadow 0.2s ease-in-out;*/
   font-size: large;
   text-align: center;
-  -moz-transition: box-shadow 0.25s ease;
-  -webkit-transition: box-shadow 0.25s ease;
+  -moz-transition: box-shadow 0.25s ease,text-shadow 0.25s ease;
+  -webkit-transition: box-shadow 0.25s ease,text-shadow 0.25s ease;
 }
 
 a.download-blue:hover {
@@ -500,32 +437,40 @@ a.download-blue:hover {
   }
 
 #news {
-  float: left;
-  position: relative;
-  width: 320px;
-  height: 340px;
-  margin: 32px 24px;
+  width: 100%;
+  height: 2048px;
+  border: solid 1px #21647F;
 }
 
 #news-frame {
-  position: absolute;
+  /*position: absolute;*/
   width: 100%;
   height: 100%;
   background: white;
-  border: solid 1px #BF5C00;
+  /*border: solid 1px #BF5C00;*/
   box-shadow: 0 0 8px black;
+  overflow: hidden;
 }
 
-#news-shadow {
-  display: none;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: -24px;
-  top: -12px;
-  background: black;
-  border: solid 18px black;
-  border-radius: 16px;
-  opacity: 0.3;
+#logo {
+  display: block;
+  margin-bottom: 16px;
 }
 
+#all-news {
+  display: inline-table;
+  background: #3398C3;
+  border: solid 1px #21647F;
+  color: white;
+  font-size: small; 
+  padding: 0px 6px;
+  margin-top: 8px;
+}
+
+#all-news a:link {
+  color: white;
+}
+
+#all-news a:visited {
+  color: white;
+}

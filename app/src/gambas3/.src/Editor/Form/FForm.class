@@ -2266,8 +2266,6 @@ Private Sub CreateMenu()
 
   Endif
 
-  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
-
   RefreshMenu
 
 End
@@ -2364,6 +2362,8 @@ Sub RefreshMenu()
 
   Endif
   
+  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
+
 End
 
 Sub SelectionChange()
@@ -3136,6 +3136,7 @@ End
 
 Public Sub Form_Activate()
 
+  RefreshMenu
   Project.SetCurrentPopup(mnuForm)
 
 End

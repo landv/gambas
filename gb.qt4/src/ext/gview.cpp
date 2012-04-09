@@ -985,7 +985,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 			p.setPen(styles[GLine::Normal].color);
 			//p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
 			//p.drawText(QRect(lineWidth(realRow, xmin), 1, visibleWidth(), _cellh), l->s.getString().mid(xmin, lmax), textOption);
-			p.drawText(lineWidth(realRow, xmin), 1 + fm.ascent(), l->s.getString().mid(xmin, lmax));
+			p.drawText(lineWidth(realRow, xmin), fm.ascent(), l->s.getString().mid(xmin, lmax));
 			if (getFlag(ShowDots))
 			{
 				i = find_last_non_space(l->s.getString()) + 1;
@@ -996,7 +996,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 	else
 	{
-		paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, xs1, xs2, realRow, color);
+		paintText(p, l, margin, fm.ascent(), xmin, lmax, _cellh, xs1, xs2, realRow, color);
 	}
 	
 	// Folding symbol

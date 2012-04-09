@@ -4,7 +4,6 @@
 
 Public Const STYLE_HTML As Integer = 1
 Public Const STYLE_WEB As Integer = 2
-Public Const STYLE_CSS As Integer = 3
 
 Private Enum TAG_HTML, TAG_CODE, TAG_SCRIPT, TAG_STYLE, TAG_CODE_MARKUP, TAG_COMMENT, TAG_VARIABLE
 
@@ -342,68 +341,6 @@ Public Sub Run(iStyle As Integer)
       
       Highlight.Text = sTextAfter
       
-    Case STYLE_CSS
-    
-      For iInd = 1 To String.Len(sText)
-    
-        iNextState = iState
-        sCar = String.Mid$(sText, iInd, 1)
-
-        Select Case iState
-        
-          Case Highlight.Normal, Highlight.String, Highlight.Function, Highlight.Operator
-            If sCar = "." Then 
-              iState = Highlight.String
-              iNextState = iState
-            Else If sCar = "#" Then 
-              iState = Highlight.Function
-              iNextState = iState
-            Else If sCar = ":" Then
-              iState = Highlight.Operator
-              iNextState = iState
-            Else If sCar = " " Then 
-              iState = Highlight.Normal
-              iNextState = iState
-            Else If sCar = "{" Then 
-              iState = Highlight.Keyword
-              iNextState = iState
-              iTag = Highlight.Keyword
-              bLimit = True
-            Else If sCar = "/" Then 
-              If Mid$(sText, iInd, 2) = "/*" Then 
-                iState = Highlight.Comment
-                iNextState = iState
-              Endif
-            Endif
-            
-          Case Highlight.Keyword, Highlight.Number
-            If sCar = ":" Then 
-              iNextState = Highlight.Number
-            Else If sCar = ";" Then 
-              iState = Highlight.Keyword
-              iNextState = iState
-            Else If sCar = "}" Then 
-              iNextState = Highlight.Normal
-              iTag = 0
-            Else If sCar = "/" Then 
-              If Mid$(sText, iInd, 2) = "/*" Then 
-                iState = Highlight.Comment
-                iNextState = iState
-              Endif
-            Endif
-                        
-          Case Highlight.Comment
-            If sCar = "/" And If iInd > 1 And If String.Mid$(sText, iInd - 1, 1) = "*" Then
-              iNextState = IIf(iTag, iTag, Highlight.Normal)
-            Endif
-            
-        End Select
-        
-        Highlight.Add(iState)
-        iState = iNextState
-    
-      Next
-    
   End Select 
 
   Highlight.State = iNextState

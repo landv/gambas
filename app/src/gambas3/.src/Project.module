@@ -4358,6 +4358,10 @@ End
 
 Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
 
+  Dim sKey As String
+
+  sKey = ProjectTree.Key
+  
   sPath = File.BaseName(sPath)
   If Not Project.Exist(sPath) Then sPath = ""
 
@@ -4369,6 +4373,8 @@ Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
     WriteProject(True)
     Compile
   Endif
+
+  SelectKey(sKey)
 
 Catch
 

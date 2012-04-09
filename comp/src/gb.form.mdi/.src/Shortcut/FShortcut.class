@@ -29,11 +29,11 @@ Public Sub Form_Open()
   Next
   $aAction.Sort
 
-  Debug tvwShortcut.Row;; tvwShortcut.Column
+  'Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Rows.Count = $aAction.Count
-  Debug tvwShortcut.Row;; tvwShortcut.Column
+  'Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Columns.Count = 2
-  Debug tvwShortcut.Row;; tvwShortcut.Column
+  'Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Columns[0].Text = ("Action")
   tvwShortcut.Columns[1].Text = ("Shortcut")
   
