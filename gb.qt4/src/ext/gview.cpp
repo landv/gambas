@@ -119,7 +119,6 @@ void GEditor::reset()
 	_posOutside = false;
 	_checkCache = true;
 	_ensureCursorVisibleLater = false;
-	_sameWidth = 0;
 	
 	foldClear();
 }
@@ -188,7 +187,6 @@ GEditor::GEditor(QWidget *parent)
 	setDocument(NULL);
 
 	setFont(QFont("monospace", QApplication::font().pointSize()));
-	updateFont();
 
 	blinkTimer = new QTimer(this);
 	connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blinkTimerTimeout()));
@@ -243,22 +241,45 @@ int GEditor::getStringWidth(const QString &s, int len, bool unicode) const
 {
 	int i;
 	ushort c;
-	int w = 0;
+	double w = 0;
+	int us = -1, ul = 0;
 	
 	//if (len < 0)
 	//	len = s.length();
 	
 	if (_sameWidth && !unicode)
-		return len * _sameWidth;
+		return len * _sameWidth + 0.5;
 	
 	for (i = 0; i < len; i++)
 	{
 		c = s.at(i).unicode();
-		if (c & 0xFF00)
-			return fm.width(s, len);
+		if (c != 9 && !GString::isStandardChar(c))
+		{
+			if (us < 0)
+			{
+				us = i;
+				ul = 0;
+			}
+			ul++;
+		}
 		else
-			w += _charWidth[c];
+		{
+			if (us >= 0)
+			{
+				w += fm.width(s.mid(us), ul);
+				us = -1;
+			}
+			if (c == 9)
+				w = ((int)(w + 0.5) + _tabWidth) / _tabWidth * _tabWidth;
+			else
+				w += _charWidth[c];
+		}
 	}
+	
+	if (us >= 0)
+		w += fm.width(s.mid(us), ul);
+	
+	//qDebug("getStringWidth: %g / %d (%g %d)", w, fm.width(s, len), _sameWidth, unicode);
 	
 	return w;
 }
@@ -267,7 +288,7 @@ void GEditor::updateCache()
 {
 	//int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
 	//int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
-	int nw = QMAX(_cache->width(), visibleWidth() + _charWidth['m'] * 2);
+	int nw = QMAX(_cache->width(), (int)(visibleWidth() + _charWidth['m'] * 2 + 0.5));
 	int nh = QMAX(_cache->height(), visibleHeight() + _cellh);
 	
 	if (nw > 0 && nh > 0 && (nw != _cache->width() || nh != _cache->height()))
@@ -277,9 +298,9 @@ void GEditor::updateCache()
 
 int GEditor::lineWidth(int y) const
 {
-	// Add 2 or a space width so that we see the cursor at end of line
+	// Add 2 or a character width so that we see the cursor at end of line
 	GLine *l = doc->lines.at(y);
-	return margin + getStringWidth(l->s.getString(), l->s.length(), l->unicode) + (_insertMode ? _charWidth[' '] : 2);
+	return margin + getStringWidth(l->s.getString(), l->s.length(), l->unicode) + (_insertMode ? _charWidth['W'] : 2);
 }
 
 
@@ -385,7 +406,7 @@ UPDATE_WIDTH:
 	
 void GEditor::updateHeight()
 {
-	_cellh = fm.ascent() + fm.descent() + 2;
+	_cellh = fm.ascent() + fm.descent() + 3;
 	//updateCache();
 	_checkCache = true;
 		
@@ -402,31 +423,65 @@ void GEditor::redrawContents()
 void GEditor::updateFont()
 {
 	QFont f;
+	int i;
+	QString c;
 	
-	fm = fontMetrics();
+	normalFont = QFont(font());
+	normalFont.setKerning(false);
+	italicFont = QFont(font());
+	italicFont.setKerning(false);
+	italicFont.setItalic(true);
+	
+	fm = QFontMetrics(normalFont);
+	_ytext = fm.ascent() + 1;
+	
 	for (int i = 0; i < 256; i++)
-		_charWidth[i] = fm.width(QChar(i));
+	{
+		c = QChar(i);
+		c = c.repeated(64);
+		_charWidth[i] = (double)fm.width(c) / 64;
+		//qDebug("_charWidth[%d] = %g", i, _charWidth[i]);
+	}
 	
 	_sameWidth = _charWidth[' '];
+	_tabWidth = _charWidth['m'] * 8;
 	//_charWidth[9] = _sameWidth * 8;
 	
-	textOption.setTabStop(_sameWidth * 8);
-	textOption.setWrapMode(QTextOption::NoWrap);
-	
-	for (int i = 33; i < 256; i++)
+	for (i = 33; i < 127; i++)
 	{
 		if (_charWidth[i] != _sameWidth)
 		{
+			//qDebug("[%d] = %g!", i, _charWidth[i]);
 			_sameWidth = 0;
 			break;
 		}
 	}
 	
-	normalFont = font();
-	normalFont.setKerning(false);
-	italicFont = font();
-	italicFont.setKerning(false);
-	italicFont.setItalic(true);
+	if (_sameWidth)
+	{
+		for (i = 160; i < 256; i++)
+		{
+			if (i == 173)
+				continue;
+			if (_charWidth[i] != _sameWidth)
+			{
+				//qDebug("[%d] = %g!", i, _charWidth[i]);
+				_sameWidth = 0;
+				break;
+			}
+		}
+	}
+	
+	//qDebug("%p: sameWidth = %g tabWidth = %d", this, _sameWidth, _tabWidth);
+	
+	if (_sameWidth)
+	{
+		QString t = "AbCdEfGh01#@WwmM";
+		t = t.repeated(4);
+		
+		_sameWidth = (double)fm.width(t) / t.length();
+		//qDebug("_sameWidth -> %g", _sameWidth);
+	}
 	
 	updateMargin();
 	updateWidth();
@@ -444,10 +499,12 @@ void GEditor::changeEvent(QEvent *e)
 static int find_last_non_space(const QString &s)
 {
 	int i;
+	ushort c;
 	
 	for (i = s.length() - 1; i >= 0; i--)
 	{
-		if (s[i].unicode() > 32) // || s[i].unicode() == 9)
+		c = s[i].unicode();
+		if (c > 32 || c == 9)
 			return i;
 	}
 	return -1;
@@ -459,7 +516,7 @@ void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 	int i, x, y, w;
 
 	x = lineWidth(row, ps) + 1;
-	y = fm.ascent();
+	y = //fm.ascent();
 	w = _charWidth[' '];
 	for (i = 0; i < ls; i++)
 	{
@@ -468,7 +525,9 @@ void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 		x += w;
 	}
 
+	p.setOpacity(0.5);
 	p.drawPoints(pa, i);
+	p.setOpacity(1);
 }
 
 static QColor merge_color(const QColor &ca, const QColor &cb)
@@ -517,6 +576,35 @@ static QColor calc_color(QColor ca, QColor cb, QColor cd)
 	return QColor(r / n, g / n, b / n);
 }
 
+void GEditor::drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &s)
+{
+	int tp, tnp, yt = y;
+	
+	tp = 0;
+	
+	for(;;) //while (pos < s.length())
+	{
+		tnp = s.find('\t', tp);
+		if (tnp < 0)
+		{
+			p.drawText(x, y, s.mid(tp));
+			break;
+		}
+		
+		if (tnp > tp)
+		{
+			p.drawText(x, y, s.mid(tp, tnp - tp));
+			x += fm.width(s.mid(tp, tnp - tp));
+		}
+		p.setOpacity(0.5);
+		p.drawLine(x, yt - 2, x, yt);
+		p.drawLine(x + 1, yt, x + 2, yt);
+		p.setOpacity(1);
+		x = sx + ((x - sx) + _tabWidth) / _tabWidth * _tabWidth;
+		tp = tnp + 1;
+	}
+}
+
 void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row, QColor &fbg)
 {
 	int i;
@@ -530,6 +618,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	QColor bg;
 	bool draw_bg;
 	bool show_dots = getFlag(ShowDots);
+	int xs = x;
 
 	if (l->s.length() == 0)
 	{
@@ -628,17 +717,21 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 				if (st->bold)
 				{
 					QColor c = st->color;
-					c.setAlpha(160);
+					c.setAlpha(128);
 					p.setPen(c);
-					p.drawText(x + 1, y, sd);
+					drawTextWithTab(p, xs, x + 1, y, sd);
 				}
 				
 				p.setPen(st->color);
-				p.drawText(x, y, sd);
+				drawTextWithTab(p, xs, x, y, sd);
 			}
 			
 			if (st->underline)
+			{
+				p.setOpacity(0.5);
 				p.drawLine(x, y + 2, nx - 1, y + 2);
+				p.setOpacity(1);
+			}
 		}
 
 		pos += len;
@@ -648,7 +741,8 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	if (pos < (int)l->s.length() && pos < (xmin + lmax))
 	{
 		p.setPen(styles[GLine::Normal].color);
-		p.drawText(x, y, l->s.mid(pos).getString());
+		//p.drawText(x, y, l->s.mid(pos).getString());
+		drawTextWithTab(p, xs, x, y, l->s.mid(pos).getString());
 		if (show_dots)
 			paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, (int)l->s.length() - pos));
 	}
@@ -694,7 +788,7 @@ void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int
 static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 {
 	double r, g, b, a, da;
-	int n = pix->height() * 3 / 4;
+	int n = pix->height();
 	int i;
 	QPainter p;
 
@@ -703,19 +797,20 @@ static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 	r = start.red();
 	g = start.green();
 	b = start.blue();
-	a = 255;
 
 	if (n == 0)
 		n = 1;
 
-	da = -(a / n);
+	a = 0;
+	da = (128 / ((n + 1) / 2) - 1);
 
 	p.begin(pix);
 
-	for (i = 0; i < n; i++)
+	for (i = 0; i < ((n + 1) / 2); i++)
 	{
-		QBrush brush(QColor((int)r, (int)g, (int)b, (int) a));
+		QBrush brush(QColor((int)r, (int)g, (int)b, qMin(255,(int)a)));
 		p.fillRect(0, i, pix->width(), 1, brush);
+		p.fillRect(0, n - i - 1, pix->width(), 1, brush);
 		a += da;
 	}
 
@@ -844,7 +939,10 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	if (drawSep && getFlag(ChangeBackgroundAtLimit) && isEnabled())
 	{
 		if (ysep)
+		{
+			//int xsep = qMax(0, margin - qMin(_cellh, 12) - contentsX());
 			p.fillRect(0, ysep, visibleWidth(), _cellh - ysep, !odd ? _oddBackground : styles[GLine::Background].color);
+		}
 		
 		drawSep = false;
 	}
@@ -854,10 +952,10 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	//p.translate(-ur.left(), 0);
 
 	p.translate(-contentsX(), 0);
-
+	
 	// Show string
 	if ((_showRow == realRow || _showString.length()))
-		paintShowString(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, realRow);
+		paintShowString(p, l, margin, _ytext, xmin, lmax, _cellh, realRow);
 	
 	// Selection background
 	xs1 = 0;
@@ -892,44 +990,13 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		}
 	}
 
-	// Margin
-	if (margin && (margin > ur.left()))
-	{
-		//if (!l->flag)
-		//	p.fillRect(0, 0, margin, _cellh, color); //styles[GLine::Background].color);
-
-		if (getFlag(ShowModifiedLines))
-		{
-			if (l->changed)
-				p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
-			//if (l->modified)
-			//	p.fillRect((margin - 2) / 2, _cellh / 2, 1, 1, styles[GLine::Breakpoint].color);
-		}
-		//else
-		//	p.fillRect(0, 0, margin - 2, _cellh, odd ? _oddBackground : styles[GLine::Background].color);
-		/*else if (getFlag(ShowCurrentLine))
-			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);*/
-
-		//x1 = 0;
-
-		if (getFlag(ShowLineNumbers))
-		{
-			int n = realRow + 1;
-			if ((n % 10) == 0 || (l->proc && folded))
-				p.setPen(styles[GLine::Normal].color);
-			else
-				p.setPen(styles[GLine::Selection].color);
-			p.drawText(2, fm.ascent() + 1, QString::number(n).rightJustify(lineNumberLength));
-		}
-	}
-	
 	// Highlight braces
 	if (getFlag(HighlightBraces))
 	{
 		if (realRow == y1m && x1m >= 0)
-			highlight_text(p, lineWidth(y1m, x1m), fm.ascent(), lineWidth(y1m, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
+			highlight_text(p, lineWidth(y1m, x1m), _ytext, lineWidth(y1m, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
 		if (realRow == y2m && x2m >= 0)
-			highlight_text(p, lineWidth(y2m, x2m), fm.ascent(), lineWidth(y2m, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+			highlight_text(p, lineWidth(y2m, x2m), _ytext, lineWidth(y2m, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
 	}
@@ -938,19 +1005,21 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	
 	if (drawSep)
 	{
+		int xsep = 0; //qMax(0, margin - qMin(_cellh, 12) - contentsX());
+		
 		p.translate(contentsX(), 0);
-
+		
 		if (getFlag(BlendedProcedureLimits))
 		{
 			if (!_blend_pattern)
 			{
-				_blend_pattern = new QImage(64, _cellh, QImage::Format_ARGB32_Premultiplied);
-				make_blend(_blend_pattern, styles[GLine::Line].color);
+				_blend_pattern = new QImage(64, _cellh / 2, QImage::Format_ARGB32_Premultiplied);
+				make_blend(_blend_pattern, styles[GLine::Selection].color);
 			}
 			
 			wsep = visibleWidth();
 			
-			for (i = 0; i < wsep; i += _blend_pattern->width())
+			for (i = xsep; i < wsep; i += _blend_pattern->width())
 				p.drawImage(i, ysep, *_blend_pattern, 0, 0, QMIN(wsep - i, _blend_pattern->width()), _cellh - ysep);
 			
 			if (xs1 && xs2)
@@ -971,12 +1040,50 @@ void GEditor::paintCell(QPainter &p, int row, int)
 			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
 			//p.fillRect(0, 0, cache->width(), 1, brush);
 			p.setPen(styles[GLine::Selection].color);
-			p.drawLine(0, ysep, visibleWidth() - 1, ysep);
+			p.setOpacity(0.5);
+			p.drawLine(xsep, ysep, visibleWidth() - 1, ysep);
+			p.setOpacity(1);
 		}
 		
 		p.translate(-contentsX(), 0);
 	}
 
+	// Margin
+	if (margin && (margin > ur.left()))
+	{
+		//if (!l->flag)
+		//	p.fillRect(0, 0, margin, _cellh, color); //styles[GLine::Background].color);
+
+		if (getFlag(ShowModifiedLines))
+		{
+			if (l->changed)
+			{
+				int w = qMax(2, margin - qMin(_cellh, 12) - 1);
+				p.setOpacity(0.5);
+				p.fillRect(0, 0, w, _cellh, styles[GLine::Highlight].color);
+				p.setOpacity(1);
+			}
+			//if (l->modified)
+			//	p.fillRect((margin - 2) / 2, _cellh / 2, 1, 1, styles[GLine::Breakpoint].color);
+		}
+		//else
+		//	p.fillRect(0, 0, margin - 2, _cellh, odd ? _oddBackground : styles[GLine::Background].color);
+		/*else if (getFlag(ShowCurrentLine))
+			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);*/
+
+		//x1 = 0;
+
+		if (getFlag(ShowLineNumbers))
+		{
+			int n = realRow + 1;
+			if ((n % 10) == 0 || (l->proc && folded))
+				p.setPen(styles[GLine::Normal].color);
+			else
+				p.setPen(styles[GLine::Selection].color);
+			p.drawText(2, _ytext, QString::number(n).rightJustify(lineNumberLength));
+		}
+	}
+	
 	// Line text
 	if (!highlight)
 	{
@@ -984,8 +1091,9 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		{
 			p.setPen(styles[GLine::Normal].color);
 			//p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
-			//p.drawText(QRect(lineWidth(realRow, xmin), 1, visibleWidth(), _cellh), l->s.getString().mid(xmin, lmax), textOption);
-			p.drawText(lineWidth(realRow, xmin), fm.ascent(), l->s.getString().mid(xmin, lmax));
+			//p.drawText(QRect(lineWidth(realRow, xmin), 0, visibleWidth(), _cellh), l->s.getString().mid(xmin, lmax), textOption);
+			//p.drawText(lineWidth(realRow, xmin), fm.ascent(), l->s.getString().mid(xmin, lmax));
+			drawTextWithTab(p, lineWidth(realRow, 0), lineWidth(realRow, xmin), _ytext, l->s.getString().mid(xmin, lmax));
 			if (getFlag(ShowDots))
 			{
 				i = find_last_non_space(l->s.getString()) + 1;
@@ -996,7 +1104,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 	else
 	{
-		paintText(p, l, margin, fm.ascent(), xmin, lmax, _cellh, xs1, xs2, realRow, color);
+		paintText(p, l, margin, _ytext, xmin, lmax, _cellh, xs1, xs2, realRow, color);
 	}
 	
 	// Folding symbol
@@ -1386,7 +1494,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		nx = 0;
 	else 
 	{
-		int xmax = _insertMode ? QMAX((_cellw / _charWidth[' ']) + 1, lineLength(largestLine)) : lineLength(ny);
+		int xmax = _insertMode ? QMAX((int)(_cellw / _charWidth[' ']) + 1, lineLength(largestLine)) : lineLength(ny);
 		
 		if (nx > xmax)
 			nx = xmax;

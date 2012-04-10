@@ -30,7 +30,8 @@ bool GString::hasUnicode() const
 {
 	for (uint i = 0; i < (uint)s.length(); i++)
 	{
-		if (s[i].unicode() & 0xFF00)
+		int c = s[i].unicode();
+		if (!isStandardChar(c))
 			return true;
 	}
 	

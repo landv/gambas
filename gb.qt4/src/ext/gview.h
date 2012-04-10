@@ -36,7 +36,6 @@
 #include <QEvent>
 #include <QHash>
 #include <QStyle>
-#include <QTextOption>
 
 #include "gdocument.h"
 #include "../gb.qt.h"
@@ -74,7 +73,7 @@ private:
 
 	GDocument *doc;
 	QFontMetrics fm;
-	QTextOption textOption;
+	int _ytext;
 	int largestLine;
 	int x, y, xx;
 	int nx, ny;
@@ -94,8 +93,9 @@ private:
 	int _cellw, _cellh;
 	int _nrows;
 	bool _insertMode;
-	short _charWidth[256];
-	int _sameWidth;
+	double _charWidth[256];
+	double _sameWidth;
+	int _tabWidth;
 	bool _oddLine;
 	QColor _oddBackground;
 	bool _checkCache;
@@ -129,6 +129,7 @@ private:
 	void lineRemoved(int y);
 	int findLargestLine();
 
+	void drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &s);
 	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row, QColor &);
 	void paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row);
 	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);

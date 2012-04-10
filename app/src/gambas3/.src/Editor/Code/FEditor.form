@@ -181,6 +181,12 @@
     }
     { mnuSep5 Menu
     }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
     { mnuReload Menu
       Action = ".reload"
       Text = ("Reload")
@@ -317,33 +323,9 @@
       Action = ".uncomment"
       Picture = Picture["img/16/uncomment.png"]
     }
-    { btnNoSplit ToolButton mnuNoSplit
-      Name = "btnNoSplit"
-      MoveScaled(56,0,4,4)
-      Visible = False
-      ToolTip = ("No split")
-      Action = ".view-nosplit"
-      Picture = Picture["icon:/small/view-normal"]
-    }
-    { btnHorizontalSplit ToolButton mnuHorizontalSplit
-      Name = "btnHorizontalSplit"
-      MoveScaled(59,0,4,4)
-      Visible = False
-      ToolTip = ("Horizontal split")
-      Action = ".view-hsplit"
-      Picture = Picture["icon:/small/view-split-h"]
-    }
-    { btnVerticalSplit ToolButton mnuVerticalSplit
-      Name = "btnVerticalSplit"
-      MoveScaled(62,0,4,4)
-      Visible = False
-      ToolTip = ("Vertical split")
-      Action = ".view-vsplit"
-      Picture = Picture["icon:/small/view-split-v"]
-    }
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
-      MoveScaled(65,0,4,4)
+      MoveScaled(57,0,4,4)
       Visible = False
       ToolTip = ("Make code pretty")
       Action = ".pretty"
@@ -351,39 +333,65 @@
     }
     { btnBreakpoint ToolButton mnuBreakpoint
       Name = "btnBreakpoint"
-      MoveScaled(68,0,4,4)
+      MoveScaled(60,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(71,0,4,4)
+      MoveScaled(63,0,4,4)
       ToolTip = ("Watch expression")
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(74,0,4,4)
+      MoveScaled(66,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
       Picture = Picture["icon:/16/info"]
     }
     { Separator2 Separator
+      MoveScaled(70,0,1,4)
+    }
+    { btnNoSplit ToolButton mnuNoSplit
+      Name = "btnNoSplit"
+      MoveScaled(71,0,4,4)
+      Visible = False
+      ToolTip = ("No split")
+      Action = ".view-nosplit"
+      Picture = Picture["icon:/small/view-normal"]
+    }
+    { btnHorizontalSplit ToolButton mnuHorizontalSplit
+      Name = "btnHorizontalSplit"
+      MoveScaled(74,0,4,4)
+      Visible = False
+      ToolTip = ("Horizontal split")
+      Action = ".view-hsplit"
+      Picture = Picture["icon:/small/view-split-h"]
+    }
+    { btnVerticalSplit ToolButton mnuVerticalSplit
+      Name = "btnVerticalSplit"
+      MoveScaled(77,0,4,4)
+      Visible = False
+      ToolTip = ("Vertical split")
+      Action = ".view-vsplit"
+      Picture = Picture["icon:/small/view-split-v"]
+    }
+    { Separator1 Separator
       MoveScaled(81,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(82,0,44,4)
+      MoveScaled(83,0,44,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
-      Picture = Picture["img/16/procedure.png"]
+      Picture = Picture["icon:/small/bottom"]
     }
     { lblInfo Label
       MoveScaled(131,0,9,4)
-      Font = Font["+1"]
       Expand = True
       Padding = 4
       Alignment = Align.Right
@@ -427,6 +435,11 @@
     Text = "Toggle &breakpoint"
     Shortcut = "F9"
     Picture = "icon:/small/halt"
+  }
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
   }
   { Action color
     Text = "Insert color..."
@@ -503,7 +516,7 @@
   }
   { Action proc
     Text = "Procedure list"
-    Picture = "img/16/procedure.png"
+    Picture = "icon:/small/bottom"
   }
   { Action redo
     Text = "Redo"
@@ -578,7 +591,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,find-definition,proc"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
+    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,|,proc,$lblInfo"
   }
 }

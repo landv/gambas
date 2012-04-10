@@ -68,9 +68,10 @@ public:
 	unsigned flag : 2;
 	unsigned proc : 1;
 	unsigned unicode : 1;
+	unsigned tab : 1;
 	unsigned baptized : 1;
 	unsigned nobreak : 1;
-	unsigned _reserved : 2;
+	unsigned _reserved : 1;
 	signed tag : 16;
 
 	GLine();

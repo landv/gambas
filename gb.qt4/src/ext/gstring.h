@@ -70,6 +70,9 @@ public:
 	GString lower() const;
 	GString upper() const;
 	bool hasUnicode() const;
+	bool hasTab() const { return find('\t') >= 0; }
+	
+	static bool isStandardChar(ushort c);
 };
 
 inline GString::GString(const GString &str)
@@ -261,6 +264,11 @@ inline const GString operator+(const char c, const GString &str)
 	tmp += c;
 	tmp += str;
   return tmp;
+}
+
+inline bool GString::isStandardChar(ushort c)
+{
+	return !(c < 32 || (c >= 127 && c < 160) || c == 173 || c > 255);
 }
 
 #endif

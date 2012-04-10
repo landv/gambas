@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9.4286,14,96,71)
+  MoveScaled(9.4286,14,126,71)
   Icon = Picture["icon:/small/text"]
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -143,10 +143,15 @@
       Picture = Picture["icon:/small/save"]
       Shortcut = "Ctrl+S"
     }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,84,4)
-    Font = Font["-2"]
+    MoveScaled(0,0,125,4)
     Key = "text"
     Text = ("Text editor")
     Separator = True
@@ -221,32 +226,8 @@
       Action = ".unindent"
       Picture = Picture["icon:/small/unindent"]
     }
-    { btnNoSplit ToolButton mnuNoSplit
-      Name = "btnNoSplit"
-      MoveScaled(40,0,4,4)
-      Visible = False
-      ToolTip = ("No split")
-      Action = ".view-nosplit"
-      Picture = Picture["icon:/small/view-normal"]
-    }
-    { btnHorizontalSplit ToolButton mnuHorizontalSplit
-      Name = "btnHorizontalSplit"
-      MoveScaled(44,0,4,4)
-      Visible = False
-      ToolTip = ("Horizontal split")
-      Action = ".view-hsplit"
-      Picture = Picture["icon:/small/view-split-h"]
-    }
-    { btnVerticalSplit ToolButton mnuVerticalSplit
-      Name = "btnVerticalSplit"
-      MoveScaled(48,0,4,4)
-      Visible = False
-      ToolTip = ("Vertical split")
-      Action = ".view-vsplit"
-      Picture = Picture["icon:/small/view-split-v"]
-    }
     { btnInsertColor MenuButton
-      MoveScaled(52,0,6,4)
+      MoveScaled(40,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
@@ -254,24 +235,61 @@
       Menu = "mnuColor"
     }
     { Separator1 Separator
-      MoveScaled(58,0,1,4)
+      MoveScaled(47,0,1,4)
     }
     { btnCompress ToolButton mnuCompress
       Name = "btnCompress"
-      MoveScaled(60,0,4,4)
+      MoveScaled(48,0,4,4)
       ToolTip = ("Compress file")
       Action = ".compress"
       Picture = Picture["icon:/small/archive"]
     }
     { btnUncompress ToolButton mnuUncompress
       Name = "btnUncompress"
-      MoveScaled(64,0,4,4)
+      MoveScaled(51,0,4,4)
       ToolTip = ("Uncompress file")
       Action = ".uncompress"
       Picture = Picture["icon:/small/undo"]
     }
+    { Separator2 Separator
+      MoveScaled(55,0,1,4)
+    }
+    { btnNoSplit ToolButton mnuNoSplit
+      Name = "btnNoSplit"
+      MoveScaled(56,0,4,4)
+      Visible = False
+      ToolTip = ("No split")
+      Action = ".view-nosplit"
+      Picture = Picture["icon:/small/view-normal"]
+    }
+    { btnHorizontalSplit ToolButton mnuHorizontalSplit
+      Name = "btnHorizontalSplit"
+      MoveScaled(59,0,4,4)
+      Visible = False
+      ToolTip = ("Horizontal split")
+      Action = ".view-hsplit"
+      Picture = Picture["icon:/small/view-split-h"]
+    }
+    { btnVerticalSplit ToolButton mnuVerticalSplit
+      Name = "btnVerticalSplit"
+      MoveScaled(62,0,4,4)
+      Visible = False
+      ToolTip = ("Vertical split")
+      Action = ".view-vsplit"
+      Picture = Picture["icon:/small/view-split-v"]
+    }
+    { Separator3 Separator
+      MoveScaled(66,0,1,4)
+    }
+    { btnProc ToolButton
+      MoveScaled(68,0,44,4)
+      Mouse = Mouse.Pointing
+      Action = ".proc"
+      Text = ("Procedure list")
+      Picture = Picture["icon:/small/bottom"]
+    }
     { lblInfo Label
-      MoveScaled(75,0,9,4)
+      MoveScaled(114,0,9,4)
       Expand = True
       Padding = 4
       Alignment = Align.Right
@@ -279,7 +297,7 @@
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
-    MoveScaled(6,15,58,22)
+    MoveScaled(37,14,36,22)
     Expand = True
     Border = False
   }
@@ -296,6 +314,11 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
   { Action color
     Text = "Insert color..."
     Shortcut = ""
@@ -343,6 +366,10 @@
     Text = "Paste"
     Shortcut = "Ctrl+V"
     Picture = "icon:/small/paste"
+  }
+  { Action proc
+    Text = "Procedure list"
+    Picture = "icon:/small/bottom"
   }
   { Action redo
     Text = "Redo"
@@ -411,7 +438,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,color,compress,uncompress"
-    Default = "save,reload,show-class,undo,redo,indent,unindent,color,|,compress,uncompress,$lblInfo"
+    List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc"
+    Default = "save,reload,show-class,undo,redo,indent,unindent,color,|,compress,uncompress,|,|,proc,$lblInfo"
   }
 }

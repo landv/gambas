@@ -235,6 +235,12 @@
     }
     { mnuSep4 Menu
     }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
     { mnuReload Menu
       Action = ".reload"
       Text = ("Reload")
@@ -621,6 +627,11 @@
     Text = "Vertical"
     Shortcut = "Ctrl+Alt+V"
     Picture = "img/16/arrange-v.png"
+  }
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
   }
   { Action code-form
     Text = "Open code"

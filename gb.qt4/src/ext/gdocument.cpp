@@ -57,6 +57,7 @@ GLine::GLine()
 	highlight = NULL;
 	nobreak = false;
 	baptized = false;
+	tab = false;
 }
 
 GLine::~GLine()

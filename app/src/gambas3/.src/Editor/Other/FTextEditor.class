@@ -28,6 +28,9 @@ Property Read ReadOnly As Boolean
 Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage", "js", "c", "h", "cpp"]
 
 Private $bNoHighlight As Boolean
+Private $bShowCompress As Boolean
+Private $bModule As Boolean
+
 Private $bModify As Boolean
 Private $iLastLine As Integer = -1
 
@@ -40,20 +43,23 @@ Private $hEditor1 As Editor
 Private $hEditor2 As Editor
 Private $hInsertColor As CInsertColor
 
+Private $cProc As Collection
+Private $aProc As String[]
+
 Public Sub _new(sPath As String, Optional bModule As Boolean)
 
   Path = sPath
   Editor = edtEditor
   
   If bModule Then
-    btnShowCode.Visible = True
     mnuShowCode.Show
     Me.Name = File.BaseName(Path)
   Else
-    btnShowCode.Visible = False
     mnuShowCode.Hide
     Me.Name = File.Name(Path)
   Endif
+  
+  $bModule = bModule
   
   'edtEditor.Flags[Editor.ShowCursorPosition] = True
   
@@ -62,7 +68,6 @@ End
 Public Sub LoadFile() As Boolean
   
   Dim sExt As String = LCase(File.Ext(Path))
-  Dim bShowCompress As Boolean
   
   With edtEditor
     .Clear
@@ -74,12 +79,12 @@ Public Sub LoadFile() As Boolean
     Select Case sExt
       Case "css"
         edtEditor.Highlight = Highlight.CSS
-        bShowCompress = Not Project.IsHiddenPath(Path)
+        $bShowCompress = Not Project.IsHiddenPath(Path)
       Case "webpage"
         edtEditor.Highlight = Highlight.WebPage
       Case "js"
         edtEditor.Highlight = Highlight.JavaScript
-        bShowCompress = Not Project.IsHiddenPath(Path)
+        $bShowCompress = Not Project.IsHiddenPath(Path)
       Case "c"
         edtEditor.Highlight = Highlight.C
       Case "cpp", "h"
@@ -91,8 +96,6 @@ Public Sub LoadFile() As Boolean
   Else
     $bNoHighlight = True
   Endif
-
-  Action[".compress,.uncompress", Me].Visible = bShowCompress
 
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
 
@@ -137,6 +140,7 @@ End
 
 Public Sub ReadConfig()
 
+  Project.SetSmallFont(panToolbar)
   edtEditor.ReadConfig
   If $hEditor1 Then $hEditor1.ReadConfig
   If $hEditor2 Then $hEditor2.ReadConfig
@@ -203,6 +207,7 @@ End
 
 Public Sub Editors_Change()
 
+  $cProc = Null
   Modify
 
 End
@@ -488,6 +493,7 @@ Public Sub Reload()
   
   edtEditor.Text = sText
   Editor.SetFocus
+  Editors_Cursor
   Modify(True)
 
 End
@@ -714,6 +720,7 @@ End
 
 Public Sub Editors_Cursor()
 
+  RefreshCurrentProc
   CPosition.SaveCurrent
   lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
 
@@ -768,3 +775,184 @@ Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
 
 End
 
+Private Sub RemoveFromBegin(sStr As String, sBegin As String) As String
+  
+  If sStr Begins sBegin Then
+    Return Mid$(sStr, Len(sBegin) + 1)
+  Else
+    Return sStr
+  Endif
+  
+End
+
+
+Private Sub GetProc(sLine As String) As String
+
+  Dim iPos As Integer
+  Dim aStr As String[]
+  Dim iInd As Integer
+  Dim sStr As String
+
+  sLine = Trim(sLine)
+
+  Select Case Editor.Highlight
+    
+    Case Highlight.CSS
+      
+      iPos = InStr(sLine, "{")
+      If iPos Then sLine = Trim(Left(sLine, iPos - 1))
+      
+    Case Highlight.HTML, Highlight.WebPage
+      
+      iPos = InStr(sLine, " ")
+      If iPos Then sLine = Left$(sLine, iPos - 1) & ">"
+      
+    Case Highlight.JavaScript
+      
+      If sLine Begins "function " Then sLine = Mid$(sLine, 10)
+      iPos = InStr(sLine, "(")
+      If iPos Then sLine = Trim(Left$(sLine, iPos - 1))
+      
+    Case Highlight.C, Highlight.CPlusPlus
+      
+      aStr = Split(sLine & " (", " ")
+      For iInd = 0 To aStr.Max
+        sStr = aStr[iInd]
+        iPos = InStr(sStr, "(") 
+        If iPos > 0 Then
+          sLine = Trim(Left$(sStr, iPos - 1))
+          If Not sLine And If iInd > 0 Then sLine = aStr[iInd - 1]
+          Break
+        Endif
+      Next
+      
+  End Select 
+
+  Return Trim(sLine)
+
+End
+
+Private Sub GetCurrentProc() As String
+  
+  Dim iLine As Integer = Editor.Line
+  
+  While iLine >= 0
+    
+    If Editor.Lines[iLine].Limit Then Break
+    Dec iLine
+    
+  Wend
+  
+  If iLine <= 0 Then Return ("(Declarations)")
+  
+  Return GetProc(Editor.Lines[iLine].Text)
+  
+End
+
+Private Sub RefreshCurrentProc()
+
+  btnProc.Text = GetCurrentProc()
+
+End
+
+Private Sub FillProc()
+
+  Dim iLine As Integer
+  Dim sText As String
+  Dim sName As String
+  Dim sProc, sProcNum As String
+  Dim iNum As String
+
+  If $cProc Then Return
+
+  Inc Application.Busy
+
+  'fTime = Timer
+  'FOR iInd = 1 TO 20
+  'aFunc.Clear
+
+  sText = btnProc.Text
+
+  'cmbProc.Clear
+
+  $cProc = New Collection(gb.IgnoreCase)
+  $aProc = New String[]
+  iLine = 0
+  Do
+    iLine = Editor.FindNextLimit(iLine)
+    If iLine < 0 Then Break
+    sProc = GetProc(Editor.Lines[iLine].Text)
+    If $cProc.Exist(sProc) Then
+      iNum = 2
+      Do
+        sProcNum = sProc & " (" & iNum & ")"
+        If Not $cProc.Exist(sProcNum) Then
+          sProc = sProcNum
+          Break
+        Endif
+        Inc iNum
+      Loop
+    Endif
+    $aProc.Add(sProc)
+    $cProc[sProc] = iLine
+  Loop
+
+  $aProc.Sort(gb.IgnoreCase)
+
+  $aProc.Add(("(Declarations)"), 0)
+  $cProc[0] = 0
+
+  Dec Application.Busy
+
+End
+
+Public Sub btnProc_MouseDown()
+
+  If Not Mouse.Left Then Return
+  ToggleProcList
+  Stop Event
+
+End
+
+Private Sub ToggleProcList()
+
+  Dim iCurrent As Integer
+  Dim iLine As Integer
+
+  FillProc
+  iCurrent = $aProc.Find(btnProc.Text)
+
+  iCurrent = FProcedureList.Popup("", $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
+  If iCurrent >= 0 Then
+    Try iLine = $cProc[$aProc[iCurrent]]
+    GotoProc(iLine)
+  Endif
+
+End
+
+Private Sub GotoProc(iLine As Integer)
+  
+  Editor.Goto(iLine, 0, True)
+  
+End
+
+Public Sub panToolBar_Configure()
+
+  Action[".compress,.uncompress", Me].Visible = $bShowCompress
+  Action[".proc", Me].Visible = Not $bNoHighlight
+
+  If $bModule Then
+    btnShowCode.Show
+    mnuShowCode.Show
+  Else
+    btnShowCode.Hide
+    mnuShowCode.Hide
+  Endif
+
+End
+
+Public Sub mnuClose_Click()
+
+  Me.Close
+
+End

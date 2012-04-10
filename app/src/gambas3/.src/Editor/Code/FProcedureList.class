@@ -49,21 +49,27 @@ Public Sub gvwProc_Data(Row As Integer, Column As Integer)
   Try sName = $aProc[Row]
   If Not sName Then Return
   
-  cSymbol = CComponent.GetClassSymbols($sClass)
-  hSymbol = cSymbol[sName]
-  
   gvwProc.Data.Text = sName
-  If hSymbol Then
-    If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
-    If hSymbol.NotPublic Then 
-      'hColor = Color(Color.Foreground)
-      'hColor.Value = 255 - (255 - hColor.Value) * 0.6
+
+  If $sClass Then
+    
+    cSymbol = CComponent.GetClassSymbols($sClass)
+    hSymbol = cSymbol[sName]
+
+    If hSymbol Then
+      If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
+      If hSymbol.NotPublic Then 
+        'hColor = Color(Color.Foreground)
+        'hColor.Value = 255 - (255 - hColor.Value) * 0.6
+        gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+      Endif
+      'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
+    Else
       gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
     Endif
-    'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
-  Else
-    gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+  
   Endif
+    
   If Left(sName) = "_" Then 
     'gvwProc.Data.Picture = Picture["img/16/point.png"]
     'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
