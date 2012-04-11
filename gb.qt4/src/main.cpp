@@ -741,6 +741,15 @@ static void hook_main(int *argc, char **argv)
 }
 
 
+static void hook_quit()
+{
+	CWINDOW_close_all();
+	CWINDOW_delete_all();
+
+	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+}
+
+
 static void hook_loop()
 {
 	//qDebug("**** ENTERING EVENT LOOP");
@@ -754,10 +763,7 @@ static void hook_loop()
 	else
 		MAIN_check_quit();
 	
-	CWINDOW_close_all();
-	CWINDOW_delete_all();
-
-	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+	hook_quit();
 }
 
 
@@ -807,24 +813,6 @@ static void hook_post(void)
 	MyPostCheck::in_check = true;
 	QTimer::singleShot(0, &check, SLOT(check()));
 }
-
-
-static void hook_quit()
-{
-	QWidgetList list;
-	int i;
-
-	//qApp->closeAllWindows();
-
-	list = QApplication::topLevelWidgets();
-
-	for (i = 0; i < list.count(); i++)
-		list.at(i)->close();
-
-	for (i = 0; i < list.count(); i++)
-		list.at(i)->deleteLater();
-}
-
 
 
 static void hook_error(int code, char *error, char *where)

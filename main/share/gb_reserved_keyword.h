@@ -457,6 +457,11 @@ SUBR_INFO COMP_subr_info[] =
 	{ ".Kill",             69,  0,  1     },
 	{ ".Mkdir",            69,  1,  1     },
 	{ ".Rmdir",            69,  2,  1     },
+#endif
+	//{ ".Mkdir",            70,  0,  1     }, // The old Mkdir from 3.0
+	{ "Even",              70,  1,  1     },
+	{ "Odd",               70,  2,  1     },
+#ifndef __EVAL_RESERVED_C
 	{ ".Move",             72,  0,  2     },
 	{ ".Copy",             72,  1,  2     },
 	{ ".Link",             72,  2,  2     },

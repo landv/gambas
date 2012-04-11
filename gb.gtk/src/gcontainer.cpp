@@ -405,9 +405,9 @@ int gContainer::clientWidth()
 		{
 			//g_debug("clientWidth: %s: %d", name(), width());
 			GtkAllocation a = { x(), y(), width(), height() };
-			//gt_disable_warnings(true);
+			gt_disable_warnings(true);
 			gtk_widget_size_allocate(widget, &a);
-			//gt_disable_warnings(false);
+			gt_disable_warnings(false);
 		}
 		//g_debug("ClientWidth: %s -> %d", this->name(), cont->allocation.width);
 		if (cont->allocation.width > 0)

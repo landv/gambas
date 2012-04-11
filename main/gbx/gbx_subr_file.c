@@ -694,9 +694,31 @@ void SUBR_kill(ushort code)
 }
 
 
-void SUBR_mkdir(void)
+void SUBR_mkdir(ushort code)
 {
-	SUBR_kill(1);
+	SUBR_ENTER_PARAM(1);
+	
+	switch (code & 0xFF)
+	{
+		case 0: // Deprecated Mkdir
+			SUBR_kill(1);
+			return;
+			
+		case 1: // Even
+			VALUE_conv(PARAM, T_LONG);
+			PARAM->type = GB_T_BOOLEAN;
+			PARAM->_boolean.value = (PARAM->_long.value & 1) == 0 ? -1 : 0;
+			break;
+
+		case 2: // Odd
+			VALUE_conv(PARAM, T_LONG);
+			PARAM->type = GB_T_BOOLEAN;
+			PARAM->_boolean.value = (PARAM->_long.value & 1) != 0 ? -1 : 0;
+			break;
+		
+		default:
+			THROW_ILLEGAL();
+	}
 }
 
 
@@ -767,17 +789,17 @@ void SUBR_link(ushort code)
 	
 	switch (code & 0xFF)
 	{
-		case 0:
+		case 0: // Deprecated Link
 			SUBR_move(2);
 			return;
 			
-		case 1:
+		case 1: // IsNan
 			VALUE_conv(PARAM, T_FLOAT);
 			PARAM->type = GB_T_BOOLEAN;
 			PARAM->_boolean.value = isnan(PARAM->_float.value) ? -1 : 0;
 			break;
 
-		case 2:
+		case 2: // IsInf
 			VALUE_conv(PARAM, T_FLOAT);
 			PARAM->type = GB_T_INTEGER;
 			PARAM->_integer.value = isinf(PARAM->_float.value);

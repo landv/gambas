@@ -152,7 +152,7 @@ static void *SubrTable[] =
 	SUBR_lof,        /* 67 83 */
 	SUBR_seek,       /* 68 84 */
 	SUBR_kill,       /* 69 85 */
-	SUBR_mkdir,      /* 70 86 */ // deprecated
+	SUBR_mkdir,      /* 70 86 */ // deprecated -> Even() & Odd()
 	SUBR_rmdir,      /* 71 87 */ // deprecated
 	SUBR_move,       /* 72 88 */
 	SUBR_swap,       /* 73 89 */ // support for Copy()
@@ -319,7 +319,7 @@ void EXEC_loop(void)
 		/* 83 Lof             */  &&_SUBR_CODE,
 		/* 84 Seek            */  &&_SUBR_CODE,
 		/* 85 Kill            */  &&_SUBR_CODE,
-		/* 86 Mkdir           */  &&_SUBR,
+		/* 86 Mkdir           */  &&_SUBR_CODE,
 		/* 87 Rmdir           */  &&_SUBR,
 		/* 88 Move            */  &&_SUBR_CODE,
 		/* 89 Copy            */  &&_SUBR_CODE,

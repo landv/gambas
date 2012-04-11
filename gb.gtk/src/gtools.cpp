@@ -1450,12 +1450,12 @@ static GLogFunc old_handler = NULL;
 
 void gt_disable_warnings(bool disable)
 {
-	fprintf(stderr, "disable warnings\n");
+	//fprintf(stderr, "disable warnings\n");
 	if (disable)
 		old_handler = g_log_set_default_handler(disabled_handler, NULL);		
 	else
 		g_log_set_default_handler(old_handler, NULL);
-	fprintf(stderr, "enable warnings\n");
+	//fprintf(stderr, "enable warnings\n");
 }
 
 void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)

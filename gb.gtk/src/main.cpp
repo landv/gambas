@@ -300,16 +300,14 @@ extern "C"
 
 void my_quit (void)
 {
-	CWINDOW *win = CWINDOW_Main;
+	while (gtk_events_pending())
+		gtk_main_iteration();
+  
+	CWINDOW_delete_all();
+	gControl::cleanRemovedControls();
 
-	gApplication::suspendEvents(false);
-	if (win)
-	{
-		while (gtk_events_pending ()) gtk_main_iteration();
-		if (win->ob.widget) ((gMainWindow*)win->ob.widget)->destroy();
-		while (gtk_events_pending ()) gtk_main_iteration();
-	}
-
+	CWatcher::Clear();
+	gApplication::exit();
 }
 
 static bool global_key_event_handler(int type)
@@ -427,15 +425,8 @@ static int my_loop()
 		MAIN_do_iteration(false);
 	}
 
-	while (gtk_events_pending())
-		gtk_main_iteration();
-  
-	CWINDOW_delete_all();
-	gControl::cleanRemovedControls();
-
-	CWatcher::Clear();
-	gApplication::exit();
-
+	my_quit();
+	
   return 0;
 }
 
