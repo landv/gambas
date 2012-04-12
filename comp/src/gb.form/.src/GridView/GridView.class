@@ -318,25 +318,28 @@ Public Sub ScrollArea_Draw()
   H = $hColumns.Height + F
   If $iHeader And Horizontal Then Draw.FillRect(0, 0, Draw.W, H, Color.ButtonBackground)
   X = XX
-  For I = iCol To $hColumns.Count - 1
-    If X >= $hView.ClientW Then Break
-    iCol2 = I
-    With $hColumns[I]
-      If $iHeader And Horizontal Then
-        Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
-        Draw.FillRect(X - 1, F, 1, H - F, iGrid)
-        If iSort = I Then
-          WA = Min(16, H - F)
-          Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Top, Align.Bottom))
-          Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
-          If Draw.ClipRect Then Draw.Text(.Text, X + 2, F, .Width - WA - 4, H - F, .Alignment)
-        Else
-          Draw.Text(.Text, X + 2, F, .Width - 4, H - F, .Alignment)
+  
+  If iCol >= 0 Then
+    For I = iCol To $hColumns.Count - 1
+      If X >= $hView.ClientW Then Break
+      iCol2 = I
+      With $hColumns[I]
+        If $iHeader And Horizontal Then
+          Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
+          Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+          If iSort = I Then
+            WA = Min(16, H - F)
+            Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Top, Align.Bottom))
+            Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
+            If Draw.ClipRect Then Draw.Text(.Text, X + 2, F, .Width - WA - 4, H - F, .Alignment)
+          Else
+            Draw.Text(.Text, X + 2, F, .Width - 4, H - F, .Alignment)
+          Endif
         Endif
-      Endif
-      X += .Width
-    End With
-  Next
+        X += .Width
+      End With
+    Next
+  Endif
 
   If $iHeader And Horizontal Then 
     Draw.ClipRect = hClip
@@ -351,24 +354,28 @@ Public Sub ScrollArea_Draw()
   W = $hRows.Width + F
   If $iHeader And Vertical Then Draw.FillRect(0, 0, W, Draw.H, Color.ButtonBackground)
   Y = YY
-  For I = iRow To $hRows.Count - 1
-    If Y >= $hView.ClientH Then Break
-    $aRowY.Add(Y - F)
-    iRow2 = I
-    'Draw.Style.Separator(F, Y, W - F, 2)
-    H = $hRows._GetRowHeight(I)
-
-    If $iHeader And Vertical Then
-      Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
-      Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
-      If I = $iRow Then Draw.Font.Bold = True
-      Draw.Text($hRows._GetRowText(I), F, Y + 2, W - F, H - 2, Align.Center)
-      If I = $iRow Then Draw.Font.Bold = False
-    Endif
-    
-    'Draw.Style.Handle(W - 2, Y, 2, H, True)
-    Y += H
-  Next
+  
+  If iRow >= 0 Then
+    For I = iRow To $hRows.Count - 1
+      
+      If Y >= $hView.ClientH Then Break
+      $aRowY.Add(Y - F)
+      iRow2 = I
+      'Draw.Style.Separator(F, Y, W - F, 2)
+      H = $hRows._GetRowHeight(I)
+  
+      If $iHeader And Vertical Then
+        Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
+        Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
+        If I = $iRow Then Draw.Font.Bold = True
+        Draw.Text($hRows._GetRowText(I), F, Y + 2, W - F, H - 2, Align.Center)
+        If I = $iRow Then Draw.Font.Bold = False
+      Endif
+      
+      'Draw.Style.Handle(W - 2, Y, 2, H, True)
+      Y += H
+    Next
+  Endif
 
   $aRowY.Add(Y - F)
   If $iHeader And Vertical Then 
@@ -1202,6 +1209,8 @@ Private Function Header_Read() As Integer
 End
 
 Private Sub Header_Write(Value As Integer)
+
+  Value = Value And 3
 
   $iHeader = Value
   $hColumns._Layout

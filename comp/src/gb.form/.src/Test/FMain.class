@@ -141,12 +141,18 @@ End
 
 Public Sub gvwView_Menu()
 
-  Debug
+  Debug gvwView.Row
 
 End
 
-Public Sub gvwView_MouseMove()
+' Public Sub gvwView_MouseMove()
+' 
+'   Debug gvwView.RowAt(Mouse.Y);; gvwView.ColumnAt(Mouse.X)
+' 
+' End
 
-  Debug gvwView.RowAt(Mouse.Y);; gvwView.ColumnAt(Mouse.X)
+Public Sub Button3_Menu()
+
+  Debug
 
 End
