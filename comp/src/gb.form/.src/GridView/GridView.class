@@ -1435,11 +1435,17 @@ End
 
 Public Sub RowAt(Y As Integer) As Integer
   
+  Y -= $hColumns.Height
+  If Y < 0 Then Return -1
+  
   Return $hRows._FindRowFromPos(Y + $hView.ScrollY)
   
 End
 
 Public Sub ColumnAt(X As Integer) As Integer
+  
+  X -= $hRows.Width
+  If X < 0 Then Return -1
   
   Return $hColumns._FindColumnFromPos(X + $hView.ScrollX)
   

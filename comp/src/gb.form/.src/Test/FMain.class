@@ -8,7 +8,7 @@ Public Sub _new()
   Dim I As Integer
   
   gvwView.Columns.Count = 4
-  gvwView.Rows.Count = 10000
+  gvwView.Rows.Count = 1000000
   
   For I = 0 To gvwView.Columns.Count - 1
     gvwView.Columns[I].Text = "Column #" & CStr(I)
@@ -142,5 +142,11 @@ End
 Public Sub gvwView_Menu()
 
   Debug
+
+End
+
+Public Sub gvwView_MouseMove()
+
+  Debug gvwView.RowAt(Mouse.Y);; gvwView.ColumnAt(Mouse.X)
 
 End
