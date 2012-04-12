@@ -589,16 +589,16 @@ static void gambas_handle_event(GdkEvent *event)
 				gApplication::exitLoop(control);
 			}
 			
-			if (cancel)
-				return;
-				
 			if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
 				menu = true;
 			
-			if (control->_proxy_for)
+			if (!cancel)
 			{
-				control = control->_proxy_for;
-				goto __BUTTON_TRY_PROXY;
+				if (control->_proxy_for)
+				{
+					control = control->_proxy_for;
+					goto __BUTTON_TRY_PROXY;
+				}
 			}
 			
 			if (menu)
@@ -611,6 +611,9 @@ static void gambas_handle_event(GdkEvent *event)
 					control = control->_proxy_for;
 				}
 			}
+			
+			if (cancel)
+				return;
 			
 			break;
 		}
