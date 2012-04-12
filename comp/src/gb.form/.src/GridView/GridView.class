@@ -52,6 +52,7 @@ Event ColumnClick(Column As Integer)
 Event RowClick(Row As Integer)
 Event ColumnResize(Column As Integer)
 Event RowResize(Row As Integer)
+Event MouseDown
 
 Private $hView As ScrollArea
 Private $bGrid As Boolean = True
@@ -689,7 +690,7 @@ Public Sub ScrollArea_MouseMove()
   iRow = -1
   iCol = -1
   
-  If Mouse.Button Then
+  If Mouse.Left Then
     
     X = MX
     Y = MY
@@ -767,6 +768,7 @@ End
 Public Sub ScrollArea_MouseDown()
   
   Dim I, iOldRow As Integer
+  Dim bCancel As Boolean
   Dim F As Integer = GetFrameWidth()
   
   $MX = Mouse.X - F
@@ -820,24 +822,31 @@ Public Sub ScrollArea_MouseDown()
   Endif
   
   If $bInCell Then
-    Raise Click
+    bCancel = Raise MouseDown
+    If Not bCancel Then Raise Click
     Stop Event
   Else If Mouse.X < $hRows.Width And If Mouse.Y > $hColumns.H Then
     I = $hRows._FindRowFromPos(Mouse.Y - $hColumns.Height + $hView.ScrollY)
     If I >= 0 Then 
-      Raise RowClick(I)
+      bCancel = Raise MouseDown
+      If Not bCancel Then Raise RowClick(I)
       Stop Event
     Endif
   Else If Mouse.Y < $hColumns.Height And If Mouse.X > $hRows.W Then
     I = $hColumns._FindColumnFromPos(Mouse.X - $hRows.Width + $hView.ScrollX)
     If I >= 0 Then 
-      Raise ColumnClick(I)
-      If $bSorted Then
-        If $hColumns.Sort = I Then
-          $hColumns.Ascending = Not $hColumns.Ascending
-        Else
-          $hColumns.Sort = I
-          $hColumns.Ascending = False
+      bCancel = Raise MouseDown
+      If Not bCancel Then
+        bCancel = Raise ColumnClick(I)
+        If Not bCancel Then
+          If $bSorted Then
+            If $hColumns.Sort = I Then
+              $hColumns.Ascending = Not $hColumns.Ascending
+            Else
+              $hColumns.Sort = I
+              $hColumns.Ascending = False
+            Endif
+          Endif
         Endif
       Endif
       Stop Event
