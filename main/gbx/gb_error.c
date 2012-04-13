@@ -573,11 +573,6 @@ void ERROR_print(void)
 {
 	static bool lock = FALSE;
 	
-	ERROR_print_at(stderr, FALSE, TRUE);
-	
-	if (ERROR_backtrace)
-		DEBUG_print_backtrace(ERROR_backtrace);
-
 	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
 	{
 		lock = TRUE;
@@ -585,6 +580,11 @@ void ERROR_print(void)
 		HOOK(error)(ERROR_current->info.code, ERROR_current->info.msg, DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc));
 		lock = FALSE;
 	}
+
+	ERROR_print_at(stderr, FALSE, TRUE);
+	
+	if (ERROR_backtrace)
+		DEBUG_print_backtrace(ERROR_backtrace);
 }
 
 void ERROR_save(ERROR_INFO *save, ERROR_INFO *last)
