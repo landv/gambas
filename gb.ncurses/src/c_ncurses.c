@@ -53,8 +53,60 @@ DECLARE_EVENT(EVENT_Resize);
 void nc_sigwinch_handler(int signum)
 {
 	/* TODO: I wonder if this works... */
+	
+	/* BM: Of course not! :-) You can't raise an event from a signal handler
+	 * and moreover you have no sender! */
+	
 	if (signum == SIGWINCH) GB.Raise(NULL, EVENT_Resize, 0);
 }
+
+static bool _init = FALSE;
+
+bool NCURSES_running()
+{
+	return _init && (!isendwin() || stdscr);
+}
+
+void NCURSES_init(void)
+{
+	struct sigaction sa;
+
+	if (_init)
+		return;
+	
+	initscr();
+
+	/* global variable default setup */
+	nc_cursor = CURSOR_VISIBLE;
+	nc_input = INPUT_CBREAK;
+	nc_echo = 0;
+	/* accordingly... */
+	curs_set(1);
+	cbreak();
+	noecho();
+
+	sa.sa_handler = nc_sigwinch_handler;
+	sigemptyset(&(sa.sa_mask));
+	sa.sa_flags = 0;
+	if (sigaction(SIGWINCH, &sa, NULL) == -1)
+	{
+		fprintf(stderr, "gb.ncurses: Could not install SIGWINCH signal handler");
+	}
+
+	refresh();
+	
+	_init = TRUE;
+}
+
+void NCURSES_exit()
+{
+	if (_init)
+	{
+		endwin();
+		_init = FALSE;
+	}
+}
+
 
 BEGIN_PROPERTY(CNCurses_cursor)
 
@@ -137,36 +189,13 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CNCurses_init)
 
-	struct sigaction sa;
-
-	initscr();
-
-	/* global variable default setup */
-	nc_cursor = CURSOR_VISIBLE;
-	nc_input = INPUT_CBREAK;
-	nc_echo = 0;
-	/* accordingly... */
-	curs_set(1);
-	cbreak();
-	noecho();
-
-	sa.sa_handler = nc_sigwinch_handler;
-	sigemptyset(&(sa.sa_mask));
-	sa.sa_flags = 0;
-	if (sigaction(SIGWINCH, &sa, NULL) == -1)
-	{
-		fprintf(stderr, "gb.ncurses: Could not install SIGWINCH signal handler");
-	}
-
-	refresh();
+	NCURSES_init();
 
 END_METHOD
 
-DECLARE_METHOD(CNCurses_off);
-
 BEGIN_METHOD_VOID(CNCurses_exit)
 
-	CALL_METHOD_VOID(CNCurses_off);
+	NCURSES_exit();
 
 END_METHOD
 
@@ -179,8 +208,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CNCurses_off)
 
-	if (!NCURSES_RUNNING) return;
-	if (endwin() == ERR) GB.Error(E_END);
+	NCURSES_exit();
 
 END_METHOD
 

@@ -35,10 +35,7 @@
 #define IS_WRAPPED			(THIS->wrap)
 /* This will produce final output on terminal screen, shall be called only by Gambas functions
    as they assemble all changes for a single functionality and may then output once. */
-#define REFRESH()			{ \
-						update_panels(); \
-						doupdate(); \
-					}
+#define REFRESH() WINDOW_refresh()
 
 /* Translate linear (absolute) memory addresses and x,y coordinates into each other
    most useful when wrapping is needed. */
@@ -136,4 +133,6 @@ extern GB_DESC CCharAttrsDesc[];
 								getmaxx(THIS->content), \
 								getmaxy(THIS->content), 0, 0))
 
+void WINDOW_refresh(void);
+								
 #endif /* __C_WINDOW_C */

@@ -36,14 +36,22 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
+static void hook_error(int code, char *error, char *where)
+{
+	NCURSES_exit();
+}
+
 
 int EXPORT GB_INIT()
 {
-  return 0;
+	GB.Hook(GB_HOOK_ERROR, (void *)hook_error);
+
+	return 0;
 }
 
 
 void EXPORT GB_EXIT()
 {
+	NCURSES_exit();
 }
 

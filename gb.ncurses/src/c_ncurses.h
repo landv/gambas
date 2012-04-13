@@ -27,10 +27,14 @@
 #include "gambas.h"
 #include "gb_common.h"
 
-#define NCURSES_RUNNING		(!isendwin() || stdscr)
+#define NCURSES_RUNNING		NCURSES_running()
 
 #ifndef __C_NCURSES_C
 extern GB_DESC CNCursesDesc[];
 #endif
+
+void NCURSES_init(void);
+void NCURSES_exit(void);
+bool NCURSES_running(void);
 
 #endif /* __C_NCURSES_H */

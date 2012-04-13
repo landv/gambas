@@ -8,7 +8,7 @@ AC_PROG_LIBTOOL
 GB_COMPONENT(
   ncurses,
   NCURSES,
-  [NCURSES component],
+  [NCurses component],
   [src],
   [GB_FIND(ncurses.h panel.h, /usr/lib /usr, include)],
   [GB_FIND(libncurses.$SHLIBEXT libpanel.$SHLIBEXT, /usr/local /usr, lib)],

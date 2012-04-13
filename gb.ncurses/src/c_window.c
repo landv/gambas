@@ -66,6 +66,14 @@ DECLARE_EVENT(EVENT_Read);
 #define E_COORDS	"Coordinates out of range"
 #define E_DIMENSION	"Dimensions do not fit on screen"
 
+void WINDOW_refresh()
+{
+	if (!NCURSES_running())
+		return;
+	update_panels();
+	doupdate();
+}
+
 /**
  * Copies text with attributes from a window to a newly malloced array as if the window
  * was linear memory, too (line by line).
