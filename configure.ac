@@ -9,6 +9,7 @@ AC_INIT(configure.ac)
 
 AC_CONFIG_SUBDIRS(main)
 
+GB_CONFIG_SUBDIRS(ncurses, gb.ncurses)
 GB_CONFIG_SUBDIRS(bzlib2, gb.compress.bzlib2)
 GB_CONFIG_SUBDIRS(zlib, gb.compress.zlib)
 GB_CONFIG_SUBDIRS(mysql, gb.db.mysql)

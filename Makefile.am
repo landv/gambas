@@ -1,5 +1,6 @@
 SUBDIRS = \
  main \
+ @ncurses_dir@ \
  @bzlib2_dir@ \
  @zlib_dir@ \
  @mysql_dir@ \
