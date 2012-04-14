@@ -77,6 +77,9 @@ static bool _init = FALSE;
 
 static int _last_status = 0;
 
+static int _last_child_error = 0;
+static int _last_child_error_errno = 0;
+
 static SIGNAL_HANDLER _SIGCHLD_handler;
 
 static void init_child(void);
@@ -195,35 +198,60 @@ static void exit_process(CPROCESS *_object)
 	STREAM_close(&THIS->ob.stream);
 }
 
-static void throw_child_error(CPROCESS *_object)
+static void prepare_child_error(CPROCESS *_object)
 {
 	int fd;
-	int child_error = -1;
-	int child_errno = -1;
 	char path[PATH_MAX];
 	
 	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getpid(), (int)THIS->pid);
 	
 	#ifdef DEBUG_ME
-	fprintf(stderr, "throw_child_error: %p: %s\n", _object, path);
+	fprintf(stderr, "prepare_child_error: %p: %s\n", _object, path);
 	#endif
 
-	fd = open(path, O_RDONLY);
-	if (fd >= 0)
+	if (_last_child_error == 0)
 	{
-		if (read(fd, &child_error, sizeof(int)) == sizeof(int)
-			  && read(fd, &child_errno, sizeof(int)) == sizeof(int))
+		fd = open(path, O_RDONLY);
+		if (fd >= 0)
 		{
-			THROW(E_CHILD, _child_error[child_error], strerror(errno));
+			if (read(fd, &_last_child_error, sizeof(int)) != sizeof(int)
+					|| read(fd, &_last_child_error_errno, sizeof(int)) != sizeof(int))
+			{
+				_last_child_error = -1;
+				_last_child_error_errno = 0;
+			}
+			
+			close(fd);
 		}
-		else
-		{
-			THROW(E_CHILD, "unknown error", "");
-		}
-		
-		close(fd);
+
+		#ifdef DEBUG_ME
+		fprintf(stderr, "prepare_child_error: error = %d errno = %d\n", _last_child_error, _last_child_error_errno);
+		#endif
 	}
+	
 	unlink(path);
+}
+
+static void throw_last_child_error()
+{
+	int child_error, child_errno;
+	
+	if (_last_child_error == 0)
+		return;
+	
+	child_error = _last_child_error;
+	child_errno = _last_child_error_errno;
+	
+	_last_child_error = 0;
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "throw_last_child_error: %d %d\n", child_error, child_errno);
+	#endif
+	
+	if (child_error < 0)
+		THROW(E_CHILD, "unknown error", "");
+	else
+		THROW(E_CHILD, _child_error[child_error], strerror(child_errno));
 }
 
 static void stop_process_after(CPROCESS *_object)
@@ -236,7 +264,11 @@ static void stop_process_after(CPROCESS *_object)
 	#endif
 
 	if (WIFEXITED(THIS->status) && WEXITSTATUS(THIS->status) == 255)
-		throw_child_error(THIS);
+	{
+		prepare_child_error(THIS);
+		exit_process(THIS);
+		OBJECT_detach((OBJECT *)THIS);
+	}
 
 	/* Vidage du tampon d'erreur */
 	if (THIS->err >= 0)
@@ -693,6 +725,8 @@ static void callback_child(int fd, int type, void *data)
 		process = next;
 	}
 
+	throw_last_child_error();
+	
 	#ifdef DEBUG_ME
 	fprintf(stderr, ">> callback_child\n");
 	#endif
@@ -797,51 +831,43 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	return process;
 }
 
+static CPROCESS *_error_CPROCESS_wait_for_process;
+
+static void error_CPROCESS_wait_for()
+{
+	OBJECT_UNREF(_error_CPROCESS_wait_for_process, "CPROCESS_wait_for");
+}
 
 void CPROCESS_wait_for(CPROCESS *process)
 {
-	//sigset_t sig, old;
-	//bool have_sigchld;
 	int ret;
 
 	#ifdef DEBUG_ME
 	printf("Waiting for %d\n", process->pid);
 	#endif
 
-	/*sigemptyset(&sig);
-	sigaddset(&sig, SIGCHLD);
-	sigprocmask(SIG_BLOCK, &sig, &old);
-
-	have_sigchld = sigismember(&old, SIGCHLD);
-	if (have_sigchld)
-		sigdelset(&old, SIGCHLD);*/
-
-	/*if (process->to_string)
-	{
-		while (process->running)
-			WATCH_loop();
-	}
-	else
-	{
-		while (process->running)
-			WATCH_loop();
-			//sigsuspend(&old);
-	}*/
 	OBJECT_REF(process, "CPROCESS_wait_for");
-	while (process->running)
+	_error_CPROCESS_wait_for_process = process;
+	
+	ON_ERROR(error_CPROCESS_wait_for)
 	{
-		//HOOK_DEFAULT(wait, WATCH_wait)(0);
-		#ifdef DEBUG_ME
-		fprintf(stderr, "watching _pipe_child[0] = %d\n", _pipe_child[0]);
-		#endif
-		ret = WATCH_process(_pipe_child[0], process->out);
-		if (ret == _pipe_child[0])
-			callback_child(_pipe_child[0], GB_WATCH_READ, 0);
-		else if (ret == process->out)
-			callback_write(process->out, GB_WATCH_READ, process);
-		else
-			usleep(1000);
+		while (process->running)
+		{
+			//HOOK_DEFAULT(wait, WATCH_wait)(0);
+			#ifdef DEBUG_ME
+			fprintf(stderr, "watching _pipe_child[0] = %d\n", _pipe_child[0]);
+			#endif
+			ret = WATCH_process(_pipe_child[0], process->out);
+			if (ret == _pipe_child[0])
+				callback_child(_pipe_child[0], GB_WATCH_READ, 0);
+			else if (ret == process->out)
+				callback_write(process->out, GB_WATCH_READ, process);
+			else
+				usleep(1000);
+		}
 	}
+	END_ERROR
+	
 	OBJECT_UNREF(process, "CPROCESS_wait_for");
 
 	#if 0
