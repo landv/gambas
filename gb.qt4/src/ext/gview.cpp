@@ -50,6 +50,8 @@
 #include "main.h"
 #include "gview.h"
 
+#define ROUND_WIDTH(_w) ((int)((_w) + 0.4999))
+
 #if 0
 static const char *breakpoint_xpm[] = 
 {
@@ -247,8 +249,11 @@ int GEditor::getStringWidth(const QString &s, int len, bool unicode) const
 	//if (len < 0)
 	//	len = s.length();
 	
+	if (len == 0)
+		return 0;
+	
 	if (_sameWidth && !unicode)
-		return len * _sameWidth + 0.5;
+		return ROUND_WIDTH(len * _sameWidth);
 	
 	for (i = 0; i < len; i++)
 	{
@@ -270,7 +275,7 @@ int GEditor::getStringWidth(const QString &s, int len, bool unicode) const
 				us = -1;
 			}
 			if (c == 9)
-				w = ((int)(w + 0.5) + _tabWidth) / _tabWidth * _tabWidth;
+				w = (ROUND_WIDTH(w) + _tabWidth) / _tabWidth * _tabWidth;
 			else
 				w += _charWidth[c];
 		}
@@ -288,7 +293,7 @@ void GEditor::updateCache()
 {
 	//int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
 	//int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
-	int nw = QMAX(_cache->width(), (int)(visibleWidth() + _charWidth['m'] * 2 + 0.5));
+	int nw = QMAX(_cache->width(), ROUND_WIDTH(visibleWidth() + _charWidth['m'] * 2));
 	int nh = QMAX(_cache->height(), visibleHeight() + _cellh);
 	
 	if (nw > 0 && nh > 0 && (nw != _cache->width() || nh != _cache->height()))

@@ -1,9 +1,11 @@
 ' Gambas class file
 
-Private icwView As IconPanel
+Public Sub DateChooser1_Data({Date} As Date)
 
-Public Sub Form_Open()
-
-  icwView = New IconPanel(Me)
+  If Month({Date}) = 5 And If Day({Date}) = 1 Then
+    DateChooser1.Data.Foreground = Color.Red
+    DateChooser1.Data.Background = Color.Lighter(Color.Yellow)
+    DateChooser1.Data.Text = "Fête du travail"
+  Endif
 
 End

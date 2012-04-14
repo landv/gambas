@@ -1,0 +1,27 @@
+' Gambas class file
+
+Export
+
+'Public Picture As Picture
+'Public Alignment As Integer = Align.Normal
+'Public Padding As Integer = 2
+'Public WordWrap As Boolean
+Public Foreground As Integer = Color.Default
+Public Background As Integer = Color.Default
+Public Text As String
+
+Property Font As Font
+
+Private $hFont As Font
+
+Private Function Font_Read() As Font
+
+  Return $hFont
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $hFont = Value.Copy()
+
+End

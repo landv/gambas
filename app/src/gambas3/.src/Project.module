@@ -1395,6 +1395,8 @@ End
 
 Public Sub FillDir(sDir As String)
 
+  If Not IsDir(sDir) Then Return
+  
   ProjectTree.MoveTo(sDir)
   If ProjectTree.MoveChild() Then Return
   If ProjectTree.Item.Key <> sDir & "/" Then Return
@@ -4248,6 +4250,8 @@ End
 Public Function IsSourcePath(sPath As String) As Boolean
 
   Dim sExt As String
+
+  If IsDir(sPath) Then Return
 
   If SourceDir <> {Dir} Then Return sPath & "/" Begins SourceDir &/ "/"
 

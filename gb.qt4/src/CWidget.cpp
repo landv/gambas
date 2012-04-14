@@ -2532,6 +2532,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 		GB.Unref(POINTER(&control));
 		
+		if (!control)
+			return true;
+		
 		if (control->flag.grab && event_id == EVENT_MouseUp)
 			MyApplication::eventLoop->exit();
 		
@@ -2611,15 +2614,19 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		}
 		#endif
 		
+		GB.Ref(control);
+		
 		if (!cancel)
 			cancel = raise_key_event_to_parent_window(control, event_id);
 		
 		if (!cancel)
 			cancel = GB.Raise(control, event_id, 0);
 
+		GB.Unref(POINTER(&control));
+		
 		CKEY_clear(false);
 
-		if (cancel && (type != QEvent::KeyRelease))
+		if ((cancel && (type != QEvent::KeyRelease)) || !control)
 			return true;
 
 		if (EXT(control) && EXT(control)->proxy_for)

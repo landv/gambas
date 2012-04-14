@@ -7,6 +7,7 @@ Private $dMonth As Date
 Private $dLast As Date
 Private $iDisabledColor As Integer
 Private $cDateColor As New Collection
+Private $cDateFormat As New Collection
 Private $bShort As Boolean
 
 Private Sub FillMonth(bShort As Boolean)
@@ -91,6 +92,7 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
   
   Dim dMonth As Date
   Dim dDate As Date
+  Dim sText As String
 
   If iYear <= 0 Then iYear = Year($dDate)
   If iMonth <= 0 Then iMonth = Month($dDate)
@@ -160,6 +162,7 @@ Public Sub dwgMonth_Draw()
   Dim iBackground As Integer
   Dim sKey As String
   Dim bToday As Boolean
+  Dim hDate As _DateChooser_Date
   
   iForeground = dwgMonth.Foreground 'Draw.Foreground
   iBackground = dwgMonth.Background 'Draw.Background
@@ -206,13 +209,20 @@ Public Sub dwgMonth_Draw()
     X = XD
     For I = 0 To 6
 
+      hDate = GetParent()[dDate]
+      
+      iForeground = hDate.Foreground
+      If iForeground = Color.Default Then iForeground = dwgMonth.Foreground
+      iBackground = hDate.Background
+      If iBackground = Color.Default Then iBackground = dwgMonth.Background
+
       If CInt(dDate) = CInt($dDate) Then
         Draw.FillColor = If(dwgMonth.HasFocus, Color.SelectedBackground, Color.LightForeground)
         Draw.Foreground = Color.SelectedForeground
       Else 
         If Month(dDate) <> Month($dMonth) Then 
           Draw.FillColor = iBackground
-          Draw.Foreground = $iDisabledColor
+          Draw.Foreground = Color.Merge(iForeground, dwgMonth.Background)
         Else
           Draw.FillColor = iBackground
           Draw.Foreground = iForeground

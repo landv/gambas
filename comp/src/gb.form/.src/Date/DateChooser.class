@@ -10,6 +10,7 @@ Property Day As Integer
 Property Font As Font
 Property Read Colors As _DateChooser_Colors
 Property Mode As Integer
+Property Read Data As _DateChooser_Data
 
 Public Const DateOnly As Integer = 0
 Public Const DateTime As Integer = 1
@@ -18,6 +19,7 @@ Public Const TimeOnly As Integer = 2
 Event Change
 Event Activate
 Event Cancel
+Event Data({Date} As Date)
 
 Public Const _Properties As String = "*,Mode{DateChooser.*}=DateOnly"
 Public Const _DefaultEvent As String = "Change"
@@ -25,6 +27,8 @@ Public Const _DefaultSize As String = "40,28"
 Public Const _Group As String = "Chooser"
 
 Private $hCal As FCalendar
+Private $cData As New Collection
+Private $hData As _DateChooser_Data
 
 Public Sub _new()
   
@@ -161,5 +165,51 @@ Private Sub Mode_Write(Value As Integer)
       $hCal.SetShowTime(True)
       $hCal.SetShowDate(False)
   End Select
+
+End
+
+Public Sub _get({Date} As Date) As _DateChooser_Date
+  
+  Dim hDate As _DateChooser_Date
+  
+  hDate = New _DateChooser_Date
+  hDate._Date = {Date}
+  hDate._View = Me
+  Return hDate
+  
+End
+
+Private Sub GetKey(dDate As Date) As String
+  
+  Return CStr(Date(dDate))
+  
+End
+
+
+Public Sub _GetData(dDate As Date, Optional bCreate As Boolean) As _DateChooser_Data
+
+  Dim hData As _DateChooser_Data
+
+  hData = $cData[GetKey(dDate)]
+  If Not hData Then
+    If bCreate Then
+      hData = New _DateChooser_Data
+      hData.Font = Me.Font
+      $cData[GetKey(dDate)] = hData
+    Else
+      $hData = New _DateChooser_Data
+      $hData.Font = Me.Font
+      Raise Data(dDate)
+      hData = $hData
+    Endif
+  Endif
+  
+  Return hData
+  
+End
+
+Private Function Data_Read() As _DateChooser_Data
+
+  Return $hData
 
 End

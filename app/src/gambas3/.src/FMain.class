@@ -1615,6 +1615,8 @@ Public Sub Form_KeyPress()
   
   If Key.Code = Key.Escape Then 
 
+    If $bInRename Then Return ' Prevent Balloon.Hide from calling WAIT, reentering the event loop, and crashing Qt.
+
     ' Top-level forms get key event before now.
     Try hEditor = Project.ActiveForm
     If hEditor And If FCompletion.VisibleFrom(hEditor.Editor) Then Return

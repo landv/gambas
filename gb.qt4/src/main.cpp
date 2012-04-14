@@ -633,6 +633,8 @@ static void QT_Init(void)
 
 	MAIN_update_scale();
 
+	qApp->installEventFilter(&CWidget::manager);
+
 	MyApplication::setEventFilter(true);
 	
 	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)
@@ -640,8 +642,6 @@ static void QT_Init(void)
 		_application_keypress = true;
 		MyApplication::setEventFilter(true);
 	}
-
-	qApp->installEventFilter(&CWidget::manager);
 
 	//qt_x11_set_global_double_buffer(false);
 

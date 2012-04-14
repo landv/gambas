@@ -340,6 +340,10 @@ Mode
 p
 i
 
+Data
+r
+_DateChooser_Data
+
 DateOnly
 C
 i
@@ -364,6 +368,10 @@ i
 :
 
 
+:Data
+:
+
+(Date)d
 _Properties
 C
 s
@@ -400,6 +408,14 @@ SetFocus
 m
 
 
+_get
+m
+_DateChooser_Date
+(Date)d
+_GetData
+m
+_DateChooser_Data
+(dDate)d[(bCreate)b]
 #DirChooser
 UserControl
 C
@@ -2749,6 +2765,52 @@ _get
 m
 i
 (Date)d
+#_DateChooser_Data
+
+C
+Foreground
+v
+i
+
+Background
+v
+i
+
+Text
+v
+s
+
+Font
+p
+Font
+
+#_DateChooser_Date
+
+C
+Background
+p
+i
+
+Foreground
+p
+i
+
+Text
+p
+s
+
+Font
+p
+Font
+
+_Date
+v
+d
+
+_View
+v
+DateChooser
+
 #_GridView_Cell
 
 C
