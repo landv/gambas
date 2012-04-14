@@ -50,6 +50,8 @@
 #include "main.h"
 #include "gview.h"
 
+#define ROUND_WIDTH(_w) ((int)((_w) + 0.4999))
+
 #if 0
 static const char *breakpoint_xpm[] = 
 {
@@ -247,6 +249,9 @@ int GEditor::getStringWidth(const QString &s, int len, bool unicode) const
 	
 	//if (len < 0)
 	//	len = s.length();
+	
+	if (len == 0)
+		return 0;
 	
 	if (_sameWidth && !unicode)
 		return len * _sameWidth;
