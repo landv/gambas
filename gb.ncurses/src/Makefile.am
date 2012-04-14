@@ -11,5 +11,6 @@ gb_ncurses_la_LDFLAGS = -module @LD_FLAGS@ @NCURSES_LDFLAGS@
 gb_ncurses_la_SOURCES = \
  main.h main.c \
  c_ncurses.h c_ncurses.c \
- c_window.h c_window.c
+ c_window.h c_window.c \
+ c_key.h c_key.c
 

@@ -1,6 +1,5 @@
 SUBDIRS = \
  main \
- @ncurses_dir@ \
  @bzlib2_dir@ \
  @zlib_dir@ \
  @mysql_dir@ \
@@ -27,6 +26,7 @@ SUBDIRS = \
  @imageimlib_dir@ \
  @dbus_dir@ \
  @gsl_dir@ \
+ @ncurses_dir@ \
  comp \
  app \
  examples \

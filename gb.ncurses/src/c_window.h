@@ -33,9 +33,13 @@
 #define THIS				((struct nc_window *) _object)
 #define HAS_BORDER			(THIS->border)
 #define IS_WRAPPED			(THIS->wrap)
-/* This will produce final output on terminal screen, shall be called only by Gambas functions
-   as they assemble all changes for a single functionality and may then output once. */
-#define REFRESH() WINDOW_refresh()
+#define IS_BUFFERED			(THIS->buffered)
+/* This will produce final output on terminal screen */
+#define REAL_REFRESH()			WINDOW_real_refresh()
+/* This macro is mostly called by Gambas implementation functions to request output on screen
+   (read: to check if the output is buffered and if not produce output by means of
+   REAL_REFRESH(). To check buffering, this need to get an object parameter.) */
+#define REFRESH()			WINDOW_refresh(THIS)
 
 /* Translate linear (absolute) memory addresses and x,y coordinates into each other
    most useful when wrapping is needed. */
@@ -48,8 +52,10 @@
 				}
 /* Interpret the -1 values in coordinates as to insert the current cursor position */
 #define MAKE_COORDS(win, x, y)	{ \
-					if ((x) == -1) x = getcurx(win); \
-					if ((y) == -1) y = getcury(win); \
+					if ((x) == -1) \
+						x = getcurx(win); \
+					if ((y) == -1) \
+						y = getcury(win); \
 				}
 /* Check for out-of-range coordinates */
 #define BAD_COORDS(win, x, y)	((x) < 0 || (x) >= getmaxx(win) || \
@@ -70,11 +76,12 @@ enum
 
 #define WIN_ATTR_METHOD(b, a)	{ \
 					if (READ_PROPERTY) \
-						GB.ReturnBoolean(nc_window_attrs_driver( \
+						GB.ReturnBoolean(WINDOW_attrs_driver( \
 							THIS, (a), ATTR_DRV_RET) \
 							& (a)); \
-					else nc_window_attrs_driver( \
-						THIS, (a), (b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
+					else \
+						WINDOW_attrs_driver(THIS, (a), \
+							(b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
 				}
 #define WIN_ATTR_METHOD_BOOL(a)		WIN_ATTR_METHOD(VPROP(GB_BOOLEAN), a);
 #define WIN_ATTR_METHOD_INT(a)		WIN_ATTR_METHOD(1, a);
@@ -84,12 +91,12 @@ enum
    line manually. A higher-callstack function may call REFRESH() to get output. */
 #define CHAR_ATTR_METHOD(b, a)	{ \
 					if (READ_PROPERTY) \
-						GB.ReturnBoolean(nc_window_char_attrs_driver( \
+						GB.ReturnBoolean(WINDOW_char_attrs_driver( \
 							THIS, (a), THIS->pos.col, THIS->pos.line, \
 							ATTR_DRV_RET) & (a)); \
-					else nc_window_char_attrs_driver( \
-						THIS, (a), THIS->pos.col, THIS->pos.line, \
-						(b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
+					else \
+						WINDOW_char_attrs_driver(THIS, (a), THIS->pos.col, \
+							THIS->pos.line, (b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
 					wtouchln(THIS->main, THIS->pos.line + (HAS_BORDER ? 1 : 0), 1, 1); \
 				}
 #define CHAR_ATTR_METHOD_BOOL(a)	CHAR_ATTR_METHOD(VPROP(GB_BOOLEAN), a);
@@ -113,6 +120,8 @@ struct nc_window
 	PANEL *pan;		/* Panel of the main window to provide overlapping windows */
 	bool border;		/* Whether there is a border */
 	bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
+	bool buffered;		/* Whether the output via REFRESH() macro shall be buffered (only a call to
+				   Window.Refresh() will then produce any output) */
 	struct			/* This structure is used to pass a line and a column number to virtual objects */
 	{
 		int line;
@@ -126,13 +135,13 @@ extern GB_DESC CWindowAttrsDesc[];
 extern GB_DESC CCharAttrsDesc[];
 #endif
 
-#define nc_window_main_to_content()	(nc_window_copy_window(THIS->main, THIS->content, 0, 0, \
+#define WINDOW_main_to_content()	WINDOW_copy_window(THIS->main, THIS->content, 0, 0, \
 								getmaxx(THIS->content), \
-								getmaxy(THIS->content), 0, 0))
-#define nc_window_content_to_main()	(nc_window_copy_window(THIS->content, THIS->main, 0, 0, \
+								getmaxy(THIS->content), 0, 0)
+#define WINDOW_content_to_main()	WINDOW_copy_window(THIS->content, THIS->main, 0, 0, \
 								getmaxx(THIS->content), \
-								getmaxy(THIS->content), 0, 0))
+								getmaxy(THIS->content), 0, 0)
 
-void WINDOW_refresh(void);
+void WINDOW_real_refresh();
 								
 #endif /* __C_WINDOW_C */

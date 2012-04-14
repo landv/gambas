@@ -45,6 +45,7 @@ static int nc_echo;
 
 DECLARE_EVENT(EVENT_Resize);
 
+#if 0
 /*
  * Signal handler for the SIGWINCH signal.
  * @signum: signal number given
@@ -53,12 +54,13 @@ DECLARE_EVENT(EVENT_Resize);
 void nc_sigwinch_handler(int signum)
 {
 	/* TODO: I wonder if this works... */
-	
+
 	/* BM: Of course not! :-) You can't raise an event from a signal handler
 	 * and moreover you have no sender! */
-	
+
 	if (signum == SIGWINCH) GB.Raise(NULL, EVENT_Resize, 0);
 }
+#endif
 
 static bool _init = FALSE;
 
@@ -69,12 +71,11 @@ bool NCURSES_running()
 
 void NCURSES_init(void)
 {
-	struct sigaction sa;
-
 	if (_init)
 		return;
-	
+
 	initscr();
+	keypad(stdscr, TRUE);
 
 	/* global variable default setup */
 	nc_cursor = CURSOR_VISIBLE;
@@ -85,6 +86,9 @@ void NCURSES_init(void)
 	cbreak();
 	noecho();
 
+#if 0
+	struct sigaction sa;
+
 	sa.sa_handler = nc_sigwinch_handler;
 	sigemptyset(&(sa.sa_mask));
 	sa.sa_flags = 0;
@@ -92,9 +96,10 @@ void NCURSES_init(void)
 	{
 		fprintf(stderr, "gb.ncurses: Could not install SIGWINCH signal handler");
 	}
+#endif
 
 	refresh();
-	
+
 	_init = TRUE;
 }
 
@@ -108,7 +113,7 @@ void NCURSES_exit()
 }
 
 
-BEGIN_PROPERTY(CNCurses_cursor)
+BEGIN_PROPERTY(NCurses_Cursor)
 
 	if (READ_PROPERTY)
 	{
@@ -116,7 +121,6 @@ BEGIN_PROPERTY(CNCurses_cursor)
 		return;
 	}
 
-	/* Hide if setting cursor is not supported */
 	switch (VPROP(GB_INTEGER))
 	{
 		case CURSOR_HIDDEN:
@@ -133,7 +137,7 @@ BEGIN_PROPERTY(CNCurses_cursor)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CNCurses_input)
+BEGIN_PROPERTY(NCurses_Input)
 
 	if (READ_PROPERTY)
 	{
@@ -161,7 +165,7 @@ BEGIN_PROPERTY(CNCurses_input)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CNCurses_echo)
+BEGIN_PROPERTY(NCurses_Echo)
 
 	if (READ_PROPERTY)
 	{
@@ -175,38 +179,19 @@ BEGIN_PROPERTY(CNCurses_echo)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CNCurses_lines)
+BEGIN_PROPERTY(NCurses_Lines)
 
 	GB.ReturnInteger(LINES);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CNCurses_cols)
+BEGIN_PROPERTY(NCurses_Cols)
 
 	GB.ReturnInteger(COLS);
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CNCurses_init)
-
-	NCURSES_init();
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CNCurses_exit)
-
-	NCURSES_exit();
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CNCurses_on)
-
-	if (NCURSES_RUNNING) return;
-	refresh();
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CNCurses_off)
+BEGIN_METHOD_VOID(NCurses_exit)
 
 	NCURSES_exit();
 
@@ -224,17 +209,14 @@ GB_DESC CNCursesDesc[] =
 	GB_CONSTANT("CBreak", "i", INPUT_CBREAK),
 	GB_CONSTANT("Raw", "i", INPUT_RAW),
 
-	GB_STATIC_PROPERTY("Cursor", "i", CNCurses_cursor),
-	GB_STATIC_PROPERTY("Input", "i", CNCurses_input),
-	GB_STATIC_PROPERTY("Echo", "b", CNCurses_echo),
+	GB_STATIC_PROPERTY("Cursor", "i", NCurses_Cursor),
+	GB_STATIC_PROPERTY("Input", "i", NCurses_Input),
+	GB_STATIC_PROPERTY("Echo", "b", NCurses_Echo),
 
-	GB_STATIC_PROPERTY_READ("Lines", "i", CNCurses_lines),
-	GB_STATIC_PROPERTY_READ("Cols", "i", CNCurses_cols),
+	GB_STATIC_PROPERTY_READ("Lines", "i", NCurses_Lines),
+	GB_STATIC_PROPERTY_READ("Cols", "i", NCurses_Cols),
 
-	GB_STATIC_METHOD("_init", NULL, CNCurses_init, NULL),
-	GB_STATIC_METHOD("_exit", NULL, CNCurses_exit, NULL),
-	GB_STATIC_METHOD("On", NULL, CNCurses_on, NULL),
-	GB_STATIC_METHOD("Off", NULL, CNCurses_off, NULL),
+	GB_STATIC_METHOD("_exit", NULL, NCurses_exit, NULL),
 
 	GB_END_DECLARE
 };

@@ -1,5 +1,5 @@
 /*
- * main.c - gb.ncurses main object
+ * c_key.h - gb.ncurses Key static class
  *
  * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -19,45 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#define __MAIN_C
+#ifndef __C_KEY_H
+#define __C_KEY_H
 
-#include "c_ncurses.h"
-#include "c_window.h"
-#include "c_key.h"
-#include "main.h"
+#ifndef __C_KEY_C
+extern GB_DESC CKeyDesc[];
+#endif
 
-GB_INTERFACE GB EXPORT;
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CNCursesDesc,
-  CWindowDesc,
-  CWindowAttrsDesc,
-  CCharAttrsDesc,
-  CKeyDesc,
-  NULL
-};
-
-static void hook_error(int code, char *error, char *where)
-{
-	NCURSES_exit();
-}
-
-static void hook_init()
-{
-	NCURSES_init();
-}
-
-int EXPORT GB_INIT()
-{
-	GB.Hook(GB_HOOK_ERROR, (void *) hook_error);
-	GB.Hook(GB_HOOK_MAIN, (void *) hook_init);
-	return 0;
-}
-
-
-void EXPORT GB_EXIT()
-{
-	NCURSES_exit();
-}
-
+#endif /* __C_KEY_H */

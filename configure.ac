@@ -9,7 +9,6 @@ AC_INIT(configure.ac)
 
 AC_CONFIG_SUBDIRS(main)
 
-GB_CONFIG_SUBDIRS(ncurses, gb.ncurses)
 GB_CONFIG_SUBDIRS(bzlib2, gb.compress.bzlib2)
 GB_CONFIG_SUBDIRS(zlib, gb.compress.zlib)
 GB_CONFIG_SUBDIRS(mysql, gb.db.mysql)
@@ -36,6 +35,7 @@ GB_CONFIG_SUBDIRS(imageio, gb.image.io)
 GB_CONFIG_SUBDIRS(imageimlib, gb.image.imlib)
 GB_CONFIG_SUBDIRS(dbus, gb.dbus)
 GB_CONFIG_SUBDIRS(gsl, gb.gsl)
+GB_CONFIG_SUBDIRS(ncurses, gb.ncurses)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)
