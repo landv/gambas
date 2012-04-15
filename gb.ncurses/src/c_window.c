@@ -34,7 +34,10 @@
 #include "c_window.h"
 
 /* The nc_window currently having the focus (raising Read events) */
-static struct nc_window *focused = NULL;
+static CWINDOW *focused = NULL;
+
+#define MAIN (THIS ? THIS->main : stdscr)
+#define CONTENT (THIS ? THIS->content : stdscr)
 
 DECLARE_EVENT(EVENT_Read);
 
@@ -215,15 +218,15 @@ static int WINDOW_copy_window(WINDOW *src, WINDOW *dst, int sx, int sy, int nx, 
  */
 static int WINDOW_remove(void *_object)
 {
-	wclear(THIS->content);
+	wclear(CONTENT);
 	if (HAS_BORDER)
 	{
-		delwin(THIS->content);
-		wclear(THIS->main);
+		delwin(CONTENT);
+		wclear(MAIN);
 	}
 	REFRESH();
 	del_panel(THIS->pan);
-	delwin(THIS->main);
+	delwin(MAIN);
 	return 0;
 }
 
@@ -263,7 +266,7 @@ static int WINDOW_remove_content(void *_object)
 	WINDOW_content_to_main();
 	wattrset(THIS->main, getattrs(THIS->content));
 	delwin(THIS->content);
-	THIS->content = THIS->main;
+	THIS->content = MAIN;
 	return 0;
 }
 
@@ -279,9 +282,9 @@ static int WINDOW_draw_border(void *_object, bool b)
 	   the format of that string */
 	//WINDOW_print(THIS, tigetstr("acsc"), -1, -1);
 	if (b)
-		box(THIS->main, 0, 0);
+		box(MAIN, 0, 0);
 	else
-		wborder(THIS->main, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+		wborder(MAIN, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
 	return 0;
 }
 
@@ -294,14 +297,14 @@ static int WINDOW_draw_border(void *_object, bool b)
  */
 static int WINDOW_cursor_move(void *_object, int x, int y)
 {
-	MAKE_COORDS(THIS->content, x, y);
-	if (BAD_COORDS(THIS->content, x, y))
+	MAKE_COORDS(CONTENT, x, y);
+	if (BAD_COORDS(CONTENT, x, y))
 	{
 		GB.Error(E_COORDS);
 		return -1;
 	}
 
-	if (wmove(THIS->content, y, x) == ERR)
+	if (wmove(CONTENT, y, x) == ERR)
 	{
 		GB.Error("Could not move cursor");
 		return -1;
@@ -319,7 +322,7 @@ static int WINDOW_move(void *_object, int x, int y)
 {
 	int ox, oy;
 
-	getbegyx(THIS->main, oy, ox);
+	getbegyx(MAIN, oy, ox);
 	if (x == -1)
 		x = ox;
 	if (y == -1)
@@ -333,7 +336,7 @@ static int WINDOW_move(void *_object, int x, int y)
 	move_panel(THIS->pan, y, x);
 	if (HAS_BORDER)
 	{
-		mvwin(THIS->content, y + 1, x + 1);
+		mvwin(CONTENT, y + 1, x + 1);
 		WINDOW_draw_border(THIS, 1);
 	}
 	return 0;
@@ -352,7 +355,7 @@ static int WINDOW_resize(void *_object, int w, int h)
 {
 	int ow, oh;
 
-	getmaxyx(THIS->content, ow, oh);
+	getmaxyx(CONTENT, ow, oh);
 	if (w == -1)
 		w = ow;
 	if (h == -1)
@@ -368,7 +371,7 @@ static int WINDOW_resize(void *_object, int w, int h)
 		}
 
 		WINDOW_draw_border(THIS, 0);
-		wresize(THIS->main, h + 2, w + 2);
+		wresize(MAIN, h + 2, w + 2);
 	}
 
 	if (w <= 0 || w > COLS || h <= 0 || h > LINES)
@@ -376,8 +379,8 @@ static int WINDOW_resize(void *_object, int w, int h)
 		GB.Error(E_DIMENSION);
 		return -1;
 	}
-	wresize(THIS->content, h, w) == ERR;
-	replace_panel(THIS->pan, THIS->main);
+	wresize(CONTENT, h, w) == ERR;
+	replace_panel(THIS->pan, MAIN);
 
 	if (HAS_BORDER)
 		WINDOW_draw_border(THIS, 1);
@@ -404,16 +407,16 @@ static int WINDOW_print(void *_object, char *str, int x, int y)
 	{
 		if (WINDOW_cursor_move(THIS, x, y) == -1)
 			return -1;
-		width = getmaxx(THIS->content) - x;
+		width = getmaxx(CONTENT) - x;
 		if ((len = strlen(p)) < width)
 			width = len;
-		waddnstr(THIS->content, p, width);
+		waddnstr(CONTENT, p, width);
 		p += width;
-		if (!THIS->wrap)
+		if (THIS && !THIS->wrap)
 			break;
 		x = 0;
 		y++;
-		if (y >= getmaxy(THIS->content))
+		if (y >= getmaxy(CONTENT))
 			break;
 	}
 	while (*p);
@@ -453,28 +456,28 @@ int WINDOW_insert(void *_object, char *str, int x, int y)
 	}
 
 	/* we need the real vals, WINDOW_cursor_move() interpreted the -1 values for us */
-	x = getcurx(THIS->content);
-	y = getcury(THIS->content);
+	x = getcurx(CONTENT);
+	y = getcury(CONTENT);
 	if (rec == 1) /* first call, initialise all static control data */
 	{
-		XY2A(THIS->content, getmaxx(THIS->content) - 1, getmaxy(THIS->content) - 1, a);
+		XY2A(CONTENT, getmaxx(CONTENT) - 1, getmaxy(CONTENT) - 1, a);
 		a += strlen(str);
-		A2XY(THIS->content, a, ex, ey);
+		A2XY(CONTENT, a, ex, ey);
 		/* the text may fill the entire box, so we better catch that and locate the cursor
 		   at the end in that case */
-		if (ey >= getmaxy(THIS->content))
+		if (ey >= getmaxy(CONTENT))
 		{
-			ex = getmaxx(THIS->content) - 1;
-			ey = getmaxy(THIS->content) - 1;
+			ex = getmaxx(CONTENT) - 1;
+			ey = getmaxy(CONTENT) - 1;
 		}
 	}
 
 	/* if we're on the last line, nothing will be wrapped around at all, so we take this branch.
 	   in this case, the call works exactly like the non-wrapping insert and begins to unroll the
 	   recursion. */
-	if (!THIS->wrap || y == getmaxy(THIS->content) - 1)
+	if (!THIS->wrap || y == getmaxy(CONTENT) - 1)
 	{
-		mvwinsstr(THIS->content, y, x, str);
+		mvwinsstr(CONTENT, y, x, str);
 	}
 	else
 	{
@@ -490,21 +493,21 @@ int WINDOW_insert(void *_object, char *str, int x, int y)
 		}
 		/* if the @str itself overflows the line, there will be a remainder of
 		   it that has to preceed the shifted string to be wrapped to the next line */
-		if (x + len > getmaxx(THIS->content))
+		if (x + len > getmaxx(CONTENT))
 		{
-			len = getmaxx(THIS->content) - x;
+			len = getmaxx(CONTENT) - x;
 			strcpy(temp, str + len);
-			winstr(THIS->content, temp + strlen(temp));
+			winstr(CONTENT, temp + strlen(temp));
 		}
 		else
 		{
 			/* remainder on the right (giving a negative @n to winnstr() family seems broken
 			   in my library and may be elsewhere (manpages say it's an extension to XSI curses) */
-			mvwinstr(THIS->content, y, getmaxx(THIS->content) - len, temp);
+			mvwinstr(CONTENT, y, getmaxx(CONTENT) - len, temp);
 		}
 		/* the winnstr() family of functions used to extract shifted characters moves the cursor, we have
 		   to reset it here (would have been nice to leave that fact in the manpages...) */
-		mvwinsstr(THIS->content, y, x, str);
+		mvwinsstr(CONTENT, y, x, str);
 		strcpy(shifted, temp);
 		WINDOW_insert(THIS, shifted, 0, y + 1);
 	}
@@ -548,23 +551,23 @@ static int WINDOW_insert(void *_object, char *str, int x, int y)
 		return -1;
 	if (!THIS->wrap)
 	{
-		winsstr(THIS->content, str);
+		winsstr(CONTENT, str);
 		return 0;
 	}
 
-	x = getcurx(THIS->content);
-	y = getcury(THIS->content);
-	XY2A(THIS->content, x, y, a);
+	x = getcurx(CONTENT);
+	y = getcury(CONTENT);
+	XY2A(CONTENT, x, y, a);
 	len = strlen(str);
-	slen = getmaxy(THIS->content) * getmaxx(THIS->content) - a - len + 1;
+	slen = getmaxy(CONTENT) * getmaxx(CONTENT) - a - len + 1;
 	GB.Alloc((void **) &ins, len * sizeof(chtype));
 	for (i = 0; i < len; i++)
-		ins[i] = (chtype) str[i] | getattrs(THIS->content);
-	WINDOW_get_mem(THIS->content, &shifted, x, y, getmaxy(THIS->content) * getmaxx(THIS->content) - a);
+		ins[i] = (chtype) str[i] | getattrs(CONTENT);
+	WINDOW_get_mem(CONTENT, &shifted, x, y, getmaxy(CONTENT) * getmaxx(CONTENT) - a);
 
-	WINDOW_put_mem(ins, THIS->content, x, y, len);
-	getyx(THIS->content, y, x);
-	WINDOW_put_mem(shifted, THIS->content, x, y, slen);
+	WINDOW_put_mem(ins, CONTENT, x, y, len);
+	getyx(CONTENT, y, x);
+	WINDOW_put_mem(shifted, CONTENT, x, y, slen);
 
 	/* place the cursor after the last inserted char */
 	WINDOW_cursor_move(THIS, x, y);
@@ -591,10 +594,10 @@ static int WINDOW_get_str(void *_object, int x, int y, unsigned int len, char **
 	char *buf;
 
 	if (len == -1)
-		len = getmaxx(THIS->content) - getcurx(THIS->content);
+		len = getmaxx(CONTENT) - getcurx(CONTENT);
 
 	GB.Alloc((void **) &buf, len + 1);
-	WINDOW_get_mem(THIS->content, &chbuf, x, y, len);
+	WINDOW_get_mem(CONTENT, &chbuf, x, y, len);
 	for (i = 0; i < len; i++)
 		buf[i] = chbuf[i] & A_CHARTEXT;
 	buf[len] = 0;
@@ -714,7 +717,7 @@ static int WINDOW_import(void *_object, WINDOW *imp)
 	/* Clean up former members */
 	if (HAS_BORDER)
 		WINDOW_remove_content(THIS);
-	if (THIS->main)
+	if (MAIN)
 		WINDOW_remove(THIS);
 
 	THIS->main = imp;
@@ -739,12 +742,12 @@ static int WINDOW_attrs_driver(void *_object, int attr, int req)
 	switch (req)
 	{
 		case ATTR_DRV_RET:
-			return getattrs(THIS->content);
+			return getattrs(CONTENT);
 		case ATTR_DRV_ON:
-			wattron(THIS->content, attr);
+			wattron(CONTENT, attr);
 			break;
 		case ATTR_DRV_OFF:
-			wattroff(THIS->content, attr);
+			wattroff(CONTENT, attr);
 	}
 	return 0;
 }
@@ -769,12 +772,12 @@ static int WINDOW_char_attrs_driver(void *_object, int attr, int x, int y, int r
 	/* Find the number of bits to right-shift to get the color number from chtype
 	   attributes - _portably_ (don't know if it is required, if anyone could point
 	   to the magical manpage where all that is written?) */
-	mask = ~A_COLOR;
+	mask = ~(int)A_COLOR;
 	for (shift = 0; mask & 1; shift++, mask >>= 1);
 
-	getyx(THIS->content, oy, ox);
+	getyx(CONTENT, oy, ox);
 	WINDOW_cursor_move(THIS, x, y);
-	ch = winch(THIS->content);
+	ch = winch(CONTENT);
 	switch (req)
 	{
 		case ATTR_DRV_RET:
@@ -783,10 +786,10 @@ static int WINDOW_char_attrs_driver(void *_object, int attr, int x, int y, int r
 			res = ch & A_ATTRIBUTES;
 			goto _cleanup;
 		case ATTR_DRV_ON:
-			wchgat(THIS->content, 1, (ch & A_ATTRIBUTES) | attr, (ch & A_COLOR) >> shift, NULL);
+			wchgat(CONTENT, 1, (ch & A_ATTRIBUTES) | attr, (ch & A_COLOR) >> shift, NULL);
 			break;
 		case ATTR_DRV_OFF:
-			wchgat(THIS->content, 1, (ch & A_ATTRIBUTES) & ~attr, (ch & A_COLOR) >> shift, NULL);
+			wchgat(CONTENT, 1, (ch & A_ATTRIBUTES) & ~attr, (ch & A_COLOR) >> shift, NULL);
 	}
 
 	res = 0;
@@ -830,9 +833,9 @@ BEGIN_PROPERTY(Window_Border)
 	/* FIXME: try Full() and then Border = True */
 	if (b)
 	{
-		WINDOW_resize(THIS, getmaxx(THIS->content) + 2, getmaxy(THIS->content) + 2);
-		WINDOW_move(THIS, (x = getbegx(THIS->main) - 1) == -1 ? 0 : x,
-		                     (y = getbegy(THIS->main) - 1) == -1 ? 0 : y);
+		WINDOW_resize(THIS, getmaxx(CONTENT) + 2, getmaxy(CONTENT) + 2);
+		WINDOW_move(THIS, (x = getbegx(MAIN) - 1) == -1 ? 0 : x,
+		                     (y = getbegy(MAIN) - 1) == -1 ? 0 : y);
 		WINDOW_add_content(THIS);
 		WINDOW_draw_border(THIS, 1);
 	}
@@ -843,9 +846,9 @@ BEGIN_PROPERTY(Window_Border)
 		WINDOW_draw_border(THIS, 0);
 		WINDOW_remove_content(THIS);
 		THIS->border = b; /* FIXME: this is important here due to the automatic border-redraw in WINDOW_resize */
-		WINDOW_resize(THIS, getmaxx(THIS->content) - 2, getmaxy(THIS->content) - 2);
-		WINDOW_move(THIS, (x = getbegx(THIS->main) + 1) >= getmaxx(THIS->main) ? getmaxx(THIS->main) - 1 : x,
-		               (y = getbegy(THIS->main) + 1) >= getmaxy(THIS->main) ? getmaxy(THIS->main) - 1 : y);
+		WINDOW_resize(THIS, getmaxx(CONTENT) - 2, getmaxy(CONTENT) - 2);
+		WINDOW_move(THIS, (x = getbegx(MAIN) + 1) >= getmaxx(MAIN) ? getmaxx(MAIN) - 1 : x,
+		               (y = getbegy(MAIN) + 1) >= getmaxy(MAIN) ? getmaxy(MAIN) - 1 : y);
 	}
 	THIS->border = b;
 	REFRESH();
@@ -863,15 +866,15 @@ BEGIN_PROPERTY(Window_Buffered)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Window_ContainerHeight)
+BEGIN_PROPERTY(Window_ClientHeight)
 
-	GB.ReturnInteger(getmaxy(THIS->main));
+	GB.ReturnInteger(getmaxy(MAIN));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Window_ContainerWidth)
+BEGIN_PROPERTY(Window_ClientWidth)
 
-	GB.ReturnInteger(getmaxx(THIS->main));
+	GB.ReturnInteger(getmaxx(MAIN));
 
 END_PROPERTY
 
@@ -879,7 +882,7 @@ BEGIN_PROPERTY(Window_CursorX)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(getcurx(THIS->content));
+		GB.ReturnInteger(getcurx(CONTENT));
 		return;
 	}
 	WINDOW_cursor_move(THIS, VPROP(GB_INTEGER), -1);
@@ -891,7 +894,7 @@ BEGIN_PROPERTY(Window_CursorY)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(getcury(THIS->content));
+		GB.ReturnInteger(getcury(CONTENT));
 		return;
 	}
 	WINDOW_cursor_move(THIS, -1, VPROP(GB_INTEGER));
@@ -909,7 +912,7 @@ BEGIN_PROPERTY(Window_Height)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(getmaxy(THIS->content));
+		GB.ReturnInteger(getmaxy(CONTENT));
 		return;
 	}
 	WINDOW_resize(THIS, -1, VPROP(GB_INTEGER));
@@ -933,7 +936,7 @@ BEGIN_PROPERTY(Window_Width)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(getmaxx(THIS->content));
+		GB.ReturnInteger(getmaxx(CONTENT));
 		return;
 	}
 	WINDOW_resize(THIS, VPROP(GB_INTEGER), -1);
@@ -945,7 +948,7 @@ BEGIN_PROPERTY(Window_X)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(getbegx(THIS->main));
+		GB.ReturnInteger(getbegx(MAIN));
 		return;
 	}
 	WINDOW_move(THIS, VPROP(GB_INTEGER), -1);
@@ -957,7 +960,7 @@ BEGIN_PROPERTY(Window_Y)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(getbegy(THIS->main));
+		GB.ReturnInteger(getbegy(MAIN));
 		return;
 	}
 	WINDOW_move(THIS, -1, VPROP(GB_INTEGER));
@@ -1043,7 +1046,7 @@ BEGIN_METHOD_VOID(Window_Cls)
 
 	/* ncurses sets the cursor to 0,0 after wclear() which may or may not be
 	   surprising. */
-	wclear(THIS->content);
+	wclear(CONTENT);
 	REFRESH();
 
 END_METHOD
@@ -1095,7 +1098,7 @@ BEGIN_METHOD(Window_DrawHLine, GB_INTEGER x; GB_INTEGER y; GB_INTEGER len; GB_ST
 	int length, t;
 	int i;
 
-	getyx(THIS->content, oy, ox);
+	getyx(CONTENT, oy, ox);
 	c = *(STRING(ch));
 	length = VARG(len);
 	if (MISSING(thickness))
@@ -1108,7 +1111,7 @@ BEGIN_METHOD(Window_DrawHLine, GB_INTEGER x; GB_INTEGER y; GB_INTEGER len; GB_ST
 	for (i = 0; i < t; i++)
 	{
 		WINDOW_cursor_move(THIS, gx, gy);
-		whline(THIS->content, c, length);
+		whline(CONTENT, c, length);
 		gy++;
 	}
 	WINDOW_cursor_move(THIS, ox, oy);
@@ -1158,19 +1161,19 @@ BEGIN_METHOD(Window_PrintCenter, GB_STRING text)
 	}
 
 	p = STRING(text);
-	y = (getmaxy(THIS->content) - lines) / 2;
+	y = (getmaxy(CONTENT) - lines) / 2;
 	while (lines--)
 	{
 		if (!lines)
 		{
-			x = (getmaxx(THIS->content) - strlen(p)) / 2;
+			x = (getmaxx(CONTENT) - strlen(p)) / 2;
 			WINDOW_print(THIS, p, x, y);
 		}
 		else
 		{
 			q = strchr(p, '\n');
 			*q = 0;
-			x = (getmaxx(THIS->content) - (q - p)) / 2;
+			x = (getmaxx(CONTENT) - (q - p)) / 2;
 			WINDOW_print(THIS, p, x, y);
 			y++;
 			p = q + 1;
@@ -1221,7 +1224,7 @@ BEGIN_METHOD(Window_DrawVLine, GB_INTEGER x; GB_INTEGER y; GB_INTEGER len; GB_ST
 	int length, t;
 	int i;
 
-	getyx(THIS->content, oy, ox);
+	getyx(CONTENT, oy, ox);
 	c = *(STRING(ch));
 	length = VARG(len);
 	if (MISSING(thickness))
@@ -1234,7 +1237,7 @@ BEGIN_METHOD(Window_DrawVLine, GB_INTEGER x; GB_INTEGER y; GB_INTEGER len; GB_ST
 	for (i = 0; i < t; i++)
 	{
 		WINDOW_cursor_move(THIS, gx, gy);
-		wvline(THIS->content, c, length);
+		wvline(CONTENT, c, length);
 		gx++;
 	}
 	WINDOW_cursor_move(THIS, ox, oy);
@@ -1265,9 +1268,9 @@ BEGIN_PROPERTY(WindowAttrs_Normal)
 
 	/* normal is special because it turns off all other attributes and can't itself been turned off */
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(getattrs(THIS->content) == A_NORMAL);
+		GB.ReturnBoolean(getattrs(CONTENT) == A_NORMAL);
 	if (VPROP(GB_BOOLEAN))
-		wattrset(THIS->content, A_NORMAL);
+		wattrset(CONTENT, A_NORMAL);
 
 END_PROPERTY
 
@@ -1346,7 +1349,7 @@ END_PROPERTY
 
 GB_DESC CWindowDesc[] =
 {
-	GB_DECLARE("Window", sizeof(struct nc_window)),
+	GB_DECLARE("Window", sizeof(CWINDOW)),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 
@@ -1363,10 +1366,10 @@ GB_DESC CWindowDesc[] =
 
 	GB_PROPERTY("Buffered", "b", Window_Buffered),
 
-	GB_PROPERTY_READ("ContainerHeight", "i", Window_ContainerHeight),
-	GB_PROPERTY_READ("ContainerH", "i", Window_ContainerHeight),
-	GB_PROPERTY_READ("ContainerWidth", "i", Window_ContainerWidth),
-	GB_PROPERTY_READ("ComtainerW", "i", Window_ContainerWidth),
+	GB_PROPERTY_READ("ClientHeight", "i", Window_ClientHeight),
+	GB_PROPERTY_READ("ClientH", "i", Window_ClientHeight),
+	GB_PROPERTY_READ("ClientWidth", "i", Window_ClientWidth),
+	GB_PROPERTY_READ("ClientW", "i", Window_ClientWidth),
 
 	GB_PROPERTY("CursorX", "i", Window_CursorX),
 	GB_PROPERTY("CursorY", "i", Window_CursorY),
@@ -1453,5 +1456,78 @@ GB_DESC CCharAttrsDesc[] =
 
 	//GB_PROPERTY("Color", "i", CCharAttrs_color),
 
+	GB_END_DECLARE
+};
+
+GB_DESC CScreenDesc[] = 
+{
+	GB_DECLARE("Screen", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+
+	/* Constants */
+	//GB_CONSTANT("NoTimeout", "i", TIMEOUT_NOTIMEOUT),
+
+	/* Properties */
+	//GB_PROPERTY_READ("Attributes", ".Window.Attrs", Window_Attrs),
+
+	GB_STATIC_PROPERTY("Background", "i", Window_Background),
+	GB_STATIC_PROPERTY("Paper", "i", Window_Background),
+
+	//GB_STATIC_PROPERTY("Border", "b", Window_Border),
+
+	//GB_STATIC_PROPERTY("Buffered", "b", Window_Buffered),
+
+	GB_STATIC_PROPERTY_READ("ClientHeight", "i", Window_ClientHeight),
+	GB_STATIC_PROPERTY_READ("ClientH", "i", Window_ClientHeight),
+	GB_STATIC_PROPERTY_READ("ClientWidth", "i", Window_ClientWidth),
+	GB_STATIC_PROPERTY_READ("ClientW", "i", Window_ClientWidth),
+
+	GB_STATIC_PROPERTY("CursorX", "i", Window_CursorX),
+	GB_STATIC_PROPERTY("CursorY", "i", Window_CursorY),
+
+	GB_STATIC_PROPERTY("Foreground", "i", Window_Foreground),
+	GB_STATIC_PROPERTY("Pen", "i", Window_Foreground),
+
+	GB_STATIC_PROPERTY("Height", "i", Window_Height),
+	GB_STATIC_PROPERTY("H", "i", Window_Height),
+
+	//GB_STATIC_PROPERTY("Wrap", "b", Window_Wrap),
+
+	GB_STATIC_PROPERTY("Width", "i", Window_Width),
+	GB_STATIC_PROPERTY("W", "i", Window_Width),
+
+	GB_STATIC_PROPERTY("X", "i", Window_X),
+	GB_STATIC_PROPERTY("Y", "i", Window_Y),
+
+	/* Methods */
+	//GB_STATIC_METHOD("_get", ".Char.Attrs", Window_get, "(Y)i(X)i"),
+
+	GB_STATIC_METHOD("Ask", "s", Window_Ask, "(Opts)s[(Tries)i]"),
+
+	GB_STATIC_METHOD("Bottom", NULL, Window_Bottom, NULL),
+	GB_STATIC_METHOD("Top", NULL, Window_Top, NULL),
+
+	GB_STATIC_METHOD("Cls", NULL, Window_Cls, NULL),
+
+	GB_STATIC_METHOD("Flush", NULL, Window_Flush, NULL),
+
+	GB_STATIC_METHOD("Get", "s", Window_Get, "(X)i(Y)i[(Len)i]"),
+
+	GB_STATIC_METHOD("DrawHLine", NULL, Window_DrawHLine, "(X)i(Y)i(Len)i(Ch)s[(Thickness)i]"),
+	GB_STATIC_METHOD("DrawVLine", NULL, Window_DrawVLine, "(X)i(Y)i(Len)i(Ch)s[(Thickness)i]"),
+
+	GB_STATIC_METHOD("Insert", NULL, Window_Insert, "(Text)s[(X)i(Y)i]"),
+	GB_STATIC_METHOD("Print", NULL, Window_Print, "(Text)s[(X)i(Y)i]"),
+	GB_STATIC_METHOD("PrintCenter", NULL, Window_PrintCenter, "(Text)s"),
+
+	GB_STATIC_METHOD("Locate", NULL, Window_Locate, "(X)i(Y)i"),
+
+	GB_STATIC_METHOD("Refresh", NULL, Window_Refresh, NULL),
+
+	GB_STATIC_METHOD("SetFocus", NULL, Window_SetFocus, NULL),
+
+	GB_STATIC_METHOD("WaitKey", "i", Window_WaitKey, "[(Timeout)i]"),
+	
 	GB_END_DECLARE
 };

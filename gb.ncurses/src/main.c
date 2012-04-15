@@ -34,6 +34,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CWindowDesc,
   CWindowAttrsDesc,
   CCharAttrsDesc,
+	CScreenDesc,
   CKeyDesc,
   NULL
 };

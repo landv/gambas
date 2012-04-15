@@ -30,10 +30,10 @@
 
 #include "c_ncurses.h"
 
-#define THIS				((struct nc_window *) _object)
-#define HAS_BORDER			(THIS->border)
-#define IS_WRAPPED			(THIS->wrap)
-#define IS_BUFFERED			(THIS->buffered)
+#define THIS				((CWINDOW *) _object)
+#define HAS_BORDER			(THIS && THIS->border)
+#define IS_WRAPPED			(THIS && THIS->wrap)
+#define IS_BUFFERED			(THIS && THIS->buffered)
 /* This will produce final output on terminal screen */
 #define REAL_REFRESH()			WINDOW_real_refresh()
 /* This macro is mostly called by Gambas implementation functions to request output on screen
@@ -107,32 +107,35 @@ enum
 //	[-] Timer
 //	[-] Color
 
-struct nc_window
-{
-	GB_BASE ob;
-	GB_STREAM stream;	/* Gambas stream structure to enable Print #Window, Expr and other stream-related
-				   syntaxes */
-	WINDOW *main;		/* The main window. */
-	WINDOW *content;	/* This window is used for all content-related operations. Its purpose is turning
-				   the ncurses window borders which are inner-window to outer-window ones thus
-				   separating border from content. If there is no border, this is the same as @main
-				   otherwise a subwindow of it. */
-	PANEL *pan;		/* Panel of the main window to provide overlapping windows */
-	bool border;		/* Whether there is a border */
-	bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
-	bool buffered;		/* Whether the output via REFRESH() macro shall be buffered (only a call to
-				   Window.Refresh() will then produce any output) */
-	struct			/* This structure is used to pass a line and a column number to virtual objects */
+typedef
+	struct nc_window
 	{
-		int line;
-		int col;
-	} pos;
-};
+		GB_BASE ob;
+		GB_STREAM stream;	/* Gambas stream structure to enable Print #Window, Expr and other stream-related
+						syntaxes */
+		WINDOW *main;		/* The main window. */
+		WINDOW *content;	/* This window is used for all content-related operations. Its purpose is turning
+						the ncurses window borders which are inner-window to outer-window ones thus
+						separating border from content. If there is no border, this is the same as @main
+						otherwise a subwindow of it. */
+		PANEL *pan;		/* Panel of the main window to provide overlapping windows */
+		bool border;		/* Whether there is a border */
+		bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
+		bool buffered;		/* Whether the output via REFRESH() macro shall be buffered (only a call to
+						Window.Refresh() will then produce any output) */
+		struct			/* This structure is used to pass a line and a column number to virtual objects */
+		{
+			int line;
+			int col;
+		} pos;
+	}
+	CWINDOW;
 
 #ifndef __C_WINDOW_C
 extern GB_DESC CWindowDesc[];
 extern GB_DESC CWindowAttrsDesc[];
 extern GB_DESC CCharAttrsDesc[];
+extern GB_DESC CScreenDesc[];
 #endif
 
 #define WINDOW_main_to_content()	WINDOW_copy_window(THIS->main, THIS->content, 0, 0, \
