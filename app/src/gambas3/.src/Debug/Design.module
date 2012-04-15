@@ -836,7 +836,7 @@ Private Sub Start(sCmd As String)
       
     Case "gnome-terminal"
       ' gnome terminal cannot hold at end
-      aExec = ["gnome-terminal", "--hide-menubar", "--maximize", "--title=" & sTitle, "-e", aExec.Join(" ")]
+      aExec.Insert(["gnome-terminal", "--hide-menubar", "--maximize", "--title=" & sTitle, "-x"], 0)
       
     Case "Terminal"
       aExec.Insert(["Terminal", "--hide-menubar", "--hide-toolbars", "--title=" & sTitle, "--hold", "-x"], 0)
