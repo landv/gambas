@@ -4247,6 +4247,12 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
 
 End
 
+Public Function IsSourceDir(sDir As String) As Boolean
+
+  Return sDir Begins SourceDir
+
+End
+
 Public Function IsSourcePath(sPath As String) As Boolean
 
   Dim sExt As String
