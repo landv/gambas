@@ -97,7 +97,7 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
 
-  If Project.IsSourcePath($sDir &/ "/") Then
+  If Project.IsSourceDir($sDir) Then
 
     $aFilterType = ["module", "class"]
     
