@@ -19,20 +19,7 @@ GB_COMPONENT(
   [$CXX_LIB $THREAD_LIB $X_LIBS -lqt-mt],
   [$THREAD_INC])
 
-if test x"$have_qt" != "x"; then
-
-  GB_COMPONENT(
-    trinity,
-    TRINITY,
-    [Trinity],
-    [src],
-    [GB_FIND(tqstring.h, /usr/local /usr /opt, include include/tqt tqt/include)],
-    [GB_FIND(libtqt.$SHLIBEXT, /usr/local /usr, lib lib/tqt tqt/lib)],
-    [-ltqt])
-
-  if test x"$have_trinity" != x; then
-    PATH=$PATH:/opt/trinity/bin
-  fi
+if test "$have_qt" != "no"; then
 
   GB_COMPONENT(
     kde,
@@ -42,6 +29,22 @@ if test x"$have_qt" != "x"; then
     [GB_FIND(kapplication.h, `kde-config --prefix 2> /dev/null`, include)],
     [GB_FIND(libkdecore.$SHLIBEXT, `kde-config --prefix 2> /dev/null`, lib)],
     [-lkdecore -lkdeui -lDCOP -lkio])
+
+  if test "$have_kde" == "no"; then
+
+    PATH=$PATH:/opt/trinity/bin
+    rm -f DISABLED
+  
+    GB_COMPONENT(
+      trinity,
+      TRINITY,
+      [Trinity],
+      [src],
+      [GB_FIND(tqstring.h, /usr/local /usr /opt, include include/tqt tqt/include)],
+      [GB_FIND(libtqt.$SHLIBEXT, /usr/local /usr, lib lib/tqt tqt/lib)],
+      [-ltqt])
+
+  fi
 
 fi
   
