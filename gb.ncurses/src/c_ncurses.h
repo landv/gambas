@@ -25,7 +25,6 @@
 #include <ncurses.h>
 
 #include "gambas.h"
-#include "gb_common.h"
 
 #define NCURSES_RUNNING		NCURSES_running()
 

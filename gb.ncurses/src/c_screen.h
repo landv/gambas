@@ -1,5 +1,5 @@
 /*
- * main.c - gb.ncurses main object
+ * c_screen.h - gb.ncurses Screen class
  *
  * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -19,51 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#define __MAIN_C
+#ifndef __C_SCREEN_H
+#define __C_SCREEN_H
 
-#include "c_ncurses.h"
-#include "c_window.h"
-#include "c_key.h"
-#include "c_color.h"
-#include "c_screen.h"
-#include "main.h"
+#include "gambas.h"
 
-GB_INTERFACE GB EXPORT;
+#ifndef __C_WINDOW_C
+extern GB_DESC CScreenDesc[];
+#endif
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CNCursesDesc,
-  CWindowDesc,
-  CWindowAttrsDesc,
-  CCharAttrsDesc,
-  CKeyDesc,
-  CColorDesc,
-  CColorCapabilitiesDesc,
-  CColorPairDesc,
-  CColorContentDesc,
-  CScreenDesc,
-  NULL
-};
+int SCREEN_init();
 
-static void hook_error(int code, char *error, char *where)
-{
-	NCURSES_exit();
-}
-
-static void hook_main(int *argc, char **argv)
-{
-	NCURSES_init();
-}
-
-int EXPORT GB_INIT()
-{
-	GB.Hook(GB_HOOK_ERROR, (void *) hook_error);
-	GB.Hook(GB_HOOK_MAIN, (void *) hook_main);
-	return 0;
-}
-
-
-void EXPORT GB_EXIT()
-{
-	NCURSES_exit();
-}
+#endif /* __C_SCREEN_H */

@@ -31,14 +31,14 @@
 #include "c_ncurses.h"
 
 #define THIS				((CWINDOW *) _object)
-#define HAS_BORDER			(THIS && THIS->border)
-#define IS_WRAPPED			(THIS && THIS->wrap)
-#define IS_BUFFERED			(THIS && THIS->buffered)
+#define HAS_BORDER			(THIS->border)
+#define IS_WRAPPED			(THIS->wrap)
+#define IS_BUFFERED			(THIS->buffered)
 /* This will produce final output on terminal screen */
 #define REAL_REFRESH()			WINDOW_real_refresh()
 /* This macro is mostly called by Gambas implementation functions to request output on screen
    (read: to check if the output is buffered and if not produce output by means of
-   REAL_REFRESH(). To check buffering, this need to get an object parameter.) */
+   REAL_REFRESH(). To check buffering, this needs to get an object parameter.) */
 #define REFRESH()			WINDOW_refresh(THIS)
 
 /* Translate linear (absolute) memory addresses and x,y coordinates into each other
@@ -71,7 +71,9 @@ enum
 	/* Enable given attributes */
 	ATTR_DRV_ON,
 	/* Disable given attributes */
-	ATTR_DRV_OFF
+	ATTR_DRV_OFF,
+	/* Set a color */
+	ATTR_DRV_COL
 };
 
 #define WIN_ATTR_METHOD(b, a)	{ \
@@ -84,7 +86,6 @@ enum
 							(b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
 				}
 #define WIN_ATTR_METHOD_BOOL(a)		WIN_ATTR_METHOD(VPROP(GB_BOOLEAN), a);
-#define WIN_ATTR_METHOD_INT(a)		WIN_ATTR_METHOD(1, a);
 /* Notice the wtouchln() line in the following macro. It seems that a chgat() from
    nc_window_char_attrs_driver() doesn't mark anything dirty (no output on screen from
    a REFRESH()). So to make the new attribute available immidiately, we touch the affected
@@ -100,42 +101,35 @@ enum
 					wtouchln(THIS->main, THIS->pos.line + (HAS_BORDER ? 1 : 0), 1, 1); \
 				}
 #define CHAR_ATTR_METHOD_BOOL(a)	CHAR_ATTR_METHOD(VPROP(GB_BOOLEAN), a);
-#define CHAR_ATTR_METHOD_INT(a)		CHAR_ATTR_METHOD(1, a);
 
-//TODO:	[x] chgat on line and character basis
-//	[-] Stream
-//	[-] Timer
-//	[-] Color
+//TODO: [-] Stream
 
-typedef
-	struct nc_window
+typedef struct nc_window
+{
+	GB_BASE ob;
+	GB_STREAM stream;	/* Gambas stream structure to enable Print #Window, Expr and other stream-related
+				   syntaxes */
+	WINDOW *main;		/* The main window. */
+	WINDOW *content;	/* This window is used for all content-related operations. Its purpose is turning
+				   the ncurses window borders which are inner-window to outer-window ones thus
+				   separating border from content. If there is no border, this is the same as @main
+				   otherwise a subwindow of it. */
+	PANEL *pan;		/* Panel of the main window to provide overlapping windows */
+	bool border;		/* Whether there is a border */
+	bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
+	bool buffered;		/* Whether the output via REFRESH() macro shall be buffered (only a call to
+				   Window.Refresh() will then produce any output) */
+	struct			/* This structure is used to pass a line and a column number to virtual objects */
 	{
-		GB_BASE ob;
-		GB_STREAM stream;	/* Gambas stream structure to enable Print #Window, Expr and other stream-related
-						syntaxes */
-		WINDOW *main;		/* The main window. */
-		WINDOW *content;	/* This window is used for all content-related operations. Its purpose is turning
-						the ncurses window borders which are inner-window to outer-window ones thus
-						separating border from content. If there is no border, this is the same as @main
-						otherwise a subwindow of it. */
-		PANEL *pan;		/* Panel of the main window to provide overlapping windows */
-		bool border;		/* Whether there is a border */
-		bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
-		bool buffered;		/* Whether the output via REFRESH() macro shall be buffered (only a call to
-						Window.Refresh() will then produce any output) */
-		struct			/* This structure is used to pass a line and a column number to virtual objects */
-		{
-			int line;
-			int col;
-		} pos;
-	}
-	CWINDOW;
+		int line;
+		int col;
+	} pos;
+} CWINDOW;
 
 #ifndef __C_WINDOW_C
 extern GB_DESC CWindowDesc[];
 extern GB_DESC CWindowAttrsDesc[];
 extern GB_DESC CCharAttrsDesc[];
-extern GB_DESC CScreenDesc[];
 #endif
 
 #define WINDOW_main_to_content()	WINDOW_copy_window(THIS->main, THIS->content, 0, 0, \
@@ -146,5 +140,6 @@ extern GB_DESC CScreenDesc[];
 								getmaxy(THIS->content), 0, 0)
 
 void WINDOW_real_refresh();
-								
+void WINDOW_refresh();
+
 #endif /* __C_WINDOW_C */

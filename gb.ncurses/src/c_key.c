@@ -21,11 +21,18 @@
 
 #define __C_KEY_C
 
-#include "../gambas.h"
-
 #include <ncurses.h>
 
+#include "../gambas.h"
+
+#include "main.h"
 #include "c_key.h"
+
+BEGIN_METHOD(Key_get, GB_STRING key)
+
+	GB.ReturnInteger((int) *STRING(key));
+
+END_METHOD
 
 GB_DESC CKeyDesc[] =
 {
@@ -48,18 +55,20 @@ GB_DESC CKeyDesc[] =
 	GB_CONSTANT("Down", "i", KEY_DOWN),
 
 	/* F keys */
-	GB_CONSTANT("F1", "i", KEY_F(0)),
-	GB_CONSTANT("F2", "i", KEY_F(1)),
-	GB_CONSTANT("F3", "i", KEY_F(2)),
-	GB_CONSTANT("F4", "i", KEY_F(3)),
-	GB_CONSTANT("F5", "i", KEY_F(4)),
-	GB_CONSTANT("F6", "i", KEY_F(5)),
-	GB_CONSTANT("F7", "i", KEY_F(6)),
-	GB_CONSTANT("F8", "i", KEY_F(7)),
-	GB_CONSTANT("F9", "i", KEY_F(8)),
-	GB_CONSTANT("F10", "i", KEY_F(9)),
-	GB_CONSTANT("F11", "i", KEY_F(10)),
-	GB_CONSTANT("F12", "i", KEY_F(11)),
+	GB_CONSTANT("F1", "i", KEY_F(1)),
+	GB_CONSTANT("F2", "i", KEY_F(2)),
+	GB_CONSTANT("F3", "i", KEY_F(3)),
+	GB_CONSTANT("F4", "i", KEY_F(4)),
+	GB_CONSTANT("F5", "i", KEY_F(5)),
+	GB_CONSTANT("F6", "i", KEY_F(6)),
+	GB_CONSTANT("F7", "i", KEY_F(7)),
+	GB_CONSTANT("F8", "i", KEY_F(8)),
+	GB_CONSTANT("F9", "i", KEY_F(9)),
+	GB_CONSTANT("F10", "i", KEY_F(10)),
+	GB_CONSTANT("F11", "i", KEY_F(11)),
+	GB_CONSTANT("F12", "i", KEY_F(12)),
+
+	GB_STATIC_METHOD("_get", "i", Key_get, "(Key)s"),
 
 	GB_END_DECLARE
 };
