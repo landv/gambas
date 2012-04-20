@@ -1,0 +1,25 @@
+' Gambas module file
+
+Public Sub Main()
+
+Dim writer As New XmlWriter
+
+  
+writer.Open("", True)
+
+
+writer.StartElement("toto", ["titi", "tutu", "truc"], "tata", "http://")
+writer.StartElement("titi")
+writer.Attribute("tutu", "toto", "muche", "ftp://")
+
+writer.EndElement()
+writer.Comment("Test")
+writer.CDATA("Test")
+writer.Comment("test")
+writer.PI("tut", "toto")
+
+writer.EndDocument()
+
+Print writer.Data
+
+End

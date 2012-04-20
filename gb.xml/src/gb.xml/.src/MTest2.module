@@ -1,0 +1,16 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim reader As New XmlReader
+  
+  reader.Open("text.xml")
+  
+  
+  While Not reader.Eof
+    Print reader.Read()
+    If reader.Node.Type = XmlNode.CommentNode Then Print reader.Node.Value
+  Wend
+  
+  
+End

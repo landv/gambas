@@ -1,0 +1,204 @@
+' Gambas class file
+
+Export
+
+Property Read Data As String
+Property Read DTD As _XmlWriterDTD
+Property OutputStream As Stream
+
+Private $buffer As String
+Private $stream As Stream
+Private $indent As Boolean
+Private $TagEnded As Boolean = True
+
+Private $opened As Boolean = False
+
+Private PileElements As New String[]
+
+Public Sub Open(Optional fileName As String, Optional Indent As Boolean, Optional Encoding As String)
+  
+  If fileName Then
+    $stream = Open fileName For Output Create
+  Endif
+  
+  $indent = Indent
+  
+  $opened = True
+  
+  Write("<?xml version=\"1.0\"?>\n")
+  
+End
+
+Private Sub Write(Data As String, Optional IgnoreIndent As Boolean, Optional LineBreak As Boolean = False)
+  
+  If Not $opened Then Error.Raise("Document not opened")
+  LineBreak = LineBreak And $indent
+  If $indent And Not IgnoreIndent Then Data = String$(PileElements.Count, "\t") & Data
+  If LineBreak Then Data &= "\n"
+  If $stream Then
+    Write #$stream, Data
+  Else
+    $buffer &= Data
+  Endif
+  
+End
+
+Public Sub Flush()
+  
+  If Not $stream Then Return
+  Write #$stream, $buffer
+  $buffer = ""
+  
+End
+
+Public Sub Element(TagName As String, Optional Value As String, Optional Prefix As String, Optional URI As String)
+  
+  Dim Xmlns, sData As String
+  If URI Then
+    Xmlns = " xmlns"
+    If Prefix Then Xmlns &= ":" & Prefix
+    Xmlns &= "=\"" & URI & "\""
+  Endif
+  If Prefix Then TagName = Prefix & ":" & TagName
+  If Not $TagEnded Then 
+    Write(">" & If($indent, "\n", ""), True)
+    $TagEnded = True
+  Endif
+  sData = "<" & TagName & Xmlns
+  If Value Then
+    sData &= ">" & If($indent, "\n", "") & Value & If($indent, "\n", "") & "</" & TagName & "> "
+  Else
+    sData &= " />"
+  Endif
+  Write(sData,, True)
+  
+End
+
+Public Sub StartElement(TagName As String, Optional Attributes As String[], Optional Prefix As String, Optional URI As String)
+  
+  Dim Xmlns, s, sData As String
+  Dim i As Integer = 0
+  If URI Then
+    Xmlns = " xmlns"
+    If Prefix Then Xmlns &= ":" & Prefix
+    Xmlns &= "=\"" & URI & "\""
+  Endif
+  If Prefix Then TagName = Prefix & ":" & TagName
+  
+  sData = "<" & TagName
+  
+  If Attributes
+    If (Attributes.Count Mod 2) Then Attributes.Push("")
+    For i = 0 To Attributes.Max Step 2
+      sData &= " " & Attributes[i] & "=\"" & Attributes[i + 1] & "\""
+    Next
+  Endif
+  
+  sData &= Xmlns
+  
+  If Not $TagEnded Then 'On ferme le tag précédent
+    Write(">" & If($indent, "\n", ""), True)
+  Endif
+  
+  $TagEnded = False
+  
+  Write(sData)
+  
+  PileElements.Push(TagName)
+  
+End
+
+Public Sub EndElement()
+  
+  Dim tag As String
+  
+  If Not PileElements.Count Then Return
+  
+  tag = PileElements.Pop()
+  
+  If Not $TagEnded Then 'On ferme le tag précédent
+    Write(" />" & If($indent, "\n", ""), True) 'Pas de contenu
+    $TagEnded = True
+  Else
+    Write("</" & tag & ">")
+  Endif
+  
+End
+
+Public Sub Attribute(Name As String, Value As String, Optional Prefix As String, Optional URI As String)
+  
+  Dim sData As String 
+  
+  If Prefix Then 
+    Name = Prefix & ":" & Name
+  Endif
+  
+  sData = " " & Name & "=\"" & Value & "\""
+  
+  If URI Then sData &= " xmlns" & If(Prefix, ":" & Prefix, "") & "=\"" & URI & "\""
+  
+  Write(sData, True)
+  
+End
+
+Public Sub Comment(Comment As String)
+  
+  Write("<!--" & Comment & "-->",, True)
+  
+End
+
+Public Sub Text(Text As String)
+  
+  Write(Text, True)
+  
+End
+
+Public Sub CDATA(data As String)
+  
+  Write("<![CDATA[" & data & "]]>", True)
+  
+End
+
+Public Sub PI(Target As String, Content As String)
+  
+  Write("<?" & Target & " " & Content & "?>", True, True)
+  
+End
+
+
+
+Public Function EndDocument() As String
+  
+  While PileElements.Count
+    Me.EndElement()
+  Wend
+  $opened = False
+  Return $buffer
+  
+End
+
+
+Private Function Data_Read() As String
+
+  Return $buffer
+
+End
+
+Private Function OutputStream_Read() As Stream
+
+  Return $stream
+
+End
+
+Private Sub OutputStream_Write(Value As Stream)
+
+  $stream = Value
+
+End
+
+Private Function DTD_Read() As _XmlWriterDTD
+
+  _XmlWriterDTD._$writer = Me
+  Return _XmlWriterDTD
+
+End

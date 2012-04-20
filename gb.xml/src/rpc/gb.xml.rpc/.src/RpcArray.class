@@ -1,0 +1,248 @@
+'***************************************************************************
+' 
+' RpcArray.class
+' 
+' (c)2005 - Daniel Campos Fernández
+' 
+' XML-RPC Component
+' 
+' Realizado para la Junta de Extremadura.
+' Consejería de Educación Ciencia y Tecnología.
+' Proyecto gnuLinEx
+'
+' This program Is free software; you can redistribute it And / Or modify
+' it under the terms OF the GNU General PUBLIC License AS published by
+' the Free Software Foundation; either version 1, Or (at your option)
+' any later version.
+' 
+' This program Is distributed IN the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; WITHOUT even the implied WARRANTY OF
+' MERCHANTABILITY Or FITNESS FOR A PARTICULAR PURPOSE.See the
+' GNU General PUBLIC License FOR more details.
+' 
+' You should have received a COPY OF the GNU General PUBLIC License
+' along WITH this program; IF Not, WRITE TO the Free Software
+' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+' 
+'***************************************************************************
+EXPORT
+
+PRIVATE Values AS Variant[]
+PRIVATE dTypes AS Integer[]
+
+PROPERTY READ Count AS Integer
+PROPERTY READ Length AS Integer
+
+FUNCTION Count_Read() AS Integer
+
+  RETURN Values.Count
+
+END
+
+FUNCTION Length_Read() AS Integer
+
+  RETURN Values.Count
+
+END
+
+
+PUBLIC SUB Add(Value AS Variant, dataType AS Integer)
+
+  DIM sErr AS String
+
+  IF datatype < 0 Or datatype > 7 THEN
+    Error.Raise("Invalid data type")
+    RETURN
+  END IF
+
+  Values.Add(NULL)
+  dTypes.Add(dataType)
+  TRY ME[Values.Count - 1] = Value
+  IF ERROR THEN
+    sErr = Error.Text
+    Values.Pop()
+    dTypes.Pop()
+    Error.Raise(sErr)
+  END IF
+
+END
+
+PUBLIC FUNCTION Pop() AS Variant
+
+  IF Values.Count = 0 THEN
+    Error.Raise("Bad argument")
+    RETURN NULL
+  END IF
+
+  dTypes.Pop()
+  RETURN Values.Pop()
+
+END
+
+PUBLIC sub Push(Value AS Variant, dataType AS Integer)
+
+  Add(Value, dataType)
+
+END
+
+
+
+PUBLIC SUB Clear()
+
+  Values.Clear()
+  dTypes.Clear()
+
+END
+
+PUBLIC FUNCTION Copy() AS RpcArray
+
+  DIM hRes AS NEW RpcArray
+  DIM Bucle AS Integer
+
+  FOR Bucle = 0 TO Values.Count - 1
+    hRes.Add(Values[Bucle], dTypes[Bucle])
+  NEXT
+
+  RETURN hRes
+
+END
+
+
+
+PUBLIC SUB Reverse()
+
+  Values.Reverse()
+  dTypes.Reverse()
+
+END
+
+
+PUBLIC SUB Remove(Index AS Integer)
+
+  IF Index < 0 Or Index >= Values.Count THEN
+    Error.Raise("Bad index")
+    RETURN
+  END IF
+
+  Values.Remove(Index)
+  dTypes.Remove(Index)
+
+END
+
+PUBLIC FUNCTION Datatype(Index AS Integer) AS Integer
+
+  IF Index < 0 Or Index >= Values.Count THEN
+    Error.Raise("Bad index")
+    RETURN ""
+  END IF
+
+  RETURN dTypes[Index]
+
+END
+
+PUBLIC SUB _New()
+
+  Values = NEW Variant[]
+  dTypes = NEW Integer[]
+
+END
+
+PUBLIC FUNCTION _Get(Index AS Integer) AS Variant
+
+  IF Index < 0 Or Index >= Values.Count THEN
+    Error.Raise("Bad index")
+    RETURN NULL
+  END IF
+
+  RETURN Values[Index]
+
+END
+
+PUBLIC SUB _Put(Data AS Variant, Index AS Integer)
+
+  DIM pSt AS RpcStruct
+  DIM pAr AS RpcArray
+
+  IF Index < 0 Or Index >= Values.Count THEN
+    Error.Raise("Bad index")
+    RETURN
+  END IF
+
+  SELECT CASE dTypes[Index]
+
+    CASE XmlRpc.xInteger
+      TRY Values[Index] = CInt(Data)
+      IF ERROR THEN
+        Error.Raise("Bad integer value")
+        RETURN
+      END IF
+
+    CASE XmlRpc.xBoolean
+      TRY Values[Index] = CBool(Data)
+      IF ERROR THEN
+        Error.Raise("Bad boolean value")
+        RETURN
+      END IF
+
+    CASE XmlRpc.xDouble
+      TRY Values[Index] = CFloat(Data)
+      IF ERROR THEN
+        Error.Raise("Bad float value")
+        RETURN
+      END IF
+
+    CASE XmlRpc.xString
+      TRY Values[Index] = CStr(Data)
+      IF ERROR THEN
+        Error.Raise("Bad string value")
+        RETURN
+      END IF
+
+    CASE XmlRpc.xBase64
+      TRY Values[Index] = CStr(Data)
+      IF ERROR THEN
+        Error.Raise("Bad string value")
+        RETURN
+      END IF
+
+    CASE XmlRpc.xDate
+      TRY Values[Index] = CDate(Data)
+      IF ERROR THEN
+        Error.Raise("Bad date value")
+        RETURN
+      END IF
+
+    CASE XmlRpc.xStruct
+      IF Data = NULL THEN
+        Error.Raise("Bad RpcStruct value")
+        RETURN
+      END IF
+      TRY pSt = Data
+      IF ERROR THEN
+        Error.Raise("Bad RpcStruct value")
+        RETURN
+      END IF
+      Values[Index] = PSt
+
+    CASE XmlRpc.xArray
+      IF Data = NULL THEN
+        Error.Raise("Bad RpcArray value")
+        RETURN
+      END IF
+      TRY pAr = Data
+      IF ERROR THEN
+        Error.Raise("Bad RpcArray value")
+        RETURN
+      END IF
+      Values[Index] = pAr
+
+  END SELECT
+
+END
+
+
+
+
+
+
+

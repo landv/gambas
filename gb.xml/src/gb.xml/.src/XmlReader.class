@@ -1,0 +1,56 @@
+' Gambas class file
+
+Export
+Inherits _XmlReader
+
+Property InputStream As Stream
+Property Read Eof As Boolean
+
+Private $stream As Stream
+
+Private Function InputStream_Read() As Stream
+
+  Return $stream
+
+End
+
+Private Sub InputStream_Write(Value As Stream)
+
+  $stream = Value
+
+End
+
+Public Function Read() As Integer
+  
+  Dim sBuf As String
+  Dim code As Integer
+  
+  If Not $stream Then Return False
+  If Eof($stream) Then Return
+  
+  Do
+    sBuf = Read #$stream, 1
+    code = Me._ReadChar(sBuf)
+  Loop Until (code <> 0 And Me.ReadFlags[code]) Or Eof($stream)
+  
+  If Eof($stream) Then Return XmlReaderNodeType.EndStream
+  Return code
+  
+End
+
+Public Sub Open(path As String)
+  
+  Dim fichier As File
+
+  fichier = Open "text.xml" For Input
+  Me.InputStream = fichier
+  
+End
+
+
+Private Function Eof_Read() As Boolean
+
+  If Not $stream Then Return False
+  Return Eof($stream)
+
+End

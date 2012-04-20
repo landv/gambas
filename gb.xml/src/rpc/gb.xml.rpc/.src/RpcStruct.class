@@ -1,0 +1,149 @@
+'***************************************************************************
+' 
+' RpcStruct.class
+' 
+' (c)2005 - Daniel Campos Fernández
+' 
+' XML-RPC Component
+' 
+' Realizado para la Junta de Extremadura.
+' Consejería de Educación Ciencia y Tecnología.
+' Proyecto gnuLinEx
+'
+' This program Is free software; you can redistribute it And / Or modify
+' it under the terms OF the GNU General PUBLIC License AS published by
+' the Free Software Foundation; either version 1, Or (at your option)
+' any later version.
+' 
+' This program Is distributed IN the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; WITHOUT even the implied WARRANTY OF
+' MERCHANTABILITY Or FITNESS FOR A PARTICULAR PURPOSE.See the
+' GNU General PUBLIC License FOR more details.
+' 
+' You should have received a COPY OF the GNU General PUBLIC License
+' along WITH this program; IF Not, WRITE TO the Free Software
+' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+' 
+'***************************************************************************
+EXPORT
+
+PRIVATE Names AS String[]
+PRIVATE Values AS Variant[]
+PRIVATE dTypes AS Integer[]
+
+PROPERTY READ Count AS Integer
+
+FUNCTION Count_Read() AS Integer
+
+  RETURN Names.Count
+
+END
+
+
+PUBLIC SUB _New()
+
+  Names = NEW String[]
+  Values = NEW Variant[]
+  dTypes = NEW Integer[]
+
+END
+
+PUBLIC SUB Add(Name AS String, Value AS Variant, dataType AS Integer)
+
+  IF datatype < 0 Or datatype > 7 THEN
+    Error.Raise("Invalid data type")
+    RETURN
+  END IF
+
+  Names.Add(Name)
+  Values.Add(Value)
+  dTypes.Add(dataType)
+
+END
+
+PUBLIC SUB Clear()
+
+  Names.Clear()
+  Values.Clear()
+  dTypes.Clear()
+
+END
+
+PUBLIC FUNCTION Copy() AS RpcStruct
+
+  DIM hRes AS NEW RpcStruct
+  DIM Bucle AS Integer
+
+  FOR Bucle = 0 TO Names.Count - 1
+
+    hRes.Add(Names[Bucle], Values[Bucle], dTypes[Bucle])
+
+  NEXT
+
+  RETURN hRes
+
+END
+
+PUBLIC FUNCTION Key(Index AS Integer) AS String
+
+  IF Index < 0 Or Index >= Names.Count THEN
+    Error.Raise("Bad index")
+    RETURN ""
+  END IF
+
+  RETURN Names[Index]
+
+END
+
+
+PUBLIC SUB Reverse()
+
+  Names.Reverse()
+  Values.Reverse()
+  dTypes.Reverse()
+
+END
+
+
+PUBLIC SUB Remove(Index AS String)
+
+  DIM Ind AS Integer
+
+  Ind = Names.Find(Index)
+  IF Ind = - 1 THEN
+    Error.Raise("Invalid Index")
+    RETURN
+  END IF
+
+  Names.Remove(Ind)
+  Values.Remove(Ind)
+  dTypes.Remove(Ind)
+
+END
+
+PUBLIC FUNCTION Datatype(Index AS Integer) AS Integer
+
+  IF Index < 0 Or Index >= Names.Count THEN
+    Error.Raise("Bad index")
+    RETURN ""
+  END IF
+
+  RETURN dTypes[Index]
+
+END
+
+
+PUBLIC FUNCTION Value(Index AS Integer) AS Variant
+
+  IF Index < 0 Or Index >= Names.Count THEN
+    Error.Raise("Bad index")
+    RETURN ""
+  END IF
+
+  RETURN Values[Index]
+
+END
+
+
+
+
