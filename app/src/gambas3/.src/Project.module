@@ -1139,6 +1139,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Else If sDir = Project.Dir &/ ".connection" Then
     sParent = KEY_CONNECTION
   Endif
+  
+  If Not ProjectTree.Exist(sParent) Then Return
 
   With Stat(sPath)
 

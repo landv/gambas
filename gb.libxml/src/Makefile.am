@@ -9,9 +9,10 @@ EXTRA_DIST = *.kateproject
 
 gblib_LTLIBRARIES = gb.libxml.la
 
-gb_xml_la_LIBADD = @XML_LIB@
-gb_xml_la_LDFLAGS = -module @LD_FLAGS@ @XML_LDFLAGS@
+gb_libxml_la_LIBADD = @XML_LIB@
+gb_libxml_la_LDFLAGS = -module @LD_FLAGS@ @XML_LDFLAGS@
 
-gb_xml_la_SOURCES = main.h main.c CXMLNode.h CXMLNode.c CXMLReader.h CXMLReader.c \
-                    CXMLWriter.h CXMLWriter.c CXMLDocument.h CXMLDocument.c 
+gb_libxml_la_SOURCES = \
+ main.h main.c CXMLNode.h CXMLNode.c CXMLReader.h CXMLReader.c \
+ CXMLWriter.h CXMLWriter.c CXMLDocument.h CXMLDocument.c 
 

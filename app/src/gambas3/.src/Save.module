@@ -37,7 +37,7 @@ Public Function Error() As Boolean
   Endif
   
   FMain.ShowError("<b>" & ("Cannot save file !") & "</b>\n\n" & $sPath & "\n\n" & sError, $sPath)
-  Save.End
+  Try Save.End
   Return True
   
 End
