@@ -13,7 +13,7 @@ SUBDIRS = \
  @pcre_dir@ \
  @sdl_dir@ \
  @sdlsound_dir@ \
- @xml_dir@ \
+ @libxml_dir@ \
  @v4l_dir@ \
  @crypt_dir@ \
  @qt4_dir@ \

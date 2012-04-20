@@ -342,6 +342,10 @@ static void abort_child(int error)
 	
 	save_errno = errno;
 	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "abort_child: %d %d\n", error, save_errno);
+	#endif
+	
 	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getppid(), (int)getpid());
 	
 	fd = open(path, O_CREAT | O_WRONLY, 0600);
