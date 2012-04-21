@@ -1,8 +1,6 @@
 COMPONENT = gb.libxml
 include $(top_srcdir)/component.am
 
-SUBDIRS = . @XSLT_DIR@ rpc
-
 INCLUDES = @XML_INC@
 
 EXTRA_DIST = *.kateproject

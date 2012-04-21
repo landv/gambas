@@ -12,18 +12,9 @@ GB_COMPONENT_PKG_CONFIG(
   [src],
   libxml-2.0)
 
-GB_COMPONENT_PKG_CONFIG(
-  xslt,
-  XSLT,
-  [XSLT/XML parser component],
-  [xslt],
-  libxslt)
-
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
-src/xslt/Makefile \
-src/rpc/Makefile \
 )
 
 GB_PRINT_MESSAGES
