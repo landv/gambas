@@ -14,6 +14,7 @@ SUBDIRS = \
  @sdl_dir@ \
  @sdlsound_dir@ \
  @libxml_dir@ \
+ @xml_dir@ \
  @v4l_dir@ \
  @crypt_dir@ \
  @qt4_dir@ \
