@@ -57,7 +57,7 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_frozen = false;
 	_event_mask = 0;
 	_use_paint = false;
-	_set_background = false;
+	_set_background = true;
 	_cached = false;
 	_no_background = false;
 	_in_draw_event = false;

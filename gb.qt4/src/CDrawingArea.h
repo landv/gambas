@@ -114,6 +114,7 @@ protected:
 	virtual void setStaticContents(bool on);
 	virtual void resizeEvent(QResizeEvent *);
 	virtual void paintEvent(QPaintEvent *);
+	//virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
 	//virtual void drawContents(QPainter *p);
 	virtual void setPalette(const QPalette &);
