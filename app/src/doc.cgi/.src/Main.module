@@ -1105,6 +1105,10 @@ Private Function Encode(sText As String) As String
             $sRes &= GetOnlyIn(sArg)
             Continue
 
+          Case "since"
+            $sRes &= GetSince(sArg)
+            Continue
+
           Case "changes"
             $sRes &= GetLastChanges()
             Continue
@@ -5068,6 +5072,12 @@ End
 Private Sub GetOnlyIn(sVer As String) As String
 
   Return "<div class=\"only-in\">" & Subst(("Only in &1 version"), EncodeHTML(sVer)) & "</div>\n"
+
+End
+
+Private Sub GetSince(sVer As String) As String
+
+  Return "<div class=\"only-in\">" & Subst(("Since &1 version"), EncodeHTML(sVer)) & "</div>\n"
 
 End
 

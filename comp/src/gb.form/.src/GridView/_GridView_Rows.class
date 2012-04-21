@@ -283,7 +283,8 @@ Public Sub SelectAll()
   If GetView().Mode <> Select.Multiple Then Return
 
   $hSel.UnSelectAll
-  Select()
+  $hSel.Select(0, $nRows)
+  GetView()._RaiseSelect
   
 End
 
