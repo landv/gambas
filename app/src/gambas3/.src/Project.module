@@ -1147,7 +1147,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     If .Hidden Then Return
 
     bShow = False
-    bSource = IsSourcePath(sDir &/ sFile) 'Like (SourceDir &/ "*")
+    bSource = IsSourcePath(sDir &/ sFile, True)
 
     If IsDir(sPath) Then
 
@@ -4255,11 +4255,11 @@ Public Function IsSourceDir(sDir As String) As Boolean
 
 End
 
-Public Function IsSourcePath(sPath As String) As Boolean
+Public Function IsSourcePath(sPath As String, Optional bAllowDir As Boolean) As Boolean
 
   Dim sExt As String
 
-  If IsDir(sPath) Then Return
+  If IsDir(sPath) And If Not bAllowDir Then Return
 
   If SourceDir <> {Dir} Then Return sPath & "/" Begins SourceDir &/ "/"
 
