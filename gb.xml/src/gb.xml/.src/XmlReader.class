@@ -41,7 +41,7 @@ End
 Public Sub Open(path As String)
   
   Dim fichier As File
-
+  If Left(Path) <> "/" Then Path = ".." &/ Path
   fichier = Open path For Input
   Me.InputStream = fichier
   

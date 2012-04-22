@@ -18,6 +18,7 @@ Private PileElements As New String[]
 Public Sub Open(Optional fileName As String, Optional Indent As Boolean, Optional Encoding As String)
   
   If fileName Then
+    If Left(fileName) <> "/" Then fileName = ".." &/ fileName
     $stream = Open fileName For Output Create
   Endif
   
