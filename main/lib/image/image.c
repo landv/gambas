@@ -988,6 +988,56 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int 
 	MODIFY(dst);
 }
 
+void IMAGE_set_opacity(GB_IMG *dst, uchar opacity)
+{
+	if (!GB_IMAGE_FMT_IS_32_BITS(dst->format))
+	{
+		GB.Error("The image must have an alpha channel");
+		return;
+	}
+	
+	if (opacity == 255)
+		return;
+
+	SYNCHRONIZE(dst);
+	
+	GET_POINTER(dst, p, pm);
+
+	uchar *d = (uchar *)p;
+	uchar *dm = (uchar *)pm;
+	
+	if (!GB_IMAGE_FMT_IS_SWAPPED(dst->format))
+	{
+		d += 3;
+		dm += 3;
+	}
+	
+	if (opacity == 0)
+	{
+		while (d != dm)
+		{
+			*d = 0;
+			d += 4;
+		}
+	}
+	else
+	{
+		uchar da[256];
+		int i;
+		
+		for (i = 0; i < 256; i++)
+			da[i] = i * opacity >> 8;
+	
+		while (d != dm)
+		{
+			*d = da[*d];
+			d += 4;
+		}
+	}
+
+	MODIFY(dst);
+}
+
 void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
 	if (!GB_IMAGE_FMT_IS_32_BITS(src->format) || !GB_IMAGE_FMT_IS_32_BITS(dst->format))
