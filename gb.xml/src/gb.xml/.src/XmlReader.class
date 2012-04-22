@@ -42,7 +42,7 @@ Public Sub Open(path As String)
   
   Dim fichier As File
 
-  fichier = Open "text.xml" For Input
+  fichier = Open path For Input
   Me.InputStream = fichier
   
 End
