@@ -86,7 +86,13 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
     xmlDocDumpFormatMemoryEnc(xmlOutDoc ,&buffer, &size, "UTF-8", 1);
 
     Document *outDoc = GBI::New<Document>("XmlDocument");
+    try{
     outDoc->setContent(StringToWString(string((char*)(buffer),size)));
+    }
+    catch(HTMLParseException &e)
+    {
+    outDoc->setContent(L"<?xml version=\"1.0\"?><xml></xml>");
+    }
 	
     GB.ReturnObject(outDoc);
 		
