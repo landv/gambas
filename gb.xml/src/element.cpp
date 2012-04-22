@@ -280,7 +280,7 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
 
             for(INC; i < data.length(); INC) //On cherche le tagName
             {
-                if(!isLetter(s) && s != L":" && s != L"-"&& s != L"_") break;
+                if(!isNameChar(s)) break;
                 tag += s;
             }
 
@@ -357,9 +357,9 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
 
                 wstring attr, sVal = L"";
 
-                if(isLetter(s))
+                if(isNameStartChar(s))
                 {
-                    while(i < data.length() && (isLetter(s) || s == L"-" || s == L":" || s == L"_"))
+                    while(i < data.length() && isNameChar(s))
                     {
                         attr += s;
                         INC;

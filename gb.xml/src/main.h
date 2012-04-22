@@ -64,6 +64,9 @@ extern "C" GB_INTERFACE GB;
 
 #define VARGOBJ(type, arg) reinterpret_cast<type*>(VARG(arg))
 
+bool isNameStartChar(wstring &s);
+bool isNameChar(wstring &s);
+
 
 
 #endif // MAIN_H
