@@ -180,6 +180,19 @@ bool isNameChar(wstring &s)
             (car == 0xB7) || INTER(0x0300, 0x036F) || INTER(0x203F, 0x2040);
 }
 
+/* http://www.w3.org/TR/REC-xml/#NT-S
+
+    S ::= (#x20 | #x9 | #xD | #xA)+
+
+  */
+
+bool isWhiteSpace(wstring &s)
+{
+    const wchar_t car = (s.at(0));
+
+    return (car == 0x20) || (car == 0x9) || (car == 0xD) || (car == 0xA);
+}
+
 #ifndef __HMAIN_CPP
 
 GB_INTERFACE GB EXPORT;

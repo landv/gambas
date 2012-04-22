@@ -66,6 +66,7 @@ extern "C" GB_INTERFACE GB;
 
 bool isNameStartChar(wstring &s);
 bool isNameChar(wstring &s);
+bool isWhiteSpace(wstring &s);
 
 
 

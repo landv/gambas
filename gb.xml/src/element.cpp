@@ -364,14 +364,19 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
                         attr += s;
                         INC;
                     }
+
+                    while(i < data.length() && isWhiteSpace(s)) INC;
+
                     if(s != L"=")
                     {
                         i -= attr.length();
                         CLEAR
                         throw HTMLParseException(c, l,  NEAR,  L"Expected '=' after attribute name.");
                     }
-
                     INC;
+
+                    while(i < data.length() && isWhiteSpace(s)) INC;
+
                     wstring delimiter = s;
 
                     if(delimiter != L"\"" && delimiter != L"'"){//Pas de délimiteur
