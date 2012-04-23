@@ -84,6 +84,7 @@ static void READ_init(void)
 	unsigned char i;
 	
 	JOB->line = 1;
+	JOB->max_line = FORM_FIRST_LINE - 1;
 	JOB->column = TRUE;
 	
 	if (!is_init)
