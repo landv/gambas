@@ -176,8 +176,13 @@ End
 
 Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
 
+  Dim hParent As Container
+
   If Not $hLabel Then
-    $hLabel = New TextLabel(Me.Parent) As "Label"
+    hParent = Me.Parent
+    If hParent Is HSplit Or If hParent Is VSplit Then hParent = hParent.Parent
+    
+    $hLabel = New TextLabel(hParent) As "Label"
     $hLabel.Ignore = True
     $hLabel.AutoResize = True
     $hLabel.Border = Border.Plain
@@ -207,6 +212,13 @@ Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional
   Me.SetFocus
 
 End
+
+Public Sub Editor_Cursor()
+  
+  Try $hLabel.Hide
+  
+End
+
 
 Public Sub Editor_Scroll()
   
