@@ -771,7 +771,7 @@ End
 
 Private Sub FindIndex(sMsgId As String) As Integer
 
-  sMsgId = Trim(sMsgId)
+  'sMsgId = Trim(sMsgId)
   If Not sMsgId Then Return
   If $cCacheImport.Exist(sMsgId) Then 
     Return $cCacheImport[sMsgId]
