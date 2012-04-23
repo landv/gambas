@@ -233,35 +233,6 @@ Public Sub _GenerateClones()
 
 End
 
-Public Sub pause()
-
-  ' '********************************************************
-  ' If _Arrangement = Arrange.Fill Then
-  '   '*******************************************************
-  '
-  '   fPdg = Me._Padding
-  '
-  '   X = fPdg
-  '   Y = fPdg
-  '   W -= fPdg * 2
-  '   H -= fPdg * 2
-  '
-  '   For Each hChild In Me.Children
-  '     If hChild.Ctrl.Ignore Then
-  '       aIgnored.Add(hChild)
-  '       Continue
-  '     Endif
-  '     hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
-  '     hchild._SetGeometry(X, Y, W, H)
-  '   Next
-  '
-  '   For Each hChild In aIgnored
-  '     hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
-  '   Next
-  '
-  ' Endif
-
-End
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 

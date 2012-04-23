@@ -9,7 +9,7 @@
     Height = "4cm"
     Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
     { ReportPanel3 ReportPanel
-      #MoveScaled(1,1,9,8)
+      #MoveScaled(1,2,9,8)
       Expand = True
     }
     { ReportPanel2 ReportPanel
@@ -23,7 +23,6 @@
         Width = "3cm"
         Height = "6mm"
         Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
-        StretchMode = ReportImage.Fill
         Alignment = Align.Center
       }
       { ReportImage3 ReportImage
@@ -32,7 +31,6 @@
         Height = "6mm"
         Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
         Border = ReportBorder["Left:1mm #000000"]
-        StretchMode = ReportImage.Fill
         Alignment = Align.Center
       }
       { ReportImage2 ReportImage
@@ -41,7 +39,6 @@
         Height = "6mm"
         Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
         Border = ReportBorder["Left:1mm #000000"]
-        StretchMode = ReportImage.Fill
         Alignment = Align.Center
       }
     }
