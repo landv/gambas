@@ -23,6 +23,8 @@ Public Sub _new(sPath As String)
   Path = sPath
   Name = File.Name(sPath)
   Classes = New String[]
+  Libraries = New String[]
+  Require = New String[]
     
   If Not sPath Or If Not Exist(sPath) Then 
     NotFound = True
@@ -32,8 +34,6 @@ Public Sub _new(sPath As String)
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".startup"] To sData
   aData = Split(sData, "\n")
   Try Version = aData[4]
-  
-  Libraries = New String[]
   
   For iPos = 5 To aData.Max
     If aData[iPos] Then Break
@@ -47,7 +47,6 @@ Public Sub _new(sPath As String)
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".list"] To sData
   Classes = Split(sData, "\n", "", True)
   
-  Require = New String[]
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".component"] To sData
   For Each sLine In Split(sData, "\n", "", True)
     If Trim(sLine) Begins "Requires=" Then Require.Insert(Split(Trim(Mid$(sLine, InStr(sLine, "=") + 1))))
