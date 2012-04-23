@@ -2515,7 +2515,7 @@ Private Sub GetDefaultSymbolTitle(hSym As CSymbolInfo) As String
     If Not sName Then 
       sName = $hSym.Class
     Endif
-    Select Case $hSym.Name
+    Select Case LCase($hSym.Name)
       Case "_new"
         sTitle = If($sVersion = "2.0", "NEW ", "New ") & sName
       Case "_put"
@@ -2866,16 +2866,16 @@ Private Function AutoLink(sStr As String) As String
             Else
 
               If aWord[0] = "gb" Then
-                rPage = DB.Find("page", "sPath = &1 AND sLang = &2", "/comp" &/ LCase(sWord), DEFAULT_LANG)
+                rPage = DB.Find("page", "sPath = &1 AND sLang = &2", "/comp" &/ sWord, DEFAULT_LANG)
                 If rPage.Available Then Goto FOUND
               Endif
 
               If aWord.Count = 2 Then
 
-                rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb.qt" &/ LCase(aWord[0]) &/ "%")
-                If Not rPage.Available Then
-                  rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb%" &/ LCase(aWord[0]) &/ "%")
-                Endif
+                'rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb.qt" &/ LCase(aWord[0]) &/ "%")
+                'If Not rPage.Available Then
+                  rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb%." &/ aWord[0] &/ "/%")
+                'Endif
                 sTitle = sWord
 
               Endif
@@ -4180,8 +4180,8 @@ Private Function GetToDo() As String
           
         Else
         
-          If sName = "_free" Then Continue
-          If sName = "_new" Then
+          If LCase(sName) = "_free" Then Continue
+          If LCase(sName) = "_new" Then
             If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
           Endif
           
@@ -4329,9 +4329,9 @@ Private Function GetSymbols() As String
       Endif
 
       Select Case hSym.Kind
-        Case "r", "p"
+        Case "r", "p", "v"
           cSymbol[sPrefix & "p"].Add(hSym.Name)
-        Case "R", "P"
+        Case "R", "P", "V"
           cSymbol[sPrefix & "P"].Add(hSym.Name)
         Case "C"
           cSymbol[sPrefix & "C"].Add(hSym.Name)
@@ -4580,7 +4580,7 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
   sName = hSym.Class
   sVirtual = GetVirtualClass(sName)
 
-  Select Case hSym.Name
+  Select Case LCase(hSym.Name)
 
     Case "_get"
 
@@ -4679,7 +4679,7 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
       Select Case LCase(hSym.Kind)
 
-        Case "p"
+        Case "p", "v"
           sSyntax = sSyntax & Keyword("Property") & " "
         Case "r"
           sSyntax = sSyntax & Keyword("Property Read") & " "

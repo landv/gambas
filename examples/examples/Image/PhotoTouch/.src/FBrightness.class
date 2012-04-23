@@ -1,0 +1,79 @@
+' Gambas class file
+
+Private $bNoChange As Boolean
+
+Private $MX As Integer
+Private $MY As Integer
+Private $hRect As Rect
+
+Private btnUndo As CButton
+Private btnApply As CButton
+
+Public Sub _new()
+  
+  btnUndo = New CButton(Me) As "btnUndo"
+  btnUndo.Move(Me.W - 128 - Desktop.Scale * 3, Desktop.Scale * 3, 64, 64)
+  btnUndo.Image = Image.Load("undo.png")
+  
+  btnApply = New CButton(Me) As "btnApply"
+  btnApply.Move(btnUndo.X + btnUndo.W + Desktop.Scale, btnUndo.Y, 64, 64)
+  btnApply.Image = Image.Load("ok.png")
+  
+End
+
+
+Public Sub Form_Open()
+
+  Me.Center
+  FMain.Begin
+
+End
+
+Public Sub Form_Close()
+
+  FMain.End
+
+End
+
+Public Sub btnUndo_Click()
+
+  $bNoChange = True
+  sldBrightness.Value = 50
+  sldContrast.Value = 50
+  sldGamma.Value = 50
+  $bNoChange = False
+  Balance_Change
+
+End
+
+Public Sub btnApply_Click()
+
+  FMain.Apply
+  Me.Close
+
+End
+
+Public Sub Balance_Change()
+
+  If $bNoChange Then Return
+  FMain.Balance(sldBrightness.Value, sldContrast.Value, sldGamma.Value)
+
+End
+
+Public Sub panBrightness_MouseDown()
+
+  $MX = Mouse.ScreenX
+  $MY = Mouse.ScreenY
+  $hRect = Rect(Me.X, Me.Y, Me.W, Me.H)
+
+End
+
+Public Sub panBrightness_MouseMove()
+  
+  Dim X, Y As Integer
+  
+  X = Min(Max($hRect.X + Mouse.ScreenX - $MX, 0), FMain.W - $hRect.W)
+  Y = Min(Max($hRect.Y + Mouse.ScreenY - $MY, 0), FMain.H - $hRect.H)
+  Me.Move(X, Y)
+  
+End

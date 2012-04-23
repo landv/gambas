@@ -1,0 +1,35 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,82,72)
+  Border = False
+  Maximized = True
+  Arrangement = Arrange.Fill
+  { svwImage ScrollArea
+    MoveScaled(24,24,24,24)
+    Background = &H000000&
+    Mouse = Mouse.SizeAll
+    Border = False
+    ScrollBar = Scroll.None
+  }
+  { dwgInfo DrawingArea
+    MoveScaled(5,64,66,6)
+    Ignore = True
+    Painted = True
+  }
+  { panToolbar HBox
+    MoveScaled(1,1,52,13)
+    Ignore = True
+    AutoResize = True
+    Spacing = True
+    Margin = True
+  }
+  { lblError Label
+    MoveScaled(15,52,46,9)
+    Visible = False
+    Font = Font["Bold,+5"]
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Alignment = Align.Center
+  }
+}

@@ -1,0 +1,103 @@
+' Gambas class file
+
+Export
+
+Inherits DrawingArea
+
+Event Click
+
+Property Image As Image
+
+Private Const MIN_OPACITY As Float = 0.3
+Private Const MAX_OPACITY As Float = 0.8
+
+Private $hObs As Observer
+Private $hImage As Image
+Private $hDraw As Image
+Private $bInside As Boolean
+Private $hTimer As Timer
+Private $fOpacity As Float = MIN_OPACITY
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me) As "DrawingArea"
+  $hTimer = New Timer As "Timer"
+  $hTimer.Delay = 50
+  Me.Mouse = Mouse.Pointing
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  $bInside = True
+  $hTimer.Start
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  $bInside = False
+  $hTimer.Start
+  
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  Raise Click
+  
+End
+
+Public Sub DrawingArea_DblClick()
+  
+  Raise Click
+  
+End
+
+
+Public Sub Timer_Timer()
+  
+  If $bInside Then
+    $fOpacity = Min(MAX_OPACITY, $fOpacity + 0.1)
+    If $fOpacity >= MAX_OPACITY Then
+      $hTimer.Stop
+    Endif
+  Else
+    $fOpacity = Max(MIN_OPACITY, $fOpacity - 0.1)
+    If $fOpacity <= MIN_OPACITY Then
+      $hTimer.Stop
+    Endif
+  Endif
+  
+  SetOpacity
+  
+End
+
+
+Public Sub DrawingArea_Draw()
+  
+  If Not $hImage Then Return
+  
+  Draw.Image($hDraw, 0, 0, Me.W, Me.H)
+  
+End
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value
+  SetOpacity
+
+End
+
+Private Sub SetOpacity()
+
+  $hDraw = $hImage.Copy()
+  $hDraw.Opacity($fOpacity)
+  Me.Refresh
+
+End
