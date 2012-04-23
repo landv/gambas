@@ -1186,6 +1186,7 @@ char *STRING_conv_file_name(const char *name, int len)
 	struct passwd *info;
 	char *dir;
 	char *user;
+	int err;
 
 	if (!name)
 		return "";
@@ -1227,8 +1228,11 @@ char *STRING_conv_file_name(const char *name, int len)
 	if (LOCAL_is_UTF8)
 		result = STRING_new_temp(name, len);
 	else
-		STRING_conv(&result, name, len, SC_UTF8, LOCAL_encoding, TRUE);
-
+	{
+		err = STRING_conv(&result, name, len, SC_UTF8, LOCAL_encoding, FALSE);
+		if (err)
+			result = STRING_new_temp(name, len);
+	}
 	//fprintf(stderr, "STRING_conv_file_name: %s\n", result);
 
 	if (result)

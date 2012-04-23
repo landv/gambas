@@ -141,6 +141,7 @@ static void load_exported_class(ARCHIVE *arch)
   FREE(&buffer, "load_exported_class");
 }
 
+#if 0
 static void load_component(char *name)
 {
 	COMPONENT *comp;
@@ -148,6 +149,7 @@ static void load_component(char *name)
 	comp = COMPONENT_create(name);
 	COMPONENT_load(comp);
 }
+#endif
 
 /*static void load_dependencies(ARCHIVE *arch)
 {

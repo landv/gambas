@@ -731,6 +731,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Stream_free)
 
+	STREAM_close(CSTREAM_stream(THIS_STREAM));
 	GB_StoreVariant(NULL, POINTER(&(THIS_STREAM->tag)));
 
 END_METHOD
@@ -740,9 +741,14 @@ BEGIN_METHOD(Stream_ReadLine, GB_STRING escape)
 	char *escape;
 	char *str;
 	
-	escape = GB_ToZeroString(ARG(escape));
-	if (!*escape)
+	if (MISSING(escape))
 		escape = NULL;
+	else
+	{
+		escape = GB_ToZeroString(ARG(escape));
+		if (!*escape)
+			escape = NULL;
+	}
 
 	str = STREAM_line_input(CSTREAM_stream(THIS_STREAM), escape);
 	STRING_free_later(str);

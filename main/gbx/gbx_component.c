@@ -191,7 +191,7 @@ COMPONENT *COMPONENT_create(const char *name)
 		
 		can_archive = !same_name_as_project;
 
-		// System wide component, located in /usr/local/lib/gambas2 (by default)
+		// System wide component
 
 		path = FILE_buffer();
 		sprintf(path, LIB_PATTERN, COMPONENT_path, name);
