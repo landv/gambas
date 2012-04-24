@@ -7,22 +7,26 @@ Inherits DrawingArea
 Event Click
 
 Property Image As Image
+Property Opacity As Float
+Property Highlight As Boolean
 
-Private Const MIN_OPACITY As Float = 0.3
-Private Const MAX_OPACITY As Float = 0.8
+Private MIN_OPACITY As Float = 0.2
+Private MAX_OPACITY As Float = 0.8
 
 Private $hObs As Observer
 Private $hImage As Image
 Private $hDraw As Image
 Private $bInside As Boolean
-Private $hTimer As Timer
+'Private $hTimer As Timer
+Private $hAnim As CAnimation
 Private $fOpacity As Float = MIN_OPACITY
+Private $bHighlight As Boolean
 
 Public Sub _new()
   
   $hObs = New Observer(Me) As "DrawingArea"
-  $hTimer = New Timer As "Timer"
-  $hTimer.Delay = 50
+  '$hTimer = New Timer As "Timer"
+  '$hTimer.Delay = 50
   Me.Mouse = Mouse.Pointing
   
 End
@@ -30,14 +34,16 @@ End
 Public Sub DrawingArea_Enter()
   
   $bInside = True
-  $hTimer.Start
+  Try $hAnim.Stop
+  $hAnim = New CAnimation(Me, "Opacity", MAX_OPACITY, 250)
   
 End
 
 Public Sub DrawingArea_Leave()
   
   $bInside = False
-  $hTimer.Start
+  Try $hAnim.Stop
+  $hAnim = New CAnimation(Me, "Opacity", MIN_OPACITY, 250)
   
 End
 
@@ -54,30 +60,37 @@ Public Sub DrawingArea_DblClick()
 End
 
 
-Public Sub Timer_Timer()
-  
-  If $bInside Then
-    $fOpacity = Min(MAX_OPACITY, $fOpacity + 0.1)
-    If $fOpacity >= MAX_OPACITY Then
-      $hTimer.Stop
-    Endif
-  Else
-    $fOpacity = Max(MIN_OPACITY, $fOpacity - 0.1)
-    If $fOpacity <= MIN_OPACITY Then
-      $hTimer.Stop
-    Endif
-  Endif
-  
-  SetOpacity
-  
-End
+' Public Sub Timer_Timer()
+'   
+'   If $bInside Then
+'     $fOpacity = Min(MAX_OPACITY, $fOpacity + 0.1)
+'     If $fOpacity >= MAX_OPACITY Then
+'       $hTimer.Stop
+'     Endif
+'   Else
+'     $fOpacity = Max(MIN_OPACITY, $fOpacity - 0.1)
+'     If $fOpacity <= MIN_OPACITY Then
+'       $hTimer.Stop
+'     Endif
+'   Endif
+'   
+'   SetOpacity
+'   
+' End
 
 
 Public Sub DrawingArea_Draw()
   
   If Not $hImage Then Return
   
-  Draw.Image($hDraw, 0, 0, Me.W, Me.H)
+  Draw.Image($hDraw, 4, 4)
+  If $bHighlight Then 
+    Paint.Begin(Me)
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
+    Paint.Rectangle(0, 0, Me.W, Me.H)
+    Paint.Fill
+    Paint.End
+  Endif
   
 End
 
@@ -89,7 +102,7 @@ End
 
 Private Sub Image_Write(Value As Image)
 
-  $hImage = Value
+  $hImage = Value.Stretch(Me.W - 8, Me.H - 8)
   SetOpacity
 
 End
@@ -98,6 +111,37 @@ Private Sub SetOpacity()
 
   $hDraw = $hImage.Copy()
   $hDraw.Opacity($fOpacity)
+  Me.Refresh
+
+End
+
+Private Function Opacity_Read() As Float
+
+  Return $fOpacity
+
+End
+
+Private Sub Opacity_Write(Value As Float)
+
+  $fOpacity = Max(0, Min(1, Value))
+  SetOpacity
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bHighlight = Value
+  'MIN_OPACITY = If($bHighlight, 0.6, 0.2)
+  'If Not $bInside Then
+  '  Try $hAnim.Stop
+  '  $hAnim = New CAnimation(Me, "Opacity", MIN_OPACITY, 250)
+  'Endif
   Me.Refresh
 
 End

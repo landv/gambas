@@ -1,6 +1,7 @@
 ' Gambas class file
 
-Private CACHE_DIR As String = "~/.cache/gambas/PhotoTouch"
+Private CACHE_ROOT As String = "~/.cache/gambas/PhotoTouch"
+Private CACHE_DIR As String
 
 Private $aPath As String[]
 Private $sPath As String
@@ -13,6 +14,7 @@ Private $fZoom As Float = 1
 Private $sInfo As String
 Private $sMode As String
 Private $bModify As Boolean
+Private $cButton As New Collection
 
 Private $MX As Integer
 Private $MY As Integer
@@ -73,26 +75,52 @@ Public Sub _new()
   Dim sImg As String
   Dim hButton As CButton
   Dim hPanel As Panel
+  Dim cTooltip As Collection
 
   Application.MainWindow = Me
   
-  Try Mkdir File.Dir(File.Dir(cache_dir))
-  Try Mkdir File.Dir(cache_dir)
-  Try Mkdir CACHE_DIR
+  Try Mkdir File.Dir(File.Dir(CACHE_ROOT))
+  Try Mkdir File.Dir(CACHE_ROOT)
+  Try Mkdir CACHE_ROOT
   
-  For Each sImg In ["usb", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "rotate-left", "rotate-right", "-", "scissors", "luminosity", "<->", "undo", "quit"]
+  cTooltip = [
+    "usb": ("Select photo directory"),
+    "zoom-in": ("Zoom in"),
+    "zoom-out": ("Zoom out"),
+    "zoom-original": ("Zoom 100%"),
+    "zoom-fit": ("Fit to window"),
+    "hflip": ("Flip horizontally"),
+    "vflip": ("Flip vertically"),
+    "rotate-left": ("Rotate left"),
+    "rotate-right": ("Rotate right"),
+    "magic": ("Automatic correction"),
+    "invert": ("Invert"),
+    "blur": ("Blur"),
+    "sharpen": ("Sharpen"),
+    "normalize": ("Normalize"),
+    "despeckle": ("Remove speckles"),
+    "oil": ("Oil painting effect"),
+    "scissors": ("Crop image"),
+    "balance": ("Balance"),
+    "resize": ("Resize"),
+    "undo": ("Undo all changes"),
+    "quit": ("Quit")]
+  
+  For Each sImg In ["usb", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "hflip", "vflip", "rotate-left", "rotate-right", "-", "magic", "invert", "blur", "sharpen", "normalize", "despeckle", "oil", "-", "scissors", "resize", "balance", "<->", "undo", "quit"]
     If sImg = "<->" Then
       hPanel = New Panel(panToolbar)
       hPanel.Expand = True
-      hPanel.Resize(8, 64)
+      hPanel.Resize(8, 48)
     Else If sImg = "-" Then
       hPanel = New Panel(panToolbar)
-      hPanel.Resize(16, 64)
+      hPanel.Resize(8, 48)
     Else
       hButton = New CButton(panToolbar) As "Button"
-      hButton.Resize(64, 64)
+      hButton.Resize(48, 48)
       hButton.Image = Image.Load(sImg & ".png")
       hButton.Tag = sImg
+      hButton.Tooltip = cTooltip[sImg]
+      $cButton[hButton.Tag] = hButton
     Endif
   Next
   
@@ -110,12 +138,6 @@ Public Sub _new()
 
 End
 
-
-Public Sub Form_Open()
-
-  SetDir(User.Home)
-  
-End
 
 Public Sub svwImage_Draw()
 
@@ -204,7 +226,7 @@ End
 
 Public Sub Form_Resize()
 
-  panToolbar.Move(0, 0, Me.W, 64 + Desktop.Scale * 2)
+  panToolbar.Move(0, 0, Me.W, 48 + Desktop.Scale * 2)
   dwgInfo.Move(8, Me.H - dwgInfo.H, Me.W, dwgInfo.H)
   btnPrev.Move(8, (Me.H - btnPrev.H) / 2)
   btnNext.Move(Me.W - 8 - btnNext.W, (Me.H - btnNext.H) / 2)
@@ -235,6 +257,7 @@ Private Sub UpdateZoom()
   svwImage.ResizeContents($hImage.W * $fZoom, $hImage.H * $fZoom)
   svwImage.Scroll(X * svwImage.ScrollW - svwImage.ClientW / 2, Y * svwImage.ScrollH - svwImage.ClientH / 2)
   
+  dwgInfo.Refresh
   Me.Refresh
   
 End
@@ -263,9 +286,16 @@ End
 Public Sub SetMode(sMode As String)
   
   If $sMode Then
+    $cButton[$sMode].Highlight = False
     Cancel
-    FBrightness.Close
-    FScissors.Close
+    Select Case $sMode
+      Case "balance"
+        FBrightness.Close
+      Case "scissors"
+        FScissors.Close
+      Case "resize"
+        FResize.Close
+    End Select
   Endif
     
   If sMode = $sMode Then 
@@ -273,12 +303,20 @@ Public Sub SetMode(sMode As String)
     Return
   Endif
     
-  Select Case sMode
-    Case "luminosity"
-      FBrightness.Show
-    Case "scissors"
-      FScissors.Show
-  End Select
+  If sMode Then 
+  
+    $cButton[sMode].Highlight = True
+
+    Select Case sMode
+      Case "balance"
+        FBrightness.Show
+      Case "scissors"
+        FScissors.Show
+      Case "resize"
+        FResize.Show
+    End Select
+    
+  Endif
     
   $sMode = sMode
   
@@ -311,27 +349,13 @@ Private Sub Action(sAction As String)
     Case "zoom-fit"
       SetZoom(0)
       
-    Case "rotate-left"
-      If Not $hImage Then Return
-      $hImage = $hImage.Rotate(Pi(0.5))
-      $bModify = True
-      'SaveImage
-      UpdateZoom
-    
-    Case "rotate-right"
-      If Not $hImage Then Return
-      $hImage = $hImage.Rotate(Pi(-0.5))
-      $bModify = True
-      'SaveImage
-      UpdateZoom
-      
     Case "quit"
       SetMode("")
       SaveImage
-      If Dir(CACHE_DIR).Count Then Desktop.Open(CACHE_DIR)
+      If Exist(CACHE_DIR) Then Desktop.Open(CACHE_DIR)
       Me.Close
       
-    Case "luminosity", "scissors"
+    Case "balance", "scissors", "resize"
       If Not $hImage Then Return
       SetMode(sAction)
       
@@ -344,6 +368,43 @@ Private Sub Action(sAction As String)
       SetMode("")
       LoadImage(True)
       RemoveImage
+    
+    Case Else
+      
+      If Not $hImage Then Return
+      
+      SetMode("")
+      
+      Select Case sAction
+        Case "hflip"
+          $hImage.Mirror(True, False)
+        Case "vflip"
+          $hImage.Mirror(False, True)
+        Case "rotate-left"
+          $hImage = $hImage.Rotate(Pi(0.5))
+        Case "rotate-right"
+          $hImage = $hImage.Rotate(Pi(-0.5))
+        Case "oil"
+          $hImage = ImageMagick("-paint 4") '$hImage.OilPaint()
+        Case "magic"
+          $hImage = ImageMagick("-auto-gamma -auto-level")
+        Case "invert"
+          $hImage.Invert()
+        'Case "equalize"
+        '  $hImage = ImageMagick("-equalize")
+        Case "despeckle"
+          $hImage = ImageMagick("-despeckle")
+        Case "normalize"
+          $hImage = ImageMagick("-normalize")
+        Case "blur"
+          $hImage = ImageMagick("-blur 8") '$hImage.OilPaint()
+        Case "sharpen"
+          $hImage = ImageMagick("-sharpen 8") '$hImage.OilPaint()
+      
+      End Select
+      
+      $bModify = True
+      UpdateZoom
     
   End Select
   
@@ -381,7 +442,7 @@ Public Sub dwgInfo_Draw()
   ' Paint.Fill
   Paint.LineWidth = 1
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
-  Paint.DrawText($sInfo, 0, 0, dwgInfo.W, dwgInfo.H, Align.Left)
+  Paint.DrawText($sInfo & " - " & Format($fZoom, "0%"), 0, 0, dwgInfo.W, dwgInfo.H, Align.Left)
   
 End
 
@@ -415,6 +476,7 @@ End
 Public Sub Apply()
   
   $hTemp = $hImage
+  {End}
   
 End
 
@@ -469,13 +531,34 @@ Public Sub Cut()
   
 End
 
+Public Sub Stretch(W As Integer, H As Integer)
+  
+  $hImage = $hImage.Stretch(W, H)
+  $bModify = True
+  $hTemp = $hImage
+  Me.End
+  SetZoom(0)
+  
+End
+
+
+Public Sub Form_Activate()
+  
+  If $sDir = "" Then SetDir(Settings["Directory", User.Home])
+  
+End
+
+
 Private Sub SetDir(sDir As String)
 
   Inc Application.Busy
     
-  Shell "cd " & Shell(CACHE_DIR) & "; rm -f *" Wait
+  'Shell "cd " & Shell(CACHE_DIR) & "; rm -f *" Wait
+
+  CACHE_DIR = CACHE_ROOT &/ Replace(sDir, "/", ":")
   
   $sDir = sDir
+  Settings["Directory"] = $sDir
   $aPath = New String[]
   Try $aPath = Dir(sDir, "*.{jpg,JPG,jpeg,JPEG,png,PNG,bmp,BMP,gig,GIF}").Sort()
   $iIndex = 0
@@ -485,13 +568,15 @@ Private Sub SetDir(sDir As String)
   
 End
 
-Private Sub SaveImage()
+Private Sub SaveImage() As String
   
   If Not $hImage Then Return
   If Not $bModify Then Return
   
-  $hImage.Save(CACHE_DIR &/ File.Name($sPath))
+  Try Mkdir CACHE_DIR
+  $hImage.Save(CACHE_DIR &/ File.Name($sPath), 80)
   $bModify = False
+  Return CACHE_DIR &/ File.Name($sPath)
   
 Catch
   
@@ -501,6 +586,32 @@ End
 
 Private Sub RemoveImage()
   
-  Try Kill CACHE_DIR &/ File.Name($sPath)
+  Kill CACHE_DIR &/ File.Name($sPath)
+  If Dir(CACHE_DIR).Count = 0 Then Rmdir CACHE_DIR
+  
+Catch
+  
+End
+
+Private Sub ImageMagick(sCommand As String) As Image
+  
+  Dim sPath, sPath2 As String
+  Dim hImage As Image
+  
+  Inc Application.Busy
+  
+  sPath = File.SetExt(Temp$("image"), File.Ext($sPath))
+  sPath2 = File.SetExt(Temp$("image2"), File.Ext($sPath))
+  
+  $hImage.Save(sPath, 100)
+  
+  Shell "convert " & Shell(sPath) & " " & sCommand & " " & Shell(sPath2) Wait
+  hImage = Image.Load(sPath2)
+  Kill sPath
+  Kill sPath2
+  
+  Dec Application.Busy
+  
+  Return hImage
   
 End

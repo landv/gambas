@@ -14,7 +14,7 @@ Private $hRect As Rect
 
 Private btnCut As CButton
 
-Private Sub Form_Resize()
+Public Sub Form_Resize()
   
   $aScissors[S_NW].Move(0, 0, HANDLE_SIZE, HANDLE_SIZE)
   $aScissors[S_NE].Move(Me.W - HANDLE_SIZE, 0, HANDLE_SIZE, HANDLE_SIZE)
@@ -25,7 +25,7 @@ Private Sub Form_Resize()
   $aScissors[S_W].Move(0, HANDLE_SIZE, HANDLE_SIZE, Me.H - HANDLE_SIZE * 2)
   $aScissors[S_E].Move(Me.W - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, Me.H - HANDLE_SIZE * 2)
   
-  btnCut.Move(Me.W - 64 - Desktop.Scale * 3, Desktop.Scale * 3)
+  btnCut.Move(Me.W - btnCut.W - Desktop.Scale * 3, Desktop.Scale * 3)
   
 End
 
@@ -49,11 +49,11 @@ Public Sub Form_Open()
   Next
   
   btnCut = New CButton(Me) As "btnCut"
-  btnCut.Resize(64, 64)
+  btnCut.Resize(48, 48)
   btnCut.Image = Image.Load("scissors.png")
   
   Me.Move(FMain.ClientW \ 4, FMain.ClientH \ 4, FMain.ClientW \ 2, FMain.ClientH \ 2)
-  Form_Resize
+  'Form_Resize
 
 End
 
@@ -69,8 +69,8 @@ Public Sub Panel_MouseMove()
   
   Dim X, Y As Integer
   Dim iTag As Integer = Last.Tag
-  Dim MIN_HEIGHT As Integer = 64 + Desktop.Scale * 6
-  Dim MIN_WIDTH As Integer = 64 + Desktop.Scale * 6
+  Dim MIN_HEIGHT As Integer = btnCut.W + Desktop.Scale * 6
+  Dim MIN_WIDTH As Integer = btnCut.H + Desktop.Scale * 6
   
   Select Case Last.Tag
     
@@ -124,7 +124,7 @@ Public Sub Panel_MouseMove()
 
   End Select
   
-  Form_Resize
+  'Form_Resize
   
 End
 
