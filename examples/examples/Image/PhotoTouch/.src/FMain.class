@@ -15,12 +15,53 @@ Private $sInfo As String
 Private $sMode As String
 Private $bModify As Boolean
 Private $cButton As New Collection
+Private $bFilm As Boolean = True
+Private $bReloadFilm As Boolean
 
 Private $MX As Integer
 Private $MY As Integer
 
 Private btnPrev As CButton
 Private btnNext As CButton
+
+Private Sub UpdateSaveIcon()
+  
+  $cButton["save"].Visible = Exist(CACHE_DIR &/ File.Name($sPath)) Or $bModify
+  
+End
+
+Private Sub UpdateFilmMode()
+  
+  Dim sTag As String
+  Dim hCtrl As Control
+  
+  btnPrev.Visible = Not $bFilm
+  btnNext.Visible = Not $bFilm
+  
+  For Each hCtrl In $cButton
+    If hCtrl.Tag = "quit" Then
+      hCtrl.Visible = True
+    Else If ["photo", "usb"].Exist(hCtrl.Tag) Then
+      hCtrl.Visible = $bFilm
+    Else
+      hCtrl.Visible = Not $bFilm
+    Endif
+  Next
+  
+  If $bFilm Then
+    'ivwImage.IconSize = 128
+    panBrowser.Show
+    svwImage.Hide
+    FillImageBrowser
+  Else
+    panBrowser.Hide
+    svwImage.Show
+    Try $iIndex = CInt(ivwImage.Key)
+    LoadImage
+  Endif
+  
+End
+
 
 Private Sub LoadImage(Optional bReset As Boolean) As Boolean
 
@@ -62,6 +103,7 @@ Private Sub LoadImage(Optional bReset As Boolean) As Boolean
   
   $bModify = False
   SetZoom(0)
+  UpdateSaveIcon
   dwgInfo.Refresh
   Me.Refresh
   
@@ -84,6 +126,8 @@ Public Sub _new()
   Try Mkdir CACHE_ROOT
   
   cTooltip = [
+    "film": ("Browse photos"),
+    "photo": ("Show photo"),
     "usb": ("Select photo directory"),
     "zoom-in": ("Zoom in"),
     "zoom-out": ("Zoom out"),
@@ -103,10 +147,11 @@ Public Sub _new()
     "scissors": ("Crop image"),
     "balance": ("Balance"),
     "resize": ("Resize"),
+    "save": ("Save"),
     "undo": ("Undo all changes"),
     "quit": ("Quit")]
   
-  For Each sImg In ["usb", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "hflip", "vflip", "rotate-left", "rotate-right", "-", "magic", "invert", "blur", "sharpen", "normalize", "despeckle", "oil", "-", "scissors", "resize", "balance", "<->", "undo", "quit"]
+  For Each sImg In ["film", "photo", "usb", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "hflip", "vflip", "rotate-left", "rotate-right", "-", "magic", "invert", "blur", "sharpen", "normalize", "despeckle", "oil", "-", "scissors", "resize", "balance", "<->", "save", "undo", "quit"]
     If sImg = "<->" Then
       hPanel = New Panel(panToolbar)
       hPanel.Expand = True
@@ -135,6 +180,8 @@ Public Sub _new()
   btnNext.Ignore = True
   btnNext.Tag = "next"
   btnNext.Image = Image.Load("next.png")
+
+  panToolbar.Raise
 
 End
 
@@ -227,6 +274,7 @@ End
 Public Sub Form_Resize()
 
   panToolbar.Move(0, 0, Me.W, 48 + Desktop.Scale * 2)
+  panMargin.H = panToolbar.H 
   dwgInfo.Move(8, Me.H - dwgInfo.H, Me.W, dwgInfo.H)
   btnPrev.Move(8, (Me.H - btnPrev.H) / 2)
   btnNext.Move(Me.W - 8 - btnNext.W, (Me.H - btnNext.H) / 2)
@@ -327,6 +375,16 @@ Private Sub Action(sAction As String)
   
   Select Case sAction
     
+    Case "film"
+      Me.End
+      SaveImage
+      $bFilm = True
+      UpdateFilmMode
+    
+    Case "photo"
+      $bFilm = False
+      UpdateFilmMode
+    
     Case "previous"
       Dec $iIndex
       If $iIndex < 0 Then $iIndex = $aPath.Max
@@ -352,7 +410,6 @@ Private Sub Action(sAction As String)
     Case "quit"
       SetMode("")
       SaveImage
-      If Exist(CACHE_DIR) Then Desktop.Open(CACHE_DIR)
       Me.Close
       
     Case "balance", "scissors", "resize"
@@ -361,6 +418,7 @@ Private Sub Action(sAction As String)
       
     Case "usb"
       SetMode("")
+      Dialog.Title = ("Select photo directory")
       If Dialog.SelectDirectory() Then Return
       SetDir(Dialog.Path)
       
@@ -404,6 +462,7 @@ Private Sub Action(sAction As String)
       End Select
       
       $bModify = True
+      UpdateSaveIcon
       UpdateZoom
     
   End Select
@@ -562,7 +621,8 @@ Private Sub SetDir(sDir As String)
   $aPath = New String[]
   Try $aPath = Dir(sDir, "*.{jpg,JPG,jpeg,JPEG,png,PNG,bmp,BMP,gig,GIF}").Sort()
   $iIndex = 0
-  LoadImage
+  $bReloadFilm = True
+  UpdateFilmMode
   
   Dec Application.Busy
   
@@ -574,8 +634,11 @@ Private Sub SaveImage() As String
   If Not $bModify Then Return
   
   Try Mkdir CACHE_DIR
+  Try Kill CACHE_DIR &/ ".thumb." & File.Name($sPath)
+  $bReloadFilm = True
   $hImage.Save(CACHE_DIR &/ File.Name($sPath), 80)
   $bModify = False
+  UpdateSaveIcon
   Return CACHE_DIR &/ File.Name($sPath)
   
 Catch
@@ -587,7 +650,10 @@ End
 Private Sub RemoveImage()
   
   Kill CACHE_DIR &/ File.Name($sPath)
+  Try Kill CACHE_DIR &/ ".thumb." & File.Name($sPath)
+  $bReloadFilm = True
   If Dir(CACHE_DIR).Count = 0 Then Rmdir CACHE_DIR
+  UpdateSaveIcon
   
 Catch
   
@@ -611,7 +677,81 @@ Private Sub ImageMagick(sCommand As String) As Image
   Kill sPath2
   
   Dec Application.Busy
+  UpdateSaveIcon
   
   Return hImage
   
+End
+
+Private Sub GetThumb(sPath As String) As Image
+  
+  Dim sName As String
+  Dim sThumb As String
+  Dim hImage As Image
+  
+  sName = File.Name(sPath)
+  
+  If Exist(CACHE_DIR &/ sName) Then sPath = CACHE_DIR &/ sName
+  
+  sThumb = CACHE_DIR &/ ".thumb." & sName
+  If Exist(sThumb) Then
+    'If Stat(sThumb).LastModified >= Stat(sPath).LastModified Then
+      hImage = Image.Load(sThumb)
+    'Endif
+  Endif
+  
+  If Not hImage Then
+    hImage = Image.Load(sPath)
+    If hImage.W > hImage.H Then
+      hImage = hImage.Stretch(256, 256 * hImage.H / hImage.W)
+    Else
+      hImage = hImage.Stretch(256 * hImage.W / hImage.H, 256)
+    Endif
+    Try Kill sThumb
+    hImage.Save(sThumb)
+  Endif
+  
+  Return hImage
+  
+End
+
+Private Sub FillImageBrowser()
+  
+  Dim I As Integer
+  Dim hImage As Image
+  
+  If $bReloadFilm Then
+  
+    Inc Application.Busy
+    
+    Try Mkdir CACHE_DIR
+    ivwImage.Clear
+    ivwImage.GridSize = 280 \ Desktop.Scale
+    For I = 0 To $aPath.Max
+      Try hImage = GetThumb($sDir &/ $aPath[i])
+      If Error Then
+        Error Error.Where; ": "; Error.Text
+        hImage = Picture["icon:/256/image"].Image
+      Endif
+      ivwImage.Add(I, File.Name($aPath[I]), hImage.Picture)
+      Wait
+    Next
+  
+    Dec Application.Busy
+    $bReloadFilm = False
+  
+  Endif
+  
+  ivwImage[$iIndex].Selected = True
+  ivwImage[$iIndex].EnsureVisible
+  
+End
+
+
+Public Sub ivwImage_DblClick()
+
+  $bFilm = False
+  $iIndex = CInt(ivwImage.Key)
+  UpdateFilmMode
+
 End

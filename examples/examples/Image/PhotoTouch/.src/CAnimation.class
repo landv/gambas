@@ -8,6 +8,8 @@ Private $hTimer As Timer
 
 Public Sub _new(hObject As Control, sProperty As String, fTarget As Float, iTime As Integer)
   
+  Debug hObject.Tag;; sProperty;; fTarget
+  
   $hObject = hObject
   $sProperty = sProperty
   $fTarget = fTarget
@@ -43,6 +45,8 @@ End
 
 Public Sub Stop()
   
+  $hTimer.Stop
   $hTimer = Null
+  $hObject = Null
   
 End

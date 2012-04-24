@@ -1601,7 +1601,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
 
     .Clear()
 
-    .Background = If(Len(ProjectFilter), Color.LightBackground, Color.Default)
+    .Background = If(Len(ProjectFilter), Color.Merge(Color.TextBackground, Color.LightBackground, 0.25), Color.Default)
 
     sKey = Project.Dir
     .Add(sKey, Name, GetIcon(Project.Dir, 16))

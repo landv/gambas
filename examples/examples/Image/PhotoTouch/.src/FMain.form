@@ -7,7 +7,8 @@
   Maximized = True
   Arrangement = Arrange.Fill
   { svwImage ScrollArea
-    MoveScaled(24,24,24,24)
+    MoveScaled(5,25,24,24)
+    Visible = False
     Background = &H000000&
     Mouse = Mouse.SizeAll
     Border = False
@@ -32,5 +33,23 @@
     Background = &H000000&
     Foreground = &HFFFFFF&
     Alignment = Align.Center
+  }
+  { panBrowser Panel
+    MoveScaled(48,17,24,30)
+    Background = &H000000&
+    Arrangement = Arrange.Vertical
+    Margin = True
+    { panMargin Panel
+      MoveScaled(4,1,12,10)
+    }
+    { ivwImage IconView
+      MoveScaled(3,11,16,16)
+      Font = Font["+2"]
+      Background = &H000000&
+      Foreground = &HFFFFFF&
+      Expand = True
+      Mode = Select.Multiple
+      Border = False
+    }
   }
 }
