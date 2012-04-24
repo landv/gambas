@@ -43,7 +43,7 @@ Node* Node::previous()
 
     if(it == parent->children->begin()) return 0; //Si c'est le premier, y risque pas d'y en avoir avant
 
-    return *(--(it));
+    return *((--it));
 
 }
 
@@ -56,8 +56,8 @@ Node* Node::next()
         if(*it == this) break;
     }
 
-    if(it == parent->children->end()) return 0; //Si c'est le dernier, y risque pas d'y en avoir après
+    if((++it) == parent->children->end()) return 0; //Si c'est le dernier, y risque pas d'y en avoir après
 
-    return *(++(it));
+    return *(it);
 
 }

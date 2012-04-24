@@ -155,7 +155,7 @@ ostream &operator<<( ostream &out, std::wstring *str )
 
 bool isNameStartChar(wstring &s)
 {
-    const wchar_t car = (s.at(0));
+    register const wchar_t car = (s.at(0));
 
     return CAR(":") || INTERCAR("A", "Z") || CAR("_") || INTERCAR("a", "z") || CAR("Ø") ||
             INTER(0xC0, 0xD6) || INTER(0xD8, 0xF6) || INTER(0xF8, 0x2FF) ||
@@ -174,7 +174,7 @@ bool isNameStartChar(wstring &s)
 
 bool isNameChar(wstring &s)
 {
-    const wchar_t car = (s.at(0));
+    register const wchar_t car = (s.at(0));
 
     return isNameStartChar(s) || CAR("-") || CAR(".") || INTERCAR("0", "9") ||
             (car == 0xB7) || INTER(0x0300, 0x036F) || INTER(0x203F, 0x2040);
@@ -188,7 +188,12 @@ bool isNameChar(wstring &s)
 
 bool isWhiteSpace(wstring &s)
 {
-    const wchar_t car = (s.at(0));
+    return isWhiteSpace(s.at(0));
+}
+
+bool isWhiteSpace(wchar_t &s)
+{
+    register const wchar_t car = s;
 
     return (car == 0x20) || (car == 0x9) || (car == 0xD) || (car == 0xA);
 }
@@ -200,7 +205,7 @@ GB_INTERFACE GB EXPORT;
 extern "C"{
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-  CDocumentDesc, CNodeDesc, CElementAttributesDesc, CElementDesc, CTextNodeDesc,
+  CDocumentDesc, CNodeDesc, CElementAttributesDesc, CElementAttributeNodeDesc, CElementDesc, CTextNodeDesc,
     CCommentNodeDesc, CCDATANodeDesc, CReaderDesc, CReaderNodeDesc, CReaderNodeTypeDesc,
     CReaderNodeAttributesDesc, CReaderReadFlagsDesc, CExplorerDesc, CExplorerReadFlagsDesc, 0
 };

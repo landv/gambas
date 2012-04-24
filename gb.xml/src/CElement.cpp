@@ -15,6 +15,13 @@ THIS->ownerDoc = 0;
 THIS->attributes = new map<wstring, wstring>;
 THIS->parent = 0;
 
+THIS->attributeNode = GBI::New<AttrNode>("_XmlAttrNode");
+THIS->attributeNode->parent = THIS;
+THIS->attributeNode->virt = new AttrNode::Virtual(THIS->attributeNode);
+THIS->attributeNode->attrName = 0;
+
+
+
 if(!MISSING(tagName)) THIS->setTagName(STRING(tagName));
 //if(!MISSING(doc)) THIS->setOwnerDocument(reinterpret_cast<Document*>(VARG(doc)));
 
@@ -33,9 +40,14 @@ if(THIS->children)
     delete THIS->children;
 }
 
+
 delete THIS->virt;
 delete THIS->attributes;
 delete THIS->tagName;
+
+//DELETE(THIS->attributeNode->attrName);
+delete THIS->attributeNode->virt;
+UNREF(THIS->attributeNode);
 
 THIS->virt = 0;
 THIS->children = 0;
@@ -142,47 +154,6 @@ THIS->replaceChild(reinterpret_cast<Node*>(VARG(oldChild)),
 
 END_METHOD
 
-BEGIN_METHOD(CElementAttributes_get, GB_STRING name)
-
-GB.ReturnNewZeroString(WStringToString(THIS->getAttribute(STRING(name))).c_str());
-
-END_METHOD
-
-BEGIN_METHOD(CElementAttributes_put, GB_STRING value; GB_STRING name)
-
-THIS->setAttribute(STRING(name), STRING(value));
-
-END_METHOD
-
-BEGIN_PROPERTY(CElementAttributes_count)
-
-if(READ_PROPERTY)
-{
-    GB.ReturnInteger(THIS->attributes->size());
-}
-
-END_PROPERTY
-
-BEGIN_METHOD_VOID(CElementAttributes_next)
-
-map<wstring,wstring>::iterator *it = *reinterpret_cast<map<wstring,wstring>::iterator**>((GB.GetEnum()));
-if(it == 0)
-{
-    it = new map<wstring,wstring>::iterator(THIS->attributes->begin());
-    *reinterpret_cast<map<wstring,wstring>::iterator**>(GB.GetEnum()) = it;
-}
-else
-{
-    ++(*it);
-}
-
-if(*it == THIS->attributes->end()) {GB.StopEnum(); delete it; return;}
-
-GB.ReturnNewZeroString(WStringToString((*(*it)).second).c_str());
-
-
-END_METHOD
-
 BEGIN_METHOD(CElement_getAttribute, GB_STRING attr)
 
 GB.ReturnNewZeroString(WStringToString(THIS->getAttribute(STRING(attr))).c_str());
@@ -258,15 +229,6 @@ GB.ReturnBoolean(THIS->MatchXPathFilter(STRING(filter)));
 
 END_METHOD
 
-GB_DESC CElementAttributesDesc[] =
-{
-    GB_DECLARE(".XmlElementAttributes", 0), GB_VIRTUAL_CLASS(),
-    GB_METHOD("_get", "s", CElementAttributes_get, "(Name)s"),
-    GB_METHOD("_put", "s", CElementAttributes_put, "(Value)s(Name)s"),
-    GB_METHOD("_next", "s", CElementAttributes_next, ""),
-    GB_PROPERTY_READ("Count", "i", CElementAttributes_count),
-    GB_END_DECLARE
-};
 
 GB_DESC CElementDesc[] =
 {
@@ -289,7 +251,6 @@ GB_DESC CElementDesc[] =
     GB_PROPERTY_READ("PreviousSibling", "XmlElement", CElement_previousSibling),
     GB_PROPERTY_READ("NextSibling", "XmlElement", CElement_nextSibling),
 
-    GB_PROPERTY_SELF("Attributes", ".XmlElementAttributes"),
     GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s"),
     GB_METHOD("SetAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
     GB_METHOD("NewAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
@@ -310,3 +271,5 @@ GB_DESC CElementDesc[] =
 
     GB_END_DECLARE
 };
+
+

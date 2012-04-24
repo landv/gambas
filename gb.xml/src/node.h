@@ -12,7 +12,7 @@ class Node : public GB_BASE
 {
 public:
     void operator=(const Node& copie);
-    enum Type {BaseNode, ElementNode, NodeText, Comment, CDATA} ;
+    enum Type {BaseNode, ElementNode, NodeText, Comment, CDATA, Attribute} ;
 
     class Virtual
     {
@@ -24,9 +24,8 @@ public:
         virtual Node::Type getType() {return Node::BaseNode;}
         virtual wstring toString(int indent = -1) = 0;
         virtual wstring textContent() = 0;
-        virtual void setTextContent(wstring content) = 0;
+        virtual void setTextContent(wstring &content) = 0;
         virtual void setOwnerDocument(Document *doc) {parent->ownerDoc = doc;}
-        virtual Node* cloneNode() = 0;
         Node *parent;
     };
 

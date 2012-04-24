@@ -17,7 +17,7 @@ public:
         virtual Node::Type getType() {return Node::NodeText;}
         virtual wstring toString(int indent = -1);
         virtual wstring textContent() {return *(parent->content);}
-        virtual void setTextContent(wstring content) {*(parent->content) = content;}
+        virtual void setTextContent(wstring &content) {*(parent->content) = content;}
         virtual Node* cloneNode();
 
         TextNode *parent;

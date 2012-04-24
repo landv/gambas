@@ -74,7 +74,17 @@ else
     ++(*it);
 }
 
-if(*it == THIS->foundNode->toElement()->attributes->end()) {GB.StopEnum(); delete it; return;}
+if(*it == THIS->foundNode->toElement()->attributes->end())
+{
+    GB.StopEnum();
+    delete it;
+    delete THIS->curAttrNameEnum;
+    THIS->curAttrNameEnum = 0;
+
+    return;
+}
+
+THIS->curAttrNameEnum = new wstring(((*(*it)).first));
 
 GB.ReturnNewZeroString(WStringToString((*(*it)).second).c_str());
 
@@ -121,6 +131,12 @@ END_METHOD
 
 BEGIN_PROPERTY(CReaderNode_type)
 
+if(THIS->curAttrNameEnum)
+{
+    GB.ReturnInteger(READ_ATTRIBUTE);
+    return;
+}
+
 switch(THIS->foundNode->getType())
 {
     case Node::ElementNode:
@@ -140,11 +156,25 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Value)
 
+
+if(THIS->curAttrNameEnum)
+{
+    GB.ReturnNewZeroString(WStringToString(THIS->foundNode->toElement()->attributes->at(*(THIS->curAttrNameEnum))).c_str());
+    return;
+}
+
 GB.ReturnNewZeroString(WStringToString(THIS->foundNode->textContent()).c_str());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Name)
+
+
+if(THIS->curAttrNameEnum)
+{
+    GB.ReturnNewZeroString(WStringToString(*(THIS->curAttrNameEnum)).c_str());
+    return;
+}
 
 switch (THIS->foundNode->getType())
 {
@@ -179,6 +209,7 @@ GB.ReturnObject(nodes->array);
 //delete nodes;
 
 END_PROPERTY
+
 
 
 GB_DESC CReaderNodeTypeDesc[] =

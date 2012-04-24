@@ -29,6 +29,7 @@ END_PROPERTY
 #define NODE_TEXT 2
 #define NODE_COMMENT 3
 #define NODE_CDATA 4
+#define NODE_ATTRIBUTE 5
 
 BEGIN_PROPERTY(CNode_type)
 
@@ -126,6 +127,8 @@ switch (THIS->getType())
         GB.ReturnNewZeroString("#comment");break;
     case Node::CDATA:
         GB.ReturnNewZeroString("#cdata");break;
+    case Node::Attribute:
+        GB.ReturnNewZeroString(WStringToString(*(reinterpret_cast<AttrNode*>(THIS)->attrName)).c_str()); break;
     case Node::BaseNode:
     default:
         GB.ReturnNull();
@@ -150,6 +153,79 @@ THIS->toElement()->setAttribute(STRING(attr), STRING(val));
 
 END_METHOD
 
+
+BEGIN_METHOD(CElementAttributes_get, GB_STRING name)
+
+GB.ReturnNewZeroString(WStringToString(THIS->toElement()->getAttribute(STRING(name))).c_str());
+
+END_METHOD
+
+BEGIN_METHOD(CElementAttributes_put, GB_STRING value; GB_STRING name)
+
+THIS->toElement()->setAttribute(STRING(name), STRING(value));
+
+END_METHOD
+
+BEGIN_PROPERTY(CElementAttributes_count)
+
+if(READ_PROPERTY)
+{
+    GB.ReturnInteger(THIS->toElement()->attributes->size());
+}
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(CElementAttributes_next)
+
+map<wstring,wstring>::iterator *it = *reinterpret_cast<map<wstring,wstring>::iterator**>((GB.GetEnum()));
+if(it == 0)
+{
+    it = new map<wstring,wstring>::iterator(THIS->toElement()->attributes->begin());
+    *reinterpret_cast<map<wstring,wstring>::iterator**>(GB.GetEnum()) = it;
+}
+else
+{
+    ++(*it);
+}
+
+if(*it == THIS->toElement()->attributes->end()) {GB.StopEnum(); delete it; THIS->toElement()->attributeNode->attrName = 0; return;}
+
+THIS->toElement()->attributeNode->setAttrName(((*(*it)).first));
+GB.ReturnObject(THIS->toElement()->attributeNode);
+
+
+END_METHOD
+
+
+BEGIN_PROPERTY(CNode_attributes)
+
+if(THIS->getType() == NODE_ELEMENT)
+{
+    RETURN_SELF();
+    return;
+}
+
+GB.ReturnNull();
+
+END_PROPERTY
+
+GB_DESC CElementAttributesDesc[] =
+{
+    GB_DECLARE(".XmlElementAttributes", 0), GB_VIRTUAL_CLASS(),
+    GB_METHOD("_get", "s", CElementAttributes_get, "(Name)s"),
+    GB_METHOD("_put", "s", CElementAttributes_put, "(Value)s(Name)s"),
+    GB_METHOD("_next", "XmlNode", CElementAttributes_next, ""),
+    GB_PROPERTY_READ("Count", "i", CElementAttributes_count),
+    GB_END_DECLARE
+};
+
+GB_DESC CElementAttributeNodeDesc[] =
+{
+    GB_DECLARE("_XmlAttrNode", sizeof(AttrNode)), GB_INHERITS("XmlNode"),
+
+    GB_END_DECLARE
+};
+
 GB_DESC CNodeDesc[] =
 {
     GB_DECLARE("XmlNode", sizeof(Node)), GB_NOT_CREATABLE(),
@@ -158,6 +234,7 @@ GB_DESC CNodeDesc[] =
     GB_CONSTANT("TextNode", "i", NODE_TEXT),
     GB_CONSTANT("CommentNode", "i", NODE_COMMENT),
     GB_CONSTANT("CDATASectionNode", "i", NODE_CDATA),
+    GB_CONSTANT("AttributeNode", "i", NODE_ATTRIBUTE),
 
     GB_PROPERTY_READ("Type", "i", CNode_type),
     GB_PROPERTY_READ("IsElement", "b", CNode_isElement),
@@ -179,9 +256,9 @@ GB_DESC CNodeDesc[] =
     //Méthodes obsolètes
     GB_METHOD("NewElement", "s", CNode_newElement, "(Name)s[(Value)s]"),
     GB_METHOD("NewAttribute", "", CNode_setAttribute, "(Name)s(Value)s"),
+    GB_PROPERTY_READ("Attributes", ".XmlElementAttributes", CNode_attributes),
     
     //Constantes obsolètes
-      GB_CONSTANT("AttributeNode", "i", 0),
       GB_CONSTANT("EntityRefNode", "i", 0),
       GB_CONSTANT("EntityNode", "i", 0),
       GB_CONSTANT("PiNode", "i", 0),

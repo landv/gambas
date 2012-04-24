@@ -14,6 +14,9 @@ using namespace std;
 
 #define uint unsigned int
 
+#define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
+#define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
+
 template<class T>
 std::wstring toString(T i)
 {
@@ -67,6 +70,7 @@ extern "C" GB_INTERFACE GB;
 bool isNameStartChar(wstring &s);
 bool isNameChar(wstring &s);
 bool isWhiteSpace(wstring &s);
+bool isWhiteSpace(wchar_t &s);
 
 
 

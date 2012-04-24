@@ -26,20 +26,29 @@ void Reader::ClearReader()
         GB.Unref(POINTER(&(*it)));
     }
     this->storedElements->clear();
+
+    this->curAttrNameEnum = 0;
     
 }
 
 void Reader::InitReader()
 {
+    ClearReader();
+
     this->flags[NODE_ELEMENT] = true;
     this->flags[NODE_TEXT] = true;
     this->flags[NODE_COMMENT] = true;
     this->flags[NODE_CDATA] = true;
-    this->flags[READ_END_CUR_ELEMENT] = false;
+    this->flags[READ_END_CUR_ELEMENT] = true;
     this->flags[READ_ERR_EOF] = true;
     this->storedElements = new vector<Node*>;
-    
+
+}
+
+void Reader::DestroyReader()
+{
     ClearReader();
+    delete this->storedElements;
 }
 
 int Reader::ReadChar(wstring car)
@@ -69,7 +78,7 @@ int Reader::ReadChar(wstring car)
     else if(car == L">" && inTag && !inEndTag)//Fin de tag (de nouvel élément)
     {
         //DEBUG "Nouvel élément : " << WStringToString(*(curNode->toElement()->tagName)) << endl;
-        if(foundNode) GB.Unref(POINTER(&foundNode));
+        UNREF(foundNode);
         foundNode = curNode;//On a trouvé un élément complet
         //curNode = 0;
         GB.Ref(foundNode);
@@ -80,14 +89,26 @@ int Reader::ReadChar(wstring car)
             APPEND(foundNode);
             curElmt = foundNode->toElement();
         }
-        if(attrName) {curNode->toElement()->setAttribute(*attrName, L""); 
+        if(attrName && attrVal)
+        {
+            curNode->toElement()->setAttribute(*attrName, *attrVal);
+            delete attrName; attrName = 0; inAttrName = false; inAttr = false;
+            delete attrVal; attrVal = 0; inAttrVal = false;
+        }
+        else if(attrName) {curNode->toElement()->setAttribute(*attrName, L"");
             delete attrName; attrName = 0; inAttrName = false; inAttr = false;}
         return NODE_ELEMENT;
     }
-    else if(car == L" " && inTag && !inEndTag)//Début de nom d'attribut
+    else if(isWhiteSpace(car) && inTag && !inEndTag && !inAttrVal)//Début de nom d'attribut
     {
-        if(attrName) {curNode->toElement()->setAttribute(*attrName, L""); 
-                                 delete attrName; attrName = 0;}
+        if(attrName && attrVal)
+        {
+            curNode->toElement()->setAttribute(*attrName, *attrVal);
+            delete attrName; attrName = 0; inAttrName = false; inAttr = false;
+            delete attrVal; attrVal = 0; inAttrVal = false;
+        }
+        else if(attrName) {curNode->toElement()->setAttribute(*attrName, L"");
+            delete attrName; attrName = 0; inAttrName = false; inAttr = false;}
         inAttr = true;
         inAttrName = true;
     }
@@ -98,8 +119,9 @@ int Reader::ReadChar(wstring car)
     else if((car == L"\"" || car == L"'") && inAttr && !inAttrVal)//Début de valeur d'attribut
     {
         inAttrVal = true;
+        attrVal = new wstring;
     }
-    else if((car == L"\"" || car == L"'") && inAttr && !inAttrVal)//Fin de valeur d'attribut
+    else if((car == L"\"" || car == L"'") && inAttr && inAttrVal)//Fin de valeur d'attribut
     {
         curNode->toElement()->setAttribute(*attrName, *attrVal);
         delete attrName; attrName = 0; delete attrVal; attrVal = 0;
@@ -116,6 +138,7 @@ int Reader::ReadChar(wstring car)
     }
     else if(car == L">" && inEndTag)//La fin d'un tag de fin
     {
+        inTag = false;
         inEndTag = false;
         //DEBUG "Fin de l'élément : " << WStringToString(*content) << endl;
         if(curElmt && *(curElmt->toElement()->tagName) == (*content))
@@ -199,15 +222,14 @@ int Reader::ReadChar(wstring car)
             Node* newNode = GBI::New<Node>("XmlElement");
             inTag = true;
             inNewTag = false;
-            if(curNode) 
-            { /*if(curNode->isElement()) this->curNode->toElement()->appendChild((newNode));*/
-                GB.Unref(POINTER(&curNode));}
+            UNREF(curNode);
             curNode = newNode;
             GB.Ref(curNode);
             *(curNode->toElement()->tagName) += car;
         }
         else if(!curNode || (!curNode->isText() && !inTag))//Pas de nœud courant -> nœud texte
         {
+            if(isWhiteSpace(car)) return 0;
             //DEBUG "Nouvel élément texte " << endl;
             Node* newNode = GBI::New<Node>("XmlTextNode");
             if(curNode) 

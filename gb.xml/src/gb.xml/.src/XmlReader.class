@@ -5,8 +5,10 @@ Inherits _XmlReader
 
 Property InputStream As Stream
 Property Read Eof As Boolean
+Property Read State As Integer
 
 Private $stream As Stream
+Private $state As Integer = 0
 
 Private Function InputStream_Read() As Stream
 
@@ -23,18 +25,17 @@ End
 Public Function Read() As Integer
   
   Dim sBuf As String
-  Dim code As Integer
   
   If Not $stream Then Return False
   If Eof($stream) Then Return
   
   Do
     sBuf = Read #$stream, 1
-    code = Me._ReadChar(sBuf)
-  Loop Until (code <> 0 And Me.ReadFlags[code]) Or Eof($stream)
+    $state = Me._ReadChar(sBuf)
+  Loop Until ($state <> 0 And Me.ReadFlags[$state]) Or Eof($stream)
   
   If Eof($stream) Then Return XmlReaderNodeType.EndStream
-  Return code
+  Return $state
   
 End
 
@@ -52,5 +53,11 @@ Private Function Eof_Read() As Boolean
 
   If Not $stream Then Return False
   Return Eof($stream)
+
+End
+
+Private Function State_Read() As Integer
+
+  Return $state
 
 End

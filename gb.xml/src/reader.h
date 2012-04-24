@@ -9,10 +9,11 @@
 #define NODE_TEXT 2
 #define NODE_COMMENT 3
 #define NODE_CDATA 4
-#define READ_END_CUR_ELEMENT 5
-#define READ_ERR_EOF 6
-#define READ_ATTRIBUTE 7
-#define FLAGS_COUNT 8
+#define NODE_ATTRIBUTE 5
+#define READ_END_CUR_ELEMENT 6
+#define READ_ERR_EOF 7
+#define READ_ATTRIBUTE 8
+#define FLAGS_COUNT 9
 
 //Niveau de lecture des tags spéciaux (commentaires, CDATA, prologue ...)
 //Commentaire <!-- -->
@@ -55,7 +56,10 @@ public :
     void InitReader();//Intitialise le lecteur
     int ReadChar(wstring car);//Lit un caractère
     void ClearReader();//Réinitialise le lecteur
+    void DestroyReader();//Détruit le lecteur
     bool flags[FLAGS_COUNT];//Flags de lecture
+
+    wstring *curAttrNameEnum;
 };
 
 

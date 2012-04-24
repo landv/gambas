@@ -47,6 +47,8 @@ bool isLetter(wstring &s);
 bool exist(vector<wstring> vect, wstring elmt);
 bool exist(vector<wstring> *vect, wstring elmt);
 
+class AttrNode;
+
 class Element : public Node
 {
 public:
@@ -60,7 +62,7 @@ public:
         virtual Node::Type getType() {return Node::ElementNode;}
         virtual wstring toString(int indent = -1);
         virtual wstring textContent();
-        virtual void setTextContent(wstring content);
+        virtual void setTextContent(wstring &content);
         virtual void setOwnerDocument(Document *doc);
         virtual Node* cloneNode();
 
@@ -116,8 +118,34 @@ public:
     map<wstring, wstring> *attributes;
     wstring *tagName;
     list<Node*> *children;
+    AttrNode *attributeNode;
 
 #ifndef HELEMENT_H
+
+};
+
+class AttrNode : public Node
+{
+public:
+    class Virtual : public Node::Virtual
+    {
+    public:
+        Virtual(AttrNode *node) : Node::Virtual(node), parent(node) {}
+        Virtual(const AttrNode::Virtual &copie) : Node::Virtual(copie.parent), parent(copie.parent) {}
+        AttrNode::Virtual &operator=(const AttrNode::Virtual &copie) {parent = copie.parent; return *this;}
+
+        virtual Node::Type getType() {return Node::Attribute;}
+        virtual wstring toString(int indent = -1){return textContent();}
+        virtual wstring textContent(){if((parent->attrName)) return parent->parent->getAttribute(*(parent->attrName)); return L"";}
+        virtual void setTextContent(wstring &content){if(parent->attrName) parent->parent->setAttribute(*(parent->attrName), content);}
+
+        AttrNode *parent;
+
+    };
+
+    wstring *attrName;
+    void setAttrName(const wstring &name){attrName = new wstring(name);}
+
 
 };
 

@@ -1,11 +1,17 @@
 #include "explorer.h"
 
 #define DEBUG std::cout << pos << " : " <<
-#define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
-#define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
+
 
 void Explorer::Init()
 {
+    this->flags = new bool[FLAGS_COUNT];
+    this->flags[NODE_ELEMENT] = true;
+    this->flags[NODE_TEXT] = true;
+    this->flags[NODE_COMMENT] = true;
+    this->flags[NODE_CDATA] = true;
+    this->flags[READ_END_CUR_ELEMENT] = true;
+    this->flags[READ_ERR_EOF] = true;
     Clear();
 }
 
@@ -22,17 +28,20 @@ void Explorer::Clear()
     UNREF(loadedDocument);
     loadedDocument = 0;
     curNode = 0;
+    this->eof = false;
+    this->endElement = false;
 }
 
 int Explorer::MoveNext()
 {
+    if(eof) return READ_ERR_EOF;
     if(!curNode)//Début du document
     {
         curNode = loadedDocument->root;
         return NODE_ELEMENT;
     }
     //Premier enfant
-    else if(curNode->isElement() && curNode->toElement()->children->size() > 0)
+    else if(curNode->isElement() && curNode->toElement()->children->size() > 0 && !endElement)
     {
         curNode = *(curNode->toElement()->children->begin());
         return curNode->getType();
@@ -41,6 +50,7 @@ int Explorer::MoveNext()
     else
     {
         Node *nextNode = curNode->next();
+        endElement = false;
         if(nextNode)
         {
             curNode = nextNode;
@@ -55,6 +65,7 @@ int Explorer::MoveNext()
         }
         else//Plus de parent = fin du document
         {
+            this->eof = true;
             return READ_ERR_EOF;
         }
 
@@ -66,11 +77,10 @@ int Explorer::MoveNext()
 
 int Explorer::Read()
 {
-    int code;
     do
     {
-        code = MoveNext();
-    } while(!flags[code]);
+        state = MoveNext();
+    } while(!this->flags[state]);
 
-    return code;
+    return state;
 }

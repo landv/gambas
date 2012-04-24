@@ -48,6 +48,41 @@ THIS->Clear();
 
 END_METHOD
 
+BEGIN_METHOD(CExplorer_open, GB_STRING path)
+
+Document *doc = GBI::New<Document>("XmlDocument");
+char *content; int len;
+
+if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len))
+{
+    GB.Error("Error loading file.");
+    return;
+}
+try
+{
+    doc->setContent(StringToWString(std::string(content,len)));
+    GB.ReleaseFile(content, len);
+}
+catch(HTMLParseException &e)
+{
+    GB.Error(e.what());
+}
+THIS->Load(doc);
+
+END_METHOD
+
+BEGIN_PROPERTY(CExplorer_eof)
+
+GB.ReturnBoolean(THIS->eof);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CExplorer_state)
+
+GB.ReturnInteger(THIS->state);
+
+END_PROPERTY
+
 GB_DESC CExplorerReadFlagsDesc[] =
 {
     GB_DECLARE(".XmlExplorerReadFlags", 0), GB_VIRTUAL_CLASS(),
@@ -62,9 +97,14 @@ GB_DESC CExplorerDesc[] =
 {
     GB_DECLARE("XmlExplorer", sizeof(Explorer)),
 
+    GB_METHOD("_new", "", CExplorer_new, "[(Document)XmlDocument]"),
+    GB_METHOD("_free", "", CExplorer_free, ""),
     GB_PROPERTY_SELF("ReadFlags", ".XmlExplorerReadFlags"),
     GB_PROPERTY_READ("Node", "XmlNode", CExplorer_Node),
+    GB_PROPERTY_READ("Eof", "b", CExplorer_eof),
+    GB_PROPERTY_READ("State", "i", CExplorer_state),
     GB_METHOD("Read", "i", CExplorer_Read, ""),
+    GB_METHOD("Open", "", CExplorer_open, "(Path)s"),
 
     GB_END_DECLARE
 };

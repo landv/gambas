@@ -207,7 +207,7 @@ wstring Element::Virtual::textContent()
     return str;
 }
 
-void Element::Virtual::setTextContent(wstring content)
+void Element::Virtual::setTextContent(wstring &content)
 {
     parent->ClearElements();
     parent->appendText(content);
@@ -440,6 +440,15 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
                     text += L"&";
                 }
             }
+            else if(isWhiteSpace(s))
+            {
+                if(i > 0)
+                    if(data.at(i-1) == *(L" "))//Deux espaces d'afilée -> on ignore
+                        continue;
+
+                text += L" ";
+
+            }
             else
             {
                 text += s;
@@ -624,9 +633,9 @@ Element* Element::nextSibling()
         if(*it == this) break;
     }
 
-    if(it == --parent->children->end()) return 0; //Si c'est le dernier, y risque pas d'y en avoir avant
+    if(it == --(parent->children->end())) return 0; //Si c'est le dernier, y risque pas d'y en avoir avant
 
-    while(it != (parent->children->end()))
+    while(it != --(parent->children->end()))
     {
         ++it;
         if((*it)->isElement())
