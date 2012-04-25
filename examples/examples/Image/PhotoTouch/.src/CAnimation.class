@@ -1,10 +1,42 @@
 ' Gambas class file
 
+Static Private All As New CAnimation[]
+
+Property Read Object As Object
+
 Private $hObject As Object
 Private $sProperty As String
 Private $fTarget As Float
 Private $fTime As Float
 Private $hTimer As Timer
+
+Static Public Sub Start(hObject As Control, sProperty As String, fTarget As Float, iTime As Integer)
+  
+  Dim hAnim As CAnimation
+  Dim aStop As New CAnimation[]
+  
+  For Each hAnim In All
+    If hAnim.Object = hObject Then aStop.Add(hAnim)
+  Next
+  
+  For Each hAnim In aStop
+    hAnim.Stop
+  Next
+  
+  hAnim = New CAnimation(hObject, sProperty, fTarget, iTime)
+  All.Add(hAnim)
+  
+End
+
+Static Public Sub Exit()
+  
+  While All.Count
+    All[0].Stop
+  Wend
+  
+End
+
+
 
 Public Sub _new(hObject As Control, sProperty As String, fTarget As Float, iTime As Integer)
   
@@ -49,4 +81,12 @@ Public Sub Stop()
   $hTimer = Null
   $hObject = Null
   
+  All.Remove(All.Find(Me))
+  
+End
+
+Private Function Object_Read() As Object
+
+  Return $hObject
+
 End

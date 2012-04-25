@@ -377,7 +377,7 @@ Private Sub OpenPopup()
   
     $hView.Current = [$vCurrent]
     
-    $hPopup.Resize(Me.Width, Min(8, $hView.Count) * (1 + $hView.View.Rows.Height) + $hView.View.Rows.HeaderHeight + 2)
+    $hPopup.Resize(Me.Width, Min(8, $hView.Count) * (1 + $hView.View.Rows.Height) + $hView.View.Columns.H + 2)
     $hPopup.ShowPopup(Me.ScreenX, Me.ScreenY + Me.Height)
     
   Endif

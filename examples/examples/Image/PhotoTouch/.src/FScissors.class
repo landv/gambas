@@ -27,6 +27,11 @@ Public Sub Form_Resize()
   
   btnCut.Move(Me.W - btnCut.W - Desktop.Scale * 3, Desktop.Scale * 3)
   
+  dwgNW.Move(HANDLE_SIZE, HANDLE_SIZE)
+  dwgNE.Move(Me.W - HANDLE_SIZE - dwgNE.W, dwgNW.Y)
+  dwgSE.Move(dwgNE.X, Me.H - HANDLE_SIZE - dwgSE.H)
+  dwgSW.Move(dwgNW.X, dwgSE.Y)
+  
 End
 
 
@@ -150,5 +155,49 @@ End
 Public Sub btnCut_Click()
   
   FMain.Cut
+  
+End
+
+Public Sub dwgCorner_Draw()
+
+  Dim hCtrl As DrawingArea = Last
+
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+
+  Select Case Last.Tag
+    
+    Case "NW"
+      
+      Paint.MoveTo(2, 2)
+      Paint.LineTo(hCtrl.W - 2, 2)
+      Paint.LineTo(2, hCtrl.H - 2)
+      
+    Case "NE"
+
+      Paint.MoveTo(hCtrl.W - 2, 2)
+      Paint.LineTo(hCtrl.W - 2, hCtrl.H - 2)
+      Paint.LineTo(2, 2)
+      
+    Case "SW"
+      
+      Paint.MoveTo(2, hCtrl.H - 2)
+      Paint.LineTo(2, 2)
+      Paint.LineTo(hCtrl.W - 2, hCtrl.H - 2)
+      
+    Case "SE"
+    
+      Paint.MoveTo(hCtrl.W - 2, hCtrl.H - 2)
+      Paint.LineTo(2, hCtrl.H - 2)
+      Paint.LineTo(hCtrl.W - 2, 2)
+
+  End Select
+  
+  Paint.Fill
+
+End
+
+Public Sub Form_KeyPress()
+  
+  FMain.Form_KeyPress
   
 End

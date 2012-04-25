@@ -7,7 +7,7 @@ Public Sub sldResize_Change()
 
   Dim W, H As Integer
 
-  With FMain.GetImage()
+  With FMain.GetCurrentImage()
     W = .W * $aSize[sldResize.Value]
     H = .H * $aSize[sldResize.Value]
   End With
@@ -34,11 +34,17 @@ Public Sub btnApply_Click()
   
   Dim W, H As Integer
 
-  With FMain.GetImage()
+  With FMain.GetCurrentImage()
     W = .W * $aSize[sldResize.Value]
     H = .H * $aSize[sldResize.Value]
   End With
 
   FMain.Stretch(W, H)
+  
+End
+
+Public Sub Form_KeyPress()
+  
+  FMain.Form_KeyPress
   
 End

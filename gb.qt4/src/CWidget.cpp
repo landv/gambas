@@ -681,6 +681,7 @@ void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
 }
 */
 
+#if 0
 void CWIDGET_check_hovered()
 {
 	//qDebug("CWIDGET_check_hovered: %p %s -> %p %s", _hovered, _hovered ? _hovered->name : 0, _official_hovered, _official_hovered ? _official_hovered->name : 0);
@@ -688,14 +689,15 @@ void CWIDGET_check_hovered()
 	if (_official_hovered != _hovered)
 	{
 		if (_official_hovered)
-			GB.Raise(_official_hovered, EVENT_Leave, NULL);
+			CWIDGET_leave(_official_hovered);
 		
 		if (_hovered)
-			GB.Raise(_hovered, EVENT_Enter, NULL);
+			CWIDGET_enter(_hovered);
 		
 		_official_hovered = _hovered;
 	}
 }
+#endif
 
 BEGIN_PROPERTY(Control_X)
 
@@ -2353,6 +2355,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		QWidget *popup = qApp->activePopupWidget();
 		
+		//qDebug("enter %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
+		
 		if (real && (!popup || CWidget::getReal(popup)))
 			CWIDGET_enter(control);
 		
@@ -2362,6 +2366,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	__LEAVE:
 	{
 		QWidget *popup = qApp->activePopupWidget();
+		
+		//qDebug("leave %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
 		
 		if (real && (!popup || CWidget::getReal(popup)))
 			CWIDGET_leave(control);

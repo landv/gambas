@@ -20,7 +20,7 @@ Property Read Count As Integer
 Property Read Current As _IconView_Item
 Property Read Item As _IconView_Item
 Property Read Available As Boolean
-Property Read Key As String
+Property Key As String
 Property Compare As Integer
 Property Editable As Boolean
 Property Sorted As Boolean
@@ -1408,5 +1408,17 @@ End
 Private Sub Background_Write(Value As Integer)
 
   $hView.Background = Value
+
+End
+
+Private Sub Key_Write(Value As String)
+
+  Dim hItem As _IconView_Item = $cItems[Value]
+  
+  If hItem Then
+    SetCurrentItem(_FindItem(hItem))
+  Else
+    SetCurrentItem(-1)
+  Endif
 
 End

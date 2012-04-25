@@ -9,18 +9,19 @@
   { svwImage ScrollArea
     MoveScaled(5,25,24,24)
     Visible = False
-    Background = &H000000&
+    Background = Color.Background
     Mouse = Mouse.SizeAll
     Border = False
     ScrollBar = Scroll.None
   }
   { dwgInfo DrawingArea
     MoveScaled(5,64,66,6)
+    Foreground = Color.LightForeground
     Ignore = True
     Painted = True
   }
   { panToolbar HBox
-    MoveScaled(1,1,52,13)
+    MoveScaled(1,1,75,5)
     Ignore = True
     AutoResize = True
     Spacing = True
@@ -30,13 +31,13 @@
     MoveScaled(15,52,46,9)
     Visible = False
     Font = Font["Bold,+5"]
-    Background = &H000000&
-    Foreground = &HFFFFFF&
+    Background = Color.Background
+    Foreground = Color.LightForeground
     Alignment = Align.Center
   }
   { panBrowser Panel
     MoveScaled(48,17,24,30)
-    Background = &H000000&
+    Background = Color.Background
     Arrangement = Arrange.Vertical
     Margin = True
     { panMargin Panel
@@ -45,11 +46,19 @@
     { ivwImage IconView
       MoveScaled(3,11,16,16)
       Font = Font["+2"]
-      Background = &H000000&
-      Foreground = &HFFFFFF&
+      Background = Color.Background
+      Foreground = Color.LightForeground
       Expand = True
       Mode = Select.Multiple
       Border = False
     }
+  }
+  { panToolbarBrowser HBox
+    MoveScaled(1,7,75,5)
+    Visible = False
+    Ignore = True
+    AutoResize = True
+    Spacing = True
+    Margin = True
   }
 }
