@@ -311,6 +311,10 @@ Public Sub ScrollArea_Draw()
   
   hClip = Draw.ClipRect
   
+  ' Headers use button colors
+  
+  Draw.Foreground = Color.ButtonForeground
+  
   ' Vertical header
   
   iSort = $hColumns.Sort
@@ -325,7 +329,7 @@ Public Sub ScrollArea_Draw()
       If X >= $hView.ClientW Then Break
       iCol2 = I
       With $hColumns[I]
-        If $iHeader And Horizontal Then
+        If .W > 0 And If $iHeader And Horizontal Then
           Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
           Draw.FillRect(X - 1, F, 1, H - F, iGrid)
           If iSort = I Then
@@ -364,8 +368,7 @@ Public Sub ScrollArea_Draw()
       iRow2 = I
       'Draw.Style.Separator(F, Y, W - F, 2)
       H = $hRows._GetRowHeight(I)
-  
-      If $iHeader And Vertical Then
+      If H > 0 And If $iHeader And Vertical Then
         Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
         Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
         If I = $iRow Then Draw.Font.Bold = True
@@ -633,7 +636,7 @@ Public Sub ScrollArea_MouseMove()
   
   If $bResize Then
     If $iRowResize >= 0 Then
-      $hRows._SetRowHeight($iRowResize, $iDimResize + MY - $MY)
+      $hRows._SetRowHeight($iRowResize, Max(1, $iDimResize + MY - $MY))
     Else If $iColResize >= 0 Then
       $hColumns[$iColResize].Width = Max(1, $iDimResize + MX - $MX)
     Endif

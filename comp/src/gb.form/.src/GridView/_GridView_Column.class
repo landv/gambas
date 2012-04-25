@@ -52,7 +52,7 @@ Private Sub Width_Write(Value As Integer)
   
   If Value < 0 Then Value = GetView()._GetPreferredWidth(_Column)
   If Value < 0 Or If Value > 1024 Or If Value = $W Then Return
-  $W = Max(1, Value)
+  $W = Max(0, Value)
   Raise _Refresh
   GetView()._RaiseColumnResize(_Column)
 

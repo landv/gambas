@@ -143,17 +143,18 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
     $aHeight = New Integer[]
   Endif
   
-  If H = DH Or If H <= 0 Then
+  If H = DH Or If H < 0 Then
     If $cHeight.Exist(iRow) Then
       $cHeight.Remove(iRow)
       $aHeight.Remove($aHeight.Find(iRow))
       hView._ResizeContents()
       hView._RaiseRowResize(iRow)
     Endif
-  Else If H > 0 Then
+  Else If H >= 0 Then
+    OH = -1
     Try OH = $cHeight[iRow]
     If H <> OH Then
-      If OH = 0 Then AddSorted(iRow)
+      If OH < 0 Then AddSorted(iRow)
       $cHeight[iRow] = H
       hView._ResizeContents()
       hView._RaiseRowResize(iRow)
