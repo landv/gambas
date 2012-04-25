@@ -9,6 +9,9 @@ Property Read State As Integer
 
 Private $stream As Stream
 Private $state As Integer = 0
+Private $DataBuffer As String
+Private $posBuffer As Integer
+Private $lenBuffer As Integer
 
 Private Function InputStream_Read() As Stream
 
@@ -22,12 +25,36 @@ Private Sub InputStream_Write(Value As Stream)
 
 End
 
+Public Sub FromString(data As String)
+  
+  $DataBuffer = data
+  $posBuffer = 0
+  $lenBuffer = String.Len(data)
+  
+End
+
+
 Public Function Read() As Integer
   
   Dim sBuf As String
   
-  If Not $stream Then Return False
-  If Eof($stream) Then Return
+  If $DataBuffer Then
+    
+    If $posBuffer = $lenBuffer Then Return XmlReaderNodeType.EndStream
+    
+    Do
+      Inc $posBuffer
+      sBuf = String.Mid($DataBuffer, $posBuffer, 1)
+      $state = Me._ReadChar(sBuf)
+    Loop Until ($state <> 0 And Me.ReadFlags[$state]) Or $posBuffer = $lenBuffer
+  
+    If $posBuffer = $lenBuffer Then Return XmlReaderNodeType.EndStream
+    Return $state
+  
+  Endif
+  
+  If Not $stream Then Return 0
+  If Eof($stream) Then Return XmlReaderNodeType.EndStream
   
   Do
     sBuf = Read #$stream, 1
@@ -51,6 +78,7 @@ End
 
 Private Function Eof_Read() As Boolean
 
+  If $DataBuffer Then Return $posBuffer = $lenBuffer
   If Not $stream Then Return False
   Return Eof($stream)
 
