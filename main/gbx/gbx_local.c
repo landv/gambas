@@ -196,7 +196,8 @@ static void stradd_sep(char *dst, const char *src, const char *sep)
 {
 	if (*dst)
 		strcat(dst, sep);
-		strcat(dst, src);
+	
+	strcat(dst, src);
 }
 
 
@@ -365,6 +366,7 @@ static void fill_local_info(void)
 	char *tp;
 	char *codeset;
 	const char *lang;
+	char *am_pm;
 
 	/* Localisation courante */
 
@@ -502,7 +504,15 @@ static void fill_local_info(void)
 	}
 
 	stradd_sep(LOCAL_local.general_date, LOCAL_local.long_time, " ");
-	stradd_sep(LOCAL_local.medium_time, "AM/PM", " ");
+	am_pm = nl_langinfo(AM_STR);
+	if (am_pm && *am_pm)
+	{
+		am_pm = nl_langinfo(PM_STR);
+		if (am_pm && *am_pm)
+		{
+			stradd_sep(LOCAL_local.medium_time, "AM/PM", " ");
+		}
+	}
 
 	/* currency information */
 
