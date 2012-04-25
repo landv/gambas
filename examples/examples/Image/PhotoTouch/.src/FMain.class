@@ -196,6 +196,7 @@ Public Sub _new()
     "balance": ("Balance"),
     "resize": ("Resize"),
     "save": ("Save"),
+    "save-all": ("Save all"),
     "undo": ("Undo all changes"),
     "quit": ("Quit")]
     
@@ -224,7 +225,7 @@ Public Sub _new()
     
   CreateButtons(aButton, cTooltip, panToolbar)
     
-  aButton = ["photo", "usb", "-", "hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "<->", "save#2", "undo#2", "quit#2"]
+  aButton = ["photo", "usb", "-", "hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "<->", "save#2", "save-all", "undo#2", "quit#2"]
     
   CreateButtons(aButton, cTooltip, panToolbarBrowser)
     
@@ -436,6 +437,17 @@ Private Sub Action(sAction As String)
   
   Dim iPos As Integer
   
+  Select Case sAction
+    
+    Case "usb"
+      SetMode("")
+      Dialog.Title = ("Select photo directory")
+      If Dialog.SelectDirectory() Then Return
+    
+  End Select
+  
+  Inc Application.Busy
+        
   iPos = RInStr(sAction, "#")
   If iPos Then sAction = Left(sAction, iPos - 1)
   
@@ -481,20 +493,15 @@ Private Sub Action(sAction As String)
       Me.Close
       
     Case "balance", "scissors", "resize"
-      If Not $hImage Then Return
+      'If Not $hImage Then Return
       SetMode(sAction)
       
     Case "usb"
-      SetMode("")
-      Dialog.Title = ("Select photo directory")
-      If Dialog.SelectDirectory() Then Return
       SetDir(Dialog.Path)
       
     Case "undo"
       
       If Not $hImage Then
-        
-        Inc Application.Busy
         
         ivwImage.MoveFirst
         While ivwImage.Available
@@ -508,19 +515,16 @@ Private Sub Action(sAction As String)
       
         FillImageBrowser(True)
         $hImage = Null
-        Dec Application.Busy
         
       Else
       
         SetMode("")
         If $hUndoStack.Count Then
-          Inc Application.Busy
           $hImage = $hUndoStack[$hUndoStack.Max]
           $hUndoStack.Remove($hUndoStack.Max)
           $bModify = $hUndoStack.Count > 0
           If Not $bModify Then RemoveImage
           UpdateZoom
-          Dec Application.Busy
         Else
           LoadImage(True)
           RemoveImage
@@ -530,23 +534,15 @@ Private Sub Action(sAction As String)
       
     Case "save"
       
-      If Not $hImage Then
+      If Not $hImage Then 
         
-        Inc Application.Busy
-        
-        ivwImage.MoveFirst
-        While ivwImage.Available
-          'If ivwImage.Item.Selected Then
-          $iIndex = CInt(ivwImage.Item.Key)
-          GetImage
+        $iIndex = CInt(ivwImage.Key)
+        $sPath = CACHE_DIR &/ File.Name($aPath[$iIndex])
+        If Exist($sPath) Then
           SaveImageDefinitely
-          'Endif
-          ivwImage.MoveNext
-        Wend
-      
-        FillImageBrowser(True)
+          FillImageBrowser(True)
+        Endif
         $hImage = Null
-        Dec Application.Busy
         
       Else
         
@@ -555,12 +551,25 @@ Private Sub Action(sAction As String)
         
       Endif
     
+    Case "save-all"
+      
+      ivwImage.MoveFirst
+      While ivwImage.Available
+        'If ivwImage.Item.Selected Then
+        $iIndex = CInt(ivwImage.Item.Key)
+        GetImage
+        SaveImageDefinitely
+        'Endif
+        ivwImage.MoveNext
+      Wend
+    
+      FillImageBrowser(True)
+      $hImage = Null
+        
     Case Else
       
       If Not $hImage Then 
       
-        Inc Application.Busy
-        
         ivwImage.MoveFirst
         While ivwImage.Available
           If ivwImage.Item.Selected Then
@@ -584,7 +593,6 @@ Private Sub Action(sAction As String)
       
         FillImageBrowser(True)
         $hImage = Null
-        Dec Application.Busy
       
       Else
         
@@ -605,7 +613,7 @@ Private Sub Action(sAction As String)
             $hImage = $hImage.Rotate(Pi(-0.5))
           Case "oil"
             PushUndo()
-            $hImage = ImageMagick("-paint 4") '$hImage.OilPaint()
+            $hImage = ImageMagick("-paint " & CStr(Max(3, Min($hImage.W, $hImage.H) \ 256)))
           Case "magic"
             PushUndo()
             $hImage = ImageMagick("-auto-gamma -auto-level")
@@ -636,6 +644,8 @@ Private Sub Action(sAction As String)
       Endif
     
   End Select
+  
+  Dec Application.Busy
   
 End
 
@@ -787,11 +797,13 @@ End
 
 Public Sub Stretch(W As Integer, H As Integer)
   
+  Inc Application.Busy
   $hImage = $hImage.Stretch(W, H)
   $bModify = True
   $hTemp = $hImage
   Me.End
   SetZoom(0)
+  Dec Application.Busy
   
 End
 
@@ -947,14 +959,22 @@ Private Sub FillImageBrowser(Optional bNoWait As Boolean)
   Dim I As Integer
   Dim hImage As Image
   Dim sText As String
+  Dim fLastTime As Float
+  Dim sKey As String
   
   If $bReloadFilm Then
   
     Inc Application.Busy
     
+    fLastTime = Timer
+    
     Try Mkdir CACHE_DIR
+    
+    sKey = ivwImage.Key
+    
     ivwImage.Clear
     ivwImage.GridSize = 280 \ Desktop.Scale
+    
     For I = 0 To $aPath.Max
       
       Try hImage = GetThumb($sDir &/ $aPath[i])
@@ -964,12 +984,17 @@ Private Sub FillImageBrowser(Optional bNoWait As Boolean)
       Endif
       sText = File.Name($aPath[I])
       ivwImage.Add(I, sText, hImage.Picture)
-      If Not bNoWait Then Wait
+      If (Timer - fLastTime) > 1 Then
+        fLastTime = Timer
+        Wait
+      Endif
     Next
+  
+    Try ivwImage.Key = sKey
   
     Dec Application.Busy
     $bReloadFilm = False
-  
+    
   Endif
   
   If ivwImage.Count Then
