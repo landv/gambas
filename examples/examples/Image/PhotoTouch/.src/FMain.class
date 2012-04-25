@@ -19,6 +19,7 @@ Private $bFilm As Boolean = True
 Private $bReloadFilm As Boolean
 Private $cShortcut As New Collection
 Private $hSave As Image
+Private $hUndoStack As Image[]
 
 Private $MX As Integer
 Private $MY As Integer
@@ -56,6 +57,7 @@ Private Sub UpdateFilmMode()
   btnNext.Visible = Not $bFilm
   
   If $bFilm Then
+    $hImage = Null
     FillImageBrowser
   Else
     Try $iIndex = CInt(ivwImage.Key)
@@ -111,6 +113,7 @@ Private Sub LoadImage(Optional bReset As Boolean) As Boolean
   Endif
   
   $bModify = False
+  $hUndoStack = New Image[]
   SetZoom(0)
   UpdateSaveIcon
   dwgInfo.Refresh
@@ -445,8 +448,10 @@ Private Sub Action(sAction As String)
       UpdateFilmMode
     
     Case "photo"
-      $bFilm = False
-      UpdateFilmMode
+      If $aPath.Count Then
+        $bFilm = False
+        UpdateFilmMode
+      Endif
     
     Case "previous"
       Dec $iIndex
@@ -486,9 +491,69 @@ Private Sub Action(sAction As String)
       SetDir(Dialog.Path)
       
     Case "undo"
-      SetMode("")
-      LoadImage(True)
-      RemoveImage
+      
+      If Not $hImage Then
+        
+        Inc Application.Busy
+        
+        ivwImage.MoveFirst
+        While ivwImage.Available
+          If ivwImage.Item.Selected Then
+            $iIndex = CInt(ivwImage.Item.Key)
+            GetImage
+            RemoveImage
+          Endif
+          ivwImage.MoveNext
+        Wend
+      
+        FillImageBrowser(True)
+        $hImage = Null
+        Dec Application.Busy
+        
+      Else
+      
+        SetMode("")
+        If $hUndoStack.Count Then
+          Inc Application.Busy
+          $hImage = $hUndoStack[$hUndoStack.Max]
+          $hUndoStack.Remove($hUndoStack.Max)
+          $bModify = $hUndoStack.Count > 0
+          If Not $bModify Then RemoveImage
+          UpdateZoom
+          Dec Application.Busy
+        Else
+          LoadImage(True)
+          RemoveImage
+        Endif
+        
+      Endif
+      
+    Case "save"
+      
+      If Not $hImage Then
+        
+        Inc Application.Busy
+        
+        ivwImage.MoveFirst
+        While ivwImage.Available
+          'If ivwImage.Item.Selected Then
+          $iIndex = CInt(ivwImage.Item.Key)
+          GetImage
+          SaveImageDefinitely
+          'Endif
+          ivwImage.MoveNext
+        Wend
+      
+        FillImageBrowser(True)
+        $hImage = Null
+        Dec Application.Busy
+        
+      Else
+        
+        SetMode("")
+        SaveImageDefinitely
+        
+      Endif
     
     Case Else
       
@@ -527,28 +592,39 @@ Private Sub Action(sAction As String)
         
         Select Case sAction
           Case "hflip"
+            PushUndo()
             $hImage.Mirror(True, False)
           Case "vflip"
+            PushUndo()
             $hImage.Mirror(False, True)
           Case "rotate-left"
+            PushUndo()
             $hImage = $hImage.Rotate(Pi(0.5))
           Case "rotate-right"
+            PushUndo()
             $hImage = $hImage.Rotate(Pi(-0.5))
           Case "oil"
+            PushUndo()
             $hImage = ImageMagick("-paint 4") '$hImage.OilPaint()
           Case "magic"
+            PushUndo()
             $hImage = ImageMagick("-auto-gamma -auto-level")
           Case "invert"
+            PushUndo()
             $hImage.Invert()
           'Case "equalize"
           '  $hImage = ImageMagick("-equalize")
           Case "despeckle"
+            PushUndo()
             $hImage = ImageMagick("-despeckle")
           Case "normalize"
+            PushUndo()
             $hImage = ImageMagick("-normalize")
           Case "blur"
+            PushUndo()
             $hImage = ImageMagick("-blur 8") '$hImage.OilPaint()
           Case "sharpen"
+            PushUndo()
             $hImage = ImageMagick("-sharpen 8") '$hImage.OilPaint()
         
         End Select
@@ -558,7 +634,6 @@ Private Sub Action(sAction As String)
         UpdateZoom
         
       Endif
-      
     
   End Select
   
@@ -769,7 +844,7 @@ End
 
 Private Sub RemoveImage()
   
-  Kill CACHE_DIR &/ File.Name($sPath)
+  Try Kill CACHE_DIR &/ File.Name($sPath)
   Try Kill CACHE_DIR &/ ".thumb." & File.Name($sPath)
   $bReloadFilm = True
   If Dir(CACHE_DIR).Count = 0 Then Rmdir CACHE_DIR
@@ -777,7 +852,29 @@ Private Sub RemoveImage()
   
 Catch
   
+  Message.Error(Error.Text)
+  
 End
+
+Private Sub SaveImageDefinitely()
+  
+  Dim sPath As String
+  
+  SaveImage
+  If Exist(CACHE_DIR &/ File.Name($sPath)) Then
+    sPath = $sDir &/ File.Name($sPath)
+    Try Kill sPath & "~"
+    Move sPath To sPath & "~"
+    Copy CACHE_DIR &/ File.Name($sPath) To sPath
+    RemoveImage
+  Endif
+  
+Catch
+  
+  Message.Error(Error.Text)
+  
+End
+
 
 Private Sub ImageMagick(sCommand As String) As Image
   
@@ -875,8 +972,17 @@ Private Sub FillImageBrowser(Optional bNoWait As Boolean)
   
   Endif
   
-  ivwImage.Key = $iIndex
-  ivwImage[$iIndex].EnsureVisible
+  If ivwImage.Count Then
+    ivwImage.Key = $iIndex
+    ivwImage[$iIndex].EnsureVisible
+    panBrowser.Show
+    '$cButton["photo"].Show
+  Else
+    '$cButton["photo"].Hide
+    panBrowser.Hide
+    lblError.Text = ("No image in directory")
+    lblError.Show
+  Endif
   
 End
 
@@ -928,4 +1034,10 @@ Public Sub svwImage_KeyPress()
     
   End Select
 
+End
+
+Public Sub PushUndo()
+  
+  $hUndoStack.Add($hImage.Copy())
+  
 End
