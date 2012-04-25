@@ -44,6 +44,7 @@
 #include "CProgress.h"
 #include "CDrawingArea.h"
 #include "CTextArea.h"
+#include "CTreeView.h"
 
 #include <QApplication>
 #include <QObject>
@@ -64,6 +65,7 @@
 #include <Q3ScrollView>
 #include <QProgressBar>
 #include <QAbstractEventDispatcher>
+#include <QListWidget>
  
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
@@ -268,6 +270,8 @@ static QWidget *get_viewport(QWidget *w)
 		return ((QAbstractScrollArea *)w)->viewport();
 	else if (qobject_cast<Q3ScrollView *>(w))
 		return ((Q3ScrollView *)w)->viewport();
+	//else if (qobject_cast<Q3ListView *>(w))
+	//	return ((Q3ListView *)w)->viewport();
 	else
 		return 0;
 }
@@ -1331,6 +1335,9 @@ END_PROPERTY
 
 static QWidget *get_color_widget(QWidget *w)
 {
+	if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+		return w;
+	
 	QWidget *view = get_viewport(w);
 	if (view)
 		return view;
@@ -1370,12 +1377,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	
 	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
-		//CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
-		//if (parent)
-		//	w->setPalette(parent->widget->palette());
-		//else
 		w->setPalette(QPalette());
-		//WIDGET->setPalette(QPalette());
 	}
 	else
 	{
@@ -1388,17 +1390,13 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		
 		if (fg != COLOR_DEFAULT)
 		{
-			palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
-			//palette.setColor(QPalette::Text, QColor((QRgb)fg));
-			//palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
-			//palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
-			/*palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
-			palette.setColor(QPalette::Text, QColor((QRgb)fg));
-			palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));*/
+			if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+				palette.setColor(QPalette::Text, QColor((QRgb)fg));
+			else
+				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
 		}
-			
+		
 		w->setPalette(palette);
-		//WIDGET->setPalette(palette);
 	}	
 	
 	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));

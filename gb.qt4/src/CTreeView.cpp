@@ -238,14 +238,6 @@ void MyListViewItem::cancelRename(int col)
 	}
 }
 
-/*void MyListViewItem::setSelected(bool s)
-{
-	if (CDRAG_dragging)
-		return;
-	qDebug("setSelected: %s %d", key, s);
-	QListViewItem::setSelected(s);
-}*/
-
 /***************************************************************************
 
   class MyListView
