@@ -91,7 +91,8 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
     }
     catch(HTMLParseException &e)
     {
-    outDoc->setContent(L"<?xml version=\"1.0\"?><xml></xml>");
+        outDoc->setContent(L"<?xml version=\"1.0\"?><xml></xml>");
+        std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
     }
 	
     GB.ReturnObject(outDoc);

@@ -21,11 +21,14 @@ void Reader::ClearReader()
     DELETE(attrVal)
     DELETE(content)
     
-    for(vector<Node*>::iterator it = storedElements->begin(); it != storedElements->end(); ++it)
+    if(storedElements)
     {
-        GB.Unref(POINTER(&(*it)));
+        for(vector<Node*>::iterator it = storedElements->begin(); it != storedElements->end(); ++it)
+        {
+            GB.Unref(POINTER(&(*it)));
+        }
+        this->storedElements->clear();
     }
-    this->storedElements->clear();
 
     this->curAttrNameEnum = 0;
     
