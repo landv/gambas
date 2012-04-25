@@ -1378,25 +1378,39 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
 		w->setPalette(QPalette());
+		if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+			get_viewport(WIDGET)->setPalette(QPalette());
 	}
 	else
 	{
-		palette = QPalette(); //w->palette());
 		bg = THIS_EXT->bg;
 		fg = THIS_EXT->fg;
 		
-		if (bg != COLOR_DEFAULT)
-			palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
-		
-		if (fg != COLOR_DEFAULT)
+		if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
 		{
-			if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+			QPalette vpalette;
+			
+			if (bg != COLOR_DEFAULT)
+				vpalette.setColor(QPalette::Base, QColor((QRgb)bg));
+			
+			if (fg != COLOR_DEFAULT)
 				palette.setColor(QPalette::Text, QColor((QRgb)fg));
-			else
-				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
+			
+			w->setPalette(palette);
+			get_viewport(WIDGET)->setPalette(vpalette);
 		}
+		else
+		{
+			palette = QPalette();
 		
-		w->setPalette(palette);
+			if (bg != COLOR_DEFAULT)
+				palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
+			
+			if (fg != COLOR_DEFAULT)
+				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
+		
+			w->setPalette(palette);
+		}
 	}	
 	
 	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));
