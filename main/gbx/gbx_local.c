@@ -960,7 +960,7 @@ _FORMAT:
 		if (!exposant) ndigit += number_exp;
 		ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
 		
-		power = pow(10, ndigit + 1);
+		power = pow10(ndigit + 1);
 		mantisse = number_mant * power;
 		if ((mantisse % 10) >= 5)
 			mantisse += 10;

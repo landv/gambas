@@ -284,10 +284,8 @@ __END:
 	if (local && first_thsep && ndigit_thsep != 3)
 		return TRUE;
 
-	//*result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
-	
 	nexp -= ndigit_frac;
-	*result = ((double)mantisse * pow(10, nexp));
+	*result = ((double)mantisse * pow10(nexp));
 
 	return FALSE;
 }

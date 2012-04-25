@@ -50,6 +50,7 @@ Private Sub UpdateFilmMode()
     panToolbar.Show
     panBrowser.Hide
     panToolbarBrowser.Hide
+    $cButton["film"].Opacity = CButton.MAX_OPACITY
     svwImage.SetFocus
   Endif
 
@@ -201,6 +202,7 @@ Public Sub _new()
     "quit": ("Quit")]
     
   $cShortcut = [
+    "usb": "!",
     "zoom-in": "+",
     "zoom-out": "-",
     "zoom-original": "1",
@@ -212,20 +214,21 @@ Public Sub _new()
     "magic": ("M"),
     "invert": ("I"),
     "blur": ("B"),
-    "sharpen": ("S"),
-    "normalize": ("N"),
+    "sharpen": ("N"),
+    "normalize": ("E"),
     "despeckle": ("D"),
     "oil": ("O"),
     "scissors": ("/"),
     "resize": ("R"),
-    "balance": ("*")]
+    "balance": ("*"),
+    "save": ("S")]
 
   aButton = ["film", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "hflip", "vflip", "rotate-left", "rotate-right", "-", 
     "magic", "invert", "blur", "sharpen", "normalize", "despeckle", "oil", "-", "scissors", "resize", "balance", "<->", "save", "undo", "quit"]
     
   CreateButtons(aButton, cTooltip, panToolbar)
     
-  aButton = ["photo", "usb", "-", "hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "<->", "save#2", "save-all", "undo#2", "quit#2"]
+  aButton = ["photo", "usb", "save-all", "-", "hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "<->", "save#2", "undo#2", "quit#2"]
     
   CreateButtons(aButton, cTooltip, panToolbarBrowser)
     

@@ -31,6 +31,11 @@
 #include "gb_hash.h"
 #include "gbx_math.h"
 
+const double MATH_pow10[] = {
+	1E-10, 1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3, 1E-2, 0.1, 1,
+	10, 100, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8, 1E9, 1E10, 1E11, 1E12, 1E13, 1E14, 1E15, 1E16
+};
+
 /* This is a twisted generalized feedback shift register
    that generates pseudo-random numbers.
 
@@ -126,37 +131,6 @@ double fix(double x)
     return -floor(fabs(x));
 }
 
-#if 0
-double frexp10_old(double x, int *exp)
-{
-  long double l, f;
-
-  if (x == 0.0)
-  {
-    *exp = 0;
-    return x;
-  }
-
-  l = modfl(log10l(fabsl(x)), &f);
-  
-  if (f == 0.0)
-    l = x;
-  else
-    l = powl(10, l);
-
-  if (x < 0.0) l = -l;
-
-  while (l >= 1.0)
-  {
-    l /= 10.0;
-    f++;
-  }
-
-  *exp = (int)f;
-  return l;
-}
-#endif
-
 double frexp10(double x, int *exp)
 {
 	int p;
@@ -227,36 +201,6 @@ double log2(double x)
 double exp2(double x)
 {
 	return pow(2, x);
-}
-#endif
-
-#ifndef HAVE_LOG10L
-long double log10l(long double x)
-{
-	return log10((double) x);
-}
-#endif
-
-#ifndef HAVE_FABSL
-long double fabsl(long double x)
-{
-	return fabs((double) x);
-}
-#endif
-
-#ifndef HAVE_POWL
-long double powl(long double x, long double y)
-{
-	return pow((double) x, (double) y);
-}
-#endif
-
-#ifndef HAVE_MODFL
-long double modfl(long double x, long double *iptr)
-{
-	double val;
-	return modf((double)x, &val);
-	*iptr = val;
 }
 #endif
 

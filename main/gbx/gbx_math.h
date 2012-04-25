@@ -30,6 +30,10 @@
 #undef HAVE_EXP10
 #endif
 
+#ifndef __GBX_MATH_C
+extern const double MATH_pow10[];
+#endif
+
 void MATH_init(void);
 
 int lsgn(int x);
@@ -41,6 +45,8 @@ int fsgn(double x);
 float fixf(float x);
 double fix(double x);
 double frexp10(double x, int *exp);
+
+#define pow10(_n) (((_n) >= -10 && (_n) <= 16) ? MATH_pow10[(_n) + 10] : pow(10, (_n)))
 
 void randomize(bool set, uint seed);
 double rnd(void);
@@ -58,22 +64,6 @@ double log2(double x);
 
 #ifndef HAVE_EXP2
 double exp2(double x);
-#endif
-
-#ifndef HAVE_LOG10L
-long double log10l(long double x);
-#endif
-
-#ifndef HAVE_FABSL
-long double fabsl(long double x);
-#endif
-
-#ifndef HAVE_POWL
-long double powl(long double x, long double y);
-#endif
-
-#ifndef HAVE_MODFL
-long double modfl(long double x, long double *iptr);
 #endif
 
 #endif
