@@ -274,7 +274,7 @@ GB_DESC CDocumentScriptsDesc[] =
 
 GB_DESC CDocumentDesc[] =
 {
-    GB_DECLARE("HtmlDocument", sizeof(Document)), GB_INHERITS("XmlDocument"),
+    GB_DECLARE("HtmlDocument", sizeof(HtmlDocument)), GB_INHERITS("XmlDocument"),
 
     GB_METHOD("_new", "", CDocument_new, "[(Path)s]"),
     GB_METHOD("_free", "", CDocument_free, ""),
