@@ -410,8 +410,10 @@ Private Function GetDependency(sLib As String) As String
   
   If Left(sLib) = "/" Then
     
+    ' The package name dependency must not include the version!
+    
     hLibrary = New CLibraryInfo(sLib)
-    sPackageName = hLibrary.GetPackageName()
+    sPackageName = hLibrary.GetDependencyName()
     sVersion = hLibrary.Version
     
     aMinVersion = Split(sVersion, ".")
@@ -711,7 +713,7 @@ Private Function MakeDebPackage(sSys As String)
   If Project.CreateComponent Then
     Print #hFile, " This is a Gambas3 component written in Gambas"
   Else 
-      Print #hFile, " This program is written in Gambas"
+    Print #hFile, " This program is written in Gambas"
   Endif 
   Close #hFile
   

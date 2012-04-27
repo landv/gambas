@@ -445,6 +445,7 @@ Private Sub Action(sAction As String)
     Case "usb"
       SetMode("")
       Dialog.Title = ("Select photo directory")
+      Dialog.Path = $sDir
       If Dialog.SelectDirectory() Then Return
     
   End Select
@@ -938,17 +939,23 @@ Private Sub GetThumb(sPath As String) As Image
   
   If Not hImage Then
     hImage = Image.Load(sPath)
-    If hImage.W > hImage.H Then
-      hImage = hImage.Stretch(256, 256 * hImage.H / hImage.W)
-    Else
-      hImage = hImage.Stretch(256 * hImage.W / hImage.H, 256)
+    If hImage.W > 256 Or If hImage.H > 256 Then
+      If hImage.W > hImage.H Then
+        hImage = hImage.Stretch(256, 256 * hImage.H / hImage.W)
+      Else
+        hImage = hImage.Stretch(256 * hImage.W / hImage.H, 256)
+      Endif
     Endif
+    Paint.Begin(hImage)
+    Paint.Rectangle(0, 0, hImage.W, hImage.H)
+    Paint.LineWidth = 0.5
+    Paint.Brush = Paint.Color(Color.Black)
+    Paint.Stroke
     If bModified Then
       If Not $hSave Then $hSave = Image.Load("save.png").Stretch(24, 24)
-      Paint.Begin(hImage)
       Paint.DrawImage($hSave, Paint.W - 24 - 8, 8)
-      Paint.End
     Endif
+    Paint.End
     Try Kill sThumb
     hImage.Save(sThumb)
   Endif
