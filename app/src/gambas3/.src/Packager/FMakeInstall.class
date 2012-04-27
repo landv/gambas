@@ -77,7 +77,6 @@ Public Sub Form_Open()
   txtTests.Text = Project.ExtraAutoconfTest
 
   chkPrefix.Value = Project.Prefix
-  chkUseRelease.Value = Project.UseRelease
 
   'InitSystemControls
   InitSystems
@@ -156,8 +155,7 @@ Private Sub UpdatePackageName()
     
   Endif
   
-  sText &= Subst("-&1.&2", Project.MajorVersion, Project.MinorVersion)
-  If chkUseRelease.Value Then sText &= "." & Project.ReleaseVersion
+  sText &= Subst("-&1.&2.&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
   
   txtPackage.Text = sText
   
@@ -342,7 +340,6 @@ Public Sub wizInstall_BeforeChange()
 
       Project.Description = txtDescribe.Text
       Project.Prefix = chkPrefix.Value
-      Project.UseRelease = chkUseRelease.Value
       Project.PackageName = txtPackage.Text
 
     Case 1
@@ -876,12 +873,6 @@ End
 Public Sub txtVendor_Change()
 
   UpdatePackageName  
-
-End
-
-Public Sub chkUseRelease_Click()
-
-  UpdatePackageName
 
 End
 

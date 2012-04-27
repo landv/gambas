@@ -97,11 +97,7 @@ End
 
 Private Sub GetVersion() As String
 
-  Dim sVer As String
-        
-  sVer = Project.MajorVersion & "." & Project.MinorVersion
-  If Project.UseRelease Then sVer &= "." & Project.ReleaseVersion
-  Return sVer
+  Return Project.MajorVersion & "." & Project.MinorVersion & "." & Project.ReleaseVersion
         
 End  
 

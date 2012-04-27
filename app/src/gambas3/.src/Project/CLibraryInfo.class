@@ -60,27 +60,23 @@ Public Sub GetInfo()
   
 End
 
-' Public Sub GetPackageName() As String
-'   
-'   Dim sProject As String
-'   Dim sLine As String
-'   Dim aLine As String[]
-'   Dim aVersion As String[]
-'   
-'   Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sProject
-'   
-'   For Each sLine In Split(sProject, "\n")
-'     aLine = Scan(sLine, "PackageName=*")
-'     If aLine.Count Then Return aLine[0]
-'   Next
-'   
-'   aVersion = Split(Version, ".")
-'   Return String.UCase(Name & "-" & aVersion[0] & "." & aVersion[1])
-'   
-' End
-
 Public Sub GetDependencyName() As String
   
-  Return LCase(File.BaseName(Name))
+  Dim sProject As String
+  Dim sLine As String
+  Dim sName As String
+  Dim iPos As Integer
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sProject
+  
+  For Each sLine In Split(sProject, "\n")
+    If sLine Begins "PackageName=" Then
+      sLine = Mid$(sLine, InStr(sLine, "=") + 1)
+      iPos = RInStr(sLine, "-")
+      If iPos Then sLine = Left(sLine, iPos - 1)
+      Return sLine
+    Endif
+  Next
   
 End
+

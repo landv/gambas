@@ -31,14 +31,10 @@
       AutoResize = True
     }
     { VBox1 VBox
-      MoveScaled(1,10,70,8)
+      MoveScaled(1,10,70,4)
       { chkPrefix CheckBox
         MoveScaled(0,0,65,4)
         Text = ("Prefix package name with the vendor name")
-      }
-      { chkUseRelease CheckBox
-        MoveScaled(0,4,65,4)
-        Text = ("Insert release number in package version")
       }
     }
     { TextLabel2 TextLabel

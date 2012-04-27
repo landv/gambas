@@ -68,7 +68,6 @@ Public Categories As Collection
 Public MimeTypes As String[]
 Public ExtraDesktop As String
 Public Prefix As Boolean
-Public UseRelease As Boolean
 Public PackageName As String
 Public Maintainer As String
 Public Address As String
@@ -2872,7 +2871,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   SameFiles = False
   ExtraAutoconfTest = ""
   Prefix = False
-  UseRelease = False
   PackageName = ""
   ExecPath = Project.Name & ".gambas"
   SourcePath = ""
@@ -3078,9 +3076,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "prefix"
         Prefix = Val(sVal)
 
-      Case "userelease"
-        UseRelease = Val(sVal)
-
       Case "packagename"
         PackageName = sVal
 
@@ -3257,7 +3252,6 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Url And If Url <> DEFAULT_URL Then Print #hFic, "Url="; Url
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
-  If UseRelease Then Print #hFic, "UseRelease=1"
   If PackageName Then Print #hFic, "PackageName="; PackageName
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
