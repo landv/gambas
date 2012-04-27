@@ -11,6 +11,7 @@ Private $aOpacity As Integer[]
 Private $MX As Integer
 Private $MY As Integer
 Private $hRect As Rect
+Private $bResize As Boolean
 
 Private btnCut As CButton
 
@@ -162,11 +163,13 @@ Public Sub dwgCorner_Draw()
 
   Dim hCtrl As DrawingArea = Last
 
-  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
 
   Select Case Last.Tag
     
     Case "NW"
+      
+      If Not $bResize Then Paint.Brush = Paint.Color(Color.White)
       
       Paint.MoveTo(2, 2)
       Paint.LineTo(hCtrl.W - 2, 2)
@@ -186,6 +189,8 @@ Public Sub dwgCorner_Draw()
       
     Case "SE"
     
+      If $bResize Then Paint.Brush = Paint.Color(Color.White)
+
       Paint.MoveTo(hCtrl.W - 2, hCtrl.H - 2)
       Paint.LineTo(2, hCtrl.H - 2)
       Paint.LineTo(hCtrl.W - 2, 2)
@@ -197,6 +202,58 @@ Public Sub dwgCorner_Draw()
 End
 
 Public Sub Form_KeyPress()
+  
+  Dim MIN_HEIGHT As Integer = btnCut.W + Desktop.Scale * 6
+  Dim MIN_WIDTH As Integer = btnCut.H + Desktop.Scale * 6
+  Dim X, Y, W, H As Integer
+  
+  X = Me.X
+  Y = Me.Y
+  W = Me.W
+  H = Me.H
+  
+  Select Case Key.Code
+    Case Key.Up
+      If $bResize Then
+        H = Max(MIN_HEIGHT, H - 16)
+      Else
+        Y = Max(0, Y - 16)
+      Endif
+    Case Key.Down
+      If $bResize Then
+        H = Min(FMain.H - Me.Y, H + 16)
+      Else
+        Y = Min(FMain.H - Me.H, Y + 16)
+      Endif
+    Case Key.Left
+      If $bResize Then
+        W = Max(MIN_WIDTH, W - 16)
+      Else
+        X = Max(0, X - 16)
+      Endif
+    Case Key.Right
+      If $bResize Then
+        W = Min(FMain.W - Me.X, W + 16)
+      Else
+        X = Min(FMain.W - Me.W, X + 16)
+      Endif
+    Case Key.Space
+      $bResize = Not $bResize
+      dwgNW.Refresh
+      dwgSE.Refresh
+      Stop Event
+      Return
+    Case Key.Return, Key.Enter
+      btnCut_Click
+      Stop Event
+      Return
+  End Select
+  
+  If X <> Me.X Or If Y <> Me.Y Or If W <> Me.W Or If H <> Me.H Then
+    Me.Move(X, Y, W, H)
+    Stop Event
+    Return
+  Endif
   
   FMain.Form_KeyPress
   

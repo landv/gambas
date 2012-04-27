@@ -716,9 +716,11 @@ Public Sub Form_KeyPress()
   If Key.Text Then
     For Each sShortcut In $cShortcut
       If String.UCase(Key.Text) = sShortcut Then
-        Action($cShortcut.Key)
-        Stop Event
-        Return
+        If $cButton[$cShortcut.Key].Parent.Visible Then
+          Action($cShortcut.Key)
+          Stop Event
+          Return
+        Endif
       Endif
     Next
   Endif

@@ -105,6 +105,12 @@ Public Sub Form_KeyPress()
     Stop Event
     Return
   Endif
+  
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    btnApply_Click
+    Stop Event
+    Return
+  Endif
 
   Select Case UCase(Key.Text)
     Case "B"

@@ -26,6 +26,7 @@ End
 Public Sub Form_Open()
 
   Me.Center
+  sldResize.SetFocus
   sldResize_Change
 
 End
@@ -44,6 +45,12 @@ Public Sub btnApply_Click()
 End
 
 Public Sub Form_KeyPress()
+  
+  If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
+    btnApply_Click
+    Stop Event
+    Return
+  Endif
   
   FMain.Form_KeyPress
   
