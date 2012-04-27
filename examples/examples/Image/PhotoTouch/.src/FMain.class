@@ -11,7 +11,7 @@ Private $hImage As Image
 Private $hZoom As Image
 Private $hTemp As Image
 Private $fZoom As Float = 1
-Private $sInfo As String
+'Private $sInfo As String
 Private $sMode As String
 Private $bModify As Boolean
 Private $cButton As New Collection
@@ -95,8 +95,6 @@ Private Sub LoadImage(Optional bReset As Boolean) As Boolean
 
   GetImage(bReset)
 
-  $sInfo = ""
-  Try $sInfo = File.Name($sPath) & " - " & Format(Stat($sPath).LastModified, gb.LongDate)
   If $hImage Then
     svwImage.ResizeContents($hImage.W, $hImage.H)
     svwImage.Show
@@ -106,10 +104,8 @@ Private Sub LoadImage(Optional bReset As Boolean) As Boolean
     lblError.Show
     If $aPath.Count = 0 Then      
       lblError.Text = ("No image in directory")
-      $sInfo = ""
     Else
       lblError.Text = ("Unable to load image")
-      $sInfo = File.Name($sPath) & " -  " & Format(Stat($sPath).LastModified, gb.LongDate)
     Endif
   Endif
   
@@ -674,20 +670,27 @@ Public Sub dwgInfo_Draw()
   
   Dim X, Y As Integer
   Dim sText As String
+  Dim sSpace As String
   
-  sText = $sInfo & " - " & Format($fZoom, "0%")
+  If Not $hImage Then Return
   
-  Paint.Font = Font["Bold,+3"]
+  With Stat($sPath)
+    sSpace = String$(6, "&nbsp;")
+    sText = "<b>" & Html(File.Name($sPath)) & "</b>" & sSpace & Html(Format(.LastModified, gb.LongDate)) 
+    sText &= sSpace & $hImage.W & " x " & $hImage.H & " (" & Format($fZoom, "0%") & ")"
+  End With
+  
+  Paint.Font = Font["+5"]
   
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
   For X = -1 To 1
     For Y = -1 To 1
-      Paint.DrawText(sText, X + 2, Y + 2, dwgInfo.W - 4, dwgInfo.H - 4, Align.Left)
+      Paint.DrawRichText(sText, X + 2, Y + 2, dwgInfo.W - 4, dwgInfo.H - 4, Align.Left)
     Next
   Next
   'Paint.Fill
   Paint.Brush = Paint.Color(Color.LightForeground)
-  Paint.DrawText(sText, 2, 2, dwgInfo.W - 4, dwgInfo.H - 4, Align.Left)
+  Paint.DrawRichText(sText, 2, 2, dwgInfo.W - 4, dwgInfo.H - 4, Align.Left)
   
 End
 
@@ -966,6 +969,16 @@ Private Sub GetThumb(sPath As String) As Image
   
 End
 
+Private Sub GetSize(iSize As Long) As String
+  
+  Dim sSize As String
+  
+  If iSize < 1024 Then Return iSize & " b"
+  Return Format(iSize \ 1024, "#,##0") & " K"
+  
+End
+
+
 Private Sub FillImageBrowser(Optional bNoWait As Boolean)
   
   Dim I As Integer
@@ -994,7 +1007,9 @@ Private Sub FillImageBrowser(Optional bNoWait As Boolean)
         Error Error.Where; ": "; Error.Text
         hImage = Picture["icon:/256/image"].Image
       Endif
-      sText = File.Name($aPath[I])
+      With Stat($sDir &/ $aPath[I])
+        sText = "<b>" & Html(File.Name($aPath[I])) & "</b><br>" & Format(.LastModified, gb.LongDate) & "<br>" & GetSize(.Size)
+      End With
       ivwImage.Add(I, sText, hImage.Picture)
       If (Timer - fLastTime) > 1 Then
         fLastTime = Timer

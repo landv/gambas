@@ -85,7 +85,7 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  If $hDraw Then Draw.Image($hDraw, 4, 4)
+  If $hDraw Then Draw.Image($hDraw, 2, 2)
   
   If $bHighlight Then 
     Paint.Begin(Me)
@@ -105,7 +105,7 @@ End
 
 Private Sub Image_Write(Value As Image)
 
-  $hImage = Value.Stretch(Me.W - 8, Me.H - 8)
+  $hImage = Value.Stretch(Me.W - 4, Me.H - 4)
   SetOpacity
 
 End
@@ -119,7 +119,7 @@ Private Sub SetOpacity()
     
     Paint.Begin($hDraw)
     
-    Paint.Font = Font["Bold,+2"]
+    Paint.Font = Font["Bold,+3"]
     
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 64))
     'For X = -2 To 2
@@ -127,11 +127,11 @@ Private Sub SetOpacity()
     '    Paint.DrawText($sShortcut, $hDraw.W - 16 + X, $hDraw.H - 16 + Y, 16, 16, Align.Center)
     '  Next
     'Next
-    Paint.Arc($hDraw.W - 10, $hDraw.H - 10, 10)
+    Paint.Arc($hDraw.W - 12, $hDraw.H - 12, 12)
     Paint.Fill
     
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
-    Paint.DrawText($sShortcut, $hDraw.W - 20, $hDraw.H - 20, 20, 20, Align.Center)
+    Paint.DrawText($sShortcut, $hDraw.W - 24, $hDraw.H - 24, 24, 24, Align.Center)
     
     Paint.End
     
