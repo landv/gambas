@@ -181,6 +181,7 @@ __CEIL: PARAM->_float.value = __builtin_ceil(PARAM->_float.value); goto __END;
 
 __END:
 
+	//fprintf(stderr, "m: %.24g\n", PARAM->_float.value);
   if (!isfinite(PARAM->_float.value))
     THROW(E_MATH);
 }

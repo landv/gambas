@@ -295,7 +295,7 @@ __END:
 	if (local && first_thsep && ndigit_thsep != 3)
 		return TRUE;
 
-	if (frac_null)
+	if (frac && frac_null)
 		mantisse = mantisse_int;
 	else
 		nexp -= ndigit_frac;

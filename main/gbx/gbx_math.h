@@ -46,7 +46,7 @@ float fixf(float x);
 double fix(double x);
 double frexp10(double x, int *exp);
 
-#define pow10(_n) (((_n) >= -10 && (_n) <= 16) ? MATH_pow10[(_n) + 10] : pow(10, (_n)))
+#define pow10(_n) (((_n) >= -10 && (_n) <= 16) ? MATH_pow10[(_n) + 10] : exp10(_n))
 
 void randomize(bool set, uint seed);
 double rnd(void);

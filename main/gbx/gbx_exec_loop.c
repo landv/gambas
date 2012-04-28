@@ -2740,7 +2740,9 @@ __FLOAT:
 	VALUE_conv_float(P1);
 	VALUE_conv_float(P2);
 
-	P1->_float.value += P2->_float.value; goto __END;
+	P1->_float.value += P2->_float.value; 
+	//fprintf(stderr, "+: %.24g\n", P1->_float.value);
+	goto __END;
 	
 __POINTER:
 
@@ -2895,7 +2897,9 @@ __FLOAT:
 	VALUE_conv_float(P1);
 	VALUE_conv_float(P2);
 
-	P1->_float.value *= P2->_float.value; goto __END;
+	P1->_float.value *= P2->_float.value;
+	//fprintf(stderr, "*: %.24g\n", P1->_float.value);
+	goto __END;
 
 __VARIANT:
 

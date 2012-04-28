@@ -192,12 +192,16 @@ int main(int argc, char **argv)
 	//if (setrlimit(RLIMIT_CORE, &rl))
 	//	perror(strerror(errno));
 
-	/*VALUE v, a, b;
+	/*VALUE c, s, a, b, r;
+	double v = (argc - 2) / 2.0;
+	c._float.value = cos(v);
+	s._float.value = __builtin_sin(v);
+	a._float.value = c._float.value * c._float.value;
+	b._float.value = s._float.value * s._float.value;
+	r._float.value = a._float.value + b._float.value;
 	
-	v._float.value = cos(0.5);
-	a._float.value = pow(v._float.value, (double)(argc - 1));
-	b._float.value = v._float.value * v._float.value;
-	fprintf(stderr, "%.24g %.24g %.24g %.24g %d\n", v._float.value, (double)(argc - 1), a._float.value, b._float.value, a._float.value == b._float.value);*/
+	fprintf(stderr, "%.24g %.24g / %.24g + %.24g = %.24g %d\n", c._float.value, s._float.value, a._float.value, b._float.value, r._float.value, r._float.value == 1.0);
+	*/
 	
 	MEMORY_init();
 	COMMON_init();
