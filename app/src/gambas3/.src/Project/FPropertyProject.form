@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,71)
+  MoveScaled(0,2,93,70)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -19,7 +19,7 @@
     }
   }
   { tabProject TabPanel
-    MoveScaled(1,1,91,64)
+    MoveScaled(1,1,91,63)
     Arrangement = Arrange.Vertical
     Count = 6
     Index = 0
@@ -40,18 +40,29 @@
       MoveScaled(53,11,29,0)
     }
     { HPanel1 HPanel
-      MoveScaled(1,12,84,48)
+      MoveScaled(1,12,84,47)
       Expand = True
       AutoResize = True
       Spacing = True
       Margin = True
-      { Label10 Label
+      { Label16 Label
         MoveScaled(0,0,16,4)
+        Font = Font["Bold"]
+        Text = ("Project type")
+      }
+      { cmbType ComboBox
+        MoveScaled(18,0,35,4)
+        Expand = True
+        ReadOnly = True
+        List = [("Normal"), ("Library"), ("Component")]
+      }
+      { Label10 Label
+        MoveScaled(0,5,16,4)
         Font = Font["Bold"]
         Text = ("Version")
       }
       { HBox1 HBox
-        MoveScaled(18,0,64,4)
+        MoveScaled(18,5,64,4)
         Expand = True
         Spacing = True
         { txtMajor SpinBox
@@ -73,31 +84,31 @@
         }
       }
       { Label12 Label
-        MoveScaled(0,5,16,4)
+        MoveScaled(0,10,16,4)
         Font = Font["Bold"]
         Text = ("Title")
       }
       { txtTitle TextBox
-        MoveScaled(18,5,60,4)
+        MoveScaled(18,10,60,4)
         Expand = True
       }
       { Label3 Label
-        MoveScaled(0,10,16,4)
+        MoveScaled(0,15,16,4)
         Font = Font["Bold"]
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,10,60,17)
+        MoveScaled(18,15,60,15)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,28,16,4)
+        MoveScaled(0,30,16,4)
         Font = Font["Bold"]
         Text = ("Author(s)")
       }
       { txtAuthor TextArea
-        MoveScaled(18,28,57,20)
+        MoveScaled(18,31,57,16)
         Expand = True
         Wrap = True
       }
@@ -105,7 +116,7 @@
     Index = 1
     Text = ("Options")
     { Panel6 VBox
-      MoveScaled(1,1,87,55)
+      MoveScaled(1,1,87,46)
       Spacing = True
       Margin = True
       { Label7 Label
@@ -220,27 +231,6 @@
           Text = ("Use a terminal emulator")
         }
         { cmbTerminal ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
-        }
-      }
-      { Label16 Label
-        MoveScaled(0,46,84,3)
-        Font = Font["Bold"]
-        Expand = True
-        Text = ("Component")
-        Alignment = Align.BottomNormal
-      }
-      { HBox6 HBox
-        MoveScaled(1,50,83,4)
-        Spacing = True
-        Indent = True
-        { Label25 Label
-          MoveScaled(0,0,46,4)
-          Text = ("This project is a component or a library")
-        }
-        { cmbComponent ComboBox
           MoveScaled(47,0,10,4)
           ReadOnly = True
           List = [("Yes"), ("No")]
@@ -409,33 +399,33 @@
       Border = False
     }
     { HBox18 HBox
-      MoveScaled(1,54,84,6)
+      MoveScaled(1,53,84,6)
       Spacing = True
       Margin = True
       { btnInsertLib Button
-        MoveScaled(0,0,17,4)
+        MoveScaled(1,1,17,4)
         Text = ("&Add...")
         Picture = Picture["icon:/small/add"]
       }
       { btnRemoveLib Button
-        MoveScaled(18,0,17,4)
+        MoveScaled(19,1,17,4)
         Text = ("&Remove")
         Picture = Picture["icon:/small/remove"]
       }
       { btnMoveUpLib Button
-        MoveScaled(35,0,6,4)
+        MoveScaled(37,1,6,4)
         Picture = Picture["icon:/small/up"]
       }
       { btnMoveDownLib Button
-        MoveScaled(41,0,6,4)
+        MoveScaled(44,1,6,4)
         Picture = Picture["icon:/small/down"]
       }
       { Panel2 Panel
-        MoveScaled(59,0,1,4)
+        MoveScaled(56,1,1,4)
         Expand = True
       }
       { btnUndoLib Button
-        MoveScaled(65,0,17,4)
+        MoveScaled(66,1,17,4)
         Text = ("&Reset")
         Picture = Picture["icon:/small/undo"]
       }
@@ -484,12 +474,12 @@
     Index = 0
   }
   { btnOK Button
-    MoveScaled(59,66,16,4)
+    MoveScaled(59,65,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(76,66,16,4)
+    MoveScaled(76,65,16,4)
     Text = ("Cancel")
     Cancel = True
   }

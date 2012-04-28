@@ -1059,7 +1059,7 @@ Public Sub UpdateMenu()
   
   mnuClearDebugWindows.Enabled = Project.Running
   
-  Action["component-property"].Visible = Project.CreateComponent
+  Action["component-property"].Visible = Project.Type <> Project.TYPE_NORMAL
   
 End
 

@@ -26,7 +26,7 @@ AC_DEFUN([GB_INIT_PROJECT],
   COMPONENTS=`cat $1/.project | grep "^Component=" | sed s/"Component="//g`
 
   ## Check if the project is a component
-  COMPONENT_build=`cat $1/.project | grep "^MakeComponent=" | sed s/"MakeComponent="//g`
+  COMPONENT_build=`cat $1/.project | grep "^Type=Component" | sed s/"Type=Component"/1/g`
   AC_SUBST(COMPONENT_build)
 
   AC_MSG_CHECKING(for gambas$(VERSION) binaries)

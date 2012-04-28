@@ -226,6 +226,10 @@ Public Sub Form_Open()
   Dim aClass As String[]
   Dim iInd As Integer
 
+  If Project.Type = Project.TYPE_LIBRARY Then
+    Me.Title = ("Library properties")
+  Endif
+
   ReadComponent
 
   'Me.Title = 

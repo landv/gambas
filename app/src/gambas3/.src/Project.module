@@ -83,7 +83,7 @@ Public FullVersionWithRevision As String
 Public ExecPath As String
 Public SourcePath As String
 Public Language As String
-Public CreateComponent As Boolean
+Public Type As Integer
 Public ComponentState As Integer
 'Public Stack As Integer
 'Public StackTrace As Boolean
@@ -95,6 +95,9 @@ Public Running As Boolean
 
 'Private Recent As New String[]
 'Private RecentDate As New Date[]
+
+' Project type
+Public Enum TYPE_NORMAL, TYPE_LIBRARY, TYPE_COMPONENT
 
 Public Const FORM_MAGIC As String = "# Gambas Form File 3.0"
 Public Const FORM_MAGIC_1 As String = "# Gambas Form File 1.0"
@@ -2874,7 +2877,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   PackageName = ""
   ExecPath = Project.Name & ".gambas"
   SourcePath = ""
-  CreateComponent = False
+  Type = TYPE_NORMAL
   ComponentState = CComponent.STABLE
   CreateShortcut = False
   RunAfterMakingExec = ""
@@ -2968,7 +2971,16 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         RunAfterMakingExec = sVal
 
       Case "makecomponent"
-        CreateComponent = Val(sVal) <> 0
+        Type = If(Val(sVal) <> 0, TYPE_COMPONENT, TYPE_NORMAL)
+        'CreateComponent = Val(sVal) <> 0
+      
+      Case "type"
+        Select LCase(sVal)
+          Case "library"
+            Type = TYPE_LIBRARY
+          Case "component"
+            Type = TYPE_COMPONENT
+        End Select
 
       Case "alphacomponent"
         If Val(sVal) Then ComponentState = CComponent.UNSTABLE
@@ -3182,7 +3194,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   If Project.ReadOnly Then Return
 
-  If CreateComponent
+  If Type
     ' If bMakeShortcut Then
     '   If Project.CreateShortcut Then
     '     InstallComponent
@@ -3238,7 +3250,12 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Not KeepDebugInfo Then Print #hFic, "KeepDebugInfo=0"
   If CreateShortcut Then Print #hFic, "CreateShortcut=1"
   If RunAfterMakingExec Then Print #hFic, "RunAfter="; RunAfterMakingExec
-  If CreateComponent Then Print #hFic, "MakeComponent=1"
+  Select Case Type
+    Case TYPE_LIBRARY
+      Print #hFic, "Type=Library"
+    Case TYPE_COMPONENT
+      Print #hFic, "Type=Component"
+  End Select
   If ControlPublic Then Print #hFic, "ControlPublic=1"
   If ModulePublic Then Print #hFic, "ModulePublic=1"
   If ExecPath <> (Project.Name & ".gambas") Then
@@ -3680,7 +3697,7 @@ Public Function CheckClassName(sName As String, Optional bCheckNotExist As Boole
 
   For iInd = 2 To Len(sName)
     sCar = LCase(Mid$(sName, iInd, 1))
-    If Project.CreateComponent And If InStr(CLASS_AUTH_CAR_COMPONENT, sCar) Then Continue
+    If Project.Type And If InStr(CLASS_AUTH_CAR_COMPONENT, sCar) Then Continue
     If InStr(CLASS_AUTH_CAR & "_", sCar) = 0 Then Goto BAD_CHAR
   Next
 

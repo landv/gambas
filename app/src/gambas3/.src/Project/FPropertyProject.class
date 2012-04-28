@@ -68,7 +68,15 @@ Public Sub Form_Open()
     txtMinor.Value = .MinorVersion
     txtRelease.Value = .ReleaseVersion
     cmbTranslate.Index = If(.Localize, 0, 1)
-    cmbComponent.Index = If(.CreateComponent, 0, 1)
+    cmbType.Index = .Type
+    ' Select Case .Type
+    '   Case .TYPE_NORMAL
+    '     radTypeNormal.Value = True
+    '   Case .TYPE_LIBRARY
+    '     radTypeLibrary.Value = True
+    '   Case .TYPE_COMPONENT
+    '     radTypeComponent.Value = True
+    ' End Select
     $sIcon = .Icon
     UpdateIcon
     txtTabSize.Value = .TabSize
@@ -221,7 +229,15 @@ Private Function DoApply() As Boolean
     Else 
       .Language = ""
     Endif
-    .CreateComponent = cmbComponent.Index = 0
+    
+    .Type = cmbType.Index
+    ' If radTypeNormal.Value Then
+    '   .Type = .TYPE_NORMAL
+    ' Else If radTypeLibrary.Value Then
+    '   .Type = .TYPE_LIBRARY
+    ' Else If radTypeComponent.Value Then
+    '   .Type = .TYPE_COMPONENT
+    ' Endif
 
     If .TabSize <> txtTabSize.Value Then
       bRefreshEditor = True
@@ -237,7 +253,7 @@ Private Function DoApply() As Boolean
   SaveEnvironment
 
   Project.WriteProject
-  If Project.CreateComponent Then FPropertyComponent.UpdateComponent
+  If Project.Type <> Project.TYPE_NORMAL Then FPropertyComponent.UpdateComponent
   Project.MakeDirectoryIcon
   Project.Compile
 

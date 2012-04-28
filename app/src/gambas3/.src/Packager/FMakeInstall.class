@@ -87,7 +87,7 @@ Public Sub Form_Open()
 
   txtLicense.List = ["General Public License", "Freeware", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-Free License"]
   
-  If Project.CreateComponent Then 
+  If Project.Type = Project.TYPE_COMPONENT Then 
     chkPrefix.Value = True
     chkPrefix.Enabled = False
   Endif 
@@ -132,7 +132,7 @@ Private Sub UpdatePackageName()
   Dim sVendor As String
   Dim sText As String
 
-  If Project.CreateComponent Then
+  If Project.Type = Project.TYPE_COMPONENT Then
 
     sVendor = String.LCase(Trim(txtVendor.Text))
     If Not sVendor Then sVendor = "gb"
@@ -291,7 +291,7 @@ Public Sub wizInstall_Close()
   
   If Package.Make() Then Return
   
-  If Message.Warning(("The packages have been successfully created."), ("Close"), ("Retry")) = 2 Then Return
+  If Message.Warning(("The packages have been successfully created."), ("OK"), ("Quit")) = 1 Then Return
   
   Me.Close(True)
 
@@ -382,8 +382,9 @@ Public Sub wizInstall_BeforeChange()
       
       wizInstall[TAB_TEST].Enabled = Project.Systems.Exist("autotools")
       
-      If Project.CreateComponent
+      If Project.Type <> Project.TYPE_NORMAL
         wizInstall[TAB_MENU].Enabled = False
+        wizInstall[TAB_MIME].Enabled = False
       Endif
       
     Case TAB_GROUP

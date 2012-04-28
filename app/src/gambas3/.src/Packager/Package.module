@@ -164,6 +164,7 @@ Public Function Make() As Boolean
   Try Kill sMacro
   Try Move sMacro & ".save" To sMacro
 
+  AddLog("\n" & String(40, "=") & "\n")
   AddLog(("Saving CHANGELOG file."))
   sPath = Project.Dir &/ ".hidden" &/ "CHANGELOG"
   bAdd = Not Exist(sPath)
@@ -512,7 +513,9 @@ End
 
 Private Function MakePackage(sSys As String) As Boolean
 
+  AddLog("\n" & String(40, "=") & "\n")
   AddLog(Subst(("Creating package for &1."), FMakeInstall.GetSystemName(sSys)))
+  AddLog("\n" & String(40, "=") & "\n")
 
   InitMake(sSys)
   
@@ -596,7 +599,7 @@ Private Function MakeDebPackage(sSys As String)
   Try Mkdir sPackagePath &/ "debian"
 
   ' Step 2. Make the desktop file
-  If Not Project.CreateComponent Then
+  If Project.Type = Project.TYPE_NORMAL Then
     AddLog(("Creating desktop file..."))
     hFile = Open sPackagePath &/ "debian/" & $sPackageName & ".desktop" For Create
     PrintDesktopFile(hFile, "/usr/bin/" & $sName & ".gambas", "/usr/share/pixmaps/" & sIcon)
@@ -628,7 +631,7 @@ Private Function MakeDebPackage(sSys As String)
   Close #hFile
     
   'debian/menu
-  If Not Project.CreateComponent Then
+  If Project.Type = Project.TYPE_NORMAL Then
     hFile = Open sPackagePath &/ "debian/menu" For Create 
     Print #hFile, "?package("; $sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
     Print #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
@@ -639,7 +642,7 @@ Private Function MakeDebPackage(sSys As String)
   
   'debian/dirs
   hFile = Open sPackagePath &/ "debian/dirs" For Create
-  If Project.CreateComponent Then
+  If Project.Type <> Project.TYPE_NORMAL Then
     Print #hFile, "usr/share/gambas"; System.Version; "/info\nusr/lib/gambas"; System.Version 
     If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "usr/share/gambas"; System.Version; "/control/"; Shell$($sName)
   Else 
@@ -650,13 +653,15 @@ Private Function MakeDebPackage(sSys As String)
   
   'debian/install
   hFile = Open sPackagePath &/ "debian/install" For Create
-  If Project.CreateComponent Then 
+  If Project.Type = Project.TYPE_COMPONENT Then 
     Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/lib/gambas" & System.Version
     If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
   Else 
     Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/bin"
-    Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
-    Print #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
+    If Project.Type = Project.TYPE_NORMAL Then 
+      Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
+      Print #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
+    Endif
   Endif
   Print #hFile, GetExtraFilesList(sSys, "src/" & $sName & "/.hidden", "&1 &3", True)
   Close #hFile  
@@ -682,12 +687,8 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Package: "; $sPackageName
   Print #hFile, "Architecture: all"
   Print #hFile, "Depends: gambas"; System.Version; "-runtime (>= "; MIN_VERSION; "), gambas"; System.Version; "-runtime (<< "; MAX_VERSION; ")";
-  If Not Project.CreateComponent Then
-    ' For Each sLib In GetDependencies()
-    '   aVer = GetComponentMinMaxVersion(sLib)
-    '   sLib = ComponentToPackageName(sLib)
-    '   Print #hFile, ", "; sLib; " (>= "; aVer[0]; "), "; sLib; " (<< "; aVer[1]; ")";
-    ' Next 
+  
+  If Project.Type <> Project.TYPE_COMPONENT Then
     Print #hFile, GetDependencies();
     Print #hFile, GetExtraDependencies(sSys);
   Endif 
@@ -706,11 +707,14 @@ Private Function MakeDebPackage(sSys As String)
       Print #hFile, " "; Trim(aLine[n])
     Next 
   Endif
-  If Project.CreateComponent Then
-    Print #hFile, " This is a Gambas3 component written in Gambas"
-  Else 
-    Print #hFile, " This program is written in Gambas"
-  Endif 
+  Select Case Project.Type
+    Case Project.TYPE_NORMAL
+      Print #hFile, " This program is written in Gambas"
+    Case Project.TYPE_LIBRARY
+      Print #hFile, " This is a Gambas library"
+    Case Project.TYPE_COMPONENT
+      Print #hFile, " This is a Gambas component written in Gambas"
+  End Select
   Close #hFile
   
   'debian/rules
@@ -728,7 +732,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile 
   Print #hFile, "install: build\n\tdh_testdir\n\tdh_testroot\n\tdh_clean -k\n"
   Print #hFile, "\tdh_installdirs\n" 
-  If Project.CreateComponent Then 
+  If Project.Type = Project.TYPE_COMPONENT Then 
       Print #hFile, "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & $sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sName) & ".component"
       Print #hFile, "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".info " ""
       Print #hFile, "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".list"
@@ -926,15 +930,8 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "Requires: gambas"; System.Version; "-runtime >= "; MIN_VERSION; ",gambas"; System.Version; "-runtime < "; MAX_VERSION;
 
-  If Not Project.CreateComponent Then 
+  If Project.Type <> Project.TYPE_COMPONENT Then 
   
-    ' For Each sLib In GetDependencies()
-    '   aVer = GetComponentMinMaxVersion(sLib)
-    '   sLib = ComponentToPackageName(sLib)
-    '   Print #hFile, ","; sLib; " >= "; aVer[0];
-    '   Print #hFile, ","; sLib; " < "; aVer[1];
-    ' Next
-    
     Print #hFile, GetDependencies();
     Print #hFile, GetExtraDependencies(sSys);
   
@@ -951,7 +948,7 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "\n%setup -q -n " & Shell$($sName)
 
-  If Project.CreateComponent Then
+  If Project.Type = Project.TYPE_COMPONENT Then
 
     ' Components must be installed in Gambas prefix, which is not known at package creation time.
     ' How can we do that? Hardcode installation path according to the distribution?
@@ -988,60 +985,63 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
     Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1", "cp -R --preserve=timestamp .hidden/&1 %{buildroot}/&2/&1")
     
-    sIcon = Shell$($sName) & ".png"
+    If Project.Type = Project.TYPE_NORMAL
+    
+      sIcon = Shell$($sName) & ".png"
+    
+      ' NOTE: There are explicit references to /usr/share.
+      '       I must find a way to use the rpm macros instead.
+    
+      Select Case sSys
+    
+        Case "mandriva", "mageia"
+    
+          Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
+          Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
+          Print #hFile, "install -d %{buildroot}/%{_liconsdir}"
+          Print #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ sIcon
+          Print #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ sIcon
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ sIcon
   
-    ' NOTE: There are explicit references to /usr/share.
-    '       I must find a way to use the rpm macros instead.
-  
-    Select Case sSys
-  
-      Case "mandriva", "mageia"
-  
-        Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
-        Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
-        Print #hFile, "install -d %{buildroot}/%{_liconsdir}"
-        Print #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ sIcon
-        Print #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ sIcon
-        Print #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ sIcon
-  
-        Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-        Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
         
-        PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
         
-        Print #hFile, "EOF"
-  
-        Print #hFile, "\n%post"
-        Print #hFile, "%{update_menus}"
-  
-        Print #hFile, "\n%postun"
-        Print #hFile, "%{clean_menus}"
-  
-      Case "fedora"
-  
-        Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
-        Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-        Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
-  
-        Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
-        
-        PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-RedHat-Extra;")
-        
-        Print #hFile, "EOF"
-  
-      Case "suse"
-  
-        Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
-        Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-        Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
-  
-        Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
-        
-        PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon)
-        
-        Print #hFile, "EOF"
-  
-    End Select
+          Print #hFile, "EOF"
+          Print #hFile, "\n%post"
+          Print #hFile, "%{update_menus}"
+    
+          Print #hFile, "\n%postun"
+          Print #hFile, "%{clean_menus}"
+    
+        Case "fedora"
+    
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+    
+          Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+          
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-RedHat-Extra;")
+          
+          Print #hFile, "EOF"
+    
+        Case "suse"
+    
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+    
+          Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+          
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon)
+          
+          Print #hFile, "EOF"
+          
+      End Select
+      
+    Endif
     
   Endif
 
@@ -1051,7 +1051,7 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "\n%files"
   Print #hFile, "%defattr(-,root,root)"
   
-  If Project.CreateComponent Then
+  If Project.Type = Project.TYPE_COMPONENT Then
   
     Print #hFile, "%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".gambas"
     Print #hfile, "%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"  
@@ -1069,27 +1069,31 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "%{_bindir}" &/ Shell$($sName)
     Print #hFile, GetExtraFilesList(sSys, "", "&2");
   
-    Select Case sSys
-  
-      Case "mandriva", "mageia"
-  
-        Print #hFile, "/%{_miconsdir}" &/ sIcon
-        Print #hFile, "/%{_iconsdir}" &/ sIcon
-        Print #hFile, "/%{_liconsdir}" &/ sIcon
-              'PRINT #hFile, "/%{_menudir}" &/ sName
-        Print #hFile, "/%{_datadir}/applications/%{name}.desktop"
+    If Project.Type = Project.TYPE_NORMAL Then
       
-      Case "fedora"
-  
-        Print #hFile, "%{_datadir}/pixmaps" &/ sIcon
-        Print #hFile, "%{_datadir}/applications/%{name}.desktop"
-  
-      Case "suse"
-  
-        Print #hFile, "%{_datadir}/pixmaps" &/ sIcon
-        Print #hFile, "%{_datadir}/applications/%{name}.desktop"
-  
-    End Select
+      Select Case sSys
+    
+        Case "mandriva", "mageia"
+    
+          Print #hFile, "/%{_miconsdir}" &/ sIcon
+          Print #hFile, "/%{_iconsdir}" &/ sIcon
+          Print #hFile, "/%{_liconsdir}" &/ sIcon
+                'PRINT #hFile, "/%{_menudir}" &/ sName
+          Print #hFile, "/%{_datadir}/applications/%{name}.desktop"
+        
+        Case "fedora"
+    
+          Print #hFile, "%{_datadir}/pixmaps" &/ sIcon
+          Print #hFile, "%{_datadir}/applications/%{name}.desktop"
+    
+        Case "suse"
+    
+          Print #hFile, "%{_datadir}/pixmaps" &/ sIcon
+          Print #hFile, "%{_datadir}/applications/%{name}.desktop"
+    
+      End Select
+      
+    Endif
     
   Endif
 
@@ -1232,7 +1236,7 @@ Private Sub MakeTgzPackage(sSys As String)
   Shell "rm -rf " & Shell(sBuildDir) Wait
   Mkdir sBuildDir
 
-  If Project.CreateComponent Then 
+  If Project.Type = Project.TYPE_COMPONENT Then 
   
     For Each sCmd In ["/usr", "/usr/lib", "/usr/lib/gambas" & System.Version, "/usr/share", "/usr/share/gambas" & System.Version, "/usr/share/gambas" & System.Version & "/info", "/install"]
       Try Mkdir sBuildDir &/ sCmd
@@ -1248,7 +1252,7 @@ Private Sub MakeTgzPackage(sSys As String)
   
   CopyExtraFiles(sSys, sBuildDir)
   
-  If Project.CreateComponent Then 
+  If Project.Type = Project.TYPE_COMPONENT Then 
   
     ' 2. Copy the library, the information files and the controls
   
@@ -1273,25 +1277,29 @@ Private Sub MakeTgzPackage(sSys As String)
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName
       Shell "chmod a+x " & Shell$(sBuildDir &/ "/usr/bin" &/ $sName) Wait
       
-    ' 3. Copy the icon
-  
-    ' IF Project.Icon THEN
-    '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
-    ' ELSE
-    '   hIcon = Image.Load("img/gambas.png")
-    ' ENDIF
-  
-    Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ "/usr/share/pixmaps" &/ Project.Name & ".png")
-  
-    ' 4. Make the desktop file
+    If Project.Type = Project.TYPE_NORMAL Then
+      
+      ' 3. Copy the icon
     
-    sIcon = Shell$($sName) & ".png"
-  
-    hFile = Open sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" For Create
-  
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
-  
-    Close #hFile
+      ' IF Project.Icon THEN
+      '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
+      ' ELSE
+      '   hIcon = Image.Load("img/gambas.png")
+      ' ENDIF
+    
+      Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ "/usr/share/pixmaps" &/ Project.Name & ".png")
+    
+      ' 4. Make the desktop file
+      
+      sIcon = Shell$($sName) & ".png"
+    
+      hFile = Open sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" For Create
+    
+      PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
+    
+      Close #hFile
+      
+    Endif
   
   Endif
   
@@ -1317,15 +1325,8 @@ Private Sub MakeTgzPackage(sSys As String)
   Print #hFile, "gambas"; System.Version; "-runtime >= "; MIN_VERSION
   Print #hFile, "gambas"; System.Version; "-runtime < "; MAX_VERSION
 
-  If Not Project.CreateComponent Then
+  If Project.Type <> Project.TYPE_COMPONENT Then
 
-    ' For Each sLib In GetDependencies()
-    '   aVer = GetComponentMinMaxVersion(sLib)
-    '   sLib = ComponentToPackageName(sLib)
-    '   Print #hFile, sLib; " >= "; aVer[0]
-    '   Print #hFile, sLib; " < "; aVer[1]
-    ' Next
-    
     Print #hFile, GetDependencies();
     Print #hFile, GetExtraDependencies(sSys);
 
@@ -1472,7 +1473,7 @@ Private Function MakeArchPackage(sSys As String)
 
   File.Save(sBuilddir &/ "license.txt", "This program is under : " & Project.License)
   
-  If Not Project.CreateComponent Then
+  If Project.Type = Project.TYPE_NORMAL Then
 
     Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ Project.Name & ".png")
 
@@ -1503,7 +1504,7 @@ Private Function MakeArchPackage(sSys As String)
     Endif
     Print #hFile, "makedepend=('gambas3-devel')"
     Print #hFile, "source=(${_realname}-$pkgver.tar.bz2 license.txt";
-    If Not Project.CreateComponent Then
+    If Project.Type = Project.TYPE_NORMAL Then
       Print #hFile, "\\\n        '" & $sPackageName & ".desktop'";
       Print #hFile, " '" & Project.Name & ".png'";
     Endif 
@@ -1521,7 +1522,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, "package() {"
     Print #hFile, "  cd ${srcdir}/${_realname}"
     Print #hFile, ""
-    If Project.CreateComponent Then 
+    If Project.Type = Project.TYPE_COMPONENT Then 
       Print #hFile, "  install -d ${pkgdir}/usr/lib/gambas" & System.Version
       Print #hFile, "  install -d ${pkgdir}/usr/share/gambas" & System.Version &/ "info"
       Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/lib/gambas" & System.Version
@@ -1539,10 +1540,12 @@ Private Function MakeArchPackage(sSys As String)
     Else  
       Print #hFile, "  install -d ${pkgdir}/usr/bin"
       Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/bin" &/ $sName
-      Print #hFile, "  install -D .." &/ Project.Name & ".png \\"
-      Print #hFile, "    ${pkgdir}/usr/share/pixmaps" &/ Project.Name & ".png"
-      Print #hFile, "  install -D .." &/ $sPackageName & ".desktop \\"
-      Print #hFile, "    ${pkgdir}/usr/share/applications" &/ $sPackageName & ".desktop"
+      If Project.Type = Project.TYPE_NORMAL Then
+        Print #hFile, "  install -D .." &/ Project.Name & ".png \\"
+        Print #hFile, "    ${pkgdir}/usr/share/pixmaps" &/ Project.Name & ".png"
+        Print #hFile, "  install -D .." &/ $sPackageName & ".desktop \\"
+        Print #hFile, "    ${pkgdir}/usr/share/applications" &/ $sPackageName & ".desktop"
+      Endif
     Endif
     Print #hFile, GetExtraFilesDir(sSys, "  install -d ${pkgdir}&1\n");
     Print #hFile, GetExtraFiles(sSys, "  install -p ${srcdir}/${_realname}/.hidden/&1 ${pkgdir}&2/&1", "  cp -R --preserve=timestamp ${srcdir}/${_realname}/.hidden/&1 ${pkgdir}&2/&1");
