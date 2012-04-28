@@ -229,7 +229,7 @@ void SUBR_pow(void)
 		__P0: PARAM->_float.value = 1.0; goto __END;
 		__P2: PARAM->_float.value *= PARAM->_float.value; goto __END;
 		__P3: PARAM->_float.value *= PARAM->_float.value * PARAM->_float.value; goto __END;
-		__P4: PARAM->_float.value *= PARAM->_float.value;PARAM->_float.value *= PARAM->_float.value; goto __END;
+		__P4: PARAM->_float.value = PARAM->_float.value * PARAM->_float.value * PARAM->_float.value * PARAM->_float.value; goto __END;
 		__M1: PARAM->_float.value = 1.0 / PARAM->_float.value; goto __END;
 		__M2: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value; goto __END;
 		__M3: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value; goto __END;

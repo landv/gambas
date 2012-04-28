@@ -163,9 +163,10 @@ static bool read_float(double *result, bool local)
 	bool first_thsep;
 	int c, n;
 
-	uint64_t mantisse;
+	uint64_t mantisse, mantisse_int;
 	int ndigit_frac;
 	bool frac;
+	bool frac_null;
 	bool nozero;
 
 	int nexp;
@@ -183,7 +184,9 @@ static bool read_float(double *result, bool local)
 
 	n = 0;
 	mantisse = 0;
+	mantisse_int = 0;
 	frac = FALSE;
+	frac_null = TRUE;
 	ndigit_frac = 0;
 	nexp = 0;
 	nexp_minus = FALSE;
@@ -197,6 +200,7 @@ static bool read_float(double *result, bool local)
 				break;
 			c = get_char();
 			frac = TRUE;
+			mantisse_int = mantisse;
 		}
 
 		if (local && !frac)
@@ -228,7 +232,14 @@ static bool read_float(double *result, bool local)
 			continue;
 		}
 
-		mantisse = mantisse * 10 + (c - '0');
+		if (c == '0')
+			mantisse *= 10;
+		else
+		{
+			if (frac)
+				frac_null = FALSE;
+			mantisse = mantisse * 10 + (c - '0');
+		}
 		
 		if (frac)
 			ndigit_frac++;
@@ -284,9 +295,13 @@ __END:
 	if (local && first_thsep && ndigit_thsep != 3)
 		return TRUE;
 
-	nexp -= ndigit_frac;
-	*result = ((double)mantisse * pow10(nexp));
+	if (frac_null)
+		mantisse = mantisse_int;
+	else
+		nexp -= ndigit_frac;
 
+	*result = ((double)mantisse * pow10(nexp));
+	
 	return FALSE;
 }
 
