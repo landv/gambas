@@ -31,7 +31,7 @@
 #endif
 
 #ifndef __GBX_MATH_C
-extern const double MATH_pow10[];
+extern const double MATH_pow10_double[];
 #endif
 
 void MATH_init(void);
@@ -46,7 +46,10 @@ float fixf(float x);
 double fix(double x);
 double frexp10(double x, int *exp);
 
-#define pow10(_n) (((_n) >= -10 && (_n) <= 16) ? MATH_pow10[(_n) + 10] : exp10(_n))
+#define pow10(_n) (((_n) >= 0 && (_n) <= 9) ? MATH_pow10_double[_n] : (((_n) < 0 && (_n) >= -9) ? (1.0 / MATH_pow10_double[-(_n)]) : exp10(_n)))
+//#define mulpow10(_v, _n) (((_n) >= 0 && (_n) <= 9) ? ((_v) * MATH_pow10_double[_n]) : (((_n) < 0 && (_n) >= -9) ? ((_v) / MATH_pow10[-(_n)]) : ((_v) * exp10(_n))))
+
+uint64_t pow10_uint64_p(int n);
 
 void randomize(bool set, uint seed);
 double rnd(void);

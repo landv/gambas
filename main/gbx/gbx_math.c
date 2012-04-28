@@ -23,18 +23,17 @@
 
 #define __GBX_MATH_C
 
+#include "gb_common.h"
+
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
 
-#include "gb_common.h"
 #include "gb_hash.h"
 #include "gbx_math.h"
 
-const double MATH_pow10[] = {
-	1E-10, 1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3, 1E-2, 0.1, 1,
-	10, 100, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8, 1E9, 1E10, 1E11, 1E12, 1E13, 1E14, 1E15, 1E16
-};
+const double MATH_pow10_double[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+static const uint _pow10_uint[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
 /* This is a twisted generalized feedback shift register
    that generates pseudo-random numbers.
@@ -142,7 +141,7 @@ double frexp10(double x, int *exp)
 	}
 	
 	p = (int)log10(x);
-	x /= pow(10, p);
+	x /= pow10(p);
 
 	if (x >= 1)
 	{
@@ -225,3 +224,17 @@ void MATH_init(void)
 		
 	HASH_seed = seed;
 }
+
+uint64_t pow10_uint64_p(int n)
+{
+	uint64_t v = 1;
+
+	while (n > 8)
+	{
+		v *= 100000000;
+		n -= 8;
+	}
+	v *= _pow10_uint[n];
+	return v;
+}
+

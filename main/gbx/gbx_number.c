@@ -34,7 +34,7 @@
 #include "gbx_type.h"
 #include "gb_common_buffer.h"
 #include "gbx_local.h"
-
+#include "gbx_math.h"
 #include "gbx_string.h"
 #include "gbx_number.h"
 
@@ -300,7 +300,9 @@ __END:
 	else
 		nexp -= ndigit_frac;
 
-	*result = ((double)mantisse * pow10(nexp));
+	//fprintf(stderr, "%.24g %d\n", (double)mantisse, nexp);
+	//*result = mulpow10((double)mantisse, nexp);
+	*result = (double)mantisse * pow10(nexp);
 	
 	return FALSE;
 }

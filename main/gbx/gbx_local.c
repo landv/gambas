@@ -955,15 +955,18 @@ _FORMAT:
 	if (isfinite(number))
 	{
 		number_mant = frexp10(fabs(number), &number_exp);
-
 		ndigit = after;
 		if (!exposant) ndigit += number_exp;
 		ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
+		//fprintf(stderr, "number_mant = %.24g  number_exp = %d  ndigit = %d\n", number_mant, number_exp, ndigit);
 		
-		power = pow10(ndigit + 1);
+		power = pow10_uint64_p(ndigit + 1);
+		
 		mantisse = number_mant * power;
 		if ((mantisse % 10) >= 5)
 			mantisse += 10;
+		
+		//fprintf(stderr, "-> power = %" PRId64 " mantisse = %" PRId64 "\n", power, mantisse);
 		
 		if (mantisse >= power)
 		{
