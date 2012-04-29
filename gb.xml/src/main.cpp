@@ -10,17 +10,17 @@
 #endif
 
 
-#define PUSH_BACK(car) deststr[j] = car; j++
+#define PUSH_BACK(car) if(car > 0) {deststr[j] = (car); j++;}
 void utf8toWStr(wstring& dest, const string& src){
-    dest.clear();
-    wchar_t *deststr = new wchar_t[src.size()];
-    wchar_t w = 0;
-    int bytes = 0;
-    wchar_t err = L'�';
+    register wchar_t *deststr = new wchar_t[src.size() ];
+    register wchar_t w = 0;
+    register unsigned char bytes = 0;
+    register wchar_t err = L'�';
     register size_t j = 0;
-    register unsigned char c = 0;
-    for (register size_t i = 0; i < src.size(); i++){
-         c = (unsigned char)src[i];
+    register size_t i = 0;
+    register unsigned char c;
+    for (; i < src.size(); i++){
+        c = (unsigned char)src[i];
         if (c <= 0x7f){//first byte
             if (bytes){
                 PUSH_BACK(err);
@@ -33,7 +33,7 @@ void utf8toWStr(wstring& dest, const string& src){
                 w = ((w << 6)|(c & 0x3f));
                 bytes--;
                 if (bytes == 0)
-                     PUSH_BACK(w);
+                     PUSH_BACK(w)
             }
             else
                  PUSH_BACK(err);
@@ -57,7 +57,12 @@ void utf8toWStr(wstring& dest, const string& src){
     }
     if (bytes)
          PUSH_BACK(err);
-    dest = deststr;
+
+    dest.erase();
+    dest.append(deststr, j);
+
+    //std::cout << i << "/" << j << ">" << dest.size() << "/" << src.size() <<endl;
+    delete[] deststr;
 }
 
 #undef PUSH_BACK
@@ -167,7 +172,7 @@ bool isNameStartChar(wstring &s)
     return CAR(":") || INTERCAR("A", "Z") || CAR("_") || INTERCAR("a", "z") || CAR("Ø") ||
             INTER(0xC0, 0xD6) || INTER(0xD8, 0xF6) || INTER(0xF8, 0x2FF) ||
             INTER(0x370, 0x37D) || INTER(0x37F, 0x1FFF) || INTER(0x200C, 0x200D) ||
-            INTER(0x2070, 0x218F) || INTER(0x2C00, 0x2FEF) || INTER(0x3001, 0xD7FF) ||
+            INTER(0x2070, 0x218F) || INTER(0xC200, 0x2FEF) || INTER(0x3001, 0xD7FF) ||
             INTER(0xF900, 0xFDCF) || INTER(0xFDF0, 0xFFFD) || INTER(0x10000, 0xEFFFF);
 
 
