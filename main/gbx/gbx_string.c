@@ -198,11 +198,12 @@ void STRING_free_real(char *ptr)
 	int pool = (size / SIZE_INC) - 1;
 
 	if (STRING_utf8_current == ptr)
+	{
+		//fprintf(stderr, "free STRING_utf8_current (%p)\n", ptr);
 		STRING_utf8_current = NULL;
+	}
 	
 	MEMORY_count--;
-	
-	//fprintf(stderr, "STRING_free_real: %p '%s'\n", ptr, ptr);
 	
 	if (pool < POOL_SIZE)
 	{

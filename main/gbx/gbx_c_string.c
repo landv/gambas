@@ -68,8 +68,9 @@ int STRING_get_utf8_char_length(unsigned char c)
 	return utf8_get_char_length(c);
 }
 
-static int utf8_get_length(const char *str, int len)
+static int utf8_get_length(const char *sstr, int len)
 {
+	const uchar *str = (const uchar *)sstr;
 	int ulen;
 	int i;
 
@@ -84,8 +85,9 @@ static int utf8_get_length(const char *str, int len)
 	return ulen;
 }
 
-static uint utf8_to_unicode(const char *str, int len)
+static uint utf8_to_unicode(const char *sstr, int len)
 {
+	const uchar *str = (const uchar *)sstr;
 	uint unicode;
 	
 	switch (len)
@@ -132,8 +134,10 @@ _INVALID:
 	return UNICODE_INVALID;
 }
 
-static void utf8_from_unicode(uint code, char *str)
+static void utf8_from_unicode(uint code, char *sstr)
 {
+	uchar *str = (uchar *)sstr;
+	
 	if (code < 0x80)
 		str[0] = code;
 	else if (code < 0x800)
@@ -179,19 +183,22 @@ static void utf8_from_unicode(uint code, char *str)
 
 char *STRING_utf8_current = NULL;
 #define UTF8_POS_COUNT 256
-static short _utf8_pos[UTF8_POS_COUNT];
+static ushort _utf8_pos[UTF8_POS_COUNT];
 static int _utf8_last_pos;
 
-static int utf8_get_pos(const char *str, int len, int index)
+static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
 {
+	const uchar *str = (const uchar *)sstr;
 	int i, pos;
 	
 	if (index <= 0)
 		return 0;
 	
-	if (str != STRING_utf8_current)
+	//fprintf(stderr, "utf8_get_pos: %p %d %d '%s'\n", sstr, len, index, sstr);
+	
+	if (ref != STRING_utf8_current || sstr != STRING_utf8_current)
 	{
-		STRING_utf8_current = (char *)str;
+		STRING_utf8_current = (char *)ref;
 		_utf8_last_pos = 0;
 		_utf8_pos[0] = 0;
 	}
@@ -208,8 +215,10 @@ static int utf8_get_pos(const char *str, int len, int index)
 	{
 		if (pos >= len)
 			return len;
+
 		pos += utf8_get_char_length(str[pos]);
 		_utf8_pos[++_utf8_last_pos] = pos;
+
 		if (index == _utf8_last_pos)
 			return pos;
 	}
@@ -218,6 +227,7 @@ static int utf8_get_pos(const char *str, int len, int index)
 	{
 		if (pos >= len)
 			return len;
+
 		pos += utf8_get_char_length(str[pos]);
 	}
 	
@@ -238,18 +248,18 @@ static int byte_to_index(const char *str, int len, int byte)
 	return utf8_get_length(str, byte);
 }
 
-static int index_to_byte(const char *str, int len, int index)
+static int index_to_byte(const char *ref, const char *str, int len, int index)
 {
 	if (index <= 0)
 		return 0;
 
-	return utf8_get_pos(str, len, index - 1) + 1;
+	return utf8_get_pos(ref, str, len, index - 1) + 1;
 }
 
 
 BEGIN_METHOD(String_Pos, GB_STRING str; GB_INTEGER index)
 
-	GB_ReturnInteger(index_to_byte(STRING(str), LENGTH(str), VARG(index)));
+	GB_ReturnInteger(index_to_byte(VARG(str).addr, STRING(str), LENGTH(str), VARG(index)));
 
 END_METHOD
 
@@ -271,6 +281,7 @@ END_METHOD
 static void String_Mid(ushort code)
 {
 	char *str;
+	char *ref;
 	int start, length;
 	int len, ulen, upos;
 	bool null;
@@ -288,10 +299,11 @@ static void String_Mid(ushort code)
 	if (null)
 		goto _SUBR_MID_FIN;
 	
-	str = PARAM->_string.addr + PARAM->_string.start;
+	ref = PARAM->_string.addr;
+	str = ref + PARAM->_string.start;
 	len = PARAM->_string.len;
 	
-	ulen = utf8_get_pos(str, len, start);
+	ulen = utf8_get_pos(ref, str, len, start);
 	if (ulen >= len)
 	{
 		VOID_STRING(PARAM);
@@ -315,10 +327,12 @@ static void String_Mid(ushort code)
 			length += utf8_get_length(str, len) - start;
 		
 		if (length == 1)
+		{
 			ulen = utf8_get_char_length(str[ulen]);
+		}
 		else
 		{
-			upos = utf8_get_pos(str, len, start + length);
+			upos = utf8_get_pos(ref, str, len, start + length);
 			if (upos > len)
 				upos = len;
 			ulen = upos - ulen;
@@ -342,6 +356,7 @@ _SUBR_MID_FIN:
 static void String_Left(ushort code)
 {
 	int val;
+	char *ref;
 	char *str;
 	int len, ulen;
 
@@ -357,13 +372,14 @@ static void String_Left(ushort code)
 			val = PARAM[1]._integer.value;
 		}
 	
-		str = PARAM->_string.addr + PARAM->_string.start;
+		ref = PARAM->_string.addr;
+		str = ref + PARAM->_string.start;
 		len = PARAM->_string.len;
 	
 		if (val < 0)
 			val += utf8_get_length(str, len);
 		
-		ulen = utf8_get_pos(str, len, val);
+		ulen = utf8_get_pos(ref, str, len, val);
 		PARAM->_string.len = ulen;
 	}
 
@@ -376,6 +392,7 @@ static void String_Right(ushort code)
 {
 	int val;
 	char *str;
+	char *ref;
 	int len, ulen;
 
 	SUBR_ENTER();
@@ -390,7 +407,8 @@ static void String_Right(ushort code)
 			val = PARAM[1]._integer.value;
 		}
 	
-		str = PARAM->_string.addr + PARAM->_string.start;
+		ref = PARAM->_string.addr;
+		str = ref + PARAM->_string.start;
 		len = PARAM->_string.len;
 	
 		if (val < 0)
@@ -398,7 +416,7 @@ static void String_Right(ushort code)
 		else
 			val = utf8_get_length(str, len) - val;
 		
-		ulen = utf8_get_pos(str, len, val);
+		ulen = utf8_get_pos(ref, str, len, val);
 		
 		PARAM->_string.start += ulen;
 		PARAM->_string.len -= ulen;
@@ -576,19 +594,19 @@ BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 	
 	str = STRING(str);
 	len = LENGTH(str);
-	pos = utf8_get_pos(str, len, index - 1);
+	pos = utf8_get_pos(VARG(str).addr, str, len, index - 1);
 	lc = utf8_get_char_length(str[pos]);
 	
 	GB_ReturnInteger(utf8_to_unicode(&str[pos], lc));
 	
 END_METHOD
 
-static void string_search(const char *str, int len, const char *pattern, int lenp, int start, bool right, bool nocase)
+static void string_search(const char *str, const char *ref, int len, const char *pattern, int lenp, int start, bool right, bool nocase)
 {
 	int pos;
 
 	if (start)
-		start = index_to_byte(str, len, start);
+		start = index_to_byte(ref, str, len, start);
 
 	if (!nocase)
 	{
@@ -624,13 +642,13 @@ __ERROR:
 
 BEGIN_METHOD(String_Instr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
 
-	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), FALSE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
+	string_search(STRING(str), VARG(str).addr, LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), FALSE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
 
 END_METHOD
 
 BEGIN_METHOD(String_RInstr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
 
-	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), TRUE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
+	string_search(STRING(str), VARG(str).addr, LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), TRUE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
 
 END_METHOD
 
