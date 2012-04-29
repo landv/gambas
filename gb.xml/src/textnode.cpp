@@ -1,5 +1,9 @@
 #include "textnode.h"
 
+GB_CLASS TextNode::ClassName = 0;
+GB_CLASS CommentNode::ClassName = 0;
+GB_CLASS CDATANode::ClassName = 0;
+
 wstring TextNode::Virtual::toString(int indent)
 {
     wstring str, s;
@@ -45,7 +49,7 @@ wstring TextNode::Virtual::toString(int indent)
 
 Node* TextNode::Virtual::cloneNode()
 {
-    TextNode* node = GBI::New<TextNode>("XmlTextNode");
+    TextNode* node = GBI::New<TextNode>();
     node->setTextContent(*(parent->content));
     return node;
 }
@@ -76,7 +80,7 @@ wstring CommentNode::Virtual::toString(int indent)
 
 Node* CommentNode::Virtual::cloneNode()
 {
-    CommentNode* node = GBI::New<CommentNode>("XmlCommentNode");
+    CommentNode* node = GBI::New<CommentNode>();
     node->setTextContent(*(parent->content));
     return node;
 }
@@ -107,7 +111,7 @@ wstring CDATANode::Virtual::toString(int indent)
 
 Node* CDATANode::Virtual::cloneNode()
 {
-    CDATANode* node = GBI::New<CDATANode>("XmlCDATANode");
+    CDATANode* node = GBI::New<CDATANode>();
     node->setTextContent(*(parent->content));
     return node;
 }

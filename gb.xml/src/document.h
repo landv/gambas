@@ -43,6 +43,8 @@ public:
 
     Virtual *virt;
 
+    static GB_CLASS ClassName;
+
 };
 
 

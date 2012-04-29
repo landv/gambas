@@ -2,6 +2,8 @@
 #include "element.h"
 #include "textnode.h"
 
+GB_CLASS Node::ClassName = 0;
+
 //ostream &operator<<( ostream &out, Node &node )
 //{
 //    out << node.toString();

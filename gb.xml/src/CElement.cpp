@@ -15,7 +15,7 @@ THIS->ownerDoc = 0;
 THIS->attributes = new map<wstring, wstring>;
 THIS->parent = 0;
 
-THIS->attributeNode = GBI::New<AttrNode>("_XmlAttrNode");
+THIS->attributeNode = GBI::New<AttrNode>();
 THIS->attributeNode->parent = THIS;
 THIS->attributeNode->virt = new AttrNode::Virtual(THIS->attributeNode);
 THIS->attributeNode->attrName = 0;
@@ -216,7 +216,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_newElement, GB_STRING name; GB_STRING value)
 
-Element *elmt = GBI::New<Element>("XmlElement");
+Element *elmt = GBI::New<Element>();
 elmt->setTagName(STRING(name));
 if(!MISSING(value)) elmt->setTextContent(STRING(value));
 THIS->appendChild(elmt);

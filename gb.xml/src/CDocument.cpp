@@ -29,7 +29,7 @@ if(!MISSING(path))
 }
 else
 {
-Element *root = GBI::New<Element>("XmlElement");
+Element *root = GBI::New<Element>();
 GB.Ref(root);
 root->setTagName(L"xml");
 THIS->setRoot(root);

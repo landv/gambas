@@ -54,6 +54,8 @@ public:
     Element *parent;
     Document *ownerDoc;
     Virtual *virt;
+
+    static GB_CLASS ClassName;
 };
 
 #include "element.h"

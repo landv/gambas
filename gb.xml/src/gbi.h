@@ -54,6 +54,12 @@ namespace GBI
     }
 
     template<typename T>
+    T* New()
+    {
+        return reinterpret_cast<T*>(GB.New(T::ClassName, "", 0));
+    }
+
+    template<typename T>
     void ObjectArray<T>::push_back(T* value)
     {
         *(reinterpret_cast<void **>((GB.Array.Add(this->array)))) = value;
@@ -96,5 +102,25 @@ namespace GBI
     }
 
 }
+
+class fwstring
+{
+public:
+    fwstring();
+    fwstring(char *src, size_t &length);
+    fwstring(fwstring &other);
+    ~fwstring();
+
+
+    wchar_t increment();
+    wchar_t increment(size_t count);
+    void resetCounter();
+
+
+    char *data;
+    size_t len;
+    size_t cur;
+
+};
 
 #endif // GBI_H

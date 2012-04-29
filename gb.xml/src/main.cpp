@@ -11,15 +11,17 @@
 
 
 #define PUSH_BACK(car) if(car > 0) {deststr[j] = (car); j++;}
-void utf8toWStr(wstring& dest, const string& src){
-    register wchar_t *deststr = new wchar_t[src.size() ];
+
+void utf8toWStr(wstring &dest, const char *src, const uint len)
+{
+    register wchar_t *deststr = new wchar_t[len];
     register wchar_t w = 0;
     register unsigned char bytes = 0;
     register wchar_t err = L'�';
     register size_t j = 0;
     register size_t i = 0;
     register unsigned char c;
-    for (; i < src.size(); i++){
+    for (; i < len; i++){
         c = (unsigned char)src[i];
         if (c <= 0x7f){//first byte
             if (bytes){
@@ -65,6 +67,10 @@ void utf8toWStr(wstring& dest, const string& src){
     delete[] deststr;
 }
 
+void utf8toWStr(wstring& dest, const string& src){
+    return utf8toWStr(dest, src.c_str(), src.size());
+}
+
 #undef PUSH_BACK
 
 void wstrToUtf8(string& dest, const wstring& src){
@@ -105,6 +111,13 @@ std::wstring StringToWString(const std::string& str)
 {
     wstring result;
     utf8toWStr(result, str);
+    return result;
+}
+
+std::wstring StringToWString(const char *src, const uint &len)
+{
+    wstring result;
+    utf8toWStr(result, src, len);
     return result;
 }
 
@@ -167,12 +180,16 @@ ostream &operator<<( ostream &out, std::wstring *str )
 
 bool isNameStartChar(wstring &s)
 {
-    register const wchar_t car = (s.at(0));
+    return isNameStartChar(s.at(0));
+}
+bool isNameStartChar(const wchar_t s)
+{
+    register const wchar_t car = s;
 
     return CAR(":") || INTERCAR("A", "Z") || CAR("_") || INTERCAR("a", "z") || CAR("Ø") ||
             INTER(0xC0, 0xD6) || INTER(0xD8, 0xF6) || INTER(0xF8, 0x2FF) ||
             INTER(0x370, 0x37D) || INTER(0x37F, 0x1FFF) || INTER(0x200C, 0x200D) ||
-            INTER(0x2070, 0x218F) || INTER(0xC200, 0x2FEF) || INTER(0x3001, 0xD7FF) ||
+            INTER(0x2070, 0x218F) || INTER(0x2C00, 0x2FEF) || INTER(0x3001, 0xD7FF) ||
             INTER(0xF900, 0xFDCF) || INTER(0xFDF0, 0xFFFD) || INTER(0x10000, 0xEFFFF);
 
 
@@ -184,12 +201,16 @@ bool isNameStartChar(wstring &s)
 
   */
 
-bool isNameChar(wstring &s)
+bool isNameChar(const wchar_t s)
 {
-    register const wchar_t car = (s.at(0));
-
+    register const wchar_t car = s;
     return isNameStartChar(s) || CAR("-") || CAR(".") || INTERCAR("0", "9") ||
             (car == 0xB7) || INTER(0x0300, 0x036F) || INTER(0x203F, 0x2040);
+}
+
+bool isNameChar(wstring &s)
+{
+    return isNameChar(s.at(0));
 }
 
 /* http://www.w3.org/TR/REC-xml/#NT-S
@@ -203,7 +224,7 @@ bool isWhiteSpace(wstring &s)
     return isWhiteSpace(s.at(0));
 }
 
-bool isWhiteSpace(wchar_t &s)
+bool isWhiteSpace(const wchar_t s)
 {
     register const wchar_t car = s;
 
@@ -224,6 +245,14 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
+   // GBI::InitClasses();
+    Element::ClassName = GB.FindClass("XmlElement");
+    TextNode::ClassName = GB.FindClass("XmlTextNode");
+    CommentNode::ClassName = GB.FindClass("XmlCommentNode");
+    CDATANode::ClassName = GB.FindClass("XmlCDATANode");
+    Node::ClassName = GB.FindClass("XmlNode");
+    AttrNode::ClassName = GB.FindClass("_XmlAttrNode");
+    Document::ClassName = GB.FindClass("XmlDocument");
 
   return -1;
 }

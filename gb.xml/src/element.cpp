@@ -1,5 +1,8 @@
 #include "element.h"
 
+GB_CLASS Element::ClassName = 0;
+GB_CLASS AttrNode::ClassName = 0;
+
 bool isLetter(const char *str)
 {
     char s = *str;
@@ -215,7 +218,7 @@ void Element::Virtual::setTextContent(wstring &content)
 
 void Element::appendText(wstring text)
 {
-    TextNode *node = GBI::New<TextNode>("XmlTextNode");
+    TextNode *node = GBI::New<TextNode>();
     node->setTextContent(text);
     appendChild(node);
 }
@@ -230,30 +233,31 @@ void Element::appendFromText(wstring data, bool force)
     delete elements;
 }
 
-inline void increment( wstring::size_type &i, unsigned int &l, unsigned int &c, wstring &s, wstring &data)
+inline void increment( wstring::size_type &i, unsigned int &l, unsigned int &c, wchar_t &s, wstring &data)
 {
-    i++; c++; s = data[i]; if(s == L"\n" || s == L"\r"){l++; c=1;}
+    i++; c++; s = data[i]; if(s == SCHAR_N || s == SCHAR_R){l++; c=1;}
 }
 
 inline void increment( wstring::size_type &i, unsigned int &l, unsigned int &c, wstring &s, wstring &data, wstring::size_type num)
 {
-    for(uint j = 0; j < num; j++)
-    {
-        increment(i, l, c, s, data);
-    }
+
 }
 
 
 
-vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uint l)
+vector<Node*>* Element::fromText(wstring data, wstring::size_type $i, uint $c, uint $l)
 {
     vector<Node*>* elements = new vector<Node*>;
     Element *curElement = 0;
 
-    wstring s, text, tag;
+    wstring text, tag;
+    register wchar_t s = 0;
+    register uint c = $c;
+    register uint l = $l;
+    register wstring::size_type i = $i;
 
-    #define INC increment(i, l, c, s, data)
-    #define INCS(num) increment(i, l, c, s, data, num)
+#define INC {i++; /*c++;*/ s = data[i]; }
+    #define INCS(num) i += num; c += num; s = data[i];
 #define NEAR data.substr(i, Mini<wstring::size_type>(data.length() - i, (80)))
 #undef CLEAR
 #define CLEAR Node *dnode; for(vector<Node*>::iterator it = elements->begin(); it != elements->end(); ++it)\
@@ -264,29 +268,33 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
     #define APPEND(elmt) if(curElement == 0){elements->push_back(elmt);}\
     else {curElement->appendChild(elmt);}
 
+#define continue {INC continue;}
+
     s = data[i];
     //On commence
-    for(; i < data.length(); INC)
+    while(i < data.length())
     {
-        if(s == L"<")//On trouve un début d'élément
+        if(s == CHAR_STARTTAG )//On trouve un début d'élément
         {
             if(text.length() > 0)//On se débarrase du texte
             {
-                TextNode *node = GBI::New<TextNode>("XmlTextNode");
+                TextNode *node = GBI::New<TextNode>();
                 node->setTextContent(text);
                 APPEND(node)
                 text.erase();
             }
 
-            for(INC; i < data.length(); INC) //On cherche le tagName
+            INC
+            while(i < data.length()) //On cherche le tagName
             {
                 if(!isNameChar(s)) break;
                 tag += s;
+                INC
             }
 
             if(tag.length() <= 0)//Il y a quelque chose ...
             {
-                if(s == L"/")//C'est un élément de fin
+                if(s == CHAR_SLASH)//C'est un élément de fin
                 {
                     if(curElement == 0) {i -=2; c-=2; CLEAR throw HTMLParseException(c, l, NEAR, L"Unexpected end tag.");}
                     INC;
@@ -305,12 +313,13 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
                 {
                     INCS(3);
                     wstring comm;
-                    for(; i<data.length(); INC)
+                    while(i<data.length())
                     {
                         if(data.substr(i, 3) == L"-->") break;//Fin du commentaire
                         comm += s;
+                        INC
                     }
-                    CommentNode *comment = GBI::New<CommentNode>("XmlCommentNode");
+                    CommentNode *comment = GBI::New<CommentNode>();
                     comment->setTextContent(comm);
                     APPEND(comment)
                     INCS(2);
@@ -326,7 +335,7 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
                         if(data.substr(i, 3) == L"]]>") break;//Fin du CDATA
                         comm += s;
                     }
-                    CDATANode *comment = GBI::New<CDATANode>("XmlCDATANode");
+                    CDATANode *comment = GBI::New<CDATANode>();
                     comment->setTextContent(comm);
                     APPEND(comment)
                     INCS(2);
@@ -340,15 +349,15 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
             }
 
             //Si tout va bien, on a un nouvel élément
-            Element *elmt = GBI::New<Element>("XmlElement");
+            Element *elmt = GBI::New<Element>();
             elmt->setTagName(tag);
             APPEND(elmt);
             curElement = elmt;
 
             while(i<data.length())//On gère le contenu
             {
-                if(s == L">") break; //Fin de l'élément
-                if(s == L"/") //Élément auto-fermant
+                if(s == CHAR_ENDTAG) break; //Fin de l'élément
+                if(s == CHAR_SLASH) //Élément auto-fermant
                 {
                     INC;
                     curElement = curElement->getParent();//Pas d'enfants, on remonte
@@ -367,7 +376,7 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
 
                     while(i < data.length() && isWhiteSpace(s)) INC;
 
-                    if(s != L"=")
+                    if(s != CHAR_EQUAL)
                     {
                         i -= attr.length();
                         CLEAR
@@ -377,9 +386,9 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
 
                     while(i < data.length() && isWhiteSpace(s)) INC;
 
-                    wstring delimiter = s;
+                    register wchar_t delimiter = s;
 
-                    if(delimiter != L"\"" && delimiter != L"'"){//Pas de délimiteur
+                    if(delimiter != CHAR_DOUBLEQUOTE && delimiter != CHAR_SINGLEQUOTE){//Pas de délimiteur
                         CLEAR
                         throw HTMLParseException(c, l, NEAR,  L"Expected delimiter.");
                     }
@@ -388,7 +397,7 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
 
                     while(i<data.length() && s != delimiter)
                     {
-                        if(s == L"\\")//Échappement
+                        if(s == CHAR_BACKSLASH)//Échappement
                         {
                             INC; //On avance
                             sVal += L"\\";//On garde quand même le backslash
@@ -406,13 +415,13 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
 
 
         }
-        else if(s == L">")//Erreur
+        else if(s == CHAR_ENDTAG)//Erreur
         {
             CLEAR throw HTMLParseException(c, l,NEAR,   L"Unexpected '>'.");
         }
         else//Texte normal
         {
-            if(s == L"&")
+            if(s == CHAR_AND)
             {
                 if(data.substr(i, 5) == L"&amp;")
                 {
@@ -442,8 +451,9 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
             }
             else if(isWhiteSpace(s))
             {
+                if(s == SCHAR_N || s == SCHAR_R){l++; c=1;}
                 if(i > 0)
-                    if(data.at(i-1) == *(L" "))//Deux espaces d'afilée -> on ignore
+                    if(isWhiteSpace(data.at(i-1)))//Deux espaces d'afilée -> on ignore
                         continue;
 
                 text += L" ";
@@ -454,17 +464,19 @@ vector<Node*>* Element::fromText(wstring data, wstring::size_type i, uint c, uin
                 text += s;
             }
         }
+        INC
     }
 
     if(text.length() > 0)//On évacue le texte qui reste à la fin
     {
-        TextNode *node = GBI::New<TextNode>("XmlTextNode");
+        TextNode *node = GBI::New<TextNode>();
         node->setTextContent(text);
         APPEND(node)
     }
 
     return elements;
     #undef APPEND
+#undef continue
 }
 
 GBI::ObjectArray<Element>* Element::getChildrenByAttributeValue(wstring attr, wstring val, int depth)
@@ -749,7 +761,21 @@ bool Element::MatchSubXPathFilter(wstring filter)
 
 Node* Element::Virtual::cloneNode()
 {
-    Element *node = GBI::New<Element>("XmlElement");
+    Element *node = GBI::New<Element>();
     node->setTagName(*(parent->tagName));
     return node;
+}
+
+wstring AttrNode::Virtual::textContent()
+{
+    if((parent->attrName))
+        return parent->parent->getAttribute(*(parent->attrName));
+
+    return L"";
+}
+
+void AttrNode::Virtual::setTextContent(wstring &content)
+{
+    if(parent->attrName)
+        parent->parent->setAttribute(*(parent->attrName), content);
 }

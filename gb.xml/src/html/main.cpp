@@ -15,6 +15,13 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
+    Element::ClassName = GB.FindClass("XmlElement");
+    TextNode::ClassName = GB.FindClass("XmlTextNode");
+    CommentNode::ClassName = GB.FindClass("XmlCommentNode");
+    CDATANode::ClassName = GB.FindClass("XmlCDATANode");
+    Node::ClassName = GB.FindClass("XmlNode");
+    AttrNode::ClassName = GB.FindClass("_XmlAttrNode");
+    Document::ClassName = GB.FindClass("XmlDocument");
   return -1;
 }
 

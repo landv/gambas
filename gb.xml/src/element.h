@@ -47,7 +47,31 @@ bool isLetter(wstring &s);
 bool exist(vector<wstring> vect, wstring elmt);
 bool exist(vector<wstring> *vect, wstring elmt);
 
-class AttrNode;
+class AttrNode : public Node
+{
+public:
+    class Virtual : public Node::Virtual
+    {
+    public:
+        Virtual(AttrNode *node) : Node::Virtual(node), parent(node) {}
+        Virtual(const AttrNode::Virtual &copie) : Node::Virtual(copie.parent), parent(copie.parent) {}
+        AttrNode::Virtual &operator=(const AttrNode::Virtual &copie) {parent = copie.parent; return *this;}
+
+        virtual Node::Type getType() {return Node::Attribute;}
+        virtual wstring toString(int indent = -1){return textContent();}
+        virtual wstring textContent();
+        virtual void setTextContent(wstring &content);
+
+        AttrNode *parent;
+
+    };
+
+    wstring *attrName;
+    void setAttrName(const wstring &name){attrName = new wstring(name);}
+
+    static GB_CLASS ClassName;
+
+};
 
 class Element : public Node
 {
@@ -100,7 +124,7 @@ public:
     void setAttribute(wstring key, wstring value){(*attributes)[key] = value;}
     bool isAttributeSet(wstring key);
 
-    static vector<Node*>* fromText(wstring data, wstring::size_type i = 0, uint c = 1, uint l = 1);
+    static vector<Node*>* fromText(wstring data, wstring::size_type $i = 0, uint $c = 1, uint $l = 1);
 
     GBI::ObjectArray<Element>* getChildElements();
     map<wstring, wstring> *getAttributes() {return attributes;}
@@ -120,34 +144,12 @@ public:
     list<Node*> *children;
     AttrNode *attributeNode;
 
+    static GB_CLASS ClassName;
+
 #ifndef HELEMENT_H
 
 };
 
-class AttrNode : public Node
-{
-public:
-    class Virtual : public Node::Virtual
-    {
-    public:
-        Virtual(AttrNode *node) : Node::Virtual(node), parent(node) {}
-        Virtual(const AttrNode::Virtual &copie) : Node::Virtual(copie.parent), parent(copie.parent) {}
-        AttrNode::Virtual &operator=(const AttrNode::Virtual &copie) {parent = copie.parent; return *this;}
-
-        virtual Node::Type getType() {return Node::Attribute;}
-        virtual wstring toString(int indent = -1){return textContent();}
-        virtual wstring textContent(){if((parent->attrName)) return parent->parent->getAttribute(*(parent->attrName)); return L"";}
-        virtual void setTextContent(wstring &content){if(parent->attrName) parent->parent->setAttribute(*(parent->attrName), content);}
-
-        AttrNode *parent;
-
-    };
-
-    wstring *attrName;
-    void setAttrName(const wstring &name){attrName = new wstring(name);}
-
-
-};
 
 #endif
 

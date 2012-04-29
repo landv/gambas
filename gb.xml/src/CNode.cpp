@@ -139,7 +139,7 @@ END_PROPERTY
 BEGIN_METHOD(CNode_newElement, GB_STRING name; GB_STRING value)
 
 if(!THIS->isElement()) return;
-Element *elmt = GBI::New<Element>("XmlElement");
+Element *elmt = GBI::New<Element>();
 elmt->setTagName(STRING(name));
 if(!MISSING(value)) elmt->setTextContent(STRING(value));
 THIS->toElement()->appendChild(elmt);

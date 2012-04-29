@@ -50,7 +50,7 @@ END_METHOD
 
 BEGIN_METHOD(CExplorer_open, GB_STRING path)
 
-Document *doc = GBI::New<Document>("XmlDocument");
+Document *doc = GBI::New<Document>();
 char *content; int len;
 
 if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len))

@@ -173,7 +173,7 @@ int Reader::ReadChar(wstring car)
         {
             inCommentTag = false;
             UNREF(curNode);
-            curNode = GBI::New<Node>("XmlCommentNode");
+            curNode = GBI::New<Node>();
             GB.Ref(curNode);
         }
     }
@@ -222,7 +222,7 @@ int Reader::ReadChar(wstring car)
         if(inXMLProlog) return 0;
         if(inNewTag && !inEndTag)//On est dans un tag avec contenu -> on crée l'élément
         {
-            Node* newNode = GBI::New<Node>("XmlElement");
+            Node* newNode = GBI::New<Node>();
             inTag = true;
             inNewTag = false;
             UNREF(curNode);
@@ -234,7 +234,7 @@ int Reader::ReadChar(wstring car)
         {
             if(isWhiteSpace(car)) return 0;
             //DEBUG "Nouvel élément texte " << endl;
-            Node* newNode = GBI::New<Node>("XmlTextNode");
+            Node* newNode = GBI::New<Node>();
             if(curNode) 
             { /*if(curNode->isElement()) this->curNode->toElement()->appendChild((newNode));*/
                 GB.Unref(POINTER(&curNode));}

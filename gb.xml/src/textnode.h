@@ -26,6 +26,7 @@ public:
 
 
     wstring *content;
+    static GB_CLASS ClassName;
 };
 
 class CommentNode : public TextNode
@@ -45,6 +46,7 @@ public:
         CommentNode *parent;
 
     };
+    static GB_CLASS ClassName;
 };
 
 
@@ -65,6 +67,7 @@ public:
         CDATANode *parent;
 
     };
+    static GB_CLASS ClassName;
 };
 
 #endif // TEXTNODE_H
