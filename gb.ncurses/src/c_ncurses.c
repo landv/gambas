@@ -60,8 +60,7 @@ void NCURSES_init(void)
 
 void NCURSES_exit()
 {
-	if (_init)
-	{
+	if (_init) {
 		endwin();
 		_init = FALSE;
 	}

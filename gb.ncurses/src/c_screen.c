@@ -39,6 +39,7 @@
 #define INPUT_COOKED	0
 #define INPUT_CBREAK	1
 #define INPUT_RAW	2
+#define INPUT_KEYBOARD	3
 
 static bool _cursor;
 static int _input;
@@ -63,6 +64,9 @@ void nc_sigwinch_handler(int signum)
 }
 #endif
 
+/**
+ * Screen initialisation
+ */
 int SCREEN_init()
 {
 	/* Global variable default setup */
@@ -91,14 +95,12 @@ int SCREEN_init()
 
 BEGIN_PROPERTY(Screen_Cursor)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(_cursor);
 		return;
 	}
 
-	switch (VPROP(GB_INTEGER))
-	{
+	switch (VPROP(GB_INTEGER)) {
 		case CURSOR_HIDDEN:
 			curs_set(0);
 			break;
@@ -115,14 +117,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Input)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(_input);
 		return;
 	}
 
-	switch (VPROP(GB_INTEGER))
-	{
+	switch (VPROP(GB_INTEGER)) {
 		case INPUT_COOKED:
 			noraw();
 			nocbreak();
@@ -132,6 +132,9 @@ BEGIN_PROPERTY(Screen_Input)
 			break;
 		case INPUT_RAW:
 			raw();
+			break;
+		case INPUT_KEYBOARD:
+			/* TODO: implement! */
 			break;
 		default:
 			GB.Error(E_UNSUPP);
@@ -143,15 +146,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Echo)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnBoolean(_echo);
 		return;
 	}
 
 	_echo = VPROP(GB_BOOLEAN);
-	if (_echo) echo();
-	else noecho();
+	if (_echo)
+		echo();
+	else
+		noecho();
 
 END_PROPERTY
 

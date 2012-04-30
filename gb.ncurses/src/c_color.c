@@ -31,18 +31,67 @@
 static int _index;
 static int _color;
 
+/**
+ * Colour initialisation
+ */
 void COLOR_init()
 {
-	/* TODO: use_default_colors() and assume_default_colors() for more control */
 	start_color();
+	use_default_colors();
 }
 
-static int COLOR_setpair(short index, short fg, short bg)
+/**
+ * Initialise a colour pair
+ * @index: colour pair index
+ * @fg: foreground value
+ * @bg: background value
+ */
+int COLOR_setpair(short index, short fg, short bg)
 {
-	init_pair(index, fg, bg);
+	/* FIXME: on my setup, giving -1 doesn't work after
+	   use_default_colors(). It gives no error but does nothing. I
+	   workaround this issue by assuming COLOR_BLACK and COLOR_WHITE as
+	   defaults for back- and foreground respectively */
+	if (fg == -1)
+		fg = COLOR_WHITE;
+	if (bg == -1)
+		bg = COLOR_BLACK;
+
+	if (index)
+		init_pair(index, fg, bg);
+	else
+		assume_default_colors(fg, bg);
 	return 0;
 }
 
+/**
+ * Set either foreground or background of a colour pair
+ * @index: colour pair
+ * @val: colour
+ * @what: SETPAIR_* constant to indicate what should be set
+ */
+int COLOR_setpair_one(short index, short val, int what)
+{
+	short f, b;
+
+	pair_content(index, &f, &b);
+	switch (what) {
+		case SETPAIR_FORE:
+			return COLOR_setpair(index, val, b);
+		case SETPAIR_BACK:
+			return COLOR_setpair(index, f, val);
+	}
+	return -1;
+}
+
+/**
+ * Return the RGB contents of a colour
+ * @color: colour value to examine
+ * @r: pointer to variable to be containing red portion
+ * @g: green
+ * @b: blue
+ * The @r, @g, @b values may be NULL in which case the value is discarded
+ */
 static int COLOR_content(short color, short *r, short *g, short *b)
 {
 	short ar, ag, ab;
@@ -75,8 +124,7 @@ END_PROPERTY
 
 BEGIN_METHOD(Color_get, GB_INTEGER index)
 
-	if (!PAIR_VALID(VARG(index)))
-	{
+	if (!PAIR_VALID(VARG(index))) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
@@ -87,8 +135,7 @@ END_METHOD
 
 BEGIN_METHOD(Color_Define, GB_INTEGER color; GB_INTEGER r; GB_INTEGER g; GB_INTEGER b)
 
-	if (!COLOR_VALID(VARG(color)))
-	{
+	if (!COLOR_VALID(VARG(color))) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
@@ -98,8 +145,7 @@ END_METHOD
 
 BEGIN_METHOD(Color_Content, GB_INTEGER color)
 
-	if (!COLOR_VALID(VARG(color)))
-	{
+	if (!COLOR_VALID(VARG(color))) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
@@ -133,13 +179,11 @@ BEGIN_PROPERTY(ColorPair_Background)
 	short f, b;
 
 	pair_content(_index, &f, &b);
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(b);
 		return;
 	}
-	if (!COLOR_VALID(VPROP(GB_INTEGER)))
-	{
+	if (!COLOR_VALID(VPROP(GB_INTEGER))) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
@@ -154,13 +198,11 @@ BEGIN_PROPERTY(ColorPair_Foreground)
 	short f, b;
 
 	pair_content(_index, &f, &b);
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(f);
 		return;
 	}
-	if (!COLOR_VALID(VPROP(GB_INTEGER)))
-	{
+	if (!COLOR_VALID(VPROP(GB_INTEGER))) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}

@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 
 #include <ncurses.h>
 #include <panel.h>
@@ -34,10 +35,36 @@
 #include "c_window.h"
 #include "c_color.h"
 
+static int Window_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
+static int Window_stream_close(GB_STREAM *stream);
+static int Window_stream_read(GB_STREAM *stream, char *buffer, int len);
+static int Window_stream_getchar(GB_STREAM *stream, char *buffer);
+static int Window_stream_write(GB_STREAM *stream, char *buffer, int len);
+static int Window_stream_seek(GB_STREAM *stream, int64_t pos, int whence);
+static int Window_stream_tell(GB_STREAM *stream, int64_t *pos);
+static int Window_stream_flush(GB_STREAM *stream);
+static int Window_stream_eof(GB_STREAM *stream);
+static int Window_stream_lof(GB_STREAM *stream, int64_t *len);
+static int Window_stream_handle(GB_STREAM *stream);
+
 /* The nc_window currently having the focus (raising Read events) */
 static struct nc_window *focused = NULL;
 
 DECLARE_EVENT(EVENT_Read);
+
+GB_STREAM_DESC WindowStream = {
+	open: Window_stream_open,
+	close: Window_stream_close,
+	read: Window_stream_read,
+	getchar: Window_stream_getchar,
+	write: Window_stream_write,
+	seek: Window_stream_seek,
+	tell: Window_stream_tell,
+	flush: Window_stream_flush,
+	eof: Window_stream_eof,
+	lof: Window_stream_lof,
+	handle: Window_stream_handle
+};
 
 /*
  * C Window interface
@@ -103,20 +130,17 @@ static int WINDOW_get_mem(WINDOW *src, chtype **arrp, int sx, int sy, int len)
 
 	getyx(src, oy, ox);
 	MAKE_COORDS(src, sx, sy);
-	if (BAD_COORDS(src, sx, sy))
-	{
+	if (BAD_COORDS(src, sx, sy)) {
 		GB.Error(E_COORDS);
 		return -1;
 	}
 	len = MinMax(len, 0, (getmaxy(src) - sy) * getmaxx(src) - sx);
 
 	GB.Alloc((void **) arrp, len * sizeof(chtype));
-	for (i = 0; i < len; i++)
-	{
+	for (i = 0; i < len; i++) {
 		ch = mvwinch(src, sy, sx);
 		(*arrp)[i] = ch;
-		if (++sx >= getmaxx(src))
-		{
+		if (++sx >= getmaxx(src)) {
 			sy++;
 			sx = 0;
 		}
@@ -142,8 +166,7 @@ static int WINDOW_put_mem(chtype *arr, WINDOW *dst, int sx, int sy, unsigned int
 	int attrs = getattrs(dst);
 
 	MAKE_COORDS(dst, sx, sy);
-	if (BAD_COORDS(dst, sx, sy))
-	{
+	if (BAD_COORDS(dst, sx, sy)) {
 		GB.Error(E_COORDS);
 		return -1;
 	}
@@ -181,14 +204,12 @@ static int WINDOW_copy_window(WINDOW *src, WINDOW *dst, int sx, int sy, int nx, 
 
 	MAKE_COORDS(src, sx, sy);
 	MAKE_COORDS(dst, dx, dy);
-	if (BAD_COORDS(src, sx, sy) || BAD_COORDS(dst, dx, dy))
-	{
+	if (BAD_COORDS(src, sx, sy) || BAD_COORDS(dst, dx, dy)) {
 		GB.Error(E_COORDS);
 		return -1;
 	}
 	if (BAD_COORDS(src, sx + nx - 1, sy + ny - 1) ||
-	    BAD_COORDS(dst, dx + nx - 1, dy + ny - 1))
-	{
+	    BAD_COORDS(dst, dx + nx - 1, dy + ny - 1)) {
 		GB.Error(E_COORDS);
 		return -1;
 	}
@@ -202,8 +223,7 @@ static int WINDOW_copy_window(WINDOW *src, WINDOW *dst, int sx, int sy, int nx, 
 
 	getyx(dst, oy, ox);
 	wattrset(dst, A_NORMAL);
-	for (i = 0; i < ny; i++)
-	{
+	for (i = 0; i < ny; i++) {
 		if (dy + i >= getmaxy(dst)) break;
 		wmove(dst, dy + i, dx);
 		for (j = 0; j < nx; j++)
@@ -222,8 +242,7 @@ static int WINDOW_copy_window(WINDOW *src, WINDOW *dst, int sx, int sy, int nx, 
 static int WINDOW_remove(void *_object)
 {
 	wclear(THIS->content);
-	if (HAS_BORDER)
-	{
+	if (HAS_BORDER) {
 		delwin(THIS->content);
 		wclear(THIS->main);
 	}
@@ -283,15 +302,12 @@ static int WINDOW_draw_border(void *_object, bool b)
 	/* TODO: how to check for the possibility of displaying ACS chars?
 	   Terminfo exports the 'eacs' variable. Anyone to tell whether I understood the bare
 	   information correctly? */
-	if (b)
-	{
+	if (b) {
 		if (tigetstr("enacs"))
 			box(THIS->main, 0, 0);
 		else
 			wborder(THIS->main, '|', '|', '-', '-', '+', '+', '+', '+');
-	}
-	else
-	{
+	} else {
 		wborder(THIS->main, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
 	}
 	return 0;
@@ -307,14 +323,12 @@ static int WINDOW_draw_border(void *_object, bool b)
 static int WINDOW_cursor_move(void *_object, int x, int y)
 {
 	MAKE_COORDS(THIS->content, x, y);
-	if (BAD_COORDS(THIS->content, x, y))
-	{
+	if (BAD_COORDS(THIS->content, x, y)) {
 		GB.Error(E_COORDS);
 		return -1;
 	}
 
-	if (wmove(THIS->content, y, x) == ERR)
-	{
+	if (wmove(THIS->content, y, x) == ERR) {
 		GB.Error("Could not move cursor");
 		return -1;
 	}
@@ -336,15 +350,13 @@ static int WINDOW_move(void *_object, int x, int y)
 		x = ox;
 	if (y == -1)
 		y = oy;
-	if (BAD_COORDS(stdscr, x, y))
-	{
+	if (BAD_COORDS(stdscr, x, y)) {
 		GB.Error(E_COORDS);
 		return -1;
 	}
 
 	move_panel(THIS->pan, y, x);
-	if (HAS_BORDER)
-	{
+	if (HAS_BORDER) {
 		mvwin(THIS->content, y + 1, x + 1);
 		WINDOW_draw_border(THIS, 1);
 	}
@@ -370,11 +382,9 @@ static int WINDOW_resize(void *_object, int w, int h)
 	if (h == -1)
 		h = oh;
 
-	if (HAS_BORDER)
-	{
+	if (HAS_BORDER) {
 		if ((w + 2) <= 0 || (w + 2) > COLS ||
-		    (h + 2) <= 0 || (h + 2) > LINES)
-		{
+		    (h + 2) <= 0 || (h + 2) > LINES) {
 			GB.Error(E_DIMENSION);
 			return -1;
 		}
@@ -383,8 +393,7 @@ static int WINDOW_resize(void *_object, int w, int h)
 		wresize(THIS->main, h + 2, w + 2);
 	}
 
-	if (w <= 0 || w > COLS || h <= 0 || h > LINES)
-	{
+	if (w <= 0 || w > COLS || h <= 0 || h > LINES) {
 		GB.Error(E_DIMENSION);
 		return -1;
 	}
@@ -412,8 +421,7 @@ static int WINDOW_print(void *_object, char *str, int x, int y)
 	char *p, *q;
 
 	p = str;
-	do
-	{
+	do {
 		if (WINDOW_cursor_move(THIS, x, y) == -1)
 			return -1;
 		width = getmaxx(THIS->content) - x;
@@ -430,120 +438,9 @@ static int WINDOW_print(void *_object, char *str, int x, int y)
 		y++;
 		if (y >= getmaxy(THIS->content))
 			break;
-	}
-	while (*p);
+	} while (*p);
 	return 0;
 }
-
-#if 0 /* Works but a simpler, although more memory intense, solution is ready */
-/**
- * Insert a given string before the cursor position denoted by x,y coordinates shifting what follows
- * this position.
- * @str: string to insert
- * @x: x coordinate
- * @y: y coordinate
- * -1 as coordinate value means to leave the current value set.
- * If wrapping is set for the window, the entire content, which means all lines, are shifted. If wrapping
- * was turned off, only the current line is shifted but not wrapped around if the end is reached.
- * Note that this function calls itself recursively. Regarding the memory usage and recursion end conditions,
- * it is obvious that if this function leads to stack overflow something was seriously screwed up in the earlier
- * call contexts (or the terminal has about 2^penguin gazillion lines).
- */
-int WINDOW_insert(void *_object, char *str, int x, int y)
-{
-	static int ex = 0, ey = 0; /* hold the cursor positions where the inserted text will end */
-	int len, res, a;
-	static char *shifted = NULL; /* we have one buffer that is overwritten by each call */
-	static char *temp = NULL; /* temporary storage to be stored in @shifted */
-	static int rec = 0; /* keeps track of recursion depth to do optimisation */
-
-	/* FIXME: this algorithm really messes up the view when wrapped and e.g. A_REVERSE is set on the window:
-	   it does not preserve the attributes of the formerly present text */
-
-	rec++;
-	if (WINDOW_cursor_move(THIS, x, y) == -1)
-	{
-		res = -1;
-		goto _return;
-	}
-
-	/* we need the real vals, WINDOW_cursor_move() interpreted the -1 values for us */
-	x = getcurx(THIS->content);
-	y = getcury(THIS->content);
-	if (rec == 1) /* first call, initialise all static control data */
-	{
-		XY2A(THIS->content, getmaxx(THIS->content) - 1, getmaxy(THIS->content) - 1, a);
-		a += strlen(str);
-		A2XY(THIS->content, a, ex, ey);
-		/* the text may fill the entire box, so we better catch that and locate the cursor
-		   at the end in that case */
-		if (ey >= getmaxy(THIS->content))
-		{
-			ex = getmaxx(THIS->content) - 1;
-			ey = getmaxy(THIS->content) - 1;
-		}
-	}
-
-	/* if we're on the last line, nothing will be wrapped around at all, so we take this branch.
-	   in this case, the call works exactly like the non-wrapping insert and begins to unroll the
-	   recursion. */
-	if (!THIS->wrap || y == getmaxy(THIS->content) - 1)
-	{
-		mvwinsstr(THIS->content, y, x, str);
-	}
-	else
-	{
-		len = strlen(str);
-		if (rec == 1)
-		{
-			if (!(shifted = malloc(len + 1)) || !(temp = malloc(len + 1)))
-			{
-				GB.Error("Could not allocate memory");
-				res = -1;
-				goto _return;
-			}
-		}
-		/* if the @str itself overflows the line, there will be a remainder of
-		   it that has to preceed the shifted string to be wrapped to the next line */
-		if (x + len > getmaxx(THIS->content))
-		{
-			len = getmaxx(THIS->content) - x;
-			strcpy(temp, str + len);
-			winstr(THIS->content, temp + strlen(temp));
-		}
-		else
-		{
-			/* remainder on the right (giving a negative @n to winnstr() family seems broken
-			   in my library and may be elsewhere (manpages say it's an extension to XSI curses) */
-			mvwinstr(THIS->content, y, getmaxx(THIS->content) - len, temp);
-		}
-		/* the winnstr() family of functions used to extract shifted characters moves the cursor, we have
-		   to reset it here (would have been nice to leave that fact in the manpages...) */
-		mvwinsstr(THIS->content, y, x, str);
-		strcpy(shifted, temp);
-		WINDOW_insert(THIS, shifted, 0, y + 1);
-	}
-
-	res = 0;
-	_return:
-	if (!--rec)
-	{
-		WINDOW_cursor_move(THIS, ex, ey);
-		REFRESH();
-		if (shifted)
-		{
-			free(shifted);
-			shifted = NULL;
-		}
-		if (temp)
-		{
-			free(temp);
-			temp = NULL;
-		}
-	}
-	return res;
-}
-#endif
 
 /**
  * Insert a given string before the cursor position denoted by x,y and shift what follows it
@@ -561,8 +458,7 @@ static int WINDOW_insert(void *_object, char *str, int x, int y)
 
 	if (WINDOW_cursor_move(THIS, x, y) == -1)
 		return -1;
-	if (!THIS->wrap)
-	{
+	if (!THIS->wrap) {
 		winsstr(THIS->content, str);
 		return 0;
 	}
@@ -630,24 +526,25 @@ static int WINDOW_key_timeout(void *_object, int timeout, int *ret)
 	/* wtimeout() and wgetch() cause ncurses, for whatever reason, to mess up the panel
 	   layout: the particular window gets risen to the top of everything. Consequently
 	   I use the stdscr here which appears to not suffer from this. */
-	timeout(timeout);
+	if (timeout >= 0)
+		timeout(timeout);
 	*ret = getch();
-	if (*ret == ERR)
-	{
+	if (*ret == ERR) {
 		/* Had a timeout, the manual doesn't define any errors to happen for wgetch()
 		   besides NULL pointer arguments. The only source of ERR is timeout expired. */
 		if (timeout >= 0)
 			*ret = 0;
 	}
 
-	timeout(-1);
+	if (timeout >= 0)
+		timeout(-1);
 	return 0;
 }
 
 /**
- * Flush the input queue
+ * Drain the input queue
  */
-static void WINDOW_flush()
+static void WINDOW_drain()
 {
 	flushinp();
 }
@@ -751,16 +648,17 @@ static int WINDOW_import(void *_object, WINDOW *imp)
  */
 static int WINDOW_attrs_driver(void *_object, int attr, int req)
 {
-	switch (req)
-	{
+	switch (req) {
 		case ATTR_DRV_RET:
 			return getattrs(THIS->content);
-		case ATTR_DRV_COL:
 		case ATTR_DRV_ON:
 			wattron(THIS->content, attr);
 			break;
 		case ATTR_DRV_OFF:
 			wattroff(THIS->content, attr);
+			break;
+		case ATTR_DRV_COL:
+			wbkgd(THIS->content, attr | ' ');
 	}
 	return 0;
 }
@@ -786,8 +684,7 @@ static int WINDOW_char_attrs_driver(void *_object, int attr, int x, int y, int r
 	getyx(THIS->content, oy, ox);
 	WINDOW_cursor_move(THIS, x, y);
 	ch = winch(THIS->content);
-	switch (req)
-	{
+	switch (req) {
 		case ATTR_DRV_RET:
 			res = ch & A_ATTRIBUTES;
 			goto _cleanup;
@@ -808,18 +705,114 @@ static int WINDOW_char_attrs_driver(void *_object, int attr, int x, int y, int r
 }
 
 /*
+ * Window stream functions
+ */
+
+static int Window_stream_open(GB_STREAM *stream, const char *path, int mode, void *data)
+{
+	return -1;
+}
+
+static int Window_stream_close(GB_STREAM *stream)
+{
+	return -1;
+}
+
+static int Window_stream_read(GB_STREAM *stream, char *buffer, int len)
+{
+	STREAM_PROLOGUE();
+	int key, res;
+
+	/* We only support reading Byte or Integer. */
+	switch (len) {
+		case sizeof(char):
+			return Window_stream_getchar(stream, buffer);
+		case sizeof(int):
+			res = WINDOW_key_timeout(THIS, -1, &key);
+			*((int *) buffer) = key;
+			return res;
+		default:
+			return -1;
+	}
+}
+
+static int Window_stream_getchar(GB_STREAM *stream, char *buffer)
+{
+	STREAM_PROLOGUE();
+	int key, res;
+
+	res = WINDOW_key_timeout(THIS, -1, &key);
+	*buffer = (char) key;
+	return res;
+}
+
+static int Window_stream_write(GB_STREAM *stream, char *buffer, int len)
+{
+	STREAM_PROLOGUE();
+
+	/* However, we terminate at the first NUL byte */
+	return WINDOW_print(THIS, buffer, -1, -1);
+}
+
+static int Window_stream_seek(GB_STREAM *steram, int64_t pos, int whence)
+{
+	return -1;
+}
+
+static int Window_stream_tell(GB_STREAM *stream, int64_t *pos)
+{
+	return -1;
+}
+
+static int Window_stream_flush(GB_STREAM *stream)
+{
+	REAL_REFRESH();
+	return 0;
+}
+
+static int Window_stream_eof(GB_STREAM *stream)
+{
+	int n;
+
+	/* Safest method */
+	if (ioctl(0, TIOCINQ, &n) == -1)
+		return -1;
+	return n ? 1 : 0;
+}
+
+static int Window_stream_lof(GB_STREAM *stream, int64_t *len)
+{
+	return ioctl(0, TIOCINQ, len);
+}
+
+static int Window_stream_handle(GB_STREAM *stream)
+{
+	/* There's no clear 'handle', we operate on stdin or stdout depending on context */
+	return -1;
+}
+
+/*
  * Window class
  */
 
-BEGIN_PROPERTY(Window_Attrs)
-
-	RETURN_SELF();
-
-END_PROPERTY
-
 BEGIN_PROPERTY(Window_Background)
 
-	;
+	short pair;
+	short f, b;
+
+	pair = PAIR_NUMBER(getbkgd(THIS->content));
+	pair_content(pair, &f, &b);
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(b);
+		return;
+	}
+	b = VPROP(GB_INTEGER);
+	if (!COLOR_VALID(b)) {
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+	COLOR_setpair(pair, f, b);
+	wbkgd(THIS->content, COLOR_PAIR(pair) | ' ');
 
 END_PROPERTY
 
@@ -828,8 +821,7 @@ BEGIN_PROPERTY(Window_Border)
 	bool b;
 	int x, y, w, h;
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnBoolean(THIS->border);
 		return;
 	}
@@ -839,17 +831,14 @@ BEGIN_PROPERTY(Window_Border)
 	if (b == THIS->border)
 		return;
 
-	if (b)
-	{
+	if (b) {
 		WINDOW_resize(THIS, (w = getmaxx(THIS->main) + 2) > COLS ? getmaxx(THIS->main) : w,
 			(h = getmaxy(THIS->main) + 2) > LINES ? getmaxy(THIS->main) : h);
 		WINDOW_move(THIS, (x = getbegx(THIS->main) - 1) < 0 ? 0 : x,
 		                     (y = getbegy(THIS->main) - 1) < 0 ? 0 : y);
 		WINDOW_add_content(THIS);
 		WINDOW_draw_border(THIS, 1);
-	}
-	else
-	{
+	} else {
 		WINDOW_draw_border(THIS, 0);
 		/* as long as we have control over the area taken up (before resize), we shall erase
 		   the whole border */
@@ -868,8 +857,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_Buffered)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnBoolean(THIS->buffered);
 		return;
 	}
@@ -891,8 +879,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_CursorX)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(getcurx(THIS->content));
 		return;
 	}
@@ -903,8 +890,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_CursorY)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(getcury(THIS->content));
 		return;
 	}
@@ -915,14 +901,28 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_Foreground)
 
-	;
+	short pair;
+	short f, b;
+
+	pair = PAIR_NUMBER(getbkgd(THIS->content));
+	pair_content(pair, &f, &b);
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(f);
+		return;
+	}
+	f = VPROP(GB_INTEGER);
+	if (!COLOR_VALID(f)) {
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+	COLOR_setpair(pair, f, b);
+	wbkgd(THIS->content, COLOR_PAIR(pair) | ' ');
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Window_Height)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(getmaxy(THIS->content));
 		return;
 	}
@@ -934,8 +934,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Window_Wrap)
 
 	/* This property only affects subsequent prints */
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnBoolean(THIS->wrap);
 		return;
 	}
@@ -945,8 +944,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_Width)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(getmaxx(THIS->content));
 		return;
 	}
@@ -957,8 +955,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_X)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(getbegx(THIS->main));
 		return;
 	}
@@ -969,8 +966,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_Y)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(getbegy(THIS->main));
 		return;
 	}
@@ -983,8 +979,7 @@ BEGIN_METHOD(Window_new, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	WINDOW *new;
 
-	if (!NCURSES_RUNNING)
-	{
+	if (!NCURSES_RUNNING) {
 		GB.Error("Not in NCurses mode");
 		return;
 	}
@@ -995,6 +990,9 @@ BEGIN_METHOD(Window_new, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 	if (!GB.Parent(_object))
 		GB.Attach(THIS, (void *) GB.Application.StartupClass(), "Window");
 
+	THIS->stream.desc = &WindowStream;
+	THIS->stream.tag = THIS;
+
 	REFRESH();
 
 END_METHOD
@@ -1002,8 +1000,10 @@ END_METHOD
 BEGIN_METHOD_VOID(Window_free)
 
 	WINDOW_remove(THIS);
-	if (focused == THIS)
+	if (focused == THIS) {
 		GB.Watch(0, GB_WATCH_NONE, NULL, 0);
+		focused = NULL;
+	}
 	GB.Detach(THIS);
 	/* the REFRESH() makes use of THIS so it would be unwise to call that
 	   since we just invalidated it */
@@ -1033,15 +1033,13 @@ BEGIN_METHOD(Window_Ask, GB_STRING opts; GB_INTEGER tries)
 
 	o = STRING(opts);
 
-	while (miss || t--)
-	{
+	while (miss || t--) {
 		ch = getch();
 		/* Per convention, only dealing with byte chars */
 		if (ch > 255)
 			continue;
 		*c = (char) ch;
-		if (strchr(o, *c))
-		{
+		if (strchr(o, *c)) {
 			c[1] = 0;
 			GB.ReturnNewZeroString(c);
 			return;
@@ -1067,9 +1065,9 @@ BEGIN_METHOD_VOID(Window_Cls)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(Window_Flush)
+BEGIN_METHOD_VOID(Window_Drain)
 
-	WINDOW_flush();
+	WINDOW_drain();
 
 END_METHOD
 
@@ -1124,8 +1122,7 @@ BEGIN_METHOD(Window_DrawHLine, GB_INTEGER x; GB_INTEGER y; GB_INTEGER len; GB_ST
 
 	gx = VARG(x);
 	gy = VARG(y);
-	for (i = 0; i < t; i++)
-	{
+	for (i = 0; i < t; i++) {
 		WINDOW_cursor_move(THIS, gx, gy);
 		whline(THIS->content, c, length);
 		gy++;
@@ -1170,23 +1167,18 @@ BEGIN_METHOD(Window_PrintCenter, GB_STRING text)
 	char *p, *q;
 
 	p = STRING(text);
-	while ((q = strchr(p, '\n')))
-	{
+	while ((q = strchr(p, '\n'))) {
 		lines++;
 		p = q + 1;
 	}
 
 	p = STRING(text);
 	y = (getmaxy(THIS->content) - lines) / 2;
-	while (lines--)
-	{
-		if (!lines)
-		{
+	while (lines--) {
+		if (!lines) {
 			x = (getmaxx(THIS->content) - strlen(p)) / 2;
 			WINDOW_print(THIS, p, x, y);
-		}
-		else
-		{
+		} else {
 			q = strchr(p, '\n');
 			*q = 0;
 			x = (getmaxx(THIS->content) - (q - p)) / 2;
@@ -1250,8 +1242,7 @@ BEGIN_METHOD(Window_DrawVLine, GB_INTEGER x; GB_INTEGER y; GB_INTEGER len; GB_ST
 
 	gx = VARG(x);
 	gy = VARG(y);
-	for (i = 0; i < t; i++)
-	{
+	for (i = 0; i < t; i++) {
 		WINDOW_cursor_move(THIS, gx, gy);
 		wvline(THIS->content, c, length);
 		gx++;
@@ -1282,7 +1273,7 @@ END_METHOD
 
 BEGIN_PROPERTY(WindowAttrs_Normal)
 
-	/* normal is special because it turns off all other attributes and can't itself been turned off */
+	/* Normal is special because it turns off all other attributes and can't itself been turned off */
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(getattrs(THIS->content) == A_NORMAL);
 	if (VPROP(GB_BOOLEAN))
@@ -1318,14 +1309,12 @@ BEGIN_PROPERTY(WindowAttrs_Color)
 
 	short pair;
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnInteger(PAIR_NUMBER(getattrs(THIS->content)));
 		return;
 	}
 	pair = VPROP(GB_INTEGER);
-	if (!PAIR_VALID(pair))
-	{
+	if (!PAIR_VALID(pair)) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
@@ -1339,8 +1328,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CharAttrs_Normal)
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		GB.ReturnBoolean(!WINDOW_char_attrs_driver(THIS, A_NORMAL,
 			THIS->pos.col, THIS->pos.line, ATTR_DRV_RET));
 		return;
@@ -1381,16 +1369,14 @@ BEGIN_PROPERTY(CharAttrs_Color)
 
 	short pair;
 
-	if (READ_PROPERTY)
-	{
+	if (READ_PROPERTY) {
 		pair = PAIR_NUMBER(WINDOW_char_attrs_driver(THIS, 0,
 			THIS->pos.col, THIS->pos.line, ATTR_DRV_RET));
 		GB.ReturnInteger(pair);
 		return;
 	}
 	pair = VPROP(GB_INTEGER);
-	if (!PAIR_VALID(pair))
-	{
+	if (!PAIR_VALID(pair)) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
@@ -1405,6 +1391,7 @@ END_PROPERTY
 GB_DESC CWindowDesc[] =
 {
 	GB_DECLARE("Window", sizeof(struct nc_window)),
+	GB_INHERITS("Stream"),
 	GB_AUTO_CREATABLE(),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
@@ -1413,7 +1400,7 @@ GB_DESC CWindowDesc[] =
 	GB_CONSTANT("NoTimeout", "i", TIMEOUT_NOTIMEOUT),
 
 	/* Properties */
-	GB_PROPERTY_READ("Attributes", ".Window.Attrs", Window_Attrs),
+	GB_PROPERTY_SELF("Attributes", ".Window.Attrs"),
 
 	GB_PROPERTY("Background", "i", Window_Background),
 	GB_PROPERTY("Paper", "i", Window_Background),
@@ -1425,7 +1412,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY_READ("ContainerHeight", "i", Window_ContainerHeight),
 	GB_PROPERTY_READ("ContainerH", "i", Window_ContainerHeight),
 	GB_PROPERTY_READ("ContainerWidth", "i", Window_ContainerWidth),
-	GB_PROPERTY_READ("ComtainerW", "i", Window_ContainerWidth),
+	GB_PROPERTY_READ("ContainerW", "i", Window_ContainerWidth),
 
 	GB_PROPERTY("CursorX", "i", Window_CursorX),
 	GB_PROPERTY("CursorY", "i", Window_CursorY),
@@ -1456,7 +1443,7 @@ GB_DESC CWindowDesc[] =
 
 	GB_METHOD("Cls", NULL, Window_Cls, NULL),
 
-	GB_METHOD("Flush", NULL, Window_Flush, NULL),
+	GB_METHOD("Drain", NULL, Window_Drain, NULL),
 
 	GB_METHOD("Full", NULL, Window_Full, NULL),
 

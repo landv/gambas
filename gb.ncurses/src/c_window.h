@@ -43,20 +43,20 @@
 
 /* Translate linear (absolute) memory addresses and x,y coordinates into each other
    most useful when wrapping is needed. */
-#define A2XY(win, a, x, y)	{ \
+#define A2XY(win, a, x, y)	do { \
 					(x) = (a) % getmaxx(win); \
 					(y) = (a) / getmaxx(win); \
-				}
-#define XY2A(win, x, y, a)	{ \
+				} while (0)
+#define XY2A(win, x, y, a)	do { \
 					(a) = (y) * getmaxx(win) + (x); \
-				}
+				} while (0)
 /* Interpret the -1 values in coordinates as to insert the current cursor position */
-#define MAKE_COORDS(win, x, y)	{ \
+#define MAKE_COORDS(win, x, y)	do { \
 					if ((x) == -1) \
 						x = getcurx(win); \
 					if ((y) == -1) \
 						y = getcury(win); \
-				}
+				} while (0)
 /* Check for out-of-range coordinates */
 #define BAD_COORDS(win, x, y)	((x) < 0 || (x) >= getmaxx(win) || \
 				 (y) < 0 || (y) >= getmaxy(win))
@@ -76,7 +76,7 @@ enum
 	ATTR_DRV_COL
 };
 
-#define WIN_ATTR_METHOD(b, a)	{ \
+#define WIN_ATTR_METHOD(b, a)	do { \
 					if (READ_PROPERTY) \
 						GB.ReturnBoolean(WINDOW_attrs_driver( \
 							THIS, (a), ATTR_DRV_RET) \
@@ -84,13 +84,13 @@ enum
 					else \
 						WINDOW_attrs_driver(THIS, (a), \
 							(b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
-				}
-#define WIN_ATTR_METHOD_BOOL(a)		WIN_ATTR_METHOD(VPROP(GB_BOOLEAN), a);
+				} while (0)
+#define WIN_ATTR_METHOD_BOOL(a)		WIN_ATTR_METHOD(VPROP(GB_BOOLEAN), a)
 /* Notice the wtouchln() line in the following macro. It seems that a chgat() from
    nc_window_char_attrs_driver() doesn't mark anything dirty (no output on screen from
    a REFRESH()). So to make the new attribute available immidiately, we touch the affected
    line manually. A higher-callstack function may call REFRESH() to get output. */
-#define CHAR_ATTR_METHOD(b, a)	{ \
+#define CHAR_ATTR_METHOD(b, a)	do { \
 					if (READ_PROPERTY) \
 						GB.ReturnBoolean(WINDOW_char_attrs_driver( \
 							THIS, (a), THIS->pos.col, THIS->pos.line, \
@@ -99,16 +99,16 @@ enum
 						WINDOW_char_attrs_driver(THIS, (a), THIS->pos.col, \
 							THIS->pos.line, (b) ? ATTR_DRV_ON : ATTR_DRV_OFF); \
 					wtouchln(THIS->main, THIS->pos.line + (HAS_BORDER ? 1 : 0), 1, 1); \
-				}
-#define CHAR_ATTR_METHOD_BOOL(a)	CHAR_ATTR_METHOD(VPROP(GB_BOOLEAN), a);
+				} while(0)
+#define CHAR_ATTR_METHOD_BOOL(a)	CHAR_ATTR_METHOD(VPROP(GB_BOOLEAN), a)
+
+#define STREAM_PROLOGUE()		void *_object = stream->tag
 
 //TODO: [-] Stream
-
-typedef struct nc_window
-{
+//	[-] background/foreground colors
+typedef struct nc_window {
 	GB_BASE ob;
-	GB_STREAM stream;	/* Gambas stream structure to enable Print #Window, Expr and other stream-related
-				   syntaxes */
+	GB_STREAM stream;	/* Gambas stream structure to enable stream-related syntaxes */
 	WINDOW *main;		/* The main window. */
 	WINDOW *content;	/* This window is used for all content-related operations. Its purpose is turning
 				   the ncurses window borders which are inner-window to outer-window ones thus
@@ -119,8 +119,7 @@ typedef struct nc_window
 	bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
 	bool buffered;		/* Whether the output via REFRESH() macro shall be buffered (only a call to
 				   Window.Refresh() will then produce any output) */
-	struct			/* This structure is used to pass a line and a column number to virtual objects */
-	{
+	struct {		/* This structure is used to pass a line and a column number to virtual objects */
 		int line;
 		int col;
 	} pos;
@@ -130,6 +129,7 @@ typedef struct nc_window
 extern GB_DESC CWindowDesc[];
 extern GB_DESC CWindowAttrsDesc[];
 extern GB_DESC CCharAttrsDesc[];
+extern GB_STREAM_DESC WindowStream;
 #endif
 
 #define WINDOW_main_to_content()	WINDOW_copy_window(THIS->main, THIS->content, 0, 0, \
