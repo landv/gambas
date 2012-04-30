@@ -43,6 +43,7 @@ Private Sub Count_Write(Value As Integer)
   If Error Then Error.Raise("Bad argument")
   
   If Value > iOldCount Then
+    If GetView().AutoResize And If iOldCount Then $aColumns[iOldCount - 1]._W = 0
     For I = iOldCount To Value - 1
       $aColumns[I] = New _GridView_Column As "Column"
       $aColumns[I]._Column = I
