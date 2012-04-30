@@ -26,7 +26,7 @@ Public Sub Form_Open()
   ' Else
   '   chkShortcut.Text = ("Create a shortcut on the desktop")
   ' Endif
-  chkShortcut.Visible = Project.Type = Project.PROJECT_NORMAL
+  chkShortcut.Visible = Project.Type = Project.TYPE_NORMAL
   txtCommand.Text = Project.RunAfterMakingExec
   
   panExtension.Reparent(fchExec.Extension)
