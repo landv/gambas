@@ -46,7 +46,7 @@ static MEDIA_TYPE _types[] =
 	{ NULL, NULL }
 };
 
-DECLARE_EVENT(EVENT_Ready);
+//DECLARE_EVENT(EVENT_Ready);
 
 /*static void cb_realized(GstElement *element, CMEDIACONTROL *_object)
 {
@@ -107,6 +107,9 @@ BEGIN_METHOD(MediaControl_new, GB_STRING type; GB_OBJECT parent)
 	else
 		type = GB.ToZeroString(ARG(type));
 	
+	THIS->state = GST_STATE_NULL;
+	THIS->type = GB.NewZeroString(type);
+	
 	ELEMENT = gst_element_factory_make(type, NULL);
 	if (!ELEMENT)
 	{
@@ -115,6 +118,7 @@ BEGIN_METHOD(MediaControl_new, GB_STRING type; GB_OBJECT parent)
 	}
 	
 	gst_object_ref(GST_OBJECT(ELEMENT));
+	g_object_set_data(G_OBJECT(ELEMENT), "gambas-control", THIS);
 	
 	parent = VARGOPT(parent, NULL);
 	if (parent)
@@ -135,12 +139,14 @@ BEGIN_METHOD_VOID(MediaControl_free)
 	
 	if (ELEMENT)
 		gst_object_unref(GST_OBJECT(ELEMENT));
+	
+	GB.FreeString(&THIS->type);
 
 END_METHOD
 
 BEGIN_PROPERTY(MediaControl_Type)
 
-	GB.ReturnNewZeroString(gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
+	GB.ReturnString(THIS->type); //NewZeroString(gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
 	
 END_PROPERTY
 
@@ -153,33 +159,41 @@ BEGIN_PROPERTY(MediaControl_Name)
 
 END_PROPERTY
 
+static bool set_state(void *_object, int state)
+{
+	GstStateChangeReturn status;
+
+	status = gst_element_set_state(ELEMENT, state);
+	
+	if (status == GST_STATE_CHANGE_ASYNC)
+		status = gst_element_get_state(ELEMENT, NULL, NULL, GST_SECOND * 3);
+	
+	if (status == GST_STATE_CHANGE_FAILURE)
+	{
+		GB.Error("Cannot set status");
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
 BEGIN_PROPERTY(MediaControl_State)
 
-	GstStateChangeReturn status;
-	
 	if (READ_PROPERTY)
 	{
-		GstState state;
+		GB.ReturnInteger(THIS->state);
+		/*GstState state;
 		
 		status = gst_element_get_state(ELEMENT, &state, NULL, GST_SECOND * 3);
 		
 		if (status != GST_STATE_CHANGE_SUCCESS)
 			GB.ReturnInteger(-1);
 		else
-			GB.ReturnInteger(state);
+			GB.ReturnInteger(state);*/
 	}
 	else
 	{
-		status = gst_element_set_state(ELEMENT, VPROP(GB_INTEGER));
-		
-		if (status == GST_STATE_CHANGE_ASYNC)
-			status = gst_element_get_state(ELEMENT, NULL, NULL, GST_SECOND * 3);
-		
-		if (status == GST_STATE_CHANGE_FAILURE)
-		{
-			GB.Error("Cannot set status");
-			return;
-		}
+		set_state(THIS, VPROP(GB_INTEGER));
 	}
 
 END_PROPERTY
@@ -320,28 +334,39 @@ DECLARE_EVENT(EVENT_State);
 DECLARE_EVENT(EVENT_Duration);
 DECLARE_EVENT(EVENT_Progress);
 
-static int cb_media(CMEDIAPIPELINE *_object)
+static int cb_message(CMEDIAPIPELINE *_object)
 {
 	GstMessage *msg;
 	GstMessageType type;
 	int msg_type;
 	GstBus *bus;
-	bool raise_state = FALSE;
+	CMEDIACONTROL *control;
 	
 	bus = gst_pipeline_get_bus(PIPELINE);
 	
 	while((msg = gst_bus_pop(bus)) != NULL) 
 	{
 		type = GST_MESSAGE_TYPE(msg);
+		control = (CMEDIACONTROL *)g_object_get_data(G_OBJECT(GST_MESSAGE_SRC(msg)), "gambas-control");
 		
-		if (type == GST_MESSAGE_APPLICATION)
+		/*if (type == GST_MESSAGE_APPLICATION)
 		{
-			CMEDIACONTROL *src = (CMEDIACONTROL *) g_value_get_pointer(gst_structure_get_value(gst_message_get_structure(msg), "control"));
-			GB.Raise(src, EVENT_Ready, 0);
+			CMEDIACONTROL *target = (CMEDIACONTROL *)g_value_get_pointer(gst_structure_get_value(gst_message_get_structure(msg), "control"));
+			GB.Raise(target, EVENT_Ready, 0);
 		}
-		else if (GST_MESSAGE_SRC(msg) == GST_OBJECT(PIPELINE))
+		else*/
+		if (type == GST_MESSAGE_STATE_CHANGED && control)
 		{
-		
+			GstState old_state, new_state;
+
+			gst_message_parse_state_changed(msg, &old_state, &new_state, NULL);
+			control->state = new_state;
+			if (new_state == GST_STATE_NULL)
+				control->error = FALSE;
+			GB.Raise(control, EVENT_State, 0);
+		}
+		else //if (GST_MESSAGE_SRC(msg) == GST_OBJECT(PIPELINE))
+		{
 			switch (type)
 			{
 				case GST_MESSAGE_EOS: 
@@ -359,6 +384,8 @@ static int cb_media(CMEDIAPIPELINE *_object)
 					{
 						gst_message_parse_error(msg, &error, &debug);
 						msg_type = 2;
+						control->error = TRUE;
+						THIS->error = TRUE;
 					}
 					else if (type == GST_MESSAGE_WARNING)
 					{
@@ -373,19 +400,16 @@ static int cb_media(CMEDIAPIPELINE *_object)
 					
 					g_free(debug);
 					
-					GB.Raise(THIS, EVENT_Message, 2, GB_T_INTEGER, msg_type, GB_T_STRING, error->message, -1);
-					
+					GB.Ref(control);
+					GB.Raise(THIS, EVENT_Message, 3, GB_T_OBJECT, control, GB_T_INTEGER, msg_type, GB_T_STRING, error->message, -1);
 					g_error_free(error);
+					GB.Unref(POINTER(&control));
+					
 					break;
 				}
 				
 				case GST_MESSAGE_TAG: GB.Raise(THIS, EVENT_Tag, 0); break;
 				case GST_MESSAGE_BUFFERING: GB.Raise(THIS, EVENT_Buffering, 0); break;
-				
-				case GST_MESSAGE_STATE_CHANGED:
-					raise_state = TRUE;
-					break;
-				
 				case GST_MESSAGE_DURATION: GB.Raise(THIS, EVENT_Duration, 0); break;
 				case GST_MESSAGE_PROGRESS: GB.Raise(THIS, EVENT_Progress, 0); break;
 				default: break;
@@ -397,15 +421,12 @@ static int cb_media(CMEDIAPIPELINE *_object)
 	
 	gst_object_unref(bus);
 	
-	if (raise_state)
-		GB.Raise(THIS, EVENT_State, 0);
-	
 	return FALSE;
 }
 
 BEGIN_METHOD_VOID(MediaPipeline_new)
 	
-	THIS->watch = GB.Every(250, (GB_TIMER_CALLBACK)cb_media, (intptr_t)THIS);
+	THIS->watch = GB.Every(250, (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
 
 END_METHOD
 
@@ -417,25 +438,25 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Play)
 
-	gst_element_set_state(ELEMENT, GST_STATE_PLAYING);
+	set_state(THIS, GST_STATE_PLAYING);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Stop)
 
-	gst_element_set_state(ELEMENT, GST_STATE_READY);
+	set_state(THIS, GST_STATE_READY);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Close)
 
-	gst_element_set_state(ELEMENT, GST_STATE_NULL);
+	set_state(THIS, GST_STATE_NULL);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Pause)
 
-	gst_element_set_state(ELEMENT, GST_STATE_PAUSED);
+	set_state(THIS, GST_STATE_PAUSED);
 
 END_METHOD
 
@@ -446,7 +467,7 @@ BEGIN_PROPERTY(MediaPipeline_Position)
 		GstFormat format = GST_FORMAT_TIME;
 		gint64 pos;
 		
-		if (!gst_element_query_position(ELEMENT, &format, &pos) || format != GST_FORMAT_TIME)
+		if (THIS->state == GST_STATE_NULL || THIS->state == GST_STATE_READY || THIS->error || !gst_element_query_position(ELEMENT, &format, &pos) || format != GST_FORMAT_TIME)
 			GB.ReturnFloat(0);
 		else
 			GB.ReturnFloat((double)(pos / 1000) / 1E6);
@@ -468,7 +489,7 @@ BEGIN_PROPERTY(MediaPipeline_Duration)
 	GstFormat format = GST_FORMAT_TIME;
 	gint64 dur;
 	
-	if (!gst_element_query_duration(ELEMENT, &format, &dur) || format != GST_FORMAT_TIME)
+	if (THIS->state == GST_STATE_NULL || THIS->error || !gst_element_query_duration(ELEMENT, &format, &dur) || format != GST_FORMAT_TIME)
 		GB.ReturnFloat(0);
 	else
 		GB.ReturnFloat((double)(dur / 1000) / 1E6);
@@ -523,6 +544,8 @@ GB_DESC MediaControlDesc[] =
 	
 	GB_METHOD("LinkTo", NULL, MediaControl_LinkTo, "(Destination)MediaControl;[(Later)b]"),
 	
+	GB_EVENT("State", NULL, NULL, &EVENT_State),
+	
 	GB_END_DECLARE
 };
 
@@ -546,7 +569,6 @@ GB_DESC MediaPipelineDesc[] =
 	GB_METHOD("_free", NULL, MediaPipeline_free, NULL),
 	
 	GB_CONSTANT("Null", "i", GST_STATE_NULL),
-	GB_CONSTANT("Unknown", "i", -1),
 	GB_CONSTANT("Ready", "i", GST_STATE_READY),
 	GB_CONSTANT("Paused", "i", GST_STATE_PAUSED),
 	GB_CONSTANT("Playing", "i", GST_STATE_PLAYING),
@@ -565,10 +587,9 @@ GB_DESC MediaPipelineDesc[] =
 	GB_METHOD("Close", NULL, MediaPipeline_Close, NULL),
 	
 	GB_EVENT("End", NULL, NULL, &EVENT_End),
-	GB_EVENT("Message", NULL, "(Type)i(Message)s", &EVENT_Message),
+	GB_EVENT("Message", NULL, "(Source)MediaControl;(Type)i(Message)s", &EVENT_Message),
 	GB_EVENT("Tag", NULL, NULL, &EVENT_Tag),
 	GB_EVENT("Buffering", NULL, NULL, &EVENT_Buffering),
-	GB_EVENT("State", NULL, NULL, &EVENT_State),
 	GB_EVENT("Duration", NULL, NULL, &EVENT_Duration),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_Progress),
 	

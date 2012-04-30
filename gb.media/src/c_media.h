@@ -47,8 +47,11 @@ typedef
 	struct {
 		GB_BASE ob;
 		GstElement *elt;
+		char *type;
 		void *dest;
 		GB_TIMER *watch;
+		unsigned state : 3;
+		unsigned error : 1;
 	}
 	CMEDIACONTROL;
 
