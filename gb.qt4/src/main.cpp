@@ -729,15 +729,18 @@ static int X11_error_handler(Display *d, XErrorEvent *e)
 }
 #endif
 
-static void hook_main(int *argc, char **argv)
+static void *_old_hook_main;
+
+static void hook_main(int *argc, char ***argv)
 {
-	//QApplication::setGraphicsSystem("opengl");
-	new MyApplication(*argc, argv);
+	new MyApplication(*argc, *argv);
 	
 	QT_Init();
 	init_lang(GB.System.Language(), GB.System.IsRightToLeft());
 	
 	//_old_handler = XSetErrorHandler(X11_error_handler);
+	
+	CALL_HOOK_MAIN(_old_hook_main, argc, argv);
 }
 
 
@@ -1090,7 +1093,7 @@ int EXPORT GB_INIT(void)
 	
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 
-	GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
+	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
 	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
 	GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
 	GB.Hook(GB_HOOK_TIMER, (void *)hook_timer);

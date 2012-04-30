@@ -124,7 +124,6 @@
     }
     { mnuPropertyComp Menu
       Action = "component-property"
-      Text = ("Co&mponent properties...")
       Picture = Picture["icon:/small/component"]
       Visible = False
       Shortcut = "Ctrl+Shift+P"
@@ -574,7 +573,6 @@
       }
       { btnComponent ToolButton
         MoveScaled(17,0,4,4)
-        ToolTip = ("Component properties")
         Action = "component-property"
         Picture = Picture["icon:/small/component"]
       }
@@ -1061,7 +1059,7 @@
     Picture = "icon:/small/make-all"
   }
   { Action component-property
-    Text = "Co&mponent properties..."
+    Text = ""
     Shortcut = "Ctrl+Shift+P"
     Picture = "icon:/small/component"
   }

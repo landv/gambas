@@ -84,7 +84,7 @@ GB_CLASS CLASS_SvgImage;
 static void my_lang(char *lang,int rtl1);
 static void my_error(int code,char *error,char *where);
 static void my_quit (void);
-static void my_main(int *argc, char **argv);
+static void my_main(int *argc, char ***argv);
 static void my_timer(GB_TIMER *timer,bool on);
 static void my_wait(int duration);
 static void my_post(void);
@@ -96,6 +96,8 @@ static bool _must_check_quit = false;
 
 static bool _application_keypress = false;
 static GB_FUNCTION _application_keypress_func;
+
+static void *_old_hook_main;
 
 int MAIN_scale = 0;
 
@@ -215,7 +217,7 @@ extern "C"
 	int EXPORT GB_INIT(void)
 	{
 		GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
-		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
+		_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
 		GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
 		GB.Hook(GB_HOOK_TIMER,(void *)my_timer);
@@ -316,14 +318,14 @@ static bool global_key_event_handler(int type)
 	return GB.Stopped();
 }
 
-static void my_main(int *argc, char **argv)
+static void my_main(int *argc, char ***argv)
 {
 	static bool init = false;
 	
 	if (init)
 		return;
 	
-	gApplication::init(argc, &argv);
+	gApplication::init(argc, argv);
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();
 	MAIN_scale = gDesktop::scale();
@@ -338,6 +340,8 @@ static void my_main(int *argc, char **argv)
 	}
 
 	init = true;
+	
+	CALL_HOOK_MAIN(_old_hook_main, argc, argv);
 }
 
 /*static void raise_timer(GB_TIMER *timer)
@@ -348,10 +352,11 @@ static void my_main(int *argc, char **argv)
 
 typedef
 	struct {
+		int source;
 		GTimer *timer;
 		int timeout;
 		}
-	MyTimerTag;
+	MyTimerId;
 
 gboolean my_timer_function(GB_TIMER *timer)
 {
@@ -361,15 +366,16 @@ gboolean my_timer_function(GB_TIMER *timer)
 		
 		if (timer->id)
 		{
-			MyTimerTag *tag = (MyTimerTag *)timer->tag;
-			GTimer *t = tag->timer;
-			int elapsed = (int)(g_timer_elapsed(t, NULL) * 1000) - tag->timeout;
+			MyTimerId *id = (MyTimerId *)timer->id;
+			GTimer *t = id->timer;
+			int elapsed = (int)(g_timer_elapsed(t, NULL) * 1000) - id->timeout;
 			int next = timer->delay - elapsed;
 			if (next < 10)
 				next = 10;
-			tag->timeout = next;
+			id->timeout = next;
 			g_timer_start(t);
-			timer->id = (intptr_t)g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
+			id->source = g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
+			//timer->id = (intptr_t)g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
 			//fprintf(stderr, "elapsed = %d  delay = %d  next = %d\n", elapsed, timer->delay, next);
 		}
 	}
@@ -379,22 +385,22 @@ gboolean my_timer_function(GB_TIMER *timer)
 
 static void my_timer(GB_TIMER *timer,bool on)
 {
-	if (timer->id) {
-		MyTimerTag *tag = (MyTimerTag *)timer->tag;
-		g_source_remove(timer->id);
-		g_timer_destroy(tag->timer);
-		g_free(tag);
+	if (timer->id)
+	{
+		MyTimerId *id = (MyTimerId *)timer->id;
+		g_source_remove(id->source);
+		g_timer_destroy(id->timer);
+		g_free(id);
 		timer->id = 0;
-		timer->tag = 0;
 	}
 
 	if (on)
 	{
-		MyTimerTag *tag = g_new(MyTimerTag, 1);
-		tag->timer = g_timer_new();
-		tag->timeout = timer->delay;
-		timer->tag = (intptr_t)tag;
-		timer->id = (intptr_t)g_timeout_add(timer->delay,(GSourceFunc)my_timer_function,(gpointer)timer);
+		MyTimerId *id = g_new(MyTimerId, 1);
+		id->timer = g_timer_new();
+		id->timeout = timer->delay;
+		id->source = (intptr_t)g_timeout_add(timer->delay,(GSourceFunc)my_timer_function,(gpointer)timer);
+		timer->id = (intptr_t)id;
 		return;
 	}
 }

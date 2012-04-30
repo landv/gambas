@@ -28,6 +28,7 @@ SUBDIRS = \
  @dbus_dir@ \
  @gsl_dir@ \
  @ncurses_dir@ \
+ @media_dir@ \
  comp \
  app \
  examples \

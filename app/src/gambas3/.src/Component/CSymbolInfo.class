@@ -775,8 +775,9 @@ Private Sub DecodeHelpLine(sLine As String) As String
   
     Inc iPos
     If iPos > iLen Then Break
+
     sChar = String.Mid(sLine, iPos, 1)
-    
+  
     If sWait = ">" Then
       sHtml &= sChar
       If sChar = ">" Then sWait = ""

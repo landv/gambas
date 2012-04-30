@@ -1,0 +1,13 @@
+COMPONENT = __COMPONENT
+include $(top_srcdir)/component.am
+
+INCLUDES = #@#__UNAME##_INC@
+
+gblib_LTLIBRARIES = __COMPONENT.la
+
+__COMPONENT_UNDERSCORE##_la_LIBADD = #@#__UNAME##_LIB@
+__COMPONENT_UNDERSCORE##_la_LDFLAGS = -module @LD_FLAGS@ #@#__UNAME##_LDFLAGS@
+
+__COMPONENT_UNDERSCORE##_la_SOURCES = __SOURCES
+
+

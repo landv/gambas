@@ -175,7 +175,7 @@ static bool is_long_option(const char *arg, char option, char *long_option)
 		return (arg[0] == '-' && arg[1] == '-' && !strcmp(&arg[2], long_option));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	//CLASS *class = NULL;
 	CLASS_DESC_METHOD *startup = NULL;
@@ -349,7 +349,7 @@ int main(int argc, char **argv)
 		if (!EXEC_arch)
 			argv[0] = PROJECT_name;
 
-		HOOK(main)(&argc, argv);
+		HOOK(main)(&argc, &argv);
 		EXEC_main_hook_done = TRUE;
 
 		/* Startup class */

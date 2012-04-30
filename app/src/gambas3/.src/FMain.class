@@ -1059,7 +1059,20 @@ Public Sub UpdateMenu()
   
   mnuClearDebugWindows.Enabled = Project.Running
   
-  Action["component-property"].Visible = Project.Type <> Project.TYPE_NORMAL
+  With Action["component-property"]
+    Select Case Project.Type
+      Case Project.TYPE_NORMAL
+        .Visible = False
+      Case Project.TYPE_LIBRARY
+        .Visible = True
+        mnuPropertyComp.Text = ("Library properties") & "..."
+        btnComponent.Tooltip = ("Library properties")
+      Case Project.TYPE_COMPONENT
+        .Visible = True
+        mnuPropertyComp.Text = ("Component properties") & "..."
+        btnComponent.Tooltip = ("Component properties")
+    End Select
+  End With
   
 End
 

@@ -54,7 +54,9 @@ CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback, intptr_t param)
 	timer->callback = callback;
 	timer->delay = delay;
 	timer->tag = param;
+	
 	enable_timer(timer, TRUE);
+	
 	return timer;
 }
 

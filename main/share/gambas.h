@@ -567,6 +567,10 @@ typedef
 #define GB_HOOK_ERROR     9
 #define GB_HOOK_TIMEOUT   10
 
+/* Macro for calling the previous hook */
+
+#define CALL_HOOK_MAIN(_hook, _pargc, _pargv) do { if (_hook) { ((void (*)(int *, char ***))(_hook))((_pargc), (_pargv)); } } while (0);
+
 /* Constants that represent interpreter signals catched by GB_SIGNAL function */
 
 #define GB_SIGNAL_DEBUG_BREAK         1
@@ -780,8 +784,12 @@ typedef
 		intptr_t id;
 		intptr_t tag;
 		int delay;
+		#if __WORDSIZE == 64
+		int _pad;
+		#endif
 		GB_TIMER_CALLBACK callback;
 		}
+	PACKED
 	GB_TIMER;
 
 /* Structure for GB.RaiseCatch handler */

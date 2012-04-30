@@ -26,6 +26,7 @@ Private $MY As Integer
 
 Private btnPrev As CButton
 Private btnNext As CButton
+Private dwgPath As DrawingArea
 
 Private Sub UpdateSaveIcon()
   
@@ -221,11 +222,17 @@ Public Sub _new()
 
   aButton = ["film", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "hflip", "vflip", "rotate-left", "rotate-right", "-", 
     "magic", "invert", "blur", "sharpen", "normalize", "despeckle", "oil", "-", "scissors", "resize", "balance", "<->", "save", "undo", "quit"]
-    
   CreateButtons(aButton, cTooltip, panToolbar)
     
-  aButton = ["photo", "usb", "save-all", "-", "hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "<->", "save#2", "undo#2", "quit#2"]
-    
+  aButton = ["photo", "usb", "save-all", "-"]
+  CreateButtons(aButton, cTooltip, panToolbarBrowser)
+  
+  dwgPath = New DrawingArea(panToolbarBrowser) As "dwgPath"
+  dwgPath.Painted = True
+  dwgPath.Expand = True
+  dwgPath.Font = Font["Bold,+5"]
+  
+  aButton = ["hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "-", "save#2", "undo#2", "quit#2"]
   CreateButtons(aButton, cTooltip, panToolbarBrowser)
     
   btnPrev = New CButton(Me) As "Button"
@@ -666,9 +673,25 @@ Public Sub svwImage_MouseMove()
   
 End
 
+Private Sub PaintOutlineText(sText As String, X As Float, Y As Float, W As Float, H As Float)
+  
+  Dim I, J As Integer
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  For I = -1 To 1
+    For J = -1 To 1
+      Paint.DrawRichText(sText, X + I + 2, Y + J + 2, W - 4, H - 4, Align.Left)
+    Next
+  Next
+  'Paint.Fill
+  Paint.Brush = Paint.Color(Color.LightForeground)
+  Paint.DrawRichText(sText, X + 2, Y + 2, W - 4, H - 4, Align.Left)
+  
+End
+
+
 Public Sub dwgInfo_Draw()
   
-  Dim X, Y As Integer
   Dim sText As String
   Dim sSpace As String
   
@@ -681,16 +704,7 @@ Public Sub dwgInfo_Draw()
   End With
   
   Paint.Font = Font["+5"]
-  
-  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
-  For X = -1 To 1
-    For Y = -1 To 1
-      Paint.DrawRichText(sText, X + 2, Y + 2, dwgInfo.W - 4, dwgInfo.H - 4, Align.Left)
-    Next
-  Next
-  'Paint.Fill
-  Paint.Brush = Paint.Color(Color.LightForeground)
-  Paint.DrawRichText(sText, 2, 2, dwgInfo.W - 4, dwgInfo.H - 4, Align.Left)
+  PaintOutlineText(sText, 0, 0, dwgInfo.W, dwgInfo.H)
   
 End
 
@@ -1091,5 +1105,11 @@ End
 Public Sub PushUndo()
   
   $hUndoStack.Add($hImage.Copy())
+  
+End
+
+Public Sub dwgPath_Draw()
+  
+  PaintOutlineText($sDir, 0, 0, Paint.W, Paint.H)
   
 End
