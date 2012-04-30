@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_mediaplayer.c
 
   gb.media component
 
@@ -23,39 +23,20 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#define __C_MEDIAPLAYER_C
 
-#include "main.h"
-#include "c_media.h"
 #include "c_mediaplayer.h"
 
-GB_INTERFACE GB EXPORT;
+//---- MediaPlayer -------------------------------------------------------
 
-GB_DESC *GB_CLASSES[] EXPORT =
+
+//-------------------------------------------------------------------------
+
+GB_DESC MediaPlayerDesc[] = 
 {
-	MediaControlDesc,
-	MediaContainerDesc,
-	MediaPipelineDesc,
-	MediaDesc,
-	MediaPlayerDesc,
-  NULL
+	GB_DECLARE("MediaPlayer", sizeof(CMEDIAPLAYER)),
+	GB_INHERITS("MediaPipeline"),
+	
+	GB_END_DECLARE
 };
-
-static void *_old_hook_main;
-
-static void hook_main(int *argc, char ***argv)
-{
-	gst_init(argc, argv);
-	CALL_HOOK_MAIN(_old_hook_main, argc, argv);
-}
-
-int EXPORT GB_INIT()
-{
-	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
-	return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-}
 
