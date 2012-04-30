@@ -18,7 +18,7 @@ wstring Document::Virtual::getContent(bool indent)
 }
 
 void Document::setContent(wstring str)
-{/*
+{
     unsigned int i, pos = 0, len = 0, lines = 0;
     wstring prolog, s;
     for (i = 0; i < str.length(); i++)//On cherche le prologue XML
@@ -75,7 +75,7 @@ void Document::setContent(wstring str)
     delete elements;
 
     if(!root) throw HTMLParseException(0, 0, L"somewhere", L"No valid root element found.");
-*/
+
 }
 
 Element* Document::createElement(wstring tagName)
