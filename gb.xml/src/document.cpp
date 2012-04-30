@@ -80,7 +80,7 @@ void Document::setContent(wstring str)
 
 Element* Document::createElement(wstring tagName)
 {
-    Element *elmt = GBI::New<Element>();
+    Element *elmt = GBI::New<Element>("XmlElement");
     elmt->setTagName(tagName);
     return elmt;
 }

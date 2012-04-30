@@ -2,6 +2,8 @@
 #include "document.h"
 #include "../document.cpp"
 
+GB_CLASS HtmlDocument::ClassName = 0;
+
 Element* HtmlDocument::getTitleElement()
 {
     Element *head = getHead();

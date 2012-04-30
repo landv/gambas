@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 
+#define CHAR_ERROR 0xFFFD // �
+
 
 extern "C" GB_INTERFACE GB;
 
@@ -53,11 +55,15 @@ namespace GBI
         return reinterpret_cast<T*>(GB.New(GB.FindClass(className.c_str()), eventName, parent));
     }
 
+    void InitClasses();
+
     template<typename T>
     T* New()
     {
+        if(!T::ClassName) InitClasses();
         return reinterpret_cast<T*>(GB.New(T::ClassName, "", 0));
     }
+
 
     template<typename T>
     void ObjectArray<T>::push_back(T* value)
@@ -108,7 +114,8 @@ class fwstring
 public:
     fwstring();
     fwstring(char *src, size_t &length);
-    fwstring(fwstring &other);
+    fwstring(char *src, int &length);
+    fwstring(const fwstring &other);
     ~fwstring();
 
 
@@ -116,10 +123,21 @@ public:
     wchar_t increment(size_t count);
     void resetCounter();
 
+    wchar_t at(size_t i);
+    wchar_t operator[](size_t i);
+
+    std::string toString() const;
+
+    fwstring& operator+(const fwstring &other);
+
+    bool incrementCompare(const wchar_t* text, size_t len);
+    inline bool neof(){return cur < len;}
+
 
     char *data;
     size_t len;
     size_t cur;
+    size_t wcur;
 
 };
 

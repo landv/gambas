@@ -56,6 +56,8 @@ public:
     Element* getBaseElement();
     bool html5;
 
+    static GB_CLASS ClassName;
+
 };
 
 #endif

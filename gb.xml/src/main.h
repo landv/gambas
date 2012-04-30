@@ -30,6 +30,7 @@ using namespace std;
 #define CHAR_BACKSLASH 0x5C
 #define CHAR_EQUAL 0x3D // =
 #define CHAR_AND 0x26 // &
+#define CHAR_PI 0x3F // ?
 
 
 
