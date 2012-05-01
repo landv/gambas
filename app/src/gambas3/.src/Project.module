@@ -1850,7 +1850,7 @@ Public Function LoadFile(sPath As String) As Object
 
   Return hForm
 
-'Catch
+Catch
 
   Dec Application.Busy
   Files[sPath] = Null

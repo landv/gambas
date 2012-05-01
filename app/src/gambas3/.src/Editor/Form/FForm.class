@@ -2523,14 +2523,14 @@ End
 '
 ' END
 
-Public Sub Control_Data(Row As Integer, Column As Integer)
-
-  If Row = 0 And Column = 0 Then
-    Last.Data.Text = Control[Last.Tag].Name
-    'LAST.Data.Picture = Picture["img/16/image.png"]
-  Endif
-
-End
+' Public Sub Control_Data(Row As Integer, Column As Integer)
+' 
+'   If Row = 0 And Column = 0 Then
+'     Last.Data.Text = Control[Last.Tag].Name
+'     'LAST.Data.Picture = Picture["img/16/image.png"]
+'   Endif
+' 
+' End
 
 Public Sub mnuSelectAll_Click()
 
