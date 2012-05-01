@@ -37,6 +37,9 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	MediaContainerDesc,
 	MediaPipelineDesc,
 	MediaDesc,
+	MediaPlayerAudioDesc,
+	MediaPlayerVideoDesc,
+	MediaPlayerSubtitlesDesc,
 	MediaPlayerDesc,
   NULL
 };

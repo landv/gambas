@@ -27,6 +27,11 @@
 
 #include "c_media.h"
 
+void MEDIA_raise_event(void *_object, int event)
+{
+	gst_element_post_message(ELEMENT, gst_message_new_application(GST_OBJECT(ELEMENT), gst_structure_new("SendEvent", "event", G_TYPE_INT, event, NULL)));
+}
+
 //---- MediaControl -------------------------------------------------------
 
 typedef
@@ -41,8 +46,8 @@ static MEDIA_TYPE _types[] =
 	{ "MediaContainer", "bin" },
 	{ "MediaPipeline", "pipeline" },
 	{ "Media", "pipeline" },
-	{ "MediaPlayer", "playerbin2" },
-	{ "MediaDecoder", "decoderbin2" },
+	{ "MediaPlayer", "playbin2" },
+	//{ "MediaDecoder", "decodebin2" },
 	{ NULL, NULL }
 };
 
@@ -322,6 +327,59 @@ BEGIN_METHOD(MediaControl_LinkTo, GB_OBJECT dest; GB_BOOLEAN later)
 
 END_METHOD
 
+static void fill_pad_list(GB_ARRAY array, GstIterator *iter)
+{
+	bool done = FALSE;
+	GstPad *pad;
+	char *name;
+	
+	while (!done) 
+	{
+		switch (gst_iterator_next(iter, (gpointer *)&pad)) 
+		{
+			case GST_ITERATOR_OK:
+				name = gst_pad_get_name(pad);
+				*((char **)GB.Array.Add(array)) = GB.NewZeroString(name);
+				g_free(name);
+				gst_object_unref(pad);
+				break;
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync(iter);
+				break;
+			case GST_ITERATOR_ERROR:
+			case GST_ITERATOR_DONE:
+				done = TRUE;
+				break;
+		}
+	}
+	
+	gst_iterator_free(iter);
+}
+
+BEGIN_PROPERTY(MediaControl_Inputs)
+
+	GstIterator *iter;
+	GB_ARRAY array;
+	
+	GB.Array.New(&array, GB_T_STRING, 0);
+	iter = gst_element_iterate_sink_pads(ELEMENT);
+	fill_pad_list(array, iter);
+	GB.ReturnObject(array);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaControl_Outputs)
+
+	GstIterator *iter;
+	GB_ARRAY array;
+	
+	GB.Array.New(&array, GB_T_STRING, 0);
+	iter = gst_element_iterate_src_pads(ELEMENT);
+	fill_pad_list(array, iter);
+	GB.ReturnObject(array);
+
+END_PROPERTY
+
 //---- MediaContainer -----------------------------------------------------
 
 //---- MediaPipeline ------------------------------------------------------
@@ -349,12 +407,13 @@ static int cb_message(CMEDIAPIPELINE *_object)
 		type = GST_MESSAGE_TYPE(msg);
 		control = (CMEDIACONTROL *)g_object_get_data(G_OBJECT(GST_MESSAGE_SRC(msg)), "gambas-control");
 		
-		/*if (type == GST_MESSAGE_APPLICATION)
+		if (type == GST_MESSAGE_APPLICATION)
 		{
-			CMEDIACONTROL *target = (CMEDIACONTROL *)g_value_get_pointer(gst_structure_get_value(gst_message_get_structure(msg), "control"));
-			GB.Raise(target, EVENT_Ready, 0);
+			//CMEDIACONTROL *target = (CMEDIACONTROL *)g_value_get_pointer(gst_structure_get_value(gst_message_get_structure(msg), "control"));
+			int event = g_value_get_int(gst_structure_get_value(gst_message_get_structure(msg), "event"));
+			GB.Raise(control, event, 0);
 		}
-		else*/
+		else
 		if (type == GST_MESSAGE_STATE_CHANGED && control)
 		{
 			GstState old_state, new_state;
@@ -543,6 +602,9 @@ GB_DESC MediaControlDesc[] =
 	GB_METHOD("_get", "v", MediaControl_get, "(Property)s"),
 	
 	GB_METHOD("LinkTo", NULL, MediaControl_LinkTo, "(Destination)MediaControl;[(Later)b]"),
+	
+	GB_PROPERTY_READ("Inputs", "String[]", MediaControl_Inputs),
+	GB_PROPERTY_READ("Outputs", "String[]", MediaControl_Outputs),
 	
 	GB_EVENT("State", NULL, NULL, &EVENT_State),
 	

@@ -29,14 +29,17 @@
 #include "main.h"
 #include "c_media.h"
 
-#ifndef __C_MEDIA_C
+#ifndef __C_MEDIAPLAYER_C
 
 extern GB_DESC MediaPlayerDesc[];
+extern GB_DESC MediaPlayerAudioDesc[];
+extern GB_DESC MediaPlayerVideoDesc[];
+extern GB_DESC MediaPlayerSubtitlesDesc[];
 
 #else
 
 #define THIS ((CMEDIAPLAYER *)_object)
-#define PIPELINE ((GstPipeline *)THIS->base.elt)
+#define ELEMENT ((GstPipeline *)THIS->base.elt)
 
 #endif
 

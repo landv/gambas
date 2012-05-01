@@ -61,4 +61,9 @@ typedef
 typedef
 	CMEDIACONTROL CMEDIAPIPELINE;
 
+#define TO_SECOND(_time) ((double)((_time) / 1000) / 1E6)
+#define TO_TIME(_second) ((gint64)((_second) * 1E9))
+	
+void MEDIA_raise_event(void *_object, int event);
+
 #endif /* __C_MEDIA_H */
