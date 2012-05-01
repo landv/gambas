@@ -32,7 +32,119 @@ void MEDIA_raise_event(void *_object, int event)
 	gst_element_post_message(ELEMENT, gst_message_new_application(GST_OBJECT(ELEMENT), gst_structure_new("SendEvent", "event", G_TYPE_INT, event, NULL)));
 }
 
+/*void MEDIA_raise_event_arg(void *_object, int event, char *arg)
+{
+	gst_element_post_message(ELEMENT, gst_message_new_application(GST_OBJECT(ELEMENT), gst_structure_new("SendEvent", "event", G_TYPE_INT, event, "arg", G_TYPE_STRING, arg, NULL)));
+}*/
+
+CMEDIACONTROL *MEDIA_get_control_from_element(void *element)
+{
+	if (!element)
+		return NULL;
+	else
+		return (CMEDIACONTROL *)g_object_get_data(G_OBJECT(element), "gambas-control");
+}
+
+static void return_value(const GValue *value)
+{
+	switch (G_VALUE_TYPE(value))
+	{
+		case G_TYPE_BOOLEAN: GB.ReturnBoolean(g_value_get_boolean(value)); break;
+		case G_TYPE_INT: GB.ReturnInteger(g_value_get_int(value)); break;
+		case G_TYPE_UINT: GB.ReturnInteger(g_value_get_uint(value)); break;
+		case G_TYPE_UINT64: GB.ReturnLong(g_value_get_uint64(value)); break;
+		case G_TYPE_STRING: GB.ReturnNewZeroString(g_value_get_string(value)); break;
+		case G_TYPE_FLOAT: GB.ReturnFloat(g_value_get_float(value)); break;
+		case G_TYPE_DOUBLE: GB.ReturnFloat(g_value_get_double(value)); break;
+		default: GB.Error("Unsupported property datatype"); GB.ReturnNull(); break;
+	}
+	
+	GB.ReturnConvVariant();
+}
+
+static bool set_value(GValue *value, GB_VALUE *v)
+{
+	//g_value_init(&value, desc->value_type);
+
+	switch (G_VALUE_TYPE(value))
+	{
+		case G_TYPE_BOOLEAN:
+			if (GB.Conv(v, GB_T_BOOLEAN))
+				return TRUE;
+			g_value_set_boolean(value, v->_boolean.value);
+			break;
+			
+		case G_TYPE_INT:
+			if (GB.Conv(v, GB_T_INTEGER))
+				return TRUE;
+			g_value_set_int(value, v->_integer.value);
+			break;
+			
+		case G_TYPE_UINT:
+			if (GB.Conv(v, GB_T_INTEGER))
+				return TRUE;
+			g_value_set_uint(value, (uint)v->_integer.value);
+			break;
+			
+		case G_TYPE_UINT64:
+			if (GB.Conv(v, GB_T_LONG))
+				return TRUE;
+			g_value_set_uint64(value, (guint64)v->_long.value);
+			break;
+			
+		case G_TYPE_STRING:
+			if (GB.Conv(v, GB_T_STRING))
+				return TRUE;
+			g_value_set_string(value, GB.ToZeroString((GB_STRING *)v));
+			break;
+			
+		case G_TYPE_FLOAT:
+			if (GB.Conv(v, GB_T_FLOAT))
+				return TRUE;
+			g_value_set_float(value, v->_float.value);
+			break;
+			
+		case G_TYPE_DOUBLE:
+			if (GB.Conv(v, GB_T_FLOAT))
+				return TRUE;
+			g_value_set_double(value, v->_float.value);
+			break;
+			
+		default:
+			GB.Error("Unsupported property datatype");
+			return TRUE;
+	}
+	
+	return FALSE;
+}
+
+#if 0
+//---- MediaSignalArguments -----------------------------------------------
+
+static int check_signal_arguments(void *_object)
+{
+	return THIS_ARG->param_values == NULL;
+}
+
+BEGIN_METHOD(MediaSignalArguments_get, GB_INTEGER index)
+
+	int index = VARG(index);
+	
+	if (index < 0 || index >= THIS_ARG->n_param_values)
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+	
+	return_value(&THIS_ARG->param_values[index]);
+
+END_METHOD
+#endif
+
 //---- MediaControl -------------------------------------------------------
+
+DECLARE_EVENT(EVENT_State);
+//DECLARE_EVENT(EVENT_Signal);
 
 typedef
 	struct {
@@ -51,21 +163,12 @@ static MEDIA_TYPE _types[] =
 	{ NULL, NULL }
 };
 
-//DECLARE_EVENT(EVENT_Ready);
-
-/*static void cb_realized(GstElement *element, CMEDIACONTROL *_object)
-{
-	fprintf(stderr, "cb_realized: %s\n", gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
-	
-	gst_element_post_message(element, gst_message_new_application(GST_OBJECT(element), gst_structure_new("ReadyEvent", "control", G_TYPE_POINTER, THIS, NULL)));
-}*/
-
 static void cb_pad_added(GstElement *element, GstPad *pad, CMEDIACONTROL *_object)
 {
 	char *name;
 	//GstPad *sinkpad;
 	
-	fprintf(stderr, "cb_pad_added: %s\n", gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
+	//fprintf(stderr, "cb_pad_added: %s\n", gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
 
 	if (!THIS->dest)
 		return;
@@ -82,7 +185,7 @@ static void cb_pad_added(GstElement *element, GstPad *pad, CMEDIACONTROL *_objec
 	//gst_object_unref (sinkpad);
 }
 
-BEGIN_METHOD(MediaControl_new, GB_STRING type; GB_OBJECT parent)
+BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
 
 	char *type;
 	CMEDIACONTAINER *parent;
@@ -138,15 +241,15 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaControl_free)
 
-	gst_element_set_state(ELEMENT, GST_STATE_NULL);
-
 	GB.Unref(POINTER(&THIS->dest));
+	GB.FreeString(&THIS->type);
 	
 	if (ELEMENT)
+	{
+		gst_element_set_state(ELEMENT, GST_STATE_NULL);
 		gst_object_unref(GST_OBJECT(ELEMENT));
+	}
 	
-	GB.FreeString(&THIS->type);
-
 END_METHOD
 
 BEGIN_PROPERTY(MediaControl_Type)
@@ -227,21 +330,8 @@ BEGIN_METHOD(MediaControl_get, GB_STRING property)
 	//fprintf(stderr, "type = %s\n", g_type_name(desc->value_type));
 	g_value_init(&value, desc->value_type);
 	g_object_get_property(G_OBJECT(ELEMENT), property, &value);
-
-	switch (desc->value_type)
-	{
-		case G_TYPE_INT: GB.ReturnInteger(g_value_get_int(&value)); break;
-		case G_TYPE_UINT: GB.ReturnInteger(g_value_get_uint(&value)); break;
-		case G_TYPE_UINT64: GB.ReturnLong(g_value_get_uint64(&value)); break;
-		case G_TYPE_STRING: GB.ReturnNewZeroString(g_value_get_string(&value)); break;
-		case G_TYPE_FLOAT: GB.ReturnFloat(g_value_get_float(&value)); break;
-		case G_TYPE_DOUBLE: GB.ReturnFloat(g_value_get_double(&value)); break;
-		default: GB.Error("Unsupported property datatype"); GB.ReturnNull(); break;
-	}
-	
+	return_value(&value);
 	g_value_unset(&value);
-	
-	GB.ReturnConvVariant();
 	
 END_METHOD
 
@@ -257,73 +347,43 @@ BEGIN_METHOD(MediaControl_put, GB_VARIANT value; GB_STRING property)
 		return;
 	
 	g_value_init(&value, desc->value_type);
-
-	switch (desc->value_type)
-	{
-		case G_TYPE_INT:
-			if (GB.Conv(v, GB_T_INTEGER))
-				return;
-			g_value_set_int(&value, v->_integer.value);
-			break;
-			
-		case G_TYPE_UINT:
-			if (GB.Conv(v, GB_T_INTEGER))
-				return;
-			g_value_set_uint(&value, (uint)v->_integer.value);
-			break;
-			
-		case G_TYPE_UINT64:
-			if (GB.Conv(v, GB_T_LONG))
-				return;
-			g_value_set_uint64(&value, (guint64)v->_long.value);
-			break;
-			
-		case G_TYPE_STRING:
-			if (GB.Conv(v, GB_T_STRING))
-				return;
-			g_value_set_string(&value, GB.ToZeroString((GB_STRING *)v));
-			break;
-			
-		case G_TYPE_FLOAT:
-			if (GB.Conv(v, GB_T_FLOAT))
-				return;
-			g_value_set_float(&value, v->_float.value);
-			break;
-			
-		case G_TYPE_DOUBLE:
-			if (GB.Conv(v, GB_T_FLOAT))
-				return;
-			g_value_set_double(&value, v->_float.value);
-			break;
-			
-		default:
-			GB.Error("Unsupported property datatype");
-			return;
-	}
+	if (set_value(&value, v))
+		return;
 	
 	g_object_set_property(G_OBJECT(ELEMENT), property, &value);
 	g_value_unset(&value);
 	
 END_METHOD
 
-BEGIN_METHOD(MediaControl_LinkTo, GB_OBJECT dest; GB_BOOLEAN later)
+BEGIN_METHOD(MediaControl_LinkTo, GB_OBJECT dest; GB_STRING output; GB_STRING input)
+
+	CMEDIACONTROL *dest = (CMEDIACONTROL *)VARG(dest);
+	char *output;
+	char *input;
+	
+	if (GB.CheckObject(dest))
+		return;
+
+	output = MISSING(output) ? NULL : GB.ToZeroString(ARG(output));
+	if (output && !*output) output = NULL;
+	input = MISSING(input) ? NULL : GB.ToZeroString(ARG(input));
+	if (input && !*input) input = NULL;
+	
+	gst_element_link_pads(ELEMENT, output, dest->elt, input);
+
+END_METHOD
+
+BEGIN_METHOD(MediaControl_LinkLaterTo, GB_OBJECT dest)
 
 	CMEDIACONTROL *dest = (CMEDIACONTROL *)VARG(dest);
 	
 	if (GB.CheckObject(dest))
 		return;
 
-	if (VARGOPT(later, FALSE))
-	{
-		GB.Unref(POINTER(&THIS->dest));
-		GB.Ref(dest);
-		THIS->dest = dest;
-		g_signal_connect(ELEMENT, "pad-added", G_CALLBACK(cb_pad_added), THIS);
-	}
-	else
-	{
-		gst_element_link(ELEMENT, dest->elt);
-	}
+	GB.Unref(POINTER(&THIS->dest));
+	GB.Ref(dest);
+	THIS->dest = dest;
+	g_signal_connect(ELEMENT, "pad-added", G_CALLBACK(cb_pad_added), THIS);
 
 END_METHOD
 
@@ -380,7 +440,132 @@ BEGIN_PROPERTY(MediaControl_Outputs)
 
 END_PROPERTY
 
+#if 0
+static void closure_marshal(GClosure     *closure,
+                            GValue       *return_value,
+                            guint         n_param_values,
+                            const GValue *param_values,
+                            gpointer      invocation_hint,
+                            gpointer      marshal_data)
+{
+	GObject *src;
+	CMEDIACONTROL *_object;
+	CMEDIASIGNALARGUMENTS *arg;
+	
+	src = g_value_peek_pointer (param_values + 0);
+	_object = get_control_from_element(src);
+	
+	arg = GB.New(GB.FindClass("MediaSignalArguments"), NULL, NULL);
+	arg->n_param_values = n_param_values;
+	arg->param_values = param_values;
+	
+	GB.Ref(arg);
+	GB.Raise(THIS, EVENT_Signal, 1, GB_T_OBJECT, arg);
+	MEDIA_raise_event_arg(THIS, EVENT_Signal, );
+	
+	arg->n_param_values = 0;
+	arg->param_values = NULL;
+	GB.Unref(POINTER(&arg));
+}
+
+static GClosure *get_closure()
+{
+	static GClosure *closure = NULL;
+	
+	if (!closure)
+	{
+		closure = g_closure_new_simple(sizeof(GClosure), NULL);
+		g_closure_set_marshal(closure, closure_marshal);
+	}
+	
+	return closure;
+}
+
+BEGIN_METHOD(MediaControl_Activate, GB_STRING signal)
+
+	char *signal = GB.ToZeroString(ARG(signal));
+	GClosure *closure = get_closure();
+	
+	if (g_signal_handler_find(ELEMENT, G_SIGNAL_MATCH_CLOSURE | G_SIGNAL_MATCH_ID, g_signal_lookup(signal, G_OBJECT_TYPE(ELEMENT)), (GQuark)0, closure, NULL, NULL))
+	{
+		GB.Error("Signal is already activated");
+		return;
+	}
+		
+	g_signal_connect_closure(ELEMENT, GB.ToZeroString(ARG(signal)), closure, FALSE);
+
+END_METHOD
+#endif
+
 //---- MediaContainer -----------------------------------------------------
+
+static bool add_input_output(void *_object, CMEDIACONTROL *child, char *name, int direction, const char *dir_error, const char *unknown_error)
+{
+	GstPad *pad;
+	GstIterator *iter;
+	GstIteratorResult res;
+	
+	if (GB.CheckObject(child))
+		return TRUE;
+	
+	if (!name)
+	{
+		if (direction == GST_PAD_SINK)
+			iter = gst_element_iterate_sink_pads(child->elt);
+		else
+			iter = gst_element_iterate_src_pads(child->elt);
+		
+		for(;;)
+		{
+			res = gst_iterator_next(iter, (gpointer *)&pad);
+			if (res == GST_ITERATOR_RESYNC)
+				gst_iterator_resync(iter);
+			else
+				break;
+		}
+		
+		gst_iterator_free(iter);
+		
+		if (res != GST_ITERATOR_OK)
+		{
+			GB.Error(unknown_error);
+			return TRUE;
+		}
+	}
+	else
+	{
+		pad = gst_element_get_static_pad(child->elt, name);
+		if (!pad)
+		{
+			GB.Error(unknown_error);
+			return TRUE;
+		}
+		
+		if (gst_pad_get_direction(pad) != direction)
+		{
+			gst_object_unref (GST_OBJECT(pad));
+			GB.Error(dir_error);
+			return TRUE;
+		}
+	}
+	
+	gst_element_add_pad(ELEMENT, gst_ghost_pad_new(name, pad));
+	gst_object_unref(GST_OBJECT(pad));
+	
+	return FALSE;
+}
+
+BEGIN_METHOD(MediaContainer_AddInput, GB_OBJECT child; GB_STRING name)
+
+	add_input_output(THIS, (CMEDIACONTROL *)VARG(child), MISSING(name) ? NULL : GB.ToZeroString(ARG(name)), GST_PAD_SINK, "Not an input", "Unknown input");
+
+END_METHOD
+
+BEGIN_METHOD(MediaContainer_AddOutput, GB_OBJECT child; GB_STRING name)
+
+	add_input_output(THIS, (CMEDIACONTROL *)VARG(child), MISSING(name) ? NULL : GB.ToZeroString(ARG(name)), GST_PAD_SRC, "Not an output", "Unknown output");
+
+END_METHOD
 
 //---- MediaPipeline ------------------------------------------------------
 
@@ -388,7 +573,6 @@ DECLARE_EVENT(EVENT_End);
 DECLARE_EVENT(EVENT_Message);
 DECLARE_EVENT(EVENT_Tag);
 DECLARE_EVENT(EVENT_Buffering);
-DECLARE_EVENT(EVENT_State);
 DECLARE_EVENT(EVENT_Duration);
 DECLARE_EVENT(EVENT_Progress);
 
@@ -405,7 +589,7 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	while((msg = gst_bus_pop(bus)) != NULL) 
 	{
 		type = GST_MESSAGE_TYPE(msg);
-		control = (CMEDIACONTROL *)g_object_get_data(G_OBJECT(GST_MESSAGE_SRC(msg)), "gambas-control");
+		control = MEDIA_get_control_from_element(GST_MESSAGE_SRC(msg));
 		
 		if (type == GST_MESSAGE_APPLICATION)
 		{
@@ -585,13 +769,39 @@ BEGIN_METHOD(Media_Time, GB_FLOAT second)
 
 END_METHOD
 
+BEGIN_METHOD(Media_URL, GB_STRING path)
+
+	char *path = GB.RealFileName(STRING(path), LENGTH(path));
+	
+	path = g_filename_to_uri(path, NULL, NULL);
+	GB.ReturnNewZeroString(path);
+	g_free(path);
+
+END_METHOD
+
 //-------------------------------------------------------------------------
+
+#if 0
+GB_DESC MediaSignalArgumentsDesc[] = 
+{
+	GB_DECLARE("MediaSignalArguments", sizeof(CMEDIASIGNALARGUMENTS)),
+	GB_NOT_CREATABLE(), GB_HOOK_CHECK(check_signal_arguments),
+	
+	//GB_METHOD("_new", NULL, MediaControl_new, "[(Type)s(Parent)MediaContainer;]"),
+	//GB_METHOD("_free", NULL, MediaSignalArguments_free, NULL),
+	
+	//GB_METHOD("_put", NULL, MediaSignal_put, "(Value)v(Property)s"),
+	GB_METHOD("_get", "v", MediaSignalArguments_get, "(Name)s"),
+	
+	GB_END_DECLARE
+};
+#endif
 
 GB_DESC MediaControlDesc[] = 
 {
 	GB_DECLARE("MediaControl", sizeof(CMEDIACONTROL)),
 	
-	GB_METHOD("_new", NULL, MediaControl_new, "[(Type)s(Parent)MediaContainer;]"),
+	GB_METHOD("_new", NULL, MediaControl_new, "[(Parent)MediaContainer;(Type)s]"),
 	GB_METHOD("_free", NULL, MediaControl_free, NULL),
 	
 	GB_PROPERTY("Name", "s", MediaControl_Name),
@@ -601,12 +811,16 @@ GB_DESC MediaControlDesc[] =
 	GB_METHOD("_put", NULL, MediaControl_put, "(Value)v(Property)s"),
 	GB_METHOD("_get", "v", MediaControl_get, "(Property)s"),
 	
-	GB_METHOD("LinkTo", NULL, MediaControl_LinkTo, "(Destination)MediaControl;[(Later)b]"),
+	GB_METHOD("LinkTo", NULL, MediaControl_LinkTo, "(Destination)MediaControl;[(Output)s(Input)s]"),
+	GB_METHOD("LinkLaterTo", NULL, MediaControl_LinkLaterTo, "(Destination)MediaControl;"),
 	
 	GB_PROPERTY_READ("Inputs", "String[]", MediaControl_Inputs),
 	GB_PROPERTY_READ("Outputs", "String[]", MediaControl_Outputs),
 	
+	//GB_METHOD("Activate", NULL, MediaControl_Activate, "(Signal)s"),
+	
 	GB_EVENT("State", NULL, NULL, &EVENT_State),
+	//GB_EVENT("Signal", NULL, "(Arg)MediaSignalArguments", &EVENT_Signal),
 	
 	GB_END_DECLARE
 };
@@ -616,8 +830,8 @@ GB_DESC MediaContainerDesc[] =
 	GB_DECLARE("MediaContainer", sizeof(CMEDIACONTAINER)),
 	GB_INHERITS("MediaControl"),
 	
-	//GB_METHOD("_new", NULL, MediaContainer_new, NULL),
-	//GB_METHOD("_new", NULL, MediaContainer_new, NULL),
+	GB_METHOD("AddInput", NULL, MediaContainer_AddInput, "(Child)MediaControl;[(Name)s]"),
+	GB_METHOD("AddOutput", NULL, MediaContainer_AddOutput, "(Child)MediaControl;[(Name)s]"),
 	
 	GB_END_DECLARE
 };
@@ -675,6 +889,7 @@ GB_DESC MediaDesc[] =
 	
 	GB_STATIC_METHOD("Link", NULL, Media_Link, "(FirstControl)MediaControl;(SecondControl)MediaControl;."),
 	GB_STATIC_METHOD("Time", "l", Media_Time, "(Seconds)f"),
+	GB_STATIC_METHOD("URL", "s", Media_URL, "(Path)s"),
 	
 	GB_END_DECLARE
 };

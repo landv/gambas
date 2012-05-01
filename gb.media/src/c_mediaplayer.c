@@ -104,6 +104,38 @@ static void set_string(CMEDIAPLAYER *_object, char *name, gchar *value)
 	g_object_set(G_OBJECT(ELEMENT), name, value, NULL);
 }
 
+static CMEDIACONTROL *get_control(CMEDIAPLAYER *_object, char *name)
+{
+	GstElement *value;
+	g_object_get(G_OBJECT(ELEMENT), name, &value, NULL);
+	return MEDIA_get_control_from_element(value);
+}
+
+static void set_control(CMEDIAPLAYER *_object, char *name, CMEDIACONTROL *control)
+{
+	GstElement *elt;
+	GstBin *parent;
+	
+	if (!control)
+	{
+		g_object_set(G_OBJECT(ELEMENT), name, NULL, NULL);
+		return;
+	}
+	
+	elt = control->elt;
+	parent = GST_BIN(gst_element_get_parent(elt));
+	if (parent)
+	{
+		gst_object_ref(elt);
+		gst_bin_remove(parent, elt);
+	}
+	
+	g_object_set(G_OBJECT(ELEMENT), name, elt, NULL);
+	
+	if (parent)
+		gst_object_unref(elt);
+}
+
 static bool get_flag(CMEDIAPLAYER *_object, int flag)
 {
 	GstPlayFlags flags;
@@ -182,6 +214,15 @@ BEGIN_PROPERTY(MediaPlayerAudio_Offset)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(MediaPlayerAudio_Output)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(get_control(THIS, "audio-sink"));
+	else
+		set_control(THIS, "audio-sink", VPROP(GB_OBJECT));
+
+END_PROPERTY
+
 //---- MediaPlayerVideo --------------------------------------------------
 
 BEGIN_PROPERTY(MediaPlayerVideo_Count)
@@ -201,8 +242,28 @@ END_PROPERTY
 
 IMPLEMENT_FLAG(MediaPlayerVideo_Enabled, GST_PLAY_FLAG_VIDEO)
 IMPLEMENT_FLAG(MediaPlayerVideo_NativeOnly, GST_PLAY_FLAG_NATIVE_VIDEO)
-IMPLEMENT_FLAG(MediaPlayerVideo_Visualisation, GST_PLAY_FLAG_VIS)
 IMPLEMENT_FLAG(MediaPlayerVideo_Deinterlace, GST_PLAY_FLAG_DEINTERLACE)
+
+BEGIN_PROPERTY(MediaPlayerVideo_Output)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(get_control(THIS, "video-sink"));
+	else
+		set_control(THIS, "video-sink", VPROP(GB_OBJECT));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayerVideo_Visualisation)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(get_control(THIS, "vis-plugin"));
+	else
+	{
+		set_control(THIS, "vis-plugin", VPROP(GB_OBJECT));
+		set_flag(THIS, GST_PLAY_FLAG_VIS, VPROP(GB_OBJECT) != NULL);
+	}
+
+END_PROPERTY
 
 //---- MediaPlayerSubtitles ----------------------------------------------
 
@@ -249,13 +310,22 @@ BEGIN_PROPERTY(MediaPlayerSubtitles_URL)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(MediaPlayerSubtitles_Output)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(get_control(THIS, "text-sink"));
+	else
+		set_control(THIS, "text-sink", VPROP(GB_OBJECT));
+
+END_PROPERTY
+
 //---- MediaPlayer -------------------------------------------------------
 
 DECLARE_EVENT(EVENT_AboutToFinish);
 DECLARE_EVENT(EVENT_AudioChanged);
 DECLARE_EVENT(EVENT_SubtitlesChanged);
 DECLARE_EVENT(EVENT_VideoChanged);
-DECLARE_EVENT(EVENT_SourceSetup);
+//DECLARE_EVENT(EVENT_SourceSetup);
 
 static void cb_about_to_finish(void *playbin, void *_object)
 {
@@ -277,10 +347,10 @@ static void cb_video_changed(void *playbin, void *_object)
 	MEDIA_raise_event(THIS, EVENT_VideoChanged);
 }
 
-static void cb_source_setup(void *playbin, GstElement *source, void *_object)
+/*static void cb_source_setup(void *playbin, GstElement *source, void *_object)
 {
 	MEDIA_raise_event(THIS, EVENT_SourceSetup);
-}
+}*/
 
 BEGIN_METHOD_VOID(MediaPlayer_new)
 
@@ -288,7 +358,7 @@ BEGIN_METHOD_VOID(MediaPlayer_new)
 	g_signal_connect(ELEMENT, "audio-changed", G_CALLBACK(cb_audio_changed), THIS);
 	g_signal_connect(ELEMENT, "text-changed", G_CALLBACK(cb_text_changed), THIS);
 	g_signal_connect(ELEMENT, "video-changed", G_CALLBACK(cb_video_changed), THIS);
-	g_signal_connect(ELEMENT, "source-setup", G_CALLBACK(cb_source_setup), THIS);
+	//g_signal_connect(ELEMENT, "source-setup", G_CALLBACK(cb_source_setup), THIS);
 
 END_METHOD
 
@@ -317,6 +387,15 @@ BEGIN_PROPERTY(MediaPlayer_URL)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(MediaPlayer_Input)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(get_control(THIS, "source"));
+	else
+		set_control(THIS, "source", VPROP(GB_OBJECT));
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 GB_DESC MediaPlayerAudioDesc[] = 
@@ -332,6 +411,7 @@ GB_DESC MediaPlayerAudioDesc[] =
 	GB_PROPERTY("Volume", "f", MediaPlayerAudio_Volume),
 	GB_PROPERTY("Mute", "b", MediaPlayerAudio_Mute),
 	GB_PROPERTY("Offset", "f", MediaPlayerAudio_Offset),
+	GB_PROPERTY("Output", "MediaControl", MediaPlayerAudio_Output),
 	
 	GB_END_DECLARE
 };
@@ -345,8 +425,9 @@ GB_DESC MediaPlayerVideoDesc[] =
 	GB_PROPERTY("Current", "i", MediaPlayerVideo_Current),
 	GB_PROPERTY("Enabled", "b", MediaPlayerVideo_Enabled),
 	GB_PROPERTY("NativeOnly", "b", MediaPlayerVideo_NativeOnly),
-	GB_PROPERTY("Visualisation", "b", MediaPlayerVideo_Visualisation),
 	GB_PROPERTY("Deinterlace", "b", MediaPlayerVideo_Deinterlace),
+	GB_PROPERTY("Output", "MediaControl", MediaPlayerVideo_Output),
+	GB_PROPERTY("Visualisation", "MediaControl", MediaPlayerVideo_Visualisation),
 	
 	GB_END_DECLARE
 };
@@ -361,6 +442,7 @@ GB_DESC MediaPlayerSubtitlesDesc[] =
 	GB_PROPERTY("Enabled", "b", MediaPlayerSubtitles_Enabled),
 	GB_PROPERTY("Charset", "s", MediaPlayerSubtitles_Charset),
 	GB_PROPERTY("URL", "s", MediaPlayerSubtitles_URL),
+	GB_PROPERTY("Output", "MediaControl", MediaPlayerSubtitles_Output),
 	
 	GB_END_DECLARE
 };
@@ -375,17 +457,19 @@ GB_DESC MediaPlayerDesc[] =
 	GB_PROPERTY_SELF("Audio", ".MediaPlayer.Audio"),
 	GB_PROPERTY_SELF("Video", ".MediaPlayer.Video"),
 	GB_PROPERTY_SELF("Subtitles", ".MediaPlayer.Subtitles"),
+	GB_PROPERTY_SELF("Visualisation", ".MediaPlayer.Visualisation"),
 	
 	GB_PROPERTY("ConnectionSpeed", "i", MediaPlayer_ConnectionSpeed),
 	GB_PROPERTY("ProgressiveDownload", "b", MediaPlayer_ProgressiveDownload),
 	GB_PROPERTY("Buffering", "b", MediaPlayer_Buffering),
 	GB_PROPERTY("URL", "s", MediaPlayer_URL),
+	GB_PROPERTY("Input", "MediaControl", MediaPlayer_Input),
 	
 	GB_EVENT("AboutToFinish", NULL, NULL, &EVENT_AboutToFinish),
 	GB_EVENT("AudioChanged", NULL, NULL, &EVENT_AudioChanged),
 	GB_EVENT("SubtitlesChanged", NULL, NULL, &EVENT_SubtitlesChanged),
 	GB_EVENT("VideoChanged", NULL, NULL, &EVENT_VideoChanged),
-	GB_EVENT("SourceSetup", NULL, NULL, &EVENT_SourceSetup),
+	//GB_EVENT("SourceSetup", NULL, NULL, &EVENT_SourceSetup),
 	
 	GB_END_DECLARE
 };
