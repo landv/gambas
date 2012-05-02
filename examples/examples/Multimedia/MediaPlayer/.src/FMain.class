@@ -2,6 +2,8 @@
 
 Private $hPlayer As MediaPlayer
 Private $hOutput As MediaControl
+Private $hVisualisation As MediaControl
+
 Private $fPos As Float
 Private $fLength As Float
 Private $sInfo As String
@@ -17,9 +19,11 @@ Private Sub MakeMediaPlayer()
   
   $hPlayer = New MediaPlayer As "MediaPlayer"
   
-  $hOutput = New MediaControl($hPlayer, "ximagesink")
-  
+  $hOutput = New MediaControl($hPlayer, "ximagesink")  
   $hPlayer.Video.Output = $hOutput
+  
+  $hVisualisation = New MediaControl($hPlayer, "wavescope")
+  $hPlayer.Video.Visualisation = $hVisualisation
   
 End
 
@@ -93,6 +97,17 @@ Private Sub Action(sAction As String)
         Action("play")
       Endif
       
+    Case "subtitle"
+      If $hPlayer.State = Media.Playing Or If $hPlayer.State = Media.Paused Then
+        $hPlayer.Subtitles.Enabled = Not $hPlayer.Subtitles.Enabled
+      Else
+        Dialog.Title = ("Select a subtitle file")
+        If Not Dialog.OpenFile() Then 
+          $hPlayer.Subtitles.URL = Media.URL(Dialog.Path)
+          $hPlayer.Subtitles.Enabled = True
+        Endif
+      Endif
+      
     Case "play"
       $hOutput.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
       Try $hPlayer.Play
@@ -105,7 +120,7 @@ Private Sub Action(sAction As String)
       $fLength = 0
       timTime.Stop
       dwgVideo.Mouse = Mouse.Default
-      FControl.SetMinOpacity(100)
+      FControl.SetMinOpacity(80)
       
     Case "pause"
       $hPlayer.Pause
