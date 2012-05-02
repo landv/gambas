@@ -146,6 +146,8 @@ public:
 
     static GB_CLASS ClassName;
 
+    static vector<wstring> singleElements;
+
 #ifndef HELEMENT_H
 
 };

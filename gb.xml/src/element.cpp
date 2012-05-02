@@ -3,6 +3,11 @@
 GB_CLASS Element::ClassName = 0;
 GB_CLASS AttrNode::ClassName = 0;
 
+vector<wstring> Element::singleElements = {L"br", L"hr", L"area", L"base", L"br", L"col",
+                                          L"command", L"embed", L"hr", L"img", L"input", L"keygen",
+                                          L"link", L"meta", L"param", L"source", L"track", L"wbr"};
+
+
 bool isLetter(const char *str)
 {
     char s = *str;
@@ -134,6 +139,8 @@ void Element::replaceChild(Node *oldChild, Node *newChild)
     if(insertBefore(oldChild, newChild))
         removeChild(oldChild);
 }
+/*
+#ifndef HELEMENT_CPP
 
 wstring Element::Virtual::toString(int indent)
 {
@@ -159,6 +166,42 @@ wstring Element::Virtual::toString(int indent)
 
     return str;
 }
+
+#else
+
+*/
+wstring Element::Virtual::toString(int indent)
+{
+    wstring str;
+    if(indent > 0){str += wstring(indent, ' ');};
+    str = L"<"+ parent->getTagName();
+    if(parent->attributes->size() > 0){
+    for(map<wstring, wstring>::iterator it = parent->attributes->begin(); it != parent->attributes->end(); ++it)
+    {
+        str += L" " + it->first + L"=\"" + it->second + L"\"";
+    }}
+
+    if(exist(Element::singleElements, parent->getTagName()))
+    {
+        str += L" />";
+    }
+    else
+    {
+        str += L">";
+        if(indent >= 0) str += L"\n";
+
+        for(list<Node*>::iterator it = parent->children->begin(); it != parent->children->end(); ++it)
+        {
+            str += (*it)->virt->toString(indent >= 0 ? (indent + 1) : -1);
+        }
+
+        if(indent > 0){str += wstring(indent, ' ');};
+        str += L"</"+parent->getTagName()+L">";
+        if(indent >= 0) str += L"\n";
+    }
+    return str;
+}
+
 
 void Element::ClearElements()
 {
