@@ -52,6 +52,7 @@ typedef
 		char *type;
 		void *dest;
 		GB_TIMER *watch;
+		GB_VARIANT_VALUE tag;
 		unsigned state : 3;
 		unsigned error : 1;
 	}
@@ -78,5 +79,6 @@ typedef
 	
 void MEDIA_raise_event(void *_object, int event);
 CMEDIACONTROL *MEDIA_get_control_from_element(void *element);
+bool MEDIA_set_state(void *_object, int state, bool error);
 
 #endif /* __C_MEDIA_H */

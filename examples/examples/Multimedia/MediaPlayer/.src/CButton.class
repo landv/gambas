@@ -10,6 +10,8 @@ Property Image As Image
 Property Opacity As Float
 Property Highlight As Boolean
 Property Shortcut As String
+Property Text As String
+Property Font As Font
 
 Public Const MIN_OPACITY As Float = 0.2
 Public Const MAX_OPACITY As Float = 0.8
@@ -23,6 +25,8 @@ Private $fOpacity As Float = MIN_OPACITY
 Private $bHighlight As Boolean
 Private $hTimer As Timer
 Private $sShortcut As String
+Private $sText As String
+Private $hFont As Font
 
 Public Sub _new()
   
@@ -112,12 +116,13 @@ End
 
 Private Sub SetOpacity()
 
-  Dim X, Y As Integer
+  Dim X, Y, W, H As Integer
+  Dim hFont As Font
 
   $hDraw = $hImage.Copy()
+  Paint.Begin($hDraw)
+   
   If $sShortcut Then
-    
-    Paint.Begin($hDraw)
     
     Paint.Font = Font["Bold,+3"]
     
@@ -133,10 +138,26 @@ Private Sub SetOpacity()
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
     Paint.DrawText($sShortcut, $hDraw.W - 24, $hDraw.H - 24, 24, 24, Align.Center)
     
-    Paint.End
-    
   Endif
   
+  If $sText Then
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 64))
+    If $hFont Then
+      hFont = $hFont
+    Else
+      hFont = Font["Bold,+2"]
+    Endif
+    Paint.Font = hFont
+    W = hFont.TextWidth($sText) + 4
+    H = hFont.TextHeight($sText) + 2
+    Paint.Rectangle(($hDraw.W - W) / 2, $hDraw.H - H, W, H)
+    Paint.Fill
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
+    Paint.DrawText($sText, ($hDraw.W - W) / 2, $hDraw.H - H, W, H, Align.Center)
+  Endif
+  
+  Paint.End
+    
   $hDraw.Opacity($fOpacity)
   Me.Refresh
 
@@ -180,5 +201,31 @@ Private Sub Shortcut_Write(Value As String)
   $sShortcut = Value
   SetOpacity
   Me.Refresh
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  SetOpacity
+  Me.Refresh
+
+End
+
+Private Function Font_Read() As Font
+
+  Return $hFont
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $hFont = Value.Copy()
 
 End

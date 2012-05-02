@@ -177,9 +177,9 @@ END_PROPERTY
 BEGIN_PROPERTY(MediaPlayerAudio_Current)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_int(THIS, "audio-current"));
+		GB.ReturnInteger(get_int(THIS, "current-audio"));
 	else
-		set_int(THIS, "audio-current", VPROP(GB_INTEGER));
+		set_int(THIS, "current-audio", VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -199,9 +199,9 @@ END_PROPERTY
 BEGIN_PROPERTY(MediaPlayerAudio_Mute)
 
 	if (READ_PROPERTY)
-		GB.ReturnFloat(get_boolean(THIS, "mute"));
+		GB.ReturnBoolean(get_boolean(THIS, "mute"));
 	else
-		set_boolean(THIS, "mute", VPROP(GB_BOOLEAN));
+		set_boolean(THIS, "mute", VPROP(GB_BOOLEAN) != 0);
 
 END_PROPERTY
 
@@ -234,9 +234,9 @@ END_PROPERTY
 BEGIN_PROPERTY(MediaPlayerVideo_Current)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_int(THIS, "video-current"));
+		GB.ReturnInteger(get_int(THIS, "current-video"));
 	else
-		set_int(THIS, "video-current", VPROP(GB_INTEGER));
+		set_int(THIS, "current-video", VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -259,8 +259,23 @@ BEGIN_PROPERTY(MediaPlayerVideo_Visualisation)
 		GB.ReturnObject(get_control(THIS, "vis-plugin"));
 	else
 	{
-		set_control(THIS, "vis-plugin", VPROP(GB_OBJECT));
-		set_flag(THIS, GST_PLAY_FLAG_VIS, VPROP(GB_OBJECT) != NULL);
+		CMEDIACONTROL *vis = VPROP(GB_OBJECT);
+		CMEDIACONTROL *old = get_control(THIS, "vis-plugin");
+		bool playing;
+		
+		set_flag(THIS, GST_PLAY_FLAG_VIS, FALSE);
+		
+		playing = THIS->base.state == GST_STATE_PLAYING;
+		if (playing)
+			MEDIA_set_state(THIS, GST_STATE_PAUSED, FALSE);
+		
+		//set_control(THIS, "vis-plugin", NULL);
+		//if (vis)
+		set_control(THIS, "vis-plugin", vis);
+		if (vis) set_flag(THIS, GST_PLAY_FLAG_VIS, TRUE);
+		
+		if (playing)
+			MEDIA_set_state(THIS, GST_STATE_PLAYING, FALSE);
 	}
 
 END_PROPERTY
@@ -276,9 +291,9 @@ END_PROPERTY
 BEGIN_PROPERTY(MediaPlayerSubtitles_Current)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_int(THIS, "text-current"));
+		GB.ReturnInteger(get_int(THIS, "current-text"));
 	else
-		set_int(THIS, "text-current", VPROP(GB_INTEGER));
+		set_int(THIS, "current-text", VPROP(GB_INTEGER));
 
 END_PROPERTY
 

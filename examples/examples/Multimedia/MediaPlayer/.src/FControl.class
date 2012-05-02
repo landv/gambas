@@ -32,7 +32,7 @@ Public Sub _new()
 
   panToolbar.H = 48 + Desktop.Scale * 2
 
-  FMain.CreateButtons(["eject", "play", "pause", "stop", "fullscreen", "subtitle", "-"], panToolbar)
+  FMain.CreateButtons(["eject", "play", "pause", "stop", "fullscreen", "subtitle", "visualisation", "-"], panToolbar)
   
   sldTime = New DrawingArea(panToolbar) As "sldTime"
   sldTime.Resize(8, 8)
@@ -46,11 +46,13 @@ Public Sub _new()
   lblTime.Font = Font["Bold,+5"]
   lblTime.W = lblTime.Font.TextWidth("99:99:99 / 99:99:99") + 16
   
-  FMain.CreateButtons(["-", "quit"], panToolbar)
+  FMain.CreateButtons(["-", "volume", "quit"], panToolbar)
   
-  Me.H = 48 + Desktop.Scale * 2 + lblTitle.Font.Height
+  Me.H = 48 + Desktop.Scale * 4 + lblTitle.Font.Height
   Me.Arrangement = Arrange.Vertical
   panToolbar.Arrangement = Arrange.Horizontal
+  
+  FMain.GetButton("visualisation").Font = Font["-1"]
   
 End
 

@@ -2,11 +2,12 @@
 
 Private $hPlayer As MediaPlayer
 Private $hOutput As MediaControl
-Private $hVisualisation As MediaControl
+Private $aVisualisation As MediaControl[]
 
 Private $fPos As Float
 Private $fLength As Float
 Private $sInfo As String
+Private $iVisualisation As Integer
 
 Public Sub _new()
   
@@ -14,6 +15,19 @@ Public Sub _new()
   
 End
 
+Private Sub AddVisualisation(sType As String, sTitle As String)
+  
+  Dim hVisualisation As MediaControl
+  
+  hVisualisation = New MediaControl($hPlayer, sType)
+  hVisualisation.Tag = sTitle
+  $aVisualisation.Add(hVisualisation)
+  
+Catch
+  
+  Error sType; ": "; Error.Text
+  
+End
 
 Private Sub MakeMediaPlayer()
   
@@ -22,10 +36,33 @@ Private Sub MakeMediaPlayer()
   $hOutput = New MediaControl($hPlayer, "ximagesink")  
   $hPlayer.Video.Output = $hOutput
   
-  $hVisualisation = New MediaControl($hPlayer, "wavescope")
-  $hPlayer.Video.Visualisation = $hVisualisation
+  $aVisualisation = New MediaControl[]
+  'AddVisualisation("libvisual_lv_analyzer", "Analyze")
+  AddVisualisation("libvisual_bumpscope", "Bump")
+  AddVisualisation("libvisual_corona", "Corona")
+  AddVisualisation("goom", "Goom")
+  AddVisualisation("libvisual_infinite", "Infinite")
+  AddVisualisation("libvisual_jakdaw", "Jakdaw")
+  AddVisualisation("libvisual_jess", "Jess")
+  AddVisualisation("monoscope", "Mono")
+  AddVisualisation("libvisual_oinksie", "Oinksie")
+  AddVisualisation("libvisual_lv_scope", "Scope")
+  AddVisualisation("spacescope", "Space")
+  AddVisualisation("spectrascope", "Spectra")
+  AddVisualisation("synaescope", "Synae")
+  AddVisualisation("wavescope", "Wave")
+  
+  $iVisualisation = 2
+  UpdateVisualisation
   
 End
+
+Public Sub GetButton(sKey As String) As CButton
+  
+  Return FControl.Controls["#" & sKey]
+  
+End
+
 
 Public Sub CreateButtons(aButton As String[], hParent As Container)
   
@@ -54,6 +91,7 @@ Public Sub CreateButtons(aButton As String[], hParent As Container)
       hButton.Resize(48, 48)
       hButton.Image = Image.Load(sImg & ".png")
       hButton.Tag = sKey
+      hButton.Name = "#" & sKey
       'If cTooltip Then hButton.Tooltip = cTooltip[sImg]
       'If $cShortcut Then hButton.Shortcut = $cShortcut[sImg]
       '$cButton[hButton.Tag] = hButton
@@ -73,6 +111,8 @@ Public Sub Form_Open()
   
   FControl.Show
   
+  RefreshVolume
+  
 End
 
 Public Sub Form_KeyPress()
@@ -83,30 +123,38 @@ End
 
 Private Sub Action(sAction As String)
 
+  Dim fPos As Float
+  Dim iState As Integer
+
   Select sAction
     
     Case "eject"
       Dialog.Title = ("Select a media file")
       If Not Dialog.OpenFile() Then 
+        Action("stop")
+        $hPlayer.Subtitles.Enabled = False
         $hPlayer.URL = Media.URL(Dialog.Path)
         If Exist(File.SetExt(Dialog.Path, "srt")) Then 
           $hPlayer.Subtitles.URL = Media.URL(File.SetExt(Dialog.Path, "srt"))
           $hPlayer.Subtitles.Enabled = True
         Endif
+        UpdateSubtitle
         FControl.SetTitle(File.Name(Dialog.Path))
         Action("play")
       Endif
       
     Case "subtitle"
-      If $hPlayer.State = Media.Playing Or If $hPlayer.State = Media.Paused Then
-        $hPlayer.Subtitles.Enabled = Not $hPlayer.Subtitles.Enabled
-      Else
+      'If $hPlayer.State = Media.Playing Or If $hPlayer.State = Media.Paused Then
+      '  $hPlayer.Subtitles.Enabled = Not $hPlayer.Subtitles.Enabled
+      '  UpdateSubtitle
+      'Else
         Dialog.Title = ("Select a subtitle file")
         If Not Dialog.OpenFile() Then 
           $hPlayer.Subtitles.URL = Media.URL(Dialog.Path)
           $hPlayer.Subtitles.Enabled = True
+          UpdateSubtitle
         Endif
-      Endif
+      'Endif
       
     Case "play"
       $hOutput.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
@@ -130,6 +178,32 @@ Private Sub Action(sAction As String)
     Case "fullscreen"
       Me.FullScreen = Not Me.FullScreen
       Me.Maximized = Not Me.FullScreen
+      
+    Case "volume"
+      $hPlayer.Audio.Mute = Not $hPlayer.Audio.Mute
+      RefreshVolume
+      
+    Case "visualisation"
+      
+      iState = $hPlayer.State
+      If iState <> Media.Null And If iState <> Media.Ready Then
+        fPos = $hPlayer.Position
+        $hPlayer.Stop
+        $hPlayer.Close
+        timTime.Stop
+        'Wait 1
+      Endif
+      
+      Inc $iVisualisation
+      If $iVisualisation >= $aVisualisation.Count Then $iVisualisation = 0
+      UpdateVisualisation
+      
+      If iState <> Media.Null And If iState <> Media.Ready Then
+        $hPlayer.Pause
+        $hPlayer.Position = fPos
+        $hPlayer.State = iState
+        If iState = Media.Playing Then timTime.Start
+      Endif
     
     Case "quit"
       Me.Close
@@ -190,5 +264,55 @@ End
 Public Sub Form_Close()
 
   CAnimation.Exit
+
+End
+
+Public Sub Button_MouseWheel()
+  
+  $hPlayer.Audio.Mute = False
+  
+  If Mouse.Delta > 0 Then
+    $hPlayer.Audio.Volume = Min(1, (Sqr($hPlayer.Audio.Volume) + 0.05) ^ 2)
+  Else
+    $hPlayer.Audio.Volume = Max(0, (Sqr($hPlayer.Audio.Volume) - 0.05) ^ 2)
+  Endif
+  
+  RefreshVolume
+  
+End
+
+Private Sub RefreshVolume()
+  
+  Dim sImage As String
+  Dim fVolume As Float
+  
+  With GetButton("volume")
+    
+    If $hPlayer.Audio.Mute Then
+      sImage = "mute"
+      .Text = ""
+    Else
+      fVolume = Sqr($hPlayer.Audio.Volume)
+      .Text = Format(fVolume, "0%")
+      sImage = "volume-" & Min(3, CInt(fVolume * 4))
+    Endif
+    
+    .Image = Image.Load(sImage & ".png")
+    
+  End With
+  
+End
+
+Private Sub UpdateSubtitle()
+
+  GetButton("subtitle").Text = If($hPlayer.Subtitles.Enabled, "ON", "")
+
+End
+
+Private Sub UpdateVisualisation()
+
+  $hPlayer.Video.Visualisation = $aVisualisation[$iVisualisation]
+  GetButton("visualisation").Text = $aVisualisation[$iVisualisation].Tag
+  $hOutput.SetWindow(dwgVideo)
 
 End

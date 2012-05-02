@@ -1,21 +1,22 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,18)
+  MoveScaled(0,0,64,19)
+  Background = &H000000&
   Border = False
   Utility = True
-  Stacking = Window.Above
   SkipTaskbar = True
   Opacity = 80
+  Margin = True
   { Panel1 HBox
-    MoveScaled(1,1,61,5)
+    MoveScaled(1,2,61,6)
     Background = &H000000&
     AutoResize = True
     { Panel2 Panel
       MoveScaled(2,0,2,4)
     }
     { lblTitle Label
-      MoveScaled(14,1,43,2)
+      MoveScaled(13,1,43,2)
       Font = Font["Bold,+5"]
       Foreground = Color.LightForeground
       Expand = True
@@ -23,7 +24,7 @@
     }
   }
   { panToolbar Panel
-    MoveScaled(1,8,57,9)
+    MoveScaled(1,9,57,9)
     Background = &H000000&
     Margin = True
   }

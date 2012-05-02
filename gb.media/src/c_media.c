@@ -46,6 +46,25 @@ CMEDIACONTROL *MEDIA_get_control_from_element(void *element)
 		return (CMEDIACONTROL *)g_object_get_data(G_OBJECT(element), "gambas-control");
 }
 
+bool MEDIA_set_state(void *_object, int state, bool error)
+{
+	GstStateChangeReturn status;
+
+	status = gst_element_set_state(ELEMENT, state);
+	
+	if (status == GST_STATE_CHANGE_ASYNC)
+		status = gst_element_get_state(ELEMENT, NULL, NULL, GST_SECOND * 3);
+	
+	if (status == GST_STATE_CHANGE_FAILURE)
+	{
+		if (error) GB.Error("Cannot set status");
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
+
 static void return_value(const GValue *value)
 {
 	switch (G_VALUE_TYPE(value))
@@ -193,6 +212,8 @@ BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
 	MEDIA_TYPE *mtp;
 	GB_CLASS klass;
 	
+	THIS->tag.type = GB_T_NULL;
+	
 	if (MISSING(type))
 	{
 		klass = GB.GetClass(THIS);
@@ -244,6 +265,7 @@ BEGIN_METHOD_VOID(MediaControl_free)
 
 	GB.Unref(POINTER(&THIS->dest));
 	GB.FreeString(&THIS->type);
+	GB.StoreVariant(NULL, &THIS->tag);
 	
 	if (ELEMENT)
 	{
@@ -251,6 +273,15 @@ BEGIN_METHOD_VOID(MediaControl_free)
 		gst_object_unref(GST_OBJECT(ELEMENT));
 	}
 	
+END_METHOD
+
+BEGIN_PROPERTY(MediaControl_Tag)
+
+	if (READ_PROPERTY)
+		GB.ReturnVariant(&THIS->tag);
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), POINTER(&THIS->tag));
+
 END_METHOD
 
 BEGIN_PROPERTY(MediaControl_Type)
@@ -268,24 +299,6 @@ BEGIN_PROPERTY(MediaControl_Name)
 
 END_PROPERTY
 
-static bool set_state(void *_object, int state)
-{
-	GstStateChangeReturn status;
-
-	status = gst_element_set_state(ELEMENT, state);
-	
-	if (status == GST_STATE_CHANGE_ASYNC)
-		status = gst_element_get_state(ELEMENT, NULL, NULL, GST_SECOND * 3);
-	
-	if (status == GST_STATE_CHANGE_FAILURE)
-	{
-		GB.Error("Cannot set status");
-		return TRUE;
-	}
-	
-	return FALSE;
-}
-
 BEGIN_PROPERTY(MediaControl_State)
 
 	if (READ_PROPERTY)
@@ -302,7 +315,7 @@ BEGIN_PROPERTY(MediaControl_State)
 	}
 	else
 	{
-		set_state(THIS, VPROP(GB_INTEGER));
+		MEDIA_set_state(THIS, VPROP(GB_INTEGER), TRUE);
 	}
 
 END_PROPERTY
@@ -722,25 +735,25 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Play)
 
-	set_state(THIS, GST_STATE_PLAYING);
+	MEDIA_set_state(THIS, GST_STATE_PLAYING, TRUE);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Stop)
 
-	set_state(THIS, GST_STATE_READY);
+	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Close)
 
-	set_state(THIS, GST_STATE_NULL);
+	MEDIA_set_state(THIS, GST_STATE_NULL, TRUE);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Pause)
 
-	set_state(THIS, GST_STATE_PAUSED);
+	MEDIA_set_state(THIS, GST_STATE_PAUSED, TRUE);
 
 END_METHOD
 
@@ -848,6 +861,7 @@ GB_DESC MediaControlDesc[] =
 	GB_PROPERTY("Name", "s", MediaControl_Name),
 	GB_PROPERTY_READ("Type", "s", MediaControl_Type),
 	GB_PROPERTY("State", "i", MediaControl_State),
+	GB_PROPERTY("Tag", "v", MediaControl_Tag),
 			
 	GB_METHOD("_put", NULL, MediaControl_put, "(Value)v(Property)s"),
 	GB_METHOD("_get", "v", MediaControl_get, "(Property)s"),
