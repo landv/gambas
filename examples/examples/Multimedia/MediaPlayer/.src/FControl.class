@@ -1,0 +1,103 @@
+' Gambas class file
+
+Private sldTime As DrawingArea
+Private lblTime As DrawingArea
+
+Private $sInfo As String
+Private $iMinOpacity As Integer = 100
+
+Public Sub SetMinOpacity(iOpacity As Integer)
+  
+  $iMinOpacity = iOpacity
+  If Me.Opacity > $iMinOpacity And If Not Me.Hovered Then
+    CAnimation.Start(Me, "Opacity", $iMinOpacity, 250)
+  Endif
+  
+End
+
+
+Public Sub Form_Enter()
+
+  CAnimation.Start(Me, "Opacity", 100, 250)
+
+End
+
+Public Sub Form_Leave()
+
+  CAnimation.Start(Me, "Opacity", $iMinOpacity, 250)
+
+End
+
+Public Sub _new()
+
+  panToolbar.H = 48 + Desktop.Scale * 2
+
+  FMain.CreateButtons(["eject", "play", "pause", "stop", "fullscreen", "-"], panToolbar)
+  
+  sldTime = New DrawingArea(panToolbar) As "sldTime"
+  sldTime.Resize(8, 8)
+  sldTime.Expand = True
+  sldTime.Painted = True
+  sldTime.Mouse = Mouse.Pointing
+  
+  lblTime = New DrawingArea(panToolbar) As "lblTime"
+  lblTime.Resize(8, 8)
+  lblTime.Painted = True
+  lblTime.Font = Font["Bold,+5"]
+  lblTime.W = lblTime.Font.TextWidth("99:99:99 / 99:99:99") + 16
+  
+  FMain.CreateButtons(["-", "quit"], panToolbar)
+  
+  Me.H = 48 + Desktop.Scale * 2 + lblTitle.Font.Height
+  Me.Arrangement = Arrange.Vertical
+  panToolbar.Arrangement = Arrange.Horizontal
+  
+End
+
+Public Sub lblTime_Draw()
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  Paint.Font = lblTime.Font
+  Paint.DrawText($sInfo, 0, 0, Paint.W, Paint.H, Align.Center)
+  
+End
+
+Public Sub sldTime_Draw()
+  
+  Dim fLength As Float = FMain.GetLength()
+  If fLength = 0 Then Return
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
+  Paint.Rectangle(0, (Paint.H - 16) / 2, Paint.W, 16)
+  Paint.Fill
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  Paint.Rectangle(0, (Paint.H - 16) / 2, Paint.W * FMain.GetPos() / fLength, 16)
+  Paint.Fill
+  
+End
+
+Public Sub sldTime_MouseDown()
+  
+  FMain.SetPos(Mouse.X / sldTime.W)
+  
+End
+
+Public Sub SetInfo(sInfo As String)
+  
+  $sInfo = sInfo
+  lblTime.Refresh
+  sldTime.Refresh
+  
+End
+
+Public Sub Form_KeyPress()
+
+  FMain.Form_KeyPress
+
+End
+
+Public Sub SetTitle(sTitle As String)
+  
+  lblTitle.Text = sTitle
+  
+End

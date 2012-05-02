@@ -9,7 +9,8 @@ GB_COMPONENT_PKG_CONFIG(
   MEDIA,
   [GStreamer media],
   [src],
-  gstreamer-0.10)
+  gstreamer-0.10 gstreamer-interfaces-0.10
+)
 AC_OUTPUT( Makefile src/Makefile )
 
 GB_PRINT_MESSAGES

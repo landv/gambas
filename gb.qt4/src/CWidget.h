@@ -191,6 +191,7 @@ void CWIDGET_reset_color(CWIDGET *_object);
 int CWIDGET_get_background(CWIDGET *_object);
 int CWIDGET_get_foreground(CWIDGET *_object);
 void *CWIDGET_get_parent(void *_object);
+int CWIDGET_get_handle(void *_object);
 void CWIDGET_set_visible(CWIDGET *_object, bool v);
 //void CWIDGET_check_hovered();
 void CWIDGET_grab(CWIDGET *_object);

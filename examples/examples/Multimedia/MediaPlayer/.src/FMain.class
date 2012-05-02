@@ -1,0 +1,179 @@
+' Gambas class file
+
+Private $hPlayer As MediaPlayer
+Private $hOutput As MediaControl
+Private $fPos As Float
+Private $fLength As Float
+Private $sInfo As String
+
+Public Sub _new()
+  
+  Application.MainWindow = Me
+  
+End
+
+
+Private Sub MakeMediaPlayer()
+  
+  $hPlayer = New MediaPlayer As "MediaPlayer"
+  
+  $hOutput = New MediaControl($hPlayer, "ximagesink")
+  
+  $hPlayer.Video.Output = $hOutput
+  
+End
+
+Public Sub CreateButtons(aButton As String[], hParent As Container)
+  
+  Dim sKey As String
+  Dim sImg As String
+  Dim hPanel As Panel
+  Dim hButton As CButton
+  Dim iPos As Integer
+  
+  For Each sKey In aButton
+    
+    If sKey = "<->" Then
+      hPanel = New Panel(hParent)
+      hPanel.Expand = True
+      hPanel.Resize(8, 48)
+    Else If sKey = "-" Then
+      hPanel = New Panel(hParent)
+      hPanel.Resize(8, 48)
+    Else
+      
+      sImg = sKey
+      iPos = InStr(sImg, "#")
+      If iPos Then sImg = Left(sImg, iPos - 1)
+      
+      hButton = New CButton(hParent) As "Button"
+      hButton.Resize(48, 48)
+      hButton.Image = Image.Load(sImg & ".png")
+      hButton.Tag = sKey
+      'If cTooltip Then hButton.Tooltip = cTooltip[sImg]
+      'If $cShortcut Then hButton.Shortcut = $cShortcut[sImg]
+      '$cButton[hButton.Tag] = hButton
+    Endif
+  Next
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim sButton As String
+  Dim hButton As CButton
+  Dim hPanel As Panel
+  
+  MakeMediaPlayer
+  
+  FControl.Show
+  
+End
+
+Public Sub Form_KeyPress()
+  
+  If Key.Code = Key.Escape Then Action("quit")
+  
+End
+
+Private Sub Action(sAction As String)
+
+  Select sAction
+    
+    Case "eject"
+      Dialog.Title = ("Select a media file")
+      If Not Dialog.OpenFile() Then 
+        $hPlayer.URL = Media.URL(Dialog.Path)
+        If Exist(File.SetExt(Dialog.Path, "srt")) Then 
+          $hPlayer.Subtitles.URL = Media.URL(File.SetExt(Dialog.Path, "srt"))
+          $hPlayer.Subtitles.Enabled = True
+        Endif
+        FControl.SetTitle(File.Name(Dialog.Path))
+        Action("play")
+      Endif
+      
+    Case "play"
+      $hOutput.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
+      Try $hPlayer.Play
+      FControl.SetMinOpacity(0)
+      dwgVideo.Mouse = Mouse.Blank
+      timTime.Start
+      
+    Case "stop"
+      $hPlayer.Stop
+      $fLength = 0
+      timTime.Stop
+      dwgVideo.Mouse = Mouse.Default
+      FControl.SetMinOpacity(100)
+      
+    Case "pause"
+      $hPlayer.Pause
+      dwgVideo.Mouse = Mouse.Default
+      timTime.Stop
+      
+    Case "fullscreen"
+      Me.FullScreen = Not Me.FullScreen
+      Me.Maximized = Not Me.FullScreen
+    
+    Case "quit"
+      Me.Close
+    
+  End Select
+
+End
+
+Public Sub Button_Click()
+  
+  Action(Last.Tag)
+  
+End
+
+' Public Sub Form_Arrange()
+' 
+'   panToolbar.Move(0, Me.H - panToolbar.H, Me.W, panToolbar.H)
+' 
+' End
+
+Public Sub timTime_Timer()
+
+  $fPos = $hPlayer.Position
+  If $fLength = 0 Then $fLength = $hPlayer.Duration
+  FControl.SetInfo(Format(CDate(($fPos + 0.5) / 86400), "hh:nn:ss") & " / " & Format(CDate($fLength / 86400), "hh:nn:ss"))
+  
+End
+
+Public Sub GetLength() As Float
+  
+  Return $fLength
+  
+End
+
+Public Sub GetPos() As Float
+  
+  Return $fPos
+  
+End
+
+Public Sub SetPos(fPos As Float)
+  
+  If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
+    If $fLength Then
+      $fPos = fPos * $fLength
+      $hPlayer.Position = $fPos
+    Endif
+  Endif
+  
+End
+
+Public Sub Form_Resize()
+
+  FControl.Move(0, Me.H - FControl.H, Me.W, FControl.H)
+
+End
+
+Public Sub Form_Close()
+
+  CAnimation.Exit
+
+End

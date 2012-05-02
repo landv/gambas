@@ -791,6 +791,7 @@ bool (*gApplication::onKeyEvent)(int) = NULL;
 guint32 gApplication::_event_time = 0;
 bool gApplication::_close_next_window = false;
 bool gApplication::_fix_printer_dialog = false;
+gMainWindow *gApplication::_main_window = NULL;
 
 void gApplication::grabPopup()
 {

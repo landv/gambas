@@ -27,11 +27,12 @@
 #define __MAIN_H
 
 #include <gst/gst.h>
-
 #include "gambas.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 #endif
+
+int MAIN_get_x11_handle(void *control);
 
 #endif /* __MAIN_H */

@@ -295,6 +295,11 @@ extern "C"
 			#endif
 			return TRUE;
 		}
+		else if (!strcasecmp(key, "GET_HANDLE"))
+		{
+			*value = (void *)CWIDGET_get_handle;
+			return TRUE;
+		}
 		else
 			return FALSE;
 	}

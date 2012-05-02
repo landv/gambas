@@ -76,6 +76,9 @@ public:
 	
 	static void grabPopup();
 	static void ungrabPopup();
+	
+	static void setMainWindow(gMainWindow *win) { _main_window = win; }
+	static gMainWindow *mainWindow() { return _main_window; }
 
 	//"Private"
 	static bool _busy;
@@ -92,6 +95,7 @@ public:
 	static gControl *_active_control;
 	static gControl *_old_active_control;
 	static guint32 _event_time;
+	static gMainWindow *_main_window;
 	static bool _close_next_window;
 	static bool _fix_printer_dialog;
 };

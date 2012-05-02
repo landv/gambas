@@ -36,7 +36,7 @@ public:
 //"Properties"
 	bool hasBorder();
 	bool isResizable();
-	int getType();
+	bool isUtility();
 	gPicture *icon() { return _icon; }
 	gPicture *picture() { return _picture; }
 	bool mask() { return _mask; }
@@ -63,7 +63,7 @@ public:
 
 	void setBorder(bool b);
 	void setResizable(bool b);
-	void setType(int type);
+	void setUtility(bool v);
 	void setIcon(gPicture *pic);
 	void setMask(bool vl);
 	void setPicture(gPicture *pic);

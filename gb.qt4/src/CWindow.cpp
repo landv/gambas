@@ -127,6 +127,7 @@ bool CWINDOW_has_property(QWidget *w, Atom property)
 
 	return X11_window_has_property(w->winId(), property);
 }
+
 #endif
 
 // Fix a QT little boring visual bug on menubars

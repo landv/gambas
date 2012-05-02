@@ -335,6 +335,11 @@ CWIDGET *GetContainer(CWIDGET *control)
 	return control;
 }
 
+int CWIDGET_get_handle(void *_object)
+{
+	return CONTROL->handle();
+}
+
 int CWIDGET_check(void *_object)
 {
 	return (!CONTROL || CONTROL->isDestroyed());

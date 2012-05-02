@@ -45,6 +45,23 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
+int MAIN_get_x11_handle(void *control)
+{
+	int (*get_handle)(void *) = NULL;
+	
+	if (!get_handle)
+	{
+		GB.GetComponentInfo("GET_HANDLE", (void **)&get_handle);
+		if (!get_handle)
+		{
+			GB.Error("Unable to get window handle");
+			return 0;
+		}
+	}
+	
+	return (*get_handle)(control);
+}
+
 static void *_old_hook_main;
 
 static void hook_main(int *argc, char ***argv)

@@ -297,6 +297,9 @@ gMainWindow::~gMainWindow()
 	if (_active == this)
 		_active = NULL;
 	
+	if (gApplication::mainWindow() == this)
+		gApplication::setMainWindow(NULL);
+	
 	windows = g_list_remove(windows, (gpointer)this);
 }
 
@@ -476,12 +479,7 @@ void gMainWindow::setVisible(bool vl)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
 			
 			if (!_xembed)
-			{
 				gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
-				active = gDesktop::activeWindow();
-				if (isModal() && active && active != this)
-					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->topLevel()->border));
-			}
 			
 			// Thanks for Ubuntu's GTK+ patching :-(
 			#if GTK_CHECK_VERSION(3,0,0)
@@ -499,7 +497,17 @@ void gMainWindow::setVisible(bool vl)
 			}
 			else
 				gtk_window_present(GTK_WINDOW(border));
-			//gtk_window_move(GTK_WINDOW(border), bufX, bufY);
+
+			if (isUtility())
+			{
+				gMainWindow *parent = _current;
+				
+				if (!parent && gApplication::mainWindow() && gApplication::mainWindow() != this)
+					parent = gApplication::mainWindow();
+				
+				if (parent)
+					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(parent->border));
+			}
 		}
 		else 
 		{
@@ -1262,27 +1270,25 @@ void gMainWindow::setActiveWindow(gControl *control)
 }
 
 #ifdef GDK_WINDOWING_X11
-int gMainWindow::getType()
+bool gMainWindow::isUtility()
 {
-	if (!isTopLevel())
-		return 0;
-	return _type; //X11_get_window_type(handle());
+	return gtk_window_get_type_hint(GTK_WINDOW(border)) == GDK_WINDOW_TYPE_HINT_UTILITY;
 }
 
-void gMainWindow::setType(int type)
+void gMainWindow::setUtility(bool v)
 {
 	if (!isTopLevel())
 		return;
-	X11_set_window_type(handle(), type);
-	_type = type;
+	
+	gtk_window_set_type_hint(GTK_WINDOW(border), v ? GDK_WINDOW_TYPE_HINT_UTILITY : GDK_WINDOW_TYPE_HINT_NORMAL);
 }
 #else
-int gMainWindow::getType()
+bool gMainWindow::isUtility()
 {
-	return 0;
+	return false;
 }
 
-void gMainWindow::setType()
+void gMainWindow::setUtility(bool v)
 {
 }
 #endif

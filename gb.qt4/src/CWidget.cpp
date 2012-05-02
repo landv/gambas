@@ -228,6 +228,11 @@ void *CWIDGET_get_parent(void *_object)
     return CWidget::get(parent);
 }
 
+int CWIDGET_get_handle(void *_object)
+{
+	return (int)WIDGET->winId();
+}
+
 static bool is_visible(void *_object)
 {
 	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();

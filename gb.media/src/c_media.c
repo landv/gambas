@@ -26,6 +26,7 @@
 #define __C_MEDIA_C
 
 #include "c_media.h"
+#include <gst/interfaces/xoverlay.h>
 
 void MEDIA_raise_event(void *_object, int event)
 {
@@ -497,6 +498,46 @@ BEGIN_METHOD(MediaControl_Activate, GB_STRING signal)
 END_METHOD
 #endif
 
+BEGIN_METHOD(MediaControl_SetWindow, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	void *control = VARG(control);
+	long wid;
+	int x, y, w, h;
+	
+	if (!gst_element_implements_interface(ELEMENT, GST_TYPE_X_OVERLAY))
+	{
+		GB.Error("Not supported on this control");
+		return;
+	}
+	
+	if (control && GB.CheckObject(control))
+		return;
+	
+	if (control)
+	{
+		wid = MAIN_get_x11_handle(control);
+		if (wid == 0)
+			return;
+	}
+	else
+		wid = 0;
+	
+	gst_x_overlay_set_window_handle(GST_X_OVERLAY(ELEMENT), (guintptr)wid);
+	
+	if (wid && !MISSING(x) && !MISSING(y) && !MISSING(w) && !MISSING(h))
+	{
+		x = VARG(x);
+		y = VARG(y);
+		w = VARG(w);
+		h = VARG(h);
+		
+		if (w > 0 && h > 0)
+			gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(ELEMENT), x, y, w, h);
+	}
+	gst_x_overlay_expose(GST_X_OVERLAY(ELEMENT));
+
+END_PROPERTY
+
 //---- MediaContainer -----------------------------------------------------
 
 static bool add_input_output(void *_object, CMEDIACONTROL *child, char *name, int direction, const char *dir_error, const char *unknown_error)
@@ -817,7 +858,7 @@ GB_DESC MediaControlDesc[] =
 	GB_PROPERTY_READ("Inputs", "String[]", MediaControl_Inputs),
 	GB_PROPERTY_READ("Outputs", "String[]", MediaControl_Outputs),
 	
-	//GB_METHOD("Activate", NULL, MediaControl_Activate, "(Signal)s"),
+	GB_METHOD("SetWindow", NULL, MediaControl_SetWindow, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
 	
 	GB_EVENT("State", NULL, NULL, &EVENT_State),
 	//GB_EVENT("Signal", NULL, "(Arg)MediaSignalArguments", &EVENT_Signal),

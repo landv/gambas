@@ -1160,6 +1160,11 @@ int EXPORT GB_INFO(const char *key, void **value)
 		*value = (void *)x11_set_event_filter;
 		return TRUE;
 	}
+	else if (!strcasecmp(key, "GET_HANDLE"))
+	{
+		*value = (void *)CWIDGET_get_handle;
+		return TRUE;
+	}
 	else
 		return FALSE;
 }

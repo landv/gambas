@@ -201,7 +201,10 @@ BEGIN_PROPERTY(Application_MainWindow)
 	if (READ_PROPERTY)
 		GB.ReturnObject(CWINDOW_Main);
 	else
+	{
 		CWINDOW_Main = (CWINDOW *)VPROP(GB_OBJECT);
+		gApplication::setMainWindow(CWINDOW_Main ? (gMainWindow *)CWINDOW_Main->ob.widget : NULL);
+	}
 
 END_PROPERTY
 
