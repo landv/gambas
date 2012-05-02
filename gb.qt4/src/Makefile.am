@@ -14,7 +14,7 @@ gb_qt4_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@
 gb_qt4_la_CXXFLAGS = -DGB_QT_COMPONENT $(AM_CXXFLAGS)
 
 gb_qt4_la_SOURCES = \
- gb.x11.h x11.h x11.c \
+ x11.h x11.c \
  gb.qt.h main.h main_moc.cpp main.cpp \
  CFont.h CFont.cpp \
  CScreen.h CScreen.cpp \
