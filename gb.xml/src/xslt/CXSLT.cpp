@@ -40,6 +40,8 @@
 #include "../element.cpp"
 #include "../node.h"
 #include "../node.cpp"
+#include "../textnode.h"
+#include "../textnode.cpp"
 
 BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
 
