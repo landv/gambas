@@ -317,8 +317,8 @@ AC_DEFUN([GB_INIT],
   dnl ---- Debug flags
   
   if test "$gambas_debug" = "yes"; then
-    AM_CFLAGS="$AM_CFLAGS -g"
-    AM_CXXFLAGS="$AM_CXXFLAGS -g"
+    AM_CFLAGS="$AM_CFLAGS -g -ggdb"
+    AM_CXXFLAGS="$AM_CXXFLAGS -g -ggdb"
   fi
 
   dnl ---- Optimization flags

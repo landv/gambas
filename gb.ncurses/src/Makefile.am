@@ -1,12 +1,11 @@
 COMPONENT = gb.ncurses
 include $(top_srcdir)/component.am
 
-INCLUDES = @NCURSES_INC@
-
 gblib_LTLIBRARIES = gb.ncurses.la
 
 gb_ncurses_la_LIBADD = @NCURSES_LIB@
 gb_ncurses_la_LDFLAGS = -module @LD_FLAGS@ @NCURSES_LDFLAGS@
+gb_ncurses_la_CPPFLAGS = @NCURSES_INC@
 
 gb_ncurses_la_SOURCES = \
  main.h main.c \

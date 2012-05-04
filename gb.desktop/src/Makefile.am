@@ -3,12 +3,11 @@ include $(top_srcdir)/component.am
 
 SUBDIRS = . @GNOME_DIR@
 
-INCLUDES = @DESKTOP_INC@
-
 gblib_LTLIBRARIES = gb.desktop.la
 
 gb_desktop_la_LIBADD = @DESKTOP_LIB@
 gb_desktop_la_LDFLAGS = -module @LD_FLAGS@ @DESKTOP_LDFLAGS@
+gb_desktop_la_CPPFLAGS = @DESKTOP_INC@
 
 gb_desktop_la_SOURCES = \
  main.c main.h \

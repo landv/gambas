@@ -5,7 +5,7 @@ gblib_LTLIBRARIES = gb.dbus.la
 
 gb_dbus_la_LIBADD = @DBUS_LIB@
 gb_dbus_la_LDFLAGS = -module @LD_FLAGS@ @DBUS_LDFLAGS@
-gb_dbus_la_CFLAGS = @DBUS_INC@
+gb_dbus_la_CPPFLAGS = @DBUS_INC@
 
 gb_dbus_la_SOURCES = \
 	main.c main.h \

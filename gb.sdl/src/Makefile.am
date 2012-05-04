@@ -2,12 +2,12 @@ COMPONENT = gb.sdl
 include $(top_srcdir)/component.am
 
 gblib_LTLIBRARIES = gb.sdl.la
-INCLUDES = @SDL_INC@
 EXTRA_DIST = data
 
 gb_sdl_la_LIBADD = @SDL_LIB@
 gb_sdl_la_LDFLAGS = -module @LD_FLAGS@ @SDL_LDFLAGS@
 gb_sdl_la_CXXFLAGS = $(AM_CXXFLAGS) -DDATA_DIR=\"$(DESTDIR)$(gbdatadir)/$(COMPONENT)\"
+gb_sdl_la_CPPFLAGS = @SDL_INC@
 
 gb_sdl_la_SOURCES = \
  SDL_h.h \
