@@ -30,6 +30,7 @@
 #undef _GNU_SOURCE
 #endif
 #define _GNU_SOURCE 500
+
 #define _FILE_OFFSET_BITS 64
 
 #define _ISOC9X_SOURCE	1
@@ -57,14 +58,16 @@
 #endif
 
 #if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
+
 #include <getopt.h>
 #define HAVE_GETOPT_LONG 1
+
 #endif
 
 #if defined(OS_CYGWIN)
 
-typedef void (*sighandler_t) (int);
-typedef unsigned long ulong;
+	typedef void (*sighandler_t) (int);
+	typedef unsigned long ulong;
 
 #endif
 
@@ -164,10 +167,10 @@ typedef
 #elif defined (__alpha__) && !defined(__osf__) && defined (__GNUC__) && __GNUC__ >= 2
 	#define BREAKPOINT()	{ __asm__ __volatile__ ("bpt"); }
 #else	/* !__i386__ && !__alpha__ */
-	#define BREAKPOINT()	{ raise (SIGTRAP); }
+	#define BREAKPOINT()	{ raise(SIGTRAP); }
 #endif	/* __i386__ */
 
-#define COPYRIGHT "(c) 2000-2011 Benoît Minisini\n\n" \
+#define COPYRIGHT "(c) 2000-2012 Benoît Minisini\n\n" \
 	"This program is free software; you can redistribute it and/or \n" \
 	"modify it under the terms of the GNU General Public License as \n" \
 	"published by the Free Software Foundation; either version 2, or \n" \

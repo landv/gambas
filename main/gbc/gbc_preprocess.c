@@ -181,6 +181,8 @@ static int get_value(void)
 		return 1;
 	else if (is_current(RS_DEBUG))
 		return JOB->debug;
+	else if (is_current(RS_EXEC))
+		return JOB->exec;
 	
 	return 0;
 }

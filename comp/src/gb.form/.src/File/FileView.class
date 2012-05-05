@@ -370,6 +370,8 @@ Private Sub Current_Write(sFile As String)
 
   Dim sKey As String
 
+  'Debug sFile
+
   GetView().UnselectAll
   sKey = "0" & sFile
   If Not GetView().Exist(sKey) Then sKey = "1" & sFile

@@ -1219,10 +1219,13 @@ void CLASS_load_real(CLASS *class)
 	char *name = class->name;
 	int len = strlen(name);
 
-	if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
+	if (class->state == CS_NULL)
 	{
-		CLASS_create_array_class(class);
-		return;
+		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
+		{
+			CLASS_create_array_class(class);
+			return;
+		}
 	}
 
 	CLASS_load_without_init(class);

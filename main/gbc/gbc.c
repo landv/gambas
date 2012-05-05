@@ -79,6 +79,7 @@ static struct option Long_options[] =
 #endif
 
 static bool main_debug = FALSE;
+static bool main_exec = FALSE;
 static bool main_verbose = FALSE;
 static bool main_compile_all = FALSE;
 static bool main_trans = FALSE;
@@ -101,9 +102,9 @@ static void get_arguments(int argc, char **argv)
 	for(;;)
 	{
 		#if HAVE_GETOPT_LONG
-			opt = getopt_long(argc, argv, "gvaVhLtpmser:", Long_options, &index);
+			opt = getopt_long(argc, argv, "gxvaVhLtpmser:", Long_options, &index);
 		#else
-			opt = getopt(argc, argv, "gvaVhLtpmser:");
+			opt = getopt(argc, argv, "gxvaVhLtpmser:");
 		#endif
 		if (opt < 0) break;
 
@@ -115,6 +116,10 @@ static void get_arguments(int argc, char **argv)
 
 			case 'g':
 				main_debug = TRUE;
+				break;
+
+			case 'x':
+				main_exec = TRUE;
 				break;
 
 			case 'v':
@@ -182,6 +187,7 @@ static void get_arguments(int argc, char **argv)
 					"  -h  --help                 display this help\n"
 					"  -L  --license              display license\n"
 					"  -e  --translate-errors     display translatable error messages\n"
+					"  -x  --exec                 define the 'Exec' preprocessor constant\n"
 					#else
 					" (no long options on this system)\n"
 					"  -g                         add debugging information\n"
@@ -196,6 +202,7 @@ static void get_arguments(int argc, char **argv)
 					"  -h                         display this help\n"
 					"  -L                         display license\n"
 					"  -e                         display translatable error messages\n"
+					"  -x                         define the 'Exec' preprocessor constant\n"
 					#endif
 					"\n"
 					);
@@ -267,6 +274,7 @@ static void compile_file(const char *file)
 
 	JOB->all = main_compile_all;
 	JOB->debug = main_debug;
+	JOB->exec = main_exec;
 	JOB->verbose = main_verbose;
 	JOB->swap = main_swap;
 	JOB->public_module = main_public_module;

@@ -8,6 +8,8 @@ Private $fPos As Float
 Private $fLength As Float
 Private $sInfo As String
 Private $iVisualisation As Integer
+Private $fVolume As Float
+Private $bSuspend As Boolean
 
 Public Sub _new()
   
@@ -41,7 +43,8 @@ Private Sub MakeMediaPlayer()
   AddVisualisation("libvisual_bumpscope", "Bump")
   AddVisualisation("libvisual_corona", "Corona")
   AddVisualisation("goom", "Goom")
-  AddVisualisation("libvisual_infinite", "Infinite")
+  ' Buggy infinite
+  'AddVisualisation("libvisual_infinite", "Infinite")
   AddVisualisation("libvisual_jakdaw", "Jakdaw")
   AddVisualisation("libvisual_jess", "Jess")
   AddVisualisation("monoscope", "Mono")
@@ -157,6 +160,7 @@ Private Sub Action(sAction As String)
       'Endif
       
     Case "play"
+      SuspendScreenSaver
       $hOutput.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
       Try $hPlayer.Play
       FControl.SetMinOpacity(0)
@@ -164,6 +168,7 @@ Private Sub Action(sAction As String)
       timTime.Start
       
     Case "stop"
+      ResumeScreenSaver
       $hPlayer.Stop
       $fLength = 0
       timTime.Stop
@@ -171,6 +176,7 @@ Private Sub Action(sAction As String)
       FControl.SetMinOpacity(80)
       
     Case "pause"
+      ResumeScreenSaver
       $hPlayer.Pause
       dwgVideo.Mouse = Mouse.Default
       timTime.Stop
@@ -191,7 +197,7 @@ Private Sub Action(sAction As String)
         $hPlayer.Stop
         $hPlayer.Close
         timTime.Stop
-        'Wait 1
+        'FadeOut
       Endif
       
       Inc $iVisualisation
@@ -203,6 +209,7 @@ Private Sub Action(sAction As String)
         $hPlayer.Position = fPos
         $hPlayer.State = iState
         If iState = Media.Playing Then timTime.Start
+        'FadeIn
       Endif
     
     Case "quit"
@@ -249,7 +256,11 @@ Public Sub SetPos(fPos As Float)
   If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
     If $fLength Then
       $fPos = fPos * $fLength
+      '$hPlayer.Pause
+      'FadeOut
       $hPlayer.Position = $fPos
+      '$hPlayer.Play
+      'FadeIn
     Endif
   Endif
   
@@ -263,6 +274,7 @@ End
 
 Public Sub Form_Close()
 
+  ResumeScreenSaver
   CAnimation.Exit
 
 End
@@ -315,4 +327,62 @@ Private Sub UpdateVisualisation()
   GetButton("visualisation").Text = $aVisualisation[$iVisualisation].Tag
   $hOutput.SetWindow(dwgVideo)
 
+End
+
+Public Sub dwgVideo_Draw()
+
+  If $hPlayer.State = Media.Null Then
+    Draw.Font = Font["+5"]
+    Draw.Foreground = Color.Gray
+    Draw.RichText(("<h1>MediaPlayer</h1>A media player example based on GStreamer and Gambas.<br><i>Made by Benoît Minisini.</i>"), 0, 0, dwgVideo.Width, dwgVideo.Height, Align.Center)
+  Endif
+
+End
+
+Public Sub MediaPlayer_End()
+  
+  Action("stop")
+  
+End
+
+Private Sub FadeOut()
+  
+  Dim I As Integer
+  
+  $fVolume = $hPlayer.Audio.Volume
+  
+  Do
+    Debug $hPlayer.Audio.Volume 
+    $hPlayer.Audio.Volume = Max(0, $hPlayer.Audio.Volume - 0.05)
+    If $hPlayer.Audio.Volume = 0 Then Break
+    Sleep 0.01
+  Loop
+  
+End
+
+Private Sub FadeIn()
+  
+  Dim I As Integer
+  
+  Do
+    Debug $hPlayer.Audio.Volume 
+    $hPlayer.Audio.Volume = Min($fVolume, $hPlayer.Audio.Volume + 0.05)
+    If $hPlayer.Audio.Volume >= $fVolume Then Break
+    Sleep 0.01
+  Loop
+  
+End
+
+Private Sub SuspendScreenSaver()
+  
+  If $bSuspend Then Return
+  Desktop.ScreenSaver.Suspend(Me)
+  
+End
+
+Private Sub ResumeScreenSaver()
+  
+  If Not $bSuspend Then Return
+  Desktop.ScreenSaver.Resume(Me)
+  
 End

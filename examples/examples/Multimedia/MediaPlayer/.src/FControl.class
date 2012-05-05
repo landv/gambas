@@ -9,7 +9,7 @@ Private $iMinOpacity As Integer = 80
 Public Sub SetMinOpacity(iOpacity As Integer)
   
   $iMinOpacity = iOpacity
-  If Me.Opacity > $iMinOpacity And If Not Me.Hovered Then
+  If Me.Opacity < $iMinOpacity Then
     CAnimation.Start(Me, "Opacity", $iMinOpacity, 250)
   Endif
   
@@ -38,6 +38,7 @@ Public Sub _new()
   sldTime.Resize(8, 8)
   sldTime.Expand = True
   sldTime.Painted = True
+  sldTime.Tracking = True
   sldTime.Mouse = Mouse.Pointing
   
   lblTime = New DrawingArea(panToolbar) As "lblTime"
@@ -80,7 +81,13 @@ End
 
 Public Sub sldTime_MouseDown()
   
-  FMain.SetPos(Mouse.X / sldTime.W)
+  If Mouse.Left Then FMain.SetPos(Mouse.X / sldTime.W)
+  
+End
+
+Public Sub sldTime_MouseMove()
+  
+  If Mouse.Left Then FMain.SetPos(Mouse.X / sldTime.W)
   
 End
 

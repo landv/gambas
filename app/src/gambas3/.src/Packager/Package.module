@@ -105,7 +105,7 @@ Private Sub InitMake(sSys As String)
   
   If Project.Prefix Then 
     If Project.Vendor Then 
-      $sPrefix = String.LCase(Project.Vendor) & "-"
+      $sPrefix = Replace(String.LCase(Project.Vendor), " ", "_") & "-"
     Else 
       $sPrefix = "gambas" & System.Version & "-"
     Endif
@@ -722,7 +722,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "#!/usr/bin/make -f"
   Print #hFile, "build: build-stamp\nbuild-stamp:"
   Print #hFile, "\tdh_testdir\n\ttouch build-stamp"
-  Print #hFile, "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False) & " src" &/ $sName
+  Print #hFile, "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & " src" &/ $sName
   Print #hFile, "\tgba"; System.Version & " src" &/ $sName
   Print #hFile
   Print #hFile, "clean:"
@@ -954,7 +954,7 @@ Private Function MakeRpmPackage(sSys As String)
     ' How can we do that? Hardcode installation path according to the distribution?
 
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
      
     Print #hFile, "\n%install"
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
@@ -975,7 +975,7 @@ Private Function MakeRpmPackage(sSys As String)
   Else 
   
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
   
     Print #hFile, "\n%install"
   
@@ -1380,10 +1380,10 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   
   ' 2. Copy needed files 
 
-  Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False), "*/bin/gbc" & System.Version & " *")[1]
+  Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False), "*/bin/gbc" & System.Version & " *")[1]
 
   'Mkdir sBuildDir &/ Project.Name
-  Shell "cp -r " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
+  Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
   sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
   sFile = Replace(sFile, "$(EXTRA_TEST)", Project.ExtraAutoconfTest)

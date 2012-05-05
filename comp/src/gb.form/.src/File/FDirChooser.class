@@ -360,9 +360,10 @@ End
 
 Public Sub fvwChoose_Select()
 
-  'IF txtFile.Visible THEN 
-  txtFile.Text = fvwChoose.Current
-  If $bFile Then Raise Change
+  If fvwChoose.Current Or If txtFile.ReadOnly Then
+    txtFile.Text = fvwChoose.Current
+    If $bFile Then Raise Change
+  Endif
   
 End
 

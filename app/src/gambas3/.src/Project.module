@@ -2177,7 +2177,7 @@ Public Sub DeleteCompiledFiles()
 
 End
 
-Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bIDE As Boolean) As String
+Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bMakeExecutable As Boolean, bIDE As Boolean) As String
 
   Dim sExec As String
 
@@ -2187,6 +2187,7 @@ Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bIDE As 
   If Localize Then sExec &= "-t "
   If ControlPublic Then sExec &= "-p "
   If ModulePublic Then sExec &= "-m "
+  If bMakeExecutable Then sExec &= "-x "
   'sExec = sExec & "-c " & Quote(CLASSES_FILE) & " " & Quote(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1"
   If bIDE Then
     sExec = sExec & Shell$(Project.Dir)
@@ -2214,7 +2215,7 @@ Private Sub GetInfoFile() As String
 
 End
 
-Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, Optional bNoMessage As Boolean) As Boolean
+Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, Optional bNoMessage As Boolean, Optional bMakeExecutable As Boolean) As Boolean
 
   Dim sExec As String
   Dim sRes As String
@@ -2252,7 +2253,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
 
   sBefore = GetInfoFile()
 
-  sExec = GetCompileCommand(bAll, bNoDebug, True)
+  sExec = GetCompileCommand(bAll, bNoDebug, bMakeExecutable, True)
   Shell sExec Wait
 
   'Stat(OUTPUT_FILE)
@@ -2728,7 +2729,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Exec ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] Wait
   'MOVE Project.Dir &/ ".gambas" TO Project.Dir &/ ".gambas.save"
 
-  If Not Compile(True, Not KeepDebugInfo) Then
+  If Not Compile(True, Not KeepDebugInfo, False, True) Then
 
     GetVersion()
 

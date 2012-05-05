@@ -40,37 +40,38 @@
 
 typedef
 	struct {
-		char *name;                        /* source file name */
-		int line;                          /* current line number */
-		int first_line;                    /* first line to compile */
-		int max_line;                      /* maximum line number */
-		char *source;                      /* source file contents */
-		unsigned verbose : 1;              /* verbose compilation */
-		unsigned debug : 1;                /* if debugging information must be generated */
-		unsigned trans : 1;                /* if translation files must be generated */
-		unsigned is_module : 1;            /* if the source file is a module */
-		unsigned is_form : 1;              /* if the source is a class form */
-		unsigned declared : 1;             /* ? */
-		unsigned nobreak : 1;              /* no breakpoint */
-		unsigned exported : 1;             /* there are some exported class */
-		unsigned all : 1;                  /* compile everything */
-		unsigned swap : 1;                 /* endianness must be swapped */
-		unsigned public_module : 1;        /* modules symbols are public by default */
-		unsigned trans_error : 1;          /* display error messages in a translatable form */
-		unsigned no_old_read_syntax : 1;   /* do not compile the old read syntax */
-		unsigned column : 1;               /* search column where there is an error */
-		unsigned _reserved : 18;           /* reserved*/
-		char *output;                      /* output file */
-		PATTERN *pattern;                  /* lexical analyze */
-		int pattern_count;                 /* number of patterns */
-		PATTERN *current;                  /* current pattern */
-		PATTERN *end;                      /* last pattern */
-		FUNCTION *func;                    /* current function being compiled */
-		CLASS *class;                      /* current class being compiled */
-		char *form;                        /* form file name */
-		const FORM_FAMILY *family;         /* form file family */
-		char *tname;                       /* translation file name */
-		int default_library;               /* default library name for extern declarations */
+		char *name;                        // source file name
+		int line;                          // current line number
+		int first_line;                    // first line to compile
+		int max_line;                      // maximum line number
+		char *source;                      // source file contents
+		unsigned verbose : 1;              // verbose compilation
+		unsigned debug : 1;                // if debugging information must be generated
+		unsigned trans : 1;                // if translation files must be generated
+		unsigned is_module : 1;            // if the source file is a module
+		unsigned is_form : 1;              // if the source is a class form
+		unsigned declared : 1;             // ?
+		unsigned nobreak : 1;              // no breakpoint
+		unsigned exported : 1;             // there are some exported class
+		unsigned all : 1;                  // compile everything
+		unsigned swap : 1;                 // endianness must be swapped
+		unsigned public_module : 1;        // modules symbols are public by default
+		unsigned trans_error : 1;          // display error messages in a translatable form
+		unsigned no_old_read_syntax : 1;   // do not compile the old read syntax
+		unsigned column : 1;               // search column where there is an error
+		unsigned exec : 1;                 // we are compiling for an executable
+		unsigned _reserved : 17;           // reserved
+		char *output;                      // output file
+		PATTERN *pattern;                  // lexical analyze
+		int pattern_count;                 // number of patterns
+		PATTERN *current;                  // current pattern
+		PATTERN *end;                      // last pattern
+		FUNCTION *func;                    // current function being compiled
+		CLASS *class;                      // current class being compiled
+		char *form;                        // form file name
+		const FORM_FAMILY *family;         // form file family
+		char *tname;                       // translation file name
+		int default_library;               // default library name for extern declarations
 		}
 	COMPILE;
 
