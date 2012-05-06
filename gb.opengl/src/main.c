@@ -30,15 +30,11 @@
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
 
-void Init(void );
+bool Init(void);
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-/* GL */
 	Cgl,
-/* GLU */
-//	Cglu,
-
 	NULL
 };
 
@@ -93,7 +89,7 @@ void EXPORT GB_EXIT()
 {
 }
 
-bool Init()
+bool Init(void)
 {
 	static bool _init = FALSE;
 	
@@ -110,6 +106,6 @@ bool Init()
 	else
 	{
 		_init = TRUE;
-		return FALSE
+		return FALSE;
 	}
 }
