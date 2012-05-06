@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gb.gl.h
+  main.h
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2012 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,22 +21,19 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
 #include "gambas.h"
+#include "../gb.gtk.h"
+#include "gb.gl.h"
+#include <gtk/gtk.h>
+#include <gtk/gtkgl.h>
 
-#define GL_INTERFACE_VERSION 1
-
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    bool (*Init)(void);
-
-    void *_null;
-  }
-  GL_INTERFACE;
+#ifndef __MAIN_CPP
+extern GB_INTERFACE GB;
+extern GTK_INTERFACE GTK;
+extern GL_INTERFACE GL;
+#endif
 
 #endif

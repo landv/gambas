@@ -1,7 +1,7 @@
 COMPONENT = gb.gtk
 include $(top_srcdir)/component.am
 
-#SUBDIRS = @GTKOPENGL_DIR@
+SUBDIRS = @GTKOPENGL_DIR@
 
 gblib_LTLIBRARIES = gb.gtk.la
 
@@ -96,4 +96,5 @@ gb_gtk_la_SOURCES = \
 	gdrag.h gdrag.cpp \
 	gtools.h kentities.h \
 	gprinter.h gprinter.cpp \
+	gglarea.h gglarea.cpp \
 	x11.h x11.c

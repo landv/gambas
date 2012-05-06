@@ -461,8 +461,6 @@ void gMainWindow::afterShow()
 
 void gMainWindow::setVisible(bool vl)
 {
-  gMainWindow *active;
-
 	if (vl)
 	{
 		emitOpen();

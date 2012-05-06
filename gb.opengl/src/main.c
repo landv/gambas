@@ -93,12 +93,23 @@ void EXPORT GB_EXIT()
 {
 }
 
-void Init()
+bool Init()
 {
+	static bool _init = FALSE;
+	
+	if (_init)
+		return FALSE;
+	
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
 		/* Problem: glewInit failed, something is seriously wrong. */
 		GB.Error("Failed to init GLEW: &1\n", glewGetErrorString(err));
+		return TRUE;
+	}
+	else
+	{
+		_init = TRUE;
+		return FALSE
 	}
 }

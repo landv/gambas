@@ -93,6 +93,7 @@ BEGIN_METHOD_VOID(CGLAREA_update)
 
 END_METHOD
 
+#if 0
 BEGIN_METHOD_VOID(CGLAREA_select)
 
 	WIDGET->makeCurrent();
@@ -100,6 +101,7 @@ BEGIN_METHOD_VOID(CGLAREA_select)
 	GL.Init();
 
 END_METHOD
+#endif
 
 BEGIN_METHOD(CGLAREA_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 
@@ -130,15 +132,15 @@ END_METHOD
 
 GB_DESC CGlareaDesc[] =
 {
-  GB_DECLARE("GLarea", sizeof(CGLAREA)), GB_INHERITS("Control"),
+  GB_DECLARE("GLArea", sizeof(CGLAREA)), GB_INHERITS("Control"),
 
   GB_STATIC_METHOD("_exit", NULL, CGLAREA_exit, NULL),
 
   GB_METHOD("_new", NULL, CGLAREA_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CGLAREA_free, NULL),
-  GB_METHOD("Update", NULL, CGLAREA_update, NULL),
+  //GB_METHOD("Update", NULL, CGLAREA_update, NULL),
   GB_METHOD("Refresh", NULL, CGLAREA_update, NULL),
-  GB_METHOD("Select", NULL, CGLAREA_select, NULL),
+  //GB_METHOD("Select", NULL, CGLAREA_select, NULL),
   //GB_METHOD("Text", NULL, CGLAREA_text, "(Text)s(X)i(Y)i"),
 
   GB_CONSTANT("_Properties", "s", CGLAREA_PROPERTIES),

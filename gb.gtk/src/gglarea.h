@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gb.gl.h
+  gglarea.h
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,22 +21,13 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __GGLAREA_H
+#define __GGLAREA_H
 
-#include "gambas.h"
-
-#define GL_INTERFACE_VERSION 1
-
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    bool (*Init)(void);
-
-    void *_null;
-  }
-  GL_INTERFACE;
+class gGLArea : public gControl
+{
+public:
+	gGLArea(gContainer *parent, void (*init)(GtkWidget *));
+};
 
 #endif

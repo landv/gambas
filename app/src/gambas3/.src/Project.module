@@ -2043,6 +2043,7 @@ Private Sub CompileError(sMsg As String)
   Dim sErr As String
   Dim sInfo As String
   Dim aInfo As String[]
+  Dim hEditor As Editor
 
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
@@ -2074,7 +2075,9 @@ Private Sub CompileError(sMsg As String)
 
     sErr = TranslateMessage(sMsg)
 
-    If hForm And If iLine > hForm.Editor.Lines.Count Then
+    Try hEditor = hForm.Editor
+
+    If hEditor And If iLine > hEditor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
       sMsg = "<b>" & sErr & "</b> " & ("in form definition")
     Else If iLine >= 1 Then
@@ -2087,7 +2090,7 @@ Private Sub CompileError(sMsg As String)
 
   Endif
 
-  If hForm Then
+  If hEditor Then
     hForm.ShowErrorMessage(sMsg, "make")
   Else
     FMain.ShowMessage(sMsg, "make")

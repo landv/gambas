@@ -34,7 +34,7 @@ extern IMAGE_INTERFACE IMAGE;
 #endif
 
 #ifndef WARNING
-#define WARNING(c) printf("WARNING: " c)
+#define WARNING(_c) printf("warning: " _c)
 #endif /* WARNING */
 
 int IMAGE_get_pixel_format(GB_IMG *image);

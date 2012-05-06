@@ -83,8 +83,7 @@ enum
 	Type_gListView    = 0x1010,
 	Type_gColumnView  = 0x1012,
 	Type_gTreeView    = 0x1014,
-	Type_gIconView    = 0x1015,
-	Type_gGridView    = 0x1016,
+	Type_gGLArea      = 0x0018,
 };
 
 enum

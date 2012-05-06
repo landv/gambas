@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gb.gl.h
+  c_glarea.h
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2012 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,22 +21,28 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __C_GLAREA_H
+#define __C_GLAREA_H
 
-#include "gambas.h"
-
-#define GL_INTERFACE_VERSION 1
+#include "main.h"
 
 typedef
   struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    bool (*Init)(void);
+    GTK_CONTROL control;
+		GtkWidget *widget;
+		bool init;
+   }
+  CGLAREA;
 
-    void *_null;
-  }
-  GL_INTERFACE;
+#ifndef __C_GLAREA_C
+extern GB_DESC GLAreaDesc[];
+#else
+
+#define THIS    ((CGLAREA *)_object)
+#define WIDGET  ((GLarea *)((GTK_CONTROL *)_object)->widget)
+
+//#define CGLAREA_PROPERTIES QT_WIDGET_PROPERTIES
+
+#endif /* __CGLAREA_CPP */
 
 #endif

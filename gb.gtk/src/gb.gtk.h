@@ -26,6 +26,7 @@
 
 #include "gambas.h"
 #include <gdk/gdk.h>
+#include <gtk/gtk.h>
 
 #ifndef GDK_WINDOWING_X11
 #define NO_X_WINDOW 1
@@ -37,29 +38,23 @@ typedef
 	struct 
 	{
 		intptr_t version;
-		void (*Init)(int *, char **);
 		void *(*GetPicture)(GdkPixbuf *buf);
 		void *(*GetImage)(GdkPixbuf *buf);
-		struct {
-			void* (*GetDrawable)(void *);
-			void* (*GetStyle)(void *);
-			int   (*GetState)(void *);
-			int   (*GetShadow)(void *);
-			void  (*SetState)(void *,int);
-			void  (*SetShadow)(void *,int);
-		} Draw;
+		GtkWidget *(*CreateGLArea)(void *control, void *parent, void (*init)(GtkWidget *));
 		void *_null;
 	}  
 	GTK_INTERFACE;
 
-typedef
+typedef  
 	struct {
-		GB_BASE ob;
-		void *widget;
+	  GB_BASE ob;
+	  void *widget;
 		GB_VARIANT_VALUE tag;
 		void *font;
+		void *cursor;
 		char *popup;
-	}
+		char *action;
+	}  
 	GTK_CONTROL;
 
 #endif

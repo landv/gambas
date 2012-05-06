@@ -30,6 +30,7 @@
 #include "gb.image.h"
 #include "gb.gtk.h"
 #include "watcher.h"
+#include "gglarea.h"
 
 #include "x11.h"
 #include "CScreen.h"
@@ -90,6 +91,8 @@ static void my_wait(int duration);
 static void my_post(void);
 static int my_loop();
 static void my_watch(int fd, int type, void *callback, intptr_t param);
+
+static GtkWidget *GTK_CreateGLArea(void *_object, void *parent, void (*init)(GtkWidget *));
 
 static bool _post_check = false;
 static bool _must_check_quit = false;
@@ -200,15 +203,9 @@ extern "C"
 	void *GB_GTK_1[] EXPORT =
 	{
 		(void *)GTK_INTERFACE_VERSION,
-		(void *)my_main,
 		(void *)GTK_GetPicture,
 		(void *)GTK_GetImage,
-		(void *)DRAW_get_drawable,
-		(void *)DRAW_get_style,
-		(void *)DRAW_get_state,
-		(void *)DRAW_get_shadow,
-		(void *)DRAW_set_state,
-		(void *)DRAW_set_shadow,
+		(void *)GTK_CreateGLArea,
 		NULL
 	};
 
@@ -521,3 +518,12 @@ void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 	
 	gControl::cleanRemovedControls();
 }
+
+static GtkWidget *GTK_CreateGLArea(void *_object, void *parent, void (*init)(GtkWidget *))
+{
+	gControl *ctrl = new gGLArea(CONTAINER(parent), init);
+	InitControl(ctrl, (CWIDGET*)_object);
+	//WIDGET->onExpose = Darea_Expose;
+	return ctrl->widget;
+}
+

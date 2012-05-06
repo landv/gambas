@@ -48,7 +48,7 @@ uninstall-local:
 	 rm -f $(DESTDIR)/$(GBINFO_path)/$(PACKAGE).list; \
 	 rm -rf $(DESTDIR)/$(GBCONTROL_path)/$(PACKAGE); \
 	else \
-	 echo "Removing $(PACKAGE).gambas file..." \
+	 echo "Removing $(PACKAGE).gambas file..."; \
 	 rm -f $(DESTDIR)$(bindir)/$(PACKAGE).gambas; \
 	fi)
 

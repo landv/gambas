@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gb.gl.h
+  gglarea.cpp
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,22 +21,18 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#define __GGLAREA_C
 
-#include "gambas.h"
+#include "widgets.h"
+#include "widgets_private.h"
+#include "gglarea.h"
 
-#define GL_INTERFACE_VERSION 1
+gGLArea::gGLArea(gContainer *parent, void (*init)(GtkWidget *)) : gControl(parent)
+{
+	g_typ = Type_gGLArea;
 
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    bool (*Init)(void);
+	border = widget = gtk_event_box_new();
+	(*init)(widget);
+	realize(false);
+}
 
-    void *_null;
-  }
-  GL_INTERFACE;
-
-#endif
