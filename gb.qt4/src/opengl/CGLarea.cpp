@@ -143,7 +143,7 @@ GB_DESC CGlareaDesc[] =
   //GB_METHOD("Select", NULL, CGLAREA_select, NULL),
   //GB_METHOD("Text", NULL, CGLAREA_text, "(Text)s(X)i(Y)i"),
 
-  GB_CONSTANT("_Properties", "s", CGLAREA_PROPERTIES),
+  GB_CONSTANT("_Group", "s", "Special"),
 
   GB_EVENT("Open", NULL, NULL, &EVENT_Open),
   GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),

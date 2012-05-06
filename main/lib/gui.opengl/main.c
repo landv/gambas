@@ -27,14 +27,12 @@
 
 GB_INTERFACE GB EXPORT;
 
-// Prevents gbi2 from complaining
-
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   NULL
 };
 
-char *GB_INCLUDE EXPORT = "gb.qt4";
+char *GB_INCLUDE EXPORT = "gb.qt4.opengl";
 
 int EXPORT GB_INIT(void)
 {
@@ -45,27 +43,27 @@ int EXPORT GB_INIT(void)
 	if (env)
 	{
 		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
+			comp = "gb.qt4.opengl";
 		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
+			comp = "gb.gtk.opengl";
 	}
 	
 	if (!comp)
 	{
-		comp = "gb.gtk";
-		
+		comp = "gb.gtk.opengl";
+	
 		env = getenv("KDE_FULL_SESSION");
-		
+	
 		if (env && !strcmp(env, "true"))
 		{
 			env = getenv("KDE_SESSION_VERSION");
 			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
+				comp = "gb.qt4.opengl";
 		}
 	}
 		
 	if (GB.LoadComponent(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
+		fprintf(stderr, "gb.gui.opengl: unable to load '%s' component\n", comp);
   
   return 0;
 }

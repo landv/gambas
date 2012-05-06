@@ -109,6 +109,7 @@ lib/compress/Makefile \
 lib/option/Makefile \
 lib/draw/Makefile \
 lib/gui/Makefile \
+lib/gui.opengl/Makefile \
 lib/image/Makefile \
 lib/image.effect/Makefile \
 lib/signal/Makefile \

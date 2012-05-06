@@ -41,8 +41,6 @@ extern GB_DESC CGlareaDesc[];
 #define THIS    ((CGLAREA *)_object)
 #define WIDGET  ((GLarea *)((QT_WIDGET *)_object)->widget)
 
-#define CGLAREA_PROPERTIES QT_WIDGET_PROPERTIES
-
 #endif /* __CGLAREA_CPP */
 
 class GLarea : public QGLWidget
