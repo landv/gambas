@@ -21,8 +21,11 @@ Private Sub AddVisualisation(sType As String, sTitle As String)
   
   Dim hVisualisation As MediaControl
   
-  hVisualisation = New MediaControl($hPlayer, sType)
-  hVisualisation.Tag = sTitle
+  If sType Then
+    hVisualisation = New MediaControl($hPlayer, sType)
+    hVisualisation.Tag = sTitle
+  Endif
+  
   $aVisualisation.Add(hVisualisation)
   
 Catch
@@ -39,10 +42,10 @@ Private Sub MakeMediaPlayer()
   $hPlayer.Video.Output = $hOutput
   
   $aVisualisation = New MediaControl[]
-  'AddVisualisation("libvisual_lv_analyzer", "Analyze")
+  AddVisualisation("", "")
+  AddVisualisation("goom", "Goom")
   AddVisualisation("libvisual_bumpscope", "Bump")
   AddVisualisation("libvisual_corona", "Corona")
-  AddVisualisation("goom", "Goom")
   ' Buggy infinite
   'AddVisualisation("libvisual_infinite", "Infinite")
   AddVisualisation("libvisual_jakdaw", "Jakdaw")
@@ -55,7 +58,7 @@ Private Sub MakeMediaPlayer()
   AddVisualisation("synaescope", "Synae")
   AddVisualisation("wavescope", "Wave")
   
-  $iVisualisation = 2
+  $iVisualisation = 0
   UpdateVisualisation
   
 End
@@ -323,9 +326,16 @@ End
 
 Private Sub UpdateVisualisation()
 
-  $hPlayer.Video.Visualisation = $aVisualisation[$iVisualisation]
-  GetButton("visualisation").Text = $aVisualisation[$iVisualisation].Tag
-  $hOutput.SetWindow(dwgVideo)
+  Dim hVis As MediaControl = $aVisualisation[$iVisualisation]
+
+  $hPlayer.Video.Visualisation = hVis
+  If hVis Then
+    GetButton("visualisation").Text = hVis.Tag
+    $hOutput.SetWindow(dwgVideo)
+  Else
+    GetButton("visualisation").Text = ""
+    $hOutput.SetWindow(Null)
+  Endif
 
 End
 

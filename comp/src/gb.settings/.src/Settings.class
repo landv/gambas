@@ -221,12 +221,17 @@ Public Sub _put(Value As Variant, Key As String)
 End
 
 
-Public Sub Clear(ParentKey As String)
+Public Sub Clear(Optional ParentKey As String)
 
   Dim sSlot As String
 
-  sSlot = GetSlot(ParentKey &/ "g")
-  $cSlot.Remove(sSlot)
+  If Not ParentKey Then
+    $cSlot.Clear
+  Else
+    sSlot = GetSlot(ParentKey &/ "g")
+    $cSlot.Remove(sSlot)
+  Endif
+
   $bModify = True
 
 End
