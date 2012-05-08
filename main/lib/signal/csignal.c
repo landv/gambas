@@ -182,9 +182,40 @@ static void add_handler(int num, struct sigaction *action)
 
 static void handle_signal(int num, siginfo_t *info, void *context)
 {
+	SIGNAL_HANDLER *sh;
 	char cnum = (char)num;
-	if (write(_pipe_signal[1], &cnum, 1) != 1)
-		return;
+	int save_errno;
+	
+	save_errno = errno;
+
+	for(;;)
+	{
+		if (write(_pipe_signal[1], &cnum, 1) == 1)
+			break;
+		
+		if (errno != EINTR)
+			break;
+	}
+	
+	// Call old signal handler
+		
+	sh = find_handler(num);
+	
+	if (sh->action.sa_handler != SIG_DFL && sh->action.sa_handler != SIG_IGN)
+	{
+		if (sh->action.sa_flags & SA_SIGINFO)
+		{
+			//fprintf(stderr, "Calling old action %p\n", _old_SIGCHLD_action.sa_sigaction);
+			(*sh->action.sa_sigaction)(num, info, context);
+		}
+		else
+		{
+			//fprintf(stderr, "Calling old handler %p\n", _old_SIGCHLD_action.sa_handler);
+			(*sh->action.sa_handler)(num);
+		}
+	}
+	
+	errno = save_errno;
 }
 
 BEGIN_METHOD_VOID(Signal_Reset)

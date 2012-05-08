@@ -28,6 +28,8 @@
 #include "gbx_api.h"
 #include "gbx_signal.h"
 
+//#define DEBUG_ME 1
+
 static SIGNAL_HANDLER *_handlers = NULL;
 static int _pipe[2];
 static int _count = 0;
@@ -36,8 +38,10 @@ void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, s
 {
 	struct sigaction action;
 	
+	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGNAL_install: %d %p\n", signum, callback);
-
+	#endif
+	
 	handler->signum = signum;
 	
 	action.sa_flags = SA_SIGINFO;
@@ -50,8 +54,10 @@ void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, s
 
 void SIGNAL_uninstall(SIGNAL_HANDLER *handler, int signum)
 {
+	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGNAL_uninstall: %d\n", signum);
-
+	#endif
+	
 	while (handler->callbacks)
 		SIGNAL_unregister(handler->signum, handler->callbacks);
 	
@@ -172,7 +178,9 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 	cb->callback = callback;
 	cb->data = data;
 
+	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGNAL_register: %d -> %p\n", signum, cb);
+	#endif
 	
 	return cb;
 }
@@ -193,7 +201,9 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	if (cb == handler->callbacks)
 		handler->callbacks = cb->next;
 	
+	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGNAL_unregister: %d %p\n", signum, cb);
+	#endif
 	
 	FREE(&cb, "SIGNAL_unregister_callback");
 	
