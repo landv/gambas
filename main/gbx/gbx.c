@@ -52,6 +52,7 @@
 #include "gbx_math.h"
 #include "gb_common_buffer.h"
 #include "gbx_api.h"
+#include "gbx_signal.h"
 
 #if USE_PROFILE
 #include "gbx_profile.h"
@@ -137,6 +138,7 @@ static void main_exit(bool silent)
 	
 	TRY
 	{
+		SIGNAL_exit();
 		EXTERN_release();
 		STREAM_exit();
 		OBJECT_exit();

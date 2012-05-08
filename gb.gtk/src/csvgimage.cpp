@@ -39,7 +39,7 @@ static void release(CSVGIMAGE *_object)
 {
 	if (HANDLE)
 	{
-		rsvg_handle_free(HANDLE);
+		g_object_unref(G_OBJECT(HANDLE));
 		HANDLE = NULL;
 	}
 
@@ -151,7 +151,7 @@ static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 __RETURN:
 
 	if (handle)
-		rsvg_handle_free(handle);
+		g_object_unref(G_OBJECT(handle));
 	
 	GB.ReleaseFile(addr, len);
 	return err;

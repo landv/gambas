@@ -319,8 +319,8 @@ bool X11_do_init()
 	if (X11_ready)
 		return FALSE;
 		
-	GB.GetComponentInfo("DISPLAY", POINTER(&_display));
-	GB.GetComponentInfo("ROOT_WINDOW", POINTER(&_root));
+	GB.Component.GetInfo("DISPLAY", POINTER(&_display));
+	GB.Component.GetInfo("ROOT_WINDOW", POINTER(&_root));
   
   /*_display = XOpenDisplay(NULL);
   fprintf(stderr, "_display = %p\n", _display);
@@ -753,7 +753,7 @@ void X11_enable_event_filter(bool enable)
 	
 	X11_event_filter_enabled = enable;
 	
-	GB.GetComponentInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
+	GB.Component.GetInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
 	if (set_event_filter)
 		(*set_event_filter)(enable ? X11_event_filter : 0);
 }

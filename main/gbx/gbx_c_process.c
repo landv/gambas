@@ -72,15 +72,14 @@ DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Kill);
 
 static CPROCESS *RunningProcessList = NULL;
-static int _pipe_child[2];
+//static int _pipe_child[2];
+static SIGNAL_CALLBACK *_SIGCHLD_callback;
 static bool _init = FALSE;
 
 static int _last_status = 0;
 
 static int _last_child_error = 0;
 static int _last_child_error_errno = 0;
-
-static SIGNAL_HANDLER _SIGCHLD_handler;
 
 static void init_child(void);
 static void exit_child(void);
@@ -686,14 +685,13 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 }
 
 
-static void callback_child(int fd, int type, void *data)
+static void callback_child(int signum, intptr_t data)
 {
 	int status;
 	CPROCESS *process, *next;
-	int buffer;
+	//int buffer;
 
-	/*old = signal(SIGCHLD, signal_child);*/
-
+#if 0
 	for(;;)
 	{
 		if (read(fd, (char *)&buffer, 1) == 1)
@@ -701,7 +699,7 @@ static void callback_child(int fd, int type, void *data)
 		if (errno != EINTR)
 			ERROR_panic("Cannot read from SIGCHLD pipe: %s", strerror(errno));
 	}
-
+#endif
 	#ifdef DEBUG_ME
 	fprintf(stderr, "<< callback_child\n");
 	#endif
@@ -736,7 +734,7 @@ static void callback_child(int fd, int type, void *data)
 	#endif
 }
 
-
+#if 0
 static void signal_child(int sig, siginfo_t *info, void *context)
 {
 	#ifdef DEBUG_ME
@@ -766,7 +764,7 @@ static void signal_child(int sig, siginfo_t *info, void *context)
 	
 	errno = save_errno;
 }
-
+#endif
 
 static void init_child(void)
 {
@@ -777,6 +775,9 @@ static void init_child(void)
 	fprintf(stderr, "init_child()\n");
 	#endif
 
+	_SIGCHLD_callback = SIGNAL_register(SIGCHLD, callback_child, 0);
+	
+#if 0
 	if (pipe(_pipe_child) != 0)
 		ERROR_panic("Cannot create SIGCHLD pipes: %s", strerror(errno));
 
@@ -790,6 +791,7 @@ static void init_child(void)
 	SIGNAL_install(&_SIGCHLD_handler, SIGCHLD, signal_child);
 	
 	GB_Watch(_pipe_child[0], GB_WATCH_READ, (void *)callback_child, 0);
+#endif
 	_init = TRUE;
 }
 
@@ -802,11 +804,15 @@ static void exit_child(void)
 	fprintf(stderr, "exit_child()\n");
 	#endif
 
+	SIGNAL_unregister(SIGCHLD, _SIGCHLD_callback);
+
+#if 0
 	GB_Watch(_pipe_child[0], GB_WATCH_NONE, NULL, 0);
 	close(_pipe_child[0]);
 	close(_pipe_child[1]);
 	
-	SIGNAL_uninstall(&_SIGCHLD_handler);
+	SIGNAL_uninstall(&_SIGCHLD_handler, SIGCHLD);
+#endif
 	_init = FALSE;
 }
 
@@ -845,6 +851,7 @@ static void error_CPROCESS_wait_for()
 void CPROCESS_wait_for(CPROCESS *process)
 {
 	int ret;
+	int sigfd;
 
 	#ifdef DEBUG_ME
 	printf("Waiting for %d\n", process->pid);
@@ -852,6 +859,8 @@ void CPROCESS_wait_for(CPROCESS *process)
 
 	OBJECT_REF(process, "CPROCESS_wait_for");
 	_error_CPROCESS_wait_for_process = process;
+	
+	sigfd = SIGNAL_get_fd();
 	
 	ON_ERROR(error_CPROCESS_wait_for)
 	{
@@ -861,9 +870,9 @@ void CPROCESS_wait_for(CPROCESS *process)
 			#ifdef DEBUG_ME
 			fprintf(stderr, "watching _pipe_child[0] = %d\n", _pipe_child[0]);
 			#endif
-			ret = WATCH_process(_pipe_child[0], process->out);
-			if (ret == _pipe_child[0])
-				callback_child(_pipe_child[0], GB_WATCH_READ, 0);
+			ret = WATCH_process(sigfd, process->out);
+			if (ret == sigfd)
+				SIGNAL_raise_callbacks(sigfd, GB_WATCH_READ, 0);
 			else if (ret == process->out)
 				callback_write(process->out, GB_WATCH_READ, process);
 			else

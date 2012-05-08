@@ -228,7 +228,7 @@ extern "C"
 		//putenv((char *)"GDK_NATIVE_WINDOWS=1");
 		#endif
 		
-		GB.LoadComponent("gb.draw");
+		GB.Component.Load("gb.draw");
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
 		DRAW_init();

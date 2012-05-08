@@ -28,16 +28,33 @@
 #include <signal.h>
 
 typedef
+	struct SIGNAL_CALLBACK {
+		struct SIGNAL_CALLBACK *prev;
+		struct SIGNAL_CALLBACK *next;
+		void (*callback)(int, intptr_t);
+		intptr_t data;
+	}
+	SIGNAL_CALLBACK;
+
+typedef
 	struct {
-		struct sigaction old_action;
 		int signum;
+		struct sigaction old_action;
+		SIGNAL_CALLBACK *callbacks;
 	}
 	SIGNAL_HANDLER;
-
-void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, siginfo_t *, void *));
-void SIGNAL_uninstall(SIGNAL_HANDLER *handler);
-void SIGNAL_previous(SIGNAL_HANDLER *handler, int sig, siginfo_t *info, void *context);
 	
+void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, siginfo_t *, void *));
+void SIGNAL_uninstall(SIGNAL_HANDLER *handler, int signum);
+void SIGNAL_previous(SIGNAL_HANDLER *handler, int signum, siginfo_t *info, void *context);
+
+SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), intptr_t data);
+void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb);
+
+int SIGNAL_get_fd(void);
+void SIGNAL_raise_callbacks(int fd, int type, void *data);
+void SIGNAL_exit(void);
+
 #endif
 
  

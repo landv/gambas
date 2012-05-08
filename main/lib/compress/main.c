@@ -72,7 +72,7 @@ COMPRESS_DRIVER *COMPRESS_GetDriver(char *type)
   strcpy(comp, "gb.compress.");
   strcat(comp, type);
 
-  if (GB.LoadComponent(comp))
+  if (GB.Component.Load(comp))
   {
     GB.Error("Cannot find driver for : &1", type);
     return NULL;

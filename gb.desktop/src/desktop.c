@@ -671,7 +671,7 @@ static void enable_event_filter(bool enable)
 {
 	void (*set_event_filter)(void *) = NULL;
 	
-	GB.GetComponentInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
+	GB.Component.GetInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
 	if (set_event_filter)
 		(*set_event_filter)(enable ? x11_event_filter : 0);
 }

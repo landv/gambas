@@ -64,8 +64,8 @@ void CHECK_enter(void)
 
 void CHECK_leave(void)
 {
-	SIGNAL_uninstall(&_SIGSEGV_handler);
-	SIGNAL_uninstall(&_SIGBUS_handler);
+	SIGNAL_uninstall(&_SIGSEGV_handler, SIGSEGV);
+	SIGNAL_uninstall(&_SIGBUS_handler, SIGBUS);
 }
 
 bool CHECK_got_error(void)

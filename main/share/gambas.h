@@ -621,6 +621,12 @@ typedef
 	int (*GB_TIMER_CALLBACK)(intptr_t);
 
 
+/* Type of a signal callback */
+
+typedef
+	void (*GB_SIGNAL_CALLBACK)(int, intptr_t);
+
+
 /* Type of a posted function */
 
 typedef
@@ -817,10 +823,14 @@ typedef
 
 		void *(*Hook)(int, void *);
 
-		bool (*LoadComponent)(const char *);
-		bool (*ExistComponent)(const char *);
-		char *(*CurrentComponent)(void);
-		bool (*GetComponentInfo)(const char *, void **);
+		struct {
+			bool (*Load)(const char *);
+			bool (*Exist)(const char *);
+			char *(*Current)(void);
+			bool (*GetInfo)(const char *, void **);
+			void (*Signal)(int, void *);
+		}
+		Component;
 
 		void (*Push)(int, ...);
 		bool (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
@@ -843,7 +853,6 @@ typedef
 		char *(*GetLastEventName)();
 		void (*RaiseTimer)(void *);
 		bool (*Stopped)(void);
-		void (*Signal)(int, void *);
 
 		int (*NParam)(void);
 		bool (*Conv)(GB_VALUE *, GB_TYPE);
@@ -1034,6 +1043,12 @@ typedef
 			char *(*GetCurrentPosition)();
 			}
 		Debug;
+		
+		struct {
+			GB_SIGNAL_CALLBACK *(*Register)(int signum, void (*func)(int, intptr_t), intptr_t data);
+			void (*Unregister)(int signum, GB_SIGNAL_CALLBACK *cb);
+		}
+		Signal;
 		
 		}
 	GB_INTERFACE;

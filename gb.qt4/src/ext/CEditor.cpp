@@ -477,7 +477,7 @@ BEGIN_PROPERTY(CEDITOR_highlight)
     }
 		else if (mode > GDocument::Custom)
 		{
-			if (GB.LoadComponent("gb.eval.highlight"))
+			if (GB.Component.Load("gb.eval.highlight"))
 			{
         GB.Error("Cannot load Gambas custom syntax highlighter component");
         return;

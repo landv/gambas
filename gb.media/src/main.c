@@ -51,7 +51,7 @@ int MAIN_get_x11_handle(void *control)
 	
 	if (!get_handle)
 	{
-		GB.GetComponentInfo("GET_HANDLE", (void **)&get_handle);
+		GB.Component.GetInfo("GET_HANDLE", (void **)&get_handle);
 		if (!get_handle)
 		{
 			GB.Error("Unable to get window handle");

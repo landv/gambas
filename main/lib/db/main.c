@@ -176,7 +176,7 @@ static DB_DRIVER *DB_GetDriver(const char *type)
   strcpy(comp, "gb.db.");
   strcat(comp, type);
 
-  GB.LoadComponent(comp);
+  GB.Component.Load(comp);
   GB.Error(NULL); // reset the error flag;
   
   for (i = 0; i < _drivers_count; i++)

@@ -529,7 +529,7 @@ static void command_quit(const char *cmd)
 
 static void command_go(const char *cmd)
 {
-  GB.Signal(GB_SIGNAL_DEBUG_CONTINUE, 0);
+  GB.Component.Signal(GB_SIGNAL_DEBUG_CONTINUE, 0);
 
   DEBUG_info.stop = FALSE;
   DEBUG_info.leave = FALSE;
@@ -539,13 +539,13 @@ static void command_go(const char *cmd)
 
 static void command_step(const char *cmd)
 {
-  GB.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
+  GB.Component.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
   DEBUG_break_on_next_line();
 }
 
 static void command_next(const char *cmd)
 {
-  GB.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
+  GB.Component.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
   DEBUG_info.stop = TRUE;
   DEBUG_info.leave = FALSE;
   DEBUG_info.fp = FP;
@@ -558,7 +558,7 @@ static void command_from(const char *cmd)
 
   if (sc && sc->pc)
   {
-	  GB.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
+	  GB.Component.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
     DEBUG_info.stop = TRUE;
     DEBUG_info.leave = FALSE;
     DEBUG_info.fp = sc->fp;
@@ -566,7 +566,7 @@ static void command_from(const char *cmd)
   }
   else
   {
-	  GB.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
+	  GB.Component.Signal(GB_SIGNAL_DEBUG_FORWARD, 0);
     DEBUG_info.stop = TRUE;
     DEBUG_info.leave = TRUE;
     DEBUG_info.fp = FP;
@@ -895,7 +895,7 @@ void DEBUG_main(bool error)
     else
       printf("[%s%s]:", DEBUG_get_current_position(), Error ? "*" : "");*/
 
-		GB.Signal(GB_SIGNAL_DEBUG_BREAK, 0);
+		GB.Component.Signal(GB_SIGNAL_DEBUG_BREAK, 0);
 
     if (!_fifo)
     {

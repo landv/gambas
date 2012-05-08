@@ -55,6 +55,7 @@
 #include "gbx_c_observer.h"
 #include "gbx_debug.h"
 #include "gbx_c_file.h"
+#include "gbx_signal.h"
 
 #include "gambas.h"
 #include "gbx_api.h"
@@ -78,6 +79,7 @@ void *GAMBAS_Api[] =
 	(void *)COMPONENT_exist,
 	(void *)GB_CurrentComponent,
 	(void *)COMPONENT_get_info,
+	(void *)COMPONENT_signal,
 
 	(void *)GB_Push,
 	(void *)GB_GetFunction,
@@ -100,7 +102,6 @@ void *GAMBAS_Api[] =
 	(void *)GB_GetLastEventName,
 	(void *)CTIMER_raise,
 	(void *)GB_Stopped,
-	(void *)COMPONENT_signal,
 
 	(void *)GB_NParam,
 	(void *)GB_Conv,
@@ -264,6 +265,9 @@ void *GAMBAS_Api[] =
 	(void *)STRING_make,
 	
 	(void *)DEBUG_get_current_position,
+	
+	(void *)SIGNAL_register,
+	(void *)SIGNAL_unregister,
 
 	NULL
 };

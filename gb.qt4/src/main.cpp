@@ -1103,7 +1103,7 @@ int EXPORT GB_INIT(void)
 	GB.Hook(GB_HOOK_ERROR, (void *)hook_error);
 	GB.Hook(GB_HOOK_LANG, (void *)hook_lang);
 
-	GB.LoadComponent("gb.draw");
+	GB.Component.Load("gb.draw");
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRA);
 	DRAW_init();

@@ -175,10 +175,10 @@ static int open_database(DB_DESC *desc, DB_DATABASE * db)
 	
 __SQLITE:
   
-  GB.LoadComponent("gb.db.sqlite3");
+  GB.Component.Load("gb.db.sqlite3");
   GB.Error(NULL);
 	
-	if (GB.ExistComponent("gb.db.sqlite3"))
+	if (GB.Component.Exist("gb.db.sqlite3"))
 		goto __SQLITE3;
 	else
 		goto __SQLITE2;

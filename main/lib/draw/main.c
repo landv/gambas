@@ -66,7 +66,7 @@ void *GB_DRAW_1[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-	GB.LoadComponent("gb.image");
+	GB.Component.Load("gb.image");
   GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   return 0;
 }

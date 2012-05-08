@@ -84,7 +84,7 @@ void EXPORT GB_EXIT()
 
 bool MAIN_load_eval_component(void)
 {
-	if (GB.LoadComponent("gb.eval"))
+	if (GB.Component.Load("gb.eval"))
 		return true;
 
 	GB.GetInterface("gb.eval", EVAL_INTERFACE_VERSION, &EVAL);

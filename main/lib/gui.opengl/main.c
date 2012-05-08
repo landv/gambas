@@ -62,7 +62,7 @@ int EXPORT GB_INIT(void)
 		}
 	}
 		
-	if (GB.LoadComponent(comp))
+	if (GB.Component.Load(comp))
 		fprintf(stderr, "gb.gui.opengl: unable to load '%s' component\n", comp);
   
   return 0;

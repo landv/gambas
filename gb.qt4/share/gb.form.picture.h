@@ -139,7 +139,7 @@ static CPICTURE *get_picture(const char *path, int len)
 	if (len <= 0)
 		return NULL;
 	
-  snprintf(key, sizeof(key), "%s\n%.*s", GB.CurrentComponent(), len, path);
+  snprintf(key, sizeof(key), "%s\n%.*s", GB.Component.Current(), len, path);
 
 	pict = GET_FROM_CACHE(key);
   if (!pict)
@@ -195,6 +195,6 @@ static void set_picture(const char *path, int len, CPICTURE *newpict)
 {
   char key[MAX_KEY + 1];
 
-  snprintf(key, sizeof(key), "%s\n%.*s", GB.CurrentComponent(), len, path);
+  snprintf(key, sizeof(key), "%s\n%.*s", GB.Component.Current(), len, path);
   INSERT_INTO_CACHE(key, newpict);
 }
