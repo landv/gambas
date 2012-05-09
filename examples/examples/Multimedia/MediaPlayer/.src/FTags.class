@@ -1,0 +1,51 @@
+' Gambas class file
+
+Private $cTags As New Collection
+Private $aTags As New String[]
+
+Public Sub ClearTags()
+  
+  $cTags.Clear
+  $aTags.Clear
+  gvwTags.Rows.Count = 0
+  
+End
+
+Public Sub AddTag(sTag As String, sValue As String)
+  
+  $cTags[sTag] = sValue
+  
+  If Not $aTags.Exist(sTag) Then
+    $aTags.Add(sTag)
+    $aTags.Sort
+    gvwTags.Rows.Count = $aTags.Count
+    gvwTags.Columns[0].Width = -1
+  Endif
+  
+  gvwTags.Refresh
+  
+End
+
+
+Public Sub gvwTags_Data(Row As Integer, Column As Integer)
+
+  If Column = 0 Then
+    gvwTags.Data.Text = $aTags[Row]
+  Else
+    gvwTags.Data.Text = $cTags[$aTags[Row]]
+    gvwTags.Data.WordWrap = True
+  Endif
+
+End
+
+Public Sub _new()
+
+  gvwTags.Columns.Count = 2
+
+End
+
+Public Sub Form_Resize()
+
+  panTags.Move(0, 0, Me.W - Desktop.Scale, Me.H)
+
+End

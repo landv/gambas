@@ -260,7 +260,7 @@ BEGIN_PROPERTY(MediaPlayerVideo_Visualisation)
 	else
 	{
 		CMEDIACONTROL *vis = VPROP(GB_OBJECT);
-		CMEDIACONTROL *old = get_control(THIS, "vis-plugin");
+		//CMEDIACONTROL *old = get_control(THIS, "vis-plugin");
 		bool playing;
 		
 		set_flag(THIS, GST_PLAY_FLAG_VIS, FALSE);

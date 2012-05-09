@@ -65,6 +65,109 @@ bool MEDIA_set_state(void *_object, int state, bool error)
 }
 
 
+static GB_TYPE to_gambas_type(const GValue *value)
+{
+	switch (G_VALUE_TYPE(value))
+	{
+		case G_TYPE_BOOLEAN: return GB_T_BOOLEAN;
+		case G_TYPE_INT: return GB_T_INTEGER;
+		case G_TYPE_UINT: return GB_T_INTEGER;
+		case G_TYPE_UINT64: return GB_T_LONG;
+		case G_TYPE_STRING: return GB_T_STRING;
+		case G_TYPE_FLOAT: return GB_T_FLOAT;
+		case G_TYPE_DOUBLE: return GB_T_FLOAT;
+		default:
+			if (GST_VALUE_HOLDS_DATE(value))
+				return GB_T_DATE;
+			else if (GST_VALUE_HOLDS_DATE_TIME(value))
+				return GB_T_DATE;
+			else
+			{
+				//GB.Error("Unsupported property datatype"); 
+				return GB_T_NULL;
+			}
+	}
+}
+
+static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
+{
+	switch (G_VALUE_TYPE(value))
+	{
+		case G_TYPE_BOOLEAN:
+			gvalue->type = GB_T_BOOLEAN;
+			gvalue->_boolean.value = g_value_get_boolean(value) == 0 ? 0 : -1;
+			break;
+			
+		case G_TYPE_INT:
+			gvalue->type = GB_T_INTEGER;
+			gvalue->_integer.value = g_value_get_int(value);
+			break;
+			
+		case G_TYPE_UINT:
+			gvalue->type = GB_T_INTEGER;
+			gvalue->_integer.value = (int)g_value_get_uint(value);
+			break;
+
+		case G_TYPE_UINT64:
+			gvalue->type = GB_T_LONG;
+			gvalue->_long.value = (int64_t)g_value_get_uint64(value);
+			break;
+			
+		case G_TYPE_STRING:
+			gvalue->type = GB_T_STRING;
+			gvalue->_string.value.addr = GB.NewZeroString(g_value_get_string(value));
+			gvalue->_string.value.start = 0;
+			gvalue->_string.value.len = GB.StringLength(gvalue->_string.value.addr);
+			break;
+			
+		case G_TYPE_FLOAT:
+			gvalue->type = GB_T_FLOAT;
+			gvalue->_float.value = (double)g_value_get_float(value);
+			break;
+			
+		case G_TYPE_DOUBLE:
+			gvalue->type = GB_T_FLOAT;
+			gvalue->_float.value = g_value_get_double(value);
+			break;
+			
+		default:
+			
+			if (GST_VALUE_HOLDS_DATE(value))
+			{
+				GB_DATE_SERIAL ds;
+				GDate *date = (GDate *)g_value_get_boxed(value);
+				
+				CLEAR(&ds);
+				ds.year = date->year;
+				ds.month = date->month;
+				ds.day = date->day;
+				
+				GB.MakeDate(&ds, (GB_DATE *)gvalue);
+				break;
+			}
+			else if (GST_VALUE_HOLDS_DATE_TIME(value))
+			{
+				GB_DATE_SERIAL ds;
+				GstDateTime *date = (GstDateTime *)g_value_get_boxed(value);
+				
+				CLEAR(&ds);
+				ds.year = gst_date_time_get_year(date);
+				ds.month = gst_date_time_get_month(date);
+				ds.day = gst_date_time_get_day(date);
+				ds.hour = gst_date_time_get_hour(date);
+				ds.min = gst_date_time_get_minute(date);
+				ds.sec = gst_date_time_get_second(date);
+				ds.msec = gst_date_time_get_microsecond(date);
+				fprintf(stderr, "gb.media: warning: timezone = %g\n", gst_date_time_get_time_zone_offset(date));
+				
+				GB.MakeDate(&ds, (GB_DATE *)gvalue);
+				break;
+			}
+			else
+				gvalue->type = GB_T_NULL;
+	}
+}
+
 static void return_value(const GValue *value)
 {
 	switch (G_VALUE_TYPE(value))
@@ -76,11 +179,25 @@ static void return_value(const GValue *value)
 		case G_TYPE_STRING: GB.ReturnNewZeroString(g_value_get_string(value)); break;
 		case G_TYPE_FLOAT: GB.ReturnFloat(g_value_get_float(value)); break;
 		case G_TYPE_DOUBLE: GB.ReturnFloat(g_value_get_double(value)); break;
-		default: GB.Error("Unsupported property datatype"); GB.ReturnNull(); break;
+		
+		default: 
+			if (GST_VALUE_HOLDS_DATE(value) || GST_VALUE_HOLDS_DATE_TIME(value))
+			{
+				GB_VALUE date;
+				to_gambas_value(value, &date);
+				GB.ReturnDate((GB_DATE *)&date);
+			}
+			else
+			{
+				fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", g_type_name(G_VALUE_TYPE(value)));
+				GB.ReturnNull();
+			}
 	}
 	
 	GB.ReturnConvVariant();
 }
+
+
 
 static bool set_value(GValue *value, GB_VALUE *v)
 {
@@ -160,6 +277,84 @@ BEGIN_METHOD(MediaSignalArguments_get, GB_INTEGER index)
 
 END_METHOD
 #endif
+
+//---- MediaTagList -------------------------------------------------------
+
+static int MediaTagList_check(void *_object)
+{
+	return THIS_TAGLIST->tags == NULL;
+}
+
+static CMEDIATAGLIST *create_tag_list(GstTagList *tags)
+{
+	CMEDIATAGLIST *ob;
+	
+	ob = GB.New(GB.FindClass("MediaTagList"), NULL, NULL);
+	ob->tags = tags;
+	return ob;
+}
+
+BEGIN_METHOD(MediaTagList_get, GB_STRING name)
+
+	char *name = GB.ToZeroString(ARG(name));
+	GstTagList *tags = THIS_TAGLIST->tags;
+	const GValue *value;
+	int nvalue;
+
+	nvalue = gst_tag_list_get_tag_size(tags, name);
+	
+	if (nvalue <= 0)
+	{
+		GB.ReturnNull();
+		GB.ReturnConvVariant();
+	}
+	else if (nvalue == 1)
+	{
+		value = gst_tag_list_get_value_index(tags, name, 0);
+		return_value(value);
+	}
+	else
+	{
+		GB_ARRAY array;
+		GB_TYPE type;
+		GB_VALUE gvalue;
+		int i;
+		
+		value = gst_tag_list_get_value_index(tags, name, 0);
+		type = to_gambas_type(value);
+		if (type == GB_T_NULL)
+			return;
+		
+		GB.Array.New(&array, type, nvalue);
+		for (i = 0; i < nvalue; i++)
+		{
+			value = gst_tag_list_get_value_index(tags, name, i);
+			to_gambas_value(value, &gvalue);
+			GB.Store(type, GB.Array.Get(array, i), &gvalue);
+		}
+		
+		GB.ReturnObject(array);
+		GB.ReturnConvVariant();
+	}
+
+END_METHOD
+
+BEGIN_PROPERTY(MediaTagList_Tags)
+
+	GB_ARRAY array;
+	GstTagList *tags = THIS_TAGLIST->tags;
+	int ntags, i;
+	
+	ntags = gst_structure_n_fields(GST_STRUCTURE(tags));
+	
+	GB.Array.New(&array, GB_T_STRING, ntags);
+	
+	for (i = 0; i < ntags; i++)
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(gst_structure_nth_field_name(GST_STRUCTURE(tags), i));
+	
+	GB.ReturnObject(array);
+
+END_PROPERTY
 
 //---- MediaControl -------------------------------------------------------
 
@@ -705,7 +900,30 @@ static int cb_message(CMEDIAPIPELINE *_object)
 					break;
 				}
 				
-				case GST_MESSAGE_TAG: GB.Raise(THIS, EVENT_Tag, 0); break;
+				case GST_MESSAGE_TAG:
+				{
+					GstTagList *tags = NULL;
+					CMEDIATAGLIST *ob;
+					char *list;
+    
+					gst_message_parse_tag(msg, &tags);
+					
+					list = gst_tag_list_to_string(tags);
+					//fprintf(stderr, "--> %s\n", list);
+					g_free(list);
+					
+					ob = create_tag_list(tags);
+					GB.Ref(ob);
+					
+					GB.Raise(THIS, EVENT_Tag, 1, GB_T_OBJECT, ob);
+					ob->tags = NULL;
+					GB.Unref(POINTER(&ob));
+					
+					gst_tag_list_free(tags);
+					
+					break;
+				}
+				
 				case GST_MESSAGE_BUFFERING: GB.Raise(THIS, EVENT_Buffering, 0); break;
 				case GST_MESSAGE_DURATION: GB.Raise(THIS, EVENT_Duration, 0); break;
 				case GST_MESSAGE_PROGRESS: GB.Raise(THIS, EVENT_Progress, 0); break;
@@ -835,21 +1053,19 @@ END_METHOD
 
 //-------------------------------------------------------------------------
 
-#if 0
-GB_DESC MediaSignalArgumentsDesc[] = 
+GB_DESC MediaTagListDesc[] = 
 {
-	GB_DECLARE("MediaSignalArguments", sizeof(CMEDIASIGNALARGUMENTS)),
-	GB_NOT_CREATABLE(), GB_HOOK_CHECK(check_signal_arguments),
+	GB_DECLARE("MediaTagList", sizeof(CMEDIATAGLIST)),
+	GB_NOT_CREATABLE(),
 	
-	//GB_METHOD("_new", NULL, MediaControl_new, "[(Type)s(Parent)MediaContainer;]"),
-	//GB_METHOD("_free", NULL, MediaSignalArguments_free, NULL),
+	GB_HOOK_CHECK(MediaTagList_check),
 	
-	//GB_METHOD("_put", NULL, MediaSignal_put, "(Value)v(Property)s"),
-	GB_METHOD("_get", "v", MediaSignalArguments_get, "(Name)s"),
+	GB_METHOD("_get", "v", MediaTagList_get, "(Name)s"),
+	GB_PROPERTY_READ("Tags", "String[]", MediaTagList_Tags),
 	
 	GB_END_DECLARE
 };
-#endif
+
 
 GB_DESC MediaControlDesc[] = 
 {
@@ -919,7 +1135,7 @@ GB_DESC MediaPipelineDesc[] =
 	
 	GB_EVENT("End", NULL, NULL, &EVENT_End),
 	GB_EVENT("Message", NULL, "(Source)MediaControl;(Type)i(Message)s", &EVENT_Message),
-	GB_EVENT("Tag", NULL, NULL, &EVENT_Tag),
+	GB_EVENT("Tag", NULL, "(TagList)MediaTagList;", &EVENT_Tag),
 	GB_EVENT("Buffering", NULL, NULL, &EVENT_Buffering),
 	GB_EVENT("Duration", NULL, NULL, &EVENT_Duration),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_Progress),

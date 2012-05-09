@@ -31,6 +31,7 @@
 #ifndef __C_MEDIA_C
 
 //extern GB_DESC MediaSignalArgumentsDesc[];
+extern GB_DESC MediaTagListDesc[];
 extern GB_DESC MediaControlDesc[];
 extern GB_DESC MediaContainerDesc[];
 extern GB_DESC MediaPipelineDesc[];
@@ -42,6 +43,7 @@ extern GB_DESC MediaDesc[];
 #define THIS_ARG ((CMEDIASIGNALARGUMENTS *)_object)
 #define ELEMENT THIS->elt
 #define PIPELINE ((GstPipeline *)THIS->elt)
+#define THIS_TAGLIST ((CMEDIATAGLIST *)_object)
 
 #endif
 
@@ -64,6 +66,13 @@ typedef
 typedef
 	CMEDIACONTROL CMEDIAPIPELINE;
 
+typedef
+	struct {
+		GB_BASE ob;
+		GstTagList *tags;
+	}
+	CMEDIATAGLIST;
+	
 #if 0
 typedef
 	struct {

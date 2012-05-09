@@ -1,0 +1,35 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,90,63)
+  Background = &H3F3F3F&
+  Resizable = False
+  Border = False
+  Utility = True
+  SkipTaskbar = True
+  Opacity = 0
+  Spacing = True
+  Margin = True
+  { panTags Panel
+    MoveScaled(2,3,64,58)
+    Background = &H000000&
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Margin = True
+    { Label1 Label
+      MoveScaled(1,1,47,5)
+      Font = Font["Bold,+5"]
+      Foreground = &HBFBFBF&
+      Text = ("Information")
+    }
+    { gvwTags GridView
+      MoveScaled(3,8,43,39)
+      Font = Font["+3"]
+      Background = &H000000&
+      Foreground = &HBFBFBF&
+      Expand = True
+      Grid = False
+      Border = False
+    }
+  }
+}

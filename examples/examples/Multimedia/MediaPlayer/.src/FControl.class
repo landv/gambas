@@ -4,7 +4,7 @@ Private sldTime As DrawingArea
 Private lblTime As DrawingArea
 
 Private $sInfo As String
-Private $iMinOpacity As Integer = 80
+Private $iMinOpacity As Integer = 70
 
 Public Sub SetMinOpacity(iOpacity As Integer)
   
@@ -16,23 +16,11 @@ Public Sub SetMinOpacity(iOpacity As Integer)
 End
 
 
-Public Sub Form_Enter()
-
-  CAnimation.Start(Me, "Opacity", 80, 250)
-
-End
-
-Public Sub Form_Leave()
-
-  CAnimation.Start(Me, "Opacity", $iMinOpacity, 250)
-
-End
-
 Public Sub _new()
 
   panToolbar.H = 48 + Desktop.Scale * 2
 
-  FMain.CreateButtons(["eject", "play", "pause", "stop", "fullscreen", "subtitle", "visualisation", "-"], panToolbar)
+  FMain.CreateButtons(["eject", "info", "play", "pause", "stop", "fullscreen", "subtitle", "visualisation", "-"], panToolbar)
   
   sldTime = New DrawingArea(panToolbar) As "sldTime"
   sldTime.Resize(8, 8)
@@ -49,7 +37,7 @@ Public Sub _new()
   
   FMain.CreateButtons(["-", "volume", "quit"], panToolbar)
   
-  Me.H = 48 + Desktop.Scale * 4 + lblTitle.Font.Height
+  Me.H = 48 + Desktop.Scale * 6 + lblTitle.Font.Height
   Me.Arrangement = Arrange.Vertical
   panToolbar.Arrangement = Arrange.Horizontal
   

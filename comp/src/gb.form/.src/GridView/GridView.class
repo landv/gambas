@@ -193,7 +193,10 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
     If iColor = Color.Default Then 
       iColor = $hColumns[iCol].Background
       If iColor = Color.Default Then
-        iColor = Color.TextBackground
+        iColor = Me.Background
+        If iColor = Color.Default Then
+          iColor = Color.TextBackground
+        Endif
       Endif
     Endif
     
@@ -1666,3 +1669,4 @@ End
 '   Me.Refresh
 ' 
 ' End
+

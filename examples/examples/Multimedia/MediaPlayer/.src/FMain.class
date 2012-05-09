@@ -10,6 +10,7 @@ Private $sInfo As String
 Private $iVisualisation As Integer
 Private $fVolume As Float
 Private $bSuspend As Boolean
+Private $bShowTags As Boolean
 
 Public Sub _new()
   
@@ -146,8 +147,18 @@ Private Sub Action(sAction As String)
         Endif
         UpdateSubtitle
         FControl.SetTitle(File.Name(Dialog.Path))
+        FTags.ClearTags
         Action("play")
       Endif
+      
+    Case "info"
+      If $bShowTags Then
+        CAnimation.Start(FTags, "Opacity", 0, 250, Me)
+      Else
+        FTags.Show
+        CAnimation.Start(FTags, "Opacity", 70, 250)
+      Endif
+      $bShowTags = Not $bShowTags
       
     Case "subtitle"
       'If $hPlayer.State = Media.Playing Or If $hPlayer.State = Media.Paused Then
@@ -166,7 +177,6 @@ Private Sub Action(sAction As String)
       SuspendScreenSaver
       $hOutput.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
       Try $hPlayer.Play
-      FControl.SetMinOpacity(0)
       dwgVideo.Mouse = Mouse.Blank
       timTime.Start
       
@@ -176,7 +186,6 @@ Private Sub Action(sAction As String)
       $fLength = 0
       timTime.Stop
       dwgVideo.Mouse = Mouse.Default
-      FControl.SetMinOpacity(80)
       
     Case "pause"
       ResumeScreenSaver
@@ -187,6 +196,7 @@ Private Sub Action(sAction As String)
     Case "fullscreen"
       Me.FullScreen = Not Me.FullScreen
       Me.Maximized = Not Me.FullScreen
+      Form_Resize
       
     Case "volume"
       $hPlayer.Audio.Mute = Not $hPlayer.Audio.Mute
@@ -271,7 +281,8 @@ End
 
 Public Sub Form_Resize()
 
-  FControl.Move(0, Me.H - FControl.H, Me.W, FControl.H)
+  FControl.Move(Me.X, Me.Y + Me.H - FControl.H, Me.W, FControl.H)
+  FTags.Move(Me.X, Me.Y, FTags.W, Me.H - FControl.H)
 
 End
 
@@ -355,6 +366,17 @@ Public Sub MediaPlayer_End()
   
 End
 
+Public Sub MediaPlayer_Tag(TagList As MediaTagList)
+  
+  Dim sTag As String
+  
+  For Each sTag In TagList.Tags
+    FTags.AddTag(sTag, Str(TagList[sTag]))
+  Next
+  
+End
+
+
 Private Sub FadeOut()
   
   Dim I As Integer
@@ -394,5 +416,29 @@ Private Sub ResumeScreenSaver()
   
   If Not $bSuspend Then Return
   Desktop.ScreenSaver.Resume(Me)
+  
+End
+
+Public Sub Form_Enter()
+
+  If $hPlayer.State = Media.Playing Then
+    CAnimation.Start(FControl, "Opacity", 0, 400)
+    CAnimation.Start(FTags, "Opacity", 0, 400)
+  Endif
+
+End
+
+Public Sub Form_Leave()
+
+  If $hPlayer.State = Media.Playing Then
+    CAnimation.Start(FControl, "Opacity", 70, 250)
+    If $bShowTags Then CAnimation.Start(FTags, "Opacity", 70, 250)
+  Endif
+
+End
+
+Public Sub Animation_Stop()
+  
+  FTags.Hide
   
 End
