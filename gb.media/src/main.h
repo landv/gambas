@@ -26,6 +26,7 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include <glib.h>
 #include <gst/gst.h>
 #include "gambas.h"
 

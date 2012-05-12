@@ -190,9 +190,9 @@ int main(int argc, char *argv[])
 	//log_file = freopen(log_path, "w+", stderr);
 	//fprintf(stderr, "Fichier log Gambas\n");
 	
-	//struct rlimit rl = { 32000000, 32000000 };
-	//if (setrlimit(RLIMIT_CORE, &rl))
-	//	perror(strerror(errno));
+	/*struct rlimit rl = { 32000000, 32000000 };
+	if (setrlimit(RLIMIT_CORE, &rl))
+		perror(strerror(errno));*/
 
 	/*VALUE c, s, a, b, r;
 	double v = (argc - 2) / 2.0;

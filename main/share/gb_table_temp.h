@@ -72,13 +72,12 @@ int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2
 	unsigned int i;
 	int result;
 
-	for(i = 0;;i++)
+	for(i = 0; len > 0; i++)
 	{
 		result = toupper(s1[i]) - toupper(s2[i]);
 		if (LIKELY(result))
 			return result; // < 0 ? -1 : 1;
-		if (UNLIKELY(--len == 0))
-			break;
+		len--;
 	}
 
 	if (LIKELY(len1 < len2))

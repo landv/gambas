@@ -1,5 +1,7 @@
 ' Gambas class file
 
+'Property TagsX As Integer
+
 Private $hPlayer As MediaPlayer
 Private $hOutput As MediaControl
 Private $aVisualisation As MediaControl[]
@@ -11,10 +13,12 @@ Private $iVisualisation As Integer
 Private $fVolume As Float
 Private $bSuspend As Boolean
 Private $bShowTags As Boolean
+'Private $iTagsX As Integer
 
 Public Sub _new()
   
   Application.MainWindow = Me
+  '$iTagsX = - FTags.W
   
 End
 
@@ -154,9 +158,12 @@ Private Sub Action(sAction As String)
     Case "info"
       If $bShowTags Then
         CAnimation.Start(FTags, "Opacity", 0, 250, Me)
+        'CAnimation.Start(Me, "TagsX", - FTags.W, 250)
       Else
+        FTags.X = - FTags.W
         FTags.Show
         CAnimation.Start(FTags, "Opacity", 70, 250)
+        'CAnimation.Start(Me, "TagsX", 0, 250)
       Endif
       $bShowTags = Not $bShowTags
       
@@ -442,3 +449,16 @@ Public Sub Animation_Stop()
   FTags.Hide
   
 End
+
+' Private Function TagsX_Read() As Integer
+' 
+'   Return $iTagsX
+' 
+' End
+' 
+' Private Sub TagsX_Write(Value As Integer)
+' 
+'   $iTagsX = Value
+'   FTags.X = Me.X + $iTagsX
+' 
+' End
