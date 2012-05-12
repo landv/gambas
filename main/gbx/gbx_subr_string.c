@@ -149,25 +149,29 @@ void SUBR_file(ushort code)
 	i = NPARAM;
 	while (i--)
 	{
-		VALUE_get_string(PARAM, &addr, &len);
-		
-		if (len > 0)
+		if (PARAM->type != T_NULL)
 		{
-			if (ptr > str)
+			VALUE_get_string(PARAM, &addr, &len);
+			
+			if (len > 0)
 			{
-				if (!slash && *addr != '/')
-					*ptr++ = '/';
-				else if (slash && *addr == '/')
-					ptr--;
+				if (ptr > str)
+				{
+					if (!slash && *addr != '/')
+						*ptr++ = '/';
+					else if (slash && *addr == '/')
+						ptr--;
+				}
+				
+				slash = addr[len - 1] == '/';
+				
+				memcpy(ptr, addr, len);
+				ptr += len;
 			}
-			
-			slash = addr[len - 1] == '/';
-			
-			memcpy(ptr, addr, len);
-			ptr += len;
-		}
 
-		RELEASE_STRING(PARAM);
+			RELEASE_STRING(PARAM);
+		}
+		
 		PARAM++;
 	}
 
