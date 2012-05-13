@@ -248,7 +248,11 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
       
       If .Font Then Draw.Font = .Font
       If .Text Then
-        Draw.Text(.Text, X, Y, W, H, .Alignment)
+        If .WordWrap Then
+          Draw.RichText(Html(.Text), X, Y, W, H, .Alignment)
+        Else
+          Draw.Text(.Text, X, Y, W, H, .Alignment)
+        Endif
       Else If .RichText Then
         If .WordWrap Then
           Draw.RichText(.RichText, X, Y, W, H, .Alignment)

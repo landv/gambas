@@ -24,7 +24,7 @@ Public Sub _new()
   Next
   
   With gvwView[2, 1]
-    .Text = "Bonjour tout le\nmonde ! Comment\nallez-vous ?\nEh bien ça va, rien de neuf quoi."
+    .Text = "Bonjour tout le monde ! Comment allez-vous ? Eh bien ça va, rien de neuf quoi. On fait aller. On verra bien les amis."
     .Background = Color.Yellow
     .Padding = 10
     .Picture = Picture["icon:/32/warning"]
@@ -32,6 +32,7 @@ Public Sub _new()
     .ColumnSpan = 2
     .Alignment = Align.Center
     .Font = Font["0,Bold"]
+    .WordWrap = True
   End With
   
   gvwView.Rows[2].Height = 80
