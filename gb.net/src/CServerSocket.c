@@ -52,27 +52,37 @@ static void srvsock_post_error(CSERVERSOCKET *_object)
 
 static void CServerSocket_CallBack(int fd, int type, intptr_t lParam)
 {
-	int okval=0;
-	char *rem_ip_buf;
-	unsigned int ClientLen;
+	int okval = 0;
+	char *remote_ip;
+	unsigned int clen;
 	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
 	
-	if ( SOCKET->status != NET_ACTIVE) return;
+	if (SOCKET->status != NET_ACTIVE) return;
 
 	SOCKET->status = NET_PENDING;
-	ClientLen=sizeof(struct sockaddr_in);
-	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.in,&ClientLen);
+	clen = sizeof(struct sockaddr_in);
+	THIS->Client = accept(SOCKET->socket, (struct sockaddr*)&THIS->so_client.in, &clen);
+	
 	if (THIS->Client == -1)
 	{
-		close(THIS->Client);
+		//close(THIS->Client);
 		SOCKET->status = NET_ACTIVE;
 		return;
 	}
-	rem_ip_buf=inet_ntoa(THIS->so_client.in.sin_addr);
-	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
-	if ( (!THIS->iPause) && (okval) )
-		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,rem_ip_buf,0);
-	if  ( SOCKET->status == NET_PENDING) close(THIS->Client);
+	
+	if ((!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn))
+		okval = 1;
+	
+	if ((!THIS->iPause) && (okval))
+	{
+		remote_ip = GB.NewZeroString(inet_ntoa(THIS->so_client.in.sin_addr));
+		GB.Raise(THIS,EVENT_Connection, 1, GB_T_STRING, remote_ip, GB.StringLength(remote_ip));
+		GB.FreeString(&remote_ip);
+	}
+	
+	if (SOCKET->status == NET_PENDING)
+		close(THIS->Client);
+	
 	SOCKET->status = NET_ACTIVE;
 }
 
