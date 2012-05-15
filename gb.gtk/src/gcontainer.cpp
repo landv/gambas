@@ -493,10 +493,10 @@ gControl *gContainer::find(int x, int y)
 	int i;
 	gControl *ch;
 	
-	for (i = 0; i < childCount(); i++)
+	for (i = childCount() - 1; i >= 0; i--)
 	{
 		ch = child(i);
-		if (x >= ch->left() && y >= ch->top() && x < (ch->left() + ch->width()) && y < (ch->top() + ch->height()))
+		if (ch->isVisible() && x >= ch->left() && y >= ch->top() && x < (ch->left() + ch->width()) && y < (ch->top() + ch->height()))
 			return ch;
 	}
 	

@@ -476,6 +476,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     If CloseProject() Then Return True
   Endif
 
+  If Right(sDir) = "/" Then sDir = Left(sDir, -1)
   Project.Dir = sDir
 
   If bConvert Then
@@ -495,7 +496,7 @@ _INIT_AGAIN:
   Path = Project.Dir &/ PROJECT_FILE
   Name = File.Name(Project.Dir)
   SourceDir = Project.Dir &/ ".src"
-
+  
   ProjectFilter = ""
   VersionControl.Refresh
 
@@ -576,7 +577,9 @@ _INIT_AGAIN:
   '   If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
   '   If bConvert Then WriteProject(True)
   ' Endif
+
   ReadProject
+  
   If Not ReadOnly Then
     If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
   Endif

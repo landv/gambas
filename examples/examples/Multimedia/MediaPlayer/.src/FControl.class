@@ -98,3 +98,9 @@ Public Sub SetTitle(sTitle As String)
   lblTitle.Text = sTitle
   
 End
+
+Public Sub Form_Move()
+
+  Debug Me.X;; Me.Y
+
+End

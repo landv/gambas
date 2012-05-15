@@ -60,13 +60,18 @@ Public Sub Timer_Timer()
   
   fValue = Object.GetProperty($hObject, $sProperty)
   
-  iSign = Sgn($fTarget - fValue)
-  fValue += ($fTarget - fValue) / (1000 * ($fTime - Timer) / $hTimer.Delay)
-  If Sgn($fTarget - fValue) <> iSign Then
+  If Abs(fValue - $fTarget) < 1E-6 Then
     Object.SetProperty($hObject, $sProperty, $fTarget)
     {Stop}
   Else
-    Object.SetProperty($hObject, $sProperty, fValue)
+    iSign = Sgn($fTarget - fValue)
+    fValue += ($fTarget - fValue) / (1000 * ($fTime - Timer) / $hTimer.Delay)
+    If Sgn($fTarget - fValue) <> iSign Then
+      Object.SetProperty($hObject, $sProperty, $fTarget)
+      {Stop}
+    Else
+      Object.SetProperty($hObject, $sProperty, fValue)
+    Endif
   Endif
   
 Catch

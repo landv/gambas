@@ -146,12 +146,17 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 
 	int x, y, w, h;
 
-	x = VARGOPT(x, 0);
-	y = VARGOPT(y, 0);
-	w = VARGOPT(w, WIDGET->width());
-	h = VARGOPT(h, WIDGET->height());
-	
-	WIDGET->refresh(x,y,w,h);
+	if (MISSING(x) && MISSING(y) && MISSING(w) && MISSING(h))
+		WIDGET->refresh();
+	else
+	{
+		x = VARGOPT(x, 0);
+		y = VARGOPT(y, 0);
+		w = VARGOPT(w, WIDGET->width());
+		h = VARGOPT(h, WIDGET->height());
+		
+		WIDGET->refresh(x,y,w,h);
+	}
 
 END_METHOD
 

@@ -1003,6 +1003,16 @@ void IMAGE_set_opacity(GB_IMG *dst, uchar opacity)
 	
 	GET_POINTER(dst, p, pm);
 
+	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(dst->format))
+	{
+		uint *pp = p;
+		while (pp != pm)
+		{
+			*pp = INV_PREMUL(*pp);
+			pp++;
+		}
+	}
+	
 	uchar *d = (uchar *)p;
 	uchar *dm = (uchar *)pm;
 	
@@ -1035,6 +1045,16 @@ void IMAGE_set_opacity(GB_IMG *dst, uchar opacity)
 		}
 	}
 
+	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(dst->format))
+	{
+		uint *pp = p;
+		while (pp != pm)
+		{
+			*pp = PREMUL(*pp);
+			pp++;
+		}
+	}
+	
 	MODIFY(dst);
 }
 

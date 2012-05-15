@@ -38,39 +38,53 @@ gboolean slider_Expose(GtkWidget *widget,GdkEventExpose *event,gSlider *data)
 	GtkAdjustment* adj=gtk_range_get_adjustment(GTK_RANGE(data->widget));
 	int max=(int)(adj->upper-adj->lower);
 	int b;
-	int fact=1;
 	int myh;
+	int step;
 	
-	if (!data->_mark) return false;
+	if (!data->_mark || !max) return false;
 	
 	if ( GTK_WIDGET_TYPE(data->widget)==GTK_TYPE_HSCALE )
 	{
+		step = data->_page_step * data->width() / max;
+		if (!step)
+			return false;
+		
+		while (step < 4)
+			step *= 2;
+		
 		myh=(data->height()-20)/2;
 		if (myh<=0) myh=1;
-		if (max) fact = data->width()/max;
 		gDraw *dr=new gDraw();
 		dr->connect(data);
 		dr->setForeground(get_gdk_fg_color(data->border));
-		for (b=0;b<data->width();b+=data->_step)
+		
+		for(b = step; b <= (data->width() - step); b += step)
 		{
-			dr->line(b*fact,0,b*fact,myh);
-			dr->line(b*fact,data->height(),b*fact,data->height()-myh);
+			dr->line(b, 0, b,myh);
+			dr->line(b, data->height(), b,data->height()-myh);
 		}
 		dr->disconnect();
 		delete dr;
 	}
 	else
 	{
+		step = data->_page_step * data->height() / max;
+		if (!step)
+			return false;
+		
+		while (step < 4)
+			step *= 2;
+		
 		myh=(data->width()-20)/2;
 		if (myh<=0) myh=1;
-		if (max) fact = data->height()/max;
 		gDraw *dr=new gDraw();
 		dr->connect(data);
 		dr->setForeground(get_gdk_fg_color(data->border));
-		for (b=0;b<data->height();b+=data->_step)
+		
+		for(b = 0; b < data->height(); b += step)
 		{
-			dr->line(0,b*fact,myh,b*fact);
-			dr->line(data->width(),b*fact,data->width()-myh,b*fact);
+			dr->line(0, b, myh, b);
+			dr->line(data->width(), b, data->width() - myh, b);
 		}
 		dr->disconnect();
 		delete dr;
@@ -119,7 +133,7 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	_max = 100;
 	_tracking = true;
 	
-	border = gtk_event_box_new();
+	border = gtk_alignment_new(0,0,1,1);
 	
 	if (scrollbar)
 		return;
@@ -142,6 +156,9 @@ gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
 	g_typ = Type_gScrollBar;
 	widget = gtk_hscrollbar_new(NULL);
 	realize(false);
+	
+	init();
+	onChange = NULL;
 	
 	gtk_range_set_update_policy(GTK_RANGE(widget),GTK_UPDATE_CONTINUOUS);
 	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
@@ -302,7 +319,7 @@ void gScrollBar::resize(int w, int h)
 			widget = gtk_vscrollbar_new(adj);
 		else
 			widget = gtk_hscrollbar_new(adj);
-
+		
 		gtk_container_add(GTK_CONTAINER(border), widget);
 		gtk_widget_show(widget);
 		widgetSignals();

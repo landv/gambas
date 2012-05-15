@@ -266,9 +266,9 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	}
 
   widget = border;
-  border = gtk_event_box_new();
-	if (invisible)
-		gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
+  //border = gtk_event_box_new();
+	//if (invisible)
+	//	gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
 																
   type = typ;
 

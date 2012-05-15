@@ -114,6 +114,7 @@ Private Sub LoadImage(Optional bReset As Boolean) As Boolean
   $hUndoStack = New Image[]
   SetZoom(0)
   UpdateSaveIcon
+  dwgInfo.Raise
   dwgInfo.Refresh
   Me.Refresh
   
@@ -346,7 +347,7 @@ Public Sub Form_Resize()
   dwgInfo.Move(8, Me.H - dwgInfo.H, Me.W, dwgInfo.H)
   btnPrev.Move(8, (Me.H - btnPrev.H) / 2)
   btnNext.Move(Me.W - 8 - btnNext.W, (Me.H - btnNext.H) / 2)
-
+  
 End
 
 Public Sub Button_Click()
@@ -680,12 +681,12 @@ Private Sub PaintOutlineText(sText As String, X As Float, Y As Float, W As Float
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
   For I = -1 To 1
     For J = -1 To 1
-      Paint.DrawRichText(sText, X + I + 2, Y + J + 2, W - 4, H - 4, Align.Left)
+      Paint.DrawRichText(sText, X + I + 2, Y + J + 2, 4096, H - 4, Align.Left)
     Next
   Next
   'Paint.Fill
   Paint.Brush = Paint.Color(Color.LightForeground)
-  Paint.DrawRichText(sText, X + 2, Y + 2, W - 4, H - 4, Align.Left)
+  Paint.DrawRichText(sText, X + 2, Y + 2, 4096, H - 4, Align.Left)
   
 End
 
@@ -703,7 +704,6 @@ Public Sub dwgInfo_Draw()
     sText &= sSpace & $hImage.W & " x " & $hImage.H & " (" & Format($fZoom, "0%") & ")"
   End With
   
-  Paint.Font = Font["+5"]
   PaintOutlineText(sText, 0, 0, dwgInfo.W, dwgInfo.H)
   
 End
@@ -1110,6 +1110,7 @@ End
 
 Public Sub dwgPath_Draw()
   
+  'Debug Paint.Font.ToString()
   PaintOutlineText($sDir, 0, 0, Paint.W, Paint.H)
   
 End

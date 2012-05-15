@@ -41,7 +41,7 @@ gPanel::gPanel(gContainer *parent) : gContainer(parent)
 {
 	g_typ = Type_gPanel;
 
-	border = gtk_event_box_new();
+	border = //gtk_event_box_new();
 	widget = gtk_fixed_new();
 	frame = widget;
 	realize(true);
@@ -58,8 +58,7 @@ gFrame::gFrame(gContainer *parent) : gContainer(parent)
 {
 	g_typ=Type_gFrame;
 
-	border = gtk_event_box_new();
-	widget = gtk_fixed_new();
+	border = widget = gtk_fixed_new();
 	
 	fr = gtk_frame_new(NULL);
 	label = gtk_frame_get_label_widget(GTK_FRAME(fr));

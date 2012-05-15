@@ -605,11 +605,11 @@ Private Sub Ellipsize(sText As String, hFont As Font, W As Integer, H As Integer
   
   If Not sText Then Return
   
-  For iPos = 1 To Len(sText)
-    If hFont.RichTextHeight(Left(sText, iPos) & sCar, W) > H Then Break
+  For iPos = 1 To String.Len(sText)
+    If hFont.RichTextHeight(String.Left(sText, iPos) & sCar, W) > H Then Break
   Next
   
-  Return Left(sText, iPos - 1) & sCar
+  Return String.Left(sText, iPos - 1) & sCar
   
 End
 

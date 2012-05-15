@@ -288,6 +288,8 @@ End
 
 Public Sub Form_Resize()
 
+  'Debug Me.X;; Me.Y;; Me.W;; Me.H;; FControl.H;; Me.Y + Me.H - FControl.H
+  Debug "FControl.Move:";; Me.X;; Me.Y + Me.H - FControl.H
   FControl.Move(Me.X, Me.Y + Me.H - FControl.H, Me.W, FControl.H)
   FTags.Move(Me.X, Me.Y, FTags.W, Me.H - FControl.H)
 
@@ -360,9 +362,9 @@ End
 Public Sub dwgVideo_Draw()
 
   If $hPlayer.State = Media.Null Then
-    Draw.Font = Font["+5"]
+    Draw.Font = Font["+16"]
     Draw.Foreground = Color.Gray
-    Draw.RichText(("<h1>MediaPlayer</h1>A media player example based on GStreamer and Gambas.<br><i>Made by Benoît Minisini.</i>"), 0, 0, dwgVideo.Width, dwgVideo.Height, Align.Center)
+    Draw.RichText("<b>G</b>ambas <b>A</b>lmost <b>M</b>eans <b>Bas</b>ic!", 0, 0, dwgVideo.Width, dwgVideo.Height, Align.Center)
   Endif
 
 End

@@ -46,7 +46,8 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 		case 3: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
 	}
 	
-	gdk_drawable_get_size (draw->window, &vw, &vh);
+	vw = d->width();
+	vh = d->height();
 	pango_layout_get_pixel_size(d->layout, &lw, &lh);
 	
 	if (!d->markup)
@@ -77,6 +78,9 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	
 	if (vh < 0) vh = 0;
 	
+	vw += draw->allocation.x;
+	vh += draw->allocation.y;
+	
 	if (d->_transparent && d->_mask_dirty)
 	{
 		GdkBitmap *mask = gt_make_text_mask(draw->window, d->width(), d->height(), d->layout, vw, vh);
@@ -102,6 +106,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 		d->_mask_dirty = false;
 	}
 	
+	//fprintf(stderr, "draw label: %s: %d %d\n", d->name(), vw, vh);
 	gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
 	g_object_unref(G_OBJECT(gc));
 	return false;
@@ -119,7 +124,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	_wrap = true;
 	align = -1;
 	
-	border = widget = gtk_event_box_new();
+	border = widget = gtk_fixed_new();
 	layout = gtk_widget_create_pango_layout(border, "");
 	
 	realize(true);

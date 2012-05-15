@@ -1611,7 +1611,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
       If .RichText Then
         If Not .WordWrap Then W += hFont.RichTextWidth(.RichText)
       Else If .Text Then
-        W += hFont.TextWidth(.Text)
+        If Not .WordWrap Then W += hFont.TextWidth(.Text)
       Endif
       
       If .Picture Then

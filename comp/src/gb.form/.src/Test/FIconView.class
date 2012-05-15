@@ -8,9 +8,9 @@ Public Sub Form_Open()
   
   For Each sPath In Dir(sDir).Sort(gb.Language + gb.IgnoreCase)
     If IsDir(sDir &/ sPath) Then
-      IconView1.Add(sPath, sPath, Picture["icon:/48/directory"])
+      IconView1.Add(sPath, sPath, Picture["icon:/64/directory"])
     Else
-      IconView1.Add(sPath, sPath, Picture["icon:/48/file"])
+      IconView1.Add(sPath, sPath, Picture["icon:/64/file"])
     Endif
   Next
   

@@ -80,6 +80,9 @@ public:
 	void setState(int vl);
 	void setShadow(int vl);
 	
+	int offX() const { return _x; }
+	int offY() const { return _y; }
+	void offset(int *x, int *y) const { *x += _x; *y += _y; }
 
 //"Methods"
 	void save();
@@ -108,6 +111,7 @@ private:
 	void endFill();
 	void drawLayout(PangoLayout *ly, bool markup, int x, int y, int w, int h, int align);
 	void initGC();
+	void updateClip();
 
 	gDrawingArea *dArea;
 	gFont *ft;

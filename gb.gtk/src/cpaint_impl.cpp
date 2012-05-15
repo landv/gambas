@@ -83,11 +83,17 @@ typedef
 		CFONT *font;
 		CFONT **font_stack;
 		cairo_matrix_t init;
+		double dx;
+		double dy;
 		}
 	GB_PAINT_EXTRA;
 
 #define EXTRA(d) ((GB_PAINT_EXTRA *)d->extra)
 #define CONTEXT(d) EXTRA(d)->context
+//#define DX(d) EXTRA(d)->dx
+//#define DY(d) EXTRA(d)->dy
+#define DX(d) 0
+#define DY(d) 0
 
 static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double h, int rx, int ry)
 {
@@ -173,6 +179,7 @@ static int Begin(GB_PAINT *d)
 	int rx = 96, ry = 96;
 	
 	EXTRA(d)->print_context = NULL;
+	EXTRA(d)->dx = EXTRA(d)->dy = 0;
 	
 	if (GB.Is(device, CLASS_Picture))
 	{
@@ -209,6 +216,8 @@ static int Begin(GB_PAINT *d)
 	{
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
 		GdkDrawable *dr;
+		GtkAllocation *a;
+		double dx = 0, dy = 0;
 		
 		w = wid->width();
 		h = wid->height();
@@ -225,17 +234,29 @@ static int Begin(GB_PAINT *d)
 				GB.Error("Cannot paint outside of Draw event handler");
 				return TRUE;
 			}
+			
+			a = &wid->widget->allocation;
+			dx = a->x;
+			dy = a->y;
+			//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
 			dr = wid->widget->window;
 		}
 
-		/*target = 
-			cairo_xlib_surface_create(gdk_x11_drawable_get_xdisplay(dr), gdk_x11_drawable_get_xid(dr), 
-				gdk_x11_visual_get_xvisual(gdk_drawable_get_visual(dr)), w, h);*/
-		
 		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
 		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
 		
 		EXTRA(d)->context = gdk_cairo_create(dr);
+		
+		cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &EXTRA(d)->dx, &EXTRA(d)->dy);
+		//fprintf(stderr, "Begin: device offset = %g %g ", EXTRA(d)->dx, EXTRA(d)->dy);
+		
+		dx += EXTRA(d)->dx;
+		dy += EXTRA(d)->dy;
+		cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), dx, dy);
+		//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
+		//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
+		//EXTRA(d)->font = CFONT_create(wid->font());
+		//GB.Ref(EXTRA(d)->font);
 	}
 	else if (GB.Is(device, CLASS_Printer))
 	{
@@ -300,19 +321,30 @@ static void End(GB_PAINT *d)
 		GB.FreeArray(POINTER(&dx->font_stack));
 	GB.Unref(POINTER(&dx->font));
 	
-	cairo_destroy(dx->context);
-
 	if (GB.Is(device, CLASS_DrawingArea))
 	{
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
 		if (wid->cached())
 			wid->setCache();
+		else
+		{
+			//double dx, dy;
+			//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
+			//fprintf(stderr, "End: device offset = %g %g ", dx, dy);
+			//fprintf(stderr, "-> device offset = %g %g\n", EXTRA(d)->dx, EXTRA(d)->dy);
+			cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), EXTRA(d)->dx, EXTRA(d)->dy);
+			//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
+			//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
+		}
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
 		CSVGIMAGE *svgimage = ((CSVGIMAGE *)device);
 		SVGIMAGE_end(svgimage);
 	}
+	
+	cairo_destroy(dx->context);
+	
 }
 
 static void Save(GB_PAINT *d)
@@ -359,7 +391,16 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
 	if (!EXTRA(d)->font)
 	{
-		EXTRA(d)->font = CFONT_create(new gFont());
+		if (GB.Is(d->device, CLASS_DrawingArea))
+		{
+			gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)d->device)->widget;
+			EXTRA(d)->font = CFONT_create(wid->font()->copy());
+		}
+		else
+		{
+			EXTRA(d)->font = CFONT_create(new gFont());
+		}
+		
 		GB.Ref(EXTRA(d)->font);
 	}
 		
@@ -404,8 +445,8 @@ static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 	double x1, y1, x2, y2;
 	cairo_clip_extents(CONTEXT(d), &x1, &y1, &x2, &y2);
 	
-	ext->x1 = (float)x1;
-	ext->y1 = (float)y1;
+	ext->x1 = (float)x1 - DX(d);
+	ext->y1 = (float)y1 - DY(d);
 	ext->x2 = (float)x2;
 	ext->y2 = (float)y2;
 }
@@ -431,15 +472,15 @@ static void PathExtents(GB_PAINT *d, GB_EXTENTS *ext)
 	double x1, y1, x2, y2;
 	cairo_path_extents(CONTEXT(d), &x1, &y1, &x2, &y2);
 	
-	ext->x1 = (float)x1;
-	ext->y1 = (float)y1;
+	ext->x1 = (float)x1 - DX(d);
+	ext->y1 = (float)y1 - DY(d);
 	ext->x2 = (float)x2;
 	ext->y2 = (float)y2;
 }
 
 static int PathContains(GB_PAINT *d, float x, float y)
 {
-	return cairo_in_fill(CONTEXT(d), (double)x, (double)y);
+	return cairo_in_fill(CONTEXT(d), (double)x + DX(d), (double)y + DY(d));
 }
 
 static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
@@ -675,6 +716,9 @@ static void ClosePath(GB_PAINT *d)
 		
 static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length)
 {
+	xc += DX(d);
+	yc += DY(d);
+	
 	cairo_new_sub_path(CONTEXT(d));
 	//angle = - angle;
 	if (length < 0.0)
@@ -685,6 +729,8 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
 {
+	x += DX(d);
+	y += DY(d);
 	cairo_rectangle(CONTEXT(d), x, y, width, height);
 }
 
@@ -693,23 +739,23 @@ static void GetCurrentPoint(GB_PAINT *d, float *x, float *y)
 	double cx, cy;
 	
 	cairo_get_current_point(CONTEXT(d), &cx, &cy);
-	*x = (float)cx;
-	*y = (float)cy;
+	*x = (float)cx - DX(d);
+	*y = (float)cy - DY(d);
 }
 
 static void MoveTo(GB_PAINT *d, float x, float y)
 {
-	cairo_move_to(CONTEXT(d), x, y);
+	cairo_move_to(CONTEXT(d), x + DX(d), y + DY(d));
 }
 
 static void LineTo(GB_PAINT *d, float x, float y)
 {
-	cairo_line_to(CONTEXT(d), x, y);
+	cairo_line_to(CONTEXT(d), x + DX(d), y + DY(d));
 }
 
 static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3)
 {
-	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
+	cairo_curve_to(CONTEXT(d), x1 + DX(d), y1 + DY(d), x2 + DX(d), y2 + DY(d), x3 + DX(d), y3 + DY(d));
 }
 
 static PangoLayout *create_pango_layout(GB_PAINT *d)
@@ -759,7 +805,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 		offy = -(font->font->ascentF());
 	}
 	
-	cairo_rel_move_to(CONTEXT(d), offx, offy);
+	cairo_rel_move_to(CONTEXT(d), offx + DX(d), offy + DY(d));
 	if (draw)
 		pango_cairo_show_layout(CONTEXT(d), layout);
 	else
@@ -1097,6 +1143,9 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_pattern_t *pattern, *save;
 	cairo_matrix_t matrix;
 	gPicture *picture = CIMAGE_get((CIMAGE *)image);
+	
+	x += DX(d);
+	y += DY(d);
 	
 	cairo_save(CONTEXT(d));
 	

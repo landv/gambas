@@ -434,7 +434,7 @@ bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int
 	int i, lc;
 	wchar_t *wstr;
 	
-	result = STRING_new_temp(NULL, wlen * sizeof(wchar_t) + 3);
+	result = STRING_new_temp(NULL, (wlen  + 1) * sizeof(wchar_t) - 1);
 	wstr = (wchar_t *)result;
 	
 	for (i = 0; i < wlen; i++)

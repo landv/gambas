@@ -51,6 +51,7 @@ public:
 	gMainWindow *topLevel();
 	
 	gContainer *parent() const { return pr; }
+	bool isAncestorOf(gControl *child);
 	gCursor* cursor();
 	bool design();
 	virtual bool enabled();
@@ -114,6 +115,9 @@ public:
 	virtual gFont *font();
 	virtual void setFont(gFont *ft);
 	bool ownFont() { return fnt != 0; }
+
+	bool canFocus() const;
+	void setCanFocus(bool vl);
 
 	gControl *proxy() const { return _proxy; }
 	bool setProxy(gControl *proxy);
@@ -241,11 +245,12 @@ public:
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();
 	void drawBorder(GdkDrawable *win = 0);
+	void drawBackground();
 	
 	virtual int minimumHeight();
 	void resolveFont(gFont *new_font);
 	
-	void emitEnterEvent();
+	void emitEnterEvent(bool no_leave = false);
 	void emitLeaveEvent();
 	
 /*	static gControl* dragWidget();

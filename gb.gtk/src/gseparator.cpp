@@ -28,8 +28,10 @@
 
 gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 {
-	gint w, h;
+	gint x, y, w, h;
 
+	x = wid->allocation.x;
+	y = wid->allocation.y;
 	w = data->width();
 	h = data->height();
 	
@@ -45,9 +47,9 @@ gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 		gtk_gc_release(gc);
 	}
 	else if (w>=h)
-		gtk_paint_hline(wid->style,wid->window,GTK_STATE_NORMAL,&e->area,wid,NULL,0,w,h/2);
+		gtk_paint_hline(wid->style, wid->window, GTK_STATE_NORMAL, &e->area, wid, NULL, x, x + w, y + h / 2);
 	else
-		gtk_paint_vline(wid->style,wid->window,GTK_STATE_NORMAL,&e->area,wid,NULL,0,h,w/2);
+		gtk_paint_vline(wid->style, wid->window, GTK_STATE_NORMAL, &e->area, wid, NULL, y, y + h, x + w / 2);
 
 	return false;
 } 
@@ -56,17 +58,15 @@ gSeparator::gSeparator(gContainer *parent) : gControl(parent)
 {
 	g_typ=Type_gSeparator;
 	
-	border=gtk_event_box_new();
-	widget=gtk_drawing_area_new();
-	gtk_container_add(GTK_CONTAINER(border),widget);
+	border = widget = gtk_fixed_new();
 
-	gtk_widget_add_events(widget,GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-	gtk_widget_add_events(widget,GDK_POINTER_MOTION_MASK);
+	gtk_widget_add_events(widget, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+	gtk_widget_add_events(widget, GDK_POINTER_MOTION_MASK);
 	
 	connectParent();
 	initSignals();
 
-	g_signal_connect(G_OBJECT(widget),"expose-event",G_CALLBACK(gSeparator_expose),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(gSeparator_expose), (gpointer)this);
 }
 
 

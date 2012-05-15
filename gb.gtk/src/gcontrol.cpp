@@ -49,6 +49,7 @@
 #include "gdesktop.h"
 #include "gdrag.h"
 #include "gmouse.h"
+#include "gdraw.h"
 #include "gcontrol.h"
 
 static GList *controls=NULL;
@@ -358,6 +359,8 @@ void gControl::setVisible(bool vl)
 	{
 		if (parent() && hasFocus())
 			gtk_widget_child_focus(GTK_WIDGET(gtk_widget_get_toplevel(border)), GTK_DIR_TAB_FORWARD);
+		if (gtk_widget_has_grab(border))
+			gtk_grab_remove(border);
 		gtk_widget_hide(border);
 	}
 	
@@ -881,7 +884,18 @@ void gControl::refresh(int x, int y, int w, int h)
 	if (x < 0 || y < 0 || w < 0 || h < 0)
 	  gtk_widget_queue_draw(border);
 	else	
-	  gtk_widget_queue_draw_area(border, x, y, w, h);
+	{
+		// Buggy GTK+
+	  // gtk_widget_queue_draw_area(border, x, y, w, h);
+	  GdkRectangle r;
+		
+		r.x = border->allocation.x + x;
+		r.y = border->allocation.y + y;
+		r.width = w;
+		r.height = h;
+  
+		gdk_window_invalidate_rect(border->window, &r, TRUE);
+	}
 
 	afterRefresh();
 }
@@ -1250,6 +1264,12 @@ static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *con
 	return false;
 }
 
+static gboolean cb_draw_background(GtkWidget *wid, GdkEventExpose *e, gControl *control)
+{
+	control->drawBackground();
+	return false;
+}
+
 /*static void cb_size_allocate(GtkWidget *wid, GtkAllocation *a, gContainer *container)
 {
 	if (!container->isTopLevel())
@@ -1330,7 +1350,10 @@ void gControl::realize(bool make_frame)
 	
   if (frame)
 		g_signal_connect_after(G_OBJECT(frame), "expose-event", G_CALLBACK(cb_frame_expose), (gpointer)this);
-		
+	
+	if (!gtk_widget_get_has_window(border))
+		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
+	
 	//if (isContainer() && widget != border)
 	//	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 	
@@ -1350,12 +1373,14 @@ void gControl::realize(bool make_frame)
 
 void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 {
-	border = gtk_event_box_new();
+	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
+	
+	border = GTK_WIDGET(_scroll);
 	widget = wid;
 	frame = 0;
 
-	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
-	gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
+	
+	//gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
 	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(_scroll), widget);
 	
@@ -1861,11 +1886,26 @@ void gControl::setNoTabFocus(bool v)
 		pr->updateFocusChain();
 }
 
-void gControl::emitEnterEvent()
+void gControl::emitEnterEvent(bool no_leave)
 {
+	gContainer *cont;
+	
+	if (parent())
+		parent()->emitEnterEvent(true);
+	
+	if (!no_leave && isContainer())
+	{
+		cont = (gContainer *)this;
+		int i;
+		
+		for (i = 0; i < cont->childCount(); i++)
+			cont->child(i)->emitLeaveEvent();
+	}
+	
 	if (_inside)
 		return;
-
+	
+	setMouse(mouse());
 	emit(SIGNAL(onEnterLeave), gEvent_Enter);
 	_inside = true;
 }
@@ -1874,7 +1914,57 @@ void gControl::emitLeaveEvent()
 {
 	if (!_inside)
 		return;
-
+	
+	if (isContainer())
+	{
+		gContainer *cont = (gContainer *)this;
+		int i;
+		
+		for (i = 0; i < cont->childCount(); i++)
+			cont->child(i)->emitLeaveEvent();
+	}
+	
 	emit(SIGNAL(onEnterLeave), gEvent_Leave);
+	if (parent()) parent()->setMouse(parent()->mouse());
 	_inside = false;
 }
+
+bool gControl::isAncestorOf(gControl *child)
+{
+	if (!isContainer())
+		return false;
+	
+	for(;;)
+	{
+		child = child->parent();
+		if (!child)
+			return false;
+		else if (child == this)
+			return true;
+	}
+}
+
+void gControl::drawBackground()
+{
+	if (background() == COLOR_DEFAULT)
+		return;
+	
+	gDraw *d = new gDraw();
+	d->connect(this);
+	d->setFillStyle(FILL_SOLID);
+	d->setFillColor(background());
+	d->setLineStyle(LINE_NONE);
+	d->rect(0, 0, width(), height());
+	delete d;
+}
+
+bool gControl::canFocus() const
+{
+	return GTK_WIDGET_CAN_FOCUS(widget);
+}
+
+void gControl::setCanFocus(bool vl)
+{
+	gtk_widget_set_can_focus(widget, vl);
+}
+

@@ -169,19 +169,13 @@ gPictureBox::gPictureBox(gContainer *parent) : gControl(parent)
 	_picture = NULL;
 	g_typ=Type_gPictureBox;
 	
-	border = gtk_event_box_new();
+	border = gtk_alignment_new(0,0,1,1);
 	widget = gtk_image_new();
 	gtk_image_set_pixel_size(GTK_IMAGE(widget),0);
 	realize(true);
 	
 	setAlignment(ALIGN_TOP_LEFT);
 	_autoresize = false;
-	
-	// BM: The gControl signal handlers are used only there. Is it really needed ?
-	//g_signal_connect(G_OBJECT(border),"button-press-event",G_CALLBACK(sg_button_Press),(gpointer)this);
-	//g_signal_connect_after(G_OBJECT(border),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
-	//g_signal_connect(G_OBJECT(border),"button-release-event",G_CALLBACK(sg_button_Release),(gpointer)this);
-	//GTK_WIDGET_SET_FLAGS(widget,GTK_CAN_FOCUS);
 }
 
 gPictureBox::~gPictureBox()

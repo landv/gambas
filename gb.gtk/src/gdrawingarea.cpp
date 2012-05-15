@@ -22,6 +22,7 @@
 ***************************************************************************/
 
 #include "widgets.h"
+#include "gdraw.h"
 #include "gdrawingarea.h"
 
 /****************************************************************************************
@@ -39,10 +40,12 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 	}
 	else
 	{
+		//data->drawBackground();
+		
 		if (data->onExpose)
 		{
 			data->_in_draw_event = true;
-			data->onExpose(data,e->area.x,e->area.y,e->area.width,e->area.height);
+			data->onExpose(data,e->area.x-wid->allocation.x,e->area.y-wid->allocation.y,e->area.width,e->area.height);
 			data->_in_draw_event = false;
 		}
 		data->drawBorder();
@@ -56,13 +59,13 @@ static void cb_size(GtkWidget *wid, GtkAllocation *a, gDrawingArea *data)
 	data->updateCache();
 }
 
-static gboolean cb_button_press(GtkWidget *wid, GdkEventButton *event, gDrawingArea *data)
+/*static gboolean cb_button_press(GtkWidget *wid, GdkEventButton *event, gDrawingArea *data)
 {
 	if (data->canFocus())
 		data->setFocus();
 	
 	return false;
-}
+}*/
 
 void gDrawingArea::init()
 {
@@ -83,7 +86,7 @@ void gDrawingArea::init()
 	
 	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
-	g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
+	//g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
 }	
 
 gDrawingArea::gDrawingArea(gContainer *parent, bool scrollarea) : gContainer(parent)
@@ -99,7 +102,7 @@ gDrawingArea::gDrawingArea(gContainer *parent, bool scrollarea) : gContainer(par
 	{
 		g_typ = Type_gDrawingArea;
 		
-		border = gtk_event_box_new();
+		border = //gtk_event_box_new();
 		widget = gtk_fixed_new();
 		//widget = border; //gtk_layout_new(0,0);
 			
@@ -119,16 +122,6 @@ void gDrawingArea::resize(int w, int h)
 	// TODO Do not resize cache if the DrawingArea is being painted
 	gContainer::resize(w,h);
 	//updateCache();
-}
-
-bool gDrawingArea::canFocus() const
-{
-	return GTK_WIDGET_CAN_FOCUS(widget);
-}
-
-void gDrawingArea::setCanFocus(bool vl)
-{
-	gtk_widget_set_can_focus(widget, vl);
 }
 
 void gDrawingArea::updateEventMask()
@@ -163,6 +156,7 @@ void gDrawingArea::setCached(bool vl)
 	
 	_cached = vl;
 	
+	gtk_widget_set_has_window(widget, _cached);
 	gtk_widget_set_double_buffered(widget, !_cached);
 	
 	if (!_cached)
@@ -302,3 +296,17 @@ void gDrawingArea::setRealBackground(gColor color)
 	gControl::setRealBackground(color);
 	clear();
 }
+
+/*void gDrawingArea::drawBackground(GdkDrawable *win)
+{
+	GdkGC *gc;
+	GdkGCValues values;
+
+	fill_gdk_color(&values.background, gDesktop::lightfgColor(), gdk_drawable_get_colormap(win));
+	gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
+	
+	//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
+	gdk_draw_rectangle(win, gc, FALSE, x, y, w - 1, h - 1); 
+	gtk_gc_release(gc);
+	return;
+}*/

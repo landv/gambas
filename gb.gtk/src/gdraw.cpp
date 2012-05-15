@@ -204,14 +204,12 @@ void gDraw::connect(gControl *wid)
 
 			break;
 			
-		case Type_gFrame:
-			dr=GTK_LAYOUT(wid->widget)->bin_window; 
-			break;
-			
 		default:
 			dr=wid->widget->window;
+			GtkAllocation *a = &wid->widget->allocation;
+			_x = a->x;
+			_y = a->y;
 			break;
-		
 	}
 	
 	initGC();
@@ -574,7 +572,7 @@ void gDraw::setFillX(int vl)
 
 	_fillX = vl;
 	gdk_gc_get_values(gc,&val);
-	gdk_gc_offset(gc,vl,val.ts_y_origin);
+	gdk_gc_offset(gc,_fillX + _x,val.ts_y_origin);
 	if (gcm) gdk_gc_offset(gcm, vl, val.ts_y_origin);
 }
 
@@ -589,7 +587,7 @@ void gDraw::setFillY(int vl)
 
 	_fillY = vl;
 	gdk_gc_get_values(gc,&val);
-	gdk_gc_offset(gc,val.ts_x_origin,vl);
+	gdk_gc_offset(gc,val.ts_x_origin,_fillY + _y);
 	if (gcm) gdk_gc_offset(gcm, val.ts_x_origin, vl);
 }
 
@@ -677,31 +675,41 @@ bool gDraw::clipEnabled()
 	return clip_enabled;
 }
 
-void gDraw::setClipEnabled(bool vl)
+void gDraw::updateClip()
 {
-	if (vl)
+	GdkRectangle r;
+	
+	if (clip_enabled)
 	{
-		gdk_gc_set_clip_rectangle(gc,&clip);
-		if (gcm) gdk_gc_set_clip_rectangle(gcm, &clip);
-		clip_enabled=true;
+		r = clip;
+		r.x += _x;
+		r.y += _y;
+	
+		gdk_gc_set_clip_rectangle(gc, &r);
+		if (gcm) gdk_gc_set_clip_rectangle(gcm, &r);
 	}
 	else
 	{
 		gdk_gc_set_clip_rectangle(gc,NULL);
 		if (gcm) gdk_gc_set_clip_rectangle(gcm, NULL);
-		clip_enabled=false;
 	}
+}
+
+void gDraw::setClipEnabled(bool vl)
+{
+	clip_enabled = vl;
+	updateClip();
 }
 
 void gDraw::setClip(int x,int y,int w,int h)
 {
-	clip_enabled=true;
-	clip.x=x;
-	clip.y=y;
-	clip.width=w;
-	clip.height=h;
-	gdk_gc_set_clip_rectangle(gc,&clip);
-	if (gcm) gdk_gc_set_clip_rectangle(gcm, &clip);
+	clip_enabled = true;
+	clip.x = x;
+	clip.y = y;
+	clip.width = w;
+	clip.height = h;
+	
+	updateClip();
 }
 
 
@@ -715,12 +723,18 @@ void gDraw::line(int x1,int y1,int x2,int y2)
 {
 	if (!line_style) return;
 	
+	x1 += _x; y1 += _y;
+	x2 += _x; y2 += _y;
+	
 	gdk_draw_line(dr,gc,x1,y1,x2,y2);
 	if (drm) gdk_draw_line(drm,gcm,x1,y1,x2,y2);
 }
 
 void gDraw::point(int x,int y)
 {
+	x += _x;
+	y += _y;
+	
 	gdk_draw_point(dr,gc,x,y);
 	if (drm) gdk_draw_point(drm,gcm,x,y);
 }
@@ -745,10 +759,11 @@ void gDraw::endFill()
 
 void gDraw::rect(int x,int y,int width,int height)
 {
-	x += _x;
-	y += _y;
 	if (width<0) { x+=width; width=-width; }
 	if (height<0) { y+=height; height=-height; }
+	
+	x += _x;
+	y += _y;
 	
 	if (fill)
 	{
@@ -770,6 +785,9 @@ void gDraw::ellipse(int x, int y, int w, int h, double start, double end)
 {
 	int as, ae;
 
+	x += _x;
+	y += _y;
+	
 	if (start == end)
 	{
 		as = 0;
@@ -831,6 +849,9 @@ void gDraw::arc(int x, int y, int w, int h, double start, double end)
 	if (!line_style)
 		return;
 	
+	x += _x;
+	y += _y;
+	
 	if (start == end)
 	{
 		as = 0;
@@ -849,6 +870,7 @@ void gDraw::arc(int x, int y, int w, int h, double start, double end)
 void gDraw::polyline(int *vl, int nel)
 {
 	GdkPoint *points;
+	int i;
 	
 	if (!line_style) return; 
 
@@ -865,6 +887,15 @@ void gDraw::polyline(int *vl, int nel)
 	
 	points = (GdkPoint *)vl;
 	
+	if (_x || _y)
+	{
+		for (i = 0; i < nel; i++)
+		{
+			points[i].x += _x;
+			points[i].y += _y;
+		}
+	}
+	
 	gdk_draw_lines(dr,gc,points,nel);
 	if (drm) gdk_draw_lines(drm,gcm,points,nel);
 	//g_free(points);
@@ -873,6 +904,7 @@ void gDraw::polyline(int *vl, int nel)
 void gDraw::polygon (int *vl, int nel)
 {
 	GdkPoint *points;
+	int i;
 	
 	if (!GDK_IS_DRAWABLE (dr)) return;
 	if (nel <= 0) return;
@@ -887,6 +919,15 @@ void gDraw::polygon (int *vl, int nel)
 	}*/
 	
 	points = (GdkPoint *)vl;
+	
+	if (_x || _y)
+	{
+		for (i = 0; i < nel; i++)
+		{
+			points[i].x += _x;
+			points[i].y += _y;
+		}
+	}
 	
 	if (fill)
 	{
@@ -918,7 +959,9 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 	
 	GT_NORMALIZE(x, y, w, h, sx, sy, sw, sh, pic->width(), pic->height());
 	
-	if (clip_enabled)
+	//fprintf(stderr, "picture: %d %d (%d %d) %d\n", x, y, _x, _y, clip_enabled);
+	
+	/*if (clip_enabled)
 	{
 		GdkRectangle rect = { x, y, w, h };
 		GdkRectangle dst;
@@ -933,7 +976,7 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 		y = dst.y;
 		w = dst.width;
 		h = dst.height;
-	}
+	}*/
 	
 	if (pic->type() == gPicture::SERVER && w == sw && h == sh)
 	{
@@ -945,12 +988,12 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 			GdkGC *tmp_gc = gdk_gc_new(dr);
 			gdk_gc_set_clip_mask(tmp_gc, mask);
 			gdk_gc_set_clip_origin(tmp_gc, x, y);
-			gdk_draw_drawable(dr, tmp_gc, pic->getPixmap(), sx, sy, x, y, sw, sh);
+			gdk_draw_drawable(dr, tmp_gc, pic->getPixmap(), sx, sy, x + _x, y + _y, sw, sh);
 			gdk_gc_set_clip_mask(tmp_gc, NULL);
 			g_object_unref(tmp_gc);
 		}
 		else
-			gdk_draw_drawable(dr, gc, pic->getPixmap(), sx, sy, x, y, sw, sh);
+			gdk_draw_drawable(dr, gc, pic->getPixmap(), sx, sy, x += _x, y + _y, sw, sh);
 	}
   else
   {
@@ -971,7 +1014,7 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
   		sx = 0; sy = 0; sw = w; sh = h;
   	}
 		
-		gdk_draw_pixbuf(dr, gc, pic->getPixbuf(), sx, sy, x, y, sw, sh, GDK_RGB_DITHER_MAX, 0, 0);
+		gdk_draw_pixbuf(dr, gc, pic->getPixbuf(), sx, sy, x + _x, y + _y, sw, sh, GDK_RGB_DITHER_MAX, 0, 0);
 		
 	}
 
@@ -987,12 +1030,12 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 		if (mask)
 		{
 			gdk_gc_set_function(gcm, GDK_OR);
-			gdk_draw_drawable(drm, gcm, mask, sx, sy, x, y, sw, sh);
+			gdk_draw_drawable(drm, gcm, mask, sx, sy, x + _x, y + _y, sw, sh);
 			gdk_gc_set_function(gcm, GDK_COPY);
 		}
 		else
 		{
-			gdk_draw_rectangle(drm, gcm, true, x, y, w, h);	
+			gdk_draw_rectangle(drm, gcm, true, x + _x, y + _y, w, h);	
 		}
 		
 		//val.foreground.pixel = (foreground() & 0xFF) ? 0 : 0xFFFFFF;
@@ -1126,12 +1169,12 @@ void gDraw::drawLayout(PangoLayout *ly, bool markup, int x, int y, int w, int h,
 	{
 		gColor buf = foreground();
 		setForeground(background());
-		gdk_draw_rectangle (dr, gc, true, x + offx, y + offy, tw, th);	
-		if (drm) gdk_draw_rectangle (drm, gcm, true, x + offx, y + offy, tw, th);	
+		gdk_draw_rectangle (dr, gc, true, x + _x + offx, y + _y + offy, tw, th);	
+		if (drm) gdk_draw_rectangle (drm, gcm, true, x + _x + offx, y + _y + offy, tw, th);	
 		setForeground(buf);
 	}
 	
-	gdk_draw_layout(dr, gc, x + offx, y + offy, ly);
+	gdk_draw_layout(dr, gc, x + _x + offx, y + _y + offy, ly);
 	
 	if (drm && _transparent)
 	{
@@ -1140,7 +1183,7 @@ void gDraw::drawLayout(PangoLayout *ly, bool markup, int x, int y, int w, int h,
 		mask = gt_make_text_mask(dr, tw, th, ly, 0, 0);
 		
 		gdk_gc_set_function(gcm, GDK_OR);
-		gdk_draw_drawable(drm, gcm, mask, 0, 0, x + offx, y + offy, tw, th);
+		gdk_draw_drawable(drm, gcm, mask, 0, 0, x + _x + offx, y + _y + offy, tw, th);
 		gdk_gc_set_function(gcm, GDK_COPY);
 		
 		g_object_unref(mask);

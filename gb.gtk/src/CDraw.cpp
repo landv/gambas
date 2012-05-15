@@ -382,6 +382,8 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 	GtkArrowType arrow;
 	GtkStyle *style = DR(d)->style();
 	
+	DR(d)->offset(&x, &y);
+	
 	switch (type)
 	{
 		case ALIGN_NORMAL: arrow = GB.System.IsRightToLeft() ? GTK_ARROW_LEFT : GTK_ARROW_RIGHT; break;
@@ -408,6 +410,8 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
 	GtkStyle *style = DR(d)->style("GtkCheckButton", GTK_TYPE_CHECK_BUTTON);
 	
+	DR(d)->offset(&x, &y);
+	
 	switch (value)
 	{
 		case -1: shadow = GTK_SHADOW_IN; break;
@@ -433,6 +437,8 @@ static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
 	GtkStyle *style = DR(d)->style("GtkRadioButton", GTK_TYPE_RADIO_BUTTON);
 	
+	DR(d)->offset(&x, &y);
+	
 	shadow = value ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
 
 	gtk_paint_option(style, DR(d)->drawable(),
@@ -451,6 +457,8 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 {
 	GtkStateType st = get_state(state);
 	GtkStyle *style = DR(d)->style();
+	
+	DR(d)->offset(&x, &y);
 	
 	if (vertical)
 	{
@@ -482,6 +490,8 @@ static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 	GtkBorder *default_border, *default_outside_border, *inner_border;
 	int focus_width, focus_pad, df;
 	gboolean interior_focus;
+	
+	DR(d)->offset(&x, &y);
 	
 	gtk_style_get(style, GTK_TYPE_BUTTON,
 		"default-border", &default_border,
@@ -573,6 +583,8 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 	GtkStateType st = get_state(state);
 	GtkStyle *style = DR(d)->style();
 
+	DR(d)->offset(&x, &y);
+	
 	switch (border)
 	{
 		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
@@ -621,6 +633,8 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 	GtkStateType st = get_state(state);
 	GtkStyle *style = DR(d)->style();
 
+	DR(d)->offset(&x, &y);
+	
 	gtk_paint_handle(style, DR(d)->drawable(), st,
 		GTK_SHADOW_NONE, get_area(d), NULL, NULL,
 		x, y, w, h,
@@ -639,6 +653,8 @@ static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 	GtkStateType st = get_state(state);
 	GtkStyle *style = DR(d)->style("GtkEntry", GTK_TYPE_ENTRY);
 
+	DR(d)->offset(&x, &y);
+	
 	//if (!widget)
 		//widget = gtk_entry_new();
 	
@@ -769,7 +785,3 @@ void DRAW_set_shadow(void *dr,int vl)
 	if (!dr) return;
 	((gDraw*)dr)->setShadow(vl);
 }
-
-
-
-

@@ -1,23 +1,24 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,74,43)
+  MoveScaled(0,0,74,40)
   Background = &HFFFFFF&
   Border = False
+  Utility = True
   Stacking = Window.Above
   SkipTaskbar = True
   Opacity = 50
   { panBrightness Panel
-    MoveScaled(1,1,72,41)
+    MoveScaled(1,1,72,38)
     Background = &H000000&
     { sldBrightness Slider Balance
       Name = "sldBrightness"
-      MoveScaled(13,13,55,3)
+      MoveScaled(13,13,56,3)
       Value = 50
     }
     { sldContrast Slider Balance
       Name = "sldContrast"
-      MoveScaled(13,22,55,3)
+      MoveScaled(13,22,56,3)
       Value = 50
     }
     { Label1 Label
@@ -29,7 +30,7 @@
     }
     { sldGamma Slider Balance
       Name = "sldGamma"
-      MoveScaled(13,31,55,3)
+      MoveScaled(13,31,56,3)
       Value = 50
     }
   }

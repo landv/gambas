@@ -256,7 +256,7 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	gtk_widget_realize(border);
 	gtk_widget_show(widget);
 	
-	gtk_widget_set_size_request(border, 4, 4);
+	gtk_widget_set_size_request(border, 1, 1);
 }
 
 gMainWindow::gMainWindow(gContainer *par) : gContainer(par)

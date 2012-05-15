@@ -14,12 +14,6 @@
     Border = False
     ScrollBar = Scroll.None
   }
-  { dwgInfo DrawingArea
-    MoveScaled(5,64,20,6)
-    Foreground = Color.LightForeground
-    Ignore = True
-    Painted = True
-  }
   { panToolbar HBox
     MoveScaled(1,1,75,5)
     Ignore = True
@@ -41,7 +35,7 @@
     Arrangement = Arrange.Vertical
     Margin = True
     { panMargin Panel
-      MoveScaled(4,1,12,10)
+      MoveScaled(4,1,12,4)
     }
     { ivwImage IconView
       MoveScaled(3,11,16,16)
@@ -61,5 +55,12 @@
     AutoResize = True
     Spacing = True
     Margin = True
+  }
+  { dwgInfo DrawingArea
+    MoveScaled(5,64,20,6)
+    Font = Font["+5"]
+    Foreground = Color.LightForeground
+    Ignore = True
+    Painted = True
   }
 }

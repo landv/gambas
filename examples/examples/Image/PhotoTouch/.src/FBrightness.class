@@ -5,6 +5,7 @@ Private $bNoChange As Boolean
 Private $MX As Integer
 Private $MY As Integer
 Private $hRect As Rect
+Private $bBegin As Boolean
 
 Private btnUndo As CButton
 Private btnApply As CButton
@@ -52,7 +53,6 @@ End
 Public Sub Form_Open()
 
   Me.Center
-  FMain.Begin
 
 End
 
@@ -69,13 +69,17 @@ End
 
 Public Sub btnApply_Click()
 
-  FMain.Apply
+  If $bBegin Then FMain.Apply
 
 End
 
 Public Sub Balance_Change()
 
   If $bNoChange Then Return
+  If Not $bBegin Then
+    FMain.Begin
+    $bBegin = True
+  Endif
   FMain.Balance(sldBrightness.Value, sldContrast.Value, sldGamma.Value)
 
 End

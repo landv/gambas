@@ -32,12 +32,10 @@ public:
 
 	int getBorder() const { return getFrameBorder(); }
 	bool cached() const { return _cached; }
-	bool canFocus() const;
 	bool hasNoBackground() const { return _no_background; }
 
 	void setBorder(int vl) { setFrameBorder(vl); }
 	void setCached(bool vl);
-	void setCanFocus(bool vl);
 	void setNoBackground(bool vl);
 	
 	bool inDrawEvent() const { return _in_draw_event; }
