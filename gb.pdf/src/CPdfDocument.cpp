@@ -989,7 +989,7 @@ END_METHOD
 void aux_fill_links(void *_object)
 {
 	#if POPPLER_VERSION_0_20
-	THIS->links = new Links (THIS->page->getAnnots ()));
+	THIS->links = new Links (THIS->page->getAnnots ());
 	#elif POPPLER_VERSION_0_17
 	THIS->links = new Links (THIS->page->getAnnots (THIS->doc->getCatalog()));
 	#else
