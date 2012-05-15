@@ -449,9 +449,13 @@ int32_t open_document (void *_object, char *sfile, int32_t lfile)
 
 	white[0] = 0xFF; white[1] = 0xFF; white[2] = 0xFF;
 	THIS->dev=new SplashOutputDev(splashModeRGB8, 3, gFalse, white);
-		
-	THIS->dev->startDoc(THIS->doc->getXRef ());
 
+	#if POPPLER_VERSION_0_20
+	THIS->dev->startDoc(THIS->doc);
+	#else
+	THIS->dev->startDoc(THIS->doc->getXRef ());
+	#endif
+	
 	outline=THIS->doc->getOutline();
 	if (outline) THIS->index=outline->getItems();
 	
@@ -875,6 +879,14 @@ static uint32_t *get_page_data(CPDFDOCUMENT *_object, int32_t x, int32_t y, int3
 
 	if ( (w<0) || (h<0) ) return NULL;
 
+	#if POPPLER_VERSION_0_20
+	THIS->page->displaySlice(THIS->dev,72.0*scale,72.0*scale,
+			   rotation,
+			   gFalse,
+			   gTrue,
+			   x,y,w,h,
+			   gFalse);
+	#else
 	THIS->page->displaySlice(THIS->dev,72.0*scale,72.0*scale,
 			   rotation,
 			   gFalse,
@@ -882,7 +894,8 @@ static uint32_t *get_page_data(CPDFDOCUMENT *_object, int32_t x, int32_t y, int3
 			   x,y,w,h,
 			   gFalse,
 			   THIS->doc->getCatalog ());
-
+	#endif
+	
 	map=THIS->dev->getBitmap();
 	
 	data=(uint32_t*)map->getDataPtr();
@@ -940,9 +953,14 @@ BEGIN_METHOD(PDFPAGE_select, GB_INTEGER X; GB_INTEGER Y; GB_INTEGER W; GB_INTEGE
 	w = VARGOPT(W, (int32_t)THIS->page->getMediaWidth());
 	h = VARGOPT(H, (int32_t)THIS->page->getMediaHeight());
 
+	#if POPPLER_VERSION_0_20
+	dev = new TextOutputDev (NULL, gTrue, 0, gFalse, gFalse);
+	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, gFalse);
+	#else
 	dev = new TextOutputDev (NULL, gTrue, gFalse, gFalse);
 	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, gFalse,THIS->doc->getCatalog (),NULL, NULL, NULL, NULL);
-	
+	#endif
+
 	THIS->page->display(gfx);
 	dev->endPage();
 
@@ -970,7 +988,9 @@ END_METHOD
 
 void aux_fill_links(void *_object)
 {
-	#if POPPLER_VERSION_0_17
+	#if POPPLER_VERSION_0_20
+	THIS->links = new Links (THIS->page->getAnnots ()));
+	#elif POPPLER_VERSION_0_17
 	THIS->links = new Links (THIS->page->getAnnots (THIS->doc->getCatalog()));
 	#else
 	Object obj;
@@ -1152,13 +1172,22 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 
 	if (!MISSING(Sensitive)) sensitive=VARG(Sensitive);
 
+	#if POPPLER_VERSION_0_20
+	textdev = new TextOutputDev (NULL, true, 0, false, false);
+	THIS->page->display (textdev, 72, 72, 0, false, false, false);
+	#else
 	textdev = new TextOutputDev (NULL, true, false, false);
 	THIS->page->display (textdev, 72, 72, 0, false, false, false, THIS->doc->getCatalog());
+	#endif
 
 	if (THIS->Found) { GB.FreeArray(POINTER(&THIS->Found)); THIS->Found=NULL; }
 
 	count = 0;
+	#if POPPLER_VERSION_0_20
+	while (textdev->findText (block,nlen,gFalse,gTrue,gTrue,gFalse,sensitive,gFalse,gFalse,&x0,&y0,&x1,&y1))
+	#else
 	while (textdev->findText (block,nlen,gFalse,gTrue,gTrue,gFalse,sensitive,gFalse,&x0,&y0,&x1,&y1))
+	#endif
 	{
 		if (!THIS->Found)
 			GB.NewArray(POINTER(&THIS->Found),sizeof(CPDFFIND),1);
