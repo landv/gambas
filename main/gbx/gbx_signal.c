@@ -28,7 +28,7 @@
 #include "gbx_api.h"
 #include "gbx_signal.h"
 
-#define DEBUG_ME 1
+//#define DEBUG_ME 1
 
 static SIGNAL_HANDLER *_handlers = NULL;
 static int _pipe[2];
