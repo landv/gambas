@@ -472,12 +472,6 @@ static void send_configure (gControl *control)
   gdk_event_free (event);
 }
 
-void gControl::move(int x, int y, int w, int h)
-{
-	move(x,y);
-	resize(w,h);
-}
-
 void gControl::move(int x, int y)
 {
 	//GtkLayout *fx;
@@ -495,9 +489,8 @@ void gControl::move(int x, int y)
 	_dirty_pos = true;
 	if (pr)
 	{
-    //fx = GTK_LAYOUT(gtk_widget_get_parent(border));
-	  //gtk_layout_move(fx, border, x, y);
-	  if (gtk_widget_get_parent(border) == pr->getContainer())
+		// TODO: check the following optimization to see if it can be enabled again
+	  //if (gtk_widget_get_parent(border) == pr->getContainer())
 	  	pr->performArrange();
   }
 	
@@ -563,6 +556,21 @@ void gControl::resize(int w, int h)
 		pr->performArrange();
 	
 	send_configure(this);
+}
+
+void gControl::moveResize(int x, int y, int w, int h)
+{
+	if (pr)
+		pr->disableArrangement();
+	
+	resize(w, h);
+	move(x, y);
+	
+	if (pr)
+	{
+		pr->enableArrangement();
+		pr->performArrange();
+	}
 }
 
 void gControl::updateGeometry()

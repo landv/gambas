@@ -105,7 +105,7 @@ static void resize_container(gControl *cont, int w, int h)
 #define GET_WIDGET_H(_widget)  (((gControl*)_widget)->height())
 #define MOVE_WIDGET(_object, _widget, _x, _y)  (((gControl*)_widget)->move( _x, _y))
 #define RESIZE_WIDGET(_object, _widget, _w, _h)  (((gControl*)_widget)->resize( _w, _h))
-#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) (((gControl*)_widget)->move( _x, _y, _w, _h))
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) (((gControl*)_widget)->moveResize( _x, _y, _w, _h))
 #define RESIZE_CONTAINER(_widget, _cont, _w, _h)  resize_container((gControl *)(_cont), _w, _h) 
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
@@ -137,6 +137,7 @@ int gContainer::_arrangement_level = 0;
 
 void gContainer::performArrange()
 {
+	if (_no_arrangement) return;
 	if (!gApplication::allEvents()) return;
 
 	//if (!CAN_ARRANGE(this))
@@ -161,6 +162,7 @@ void gContainer::initialize()
 	_client_y = -1;
 	_client_w = 0;
 	_client_h = 0;
+	_no_arrangement = 0;
 	//onInsert = NULL;
 	
 	arrangement.mode = 0;

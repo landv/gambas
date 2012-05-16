@@ -201,7 +201,6 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 gButton::gButton(gContainer *par, Type typ) : gControl(par)
 {
 	gContainer *ct;
-	bool invisible;
 
 	g_typ = Type_gButton;
 	
@@ -220,10 +219,6 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	rendinc = NULL;
 	pic = NULL;
 	shortcut = 0;
-	
-	//border=gtk_event_box_new();
-	
-	invisible = false;
 	
 	switch(typ)
 	{
@@ -255,7 +250,6 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 			rendtxt = gtk_cell_renderer_text_new();
 			border = gtk_toggle_button_new();
 			gtk_button_set_focus_on_click(GTK_BUTTON(border), false);
-			invisible = true;
 			break;
 		
 		default:
@@ -266,10 +260,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	}
 
   widget = border;
-  //border = gtk_event_box_new();
-	//if (invisible)
-	//	gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
-																
+	
   type = typ;
 
 	if (rendtxt) 

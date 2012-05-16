@@ -45,9 +45,9 @@ public:
 	const char* text();
 	bool topOnly();
 	bool skipTaskBar();
-	bool minimized();
-	bool maximized();
-	bool fullscreen();
+	bool minimized() const { return _minimized; }
+	bool maximized() const { return _maximized; }
+	bool fullscreen() const { return _fullscreen; }
 	bool getSticky();
 	int  getStacking();
 	bool isPersistent() const { return persistent; }
@@ -105,6 +105,7 @@ public:
 	void raise();
 	virtual void move(int x, int y);
 	virtual void resize(int w, int h);
+	virtual void moveResize(int x, int y, int w, int h);
 	bool close();
 	virtual void reparent(gContainer *newpr, int x, int y);
 
@@ -175,6 +176,9 @@ public:
 	unsigned _hideMenuBar : 1;
 	unsigned _showMenuBar : 1;
 	unsigned _popup : 1;
+	unsigned _maximized : 1;
+	unsigned _minimized : 1;
+	unsigned _fullscreen : 1;
 };
 
 #endif

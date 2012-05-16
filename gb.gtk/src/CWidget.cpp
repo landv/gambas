@@ -514,14 +514,10 @@ END_PROPERTY
 
 BEGIN_METHOD(CWIDGET_move, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	CONTROL->move(VARG(x),VARG(y));
-	if (MISSING(w)) return;
-	if (MISSING(h))
-	{
-		CONTROL->resize(VARG(w),CONTROL->height());
-		return;
-	}
-	CONTROL->resize(VARG(w),VARG(h));
+	if (MISSING(w) && MISSING(h))
+		CONTROL->move(VARG(x), VARG(y));
+	else
+		CONTROL->moveResize(VARG(x), VARG(y), VARGOPT(w, CONTROL->width()), VARGOPT(h, CONTROL->height()));
 
 END_METHOD
 

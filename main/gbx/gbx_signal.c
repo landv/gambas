@@ -28,7 +28,7 @@
 #include "gbx_api.h"
 #include "gbx_signal.h"
 
-//#define DEBUG_ME 1
+#define DEBUG_ME 1
 
 static SIGNAL_HANDLER *_handlers = NULL;
 static int _pipe[2];
@@ -199,7 +199,7 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 	handler->callbacks = cb;
 
 	#ifdef DEBUG_ME
-	fprintf(stderr, "SIGNAL_register: %d -> %p\n", signum, cb);
+	fprintf(stderr, "SIGNAL_register: %d -> %p (%p)\n", signum, cb, cb->callback);
 	#endif
 	
 	return cb;
@@ -214,9 +214,16 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	
 	if (_raising_callback)
 	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "SIGNAL_unregister: disable %d %p (%p)\n", signum, cb, cb->callback);
+		#endif
 		cb->callback = NULL;
 		return;
 	}
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "SIGNAL_unregister: remove %d %p (%p)\n", signum, cb, cb->callback);
+	#endif
 	
 	if (cb->prev)
 		cb->prev->next = cb->next;
@@ -226,10 +233,6 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	
 	if (cb == handler->callbacks)
 		handler->callbacks = cb->next;
-	
-	#ifdef DEBUG_ME
-	fprintf(stderr, "SIGNAL_unregister: %d %p\n", signum, cb);
-	#endif
 	
 	FREE(&cb, "SIGNAL_unregister_callback");
 	

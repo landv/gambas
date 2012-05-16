@@ -312,6 +312,10 @@ void my_quit (void)
 
 	CWatcher::Clear();
 	gApplication::exit();
+
+	#ifdef GDK_WINDOWING_X11
+  	X11_exit();
+  #endif
 }
 
 static bool global_key_event_handler(int type)

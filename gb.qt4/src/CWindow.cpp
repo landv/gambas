@@ -967,7 +967,7 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 			else
 				WINDOW->setWindowState(WINDOW->windowState() & ~state);
 			
-			if (WINDOW->isVisible())
+			/*if (WINDOW->isVisible())
 			{
 				if (WINDOW->windowState() & Qt::WindowMinimized)
 					WINDOW->showMinimized();
@@ -977,7 +977,8 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 					WINDOW->showMaximized();
 				else
 					WINDOW->showNormal();
-			}
+			}*/
+			
 			/*if (WINDOW->isVisible() && !THIS->stateChange)
 			{
 				THIS->stateChange = true;

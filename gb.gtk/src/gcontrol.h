@@ -140,9 +140,9 @@ public:
 	void hide() { setVisible(false); }
 	void lower();
 	void raise();
-	void move(int x, int y, int w, int h);
 	virtual void move(int x, int y);
 	virtual void resize(int w, int h);
+	virtual void moveResize(int x, int y, int w, int h);
 	virtual void setFocus();
 	bool hasFocus();
 	void resize() { resize(width(), height()); }

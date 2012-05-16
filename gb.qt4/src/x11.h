@@ -113,6 +113,10 @@ void X11_window_remap(Window window);
 void X11_window_activate(Window window);
 bool X11_get_available_geometry(int screen, int *x, int *y, int *w, int *h);
 
+char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcount);
+bool X11_is_supported_by_WM(Atom atom);
+bool X11_send_move_resize_event(Window window, int x, int y, int w, int h);
+
 #ifdef __cplusplus
 }
 #endif

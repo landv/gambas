@@ -234,6 +234,12 @@ Private Sub Action(sAction As String)
     
     Case "quit"
       Me.Close
+      
+    Case "seek-forward"
+      FControl.Y = Screen.H - FControl.H
+    
+    Case "seek-backward"
+      FControl.Y = 600
     
   End Select
 
@@ -289,7 +295,7 @@ End
 Public Sub Form_Resize()
 
   'Debug Me.X;; Me.Y;; Me.W;; Me.H;; FControl.H;; Me.Y + Me.H - FControl.H
-  Debug "FControl.Move:";; Me.X;; Me.Y + Me.H - FControl.H
+  'Debug "FControl.Move:";; Me.X;; Me.Y + Me.H - FControl.H;; Me.W;; FControl.H
   FControl.Move(Me.X, Me.Y + Me.H - FControl.H, Me.W, FControl.H)
   FTags.Move(Me.X, Me.Y, FTags.W, Me.H - FControl.H)
 

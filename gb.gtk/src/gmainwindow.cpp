@@ -99,7 +99,9 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 	if (data->opened)
 	{
 		if (data->isTopLevel())
+		{
 			gtk_window_get_position(GTK_WINDOW(data->border), &x, &y);
+		}
 		else
 		{
 			x = event->x;
@@ -190,6 +192,7 @@ void gMainWindow::initialize()
 	_hideMenuBar = false;
 	_showMenuBar = true;
 	_popup = false;
+	_maximized = _minimized = _fullscreen = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -361,13 +364,26 @@ void gMainWindow::setRealForeground(gColor color)
 
 void gMainWindow::move(int x, int y)
 {
+	gint ox, oy;
+	
 	if (isTopLevel())
 	{
 		if (x == bufX && y == bufY) 
 			return;
 	
+		#ifdef GDK_WINDOWING_X11
+		gdk_window_get_origin(border->window, &ox, &oy);
+		ox = x + ox - bufX;
+		oy = y + oy - bufY;
 		bufX = x;
 		bufY = y;
+		if (!X11_send_move_resize_event(GDK_WINDOW_XID(border->window), ox, oy, width(), height()))
+			return;
+		#else
+		bufX = x;
+		bufY = y;
+		#endif
+		
 		gtk_window_move(GTK_WINDOW(border), x, y);
 	}
 	else
@@ -400,13 +416,12 @@ void gMainWindow::resize(int w, int h)
 		{
 			//fprintf(stderr, "resize: %d %d (%d)\n", w, h, gtk_window_get_resizable(GTK_WINDOW(border)));
 			if (isResizable())
-				gtk_window_resize(GTK_WINDOW(border),w, h);
+				gtk_window_resize(GTK_WINDOW(border), w, h);
 			else
 				gtk_widget_set_size_request(border, w, h);
 				
 			if (visible)
 				gtk_widget_show(border);
-			
 		}
 	}
 	else
@@ -414,6 +429,14 @@ void gMainWindow::resize(int w, int h)
 		//fprintf(stderr, "resize %p -> (%d %d) (%d %d)\n", this, bufW, bufH, w, h);
 		gContainer::resize(w, h);
 	}
+}
+
+void gMainWindow::moveResize(int x, int y, int w, int h)
+{
+	//if (isTopLevel())
+	//	gdk_window_move_resize(border->window, x, y, w, h);
+	//else
+		gContainer::moveResize(x, y, w, h);
 }
 
 void gMainWindow::emitOpen()
@@ -543,46 +566,39 @@ void gMainWindow::setVisible(bool vl)
 void gMainWindow::setMinimized(bool vl)
 {
 	if (!isTopLevel()) return;
+	
+	_minimized = vl;
 	if (vl) gtk_window_iconify(GTK_WINDOW(border));
 	else    gtk_window_deiconify(GTK_WINDOW(border));
 }
 
 void gMainWindow::setMaximized(bool vl)
 {
-	if (!isTopLevel()) return;
-	if (vl) gtk_window_maximize(GTK_WINDOW(border));
-	else    gtk_window_unmaximize(GTK_WINDOW(border));
+	if (!isTopLevel())
+		return;
+
+	_maximized = vl;
+	
+	if (vl)
+		gtk_window_maximize(GTK_WINDOW(border));
+	else
+		gtk_window_unmaximize(GTK_WINDOW(border));
 }
 
 void gMainWindow::setFullscreen(bool vl)
 {
-	if (!isTopLevel()) return;
-	if (vl) gtk_window_fullscreen(GTK_WINDOW(border));
-	else    gtk_window_unfullscreen(GTK_WINDOW(border));
-}
-
-bool gMainWindow::minimized()
-{
-	if (isTopLevel())
-		return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_ICONIFIED);
+	if (!isTopLevel())
+		return;
+	
+	_fullscreen = vl;
+	
+	if (vl)
+	{
+		gtk_window_fullscreen(GTK_WINDOW(border));
+		gtk_window_present(GTK_WINDOW(border));
+	}
 	else
-		return false;
-}
-
-bool gMainWindow::maximized()
-{
-	if (isTopLevel())
-		return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_MAXIMIZED);
-	else
-		return false;
-}
-
-bool gMainWindow::fullscreen()
-{
-	if (isTopLevel())
-		return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_FULLSCREEN);
-	else
-		return false;
+		gtk_window_unfullscreen(GTK_WINDOW(border));
 }
 
 void gMainWindow::center()
@@ -748,6 +764,11 @@ void gMainWindow::setBorder(bool b)
   	return;
 	
 	gtk_window_set_decorated(GTK_WINDOW(border), b);
+	/*#ifdef GDK_WINDOWING_X11
+	XSetWindowAttributes attr;
+	attr.override_redirect = !b;
+	XChangeWindowAttributes(GDK_WINDOW_XDISPLAY(border->window), GDK_WINDOW_XID(border->window), CWOverrideRedirect, &attr);
+	#endif*/
 }
 
 void gMainWindow::setResizable(bool b)
