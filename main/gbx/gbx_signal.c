@@ -33,6 +33,7 @@
 static SIGNAL_HANDLER *_handlers = NULL;
 static int _pipe[2];
 static int _count = 0;
+static bool _raising_callback = FALSE;
 
 void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, siginfo_t *, void *))
 {
@@ -58,11 +59,11 @@ void SIGNAL_uninstall(SIGNAL_HANDLER *handler, int signum)
 	fprintf(stderr, "SIGNAL_uninstall: %d\n", signum);
 	#endif
 	
-	while (handler->callbacks)
-		SIGNAL_unregister(handler->signum, handler->callbacks);
-	
 	if (sigaction(signum, &handler->old_action, NULL) != 0)
 		ERROR_panic("Cannot uninstall signal handler");
+
+	while (handler->callbacks)
+		SIGNAL_unregister(handler->signum, handler->callbacks);
 }
 
 void SIGNAL_previous(SIGNAL_HANDLER *handler, int signum, siginfo_t *info, void *context)
@@ -128,7 +129,7 @@ static void handle_signal(int signum, siginfo_t *info, void *context)
 void SIGNAL_raise_callbacks(int fd, int type, void *data)
 {
 	SIGNAL_HANDLER *handler;
-	SIGNAL_CALLBACK *cb;
+	SIGNAL_CALLBACK *cb, *next_cb;
 	char signum;
 
 	/*old = signal(SIGCHLD, signal_child);*/
@@ -136,18 +137,36 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	if (read(fd, &signum, 1) != 1)
 		return;
 	
+	_raising_callback = TRUE;
+	
 	handler = find_handler(signum);
+
 	cb = handler->callbacks;
 	while (cb)
 	{
-		(*cb->callback)((int)signum, cb->data);
+		if (cb->callback)
+			(*cb->callback)((int)signum, cb->data);
+		
 		cb = cb->next;
+	}
+	
+	_raising_callback = FALSE;
+
+	cb = handler->callbacks;
+	while (cb)
+	{
+		next_cb = cb->next;
+		
+		if (!cb->callback)
+			SIGNAL_unregister(signum, cb);
+		
+		cb = next_cb;
 	}
 }
 
 SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), intptr_t data)
 {
-	SIGNAL_HANDLER *handler = find_handler(signum);
+	SIGNAL_HANDLER *handler;
 	SIGNAL_CALLBACK *cb;
 	
 	if (!_count)
@@ -163,6 +182,7 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 	
 	_count++;
 	
+	handler = find_handler(signum);
 	if (!handler)
 	{
 		handler = add_handler();
@@ -173,10 +193,10 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 	
 	cb->prev = NULL;
 	cb->next = handler->callbacks;
-	handler->callbacks = cb;
-	
 	cb->callback = callback;
 	cb->data = data;
+	
+	handler->callbacks = cb;
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGNAL_register: %d -> %p\n", signum, cb);
@@ -191,6 +211,12 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	
 	if (!handler)
 		return;
+	
+	if (_raising_callback)
+	{
+		cb->callback = NULL;
+		return;
+	}
 	
 	if (cb->prev)
 		cb->prev->next = cb->next;
