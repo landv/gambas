@@ -41,7 +41,7 @@ gMovieBox::gMovieBox(gContainer *parent) : gControl(parent)
 	pl=false;
 	animation=NULL;
 	
-	border = gtk_event_box_new();
+	border = gtk_alignment_new(0,0,1,1);
 	widget = gtk_image_new();
 	realize(true);
 

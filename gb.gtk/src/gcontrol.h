@@ -59,19 +59,21 @@ public:
 	bool ignore() const { return igno; }
 	bool hovered();
 	virtual int handle();
-	virtual int height();
-	virtual int left();
-	int x() { return left(); }
+	
+	int left() const { return bufX; }
+	int x() const { return left(); }
+	int top() const { return bufY; }
+	int y() const { return top(); }
+	int width() const { return bufW; }
+	int height() const { return bufH; }
+	
 	int mouse();
 	gControl *next();
 	gControl *previous();
 	int screenX();
 	int screenY();
-	void getScreenPos(int *x, int *y);
+	virtual void getScreenPos(int *x, int *y);
 	char *toolTip();
-	virtual int top();
-	int y() { return top(); }
-	virtual int width();
 	bool isVisible() const { return visible; }
 	bool isReallyVisible();
 	bool acceptDrops() { return _accept_drops; }

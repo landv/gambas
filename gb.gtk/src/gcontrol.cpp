@@ -406,26 +406,6 @@ int gControl::screenY()
 	return y;
 }
 
-int gControl::left()
-{
-	return bufX;
-}
-
-int gControl::top()
-{	
-	return bufY;
-}
-
-int gControl::width()
-{
-	return bufW;
-}
-
-int gControl::height()
-{
-	return bufH;
-}
-
 void gControl::setLeft(int l)
 {
 	move(l,top());

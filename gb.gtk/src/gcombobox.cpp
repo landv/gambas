@@ -138,7 +138,7 @@ void gComboBox::create(bool readOnly)
 	lock();
 	
 	if (first)
-		border = gtk_event_box_new();
+		border = gtk_alignment_new(0, 0, 1, 1); //gtk_event_box_new();
 	else
 		ind = index();
 	

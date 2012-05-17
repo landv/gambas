@@ -27,13 +27,12 @@
 gProgressBar::gProgressBar(gContainer *parent)  : gControl(parent)
 {
 	_label = true;
-	g_typ=Type_gProgressBar;
-	border=gtk_event_box_new();
-	widget=gtk_progress_bar_new();
-
-	gtk_container_add (GTK_CONTAINER(border),widget);	
-	connectParent();
-	initSignals();
+	
+	g_typ = Type_gProgressBar;
+	
+	border = gtk_alignment_new(0,0,1,1);
+	widget = gtk_progress_bar_new();
+	realize(false);
 }
 
 double gProgressBar::value()
