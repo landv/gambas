@@ -12,102 +12,100 @@
 class HTMLParseException : public exception
 {
 public:
-    HTMLParseException(unsigned int col, unsigned int line, wstring nnear, wstring err ) throw()
+    HTMLParseException(unsigned int col, unsigned int line, string nnear, string err ) throw()
         : ncol(col), nline(line), error(err), near(nnear)
     {}
 
     virtual const char* what() const throw()
     {
-        wstring str;
-        str += L"Parse error !\n" + error + L"\nLine " + toString(nline) + L", column " + toString(ncol) + L"\nNear : \n" + near;
-        return WStringToString(str).c_str();
+        string str;
+        str += "Parse error !\n" + error + "\nLine " + toString(nline) + ", column " + toString(ncol) + "\nNear : \n" + near;
+        return (str).c_str();
     }
 
     int getCol() {return ncol;}
     void setCol(int col) {ncol = col;}
     int getLine() {return nline;}
     void setLine(int lin) {nline = lin;}
-    wstring text() {return error;}
+    string text() {return error;}
 
     ~HTMLParseException() throw() {}
 
 private:
     int ncol;
     int nline;
-    wstring error;
-    wstring near;
+    string error;
+    string near;
 };
 
 
-vector<wstring>* split(wstring str, wstring pattern);
-wstring Right(wstring str, wstring::size_type len);
+vector<fwstring>* split(fwstring str, fwstring pattern);
+fwstring Right(fwstring str, size_t len);
 bool isLetter(const char *str);
-wstring Trim(wstring str);
-bool isLetter(wstring &s);
-bool exist(vector<wstring> vect, wstring elmt);
-bool exist(vector<wstring> *vect, wstring elmt);
+fwstring Trim(fwstring str);
+bool isLetter(fwstring &s);
+bool exist(vector<fwstring> vect, fwstring elmt);
+bool exist(vector<fwstring> *vect, fwstring elmt);
+
+struct CAttrNode;
 
 class AttrNode : public Node
 {
 public:
-    class Virtual : public Node::Virtual
-    {
-    public:
-        Virtual(AttrNode *node) : Node::Virtual(node), parent(node) {}
-        Virtual(const AttrNode::Virtual &copie) : Node::Virtual(copie.parent), parent(copie.parent) {}
-        AttrNode::Virtual &operator=(const AttrNode::Virtual &copie) {parent = copie.parent; return *this;}
-
         virtual Node::Type getType() {return Node::Attribute;}
-        virtual wstring toString(int indent = -1){return textContent();}
-        virtual wstring textContent();
-        virtual void setTextContent(wstring &content);
+        virtual fwstring toString(int indent = -1){return textContent();}
+        virtual fwstring textContent();
+        virtual void setTextContent(fwstring content);
+        virtual void NewGBObject();
+    virtual Node* cloneNode();
 
-        AttrNode *parent;
+    fwstring *attrName;
+    fwstring *attrValue;
+    void setAttrName(const fwstring &name){attrName = new fwstring(name);}
+    virtual CNode* GetGBObject(){return (CNode*)relElmt;}
 
-    };
-
-    wstring *attrName;
-    void setAttrName(const wstring &name){attrName = new wstring(name);}
-
-    static GB_CLASS ClassName;
+    CAttrNode *relElmt;
 
 };
+
+class AttrListElement
+{
+public:
+    fwstring *attrName;
+    fwstring *attrValue;
+};
+
+struct CElement;
 
 class Element : public Node
 {
 public:
-    class Virtual : public Node::Virtual
-    {
-    public:
-        Virtual(Element *node) : Node::Virtual(node), parent(node) {}
-        Virtual(const Element::Virtual &copie) : Node::Virtual(copie.parent), parent(copie.parent) {}
-        Element::Virtual &operator=(const Element::Virtual &copie) {parent = copie.parent; return *this;}
-
+        Element();
+        virtual ~Element();
         virtual Node::Type getType() {return Node::ElementNode;}
-        virtual wstring toString(int indent = -1);
-        virtual wstring textContent();
-        virtual void setTextContent(wstring &content);
+        virtual fwstring toString(int indent = -1);
+        virtual fwstring textContent();
+        virtual void setTextContent(fwstring content);
         virtual void setOwnerDocument(Document *doc);
         virtual Node* cloneNode();
+    virtual void NewGBObject();
+        virtual void SetGBObject(CElement *ob);
+        virtual CNode* GetGBObject(){return (CNode*)relElmt;}
 
-        Element *parent;
-
-    };
-    list<Node*>* getChildren() {return children;}
     GBI::ObjectArray<Node>* getGBChildren();
     GBI::ObjectArray<Node>* getAllChildren();
-    GBI::ObjectArray<Element>* getChildrenByAttributeValue(wstring attr, wstring val, int depth = -1);
-    GBI::ObjectArray<Element>* getGBChildrenByTagName(wstring tag, int depth = -1);
-    vector<Element*>* getChildrenByTagName(wstring tag, int depth = -1);
+    GBI::ObjectArray<Element>* getChildrenByAttributeValue(fwstring attr, fwstring val, int depth = -1);
+    GBI::ObjectArray<Element>* getGBChildrenByTagName(fwstring tag, int depth = -1);
+    vector<Element*>* getChildrenByTagName(fwstring tag, int depth = -1);
 
-    Element* getFirstChildByTagName(wstring tag, int depth = -1);
+    Element* getFirstChildByTagName(fwstring tag, int depth = -1);
     Element& operator=(const Element &copie);
     Node* appendChild(Node &newChild);
     Node* appendChild(Node *newChild);
     Node* prependChild(Node &newChild);
     Node* prependChild(Node *newChild);
     void ClearElements();
-    void appendFromText(wstring data, bool force = false);
+    void appendFromText(fwstring data, bool force = false);
 
     void removeChild(Node *child);
     void replaceChild(Node *oldChild, Node *newChild);
@@ -115,19 +113,22 @@ public:
     bool insertAfter(Node *child, Node *newChild);
     bool insertBefore(Node *child, Node *newChild);
 
-    wstring getTagName() {return *tagName;}
-    void setTagName(wstring tag) {*tagName = tag;}
+    fwstring getTagName() {return *tagName;}
+    void setTagName(fwstring tag) {if(!tagName) tagName = new fwstring; *tagName = tag;}
 
-    void appendText(wstring text);
+    void appendText(fwstring text);
 
-    wstring getAttribute(wstring key);
-    void setAttribute(wstring key, wstring value){(*attributes)[key] = value;}
-    bool isAttributeSet(wstring key);
+    fwstring getAttribute(fwstring key);
+    void setAttribute(fwstring key, fwstring value);
+    void addAttribute(fwstring key, fwstring value);
+    bool isAttributeSet(fwstring key);
 
-    static vector<Node*>* fromText(wstring data, wstring::size_type $i = 0, uint $c = 1, uint $l = 1);
+    //static vector<Node*>* fromText(fwstring data, fwstring::size_type $i = 0, uint $c = 1, uint $l = 1);
+    static fvector<Node*>* fromText(fwstring data, size_t start = 0);
+
 
     GBI::ObjectArray<Element>* getChildElements();
-    map<wstring, wstring> *getAttributes() {return attributes;}
+    flist<AttrListElement*> *getAttributes() {return attributes;}
 
     Element* previousSibling();
     Element* nextSibling();
@@ -135,23 +136,26 @@ public:
     Element* firstChildElement();
     Element* lastChildElement();
 
-    bool MatchSubXPathFilter(wstring filter);
-    bool MatchXPathFilter(wstring filter);
+    bool MatchSubXPathFilter(fwstring filter);
+    bool MatchXPathFilter(fwstring filter);
 
 
-    map<wstring, wstring> *attributes;
-    wstring *tagName;
-    list<Node*> *children;
+    flist<AttrListElement*> *attributes;
+    fwstring *tagName;
     AttrNode *attributeNode;
 
-    static GB_CLASS ClassName;
+    static vector<fwstring> singleElements;
 
-    static vector<wstring> singleElements;
+    //Children
+    size_t childCount;
+    Node *firstChild;
+    Node *lastChild;
+
+    CElement *relElmt;
 
 #ifndef HELEMENT_H
 
 };
-
 
 #endif
 

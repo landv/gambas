@@ -4,6 +4,8 @@
 #include "CDocument.h"
 
 #include "../main.cpp"
+#include "../gbi.cpp"
+#include "../utils.cpp"
 
 GB_INTERFACE GB EXPORT;
 
@@ -15,7 +17,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-    HtmlDocument::ClassName = GB.FindClass("HtmlDocument");
+
   return -1;
 }
 

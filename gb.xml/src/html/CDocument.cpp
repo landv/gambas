@@ -1,11 +1,15 @@
 #include "CDocument.h"
+#include "document.h"
 
 /*========== Document */
 
 #undef THIS
-#define THIS (static_cast<HtmlDocument*>(_object))
+#define THIS (static_cast<CHtmlDocument*>(_object)->doc)
 
 BEGIN_METHOD(CDocument_new, GB_STRING path)
+
+THIS = new HtmlDocument;
+static_cast<CHtmlDocument*>(_object)->d.doc = THIS;
 
 if(!MISSING(path))
 {
@@ -13,7 +17,7 @@ if(!MISSING(path))
     if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len)) return;
     try
     {
-        THIS->setContent(StringToWString(content));
+        THIS->setContent((content));
     }
     catch(HTMLParseException &e)
     {
@@ -22,42 +26,41 @@ if(!MISSING(path))
 }
 else
 {
-THIS->root->setTagName(L"html");
+THIS->root->setTagName("html");
 
-Element *head = GBI::New<Element>("XmlElement");
-head->setTagName(L"head");
+Element *head = new Element;
+head->setTagName("head");
 THIS->root->appendChild(head);
 
-Element *body = GBI::New<Element>("XmlElement");
-body->setTagName(L"body");
+Element *body = new Element;
+body->setTagName("body");
 THIS->root->appendChild(body);
 
 //Meta utf-8
-Element *meta = GBI::New<Element>("XmlElement");
-meta->setTagName(L"meta");
-meta->setAttribute(L"charset", L"utf-8");
+Element *meta = new Element;
+meta->setTagName("meta");
+meta->setAttribute("charset", "utf-8");
 head->appendChild(meta);
 
-meta = GBI::New<Element>("XmlElement");
-meta->setTagName(L"meta");
-meta->setAttribute(L"http-equiv", L"Content-Type");
-meta->setAttribute(L"content",L"text/html; charset=utf-8");
+meta = new Element;
+meta->setTagName("meta");
+meta->setAttribute("http-equiv", "Content-Type");
+meta->setAttribute("content","text/html; charset=utf-8");
 head->appendChild(meta);
 
 //Title
-Element *title = GBI::New<Element>("XmlElement");
-title->setTagName(L"title");
+Element *title = new Element;
+title->setTagName("title");
 head->appendChild(title);
 
 }
 
-THIS->virt = new HtmlDocument::Virtual(THIS);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CDocument_free)
 
-GB.Unref(POINTER(&(THIS->root)));
+//GB.Unref(POINTER(&(THIS->root)));
 
 END_METHOD
 
@@ -78,7 +81,7 @@ BEGIN_PROPERTY(CDocument_content)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getContent()).c_str());
+    GBI::Return((THIS->getContent()));
 }
 else
 {
@@ -99,7 +102,7 @@ BEGIN_PROPERTY(CDocument_Title)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getTitle()).c_str());
+    GBI::Return(THIS->getTitle());
 }
 else
 {
@@ -113,7 +116,7 @@ BEGIN_PROPERTY(CDocument_favicon)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getFavicon()).c_str());
+    GBI::Return(((THIS->getFavicon())));
 }
 else
 {
@@ -127,7 +130,7 @@ BEGIN_PROPERTY(CDocument_lang)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getLang()).c_str());
+    GBI::Return(THIS->getLang());
 }
 else
 {
@@ -139,32 +142,32 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_root)
 
-GB.ReturnObject(THIS->getRoot());
+GBI::Return(THIS->getRoot());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_head)
 
-GB.ReturnObject(THIS->getHead());
+GBI::Return(THIS->getHead());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_body)
 
-GB.ReturnObject(THIS->getBody());
+GBI::Return(THIS->getBody());
 
 END_PROPERTY
 
 BEGIN_METHOD(CDocument_getElementById, GB_STRING id; GB_INTEGER depth)
 
-GB.ReturnObject(THIS->getElementById(STRING(id), VARGOPT(depth, -1)));
+GBI::Return(THIS->getElementById(STRING(id), VARGOPT(depth, -1)));
 
 END_METHOD
 
 BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
 
-if(LENGTH(tagName) <= 0) return;
-GB.ReturnObject(THIS->createElement(MISSING(tagName) ? L"" : STRING(tagName)));
+if(LENGTH(tagName) <= 0) {GB.ReturnNull(); return;}
+GBI::Return(THIS->createElement(MISSING(tagName) ? "" : STRING(tagName)));
 
 END_METHOD
 
@@ -189,19 +192,19 @@ END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_add, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheet(STRING(path), MISSING(media) ? L"screen" : STRING(media));
+THIS->AddStyleSheet(STRING(path), MISSING(media) ? "screen" : STRING(media));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfNotIE, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheetIfNotIE(STRING(path), MISSING(media) ? L"screen" : STRING(media));
+THIS->AddStyleSheetIfNotIE(STRING(path), MISSING(media) ? "screen" : STRING(media));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfIE, GB_STRING path; GB_STRING cond; GB_STRING media)
 
-THIS->AddStyleSheetIfIE(STRING(path), STRINGOPT(cond, L"IE"), STRINGOPT(media, L"screen"));
+THIS->AddStyleSheetIfIE(STRING(path), STRINGOPT(cond, "IE"), STRINGOPT(media, "screen"));
 
 END_METHOD
 
@@ -219,7 +222,7 @@ END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_addIfIE, GB_STRING path; GB_STRING cond)
 
-THIS->AddScriptIfIE(STRING(path), STRINGOPT(cond, L"IE"));
+THIS->AddScriptIfIE(STRING(path), STRINGOPT(cond, "IE"));
 
 END_METHOD
 
@@ -240,7 +243,7 @@ BEGIN_PROPERTY(CDocument_base)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getBase()).c_str());
+    GBI::Return(THIS->getBase());
 }
 else
 {
@@ -274,7 +277,7 @@ GB_DESC CDocumentScriptsDesc[] =
 
 GB_DESC CDocumentDesc[] =
 {
-    GB_DECLARE("HtmlDocument", sizeof(HtmlDocument)), GB_INHERITS("XmlDocument"),
+    GB_DECLARE("HtmlDocument", sizeof(CHtmlDocument)), GB_INHERITS("XmlDocument"),
 
     GB_METHOD("_new", "", CDocument_new, "[(Path)s]"),
     GB_METHOD("_free", "", CDocument_free, ""),

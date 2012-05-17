@@ -1,27 +1,18 @@
+#include "CElement.h"
 #include "element.h"
 
 /*========== Element */
 
 #undef THIS
-#define THIS (static_cast<Element*>(_object))
+#define THIS (static_cast<CElement*>(_object)->elmt)
 
 
 BEGIN_METHOD(CElement_new, GB_STRING tagName)
 
-THIS->virt = new Element::Virtual(THIS);
-THIS->tagName = new wstring;
-THIS->children = new list<Node*>;
-THIS->ownerDoc = 0;
-THIS->attributes = new map<wstring, wstring>;
-THIS->parent = 0;
-
-THIS->attributeNode = GBI::New<AttrNode>();
-THIS->attributeNode->parent = THIS;
-THIS->attributeNode->virt = new AttrNode::Virtual(THIS->attributeNode);
-THIS->attributeNode->attrName = 0;
-
-
-
+if(Node::NoInstanciate) return;
+THIS = new Element;
+static_cast<CNode*>(_object)->node = THIS;
+THIS->SetGBObject(static_cast<CElement*>(_object));
 if(!MISSING(tagName)) THIS->setTagName(STRING(tagName));
 //if(!MISSING(doc)) THIS->setOwnerDocument(reinterpret_cast<Document*>(VARG(doc)));
 
@@ -30,29 +21,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CElement_free)
 
-if(THIS->children)
-{   Node *node;
-    for(auto it = THIS->children->begin(); it != THIS->children->end(); ++it)
-    {
-        node = *it;
-        GB.Unref(POINTER(&node));
-    }
-    delete THIS->children;
-}
 
-
-delete THIS->virt;
-delete THIS->attributes;
-delete THIS->tagName;
-
-//DELETE(THIS->attributeNode->attrName);
-delete THIS->attributeNode->virt;
-UNREF(THIS->attributeNode);
-
-THIS->virt = 0;
-THIS->children = 0;
-THIS->attributes = 0;
-THIS->tagName = 0;
 
 END_METHOD
 
@@ -60,7 +29,8 @@ BEGIN_PROPERTY(CElement_tagName)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getTagName()).c_str());
+    //DEBUG << THIS->tagName->toStdString() << endl;
+    GBI::Return((THIS->getTagName()));
 }
 else
 {
@@ -71,7 +41,8 @@ END_PROPERTY
 
 BEGIN_METHOD(CElement_AppendChild, GB_OBJECT newChild)
 
-THIS->appendChild(reinterpret_cast<Node*>(VARG(newChild)));
+//DEBUG << VARGOBJ(CNode,newChild)->node << endl;
+THIS->appendChild(VARGOBJ(CNode,newChild)->node);
 
 END_METHOD
 
@@ -88,6 +59,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_AppendText, GB_STRING text)
 
+DEBUG << STRING(text).toStdString() << endl;
 THIS->appendText(STRING(text));
 
 END_METHOD
@@ -156,7 +128,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_getAttribute, GB_STRING attr)
 
-GB.ReturnNewZeroString(WStringToString(THIS->getAttribute(STRING(attr))).c_str());
+GBI::Return((THIS->getAttribute(STRING(attr))));
 
 END_METHOD
 
@@ -168,13 +140,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CElement_previousSibling)
 
-GB.ReturnObject(THIS->previousSibling());
+GBI::Return(THIS->previousSibling());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CElement_nextSibling)
 
-GB.ReturnObject(THIS->nextSibling());
+GBI::Return(THIS->nextSibling());
 
 END_PROPERTY
 
@@ -186,13 +158,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CElement_firstChildElement)
 
-GB.ReturnObject(THIS->firstChildElement());
+GBI::Return(THIS->firstChildElement());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CElement_lastChildElement)
 
-GB.ReturnObject(THIS->lastChildElement());
+GBI::Return(THIS->lastChildElement());
 
 END_PROPERTY
 
@@ -216,7 +188,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_newElement, GB_STRING name; GB_STRING value)
 
-Element *elmt = GBI::New<Element>();
+Element *elmt = new Element;
 elmt->setTagName(STRING(name));
 if(!MISSING(value)) elmt->setTextContent(STRING(value));
 THIS->appendChild(elmt);
@@ -232,7 +204,7 @@ END_METHOD
 
 GB_DESC CElementDesc[] =
 {
-    GB_DECLARE("XmlElement", sizeof(Element)), GB_INHERITS("XmlNode"),
+    GB_DECLARE("XmlElement", sizeof(CElement)), GB_INHERITS("XmlNode"),
     GB_METHOD("_new", "", CElement_new, "[(TagName)s]"),
     GB_METHOD("_free", "", CElement_free, ""),
     GB_METHOD("AppendChild", "", CElement_AppendChild, "(NewChild)XmlNode"),

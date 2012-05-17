@@ -4,70 +4,54 @@
 #include "main.h"
 #include "node.h"
 
+struct CTextNode;
+struct CCDATANode;
+struct CCommentNode;
+
 class TextNode : public Node
 {
 public:
-    class Virtual : public Node::Virtual
-    {
-    public:
-        Virtual(TextNode *node) : Node::Virtual(node), parent(node) {}
-        Virtual(const Virtual &copie) : Node::Virtual(copie.parent), parent(copie.parent) {}
-        Virtual &operator=(const Virtual &copie) {parent = copie.parent; return *this;}
+    TextNode();
+    virtual ~TextNode();
 
-        virtual Node::Type getType() {return Node::NodeText;}
-        virtual wstring toString(int indent = -1);
-        virtual wstring textContent() {return *(parent->content);}
-        virtual void setTextContent(wstring &content) {*(parent->content) = content;}
-        virtual Node* cloneNode();
+    virtual fwstring toString(int indent = -1);
+    virtual Node* cloneNode();
+    virtual Node::Type getType();
+    virtual void setTextContent(fwstring newcontent);
 
-        TextNode *parent;
+    virtual void NewGBObject();
+    virtual CNode* GetGBObject(){return (CNode*)relElmt;}
+    virtual fwstring textContent();
 
-    };
-
-
-    wstring *content;
-    static GB_CLASS ClassName;
+    fwstring *content;
+    CTextNode *relElmt;
 };
 
 class CommentNode : public TextNode
 {
 public:
-    class Virtual : public TextNode::Virtual
-    {
-    public:
-        Virtual(CommentNode *node) : TextNode::Virtual(node), parent(node) {}
-        Virtual(const Virtual &copie) : TextNode::Virtual(copie.parent), parent(copie.parent) {}
-        Virtual &operator=(const Virtual &copie) {parent = copie.parent; return *this;}
+    virtual fwstring toString(int indent);
+    virtual Node* cloneNode();
+    virtual Node::Type getType();
+    virtual CNode* GetGBObject(){return (CNode*)relNode;}
 
-        virtual Node::Type getType() {return Node::Comment;}
-        virtual wstring toString(int indent = -1);
-        virtual Node* cloneNode();
-
-        CommentNode *parent;
-
-    };
-    static GB_CLASS ClassName;
+    virtual void NewGBObject();
+    CCommentNode *relNode;
 };
 
 
 class CDATANode : public TextNode
 {
 public:
-    class Virtual : public TextNode::Virtual
-    {
-    public:
-        Virtual(CDATANode *node) : TextNode::Virtual(node), parent(node) {}
-        Virtual(const Virtual &copie) : TextNode::Virtual(copie.parent), parent(copie.parent) {}
-        Virtual &operator=(const Virtual &copie) {parent = copie.parent; return *this;}
+    virtual fwstring toString(int indent);
+    virtual Node* cloneNode();
+    virtual Node::Type getType();
 
-        virtual Node::Type getType() {return Node::CDATA;}
-        virtual wstring toString(int indent = -1);
-        virtual Node* cloneNode();
+    virtual void NewGBObject();
+    virtual CNode* GetGBObject(){return (CNode*)relNode;}
 
-        CDATANode *parent;
+    CCDATANode *relNode;
 
-    };
-    static GB_CLASS ClassName;
 };
 
 #endif // TEXTNODE_H

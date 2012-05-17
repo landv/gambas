@@ -9,47 +9,39 @@ class HtmlDocument : public Document
 {
 public:
 
-    class Virtual : public Document::Virtual
-    {
-    public:
-        Virtual(HtmlDocument *doc) : Document::Virtual(doc), parent(doc) {}
-        Virtual(const HtmlDocument::Virtual &copie) : Document::Virtual(copie.parent), parent(copie.parent) {}
-        HtmlDocument::Virtual &operator=(const HtmlDocument::Virtual &copie) {parent = copie.parent; return *this;}
-        virtual wstring getContent(bool indent = false);
 
-        HtmlDocument *parent;
+    virtual fwstring getContent(bool indent = false);
 
-    };
 
     Element* getBody();
     Element* getHead();
 
-    Element* getElementById(wstring id, int depth) { return root->getChildById(id, depth); }
-    GBI::ObjectArray<Element>* getElementsByClassName(wstring className, int depth = -1) {return root->getChildrenByClassName(className, depth);}
+    Element* getElementById(fwstring id, int depth) { return root->getChildById(id, depth); }
+    GBI::ObjectArray<Element>* getElementsByClassName(fwstring className, int depth = -1) {return root->getChildrenByClassName(className, depth);}
 
     bool getHtml5() {return html5;}
     void setHtml5(bool val) {html5 = val;}
 
-    void setContent(wstring str);
+    void setContent(fwstring str);
 
-    wstring getTitle();
-    void setTitle(wstring title);
+    fwstring getTitle();
+    void setTitle(fwstring title);
 
-    wstring getFavicon();
-    void setFavicon(wstring url);
+    fwstring getFavicon();
+    void setFavicon(fwstring url);
 
-    wstring getBase();
-    void setBase(wstring base);
+    fwstring getBase();
+    void setBase(fwstring base);
 
-    wstring getLang() {return root->getAttribute(L"lang");}
-    void setLang(wstring lang) {root->setAttribute(L"lang", lang);}
+    fwstring getLang() {return root->getAttribute("lang");}
+    void setLang(fwstring lang) {root->setAttribute("lang", lang);}
 
-    void AddStyleSheet(wstring src, wstring media = L"screen");
-    void AddStyleSheetIfIE(wstring src, wstring cond = L"IE", wstring media = L"screen");
-    void AddStyleSheetIfNotIE(wstring src, wstring media = L"screen");
-    void AddScript(wstring src);
-    void AddScriptIfIE(wstring src, wstring cond = L"IE");
-    void AddScriptIfNotIE(wstring src);
+    void AddStyleSheet(fwstring src, fwstring media = "screen");
+    void AddStyleSheetIfIE(fwstring src, fwstring cond = "IE", fwstring media = "screen");
+    void AddStyleSheetIfNotIE(fwstring src, fwstring media = "screen");
+    void AddScript(fwstring src);
+    void AddScriptIfIE(fwstring src, fwstring cond = "IE");
+    void AddScriptIfNotIE(fwstring src);
 
     Element* getTitleElement();
     Element* getFaviconElement();

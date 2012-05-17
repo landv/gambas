@@ -38,7 +38,7 @@ public:
 
     int state;
 
-    wstring *curAttrNameEnum;
+    fwstring *curAttrNameEnum;
 };
 
 #endif // EXPLORER_H

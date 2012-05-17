@@ -8,23 +8,23 @@
 //class Element:
 //{
 
-    wstring getClassName(){return getAttribute(L"class");}
-    vector<wstring>* getClassNames();
-    void setClassName(wstring value){setAttribute(L"class", value);}
+    fwstring getClassName(){return getAttribute("class");}
+    vector<fwstring>* getClassNames();
+    void setClassName(fwstring value){setAttribute("class", value);}
 
-    wstring getId(){return getAttribute(L"id");}
-    void setId(wstring value){setAttribute(L"id", value);}
+    fwstring getId(){return getAttribute("id");}
+    void setId(fwstring value){setAttribute("id", value);}
 
-    bool matchSubFilter(wstring filter);
-    bool matchFilter(wstring filter);
-    vector<Element*>* getChildrenByFilter(wstring filter, int depth = -1);
+    bool matchSubFilter(fwstring filter);
+    bool matchFilter(fwstring filter);
+    vector<Element*>* getChildrenByFilter(fwstring filter, int depth = -1);
 
-    Element* getChildById(wstring id, int depth = -1)
+    Element* getChildById(fwstring id, int depth = -1)
     {
-        GBI::ObjectArray<Element>* elmts = getChildrenByAttributeValue(L"id", id, depth);
+        GBI::ObjectArray<Element>* elmts = getChildrenByAttributeValue("id", id, depth);
         return elmts->size() > 0 ? elmts->at(0) : 0;
     }
-    GBI::ObjectArray<Element>* getChildrenByClassName(wstring className, int depth = -1){return getChildrenByAttributeValue(L"class", className, depth);}
+    GBI::ObjectArray<Element>* getChildrenByClassName(fwstring className, int depth = -1){return getChildrenByAttributeValue("class", className, depth);}
 
 
 };

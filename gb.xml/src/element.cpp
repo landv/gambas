@@ -1,12 +1,30 @@
 #include "element.h"
+#include "CElement.h"
 
-GB_CLASS Element::ClassName = 0;
-GB_CLASS AttrNode::ClassName = 0;
+vector<fwstring> Element::singleElements = {"br", "hr", "area", "base", "br", "co",
+                                          "command", "embed", "hr", "img", "input", "keygen",
+                                          "link", "meta", "param", "source", "track", "wbr"};
+Element::Element()
+{
+    tagName = new fwstring;
+    firstChild = 0;
+    lastChild = 0;
+    childCount = 0;
+    //DEBUG << "newelmt, childlist : " << children << endl;
+    attributes = new flist<AttrListElement*>;
 
-vector<wstring> Element::singleElements = {L"br", L"hr", L"area", L"base", L"br", L"col",
-                                          L"command", L"embed", L"hr", L"img", L"input", L"keygen",
-                                          L"link", L"meta", L"param", L"source", L"track", L"wbr"};
+    attributeNode = new AttrNode;
+    attributeNode->attrName = 0;
+    relElmt = 0;
 
+}
+
+Element::~Element()
+{
+
+    delete attributes;
+    attributes = 0;
+}
 
 bool isLetter(const char *str)
 {
@@ -17,58 +35,58 @@ bool isLetter(const char *str)
     return false;
 }
 
-wstring Right(wstring str, wstring::size_type len)
+fwstring Right(fwstring str, size_t len)
 {
-    return str.substr(str.length() - len, len);
+    return (str.substr(str.length() - len, len));
 }
 
-vector<wstring>* split(wstring str, wstring pattern)
+vector<fwstring>* split(fwstring str, fwstring pattern)
 {
-    vector<wstring> *splits = new vector<wstring>;
-    wstring s;
+    vector<fwstring> *splits = new vector<fwstring>;
+    fwstring s;
     unsigned int i, pos = 0;
     for(i = 0; i < str.length(); i++)
     {
         s = str.at(i);
         if(s == pattern)
         {
-            splits->push_back(str.substr(pos, i - pos));
+            splits->push_back((str.substr(pos, i - pos)));
             pos = i + 1;
         }
     }
 
     if(i > pos)//Il en reste un au bout
     {
-        splits->push_back(str.substr(pos, i - pos));
+        splits->push_back((str.substr(pos, i - pos)));
     }
     return splits;
 }
 
-wstring Trim(wstring str)
+fwstring Trim(fwstring str)
 {
-    wstring s;
-    wstring::size_type i, j;
+    fwstring s;
+    fwstring::size_type i, j;
     for(i = 0; i < str.length(); i++)
     {
         s = str.at(i);
-        if(s != L" ") break;
+        if(s != " ") break;
     }
 
     for(j = str.length() - 1; j > 0;j--)
     {
         s = str.at(j);
-        if(s != L" ") break;
+        if(s != " ") break;
     }
 
     j++;
 
-    return str.substr(i, j - i);
+    return (str.substr(i, j - i));
 
 }
 
-bool isLetter(wstring &s){return isLetter(WStringToString(s).c_str());}
+bool isLetter(fwstring &s){return isLetter((s).c_str());}
 
-bool exist(vector<wstring> vect, wstring elmt)
+bool exist(vector<fwstring> vect, fwstring elmt)
 {
     for(unsigned int i = 0; i < vect.size(); i++)
     {
@@ -77,7 +95,7 @@ bool exist(vector<wstring> vect, wstring elmt)
     return false;
 }
 
-bool exist(vector<wstring> *vect, wstring elmt)
+bool exist(vector<fwstring> *vect, fwstring elmt)
 {
     for(unsigned int i = 0; i < vect->size(); i++)
     {
@@ -88,50 +106,47 @@ bool exist(vector<wstring> *vect, wstring elmt)
 
 void Element::removeChild(Node *child)
 {
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
-    {
-        if((*it) == child)
-        {
-            Node *tNode = *it;
-            (*it)->setParent(0);
-            (*it)->setOwnerDocument(0);
-            GB.Unref(POINTER(&tNode));
-            children->erase(it);
-            return;
-        }
-    }
+    if(child == firstChild) firstChild = child->nextNode;
+    if(child == lastChild) lastChild = child->previousNode;
+    if(child->nextNode) child->nextNode->previousNode = child->previousNode;
+    if(child->previousNode) child->previousNode->nextNode = child->nextNode;
+    childCount--;
 }
 
 bool Element::insertAfter(Node *child, Node *newChild)
 {
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    if(child->parent != this) return false;
+    newChild->nextNode = child->nextNode;
+    newChild->previousNode = child;
+    if(child->nextNode)
     {
-        if((*it) == child)
-        {
-            children->insert(++it, newChild);
-            newChild->setParent(this);
-            newChild->setOwnerDocument(ownerDoc);
-            GB.Ref(newChild);
-            return true;
-        }
+        child->nextNode->previousNode = newChild;
     }
-    return false;
+    if(child == lastChild)
+    {
+        lastChild = newChild;
+    }
+    child->nextNode = newChild;
+    childCount++;
+    return true;
 }
 
 bool Element::insertBefore(Node *child, Node *newChild)
 {
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    if(child->parent != this) return false;
+    newChild->nextNode = child;
+    newChild->previousNode = child->previousNode;
+    if(child->previousNode)
     {
-        if((*it) == child)
-        {
-            children->insert(it, newChild);
-            newChild->setParent(this);
-            newChild->setOwnerDocument(ownerDoc);
-            GB.Ref(newChild);
-            return true;
-        }
+        child->previousNode->nextNode = newChild;
     }
-    return false;
+    if(child == firstChild)
+    {
+        firstChild = newChild;
+    }
+    child->previousNode = newChild;
+    childCount++;
+    return true;
 }
 
 void Element::replaceChild(Node *oldChild, Node *newChild)
@@ -142,27 +157,27 @@ void Element::replaceChild(Node *oldChild, Node *newChild)
 /*
 #ifndef HELEMENT_CPP
 
-wstring Element::Virtual::toString(int indent)
+fwstring Element::Virtual::toString(int indent)
 {
-    wstring str;
-    if(indent > 0){str += wstring(indent, ' ');};
-    str += L"<"+ parent->getTagName();
+    fwstring str;
+    if(indent > 0){str += fwstring(indent, ' ');};
+    str += "<"+ parent->getTagName();
     if(parent->attributes->size() > 0){
-        for(map<wstring, wstring>::iterator it = parent->attributes->begin(); it != parent->attributes->end(); ++it)
+        for(map<fwstring, fwstring>::iterator it = parent->attributes->begin(); it != parent->attributes->end(); ++it)
         {
-            str += L" " + it->first + L"=\"" + Html$(it->second) + L"\"";
+            str += " " + it->first + "=\"" + Html$(it->second) + "\"";
         }}
-    str += L">";
-    if(indent >= 0) str += L"\n";
+    str += ">";
+    if(indent >= 0) str += "\n";
 
     for(list<Node*>::iterator it = parent->children->begin(); it != parent->children->end(); ++it)
     {
         str += (*it)->virt->toString(indent >= 0 ? (indent + 1) : -1);
     }
 
-    if(indent > 0){str += wstring(indent, ' ');};
-    str += L"</"+parent->getTagName()+L">";
-    if(indent >= 0) str += L"\n";
+    if(indent > 0){str += fwstring(indent, ' ');};
+    str += "</"+parent->getTagName()+">";
+    if(indent >= 0) str += "\n";
 
     return str;
 }
@@ -170,55 +185,88 @@ wstring Element::Virtual::toString(int indent)
 #else
 
 */
-wstring Element::Virtual::toString(int indent)
+fwstring Element::toString(int indent)
 {
-    wstring str;
-    if(indent > 0){str += wstring(indent, ' ');};
-    str = L"<"+ parent->getTagName();
-    if(parent->attributes->size() > 0){
-    for(map<wstring, wstring>::iterator it = parent->attributes->begin(); it != parent->attributes->end(); ++it)
+    fwstring str;
+    if(indent > 0){str += fwstring(indent, ' ');};
+    str += fwstring("<");
+    //DEBUG << str.toStdString() << endl;
+    str += getTagName();
+    //DEBUG << str.toStdString() << endl;
+    //DEBUGH;
+    if(attributes->len > 0){
+        //DEBUGH;
+    for(flist<AttrListElement*>::element *it = attributes->firstElement; it != 0; it = it->next)
     {
-        str += L" " + it->first + L"=\"" + it->second + L"\"";
+        //DEBUGH;
+        str += " ";
+        str += *(it->value->attrName);
+        str += "=\"";
+        str += *(it->value->attrValue);
+        str += "\"";
     }}
 
-    if(exist(Element::singleElements, parent->getTagName()))
+    //DEBUGH;
+
+    if(exist(Element::singleElements, getTagName()))
     {
-        str += L" />";
+        str += " />";
     }
     else
     {
-        str += L">";
-        if(indent >= 0) str += L"\n";
+        str += ">";
+        if(indent >= 0) str += "\n";
 
-        for(list<Node*>::iterator it = parent->children->begin(); it != parent->children->end(); ++it)
+        for(Node *it = firstChild; it != 0; it = it->nextNode)
         {
-            str += (*it)->virt->toString(indent >= 0 ? (indent + 1) : -1);
+            str += (it)->toString(indent >= 0 ? (indent + 1) : -1);
         }
 
-        if(indent > 0){str += wstring(indent, ' ');};
-        str += L"</"+parent->getTagName()+L">";
-        if(indent >= 0) str += L"\n";
+        if(indent > 0){str += fwstring(indent, ' ');};
+        str += "</";
+        str += getTagName();
+        ///DEBUG << getTagName().toStdString() << endl;
+        str += ">";
+        if(indent >= 0) str += "\n";
     }
+    //DEBUGH;
     return str;
 }
 
 
 void Element::ClearElements()
 {
-    Node *tnode;
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    /*Node *tnode;
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-            tnode = *it; GB.Unref(POINTER(&tnode));
+            tnode = it->value; //GB.Unref(POINTER(&tnode));
     }
-    children->clear();
+    children->clear();*/
+    firstChild = 0;
+    lastChild = 0;
 }
 
 Node* Element::appendChild(Node *newChild)
 {
-    children->push_back(newChild);
+    //children->push_back(newChild);
+    childCount++;
+    if(!lastChild)//La liste est vide
+    {
+        firstChild = newChild;
+        lastChild = firstChild;
+        lastChild->nextNode = 0;
+        lastChild->previousNode = 0;
+        return newChild;
+    }
+
+    newChild->previousNode = lastChild;
+    newChild->nextNode = 0;
+    lastChild->nextNode = newChild;
+    lastChild = newChild;
+
     newChild->setParent(this);
     newChild->setOwnerDocument(ownerDoc);
-    GB.Ref(newChild);
+    //GB.Ref(newChild);
     return newChild;
 }
 
@@ -229,10 +277,26 @@ Node* Element::appendChild(Node &newChild)
 
 Node* Element::prependChild(Node *newChild)
 {
-    children->push_front(newChild);
+    //children->push_front(newChild);
+
+    childCount++;
+    if(!lastChild)//La liste est vide
+    {
+        firstChild = newChild;
+        lastChild = firstChild;
+        lastChild->nextNode = 0;
+        lastChild->previousNode = 0;
+        return newChild;
+    }
+
+    newChild->nextNode = firstChild;
+    newChild->previousNode = 0;
+    firstChild->previousNode = newChild;
+    firstChild = newChild;
+
     newChild->setParent(this);
     newChild->setOwnerDocument(ownerDoc);
-    GB.Ref(newChild);
+    //GB.Ref(newChild);
     return newChild;
 }
 
@@ -241,34 +305,34 @@ Node* Element::prependChild(Node &newChild)
     return prependChild(&newChild);
 }
 
-wstring Element::Virtual::textContent()
+fwstring Element::textContent()
 {
-    wstring str;
-    if(parent->children->size() <= 0) return L"";
-    for(list<Node*>::iterator it = parent->children->begin(); it != parent->children->end(); ++it)
+    fwstring str;
+    if(childCount == 0) return "";
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        str += (*it)->virt->textContent();
+        str += (it)->textContent();
     }
 
     return str;
 }
 
-void Element::Virtual::setTextContent(wstring &content)
+void Element::setTextContent(fwstring content)
 {
-    parent->ClearElements();
-    parent->appendText(content);
+    ClearElements();
+    appendText(content);
 }
 
-void Element::appendText(wstring text)
+void Element::appendText(fwstring text)
 {
-    TextNode *node = GBI::New<TextNode>();
-    node->setTextContent(text);
+    TextNode *node = new TextNode;
+    node->setTextContent(*(text.copy()));
     appendChild(node);
 }
 
-void Element::appendFromText(wstring data, bool force)
+void Element::appendFromText(fwstring data, bool force)
 {
-    vector<Node*> *elements = fromText(data, force);
+    fvector<Node*> *elements = fromText(data, force);
     for(unsigned int i = 0; i < elements->size(); i++)
     {
         this->appendChild(elements->at(i));
@@ -276,280 +340,274 @@ void Element::appendFromText(wstring data, bool force)
     delete elements;
 }
 
-inline void increment( wstring::size_type &i, unsigned int &l, unsigned int &c, wchar_t &s, wstring &data)
+inline void increment( fwstring::size_type &i, unsigned int &l, unsigned int &c, wchar_t &s, fwstring &data)
 {
     i++; c++; s = data[i]; if(s == SCHAR_N || s == SCHAR_R){l++; c=1;}
 }
 
-inline void increment( wstring::size_type &i, unsigned int &l, unsigned int &c, wstring &s, wstring &data, wstring::size_type num)
+inline void increment( fwstring::size_type &i, unsigned int &l, unsigned int &c, fwstring &s, fwstring &data, fwstring::size_type num)
 {
 
 }
 
-
-
-vector<Node*>* Element::fromText(wstring data, wstring::size_type $i, uint $c, uint $l)
+fvector<Node*>* Element::fromText(fwstring data, size_t start)
 {
-    vector<Node*>* elements = new vector<Node*>;
-    Element *curElement = 0;
+    fvector<Node*>* elements = new fvector<Node*>;//Liste des éléments à retourner
 
-    wstring text, tag;
-    register wchar_t s = 0;
-    register uint c = $c;
-    register uint l = $l;
-    register wstring::size_type i = $i;
+    if(!data.len) return elements; //Chaîne vide ?
 
-#define INC {i++; /*c++;*/ s = data[i]; }
-    #define INCS(num) i += num; c += num; s = data[i];
-#define NEAR data.substr(i, Mini<wstring::size_type>(data.length() - i, (80)))
-#undef CLEAR
-#define CLEAR Node *dnode; for(vector<Node*>::iterator it = elements->begin(); it != elements->end(); ++it)\
-    {\
-        dnode = *it; GB.Unref(POINTER(&dnode));\
-    }\
+    Element *curElement = 0;//Élément courant
 
-    #define APPEND(elmt) if(curElement == 0){elements->push_back(elmt);}\
-    else {curElement->appendChild(elmt);}
+#define APPEND(elmt) if(curElement == 0){elements->push_back(elmt);  /*DEBUG << elements->at(0) << endl;*/}\
+else {curElement->appendChild(elmt);}//Ajoute 'elmt' à la liste
 
-#define continue {INC continue;}
+#define INC i++; s = source[i]//Passe au byte suivant
+    size_t i = start;//Byte courant (indice)
+    register char s = 0;//Byte courant (valeur)
+    char *source = data.data;//Chaîne source
+    size_t len = data.len;//Longueur de la source (en bytes)
+    register wchar_t ws = 0;//Caractère courant (valeur)
 
-    s = data[i];
-    //On commence
-    while(i < data.length())
+    size_t tagPos = 0;//Position du premier caractère < trouvé
+    char *tag = 0;//Premier caractère < trouvé
+
+    //DEBUG << i << endl;
+    //DEBUG << len << endl;
+
+    while(i < len)//On commence
     {
-        if(s == CHAR_STARTTAG )//On trouve un début d'élément
+        s = source[i];
+        //DEBUG << i << endl;
+        tag = (char*)memchr((source + i), CHAR_STARTTAG, len - i);//On cherche un début de tag
+        tagPos = (tag - source);
+        //DEBUG << (void*)tag << " - " << (void*)source <<  " = " << tagPos << endl;
+        if(tag)//On ajoute le texte, s'il existe
         {
-            if(text.length() > 0)//On se débarrase du texte
-            {
-                TextNode *node = GBI::New<TextNode>();
-                node->setTextContent(text);
-                APPEND(node)
-                text.erase();
-            }
+            TextNode *text = new TextNode;
+            text->content = data.copyString(i, tagPos);
+            APPEND(text);
+        }
 
-            INC
-            while(i < data.length()) //On cherche le tagName
-            {
-                if(!isNameChar(s)) break;
-                tag += s;
-                INC
-            }
+        if(!tag) break; //Pas de tag suivant ? On a fini !
+        i = tagPos + 1;//On avance au caractère trouvé
 
-            if(tag.length() <= 0)//Il y a quelque chose ...
+        //DEBUG << i << endl;
+
+        //On analyse le contenu du tag
+        ws = data.increment(i);//On prend le premier caractère
+
+        if(!isNameStartChar(ws))//Ce n'est pas un tagName, il y a quelque chose ...
+        {
+            if(ws == CHAR_SLASH)//C'est un élément de fin
             {
-                if(s == CHAR_SLASH)//C'est un élément de fin
+                if(!curElement)//Pas d'élément courant
                 {
-                    if(curElement == 0) {i -=2; c-=2; CLEAR throw HTMLParseException(c, l, NEAR, L"Unexpected end tag.");}
-                    INC;
-                    if(!(data.substr(i, curElement->getTagName().length()) == curElement->getTagName()))
-                    {//Ce n'est pas le bon
+                    //ERREUR : CLOSING TAG WHEREAS NONE IS OPEN
+                    throw HTMLParseException(0, 0, "", "CLOSING TAG WHEREAS NONE IS OPEN");
+                }
+                if((len - i) < curElement->tagName->len)//Impossible que les tags correspondent
+                {
+                    //ERREUR : TAG MISMATCH
+                    throw HTMLParseException(0, 0, "", "TAG MISMATCH");
+                }
+                //Les tags ne correspondent pas
+                else if(memcmp(source + i, curElement->tagName->data, curElement->tagName->len) != 0)
+                {
+                    //ERREUR : TAG MISMATCH
+                    //DEBUG << *(curElement->tagName) << " " << fwstring(source + i, curElement->tagName->len) << endl;
+                    throw HTMLParseException(0, 0, "", "TAG MISMATCH");
+                }
+                else//Les tags correspondent, on remonte
+                {
+                    i += curElement->tagName->len;
+                    //DEBUG << i << endl;
+                    curElement = curElement->parent;
+                    tag = (char*)memchr((source + i), CHAR_ENDTAG, len - i);//On cherche la fin du tag
+                    tagPos = (tag - source);
+                    //DEBUG << (void*)tag <<"-"<< (void*)source << endl;
+                    i = tagPos +1;//On avance à la fin du tag
 
-                            i -=2; c-=2; CLEAR throw HTMLParseException(c, l, NEAR, L"Unexpected end tag.");
-
-                    }
-
-                    INCS(curElement->getTagName().length());
-                    curElement = curElement->getParent();//On a terminé, on remonte
+                    //DEBUG << i << endl;
                     continue;
                 }
-                else if(data.substr(i, 3) == L"!--")//C'est un commentaire
+            }
+            else if(ws == CHAR_EXCL)//Ce serait un commentaire ou un CDATA
+            {
+                if(memcmp(source + i, "--", 2) == 0)//C'est bien un commentaire
                 {
-                    INCS(3);
-                    wstring comm;
-                    while(i<data.length())
+                    i += 2;//On va au début du contenu du commentaire
+                    tag = (char*)memchrs(source + i, len - i, "-->", 3);
+                    if(!tag)//Commentaire sans fin
                     {
-                        if(data.substr(i, 3) == L"-->") break;//Fin du commentaire
-                        comm += s;
-                        INC
+                        //ERREUR : UNENDED COMMENT
+                        throw HTMLParseException(0, 0, "", "UNENDED COMMENT");
                     }
-                    CommentNode *comment = GBI::New<CommentNode>();
-                    comment->setTextContent(comm);
-                    APPEND(comment)
-                    INCS(2);
+
+                    tagPos = tag - source;
+
+                    CommentNode *comment = new CommentNode;
+                    comment->content = data.copyString(i, tagPos);
+                    APPEND(comment);
+
+                    i = tagPos + 3;
                     continue;
                 }
-                else if(data.substr(i, 8) == L"![CDATA[")//Structrure CDATA
+                else if(memcmp(source + i + 1, "[CDATA[", 7) == 0)//C'est un CDATA
                 {
-                    INCS(8);
-                    wstring comm;
-                    for(; i<data.length(); i++)
+                    i += 3;//On va au début du contenu du cdata
+                    tag = (char*)memchrs(source, len - i, "]]>", 3);
+                    if(!tag)//Cdata sans fin
                     {
-                        s = data[i];
-                        if(data.substr(i, 3) == L"]]>") break;//Fin du CDATA
-                        comm += s;
+                        //ERREUR : UNENDED CDATA
+                        throw HTMLParseException(0, 0, "", "UNENDED CDATA");
                     }
-                    CDATANode *comment = GBI::New<CDATANode>();
-                    comment->setTextContent(comm);
-                    APPEND(comment)
-                    INCS(2);
+
+                    tagPos = tag - source;
+
+                    CDATANode *cdata = new CDATANode;
+                    cdata->content = data.copyString(i, tagPos);
+                    APPEND(cdata);
                     continue;
                 }
-                else//Euuh ...
+                else// ... ?
                 {
-                    CLEAR
-                    throw HTMLParseException(c, l, NEAR, L"Unexpected character in tag.");
+                    //ERREUR : INVALID TAG
+                    //DEBUG << "TxtPos : " << source + i + 1 << endl;
+                    throw HTMLParseException(i, 0, "", "INVALID TAG");
                 }
             }
+            else// ... ?
+            {
+                //ERREUR : INVALID TAG
+                //DEBUG << "TagPos : " << tagPos << endl;
+                throw HTMLParseException(i, 0, "", "INVALID TAG");
+            }
+        }//Si tout va bien, on a un nouvel élément
+        else
+        {
+            while(isNameChar(data.increment(i)))//On cherche le tagName
+            {
+                if(i > len)
+                {
+                    //ERREUR : UNENDED TAG
+                    throw HTMLParseException(0, 0, "", "UNENDED TAG");
+                }
+            }
+            i--;
 
-            //Si tout va bien, on a un nouvel élément
-            Element *elmt = GBI::New<Element>();
-            elmt->setTagName(tag);
+            Element *elmt = new Element;
+            elmt->tagName = data.copyString(tagPos + 1, i);
+            //DEBUG << tagPos << endl;
             APPEND(elmt);
             curElement = elmt;
+            s = source[i];
+            //DEBUG << "S : " << s << endl;
 
-            while(i<data.length())//On gère le contenu
+            //DEBUG << "TAG : " << *(elmt->tagName) << endl;
+
+            while(i < len)//On gère le contenu de l'élément (attributs)
             {
-                if(s == CHAR_ENDTAG) break; //Fin de l'élément
+                if(s == CHAR_ENDTAG) break;//Fin de l'élément
                 if(s == CHAR_SLASH) //Élément auto-fermant
                 {
-                    INC;
+                    i++;
                     curElement = curElement->getParent();//Pas d'enfants, on remonte
                     break;
                 }
 
-                wstring attr, sVal = L"";
-
-                if(isNameStartChar(s))
+                if(isNameStartChar(s))//Début d'attribut
                 {
-                    while(i < data.length() && isNameChar(s))
-                    {
-                        attr += s;
-                        INC;
-                    }
+                    size_t attrNamestart = i;
+                    while(isNameChar(data.increment(i)) && i < len){}//On parcourt le nom d'attribut
+                    i--;
+                    size_t attrNameEnd = i;
+                    s = source[i];
+                    //DEBUG << "S : " << s << endl;
+                    //DEBUG << "ATTR : " << *(data.copyString(attrNamestart, attrNameEnd)) << endl;
 
-                    while(i < data.length() && isWhiteSpace(s)) INC;
+                    while(isWhiteSpace(s) && i < len){INC;}//On ignore les espaces blancs
 
                     if(s != CHAR_EQUAL)
                     {
-                        i -= attr.length();
-                        CLEAR
-                        throw HTMLParseException(c, l,  NEAR,  L"Expected '=' after attribute name.");
-                    }
-                    INC;
-
-                    while(i < data.length() && isWhiteSpace(s)) INC;
-
-                    register wchar_t delimiter = s;
-
-                    if(delimiter != CHAR_DOUBLEQUOTE && delimiter != CHAR_SINGLEQUOTE){//Pas de délimiteur
-                        CLEAR
-                        throw HTMLParseException(c, l, NEAR,  L"Expected delimiter.");
-                    }
-
-                    INC;
-
-                    while(i<data.length() && s != delimiter)
-                    {
-                        if(s == CHAR_BACKSLASH)//Échappement
+                        elmt->setAttribute(*(data.ssubstr(attrNamestart, attrNamestart - attrNameEnd)), "");
+                        if(s == CHAR_ENDTAG) break;//Fin de l'élément
+                        else if (s == CHAR_SLASH)//Élément auto-fermant
                         {
-                            INC; //On avance
-                            sVal += L"\\";//On garde quand même le backslash
+                            i++;
+                            curElement = curElement->getParent();//Pas d'enfants, on remonte
+                            break;
                         }
-                            sVal += s;
-                        INC;
+                        else
+                        {
+                            //ERREUR : INVALID TAG
+                            //DEBUG << "S : " << s << endl;
+                            throw HTMLParseException(i, 0, "", "INVALID TAG");
+                        }
                     }
 
-                    curElement->setAttribute(attr, sVal);
+                    INC;
+
+                    while(isWhiteSpace(s) && i < len){INC;}//On ignore les espaces blancs
+
+                    //DEBUG << "S : " << s << endl;
+                    char delimiter = s;
+                    if(delimiter != CHAR_DOUBLEQUOTE && delimiter != CHAR_SINGLEQUOTE)
+                    {
+                        //ERREUR : EXPECTED ATTRIBUTE DELIMITER
+                        throw HTMLParseException(0, 0, "", "EXPECTED ATTRIBUTE DELIMITER");
+                    }
+                    i++;
+
+                    size_t delimiterPos = (char*)memchr(source + i, delimiter, len - i) - source;
+
+                    elmt->addAttribute(*(data.ssubstr(attrNamestart, attrNameEnd - attrNamestart)),
+                                       *(data.ssubstr(i, delimiterPos - i)));
+                    i = delimiterPos;
+
                 }
+
                 INC;
             }
 
-            tag.erase();
-
-
         }
-        else if(s == CHAR_ENDTAG)//Erreur
-        {
-            CLEAR throw HTMLParseException(c, l,NEAR,   L"Unexpected '>'.");
-        }
-        else//Texte normal
-        {
-            if(s == CHAR_AND)
-            {
-                if(data.substr(i, 5) == L"&amp;")
-                {
-                    text += L"&";
-                    INCS(4);
-                }
-                else if(data.substr(i, 4) == L"&lt;")
-                {
-                    text += L"<";
-                    INCS(3);
-                }
-                else if(data.substr(i, 4) == L"&gt;")
-                {
-                    text += L">";
-                    INCS(3);
-                }
-                else if(data.substr(i, 6) == L"&quot;")
-                {
-                    text += L"\"";
-                    INCS(5);
-                }
-                else
-                {
-                    //throw HTMLParseException(1, i, "Unexpected '&'.");
-                    text += L"&";
-                }
-            }
-            else if(isWhiteSpace(s))
-            {
-                if(s == SCHAR_N || s == SCHAR_R){l++; c=1;}
-                if(i > 0)
-                    if(isWhiteSpace(data.at(i-1)))//Deux espaces d'afilée -> on ignore
-                        continue;
+        i++;
 
-                text += L" ";
-
-            }
-            else
-            {
-                text += s;
-            }
-        }
-        INC
     }
 
-    if(text.length() > 0)//On évacue le texte qui reste à la fin
-    {
-        TextNode *node = GBI::New<TextNode>();
-        node->setTextContent(text);
-        APPEND(node)
-    }
+    //DEBUG << i << endl;
 
     return elements;
-    #undef APPEND
-#undef continue
+
 }
 
-GBI::ObjectArray<Element>* Element::getChildrenByAttributeValue(wstring attr, wstring val, int depth)
+GBI::ObjectArray<Element>* Element::getChildrenByAttributeValue(fwstring attr, fwstring val, int depth)
 {
     GBI::ObjectArray<Element> *elements = new GBI::ObjectArray<Element>("XmlElement");
     if(depth == 0) return elements;
     if(getAttribute(attr) == val) elements->push_back(this);
     if(depth == 1) return elements;
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            elements->push_back((*it)->toElement()->getChildrenByAttributeValue(attr, val, depth - 1));
+            elements->push_back((it)->toElement()->getChildrenByAttributeValue(attr, val, depth - 1));
         }
     }
     return elements;
 }
 
-GBI::ObjectArray<Element>* Element::getGBChildrenByTagName(wstring tag, int depth)
+GBI::ObjectArray<Element>* Element::getGBChildrenByTagName(fwstring tag, int depth)
 {
     GBI::ObjectArray<Element> *elements = new GBI::ObjectArray<Element>("XmlElement");
     if(depth == 0) return elements;
-    if(*tagName == tag) elements->push_back(this);
+    if(tagName->toString() == tag) elements->push_back(this);
     if(depth == 1) return elements;
     vector<Element*> *childelements;
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            childelements = (*it)->toElement()->getChildrenByTagName(tag, depth - 1);
+            childelements = (it)->toElement()->getChildrenByTagName(tag, depth - 1);
             elements->push_back(childelements);
             delete childelements;
         }
@@ -557,18 +615,18 @@ GBI::ObjectArray<Element>* Element::getGBChildrenByTagName(wstring tag, int dept
     return elements;
 }
 
-vector<Element*>* Element::getChildrenByTagName(wstring tag, int depth)
+vector<Element*>* Element::getChildrenByTagName(fwstring tag, int depth)
 {
     vector<Element*> *elements = new vector<Element*>;
     if(depth == 0) return elements;
-    if(*tagName == tag) elements->push_back(this);
+    if(tagName->toString() == tag) elements->push_back(this);
     if(depth == 1) return elements;
     vector<Element*> *childelements;
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            childelements = (*it)->toElement()->getChildrenByTagName(tag, depth - 1);
+            childelements = (it)->toElement()->getChildrenByTagName(tag, depth - 1);
             elements->insert(elements->end(), childelements->begin(), childelements->end());
             delete childelements;
         }
@@ -576,46 +634,73 @@ vector<Element*>* Element::getChildrenByTagName(wstring tag, int depth)
     return elements;
 }
 
-wstring Element::getAttribute(wstring key)
+fwstring Element::getAttribute(fwstring key)
 {
-    try{return attributes->at(key);}
-    catch(out_of_range &e)
+    for(flist<AttrListElement*>::element *it = attributes->firstElement; it != 0; it = it->next)
     {
-        return L"";
+        if(*(it->value->attrName) == key)
+        {
+            return *(it->value->attrValue);
+        }
     }
+    return "";
+}
+
+void Element::setAttribute(fwstring key, fwstring value)
+{
+    //DEBUG << this << " " << attributes << endl;
+    for(flist<AttrListElement*>::element *it = attributes->firstElement; it != 0; it = it->next)
+    {
+        if(*(it->value->attrName) == key)
+        {
+            it->value->attrValue = value.copy();
+            return;
+        }
+    }
+
+    addAttribute(key, value);
+
+}
+
+void Element::addAttribute(fwstring key, fwstring value)
+{
+    AttrListElement *newAttr = (AttrListElement*)malloc(sizeof(AttrListElement));
+    newAttr->attrName = key.copy();
+    newAttr->attrValue = value.copy();
+    attributes->push_back(newAttr);
 }
 
 GBI::ObjectArray<Node>* Element::getAllChildren()
 {
     GBI::ObjectArray<Node> *allchildren = new GBI::ObjectArray<Node>("XmlNode");
-    for(list<Node*>::iterator it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        allchildren->push_back(*it);
-        if((*it)->isElement())
+        allchildren->push_back(it);
+        if((it)->isElement())
         {
-            allchildren->push_back((*it)->toElement()->getAllChildren());
+            allchildren->push_back((it)->toElement()->getAllChildren());
         }
     }
     return allchildren;
 }
 
-void Element::Virtual::setOwnerDocument(Document *doc)
+void Element::setOwnerDocument(Document *doc)
 {
-    parent->ownerDoc = doc;
-    for(auto it = parent->children->begin(); it != parent->children->end(); ++it)
+    ownerDoc = doc;
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        (*it)->virt->setOwnerDocument(doc);
+        (it)->setOwnerDocument(doc);
     }
 }
 
 GBI::ObjectArray<Element>* Element::getChildElements()
 {
     GBI::ObjectArray<Element>* vect = new GBI::ObjectArray<Element>("XmlElement");
-    for(auto it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            vect->push_back((*it)->toElement());
+            vect->push_back((it)->toElement());
         }
     }
     return vect;
@@ -624,25 +709,25 @@ GBI::ObjectArray<Element>* Element::getChildElements()
 GBI::ObjectArray<Node>* Element::getGBChildren()
 {
     GBI::ObjectArray<Node> *childs = new GBI::ObjectArray<Node>("XmlNode");
-    for(auto it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        childs->push_back(*it);
+        childs->push_back(it);
     }
     return childs;
 }
 
 
-Element* Element::getFirstChildByTagName(wstring tag, int depth)
+Element* Element::getFirstChildByTagName(fwstring tag, int depth)
 {
     Element *elmt = 0;
     if(depth == 0) return 0;
     if(this->getTagName() == tag) return this;
     if(depth == 1) return 0;
-    for(auto it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            elmt = (*it)->toElement()->getFirstChildByTagName(tag, depth - 1);
+            elmt = (it)->toElement()->getFirstChildByTagName(tag, depth - 1);
             if(elmt) return elmt;
         }
     }
@@ -652,94 +737,76 @@ Element* Element::getFirstChildByTagName(wstring tag, int depth)
 
 Element* Element::previousSibling()
 {
-    Element *elmt = 0;
     if(!parent) return 0;
-    if(!parent->children->size()) return 0;
-    list<Node*>::iterator it;
-    for(it = parent->children->begin(); it != parent->children->end(); ++it)
-    {
-        if(*it == this) break;
-    }
 
-    if(it == parent->children->begin()) return 0; //Si c'est le premier, y risque pas d'y en avoir avant
-
-    while(it != (parent->children->begin()))
+    for(Node *it = this; it != 0; it = it->previousNode)
     {
-        --it;
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            elmt = (*it)->toElement();
-            break;
+            return it->toElement();
         }
     }
 
-    return elmt;
+    return 0;
 
 }
 
 Element* Element::nextSibling()
 {
-    Element *elmt = 0;
     if(!parent) return 0;
-    if(!parent->children->size()) return 0;
-    list<Node*>::iterator it;
-    for(it = parent->children->begin(); it != parent->children->end(); ++it)
-    {
-        if(*it == this) break;
-    }
 
-    if(it == --(parent->children->end())) return 0; //Si c'est le dernier, y risque pas d'y en avoir avant
-
-    while(it != --(parent->children->end()))
+    for(Node *it = this; it != 0; it = it->nextNode)
     {
-        ++it;
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            elmt = (*it)->toElement();
-            break;
+            return it->toElement();
         }
     }
 
-    return elmt;
+    return 0;
 
 }
 
 
 Element* Element::firstChildElement()
 {
-    for(auto it = children->begin(); it != children->end(); ++it)
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            return (*it)->toElement();
+            return it->toElement();
         }
     }
+
     return 0;
 }
 
 Element* Element::lastChildElement()
 {
-    for(auto it = --(children->end()); it != --(children->begin()); ++it)
+    for(Node *it = lastChild; it != 0; it = it->previousNode)
     {
-        if((*it)->isElement())
+        if((it)->isElement())
         {
-            return (*it)->toElement();
+            return it->toElement();
         }
     }
+
     return 0;
 }
 
-bool Element::isAttributeSet(wstring key)
+bool Element::isAttributeSet(fwstring key)
 {
-        try{attributes->at(key);}
-        catch(out_of_range &e)
+    for(flist<AttrListElement*>::element *it = attributes->firstElement; it != 0; it = it->next)
+    {
+        if(*(it->value->attrName) == key)
         {
-            return false;
+            return true;
         }
-    return true;
+    }
+    return false;
 }
 
-bool Element::MatchXPathFilter(wstring filter)
+bool Element::MatchXPathFilter(fwstring filter)
 {
 #define CHECKPOS if(pos >= filter.length() - 1)\
     {\
@@ -747,38 +814,38 @@ bool Element::MatchXPathFilter(wstring filter)
         return false;\
     }
 
-    wstring::size_type pos;
-    wstring s;
+    fwstring::size_type pos;
+    fwstring s;
 
     filter = Trim(filter);
 
 
-    if(filter == L"*") return true;
+    if(filter == "*") return true;
 
-    pos = filter.rfind(L"|");
-    if(pos != wstring::npos)
+    pos = filter.rfind("|");
+    if(pos != fwstring::npos)
     {
         CHECKPOS
-        return MatchXPathFilter(filter.substr(pos +  1)) || MatchXPathFilter(filter.substr(0, pos));
+        return MatchXPathFilter((filter.substr(pos +  1))) || MatchXPathFilter((filter.substr(0, pos)));
     }
 
-    pos = filter.rfind(L"/");
-    if(pos != wstring::npos)
+    pos = filter.rfind("/");
+    if(pos != fwstring::npos)
     {
         CHECKPOS
         if(pos == 0)//Si le / est au début (chemin absolu)
         {
-            return !(this->parent) && MatchXPathFilter(filter.substr(1));
+            return !(this->parent) && MatchXPathFilter((filter.substr(1)));
         }
 
         s = filter.at(pos - 1);
-        if(s == L"/")//Si on a un double slash //
+        if(s == "/")//Si on a un double slash //
         {
-            if(!MatchXPathFilter(filter.substr(pos + 1))) return false;
+            if(!MatchXPathFilter((filter.substr(pos + 1)))) return false;
             Element *elmt = this->parent;
             while(elmt)
             {
-                if(elmt->MatchXPathFilter(filter.substr(0, pos - 1))) return true;
+                if(elmt->MatchXPathFilter((filter.substr(0, pos - 1)))) return true;
                 elmt = elmt->parent;
             }
 
@@ -786,39 +853,80 @@ bool Element::MatchXPathFilter(wstring filter)
         }
 
       if(!(this->parent)) return false;
-        return MatchXPathFilter(filter.substr(pos +  1)) && this->parent->MatchXPathFilter(filter.substr(0, pos));
+        return MatchXPathFilter((filter.substr(pos +  1))) && this->parent->MatchXPathFilter((filter.substr(0, pos)));
     }
 
     return MatchSubXPathFilter(filter);
 }
 
-bool Element::MatchSubXPathFilter(wstring filter)
+bool Element::MatchSubXPathFilter(fwstring filter)
 {
-    if(filter == L"*") return true;
-    if(filter == *(this->tagName))
+    if(filter == "*") return true;
+    if(filter == (this->tagName)->toString())
     {
         return true;
     }
     return false;
 }
 
-Node* Element::Virtual::cloneNode()
+Node* Element::cloneNode()
 {
-    Element *node = GBI::New<Element>();
-    node->setTagName(*(parent->tagName));
+    Element *node = new Element;
+    node->setTagName(*(tagName));
     return node;
 }
 
-wstring AttrNode::Virtual::textContent()
+fwstring AttrNode::textContent()
 {
-    if((parent->attrName))
-        return parent->parent->getAttribute(*(parent->attrName));
+    if((attrName))
+        return parent->getAttribute(*(attrName));
 
-    return L"";
+    return "";
 }
 
-void AttrNode::Virtual::setTextContent(wstring &content)
+void AttrNode::setTextContent(fwstring content)
 {
-    if(parent->attrName)
-        parent->parent->setAttribute(*(parent->attrName), content);
+    if(attrName)
+        parent->setAttribute(*(attrName), content);
+}
+
+/*Element* Element::FNew()
+{
+    if(!Element::ClassName) GBI::InitClasses();
+    Element* obj = new Element;
+    obj->ref = 0;
+    obj->klass = Element::ClassName;
+    return obj;
+    //return reinterpret_cast<T*>(GB.New(T::ClassName, 0, 0));
+}*/
+
+void AttrNode::NewGBObject()
+{
+    NoInstanciate = true;
+    //relElmt = GBI::New<CNode>("_XmlAttrNode");
+    //relElmt->node = this;
+    //GB.Ref(relob);
+    NoInstanciate = false;
+}
+
+void Element::NewGBObject()
+{
+    NoInstanciate = true;
+    SetGBObject(GBI::New<CElement>("XmlElement"));
+    NoInstanciate = false;
+}
+
+void Element::SetGBObject(CElement *ob)
+{
+    relElmt = ob;
+    relElmt->elmt = this;
+    relElmt->n.node = this;
+}
+
+Node* AttrNode::cloneNode()
+{
+    AttrNode *newnode = new AttrNode;
+    newnode->setAttrName(*attrName);
+    newnode->setTextContent(*attrValue);
+    return newnode;
 }

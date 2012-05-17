@@ -1,15 +1,16 @@
 #include "CElement.h"
+#include "element.h"
 
 /*========== Element */
 
 #undef THIS
-#define THIS (static_cast<Element*>(_object))
+#define THIS (static_cast<CElement*>(_object)->elmt)
 
 BEGIN_PROPERTY(CElement_id)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getId()).c_str());
+    GBI::Return((THIS->getId()).c_str());
 }
 else
 {
@@ -20,7 +21,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CElement_className)
 
-if(READ_PROPERTY) GB.ReturnNewZeroString(WStringToString(THIS->getClassName()).c_str());
+if(READ_PROPERTY) GBI::Return((THIS->getClassName()));
 else THIS->setClassName(PSTRING());
 
 END_PROPERTY
@@ -41,7 +42,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_getChildById, GB_STRING id; GB_INTEGER depth)
 
-GB.ReturnObject(THIS->getChildById(STRING(id), VARGOPT(depth, -1)));
+GBI::Return(THIS->getChildById(STRING(id), VARGOPT(depth, -1)));
 
 END_METHOD
 
@@ -53,7 +54,7 @@ END_METHOD
 
 GB_DESC CElementDesc[] =
 {
-    GB_DECLARE("XmlElement", sizeof(Element)),
+    GB_DECLARE("XmlElement", sizeof(CElement)),
 
 
     GB_PROPERTY("Id", "s", CElement_id),

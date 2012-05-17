@@ -27,9 +27,12 @@
 #define PROLOG_TAG_ENDCHAR 6//Caractère ?
 
 
-class Reader : public GB_BASE
+class Reader
 {
 public :
+
+    Reader(){InitReader();}
+    ~Reader(){ClearReader();}
 
     Document *storedDocument;//Document stocké
     Node *curNode;//Nœud en cours de lecture
@@ -47,19 +50,19 @@ public :
     bool inXMLProlog;//Si on est dans un prologue xml
     unsigned char specialTagLevel;//Niveau de lecture d'un tag spécial
     int depth;//Profondeur du nœud courant
-    wstring *attrName;//Nom de l'attribut en cours de lecture
-    wstring *attrVal;//Valeur de l'attribut en cours de lecture
-    wstring *content;//Contenu du nœud texte en cours de lecture
+    fwstring *attrName;//Nom de l'attribut en cours de lecture
+    fwstring *attrVal;//Valeur de l'attribut en cours de lecture
+    fwstring *content;//Contenu du nœud texte en cours de lecture
     
     vector<Node*> *storedElements;
     
     void InitReader();//Intitialise le lecteur
-    int ReadChar(wstring car);//Lit un caractère
+    int ReadChar(char car);//Lit un caractère
     void ClearReader();//Réinitialise le lecteur
     void DestroyReader();//Détruit le lecteur
     bool flags[FLAGS_COUNT];//Flags de lecture
 
-    wstring *curAttrNameEnum;
+    fwstring *curAttrNameEnum;
 };
 
 

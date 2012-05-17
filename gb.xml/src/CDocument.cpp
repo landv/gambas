@@ -1,12 +1,16 @@
 #include "CDocument.h"
+#include "document.h"
 
 
 /*========== Document */
 
 #undef THIS
-#define THIS (static_cast<Document*>(_object))
+#define THIS (static_cast<CDocument*>(_object)->doc)
 
 BEGIN_METHOD(CDocument_new, GB_STRING path)
+
+if(Document::NoInstanciate) return;
+THIS = new Document;
 
 if(!MISSING(path))
 {
@@ -19,7 +23,7 @@ if(!MISSING(path))
     }
     try
     {
-        THIS->setContent(StringToWString(std::string(content,len)));
+        THIS->setContent((fwstring(content,len)));
         GB.ReleaseFile(content, len);
     }
     catch(HTMLParseException &e)
@@ -29,14 +33,12 @@ if(!MISSING(path))
 }
 else
 {
-Element *root = GBI::New<Element>();
-GB.Ref(root);
-root->setTagName(L"xml");
+Element *root = new Element;
+//root->setTagName("xml");
 THIS->setRoot(root);
 
 
 }
-THIS->virt = new Document::Virtual(THIS);
 
 END_METHOD
 
@@ -46,18 +48,21 @@ BEGIN_METHOD(CDocument_open, GB_STRING path)
     if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len)) return;
     try
     {
-        THIS->setContent(StringToWString(std::string(content,len)));
+        THIS->setContent((fwstring(content,len)));
     }
     catch(HTMLParseException &e)
     {
         GB.Error(e.what());
+        GB.ReleaseFile(content, len);
     }
+
+        GB.ReleaseFile(content, len);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CDocument_free)
 
-GB.Unref(POINTER(&(THIS->root)));
+//GB.Unref(POINTER(&(THIS->root)));
 
 END_METHOD
 
@@ -65,7 +70,7 @@ BEGIN_PROPERTY(CDocument_content)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->getContent()).c_str());
+    GBI::Return((THIS->getContent()));
 }
 else
 {
@@ -98,20 +103,21 @@ END_METHOD
 
 BEGIN_METHOD(CDocument_toString, GB_BOOLEAN indent)
 
-    GB.ReturnNewZeroString(WStringToString(THIS->getContent(VARGOPT(indent, false))).c_str());
+    GBI::Return(THIS->getContent(VARGOPT(indent, false)));
 
 END_METHOD
 
 BEGIN_PROPERTY(CDocument_root)
 
-GB.ReturnObject(THIS->getRoot());
+GBI::Return(THIS->getRoot());
 
 END_PROPERTY
 
 BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
 
 if(LENGTH(tagName) <= 0) return;
-GB.ReturnObject(THIS->createElement(MISSING(tagName) ? L"" : STRING(tagName)));
+//DEBUG << "New element" << endl;
+GBI::Return(THIS->createElement(MISSING(tagName) ? "" : STRING(tagName)));
 
 END_METHOD
 
@@ -130,7 +136,7 @@ END_METHOD
 
 BEGIN_METHOD(CDocument_save, GB_STRING fileName)
 
-THIS->save(STRING(fileName));
+THIS->save(string(CSTRING(fileName), LENGTH(fileName)));
 
 END_METHOD
 
@@ -138,7 +144,7 @@ END_METHOD
 
 GB_DESC CDocumentDesc[] =
 {
-    GB_DECLARE("XmlDocument", sizeof(Document)),
+    GB_DECLARE("XmlDocument", sizeof(CDocument)),
 
     GB_METHOD("_new", "", CDocument_new, "[(Path)s]"),
     GB_METHOD("_free", "", CDocument_free, ""),

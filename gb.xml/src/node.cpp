@@ -1,20 +1,45 @@
 #include "node.h"
 #include "element.h"
 #include "textnode.h"
+#include "CNode.h"
 
-GB_CLASS Node::ClassName = 0;
+bool Node::NoInstanciate = false;
 
-//ostream &operator<<( ostream &out, Node &node )
-//{
-//    out << node.toString();
-//    return out;
-//}
+Node::Node()
+{
+    ownerDoc = 0;
+    parent = 0;
+    ref = 0;
+    nextNode = 0;
+    previousNode = 0;
+}
 
-//ostream &operator<<( ostream &out, Node *node )
-//{
-//    out << *node;
-//    return out;
-//}
+Node::~Node()
+{
+
+}
+
+bool Node::isElement()
+{
+    return getType() == Node::ElementNode;
+}
+
+bool Node::isText()
+{
+    return (getType() == Node::NodeText) ||
+           (getType() == Node::Comment) ||
+           (getType() == Node::CDATA);
+}
+
+bool Node::isComment()
+{
+    return getType() == Node::Comment;
+}
+
+bool Node::isCDATA()
+{
+    return getType() == Node::CDATA;
+}
 
 Element* Node::toElement()
 {
@@ -24,7 +49,7 @@ Element* Node::toElement()
 
 TextNode* Node::toTextNode()
 {
-    if (this->isText() || this->isComment() || this->isCDATA()) return reinterpret_cast<TextNode*>(this);
+    if (this->isText()) return reinterpret_cast<TextNode*>(this);
     return 0;
 }
 
@@ -37,29 +62,41 @@ CommentNode* Node::toComment()
 Node* Node::previous()
 {
     if(!parent) return 0;
-    list<Node*>::iterator it;
-    for(it = parent->children->begin(); it != parent->children->end(); ++it)
-    {
-        if(*it == this) break;
-    }
-
-    if(it == parent->children->begin()) return 0; //Si c'est le premier, y risque pas d'y en avoir avant
-
-    return *((--it));
+    return previousNode;
 
 }
 
 Node* Node::next()
 {
     if(!parent) return 0;
-    list<Node*>::iterator it;
-    for(it = parent->children->begin(); it != parent->children->end(); ++it)
-    {
-        if(*it == this) break;
-    }
+    return nextNode;
+}
 
-    if((++it) == parent->children->end()) return 0; //Si c'est le dernier, y risque pas d'y en avoir après
+/*void Node::NewGBObject()
+{
+    NoInstanciate = true;
+    relob = GBI::New<CNode>("XmlNode");
+    relob->node = this;
+    //GB.Ref(relob);
+    NoInstanciate = false;
+}*/
 
-    return *(it);
+void Node::setParent(Element *newparent)
+{
+    parent = newparent;
+}
 
+Element* Node::getParent()
+{
+    return parent;
+}
+
+Document* Node::ownerDocument()
+{
+    return ownerDoc;
+}
+
+void Node::setOwnerDocument(Document *doc)
+{
+    ownerDoc = doc;
 }

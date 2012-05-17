@@ -21,7 +21,8 @@ HEADERS += document.h \
     CReader.h \
     reader.h \
     explorer.h \
-    CExplorer.h
+    CExplorer.h \
+    utils.h
 SOURCES += document.cpp \
            element.cpp \
            main.cpp \
@@ -35,4 +36,5 @@ SOURCES += document.cpp \
     CReader.cpp \
     reader.cpp \
     explorer.cpp \
-    CExplorer.cpp
+    CExplorer.cpp \
+    utils.cpp

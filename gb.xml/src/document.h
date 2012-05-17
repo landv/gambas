@@ -6,44 +6,38 @@
 #include <fstream>
 
 class Document;
+struct CDocument;
 
 ostream &operator<<( ostream &out, Document &doc );
 ostream &operator<<( ostream &out, Document *doc );
 
-class Document : public GB_BASE
+class Document
 {
 public:
+    Document();
+    ~Document();
     void operator=(const Document& copie);
 
-    class Virtual
-    {
-    public:
-        Virtual(Document *doc) : parent(doc) {}
-        Virtual(const Document::Virtual &copie) :  parent(copie.parent) {}
-        Document::Virtual &operator=(const Document::Virtual &copie) {parent = copie.parent; return *this;}
-        virtual wstring getContent(bool indent = false);
-
-        Document *parent;
-
-    };
+    virtual void NewGBObject();
 
     Element* getRoot() { return root; }
     void setRoot(Element* newRoot) {root = newRoot;}
 
-    GBI::ObjectArray<Element>* getGBElementsByTagName(wstring tag, int depth = -1) {return root->getGBChildrenByTagName(tag, depth);}
-    vector<Element*>* getElementsByTagName(wstring tag, int depth = -1) {return root->getChildrenByTagName(tag, depth);}
+    GBI::ObjectArray<Element>* getGBElementsByTagName(fwstring tag, int depth = -1) {return root->getGBChildrenByTagName(tag, depth);}
+    vector<Element*>* getElementsByTagName(fwstring tag, int depth = -1) {return root->getChildrenByTagName(tag, depth);}
     GBI::ObjectArray<Node>* getAll();
-    Element* createElement(wstring tagName);
+    Element* createElement(fwstring tagName);
 
-    wstring getContent(bool indent = false){return virt->getContent(indent);}
-    void setContent(wstring str);
-    void save(wstring fileName);
+    virtual fwstring getContent(bool indent = false);
+    void setContent(fwstring str);
+    void save(string fileName);
 
     Element *root;
+    CDocument *relob;
 
-    Virtual *virt;
+    static bool NoInstanciate;
+    unsigned char ref;
 
-    static GB_CLASS ClassName;
 
 };
 

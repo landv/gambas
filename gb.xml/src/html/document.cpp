@@ -7,12 +7,12 @@ GB_CLASS HtmlDocument::ClassName = 0;
 Element* HtmlDocument::getTitleElement()
 {
     Element *head = getHead();
-    vector<Element*>* elmts = head->getChildrenByTagName(L"title");
+    vector<Element*>* elmts = head->getChildrenByTagName("title");
     Element *elmt;
     if(elmts->size() <= 0)
     {
-        elmt = GBI::New<Element>("XmlElement");
-        elmt->setTagName(L"title");
+        elmt = new Element;
+        elmt->setTagName("title");
         head->appendChild(elmt);
         return elmt;
     }
@@ -27,12 +27,12 @@ Element* HtmlDocument::getTitleElement()
 Element* HtmlDocument::getBaseElement()
 {
     Element *head = getHead();
-    vector<Element*>* elmts = head->getChildrenByTagName(L"base");
+    vector<Element*>* elmts = head->getChildrenByTagName("base");
     Element *elmt;
     if(elmts->size() <= 0)
     {
-        elmt = GBI::New<Element>("XmlElement");
-        elmt->setTagName(L"base");
+        elmt = new Element;
+        elmt->setTagName("base");
         head->prependChild(elmt);
     }
     else
@@ -47,12 +47,12 @@ Element* HtmlDocument::getBaseElement()
 Element* HtmlDocument::getFaviconElement()
 {
     Element *head = getHead();
-    vector<Element*>* elmts = head->getChildrenByTagName(L"link");
+    vector<Element*>* elmts = head->getChildrenByTagName("link");
     Element *elmt;
 
     for(unsigned int i = 0; i < elmts->size(); i++)
     {
-        if(elmts->at(i)->getAttribute(L"rel") == L"icon")
+        if(elmts->at(i)->getAttribute("re") == "icon")
         {
             elmt = elmts->at(i);
             delete elmts;
@@ -61,166 +61,167 @@ Element* HtmlDocument::getFaviconElement()
     }
 
     delete elmts;
-    elmt = GBI::New<Element>("XmlElement");
-    elmt->setTagName(L"link");
-        elmt->setAttribute(L"rel", L"icon");
+    elmt = new Element;
+    elmt->setTagName("link");
+        elmt->setAttribute("rel", "icon");
         head->appendChild(elmt);
         return elmt;
 
 }
 
-wstring HtmlDocument::getBase()
+fwstring HtmlDocument::getBase()
 {
-    return getBaseElement()->getAttribute(L"href");
+    return getBaseElement()->getAttribute("href");
 }
 
-void HtmlDocument::setBase(wstring base)
+void HtmlDocument::setBase(fwstring base)
 {
-    getBaseElement()->setAttribute(L"href", base);
+    getBaseElement()->setAttribute("href", base);
 }
 
-wstring HtmlDocument::getFavicon()
+fwstring HtmlDocument::getFavicon()
 {
-    return getFaviconElement()->getAttribute(L"href");
+    return getFaviconElement()->getAttribute("href");
 }
 
-void HtmlDocument::setFavicon(wstring url)
+void HtmlDocument::setFavicon(fwstring url)
 {
-    getFaviconElement()->setAttribute(L"href", url);
+    getFaviconElement()->setAttribute("href", url);
 }
 
-void HtmlDocument::AddStyleSheet(wstring src, wstring media)
+void HtmlDocument::AddStyleSheet(fwstring src, fwstring media)
 {
-    Element *elmt = GBI::New<Element>("XmlElement");
-    elmt->setTagName(L"link");
-    elmt->setAttribute(L"rel", L"stylesheet");
-    elmt->setAttribute(L"href", src);
-    elmt->setAttribute(L"type", L"text/css");
-    elmt->setAttribute(L"media", media);
+    Element *elmt = new Element;
+    elmt->setTagName("link");
+    elmt->setAttribute("rel", "stylesheet");
+    elmt->setAttribute("href", src);
+    elmt->setAttribute("type", "text/css");
+    elmt->setAttribute("media", media);
     getHead()->appendChild(elmt);
 }
 
-void HtmlDocument::AddStyleSheetIfIE(wstring src, wstring cond, wstring media)
+void HtmlDocument::AddStyleSheetIfIE(fwstring src, fwstring cond, fwstring media)
 {
-    wstring content;
-    content = L"[if "+cond+L"]>";
+    fwstring content;
+    content = "[if "+cond+"]>";
 
-    Element *elmt = GBI::New<Element>("XmlElement");
-    elmt->setTagName(L"link");
-    elmt->setAttribute(L"rel", L"stylesheet");
-    elmt->setAttribute(L"href", src);
-    elmt->setAttribute(L"type", L"text/css");
-    elmt->setAttribute(L"media", media);
+    Element *elmt = new Element;
+    elmt->setTagName("link");
+    elmt->setAttribute("rel", "stylesheet");
+    elmt->setAttribute("href", src);
+    elmt->setAttribute("type", "text/css");
+    elmt->setAttribute("media", media);
 
     content += elmt->toString();
-    content += L"<![endif]";
+    content += "<![endif]";
     GB.Unref(POINTER(&elmt));
 
-    CommentNode *comment = GBI::New<CommentNode>("XmlCommentNode");
+    CommentNode *comment = new CommentNode;
     comment->setTextContent(content);
     getHead()->appendChild(comment);
 }
 
-void HtmlDocument::AddStyleSheetIfNotIE(wstring src, wstring media)
+void HtmlDocument::AddStyleSheetIfNotIE(fwstring src, fwstring media)
 {
     Element *head = getHead();
-    CommentNode *comment = GBI::New<CommentNode>("XmlCommentNode");
-    comment->setTextContent(L"[if !IE]><");
+    CommentNode *comment =  new CommentNode;
+    comment->setTextContent("[if !IE]><");
     head->appendChild(comment);
     AddStyleSheet(src, media);
-    comment = GBI::New<CommentNode>("XmlCommentNode");
-    comment->setTextContent(L"><![endif]");
+    comment =  new CommentNode;
+    comment->setTextContent("><![endif]");
     head->appendChild(comment);
 }
 
-void HtmlDocument::AddScript(wstring src)
+void HtmlDocument::AddScript(fwstring src)
 {
-    Element *elmt = GBI::New<Element>("XmlElement");
-    elmt->setTagName(L"script");
-    elmt->setAttribute(L"src", src);
-    elmt->setAttribute(L"type", L"text/javascript");
+    Element *elmt = new Element;
+    elmt->setTagName("script");
+    elmt->setAttribute("src", src);
+    elmt->setAttribute("type", "text/javascript");
     getHead()->appendChild(elmt);
 }
 
-void HtmlDocument::AddScriptIfIE(wstring src, wstring cond)
+void HtmlDocument::AddScriptIfIE(fwstring src, fwstring cond)
 {
-    wstring content;
-    content = L"[if "+cond+L"]>";
+    fwstring content;
+    content = "[if "+cond+"]>";
 
-    Element *elmt = GBI::New<Element>("XmlElement");
-    elmt->setTagName(L"script");
-    elmt->setAttribute(L"src", src);
-    elmt->setAttribute(L"type", L"text/javascript");
+    Element *elmt = new Element;
+    elmt->setTagName("script");
+    elmt->setAttribute("src", src);
+    elmt->setAttribute("type", "text/javascript");
 
     content += elmt->toString();
-    content += L"<![endif]";
+    content += "<![endif]";
     GB.Unref(POINTER(&elmt));
 
-    CommentNode *comment = GBI::New<CommentNode>("XmlCommentNode");
+    CommentNode *comment = new CommentNode;
     comment->setTextContent(content);
     getHead()->appendChild(comment);
 }
 
-void HtmlDocument::AddScriptIfNotIE(wstring src)
+void HtmlDocument::AddScriptIfNotIE(fwstring src)
 {
     Element *head = getHead();
-    CommentNode *comment = GBI::New<CommentNode>("XmlCommentNode");
-    comment->setTextContent(L"[if !IE]><");
+    CommentNode *comment = new CommentNode;
+    comment->setTextContent("[if !IE]><");
     head->appendChild(comment);
     AddScript(src);
-    comment = GBI::New<CommentNode>("XmlCommentNode");
-    comment->setTextContent(L"><![endif]");
+    comment = new CommentNode;
+    comment->setTextContent("><![endif]");
     head->appendChild(comment);;
 }
 
-wstring HtmlDocument::getTitle()
+fwstring HtmlDocument::getTitle()
 {
     return getTitleElement()->textContent();
 }
 
-void HtmlDocument::setTitle(wstring text)
+void HtmlDocument::setTitle(fwstring text)
 {
     getTitleElement()->setTextContent(text);
 }
 
-wstring HtmlDocument::Virtual::getContent(bool indent)
+fwstring HtmlDocument::getContent(bool indent)
 {
-    wstring doctype;
-    if (parent->html5)
+    fwstring doctype;
+    if (html5)
     {
-        doctype = L"<!DOCTYPE html>\n";
+        doctype = "<!DOCTYPE html>\n";
     }
     else
     {
-        doctype = L"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
+        doctype = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
     }
 
-    return doctype + parent->root->toString(indent ? 0 : -1);
+    doctype += root->toString(indent ? 0 : -1);
+    return doctype;
 }
 
-void HtmlDocument::setContent(wstring str)
+void HtmlDocument::setContent(fwstring str)
 {
     //Doctype ?
     unsigned int i;
-    wstring s;
+    fwstring s;
     for (i = 0; i < str.length(); i++)
     {
         s = str[i];
-        if(!(s == L" " || s == L"\n" || s == L"\r" || s == L"\t")) break; //On enlève les espaces du début
+        if(!(s == " " || s == "\n" || s == "\r" || s == "\t")) break; //On enlève les espaces du début
     }
 
-    vector<Node*>* elements = 0;
-    if(str.substr(i + 1, 9) == L"!DOCTYPE " )//Il y a un doctype
+    fvector<Node*>* elements = 0;
+    if(str.substr(i + 1, 9) == "!DOCTYPE " )//Il y a un doctype
     {
         i += 10;
-        wstring doctype;
+        fwstring doctype;
         for(;i < str.length(); i++)//On prend le contenu
         {
             s = str[i];
-            if(s == L">") break;
+            if(s == ">") break;
             doctype += s;
         }
-        if(doctype == L"html")
+        if(doctype == "htm")
         {
             html5 = true;
         }
@@ -229,7 +230,7 @@ void HtmlDocument::setContent(wstring str)
             html5 = false;
         }
         i++;
-        elements = Element::fromText(str, i, i + 1, 1);
+        elements = Element::fromText(str, i);
 
     }
     else
@@ -257,17 +258,17 @@ void HtmlDocument::setContent(wstring str)
 
     delete elements;
 
-    if(!root)throw HTMLParseException(0, 0, L"somewhere", L"No valid root element found.");
+    if(!root)throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
 
 }
 
 Element* HtmlDocument::getHead()
 {
-    Element *elmt = root->getFirstChildByTagName(L"head", 2);
+    Element *elmt = root->getFirstChildByTagName("head", 2);
     if(!elmt)
     {
-        elmt = GBI::New<Element>("XmlElement");
-        elmt->setTagName(L"head");
+        elmt = new Element;
+        elmt->setTagName("head");
         root->appendChild(elmt);
     }
         return elmt;
@@ -275,11 +276,11 @@ Element* HtmlDocument::getHead()
 
 Element* HtmlDocument::getBody()
 {
-    Element *elmt = root->getFirstChildByTagName(L"body", 2);
+    Element *elmt = root->getFirstChildByTagName("body", 2);
     if(!elmt)
     {
-        elmt = GBI::New<Element>("XmlElement");
-        elmt->setTagName(L"body");
+        elmt = new Element;
+        elmt->setTagName("body");
         root->appendChild(elmt);
     }
         return elmt;

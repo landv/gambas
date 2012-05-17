@@ -1,6 +1,6 @@
 #include "explorer.h"
 
-#define DEBUG std::cout << pos << " : " <<
+//#define DEBUG std::cout << pos << " : " <<
 
 
 void Explorer::Init()
@@ -17,9 +17,9 @@ void Explorer::Init()
 
 void Explorer::Load(Document *doc)
 {
-    UNREF(loadedDocument);
+    //UNREF(loadedDocument);
     loadedDocument = doc;
-    GB.Ref(doc);
+    //GB.Ref(doc);
 
 }
 
@@ -41,9 +41,9 @@ int Explorer::MoveNext()
         return NODE_ELEMENT;
     }
     //Premier enfant
-    else if(curNode->isElement() && curNode->toElement()->children->size() > 0 && !endElement)
+    else if(curNode->isElement() && curNode->toElement()->childCount > 0 && !endElement)
     {
-        curNode = *(curNode->toElement()->children->begin());
+        curNode = (curNode->toElement()->firstChild);
         return curNode->getType();
     }
     //Si plus d'enfants, frère suivant

@@ -3,18 +3,19 @@
 
 #include "../gambas.h"
 #include "../gb_common.h"
-#include <string>
+#include "utils.h"
 #include <iostream>
+#include <sstream>
 #include <vector>
-
-#define CHAR_ERROR 0xFFFD // �
-
 
 extern "C" GB_INTERFACE GB;
 
+class fwstring;
+class Node;
+class Document;
+
 namespace GBI
 {
-
     template<typename T>
     class ObjectArray
     {
@@ -24,6 +25,7 @@ namespace GBI
             GB.Array.New(&array, GB.FindClass(className), siz);
         }
         ObjectArray(const char *className, std::vector<T*> &vect);
+        ObjectArray(const char *className, fvector<T*> &vect);
         ~ObjectArray();
 
         T* at(unsigned int i) const;
@@ -39,6 +41,8 @@ namespace GBI
 
     };
 
+    void Return(fwstring str);
+
     template<typename T>
     ObjectArray<T>::ObjectArray(const char *className, std::vector<T*> &vect) : array(0)
     {
@@ -50,19 +54,29 @@ namespace GBI
     }
 
     template<typename T>
-    T* New(const std::string className, char* eventName = "", void* parent = 0)
+    ObjectArray<T>::ObjectArray(const char *className, fvector<T*> &vect) : array(0)
     {
-        return reinterpret_cast<T*>(GB.New(GB.FindClass(className.c_str()), eventName, parent));
+        GB.Array.New(&array, GB.FindClass(className), 0);
+        for(unsigned int i = 0; i < vect.size(); i++)
+        {
+            push_back(vect.at(i));
+        }
+    }
+
+    template<typename T>
+    T* New(const char* className, char* eventName = 0, void* parent = 0)
+    {
+        return reinterpret_cast<T*>(GB.New(GB.FindClass(className), eventName, parent));
     }
 
     void InitClasses();
 
-    template<typename T>
+    /*template<typename T>
     T* New()
     {
         if(!T::ClassName) InitClasses();
-        return reinterpret_cast<T*>(GB.New(T::ClassName, "", 0));
-    }
+        return reinterpret_cast<T*>(GB.New(T::ClassName, 0, 0));
+    }*/
 
 
     template<typename T>
@@ -107,38 +121,11 @@ namespace GBI
 //        GB.Unref(POINTER((void*)(&(this->array))));
     }
 
+    void Return(Node *ob);
+    void Return(Document *ob);
+
+
 }
 
-class fwstring
-{
-public:
-    fwstring();
-    fwstring(char *src, size_t &length);
-    fwstring(char *src, int &length);
-    fwstring(const fwstring &other);
-    ~fwstring();
-
-
-    wchar_t increment();
-    wchar_t increment(size_t count);
-    void resetCounter();
-
-    wchar_t at(size_t i);
-    wchar_t operator[](size_t i);
-
-    std::string toString() const;
-
-    fwstring& operator+(const fwstring &other);
-
-    bool incrementCompare(const wchar_t* text, size_t len);
-    inline bool neof(){return cur < len;}
-
-
-    char *data;
-    size_t len;
-    size_t cur;
-    size_t wcur;
-
-};
 
 #endif // GBI_H

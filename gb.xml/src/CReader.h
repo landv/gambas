@@ -1,8 +1,16 @@
 #ifndef CXMLREADER_H
 #define CXMLREADER_H
 
-#include "main.h"
-#include "reader.h"
+#include "../gambas.h"
+#include "../gb_common.h"
+
+class Reader;
+
+typedef struct CReader
+{
+    GB_BASE ob;
+    Reader *reader;
+} CReader;
 
 
 #ifndef CLASSES_CPP

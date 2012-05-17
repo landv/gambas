@@ -1,7 +1,15 @@
 #ifndef HCDOCUMENT_H
 #define HCDOCUMENT_H
 
-#include "document.h"
+#include "../CDocument.h"
+
+class HtmlDocument;
+
+typedef struct CHtmlDocument
+{
+    CDocument d;
+    HtmlDocument *doc;
+} CHtmlDocument;
 
 #ifndef CLASSES_CPP
 extern GB_DESC CDocumentDesc[];

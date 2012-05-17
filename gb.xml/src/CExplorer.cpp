@@ -1,8 +1,9 @@
 #define CEXPLORER_CPP
 #include "CExplorer.h"
+#include "explorer.h"
 
 #undef THIS
-#define THIS (static_cast<Explorer*>(_object))
+#define THIS (static_cast<CExplorer*>(_object)->explorer)
 
 BEGIN_METHOD(CExplorerReadFlags_get, GB_INTEGER flag)
 
@@ -22,7 +23,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CExplorer_Node)
 
-GB.ReturnObject(THIS->curNode);
+GBI::Return(THIS->curNode);
 
 END_PROPERTY
 
@@ -50,7 +51,7 @@ END_METHOD
 
 BEGIN_METHOD(CExplorer_open, GB_STRING path)
 
-Document *doc = GBI::New<Document>();
+Document *doc = new Document;
 char *content; int len;
 
 if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len))
@@ -60,7 +61,7 @@ if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len))
 }
 try
 {
-    doc->setContent(StringToWString(std::string(content,len)));
+    doc->setContent((fwstring(content,len)));
     GB.ReleaseFile(content, len);
 }
 catch(HTMLParseException &e)
@@ -95,7 +96,7 @@ GB_DESC CExplorerReadFlagsDesc[] =
 
 GB_DESC CExplorerDesc[] =
 {
-    GB_DECLARE("XmlExplorer", sizeof(Explorer)),
+    GB_DECLARE("XmlExplorer", sizeof(CExplorer)),
 
     GB_METHOD("_new", "", CExplorer_new, "[(Document)XmlDocument]"),
     GB_METHOD("_free", "", CExplorer_free, ""),

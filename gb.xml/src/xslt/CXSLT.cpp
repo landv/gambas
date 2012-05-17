@@ -33,7 +33,7 @@
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 
-
+#include "../CDocument.h"
 #include "../document.h"
 #include "../document.cpp"
 #include "../element.h"
@@ -42,29 +42,32 @@
 #include "../node.cpp"
 #include "../textnode.h"
 #include "../textnode.cpp"
+#include "../gbi.cpp"
+#include "../utils.cpp"
 
 BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
 
-    Document *doc = VARGOBJ(Document,inputDoc),
-             *stylesheet = VARGOBJ(Document,inputStyleSheet);
+if (GB.CheckObject(VARGOBJ(CDocument,inputDoc))) return;
+if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
+    Document *doc = VARGOBJ(CDocument,inputDoc)->doc,
+             *stylesheet = VARGOBJ(CDocument,inputStyleSheet)->doc;
 	
-    if (GB.CheckObject(doc)) return;
-    if (GB.CheckObject(stylesheet)) return;
+
 	
-    if (!doc->root->children->size())
+    if (!doc->root->childCount)
 	{
 		GB.Error("Void document");
 		return;
 	}
 	
-    if (!stylesheet->root->children->size())
+    if (!stylesheet->root->childCount)
 	{
 		GB.Error("Void Style Sheet");
 		return;
 	}
 
     xsltStylesheetPtr sheet = 0;
-    xmlDoc *xmlStyleSheet = xmlParseDoc((xmlChar*)(WStringToString(stylesheet->getContent()).c_str()));
+    xmlDoc *xmlStyleSheet = xmlParseDoc((xmlChar*)((stylesheet->getContent()).c_str()));
 	
 
     if(!(sheet=xsltParseStylesheetDoc(xmlStyleSheet)))
@@ -73,7 +76,7 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
 		return;
 	}
 
-    xmlDoc *xmlInputDoc = xmlParseDoc((xmlChar*)(WStringToString(doc->getContent()).c_str()));
+    xmlDoc *xmlInputDoc = xmlParseDoc((xmlChar*)((doc->getContent()).c_str()));
 
 	
     xmlDoc *xmlOutDoc;
@@ -87,17 +90,18 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
     }
     xmlDocDumpFormatMemoryEnc(xmlOutDoc ,&buffer, &size, "UTF-8", 1);
 
-    Document *outDoc = GBI::New<Document>("XmlDocument");
-    try{
-    outDoc->setContent(StringToWString(string((char*)(buffer),size)));
+    Document *outDoc = new Document;
+
+    try
+    {
+        outDoc->setContent(fwstring((char*)(buffer),size));
     }
     catch(HTMLParseException &e)
     {
-        outDoc->setContent(L"<?xml version=\"1.0\"?><xml></xml>");
+        outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>");
         std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
     }
-	
-    GB.ReturnObject(outDoc);
+    GBI::Return(outDoc);
 		
 END_METHOD
 

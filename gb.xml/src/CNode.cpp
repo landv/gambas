@@ -1,13 +1,20 @@
-#include "node.h"
+#include "element.h"
+#include "CNode.h"
 
 /*========== Node */
 
 #undef THIS
-#define THIS (static_cast<Node*>(_object))
+#define THIS (static_cast<CNode*>(_object)->node)
+
+BEGIN_METHOD_VOID(CNode_new)
+if(Node::NoInstanciate) return;
+THIS = 0;
+
+END_METHOD
 
 BEGIN_METHOD(CNode_toString, GB_BOOLEAN indent)
 
-    GB.ReturnNewZeroString(WStringToString(THIS->toString((!MISSING(indent) && VARG(indent)) ? 0 : -1)).c_str());
+    GBI::Return(THIS->toString((!MISSING(indent) && VARG(indent)) ? 0 : -1));
 
 END_METHOD
 
@@ -15,7 +22,7 @@ BEGIN_PROPERTY(CNode_textContent)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewZeroString(WStringToString(THIS->textContent()).c_str());
+    GBI::Return((THIS->textContent()));
 }
 else
 {
@@ -76,33 +83,33 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CNode_element)
 
-GB.ReturnObject(THIS->toElement());
+GBI::Return(THIS->toElement());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_ownerDoc)
 
-GB.ReturnObject(THIS->ownerDocument());
+GBI::Return(THIS->ownerDocument());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_parent)
 
-GB.ReturnObject(THIS->getParent());
+GBI::Return(THIS->getParent());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_previous)
 
 if(!READ_PROPERTY) return;
-GB.ReturnObject(THIS->previous());
+GBI::Return(THIS->previous());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_next)
 
 if(!READ_PROPERTY) return;
-GB.ReturnObject(THIS->next());
+GBI::Return(THIS->next());
 
 END_PROPERTY
 
@@ -120,7 +127,7 @@ if(!READ_PROPERTY)
 switch (THIS->getType())
 {
     case Node::ElementNode:
-        GB.ReturnNewZeroString(WStringToString(*(THIS->toElement()->tagName)).c_str());break;
+        GBI::Return((*(THIS->toElement()->tagName)));break;
     case Node::NodeText:
         GB.ReturnNewZeroString("#text");break;
     case Node::Comment:
@@ -128,7 +135,7 @@ switch (THIS->getType())
     case Node::CDATA:
         GB.ReturnNewZeroString("#cdata");break;
     case Node::Attribute:
-        GB.ReturnNewZeroString(WStringToString(*(reinterpret_cast<AttrNode*>(THIS)->attrName)).c_str()); break;
+        GBI::Return((*(reinterpret_cast<AttrNode*>(THIS)->attrName)).c_str()); break;
     case Node::BaseNode:
     default:
         GB.ReturnNull();
@@ -139,7 +146,7 @@ END_PROPERTY
 BEGIN_METHOD(CNode_newElement, GB_STRING name; GB_STRING value)
 
 if(!THIS->isElement()) return;
-Element *elmt = GBI::New<Element>();
+Element *elmt = new Element;
 elmt->setTagName(STRING(name));
 if(!MISSING(value)) elmt->setTextContent(STRING(value));
 THIS->toElement()->appendChild(elmt);
@@ -156,7 +163,7 @@ END_METHOD
 
 BEGIN_METHOD(CElementAttributes_get, GB_STRING name)
 
-GB.ReturnNewZeroString(WStringToString(THIS->toElement()->getAttribute(STRING(name))).c_str());
+GBI::Return((THIS->toElement()->getAttribute(STRING(name))));
 
 END_METHOD
 
@@ -170,28 +177,28 @@ BEGIN_PROPERTY(CElementAttributes_count)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnInteger(THIS->toElement()->attributes->size());
+    GB.ReturnInteger(THIS->toElement()->attributes->len);
 }
 
 END_PROPERTY
 
 BEGIN_METHOD_VOID(CElementAttributes_next)
 
-map<wstring,wstring>::iterator *it = *reinterpret_cast<map<wstring,wstring>::iterator**>((GB.GetEnum()));
+flist<AttrListElement*>::element *it = *reinterpret_cast<flist<AttrListElement*>::element**>((GB.GetEnum()));
 if(it == 0)
 {
-    it = new map<wstring,wstring>::iterator(THIS->toElement()->attributes->begin());
-    *reinterpret_cast<map<wstring,wstring>::iterator**>(GB.GetEnum()) = it;
+    it = THIS->toElement()->attributes->firstElement;
+    *reinterpret_cast<flist<AttrListElement*>::element**>(GB.GetEnum()) = it;
 }
 else
 {
-    ++(*it);
+    *reinterpret_cast<flist<AttrListElement*>::element**>(GB.GetEnum()) = it->next;
 }
 
-if(*it == THIS->toElement()->attributes->end()) {GB.StopEnum(); delete it; THIS->toElement()->attributeNode->attrName = 0; return;}
+if(it == 0) {GB.StopEnum(); THIS->toElement()->attributeNode->attrName = 0; return;}
 
-THIS->toElement()->attributeNode->setAttrName(((*(*it)).first));
-GB.ReturnObject(THIS->toElement()->attributeNode);
+THIS->toElement()->attributeNode->setAttrName(*(it->value->attrName));
+GBI::Return(THIS->toElement()->attributeNode);
 
 
 END_METHOD
@@ -228,7 +235,9 @@ GB_DESC CElementAttributeNodeDesc[] =
 
 GB_DESC CNodeDesc[] =
 {
-    GB_DECLARE("XmlNode", sizeof(Node)), GB_NOT_CREATABLE(),
+    GB_DECLARE("XmlNode", sizeof(CNode)), GB_NOT_CREATABLE(),
+
+    GB_METHOD("_new", "", CNode_new, ""),
 
     GB_CONSTANT("ElementNode", "i", NODE_ELEMENT),
     GB_CONSTANT("TextNode", "i", NODE_TEXT),
