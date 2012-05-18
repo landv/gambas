@@ -6,10 +6,7 @@ GB_INIT(gb.db.sqlite3)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_SEARCH(
-  sqlite3,
-  SQLITE3,
-  [SQLite 3 driver],
-  [src],
+  sqlite3, SQLITE3, gb.db.sqlite3, [src],
   sqlite3 ">= 3.0",
   [GB_FIND(sqlite3.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include sqlite*/include)],
   [GB_FIND(libsqlite3.$SHLIBEXT, /usr/local /opt /usr, lib sqlite*/lib)],

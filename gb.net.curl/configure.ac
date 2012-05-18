@@ -6,10 +6,7 @@ GB_INIT(gb.net.curl)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
-  curl,
-  CURL,
-  [Advanced networking component],
-  [src],
+  curl, CURL, gb.net.curl, [src],
   libcurl ">= 7.13"
   )
 

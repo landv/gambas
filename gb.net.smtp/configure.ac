@@ -8,10 +8,7 @@ GB_INIT(gb.net.smtp)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
-  smtp,
-  SMTP,
-  [SMTP client],
-  [src],
+  smtp, SMTP, gb.net.smtp, [src],
   glib-2.0)
 
 AC_OUTPUT( Makefile src/Makefile )

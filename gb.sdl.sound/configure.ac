@@ -10,10 +10,7 @@ GB_PATH_SDL(1.2.8, [] , [touch DISABLED])
 
 dnl check for SDL libs
 GB_COMPONENT(
-  sdlsound,
-  SDLSOUND,
-  [SDL sound],
-  [src],
+  sdlsound, SDLSOUND, gb.sdl.sound, [src],
   [GB_FIND(SDL_mixer.h SDL_cdrom.h, `sdl-config --prefix`, include/SDL)],
   [GB_FIND(libSDL_mixer.$SHLIBEXT, /usr /usr/local `sdl-config --prefix`, lib)],
   [-lSDL_mixer],

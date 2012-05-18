@@ -8,10 +8,7 @@ AC_PROG_LIBTOOL
 dnl ---- zlib compression driver
 
 GB_COMPONENT(
-  zlib,
-  ZLIB,
-  [zlib compression],
-  [src],
+  zlib, ZLIB, gb.compress.zlib, [src],
   [GB_FIND(zlib.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include)],
   [GB_FIND(libz.$SHLIBEXT, /usr/local /opt /usr, lib)],
   [$C_LIB -lz])

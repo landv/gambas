@@ -6,17 +6,15 @@ GB_INIT(gb.opengl)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
-  opengl,
-  OPENGL,
-  [OpenGL support component],
-  [src],
+  opengl, OPENGL, gb.opengl, [src],
   [gl glew])
 
 GB_COMPONENT_PKG_CONFIG(
-  glu,
-  GLU,
-  [OpenGL Utility support component],
-  [glu],
+  glsl, GLSL, gb.opengl.glsl, [glsl],
+  [gl glew])
+
+GB_COMPONENT_PKG_CONFIG(
+  glu, GLU, gb.opengl.glu, [glu],
   [glu])
 
 AC_OUTPUT( \

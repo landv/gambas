@@ -6,10 +6,7 @@ GB_INIT(gb.db.mysql)
 LT_INIT
 
 GB_COMPONENT(
-  mysql,
-  MYSQL,
-  [MySQL driver],
-  [src],
+  mysql, MYSQL, gb.db.mysql, [src],
   [GB_FIND(mysql.h my_config.h, /opt/local /opt /usr/local/lib /usr/local /usr/lib /usr, include mysql*/include)],
   [GB_FIND(libmysqlclient.$SHLIBEXT, /opt/local /opt /usr/local /usr, lib mysql*/lib)],
   [$C_LIB -lmysqlclient -lz])

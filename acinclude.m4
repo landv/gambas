@@ -185,7 +185,7 @@ AC_DEFUN([GB_INIT],
   dnl AC_TYPE_SIZE_T
   dnl AC_HEADER_TIME
   dnl AC_STRUCT_TM
-  AC_C_LONG_DOUBLE
+  dnl AC_C_LONG_DOUBLE
 
   dnl ---- Checks for library functions.
 
@@ -343,7 +343,7 @@ AC_DEFUN([GB_INIT],
   AC_SUBST(AM_CXXFLAGS)
   AC_SUBST(AM_CXXFLAGS_OPT)
   
-  rm -f DISABLED
+  rm -f DISABLED DISABLED.*
 ])
 
 
@@ -698,7 +698,7 @@ cd $gb_save
 ##
 ##   $1 = Component key in lower case (ex: pgsql)
 ##   $2 = Component key in upper case (ex: PGSQL)
-##   $3 = Component name (ex: PostgreSQL)
+##   $3 = Component name (ex: gb.db.postgresql)
 ##   $4 = Sub-directory name
 ##   $5 = pkg-config module(s) name(s) with optional required version(s)
 ##   $6 = Warning message (optional)
@@ -716,17 +716,17 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     gb_enable_$1=yes
   )
 
-  AC_ARG_WITH($1-includes,
-    [  --with-$1-includes      where the $3 headers are located. ],
-    [  gb_inc_$1="$withval" ])
+  dnl AC_ARG_WITH($1-includes,
+  dnl   [  --with-$1-includes      where the $3 headers are located. ],
+  dnl   [  gb_inc_$1="$withval" ])
 
-  AC_ARG_WITH($1-libraries,
-    [  --with-$1-libraries     where the $3 libraries are located. ],
-    [  gb_lib_$1="$withval" ])
+  dnl AC_ARG_WITH($1-libraries,
+  dnl   [  --with-$1-libraries     where the $3 libraries are located. ],
+  dnl   [  gb_lib_$1="$withval" ])
 
   have_$1=no
 
-  if test "$gb_enable_$1"="yes" && test ! -e DISABLED; then
+  if test "$gb_enable_$1"="yes" && test ! -e DISABLED.$3; then
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
   
@@ -759,24 +759,22 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
   if test "$have_$1" = "no"; then
   
-    if test "$4" = "src" && test "$gb_in_component_search" != "yes"; then
+    if test "$gb_in_component_search" != "yes"; then
       touch DISABLED
+      touch DISABLED.$3
     fi
+
     AC_MSG_RESULT(no)
     
   else
     
-dnl    if test "$4" = "src"; then
-dnl      rm -f DISABLED
-dnl    fi
-    
-    AC_DEFINE(HAVE_$2_COMPONENT, 1, Have $3)
+    AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
     
     AC_MSG_RESULT(OK)
     
   fi
   
-  if test "$have_$1" = "no" || test -e DISABLED; then
+  if test "$have_$1" = "no" || test -e DISABLED.$3; then
   
     $2_INC=""
     $2_LIB=""
@@ -805,7 +803,7 @@ dnl    fi
 ##
 ##   $1 = Component key in lower case (ex: postgresql)
 ##   $2 = Component key in upper case (ex: POSTGRESQL)
-##   $3 = Component name (ex: PostgreSQL)
+##   $3 = Component name (ex: gb.db.postgresql)
 ##   $4 = Sub-directory name
 ##   $5 = How to get include path (must return it in gb_val)
 ##   $6 = How to get library path (must return it in gb_val)
@@ -829,7 +827,7 @@ AC_DEFUN([GB_COMPONENT],
   gb_inc_$1=no
   gb_lib_$1=no
 
-  if test "$gb_enable_$1" = "yes" && test ! -e DISABLED; then
+  if test "$gb_enable_$1" = "yes" && test ! -e DISABLED.$3; then
 
     ## Checking for headers
 
@@ -938,13 +936,12 @@ AC_DEFUN([GB_COMPONENT],
   else
   
     have_$1=no
-    if test "$4" = "src"; then
-      touch DISABLED
-    fi
+    touch DISABLED
+    touch DISABLED.$3
     
   fi
   
-  if test "$have_$1" = "no" || test -e DISABLED; then
+  if test "$have_$1" = "no" || test -e DISABLED.$3; then
   
     $2_INC=""
     $2_LIB=""

@@ -6,10 +6,7 @@ GB_INIT(gb.pdf)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
-  poppler,
-  POPPLER,
-  [Poppler PDF library],
-  [src],
+  poppler, POPPLER, gb.pdf, [src],
   poppler ">= 0.5"
 )
 

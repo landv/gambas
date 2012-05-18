@@ -6,10 +6,7 @@ GB_INIT(gb.libxml)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
-  xml,
-  XML,
-  [XML parser component],
-  [src],
+  xml, XML, gb.libxml, [src],
   libxml-2.0)
 
 AC_OUTPUT( \

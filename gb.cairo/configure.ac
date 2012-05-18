@@ -6,19 +6,8 @@ GB_INIT(gb.cairo)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
-  cairo,
-  CAIRO,
-  [Cairo component],
-  [src],
-  cairo ">= 1.6.0"
-)
-
-GB_COMPONENT_PKG_CONFIG(
-  cairo_ft,
-  CAIRO_FT,
-  [FreeType backend for Cairo],
-  [src],
-  cairo-ft ">= 1.6.0"
+  cairo, CAIRO, gb.cairo, [src],
+  cairo ">= 1.6.0" cairo-ft ">= 1.6.0"
 )
 
 AC_OUTPUT( Makefile src/Makefile )

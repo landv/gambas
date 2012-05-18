@@ -6,10 +6,7 @@ GB_INIT(gb.crypt)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT(
-  crypt,
-  CRYPT,
-  [DES/MD5 crypt component],
-  [src],
+  crypt, CRYPT, gb.crypt, [src],
   [GB_FIND(crypt.h, /usr/lib /usr, include)],
   [GB_FIND(libcrypt.$SHLIBEXT, /usr/local /usr, lib)],
   [-lcrypt])

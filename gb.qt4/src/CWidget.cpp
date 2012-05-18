@@ -66,6 +66,7 @@
 #include <QProgressBar>
 #include <QAbstractEventDispatcher>
 #include <QListWidget>
+#include <QComboBox>
  
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
@@ -1403,6 +1404,18 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			
 			w->setPalette(palette);
 			get_viewport(WIDGET)->setPalette(vpalette);
+		}
+		else if (qobject_cast<QComboBox *>(w))
+		{
+			palette = QPalette();
+		
+			if (bg != COLOR_DEFAULT)
+				palette.setColor(QPalette::Base, QColor((QRgb)bg));
+			
+			if (fg != COLOR_DEFAULT)
+				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
+		
+			w->setPalette(palette);
 		}
 		else
 		{

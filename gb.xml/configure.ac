@@ -7,29 +7,23 @@ AC_PROG_LIBTOOL
 GB_CXXFLAGS_GCC_OPTION(-std=c++0x)
 
 GB_COMPONENT(
-  xml,
-  XML,
-  [XML document manipulation],
-  [src],
+  xml, XML, gb.xml, [src],
   [],
   [],
-  [])
+  []
+)
 
 GB_COMPONENT(
-  xmlhtml,
-  XMLHTML,
-  [HTML document manipulation],
-  [html],
+  xmlhtml, XMLHTML, gb.xml.html, [html],
   [],
   [],
-  [])
+  []
+)
   
 GB_COMPONENT_PKG_CONFIG(
-  xmlxslt,
-  XMLXSLT,
-  [XSLT/XML parser component],
-  [xslt],
-  [libxml-2.0, libxslt])
+  xmlxslt, XMLXSLT, gb.xml.xslt, [xslt],
+  libxml-2.0 libxslt
+)
 
 AC_OUTPUT( \
 Makefile \

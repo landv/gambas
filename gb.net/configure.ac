@@ -6,10 +6,7 @@ GB_INIT(gb.net)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT(
-  net,
-  NET,
-  [Networking component],
-  [src],
+  net, NET, gb.net, [src],
   [],
   [],
   [$C_LIB $THREAD_LIB],

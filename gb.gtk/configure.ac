@@ -8,18 +8,12 @@ AC_PROG_LIBTOOL
 GB_CHECK_XWINDOW
 
 GB_COMPONENT_PKG_CONFIG(
-  gtk,
-  GTK,
-  [GTK+ toolkit],
-  [src],
+  gtk, GTK, gb.gtk, [src],
   gtk+-2.0 ">= 2.16" librsvg-2.0 ">= 2.14.3" cairo ">= 1.6.0" cairo-ft ">= 1.6.0" gtk+-unix-print-2.0 ">= 2.10"
 )
 
 GB_COMPONENT_PKG_CONFIG(
-  gtkopengl,
-  GTKOPENGL,
-  [GTKglext toolkit],
-  [opengl],
+  gtkopengl, GTKOPENGL, gb.gtk.opengl, [opengl],
   gtkglext-1.0
 )
   

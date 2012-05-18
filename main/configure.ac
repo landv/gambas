@@ -11,10 +11,7 @@ AM_PROG_CC_C_O
 dnl ---- Check for internationalization library
 
 GB_COMPONENT(
-  intl,
-  INTL,
-  [external internationalization library],
-  [],
+  intl, INTL, libintl, [],
   [GB_FIND(libintl.h, /opt/local /usr/local /usr, include)],
   [GB_FIND(libintl.$SHLIBEXT, /opt/local /usr/local /usr /, lib)],
   [-lintl],
@@ -24,10 +21,7 @@ GB_COMPONENT(
 dnl ---- Check for charset conversion library
 
 GB_COMPONENT(
-  conv,
-  CONV,
-  [optional external charset conversion library],
-  [],
+  conv, CONV, libiconv, [],
   [GB_FIND(iconv.h, /opt/local /usr/local /usr, include)],
   [GB_FIND(libiconv.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-liconv],
@@ -39,10 +33,7 @@ dnl ---- Check for gettext library
 if test "x$GETTEXT_LIB" != x; then
 
 GB_COMPONENT(
-  gettext,
-  GETTEXT,
-  [external gettext library],
-  [],
+  gettext, GETTEXT, libgettextlib, [],
   [],
   [GB_FIND(libgettextlib.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-lgettextlib],
@@ -54,10 +45,7 @@ fi
 dnl ---- Check for ffi library
 
 GB_COMPONENT_SEARCH(
-  ffi,
-  FFI,
-  [foreign function interface],
-  [],
+  ffi, FFI, libffi, [],
   libffi,
   [GB_FIND(ffi.h, /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
   [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr /usr/lib/gcc/*/*, lib .)],
@@ -65,10 +53,7 @@ GB_COMPONENT_SEARCH(
 
 if test -z "$FFI_LIB"; then
   GB_COMPONENT(
-    ffi,
-    FFI,
-    [foreign function interface],
-    [],
+    ffi, FFI, libffi, [],
     [GB_FIND(ffi.h, /opt/local /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
     [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
     [-lffi])
@@ -76,7 +61,7 @@ fi
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED
+rm -f DISABLED DISABLED.*
 
 dnl ---- We do not use libtool to load shared libraries anymore!
 

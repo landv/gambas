@@ -20,34 +20,22 @@ GB_CHECK_XWINDOW
 AM_CONDITIONAL(XWINDOW, test x"$have_x" = xyes)
 
 GB_COMPONENT_PKG_CONFIG(
-  qt,
-  QT,
-  [QT4 toolkit],
-  [src],
+  qt, QT, gb.qt4, [src],
   QtCore ">= 4.5.0" QtGui Qt3Support QtSvg
 )
 
 GB_COMPONENT_PKG_CONFIG(
-  qtext,
-  QTEXT,
-  [QT4 toolkit extension],
-  [ext],
+  qtext, QTEXT, gb.qt4.ext, [ext],
   QtCore ">= 4.5.0" QtGui Qt3Support
 )
 
 GB_COMPONENT_PKG_CONFIG(
-  qtwebkit,
-  QTWEBKIT,
-  [QT4 webkit component],
-  [webkit],
+  qtwebkit, QTWEBKIT, gb.qt4.webkit, [webkit],
   QtCore ">= 4.5.0" QtGui QtNetwork QtDBus QtXml QtWebKit ">= 4.5.0"
 )
 
 GB_COMPONENT_PKG_CONFIG(
-  qtopengl,
-  QTOPENGL,
-  [QT4 OpenGL],
-  [opengl],
+  qtopengl, QTOPENGL, gb.qt4.opengl, [opengl],
   QtCore ">= 4.5.0" QtGui QtOpenGL
 )
 
