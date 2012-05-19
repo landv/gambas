@@ -122,6 +122,16 @@ BEGIN_PROPERTY(Desktop_Resolution)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Desktop_HasSystemTray)
+
+	#ifdef NO_X_WINDOW
+		GB.Return(FALSE);
+	#else
+		GB.ReturnBoolean(X11_get_system_tray() != None);
+	#endif
+
+END_PROPERTY
+
 static void set_font(QFont &font, void *object = 0)
 {
 	qApp->setFont(font);
@@ -170,13 +180,6 @@ BEGIN_PROPERTY(Application_Busy)
 
 		screen_busy = busy;
 	}
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(Desktop_Charset)
-
-	GB.ReturnConstZeroString("UTF-8");
 
 END_PROPERTY
 
@@ -363,10 +366,12 @@ GB_DESC DesktopDesc[] =
 	GB_STATIC_PROPERTY_READ("Width", "i", Desktop_Width),
 	GB_STATIC_PROPERTY_READ("Height", "i", Desktop_Height),
 
-	GB_STATIC_PROPERTY_READ("Charset", "s", Desktop_Charset),
+	GB_CONSTANT("Charset", "s", "UTF-8"),
 	GB_STATIC_PROPERTY_READ("Resolution", "i", Desktop_Resolution),
 	GB_STATIC_PROPERTY_READ("Scale", "i", Desktop_Scale),
 
+	GB_STATIC_PROPERTY("HasSystemTray", "s", Desktop_HasSystemTray),
+	
 	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_END_DECLARE

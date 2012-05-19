@@ -13,6 +13,10 @@ Private $hCurrent As CProfile
 
 Private $bPercent As Boolean
 
+Private $aHistory As New String[]
+Private $iHistory As Integer
+Private $iNoHistory As Integer
+
 Static Public Sub Open(sPath As String)
   
   Dim hProf As FProfile
@@ -91,11 +95,13 @@ Public Sub Init(sPath As String)
   
   Me.Title = Subst(("Profile &1"), File.Name(sPath)) & " - " & Str(Stat(sPath).LastModified) & " - " & Subst(("Total time &1 μs"), Format($iTime, "#,##0"))
 
-  gvwProfile_Sort
+  gvwProfile.Rows.Count = $aFunc.Count
   
-  With gvwProfile
-    .Rows.Count = $aFunc.Count
-  End With
+  Object.Lock(gvwProfile)
+  gvwProfile.Columns.Sort = 2
+  gvwProfile.Columns.Ascending = True
+  Object.Unlock(gvwProfile)
+  gvwProfile_Sort
   
   Me.Show
   
@@ -152,7 +158,7 @@ Public Sub gvwProfile_Sort()
 
 End
 
-Private Sub GotoFunction(sFunc As String)
+Private Sub GotoFunction(sFunc As String, Optional bNoHistory As Boolean)
   
   Dim hEditor As FEditor
   Dim aWhere As String[]
@@ -221,13 +227,28 @@ Public Sub Form_Open()
     '.Columns[3].Alignment = Align.Right
   End With
   
+  gvwProfile.Row = 0
+  
 End
+
+Private Sub AddHistory(sFunc As String)
+  
+  If $iNoHistory Then Return
+  
+  $aHistory.Resize($iHistory)
+  If $aHistory.Count >= 32 Then $aHistory.Remove(0)
+  $aHistory.Add(sFunc)
+  Inc $iHistory
+  
+End
+
 
 Public Sub gvwProfile_Select()
 
   If gvwProfile.Row < 0 Then Return
   
   $hCurrent = $aFunc[gvwProfile.Row]
+  AddHistory($hCurrent.Name)
   RefreshCalled
   gvwCalled.Columns[0].Width = -1
 
@@ -243,12 +264,17 @@ Private Sub RefreshCalled()
     gvwCalled.Columns.Ascending = True
     Object.Unlock(gvwCalled)
     gvwCalled_Sort
-    gvwCalled.Header = gvwCalled.Horizontal
+    'gvwCalled.Header = gvwCalled.Horizontal
+    lblCurrent.Text = $hCurrent.Name
+    Try gvwCalled.Row = 0
+    panCurrent.Show
     
   Else
     
-    gvwCalled.Rows.Count = 0
-    gvwCalled.Header = gvwCalled.None
+    panCurrent.Hide
+    'gvwCalled.Rows.Count = 0
+    'gvwCalled.Header = gvwCalled.None
+    lblCurrent.Text = ""
     
   Endif
   
@@ -311,5 +337,27 @@ Public Sub btnPercent_Click()
   $bPercent = Not $bPercent
   gvwProfile.Refresh
   gvwCalled.Refresh
+
+End
+
+Public Sub btnPrev_Click()
+
+  If $iHistory >= 2 Then
+    Dec $iHistory
+    Inc $iNoHistory
+    gvwProfile.Row = $aFunc.Find($cFunc[$aHistory[$iHistory - 1]])
+    Dec $iNoHistory
+  Endif
+
+End
+
+Public Sub btnNext_Click()
+
+  If $iHistory <= $aHistory.Max Then
+    Inc $iHistory
+    Inc $iNoHistory
+    gvwProfile.Row = $aFunc.Find($cFunc[$aHistory[$iHistory - 1]])
+    Dec $iNoHistory
+  Endif
 
 End

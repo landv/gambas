@@ -54,7 +54,9 @@ Atom X11_atom_net_wm_window_type_utility;
 Atom X11_atom_net_wm_desktop;
 Atom X11_atom_net_current_desktop;
 Atom X11_atom_net_workarea = None;
+
 Atom X11_atom_motif_wm_hints = None;
+Atom X11_atom_net_system_tray = None;
 
 Atom X11_atom_net_supported;
 Atom *_supported = NULL;
@@ -130,7 +132,7 @@ static void init_atoms()
 	X11_atom_net_wm_window_type_normal = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_NORMAL", True);
 	X11_atom_net_wm_window_type_utility = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_UTILITY", True);
 	X11_atom_net_supported = XInternAtom(_display, "_NET_SUPPORTED", True);
-
+	
 	_atom_init = TRUE;
 }
 
@@ -403,54 +405,6 @@ void X11_window_restore_properties(Window window)
 	//save_window_state(window, X11_atom_net_wm_window_type);
 }
 
-#define SYSTEM_TRAY_REQUEST_DOCK    0
-#define SYSTEM_TRAY_BEGIN_MESSAGE   1
-#define SYSTEM_TRAY_CANCEL_MESSAGE  2
-
-#define OPCODE "_NET_SYSTEM_TRAY_OPCODE"
-
-void X11_window_dock(Window window)
-{
-	Window xmanager=None;
-	XClientMessageEvent ev;
-	Atom OpCodeAtom;
-	Screen *xscreen;
-	char buf[256];
-	Atom selection_atom;
-
-	xscreen = DefaultScreenOfDisplay(_display);
-	sprintf(buf, "_NET_SYSTEM_TRAY_S%d", XScreenNumberOfScreen(xscreen));
-	selection_atom = XInternAtom(_display, buf, 0);
-
-	XGrabServer(_display);
-
-	xmanager = XGetSelectionOwner(_display, selection_atom);
-	if (xmanager != None)
-		XSelectInput(_display, xmanager, StructureNotifyMask);
-
-	XUngrabServer(_display);
-	XFlush(_display);
-
-	/***********************************************
-		Dock Tray Icon
-	************************************************/
-
-	OpCodeAtom = XInternAtom(_display, OPCODE, 0);
-
-	ev.type = ClientMessage;
-	ev.window = xmanager;
-	ev.message_type = OpCodeAtom;
-	ev.format = 32;
-	ev.data.l[0] = 0;
-	ev.data.l[1] = SYSTEM_TRAY_REQUEST_DOCK;
-	ev.data.l[2] = window;
-	ev.data.l[3] = 0;
-	ev.data.l[4] = 0;
-
-	XSendEvent(_display, xmanager, 0, NoEventMask, (XEvent *)&ev);
-	XSync(_display, 0);
-}
-
 void X11_window_startup(Window window, int x, int y, int w, int h)
 {
 	XSizeHints s;
@@ -720,7 +674,7 @@ bool X11_is_supported_by_WM(Atom atom)
 
 bool X11_send_move_resize_event(Window window, int x, int y, int w, int h)
 {
- 	static Atom _net_moveresize_window = 0;
+ 	static Atom _net_moveresize_window = None;
 	XEvent e;
 
 	if (!_net_moveresize_window)
@@ -743,3 +697,69 @@ bool X11_send_move_resize_event(Window window, int x, int y, int w, int h)
  
 	return FALSE;
 }
+
+static Atom get_net_system_tray(void)
+{
+	char buf[64];
+	
+	if (X11_atom_net_system_tray == None)
+	{
+		sprintf(buf, "_NET_SYSTEM_TRAY_S%d", XScreenNumberOfScreen(DefaultScreenOfDisplay(_display)));
+		X11_atom_net_system_tray = XInternAtom(_display, buf, 0);
+	}
+	
+	return X11_atom_net_system_tray;
+}
+
+#define SYSTEM_TRAY_REQUEST_DOCK    0
+#define SYSTEM_TRAY_BEGIN_MESSAGE   1
+#define SYSTEM_TRAY_CANCEL_MESSAGE  2
+
+#define OPCODE "_NET_SYSTEM_TRAY_OPCODE"
+
+Window X11_get_system_tray()
+{
+	return XGetSelectionOwner(_display, get_net_system_tray());
+}
+
+bool X11_window_dock(Window window)
+{
+	Window xmanager=None;
+	XClientMessageEvent ev;
+	Atom OpCodeAtom;
+
+	XGrabServer(_display);
+
+	xmanager = X11_get_system_tray();
+	if (xmanager != None)
+		XSelectInput(_display, xmanager, StructureNotifyMask);
+
+	XUngrabServer(_display);
+	XFlush(_display);
+	
+	if (xmanager == None)
+		return TRUE;
+
+	/***********************************************
+		Dock Tray Icon
+	************************************************/
+
+	OpCodeAtom = XInternAtom(_display, OPCODE, 0);
+
+	ev.type = ClientMessage;
+	ev.window = xmanager;
+	ev.message_type = OpCodeAtom;
+	ev.format = 32;
+	ev.data.l[0] = 0;
+	ev.data.l[1] = SYSTEM_TRAY_REQUEST_DOCK;
+	ev.data.l[2] = window;
+	ev.data.l[3] = 0;
+	ev.data.l[4] = 0;
+
+	XSendEvent(_display, xmanager, 0, NoEventMask, (XEvent *)&ev);
+	XSync(_display, 0);
+	usleep(10000);
+	
+	return FALSE;
+}
+

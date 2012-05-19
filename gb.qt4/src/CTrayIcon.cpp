@@ -285,6 +285,12 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 		}*/
 		
 		#ifndef NO_X_WINDOW
+		if (WIDGET->locateSystemTray() == None)
+		{
+			destroy_widget(THIS);
+			GB.Error("Unable to find system tray");
+			return;
+		}
 		WIDGET->addToTray();
 		#else
 		WIDGET->show();

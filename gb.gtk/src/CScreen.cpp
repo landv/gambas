@@ -28,6 +28,7 @@
 #include "CFont.h"
 #include "CScreen.h"
 
+#include "gtrayicon.h"
 #include "gapplication.h"
 #include "gmainwindow.h"
 
@@ -107,13 +108,11 @@ BEGIN_PROPERTY(Desktop_Height)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Desktop_Resolution)
 
 	GB.ReturnInteger(gDesktop::resolution());
 
 END_PROPERTY
-
 
 BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height)
 
@@ -126,6 +125,16 @@ BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; G
 	GB.ReturnObject(pic);
 
 END_METHOD
+
+BEGIN_PROPERTY(Desktop_HasSystemTray)
+
+	#ifdef NO_X_WINDOW
+		GB.Return(FALSE);
+	#else
+		GB.ReturnBoolean(gTrayIcon::hasSystemTray());
+	#endif
+
+END_PROPERTY
 
 
 static void set_font(gFont *font, void *object = 0)
@@ -366,6 +375,7 @@ GB_DESC DesktopDesc[] =
 	GB_CONSTANT("Charset", "s", "UTF-8"),
 	GB_STATIC_PROPERTY_READ("Resolution", "i", Desktop_Resolution),
 	GB_STATIC_PROPERTY_READ("Scale","i",Desktop_Scale),
+	GB_STATIC_PROPERTY_READ("HasSystemTray", "b", Desktop_HasSystemTray),
 	
 	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
 

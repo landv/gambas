@@ -90,7 +90,8 @@ bool X11_window_has_property(Window window, Atom property);
 void X11_window_save_properties(Window window);
 void X11_window_restore_properties(Window window);
 /* Function to dock a window in the system tray */
-void X11_window_dock(Window window);
+bool X11_window_dock(Window window);
+Window X11_get_system_tray();
 /* Function to define startup position hints for a window being shown */
 void X11_window_startup(Window window, int x, int y, int w, int h);
 /* Functions to search for a specific top-level window */

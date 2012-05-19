@@ -69,6 +69,7 @@ public:
 	static gTrayIcon *get(int index) { return (gTrayIcon *)g_list_nth_data(trayicons, index); }
 	static void exit();	
 	static gPicture *defaultIcon();
+	static bool hasSystemTray();
 
 //"Private"
 	GtkWidget *plug;

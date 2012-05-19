@@ -4,57 +4,80 @@
   MoveScaled(0,0,80,56)
   Icon = Picture["icon:/medium/clock"]
   Utility = True
-  Arrangement = Arrange.Vertical
-  { ToolBar1 ToolBar
-    MoveScaled(0,0,69,4)
-    Separator = True
-    { btnPrev ToolButton
-      MoveScaled(0,0,4,4)
-      Picture = Picture["icon:/small/left"]
-    }
-    { btnNext ToolButton
-      MoveScaled(4,0,4,4)
-      Picture = Picture["icon:/small/right"]
-    }
-    { btnPercent ToolButton
-      MoveScaled(8,0,4,4)
-      Picture = Picture["img/16/percent.png"]
-      Toggle = True
-    }
-  }
+  Arrangement = Arrange.Fill
   { splProfile HSplit
-    MoveScaled(1,8,78,42)
+    MoveScaled(1,6,78,45)
     Expand = True
-    { gvwProfile GridView
-      MoveScaled(1,6,33,32)
-      Expand = True
-      Mode = Select.Single
-      Header = GridView.Horizontal
-      ScrollBar = Scroll.Vertical
-      Border = False
-      Sorted = True
-    }
-    { Panel1 HBox
-      MoveScaled(38,4,32,37)
-      { Separator1 Separator
-        MoveScaled(2,10,0,15)
-      }
-      { tabInfo TabPanel
-        MoveScaled(5,0,26,36)
+    { Panel3 HBox
+      MoveScaled(1,6,35,34)
+      { Panel2 VBox
+        MoveScaled(0,2,31,30)
         Expand = True
-        Arrangement = Arrange.Fill
-        Border = False
-        Index = 0
-        Text = ("Called functions")
-        { gvwCalled GridView
-          MoveScaled(0,3,22,28)
+        { ToolBar1 ToolBar
+          MoveScaled(2,1,25,4)
+          Separator = True
+          { btnPrev ToolButton
+            MoveScaled(0,0,4,4)
+            Picture = Picture["icon:/small/left"]
+          }
+          { btnNext ToolButton
+            MoveScaled(4,0,4,4)
+            Picture = Picture["icon:/small/right"]
+          }
+          { btnPercent ToolButton
+            MoveScaled(8,0,4,4)
+            Picture = Picture["img/16/percent.png"]
+            Toggle = True
+          }
+        }
+        { gvwProfile GridView
+          MoveScaled(2,8,24,21)
+          Expand = True
           Mode = Select.Single
           Header = GridView.Horizontal
           ScrollBar = Scroll.Vertical
           Border = False
           Sorted = True
         }
-        Index = 0
+      }
+      { Separator2 Separator
+        MoveScaled(32,7,0,13)
+      }
+    }
+    { Panel1 HBox
+      MoveScaled(38,2,32,41)
+      { Separator1 Separator
+        MoveScaled(2,10,0,15)
+      }
+      { panCurrent VBox
+        MoveScaled(4,3,27,37)
+        Visible = False
+        Expand = True
+        { lblCurrent Label
+          MoveScaled(1,1,24,4)
+          Font = Font["Bold"]
+          Padding = 4
+        }
+        { Separator3 Separator
+          MoveScaled(4,6,16,0)
+        }
+        { tabInfo TabPanel
+          MoveScaled(2,7,23,29)
+          Expand = True
+          Arrangement = Arrange.Fill
+          Border = False
+          Index = 0
+          Text = ("Called functions")
+          { gvwCalled GridView
+            MoveScaled(2,1,19,23)
+            Mode = Select.Single
+            Header = GridView.Horizontal
+            ScrollBar = Scroll.Vertical
+            Border = False
+            Sorted = True
+          }
+          Index = 0
+        }
       }
     }
   }

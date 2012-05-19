@@ -36,6 +36,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
 #endif
+#include "x11.h"
 #include "gapplication.h"
 #include "gmouse.h"
 #include "gtrayicon.h"
@@ -61,50 +62,6 @@ Low level stuff
 
 ******************************************************************************/
 #ifdef GOT_TRAYICON
-void XTray_RequestDock(Display *xdisplay,Window icon)
-{
-	Window xmanager=None;
-	XClientMessageEvent ev;
-	Atom OpCodeAtom;
-	Screen *xscreen;
-	char buf[256];
-	Atom selection_atom;
-
-	buf[0]=0;
-
-	xscreen=DefaultScreenOfDisplay(xdisplay);
-	sprintf(buf,"_NET_SYSTEM_TRAY_S%d",XScreenNumberOfScreen (xscreen));
-	selection_atom = XInternAtom (xdisplay,buf,0);
-
-	XGrabServer (xdisplay);
-
-	xmanager = XGetSelectionOwner (xdisplay,selection_atom);
-	if ( xmanager != None)
-		XSelectInput (xdisplay,xmanager,StructureNotifyMask);
-
-	XUngrabServer (xdisplay);
-	XFlush (xdisplay);
-
-
-	/***********************************************
-	 Dock Tray Icon
-	************************************************/
-	OpCodeAtom=XInternAtom(xdisplay,OPCODE,0);
-
-	ev.type = ClientMessage;
-	ev.window = xmanager;
-	ev.message_type = OpCodeAtom;
-	ev.format = 32;
-	ev.data.l[0] = 0;
-	ev.data.l[1] = SYSTEM_TRAY_REQUEST_DOCK;
-	ev.data.l[2] = icon;
-	ev.data.l[3] = 0;
-	ev.data.l[4] = 0;
-
-	XSendEvent (xdisplay,xmanager, 0, NoEventMask, (XEvent *)&ev);
-	XSync (xdisplay, 0);
-	usleep(10000);
-}
 
 void XTray_getSize(Display *xdisplay,Window icon,unsigned int *w,unsigned int *h)
 {
@@ -459,7 +416,8 @@ void gTrayIcon::setVisible(bool vl)
 			
 			win = gtk_plug_get_id(GTK_PLUG(plug));
 			
-			XTray_RequestDock(gdk_display, win);
+			X11_window_dock(win);
+			//XTray_RequestDock(gdk_display, win);
 			
 			//gdk_window_set_back_pixmap(plug->window, (GdkPixmap *)GDK_PARENT_RELATIVE, FALSE);
 			//XSetWindowBackgroundPixmap(gdk_display, win, ParentRelative);
@@ -520,6 +478,11 @@ void gTrayIcon::exit()
 	
 	while((icon = get(0)))
 		delete icon;
+}
+
+bool gTrayIcon::hasSystemTray()
+{
+	return X11_get_system_tray() != None;
 }
 
 #else
@@ -595,3 +558,4 @@ void gTrayIcon::exit()
 }
 
 #endif
+
