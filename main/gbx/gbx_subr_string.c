@@ -963,6 +963,8 @@ __HTML:
 			STRING_make_char(c);
 	}
 	
+	goto __END;
+	
 __BASE64:
 	{
 		static const char base64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
