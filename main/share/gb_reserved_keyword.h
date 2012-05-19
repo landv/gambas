@@ -516,9 +516,13 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Shell$",            92,  1,  1     },
 	{ "Html",              92,  2,  1     },
 	{ "Html$",             92,  2,  1     },
+	{ "Base64",            92,  3,  1     },
+	{ "Base64$",           92,  3,  1     },
 	
-	{ "Unquote",           93,  0,  1     },
-	{ "Unquote$",          93,  0,  1     },
+	{ "UnQuote",           93,  0,  1     },
+	{ "UnQuote$",          93,  0,  1     },
+	{ "UnBase64",          93,  1,  1     },
+	{ "UnBase64$",         93,  1,  1     },
 	
 	{ "MkBool",            94,  1,  1     },
 	{ "MkBool$",           94,  1,  1     },

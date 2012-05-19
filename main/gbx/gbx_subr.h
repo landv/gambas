@@ -153,7 +153,7 @@ void SUBR_sconv(ushort code);
 void SUBR_is_chr(ushort code);
 void SUBR_tr(void);
 void SUBR_quote(ushort code);
-void SUBR_unquote(void);
+void SUBR_unquote(ushort code);
 void SUBR_swap(ushort code);
 
 /* subr_test.c */

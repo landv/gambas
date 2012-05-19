@@ -29,7 +29,7 @@
 #include "gbx_string.h"
 #include "gbx_class.h"
 #include "gbx_exec.h"
-
+#include "gbx_debug.h"
 #include "gbx_eval.h"
 
 #include "gbx_c_collection.h"
@@ -56,11 +56,14 @@ static void EVAL_enter()
   EC = NULL;
 
   RP->type = T_VOID;
+	
+	PROFILE_ENTER_FUNCTION();
 }
 
 static void error_EVAL_exec(void)
 {
 	STACK_pop_frame(&EXEC_current);
+	PROFILE_LEAVE_FUNCTION();
 }
 
 static void EVAL_exec()

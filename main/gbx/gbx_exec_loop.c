@@ -342,7 +342,7 @@ void EXEC_loop(void)
 		/* 9A Collection      */  &&_SUBR_CODE,
 		/* 9B Tr$             */  &&_SUBR,
 		/* 9C Quote$...       */  &&_SUBR_CODE,
-		/* 9D Unquote$        */  &&_SUBR,
+		/* 9D Unquote$...     */  &&_SUBR_CODE,
 		/* 9E MkInt$...       */  &&_SUBR_CODE,
 		/* 9F Byte@...        */  &&_SUBR_CODE,
 		/* A0 ADD QUICK       */  &&_ADD_QUICK,

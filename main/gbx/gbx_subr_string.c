@@ -852,7 +852,7 @@ void SUBR_tr(void)
 
 void SUBR_quote(ushort code)
 {
-	static void *jump[4] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__QUOTE };
+	static void *jump[4] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64 };
 	char *str;
 	int lstr;
 	int i;
@@ -963,6 +963,34 @@ __HTML:
 			STRING_make_char(c);
 	}
 	
+__BASE64:
+	{
+		static const char base64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		uchar *in;
+		char *out = buf;
+		
+		for (i = 0; i < (lstr - 2); i += 3)
+		{
+			in = (uchar *)&str[i];
+			out[0] = base64[in[0] >> 2];
+			out[1] = base64[((in[0] & 0x03) << 4) | ((in[1] & 0xF0) >> 4)];
+			out[2] = base64[((in[1] & 0x0F) << 2) | ((in[2] & 0xC0) >> 6)];
+			out[3] = base64[in[2] & 0x3F];
+			STRING_make(out, 4);
+		}
+
+		if (i < lstr)
+		{
+			in = (uchar *)&str[i];
+			lstr -= i;
+			out[0] = base64[in[0] >> 2];
+			out[1] = base64[((in[0] & 0x03) << 4) | ((in[1] & 0xF0) >> 4)];
+			out[2] = (lstr > 1 ? base64[((in[1] & 0x0F) << 2) | ((in[2] & 0xC0) >> 6) ] : '=');
+			out[3] = (lstr > 2 ? base64[in[2] & 0x3F] : '=');
+			STRING_make(out, 4);
+		}
+	}
+	
 	goto __END;
 
 __END:
@@ -987,21 +1015,27 @@ static int read_hex_digit(unsigned char c)
 		return 0;
 }
 
-void SUBR_unquote(void)
+void SUBR_unquote(ushort code)
 {
+	static void *jump[2] = { &&__UNQUOTE, &&__UNBASE64 };
+	
 	char *str;
 	int lstr;
 	int i;
 	unsigned char c;
 	
 	SUBR_ENTER_PARAM(1);
-	
+
 	VALUE_conv_string(&PARAM[0]);
 	
 	str = PARAM->_string.addr + PARAM->_string.start;
 	lstr = PARAM->_string.len;
 	
 	STRING_start_len(lstr);
+	
+	goto *jump[code & 0x3];
+
+__UNQUOTE:
 	
 	if (lstr >= 2 && str[0] == '"' && str[lstr - 1] == '"')
 	{
@@ -1037,6 +1071,50 @@ void SUBR_unquote(void)
 		
 		STRING_make_char(c);
 	}
+	
+	goto __END;
+	
+__UNBASE64:
+
+	{
+		char buf[4];
+		unsigned char n = 0;
+		
+		for (i = 0; i < lstr; i++)
+		{
+			c = str[i];
+			if (c >= 'A' && c <= 'Z')
+				c = c - 'A';
+			else if (c >= 'a' && c <= 'z')
+				c = c - 'a' + 26;
+			else if (c >= '0' && c <= '9')
+				c = c - '0' + 52;
+			else if (c == '+')
+				c = 62;
+			else if (c == '/')
+				c = 63;
+			else if (c == '=')
+				c = 0;
+			else
+				continue;
+			
+			switch (n & 3)
+			{
+				case 0: buf[0] = c << 2; break;
+				case 1: buf[0] |= c >> 4; buf[1] = c << 4; break;
+				case 2: buf[1] |= c >> 2; buf[2] = c << 6; break;
+				case 3: buf[2] |= c; STRING_make(buf, 3); break;
+			}
+			n++;
+		}
+		
+		if (n & 3)
+			STRING_make(buf, n & 3);
+	}
+	
+	goto __END;
+	
+__END:
 	
 	RETURN->type = T_STRING;
 	RETURN->_string.addr = STRING_end_temp();
