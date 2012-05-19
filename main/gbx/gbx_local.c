@@ -84,8 +84,8 @@ LOCAL_INFO LOCAL_default = {
 	{ LO_MONTH, LO_DAY, LO_YEAR },
 	{ LO_HOUR, LO_MINUTE, LO_SECOND },
 	"dddd mmmm d yyyy",
-	"mmm d yy",
-	"mm/dd/yy",
+	"mmm d yyyy",
+	"mm/dd/yyyy",
 	"hh:nn:ss",
 	"hh:nn AM/PM",
 	"hh:nn",
@@ -436,8 +436,8 @@ static void fill_local_info(void)
 			case '4':
 				*dp++ = LO_YEAR;
 				stradd_sep(LOCAL_local.long_date, "yyyy", " ");
-				stradd_sep(LOCAL_local.medium_date, "yy", " ");
-				stradd_sep(LOCAL_local.short_date, "yy", "/");
+				stradd_sep(LOCAL_local.medium_date, "yyyy", " ");
+				stradd_sep(LOCAL_local.short_date, "yyyy", "/");
 				stradd_sep(LOCAL_local.general_date, "yyyy", "/");
 				break;
 
