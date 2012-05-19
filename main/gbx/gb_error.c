@@ -260,7 +260,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 
 void ERROR_propagate()
 {
-	ERROR_HANDLER *ph;
+	ERROR_HANDLER *ph, *prev;
 	#if DEBUG_ERROR
 	ERROR_debug("ERROR_propagate: %p %d %s (ret = %d)\n", ERROR_current, ERROR_current->info.code, ERROR_current->info.msg, ERROR_current->ret);
 	#endif
@@ -277,8 +277,9 @@ void ERROR_propagate()
 			break;
 		
 		//fprintf(stderr, "ERROR_propagate: %p @ %p (%p)\n", ERROR_handler, ERROR_handler->context, ERROR_current);
-		ERROR_handler = ph->prev;
+		prev = ph->prev;
 		(*ph->handler)();
+		ERROR_handler = prev;
 	}
 	
 	longjmp(ERROR_current->env, 1);

@@ -134,6 +134,14 @@ void ERROR_debug(const char *msg, ...);
 		ERROR_handler = &__handler;
 		//fprintf(stderr, "%s.%d: ERROR_handler -> %p @ %p\n", __FUNCTION__, __LINE__, ERROR_handler, ERROR_current);
 
+#define ON_ERROR_1(_handler, _arg1) \
+	ON_ERROR(_handler) \
+	__handler.arg1 = (intptr_t)(_arg1);
+
+#define ON_ERROR_2(_handler, _arg1, _arg2) \
+	ON_ERROR_1(_handler, _arg1) \
+	__handler.arg2 = (intptr_t)(_arg2);
+
 #define END_ERROR \
 		ERROR_handler = __handler.prev; \
 	}

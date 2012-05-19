@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  profile.h
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,51 +21,13 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __PROFILE_H
+#define __PROFILE_H
 
-#include "gambas.h"
-#include "debug.h"
-#include "profile.h"
-#include "CDebug.h"
-#include "main.h"
+void PROFILE_init(void);
+void PROFILE_exit(void);
+void PROFILE_add(void *cp, void *fp, void *pc);
+void PROFILE_begin(void *cp, void *fp);
+void PROFILE_end(void *cp, void *fp);
 
-GB_INTERFACE GB EXPORT;
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CDebugDesc,
-  NULL
-};
-
-void *GB_DEBUG_1[] EXPORT =
-{
-	(void *)1,
-	(void *)DEBUG_init,
-	(void *)DEBUG_exit,
-	(void *)DEBUG_welcome,
-	(void *)DEBUG_main,
-	(void *)DEBUG_where,
-	(void *)DEBUG_backtrace,
-	(void *)DEBUG_breakpoint,
-	(void *)DEBUG_break_on_next_line,
-	(void *)DEBUG_get_position,
-	(void *)DEBUG_get_current_position,
-	(void *)DEBUG_init_breakpoints,
-	(void *)PROFILE_init,
-	(void *)PROFILE_add,
-	(void *)PROFILE_exit,
-	(void *)PROFILE_begin,
-	(void *)PROFILE_end,
-	NULL
-};
-
-int EXPORT GB_INIT(void)
-{
-  return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-}
-
-
+#endif

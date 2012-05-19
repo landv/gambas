@@ -90,6 +90,7 @@ Public ComponentState As Integer
 Public Authors As String
 Public VersionFile As Boolean
 Public UseTerminal As Boolean
+Public Profiling As Boolean
 
 Public Running As Boolean
 
@@ -2894,6 +2895,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   'Stack = 0
   'StackTrace = False
   UseTerminal = False
+  Profiling = False
   Maintainer = ""
   Vendor = ""
   Address = ""
@@ -3123,6 +3125,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "useterminal"
         UseTerminal = Val(sVal) <> 0
 
+      Case "profiling"
+        Profiling = Val(sVal) <> 0
+
       Case "createeachdirectory"
         CreateEachDirectory = Val(sVal) <> 0
 
@@ -3230,6 +3235,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   'If Stack Then Print #hFic, "Stack="; Stack
   'If StackTrace Then Print #hFic, "StackTrace=1"
   If UseTerminal Then Print #hFic, "UseTerminal=1"
+  If Profiling Then Print #hFic, "Profiling=1"
   If Icon Then Print #hFic, "Icon="; Icon
 
   GetVersion()
@@ -4756,7 +4762,7 @@ End
 Public Sub CleanUp()
 
   Dim iInd As Integer
-  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core", "core.*", "vgcore.*", ".kdbg*"]
+  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core", "core.*", "vgcore.*", ".kdbg*", ".prof.*"]
   Dim sClear As String
 
   For iInd = 0 To aClear.Max
@@ -5137,8 +5143,9 @@ End
 
 Public Sub IsLocked(sPath As String) As Boolean
 
+  If LockedPaths.Count = 0 Then Return 
   If LockedPaths.Exist(sPath) Then Return True
-  If sPath = "" Or sPath = "/" Then Return False
+  If sPath = "" Or sPath = "/" Then Return 
   'If IsAdded(sPath) Then Return True
   Return IsLocked(File.Dir(sPath))
 

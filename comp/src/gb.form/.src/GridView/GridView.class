@@ -53,6 +53,7 @@ Event RowClick(Row As Integer)
 Event ColumnResize(Column As Integer)
 Event RowResize(Row As Integer)
 Event MouseDown
+Event Sort
 
 Private $hView As ScrollArea
 Private $bGrid As Boolean = True
@@ -1641,6 +1642,13 @@ Public Sub _RaiseColumnResize(iCol As Integer)
   
 End
 
+Public Sub _RaiseSort()
+  
+  Raise Sort
+  
+End
+
+
 Private Function Sorted_Read() As Boolean
 
   Return $bSorted
@@ -1673,4 +1681,3 @@ End
 '   Me.Refresh
 ' 
 ' End
-

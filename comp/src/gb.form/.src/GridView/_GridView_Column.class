@@ -67,7 +67,7 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
-  $W = Max($W, GetView().Font.TextWidth($sText) + 8)
+  $W = Max($W, GetView().Font.TextWidth($sText) + 8 + If(GetView().Sorted, 16, 0))
   Raise _Refresh
 
 End

@@ -52,6 +52,8 @@ typedef
 		struct _ERROR_HANDLER *prev;
 		ERROR_CONTEXT *context;
 		void (*handler)();
+		intptr_t arg1;
+		intptr_t arg2;
 		}
 	ERROR_HANDLER;
 

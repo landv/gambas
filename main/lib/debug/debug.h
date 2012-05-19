@@ -77,6 +77,7 @@ EXTERN char DEBUG_buffer[];
 void DEBUG_breakpoint(int id);
 void DEBUG_main(bool error);
 
+bool DEBUG_calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line);
 const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc);
 const char *DEBUG_get_current_position(void);
 void DEBUG_init_breakpoints(CLASS *class);

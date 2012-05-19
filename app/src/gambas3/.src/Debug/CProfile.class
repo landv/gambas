@@ -1,0 +1,76 @@
+' Gambas class file
+
+Static Public Sort As Integer
+Static Public Ascending As Boolean
+
+Public Name As String
+Public Count As Integer
+Public Time As Long
+Property Read Self As Long
+
+Public Called As New Collection
+Public CalledList As New CProfile[]
+
+Private $iSelf As Long = -1
+
+Public Sub _compare(hOther As CProfile) As Integer
+  
+  Dim iRet As Integer
+  
+  Select Case Sort
+    
+    Case 0
+      iRet = Comp(Name, hOther.Name, gb.IgnoreCase)
+      
+    Case 1
+      iRet = Sgn(Count - hOther.Count)
+      
+    Case 2
+      iRet = Sgn({Time} - hOther.Time)
+      
+    Case 3
+      iRet = Sgn(Me.Self - hOther.Self)
+      
+    Case 4
+      iRet = Sgn({Time} / Count - hOther.Time / hOther.Count)
+      
+  End Select
+  
+  If Ascending Then iRet = - iRet
+  Return iRet
+  
+End
+
+Public Sub AddCalled(sFunc As String, iTime As Long)
+  
+  Dim hProf As CProfile
+  
+  hProf = Called[sFunc]
+  If Not hProf Then
+    hProf = New CProfile
+    hProf.Name = sFunc
+    Called[sFunc] = hProf
+    CalledList.Add(hProf)
+  Endif
+  
+  Inc hProf.Count
+  hProf.Time += iTime
+  
+End
+
+Private Function Self_Read() As Long
+
+  Dim hProf As CProfile
+  
+  If $iSelf < 0 Then
+  
+    $iSelf = {Time}
+    For Each hProf In CalledList
+      $iSelf -= hProf.Time
+    Next
+  
+  Endif
+  
+  Return $iSelf
+
+End

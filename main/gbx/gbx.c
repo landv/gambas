@@ -91,11 +91,6 @@ static void NORETURN fatal(const char *msg, ...)
 
 static void init(const char *file)
 {
-	#if USE_PROFILE
-	if (EXEC_profile)
-		PROFILE_init();
-	#endif
-	
 	COMPONENT_init();
 	FILE_init();
 	EXEC_init();
@@ -234,6 +229,7 @@ int main(int argc, char *argv[])
 				"  -h --help      display this help\n"
 				"  -L --license   display license\n"
 				"  -g             enter debugging mode\n"
+				"  -p             activate profiling and debugging mode\n"
 				"  -k             do not unload shared libraries\n"
 				);
 			if (!EXEC_arch)
@@ -287,12 +283,11 @@ int main(int argc, char *argv[])
 		{
 			EXEC_debug = TRUE;
 		}
-		#if USE_PROFILE
 		else if (is_option(argv[i], 'p'))
 		{
+			EXEC_debug = TRUE;
 			EXEC_profile = TRUE;
 		}
-		#endif
 		else if (is_option(argv[i], 'f'))
 		{
 			EXEC_fifo = TRUE;

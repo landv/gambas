@@ -350,6 +350,10 @@ Public Sub Process_Kill()
     FMain.ShowInfo(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
   Endif
 
+  If Project.Profiling Then
+    FProfile.Open(Project.Dir &/ ".prof." & CInt($hProcess.Id))
+  Endif
+
   $hProcess = Null
 
 End
@@ -784,10 +788,10 @@ Private Sub Start(sCmd As String)
   ' Else
 
   aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo, File.Dir(SConv(Project.Path)), "--"]
+  If Project.Profiling Then aExec.Add("-p", 2)
   aExec.Insert(Project.Arguments)
   
   If bValgrind Then 
-    aExec.Add("-p", 1)
     aExec.Insert(["valgrind", "--tool=memcheck", "--num-callers=50"], 0)
   Endif
 

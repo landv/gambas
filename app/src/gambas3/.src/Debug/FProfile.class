@@ -1,0 +1,315 @@
+' Gambas class file
+
+Private $sPath As String
+Private $iTime As Long
+Private $aFunc As New CProfile[]
+Private $cFunc As New Collection
+
+Private $iLevel As Integer
+Private $aLevel As New String[]
+Private $aLevelTime As New Long[]
+
+Private $hCurrent As CProfile
+
+Private $bPercent As Boolean
+
+Static Public Sub Open(sPath As String)
+  
+  Dim hProf As FProfile
+  
+  If Not Exist(sPath) Then Return
+  
+  hProf = New FProfile
+  hProf.Init(sPath)
+  
+End
+
+Private Sub EnterFunction(sFunc As String, iTime As Long)
+  
+  Dim hProf As CProfile
+  
+  hProf = $cFunc[sFunc]
+  If Not hProf Then
+    hProf = New CProfile
+    $cFunc[sFunc] = hProf
+    hProf.Name = sFunc
+    $aFunc.Add(hProf)
+  Endif
+  
+  $aLevel.Add(sFunc)
+  $aLevelTime.Add(iTime)
+  
+  Inc hProf.Count
+  
+End
+
+Private Sub ExitFunction(sFunc As String, iTime As Long)
+  
+  Dim hProf As CProfile
+  Dim hCaller As CProfile
+  
+  hProf = $cFunc[sFunc]
+  
+  $aLevel.Remove($aLevel.Max)
+  iTime -= $aLevelTime[$aLevelTime.Max]
+  $aLevelTime.Remove($aLevelTime.Max)
+  
+  hProf.Time += iTime
+  
+  If $aLevel.Count Then
+    hCaller = $cFunc[$aLevel[$aLevel.Max]]
+    'hCaller.Time -= iTime
+    hCaller.AddCalled(sFunc, iTime)
+  Else
+    $iTime += iTime
+  Endif
+  
+End
+
+Public Sub Init(sPath As String)
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
+  
+  $sPath = sPath
+  
+  hFile = Open sPath
+  While Not Eof(hFile)
+    
+    Line Input #hFile, sLine
+    If IsDigit(Left(sLine)) Then Continue
+    
+    iPos = InStr(sLine, " ")
+    If Left(sLine) = "+" Then
+      EnterFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
+    Else
+      ExitFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
+    Endif
+    
+  Wend
+  
+  Me.Title = Subst(("Profile &1"), File.Name(sPath)) & " - " & Str(Stat(sPath).LastModified) & " - " & Subst(("Total time &1 μs"), Format($iTime, "#,##0"))
+
+  gvwProfile_Sort
+  
+  With gvwProfile
+    .Rows.Count = $aFunc.Count
+  End With
+  
+  Me.Show
+  
+'Catch
+  
+'  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Text)
+  
+End
+
+Public Sub gvwProfile_Data(Row As Integer, Column As Integer)
+
+  Dim hProf As CProfile
+
+  With gvwProfile.Data
+
+    hProf = $aFunc[Row]
+
+    Select Case Column
+      Case 0
+        .Text = hProf.Name
+      Case 1
+        .Text = hProf.Count
+      Case 2
+        If $bPercent Then
+          .Text = Format(hProf.Time / $iTime * 100, "0.00")
+        Else
+          .Text = hProf.Time
+        Endif
+      Case 3
+        If $bPercent Then
+          .Text = Format(hProf.Self / $iTime * 100, "0.00")
+        Else
+          .Text = hProf.Self
+        Endif
+      'Case 4
+      '  .Text = Format(hProf.Time / hProf.Count, "0.##")
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwProfile_Sort()
+
+  Dim sCurrent As String
+
+  Try sCurrent = $aFunc[gvwProfile.Row].Name
+
+  CProfile.Sort = gvwProfile.Columns.Sort
+  CProfile.Ascending = gvwProfile.Columns.Ascending
+  $aFunc.Sort
+  
+  If sCurrent Then gvwProfile.Row = $aFunc.Find($cFunc[sCurrent])
+
+End
+
+Private Sub GotoFunction(sFunc As String)
+  
+  Dim hEditor As FEditor
+  Dim aWhere As String[]
+  
+  aWhere = Split(sFunc, "*.*")
+  
+  Try hEditor = Project.OpenFile(Project.FindPath(aWhere[0]))
+  If IsNull(hEditor) Then Return
+  
+  hEditor.GotoFunction(aWhere[1])
+  
+End
+
+
+Public Sub gvwProfile_Activate()
+
+  GotoFunction($aFunc[gvwProfile.Row].Name)
+
+End
+
+Public Sub Form_Close()
+
+  Try Kill $sPath
+
+  Settings.Write(Me)
+  Settings.Write(splProfile)
+
+End
+
+Public Sub ReadConfig()
+  
+  Project.SetSmallFont(gvwProfile)
+  Project.SetSmallFont(tabInfo)
+  
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  Settings.Read(splProfile)
+  ReadConfig
+
+  With gvwProfile
+    .Columns.Count = 4
+    .Columns[0].Text = ("Function")
+    .Columns[0].Width = -1
+    .Columns[1].Text = ("Calls")
+    .Columns[1].Alignment = Align.Right
+    .Columns[2].Text = ("Duration")
+    .Columns[2].Alignment = Align.Right
+    .Columns[3].Text = ("Self")
+    .Columns[3].Alignment = Align.Right
+    '.Columns[4].Text = ("Mean (μs)")
+    '.Columns[4].Alignment = Align.Right
+  End With
+
+  With gvwCalled
+    .Columns.Count = 3
+    .Columns[0].Text = ("Function")
+    .Columns[0].Width = -1
+    .Columns[1].Text = ("Calls")
+    .Columns[1].Alignment = Align.Right
+    .Columns[2].Text = ("Duration")
+    .Columns[2].Alignment = Align.Right
+    '.Columns[3].Text = ("Mean (μs)")
+    '.Columns[3].Alignment = Align.Right
+  End With
+  
+End
+
+Public Sub gvwProfile_Select()
+
+  If gvwProfile.Row < 0 Then Return
+  
+  $hCurrent = $aFunc[gvwProfile.Row]
+  RefreshCalled
+  gvwCalled.Columns[0].Width = -1
+
+End
+
+Private Sub RefreshCalled()
+  
+  If $hCurrent Then
+    
+    gvwCalled.Rows.Count = $hCurrent.CalledList.Count
+    Object.Lock(gvwCalled)
+    gvwCalled.Columns.Sort = 2
+    gvwCalled.Columns.Ascending = True
+    Object.Unlock(gvwCalled)
+    gvwCalled_Sort
+    gvwCalled.Header = gvwCalled.Horizontal
+    
+  Else
+    
+    gvwCalled.Rows.Count = 0
+    gvwCalled.Header = gvwCalled.None
+    
+  Endif
+  
+End
+
+Public Sub gvwCalled_Sort()
+
+  Dim sCurrent As String
+
+  If Not $hCurrent Then Return
+  
+  Try sCurrent = $hCurrent.CalledList[gvwProfile.Row].Name
+
+  CProfile.Sort = gvwCalled.Columns.Sort
+  CProfile.Ascending = gvwCalled.Columns.Ascending
+  $hCurrent.CalledList.Sort
+  
+  If sCurrent Then gvwCalled.Row = $hCurrent.CalledList.Find($hCurrent.Called[sCurrent])
+
+End
+
+Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
+
+  Dim hProf As CProfile
+  
+  If Not $hCurrent Then Return
+
+  With gvwCalled.Data
+
+    hProf = $hCurrent.CalledList[Row]
+
+    Select Case Column
+      Case 0
+        .Text = hProf.Name
+      Case 1
+        .Text = hProf.Count
+      Case 2
+        If $bPercent Then
+          .Text = Format(hProf.Time / $iTime * 100, "0.00")
+        Else
+          .Text = hProf.Time
+        Endif
+      'Case 3
+      '  .Text = Format(hProf.Time / hProf.Count, "0.##")
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwCalled_Activate()
+
+  If Not $hCurrent Then Return
+  gvwProfile.Row = $aFunc.Find($cFunc[$hCurrent.CalledList[gvwCalled.Row].Name])
+
+End
+
+Public Sub btnPercent_Click()
+
+  $bPercent = Not $bPercent
+  gvwProfile.Refresh
+  gvwCalled.Refresh
+
+End

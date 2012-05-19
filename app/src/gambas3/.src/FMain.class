@@ -1080,6 +1080,8 @@ Public Sub OnProjectChange()
   
   UpdateMenu
   btnSearchAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
+  mnuUseTerminal.Value = Project.UseTerminal
+  mnuProfile.Value = Project.Profiling
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -1268,10 +1270,17 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case "go-back"
       CPosition.MovePrevious
-      
     Case "go-forward"
       CPosition.MoveNext
+    
+    Case "terminal"
+      Project.UseTerminal = Action["terminal"].Value
+      Project.WriteProject(True)
       
+    Case "profile"
+      Project.Profiling = Action["profile"].Value
+      Project.WriteProject(True)
+    
     Case "menu-file"
       mnuFile.Popup(btnMnuFile.ScreenX, btnMnuFile.ScreenY + btnMnuFile.H)
     Case "menu-project"

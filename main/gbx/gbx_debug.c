@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_debug.c
+	gbx_debug.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -41,83 +41,88 @@
 
 #include "gbx_debug.h"
 
-
 DEBUG_INTERFACE DEBUG;
 DEBUG_INFO *DEBUG_info = NULL;
 
 static bool calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
-  int i;
-  ushort pos = addr - func->code;
-  ushort *post;
+	int i;
+	ushort pos = addr - func->code;
+	ushort *post;
 
-  if (func->debug)
-  {
-    post =  func->debug->pos;
-    for (i = 0; i < (func->debug->nline - 1); i++)
-    {
-      if (pos >= post[i] && pos < post[i + 1])
-      {
-        *line = i + func->debug->line;
-        return FALSE;
-      }
-    }
+	if (func->debug)
+	{
+		post =  func->debug->pos;
+		for (i = 0; i < (func->debug->nline - 1); i++)
+		{
+			if (pos >= post[i] && pos < post[i + 1])
+			{
+				*line = i + func->debug->line;
+				return FALSE;
+			}
+		}
 
-    /*printf("pos = %d addr=%p func->code=%p\n", pos, addr, func->code);*/
-  }
+		/*printf("pos = %d addr=%p func->code=%p\n", pos, addr, func->code);*/
+	}
 
-  return TRUE;
+	return TRUE;
 }
 
 const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 {
 #if DEBUG_MEMORY
-  static char buffer[256];
+	static char buffer[256];
 #endif
-  ushort line = 0;
+	ushort line = 0;
 
 	if (!cp || !pc)
 		return "?";
 		
-  if (fp != NULL && fp->debug)
-    calc_line_from_position(cp, fp, pc, &line);
+	if (fp != NULL && fp->debug)
+		calc_line_from_position(cp, fp, pc, &line);
 
 #if DEBUG_MEMORY
-  snprintf(buffer, sizeof(buffer), "%s.%s.%d",
-    cp ? cp->name : "?",
-    (fp && fp->debug) ? fp->debug->name : "?",
-    line);
+	snprintf(buffer, sizeof(buffer), "%s.%s.%d",
+		cp ? cp->name : "?",
+		(fp && fp->debug) ? fp->debug->name : "?",
+		line);
 
-  return buffer;
+	return buffer;
 #else
-  snprintf(COMMON_buffer, COMMON_BUF_MAX, "%.64s.%.64s.%d",
-    cp ? cp->name : "?",
-    (fp && fp->debug) ? fp->debug->name : "?",
-    line);
+	snprintf(COMMON_buffer, COMMON_BUF_MAX, "%.64s.%.64s.%d",
+		cp ? cp->name : "?",
+		(fp && fp->debug) ? fp->debug->name : "?",
+		line);
 
-  return COMMON_buffer;
+	return COMMON_buffer;
 #endif
 }
 
 
 const char *DEBUG_get_current_position(void)
 {
-  return DEBUG_get_position(CP, FP, PC);
+	return DEBUG_get_position(CP, FP, PC);
 }
 
 
 void DEBUG_init(void)
 {
-  if (!EXEC_debug)
-  	return;
+	if (!EXEC_debug)
+		return;
 
-  COMPONENT_load(COMPONENT_create("gb.debug"));
-  LIBRARY_get_interface_by_name("gb.debug", DEBUG_INTERFACE_VERSION, &DEBUG);
+	COMPONENT_load(COMPONENT_create("gb.debug"));
+	LIBRARY_get_interface_by_name("gb.debug", DEBUG_INTERFACE_VERSION, &DEBUG);
 
-  DEBUG_info = DEBUG.Init((GB_DEBUG_INTERFACE *)(void *)GAMBAS_DebugApi, EXEC_fifo, EXEC_fifo_name);
+	DEBUG_info = DEBUG.Init((GB_DEBUG_INTERFACE *)(void *)GAMBAS_DebugApi, EXEC_fifo, EXEC_fifo_name);
 	
-  if (!DEBUG_info)
-  	ERROR_panic("Cannot initializing debug mode");
+	if (!DEBUG_info)
+		ERROR_panic("Cannot initializing debug mode");
+	
+	if (EXEC_profile)
+	{
+		EXEC_profile_last_fp = NULL;
+		DEBUG.Profile.Init();
+	}
 }
 
 
@@ -127,6 +132,8 @@ void DEBUG_exit(void)
 		return;
 
 	DEBUG.Exit();
+	if (EXEC_profile)
+		DEBUG.Profile.Exit();
 }
 
 
@@ -139,67 +146,67 @@ void DEBUG_where(void)
 		breakpoint = TRUE;
 		BREAKPOINT();
 	}*/
-  fprintf(stderr, "%s: ", where);
+	fprintf(stderr, "%s: ", where);
 }
 
 
 bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 {
-  int i;
-  VALUE value;
-  LOCAL_SYMBOL *lp;
-  GLOBAL_SYMBOL *gp;
-  CLASS_VAR *var;
-  char *addr;
-  CLASS *class;
+	int i;
+	VALUE value;
+	LOCAL_SYMBOL *lp;
+	GLOBAL_SYMBOL *gp;
+	CLASS_VAR *var;
+	char *addr;
+	CLASS *class;
 	void *ref;
 
-  if (DEBUG_info->fp)
-  {
-    for (i = 0; i < DEBUG_info->fp->debug->n_local; i++)
-    {
-      lp = &DEBUG_info->fp->debug->local[i];
-      if (len == lp->sym.len && strncasecmp(sym, lp->sym.name, len) == 0)
-      {
-        value = DEBUG_info->bp[lp->value];
-        goto __FOUND;
-      }
-    }
-  }
+	if (DEBUG_info->fp)
+	{
+		for (i = 0; i < DEBUG_info->fp->debug->n_local; i++)
+		{
+			lp = &DEBUG_info->fp->debug->local[i];
+			if (len == lp->sym.len && strncasecmp(sym, lp->sym.name, len) == 0)
+			{
+				value = DEBUG_info->bp[lp->value];
+				goto __FOUND;
+			}
+		}
+	}
 
-  if (DEBUG_info->cp)
-  {
-    for (i = 0; i < DEBUG_info->cp->load->n_global; i++)
-    {
-      gp = &DEBUG_info->cp->load->global[i];
-      if (len != gp->sym.len || strncasecmp(sym, gp->sym.name, len) != 0)
-        continue;
+	if (DEBUG_info->cp)
+	{
+		for (i = 0; i < DEBUG_info->cp->load->n_global; i++)
+		{
+			gp = &DEBUG_info->cp->load->global[i];
+			if (len != gp->sym.len || strncasecmp(sym, gp->sym.name, len) != 0)
+				continue;
 
-      if (CTYPE_get_kind(gp->ctype) == TK_VARIABLE)
-      {
-        if (!CTYPE_is_static(gp->ctype) && DEBUG_info->op)
-        {
-          var = &DEBUG_info->cp->load->dyn[gp->value];
-          addr = (char *)DEBUG_info->op + var->pos;
+			if (CTYPE_get_kind(gp->ctype) == TK_VARIABLE)
+			{
+				if (!CTYPE_is_static(gp->ctype) && DEBUG_info->op)
+				{
+					var = &DEBUG_info->cp->load->dyn[gp->value];
+					addr = (char *)DEBUG_info->op + var->pos;
 					ref = DEBUG_info->op;
-        }
-        else
-        {
-          var = &DEBUG_info->cp->load->stat[gp->value];
-          addr = (char *)DEBUG_info->cp->stat + var->pos;
+				}
+				else
+				{
+					var = &DEBUG_info->cp->load->stat[gp->value];
+					addr = (char *)DEBUG_info->cp->stat + var->pos;
 					ref = DEBUG_info->cp;
-        }
+				}
 
-        VALUE_class_read(DEBUG_info->cp, &value, addr, var->type, ref);
-        goto __FOUND;
-      }
-      else if (CTYPE_get_kind(gp->ctype) == TK_CONST)
-      {
-        VALUE_class_constant(DEBUG_info->cp, &value, gp->value);
-        goto __FOUND;
-      }
-    }
-  }
+				VALUE_class_read(DEBUG_info->cp, &value, addr, var->type, ref);
+				goto __FOUND;
+			}
+			else if (CTYPE_get_kind(gp->ctype) == TK_CONST)
+			{
+				VALUE_class_constant(DEBUG_info->cp, &value, gp->value);
+				goto __FOUND;
+			}
+		}
+	}
 
 	//class = CLASS_look_global(sym, len);
 	class = CLASS_look(sym, len);
@@ -220,36 +227,36 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 		goto __FOUND;
 	}
 
-  return TRUE;
+	return TRUE;
 
 __FOUND:
 
-  /*printf("%.*s =", (int)len, sym);
-  print_value(&value);*/
+	/*printf("%.*s =", (int)len, sym);
+	print_value(&value);*/
 
-  BORROW(&value);
-  /*if (value.type == T_ARRAY)
-    value._array.keep = TRUE;
-  else*/
-    VALUE_conv_variant(&value);
-  UNBORROW(&value);
+	BORROW(&value);
+	/*if (value.type == T_ARRAY)
+		value._array.keep = TRUE;
+	else*/
+		VALUE_conv_variant(&value);
+	UNBORROW(&value);
 
-  *((VALUE *)ret) = value;
-  return FALSE;
+	*((VALUE *)ret) = value;
+	return FALSE;
 }
 
 int DEBUG_set_value(const char *sym, int len, VALUE *value)
 {
-  int i;
-  LOCAL_SYMBOL *lp;
-  GLOBAL_SYMBOL *gp;
-  CLASS_VAR *var;
-  char *addr;
+	int i;
+	LOCAL_SYMBOL *lp;
+	GLOBAL_SYMBOL *gp;
+	CLASS_VAR *var;
+	char *addr;
 	VALUE *where;
 	bool ret = GB_DEBUG_SET_OK;
 
-  TRY
-  {
+	TRY
+	{
 		if (DEBUG_info->fp)
 		{
 			for (i = 0; i < DEBUG_info->fp->debug->n_local; i++)
@@ -300,21 +307,21 @@ __FOUND:
 
 		0;
 	}
-  CATCH
-  {
-    ret = GB_DEBUG_SET_ERROR;
-    EXEC_set_native_error(TRUE);
-  }
-  END_TRY
+	CATCH
+	{
+		ret = GB_DEBUG_SET_ERROR;
+		EXEC_set_native_error(TRUE);
+	}
+	END_TRY
 
-  return ret;
+	return ret;
 }
 
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 {
 	CLASS_DESC *desc;
 	CLASS_DESC_METHOD *dm;
-  char type;
+	char type;
 	int access = GB_DEBUG_ACCESS_NORMAL;
 
 	//fprintf(stderr, "DEBUG_can_be_used_like_an_array: %p %s ?\n", object, class->name);
@@ -330,15 +337,15 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 	}
 
 	dm = CLASS_get_special_desc(class, SPEC_GET);
-  if (!dm)
-  {
-  	//fprintf(stderr, "No _get method\n");
+	if (!dm)
+	{
+		//fprintf(stderr, "No _get method\n");
 		goto __NORMAL;
-  }
+	}
 
 	if (dm->npmin != 1 || dm->npmax != 1)
 	{
-  	//fprintf(stderr, "No _get(Arg AS Integer) method\n");
+		//fprintf(stderr, "No _get(Arg AS Integer) method\n");
 		goto __NORMAL;
 	}
 

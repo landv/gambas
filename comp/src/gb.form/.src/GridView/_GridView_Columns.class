@@ -218,7 +218,10 @@ Private Sub Sort_Write(Value As Integer)
 
   If $iSort = Value Then Return
   $iSort = Value
-  GetView().Refresh
+  With GetView()
+    ._RaiseSort
+    .Refresh
+  End With
 
 End
 
@@ -232,6 +235,9 @@ Private Sub Ascending_Write(Value As Boolean)
 
   If $bAscent = Value Then Return
   $bAscent = Value
-  GetView().Refresh
+  With GetView()
+    ._RaiseSort
+    .Refresh
+  End With
 
 End

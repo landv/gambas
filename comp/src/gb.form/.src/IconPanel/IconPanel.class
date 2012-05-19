@@ -113,11 +113,13 @@ Private Sub Count_Write(iCount As Integer)
 
     iCurrent = $iCurrent
     
+    Object.Lock(Me) '' FIXME: Interpreter crash if this is removed!
     For iInd = $aCont.Max To iCount Step -1
       $aCont[iInd].Delete
       $hView.Rows.Remove(iInd)
       If iInd <= iCurrent Then Dec iCurrent
     Next
+    Object.Unlock(Me)
 
     $aCont.Remove(iCount, -1)
     

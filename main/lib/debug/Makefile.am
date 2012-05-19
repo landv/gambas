@@ -11,6 +11,7 @@ gb_debug_la_SOURCES = \
  CDebug.h CDebug.c \
  print.h print.c \
  debug.h debug.c \
+ profile.h profile.c \
  main.h main.c \
  gb.debug.h
 

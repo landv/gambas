@@ -2919,7 +2919,21 @@ End
 '
 ' End
 
-Public Sub GotoProc(iLine As Integer)
+Public Sub GotoFunction(sFunc As String)
+  
+  Dim iLine As Integer
+  
+  FillProcCombo
+  
+  Try iLine = $cProc[sFunc]
+  If Error Then Return
+  
+  Goto(iLine)
+  
+End
+
+
+Private Sub GotoProc(iLine As Integer)
 
   Dim sLine As String
   Dim iCol As Integer

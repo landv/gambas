@@ -63,6 +63,7 @@ CENUM *EXEC_enum;
 
 bool EXEC_debug = FALSE; // debugging mode
 bool EXEC_profile = FALSE; // profiling mode
+void *EXEC_profile_last_fp;
 bool EXEC_arch = FALSE; // executing an archive
 bool EXEC_fifo = FALSE; // debugging through a fifo
 const char *EXEC_fifo_name = NULL; // fifo name
@@ -493,6 +494,8 @@ void EXEC_enter(void)
 	CP = class;
 	EP = NULL;
 	GP = NULL;
+	
+	PROFILE_ENTER_FUNCTION();
 
 	if (func->error)
 	{
@@ -589,6 +592,8 @@ void EXEC_enter_quick(void)
 		EC = PC + func->error;
 	else
 		EC = NULL;
+	
+	PROFILE_ENTER_FUNCTION();
 
 	/* reference the object so that it is not destroyed during the function call */
 	OBJECT_REF(OP, "EXEC_enter_quick");
@@ -671,7 +676,10 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	SP += nb;
 	OBJECT_UNREF(OP, "EXEC_leave");
 	SP -= nb;
+	
+	PROFILE_LEAVE_FUNCTION();
 	STACK_pop_frame(&EXEC_current);
+	
 	PC += nbyref + 1;
 	return nb;
 }
@@ -722,6 +730,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	SP += nb; \
 	OBJECT_UNREF(OP, "EXEC_leave"); \
 	SP -= nb; \
+	PROFILE_LEAVE_FUNCTION(); \
 	STACK_pop_frame(&EXEC_current); \
 	PC += nbyref + 1; \
 	goto __RETURN_VALUE;
@@ -756,6 +765,7 @@ void EXEC_leave_drop()
 		RELEASE_MANY(SP, n);
 
 		OBJECT_UNREF(OP, "EXEC_leave");
+		PROFILE_LEAVE_FUNCTION();
 		STACK_pop_frame(&EXEC_current);
 	}
 
@@ -798,6 +808,7 @@ void EXEC_leave_keep()
 		RELEASE_MANY(SP, n);
 
 		OBJECT_UNREF(OP, "EXEC_leave");
+		PROFILE_LEAVE_FUNCTION();
 		STACK_pop_frame(&EXEC_current);
 	}
 

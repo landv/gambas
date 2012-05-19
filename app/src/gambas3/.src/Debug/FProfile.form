@@ -1,0 +1,61 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,80,56)
+  Icon = Picture["icon:/medium/clock"]
+  Utility = True
+  Arrangement = Arrange.Vertical
+  { ToolBar1 ToolBar
+    MoveScaled(0,0,69,4)
+    Separator = True
+    { btnPrev ToolButton
+      MoveScaled(0,0,4,4)
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnNext ToolButton
+      MoveScaled(4,0,4,4)
+      Picture = Picture["icon:/small/right"]
+    }
+    { btnPercent ToolButton
+      MoveScaled(8,0,4,4)
+      Picture = Picture["img/16/percent.png"]
+      Toggle = True
+    }
+  }
+  { splProfile HSplit
+    MoveScaled(1,8,78,42)
+    Expand = True
+    { gvwProfile GridView
+      MoveScaled(1,6,33,32)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+      ScrollBar = Scroll.Vertical
+      Border = False
+      Sorted = True
+    }
+    { Panel1 HBox
+      MoveScaled(38,4,32,37)
+      { Separator1 Separator
+        MoveScaled(2,10,0,15)
+      }
+      { tabInfo TabPanel
+        MoveScaled(5,0,26,36)
+        Expand = True
+        Arrangement = Arrange.Fill
+        Border = False
+        Index = 0
+        Text = ("Called functions")
+        { gvwCalled GridView
+          MoveScaled(0,3,22,28)
+          Mode = Select.Single
+          Header = GridView.Horizontal
+          ScrollBar = Scroll.Vertical
+          Border = False
+          Sorted = True
+        }
+        Index = 0
+      }
+    }
+  }
+}

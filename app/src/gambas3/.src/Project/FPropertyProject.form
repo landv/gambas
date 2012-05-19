@@ -116,7 +116,7 @@
     Index = 1
     Text = ("Options")
     { Panel6 VBox
-      MoveScaled(1,1,87,46)
+      MoveScaled(1,1,87,51)
       Spacing = True
       Margin = True
       { Label7 Label
@@ -222,8 +222,22 @@
         Text = ("Debugging")
         Alignment = Align.BottomNormal
       }
-      { HBox17 HBox
+      { HBox4 HBox
         MoveScaled(1,41,83,4)
+        Spacing = True
+        Indent = True
+        { Label2 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Activate profiling")
+        }
+        { cmbProfile ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
+      }
+      { HBox17 HBox
+        MoveScaled(1,46,83,4)
         Spacing = True
         Indent = True
         { Label28 Label

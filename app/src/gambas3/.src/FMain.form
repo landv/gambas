@@ -137,6 +137,16 @@
       Picture = Picture["icon:/small/play"]
       Shortcut = "F5"
     }
+    { mnuUseTerminal Menu
+      Action = "terminal"
+      Text = ("Use &terminal emulator")
+      Toggle = True
+    }
+    { mnuProfile Menu
+      Action = "profile"
+      Text = ("Activate profilin&g")
+      Toggle = True
+    }
     { Menu14 Menu
     }
     { mnuPause Menu
@@ -1237,6 +1247,10 @@
     Shortcut = "Pause"
     Picture = "icon:/small/pause"
   }
+  { Action profile
+    Text = "Activate profilin&g"
+    Shortcut = ""
+  }
   { Action project
     Text = "Pro&ject"
     Shortcut = "F10"
@@ -1306,6 +1320,10 @@
     Text = "&Stop"
     Shortcut = "Alt+Pause"
     Picture = "icon:/small/stop"
+  }
+  { Action terminal
+    Text = "Use &terminal emulator"
+    Shortcut = ""
   }
   { Action tips
     Text = "&Tips of the day"

@@ -65,4 +65,14 @@ void DEBUG_enum_keys(void *object, char **key);
 void DEBUG_print_backtrace(STACK_BACKTRACE *bt);
 GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt);
 
+#define PROFILE_ENTER_FUNCTION() \
+	if (EXEC_profile && CP && CP->component == COMPONENT_main) \
+		DEBUG.Profile.Begin(CP, FP); \
+
+#define PROFILE_LEAVE_FUNCTION() \
+	if (EXEC_profile && CP && CP->component == COMPONENT_main) \
+		DEBUG.Profile.End(CP, FP); \
+
+
+
 #endif

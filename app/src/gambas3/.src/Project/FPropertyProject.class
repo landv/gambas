@@ -86,6 +86,7 @@ Public Sub Form_Open()
     chkGetVersionFromFile.Value = .VersionFile
     'chkVersion.Value = NOT IsNull(.VersionProgram)
     cmbTerminal.Index = If(.UseTerminal, 0, 1)
+    cmbProfile.Index = If(.Profiling, 0, 1)
     $aLibraries = .Libraries.Copy()
 
   End With

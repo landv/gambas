@@ -94,6 +94,14 @@ typedef
 		const char *(*GetPosition)(void *klass, void *func, void *pcode);
 		const char *(*GetCurrentPosition)(void);
 		void (*InitBreakpoints)(void *klass);
+		struct {
+			void (*Init)(void);
+			void (*Add)(void *cp, void *fp, void *pc);
+			void (*Exit)(void);
+			void (*Begin)(void *cp, void *fp);
+			void (*End)(void *cp, void *fp);
+			}
+			Profile;
 		void *_null;
 		}
 	DEBUG_INTERFACE;

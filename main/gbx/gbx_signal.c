@@ -126,10 +126,37 @@ static void handle_signal(int signum, siginfo_t *info, void *context)
 	errno = save_errno;
 }
 
+static bool _must_purge_callbacks;
+static int _purge_signum;
+static SIGNAL_HANDLER *_purge_handler;
+
+static void purge_callbacks(void)
+{
+	SIGNAL_CALLBACK *cb, *next_cb;
+	
+	_raising_callback = FALSE;
+	
+	if (_must_purge_callbacks)
+	{
+		cb = _purge_handler->callbacks;
+		while (cb)
+		{
+			next_cb = cb->next;
+			
+			if (!cb->callback)
+				SIGNAL_unregister(_purge_signum, cb);
+			
+			cb = next_cb;
+		}
+
+		_must_purge_callbacks = FALSE;
+	}
+}
+
 void SIGNAL_raise_callbacks(int fd, int type, void *data)
 {
 	SIGNAL_HANDLER *handler;
-	SIGNAL_CALLBACK *cb, *next_cb;
+	SIGNAL_CALLBACK *cb;
 	char signum;
 
 	/*old = signal(SIGCHLD, signal_child);*/
@@ -137,31 +164,27 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	if (read(fd, &signum, 1) != 1)
 		return;
 	
-	_raising_callback = TRUE;
-	
 	handler = find_handler(signum);
-
-	cb = handler->callbacks;
-	while (cb)
-	{
-		if (cb->callback)
-			(*cb->callback)((int)signum, cb->data);
-		
-		cb = cb->next;
-	}
 	
-	_raising_callback = FALSE;
-
-	cb = handler->callbacks;
-	while (cb)
+	_raising_callback = TRUE;
+	_purge_signum = signum;
+	_purge_handler = handler;
+	_must_purge_callbacks = FALSE;
+	
+	ON_ERROR(purge_callbacks)
 	{
-		next_cb = cb->next;
-		
-		if (!cb->callback)
-			SIGNAL_unregister(signum, cb);
-		
-		cb = next_cb;
+		cb = handler->callbacks;
+		while (cb)
+		{
+			if (cb->callback)
+				(*cb->callback)((int)signum, cb->data);
+			
+			cb = cb->next;
+		}
 	}
+	END_ERROR
+	
+	purge_callbacks();
 }
 
 SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), intptr_t data)
@@ -218,6 +241,7 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 		fprintf(stderr, "SIGNAL_unregister: disable %d %p (%p)\n", signum, cb, cb->callback);
 		#endif
 		cb->callback = NULL;
+		_must_purge_callbacks = TRUE;
 		return;
 	}
 	

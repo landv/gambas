@@ -196,7 +196,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Font_Copy)
 
-	GB.ReturnObject(CFONT_create(FONT));
+	GB.ReturnObject(CFONT_create(FONT->copy()));
 
 END_METHOD
 

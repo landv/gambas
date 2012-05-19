@@ -1,0 +1,31 @@
+' Gambas class file
+
+' Public Sub SpinBox1_Change()
+' 
+'   IconPanel1.Count = SpinBox1.Value
+' 
+' Catch
+'   
+'   Error Error.Text
+' 
+' End
+' 
+' Public Sub IconPanel1_Click()
+' 
+'   Debug IconPanel1.Index
+' 
+' End
+
+Public Sub Form_Open()
+
+  GridView1.Columns.Count = 1
+  GridView1.Rows.Count = 1
+  GridView1[0, 0].Text = "Item 1"
+
+End
+
+Public Sub Form_Close()
+
+  'GridView1.Clear
+
+End

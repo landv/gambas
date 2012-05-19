@@ -123,12 +123,12 @@ void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 	if ((char *)(SP + (_need) + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) \
 		THROW_STACK(); \
 	\
-  STACK_frame--; \
-  \
-  STACK_copy(STACK_frame, _context); \
-  \
-  STACK_frame_count++; \
-  STACK_limit = (char *)STACK_frame; \
+	STACK_frame--; \
+	\
+	STACK_copy(STACK_frame, _context); \
+	\
+	STACK_frame_count++; \
+	STACK_limit = (char *)STACK_frame; \
 })
 
 #define STACK_pop_frame(_context) \
