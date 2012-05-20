@@ -1041,6 +1041,8 @@ typedef
 		
 		struct {
 			char *(*GetCurrentPosition)();
+			void (*EnterEventLoop)();
+			void (*LeaveEventLoop)();
 			}
 		Debug;
 		

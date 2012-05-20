@@ -57,10 +57,12 @@
         MoveScaled(4,3,33,37)
         Visible = False
         Expand = True
-        { lblCurrent Label
+        { lblCurrent TextLabel
           MoveScaled(1,1,24,4)
           Font = Font["Bold"]
           Padding = 4
+          Alignment = Align.Normal
+          Wrap = False
         }
         { Separator3 Separator
           MoveScaled(4,6,16,0)

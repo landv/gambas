@@ -53,9 +53,14 @@ EXTERN DEBUG_INFO *DEBUG_info;
 
 void DEBUG_init(void);
 void DEBUG_exit(void);
+
+void DEBUG_enter_event_loop(void);
+void DEBUG_leave_event_loop(void);
+
 const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc);
 const char *DEBUG_get_current_position(void);
 void DEBUG_where(void);
+
 bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret);
 int DEBUG_set_value(const char *sym, int len, VALUE *value);
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count);

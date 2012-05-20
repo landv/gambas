@@ -99,6 +99,8 @@ public:
 	static gMainWindow *_main_window;
 	static bool _close_next_window;
 	static bool _fix_printer_dialog;
+	static void (*onEnterEventLoop)();
+	static void (*onLeaveEventLoop)();
 };
 
 #endif

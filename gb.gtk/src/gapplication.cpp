@@ -945,7 +945,11 @@ bool gApplication::allEvents()
 	return true;
 }
 
-void gApplication::init(int *argc,char ***argv)
+static void do_nothing()
+{
+}
+
+void gApplication::init(int *argc, char ***argv)
 {
 	appEvents=0;
 	
@@ -955,6 +959,10 @@ void gApplication::init(int *argc,char ***argv)
 	
 	gClipboard::init();
 	gKey::init();
+	
+	onEnterEventLoop = do_nothing;
+	onLeaveEventLoop = do_nothing;
+	
 	_loop_owner = 0;
 }
 
@@ -1126,11 +1134,13 @@ void gApplication::enterLoop(void *owner, bool showIt)
 	_loopLevel++;
 	_loop_owner = owner;
 	
+	(*onEnterEventLoop)();
 	do
 	{
 		MAIN_do_iteration(false);
 	}
 	while (_loopLevel > l);
+	(*onLeaveEventLoop)();
 	
 	_loop_owner = old_owner;
 
@@ -1161,11 +1171,13 @@ void gApplication::enterPopup(gMainWindow *owner)
 	_loopLevel++;
 	_loop_owner = owner;
 	
+	(*onEnterEventLoop)();
 	do
 	{
 		MAIN_do_iteration(false);
 	}
 	while (_loopLevel > l);
+	(*onLeaveEventLoop)();
 	
 	gApplication::ungrabPopup();
 	

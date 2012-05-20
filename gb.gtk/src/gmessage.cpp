@@ -58,7 +58,9 @@ static int run_dialog(GtkDialog *window)
 	gtk_window_present(GTK_WINDOW(window));
 	oldGroup = gApplication::enterGroup();
 	gApplication::_loopLevel++;
+	(*gApplication::onEnterEventLoop)();
 	ret = gtk_dialog_run(window);
+	(*gApplication::onLeaveEventLoop)();
 	gApplication::_loopLevel--;
 	gApplication::exitGroup(oldGroup);
 	return ret;

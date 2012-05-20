@@ -334,6 +334,10 @@ static void my_main(int *argc, char ***argv)
 	gApplication::init(argc, argv);
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();
+	
+	gApplication::onEnterEventLoop = GB.Debug.EnterEventLoop;
+	gApplication::onLeaveEventLoop = GB.Debug.LeaveEventLoop;
+		
 	MAIN_scale = gDesktop::scale();
 	#ifdef GDK_WINDOWING_X11
   	X11_init(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gdk_x11_get_default_root_xwindow());

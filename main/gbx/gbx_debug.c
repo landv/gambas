@@ -136,6 +136,17 @@ void DEBUG_exit(void)
 		DEBUG.Profile.Exit();
 }
 
+void DEBUG_enter_event_loop(void)
+{
+	if (EXEC_profile)
+		DEBUG.Profile.Begin(NULL, NULL);
+}
+
+void DEBUG_leave_event_loop(void)
+{
+	if (EXEC_profile)
+		DEBUG.Profile.End(NULL, NULL);
+}
 
 void DEBUG_where(void)
 {

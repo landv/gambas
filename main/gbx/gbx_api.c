@@ -265,6 +265,8 @@ void *GAMBAS_Api[] =
 	(void *)STRING_make,
 	
 	(void *)DEBUG_get_current_position,
+	(void *)DEBUG_enter_event_loop,
+	(void *)DEBUG_leave_event_loop,
 	
 	(void *)SIGNAL_register,
 	(void *)SIGNAL_unregister,

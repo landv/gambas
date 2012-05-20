@@ -246,7 +246,9 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	// Run the message box
 	
+	GB.Debug.EnterEventLoop();
 	mb->exec();
+	GB.Debug.LeaveEventLoop();
 	
 	//CWINDOW_ensure_active_window();
 	if (parent)

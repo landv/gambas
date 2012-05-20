@@ -94,8 +94,11 @@ Public Sub Init(sPath As String)
   Dim iPos As Integer
   Dim sClass As String
   Dim hCurrent As CProfile
-  Dim cCol As Collection
-  Dim iLine As Integer
+  Dim aLine As Long[]
+  Dim iLastLine, iLine As Integer
+  Dim iTime, iOldTime, iLastTime As Long
+  Dim aLastLine As New Integer[]
+  Dim aLastTime As New Long[]
   
   Inc Application.Busy
   
@@ -105,34 +108,45 @@ Public Sub Init(sPath As String)
   While Not Eof(hFile)
     
     Line Input #hFile, sLine
+    
+    iPos = InStr(sLine, " ")
+    iLastTime = iOldTime
+    iTime += CLong(Mid$(sLine, iPos + 1))
+    iOldTime = iTime
+    
     If IsDigit(Left(sLine)) Then 
       If hCurrent Then
-        iPos = InStr(sLine, " ")
-        cCol = $cLines[sClass]
-        If Not cCol Then
-          cCol = New Collection
-          $cLines[sClass] = cCol
+        aLine = $cLines[sClass]
+        If Not aLine Then
+          aLine = New Long[]
+          $cLines[sClass] = aLine
         Endif
         iLine = CInt(Left(sLine, iPos - 1))
-        If cCol.Exist(iLine) Then
-          cCol[iLine] += CLong(Mid$(sLine, iPos + 1))
-        Else
-          cCol[iLine] = CLong(Mid$(sLine, iPos + 1))
+        If iLastLine Then 
+          aLine.Resize(Max(aLine.Count, iLastLine))
+          aLine[iLastLine - 1] += iTime - iLastTime
         Endif
+        iLastLine = iLine
       Endif
       Continue
     Endif
     
-    iPos = InStr(sLine, " ")
     If Left(sLine) = "+" Then
-      hCurrent = EnterFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
+      aLastLine.Push(iLastLine)
+      aLastTime.Push(iOldTime)
+      hCurrent = EnterFunction(Mid$(sLine, 2, iPos - 2), iTime)
     Else
-      hCurrent = ExitFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
+      hCurrent = ExitFunction(Mid$(sLine, 2, iPos - 2), iTime)
+      iLastLine = aLastLine.Pop()
+      iOldTime = aLastTime.Pop()
     Endif
     
     If hCurrent Then sClass = GetClass(hCurrent.Name)
     
   Wend
+  
+  hCurrent = $cFunc[".System.EventLoop"]
+  If hCurrent Then hCurrent.SetEventLoop()
   
   Me.Title = Subst(("Profile &1"), File.Name(sPath)) & " - " & Str(Stat(sPath).LastModified) & " - " & Subst(("Total time &1 μs"), Format($iTime, "#,##0"))
 
@@ -167,7 +181,7 @@ Public Sub gvwProfile_Data(Row As Integer, Column As Integer)
 
     Select Case Column
       Case 0
-        .Text = hProf.Name
+        .RichText = hProf.GetTitle()
       Case 1
         .Text = hProf.Count
       Case 2
@@ -232,10 +246,10 @@ Private Sub LoadCurrentSourceCode() As String
   aWhere = Split($hCurrent.Name, "*.*")
   
   sPath = Project.FindPath(aWhere[0])
-  If Not Exist(sPath) Then Return
+  If Not Exist(sPath) Then Goto HIDE_SOURCE
   
   Try hEditor = Project.LoadFile(sPath)
-  If IsNull(hEditor) Then Return
+  If IsNull(hEditor) Then Goto HIDE_SOURCE
   
   If $hCurrent.StartLine < 0 Then
     If aWhere[1] = aWhere[0] Then
@@ -252,6 +266,12 @@ Private Sub LoadCurrentSourceCode() As String
   
   gvwSource.Rows.Height = edtSource.LineHeight
   gvwSource.Rows.Count = edtSource.Lines.Count
+  tabInfo[2].Visible = True
+  Return
+  
+HIDE_SOURCE:
+
+  tabInfo[2].Visible = False
   
 End
 
@@ -381,7 +401,7 @@ Private Sub RefreshCurrent()
     
     LoadCurrentSourceCode
     
-    lblCurrent.Text = $hCurrent.Name
+    lblCurrent.Text = $hCurrent.GetTitle()
     Try gvwCalled.Row = 0
     Try gvwCaller.Row = 0
     panCurrent.Show
@@ -424,7 +444,7 @@ Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
 
     Select Case Column
       Case 0
-        .Text = hProf.Name
+        .RichText = hProf.GetTitle()
       Case 1
         .Text = hProf.Count
       Case 2
@@ -508,7 +528,7 @@ Public Sub gvwCaller_Data(Row As Integer, Column As Integer)
 
     Select Case Column
       Case 0
-        .Text = hProf.Name
+        .RichText = hProf.GetTitle()
       Case 1
         .Text = hProf.Count
       ' Case 2
@@ -537,7 +557,7 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
   Dim iTime As Long
   'If Not $hCurrent Then Return
   'Debug $hCurrent.Name; "."; Row + $iFirstLine; ": "; $hCurrent.Lines[Row + $iFirstLine]
-  Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine + 1]
+  Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
   If iTime = 0 Then Return
   
   With gvwSource.Data

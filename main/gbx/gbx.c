@@ -400,7 +400,9 @@ int main(int argc, char *argv[])
 		
 		if (!ret)
 		{
+			DEBUG_enter_event_loop();
 			HOOK_DEFAULT(loop, WATCH_loop)();
+			DEBUG_leave_event_loop();
 			EVENT_check_post();
 		}
 	}

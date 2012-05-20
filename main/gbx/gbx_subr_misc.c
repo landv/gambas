@@ -71,6 +71,8 @@ void SUBR_wait(ushort code)
 
 	SUBR_ENTER();
 
+	DEBUG_enter_event_loop();
+		
 	if (NPARAM == 0)
 	{
 		HOOK_DEFAULT(wait, WATCH_wait)(0);
@@ -98,6 +100,7 @@ void SUBR_wait(ushort code)
 		}
 	}
 
+	DEBUG_leave_event_loop();
 	SUBR_LEAVE_VOID();
 }
 

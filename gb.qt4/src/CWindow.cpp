@@ -1856,7 +1856,9 @@ void MyMainWindow::showModal(void)
 	
 	_enterLoop = true;
 	
+	GB.Debug.EnterEventLoop();
 	eventLoop.exec();
+	GB.Debug.LeaveEventLoop();
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 	
 	MyApplication::eventLoop = old;
@@ -1913,7 +1915,9 @@ void MyMainWindow::showPopup(QPoint &pos)
 	
 	old = MyApplication::eventLoop;
 	MyApplication::eventLoop = &eventLoop;
+	GB.Debug.EnterEventLoop();
 	eventLoop.exec();
+	GB.Debug.LeaveEventLoop();
 	MyApplication::eventLoop = old;
 	//eventLoop.exec();
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
