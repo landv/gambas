@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Static Private $aAll As New String[]
+
 Private $sPath As String
 Private $iTime As Long
 Private $aFunc As New CProfile[]
@@ -17,6 +19,8 @@ Private $aHistory As New String[]
 Private $iHistory As Integer
 Private $iNoHistory As Integer
 
+Private $cLines As New Collection
+Private $sCurrentClass As String
 Private $iFirstLine As Integer
 
 Static Public Sub Open(sPath As String)
@@ -29,6 +33,13 @@ Static Public Sub Open(sPath As String)
   hProf.Init(sPath)
   
 End
+
+Private Sub GetClass(sFunc As String) As String
+  
+  Return Left(sFunc, InStr(sFunc, ".") - 1)
+  
+End
+
 
 Private Sub EnterFunction(sFunc As String, iTime As Long) As CProfile
   
@@ -81,7 +92,10 @@ Public Sub Init(sPath As String)
   Dim hFile As File
   Dim sLine As String
   Dim iPos As Integer
+  Dim sClass As String
   Dim hCurrent As CProfile
+  Dim cCol As Collection
+  Dim iLine As Integer
   
   Inc Application.Busy
   
@@ -94,7 +108,17 @@ Public Sub Init(sPath As String)
     If IsDigit(Left(sLine)) Then 
       If hCurrent Then
         iPos = InStr(sLine, " ")
-        hCurrent.AddLine(CInt(Left(sLine, iPos - 1)), CLong(Mid$(sLine, iPos + 1)))
+        cCol = $cLines[sClass]
+        If Not cCol Then
+          cCol = New Collection
+          $cLines[sClass] = cCol
+        Endif
+        iLine = CInt(Left(sLine, iPos - 1))
+        If cCol.Exist(iLine) Then
+          cCol[iLine] += CLong(Mid$(sLine, iPos + 1))
+        Else
+          cCol[iLine] = CLong(Mid$(sLine, iPos + 1))
+        Endif
       Endif
       Continue
     Endif
@@ -105,6 +129,8 @@ Public Sub Init(sPath As String)
     Else
       hCurrent = ExitFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
     Endif
+    
+    If hCurrent Then sClass = GetClass(hCurrent.Name)
     
   Wend
   
@@ -118,14 +144,16 @@ Public Sub Init(sPath As String)
   Object.Unlock(gvwProfile)
   gvwProfile_Sort
   
+  $aAll.Add($sPath)
+  
   Me.Show
   
   Dec Application.Busy
   
-Catch
-  
-  Dec Application.Busy
-  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Text)
+'Catch
+'  
+'  Dec Application.Busy
+'  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Text)
   
 End
 
@@ -209,9 +237,14 @@ Private Sub LoadCurrentSourceCode() As String
   Try hEditor = Project.LoadFile(sPath)
   If IsNull(hEditor) Then Return
   
-  If $hCurrent.StartLine = 0 Then
-    $hCurrent.StartLine = hEditor.GetFunctionLine(aWhere[1])
-    $hCurrent.Code = hEditor.GetFunctionSource(aWhere[1])
+  If $hCurrent.StartLine < 0 Then
+    If aWhere[1] = aWhere[0] Then
+      $hCurrent.StartLine = 0
+      $hCurrent.Code = hEditor.GetFunctionSource()
+    Else
+      $hCurrent.StartLine = hEditor.GetFunctionLine(aWhere[1])
+      $hCurrent.Code = hEditor.GetFunctionSource(aWhere[1])
+    Endif
   Endif
   
   $iFirstLine = $hCurrent.StartLine
@@ -232,6 +265,7 @@ End
 Public Sub Form_Close()
 
   Try Kill $sPath
+  $aAll.Remove($aAll.Find($sPath))
 
   Settings.Write(Me)
   Settings.Write(splProfile)
@@ -327,6 +361,8 @@ Private Sub RefreshCurrent()
   
   If $hCurrent Then
     
+    $sCurrentClass = GetClass($hCurrent.Name)
+
     gvwCalled.Rows.Count = $hCurrent.CalledList.Count
     Object.Lock(gvwCalled)
     gvwCalled.Columns.Sort = 2
@@ -350,13 +386,11 @@ Private Sub RefreshCurrent()
     Try gvwCaller.Row = 0
     panCurrent.Show
     
-    
   Else
     
     panCurrent.Hide
-    'gvwCalled.Rows.Count = 0
-    'gvwCalled.Header = gvwCalled.None
     lblCurrent.Text = ""
+    $sCurrentClass = ""
     
   Endif
   
@@ -503,7 +537,7 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
   Dim iTime As Long
   'If Not $hCurrent Then Return
   'Debug $hCurrent.Name; "."; Row + $iFirstLine; ": "; $hCurrent.Lines[Row + $iFirstLine]
-  Try iTime = $hCurrent.Lines[Row + $iFirstLine + 1]
+  Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine + 1]
   If iTime = 0 Then Return
   
   With gvwSource.Data
@@ -520,5 +554,26 @@ End
 Public Sub edtSource_Scroll()
 
   gvwSource.ScrollY = edtSource.ScrollY
+
+End
+
+Static Public Sub OnProjectChange()
+  
+  Dim hWin As Window
+  
+  For Each hWin In Windows
+    If hWin Is FProfile Then hWin.Close
+  Next
+  
+End
+
+Static Public Sub CleanProfileFiles()
+  
+  Dim sPath As String
+  
+  For Each sPath In Dir(Project.Dir, ".prof.*")
+    If $aAll.Exist(sPath) Then Continue
+    Try Kill sPath
+  Next
 
 End

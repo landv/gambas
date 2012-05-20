@@ -774,6 +774,8 @@ Private Sub Start(sCmd As String)
   FMain.ShowDebug(True)
   FDebugInfo.UpdateView
 
+  If Project.Profiling Then FProfile.CleanProfileFiles
+
   ' If Project.Environment And If Project.Environment.Count Then 
   ' 
   '   sExec = Project.Environment.Join(" ")

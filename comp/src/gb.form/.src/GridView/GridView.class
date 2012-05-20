@@ -1217,7 +1217,7 @@ End
 
 Private Sub AutoResize_Write(Value As Boolean)
 
-  $bAutoResize = True
+  $bAutoResize = Value
   $hColumns._Layout
 
 End
@@ -1586,7 +1586,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim iColSpan As Integer
   Dim D As Integer
   
-  PW = Me.Font.TextWidth($hColumns[iCol].Text) + 8
+  PW = Me.Font.TextWidth($hColumns[iCol].Text) + 8 + If($bSorted, 16, 0)
   
   For I = 0 To Min(999, $hRows.Max)
     

@@ -3437,15 +3437,17 @@ Public Sub mnuUpperCase_Click()
   
 End
 
-Public Sub GetFunctionSource(sFunc As String) As String
+Public Sub GetFunctionSource(Optional sFunc As String) As String
 
   Dim sCode As String
   Dim iLine As Integer
   Dim sLine As String
   
-  FillProcCombo
-  Try iLine = $cProc[sFunc]
-  If Error Then Return
+  If sFunc Then
+    FillProcCombo
+    Try iLine = $cProc[sFunc]
+    If Error Then Return
+  Endif
   
   sLine = Editor.Lines[iLine].Text
   Do

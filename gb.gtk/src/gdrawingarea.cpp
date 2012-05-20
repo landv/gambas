@@ -96,6 +96,7 @@ gDrawingArea::gDrawingArea(gContainer *parent, bool scrollarea) : gContainer(par
 	_old_bg_id = 0;
 	_resize_cache = false;
 	_no_background = false;
+	
 	onExpose = NULL;
 		
 	if (!scrollarea)

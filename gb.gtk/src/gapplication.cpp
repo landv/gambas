@@ -462,10 +462,24 @@ static void gambas_handle_event(GdkEvent *event)
 	}
 	
 	/*if (event->type == GDK_BUTTON_PRESS)
-		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);*/
+		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);
+	else if (event->type == GDK_BUTTON_RELEASE)
+		fprintf(stderr, "GDK_BUTTON_RELEASE: %p %s\n", widget, control ? control->name() : NULL);*/
 	/*else if (event->type == GDK_KEY_PRESS)
 		fprintf(stderr, "GDK_KEY_PRESS: %p %s (%s)\n", widget, control ? control->name() : NULL, gApplication::activeControl() ? gApplication::activeControl()->name() : NULL);
 	*/
+	
+	// Release possible button press grab
+	
+	if (event->type == GDK_BUTTON_RELEASE)
+	{
+		if (gApplication::_button_grab)
+		{
+			//fprintf(stderr, "ungrab %s\n", gApplication::_button_grab->name());
+			gtk_grab_remove(gApplication::_button_grab->border);
+			gApplication::_button_grab = NULL;
+		}
+	}
 	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
@@ -564,6 +578,7 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 		{
+			//fprintf(stderr, "grab = %p\n", grab);
 			control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
 			bool menu = false;
@@ -578,12 +593,15 @@ static void gambas_handle_event(GdkEvent *event)
 			
 			if (event->type != GDK_BUTTON_RELEASE)
 			{
-				gtk_grab_add(control->border);
 				if (control->canFocus() && !control->hasFocus())
 					control->setFocus();
+				if (!control->_no_auto_grab)
+				{
+					//fprintf(stderr, "grab %s\n", control->name());
+					gApplication::_button_grab = control;
+					gtk_grab_add(control->border);
+				}
 			}
-			else
-				gtk_grab_remove(control->border);
 			
 		__BUTTON_TRY_PROXY:
 		
@@ -662,7 +680,7 @@ static void gambas_handle_event(GdkEvent *event)
 			}
 			
 			if (cancel)
-				return;
+				goto __RETURN;
 			
 			break;
 		}
@@ -694,7 +712,7 @@ static void gambas_handle_event(GdkEvent *event)
 				gMouse::invalidate();
 				
 				if (cancel)
-					return;
+					goto __RETURN;
 			}
 
 			if (control->_proxy_for)
@@ -735,7 +753,7 @@ static void gambas_handle_event(GdkEvent *event)
 			}
 
 			if (cancel)
-				return;
+				goto __RETURN;
 				
 			if (control->_proxy_for)
 			{
@@ -776,7 +794,7 @@ static void gambas_handle_event(GdkEvent *event)
 				gKey::disable();
 				
 				if (cancel)
-					return;
+					goto __RETURN;
 				
 				if (control->_proxy_for)
 				{
@@ -789,13 +807,13 @@ static void gambas_handle_event(GdkEvent *event)
 					if (control->_grab)
 					{
 						gApplication::exitLoop(control);
-						return;
+						goto __RETURN;
 					}
 					
 					if (check_button(win->_cancel))
 					{
 						win->_cancel->animateClick(type == gEvent_KeyRelease);
-						return;
+						goto __RETURN;
 					}
 				}
 				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
@@ -803,12 +821,12 @@ static void gambas_handle_event(GdkEvent *event)
 					if (check_button(win->_default))
 					{
 						win->_default->animateClick(type == gEvent_KeyRelease);
-						return;
+						goto __RETURN;
 					}
 				}
 				
 				if (control->_grab)
-					return;
+					goto __RETURN;
 			}
 
 			break;
@@ -818,6 +836,12 @@ static void gambas_handle_event(GdkEvent *event)
 __HANDLE_EVENT:
 
 	gtk_main_do_event(event);
+	
+__RETURN:
+	
+	(void)0;
+	//if (ungrab)
+	//	gtk_grab_remove(widget);
 }
 
 
@@ -839,6 +863,7 @@ void *gApplication::_loop_owner = 0;
 GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
+gControl *gApplication::_button_grab = NULL;
 gControl *gApplication::_active_control = NULL;
 gControl *gApplication::_old_active_control = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;

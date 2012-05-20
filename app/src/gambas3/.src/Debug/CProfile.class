@@ -14,8 +14,7 @@ Public CalledList As New CProfile[]
 Public Caller As New Collection
 Public CallerList As New CProfile[]
 
-Public Lines As Collection
-Public StartLine As Integer
+Public StartLine As Integer = -1
 Public Code As String
 
 Private $iSelf As Long = -1
@@ -95,14 +94,5 @@ Public Sub AddCaller(sFunc As String)
   Endif
   
   Inc hProf.Count
-  
-End
-
-Public Sub AddLine(iLine As Integer, iTime As Long)
-  
-  If Not Lines Then Lines = New Collection
-  
-  Try iTime += Lines[iLine]
-  Lines[iLine] = iTime
   
 End

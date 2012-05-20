@@ -239,6 +239,7 @@ void gControl::initAll(gContainer *parent)
 	_proxy = _proxy_for = NULL;
 	_no_tab_focus = false;
 	_inside = false;
+	_no_auto_grab = false;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -311,6 +312,8 @@ gControl::~gControl()
 		gApplication::_active_control = NULL;
 	if (gApplication::_old_active_control == this)
 		gApplication::_old_active_control = NULL;
+	if (gApplication::_button_grab == this)
+		gApplication::_button_grab = NULL;
 }
 
 void gControl::destroy()

@@ -222,6 +222,7 @@ public:
 	unsigned _has_border : 1;              // if the control has a border
 	unsigned _no_tab_focus : 1;            // Don't put inside focus chain
 	unsigned _inside : 1;                  // if we got an enter event, but not a leave event yet.
+	unsigned _no_auto_grab : 1;            // do not automatically grab widget on button press event
 	
   void removeParent() { pr = NULL; }
 	void initSignals();

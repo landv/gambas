@@ -94,6 +94,7 @@ public:
 	static gControl *_leave;
 	static gControl *_active_control;
 	static gControl *_old_active_control;
+	static gControl *_button_grab;
 	static guint32 _event_time;
 	static gMainWindow *_main_window;
 	static bool _close_next_window;

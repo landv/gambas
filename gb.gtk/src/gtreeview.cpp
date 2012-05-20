@@ -59,6 +59,7 @@ static gboolean cb_button_press(GtkWidget *widget, GdkEventButton *e, gTreeView 
 			if ((e->time - control->_last_click_time) >= 500)
 				control->emit(SIGNAL(control->onClick));
 			control->_last_click_time = e->time;
+			//fprintf(stderr, "cb_button_press: cancel\n");
 			return true;
 		}
 	}
@@ -114,6 +115,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	use_base = true;
 	_fix_border = false;
 	_last_click_time = 0;
+	_no_auto_grab = true;
 
 	tree = new gTree(this);
 	tree->addColumn();
@@ -359,11 +361,20 @@ char* gTreeView::belowItem(char *vl)
 char* gTreeView::find(int x, int y)
 {
 	GtkTreePath *path;
-
+	
 	if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree->widget), x, y, &path, NULL, NULL, NULL))
-		return tree->pathToKey(path);
-	else
-		return NULL;
+	{
+		char *key = tree->pathToKey(path);
+		gTreeRow *row = tree->getRow(key);
+		int rx, ry, rw, rh;
+		
+		row->rect(&rx, &ry, &rw, &rh);
+		
+		if (x >= rx)
+			return key;
+	}
+	
+	return NULL;
 }
 
 
