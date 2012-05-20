@@ -389,7 +389,7 @@ msgstr ""
 
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
 #: FConflict.class:191 FConnectionEditor.class:294 FCreateFile.form:437
-#: FDebugInfo.form:215 FEditor.class:2401 FExportData.class:126
+#: FDebugInfo.form:215 FEditor.class:2400 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3153
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
 #: FList.form:121 FMain.class:200 FMakeInstall.class:348 FMenu.form:378
@@ -1291,7 +1291,7 @@ msgstr ""
 msgid "Expression"
 msgstr ""
 
-#: FDebugInfo.class:55 FProfile.class:206
+#: FDebugInfo.class:55 FProfile.class:261
 msgid "Function"
 msgstr ""
 
@@ -1461,14 +1461,14 @@ msgstr ""
 msgid "Procedure list"
 msgstr ""
 
-#: FEditor.class:2401 FIconEditor.class:2048 FTextEditor.class:504
+#: FEditor.class:2400 FIconEditor.class:2048 FTextEditor.class:504
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2827 FTextEditor.class:846
+#: FEditor.class:2826 FTextEditor.class:846
 msgid "(Declarations)"
 msgstr ""
 
@@ -1794,11 +1794,11 @@ msgstr ""
 msgid "Help browser"
 msgstr ""
 
-#: FHelpBrowser.form:41 FMain.form:489
+#: FHelpBrowser.form:41 FMain.form:489 FProfile.form:50
 msgid "Go back"
 msgstr ""
 
-#: FHelpBrowser.form:47 FMain.form:496
+#: FHelpBrowser.form:47 FMain.form:496 FProfile.form:56
 msgid "Go forward"
 msgstr ""
 
@@ -1932,7 +1932,7 @@ msgstr ""
 msgid "Import file"
 msgstr ""
 
-#: FImportTable.form:56 FPasteTable.form:40
+#: FImportTable.form:56 FPasteTable.form:40 FProfile.form:135
 msgid "Source"
 msgstr ""
 
@@ -3563,27 +3563,39 @@ msgstr ""
 msgid "Table already exists"
 msgstr ""
 
-#: FProfile.form:103
-msgid "Called functions"
+#: FProfile.form:62
+msgid "Show relative durations"
 msgstr ""
 
-#: FProfile.class:96
+#: FProfile.form:113
+msgid "Callees"
+msgstr ""
+
+#: FProfile.form:124
+msgid "Callers"
+msgstr ""
+
+#: FProfile.class:111
 msgid "Profile &1"
 msgstr ""
 
-#: FProfile.class:96
+#: FProfile.class:111
 msgid "Total time &1 μs"
 msgstr ""
 
-#: FProfile.class:208
+#: FProfile.class:128
+msgid "Unable to load profile file: &1"
+msgstr ""
+
+#: FProfile.class:263
 msgid "Calls"
 msgstr ""
 
-#: FProfile.class:210
+#: FProfile.class:265
 msgid "Duration"
 msgstr ""
 
-#: FProfile.class:212
+#: FProfile.class:267
 msgid "Self"
 msgstr ""
 

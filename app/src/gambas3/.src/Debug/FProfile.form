@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,80,56)
+  MoveScaled(0,0,85,48)
   Icon = Picture["icon:/medium/clock"]
   Utility = True
   Arrangement = Arrange.Fill
   { splProfile HSplit
-    MoveScaled(1,6,78,45)
+    MoveScaled(1,1,78,45)
     Expand = True
     { Panel3 HBox
       MoveScaled(1,6,35,34)
@@ -18,14 +18,17 @@
           Separator = True
           { btnPrev ToolButton
             MoveScaled(0,0,4,4)
+            ToolTip = ("Go back")
             Picture = Picture["icon:/small/left"]
           }
           { btnNext ToolButton
             MoveScaled(4,0,4,4)
+            ToolTip = ("Go forward")
             Picture = Picture["icon:/small/right"]
           }
           { btnPercent ToolButton
             MoveScaled(8,0,4,4)
+            ToolTip = ("Show relative durations")
             Picture = Picture["img/16/percent.png"]
             Toggle = True
           }
@@ -41,16 +44,16 @@
         }
       }
       { Separator2 Separator
-        MoveScaled(32,7,0,13)
+        MoveScaled(32,7,0,23)
       }
     }
     { Panel1 HBox
-      MoveScaled(38,2,32,41)
+      MoveScaled(38,2,38,41)
       { Separator1 Separator
-        MoveScaled(2,10,0,15)
+        MoveScaled(2,10,0,24)
       }
       { panCurrent VBox
-        MoveScaled(4,3,27,37)
+        MoveScaled(4,3,33,37)
         Visible = False
         Expand = True
         { lblCurrent Label
@@ -62,12 +65,13 @@
           MoveScaled(4,6,16,0)
         }
         { tabInfo TabPanel
-          MoveScaled(2,7,23,29)
+          MoveScaled(2,7,29,29)
           Expand = True
           Arrangement = Arrange.Fill
           Border = False
+          Count = 3
           Index = 0
-          Text = ("Called functions")
+          Text = ("Callees")
           { gvwCalled GridView
             MoveScaled(2,1,19,23)
             Mode = Select.Single
@@ -75,6 +79,43 @@
             ScrollBar = Scroll.Vertical
             Border = False
             Sorted = True
+          }
+          Index = 1
+          Text = ("Callers")
+          { gvwCaller GridView
+            MoveScaled(2,2,19,23)
+            Mode = Select.Single
+            Header = GridView.Horizontal
+            ScrollBar = Scroll.Vertical
+            Border = False
+            Sorted = True
+          }
+          Index = 2
+          Text = ("Source")
+          { HBox1 HBox
+            MoveScaled(1,1,27,24)
+            { gvwSource GridView
+              MoveScaled(1,1,7,22)
+              Enabled = False
+              Grid = False
+              ScrollBar = Scroll.None
+              Border = False
+            }
+            { Separator4 Separator
+              MoveScaled(9,3,0,16)
+            }
+            { panSepSource Panel
+              MoveScaled(10,2,1,21)
+              Background = Color.TextBackground
+            }
+            { edtSource Editor
+              MoveScaled(12,1,14,22)
+              Expand = True
+              Border = False
+              ScrollBar = Scroll.Vertical
+              Highlight = Highlight.Gambas
+              ReadOnly = True
+            }
           }
           Index = 0
         }

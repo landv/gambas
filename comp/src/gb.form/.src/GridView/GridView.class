@@ -1669,15 +1669,8 @@ Private Sub Sorted_Write(Value As Boolean)
 
 End
 
-' Private Function HighlightSort_Read() As Boolean
-' 
-'   Return $bHighlightSort
-' 
-' End
-' 
-' Private Sub HighlightSort_Write(Value As Boolean)
-' 
-'   $bHighlightSort = Value
-'   Me.Refresh
-' 
-' End
+Public Sub Scroll(X As Integer, Y As Integer)
+  
+  $hView.Scroll(X, Y)
+  
+End

@@ -1187,11 +1187,15 @@ msgstr "Pr&océdure courante"
 msgid "Cairo graphic library"
 msgstr "Bibliothèque graphique Cairo"
 
-#: FProfile.form:69
-msgid "Called functions"
+#: FProfile.form:108
+msgid "Callees"
 msgstr "Fonctions appelées"
 
-#: FProfile.class:198
+#: FProfile.form:119
+msgid "Callers"
+msgstr "Fonctions appelantes"
+
+#: FProfile.class:213
 msgid "Calls"
 msgstr "Appels"
 
@@ -2099,7 +2103,7 @@ msgstr "Dessiner"
 msgid "Drawing"
 msgstr "Dessin"
 
-#: FProfile.class:200
+#: FProfile.class:215
 msgid "Duration"
 msgstr "Durée"
 
@@ -2563,7 +2567,7 @@ msgstr "Français (France)"
 msgid "French (Switzerland)"
 msgstr "Français (Suisse)"
 
-#: FDebugInfo.class:55 FProfile.class:196
+#: FDebugInfo.class:55 FProfile.class:211
 msgid "Function"
 msgstr "Fonction"
 
@@ -2691,11 +2695,11 @@ msgstr "Analyseur d'options de ligne de commande GNU"
 msgid "GNU Scientific Library"
 msgstr "Bibliothèque scientifique GNU"
 
-#: FHelpBrowser.form:41 FMain.form:489
+#: FHelpBrowser.form:41 FMain.form:489 FProfile.form:45
 msgid "Go back"
 msgstr "Revenir en arrière"
 
-#: FHelpBrowser.form:47 FMain.form:496
+#: FHelpBrowser.form:47 FMain.form:496 FProfile.form:51
 msgid "Go forward"
 msgstr "Aller en avant"
 
@@ -4075,7 +4079,7 @@ msgstr "Liste des procédures"
 msgid "Procedure separation"
 msgstr "Séparation des procédures"
 
-#: FProfile.class:92
+#: FProfile.class:97
 msgid "Profile &1"
 msgstr "Profil &1"
 
@@ -4087,7 +4091,7 @@ msgstr "Projet"
 msgid "Project checkout has failed."
 msgstr "La récupération du projet a échoué."
 
-#: Project.module:5260
+#: Project.module:5262
 msgid "Project cleanup..."
 msgstr "Nettoyage du projet..."
 
@@ -4095,7 +4099,7 @@ msgstr "Nettoyage du projet..."
 msgid "Project commit"
 msgstr "Envoi du projet"
 
-#: Project.module:5266
+#: Project.module:5268
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
@@ -4603,7 +4607,7 @@ msgstr "Sélectionnez le répertoire destination"
 msgid "Selection"
 msgstr "Sélection"
 
-#: FProfile.class:202
+#: FProfile.class:217
 msgid "Self"
 msgstr "Propre"
 
@@ -4666,6 +4670,10 @@ msgstr "Afficher les numéros de lignes"
 #: FPropertyProject.form:504
 msgid "Show only components used in project"
 msgstr "Afficher uniquement les composants utilisés dans le projet"
+
+#: FProfile.form:57
+msgid "Show relative durations"
+msgstr "Afficher des durées relatives"
 
 #: FDebugInfo.form:236
 msgid "Show search window"
@@ -5591,7 +5599,7 @@ msgstr "-"
 msgid "TopRight"
 msgstr "-"
 
-#: FProfile.class:92
+#: FProfile.class:97
 msgid "Total time &1 μs"
 msgstr "Durée totale &1 μs"
 
@@ -5667,7 +5675,7 @@ msgstr "Impossible de compresser le fichier."
 msgid "Unable to connect to database."
 msgstr "Impossible de se connecter à la base de données."
 
-#: Project.module:5296
+#: Project.module:5298
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
 

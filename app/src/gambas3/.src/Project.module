@@ -2951,10 +2951,10 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         TabSize = Val(sVal)
 
       Case "arguments"
-        Arguments = Split(Unquote(sVal), "\n")
+        Arguments = Split(UnQuote(sVal), "\n")
 
       Case "environment"
-        Environment = Split(Unquote(sVal), "\n")
+        Environment = Split(UnQuote(sVal), "\n")
 
       Case "version"
         cVer = Split(sVal, ".")
@@ -3006,10 +3006,10 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         ModulePublic = Val(sVal) <> 0
 
       Case "description"
-        Description = Unquote(sVal)
+        Description = UnQuote(sVal)
 
       Case "authors"
-        Authors = Unquote(sVal)
+        Authors = UnQuote(sVal)
 
       Case "icon"
         Icon = sVal
@@ -3023,7 +3023,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "menus"
         If bNewPackagerConfig Then
           iPos = InStr(sVal, ":")
-          Menus[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+          Menus[Left$(sVal, iPos - 1)] = UnQuote(Mid$(sVal, iPos + 1))
         Else
           iElt = 0
           For Each sElt In Split(sVal, ",")
@@ -3036,7 +3036,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "categories"
         If bNewPackagerConfig Then
           iPos = InStr(sVal, ":")
-          Categories[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+          Categories[Left$(sVal, iPos - 1)] = UnQuote(Mid$(sVal, iPos + 1))
         Else
           iElt = 0
           For Each sElt In Split(sVal, ",")
@@ -3049,7 +3049,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "groups"
         If bNewPackagerConfig Then
           iPos = InStr(sVal, ":")
-          Groups[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+          Groups[Left$(sVal, iPos - 1)] = UnQuote(Mid$(sVal, iPos + 1))
         Else
           iElt = 0
           For Each sElt In Split(sVal, ",")
@@ -3062,7 +3062,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "extradependencies"
         If bNewPackagerConfig Then
           iPos = InStr(sVal, ":")
-          ExtraDependencies[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+          ExtraDependencies[Left$(sVal, iPos - 1)] = UnQuote(Mid$(sVal, iPos + 1))
         Else
           iElt = 0
           For Each sElt In Split(sVal, ",")
@@ -3077,7 +3077,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "extrafiles"
         If bNewPackagerConfig Then
           iPos = InStr(sVal, ":")
-          ExtraFiles[Left$(sVal, iPos - 1)] = Unquote(Mid$(sVal, iPos + 1))
+          ExtraFiles[Left$(sVal, iPos - 1)] = UnQuote(Mid$(sVal, iPos + 1))
         Else
           iElt = 0
           For Each sElt In Split(sVal, ",")
@@ -3090,10 +3090,10 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Endif
 
       Case "extraautoconftest"
-        ExtraAutoconfTest = Unquote(sVal)
+        ExtraAutoconfTest = UnQuote(sVal)
 
       Case "extradesktop"
-        ExtraDesktop = Unquote(sVal)
+        ExtraDesktop = UnQuote(sVal)
 
       Case "prefix"
         Prefix = Val(sVal)

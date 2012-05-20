@@ -1771,10 +1771,8 @@ _BREAK:
 		TC = PC + 1;
 		TP = SP;
 		
-		/*if (EXEC_profile)
-		{
+		if (EXEC_profile)
 			DEBUG.Profile.Add(CP, FP, PC);
-		}*/
 
 		ind = GET_UX();
 

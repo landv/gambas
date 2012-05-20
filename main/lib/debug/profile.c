@@ -76,6 +76,7 @@ void PROFILE_exit(void)
 void PROFILE_add(void *cp, void *fp, void *pc)
 {
 	static void *_last_fp = NULL;
+	static void *_last_pc = NULL;
 	static struct timeval _last_time;
 	
 	struct timeval time;
@@ -86,12 +87,13 @@ void PROFILE_add(void *cp, void *fp, void *pc)
 	if (fp == _last_fp)
 	{
 		line = 0;
-		DEBUG_calc_line_from_position(cp, fp, pc, &line);
+		DEBUG_calc_line_from_position(cp, fp, _last_pc, &line);
 		//fprintf(_file, "%d %d %s\n", line, (int)((time.tv_sec - _last_time.tv_sec) * 1000000 + time.tv_usec - _last_time.tv_usec), DEBUG_get_position(cp, fp, pc));
 		fprintf(_file, "%d %d\n", line, (int)((time.tv_sec - _last_time.tv_sec) * 1000000 + time.tv_usec - _last_time.tv_usec));
 	}
 	
 	_last_fp = fp;
+	_last_pc = pc;
 	_last_time = time;
 }
 

@@ -140,6 +140,3 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
   EXEC_debug = debug;
   return error;
 }
-
-
-

@@ -967,7 +967,7 @@ __HTML:
 	
 __BASE64:
 	{
-		static const char base64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		static const char base64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 		uchar *in;
 		char *out = buf;
 		

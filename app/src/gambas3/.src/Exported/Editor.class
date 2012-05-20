@@ -138,6 +138,8 @@ Public Sub ReadConfig()
   Me.Flags[Editor.ShowDots] = Settings["/Editor/ShowDots", True]
   Me.Flags[Editor.HighlightBraces] = True
   
+  Me.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
+  
 End
 
 Public Sub StoreSelection()

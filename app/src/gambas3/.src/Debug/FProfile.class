@@ -17,6 +17,8 @@ Private $aHistory As New String[]
 Private $iHistory As Integer
 Private $iNoHistory As Integer
 
+Private $iFirstLine As Integer
+
 Static Public Sub Open(sPath As String)
   
   Dim hProf As FProfile
@@ -28,7 +30,7 @@ Static Public Sub Open(sPath As String)
   
 End
 
-Private Sub EnterFunction(sFunc As String, iTime As Long)
+Private Sub EnterFunction(sFunc As String, iTime As Long) As CProfile
   
   Dim hProf As CProfile
   
@@ -45,9 +47,11 @@ Private Sub EnterFunction(sFunc As String, iTime As Long)
   
   Inc hProf.Count
   
+  Return hProf
+  
 End
 
-Private Sub ExitFunction(sFunc As String, iTime As Long)
+Private Sub ExitFunction(sFunc As String, iTime As Long) As CProfile
   
   Dim hProf As CProfile
   Dim hCaller As CProfile
@@ -64,6 +68,8 @@ Private Sub ExitFunction(sFunc As String, iTime As Long)
     hCaller = $cFunc[$aLevel[$aLevel.Max]]
     'hCaller.Time -= iTime
     hCaller.AddCalled(sFunc, iTime)
+    hProf.AddCaller(hCaller.Name)
+    Return hCaller
   Else
     $iTime += iTime
   Endif
@@ -75,6 +81,9 @@ Public Sub Init(sPath As String)
   Dim hFile As File
   Dim sLine As String
   Dim iPos As Integer
+  Dim hCurrent As CProfile
+  
+  Inc Application.Busy
   
   $sPath = sPath
   
@@ -82,13 +91,19 @@ Public Sub Init(sPath As String)
   While Not Eof(hFile)
     
     Line Input #hFile, sLine
-    If IsDigit(Left(sLine)) Then Continue
+    If IsDigit(Left(sLine)) Then 
+      If hCurrent Then
+        iPos = InStr(sLine, " ")
+        hCurrent.AddLine(CInt(Left(sLine, iPos - 1)), CLong(Mid$(sLine, iPos + 1)))
+      Endif
+      Continue
+    Endif
     
     iPos = InStr(sLine, " ")
     If Left(sLine) = "+" Then
-      EnterFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
+      hCurrent = EnterFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
     Else
-      ExitFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
+      hCurrent = ExitFunction(Mid$(sLine, 2, iPos - 2), CLong(Mid$(sLine, iPos + 1)))
     Endif
     
   Wend
@@ -105,9 +120,12 @@ Public Sub Init(sPath As String)
   
   Me.Show
   
-'Catch
+  Dec Application.Busy
   
-'  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Text)
+Catch
+  
+  Dec Application.Busy
+  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Text)
   
 End
 
@@ -162,13 +180,45 @@ Private Sub GotoFunction(sFunc As String, Optional bNoHistory As Boolean)
   
   Dim hEditor As FEditor
   Dim aWhere As String[]
+  Dim sPath As String
   
   aWhere = Split(sFunc, "*.*")
   
-  Try hEditor = Project.OpenFile(Project.FindPath(aWhere[0]))
+  sPath = Project.FindPath(aWhere[0])
+  If Not Exist(sPath) Then Return
+  
+  Try hEditor = Project.OpenFile(sPath)
   If IsNull(hEditor) Then Return
   
-  hEditor.GotoFunction(aWhere[1])
+  hEditor.GotoFunction(hEditor.GetFunctionLine(aWhere[1]))
+  
+End
+
+Private Sub LoadCurrentSourceCode() As String
+  
+  Dim hEditor As FEditor
+  Dim aWhere As String[]
+  Dim sPath As String
+  Dim sSource As String
+  
+  aWhere = Split($hCurrent.Name, "*.*")
+  
+  sPath = Project.FindPath(aWhere[0])
+  If Not Exist(sPath) Then Return
+  
+  Try hEditor = Project.LoadFile(sPath)
+  If IsNull(hEditor) Then Return
+  
+  If $hCurrent.StartLine = 0 Then
+    $hCurrent.StartLine = hEditor.GetFunctionLine(aWhere[1])
+    $hCurrent.Code = hEditor.GetFunctionSource(aWhere[1])
+  Endif
+  
+  $iFirstLine = $hCurrent.StartLine
+  edtSource.Text = $hCurrent.Code
+  
+  gvwSource.Rows.Height = edtSource.LineHeight
+  gvwSource.Rows.Count = edtSource.Lines.Count
   
 End
 
@@ -192,6 +242,11 @@ Public Sub ReadConfig()
   
   Project.SetSmallFont(gvwProfile)
   Project.SetSmallFont(tabInfo)
+  edtSource.ReadConfig
+  edtSource.Flags[Editor.HideMargin] = True
+  panSepSource.Background = edtSource.Styles[Highlight.Background].Color
+  Project.SetEditorFont(gvwSource)
+  gvwSource.Width = gvwSource.Font.TextWidth("9999999999")
   
 End
 
@@ -227,6 +282,21 @@ Public Sub Form_Open()
     '.Columns[3].Alignment = Align.Right
   End With
   
+  With gvwCaller
+    .Columns.Count = 2
+    .Columns[0].Text = ("Function")
+    .Columns[0].Width = -1
+    .Columns[1].Text = ("Calls")
+    .Columns[1].Alignment = Align.Right
+    '.Columns[2].Text = ("Duration")
+    '.Columns[2].Alignment = Align.Right
+    '.Columns[3].Text = ("Mean (μs)")
+    '.Columns[3].Alignment = Align.Right
+  End With
+  
+  gvwSource.Columns.Count = 1
+  gvwSource.Columns[0].Alignment = Align.Right
+  
   gvwProfile.Row = 0
   
 End
@@ -249,12 +319,11 @@ Public Sub gvwProfile_Select()
   
   $hCurrent = $aFunc[gvwProfile.Row]
   AddHistory($hCurrent.Name)
-  RefreshCalled
-  gvwCalled.Columns[0].Width = -1
+  RefreshCurrent
 
 End
 
-Private Sub RefreshCalled()
+Private Sub RefreshCurrent()
   
   If $hCurrent Then
     
@@ -264,10 +333,23 @@ Private Sub RefreshCalled()
     gvwCalled.Columns.Ascending = True
     Object.Unlock(gvwCalled)
     gvwCalled_Sort
-    'gvwCalled.Header = gvwCalled.Horizontal
+    gvwCalled.Columns[0].Width = -1
+    
+    gvwCaller.Rows.Count = $hCurrent.CallerList.Count
+    Object.Lock(gvwCaller)
+    gvwCalled.Columns.Sort = 1
+    gvwCalled.Columns.Ascending = True
+    Object.Unlock(gvwCaller)
+    gvwCaller_Sort
+    gvwCaller.Columns[0].Width = -1
+    
+    LoadCurrentSourceCode
+    
     lblCurrent.Text = $hCurrent.Name
     Try gvwCalled.Row = 0
+    Try gvwCaller.Row = 0
     panCurrent.Show
+    
     
   Else
     
@@ -337,6 +419,8 @@ Public Sub btnPercent_Click()
   $bPercent = Not $bPercent
   gvwProfile.Refresh
   gvwCalled.Refresh
+  gvwCaller.Refresh
+  gvwSource.Refresh
 
 End
 
@@ -359,5 +443,82 @@ Public Sub btnNext_Click()
     gvwProfile.Row = $aFunc.Find($cFunc[$aHistory[$iHistory - 1]])
     Dec $iNoHistory
   Endif
+
+End
+
+Public Sub gvwCaller_Sort()
+
+  Dim sCurrent As String
+
+  If Not $hCurrent Then Return
+  
+  Try sCurrent = $hCurrent.CallerList[gvwProfile.Row].Name
+
+  CProfile.Sort = gvwCaller.Columns.Sort
+  CProfile.Ascending = gvwCaller.Columns.Ascending
+  $hCurrent.CallerList.Sort
+  
+  If sCurrent Then gvwCaller.Row = $hCurrent.CallerList.Find($hCurrent.Caller[sCurrent])
+
+End
+
+Public Sub gvwCaller_Data(Row As Integer, Column As Integer)
+
+  Dim hProf As CProfile
+  
+  If Not $hCurrent Then Return
+
+  With gvwCaller.Data
+
+    hProf = $hCurrent.CallerList[Row]
+
+    Select Case Column
+      Case 0
+        .Text = hProf.Name
+      Case 1
+        .Text = hProf.Count
+      ' Case 2
+      '   If $bPercent Then
+      '     .Text = Format(hProf.Time / $iTime * 100, "0.00")
+      '   Else
+      '     .Text = hProf.Time
+      '   Endif
+      ' Case 3
+      '  .Text = Format(hProf.Time / hProf.Count, "0.##")
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwCaller_Activate()
+
+  If Not $hCurrent Then Return
+  gvwProfile.Row = $aFunc.Find($cFunc[$hCurrent.CallerList[gvwCaller.Row].Name])
+
+End
+
+Public Sub gvwSource_Data(Row As Integer, Column As Integer)
+  
+  Dim iTime As Long
+  'If Not $hCurrent Then Return
+  'Debug $hCurrent.Name; "."; Row + $iFirstLine; ": "; $hCurrent.Lines[Row + $iFirstLine]
+  Try iTime = $hCurrent.Lines[Row + $iFirstLine + 1]
+  If iTime = 0 Then Return
+  
+  With gvwSource.Data
+    If $bPercent Then
+      .Text = Format(iTime / $hCurrent.Self * 100, "0.00")
+    Else
+      .Text = iTime
+    Endif
+  End With
+  'If Row And 1 Then gvwSource.Data.Background = Color.LightForeground
+  
+End
+
+Public Sub edtSource_Scroll()
+
+  gvwSource.ScrollY = edtSource.ScrollY
 
 End

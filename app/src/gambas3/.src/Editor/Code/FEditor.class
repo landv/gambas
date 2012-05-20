@@ -172,7 +172,6 @@ End
 Private Sub ReadConfigEditor(hEditor As Editor)
 
   hEditor.ReadConfig
-  hEditor.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
 
 End
 
@@ -639,7 +638,7 @@ End
 
 Public Sub mnuGoto_Click()
 
-  GotoProc(CInt(Last.Tag))
+  GotoFunction(CInt(Last.Tag))
 
 End
 
@@ -698,7 +697,7 @@ Public Sub GotoEvent(sName As String, sEvent As String, Optional sSign As String
   sProc = sName & "_" & sEvent
   iLine = InsertFunction(sProc, "", True, sSign)
   If iLine < 0 Then Return True
-  GotoProc(iLine) ' + 1, Len(edtEditor.Lines[iLine]))
+  GotoFunction(iLine) ' + 1, Len(edtEditor.Lines[iLine]))
 
 End
 
@@ -2919,21 +2918,19 @@ End
 '
 ' End
 
-Public Sub GotoFunction(sFunc As String)
+Public Sub GetFunctionLine(sFunc As String) As Integer
   
   Dim iLine As Integer
   
   FillProcCombo
   
   Try iLine = $cProc[sFunc]
-  If Error Then Return
-  
-  Goto(iLine)
+  If Not Error Then Return iLine
   
 End
 
 
-Private Sub GotoProc(iLine As Integer)
+Public Sub GotoFunction(iLine As Integer)
 
   Dim sLine As String
   Dim iCol As Integer
@@ -3190,7 +3187,7 @@ Private Sub ToggleProcList()
   iCurrent = FProcedureList.Popup(Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
   If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
-    GotoProc(iLine)
+    GotoFunction(iLine)
   Endif
 
 End
@@ -3437,5 +3434,28 @@ Public Sub mnuUpperCase_Click()
   Editor.Insert(String.UCase(Editor.Selection.Text))
   Editor.End
   Editor.RecallSelection
+  
+End
+
+Public Sub GetFunctionSource(sFunc As String) As String
+
+  Dim sCode As String
+  Dim iLine As Integer
+  Dim sLine As String
+  
+  FillProcCombo
+  Try iLine = $cProc[sFunc]
+  If Error Then Return
+  
+  sLine = Editor.Lines[iLine].Text
+  Do
+    sCode &= sLine & "\n"
+    Inc iLine
+    If iLine >= Editor.Lines.Count Then Break
+    sLine = Editor.Lines[iLine].Text
+    If IsProc(sLine) Then Break
+  Loop
+  
+  Return sCode
   
 End

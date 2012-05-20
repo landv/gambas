@@ -11,6 +11,13 @@ Property Read Self As Long
 Public Called As New Collection
 Public CalledList As New CProfile[]
 
+Public Caller As New Collection
+Public CallerList As New CProfile[]
+
+Public Lines As Collection
+Public StartLine As Integer
+Public Code As String
+
 Private $iSelf As Long = -1
 
 Public Sub _compare(hOther As CProfile) As Integer
@@ -73,4 +80,29 @@ Private Function Self_Read() As Long
   
   Return $iSelf
 
+End
+
+Public Sub AddCaller(sFunc As String)
+  
+  Dim hProf As CProfile
+  
+  hProf = Caller[sFunc]
+  If Not hProf Then
+    hProf = New CProfile
+    hProf.Name = sFunc
+    Caller[sFunc] = hProf
+    CallerList.Add(hProf)
+  Endif
+  
+  Inc hProf.Count
+  
+End
+
+Public Sub AddLine(iLine As Integer, iTime As Long)
+  
+  If Not Lines Then Lines = New Collection
+  
+  Try iTime += Lines[iLine]
+  Lines[iLine] = iTime
+  
 End
