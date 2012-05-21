@@ -63,11 +63,13 @@ Private Sub EnterFunction(sFunc As String, iTime As Long) As CProfile
   
 End
 
-Private Sub ExitFunction(sFunc As String, iTime As Long) As CProfile
+Private Sub ExitFunction(iTime As Long) As CProfile
   
   Dim hProf As CProfile
   Dim hCaller As CProfile
+  Dim sFunc As String
   
+  sFunc = $aLevel[$aLevel.Max]
   hProf = $cFunc[sFunc]
   
   $aLevel.Remove($aLevel.Max)
@@ -117,28 +119,27 @@ Public Sub Init(sPath As String)
     If Left(sLine) = " " Then
       
       sLine = Mid$(sLine, 2)
-      iPos = InStr(sLine, " ")
+       
       iLastTime = iOldTime
-      If iPos Then
-        iTime += CLong(Mid$(sLine, iPos + 1))
-        sFunc = Left(sLine, iPos - 1)
-      Else
-        sFunc = sLine
-      Endif
-      
-      iOldTime = iTime
       
       If Left(sLine) = ">" Then
       
         aLastLine.Push(iLastLine)
         aLastTime.Push(iOldTime)
+        
+        iPos = InStr(sLine, " ")
+        iTime += CLong(Mid$(sLine, iPos + 1))
+        sFunc = Left(sLine, iPos - 1)
+        
+        iOldTime = iTime
+      
         hCurrent = EnterFunction(Mid$(sFunc, 2), iTime)
         iLine = 0
         iLastLine = 0
         
       Else
       
-        hCurrent = ExitFunction(Mid$(sFunc, 2), iTime)
+        hCurrent = ExitFunction(iTime)
         iLastLine = aLastLine.Pop()
         iOldTime = aLastTime.Pop()
         iLine = 0
@@ -324,6 +325,7 @@ Public Sub Init(sPath As String)
           If Not Error Then 
             Inc aCount[iLastLine]
           Else
+            hCurrent.FirstTime += iTime - iLastTime
             If iLastLine >= 0 Then Debug hCurrent.Name; "."; iLastLine + 1
           Endif
           
@@ -800,8 +802,16 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
     Select Case Column
       
       Case 0
-        Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
-        If iTime = 0 Then Return
+        If Row = 0 Then
+          iTime = $hCurrent.FirstTime
+        Else
+          Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
+          If iTime = 0 Then 
+            Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
+            If iCount <= 1 Then Return
+          Endif
+        Endif
+        
   
         If $bPercent Then
           .Text = Format(iTime / $hCurrent.Time * 100, "0.00")
@@ -810,7 +820,12 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
         Endif
         
       Case 1
-        Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
+        If Row = 0 Then
+          iCount = $hCurrent.Count
+        Else
+          Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
+        Endif
+        
         If iCount <= 1 Then Return
         .Text = "/ " & CStr(iCount)
         
@@ -856,5 +871,12 @@ End
 Public Sub gvwSource_Select()
 
   edtSource.Goto(gvwSource.Row, 0)
+
+End
+
+Public Sub edtSource_Cursor()
+
+  gvwSource.Row = edtSource.Line
+  edtSource.Selection.Hide
 
 End

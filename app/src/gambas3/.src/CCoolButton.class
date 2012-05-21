@@ -16,7 +16,6 @@ Private $iHighlight As Integer = Color.SelectedBackground
 
 Event Click
 
-
 Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Integer, H As Integer, sText As String, vIcon As Variant, Optional sFont As String)
 
   $hPanel = New DrawingArea(hContainer) As "Panel"

@@ -85,16 +85,11 @@ void PROFILE_exit(void)
 
 #define CODE(n) (n + '9' + 1)
 
-void PROFILE_add(void *cp, void *fp, void *pc)
+static void add_line(ushort line, uint64_t time)
 {
-	ushort line;
-	uint64_t time = get_time();
 	int n;
 	char buf[32], num[16];
 	char *p;
-	
-	line = 0;
-	DEBUG_calc_line_from_position(cp, fp, pc, &line);
 	
 	n = line - _last_line;
 	p = buf;
@@ -133,24 +128,51 @@ void PROFILE_add(void *cp, void *fp, void *pc)
 	_new_line = FALSE;
 }
 
+void PROFILE_add(void *cp, void *fp, void *pc)
+{
+	uint64_t time = get_time();
+	ushort line;
+	
+	line = 0;
+	DEBUG_calc_line_from_position(cp, fp, pc, &line);
+	
+	add_line(line, time);
+}
+
 void PROFILE_begin(void *cp, void *fp)
 {
+	uint64_t time = get_time();
 	const char *where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
 	
 	if (!_new_line)
 		fputc('\n', _file);
-	fprintf(_file, " >%s %" PRId64 "\n", where, get_time());
+	fprintf(_file, " >%s %" PRId64 "\n", where, time);
 	_last_line = 0;
 	_new_line = TRUE;
+	
+	/*if (cp && fp)
+	{
+		FUNCTION *ffp = (FUNCTION *)fp;
+		add_line(ffp->debug->line, time);
+	}*/
 }
 
 void PROFILE_end(void *cp, void *fp)
 {
-	const char *where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
+	uint64_t time = get_time();
+	//const char *where;
+	
+	if (cp && fp)
+	{
+		FUNCTION *ffp = (FUNCTION *)fp;
+		add_line(ffp->debug->line + ffp->debug->nline, time);
+	}
+
+	//where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
 
 	if (!_new_line)
 		fputc('\n', _file);
-	fprintf(_file, " <%s %" PRId64 "\n", where, get_time());
+	fprintf(_file, " <\n");
 	_last_line = 0;
 	_new_line = TRUE;
 }
