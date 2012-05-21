@@ -238,7 +238,7 @@ Public Sub Form_Open()
         Try $aCoordBox[iBorder + 1].Value = aScan[1]
         achkSynchro[iBorder].Value = $aCoordBox[iBorder].Value = $aCoordBox[iBorder + 1].Value
       Else
-        Try $aCoordBox[iBorder].Value = sBrush
+        Try $aCoordBox[iBorder].Value = aScan[0]
         achkSynchro[iBorder - 4].Value = True
       Endif
       
