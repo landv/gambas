@@ -236,7 +236,9 @@ Public Sub Form_Open()
       If aScan.Count = 2 Then
         Try $aCoordBox[iBorder].Value = aScan[0]
         Try $aCoordBox[iBorder + 1].Value = aScan[1]
-        achkSynchro[iBorder].Value = $aCoordBox[iBorder].Value = $aCoordBox[iBorder + 1].Value
+        If [TOPLEFTCORNER, TOPRIGHTCORNER, BOTTOMRIGHTCORNER, BOTTOMLEFTCORNER].Exist(iBorder) Then 
+          achkSynchro[iBorder - 4].Value = $aCoordBox[iBorder].Value = $aCoordBox[iBorder + 1].Value
+        Endif
       Else
         Try $aCoordBox[iBorder].Value = aScan[0]
         achkSynchro[iBorder - 4].Value = True

@@ -353,7 +353,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
           If Left$(sValue, 1) = Chr$(34) Then
             If sProperty = "Name" Then Continue
-            vValue = Unquote(Mid$(sValue, 2, -1))
+            vValue = UnQuote(Mid$(sValue, 2, -1))
             If sClass = "ComboBox" Or sClass = "ListBox" Then
               If sProperty = "List" Then
                 vValue = Split(vValue, "\n")
@@ -376,7 +376,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
                 If iPos3 = 0 Or If iPos3 > iPos2 Then Break
                 iPos2 = iPos3 + 1
               Loop
-              aVal.Add(Unquote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
+              aVal.Add(UnQuote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
               iPos = iPos2 + 1
             Loop
             vValue = aVal '.Join("\n")
@@ -391,7 +391,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
             For Each sProp In CControl.COMPLEX_STRING_PROPERTIES
 
               If sValue Begins sProp Then
-                vValue = Unquote$(Mid$(sValue, Len(sProp) + 2, -2))
+                vValue = UnQuote$(Mid$(sValue, Len(sProp) + 2, -2))
                 sProp = ""
                 Break
               Endif
