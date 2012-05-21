@@ -237,6 +237,8 @@ Public Sub Main()
       Application.Theme = "gambas"
   End Select
   
+  System.Profile = False
+  
   'DB.Debug = True
 
   OUTPUT_FILE = Temp$()
@@ -274,6 +276,8 @@ Public Sub Main()
     Project.Exit
     Return
   Endif
+
+  System.Profile = True
 
   InitVersion
   InitWebView

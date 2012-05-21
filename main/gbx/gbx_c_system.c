@@ -200,11 +200,14 @@ BEGIN_PROPERTY(System_Shell)
 
 END_PROPERTY
 
-/*BEGIN_METHOD_VOID(System_ClearMemoryCache)
+BEGIN_PROPERTY(System_Profile)
 
-	MEMORY_clear_cache();
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(EXEC_profile);
+	else if (EXEC_debug)
+		EXEC_profile = VPROP(GB_BOOLEAN);
 
-END_METHOD*/
+END_PROPERTY
 
 #endif
 
@@ -232,6 +235,8 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_PROPERTY("Language", "s", System_Language),
 	GB_STATIC_PROPERTY("FirstDayOfWeek", "i", System_FirstDayOfWeek),
 	GB_STATIC_PROPERTY("Shell", "s", System_Shell),
+	GB_STATIC_PROPERTY("Profile", "b", System_Profile),
+	
 	GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_RightToLeft),
 	GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),
 	GB_STATIC_PROPERTY_READ("Host", "s", System_Host),
@@ -243,7 +248,6 @@ GB_DESC NATIVE_System[] =
 	GB_CONSTANT("Architecture", "s", ARCHITECTURE),
 	
 	GB_STATIC_METHOD("GetExternSymbol", "p", System_GetExternSymbol, "(Library)s(Symbol)s"),
-	//GB_STATIC_METHOD("ClearMemoryCache", NULL, System_ClearMemoryCache, NULL),
 	
 	GB_STATIC_PROPERTY_SELF("User", "User"),
 

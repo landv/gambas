@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,85,48)
+  MoveScaled(0,0,85,52)
   Icon = Picture["icon:/medium/clock"]
   Utility = True
   Arrangement = Arrange.Fill
   { splProfile HSplit
-    MoveScaled(1,1,78,45)
+    MoveScaled(1,1,78,50)
     Expand = True
     { Panel3 HBox
       MoveScaled(1,6,35,34)
@@ -47,16 +47,16 @@
         }
       }
       { Separator2 Separator
-        MoveScaled(32,7,0,23)
+        MoveScaled(33,1,0,32)
       }
     }
     { Panel1 HBox
-      MoveScaled(38,2,38,41)
+      MoveScaled(38,1,38,48)
       { Separator1 Separator
         MoveScaled(2,10,0,24)
       }
       { panCurrent VBox
-        MoveScaled(4,3,33,37)
+        MoveScaled(4,1,33,46)
         Visible = False
         Expand = True
         { lblCurrent TextLabel
@@ -69,62 +69,79 @@
         { Separator3 Separator
           MoveScaled(4,6,16,0)
         }
-        { tabInfo TabPanel
-          MoveScaled(2,7,29,29)
+        { splSource VSplit
+          MoveScaled(1,7,31,38)
           Expand = True
-          Arrangement = Arrange.Fill
-          Border = False
-          Count = 3
-          Index = 0
-          Text = ("Callees")
-          { gvwCalled GridView
-            MoveScaled(2,1,19,23)
-            Mode = Select.Single
-            Header = GridView.Horizontal
-            ScrollBar = Scroll.Vertical
+          { tabInfo TabPanel
+            MoveScaled(1,2,29,17)
+            Expand = True
+            Arrangement = Arrange.Fill
             Border = False
-            AutoResize = False
-            Sorted = True
+            Count = 2
+            Index = 0
+            Text = ("Callees")
+            { gvwCalled GridView
+              MoveScaled(2,1,27,11)
+              Mode = Select.Single
+              Header = GridView.Horizontal
+              ScrollBar = Scroll.Vertical
+              Border = False
+              AutoResize = False
+              Sorted = True
+            }
+            Index = 1
+            Text = ("Callers")
+            { gvwCaller GridView
+              MoveScaled(1,2,27,11)
+              Mode = Select.Single
+              Header = GridView.Horizontal
+              ScrollBar = Scroll.Vertical
+              Border = False
+              AutoResize = False
+              Sorted = True
+            }
+            Index = 0
           }
-          Index = 1
-          Text = ("Callers")
-          { gvwCaller GridView
-            MoveScaled(2,2,19,23)
-            Mode = Select.Single
-            Header = GridView.Horizontal
-            ScrollBar = Scroll.Vertical
-            Border = False
-            AutoResize = False
-            Sorted = True
-          }
-          Index = 2
-          Text = ("Source")
-          { HBox1 HBox
-            MoveScaled(1,1,27,24)
+          { panSource HBox
+            MoveScaled(1,20,29,17)
             { gvwSource GridView
-              MoveScaled(1,1,7,22)
+              MoveScaled(1,1,7,14)
               Mode = Select.Single
               Grid = False
+              Header = GridView.Horizontal
               ScrollBar = Scroll.None
               Border = False
             }
             { Separator4 Separator
-              MoveScaled(9,3,0,16)
+              MoveScaled(9,1,0,14)
             }
-            { panSepSource Panel
-              MoveScaled(10,2,1,21)
-              Background = Color.TextBackground
-            }
-            { edtSource Editor
-              MoveScaled(12,1,14,22)
+            { Panel4 VBox
+              MoveScaled(10,1,18,15)
               Expand = True
-              Border = False
-              ScrollBar = Scroll.Vertical
-              Highlight = Highlight.Gambas
-              ReadOnly = True
+              { panSourceHeader Panel
+                MoveScaled(2,1,10,1)
+              }
+              { Separator6 Separator
+                MoveScaled(2,3,11,0)
+              }
+              { Panel5 HBox
+                MoveScaled(1,4,16,10)
+                Expand = True
+                { panSepSource Panel
+                  MoveScaled(2,1,1,8)
+                  Background = Color.TextBackground
+                }
+                { edtSource Editor
+                  MoveScaled(4,1,11,8)
+                  Expand = True
+                  Border = False
+                  ScrollBar = Scroll.Vertical
+                  Highlight = Highlight.Gambas
+                  ReadOnly = True
+                }
+              }
             }
           }
-          Index = 0
         }
       }
     }

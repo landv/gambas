@@ -137,19 +137,19 @@ Private Function CountNeighboursOnBorder(x As Integer, y As Integer) As Integer
     
 End
 
-Private Function CountNeighbours(x As Integer, y As Integer) As Integer
-  
-  Dim iTot As Integer
-
-  iTot = Game[x - 1, y - 1] + Game[x, y - 1] + Game[x + 1, y - 1] +
-    Game[x - 1, y] + Game[x + 1, y] +
-    Game[x - 1, y + 1] + Game[x, y + 1] + Game[x + 1, y + 1]
-    
-  iTot -= Color.White * 8
-  'DEBUG iTot / (Color.Red - Color.Background)
-  Return iTot \ (Color.Red - Color.White)
-
-End
+' Private Function CountNeighbours(x As Integer, y As Integer) As Integer
+'   
+'   Dim iTot As Integer
+' 
+'   iTot = Game[x - 1, y - 1] + Game[x, y - 1] + Game[x + 1, y - 1] +
+'     Game[x - 1, y] + Game[x + 1, y] +
+'     Game[x - 1, y + 1] + Game[x, y + 1] + Game[x + 1, y + 1]
+'     
+'   iTot -= Color.White * 8
+'   'DEBUG iTot / (Color.Red - Color.Background)
+'   Return iTot \ (Color.Red - Color.White)
+' 
+' End
 
 Public Sub SpawnNextGeneration(Live As Boolean[], Keep As Boolean[])
 
@@ -158,12 +158,22 @@ Public Sub SpawnNextGeneration(Live As Boolean[], Keep As Boolean[])
   Dim i, j As Integer
   Dim myCount As Integer
   Dim newGame As Image
+  Dim myCountSub As Integer = Color.White * 8
   
   newgame = Game.Copy()
   
   For x = 1 To MaxX - 1
     For y = 1 To MaxY - 1
-      myCount = CountNeighbours(x, y)
+      
+      'myCount = CountNeighbours(x, y)
+
+      myCount = Game[x - 1, y - 1] + Game[x, y - 1] + Game[x + 1, y - 1] +
+        Game[x - 1, y] + Game[x + 1, y] +
+        Game[x - 1, y + 1] + Game[x, y + 1] + Game[x + 1, y + 1]
+    
+      myCount -= myCountSub
+      myCount \= (Color.Red - Color.White)
+      
       If keep[myCount] Then Continue
       If live[myCount]
         newGame[x, y] = Color.Red

@@ -30,10 +30,15 @@
 #include "debug.h"
 #include "main.h"
 
+// Maximum profile file is 512 M
+
+#define MAX_PROFILE_SIZE (512 << 20)
+
 static bool _init = FALSE;
 static FILE *_file;
 static int _last_line = 0;
 static bool _new_line = TRUE;
+static int _count = 0;
 
 static uint64_t get_time(void)
 {
@@ -83,6 +88,18 @@ void PROFILE_exit(void)
 	fclose(_file);
 }
 
+static void check_size()
+{
+	_count = 0;
+	if (ftell(_file) > MAX_PROFILE_SIZE)
+	{
+		fprintf(stderr, "gb.profile: maximum profile size reached (512M)\n");
+		PROFILE_exit();
+		abort();
+	}
+}
+
+
 #define CODE(n) (n + '9' + 1)
 
 static void add_line(ushort line, uint64_t time)
@@ -126,6 +143,9 @@ static void add_line(ushort line, uint64_t time)
 	
 	_last_line = line;
 	_new_line = FALSE;
+	_count++;
+	if ((_count & 0xFFFFF) == 0)
+		check_size();
 }
 
 void PROFILE_add(void *cp, void *fp, void *pc)
@@ -150,6 +170,9 @@ void PROFILE_begin(void *cp, void *fp)
 	_last_line = 0;
 	_new_line = TRUE;
 	
+	_count++;
+	if ((_count & 0xFFFFF) == 0)
+		check_size();
 	/*if (cp && fp)
 	{
 		FUNCTION *ffp = (FUNCTION *)fp;

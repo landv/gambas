@@ -106,6 +106,7 @@ Public Sub Init(sPath As String)
   Dim iCount As Integer
   Dim aSplitLine As String[]
   Dim I, N As Integer
+  Dim iMax As Long
   
   Inc Application.Busy
   
@@ -333,27 +334,6 @@ Public Sub Init(sPath As String)
           
         Next
         
-        ' aSplitLine = Split(sLine, ",")
-        ' 
-        ' For I = 0 To aSplitLine.Max Step 2
-        '   
-        '   iLine += CInt(aSplitLine[I])
-        '   iLastTime = iOldTime
-        '   Try iTime += CLong(aSplitLine[I + 1])
-        '   iOldTime = iTime
-        '   
-        '   Dec iLastLine
-        '   Try aLine[iLastLine] += iTime - iLastTime
-        '   If Not Error Then 
-        '     Inc aCount[iLastLine]
-        '   Else
-        '     If iLastLine >= 0 Then Debug hCurrent.Name; "."; iLastLine + 1
-        '   Endif
-        '   
-        '   iLastLine = iLine
-        ' 
-        ' Next
-        
       Endif
         
     Endif
@@ -475,6 +455,9 @@ Private Sub LoadCurrentSourceCode() As String
   Dim aWhere As String[]
   Dim sPath As String
   Dim sSource As String
+  Dim aDuration As Long[]
+  Dim iTime As Long
+  Dim I As Integer
   
   aWhere = Split($hCurrent.Name, "*.*")
   
@@ -497,15 +480,28 @@ Private Sub LoadCurrentSourceCode() As String
   $iFirstLine = $hCurrent.StartLine
   edtSource.Text = $hCurrent.Code
   
+  If $hCurrent.MaxTime = 0 Then
+    
+    aDuration = $cLines[$sCurrentClass]
+    
+    For I = $iFirstLine To $iFirstLine + edtSource.Lines.Count - 1
+      Try iTime = Max(iTime, aDuration[I])
+    Next
+    $hCurrent.MaxTime = iTime
+    
+  Endif
+  
   gvwSource.Rows.Height = edtSource.LineHeight
   gvwSource.Rows.Count = edtSource.Lines.Count
   gvwSource.Refresh
-  tabInfo[2].Visible = True
+  
+  panSourceHeader.H = gvwSource.Columns.Height - 1
+  panSource.Show
   Return
   
 HIDE_SOURCE:
 
-  tabInfo[2].Visible = False
+  panSource.Hide
   
 End
 
@@ -522,6 +518,7 @@ Public Sub Form_Close()
   $aAll.Remove($aAll.Find($sPath))
 
   Settings.Write(Me)
+  Settings.Write(splSource)
   Settings.Write(splProfile)
 
 End
@@ -536,13 +533,14 @@ Public Sub ReadConfig()
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetEditorFont(gvwSource)
   gvwSource.Width = gvwSource.Font.TextWidth("999999") * 4
-  
+    
 End
 
 Public Sub Form_Open()
 
   Settings.Read(Me)
   Settings.Read(splProfile)
+  Settings.Read(splSource)
   ReadConfig
 
   With gvwProfile
@@ -585,9 +583,12 @@ Public Sub Form_Open()
   
   With gvwSource
     .Columns.Count = 2
+    .Columns.Resizable = False
+    .Columns[0].Text = ("Duration")
     .Columns[0].Alignment = Align.Right
     .Columns[0].Expand = True
-    .Columns[1].Alignment = Align.Left
+    .Columns[1].Text = ("Calls")
+    .Columns[1].Alignment = Align.Right
     .Columns[1].Expand = True
   End With
   
@@ -792,27 +793,43 @@ Public Sub gvwCaller_Activate()
 
 End
 
+Private Sub GetDurationColor(fPercent As Float) As Integer
+  
+  Dim iCol As Integer
+  
+  iCol = 255 - fPercent * 64
+  Return Color.RGB(iCol, iCol, iCol)
+  
+End
+
+
 Public Sub gvwSource_Data(Row As Integer, Column As Integer)
   
   Dim iTime As Long
   Dim iCount As Integer
   'If Not $hCurrent Then Return
   'Debug $hCurrent.Name; "."; Row + $iFirstLine; ": "; $hCurrent.Lines[Row + $iFirstLine]
+  
+  If Row = 0 Then
+    iTime = $hCurrent.FirstTime
+  Else
+    Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
+  Endif
+  
+        
   With gvwSource.Data
+    
+    Try .Background = GetDurationColor(iTime / $hCurrent.MaxTime)
+    
     Select Case Column
       
       Case 0
-        If Row = 0 Then
-          iTime = $hCurrent.FirstTime
-        Else
-          Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
-          If iTime = 0 Then 
-            Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
-            If iCount <= 1 Then Return
-          Endif
+  
+        If iTime = 0 Then 
+          Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
+          If iCount <= 1 Then Return
         Endif
         
-  
         If $bPercent Then
           .Text = Format(iTime / $hCurrent.Time * 100, "0.00")
         Else
@@ -820,6 +837,7 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
         Endif
         
       Case 1
+        
         If Row = 0 Then
           iCount = $hCurrent.Count
         Else
@@ -827,11 +845,11 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
         Endif
         
         If iCount <= 1 Then Return
-        .Text = "/ " & CStr(iCount)
+        .Text = CStr(iCount) & " "
         
     End Select
+    
   End With
-  'If Row And 1 Then gvwSource.Data.Background = Color.LightForeground
   
 End
 
