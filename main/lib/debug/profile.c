@@ -32,6 +32,8 @@
 
 static bool _init = FALSE;
 static FILE *_file;
+static int _last_line = 0;
+static bool _new_line = TRUE;
 
 static uint64_t get_time(void)
 {
@@ -75,26 +77,80 @@ void PROFILE_exit(void)
 	
 	//fprintf(stderr, "gb.profile: stop profiling\n");
 	
+	if (!_new_line)
+		fputc('\n', _file);
+		
 	fclose(_file);
 }
+
+#define CODE(n) (n + '9' + 1)
 
 void PROFILE_add(void *cp, void *fp, void *pc)
 {
 	ushort line;
+	uint64_t time = get_time();
+	int n;
+	char buf[32], num[16];
+	char *p;
 	
 	line = 0;
 	DEBUG_calc_line_from_position(cp, fp, pc, &line);
-	fprintf(_file, "%d %" PRId64 "\n", line, get_time());
+	
+	n = line - _last_line;
+	p = buf;
+	
+	if (n >= -9 && n <= 9)
+		*p++ = CODE(0 + n + 9);
+	else if (n >= -99 && n <= 99)
+	{
+		*p++ = n > 0 ? CODE(19) : CODE(20);
+		*p++ = CODE(0) + abs(n) - 10;
+	}
+	else
+	{
+		*p++ = n > 0 ? CODE(21) : CODE(22);
+		n = sprintf(num, "%d", abs(n));
+		*p++ = CODE(n);
+		strcpy(p, num);
+		p += n;
+	}
+	
+	if (time <= 9)
+		*p++ = CODE(time);
+	else
+	{
+		n = sprintf(num, "%" PRIu64, time);
+		*p++ = CODE(10 + n - 2);
+		strcpy(p, num);
+		p += n;
+	}
+	
+	*p = 0;
+	
+	fputs(buf, _file);
+	
+	_last_line = line;
+	_new_line = FALSE;
 }
 
 void PROFILE_begin(void *cp, void *fp)
 {
 	const char *where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
-	fprintf(_file, "+%s %" PRId64 "\n", where, get_time());
+	
+	if (!_new_line)
+		fputc('\n', _file);
+	fprintf(_file, " >%s %" PRId64 "\n", where, get_time());
+	_last_line = 0;
+	_new_line = TRUE;
 }
 
 void PROFILE_end(void *cp, void *fp)
 {
 	const char *where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
-	fprintf(_file, "-%s %" PRId64 "\n", where, get_time());
+
+	if (!_new_line)
+		fputc('\n', _file);
+	fprintf(_file, " <%s %" PRId64 "\n", where, get_time());
+	_last_line = 0;
+	_new_line = TRUE;
 }

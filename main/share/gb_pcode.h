@@ -88,6 +88,7 @@
 #define C_CALL                  0x1C00
 #define C_CALL_QUICK            0x1D00
 #define C_CALL_SLOW             0x1E00
+#define C_ON                    0x1F00
 
 #define C_JUMP                  0x2000
 #define C_JUMP_IF_TRUE          0x2100

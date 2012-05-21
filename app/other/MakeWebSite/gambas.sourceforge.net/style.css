@@ -314,11 +314,11 @@ img.screenshot {
 #title {
   padding: 0px;
   font-weight: bold;
-  font-size: 250%;
+  font-size: 200%;
   color: #3398c3;
   letter-spacing: 1px;
   margin-bottom: 16px;
-  text-shadow: 2px 2px 0px #DF6B00;
+  text-shadow: 1px 1px 1px #DF6B00;
 }
 
 .title {
@@ -433,6 +433,30 @@ a.download-blue:hover {
   border: solid 1px #21647F;
   box-shadow: 0 0 8px black;
   overflow: hidden;
+}
+
+#see-news {
+  position: relative;
+  left: -1em;
+  top: 3em;
+  border: solid 1px #21647F;
+}
+
+#see-news a:link {
+  color: white;
+}
+
+#see-news a:visited {
+  color: white;
+}
+
+#fade {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 64px;
+  background-image: url('fade.png');  
 }
 
 #news-frame {

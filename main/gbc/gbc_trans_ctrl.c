@@ -69,7 +69,7 @@ static void control_set_value(int value)
 }
 
 
-static int control_get_value()
+static int control_get_value(void)
 {
 	if (ctrl_level <= 0)
 		return 0;
@@ -87,7 +87,7 @@ static void control_add_pos(short **tab_pos, short pos)
 }
 
 
-static void control_add_current_pos()
+static void control_add_current_pos(void)
 {
 	control_add_pos(&current_ctrl->pos, CODE_get_current_pos());
 }
@@ -110,7 +110,7 @@ static void control_jump_each_pos_with(short *tab_pos)
 }
 
 
-static void control_jump_each_pos()
+static void control_jump_each_pos(void)
 {
 	control_jump_each_pos_with(current_ctrl->pos);
 }
@@ -158,7 +158,7 @@ static TRANS_CTRL *control_get_inner_with(void)
 }
 
 
-static void add_goto(int index, bool gosub)
+static void add_goto(int index, int mode)
 {
 	TRANS_GOTO *info;
 
@@ -170,16 +170,19 @@ static void add_goto(int index, bool gosub)
 	info->pos = CODE_get_current_pos();
 	info->ctrl_id = (ctrl_level == 0) ? 0 : current_ctrl->id;
 	info->line = JOB->line;
-	info->gosub = gosub;
+	info->gosub = mode == RS_GOSUB;
+	info->on_goto = mode == RS_NONE;
 
 	#ifdef DEBUG_GOTO
 		printf("add_goto: ctrl_id = %d (%ld)\n", info->ctrl_id, ARRAY_count(goto_info));
 	#endif
 
-	if (gosub)
+	if (mode == RS_GOSUB)
 		CODE_gosub();
-	else
+	else if (mode == RS_GOTO)
 		CODE_jump();
+	else
+		CODE_nop();
 }
 
 
@@ -228,7 +231,7 @@ static void control_enter(int type)
 }
 
 
-static void control_leave()
+static void control_leave(void)
 {
 	control_jump_each_pos_with(current_ctrl->pos_break);
 
@@ -290,7 +293,7 @@ static void check_try(const char *name)
 	}
 }
 
-void TRANS_control_init()
+void TRANS_control_init(void)
 {
 	ctrl_level = 0;
 	ctrl_id = 0;
@@ -307,7 +310,7 @@ void TRANS_control_init()
 }
 
 
-void TRANS_control_exit()
+void TRANS_control_exit(void)
 {
 	int i;
 	CLASS_SYMBOL *sym;
@@ -356,7 +359,7 @@ void TRANS_control_exit()
 					id = ctrl_parent[id - 1];
 				}
 			}
-
+			
 			CODE_jump_length(goto_info[i].pos, label->pos);
 		}
 
@@ -540,7 +543,7 @@ static void trans_else_if(void)
 }
 
 
-void TRANS_if()
+void TRANS_if(void)
 {
 	control_enter(RS_IF);
 
@@ -554,7 +557,7 @@ void TRANS_if()
 }
 
 
-void TRANS_else()
+void TRANS_else(void)
 {
 	control_check(RS_IF, "ELSE without IF", "ELSE");
 
@@ -568,7 +571,7 @@ void TRANS_else()
 }
 
 
-void TRANS_endif()
+void TRANS_endif(void)
 {
 	control_check(RS_IF, "ENDIF without IF", "ENDIF");
 	trans_endif();
@@ -576,7 +579,7 @@ void TRANS_endif()
 }
 
 
-void TRANS_goto()
+void TRANS_goto(void)
 {
 	int index;
 
@@ -588,10 +591,10 @@ void TRANS_goto()
 	index = PATTERN_index(*JOB->current);
 	JOB->current++;
 
-	add_goto(index, FALSE);
+	add_goto(index, RS_GOTO);
 }
 
-void TRANS_gosub()
+void TRANS_gosub(void)
 {
 	int index;
 
@@ -603,9 +606,55 @@ void TRANS_gosub()
 	index = PATTERN_index(*JOB->current);
 	JOB->current++;
 
-	add_goto(index, TRUE);
+	add_goto(index, RS_GOSUB);
 }
 
+void TRANS_on_goto_gosub(void)
+{
+	bool gosub;
+	int pos, n;
+	int index;
+	
+	TRANS_expression(FALSE);
+	
+	if (TRANS_is(RS_GOTO))
+		gosub = FALSE;
+	else if (TRANS_is(RS_GOSUB))
+		gosub = TRUE;
+	else
+		THROW(E_SYNTAX);
+
+	check_try(gosub ? "ON GOSUB" : "ON GOTO");
+	
+	pos = CODE_get_current_pos();
+	CODE_nop();
+	
+	for (n = 1;; n++)
+	{
+		if (!PATTERN_is_identifier(*JOB->current))
+			THROW(E_SYNTAX);
+		
+		index = PATTERN_index(*JOB->current);
+		JOB->current++;
+
+		add_goto(index, RS_NONE);
+		
+		if (!TRANS_is(RS_COMMA))
+			break;
+		
+		if (n == 127)
+			THROW("Too many labels");
+	}
+	
+	pos = CODE_set_current_pos(pos);
+	CODE_on(n);
+	CODE_set_current_pos(pos);
+	
+	if (gosub)
+		CODE_gosub();
+	else
+		CODE_jump();
+}
 
 void TRANS_do(int type)
 {

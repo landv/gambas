@@ -293,10 +293,12 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
     sData = Replace(sData, "$(LANGDIR)", "rtl")
     sData = Replace(sData, "$(DIR)", "-rtl")
     sData = Replace(sData, "$(STYLE)", "style-rtl.css")
+    sData = Replace(sData, "$(RIGHT)", "left")
   Else
     sData = Replace(sData, "$(LANGDIR)", "ltr")
     sData = Replace(sData, "$(DIR)", "")
     sData = Replace(sData, "$(STYLE)", "style.css")
+    sData = Replace(sData, "$(RIGHT)", "right")
   Endif
 
   File.Save(sDest, sData)

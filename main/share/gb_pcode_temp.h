@@ -74,6 +74,10 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 		case C_BYREF:
 			ncode = 2 + (op & 0xFF);
 			break;
+			
+		case C_ON:
+			ncode = 1 + (op & 0xFF);
+			break;
 
 		default:
 
@@ -86,9 +90,13 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 	fprintf(out, "%04d : ", addr);
 
 	for (j = 0; j < ncode; j++)
+	{
+		if (j > 2 && (j % 3) == 0)
+			fprintf(out, "\n     : ");
 		fprintf(out, " %04hX", code[j]);
+	}
 
-	for (j = 0; j < (3 - ncode); j++)
+	for (j = 0; j < (3 - (ncode % 3)); j++)
 		fprintf(out, "     ");
 
 	fprintf(out, "  ");
@@ -289,6 +297,8 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 						case CPM_TRUE: fprintf(out, "PUSH TRUE"); break;
 						case CPM_LAST: fprintf(out, "PUSH LAST"); break;
 						case CPM_STRING: fprintf(out, "PUSH NULL STRING"); break;
+						case CPM_PINF: fprintf(out, "PUSH +INF"); break;
+						case CPM_MINF: fprintf(out, "PUSH -INF"); break;
 					}
 					break;
 
@@ -318,6 +328,10 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 				case C_GOSUB:
 					value = code[1];
 					fprintf(out, "GOSUB %04d", (short)(addr + value + 2));
+					break;
+
+				case C_ON:
+					fprintf(out, "ON %d", (short)value);
 					break;
 
 				case C_FIRST:

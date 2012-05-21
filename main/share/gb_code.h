@@ -71,6 +71,7 @@ void CODE_push_extern(short index);
 
 void CODE_jump(void);
 void CODE_gosub(void);
+void CODE_on(uchar num);
 void CODE_jump_first(short local);
 void CODE_jump_next(void);
 void CODE_jump_if_true(void);
@@ -96,6 +97,7 @@ void CODE_pop_ctrl(short num);
 #endif /* PROJECT_COMP */
 
 int CODE_get_current_pos(void);
+int CODE_set_current_pos(int pos);
 void CODE_ignore_next_stack_usage(void);
 
 void CODE_dump(PCODE *code, int count);
@@ -136,5 +138,7 @@ void CODE_call_byref(short nparam, uint64_t byref);
 void CODE_byref(uint64_t byref);
 void CODE_drop(void);
 void CODE_push_return(void);
+
+void CODE_nop(void);
 
 #endif

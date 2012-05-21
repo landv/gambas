@@ -4,16 +4,16 @@
 '   Copyright (C) 2004, Michael Isaac.  All rights reserved. 
 '
 
-PUBLIC SUB cmdOK_Click()
-    ME.Close()
-END
+Public Sub cmdOK_Click()
+    Me.Close()
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-    ME.Center
+    Me.Center
 
     lblInfo.Text = 
         "<u><font size=\"6\"><b>DeepSpace&nbsp;&nbsp;" & Application.Version & "</b></font></u><br>"
         "A vector engine written in Gambas.<br><br>Contact <font color=\"#0000FF\">subjugator@gmail.com</font> with questions.<br>"
         "Copyright (C) 2004, Michael Isaac. All rights reserved."
-END
+End

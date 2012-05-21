@@ -138,8 +138,9 @@ typedef
 		int line;
 		ushort pos;
 		short ctrl_id;
-		bool gosub;
-		char _reserved[3];
+		unsigned gosub : 1;
+		unsigned on_goto : 1;
+		unsigned _reserved : 30;
 		}
 	PACKED
 	TRANS_GOTO;

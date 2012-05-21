@@ -139,6 +139,7 @@ typedef
 		RS_CONTINUE,
 		RS_GOTO,
 		RS_GOSUB,
+		RS_ON,
 		RS_ME,
 		RS_LAST,
 		RS_TRY,

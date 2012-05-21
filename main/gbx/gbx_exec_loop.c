@@ -216,7 +216,7 @@ void EXEC_loop(void)
 		/* 1C CALL            */  &&_CALL,
 		/* 1D CALL QUICK      */  &&_CALL_QUICK,
 		/* 1E CALL EASY       */  &&_CALL_SLOW,
-		/* 1F CALL SLOW       */  &&_ILLEGAL,
+		/* 1F ON              */  &&_ON_GOTO_GOSUB,
 		/* 20 JUMP            */  &&_JUMP,
 		/* 21 JUMP IF TRUE    */  &&_JUMP_IF_TRUE,
 		/* 22 JUMP IF FALSE   */  &&_JUMP_IF_FALSE,
@@ -878,6 +878,27 @@ _NEW:
 
 	EXEC_new();
 	goto _NEXT;
+
+/*-----------------------------------------------*/
+
+_ON_GOTO_GOSUB:
+
+	{
+		int n, m;
+		
+		m = GET_XX();
+		SP--;
+		VALUE_conv_integer(SP);
+		n = SP->_integer.value;
+		if (n < 0 || n >= m)
+			PC += m + 3;
+		else
+		{
+			PC[m + 2] = PC[n + 1] - (m - n) - 2;
+			PC += m + 1;
+		}
+		goto _MAIN;
+	}
 
 /*-----------------------------------------------*/
 
@@ -1844,9 +1865,9 @@ _BYREF:
 
 /*-----------------------------------------------*/
 
-_ILLEGAL:
+/*_ILLEGAL:
 
-	THROW_ILLEGAL();
+	THROW_ILLEGAL();*/
 
 /*-----------------------------------------------*/
 

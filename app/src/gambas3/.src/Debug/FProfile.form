@@ -13,9 +13,8 @@
       { Panel2 VBox
         MoveScaled(0,2,31,30)
         Expand = True
-        { ToolBar1 ToolBar
-          MoveScaled(2,1,25,4)
-          Separator = True
+        { HBox2 HBox
+          MoveScaled(2,2,27,4)
           { btnPrev ToolButton
             MoveScaled(0,0,4,4)
             ToolTip = ("Go back")
@@ -33,8 +32,11 @@
             Toggle = True
           }
         }
+        { Separator5 Separator
+          MoveScaled(3,8,25,0)
+        }
         { gvwProfile GridView
-          MoveScaled(2,8,24,21)
+          MoveScaled(3,10,24,17)
           Expand = True
           Mode = Select.Single
           Header = GridView.Horizontal
@@ -101,7 +103,7 @@
             MoveScaled(1,1,27,24)
             { gvwSource GridView
               MoveScaled(1,1,7,22)
-              Enabled = False
+              Mode = Select.Single
               Grid = False
               ScrollBar = Scroll.None
               Border = False

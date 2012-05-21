@@ -172,6 +172,7 @@ void TRANS_else(void);
 void TRANS_endif(void);
 void TRANS_goto(void);
 void TRANS_gosub(void);
+void TRANS_on_goto_gosub(void);
 void TRANS_do(int type);
 void TRANS_loop(int type);
 void TRANS_select(void);

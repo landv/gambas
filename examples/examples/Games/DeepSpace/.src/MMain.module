@@ -236,25 +236,33 @@ Sub RenderBullets()
 End
 
 Public Sub RenderObjects()
-    Dim I As Integer
+    Dim I, J As Integer
     Dim Ob As CObject
     Dim Size As Integer
-
+    Dim aPoint As Integer[]
+    Dim A, D As Float
     Dim Tag As String
 
     Draw.Foreground = Color.Red
     For Each Ob In Obj
         With Ob
-            Size = .Degree.Count - 1
+            Size = .Degree.Count
 
-            .Points.Clear()
+            aPoint = .Points
+            
+            aPoint.Resize(Size * 2)
 
-            For I = 0 To Size
-                .Points.Add(CInt(.X + ((Sin(.Direction + Rad(.Degree[I]))) * .Distance[I])))
-                .Points.Add(CInt(.Y + ((Cos(.Direction + Rad(.Degree[I]))) * .Distance[I])))
+            J = 0
+            For I = 0 To Size - 1
+                A = .Direction + Rad(.Degree[I])
+                D = .Distance[I]
+                aPoint[J] = .X + (Sin(A) * D)
+                Inc J
+                aPoint[J] = .Y + (Cos(A) * D)
+                Inc J
             Next
 
-            Draw.Polygon(.Points)
+            Draw.Polygon(aPoint)
         End With
     Next
 

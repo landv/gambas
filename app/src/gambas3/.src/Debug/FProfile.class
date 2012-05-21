@@ -20,6 +20,7 @@ Private $iHistory As Integer
 Private $iNoHistory As Integer
 
 Private $cLines As New Collection
+Private $cCount As New Collection
 Private $sCurrentClass As String
 Private $iFirstLine As Integer
 
@@ -90,15 +91,19 @@ End
 Public Sub Init(sPath As String)
   
   Dim hFile As File
-  Dim sLine As String
+  Dim sLine, sFunc As String
   Dim iPos As Integer
   Dim sClass As String
   Dim hCurrent As CProfile
   Dim aLine As Long[]
+  Dim aCount As Integer[]
   Dim iLastLine, iLine As Integer
   Dim iTime, iOldTime, iLastTime As Long
   Dim aLastLine As New Integer[]
   Dim aLastTime As New Long[]
+  Dim iCount As Integer
+  Dim aSplitLine As String[]
+  Dim I, N As Integer
   
   Inc Application.Busy
   
@@ -109,39 +114,247 @@ Public Sub Init(sPath As String)
     
     Line Input #hFile, sLine
     
-    iPos = InStr(sLine, " ")
-    iLastTime = iOldTime
-    iTime += CLong(Mid$(sLine, iPos + 1))
-    iOldTime = iTime
-    
-    If IsDigit(Left(sLine)) Then 
-      If hCurrent Then
-        aLine = $cLines[sClass]
-        If Not aLine Then
-          aLine = New Long[]
-          $cLines[sClass] = aLine
-        Endif
-        iLine = CInt(Left(sLine, iPos - 1))
-        If iLastLine Then 
-          aLine.Resize(Max(aLine.Count, iLastLine))
-          aLine[iLastLine - 1] += iTime - iLastTime
-        Endif
-        iLastLine = iLine
+    If Left(sLine) = " " Then
+      
+      sLine = Mid$(sLine, 2)
+      iPos = InStr(sLine, " ")
+      iLastTime = iOldTime
+      If iPos Then
+        iTime += CLong(Mid$(sLine, iPos + 1))
+        sFunc = Left(sLine, iPos - 1)
+      Else
+        sFunc = sLine
       Endif
-      Continue
-    Endif
-    
-    If Left(sLine) = "+" Then
-      aLastLine.Push(iLastLine)
-      aLastTime.Push(iOldTime)
-      hCurrent = EnterFunction(Mid$(sLine, 2, iPos - 2), iTime)
+      
+      iOldTime = iTime
+      
+      If Left(sLine) = ">" Then
+      
+        aLastLine.Push(iLastLine)
+        aLastTime.Push(iOldTime)
+        hCurrent = EnterFunction(Mid$(sFunc, 2), iTime)
+        iLine = 0
+        iLastLine = 0
+        
+      Else
+      
+        hCurrent = ExitFunction(Mid$(sFunc, 2), iTime)
+        iLastLine = aLastLine.Pop()
+        iOldTime = aLastTime.Pop()
+        iLine = 0
+        
+      Endif
+        
+      If hCurrent Then
+        sClass = GetClass(hCurrent.Name)
+        If sClass Then
+          aLine = $cLines[sClass]
+          aCount = $cCount[sClass]
+          If Not aLine Then
+            aLine = New Long[GetNumberOfLines(sClass)]
+            aCount = New Integer[aLine.Count]
+            $cLines[sClass] = aLine
+            $cCount[sClass] = aCount
+          Endif
+        Else
+          aLine = Null
+          aCount = Null
+        Endif
+      Endif
+      
     Else
-      hCurrent = ExitFunction(Mid$(sLine, 2, iPos - 2), iTime)
-      iLastLine = aLastLine.Pop()
-      iOldTime = aLastTime.Pop()
+        
+      If aLine Then
+        
+        For I = 1 To Len(sLine)
+          
+          On Asc(sLine, I) - 58 Goto LM9, LM8, LM7, LM6, LM5, LM4, LM3, LM2, LM1, _TIME, LP1, LP2, LP3, LP4, LP5, LP6, LP7, LP8, LP9, LP99, LM99, LP, LM
+          Debug Asc(sLine, I) - 58;; "?"
+          Break
+          
+        LM9:
+          iLine -= 9
+          Goto _TIME
+          
+        LM8:
+          iLine -= 8
+          Goto _TIME
+          
+        LM7:
+          iLine -= 7
+          Goto _TIME
+          
+        LM6:
+          iLine -= 6
+          Goto _TIME
+          
+        LM5:
+          iLine -= 5
+          Goto _TIME
+          
+        LM4:
+          iLine -= 4
+          Goto _TIME
+          
+        LM3:
+          iLine -= 3
+          Goto _TIME
+          
+        LM2:
+          iLine -= 2
+          Goto _TIME
+          
+        LM1:
+          iLine -= 1
+          Goto _TIME
+          
+        LP9:
+          iLine += 9
+          Goto _TIME
+          
+        LP8:
+          iLine += 8
+          Goto _TIME
+        
+        LP7:
+          iLine += 7
+          Goto _TIME
+          
+        LP6:
+          iLine += 6
+          Goto _TIME
+          
+        LP5:
+          iLine += 5
+          Goto _TIME
+          
+        LP4:
+          iLine += 4
+          Goto _TIME
+          
+        LP3:
+          iLine += 3
+          Goto _TIME
+          
+        LP2:
+          iLine += 2
+          Goto _TIME
+          
+        LP99:
+          iLine += Asc(sLine, I + 1) - 58 + 10
+          Inc I
+          Goto _TIME
+        
+        LM99:
+          iLine -= Asc(sLine, I + 1) - 58 + 10
+          Inc I
+          Goto _TIME
+          
+        LP:
+          N = Asc(sLine, I + 1) - 58
+          iLine += CInt(Mid$(sLine, I + 2, N))
+          I += N + 1
+          Goto _TIME
+        
+        LM:
+          N = Asc(sLine, I + 1) - 58
+          iLine -= CInt(Mid$(sLine, I + 2, N))
+          I += N + 1
+          Goto _TIME
+        
+        LP1:
+          Inc iLine
+          
+        _TIME:
+        
+          iLastTime = iOldTime
+          
+          Inc I
+          On Asc(sLine, I) - 58 Goto TP0, TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9
+          
+          N = Asc(sLine, I) - 58 - 10 + 2
+          If N < 2 Then 
+            Debug N;; "?"
+            Break
+          Endif
+          iTime += CLong(Mid$(sLine, I + 1, N))
+          I += N
+          Goto TP0
+        
+        TP2:
+          iTime += 2
+          Goto TP0
+        
+        TP3:
+          iTime += 3
+          Goto TP0
+        
+        TP4:
+          iTime += 4
+          Goto TP0
+        
+        TP5:
+          iTime += 5
+          Goto TP0
+        
+        TP6:
+          iTime += 6
+          Goto TP0
+        
+        TP7:
+          iTime += 7
+          Goto TP0
+        
+        TP8:
+          iTime += 8
+          Goto TP0
+        
+        TP9:
+          iTime += 9
+          Goto TP0
+        
+        TP1:
+          Inc iTime
+        
+        TP0:
+          iOldTime = iTime
+          
+          Dec iLastLine
+          Try aLine[iLastLine] += iTime - iLastTime
+          If Not Error Then 
+            Inc aCount[iLastLine]
+          Else
+            If iLastLine >= 0 Then Debug hCurrent.Name; "."; iLastLine + 1
+          Endif
+          
+          iLastLine = iLine
+          
+        Next
+        
+        ' aSplitLine = Split(sLine, ",")
+        ' 
+        ' For I = 0 To aSplitLine.Max Step 2
+        '   
+        '   iLine += CInt(aSplitLine[I])
+        '   iLastTime = iOldTime
+        '   Try iTime += CLong(aSplitLine[I + 1])
+        '   iOldTime = iTime
+        '   
+        '   Dec iLastLine
+        '   Try aLine[iLastLine] += iTime - iLastTime
+        '   If Not Error Then 
+        '     Inc aCount[iLastLine]
+        '   Else
+        '     If iLastLine >= 0 Then Debug hCurrent.Name; "."; iLastLine + 1
+        '   Endif
+        '   
+        '   iLastLine = iLine
+        ' 
+        ' Next
+        
+      Endif
+        
     Endif
-    
-    If hCurrent Then sClass = GetClass(hCurrent.Name)
     
   Wend
   
@@ -236,6 +449,24 @@ Private Sub GotoFunction(sFunc As String, Optional bNoHistory As Boolean)
   
 End
 
+Private Sub GetNumberOfLines(sClass As String) As Integer
+  
+  Dim hEditor As FEditor
+  Dim aWhere As String[]
+  Dim sPath As String
+  Dim sSource As String
+  
+  sPath = Project.FindPath(sClass)
+  If Not Exist(sPath) Then Return
+  
+  Try hEditor = Project.LoadFile(sPath)
+  If IsNull(hEditor) Then Return
+  
+  Return hEditor.Editor.Lines.Count
+  
+End
+
+
 Private Sub LoadCurrentSourceCode() As String
   
   Dim hEditor As FEditor
@@ -266,6 +497,7 @@ Private Sub LoadCurrentSourceCode() As String
   
   gvwSource.Rows.Height = edtSource.LineHeight
   gvwSource.Rows.Count = edtSource.Lines.Count
+  gvwSource.Refresh
   tabInfo[2].Visible = True
   Return
   
@@ -298,9 +530,10 @@ Public Sub ReadConfig()
   Project.SetSmallFont(tabInfo)
   edtSource.ReadConfig
   edtSource.Flags[Editor.HideMargin] = True
+  'edtSource.Flags[Editor.ShowLineNumbers] = True
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetEditorFont(gvwSource)
-  gvwSource.Width = gvwSource.Font.TextWidth("9999999999")
+  gvwSource.Width = gvwSource.Font.TextWidth("999999") * 4
   
 End
 
@@ -348,8 +581,13 @@ Public Sub Form_Open()
     '.Columns[3].Alignment = Align.Right
   End With
   
-  gvwSource.Columns.Count = 1
-  gvwSource.Columns[0].Alignment = Align.Right
+  With gvwSource
+    .Columns.Count = 2
+    .Columns[0].Alignment = Align.Right
+    .Columns[0].Expand = True
+    .Columns[1].Alignment = Align.Left
+    .Columns[1].Expand = True
+  End With
   
   gvwProfile.Row = 0
   
@@ -555,17 +793,28 @@ End
 Public Sub gvwSource_Data(Row As Integer, Column As Integer)
   
   Dim iTime As Long
+  Dim iCount As Integer
   'If Not $hCurrent Then Return
   'Debug $hCurrent.Name; "."; Row + $iFirstLine; ": "; $hCurrent.Lines[Row + $iFirstLine]
-  Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
-  If iTime = 0 Then Return
-  
   With gvwSource.Data
-    If $bPercent Then
-      .Text = Format(iTime / $hCurrent.Self * 100, "0.00")
-    Else
-      .Text = iTime
-    Endif
+    Select Case Column
+      
+      Case 0
+        Try iTime = $cLines[$sCurrentClass][Row + $iFirstLine]
+        If iTime = 0 Then Return
+  
+        If $bPercent Then
+          .Text = Format(iTime / $hCurrent.Time * 100, "0.00")
+        Else
+          .Text = iTime
+        Endif
+        
+      Case 1
+        Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
+        If iCount <= 1 Then Return
+        .Text = "/ " & CStr(iCount)
+        
+    End Select
   End With
   'If Row And 1 Then gvwSource.Data.Background = Color.LightForeground
   
@@ -593,7 +842,19 @@ Static Public Sub CleanProfileFiles()
   
   For Each sPath In Dir(Project.Dir, ".prof.*")
     If $aAll.Exist(sPath) Then Continue
-    Try Kill sPath
+    Try Kill Project.Dir &/ sPath
   Next
+
+End
+
+Public Sub gvwSource_Scroll()
+
+  edtSource.ScrollY = gvwSource.ScrollY
+
+End
+
+Public Sub gvwSource_Select()
+
+  edtSource.Goto(gvwSource.Row, 0)
 
 End

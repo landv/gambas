@@ -1,31 +1,33 @@
+' Gambas module file
+
 '
 '   Copyright (C) 2004, Michael Isaac.  All rights reserved.
 '
 
 'PUBLIC CONST Radian AS Float = 0.01745329252
 
-PUBLIC SineArray AS NEW Float[]
-PUBLIC CoSineArray AS NEW Float[]
+Public SineArray As New Float[]
+Public CoSineArray As New Float[]
 
-PUBLIC SUB InitializeSineTable()
-    DIM I AS Integer
+Public Sub InitializeSineTable()
+    Dim I As Integer
 
     'We create the cosine/sine array so we dont have to call
     'a function which had to calculate a value everytime we call it.
     'These calls are made once here, and then from now we can just
     'point at the value we want.  Should be much faster this way.
 
-    FOR I = 0 TO 359
+    For I = 0 To 359
         SineArray.Add(Sin(I * (Pi / 180)))
         CoSineArray.Add(Cos(I * (Pi / 180)))
-    NEXT
-END
+    Next
+End
 
 
-FUNCTION GetDistance(X1 AS Float, Y1 AS Float, X2 AS Float, Y2 AS Float) AS Float
+Function GetDistance(X1 As Float, Y1 As Float, X2 As Float, Y2 As Float) As Float
     'RETURN Sqr((X1 - X2) ^ 2 + (Y1 - Y2) ^ 2)
-    RETURN Hyp(X1 - X2, Y1 - Y2)
-END
+    Return Hyp(X1 - X2, Y1 - Y2)
+End
 
 
 ' FUNCTION CosE(A AS Float) AS Float

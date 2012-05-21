@@ -204,6 +204,7 @@ void TRANS_statement(void)
 		{ RS_CHOWN, TRANS_chown },
 		{ RS_CHGRP, TRANS_chgrp },
 		{ RS_GOSUB, TRANS_gosub },
+		{ RS_ON, TRANS_on_goto_gosub },
 
 		{ RS_NONE, NULL }
 	};

@@ -1,67 +1,69 @@
+' Gambas class file
+
 ' 
 '   Copyright (C) 2004, Michael Isaac.  All rights reserved. 
 ' 
 
-PUBLIC ID AS String
+Public ID As String
 
-PUBLIC X AS Float 'Center X 
-PUBLIC Y AS Float 'Center Y 
+Public X As Float 'Center X 
+Public Y As Float 'Center Y 
 
-PUBLIC MX AS Float 'Motion X 
-PUBLIC MY AS Float 'Motion Y 
+Public MX As Float 'Motion X 
+Public MY As Float 'Motion Y 
 
-PUBLIC Size AS Float
+Public Size As Float
 
-PUBLIC Points AS Integer[]
-PUBLIC Distance AS Float[]
-PUBLIC Degree AS Float[]
+Public Points As Integer[]
+Public Distance As Float[]
+Public Degree As Float[]
 
-PUBLIC Direction AS Float
-PUBLIC Agility AS Float
-PUBLIC Acceleration AS Float
-PUBLIC Torque AS Float
+Public Direction As Float
+Public Agility As Float
+Public Acceleration As Float
+Public Torque As Float
 
-PUBLIC Hull AS Integer
-PUBLIC Shield AS Integer
+Public Hull As Integer
+Public Shield As Integer
 
-PUBLIC ShieldOn AS Boolean
+Public ShieldOn As Boolean
 
-PUBLIC Thrust AS Boolean
-PUBLIC Attack AS Boolean
-PUBLIC TurnRight AS Boolean
-PUBLIC TurnLeft AS Boolean
+Public Thrust As Boolean
+Public Attack As Boolean
+Public TurnRight As Boolean
+Public TurnLeft As Boolean
 
-PUBLIC SUB _new()
-    Points = NEW Integer[]
-    Distance = NEW Float[]
-    Degree = NEW Float[]
-END
+Public Sub _new()
+    Points = New Integer[]
+    Distance = New Float[]
+    Degree = New Float[]
+End
 
-PUBLIC SUB Load2DObject(sFilename AS String, sID AS String, X AS Integer, Y AS Integer)
+Public Sub Load2DObject(sFilename As String, sID As String, X As Integer, Y As Integer)
     'DIM F AS File 
-    DIM I AS Integer
-    DIM sData AS String
+    Dim I As Integer
+    Dim sData As String
 
-    DIM aLine AS NEW String[]
+    Dim aLine As New String[]
 
     sData = File.Load(Application.Path &/ "object.data/" &/ sFilename)
     'OPEN Application.Path &/ "object.data/" &/ sFilename FOR READ AS #F
     'READ #F, sData, Lof(F)
 
     'Split this into an array and remove the CR character
-    aLine = Split(Replace(sData, Chr$(13), NULL), "\n")
+    aLine = Split(Replace(sData, Chr$(13), Null), "\n")
 
-    WITH ME
+    With Me
         .X = X
         .Y = Y
         .ID = sID
 
-        IF sID LIKE "Object*" THEN
+        If sID Like "Object*" Then
             .Torque = -1
             '.Attack = TRUE
             .MX = Rnd(-4, +5)
             .MY = Rnd(-4, +5)
-        END IF
+        End If
 
         .Agility = 5
         .Acceleration = 0.75
@@ -69,17 +71,17 @@ PUBLIC SUB Load2DObject(sFilename AS String, sID AS String, X AS Integer, Y AS I
 
         .Direction = Rad(180)
 
-        FOR I = 0 TO aLine.Count - 1
-            IF ( NOT (Left$(aLine[I], 1) = "'")) AND ( NOT (aLine[I] = "")) THEN
+        For I = 0 To aLine.Count - 1
+            If (Not (Left$(aLine[I], 1) = "'")) And (Not (aLine[I] = "")) Then
                 .Degree.Add(CFloat(Split(aLine[I], ",")[1]))
                 .Distance.Add(CFloat(Split(aLine[I], ",")[0]))
 
-                IF .Distance[.Distance.Count - 1] > .Size THEN
+                If .Distance[.Distance.Count - 1] > .Size Then
                     .Size = .Distance[.Distance.Count - 1]
-                END IF
-            END IF
-        NEXT
-    END WITH
+                End If
+            End If
+        Next
+    End With
 
     'CLOSE #F
-END
+End
