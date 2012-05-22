@@ -237,8 +237,6 @@ Public Sub Main()
       Application.Theme = "gambas"
   End Select
   
-  System.Profile = False
-  
   'DB.Debug = True
 
   OUTPUT_FILE = Temp$()
@@ -276,8 +274,6 @@ Public Sub Main()
     Project.Exit
     Return
   Endif
-
-  System.Profile = True
 
   InitVersion
   InitWebView
@@ -1097,8 +1093,7 @@ Public Sub GetParentClass(sPath As String) As String
   ' Possible, if sPath is a broken symbolic link
   If Error Then Return
 
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
+  For Each sLine In hFile.Lines
     sLine = Trim(sLine)
     If Not sLine Then Continue
     If Left(sLine) = "'" Then Continue
@@ -1114,7 +1109,7 @@ Public Sub GetParentClass(sPath As String) As String
     If sLine Like "CREATE *" Then Continue
     If sLine Like "EXPORT *" Then Continue
     Break
-  Wend
+  Next
 
 End
 
@@ -2908,9 +2903,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   License = ""
   CreateEachDirectory = False
 
-  While Not Eof(hFic)
-
-    Line Input #hFic, sLig
+  For Each sLig In hFic.Lines
+    
     sLig = Trim(sLig)
 
     If Len(sLig) = 0 Then Continue
@@ -3147,7 +3141,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
     End Select
 
-  Wend
+  Next
 
   Close hFic
 
@@ -4730,13 +4724,12 @@ Public Function GetIcon(sPath As String, Optional iSize As Integer) As Picture
 
   hFile = Open sPath &/ ".project"
 
-  While Not Eof(hFile)
-    Line Input #hFile, sLig
+  For Each sLig In hFile.Lines
     If Left$(sLig, 5) = "Icon=" Then
       sIcon = Mid$(sLig, 6)
       Break
     Endif
-  Wend
+  Next
 
   Close #hFile
 
@@ -5131,8 +5124,7 @@ Public Sub IsExported(sPath As String) As Boolean
   Try hFile = Open sPath
   If Error Then Return
 
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
+  For Each sLine In hFile.Lines
     sLine = Highlight.Purge(Trim(sLine))
     If Not sLine Then Continue
     If Left(sLine) = "'" Then Continue
@@ -5142,7 +5134,7 @@ Public Sub IsExported(sPath As String) As Boolean
     If sLine Like "EXPORT" Then Return True
     If sLine Like "EXPORT OPTIONAL" Then Return True
     Break
-  Wend
+  Next
 
 End
 

@@ -182,16 +182,18 @@ void gDraw::connect(gControl *wid)
 	switch (wid->getClass())
 	{
 		case Type_gMainWindow: 
+			
 			dr = GTK_LAYOUT(wid->widget)->bin_window; 
 			mode = GDK_INCLUDE_INFERIORS;
 			break;
 			
 		case Type_gDrawingArea:
-			if ( ((gDrawingArea*)wid)->cached() )
+			
+			if (((gDrawingArea*)wid)->cached())
 			{
-				dArea=(gDrawingArea*)wid;
+				dArea = (gDrawingArea*)wid;
 				dArea->resizeCache();
-				dr=dArea->buffer;
+				dr = dArea->buffer;
 			//	gdk_window_freeze_updates (GTK_LAYOUT(wid->widget)->bin_window);
 			}
 			else
@@ -201,11 +203,12 @@ void gDraw::connect(gControl *wid)
 				_x = a->x;
 				_y = a->y;
 			}
-
+			
 			break;
 			
 		default:
-			dr=wid->widget->window;
+			
+			dr = wid->widget->window;
 			GtkAllocation *a = &wid->widget->allocation;
 			_x = a->x;
 			_y = a->y;

@@ -113,9 +113,8 @@ Public Sub Init(sPath As String)
   $sPath = sPath
   
   hFile = Open sPath
-  While Not Eof(hFile)
-    
-    Line Input #hFile, sLine
+  
+  For Each sLine In hFile.Lines
     
     If Left(sLine) = " " Then
       
@@ -338,7 +337,7 @@ Public Sub Init(sPath As String)
         
     Endif
     
-  Wend
+  Next
   
   hCurrent = $cFunc[".System.EventLoop"]
   If hCurrent Then hCurrent.SetEventLoop()
@@ -349,7 +348,7 @@ Public Sub Init(sPath As String)
   
   Object.Lock(gvwProfile)
   gvwProfile.Columns.Sort = 2
-  gvwProfile.Columns.Ascending = True
+  gvwProfile.Columns.Ascending = False
   Object.Unlock(gvwProfile)
   gvwProfile_Sort
   
@@ -484,6 +483,7 @@ Private Sub LoadCurrentSourceCode() As String
     
     aDuration = $cLines[$sCurrentClass]
     
+    iTime = $hCurrent.FirstTime
     For I = $iFirstLine To $iFirstLine + edtSource.Lines.Count - 1
       Try iTime = Max(iTime, aDuration[I])
     Next
@@ -518,7 +518,6 @@ Public Sub Form_Close()
   $aAll.Remove($aAll.Find($sPath))
 
   Settings.Write(Me)
-  Settings.Write(splSource)
   Settings.Write(splProfile)
 
 End
@@ -540,7 +539,7 @@ Public Sub Form_Open()
 
   Settings.Read(Me)
   Settings.Read(splProfile)
-  Settings.Read(splSource)
+  splSource.Layout = [1, 2]
   ReadConfig
 
   With gvwProfile
@@ -797,7 +796,7 @@ Private Sub GetDurationColor(fPercent As Float) As Integer
   
   Dim iCol As Integer
   
-  iCol = 255 - fPercent * 64
+  iCol = 255 - Min(1, fPercent) * 64
   Return Color.RGB(iCol, iCol, iCol)
   
 End

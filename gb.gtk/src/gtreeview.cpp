@@ -115,7 +115,6 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	use_base = true;
 	_fix_border = false;
 	_last_click_time = 0;
-	_no_auto_grab = true;
 
 	tree = new gTree(this);
 	tree->addColumn();

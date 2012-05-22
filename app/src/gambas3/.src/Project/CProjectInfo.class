@@ -51,8 +51,7 @@ Private Sub ReadProject()
     
   hFile = Open $sPath &/ ".project"
   
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
+  For Each sLine In hFile.Lines
     sLine = Trim(sLine)
     If Not sLine Then Continue 
     If Left(sLine) = "#" Then Continue
@@ -72,10 +71,10 @@ Private Sub ReadProject()
         $sVersion = sVal
         
       Case "description"
-        $sDescription = Unquote(sVal)
+        $sDescription = UnQuote(sVal)
 
       Case "authors"
-        $aAuthors = Split(Unquote(sVal), "\n")
+        $aAuthors = Split(UnQuote(sVal), "\n")
 
       Case "icon"
         sIcon = sVal
@@ -88,7 +87,7 @@ Private Sub ReadProject()
 
     End Select
   
-  Wend
+  Next
   
   Close #hFile
 

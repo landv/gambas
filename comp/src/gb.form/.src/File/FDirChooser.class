@@ -952,7 +952,7 @@ Public Sub fvwChoose_Menu()
 
   Dim sFile As String = fvwChoose.Current
   
-  If sFile Like "*.tar.gz" Or If sFile Like "*.tar.bz2" Then
+  If sFile Like "*.tar.gz" Or If sFile Like "*.tar.bz2" Or If sFile Like "*.tgz" Then
     mnuUncompress.Show
   Else
     mnuUncompress.Hide
@@ -1005,7 +1005,7 @@ Public Sub mnuUncompress_Click()
   
   Select Case File.Name(fvwChoose.Current)
     
-    Case Like "*.tar.gz", "*.tar.bz2"
+    Case Like "*.tar.gz", "*.tar.bz2", "*.tgz"
       Shell "cd " & Shell(fvwChoose.Dir) & ";tar tf " & Shell$(fvwChoose.Current) To sOutput
   
       For Each sOutput In Split(Trim(sOutput), "\n")
@@ -1039,7 +1039,7 @@ Public Sub mnuUncompress_Click()
   
   Select Case File.Name(fvwChoose.Current)
     
-    Case Like "*.tar.gz"
+    Case Like "*.tar.gz", "*.tgz"
       Shell "cd " & Shell(fvwChoose.Dir) & ";tar xfz " & Shell$(fvwChoose.Current) Wait
       'Exec ["/bin/tar", "xfz", "-C", fvwChoose.Dir, sPath] To sResult
       

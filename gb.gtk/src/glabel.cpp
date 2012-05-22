@@ -109,6 +109,9 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	//fprintf(stderr, "draw label: %s: %d %d\n", d->name(), vw, vh);
 	gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
 	g_object_unref(G_OBJECT(gc));
+	
+	d->drawBorder();
+	
 	return false;
 }
 
@@ -127,7 +130,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	border = widget = gtk_fixed_new();
 	layout = gtk_widget_create_pango_layout(border, "");
 	
-	realize(true);
+	realize(false);
 
 	g_signal_connect_after(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	

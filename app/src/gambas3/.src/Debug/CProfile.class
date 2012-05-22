@@ -31,16 +31,16 @@ Public Sub _compare(hOther As CProfile) As Integer
       iRet = Comp(Name, hOther.Name, gb.IgnoreCase)
       
     Case 1
-      iRet = Sgn(Count - hOther.Count)
+      iRet = - Sgn(Count - hOther.Count)
       
     Case 2
-      iRet = Sgn({Time} - hOther.Time)
+      iRet = - Sgn({Time} - hOther.Time)
       
     Case 3
-      iRet = Sgn(Me.Self - hOther.Self)
+      iRet = - Sgn(Me.Self - hOther.Self)
       
     Case 4
-      iRet = Sgn({Time} / Count - hOther.Time / hOther.Count)
+      iRet = - Sgn({Time} / Count - hOther.Time / hOther.Count)
       
   End Select
   

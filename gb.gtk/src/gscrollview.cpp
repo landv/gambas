@@ -54,15 +54,15 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	_maxw = _maxh = 0;
 	_mw = _mh = 0;
 	_timer = 0;
+	_no_auto_grab = TRUE;
 	
 	onScroll = NULL;
 	
-	border = gtk_event_box_new();
+	border = gtk_scrolled_window_new(NULL, NULL);
+	_scroll = GTK_SCROLLED_WINDOW(border);
 	widget = gtk_layout_new(0, 0);
-	frame = 0;
+	//frame = 0;
 
-	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
-	gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
 	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
   viewport = gtk_viewport_new(gtk_scrolled_window_get_hadjustment(_scroll), gtk_scrolled_window_get_vadjustment(_scroll));
@@ -72,7 +72,7 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	gtk_container_add(GTK_CONTAINER(viewport), widget);
 	
 	realize(false);
-	
+
 	setBorder(true);
 	
 	Adj=gtk_scrolled_window_get_hadjustment(_scroll);
@@ -160,4 +160,12 @@ int gScrollView::scrollWidth()
 int gScrollView::scrollHeight()
 {
 	return MAX(_maxh, clientHeight());
+}
+
+void gScrollView::updateCursor(GdkCursor *cursor)
+{
+	gContainer::updateCursor(cursor);
+	
+	if (childCount())
+		child(0)->updateCursor(cursor);
 }

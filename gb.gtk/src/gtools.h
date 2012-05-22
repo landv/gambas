@@ -144,4 +144,6 @@ void
 gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus);
 #endif
 
+void gt_lower_widget(GtkWidget *widget);
+
 #endif

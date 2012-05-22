@@ -315,7 +315,7 @@ Public Sub ScrollArea_Draw()
   YO = $hColumns.Height - $hView.ScrollY + F
   YY = YO + $hRows._GetRowY(iRow)
   
-  iGrid = Color.Merge(Color.LightForeground, $hView.Background)
+  iGrid = Color.LightForeground 'Color.Merge(Color.LightForeground, $hView.Background)
   
   hClip = Draw.ClipRect
   
@@ -339,7 +339,7 @@ Public Sub ScrollArea_Draw()
       With $hColumns[I]
         If .W > 0 And If $iHeader And Horizontal Then
           Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
-          Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+          If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
           If iSort = I Then
             WA = Min(16, H - F)
             Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Top, Align.Bottom))
@@ -356,7 +356,7 @@ Public Sub ScrollArea_Draw()
 
   If $iHeader And Horizontal Then 
     Draw.ClipRect = hClip
-    Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+    If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
   Endif
     
   ' Horizontal header
@@ -377,7 +377,7 @@ Public Sub ScrollArea_Draw()
       'Draw.Style.Separator(F, Y, W - F, 2)
       H = $hRows._GetRowHeight(I)
       If H > 0 And If $iHeader And Vertical Then
-        Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
+        If $bGrid Then Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
         Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
         If I = $iRow Then Draw.Font.Bold = True
         Draw.Text($hRows._GetRowText(I), F, Y + 2, W - F, H - 2, Align.Center)
@@ -392,7 +392,7 @@ Public Sub ScrollArea_Draw()
   $aRowY.Add(Y - F)
   If $iHeader And Vertical Then 
     Draw.ClipRect = hClip
-    Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
+    If $bGrid Then Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
   Endif
 
   ' Top-left frame

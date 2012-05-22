@@ -47,9 +47,8 @@ Private Sub ReadComponentFile()
   Line Input #hFile, sLine
   If Trim(sLine) <> "[Component]" Then Return
   
-  While Not Eof(hFile)
+  For Each sLine In hFile.Lines
     
-    Line Input #hFile, sLine
     sLine = Trim(sLine)
     If Not sLine Then Continue 
     If Left(sLine) = ";" Then Continue
@@ -78,7 +77,7 @@ Private Sub ReadComponentFile()
         cmbHidden.Index = If(sLine = "True", 0, 1)
     End Select 
     
-  Wend
+  Next
   
 Catch 
 

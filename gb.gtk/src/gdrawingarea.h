@@ -27,7 +27,7 @@
 class gDrawingArea : public gContainer
 {
 public:
-	gDrawingArea(gContainer *parent, bool scrollarea = false);
+	gDrawingArea(gContainer *parent);
 	~gDrawingArea();
 
 	int getBorder() const { return getFrameBorder(); }
@@ -51,12 +51,14 @@ public:
 
 //"Private"
 	void init();
+	void create();
 	void updateCache();
 	void resizeCache();
 	void refreshCache();
 	void updateEventMask();
 	void setCache();
 	GdkPixmap *buffer;
+	GtkWidget *box;
 	uint _event_mask;
 	uint _old_bg_id;
 	unsigned _cached : 1;

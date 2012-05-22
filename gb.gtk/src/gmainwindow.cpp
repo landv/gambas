@@ -1102,6 +1102,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		checkMenuBar();
 		
+		bufX = bufY = 0;
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
 		

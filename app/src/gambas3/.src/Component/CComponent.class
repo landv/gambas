@@ -227,9 +227,8 @@ Static Private Sub InitComponent(sFile As String)
     hComponent.Name = $cName[hComponent.Key]
     If Not hComponent.Name Then hComponent.Name = " " 'Subst(("&1 component"), hComponent.Key)
     
-    While Not Eof(hFic)
+    For Each sLig In hFic.Lines
       
-      Line Input #hFic, sLig
       sLig = Trim(sLig)
       
       If Not sLig Then Continue
@@ -283,7 +282,7 @@ Static Private Sub InitComponent(sFile As String)
         
       End With
       
-    Wend
+    Next
     
     If hComponent.Key Then
       All[hComponent.Key] = hComponent
@@ -497,8 +496,7 @@ Public Sub Load()
     
     hFic = Open sPath
     
-    While Not Eof(hFic)
-      Line Input #hFic, sLig
+    For Each sLig In hFic.Lines
       
       If Left$(sLig) = "#" Then
         
@@ -569,7 +567,7 @@ Public Sub Load()
         Endif
       Endif
       
-    Wend
+    Next
     
     Close #hFic
     

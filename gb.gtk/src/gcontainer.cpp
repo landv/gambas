@@ -495,6 +495,18 @@ gControl *gContainer::find(int x, int y)
 	int i;
 	gControl *ch;
 	
+	if (gApplication::_button_grab != this)
+	{
+		if (x < 0 || y < 0 || x >= clientWidth() || y >= clientHeight())
+			return NULL;
+	}
+	
+	if (_scroll)
+	{
+		x += scrollX();
+		y += scrollY();
+	}
+	
 	for (i = childCount() - 1; i >= 0; i--)
 	{
 		ch = child(i);

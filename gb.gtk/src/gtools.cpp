@@ -1635,3 +1635,41 @@ gtk_widget_set_can_focus (GtkWidget *widget,
     }
 }
 #endif
+
+static void add_again(GtkWidget *widget, GtkWidget *ignore)
+{
+	int x, y;
+	GtkContainer *parent;
+	gControl *control;
+	gContainer *parent_control;
+
+	if (widget == ignore)
+		return;
+	
+	parent = GTK_CONTAINER(gtk_widget_get_parent(ignore));
+	control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+	parent_control = (gContainer *)g_object_get_data(G_OBJECT(parent), "gambas-control");
+	
+	if (control && parent_control)
+	{
+		x = control->x();
+		y = control->y();
+	}
+	
+	g_object_ref(G_OBJECT(widget));
+	gtk_container_remove(parent, widget);
+	gtk_container_add(parent, widget);
+	g_object_unref(G_OBJECT(widget));
+	
+	if (control && parent_control)
+		parent_control->moveChild(control, x, y);
+}
+
+void gt_lower_widget(GtkWidget *widget)
+{
+	GtkContainer *parent;
+	
+	parent = GTK_CONTAINER(gtk_widget_get_parent(widget));
+	if (parent)
+		gtk_container_foreach(parent, (GtkCallback)add_again, widget);
+}

@@ -771,6 +771,7 @@ void TRANS_case(void)
 	int i;
 	short pos;
 	short local;
+	bool like;
 
 	control_check(RS_SELECT, "CASE without SELECT", "CASE");
 	
@@ -782,7 +783,9 @@ void TRANS_case(void)
 	local = current_ctrl->local;
 
 	control_enter(RS_CASE);
-
+	
+	like = FALSE;
+	
 	for(i = 0; ; i++)
 	{
 		if (i > MAX_CASE_EXPR)
@@ -801,8 +804,9 @@ void TRANS_case(void)
 			TRANS_expression(FALSE);
 			CODE_op(C_LE, 0, 2, TRUE);
 		}
-		else if (TRANS_is(RS_LIKE))
+		else if (TRANS_is(RS_LIKE) || like)
 		{
+			like = TRUE;
 			CODE_push_local(local);
 			TRANS_expression(FALSE);
 			CODE_op(C_LIKE, 0, 2, TRUE);

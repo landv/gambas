@@ -41,6 +41,7 @@ public:
 	void (*onScroll)(gScrollView *sender);
 
 //"Private"
+	virtual void updateCursor(GdkCursor *cursor);
 	virtual void performArrange();
   void updateSize();
   guint _timer;

@@ -226,7 +226,7 @@ void gControl::initAll(gContainer *parent)
 	use_base = false;
 	mous = CURSOR_DEFAULT;
 	pr = parent;
-	_name=NULL;
+	_name = NULL;
 	visible = false;
 	_locked = 0;
 	_destroyed = false;
@@ -726,10 +726,6 @@ void gControl::updateCursor(GdkCursor *cursor)
 {
   if (GDK_IS_WINDOW(border->window))
     gdk_window_set_cursor(border->window, cursor);
-  /*if (frame && GDK_IS_WINDOW(frame->window) && frame->window != border->window)
-    gdk_window_set_cursor(frame->window, cursor);
-  if (widget != frame && widget != border && GDK_IS_WINDOW(widget->window))
-    gdk_window_set_cursor(widget->window, cursor);*/
 }
 
 void gControl::setMouse(int m)
@@ -971,7 +967,6 @@ gControl* gControl::previous()
 void gControl::lower()
 {
 	gpointer *p;
-	GList *iter;
 	GList *chd;
 	GtkWidget *child;
 	gControl *Br;
@@ -991,40 +986,27 @@ void gControl::lower()
 		fprintf(stderr, "gb.gtk: warning: gControl::lower(): no window\n");
 		
 		if (!(chd=gtk_container_get_children(GTK_CONTAINER(pr->getContainer())))) return;
-		chd=g_list_first(chd);
 		
-		while (chd)
+		chd = g_list_first(chd);
+		
+		while(chd)
 		{
-			child=(GtkWidget*)chd->data;
+			child = (GtkWidget*)chd->data;
 			
-			Br=NULL;
-			if (controls)
-			{
-				iter=g_list_first(controls);
-				while (iter)
-				{
-					if ( ((gControl*)iter->data)->border == child)
-					{
-						Br=(gControl*)iter->data;
-						break;
-					}
-					iter=iter->next;
-				}
-			}
+			Br = (gControl *)g_object_get_data(G_OBJECT(child), "gambas-control");;
 			
-			if (Br && (Br != this))
+			if (Br && Br != this)
 			{
-				x=Br->left();
-				y=Br->top();
+				x = Br->x();
+				y = Br->y();
 				g_object_ref(G_OBJECT(Br->border));
 				gtk_container_remove(GTK_CONTAINER(pr->getContainer()),Br->border);
 				gtk_container_add(GTK_CONTAINER(pr->getContainer()),Br->border);
 				pr->moveChild(Br, x, y);
-				//gtk_layout_put(GTK_LAYOUT(pr->getContainer()),Br->border,x,y);
 				g_object_unref(G_OBJECT(Br->border));
 			}
 			
-			chd=g_list_next(chd);
+			chd = g_list_next(chd);
 		}
 	}
 	
@@ -1169,10 +1151,10 @@ void gControl::connectParent()
 {
 	if (pr)
 	{
-    //gtk_widget_set_redraw_on_allocate(border, false);
-    
-  	pr->insert(this, true);
-  }
+		//gtk_widget_set_redraw_on_allocate(border, false);
+		
+		pr->insert(this, true);
+	}
   
 	// BM: Widget has been created, so we can set its cursor if application is busy
 	if (gApplication::isBusy() && mustUpdateCursor())
@@ -1369,7 +1351,7 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 	border = GTK_WIDGET(_scroll);
 	widget = wid;
 	frame = 0;
-
+	_no_auto_grab = true;
 	
 	//gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
 	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -1940,6 +1922,8 @@ void gControl::drawBackground()
 	if (background() == COLOR_DEFAULT)
 		return;
 	
+	//fprintf(stderr, "drawBackground: %s %08X\n", name(), background());
+					
 	gDraw *d = new gDraw();
 	d->connect(this);
 	d->setFillStyle(FILL_SOLID);

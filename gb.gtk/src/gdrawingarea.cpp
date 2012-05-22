@@ -33,9 +33,11 @@ gDrawingArea Widget
 
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 {
+	
 	if (data->cached())
 	{
-		gdk_window_clear(GTK_WIDGET(wid)->window);
+		//gdk_window_clear(data->box->window);
+		//fprintf(stderr, "drawBorder: %s\n", data->name());
 		data->drawBorder();
 	}
 	else
@@ -69,7 +71,7 @@ static void cb_size(GtkWidget *wid, GtkAllocation *a, gDrawingArea *data)
 
 void gDrawingArea::init()
 {
-	gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
+	/*gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 
 		| GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK);
@@ -77,45 +79,110 @@ void gDrawingArea::init()
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 
-		| GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK);
+		| GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK);*/
 
 	//GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
 	//GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
 		
-	_event_mask = gtk_widget_get_events(widget);
+	//_event_mask = gtk_widget_get_events(widget);
 	
-	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
-	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
 	//g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
 }	
 
-gDrawingArea::gDrawingArea(gContainer *parent, bool scrollarea) : gContainer(parent)
+void gDrawingArea::create(void)
+{
+	int i;
+	GtkWidget *ch;
+	bool doReparent = false;
+	bool was_visible = isVisible();
+	GdkRectangle rect;
+	int bg, fg;
+	
+	if (border)
+	{
+		getGeometry(&rect);
+		bg = background();
+		fg = foreground();
+		parent()->remove(this);
+		
+		for (i = 0; i < childCount(); i++)
+		{
+			ch = child(i)->border;
+			g_object_ref(G_OBJECT(ch));
+			gtk_container_remove(GTK_CONTAINER(widget), ch);
+		}
+		
+		_no_delete = true;
+		gtk_widget_destroy(border);
+		_no_delete = false;
+		doReparent = true;
+	}
+	
+	if (_cached)
+	{
+		border = gtk_event_box_new();
+		widget = gtk_fixed_new();
+		box = widget;
+		gtk_widget_set_app_paintable(border, TRUE);
+		gtk_widget_set_app_paintable(box, TRUE);
+	}
+	else
+	{
+		border = widget = gtk_fixed_new();
+		box = NULL;
+	}
+
+	realize(false);
+	
+	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
+	g_signal_connect_after(G_OBJECT(border), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+	
+	if (doReparent)
+	{
+		if (_cached)
+			gtk_widget_realize(box);
+				
+		setBackground(bg);
+		setForeground(fg);
+		setFont(font());
+		bufX = bufY = bufW = bufH = -1;
+		setGeometry(&rect);
+		
+		for (i = 0; i < childCount(); i++)
+		{
+			ch = child(i)->border;
+			gtk_container_add(GTK_CONTAINER(widget), ch);
+			moveChild(child(i), child(i)->x(), child(i)->y());
+			g_object_unref(G_OBJECT(ch));
+		}
+		
+		if (was_visible)
+			show();
+		else
+			hide();
+	}
+}
+
+gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 {
 	_cached = false;
 	buffer = NULL;
+	box = NULL;
 	_old_bg_id = 0;
 	_resize_cache = false;
 	_no_background = false;
 	
 	onExpose = NULL;
 		
-	if (!scrollarea)
-	{
-		g_typ = Type_gDrawingArea;
-		
-		border = //gtk_event_box_new();
-		widget = gtk_fixed_new();
-		//widget = border; //gtk_layout_new(0,0);
-			
-		realize(false);
-		
-		init();
-	}
+	g_typ = Type_gDrawingArea;
+	
+	create();
 }
 
 gDrawingArea::~gDrawingArea()
 {
-  setCached(false);
+	if (buffer)
+		g_object_unref(G_OBJECT(buffer));
 }
 
 void gDrawingArea::resize(int w, int h)
@@ -127,6 +194,7 @@ void gDrawingArea::resize(int w, int h)
 
 void gDrawingArea::updateEventMask()
 {
+	/*
 	static int event_mask;
 	XWindowAttributes attr;
 		
@@ -142,7 +210,7 @@ void gDrawingArea::updateEventMask()
 	{
 		XSelectInput(gdk_display, GDK_WINDOW_XID(border->window), event_mask);
 	}
-	
+	*/
 }
 
 void gDrawingArea::setEnabled(bool vl)
@@ -153,22 +221,18 @@ void gDrawingArea::setEnabled(bool vl)
 
 void gDrawingArea::setCached(bool vl)
 {
-	if (vl == cached()) return;	
+	if (vl == _cached) return;	
 	
 	_cached = vl;
-	
-	gtk_widget_set_has_window(widget, _cached);
-	gtk_widget_set_double_buffered(widget, !_cached);
 	
 	if (!_cached)
 	{
 		g_object_unref(G_OBJECT(buffer));
 		buffer = NULL;
-		set_gdk_bg_color(widget, background());	
-		return;
+		set_gdk_bg_color(border, background());	
 	}
 	
-	gtk_widget_realize(widget);
+	create();
 	resizeCache();
 }
 
@@ -182,11 +246,13 @@ void gDrawingArea::resizeCache()
 	GdkColormap *cmap;
 	GdkColor gcol;
 	
-	win = GTK_WIDGET(widget)->window;
+	if (!_cached)
+		return;
+	
+	win = GTK_WIDGET(box)->window;
 	if (!win)
 		return;
 	
-	//gdk_drawable_get_size(border->window, &w, &h);
 	w = width();
 	h = height();
 	
@@ -227,15 +293,16 @@ void gDrawingArea::setCache()
 {
 	GdkWindow *win;
 	
-	win = widget->window;
+	if (!box)
+		return;
+	
+	win = box->window;
 	if (!win)
 		return;
 	
-	//drawBorder(buffer);
+	//fprintf(stderr, "set back pixmap: %p\n", buffer);
+	
 	gdk_window_set_back_pixmap(win, buffer, FALSE);
-	//gdk_window_set_back_pixmap(border->window, buffer, FALSE);
-	//gdk_window_set_back_pixmap(widget->window, NULL, TRUE);
-	//gdk_window_set_back_pixmap(win, NULL, TRUE);
 	refreshCache();
 }
 
@@ -272,15 +339,14 @@ void gDrawingArea::clear()
 
 void gDrawingArea::refreshCache()
 {
-	if (_cached)
-	{
-		if (GTK_WIDGET(widget)->window)
-			gdk_window_clear(GTK_WIDGET(widget)->window);
-	}
+	gtk_widget_queue_draw(box);
+	//if (box && box->window)
+	//	gdk_window_clear(box->window);
 }
 
 void gDrawingArea::setNoBackground(bool vl)
 {
+	/*
 	GdkWindow *win;
 	
 	gtk_widget_realize(widget);
@@ -290,6 +356,7 @@ void gDrawingArea::setNoBackground(bool vl)
 		gdk_window_set_back_pixmap(win, NULL, FALSE);
 	else
 		setBackground(background());
+	*/
 }
 
 void gDrawingArea::setRealBackground(gColor color)
@@ -298,16 +365,3 @@ void gDrawingArea::setRealBackground(gColor color)
 	clear();
 }
 
-/*void gDrawingArea::drawBackground(GdkDrawable *win)
-{
-	GdkGC *gc;
-	GdkGCValues values;
-
-	fill_gdk_color(&values.background, gDesktop::lightfgColor(), gdk_drawable_get_colormap(win));
-	gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
-	
-	//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
-	gdk_draw_rectangle(win, gc, FALSE, x, y, w - 1, h - 1); 
-	gtk_gc_release(gc);
-	return;
-}*/

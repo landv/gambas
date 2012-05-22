@@ -160,6 +160,9 @@ public:
 	void unlock() { _locked--; }
 	bool locked() { return _locked; }
 	
+	void getGeometry(GdkRectangle *rect) const { rect->x = bufX; rect->y = bufY; rect->width = bufW; rect->height = bufH; }
+	void setGeometry(GdkRectangle *rect) { moveResize(rect->x, rect->y, rect->width, rect->height); }
+	
 	void emit(void *signal);
 	void emit(void *signal, intptr_t arg);
 	void emit(void *signal, char *arg) { emit(signal, (intptr_t)arg); }

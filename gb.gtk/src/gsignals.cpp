@@ -35,8 +35,6 @@
 
 static void  sg_destroy (GtkWidget *object,gControl *data)
 {
-	//fprintf(stderr, "sg_destroy: %p\n", data);
-	
 	if (data->_no_delete)
 		return;
 		
