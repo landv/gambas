@@ -222,6 +222,7 @@ static int begin(GB_DRAW *d)
 		{
 			QPixmap *p = wid->getBackgroundPixmap();
 			ret = init_drawing(d, p, p->width(), p->height());
+			DP(d)->initFrom(wid);
 		}
 		else
 		{

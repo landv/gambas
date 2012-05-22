@@ -1466,7 +1466,22 @@ int CWIDGET_get_background(CWIDGET *_object)
 		return w->palette().color(w->backgroundRole()).rgb() & 0xFFFFFF;
 	*/
 }
+
+int CWIDGET_get_real_background(CWIDGET *_object)
+{
+	int bg = CWIDGET_get_background(THIS);
 	
+	if (bg != COLOR_DEFAULT)
+		return bg;
+
+	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
+	
+	if (parent)
+		return CWIDGET_get_real_background(parent);
+	else
+		return QApplication::palette().color(QPalette::Window).rgb() & 0xFFFFFF;
+}
+
 int CWIDGET_get_foreground(CWIDGET *_object)
 {
 	return THIS_EXT ? THIS_EXT->fg : COLOR_DEFAULT;

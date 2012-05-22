@@ -190,6 +190,7 @@ void CWIDGET_set_color(CWIDGET *_object, int bg, int fg);
 void CWIDGET_reset_color(CWIDGET *_object);
 int CWIDGET_get_background(CWIDGET *_object);
 int CWIDGET_get_foreground(CWIDGET *_object);
+int CWIDGET_get_real_background(CWIDGET *_object);
 void *CWIDGET_get_parent(void *_object);
 int CWIDGET_get_handle(void *_object);
 void CWIDGET_set_visible(CWIDGET *_object, bool v);

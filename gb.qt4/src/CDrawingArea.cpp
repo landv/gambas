@@ -219,6 +219,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 
 void MyDrawingArea::createBackground(int w, int h)
 {
+	void *_object = CWidget::get(this);
 	QX11Info xinfo = x11Info();
 	QPixmap p;
 	Qt::HANDLE old = _background;
@@ -233,7 +234,8 @@ void MyDrawingArea::createBackground(int w, int h)
 	//qDebug("color = %06X -> %06X", palette().color(backgroundRole()).rgb(), QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
 	
 	gc = XCreateGC(QX11Info::display(), _background, 0, 0);
-	XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
+	//XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
+	XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel(CWIDGET_get_real_background((CWIDGET *)THIS)));
 	XFillRectangle(QX11Info::display(), _background, gc, 0, 0, w, h);
 	XFreeGC(QX11Info::display(), gc);
 	
@@ -515,7 +517,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 		
 		if (bg == COLOR_DEFAULT)
 		{
-			CWIDGET_set_color((CWIDGET *)THIS, fg, WIDGET->palette().color(WIDGET->backgroundRole()).rgb() & 0xFFFFFF);
+			CWIDGET_set_color((CWIDGET *)THIS, WIDGET->palette().color(WIDGET->backgroundRole()).rgb() & 0xFFFFFF, fg);
 			WIDGET->clearBackground();
 		}
 		WIDGET->setCached(VPROP(GB_BOOLEAN));
