@@ -2,7 +2,6 @@
 
 Private Game As New CGameField
 
-
 Private Sub DrawGame()
   
   Game.DrawGame(chkBorder.Value)
@@ -12,7 +11,11 @@ End
 
 Public Sub Form_Open()
 
+  'System.Profile = False
+  'Randomize 1972
   Button1_Click
+  Slider1_Change
+  'togEvolution.Value = True
   
 End
 

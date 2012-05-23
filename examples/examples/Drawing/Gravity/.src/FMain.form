@@ -37,8 +37,8 @@
   }
   { dW DrawingArea
     MoveScaled(22,8,89,64)
-    Cached = True
     Border = Border.Plain
+    Cached = True
     { lblAddMore TextLabel
       MoveScaled(1,1,24,10)
       Visible = False
@@ -57,9 +57,9 @@
     }
     { cB ComboBox
       MoveScaled(1,7,18,4)
-      Text = ("ComboBox1")
       ReadOnly = True
-      List = []
+      List = Null
+      Text = ("ComboBox1")
     }
     { togFocus ToggleButton
       MoveScaled(1,12,18,4)

@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 	//log_file = freopen(log_path, "w+", stderr);
 	//fprintf(stderr, "Fichier log Gambas\n");
 	
-	/*struct rlimit rl = { 32000000, 32000000 };
+	/*struct rlimit rl = { 64000000, 64000000 };
 	if (setrlimit(RLIMIT_CORE, &rl))
 		perror(strerror(errno));*/
 

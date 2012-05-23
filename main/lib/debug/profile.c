@@ -188,7 +188,8 @@ void PROFILE_end(void *cp, void *fp)
 	if (cp && fp)
 	{
 		FUNCTION *ffp = (FUNCTION *)fp;
-		add_line(ffp->debug->line + ffp->debug->nline, time);
+		if (ffp->debug)
+			add_line(ffp->debug->line + ffp->debug->nline, time);
 	}
 
 	//where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
