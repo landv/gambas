@@ -389,10 +389,6 @@ void *GAMBAS_JitApi[] =
 	(void *)TYPE_get_name,
 	
 	(void *)SUBR_not,
-	(void *)SUBR_compi,
-	(void *)SUBR_add,
-	(void *)SUBR_sub,
-	(void *)SUBR_mul,
 	(void *)SUBR_and_,
 	(void *)SUBR_cat,
 	(void *)SUBR_file,

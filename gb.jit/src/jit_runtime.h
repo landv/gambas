@@ -35,6 +35,10 @@ void JR_release_variant(long vtype, char* data);
 void JR_borrow_variant(long vtype, char* data);
 void JR_aq_variant(int add);
 void JR_variant_equal(void);
+void JR_variant_compi_less_than(void);
+void JR_add(ushort code);
+void JR_sub(ushort code);
+void JR_mul(ushort code);
 void JR_call(int nparam);
 
 void JR_exec_enter_quick(CLASS* klass, void* object, int index);

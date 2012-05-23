@@ -3558,10 +3558,9 @@ static llvm::Value* LessDate(llvm::Value* date_left, llvm::Value* date_right){
 
 llvm::Value* LessExpression::codegen_get_value(){
 	if (t == T_VARIANT){
-		/* _SUBR_compi made non-static */
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_compi, 'v', "h"), getInteger(16, C_LT));
+		builder->CreateCall(get_global_function(JR_variant_compi_less_than, 'v', ""));
 		return ret_top_stack(T_BOOLEAN, true);
 	} else {
 		auto op = codegen_operands();
@@ -3643,10 +3642,9 @@ llvm::Value* NearExpression::codegen_get_value(){
 
 llvm::Value* AddExpression::codegen_get_value(){
 	if (type == T_VARIANT){
-		/* _SUBR_add made non-static */
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_add, 'v', "h"), getInteger(16, 0));
+		builder->CreateCall(get_global_function(JR_add, 'v', "h"), getInteger(16, 0));
 		return ret_top_stack(T_VARIANT, true);
 	} else {
 		auto op = codegen_operands();
@@ -3667,10 +3665,9 @@ llvm::Value* AddExpression::codegen_get_value(){
 
 llvm::Value* SubExpression::codegen_get_value(){
 	if (type == T_VARIANT){
-		/* _SUBR_sub made non-static */
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_sub, 'v', "h"), getInteger(16, 0));
+		builder->CreateCall(get_global_function(JR_sub, 'v', "h"), getInteger(16, 0));
 		return ret_top_stack(T_VARIANT, true);
 	} else {
 		auto op = codegen_operands();
@@ -3691,10 +3688,9 @@ llvm::Value* SubExpression::codegen_get_value(){
 
 llvm::Value* MulExpression::codegen_get_value(){
 	if (type == T_VARIANT){
-		/* _SUBR_mul made non-static */
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_mul, 'v', "h"), getInteger(16, 0));
+		builder->CreateCall(get_global_function(JR_mul, 'v', "h"), getInteger(16, 0));
 		return ret_top_stack(T_VARIANT, true);
 	} else {
 		auto op = codegen_operands();

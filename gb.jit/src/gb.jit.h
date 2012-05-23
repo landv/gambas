@@ -119,10 +119,6 @@ typedef
 		const char *(*F_TYPE_get_name)(TYPE type);
 		
 		void (*F_SUBR_not)(ushort code);
-		void (*F_SUBR_compi)(ushort code);
-		void (*F_SUBR_add)(ushort code);
-		void (*F_SUBR_sub)(ushort code);
-		void (*F_SUBR_mul)(ushort code);
 		void (*F_SUBR_and_)(ushort code);
 		void (*F_SUBR_cat)(ushort code);
 		void (*F_SUBR_file)(ushort code);
