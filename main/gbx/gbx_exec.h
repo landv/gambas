@@ -83,6 +83,7 @@ EXTERN VALUE *EXEC_super;
 
 EXTERN bool EXEC_debug;
 EXTERN bool EXEC_profile;
+EXTERN bool EXEC_profile_instr;
 EXTERN bool EXEC_arch;
 EXTERN bool EXEC_fifo;
 EXTERN const char *EXEC_fifo_name;

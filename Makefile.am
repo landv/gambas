@@ -29,6 +29,7 @@ SUBDIRS = \
  @gsl_dir@ \
  @ncurses_dir@ \
  @media_dir@ \
+ @jit_dir@ \
  comp \
  app \
  examples \

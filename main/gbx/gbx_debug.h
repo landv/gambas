@@ -48,7 +48,6 @@
 
 EXTERN DEBUG_INTERFACE DEBUG;
 EXTERN DEBUG_INFO *DEBUG_info;
-EXTERN bool DEBUG_profiling;
 
 #endif
 

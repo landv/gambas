@@ -203,9 +203,9 @@ END_PROPERTY
 BEGIN_PROPERTY(System_Profile)
 
 	if (READ_PROPERTY)
-		GB_ReturnBoolean(EXEC_profile);
-	else if (DEBUG_profiling)
-		EXEC_profile = VPROP(GB_BOOLEAN);
+		GB_ReturnBoolean(EXEC_profile_instr);
+	else
+		EXEC_profile_instr = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 

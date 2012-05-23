@@ -493,6 +493,7 @@ Private Sub LoadCurrentSourceCode() As String
   
   gvwSource.Rows.Height = edtSource.LineHeight
   gvwSource.Rows.Count = edtSource.Lines.Count
+  gvwSource.Row = 0
   gvwSource.Refresh
   
   panSourceHeader.H = gvwSource.Columns.Height - 1
