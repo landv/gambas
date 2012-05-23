@@ -103,8 +103,6 @@ EXTERN char EXEC_unknown_nparam;
 
 EXTERN EXEC_GLOBAL EXEC;
 
-EXTERN void *EXEC_profile_last_fp;
-
 #endif
 
 // Local variables base pointer

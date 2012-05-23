@@ -43,6 +43,7 @@
 
 DEBUG_INTERFACE DEBUG;
 DEBUG_INFO *DEBUG_info = NULL;
+bool DEBUG_profiling = FALSE;
 
 static bool calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
@@ -104,7 +105,6 @@ const char *DEBUG_get_current_position(void)
 	return DEBUG_get_position(CP, FP, PC);
 }
 
-
 void DEBUG_init(void)
 {
 	if (!EXEC_debug)
@@ -120,8 +120,8 @@ void DEBUG_init(void)
 	
 	if (EXEC_profile)
 	{
-		EXEC_profile_last_fp = NULL;
 		DEBUG.Profile.Init();
+		DEBUG_profiling = TRUE;
 	}
 }
 

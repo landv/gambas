@@ -48,6 +48,7 @@
 
 EXTERN DEBUG_INTERFACE DEBUG;
 EXTERN DEBUG_INFO *DEBUG_info;
+EXTERN bool DEBUG_profiling;
 
 #endif
 
@@ -77,7 +78,5 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt);
 #define PROFILE_LEAVE_FUNCTION() \
 	if (EXEC_profile && CP && CP->component == COMPONENT_main) \
 		DEBUG.Profile.End(CP, FP); \
-
-
 
 #endif
