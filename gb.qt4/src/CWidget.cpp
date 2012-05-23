@@ -840,16 +840,16 @@ END_PROPERTY
 BEGIN_PROPERTY(Control_Hovered)
 
 	if (!is_visible(THIS))
-	{
 		GB.ReturnBoolean(false);
-		return;
-	}
+	else
+		GB.ReturnBoolean(THIS->flag.inside);
 
+	/*
 	QPoint m = QCursor::pos();
 	int x = WIDGET->mapToGlobal(QPoint(0, 0)).x(); 
 	int y = WIDGET->mapToGlobal(QPoint(0, 0)).y(); 
 
-	GB.ReturnBoolean(m.x() >= x && m.y() >= y && m.x() < (x + WIDGET->width()) && m.y() < (y + WIDGET->height()));
+	GB.ReturnBoolean(m.x() >= x && m.y() >= y && m.x() < (x + WIDGET->width()) && m.y() < (y + WIDGET->height()));*/
 
 END_PROPERTY
 

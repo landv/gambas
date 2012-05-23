@@ -850,7 +850,7 @@
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
-      MoveScaled(2,3,31,66)
+      MoveScaled(2,3,30,66)
       ToolTip = ("Project")
       Arrangement = Arrange.Vertical
       Action = "project"
@@ -913,6 +913,7 @@
         Expand = True
         { Separator5 Separator
           MoveScaled(1,7,0,10)
+          Visible = False
         }
         { wrkProject Workspace
           MoveScaled(2,0,18,31)
@@ -922,16 +923,19 @@
         }
         { Separator8 Separator
           MoveScaled(23,7,0,9)
+          Visible = False
         }
       }
       { Separator9 Separator
         MoveScaled(3,35,19,0)
+        Visible = False
       }
       { panDebug SidePanel
-        MoveScaled(2,37,19,27)
+        MoveScaled(2,38,19,27)
         ToolTip = ("Debug")
         Arrangement = Arrange.Fill
         Orientation = Align.Bottom
+        Separator = True
         Hidden = True
       }
     }

@@ -2,8 +2,6 @@
 
 Static Private $hTile As Picture
 
-Public TitleBar As Control
-
 Private $aWindow As New CWindow[]
 Private $hCurrent As CWindow
 Private $bMove As Boolean
@@ -23,7 +21,7 @@ Public Sub _new()
   
   If Not $hTile Then $hTile = Picture["img/hash.png"]
   '$hWatcher = NEW Watcher(panChild) AS "panChild"
-  TitleBar = tabWorkspace
+  'TitleBar = tabWorkspace
   '$bLogo = Application.Name = "gambas" & System.Version
   ' If $bLogo Then 
   '   picLogo.Picture = Picture.Load("img/logo.png")
@@ -785,6 +783,18 @@ Public Sub SetPicture(hPicture As Picture)
   
   $hPicture = hPicture
   panWorkspace.Refresh
+  
+End
+
+Public Sub SetFont(hFont As Font)
+  
+  tabWorkspace.TextFont = hFont
+  
+End
+
+Public Sub GetFont() As Font
+  
+  Return tabWorkspace.TextFont
   
 End
 

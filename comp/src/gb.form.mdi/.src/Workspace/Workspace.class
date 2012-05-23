@@ -94,13 +94,13 @@ End
 
 Private Function Font_Read() As Font
 
-  Return $hWorkspace.TitleBar.Font  
+  Return $hWorkspace.GetFont()
 
 End
 
 Private Sub Font_Write(Value As Font)
 
-  $hWorkspace.TitleBar.Font = Value
+  $hWorkspace.SetFont(Value)
 
 End
 

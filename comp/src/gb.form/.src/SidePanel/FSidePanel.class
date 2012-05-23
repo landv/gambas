@@ -18,6 +18,9 @@ Private $iColor As Integer
 Private $bOpened As Boolean
 Private $hArrow As Image
 Private $bSeparator As Boolean
+Private $bCanMove As Boolean
+Private $bInside As Boolean
+Private $bDblClick As Boolean
 
 Private BUTTON_H As Integer = Desktop.Scale
 Private BUTTON_W As Integer = 48
@@ -175,23 +178,25 @@ Private Sub RefreshPanel()
 
   End Select
 
+  panSide.Move(0, 0, Me.ClientW, Me.ClientH)
+  
   Select Case $iOrientation
 
-    Case Align.Top
-      sepSide.Move(0, 0, Me.ClientW, 1)
-      panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
-
     Case Align.Bottom
-      sepSide.Move(0, sepSide.Parent.ClientH - 1, Me.ClientW, 1)
-      panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
+      sepSide.Move(0, 0, Me.ClientW, 1)
+      'panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
 
-    Case Align.Left
-      sepSide.Move(0, 0, 1, Me.ClientH)
-      panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+    Case Align.Top
+      sepSide.Move(0, sepSide.Parent.ClientH - 1, Me.ClientW, 1)
+      'panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Right
+      sepSide.Move(0, 0, 1, Me.ClientH)
+      'panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+
+    Case Align.Left
       sepSide.Move(sepSide.Parent.ClientW - 1, 0, 1, Me.ClientH)
-      panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+      'panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
   End Select
   
@@ -249,13 +254,17 @@ Private Sub RefreshArrow()
       Endif
   End Select
   
-  If Not Component.IsLoaded("gb.gtk") Then $hArrow = Main.GetArrow(iType, 10)
+  If Not Component.IsLoaded("gb.gtk") Then $hArrow = Main.GetArrow(iType, Desktop.Scale * 2)
   $iArrowType = iType
   btnSide.Refresh
   btnSide2.Refresh
 
-  If $bVisible And Not $bFixed And Not Me.Parent.Design Then
-    panMove.Mouse = If(IsVertical(), Mouse.SplitV, Mouse.SplitH)
+  If Not $bFixed And Not Me.Parent.Design Then
+    If $bVisible Then
+      panMove.Mouse = If(IsVertical(), Mouse.SplitV, Mouse.SplitH)
+    Else
+      panMove.Mouse = Mouse.Pointing
+    Endif
   Else
     panMove.Mouse = Mouse.Default
   Endif
@@ -264,28 +273,35 @@ End
 
 Private Sub RefreshAll()
 
+  Dim D As Integer
+
   If Not $bOpened Then Return
   
   If $bVisible Then
     panSide.Show 'Enabled = TRUE
+    panMove.Raise
     If $W And If $H Then Me.Parent.Move($X, $Y, $W, $H)
   Else
     'DEBUG ME.Parent.W;; ME.CLientW
     panSide.Hide 'Enabled = FALSE
+    panMove.Raise
+    D = 1
+    
     Select Case $iOrientation
       Case Align.Top
-        Me.Parent.H = BUTTON_H
+        Me.Parent.H = D
       Case Align.Bottom
-        Me.Parent.Y += Me.Parent.H - BUTTON_H
-        Me.Parent.H = BUTTON_H
+        Me.Parent.Y += Me.Parent.H - D
+        Me.Parent.H = D
       Case Align.Left
-        Me.Parent.W = BUTTON_H
+        Me.Parent.W = D
       Case Align.Right
-        Me.Parent.X += Me.Parent.W - BUTTON_H
-        Me.Parent.W = BUTTON_H
+        Me.Parent.X += Me.Parent.W - D
+        Me.Parent.W = D
     End Select
   Endif
 
+  UpdateBackground
   RefreshArrow
   RefreshPanel
   
@@ -343,10 +359,12 @@ End
 
 Public Sub panMove_MouseDown()
 
-  If Not $bVisible Then Return
+  $bCanMove = False
+
   If Me.Parent.Design Then Return
   If Not Me.Parent.Enabled Then Return
   If $bFixed Then Return
+  If Not $bVisible Then Return
 
   $MX = Mouse.ScreenX - Me.Parent.W
 
@@ -365,7 +383,17 @@ Public Sub panMove_MouseDown()
       $iMax = Me.Parent.X + Me.Parent.W '+ Desktop.Scale * 8
   End Select
   
+  $bCanMove = True
+  
 End
+
+Public Sub panMove_MouseUp()
+
+  If Not $bDblClick And If Not $bVisible Then TogglePanel
+  $bDblClick = False
+  
+End
+
 
 Private Function GetDim(H As Integer) As Integer
   
@@ -374,7 +402,7 @@ Private Function GetDim(H As Integer) As Integer
   iMin = Min($iMax, Max(BUTTON_H, Desktop.Scale * 8))
 
   If H < BUTTON_H Then
-    H = BUTTON_H
+    H = 1
   Else If H < iMin Then
     H = iMin
   Endif
@@ -389,8 +417,9 @@ Public Sub panMove_MouseMove()
   Dim H As Integer
   Dim iMax As Integer
 
+  If Not $bCanMove Then Return
+
   If Not Mouse.Left Then Return
-  If Not $bVisible Then Return
   If Me.Parent.Design Then Return
   If Not Me.Parent.Enabled Then Return
   If $bFixed Then Return
@@ -399,14 +428,35 @@ Public Sub panMove_MouseMove()
 
   Select Case $iOrientation
     Case Align.Top
-      Me.Parent.H = GetDim(Min(iMax, Mouse.ScreenY - $MY))
+      H = GetDim(Min(iMax, Mouse.ScreenY - $MY))
     Case Align.Bottom
       H = GetDim(Min(iMax, $MY - Mouse.ScreenY))
-      Me.Parent.Move(Me.Parent.X, $iMax - H, Me.Parent.W, H)
     Case Align.Left
-      Me.Parent.W = GetDim(Min(iMax, Mouse.ScreenX - $MX))
+      H = GetDim(Min(iMax, Mouse.ScreenX - $MX))
     Case Align.Right
       H = GetDim(Min(iMax, $MX - Mouse.ScreenX))
+  End Select
+  
+  If H <= 1 Then
+    If $bVisible Then 
+      TogglePanel
+      $bDblClick = True
+      Return
+    Endif
+  Else
+    If Not $bVisible Then
+      TogglePanel
+    Endif
+  Endif
+
+  Select Case $iOrientation
+    Case Align.Top
+      Me.Parent.H = H
+    Case Align.Bottom
+      Me.Parent.Move(Me.Parent.X, $iMax - H, Me.Parent.W, H)
+    Case Align.Left
+      Me.Parent.W = H
+    Case Align.Right
       Me.Parent.Move($iMax - H, Me.Parent.Y, H, Me.Parent.H)
   End Select
 
@@ -479,7 +529,8 @@ End
 Public Sub panMove_DblClick()
 
   If Not Me.Parent.Enabled Then Return
-  If $bVisible Then TogglePanel
+  TogglePanel
+  $bDblClick = True
 
 End
 
@@ -544,33 +595,29 @@ End
 Public Sub btnSide_Draw()
 
   Dim S As Integer
-  'If Last.Tag Then
-  '  Draw.Style.Button(0, 0, btnSide.W, btnSide.H, Last.Tag = 2)
-  'Endif
-  If $hArrow Then 
-    Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
-  Else
-    S = Min(btnSide.W, btnSide.H)
-    Draw.Style.Arrow((btnSide.W - S) \ 2, (btnSide.H - S) \ 2, S, S, $iArrowType)
+  
+  If Me.Parent.Design Or If Last.Hovered Then 
+  
+    If $hArrow Then 
+      Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
+    Else
+      S = Min(btnSide.W, btnSide.H)
+      Draw.Style.Arrow((btnSide.W - S) \ 2, (btnSide.H - S) \ 2, S, S, $iArrowType)
+    Endif
+    
   Endif
 
 End
 
 Public Sub btnSide_Enter()
 
-  Last.Background = Color.ButtonBackground
-  'Last.Background = Color.ButtonBackground
-  'Last.Tag = 1
-  'Last.Refresh
+  Last.Refresh
 
 End
 
 Public Sub btnSide_Leave()
 
-  Last.Background = Color.Default
-  'Last.Background = Color.Default
-  'Last.Tag = Null
-  'Last.Refresh
+  Last.Refresh
 
 End
 
@@ -594,4 +641,28 @@ Public Sub SetSeparator(bVisible As Boolean)
   $bSeparator = bVisible
   RefreshPanel
   
+End
+
+Private Sub UpdateBackground()
+
+  If $bInside And If Not $bVisible Then
+    panMove.Background = Color.SelectedBackground
+  Else
+    panMove.Background = Color.Default
+  Endif
+
+End
+
+Public Sub panMove_Enter()
+
+  $bInside = True
+  UpdateBackground
+
+End
+
+Public Sub panMove_Leave()
+
+  $bInside = False
+  UpdateBackground
+
 End

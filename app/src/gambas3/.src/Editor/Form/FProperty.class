@@ -28,6 +28,8 @@ Private $iHighlightColor As Integer
 Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]",
   "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Table"]
 
+Private Const PADDING As Integer = 6
+
 Public Sub _new()
 
   Settings.Read(Me)
@@ -164,6 +166,7 @@ Public Sub RefreshAll()
 
   grdProperty[iRow, 0].Text = "Class"
   grdProperty[iRow, 1].Text = $hObject.Kind
+  grdProperty[iRow, 0].Padding = PADDING
 
   Inc iRow
 
@@ -173,6 +176,7 @@ Public Sub RefreshAll()
   Else
     grdProperty[iRow, 1].Text = $hObject.Name
   Endif
+  grdProperty[iRow, 0].Padding = PADDING
 
   Inc iRow
 
@@ -193,6 +197,7 @@ Public Sub RefreshAll()
     $cIndex[sProp] = iRow
 
     grdProperty[iRow, 0].Text = sProp
+    grdProperty[iRow, 0].Padding = PADDING
 
     If sProp = "Filter" Then Stop
     sVal = GetProperty(sProp)
