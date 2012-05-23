@@ -13,10 +13,7 @@ if [[ -f /usr/lib/llvm-3.0/bin/llvm-config ]]; then
 fi
 
 GB_COMPONENT(
-  jit,
-  JIT,
-  [Gambas-JIT-Compiler],
-  [src],
+  jit, JIT, gb.jit, [src],
   [GB_FIND(llvm/LLVMContext.h, /usr/lib/llvm-3.0 /usr/local/lib /usr/local /usr/lib /usr `$LLVM_CONFIG --prefix`, include)],
   [GB_FIND(libLLVM-3.2svn.so, /usr/lib/llvm-3.0 /usr/local /usr `$LLVM_CONFIG --prefix`, lib)],
   [$C_LIB `$LLVM_CONFIG --ldflags` -lLLVM-3.2svn],
