@@ -113,7 +113,7 @@ typedef
 		char n_param;
 		char npmin;
 		char vararg;
-		char _reserved;
+		bool fast;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;
@@ -312,6 +312,8 @@ typedef
 		struct _CLASS *override;          // 124 200 The overridden class
 		
 		struct _CLASS *next;              // 128 208 next class
+		
+		void (**jit_functions)(void);     // 132 216 array of jit functions
 		}
 	CLASS;
 
@@ -464,7 +466,7 @@ int CLASS_return_zero();
 
 void CLASS_sort(CLASS *class);
 
-void CLASS_inheritance(CLASS *class, CLASS *parent);
+void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation);
 void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first);
 void CLASS_make_event(CLASS *class, int *first);
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static);
@@ -494,6 +496,7 @@ void CLASS_init_native(void);
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
 int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype);
 
+void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation);
 void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
@@ -501,6 +504,8 @@ void CLASS_load_real(CLASS *class);
 	if (!((_class)->ready)) \
 		CLASS_load_real(_class); \
 })
+void CLASS_run_inits(CLASS *class);
+void CLASS_load_from_jit(CLASS *class);
 
 /* class_native.c */
 

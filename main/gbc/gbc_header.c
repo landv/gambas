@@ -837,6 +837,14 @@ static bool header_option(void)
 			return TRUE;
 		}
 	}
+	
+	if (PATTERN_is(JOB->current[0], RS_FAST))
+	{
+		JOB->current++;
+		JOB->class->all_fast = TRUE;
+		
+		return TRUE;
+	}
 
 	return FALSE;
 }

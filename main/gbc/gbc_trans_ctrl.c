@@ -178,7 +178,7 @@ static void add_goto(int index, int mode)
 	#endif
 
 	if (mode == RS_GOSUB)
-		CODE_gosub();
+		CODE_gosub(ctrl_local);
 	else if (mode == RS_GOTO)
 		CODE_jump();
 	else
@@ -651,7 +651,7 @@ void TRANS_on_goto_gosub(void)
 	CODE_set_current_pos(pos);
 	
 	if (gosub)
-		CODE_gosub();
+		CODE_gosub(ctrl_local);
 	else
 		CODE_jump();
 }

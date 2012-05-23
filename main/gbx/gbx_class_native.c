@@ -125,7 +125,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 		switch ((intptr_t)desc->gambas.name)
 		{
 			case (intptr_t)GB_INHERITS_ID:
-				CLASS_inheritance(class, CLASS_find((const char *)desc->gambas.type));
+				CLASS_inheritance(class, CLASS_find((const char *)desc->gambas.type), FALSE);
 				break;
 
 			case (intptr_t)GB_AUTO_CREATABLE_ID:

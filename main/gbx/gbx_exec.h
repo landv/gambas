@@ -174,6 +174,7 @@ void EXEC_native_check(bool defined);
 void EXEC_native_quick(void);
 void EXEC_native(void);
 void EXEC_function_real(void);
+void EXEC_jit_function_loop(void);
 void EXEC_function_loop(void);
 
 #define EXEC_function() EXEC_function_real(), EXEC_release_return_value()

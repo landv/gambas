@@ -849,6 +849,7 @@ void EXEC_function_real()
 	STACK_push_frame(&EXEC_current, 0);
 
 	PC = NULL;
+	GP = NULL;
 
 	ON_ERROR(error_EXEC_function_real)
 	{
@@ -856,7 +857,33 @@ void EXEC_function_real()
 	}
 	END_ERROR
 	
-	EXEC_function_loop();
+	if (FP->fast)
+		EXEC_jit_function_loop();
+	else
+		EXEC_function_loop();
+}
+
+void EXEC_jit_function_loop()
+{
+	TRY
+	{
+		(*CP->jit_functions[EXEC.index])();
+	}
+	CATCH
+	{
+		ERROR_set_last(TRUE);
+		
+		ERROR_lock();
+		while (PC != NULL && EC == NULL)
+			EXEC_leave_drop();
+		ERROR_unlock();
+		
+		STACK_pop_frame(&EXEC_current);
+		PROPAGATE();
+	}
+	END_TRY
+	
+	STACK_pop_frame(&EXEC_current);
 }
 
 void EXEC_function_loop()
@@ -1029,7 +1056,8 @@ void EXEC_function_loop()
 		while (retry);
 	}
 
-	STACK_pop_frame(&EXEC_current);
+	if (PC == NULL)
+		STACK_pop_frame(&EXEC_current);
 }
 
 

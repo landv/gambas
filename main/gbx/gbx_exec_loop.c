@@ -67,17 +67,17 @@ static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ct
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compn(ushort code);
-static void _SUBR_compi(ushort code);
-static void _SUBR_add(ushort code);
-static void _SUBR_sub(ushort code);
-static void _SUBR_mul(ushort code);
+//static void _SUBR_compi(ushort code);
+//static void _SUBR_add(ushort code);
+//static void _SUBR_sub(ushort code);
+//static void _SUBR_mul(ushort code);
 static void _SUBR_div(ushort code);
 
 static void *SubrTable[] =
 {
-	/* 28 */  NULL,                 _SUBR_compn,          _SUBR_compi,          _SUBR_compi,
-	/* 2C */  _SUBR_compi,          _SUBR_compi,          SUBR_near,            SUBR_case,
-	/* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
+	/* 28 */  NULL,                 _SUBR_compn,          SUBR_compi,           SUBR_compi,
+	/* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
+	/* 30 */  SUBR_add,             SUBR_sub,             SUBR_mul,            _SUBR_div,
 	/* 34 */  SUBR_neg,             SUBR_quo,             SUBR_rem,             SUBR_pow,
 	/* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
 	/* 3C */  SUBR_cat,             SUBR_like,            SUBR_file,            SUBR_is,
@@ -1023,7 +1023,7 @@ _RETURN:
 	
 		EXEC_leave_keep();
 
-		if (UNLIKELY(PC == NULL))
+		if (PC == NULL || FP->fast)
 			return;
 
 		goto _NEXT;
@@ -1118,7 +1118,13 @@ _CALL:
 	__EXEC_ENTER:
 
 		EXEC_enter_check(val->_function.defined);
-		goto _MAIN;
+		if (FP->fast)
+		{
+			(*CP->jit_functions[EXEC.index])();
+			goto _NEXT;
+		}
+		else
+			goto _MAIN;
 
 	__EXEC_NATIVE:
 
@@ -1181,7 +1187,13 @@ _CALL:
 			EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
 			EXEC.class = EXEC.desc->class;
 			EXEC_enter();
-			goto _MAIN;
+			if (FP->fast)
+			{
+				(*CP->jit_functions[EXEC.index])();
+				goto _NEXT;
+			}
+			else
+				goto _MAIN;
 		}
 
 	__CALL_EXTERN:
@@ -1240,7 +1252,13 @@ _CALL_QUICK:
 	__EXEC_ENTER_Q:
 
 		EXEC_enter_quick();
-		goto _MAIN;
+		if (FP->fast)
+		{
+			(*CP->jit_functions[EXEC.index])();
+			goto _NEXT;
+		}
+		else
+			goto _MAIN;
 		
 	__CALL_NATIVE_Q:
 	
@@ -1347,7 +1365,13 @@ _CALL_SLOW:
 	__EXEC_ENTER_S:
 
 		EXEC_enter();
-		goto _MAIN;
+		if (FP->fast)
+		{
+			(*CP->jit_functions[EXEC.index])();
+			goto _NEXT;
+		}
+		else
+			goto _MAIN;
 		
 	__CALL_NATIVE_S:
 		
@@ -2478,162 +2502,6 @@ __END:
   int result = minusOne | plusOne; \
   result; \
 })
-
-static void _SUBR_compi(ushort code)
-{
-	static void *jump[17] = {
-		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
-		};
-
-	static void *test[] = { &&__GT, &&__LE, &&__LT, &&__GE };
-
-	char NO_WARNING(result);
-	VALUE *P1;
-	VALUE *P2;
-	TYPE type;
-
-	P1 = SP - 2;
-	P2 = P1 + 1;
-
-	type = code & 0x1F;
-	goto *jump[type];
-
-__BOOLEAN:
-__BYTE:
-__SHORT:
-__INTEGER:
-
-	result = P1->_integer.value > P2->_integer.value ? 1 : P1->_integer.value < P2->_integer.value ? -1 : 0;
-	goto __END;
-	
-__LONG:
-
-	VALUE_conv(P1, T_LONG);
-	VALUE_conv(P2, T_LONG);
-
-	result = P1->_long.value > P2->_long.value ? 1 : P1->_long.value < P2->_long.value ? -1 : 0;
-	goto __END;
-
-__DATE:
-
-	VALUE_conv(P1, T_DATE);
-	VALUE_conv(P2, T_DATE);
-
-	result = DATE_comp_value(P1, P2);
-	goto __END;
-
-__NULL:
-__STRING:
-
-	VALUE_conv_string(P1);
-	VALUE_conv_string(P2);
-
-	result = STRING_compare(P1->_string.addr + P1->_string.start, P1->_string.len, P2->_string.addr + P2->_string.start, P2->_string.len);
-	
-	RELEASE_STRING(P1);
-	RELEASE_STRING(P2);
-	goto __END;
-
-__SINGLE:
-
-	VALUE_conv(P1, T_SINGLE);
-	VALUE_conv(P2, T_SINGLE);
-
-	result = P1->_single.value > P2->_single.value ? 1 : P1->_single.value < P2->_single.value ? -1 : 0;
-	goto __END;
-
-__FLOAT:
-
-	VALUE_conv_float(P1);
-	VALUE_conv_float(P2);
-
-	result = P1->_float.value > P2->_float.value ? 1 : P1->_float.value < P2->_float.value ? -1 : 0;
-	goto __END;
-
-__POINTER:
-
-	VALUE_conv(P1, T_POINTER);
-	VALUE_conv(P2, T_POINTER);
-
-	result = P1->_pointer.value > P2->_pointer.value ? 1 : P1->_pointer.value < P2->_pointer.value ? -1 : 0;
-	goto __END;
-
-__OBJECT:
-
-	result = OBJECT_comp_value(P1, P2);
-	//RELEASE_OBJECT(P1);
-	//RELEASE_OBJECT(P2);
-	goto __END_RELEASE;
-
-__VARIANT:
-
-	{
-		bool variant = FALSE;
-	
-		if (TYPE_is_variant(P1->type))
-		{
-			VARIANT_undo(P1);
-			variant = TRUE;
-		}
-
-		if (TYPE_is_variant(P2->type))
-		{
-			VARIANT_undo(P2);
-			variant = TRUE;
-		}
-
-		type = Max(P1->type, P2->type);
-
-		if (type == T_NULL || TYPE_is_string(type))
-		{
-			TYPE typem = Min(P1->type, P2->type);
-			if (!TYPE_is_string(typem))
-				THROW(E_TYPE, TYPE_get_name(typem), TYPE_get_name(type));
-		}
-		else if (TYPE_is_object(type))
-			goto __ERROR;
-		else if (TYPE_is_void(type))
-			THROW(E_NRETURN);
-
-		if (!variant)
-			*PC |= type;
-
-		goto *jump[type];
-	}
-
-__ERROR:
-
-	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(type));
-
-__END_RELEASE:
-
-	RELEASE(P1);
-	RELEASE(P2);
-
-__END:
-
-	P1->type = T_BOOLEAN;
-	SP--;
-
-	goto *test[(code >> 8) - (C_GT >> 8)];
-
-__GT:
-	P1->_boolean.value = result > 0 ? -1 : 0;
-	return;
-
-__GE:
-	P1->_boolean.value = result >= 0 ? -1 : 0;
-	return;
-
-__LT:
-	P1->_boolean.value = result < 0 ? -1 : 0;
-	return;
-
-__LE:
-	P1->_boolean.value = result <= 0 ? -1 : 0;
-	return;
-}
 
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 {

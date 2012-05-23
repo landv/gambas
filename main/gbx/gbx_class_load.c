@@ -46,6 +46,7 @@
 #include "gbx_variant.h"
 #include "gbx_number.h"
 #include "gbx_struct.h"
+#include "gbx_jit.h"
 
 #include "gambas.h"
 
@@ -474,7 +475,7 @@ __MISMATCH:
 }
 
 
-static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc)
+static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc, bool in_jit_compilation)
 {
   char *section;
 	CLASS_INFO *info;
@@ -573,6 +574,8 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
   {
     func = &class->load->func[i];
     func->code = (ushort *)get_section("code", &section, NULL, _s);
+    if (func->fast)
+      func->fast = JIT_load();
   }
 
   /* Creation flags */
@@ -867,7 +870,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
   if (info->parent >= 0)
   {
     //printf("%s inherits %s\n", class->name, (class->load->class_ref[info->parent])->name);
-    CLASS_inheritance(class, class->load->class_ref[info->parent]);
+    CLASS_inheritance(class, class->load->class_ref[info->parent], in_jit_compilation);
   }
 
   /* If there is no dynamic variable, then the class is not instanciable */
@@ -880,10 +883,18 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	
 	*pstart = start;
   *pndesc = n_desc;
+  
+  /* JIT function pointers */
+  
+  ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func, "CLASS_load");
+  for(i = 0; i < class->load->n_func; i++)
+  {
+    class->jit_functions[i] = JIT_default_jit_function;
+  }
 }
 
 
-void CLASS_load_without_init(CLASS *class)
+void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 {
   int i;
   FUNCTION *func;
@@ -985,7 +996,7 @@ void CLASS_load_without_init(CLASS *class)
 
 	class->init_dynamic = TRUE;
 
-	load_and_relocate(class, len_data, &start, &n_desc);
+	load_and_relocate(class, len_data, &start, &n_desc, FALSE);
 
   /* Information on static and dynamic variables */
 
@@ -1197,6 +1208,13 @@ void CLASS_load_without_init(CLASS *class)
 
 	if (EXEC_debug)
 		DEBUG.InitBreakpoints(class);
+	
+  //total += MEMORY_size - alloc;
+  //printf("%s: %d  TOTAL = %d\n", class->name, MEMORY_size - alloc, total);
+}
+
+void CLASS_load_without_init(CLASS *class){
+  CLASS_load_without_inits(class, FALSE);
 
   /* Call the static initializer */
 
@@ -1208,9 +1226,23 @@ void CLASS_load_without_init(CLASS *class)
   //EXEC.func = &class->load->func[FUNC_INIT_STATIC];
 
   EXEC_function();
-	
-  //total += MEMORY_size - alloc;
-  //printf("%s: %d  TOTAL = %d\n", class->name, MEMORY_size - alloc, total);
+}
+
+
+void CLASS_run_inits(CLASS *class){
+  /* Call the static initializer */
+
+  EXEC.native = FALSE;
+  EXEC.class = class;
+  EXEC.object = NULL;
+  EXEC.nparam = 0;
+  EXEC.index = FUNC_INIT_STATIC;
+  //EXEC.func = &class->load->func[FUNC_INIT_STATIC];
+
+  EXEC_function();
+  
+  /* _init */
+  EXEC_public(class, NULL, "_init", 0);
 }
 
 
@@ -1233,4 +1265,23 @@ void CLASS_load_real(CLASS *class)
 	class->ready = TRUE;
 
   EXEC_public(class, NULL, "_init", 0);
+}
+
+void CLASS_load_from_jit(CLASS *class)
+{
+	char *name = class->name;
+	int len = strlen(name);
+
+	if (class->state == CS_NULL)
+	{
+		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
+		{
+			CLASS_create_array_class(class);
+			return;
+		}
+	}
+
+	CLASS_load_without_inits(class, TRUE);
+  class->state = CS_READY;
+	class->ready = TRUE;
 }

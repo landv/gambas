@@ -45,6 +45,7 @@
 #include "gbx_variant.h"
 #include "gbx_number.h"
 #include "gbx_c_array.h"
+#include "gbx_jit.h"
 
 #include "gambas.h"
 
@@ -155,6 +156,8 @@ static void unload_class(CLASS *class)
 			}
 
 		#endif
+		
+		FREE(&class->jit_functions, "unload_class");
 		
 		FREE(&class->load, "unload_class");
 		if (!class->mmapped)
@@ -864,7 +867,7 @@ void CLASS_sort(CLASS *class)
 	#endif
 }
 
-void CLASS_inheritance(CLASS *class, CLASS *parent)
+void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 {
 	if (class->parent != NULL)
 		THROW(E_CLASS, class->name, "Multiple inheritance", "");
@@ -874,7 +877,10 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 
 	TRY
 	{
-		CLASS_load(class->parent);
+		if (!in_jit_compilation)
+			CLASS_load(class->parent);
+		else
+			JIT.LoadClass(class->parent);
 	}
 	CATCH
 	{
@@ -1292,7 +1298,7 @@ CLASS *CLASS_check_global(char *name)
 		parent = class;
 		class = class_replace_global(name);
 
-		CLASS_inheritance(class, parent);
+		CLASS_inheritance(class, parent, FALSE);
 	}
 
 	return class;

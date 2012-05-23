@@ -55,6 +55,11 @@
 #include "gbx_c_observer.h"
 #include "gbx_debug.h"
 #include "gbx_c_file.h"
+#include "gbx_extern.h"
+#include "gbx_compare.h"
+#include "gbx_subr.h"
+#include "gbx_math.h"
+#include "gbx_struct.h"
 #include "gbx_signal.h"
 
 #include "gambas.h"
@@ -292,6 +297,172 @@ void *GAMBAS_DebugApi[] =
 	(void *)DEBUG_get_object_access_type,
 	(void *)DEBUG_find_class,
 	(void *)CARRAY_get_array_bounds,
+	NULL
+};
+
+void *GAMBAS_JitApi[] =
+{
+	(void *)EXEC_release,
+	(void *)RELEASE_many,
+	
+	(void *)EXEC_push_unknown,
+	(void *)EXEC_push_array,
+	
+	(void *)EXEC_pop_unknown,
+	(void *)EXEC_pop_array,
+	
+	(void *)CENUM_create,
+	(void *)EXEC_enum_first,
+	(void *)EXEC_enum_next,
+	
+	(void *)EXEC_new,
+	(void *)EXEC_enter_quick,
+	(void *)EXEC_enter,
+	(void *)EXEC_native_quick,
+	(void *)EXEC_native,
+	(void *)EXEC_call_native,
+	(void *)EXEC_function_real,
+	(void *)EXEC_leave_keep,
+	(void *)EXEC_leave_drop,
+	(void *)EXEC_function_loop,
+	
+	(void *)EXEC_special,
+	(void *)EXEC_object_variant,
+	(void *)EXEC_object_other,
+	
+	(void *)EXTERN_call,
+	
+	(void *)STRING_new,
+	(void *)STRING_new_temp_value,
+	(void *)STRING_free_real,
+	(void *)STRING_free_later,
+	(void *)STRING_compare,
+	(void *)STRING_equal_ignore_case_same,
+	(void *)STRING_conv,
+	
+	(void *)OBJECT_comp_value,
+	(void *)COMPARE_object,
+	(void *)CLASS_inherits,
+	(void *)OBJECT_create,
+	(void *)CLASS_free,
+	(void *)SYMBOL_find,
+	
+	(void *)CARRAY_get_array_class,
+	(void *)CARRAY_get_data_multi,
+	(void *)CARRAY_create_static,
+	(void *)CSTRUCT_create_static,
+	
+	(void *)REGEXP_scan,
+	
+	(void *)VALUE_convert,
+	(void *)VALUE_to_string,
+	(void *)VALUE_convert_float,
+	(void *)VALUE_convert_variant,
+	(void *)VALUE_convert_string,
+	(void *)VALUE_convert_object,
+	(void *)VALUE_is_null,
+	(void *)VALUE_undo_variant,
+	
+	(void *)NUMBER_from_string,
+	(void *)NUMBER_int_to_string,
+	
+	(void *)LOCAL_format_number,
+	
+	(void *)DATE_to_string,
+	(void *)DATE_from_string,
+	(void *)DATE_comp,
+	(void *)DATE_timer,
+	(void *)DATE_now,
+	(void *)DATE_add,
+	(void *)DATE_diff,
+	
+	(void *)randomize,
+	(void *)rnd,
+	
+	(void *)THROW,
+	(void *)ERROR_propagate,
+	(void *)ERROR_reset,
+	(void *)ERROR_set_last,
+	(void *)ERROR_lock,
+	(void *)ERROR_unlock,
+	
+	(void *)TYPE_get_name,
+	
+	(void *)SUBR_not,
+	(void *)SUBR_compi,
+	(void *)SUBR_add,
+	(void *)SUBR_sub,
+	(void *)SUBR_mul,
+	(void *)SUBR_and_,
+	(void *)SUBR_cat,
+	(void *)SUBR_file,
+	(void *)SUBR_like,
+	(void *)SUBR_string,
+	(void *)SUBR_upper,
+	(void *)SUBR_instr,
+	(void *)SUBR_subst,
+	(void *)SUBR_replace,
+	(void *)SUBR_split,
+	(void *)SUBR_strcomp,
+	(void *)SUBR_sconv,
+	(void *)SUBR_abs,
+	(void *)SUBR_int,
+	(void *)SUBR_fix,
+	(void *)SUBR_sgn,
+	(void *)SUBR_min_max,
+	(void *)SUBR_choose,
+	(void *)SUBR_bit,
+	(void *)SUBR_is_type,
+	(void *)SUBR_hex_bin,
+	(void *)SUBR_val,
+	(void *)SUBR_format,
+	(void *)SUBR_year,
+	(void *)SUBR_week,
+	(void *)SUBR_date,
+	(void *)SUBR_time,
+	(void *)SUBR_eval,
+	(void *)SUBR_debug,
+	(void *)SUBR_wait,
+	(void *)SUBR_open,
+	(void *)SUBR_close,
+	(void *)SUBR_input,
+	(void *)SUBR_linput,
+	(void *)SUBR_print,
+	(void *)SUBR_read,
+	(void *)SUBR_write,
+	(void *)SUBR_flush,
+	(void *)SUBR_lock,
+	(void *)SUBR_inp_out,
+	(void *)SUBR_eof,
+	(void *)SUBR_lof,
+	(void *)SUBR_seek,
+	(void *)SUBR_kill,
+	(void *)SUBR_move,
+	(void *)SUBR_exist,
+	(void *)SUBR_access,
+	(void *)SUBR_stat,
+	(void *)SUBR_dfree,
+	(void *)SUBR_temp,
+	(void *)SUBR_isdir,
+	(void *)SUBR_dir,
+	(void *)SUBR_rdir,
+	(void *)SUBR_exec,
+	(void *)SUBR_alloc,
+	(void *)SUBR_free,
+	(void *)SUBR_realloc,
+	(void *)SUBR_strptr,
+	(void *)SUBR_collection,
+	(void *)SUBR_tr,
+	(void *)SUBR_quote,
+	(void *)SUBR_unquote,
+	(void *)SUBR_ptr,
+	
+	(void *)CLASS_load_from_jit,
+	(void *)CLASS_run_inits,
+	
+	(void *)DEBUG_get_current_position,
+	
+	(void *)EXEC_quit,
 	NULL
 };
 

@@ -188,7 +188,8 @@ typedef
 		unsigned autocreate : 1;       // class is auto-creatable
 		unsigned optional : 1;         // class is optional
 		unsigned nocreate : 1;         // class cannot be instantiated
-		unsigned _reserved : 12;
+		unsigned all_fast : 1;         // all methods have the Fast option (JIT)
+		unsigned _reserved : 11;
 		VARIABLE *stat;                // static variables
 		VARIABLE *dyn;                 // dynamic variables
 		CONSTANT *constant;            // constants

@@ -658,6 +658,7 @@ __END:
   int result = minusOne | plusOne; \
   result; \
 })
+#endif
 
 void SUBR_compi(ushort code)
 {
@@ -812,7 +813,6 @@ __LE:
 	P1->_boolean.value = result <= 0 ? -1 : 0;
 	return;
 }
-#endif
 
 void SUBR_strcomp(ushort code)
 {

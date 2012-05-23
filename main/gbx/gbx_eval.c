@@ -54,6 +54,7 @@ static void EVAL_enter()
 
   EP = NULL;
   EC = NULL;
+  GP = NULL;
 
   RP->type = T_VOID;
 	
@@ -72,6 +73,7 @@ static void EVAL_exec()
 	STACK_push_frame(&EXEC_current, 0);
 
 	PC = NULL;
+	GP = NULL;
 
 	ON_ERROR(error_EVAL_exec)
 	{

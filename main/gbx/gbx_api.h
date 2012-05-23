@@ -201,6 +201,7 @@ void *GB_DebugGetExec(void);
 #ifndef __GBX_API_C
 EXTERN void *GAMBAS_Api[];
 EXTERN void *GAMBAS_DebugApi[];
+EXTERN void *GAMBAS_JitApi[];
 EXTERN unsigned int GAMBAS_MissingParam;
 EXTERN bool GAMBAS_DoNotRaiseEvent;
 EXTERN bool GAMBAS_StopEvent;

@@ -70,7 +70,7 @@ void CODE_push_event(short event);
 void CODE_push_extern(short index);
 
 void CODE_jump(void);
-void CODE_gosub(void);
+void CODE_gosub(int ctrl_local);
 void CODE_on(uchar num);
 void CODE_jump_first(short local);
 void CODE_jump_next(void);

@@ -627,14 +627,14 @@ void CODE_jump()
 	write_short(0);
 }
 
-void CODE_gosub()
+void CODE_gosub(int ctrl_local)
 {
 	LAST_CODE;
 
 	#ifdef DEBUG
 	printf("GOSUB\n");
 	#endif
-	write_short(C_GOSUB);
+	write_ZZxx(C_GOSUB, ctrl_local);
 	write_short(0);
 }
 

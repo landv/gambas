@@ -127,6 +127,10 @@ void SUBR_round(ushort code);
 
 void SUBR_isnan(ushort code);
 
+void SUBR_add(ushort code);
+void SUBR_sub(ushort code);
+void SUBR_mul(ushort code);
+
 /* subr_string.c */
 
 void SUBR_cat(ushort code);
@@ -169,6 +173,7 @@ void SUBR_choose(ushort code);
 void SUBR_near(void);
 void SUBR_strcomp(ushort code);
 void SUBR_is(ushort code);
+void SUBR_compi(ushort code);
 
 /* subr_conv.c */
 
