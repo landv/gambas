@@ -29,7 +29,8 @@
 
 JIT_INTERFACE JIT;
 
-bool JIT_load(){
+bool JIT_load()
+{
 	static bool loaded = FALSE;
 	static bool available = TRUE;
 	
