@@ -25,7 +25,6 @@ Public Sub _new()
   Project.Workspace = wrkProject
   
   tvwProject.Columns.Count = 2
-  tvwProject.Columns[0].Width = Desktop.Width 
   
   Design.Init
   
@@ -227,6 +226,7 @@ Public Sub tvwProject_Menu()
   
   'mnuPopup.Enabled = TRUE
   GetCurrent()
+  If Not $sKey Then Return
   
   If $sKey And If Project.IsLocked($sKey) Then Return
   
@@ -1959,4 +1959,10 @@ Public Sub mnuBackward_Show()
   
   CPosition.FillMenu(mnuBackward)
   
+End
+
+Public Sub panProject_Resize()
+
+  tvwProject.Columns[0].Width = panProject.W + 64
+
 End
