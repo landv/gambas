@@ -128,7 +128,7 @@ Private Sub ConvertForm(sPath As String)
         Endif
       Else If sLine Begins "List = " & Chr$(34) Then
         If sClass = "ListBox" Or If sClass = "ComboBox" Then
-          sVal = Unquote$(Trim(Mid$(sLine, 7)))
+          sVal = UnQuote$(Trim(Mid$(sLine, 7)))
           aVal = Split(sVal, "\n")
           sFullLine = "List = " & CControl.StringArrayPropertyToString(aVal, True)
         Endif
@@ -577,6 +577,7 @@ Private Sub ConvertClass(sPath As String)
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLng", "CLong")
+        If Not sNewLine Then sNewLine = CheckReplaceFunction("CFLT", sLine, "CFlt", "CFloat")
         If Not sNewLine Then sNewLine = CheckUdpSocketBind("BIND", sLine)
         If Not sNewLine Then sNewLine = CheckSplitterLayout("SLAY", sLine)
         

@@ -1614,12 +1614,14 @@ End
 Public Sub tvwProject_Leave()
   
   $bInTreeView = False
+  'tvwProject.ScrollBar = Scroll.None
   
 End
 
 Public Sub tvwProject_Enter()
   
-  $bInTreeView = True  
+  $bInTreeView = True
+  'tvwProject.ScrollBar = Scroll.Vertical
   
 End
 
@@ -1966,3 +1968,4 @@ Public Sub panProject_Resize()
   tvwProject.Columns[0].Width = panProject.W + 64
 
 End
+

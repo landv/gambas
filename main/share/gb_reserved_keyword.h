@@ -43,7 +43,7 @@ COMP_INFO COMP_res_info[] =
 	{ "Class",        RSF_IDENT,                0,          2     },
 	{ "Function",     RSF_IDENT,                0,          4     },
 	{ "Struct",       RSF_PREV,                 0,          3     },
-	{ "Const",        0,                        0,          5     },
+	{ "Const",        RSF_IDENT,                0,          5     },
 	{ "Private",      RSF_IDENT|RSF_PUB,                          },
 	{ "Public",       RSF_IDENT|RSF_PUB,                          },
 	{ "Static",       RSF_PUB                                     },

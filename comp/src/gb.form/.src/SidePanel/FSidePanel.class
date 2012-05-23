@@ -187,7 +187,7 @@ Private Sub RefreshPanel()
       'panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Top
-      sepSide.Move(0, sepSide.Parent.ClientH - 1, Me.ClientW, 1)
+      sepSide.Move(0, Me.ClientH - 1, Me.ClientW, 1)
       'panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Right
@@ -195,7 +195,7 @@ Private Sub RefreshPanel()
       'panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
     Case Align.Left
-      sepSide.Move(sepSide.Parent.ClientW - 1, 0, 1, Me.ClientH)
+      sepSide.Move(Me.ClientW - 1, 0, 1, Me.ClientH)
       'panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
   End Select
@@ -279,12 +279,10 @@ Private Sub RefreshAll()
   
   If $bVisible Then
     panSide.Show 'Enabled = TRUE
-    panMove.Raise
     If $W And If $H Then Me.Parent.Move($X, $Y, $W, $H)
   Else
     'DEBUG ME.Parent.W;; ME.CLientW
     panSide.Hide 'Enabled = FALSE
-    panMove.Raise
     D = 1
     
     Select Case $iOrientation
@@ -304,6 +302,9 @@ Private Sub RefreshAll()
   UpdateBackground
   RefreshArrow
   RefreshPanel
+  
+  panMove.Raise
+  sepSide.Raise
   
 End
 
