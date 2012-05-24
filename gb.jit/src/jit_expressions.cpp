@@ -927,11 +927,15 @@ SubrExpression::SubrExpression(int digit, Expression** it, int nargs, int extra)
 		}
 		
 		case 0x5F: //IIf
-			if (args[0]->type == T_VOID || args[1]->type == T_VOID)
+			if (args[0]->type == T_VOID || args[1]->type == T_VOID || args[2]->type == T_VOID)
 				THROW(E_NRETURN);
 			type = check_good_type(args[1]->type, args[2]->type);
 			JIT_conv(args[0], T_BOOLEAN);
-			if (type != T_VARIANT){
+			if (type == T_VARIANT && (args[1]->type != T_VARIANT || args[2]->type != T_VARIANT)){
+				/*ref_stack();
+				args[1]->ref_on_stack();
+				on_stack = true;*/
+			} else {
 				JIT_conv(args[1], type);
 				JIT_conv(args[2], type);
 			}

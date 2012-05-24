@@ -31,6 +31,87 @@ extern "C" {
 #include "gb_common_buffer.h"
 }
 
+llvm::Value* JIT_conv_to_variant(Expression* value, llvm::Value* val, bool on_stack, bool* no_ref_variant){
+	llvm::Value* ret;
+	if (TYPE_is_string(value->type)){
+		ret = string_for_array_or_variant(val, value->type);
+		ret = get_new_struct(variant_type, getInteger(TARGET_BITS, T_STRING), builder->CreatePtrToInt(ret, llvmType(getInt64Ty)));
+	} else {
+		if (value->type < T_OBJECT && no_ref_variant)
+			*no_ref_variant = true;
+		
+		llvm::Value* data;
+		llvm::Type* t64 = llvmType(getInt64Ty);
+		
+		if (value->type < T_OBJECT)
+			ret = get_new_struct(variant_type, getInteger(TARGET_BITS, value->type));
+		else
+			ret = get_new_struct(variant_type, builder->CreatePtrToInt(extract_value(val, 0), LONG_TYPE));
+		
+		switch(value->type){
+			case T_BYTE:
+				data = builder->CreateZExt(val, t64);
+				break;
+			case T_BOOLEAN:
+			case T_SHORT:
+			case T_INTEGER:
+				data = builder->CreateSExt(val, t64);
+				break;
+			case T_LONG:
+				data = val;
+				break;
+			case T_SINGLE:
+				data = builder->CreateBitCast(val, llvmType(getInt32Ty));
+				data = builder->CreateZExt(data, t64);
+				break;
+			case T_FLOAT:
+				data = builder->CreateBitCast(val, t64);
+				break;
+			case T_DATE:
+				data = builder->CreateShl(builder->CreateZExt(extract_value(val, 1), t64), getInteger(64, 32));
+				data = builder->CreateOr(data, builder->CreateZExt(extract_value(val, 0), t64));
+				break;
+			case T_POINTER:
+			case T_CLASS:
+				data = builder->CreatePtrToInt(val, t64);
+				break;
+			case T_NULL:
+				break;
+			default:
+				data = builder->CreatePtrToInt(extract_value(val, 1), t64);
+				break;
+		}
+		if (value->type != T_NULL)
+			ret = insert_value(ret, data, 1);
+		
+		if (on_stack){ //FIXME is this code really good/correct? stack seems strange
+			c_SP(-value->on_stack+1);
+			llvm::Value* addr = builder->CreateBitCast(get_value_on_top_addr(), pointer_t(LONG_TYPE));
+			
+			builder->CreateStore(getInteger(TARGET_BITS, T_VARIANT), addr);
+			
+			addr = builder->CreateGEP(addr, getInteger(TARGET_BITS, 1));
+			if (value->type < T_OBJECT)
+				builder->CreateStore(getInteger(TARGET_BITS, value->type), addr);
+			else
+				builder->CreateStore(builder->CreatePtrToInt(extract_value(val, 0), t64), addr);
+			
+			if (value->type != T_NULL){
+				addr = builder->CreateGEP(addr, getInteger(TARGET_BITS, 1));
+				if (value->type < T_OBJECT)
+					builder->CreateStore(val, builder->CreateBitCast(addr, pointer_t(TYPE_llvm(value->type))));
+				else
+					builder->CreateStore(extract_value(val, 1), builder->CreateBitCast(addr, charPP));
+			}
+			return ret;
+		}
+	}
+	c_SP(-value->on_stack+on_stack);
+	if (on_stack)
+		set_top_value(ret, T_VARIANT);
+	return ret;
+}
+
 llvm::Value* ConvExpression::codegen_get_value()
 {
 	Expression* value = expr;
@@ -442,117 +523,8 @@ __v2:
 	goto __CONV;*/
 
 __s2v:
-{
-	///Same as variable_write
-	llvm::Value* len = extract_value(val, 3);
-	ret = gen_if_else_phi(builder->CreateICmpEQ(len, getInteger(32, 0)), [&](){
-		return get_nullptr();
-	}, [&](){
-		llvm::Value* ptr = extract_value(val, 1);
-		llvm::Value* offset = extract_value(val, 2);
-		if (value->type == T_STRING){
-			llvm::Value* is_t_string = builder->CreateICmpEQ(extract_value(val, 0), getInteger(TARGET_BITS, T_STRING));
-			llvm::Value* test1 = gen_and_if(builder->CreateAnd(
-			is_t_string,
-			builder->CreateICmpEQ(offset, getInteger(32, 0))), [&](){
-				llvm::Value* len_addr = builder->CreateGEP(ptr, getInteger(TARGET_BITS, -4));
-				len_addr = builder->CreateBitCast(len_addr, llvmType(getInt32PtrTy));
-				return builder->CreateICmpEQ(builder->CreateLoad(len_addr), len);
-			});
-			return (llvm::Value*)gen_if_phi(ptr, builder->CreateXor(test1, getInteger(1, 1)), [&](){
-				llvm::Value* newstr = builder->CreateCall2(get_global_function_jif(STRING_new, 'p', "pi"), builder->CreateGEP(ptr, to_target_int(offset)), len);
-				newstr = builder->CreateCall(get_global_function_jif(STRING_free_later, 'p', "p"), newstr);
-				gen_if(is_t_string, [&](){
-					unref_string_no_nullcheck(ptr);
-				});
-				borrow_string_no_nullcheck(newstr);
-				return newstr;
-			});
-		} else {
-			llvm::Value* newstr = builder->CreateCall2(get_global_function_jif(STRING_new, 'p', "pi"), builder->CreateGEP(ptr, to_target_int(offset)), len);
-			newstr = builder->CreateCall(get_global_function_jif(STRING_free_later, 'p', "p"), newstr);
-			borrow_string_no_nullcheck(newstr);
-			return newstr;
-		}
-	});
-	ret = get_new_struct(variant_type, getInteger(TARGET_BITS, T_STRING), builder->CreatePtrToInt(ret, llvmType(getInt64Ty)));
-	goto __DONE;
-}
-
 __2v:
-
-{
-	if (value->type < T_OBJECT)
-		no_ref_variant = true;
-	
-	llvm::Value* data;
-	llvm::Type* t64 = llvmType(getInt64Ty);
-	
-	if (value->type < T_OBJECT)
-		ret = get_new_struct(variant_type, getInteger(TARGET_BITS, value->type));
-	else
-		ret = get_new_struct(variant_type, builder->CreatePtrToInt(extract_value(val, 0), LONG_TYPE));
-	
-	switch(value->type){
-		case T_BYTE:
-			data = builder->CreateZExt(val, t64);
-			break;
-		case T_BOOLEAN:
-		case T_SHORT:
-		case T_INTEGER:
-			data = builder->CreateSExt(val, t64);
-			break;
-		case T_LONG:
-			data = val;
-			break;
-		case T_SINGLE:
-			data = builder->CreateBitCast(val, llvmType(getInt32Ty));
-			data = builder->CreateZExt(data, t64);
-			break;
-		case T_FLOAT:
-			data = builder->CreateBitCast(val, t64);
-			break;
-		case T_DATE:
-			data = builder->CreateShl(builder->CreateZExt(extract_value(val, 1), t64), getInteger(64, 32));
-			data = builder->CreateOr(data, builder->CreateZExt(extract_value(val, 0), t64));
-			break;
-		case T_POINTER:
-		case T_CLASS:
-			data = builder->CreatePtrToInt(val, t64);
-			break;
-		case T_NULL:
-			break;
-		default:
-			data = builder->CreatePtrToInt(extract_value(val, 1), t64);
-			break;
-	}
-	if (value->type != T_NULL)
-		ret = insert_value(ret, data, 1);
-	
-	if (on_stack){ //FIXME is this code really good/correct? stack seems strange
-		c_SP(-value->on_stack+1);
-		llvm::Value* addr = builder->CreateBitCast(get_value_on_top_addr(), pointer_t(LONG_TYPE));
-		
-		builder->CreateStore(getInteger(TARGET_BITS, T_VARIANT), addr);
-		
-		addr = builder->CreateGEP(addr, getInteger(TARGET_BITS, 1));
-		if (value->type < T_OBJECT)
-			builder->CreateStore(getInteger(TARGET_BITS, value->type), addr);
-		else
-			builder->CreateStore(builder->CreatePtrToInt(extract_value(val, 0), t64), addr);
-		
-		if (value->type != T_NULL){
-			addr = builder->CreateGEP(addr, getInteger(TARGET_BITS, 1));
-			if (value->type < T_OBJECT)
-				builder->CreateStore(val, builder->CreateBitCast(addr, pointer_t(TYPE_llvm(value->type))));
-			else
-				builder->CreateStore(extract_value(val, 1), builder->CreateBitCast(addr, charPP));
-		}
-		return ret;
-	} else {
-		goto __DONE;
-	}
-}
+	return JIT_conv_to_variant(value, val, on_stack, &no_ref_variant);
 
 	/* VALUE_put ne fonctionne pas avec T_STRING ! */
 	/*if (value->type != T_NULL)

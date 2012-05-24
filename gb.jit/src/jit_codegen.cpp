@@ -1107,6 +1107,40 @@ static void release_val(Expression* expr){
 		expr->codegen();
 }
 
+///Convert a String to a pointer that can be put in an array or a Variant.
+///If 'val' is a guaranteed to be T_CSTRING, set type to T_CSTRING, otherwise set it to T_STRING
+static llvm::Value* string_for_array_or_variant(llvm::Value* val, TYPE type){
+	llvm::Value* len = extract_value(val, 3);
+	return gen_if_phi(get_nullptr(), builder->CreateICmpNE(len, getInteger(32, 0)), [&](){
+		llvm::Value* ptr = extract_value(val, 1);
+		llvm::Value* offset = extract_value(val, 2);
+		if (type == T_STRING){
+			llvm::Value* is_t_string = builder->CreateICmpEQ(extract_value(val, 0), getInteger(TARGET_BITS, T_STRING));
+			llvm::Value* test1 = gen_and_if(builder->CreateAnd(
+			is_t_string,
+			builder->CreateICmpEQ(offset, getInteger(32, 0))), [&](){
+				llvm::Value* len_addr = builder->CreateGEP(ptr, getInteger(TARGET_BITS, -4));
+				len_addr = builder->CreateBitCast(len_addr, llvmType(getInt32PtrTy));
+				return builder->CreateICmpEQ(builder->CreateLoad(len_addr), len);
+			});
+			return (llvm::Value*)gen_if_phi(ptr, builder->CreateXor(test1, getInteger(1, 1)), [&](){
+				llvm::Value* newstr = builder->CreateCall2(get_global_function_jif(STRING_new, 'p', "pi"), builder->CreateGEP(ptr, to_target_int(offset)), len);
+				newstr = builder->CreateCall(get_global_function_jif(STRING_free_later, 'p', "p"), newstr);
+				gen_if(is_t_string, [&](){
+					unref_string_no_nullcheck(ptr);
+				});
+				borrow_string_no_nullcheck(newstr);
+				return newstr;
+			});
+		} else {
+			llvm::Value* newstr = builder->CreateCall2(get_global_function_jif(STRING_new, 'p', "pi"), builder->CreateGEP(ptr, to_target_int(offset)), len);
+			newstr = builder->CreateCall(get_global_function_jif(STRING_free_later, 'p', "p"), newstr);
+			borrow_string_no_nullcheck(newstr);
+			return newstr;
+		}
+	});
+}
+
 ///Transfers the ownership from val to the variable in memory
 ///The old data in memory is not released
 static void variable_write(llvm::Value* addr, llvm::Value* val, TYPE type){
@@ -1134,39 +1168,7 @@ static void variable_write(llvm::Value* addr, llvm::Value* val, TYPE type){
 		case T_STRING:
 		case T_CSTRING: {
 			addr = builder->CreateBitCast(addr, charPP);
-			llvm::Value* len = extract_value(val, 3);
-			gen_if_else(builder->CreateICmpEQ(len, getInteger(32, 0)), [&](){
-				builder->CreateStore(get_nullptr(), addr);
-			}, [&](){
-				llvm::Value* ptr = extract_value(val, 1);
-				llvm::Value* offset = extract_value(val, 2);
-				if (type == T_STRING){
-					llvm::Value* is_t_string = builder->CreateICmpEQ(extract_value(val, 0), getInteger(TARGET_BITS, T_STRING));
-					llvm::Value* test1 = gen_and_if(builder->CreateAnd(
-					is_t_string,
-					builder->CreateICmpEQ(offset, getInteger(32, 0))), [&](){
-						llvm::Value* len_addr = builder->CreateGEP(ptr, getInteger(TARGET_BITS, -4));
-						len_addr = builder->CreateBitCast(len_addr, llvmType(getInt32PtrTy));
-						return builder->CreateICmpEQ(builder->CreateLoad(len_addr), len);
-					});
-					gen_if_else(test1, [&](){
-						builder->CreateStore(ptr, addr);
-					}, [&](){
-						llvm::Value* newstr = builder->CreateCall2(get_global_function_jif(STRING_new, 'p', "pi"), builder->CreateGEP(ptr, to_target_int(offset)), len);
-						newstr = builder->CreateCall(get_global_function_jif(STRING_free_later, 'p', "p"), newstr);
-						builder->CreateStore(newstr, addr);
-						gen_if(is_t_string, [&](){
-							unref_string_no_nullcheck(ptr);
-						});
-						borrow_string_no_nullcheck(newstr);
-					});
-				} else {
-					llvm::Value* newstr = builder->CreateCall2(get_global_function_jif(STRING_new, 'p', "pi"), builder->CreateGEP(ptr, to_target_int(offset)), len);
-					newstr = builder->CreateCall(get_global_function_jif(STRING_free_later, 'p', "p"), newstr);
-					builder->CreateStore(newstr, addr);
-					borrow_string_no_nullcheck(newstr);
-				}
-			});
+			builder->CreateStore(string_for_array_or_variant(val, type), addr);
 			break;
 		}
 		default: {
@@ -3174,7 +3176,7 @@ void JumpEnumNextExpression::codegen(){
 	llvm::Value* stop;
 	if (!TYPE_is_pure_object(jfirst->obj->type)){
 		store_pc(pc);
-		stop = builder->CreateCall(get_global_function_jif(EXEC_enum_next, 'c', "h"), getInteger(16, drop));
+		stop = builder->CreateICmpNE(builder->CreateCall(get_global_function_jif(EXEC_enum_next, 'c', "h"), getInteger(16, drop)), getInteger(1, false));
 	} else {
 		llvm::Value* cenum_obj = extract_value(builder->CreateLoad(locals[jfirst->ctrl+1]), 1);
 		int stop_offset = sizeof(GB_BASE) + sizeof(LIST) + 5*sizeof(void*);
@@ -4588,6 +4590,8 @@ void PopArrayExpression::codegen(){
 	}
 }
 
+#include "jit_codegen_conv.h"
+
 #define codegen_stack for(size_t i=0, e=args.size(); i!=e; i++){ args[i]->must_on_stack(); args[i]->codegen_on_stack(); } stack_diff -= args.size();
 #define codegen_value for(size_t i=0, e=args.size(); i!=e; i++){ param[i] = args[i]->codegen_get_value(); stack_diff -= args[i]->on_stack; }
 
@@ -5168,30 +5172,47 @@ llvm::Value* SubrExpression::codegen_get_value(){
 		}
 		
 		case 0x5F: { //IIf
+			//FIXME if a destructor throws an error, this does not work ...
 			codegen_value
 			llvm::Value* ret;
 			if (args[1]->type == args[2]->type){
 				ret = builder->CreateSelect(param[0], param[1], param[2]);
+				gen_if_else(param[0], [&](){
+					release(param[2], args[2]->type);
+				}, [&](){
+					release(param[1], args[1]->type);
+				}, "IIf_release_false_argument", "IIf_release_true_argument", "IIf_release_done");
+				
+				c_SP(-args[0]->on_stack-args[1]->on_stack-args[2]->on_stack+on_stack);
+				if (on_stack)
+					set_top_value(ret, type);
+				return ret;
 			} else {
 				//Convert to variant
+				
+				c_SP(-args[0]->on_stack-args[1]->on_stack-args[2]->on_stack);
+				
+				args[1]->on_stack = false;
+				args[2]->on_stack = false;
+				
 				ret = gen_if_else_phi(param[0], [&](){
-					if (args[1]->type == T_VARIANT)
+					if (args[1]->type == type)
 						return param[1];
-					//else FIXME convert to variant
-					abort();
-					return (llvm::Value*)NULL;
+					
+					release(param[2], args[2]->type);
+					
+					return JIT_conv_to_variant(args[1], param[1], on_stack, NULL);
 				}, [&](){
-					if (args[2]->type == T_VARIANT)
+					if (args[2]->type == type)
 						return param[2];
-					//else FIXME convert to variant
-					abort();
-					return (llvm::Value*)NULL;
+					
+					release(param[1], args[1]->type);
+					
+					return JIT_conv_to_variant(args[2], param[2], on_stack, NULL);
 				}, "IIf_then", "IIf_else");
+				return ret;
 			}
-			c_SP(-args[0]->on_stack-args[1]->on_stack-args[2]->on_stack+on_stack);
-			if (on_stack)
-				set_top_value(ret, type);
-			return ret;
+			break;
 		}
 		
 		case 0x60: { //Choose
@@ -5217,24 +5238,38 @@ llvm::Value* SubrExpression::codegen_get_value(){
 				return ret;
 			} else if (nargs == 3){
 				llvm::Value* index = builder->CreateSub(param[0], getInteger(32, 1));
-				ret = gen_if_phi(ret, builder->CreateICmpULT(index, getInteger(32, 2)), [&](){
+				
+				c_SP(-args[0]->on_stack-args[1]->on_stack-args[2]->on_stack);
+				
+				args[1]->on_stack = false;
+				args[2]->on_stack = false;
+				
+				bool stack_already_set_in_conv = false;
+				
+				ret = gen_if_else_phi(builder->CreateICmpULT(index, getInteger(32, 2)), [&](){
 					llvm::Value* r;
 					if (args[1]->type == args[2]->type || (TYPE_is_string(args[1]->type) && TYPE_is_string(args[2]->type))){
 						r = builder->CreateSelect(builder->CreateTrunc(index, llvmType(getInt1Ty)), param[2], param[1]);
+						c_SP(on_stack);
 						return r;
 					} else {
 						r = gen_if_else_phi(builder->CreateTrunc(index, llvmType(getInt1Ty)), [&](){
-							//FIXME convert param[2] to variant
-							abort();
-							return (llvm::Value*)NULL;
+							return JIT_conv_to_variant(args[2], param[2], on_stack, NULL);
 						}, [&](){
-							//FIXME convert param[1] to variant
-							abort();
-							return (llvm::Value*)NULL;
+							return JIT_conv_to_variant(args[1], param[1], on_stack, NULL);
 						});
+						stack_already_set_in_conv = true;
 						return r;
 					}
+				}, [&](){
+					c_SP(on_stack);
+					if (stack_already_set_in_conv && on_stack)
+						set_top_value(ret, type);
+					return ret;
 				});
+				
+				if (!stack_already_set_in_conv && on_stack)
+					set_top_value(ret, type);
 				
 				gen_if(builder->CreateICmpNE(param[0], getInteger(32, 1)), [&](){
 					release(param[1], args[1]->type);
@@ -5243,9 +5278,6 @@ llvm::Value* SubrExpression::codegen_get_value(){
 					release(param[2], args[2]->type);
 				}, "release_2st_choose");
 				
-				c_SP(-args[0]->on_stack-args[1]->on_stack-args[2]->on_stack+on_stack);
-				if (on_stack)
-					set_top_value(ret, T_VARIANT);
 				return ret;
 			} else {
 				codegen_stack
@@ -5968,8 +6000,6 @@ void QuitExpression::codegen(){
 	builder->CreateUnreachable();
 	builder->SetInsertPoint(create_bb("dummy"));
 }
-
-#include "jit_codegen_conv.h"
 
 static void func_void(){
 	RP->type = T_VOID;
