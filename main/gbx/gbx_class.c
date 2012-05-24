@@ -157,7 +157,8 @@ static void unload_class(CLASS *class)
 
 		#endif
 		
-		FREE(&class->jit_functions, "unload_class");
+		if (class->jit_functions)
+			FREE(&class->jit_functions, "unload_class");
 		
 		FREE(&class->load, "unload_class");
 		if (!class->mmapped)

@@ -494,6 +494,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	int size;
 	char *name;
 	int len;
+	bool have_jit_functions = FALSE;
 	
   ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");
 
@@ -576,6 +577,8 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
     func->code = (ushort *)get_section("code", &section, NULL, _s);
     if (func->fast)
       func->fast = JIT_load();
+    if (func->fast)
+      have_jit_functions = TRUE;
   }
 
   /* Creation flags */
@@ -886,10 +889,13 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
   
   /* JIT function pointers */
   
-  ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func, "CLASS_load");
-  for(i = 0; i < class->load->n_func; i++)
+  if (have_jit_functions)
   {
-    class->jit_functions[i] = JIT_default_jit_function;
+    ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func, "CLASS_load");
+    for(i = 0; i < class->load->n_func; i++)
+    {
+      class->jit_functions[i] = JIT_default_jit_function;
+    }
   }
 }
 
