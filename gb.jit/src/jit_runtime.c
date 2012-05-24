@@ -546,6 +546,7 @@ __END_RELEASE:
 __END:
 
 	P1->type = T_BOOLEAN;
+	P1->_boolean.value = result;
 	SP--;
 	return;
 }
