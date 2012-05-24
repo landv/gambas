@@ -6147,7 +6147,16 @@ void JIT_codegen(){
 	MPM.run(*M);
 	
 	//Print out the code after optimization
-	//M->dump();
+	if (char* gb_jit_env = getenv("GB_JIT")){
+		if (strcmp(gb_jit_env, "info") == 0){
+			fprintf(stderr, "Dump of function %s.", CP->name);
+			if (FP->debug)
+				fprintf(stderr, "%s:\n", FP->debug->name);
+			else
+				fprintf(stderr, "%d:\n", EXEC.index);
+			M->dump();
+		}
+	}
 	
 	void (*fn)(void) = (void(*)(void))EE->getPointerToFunction(llvm_function);
 	
