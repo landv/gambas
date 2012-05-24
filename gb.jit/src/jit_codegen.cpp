@@ -3176,7 +3176,7 @@ void JumpEnumNextExpression::codegen(){
 	llvm::Value* stop;
 	if (!TYPE_is_pure_object(jfirst->obj->type)){
 		store_pc(pc);
-		stop = builder->CreateICmpNE(builder->CreateCall(get_global_function_jif(EXEC_enum_next, 'c', "h"), getInteger(16, drop)), getInteger(1, false));
+		stop = builder->CreateICmpNE(builder->CreateCall(get_global_function_jif(EXEC_enum_next, 'c', "h"), getInteger(16, drop)), getInteger(8, false));
 	} else {
 		llvm::Value* cenum_obj = extract_value(builder->CreateLoad(locals[jfirst->ctrl+1]), 1);
 		int stop_offset = sizeof(GB_BASE) + sizeof(LIST) + 5*sizeof(void*);
