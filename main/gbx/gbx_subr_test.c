@@ -309,6 +309,8 @@ void SUBR_if(ushort code)
 			if (TYPE_is_object(type))
 				type = T_OBJECT;
 			*PC |= (unsigned char)type;
+			
+			VALUE_conv(&PARAM[i], type);
 		}
 	}
 	else if (test != 0x1F)
