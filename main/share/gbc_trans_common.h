@@ -77,6 +77,7 @@ typedef
 		int line;
 		uint64_t byref;
 		unsigned vararg : 1;
+		unsigned fast : 1;
 		}
 	PACKED
 	TRANS_FUNC;

@@ -903,6 +903,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         Case "STRUCT"
           sKind = "S"
           Break
+        Case "FAST"
+          ' continue
         Case Else
           Break
       End Select

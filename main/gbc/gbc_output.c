@@ -753,7 +753,7 @@ static void output_method(void)
 		write_byte(func->nparam);
 		write_byte(func->npmin);
 		write_byte(func->vararg);
-		write_byte(Class->all_fast);
+		write_byte(func->fast || Class->all_fast);
 		write_short(func->nlocal);
 		write_short(func->nctrl);
 		write_short(func->stack);

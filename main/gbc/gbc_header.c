@@ -596,8 +596,17 @@ static bool header_function(TRANS_FUNC *func)
 	bool is_proc = FALSE;
 	bool is_static = FALSE;
 	bool is_public = FALSE;
+	bool is_fast = FALSE;
 
-	/* static ? */
+	// fast ?
+	
+	if (PATTERN_is(*look, RS_FAST))
+	{
+		is_fast = TRUE;
+		look++;
+	}
+	
+	// static ?
 
 	if (JOB->is_module)
 	{
@@ -609,7 +618,7 @@ static bool header_function(TRANS_FUNC *func)
 		look++;
 	}
 
-	/* public ou static ? */
+	// public ou static ?
 
 	is_public = JOB->is_module && JOB->public_module;
 
@@ -635,7 +644,6 @@ static bool header_function(TRANS_FUNC *func)
 	JOB->current = look;
 	analyze_function_desc(func, HF_NORMAL);
 
-	//if (!is_proc)
 	if (PATTERN_is(*JOB->current, RS_AS))
 	{
 		if (!TRANS_type(TT_NOTHING, &ttyp))
@@ -647,6 +655,8 @@ static bool header_function(TRANS_FUNC *func)
 	TYPE_set_kind(&func->type, TK_FUNCTION);
 	if (is_static) TYPE_set_flag(&func->type, TF_STATIC);
 	if (is_public) TYPE_set_flag(&func->type, TF_PUBLIC);
+	
+	func->fast = is_fast;
 
 	// Check special methods
 
@@ -721,7 +731,7 @@ static bool header_function(TRANS_FUNC *func)
 	}
 
 
-	/* on saute le corps de la fonction */
+	// We ignore function body
 
 	if (!PATTERN_is_newline(*(JOB->current)))
 		THROW("Syntax error at function declaration");

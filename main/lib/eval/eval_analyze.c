@@ -162,7 +162,7 @@ static int is_proc(void)
     if (PATTERN_is_end(pattern))
       return FALSE;
 
-    if (PATTERN_is(pattern, RS_PRIVATE) || PATTERN_is(pattern, RS_PUBLIC) || PATTERN_is(pattern, RS_STATIC))
+    if (PATTERN_is(pattern, RS_PRIVATE) || PATTERN_is(pattern, RS_PUBLIC) || PATTERN_is(pattern, RS_STATIC) || PATTERN_is(pattern, RS_FAST))
       continue;
 
     return (PATTERN_is(pattern, RS_SUB) || PATTERN_is(pattern, RS_PROCEDURE) || PATTERN_is(pattern, RS_FUNCTION));

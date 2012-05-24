@@ -239,6 +239,7 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	func->catch = 0;
 	func->npmin = -1;
 	func->vararg = decl->vararg;
+	func->fast = decl->fast;
 
 	// Function startup
 
