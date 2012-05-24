@@ -101,7 +101,7 @@ Public Sub Main() As Integer
       Return 1
     Endif
     
-    Mkdir sCacheDir &/ $sMd5
+    Try Mkdir sCacheDir &/ $sMd5
     Exec [System.Path &/ "bin/gba" & System.Version, "-o", sCacheDir &/ $sMd5 &/ sName, $sPrjPath] To sRes 
     
     File.Save(sCacheDir &/ $sMd5 & ".info", $aIncFiles.Join("\n"))

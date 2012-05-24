@@ -72,7 +72,7 @@ typedef
 		}
 	GB_API_FUNCTION;
 
-void *GAMBAS_Api[] =
+const void *GAMBAS_Api[] =
 {
 	(void *)GB_VERSION,
 
@@ -279,7 +279,7 @@ void *GAMBAS_Api[] =
 	NULL
 };
 
-void *GAMBAS_DebugApi[] =
+const void *GAMBAS_DebugApi[] =
 {
 	(void *)GB_DebugGetExec,
 	(void *)STACK_get_frame,
@@ -300,7 +300,7 @@ void *GAMBAS_DebugApi[] =
 	NULL
 };
 
-void *GAMBAS_JitApi[] =
+const void *GAMBAS_JitApi[] =
 {
 	(void *)EXEC_release,
 	(void *)RELEASE_many,

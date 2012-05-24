@@ -67,7 +67,7 @@ static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ct
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compn(ushort code);
-//static void _SUBR_compi(ushort code);
+static void _SUBR_compi(ushort code);
 static void _SUBR_add(ushort code);
 static void _SUBR_sub(ushort code);
 static void _SUBR_mul(ushort code);
@@ -75,8 +75,8 @@ static void _SUBR_div(ushort code);
 
 static void *SubrTable[] =
 {
-	/* 28 */  NULL,                 _SUBR_compn,          SUBR_compi,           SUBR_compi,
-	/* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
+	/* 28 */  NULL,                 _SUBR_compn,          _SUBR_compi,          _SUBR_compi,
+	/* 2C */  _SUBR_compi,          _SUBR_compi,          SUBR_near,            SUBR_case,
 	/* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
 	/* 34 */  SUBR_neg,             SUBR_quo,             SUBR_rem,             SUBR_pow,
 	/* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
@@ -2510,3 +2510,4 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 
 #define STATIC_SUBR
 #include "gbx_subr_common.h"
+
