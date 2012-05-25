@@ -26,8 +26,12 @@
 #include "gb_common.h"
 #include "gambas.h"
 
+#define NCURSES_RUNNING		MAIN_running()
+
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 #endif
+
+bool MAIN_running();
 
 #endif /* __MAIN_H */

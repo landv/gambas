@@ -21,7 +21,6 @@
 
 #define __MAIN_C
 
-#include "c_ncurses.h"
 #include "c_window.h"
 #include "c_key.h"
 #include "c_color.h"
@@ -32,38 +31,86 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-  CNCursesDesc,
-  CWindowDesc,
-  CWindowAttrsDesc,
-  CCharAttrsDesc,
-  CKeyDesc,
-  CColorDesc,
-  CColorCapabilitiesDesc,
-  CColorPairDesc,
-  CColorContentDesc,
-  CScreenDesc,
-  NULL
+	CScreenDesc,
+	CWindowDesc,
+	CWindowAttrsDesc,
+	CCharAttrsDesc,
+	CKeyDesc,
+	CColorDesc,
+	CColorCapabilitiesDesc,
+	CColorPairDesc,
+	CColorContentDesc,
+	NULL
 };
 
-static void hook_error(int code, char *error, char *where)
+static bool _init = FALSE;
+
+/**
+ * Returns if we are in ncurses mode
+ */
+bool MAIN_running()
 {
-	NCURSES_exit();
+	return _init && (!isendwin() || stdscr);
 }
 
-static void hook_main(int *argc, char **argv)
+/**
+ * Component-global initialisation
+ * Start ncurses and prepare stdscr. Call other relevant initialisation
+ * routines.
+ */
+static void MAIN_init()
 {
-	NCURSES_init();
+	if (_init)
+		return;
+
+	initscr();
+	keypad(stdscr, TRUE);
+
+	SCREEN_init();
+	COLOR_init();
+
+	refresh();
+
+	_init = TRUE;
+}
+
+/**
+ * Cleanup and exit ncurses
+ */
+static void MAIN_exit()
+{
+	if (_init) {
+		SCREEN_exit();
+		endwin();
+		_init = FALSE;
+	}
+}
+
+/**
+ * Error hook
+ */
+static void MAIN_hook_error(int code, char *error, char *where)
+{
+	MAIN_exit();
+}
+
+/**
+ * Main hook
+ */
+static void MAIN_hook_main(int *argc, char **argv)
+{
+	MAIN_init();
 }
 
 int EXPORT GB_INIT()
 {
-	GB.Hook(GB_HOOK_ERROR, (void *) hook_error);
-	GB.Hook(GB_HOOK_MAIN, (void *) hook_main);
+	GB.Hook(GB_HOOK_ERROR, (void *) MAIN_hook_error);
+	GB.Hook(GB_HOOK_MAIN, (void *) MAIN_hook_main);
 	return 0;
 }
 
 
 void EXPORT GB_EXIT()
 {
-	NCURSES_exit();
+	MAIN_exit();
 }

@@ -24,10 +24,45 @@
 
 #include "gambas.h"
 
-#ifndef __C_WINDOW_C
+/* This will produce final output on terminal screen */
+#define REAL_REFRESH()			SCREEN_real_refresh()
+/* This macro is mostly called by Gambas implementation functions to request output on screen
+   (read: to check if the output is buffered and if not produce output by means of
+   REAL_REFRESH()) */
+#define REFRESH()			SCREEN_refresh(NULL)
+
+/*
+ * Cursor modes
+ */
+enum {
+	CURSOR_HIDDEN,
+	CURSOR_VISIBLE,
+	CURSOR_VERY
+};
+
+/*
+ * Echo modes
+ */
+enum {
+	ECHO_NOECHO,
+	ECHO_ECHO
+};
+
+#ifndef __C_SCREEN_C
 extern GB_DESC CScreenDesc[];
 #endif
 
+typedef struct {
+	GB_BASE ob;
+	bool buffered;		/* Whether output will be buffered, i.e.
+				   only done via Screen.Refresh() */
+} CSCREEN;
+
 int SCREEN_init();
+void SCREEN_exit();
+CSCREEN *SCREEN_get_active();
+void SCREEN_refresh();
+void SCREEN_real_refresh();
+void SCREEN_raise_read(void *);
 
 #endif /* __C_SCREEN_H */

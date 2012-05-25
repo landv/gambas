@@ -27,6 +27,7 @@
 
 #include "main.h"
 #include "c_color.h"
+#include "c_screen.h"
 
 static int _index;
 static int _color;
@@ -189,6 +190,7 @@ BEGIN_PROPERTY(ColorPair_Background)
 	}
 	b = VPROP(GB_INTEGER);
 	COLOR_setpair(_index, f, b);
+	REAL_REFRESH();
 
 
 END_PROPERTY
@@ -208,6 +210,7 @@ BEGIN_PROPERTY(ColorPair_Foreground)
 	}
 	f = VPROP(GB_INTEGER);
 	COLOR_setpair(_index, f, b);
+	REAL_REFRESH();
 
 END_PROPERTY
 

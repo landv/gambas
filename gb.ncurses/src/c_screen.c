@@ -25,44 +25,81 @@
 #include <signal.h>
 
 #include <ncurses.h>
+#include <panel.h>
 
 #include "gambas.h"
 
 #include "c_screen.h"
 #include "main.h"
+#include "input.h"
+
+#define THIS			((CSCREEN *) _object)
+#define IS_BUFFERED		(THIS->buffered)
 
 #define E_UNSUPP	"Unsupported value"
 
-#define CURSOR_HIDDEN	0
-#define CURSOR_VISIBLE	1
-
-#define INPUT_COOKED	0
-#define INPUT_CBREAK	1
-#define INPUT_RAW	2
-#define INPUT_KEYBOARD	3
-
 static bool _cursor;
-static int _input;
 static int _echo;
 
+/* Currently active screen */
+static CSCREEN *active = NULL;
+
+GB_SIGNAL_CALLBACK *callback;
+
+DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Resize);
 
-#if 0
 /*
  * Signal handler for the SIGWINCH signal.
  * @signum: signal number given
  * This routine dispatches the Resize Event
  */
-void nc_sigwinch_handler(int signum)
+void SCREEN_sigwinch_handler(int signum, intptr_t data)
 {
-	/* TODO: I wonder if this works... */
-
-	/* BM: Of course not! :-) You can't raise an event from a signal handler
-	 * and moreover you have no sender! */
-
-	if (signum == SIGWINCH) GB.Raise(NULL, EVENT_Resize, 0);
+	if (signum == SIGWINCH)
+		GB.Raise(active, EVENT_Resize, 0);
 }
-#endif
+
+/**
+ * Set mode of @_cursor
+ */
+static int SCREEN_cursor_mode(int mode)
+{
+	switch (mode) {
+		case CURSOR_HIDDEN:
+			curs_set(0);
+			break;
+		case CURSOR_VISIBLE:
+			curs_set(1);
+			break;
+		case CURSOR_VERY:
+			curs_set(2);
+			break;
+		default:
+			return -1;
+	}
+	_cursor = mode;
+	return 0;
+}
+
+/**
+ * Set mode of @_echo
+ */
+static int SCREEN_echo_mode(int mode)
+{
+	switch (mode) {
+		case ECHO_NOECHO:
+			noecho();
+			break;
+		case ECHO_ECHO:
+			echo();
+			break;
+		default:
+			return -1;
+	}
+	_echo = mode;
+	return 0;
+}
 
 /**
  * Screen initialisation
@@ -70,28 +107,91 @@ void nc_sigwinch_handler(int signum)
 int SCREEN_init()
 {
 	/* Global variable default setup */
-	_cursor = CURSOR_VISIBLE;
-	_input = INPUT_CBREAK;
-	_echo = 0;
-	/* accordingly... */
-	curs_set(1);
-	cbreak();
-	noecho();
+	SCREEN_cursor_mode(CURSOR_VISIBLE);
+	SCREEN_echo_mode(ECHO_NOECHO);
 
-#if 0
-	struct sigaction sa;
+	INPUT_init();
 
-	sa.sa_handler = nc_sigwinch_handler;
-	sigemptyset(&(sa.sa_mask));
-	sa.sa_flags = 0;
-	if (sigaction(SIGWINCH, &sa, NULL) == -1)
-	{
-		fprintf(stderr, "gb.ncurses: Could not install SIGWINCH signal handler");
-	}
-#endif
-
+/*	callback = GB.Signal.Register(SIGSEGV,
+		SCREEN_sigwinch_handler, (intptr_t) NULL);
+*/
 	return 0;
 }
+
+/**
+ * Screen cleanup
+ */
+void SCREEN_exit()
+{
+	INPUT_exit();
+
+/*	GB.Signal.Unregister(SIGWINCH, callback);
+*/
+}
+
+/**
+ * Get the active Screen
+ * If @active is NULL, the default Screen will be made active and then returned
+ */
+CSCREEN *SCREEN_get_active()
+{
+	GB_CLASS screen_class;
+
+	if (active)
+		return active;
+	screen_class = GB.FindClass("Screen");
+	active = GB.AutoCreate(screen_class, 0);
+	return active;
+}
+
+/**
+ * Redraw the screen no matter what the buffer settings are.
+ * Note that this function may not be used to return into ncurses mode once left.
+ */
+void SCREEN_real_refresh()
+{
+	if (!NCURSES_RUNNING)
+		return;
+	update_panels();
+	doupdate();
+}
+
+/**
+ * Refresh the screen. This respects the currently active buffering wishes
+ */
+void SCREEN_refresh(void *_object)
+{
+	if (!NCURSES_RUNNING)
+		return;
+
+	if (!_object)
+		_object = SCREEN_get_active();
+
+	if (!IS_BUFFERED)
+		SCREEN_real_refresh();
+}
+
+/**
+ * Let the specified screen raise its Read event. If the _object is NULL,
+ * the currently active screen will raise.
+ */
+void SCREEN_raise_read(void *_object)
+{
+	if (!_object)
+		GB.Raise(active, EVENT_Read, 0);
+	else
+		GB.Raise(_object, EVENT_Read, 0);
+}
+
+BEGIN_PROPERTY(Screen_Buffered)
+
+	if (READ_PROPERTY) {
+		GB.ReturnBoolean(IS_BUFFERED);
+		return;
+	}
+	THIS->buffered = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Cursor)
 
@@ -100,47 +200,8 @@ BEGIN_PROPERTY(Screen_Cursor)
 		return;
 	}
 
-	switch (VPROP(GB_INTEGER)) {
-		case CURSOR_HIDDEN:
-			curs_set(0);
-			break;
-		case CURSOR_VISIBLE:
-			curs_set(1);
-			break;
-		default:
-			GB.Error(E_UNSUPP);
-			return;
-	}
-	_cursor = VPROP(GB_INTEGER);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Screen_Input)
-
-	if (READ_PROPERTY) {
-		GB.ReturnInteger(_input);
-		return;
-	}
-
-	switch (VPROP(GB_INTEGER)) {
-		case INPUT_COOKED:
-			noraw();
-			nocbreak();
-			break;
-		case INPUT_CBREAK:
-			cbreak();
-			break;
-		case INPUT_RAW:
-			raw();
-			break;
-		case INPUT_KEYBOARD:
-			/* TODO: implement! */
-			break;
-		default:
-			GB.Error(E_UNSUPP);
-			return;
-	}
-	_input = VPROP(GB_INTEGER);
+	if (SCREEN_cursor_mode(VPROP(GB_INTEGER)) == -1)
+		GB.Error(E_UNSUPP);
 
 END_PROPERTY
 
@@ -151,11 +212,46 @@ BEGIN_PROPERTY(Screen_Echo)
 		return;
 	}
 
-	_echo = VPROP(GB_BOOLEAN);
-	if (_echo)
-		echo();
-	else
-		noecho();
+	if (SCREEN_echo_mode(!!VPROP(GB_BOOLEAN)) == -1)
+		GB.Error(E_UNSUPP);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Screen_Input)
+
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(INPUT_mode(INPUT_RETURN));
+		return;
+	}
+
+	if (INPUT_mode(VPROP(GB_INTEGER)) == -1)
+		GB.Error(E_UNSUPP);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Screen_IsConsole)
+
+	int fd = INPUT_consolefd();
+
+	if (fd == -1) {
+		GB.ReturnBoolean(FALSE);
+		return;
+	}
+	close(fd);
+	GB.ReturnBoolean(TRUE);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Screen_Repeater)
+
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(INPUT_repeater_delay(REPEATER_RETURN));
+		return;
+	}
+	if (INPUT_repeater_delay(VPROP(GB_INTEGER)) == -1) {
+		GB.Error("Invalid value");
+		return;
+	}
 
 END_PROPERTY
 
@@ -173,14 +269,29 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Screen_new)
 
-	SCREEN_init();
+	active = THIS;
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Screen_free)
+
+	SCREEN_exit();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Screen_Refresh)
+
+	SCREEN_real_refresh();
 
 END_METHOD
 
 GB_DESC CScreenDesc[] =
 {
-	GB_DECLARE("Screen", 0), //sizeof(struct nc_screen)),
+	GB_DECLARE("Screen", sizeof(CSCREEN)),
 	GB_AUTO_CREATABLE(),
+
+	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 
 	GB_CONSTANT("Hidden", "i", CURSOR_HIDDEN),
 	GB_CONSTANT("Visible", "i", CURSOR_VISIBLE),
@@ -188,15 +299,23 @@ GB_DESC CScreenDesc[] =
 	GB_CONSTANT("Cooked", "i", INPUT_COOKED),
 	GB_CONSTANT("CBreak", "i", INPUT_CBREAK),
 	GB_CONSTANT("Raw", "i", INPUT_RAW),
+	GB_CONSTANT("NoDelay", "i", INPUT_NODELAY),
+
+	GB_PROPERTY("Buffered", "b", Screen_Buffered),
 
 	GB_STATIC_PROPERTY("Cursor", "i", Screen_Cursor),
-	GB_STATIC_PROPERTY("Input", "i", Screen_Input),
 	GB_STATIC_PROPERTY("Echo", "b", Screen_Echo),
+	GB_STATIC_PROPERTY("Input", "i", Screen_Input),
+	GB_STATIC_PROPERTY_READ("IsConsole", "b", Screen_IsConsole),
+	GB_STATIC_PROPERTY("Repeater", "i", Screen_Repeater),
 
 	GB_STATIC_PROPERTY_READ("Lines", "i", Screen_Lines), //GB_PROPERTY
 	GB_STATIC_PROPERTY_READ("Cols", "i", Screen_Cols),
 
 	GB_METHOD("_new", NULL, Screen_new, NULL),
+	GB_METHOD("_free", NULL, Screen_free, NULL),
+
+	GB_METHOD("Refresh", NULL, Screen_Refresh, NULL),
 
 	GB_END_DECLARE
 };
