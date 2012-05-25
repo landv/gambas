@@ -5,11 +5,13 @@ AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.jit)
 AC_PROG_LIBTOOL
 
-LLVM_CONFIG=`which llvm-config`
-if test x$LLVM_CONFIG == x; then
+dnl llvm-config file can be forced with LLVM_CONFIG env var
+AC_PATH_PROG([LLVM_CONFIG], [llvm-config], [no])
+
+if test "x$LLVM_CONFIG" = xno; then
   touch DISABLED DISABLED.gb.jit
 else
-  LLVM_VERSION=`llvm-config --version`
+  LLVM_VERSION=`$LLVM_CONFIG --version`
 fi
 
 GB_COMPONENT(
