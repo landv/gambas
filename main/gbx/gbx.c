@@ -432,6 +432,6 @@ int main(int argc, char *argv[])
 
 	fflush(NULL);
 
-	exit(ret);
+	return ret;
 }
 

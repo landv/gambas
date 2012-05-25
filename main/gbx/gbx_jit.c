@@ -34,6 +34,8 @@ bool JIT_load()
 	static bool loaded = FALSE;
 	static bool available = TRUE;
 	
+	COMPONENT *comp;
+	
 	if (loaded)
 		return TRUE;
 	
@@ -42,7 +44,11 @@ bool JIT_load()
 	
 	TRY
 	{
-		COMPONENT_load(COMPONENT_create("gb.jit"));
+		comp = COMPONENT_create("gb.jit");
+		//comp->preload = TRUE; // Prevent from being unloaded before exit() is called
+		
+		COMPONENT_load(comp);
+		
 		LIBRARY_get_interface_by_name("gb.jit", JIT_INTERFACE_VERSION, &JIT);
 		
 		JIT.Init((GB_JIT_INTERFACE *)(void *)GAMBAS_JitApi, &EXEC_current, &SP, &TEMP, &RET, &GAMBAS_StopEvent,

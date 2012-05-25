@@ -25,14 +25,13 @@
 
 #define __MAIN_C
 
-//#include "gb_common.h"
 #include "gambas.h"
-
 #include "main.h"
-
+#include <llvm/Config/config.h>
 
 extern "C" {
 	GB_INTERFACE GB EXPORT;
+	bool MAIN_debug = false;
 }
 
 void *GB_JIT_1[] EXPORT = {
@@ -52,6 +51,17 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 extern "C" int EXPORT GB_INIT(void)
 {
+	if (getenv("GB_JIT"))
+		MAIN_debug = true;
+	
+	if (LLVM_VERSION_MAJOR < 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 1))
+		fprintf(stderr, "gb.jit: warning: LLVM %d.%d is not supported.\n", LLVM_VERSION_MAJOR, LLVM_VERSION_MINOR);
+	else
+	{
+		if (MAIN_debug)
+			fprintf(stderr, "gb.jit: using LLVM %d.%d.\n", LLVM_VERSION_MAJOR, LLVM_VERSION_MINOR);
+	}
+	
   return 0;
 }
 

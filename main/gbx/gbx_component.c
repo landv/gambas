@@ -85,6 +85,8 @@ void COMPONENT_exit(void)
 			max_order = comp->order;
 	}
 	
+	// if order < 0, the component is not unloaded
+	
 	for (order = 0; order <= max_order; order++)
 	{
 		LIST_for_each(comp, _component_list)
@@ -94,11 +96,11 @@ void COMPONENT_exit(void)
 		}
 	}
 
-	LIST_for_each(comp, _component_list)
+	/*LIST_for_each(comp, _component_list)
 	{
 		if (comp->loaded)
 			COMPONENT_unload(comp);
-	}
+	}*/
 
   while (_component_list)
     COMPONENT_delete(_component_list);

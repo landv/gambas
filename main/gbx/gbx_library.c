@@ -319,7 +319,9 @@ void LIBRARY_unload(LIBRARY *lib)
       (*gambas_exit)();
   }
   else
+	{
     lt_dlclose(lib->handle);
+	}
 
   lib->handle = NULL;
 

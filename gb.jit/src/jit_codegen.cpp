@@ -202,6 +202,7 @@ static llvm::BasicBlock* create_bb(const char* name){
 }
 
 static void llvm_init(){
+	
 	llvm::InitializeNativeTarget();
 	
 	//string_type = llvm::StructType::create(llvm_context, string_to_type_vector("jpii"), "String");
@@ -6069,6 +6070,15 @@ static void func_object(){
 	JIF.F_EXEC_leave_keep();
 }
 
+static void print_line()
+{
+	int i;
+	
+	for (i = 1; i < 10; i++)
+		fputs("--------", stderr);
+	fputc('\n', stderr);
+}
+
 void JIT_codegen(){
 	if (FP->type <= T_OBJECT && all_statements.size() == 1){
 		if (auto re = dyn_cast<ReturnExpression>(all_statements.front()->expr)){
@@ -6177,15 +6187,18 @@ void JIT_codegen(){
 	MPM.run(*M);
 	
 	//Print out the code after optimization
-	if (char* gb_jit_env = getenv("GB_JIT")){
-		if (strcmp(gb_jit_env, "info") == 0){
-			fprintf(stderr, "Dump of function %s.", CP->name);
-			if (FP->debug)
-				fprintf(stderr, "%s:\n", FP->debug->name);
-			else
-				fprintf(stderr, "%d:\n", EXEC.index);
-			M->dump();
-		}
+	if (MAIN_debug)
+	{
+		print_line();
+		fprintf(stderr, "gb.jit: dumping function %s.", CP->name);
+		if (FP->debug)
+			fprintf(stderr, "%s:\n", FP->debug->name);
+		else
+			fprintf(stderr, "%d:\n", EXEC.index);
+		print_line();
+		M->dump();
+		print_line();
+		fputc('\n', stderr);
 	}
 	
 	void (*fn)(void) = (void(*)(void))EE->getPointerToFunction(llvm_function);

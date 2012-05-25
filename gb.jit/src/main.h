@@ -48,6 +48,7 @@ extern "C" {
 
 #ifndef __MAIN_CPP
 extern GB_INTERFACE GB;
+extern bool MAIN_debug;
 #endif
 
 typedef
