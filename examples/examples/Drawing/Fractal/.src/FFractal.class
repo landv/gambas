@@ -1,8 +1,9 @@
 ' Gambas class file
 
+Private $hRose As Image
 Private $fScale As Float = 0.01
 Private Const ITER_MAX As Integer = 256
-Private $aColor As New Integer[32]
+Private $aColor As New Integer[64]
 Private $XC As Float
 Private $YC As Float
 Private $MX As Integer
@@ -40,10 +41,8 @@ Private Sub DrawFractal(hImage As Image, XF As Float, YF As Float, SF As Float)
         
       Next
       
-      If K = ITER_MAX Then
-        hImage[I, J] = Color.Black
-      Else
-        hImage[I, J] = $aColor[K And 31]
+      If K < ITER_MAX Then
+        hImage[I, J] = $aColor[K And 63]
       Endif
       
       YF += SF
@@ -83,10 +82,8 @@ Fast Private Sub FastDrawFractal(hImage As Image, XF As Float, YF As Float, SF A
         
       Next
       
-      If K = ITER_MAX Then
-        hImage[I, J] = Color.Black
-      Else
-        hImage[I, J] = $aColor[K And 31]
+      If K < ITER_MAX Then
+        hImage[I, J] = $aColor[K And 63]
       Endif
       
       YF += SF
@@ -101,12 +98,17 @@ End
 Public Sub dwgFractal_Draw()
 
   Dim hImage As Image
-  Dim X, Y As Float
+  Dim X, Y, I, J As Float
   
   X = $XC + (Draw.Clip.X - dwgFractal.W / 2) * $fScale
   Y = $YC + (Draw.Clip.Y - dwgFractal.H / 2) * $fScale
   
   hImage = New Image(Draw.Clip.W, Draw.Clip.H)
+  For I = 0 To hImage.W Step $hRose.W
+    For J = 0 To hImage.H Step $hRose.H
+      hImage.DrawImage($hRose, I, J)
+    Next
+  Next
   
   If $bFast Then
     FastDrawFractal(hImage, X, Y, $fScale)
@@ -114,6 +116,7 @@ Public Sub dwgFractal_Draw()
     DrawFractal(hImage, X, Y, $fScale)
   Endif
   
+  'Draw.Tile($hRose, 0, 0, dwgFractal.W, dwgFractal.H)
   Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
   If $bFast Then
     Draw.Text(("Just-In-Time compilation activated!"), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
@@ -145,6 +148,7 @@ Public Sub Form_Open()
 
   Dim I As Integer
   
+  $hRose = Image.Load("rose.jpg")
   For I = 0 To $aColor.Max
     $aColor[I] = Color.HSV(360 * I / $aColor.Max, 255, 255)
   Next
