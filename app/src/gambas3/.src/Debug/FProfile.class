@@ -523,12 +523,12 @@ Public Sub Form_Close()
 
 End
 
-Public Sub ReadConfig()
+Public Sub ReadOneConfig()
   
   Project.SetSmallFont(gvwProfile)
   Project.SetSmallFont(tabInfo)
   edtSource.ReadConfig
-  edtSource.Flags[Editor.HideMargin] = True
+  edtSource.Flags[Editor.HideMargin] = Not edtSource.Flags[Editor.ShowLineNumbers]
   'edtSource.Flags[Editor.ShowLineNumbers] = True
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetEditorFont(gvwSource)
@@ -536,12 +536,27 @@ Public Sub ReadConfig()
     
 End
 
+Static Public Sub ReadConfig()
+  
+  Dim hWin As Window
+  Dim hProf As FProfile
+  
+  For Each hWin In Windows
+    If hWin Is FProfile Then
+      hProf = hWin
+      hProf.ReadOneConfig
+    Endif
+  Next
+  
+End
+
+
 Public Sub Form_Open()
 
   Settings.Read(Me)
   Settings.Read(splProfile)
   splSource.Layout = [1, 2]
-  ReadConfig
+  ReadOneConfig
 
   With gvwProfile
     .Columns.Count = 4
@@ -844,7 +859,7 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
           Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
         Endif
         
-        If iCount <= 1 Then Return
+        If iCount < 1 Then Return
         .Text = CStr(iCount) & " "
         
     End Select
