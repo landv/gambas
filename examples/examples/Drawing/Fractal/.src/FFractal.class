@@ -1,0 +1,182 @@
+' Gambas class file
+
+Private $fScale As Float = 0.01
+Private Const ITER_MAX As Integer = 256
+Private $aColor As New Integer[32]
+Private $XC As Float
+Private $YC As Float
+Private $MX As Integer
+Private $MY As Integer
+Private $XX As Float
+Private $YY As Float
+Private $bFast As Boolean
+
+Private Sub DrawFractal(hImage As Image, XF As Float, YF As Float, SF As Float)
+  
+  Dim I, J, K, W, H As Integer
+  Dim YF0 As Float
+  Dim ZX, ZY, T As Float
+  
+  YF0 = YF
+  W = hImage.W - 1
+  H = hImage.H - 1
+  
+  For I = 0 To W 
+    
+    YF = YF0
+    For J = 0 To H 
+      
+      ZX = 0
+      ZY = 0
+      
+      For K = 0 To ITER_MAX - 1
+        
+        T = ZX * ZX - ZY * ZY + XF
+        ZY = 2 * ZX * ZY + YF
+        
+        If ((T * T) + (ZY * ZY)) > 4 Then Break
+        
+        ZX = T
+        
+      Next
+      
+      If K = ITER_MAX Then
+        hImage[I, J] = Color.Black
+      Else
+        hImage[I, J] = $aColor[K And 31]
+      Endif
+      
+      YF += SF
+    Next
+    
+    XF += SF
+  Next
+  
+End
+
+Fast Private Sub FastDrawFractal(hImage As Image, XF As Float, YF As Float, SF As Float)
+  
+  Dim I, J, K, W, H As Integer
+  Dim YF0 As Float
+  Dim ZX, ZY, T As Float
+  
+  YF0 = YF
+  W = hImage.W - 1
+  H = hImage.H - 1
+  
+  For I = 0 To W 
+    
+    YF = YF0
+    For J = 0 To H 
+      
+      ZX = 0
+      ZY = 0
+      
+      For K = 0 To ITER_MAX - 1
+        
+        T = ZX * ZX - ZY * ZY + XF
+        ZY = 2 * ZX * ZY + YF
+        
+        If ((T * T) + (ZY * ZY)) > 4 Then Break
+        
+        ZX = T
+        
+      Next
+      
+      If K = ITER_MAX Then
+        hImage[I, J] = Color.Black
+      Else
+        hImage[I, J] = $aColor[K And 31]
+      Endif
+      
+      YF += SF
+    Next
+    
+    XF += SF
+  Next
+  
+End
+
+
+Public Sub dwgFractal_Draw()
+
+  Dim hImage As Image
+  Dim X, Y As Float
+  
+  X = $XC + (Draw.Clip.X - dwgFractal.W / 2) * $fScale
+  Y = $YC + (Draw.Clip.Y - dwgFractal.H / 2) * $fScale
+  
+  hImage = New Image(Draw.Clip.W, Draw.Clip.H)
+  
+  If $bFast Then
+    FastDrawFractal(hImage, X, Y, $fScale)
+  Else
+    DrawFractal(hImage, X, Y, $fScale)
+  Endif
+  
+  Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
+  ' If $bFast Then
+  '   Draw.Text(("Just-In-Time compilation activated!"), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
+  ' Else
+  '   Draw.Text(("Press F to activate Just-In-Time compilation."), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
+  ' Endif
+
+End
+
+Public Sub dwgFractal_MouseWheel()
+
+  $XC += $fScale * (Mouse.X - dwgFractal.W / 2)
+  $YC += $fScale * (Mouse.Y - dwgFractal.H / 2)
+  
+  If Mouse.Delta < 0 Then
+    $fScale *= Sqr(2)
+  Else
+    $fScale /= Sqr(2)
+  Endif
+  
+  $XC -= $fScale * (Mouse.X - dwgFractal.W / 2)
+  $YC -= $fScale * (Mouse.Y - dwgFractal.H / 2)
+  
+  Me.Refresh
+
+End
+
+Public Sub Form_Open()
+
+  Dim I As Integer
+  
+  For I = 0 To $aColor.Max
+    $aColor[I] = Color.HSV(360 * I / $aColor.Max, 255, 255)
+  Next
+
+End
+
+Public Sub dwgFractal_MouseDown()
+
+  $MX = Mouse.X
+  $MY = Mouse.Y
+  $XX = $XC
+  $YY = $YC
+
+End
+
+Public Sub dwgFractal_MouseMove()
+  
+  $XC = $XX + ($MX - Mouse.X) * $fScale
+  $YC = $YY + ($MY - Mouse.Y) * $fScale
+  Me.Refresh
+  
+End
+
+
+
+Public Sub dwgFractal_KeyPress()
+
+  If UCase(Key.Text) = "F" Then
+    $bFast = Not $bFast
+    Me.Refresh
+  Else If Key.Code = Key.Esc Then
+    Me.Close
+  Endif
+
+End
