@@ -115,11 +115,11 @@ Public Sub dwgFractal_Draw()
   Endif
   
   Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
-  ' If $bFast Then
-  '   Draw.Text(("Just-In-Time compilation activated!"), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
-  ' Else
-  '   Draw.Text(("Press F to activate Just-In-Time compilation."), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
-  ' Endif
+  If $bFast Then
+    Draw.Text(("Just-In-Time compilation activated!"), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
+  Else
+    Draw.Text(("Press F to activate Just-In-Time compilation."), 8, 8, dwgFractal.W - 16, Draw.Font.Height, Align.Left)
+  Endif
 
 End
 
