@@ -577,7 +577,7 @@ struct PushUnknownExpression : Expression {
 	unsigned short* pc;
 	int name_id;
 	PushUnknownExpression(Expression* obj, int name_id, unsigned short* pc) :
-		obj(obj), name_id(name_id), pc(pc) {
+		obj(obj), pc(pc), name_id(name_id) {
 		type = T_VARIANT;
 		ref_stack();
 		obj->must_on_stack();
@@ -832,7 +832,7 @@ struct JumpEnumFirstExpression : Expression {
 	llvm::Value* ob;
 	int ctrl;
 	JumpEnumFirstExpression(int ctrl, Expression* obj)
-	: ctrl(ctrl), obj(obj) {
+	: obj(obj), ctrl(ctrl) {
 		set_ctrl_type(obj->type, ctrl);
 	}
 	void codegen();
