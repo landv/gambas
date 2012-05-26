@@ -438,7 +438,7 @@ __s2l:
 		create_throw(E_TYPE, JIF.F_TYPE_get_name(type), JIF.F_TYPE_get_name(value->type));
 	});
 	
-	llvm::Value* intval = read_value(addr, T_INTEGER);
+	llvm::Value* intval = read_value(addr, type == T_LONG ? T_LONG : T_INTEGER);
 	
 	if (type < T_INTEGER)
 		intval = builder->CreateTrunc(intval, TYPE_llvm(type));
