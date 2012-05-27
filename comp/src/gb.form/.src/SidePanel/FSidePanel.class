@@ -23,8 +23,10 @@ Private $bInside As Boolean
 Private $bDblClick As Boolean
 
 Private BUTTON_H As Integer = Desktop.Scale
-Private BUTTON_W As Integer = 48
+Private BUTTON_W As Integer = Desktop.Scale * 4
 
+Private $hShowButtonLeft As DrawingArea
+Private $hShowButtonRight As DrawingArea
 
 Static Public Sub _init()
   
@@ -225,6 +227,7 @@ End
 Public Sub Form_Resize()
 
   RefreshPanel
+  MoveShowButton
   GetParent()._Resize
 
 End
@@ -271,6 +274,47 @@ Private Sub RefreshArrow()
 
 End
 
+Private Sub CreateShowButton() As DrawingArea
+  
+  Dim hCtrl As DrawingArea
+  
+  hCtrl = New DrawingArea(Me.Parent.Parent) As "ShowButton"
+  hCtrl.Ignore = True
+  hCtrl.Painted = True
+  hCtrl.Resize(Desktop.Scale, Desktop.Scale)
+  hCtrl.Mouse = Mouse.Pointing
+  hCtrl.Hide
+  
+  Return hCtrl
+  
+End
+
+Private Sub MoveShowButton()
+
+  If $bVisible Then Return
+  If Not $hShowButtonLeft Then Return
+
+  With Me.Parent
+  
+    Select Case $iOrientation
+      Case Align.Top
+        $hShowButtonLeft.Move(.X, .Y, BUTTON_W, BUTTON_H)
+        $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y, BUTTON_W, BUTTON_H)
+      Case Align.Bottom
+        $hShowButtonLeft.Move(.X, .Y - BUTTON_H, BUTTON_W, BUTTON_H)
+        $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y - BUTTON_H, BUTTON_W, BUTTON_H)
+      Case Align.Left
+        $hShowButtonLeft.Move(.X, .Y, BUTTON_H, BUTTON_W)
+        $hShowButtonRight.Move(.X, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
+      Case Align.Right
+        $hShowButtonLeft.Move(.X - BUTTON_H, .Y, BUTTON_H, BUTTON_W)
+        $hShowButtonRight.Move(.X - BUTTON_H, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
+    End Select
+    
+  End With  
+
+End
+
 Private Sub RefreshAll()
 
   Dim D As Integer
@@ -278,12 +322,27 @@ Private Sub RefreshAll()
   If Not $bOpened Then Return
   
   If $bVisible Then
+    
     panSide.Show 'Enabled = TRUE
     If $W And If $H Then Me.Parent.Move($X, $Y, $W, $H)
+    
+    If $hShowButtonLeft Then
+      $hShowButtonLeft.Hide
+      $hShowButtonRight.Hide
+    Endif
+
   Else
+    
     'DEBUG ME.Parent.W;; ME.CLientW
     panSide.Hide 'Enabled = FALSE
     D = 1
+    
+    If Not $hShowButtonLeft Then
+      
+      $hShowButtonLeft = CreateShowButton()
+      $hShowButtonRight = CreateShowButton()
+      
+    Endif
     
     Select Case $iOrientation
       Case Align.Top
@@ -297,6 +356,14 @@ Private Sub RefreshAll()
         Me.Parent.X += Me.Parent.W - D
         Me.Parent.W = D
     End Select
+    
+    MoveShowButton
+    
+    $hShowButtonLeft.Raise
+    $hShowButtonRight.Raise
+    $hShowButtonLeft.Show
+    $hShowButtonRight.Show
+    
   Endif
 
   UpdateBackground
@@ -323,14 +390,18 @@ Private Sub TogglePanel()
       $W = .Width
       $H = .Height
     End With
+    
     $bVisible = False
+    
     RefreshAll
+    
     Action.Raise(Me.Parent)
 
   Else
 
     $bVisible = True
     RefreshAll
+    
     Action.Raise(Me.Parent)    
 
     GetParent()._Show
@@ -598,13 +669,15 @@ Public Sub btnSide_Draw()
   Dim S As Integer
   
   If Me.Parent.Design Or If Last.Hovered Then 
+    
+    DrawArrow(Last, $iOrientation)
   
-    If $hArrow Then 
-      Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
-    Else
-      S = Min(btnSide.W, btnSide.H)
-      Draw.Style.Arrow((btnSide.W - S) \ 2, (btnSide.H - S) \ 2, S, S, $iArrowType)
-    Endif
+    ' If $hArrow Then 
+    '   Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
+    ' Else
+    '   S = Min(btnSide.W, btnSide.H)
+    '   Draw.Style.Arrow((btnSide.W - S) \ 2, (btnSide.H - S) \ 2, S, S, $iArrowType)
+    ' Endif
     
   Endif
 
@@ -646,11 +719,11 @@ End
 
 Private Sub UpdateBackground()
 
-  If $bInside And If Not $bVisible Then
-    panMove.Background = Color.SelectedBackground
-  Else
+  ' If $bInside And If Not $bVisible Then
+  '   panMove.Background = Color.SelectedBackground
+  ' Else
     panMove.Background = Color.Default
-  Endif
+  'Endif
 
 End
 
@@ -666,4 +739,98 @@ Public Sub panMove_Leave()
   $bInside = False
   UpdateBackground
 
+End
+
+Public Sub ShowButton_Draw()
+  
+  Dim iOrient As Integer
+  
+  If Not Last.Hovered Then Return
+  
+  Select Case $iOrientation
+    Case Align.Left
+      iOrient = Align.Right
+    Case Align.Right
+      iOrient = Align.Left
+    Case Align.Top
+      iOrient = Align.Bottom
+    Case Align.Bottom
+      iOrient = Align.Top
+  End Select
+  
+  DrawArrow(Last, iOrient)
+  
+End
+
+Public Sub ShowButton_Enter()
+  
+  Last.Refresh
+  
+End
+
+Public Sub ShowButton_Leave()
+  
+  Last.Refresh
+  
+End
+
+
+Private Sub DrawArrow(hCtrl As Control, iOrient As Integer)
+
+  Dim X, Y, W, H As Float
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 128))
+  
+  X = hCtrl.W / 2
+  Y = hCtrl.H / 2
+  
+  If hCtrl.W > hCtrl.H Then
+    W = Desktop.Scale * 2 - 4
+    H = Desktop.Scale - 2
+  Else
+    W = Desktop.Scale - 2
+    H = Desktop.Scale * 2 - 4
+  Endif
+  
+  X -= W / 2
+  Y -= H / 2
+  
+  Select Case iOrient
+    
+    Case Align.Right
+      
+      Paint.MoveTo(X + W, Y + H / 2)
+      Paint.LineTo(X, Y)
+      Paint.LineTo(X, Y + H)
+      Paint.Fill
+    
+    Case Align.Left
+      
+      Paint.MoveTo(X, Y + H / 2)
+      Paint.LineTo(X + W, Y)
+      Paint.LineTo(X + W, Y + H)
+      Paint.Fill
+    
+    Case Align.Bottom
+      
+      Paint.MoveTo(X + W / 2, Y + H)
+      Paint.LineTo(X, Y)
+      Paint.LineTo(X + W, Y)
+      Paint.Fill
+    
+    Case Align.Top
+      
+      Paint.MoveTo(X + W / 2, Y)
+      Paint.LineTo(X, Y + H)
+      Paint.LineTo(X + W, Y + H)
+      Paint.Fill
+    
+  End Select
+  
+End
+
+Public Sub ShowButton_MouseDown()
+  
+  TogglePanel
+  
 End
