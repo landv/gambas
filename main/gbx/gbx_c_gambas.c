@@ -104,10 +104,9 @@ BEGIN_METHOD_VOID(Param_next)
 		GB_StopEnum();
 	else
 	{
+		VALUE_conv(&PP[*index], T_VARIANT);
 		TEMP = PP[*index];
 		(*index)++;
-		GB_ReturnConvVariant();
-		//VALUE_conv(&TEMP, T_VARIANT);
 	}
 
 END_METHOD
