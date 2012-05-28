@@ -725,7 +725,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
   dnl   [  gb_lib_$1="$withval" ])
 
   have_$1=no
-
+  
   if test "$gb_enable_$1"="yes" && test ! -e DISABLED.$3; then
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
@@ -752,9 +752,9 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     else
       
       have_$1=no
-
-    fi
       
+    fi
+
   fi
 
   if test "$have_$1" = "no"; then
@@ -765,7 +765,16 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     fi
 
     AC_MSG_RESULT(no)
-    
+
+    for pkgcmp in $5
+    do
+
+      pkg-config --silence-errors --exists $pkgcmp
+      if test $? -eq "1"; then
+        GB_WARNING([Unable to met pkg-config requirement: $pkgcmp])
+      fi
+
+    done
   else
     
     AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
