@@ -3,6 +3,7 @@
   CXSLT.h
 
   (c) 2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,6 +33,5 @@
 extern GB_DESC CXsltDesc[];
 
 #endif
-
 
 #endif

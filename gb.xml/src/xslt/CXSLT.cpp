@@ -3,6 +3,7 @@
   CXSLT.c
 
   (c) 2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,7 +44,6 @@
 #include "../textnode.h"
 #include "../textnode.cpp"
 #include "../gbi.cpp"
-#include "../utils.cpp"
 
 BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
 
@@ -67,7 +67,16 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
 	}
 
     xsltStylesheetPtr sheet = 0;
-    xmlDoc *xmlStyleSheet = xmlParseDoc((xmlChar*)((stylesheet->getContent()).c_str()));
+    
+    char *StyleSheetOutput;
+    size_t StyleSheetLen;
+    doc->toString(&StyleSheetOutput, &StyleSheetLen);
+    
+    StyleSheetOutput =(char*)realloc(StyleSheetOutput, StyleSheetLen + 1);
+    StyleSheetOutput[StyleSheetLen] = 0;
+    
+    
+    xmlDoc *xmlStyleSheet = xmlParseDoc((xmlChar*)(StyleSheetOutput));
 	
 
     if(!(sheet=xsltParseStylesheetDoc(xmlStyleSheet)))
@@ -75,8 +84,15 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
 		GB.Error("Invalid style sheet");
 		return;
 	}
-
-    xmlDoc *xmlInputDoc = xmlParseDoc((xmlChar*)((doc->getContent()).c_str()));
+    
+    char *DocumentOutput;
+    size_t DocumentLen;
+    doc->toString(&DocumentOutput, &DocumentLen);
+    
+    DocumentOutput =(char*)realloc(DocumentOutput, DocumentLen + 1);
+    DocumentOutput[DocumentLen] = 0;
+    
+    xmlDoc *xmlInputDoc = xmlParseDoc((xmlChar*)(DocumentOutput));
 
 	
     xmlDoc *xmlOutDoc;
@@ -88,19 +104,16 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     {
         GB.Error("Unable to apply style sheet");
     }
+    
     xmlDocDumpFormatMemoryEnc(xmlOutDoc ,&buffer, &size, "UTF-8", 1);
 
     Document *outDoc = new Document;
 
-    try
-    {
-        outDoc->setContent(fwstring((char*)(buffer),size));
-    }
-    catch(HTMLParseException &e)
-    {
-        outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>");
-        std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
-    }
+    outDoc->setContent((char*)(buffer),size);
+
+//    outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>");
+//    std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
+
     GBI::Return(outDoc);
 		
 END_METHOD
@@ -115,7 +128,3 @@ GB_DESC CXsltDesc[] =
 
   GB_END_DECLARE
 };
-
-
-
-

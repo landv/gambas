@@ -1,121 +1,166 @@
-#include "document.h"
-#include "CDocument.h"
+/***************************************************************************
 
-bool Document::NoInstanciate = false;
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
+#include "document.h"
+#include "element.h"
+#include "utils.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 Document::Document()
 {
-    root = new Element;
-    root->setTagName("xml");
-    relob = 0;
-    ref = 0;
+    root = new Element("xml", 3);
+    root->parentDocument = this;
+    
+}
+
+Document::Document(const char *fileName, const size_t lenFileName)
+{
+    root = 0;
+    Open(fileName, lenFileName);
 }
 
 Document::~Document()
 {
-    //UNREF(relob);
+    root->DestroyParent();
 }
 
-GBI::ObjectArray<Node>* Document::getAll()
+/***** Node tree *****/
+void Document::setRoot(Element *newRoot)
 {
-    GBI::ObjectArray<Node> *children = root->getAllChildren();
-    children->push_back(root);
-    return children;
+    if(root) root->DestroyParent();
+    
+    if(newRoot->parent) newRoot->parent->removeKeepChild(newRoot);
+    
+    newRoot->parentDocument = this;
+    root = newRoot;
 }
 
-void Document::NewGBObject()
+void Document::getGBElementsByTagName(const char *ctagName, const size_t clenTagName, GB_ARRAY *array, const int depth)
 {
-    NoInstanciate = true;
-    relob = GBI::New<CDocument>("XmlDocument");
-    relob->doc = this;
-    //GB.Ref(relob);
-    NoInstanciate = false;
+    root->getGBChildrenByTagName(ctagName, clenTagName, array, depth);
 }
 
-fwstring Document::getContent(bool indent)
+void Document::getAllElements(GB_ARRAY *array)
 {
-    fwstring doctype("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    if(indent) doctype += "\n";
-
-    //DEBUGH;
-    doctype += root->toString(indent ? 0 : -1);
-    return doctype;
+    root->getGBAllChildren(array);
 }
 
-void Document::setContent(fwstring str)
+/***** Document loading *****/
+void Document::Open(const char *fileName, const size_t lenFileName)
+{
+    char *content; int len;
+    
+    if(GB.LoadFile(fileName, lenFileName, &content, &len))
+    {
+        GB.Error("Error loading file.");
+        GB.Propagate();
+        return;
+    }
+    
+    this->setContent(content, len);
+    
+}
+
+void Document::setContent(char *content, size_t len)
 {
     char *posStart = 0, *posEnd = 0;
-
+    
     //On cherche le début du prologue XML
-    posStart = (char*)memchrs(str.data, str.len, "<?xml ", 6);
-    if(!posStart) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
+    posStart = (char*)memchrs(content, len, "<?xml ", 6);
+    //if(!posStart) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
 
     //On cherche la fin du prologue XML
-    posEnd = (char*)memchrs(posStart, str.len - (posStart - str.data), "?>", 2);
-    if(!posEnd) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
+    posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
+    //if(!posEnd) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
 
-    fvector<Node*>* elements = 0;
-    try{elements = Element::fromText(str, (posEnd - str.data));}
-    catch(HTMLParseException &e) { throw e; }
+    Node** elements = 0;
+    size_t elementCount = 0;
+    elements = Element::fromText(posEnd, len - (posEnd - content), &elementCount);
 
-    //delete root;
-    root = 0;
+    Element *newRoot = 0;
     Node *node = 0;
-    //DEBUG << elements->at(0) << " " << elements->data[0] << endl;
-    for(size_t i = 0; i < elements->size(); i++)
+    
+    for(size_t i = 0; i < elementCount; i++)
     {
-        //DEBUG << i << endl;
-        node = elements->at(i);
-        if(node->isElement() && !root)
+        node = elements[i];
+        if(node->isElement() && !newRoot)
         {
-            root = node->toElement();
-            root->setOwnerDocument(this);
+            newRoot = node->toElement();
         }
         else
         {
-            //delete node;
+            delete node;
         }
 
     }
+    
+    this->setRoot(newRoot);
+    free(elements);
 
-    delete elements;
-
-    if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
-
+    //if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
 }
 
-Element* Document::createElement(fwstring tagName)
+/***** String output *****/
+void Document::toString(char **output, size_t *len)
 {
-    Element *elmt = new Element;
-    elmt->setTagName(tagName);
-    //DEBUG << elmt << endl;
-    return elmt;
+    //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
+    *len = 38; root->addStringLen(len);
+    *output = (char*)malloc(sizeof(char) * (*len));
+    memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
+    *output += 38;
+    root->addString(output);
+    (*output) -= (*len);
 }
 
-void Document::save(string fileName)
+void Document::toGBString(char **output, size_t *len)
 {
-    ofstream file((fileName.c_str()), ios::out | ios::trunc);
+    //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
+    *len = 38; root->addStringLen(len);
+    *output = GB.TempString(0, *len);
+    memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
+    *output += 38;
+    root->addString(output);
+    (*output) -= (*len);
+}
 
-    if(file)
-    {
-        file << this;
-        file.close();
-    }
-    else
+void Document::save(const char *fileName)
+{
+    FILE *newFile = fopen(fileName, "w");
+    
+    if(!newFile)
     {
         GB.Error("Cannot open file");
+        GB.Propagate();
+        return;
     }
-
-}
-
-ostream &operator<<( ostream &out, Document &doc )
-{
-    out << (doc.getContent());
-    return out;
-}
-
-ostream &operator<<( ostream &out, Document *doc )
-{
-    out << (doc->getContent());
-    return out;
+    
+    char *data = 0;
+    size_t lenData = 0;
+    toString(&data, &lenData);
+    data = (char*)realloc(data, lenData + 1);
+    data[lenData] = 0;
+    
+    fputs(data, newFile);
+    fclose(newFile);
+    
 }

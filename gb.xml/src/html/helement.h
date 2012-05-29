@@ -19,28 +19,34 @@
 
 ***************************************************************************/
 
-#include "node.h"
-#include "document.h"
-#include "gbi.h"
+#ifndef HELEMENT_H
+#define HELEMENT_H
 
-void GBI::Return(Node *node)
-{
-    if(!node)
-    {
-        GB.ReturnNull(); return;
-    }
-    if(!node->GBObject)
-    {
-        node->NewGBObject();
-    }
-    GB.ReturnObject(node->GBObject);
-}
+#include "main.h"
+#include "../element.h"
 
-void GBI::Return(Document *doc)
-{
-    if(!doc)
-    {
-        GB.ReturnNull(); return;
-    }
-    GB.ReturnObject(doc->GBObject);
-}
+
+//class Element:
+//{
+
+    Attribute* getClassName();
+    //void getClassNames(char ** &names, size_t* &lenNames, size_t &namesCount);
+    bool hasClassName(char *className, size_t lenClassName);
+    void setClassName(char *value, size_t len);
+
+    Attribute* getId();
+    void setId(char *value, size_t len);
+
+    bool matchSubFilter(char *filter, size_t lenFilter);
+    bool matchFilter(char *filter, size_t lenFilter);
+    void addGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
+    void getGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
+
+    Element* getChildById(char *id, size_t lenId, int depth = -1);
+    void getGBChildrenByClassName(char* className, size_t lenClassName, GB_ARRAY *array, int depth = -1);
+
+
+};
+
+
+#endif

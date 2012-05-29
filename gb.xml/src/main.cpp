@@ -1,44 +1,52 @@
-#define MAIN_CPP
-#ifndef __HMAIN_CPP
-#include "main.h"
-#include "CDocument.h"
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
+#include "../gambas.h"
 #include "CElement.h"
-#include "CNode.h"
 #include "CTextNode.h"
-#include "CReader.h"
+#include "CDocument.h"
 #include "CExplorer.h"
-#endif
-
-
-#ifndef __HMAIN_CPP
+#include "CReader.h"
 
 GB_INTERFACE GB EXPORT;
 
-extern "C"{
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CDocumentDesc, CNodeDesc, CElementAttributesDesc, CElementAttributeNodeDesc, CElementDesc, CTextNodeDesc,
-    CCommentNodeDesc, CCDATANodeDesc, CReaderDesc, CReaderNodeDesc, CReaderNodeTypeDesc,
-    CReaderNodeAttributesDesc, CReaderReadFlagsDesc, CExplorerDesc, CExplorerReadFlagsDesc, 0
-};
-
-int EXPORT GB_INIT(void)
-{
-   // GBI::InitClasses();
-    /*Element::ClassName = GB.FindClass("XmlElement");
-    TextNode::ClassName = GB.FindClass("XmlTextNode");
-    CommentNode::ClassName = GB.FindClass("XmlCommentNode");
-    CDATANode::ClassName = GB.FindClass("XmlCDATANode");
-    Node::ClassName = GB.FindClass("XmlNode");
-    AttrNode::ClassName = GB.FindClass("_XmlAttrNode");
-    Document::ClassName = GB.FindClass("XmlDocument");*/
-
-  return -1;
-}
-
-void EXPORT GB_EXIT()
+extern "C"
 {
 
+    GB_DESC *GB_CLASSES[] EXPORT =
+    {
+       CNodeDesc, CElementDesc, CTextNodeDesc, CCommentNodeDesc, CCDATANodeDesc, CElementAttributesDesc, CElementAttributeNodeDesc,
+       CDocumentDesc, 
+       CExplorerDesc, 
+       CReaderDesc, CReaderNodeAttributesDesc, CReaderNodeDesc, CReaderNodeTypeDesc, CReaderReadFlagsDesc, 0
+    };
+    
+    int EXPORT GB_INIT(void)
+    {
+    
+      return -1;
+    }
+    
+    void EXPORT GB_EXIT()
+    {
+    
+    }
 }
-}
-#endif

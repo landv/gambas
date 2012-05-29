@@ -1,131 +1,42 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #ifndef GBI_H
 #define GBI_H
 
-#include "../gambas.h"
-#include "../gb_common.h"
-#include "utils.h"
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include "main.h"
 
-extern "C" GB_INTERFACE GB;
-
-class fwstring;
 class Node;
 class Document;
 
 namespace GBI
 {
     template<typename T>
-    class ObjectArray
+    inline T* New(const char *className)
     {
-    public:
-        ObjectArray(const char* className, unsigned int siz = 0) : array(0)
-        {
-            GB.Array.New(&array, GB.FindClass(className), siz);
-        }
-        ObjectArray(const char *className, std::vector<T*> &vect);
-        ObjectArray(const char *className, fvector<T*> &vect);
-        ~ObjectArray();
-
-        T* at(unsigned int i) const;
-        void push_back(T* value);
-        void push_back(const ObjectArray<T> *otherArray);
-        void push_back(const std::vector<T*> *otherArray);
-
-        unsigned int size() const{return GB.Array.Count(array);}
-        unsigned int length() const{return GB.Array.Count(array);}
-        unsigned int count() const{return GB.Array.Count(array);}
-
-        GB_ARRAY array;
-
-    };
-
-    void Return(fwstring str);
-
-    template<typename T>
-    ObjectArray<T>::ObjectArray(const char *className, std::vector<T*> &vect) : array(0)
-    {
-        GB.Array.New(&array, GB.FindClass(className), 0);
-        for(unsigned int i = 0; i < vect.size(); i++)
-        {
-            push_back(vect.at(i));
-        }
+        return reinterpret_cast<T*>(GB.New(GB.FindClass(className), 0, 0));
     }
-
-    template<typename T>
-    ObjectArray<T>::ObjectArray(const char *className, fvector<T*> &vect) : array(0)
-    {
-        GB.Array.New(&array, GB.FindClass(className), 0);
-        for(unsigned int i = 0; i < vect.size(); i++)
-        {
-            push_back(vect.at(i));
-        }
-    }
-
-    template<typename T>
-    T* New(const char* className, char* eventName = 0, void* parent = 0)
-    {
-        return reinterpret_cast<T*>(GB.New(GB.FindClass(className), eventName, parent));
-    }
-
-    void InitClasses();
-
-    /*template<typename T>
-    T* New()
-    {
-        if(!T::ClassName) InitClasses();
-        return reinterpret_cast<T*>(GB.New(T::ClassName, 0, 0));
-    }*/
-
-
-    template<typename T>
-    void ObjectArray<T>::push_back(T* value)
-    {
-        *(reinterpret_cast<void **>((GB.Array.Add(this->array)))) = value;
-        GB.Ref(value);
-    }
-
-    template<typename T>
-    void ObjectArray<T>::push_back(const ObjectArray<T> *otherArray)
-    {
-        for(unsigned int i = 0; i < otherArray->length(); i++)
-        {
-            push_back(otherArray->at(i));
-        }
-    }
-
-    template<typename T>
-    void ObjectArray<T>::push_back(const std::vector<T*> *otherArray)
-    {
-        for(unsigned int i = 0; i < otherArray->size(); i++)
-        {
-            push_back(otherArray->at(i));
-        }
-    }
-
-    template<typename T>
-    T* ObjectArray<T>::at(unsigned int i) const
-    {
-        return *(reinterpret_cast<T**>(GB.Array.Get(this->array,i)));
-    }
-
-    template<typename T>
-    ObjectArray<T>::~ObjectArray()
-    {
-        for(unsigned int i = 0; i < this->count(); i++)
-        {
-            //std::cout << "-1 tab "<< this->at(i) <<" (" << (this->at(i)->ref - 1) << ") ";
-            GB.Unref(reinterpret_cast<void**>(GB.Array.Get(this->array,i)));
-        }
-//        GB.Unref(POINTER((void*)(&(this->array))));
-    }
-
-    void Return(Node *ob);
-    void Return(Document *ob);
-
-
+    
+    void Return(Node *node);
+    void Return(Document *doc);
 }
-
 
 #endif // GBI_H

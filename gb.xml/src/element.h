@@ -1,162 +1,137 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
-#include "main.h"
 #include "node.h"
 
-#include "textnode.h"
-
-#include <exception>
-#include <stdexcept>
-
-class HTMLParseException : public exception
+class Attribute : public Node
 {
 public:
-    HTMLParseException(unsigned int col, unsigned int line, string nnear, string err ) throw()
-        : ncol(col), nline(line), error(err), near(nnear)
-    {}
-
-    virtual const char* what() const throw()
-    {
-        string str;
-        str += "Parse error !\n" + error + "\nLine " + toString(nline) + ", column " + toString(ncol) + "\nNear : \n" + near;
-        return (str).c_str();
-    }
-
-    int getCol() {return ncol;}
-    void setCol(int col) {ncol = col;}
-    int getLine() {return nline;}
-    void setLine(int lin) {nline = lin;}
-    string text() {return error;}
-
-    ~HTMLParseException() throw() {}
-
-private:
-    int ncol;
-    int nline;
-    string error;
-    string near;
+    Attribute();
+    Attribute(const char *nattrName, const size_t nlenAttrName);
+    Attribute(const char *nattrName, const size_t nlenAttrName, 
+              const char *nattrVal, const size_t nlenAttrVal);
+    ~Attribute();
+    
+    
+    void setName(const char *nattrName, const size_t nlenAttrName);
+    void setValue(const char *nattrVal, const size_t nlenAttrVal);
+    char *attrName;
+    size_t lenAttrName;
+    char *attrValue;
+    size_t lenAttrValue;
+    
+    virtual Node::Type getType();
+    virtual void addStringLen(size_t *len);
+    virtual void addString(char **data);
+    virtual void setTextContent(const char *ncontent, const size_t nlen);
+    virtual void addTextContentLen(size_t &len);
+    virtual void addTextContent(char *&data);
+    virtual void NewGBObject();
 };
-
-
-vector<fwstring>* split(fwstring str, fwstring pattern);
-fwstring Right(fwstring str, size_t len);
-bool isLetter(const char *str);
-fwstring Trim(fwstring str);
-bool isLetter(fwstring &s);
-bool exist(vector<fwstring> vect, fwstring elmt);
-bool exist(vector<fwstring> *vect, fwstring elmt);
-
-struct CAttrNode;
-
-class AttrNode : public Node
-{
-public:
-        virtual Node::Type getType() {return Node::Attribute;}
-        virtual fwstring toString(int indent = -1){return textContent();}
-        virtual fwstring textContent();
-        virtual void setTextContent(fwstring content);
-        virtual void NewGBObject();
-    virtual Node* cloneNode();
-
-    fwstring *attrName;
-    fwstring *attrValue;
-    void setAttrName(const fwstring &name){attrName = new fwstring(name);}
-    virtual CNode* GetGBObject(){return (CNode*)relElmt;}
-
-    CAttrNode *relElmt;
-
-};
-
-class AttrListElement
-{
-public:
-    fwstring *attrName;
-    fwstring *attrValue;
-};
-
-struct CElement;
 
 class Element : public Node
 {
 public:
-        Element();
-        virtual ~Element();
-        virtual Node::Type getType() {return Node::ElementNode;}
-        virtual fwstring toString(int indent = -1);
-        virtual fwstring textContent();
-        virtual void setTextContent(fwstring content);
-        virtual void setOwnerDocument(Document *doc);
-        virtual Node* cloneNode();
-    virtual void NewGBObject();
-        virtual void SetGBObject(CElement *ob);
-        virtual CNode* GetGBObject(){return (CNode*)relElmt;}
-
-    GBI::ObjectArray<Node>* getGBChildren();
-    GBI::ObjectArray<Node>* getAllChildren();
-    GBI::ObjectArray<Element>* getChildrenByAttributeValue(fwstring attr, fwstring val, int depth = -1);
-    GBI::ObjectArray<Element>* getGBChildrenByTagName(fwstring tag, int depth = -1);
-    vector<Element*>* getChildrenByTagName(fwstring tag, int depth = -1);
-
-    Element* getFirstChildByTagName(fwstring tag, int depth = -1);
-    Element& operator=(const Element &copie);
-    Node* appendChild(Node &newChild);
-    Node* appendChild(Node *newChild);
-    Node* prependChild(Node &newChild);
-    Node* prependChild(Node *newChild);
-    void ClearElements();
-    void appendFromText(fwstring data, bool force = false);
-
-    void removeChild(Node *child);
+    Element();
+    Element(const char *ntagName, size_t nlenTagName);
+    virtual ~Element();
+    virtual Type getType();
+    
+    //Tag Name
+    void setTagName(const char *ntagName, size_t nlenTagName);//(re)defines the tag name
+    char *tagName;
+    size_t lenTagName;
+   
+    //Node tree
+    void appendChild(Node *newChild);//Adds a new child after the last one
+    void prependChild(Node *newChild);
+    void removeChild(Node *child);//Removes a child from the node
+    void removeKeepChild(Node *child);//Removes a child from the node, but doesn't destroys it
     void replaceChild(Node *oldChild, Node *newChild);
-
     bool insertAfter(Node *child, Node *newChild);
     bool insertBefore(Node *child, Node *newChild);
-
-    fwstring getTagName() {return *tagName;}
-    void setTagName(fwstring tag) {if(!tagName) tagName = new fwstring; *tagName = tag;}
-
-    void appendText(fwstring text);
-
-    fwstring getAttribute(fwstring key);
-    void setAttribute(fwstring key, fwstring value);
-    void addAttribute(fwstring key, fwstring value);
-    bool isAttributeSet(fwstring key);
-
-    //static vector<Node*>* fromText(fwstring data, fwstring::size_type $i = 0, uint $c = 1, uint $l = 1);
-    static fvector<Node*>* fromText(fwstring data, size_t start = 0);
-
-
-    GBI::ObjectArray<Element>* getChildElements();
-    flist<AttrListElement*> *getAttributes() {return attributes;}
-
-    Element* previousSibling();
-    Element* nextSibling();
-
+    void appendText(const char *data, const size_t lenData);
+    
+    void appendFromText(char *data, const size_t lenData);
+    
+    void getGBChildrenByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int depth = -1);
+    void addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int depth = -1);
+    void getGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
+                                       const char *attrValue, const size_t lenAttrValue,
+                                       GB_ARRAY *array, const int depth = -1);
+    void addGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
+                                       const char *attrValue, const size_t lenAttrValue,
+                                       GB_ARRAY *array, const int depth = -1);
+    
+    Element** getChildrenByTagName(const char *ctagName, const size_t clenTagName, size_t &lenArray, const int depth = -1);
+    Element* getFirstChildByTagName(const char *ctagName, const size_t clenTagName, const int depth = -1);
+    void addChildrenByTagName(const char *compTagName, const size_t compLenTagName, Element** &array, size_t &lenArray, const int depth = -1);
+    void getGBAllChildren(GB_ARRAY *array);
+    void addGBAllChildren(GB_ARRAY *array);
+    void getGBChildren(GB_ARRAY *array);
+    void getGBChildElements(GB_ARRAY *array);
+    
     Element* firstChildElement();
     Element* lastChildElement();
-
-    bool MatchSubXPathFilter(fwstring filter);
-    bool MatchXPathFilter(fwstring filter);
-
-
-    flist<AttrListElement*> *attributes;
-    fwstring *tagName;
-    AttrNode *attributeNode;
-
-    static vector<fwstring> singleElements;
-
-    //Children
-    size_t childCount;
+    Element* previousSibling();
+    Element* nextSibling();
+    
+    
     Node *firstChild;
     Node *lastChild;
-
-    CElement *relElmt;
-
+    size_t childCount;
+    
+    //Attributes
+    void addAttribute(const char *nattrName, const size_t nlenAttrName);//Adds a new attribute
+    void addAttribute(const char *nattrName, const size_t nlenAttrName, 
+                      const char *nattrVal, const size_t nlenAttrVal);
+    Attribute* getAttribute(const char *nattrName, const size_t nlenAttrName);//Looks for attribute, and returns its value
+    void setAttribute(const char *nattrName, const size_t nlenAttrName,
+                       const char *nattrVal, const size_t nlenAttrVal);//Looks for attribute, sets its value or add it if attribute is not found
+    bool attributeContains(const char *attrName, size_t lenAttrName, char *value, size_t lenValue);
+    Attribute *firstAttribute;
+    Attribute *lastAttribute;
+    size_t attributeCount;
+    
+    //String output
+    virtual void addStringLen(size_t *len);
+    virtual void addString(char **data);
+    
+    //Text Content
+    virtual void setTextContent(const char *ncontent, const size_t nlen);
+    virtual void addTextContentLen(size_t &len);
+    virtual void addTextContent(char *&data);
+    
+    //Parser
+    static void GBfromText(char *data, const size_t lendata, GB_ARRAY *array);
+    static Node** fromText(char *data, const size_t lendata, size_t *nodeCount);
+    
+    //Gambas object    
+    virtual void NewGBObject();
+    
 #ifndef HELEMENT_H
-
 };
-
 #endif
 
 #endif // ELEMENT_H

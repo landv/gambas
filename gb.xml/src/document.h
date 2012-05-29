@@ -1,45 +1,56 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
 #include "main.h"
-#include "element.h"
-#include <fstream>
 
-class Document;
+class Element;
 struct CDocument;
 
-ostream &operator<<( ostream &out, Document &doc );
-ostream &operator<<( ostream &out, Document *doc );
-
-class Document
+class Document 
 {
 public:
     Document();
-    ~Document();
-    void operator=(const Document& copie);
-
-    virtual void NewGBObject();
-
-    Element* getRoot() { return root; }
-    void setRoot(Element* newRoot) {root = newRoot;}
-
-    GBI::ObjectArray<Element>* getGBElementsByTagName(fwstring tag, int depth = -1) {return root->getGBChildrenByTagName(tag, depth);}
-    vector<Element*>* getElementsByTagName(fwstring tag, int depth = -1) {return root->getChildrenByTagName(tag, depth);}
-    GBI::ObjectArray<Node>* getAll();
-    Element* createElement(fwstring tagName);
-
-    virtual fwstring getContent(bool indent = false);
-    void setContent(fwstring str);
-    void save(string fileName);
-
+    Document(const char *fileName, const size_t lenFileName);
+    virtual ~Document();
+    
+    //Document loading
+    void Open(const char *fileName, const size_t lenFileName);
+    virtual void setContent(char *content, size_t len);
+    
+    //String output
+    virtual void toString(char **output, size_t *len);
+    virtual void toGBString(char **output, size_t *len);
+    void save(const char *fileName);
+    
+    
+    //Node tree
+    void setRoot(Element *newRoot);
+    void getGBElementsByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int depth);
+    void getAllElements(GB_ARRAY *array);
+    
     Element *root;
-    CDocument *relob;
-
-    static bool NoInstanciate;
-    unsigned char ref;
-
-
+    CDocument *GBObject;
 };
-
 
 #endif // DOCUMENT_H

@@ -8,6 +8,11 @@ DEPENDPATH += .
 INCLUDEPATH += . /usr/include/c++/4.6.1
 
 # Input
-HEADERS += CDocument.h CElement.h document.h element.h main.h
-SOURCES += CDocument.cpp CElement.cpp document.cpp main.cpp \
-    element.cpp
+HEADERS += CDocument.h CElement.h \
+    hdocument.h \
+    helement.h \
+    main.h
+SOURCES += CDocument.cpp CElement.cpp \
+    hdocument.cpp \
+    helement.cpp \
+    main.cpp

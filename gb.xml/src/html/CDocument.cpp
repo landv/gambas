@@ -1,58 +1,48 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #include "CDocument.h"
-#include "document.h"
+#include "hdocument.h"
+#include "helement.h"
+#include "../gbi.h"
+
+#define STRINGOPT(_str, _repl, _lenrepl) MISSING(_str) ? _repl : STRING(_str),\
+    MISSING(_str) ? _lenrepl : LENGTH(_str)
 
 /*========== Document */
 
 #undef THIS
-#define THIS (static_cast<CHtmlDocument*>(_object)->doc)
+#define THIS ((HtmlDocument*)(static_cast<CDocument*>(_object)->doc))
 
 BEGIN_METHOD(CDocument_new, GB_STRING path)
 
-THIS = new HtmlDocument;
-static_cast<CHtmlDocument*>(_object)->d.doc = THIS;
+//(static_cast<CDocument*>(_object)->doc) = new HtmlDocument;
 
 if(!MISSING(path))
 {
-    char *content; int len;
-    if(GB.LoadFile(CSTRING(path), LENGTH(path), &content, &len)) return;
-    try
-    {
-        THIS->setContent((content));
-    }
-    catch(HTMLParseException &e)
-    {
-        GB.Error(e.what());
-    }
+    (static_cast<CDocument*>(_object)->doc) = new HtmlDocument(STRING(path), LENGTH(path));
 }
 else
 {
-THIS->root->setTagName("html");
-
-Element *head = new Element;
-head->setTagName("head");
-THIS->root->appendChild(head);
-
-Element *body = new Element;
-body->setTagName("body");
-THIS->root->appendChild(body);
-
-//Meta utf-8
-Element *meta = new Element;
-meta->setTagName("meta");
-meta->setAttribute("charset", "utf-8");
-head->appendChild(meta);
-
-meta = new Element;
-meta->setTagName("meta");
-meta->setAttribute("http-equiv", "Content-Type");
-meta->setAttribute("content","text/html; charset=utf-8");
-head->appendChild(meta);
-
-//Title
-Element *title = new Element;
-title->setTagName("title");
-head->appendChild(title);
-
+    (static_cast<CDocument*>(_object)->doc) = new HtmlDocument;
 }
 
 
@@ -77,37 +67,18 @@ else
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDocument_content)
-
-if(READ_PROPERTY)
-{
-    GBI::Return((THIS->getContent()));
-}
-else
-{
-if(PLENGTH() <= 0) return;
-    try
-    {
-        THIS->setContent(PSTRING());
-    }
-    catch(HTMLParseException &e)
-    {
-        GB.Error(e.what());
-    }
-}
-
-END_PROPERTY
-
 BEGIN_PROPERTY(CDocument_Title)
 
 if(READ_PROPERTY)
 {
-    GBI::Return(THIS->getTitle());
+    char *title; size_t lenTitle;
+    THIS->getGBTitle(title, lenTitle);
+    GB.ReturnString(title);
 }
 else
 {
 if(PLENGTH() <= 0) return;
-    THIS->setTitle(PSTRING());
+THIS->setTitle(PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -116,12 +87,14 @@ BEGIN_PROPERTY(CDocument_favicon)
 
 if(READ_PROPERTY)
 {
-    GBI::Return(((THIS->getFavicon())));
+    char *favicon; size_t lenFavicon;
+    THIS->getGBFavicon(favicon, lenFavicon);
+    GB.ReturnString(favicon);
 }
 else
 {
 if(PLENGTH() <= 0) return;
-THIS->setFavicon(PSTRING());
+THIS->setFavicon(PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -130,19 +103,21 @@ BEGIN_PROPERTY(CDocument_lang)
 
 if(READ_PROPERTY)
 {
-    GBI::Return(THIS->getLang());
+    char *lang; size_t lenLang;
+    THIS->getGBLang(lang, lenLang);
+    GB.ReturnString(lang);
 }
 else
 {
-if(PLENGTH() <= 0) return;
-    THIS->setLang(PSTRING());
+    if(PLENGTH() <= 0) return;
+    THIS->setLang(PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_root)
 
-GBI::Return(THIS->getRoot());
+GBI::Return(THIS->root);
 
 END_PROPERTY
 
@@ -160,69 +135,53 @@ END_PROPERTY
 
 BEGIN_METHOD(CDocument_getElementById, GB_STRING id; GB_INTEGER depth)
 
-GBI::Return(THIS->getElementById(STRING(id), VARGOPT(depth, -1)));
+GBI::Return(THIS->getElementById(STRING(id), LENGTH(id), VARGOPT(depth, -1)));
 
 END_METHOD
-
-BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
-
-if(LENGTH(tagName) <= 0) {GB.ReturnNull(); return;}
-GBI::Return(THIS->createElement(MISSING(tagName) ? "" : STRING(tagName)));
-
-END_METHOD
-
-BEGIN_PROPERTY(CDocument_All)
-
-GB.ReturnObject(THIS->getAll()->array);
-
-END_PROPERTY
 
 BEGIN_METHOD(CDocument_getElementsByClassName, GB_STRING className; GB_INTEGER depth)
 
 if(LENGTH(className) <= 0) return;
-GB.ReturnObject(THIS->getElementsByClassName(STRING(className), VARGOPT(depth, -1))->array);
-
-END_METHOD
-
-BEGIN_METHOD(CDocument_getElementsByTagName, GB_STRING className; GB_INTEGER depth)
-
-GB.ReturnObject(THIS->getGBElementsByTagName(STRING(className), VARGOPT(depth, -1))->array);
+GB_ARRAY array;
+THIS->getElementsByClassName(STRING(className), LENGTH(className), &array, VARGOPT(depth, -1));
+GB.ReturnObject(array);
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_add, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheet(STRING(path), MISSING(media) ? "screen" : STRING(media));
+THIS->AddStyleSheet(STRING(path), LENGTH(media), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfNotIE, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheetIfNotIE(STRING(path), MISSING(media) ? "screen" : STRING(media));
+THIS->AddStyleSheetIfNotIE(STRING(path), LENGTH(media), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfIE, GB_STRING path; GB_STRING cond; GB_STRING media)
 
-THIS->AddStyleSheetIfIE(STRING(path), STRINGOPT(cond, "IE"), STRINGOPT(media, "screen"));
+THIS->AddStyleSheetIfIE(STRING(path), LENGTH(path), 
+                        STRINGOPT(cond, "IE", 2), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_add, GB_STRING path)
 
-THIS->AddScript(STRING(path));
+THIS->AddScript(STRING(path), LENGTH(path));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_addIfNotIE, GB_STRING path)
 
-THIS->AddScriptIfNotIE(STRING(path));
+THIS->AddScriptIfNotIE(STRING(path), LENGTH(path));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_addIfIE, GB_STRING path; GB_STRING cond)
 
-THIS->AddScriptIfIE(STRING(path), STRINGOPT(cond, "IE"));
+THIS->AddScriptIfIE(STRING(path), LENGTH(path), STRINGOPT(cond, "IE", 2));
 
 END_METHOD
 
@@ -243,11 +202,13 @@ BEGIN_PROPERTY(CDocument_base)
 
 if(READ_PROPERTY)
 {
-    GBI::Return(THIS->getBase());
+    char *base; size_t lenBase;
+    THIS->getGBLang(base, lenBase);
+    GB.ReturnString(base);
 }
 else
 {
-    THIS->setBase(PSTRING());
+THIS->setBase(PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -277,7 +238,7 @@ GB_DESC CDocumentScriptsDesc[] =
 
 GB_DESC CDocumentDesc[] =
 {
-    GB_DECLARE("HtmlDocument", sizeof(CHtmlDocument)), GB_INHERITS("XmlDocument"),
+    GB_DECLARE("HtmlDocument", sizeof(CDocument)), GB_INHERITS("XmlDocument"),
 
     GB_METHOD("_new", "", CDocument_new, "[(Path)s]"),
     GB_METHOD("_free", "", CDocument_free, ""),

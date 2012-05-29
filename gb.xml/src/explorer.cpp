@@ -1,4 +1,28 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #include "explorer.h"
+#include "document.h"
+#include "element.h"
+
 
 //#define DEBUG std::cout << pos << " : " <<
 
@@ -25,7 +49,7 @@ void Explorer::Load(Document *doc)
 
 void Explorer::Clear()
 {
-    UNREF(loadedDocument);
+    //UNREF(loadedDocument);
     loadedDocument = 0;
     curNode = 0;
     this->eof = false;
@@ -37,7 +61,7 @@ int Explorer::MoveNext()
     if(eof) return READ_ERR_EOF;
     if(!curNode)//Début du document
     {
-        curNode = loadedDocument->root;
+        curNode = (Node*)(loadedDocument->root);
         return NODE_ELEMENT;
     }
     //Premier enfant
@@ -49,7 +73,7 @@ int Explorer::MoveNext()
     //Si plus d'enfants, frère suivant
     else
     {
-        Node *nextNode = curNode->next();
+        Node *nextNode = curNode->nextNode;
         endElement = false;
         if(nextNode)
         {
@@ -75,7 +99,7 @@ int Explorer::MoveNext()
 
 }
 
-int Explorer::Read()
+unsigned char Explorer::Read()
 {
     do
     {

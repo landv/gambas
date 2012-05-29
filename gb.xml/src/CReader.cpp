@@ -1,5 +1,28 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #include "CReader.h"
 #include "reader.h"
+#include "element.h"
+#include "gbi.h"
 
 #undef THIS
 #define THIS (static_cast<CReader*>(_object)->reader)
@@ -18,7 +41,8 @@ END_METHOD
 
 BEGIN_METHOD(CReader_ReadChar, GB_STRING car)
 
-GB.ReturnInteger(THIS->ReadChar(CSTRING(car)[0]));
+if(!LENGTH(car)) return;
+GB.ReturnInteger(THIS->ReadChar(STRING(car)[0]));
 
 END_METHOD
 
@@ -33,7 +57,8 @@ else
     THIS->keepMemory = VPROP(GB_BOOLEAN);
     if(THIS->keepMemory && THIS->foundNode)
     {
-        THIS->storedElements->push_back(THIS->foundNode);
+        //TODO :
+        //THIS->storedElements->push_back(THIS->foundNode);
         //GB.Ref(THIS->foundNode);
     }
 }
@@ -64,49 +89,44 @@ if(!THIS->foundNode->isElement())
     GB.StopEnum(); return;
 }
 
-flist<AttrListElement*>::element *it = *reinterpret_cast<flist<AttrListElement*>::element**>((GB.GetEnum()));
-if(it == 0)
+Attribute *attr = *reinterpret_cast<Attribute**>((GB.GetEnum()));
+//DEBUG << attr << std::endl;
+if(attr == 0)
 {
-    it = THIS->foundNode->toElement()->attributes->firstElement;
-    *reinterpret_cast<flist<AttrListElement*>::element**>(GB.GetEnum()) = it;
+    //DEBUG << attr << std::endl;
+    attr = THIS->foundNode->toElement()->firstAttribute;
+    *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
 }
 else
 {
-    *reinterpret_cast<flist<AttrListElement*>::element**>(GB.GetEnum()) = it->next;
-    it = it->next;
-}
-//DEBUG << it << endl;
-//DEBUG << *reinterpret_cast<flist<AttrListElement*>::element**>(GB.GetEnum()) << endl;
-if(it == 0)
-{
-    GB.StopEnum();
-    //delete THIS->curAttrNameEnum;
-    THIS->curAttrNameEnum = 0;
+    attr = (Attribute*)attr->nextNode;
+    *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
+}    
 
-    return;
-}
-else
-{
- //DEBUG << it->next << endl;
-}
+if(attr == 0) {GB.StopEnum(); THIS->curAttrEnum = 0; return;}
 
-THIS->curAttrNameEnum = it->value->attrName;
+GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
 
-GBI::Return(*(it->value->attrName));
+THIS->curAttrEnum = attr;
+
 
 END_METHOD
 
 BEGIN_METHOD(CReaderNodeAttr_get, GB_STRING name)
 
 if(!THIS->foundNode->isElement()) return;
-GBI::Return((THIS->foundNode->toElement()->getAttribute(STRING(name))));
+
+Attribute *attr = THIS->foundNode->toElement()->getAttribute(STRING(name), LENGTH(name));
+
+GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
 
 END_METHOD
 
 BEGIN_METHOD(CReaderNodeAttr_put, GB_STRING value; GB_STRING name)
 
 if(!THIS->foundNode->isElement()) return;
-THIS->foundNode->toElement()->setAttribute(STRING(name), STRING(value));
+THIS->foundNode->toElement()->setAttribute(STRING(name), LENGTH(name), 
+                                           STRING(value), LENGTH(value));
 
 END_METHOD
 
@@ -114,7 +134,7 @@ BEGIN_PROPERTY(CReaderNodeAttr_count)
 
 if(READ_PROPERTY && THIS->foundNode->isElement())
 {
-    GB.ReturnInteger(THIS->foundNode->toElement()->attributes->len);
+    GB.ReturnInteger(THIS->foundNode->toElement()->attributeCount);
 }
 
 END_PROPERTY
@@ -137,7 +157,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CReaderNode_type)
 
-if(THIS->curAttrNameEnum)
+if(THIS->curAttrEnum)
 {
     GB.ReturnInteger(READ_ATTRIBUTE);
     return;
@@ -153,7 +173,6 @@ switch(THIS->foundNode->getType())
         GB.ReturnInteger(NODE_TEXT);break;
     case Node::CDATA:
         GB.ReturnInteger(NODE_CDATA);break;
-    case Node::BaseNode:
     default:
         GB.ReturnInteger(0);
 }
@@ -163,36 +182,38 @@ END_PROPERTY
 BEGIN_PROPERTY(CReaderNode_Value)
 
 
-if(THIS->curAttrNameEnum)
+if(THIS->curAttrEnum)
 {
-    GBI::Return(THIS->foundNode->toElement()->getAttribute(*(THIS->curAttrNameEnum)));
+    GB.ReturnNewString(THIS->curAttrEnum->attrValue, THIS->curAttrEnum->lenAttrValue);
     return;
 }
 //DEBUG << THIS->foundNode->textContent().toStdString() << endl;
-GBI::Return(THIS->foundNode->textContent());
+
+char *data; size_t len;
+THIS->foundNode->GBTextContent(data, len);
+GB.ReturnString(data);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Name)
 
-
-if(THIS->curAttrNameEnum)
+if(THIS->curAttrEnum)
 {
-    GBI::Return((*(THIS->curAttrNameEnum)));
+    GB.ReturnNewString(THIS->curAttrEnum->attrName, THIS->curAttrEnum->lenAttrName);
     return;
 }
 
 switch (THIS->foundNode->getType())
 {
     case Node::ElementNode:
-        GBI::Return((*(THIS->foundNode->toElement()->tagName)));break;
+        GB.ReturnNewString(THIS->foundNode->toElement()->tagName, 
+                           THIS->foundNode->toElement()->lenTagName); break;
     case Node::NodeText:
         GB.ReturnNewZeroString("#text");break;
     case Node::Comment:
         GB.ReturnNewZeroString("#comment");break;
     case Node::CDATA:
         GB.ReturnNewZeroString("#cdata");break;
-    case Node::BaseNode:
     default:
         GB.ReturnNull();
 }
@@ -210,8 +231,8 @@ BEGIN_PROPERTY(CReader_storedNodes)
 
 if(!READ_PROPERTY) return;
 
-GBI::ObjectArray<Node> *nodes = new GBI::ObjectArray<Node>("XmlNode", *(THIS->storedElements));
-GB.ReturnObject(nodes->array);
+//GBI::ObjectArray<Node> *nodes = new GBI::ObjectArray<Node>("XmlNode", *(THIS->storedElements));
+//GB.ReturnObject(nodes->array);
 //delete nodes;
 
 END_PROPERTY

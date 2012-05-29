@@ -1,90 +1,92 @@
-#include "textnode.h"
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #include "CTextNode.h"
+#include "textnode.h"
 
-
-/*========== TextNode */
-
-#undef THIS
-#define THIS (static_cast<CTextNode*>(_object)->node)
+#define THISNODE (static_cast<CNode*>(_object)->node)
 
 BEGIN_METHOD(CTextNode_new, GB_STRING content)
 
+
 if(Node::NoInstanciate) return;
-if(!THIS)
+if(GB.Is(_object, GB.FindClass("XmlCommentNode")))//Called as inherited Comment constructor
 {
-    THIS = new TextNode;
-    static_cast<CNode*>(_object)->node = THIS;
+    if(!MISSING(content))
+    {
+        THISNODE = new CommentNode(STRING(content), LENGTH(content));
+    }
+    else
+    {
+        THISNODE = new CommentNode;
+    }
 }
-if(!MISSING(content)) THIS->content = new fwstring(STRING(content));
-//else THIS->content = new fwstring();
+else if(GB.Is(_object, GB.FindClass("XmlCDATANode")))//Called as inherited CDATA constructor
+{
+    if(!MISSING(content))
+    {
+        THISNODE = new CDATANode(STRING(content), LENGTH(content));
+    }
+    else
+    {
+        THISNODE = new CDATANode;
+    }
+}
+else 
+{
+    if(!MISSING(content))
+    {
+        THISNODE = new TextNode(STRING(content), LENGTH(content));
+    }
+    else
+    {
+        THISNODE = new TextNode;
+    }
+}
+        
+        THISNODE->GBObject = static_cast<CNode*>(_object);
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CTextNode_free)
-
-delete THIS;
-
-END_METHOD
 
 GB_DESC CTextNodeDesc[] =
 {
-    GB_DECLARE("XmlTextNode", sizeof(CTextNode)), GB_INHERITS("XmlNode"),
+    GB_DECLARE("XmlTextNode", sizeof(CNode)), GB_INHERITS("XmlNode"),
+    
     GB_METHOD("_new", "", CTextNode_new, "[(Content)s]"),
-    GB_METHOD("_free", "", CTextNode_free, ""),
 
     GB_END_DECLARE
 };
-
-/*========== CommentNode */
-
-#undef THIS
-#define THIS (static_cast<CCommentNode*>(_object)->node)
-
-BEGIN_METHOD_VOID(CCommentNode_new)
-
-if(Node::NoInstanciate) return;
-THIS = new CommentNode;
-static_cast<CTextNode*>(_object)->node = THIS;
-static_cast<CNode*>(_object)->node = THIS;
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CCommentNode_free)
-
-END_METHOD
 
 GB_DESC CCommentNodeDesc[] =
 {
-    GB_DECLARE("XmlCommentNode", sizeof(CCommentNode)),GB_INHERITS("XmlTextNode"),
-    GB_METHOD("_new", "", CCommentNode_new, ""),
-    GB_METHOD("_free", "", CCommentNode_free, ""),
+    GB_DECLARE("XmlCommentNode", sizeof(CNode)), GB_INHERITS("XmlTextNode"),
 
     GB_END_DECLARE
 };
-
-/*========== CDATANode */
-
-#undef THIS
-#define THIS (static_cast<CCDATANode*>(_object)->node)
-
-BEGIN_METHOD_VOID(CCDATANode_new)
-
-THIS = new CDATANode;
-
-static_cast<CTextNode*>(_object)->node = THIS;
-static_cast<CNode*>(_object)->node = THIS;
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CCDATANode_free)
-
-END_METHOD
 
 GB_DESC CCDATANodeDesc[] =
 {
-    GB_DECLARE("XmlCDATANode", sizeof(CCDATANode)),GB_INHERITS("XmlTextNode"),
-    GB_METHOD("_new", "", CCDATANode_new, ""),
-    GB_METHOD("_free", "", CCDATANode_free, ""),
+    GB_DECLARE("XmlCDATANode", sizeof(CNode)), GB_INHERITS("XmlTextNode"),
 
     GB_END_DECLARE
 };
+

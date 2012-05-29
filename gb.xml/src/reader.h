@@ -1,9 +1,28 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #ifndef READER_H
 #define READER_H
 
-#include "document.h"
-#include "element.h"
-#include "textnode.h"
+#include "main.h"
 
 #define NODE_ELEMENT 1
 #define NODE_TEXT 2
@@ -26,6 +45,10 @@
 //Prologue <? ?>
 #define PROLOG_TAG_ENDCHAR 6//Caractère ?
 
+class Document;
+class Node;
+class Element;
+class Attribute;
 
 class Reader
 {
@@ -50,20 +73,23 @@ public :
     bool inXMLProlog;//Si on est dans un prologue xml
     unsigned char specialTagLevel;//Niveau de lecture d'un tag spécial
     int depth;//Profondeur du nœud courant
-    fwstring *attrName;//Nom de l'attribut en cours de lecture
-    fwstring *attrVal;//Valeur de l'attribut en cours de lecture
-    fwstring *content;//Contenu du nœud texte en cours de lecture
+    char *attrName;//Nom de l'attribut en cours de lecture
+    size_t lenAttrName;
+    char *attrVal;//Valeur de l'attribut en cours de lecture
+    size_t lenAttrVal;
+    char *content;//Contenu du nœud texte en cours de lecture
+    size_t lenContent;
     
-    vector<Node*> *storedElements;
+    Node* *storedElements;
+    size_t lenStoredElements;
     
     void InitReader();//Intitialise le lecteur
     int ReadChar(char car);//Lit un caractère
     void ClearReader();//Réinitialise le lecteur
     void DestroyReader();//Détruit le lecteur
     bool flags[FLAGS_COUNT];//Flags de lecture
-
-    fwstring *curAttrNameEnum;
+    
+    Attribute *curAttrEnum;
 };
-
 
 #endif

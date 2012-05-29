@@ -1,102 +1,138 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #include "node.h"
 #include "element.h"
-#include "textnode.h"
-#include "CNode.h"
+#include <string>
 
 bool Node::NoInstanciate = false;
 
-Node::Node()
+Node::Node() : parentDocument(0), parent(0), nextNode(0), previousNode(0), GBObject(0)
 {
-    ownerDoc = 0;
-    parent = 0;
-    ref = 0;
-    nextNode = 0;
-    previousNode = 0;
 }
 
 Node::~Node()
 {
-
+    
 }
+
+CNode* Node::GetGBObject()
+{
+    if(!GBObject)
+    {
+        NewGBObject();
+    }
+    
+    return GBObject;
+}
+
+void Node::DestroyGBObject()
+{
+    if((!parent) && (!parentDocument))
+    {
+        delete this;
+    }
+    else
+    {
+        GBObject = 0;
+    }
+}
+
+void Node::DestroyParent()
+{
+    if(!GBObject)
+    {
+        delete this;
+    }
+    else 
+    {
+        parent = 0;
+        parentDocument = 0;
+    }
+}
+
+/***** Node tree *****/
+Document* Node::GetOwnerDocument()
+{
+    Node *node = this;
+    while(node->parent && !node->parentDocument)
+        node = (Node*)(node->parent);
+    return node->parentDocument;
+}
+
+/***** Node types *****/
 
 bool Node::isElement()
 {
-    return getType() == Node::ElementNode;
+    return getType() == ElementNode;
+}
+
+Element *Node::toElement()
+{
+    if(isElement()) return reinterpret_cast<Element*>(this);
+    return 0;
 }
 
 bool Node::isText()
 {
-    return (getType() == Node::NodeText) ||
-           (getType() == Node::Comment) ||
-           (getType() == Node::CDATA);
+    return getType() == NodeText || getType() == Comment || getType() == CDATA;
 }
 
 bool Node::isComment()
 {
-    return getType() == Node::Comment;
+    return getType() == Comment;
 }
 
-bool Node::isCDATA()
+bool Node::isTextNode()
 {
-    return getType() == Node::CDATA;
-}
-
-Element* Node::toElement()
-{
-    if (this->isElement()) return reinterpret_cast<Element*>(this);
-    return 0;
+    return getType() == NodeText;
 }
 
 TextNode* Node::toTextNode()
 {
-    if (this->isText()) return reinterpret_cast<TextNode*>(this);
+    if(isText()) return reinterpret_cast<TextNode*>(this);
     return 0;
 }
 
-CommentNode* Node::toComment()
+/***** String output *****/
+void Node::toString(char **output, size_t *len)
 {
-    if(this->isComment()) return reinterpret_cast<CommentNode*>(this);
-    return 0;
+    *len = 0; addStringLen(len);
+    *output = (char*)malloc(sizeof(char) * (*len));
+    addString(output);
+    (*output) -= (*len);
 }
 
-Node* Node::previous()
+void Node::toGBString(char *&output, size_t &len)
 {
-    if(!parent) return 0;
-    return previousNode;
-
+    len = 0; addStringLen(&len);
+    output = GB.TempString(0, len);
+    addString(&output);
+    output -= len;
 }
 
-Node* Node::next()
+void Node::GBTextContent(char *&output, size_t &len)
 {
-    if(!parent) return 0;
-    return nextNode;
-}
-
-/*void Node::NewGBObject()
-{
-    NoInstanciate = true;
-    relob = GBI::New<CNode>("XmlNode");
-    relob->node = this;
-    //GB.Ref(relob);
-    NoInstanciate = false;
-}*/
-
-void Node::setParent(Element *newparent)
-{
-    parent = newparent;
-}
-
-Element* Node::getParent()
-{
-    return parent;
-}
-
-Document* Node::ownerDocument()
-{
-    return ownerDoc;
-}
-
-void Node::setOwnerDocument(Document *doc)
-{
-    ownerDoc = doc;
+    len = 0; addTextContentLen(len);
+    output = GB.TempString(0, len);
+    addTextContent(output);
+    output -= len;
 }

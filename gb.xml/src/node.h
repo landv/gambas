@@ -1,66 +1,77 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #ifndef NODE_H
 #define NODE_H
 
+#include <memory.h>
 #include "main.h"
-#include "gbi.h"
-#include "utils.h"
 
 class Element;
 class TextNode;
-class CommentNode;
 class Document;
-class CDATANode;
 
 struct CNode;
+
 class Node
 {
 public:
-
-    enum Type {BaseNode, ElementNode, NodeText, Comment, CDATA, Attribute};
-
+    static bool NoInstanciate;//If true, newly-created Gambas objects won't instanciate a new node
+    
     Node();
     virtual ~Node();
-
-    //void operator=(const Node& copie);
-
-    virtual Type getType() = 0;
+    void DestroyGBObject();//Removes the link between the Gambas object and the node, and deletes the node if there isn't any other link
+    void DestroyParent();//Removes the link between the parent node and the node, and deletes the node if there isn't any other link
+    CNode *GetGBObject();
+    
+    //Node tree
+    Document* GetOwnerDocument();
+    Document *parentDocument;
+    Element *parent;
+    Node *nextNode;
+    Node *previousNode;
+    
+    //Node Types
+    enum Type {ElementNode, NodeText, Comment, CDATA, AttributeNode};
+    virtual Type getType() = 0;//Returns the type of the node
     bool isElement();
     bool isText();
     bool isComment();
-    bool isCDATA();
-
+    bool isTextNode();
     Element* toElement();
     TextNode* toTextNode();
-    CommentNode* toComment();
-
-    void setParent(Element *newparent);
-    Element *getParent();
-
-    Node* previous();
-    Node* next();
-
-    virtual Node* cloneNode() = 0;
-
-    Document* ownerDocument();
-    virtual void setOwnerDocument(Document *doc);
-
-    virtual fwstring toString(int indent = -1) = 0;
-
-    virtual fwstring textContent() = 0;
-    virtual void setTextContent(fwstring content) = 0;
-
-    virtual void NewGBObject() = 0;
-    virtual CNode* GetGBObject() = 0;
-
-    Element *parent;
-    Document *ownerDoc;
-
-    Node *nextNode;
-    Node *previousNode;
-
-    //CNode *relob;
-
-    static bool NoInstanciate;
-    unsigned char ref;
+    
+    //String output
+    virtual void addStringLen(size_t *len) = 0;//Calculates the node's string representation length, and adds it to len (recursive)
+    virtual void addString(char **data) = 0;//Puts the string represenetation into data, and increments it (recursive)
+    void toString(char **output, size_t *len);//Converts the node to its string representation
+    void toGBString(char *&output, size_t &len);
+    
+    virtual void setTextContent(const char *ncontent, const size_t nlen) = 0;//Sets the plain text conent of a node
+    virtual void addTextContentLen(size_t &len) = 0;
+    virtual void addTextContent(char *&data) = 0;
+    void GBTextContent(char *&output, size_t &len);
+    //Gambas object
+    virtual void NewGBObject() = 0;//Instanciates a new Gambas XmlElement object linked to the element
+    CNode *GBObject;
 };
+
 #endif // NODE_H

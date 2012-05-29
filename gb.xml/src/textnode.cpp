@@ -1,138 +1,120 @@
+/***************************************************************************
+
+  (c) 2012 Adrien Prokopowicz <prokopy@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
+
+***************************************************************************/
+
 #include "textnode.h"
-#include "element.h"
 
-#include "CTextNode.h"
+#include "gbi.h"
+#include "CNode.h"
 
-/****************TextNode****************/
+/*************************************** TextNode ***************************************/
 
-TextNode::TextNode()
+TextNode::TextNode() : Node()
 {
-    content = new fwstring();
+    content = 0;
+    lenContent = 0;
 }
+
+TextNode::TextNode(const char *ncontent, const size_t nlen) : Node()
+{
+    lenContent = nlen;
+    content = (char*)malloc(sizeof(char) * nlen);
+    memcpy(content, ncontent, nlen);
+}
+
 TextNode::~TextNode()
 {
-
+    if(content) free(content);
 }
 
 Node::Type TextNode::getType()
 {
-    return Node::NodeText;
+    return NodeText;
 }
+
+
+/***** String output *****/
+
+void TextNode::addStringLen(size_t *len)
+{
+    *len += lenContent;
+}
+
+void TextNode::addString(char **data)
+{
+    memcpy(*data, content, lenContent);
+    *data += lenContent;
+}
+
+/***** Text Content *****/
+
+void TextNode::setTextContent(const char *ncontent, const size_t nlen)
+{
+    if(!ncontent) 
+    {
+        content = (char*)malloc(sizeof(char)*nlen);
+    }
+    else
+    {
+        content = (char*)realloc(content, sizeof(char)*nlen);
+    }
+}
+
+void TextNode::addTextContentLen(size_t &len)
+{
+    len += lenContent;
+}
+
+void TextNode::addTextContent(char *&data)
+{
+    memcpy(data, content, lenContent);
+    data += lenContent;
+}
+
+/***** Gambas Object *****/
 
 void TextNode::NewGBObject()
 {
     NoInstanciate = true;
-    relElmt = GBI::New<CTextNode>("XmlTextNode");
-    relElmt->n.node = this;
-    relElmt->node = this;
-    //GB.Ref(relob);
+    GBObject = GBI::New<CNode>("XmlTextNode");
+    GBObject->node = this;
     NoInstanciate = false;
 }
 
-fwstring TextNode::textContent()
+
+/*************************************** Comment ***************************************/
+
+CommentNode::CommentNode() : TextNode()
 {
-    return *content;
+    
 }
 
-void TextNode::setTextContent(fwstring newcontent)
+
+CommentNode::CommentNode(const char *ncontent, const size_t nlen) : TextNode(ncontent, nlen)
 {
-    DELETE(content);
-    content = new fwstring(newcontent);
+    
 }
 
-fwstring TextNode::toString(int indent)
+CommentNode::~CommentNode()
 {
-    /*fwstring str, s;
-    if(indent > 0){str += fwstring(indent, ' ');};
-
-    for(unsigned int i = 0; i < content->len; i++)
-    {
-        s = content->data[i];
-        if(s == "<")
-        {
-            str += "&lt;";
-        }
-        else if(s == ">")
-        {
-            str += "&gt;";
-        }
-        else if(s == "&")
-        {
-            if((parent->content->substr(i, 6) == "&nbsp;"))
-            {str+= "&nbsp;"; i +=5;} //On ignore les espaces
-            else * /str += "&amp;";
-        }
-        else if(s == "\"")
-        {
-            str += "&quot;";
-        }
-        else if(s == "\n" && indent > 0)
-        {
-            str += fwstring(indent, ' ');
-            str += s;
-        }
-        else
-        {
-            str += s;
-        }
-    }
-
-
-    if(indent >= 0) str += "\n";
-
-    return str;*/
-    return *content;
-}
-
-Node* TextNode::cloneNode()
-{
-    TextNode* node = new TextNode;
-    node->setTextContent(content->toString());
-    return node;
-}
-
-/****************CommentNode****************/
-
-fwstring CommentNode::toString(int indent)
-{
-    fwstring str, s;
-    str = "<!--";
-    for(unsigned int i = 0; i < content->len; i++)
-    {
-        s = content->data[i];
-        /*if((i + 2) < parent->content->len)
-        {
-            if(parent->content->substr(i, 3) == "-->") {str += "--&gt;"; i += 2;}
-            else str += s;
-        }
-        else
-        {*/
-            str += s;
-        //}
-    }
-
-    str += "-->";
-    if(indent) str += "\n";
-
-    return str;
-}
-
-Node* CommentNode::cloneNode()
-{
-    CommentNode* node = new CommentNode;
-    node->setTextContent(content->toString());
-    return node;
-}
-
-void CommentNode::NewGBObject()
-{
-    NoInstanciate = true;
-    relNode = GBI::New<CCommentNode>("XmlCommentNode");
-    relNode->node = this;
-    relNode->n.node = this;
-    relNode->n.n.node = this;
-    //GB.Ref(relob);
-    NoInstanciate = false;;
+    
 }
 
 Node::Type CommentNode::getType()
@@ -140,37 +122,46 @@ Node::Type CommentNode::getType()
     return Node::Comment;
 }
 
-/****************CDATANode****************/
-
-fwstring CDATANode::toString(int indent)
+void CommentNode::NewGBObject()
 {
-    fwstring str, s;
-    str = "<![CDATA[";
-    for(unsigned int i = 0; i < content->len; i++)
-    {
-        s = content->data[i];
-        if((i + 2) < content->len)
-        {
-            /*if(parent->content->substr(i, 3) == "]]>") {str += "]]&gt;"; i += 2;}
-            else */str += s;
-        }
-        else
-        {
-            str += s;
-        }
-    }
-
-    str += "]]>";
-    if(indent) str += "\n";
-
-    return str;
+    NoInstanciate = true;
+    GBObject = GBI::New<CNode>("XmlCommentNode");
+    GBObject->node = this;
+    NoInstanciate = false;
 }
 
-Node* CDATANode::cloneNode()
+void CommentNode::addStringLen(size_t *len)
 {
-    CDATANode* node = new CDATANode;
-    node->setTextContent(*(content));
-    return node;
+    // <!-- + content + -->
+    *len += lenContent + 7;
+}
+
+void CommentNode::addString(char **data)
+{
+    memcpy(*data, "<!--", 4);
+    *data += 4;
+    memcpy(*data, content, lenContent);
+    *data += lenContent;
+    memcpy(*data, "-->", 3);
+    *data += 3;
+}
+
+/*************************************** CDATA ***************************************/
+
+CDATANode::CDATANode() : TextNode()
+{
+    
+}
+
+
+CDATANode::CDATANode(const char *ncontent, const size_t nlen) : TextNode(ncontent, nlen)
+{
+    
+}
+
+CDATANode::~CDATANode()
+{
+    
 }
 
 Node::Type CDATANode::getType()
@@ -181,10 +172,23 @@ Node::Type CDATANode::getType()
 void CDATANode::NewGBObject()
 {
     NoInstanciate = true;
-    relNode = GBI::New<CCDATANode>("XmlCDATANode");
-    relNode->node = this;
-    relNode->n.node = this;
-    relNode->n.n.node = this;
-    //GB.Ref(relob);
+    GBObject = GBI::New<CNode>("XmlCDATANode");
+    GBObject->node = this;
     NoInstanciate = false;
+}
+
+void CDATANode::addStringLen(size_t *len)
+{
+    // <![CDATA[ + content + ]]>
+    *len += lenContent + 12;
+}
+
+void CDATANode::addString(char **data)
+{
+    memcpy(*data, "<![CDATA[", 9);
+    *data += 9;
+    memcpy(*data, content, lenContent);
+    *data += lenContent;
+    memcpy(*data, "]]>", 3);
+    *data += 3;
 }
