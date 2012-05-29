@@ -7,7 +7,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
   image_io, IMAGE_IO, gb.image.io, [src],
-  gdk-pixbuf-2.0 ">= 2.4.13"
+  'gdk-pixbuf-2.0 >= 2.4.13'
   )
 
 AC_OUTPUT( Makefile src/Makefile )

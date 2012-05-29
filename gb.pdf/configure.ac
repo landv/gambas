@@ -7,7 +7,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
   poppler, POPPLER, gb.pdf, [src],
-  poppler ">= 0.5"
+  'poppler >= 0.5'
 )
 
 if test "$have_poppler" = "yes"; then

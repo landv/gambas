@@ -7,7 +7,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
   image_imlib, IMAGE_IMLIB, gb.image.imlib, [src],
-  imlib2 ">= 1.4.0"
+  'imlib2 >= 1.4.0'
   )
 
 AC_OUTPUT( Makefile src/Makefile )

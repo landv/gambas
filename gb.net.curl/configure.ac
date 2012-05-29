@@ -7,7 +7,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
   curl, CURL, gb.net.curl, [src],
-  libcurl ">= 7.13"
+  'libcurl >= 7.13'
   )
 
 AC_OUTPUT( \
