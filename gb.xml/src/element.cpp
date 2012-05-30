@@ -22,12 +22,14 @@
 #include "element.h"
 #include "gbi.h"
 #include <stdlib.h>
-#include <string>
 #include "CNode.h"
 #include "utils.h"
 #include "textnode.h"
 
 /*************************************** Element ***************************************/
+
+const char* Element::singleElements = "br\0hr\0area\0base\0br\0co\0command\0embed\0hr\0img\0input\0keygen\0link\0meta\0param\0source\0track\0wbr\0\0";
+#define LEN_SINGLEELEMENTS 89
 
 Element::Element() : Node()
 {
@@ -412,6 +414,30 @@ void Element::setTagName(const char *ntagName, size_t nlenTagName)
     memcpy(tagName, ntagName, lenTagName);
 }
 
+bool Element::isSingle()
+{
+    const char *start = Element::singleElements;
+    char *end = (char*)memchr(start, 0, LEN_SINGLEELEMENTS);
+    unsigned char lenTag = end - start;
+    
+    while(end < singleElements + LEN_SINGLEELEMENTS)
+    {
+        if(lenTag == lenTagName)
+        {
+            if(!memcmp(tagName, start, lenTagName))
+            {
+                return true;
+            }
+        }
+        
+        start = end + 1;
+        end = (char*)memchr(start, 0, LEN_SINGLEELEMENTS - (singleElements - start));
+        lenTag = end - start;
+    }
+    
+    return false;
+}
+
 /***** Attributes *****/
 
 void Element::addAttribute(const char *nattrName, const size_t nlenAttrName)
@@ -511,23 +537,33 @@ void Element::addStringLen(size_t *len)
 {
     // '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' 
     // + children + '</' + tag + '>"
+    // Or, singlElement :
+    // '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' 
     
-    (*len) += (5 + (lenTagName * 2));
+    if(isSingle())
+    {
+        (*len) += (4 + lenTagName);
+    }
+    else
+    {
+        (*len) += (5 + (lenTagName * 2));
+        for(Node *child = firstChild; child != 0; child = child->nextNode)
+        {
+            child->addStringLen(len);
+        }
+    }
     
     for(Attribute *attr = (Attribute*)(firstAttribute); attr != 0; attr = (Attribute*)(attr->nextNode))
     {
         (*len) += 4 + attr->lenAttrName + attr->lenAttrValue;
     }
     
-    for(Node *child = firstChild; child != 0; child = child->nextNode)
-    {
-        child->addStringLen(len);
-    }
 }
 
 void Element::addString(char **data)
 {
     register char *content = (*data);
+    bool single = isSingle();
 #define ADD(_car) *content = _car; content++;
     
     //Opening tag
@@ -546,20 +582,29 @@ void Element::addString(char **data)
         ADD(CHAR_DOUBLEQUOTE);
     }
     
+    if(single)
+    {
+        ADD(CHAR_SPACE);
+        ADD(CHAR_SLASH);
+    }
     ADD(CHAR_ENDTAG);
     
-    
-    //Content
-    for(register Node *child = firstChild; child != 0; child = child->nextNode)
+    if(!single)
     {
-        child->addString(&content);
-    }
     
-    //Ending Tag    
-    ADD(CHAR_STARTTAG);
-    ADD(CHAR_SLASH);
-    memcpy(content, tagName, lenTagName); content += lenTagName;
-    ADD(CHAR_ENDTAG); 
+        //Content
+        for(register Node *child = firstChild; child != 0; child = child->nextNode)
+        {
+            child->addString(&content);
+        }
+        
+        //Ending Tag    
+        ADD(CHAR_STARTTAG);
+        ADD(CHAR_SLASH);
+        memcpy(content, tagName, lenTagName); content += lenTagName;
+        ADD(CHAR_ENDTAG); 
+    
+    }
     
     *data = content;
     

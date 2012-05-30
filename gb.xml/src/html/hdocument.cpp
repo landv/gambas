@@ -106,7 +106,7 @@ Element* HtmlDocument::getFaviconElement()
 {
     Element *head = getHead();
     Element **elmts; size_t lenElmts;
-    elmts = head->getChildrenByTagName("base", 4, lenElmts);
+    elmts = head->getChildrenByTagName("link", 4, lenElmts);
     Element *elmt;
     
     Attribute *attr;
@@ -116,9 +116,9 @@ Element* HtmlDocument::getFaviconElement()
         attr = elmts[i]->getAttribute("rel", 3);
         if(attr->lenAttrValue == 4)
         {
-            if(memcmp(attr->attrValue, "icon", 4))
+            if(!memcmp(attr->attrValue, "icon", 4))
             {
-                elmt = *elmts;
+                elmt = elmts[i];
                 free(elmts);
                 return elmt;
             }
@@ -154,7 +154,7 @@ void HtmlDocument::getGBFavicon(char *&base, size_t &len)
 
 void HtmlDocument::setFavicon(char *content, size_t len)
 {
-    getBaseElement()->setAttribute("href", 4, content, len);
+    getFaviconElement()->setAttribute("href", 4, content, len);
 }
 
 void HtmlDocument::AddStyleSheet(const char *src, size_t lenSrc, 
@@ -332,7 +332,7 @@ void HtmlDocument::setContent(char *content, size_t len)
     
     //HTML5 ? (<!DOCTYPE html>)
     html5 = (posEnd - posStart == 4);
-    html5 = html5 && memcmp(posStart, "html", 4);
+    html5 = html5 && !memcmp(posStart, "html", 4);
 
     Node** elements = 0;
     size_t elementCount = 0;

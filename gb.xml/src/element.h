@@ -60,6 +60,7 @@ public:
     
     //Tag Name
     void setTagName(const char *ntagName, size_t nlenTagName);//(re)defines the tag name
+    bool isSingle();
     char *tagName;
     size_t lenTagName;
    
@@ -129,6 +130,8 @@ public:
     
     //Gambas object    
     virtual void NewGBObject();
+    
+    static const char* singleElements;
     
 #ifndef HELEMENT_H
 };

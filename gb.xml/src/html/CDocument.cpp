@@ -150,13 +150,13 @@ END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_add, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheet(STRING(path), LENGTH(media), STRINGOPT(media, "screen", 6));
+THIS->AddStyleSheet(STRING(path), LENGTH(path), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfNotIE, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheetIfNotIE(STRING(path), LENGTH(media), STRINGOPT(media, "screen", 6));
+THIS->AddStyleSheetIfNotIE(STRING(path), LENGTH(path), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
@@ -203,7 +203,7 @@ BEGIN_PROPERTY(CDocument_base)
 if(READ_PROPERTY)
 {
     char *base; size_t lenBase;
-    THIS->getGBLang(base, lenBase);
+    THIS->getGBBase(base, lenBase);
     GB.ReturnString(base);
 }
 else
