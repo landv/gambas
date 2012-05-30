@@ -296,12 +296,22 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
     Case "ReportLabel"
 
+      draw.Begin(Paint.Device)
+      Draw.Foreground = &H819AFF&
+      draw.LineStyle = Line.Dash
+      Draw.Rect(X, Y, W, H)
+      draw.End
       Try Paint.Font = Font[hCtrl["Font"]]
       Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       Paint.Fill
 
     Case "ReportTextLabel"
-
+      
+      draw.Begin(Paint.Device)
+      Draw.Foreground = &H819AFF&
+      draw.LineStyle = Line.Dash
+      Draw.Rect(X, Y, W, H)
+      draw.End
       Try Paint.Font = Font[hCtrl["Font"]]
       Paint.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       'Paint.Fill
