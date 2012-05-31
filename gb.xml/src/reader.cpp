@@ -183,7 +183,7 @@ int Reader::ReadChar(char car)
     }
     else if((car == CHAR_SINGLEQUOTE || car == CHAR_DOUBLEQUOTE) && inAttr && inAttrVal)//Fin de valeur d'attribut
     {
-        curNode->toElement()->setAttribute(attrName, lenAttrName,
+        curNode->toElement()->addAttribute(attrName, lenAttrName,
                                            attrVal, lenAttrVal);
         FREE(attrName); lenAttrName = 0;
         FREE(attrVal); lenAttrVal = 0;

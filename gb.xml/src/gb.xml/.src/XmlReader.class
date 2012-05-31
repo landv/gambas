@@ -61,7 +61,7 @@ Public Function Read() As Integer
     $state = Me._ReadChar(sBuf)
   Loop Until ($state <> 0 And Me.ReadFlags[$state]) Or Eof($stream)
   
-  If Eof($stream) Then Return XmlReaderNodeType.EndStream
+  If Eof($stream) And $state = 0 Then Return XmlReaderNodeType.EndStream
   Return $state
   
 End

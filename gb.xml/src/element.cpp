@@ -56,6 +56,7 @@ Element::Element(const char *ntagName, size_t nlenTagName) : Node()
     childCount = 0;
     firstAttribute = 0;
     lastAttribute = 0;
+    attributeCount = 0;
 }
 
 Element::~Element()
