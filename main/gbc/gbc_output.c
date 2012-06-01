@@ -713,8 +713,10 @@ static void output_extern(void)
 		write_type(ext->type);
 		/* n_param */
 		write_short(ext->nparam);
+		/* vararg */
+		write_byte(ext->vararg);
 		/* reserved */
-		write_short(0);
+		write_byte(0);
 		/* desc_param */
 		write_int(0);
 		/* name */

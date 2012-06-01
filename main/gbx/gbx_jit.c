@@ -58,7 +58,11 @@ bool JIT_load()
 	}
 	CATCH
 	{
+		char *env = getenv("GB_JIT");
 		available = FALSE;
+	
+		if (env && *env)
+			ERROR_warning("JIT compiler not available");
 	}
 	END_TRY
 	

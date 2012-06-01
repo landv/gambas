@@ -377,6 +377,7 @@ void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
 	extfunc = ARRAY_add_void(&class->ext_func);
 	TYPE_clear(&extfunc->type);
 	extfunc->nparam = 0;
+	extfunc->vararg = FALSE;
 	extfunc->name = NO_SYMBOL;
 
 	if (!decl) return;
@@ -388,6 +389,7 @@ void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
 	sym->global.value = ARRAY_count(class->ext_func) - 1;
 
 	extfunc->nparam = decl->nparam;
+	extfunc->vararg = decl->vararg;
 
 	if (extfunc->nparam)
 	{

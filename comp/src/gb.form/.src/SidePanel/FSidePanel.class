@@ -122,13 +122,13 @@ Private Sub RefreshPanel()
   Select Case $iOrientation
 
     Case Align.Bottom, Align.Right
-      Y = 0
+      Y = 1
 
     Case Align.Top
-      Y = Me.ClientH - BUTTON_H
+      Y = Me.ClientH - BUTTON_H - 1
 
     Case Align.Left
-      Y = Me.ClientW - BUTTON_H
+      Y = Me.ClientW - BUTTON_H - 1
 
   End Select
 

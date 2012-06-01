@@ -136,7 +136,8 @@ typedef
 		int name;                      // Function name index in class symbol table
 		PARAM *param;                  // Argument list
 		short nparam;                  // Number of arguments
-		short _reserved;
+		unsigned vararg : 1;           // Variable number of arguments
+		unsigned _reserved : 15;
 		int library;                   // Library name index
 		int alias;                     // Real function name index
 		}

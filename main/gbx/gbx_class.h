@@ -141,8 +141,9 @@ typedef
 	struct {
 		TYPE type;
 		short n_param;
+		bool vararg;
 		unsigned loaded : 1;
-		unsigned _reserved : 15;
+		unsigned _reserved : 7;
 		CLASS_PARAM *param;
 		char *alias;
 		char *library;

@@ -71,12 +71,13 @@ typedef
 	struct {
 		int index;
 		TYPE type;
-		int nparam;
+		short nparam;
+		unsigned vararg : 1;
+		unsigned _reserved : 15;
 		TRANS_PARAM param[MAX_PARAM_FUNC];
 		PATTERN *start;
 		int line;
 		uint64_t byref;
-		unsigned vararg : 1;
 		unsigned fast : 1;
 		}
 	PACKED
@@ -86,11 +87,26 @@ typedef
 	struct {
 		int index;
 		TYPE type;
-		int nparam;
+		short nparam;
+		short _reserved;
 		TRANS_PARAM param[MAX_PARAM_FUNC];
 		}
 	PACKED
 	TRANS_EVENT;
+
+typedef
+	struct {
+		int index;
+		TYPE type;
+		short nparam;
+		unsigned vararg : 1;
+		unsigned _reserved : 15;
+		TRANS_PARAM param[MAX_PARAM_FUNC];
+		int library;
+		int alias;
+		}
+	PACKED
+	TRANS_EXTERN;
 
 typedef
 	struct {
@@ -105,18 +121,6 @@ typedef
 		}
 	PACKED
 	TRANS_PROPERTY;
-
-typedef
-	struct {
-		int index;
-		TYPE type;
-		int nparam;
-		TRANS_PARAM param[MAX_PARAM_FUNC];
-		int library;
-		int alias;
-		}
-	PACKED
-	TRANS_EXTERN;
 
 typedef
 	struct {

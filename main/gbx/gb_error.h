@@ -107,7 +107,8 @@ enum {
 	E_SERIAL,
 	E_CHILD,
 	E_USER,
-	E_NEMPTY
+	E_NEMPTY,
+	E_UTYPE
 	};
 
 #ifndef __GB_ERROR_C

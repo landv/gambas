@@ -93,7 +93,7 @@ static ffi_type *_to_ffi_type[17] = {
 	};
 
 
-static void prepare_cif(EXTERN_CIF *info, int nparam, TYPE *sign, TYPE ret)
+static void prepare_cif(EXTERN_CIF *info, int nsign, TYPE *sign, TYPE ret, int nparam, VALUE *value)
 {
 	int i;
 	TYPE t;
@@ -106,10 +106,13 @@ static void prepare_cif(EXTERN_CIF *info, int nparam, TYPE *sign, TYPE ret)
 		
 		for (i = 0; i < nparam; i++)
 		{
-			if (TYPE_is_object(sign[i]))
-				t = T_OBJECT;
+			if (i < nsign)
+				t = sign[i];
 			else
-				t = (int)sign[i];
+				t = value[i].type;
+			
+			if (TYPE_is_object(t))
+				t = T_OBJECT;
 				
 			info->types[i] = _to_ffi_type[t];
 		}
@@ -118,7 +121,7 @@ static void prepare_cif(EXTERN_CIF *info, int nparam, TYPE *sign, TYPE ret)
 	if (TYPE_is_object(ret))
 		t = T_OBJECT;
 	else
-		t = (int)ret;
+		t = ret;
 	
 	info->rtype = _to_ffi_type[t];
 
@@ -207,7 +210,9 @@ static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 	_functions = func;
 	
 	func->call = call;
-	prepare_cif(&func->info, ext->n_param, (TYPE *)ext->param, ext->type);
+	
+	if (!ext->vararg)
+		prepare_cif(&func->info, ext->n_param, (TYPE *)ext->param, ext->type, ext->n_param, NULL);
 	
 	//ext->library = (char *)handle;
 	ext->alias = (char *)func;
@@ -236,6 +241,8 @@ void EXTERN_call(void)
 		
 	CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
 	EXTERN_FUNC *func;
+	EXTERN_CIF cif;
+	bool vararg;
 	int nparam = EXEC.nparam;
 	void *args[nparam];
 	TYPE *sign;
@@ -257,20 +264,29 @@ void EXTERN_call(void)
 	{
 		if (nparam < ext->n_param)
 			THROW(E_NEPARAM);
-		if (nparam > ext->n_param)
+		if (!ext->vararg && nparam > ext->n_param)
 			THROW(E_TMPARAM);
 	}
 	
 	func = get_function(ext);
-	
 	sign = (TYPE *)ext->param;
+	vararg = ext->vararg;
 	value = &SP[-nparam];
 	next_tmp = temp;
+
+	for (i = 0; i < nparam; i++)
+	{
+		if (i < ext->n_param)
+			VALUE_conv(&value[i], sign[i]);
+		else
+			VARIANT_undo(&value[i]);
+	}
+	
+	if (vararg)
+		prepare_cif(&cif, ext->n_param, (TYPE *)ext->param, ext->type, nparam, value);
 	
 	for (i = 0; i < nparam; i++, value++, sign++)
 	{
-		VALUE_conv(value, *sign);
-		
 		if (TYPE_is_object(value->type))
 			t = T_OBJECT;
 		else
@@ -315,7 +331,7 @@ void EXTERN_call(void)
 			void *addr;
 			CLASS *class = OBJECT_class(ob);
 			
-			if (!CLASS_is_native(class) && class == CLASS_Class)
+			if (class == CLASS_Class && !CLASS_is_native((CLASS *)ob))
 				addr = class->stat;
 			else if (CLASS_is_array(class))
 				addr = ((CARRAY *)ob)->data;
@@ -347,10 +363,17 @@ void EXTERN_call(void)
 	__CLASS:
 	__FUNCTION:
 	
-		ERROR_panic("Bad type (%d) for EXTERN_call", value->type);
+		THROW(E_UTYPE);
 	}
 	
-	ffi_call(&func->info.cif, func->call, &rvalue, args);
+	if (vararg)
+	{
+		ffi_call(&cif.cif, func->call, &rvalue, args);
+		FREE(&cif.types, "EXTERN_call");
+	}
+	else
+		ffi_call(&func->info.cif, func->call, &rvalue, args);
+	
 
 	switch (ext->type)
 	{
@@ -707,7 +730,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	
 	cb->exec.nparam = cb->nparam;
 	
-	prepare_cif(&cb->info, cb->nparam, cb->sign, cb->ret);
+	prepare_cif(&cb->info, cb->nparam, cb->sign, cb->ret, cb->nparam, NULL);
 	
 	cb->closure = ffi_closure_alloc(sizeof(ffi_closure), &cb->code);
 	

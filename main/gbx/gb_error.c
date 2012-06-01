@@ -46,7 +46,7 @@ int ERROR_depth = 0;
 
 static int _lock = 0;
 
-static const char *_message[71] =
+static const char *const _message[72] =
 {
 	/*  0 E_UNKNOWN */ "Unknown error",
 	/*  1 E_MEMORY */ "Out of memory",
@@ -118,7 +118,8 @@ static const char *_message[71] =
 	/* 67 E_SERIAL */ "Serialization error",
 	/* 68 E_CHILD */ ".2Cannot run child process: &1&2",
 	/* 69 E_USER */ "Unknown user or group",
-	/* 70 E_NEMPTY */ "Directory is not empty"
+	/* 70 E_NEMPTY */ "Directory is not empty",
+	/* 71 E_UTYPE */ "Unsupported datatype"
 };
 
 #if DEBUG_ERROR
