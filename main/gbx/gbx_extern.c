@@ -332,7 +332,7 @@ void EXTERN_call(void)
 			CLASS *class = OBJECT_class(ob);
 			
 			if (class == CLASS_Class && !CLASS_is_native((CLASS *)ob))
-				addr = class->stat;
+				addr = ((CLASS *)ob)->stat;
 			else if (CLASS_is_array(class))
 				addr = ((CARRAY *)ob)->data;
 			else if (CLASS_is_struct(class))
