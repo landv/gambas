@@ -1260,21 +1260,22 @@ void CLASS_run_inits(CLASS *class)
 
 void CLASS_load_real(CLASS *class)
 {
+	bool load_from_jit = _load_class_from_jit;
 	char *name = class->name;
 	int len = strlen(name);
 
+	_load_class_from_jit = FALSE;
+	
 	if (class->state == CS_NULL)
 	{
 		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
 		{
-			_load_class_from_jit = FALSE;
 			CLASS_create_array_class(class);
 			return;
 		}
 	}
 
-	load_without_inits(class, _load_class_from_jit);
-	_load_class_from_jit = FALSE;
+	load_without_inits(class, load_from_jit);
 	
 	class->state = CS_READY;
 	class->ready = TRUE;
