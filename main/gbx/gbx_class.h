@@ -497,8 +497,7 @@ void CLASS_init_native(void);
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
 int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype);
 
-void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation);
-void CLASS_load_without_init(CLASS *class);
+//void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
 ({ \

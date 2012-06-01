@@ -135,7 +135,7 @@ static void load_exported_class(ARCHIVE *arch)
   }
 
 	for (i = 0; i < ARRAY_count(exported); i++)
-		CLASS_load_without_init(exported[i]);
+		CLASS_load(exported[i]);
 	
 	ARRAY_delete(&exported);
   FREE(&buffer, "load_exported_class");

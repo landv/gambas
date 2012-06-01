@@ -56,7 +56,8 @@
 //#define DEBUG_LOAD 1
 //#define DEBUG_STRUCT 1
 
-static const char *ClassName;
+static bool _load_class_from_jit = FALSE;
+static const char *_class_name;
 static bool _swap;
 
 #define _b "\x1"
@@ -166,9 +167,9 @@ static void conv_type_simple(CLASS *class, int *ptype)
 static void check_version(CLASS *class, int loaded)
 {
 	if (loaded > GAMBAS_PCODE_VERSION)
-		THROW(E_CLASS, ClassName, "Bytecode too recent. Please upgrade Gambas.", "");
+		THROW(E_CLASS, _class_name, "Bytecode too recent. Please upgrade Gambas.", "");
 	if (loaded < GAMBAS_PCODE_VERSION_MIN)
-		THROW(E_CLASS, ClassName, "Bytecode too old. Please recompile the project.", "");
+		THROW(E_CLASS, _class_name, "Bytecode too old. Please recompile the project.", "");
 }
 
 
@@ -217,7 +218,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 		}
 	
 		if (section_size % size_one)
-			THROW(E_CLASS, ClassName, "Bad format in section: ", sec_name);
+			THROW(E_CLASS, _class_name, "Bad format in section: ", sec_name);
 	
 		size = section_size / size_one;
 		if (pcount) *pcount = size;
@@ -347,7 +348,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	if (sclass->state)
 	{
 		if (!sclass->is_struct)
-			THROW(E_CLASS, ClassName, "Class already exists: ", name);
+			THROW(E_CLASS, _class_name, "Class already exists: ", name);
 		
 		// Check compatibility with previous declaration
 		
@@ -471,7 +472,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	
 __MISMATCH:
 
-	THROW(E_CLASS, ClassName, "Structure is declared elsewhere differently: ", sclass->name);
+	THROW(E_CLASS, _class_name, "Structure is declared elsewhere differently: ", sclass->name);
 }
 
 
@@ -531,7 +532,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 			close(fd);
 		}
 		
-		THROW(E_CLASS, ClassName, "Bad header", "");
+		THROW(E_CLASS, _class_name, "Bad header", "");
 	}
 	
 	check_version(class, header->version);
@@ -754,7 +755,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	if (section != &class->data[len_data])
 	{
 		/*printf("%d\n", &class->load[BUFFER_length(class->load)] - section);*/
-		THROW(E_CLASS, ClassName, "Unknown section", "");
+		THROW(E_CLASS, _class_name, "Unknown section", "");
 	}
 
 
@@ -902,7 +903,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 }
 
 
-void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
+static void load_without_inits(CLASS *class, bool in_jit_compilation)
 {
 	int i;
 	FUNCTION *func;
@@ -941,10 +942,10 @@ void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 		NSection = 0;
 	#endif
 
-	ClassName = class->name;
+	_class_name = class->name;
 
 	if (class->in_load)
-		THROW(E_CLASS, ClassName, "Circular reference", "");
+		THROW(E_CLASS, _class_name, "Circular reference", "");
 
 	if (!class->component)
 	{
@@ -992,7 +993,7 @@ void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 		END_TRY
 
 		/*if (BUFFER_load_file(&class->data, FILE_get(name)))
-			THROW(E_CLASS, ClassName, "Unable to load class file", "");*/
+			THROW(E_CLASS, _class_name, "Unable to load class file", "");*/
 	}
 
 	COMPONENT_current = save;
@@ -1064,7 +1065,7 @@ void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 			case T_FLOAT: case T_SINGLE:
 				cc->_string.addr += (intptr_t)class->string;
 				if (NUMBER_from_string(NB_READ_FLOAT, cc->_string.addr, strlen(cc->_string.addr), &value))
-					THROW(E_CLASS, ClassName, "Bad constant", "");
+					THROW(E_CLASS, _class_name, "Bad constant", "");
 				if (cc->type == T_SINGLE)
 					cc->_single.value = (float)value._float.value;
 				else
@@ -1086,7 +1087,7 @@ void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 		kind = *CLASS_DESC_get_type_name(desc);
 
 		if (!desc->gambas.val1 && index(CD_CALL_SOMETHING_LIST, kind) != NULL)
-			fprintf(stderr, "CLASS_load_without_init: '%s.%s' gambas.val1 == 0\n", class->name, desc->gambas.name);
+			fprintf(stderr, "load_without_inits: '%s.%s' gambas.val1 == 0\n", class->name, desc->gambas.name);
 		
 		switch (kind)
 		{
@@ -1171,7 +1172,7 @@ void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 
 			default:
 
-				THROW(E_CLASS, ClassName, "Bad description", "");
+				THROW(E_CLASS, _class_name, "Bad description", "");
 		}
 	}
 
@@ -1221,8 +1222,10 @@ void CLASS_load_without_inits(CLASS *class, bool in_jit_compilation)
 	//printf("%s: %d  TOTAL = %d\n", class->name, MEMORY_size - alloc, total);
 }
 
-void CLASS_load_without_init(CLASS *class){
-	CLASS_load_without_inits(class, FALSE);
+#if 0
+void CLASS_load_without_init(CLASS *class)
+{
+	load_without_inits(class, FALSE);
 
 	/* Call the static initializer */
 
@@ -1235,9 +1238,10 @@ void CLASS_load_without_init(CLASS *class){
 
 	EXEC_function();
 }
+#endif
 
-
-void CLASS_run_inits(CLASS *class){
+void CLASS_run_inits(CLASS *class)
+{
 	/* Call the static initializer */
 
 	EXEC.native = FALSE;
@@ -1263,33 +1267,25 @@ void CLASS_load_real(CLASS *class)
 	{
 		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
 		{
+			_load_class_from_jit = FALSE;
 			CLASS_create_array_class(class);
 			return;
 		}
 	}
 
-	CLASS_load_without_init(class);
+	load_without_inits(class, _load_class_from_jit);
+	_load_class_from_jit = FALSE;
+	
 	class->state = CS_READY;
 	class->ready = TRUE;
+	
+	CLASS_run_inits(class);
 
-	EXEC_public(class, NULL, "_init", 0);
+	//EXEC_public(class, NULL, "_init", 0);
 }
 
 void CLASS_load_from_jit(CLASS *class)
 {
-	char *name = class->name;
-	int len = strlen(name);
-
-	if (class->state == CS_NULL)
-	{
-		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
-		{
-			CLASS_create_array_class(class);
-			return;
-		}
-	}
-
-	CLASS_load_without_inits(class, TRUE);
-	class->state = CS_READY;
-	class->ready = TRUE;
+	_load_class_from_jit = TRUE;
+	CLASS_load_real(class);
 }
