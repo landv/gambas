@@ -139,7 +139,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 			look++;
 		}
 
-		if (PATTERN_is(*look, RS_3PTS))
+		if (PATTERN_is(*look, RS_3PTS) && !(flag & HF_NO_3PTS))
 		{
 			look++;
 			if (!PATTERN_is(*look, RS_RBRA))
@@ -376,7 +376,7 @@ static bool header_extern(TRANS_EXTERN *trans)
 	CLEAR(trans);
 
 	JOB->current = look;
-	analyze_function_desc((TRANS_FUNC *)trans, HF_NO_3PTS);
+	analyze_function_desc((TRANS_FUNC *)trans, HF_NO_BYREF);
 
 	if (PATTERN_is(*JOB->current, RS_AS))
 	{
