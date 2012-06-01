@@ -1,19 +1,29 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,72,56)
-  Arrangement = Arrange.Horizontal
-  { SidePanel1 SidePanel
-    MoveScaled(3,3,39,44)
-    Arrangement = Arrange.Fill
-    Orientation = Align.Left
-    Hidden = True
-    { FileChooser1 FileChooser
-      MoveScaled(0,0,36,36)
+  MoveScaled(0,0,91,56)
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(8,1,39,5)
+    { Button1 Button
+      MoveScaled(0,0,16,4)
+      Text = ("Transparent")
     }
   }
-  { FileView1 FileView
-    MoveScaled(46,6,22,43)
+  { Panel1 HBox
+    MoveScaled(7,9,80,45)
     Expand = True
+    { FileChooser2 FileChooser
+      MoveScaled(2,1,36,36)
+      Expand = True
+    }
+    { SidePanel1 SidePanel
+      MoveScaled(41,0,39,44)
+      Arrangement = Arrange.Fill
+      Orientation = Align.Right
+      { FileChooser1 FileChooser
+        MoveScaled(0,0,36,36)
+      }
+    }
   }
 }

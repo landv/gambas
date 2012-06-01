@@ -850,12 +850,13 @@
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
-      MoveScaled(2,3,30,66)
+      MoveScaled(2,3,29,66)
       ToolTip = ("Project")
       Arrangement = Arrange.Vertical
       Action = "project"
       Orientation = Align.Left
       Separator = True
+      Transparent = True
       { panSearchProject HBox
         MoveScaled(0,0,29,3)
         Background = Color.TextBackground
@@ -936,6 +937,7 @@
         Arrangement = Arrange.Fill
         Orientation = Align.Bottom
         Separator = True
+        Transparent = True
         Hidden = True
       }
     }
@@ -946,6 +948,7 @@
       Action = "property"
       Orientation = Align.Right
       Separator = True
+      Transparent = True
       { panTabProperty Panel
         MoveScaled(1,5,28,42)
         Expand = True
@@ -971,6 +974,7 @@
         Action = "control"
         Orientation = Align.Bottom
         Separator = True
+        Transparent = True
       }
     }
   }

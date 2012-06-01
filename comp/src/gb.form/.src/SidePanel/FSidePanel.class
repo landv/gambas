@@ -21,6 +21,7 @@ Private $bSeparator As Boolean
 Private $bCanMove As Boolean
 Private $bInside As Boolean
 Private $bDblClick As Boolean
+Private $bTransparent As Boolean
 
 Private BUTTON_H As Integer = Desktop.Scale
 Private BUTTON_W As Integer = Desktop.Scale * 4
@@ -138,14 +139,16 @@ Private Sub RefreshPanel()
 
       panMove.Move(0, Y, Me.ClientW, BUTTON_H)
 
-      If W2 Then
-        btnSide.Move(0, 0, W, BUTTON_H)
-        btnSide2.Move(Me.ClientW - W2, 0, W2, BUTTON_H)
-        btnSide2.Show
-      Else
-        btnSide.Move(0, 0, W, BUTTON_H)
-        'btnSide.Move((D - W) / 2, Y, W, BUTTON_H)
-        btnSide2.Hide
+      If $bVisible Then
+        If W2 Then
+          btnSide.Move(0, 0, W, BUTTON_H)
+          btnSide2.Move(Me.ClientW - W2, 0, W2, BUTTON_H)
+          btnSide2.Show
+        Else
+          btnSide.Move(0, 0, W, BUTTON_H)
+          'btnSide.Move((D - W) / 2, Y, W, BUTTON_H)
+          btnSide2.Hide
+        Endif
       Endif
 
       ' W2 = ME.ClientW - W - W2
@@ -160,14 +163,16 @@ Private Sub RefreshPanel()
 
       panMove.Move(Y, 0, BUTTON_H, Me.ClientH)
 
-      If W2 Then
-        btnSide.Move(0, 0, BUTTON_H, W)
-        btnSide2.Move(0, Me.ClientH - W2, BUTTON_H, W2)
-        btnSide2.Show
-      Else
-        btnSide.Move(0, 0, BUTTON_H, W)
-        'btnSide.Move(Y, (D - W) / 2, BUTTON_H, W)
-        btnSide2.Hide
+      If $bVisible Then
+        If W2 Then
+          btnSide.Move(0, 0, BUTTON_H, W)
+          btnSide2.Move(0, Me.ClientH - W2, BUTTON_H, W2)
+          btnSide2.Show
+        Else
+          btnSide.Move(0, 0, BUTTON_H, W)
+          'btnSide.Move(Y, (D - W) / 2, BUTTON_H, W)
+          btnSide2.Hide
+        Endif
       Endif
 
       ' W2 = ME.ClientH - W - W2
@@ -180,25 +185,25 @@ Private Sub RefreshPanel()
 
   End Select
 
-  panSide.Move(0, 0, Me.ClientW, Me.ClientH)
+  If $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH)
   
   Select Case $iOrientation
 
     Case Align.Bottom
       sepSide.Move(0, 0, Me.ClientW, 1)
-      'panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
+      If Not $bTransparent Then panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Top
       sepSide.Move(0, Me.ClientH - 1, Me.ClientW, 1)
-      'panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
+      If Not $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Right
       sepSide.Move(0, 0, 1, Me.ClientH)
-      'panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+      If Not $bTransparent Then panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
     Case Align.Left
       sepSide.Move(Me.ClientW - 1, 0, 1, Me.ClientH)
-      'panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+      If Not $bTransparent Then panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
   End Select
   
@@ -291,8 +296,12 @@ End
 
 Private Sub MoveShowButton()
 
+  Dim D As Integer
+
   If $bVisible Then Return
   If Not $hShowButtonLeft Then Return
+
+  D = If($bTransparent, BUTTON_H, 0)
 
   With Me.Parent
   
@@ -301,14 +310,14 @@ Private Sub MoveShowButton()
         $hShowButtonLeft.Move(.X, .Y, BUTTON_W, BUTTON_H)
         $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y, BUTTON_W, BUTTON_H)
       Case Align.Bottom
-        $hShowButtonLeft.Move(.X, .Y - BUTTON_H, BUTTON_W, BUTTON_H)
-        $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y - BUTTON_H, BUTTON_W, BUTTON_H)
+        $hShowButtonLeft.Move(.X, .Y - D, BUTTON_W, BUTTON_H)
+        $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y - D, BUTTON_W, BUTTON_H)
       Case Align.Left
         $hShowButtonLeft.Move(.X, .Y, BUTTON_H, BUTTON_W)
         $hShowButtonRight.Move(.X, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
       Case Align.Right
-        $hShowButtonLeft.Move(.X - BUTTON_H, .Y, BUTTON_H, BUTTON_W)
-        $hShowButtonRight.Move(.X - BUTTON_H, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        $hShowButtonLeft.Move(.X - D, .Y, BUTTON_H, BUTTON_W)
+        $hShowButtonRight.Move(.X - D, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
     End Select
     
   End With  
@@ -324,7 +333,6 @@ Private Sub RefreshAll()
   If $bVisible Then
     
     panSide.Show 'Enabled = TRUE
-    If $W And If $H Then Me.Parent.Move($X, $Y, $W, $H)
     
     If $hShowButtonLeft Then
       $hShowButtonLeft.Hide
@@ -335,7 +343,12 @@ Private Sub RefreshAll()
     
     'DEBUG ME.Parent.W;; ME.CLientW
     panSide.Hide 'Enabled = FALSE
-    D = 1
+    
+    If $bTransparent Then
+      D = 1
+    Else
+      D = BUTTON_H
+    Endif
     
     If Not $hShowButtonLeft Then
       
@@ -382,6 +395,9 @@ Private Sub TogglePanel()
 
   If $bVisible Then
 
+    btnSide.Hide
+    btnSide2.Hide
+    
     GetParent()._Hide
     
     With Me.Parent
@@ -399,7 +415,17 @@ Private Sub TogglePanel()
 
   Else
 
+    btnSide.Show
+    btnSide2.Show
+    
     $bVisible = True
+    
+    If $W And If $H Then 
+      Me.Parent.Move($X, $Y, $W, $H)
+      $W = 0
+      $H = 0
+    Endif
+    
     RefreshAll
     
     Action.Raise(Me.Parent)    
@@ -474,7 +500,7 @@ Private Function GetDim(H As Integer) As Integer
   iMin = Min($iMax, Max(BUTTON_H, Desktop.Scale * 8))
 
   If H < BUTTON_H Then
-    H = 1
+    H = If($bTransparent, 1, BUTTON_H)
   Else If H < iMin Then
     H = iMin
   Endif
@@ -509,7 +535,7 @@ Public Sub panMove_MouseMove()
       H = GetDim(Min(iMax, $MX - Mouse.ScreenX))
   End Select
   
-  If H <= 1 Then
+  If H <= BUTTON_H Then
     If $bVisible Then 
       TogglePanel
       $bDblClick = True
@@ -668,7 +694,7 @@ Public Sub btnSide_Draw()
 
   Dim S As Integer
   
-  If Me.Parent.Design Or If Last.Hovered Then 
+  If Me.Parent.Design Or If Not $bTransparent Or If Last.Hovered Then 
     
     DrawArrow(Last, $iOrientation)
   
@@ -741,13 +767,9 @@ Public Sub panMove_Leave()
 
 End
 
-Public Sub ShowButton_Draw()
+Private Sub InvertOrientation(iOrient As Integer) As Integer
   
-  Dim iOrient As Integer
-  
-  If Not Last.Hovered Then Return
-  
-  Select Case $iOrientation
+  Select Case iOrient
     Case Align.Left
       iOrient = Align.Right
     Case Align.Right
@@ -758,7 +780,18 @@ Public Sub ShowButton_Draw()
       iOrient = Align.Top
   End Select
   
-  DrawArrow(Last, iOrient)
+  Return iOrient
+  
+End
+
+
+Public Sub ShowButton_Draw()
+  
+  Dim iOrient As Integer
+  
+  If $bTransparent And If Not Last.Hovered Then Return
+  
+  DrawArrow(Last, InvertOrientation($iOrientation))
   
 End
 
@@ -779,7 +812,6 @@ Private Sub DrawArrow(hCtrl As Control, iOrient As Integer)
 
   Dim X, Y, W, H As Float
   
-  Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 128))
   
   X = hCtrl.W / 2
   Y = hCtrl.H / 2
@@ -802,30 +834,32 @@ Private Sub DrawArrow(hCtrl As Control, iOrient As Integer)
       Paint.MoveTo(X + W, Y + H / 2)
       Paint.LineTo(X, Y)
       Paint.LineTo(X, Y + H)
-      Paint.Fill
     
     Case Align.Left
       
       Paint.MoveTo(X, Y + H / 2)
       Paint.LineTo(X + W, Y)
       Paint.LineTo(X + W, Y + H)
-      Paint.Fill
     
     Case Align.Bottom
       
       Paint.MoveTo(X + W / 2, Y + H)
       Paint.LineTo(X, Y)
       Paint.LineTo(X + W, Y)
-      Paint.Fill
     
     Case Align.Top
       
       Paint.MoveTo(X + W / 2, Y)
       Paint.LineTo(X, Y + H)
       Paint.LineTo(X + W, Y + H)
-      Paint.Fill
     
   End Select
+  
+  'Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextBackground, 0))
+  'Paint.LineWidth = 3
+  'Paint.Stroke(True)
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 64))
+  Paint.Fill
   
 End
 
@@ -834,3 +868,17 @@ Public Sub ShowButton_MouseDown()
   TogglePanel
   
 End
+
+Public Sub IsTransparent() As Boolean
+  
+  Return $bTransparent
+  
+End
+
+Public Sub SetTransparent(bTransparent As Boolean)
+  
+  $bTransparent = bTransparent
+  RefreshAll
+  
+End
+

@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Action,Orientation{Align.Top;Bottom;Left;Right}=Top,Resizable=True,Border,Separator,Hidden"
+Public Const _Properties As String = "*,Action,Orientation{Align.Top;Bottom;Left;Right}=Top,Resizable=True,Border,Separator,Transparent,Hidden"
 Public Const _Similar As String = "Panel"
 
 Event Show
@@ -21,6 +21,7 @@ Property Value As Boolean
 Property Action As String
 Property Design As Boolean
 Property Settings As Variant[]
+Property Transparent As Boolean
 
 Private $hForm As FSidePanel
 Private $bAnimate As Boolean
@@ -189,5 +190,17 @@ End
 Private Sub Separator_Write(Value As Boolean)
 
   $hForm.SetSeparator(Value)
+
+End
+
+Private Function Transparent_Read() As Boolean
+
+  Return $hForm.IsTransparent()
+
+End
+
+Private Sub Transparent_Write(Value As Boolean)
+
+  $hForm.SetTransparent(Value)
 
 End
