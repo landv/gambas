@@ -1413,6 +1413,10 @@ _GetPreferredWidth
 m
 i
 (iCol)i
+_GetPreferredHeight
+m
+i
+(iRow)i
 _RaiseRowResize
 m
 
@@ -3205,14 +3209,18 @@ _GetRowHeight
 m
 i
 (iRow)i
-_SetRowHeight
+_ResetRowHeight
 m
 
-(iRow)i(H)i
+(iRow)i
 Remove
 m
 
 (Start)i[(Length)i]
+_SetRowHeight
+m
+
+(iRow)i(H)i
 _GetHeight
 m
 i

@@ -895,6 +895,8 @@ Public Sub ScrollArea_DblClick()
     Raise Activate
   Else If $iColResize >= 0 Then
     $hColumns[$iColResize].Width = -1
+  Else If $iRowResize >= 0 Then
+    $hRows[$iRowResize].Height = -1
   Endif
   
 End
@@ -1588,7 +1590,8 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   
   PW = Me.Font.TextWidth($hColumns[iCol].Text) + 8 + If($bSorted, 16, 0)
   
-  For I = 0 To Min(999, $hRows.Max)
+  I = Max(0, $hRows._FindRowFromPos($hView.ScrollY))
+  For I = I To Min(1000 + I, $hRows.Max)
     
     hData = _GetCellData(I, iCol)
     
@@ -1627,6 +1630,79 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Next
   
   Return PW
+  
+End
+
+Public Sub _GetPreferredHeight(iRow As Integer) As Integer
+  
+  Dim PH, H, I, J, WC As Integer
+  Dim hSpan As Short[]
+  Dim hData As _GridView_Data
+  Dim hFont As Font
+  Dim iRowSpan, iColSpan As Integer
+  Dim iCol As Integer
+  Dim D As Integer
+  
+  PH = $hRows.Height
+  
+  For I = 0 To $hColumns.Max
+    
+    iCol = I
+    
+    If HasSpan(iRow, iCol) Then
+      hSpan = _GetSpan(iRow, iCol)
+      iRowSpan = hSpan[0]
+      iColSpan = hSpan[1]
+      If iRowSpan < 0 Then iRow += iRowSpan
+      If iColSpan < 0 Then iCol += iColSpan
+      hData = _GetCellData(iRow, iCol)
+      hSpan = _GetSpan(iRow, iCol)
+      iRowSpan = hSpan[0]
+      iColSpan = hSpan[1]
+      D = iRowSpan + 1
+    Else
+      D = 1
+      iRowSpan = 0
+      iColSpan = 0
+      hData = _GetCellData(iRow, iCol)
+    Endif
+
+    WC = $hColumns[iCol].W
+    For J = 1 To iColSpan
+      WC += $hColumns[iCol + J].Width
+    Next
+    
+    With hData
+      
+      H = Max(4, .Padding * 2)
+      hFont = .Font
+      If Not hFont Then hFont = Me.Font
+      
+      If .RichText Then
+        If .WordWrap Then
+          H += hFont.RichTextHeight(.RichText, WC - .Padding * 2)
+        Else
+          H += hFont.RichTextHeight(.RichText)
+        Endif
+      Else If .Text Then
+        If .WordWrap Then
+          H += hFont.RichTextHeight(Html(.Text), WC - .Padding * 2)
+        Else
+          H += hFont.TextHeight(.Text)
+        Endif
+      Endif
+      
+      If .Picture Then
+        H = Max(.Picture.H + .Padding * 2, H)
+      Endif
+      
+      PH = Max(PH, (H + D - 1) \ D)
+      
+    End With
+    
+  Next
+  
+  Return PH
   
 End
 

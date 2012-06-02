@@ -129,6 +129,19 @@ Private Sub AddSorted(iRow As Integer)
   
 End
 
+Public Sub _ResetRowHeight(iRow As Integer)
+  
+  Dim hView As GridView = GetView()
+  
+  If $cHeight.Exist(iRow) Then
+    $cHeight.Remove(iRow)
+    $aHeight.Remove($aHeight.Find(iRow))
+    hView._ResizeContents()
+    hView._RaiseRowResize(iRow)
+  Endif
+  
+End
+
 
 Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   
@@ -143,14 +156,14 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
     $aHeight = New Integer[]
   Endif
   
-  If H = DH Or If H < 0 Then
-    If $cHeight.Exist(iRow) Then
-      $cHeight.Remove(iRow)
-      $aHeight.Remove($aHeight.Find(iRow))
-      hView._ResizeContents()
-      hView._RaiseRowResize(iRow)
-    Endif
-  Else If H >= 0 Then
+  If H = DH Then
+    _ResetRowHeight(iRow)
+    Return
+  Endif
+  
+  If H < 0 Then H = hView._GetPreferredHeight(iRow)
+    
+  If H >= 0 Then
     OH = -1
     Try OH = $cHeight[iRow]
     If H <> OH Then
@@ -160,7 +173,6 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
       hView._RaiseRowResize(iRow)
     Endif
   Endif
-  
   
 End
 

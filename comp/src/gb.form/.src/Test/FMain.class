@@ -39,6 +39,9 @@ Public Sub _new()
   
   gvwView.Rows[gvwView.Rows.Count - 1].Text = "Création"
   
+  gvwView[10, 0].RichText = "<b>G</b>ambas almost means BASic!<br>La nuit tous les chats sont bleux!"
+  gvwView[10, 0].WordWrap = True
+  
 End
 
 Private Sub GetCellKey(iRow As Integer, iCol As Integer) As Long
