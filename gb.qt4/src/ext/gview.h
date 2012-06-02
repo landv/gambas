@@ -101,6 +101,7 @@ private:
 	bool _checkCache;
 	bool _border;
 	bool _ensureCursorVisibleLater;
+	int _firstLineNumber;
 	
 	int lastx;
 	bool left;
@@ -194,7 +195,8 @@ public:
 		ShowCursorPosition = 10,
 		ChangeBackgroundAtLimit = 11,
 		HideMargin = 12,
-		BlinkCursor = 13
+		BlinkCursor = 13,
+		NoFolding = 14
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);
@@ -244,6 +246,7 @@ public:
 	void setFlag(int f, bool v);
 	bool hasBorder() const { return _border; }
 	void setBorder(bool b);
+	void setLineOffset(int l);
 
 	int rowAt(int y) const { return y / _cellh; }
 	int getLineHeight() const { return _cellh; }
@@ -258,6 +261,7 @@ public:
 	void updateLine(int y);
 	void setNumRows(int);
 	void leaveCurrentLine();
+	int lineOffset() const { return _firstLineNumber; }
 	
 	virtual void resizeContents(int w, int h);
 	

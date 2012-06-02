@@ -39,17 +39,24 @@ static FILE *_file;
 static int _last_line = 0;
 static bool _new_line = TRUE;
 static int _count = 0;
+//static long _ticks_per_sec;
 
 static uint64_t get_time(void)
 {
 	static uint64_t last = 0;
 	
 	struct timeval time;
+	//struct tms time;
 	uint64_t t;
 
 	gettimeofday(&time, NULL);
 	t = (uint64_t)time.tv_sec * 1000000 + (uint64_t)time.tv_usec - last;
+
+	//times(&time);	
+	//t = (uint64_t)(time.tms_utime + time.tms_stime) * 1000000 / _ticks_per_sec - last;
+	
 	last += t;
+	
 	return t;
 }
 
@@ -70,6 +77,9 @@ void PROFILE_init(void)
 		fprintf(stderr, "gb.profile: cannot create profile file '%s': %s\n", path, strerror(errno));
 		abort();
 	}
+	
+	//_ticks_per_sec = sysconf(_SC_CLK_TCK);
+	//fprintf(stderr, "_ticks_per_sec = %ld\n", _ticks_per_sec);
 	
 	_init = TRUE;
 	get_time();

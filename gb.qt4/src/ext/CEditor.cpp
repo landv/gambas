@@ -1138,6 +1138,15 @@ BEGIN_METHOD(Editor_Scroll, GB_INTEGER x; GB_INTEGER y)
 
 END_METHOD
 
+BEGIN_PROPERTY(Editor_LineOffset)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->lineOffset());
+	else
+		WIDGET->setLineOffset(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 #if 0
 BEGIN_PROPERTY(Editor_ShowLimits)
 
@@ -1350,6 +1359,7 @@ GB_DESC CEditorDesc[] =
 	GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
 	//GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
 	GB_CONSTANT("HideMargin", "i", GEditor::HideMargin),
+	GB_CONSTANT("NoFolding", "i", GEditor::NoFolding),
 	//GB_CONSTANT("BlinkCursor", "i", GEditor::BlinkCursor),
 
 	GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
@@ -1419,6 +1429,7 @@ GB_DESC CEditorDesc[] =
 	//GB_METHOD("ShowWord", NULL, CEDITOR_show_word, "[(Line)i(Column)i(Length)i]"),
 
 	GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
+	GB_PROPERTY("LineOffset", "i", Editor_LineOffset),
 	GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),
 
 	GB_PROPERTY("ReadOnly", "b", CEDITOR_read_only),

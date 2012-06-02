@@ -477,6 +477,7 @@ Private Sub LoadCurrentSourceCode() As String
   Endif
   
   $iFirstLine = $hCurrent.StartLine
+  edtSource.LineOffset = $iFirstLine
   edtSource.Text = $hCurrent.Code
   
   If $hCurrent.MaxTime = 0 Then
@@ -529,7 +530,7 @@ Public Sub ReadOneConfig()
   Project.SetSmallFont(tabInfo)
   edtSource.ReadConfig
   edtSource.Flags[Editor.HideMargin] = Not edtSource.Flags[Editor.ShowLineNumbers]
-  'edtSource.Flags[Editor.ShowLineNumbers] = True
+  edtSource.Flags[Editor.NoFolding] = True
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetEditorFont(gvwSource)
   gvwSource.Width = gvwSource.Font.TextWidth("999999") * 4

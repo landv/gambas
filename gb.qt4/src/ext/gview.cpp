@@ -167,6 +167,7 @@ GEditor::GEditor(QWidget *parent)
 	_cellw = _cellh = 0;
 	_oddLine = false;
 	_dblclick = false;
+	_firstLineNumber = 0;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -1079,9 +1080,9 @@ void GEditor::paintCell(QPainter &p, int row, int)
 
 		//x1 = 0;
 
-		if (getFlag(ShowLineNumbers))
+		if (getFlag(ShowLineNumbers) && (!drawSep || ysep == 0))
 		{
-			int n = realRow + 1;
+			int n = realRow + 1 + _firstLineNumber;
 			if ((n % 10) == 0 || (l->proc && folded))
 				p.setPen(styles[GLine::Normal].color);
 			else
@@ -1114,7 +1115,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 	
 	// Folding symbol
-	if (margin && l->proc)
+	if (!getFlag(NoFolding) && margin && l->proc)
 	{
 		QPalette pal;
 		QStyleOption opt;
@@ -2256,15 +2257,14 @@ void GEditor::mouseDoubleClickEvent(QMouseEvent *e)
 	if (left)
 	{
 		ny = posToLine(e->pos().y());
-		if (doc->lines.at(ny)->proc)
+		if (!getFlag(NoFolding) && doc->lines.at(ny)->proc)
 		{
 			if (isFolded(ny))
 				foldAll();
 			else
 				unfoldAll();
 		}
-		else
-			emit marginDoubleClicked(ny);
+		emit marginDoubleClicked(ny);
 		return;
 	}
 	
@@ -2298,7 +2298,7 @@ void GEditor::mouseReleaseEvent(QMouseEvent *e)
 		if (left && !_dblclick)
 		{
 			int ny = posToLine(e->pos().y());
-			if (doc->lines.at(ny)->proc)
+			if (!getFlag(NoFolding) && doc->lines.at(ny)->proc)
 			{
 				if (isFolded(ny))
 					unfoldLine(ny);
@@ -2495,7 +2495,7 @@ void GEditor::updateMargin()
 		
 		if (getFlag(ShowLineNumbers))
 		{
-			int cnt = numLines();
+			int cnt = numLines() + _firstLineNumber;
 
 			while (cnt)
 			{
@@ -3177,4 +3177,10 @@ void GEditor::setBorder(bool b)
 	setFrameStyle(b ? StyledPanel + Sunken : NoFrame);
 	style()->polish(this);
 	updateViewportAttributes();
+}
+
+void GEditor::setLineOffset(int l)
+{
+	_firstLineNumber = l;
+	update();
 }

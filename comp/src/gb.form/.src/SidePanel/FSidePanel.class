@@ -26,6 +26,7 @@ Private $bTransparent As Boolean
 Private BUTTON_H As Integer = Desktop.Scale
 Private BUTTON_W As Integer = Desktop.Scale * 4
 
+Private $hShowPanel As Panel
 Private $hShowButtonLeft As DrawingArea
 Private $hShowButtonRight As DrawingArea
 
@@ -283,12 +284,11 @@ Private Sub CreateShowButton() As DrawingArea
   
   Dim hCtrl As DrawingArea
   
-  hCtrl = New DrawingArea(Me.Parent.Parent) As "ShowButton"
+  hCtrl = New DrawingArea($hShowPanel) As "ShowButton"
   hCtrl.Ignore = True
   hCtrl.Painted = True
   hCtrl.Resize(Desktop.Scale, Desktop.Scale)
   hCtrl.Mouse = Mouse.Pointing
-  hCtrl.Hide
   
   Return hCtrl
   
@@ -299,7 +299,7 @@ Private Sub MoveShowButton()
   Dim D As Integer
 
   If $bVisible Then Return
-  If Not $hShowButtonLeft Then Return
+  If Not $hShowPanel Then Return
 
   D = If($bTransparent, BUTTON_H, 0)
 
@@ -307,21 +307,28 @@ Private Sub MoveShowButton()
   
     Select Case $iOrientation
       Case Align.Top
-        $hShowButtonLeft.Move(.X, .Y, BUTTON_W, BUTTON_H)
-        $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y, BUTTON_W, BUTTON_H)
+        $hShowPanel.Move(.X, .Y, .W, BUTTON_H)
+        $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
+        $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
       Case Align.Bottom
-        $hShowButtonLeft.Move(.X, .Y - D, BUTTON_W, BUTTON_H)
-        $hShowButtonRight.Move(.X + .W - BUTTON_W, .Y - D, BUTTON_W, BUTTON_H)
+        $hShowPanel.Move(.X, .Y - D, .W, BUTTON_H)
+        $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
+        $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
       Case Align.Left
-        $hShowButtonLeft.Move(.X, .Y, BUTTON_H, BUTTON_W)
-        $hShowButtonRight.Move(.X, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        $hShowPanel.Move(.X, .Y, BUTTON_H, .H)
+        $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
+        $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
       Case Align.Right
-        $hShowButtonLeft.Move(.X - D, .Y, BUTTON_H, BUTTON_W)
-        $hShowButtonRight.Move(.X - D, .Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        $hShowPanel.Move(.X - D, .Y, BUTTON_H, .H)
+        $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
+        $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
     End Select
     
   End With  
 
+  $hShowPanel.Raise
+  $hShowPanel.Show
+    
 End
 
 Private Sub RefreshAll()
@@ -334,10 +341,7 @@ Private Sub RefreshAll()
     
     panSide.Show 'Enabled = TRUE
     
-    If $hShowButtonLeft Then
-      $hShowButtonLeft.Hide
-      $hShowButtonRight.Hide
-    Endif
+    If $hShowPanel Then $hShowPanel.Hide
 
   Else
     
@@ -345,13 +349,16 @@ Private Sub RefreshAll()
     panSide.Hide 'Enabled = FALSE
     
     If $bTransparent Then
-      D = If($bSeparator, 2, 1)
+      D = If($bSeparator, 1, 0)
     Else
       D = BUTTON_H
     Endif
     
-    If Not $hShowButtonLeft Then
+    If Not $hShowPanel Then
       
+      $hShowPanel = New Panel(Me.Parent.Parent) As "panMove"
+      $hShowPanel.Ignore = True
+      $hShowPanel.Mouse = Mouse.Pointing
       $hShowButtonLeft = CreateShowButton()
       $hShowButtonRight = CreateShowButton()
       
@@ -372,11 +379,6 @@ Private Sub RefreshAll()
     
     MoveShowButton
     
-    $hShowButtonLeft.Raise
-    $hShowButtonRight.Raise
-    $hShowButtonLeft.Show
-    $hShowButtonRight.Show
-    
   Endif
 
   UpdateBackground
@@ -393,8 +395,6 @@ End
 Private Sub TogglePanel()
 
   If Me.Parent.Design Then Return
-
-  $bInside = False
 
   If $bVisible Then
 
@@ -447,6 +447,7 @@ Public Sub btnSide_MouseUp()
   'Last.Tag = 1
   'Last.Refresh
 
+  $bInside = False
   TogglePanel
 
 End
@@ -485,11 +486,13 @@ Public Sub panMove_MouseDown()
   End Select
   
   $bCanMove = True
+  $bInside = True
   
 End
 
 Public Sub panMove_MouseUp()
 
+  $bInside = False
   If Not $bDblClick And If Not $bVisible Then TogglePanel
   $bDblClick = False
   
@@ -774,6 +777,7 @@ End
 
 Public Sub panMove_Enter()
 
+  'Debug
   $bInside = True
   UpdateBackground
   RefreshButtons
@@ -782,6 +786,7 @@ End
 
 Public Sub panMove_Leave()
 
+  'Debug
   $bInside = False
   UpdateBackground
   RefreshButtons
