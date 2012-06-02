@@ -345,7 +345,7 @@ Private Sub RefreshAll()
     panSide.Hide 'Enabled = FALSE
     
     If $bTransparent Then
-      D = 1
+      D = If($bSeparator, 2, 1)
     Else
       D = BUTTON_H
     Endif
@@ -382,9 +382,10 @@ Private Sub RefreshAll()
   UpdateBackground
   RefreshArrow
   RefreshPanel
+  RefreshButtons
   
-  panMove.Raise
   sepSide.Raise
+  panMove.Raise
   
 End
 
@@ -392,6 +393,8 @@ End
 Private Sub TogglePanel()
 
   If Me.Parent.Design Then Return
+
+  $bInside = False
 
   If $bVisible Then
 
@@ -694,7 +697,7 @@ Public Sub btnSide_Draw()
 
   Dim S As Integer
   
-  If Me.Parent.Design Or If Not $bTransparent Or If Last.Hovered Then 
+  If Me.Parent.Design Or If Not $bTransparent Or If $bInside Then 
     
     DrawArrow(Last, $iOrientation)
   
@@ -739,7 +742,8 @@ Public Sub SetSeparator(bVisible As Boolean)
   If $bSeparator = bVisible Then Return
   
   $bSeparator = bVisible
-  RefreshPanel
+  RefreshAll
+  'RefreshPanel
   
 End
 
@@ -753,18 +757,35 @@ Private Sub UpdateBackground()
 
 End
 
+Private Sub RefreshButtons()
+  
+  If $bTransparent Then
+    If $bVisible Then
+      btnSide.Refresh
+      btnSide2.Refresh
+    Else If $hShowButtonLeft Then
+      $hShowButtonLeft.Refresh
+      $hShowButtonRight.Refresh
+    Endif
+  Endif
+
+End
+
+
 Public Sub panMove_Enter()
 
   $bInside = True
   UpdateBackground
-
+  RefreshButtons
+  
 End
 
 Public Sub panMove_Leave()
 
   $bInside = False
   UpdateBackground
-
+  RefreshButtons
+  
 End
 
 Private Sub InvertOrientation(iOrient As Integer) As Integer
@@ -789,7 +810,7 @@ Public Sub ShowButton_Draw()
   
   Dim iOrient As Integer
   
-  If $bTransparent And If Not Last.Hovered Then Return
+  If $bTransparent And If Not $bInside And If Not Last.Hovered Then Return
   
   DrawArrow(Last, InvertOrientation($iOrientation))
   

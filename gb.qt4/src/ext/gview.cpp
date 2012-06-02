@@ -166,6 +166,7 @@ GEditor::GEditor(QWidget *parent)
 	_insertMode = false;
 	_cellw = _cellh = 0;
 	_oddLine = false;
+	_dblclick = false;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -2220,17 +2221,7 @@ void GEditor::mousePressEvent(QMouseEvent *e)
 	lastx = e->pos().x();
 	left = updateCursor();
 	
-	if (left)
-	{
-		if (doc->lines.at(ny)->proc)
-		{
-			if (isFolded(ny))
-				unfoldLine(ny);
-			else
-				foldLine(ny);
-		}
-	}
-	else
+	if (!left)
 		cursorGoto(ny, nx, shift);
 }
 
@@ -2259,6 +2250,8 @@ void GEditor::mouseMoveEvent(QMouseEvent *e)
 void GEditor::mouseDoubleClickEvent(QMouseEvent *e)
 {
 	int ny;
+	
+	_dblclick = true;
 	
 	if (left)
 	{
@@ -2299,14 +2292,27 @@ void GEditor::mouseReleaseEvent(QMouseEvent *e)
 		scrollTimer->stop();
 		startBlink();
 		copy(true);
-		return;
 	}
+	else
+	{
+		if (left && !_dblclick)
+		{
+			int ny = posToLine(e->pos().y());
+			if (doc->lines.at(ny)->proc)
+			{
+				if (isFolded(ny))
+					unfoldLine(ny);
+				else
+					foldLine(ny);
+			}
+			emit marginClicked(ny);
+		}
 
-	if (left)
-		emit marginClicked(posToLine(e->pos().y()));
-
-	if (e->button() == Qt::MidButton)
-		paste(true);
+		if (e->button() == Qt::MidButton)
+			paste(true);
+	}
+	
+	_dblclick = false;
 }
 
 

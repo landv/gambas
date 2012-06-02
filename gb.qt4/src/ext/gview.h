@@ -104,6 +104,7 @@ private:
 	
 	int lastx;
 	bool left;
+	bool _dblclick;
 	GArray<GFoldedProc> fold;
 		
 	QFont normalFont;
