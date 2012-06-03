@@ -85,7 +85,27 @@ void JIT_load_class(CLASS* klass){
 		classes_to_load.push_back(klass);
 }
 
+static void print_line()
+{
+	int i;
+	
+	for (i = 1; i < 10; i++)
+		fputs("--------", stderr);
+	fputc('\n', stderr);
+}
+
 void JIT_compile_and_execute(){
+	if (MAIN_debug){
+		print_line();
+		fprintf(stderr, "gb.jit: beginning compiling %s.", CP->name);
+		if (FP->debug)
+			fprintf(stderr, "%s:\n", FP->debug->name);
+		else
+			fprintf(stderr, "%d:\n", EXEC.index);
+		print_line();
+		fputc('\n', stderr);
+	}
+	
 	ctrl_types.resize(FP->n_ctrl);
 	used_ctrl_types.resize(FP->n_ctrl);
 	ngosubs = 0;

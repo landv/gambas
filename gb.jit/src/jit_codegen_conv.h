@@ -94,7 +94,7 @@ llvm::Value* JIT_conv_to_variant(Expression* value, llvm::Value* val, bool on_st
 			if (value->type < T_OBJECT)
 				builder->CreateStore(getInteger(TARGET_BITS, value->type), addr);
 			else
-				builder->CreateStore(builder->CreatePtrToInt(extract_value(val, 0), t64), addr);
+				builder->CreateStore(builder->CreatePtrToInt(extract_value(val, 0), LONG_TYPE), addr);
 			
 			if (value->type != T_NULL){
 				addr = builder->CreateGEP(addr, getInteger(TARGET_BITS, 1));

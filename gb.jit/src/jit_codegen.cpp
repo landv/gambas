@@ -1712,10 +1712,6 @@ void PopPureObjectPropertyExpression::codegen(){
 	llvm::Value* class_desc_property;
 	llvm::Value* is_native;
 	
-	if (index == 105){
-		puts("Hej!!");
-	}
-	
 	if (super){
 		is_native = getInteger(1, ((CLASS*)(void*)obj->type)->is_native);
 	} else {
