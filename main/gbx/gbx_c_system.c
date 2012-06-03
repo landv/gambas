@@ -205,7 +205,7 @@ BEGIN_PROPERTY(System_Profile)
 	if (READ_PROPERTY)
 		GB_ReturnBoolean(EXEC_profile_instr);
 	else
-		EXEC_profile_instr = VPROP(GB_BOOLEAN);
+		EXEC_profile_instr = EXEC_profile && VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 

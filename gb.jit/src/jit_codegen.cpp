@@ -4265,7 +4265,7 @@ llvm::Value* PushArrayExpression::codegen_get_value(){
 	
 	bool is_push_dynamic = false;
 	
-	if ( (is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY
+	if ( ((is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY)
 		||
 		(dynamic_cast<ReadVariableExpression*>(args[0]) && ((ReadVariableExpression*)args[0])->ctype->id == TC_ARRAY) ){
 		auto ret = inline_array_get_addr(args, is_push_dynamic);
@@ -4420,7 +4420,7 @@ llvm::Value* PushArrayExpression::codegen_get_value(){
 			dispatch = false;
 		}
 		
-		for(int i=1; i<args.size(); i++)
+		for(uint i=1; i<args.size(); i++)
 			args[i]->codegen_on_stack();
 		
 		return codegen_spec_method(desc, index, dispatch, can_quick, !is_push_class, klass, effective_class, obj, args.size()-1, false);
@@ -4434,7 +4434,7 @@ void PopArrayExpression::codegen(){
 	bool is_push_class;
 	bool is_push_dynamic = false;
 	
-	if ( (is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY
+	if ( ((is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY)
 		||
 		(dynamic_cast<ReadVariableExpression*>(args[0]) && ((ReadVariableExpression*)args[0])->ctype->id == TC_ARRAY) ){
 		
@@ -4580,7 +4580,7 @@ void PopArrayExpression::codegen(){
 		}
 		
 		val->codegen_on_stack();
-		for(int i=1; i<args.size(); i++)
+		for(uint i=1; i<args.size(); i++)
 			args[i]->codegen_on_stack();
 		
 		codegen_spec_method(desc, index, dispatch, can_quick, !is_push_class, klass, effective_class, obj, args.size(), true);
@@ -5392,7 +5392,7 @@ llvm::Value* SubrExpression::codegen_get_value(){
 				case 7: { //IsSpace:
 					const char* conds = " \n\r\t\f\v";
 					res = builder->CreateICmpEQ(c, getInteger(8, conds[0]));
-					for(int i=1; i<strlen(conds); i++)
+					for(uint i=1; i<strlen(conds); i++)
 						res = builder->CreateOr(res, builder->CreateICmpEQ(c, getInteger(8, conds[i])));
 					break;
 				}

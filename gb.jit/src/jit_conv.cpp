@@ -52,7 +52,7 @@ void JIT_conv(Expression*& value, TYPE type, Expression* other){
 	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__OK,    },
 	};
 
-	if (value->type == -1) //Unknown, so always do a VALUE_convert
+	if (value->type == (TYPE)-1) //Unknown, so always do a VALUE_convert
 		goto __TYPE2;
 	else if ((type | value->type) >> 4)
 		goto __OBJECT;

@@ -85,20 +85,25 @@ Private Sub UpdateLabelDir()
   
   Dim sDir As String
 
-  sDir = Mid$(dvwChoose.Current, Len(dvwChoose.Root) + 1)
-
-  If Left(sDir) <> "/" Then sDir = "/" & sDir
-  'If Left(sDir) = "/" Then sDir = Mid$(sDir, 2)
-  sDir = Trim(Replace(sDir, "/", "  /  "))
-  
-  If sDir = "/" Then
+  If dvwChoose.Current = "/" Then
+    
     txtDir.Text = ""
     txtDir.Hide
     btnParent.Hide
+    
   Else
+
+    sDir = Mid$(dvwChoose.Current, Len(dvwChoose.Root) + 1)
+
+    If Left(sDir) <> "/" Then sDir = "/" & sDir
+    If Right(sDir) = "/" Then sDir = Left(sDir, -1)
+    
+    sDir = Trim(Replace(sDir, "/", "  ·  "))
+  
     txtDir.Text = sDir
-    txtDir.Show
+    txtDir.Visible = sDir
     btnParent.Show
+    
   Endif
   
 End
@@ -1083,7 +1088,22 @@ End
 
 Public Sub btnParent_Click()
 
-  dvwChoose.Current = File.Dir(dvwChoose.Current)
+  Dim hBookmark As CBookmark
+  Dim sDir As String = dvwChoose.Current
+
+  If sDir = dvwChoose.Root And sDir <> "/" Then
+    
+    hBookmark = $hBookmarkList.FindBest(File.Dir(sDir))
+    If hBookmark Then
+      SetBookmark(hBookmark)
+    Else
+      dvwChoose.Root = File.Dir(sDir)
+      SetBookmark(Null)
+    Endif
+
+  Endif
+  
+  dvwChoose.Current = File.Dir(sDir)
 
 End
 

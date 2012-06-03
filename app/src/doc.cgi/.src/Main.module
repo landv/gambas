@@ -551,7 +551,12 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
 
     sSuff = AddParam($sLangSuff, sMoreSuff)
     'If IsComponentPath(sPath) Then
-    If $sVersion = "3.0" And If Right$(sPath, 2) <> "v2" Then sSuff = AddParam(sSuff, "v3")
+    
+    'If InStr("?&", Left(Right$(sMoreSuff, 3))) And If Left$(Right$(sMoreSuff, 2)) = "v" And If IsDigit(Right$(sMoreSuff)) Then
+    If Left(Right$(sMoreSuff, 2)) = "v" And If IsDigit(Right$(sMoreSuff)) Then
+    Else
+      If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
+    Endif
     'Endif
 
     If sTitle Then

@@ -138,7 +138,7 @@ PushArrayExpression::PushArrayExpression(Expression** it, int nargs){
 	
 	bool is_push_dynamic = false;
 	
-	if ( (is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY
+	if ( ((is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY)
 		||
 		(dynamic_cast<ReadVariableExpression*>(args[0]) && ((ReadVariableExpression*)args[0])->ctype->id == TC_ARRAY) ){
 		CTYPE* ctype;
@@ -245,7 +245,7 @@ PushArrayExpression::PushArrayExpression(Expression** it, int nargs){
 			}
 		}
 		on_stack = true;
-		for(int i=0; i<args.size(); i++)
+		for(uint i=0; i<args.size(); i++)
 			args[i]->must_on_stack();
 	}
 }
@@ -258,7 +258,7 @@ PopArrayExpression::PopArrayExpression(Expression** it, int nargs, Expression* v
 	bool is_push_class;
 	
 	bool is_push_dynamic = false;
-	if ( (is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY
+	if ( ((is_push_dynamic = isa<PushDynamicExpression>(args[0])) && ((PushDynamicExpression*)args[0])->ctype->id == TC_ARRAY)
 		||
 		(dynamic_cast<ReadVariableExpression*>(args[0]) && ((ReadVariableExpression*)args[0])->ctype->id == TC_ARRAY) ){
 		CTYPE* ctype;

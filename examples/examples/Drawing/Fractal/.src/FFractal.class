@@ -334,16 +334,20 @@ End
 
 Public Sub dwgFractal_MouseWheel()
 
+  Dim fNewScale As Float
+
+  If Mouse.Delta < 0 Then
+    If Log2($fScale) >= -6 Then Return
+    fNewScale = $fScale * Sqr(2)
+  Else
+    If Log2($fScale) < -50 Then Return
+    fNewScale = $fScale / Sqr(2)
+  Endif
+  
   $XC += $fScale * (Mouse.X - dwgFractal.W / 2)
   $YC += $fScale * (Mouse.Y - dwgFractal.H / 2)
   
-  If Mouse.Delta < 0 Then
-    If Log2($fScale) >= -6 Then Return
-    $fScale *= Sqr(2)
-  Else
-    If Log2($fScale) < -50 Then Return
-    $fScale /= Sqr(2)
-  Endif
+  $fScale = fNewScale
   
   $XC -= $fScale * (Mouse.X - dwgFractal.W / 2)
   $YC -= $fScale * (Mouse.Y - dwgFractal.H / 2)

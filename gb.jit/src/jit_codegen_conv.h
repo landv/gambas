@@ -140,7 +140,7 @@ llvm::Value* ConvExpression::codegen_get_value()
 	llvm::Value* val = NULL;
 	llvm::Value* ret;
 
-	if (value->type == -1)
+	if (value->type == (TYPE)-1)
 		goto __UNKNOWN;
 	else if ((type | value->type) >> 4)
 		goto __OBJECT;

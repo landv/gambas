@@ -9,6 +9,7 @@ Static Public MULTI_CONTAINER_PROP As String[] = ["Index", "Count", "Text", "Pic
 Static Private $cRedirect As New Collection
 Static Private $cTranslate As New Collection
 Static Private $cUpdateName As New Collection
+Static Private $cAlwaysRead As New Collection
 
 Public Name As String
 Public Type As String
@@ -31,24 +32,24 @@ Public ConstantList As Collection
 
 Static Public Sub _init()
 
-  $cRedirect["*.Visible"] = True
+  $cRedirect["Visible"] = True
   '$cRedirect["*.Enabled"] = True
-  $cRedirect["*.Action"] = True
-  $cRedirect["*.Tag"] = True
-  $cRedirect["*.Password"] = True
-  $cRedirect["*.Mouse"] = True
-  $cRedirect["*.ToolTip"] = True
-  $cRedirect["*.Drop"] = True
-  $cRedirect["*.List"] = True
-  $cRedirect["*.Arrangement"] = True
-  $cRedirect["*.Padding"] = True
-  $cRedirect["*.Indent"] = True
-  $cRedirect["*.Spacing"] = True
-  $cRedirect["*.Expand"] = True
-  $cRedirect["*.X"] = True
-  $cRedirect["*.Y"] = True
-  $cRedirect["*.Width"] = True
-  $cRedirect["*.Height"] = True
+  $cRedirect["Action"] = True
+  $cRedirect["Tag"] = True
+  $cRedirect["Password"] = True
+  $cRedirect["Mouse"] = True
+  $cRedirect["ToolTip"] = True
+  $cRedirect["Drop"] = True
+  $cRedirect["List"] = True
+  $cRedirect["Arrangement"] = True
+  $cRedirect["Padding"] = True
+  $cRedirect["Indent"] = True
+  $cRedirect["Spacing"] = True
+  $cRedirect["Expand"] = True
+  $cRedirect["X"] = True
+  $cRedirect["Y"] = True
+  $cRedirect["Width"] = True
+  $cRedirect["Height"] = True
 
   $cRedirect["Label.Padding"] = False
   $cRedirect["TextLabel.Padding"] = False
@@ -86,27 +87,35 @@ Static Public Sub _init()
   $cRedirect["Timer.Enabled"] = True
   $cRedirect["WebView.Editable"] = True
   
-  $cRedirect["*.AutoResize"] = True
-  $cRedirect["*.Connection"] = True
+  $cRedirect["AutoResize"] = True
+  $cRedirect["Connection"] = True
 
-  $cTranslate["*.Text"] = True
-  $cTranslate["*.Title"] = True
-  $cTranslate["*.List"] = True
+  $cTranslate["Text"] = True
+  $cTranslate["Title"] = True
+  $cTranslate["List"] = True
   $cTranslate["FileChooser.Filter"] = True
-  $cTranslate["*.Caption"] = True
-  $cTranslate["*.ToolTip"] = True
+  $cTranslate["Caption"] = True
+  $cTranslate["ToolTip"] = True
 
   $cUpdateName["ComboBox.ReadOnly"] = True
-  $cUpdateName["*.Text"] = True
+  $cUpdateName["Text"] = True
   $cUpdateName["Button.Picture"] = True
 
+  $cAlwaysRead["RadioButton.Value"] = True
+  $cAlwaysRead["ToggleButton.Value"] = True
+  $cAlwaysRead["ToolButton.Value"] = True
+  $cAlwaysRead["Button.Default"] = True
+  $cAlwaysRead["Button.Cancel"] = True
+  $cAlwaysRead["ProgressBar.Value"] = True
+  $cAlwaysRead["ProgressBar.Max"] = True
+  
 End
 
 Private Sub GetFlag(cCol As Collection, sClass As String, sName As String) As Boolean
   
   If cCol.Exist(sClass & "." & sName) Then
     Return cCol[sClass & "." & sName]
-  Else If cCol.Exist("*." & sName) Then 
+  Else If cCol.Exist(sName) Then 
     Return True
   Endif
   
@@ -125,6 +134,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Dim sSign As String
   Dim sFirst As String
   Dim sArg As String
+  Dim hClass As CClassInfo
 
   Name = sName
 
@@ -151,10 +161,12 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Endif
 
   If sComponent Then
-    Try hSym = CComponent.Classes[sComponent &/ sClass].Symbols[sName]
+    hClass = CComponent.Classes[sComponent &/ sClass]
+    Try hSym = hClass.Symbols[sName]
     Type = hSym.Type
     sSign = hSym.Signature
   Else
+    hClass = CComponent.Classes[sClass]
     If Name = "X" Or If Name = "Y" Then
       Type = "i"
       sKind = "Position"
@@ -165,25 +177,11 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Required = sKind = "Position"
 
   If Len(Type) = 1 Then
-    'IF Name = "Visible" THEN
-    '  DefaultValue = TRUE
-    'If Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" Then
-    '  Required = True
     If Name = "Tag" Then
       Type = "s"
-    'ELSE IF Name = "List" THEN
-    '  Type = "List"
-    'ELSE IF hCtrl THEN
-    '  TRY DefaultValue = Object.GetProperty(hCtrl, Name)
-    'ELSE IF NOT sDefVal THEN
-    '  PRINT sClass; "."; sName;; Type;; " DefaultValue ?"
     Endif
-  'ELSE IF Type = "Font" THEN
-  '  DefaultValue = "" 'Object.GetProperty(hCtrl, Name).ToString()
   Else
     DefaultValue = Null
-    'bDoNotApply = TRUE
-    'Control = TRUE
   Endif
 
   If sDefVal Then
@@ -287,39 +285,25 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
   If Type = "Color" Then DefaultValue = Color.Default
 
-  Coord = Name = "#X" Or Name = "#Y" Or Name = "#Width" Or Name = "#Height"
-  If Coord Then DefaultValue = Null
-  'AlwaysRead = Name = "Font"
-
+  If Left(Name) = "#" Then
+    Coord = Name = "#X" Or Name = "#Y" Or Name = "#Width" Or Name = "#Height"
+    If Coord Then DefaultValue = Null
+  Endif
+  
   If bDoNotApply Then
     DoNotApply = True
   Else
     DoNotApply = GetFlag($cRedirect, sClass, Name)
-    If Not DoNotApply And If Name = "Enabled" And If CComponent.Classes[sClass].Container Then 
+    If Not DoNotApply And If Name = "Enabled" And If hClass.Container Then 
       DoNotApply = True
     Endif
   Endif
 
   'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
+  
+  AlwaysRead = GetFlag($cAlwaysRead, sClass, Name)
 
-  Select Case sClass
-
-    Case "RadioButton", "ToggleButton", "ToolButton"
-      AlwaysRead = Name = "Value"
-
-    Case "Button"
-      AlwaysRead = Name = "Default" Or Name = "Cancel"
-
-    'CASE "TabStrip"
-    '  Exclude = Name = "Text" OR Name = "Index" OR Name = "Picture"
-    '  Hidden = Name = "Index"
-
-    Case "ProgressBar"
-      AlwaysRead = Name = "Value" Or Name = "Max"
-
-  End Select
-
-  If CComponent.Classes[sClass].MultiContainer Then
+  If hClass.MultiContainer Then
     Exclude = Name = "Text" Or Name = "Index" Or Name = "Picture"
     'AlwaysRead = Name = "Text" OR Name = "Picture"
     Hidden = Name = "Index"

@@ -35,7 +35,7 @@ static unsigned short* code;
 static int size;
 static int pos;
 static int addr;
-static int stack_start;
+static uint stack_start;
 
 static bool in_dup = false;
 
@@ -779,7 +779,7 @@ static void JIT_read_statement(){
 								auto ex = new OnStackExpression();
 								ex->type = signature ? signature[i] : -1;
 								
-								int stack_start_save = stack_start;
+								uint stack_start_save = stack_start;
 								stack_start = stack_size();
 								push(ex);
 								JIT_read_statement();

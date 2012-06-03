@@ -268,7 +268,7 @@ Public Sub Main()
     CRecentFile.Load
     FMain.Load
     Project.Open(sPath)
-    FSearch.FindProject("else")
+    'FSearch.FindProject("else")
     Project.Close
     FMain.Close
     Project.Exit
@@ -570,6 +570,8 @@ _INIT_AGAIN:
 
   Endif
 
+  Inc Application.Busy
+
   Config = New Settings(sDir &/ ".settings")
 
   Inc $iNoRefresh
@@ -615,13 +617,18 @@ _INIT_AGAIN:
 
   If bConvert Then
     MakeDirectoryIcon
-    If ConvertProject() Then Goto _CANCEL
+    If ConvertProject() Then 
+      Dec Application.Busy
+      Goto _CANCEL
+    Endif
   Endif
 
   If bStopConvert Then FConvert.Stop
 
   LastOpenedFiles
   CPosition.Clear
+  
+  Dec Application.Busy
 
   If ReadOnly Then FMain.ShowWarning(("This project is read-only."))
 
@@ -631,6 +638,8 @@ _INIT_AGAIN:
 Catch
 
   If bStopConvert Then FConvert.Stop
+
+  Application.Busy = 0
 
   If Error.Text Then
     Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
@@ -5140,7 +5149,7 @@ End
 
 Public Sub IsLocked(sPath As String) As Boolean
 
-  If LockedPaths.Count = 0 Then Return 
+  If Not LockedPaths Or If LockedPaths.Count = 0 Then Return 
   If LockedPaths.Exist(sPath) Then Return True
   If sPath = "" Or sPath = "/" Then Return 
   'If IsAdded(sPath) Then Return True
@@ -5150,7 +5159,7 @@ End
 
 Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
 
-  If AddedPaths.Count = 0 Then Return 
+  If Not AddedPaths Or If AddedPaths.Count = 0 Then Return 
   If AddedPaths.Exist(sPath) Then Return True
   'If IsSourcePath(sPath) And If File.Ext(sPath) = "form" And If AddedPaths.Exist(File.SetExt(sPath, "class")) Then Return True
   If bNoRec Then Return False

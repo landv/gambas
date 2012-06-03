@@ -868,9 +868,10 @@ struct NopExpression : Expression {
 		buf = (char*)malloc(len+1);
 		memcpy(buf, str, len+1);
 	}
-	NopExpression(){
+	
+	/*NopExpression(){
 		buf = "...";
-	}
+	}*/
 	
 	void codegen();
 	~NopExpression(){
