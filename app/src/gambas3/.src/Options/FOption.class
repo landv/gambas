@@ -138,6 +138,13 @@ Public Sub _new()
   tvwIgnore.Columns.Count = 1
   LoadIgnoreFiles
   
+  txtMaintainer.Text = Settings["FMakeInstall/Maintainer", User.Name]
+  txtVendor.Text = Settings["FMakeInstall/Vendor"]
+  txtAddress.Text = Settings["FMakeInstall/Address", User.Name & "@" & System.Host]
+  txtLicense.Text = Settings["FMakeInstall/License", "GPL"]
+  txtURL.Text = Settings["FMakeInstall/URL", "www.endoftheinternet.com"]
+  cboPrefix.Index = If(Settings["FMakeInstall/Prefix", False], 1, 0)
+  
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
 End
@@ -943,5 +950,41 @@ Public Sub btnProxy_Click()
   End With
 
   MHelp.LoadProxyConfig
+
+End
+
+Public Sub txtMaintainer_LostFocus()
+
+  Settings["FMakeInstall/Maintainer"] = txtMaintainer.Text
+
+End
+
+Public Sub txtVendor_LostFocus()
+
+  Settings["FMakeInstall/Vendor"] = txtVendor.Text
+
+End
+
+Public Sub txtAddress_LostFocus()
+
+  Settings["FMakeInstall/Address"] = txtAddress.Text
+
+End
+
+Public Sub txtLicense_LostFocus()
+
+  Settings["FMakeInstall/License"] = txtLicense.Text
+
+End
+
+Public Sub txtURL_LostFocus()
+
+  Settings["FMakeInstall/URL"] = txtURL.Text
+
+End
+
+Public Sub cboPrefix_Click()
+
+  Settings["FMakeInstall/Prefix"] = cboPrefix.Index = 1
 
 End

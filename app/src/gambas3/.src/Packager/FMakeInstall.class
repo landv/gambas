@@ -44,7 +44,7 @@ Public Sub Form_Open()
   If Project.Maintainer Then
     txtName.Text = Project.Maintainer
   Else 
-    txtName.Text = System.User.Name
+    txtName.Text = Settings["FMakeInstall/Maintainer", System.User.Name]
   Endif
   
   txtName.SelectAll
@@ -53,21 +53,25 @@ Public Sub Form_Open()
   If Project.Address Then
     txtMail.Text = Project.Address
   Else 
-    txtMail.Text = System.User.Name & "@" & System.Host
+    txtMail.Text = Settings["FMakeInstall/Address", System.User.Name & "@" & System.Host]
   Endif
   
-  txtVendor.Text = Project.Vendor
-  
+  If Project.Vendor Then
+    txtVendor.Text = Project.Vendor
+  Else
+    txtVendor.Text = Settings["FMakeInstall/Vendor"]
+  Endif
+    
   If Project.License Then
     txtLicense.Text = Project.License
   Else 
-    txtLicense.Text = "General Public License"
+    txtLicense.Text = Settings["FMakeInstall/License", "General Public License"]
   Endif
   
   If Project.Url Then
     txtUrl.Text = Project.Url
   Else 
-    txtUrl.Text = Project.DEFAULT_URL
+    txtUrl.Text = Settings["FMakeInstall/URL", Project.DEFAULT_URL]
   Endif
 
   txtDescribe.Text = Project.Description
@@ -76,7 +80,11 @@ Public Sub Form_Open()
   txtChangeLog.Pos = 0
   txtTests.Text = Project.ExtraAutoconfTest
 
-  chkPrefix.Value = Project.Prefix
+  If Project.Prefix
+    chkPrefix.Value = True
+  Else
+    chkPrefix.Value = Settings["FMakeInstall/Prefix", False]
+  Endif
 
   'InitSystemControls
   InitSystems
