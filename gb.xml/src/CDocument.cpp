@@ -64,12 +64,12 @@ catch(XMLParseException &e)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CDocument_tostring)
+BEGIN_METHOD(CDocument_tostring, GB_BOOLEAN indent)
 
     char *str = 0;
     size_t len = 0;
     
-    THIS->toGBString(&str, &len);
+    THIS->toGBString(&str, &len, VARG(indent) ? 0 : -1);
     
     GB.ReturnString(str);
 
@@ -119,9 +119,9 @@ catch(XMLParseException &e)
 
 END_METHOD
 
-BEGIN_METHOD(CDocument_save, GB_STRING fileName)
+BEGIN_METHOD(CDocument_save, GB_STRING fileName; GB_BOOLEAN indent)
 
-THIS->save(GB.ToZeroString(ARG(fileName)));
+THIS->save(GB.ToZeroString(ARG(fileName)), VARG(indent));
 
 END_METHOD
 
@@ -170,11 +170,11 @@ GB_DESC CDocumentDesc[] =
     GB_PROPERTY("Content", "s", CDocument_content),
     GB_METHOD("FromString", "", CDocument_fromString, "(Data)s"),
     GB_METHOD("HtmlFromString", "", CDocument_fromString, "(Data)s"),
-    GB_METHOD("ToString", "s", CDocument_tostring, ""),
+    GB_METHOD("ToString", "s", CDocument_tostring, "[(Indent)b]"),
     
     GB_METHOD("Open", "", CDocument_open, "(FileName)s"),
-    GB_METHOD("Save", "", CDocument_save, "(FileName)s"),
-    GB_METHOD("Write", "", CDocument_save, "(FileName)s"),
+    GB_METHOD("Save", "", CDocument_save, "(FileName)s[(Indent)b]"),
+    GB_METHOD("Write", "", CDocument_save, "(FileName)s[(Indent)b]"),
     
 
     GB_END_DECLARE

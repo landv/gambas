@@ -536,21 +536,23 @@ bool Element::attributeContains(const char *attrName, size_t lenAttrName, char *
 /***** String output *****/
 void Element::addStringLen(size_t *len, int indent)
 {
-    // (indent) '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' 
+    // (indent) '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' \n
     // + children + (indent) '</' + tag + '>" \n
     // Or, singlElement :
-    // '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' 
+    // (indent) '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' \n
     
     if(isSingle())
     {
         (*len) += (4 + lenTagName);
+        if(indent >= 0) *len += indent + 1;
     }
     else
     {
         (*len) += (5 + (lenTagName * 2));
+        if(indent >= 0) *len += indent * 2 + 2;
         for(Node *child = firstChild; child != 0; child = child->nextNode)
         {
-            child->addStringLen(len);
+            child->addStringLen(len, indent >= 0 ? indent + 1 : -1);
         }
     }
     
@@ -568,6 +570,11 @@ void Element::addString(char **data, int indent)
 #define ADD(_car) *content = _car; content++;
     
     //Opening tag
+    if(indent > 0)
+    {
+        memset(content, CHAR_SPACE, indent);
+        content += indent;
+    }
     ADD(CHAR_STARTTAG);
     memcpy(content, tagName, lenTagName); content += lenTagName;
     
@@ -589,6 +596,7 @@ void Element::addString(char **data, int indent)
         ADD(CHAR_SLASH);
     }
     ADD(CHAR_ENDTAG);
+    if(indent >= 0) { ADD(SCHAR_N); }
     
     if(!single)
     {
@@ -596,7 +604,13 @@ void Element::addString(char **data, int indent)
         //Content
         for(register Node *child = firstChild; child != 0; child = child->nextNode)
         {
-            child->addString(&content);
+            child->addString(&content, indent >= 0 ? indent + 1 : -1);
+        }
+        
+        if(indent > 0)
+        {
+            memset(content, CHAR_SPACE, indent);
+            content += indent;
         }
         
         //Ending Tag    
@@ -604,6 +618,7 @@ void Element::addString(char **data, int indent)
         ADD(CHAR_SLASH);
         memcpy(content, tagName, lenTagName); content += lenTagName;
         ADD(CHAR_ENDTAG); 
+        if(indent >= 0) { ADD(SCHAR_N); }
     
     }
     

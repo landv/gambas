@@ -128,34 +128,39 @@ void Document::setContent(char *content, size_t len) throw(XMLParseException)
 }
 
 /***** String output *****/
-void Document::toString(char **output, size_t *len)
+void Document::toString(char **output, size_t *len, int indent)
 {
     //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
-    *len = 38; root->addStringLen(len);
-    *output = (char*)malloc(sizeof(char) * (*len));
+    *len = 38 + (indent >= 0 ? 1 : 0); root->addStringLen(len, indent);
+    *output = (char*)malloc(*len);
     memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
     *output += 38;
-    root->addString(output);
+    if(indent >= 0) 
+    {
+        **output = SCHAR_N;
+        ++(*output);
+    }
+    root->addString(output, indent);
     (*output) -= (*len);
 }
 
 void Document::toGBString(char **output, size_t *len, int indent)
 {
     //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
-    *len = 38 + (indent ? 1 : 0); root->addStringLen(len, indent);
+    *len = 38 + (indent >= 0 ? 1 : 0); root->addStringLen(len, indent);
     *output = GB.TempString(0, *len);
     memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
-    if(indent) 
+    *output += 38;
+    if(indent >= 0) 
     {
         **output = SCHAR_N;
         ++(*output);
     }
-    *output += 38;
-    root->addString(output);
+    root->addString(output, indent);
     (*output) -= (*len);
 }
 
-void Document::save(const char *fileName)
+void Document::save(const char *fileName, bool indent)
 {
     FILE *newFile = fopen(fileName, "w");
     
@@ -168,7 +173,7 @@ void Document::save(const char *fileName)
     
     char *data = 0;
     size_t lenData = 0;
-    toString(&data, &lenData);
+    toString(&data, &lenData, indent ? 0 : -1);
     data = (char*)realloc(data, lenData + 1);
     data[lenData] = 0;
     

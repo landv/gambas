@@ -41,9 +41,9 @@ public:
     virtual void setContent(char *content, size_t len) throw(XMLParseException);
     
     //String output
-    virtual void toString(char **output, size_t *len);
+    virtual void toString(char **output, size_t *len, int indent = 0);
     virtual void toGBString(char **output, size_t *len, int indent = 0);
-    void save(const char *fileName);
+    void save(const char *fileName, bool indent = false);
     
     
     //Node tree
