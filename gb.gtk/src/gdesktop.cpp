@@ -255,16 +255,27 @@ gPicture* gDesktop::screenshot(int x, int y, int w, int h)
 
 int gDesktop::count()
 {
-	return gdk_screen_get_n_monitors(gdk_screen_get_default());
+	//return gdk_screen_get_n_monitors(gdk_screen_get_default());
+	return gdk_display_get_n_screens(gdk_display_get_default());
 }
 
 void gDesktop::geometry(int screen, GdkRectangle *rect)
 {
-	gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
+	rect->x = rect->y = rect->width = rect->height = 0;
+	if (screen < 0 || screen >= count())
+		return;
+	
+	rect->width = gdk_screen_get_width(gdk_display_get_screen(gdk_display_get_default(), screen));
+	rect->height = gdk_screen_get_height(gdk_display_get_screen(gdk_display_get_default(), screen));
+	//gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
 }
 
 void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
 {
+	rect->x = rect->y = rect->width = rect->height = 0;
+	if (screen < 0 || screen >= count())
+		return;
+	
 	if (X11_get_available_geometry(screen, &rect->x, &rect->y, &rect->width, &rect->height))
 		geometry(screen, rect);
 }
