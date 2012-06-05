@@ -400,9 +400,9 @@ msgstr ""
 #: FDebugInfo.form:216 FEditor.class:2404 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3154
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
-#: FList.form:121 FMain.class:198 FMakeInstall.class:348 FMenu.form:378
+#: FList.form:121 FMain.class:198 FMakeInstall.class:356 FMenu.form:378
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
-#: FOpenProject.form:174 FOption.class:637 FPasteSpecial.form:77
+#: FOpenProject.form:174 FOption.class:644 FPasteSpecial.form:77
 #: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:697
 #: FProxy.form:57 FReportBorderChooser.form:48 FReportBrushChooser.form:34
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
@@ -452,7 +452,7 @@ msgstr ""
 #: Design.module:412 FColorChooser.form:54 FCommit.form:223
 #: FConnectionEditor.class:452 FCreateFile.form:443 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
-#: FMain.form:1430 FMakeInstall.class:294 FMenu.form:373
+#: FMain.form:1430 FMakeInstall.class:302 FMenu.form:373
 #: FNewConnection.form:249 FNewTable.form:80 FNewTranslation.form:15
 #: FOpenProject.form:168 FPasteSpecial.form:71 FPropertyComponent.form:215
 #: FPropertyProject.form:691 FProxy.form:63 FReportBorderChooser.form:54
@@ -558,7 +558,7 @@ msgstr ""
 
 #: FCommit.form:109 FConflict.form:71 FConnectionEditor.form:386
 #: FEditor.form:127 FForm.form:213 FIconEditor.form:87 FImageEditor.form:99
-#: FOption.form:619 FOutput.form:41 FTextEditor.form:89
+#: FOption.form:638 FOutput.form:41 FTextEditor.form:89
 msgid "Undo"
 msgstr ""
 
@@ -719,7 +719,7 @@ msgstr ""
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.form:131 FMakeInstall.class:997
+#: FConnectionEditor.form:131 FMakeInstall.class:1005
 msgid "Remove"
 msgstr ""
 
@@ -788,7 +788,7 @@ msgid "Run query"
 msgstr ""
 
 #: FConnectionEditor.form:445 FForm.form:257 FMain.class:198
-#: FNewConnection.class:325 FOption.class:784 FTranslate.class:636
+#: FNewConnection.class:325 FOption.class:791 FTranslate.class:636
 msgid "Delete"
 msgstr ""
 
@@ -801,7 +801,8 @@ msgid "Export..."
 msgstr ""
 
 #: FConnectionEditor.class:34 FCreateFile.form:289 FDebugInfo.class:33
-#: FNewConnection.form:60 FNewTable.form:33
+#: FMakeInstall.form:158 FNewConnection.form:60 FNewTable.form:33
+#: FOption.form:1036
 msgid "Name"
 msgstr ""
 
@@ -1205,7 +1206,7 @@ msgstr ""
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.form:59 FMain.form:1017 FOption.form:576 FSearch.class:94
+#: FDebugInfo.form:59 FMain.form:1017 FOption.form:595 FSearch.class:94
 msgid "Console"
 msgstr ""
 
@@ -1225,7 +1226,7 @@ msgstr ""
 msgid "Add expression"
 msgstr ""
 
-#: FDebugInfo.form:119 FMakeInstall.form:569 FOption.form:980
+#: FDebugInfo.form:119 FMakeInstall.form:569 FOption.form:999
 #: FPropertyComponent.form:184
 msgid "&Add"
 msgstr ""
@@ -1234,7 +1235,7 @@ msgstr ""
 msgid "Remove current expression"
 msgstr ""
 
-#: FDebugInfo.form:127 FMain.form:773 FMakeInstall.form:575 FOption.form:837
+#: FDebugInfo.form:127 FMain.form:773 FMakeInstall.form:575 FOption.form:856
 #: FPropertyComponent.form:190 FPropertyProject.form:438
 msgid "&Remove"
 msgstr ""
@@ -1279,7 +1280,7 @@ msgstr ""
 msgid "Search again"
 msgstr ""
 
-#: FDebugInfo.form:230 FOption.class:920
+#: FDebugInfo.form:230 FOption.class:927
 msgid "Reset"
 msgstr ""
 
@@ -1304,7 +1305,7 @@ msgid "Function"
 msgstr ""
 
 #: FDebugInfo.class:57 FIconEditor.form:200 FImportTable.class:68
-#: FOption.form:390
+#: FOption.form:409
 msgid "Line"
 msgstr ""
 
@@ -1325,7 +1326,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr ""
 
 #: FDebugInfo.class:533 FIconEditor.class:1415 FList.class:155
-#: FOption.class:637 FOutput.form:79
+#: FOption.class:644 FOutput.form:79
 msgid "Clear"
 msgstr ""
 
@@ -1445,7 +1446,7 @@ msgstr ""
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.form:346 FOption.form:351
+#: FEditor.form:346 FOption.form:370
 msgid "Editor"
 msgstr ""
 
@@ -2500,7 +2501,7 @@ msgstr ""
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.form:934 FOption.form:156
+#: FMain.form:934 FOption.form:175
 msgid "Preferences"
 msgstr ""
 
@@ -2708,7 +2709,7 @@ msgstr ""
 msgid "Package name"
 msgstr ""
 
-#: FMakeInstall.form:140
+#: FMakeInstall.form:140 FOption.form:1118
 msgid "Prefix package name with the vendor name"
 msgstr ""
 
@@ -2716,47 +2717,43 @@ msgstr ""
 msgid "Maintainer information"
 msgstr ""
 
-#: FMakeInstall.form:158
-msgid "Your name"
+#: FMakeInstall.form:173 FOption.form:1068
+msgid "E-mail"
 msgstr ""
 
-#: FMakeInstall.form:173
-msgid "Your e-mail address"
-msgstr ""
-
-#: FMakeInstall.form:188
+#: FMakeInstall.form:188 FOption.form:1052
 msgid "Vendor name"
 msgstr ""
 
-#: FMakeInstall.form:203
-msgid "Website"
+#: FMakeInstall.form:203 FOption.form:1102
+msgid "URL"
 msgstr ""
 
-#: FMakeInstall.form:228
+#: FMakeInstall.form:228 FOption.form:1084
 msgid "License"
 msgstr ""
 
-#: FMakeInstall.form:234
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "General Public License"
 msgstr ""
 
-#: FMakeInstall.form:234
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Freeware"
 msgstr ""
 
-#: FMakeInstall.form:234
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Public Domain"
 msgstr ""
 
-#: FMakeInstall.form:234
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Lesser General Public License"
 msgstr ""
 
-#: FMakeInstall.form:234
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Other License(s)"
 msgstr ""
 
-#: FMakeInstall.form:234
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Non-free License"
 msgstr ""
 
@@ -2902,108 +2899,108 @@ msgid ""
 "\n"
 msgstr ""
 
-#: FMakeInstall.class:98
+#: FMakeInstall.class:106
 msgid "Package"
 msgstr ""
 
-#: FMakeInstall.class:99
+#: FMakeInstall.class:107
 msgid "Min. version"
 msgstr ""
 
-#: FMakeInstall.class:100
+#: FMakeInstall.class:108
 msgid "Max. version"
 msgstr ""
 
-#: FMakeInstall.class:106
+#: FMakeInstall.class:114
 msgid "File or directory"
 msgstr ""
 
-#: FMakeInstall.class:294 Package.module:186
+#: FMakeInstall.class:302 Package.module:186
 msgid "The packages have been successfully created."
 msgstr ""
 
-#: FMakeInstall.class:294 FSave.class:30 FWelcome.class:53
+#: FMakeInstall.class:302 FSave.class:30 FWelcome.class:53
 msgid "Quit"
 msgstr ""
 
-#: FMakeInstall.class:331
+#: FMakeInstall.class:339
 msgid "Please enter your name."
 msgstr ""
 
-#: FMakeInstall.class:336
+#: FMakeInstall.class:344
 msgid "Please enter your e-mail address."
 msgstr ""
 
-#: FMakeInstall.class:348
+#: FMakeInstall.class:356
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:348 FPropertyProject.class:837 FSave.form:21
+#: FMakeInstall.class:356 FPropertyProject.class:837 FSave.form:21
 #: Project.module:3161
 msgid "Continue"
 msgstr ""
 
-#: FMakeInstall.class:355
+#: FMakeInstall.class:363
 msgid "Please enter the first CHANGELOG entry."
 msgstr ""
 
-#: FMakeInstall.class:366
+#: FMakeInstall.class:374
 msgid "Please choose at least one target distribution."
 msgstr ""
 
-#: FMakeInstall.class:394
+#: FMakeInstall.class:402
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:396
+#: FMakeInstall.class:404
 msgid "Please choose a package group."
 msgstr ""
 
-#: FMakeInstall.class:406
+#: FMakeInstall.class:414
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:408
+#: FMakeInstall.class:416
 msgid "Please choose a menu location."
 msgstr ""
 
-#: FMakeInstall.class:427
+#: FMakeInstall.class:435
 msgid "Cannot found extra file: &1"
 msgstr ""
 
-#: FMakeInstall.class:432
+#: FMakeInstall.class:440
 msgid "Please choose a target directory for each extra file."
 msgstr ""
 
-#: FMakeInstall.class:446
+#: FMakeInstall.class:454
 msgid "The package cannot be stored inside the project directory."
 msgstr ""
 
-#: FMakeInstall.class:484
+#: FMakeInstall.class:492
 msgid "Initial release"
 msgstr ""
 
-#: FMakeInstall.class:738
+#: FMakeInstall.class:746
 msgid "Menus"
 msgstr ""
 
-#: FMakeInstall.class:806
+#: FMakeInstall.class:814
 msgid "Groups"
 msgstr ""
 
-#: FMakeInstall.class:924
+#: FMakeInstall.class:932
 msgid "Incorrect characters"
 msgstr ""
 
-#: FMakeInstall.class:997
+#: FMakeInstall.class:1005
 msgid "Do you really want to remove all extra dependencies?"
 msgstr ""
 
-#: FMakeInstall.class:1098
+#: FMakeInstall.class:1106
 msgid "Do you really want to remove all extra files?"
 msgstr ""
 
-#: FMakeInstall.class:1154
+#: FMakeInstall.class:1162
 msgid "Select the destination directory"
 msgstr ""
 
@@ -3219,252 +3216,260 @@ msgstr ""
 msgid "Quick"
 msgstr ""
 
-#: FOption.form:168
+#: FOption.form:187
 msgid "Foreground color..."
 msgstr ""
 
-#: FOption.form:172
+#: FOption.form:191
 msgid "Background color..."
 msgstr ""
 
-#: FOption.form:179
+#: FOption.form:198
 msgid "Bold"
 msgstr ""
 
-#: FOption.form:183
+#: FOption.form:202
 msgid "Italic"
 msgstr ""
 
-#: FOption.form:187
+#: FOption.form:206
 msgid "Underline"
 msgstr ""
 
-#: FOption.form:197
+#: FOption.form:216
 msgid "Interface"
 msgstr ""
 
-#: FOption.form:207
+#: FOption.form:226
 msgid "Default font size"
 msgstr ""
 
-#: FOption.form:213 FPropertyProject.form:169
+#: FOption.form:232 FPropertyProject.form:169
 msgid "Normal"
 msgstr ""
 
-#: FOption.form:213
+#: FOption.form:232
 msgid "Small"
 msgstr ""
 
-#: FOption.form:213
+#: FOption.form:232
 msgid "Tiny"
 msgstr ""
 
-#: FOption.form:224
+#: FOption.form:243
 msgid "Small font size"
 msgstr ""
 
-#: FOption.form:241
+#: FOption.form:260
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.form:258
+#: FOption.form:277
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.form:264 FPropertyComponent.form:90 FPropertyProject.form:299
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:299
 msgid "No"
 msgstr ""
 
-#: FOption.form:264 FPropertyComponent.form:90 FPropertyProject.form:299
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:299
 msgid "Yes"
 msgstr ""
 
-#: FOption.form:279
+#: FOption.form:298
 msgid "Minimize at runtime"
 msgstr ""
 
-#: FOption.form:300
+#: FOption.form:319
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.form:316
+#: FOption.form:335
 msgid "Use utility windows"
 msgstr ""
 
-#: FOption.form:337
+#: FOption.form:356
 msgid "Always display optional messages"
 msgstr ""
 
-#: FOption.form:361
+#: FOption.form:380
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.form:373 FPropertyProject.form:274
+#: FOption.form:392 FPropertyProject.form:274
 msgid "space(s)"
 msgstr ""
 
-#: FOption.form:384
+#: FOption.form:403
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.form:390 FProperty.class:749
+#: FOption.form:409 FProperty.class:749
 msgid "None"
 msgstr ""
 
-#: FOption.form:390
+#: FOption.form:409
 msgid "Blend"
 msgstr ""
 
-#: FOption.form:390 MTheme.module:6
+#: FOption.form:409 MTheme.module:6
 msgid "Background"
 msgstr ""
 
-#: FOption.form:401
+#: FOption.form:420
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.form:422
+#: FOption.form:441
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.form:443
+#: FOption.form:462
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.form:464
+#: FOption.form:483
 msgid "Show spaces at end of line with dots"
 msgstr ""
 
-#: FOption.form:485
+#: FOption.form:504
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.form:506
+#: FOption.form:525
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.form:527
+#: FOption.form:546
 msgid "Control structure automatic completion"
 msgstr ""
 
-#: FOption.form:541
+#: FOption.form:560
 msgid "Style"
 msgstr ""
 
-#: FOption.form:547
+#: FOption.form:566
 msgid "Fonts"
 msgstr ""
 
-#: FOption.form:589
+#: FOption.form:608
 msgid "Theme"
 msgstr ""
 
-#: FOption.form:607
+#: FOption.form:626
 msgid "Import theme"
 msgstr ""
 
-#: FOption.form:613
+#: FOption.form:632
 msgid "Export theme"
 msgstr ""
 
-#: FOption.form:635
+#: FOption.form:654
 msgid "Applications"
 msgstr ""
 
-#: FOption.form:645
+#: FOption.form:664
 msgid "Browser"
 msgstr ""
 
-#: FOption.form:661
+#: FOption.form:680
 msgid "Terminal"
 msgstr ""
 
-#: FOption.form:677
+#: FOption.form:696
 msgid "Image editor"
 msgstr ""
 
-#: FOption.form:693
+#: FOption.form:712
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.form:707 MTheme.module:6
+#: FOption.form:726 MTheme.module:6
 msgid "Help"
 msgstr ""
 
-#: FOption.form:717
+#: FOption.form:736
 msgid "Display property help"
 msgstr ""
 
-#: FOption.form:738
+#: FOption.form:757
 msgid "Show tooltips"
 msgstr ""
 
-#: FOption.form:759
+#: FOption.form:778
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FOption.form:780
+#: FOption.form:799
 msgid "Clear documentation cache"
 msgstr ""
 
-#: FOption.form:792
+#: FOption.form:811
 msgid "Proxy configuration..."
 msgstr ""
 
-#: FOption.form:797
+#: FOption.form:816
 msgid "Code snippets"
 msgstr ""
 
-#: FOption.form:802
+#: FOption.form:821
 msgid "Activate code snippets"
 msgstr ""
 
-#: FOption.form:823 FTranslate.form:299
+#: FOption.form:842 FTranslate.form:299
 msgid "&New..."
 msgstr ""
 
-#: FOption.form:830
+#: FOption.form:849
 msgid "&Edit..."
 msgstr ""
 
-#: FOption.form:845
+#: FOption.form:864
 msgid "Re&set"
 msgstr ""
 
-#: FOption.form:853
+#: FOption.form:872
 msgid "E&xport..."
 msgstr ""
 
-#: FOption.form:861
+#: FOption.form:880
 msgid "&Import..."
 msgstr ""
 
-#: FOption.form:867
+#: FOption.form:886
 msgid "Code formatting"
 msgstr ""
 
-#: FOption.form:877
+#: FOption.form:896
 msgid "Format on load & save"
 msgstr ""
 
-#: FOption.form:898
+#: FOption.form:917
 msgid "Indent local variable declaration"
 msgstr ""
 
-#: FOption.form:919
+#: FOption.form:938
 msgid "Remove useless spaces at end of line"
 msgstr ""
 
-#: FOption.form:940
+#: FOption.form:959
 msgid "Keep successive void lines"
 msgstr ""
 
-#: FOption.form:954
-msgid "Packages"
+#: FOption.form:973
+msgid "Source Archives"
 msgstr ""
 
-#: FOption.form:960
-msgid "Ignore these files in source packages"
+#: FOption.form:979
+msgid "Ignore these files in source archives"
+msgstr ""
+
+#: FOption.form:1019
+msgid "Packaging"
+msgstr ""
+
+#: FOption.form:1025
+msgid "Default maintainer information"
 msgstr ""
 
 #: FOption.class:72
@@ -3483,31 +3488,31 @@ msgstr ""
 msgid "Define..."
 msgstr ""
 
-#: FOption.class:165
+#: FOption.class:172
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FOption.class:166
+#: FOption.class:173
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:327
+#: FOption.class:334
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:350
+#: FOption.class:357
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:637
+#: FOption.class:644
 msgid "Do you really want to clear the documentation cache?"
 msgstr ""
 
-#: FOption.class:784
+#: FOption.class:791
 msgid "Do you really want to delete this snippet?"
 msgstr ""
 
-#: FOption.class:920
+#: FOption.class:927
 msgid "Do you really want to reset the list to its default value?"
 msgstr ""
 

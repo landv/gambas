@@ -25,7 +25,7 @@ Fast Private Sub FastDrawFractalRect(hImage As Image, XO As Float, YO As Float, 
   XF0 = XO + X * SF
   YF0 = YO + Y * SF
   
-  If W <= 4 Or H <= 4 Then Goto CALC_ALL
+  If W <= 4 And If H <= 4 Then Goto CALC_ALL
   
   XF1 = XF0 + (W - 1) * SF
   YF1 = YF0 + (H - 1) * SF
@@ -42,7 +42,7 @@ Fast Private Sub FastDrawFractalRect(hImage As Image, XO As Float, YO As Float, 
     CC = C
     bSame = True
     
-    XF += SF
+    'XF += SF
     For I = X To X + W - 1
       YF = YF0
       J = Y
@@ -164,7 +164,7 @@ Private Sub DrawFractalRect(hImage As Image, XO As Float, YO As Float, SF As Flo
   XF0 = XO + X * SF
   YF0 = YO + Y * SF
   
-  If W <= 4 Or H <= 4 Then Goto CALC_ALL
+  If W <= 4 And If H <= 4 Then Goto CALC_ALL
   
   XF1 = XF0 + (W - 1) * SF
   YF1 = YF0 + (H - 1) * SF

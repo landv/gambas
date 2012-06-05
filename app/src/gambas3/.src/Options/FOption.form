@@ -704,19 +704,16 @@
     { Label33 Label
       MoveScaled(0,0,61,4)
       Font = Font["Bold"]
-      Text = ("Packager Defaults")
+      Text = ("Default maintainer information")
     }
     { HBox36 HBox
       MoveScaled(0,4,66,4)
       Spacing = True
       Indent = True
-      { Panel21 Panel
-        MoveScaled(0,1,2,2.1429)
-      }
       { Label35 Label
-        MoveScaled(10,0,17,4)
+        MoveScaled(0,0,17,4)
         Expand = True
-        Text = ("Maintainer")
+        Text = ("Name")
       }
       { txtMaintainer TextBox
         MoveScaled(29,0,35,4)
@@ -726,13 +723,10 @@
       MoveScaled(0,9,66,4)
       Spacing = True
       Indent = True
-      { Panel22 Panel
-        MoveScaled(0,0,2,2.1429)
-      }
       { Label34 Label
-        MoveScaled(10,0,17,4)
+        MoveScaled(0,0,17,4)
         Expand = True
-        Text = ("Vendor")
+        Text = ("Vendor name")
       }
       { txtVendor TextBox
         MoveScaled(29,0,35,4)
@@ -742,13 +736,10 @@
       MoveScaled(0,14,66,4)
       Spacing = True
       Indent = True
-      { Panel23 Panel
-        MoveScaled(0,0,2,2.1429)
-      }
       { Label36 Label
-        MoveScaled(10,0,17,4)
+        MoveScaled(0,0,17,4)
         Expand = True
-        Text = ("Address")
+        Text = ("E-mail")
       }
       { txtAddress TextBox
         MoveScaled(29,0,35,4)
@@ -758,11 +749,8 @@
       MoveScaled(0,19,66,4)
       Spacing = True
       Indent = True
-      { Panel24 Panel
-        MoveScaled(0,0,2,2.1429)
-      }
       { Label37 Label
-        MoveScaled(10,0,17,4)
+        MoveScaled(0,0,17,4)
         Expand = True
         Text = ("License")
       }
@@ -776,11 +764,8 @@
       MoveScaled(0,24,66,4)
       Spacing = True
       Indent = True
-      { Panel25 Panel
-        MoveScaled(0,0,2,2.1429)
-      }
       { Label38 Label
-        MoveScaled(10,0,17,4)
+        MoveScaled(0,0,17,4)
         Expand = True
         Text = ("URL")
       }
@@ -792,16 +777,13 @@
       MoveScaled(0,30,66,4)
       Spacing = True
       Indent = True
-      { Panel26 Panel
-        MoveScaled(0,0,2,2.1429)
-      }
       { Label41 Label
-        MoveScaled(10,0,31,4)
+        MoveScaled(0,0,42,4)
         Expand = True
-        Text = ("Prefix package with vendor name")
+        Text = ("Prefix package name with the vendor name")
       }
       { cboPrefix ComboBox
-        MoveScaled(49,0,14,4)
+        MoveScaled(53,0,10,4)
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
