@@ -60,10 +60,10 @@ public:
     TextNode* toTextNode();
     
     //String output
-    virtual void addStringLen(size_t *len) = 0;//Calculates the node's string representation length, and adds it to len (recursive)
-    virtual void addString(char **data) = 0;//Puts the string represenetation into data, and increments it (recursive)
+    virtual void addStringLen(size_t *len, int indent = 0) = 0;//Calculates the node's string representation length, and adds it to len (recursive)
+    virtual void addString(char **data, int indent = 0) = 0;//Puts the string represenetation into data, and increments it (recursive)
     void toString(char **output, size_t *len);//Converts the node to its string representation
-    void toGBString(char *&output, size_t &len);
+    void toGBString(char *&output, size_t &len, int indent = 0);
     
     virtual void setTextContent(const char *ncontent, const size_t nlen) = 0;//Sets the plain text conent of a node
     virtual void addTextContentLen(size_t &len) = 0;

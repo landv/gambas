@@ -534,10 +534,10 @@ bool Element::attributeContains(const char *attrName, size_t lenAttrName, char *
 }
 
 /***** String output *****/
-void Element::addStringLen(size_t *len)
+void Element::addStringLen(size_t *len, int indent)
 {
-    // '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' 
-    // + children + '</' + tag + '>"
+    // (indent) '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' 
+    // + children + (indent) '</' + tag + '>" \n
     // Or, singlElement :
     // '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' 
     
@@ -561,7 +561,7 @@ void Element::addStringLen(size_t *len)
     
 }
 
-void Element::addString(char **data)
+void Element::addString(char **data, int indent)
 {
     register char *content = (*data);
     bool single = isSingle();
@@ -702,7 +702,7 @@ else \
     curElement->appendChild(_elmt);\
 }
 
-Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
+Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException)
 {
     *nodeCount = 0;
     if(!lendata || !data) return 0; //Empty ?
@@ -745,15 +745,22 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
                 if(!curElement)//Pas d'élément courant
                 {
                     //ERREUR : CLOSING TAG WHEREAS NONE IS OPEN
+                    throw(XMLParseException("Closing tag whereas none is open",
+                                            data, lendata, pos - 1));
+                    
                 }
                 if((endData) < pos + curElement->lenTagName)//Impossible que les tags correspondent
                 {
                     //ERREUR : TAG MISMATCH
+                    throw(XMLParseException("Tag mismatch",
+                    data, lendata, pos - 1));
                 }
                 //Les tags ne correspondent pas
                 else if(memcmp(pos, curElement->tagName, curElement->lenTagName) != 0)
                 {
                     //ERREUR : TAG MISMATCH
+                    throw(XMLParseException("Tag mismatch",
+                    data, lendata, pos - 1));
                 }
                 else//Les tags correspondent, on remonte
                 {
@@ -773,7 +780,9 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
                     tag = (char*)memchrs(pos, endData - pos, "-->", 3);
                     if(!tag)//Commentaire sans fin
                     {
-                        //ERREUR : UNENDED COMMENT
+                        //ERREUR : NEVER-ENDING COMMENT
+                        throw(XMLParseException("Never-ending comment",
+                        data, lendata, pos - 1));
                     }
                     
                     CommentNode *comment = new CommentNode(pos, tag - pos);
@@ -788,6 +797,8 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
                     if(!tag)//Cdata sans fin
                     {
                         //ERREUR : UNENDED CDATA
+                        throw(XMLParseException("Never-ending CDATA",
+                        data, lendata, pos - 1));
                     }
                     
                     CDATANode *cdata = new CDATANode(pos, tag - pos);
@@ -797,11 +808,15 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
                 else// ... ?
                 {
                     //ERREUR : INVALID TAG
+                    throw(XMLParseException("Invalid Tag",
+                    data, lendata, pos - 1));
                 }
             }
             else// ... ?
             {
                 //ERREUR : INVALID TAG
+                throw(XMLParseException("Invalid Tag",
+                data, lendata, pos - 1));
             }
         }//Si tout va bien, on a un nouvel élément
         else
@@ -810,7 +825,9 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
             {
                 if(pos > endData)
                 {
-                    //ERREUR : UNENDED TAG
+                    //ERREUR : NEVER-ENDING TAG
+                    throw(XMLParseException("Never-ending tag",
+                    data, lendata, pos - 1));
                 }
             }
             pos--;
@@ -856,7 +873,8 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
                         else
                         {
                             //ERREUR : INVALID TAG
-                            //throw HTMLParseException(i, 0, "", "INVALID TAG");
+                            throw(XMLParseException("Invalid tag",
+                            data, lendata, pos - 1));
                         }
                     }
                     
@@ -868,7 +886,8 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount)
                     if(delimiter != CHAR_DOUBLEQUOTE && delimiter != CHAR_SINGLEQUOTE)
                     {
                         //ERREUR : EXPECTED ATTRIBUTE DELIMITER
-                        //throw HTMLParseException(0, 0, "", "EXPECTED ATTRIBUTE DELIMITER");
+                        throw(XMLParseException("Expected attribute delimiter",
+                        data, lendata, pos - 1));
                     }
                     pos++;
                     
@@ -985,12 +1004,12 @@ Node::Type Attribute::getType()
     return Node::AttributeNode;
 }
 
-void Attribute::addStringLen(size_t *len)
+void Attribute::addStringLen(size_t *len, int indent)
 {
     
 }
 
-void Attribute::addString(char **data)
+void Attribute::addString(char **data, int indent)
 {
     
 }
@@ -1018,3 +1037,4 @@ void Attribute::NewGBObject()
     GBObject->node = this;
     NoInstanciate = false;
 }
+

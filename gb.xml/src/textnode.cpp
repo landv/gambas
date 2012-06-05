@@ -20,7 +20,7 @@
 ***************************************************************************/
 
 #include "textnode.h"
-
+#include "utils.h"
 #include "gbi.h"
 #include "CNode.h"
 
@@ -52,15 +52,27 @@ Node::Type TextNode::getType()
 
 /***** String output *****/
 
-void TextNode::addStringLen(size_t *len)
+void TextNode::addStringLen(size_t *len, int indent)
 {
     *len += lenContent;
+    if(indent) *len += indent + 1;
 }
 
-void TextNode::addString(char **data)
+#define ADD(_car) **data = _car; ++(*data);
+
+void TextNode::addString(char **data, int indent)
 {
+    if(indent) 
+    {
+        memset(*data, CHAR_SPACE, indent); 
+        *data += indent;
+    }
     memcpy(*data, content, lenContent);
     *data += lenContent;
+    if(indent)
+    {
+        ADD(SCHAR_N);
+    }
 }
 
 /***** Text Content *****/
@@ -130,20 +142,30 @@ void CommentNode::NewGBObject()
     NoInstanciate = false;
 }
 
-void CommentNode::addStringLen(size_t *len)
+void CommentNode::addStringLen(size_t *len, int indent)
 {
     // <!-- + content + -->
     *len += lenContent + 7;
+    if(indent > 0) *len += indent + 1;
 }
 
-void CommentNode::addString(char **data)
+void CommentNode::addString(char **data, int indent)
 {
+    if(indent) 
+    {
+        memset(*data, CHAR_SPACE, indent); 
+        *data += indent;
+    }
     memcpy(*data, "<!--", 4);
     *data += 4;
     memcpy(*data, content, lenContent);
     *data += lenContent;
     memcpy(*data, "-->", 3);
     *data += 3;
+    if(indent)
+    {
+        ADD(SCHAR_N);
+    }
 }
 
 /*************************************** CDATA ***************************************/
@@ -177,18 +199,28 @@ void CDATANode::NewGBObject()
     NoInstanciate = false;
 }
 
-void CDATANode::addStringLen(size_t *len)
+void CDATANode::addStringLen(size_t *len, int indent)
 {
     // <![CDATA[ + content + ]]>
     *len += lenContent + 12;
+    if(indent) *len += indent + 1;
 }
 
-void CDATANode::addString(char **data)
+void CDATANode::addString(char **data, int indent)
 {
+    if(indent) 
+    {
+        memset(*data, CHAR_SPACE, indent); 
+        *data += indent;
+    }
     memcpy(*data, "<![CDATA[", 9);
     *data += 9;
     memcpy(*data, content, lenContent);
     *data += lenContent;
     memcpy(*data, "]]>", 3);
     *data += 3;
+    if(indent)
+    {
+        ADD(SCHAR_N);
+    }
 }

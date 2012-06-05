@@ -20,6 +20,7 @@
 ***************************************************************************/
 
 #include "utils.h"
+#include <cstdio>
 
 wchar_t nextUTF8Char(char *&data, size_t len)
 {
@@ -155,6 +156,63 @@ void Trim(char *&str, size_t &len)
     
     while(isWhiteSpace(*(str + len)))
         --len;
+}
+
+
+/************************************ Error Management ************************************/
+
+XMLParseException::XMLParseException(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw() 
+    : exception() 
+{
+    if(posFailed == 0) return;
+    if(posFailed > data + lenData || posFailed < data) return;
+    AnalyzeText(data, lenData, posFailed);
+    
+    lenError = strlen(nerror) + 1;
+    error = (char*) malloc(lenError);
+    memcpy(error, nerror, lenError);
+    
+    //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
+    errorWhat = (char*)malloc(61 + lenError + lenNear);
+    memset(errorWhat, 0, 61 + lenError + lenNear);
+    sprintf(errorWhat, "Parse error : %s !\n Line %u , Column %u : \n %s", error, line, column, near);
+    errorWhat[60 + lenError + lenNear] = 0;
+    
+}
+
+XMLParseException::~XMLParseException() throw()
+{
+    free(near);
+    free(error);
+}
+
+void XMLParseException::AnalyzeText(const char *text, const size_t lenText, const char *posFailed) throw()
+{
+    for(const char *pos = text; pos < posFailed; ++pos)
+    {
+        ++column;
+        if(*pos == SCHAR_N)
+        {
+            column = 0;
+            ++line;
+        }
+        else if(*pos == SCHAR_R)
+        {
+            if(*(pos + 1) == SCHAR_N) ++pos;
+            column = 0;
+            ++line;
+        }
+    }
+    
+    lenNear = text + lenText <= posFailed + 20 ?  text + lenText - posFailed : 20;
+    near = (char*)malloc(lenNear + 1);
+    memcpy(near, posFailed, lenNear);
+    near[lenNear] = 0;
+}
+
+const char* XMLParseException::what() const throw()
+{
+    return errorWhat;
 }
 
 

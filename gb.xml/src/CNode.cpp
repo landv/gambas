@@ -46,12 +46,12 @@ THIS->DestroyGBObject();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CNode_tostring)
+BEGIN_METHOD(CNode_tostring, GB_BOOLEAN indent)
 
     char *str = 0;
     size_t len = 0;
     
-    THIS->toGBString(str, len);
+    THIS->toGBString(str, len, VARG(indent) ? 0 : -1);
     
     GB.ReturnString(str);
 

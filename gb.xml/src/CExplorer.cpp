@@ -83,7 +83,14 @@ if(GB.LoadFile(STRING(path), LENGTH(path), &content, &len))
     return;
 }
 
-    doc->setContent(content, len);
+    try
+    {
+        doc->setContent(content, len);
+    }
+    catch(XMLParseException &e)
+    {
+        GB.Error(e.what());
+    }
     GB.ReleaseFile(content, len);
 
 THIS->Load(doc);

@@ -23,6 +23,7 @@
 #define ELEMENT_H
 
 #include "node.h"
+#include "utils.h"
 
 class Attribute : public Node
 {
@@ -42,8 +43,8 @@ public:
     size_t lenAttrValue;
     
     virtual Node::Type getType();
-    virtual void addStringLen(size_t *len);
-    virtual void addString(char **data);
+    virtual void addStringLen(size_t *len, int indent = 0);
+    virtual void addString(char **data, int indent = 0);
     virtual void setTextContent(const char *ncontent, const size_t nlen);
     virtual void addTextContentLen(size_t &len);
     virtual void addTextContent(char *&data);
@@ -116,8 +117,8 @@ public:
     size_t attributeCount;
     
     //String output
-    virtual void addStringLen(size_t *len);
-    virtual void addString(char **data);
+    virtual void addStringLen(size_t *len, int indent = 0);
+    virtual void addString(char **data, int indent = 0);
     
     //Text Content
     virtual void setTextContent(const char *ncontent, const size_t nlen);
@@ -126,7 +127,7 @@ public:
     
     //Parser
     static void GBfromText(char *data, const size_t lendata, GB_ARRAY *array);
-    static Node** fromText(char *data, const size_t lendata, size_t *nodeCount);
+    static Node** fromText(char *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException);
     
     //Gambas object    
     virtual void NewGBObject();

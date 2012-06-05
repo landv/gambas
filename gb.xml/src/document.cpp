@@ -22,11 +22,13 @@
 #include "document.h"
 #include "element.h"
 #include "utils.h"
+#include "gbi.h"
+#include "CDocument.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-Document::Document()
+Document::Document() : GBObject(0)
 {
     root = new Element("xml", 3);
     root->parentDocument = this;
@@ -66,7 +68,7 @@ void Document::getAllElements(GB_ARRAY *array)
 }
 
 /***** Document loading *****/
-void Document::Open(const char *fileName, const size_t lenFileName)
+void Document::Open(const char *fileName, const size_t lenFileName) throw(XMLParseException)
 {
     char *content; int len;
     
@@ -81,17 +83,22 @@ void Document::Open(const char *fileName, const size_t lenFileName)
     
 }
 
-void Document::setContent(char *content, size_t len)
+void Document::setContent(char *content, size_t len) throw(XMLParseException)
 {
     char *posStart = 0, *posEnd = 0;
     
     //On cherche le début du prologue XML
     posStart = (char*)memchrs(content, len, "<?xml ", 6);
-    //if(!posStart) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
+    
+    if(!posStart) 
+        throw(XMLParseException("No valid XML prolog found",
+        0, 0, 0));;
 
     //On cherche la fin du prologue XML
     posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
-    //if(!posEnd) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
+    if(!posEnd) 
+        throw(XMLParseException("No valid XML prolog found",
+        0, 0, 0));;
 
     Node** elements = 0;
     size_t elementCount = 0;
@@ -132,12 +139,17 @@ void Document::toString(char **output, size_t *len)
     (*output) -= (*len);
 }
 
-void Document::toGBString(char **output, size_t *len)
+void Document::toGBString(char **output, size_t *len, int indent)
 {
     //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
-    *len = 38; root->addStringLen(len);
+    *len = 38 + (indent ? 1 : 0); root->addStringLen(len, indent);
     *output = GB.TempString(0, *len);
     memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
+    if(indent) 
+    {
+        **output = SCHAR_N;
+        ++(*output);
+    }
     *output += 38;
     root->addString(output);
     (*output) -= (*len);
@@ -163,4 +175,12 @@ void Document::save(const char *fileName)
     fputs(data, newFile);
     fclose(newFile);
     
+}
+
+void Document::NewGBObject()
+{
+    Node::NoInstanciate = true;
+    GBObject = GBI::New<CDocument>("XmlDocument");
+    GBObject->doc = this;
+    Node::NoInstanciate = false;
 }

@@ -23,9 +23,11 @@
 #define DOCUMENT_H
 
 #include "main.h"
+#include "utils.h"
 
 class Element;
 struct CDocument;
+class XMLParseException;
 
 class Document 
 {
@@ -35,12 +37,12 @@ public:
     virtual ~Document();
     
     //Document loading
-    void Open(const char *fileName, const size_t lenFileName);
-    virtual void setContent(char *content, size_t len);
+    void Open(const char *fileName, const size_t lenFileName) throw(XMLParseException);
+    virtual void setContent(char *content, size_t len) throw(XMLParseException);
     
     //String output
     virtual void toString(char **output, size_t *len);
-    virtual void toGBString(char **output, size_t *len);
+    virtual void toGBString(char **output, size_t *len, int indent = 0);
     void save(const char *fileName);
     
     
@@ -51,6 +53,8 @@ public:
     
     Element *root;
     CDocument *GBObject;
+    
+    virtual void NewGBObject();
 };
 
 #endif // DOCUMENT_H

@@ -121,11 +121,11 @@ void Node::toString(char **output, size_t *len)
     (*output) -= (*len);
 }
 
-void Node::toGBString(char *&output, size_t &len)
+void Node::toGBString(char *&output, size_t &len, int indent)
 {
-    len = 0; addStringLen(&len);
+    len = 0; addStringLen(&len, indent);
     output = GB.TempString(0, len);
-    addString(&output);
+    addString(&output, indent);
     output -= len;
 }
 

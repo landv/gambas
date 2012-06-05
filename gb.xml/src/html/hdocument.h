@@ -44,7 +44,7 @@ public:
     Element* getElementById(char *id, size_t lenId, int depth);
     void getElementsByClassName(char* className, size_t lenClassName, GB_ARRAY *array, int depth = -1);
 
-    virtual void setContent(char *content, size_t len);
+    virtual void setContent(char *content, size_t len) throw(XMLParseException);
 
     void getGBTitle(char *&title, size_t &len);
     void setTitle(char *title, size_t len);

@@ -24,10 +24,13 @@
 #include "gbi.h"
 #include "document.h"
 #include "element.h"
+#include "utils.h"
 
 #define THIS (static_cast<CDocument*>(_object)->doc)
 
 BEGIN_METHOD(CDocument_new, GB_STRING fileName)
+
+if(Node::NoInstanciate) return;
 
 if(!MISSING(fileName))
 {
@@ -50,7 +53,14 @@ END_METHOD
 
 BEGIN_METHOD(CDocument_fromString, GB_STRING content)
 
-THIS->setContent(STRING(content), LENGTH(content));
+try
+{
+    THIS->setContent(STRING(content), LENGTH(content));
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
+}
 
 END_METHOD
 
@@ -78,7 +88,14 @@ if(READ_PROPERTY)
 }
 else
 {
-    THIS->setContent(PSTRING(), PLENGTH());
+    try
+    {
+        THIS->setContent(PSTRING(), PLENGTH());
+    }
+    catch(XMLParseException &e)
+    {
+        GB.Error(e.what());
+    }
 }
 
 END_PROPERTY
@@ -91,7 +108,14 @@ END_PROPERTY
 
 BEGIN_METHOD(CDocument_open, GB_STRING fileName)
 
-THIS->Open(STRING(fileName), LENGTH(fileName));
+try
+{
+    THIS->Open(STRING(fileName), LENGTH(fileName));
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
+}
 
 END_METHOD
 

@@ -44,6 +44,7 @@
 #include "../textnode.h"
 #include "../textnode.cpp"
 #include "../gbi.cpp"
+#include "../utils.cpp"
 
 BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
 
@@ -70,7 +71,7 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     
     char *StyleSheetOutput;
     size_t StyleSheetLen;
-    doc->toString(&StyleSheetOutput, &StyleSheetLen);
+    stylesheet->toString(&StyleSheetOutput, &StyleSheetLen);
     
     StyleSheetOutput =(char*)realloc(StyleSheetOutput, StyleSheetLen + 1);
     StyleSheetOutput[StyleSheetLen] = 0;
@@ -108,12 +109,18 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     xmlDocDumpFormatMemoryEnc(xmlOutDoc ,&buffer, &size, "UTF-8", 1);
 
     Document *outDoc = new Document;
-
-    outDoc->setContent((char*)(buffer),size);
-
-//    outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>");
-//    std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
-
+    
+    try
+    {
+        outDoc->setContent((char*)(buffer),size);
+    }
+    catch(XMLParseException &e)
+    {
+        //outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>", 32);
+        std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
+        return;
+    }
+        
     GBI::Return(outDoc);
 		
 END_METHOD

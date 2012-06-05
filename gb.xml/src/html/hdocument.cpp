@@ -20,10 +20,10 @@
 ***************************************************************************/
 
 
+#include "helement.h"
 #include "hdocument.h"
 #include "../textnode.h"
 #include "../utils.h"
-#include "helement.h"
 
 HtmlDocument::HtmlDocument() : Document(), html5(false)
 {
@@ -318,7 +318,7 @@ void HtmlDocument::toGBString(char **output, size_t *len)
     (*output) -= (*len);
 }
 
-void HtmlDocument::setContent(char *content, size_t len)
+void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException)
 {
     char *posStart = 0, *posEnd = 0;
     

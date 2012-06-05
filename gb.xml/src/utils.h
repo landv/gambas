@@ -65,5 +65,28 @@ bool isWhiteSpace(const char s);
 
 void Trim(char *&str, size_t &len);
 
+#include <exception>
+
+class XMLParseException : public exception
+{
+public:
+    XMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed) throw();
+    virtual ~XMLParseException() throw();
+    
+    virtual const char* what() const throw();
+    
+private:
+    void AnalyzeText(const char *text, const size_t lenText, const char *posFailed) throw();
+    
+    char *near;
+    char *error;
+    size_t lenError;
+    size_t lenNear;
+    size_t line;
+    size_t column;
+    
+    char *errorWhat;
+};
+
 
 #endif // UTILS_H

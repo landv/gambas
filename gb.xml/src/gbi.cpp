@@ -42,5 +42,9 @@ void GBI::Return(Document *doc)
     {
         GB.ReturnNull(); return;
     }
+    if(!doc->GBObject)
+    {
+        doc->NewGBObject();
+    }
     GB.ReturnObject(doc->GBObject);
 }
