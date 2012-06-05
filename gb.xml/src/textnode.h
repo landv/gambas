@@ -37,8 +37,8 @@ public:
     //static void *operator new (size_t taille);
     
     //String output
-    virtual void addStringLen(size_t *len);
-    virtual void addString(char **data);
+    virtual void addStringLen(size_t *len, int indent = 0);
+    virtual void addString(char **data, int indent = 0);
     
     //Text content
     virtual void setTextContent(const char *ncontent, const size_t nlen);
@@ -61,8 +61,8 @@ public:
     virtual Node::Type getType();
     
     //String output
-    virtual void addStringLen(size_t *len);
-    virtual void addString(char **data);
+    virtual void addStringLen(size_t *len, int indent = 0);
+    virtual void addString(char **data, int indent = 0);
     
     //Gambas object
     virtual void NewGBObject();
@@ -78,8 +78,8 @@ public:
     virtual Node::Type getType();
     
     //String output
-    virtual void addStringLen(size_t *len);
-    virtual void addString(char **data);
+    virtual void addStringLen(size_t *len, int indent = 0);
+    virtual void addString(char **data, int indent = 0);
     
     //Gambas object
     virtual void NewGBObject();
