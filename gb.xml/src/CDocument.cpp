@@ -47,7 +47,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CDocument_free)
 
-delete THIS;
+//delete THIS;
 
 END_METHOD
 

@@ -328,6 +328,18 @@ Element* Element::firstChildElement()
     return 0;
 }
 
+Element* Element::lastChildElement()
+{
+    Node *child = lastChild;
+    while(child != 0)
+    {
+        if(child->isElement()) return (Element*)child;
+        child = child->previousNode;
+    }
+    
+    return 0;
+}
+
 Element* Element::nextSibling()
 {
     Node *child = this->nextNode;

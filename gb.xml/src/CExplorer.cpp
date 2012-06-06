@@ -20,6 +20,7 @@
 ***************************************************************************/
 
 #include "CExplorer.h"
+#include "CDocument.h"
 #include "explorer.h"
 #include "gbi.h"
 #include "document.h"
@@ -58,10 +59,10 @@ END_METHOD
 
 BEGIN_METHOD(CExplorer_new, GB_OBJECT doc)
 
-THIS->Init();
+THIS = new Explorer;
 if(!MISSING(doc))
 {
-    THIS->Load(VARGOBJ(Document, doc));
+    THIS->Load(VARGOBJ(CDocument, doc)->doc);
 }
 
 END_METHOD
@@ -109,6 +110,12 @@ GB.ReturnInteger(THIS->state);
 
 END_PROPERTY
 
+BEGIN_METHOD(CExplorer_document, GB_OBJECT doc)
+
+THIS->Load(VARGOBJ(CDocument, doc)->doc);
+
+END_METHOD
+
 GB_DESC CExplorerReadFlagsDesc[] =
 {
     GB_DECLARE(".XmlExplorerReadFlags", 0), GB_VIRTUAL_CLASS(),
@@ -125,6 +132,7 @@ GB_DESC CExplorerDesc[] =
 
     GB_METHOD("_new", "", CExplorer_new, "[(Document)XmlDocument]"),
     GB_METHOD("_free", "", CExplorer_free, ""),
+    GB_METHOD("Load", "", CExplorer_document, "(Document)XmlDocument"),
     GB_PROPERTY_SELF("ReadFlags", ".XmlExplorerReadFlags"),
     GB_PROPERTY_READ("Node", "XmlNode", CExplorer_Node),
     GB_PROPERTY_READ("Eof", "b", CExplorer_eof),

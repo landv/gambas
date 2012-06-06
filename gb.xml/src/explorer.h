@@ -42,6 +42,8 @@ class Node;
 class Explorer
 {
 public:
+    Explorer();
+    
     void Load(Document *doc);
 
 

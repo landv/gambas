@@ -26,6 +26,10 @@
 
 //#define DEBUG std::cout << pos << " : " <<
 
+Explorer::Explorer()
+{
+    Init();
+}
 
 void Explorer::Init()
 {
@@ -42,6 +46,7 @@ void Explorer::Init()
 void Explorer::Load(Document *doc)
 {
     //UNREF(loadedDocument);
+    Clear();
     loadedDocument = doc;
     //GB.Ref(doc);
 
@@ -59,6 +64,12 @@ void Explorer::Clear()
 int Explorer::MoveNext()
 {
     if(eof) return READ_ERR_EOF;
+    if(!loadedDocument)
+    {
+        GB.Error("No document loaded");
+        GB.Propagate();
+        return READ_ERR_EOF;
+    }
     if(!curNode)//Début du document
     {
         curNode = (Node*)(loadedDocument->root);
