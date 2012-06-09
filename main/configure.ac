@@ -18,6 +18,10 @@ GB_COMPONENT(
   [],
   [This library may be located inside the system C library, so you can ignore that warning...])
 
+dnl ---- Remove DISABLED file that could have been generated before
+
+rm -f DISABLED DISABLED.*
+
 dnl ---- Check for charset conversion library
 
 GB_COMPONENT(
@@ -27,6 +31,10 @@ GB_COMPONENT(
   [-liconv],
   [],
   [This library may be located inside the system C library, so you can ignore that warning...])
+
+dnl ---- Remove DISABLED file that could have been generated before
+
+rm -f DISABLED DISABLED.*
 
 dnl ---- Check for gettext library
 
@@ -41,6 +49,10 @@ GB_COMPONENT(
   [This library may be located inside the system C library, so you can ignore that warning...])
   
 fi
+
+dnl ---- Remove DISABLED file that could have been generated before
+
+rm -f DISABLED DISABLED.*
 
 dnl ---- Check for ffi library
 
