@@ -226,6 +226,7 @@ void MyDrawingArea::createBackground(int w, int h)
 	GC gc;
 	
 	_background = (Qt::HANDLE)XCreatePixmap(QX11Info::display(), RootWindow(QX11Info::display(), xinfo.screen()), w, h, xinfo.depth());
+	_background_pixmap = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
 	_background_w = w;
 	_background_h = h;
 	
@@ -266,12 +267,10 @@ void MyDrawingArea::deleteBackground()
 
 QPixmap *MyDrawingArea::getBackgroundPixmap()
 {
-	if (!_cached)
+	if (!_cached || !_background)
 		return NULL;
-	
-	_background_pixmap = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
-	//qDebug("getBackgroundPixmap: %08X", (int)_background_pixmap.handle());
-	return &_background_pixmap;
+	else
+		return &_background_pixmap;
 }
 
 void MyDrawingArea::paintEvent(QPaintEvent *event)
