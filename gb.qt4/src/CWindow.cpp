@@ -2189,6 +2189,7 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 		if (!test->isVisible() || !test->isEnabled())
 			return;
 
+		test->setFocus();
 		test->animateClick();
 		e->accept();
 	}

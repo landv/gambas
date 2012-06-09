@@ -812,6 +812,7 @@ static void gambas_handle_event(GdkEvent *event)
 					
 					if (check_button(win->_cancel))
 					{
+						win->_cancel->setFocus();
 						win->_cancel->animateClick(type == gEvent_KeyRelease);
 						goto __RETURN;
 					}
@@ -820,6 +821,7 @@ static void gambas_handle_event(GdkEvent *event)
 				{
 					if (check_button(win->_default))
 					{
+						win->_default->setFocus();
 						win->_default->animateClick(type == gEvent_KeyRelease);
 						goto __RETURN;
 					}
