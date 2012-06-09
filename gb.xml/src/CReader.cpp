@@ -73,16 +73,12 @@ GB.ReturnInteger(THIS->pos);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CReader_node)
-
-if(!READ_PROPERTY) return;
-if(!THIS->foundNode) {GB.ReturnNull(); return;}
-
-RETURN_SELF();
-
-END_PROPERTY
-
 BEGIN_METHOD_VOID(CReaderNodeAttr_next)
+
+if(!THIS->foundNode) 
+{
+    GB.StopEnum(); return;
+}
 
 if(!THIS->foundNode->isElement())
 {
@@ -114,6 +110,11 @@ END_METHOD
 
 BEGIN_METHOD(CReaderNodeAttr_get, GB_STRING name)
 
+if(!THIS->foundNode) 
+{
+    return;
+}
+
 if(!THIS->foundNode->isElement()) return;
 
 Attribute *attr = THIS->foundNode->toElement()->getAttribute(STRING(name), LENGTH(name));
@@ -124,6 +125,10 @@ END_METHOD
 
 BEGIN_METHOD(CReaderNodeAttr_put, GB_STRING value; GB_STRING name)
 
+if(!THIS->foundNode) 
+{
+    return;
+}
 if(!THIS->foundNode->isElement()) return;
 THIS->foundNode->toElement()->setAttribute(STRING(name), LENGTH(name), 
                                            STRING(value), LENGTH(value));
@@ -131,6 +136,12 @@ THIS->foundNode->toElement()->setAttribute(STRING(name), LENGTH(name),
 END_METHOD
 
 BEGIN_PROPERTY(CReaderNodeAttr_count)
+
+if(!THIS->foundNode) 
+{
+    GB.ReturnInteger(0);
+    return;
+}
 
 if(READ_PROPERTY && THIS->foundNode->isElement())
 {
@@ -157,6 +168,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CReaderNode_type)
 
+if(!THIS->foundNode) 
+{
+    GB.ReturnInteger(0);
+    return;
+}
+
+
 if(THIS->curAttrEnum)
 {
     GB.ReturnInteger(READ_ATTRIBUTE);
@@ -181,6 +199,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Value)
 
+if(!THIS->foundNode) 
+{
+    GB.ReturnNull();
+    return;
+}
+
 
 if(THIS->curAttrEnum)
 {
@@ -196,6 +220,12 @@ GB.ReturnString(data);
 END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Name)
+
+if(!THIS->foundNode) 
+{
+    GB.ReturnNull();
+    return;
+}
 
 if(THIS->curAttrEnum)
 {
@@ -234,6 +264,8 @@ if(!READ_PROPERTY) return;
 //GBI::ObjectArray<Node> *nodes = new GBI::ObjectArray<Node>("XmlNode", *(THIS->storedElements));
 //GB.ReturnObject(nodes->array);
 //delete nodes;
+
+GB.ReturnObject(0);
 
 END_PROPERTY
 
@@ -319,7 +351,7 @@ GB_DESC CReaderDesc[] =
 
     GB_PROPERTY("KeepData", "b", CReader_keepData),
     GB_PROPERTY_READ("Pos", "i", CReader_pos),
-    GB_PROPERTY("Node", ".XmlReader.Node", CReader_node),
+    GB_PROPERTY_SELF("Node", ".XmlReader.Node"),
     GB_PROPERTY_READ("StoredNodes", "XmlNode[]", CReader_storedNodes),
     GB_PROPERTY_READ("Depth","i",CReader_Depth),
     

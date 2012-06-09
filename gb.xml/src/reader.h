@@ -69,6 +69,8 @@ public :
     bool inAttrVal;//Si on est en train de lire une valeur d'attribut
     bool inEndTag;//Si on est dans un tag de fin
     bool inNewTag;//Si on est dans un nouveau tag
+    bool inTagName;//Si on est dans le nom d'un tag
+    bool waitClosingElmt;//Si on attend la fermeture d'un tag (auto-fermant)
     bool inCommentTag;//Si on est dans un tag commentaire
     bool inXMLProlog;//Si on est dans un prologue xml
     unsigned char specialTagLevel;//Niveau de lecture d'un tag spécial

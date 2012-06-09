@@ -38,6 +38,7 @@ void Reader::ClearReader()
     this->pos = 0;
     this->depth = 0;
     this->inTag = false;
+    this->inTagName = false;
     this->inAttr = false;
     this->inAttrName = false;
     this->inAttrVal = false;
@@ -46,6 +47,7 @@ void Reader::ClearReader()
     this->inEndTag = false;
     this->inXMLProlog = false;
     this->inCommentTag = false;
+    this->waitClosingElmt = false;
     this->specialTagLevel = 0;
 
     foundNode = 0;
@@ -110,9 +112,18 @@ int Reader::ReadChar(char car)
     
     ++(this->pos);
     
+    if(waitClosingElmt)
+    {
+        if(car != CHAR_ENDTAG) return 0;
+        waitClosingElmt = false;
+        DEBUG << "curNode : " << curNode->toElement() << endl; 
+        return READ_END_CUR_ELEMENT;
+    }
+    
     if(car == CHAR_STARTTAG)//Début de tag
     {
         inNewTag = true;
+        inTagName = true;
         //DEBUG "Début de tag" << endl;
         if(curNode && curNode->isText()) //Si il y avait du texte avant
         {
@@ -155,7 +166,11 @@ int Reader::ReadChar(char car)
         }
         return NODE_ELEMENT;
     }
-    else if(isWhiteSpace(car) && inTag && !inEndTag && !inAttrVal)//Début de nom d'attribut
+    else if(isWhiteSpace(car) && inTag && inTagName)// Fin de tagName
+    {
+        inTagName = false;
+    }
+    else if(isNameStartChar(car) && inTag && !inTagName && !inEndTag && !inAttrVal && !inAttrName)//Début de nom d'attribut
     {
         if(attrName && attrVal)
         {
@@ -171,6 +186,9 @@ int Reader::ReadChar(char car)
         }
         inAttr = true;
         inAttrName = true;
+        attrName = (char*)malloc(1);
+        *attrName = car;
+        lenAttrName = 1;
     }
     else if(car == CHAR_EQUAL && inAttrName)//Fin du nom d'attribut
     {
@@ -190,6 +208,19 @@ int Reader::ReadChar(char car)
         inAttr = false;
         inAttrVal = false;
         return READ_ATTRIBUTE;
+    }
+    else if(car == CHAR_SLASH && inTag && !inAttrVal)//Self-closed element
+    {
+        inTag = false;
+        inTagName = false;
+        inEndTag = false;
+        //DEBUG "Fin de l'élément : " << (*content) << endl;
+        if(curElmt) curElmt = curElmt->parent;
+        FREE(content); lenContent = 0;
+        if(depth > 0) --depth;
+        waitClosingElmt = true;
+        foundNode = curNode;
+        return NODE_ELEMENT;
     }
     else if(car == CHAR_SLASH && inNewTag)//C'est un tag de fin
     {
@@ -229,7 +260,7 @@ int Reader::ReadChar(char car)
         }
         
     }
-    else if(inNewTag && !curNode && car == CHAR_EXCL )//Premier caractère de commentaire
+    else if(inNewTag && car == CHAR_EXCL )//Premier caractère de commentaire
     {
         specialTagLevel = COMMENT_TAG_STARTCHAR_1;
         inCommentTag = true;
