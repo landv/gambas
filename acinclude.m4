@@ -64,13 +64,23 @@ AC_DEFUN([GB_PRINT_MESSAGES],
 
 AC_DEFUN([GB_INIT_AUTOMAKE],
 [
-  AM_INIT_AUTOMAKE($1, 3.1.90)
+  AM_INIT_AUTOMAKE($1, 3.2.0)
   ##AM_SILENT_RULES([yes])
   AM_CONFIG_HEADER([config.h])
 
-  ########## DO NOT FORGET TO MODIFY GB_INIT_SHORT ! ##########
-  AC_DEFINE(GAMBAS_FULL_VERSION, 0x03010090, [Full Gambas version])
-  AC_DEFINE(GAMBAS_PCODE_VERSION, 0x03010000, [Gambas bytecode version])
+  GAMBAS_VERSION=3
+  GAMBAS_MINOR_VERSION=2
+
+  AC_SUBST(GAMBAS_VERSION)
+  AC_SUBST(GAMBAS_MINOR_VERSION)
+
+  AC_DEFINE(GAMBAS_VERSION, 3, Gambas version)
+  AC_DEFINE(GAMBAS_MINOR_VERSION, 2, Gambas minor version)
+  AC_DEFINE(GAMBAS_VERSION_STRING, "3", Gambas version string)
+  AC_DEFINE(GAMBAS_FULL_VERSION_STRING, "3.2", Gambas full version string)
+
+  AC_DEFINE(GAMBAS_FULL_VERSION, 0x03020000, [Full Gambas version])
+  AC_DEFINE(GAMBAS_PCODE_VERSION, 0x03020000, [Gambas bytecode version])
   AC_DEFINE(GAMBAS_PCODE_VERSION_MIN, 0x03000000, [Minimum Gambas bytecode version])
 
   GB_CLEAR_MESSAGES
@@ -120,11 +130,6 @@ AC_DEFUN([GB_INIT_SHORT],
 
   AC_CANONICAL_HOST
   
-  GAMBAS_VERSION=3
-  AC_SUBST(GAMBAS_VERSION)
-  GAMBAS_MINOR_VERSION=1
-  AC_SUBST(GAMBAS_MINOR_VERSION)
-
   gbbindir=$bindir/gambas$GAMBAS_VERSION
   AC_SUBST(gbbindir)
   gblibdir=$libdir/gambas$GAMBAS_VERSION
@@ -159,11 +164,6 @@ AC_DEFUN([GB_INIT],
   GB_SYSTEM
   GB_LIBTOOL
   
-  AC_DEFINE(GAMBAS_VERSION, 3, Gambas version)
-  AC_DEFINE(GAMBAS_MINOR_VERSION, 0, Gambas minor version)
-  AC_DEFINE(GAMBAS_VERSION_STRING, "3", Gambas version string)
-  AC_DEFINE(GAMBAS_FULL_VERSION_STRING, "3.0", Gambas full version string)
-
   dnl ---- Checks for programs
 
   AC_PROG_CPP
@@ -726,7 +726,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
   have_$1=no
   
-  if test "$gb_enable_$1"="yes" && test ! -e DISABLED.$3; then
+  if test "$gb_enable_$1"="yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
   
@@ -775,6 +775,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
       fi
 
     done
+
   else
     
     AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
@@ -783,7 +784,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     
   fi
   
-  if test "$have_$1" = "no" || test -e DISABLED.$3; then
+  if test "$have_$1" = "no"; then
   
     $2_INC=""
     $2_LIB=""
@@ -836,7 +837,7 @@ AC_DEFUN([GB_COMPONENT],
   gb_inc_$1=no
   gb_lib_$1=no
 
-  if test "$gb_enable_$1" = "yes" && test ! -e DISABLED.$3; then
+  if test "$gb_enable_$1" = "yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
 
     ## Checking for headers
 
@@ -950,7 +951,7 @@ AC_DEFUN([GB_COMPONENT],
     
   fi
   
-  if test "$have_$1" = "no" || test -e DISABLED.$3; then
+  if test "$have_$1" = "no"; then
   
     $2_INC=""
     $2_LIB=""
@@ -1026,6 +1027,7 @@ gb_in_component_search=no
 ## Find QT moc compiler
 ##
 ##   $1 = QT version
+##   $2 = components to disable
 ##
 ##   Returns a path list in $gb_val
 ## ---------------------------------------------------------------------------
@@ -1074,7 +1076,7 @@ AC_DEFUN([GB_FIND_QT_MOC],
   if test x"$gb_cv_path_qt_moc" = x; then
     GB_WARNING([QT moc compiler not found. Try --with-moc option.])
     MOC=""
-    touch DISABLED
+    touch DISABLED 
   else
     MOC=$gb_cv_path_qt_moc
   fi
@@ -1085,6 +1087,8 @@ AC_DEFUN([GB_FIND_QT_MOC],
 ## ---------------------------------------------------------------------------
 ## GB_CHECK_XWINDOW
 ## Check the X-Window system installation
+##
+##   $1 = components to disable
 ## ---------------------------------------------------------------------------
 
 AC_DEFUN([GB_CHECK_XWINDOW],

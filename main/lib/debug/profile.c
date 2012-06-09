@@ -39,6 +39,7 @@ static FILE *_file;
 static int _last_line = 0;
 static bool _new_line = TRUE;
 static int _count = 0;
+static size_t _max_profile_size = MAX_PROFILE_SIZE;
 //static long _ticks_per_sec;
 
 static uint64_t get_time(void)
@@ -63,6 +64,8 @@ static uint64_t get_time(void)
 void PROFILE_init(void)
 {
 	char path[PATH_MAX + 1];
+	char *env;
+	size_t max;
 	
 	if (_init)
 		return;
@@ -80,6 +83,11 @@ void PROFILE_init(void)
 	
 	//_ticks_per_sec = sysconf(_SC_CLK_TCK);
 	//fprintf(stderr, "_ticks_per_sec = %ld\n", _ticks_per_sec);
+	
+	//env = getenv("GB_PROFILE
+	
+	max = 1;
+	
 	
 	_init = TRUE;
 	get_time();

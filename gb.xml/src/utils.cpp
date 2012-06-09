@@ -175,7 +175,7 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
     //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
     errorWhat = (char*)malloc(61 + lenError + lenNear);
     memset(errorWhat, 0, 61 + lenError + lenNear);
-    sprintf(errorWhat, "Parse error : %s !\n Line %u , Column %u : \n %s", error, line, column, near);
+    sprintf(errorWhat, "Parse error : %s !\n Line %lu , Column %lu : \n %s", error, line, column, near);
     errorWhat[60 + lenError + lenNear] = 0;
     
 }
