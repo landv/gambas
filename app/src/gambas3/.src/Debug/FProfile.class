@@ -342,7 +342,7 @@ Fast Public Sub Init(sPath As String)
   hCurrent = $cFunc[".System.EventLoop"]
   If hCurrent Then hCurrent.SetEventLoop()
   
-  Me.Title = Subst(("Profile &1"), File.Name(sPath)) & " - " & Str(Stat(sPath).LastModified) & " - " & Subst(("Total time &1 μs"), Format($iTime, "#,##0"))
+  Me.Title = File.Name(sPath) & " (" & Subst(("&1 Mb"), (Stat(sPath).Size + 1048575) \ 1048576) & ") - " & Str(Stat(sPath).LastModified) & " - " & Subst(("Total time &1 μs"), Format($iTime, "#,##0"))
 
   gvwProfile.Rows.Count = $aFunc.Count
   

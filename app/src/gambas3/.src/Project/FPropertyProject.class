@@ -136,6 +136,8 @@ Private Sub InitEnvironment()
   tvwEnv.Rows.Resizable = False
   tvwEnv.Columns.Count = 2
   tvwEnv.Columns[0].Text = ("Variable")
+  tvwEnv.Columns[0].Width = -1
+  tvwEnv.Columns[0].Width = Max(tvwEnv.Columns[0].Width, Desktop.Scale * 20)
   tvwEnv.Columns[1].Text = ("Value")
   
 End
@@ -957,6 +959,7 @@ Public Sub tvwEnv_Save(Row As Integer, Column As Integer, Value As String)
   
   If Column = 0 Then 
     $aEnv[Row] = Trim(Value) & "=" & aEnv[1]
+    tvwEnv.Columns[0].Width = -1
   Else 
     $aEnv[Row] = aEnv[0] & "=" & Value
   Endif

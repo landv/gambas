@@ -256,17 +256,19 @@
     { VBox1 VBox
       MoveScaled(1,1,84,29)
       Expand = True
-      Spacing = True
       Margin = True
       { Label17 Label
-        MoveScaled(3,2,24,3)
+        MoveScaled(1,1,24,3)
         Font = Font["Bold"]
         Text = ("Arguments")
       }
       { tvwArg TableView
-        MoveScaled(2,6,46,16)
+        MoveScaled(1,5,46,16)
         Expand = True
         Header = GridView.Vertical
+      }
+      { Panel8 Panel
+        MoveScaled(21,22,5,1)
       }
       { HBox2 HBox
         MoveScaled(2,24,53,4)
@@ -297,7 +299,6 @@
     { Panel5 VBox
       MoveScaled(1,33,85,26)
       Expand = True
-      Spacing = True
       Margin = True
       { Label18 Label
         MoveScaled(0,0,24,3)
@@ -305,9 +306,12 @@
         Text = ("Environment variables")
       }
       { tvwEnv TableView
-        MoveScaled(2,4,68,16)
+        MoveScaled(0,4,68,13)
         Expand = True
         Header = GridView.Horizontal
+      }
+      { Panel9 Panel
+        MoveScaled(20,18,7,1)
       }
       { HBox3 HBox
         MoveScaled(0,21,40,4)

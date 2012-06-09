@@ -84,10 +84,20 @@ void PROFILE_init(void)
 	//_ticks_per_sec = sysconf(_SC_CLK_TCK);
 	//fprintf(stderr, "_ticks_per_sec = %ld\n", _ticks_per_sec);
 	
-	//env = getenv("GB_PROFILE
-	
-	max = 1;
-	
+	env = getenv("GB_PROFILE_MAX");
+	if (env)
+	{
+		max = atoi(env);
+		if (max > 0)
+		{
+			if (max < 128)
+				max = 128;
+			else if (max > 4096)
+				max = 4096;
+			
+			_max_profile_size = max << 20;
+		}
+	}
 	
 	_init = TRUE;
 	get_time();
@@ -109,9 +119,9 @@ void PROFILE_exit(void)
 static void check_size()
 {
 	_count = 0;
-	if (ftell(_file) > MAX_PROFILE_SIZE)
+	if (ftell(_file) > _max_profile_size)
 	{
-		fprintf(stderr, "gb.profile: maximum profile size reached (512M)\n");
+		fprintf(stderr, "gb.profile: maximum profile size reached\n");
 		PROFILE_exit();
 		abort();
 	}
