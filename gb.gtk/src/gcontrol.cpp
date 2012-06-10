@@ -983,7 +983,7 @@ void gControl::lower()
 	}
 	else
 	{	
-		fprintf(stderr, "gb.gtk: warning: gControl::lower(): no window\n");
+		//fprintf(stderr, "gb.gtk: warning: gControl::lower(): no window\n");
 		
 		if (!(chd=gtk_container_get_children(GTK_CONTAINER(pr->getContainer())))) return;
 		
@@ -1038,7 +1038,7 @@ void gControl::raise()
 	}
 	else
 	{	
-		fprintf(stderr, "gb.gtk: warning: gControl::raise(): no window\n");
+		//fprintf(stderr, "gb.gtk: warning: gControl::raise(): no window\n");
 		
 		x=left();
 		y=top();

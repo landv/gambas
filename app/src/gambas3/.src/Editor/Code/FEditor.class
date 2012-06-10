@@ -3163,6 +3163,8 @@ End
 
 Public Sub panToolBar_Configure()
 
+  UpdateMenu
+  
   If $sModule Then
     Action[".show-form"].Picture = Picture["img/16/" & $sModule & ".png"]
     btnForm.ToolTip = CModule[$sModule].Name

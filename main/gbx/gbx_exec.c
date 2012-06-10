@@ -64,6 +64,7 @@ CENUM *EXEC_enum;
 bool EXEC_debug = FALSE; // debugging mode
 bool EXEC_profile = FALSE; // profiling mode
 bool EXEC_profile_instr = FALSE; // profiling mode at instruction level
+const char *EXEC_profile_path = NULL; // profile file path
 bool EXEC_arch = FALSE; // executing an archive
 bool EXEC_fifo = FALSE; // debugging through a fifo
 const char *EXEC_fifo_name = NULL; // fifo name

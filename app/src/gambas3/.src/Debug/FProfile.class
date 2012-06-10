@@ -889,7 +889,7 @@ Static Public Sub CleanProfileFiles()
   
   Dim sPath As String
   
-  For Each sPath In Dir(Project.Dir, ".prof.*")
+  For Each sPath In Dir(Project.Dir, ".*.prof")
     If $aAll.Exist(sPath) Then Continue
     Try Kill Project.Dir &/ sPath
   Next

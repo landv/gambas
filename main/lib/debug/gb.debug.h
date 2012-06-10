@@ -95,7 +95,7 @@ typedef
 		const char *(*GetCurrentPosition)(void);
 		void (*InitBreakpoints)(void *klass);
 		struct {
-			void (*Init)(void);
+			void (*Init)(const char *path);
 			void (*Add)(void *cp, void *fp, void *pc);
 			void (*Exit)(void);
 			void (*Begin)(void *cp, void *fp);

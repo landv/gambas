@@ -1,2 +1,10 @@
 ' Gambas class file
 
+
+Public Sub Panel_Draw()
+
+  Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
+  Draw.Rect(0, 0, Draw.W, Draw.H)
+  Draw.Text(Last.Name, 0, 0, Draw.W, Draw.H, Align.Left)
+
+End

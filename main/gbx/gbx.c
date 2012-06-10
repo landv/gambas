@@ -164,6 +164,24 @@ static bool is_option(const char *arg, char option)
 	return (arg[0] == '-' && arg[1] == option && arg[2] == 0);
 }
 
+static bool is_option_arg(char **argv, int argc, int *i, char option, const char **param)
+{
+	if (is_option(argv[*i], option))
+	{
+		if (*i < (argc - 1) && *argv[*i + 1] && *argv[*i + 1] != '-')
+		{
+			*param = argv[*i + 1];
+			(*i)++;
+		}
+		else
+			*param = NULL;
+		
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
 static bool is_long_option(const char *arg, char option, char *long_option)
 {
 	if (is_option(arg, option))
@@ -229,7 +247,7 @@ int main(int argc, char *argv[])
 				"  -h --help      display this help\n"
 				"  -L --license   display license\n"
 				"  -g             enter debugging mode\n"
-				"  -p             activate profiling and debugging mode\n"
+				"  -p <path>      activate profiling and debugging mode\n"
 				"  -k             do not unload shared libraries\n"
 				);
 			if (!EXEC_arch)
@@ -283,19 +301,14 @@ int main(int argc, char *argv[])
 		{
 			EXEC_debug = TRUE;
 		}
-		else if (is_option(argv[i], 'p'))
+		else if (is_option_arg(argv, argc, &i, 'p', &EXEC_profile_path))
 		{
 			EXEC_debug = TRUE;
 			EXEC_profile = TRUE;
 		}
-		else if (is_option(argv[i], 'f'))
+		else if (is_option_arg(argv, argc, &i, 'f', &EXEC_fifo_name))
 		{
 			EXEC_fifo = TRUE;
-			if (i < (argc - 1) && *argv[i + 1] && *argv[i + 1] != '-')
-			{
-				EXEC_fifo_name = argv[i + 1];
-				i++;
-			}
 		}
 		else if (is_option(argv[i], 'k'))
 		{

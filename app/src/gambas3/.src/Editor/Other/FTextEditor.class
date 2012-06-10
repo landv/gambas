@@ -103,7 +103,6 @@ Public Sub LoadFile() As Boolean
 
   Project.InitMove(Me)
 
-  SetReadOnly
   Reload
 
   $bModify = False
@@ -416,6 +415,8 @@ Private Sub SetReadOnly()
 
   If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
   If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly
+  
+  UpdateMenu
 
 End
 
@@ -468,7 +469,8 @@ End
 
 Public Sub Form_Activate()
 
-  Editor.SetFocus
+  Project.SetCurrentPopup(mnuEditor)
+  'Editor.SetFocus
 
 End
 
@@ -938,6 +940,8 @@ End
 
 Public Sub panToolBar_Configure()
 
+  UpdateMenu
+
   Action[".compress,.uncompress", Me].Visible = $bShowCompress
   Action[".proc", Me].Visible = Not $bNoHighlight
 
@@ -954,5 +958,37 @@ End
 Public Sub mnuClose_Click()
 
   Me.Close
+
+End
+
+Private Sub UpdateMenu()
+
+  Dim bVisible As Boolean
+
+  bVisible = Not edtEditor.ReadOnly
+
+  mnuUndo.Visible = bVisible
+  mnuRedo.Visible = bVisible
+  mnuCut.Visible = bVisible
+  mnuPaste.Visible = bVisible
+  'mnuSepComment.Visible = bVisible
+  mnuReload.Visible = bVisible
+  mnuInsertColor.Visible = bVisible
+
+  btnUndo.Visible = bVisible
+  btnRedo.Visible = bVisible
+  btnCut.Visible = bVisible
+  btnPaste.Visible = bVisible
+  btnInsertColor.Visible = bVisible
+  btnIndent.Visible = bVisible
+  btnUnIndent.Visible = bVisible
+  btnReload.Visible = bVisible
+  btnSave.Visible = bVisible
+
+End
+
+Public Sub Form_Open()
+
+  SetReadOnly
 
 End

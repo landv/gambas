@@ -30,7 +30,7 @@
 #include "debug.h"
 #include "main.h"
 
-// Maximum profile file is 512 M
+// Maximum profile file is 512 Mb by default
 
 #define MAX_PROFILE_SIZE (512 << 20)
 
@@ -61,16 +61,20 @@ static uint64_t get_time(void)
 	return t;
 }
 
-void PROFILE_init(void)
+void PROFILE_init(const char *path)
 {
-	char path[PATH_MAX + 1];
 	char *env;
 	size_t max;
+	char buffer[PATH_MAX + 1];
 	
 	if (_init)
 		return;
 	
-	sprintf(path, ".prof.%d", getpid());
+	if (!path)
+	{
+		sprintf(buffer, ".%d.prof", getpid());
+		path = buffer;
+	}
 
 	//fprintf(stderr, "gb.profile: start profiling: %s\n", path);
 	

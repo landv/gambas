@@ -199,12 +199,21 @@ End
 Private Sub SetArrangement()
   
   Dim hToolbar As ToolBar = Me.Parent
+  Dim hCtrl As Control
   
   If $bDesign Then Return
   hToolBar.Padding = 0
   'Print panToolBar.H;; "["; hToolbar.Arrangement; "]";;
+  hToolbar.Arrangement = Arrange.None
   hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
   'Print "==>";; panToolBar.H;; "["; hToolbar.Arrangement; "]"
+  
+  ' Debug "----------------"
+  ' Debug System.Backtrace.Join(" ")
+  ' For Each hCtrl In panToolBar.Children
+  '   Debug hCtrl.Name;; hCtrl.Visible;; hCtrl.X;; hCtrl.Y
+  ' Next
+  ' Debug "----------------"
   
 End
 
@@ -628,6 +637,7 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   Me.Drop = $bConfigure
   
   panToolBar.Enabled = Not $bConfigure
+  'Me.Parent.Enabled = Not $bConfigure
   If $bConfigure Then
     'hColor = Color[Color.LightBackground]
     'hColor.Saturation /= 2
@@ -1455,5 +1465,15 @@ End
 Public Sub Form_Menu()
 
   FToolBarConfig.OpenMenu(Me.Parent)
+
+End
+
+Public Sub panToolbar_Draw()
+
+  If $bConfigure Then
+    Draw.Foreground = Color.Red
+    'Draw.LineStyle = Line.Solid
+    Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
+  Endif
 
 End

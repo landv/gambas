@@ -1,13 +1,21 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
-  Text = ("")
-  { ToolBar1 ToolBar
-    MoveScaled(3,6,52,4)
-    { Button1 Button
-      MoveScaled(1,0,16,4)
-      Text = ("Button1")
-    }
+  MoveScaled(0,0,43,44)
+  { DrawingArea3 DrawingArea Panel
+    Name = "DrawingArea3"
+    MoveScaled(1,17,32,7)
+  }
+  { DrawingArea4 DrawingArea Panel
+    Name = "DrawingArea4"
+    MoveScaled(1,25,32,7)
+  }
+  { DrawingArea1 DrawingArea Panel
+    Name = "DrawingArea1"
+    MoveScaled(1,1,32,7)
+  }
+  { DrawingArea2 DrawingArea Panel
+    Name = "DrawingArea2"
+    MoveScaled(1,9,32,7)
   }
 }

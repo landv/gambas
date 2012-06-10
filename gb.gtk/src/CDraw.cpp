@@ -353,6 +353,7 @@ static GdkRectangle *get_area(GB_DRAW *d)
 		return NULL;
 	
 	get_clipping(d, &area.x, &area.y, &area.width, &area.height);
+	DR(d)->offset(&area.x, &area.y);
 	return &area;
 }
 

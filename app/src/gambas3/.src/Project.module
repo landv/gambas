@@ -91,6 +91,7 @@ Public Authors As String
 Public VersionFile As Boolean
 Public UseTerminal As Boolean
 Public Profiling As Boolean
+Public ProfileIndex As Integer
 
 Public Running As Boolean
 
@@ -2905,6 +2906,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   'StackTrace = False
   UseTerminal = False
   Profiling = False
+  ProfileIndex = 0
   Maintainer = ""
   Vendor = ""
   Address = ""
@@ -4769,7 +4771,7 @@ End
 Public Sub CleanUp()
 
   Dim iInd As Integer
-  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core", "core.*", "vgcore.*", ".kdbg*", ".prof.*"]
+  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core", "core.*", "vgcore.*", ".kdbg*", ".*.prof"]
   Dim sClear As String
 
   For iInd = 0 To aClear.Max

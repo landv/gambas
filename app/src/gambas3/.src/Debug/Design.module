@@ -38,6 +38,8 @@ Public BalloonControl As Control
 Public BalloonX As Integer
 Public BalloonY As Integer
 
+Private $sProfilePath As String
+
 Public Sub Init()
  
   $sFifo = Debug.Begin()
@@ -351,7 +353,7 @@ Public Sub Process_Kill()
   Endif
 
   If Project.Profiling Then
-    FProfile.Open(Project.Dir &/ ".prof." & CInt($hProcess.Id))
+    FProfile.Open($sProfilePath)
   Endif
 
   $hProcess = Null
@@ -714,6 +716,7 @@ Private Sub Start(sCmd As String)
   Dim sTitle As String
   Dim sProg As String
   Dim sBreakpoint As String
+  Dim sFile As String
 
   If Project.Running Then Return
   
@@ -789,9 +792,29 @@ Private Sub Start(sCmd As String)
   ' 
   ' Else
 
-  aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo, File.Dir(SConv(Project.Path)), "--"]
-  If Project.Profiling Then aExec.Add("-p", 2)
-  aExec.Insert(Project.Arguments)
+  aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo]
+  
+  If Project.Profiling Then 
+    
+    aExec.Add("-p")
+    
+    Inc Project.ProfileIndex
+    sFile = "." & CStr(Project.ProfileIndex) & ".prof"
+    
+    If Project.ReadOnly Then
+      $sProfilePath = File.Dir(Temp$) &/ sFile
+    Else
+      $sProfilePath = Project.Dir &/ sFile
+    Endif
+    aExec.Add($sProfilePath)
+  Endif
+  
+  aExec.Add(File.Dir(SConv(Project.Path)))
+  
+  If Project.Arguments.Count Then
+    aExec.Add("--")
+    aExec.Insert(Project.Arguments)
+  Endif
   
   If bValgrind Then 
     aExec.Insert(["valgrind", "--tool=memcheck", "--num-callers=50"], 0)
