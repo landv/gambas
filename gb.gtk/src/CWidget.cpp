@@ -243,10 +243,11 @@ bool gb_raise_Drag(gControl *sender)
 
 bool gb_raise_DragMove(gControl *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
-	
-	if (!_ob) return false;
-	return GB.Raise((void*)_ob,EVENT_DragMove,0);
+	CWIDGET *_object = GetObject(sender);
+	if (!THIS)
+		return false;
+	else
+		return GB.Raise(THIS, EVENT_DragMove, 0);
 }
 
 void gb_raise_Drop(gControl *sender)

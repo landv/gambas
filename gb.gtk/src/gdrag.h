@@ -52,8 +52,9 @@ public:
 	static void getIconPos(int *x, int *y) { *x = _icon_x; *y = _icon_y; }
 	static void setIconPos(int x, int y) { _icon_x = x; _icon_y = y; }
 	
-	static void dragText(gControl *source, char *text, char *format = 0);
-	static void dragImage(gControl *source, gPicture *image);
+	static gControl *dragText(gControl *source, char *text, char *format = 0);
+	static gControl *dragImage(gControl *source, gPicture *image);
+	static void end() { _end = true; }
 	static void cancel();
 	
 	static gControl *getSource() { return _source; }
@@ -87,6 +88,9 @@ public:
 	static volatile bool _got_data;
 
 private:	
+
+	static gControl *drag(gControl *source, GtkTargetList *list);
+	
 	static bool _active;
 	static gPicture *_icon;
 	static int _icon_x;
@@ -106,6 +110,7 @@ private:
 	static gControl *_dest;
 	static guint32 _time;
 	static bool _local;
+	static bool _end;
 };
 
 #endif

@@ -101,9 +101,9 @@ static void sg_drag_data_get(GtkWidget *widget,GdkDragContext *ct,GtkSelectionDa
 
 static void sg_drag_end(GtkWidget *widget,GdkDragContext *ct,gControl *data)
 {
-	//g_debug("sg_drag_end\n");
+	//fprintf(stderr, "sg_drag_end\n");
 	
-	gDrag::cancel();
+	gDrag::end();
 }
 
 
@@ -123,6 +123,7 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	if (!gApplication::allEvents()) return true;
 	
 	//g_debug("sg_drag_motion\n");
+	//fprintf(stderr, "sg_drag_motion\n");
 	
 	/*if (_drag_time != context->start_time) 
 	{ 
@@ -211,7 +212,7 @@ gboolean sg_drag_drop(GtkWidget *widget,GdkDragContext *context,gint x,gint y,gu
 	}
 	
 	context = gDrag::disable(context);
-	gDrag::cancel();
+	//gDrag::cancel();
 	
 	gtk_drag_finish (context, true, false, time);
 	

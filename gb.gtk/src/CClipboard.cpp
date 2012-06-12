@@ -242,6 +242,8 @@ GB_DESC CClipboardDesc[] =
 
 void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
 {
+	gControl *dest;
+	
   if (GB.CheckObject(source))
     return NULL;
 
@@ -261,14 +263,14 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
         goto _BAD_FORMAT;
     }
     
-    gDrag::dragText(source->widget, data->value._string, format);
+    dest = gDrag::dragText(source->widget, data->value._string, format);
   }
   else if (data->type >= GB_T_OBJECT && GB.Is(data->value._object, GB.FindClass("Image")))
   {
     if (format && *format)
       goto _BAD_FORMAT;
 
-		gDrag::dragImage(source->widget, CIMAGE_get((CIMAGE *)data->value._object));
+		dest = gDrag::dragImage(source->widget, CIMAGE_get((CIMAGE *)data->value._object));
   }
   else
     goto _BAD_FORMAT;
@@ -276,7 +278,7 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
   //hide_frame(NULL);
   //GB.Post((GB_POST_FUNC)post_exit_drag, 0);
 
-  return GetObject(gDrag::getDestination());
+  return GetObject(dest);
 
 _BAD_FORMAT:
 

@@ -248,6 +248,8 @@ extern "C"
 		CLASS_Image = GB.FindClass("Image");
 		CLASS_SvgImage = GB.FindClass("SvgImage");
 		
+		g_type_init();
+		
 		return -1;
 	}
 
@@ -350,7 +352,7 @@ static void my_main(int *argc, char ***argv)
 	}
 
 	init = true;
-	
+
 	CALL_HOOK_MAIN(_old_hook_main, argc, argv);
 }
 

@@ -75,7 +75,8 @@ Public Sub DeleteIcon(hCCtrl As CControl)
   
   hCCtrl["#icon"] = Null
   $cCtrlFromIcon[Str(hIcon)] = Null
-  hIcon.Delete
+  ' Apparently hIcon can be invalid: maybe when closing forms on project changes?
+  Try hIcon.Delete
   
 End
 

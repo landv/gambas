@@ -16,7 +16,7 @@ Private Sub Copy(sSrc As String, sDest As String) As Boolean
 
 End
 
-Public Sub Main()
+Private Sub MakeStock()
   
   Dim hFile As File
   Dim sLine As String
@@ -32,8 +32,6 @@ Public Sub Main()
   Dim hImage As Image
   Dim hSvgImage As SvgImage
   Dim bOK As Boolean
-  
-  Component.Load("gb.gtk")
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form.stock/.hidden/map"
   
@@ -55,7 +53,7 @@ Public Sub Main()
     
     Print sIcon
     
-    If sIcon = "hardware" Then Stop
+    If sIcon = "earth" Then Stop
     
     For Each sSize In ["scalable", "16", "22", "32"]
       
@@ -65,6 +63,7 @@ Public Sub Main()
       For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "Humanity/&2/&1", "gnome/&1/&2", "hicolor/&1/&2"]
     
         sTemplate = "/usr/share/icons" &/ sTheme
+        'If Not Exist(sTemplate) Then Continue
     
         If sSize = "scalable" Then
           sExt = ".svg"
@@ -112,3 +111,8 @@ Public Sub Main()
   
 End
 
+Public Sub Main()
+
+  MakeStock
+
+End

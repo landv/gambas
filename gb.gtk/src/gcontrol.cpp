@@ -1134,10 +1134,14 @@ void gControl::setAcceptDrops(bool vl)
 	if (vl)
 	{
 		gtk_drag_dest_set(border, (GtkDestDefaults)0, NULL, 0, (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK));
+		//if (widget != border)
+		//	gtk_drag_dest_set(widget, (GtkDestDefaults)0, NULL, 0, (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK));
 	}
 	else
 	{
 		gtk_drag_dest_unset(border);
+		//if (widget != border)
+		//	gtk_drag_dest_unset(widget);
 	}
 }
 
@@ -1590,7 +1594,7 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 		return;
 	
 	if (was_visible) hide();
-	gtk_widget_unrealize(border);
+	//gtk_widget_unrealize(border);
 	
 	oldpr = pr;
 	pr = newpr;	
@@ -1612,7 +1616,7 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 		newpr->insert(this);
 	}
 
-	gtk_widget_realize(border);
+	//gtk_widget_realize(border);
 	move(x, y);
 	if (was_visible) show();
 }

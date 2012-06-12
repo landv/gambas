@@ -208,13 +208,6 @@ Private Sub SetArrangement()
   hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
   'Print "==>";; panToolBar.H;; "["; hToolbar.Arrangement; "]"
   
-  ' Debug "----------------"
-  ' Debug System.Backtrace.Join(" ")
-  ' For Each hCtrl In panToolBar.Children
-  '   Debug hCtrl.Name;; hCtrl.Visible;; hCtrl.X;; hCtrl.Y
-  ' Next
-  ' Debug "----------------"
-  
 End
 
 Private Sub Update()
@@ -636,7 +629,7 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   ' Next
   Me.Drop = $bConfigure
   
-  panToolBar.Enabled = Not $bConfigure
+  'panToolBar.Enabled = Not $bConfigure
   'Me.Parent.Enabled = Not $bConfigure
   If $bConfigure Then
     'hColor = Color[Color.LightBackground]
@@ -646,7 +639,7 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
     'Me.Background = Color.Default
   Endif
   UpdateHandle
-  dwgHandle.Enabled = Not $bConfigure
+  'dwgHandle.Enabled = Not $bConfigure
 
   Lock()
   If $bConfigure Then
@@ -674,6 +667,8 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
     'panToolBar.Refresh
   Endif
   Unlock()
+  
+  panToolBar.Refresh
   
 End
 
@@ -712,7 +707,7 @@ Private Sub HideWhere(bAnim As Boolean)
     D = panWhere.W
   Endif
   
-  panWhere.Border = Border.None
+  'panWhere.Border = Border.None
   If bAnim Then
     For D = D - 1 To 1 Step -2
       If $bVertical Then
@@ -779,7 +774,9 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   Else
     panWhere.W = DM
   Endif
-  panWhere.Border = Border.Plain
+  'panWhere.Border = Border.Plain
+  
+  'Debug panWhere.X;; panWhere.Y;; panWhere.W;; panWhere.H;; panWhere.Visible;; panWhere.Parent.Name
   
 End
 
@@ -790,6 +787,8 @@ Public Sub Form_DragMove()
   Dim bBefore As Boolean
   Dim bAnim As Boolean
   Dim X, Y As Integer
+  
+  'Debug
   
   If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
     HideWhere(True)
@@ -878,16 +877,48 @@ Private Sub OnMouseDrag(hCtrl As Control)
   hCtrl.Hide
   'Unlock()
   
+  ' Debug "----------------"
+  ' ' Debug System.Backtrace.Join(" ")
+  ' For Each hCtrl In panToolBar.Children
+  '   Debug hCtrl.Name;; hCtrl.Visible;; hCtrl.X;; hCtrl.Y;; hCtrl.W;; hCtrl.H
+  ' Next
+  ' ' Debug "----------------"
+  
   FToolBarConfig.DragAction(hCtrl, sAction)
   $bLock = False
   
 End
 
+Public Sub Item_KeyPress()
+  
+  If $bConfigure Then Stop Event
+  
+End
+
+
 Public Sub Item_MouseDown()
+  
+  If $bConfigure Then Stop Event
+  
+End
+
+' Public Sub Item_Enter()
+'   
+'   If $bConfigure Then Stop Event
+'   
+' End
+' 
+' Public Sub Item_Leave()
+'   
+'   If $bConfigure Then Stop Event
+'   
+' End
+
+Public Sub Item_Menu()
   
   If $bConfigure Then 
     Stop Event
-  Else If Mouse.Right Then
+  Else
     If Not Application.ActiveControl Is TextBox Then
       FToolBarConfig.OpenMenu(Me.Parent)
       Stop Event
@@ -898,6 +929,7 @@ End
 
 Public Sub Item_MouseDrag()
   
+  'Debug
   OnMouseDrag(Last)
   
 End
@@ -913,6 +945,7 @@ Public Sub DragStart(bOutside As Boolean)
   $sDropAction = ""
   If bOutside Then
     panWhere.Resize(SEPARATOR_SIZE, SEPARATOR_SIZE)
+    'Debug
     panWhere.Reparent(panToolBar)
   Endif
   
@@ -944,6 +977,7 @@ Public Sub DragEnd(bAnim As Boolean)
   Endif
 
   HideWhere(bAnim)
+  'Debug
   panWhere.Reparent(Me)
   
 End
@@ -1023,6 +1057,7 @@ End
 
 Public Sub panWhere_Drop()
   
+  'Debug
   $sDropAction = Drag.Paste(MAction.MIME)
   
 End
@@ -1312,7 +1347,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
 
 RAISE_CONFIGURE:  
   
-  hToolbar._RaiseConfigure
+  If Not $bConfigure Then hToolbar._RaiseConfigure
   
 End
 
@@ -1400,17 +1435,17 @@ End
 
 Public Sub HideControl(hCtrl As Control)
   
-  panToolBar.Enabled = True
+  'panToolBar.Enabled = True
   hCtrl.Reparent(panHide)
-  panToolBar.Enabled = False
+  'panToolBar.Enabled = False
   
 End
 
 Public Sub ShowControl(hCtrl As Control)
   
-  panToolBar.Enabled = True
+  'panToolBar.Enabled = True
   hCtrl.Reparent(panToolBar)
-  panToolBar.Enabled = False
+  'panToolBar.Enabled = False
   
 End
 
@@ -1471,9 +1506,10 @@ End
 Public Sub panToolbar_Draw()
 
   If $bConfigure Then
-    Draw.Foreground = Color.Red
+    Draw.Foreground = &HFF7F7F
     'Draw.LineStyle = Line.Solid
     Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
+    Draw.Rect(1, 1, panToolBar.W - 2, panToolBar.H - 2)
   Endif
 
 End

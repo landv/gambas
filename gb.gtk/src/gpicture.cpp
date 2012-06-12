@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gpicture.cpp
+	gpicture.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -41,7 +41,7 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 	GError *error = NULL;
 	gsize size;
 
-  *img = 0;
+	*img = 0;
 
 	loader = gdk_pixbuf_loader_new();
 	
@@ -69,11 +69,11 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 	if (gdk_pixbuf_get_n_channels(*img) == 3)
 	{
 		// Rowstride breaks gb.image (it is rounded up so that a line is always a four bytes multiple).
- 		GdkPixbuf *aimg;
- 		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
- 		g_object_unref(G_OBJECT(*img));
-   	g_object_ref(G_OBJECT(aimg));
- 		*img = aimg;
+		GdkPixbuf *aimg;
+		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
+		g_object_unref(G_OBJECT(*img));
+		g_object_ref(G_OBJECT(aimg));
+		*img = aimg;
 		*trans = false;
 	}
 	else
@@ -99,12 +99,12 @@ __ERROR:
 
 	if (pic->pic) 
 	{
-	 g_object_unref(pic->pic);
-	 //delete pic->cache;
-	 //pic->cache = 0;
-	 pic->pic = 0;
-  }
-  
+	g_object_unref(pic->pic);
+	//delete pic->cache;
+	//pic->cache = 0;
+	pic->pic = 0;
+	}
+	
 	if (gdk_pixbuf_get_has_alpha(img)) {
 		pic->_transparent=true;
 		//pic->cache=new alphaCache(img);
@@ -126,18 +126,18 @@ __ERROR:
 
 void gPicture::initialize()
 {
-  pic = 0;
-  mask = 0;
-  img = 0;
-  _transparent = false;
-  _type = VOID;
-  _width = 0;
-  _height = 0;
+	pic = 0;
+	mask = 0;
+	img = 0;
+	_transparent = false;
+	_type = VOID;
+	_width = 0;
+	_height = 0;
 }
 
 gPicture::gPicture() : gShare()
 {
-  initialize();
+	initialize();
 }
 
 static GdkPixmap *create_pixmap(int w, int h)
@@ -146,18 +146,18 @@ static GdkPixmap *create_pixmap(int w, int h)
 	gint depth;
 	GdkPixmap *pic;
 
-  scr = gdk_screen_get_default();
-  depth = (gdk_screen_get_system_visual(scr))->depth;
+	scr = gdk_screen_get_default();
+	depth = (gdk_screen_get_system_visual(scr))->depth;
 
-  pic = gdk_pixmap_new(NULL, w, h, depth);
-  gdk_drawable_set_colormap(GDK_DRAWABLE(pic), gdk_colormap_get_system());
-  return pic;
+	pic = gdk_pixmap_new(NULL, w, h, depth);
+	gdk_drawable_set_colormap(GDK_DRAWABLE(pic), gdk_colormap_get_system());
+	return pic;
 }
 
 void gPicture::createMask(bool opaque)
 {
 	GdkGC *gc;
-  GdkGCValues gc_values;
+	GdkGCValues gc_values;
 	
 	if (mask || !_transparent)
 		return;
@@ -165,38 +165,38 @@ void gPicture::createMask(bool opaque)
 	mask = gdk_pixmap_new(NULL, _width, _height, 1);
 	
 	gc_values.foreground.pixel = opaque ? 1 : 0;
-  gc = gdk_gc_new_with_values(mask, &gc_values, GDK_GC_FOREGROUND);
+	gc = gdk_gc_new_with_values(mask, &gc_values, GDK_GC_FOREGROUND);
 	
 	gdk_gc_set_fill(gc, GDK_SOLID);
-  gdk_draw_rectangle(mask, gc, TRUE, 0, 0, _width, _height);
-  
-  g_object_unref(gc);
+	gdk_draw_rectangle(mask, gc, TRUE, 0, 0, _width, _height);
+	
+	g_object_unref(gc);
 }
 
 gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 {
-  initialize();
-  
+	initialize();
+	
 	_transparent = trans;
 
-  if (!type)
-    return;
+	if (!type)
+		return;
 
 	if (w <= 0 || h <= 0) return;
 
-  _type = type;
-  _width = w;
-  _height = h;
+	_type = type;
+	_width = w;
+	_height = h;
 
-  if (_type == SERVER)
-  {
-    pic = create_pixmap(w, h);
-    createMask(false);
-  }
-  else if (_type == MEMORY)
-  {
-  	img = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, w, h);
-  }
+	if (_type == SERVER)
+	{
+		pic = create_pixmap(w, h);
+		createMask(false);
+	}
+	else if (_type == MEMORY)
+	{
+		img = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, w, h);
+	}
 }
 
 
@@ -204,15 +204,15 @@ gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 
 gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
 {
-  initialize();
-  if (!image)
-    return;
-    
-  _type = MEMORY;
-  _width = gdk_pixbuf_get_width(image);
-  _height = gdk_pixbuf_get_height(image);
-  _transparent = trans;
-  img = image;
+	initialize();
+	if (!image)
+		return;
+		
+	_type = MEMORY;
+	_width = gdk_pixbuf_get_width(image);
+	_height = gdk_pixbuf_get_height(image);
+	_transparent = trans;
+	img = image;
 
 	if (gdk_pixbuf_get_n_channels(img) == 3)
 	{
@@ -230,73 +230,73 @@ gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
 
 gPicture::gPicture(GdkPixmap *pixmap) : gShare()
 {
-  initialize();
-  if (!pixmap)
-    return;
-    
-  _type = SERVER;
-  gdk_drawable_get_size((GdkDrawable *)pixmap, &_width, &_height);
-  pic = pixmap;
+	initialize();
+	if (!pixmap)
+		return;
+		
+	_type = SERVER;
+	gdk_drawable_get_size((GdkDrawable *)pixmap, &_width, &_height);
+	pic = pixmap;
 }
 
 gPicture::~gPicture()
 {
-  clear();
+	clear();
 }
 
 void gPicture::invalidate()
 {
 	if (_type == MEMORY && pic) 
 	{
-    g_object_unref(G_OBJECT(pic));
-    pic = 0;
-    if (mask)
-    {
-    	g_object_unref(mask);
-    	mask = 0;
-    }
-  }
-  else if (_type == SERVER && img)
-  {
-    g_object_unref(G_OBJECT(img));
-    img = 0;
-  }
+		g_object_unref(G_OBJECT(pic));
+		pic = 0;
+		if (mask)
+		{
+			g_object_unref(mask);
+			mask = 0;
+		}
+	}
+	else if (_type == SERVER && img)
+	{
+		g_object_unref(G_OBJECT(img));
+		img = 0;
+	}
 }
 
 GdkPixbuf *gPicture::getPixbuf()
 {
-  if (_type == VOID)
-    return NULL;
-    
-  if (!img && pic)
-  {
-    img = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, width(), height());
-    gdk_pixbuf_get_from_drawable(img, pic, NULL, 0, 0, 0, 0, width(), height());
-    
-    if (mask)
-    {
-    	uchar *s, *d;
-    	int i;
-    	GdkPixbuf *alpha;
-	    
-	    alpha = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, width(), height());
-	    gdk_pixbuf_get_from_drawable(alpha, mask, NULL, 0, 0, 0, 0, width(), height());
-	    s = gdk_pixbuf_get_pixels(alpha);
-	    d = gdk_pixbuf_get_pixels(img) + 3;
-	    //fprintf(stderr, "mask -> pixbuf\n\n");
-	    for (i = 0; i < (_width * _height); i++)
-	    {
-	      //fprintf(stderr, "%08X%c", *((uint *)s), (1 + (i % _width)) == _width ? '\n' : ' ');
-	    	d[0] = s[0];
-	    	d += 4;
-	    	s += 4;
-	    }
-	    g_object_unref(alpha);
-    }
-  }
-  
-  _type = MEMORY;
-  return img;
+	if (_type == VOID)
+		return NULL;
+		
+	if (!img && pic)
+	{
+		img = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, width(), height());
+		gdk_pixbuf_get_from_drawable(img, pic, NULL, 0, 0, 0, 0, width(), height());
+		
+		if (mask)
+		{
+			uchar *s, *d;
+			int i;
+			GdkPixbuf *alpha;
+			
+			alpha = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, width(), height());
+			gdk_pixbuf_get_from_drawable(alpha, mask, NULL, 0, 0, 0, 0, width(), height());
+			s = gdk_pixbuf_get_pixels(alpha);
+			d = gdk_pixbuf_get_pixels(img) + 3;
+			//fprintf(stderr, "mask -> pixbuf\n\n");
+			for (i = 0; i < (_width * _height); i++)
+			{
+				//fprintf(stderr, "%08X%c", *((uint *)s), (1 + (i % _width)) == _width ? '\n' : ' ');
+				d[0] = s[0];
+				d += 4;
+				s += 4;
+			}
+			g_object_unref(alpha);
+		}
+	}
+	
+	_type = MEMORY;
+	return img;
 }
 
 GdkPixmap *gPicture::getPixmap()
@@ -352,9 +352,9 @@ int gPicture::depth()
 	int depth=0;
 
 	if (pic) 
-    depth = gdk_drawable_get_depth(GDK_DRAWABLE(pic));
-  else if (img)
-    depth = 32;
+		depth = gdk_drawable_get_depth(GDK_DRAWABLE(pic));
+	else if (img)
+		depth = 32;
 
 	return depth;
 }
@@ -383,31 +383,31 @@ void gPicture::setTransparent(bool vl)
 
 void gPicture::fill(gColor col)
 {
-  if (_type == SERVER)
-  {
-  	gt_pixmap_fill(pic, col, NULL);
-  }
-  else if (_type == MEMORY)
-  {
-  	int r, g, b, a;
+	if (_type == SERVER)
+	{
+		gt_pixmap_fill(pic, col, NULL);
+	}
+	else if (_type == MEMORY)
+	{
+		int r, g, b, a;
 		union
 		{
 			char c[4];
 			uint value;
 		}
 		color;
-  	
-  	gt_color_to_rgba(col, &r, &g, &b, &a);
-  	
-  	color.c[0] = a ^ 0xFF;
-  	color.c[1] = b;
-  	color.c[2] = g;
-  	color.c[3] = r;
-  	
-  	gdk_pixbuf_fill(img, color.value);
-  }
-  
-  invalidate();
+		
+		gt_color_to_rgba(col, &r, &g, &b, &a);
+		
+		color.c[0] = a ^ 0xFF;
+		color.c[1] = b;
+		color.c[2] = g;
+		color.c[3] = r;
+		
+		gdk_pixbuf_fill(img, color.value);
+	}
+	
+	invalidate();
 }
 
 
@@ -474,40 +474,40 @@ int gPicture::save(const char *path, int quality)
 
 
 /***********************************************************************
- The following function tries to load an icon from predefined or "stock"
- items. It accepts the format: StockSize/IconName, where StockSize can be:
+The following function tries to load an icon from predefined or "stock"
+items. It accepts the format: StockSize/IconName, where StockSize can be:
 
- "Menu", "SmallToolBar","LargeToolBar","Button","Dnd","Dialog"
+"Menu", "SmallToolBar","LargeToolBar","Button","Dnd","Dialog"
 
- And IconName can be:
+And IconName can be:
 
- "Add","Apply","Bold","Cancel",
- "CDRom","Clear","Close","ColorPicker",
- "Convert","Copy","Cut","Delete",
- "DialogAuthentication""DialogError","DialogInfo","DialogQuestion",
- "DialogWarning","Dnd","DndMultiple", "Execute",
- "Find","FindAndReplace","Floppy","GotoBottom",
- "GotoFirst", "GotoLast","GotoTop","GoBack",
- "GoDown","GoForward","GoUp","HardDisk"
- "Help","Home","Indent","Index",
- "Italic","JumpTo","JustifyCenter", "JustifyFill",
- "JustifyLeft","JustifyRight","MissingImage","Network",
- "New","No","Ok","Open",
- "Paste","Preferences","Print","PrintPreview",
- "Properties","Quit","Redo","Refresh",
- "Remove","RevertToSaved","Save","SaveAs",
- "SelectColor","SelectFont","SortAscending","SortDescending",
- "SpellCheck","Stop","StrikeThrough","Undelete",
- "Underline","Undo","Unindent","Yes",
- "Zoom100","ZoomFit","ZoomIn","ZoomOut"
+"Add","Apply","Bold","Cancel",
+"CDRom","Clear","Close","ColorPicker",
+"Convert","Copy","Cut","Delete",
+"DialogAuthentication""DialogError","DialogInfo","DialogQuestion",
+"DialogWarning","Dnd","DndMultiple", "Execute",
+"Find","FindAndReplace","Floppy","GotoBottom",
+"GotoFirst", "GotoLast","GotoTop","GoBack",
+"GoDown","GoForward","GoUp","HardDisk"
+"Help","Home","Indent","Index",
+"Italic","JumpTo","JustifyCenter", "JustifyFill",
+"JustifyLeft","JustifyRight","MissingImage","Network",
+"New","No","Ok","Open",
+"Paste","Preferences","Print","PrintPreview",
+"Properties","Quit","Redo","Refresh",
+"Remove","RevertToSaved","Save","SaveAs",
+"SelectColor","SelectFont","SortAscending","SortDescending",
+"SpellCheck","Stop","StrikeThrough","Undelete",
+"Underline","Undo","Unindent","Yes",
+"Zoom100","ZoomFit","ZoomIn","ZoomOut"
 *************************************************************************/
 
 
 
 /***********************************************************************
- The following function tries to load an icon from predefined system
- paths
- ***********************************************************************/
+The following function tries to load an icon from predefined system
+paths
+***********************************************************************/
 gPicture* gPicture::fromNamedIcon(const char *name, int len)
 {
 	GtkIconTheme* theme;
@@ -549,38 +549,38 @@ gPicture* gPicture::fromNamedIcon(const char *name, int len)
 
 void gPicture::clear()
 {
-  //fprintf(stderr, "gPicture::clear: %p (%d %d) pic = %p img = %p\n", this, _width, _height, pic, img);
-  _width = 0;
-  _height = 0;
-  _type = VOID;
-  
-  if (pic)
-  	g_object_unref(G_OBJECT(pic));
-  if (mask)
-  	g_object_unref(G_OBJECT(mask));
+	//fprintf(stderr, "gPicture::clear: %p (%d %d) pic = %p img = %p\n", this, _width, _height, pic, img);
+	_width = 0;
+	_height = 0;
+	_type = VOID;
+	
+	if (pic)
+		g_object_unref(G_OBJECT(pic));
+	if (mask)
+		g_object_unref(G_OBJECT(mask));
 	if (img)
 		g_object_unref(G_OBJECT(img));
 	
-  pic = 0;
-  img = 0;
-  mask = 0;
+	pic = 0;
+	img = 0;
+	mask = 0;
 }
 
 void gPicture::resize(int w, int h)
 {
-  if (_width <= 0 || _height <= 0)
-  {
-    clear();
-    return;
-  }
+	if (_width <= 0 || _height <= 0)
+	{
+		clear();
+		return;
+	}
 
-  if (_type == SERVER)
-  {
-  	GdkPixmap *buf;
-  	GdkBitmap *save;
-  	GdkGC *gc;
+	if (_type == SERVER)
+	{
+		GdkPixmap *buf;
+		GdkBitmap *save;
+		GdkGC *gc;
 
-    buf = create_pixmap(w, h);
+		buf = create_pixmap(w, h);
 		
 		gc=gdk_gc_new(buf);
 		gdk_draw_drawable(buf, gc, pic, 0, 0, 0, 0, w, h);
@@ -601,11 +601,11 @@ void gPicture::resize(int w, int h)
 			
 			g_object_unref(save);
 		}
-  }
-  else if (_type == MEMORY)
-  {
-  	GdkPixbuf *buf;
-  	
+	}
+	else if (_type == MEMORY)
+	{
+		GdkPixbuf *buf;
+		
 		if (w > width() || h > height())
 		{
 			buf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, w, h);
@@ -620,28 +620,28 @@ void gPicture::resize(int w, int h)
 		
 		g_object_unref(G_OBJECT(img));
 		img = buf;
-  }
-  
-  _width = w;
-  _height = h;
-  
-  invalidate();
+	}
+	
+	_width = w;
+	_height = h;
+	
+	invalidate();
 }
 
 
 gPicture *gPicture::copy(int x, int y, int w, int h)
 {
-  gPicture *ret = NULL;
-  
-  if (_type == VOID || w <= 0 || h <= 0)
-    return new gPicture();
+	gPicture *ret = NULL;
+	
+	if (_type == VOID || w <= 0 || h <= 0)
+		return new gPicture();
 
-  if (_type == SERVER)
-  {
-    GdkGC *gc;
-    
-	  ret = new gPicture(_type, w, h, _transparent);
-  
+	if (_type == SERVER)
+	{
+		GdkGC *gc;
+		
+		ret = new gPicture(_type, w, h, _transparent);
+	
 		gc=gdk_gc_new(ret->pic);
 		gdk_draw_drawable(ret->pic, gc, pic, x, y, 0, 0, w, h);
 		g_object_unref(gc);
@@ -652,22 +652,22 @@ gPicture *gPicture::copy(int x, int y, int w, int h)
 			gdk_draw_drawable(ret->mask, gc, mask, x, y, 0, 0, w, h);
 			g_object_unref(gc);
 		}
-  }
-  else if (_type == MEMORY)
-  {
-  	GdkPixbuf *buf;
-  	if (x == 0 && y == 0 && w == width() && h == height())
-  		buf = gdk_pixbuf_copy(img);
-  	else
-  	{
+	}
+	else if (_type == MEMORY)
+	{
+		GdkPixbuf *buf;
+		if (x == 0 && y == 0 && w == width() && h == height())
+			buf = gdk_pixbuf_copy(img);
+		else
+		{
 			buf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, w, h);
 			gdk_pixbuf_copy_area(img, x, y, w, h, buf, 0, 0);
 		}
 		
-  	ret = new gPicture(buf, _transparent);
-  }
-  
-  return ret;
+		ret = new gPicture(buf, _transparent);
+	}
+	
+	return ret;
 }
 
 gPicture *gPicture::copy()
@@ -685,7 +685,7 @@ void gPicture::putPixel(int x, int y, gColor col)
 	if ( (x<0) || (x>width()) ) return;
 	if ( (y<0) || (y>height()) ) return;
 
-  image = getPixbuf();
+	image = getPixbuf();
 	
 	nchannels=gdk_pixbuf_get_n_channels(image);
 	rowstride=gdk_pixbuf_get_rowstride(image);
@@ -696,12 +696,12 @@ void gPicture::putPixel(int x, int y, gColor col)
 	if (nchannels>1) p[1]=( (col>>8) & 0xFF );
 	if (nchannels>2) p[2]=( col & 0xFF );
 	//if (nchannels>3) p[3]=(col>>24);*/
-  p[0]=((col>>16) & 0xFF);
-  p[1]=((col>>8) & 0xFF);
-  p[2]=(col & 0xFF);
-  if (nchannels>3) p[3]=255 - (col >> 24);   
+	p[0]=((col>>16) & 0xFF);
+	p[1]=((col>>8) & 0xFF);
+	p[2]=(col & 0xFF);
+	if (nchannels>3) p[3]=255 - (col >> 24);   
 
-  invalidate();
+	invalidate();
 }
 
 gColor gPicture::getPixel(int x, int y)
@@ -715,7 +715,7 @@ gColor gPicture::getPixel(int x, int y)
 	if ( (x<0) || (x>width()) ) return 0;
 	if ( (y<0) || (y>height()) ) return 0;
 
- 	image = getPixbuf();
+	image = getPixbuf();
 	
 	nchannels=gdk_pixbuf_get_n_channels(image);
 	rowstride=gdk_pixbuf_get_rowstride(image);
@@ -792,8 +792,8 @@ gPicture* gPicture::flip(bool mirror)
 				s += rowstride;
 			}
 		}
-  }
-  
+	}
+	
 	return ret;
 }
 
@@ -834,7 +834,7 @@ static void rotate_image(double mat11, double mat12, double mat21, double mat22,
 		}
 		m21ydx += m21;
 		m22ydy += m22;
-   }
+	}
 }
 
 gPicture* gPicture::rotate(double angle)
@@ -895,10 +895,10 @@ gPicture* gPicture::rotate(double angle)
 
 gPicture *gPicture::stretch(int w, int h, bool smooth)
 {
-  gPicture *ret;
-  GdkPixbuf *image;
+	gPicture *ret;
+	GdkPixbuf *image;
 	int ws, hs;
-  
+	
 	if (w <= 0 && h <= 0)
 		return new gPicture();
 	
@@ -907,16 +907,16 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
 	else if (h < 0)
 		h = height() * w / width();
 	
-  if (w <= 0 || h <= 0)
-    return new gPicture();
-  
-  ret = copy();
-  if (ret->isVoid())
-    return ret;
-    
-  image = ret->getPixbuf();
-  
-  if (smooth)
+	if (w <= 0 || h <= 0)
+		return new gPicture();
+	
+	ret = copy();
+	if (ret->isVoid())
+		return ret;
+		
+	image = ret->getPixbuf();
+	
+	if (smooth)
 	{
 		ws = w;
 		hs = h;
@@ -930,17 +930,17 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
 			g_object_unref(G_OBJECT(image));
 			image = ret->img;
 		}
-    ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_BILINEAR);
+		ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_BILINEAR);
 	}
-  else
-    ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_NEAREST);
+	else
+		ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_NEAREST);
 
-  g_object_unref(G_OBJECT(image));
-  
-  ret->_width = w;
-  ret->_height = h;
+	g_object_unref(G_OBJECT(image));
+	
+	ret->_width = w;
+	ret->_height = h;
 
-  ret->invalidate();
+	ret->invalidate();
 
 	return ret;
 }
@@ -953,8 +953,8 @@ void gPicture::draw(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 
 	GT_NORMALIZE(x, y, w, h, sx, sy, sw, sh, pic->width(), pic->height());
 
-  if (x >= width() || y >= height())
-  	return;
+	if (x >= width() || y >= height())
+		return;
 	
 
 	if (_type == SERVER)
@@ -1028,29 +1028,29 @@ GHashTable *gPictureCache::cache = 0;
 
 static void destroy_key(char *key)
 {
-  g_free(key);
+	g_free(key);
 }
 
 static void destroy_value(gPicture *pic)
 {
 	//fprintf(stderr, "gPictureCache: destroy_value %p\n", pic);
-  pic->unref();
+	pic->unref();
 }
 
 void gPictureCache::init()
 {
-  cache = g_hash_table_new_full((GHashFunc)g_str_hash, (GEqualFunc)g_str_equal, (GDestroyNotify)destroy_key, (GDestroyNotify)destroy_value);
+	cache = g_hash_table_new_full((GHashFunc)g_str_hash, (GEqualFunc)g_str_equal, (GDestroyNotify)destroy_key, (GDestroyNotify)destroy_value);
 }
 
 void gPictureCache::exit()
 {
-  g_hash_table_destroy(cache);
+	g_hash_table_destroy(cache);
 }
 
 void gPictureCache::put(const char *key, gPicture *pic)
 {
 	if (!key || !*key) return;
-  
+	
 	//fprintf(stderr, "gPictureCache: put %p\n", pic);
 	pic->ref();
 	g_hash_table_replace(cache, (gpointer)g_strdup(key), (gpointer)pic);
@@ -1065,8 +1065,8 @@ gPicture *gPictureCache::get(const char *key)
 
 void gPictureCache::flush()
 {
-  exit();
-  init();
+	exit();
+	init();
 }
 
 void gPicture::makeGray()

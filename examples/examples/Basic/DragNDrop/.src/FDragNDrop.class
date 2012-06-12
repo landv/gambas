@@ -75,7 +75,7 @@ Public Sub TreeView1_MouseDrag()
     Paint.End  
 
     Drag.Icon = hImage.Picture
-    hImage.Save("~/drag.png")
+    'hImage.Save("~/drag.png")
     'Drag.Icon = .Current.Picture
     .Drag(.Key, MIME_TYPE)
   End With

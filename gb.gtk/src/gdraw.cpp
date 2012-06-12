@@ -571,12 +571,11 @@ int gDraw::fillX()
 
 void gDraw::setFillX(int vl)
 {
-	GdkGCValues val;
-
+	if (_fillX == vl)
+		return;
 	_fillX = vl;
-	gdk_gc_get_values(gc,&val);
-	gdk_gc_offset(gc,_fillX + _x,val.ts_y_origin);
-	if (gcm) gdk_gc_offset(gcm, vl, val.ts_y_origin);
+	gdk_gc_offset(gc, _fillX + _x, _fillY + _y);
+	if (gcm) gdk_gc_offset(gcm, _fillX + _x, _fillY + _y);
 }
 
 int gDraw::fillY()
@@ -586,12 +585,11 @@ int gDraw::fillY()
 
 void gDraw::setFillY(int vl)
 {
-	GdkGCValues val;
-
+	if (_fillY == vl)
+		return;
 	_fillY = vl;
-	gdk_gc_get_values(gc,&val);
-	gdk_gc_offset(gc,val.ts_x_origin,_fillY + _y);
-	if (gcm) gdk_gc_offset(gcm, val.ts_x_origin, vl);
+	gdk_gc_offset(gc, _fillX + _x, _fillY + _y);
+	if (gcm) gdk_gc_offset(gcm, _fillX + _x, _fillY + _y);
 }
 
 int gDraw::fillStyle()
@@ -996,7 +994,9 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 			g_object_unref(tmp_gc);
 		}
 		else
-			gdk_draw_drawable(dr, gc, pic->getPixmap(), sx, sy, x += _x, y + _y, sw, sh);
+		{
+			gdk_draw_drawable(dr, gc, pic->getPixmap(), sx, sy, x + _x, y + _y, sw, sh);
+		}
 	}
   else
   {
@@ -1017,8 +1017,8 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
   		sx = 0; sy = 0; sw = w; sh = h;
   	}
 		
+		//fprintf(stderr, "x = %d y = %d (%d %d) %d\n", x, y, _x, _y, drm != NULL);
 		gdk_draw_pixbuf(dr, gc, pic->getPixbuf(), sx, sy, x + _x, y + _y, sw, sh, GDK_RGB_DITHER_MAX, 0, 0);
-		
 	}
 
 	if (drm)
@@ -1059,7 +1059,7 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 	
 	if (!pic || pic->isVoid() || w < 1 || h < 1) return;
 	
-	pic->getPixmap();
+	//pic->getPixmap();
 	
 	save_clip_enabled = clip_enabled;
 	save_clip = clip;

@@ -14,3 +14,14 @@ Public Sub Button1_Click()
   Print tlbrMain.H;; tlbrMain.Children[0].H;; ToolButton1.H
 
 End
+
+Public Sub Button2_Click()
+
+  If Panel2.Parent = Panel1 Then
+    Panel2.Reparent(Me)
+  Else
+    Panel2.Reparent(Panel1)
+    Panel2.Next = ToolButton6
+  Endif
+
+End

@@ -958,7 +958,7 @@ void gApplication::init(int *argc, char ***argv)
 {
 	appEvents=0;
 	
-	gtk_init(argc,argv);
+	gtk_init(argc, argv);
  
 	gdk_event_handler_set((GdkEventFunc)gambas_handle_event, NULL, NULL);
 	

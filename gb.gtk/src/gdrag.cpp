@@ -237,6 +237,7 @@ GdkDragContext *gDrag::_context = NULL;
 guint32 gDrag::_time = 0;
 volatile bool gDrag::_got_data = false;
 bool gDrag::_local = false;
+bool gDrag::_end = false;
 
 void gDrag::setIcon(gPicture *vl)
 {  
@@ -246,7 +247,8 @@ void gDrag::setIcon(gPicture *vl)
 
 void gDrag::cancel()
 {
-	//g_debug("gDrag::cancel");
+	//fprintf(stderr, "gDrag::cancel\n");
+	
 	hide();
 	setIcon(NULL);
 	setDropText(NULL);
@@ -269,12 +271,49 @@ void gDrag::exit()
 	cancel();
 }
 
-void gDrag::dragText(gControl *source, char *text, char *format)
+gControl *gDrag::drag(gControl *source, GtkTargetList *list)
+{
+	GdkDragContext *ct;
+	gControl *dest;
+
+	_local = true;
+	
+	//fprintf(stderr, "gtk_drag_begin: start\n");
+
+	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, 1, NULL);
+	if (!ct)
+		return NULL;
+
+	//fprintf(stderr, "gtk_drag_begin: finish\n");
+	
+	if (_icon) 
+	{
+		GdkPixbuf *icon = _icon->getIconPixbuf();
+		gtk_drag_set_icon_pixbuf(ct, icon, _icon_x, _icon_y);
+		if (icon != _icon->getPixbuf())
+			g_object_unref(G_OBJECT(icon));
+	}
+	
+	while (!_end)
+		MAIN_do_iteration(true);
+	
+	gtk_target_list_unref(list);	
+	
+	_end = false;
+	
+	dest = _destination;
+	cancel();
+	
+	return dest;
+}
+
+gControl *gDrag::dragText(gControl *source, char *text, char *format)
 {
 	GtkTargetList *list;
-	GdkDragContext *ct;
 	
 	//cancel();
+	
+	//fprintf(stderr, "dragText: %s\n", text);
 	
 	setDropText(text);
 	
@@ -290,35 +329,14 @@ void gDrag::dragText(gControl *source, char *text, char *format)
 	//gtk_target_list_add (list,gdk_atom_intern("text/plain;charset=utf-8",false),0,0);
 	//gtk_target_list_add (list,gdk_atom_intern("text/plain",false),0,0);
 	
-	_source = source;
 	setDropInfo(Text, format);
-	_active = true;
-	_local = true;
-		
-	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, 1, NULL);
 	
-	if (_icon) 
-	{
-		GdkPixbuf *icon = _icon->getIconPixbuf();
-		gtk_drag_set_icon_pixbuf(ct, icon, _icon_x, _icon_y);
-		if (icon != _icon->getPixbuf())
-			g_object_unref(G_OBJECT(icon));
-	}
-	
-	gtk_target_list_unref(list);	
-
-	//g_debug("dragText: end\n");
+	return drag(source, list);
 }
 
-void gDrag::dragImage(gControl *source, gPicture *image)
+gControl *gDrag::dragImage(gControl *source, gPicture *image)
 {
 	GtkTargetList *list;
-	//GdkPixbuf *buf;
-	GdkDragContext *ct;
-	
-	//cancel();
-	
-	//g_debug("dragImage: source = %p image = %p\n", source, image);
 	
 	setDropImage(image);
 	
@@ -329,20 +347,9 @@ void gDrag::dragImage(gControl *source, gPicture *image)
 	gtk_target_list_add(list, gdk_atom_intern("image/jpeg", false), 0, 0);
 	gtk_target_list_add(list, gdk_atom_intern("image/gif", false), 0, 0);
 	
-	_source = source;
-	_local = true;
 	setDropInfo(Image, NULL);
-	
-	//g_debug("dragImage: gtk_drag_begin\n");
-	
-	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, 1, NULL);
-	
-	if (_icon)
-		gtk_drag_set_icon_pixbuf(ct, _icon->getPixbuf(), _icon_x, _icon_y);
-	
-	gtk_target_list_unref(list);
 
-	//g_debug("dragImage: end\n");
+	return drag(source, list);
 }
 
 void gDrag::setDropInfo(int type, char *format)
@@ -367,7 +374,7 @@ void gDrag::setDropData(int action, int x, int y, gControl *source, gControl *de
 
 void gDrag::setDropText(char *text, int len)
 {
-	//g_debug("gDrag::setDropText: text = %s\n", text);
+	//fprintf(stderr, "gDrag::setDropText: text = '%s' %d\n", text, len);
 	
 	g_free(_text);
 	if (text)
@@ -470,9 +477,10 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 	GdkWindow *window;
 	GdkColor color;
 	GdkWindow *parent;
+	GtkAllocation *a;
 	
-	if (w < 0) w = control->width();
-	if (h < 0) h = control->height();
+	if (w < 0) w = control->width() - control->getFrameWidth() * 2;
+	if (h < 0) h = control->height() - control->getFrameWidth() * 2;
 	
 	if (w < 2 || h < 2)
 		return;
@@ -486,11 +494,15 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 	if (control->_scroll)
 	{
 		parent = control->widget->window;
-		w -= control->getFrameWidth();
-		h -= control->getFrameWidth();
 	}
 	else
+	{
 		parent = control->border->window;
+		a = &control->border->allocation;
+		x += a->x;
+		y += a->y;
+	}
+	
 	
 	if (!_frame_visible)
 	{
@@ -663,7 +675,7 @@ bool gDrag::getData(const char *prefix)
 	gulong id;
 	static bool norec = false;
 	
-	//fprintf(stderr, "getData\n");
+	//fprintf(stderr, "getData: norec = %d _local = %d\n", norec, _local);
 	
 	if (norec || _local) // local DnD
 		return false;
@@ -707,7 +719,7 @@ bool gDrag::getData(const char *prefix)
 
 char *gDrag::getText(int *len, const char *format)
 {
-	setDropText(NULL);
+	//setDropText(NULL);
 	
 	if (!format)
 		format = "text/";

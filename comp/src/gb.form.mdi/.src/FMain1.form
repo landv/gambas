@@ -3,8 +3,9 @@
 { Form Form
   MoveScaled(0,0,55,50)
   { tlbrMain ToolBar
-    MoveScaled(7,1,45,6)
+    MoveScaled(0,0,45,6)
     Key = "tb_main"
+    Separator = True
     { ToolButton1 ToolButton
       MoveScaled(0,0,4,4)
       Action = "a1"
@@ -23,7 +24,7 @@
       Picture = Picture["70a017.png"]
     }
     { ToolButton4 ToolButton
-      MoveScaled(14,0,4,4)
+      MoveScaled(13,0,4,4)
       Visible = False
       Action = "a4"
       Picture = Picture["icon:/small/add"]
@@ -34,7 +35,29 @@
     Text = ("Button1")
   }
   { Label1 Label
-    MoveScaled(1,1,5,6)
+    MoveScaled(23,30,5,6)
+    Border = Border.Plain
+  }
+  { Panel1 Panel
+    MoveScaled(4,17,46,6)
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { ToolButton5 ToolButton
+      MoveScaled(2,1,5,4)
+      Border = True
+    }
+    { ToolButton6 ToolButton
+      MoveScaled(7,1,5,4)
+      Border = True
+    }
+  }
+  { Button2 Button
+    MoveScaled(3,30,16,4)
+    Text = ("Reparent")
+  }
+  { Panel2 Panel
+    MoveScaled(5,25,4,4)
+    Background = Color.LightBackground
     Border = Border.Plain
   }
 }

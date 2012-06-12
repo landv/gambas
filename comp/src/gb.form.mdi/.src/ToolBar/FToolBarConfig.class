@@ -34,7 +34,7 @@ Private Sub SetCurrentToolbar(hToolbar As ToolBar)
   If hToolbar = $hToolbar Then Return
   
   If $hToolbar Then
-    $hForm.SetConfigureMode(False)
+    Try $hForm.SetConfigureMode(False)
     $hToolbar = Null
     $hForm = Null
   Endif
