@@ -58,6 +58,7 @@ void TextNode::addStringLen(size_t *len, int indent)
     if(indent) *len += indent + 1;
 }
 
+#undef ADD
 #define ADD(_car) **data = _car; ++(*data);
 
 void TextNode::addString(char **data, int indent)

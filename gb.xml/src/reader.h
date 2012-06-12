@@ -74,6 +74,7 @@ public :
     bool inCommentTag;//Si on est dans un tag commentaire
     bool inXMLProlog;//Si on est dans un prologue xml
     unsigned char specialTagLevel;//Niveau de lecture d'un tag spécial
+    bool inComment;//Si on est dans un commentaire
     int depth;//Profondeur du nœud courant
     char *attrName;//Nom de l'attribut en cours de lecture
     size_t lenAttrName;
