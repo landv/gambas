@@ -172,6 +172,7 @@ BEGIN_PROPERTY(CTEXTAREA_text)
 	{
 		WIDGET->document()->setPlainText(QSTRING_PROP());
 		update_alignment(THIS);
+		CTEXTAREA_set_foreground(THIS);
 	}
 
 END_PROPERTY
