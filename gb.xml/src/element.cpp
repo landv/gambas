@@ -753,7 +753,18 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         if(tag && (tag - pos) != 0)//On ajoute le texte, s'il existe
         {
             TextNode *text = new TextNode(pos, tag - pos);
-            APPEND(text);
+            //Checking length
+            char *textpos = pos;
+            size_t textlen = tag - pos;
+            Trim(textpos, textlen);
+            if(textlen != 0)
+            {
+                APPEND(text);
+            }
+            else
+            {
+                delete text;
+            }
         }
         
         if(!tag) break;

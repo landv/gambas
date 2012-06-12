@@ -63,14 +63,14 @@ void TextNode::addStringLen(size_t *len, int indent)
 
 void TextNode::addString(char **data, int indent)
 {
-    if(indent) 
+    if(indent >= 0) 
     {
         memset(*data, CHAR_SPACE, indent); 
         *data += indent;
     }
     memcpy(*data, content, lenContent);
     *data += lenContent;
-    if(indent)
+    if(indent >= 0)
     {
         ADD(SCHAR_N);
     }
@@ -152,7 +152,7 @@ void CommentNode::addStringLen(size_t *len, int indent)
 
 void CommentNode::addString(char **data, int indent)
 {
-    if(indent) 
+    if(indent >= 0) 
     {
         memset(*data, CHAR_SPACE, indent); 
         *data += indent;
@@ -163,7 +163,7 @@ void CommentNode::addString(char **data, int indent)
     *data += lenContent;
     memcpy(*data, "-->", 3);
     *data += 3;
-    if(indent)
+    if(indent >= 0)
     {
         ADD(SCHAR_N);
     }
@@ -209,7 +209,7 @@ void CDATANode::addStringLen(size_t *len, int indent)
 
 void CDATANode::addString(char **data, int indent)
 {
-    if(indent) 
+    if(indent >= 0) 
     {
         memset(*data, CHAR_SPACE, indent); 
         *data += indent;
@@ -220,7 +220,7 @@ void CDATANode::addString(char **data, int indent)
     *data += lenContent;
     memcpy(*data, "]]>", 3);
     *data += 3;
-    if(indent)
+    if(indent >= 0)
     {
         ADD(SCHAR_N);
     }
