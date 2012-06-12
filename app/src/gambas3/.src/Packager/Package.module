@@ -1427,7 +1427,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   AddLog("")
 
   sPackage = Dir(sBuildDir, Project.Name & "*" & $sVersion & "*")[0]
-  MoveFile(sBuildDir &/ sPackage, Path &/ sPackage)
+  MoveFile(sBuildDir &/ sPackage, Path &/ $sPrefix & sPackage)
   AddLog(sPackage)
   
   ' Remove build dir
