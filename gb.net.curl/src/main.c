@@ -59,7 +59,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-  curl_global_init(0);
+  curl_global_init(CURL_GLOBAL_ALL);
   return 0;
 }
 
