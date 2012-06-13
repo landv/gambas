@@ -144,24 +144,42 @@ End
 
 Public Sub Comment(Comment As String)
   
+  
+  If Not $TagEnded Then 
+    Write(">" & If($indent, "\n", ""), True)
+    $TagEnded = True
+  Endif
   Write("<!--" & Comment & "-->",, True)
   
 End
 
 Public Sub Text(Text As String)
   
+  
+  If Not $TagEnded Then 
+    Write(">" & If($indent, "\n", ""), True)
+    $TagEnded = True
+  Endif
   Write(Text, True)
   
 End
 
 Public Sub CDATA(data As String)
   
+  If Not $TagEnded Then 
+    Write(">" & If($indent, "\n", ""), True)
+    $TagEnded = True
+  Endif
   Write("<![CDATA[" & data & "]]>", True)
   
 End
 
 Public Sub PI(Target As String, Content As String)
   
+  If Not $TagEnded Then 
+    Write(">" & If($indent, "\n", ""), True)
+    $TagEnded = True
+  Endif
   Write("<?" & Target & " " & Content & "?>", True, True)
   
 End
