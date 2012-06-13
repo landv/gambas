@@ -81,6 +81,7 @@ Public Sub AddAction(sAction As String)
   
   hItem = New DrawingArea(svwAction) As "Item"
   hItem.Tag = sAction
+  hItem.Mouse = Mouse.Pointing
   hItem.Resize(Desktop.Scale * 32, Desktop.Scale * 5)
   
 End
@@ -99,6 +100,7 @@ Private Sub InitAction()
   svwAction.Arrangement = Arrange.None
   
   AddAction("|")
+  AddAction("-")
   AddAction("~")
   
   'Print $hToolbar.Children.Count;; $hToolbar._Container.Children.Count
@@ -131,7 +133,7 @@ Public Sub Item_Leave()
   
 End
 
-Private Sub DrawItem(hAction As CAction, bScreenshot As Boolean)
+Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolean)
   
   'Dim hAction As CAction
   Dim hIcon As Picture
@@ -143,8 +145,15 @@ Private Sub DrawItem(hAction As CAction, bScreenshot As Boolean)
    bText = Draw.W > (Draw.H * 2)
   
   'If $hInside = hItem Then 
-  Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
+  'Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
+  
+  Draw.Foreground = Color.LightForeground
+  Draw.Rect(0, 0, Draw.W, Draw.H)
+  Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+  Draw.Foreground = hCtrl.Foreground
+  
   If hAction Then
+    
     hIcon = hAction.GetConfigIcon(If(bScreenshot, $hForm.GetRealIconSize(), 0))
     If hIcon Then 
       If bText Then
@@ -157,15 +166,21 @@ Private Sub DrawItem(hAction As CAction, bScreenshot As Boolean)
       W = $hForm.GetIconSize()
     Endif
     If bText Then Draw.Text(hAction.Display, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
+  
   Else
-    If Last.Tag = "|" Then
-      'Draw.Rect(4 + W \ 2 - 2, (Draw.H - W) \ 2, 4, W)
-      hIcon = Picture["img/separator.png"]
-      sText = ("Separator")
-    Else
-      hIcon = Picture["img/expander.png"]
-      sText = ("Expander")
-    Endif
+    
+    Select Case Last.Tag
+      Case "|"
+        hIcon = Picture["img/separator.png"]
+        sText = ("Separator")
+      Case "~"
+        hIcon = Picture["img/expander.png"]
+        sText = ("Expander")
+      Case "-"
+        hIcon = Picture["img/space.png"]
+        sText = ("Space")
+    End Select
+    
     If bText Then
       Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
     Else
@@ -181,7 +196,7 @@ End
 
 Public Sub Item_Draw()
   
-  DrawItem(MAction.Actions[Last.Tag], False)
+  DrawItem(Last, MAction.Actions[Last.Tag], False)
   
 End
 
@@ -236,10 +251,16 @@ Private Sub GetItemScreenshot(hAction As CAction) As Picture
   hPict = New Picture(hItem.W, hItem.H)
   Draw.Begin(hPict)
   Draw.FillRect(0, 0, Draw.W, Draw.H, Color.Background)
-  DrawItem(hAction, True)
+  DrawItem(hItem, hAction, True)
   Draw.End
   
   Return hPict
+  
+End
+
+Static Public Sub IsSpecialAction(sAction As String) As Boolean
+  
+  Return InStr("~|-", sAction)
   
 End
 
@@ -275,6 +296,8 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     Drag.Icon = Picture["img/expander.png"]
   Else If sAction = "|" Then
     Drag.Icon = Picture["img/separator.png"]
+  Else If sAction = "-" Then
+    Drag.Icon = Picture["img/space.png"]
   Else
     Drag.Icon = Null
   Endif
@@ -289,7 +312,7 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     
       If hDest = panAction Then
       Else
-        If hCtrl.Tag <> "|" And If hCtrl.Tag <> "~" Then 
+        If Not IsSpecialAction(hCtrl.Tag) Then 
           hCtrl.Hide
         Endif
       Endif
@@ -370,7 +393,7 @@ Public Sub panAction_Drop()
 
   Dim sAction As String = Drag.Paste(MAction.MIME)
   
-  If sAction <> "|" And If sAction <> "~" Then AddAction(sAction)
+  If Not IsSpecialAction(sAction) Then AddAction(sAction)
 
 End
 
@@ -474,3 +497,4 @@ Public Sub timDeleteLater_Timer()
   $aDeleteLater.Clear
   
 End
+

@@ -60,11 +60,7 @@ gSeparator::gSeparator(gContainer *parent) : gControl(parent)
 	
 	border = widget = gtk_fixed_new();
 
-	gtk_widget_add_events(widget, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-	gtk_widget_add_events(widget, GDK_POINTER_MOTION_MASK);
-	
-	connectParent();
-	initSignals();
+	realize(false);
 
 	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(gSeparator_expose), (gpointer)this);
 }

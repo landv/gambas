@@ -154,7 +154,7 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	
 	if (!data->_drag_enter)
 	{
-		//g_debug("sg_drag_motion: onDrag\n");
+		//fprintf(stderr, "sg_drag_motion: onDrag: %p\n", widget);
 	
 		x = 0; 
 		y = 0; 
@@ -165,7 +165,7 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	}
 	else
 	{
-		//g_debug("sg_drag_motion: onDragMove\n");
+		//fprintf(stderr, "sg_drag_motion: onDragMove: %p\n", widget);
 		
 		if (data->onDragMove) 
 			retval = !data->onDragMove(data);
@@ -185,6 +185,7 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 
 void sg_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time, gControl *data)
 {
+	//fprintf(stderr, "sg_drag_leave: %p\n", widget);
 	data->_drag_enter = false;
 	gDrag::hide(data);
 }

@@ -1004,25 +1004,14 @@ int gApplication::controlCount()
 
 gControl* gApplication::controlItem(GtkWidget *wid)
 {
-	GList *iter;
+	gControl *control;
 	
-	if (!wid) return NULL;
-
-	if (gControl::controlList())
+	while (wid)
 	{
-		iter=g_list_first(gControl::controlList());
-		
-		while (iter)
-		{
-			if (((gControl*)iter->data)->border == wid )
-				return (gControl*)iter->data;
-				
-			if (((gControl*)iter->data)->widget == wid )
-				return (gControl*)iter->data;
-		
-			iter=iter->next;
-		}
-		
+		control = (gControl *)g_object_get_data(G_OBJECT(wid), "gambas-control");
+		if (control)
+			return control;
+		wid = gtk_widget_get_parent(wid);
 	}
 	
 	return NULL;

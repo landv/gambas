@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,55,50)
+  Drop = True
   { tlbrMain ToolBar
     MoveScaled(0,0,45,6)
     Key = "tb_main"
@@ -34,10 +35,6 @@
     MoveScaled(1,9,16,4)
     Text = ("Button1")
   }
-  { Label1 Label
-    MoveScaled(23,30,5,6)
-    Border = Border.Plain
-  }
   { Panel1 Panel
     MoveScaled(4,17,46,6)
     Arrangement = Arrange.Horizontal
@@ -56,9 +53,25 @@
     Text = ("Reparent")
   }
   { Panel2 Panel
-    MoveScaled(5,25,4,4)
+    MoveScaled(44,26,4,4)
     Background = Color.LightBackground
     Border = Border.Plain
+  }
+  { Label1 Label
+    MoveScaled(7,35,11,6)
+    Drop = True
+    Border = Border.Plain
+  }
+  { Panel3 Panel Label1
+    Name = "Panel3"
+    MoveScaled(28,39,8,6)
+    Drop = True
+    Border = Border.Plain
+  }
+  { Separator1 Separator Label1
+    Name = "Separator1"
+    MoveScaled(39,39,3,7)
+    Drop = True
   }
 }
 

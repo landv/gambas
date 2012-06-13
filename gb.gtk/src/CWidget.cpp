@@ -235,19 +235,33 @@ void gb_raise_FocusEvent(gControl *sender, int type)
 
 bool gb_raise_Drag(gControl *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *_object = GetObject(sender);
 	
-	if (!_ob) return false;
-	return GB.Raise((void*)_ob,EVENT_Drag,0);
+	if (!THIS)
+		return true;
+	
+	if (!GB.CanRaise(THIS, EVENT_Drag))
+	{
+		if (GB.CanRaise(THIS, EVENT_DragMove) || GB.CanRaise(THIS, EVENT_Drop))
+			return false;
+		else
+			return true;
+	}
+	
+	return GB.Raise(THIS, EVENT_Drag, 0);
 }
 
 bool gb_raise_DragMove(gControl *sender)
 {
 	CWIDGET *_object = GetObject(sender);
+	
 	if (!THIS)
-		return false;
-	else
-		return GB.Raise(THIS, EVENT_DragMove, 0);
+		return true;
+	
+	if (!GB.CanRaise(THIS, EVENT_DragMove))
+		return !GB.CanRaise(THIS, EVENT_Drag);
+
+	return GB.Raise(THIS, EVENT_DragMove, 0);
 }
 
 void gb_raise_Drop(gControl *sender)

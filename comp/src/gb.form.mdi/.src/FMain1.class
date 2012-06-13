@@ -6,6 +6,8 @@ End
 
 Public Sub Form_Open()
 
+  Application.MainWindow = Me
+
 End
 
 Public Sub Button1_Click()
@@ -25,3 +27,22 @@ Public Sub Button2_Click()
   Endif
 
 End
+
+Public Sub Panel2_MouseDrag()
+
+  Drag(Panel2, "Coucou")
+
+End
+
+Public Sub Label1_DragMove()
+
+  Debug
+
+End
+
+Public Sub Label1_Drop()
+
+  Debug Drag.Data
+
+End
+

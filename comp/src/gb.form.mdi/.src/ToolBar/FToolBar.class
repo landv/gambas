@@ -3,16 +3,13 @@
 Public Enum ICON_SMALL, ICON_MEDIUM, ICON_LARGE
 
 Public ToolbarKey As String
-'Public ToolbarText As String
 Public $bDesign As Boolean
 
 Static Private $cRegister As New Collection
 Static Private $hExpanderBg As Picture
 
-Private Const SEPARATOR_SIZE As Integer = 3
+Private Const SEPARATOR_SIZE As Integer = 5
 
-'Private $hWatcher As Watcher
-'Private $hWatcherParent As Watcher
 Private $hObserverParent As Observer
 Private $bLock As Boolean
 Private $bHidden As Boolean
@@ -22,18 +19,17 @@ Private $bAutoResize As Boolean
 Private $bConfigure As Boolean
 Private $bInside As Boolean
 Private $bPressed As Boolean
-'Private $iSeparatorSize As Integer
 Private $sDropAction As String
 Private $iIconSize As Integer
 Private $iButtonWidth As Integer
 
 Private $bOpened As Boolean
 
-'Private Const $bShowHandle As Boolean = True
 Private $iHandleSize As Integer
 
 Private $iLock As Integer
-'Private $iArrangement As Integer
+
+Private $iBackground As Integer = Color.Default
 
 Private $aHidden As Control[]
 
@@ -589,6 +585,8 @@ Private Sub GetCurrentConfig() As String[]
       aConfig.Add("|")
     Else If hCtrl Is ToolBarExpander Then
       aConfig.Add("~")
+    Else If hCtrl Is Panel And If Panel(hCtrl).Children.Count = 0 Then
+      aConfig.Add("-")
     Else If hCtrl.Visible Then
       aConfig.Add("$" & hCtrl.Name)
     Endif
@@ -729,7 +727,7 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   Dim W, H As Integer
   
   If Not hCtrl Then
-    If sAction And If sAction <> "|" And If sAction <> "~" Then
+    If sAction And If Not FToolBarConfig.IsSpecialAction(sAction) Then
       hCtrl = FindControl(sAction)
       If Not hCtrl Then Return
     Endif
@@ -742,9 +740,9 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   Else
     If $bVertical Then
       W = GetToolBarHeight()
-      H = SEPARATOR_SIZE
+      H = If(sAction = "-", Desktop.Scale, SEPARATOR_SIZE)
     Else
-      W = SEPARATOR_SIZE
+      W = If(sAction = "-", Desktop.Scale, SEPARATOR_SIZE)
       H = GetToolBarHeight()
     Endif
   Endif
@@ -787,8 +785,6 @@ Public Sub Form_DragMove()
   Dim bBefore As Boolean
   Dim bAnim As Boolean
   Dim X, Y As Integer
-  
-  'Debug
   
   If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
     HideWhere(True)
@@ -844,6 +840,27 @@ Public Sub Form_DragMove()
   
 End
 
+Private Sub GetControlAction(hCtrl As Control) As String
+  
+  Dim sAction As String
+  
+  sAction = hCtrl.Action
+  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+  If Not sAction Then
+    If hCtrl Is ToolBarExpander Then
+      sAction = "~"
+    Else If hCtrl Is Separator
+      sAction = "|"
+    Else If hCtrl Is Panel And If Panel(hCtrl).Children.Count = 0 Then
+      sAction = "-"
+    Endif
+  Endif
+  
+  Return sAction
+  
+End
+
+
 Private Sub OnMouseDrag(hCtrl As Control)
   
   Dim iArr As Integer
@@ -856,17 +873,8 @@ Private Sub OnMouseDrag(hCtrl As Control)
   
   If Not $bConfigure Then Return
   
-  sAction = hCtrl.Action
-  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
-  If Not sAction Then
-    If hCtrl Is ToolBarExpander Then
-      sAction = "~"
-    Else If hCtrl Is Separator
-      sAction = "|"
-    Else
-      Return
-    Endif
-  Endif
+  sAction = GetControlAction(hCtrl)
+  If Not sAction Then Return
 
   $bLock = True
   'Lock()
@@ -904,13 +912,23 @@ End
 
 ' Public Sub Item_Enter()
 '   
-'   If $bConfigure Then Stop Event
+'   $iBackground = Last.Background
+'   
+'   If $bConfigure Then 
+'     Last.Background = panWhere.Background
+'     Stop Event
+'   Endif
 '   
 ' End
 ' 
 ' Public Sub Item_Leave()
 '   
-'   If $bConfigure Then Stop Event
+'   If $bConfigure Then 
+'     'If InStr("~-|", GetControlAction(Last)) Then
+'       Last.Background = $iBackground
+'     'Endif
+'     Stop Event
+'   Endif
 '   
 ' End
 
@@ -929,7 +947,6 @@ End
 
 Public Sub Item_MouseDrag()
   
-  'Debug
   OnMouseDrag(Last)
   
 End
@@ -964,6 +981,8 @@ Public Sub DragEnd(bAnim As Boolean)
       AddSeparator(panWhere)
     Else If $sDropAction = "~" Then
       AddExpander(panWhere)
+    Else If $sDropAction = "-" Then
+      AddSpace(panWhere)
     Else
       hCtrl = FindControl($sDropAction)
       If hCtrl Then 
@@ -1013,6 +1032,33 @@ Private Sub AddSeparator(Optional hNext As Control)
   hSep.Resize(W, H)
   hSep.Drop = True
   hObs = New Observer(hSep) As "Item"
+  
+  Unlock()
+  
+End
+
+Private Sub AddSpace(Optional hNext As Control)
+  
+  Dim hSpace As Panel
+  Dim hObs As Observer
+  Dim W, H As Integer
+
+  Lock()
+  
+  If $bVertical Then
+    W = GetToolBarHeight()
+    H = Desktop.Scale
+  Else
+    W = Desktop.Scale
+    H = GetToolBarHeight()
+  Endif
+
+  hSpace = New Panel(panToolBar)
+  hSpace.Next = hNext
+  
+  hSpace.Resize(W, H)
+  hSpace.Drop = True
+  hObs = New Observer(hSpace) As "Item"
   
   Unlock()
   
@@ -1294,7 +1340,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
     ResizeControl(hCtrl, iDim)
     If hCtrl.Action Then
       hCtrl.Reparent(panHide)
-    Else If hCtrl Is Separator Or If hCtrl Is ToolBarExpander Then 
+    Else If FToolBarConfig.IsSpecialAction(GetControlAction(hCtrl)) Then 
       hCtrl.Delete
     Else
       Inc iInd
@@ -1313,6 +1359,8 @@ Public Sub LoadConfig(Optional bInit As Boolean)
       AddSeparator()
     Else If sAction = "~" Then
       AddExpander()
+    Else If sAction = "-" Then
+      AddSpace()
     Else If Left(sAction) = "$" Then
       hCtrl = Me[Mid$(sAction, 2)]
       If hCtrl Then
@@ -1506,7 +1554,7 @@ End
 Public Sub panToolbar_Draw()
 
   If $bConfigure Then
-    Draw.Foreground = &HFF7F7F
+    Draw.Foreground = panWhere.Background
     'Draw.LineStyle = Line.Solid
     Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
     Draw.Rect(1, 1, panToolBar.W - 2, panToolBar.H - 2)
