@@ -29,22 +29,18 @@
 
 #include "gambas.h"
 
-#include "c_screen.h"
 #include "main.h"
-#include "input.h"
+#include "c_screen.h"
+#include "c_input.h"
 
 #define THIS			((CSCREEN *) _object)
 #define IS_BUFFERED		(THIS->buffered)
 
 #define E_UNSUPP	"Unsupported value"
 
-static bool _cursor;
-static int _echo;
-
-/* Currently active screen */
 static CSCREEN *active = NULL;
 
-GB_SIGNAL_CALLBACK *callback;
+GB_SIGNAL_CALLBACK *_sigwinch_cb;
 
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Resize);
@@ -52,53 +48,13 @@ DECLARE_EVENT(EVENT_Resize);
 /*
  * Signal handler for the SIGWINCH signal.
  * @signum: signal number given
+ * @arg: unused
  * This routine dispatches the Resize Event
  */
-void SCREEN_sigwinch_handler(int signum, intptr_t data)
+static void SCREEN_sigwinch_handler(int signum, intptr_t arg)
 {
 	if (signum == SIGWINCH)
 		GB.Raise(active, EVENT_Resize, 0);
-}
-
-/**
- * Set mode of @_cursor
- */
-static int SCREEN_cursor_mode(int mode)
-{
-	switch (mode) {
-		case CURSOR_HIDDEN:
-			curs_set(0);
-			break;
-		case CURSOR_VISIBLE:
-			curs_set(1);
-			break;
-		case CURSOR_VERY:
-			curs_set(2);
-			break;
-		default:
-			return -1;
-	}
-	_cursor = mode;
-	return 0;
-}
-
-/**
- * Set mode of @_echo
- */
-static int SCREEN_echo_mode(int mode)
-{
-	switch (mode) {
-		case ECHO_NOECHO:
-			noecho();
-			break;
-		case ECHO_ECHO:
-			echo();
-			break;
-		default:
-			return -1;
-	}
-	_echo = mode;
-	return 0;
 }
 
 /**
@@ -107,14 +63,13 @@ static int SCREEN_echo_mode(int mode)
 int SCREEN_init()
 {
 	/* Global variable default setup */
-	SCREEN_cursor_mode(CURSOR_VISIBLE);
-	SCREEN_echo_mode(ECHO_NOECHO);
-
+	CURSOR_mode(CURSOR_VISIBLE);
+	ECHO_mode(ECHO_NOECHO);
 	INPUT_init();
 
-/*	callback = GB.Signal.Register(SIGSEGV,
-		SCREEN_sigwinch_handler, (intptr_t) NULL);
-*/
+//	_sigwinch_cb = GB.Signal.Register(SIGWINCH,
+//		SCREEN_sigwinch_handler, (intptr_t) NULL);
+
 	return 0;
 }
 
@@ -125,8 +80,7 @@ void SCREEN_exit()
 {
 	INPUT_exit();
 
-/*	GB.Signal.Unregister(SIGWINCH, callback);
-*/
+//	GB.Signal.Unregister(SIGWINCH, _sigwinch_cb);
 }
 
 /**
@@ -173,14 +127,23 @@ void SCREEN_refresh(void *_object)
 
 /**
  * Let the specified screen raise its Read event. If the _object is NULL,
- * the currently active screen will raise.
+ * the currently active screen will raise. The latter case is the last
+ * resort for the difficulty of raising Read event in Window-Screen
+ * relation, while there need not be a focused window to raise this event,
+ * there is always an active screen.
  */
 void SCREEN_raise_read(void *_object)
 {
+	bool risen;
+
 	if (!_object)
-		GB.Raise(active, EVENT_Read, 0);
+		risen = GB.Raise(active, EVENT_Read, 0);
 	else
-		GB.Raise(_object, EVENT_Read, 0);
+		risen = GB.Raise(_object, EVENT_Read, 0);
+
+	/* Reduce watch callback calling overhead */
+	if (!risen)
+		INPUT_drain();
 }
 
 BEGIN_PROPERTY(Screen_Buffered)
@@ -196,11 +159,11 @@ END_PROPERTY
 BEGIN_PROPERTY(Screen_Cursor)
 
 	if (READ_PROPERTY) {
-		GB.ReturnInteger(_cursor);
+		GB.ReturnInteger(CURSOR_mode(CURSOR_RETURN));
 		return;
 	}
 
-	if (SCREEN_cursor_mode(VPROP(GB_INTEGER)) == -1)
+	if (CURSOR_mode(VPROP(GB_INTEGER)) == -1)
 		GB.Error(E_UNSUPP);
 
 END_PROPERTY
@@ -208,11 +171,11 @@ END_PROPERTY
 BEGIN_PROPERTY(Screen_Echo)
 
 	if (READ_PROPERTY) {
-		GB.ReturnBoolean(_echo);
+		GB.ReturnBoolean(ECHO_mode(ECHO_RETURN));
 		return;
 	}
 
-	if (SCREEN_echo_mode(!!VPROP(GB_BOOLEAN)) == -1)
+	if (ECHO_mode(!!VPROP(GB_BOOLEAN)) == -1)
 		GB.Error(E_UNSUPP);
 
 END_PROPERTY
@@ -226,32 +189,6 @@ BEGIN_PROPERTY(Screen_Input)
 
 	if (INPUT_mode(VPROP(GB_INTEGER)) == -1)
 		GB.Error(E_UNSUPP);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Screen_IsConsole)
-
-	int fd = INPUT_consolefd();
-
-	if (fd == -1) {
-		GB.ReturnBoolean(FALSE);
-		return;
-	}
-	close(fd);
-	GB.ReturnBoolean(TRUE);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Screen_Repeater)
-
-	if (READ_PROPERTY) {
-		GB.ReturnInteger(INPUT_repeater_delay(REPEATER_RETURN));
-		return;
-	}
-	if (INPUT_repeater_delay(VPROP(GB_INTEGER)) == -1) {
-		GB.Error("Invalid value");
-		return;
-	}
 
 END_PROPERTY
 
@@ -275,6 +212,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Screen_free)
 
+	/* TODO: for now, while Screen instantiation wouldn't do anything
+	 * useful */
 	SCREEN_exit();
 
 END_METHOD
@@ -285,29 +224,18 @@ BEGIN_METHOD_VOID(Screen_Refresh)
 
 END_METHOD
 
-GB_DESC CScreenDesc[] =
-{
+GB_DESC CScreenDesc[] = {
 	GB_DECLARE("Screen", sizeof(CSCREEN)),
 	GB_AUTO_CREATABLE(),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 
-	GB_CONSTANT("Hidden", "i", CURSOR_HIDDEN),
-	GB_CONSTANT("Visible", "i", CURSOR_VISIBLE),
-
-	GB_CONSTANT("Cooked", "i", INPUT_COOKED),
-	GB_CONSTANT("CBreak", "i", INPUT_CBREAK),
-	GB_CONSTANT("Raw", "i", INPUT_RAW),
-	GB_CONSTANT("NoDelay", "i", INPUT_NODELAY),
-
 	GB_PROPERTY("Buffered", "b", Screen_Buffered),
 
 	GB_STATIC_PROPERTY("Cursor", "i", Screen_Cursor),
 	GB_STATIC_PROPERTY("Echo", "b", Screen_Echo),
 	GB_STATIC_PROPERTY("Input", "i", Screen_Input),
-	GB_STATIC_PROPERTY_READ("IsConsole", "b", Screen_IsConsole),
-	GB_STATIC_PROPERTY("Repeater", "i", Screen_Repeater),
 
 	GB_STATIC_PROPERTY_READ("Lines", "i", Screen_Lines), //GB_PROPERTY
 	GB_STATIC_PROPERTY_READ("Cols", "i", Screen_Cols),
@@ -319,3 +247,73 @@ GB_DESC CScreenDesc[] =
 
 	GB_END_DECLARE
 };
+
+/*
+ * CURSOR routines
+ */
+
+static int _cursor;
+
+/**
+ * Return or set cursor mode
+ * @mode: choose operation
+ */
+int CURSOR_mode(int mode)
+{
+	switch (mode) {
+		case CURSOR_RETURN:
+			return _cursor;
+		case CURSOR_HIDDEN:
+			curs_set(0);
+			break;
+		case CURSOR_VISIBLE:
+			curs_set(1);
+			break;
+		case CURSOR_VERY:
+			curs_set(2);
+			break;
+		default:
+			return -1;
+	}
+	_cursor = mode;
+	return 0;
+}
+
+GB_DESC CCursorDesc[] = {
+	GB_DECLARE("Cursor", 0),
+	GB_NOT_CREATABLE(),
+
+	GB_CONSTANT("Hidden", "i", CURSOR_HIDDEN),
+	GB_CONSTANT("Visible", "i", CURSOR_VISIBLE),
+	GB_CONSTANT("Very", "i", CURSOR_VERY),
+
+	GB_END_DECLARE
+};
+
+/*
+ * ECHO routines
+ */
+
+static int _echo;
+
+/**
+ * Return or set echo mode
+ * @mode: choose operation
+ */
+int ECHO_mode(int mode)
+{
+	switch (mode) {
+		case ECHO_RETURN:
+			return _echo;
+		case ECHO_NOECHO:
+			noecho();
+			break;
+		case ECHO_ECHO:
+			echo();
+			break;
+		default:
+			return -1;
+	}
+	_echo = mode;
+	return 0;
+}

@@ -8,9 +8,9 @@
 
 #ifndef __C_COLOR_C
 extern GB_DESC CColorDesc[];
-extern GB_DESC CColorCapabilitiesDesc[];
-extern GB_DESC CColorPairDesc[];
-extern GB_DESC CColorContentDesc[];
+extern GB_DESC CColorInfoDesc[];
+extern GB_DESC CPairDesc[];
+extern GB_DESC CPairInfoDesc[];
 #endif
 
 enum {
@@ -19,7 +19,9 @@ enum {
 };
 
 void COLOR_init();
-int COLOR_setpair(short index, short fg, short bg);
-int COLOR_setpair_one(short index, short val, int what);
+int COLOR_setcolor(short, float, float, float);
+int COLOR_setcolor_one(short, float, int);
+int COLOR_setpair(short, short, short);
+int COLOR_setpair_one(short, short, int);
 
 #endif /* __C_COLOR_H */

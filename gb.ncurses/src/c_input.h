@@ -1,5 +1,5 @@
 /*
- * input.h - gb.ncurses opaque input routines for use of either ncurses or
+ * c_input.h - gb.ncurses opaque input routines for use of either ncurses or
  *           the terminal driver directly
  *
  * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
@@ -20,12 +20,12 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef __INPUT_H
-#define __INPUT_H
+#ifndef __C_INPUT_H
+#define __C_INPUT_H
 
 enum {
 	/* Return the current mode */
-	INPUT_RETURN,
+	INPUT_RETURN = -1,
 	/* Line discipline, signal generation */
 	INPUT_COOKED,
 	/* No line discipline, signal generation */
@@ -39,23 +39,34 @@ enum {
 };
 
 enum {
-	/* Let INPUT_repeater_delay() return the current value of the
-	   repeater delay */
+	TIMEOUT_NOTIMEOUT = -1
+};
+
+enum {
 	REPEATER_RETURN = -1
 };
 
-int INPUT_init();
-void INPUT_exit();
-int INPUT_consolefd();
-int INPUT_mode(int mode);
-int INPUT_get(int timeout);
-int INPUT_repeater_delay(int val);
-#ifdef __INPUT_C
-static int INPUT_init_nodelay();
-static int INPUT_exit_nodelay();
-static void INPUT_nodelay_error_hook();
-static int INPUT_nodelay_repeater();
-static void INPUT_callback(int fd, int flag, intptr_t arg);
+#ifndef __C_INPUT_C
+extern GB_DESC CInputDesc[];
 #endif
 
-#endif /* __INPUT_H */
+int INPUT_init();
+void INPUT_exit();
+int INPUT_mode(int);
+int INPUT_get(int);
+void INPUT_drain();
+#ifdef __C_INPUT_C
+static int INPUT_watch(int);
+static void INPUT_callback(int, int, intptr_t);
+static int NODELAY_init();
+static int NODELAY_exit();
+static void NODELAY_error_hook();
+static int NODELAY_consolefd();
+static inline void NODELAY_drain();
+static int NODELAY_repeater();
+static int NODELAY_repeater_delay(int);
+static void NODELAY_change_pressed(int);
+static int NODELAY_get(int);
+#endif
+
+#endif /* __C_INPUT_H */

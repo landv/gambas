@@ -25,28 +25,35 @@
 #include "c_key.h"
 #include "c_color.h"
 #include "c_screen.h"
+#include "c_input.h"
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
+GB_DESC *GB_CLASSES[] EXPORT = {
 	CScreenDesc,
+	CInputDesc,
+	CCursorDesc,
+
 	CWindowDesc,
 	CWindowAttrsDesc,
 	CCharAttrsDesc,
+	CBorderDesc,
+
 	CKeyDesc,
+
 	CColorDesc,
-	CColorCapabilitiesDesc,
-	CColorPairDesc,
-	CColorContentDesc,
+	CColorInfoDesc,
+	CPairDesc,
+	CPairInfoDesc,
+
 	NULL
 };
 
 static bool _init = FALSE;
 
 /**
- * Returns if we are in ncurses mode
+ * Return if we are in ncurses mode
  */
 bool MAIN_running()
 {

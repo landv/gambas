@@ -1,5 +1,5 @@
 /*
- * input.c - gb.ncurses opaque input routines
+ * c_input.c - gb.ncurses opaque input routines
  *
  * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#define __INPUT_C
+#define __C_INPUT_C
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -36,32 +36,17 @@
 #include "gb_common.h"
 
 #include "main.h"
-#include "input.h"
+#include "c_input.h"
 #include "c_window.h"
 
 #define E_UNSUPP	"Unsupported value"
 #define E_NO_NODELAY	"Could not initialise NoDelay mode"
 
+/* True input mode is inherited from terminal, we need a surely invalid
+ * value to be reset upon initialisation */
 static int _input = -1;
-static char _watching = 0;
-
-/* Note that this is not safe for functions that are used to change the mode
- * settings, in particular INPUT_init_nodelay() and INPUT_exit_nodelay(),
- * because @_input is updated after this function */
 #define IN_NODELAY	(_input == INPUT_NODELAY)
-
-static struct {
-	struct {
-		struct termios term;
-		int kbmode;
-		void (*error_hook)();
-	} old;
-	int fd;
-	unsigned short pressed;
-	unsigned int delay;
-	GB_TIMER *timer;
-} no_delay;
-static char _exiting_nodelay = 0;
+static char _watch_fd = -1;
 
 /**
  * Input initialisation
@@ -69,7 +54,8 @@ static char _exiting_nodelay = 0;
 int INPUT_init()
 {
 	INPUT_mode(INPUT_CBREAK);
-	INPUT_repeater_delay(100);
+	INPUT_watch(0);
+	NODELAY_repeater_delay(1);
 	return 0;
 }
 
@@ -84,179 +70,46 @@ void INPUT_exit()
 	}
 }
 
-/**
- * Begin or stop watching the input queue in question depending on @_input
- */
-static int INPUT_watch(char start)
-{
-	int fd = IN_NODELAY ? no_delay.fd : 0;
 
-	if (!start && !_watching)
+
+#define MY_DEBUG()		fprintf(stderr, "in %s\n", __func__)
+
+
+
+/**
+ * Begin watching the given fd (for read)
+ * @fd: fd to watch. -1 means to stop watching at all.
+ * This automatically stops watching the previously watched fd, if any
+ */
+static int INPUT_watch(int fd)
+{
+	MY_DEBUG();
+
+	if (fd == _watch_fd)
 		return 0;
-	if (start && _watching)
-		INPUT_watch(!start);
-	GB.Watch(fd, start ? GB_WATCH_READ : GB_WATCH_NONE,
-		INPUT_callback, 0);
-	_watching = start;
+
+	if (_watch_fd != -1)
+		GB.Watch(_watch_fd, GB_WATCH_NONE, NULL, 0);
+	if (fd == -1)
+		return 0;
+
+	GB.Watch(fd, GB_WATCH_READ, INPUT_callback, 0);
+	_watch_fd = fd;
 	return 0;
 }
 
 /**
  * Function to be called by Gambas when data arrives
+ * Params currently not used
  */
 static void INPUT_callback(int fd, int flag, intptr_t arg)
 {
-	WINDOW_raise_read(NULL);
-}
+	MY_DEBUG();
 
-/**
- * Return if the given fd can be used with console_ioctls
- * @fd: file descriptor to test
- * The idea was derived from "kbd" package, getfd.c, is_a_console()
- */
-static inline char is_cons(int fd)
-{
-	char type;
-
-	if (fd != -1 && isatty(fd) && ioctl(fd, KDGKBTYPE, &type) != -1
-	    && (type == KB_101 || type == KB_84))
-		return 1;
-	return 0;
-}
-
-/**
- * Returns an fd that can be used with console_ioctls or -1 if none
- * available
- */
-int INPUT_consolefd()
-{
-	int fd;
-
-	if (is_cons(0))
-		return 0;
-
-	fd = open("/dev/tty", O_RDWR);
-	if (fd == -1)
-		return -1;
-	if (is_cons(fd))
-		return fd;
-
-	close(fd);
-	return -1;
-}
-
-/**
- * Init NoDelay mode
- * We save old settings and prepare the TTY driver and Gambas
- */
-static int INPUT_init_nodelay()
-{
-	int fd = INPUT_consolefd();
-	struct termios term;
-
-	if (fd == -1)
-		return -1;
-
-	/* TODO: implement switching between vts, need available signals to
-	 * be sent */
-
-	tcgetattr(fd, &no_delay.old.term);
-	ioctl(fd, KDGKBMODE, &no_delay.old.kbmode);
-
-	memcpy(&term, &no_delay.old.term, sizeof(term));
-	term.c_lflag &= ~(ICANON | ECHO | ISIG);
-	term.c_iflag &= ~(ISTRIP | IGNCR | ICRNL | INLCR | IXOFF | IXON);
-	/* Have no timeout per default */
-	term.c_cc[VMIN] = 0;
-	term.c_cc[VTIME] = -1;
-	tcsetattr(fd, TCSAFLUSH, &term);
-	no_delay.old.error_hook = GB.Hook(GB_HOOK_ERROR,
-		INPUT_nodelay_error_hook);
-
-	no_delay.fd = fd;
-
-	no_delay.timer = NULL;
-
-	/* Switch to K_MEDIUMRAW now. Could not have been done on-the-fly
-	 * when reading from the console fd, because our key repeat code
-	 * relies on data maybe present on that fd (to determine if we can
-	 * safely inject new events for the currently pressed key or shall
-	 * examine if there is another keypress) and there wouldn't be
-	 * anything if we switch on-the-fly */
-	ioctl(no_delay.fd, KDSKBMODE, K_MEDIUMRAW);
-
-	return 0;
-}
-
-/**
- * Cleanup NoDelay mode
- * Restore old settings
- * This assumes that @_input reflects the current settings
- */
-static int INPUT_exit_nodelay()
-{
-	/* @_input must be updated after this function, if even, after this
-	 * function */
-	if (!IN_NODELAY)
-		return 0;
-	if (_exiting_nodelay)
-		return 0;
-
-	_exiting_nodelay = 1;
-	ioctl(no_delay.fd, KDSKBMODE, no_delay.old.kbmode);
-	tcsetattr(no_delay.fd, TCSANOW, &no_delay.old.term);
-	GB.Hook(GB_HOOK_ERROR, no_delay.old.error_hook);
-	if (no_delay.timer)
-		GB.Unref((void **) &no_delay.timer);
-	close(no_delay.fd);
-	_exiting_nodelay = 0;
-	return 0;
-}
-
-/**
- * The NoDelay mode error hook
- * This calls the former error hook, saved by INPUT_init_nodelay() to not
- * disturb any piece code
- */
-static void INPUT_nodelay_error_hook()
-{
-	if (_exiting_nodelay)
-		return;
-	INPUT_exit_nodelay();
-	no_delay.old.error_hook();
-}
-
-/**
- * Return or set the repeater delay
- * @val: value to set the delay to. This value must be at least 1 or an
- *       error is returned. If it is REPEATER_RETURN, the current value is
- *       returned to the caller.
- * Note that this setting affects the repeater function itself, that gets
- * called in this interval to generate events and the INPUT_get_nodelay()
- * function which will wait to return the amount of milliseconds if it is to
- * return the pressed key.
- */
-int INPUT_repeater_delay(int val)
-{
-	if (val == REPEATER_RETURN)
-		return no_delay.delay;
-	if (val < 1)
-		return -1;
-	no_delay.delay = (unsigned int) val;
-	return 0;
-}
-
-/**
- * NoDelay mode event repeater
- * Used to insert Window_Read events if there is a key pressed
- */
-static int INPUT_nodelay_repeater()
-{
-	fprintf(stderr, "here\n");
-	if (!no_delay.pressed)
-		return TRUE;
-	WINDOW_raise_read(NULL);
-	return FALSE;
+/*	if (IN_NODELAY)
+		NODELAY_change_pressed(NODELAY_get(-1));
+	else
+*/		WINDOW_raise_read(NULL);
 }
 
 /**
@@ -271,26 +124,21 @@ int INPUT_mode(int mode)
 	if (mode == _input)
 		return 0;
 
-	INPUT_watch(0);
-
-	if (_input == INPUT_NODELAY)
-		INPUT_exit_nodelay();
+	if (IN_NODELAY)
+		NODELAY_exit();
 
 	switch (mode) {
 		case INPUT_COOKED:
-			noraw();
 			nocbreak();
 			break;
 		case INPUT_CBREAK:
-			noraw();
 			cbreak();
 			break;
 		case INPUT_RAW:
-			nocbreak();
 			raw();
 			break;
 		case INPUT_NODELAY:
-			if (INPUT_init_nodelay() == -1) {
+			if (NODELAY_init() == -1) {
 				GB.Error(E_NO_NODELAY);
 				/* We return 0 to not override the previous
 				 * error message with the one emitted by the
@@ -304,9 +152,18 @@ int INPUT_mode(int mode)
 	}
 	_input = mode;
 
-	INPUT_watch(1);
-
 	return 0;
+}
+
+/**
+ * Drain the input queue
+ */
+void INPUT_drain()
+{
+	if (IN_NODELAY)
+		NODELAY_drain();
+	else
+		flushinp();
 }
 
 /**
@@ -332,8 +189,261 @@ static int INPUT_get_ncurses(int timeout)
 	return ret;
 }
 
+/**
+ * Get a keypress within the given timeout
+ * @timeout: number of milliseconds to wait. If no key is pressed during it,
+ *           0 will be returned.
+ */
+int INPUT_get(int timeout)
+{
+	if (IN_NODELAY)
+		return NODELAY_get(timeout);
+	else
+		return INPUT_get_ncurses(timeout);
+}
+
+BEGIN_PROPERTY(Input_IsConsole)
+
+	int fd = NODELAY_consolefd();
+
+	if (fd == -1) {
+		GB.ReturnBoolean(FALSE);
+		return;
+	}
+	close(fd);
+	GB.ReturnBoolean(TRUE);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Input_RepeatDelay)
+
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(NODELAY_repeater_delay(REPEATER_RETURN));
+		return;
+	}
+	if (NODELAY_repeater_delay(VPROP(GB_INTEGER)) == -1) {
+		GB.Error("Invalid value");
+		return;
+	}
+
+END_PROPERTY
+
+GB_DESC CInputDesc[] = {
+	GB_DECLARE("Input", 0),
+	GB_NOT_CREATABLE(),
+
+	GB_CONSTANT("NoTimeout", "i", TIMEOUT_NOTIMEOUT),
+
+	GB_CONSTANT("Cooked", "i", INPUT_COOKED),
+	GB_CONSTANT("CBreak", "i", INPUT_CBREAK),
+	GB_CONSTANT("Raw", "i", INPUT_RAW),
+	GB_CONSTANT("NoDelay", "i", INPUT_NODELAY),
+
+	GB_STATIC_PROPERTY_READ("IsConsole", "b", Input_IsConsole),
+	GB_STATIC_PROPERTY("RepeatDelay", "i", Input_RepeatDelay),
+};
+
 /*
- * Return codes from INPUT_trans_keycode()
+ * NODELAY routines
+ */
+static struct {
+	struct {
+		struct termios term;
+		int kbmode;
+		void (*error_hook)();
+	} old;
+	int fd;
+	unsigned short pressed;
+	unsigned int delay;
+	GB_TIMER *timer;
+} no_delay;
+static char _exiting_nodelay = 0;
+
+/**
+ * Init NoDelay mode
+ * We save old settings and prepare the TTY driver and Gambas
+ * Precisely:
+ * - (TTY driver:)
+ * - Save all related values
+ * - Set terminal to (ncurses) raw()-like input mode as base for NoDelay
+ * - Set keyboard to K_MEDIUMRAW mode to see key make and break codes
+ * - (Gambas:)
+ * - Install specific error hook
+ * - Reset repeater timer
+ * - Begin watching console fd
+ */
+static int NODELAY_init()
+{
+	int fd = NODELAY_consolefd();
+	struct termios term;
+
+	if (fd == -1)
+		return -1;
+
+	/* TODO: implement switching between vts, need available signals to
+	 * be sent */
+
+	tcgetattr(fd, &no_delay.old.term);
+	ioctl(fd, KDGKBMODE, &no_delay.old.kbmode);
+
+	memcpy(&term, &no_delay.old.term, sizeof(term));
+	term.c_lflag &= ~(ICANON | ECHO | ISIG);
+	term.c_iflag &= ~(ISTRIP | IGNCR | ICRNL | INLCR | IXOFF | IXON);
+	/* Have no timeout per default */
+	term.c_cc[VMIN] = 0;
+	term.c_cc[VTIME] = TIMEOUT_NOTIMEOUT;
+	tcsetattr(fd, TCSAFLUSH, &term);
+	no_delay.old.error_hook = GB.Hook(GB_HOOK_ERROR,
+		NODELAY_error_hook);
+	no_delay.fd = fd;
+
+	no_delay.timer = NULL;
+
+	ioctl(no_delay.fd, KDSKBMODE, K_MEDIUMRAW);
+
+	INPUT_watch(fd);
+
+	return 0;
+}
+
+/**
+ * Cleanup NoDelay mode
+ * Restore old settings, see NODELAY_init() for details
+ * This function gets called by our error hook and the error hook is removed
+ * here. When removing a hook, it gets automatically called: Hence
+ * @_exiting_nodelay
+ */
+static int NODELAY_exit()
+{
+	if (_exiting_nodelay)
+		return 0;
+
+	_exiting_nodelay = 1;
+
+	INPUT_watch(0);
+
+	ioctl(no_delay.fd, KDSKBMODE, no_delay.old.kbmode);
+
+	if (no_delay.timer)
+		GB.Unref((void **) &no_delay.timer);
+
+	GB.Hook(GB_HOOK_ERROR, no_delay.old.error_hook);
+	tcsetattr(no_delay.fd, TCSANOW, &no_delay.old.term);
+
+	close(no_delay.fd);
+
+	_exiting_nodelay = 0;
+
+	return 0;
+}
+
+/**
+ * The NoDelay mode error hook
+ * This calls the former error hook, saved by NODELAY_init() to not
+ * disturb any piece code
+ */
+static void NODELAY_error_hook()
+{
+	if (_exiting_nodelay)
+		return;
+	NODELAY_exit();
+	no_delay.old.error_hook();
+}
+
+/**
+ * Return if the given fd can be used with console_ioctls
+ * @fd: file descriptor to test
+ * The idea was derived from "kbd" package, getfd.c, is_a_console()
+ */
+static inline char NODELAY_is_cons(int fd)
+{
+	char type;
+
+	if (fd != -1 && isatty(fd) && ioctl(fd, KDGKBTYPE, &type) != -1
+	    && (type == KB_101 || type == KB_84))
+		return 1;
+	return 0;
+}
+
+/**
+ * Returns an fd that can be used with console_ioctls or -1 if none
+ * available
+ */
+static int NODELAY_consolefd()
+{
+	int fd;
+
+	if (NODELAY_is_cons(0))
+		return 0;
+
+	fd = open("/dev/tty", O_RDWR);
+	if (fd == -1)
+		return -1;
+	if (NODELAY_is_cons(fd))
+		return fd;
+
+	close(fd);
+	return -1;
+}
+
+/**
+ * Drain NoDelay input queue
+ */
+static inline void NODELAY_drain()
+{
+	tcflush(no_delay.fd, TCIFLUSH);
+}
+
+/**
+ * Return or set the repeater delay
+ * @val: value to set the delay to. This value must be at least 1 or an
+ *       error is returned. If it is REPEATER_RETURN, the current value is
+ *       returned to the caller.
+ * Note that this setting affects the repeater function itself, that gets
+ * called in this interval to generate events and the INPUT_get_nodelay()
+ * function which will wait to return the amount of milliseconds if it is to
+ * return the pressed key.
+ */
+static int NODELAY_repeater_delay(int val)
+{
+	if (val == REPEATER_RETURN)
+		return no_delay.delay;
+	if (val < 1)
+		return -1;
+	no_delay.delay = (unsigned int) val;
+	return 0;
+}
+
+/**
+ * Post callback to insert new read event during next event loop.
+ * This is important because the NODELAY_repeater() gets called by the
+ * timer. If we raise an event from there, the event handler may destroy the
+ * timer we are currently in by issuing a NODELAY_change_pressed(). This has
+ * consequently be done outside the timer tick.
+ * @arg: unused
+ */
+static void NODELAY_post_read(intptr_t arg)
+{
+	WINDOW_raise_read(NULL);
+}
+
+/**
+ * NoDelay mode event repeater. This function is the timer callback
+ * Used to insert Window_Read events if there is a key pressed
+ */
+static int NODELAY_repeater()
+{
+	MY_DEBUG();
+
+
+	if (!no_delay.pressed)
+		return TRUE;
+	GB.Post(NODELAY_post_read, 0);
+	return FALSE;
+}
+
+/*
+ * Return codes from NODELAY_trans_keycode()
  */
 enum {
 	TRANS_NEED_MORE = -1,
@@ -366,19 +476,23 @@ enum {
  * we exploit ncurses key_defined() routine to translate the sequence to an
  * int for us. This gives an int like ncurses getch() would do.
  */
-static int INPUT_trans_keycode(unsigned char kc)
+static int NODELAY_trans_keycode(unsigned char kc)
 {
 	/* Pause/Break has the largest scancode: e1 1d 45 e1 9d c5 */
 	static unsigned char codes[8];
 	static int num = 0;
 	static int modifiers = MOD_NONE;
 
-	unsigned char seq[8];
 	struct kbentry kbe;
 	struct kbsentry kbs;
 	register int mod;
 
-/* TODO: Hope they're fixed */
+
+
+	MY_DEBUG();
+
+
+
 #define KEYCODE_LCTRL	0x1d
 #define KEYCODE_RCTRL	0x61
 #define KEYCODE_ALT	0x38
@@ -417,7 +531,7 @@ account_key:
 			return TRANS_NEED_MORE;
 	}
 	/* Keys with two keycodes, no matter, those correspond to
-	 * single-keycode keys, we can safely use @kc */
+	 * single-keycode keys, we can safely use @kc != 0xe0 */
 	if (codes[0] == '\xe0' && num != 2)
 		return TRANS_NEED_MORE;
 
@@ -437,35 +551,39 @@ account_key:
 	kbe.kb_index = kc & 0x7f;
 	kbe.kb_value = 0;
 	ioctl(no_delay.fd, KDGKBENT, &kbe);
-	seq[0] = (unsigned char) kbe.kb_value;
 	/* Has an escape sequence? */
-	kbs.kb_func = seq[0];
+	kbs.kb_func = (unsigned char) kbe.kb_value;
 	ioctl(no_delay.fd, KDGKBSENT, &kbs);
-	if (kbs.kb_string[0]) {
-		strncpy((char *) seq, (char *) kbs.kb_string, 7);
-		seq[7] = '\0';
-		return key_defined((char *) seq);
-	} else {
-		return (int) seq[0];
-	}
+	if (kbs.kb_string[0])
+		return key_defined((char *) kbs.kb_string);
+	else
+		return (int) ((unsigned char) kbe.kb_value);
 }
 
 /**
  * Change the currently pressed key
  * @key: current key. 0 means that no key is pressed
- * This install the repeater
+ * This installs the repeater
  */
-static void INPUT_change_pressed(int key)
+static void NODELAY_change_pressed(int key)
 {
-	fprintf(stderr, "%d\n", no_delay.delay);
+
+
+	MY_DEBUG();
+
+
+
+/*	if (key == no_delay.pressed)
+		return;
 	if (key == 0) {
 		GB.Unref((void **) no_delay.timer);
-		no_delay.timer = NULL;
 	} else {
 		no_delay.timer = GB.Every(no_delay.delay,
-			(GB_TIMER_CALLBACK) INPUT_nodelay_repeater, 0);
+			(GB_TIMER_CALLBACK) NODELAY_repeater, 0);
 	}
-	no_delay.pressed = key;
+*/	no_delay.pressed = key;
+	//NODELAY_repeater();
+	WINDOW_raise_read(NULL);
 }
 
 /**
@@ -480,7 +598,7 @@ static void INPUT_change_pressed(int key)
  * Note carefully, that there is an emergency exit: pressing ESC thrice
  * during one second will immediately abort NoDelay mode and enter CBreak.
  */
-static int INPUT_get_nodelay(int timeout)
+static int NODELAY_get(int timeout)
 {
 	static char esc = 0;
 	struct termios old, new;
@@ -489,6 +607,13 @@ static int INPUT_get_nodelay(int timeout)
 	int ret, res, num;
 	int key; /* This will already be ncurses compatible */
 	struct timeval tv1, tv2;
+
+
+
+
+	MY_DEBUG();
+
+
 
 	if (timeout > -1) {
 		gettimeofday(&tv1, NULL);
@@ -543,26 +668,26 @@ recalc_timeout:
 			if (time(NULL) - stamp > 0)
 				esc = 0;
 			if (++esc == 3) {
-				INPUT_exit_nodelay();
+				NODELAY_exit();
 				INPUT_mode(INPUT_CBREAK);
 				return 0;
 			}
 			stamp = time(NULL);
 		}
 		/* We use ncurses keys for operations on our no_delay data */
-		if ((key = INPUT_trans_keycode(b)) == TRANS_NEED_MORE)
+		if ((key = NODELAY_trans_keycode(b)) == TRANS_NEED_MORE)
 			goto recalc_timeout;
 		/* Ignore break codes, except when it is the currently
 		   pressed key */
 		if (IS_BREAK(b)) {
 			if (no_delay.pressed == key)
-				INPUT_change_pressed(0);
+//				NODELAY_change_pressed(0);
 			/* Key release isn't visible to the gambas programmer
 			 * and thus not really an event to gb.ncurses. If
 			 * time is left, we try again reading another key */
 			goto recalc_timeout;
 		} else {
-			INPUT_change_pressed(key);
+//			NODELAY_change_pressed(key);
 		}
 	}
 
@@ -572,17 +697,4 @@ cleanup:
 	if (timeout > -1)
 		tcsetattr(no_delay.fd, TCSANOW, &old);
 	return ret;
-}
-
-/**
- * Get a keypress within the given timeout
- * @timeout: number of milliseconds to wait. If no key is pressed during it,
- *           0 will be returned.
- */
-int INPUT_get(int timeout)
-{
-	if (_input == INPUT_NODELAY)
-		return INPUT_get_nodelay(timeout);
-	else
-		return INPUT_get_ncurses(timeout);
 }

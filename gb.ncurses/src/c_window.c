@@ -35,7 +35,6 @@
 #include "main.h"
 #include "c_screen.h"
 #include "c_color.h"
-#include "input.h"
 
 #define THIS				((CWINDOW *) _object)
 #define HAS_BORDER			(THIS->border != BORDER_NONE)
@@ -118,7 +117,7 @@ DECLARE_EVENT(EVENT_Read);
 
 /*
  * C Window interface
- * @_object: Reference to the struct nc_window representing the current object.
+ * @_object: Reference to the CWINDOW representing the current object.
  *
  * The theory: Each window has a main and a content window pointer. The main window
  * represents the window object outwards. It is linked to a panel structure which
@@ -382,7 +381,7 @@ static int WINDOW_cursor_move(void *_object, int x, int y)
 }
 
 /**
- * Move the entire nc_window on screen.
+ * Move the entire window on screen.
  * @x: new x coordinate
  * @y: new y coordinate of the upper left corner of the main window relative to the
  * screen. Again, -1 denotes to leave the value as is
@@ -579,7 +578,55 @@ static int WINDOW_get_str(void *_object, int x, int y, unsigned int len, char **
  */
 static int WINDOW_key_timeout(void *_object, int timeout, int *ret)
 {
-	*ret = INPUT_get(timeout);
+	*ret = SCREEN_get(timeout);
+	return 0;
+}
+
+/**
+ * Read an entire string form the input queue
+ * @ret: the pointer to a newly malloced string will be stored there
+ * This function behaves like getstr(3X). Note that getstr() being a
+ * sequence of getch(), we must stick to its characteristics, too, i.e.
+ * beep() when there is a non-printable character typed in and echo all
+ * characters if we echo.
+ */
+static int WINDOW_readline(void *_object, char **ret)
+{
+	int key;
+	int i, j;
+	char *line = NULL, *p, c;
+
+	i = j = 0;
+	while (1) {
+		if (!(i & 256)) {
+			if (!(p = realloc(line, (++j * 256) + 1))) {
+				free(line);
+				return -1;
+			}
+			line = p;
+		}
+		key = SCREEN_get(TIMEOUT_NOTIMEOUT);
+		c = (char) key;
+		if (c == '\n' || c == '\r')
+			break;
+		if (key == KEY_BACKSPACE || key == KEY_LEFT) {
+			if (i > 0)
+				i--;
+			continue;
+		}
+		if ((c < 32 && !isspace(c)) || key > 127) {
+			beep();
+			continue;
+		}
+
+		line[i++] = c;
+		if (ECHO_mode(ECHO_RETURN)) {
+			line[i] = 0;
+			WINDOW_print(THIS, line + i - 1, -1, -1);
+		}
+	}
+	line[i] = 0;
+	*ret = line;
 	return 0;
 }
 
@@ -588,7 +635,7 @@ static int WINDOW_key_timeout(void *_object, int timeout, int *ret)
  */
 static void WINDOW_drain()
 {
-	flushinp();
+	INPUT_drain();
 }
 
 /**
@@ -633,7 +680,8 @@ static int WINDOW_show(void *_object)
  * Raise the Window_Read event of the given window. If _object is NULL,
  * the currently focused window is used. The event is, however, only risen,
  * if the window can raise events. Otherwise let the parent screen raise the
- * event.
+ * event. If there is not even a parent screen accessible, use the active
+ * screen.
  */
 void WINDOW_raise_read(void *_object)
 {
@@ -657,7 +705,7 @@ static int WINDOW_setfocus(void *_object)
 	if (focused)
 		GB.Unref((void **) &focused);
 	focused = THIS;
-	GB.Ref((void **) &focused);
+	GB.Ref((void *) focused);
 	/* We watch since SCREEN_init() */
 	return 0;
 }
@@ -838,18 +886,6 @@ BEGIN_PROPERTY(Window_Caption)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Window_ContainerHeight)
-
-	GB.ReturnInteger(getmaxy(THIS->main));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Window_ContainerWidth)
-
-	GB.ReturnInteger(getmaxx(THIS->main));
-
-END_PROPERTY
-
 BEGIN_PROPERTY(Window_CursorX)
 
 	if (READ_PROPERTY) {
@@ -1000,7 +1036,7 @@ BEGIN_METHOD(Window_Ask, GB_STRING opts; GB_INTEGER tries)
 	o = GB.ToZeroString(ARG(opts));
 
 	while (miss || t--) {
-		ch = getch();
+		WINDOW_key_timeout(THIS, -1, &ch);
 		/* Per convention, only dealing with byte chars */
 		if (ch > 255)
 			continue;
@@ -1204,9 +1240,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Window_ReadLine)
 
-	/*abbruch-kondition? ein backspace mehr, als zeichen vorhanden? eine
-	bestimmte taste? NULL wird zurueckgegeben. \n und \x4 werden nicht
-	geliefert.*/
+	char *line;
+
+	if (WINDOW_readline(THIS, &line) == -1) {
+		GB.ReturnNull();
+		return;
+	}
+	GB.ReturnNewZeroString(line);
+	free(line);
 
 END_METHOD
 
@@ -1222,6 +1263,79 @@ BEGIN_METHOD_VOID(Window_SetFocus)
 	WINDOW_setfocus(THIS);
 
 END_METHOD
+
+GB_DESC CWindowDesc[] = {
+	GB_DECLARE("Window", sizeof(CWINDOW)),
+	GB_AUTO_CREATABLE(),
+
+	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+
+	/* Properties */
+	GB_PROPERTY_SELF("Attributes", ".Window.Attrs"),
+
+	GB_PROPERTY("Background", "i", Window_Background),
+	GB_PROPERTY("Paper", "i", Window_Background),
+
+	GB_PROPERTY("Border", "i", Window_Border),
+
+	GB_PROPERTY("Caption", "s", Window_Caption),
+
+	GB_PROPERTY("CursorX", "i", Window_CursorX),
+	GB_PROPERTY("CursorY", "i", Window_CursorY),
+
+	GB_PROPERTY("Foreground", "i", Window_Foreground),
+	GB_PROPERTY("Pen", "i", Window_Foreground),
+
+	GB_PROPERTY("Height", "i", Window_Height),
+	GB_PROPERTY("H", "i", Window_Height),
+
+	GB_PROPERTY("Wrap", "b", Window_Wrap),
+
+	GB_PROPERTY("Width", "i", Window_Width),
+	GB_PROPERTY("W", "i", Window_Width),
+
+	GB_PROPERTY("X", "i", Window_X),
+	GB_PROPERTY("Y", "i", Window_Y),
+
+	/* Methods */
+	GB_METHOD("_new", NULL, Window_new, "[(Parent)Screen;(X)i(Y)i(W)i(H)i]"),
+	GB_METHOD("_free", NULL, Window_free, NULL),
+	GB_METHOD("_get", ".Char.Attrs", Window_get, "(Y)i(X)i"),
+
+	GB_METHOD("Ask", "s", Window_Ask, "(Opts)s[(Tries)i]"),
+
+	GB_METHOD("Lower", NULL, Window_Lower, NULL),
+	GB_METHOD("Raise", NULL, Window_Raise, NULL),
+
+	GB_METHOD("Cls", NULL, Window_Cls, NULL),
+
+	GB_METHOD("Drain", NULL, Window_Drain, NULL),
+
+	GB_METHOD("Full", NULL, Window_Full, NULL),
+
+	GB_METHOD("Get", "s", Window_Get, "(X)i(Y)i[(Len)i]"),
+
+	GB_METHOD("Hide", NULL, Window_Hide, NULL),
+	GB_METHOD("Show", NULL, Window_Show, NULL),
+
+	GB_METHOD("DrawHLine", NULL, Window_DrawHLine, "(X)i(Y)i(Len)i(Ch)s[(Thickness)i]"),
+	GB_METHOD("DrawVLine", NULL, Window_DrawVLine, "(X)i(Y)i(Len)i(Ch)s[(Thickness)i]"),
+
+	GB_METHOD("Insert", NULL, Window_Insert, "(Text)s[(X)i(Y)i]"),
+	GB_METHOD("Print", NULL, Window_Print, "(Text)s[(X)i(Y)i]"),
+	GB_METHOD("PrintCenter", NULL, Window_PrintCenter, "(Text)s"),
+
+	GB_METHOD("Locate", NULL, Window_Locate, "(X)i(Y)i"),
+	GB_METHOD("Move", NULL, Window_Move, "[(X)i(Y)i]"),
+	GB_METHOD("Resize", NULL, Window_Resize, "[(W)i(H)i]"),
+
+	GB_METHOD("Read", "i", Window_Read, "[(Timeout)i]"),
+	GB_METHOD("ReadLine", "s", Window_ReadLine, NULL),
+
+	GB_METHOD("SetFocus", NULL, Window_SetFocus, NULL),
+
+	GB_END_DECLARE
+};
 
 /*
  * .Window.Attrs virtual class
@@ -1283,6 +1397,21 @@ BEGIN_PROPERTY(WindowAttrs_Color)
 	REFRESH();
 
 END_PROPERTY
+
+GB_DESC CWindowAttrsDesc[] = {
+	GB_DECLARE(".Window.Attrs", 0),
+	GB_VIRTUAL_CLASS(),
+
+	GB_PROPERTY("Normal", "b", WindowAttrs_Normal),
+	GB_PROPERTY("Underline", "b", WindowAttrs_Underline),
+	GB_PROPERTY("Reverse", "b", WindowAttrs_Reverse),
+	GB_PROPERTY("Blink", "b", WindowAttrs_Blink),
+	GB_PROPERTY("Bold", "b", WindowAttrs_Bold),
+
+	GB_PROPERTY("Color", "i", WindowAttrs_Color),
+
+	GB_END_DECLARE
+};
 
 /*
  * .Char.Attrs virtual class
@@ -1349,109 +1478,7 @@ BEGIN_PROPERTY(CharAttrs_Color)
 
 END_PROPERTY
 
-GB_DESC CWindowDesc[] =
-{
-	GB_DECLARE("Window", sizeof(CWINDOW)),
-	GB_AUTO_CREATABLE(),
-
-	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
-
-	/* Constants */
-	GB_CONSTANT("NoTimeout", "i", TIMEOUT_NOTIMEOUT),
-	GB_CONSTANT("None", "i", BORDER_NONE),
-	GB_CONSTANT("Ascii", "i", BORDER_ASCII),
-	GB_CONSTANT("ACS", "i", BORDER_ACS),
-
-	/* Properties */
-	GB_PROPERTY_SELF("Attributes", ".Window.Attrs"),
-
-	GB_PROPERTY("Background", "i", Window_Background),
-	GB_PROPERTY("Paper", "i", Window_Background),
-
-	GB_PROPERTY("Border", "i", Window_Border),
-
-	GB_PROPERTY("Caption", "s", Window_Caption),
-
-	GB_PROPERTY_READ("ContainerHeight", "i", Window_ContainerHeight),
-	GB_PROPERTY_READ("ContainerH", "i", Window_ContainerHeight),
-	GB_PROPERTY_READ("ContainerWidth", "i", Window_ContainerWidth),
-	GB_PROPERTY_READ("ContainerW", "i", Window_ContainerWidth),
-
-	GB_PROPERTY("CursorX", "i", Window_CursorX),
-	GB_PROPERTY("CursorY", "i", Window_CursorY),
-
-	GB_PROPERTY("Foreground", "i", Window_Foreground),
-	GB_PROPERTY("Pen", "i", Window_Foreground),
-
-	GB_PROPERTY("Height", "i", Window_Height),
-	GB_PROPERTY("H", "i", Window_Height),
-
-	GB_PROPERTY("Wrap", "b", Window_Wrap),
-
-	GB_PROPERTY("Width", "i", Window_Width),
-	GB_PROPERTY("W", "i", Window_Width),
-
-	GB_PROPERTY("X", "i", Window_X),
-	GB_PROPERTY("Y", "i", Window_Y),
-
-	/* Methods */
-	GB_METHOD("_new", NULL, Window_new, "[(Parent)Screen;(X)i(Y)i(W)i(H)i]"),
-	GB_METHOD("_free", NULL, Window_free, NULL),
-	GB_METHOD("_get", ".Char.Attrs", Window_get, "(Y)i(X)i"),
-
-	GB_METHOD("Ask", "s", Window_Ask, "(Opts)s[(Tries)i]"),
-
-	GB_METHOD("Lower", NULL, Window_Lower, NULL),
-	GB_METHOD("Raise", NULL, Window_Raise, NULL),
-
-	GB_METHOD("Cls", NULL, Window_Cls, NULL),
-
-	GB_METHOD("Drain", NULL, Window_Drain, NULL),
-
-	GB_METHOD("Full", NULL, Window_Full, NULL),
-
-	GB_METHOD("Get", "s", Window_Get, "(X)i(Y)i[(Len)i]"),
-
-	GB_METHOD("Hide", NULL, Window_Hide, NULL),
-	GB_METHOD("Show", NULL, Window_Show, NULL),
-
-	GB_METHOD("DrawHLine", NULL, Window_DrawHLine, "(X)i(Y)i(Len)i(Ch)s[(Thickness)i]"),
-	GB_METHOD("DrawVLine", NULL, Window_DrawVLine, "(X)i(Y)i(Len)i(Ch)s[(Thickness)i]"),
-
-	GB_METHOD("Insert", NULL, Window_Insert, "(Text)s[(X)i(Y)i]"),
-	GB_METHOD("Print", NULL, Window_Print, "(Text)s[(X)i(Y)i]"),
-	GB_METHOD("PrintCenter", NULL, Window_PrintCenter, "(Text)s"),
-
-	GB_METHOD("Locate", NULL, Window_Locate, "(X)i(Y)i"),
-	GB_METHOD("Move", NULL, Window_Move, "[(X)i(Y)i]"),
-	GB_METHOD("Resize", NULL, Window_Resize, "[(W)i(H)i]"),
-
-	GB_METHOD("Read", "i", Window_Read, "[(Timeout)i]"),
-	GB_METHOD("ReadLine", "s", Window_ReadLine, NULL),
-
-	GB_METHOD("SetFocus", NULL, Window_SetFocus, NULL),
-
-	GB_END_DECLARE
-};
-
-GB_DESC CWindowAttrsDesc[] =
-{
-	GB_DECLARE(".Window.Attrs", 0),
-	GB_VIRTUAL_CLASS(),
-
-	GB_PROPERTY("Normal", "b", WindowAttrs_Normal),
-	GB_PROPERTY("Underline", "b", WindowAttrs_Underline),
-	GB_PROPERTY("Reverse", "b", WindowAttrs_Reverse),
-	GB_PROPERTY("Blink", "b", WindowAttrs_Blink),
-	GB_PROPERTY("Bold", "b", WindowAttrs_Bold),
-
-	GB_PROPERTY("Color", "i", WindowAttrs_Color),
-
-	GB_END_DECLARE
-};
-
-GB_DESC CCharAttrsDesc[] =
-{
+GB_DESC CCharAttrsDesc[] = {
 	GB_DECLARE(".Char.Attrs", 0),
 	GB_VIRTUAL_CLASS(),
 
@@ -1462,6 +1489,21 @@ GB_DESC CCharAttrsDesc[] =
 	GB_PROPERTY("Bold", "b", CharAttrs_Bold),
 
 	GB_PROPERTY("Color", "i", CharAttrs_Color),
+
+	GB_END_DECLARE
+};
+
+/*
+ * Border static class
+ */
+
+GB_DESC CBorderDesc[] = {
+	GB_DECLARE("Border", 0),
+	GB_NOT_CREATABLE(),
+
+	GB_CONSTANT("None", "i", BORDER_NONE),
+	GB_CONSTANT("Ascii", "i", BORDER_ASCII),
+	GB_CONSTANT("ACS", "i", BORDER_ACS),
 
 	GB_END_DECLARE
 };

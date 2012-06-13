@@ -34,8 +34,7 @@ BEGIN_METHOD(Key_get, GB_STRING key)
 
 END_METHOD
 
-GB_DESC CKeyDesc[] =
-{
+GB_DESC CKeyDesc[] = {
 	GB_DECLARE("Key", 0),
 	GB_NOT_CREATABLE(),
 

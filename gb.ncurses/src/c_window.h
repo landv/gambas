@@ -37,11 +37,6 @@ enum {
 	BORDER_ACS
 };
 
-/* Timeout constants */
-enum {
-	TIMEOUT_NOTIMEOUT = -1
-};
-
 /* @reqs for *_attrs_driver() */
 enum
 {
@@ -77,6 +72,7 @@ typedef struct {
 extern GB_DESC CWindowDesc[];
 extern GB_DESC CWindowAttrsDesc[];
 extern GB_DESC CCharAttrsDesc[];
+extern GB_DESC CBorderDesc[];
 #endif
 
 void WINDOW_raise_read(void *);
