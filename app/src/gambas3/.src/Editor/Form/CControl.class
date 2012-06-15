@@ -1758,6 +1758,8 @@ Public Sub AddToolbar(cToolbarSet As Collection, cForm As Collection)
       aList.Add(sAction)
     Else If hCtrl.Kind = "Separator"
       sAction = "|"
+    Else If hCtrl.Kind = "Panel" And If Container(hCtrl.Control).Children.Count = 0 Then
+      sAction = "-"
     Else
       sAction = "$" & hCtrl.Name
     Endif

@@ -1363,7 +1363,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
       AddSpace()
     Else If Left(sAction) = "$" Then
       hCtrl = Me[Mid$(sAction, 2)]
-      If hCtrl Then
+      If hCtrl And If Object.IsValid(hCtrl) Then
         'Print "--> Reparent to panToolbar"
         hCtrl.Reparent(panToolBar)
         hCtrl.Raise

@@ -202,5 +202,7 @@ Static Private Function OutOfDate_Read() As Boolean
 
   If $dLastLoad And If Stat(Settings.Path).LastModified <= $dLastLoad Then Return
   Return True  
+  
+Catch
 
 End

@@ -404,7 +404,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
               If iPos Then
                 vValue = Mid$(sValue, iPos + 1)
               Else
-                Error "Bad property value: "; sValue
+                Error "Bad property value: "; sValue; " for "; sProp
                 
                 ' This is an object !
               Endif

@@ -991,7 +991,7 @@ Public Sub ReadConfig()
   '   tvwProject.Font = hFont
   
   Project.SetNormalFont(tvwProject)
-  lblMessage.Font = tvwProject.Font
+  'lblMessage.Font = tvwProject.Font
   tabProperty.TextFont = Project.GetSmallFont()
   wrkProject.Font = tabProperty.TextFont
   'wrkProject.Font = tvwProject.Font
@@ -1669,21 +1669,21 @@ Public Sub ActivatePropertyTab()
   
 End
 
-Public Sub SetMessage(sMsg As String)
-  
-  lblMessage.Text = sMsg
-  timMessage.Stop
-  timMessage.Start
-  'Wait
-  
-End
-
-Public Sub timMessage_Timer()
-  
-  lblMessage.Text = ""
-  timMessage.Stop
-  
-End
+' Public Sub SetMessage(sMsg As String)
+'   
+'   'lblMessage.Text = sMsg
+'   timMessage.Stop
+'   timMessage.Start
+'   'Wait
+'   
+' End
+' 
+' Public Sub timMessage_Timer()
+'   
+'   lblMessage.Text = ""
+'   timMessage.Stop
+'   
+' End
 
 Public Sub mnuBrowse_Click()
   
