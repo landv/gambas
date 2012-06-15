@@ -3696,7 +3696,7 @@ llvm::Value* NotExpression::codegen_get_value(){
 		return getInteger(1, true);
 	} else if (TYPE_is_variant(expr->type)){
 		expr->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_not, 'v', "h"), getInteger(16, T_VARIANT));
+		builder->CreateCall(get_global_function_jif(SUBR_not, 'v', "h"), getInteger(16, 0/*T_VARIANT*/));
 		return ret_top_stack(T_VARIANT, true);
 	} else {
 		llvm::Value* op = expr->codegen_get_value();
@@ -3981,7 +3981,7 @@ llvm::Value* AndExpression::codegen_get_value(){
 	if (type == T_VARIANT){
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_and_, 'v', "h"), getInteger(16, 0));
+		builder->CreateCall(get_global_function_jif(SUBR_and_, 'v', "h"), getInteger(16, C_AND));
 		return ret_top_stack(T_VARIANT, on_stack);
 	} else {
 		auto op = codegen_operands();
@@ -3996,7 +3996,7 @@ llvm::Value* OrExpression::codegen_get_value(){
 	if (type == T_VARIANT){
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_and_, 'v', "h"), getInteger(16, 1));
+		builder->CreateCall(get_global_function_jif(SUBR_and_, 'v', "h"), getInteger(16, C_OR));
 		return ret_top_stack(T_VARIANT, on_stack);
 	} else {
 		auto op = codegen_operands();
@@ -4011,7 +4011,7 @@ llvm::Value* XorExpression::codegen_get_value(){
 	if (type == T_VARIANT){
 		left->codegen_on_stack();
 		right->codegen_on_stack();
-		builder->CreateCall(get_global_function_jif(SUBR_and_, 'v', "h"), getInteger(16, 2));
+		builder->CreateCall(get_global_function_jif(SUBR_and_, 'v', "h"), getInteger(16, C_XOR));
 		return ret_top_stack(T_VARIANT, on_stack);
 	} else {
 		auto op = codegen_operands();
