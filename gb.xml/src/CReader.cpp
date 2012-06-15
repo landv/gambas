@@ -143,9 +143,13 @@ if(!THIS->foundNode)
     return;
 }
 
-if(READ_PROPERTY && THIS->foundNode->isElement())
+if(THIS->foundNode->isElement())
 {
     GB.ReturnInteger(THIS->foundNode->toElement()->attributeCount);
+}
+else
+{
+GB.ReturnInteger(0);
 }
 
 END_PROPERTY
