@@ -57,7 +57,7 @@ typedef
 		ffi_type *rtype;
 	}
 	EXTERN_CIF;
-	
+
 typedef
 	struct EXTERN_CALLBACK {
 		struct EXTERN_CALLBACK *next;
@@ -70,10 +70,11 @@ typedef
 		EXTERN_CIF info;
 	}
 	EXTERN_CALLBACK;
-	
+
 typedef
 	struct EXTERN_FUNC {
 		struct EXTERN_FUNC *next;
+		char *alias;
 		void *call;
 		EXTERN_CIF info;
 	}
@@ -205,8 +206,9 @@ static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 		THROW(E_EXTSYM, ext->library, ext->alias);
 	}
 
-	ALLOC(&func, sizeof(EXTERN_FUNC), "get_function");
+	ALLOC_ZERO(&func, sizeof(EXTERN_FUNC), "get_function");
 	func->next = _functions;
+	func->alias = ext->alias;
 	_functions = func;
 	
 	func->call = call;
@@ -219,6 +221,14 @@ static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 	ext->loaded = TRUE;
 	
 	return func;
+}
+
+EXTERN_FUNC_INFO EXTERN_get_function_info(CLASS_EXTERN *ext)
+{
+	EXTERN_FUNC *func = get_function(ext);
+	EXTERN_FUNC_INFO func_info = { func->alias, func->call };
+	
+	return func_info;
 }
 
 

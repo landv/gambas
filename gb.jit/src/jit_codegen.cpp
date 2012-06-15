@@ -66,7 +66,7 @@ const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(vo
 void print_type(llvm::Value* v);
 
 static std::set<llvm::StringRef> mappings;
-static std::map<void*, llvm::GlobalVariable*> variable_mappings;
+//static std::map<void*, llvm::GlobalVariable*> variable_mappings;
 
 static llvm::LLVMContext llvm_context;
 
@@ -202,7 +202,6 @@ static llvm::BasicBlock* create_bb(const char* name){
 }
 
 static void llvm_init(){
-	
 	llvm::InitializeNativeTarget();
 	
 	//string_type = llvm::StructType::create(llvm_context, string_to_type_vector("jpii"), "String");
@@ -236,7 +235,7 @@ static void llvm_init(){
 	}
 }
 
-void register_global_symbol(const char* name, llvm::GlobalValue* value, void* address){
+void register_global_symbol(llvm::StringRef name, llvm::GlobalValue* value, void* address){
 	if (mappings.insert(name).second)
 		EE->addGlobalMapping(value, address);
 }
@@ -702,21 +701,23 @@ static llvm::Value* gen_and_if(llvm::Value* left, T1 right_func){
 }
 
 static llvm::Value* get_cstring_from_addr(llvm::Value* addr){
-	llvm::Value* len;
+	llvm::Value* str;
 	llvm::BasicBlock* B1 = builder->GetInsertBlock();
 	llvm::BasicBlock* B2;
 	
 	gen_if(builder->CreateICmpNE(addr, get_nullptr()), [&](){
-		len = builder->CreateCall(get_global_function(strlen, 'j', "p"), addr);
+		llvm::Value* len = builder->CreateCall(get_global_function(strlen, 'j', "p"), addr);
 		if (TARGET_BITS == 64)
 			len = builder->CreateTrunc(len, llvmType(getInt32Ty));
+		str = get_new_struct(string_type, getInteger(TARGET_BITS, T_CSTRING), addr, getInteger(32, 0), len);
 		B2 = builder->GetInsertBlock();
 	}, "cstring_strlen", "cstring_null_or_done_strlen");
 	
-	llvm::PHINode* phi = builder->CreatePHI(LONG_TYPE, 2);
-	phi->addIncoming(getInteger(32, 0), B1);
-	phi->addIncoming(len, B2);
-	return get_new_struct(string_type, getInteger(TARGET_BITS, T_CSTRING), addr, getInteger(32, 0), phi);
+	
+	llvm::PHINode* phi = builder->CreatePHI(string_type, 2);
+	phi->addIncoming(get_default(T_CSTRING), B1);
+	phi->addIncoming(str, B2);
+	return phi;
 }
 
 static llvm::Value* to_target_int(llvm::Value* integer32){
@@ -2565,6 +2566,130 @@ void SwapExpression::codegen_on_stack(){
 	pop_a_expr->codegen();
 }
 
+static llvm::Type* const extern_types[] = {
+	llvmType(getVoidTy),
+	llvmType(getInt8Ty),
+	llvmType(getInt8Ty),
+	llvmType(getInt16Ty),
+	llvmType(getInt32Ty),
+	llvmType(getInt64Ty),
+	llvmType(getFloatTy),
+	llvmType(getDoubleTy),
+	NULL,
+	llvmType(getInt8PtrTy),
+	llvmType(getInt8PtrTy),
+	llvmType(getInt8PtrTy),
+	NULL,
+	NULL,
+	NULL,
+	llvmType(getInt8PtrTy),
+	llvmType(getInt8PtrTy)
+};
+
+llvm::Value* codegen_extern_manage_value(llvm::Value* val, TYPE type){
+	if (type == T_BOOLEAN)
+		val = builder->CreateZExt(val, llvmType(getInt8Ty));
+	
+	else if (TYPE_is_string(type))
+		val = builder->CreateGEP(extract_value(val, 1), to_target_int(extract_value(val, 2)));
+	
+	else if (TYPE_is_object(type)){
+		val = extract_value(val, 1);
+		val = gen_if_phi(get_nullptr(), builder->CreateICmpNE(val, get_nullptr()), [&](){
+			CLASS* object_class = (CLASS*)(void*)type;
+				
+			llvm::Value* normal = builder->CreateGEP(val, getInteger(TARGET_BITS, sizeof(OBJECT)));
+			
+			llvm::Value* OBJ = builder->CreateBitCast(val, pointer_t(OBJECT_type));
+			llvm::Value* klass = load_element(OBJ, 0);
+			
+			auto get_bit_from_class = [](llvm::Value* obj, int offset_byte, int offset_bit){
+				return builder->CreateTrunc(builder->CreateLShr(builder->CreateLoad(builder->CreateGEP(obj, getInteger(TARGET_BITS, offset_byte))), getInteger(8, offset_bit)), llvmType(getInt1Ty));
+			};
+			
+			auto handle_class_object = [normal, &get_bit_from_class](llvm::Value* obj){
+				const int offset_is_native = TARGET_BITS == 64 ? 34 : 22;
+				const int bit_index_is_native = 2;
+				
+				llvm::Value* is_native = get_bit_from_class(obj, offset_is_native, bit_index_is_native);
+				return gen_if_phi(normal, builder->CreateXor(is_native, getInteger(1, true)), [obj](){
+					llvm::Value* stat = builder->CreateBitCast(builder->CreateGEP(obj, getInteger(TARGET_BITS, offsetof(CLASS, stat))), charPP);
+					return builder->CreateLoad(stat);
+				}, "not_native");
+			};
+			
+			auto handle_struct_object = [](llvm::Value* obj){
+				/*if (((CSTRUCT *)ob)->ref)
+					addr = (char *)((CSTATICSTRUCT *)ob)->addr;
+				else
+					addr = (char *)ob + sizeof(CSTRUCT);*/
+				llvm::Value* ref_addr = builder->CreateBitCast(builder->CreateGEP(obj, getInteger(TARGET_BITS, offsetof(CSTRUCT, ref))), charPP);
+				llvm::Value* ref_not_null = builder->CreateICmpNE(builder->CreateLoad(ref_addr), get_nullptr());
+				
+				return gen_if_phi(builder->CreateGEP(obj, getInteger(TARGET_BITS, sizeof(CSTRUCT))), ref_not_null, [&](){
+					llvm::Value* addr_addr = builder->CreateBitCast(builder->CreateGEP(obj, getInteger(TARGET_BITS, offsetof(CSTATICSTRUCT, addr))), charPP);
+					return builder->CreateLoad(addr_addr);
+				});
+			};
+			
+			if (TYPE_is_pure_object(type) && object_class == (CLASS*)(void*)GB.FindClass("Class")){
+				val = handle_class_object(val);
+			} else if (TYPE_is_pure_object(type) && CLASS_is_array(object_class)){
+				val = builder->CreateLoad(builder->CreateBitCast(builder->CreateGEP(val, getInteger(TARGET_BITS, offsetof(CARRAY, data))), charPP));
+			} else if (TYPE_is_pure_object(type) && CLASS_is_struct(object_class)){
+				val = handle_struct_object(val);
+			} else if (TYPE_is_pure_object(type)){
+				val = normal;
+			} else {
+				val = gen_if_else_phi(builder->CreateICmpEQ(klass, builder->CreateIntToPtr(getInteger(TARGET_BITS, GB.FindClass("Class")), llvmType(getInt8PtrTy))), [&](){
+					return handle_class_object(val);
+				}, [&](){
+					const int offset_is_array = TARGET_BITS == 64 ? 34 : 22;
+					const int bit_index_is_array = 6;
+					
+					return gen_if_else_phi(get_bit_from_class(klass, offset_is_array, bit_index_is_array), [&](){
+						return builder->CreateLoad(builder->CreateBitCast(builder->CreateGEP(val, getInteger(TARGET_BITS, offsetof(CARRAY, data))), charPP));
+					}, [&](){
+						const int offset_is_struct = TARGET_BITS == 64 ? 34 : 22;
+						const int bit_index_is_struct = 5;
+						
+						return gen_if_phi(normal, get_bit_from_class(klass, offset_is_struct, bit_index_is_struct), [&](){
+							return handle_struct_object(val);
+						}, "extern_arg_is_struct");
+					}, "extern_arg_is_array");
+				}, "extern_arg_is_class");
+			}
+			return val;
+		}, "OBJ_not_null_for_extern");
+	}
+	return val;
+}
+
+static llvm::Value* codegen_extern_manage_return_value(llvm::Value* ret, TYPE type){
+	if (type == T_BOOLEAN)
+		ret = builder->CreateICmpNE(ret, getInteger(8, false));
+	else if (TYPE_is_string(type)){
+		ret = gen_if_phi(get_default(T_CSTRING), builder->CreateICmpNE(ret, get_nullptr()), [&](){
+			return get_cstring_from_addr(ret);
+		}, "extern_return_not_nullstring");
+	} else if (TYPE_is_object(type)){
+		if (TYPE_is_pure_object(type)){
+			CLASS* class_struct = (CLASS*)(void*)type;
+			if (CLASS_is_struct(class_struct)){
+				ret = builder->CreateCall3(get_global_function_jif(CSTRUCT_create_static, 'p', "ppp"),
+					get_global((void*)-1, llvmType(getInt8Ty)),
+					get_global((void*)class_struct, llvmType(getInt8Ty)),
+					ret);
+			}
+		}
+		borrow_object(ret);
+		ret = get_new_struct(object_type, builder->CreateIntToPtr(getInteger(TARGET_BITS, type), llvmType(getInt8PtrTy)), ret);
+	}
+	return ret;
+}
+
+static void func_extern_call_variant_vararg(void* return_value_addr, void* func_addr, int nargs, TYPE return_type);
+
 static llvm::Value* codegen_raise_event(std::vector<Expression*>& args, int index, bool on_stack){
 	for(size_t i=0, e=args.size(); i!=e; i++){
 		args[i]->codegen_on_stack();
@@ -2594,6 +2719,72 @@ llvm::Value* CallExpression::codegen_get_value(){
 			return codegen_raise_event(args, ((PushEventExpression*)func)->index, on_stack);
 		}
 	}
+	if (PushExternExpression* ee = dynamic_cast<PushExternExpression*>(func)){
+		CLASS_EXTERN* ext = &ee->klass->load->ext[ee->index];
+		EXTERN_FUNC_INFO func = JIF.F_EXTERN_get_function_info(ext);
+		
+		llvm::Value* ret = NULL;
+		
+		if (!ee->must_variant_dispatch){
+			std::vector<llvm::Type*> ft;
+			std::vector<llvm::Value*> orig_args;
+			std::vector<llvm::Value*> func_args;
+			ft.resize(ext->n_param);
+			orig_args.resize(args.size());
+			func_args.resize(args.size());
+			
+			for(size_t i=0; i<args.size(); i++){
+				if (i < (size_t)ext->n_param)
+					ft[i] = extern_types[ext->param[i].type];
+				
+				llvm::Value* val = args[i]->codegen_get_value();
+				orig_args[i] = val;
+				
+				val = codegen_extern_manage_value(val, args[i]->type);
+				func_args[i] = val;
+			}
+			
+			std::string function_name = ext->library;
+			function_name += '.';
+			function_name += func.alias;
+			
+			llvm::GlobalValue* call_function = (llvm::GlobalValue*)M->getOrInsertFunction(function_name, llvm::FunctionType::get(extern_types[type > T_OBJECT ? T_OBJECT : type], ft, true));
+			register_global_symbol(function_name, call_function, func.call);
+			
+			ret = builder->CreateCall(call_function, func_args);
+			
+			ret = codegen_extern_manage_return_value(ret, type);
+			
+			for(size_t arg=args.size(); arg --> 0; ){
+				release(orig_args[arg], args[arg]->type);
+				if (args[arg]->on_stack)
+					c_SP(-1);
+			}
+		} else {
+			for(size_t i=0; i<args.size(); i++){
+				args[i]->codegen_on_stack();
+			}
+			
+			llvm::Value* return_value_addr = type == T_VOID ? get_nullptr() : (llvm::Value*)create_alloca_in_entry(TYPE_llvm(type));
+			llvm::Value* call_addr = builder->CreateIntToPtr(getInteger(TARGET_BITS, (uint64_t)func.call), llvmType(getInt8PtrTy));
+			llvm::Value* args_size = getInteger(32, args.size());
+			llvm::Value* return_type = getInteger(TARGET_BITS, type);
+			
+			builder->CreateCall4(get_global_function(func_extern_call_variant_vararg, 'v', "ppij"),
+				builder->CreateBitCast(return_value_addr, llvmType(getInt8PtrTy)),
+				call_addr,
+				args_size,
+				return_type);
+			
+			if (type != T_VOID)
+				ret = builder->CreateLoad(return_value_addr);
+		}
+		
+		if (on_stack)
+			push_value(ret, type);
+		
+		return ret;
+	}
 	codegen_on_stack();
 	return ret_top_stack(type, on_stack);
 }
@@ -2615,6 +2806,10 @@ void CallExpression::codegen_on_stack(){
 	}
 	if (fe && fe->function_kind == FUNCTION_EVENT){
 		codegen_raise_event(args, ((PushEventExpression*)func)->index, on_stack);
+		return;
+	}
+	if (PushExternExpression* ee = dynamic_cast<PushExternExpression*>(func)){
+		codegen_get_value();
 		return;
 	}
 	
@@ -4420,7 +4615,7 @@ llvm::Value* PushArrayExpression::codegen_get_value(){
 			dispatch = false;
 		}
 		
-		for(uint i=1; i<args.size(); i++)
+		for(size_t i=1; i<args.size(); i++)
 			args[i]->codegen_on_stack();
 		
 		return codegen_spec_method(desc, index, dispatch, can_quick, !is_push_class, klass, effective_class, obj, args.size()-1, false);
@@ -4580,7 +4775,7 @@ void PopArrayExpression::codegen(){
 		}
 		
 		val->codegen_on_stack();
-		for(uint i=1; i<args.size(); i++)
+		for(size_t i=1; i<args.size(); i++)
 			args[i]->codegen_on_stack();
 		
 		codegen_spec_method(desc, index, dispatch, can_quick, !is_push_class, klass, effective_class, obj, args.size(), true);
@@ -5392,7 +5587,7 @@ llvm::Value* SubrExpression::codegen_get_value(){
 				case 7: { //IsSpace:
 					const char* conds = " \n\r\t\f\v";
 					res = builder->CreateICmpEQ(c, getInteger(8, conds[0]));
-					for(uint i=1; i<strlen(conds); i++)
+					for(size_t i=1; i<strlen(conds); i++)
 						res = builder->CreateOr(res, builder->CreateICmpEQ(c, getInteger(8, conds[i])));
 					break;
 				}
@@ -5932,6 +6127,11 @@ void SubrExpression::codegen_on_stack(){
 	codegen_get_value();
 }
 
+void stack_corrupted_abort(){
+	fprintf(stderr, "Stack became corrupted in a JIT function. Please make a bug report.\n");
+	abort();
+}
+
 void NopExpression::codegen(){
 	/*builder->CreateCall4(get_global_function_vararg(printf, 'v', "p"),
 		get_global((void*)"Nu: %s %p %p\n", llvmType(getInt8Ty)),
@@ -5948,7 +6148,7 @@ void NopExpression::codegen(){
 	llvm::Value* bp = read_global((void*)&BP);
 	bp = builder->CreateGEP(bp, getInteger(TARGET_BITS, sizeof(VALUE)*(FP->n_local+FP->n_ctrl)));
 	gen_if_noreturn(builder->CreateICmpNE(bp, sp), [&](){
-		builder->CreateCall(get_global_function(abort, 'v', ""));
+		builder->CreateCall(get_global_function(stack_corrupted_abort, 'v', ""));
 		builder->CreateUnreachable();
 	});
 }
@@ -5996,6 +6196,138 @@ void QuitExpression::codegen(){
 	builder->CreateCall(get_global_function_jif(EXEC_quit, 'v', ""));
 	builder->CreateUnreachable();
 	builder->SetInsertPoint(create_bb("dummy"));
+}
+
+static void debug_print_line(){
+	for (int i = 1; i < 10; i++)
+		fputs("--------", stderr);
+	fputc('\n', stderr);
+}
+
+
+static std::map<llvm::StringRef, void(*)(void*, void*)> extern_signatures;
+
+static void func_extern_call_variant_vararg(void* return_value_addr, void* func_addr, int nargs, TYPE return_type){
+	static std::map<llvm::StringRef, void(*)(void*, void*)>& signatures = extern_signatures;
+	
+	char signature_string[nargs+sizeof(TYPE)];
+	
+	*(TYPE*)&signature_string[nargs] = return_type;
+	
+	for(int i=0; i<nargs; i++){
+		TYPE t = SP[-nargs+i].type;
+		if (t == T_VARIANT){
+			JIF.F_VALUE_undo_variant(&SP[-nargs+i]);
+			t = SP[-nargs+i].type;
+		}
+		signature_string[i] = TYPE_is_pure_object(t) ? T_OBJECT : t;
+	}
+	
+	auto it = signatures.find(llvm::StringRef(signature_string, nargs+sizeof(TYPE)));
+	
+	if (it == signatures.end()){
+		M = new llvm::Module("jit_mod_vararg_variant_extern", llvm_context);
+		if (TARGET_BITS == 64){
+			M->setTargetTriple("x86_64-pc-linux-gnu");
+			M->setDataLayout("e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64");
+		} else {
+			M->setTargetTriple("i386-unknown-linux-gnu");
+			M->setDataLayout("e-p:32:32:32-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:32:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-f80:32:32-n8:16:32-S128");
+		}
+		EE->addModule(M);
+		
+		static char buf[256] = "extern_func_caller_";
+		int eob = strlen("extern_func_caller_");
+		for(int i=0; i<nargs; i++)
+			buf[eob+i] = signature_string[i]+'A';
+		buf[eob+nargs] = '\0';
+		
+		//func_addr, return_value_addr
+		llvm_function = llvm::cast<llvm::Function>(M->getOrInsertFunction(buf, get_function_type('v', "pp", true)));
+		llvm::Function::arg_iterator arg_it = llvm_function->arg_begin();
+		llvm::Value* func_addr_arg = arg_it++;
+		llvm::Value* return_value_addr_arg = arg_it;
+		
+		entry_block = create_bb("entry");
+		builder = new llvm::IRBuilder<>(entry_block);
+		
+		std::vector<llvm::Type*> ft;
+		std::vector<llvm::Value*> orig_args;
+		std::vector<llvm::Value*> func_args;
+		ft.resize(nargs);
+		orig_args.resize(nargs);
+		func_args.resize(nargs);
+		
+		llvm::Value* SP_base = builder->CreateGEP(read_sp(), getInteger(TARGET_BITS, -nargs));
+		llvm::Value* SP_current = SP_base;
+		
+		for(int i=0; i<nargs; i++){
+			ft[i] = extern_types[signature_string[i]];
+			orig_args[i] = read_value(SP_current, signature_string[i]);
+			func_args[i] = codegen_extern_manage_value(orig_args[i], SP[-nargs+i].type);
+			
+			if (i != nargs-1)
+				SP_current = builder->CreateGEP(SP_current, getInteger(TARGET_BITS, 1));
+		}
+		
+		//Call function
+		llvm::Type* function_type = llvm::FunctionType::get(extern_types[return_type > T_OBJECT ? T_OBJECT : return_type], ft, true);
+		llvm::Value* call_function = builder->CreateBitCast(func_addr_arg, pointer_t(function_type));
+		
+		llvm::Value* ret = builder->CreateCall(call_function, func_args);
+		
+		//Manage return value
+		ret = codegen_extern_manage_return_value(ret, return_type);
+		if (return_type != T_VOID)
+			builder->CreateStore(ret, builder->CreateBitCast(return_value_addr_arg, pointer_t(TYPE_llvm(return_type))));
+		
+		//Release arguments
+		for(int i=nargs; i --> 0; ){
+			release(orig_args[i], signature_string[i]);
+			c_SP(-1);
+		}
+		
+		builder->CreateRetVoid();
+		
+		//M->dump();
+		
+		llvm::verifyModule(*M);
+		
+		llvm::FunctionPassManager FPM(M);
+		llvm::PassManager MPM;
+		llvm::PassManagerBuilder PMB;
+		PMB.OptLevel = 2;
+		PMB.SizeLevel = 1;
+		PMB.populateFunctionPassManager(FPM);
+		PMB.populateModulePassManager(MPM);
+		
+		FPM.doInitialization();
+		FPM.run(*llvm_function);
+		FPM.doFinalization();
+		MPM.run(*M);
+		
+		//Print out the code after optimization
+		if (MAIN_debug){
+			debug_print_line();
+			fprintf(stderr, "gb.jit: dumping vararg extern call function\n");
+			debug_print_line();
+			M->dump();
+			debug_print_line();
+			fputc('\n', stderr);
+		}
+		
+		void (*fn)(void*, void*) = (void(*)(void*, void*))EE->getPointerToFunction(llvm_function);
+		
+		delete builder;
+		
+		llvm_function->deleteBody();
+		mappings.clear();
+		
+		signatures.insert(std::pair<llvm::StringRef, void(*)(void*, void*)>(std::string(signature_string, nargs+sizeof(TYPE)), fn));
+		(*fn)(func_addr, return_value_addr);
+	} else {
+		(*(it->second))(func_addr, return_value_addr);
+	}
 }
 
 static void func_void(){
@@ -6064,15 +6396,6 @@ static void func_object(){
 	RP->type = T_OBJECT;
 	RP->_object.object = NULL;
 	JIF.F_EXEC_leave_keep();
-}
-
-static void print_line()
-{
-	int i;
-	
-	for (i = 1; i < 10; i++)
-		fputs("--------", stderr);
-	fputc('\n', stderr);
 }
 
 void JIT_codegen(){
@@ -6183,17 +6506,16 @@ void JIT_codegen(){
 	MPM.run(*M);
 	
 	//Print out the code after optimization
-	if (MAIN_debug)
-	{
-		print_line();
+	if (MAIN_debug){
+		debug_print_line();
 		fprintf(stderr, "gb.jit: dumping function %s.", CP->name);
 		if (FP->debug)
 			fprintf(stderr, "%s:\n", FP->debug->name);
 		else
 			fprintf(stderr, "%d:\n", EXEC.index);
-		print_line();
+		debug_print_line();
 		M->dump();
-		print_line();
+		debug_print_line();
 		fputc('\n', stderr);
 	}
 	
@@ -6210,7 +6532,7 @@ void JIT_codegen(){
 	((llvm::ExecutionEngine**)CP->jit_data)[EXEC.index] = EE;*/
 	
 	mappings.clear();
-	variable_mappings.clear();
+	//variable_mappings.clear();
 }
 
 

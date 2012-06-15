@@ -39,8 +39,17 @@
 
 #include "gbx_value.h"
 
+typedef
+	struct EXTERN_FUNC_INFO {
+		char *alias;
+		void *call;
+	}
+	EXTERN_FUNC_INFO;
+
+
 void EXTERN_release(void);
 void EXTERN_exit(void);
+EXTERN_FUNC_INFO EXTERN_get_function_info(CLASS_EXTERN *ext);
 void EXTERN_call(void);
 void *EXTERN_make_callback(VALUE_FUNCTION *value);
 void *EXTERN_get_symbol(const char *library, const char *symbol);

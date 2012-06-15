@@ -1005,7 +1005,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	class->init_dynamic = TRUE;
 
-	load_and_relocate(class, len_data, &start, &n_desc, FALSE);
+	load_and_relocate(class, len_data, &start, &n_desc, in_jit_compilation);
 
 	/* Information on static and dynamic variables */
 
@@ -1277,10 +1277,18 @@ void CLASS_load_real(CLASS *class)
 
 	load_without_inits(class, load_from_jit);
 	
-	class->state = CS_READY;
-	class->ready = TRUE;
-	
-	CLASS_run_inits(class);
+	if (load_from_jit)
+	{
+		class->state = CS_LOADED;
+		class->ready = FALSE;
+	}
+	else
+	{
+		class->state = CS_READY;
+		class->ready = TRUE;
+		
+		CLASS_run_inits(class);
+	}
 
 	//EXEC_public(class, NULL, "_init", 0);
 }

@@ -405,9 +405,14 @@ struct PopOptionalExpression : Expression {
 };
 
 struct PushExternExpression : Expression {
+	CLASS* klass;
+	Expression* object_to_release;
 	int index;
-	PushExternExpression(int index) : index(index) {
-		type = CP->load->ext[index].type;
+	bool must_variant_dispatch;
+	PushExternExpression(CLASS* klass, int index, Expression* object_to_release)
+	: klass(klass), object_to_release(object_to_release), index(index) {
+		type = T_FUNCTION;
+		must_variant_dispatch = false; //Might get changed later in CallExpression::CallExpression
 	}
 };
 

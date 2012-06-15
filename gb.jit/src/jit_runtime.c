@@ -455,7 +455,7 @@ __DATE:
 	JIF.F_VALUE_convert(P1, T_DATE);
 	JIF.F_VALUE_convert(P2, T_DATE);
 
-	result = JIF.F_DATE_comp(&P1->_date.date, &P2->_date.date) < 0 ? -1 : 0;
+	result = JIF.F_DATE_comp((DATE *)&P1->_date.date, (DATE *)&P2->_date.date) < 0 ? -1 : 0;
 	goto __END;
 
 __NULL:

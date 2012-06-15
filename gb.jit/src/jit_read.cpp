@@ -312,8 +312,8 @@ static void JIT_push_unknown(){
 				return;
 				
 			case CD_EXTERN:
-				assert(false && "not fixed yet");
-				//FIXME push(new
+				push(new PushExternExpression(klass, index, pop()));
+				return;
 			
 			default: THROW(E_NSYMBOL, name, klass->name);
 		}
@@ -399,8 +399,9 @@ static void JIT_push_unknown(){
 				return;
 				
 			case CD_EXTERN:
-				assert(false && "not fixed yet");
-				//FIXME
+				pop();
+				push(new PushExternExpression(klass, index, NULL));
+				return;
 			
 			default: THROW(E_NSYMBOL, name, klass->name);
 			
@@ -727,7 +728,7 @@ static void JIT_read_statement(){
 						push_statement(new PopOptionalExpression(pop(), value));
 						NEXT
 					case C_PUSH_EXTERN:
-						push(new PushExternExpression(value));
+						push(new PushExternExpression(CP, value, NULL));
 						NEXT
 					case C_PUSH_EVENT:
 						push(new PushEventExpression(value));

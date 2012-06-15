@@ -367,7 +367,7 @@ PopArrayExpression::PopArrayExpression(Expression** it, int nargs, Expression* v
 		can_quick = !(desc->method.npmin < desc->method.npmax || nargs != desc->method.npmin || desc->method.npvar);
 		
 		if (can_quick){
-			JIT_conv(val, desc->method.signature[0]);
+			JIT_conv(this->val, desc->method.signature[0]);
 			for(int i=1; i<nargs; i++){
 				JIT_conv(args[i], desc->method.signature[i]);
 			}
@@ -375,7 +375,7 @@ PopArrayExpression::PopArrayExpression(Expression** it, int nargs, Expression* v
 		on_stack = true;
 		for(int i=0; i<nargs; i++)
 			args[i]->must_on_stack();
-		val->must_on_stack();
+		this->val->must_on_stack();
 	}
 }
 PushPureObjectFunctionExpression::PushPureObjectFunctionExpression(Expression* obj, int index)
@@ -479,13 +479,55 @@ PopStaticPropertyExpression::PopStaticPropertyExpression(CLASS* klass, Expressio
 	this->val->must_on_stack();
 }
 CallExpression::CallExpression(Expression* function, int nargs, Expression** it, unsigned short* pc) : func(function), pc(pc) {
-	on_stack = true; //Gets replaced by false if EventFn
+	on_stack = true; //Gets replaced by false if EventFn or Extern
 	desc = NULL;
 	variant_call = false;
 	ref_stack();
 	args.resize(nargs);
 	for(int i=0; i<nargs; i++){
 		args[i] = it[i];
+	}
+	
+	if (PushExternExpression* ee = dynamic_cast<PushExternExpression*>(func)){
+		CLASS_EXTERN* ext = &ee->klass->load->ext[ee->index];
+		
+		if (nargs < ext->n_param)
+			THROW(E_NEPARAM);
+		if (!ext->vararg && nargs > ext->n_param)
+			THROW(E_TMPARAM);
+		
+		for(int i=0; i<ext->n_param; i++){
+			TYPE t = ext->param[i].type;
+			
+			if (t == T_VOID || t == T_DATE || t == T_VARIANT || t == T_CLASS || t == T_FUNCTION)
+				THROW(E_UTYPE);
+			
+			JIT_conv(args[i], t);
+			
+			if (args[i]->type == T_STRING || TYPE_is_object(t))
+				args[i]->must_on_stack();
+		}
+		
+		for(int i=ext->n_param; i<nargs; i++){
+			TYPE t = args[i]->type;
+			
+			if (t == T_VOID || t == T_DATE || t == T_CLASS || t == T_FUNCTION)
+				THROW(E_UTYPE);
+			
+			if (t == T_VARIANT)
+				ee->must_variant_dispatch = true;
+			
+			if (args[i]->type == T_STRING || TYPE_is_object(t))
+				args[i]->must_on_stack();
+		}
+		
+		if (ee->must_variant_dispatch)
+			for(int i=0; i<nargs; i++)
+				args[i]->must_on_stack();
+		
+		type = ext->type;
+		on_stack = false;
+		return;
 	}
 	
 	if (TYPE_is_pure_object(func->type)){

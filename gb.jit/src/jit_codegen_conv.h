@@ -72,8 +72,12 @@ llvm::Value* JIT_conv_to_variant(Expression* value, llvm::Value* val, bool on_st
 				data = builder->CreateOr(data, builder->CreateZExt(extract_value(val, 0), t64));
 				break;
 			case T_POINTER:
-			case T_CLASS:
 				data = builder->CreatePtrToInt(val, t64);
+				break;
+			case T_CLASS:
+				assert(dynamic_cast<PushClassExpression*>(value));
+				data = getInteger(64, (uint64_t)(void*)((PushClassExpression*)value)->klass);
+				val = builder->CreateIntToPtr(data, llvmType(getInt8PtrTy));
 				break;
 			case T_NULL:
 				break;
@@ -145,7 +149,8 @@ llvm::Value* ConvExpression::codegen_get_value()
 	else if ((type | value->type) >> 4)
 		goto __OBJECT;
 	else {
-		 val = value->codegen_get_value();
+		if (value->type != T_FUNCTION && value->type != T_CLASS)
+			val = value->codegen_get_value();
 		goto *jump[value->type][type];
 	}
 

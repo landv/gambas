@@ -26,6 +26,8 @@
 #ifndef __GB_JIT_H
 #define __GB_JIT_H
 
+#include "gbx_extern.h"
+
 typedef
 	struct {
 		//void (*GetExec)(void);
@@ -60,6 +62,7 @@ typedef
 		CLASS *(*F_EXEC_object_variant)(VALUE *val, OBJECT **pobject);
 		char (*F_EXEC_object_other)(VALUE *val, CLASS **pclass, OBJECT **pobject);
 		
+		EXTERN_FUNC_INFO (*F_EXTERN_get_function_info)(CLASS_EXTERN *ext);
 		void (*F_EXTERN_call)(void);
 		
 		char *(*F_STRING_new)(const char *src, int len);
@@ -109,8 +112,9 @@ typedef
 		void (*F_randomize)(char set, uint seed);
 		double (*F_rnd)(void);
 		
-		void (*F_THROW)(int code, ...);
-		void (*F_ERROR_propagate)(void);
+		void (*F_THROW)(int code, ...) NORETURN;
+		void (*F_ERROR_panic)(const char *error, ...) NORETURN;
+		void (*F_ERROR_propagate)(void) NORETURN;
 		void (*F_ERROR_reset)(ERROR_INFO *info);
 		void (*F_ERROR_set_last)(char bt);
 		void (*F_ERROR_lock)(void);

@@ -733,4 +733,3 @@ __ERROR:
 
   THROW(E_TYPE, "Number", TYPE_get_name(type));
 }
-

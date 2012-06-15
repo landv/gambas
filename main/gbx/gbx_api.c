@@ -330,6 +330,7 @@ const void *GAMBAS_JitApi[] =
 	(void *)EXEC_object_variant,
 	(void *)EXEC_object_other,
 	
+	(void *)EXTERN_get_function_info,
 	(void *)EXTERN_call,
 	
 	(void *)STRING_new,
@@ -380,6 +381,7 @@ const void *GAMBAS_JitApi[] =
 	(void *)rnd,
 	
 	(void *)THROW,
+	(void *)ERROR_panic,
 	(void *)ERROR_propagate,
 	(void *)ERROR_reset,
 	(void *)ERROR_set_last,
