@@ -14,6 +14,7 @@ Private $aLevelTime As New Long[]
 Private $hCurrent As CProfile
 
 Private $bPercent As Boolean
+Private $bAverage As Boolean
 
 Private $aHistory As New String[]
 Private $iHistory As Integer
@@ -390,8 +391,8 @@ Public Sub gvwProfile_Data(Row As Integer, Column As Integer)
         Else
           .Text = hProf.Self
         Endif
-      'Case 4
-      '  .Text = Format(hProf.Time / hProf.Count, "0.##")
+      Case 4
+        .Text = Format(hProf.Time / hProf.Count, "0.##")
     End Select
     
   End With
@@ -551,7 +552,6 @@ Static Public Sub ReadConfig()
   
 End
 
-
 Public Sub Form_Open()
 
   Settings.Read(Me)
@@ -560,7 +560,7 @@ Public Sub Form_Open()
   ReadOneConfig
 
   With gvwProfile
-    .Columns.Count = 4
+    .Columns.Count = 5
     .Columns[0].Text = ("Function")
     .Columns[0].Width = -1
     .Columns[1].Text = ("Calls")
@@ -569,18 +569,22 @@ Public Sub Form_Open()
     .Columns[2].Alignment = Align.Right
     .Columns[3].Text = ("Self")
     .Columns[3].Alignment = Align.Right
-    '.Columns[4].Text = ("Mean (μs)")
-    '.Columns[4].Alignment = Align.Right
+    .Columns[4].Text = ("Average")
+    .Columns[4].Alignment = Align.Right
+    .Columns[4].Width = 0
   End With
 
   With gvwCalled
-    .Columns.Count = 3
+    .Columns.Count = 4
     .Columns[0].Text = ("Function")
     .Columns[0].Width = -1
     .Columns[1].Text = ("Calls")
     .Columns[1].Alignment = Align.Right
     .Columns[2].Text = ("Duration")
     .Columns[2].Alignment = Align.Right
+    .Columns[3].Text = ("Average")
+    .Columns[3].Alignment = Align.Right
+    .Columns[3].Width = 0
     '.Columns[3].Text = ("Mean (μs)")
     '.Columns[3].Alignment = Align.Right
   End With
@@ -710,8 +714,8 @@ Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
         Else
           .Text = hProf.Time
         Endif
-      'Case 3
-      '  .Text = Format(hProf.Time / hProf.Count, "0.##")
+      Case 3
+        .Text = Format(hProf.Time / hProf.Count, "0.##")
     End Select
     
   End With
@@ -732,6 +736,19 @@ Public Sub btnPercent_Click()
   gvwCalled.Refresh
   gvwCaller.Refresh
   gvwSource.Refresh
+
+End
+
+Public Sub btnAverage_Click()
+
+  $bAverage = Not $bAverage
+  
+  gvwProfile.Columns[4].Width = If($bAverage, -1, 0)
+  gvwProfile.Refresh
+  gvwCalled.Columns[3].Width = If($bAverage, -1, 0)
+  gvwCalled.Refresh
+  'gvwCaller.Refresh
+  'gvwSource.Refresh
 
 End
 
