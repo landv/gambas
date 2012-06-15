@@ -26,13 +26,11 @@
 
 /*************************************** TextNode ***************************************/
 
-TextNode::TextNode() : Node()
+TextNode::TextNode() : Node(), content(0), lenContent(0), escapedContent(0), lenEscapedContent(0)
 {
-    content = 0;
-    lenContent = 0;
 }
 
-TextNode::TextNode(const char *ncontent, const size_t nlen) : Node()
+TextNode::TextNode(const char *ncontent, const size_t nlen) : Node(), escapedContent(0), lenEscapedContent(0)
 {
     lenContent = nlen;
     content = (char*)malloc(sizeof(char) * nlen);
@@ -42,6 +40,7 @@ TextNode::TextNode(const char *ncontent, const size_t nlen) : Node()
 TextNode::~TextNode()
 {
     if(content) free(content);
+    if(escapedContent) free(escapedContent);
 }
 
 Node::Type TextNode::getType()
@@ -49,13 +48,114 @@ Node::Type TextNode::getType()
     return NodeText;
 }
 
+void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
+{
+    dst = (char*)malloc(lenSrc + 1);
+    lenDst = lenSrc + 1;
+    dst[lenSrc] = 0;
+    memcpy(dst, src, lenSrc);
+    char *posFound = strpbrk (dst, "<>&");
+    while (posFound != 0)
+    {
+        switch(*posFound)
+        {
+        case CHAR_STARTTAG://&lt;
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst , "lt;", 3, posFound);
+            posFound = strpbrk (posFound + 1,"<>&");
+            break;
+            
+        case CHAR_ENDTAG: //&gt;
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "gt;", 3, posFound);
+            posFound = strpbrk (posFound + 1,"<>&");
+            break;
+            
+            
+        case CHAR_AND: //&amp;
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "amp;", 4, posFound);
+            posFound = strpbrk (posFound + 1,"<>&");
+            break;
+            
+        default:
+            //posFound = strpbrk (posFound + 1,"<>&");
+            break;
+        }
+
+      
+    }
+    
+    --lenDst;
+}
+
+void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
+{
+    dst = (char*)malloc(lenSrc);
+    lenDst = lenSrc;
+    memcpy(dst, src, lenSrc);
+    char *posFound = (char*)memchr(dst, CHAR_AND, lenDst);
+    
+    while(posFound != 0)
+    {
+        if(memcmp(posFound + 1, "lt;", 3) == 0)// <   &lt;
+        {
+            *posFound = CHAR_STARTTAG;
+            memmove(posFound + 1, posFound + 4, lenDst - (posFound - dst));
+            lenDst -= 3;
+            posFound += 1;
+        }
+        else if(memcmp(posFound + 1, "gt;", 3) == 0)// >   &gt;
+        {
+            *posFound = CHAR_ENDTAG;
+            memmove(posFound + 1, posFound + 4, lenDst - (posFound - dst));
+            lenDst -= 3; 
+            posFound += 1;
+        }
+        else if(memcmp(posFound + 1, "amp;", 4) == 0)// &   &amp;
+        {
+            memmove(posFound + 1, posFound + 5, lenDst - (posFound - dst));
+            lenDst -= 4; 
+            posFound += 1;
+        }
+        posFound = (char*)memchr(posFound, CHAR_AND, lenDst);
+    }
+}
+
+void TextNode::checkEscapedContent()
+{
+    if(!escapedContent && content)
+    {
+        escapeContent(content, lenContent, escapedContent, lenEscapedContent);
+    }
+}
+
+void TextNode::checkContent()
+{
+    if(escapedContent && !content)
+    {
+        unEscapeContent(escapedContent, lenEscapedContent, content, lenContent);
+    }
+}
+
+void TextNode::setEscapedTextContent(const char *ncontent, const size_t nlen)
+{
+    escapedContent = (char*)realloc(escapedContent, sizeof(char)*nlen);
+    lenEscapedContent = nlen;
+    memcpy(escapedContent, ncontent, nlen);
+}
+
 
 /***** String output *****/
 
 void TextNode::addStringLen(size_t *len, int indent)
 {
-    *len += lenContent;
-    if(indent) *len += indent + 1;
+    checkEscapedContent();
+    *len += lenEscapedContent;
+    if(indent >= 0) *len += indent + 1;
 }
 
 #undef ADD
@@ -63,13 +163,14 @@ void TextNode::addStringLen(size_t *len, int indent)
 
 void TextNode::addString(char **data, int indent)
 {
+    checkEscapedContent();
     if(indent >= 0) 
     {
         memset(*data, CHAR_SPACE, indent); 
         *data += indent;
     }
-    memcpy(*data, content, lenContent);
-    *data += lenContent;
+    memcpy(*data, escapedContent, lenEscapedContent);
+    *data += lenEscapedContent;
     if(indent >= 0)
     {
         ADD(SCHAR_N);
@@ -80,23 +181,20 @@ void TextNode::addString(char **data, int indent)
 
 void TextNode::setTextContent(const char *ncontent, const size_t nlen)
 {
-    if(!ncontent) 
-    {
-        content = (char*)malloc(sizeof(char)*nlen);
-    }
-    else
-    {
-        content = (char*)realloc(content, sizeof(char)*nlen);
-    }
+    content = (char*)realloc(content, sizeof(char)*nlen);
+    lenContent = nlen;
+    memcpy(content, ncontent, nlen);
 }
 
 void TextNode::addTextContentLen(size_t &len)
 {
+    checkContent();
     len += lenContent;
 }
 
 void TextNode::addTextContent(char *&data)
 {
+    checkContent();
     memcpy(data, content, lenContent);
     data += lenContent;
 }
@@ -145,13 +243,15 @@ void CommentNode::NewGBObject()
 
 void CommentNode::addStringLen(size_t *len, int indent)
 {
+    checkEscapedContent();
     // <!-- + content + -->
-    *len += lenContent + 7;
+    *len += lenEscapedContent + 7;
     if(indent > 0) *len += indent + 1;
 }
 
 void CommentNode::addString(char **data, int indent)
 {
+    checkEscapedContent();
     if(indent >= 0) 
     {
         memset(*data, CHAR_SPACE, indent); 
@@ -159,8 +259,8 @@ void CommentNode::addString(char **data, int indent)
     }
     memcpy(*data, "<!--", 4);
     *data += 4;
-    memcpy(*data, content, lenContent);
-    *data += lenContent;
+    memcpy(*data, escapedContent, lenEscapedContent);
+    *data += lenEscapedContent;
     memcpy(*data, "-->", 3);
     *data += 3;
     if(indent >= 0)
@@ -202,6 +302,7 @@ void CDATANode::NewGBObject()
 
 void CDATANode::addStringLen(size_t *len, int indent)
 {
+    checkEscapedContent();
     // <![CDATA[ + content + ]]>
     *len += lenContent + 12;
     if(indent) *len += indent + 1;
@@ -209,6 +310,7 @@ void CDATANode::addStringLen(size_t *len, int indent)
 
 void CDATANode::addString(char **data, int indent)
 {
+    checkEscapedContent();
     if(indent >= 0) 
     {
         memset(*data, CHAR_SPACE, indent); 
@@ -216,8 +318,8 @@ void CDATANode::addString(char **data, int indent)
     }
     memcpy(*data, "<![CDATA[", 9);
     *data += 9;
-    memcpy(*data, content, lenContent);
-    *data += lenContent;
+    memcpy(*data, escapedContent, lenEscapedContent);
+    *data += lenEscapedContent;
     memcpy(*data, "]]>", 3);
     *data += 3;
     if(indent >= 0)

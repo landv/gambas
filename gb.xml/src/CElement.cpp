@@ -195,7 +195,7 @@ END_PROPERTY
 BEGIN_METHOD(CElement_fromText, GB_STRING data)
 
 GB_ARRAY array;
-THIS->GBfromText(STRING(data), LENGTH(data), &array);
+Element::GBfromText(STRING(data), LENGTH(data), &array);
 GB.ReturnObject(array);
 
 END_METHOD

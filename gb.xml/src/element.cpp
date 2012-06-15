@@ -706,7 +706,7 @@ void Element::GBfromText(char *data, const size_t lendata, GB_ARRAY *array)
     size_t nodeCount;
     size_t i = 0;
     Node **nodes = fromText(data, lendata, &nodeCount);
-    GB.Array.New(array, GB.FindClass("XmlElement"), nodeCount);
+    GB.Array.New(array, GB.FindClass("XmlNode"), nodeCount);
     
     for(i = 0; i < nodeCount; ++i)
     {
@@ -752,7 +752,8 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         
         if(tag && (tag - pos) != 0)//On ajoute le texte, s'il existe
         {
-            TextNode *text = new TextNode(pos, tag - pos);
+            TextNode *text = new TextNode;
+            text->setEscapedTextContent(pos, tag - pos);
             //Checking length
             char *textpos = pos;
             size_t textlen = tag - pos;
@@ -767,7 +768,27 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
             }
         }
         
-        if(!tag) break;
+        if(!tag)
+        {
+            if(pos < endData)//Il reste du texte
+            {
+                TextNode *text = new TextNode;
+                text->setEscapedTextContent(pos, endData - pos);
+                //Checking length
+                char *textpos = pos;
+                size_t textlen = endData - pos;
+                Trim(textpos, textlen);
+                if(textlen != 0)
+                {
+                    APPEND(text);
+                }
+                else
+                {
+                    delete text;
+                }
+            }
+            break;
+        }
         
         tag++;
         pos = tag;//On avance au caractère trouvé
@@ -823,7 +844,8 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                         data, lendata, pos - 1));
                     }
                     
-                    CommentNode *comment = new CommentNode(pos, tag - pos);
+                    CommentNode *comment = new CommentNode;
+                    comment->setEscapedTextContent(pos, tag - pos);
                     APPEND(comment);
                     pos = tag + 3;
                     continue;
@@ -839,7 +861,8 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                         data, lendata, pos - 1));
                     }
                     
-                    CDATANode *cdata = new CDATANode(pos, tag - pos);
+                    CDATANode *cdata = new CDATANode;
+                    cdata->setEscapedTextContent(pos, tag - pos);
                     APPEND(cdata);
                     continue;
                 }

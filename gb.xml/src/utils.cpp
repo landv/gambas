@@ -158,6 +158,16 @@ void Trim(char *&str, size_t &len)
         --len;
 }
 
+void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInsert, char *&posInsert)
+{
+    size_t iPosInsert = posInsert - src;
+    lenSrc += lenInsert;
+    src = (char*)realloc(src, lenSrc);
+    posInsert = src + iPosInsert;
+    memmove(posInsert + lenInsert, posInsert, lenSrc - lenInsert - iPosInsert);
+    memcpy(posInsert, insert, lenInsert);
+}
+
 
 /************************************ Error Management ************************************/
 

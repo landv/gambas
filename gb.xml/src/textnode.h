@@ -36,6 +36,12 @@ public:
     //static void *operator new (size_t taille, TextNode *other);
     //static void *operator new (size_t taille);
     
+    static void unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
+    static void escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
+    void checkEscapedContent();
+    void checkContent();
+    void setEscapedTextContent(const char *ncontent, const size_t nlen);
+    
     //String output
     virtual void addStringLen(size_t *len, int indent = 0);
     virtual void addString(char **data, int indent = 0);
@@ -46,6 +52,9 @@ public:
     virtual void addTextContent(char *&data);
     char *content;
     size_t lenContent;
+    
+    char *escapedContent;
+    size_t lenEscapedContent;
     
     //Gambas object
     virtual void NewGBObject();

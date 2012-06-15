@@ -64,6 +64,7 @@ bool isWhiteSpace(const wchar_t s);
 bool isWhiteSpace(const char s);
 
 void Trim(char *&str, size_t &len);
+void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInsert, char *&posInsert);
 
 #include <exception>
 
