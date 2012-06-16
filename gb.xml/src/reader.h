@@ -83,6 +83,8 @@ public :
     char *content;//Contenu du nœud texte en cours de lecture
     size_t lenContent;
     
+    char state;
+    
     Node* *storedElements;
     size_t lenStoredElements;
     

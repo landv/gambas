@@ -49,6 +49,7 @@ void Reader::ClearReader()
     this->inCommentTag = false;
     this->waitClosingElmt = false;
     this->specialTagLevel = 0;
+    this->state = 0;
 
     foundNode = 0;
     curNode = 0;
@@ -117,6 +118,7 @@ int Reader::ReadChar(char car)
         if(car != CHAR_ENDTAG) return 0;
         waitClosingElmt = false;
         DEBUG << "curNode : " << curNode->toElement() << endl; 
+        this->state = READ_END_CUR_ELEMENT;
         return READ_END_CUR_ELEMENT;
     }
     
@@ -135,6 +137,7 @@ int Reader::ReadChar(char car)
                 APPEND(foundNode);
             }
             curNode = 0;
+            this->state = NODE_TEXT;
             return NODE_TEXT;
         }
     }
@@ -207,6 +210,7 @@ int Reader::ReadChar(char car)
         FREE(attrVal); lenAttrVal = 0;
         inAttr = false;
         inAttrVal = false;
+        this->state = READ_ATTRIBUTE;
         return READ_ATTRIBUTE;
     }
     else if(car == CHAR_SLASH && inTag && !inAttrVal && !inComment)//Self-closed element
@@ -220,6 +224,7 @@ int Reader::ReadChar(char car)
         if(depth > 0) --depth;
         waitClosingElmt = true;
         foundNode = curNode;
+        this->state = NODE_ELEMENT;
         return NODE_ELEMENT;
     }
     else if(car == CHAR_SLASH && inNewTag && !inComment)//C'est un tag de fin
@@ -241,6 +246,7 @@ int Reader::ReadChar(char car)
         }
         FREE(content); lenContent = 0;
         if(depth > 0) --depth;
+        this->state = READ_END_CUR_ELEMENT;
         return READ_END_CUR_ELEMENT;
     }
     else if(inEndTag)//Tag de fin
@@ -307,6 +313,7 @@ int Reader::ReadChar(char car)
             APPEND(foundNode);
         }
         curNode = 0;
+        this->state = NODE_COMMENT;
         return NODE_COMMENT;
     }
     //Début de prologue XML

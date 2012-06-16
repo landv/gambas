@@ -172,7 +172,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CReaderNode_type)
 
-if(!THIS->foundNode) 
+/*if(!THIS->foundNode) 
 {
     GB.ReturnInteger(0);
     return;
@@ -198,7 +198,9 @@ switch(THIS->foundNode->getType())
     default:
         GB.ReturnInteger(0);
 }
+*/
 
+GB.ReturnInteger(THIS->state);
 END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Value)
