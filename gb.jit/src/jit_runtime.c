@@ -67,8 +67,10 @@
 
 #define MANAGE_VARIANT(_func) \
 ({ \
-	JIF.F_VALUE_undo_variant(P1); \
-	JIF.F_VALUE_undo_variant(P2); \
+	if (P1->type == T_VARIANT) \
+		JIF.F_VALUE_undo_variant(P1); \
+	if (P2->type == T_VARIANT) \
+		JIF.F_VALUE_undo_variant(P2); \
 	\
 	if (TYPE_is_string(P1->type)) \
 		JIF.F_VALUE_convert_float(P1); \
@@ -91,8 +93,10 @@
 
 #define MANAGE_VARIANT_POINTER(_func) \
 ({ \
-	JIF.F_VALUE_undo_variant(P1); \
-	JIF.F_VALUE_undo_variant(P2); \
+	if (P1->type == T_VARIANT) \
+		JIF.F_VALUE_undo_variant(P1); \
+	if (P2->type == T_VARIANT) \
+		JIF.F_VALUE_undo_variant(P2); \
 	\
 	if (TYPE_is_string(P1->type)) \
 		JIF.F_VALUE_convert_float(P1); \

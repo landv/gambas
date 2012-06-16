@@ -1055,7 +1055,9 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 				STREAM_read(stream, value->_string.addr, len);
 			}
 			else
-				value->type = T_NULL;
+			{
+				STRING_void_value(value);
+			}
 
 			break;
 

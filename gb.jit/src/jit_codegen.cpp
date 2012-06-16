@@ -374,15 +374,16 @@ static llvm::Value* read_value(llvm::Value* addr, TYPE type){
 			//return builder->CreateLoad(addr);
 			llvm::Value* t = load_element(addr, 0);
 			llvm::Value* res = get_new_struct(string_type, t, load_element(addr, 1), load_element(addr, 2), load_element(addr, 3));
-			llvm::BasicBlock *bb1 = create_bb("bb1"), *bb2 = create_bb("bb2");
+			
+			/*llvm::BasicBlock *bb1 = create_bb("bb1"), *bb2 = create_bb("bb2");
 			
 			builder->CreateCondBr(builder->CreateICmpEQ(t, getInteger(TARGET_BITS, 12)), bb1, bb2);
 			builder->SetInsertPoint(bb1);
 			builder->CreateCall(get_global_function(abort, 'v', ""));
 			builder->CreateUnreachable();
-			builder->SetInsertPoint(bb2);
+			builder->SetInsertPoint(bb2);*/
 			return res;
-			//FIXME remove above
+			//FIXME remove above - now outcommented!
 			
 			/*gen_if_noreturn(builder->CreateICmpEQ(t, getInteger(TARGET_BITS, 12)), [&](){
 				builder->CreateCall(get_global_function(abort, 'v', ""));
@@ -4906,7 +4907,9 @@ llvm::Value* SubrExpression::codegen_get_value(){
 					param[0] = builder->CreateZExt(param[0], llvmType(getInt64Ty));
 				
 				llvm::Value* ptr = extract_value(str, 1);
-				llvm::Function* memset_func = llvm::Intrinsic::getDeclaration(M, llvm::Intrinsic::memset, string_to_type_vector("pj"));
+				//llvm::Function* memset_func = llvm::Intrinsic::getDeclaration(M, llvm::Intrinsic::memset, string_to_type_vector("pj"));
+				const char* memset_name = TARGET_BITS == 64 ? "llvm.memset.p0i8.i64" : "llvm.memset.p0i8.i32";
+				llvm::Function* memset_func = llvm::cast<llvm::Function>(M->getOrInsertFunction(memset_name, get_function_type('v', "pcjib", false)));
 				builder->CreateCall5(memset_func, ptr, getInteger(8, ' '), param[0], getInteger(32, 0), getInteger(1, false));
 				borrow_string_no_nullcheck(ptr);
 				return str;

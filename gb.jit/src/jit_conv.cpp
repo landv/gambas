@@ -35,22 +35,25 @@ void JIT_conv(Expression*& value, TYPE type, Expression* other){
 	/*  ,------->  void       b          c          h          i          l          g          f          d          cs         s          p          v          func       class      n         */
 	//  |
 	/* void   */ { &&__OK,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    },
-	/* b      */ { &&__N,     &&__OK,    &&__TYPE,   &&__TYPE,   &&__TYPE,  &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* c      */ { &&__N,     &&__c2b,   &&__OK,    &&__TYPE,   &&__TYPE,  &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* h      */ { &&__N,     &&__h2b,   &&__TYPE,   &&__OK,    &&__TYPE,  &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* i      */ { &&__N,     &&__i2b,   &&__TYPE,   &&__TYPE,   &&__OK,    &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* l      */ { &&__N,     &&__l2b,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__OK,    &&__TYPE2,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* g      */ { &&__N,     &&__g2b,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__OK,    &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* f      */ { &&__N,     &&__f2b,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE2,   &&__OK,    &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* d      */ { &&__N,     &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__TYPE,   &&__OK,    &&__TYPE,   &&__TYPE,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__N,     },
-	/* cs     */ { &&__N,     &&__TYPE,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__OK,    &&__OK,    &&__N,     &&__TYPE,   &&__N,     &&__N,     &&__N,     },
-	/* s      */ { &&__N,     &&__TYPE,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__TYPE2,   &&__OK,    &&__OK,    &&__N,     &&__TYPE,   &&__N,     &&__N,     &&__N,     },
-	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__TYPE,   &&__TYPE,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__TYPE,    &&__N,     &&__N,     &&__N,     },
+	/* b      */ { &&__N,     &&__OK,    &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* c      */ { &&__N,     &&__c2b,   &&__OK,    &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* h      */ { &&__N,     &&__h2b,   &&__TYPE,  &&__OK,    &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* i      */ { &&__N,     &&__i2b,   &&__TYPE,  &&__TYPE,  &&__OK,    &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* l      */ { &&__N,     &&__l2b,   &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__OK,    &&__TYPE2, &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* g      */ { &&__N,     &&__g2b,   &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__OK,    &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* f      */ { &&__N,     &&__f2b,   &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE2, &&__OK,    &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* d      */ { &&__N,     &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__TYPE,  &&__OK,    &&__TYPE,  &&__TYPE,  &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* cs     */ { &&__N,     &&__TYPE,  &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__OK,    &&__OK,    &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* s      */ { &&__N,     &&__TYPE,  &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__OK,    &&__OK,    &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
+	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__TYPE,  &&__TYPE,  &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__TYPE,  &&__N,     &&__N,     &&__N,     },
 	/* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__v2,    &&__v2,    },
-	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__TYPE2,   &&__func,  &&__OK,    &&__N,     &&__func,  },
-	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__TYPE,    &&__N,     &&__OK,    &&__N,     },
-	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__N,     &&__TYPE,    &&__N,     &&__N,     &&__OK,    },
+	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__TYPE2,  &&__func, &&__OK,    &&__N,     &&__func,  },
+	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__TYPE,  &&__N,     &&__OK,    &&__N,     },
+	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__OK,    },
 	};
+	
+	if (type == T_CSTRING)
+		type = T_STRING;
 
 	if (value->type == (TYPE)-1) //Unknown, so always do a VALUE_convert
 		goto __TYPE2;
