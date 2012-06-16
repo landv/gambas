@@ -414,6 +414,17 @@ BEGIN_PROPERTY(Style_FrameWidth)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Style_BoxFrameWidth)
+
+	int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+	
+	if (!::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style"))
+		w++;
+	
+	GB.ReturnInteger(w);
+
+END_PROPERTY
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
@@ -422,6 +433,9 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("ScrollbarSpacing", "i", Style_ScrollbarSpacing),
 	GB_STATIC_PROPERTY_READ("FrameWidth", "i", Style_FrameWidth),
 	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_FrameWidth),
+	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
+	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameWidth),
+	//GB_STATIC_PROPERTY_READ("InnerWidth", "i", Style_InnerWidth),
 	
 	GB_END_DECLARE
 };

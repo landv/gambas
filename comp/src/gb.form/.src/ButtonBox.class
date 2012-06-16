@@ -32,7 +32,7 @@ Private $hButton As ToolButton
 Public Sub _new()
   
   $hBackground = New DrawingArea(Me) As "Background"
-  $hBackground.Arrangement = Arrange.Horizontal
+  '$hBackground.Arrangement = Arrange.Horizontal
   Border_Write(True)
 
   $hTextBox = New MaskBox($hBackground) As "TextBox"
@@ -45,17 +45,7 @@ Public Sub _new()
   $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
   
-  'Background_Arrange
-  
 End
-
-' Public Sub _attach(Parent As Object, Name As String)
-'   
-'   If Not Name Then Return
-'   If $hTextBox Then Object.Attach($hTextBox, Parent, Name)
-'   
-' End
-
 
 Private Function Picture_Read() As Picture
 
@@ -104,7 +94,7 @@ End
 Public Sub Background_GotFocus()
   
   $hTextBox.SetFocus
-  
+
 End
 
 Public Sub Observer_GotFocus()
@@ -134,8 +124,9 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
-  $hBackground.Padding = If(Value, Max(2, Style.TextBoxFrameWidth), 0)
-  $hBackground.Margin = Value
+  '$hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
+  '$hBackground.Margin = Value
+  'Debug $hBackground.Padding
   'Background_Arrange
   Me.Refresh
 
@@ -158,15 +149,23 @@ End
 
 Public Sub Background_Draw()
   
-  Dim FW As Integer = If($bBorder, Style.FrameWidth, 0)
+  Dim FW, FH As Integer
   Dim iBg As Integer = Color.TextBackground
+  Dim iFlag As Integer
   
   If Me.Background <> Color.Default Then iBg = Me.Background
-  Draw.FillRect(FW, FW, Me.W - FW * 2, Me.H - FW * 2, iBg)
+  
+  FW = If($bBorder, Style.BoxFrameWidth, 0)
+  FH = If($bBorder, Style.BoxFrameHeight, 0)
+  
+  'Debug FW;; FH
   
   If $bBorder Then 
-    Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H) ', iFlag)
+    '$hBackground.Background = Me.Background
+    Draw.Style.Box(0, 0, Me.W, Me.H)
   Endif
+  
+  Draw.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
   
 End
 
@@ -213,26 +212,18 @@ Public Sub TextBox_Change()
   
 End
 
-' Public Sub TextBox_GotFocus()
-'   
-'   $hBackground.Refresh
-'   
-' End
-' 
-' Public Sub TextBox_LostFocus()
-'   
-'   $hBackground.Refresh
-'   
-' End
-' 
-' Public Sub Background_Enter()
-'   
-'   $hBackground.Refresh
-'   
-' End
-' 
-' Public Sub Background_Leave()
-'   
-'   $hBackground.Refresh
-'   
-' End
+Public Sub Background_Arrange()
+  
+  Dim FW, FH As Integer
+  FW = If($bBorder, Style.BoxFrameWidth, 0)
+  FH = If($bBorder, Style.BoxFrameHeight, 0)
+  
+  If System.RightToLeft Then
+    $hButton.Move(FW, FH, 24, Me.H - FH * 2)
+    $hTextBox.Move($hButton.X + $hButton.W, FH, Me.W - FW * 2 - $hButton.W, Me.H - FH * 2)
+  Else
+    $hTextBox.Move(FW, FH, Me.W - FW * 2 - $hButton.W, Me.H - FH * 2)
+    $hButton.Move($hTextBox.X + $hTextBox.W, FH, 24, Me.H - FH * 2)
+  Endif
+  
+End

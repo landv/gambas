@@ -72,7 +72,8 @@ public:
 	static int getScrollbarSize();
 	static int getScrollbarSpacing();
 	static int getFrameWidth();
-	static int getTextBoxFrameWidth();
+	static int getInnerWidth();
+	static void getBoxFrame(int *w, int *h);
 	
 	static void grabPopup();
 	static void ungrabPopup();

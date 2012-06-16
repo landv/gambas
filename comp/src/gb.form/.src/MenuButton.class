@@ -294,7 +294,7 @@ Public Sub DrawingArea_MouseDown()
   If $bInsideArrow Or $bMenuOnly Then
     Arrow_Click
     DrawingArea_MouseUp
-    If Not $hDrawingArea.Hovered Then DrawingArea_Leave
+    'If Not Mouse.Inside($hDrawingArea) Then DrawingArea_Leave
   Endif
   
 End
@@ -303,7 +303,7 @@ Public Sub DrawingArea_MouseMove()
   
   Dim bPressed As Boolean
   
-  bPressed = $hDrawingArea.Hovered
+  bPressed = Mouse.Inside($hDrawingArea)
   
   If $bPressed <> bPressed Then
     $bPressed = bPressed

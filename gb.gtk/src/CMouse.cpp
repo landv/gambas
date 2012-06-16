@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CMouse.cpp
+	CMouse.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -73,210 +73,243 @@ Mouse Class
 
 *********************************************************************************/
 
-BEGIN_PROPERTY(CMOUSE_screen_x)
+BEGIN_PROPERTY(Mouse_ScreenX)
 
 	GB.ReturnInteger(gMouse::screenX());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMOUSE_screen_y)
+BEGIN_PROPERTY(Mouse_ScreenY)
 
 	GB.ReturnInteger(gMouse::screenY());
 
 END_PROPERTY
 
 
-BEGIN_METHOD(CMOUSE_move, GB_INTEGER x; GB_INTEGER y)
+BEGIN_METHOD(Mouse_Move, GB_INTEGER x; GB_INTEGER y)
 
 	gMouse::move(VARG(x),VARG(y));
 
 END_PROPERTY
 
 #define CHECK_VALID() \
-  if (!gMouse::isValid()) \
-  { \
-  	GB.Error("No mouse event data"); \
-  	return; \
-  }
+	if (!gMouse::isValid()) \
+	{ \
+		GB.Error("No mouse event data"); \
+		return; \
+	}
 
-BEGIN_PROPERTY(CMOUSE_x)
+BEGIN_PROPERTY(Mouse_X)
 
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::x());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_y)
+BEGIN_PROPERTY(Mouse_Y)
 
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::y());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_start_x)
+BEGIN_PROPERTY(Mouse_StartX)
 
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::startX());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_start_y)
+BEGIN_PROPERTY(Mouse_StartY)
 
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::startY());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_button)
+BEGIN_PROPERTY(Mouse_Button)
 	
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::button());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_left)
+BEGIN_PROPERTY(Mouse_Left)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::left());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_right)
+BEGIN_PROPERTY(Mouse_Right)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::right());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_middle)
+BEGIN_PROPERTY(Mouse_Middle)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::middle());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_shift)
+BEGIN_PROPERTY(Mouse_Shift)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::shift());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_control)
+BEGIN_PROPERTY(Mouse_Control)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::control());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_alt)
+BEGIN_PROPERTY(Mouse_Alt)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::alt());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_meta)
+BEGIN_PROPERTY(Mouse_Meta)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::meta());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_normal)
+BEGIN_PROPERTY(Mouse_Normal)
 
 	CHECK_VALID();
 	GB.ReturnBoolean(gMouse::normal());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_delta)
+BEGIN_PROPERTY(Mouse_Delta)
 
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::delta());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_orientation)
+BEGIN_PROPERTY(Mouse_Orientation)
 
 	CHECK_VALID();
 	GB.ReturnInteger(gMouse::orientation());
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Mouse_Forward)
+
+	CHECK_VALID();
+	GB.ReturnBoolean(gMouse::delta() > 0);
+
+END_PROPERTY
+
+BEGIN_METHOD(Mouse_Inside, GB_OBJECT control)
+	
+	CWIDGET *control = (CWIDGET *)VARG(control);
+	gControl *widget;
+	int x, y, xw, yw;
+	
+	if (GB.CheckObject(control))
+		return;
+	
+	widget = control->widget;
+	
+	if (!widget->isVisible())
+	{
+		GB.ReturnBoolean(false);
+		return;
+	}
+	
+	gMouse::getScreenPos(&x, &y);
+	widget->getScreenPos(&xw, &yw);
+	x -= xw;
+	y -= yw;
+	GB.ReturnBoolean(x >= 0 && x < widget->width() && y >= 0 && y < widget->height());
+
+END_METHOD
 
 GB_DESC CCursorDesc[] =
 {
-  GB_DECLARE("Cursor", sizeof(CCURSOR)),
+	GB_DECLARE("Cursor", sizeof(CCURSOR)),
 
-  GB_METHOD("_new", 0, CCURSOR_new, "(Picture)Picture;[(X)i(Y)i]"),
-  GB_METHOD("_free", 0, CCURSOR_delete, NULL),
+	GB_METHOD("_new", 0, CCURSOR_new, "(Picture)Picture;[(X)i(Y)i]"),
+	GB_METHOD("_free", 0, CCURSOR_delete, NULL),
 
-  GB_PROPERTY_READ("X", "i", CCURSOR_x),
-  GB_PROPERTY_READ("Y", "i", CCURSOR_y),
+	GB_PROPERTY_READ("X", "i", CCURSOR_x),
+	GB_PROPERTY_READ("Y", "i", CCURSOR_y),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CMouseDesc[] =
 {
-  GB_DECLARE("Mouse", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE("Mouse", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY_READ("ScreenX", "i", CMOUSE_screen_x),
-  GB_STATIC_PROPERTY_READ("ScreenY", "i", CMOUSE_screen_y),
-  GB_STATIC_METHOD("Move", 0, CMOUSE_move, "(X)i(Y)i"),
+	GB_STATIC_PROPERTY_READ("ScreenX", "i", Mouse_ScreenX),
+	GB_STATIC_PROPERTY_READ("ScreenY", "i", Mouse_ScreenY),
+	GB_STATIC_METHOD("Move", 0, Mouse_Move, "(X)i(Y)i"),
+	GB_STATIC_METHOD("Inside", "b", Mouse_Inside, "(Control)Control"),
 
-  GB_CONSTANT("Default", "i", CURSOR_DEFAULT),
-  GB_CONSTANT("Custom", "i", CURSOR_CUSTOM),
-  GB_CONSTANT("Blank", "i", GDK_BLANK_CURSOR),
-  GB_CONSTANT("Arrow", "i", GDK_LEFT_PTR),
-  GB_CONSTANT("Cross", "i", GDK_CROSSHAIR),
-  GB_CONSTANT("Wait", "i", GDK_WATCH),
-  GB_CONSTANT("Text", "i", GDK_XTERM),
-  GB_CONSTANT("SizeAll", "i", GDK_FLEUR),
-  GB_CONSTANT("SizeH", "i", GDK_SB_H_DOUBLE_ARROW),
-  GB_CONSTANT("SizeV", "i", GDK_SB_V_DOUBLE_ARROW),
-  GB_CONSTANT("SizeN", "i", GDK_TOP_SIDE),
-  GB_CONSTANT("SizeS", "i", GDK_BOTTOM_SIDE),
-  GB_CONSTANT("SizeW", "i", GDK_LEFT_SIDE),
-  GB_CONSTANT("SizeE", "i", GDK_RIGHT_SIDE),
-  //GB_CONSTANT("SizeNW", "i", GDK_LAST_CURSOR+1), //FDiag
-  GB_CONSTANT("SizeNW", "i", GDK_TOP_LEFT_CORNER), //FDiag
-  //GB_CONSTANT("SizeSE", "i", GDK_LAST_CURSOR+1),
-  GB_CONSTANT("SizeSE", "i", GDK_BOTTOM_RIGHT_CORNER),
-  //GB_CONSTANT("SizeNE", "i", GDK_LAST_CURSOR+2), //BDiag
-  GB_CONSTANT("SizeNE", "i", GDK_TOP_RIGHT_CORNER), //BDiag
-  //GB_CONSTANT("SizeSW", "i", GDK_LAST_CURSOR+2),
-  GB_CONSTANT("SizeSW", "i", GDK_BOTTOM_LEFT_CORNER),
-  GB_CONSTANT("SizeNWSE", "i", GDK_LAST_CURSOR+1),
-  GB_CONSTANT("SizeNESW", "i", GDK_LAST_CURSOR+2),
-  //GB_CONSTANT("SplitH", "i", GDK_LAST_CURSOR+3), // SplitH
-  //GB_CONSTANT("SplitV", "i", GDK_LAST_CURSOR+4), // SplitV
-  GB_CONSTANT("SplitH", "i", GDK_SB_H_DOUBLE_ARROW), // SplitH
-  GB_CONSTANT("SplitV", "i", GDK_SB_V_DOUBLE_ARROW), // SplitV
-  GB_CONSTANT("Pointing", "i", GDK_HAND2),
+	GB_CONSTANT("Default", "i", CURSOR_DEFAULT),
+	GB_CONSTANT("Custom", "i", CURSOR_CUSTOM),
+	GB_CONSTANT("Blank", "i", GDK_BLANK_CURSOR),
+	GB_CONSTANT("Arrow", "i", GDK_LEFT_PTR),
+	GB_CONSTANT("Cross", "i", GDK_CROSSHAIR),
+	GB_CONSTANT("Wait", "i", GDK_WATCH),
+	GB_CONSTANT("Text", "i", GDK_XTERM),
+	GB_CONSTANT("SizeAll", "i", GDK_FLEUR),
+	GB_CONSTANT("SizeH", "i", GDK_SB_H_DOUBLE_ARROW),
+	GB_CONSTANT("SizeV", "i", GDK_SB_V_DOUBLE_ARROW),
+	GB_CONSTANT("SizeN", "i", GDK_TOP_SIDE),
+	GB_CONSTANT("SizeS", "i", GDK_BOTTOM_SIDE),
+	GB_CONSTANT("SizeW", "i", GDK_LEFT_SIDE),
+	GB_CONSTANT("SizeE", "i", GDK_RIGHT_SIDE),
+	//GB_CONSTANT("SizeNW", "i", GDK_LAST_CURSOR+1), //FDiag
+	GB_CONSTANT("SizeNW", "i", GDK_TOP_LEFT_CORNER), //FDiag
+	//GB_CONSTANT("SizeSE", "i", GDK_LAST_CURSOR+1),
+	GB_CONSTANT("SizeSE", "i", GDK_BOTTOM_RIGHT_CORNER),
+	//GB_CONSTANT("SizeNE", "i", GDK_LAST_CURSOR+2), //BDiag
+	GB_CONSTANT("SizeNE", "i", GDK_TOP_RIGHT_CORNER), //BDiag
+	//GB_CONSTANT("SizeSW", "i", GDK_LAST_CURSOR+2),
+	GB_CONSTANT("SizeSW", "i", GDK_BOTTOM_LEFT_CORNER),
+	GB_CONSTANT("SizeNWSE", "i", GDK_LAST_CURSOR+1),
+	GB_CONSTANT("SizeNESW", "i", GDK_LAST_CURSOR+2),
+	//GB_CONSTANT("SplitH", "i", GDK_LAST_CURSOR+3), // SplitH
+	//GB_CONSTANT("SplitV", "i", GDK_LAST_CURSOR+4), // SplitV
+	GB_CONSTANT("SplitH", "i", GDK_SB_H_DOUBLE_ARROW), // SplitH
+	GB_CONSTANT("SplitV", "i", GDK_SB_V_DOUBLE_ARROW), // SplitV
+	GB_CONSTANT("Pointing", "i", GDK_HAND2),
 
-  GB_CONSTANT("Horizontal", "i", 0),
-  GB_CONSTANT("Vertical", "i", 1),
+	GB_CONSTANT("Horizontal", "i", 0),
+	GB_CONSTANT("Vertical", "i", 1),
 
-  GB_STATIC_PROPERTY_READ("X", "i", CMOUSE_x),
-  GB_STATIC_PROPERTY_READ("Y", "i", CMOUSE_y),
-  GB_STATIC_PROPERTY_READ("StartX", "i", CMOUSE_start_x),
-  GB_STATIC_PROPERTY_READ("StartY", "i", CMOUSE_start_y),
-  GB_STATIC_PROPERTY_READ("Left", "b", CMOUSE_left),
-  GB_STATIC_PROPERTY_READ("Right", "b", CMOUSE_right),
-  GB_STATIC_PROPERTY_READ("Middle", "b", CMOUSE_middle),
-  GB_STATIC_PROPERTY_READ("Button", "i", CMOUSE_button),
-  GB_STATIC_PROPERTY_READ("Shift", "b", CMOUSE_shift),
-  GB_STATIC_PROPERTY_READ("Control", "b", CMOUSE_control),
-  GB_STATIC_PROPERTY_READ("Alt", "b", CMOUSE_alt),
-  GB_STATIC_PROPERTY_READ("Meta", "b", CMOUSE_meta),
-  GB_STATIC_PROPERTY_READ("Normal", "b", CMOUSE_normal),
-  GB_STATIC_PROPERTY_READ("Orientation", "i", CMOUSE_orientation),
-  GB_STATIC_PROPERTY_READ("Delta", "f", CMOUSE_delta),
+	GB_STATIC_PROPERTY_READ("X", "i", Mouse_X),
+	GB_STATIC_PROPERTY_READ("Y", "i", Mouse_Y),
+	GB_STATIC_PROPERTY_READ("StartX", "i", Mouse_StartX),
+	GB_STATIC_PROPERTY_READ("StartY", "i", Mouse_StartY),
+	GB_STATIC_PROPERTY_READ("Left", "b", Mouse_Left),
+	GB_STATIC_PROPERTY_READ("Right", "b", Mouse_Right),
+	GB_STATIC_PROPERTY_READ("Middle", "b", Mouse_Middle),
+	GB_STATIC_PROPERTY_READ("Button", "i", Mouse_Button),
+	GB_STATIC_PROPERTY_READ("Shift", "b", Mouse_Shift),
+	GB_STATIC_PROPERTY_READ("Control", "b", Mouse_Control),
+	GB_STATIC_PROPERTY_READ("Alt", "b", Mouse_Alt),
+	GB_STATIC_PROPERTY_READ("Meta", "b", Mouse_Meta),
+	GB_STATIC_PROPERTY_READ("Normal", "b", Mouse_Normal),
+	GB_STATIC_PROPERTY_READ("Orientation", "i", Mouse_Orientation),
+	GB_STATIC_PROPERTY_READ("Delta", "f", Mouse_Delta),
+	GB_STATIC_PROPERTY_READ("Forward", "b", Mouse_Forward),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 

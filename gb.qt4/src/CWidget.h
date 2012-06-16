@@ -193,6 +193,7 @@ int CWIDGET_get_foreground(CWIDGET *_object);
 int CWIDGET_get_real_background(CWIDGET *_object);
 void *CWIDGET_get_parent(void *_object);
 int CWIDGET_get_handle(void *_object);
+bool CWIDGET_is_visible(void *_object);
 void CWIDGET_set_visible(CWIDGET *_object, bool v);
 //void CWIDGET_check_hovered();
 void CWIDGET_grab(CWIDGET *_object);

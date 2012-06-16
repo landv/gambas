@@ -135,7 +135,7 @@ void gDrawingArea::create(void)
 	realize(false);
 	
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
-	g_signal_connect_after(G_OBJECT(border), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+	g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	
 	if (doReparent)
 	{

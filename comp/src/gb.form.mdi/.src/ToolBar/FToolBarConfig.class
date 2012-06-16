@@ -157,7 +157,7 @@ Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolea
     hIcon = hAction.GetConfigIcon(If(bScreenshot, $hForm.GetRealIconSize(), 0))
     If hIcon Then 
       If bText Then
-        Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+        Draw.Picture(hIcon, 8, (Draw.H - hIcon.H) / 2)
       Else
         Draw.Picture(hIcon, (Draw.W - hIcon.W) / 2, (Draw.H - hIcon.H) / 2)
       Endif
@@ -165,7 +165,7 @@ Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolea
     Else
       W = $hForm.GetIconSize()
     Endif
-    If bText Then Draw.Text(hAction.Display, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
+    If bText Then Draw.Text(hAction.Display, W + 12, 0, Draw.W - W - 16, Draw.H, Align.Normal)
   
   Else
     
@@ -182,12 +182,12 @@ Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolea
     End Select
     
     If bText Then
-      Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+      Draw.Picture(hIcon, 8, (Draw.H - hIcon.H) / 2)
     Else
       Draw.Picture(hIcon, (Draw.W - hIcon.W) / 2, (Draw.H - hIcon.H) / 2)
     Endif
     W = hIcon.W
-    If bText Then Draw.Text(sText, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
+    If bText Then Draw.Text(sText, W + 12, 0, Draw.W - W - 16, Draw.H, Align.Normal)
     'Draw.Style.Separator(8, (hItem.H - W) / 2, W - 4, W, False)
   Endif
   

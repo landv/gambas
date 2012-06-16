@@ -234,7 +234,7 @@ int CWIDGET_get_handle(void *_object)
 	return (int)WIDGET->winId();
 }
 
-static bool is_visible(void *_object)
+bool CWIDGET_is_visible(void *_object)
 {
 	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
 }
@@ -839,7 +839,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_Hovered)
 
-	if (!is_visible(THIS))
+	if (!CWIDGET_is_visible(THIS))
 		GB.ReturnBoolean(false);
 	else
 		GB.ReturnBoolean(THIS->flag.inside);
@@ -964,7 +964,7 @@ void CWIDGET_set_visible(CWIDGET *_object, bool v)
 BEGIN_PROPERTY(Control_Visible)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(is_visible(THIS));
+		GB.ReturnBoolean(CWIDGET_is_visible(THIS));
 	else
 		CWIDGET_set_visible(THIS, VPROP(GB_BOOLEAN));
 
@@ -1499,6 +1499,7 @@ BEGIN_PROPERTY(Control_Background)
 
 	if (THIS_EXT && THIS_EXT->proxy)
 	{
+		qDebug("Background: -> proxy %s", ((CWIDGET *)THIS_EXT->proxy)->name);
 		if (READ_PROPERTY)
 			GB.GetProperty(THIS_EXT->proxy, "Background");
 		else
@@ -1678,7 +1679,7 @@ BEGIN_METHOD(Control_Reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(VARG(container)))
 		return;
 
-	show = is_visible(THIS);
+	show = CWIDGET_is_visible(THIS);
 	CWIDGET_set_visible(THIS, false);
 	WIDGET->setParent(QCONTAINER(VARG(container)));
 	WIDGET->move(p);

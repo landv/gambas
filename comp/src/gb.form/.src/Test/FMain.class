@@ -131,12 +131,6 @@ Public Sub Button3_Click()
 
 End
 
-Public Sub Button4_Click()
-
-  gvwView.Rows.Remove(0, 1)
-
-End
-
 Public Sub gvwView_ColumnResize(Column As Integer)
 
   Debug Column

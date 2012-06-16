@@ -422,9 +422,19 @@ BEGIN_PROPERTY(Style_FrameWidth)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Style_TextBoxFrameWidth)
+BEGIN_PROPERTY(Style_BoxFrameWidth)
 
-	GB.ReturnInteger(gApplication::getTextBoxFrameWidth());
+	int w, h;
+	gApplication::getBoxFrame(&w, &h);
+	GB.ReturnInteger(w);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Style_BoxFrameHeight)
+
+	int w, h;
+	gApplication::getBoxFrame(&w, &h);
+	GB.ReturnInteger(h);
 
 END_PROPERTY
 
@@ -435,7 +445,10 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("ScrollbarSize", "i", Style_ScrollbarSize),
 	GB_STATIC_PROPERTY_READ("ScrollbarSpacing", "i", Style_ScrollbarSpacing),
 	GB_STATIC_PROPERTY_READ("FrameWidth", "i", Style_FrameWidth),
-	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_TextBoxFrameWidth),
+	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_BoxFrameWidth),
+	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
+	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameHeight),
+	//GB_STATIC_PROPERTY_READ("InnerWidth", "i", Style_InnerWidth),
 	
 	GB_END_DECLARE
 };

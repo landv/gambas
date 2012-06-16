@@ -1313,15 +1313,38 @@ int gApplication::getScrollbarSpacing()
 
 int gApplication::getFrameWidth()
 {
-	return 2;
+  GtkSettings *settings;
+	char *theme;
+
+  settings = gtk_settings_get_default();
+  g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
+	
+	if (!strcmp(theme, "oxygen-gtk"))
+		return 3;
+	else
+		return 2;
 }
 
-int gApplication::getTextBoxFrameWidth()
+int gApplication::getInnerWidth()
+{
+  GtkSettings *settings;
+	char *theme;
+
+  settings = gtk_settings_get_default();
+  g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
+	
+	if (!strcmp(theme, "oxygen-gtk"))
+		return 2;
+	else
+		return 0;
+}
+
+void gApplication::getBoxFrame(int *w, int *h)
 {
 	GtkStyle *style;
 	gint focus_width;
 	gboolean interior_focus;
-	int v;
+	int inner;
 
 	style = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
 	
@@ -1330,9 +1353,16 @@ int gApplication::getTextBoxFrameWidth()
 		"interior-focus", &interior_focus,
 		(char *)NULL);
 	
-	v = MAX(style->xthickness, style->ythickness);
-	if (!interior_focus)
-		v += focus_width;
+	*w = style->xthickness;
+	*h = style->ythickness;
 	
-	return v;
+	if (!interior_focus)
+	{
+		*w += focus_width;
+		*h += focus_width;
+	}
+	
+	inner = getInnerWidth();
+	*w += inner;
+	*h += inner;
 }
