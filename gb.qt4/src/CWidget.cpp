@@ -1499,7 +1499,6 @@ BEGIN_PROPERTY(Control_Background)
 
 	if (THIS_EXT && THIS_EXT->proxy)
 	{
-		qDebug("Background: -> proxy %s", ((CWIDGET *)THIS_EXT->proxy)->name);
 		if (READ_PROPERTY)
 			GB.GetProperty(THIS_EXT->proxy, "Background");
 		else
