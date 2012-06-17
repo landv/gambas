@@ -601,8 +601,8 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 	}
 	
 	if (PushClassExpression* ce = dyn_cast<PushClassExpression>(func)){
-		CLASS_DESC_METHOD* method_desc = JR_CLASS_get_special_desc(ce->klass, SPEC_CALL);
-		if (method_desc == NULL){
+		int special_call_function_index = ce->klass->special[SPEC_CALL];
+		if (special_call_function_index == NO_SYMBOL){
 			//Then it is a cast: Dim obj2 As SomeClass = SomeClass(obj1);
 			if (nargs != 1)
 				THROW(E_NFUNC);
@@ -612,8 +612,9 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 			JIT_conv(args[0], (TYPE)(void*)ce->klass);
 			return;
 		}
+		CLASS_DESC_METHOD* method_desc = &CLASS_get_desc(ce->klass, special_call_function_index)->method;
 		desc = (CLASS_DESC*)(void*)method_desc; //Works, since CLASS_DESC is a union containing CLASS_DESC_METHOD
-		index = (int)(intptr_t)method_desc->exec;
+		index = special_call_function_index;
 		klass = method_desc->klass;
 		type = method_desc->type;
 		
