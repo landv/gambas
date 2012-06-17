@@ -966,6 +966,8 @@ void EXEC_function_loop()
 
 					if (EXEC_debug && !STACK_has_error_handler())
 					{
+						DEBUG.Main(TRUE);
+						
 						if (TP && TC)
 						{
 							ERROR_lock();
@@ -981,7 +983,6 @@ void EXEC_function_loop()
 							ERROR_unlock();
 						}
 
-						DEBUG.Main(TRUE);
 						retry = TRUE;
 					}
 					else
