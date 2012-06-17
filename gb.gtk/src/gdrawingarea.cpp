@@ -38,7 +38,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 	{
 		//gdk_window_clear(data->box->window);
 		//fprintf(stderr, "drawBorder: %s\n", data->name());
-		data->drawBorder();
+		data->drawBorder(e);
 	}
 	else
 	{
@@ -50,7 +50,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 			data->onExpose(data,e->area.x-wid->allocation.x,e->area.y-wid->allocation.y,e->area.width,e->area.height);
 			data->_in_draw_event = false;
 		}
-		data->drawBorder();
+		data->drawBorder(e);
 	}
 
 	return false;

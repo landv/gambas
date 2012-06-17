@@ -30,7 +30,6 @@ static void cb_frame_resize (GtkWidget *wid, GtkAllocation *req, gFrame *data)
 	gtk_widget_set_size_request(data->fr, req->width, req->height);
 } 
 
-
 /****************************************************************************
 
 Panel

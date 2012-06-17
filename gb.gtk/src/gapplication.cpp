@@ -329,6 +329,10 @@ static gControl *find_child(gControl *control, int rx, int ry)
 	gControl *child;
 	int x, y;
 	
+	//fprintf(stderr, "find_child: %s ", control->name());
+	
+	control = control->topLevel();
+	
 	while (control->isContainer())
 	{
 		control->getScreenPos(&x, &y);
@@ -339,6 +343,8 @@ static gControl *find_child(gControl *control, int rx, int ry)
 		control = child;
 	}
 
+	//fprintf(stderr, "-> %s\n", control->name());
+	
 	return control;
 }
 
@@ -365,7 +371,7 @@ static void gambas_handle_event(GdkEvent *event)
 {
   GtkWidget *widget;
   GtkWidget *grab;
-	gControl *control;
+	gControl *control, *save_control;
 	int x, y, xc, yc;
 	bool cancel;
 	int type;
@@ -481,6 +487,9 @@ static void gambas_handle_event(GdkEvent *event)
 		}
 	}
 	
+	if (grab && widget != grab)
+		goto __HANDLE_EVENT;
+	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
 	
@@ -525,6 +534,8 @@ static void gambas_handle_event(GdkEvent *event)
 	{
 		case GDK_ENTER_NOTIFY:
 			
+			//control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			
 			if (gApplication::_leave == control)
 			{
 				#if DEBUG_ENTER_LEAVE
@@ -542,9 +553,15 @@ static void gambas_handle_event(GdkEvent *event)
 					check_hovered_control(control);
 				}
 			}
+
+			//if (widget != control->border && widget != control->widget)
+			//	goto __RETURN;
+			
 			break;
 		
 		case GDK_LEAVE_NOTIFY:
+			
+			//control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
 			if (gdk_events_pending() && gApplication::_leave == NULL)
 			{
@@ -572,6 +589,10 @@ static void gambas_handle_event(GdkEvent *event)
 					control->emitLeaveEvent();
 				}
 			}
+			
+			//if (widget != control->border && widget != control->widget)
+			//	goto __RETURN;
+			
 			break;
 			
 		case GDK_BUTTON_PRESS:
@@ -579,10 +600,9 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_BUTTON_RELEASE:
 		{
 			//fprintf(stderr, "grab = %p\n", grab);
-			control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
 			bool menu = false;
-			gControl *save_control = control;
 			
 			switch ((int)event->type)
 			{
@@ -682,12 +702,26 @@ static void gambas_handle_event(GdkEvent *event)
 			if (cancel)
 				goto __RETURN;
 			
+			if (widget != save_control->border && widget != save_control->widget)
+			{
+				//fprintf(stderr, "widget = %p, control = %p %p %s\n", widget, save_control->border, save_control->widget, save_control->name());
+				goto __RETURN;
+			}
+			
 			break;
 		}
 			
 		case GDK_MOTION_NOTIFY:
 
-			control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root);
+			if (gApplication::_button_grab)
+				control = gApplication::_button_grab;
+			else
+				control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root);
+			
+			//fprintf(stderr, "GDK_MOTION_NOTIFY: %s\n", control->name());
+			
+			save_control = control;
+			
 			check_hovered_control(control);
 			
 		__MOTION_TRY_PROXY:
@@ -721,11 +755,14 @@ static void gambas_handle_event(GdkEvent *event)
 				goto __MOTION_TRY_PROXY;
 			}
 			
+			//if (widget != save_control->border && widget != save_control->widget)
+			//	goto __RETURN;
+			
 			break;
 			
 		case GDK_SCROLL:
 			
-			control = find_child(control, (int)event->scroll.x_root, (int)event->scroll.y_root);
+			save_control = control = find_child(control, (int)event->scroll.x_root, (int)event->scroll.y_root);
 			
 		__SCROLL_TRY_PROXY:
 		
@@ -760,6 +797,9 @@ static void gambas_handle_event(GdkEvent *event)
 				control = control->_proxy_for;
 				goto __SCROLL_TRY_PROXY;
 			}
+			
+			if (widget != save_control->border && widget != save_control->widget)
+				goto __RETURN;
 			
 			break;
 

@@ -78,7 +78,7 @@ public:
 	
 	int childIndex(gControl *ch) const;
 	
-	gControl *find(int x, int y);
+	virtual gControl *find(int x, int y);
 	
 	gContainerArrangement *getArrangement() { return &arrangement; }
 	gContainerArrangement fullArrangement() { return arrangement; }

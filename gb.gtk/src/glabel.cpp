@@ -34,6 +34,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	int fw = d->getFrameWidth();
 	
 	gc = gdk_gc_new(draw->window);
+	gdk_gc_set_clip_rectangle(gc, &e->area);	
 	
 	if (style) 
 		gdk_gc_set_foreground(gc, &style->fg[GTK_STATE_NORMAL]);
@@ -58,7 +59,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 			case 1: vw = (vw - lw) / 2; break;
 			case 2: vw =  vw - lw - fw; break;
 			case 3: 
-				if (gtk_widget_get_default_direction()==GTK_TEXT_DIR_RTL ) 
+				if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL) 
 					vw = vw - lw - fw;
 				else 
 					vw = fw;
@@ -110,7 +111,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
 	g_object_unref(G_OBJECT(gc));
 	
-	d->drawBorder();
+	d->drawBorder(e);
 	
 	return false;
 }

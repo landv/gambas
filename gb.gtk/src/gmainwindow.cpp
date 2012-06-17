@@ -267,7 +267,7 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	initialize();
 	g_typ = Type_gMainWindow;
 	
-	border = gtk_event_box_new();
+	border = gtk_alignment_new(0,0,1,1); //gtk_fixed_new(); //gtk_event_box_new();
 	widget = gtk_fixed_new();
 	
 	realize(false);
@@ -1337,8 +1337,8 @@ void gMainWindow::configure()
 			if (menuBar)
 				gtk_fixed_move(layout, GTK_WIDGET(menuBar), 0, -h);
 			gtk_fixed_move(layout, widget, 0, 0);
-			gtk_widget_set_size_request(widget, width(), height());
 		}
+		gtk_widget_set_size_request(widget, width(), height());
 	}
 }
 

@@ -101,6 +101,8 @@ public:
 
 	void picture(gPicture *pic, int x, int y, int w = -1, int h = -1, int sx = 0, int sy = 0, int sw = -1, int sh = -1);
 	void tiledPicture(gPicture *pic, int x, int y, int w, int h);
+	
+	GdkGC *getGC() { return gc; }
 
 //"Private"
 private:

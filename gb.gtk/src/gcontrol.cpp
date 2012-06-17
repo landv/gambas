@@ -724,7 +724,7 @@ void gControl::setCursor(gCursor *vl)
 
 void gControl::updateCursor(GdkCursor *cursor)
 {
-  if (GDK_IS_WINDOW(border->window))
+  if (GDK_IS_WINDOW(border->window) && _inside)
     gdk_window_set_cursor(border->window, cursor);
 }
 
@@ -1170,12 +1170,14 @@ GList* gControl::controlList()
 	return controls; 
 }
 
-void gControl::drawBorder(GdkDrawable *win)
+void gControl::drawBorder(GdkEventExpose *e)
 {
+	GdkDrawable *win;
 	GtkShadowType shadow;
 	gint x, y, w, h;
 	//GdkGC *gc;
 	GtkStyle* st;
+	GdkRectangle clip;
 	
 	if (getFrameBorder() == BORDER_NONE)
     return;
@@ -1185,7 +1187,7 @@ void gControl::drawBorder(GdkDrawable *win)
   w = width();
   h = height();
   
-	if (!win)
+	//if (!win)
 	{
 		GtkWidget *wid;
 		
@@ -1219,6 +1221,7 @@ void gControl::drawBorder(GdkDrawable *win)
 			gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
 			
 			//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
+			gdk_gc_set_clip_region(gc, e->region);
 			gdk_draw_rectangle(win, gc, FALSE, x, y, w - 1, h - 1); 
 			gtk_gc_release(gc);
       return;
@@ -1232,18 +1235,19 @@ void gControl::drawBorder(GdkDrawable *win)
       return;
 	}
 	
-  gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, NULL, NULL, NULL, x, y, w, h);
+	gdk_region_get_clipbox(e->region, &clip);
+  gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
 }
 
 static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
 {
-	control->drawBorder();
+	control->drawBorder(e);
 	return false;
 }
 
 static gboolean cb_draw_background(GtkWidget *wid, GdkEventExpose *e, gControl *control)
 {
-	control->drawBackground();
+	control->drawBackground(e);
 	return false;
 }
 
@@ -1288,6 +1292,22 @@ void gControl::registerControl()
 	g_object_set_data(G_OBJECT(border), "gambas-control", this);
 }
 
+static gboolean cb_clip_children(GtkWidget *wid, GdkEventExpose *e, gContainer *d)
+{
+	GdkRegion *me;
+	
+	me = gdk_region_rectangle((GdkRectangle *)&wid->allocation);
+	
+	gdk_region_intersect(e->region, me);
+	
+	gdk_region_destroy(me);
+	
+	if (gdk_region_empty(e->region))
+		return TRUE;
+	
+	return FALSE;
+}
+
 void gControl::realize(bool make_frame)
 {
 	if (!_scroll)
@@ -1330,6 +1350,9 @@ void gControl::realize(bool make_frame)
 	
 	if (!gtk_widget_get_has_window(border))
 		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
+	
+	if (isContainer())
+		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_clip_children), (gpointer)this);
 	
 	//if (isContainer() && widget != border)
 	//	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
@@ -1882,9 +1905,9 @@ void gControl::emitEnterEvent(bool no_leave)
 	if (_inside)
 		return;
 	
-	setMouse(mouse());
-	emit(SIGNAL(onEnterLeave), gEvent_Enter);
 	_inside = true;
+	emit(SIGNAL(onEnterLeave), gEvent_Enter);
+	setMouse(mouse());
 }
 
 void gControl::emitLeaveEvent()
@@ -1901,9 +1924,9 @@ void gControl::emitLeaveEvent()
 			cont->child(i)->emitLeaveEvent();
 	}
 	
+	_inside = false;
 	emit(SIGNAL(onEnterLeave), gEvent_Leave);
 	if (parent()) parent()->setMouse(parent()->mouse());
-	_inside = false;
 }
 
 bool gControl::isAncestorOf(gControl *child)
@@ -1921,7 +1944,7 @@ bool gControl::isAncestorOf(gControl *child)
 	}
 }
 
-void gControl::drawBackground()
+void gControl::drawBackground(GdkEventExpose *e)
 {
 	if (background() == COLOR_DEFAULT)
 		return;
@@ -1933,6 +1956,7 @@ void gControl::drawBackground()
 	d->setFillStyle(FILL_SOLID);
 	d->setFillColor(background());
 	d->setLineStyle(LINE_NONE);
+	gdk_gc_set_clip_region(d->getGC(), e->region);
 	d->rect(0, 0, width(), height());
 	delete d;
 }

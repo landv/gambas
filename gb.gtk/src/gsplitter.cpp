@@ -376,8 +376,12 @@ void gSplitter::updateChild(GtkWidget *w)
 {
 	int bucle, nchd;
 	gControl *chd;
+	int ox, oy;
 
 	//g_debug("updateChild: %p", w);
+	
+	ox = border->allocation.x;
+	oy = border->allocation.y;
 	
 	nchd = childCount();
 	for (bucle = 0; bucle < nchd; bucle++)
@@ -390,14 +394,14 @@ void gSplitter::updateChild(GtkWidget *w)
 		chd->_dirty_pos = false;
 		chd->_dirty_size = false;
 		
-		if (chd->bufX == chd->border->allocation.x
-		    && chd->bufY == chd->border->allocation.y
+		if (chd->bufX == (chd->border->allocation.x - ox)
+		    && chd->bufY == (chd->border->allocation.y - oy)
 		    && chd->bufW == chd->border->allocation.width
 		    && chd->bufH == chd->border->allocation.height)
 			continue;
 		
-		chd->bufX = chd->border->allocation.x;
-		chd->bufY = chd->border->allocation.y;
+		chd->bufX = chd->border->allocation.x - ox;
+		chd->bufY = chd->border->allocation.y - oy;
 		chd->bufW = chd->border->allocation.width;
 		chd->bufH = chd->border->allocation.height;
 		//chd->resize(chd->border->allocation.width, chd->border->allocation.height);

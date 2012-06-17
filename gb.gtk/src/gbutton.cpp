@@ -130,9 +130,9 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		
 		py = (rect.height - rpix.height)/2;
 		
-		gc=gdk_gc_new(win);
-		gdk_gc_set_clip_origin(gc,0,0);
-		gdk_gc_set_clip_rectangle(gc,&e->area);
+		gc = gdk_gc_new(win);
+		//gdk_gc_set_clip_origin(gc,0,0);
+		gdk_gc_set_clip_region(gc, e->region);
 
 		bcenter = !(data->text()) || !(*data->text());
 		
@@ -192,7 +192,7 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	if (rect.width >= 1 && rect.height >= 1)
 	{
 		gtk_cell_renderer_set_fixed_size(data->rendtxt,rect.width,rect.height);
-		gtk_cell_renderer_render(data->rendtxt,win,wid,&rect,&rect,&rect,state);
+		gtk_cell_renderer_render(data->rendtxt,win,wid,&rect,&rect,&e->area,state);
 	}
 	
 	return FALSE;

@@ -250,8 +250,8 @@ public:
 	int getFramePadding() const { return frame_padding; }
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();
-	void drawBorder(GdkDrawable *win = 0);
-	void drawBackground();
+	void drawBorder(GdkEventExpose *e);
+	void drawBackground(GdkEventExpose *e);
 	
 	virtual int minimumHeight();
 	void resolveFont(gFont *new_font);
