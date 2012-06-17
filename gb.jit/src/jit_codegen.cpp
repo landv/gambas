@@ -129,6 +129,8 @@ static llvm::Value* current_op;
 
 static bool in_try = false;
 
+static unsigned short* statement_pc;
+
 static llvm::ConstantInt* getInteger(int bits, uint64_t value){
 	return llvm::ConstantInt::get(llvm_context, llvm::APInt(bits, value, true));
 }
@@ -847,6 +849,7 @@ static void codegen_statements(){
 			builder->SetInsertPoint(block);
 			addr_blocks[all_statements[i]->addr] = block;
 		}
+		statement_pc = FP->code + all_statements[i]->addr;
 		/*builder->CreateCall2(get_global_function_vararg(printf, 'v', "p"),
 			get_global((void*)"before: %p\n", llvmType(getInt8Ty)), read_sp());*/
 		all_statements[i]->expr->codegen();
@@ -876,15 +879,25 @@ static void insert_pending_branches(){
 	jump_table_pending_branches.clear();
 }
 
+static void store_pc(unsigned short* pc){
+	builder->CreateStore(getInteger(TARGET_BITS, (int64_t)(intptr_t)pc), get_global((void*)&PC, LONG_TYPE));
+}
+
 static void create_throw(int code){
+	if (FP->debug)
+		store_pc(statement_pc);
 	builder->CreateCall(get_global_function_jif_vararg(THROW, 'v', "i"), getInteger(32, code));
 	builder->CreateUnreachable();
 }
 static void create_throw(int code, const char* a, const char* b){
+	if (FP->debug)
+		store_pc(statement_pc);
 	builder->CreateCall3(get_global_function_jif_vararg(THROW, 'v', "i"), getInteger(32, code), get_global((void*)a, llvmType(getInt8Ty)), get_global((void*)b, llvmType(getInt8Ty)));
 	builder->CreateUnreachable();
 }
 static void create_throw(llvm::Value* code){
+	if (FP->debug)
+		store_pc(statement_pc);
 	builder->CreateCall(get_global_function_jif_vararg(THROW, 'v', "i"), code);
 	builder->CreateUnreachable();
 }
@@ -934,10 +947,6 @@ static llvm::Value* ret_top_stack(TYPE type, bool save){
 	if (!save)
 		c_SP(-1);
 	return val;
-}
-
-static void store_pc(unsigned short* pc){
-	builder->CreateStore(getInteger(TARGET_BITS, (int64_t)(intptr_t)pc), get_global((void*)&PC, LONG_TYPE));
 }
 
 static void unref_string_no_nullcheck(llvm::Value* ptr){

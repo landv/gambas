@@ -918,9 +918,9 @@ static void JIT_read_statement(){
 						NEXT
 					}
 					case C_BREAK:
-						PC = code+pos;
+						//PC = code+pos;
 						push_statement(new NopExpression(JIF.F_DEBUG_get_current_position()));
-						PC = code;
+						//PC = code;
 						//push_statement(new NopExpression());
 						NEXT
 					case C_RETURN:
@@ -1024,6 +1024,7 @@ void JIT_read(){
 		stack_start = 0;
 		while(pos < size){
 			addr = pos;
+			PC = code + pos;
 			JIT_read_statement();
 		}
 		
