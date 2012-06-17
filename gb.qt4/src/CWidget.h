@@ -69,7 +69,8 @@ typedef
 			unsigned dragging: 1;
 			unsigned noTabFocus : 1;
 			unsigned inside : 1;
-			unsigned _reserved : 3;
+			unsigned inside_later : 1;
+			unsigned _reserved : 2;
 			} flag;
 		int level;
 		char *name;
@@ -206,6 +207,8 @@ void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h);
 void CWIDGET_handle_focus(CWIDGET *control, bool on);
 void CWIDGET_register_proxy(void *_object, void *proxy);
 bool CWIDGET_container_for(void *_object, void *container_for);
+void *CWIDGET_enter_popup();
+void CWIDGET_leave_popup(void *save);
 void CACTION_register(void *control, const char *old, const char *key);
 void CACTION_raise(void *control);
 

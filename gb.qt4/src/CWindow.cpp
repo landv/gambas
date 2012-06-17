@@ -1879,6 +1879,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	CWINDOW *save = CWINDOW_Current;
+	void *save_popup;
 
 	if (isModal())
 		return;
@@ -1908,6 +1909,8 @@ void MyMainWindow::showPopup(QPoint &pos)
 	//handle_focus(THIS);
 	//activateWindow();
 	
+	save_popup = CWIDGET_enter_popup();
+	
 	_enterLoop = true;
 	
 	QEventLoop eventLoop;
@@ -1929,6 +1932,8 @@ void MyMainWindow::showPopup(QPoint &pos)
 		setWindowModality(Qt::NonModal);
 		setWindowFlags(Qt::Window | flags);
 	}
+	
+	CWIDGET_leave_popup(save_popup);
 	
 	//CWIDGET_check_hovered();
 }

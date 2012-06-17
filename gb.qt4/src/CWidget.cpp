@@ -67,6 +67,7 @@
 #include <QAbstractEventDispatcher>
 #include <QListWidget>
 #include <QComboBox>
+#include <QSet>
  
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
@@ -78,6 +79,8 @@ static CWIDGET *_old_active_control = 0;
 
 static CWIDGET *_hovered = 0;
 static CWIDGET *_official_hovered = 0;
+
+QSet<CWIDGET *> *_enter_leave_set = NULL;
 
 #define EXT(_ob) (((CWIDGET *)_ob)->ext)
 
@@ -385,6 +388,50 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 QString CWIDGET_Utf8ToQString(GB_STRING *str)
 {
 	return QString::fromUtf8((const char *)(str->value.addr + str->value.start), str->value.len);
+}
+
+void *CWIDGET_enter_popup()
+{
+	void *save = _enter_leave_set;
+	
+	_enter_leave_set = new QSet<CWIDGET *>;
+	return save;
+}
+
+void CWIDGET_leave_popup(void *save)
+{
+	CWIDGET *_object;
+	QSetIterator<CWIDGET *> i(*_enter_leave_set);
+	
+	while (i.hasNext())
+	{
+		_object = i.next();
+		GB.Unref(POINTER(&_object));
+		if (_object)
+		{
+			if (THIS->flag.inside_later != THIS->flag.inside)
+			{
+				if (THIS->flag.inside_later)
+					CWIDGET_enter(THIS);
+				else
+					CWIDGET_leave(THIS);
+			}
+		}
+	}
+	
+	delete _enter_leave_set;
+	_enter_leave_set = (QSet<CWIDGET *>*) save;
+}
+
+static void insert_enter_leave_event(CWIDGET *control, bool in)
+{
+	control->flag.inside_later = in;
+	
+	if (_enter_leave_set->contains(control))
+		return;
+	
+	_enter_leave_set->insert(control);
+	GB.Ref(control);
 }
 
 static bool _post_check_hovered = false;
@@ -2402,8 +2449,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		
 		//qDebug("enter %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
 		
-		if (real && (!popup || CWidget::getReal(popup)))
-			CWIDGET_enter(control);
+		if (real)
+		{
+			if (!popup || CWidget::getReal(popup))
+				CWIDGET_enter(control);
+			else if (_enter_leave_set)
+				insert_enter_leave_event(control, true);
+		}
 		
 		goto __NEXT;
 	}
@@ -2414,8 +2466,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		
 		//qDebug("leave %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
 		
-		if (real && (!popup || CWidget::getReal(popup)))
-			CWIDGET_leave(control);
+		if (real)
+		{
+			if (!popup || CWidget::getReal(popup))
+				CWIDGET_leave(control);
+			else if (_enter_leave_set)
+				insert_enter_leave_event(control, false);
+		}
 		
 		goto __NEXT;
 	}

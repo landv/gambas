@@ -584,6 +584,7 @@ END_METHOD
 void CMENU_popup(CMENU *_object, const QPoint &pos)
 {
 	bool disabled;
+	void *save;
 
 	if (THIS->menu && !THIS->exec)
 	{
@@ -596,11 +597,13 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 		}
 		
 		// The Click event is posted, it does not occur immediately.
+		save = CWIDGET_enter_popup();
 		THIS->exec = true;
 		_popup_immediate = true;
 		THIS->menu->exec(pos);
 		_popup_immediate = false;
 		THIS->exec = false;
+		CWIDGET_leave_popup(save);
 		
 		//qDebug("_popup_menu_clicked = %p", _popup_menu_clicked);
 		update_accel_recursive(THIS);
