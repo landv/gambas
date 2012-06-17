@@ -207,13 +207,8 @@ static void analyze(const char *src, int len_src, bool rewrite, int state)
 	_analyze_pos = parray;
 	GB.Ref(parray);
 	
-	if (rewrite)
-	{
-		GB.FreeString(&_analyze_text);
-		_analyze_text = result.str;
-	}
-	else
-		GB.FreeString(&result.str);  
+	GB.FreeString(&_analyze_text);
+	_analyze_text = result.str;
 }
 
 BEGIN_METHOD_VOID(CHIGHLIGHT_exit)
