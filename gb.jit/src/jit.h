@@ -874,9 +874,9 @@ struct NopExpression : Expression {
 		memcpy(buf, str, len+1);
 	}
 	
-	/*NopExpression(){
+	NopExpression(){
 		buf = "...";
-	}*/
+	}
 	
 	void codegen();
 	~NopExpression(){

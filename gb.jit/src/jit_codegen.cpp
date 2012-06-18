@@ -65,7 +65,7 @@ const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(vo
 ///DEBUG
 void print_type(llvm::Value* v);
 
-static std::set<llvm::StringRef> mappings;
+static std::set<std::string> mappings;
 //static std::map<void*, llvm::GlobalVariable*> variable_mappings;
 
 static llvm::LLVMContext llvm_context;

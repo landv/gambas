@@ -919,7 +919,7 @@ static void JIT_read_statement(){
 					}
 					case C_BREAK:
 						//PC = code+pos;
-						push_statement(new NopExpression(JIF.F_DEBUG_get_current_position()));
+						push_statement(new NopExpression(/*JIF.F_DEBUG_get_current_position()*/));
 						//PC = code;
 						//push_statement(new NopExpression());
 						NEXT
