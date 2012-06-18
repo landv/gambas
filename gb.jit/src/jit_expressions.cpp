@@ -726,7 +726,7 @@ NewExpression::NewExpression(Expression** it, int nargs, bool event) : event(eve
 		if (pce->klass->override)
 			pce->klass = pce->klass->override;
 		type = (TYPE)(void*)pce->klass;
-	} else if (TYPE_is_string(args[0]->type)){
+	} else {
 		type = T_OBJECT;
 	}
 }
