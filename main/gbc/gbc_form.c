@@ -430,7 +430,7 @@ void FORM_do(char *source, bool ctrl_public)
 		}
 	}
 
-	FORM_print("\nPublic Sub {$load}()\n\n");
+	FORM_print("\nPrivate Sub {$load}()\n\n");
 
 	_current = pos_rewind;
 	form_parent_level = 0;
