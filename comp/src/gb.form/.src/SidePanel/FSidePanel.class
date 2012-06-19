@@ -23,8 +23,8 @@ Private $bInside As Boolean
 Private $bDblClick As Boolean
 Private $bTransparent As Boolean
 
-Private BUTTON_H As Integer = Desktop.Scale
-Private BUTTON_W As Integer = Desktop.Scale * 4
+Private BUTTON_H As Integer = 6
+Private BUTTON_W As Integer = 24
 
 Private $hShowPanel As Panel
 Private $hShowButtonLeft As DrawingArea
@@ -326,8 +326,10 @@ Private Sub MoveShowButton()
     
   End With  
 
-  $hShowPanel.Raise
+  '$hShowPanel.Move($hShowPanel.X - 2, $hShowPanel.Y - 2, $hShowPanel.W + 4, $hShowPanel.H + 4)
+
   $hShowPanel.Show
+  $hShowPanel.Raise
     
 End
 
@@ -755,7 +757,7 @@ Private Sub UpdateBackground()
   ' If $bInside And If Not $bVisible Then
   '   panMove.Background = Color.SelectedBackground
   ' Else
-    panMove.Background = Color.Default
+  '  panMove.Background = Color.Default
   'Endif
 
 End

@@ -223,7 +223,6 @@ extern "C"
 		GB.Hook(GB_HOOK_ERROR,(void*)my_error);
 		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
 
-		// Thanks again to GTK+ 2.18 :-(
 		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
 		//putenv((char *)"GDK_NATIVE_WINDOWS=1");
 		#endif

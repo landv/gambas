@@ -2,7 +2,7 @@
 
 Private $hRose As Image
 Private $fScale As Float = 0.0078125
-Private Const ITER_MAX As Integer = 512
+Private ITER_MAX As Integer = 128
 Private $aColor As New Integer[64]
 Private $XC As Float
 Private $YC As Float
@@ -328,7 +328,7 @@ Public Sub dwgFractal_Draw()
   Endif
   
   YT += Draw.Font.Height + 8
-  Draw.Text(("Zoom") & ": " & CStr(Log2($fScale) + 6) & "  " & ("Speed") & ": " & If($bFast, ("Fast"), ("Slow")), 8, YT)
+  Draw.Text(("Zoom") & ": " & CStr(Log2($fScale) + 6) & "  " & ("Speed") & ": " & If($bFast, ("Fast"), ("Slow")) & "  " & ("Max") & ": " & ITER_MAX, 8, YT)
 
 End
 
@@ -339,9 +339,11 @@ Public Sub dwgFractal_MouseWheel()
   If Mouse.Delta < 0 Then
     If Log2($fScale) >= -6 Then Return
     fNewScale = $fScale * Sqr(2)
+    ITER_MAX -= 4
   Else
     If Log2($fScale) < -50 Then Return
     fNewScale = $fScale / Sqr(2)
+    ITER_MAX += 4
   Endif
   
   $XC += $fScale * (Mouse.X - dwgFractal.W / 2)

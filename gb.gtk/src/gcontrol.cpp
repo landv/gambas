@@ -1308,6 +1308,33 @@ static gboolean cb_clip_children(GtkWidget *wid, GdkEventExpose *e, gContainer *
 	return FALSE;
 }
 
+#if 0
+static gboolean cb_clip_by_parent(GtkWidget *wid, GdkEventExpose *e, gControl *d)
+{
+	GdkRegion *preg;
+	GdkRectangle prect = { 0, 0, d->parent()->width() - d->x(), d->parent()->height() - d->y() };
+	
+	fprintf(stderr, "area = %d %d %d %d  prect = %d %d %d %d\n",
+					e->area.x, e->area.y, e->area.width, e->area.height,
+					prect.x, prect.y, prect.width, prect.height);
+	
+	preg = gdk_region_rectangle(&prect);
+	
+	gdk_region_intersect(e->region, preg);
+	
+	gdk_region_destroy(preg);
+	
+	if (gdk_region_empty(e->region))
+		return TRUE;
+	
+	gdk_region_get_clipbox(e->region, &prect);
+	e->area = prect;
+	fprintf(stderr, "--> %d %d %d %d\n", prect.x, prect.y, prect.width, prect.height);
+	
+	return FALSE;
+}
+#endif
+
 void gControl::realize(bool make_frame)
 {
 	if (!_scroll)
@@ -1350,8 +1377,13 @@ void gControl::realize(bool make_frame)
 	
 	if (!gtk_widget_get_has_window(border))
 		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
+	/*else if (!isTopLevel())
+	{
+		fprintf(stderr, "clip by parent\n");
+		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_clip_by_parent), (gpointer)this);
+	}*/
 	
-	if (isContainer())
+	if (isContainer() && !gtk_widget_get_has_window(widget))
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_clip_children), (gpointer)this);
 	
 	//if (isContainer() && widget != border)
@@ -1842,15 +1874,17 @@ bool gControl::grab(bool showIt)
 
 bool gControl::hovered()
 {
-	int x, y, xm, ym;
+	//int x, y, xm, ym;
 	
 	if (!isVisible())
 		return false;
+	else
+		return _inside;
 	
-	getScreenPos(&x, &y);
+	/*getScreenPos(&x, &y);
 	gMouse::getScreenPos(&xm, &ym);
 	
-	return (xm >= x && ym >= y && xm < (x + width()) && ym < (y + height()));
+	return (xm >= x && ym >= y && xm < (x + width()) && ym < (y + height()));*/
 }
 
 bool gControl::setProxy(gControl *proxy)

@@ -534,7 +534,7 @@ static void gambas_handle_event(GdkEvent *event)
 	{
 		case GDK_ENTER_NOTIFY:
 			
-			//control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
 			if (gApplication::_leave == control)
 			{
@@ -554,9 +554,6 @@ static void gambas_handle_event(GdkEvent *event)
 				}
 			}
 
-			//if (widget != control->border && widget != control->widget)
-			//	goto __RETURN;
-			
 			break;
 		
 		case GDK_LEAVE_NOTIFY:

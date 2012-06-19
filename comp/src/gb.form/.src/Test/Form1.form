@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,91,56)
   Arrangement = Arrange.Vertical
+  Spacing = True
   Margin = True
   { HBox1 HBox
     MoveScaled(8,1,39,5)
@@ -13,15 +14,17 @@
   }
   { Panel1 HBox
     MoveScaled(7,9,80,45)
+    Background = &HDFEFFF&
     Expand = True
     { SidePanel1 SidePanel
-      MoveScaled(1,1,71,44)
-      Arrangement = Arrange.Fill
+      MoveScaled(1,1,66,44)
+      Arrangement = Arrange.Horizontal
       Orientation = Align.Left
       Separator = True
-      Transparent = True
       { FileChooser1 FileChooser
         MoveScaled(0,0,36,36)
+        Background = &HF7DFFF&
+        Expand = True
       }
     }
   }
