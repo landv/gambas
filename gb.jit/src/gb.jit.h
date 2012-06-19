@@ -64,6 +64,7 @@ typedef
 		
 		EXTERN_FUNC_INFO (*F_EXTERN_get_function_info)(CLASS_EXTERN *ext);
 		void (*F_EXTERN_call)(void);
+		void *(*F_EXTERN_make_callback)(VALUE_FUNCTION* value);
 		
 		char *(*F_STRING_new)(const char *src, int len);
 		void (*F_STRING_new_temp_value)(VALUE *value, const char* src, int len);

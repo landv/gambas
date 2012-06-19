@@ -332,6 +332,7 @@ const void *GAMBAS_JitApi[] =
 	
 	(void *)EXTERN_get_function_info,
 	(void *)EXTERN_call,
+	(void *)EXTERN_make_callback,
 	
 	(void *)STRING_new,
 	(void *)STRING_new_temp_value,

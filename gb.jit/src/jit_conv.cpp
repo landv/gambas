@@ -47,7 +47,7 @@ void JIT_conv(Expression*& value, TYPE type, Expression* other){
 	/* s      */ { &&__N,     &&__TYPE,  &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__TYPE2, &&__OK,    &&__OK,    &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__N,     },
 	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__TYPE,  &&__TYPE,  &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__TYPE,  &&__N,     &&__N,     &&__N,     },
 	/* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__v2,    &&__v2,    },
-	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__TYPE2,  &&__func, &&__OK,    &&__N,     &&__func,  },
+	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__F2p,  &&__func, &&__OK,    &&__N,     &&__func,  },
 	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__TYPE,  &&__N,     &&__OK,    &&__N,     },
 	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__N,     &&__TYPE,  &&__N,     &&__N,     &&__OK,    },
 	};
@@ -119,6 +119,26 @@ __n2s: {
 	value->on_stack = on_stack_save;
 	value->stack_if_ref = ref_stack_save;
 	return;
+}
+
+__F2p: {
+	if (PushFunctionExpression* pfe = dynamic_cast<PushFunctionExpression*>(value)){
+		bool on_stack_save = value->on_stack;
+		VALUE_FUNCTION v;
+		v.type = T_FUNCTION;
+		v.klass = CP;
+		v.object = OP;
+		v.kind = FUNCTION_PRIVATE;
+		v.index = pfe->index;
+		v.defined = true;
+		if (OP)
+			((OBJECT*)OP)->ref++;
+		value = new PushIntegerExpression(8*sizeof(void*), (int64_t)(void*)JIF.F_EXTERN_make_callback(&v));
+		JIT_conv(value, T_POINTER);
+		value->on_stack = on_stack_save;
+		return;
+	}
+	assert(false && "Not implemented yet!");
 }
 
 __func:
