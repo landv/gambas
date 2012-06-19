@@ -400,7 +400,7 @@ static void JIT_push_unknown(){
 				
 			case CD_EXTERN:
 				pop();
-				push(new PushExternExpression(klass, index, NULL));
+				push(new PushExternExpression(klass, desc->ext.exec, NULL));
 				return;
 			
 			default: THROW(E_NSYMBOL, name, klass->name);

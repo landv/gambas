@@ -956,6 +956,14 @@ OBJECT* JR_object_cast(OBJECT* object, CLASS* target_class){
 	THROW(E_TYPE, JIF.F_TYPE_get_name((TYPE)(void*)target_class), JIF.F_TYPE_get_name((TYPE)(void*)class));
 }
 
+void* JR_extern_dispatch_object(OBJECT* object, int index){
+	if (object == NULL)
+		THROW(E_NULL);
+	CLASS* class = object->class;
+	JR_OBJECT_unref(object);
+	return JIF.F_EXTERN_get_function_info(&class->load->ext[class->table[index].desc->ext.exec]).call;
+}
+
 void JR_exec_enter_quick(CLASS* klass, void* object, int index){
 	CLASS_DESC_METHOD* desc = &klass->table[index].desc->method;
 	EXEC.desc = desc;

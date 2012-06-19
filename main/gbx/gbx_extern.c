@@ -226,7 +226,7 @@ static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 EXTERN_FUNC_INFO EXTERN_get_function_info(CLASS_EXTERN *ext)
 {
 	EXTERN_FUNC *func = get_function(ext);
-	EXTERN_FUNC_INFO func_info = { func->alias, func->call };
+	EXTERN_FUNC_INFO func_info = { func->call, func->alias };
 	
 	return func_info;
 }

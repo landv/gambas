@@ -489,7 +489,11 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 	}
 	
 	if (PushExternExpression* ee = dynamic_cast<PushExternExpression*>(func)){
-		CLASS_EXTERN* ext = &ee->klass->load->ext[ee->index];
+		CLASS_EXTERN* ext;
+		if (ee->object_to_release)
+			ext = &ee->klass->load->ext[ee->klass->table[ee->index].desc->ext.exec]; //An extern method with the correct signature
+		else 
+			ext = &ee->klass->load->ext[ee->index];
 		
 		if (nargs < ext->n_param)
 			THROW(E_NEPARAM);

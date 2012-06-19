@@ -41,6 +41,8 @@ void JR_sub(ushort code);
 void JR_mul(ushort code);
 void JR_call(int nparam);
 
+void* JR_extern_dispatch_object(OBJECT* object, int index);
+
 void JR_exec_enter_quick(CLASS* klass, void* object, int index);
 void JR_exec_enter(CLASS* klass, void* object, int index);
 OBJECT* JR_object_cast(OBJECT* object, CLASS* target_class);

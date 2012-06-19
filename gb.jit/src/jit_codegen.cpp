@@ -2730,7 +2730,19 @@ llvm::Value* CallExpression::codegen_get_value(){
 		}
 	}
 	if (PushExternExpression* ee = dynamic_cast<PushExternExpression*>(func)){
-		CLASS_EXTERN* ext = &ee->klass->load->ext[ee->index];
+		llvm::Value* call_addr;
+		
+		if (ee->object_to_release){
+			llvm::Value* obj = ee->object_to_release->codegen_get_value();
+			c_SP(-ee->object_to_release->on_stack);
+			call_addr = builder->CreateCall2(get_global_function(JR_extern_dispatch_object, 'p', "pi"), extract_value(obj, 1), getInteger(32, ee->index));
+		}
+		
+		CLASS_EXTERN* ext;
+		if (ee->object_to_release)
+			ext = &ee->klass->load->ext[ee->klass->table[ee->index].desc->ext.exec]; //An extern method with the correct signature
+		else 
+			ext = &ee->klass->load->ext[ee->index];
 		EXTERN_FUNC_INFO func = JIF.F_EXTERN_get_function_info(ext);
 		
 		llvm::Value* ret = NULL;
@@ -2754,12 +2766,20 @@ llvm::Value* CallExpression::codegen_get_value(){
 				func_args[i] = val;
 			}
 			
+			llvm::FunctionType* function_type = llvm::FunctionType::get(extern_types[type > T_OBJECT ? T_OBJECT : type], ft, true);
+			
 			std::string function_name = ext->library;
 			function_name += '.';
 			function_name += func.alias;
 			
-			llvm::GlobalValue* call_function = (llvm::GlobalValue*)M->getOrInsertFunction(function_name, llvm::FunctionType::get(extern_types[type > T_OBJECT ? T_OBJECT : type], ft, true));
-			register_global_symbol(function_name, call_function, func.call);
+			llvm::Value* call_function;
+			if (!ee->object_to_release){
+				llvm::GlobalValue* glob_val = (llvm::GlobalValue*)M->getOrInsertFunction(function_name, function_type);
+				register_global_symbol(function_name, glob_val, func.call);
+				call_function = glob_val;
+			} else {
+				call_function = builder->CreateBitCast(call_addr, pointer_t(function_type));
+			}
 			
 			ret = builder->CreateCall(call_function, func_args);
 			
@@ -2776,7 +2796,8 @@ llvm::Value* CallExpression::codegen_get_value(){
 			}
 			
 			llvm::Value* return_value_addr = type == T_VOID ? get_nullptr() : (llvm::Value*)create_alloca_in_entry(TYPE_llvm(type));
-			llvm::Value* call_addr = builder->CreateIntToPtr(getInteger(TARGET_BITS, (uint64_t)func.call), llvmType(getInt8PtrTy));
+			if (!ee->object_to_release)
+				call_addr = builder->CreateIntToPtr(getInteger(TARGET_BITS, (uint64_t)func.call), llvmType(getInt8PtrTy));
 			llvm::Value* args_size = getInteger(32, args.size());
 			llvm::Value* return_type = getInteger(TARGET_BITS, type);
 			
@@ -6217,10 +6238,24 @@ static void debug_print_line(){
 }
 
 
+struct DynamicAllocatedString {
+	char* data;
+	int len;
+	DynamicAllocatedString(const char* data, int len){
+		this->data = new char[len];
+		this->len = len;
+		memcpy(this->data, data, len);
+	}
+	~DynamicAllocatedString(){
+		delete[] data;
+	}
+};
+
+static std::vector<DynamicAllocatedString> extern_signature_strings;
 static std::map<llvm::StringRef, void(*)(void*, void*)> extern_signatures;
 
 static void func_extern_call_variant_vararg(void* return_value_addr, void* func_addr, int nargs, TYPE return_type){
-	static std::map<llvm::StringRef, void(*)(void*, void*)>& signatures = extern_signatures;
+	std::map<llvm::StringRef, void(*)(void*, void*)>& signatures = extern_signatures;
 	
 	char signature_string[nargs+sizeof(TYPE)];
 	
@@ -6335,7 +6370,8 @@ static void func_extern_call_variant_vararg(void* return_value_addr, void* func_
 		llvm_function->deleteBody();
 		mappings.clear();
 		
-		signatures.insert(std::pair<llvm::StringRef, void(*)(void*, void*)>(std::string(signature_string, nargs+sizeof(TYPE)), fn));
+		extern_signature_strings.emplace_back((char*)signature_string, nargs+sizeof(TYPE));
+		signatures.insert(std::pair<llvm::StringRef, void(*)(void*, void*)>(llvm::StringRef(extern_signature_strings.back().data, nargs+sizeof(TYPE)), fn));
 		(*fn)(func_addr, return_value_addr);
 	} else {
 		(*(it->second))(func_addr, return_value_addr);

@@ -41,8 +41,8 @@
 
 typedef
 	struct EXTERN_FUNC_INFO {
-		char *alias;
 		void *call;
+		char *alias;
 	}
 	EXTERN_FUNC_INFO;
 
