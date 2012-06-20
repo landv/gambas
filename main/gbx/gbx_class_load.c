@@ -1098,6 +1098,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 				desc->method.exec = (void (*)())desc->gambas.val1;
 				desc->method.npmin = func->npmin;
 				desc->method.npmax = func->n_param;
+				desc->method.npvar = func->vararg;
 				desc->method.signature = (TYPE *)func->param;
 				//desc->method.help = NULL;
 				desc->method.native = FALSE;
