@@ -349,7 +349,12 @@ Static Public Function _get(Key As String) As Picture
       
       If Not Stock.List.Exist(Key) Then Break
       
-      Component.Load("gb.form.stock")
+      Try Component.Load("gb.form.stock")
+      If Error Then
+        Error "gb.form: warning: unable to load gb.form.stock component"
+        Goto __RETURN
+      Endif
+      
       sFile = Key
       
       Try hPict = _DefaultStock.LoadImage(Key, iSize).Picture
@@ -405,7 +410,7 @@ Static Public Function _get(Key As String) As Picture
 __RETURN:
 
   If Not hPict Then
-    Error "warning: unable to load "; CStr(iSize) &/ Key
+    Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key
     hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
   Endif
 

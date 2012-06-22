@@ -42,6 +42,7 @@ Property Read ClientY As Integer
 Property Read ClientW, ClientWidth As Integer
 Property Read ClientH, ClientHeight As Integer
 
+Event KeyPress
 Event Data(Row As Integer, Column As Integer)
 Event Change
 Event Select
@@ -1243,6 +1244,7 @@ End
 Public Sub ScrollArea_KeyPress()
   
   Dim iRow As Integer
+  Dim bStop As Boolean
   
   $bKeyEvent = True
   
@@ -1253,6 +1255,14 @@ Public Sub ScrollArea_KeyPress()
       $hMoveOldSelection = $hRows._SaveSelection()
     Endif
   Endif
+  
+  Select Key.Code
+    
+    Case Key.Up, Key.Down, Key.Left, Key.Right, Key.Home, Key.End, Key.PageUp, Key.PageDown
+      bStop = Raise KeyPress
+      If bStop Then Goto _RETURN
+    
+  End Select
   
   Select Key.Code
     
@@ -1319,7 +1329,9 @@ Public Sub ScrollArea_KeyPress()
       Stop Event
     
   End Select
-  
+
+_RETURN:
+
   $bKeyEvent = False
   
 End
