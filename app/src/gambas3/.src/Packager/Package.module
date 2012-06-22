@@ -234,6 +234,7 @@ Private Function GetDependencies() As String
   For Each sComp In Project.Components
     If sComp = "gb.debug" Or If sComp = "gb.eval" Then Continue 
     sRes &= GetDependency(sComp)
+    'If sComp = "gb.form" Then sRes &= GetDependency("gb.form.stock")
   Next
   
   For Each sComp In Project.Libraries
