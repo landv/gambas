@@ -167,6 +167,7 @@ int Reader::ReadChar(char car)
             curNode->toElement()->setAttribute(attrName, lenAttrName,  "", 0);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
         }
+        this->state = NODE_ELEMENT;
         return NODE_ELEMENT;
     }
     else if(isWhiteSpace(car) && inTag && inTagName && !inComment)// Fin de tagName
