@@ -1269,7 +1269,7 @@ void CLASS_load_real(CLASS *class)
 	
 	if (class->state == CS_NULL)
 	{
-		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']')
+		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']' && !class->array_type)
 		{
 			CLASS_create_array_class(class);
 			return;
