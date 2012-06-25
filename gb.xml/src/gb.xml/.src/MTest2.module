@@ -18,12 +18,13 @@ Public Sub Main()
         Print "text"
       Case XmlReaderNodeType.Comment
         Print "comment"
+      Case XmlReaderNodeType.CDATA
+        Print "cdata"
       Case XmlReaderNodeType.EndElement
         Print "endelement"
       Default
       Print ""
     End Select
-    'If reader.Node.Type = XmlNode.CommentNode Then Print reader.Node.Value
     reader.Read()
   Wend
   

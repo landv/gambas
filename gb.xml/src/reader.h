@@ -42,8 +42,20 @@
 #define COMMENT_TAG_ENDCHAR_1 4 //Caractère -
 #define COMMENT_TAG_ENDCHAR_2 5 //Caractère - (2e)
 
+
 //Prologue <? ?>
 #define PROLOG_TAG_ENDCHAR 6//Caractère ?
+
+//CDATA <![[CDATA ]]>
+#define CDATA_TAG_STARTCHAR_2 7 //Catactère [
+#define CDATA_TAG_STARTCHAR_3 8 //Catactère [ (2e)
+#define CDATA_TAG_STARTCHAR_4 9 //Catactère C
+#define CDATA_TAG_STARTCHAR_5 10 //Catactère D
+#define CDATA_TAG_STARTCHAR_6 11 //Catactère A
+#define CDATA_TAG_STARTCHAR_7 12 //Catactère T
+#define CDATA_TAG_STARTCHAR_8 13 //Catactère A
+#define CDATA_TAG_ENDCHAR_1 14 //Catactère ]
+#define CDATA_TAG_ENDCHAR_2 15 //Catactère ] (2e)
 
 class Document;
 class Node;
@@ -72,9 +84,11 @@ public :
     bool inTagName;//Si on est dans le nom d'un tag
     bool waitClosingElmt;//Si on attend la fermeture d'un tag (auto-fermant)
     bool inCommentTag;//Si on est dans un tag commentaire
+    bool inCDATATag;//Si on est dans un tag de CDATA
     bool inXMLProlog;//Si on est dans un prologue xml
     unsigned char specialTagLevel;//Niveau de lecture d'un tag spécial
     bool inComment;//Si on est dans un commentaire
+    bool inCDATA;//Si on est dans un CDATA
     int depth;//Profondeur du nœud courant
     char *attrName;//Nom de l'attribut en cours de lecture
     size_t lenAttrName;

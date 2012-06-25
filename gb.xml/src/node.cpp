@@ -48,6 +48,7 @@ void Node::DestroyGBObject()
 {
     if((!parent) && (!parentDocument))
     {
+        if(this->isElement()) DEBUG << string(this->toElement()->tagName, this->toElement()->lenTagName) << endl;
         delete this;
     }
     else
@@ -58,12 +59,14 @@ void Node::DestroyGBObject()
 
 void Node::DestroyParent()
 {
+    if(this->isElement()) DEBUG << "Delete parent : " << string(this->toElement()->tagName, this->toElement()->lenTagName) << endl;
     if(!GBObject)
     {
         delete this;
     }
     else 
     {
+        
         parent = 0;
         parentDocument = 0;
     }
@@ -104,6 +107,11 @@ bool Node::isComment()
 bool Node::isTextNode()
 {
     return getType() == NodeText;
+}
+
+bool Node::isCDATA()
+{
+    return getType() == CDATA;
 }
 
 TextNode* Node::toTextNode()

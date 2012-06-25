@@ -48,8 +48,7 @@ Element::Element(const char *ntagName, size_t nlenTagName) : Node()
     lenTagName = nlenTagName;
     tagName = (char*)malloc(sizeof(char) * lenTagName);
     memcpy(tagName, ntagName, lenTagName);
-    
-    //DEBUG << std::string(tagName, lenTagName) << endl;
+
     
     firstChild = 0;
     lastChild = 0;
@@ -109,6 +108,7 @@ void Element::appendChild(Node *newChild)
     lastChild = newChild;
     lastChild->nextNode = 0;
     newChild->parent = this;
+
     
 }
 
@@ -378,7 +378,7 @@ bool Element::insertAfter(Node *child, Node *newChild)
         lastChild = newChild;
     }
     child->nextNode = newChild;
-    child->parent = this;
+    newChild->parent = this;
     childCount++;
     return true;
 }
@@ -397,7 +397,7 @@ bool Element::insertBefore(Node *child, Node *newChild)
         firstChild = newChild;
     }
     child->previousNode = newChild;
-    child->parent = this;
+    newChild->parent = this;
     childCount++;
     return true;
 }
@@ -795,7 +795,6 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         
         //On analyse le contenu du tag
         ws = nextUTF8Char(pos, endData - pos);//On prend le premier caractère
-        //DEBUG << ws << endl;
         
         if(!isNameStartChar(ws))//Ce n'est pas un tagName, il y a quelque chose ...
         {
@@ -892,8 +891,7 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                 }
             }
             pos--;
-            
-            //DEBUG << pos - tag << endl;
+
             Element *elmt = new Element(tag, pos - tag);
             APPEND(elmt);
             curElement = elmt;
@@ -916,9 +914,6 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                     pos--;
                     char *attrNameEnd = pos;
                     s = *pos;
-                    //DEBUG << "S : " << s << endl;
-                    //DEBUG << "ATTR : " << *(data.copyString(attrNamestart, attrNameEnd)) << endl;
-                    
                     while(isWhiteSpace(s) && pos < endData){pos++; s = *pos;}//On ignore les espaces blancs
                     
                     if(s != CHAR_EQUAL)
@@ -967,8 +962,7 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         pos++;
         
     }
-    
-    //DEBUG << i << endl;
+
     
     return elements;
     

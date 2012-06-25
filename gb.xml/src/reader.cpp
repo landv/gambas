@@ -47,6 +47,9 @@ void Reader::ClearReader()
     this->inEndTag = false;
     this->inXMLProlog = false;
     this->inCommentTag = false;
+    this->inCDATATag = false;
+    this->inComment = false;
+    this->inCDATA = false;
     this->waitClosingElmt = false;
     this->specialTagLevel = 0;
     this->state = 0;
@@ -167,7 +170,6 @@ int Reader::ReadChar(char car)
             curNode->toElement()->setAttribute(attrName, lenAttrName,  "", 0);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
         }
-        this->state = NODE_ELEMENT;
         return NODE_ELEMENT;
     }
     else if(isWhiteSpace(car) && inTag && inTagName && !inComment)// Fin de tagName
@@ -274,10 +276,59 @@ int Reader::ReadChar(char car)
         inNewTag = false;
         inTag = false;
     }
+    //Caractère de début de CDATA
+    else if(inCommentTag && car == '[' && specialTagLevel == COMMENT_TAG_STARTCHAR_1)
+    {
+        specialTagLevel = CDATA_TAG_STARTCHAR_2;
+        inCommentTag = false;
+        inCDATATag = true;
+    }
+    //Caractère de CDATA
+    else if(inCDATATag && specialTagLevel >= CDATA_TAG_STARTCHAR_2 && specialTagLevel < CDATA_TAG_STARTCHAR_8
+            && (car == '[' || car == 'C' || car == 'D' || car == 'A' || car == 'T'))
+    {
+        ++specialTagLevel;
+        if(specialTagLevel == CDATA_TAG_STARTCHAR_8)
+        {
+            inCDATATag = false;
+            inCDATA = true;
+            curNode = new CDATANode;
+        }
+    }
+    //Caractère "]" de fin de CDATA
+    else if(curNode && curNode->isCDATA() && car == ']')
+    {
+        ++specialTagLevel;
+        if(specialTagLevel > CDATA_TAG_ENDCHAR_2)//On est allés un peu trop loin, il y a des ] en trop
+        {
+            --specialTagLevel;
+            char *&textContent = curNode->toTextNode()->content;
+            size_t &lenTextContent = curNode->toTextNode()->lenContent;
+            textContent = (char*)realloc(textContent, lenTextContent + 1);
+            textContent[lenTextContent] = car;
+            ++lenTextContent;
+        }
+    }
+    //Fin du CDATA
+    else if(curNode && curNode->isCDATA() && car == CHAR_ENDTAG && specialTagLevel == CDATA_TAG_ENDCHAR_2)
+    {
+        specialTagLevel = 0;
+        inTag = false;
+        //UNREF(foundNode);
+        foundNode = curNode;
+        inCDATA = false;
+        if(keepMemory)
+        {
+            APPEND(foundNode);
+        }
+        curNode = 0;
+        this->state = NODE_CDATA;
+        return NODE_CDATA;
+    }
     //Caractère "-" de début de commentaire
     else if(inCommentTag && car == CHAR_DASH && specialTagLevel >= COMMENT_TAG_STARTCHAR_1 && specialTagLevel < COMMENT_TAG_STARTCHAR_3  && !inComment)
     {
-        specialTagLevel++;
+        ++specialTagLevel;
         if (specialTagLevel == COMMENT_TAG_STARTCHAR_3)//Le tag <!-- est complet, on crée un nouveau node
         {
             inCommentTag = false;

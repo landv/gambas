@@ -55,6 +55,7 @@ public:
     bool isElement();
     bool isText();
     bool isComment();
+    bool isCDATA();
     bool isTextNode();
     Element* toElement();
     TextNode* toTextNode();
