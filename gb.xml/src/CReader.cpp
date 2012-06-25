@@ -86,10 +86,8 @@ if(!THIS->foundNode->isElement())
 }
 
 Attribute *attr = *reinterpret_cast<Attribute**>((GB.GetEnum()));
-//DEBUG << attr << std::endl;
 if(attr == 0)
 {
-    //DEBUG << attr << std::endl;
     attr = THIS->foundNode->toElement()->firstAttribute;
     *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
 }
@@ -217,7 +215,6 @@ if(THIS->curAttrEnum)
     GB.ReturnNewString(THIS->curAttrEnum->attrValue, THIS->curAttrEnum->lenAttrValue);
     return;
 }
-//DEBUG << THIS->foundNode->textContent().toStdString() << endl;
 
 char *data; size_t len;
 THIS->foundNode->GBTextContent(data, len);

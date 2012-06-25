@@ -158,15 +158,37 @@ void Element::appendFromText(char *data, const size_t lenData)
     free(nodes);
 }
 
-void Element::addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int depth)
+void Element::addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int mode, const int depth)
 {
     if(depth == 0) return;
-    if(compLenTagName == lenTagName)
+    if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
     {
-        if(memcmp(compTagName, tagName, lenTagName) == 0) 
+        if(compLenTagName == lenTagName)
+        {
+            if(strncasecmp(compTagName, tagName, lenTagName) == 0)
+            {
+                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+                GB.Ref(GBObject);
+            }
+        }
+    }
+    else if(mode == GB_STRCOMP_LIKE)
+    {
+        if(GB.MatchString(compTagName, compLenTagName, tagName, lenTagName))
         {
             *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
             GB.Ref(GBObject);
+        }
+    }
+    else
+    {
+        if(compLenTagName == lenTagName)
+        {
+            if(memcmp(compTagName, tagName, lenTagName) == 0)
+            {
+                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+                GB.Ref(GBObject);
+            }
         }
     }
     if(depth == 1) return;
@@ -175,7 +197,7 @@ void Element::addGBChildrenByTagName(const char *compTagName, const size_t compL
     {
         if(node->isElement())
         {
-            node->toElement()->addGBChildrenByTagName(compTagName, compLenTagName, array, depth - 1);
+            node->toElement()->addGBChildrenByTagName(compTagName, compLenTagName, array, mode, depth - 1);
         }
     }
 }
@@ -195,10 +217,10 @@ void Element::addGBAllChildren(GB_ARRAY *array)
             
 }
 
-void Element::getGBChildrenByTagName(const char *ctagName, const size_t clenTagName, GB_ARRAY *array, const int depth)
+void Element::getGBChildrenByTagName(const char *ctagName, const size_t clenTagName, GB_ARRAY *array, const int mode, const int depth)
 {
     GB.Array.New(array, GB.FindClass("XmlElement"), 0);
-    addGBChildrenByTagName(ctagName, clenTagName, array, depth);
+    addGBChildrenByTagName(ctagName, clenTagName, array, mode, depth);
 }
 
 void Element::getGBAllChildren(GB_ARRAY *array)
@@ -209,25 +231,47 @@ void Element::getGBAllChildren(GB_ARRAY *array)
 
 void Element::getGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
                                                  const char *attrValue, const size_t lenAttrValue,
-                                                 GB_ARRAY *array, const int depth)
+                                                 GB_ARRAY *array, const int mode, const int depth)
 {
     GB.Array.New(array, GB.FindClass("XmlNode"), 0);
-    addGBChildrenByAttributeValue(attrName, lenAttrName, attrValue, lenAttrValue, array, depth);
+    addGBChildrenByAttributeValue(attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth);
 }
 
 void Element::addGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
                                                  const char *attrValue, const size_t lenAttrValue,
-                                                 GB_ARRAY *array, const int depth)
+                                                 GB_ARRAY *array, const int mode, const int depth)
 {
-    Attribute *attr = getAttribute(attrName, lenAttrName);
+    Attribute *attr = getAttribute(attrName, lenAttrName, mode);
     if(attr)
     {
-        if(attr->lenAttrValue == lenAttrValue)
+        if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
         {
-            if(!memcmp(attr->attrValue, attrValue, lenAttrValue))
+            if(attr->lenAttrValue == lenAttrValue)
+            {
+                if(!strncasecmp(attr->attrValue, attrValue, lenAttrValue))
+                {
+                    *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+                    GB.Ref(GBObject);
+                }
+            }
+        }
+        else if(mode == GB_STRCOMP_LIKE)
+        {
+            if(GB.MatchString(attr->attrValue, attr->lenAttrValue, attrValue, lenAttrValue))
             {
                 *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
                 GB.Ref(GBObject);
+            }
+        }
+        else
+        {
+            if(attr->lenAttrValue == lenAttrValue)
+            {
+                if(!memcmp(attr->attrValue, attrValue, lenAttrValue))
+                {
+                    *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+                    GB.Ref(GBObject);
+                }
             }
         }
     }
@@ -256,7 +300,7 @@ void Element::getGBChildren(GB_ARRAY *array)
 
 void Element::getGBChildElements(GB_ARRAY *array)
 {
-    GB.Array.New(array, GB.FindClass("XmlElement"), childCount);
+    GB.Array.New(array, GB.FindClass("XmlElement"), 0);
     for(Node *node = firstChild; node != 0; node = node->nextNode)
     {
         if(!node->isElement()) continue;
@@ -494,12 +538,24 @@ void Element::addAttribute(const char *nattrName, const size_t nlenAttrName,
     lastAttribute->nextNode = 0;
 }
 
-Attribute* Element::getAttribute(const char *nattrName, const size_t nlenAttrName)
+Attribute* Element::getAttribute(const char *nattrName, const size_t nlenAttrName, const int mode)
 {
     for(Attribute *node = (Attribute*)(firstAttribute); node != 0; node = (Attribute*)(node->nextNode))
     {
-        if(!(nlenAttrName == node->lenAttrName)) continue;
-        if(memcmp(nattrName, node->attrName, nlenAttrName) == 0) return node;
+        if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
+        {
+            if(!(nlenAttrName == node->lenAttrName)) continue;
+            if(strncasecmp(nattrName, node->attrName, nlenAttrName) == 0) return node;
+        }
+        else if(mode == GB_STRCOMP_LIKE)
+        {
+            if(GB.MatchString(node->attrName, node->lenAttrName, nattrName, nlenAttrName)) return node;
+        }
+        else
+        {
+            if(!(nlenAttrName == node->lenAttrName)) continue;
+            if(memcmp(nattrName, node->attrName, nlenAttrName) == 0) return node;
+        }
     }
     return 0;
 }

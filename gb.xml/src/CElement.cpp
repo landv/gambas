@@ -200,20 +200,20 @@ GB.ReturnObject(array);
 
 END_METHOD
 
-BEGIN_METHOD(CElement_getChildrenByTagName, GB_STRING tagName; GB_INTEGER depth)
+BEGIN_METHOD(CElement_getChildrenByTagName, GB_STRING tagName; GB_INTEGER mode ; GB_INTEGER depth;)
 
 GB_ARRAY array;
-THIS->getGBChildrenByTagName(STRING(tagName), LENGTH(tagName), &array, VARGOPT(depth, -1));
+THIS->getGBChildrenByTagName(STRING(tagName), LENGTH(tagName), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 GB.ReturnObject(array);
 
 END_METHOD
 
-BEGIN_METHOD(CElement_getChildrenByAttributeValue, GB_STRING name; GB_STRING value; GB_INTEGER depth)
+BEGIN_METHOD(CElement_getChildrenByAttributeValue, GB_STRING name; GB_STRING value; GB_INTEGER mode ; GB_INTEGER depth;)
 
 GB_ARRAY array;
 THIS->getGBChildrenByAttributeValue(STRING(name), LENGTH(name), 
                                     STRING(value), LENGTH(value),
-                                    &array, VARGOPT(depth, -1));
+                                    &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 GB.ReturnObject(array);
 
 END_METHOD
@@ -237,7 +237,7 @@ GB_DESC CElementDesc[] =
     GB_METHOD("AppendText", "", CElement_appendText, "(Data)s"),
     GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s"),
     
-    GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s"),
+    GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s[(Mode)i]"),
     GB_METHOD("SetAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
     
     GB_METHOD("IsAttributeSet", "b", CElement_isAttributeSet, "(Name)s"),
@@ -253,8 +253,8 @@ GB_DESC CElementDesc[] =
     GB_PROPERTY("PerviousSibling", "XmlElement", CElement_previousSibling),
     GB_PROPERTY("NextSibling", "XmlElement", CElement_nextSibling),
     
-    GB_METHOD("GetChildrenByTagName", "XmlElement[]", CElement_getChildrenByTagName, "(TagName)s[(Depth)i]"),
-    GB_METHOD("GetChildrenByAttributeValue", "XmlElement[]", CElement_getChildrenByAttributeValue, "(Attribute)s(Value)s[(Depth)i]"),
+    GB_METHOD("GetChildrenByTagName", "XmlElement[]", CElement_getChildrenByTagName, "(TagName)s[(Mode)i(Depth)i]"),
+    GB_METHOD("GetChildrenByAttributeValue", "XmlElement[]", CElement_getChildrenByAttributeValue, "(Attribute)s(Value)s[(Mode)i(Depth)i]"),
     
     GB_STATIC_METHOD("FromText", "XmlNode[]", CElement_fromText, "(Data)s"),
     

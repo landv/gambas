@@ -25,7 +25,6 @@
 #include "document.h"
 #include "textnode.h"
 
-//#define DEBUG std::cout << pos << " : " <<
 #define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
 #define FREE(_ob) if(_ob) {free(_ob); _ob = 0;}
 #define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
@@ -112,7 +111,6 @@ int Reader::ReadChar(char car)
     #define APPEND(elmt) if(curElmt == 0){}\
     else {curElmt->appendChild(elmt);}
 
-    //DEBUG << car << endl;
     
     ++(this->pos);
     
@@ -120,7 +118,6 @@ int Reader::ReadChar(char car)
     {
         if(car != CHAR_ENDTAG) return 0;
         waitClosingElmt = false;
-        DEBUG << "curNode : " << curNode->toElement() << endl; 
         this->state = READ_END_CUR_ELEMENT;
         return READ_END_CUR_ELEMENT;
     }
@@ -129,10 +126,8 @@ int Reader::ReadChar(char car)
     {
         inNewTag = true;
         inTagName = true;
-        //DEBUG "Début de tag" << endl;
         if(curNode && curNode->isText()) //Si il y avait du texte avant
         {
-            //DEBUG "Élément de texte terminé : " << (curNode->textContent()) << endl;
             //if(foundNode) GB.Unref(POINTER(&foundNode));
             foundNode = curNode;
             if(keepMemory)
@@ -146,7 +141,6 @@ int Reader::ReadChar(char car)
     }
     else if(car == CHAR_ENDTAG && inTag && !inEndTag && !inComment)//Fin de tag (de nouvel élément)
     {
-        //DEBUG "Nouvel élément : " << (*(curNode->toElement()->tagName)) << endl;
         //UNREF(foundNode);
         foundNode = curNode;//On a trouvé un élément complet
         //curNode = 0;
@@ -221,7 +215,6 @@ int Reader::ReadChar(char car)
         inTag = false;
         inTagName = false;
         inEndTag = false;
-        //DEBUG "Fin de l'élément : " << (*content) << endl;
         if(curElmt) curElmt = curElmt->parent;
         FREE(content); lenContent = 0;
         if(depth > 0) --depth;
@@ -232,7 +225,6 @@ int Reader::ReadChar(char car)
     }
     else if(car == CHAR_SLASH && inNewTag && !inComment)//C'est un tag de fin
     {
-        //DEBUG "Tag de fermeture" << endl;
         inEndTag = true;
         inNewTag = false;
         inTag = true;
@@ -241,7 +233,6 @@ int Reader::ReadChar(char car)
     {
         inTag = false;
         inEndTag = false;
-        //DEBUG "Fin de l'élément : " << (*content) << endl;
         if(curElmt && lenContent == curElmt->lenTagName)
         {
             if(memcmp(curElmt->tagName, content, lenContent))
@@ -262,7 +253,6 @@ int Reader::ReadChar(char car)
         }
         else
         {
-            //DEBUG << (void*)content  << " " << lenContent << std::endl;
             content = (char*)realloc(content, lenContent + 1);
             content[lenContent] = car;
             ++lenContent;
@@ -399,7 +389,6 @@ int Reader::ReadChar(char car)
         else if(!curNode || (!curNode->isText() && !inTag))//Pas de nœud courant -> nœud texte
         {
             if(isWhiteSpace(car)) return 0;
-            //DEBUG "Nouvel élément texte " << endl;
             TextNode* newNode = new TextNode(&car, 1);
             if(curNode) 
             { /*if(curNode->isElement()) this->curNode->toElement()->appendChild((newNode));*/
@@ -412,7 +401,6 @@ int Reader::ReadChar(char car)
         {
             char *&textContent = curNode->toElement()->tagName;
             size_t &lenTextContent = curNode->toElement()->lenTagName;
-            //DEBUG << (void*)textContent << " " << lenTextContent << std::endl;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
             textContent[lenTextContent] = car;
             ++lenTextContent;
@@ -451,7 +439,6 @@ int Reader::ReadChar(char car)
         {
             char *&textContent = curNode->toTextNode()->content;
             size_t &lenTextContent = curNode->toTextNode()->lenContent;
-            //DEBUG << (void*)(curNode->toTextNode()) << " " << std::endl;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
             textContent[lenTextContent] = car;
             ++lenTextContent;

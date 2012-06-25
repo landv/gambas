@@ -48,7 +48,6 @@ void Node::DestroyGBObject()
 {
     if((!parent) && (!parentDocument))
     {
-        if(this->isElement()) DEBUG << string(this->toElement()->tagName, this->toElement()->lenTagName) << endl;
         delete this;
     }
     else
@@ -59,7 +58,6 @@ void Node::DestroyGBObject()
 
 void Node::DestroyParent()
 {
-    if(this->isElement()) DEBUG << "Delete parent : " << string(this->toElement()->tagName, this->toElement()->lenTagName) << endl;
     if(!GBObject)
     {
         delete this;

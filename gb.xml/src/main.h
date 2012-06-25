@@ -24,6 +24,12 @@
 
 #include "../gambas.h"
 
+#define GB_STRCOMP_BINARY   0
+#define GB_STRCOMP_NOCASE   1
+#define GB_STRCOMP_LANG     2
+#define GB_STRCOMP_LIKE     4
+#define GB_STRCOMP_NATURAL  8
+
 #define VARGOBJ(_type, _ob) ((_type*)VARG(_ob))
 
 #include <iostream>

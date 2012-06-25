@@ -77,14 +77,14 @@ public:
     
     void appendFromText(char *data, const size_t lenData);
     
-    void getGBChildrenByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int depth = -1);
-    void addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int depth = -1);
+    void getGBChildrenByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     void getGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
                                        const char *attrValue, const size_t lenAttrValue,
-                                       GB_ARRAY *array, const int depth = -1);
+                                       GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     void addGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
                                        const char *attrValue, const size_t lenAttrValue,
-                                       GB_ARRAY *array, const int depth = -1);
+                                       GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     
     Element** getChildrenByTagName(const char *ctagName, const size_t clenTagName, size_t &lenArray, const int depth = -1);
     Element* getFirstChildByTagName(const char *ctagName, const size_t clenTagName, const int depth = -1);
@@ -108,7 +108,7 @@ public:
     void addAttribute(const char *nattrName, const size_t nlenAttrName);//Adds a new attribute
     void addAttribute(const char *nattrName, const size_t nlenAttrName, 
                       const char *nattrVal, const size_t nlenAttrVal);
-    Attribute* getAttribute(const char *nattrName, const size_t nlenAttrName);//Looks for attribute, and returns its value
+    Attribute* getAttribute(const char *nattrName, const size_t nlenAttrName, const int mode = GB_STRCOMP_BINARY);//Looks for attribute, and returns its value
     void setAttribute(const char *nattrName, const size_t nlenAttrName,
                        const char *nattrVal, const size_t nlenAttrVal);//Looks for attribute, sets its value or add it if attribute is not found
     bool attributeContains(const char *attrName, size_t lenAttrName, char *value, size_t lenValue);

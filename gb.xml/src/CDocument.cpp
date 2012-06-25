@@ -125,11 +125,11 @@ THIS->save(GB.ToZeroString(ARG(fileName)), VARG(indent));
 
 END_METHOD
 
-BEGIN_METHOD(CDocument_getElementsByTagName, GB_STRING tagName; GB_INTEGER depth)
+BEGIN_METHOD(CDocument_getElementsByTagName, GB_STRING tagName; GB_INTEGER mode; GB_INTEGER depth;)
 
 GB_ARRAY array;
 
-THIS->getGBElementsByTagName(STRING(tagName), LENGTH(tagName), &array, VARGOPT(depth, -1));
+THIS->getGBElementsByTagName(STRING(tagName), LENGTH(tagName), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 
 GB.ReturnObject(array);
 
@@ -163,7 +163,7 @@ GB_DESC CDocumentDesc[] =
     GB_METHOD("CreateElement", "XmlElement", CDocument_createElement, "(TagName)s"),
     GB_PROPERTY_READ("Root", "XmlElement", CDocument_root),
     GB_PROPERTY_READ("All", "XmlElement[]", CDocument_getAll),
-    GB_METHOD("GetElementsByTagName", "XmlElement[]", CDocument_getElementsByTagName, "(TagName)s[(Depth)i]"),
+    GB_METHOD("GetElementsByTagName", "XmlElement[]", CDocument_getElementsByTagName, "(TagName)s[(Mode)i(Depth)i]"),
     
     
     

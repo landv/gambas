@@ -57,9 +57,9 @@ void Document::setRoot(Element *newRoot)
     root = newRoot;
 }
 
-void Document::getGBElementsByTagName(const char *ctagName, const size_t clenTagName, GB_ARRAY *array, const int depth)
+void Document::getGBElementsByTagName(const char *ctagName, const size_t clenTagName, GB_ARRAY *array, const int mode, const int depth)
 {
-    root->getGBChildrenByTagName(ctagName, clenTagName, array, depth);
+    root->getGBChildrenByTagName(ctagName, clenTagName, array, mode, depth);
 }
 
 void Document::getAllElements(GB_ARRAY *array)

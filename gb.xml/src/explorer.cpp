@@ -24,7 +24,6 @@
 #include "element.h"
 
 
-//#define DEBUG std::cout << pos << " : " <<
 
 Explorer::Explorer()
 {
