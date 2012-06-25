@@ -64,6 +64,10 @@ public:
     bool isSingle();
     char *tagName;
     size_t lenTagName;
+
+    void setPrefix(const char *nprefix, size_t nlenPrefix);
+    char *prefix;
+    size_t lenPrefix;
    
     //Node tree
     void appendChild(Node *newChild);//Adds a new child after the last one
@@ -77,6 +81,8 @@ public:
     
     void appendFromText(char *data, const size_t lenData);
     
+    void getGBChildrenByNamespace(const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void addGBChildrenByNamespace(const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     void getGBChildrenByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     void addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     void getGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,

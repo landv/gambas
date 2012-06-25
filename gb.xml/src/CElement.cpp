@@ -55,6 +55,19 @@ else
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CElement_prefix)
+
+if(READ_PROPERTY)
+{
+    GB.ReturnNewString(THIS->prefix, THIS->lenPrefix);
+}
+else
+{
+    THIS->setPrefix(PSTRING(), PLENGTH());
+}
+
+END_PROPERTY
+
 BEGIN_METHOD(CElement_appendChild, GB_OBJECT newChild)
 
     THIS->appendChild(VARGOBJ(CNode, newChild)->node);
@@ -208,6 +221,14 @@ GB.ReturnObject(array);
 
 END_METHOD
 
+BEGIN_METHOD(CElement_getChildrenByNamespace, GB_STRING name; GB_INTEGER mode ; GB_INTEGER depth;)
+
+GB_ARRAY array;
+THIS->getGBChildrenByNamespace(STRING(name), LENGTH(name), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
+GB.ReturnObject(array);
+
+END_METHOD
+
 BEGIN_METHOD(CElement_getChildrenByAttributeValue, GB_STRING name; GB_STRING value; GB_INTEGER mode ; GB_INTEGER depth;)
 
 GB_ARRAY array;
@@ -250,9 +271,11 @@ GB_DESC CElementDesc[] =
     GB_PROPERTY_READ("LastChildElement", "XmlElement", CElement_lastChildElement),
     
     GB_PROPERTY("TagName", "s", CElement_tagName),
+    GB_PROPERTY("Prefix", "s", CElement_prefix),
     GB_PROPERTY("PerviousSibling", "XmlElement", CElement_previousSibling),
     GB_PROPERTY("NextSibling", "XmlElement", CElement_nextSibling),
-    
+
+    GB_METHOD("GetChildrenByNamespace", "XmlElement[]", CElement_getChildrenByNamespace, "(Namespace)s[(Mode)i(Depth)i]"),
     GB_METHOD("GetChildrenByTagName", "XmlElement[]", CElement_getChildrenByTagName, "(TagName)s[(Mode)i(Depth)i]"),
     GB_METHOD("GetChildrenByAttributeValue", "XmlElement[]", CElement_getChildrenByAttributeValue, "(Attribute)s(Value)s[(Mode)i(Depth)i]"),
     

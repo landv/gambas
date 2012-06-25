@@ -49,6 +49,7 @@ public:
     //Node tree
     void setRoot(Element *newRoot);
     void getGBElementsByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void getGBElementsByNameSpace(const char *cName, const size_t clenName,  GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
     void getAllElements(GB_ARRAY *array);
     
     Element *root;

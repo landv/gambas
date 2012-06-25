@@ -41,13 +41,28 @@ Element::Element() : Node()
     firstAttribute = 0;
     lastAttribute = 0;
     attributeCount = 0;
+    prefix = 0;
+    lenPrefix = 0;
 }
 
 Element::Element(const char *ntagName, size_t nlenTagName) : Node()
 {
-    lenTagName = nlenTagName;
-    tagName = (char*)malloc(sizeof(char) * lenTagName);
-    memcpy(tagName, ntagName, lenTagName);
+    register char* pos = (char*)memchr(ntagName, ':', nlenTagName);//Prefix
+    if(pos)
+    {
+        lenTagName = (ntagName + nlenTagName) - (pos + 1);
+        lenPrefix = pos - ntagName;
+        tagName = (char*)malloc(lenTagName);
+        prefix = (char*)malloc(lenPrefix);
+        memcpy(prefix, ntagName, lenPrefix);
+        memcpy(tagName, pos + 1, lenTagName);
+    }
+    else
+    {
+        lenTagName = nlenTagName;
+        tagName = (char*)malloc(sizeof(char) * lenTagName);
+        memcpy(tagName, ntagName, lenTagName);
+    }
 
     
     firstChild = 0;
@@ -202,6 +217,50 @@ void Element::addGBChildrenByTagName(const char *compTagName, const size_t compL
     }
 }
 
+void Element::addGBChildrenByNamespace(const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode, const int depth)
+{
+    if(depth == 0) return;
+    if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
+    {
+        if(lenNamespace == lenTagName)
+        {
+            if(strncasecmp(cnamespace, prefix, lenPrefix) == 0)
+            {
+                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+                GB.Ref(GBObject);
+            }
+        }
+    }
+    else if(mode == GB_STRCOMP_LIKE)
+    {
+        if(GB.MatchString(cnamespace, lenNamespace, prefix, lenPrefix))
+        {
+            *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+            GB.Ref(GBObject);
+        }
+    }
+    else
+    {
+        if(lenNamespace == lenPrefix)
+        {
+            if(memcmp(cnamespace, prefix, lenNamespace) == 0)
+            {
+                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
+                GB.Ref(GBObject);
+            }
+        }
+    }
+    if(depth == 1) return;
+
+    for(Node *node = firstChild; node != 0; node = node->nextNode)
+    {
+        if(node->isElement())
+        {
+            node->toElement()->addGBChildrenByTagName(cnamespace, lenNamespace, array, mode, depth - 1);
+        }
+    }
+}
+
 void Element::addGBAllChildren(GB_ARRAY *array)
 {
     *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = GetGBObject();
@@ -221,6 +280,12 @@ void Element::getGBChildrenByTagName(const char *ctagName, const size_t clenTagN
 {
     GB.Array.New(array, GB.FindClass("XmlElement"), 0);
     addGBChildrenByTagName(ctagName, clenTagName, array, mode, depth);
+}
+
+void Element::getGBChildrenByNamespace(const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode, const int depth)
+{
+    GB.Array.New(array, GB.FindClass("XmlElement"), 0);
+    addGBChildrenByNamespace(cnamespace, lenNamespace, array, mode, depth);
 }
 
 void Element::getGBAllChildren(GB_ARRAY *array)
@@ -457,18 +522,29 @@ void Element::replaceChild(Node *oldChild, Node *newChild)
 
 void Element::setTagName(const char *ntagName, size_t nlenTagName)
 {
-    
-    lenTagName = nlenTagName;
-    if(tagName) 
+    register char* pos = (char*)memchr(ntagName, ':', nlenTagName);//Prefix
+    if(pos)
     {
-        tagName = (char*)realloc(tagName, sizeof(char) * lenTagName);
+        lenTagName = (ntagName + nlenTagName) - (pos + 1);
+        lenPrefix = pos - ntagName;
+        tagName = (char*)realloc(tagName, lenTagName);
+        prefix = (char*)realloc(prefix, lenPrefix);
+        memcpy(prefix, ntagName, lenPrefix);
+        memcpy(tagName, pos + 1, lenTagName);
     }
     else
     {
+        lenTagName = nlenTagName;
         tagName = (char*)malloc(sizeof(char) * lenTagName);
+        memcpy(tagName, ntagName, lenTagName);
     }
-    
-    memcpy(tagName, ntagName, lenTagName);
+}
+
+void Element::setPrefix(const char *nprefix, size_t nlenPrefix)
+{
+    lenPrefix = nlenPrefix;
+    prefix = (char*)realloc(prefix, lenPrefix);
+    memcpy(prefix, nprefix, lenPrefix);
 }
 
 bool Element::isSingle()
@@ -604,19 +680,19 @@ bool Element::attributeContains(const char *attrName, size_t lenAttrName, char *
 /***** String output *****/
 void Element::addStringLen(size_t *len, int indent)
 {
-    // (indent) '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' \n
+    // (indent) '<' + prefix:tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' \n
     // + children + (indent) '</' + tag + '>" \n
     // Or, singlElement :
-    // (indent) '<' + tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' \n
+    // (indent) '<' + prefix:tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' \n
     
     if(isSingle())
     {
-        (*len) += (4 + lenTagName);
+        (*len) += (4 + lenTagName + (prefix ? lenPrefix + 1 : 0));
         if(indent >= 0) *len += indent + 1;
     }
     else
     {
-        (*len) += (5 + (lenTagName * 2));
+        (*len) += (5 + ((lenTagName + (prefix ? lenPrefix + 1 : 0)) * 2));
         if(indent >= 0) *len += indent * 2 + 2;
         for(Node *child = firstChild; child != 0; child = child->nextNode)
         {
@@ -644,6 +720,11 @@ void Element::addString(char **data, int indent)
         content += indent;
     }
     ADD(CHAR_STARTTAG);
+    if(prefix)
+    {
+        memcpy(content, prefix, lenPrefix); content += lenPrefix;
+        ADD(':');
+    }
     memcpy(content, tagName, lenTagName); content += lenTagName;
     
     //Attributes
@@ -684,6 +765,11 @@ void Element::addString(char **data, int indent)
         //Ending Tag    
         ADD(CHAR_STARTTAG);
         ADD(CHAR_SLASH);
+        if(prefix)
+        {
+            memcpy(content, prefix, lenPrefix); content += lenPrefix;
+            ADD(':');
+        }
         memcpy(content, tagName, lenTagName); content += lenTagName;
         ADD(CHAR_ENDTAG); 
         if(indent >= 0) { ADD(SCHAR_N); }
@@ -868,6 +954,32 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                     //ERREUR : TAG MISMATCH
                     throw(XMLParseException("Tag mismatch",
                     data, lendata, pos - 1));
+                }
+                else if(curElement->prefix)//Gestion  du préfixe
+                {
+                    if((endData) < pos + curElement->lenTagName + curElement->lenPrefix + 1)//Impossible que les tags correspondent
+                    {
+                        //ERREUR : TAG MISMATCH
+                        throw(XMLParseException("Tag mismatch",
+                        data, lendata, pos - 1));
+                    }
+                    else if(memcmp(pos, curElement->prefix, curElement->lenPrefix) != 0 ||
+                            *(pos + curElement->lenPrefix) != ':' ||
+                            memcmp(pos + curElement->lenPrefix + 1, curElement->tagName, curElement->lenTagName) != 0)
+                    {
+                        //ERREUR : TAG MISMATCH
+                        throw(XMLParseException("Tag mismatch",
+                        data, lendata, pos - 1));
+                    }
+                    else
+                    {
+                        pos += curElement->lenTagName + curElement->lenPrefix + 1;
+                        curElement = curElement->parent;
+                        tag = (char*)memchr(pos, CHAR_ENDTAG, endData - pos);//On cherche la fin du ta
+                        pos = tag + 1;//On avance à la fin du tag
+
+                        continue;
+                    }
                 }
                 //Les tags ne correspondent pas
                 else if(memcmp(pos, curElement->tagName, curElement->lenTagName) != 0)

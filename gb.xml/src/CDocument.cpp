@@ -135,6 +135,16 @@ GB.ReturnObject(array);
 
 END_METHOD
 
+BEGIN_METHOD(CDocument_getElementsByNamespace, GB_STRING name; GB_INTEGER mode; GB_INTEGER depth;)
+
+GB_ARRAY array;
+
+THIS->getGBElementsByNameSpace(STRING(name), LENGTH(name), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
+
+GB.ReturnObject(array);
+
+END_METHOD
+
 BEGIN_PROPERTY(CDocument_getAll)
 
 GB_ARRAY array;
@@ -164,7 +174,8 @@ GB_DESC CDocumentDesc[] =
     GB_PROPERTY_READ("Root", "XmlElement", CDocument_root),
     GB_PROPERTY_READ("All", "XmlElement[]", CDocument_getAll),
     GB_METHOD("GetElementsByTagName", "XmlElement[]", CDocument_getElementsByTagName, "(TagName)s[(Mode)i(Depth)i]"),
-    
+    GB_METHOD("GetElementsByNamespace", "XmlElement[]", CDocument_getElementsByNamespace, "(Namespace)s[(Mode)i(Depth)i]"),
+
     
     
     GB_PROPERTY("Content", "s", CDocument_content),

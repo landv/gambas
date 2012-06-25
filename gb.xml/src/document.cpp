@@ -62,6 +62,11 @@ void Document::getGBElementsByTagName(const char *ctagName, const size_t clenTag
     root->getGBChildrenByTagName(ctagName, clenTagName, array, mode, depth);
 }
 
+void Document::getGBElementsByNameSpace(const char *cName, const size_t clenName, GB_ARRAY *array, const int mode, const int depth)
+{
+    root->getGBChildrenByNamespace(cName, clenName, array, mode, depth);
+}
+
 void Document::getAllElements(GB_ARRAY *array)
 {
     root->getGBAllChildren(array);
