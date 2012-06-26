@@ -62,6 +62,8 @@ Element::Element(const char *ntagName, size_t nlenTagName) : Node()
         lenTagName = nlenTagName;
         tagName = (char*)malloc(sizeof(char) * lenTagName);
         memcpy(tagName, ntagName, lenTagName);
+        prefix = 0;
+        lenPrefix = 0;
     }
 
     

@@ -97,8 +97,14 @@ END_METHOD
 
 BEGIN_METHOD(CElement_appendFromText, GB_STRING data)
 
-THIS->appendFromText(STRING(data), LENGTH(data));
-
+try
+{
+    THIS->appendFromText(STRING(data), LENGTH(data));
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
+}
 END_METHOD
 
 BEGIN_METHOD(CElement_appendChildren, GB_OBJECT children)
