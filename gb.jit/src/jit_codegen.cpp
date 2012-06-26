@@ -1327,7 +1327,9 @@ llvm::Value* PushLastExpression::codegen_get_value(){
 
 static llvm::Value* read_variable(TYPE type, char* addr){
 	llvm::Value* ret;
-	if (type < T_STRING || type == T_POINTER)
+	if (type == T_BOOLEAN)
+		ret = builder->CreateTrunc(read_global(addr, llvmType(getInt8Ty)), llvmType(getInt1Ty));
+	else if (type < T_STRING || type == T_POINTER)
 		ret = read_global(addr, TYPE_llvm(type));
 	else if (type == T_STRING){
 		llvm::Value* ad = read_global(addr);
@@ -1394,7 +1396,9 @@ llvm::Value* ReadVariableExpression::codegen_get_value(){
 //FIXME this is almost same as array_read, only difference is in variant
 static llvm::Value* read_variable(TYPE type, llvm::Value* addr){
 	llvm::Value* ret;
-	if (type < T_STRING || type == T_POINTER)
+	if (type == T_BOOLEAN)
+		ret = builder->CreateTrunc(builder->CreateLoad(builder->CreateBitCast(addr, llvmType(getInt8PtrTy))), llvmType(getInt1Ty));
+	else if (type < T_STRING || type == T_POINTER)
 		ret = builder->CreateLoad(builder->CreateBitCast(addr, pointer_t(TYPE_llvm(type))));
 	else if (type == T_STRING){
 		llvm::Value* ad = builder->CreateLoad(builder->CreateBitCast(addr, charPP));
