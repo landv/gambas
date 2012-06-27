@@ -910,3 +910,41 @@ Public Sub SetTransparent(bTransparent As Boolean)
   
 End
 
+
+Public Sub panMove_Menu()
+
+  Dim hPopup, hMenu As Menu
+  
+  hPopup = New Menu(Me)
+  
+  hMenu = New Menu(hPopup) As "mnuHidden"
+  hMenu.Text = ("Hidden")
+  hMenu.Checked = IsHidden()
+  
+  hMenu = New Menu(hPopup) As "mnuTransparent"
+  hMenu.Text = ("Transparent")
+  hMenu.Checked = IsTransparent()
+  
+  hMenu = New Menu(hPopup)
+  
+  hMenu = New Menu(hPopup)
+  hMenu.Text = ("Cancel")
+  hMenu.Picture = Picture["icon:/small/close"]
+
+  hPopup.Popup
+  hPopup.Delete
+
+End
+
+Public Sub mnuHidden_Click()
+  
+  SetHidden(Not IsHidden())
+  
+End
+
+Public Sub mnuTransparent_Click()
+  
+  SetTransparent(Not IsTransparent())
+  
+End
+

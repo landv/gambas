@@ -170,12 +170,13 @@ End
 
 Private Function Settings_Read() As Variant[]
 
-  Return [CVariant(Hidden_Read()), Dimension_Read()]
+  Return [CVariant(Hidden_Read()), Dimension_Read(), Transparent_Read()]
 
 End
 
 Private Sub Settings_Write(Value As Variant[])
 
+  Try Transparent_Write(Value[2])
   Try Hidden_Write(Value[0])
   Try Dimension_Write(Value[1])
 
