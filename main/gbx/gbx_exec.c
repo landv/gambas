@@ -740,7 +740,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 void EXEC_leave_drop()
 {
 	int nparam;
-	VALUE ret;
+	//VALUE ret;
 	ushort *pc;
 	int n, nb;
 
@@ -752,7 +752,9 @@ void EXEC_leave_drop()
 	/* Save the return value. It can be erased by OBJECT_UNREF() */
 
 	//ret = *RP;
-	VALUE_copy(&ret, RP);
+	EXEC_release_return_value();
+
+	//VALUE_copy(&ret, RP);
 	
   pc = STACK_get_previous_pc();
   nparam = FP->n_param;
@@ -769,8 +771,6 @@ void EXEC_leave_drop()
 		PROFILE_LEAVE_FUNCTION();
 		STACK_pop_frame(&EXEC_current);
 	}
-
-	EXEC_release_return_value();
 
 	SP += nb;
 	
@@ -827,6 +827,8 @@ void EXEC_leave_keep()
 			VALUE_conv_variant(SP);
 		SP++;
 	}
+	else
+		VALUE_copy(RP, &ret);
 
 	SP += nb;
 	
