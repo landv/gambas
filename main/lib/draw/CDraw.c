@@ -825,8 +825,6 @@ BEGIN_METHOD(CDRAW_picture, GB_OBJECT picture; GB_INTEGER x; GB_INTEGER y; GB_IN
 	y = VARGOPT(y, 0);
 	w = VARGOPT(w, info.width);
 	h = VARGOPT(h, info.height);
-	w = VARGOPT(w, -1);
-	h = VARGOPT(h, -1);
 
 	if (THIS->xform)
 		MATRIX_map_rect(THIS_MATRIX, &x, &y, &w, &h);
