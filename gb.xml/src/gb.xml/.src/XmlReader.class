@@ -75,6 +75,18 @@ Public Sub Open(path As String)
   
 End
 
+Public Sub Close()
+  
+  If $stream Then 
+    Close #$stream
+  Endif
+  
+  $posBuffer = 0
+  Me._Close()
+  
+End
+
+
 
 Private Function Eof_Read() As Boolean
 

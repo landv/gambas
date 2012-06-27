@@ -15,7 +15,7 @@ Public Sub Main()
       Case XmlReaderNodeType.Attribute
         Print "attribute"
       Case XmlReaderNodeType.Text
-        Print "text"
+        Print "text";; reader.Node.Value
       Case XmlReaderNodeType.Comment
         Print "comment"
       Case XmlReaderNodeType.CDATA
