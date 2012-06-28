@@ -406,6 +406,7 @@ int Reader::ReadChar(char car)
         }
         else if(curNode->isElement() && inTag && !inAttr)//Si on est dans le tag d'un élément
         {
+            if(!isNameChar(car)) return;
             char *&textContent = curNode->toElement()->tagName;
             size_t &lenTextContent = curNode->toElement()->lenTagName;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
