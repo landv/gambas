@@ -40,8 +40,8 @@ extern GB_DESC CUncompressDesc[];
 typedef  struct
 {
     GB_BASE ob;
-    COMPRESS_DRIVER *driver;
     GB_STREAM stream;
+    COMPRESS_DRIVER *driver;
 
 }  CUNCOMPRESS;
 
