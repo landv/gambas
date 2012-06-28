@@ -1404,6 +1404,8 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 
 		if (pos == pos_ampm)
 		{
+			add_date_token(&vdate, &token, token_count);
+			
 			/* passage en struct tm */
 
 			date_tm.tm_sec = date->sec;
