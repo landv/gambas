@@ -117,16 +117,23 @@ static bool _currency;
 
 static char *_lang = NULL;
 
-#define add_currency_flag(_flag) (LOCAL_local.currency_flag <<= 1, LOCAL_local.currency_flag |= (_flag))
-#define test_currency_flag(_negative, _space, _before, _intl) (LOCAL_local.currency_flag & (1 << ((_negative) + ((_before) << 2) + ((_intl) << 3))))
+#define add_currency_flag(_flag) (LOCAL_local.currency_flag <<= 1, LOCAL_local.currency_flag |= (!!(_flag)))
+#define test_currency_flag(_negative, _space, _before, _intl) (!!(LOCAL_local.currency_flag & (1 << ((!!_negative) + ((!!_before) << 1) + ((!!_intl) << 2)))))
 
 static void init_currency_flag(struct lconv *info)
 {
 #ifndef OS_OPENBSD
 	add_currency_flag(info->int_n_cs_precedes); // 7
 	add_currency_flag(info->int_p_cs_precedes); // 6
-	add_currency_flag(info->int_n_sep_by_space); // 5
-	add_currency_flag(info->int_p_sep_by_space); // 4
+	//add_currency_flag(info->int_n_sep_by_space); // 5
+	//add_currency_flag(info->int_p_sep_by_space); // 4
+	add_currency_flag(1); // 5
+	add_currency_flag(1); // 4
+#else
+	add_currency_flag(info->n_cs_precedes); // 7
+	add_currency_flag(info->p_cs_precedes); // 6
+	add_currency_flag(1); // 5
+	add_currency_flag(1); // 4
 #endif
 	add_currency_flag(info->n_cs_precedes); // 3
 	add_currency_flag(info->p_cs_precedes); // 2
@@ -136,26 +143,13 @@ static void init_currency_flag(struct lconv *info)
 
 static bool is_currency_before(bool negative, bool intl)
 {
-	int test = 2;
-	
-	if (intl)
-		test += 4;
-	if (negative)
-		test += 1;
-		
-	return LOCAL_local.currency_flag & (1 << test);
+	return test_currency_flag(negative, FALSE, TRUE, intl);
 }
 
 static bool is_currency_space(bool negative, bool intl)
 {
-	int test = 0;
-	
-	if (intl)
-		test += 4;
-	if (negative)
-		test += 1;
-		
-	return LOCAL_local.currency_flag & (1 << test);
+	//fprintf(stderr, "%02X & %02X\n", LOCAL_local.currency_flag, (1 << ((!!negative) + ((!!0) << 1) + ((!!intl) << 2))));
+	return test_currency_flag(negative, TRUE, FALSE, intl);
 }
 
 static int my_setenv(const char *name, const char *value, char **ptr)
