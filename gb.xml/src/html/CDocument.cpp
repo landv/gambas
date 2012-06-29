@@ -54,6 +54,15 @@ BEGIN_METHOD_VOID(CDocument_free)
 
 END_METHOD
 
+BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
+
+Element *elmt = new Element(STRING(tagName), LENGTH(tagName));
+Node::NoInstanciate = true;
+GBI::Return(elmt);
+Node::NoInstanciate = false;
+
+END_METHOD
+
 BEGIN_PROPERTY(CDocument_Html5)
 
 if(READ_PROPERTY)
@@ -117,34 +126,44 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_root)
 
+Node::NoInstanciate = true;
 GBI::Return(THIS->root);
+Node::NoInstanciate = false;
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_head)
 
+Node::NoInstanciate = true;
 GBI::Return(THIS->getHead());
+Node::NoInstanciate = false;
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_body)
 
+Node::NoInstanciate = true;
 GBI::Return(THIS->getBody());
+Node::NoInstanciate = false;
 
 END_PROPERTY
 
 BEGIN_METHOD(CDocument_getElementById, GB_STRING id; GB_INTEGER depth)
 
+Node::NoInstanciate = true;
 GBI::Return(THIS->getElementById(STRING(id), LENGTH(id), VARGOPT(depth, -1)));
+Node::NoInstanciate = false;
 
 END_METHOD
 
 BEGIN_METHOD(CDocument_getElementsByClassName, GB_STRING className; GB_INTEGER depth)
 
+Node::NoInstanciate = true;
 if(LENGTH(className) <= 0) return;
 GB_ARRAY array;
 THIS->getElementsByClassName(STRING(className), LENGTH(className), &array, VARGOPT(depth, -1));
 GB.ReturnObject(array);
+Node::NoInstanciate = false;
 
 END_METHOD
 
@@ -242,7 +261,9 @@ GB_DESC CDocumentDesc[] =
 
     GB_METHOD("_new", "", CDocument_new, "[(Path)s]"),
     GB_METHOD("_free", "", CDocument_free, ""),
-
+    
+    
+    GB_METHOD("CreateElement", "XmlElement", CDocument_createElement, "(TagName)s"),
     GB_PROPERTY("Html5", "b", CDocument_Html5),
     //GB_METHOD("ForceSetContent", "", CDocument_forceSetContent, "(Data)s"),
     GB_PROPERTY("Title", "s", CDocument_Title),

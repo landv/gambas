@@ -537,7 +537,7 @@ void Element::setTagName(const char *ntagName, size_t nlenTagName)
     else
     {
         lenTagName = nlenTagName;
-        tagName = (char*)malloc(sizeof(char) * lenTagName);
+        tagName = (char*)realloc(tagName, sizeof(char) * lenTagName);
         memcpy(tagName, ntagName, lenTagName);
     }
 }

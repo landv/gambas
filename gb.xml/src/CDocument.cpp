@@ -31,6 +31,7 @@
 BEGIN_METHOD(CDocument_new, GB_STRING fileName)
 
 if(Node::NoInstanciate) return;
+if(GB.Is(_object, GB.FindClass("HtmlDocument"))) return;//Called as inherited HtmlDocument constructor
 
 if(!MISSING(fileName))
 {
@@ -47,7 +48,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CDocument_free)
 
-//delete THIS;
+delete THIS;
 
 END_METHOD
 
@@ -158,8 +159,9 @@ END_METHOD
 BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
 
 Element *elmt = new Element(STRING(tagName), LENGTH(tagName));
-
+Node::NoInstanciate = true;
 GBI::Return(elmt);
+Node::NoInstanciate = false;
 
 END_METHOD
 
