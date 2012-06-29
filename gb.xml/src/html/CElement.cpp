@@ -30,19 +30,12 @@
 #define THIS (static_cast<CNode*>(_object)->node->toElement())
 #define THISNODE (static_cast<CNode*>(_object)->node)
 
-BEGIN_METHOD(CElement_new, GB_STRING tagName)
+BEGIN_METHOD_VOID(CElement_new)
 
-if(Node::NoInstanciate) return;
-
-if(!MISSING(tagName))
+if(Node::NoInstanciate) 
 {
-    THISNODE = new Element(STRING(tagName), LENGTH(tagName));
+    delete THISNODE;
 }
-else
-{
-    THISNODE = new Element;
-}
-    THIS->GBObject = static_cast<CNode*>(_object);
 
 END_METHOD
 
@@ -110,7 +103,7 @@ GB_DESC CElementDesc[] =
 {
     GB_DECLARE("XmlElement", sizeof(CNode)),
     
-    GB_METHOD("_new", "", CElement_new, "[(TagName)s]"),
+    GB_METHOD("_new", "", CElement_new, ""),
 
     GB_PROPERTY("Id", "s", CElement_id),
     GB_PROPERTY("ClassName", "s", CElement_className),

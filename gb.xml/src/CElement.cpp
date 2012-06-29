@@ -29,7 +29,6 @@
 BEGIN_METHOD(CElement_new, GB_STRING tagName)
 
 if(Node::NoInstanciate) return;
-if(GB.Component.Exist("gb.xml.html")) return;//html part override
 
 if(!MISSING(tagName))
 {
