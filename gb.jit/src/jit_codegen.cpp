@@ -6181,13 +6181,15 @@ void NopExpression::codegen(){
 		read_global((void*)&SP),
 		read_global((void*)&BP));*/
 	
-	llvm::Value* sp = read_global((void*)&SP);
-	llvm::Value* bp = read_global((void*)&BP);
-	bp = builder->CreateGEP(bp, getInteger(TARGET_BITS, sizeof(VALUE)*(FP->n_local+FP->n_ctrl)));
-	gen_if_noreturn(builder->CreateICmpNE(bp, sp), [&](){
-		builder->CreateCall(get_global_function(stack_corrupted_abort, 'v', ""));
-		builder->CreateUnreachable();
-	});
+	if (test_stack){
+		llvm::Value* sp = read_global((void*)&SP);
+		llvm::Value* bp = read_global((void*)&BP);
+		bp = builder->CreateGEP(bp, getInteger(TARGET_BITS, sizeof(VALUE)*(FP->n_local+FP->n_ctrl)));
+		gen_if_noreturn(builder->CreateICmpNE(bp, sp), [&](){
+			builder->CreateCall(get_global_function(stack_corrupted_abort, 'v', ""));
+			builder->CreateUnreachable();
+		});
+	}
 }
 
 void StopEventExpression::codegen(){

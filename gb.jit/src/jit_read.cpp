@@ -919,7 +919,7 @@ static void JIT_read_statement(){
 					}
 					case C_BREAK:
 						//PC = code+pos;
-						push_statement(new NopExpression(/*JIF.F_DEBUG_get_current_position()*/));
+						push_statement(new NopExpression(true/*JIF.F_DEBUG_get_current_position()*/));
 						//PC = code;
 						//push_statement(new NopExpression());
 						NEXT
@@ -929,7 +929,7 @@ static void JIT_read_statement(){
 					case C_QUIT:
 						switch(value){
 							case 0: push_statement(new QuitExpression()); NEXT
-							case 1: NEXT //FIXME breakpoint
+							case 1: push_statement(new NopExpression(false)); NEXT //FIXME breakpoint
 							case 2: default: push_statement(new StopEventExpression()); NEXT
 						}
 					case C_PUSH_CHAR:

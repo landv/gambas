@@ -867,14 +867,16 @@ struct JumpEnumNextExpression : Expression {
 
 struct NopExpression : Expression {
 	char* buf;
+	bool test_stack;
 	
 	NopExpression(const char* str){
 		int len = strlen(str);
 		buf = (char*)malloc(len+1);
 		memcpy(buf, str, len+1);
+		test_stack = true;
 	}
 	
-	NopExpression(){
+	NopExpression(bool test_stack) : test_stack(test_stack) {
 		buf = "...";
 	}
 	
