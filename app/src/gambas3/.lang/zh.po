@@ -286,81 +286,102 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FImportTable.class:540
+#: FExportData.form:37 FImportTable.form:103
 msgid ","
 msgstr "-"
 
-#: FImportTable.class:540
+#: FExportData.form:37 FImportTable.form:103
 msgid ";"
 msgstr "-"
 
-#: FImportTable.class:540
+#: FExportData.form:37 FImportTable.form:103 FNewConnection.form:100
 msgid ":"
 msgstr "-"
 
-#: FProperty.class:1223
+#: FProperty.form:121
 msgid "..."
 msgstr "..."
 
-#: FImportTable.class:551
+#: FExportData.form:48 FImportTable.form:114
 msgid "'"
 msgstr "-"
 
-#: FImportTable.class:551
-msgid "\""
-msgstr "-"
-
-#: FMain.class:2269
-msgid "&?"
-msgstr "(&H)帮助"
-
-#: FReportCoordChooser.class:109
-msgid "%"
-msgstr ""
-
-#: FInfo.class:12
-msgid "&1: &2"
-msgstr "-"
-
-#: MErrorMessage.module:15
-msgid "'&1.&2' is badly overridden in class '&3'"
-msgstr ""
-
 #: MErrorMessage.module:16
-msgid "'&1.&2' is not a property"
+msgid "'&1.&2' is incorrectly overridden in class '&3'"
 msgstr ""
 
 #: MErrorMessage.module:17
-msgid "'&1.&2' is not static"
+msgid "'&1.&2' is not a property"
 msgstr ""
 
 #: MErrorMessage.module:18
-msgid "'&1.&2' is read only"
+msgid "'&1.&2' is not static"
 msgstr ""
 
 #: MErrorMessage.module:19
-msgid "'&1.&2' is static"
+msgid "'&1.&2' is read only"
 msgstr ""
 
 #: MErrorMessage.module:20
+msgid "'&1.&2' is static"
+msgstr ""
+
+#: MErrorMessage.module:21
 msgid "'&1.&2' is write only"
 msgstr ""
 
-#: FInfo.class:132
-msgid "&1, &2 line(s)"
-msgstr "&1, &2行"
-
-#: MErrorMessage.module:14
+#: MErrorMessage.module:15
 msgid "'&1' already declared"
 msgstr ""
 
-#: Package.module:64
+#: Package.module:72
 msgid "'&1' and '&2' are missing."
 msgstr "'&1'和'&2'丢失。"
+
+#: Package.module:63
+msgid "'&1' is missing."
+msgstr "'&1'丢失。"
+
+#: Package.module:767
+msgid "'dpkg-buildpackage' has failed."
+msgstr "'dpkg-buildpackage' 失败。"
+
+#: Package.module:1136
+msgid "'rpmbuild' has returned the following error code:"
+msgstr "'rpmbuild'返回错误代码:"
+
+#: Package.module:1356
+msgid "'tar' has returned the following error code:"
+msgstr "'tar' 返回错误代码:"
+
+#: FImportTable.class:136
+msgid "(Automatic key)"
+msgstr "(自动Key)"
+
+#: FEditor.class:2830 FTextEditor.class:848
+msgid "(Declarations)"
+msgstr "(声明)"
+
+#: FOption.class:74 FTranslate.class:135
+msgid "(Default)"
+msgstr "(默认)"
+
+#: FCreateFile.class:143
+msgid "(No parent)"
+msgstr "无父类"
+
+#: FExportData.form:48 FImportTable.form:114
+msgid "\""
+msgstr "-"
+
+#: FMain.form:823
+msgid "&?"
+msgstr "(&H)帮助"
 
 #: MErrorMessage.module:4
 msgid "&1 cannot be static"
@@ -378,159 +399,595 @@ msgstr ""
 msgid "&1 is declared but is not a function"
 msgstr ""
 
-#: Package.module:55
-msgid "'&1' is missing."
-msgstr "'&1'丢失。"
-
 #: MErrorMessage.module:8
-msgid "&1 is not declared"
+msgid "&1 is not a structure"
 msgstr ""
 
 #: MErrorMessage.module:9
-msgid "&1 must be static"
+msgid "&1 is not declared"
+msgstr ""
+
+#: FProfile.class:346
+msgid "&1 Mb"
 msgstr ""
 
 #: MErrorMessage.module:10
-msgid "&1: not in archive"
+msgid "&1 must be static"
 msgstr ""
 
-#: FImportTable.class:408
+#: FImportTable.class:428
 msgid "&1 records imported."
 msgstr "&1导入记录。"
 
-#: FTranslate.class:1035
-msgid "&1 strings (&2 not translated) - &3 % done"
-msgstr "&1个字符串(&2个未翻译)-&3%己完成"
-
-#: MErrorMessage.module:11
-msgid "&1: syntax error"
+#: FTranslate.class:1059
+msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: MErrorMessage.module:12
-msgid "&1: syntax error in form file"
+#: FTranslate.class:1055
+msgid "&1 strings. Everything is translated!"
 msgstr ""
 
-#: Project.module:1680
-msgid "&1th"
+#: FTranslate.class:1057
+msgid "&1 strings. One is not translated. &3% done."
 msgstr ""
 
-#: MErrorMessage.module:13
-msgid "&1: too many nested containers"
-msgstr ""
-
-#: FTranslate.class:943
+#: FTranslate.class:958
 msgid "&1 translations were picked up."
 msgstr "&1翻译被采纳。"
 
-#: CComponent.class:106
-msgid "3D programming with OpenGL"
-msgstr "OpenGL 3D编程"
+#: FInfo.class:146
+msgid "&1, &2 line(s)"
+msgstr "&1, &2行"
 
-#: FAbout.class:495
-msgid "About"
-msgstr "关于"
+#: FInfo.class:12
+msgid "&1: &2"
+msgstr "-"
 
-#: FPropertyProject.class:1906
-msgid "About &component..."
-msgstr "(&C)关于组件..."
+#: MErrorMessage.module:11
+msgid "&1: not in archive"
+msgstr ""
 
-#: FMain.class:2290
+#: MErrorMessage.module:12
+msgid "&1: syntax error"
+msgstr ""
+
+#: MErrorMessage.module:13
+msgid "&1: syntax error in form file"
+msgstr ""
+
+#: MErrorMessage.module:14
+msgid "&1: too many nested containers"
+msgstr ""
+
+#: Project.module:2042
+msgid "&1th"
+msgstr ""
+
+#: FMain.form:854
 msgid "&About Gambas..."
 msgstr "(&A)关于Gambas..."
 
-#: FAbout.class:487
-msgid "About Gambas..."
-msgstr "关于 Gambas..."
-
-#: MErrorMessage.module:24
-msgid "Access forbidden"
-msgstr ""
-
-#: Project.module:3257
-msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
-msgstr "类的名字必须用字母或者下划线开头，由字母和数字组成。"
-
-#: FConnectionEditor.class:1680 FMain.class:1691
-msgid "Add"
-msgstr "添加"
-
-#: FDebugInfo.class:1072 FMakeInstall.class:1539 FPropertyProject.class:2142
+#: FPropertyComponent.form:184
 msgid "&Add"
 msgstr "添加(&A)"
 
-#: FDebugInfo.class:1070
-msgid "Add expression"
-msgstr "添加表达式"
-
-#: FMakeInstall.class:1635
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr "为配置进程添加附加测试。\n<p><b>如果你不需要或者对<i>autoconf</i>脚本一窍不通的就保留这个空白。</b>"
-
-#: FMain.class:2469
+#: FMain.form:730
 msgid "&Add to repository"
 msgstr ""
 
-#: Language.module:94
+#: FPropertyProject.form:615
+msgid "&Add..."
+msgstr "添加(&A)..."
+
+#: FSearch.form:205
+msgid "&Browse"
+msgstr ""
+
+#: FMain.form:524
+msgid "&Browse project..."
+msgstr "(&B)浏览工程..."
+
+#: FSearch.form:106
+msgid "&Case sensitive"
+msgstr "区分大小写(&C)"
+
+#: FMain.form:587
+msgid "&Class..."
+msgstr "(&C)类..."
+
+#: FMain.form:326
+msgid "&Clean up"
+msgstr "(&C)清理"
+
+#: FMakeInstall.form:593
+msgid "&Clear"
+msgstr "(&C)清除"
+
+#: FMain.class:577
+msgid "&Clear history"
+msgstr "(&C)清除历史"
+
+#: FTranslate.form:335
+msgid "&Close"
+msgstr "关闭"
+
+#: FPropertyProject.form:690
+msgid "&Commit..."
+msgstr "(&C)提交..."
+
+#: FMain.form:271
+msgid "&Compile"
+msgstr "(&C)编译"
+
+#: FMain.form:458
+msgid "&Console"
+msgstr "(&C)控制台"
+
+#: FList.form:92 FMain.form:681 FSystemInfo.form:75
+msgid "&Copy"
+msgstr "(&C)复制"
+
+#: FNewConnection.class:195
+msgid "&Create database '&1'"
+msgstr "(&C)创建数据库'&1'"
+
+#: FMain.form:674
+msgid "&Cut"
+msgstr "(&C)剪切"
+
+#: FMain.form:362
+msgid "&Debug"
+msgstr "(&D)调试"
+
+#: FList.form:64 FMenu.form:97 FTranslate.form:315
+msgid "&Delete"
+msgstr "(&D)删除"
+
+#: FNewConnection.class:199
+msgid "&Delete database '&1'"
+msgstr "(&D)删除数据库'&1'"
+
+#: FMain.form:702
+msgid "&Delete..."
+msgstr "(&D)删除..."
+
+#: FMain.form:562
+msgid "&Directory"
+msgstr "(&D)目录"
+
+#: FList.form:76 FMakeInstall.form:587
+msgid "&Down"
+msgstr "(&D)下"
+
+#: FConflict.class:25 FMain.form:654
+msgid "&Edit"
+msgstr "(&E)编辑"
+
+#: FOption.form:849
+msgid "&Edit..."
+msgstr "编辑(&E)..."
+
+#: FTranslate.form:323
+msgid "&Export..."
+msgstr "导出(&E)..."
+
+#: FMain.form:208
+msgid "&File"
+msgstr "(&F)文件"
+
+#: FMain.form:508
+msgid "&Find..."
+msgstr "查找(&F)..."
+
+#: FForm.form:166
+msgid "&First"
+msgstr "第一页(&F)"
+
+#: FMain.form:595
+msgid "&Form..."
+msgstr "(&F)窗口..."
+
+#: FMain.form:409
+msgid "&Forward"
+msgstr "(&F)前进"
+
+#: FMain.form:832
+msgid "&Help browser"
+msgstr "(&H)帮助浏览器"
+
+#: FSearch.form:121
+msgid "&Highlight result"
+msgstr ""
+
+#: FMain.form:629
+msgid "&HTML file..."
+msgstr "(&H)HTML文件..."
+
+#: FSearch.form:126
+msgid "&Ignore strings"
+msgstr ""
+
+#: FMain.form:622
+msgid "&Image..."
+msgstr "(&I)图像..."
+
+#: FImportTable.form:211 FTranslate.form:284
+msgid "&Import"
+msgstr "(&I)导入"
+
+#: FOption.form:880
+msgid "&Import..."
+msgstr "导入(&I)..."
+
+#: FList.form:58 FMenu.form:82 FPropertyProject.form:437
+msgid "&Insert"
+msgstr "(&I)插入"
+
+#: FMain.form:315
+msgid "&Installation package..."
+msgstr "(&I)安装包..."
+
+#: FForm.form:187
+msgid "&Last"
+msgstr "最后一页(&L)"
+
+#: FMain.form:579
+msgid "&Module..."
+msgstr "(&M)模块..."
+
+#: FMain.form:755
+msgid "&New connection..."
+msgstr "(&N)新建连接..."
+
+#: FMain.form:212
+msgid "&New project..."
+msgstr "(&N)新建工程..."
+
+#: FOption.form:842 FTranslate.form:299
+msgid "&New..."
+msgstr "新建(&N)..."
+
+#: FForm.form:180 FSearch.form:192 FTips.form:78
+msgid "&Next"
+msgstr "(&N)下一个"
+
+#: FMain.form:763
+msgid "&Open"
+msgstr "(&O)打开"
+
+#: FMain.form:531
+msgid "&Open a terminal..."
+msgstr "(&O)打开一个终端..."
+
+#: FMain.form:219
+msgid "&Open project..."
+msgstr "(&O)打开工程..."
+
+#: FMain.form:644
+msgid "&Other..."
+msgstr "其它(&O)..."
+
+#: FExportData.class:126
+msgid "&Overwrite"
+msgstr "覆盖(&O)"
+
+#: FList.form:98 FMain.form:688
+msgid "&Paste"
+msgstr "(&P)粘贴"
+
+#: FMain.form:388
+msgid "&Pause"
+msgstr "(&P)暂停"
+
+#: FMain.form:547
+msgid "&Preferences..."
+msgstr "(&P)首选项..."
+
+#: FForm.form:173 FSearch.form:198 FTips.form:72
+msgid "&Previous"
+msgstr "上一个(&P)"
+
+#: FMain.form:267
+msgid "&Project"
+msgstr "(&P)工程"
+
+#: FMain.form:568
+msgid "&Project link..."
+msgstr ""
+
+#: FMain.form:449
+msgid "&Properties"
+msgstr "(&P)属性"
+
+#: FMain.form:348
+msgid "&Properties..."
+msgstr "(&P)属性..."
+
+#: FMain.form:260
+msgid "&Quit"
+msgstr "(&Q)退出"
+
+#: FMain.form:332
+msgid "&Refresh"
+msgstr "(&R)刷新"
+
+#: FTranslate.form:307
+msgid "&Reload"
+msgstr "重新载入(&R)"
+
+#: FPropertyComponent.form:190 FPropertyProject.form:443
+msgid "&Remove"
+msgstr "删除(&R)"
+
+#: FMain.form:695
+msgid "&Rename..."
+msgstr "(&R)重命名..."
+
+#: FSearch.form:211
+msgid "&Replace"
+msgstr "替换(&R)"
+
+#: FMain.form:514
+msgid "&Replace..."
+msgstr "替换(&R)..."
+
+#: FMain.form:611
+msgid "&Report..."
+msgstr "(&R)报表..."
+
+#: FPropertyProject.form:553
+msgid "&Reset"
+msgstr "重置(&R)"
+
+#: FPropertyProject.form:684
+msgid "&Revert..."
+msgstr "(&R)还原..."
+
+#: FMain.form:366
+msgid "&Run"
+msgstr "(&R)运行"
+
+#: FConflict.form:172 FSaveProjectAs.form:82
+msgid "&Save"
+msgstr "保存(&S)"
+
+#: FMain.form:243
+msgid "&Save project"
+msgstr "(&S)保存工程"
+
+#: FMain.form:541
+msgid "&Shortcuts..."
+msgstr "(&S)快捷键..."
+
+#: FMain.form:308
+msgid "&Source archive..."
+msgstr "(&S)源归档文件..."
+
+#: FSearch.form:166
+msgid "&Source files"
+msgstr ""
+
+#: FEditor.form:117 FForm.form:144 FMain.form:721
+msgid "&Startup class"
+msgstr "(&S)启动类"
+
+#: FMain.form:395
+msgid "&Stop"
+msgstr "(&S)停止"
+
+#: FMain.form:636
+msgid "&Style sheet..."
+msgstr "(&S)样式表..."
+
+#: FMain.form:848
+msgid "&System informations..."
+msgstr ""
+
+#: FMain.form:840
+msgid "&Tips of the day"
+msgstr "(&T)今日知识"
+
+#: FMain.form:505
+msgid "&Tools"
+msgstr "(&T)工具"
+
+#: FMain.form:288
+msgid "&Translate..."
+msgstr "(&T)翻译..."
+
+#: FFieldChooser.form:121 FList.form:104
+msgid "&Undo"
+msgstr "(&U)撤销"
+
+#: FList.form:70 FMakeInstall.form:581
+msgid "&Up"
+msgstr "(&U)上"
+
+#: FPropertyProject.form:678
+msgid "&Update"
+msgstr "更新(&U)"
+
+#: FMain.form:436
+msgid "&View"
+msgstr "(&V)视图"
+
+#: FEditor.form:205
+msgid "&Watch expression"
+msgstr "(&W)监视表达式"
+
+#: FMain.form:603
+msgid "&WebPage..."
+msgstr "(&W)WEB页面..."
+
+#: FSearch.form:111
+msgid "&Words only"
+msgstr ""
+
+#: FReportCoordChooser.form:21
+msgid "%"
+msgstr "%"
+
+#: FPropertyProject.class:1104
+msgid "<b>&1</b> does not export any class."
+msgstr ""
+
+#: FPropertyProject.class:1098
+msgid "<b>&1</b> is already used as a library."
+msgstr ""
+
+#: FMakeExecutable.form:44
+msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
+msgstr "<b>$(FILE)</b> 将被可执行文件的路径替换"
+
+#: FPropertyProject.form:593
+msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
+msgstr ""
+
+#: FAbout.form:63
+msgid "<h2 align=center>Authors</h2>\n"
+msgstr "<h2 align=center>作者</h2>\n"
+
+#: FAbout.form:57
+msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr "<h2 align=center>许可协议</h2>\n\n<p align=center>该软件是自由软件；你可以再次分发它，并且／或者在自由软件基金会发布的《GNU公共许可协议》条款下修改它； 可以是用版本号2，也可以有你指定任一个更新的版本号。</p>\n\n<p align=center>发布本软件是希望它能有用，而且不需要任何授权；甚至不需要为了某种目的而出售或安装的隐含授权。 更多细节请阅读《GNU公共许可协议》。</p>\n"
+
+#: CComponent.class:118
+msgid "3D programming with OpenGL"
+msgstr "OpenGL 3D编程"
+
+#: Project.module:3741
+msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
+msgstr "类的名字必须用字母或者下划线开头，由字母和数字组成。"
+
+#: MErrorMessage.module:22
+msgid "A module cannot raise events"
+msgstr ""
+
+#: MErrorMessage.module:23
+msgid "A property implementation cannot be public"
+msgstr ""
+
+#: MErrorMessage.module:24
+msgid "A property must be public"
+msgstr ""
+
+#: FSearch.form:172
+msgid "A&ll files"
+msgstr ""
+
+#: FPropertyProject.form:542
+msgid "About &component..."
+msgstr "(&C)关于组件..."
+
+#: FAbout.form:21
+msgid "About Gambas..."
+msgstr "关于 Gambas..."
+
+#: MErrorMessage.module:25
+msgid "Access forbidden"
+msgstr "禁止访问"
+
+#: FOption.form:821
+msgid "Activate code snippets"
+msgstr ""
+
+#: FMain.form:379
+msgid "Activate profilin&g"
+msgstr ""
+
+#: FPropertyProject.form:380
+msgid "Activate profiling"
+msgstr ""
+
+#: FConnectionEditor.form:231 FMain.class:1850
+msgid "Add"
+msgstr "添加"
+
+#: FDebugInfo.form:117
+msgid "Add expression"
+msgstr "添加表达式"
+
+#: FMakeInstall.form:680
+msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr "为配置进程添加附加测试。\n<p><b>如果你不需要或者对<i>autoconf</i>脚本一窍不通的就保留这个空白。</b>"
+
+#: FReportBrushChooser.form:96
+msgid "Add gradient stop"
+msgstr ""
+
+#: FMakeInstall.form:523
+msgid "Additional configuration"
+msgstr ""
+
+#: FEditor.form:213 FTextEditor.form:155
+msgid "Advanced"
+msgstr "高级"
+
+#: Language.module:102
 msgid "Albanian (Albania)"
 msgstr "阿尔巴尼亚语(阿尔巴尼亚)"
 
-#: MErrorMessage.module:25
+#: MErrorMessage.module:26
 msgid "Alias name must be a string"
 msgstr ""
 
-#: FForm.class:3489
-msgid "Alignment"
-msgstr "对齐"
-
-#: FForm.class:3701
-msgid "Align to bottom"
-msgstr "底端对齐"
-
-#: FForm.class:3511
+#: FForm.form:364
 msgid "Align to &bottom"
 msgstr "(&B)底端对齐"
 
-#: FForm.class:3708
-msgid "Align to left"
-msgstr "左端对齐"
-
-#: FForm.class:3493
+#: FForm.form:346
 msgid "Align to &left"
 msgstr "(&L)左端对齐"
 
-#: FForm.class:3715
-msgid "Align to right"
-msgstr "右端对齐"
-
-#: FForm.class:3499
+#: FForm.form:352
 msgid "Align to &right"
 msgstr "(&R)右端对齐"
 
-#: FForm.class:3694
-msgid "Align to top"
-msgstr "顶端对齐"
-
-#: FForm.class:3505
+#: FForm.form:358
 msgid "Align to &top"
 msgstr "(&T)顶端对齐"
 
-#: FMain.class:1428
+#: FForm.form:552
+msgid "Align to bottom"
+msgstr "底端对齐"
+
+#: FForm.form:559
+msgid "Align to left"
+msgstr "左端对齐"
+
+#: FForm.form:566
+msgid "Align to right"
+msgstr "右端对齐"
+
+#: FForm.form:545
+msgid "Align to top"
+msgstr "顶端对齐"
+
+#: FForm.form:342
+msgid "Alignment"
+msgstr "对齐"
+
+#: FMain.class:1553
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "从工程目录中删除所有备份文件和生成的文件。"
 
-#: FConnectionEditor.class:1377 FTranslate.class:1240
+#: FConnectionEditor.class:1424 FTranslate.class:1266
 msgid "All files"
 msgstr "所有文件"
 
-#: FMakeInstall.class:1661
+#: FMakeInstall.form:706
 msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr "已采集到所有需要的信息。你现在可以为你的应用程序创建安装包...\n<p>单击<b>OK</b> 按钮创建安装包。\n<p>如果发生错误，单击<b>Previous</b>按钮。\n<p>单击<b>Cancel</b>按钮取消操作。\n\n"
 
-#: Project.module:1248
+#: Project.module:1525
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr "ALPHA版本，自己承担使用风险！:-)"
 
-#: FMenu.class:965
+#: FPasteTable.form:78
+msgid "Also copy table &data"
+msgstr ""
+
+#: FMenu.form:266
 msgid "ALT"
 msgstr "ALT"
 
@@ -538,11 +995,15 @@ msgstr "ALT"
 msgid "Alternate background"
 msgstr "交互背景"
 
+#: FOption.form:356
+msgid "Always display optional messages"
+msgstr ""
+
 #: FOption.class:4
 msgid "Amber"
 msgstr "琥珀"
 
-#: MErrorMessage.module:26
+#: MErrorMessage.module:27
 msgid "Ambiguous expression. Please use brackets"
 msgstr ""
 
@@ -550,32 +1011,24 @@ msgstr ""
 msgid "Amethyst"
 msgstr "紫水晶"
 
-#: MErrorMessage.module:21
-msgid "A module cannot raise events"
-msgstr ""
-
-#: CComponent.class:84
+#: CComponent.class:91
 msgid "Application debugger helper"
 msgstr "应用程序调试助手"
 
-#: FOption.class:1093
-msgid "Applications"
-msgstr "程序"
-
-#: CComponent.class:117
+#: CComponent.class:131
 msgid "Application settings management"
 msgstr "应用程序设置管理"
 
-#: FCreateProject.class:522
+#: FCreateProject.form:257
 msgid "Application stored in a\nSubversion repository"
 msgstr "存储于子版本仓库的应用程序"
 
-#: MErrorMessage.module:22
-msgid "A property implementation cannot be public"
-msgstr ""
+#: FOption.form:654
+msgid "Applications"
+msgstr "程序"
 
-#: MErrorMessage.module:23
-msgid "A property must be public"
+#: Project.module:542
+msgid "Applying conversion..."
 msgstr ""
 
 #: Language.module:7
@@ -586,139 +1039,147 @@ msgstr "Arabic (Egypt)"
 msgid "Arabic (Tunisia)"
 msgstr "Arabic (Tunisia)"
 
-#: MErrorMessage.module:27
+#: FMakeInstall.form:289
+msgid "Archlinux"
+msgstr "Archlinux"
+
+#: MErrorMessage.module:28
 msgid "Argument cannot be passed by reference"
 msgstr ""
 
-#: FPropertyProject.class:1948
+#: FPropertyProject.form:418
 msgid "Arguments"
 msgstr "表达式"
 
-#: FForm.class:3442
+#: FForm.form:280
 msgid "Arrangement"
 msgstr "排列"
 
-#: MErrorMessage.module:28
+#: MErrorMessage.module:29
 msgid "Array declaration is forbidden with typed collection"
 msgstr ""
 
-#: MErrorMessage.module:29
-msgid "Arrays are forbidden here"
+#: MErrorMessage.module:30
+msgid "Arrays of structure are not supported"
 msgstr ""
 
-#: FCommit.class:317
+#: FCommit.form:160
 msgid "Authentification"
 msgstr "验证"
 
-#: ProjectItem.class:70
+#: ProjectItem.class:63
 msgid "Author"
 msgstr "作者"
 
-#: CComponentBox.class:200 ProjectItem.class:70
-msgid "Authors"
-msgstr "作者"
-
-#: FPropertyProject.class:1649
+#: FPropertyProject.form:233
 msgid "Author(s)"
 msgstr "作者"
 
-#: FCreateFile.class:888
+#: CComponentBox.class:235 ProjectItem.class:63
+msgid "Authors"
+msgstr "作者"
+
+#: FCreateFile.form:396
 msgid "Automatic extension"
 msgstr "自动扩展"
 
-#: FImportTable.class:127
-msgid "(Automatic key)"
-msgstr "(自动Key)"
-
-#: Project.module:145
+#: Project.module:189
 msgid "Automation"
 msgstr "自动"
 
-#: FMakeInstall.class:1453
+#: FMakeInstall.form:308
 msgid "Autotools"
 msgstr "自动工具"
+
+#: FProfile.class:572
+msgid "Average"
+msgstr "普通"
 
 #: Language.module:10
 msgid "Azerbaijani (Azerbaijan)"
 msgstr "阿塞拜疆语(阿塞拜疆)"
 
-#: MTheme.module:6
+#: FOption.form:409 MTheme.module:6
 msgid "Background"
 msgstr "背景"
 
-#: FOption.class:750
+#: FOption.form:191
 msgid "Background color..."
 msgstr "背景颜色..."
 
-#: MErrorMessage.module:30
+#: MErrorMessage.module:31
 msgid "Bad archive: &1: &2"
 msgstr ""
 
-#: MErrorMessage.module:31
+#: MErrorMessage.module:32
 msgid "Bad argument"
 msgstr ""
 
-#: MErrorMessage.module:32
+#: MErrorMessage.module:33
 msgid "Bad character constant in string"
 msgstr ""
 
-#: MErrorMessage.module:33
+#: MErrorMessage.module:34
 msgid "Bad constant type"
 msgstr ""
 
-#: MErrorMessage.module:34
+#: MErrorMessage.module:35
 msgid "Bad event handler in &1.&2(): &3"
 msgstr ""
 
-#: MErrorMessage.module:35
+#: MErrorMessage.module:36
 msgid "Bad expression: &1"
 msgstr ""
 
-#: MErrorMessage.module:37
-msgid "Bad format string"
-msgstr ""
-
-#: FForm.class:117
+#: FForm.class:129
 msgid "Bad form file"
 msgstr "错误的表单文件"
 
-#: MErrorMessage.module:36
+#: MErrorMessage.module:37
 msgid "Bad form file version"
 msgstr ""
 
-#: FMenu.class:288
+#: MErrorMessage.module:38
+msgid "Bad format string"
+msgstr ""
+
+#: FMenu.class:312
 msgid "Bad group name !"
 msgstr "错误的组名"
 
-#: FMenu.class:282
+#: FMenu.class:306
 msgid "Bad menu name !"
 msgstr "错误的菜单名"
 
-#: MErrorMessage.module:38
+#: MErrorMessage.module:39
 msgid "Bad number of dimensions"
 msgstr ""
 
-#: MErrorMessage.module:39
+#: MErrorMessage.module:40
 msgid "Bad project file: line &1: &2"
 msgstr ""
 
-#: MErrorMessage.module:40
+#: MErrorMessage.module:41
 msgid "Bad regular expression: &1"
 msgstr ""
 
-#: MErrorMessage.module:41
+#: MErrorMessage.module:42
 msgid "Bad string conversion"
 msgstr ""
 
-#: MErrorMessage.module:42
+#: MErrorMessage.module:43
 msgid "Bad subscript range"
 msgstr ""
 
-#: MErrorMessage.module:43
+#: MErrorMessage.module:44
 msgid "Bad use of virtual class"
 msgstr ""
 
-#: Project.module:146
+#: MErrorMessage.module:45
+msgid "Bad version string"
+msgstr ""
+
+#: Project.module:190
 msgid "Basic"
 msgstr "基本"
 
@@ -726,575 +1187,667 @@ msgstr "基本"
 msgid "Basque (Basque country)"
 msgstr "巴斯克语(巴斯克地区)"
 
-#: FPropertyProject.class:1879
-msgid "Beta version"
-msgstr "测试版"
-
-#: FMakeExecutable.class:107
-msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
-msgstr "<b>$(FILE)</b> 将被可执行文件的路径替换"
-
-#: FOption.class:976
+#: FOption.form:409
 msgid "Blend"
 msgstr "混合"
 
-#: FConnectionEditor.class:530 MConnection.module:100
+#: FConnectionEditor.class:571 MConnection.module:101
 msgid "Blob"
 msgstr "-"
 
-#: FOption.class:757
+#: FOption.form:198
 msgid "Bold"
 msgstr "粗体"
 
-#: FConnectionEditor.class:530 MConnection.module:94
+#: FConnectionEditor.class:571 MConnection.module:95
 msgid "Boolean"
 msgstr "布尔值"
 
-#: FIconEditor.class:2311
+#: FReportBorderChooser.form:67
+msgid "Border"
+msgstr "边界"
+
+#: FIconEditor.form:249
 msgid "Border only"
 msgstr "仅绘边界"
 
-#: FDebugInfo.class:1104 MTheme.module:6
+#: FReportBorderChooser.form:79 FReportPaddingChooser.form:53
+msgid "Bottom"
+msgstr "底部"
+
+#: FReportBorderChooser.form:166
+msgid "BottomLeft"
+msgstr ""
+
+#: FReportBorderChooser.form:157
+msgid "BottomRight"
+msgstr ""
+
+#: FDebugInfo.form:167 MTheme.module:6
 msgid "Breakpoints"
 msgstr "断点"
 
-#: FForm.class:3446
+#: FForm.form:284
 msgid "Bring to foreground"
 msgstr "升到顶层"
 
-#: FSearch.class:904
-msgid "Browse"
+#: FMain.form:1131
+msgid "Browse project"
 msgstr ""
 
-#: FSearch.class:888
-msgid "&Browse"
+#: FMain.form:1107
+msgid "Browse project..."
 msgstr ""
 
-#: FMain.class:2232
-msgid "&Browse project..."
-msgstr "(&B)浏览工程..."
-
-#: FOption.class:1104
+#: FOption.form:664
 msgid "Browser"
 msgstr "浏览器"
-
-#: FTranslate.class:1682
-msgid "Browse recursively"
-msgstr ""
 
 #: Language.module:12
 msgid "Bulgarian (Bulgaria)"
 msgstr "Bulgarian (Bulgaria)"
 
-#: CComponent.class:72
+#: FSearch.form:153
+msgid "C&urrent procedure"
+msgstr ""
+
+#: CComponent.class:79
 msgid "Cairo graphic library"
 msgstr "Cairo图形库"
 
-#: FTranslate.class:617 Project.module:353
+#: FProfile.form:138
+msgid "Callees"
+msgstr "被调用方"
+
+#: FProfile.form:150
+msgid "Callers"
+msgstr "调用方"
+
+#: FProfile.class:566
+msgid "Calls"
+msgstr "调用"
+
+#: FTextEditor.class:506 FTranslate.class:636 Project.module:433
 msgid "Cancel"
 msgstr "取消"
 
-#: FImportTable.class:395
+#: FDebugInfo.form:214
+msgid "Cancel current search"
+msgstr ""
+
+#: FImportTable.class:415
 msgid "Cancelled by user"
 msgstr "用户取消"
 
-#: FCreateFile.class:441
+#: FCreateFile.class:456
 msgid "Cannot add file."
 msgstr "无法添加文件。"
 
-#: Project.module:1650
-msgid "Cannot compile the project."
-msgstr "不能编译工程。"
+#: MErrorMessage.module:46
+msgid "Cannot change current directory to '&1': &2"
+msgstr ""
 
-#: Project.module:3968
+#: Project.module:4486
 msgid "Cannot copy file &1."
 msgstr "无法复制文件&1."
 
-#: Project.module:2137
+#: Project.module:2527
 msgid "Cannot copy template file."
 msgstr "无法复制样板文件"
 
-#: MErrorMessage.module:45
-msgid "Cannot create action file: &1"
-msgstr ""
-
-#: MErrorMessage.module:46
-msgid "Cannot create class information: &1: &2"
-msgstr ""
-
 #: MErrorMessage.module:47
-msgid "Cannot create file: &1"
-msgstr ""
-
-#: Project.module:4017
-msgid "Cannot create link &1."
-msgstr "无法创建连接&1。"
-
-#: FCreateProject.class:182
-msgid "Cannot create project!"
-msgstr "无法创建工程!"
-
-#: MErrorMessage.module:44
 msgid "Cannot create .startup file"
 msgstr ""
 
-#: MConnection.module:285
-msgid "Cannot create table '&1'."
-msgstr "不能创建表'&1'。"
-
 #: MErrorMessage.module:48
-msgid "Cannot create temporary archive file: &1"
+msgid "Cannot create action file: &1"
 msgstr ""
 
-#: FMain.class:232
-msgid "Cannot delete file or directory"
-msgstr "无法复制文件&1"
-
-#: FConnectionEditor.class:1340
-msgid "Cannot delete table '&1'."
-msgstr "不能删除表'&1'。"
-
 #: MErrorMessage.module:49
-msgid "Cannot find dynamic library '&1': &2"
+msgid "Cannot create callback: &1"
 msgstr ""
 
 #: MErrorMessage.module:50
-msgid "Cannot find symbol '&2' in dynamic library '&1'"
+msgid "Cannot create class information: &1: &2"
 msgstr ""
-
-#: FTranslate.class:952
-msgid "Cannot import translation file."
-msgstr "无法导入翻译文件."
 
 #: MErrorMessage.module:51
-msgid "Cannot inherit twice"
+msgid "Cannot create file: &1"
 msgstr ""
+
+#: Project.module:4535
+msgid "Cannot create link &1."
+msgstr "无法创建连接&1。"
+
+#: FCreateProject.class:185
+msgid "Cannot create project!"
+msgstr "无法创建工程!"
+
+#: MConnection.module:286
+msgid "Cannot create table '&1'."
+msgstr "不能创建表'&1'。"
 
 #: MErrorMessage.module:52
-msgid "Cannot instanciate native types"
+msgid "Cannot create temporary archive file: &1"
 msgstr ""
 
-#: Project.module:2131
-msgid "Cannot link template file."
-msgstr ""
+#: FMain.class:220
+msgid "Cannot delete file or directory"
+msgstr "无法复制文件&1"
+
+#: FConnectionEditor.class:1387
+msgid "Cannot delete table '&1'."
+msgstr "不能删除表'&1'。"
 
 #: MErrorMessage.module:53
-msgid "Cannot load class '&1': &2&3"
+msgid "Cannot find dynamic library '&1': &2"
 msgstr ""
 
 #: MErrorMessage.module:54
-msgid "Cannot load component '&1': &2"
+msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr ""
 
-#: Project.module:2357
-msgid "Cannot make executable."
-msgstr "无法生成可执行文件。"
+#: FMakeInstall.class:435
+msgid "Cannot found extra file: &1"
+msgstr ""
+
+#: FTranslate.class:967
+msgid "Cannot import translation file."
+msgstr "无法导入翻译文件."
 
 #: MErrorMessage.module:55
-msgid "Cannot make executable: &1"
+msgid "Cannot inherit twice"
 msgstr ""
 
 #: MErrorMessage.module:56
-msgid "Cannot mix NEW and array declaration"
+msgid "Cannot instantiate native types"
 msgstr ""
 
-#: Project.module:4034
-msgid "Cannot move a directory inside itself."
-msgstr "无法将目录移动进它自己。"
-
-#: Project.module:4098
-msgid "Cannot move file &1."
-msgstr "无法移动文件&1."
-
-#: Project.module:1478
-msgid "Cannot open file."
-msgstr "无法打开文件."
-
-#: MErrorMessage.module:58
-msgid "Cannot open file: &1"
+#: Project.module:2521
+msgid "Cannot link template file."
 msgstr ""
 
 #: MErrorMessage.module:57
-msgid "Cannot open file '&1': &2"
+msgid "Cannot load class '&1': &2&3"
 msgstr ""
 
-#: Project.module:440
-msgid "Cannot open project file :\n"
-msgstr "无法打开工程文件:\n"
+#: MErrorMessage.module:58
+msgid "Cannot load component '&1': &2"
+msgstr ""
 
 #: MErrorMessage.module:59
-msgid "Cannot raise events in static function"
+msgid "Cannot load source file: &1"
 msgstr ""
 
 #: MErrorMessage.module:60
+msgid "Cannot make executable: &1: &2"
+msgstr ""
+
+#: Project.module:2782
+msgid "Cannot make executable."
+msgstr "无法生成可执行文件。"
+
+#: MErrorMessage.module:61
+msgid "Cannot mix NEW and embedded array"
+msgstr ""
+
+#: MErrorMessage.module:62
+msgid "Cannot mix NEW and embedded structure"
+msgstr ""
+
+#: Project.module:4552
+msgid "Cannot move a directory inside itself."
+msgstr "无法将目录移动进它自己。"
+
+#: Project.module:4620
+msgid "Cannot move file &1."
+msgstr "无法移动文件&1."
+
+#: Project.module:1839
+msgid "Cannot open a binary file."
+msgstr ""
+
+#: MErrorMessage.module:63
+msgid "Cannot open file '&1': &2"
+msgstr ""
+
+#: MErrorMessage.module:64
+msgid "Cannot open file: &1"
+msgstr ""
+
+#: Project.module:1872
+msgid "Cannot open file."
+msgstr "无法打开文件."
+
+#: Project.module:646
+msgid "Cannot open project file :\n"
+msgstr "无法打开工程文件:\n"
+
+#: MErrorMessage.module:65
+msgid "Cannot raise events in static function"
+msgstr ""
+
+#: MErrorMessage.module:66
 msgid "Cannot read file: &1"
 msgstr ""
 
-#: MErrorMessage.module:61
+#: MErrorMessage.module:67
 msgid "Cannot read file: &1: &2"
 msgstr ""
 
-#: FTranslate.class:354
+#: FTranslate.class:377
 msgid "Cannot read translation file for language '&1'"
 msgstr "无法读'&1'语言的翻译文件"
 
-#: MErrorMessage.module:62
+#: MErrorMessage.module:68
 msgid "Cannot register class '&1'"
+msgstr ""
+
+#: MErrorMessage.module:69
+msgid "Cannot remove file '&1': &2"
+msgstr ""
+
+#: MErrorMessage.module:70
+msgid "Cannot rename file '&1' to '&2': &3"
+msgstr ""
+
+#: MErrorMessage.module:71
+msgid "Cannot run child process: &1&2"
+msgstr ""
+
+#: FSaveProjectAs.class:35
+msgid "Cannot save a project inside its own directory."
 msgstr ""
 
 #: Save.module:39
 msgid "Cannot save file !"
 msgstr "无法保存文件!"
 
-#: FTranslate.class:503
+#: FTranslate.class:524
 msgid "Cannot save translation."
 msgstr "无法保存翻译!"
 
-#: MErrorMessage.module:63
+#: MErrorMessage.module:72
 msgid "Cannot set file owner: &1: &2"
 msgstr ""
 
-#: MErrorMessage.module:64
+#: MErrorMessage.module:73
 msgid "Cannot use NEW operator there"
 msgstr ""
 
-#: MErrorMessage.module:65
+#: MErrorMessage.module:74
 msgid "Cannot use TRY twice"
 msgstr ""
 
-#: FPropertyProject.class:881
+#: MErrorMessage.module:75
+msgid "Cannot use TRY with &1"
+msgstr ""
+
+#: FPropertyComponent.class:148
 msgid "Cannot write component description file."
 msgstr "无法写组件描述文件。"
 
-#: Project.module:2869
+#: Project.module:3356
 msgid "Cannot write project file."
 msgstr "无法写工程文件."
 
-#: FConnectionEditor.class:1217
+#: FConnectionEditor.class:1263
 msgid "Cannot write table '&1'."
 msgstr "不能写入表'&1'。"
 
-#: FCreateFile.class:87
+#: FCreateFile.class:124
 msgid "Cascading style sheets"
 msgstr "级联式工作表"
-
-#: FSearch.class:812
-msgid "&Case sensitive"
-msgstr ""
 
 #: Language.module:14
 msgid "Catalan (Catalonia, Spain)"
 msgstr "Catalan (Catalonia, Spain)"
 
-#: FMakeInstall.class:1500
+#: FMakeInstall.form:488
 msgid "Categories"
 msgstr "类别"
 
-#: FCreateProject.class:497
+#: FForm.form:330
+msgid "Center horizontally"
+msgstr ""
+
+#: FForm.form:336
+msgid "Center vertically"
+msgstr ""
+
+#: FCreateProject.form:231
 msgid "CGI Web application"
 msgstr "CGI Web应用程序"
 
-#: FForm.class:3325
+#: FForm.form:131
 msgid "Change into"
 msgstr "变成"
 
-#: FMakeInstall.class:1291
+#: FMakeInstall.form:238
 msgid "Changelog"
 msgstr "变更日志"
 
-#: FInfo.class:107
+#: FInfo.class:119
 msgid "ChangeLog"
 msgstr "变更日志"
 
-#: FCommit.class:357
+#: FCommit.form:200
 msgid "Changes"
 msgstr "改变"
 
-#: FPropertyProject.class:2025
+#: FPropertyProject.form:655
 msgid "Changes since last commit"
 msgstr "自最近提交以来的改变"
 
-#: FImportTable.class:511
+#: FImportTable.form:74
 msgid "Charset"
 msgstr "字符集"
 
-#: CComponent.class:73
+#: CComponent.class:80
 msgid "Chart drawing"
 msgstr "绘制图表"
 
-#: FMenu.class:1028
+#: FMenu.form:329
 msgid "Checked"
 msgstr "勾中"
 
-#: FTableChooser.class:86
+#: FTableChooser.form:16
 msgid "Choose a table"
 msgstr "选取一个表"
 
-#: FCreateFile.class:628 FDebugInfo.class:49 FFindList.class:71 FInfo.class:84
-msgid "Class"
-msgstr "类"
-
-#: FMain.class:2327
-msgid "&Class..."
-msgstr "(&C)类..."
-
-#: MErrorMessage.module:66
-msgid "Class '&1' is not creatable"
-msgstr ""
-
-#: FInfo.class:68
-msgid "Classes"
-msgstr "类"
-
-#: FMain.class:1428
-msgid "Clean"
-msgstr "清理"
-
-#: FMain.class:2038
-msgid "&Clean up"
-msgstr "(&C)清理"
-
-#: FCommit.class:276
-msgid "Clean up"
-msgstr "清理"
-
-#: FOption.class:585 FOutput.class:398
-msgid "Clear"
-msgstr "清除"
-
-#: FMakeInstall.class:1563
-msgid "&Clear"
-msgstr "(&C)清除"
-
-#: FList.class:302
+#: FList.form:86
 msgid "Cl&ear"
 msgstr "(&e)清除"
 
-#: FIconEditor.class:2157
-msgid "Clear all"
-msgstr "全部清除"
+#: FCreateFile.form:129 FDebugInfo.class:53
+msgid "Class"
+msgstr "类"
 
-#: FMain.class:2134
+#: MErrorMessage.module:76
+msgid "Class '&1' is not creatable"
+msgstr ""
+
+#: FInfo.class:69
+msgid "Classes"
+msgstr "类"
+
+#: FMain.class:1553
+msgid "Clean"
+msgstr "清理"
+
+#: FCommit.form:133
+msgid "Clean up"
+msgstr "清理"
+
+#: FOption.class:644 FOutput.form:79
+msgid "Clear"
+msgstr "清除"
+
+#: FMain.form:426
 msgid "Clear &all breakpoints"
 msgstr "(&A)清除全部断点"
 
-#: FOutput.class:441
+#: FIconEditor.form:95
+msgid "Clear all"
+msgstr "全部清除"
+
+#: FOutput.form:122
 msgid "Clear console"
 msgstr "清除控制台"
 
-#: FOption.class:1230
+#: FOption.form:799
 msgid "Clear documentation cache"
 msgstr ""
 
-#: FMain.class:473
-msgid "&Clear history"
-msgstr "(&C)清除历史"
-
-#: FTranslate.class:1564
+#: FTranslate.form:107
 msgid "Clear this translation"
 msgstr "清除该翻译"
 
-#: FProperty.class:1156
+#: FProperty.form:40
 msgid "Click on a form or a control to modify its properties..."
 msgstr "点选窗口或控件以修改属性..."
 
-#: FFormStack.class:301
+#: FFormStack.form:23
 msgid "Click on a form to display the hierarchy of its controls..."
 msgstr "点选窗口以显示它的控件的层次..."
 
-#: FMenu.class:1049
+#: FMenu.form:352
 msgid "Click on Insert to add a new menu."
 msgstr "点击插入以添加新菜单."
 
-#: FPasteSpecial.class:287
+#: FPasteSpecial.form:85
 msgid "Clipboard contents"
 msgstr "剪贴板内容"
 
-#: FTips.class:232
+#: FTips.form:84
 msgid "Close"
 msgstr "关闭"
 
-#: FTranslate.class:1743
-msgid "&Close"
-msgstr "关闭"
-
-#: FMain.class:2148
-msgid "Close all &debug windows"
-msgstr "(&D)关闭所有调试窗口"
-
-#: FMain.class:2206
+#: FMain.form:499
 msgid "Close &all windows"
 msgstr "(&A)关闭所有窗口"
 
-#: FReportCoordChooser.class:109
-msgid "cm"
-msgstr ""
+#: FMain.form:431
+msgid "Close all &debug windows"
+msgstr "(&D)关闭所有调试窗口"
 
-#: FForm.class:3587 FTextEditor.class:795
+#: FReportCoordChooser.form:21
+msgid "cm"
+msgstr "cm"
+
+#: FForm.form:444 FTextEditor.form:270
 msgid "Code"
 msgstr "代码"
 
-#: FReportBorderChooser.class:241
+#: FOption.form:886
+msgid "Code formatting"
+msgstr ""
+
+#: FOption.form:816
+msgid "Code snippets"
+msgstr ""
+
+#: FDebugInfo.class:68
+msgid "Col."
+msgstr ""
+
+#: FReportBrushChooser.form:47
 msgid "Color"
 msgstr "颜色"
 
-#: FFindList.class:75 FSearch.class:34
-msgid "Column"
-msgstr "列"
-
-#: FForm.class:3483
+#: FForm.form:321
 msgid "Columns"
 msgstr "多列"
 
-#: FCreateProject.class:455
+#: FCreateProject.form:187
 msgid "Command-line application"
 msgstr "命令行应用程序"
 
-#: FEditor.class:3260
+#: FEditor.form:234
 msgid "Comment"
 msgstr "注释"
 
-#: FTranslate.class:52 MTheme.module:6
+#: MTheme.module:6
 msgid "Comments"
 msgstr "注释"
 
-#: FPropertyProject.class:2059
-msgid "&Commit..."
-msgstr "(&C)提交..."
-
-#: FCommit.class:200
+#: FCommit.form:57
 msgid "Commit description"
 msgstr "提交说明"
 
-#: FPropertyProject.class:1694
+#: MErrorMessage.module:77
+msgid "Comparison operator expected"
+msgstr ""
+
+#: FPropertyProject.form:284
 msgid "Compilation"
 msgstr "编译"
 
-#: FMain.class:2672
+#: FMain.form:1039
 msgid "Compile"
 msgstr "编译"
 
-#: FMain.class:1983
-msgid "&Compile"
-msgstr "(&C)编译"
-
-#: FMain.class:2679
-msgid "Compile all"
-msgstr "全部编译"
-
-#: FMain.class:1990
+#: FMain.form:278
 msgid "Compile &All"
 msgstr "(&A)全部编译"
 
-#: Project.module:1848
+#: FMain.form:1046
+msgid "Compile all"
+msgstr "全部编译"
+
+#: Project.module:2261
 msgid "Compiling project"
 msgstr "编译工程"
 
-#: FPropertyProject.class:1844
+#: FPropertyProject.form:171
 msgid "Component"
 msgstr "组件"
 
-#: FPropertyProject.class:1872
+#: FPropertyComponent.form:66
 msgid "Component advancement"
 msgstr "组件升级"
 
-#: FCreateProject.class:609
+#: FForm.class:1306
+msgid "Component missing for control &1"
+msgstr ""
+
+#: MErrorMessage.module:78
+msgid "Component not found: &1"
+msgstr ""
+
+#: FCreateProject.form:344
 msgid "Component programming"
 msgstr "组件编程"
 
-#: FPropertyProject.class:1883
+#: FMain.class:1071 FPropertyComponent.form:37
+msgid "Component properties"
+msgstr ""
+
+#: FPropertyComponent.form:152 FPropertyProject.form:503
 msgid "Components"
 msgstr "组件"
 
-#: CComponent.class:74
+#: FTextEditor.form:182
+msgid "Compress file"
+msgstr ""
+
+#: CComponent.class:81
 msgid "Compression & decompression"
 msgstr "压缩和解压缩"
+
+#: FReportBorderChooser.form:43
+msgid "Configure border"
+msgstr ""
+
+#: FReportBrushChooser.form:29
+msgid "Configure brush"
+msgstr ""
+
+#: FReportPaddingChooser.form:18
+msgid "Configure padding"
+msgstr ""
 
 #: FConflict.class:262
 msgid "Conflict files"
 msgstr "冲突文件"
 
-#: FTableChooser.class:100
+#: FFieldChooser.form:38 FTableChooser.form:30
 msgid "Connection"
 msgstr "连接"
 
-#: FConnectionEditor.class:1557
+#: FConnectionEditor.form:94
 msgid "Connection editor"
 msgstr "连接编辑器"
 
-#: FNewConnection.class:127
+#: FNewConnection.class:129
 msgid "Connection properties"
 msgstr "连接属性"
 
-#: Project.module:1289
+#: CProjectTree.class:296 Project.module:1632
 msgid "Connections"
 msgstr "连接"
 
-#: FDebugInfo.class:981 FMain.class:2659 FOption.class:1273 FSearch.class:84
+#: FDebugInfo.form:59 FMain.form:1013 FOption.form:595 FSearch.class:94
 msgid "Console"
 msgstr "控制台"
 
-#: FMain.class:2182
-msgid "&Console"
-msgstr "(&C)控制台"
-
-#: FOutput.class:348
+#: FOutput.form:30
 msgid "Console - Gambas"
 msgstr "控制台 - Gambas"
 
-#: Project.module:2669
+#: MHelp.module:645
+msgid "Constants"
+msgstr "常数"
+
+#: Project.module:3163
 msgid "Continue"
 msgstr "继续"
 
-#: Project.module:156
+#: FOption.form:546
+msgid "Control structure automatic completion"
+msgstr ""
+
+#: Project.module:201
 msgid "Controls"
 msgstr "控件"
 
-#: FImageEditor.class:86 FOutput.class:384 FTextEditor.class:680
+#: Project.module:433
+msgid "Convert"
+msgstr "转换"
+
+#: Project.module:513
+msgid "Converting project structure..."
+msgstr ""
+
+#: FMenu.form:113 FOutput.form:65 FTextEditor.form:113
 msgid "Copy"
 msgstr "复制"
 
-#: FAbout.class:584 FList.class:308 FMain.class:2421
-msgid "&Copy"
-msgstr "(&C)复制"
-
-#: FForm.class:3420
+#: FForm.form:244
 msgid "Copy at the same place"
 msgstr ""
 
-#: FConnectionEditor.class:1709
+#: FConnectionEditor.form:260
 msgid "Copy field list"
 msgstr "复制字段列表"
 
-#: FMain.class:2452
+#: FMain.form:712
 msgid "Copy file pat&h"
 msgstr "(&H)复制文件路径"
 
-#: FTranslate.class:1576
+#: FConnectionEditor.form:145
+msgid "Copy table"
+msgstr ""
+
+#: FTranslate.form:119
 msgid "Copy untranslated string"
 msgstr "复制未翻译字符串"
 
-#: FMakeExecutable.class:26
+#: Project.module:489
+msgid "Copying project inside a temporary directory..."
+msgstr ""
+
+#: FReportBorderChooser.form:141
+msgid "Corner"
+msgstr ""
+
+#: FMakeExecutable.form:62
 msgid "Create a shortcut on the desktop"
 msgstr "创建桌面快捷方式"
 
-#: FCreateFile.class:907
+#: FCreateFile.form:424
 msgid "Create a symbolic link"
 msgstr "创建符号连接"
 
-#: FNewConnection.class:193
-msgid "&Create database '&1'"
-msgstr "(&C)创建数据库'&1'"
-
-#: FMakeInstall.class:1653
+#: FMakeInstall.form:697
 msgid "Create directories for each distribution"
 msgstr "为每个发布创建目录"
 
-#: FMakeInstall.class:1656
+#: FMakeInstall.form:700
 msgid "Create package"
 msgstr "创建包"
 
-#: Project.module:3699
+#: Project.module:4194
 msgid "Create source package"
 msgstr "创建代码包"
 
@@ -1302,83 +1855,75 @@ msgstr "创建代码包"
 msgid "Create table"
 msgstr "创建表"
 
-#: Package.module:472
-msgid "Creating desktop file..."
-msgstr "创建桌面文件..."
-
-#: Package.module:646
-msgid "Creating package..."
-msgstr "创建源代码包..."
-
-#: Package.module:396
-msgid "Creating package for &1."
-msgstr "为&1创建一个代码包."
-
-#: Package.module:761
-msgid "Creating source package."
-msgstr "创建代码包."
-
-#: Package.module:785
+#: Package.module:911
 msgid "Creating .spec file."
 msgstr "创建.spec文件."
 
-#: Language.module:58
+#: Package.module:604
+msgid "Creating desktop file..."
+msgstr "创建桌面文件..."
+
+#: Package.module:518
+msgid "Creating package for &1."
+msgstr "为&1创建一个代码包."
+
+#: Package.module:759
+msgid "Creating package..."
+msgstr "创建源代码包..."
+
+#: Package.module:887
+msgid "Creating source package."
+msgstr "创建代码包."
+
+#: Language.module:60
 msgid "Croatian (Croatia)"
 msgstr "Croatian (Croatia)"
 
-#: FInfo.class:100
+#: FInfo.class:109
 msgid "CSS file"
 msgstr "CSS文件"
 
-#: FConnectionEditor.class:1377
+#: FConnectionEditor.class:1424 FExportData.class:21
 msgid "CSV files"
 msgstr "CSV文件"
 
-#: FMenu.class:955
+#: FMenu.form:256
 msgid "CTRL"
 msgstr "CTRL"
+
+#: FSearch.form:159
+msgid "Current &file"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Current line"
 msgstr "当前行"
 
-#: FDebugInfo.class:1019
+#: FDebugInfo.form:86
 msgid "Current object"
 msgstr "当前对象"
 
-#: FSearch.class:847
-msgid "C&urrent procedure"
-msgstr ""
-
-#: FImageEditor.class:77 FOutput.class:377 FTextEditor.class:673
+#: FMenu.form:107 FOutput.form:58 FTextEditor.form:106
 msgid "Cut"
 msgstr "剪切"
-
-#: FMain.class:2414
-msgid "&Cut"
-msgstr "(&C)剪切"
 
 #: Language.module:19
 msgid "Czech (Czech Republic)"
 msgstr "捷克语(捷克共和国)"
 
+#: CComponent.class:93
+msgid "D-Bus interface"
+msgstr ""
+
 #: Language.module:21
 msgid "Danish (Denmark)"
 msgstr "Danish (Denmark)"
 
-#: Project.module:1298
+#: CProjectTree.class:305 Project.module:1641
 msgid "Data"
 msgstr "数据"
 
-#: FNewConnection.class:501 Project.module:147
-msgid "Database"
-msgstr "数据库"
-
-#: CComponent.class:76 FCreateProject.class:557
-msgid "Database access"
-msgstr "数据库存取"
-
-#: CComponent.class:78
+#: CComponent.class:85
 msgid "Data bound controls"
 msgstr "数据范围控制"
 
@@ -1386,167 +1931,175 @@ msgstr "数据范围控制"
 msgid "Data types"
 msgstr "数据类型"
 
-#: FConnectionEditor.class:530 MConnection.module:92
+#: FNewConnection.form:177 Project.module:191
+msgid "Database"
+msgstr "数据库"
+
+#: CComponent.class:83 FCreateProject.form:292
+msgid "Database access"
+msgstr "数据库存取"
+
+#: FConnectionEditor.class:571 MConnection.module:93
 msgid "Date"
 msgstr "日期"
 
-#: CComponent.class:86
-msgid "D-Bus interface"
-msgstr ""
-
-#: FMakeInstall.class:1339
+#: FMakeInstall.form:327
 msgid "Debian"
 msgstr "Debian"
 
-#: FDebugInfo.class:968 FMain.class:2819
+#: FDebugInfo.form:45 FMain.form:1320
 msgid "Debug"
 msgstr "调试"
 
-#: FMain.class:2067
-msgid "&Debug"
-msgstr "(&D)调试"
-
-#: FPropertyProject.class:1819
+#: FPropertyProject.form:369
 msgid "Debugging"
 msgstr "调试"
 
-#: FEditor.class:2508
-msgid "(Declarations)"
-msgstr "(声明)"
+#: MErrorMessage.module:79
+msgid "Default case already defined"
+msgstr ""
 
-#: FOption.class:61
-msgid "(Default)"
-msgstr "(默认)"
+#: MErrorMessage.module:80
+msgid "Default case must be the last one"
+msgstr ""
 
-#: FPropertyProject.class:1780
+#: FOption.form:226
+msgid "Default font size"
+msgstr ""
+
+#: CComponent.class:99
+msgid "Default icon theme"
+msgstr ""
+
+#: FHelpBrowser.class:24 FPropertyProject.form:354
 msgid "Default language"
 msgstr "缺省语言"
 
-#: FOption.class:946
+#: FOption.form:1025
+msgid "Default maintainer information"
+msgstr ""
+
+#: FProxy.form:76
+msgid "Default proxy"
+msgstr ""
+
+#: FOption.form:380
 msgid "Default tab size"
 msgstr "默认的TAB大小"
 
-#: FConnectionEditor.class:47
+#: FConnectionEditor.class:49
 msgid "Default value"
 msgstr "缺省值"
 
-#: FOption.class:105
+#: FOption.class:126
 msgid "Define..."
 msgstr "定义..."
 
-#: FNewConnection.class:317 FTranslate.class:617
+#: FNewConnection.class:325 FOption.class:791 FTranslate.class:636
 msgid "Delete"
 msgstr "删除"
 
-#: FList.class:280 FMenu.class:849 FTranslate.class:1725
-msgid "&Delete"
-msgstr "(&D)删除"
+#: FForm.form:264
+msgid "Delete container only"
+msgstr ""
 
-#: FMain.class:2442
-msgid "&Delete..."
-msgstr "(&D)删除..."
-
-#: FNewConnection.class:197
-msgid "&Delete database '&1'"
-msgstr "(&D)删除数据库'&1'"
-
-#: FConnectionEditor.class:1584
+#: FConnectionEditor.form:129
 msgid "Delete table"
 msgstr "删除表"
 
-#: FTranslate.class:1724
+#: FTranslate.form:313
 msgid "Delete translation"
 msgstr "删除翻译"
 
-#: FImportTable.class:534
+#: FExportData.form:31 FImportTable.form:97
 msgid "Delimiter character"
 msgstr "定界字符"
 
-#: FCommit.class:195 FMakeInstall.class:1268 FPropertyProject.class:1637
+#: FCommit.form:52 FMakeInstall.form:215 FPropertyProject.form:221
 msgid "Description"
 msgstr "描述"
 
-#: FOption.class:60
+#: FOption.class:73
 msgid "Desktop"
 msgstr "桌面"
 
-#: CComponent.class:85
+#: FMakeInstall.form:497
+msgid "Desktop configuration file"
+msgstr ""
+
+#: CComponent.class:92
 msgid "Desktop-neutral routines from Portland project"
 msgstr "来自Portland工程的中立桌面例程"
 
-#: FImportTable.class:564
+#: FImportTable.form:142 FPasteTable.form:51
 msgid "Destination"
 msgstr "目的"
 
-#: Project.module:3305
+#: Project.module:3789
 msgid "Destination already exists"
 msgstr ""
 
-#: FMakeInstall.class:100
+#: FMakeInstall.form:688
 msgid "Destination directory"
 msgstr "目的目录"
 
-#: FConflict.class:401 FInfo.class:379
+#: FConflict.form:129 FInfo.form:136
 msgid "Details"
 msgstr "细节"
 
-#: MErrorMessage.module:67
+#: MErrorMessage.module:81
 msgid "Device is full"
 msgstr ""
 
-#: FCreateFile.class:858
+#: FCreateFile.form:366
 msgid "Dialog box management"
 msgstr "对话框管理"
 
-#: FInfo.class:71
+#: FInfo.form:123
 msgid "Directory"
 msgstr "目录"
 
-#: FMain.class:2303
-msgid "&Directory"
-msgstr "(&D)目录"
-
-#: Project.module:2119
+#: Project.module:2509
 msgid "Directory already exists."
 msgstr "目录己存在."
 
-#: FDebugInfo.class:1036
+#: MErrorMessage.module:82
+msgid "Directory is not empty"
+msgstr ""
+
+#: FDebugInfo.form:143
+msgid "Display"
+msgstr "显示"
+
+#: FDebugInfo.form:141
 msgid "Display ME"
 msgstr "显示我"
 
-#: FOption.class:1164
+#: FOption.form:736
 msgid "Display property help"
 msgstr "显示属性帮助"
 
-#: MErrorMessage.module:68
+#: MErrorMessage.module:83
 msgid "Division by zero"
 msgstr ""
 
-#: Project.module:364
-msgid "Do not open"
-msgstr "不要打开"
-
-#: FSave.class:125
+#: FSave.form:35
 msgid "Do &not save"
 msgstr ""
 
-#: FConnectionEditor.class:261
+#: Project.module:445
+msgid "Do not open"
+msgstr "不要打开"
+
+#: FConnectionEditor.class:294
 msgid "Do not save"
 msgstr "不要保存"
 
-#: FConnectionEditor.class:1694
-msgid "Down"
-msgstr "下"
-
-#: FList.class:292 FMakeInstall.class:1557
-msgid "&Down"
-msgstr "(&D)下"
-
-#: FMain.class:1691
+#: FMain.class:1850
 msgid "Do you really want to add this file to the repository?"
 msgstr ""
 
-#: FOption.class:585
+#: FOption.class:644
 msgid "Do you really want to clear the documentation cache?"
 msgstr ""
 
@@ -1554,155 +2107,179 @@ msgstr ""
 msgid "Do you really want to clear the list?"
 msgstr "你确定要清除列表？"
 
-#: FConnectionEditor.class:1330
+#: FConnectionEditor.class:1376
 msgid "Do you really want to delete table '&1'?"
 msgstr "你确定要删除表'&1'？"
 
-#: FNewConnection.class:317
+#: FNewConnection.class:325
 msgid "Do you really want to delete the database '&1'?"
 msgstr "你确定要删除数据库'&1'？"
 
-#: FMain.class:213
+#: FMain.class:201
 msgid "Do you really want to delete this directory ?"
 msgstr "你确定要删除此目录?"
 
-#: FMain.class:225
+#: FMain.class:213
 msgid "Do you really want to delete this file ?"
 msgstr "你确定要删除此文件?"
 
-#: FMain.class:210
+#: FMain.class:198
 msgid "Do you really want to delete this link ?"
 msgstr ""
 
-#: FTranslate.class:617
+#: FOption.class:791
+msgid "Do you really want to delete this snippet?"
+msgstr ""
+
+#: FTranslate.class:636
 msgid "Do you really want to delete this translation ?"
 msgstr "你确定要删除此翻译?"
 
-#: FTranslate.class:711
+#: FTranslate.class:730
 msgid "Do you really want to reload this translation ?"
 msgstr "你确定要加载此翻译?"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:1005
 msgid "Do you really want to remove all extra dependencies?"
 msgstr "你确定要移除所有附加从属部分吗？"
 
-#: FMakeInstall.class:1056
+#: FMakeInstall.class:1106
 msgid "Do you really want to remove all extra files?"
 msgstr "你确定要移除所有附加文件吗？"
 
-#: FConnectionEditor.class:1399
+#: FConnectionEditor.class:1447
 msgid "Do you really want to remove the selected rows?"
 msgstr "你确定要删除选中的行？"
 
-#: FMain.class:1239
-msgid "Do you really want to update all forms?"
-msgstr "确定删更新所有窗体？"
+#: FSearch.class:838
+msgid "Do you really want to replace every string?"
+msgstr ""
 
-#: FDebugInfo.class:490
+#: FOption.class:927
+msgid "Do you really want to reset the list to its default value?"
+msgstr ""
+
+#: FDebugInfo.class:533
 msgid "Do you want to clear the expression list ?"
 msgstr "你确定要清除此表达式列表?"
 
-#: FIconEditor.class:1396
+#: FIconEditor.class:1415
 msgid "Do you want to clear the image ?"
 msgstr "你确定要清除此图像?"
 
-#: FOpenProject.class:151
-msgid "Do you want to uncompress this archive?"
-msgstr ""
+#: FConnectionEditor.form:245
+msgid "Down"
+msgstr "下"
 
-#: Package.module:649
-msgid "'dpkg-buildpackage' has failed."
-msgstr "'dpkg-buildpackage' 失败。"
-
-#: FIconEditor.class:2253
+#: FIconEditor.form:191
 msgid "Draw"
 msgstr "绘图"
 
-#: FReportBorderChooser.class:219
-msgid "Draw a border"
-msgstr ""
-
-#: Project.module:148
+#: Project.module:192
 msgid "Drawing"
 msgstr "绘制"
 
-#: FPropertyProject.class:1805
-msgid "Dump stack on error"
-msgstr "转储堆栈错误"
+#: FProfile.class:568
+msgid "Duration"
+msgstr "持续时间"
 
-#: Language.module:77
+#: Language.module:83
 msgid "Dutch (Belgium)"
 msgstr "荷兰语(Belgium)"
 
-#: Language.module:76
+#: Language.module:82
 msgid "Dutch (Netherlands)"
 msgstr "荷兰语(Netherlands)"
 
-#: MErrorMessage.module:69
+#: MErrorMessage.module:84
 msgid "Dynamic symbols cannot be used in static function"
 msgstr ""
 
-#: FDebugInfo.class:866
+#: FDebugInfo.class:944
 msgid "Dynamic variables"
 msgstr "动态变量"
 
-#: FConflict.class:25 FMain.class:2394
-msgid "&Edit"
-msgstr "(&E)编辑"
+#: FMakeInstall.form:173 FOption.form:1068
+msgid "E-mail"
+msgstr ""
 
-#: FMain.class:2399
+#: FMain.form:301
+msgid "E&xecutable..."
+msgstr "(&X)可执行文件..."
+
+#: FOption.form:872
+msgid "E&xport..."
+msgstr "导出(&X)..."
+
+#: FMain.form:659
 msgid "Edit &code"
 msgstr "(&c)编辑代码"
 
-#: FProperty.class:916
+#: FSnippet.class:66
+msgid "Edit code snippet"
+msgstr ""
+
+#: FFieldChooser.class:69
 msgid "Edit field list"
 msgstr "编辑字段列表"
+
+#: FList.form:24
+msgid "Edit list property"
+msgstr "编辑列表属性"
+
+#: FText.form:12
+msgid "Edit text property"
+msgstr "编辑文本属情"
+
+#: FMain.form:663
+msgid "Edit with"
+msgstr "编辑用"
 
 #: MTheme.module:6
 msgid "Editing line"
 msgstr "编辑行"
 
-#: FPropertyProject.class:1663
+#: FPropertyProject.form:253
 msgid "Edition"
 msgstr "版本"
 
-#: FList.class:240
-msgid "Edit list property"
-msgstr "编辑列表属性"
-
-#: FEditor.class:3355 FOption.class:935
+#: FEditor.form:346 FOption.form:370
 msgid "Editor"
 msgstr "编辑者"
 
-#: FText.class:77
-msgid "Edit text property"
-msgstr "编辑文本属情"
-
-#: FMain.class:2403
-msgid "Edit with"
-msgstr "编辑用"
-
-#: FIconEditor.class:2280
+#: FIconEditor.form:218
 msgid "Ellipse"
 msgstr "椭圆形"
+
+#: FForm.form:271
+msgid "Embed into a container"
+msgstr ""
+
+#: MErrorMessage.module:85
+msgid "Embedded array"
+msgstr ""
+
+#: MErrorMessage.module:86
+msgid "Embedded arrays are forbidden here"
+msgstr ""
 
 #: FOption.class:4
 msgid "Emerald"
 msgstr "祖母绿"
 
-#: FMenu.class:1018
+#: FMenu.form:319
 msgid "Enabled"
 msgstr "可用的"
 
-#: FImportTable.class:545
+#: FExportData.form:42 FImportTable.form:108
 msgid "Enclose character"
 msgstr "包围字符"
 
-#: MErrorMessage.module:70
+#: MErrorMessage.module:87
 msgid "End of file"
 msgstr ""
 
-#: FImportTable.class:522
+#: FImportTable.form:85
 msgid "End of line"
 msgstr "行结束符"
 
@@ -1718,25 +2295,33 @@ msgstr "英语(加拿大)"
 msgid "English (common)"
 msgstr "英语(通用)"
 
-#: Language.module:29
-msgid "English (United Kingdom)"
-msgstr "英语(英国)"
-
 #: Language.module:30
 msgid "English (U.S.A.)"
 msgstr "英语(美国)"
 
-#: CComponent.class:90
+#: Language.module:29
+msgid "English (United Kingdom)"
+msgstr "英语(英国)"
+
+#: CComponent.class:97
 msgid "Enhanced standard dialogs"
 msgstr "标准对话框增强"
 
-#: FPropertyProject.class:1935
+#: FMakeInstall.form:511
+msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
+msgstr ""
+
+#: FPropertyProject.form:408
 msgid "Environment"
 msgstr "环境"
 
-#: FPropertyProject.class:1991
+#: FPropertyProject.form:471
 msgid "Environment variables"
 msgstr "环境变量"
+
+#: MErrorMessage.module:88
+msgid "Equality or inequality operator expected"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Errors"
@@ -1750,343 +2335,367 @@ msgstr "世界语(任何地方)"
 msgid "Estonian (Estonia)"
 msgstr "爱沙尼亚语(爱沙尼亚)"
 
-#: FForm.class:3319
+#: CProfile.class:105
+msgid "Evaluator"
+msgstr ""
+
+#: FForm.form:125
 msgid "Event"
 msgstr "事件"
 
-#: CComponent.class:126 FPropertyProject.class:2090
+#: CProfile.class:107
+msgid "Event loop"
+msgstr ""
+
+#: CComponent.class:147 FPropertyComponent.form:132
 msgid "Event loop management"
 msgstr "事件循环管理"
 
-#: FTranslate.class:1017
+#: MHelp.module:577
+msgid "Events"
+msgstr "事件"
+
+#: FTranslate.class:1032
 msgid "Everything seems to be correct."
 msgstr "看起来一切正常,"
 
-#: FOpenProject.class:430 FWelcome.class:52
+#: FOpenProject.form:144 FWelcome.class:52
 msgid "Examples"
 msgstr "例子"
 
-#: CComponentBox.class:209
+#: CComponentBox.class:244
 msgid "Excludes"
 msgstr "排除"
 
-#: FMain.class:2013
-msgid "E&xecutable..."
-msgstr "(&X)可执行文件..."
-
-#: FPropertyProject.class:1794
-msgid "Execution"
-msgstr "执行"
-
-#: FCreateFile.class:895
+#: FCreateFile.form:403
 msgid "Existing"
 msgstr "己存在的"
 
-#: CComponentBox.class:92
+#: CComponentBox.class:221 FPropertyComponent.form:73
 msgid "Experimental"
 msgstr "实验性的"
 
-#: FTranslate.class:1732
-msgid "&Export..."
-msgstr "导出(&E)..."
-
-#: FConnectionEditor.class:1902
-msgid "Export..."
-msgstr "导出..."
-
-#: FOption.class:135
+#: FOption.class:173
 msgid "Export a theme file"
 msgstr "导出主题到文件"
 
-#: FTranslate.class:726
+#: FTranslate.class:745
 msgid "Export a translation"
 msgstr "导出一个翻译"
 
-#: FCreateFile.class:878
-msgid "Exported"
-msgstr "导出"
+#: FExportData.form:54
+msgid "Export field names"
+msgstr ""
 
-#: FOption.class:1309
+#: FExportData.form:60
+msgid "Export selected records only"
+msgstr ""
+
+#: FOption.form:632
 msgid "Export theme"
 msgstr "导出主题"
 
-#: FTranslate.class:1731
+#: FTranslate.form:321
 msgid "Export to a translation file"
 msgstr "导出到翻译文件"
 
-#: FDebugInfo.class:43
+#: FConnectionEditor.form:451 FExportData.form:15
+msgid "Export to CSV file"
+msgstr ""
+
+#: FConnectionEditor.form:453
+msgid "Export..."
+msgstr "导出..."
+
+#: FCreateFile.form:386
+msgid "Exported"
+msgstr "导出"
+
+#: FPropertyComponent.form:97
+msgid "Exported classes"
+msgstr ""
+
+#: FDebugInfo.class:47
 msgid "Expression"
 msgstr "表达式"
 
-#: CComponent.class:87
+#: CComponent.class:94
 msgid "Expression evaluator"
 msgstr "表达式分析器"
 
-#: MErrorMessage.module:71
+#: MErrorMessage.module:89
 msgid "Expression too complex"
 msgstr ""
 
-#: MErrorMessage.module:72
+#: MErrorMessage.module:90
 msgid "Expression too complex. Too many operands"
 msgstr ""
 
-#: FMakeInstall.class:1630
+#: FMakeInstall.form:674
 msgid "Extra autoconf tests"
 msgstr "附加autoconf测试"
 
-#: FMakeInstall.class:1509
+#: FMakeInstall.form:539
 msgid "Extra dependencies"
 msgstr "附加从属部分"
 
-#: FMakeInstall.class:1569
+#: FMakeInstall.form:599
 msgid "Extra files"
 msgstr "附加文件"
+
+#: FMakeInstall.form:616
+msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
+msgstr ""
 
 #: Language.module:43
 msgid "Farsi (Iran)"
 msgstr "波斯语(伊朗)"
 
-#: FPropertyProject.class:2069
+#: FPropertyComponent.form:111
 msgid "Features"
 msgstr "特效"
 
-#: FMakeInstall.class:1358
+#: FMakeInstall.form:346
 msgid "Fedora"
 msgstr "-"
 
-#: FConnectionEditor.class:68 FImportTable.class:346
+#: FConnectionEditor.class:70 FImportTable.class:361
 msgid "Field"
 msgstr "字段"
 
-#: FImportTable.class:260
+#: FImportTable.class:273
 msgid "Field_&1"
 msgstr "字段_&1"
 
-#: FConnectionEditor.class:1664
+#: FConnectionEditor.form:215
 msgid "Fields"
 msgstr "字段"
 
-#: FInfo.class:110 FSearch.class:30 FTranslate.class:68
+#: FDebugInfo.class:64 FInfo.class:122 FTranslate.class:68
 msgid "File"
 msgstr "文件"
 
-#: FMain.class:1920
-msgid "&File"
-msgstr "(&F)文件"
-
-#: MErrorMessage.module:73
+#: MErrorMessage.module:91
 msgid "File already exists"
 msgstr "文件已存在"
 
-#: Project.module:2085
+#: Project.module:2476
 msgid "File already exists."
 msgstr "文件己存在"
 
-#: MErrorMessage.module:74
+#: MErrorMessage.module:92
 msgid "File is a directory"
 msgstr ""
 
-#: MErrorMessage.module:75
+#: MErrorMessage.module:93
 msgid "File is locked"
 msgstr ""
 
-#: FMakeInstall.class:99
-msgid "File name"
-msgstr "文件名"
-
-#: MErrorMessage.module:76
+#: MErrorMessage.module:94
 msgid "File name is too long"
 msgstr ""
 
-#: Project.module:1537
+#: Project.module:1930
 msgid "File not found!"
 msgstr "文件未找到！"
 
-#: MErrorMessage.module:77
+#: FMakeInstall.class:114
+msgid "File or directory"
+msgstr ""
+
+#: MErrorMessage.module:95
 msgid "File or directory does not exist"
 msgstr ""
 
-#: FIconEditor.class:2320
+#: FMain.class:237
+msgid "File or directory does not exist anymore."
+msgstr ""
+
+#: FIconEditor.form:258
 msgid "Filled"
 msgstr "边界色填充"
 
-#: FIconEditor.class:2329
+#: FIconEditor.form:267
 msgid "Filled with border"
 msgstr "填充色填充"
 
-#: FMain.class:2215
-msgid "&Find..."
+#: FAbout.class:189
+msgid "Financial support"
 msgstr ""
 
-#: FTextEditor.class:706
-msgid "Find..."
-msgstr "查找..."
-
-#: FTranslate.class:1609
-msgid "Find a string in translation"
-msgstr "在翻译中查找一个字符串"
-
-#: FEditor.class:3153
+#: FEditor.form:103
 msgid "Find definition"
 msgstr "查找定义"
 
-#: FFindList.class:244
-msgid "Find list"
-msgstr "查找列表"
-
-#: FEditor.class:3277 FOutput.class:408 FTextEditor.class:719
+#: FEditor.form:175 FOutput.form:89 FTextEditor.form:139
 msgid "Find next"
 msgstr "查找下一个"
 
-#: FTranslate.class:1588
+#: FTranslate.form:131
 msgid "Find next untranslated string"
 msgstr "查找下一个未翻译字符串"
 
-#: FEditor.class:3284 FOutput.class:415 FTextEditor.class:726
+#: FEditor.form:182 FOutput.form:96 FTextEditor.form:146
 msgid "Find previous"
 msgstr "查找上一个"
 
-#: FTranslate.class:1594
+#: FTranslate.form:137
 msgid "Find previous untranslated string"
 msgstr "查找上一个未翻译字符串"
 
-#: FMain.class:2109
+#: FMain.form:416
 msgid "Finis&h"
 msgstr "(&H)结束"
 
-#: FMain.class:2721
+#: FMain.form:1088
 msgid "Finish current function"
 msgstr "结束当前函数或过程"
 
-#: FPropertyProject.class:1879
+#: FPropertyComponent.form:73
 msgid "Finished and stable"
 msgstr "稳定的最终版"
 
-#: FNewConnection.class:414
+#: Language.module:45
+msgid "Finnish (Finland)"
+msgstr "芬兰语(芬兰)"
+
+#: FNewConnection.form:81
 msgid "Firebird"
 msgstr "-"
 
-#: CComponent.class:77
+#: CComponent.class:84
 msgid "Firebird database driver"
 msgstr "Firebird数据库驱动"
 
-#: Project.module:1674
+#: Design.module:151 Project.module:2036
 msgid "first"
 msgstr ""
 
-#: FForm.class:3359
-msgid "&First"
-msgstr "第一页(&F)"
-
-#: FConnectionEditor.class:530 MConnection.module:90
+#: FConnectionEditor.class:571 MConnection.module:91
 msgid "Float"
 msgstr "浮点数"
 
-#: FIconEditor.class:2289
+#: FIconEditor.form:227
 msgid "Flood fill"
 msgstr "填充"
 
-#: FOption.class:1054
+#: FOption.form:504
 msgid "Fold procedures by default"
 msgstr "缺省折叠过程代码"
 
-#: FOption.class:1246
+#: FOption.form:566
 msgid "Fonts"
-msgstr ""
+msgstr "字体"
 
-#: FOption.class:802
-msgid "Font size"
-msgstr "字体大小"
-
-#: FProperty.class:368
+#: FProperty.class:369
 msgid "Forbidden characters in control group."
 msgstr "控件组中有禁止使用的字符."
 
-#: FProperty.class:353
+#: FProperty.class:354
 msgid "Forbidden characters in control name."
 msgstr "控件名中有禁止使用的字符."
 
-#: MErrorMessage.module:78
+#: MErrorMessage.module:96
+msgid "Forbidden GOSUB"
+msgstr ""
+
+#: MErrorMessage.module:97
 msgid "Forbidden GOTO"
 msgstr ""
 
-#: FOption.class:746
+#: FOption.form:187
 msgid "Foreground color..."
 msgstr "前景色..."
 
-#: FInfo.class:88
+#: CModule.class:28 FCreateFile.form:150 FEditor.form:368 FForm.form:422
 msgid "Form"
 msgstr "窗口"
 
-#: FMain.class:2335
-msgid "&Form..."
-msgstr "(&F)窗口..."
-
-#: FPropertyProject.class:1722
+#: FPropertyProject.form:312
 msgid "Form controls are public"
 msgstr "窗口控件是公用的"
 
-#: CModule.class:28 FInfo.class:69
+#: FEditor.form:264
+msgid "Format code"
+msgstr ""
+
+#: FOption.form:896
+msgid "Format on load & save"
+msgstr ""
+
+#: CModule.class:28 FInfo.class:70
 msgid "Forms"
 msgstr "窗口"
 
-#: FMain.class:2714
+#: FMain.form:1081
 msgid "Forward"
 msgstr "前进"
 
-#: FMain.class:2102
-msgid "&Forward"
-msgstr "(&F)前进"
-
-#: FColorChooser.class:180
+#: FColorChooser.form:33
 msgid "Free"
 msgstr "剩余"
 
-#: FMakeInstall.class:1287
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Freeware"
 msgstr "自由软件"
 
-#: Language.module:46
+#: Language.module:48
 msgid "French (Belgium)"
 msgstr "法语(Belgium)"
 
-#: Language.module:47
+#: Language.module:49
 msgid "French (Canada)"
 msgstr "法语(Canada)"
 
-#: Language.module:45
+#: Language.module:47
 msgid "French (France)"
 msgstr "法语(France)"
 
-#: Language.module:48
+#: Language.module:50
 msgid "French (Switzerland)"
 msgstr "法语(Switzerland)"
 
-#: FDebugInfo.class:50
+#: FDebugInfo.class:55 FProfile.class:564
 msgid "Function"
 msgstr "函数"
 
-#: Language.module:50
+#: Language.module:52
 msgid "Galician (Spain)"
 msgstr "Galician (Spain)"
+
+#: FOption.class:4
+msgid "Gambas"
+msgstr ""
+
+#: FInfo.class:85
+msgid "Gambas &1"
+msgstr ""
 
 #: .project:1
 msgid "Gambas 3"
 msgstr ""
 
-#: FAbout.class:512
+#: FConvert.form:10
+msgid "Gambas 3 project conversion"
+msgstr ""
+
+#: FAbout.form:44
 msgid "Gambas Almost Means Basic!"
 msgstr "Gambas几乎意味着Basic！"
 
-#: FMakeExecutable.class:18
+#: FMakeExecutable.class:18 FPropertyProject.class:1088
 msgid "Gambas applications"
 msgstr "Gambas应用程序"
 
-#: FCreateFile.class:77
+#: FInfo.class:97
+msgid "Gambas class"
+msgstr ""
+
+#: FCreateFile.class:110
 msgid "Gambas classes"
 msgstr "Gambas类"
 
-#: MMime.module:17
+#: MMime.module:19
 msgid "Gambas form data"
 msgstr "Gambas窗体数据"
 
@@ -2094,19 +2703,27 @@ msgstr "Gambas窗体数据"
 msgid "Gambas forms"
 msgstr "Gambas窗口"
 
-#: FOption.class:134
+#: FOption.class:172
 msgid "Gambas highlight theme files"
 msgstr "Gambas突出主题文件"
 
-#: FCreateFile.class:77
+#: MMime.module:20
+msgid "Gambas menu data"
+msgstr ""
+
+#: FInfo.class:93
+msgid "Gambas module"
+msgstr ""
+
+#: FCreateFile.class:110
 msgid "Gambas modules"
 msgstr "Gambas模块"
 
-#: FInfo.class:66
+#: FInfo.class:67
 msgid "Gambas project"
 msgstr "Gambas工程"
 
-#: MMime.module:18
+#: MMime.module:21
 msgid "Gambas project file path"
 msgstr "Gambas工程文件路径"
 
@@ -2118,15 +2735,27 @@ msgstr "Gambas报表"
 msgid "Gambas web pages"
 msgstr "Gambas WEB页面"
 
-#: Project.module:149
+#: FHelpBrowser.form:107
+msgid "Gambas web site"
+msgstr ""
+
+#: Project.module:193
 msgid "Games"
 msgstr "游戏"
 
-#: FInfo.class:304 FOption.class:776 FPropertyProject.class:1580
+#: FPropertyProject.form:123
+msgid "GB_GUI=gb.gtk"
+msgstr ""
+
+#: FPropertyProject.form:117
+msgid "GB_GUI=gb.qt4"
+msgstr ""
+
+#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:133
 msgid "General"
 msgstr "通用"
 
-#: FMakeInstall.class:1287
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "General Public License"
 msgstr ""
 
@@ -2138,43 +2767,47 @@ msgstr "德语(Belgium)"
 msgid "German (Germany)"
 msgstr "德语(德国)"
 
-#: FPropertyProject.class:1739
-msgid "Get version from program"
-msgstr "从程序获得版本"
+#: FPropertyProject.form:203
+msgid "Get from 'VERSION' file"
+msgstr ""
 
-#: FCreateFile.class:838
+#: FCreateFile.form:346
 msgid "GIF"
 msgstr "-"
 
-#: CComponent.class:107
+#: CComponent.class:121
 msgid "GNU command option parser"
 msgstr "GNU风格命令行参数分析程序"
 
-#: FEditor.class:3160 FHelpBrowser.class:257
+#: CComponent.class:100
+msgid "GNU Scientific Library"
+msgstr ""
+
+#: FHelpBrowser.form:41 FMain.form:485 FProfile.form:56
 msgid "Go back"
 msgstr "后退"
 
-#: FHelpBrowser.class:263
+#: FHelpBrowser.form:47 FMain.form:492 FProfile.form:62
 msgid "Go forward"
 msgstr "前进"
 
-#: FEditor.class:3142
+#: FEditor.form:92
 msgid "Go to"
 msgstr "转到"
 
-#: FGotoLine.class:52
+#: FGotoLine.form:12
 msgid "Go to line"
 msgstr "转到第...行"
 
-#: FEditor.class:3147 FTextEditor.class:647
+#: FEditor.form:97 FTextEditor.form:73
 msgid "Go to line..."
 msgstr "转到第...行..."
 
-#: FCreateProject.class:392
+#: FCreateProject.form:121
 msgid "Graphical application"
 msgstr "图形界面应用程序"
 
-#: CComponent.class:125 FPropertyProject.class:2084
+#: CComponent.class:146 FPropertyComponent.form:126
 msgid "Graphical form management"
 msgstr "图形化表单管理"
 
@@ -2182,299 +2815,291 @@ msgstr "图形化表单管理"
 msgid "Greek (Greece)"
 msgstr "希腊语(希腊)"
 
-#: FMakeInstall.class:737
+#: FMakeInstall.class:814
 msgid "Groups"
 msgstr "组"
 
-#: FCreateProject.class:434
+#: CComponent.class:112
+msgid "GStreamer multimedia component"
+msgstr ""
+
+#: FCreateProject.form:165
 msgid "GTK+ graphical application"
 msgstr "GTK+图形界面应用程序"
 
-#: CComponent.class:94
+#: CComponent.class:104
 msgid "GTK+ SVG renderer"
 msgstr "GTK+ SVG演示器"
 
-#: CComponent.class:92
+#: CComponent.class:101
 msgid "GTK+ toolkit"
 msgstr "GTK+工具包"
 
-#: CComponent.class:93
+#: CComponent.class:102
 msgid "GTK+ toolkit extension"
 msgstr "GTK+扩展工具包"
 
-#: FAbout.class:532
-msgid "<h2 align=center>Authors</h2>\n"
-msgstr "<h2 align=center>作者</h2>\n"
-
-#: FAbout.class:526
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
-msgstr "<h2 align=center>许可协议</h2>\n\n<p align=center>该软件是自由软件；你可以再次分发它，并且／或者在自由软件基金会发布的《GNU公共许可协议》条款下修改它； 可以是用版本号2，也可以有你指定任一个更新的版本号。</p>\n\n<p align=center>发布本软件是希望它能有用，而且不需要任何授权；甚至不需要为了某种目的而出售或安装的隐含授权。 更多细节请阅读《GNU公共许可协议》。</p>\n"
-
-#: FAbout.class:560
-msgid "Hall Of Fame"
-msgstr "贡献者名录"
-
-#: FIconEditor.class:2298
+#: FIconEditor.form:236
 msgid "Hatched flood fill"
 msgstr "交替填充"
 
-#: Language.module:52
+#: Language.module:54
 msgid "Hebrew (Israel)"
 msgstr "希伯来语 (以色列)"
 
-#: FCreateFile.class:813
+#: FCreateFile.form:321
 msgid "Height"
 msgstr "高度"
 
-#: FOption.class:1153 MTheme.module:6
+#: FOption.form:726 MTheme.module:6
 msgid "Help"
 msgstr "帮助"
 
-#: FMain.class:2273
-msgid "&Help browser"
-msgstr "(&H)帮助浏览器"
-
-#: FHelpBrowser.class:233
+#: FHelpBrowser.form:30 FMain.form:1031
 msgid "Help browser"
 msgstr ""
 
-#: FMain.class:2199
+#: FMain.form:476
 msgid "Hide menubar"
 msgstr "隐藏菜单条"
 
-#: FFormStack.class:293 FMain.class:2847
+#: FFormStack.form:15 FMain.form:1352
 msgid "Hierarchy"
 msgstr "层次"
 
-#: FOption.class:988
+#: FOption.form:420
 msgid "Highlight current line"
 msgstr "突出显示当前行"
+
+#: FOption.form:441
+msgid "Highlight modified lines"
+msgstr "突出修改行"
 
 #: MTheme.module:6
 msgid "Highlighting"
 msgstr "突出显示"
 
-#: FOption.class:1010
-msgid "Highlight modified lines"
-msgstr "突出修改行"
-
-#: FSearch.class:827
-msgid "&Highlight result"
-msgstr ""
-
-#: Language.module:54
+#: Language.module:56
 msgid "Hindi (India)"
 msgstr "印地语(印度)"
 
-#: FForm.class:3463
+#: FForm.form:301
 msgid "Horizontal"
 msgstr "横的"
 
-#: FIconEditor.class:2368
+#: FIconEditor.form:306
 msgid "Horizontal flip"
 msgstr "水平翻转"
 
-#: FEditor.class:3304 FTextEditor.class:746
+#: FEditor.form:287 FTextEditor.form:207
 msgid "Horizontal split"
 msgstr "水平拆分"
 
-#: FNewConnection.class:423
+#: FNewConnection.form:90 FProxy.form:32
 msgid "Host"
 msgstr "主机"
 
-#: FMain.class:2369
-msgid "&HTML file..."
-msgstr "(&H)HTML文件..."
-
-#: FCreateFile.class:748 FInfo.class:97
+#: FCreateFile.form:255 FInfo.class:106
 msgid "HTML file"
 msgstr "HTML文件"
 
-#: FCreateFile.class:87
+#: FCreateFile.class:124
 msgid "HTML files"
 msgstr "HTML文件"
 
-#: MMime.module:16
+#: CComponent.class:137
+msgid "HTML generator"
+msgstr ""
+
+#: MMime.module:18
 msgid "HTML text"
 msgstr "HTML文本"
 
-#: Language.module:56
+#: FProxy.form:76
+msgid "HTTP proxy"
+msgstr ""
+
+#: FHelpBrowser.form:109
+msgid "http://gambas.sourceforge.net"
+msgstr ""
+
+#: Language.module:58
 msgid "Hungarian (Hungary)"
 msgstr "Hungarian (Hungary)"
 
-#: FOption.class:900
-msgid "Icon theme"
-msgstr "图标主题"
-
-#: FCreateProject.class:635
-msgid "Identification"
-msgstr "识别标识"
-
-#: FProperty.class:604
-msgid "If the control is public."
-msgstr ""
-
-#: FProperty.class:600
-msgid "If the form and controls dimensions must follow the size of the default font."
-msgstr "是否窗体和控件面积必须符合缺省字体的大小。"
-
-#: FSearch.class:842
+#: FSearch.form:131
 msgid "I&gnore comments"
 msgstr ""
 
-#: FNewConnection.class:558
+#: FOption.form:319
+msgid "Icon theme"
+msgstr "图标主题"
+
+#: FProperty.class:614
+msgid "If the control is public."
+msgstr ""
+
+#: FProperty.class:610
+msgid "If the form and controls dimensions must follow the size of the default font."
+msgstr "是否窗体和控件面积必须符合缺省字体的大小。"
+
+#: FMenu.class:64
+msgid "Ignore"
+msgstr "忽略"
+
+#: FNewConnection.form:234
 msgid "Ignore database charset"
 msgstr "忽略数据库字符集"
 
-#: FSearch.class:837
-msgid "&Ignore strings"
+#: FImportTable.form:125
+msgid "Ignore first lines"
 msgstr ""
 
-#: MErrorMessage.module:79
+#: FOption.form:979
+msgid "Ignore these files in source archives"
+msgstr ""
+
+#: MErrorMessage.module:98
 msgid "Illegal instruction"
 msgstr ""
 
-#: FConflict.class:392 FCreateFile.class:708
+#: Project.module:194
 msgid "Image"
 msgstr "图像"
 
-#: FMain.class:2362
-msgid "&Image..."
-msgstr "(&I)图像..."
-
-#: FOption.class:1140
+#: FOption.form:696
 msgid "Image editor"
 msgstr ""
 
-#: CComponent.class:97
+#: FSelectIcon.class:32
+msgid "Image files"
+msgstr ""
+
+#: CComponent.class:108
 msgid "Image filtering component"
 msgstr ""
 
-#: CComponent.class:99 FPropertyProject.class:2096
+#: CComponent.class:110 FPropertyComponent.form:138
 msgid "Image loading and saving"
 msgstr "图像加载和保存"
 
-#: CComponent.class:96
+#: CComponent.class:107
 msgid "Image management"
 msgstr "图像管理"
 
-#: FCreateProject.class:593
+#: FCreateProject.form:328
 msgid "Image processing"
 msgstr "图像处理"
 
-#: CComponent.class:98
+#: CComponent.class:109
 msgid "Image routines from the Imlib2 library"
 msgstr ""
 
-#: CComponentBox.class:215
+#: CComponentBox.class:250
 msgid "Implements"
 msgstr "实施"
 
-#: FImportTable.class:41 FTranslate.class:1661
+#: FTranslate.form:254
 msgid "Import"
 msgstr "导入"
 
-#: FImportTable.class:641
-msgid "&Import"
-msgstr "(&I)导入"
-
-#: FTranslate.class:1689
-msgid "&Import..."
-msgstr "导入(&I)..."
-
-#: FConnectionEditor.class:1600
-msgid "Import..."
-msgstr "导入..."
-
-#: FTranslate.class:1687
+#: FTranslate.form:282
 msgid "Import a translation file"
 msgstr "导入翻译文件"
 
-#: FImportTable.class:475
+#: FTranslate.form:277
+msgid "Import all translations  recursively"
+msgstr ""
+
+#: FImportTable.form:37
 msgid "Import file"
 msgstr "导入文件"
 
-#: FConnectionEditor.class:1598
+#: FConnectionEditor.form:161
 msgid "Import text file"
 msgstr "导入文本文件"
 
-#: FOption.class:1303
+#: FOption.form:626
 msgid "Import theme"
 msgstr "导入主题"
 
-#: FReportCoordChooser.class:109
+#: FConnectionEditor.form:163
+msgid "Import..."
+msgstr "导入..."
+
+#: FReportCoordChooser.form:21
 msgid "in"
+msgstr "in"
+
+#: Design.module:243 Project.module:2099
+msgid "in &1:&2."
 msgstr ""
 
-#: Design.module:216 Project.module:1690
-msgid "In class &1 at line &2."
+#: Project.module:2102
+msgid "in &1."
 msgstr ""
 
-#: FMakeInstall.class:861
-msgid "Incorrect characters"
-msgstr "错误的字符"
-
-#: FProperty.class:426
-msgid "Incorrect property value."
-msgstr "错误的属性值."
-
-#: FReportCoordChooser.class:18
-msgid "Incorrect value."
-msgstr ""
-
-#: FTextEditor.class:842
-msgid "Indent"
-msgstr "缩进"
-
-#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:245
-msgid "Index"
-msgstr "索引"
-
-#: FConnectionEditor.class:1726
-msgid "Indexes"
-msgstr "索引"
-
-#: Language.module:60
-msgid "Indonesian (Indonesia)"
-msgstr "印度尼西亚语 (印度尼西亚)"
-
-#: FConflict.class:426 FInfo.class:273
-msgid "Information"
-msgstr "信息"
-
-#: CComponent.class:100
-msgid "Information about components"
-msgstr "组件信息"
-
-#: Project.module:1686
+#: Project.module:2095
 msgid "in form definition"
 msgstr "在窗体定义中"
 
-#: Package.module:741
-msgid "Initializing ~/RPM directory."
-msgstr "初始化~/RPM目录"
+#: FMakeInstall.class:932
+msgid "Incorrect characters"
+msgstr "错误的字符"
 
-#: FMakeInstall.class:425
+#: FProperty.class:429
+msgid "Incorrect property value."
+msgstr "错误的属性值."
+
+#: FReportCoordChooser.class:22
+msgid "Incorrect value."
+msgstr ""
+
+#: FTextEditor.form:320
+msgid "Indent"
+msgstr "缩进"
+
+#: FOption.form:917
+msgid "Indent local variable declaration"
+msgstr ""
+
+#: FConnectionEditor.class:60 FDebugExpr.class:472 FHelpBrowser.form:53
+msgid "Index"
+msgstr "索引"
+
+#: FConnectionEditor.form:277
+msgid "Indexes"
+msgstr "索引"
+
+#: Language.module:62
+msgid "Indonesian (Indonesia)"
+msgstr "印度尼西亚语 (印度尼西亚)"
+
+#: FConflict.form:154 FInfo.form:30
+msgid "Information"
+msgstr "信息"
+
+#: FMakeInstall.class:492
 msgid "Initial release"
 msgstr "首次发布"
 
-#: FList.class:274 FMenu.class:843 FPropertyProject.class:1957
-msgid "&Insert"
-msgstr "(&I)插入"
+#: Package.module:867
+msgid "Initializing ~/RPM directory."
+msgstr "初始化~/RPM目录"
 
-#: FMakeInstall.class:1208
-msgid "Insert release number in package version"
-msgstr "在安装包版本中插入发布号"
+#: CInsertColor.class:106 FEditor.form:414 FTextEditor.form:334
+msgid "Insert color"
+msgstr ""
 
-#: FMain.class:2027
-msgid "&Installation package..."
-msgstr "(&I)安装包..."
+#: FEditor.form:258 FTextEditor.form:176
+msgid "Insert color..."
+msgstr ""
 
-#: FMakeExecutable.class:24
-msgid "Install in the user component directory"
-msgstr "安装到用户组件目录"
+#: FMenu.form:80
+msgid "Insert menu"
+msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:86
+#: FConnectionEditor.class:571 MConnection.module:87
 msgid "Integer"
 msgstr "整数"
 
@@ -2482,79 +3107,95 @@ msgstr "整数"
 msgid "Integrated Development Environment for Gambas"
 msgstr "Gambas集成开发环境"
 
-#: FOption.class:791
+#: FOption.form:216
 msgid "Interface"
 msgstr "接口"
 
-#: CComponent.class:71
+#: MErrorMessage.module:99
+msgid "Internal compiler error: Bad stack usage computed!"
+msgstr ""
+
+#: CComponent.class:78
 msgid "Internal native classes"
 msgstr "内部本地类 "
 
-#: FCreateProject.class:551
+#: FCreateProject.form:286
 msgid "Internationalization"
 msgstr "国际化"
 
-#: MErrorMessage.module:80
+#: MErrorMessage.module:100
 msgid "Invalid assignment"
 msgstr ""
 
-#: MErrorMessage.module:81
+#: MErrorMessage.module:101
 msgid "Invalid date"
 msgstr "无效的日期"
 
-#: MErrorMessage.module:82
+#: MErrorMessage.module:102
 msgid "Invalid object"
 msgstr ""
 
-#: MErrorMessage.module:83
+#: MErrorMessage.module:103
 msgid "Invalid path"
 msgstr "无效的路径"
 
-#: Language.module:62
+#: FReportBrushChooser.form:114
+msgid "Invert gradient"
+msgstr ""
+
+#: Language.module:64
 msgid "Irish (Ireland)"
 msgstr "Irish (Ireland)"
 
-#: FImportTable.class:517
+#: FImportTable.form:80
 msgid "ISO 8859-1"
 msgstr "-"
 
-#: FImportTable.class:517
+#: FImportTable.form:80
 msgid "ISO 8859-15"
 msgstr "-"
 
-#: Language.module:64
+#: Project.module:471
+msgid "It cannot be converted."
+msgstr "不能被转换"
+
+#: Language.module:66
 msgid "Italian (Italy)"
 msgstr "意大利语(意大利)"
 
-#: FOption.class:761
+#: FOption.form:202
 msgid "Italic"
 msgstr "斜体"
-
-#: Project.module:385
-msgid "It cannot be converted."
-msgstr "不能被转换"
 
 #: FList.class:105
 msgid "Item &1"
 msgstr "条目&1"
 
-#: Language.module:66
+#: Language.module:68
 msgid "Japanese (Japan)"
 msgstr "日本语(日本)"
 
-#: FOutput.class:434
+#: FInfo.class:115
+msgid "Javascript file"
+msgstr ""
+
+#: FOutput.form:115
 msgid "Keep above"
 msgstr "保留上面的"
 
-#: FMakeExecutable.class:117
+#: FMakeExecutable.form:56
 msgid "Keep debugging information in executable"
 msgstr "在可执行文件中保留调试信息"
 
-#: FDebugExpr.class:431
+#: FOption.form:959
+msgid "Keep successive void lines"
+msgstr ""
+
+#: FDebugExpr.class:478
 msgid "Key"
 msgstr "-"
 
-#: FImportTable.class:594
+#: FImportTable.form:172
 msgid "Key field"
 msgstr "Key字段"
 
@@ -2562,19 +3203,19 @@ msgstr "Key字段"
 msgid "Keywords"
 msgstr "关键词"
 
-#: FOption.class:1076
+#: FOption.form:525
 msgid "Keywords in upper case"
 msgstr "大写关键字"
 
-#: Language.module:68
+#: Language.module:70
 msgid "Khmer (Cambodia)"
 msgstr "高棉语(柬埔寨)"
 
-#: Language.module:70
+#: Language.module:72
 msgid "Korean (Korea)"
 msgstr "朝鲜语(朝鲜)"
 
-#: MErrorMessage.module:84
+#: MErrorMessage.module:104
 msgid "Label '&1' not declared"
 msgstr ""
 
@@ -2582,375 +3223,475 @@ msgstr ""
 msgid "Language"
 msgstr "语言"
 
-#: FForm.class:3380
-msgid "&Last"
-msgstr "最后一页(&L)"
-
-#: FInfo.class:353
+#: FInfo.form:110
 msgid "Last modified"
 msgstr "最近修改"
 
-#: FConnectionEditor.class:42
+#: Language.module:74
+msgid "Latin"
+msgstr "拉丁"
+
+#: FReportBorderChooser.form:120 FReportPaddingChooser.form:33
+msgid "Left"
+msgstr "左侧"
+
+#: FConnectionEditor.class:44
 msgid "Length"
 msgstr "长度"
 
-#: FMakeInstall.class:1287
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Lesser General Public License"
 msgstr ""
 
-#: MErrorMessage.module:85
+#: FPropertyProject.form:574
+msgid "Libraries"
+msgstr "库"
+
+#: FPropertyProject.form:171
+msgid "Library"
+msgstr "库"
+
+#: MErrorMessage.module:105
 msgid "Library name must be a string"
 msgstr ""
 
-#: FMakeInstall.class:1281
+#: FMain.class:1067 FPropertyComponent.class:229
+msgid "Library properties"
+msgstr ""
+
+#: FMakeInstall.form:228 FOption.form:1084
 msgid "License"
 msgstr "许可"
 
-#: FOption.class:976 FSearch.class:32
+#: FOption.form:409
 msgid "Line"
 msgstr "行"
 
-#: FInfo.class:314
+#: FImportTable.form:135
+msgid "Line(s)"
+msgstr ""
+
+#: FReportBrushChooser.form:47
+msgid "Linear gradient"
+msgstr ""
+
+#: FInfo.class:71
+msgid "Lines of code: &1"
+msgstr ""
+
+#: FInfo.form:71
 msgid "Link to"
 msgstr "连接到"
 
-#: Project.module:1403
+#: Language.module:76
+msgid "Lithuanian (Lithuania)"
+msgstr "立陶宛语(立陶宛)"
+
+#: Project.module:1790
 msgid "Loading &1..."
 msgstr "加载&1..."
 
-#: CComponent.class:463
+#: CComponent.class:443
 msgid "Loading information on component &1..."
 msgstr "正在加载&1组件信息..."
 
-#: FDebugInfo.class:990
+#: FDebugInfo.form:68
 msgid "Local variables"
 msgstr "局部变量"
 
-#: FForm.class:3594
+#: LibraryItem.class:57
+msgid "Location"
+msgstr "位置"
+
+#: FForm.form:451
 msgid "Lock form"
 msgstr "锁定窗口"
 
-#: FProperty.class:1171
+#: FProperty.form:56
 msgid "Lock property"
 msgstr "锁定属性"
 
-#: FConnectionEditor.class:530 MConnection.module:88
+#: FConnectionEditor.class:571 MConnection.module:89
 msgid "Long"
 msgstr "长整数"
 
-#: MErrorMessage.module:86
+#: MErrorMessage.module:106
 msgid "Loop variable already in use"
 msgstr ""
 
-#: MErrorMessage.module:87
+#: MErrorMessage.module:107
 msgid "Loop variable must be local"
 msgstr ""
 
-#: FImportTable.class:529
+#: FEditor.form:217 FTextEditor.form:166
+msgid "Lower case"
+msgstr ""
+
+#: FImportTable.form:92
 msgid "Mac"
 msgstr "-"
 
-#: Language.module:74
+#: Language.module:80
 msgid "Macedonian (Republic of Macedonia)"
 msgstr "马其顿语(马其顿共和国)"
 
-#: FMakeInstall.class:1216
+#: FMakeInstall.form:365
+msgid "Mageia"
+msgstr "Mageia"
+
+#: FMakeInstall.form:148
 msgid "Maintainer information"
 msgstr "维护者信息"
 
-#: FMain.class:2009
+#: FMain.form:297
 msgid "Make"
 msgstr "编译"
 
-#: FAbout.class:556
-msgid "Make a gift!"
-msgstr "捐赠"
+#: FEditor.form:472
+msgid "Make code pretty"
+msgstr ""
 
-#: FMain.class:2611 FMakeExecutable.class:82
+#: FMain.form:965 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "制作可执行文件"
 
-#: FMain.class:2619 FMakeInstall.class:1168
+#: FMain.form:973 FMakeInstall.form:103
 msgid "Make installation package"
 msgstr "生成安装包"
 
-#: FMain.class:2604
+#: FMain.form:958
 msgid "Make source archive"
 msgstr "生成源归档文件"
 
-#: Package.module:451
+#: Package.module:583
 msgid "Making build directory."
 msgstr "建立工作目录。"
 
-#: Project.module:2313
+#: Project.module:2738
 msgid "Making executable..."
 msgstr "制作可执行文件..."
 
-#: Language.module:72
+#: Language.module:78
 msgid "Malayalam (India)"
 msgstr "马拉雅拉姆语(印度)"
 
-#: FMakeInstall.class:1377
-msgid "Mandriva Linux"
-msgstr "-"
+#: FMakeInstall.form:384
+msgid "Mandriva"
+msgstr "Mandriva"
 
-#: MErrorMessage.module:89
+#: MErrorMessage.module:109
 msgid "Mathematic error"
 msgstr ""
 
-#: FMakeInstall.class:93
+#: FMakeInstall.class:108
 msgid "Max. version"
 msgstr "最大版本"
 
-#: CComponent.class:75
+#: CComponent.class:82
 msgid "MD5/DES crypting"
 msgstr "MD5/DES加密"
 
-#: MErrorMessage.module:88
+#: MErrorMessage.module:108
 msgid "ME cannot be used in a static function"
 msgstr ""
 
-#: FForm.class:3658 FMenu.class:49
+#: FForm.form:511 FMenu.form:65
 msgid "Menu editor"
 msgstr "菜单编辑器"
 
-#: FForm.class:3536
+#: FForm.form:389
 msgid "Menu editor..."
 msgstr "菜单编辑器..."
 
-#: FMakeInstall.class:1478
+#: FMakeInstall.form:466
 msgid "Menu entry"
 msgstr "菜单条目"
 
-#: FMakeInstall.class:669
+#: FMakeInstall.class:746
 msgid "Menus"
 msgstr "菜单"
 
-#: FImportTable.class:613
+#: FMenu.class:64
+msgid "Menus have been modified!"
+msgstr ""
+
+#: FImportTable.class:70
+msgid "Message"
+msgstr "消息"
+
+#: FImportTable.form:191
 msgid "Messages"
 msgstr "消息"
 
-#: FOption.class:878
-msgid "Minimize at runtime"
-msgstr "运行时最小化"
+#: MHelp.module:576
+msgid "Methods"
+msgstr ""
 
-#: FMakeInstall.class:92
+#: FMakeInstall.form:503
+msgid "Mimetypes"
+msgstr "MIME 类型"
+
+#: FMakeInstall.class:107
 msgid "Min. version"
 msgstr "最低版本"
 
-#: Project.module:150
+#: FOption.form:298
+msgid "Minimize at runtime"
+msgstr "运行时最小化"
+
+#: Project.module:195
 msgid "Miscellaneous"
 msgstr "其它"
 
-#: MErrorMessage.module:90
+#: MErrorMessage.module:111
 msgid "Missing &1"
 msgstr ""
 
-#: FReportCoordChooser.class:109
+#: MErrorMessage.module:110
+msgid "Missing #Endif"
+msgstr ""
+
+#: MErrorMessage.module:112
+msgid "Missing operator"
+msgstr ""
+
+#: MErrorMessage.module:113
+msgid "Missing right brace"
+msgstr ""
+
+#: FReportCoordChooser.form:21
 msgid "mm"
 msgstr "毫米"
 
-#: Project.module:4644
+#: FMenu.class:947 Project.module:5117
 msgid "modified"
 msgstr "修改过"
 
-#: FHelpBrowser.class:323
+#: FHelpBrowser.form:123
 msgid "Modify documentation..."
 msgstr ""
 
-#: FCreateFile.class:608 FInfo.class:80
+#: FCreateFile.form:108
 msgid "Module"
 msgstr "模块"
 
-#: FMain.class:2319
-msgid "&Module..."
-msgstr "(&M)模块..."
-
-#: FInfo.class:67
-msgid "Modules"
-msgstr "模块"
-
-#: FPropertyProject.class:1705
+#: FPropertyProject.form:295
 msgid "Module symbols are public by default"
 msgstr "模块符号缺省是公用的"
 
-#: CComponent.class:89
+#: FInfo.class:68
+msgid "Modules"
+msgstr "模块"
+
+#: CComponent.class:96
 msgid "More controls for graphical components"
 msgstr "图形组件的更多控件"
 
-#: FFormStack.class:328
+#: FFormStack.form:50
 msgid "Move bottom"
 msgstr "降到底层"
 
-#: FFormStack.class:322
+#: FFormStack.form:44 FMenu.form:147
 msgid "Move down"
 msgstr "下移"
 
-#: FForm.class:3354
+#: FForm.form:161
 msgid "Move tab"
 msgstr "移动标签页"
 
-#: FForm.class:3775
+#: FForm.form:637
 msgid "Move tab first"
 msgstr "移动标签页到起始"
 
-#: FForm.class:3796
+#: FForm.form:658
 msgid "Move tab last"
 msgstr "移动标签页到末尾"
 
-#: FForm.class:3782
+#: FForm.form:644
 msgid "Move tab left"
 msgstr "向左移动标签页"
 
-#: FForm.class:3789
+#: FForm.form:651
 msgid "Move tab right"
 msgstr "向右移动标签页"
 
-#: FFormStack.class:310
+#: FFormStack.form:32
 msgid "Move top"
 msgstr "升到顶层"
 
-#: FFormStack.class:316
+#: FFormStack.form:38 FMenu.form:141
 msgid "Move up"
 msgstr "上移"
 
-#: CComponent.class:91
+#: CComponent.class:98
 msgid "Multi Document Interface"
 msgstr "多文档界面"
 
-#: FNewConnection.class:414
+#: Project.module:202
+msgid "Multimedia"
+msgstr "多媒体"
+
+#: FNewConnection.form:81
 msgid "MySQL"
 msgstr "-"
 
-#: CComponent.class:79
+#: CComponent.class:86
 msgid "MySQL database driver"
 msgstr "MySQL数据库驱动"
 
-#: CComponent.class:102
+#: CComponent.class:113
 msgid "MySQL specific routines"
 msgstr "MySQL专用程序"
 
-#: FDebugInfo.class:29 FNewConnection.class:393 FNewTable.class:112
+#: FOption.form:1036
 msgid "Name"
 msgstr "名称"
 
-#: FDebugInfo.class:115
+#: FDebugInfo.class:150
 msgid "native code"
 msgstr "本地代码"
 
-#: CComponent.class:104
+#: CComponent.class:114
+msgid "NCurses library"
+msgstr ""
+
+#: CComponent.class:116
 msgid "Network high-level protocols management"
 msgstr "高级网络协议管理"
 
-#: CComponent.class:103 Project.module:151
-msgid "Networking"
-msgstr "网络"
-
-#: FCreateProject.class:563
+#: CComponent.class:115 FCreateProject.form:298
 msgid "Network programming"
 msgstr "网络编程"
 
-#: FCreateFile.class:582 FMain.class:2299
+#: Project.module:196
+msgid "Networking"
+msgstr "网络"
+
+#: FCreateFile.form:79 FMain.form:558
 msgid "New"
 msgstr "新建"
 
-#: FTranslate.class:1711
-msgid "&New..."
-msgstr "新建(&N)..."
-
-#: MErrorMessage.module:91
+#: MErrorMessage.module:114
 msgid "NEW cannot have arguments passed by reference"
 msgstr ""
 
-#: FMain.class:2485
-msgid "&New connection..."
-msgstr "(&N)新建连接..."
+#: FSnippet.class:69
+msgid "New code snippet"
+msgstr ""
 
-#: FNewConnection.class:139
+#: FNewConnection.class:141
 msgid "New connection"
 msgstr "新建连接"
 
-#: FCreateFile.class:567
+#: FCreateFile.form:66
 msgid "New file"
 msgstr "新建文件"
 
-#: FMain.class:693
+#: FMain.class:746
 msgid "New folder"
 msgstr "新建目录"
 
-#: FConnectionEditor.class:1743
+#: FConnectionEditor.form:294
 msgid "New index"
 msgstr "新建索引"
 
-#: FMain.class:1924
-msgid "&New project..."
-msgstr "(&N)新建工程..."
-
-#: FCreateProject.class:336 FMain.class:2533
+#: FCreateProject.form:65 FMain.form:879
 msgid "New project"
 msgstr "新建工程"
 
-#: FWelcome.class:46
+#: FSaveProjectAs.form:38
+msgid "New project name"
+msgstr ""
+
+#: FSaveProjectAs.form:27
+msgid "New project parent directory"
+msgstr ""
+
+#: FWelcome.class:49
 msgid "New project..."
 msgstr "新建工程..."
 
-#: FConnectionEditor.class:1578 FNewTable.class:98
+#: FConnectionEditor.form:123 FNewTable.form:19
 msgid "New table"
 msgstr "新建表"
 
-#: FNewTranslation.class:59 FTranslate.class:1710
+#: FNewTranslation.form:10 FTranslate.form:297
 msgid "New translation"
 msgstr "新建翻译"
 
-#: FForm.class:3373 FMenu.class:837 FSearch.class:863 FTips.class:226
-msgid "&Next"
-msgstr "(&N)下一个"
+#: FMenu.form:89
+msgid "Next menu"
+msgstr ""
 
-#: FOption.class:862 FPropertyProject.class:1711
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:301
 msgid "No"
 msgstr "否"
 
-#: MHelp.module:267
+#: FDebugExpr.form:48
+msgid "No element"
+msgstr ""
+
+#: MHelp.module:282
 msgid "No help found."
 msgstr "没有找到帮助。"
 
-#: MErrorMessage.module:92
-msgid "No instanciation method"
+#: MErrorMessage.module:115
+msgid "No instantiation method"
 msgstr ""
 
-#: Project.module:3640
-msgid "Non-ASCII characters are forbidden in a project name."
-msgstr "工程名称禁止使用非ASCII字符。"
-
-#: FOption.class:976 FProperty.class:743
-msgid "None"
-msgstr "无"
-
-#: FMakeInstall.class:1287
-msgid "Non-free License"
-msgstr ""
-
-#: MErrorMessage.module:96
-msgid "Non terminated string"
-msgstr ""
-
-#: FCreateFile.class:113
-msgid "(No parent)"
-msgstr "无父类"
-
-#: MErrorMessage.module:93
+#: MErrorMessage.module:116
 msgid "No parent class"
 msgstr ""
 
-#: FImportTable.class:404
+#: FProxy.form:76
+msgid "No proxy"
+msgstr ""
+
+#: FImportTable.class:424
 msgid "No record imported."
 msgstr "无导入记录。"
 
-#: MErrorMessage.module:94
+#: MErrorMessage.module:117
 msgid "No return value"
 msgstr ""
 
-#: FOption.class:808
+#: FEditor.form:280 FTextEditor.form:200
+msgid "No split"
+msgstr "不拆分"
+
+#: MErrorMessage.module:118
+msgid "No startup method"
+msgstr ""
+
+#: Design.module:854
+msgid "No terminal emulator found."
+msgstr "没有找到终端仿真器。"
+
+#: FTranslate.class:954
+msgid "No translation were picked up."
+msgstr "没有翻译被采纳。"
+
+#: FHelpBrowser.form:97
+msgid "No zoom"
+msgstr ""
+
+#: MErrorMessage.module:119
+msgid "Non terminated string"
+msgstr ""
+
+#: Project.module:4129
+msgid "Non-ASCII characters are forbidden in a project name."
+msgstr "工程名称禁止使用非ASCII字符。"
+
+#: FMakeInstall.form:234 FOption.form:1090
+msgid "Non-free License"
+msgstr ""
+
+#: FOption.form:409 FProperty.class:749
+msgid "None"
+msgstr "无"
+
+#: FOption.form:232 FPropertyProject.form:171
 msgid "Normal"
 msgstr "普通"
 
@@ -2958,35 +3699,27 @@ msgstr "普通"
 msgid "Normal text"
 msgstr "普通文本"
 
-#: Language.module:79
+#: Language.module:85
 msgid "Norwegian (Norway)"
 msgstr "挪威语(挪威)"
 
-#: FEditor.class:3297 FTextEditor.class:739
-msgid "No split"
-msgstr "不拆分"
-
-#: MErrorMessage.module:95
-msgid "No startup method"
-msgstr ""
-
-#: MErrorMessage.module:97
+#: MErrorMessage.module:120
 msgid "Not a directory: &1"
 msgstr ""
 
-#: MErrorMessage.module:98
+#: MErrorMessage.module:121
 msgid "Not a function"
 msgstr ""
 
-#: MErrorMessage.module:99
+#: MErrorMessage.module:122
 msgid "Not an array"
 msgstr ""
 
-#: MErrorMessage.module:100
+#: MErrorMessage.module:123
 msgid "Not an enumeration"
 msgstr ""
 
-#: MErrorMessage.module:101
+#: MErrorMessage.module:124
 msgid "Not an object"
 msgstr ""
 
@@ -2994,47 +3727,35 @@ msgstr ""
 msgid "not available"
 msgstr "不可用"
 
-#: MErrorMessage.module:103
-msgid "Not enough arguments"
-msgstr ""
-
-#: MErrorMessage.module:104
-msgid "Not enough arguments to &1()"
-msgstr ""
-
-#: MErrorMessage.module:102
+#: MErrorMessage.module:125
 msgid "Not enough argument to New()"
 msgstr ""
 
-#: FImportTable.class:374
+#: MErrorMessage.module:126
+msgid "Not enough arguments"
+msgstr ""
+
+#: MErrorMessage.module:127
+msgid "Not enough arguments to &1()"
+msgstr ""
+
+#: FImportTable.class:389
 msgid "Not enough values"
 msgstr "没有足够的值"
 
-#: Design.module:797
-msgid "No terminal emulator found."
-msgstr "没有找到终端仿真器。"
-
-#: CComponentBox.class:94 FPropertyProject.class:1879
+#: CComponentBox.class:223 FPropertyComponent.form:73
 msgid "Not finished but stable"
 msgstr "稳定非最终版"
 
-#: Project.module:1860
-msgid "Nothing to do."
-msgstr "没事可干"
-
-#: FTranslate.class:939
-msgid "No translation were picked up."
-msgstr "没有翻译被采纳。"
-
-#: FPropertyProject.class:108
+#: FPropertyProject.class:115
 msgid "Not translatable"
 msgstr "未翻译"
 
-#: FHelpBrowser.class:305
-msgid "No zoom"
-msgstr ""
+#: Project.module:2277
+msgid "Nothing to do."
+msgstr "没事可干"
 
-#: MErrorMessage.module:105
+#: MErrorMessage.module:128
 msgid "Null object"
 msgstr ""
 
@@ -3046,103 +3767,107 @@ msgstr "数字"
 msgid "Obsidian"
 msgstr "黑曜石"
 
-#: FNewConnection.class:414
+#: FNewConnection.form:81
 msgid "ODBC"
 msgstr "-"
 
-#: CComponent.class:80
+#: CComponent.class:87
 msgid "ODBC database driver"
 msgstr "ODBC数据库驱动"
 
-#: FText.class:100
+#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "确定"
 
-#: FCreateProject.class:697
-msgid "Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
-msgstr "一旦信息输入完成，你可以单击<b>OK</b>按钮创建工程。\n<p>单击<b>Previous</b> 按钮返回上一步。\n<p>单击<b>Cancel</b>按钮取消操作。\n\n"
-
-#: FImportTable.class:406
+#: FImportTable.class:426
 msgid "One record imported."
 msgstr "一条导入记录。"
 
-#: FTranslate.class:941
+#: FTranslate.class:956
 msgid "One translation was picked up."
 msgstr "一个翻译被采纳。"
 
-#: FIconEditor.class:2347
+#: FIconEditor.form:285
 msgid "Opaque"
 msgstr "不透明度"
 
-#: FConflict.class:254 FOpenProject.class:374 Project.module:353
+#: FConflict.form:47 FOpenProject.form:42
 msgid "Open"
 msgstr "打开"
 
-#: FMain.class:2493
-msgid "&Open"
-msgstr "(&O)打开"
-
-#: Project.module:364
-msgid "Open after all"
-msgstr "继续打开"
-
-#: FMain.class:2239
-msgid "&Open a terminal..."
-msgstr "(&O)打开一个终端..."
-
-#: FForm.class:3331
-msgid "Open code"
-msgstr "打开代码"
-
-#: FMain.class:1944
+#: FMain.form:232
 msgid "Open &example"
 msgstr "(&E)打开范例"
 
-#: FEditor.class:3167
-msgid "Open form"
-msgstr "打开窗口"
-
-#: Project.module:152
-msgid "OpenGL"
-msgstr "OpenGL"
-
-#: CComponent.class:128 FPropertyProject.class:2102
-msgid "OpenGL display"
-msgstr "OpenGL显示"
-
-#: FCreateProject.class:587
-msgid "OpenGL programming"
-msgstr "OpenGL编程"
-
-#: CComponent.class:113
-msgid "OpenGL with QT4 toolkit"
-msgstr "OpenGL 编程(使用QT4工具包) "
-
-#: FCreateProject.class:661 FOpenProject.class:445
-msgid "Open in another window"
-msgstr "在另一个窗口打开"
-
-#: CComponent.class:101
-msgid "OpenLDAP client"
-msgstr "OpenLDAP客户机程序"
-
-#: FMain.class:1931
-msgid "&Open project..."
-msgstr "(&O)打开工程..."
-
-#: FMain.class:2540
-msgid "Open project"
-msgstr "打开工程"
-
-#: FWelcome.class:48
-msgid "Open project..."
-msgstr "打开工程..."
-
-#: FMain.class:1937
+#: FMain.form:225
 msgid "Open &recent"
 msgstr "打开最近的..."
 
-#: FMakeInstall.class:1396
+#: FMain.form:1139
+msgid "Open a terminal"
+msgstr ""
+
+#: Project.module:445
+msgid "Open after all"
+msgstr "继续打开"
+
+#: FForm.form:137 FTextEditor.form:79
+msgid "Open code"
+msgstr "打开代码"
+
+#: FEditor.form:110
+msgid "Open form"
+msgstr "打开窗口"
+
+#: FCreateProject.form:419 FOpenProject.form:166
+msgid "Open in another window"
+msgstr "在另一个窗口打开"
+
+#: FMain.form:886
+msgid "Open project"
+msgstr "打开工程"
+
+#: FWelcome.class:50
+msgid "Open project..."
+msgstr "打开工程..."
+
+#: Project.module:197
+msgid "OpenGL"
+msgstr "OpenGL"
+
+#: CComponent.class:149 FPropertyComponent.form:144
+msgid "OpenGL display"
+msgstr "OpenGL显示"
+
+#: FCreateProject.form:322
+msgid "OpenGL programming"
+msgstr "OpenGL编程"
+
+#: CComponent.class:120
+msgid "OpenGL shaders management"
+msgstr ""
+
+#: CComponent.class:119
+msgid "OpenGL utility component"
+msgstr ""
+
+#: CComponent.class:103
+msgid "OpenGL with GTK+ toolkit"
+msgstr ""
+
+#: CComponent.class:106
+msgid "OpenGL with QT/GTK+ switcher component"
+msgstr ""
+
+#: CComponent.class:127
+msgid "OpenGL with QT4 toolkit"
+msgstr "OpenGL 编程(使用QT4工具包) "
+
+#: CComponent.class:111
+msgid "OpenLDAP client"
+msgstr "OpenLDAP客户机程序"
+
+#: FMakeInstall.form:403
 msgid "OpenSUSE"
 msgstr "-"
 
@@ -3150,179 +3875,199 @@ msgstr "-"
 msgid "Operators"
 msgstr "操作符"
 
-#: FPropertyProject.class:1658
+#: FPropertyComponent.form:56 FPropertyProject.form:243 FSearch.form:100
 msgid "Options"
 msgstr "选项"
 
-#: FMain.class:2384
-msgid "&Other..."
-msgstr "其它(&O)..."
+#: FTextEditor.class:701
+msgid "Original file has been saved in the <b>Project</b> folder."
+msgstr ""
 
-#: FMakeInstall.class:1287
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Other License(s)"
 msgstr ""
 
-#: MErrorMessage.module:106
+#: MErrorMessage.module:129
 msgid "Out of bounds"
 msgstr ""
 
-#: MErrorMessage.module:107
+#: MErrorMessage.module:130
 msgid "Out of memory"
-msgstr ""
+msgstr "内存耗尽"
 
-#: MErrorMessage.module:108
+#: MErrorMessage.module:131
 msgid "Out of range"
 msgstr ""
 
-#: Design.module:770
+#: Design.module:827
 msgid "Output terminal"
 msgstr "输出终端"
 
-#: MErrorMessage.module:109
+#: MErrorMessage.module:132
 msgid "Overflow"
-msgstr ""
+msgstr "溢出"
 
-#: FMakeInstall.class:91
+#: FMakeInstall.class:106
 msgid "Package"
 msgstr "包"
 
-#: FMakeInstall.class:1458
+#: FMakeInstall.form:446
 msgid "Package group"
 msgstr "包组"
 
-#: FMakeInstall.class:1181
+#: FMakeInstall.form:117
 msgid "Package information"
 msgstr "包信息"
 
-#: FMakeInstall.class:1187
+#: FMakeInstall.form:123
 msgid "Package name"
 msgstr "安装包名称"
 
-#: FCreateFile.class:868
+#: FOption.form:1019
+msgid "Packaging"
+msgstr ""
+
+#: FCreateFile.form:376
 msgid "Parent class"
 msgstr "父类"
 
-#: FCommit.class:341 FNewConnection.class:471
+#: FCommit.form:184 FNewConnection.form:147 FProxy.form:47
 msgid "Password"
 msgstr "密码"
 
-#: FImageEditor.class:95 FOutput.class:391 FTextEditor.class:687
+#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:120
 msgid "Paste"
 msgstr "粘贴"
 
-#: FList.class:314 FMain.class:2428
-msgid "&Paste"
-msgstr "(&P)粘贴"
-
-#: FEditor.class:3348 FPasteSpecial.class:243
+#: FEditor.form:339 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr "粘贴为注释"
 
-#: FEditor.class:3343 FPasteSpecial.class:258
+#: FEditor.form:334 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr "粘贴为多行字符串"
 
-#: FEditor.class:3338 FPasteSpecial.class:253
+#: FEditor.form:329 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr "粘贴为字符串"
 
-#: FPasteSpecial.class:237
+#: FPasteSpecial.form:35
 msgid "Paste normally"
 msgstr "正常粘贴"
 
-#: FPasteSpecial.class:221
+#: FEditor.form:405 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr "特别粘贴"
 
-#: FEditor.class:3242
+#: FEditor.form:251
 msgid "Paste special..."
 msgstr "粘贴为指定..."
 
-#: FPasteSpecial.class:248
+#: FConnectionEditor.form:153 FPasteTable.form:22
+msgid "Paste table"
+msgstr ""
+
+#: FPasteSpecial.form:46
 msgid "Paste with PRINT"
 msgstr "用PRINT粘贴"
 
-#: FNewConnection.class:438
+#: FConnectionEditor.form:155
+msgid "Paste..."
+msgstr ""
+
+#: FNewConnection.form:115
 msgid "Path"
 msgstr "路径"
 
-#: FMain.class:2693
+#: FMain.form:1060
 msgid "Pause"
 msgstr "暂停"
 
-#: FMain.class:2081
-msgid "&Pause"
-msgstr "(&P)暂停"
-
-#: CComponent.class:109
+#: CComponent.class:123
 msgid "PDF renderer based on Poppler library"
 msgstr "基于Poppler库的PDF演示器"
 
-#: CComponent.class:108
+#: CComponent.class:122
 msgid "Perl-compatible Regular Expression Matching"
 msgstr "Perl兼容的正则表达式匹配"
 
-#: FIconEditor.class:2420
+#: FIconEditor.form:358
 msgid "Pick a color"
 msgstr "提取颜色"
 
-#: FInfo.class:92
+#: FInfo.class:101
 msgid "Picture"
 msgstr "图片"
 
-#: FCreateFile.class:87 FSelectIcon.class:27
+#: FCreateFile.class:124
 msgid "Picture files"
 msgstr "图片文件"
 
-#: MMime.module:15
+#: MMime.module:17
 msgid "Plain text"
 msgstr "无格式文本"
 
-#: FMakeInstall.class:361
+#: FMakeInstall.class:416
 msgid "Please choose a menu location."
 msgstr "请选择菜单位置。"
 
-#: FMakeInstall.class:350
+#: FMakeInstall.class:404
 msgid "Please choose a package group."
 msgstr "请选择包所属的组。"
 
-#: FMakeInstall.class:326
+#: FMakeInstall.class:440
+msgid "Please choose a target directory for each extra file."
+msgstr ""
+
+#: FMakeInstall.class:374
 msgid "Please choose at least one target distribution."
 msgstr "请选择至少一个分派目标。"
 
-#: FMakeInstall.class:359
+#: FMakeInstall.class:414
 msgid "Please choose the menu location for each target distribution."
 msgstr "请为每个分派目标选择菜单位置。"
 
-#: FMakeInstall.class:348
+#: FMakeInstall.class:402
 msgid "Please choose the package group for each target distribution."
 msgstr "请为每个分派目标选择包所属的组。"
 
-#: FMenu.class:276
+#: FSystemInfo.form:45
+msgid "Please copy these informations in all your bug reports."
+msgstr ""
+
+#: FMenu.class:300
 msgid "Please enter a menu name."
 msgstr "请输入菜单名称"
 
-#: FConnectionEditor.class:633
+#: FConnectionEditor.class:675
 msgid "Please enter a number."
 msgstr "请输入一个数。"
 
-#: FNewConnection.class:125
+#: FPasteTable.class:57
+msgid "Please enter a table name."
+msgstr ""
+
+#: FSnippet.class:25
+msgid "Please enter a trigger string."
+msgstr ""
+
+#: FNewConnection.class:127
 msgid "Please enter password"
 msgstr "请输入口令"
 
-#: FMakeInstall.class:1296
+#: FMakeInstall.form:244
 msgid "Please enter the changes of your project."
 msgstr "请输入工程的变化。"
 
-#: FMakeInstall.class:316
+#: FMakeInstall.class:363
 msgid "Please enter the first CHANGELOG entry."
 msgstr "请输入第一个更改记录项."
 
-#: FCreateProject.class:226
+#: FCreateProject.class:230
 msgid "Please enter the location of the repository."
 msgstr "请输入存储的位置。"
 
-#: FNewConnection.class:84
+#: FNewConnection.class:86
 msgid "Please enter the name of the database."
 msgstr "请输入数据库的名称"
 
@@ -3330,201 +4075,209 @@ msgstr "请输入数据库的名称"
 msgid "Please enter the name of the new table."
 msgstr "请输入新建表的名称。"
 
-#: FCommit.class:43
+#: FCommit.class:44
 msgid "Please enter the versioning user name"
 msgstr "请输入用户命名的版本"
 
-#: FMakeInstall.class:298
+#: FMakeInstall.class:344
 msgid "Please enter your e-mail address."
 msgstr "请输入你的电子邮件地址"
 
-#: FMakeInstall.class:293
+#: FMakeInstall.class:339
 msgid "Please enter your name."
 msgstr "请输入你的姓名"
 
-#: FTranslate.class:901
+#: FTranslate.class:916
 msgid "Please select the translation file to import."
 msgstr ""
 
-#: Project.module:3214
+#: Project.module:3693
 msgid "Please type a name."
 msgstr "请输入一个名字."
 
-#: Project.module:3629
+#: Project.module:4118
 msgid "Please type a project name."
 msgstr "请输入一个工程名."
 
-#: FCreateFile.class:838
+#: FCreateFile.form:346
 msgid "PNG"
 msgstr "-"
 
-#: Language.module:83
+#: Language.module:89
 msgid "Polish (Poland)"
 msgstr "波兰语(波兰)"
 
-#: Language.module:86
+#: FProxy.form:37
+msgid "Port"
+msgstr "端口"
+
+#: Language.module:92
 msgid "Portuguese (Brazil)"
 msgstr "Portuguese (Brazil)"
 
-#: Language.module:85
+#: Language.module:91
 msgid "Portuguese (Portugal)"
 msgstr "Portuguese (Portugal)"
 
-#: FNewConnection.class:414
+#: FNewConnection.form:81
 msgid "PostgreSQL"
 msgstr "-"
 
-#: CComponent.class:81
+#: CComponent.class:88
 msgid "PostgreSQL database driver"
 msgstr "PostgreSQL数据库驱动"
 
-#: FMain.class:2576 FOption.class:734
+#: FMain.form:930 FOption.form:175
 msgid "Preferences"
 msgstr "首选项"
 
-#: FMain.class:2261
-msgid "&Preferences..."
-msgstr "(&P)首选项..."
-
-#: FMakeInstall.class:1203
+#: FMakeInstall.form:140 FOption.form:1118
 msgid "Prefix package name with the vendor name"
 msgstr "安装包名称前缀销售商名称"
 
-#: FImportTable.class:605
+#: MTheme.module:6
+msgid "Preprocessor"
+msgstr ""
+
+#: FImportTable.form:183
 msgid "Preview"
 msgstr "预览"
 
-#: FForm.class:3366 FSearch.class:869 FTips.class:220
-msgid "&Previous"
-msgstr "上一个(&P)"
-
-#: FCommit.class:283
+#: FCommit.form:140
 msgid "Previous description"
 msgstr ""
 
-#: FHelpBrowser.class:316
+#: FHelpBrowser.form:116
 msgid "Print"
 msgstr "打印"
 
-#: Project.module:153
+#: Project.module:198
 msgid "Printing"
 msgstr "打印"
 
-#: FEditor.class:3489
-msgid "Procedure list"
-msgstr ""
-
-#: FOption.class:970
-msgid "Procedure separation"
-msgstr "过程分隔"
-
-#: FMain.class:2631 FSearch.class:88 FSelectIcon.class:216 Project.module:1283
-msgid "Project"
-msgstr "工程"
-
-#: FMain.class:1979
-msgid "&Project"
-msgstr "(&P)工程"
-
-#: FMain.class:2157
+#: FMain.form:440
 msgid "Pro&ject"
 msgstr "(&J)工程"
 
-#: FCreateProject.class:123
+#: FEditor.form:541 FTextEditor.form:400
+msgid "Procedure list"
+msgstr ""
+
+#: FOption.form:403
+msgid "Procedure separation"
+msgstr "过程分隔"
+
+#: Project.module:1626
+msgid "Project"
+msgstr "工程"
+
+#: FCreateProject.class:125
 msgid "Project checkout has failed."
 msgstr "工程校检失败。"
 
-#: FCommit.class:181
+#: Project.module:5270
+msgid "Project cleanup..."
+msgstr ""
+
+#: FCommit.form:38
 msgid "Project commit"
 msgstr "提交工程"
 
-#: FCreateProject.class:615
-msgid "Project directory"
-msgstr "工程目录"
+#: Project.module:5276
+msgid "Project files conversion..."
+msgstr ""
 
-#: FPropertyProject.class:1233
+#: FPropertyProject.class:832
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FCreateProject.class:624
+#: FCreateProject.form:358
 msgid "Project information"
 msgstr "工程信息"
 
-#: FPropertyProject.class:1763
+#: FPropertyProject.form:337
 msgid "Project is translatable"
 msgstr "工程是可翻译的"
 
-#: FMain.class:2309
-msgid "&Project link..."
+#: FCreateProject.form:368
+msgid "Project name"
 msgstr ""
 
-#: FMain.class:2561 FPropertyProject.class:52
+#: FCreateProject.form:350
+msgid "Project parent directory"
+msgstr ""
+
+#: FMain.form:909 FPropertyProject.form:108
 msgid "Project properties"
 msgstr "工程属性"
 
-#: FTranslate.class:1484
+#: FCreateProject.form:403
+msgid "Project title"
+msgstr ""
+
+#: FTranslate.form:51
 msgid "Project translation"
 msgstr "翻译工程"
 
-#: FCreateProject.class:352
+#: FCreateProject.form:80 FPropertyProject.form:164
 msgid "Project type"
 msgstr "工程类型"
 
-#: FMain.class:2828 FProperty.class:1146
+#: FMain.form:1331 FProperty.form:24 MHelp.module:574
 msgid "Properties"
 msgstr "属性"
 
-#: FMain.class:2166
-msgid "&Properties"
-msgstr "(&P)属性"
-
-#: FMain.class:2060
-msgid "&Properties..."
-msgstr "(&P)属性..."
-
-#: FMain.class:2641
+#: FMain.form:995
 msgid "Properties sheet"
 msgstr "属性页"
 
-#: CComponentBox.class:228
+#: CComponentBox.class:263 LibraryItem.class:61
 msgid "Provides"
 msgstr "提供"
 
-#: FMakeInstall.class:1287
+#: FProxy.form:20
+msgid "Proxy configuration"
+msgstr ""
+
+#: FOption.form:811
+msgid "Proxy configuration..."
+msgstr ""
+
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Public Domain"
 msgstr "不受版权保护"
 
-#: Language.module:81
+#: Language.module:87
 msgid "Punjabi (India)"
 msgstr "旁遮普语(印度)"
 
-#: FMain.class:2050
+#: FMain.form:338
 msgid "Put on &version control"
 msgstr ""
 
-#: FCreateFile.class:843 FReportCoordChooser.class:109
+#: FCreateFile.form:351 FReportCoordChooser.form:21
 msgid "px"
 msgstr "px"
 
-#: CComponent.class:110
-msgid "QT4 toolkit"
-msgstr "QT4工具箱"
-
-#: CComponent.class:111
-msgid "QT4 toolkit extension"
-msgstr "QT4扩展工具箱"
-
-#: CComponent.class:112
-msgid "QT4 WebKit component"
-msgstr "QT4 WebKit组件"
-
-#: FCreateProject.class:413
+#: FCreateProject.form:143
 msgid "QT graphical application"
 msgstr "QT图形界面应用程序"
 
-#: CComponent.class:95
+#: CComponent.class:105
 msgid "QT/GTK+ switcher component"
 msgstr "QT/GTK+组件切换器"
+
+#: CComponent.class:124
+msgid "QT4 toolkit"
+msgstr "QT4工具箱"
+
+#: CComponent.class:125
+msgid "QT4 toolkit extension"
+msgstr "QT4扩展工具箱"
+
+#: CComponent.class:126
+msgid "QT4 WebKit component"
+msgstr "QT4 WebKit组件"
 
 #: FOption.class:4
 msgid "Quest"
@@ -3534,151 +4287,135 @@ msgstr "探索"
 msgid "Quick"
 msgstr "敏捷"
 
-#: FOption.class:918
+#: FOption.form:712
 msgid "Quiet external commands"
 msgstr "使外部命令安静"
 
-#: FSave.class:30 FWelcome.class:54
+#: FMakeInstall.class:302 FSave.class:30 FWelcome.class:53
 msgid "Quit"
 msgstr "退出"
 
-#: FMain.class:1972
-msgid "&Quit"
-msgstr "(&Q)退出"
+#: FReportBrushChooser.form:47
+msgid "Radial gradient"
+msgstr ""
 
-#: MErrorMessage.module:110
+#: FReportBrushChooser.form:130
+msgid "Radius"
+msgstr "半径"
+
+#: FOption.form:864
+msgid "Re&set"
+msgstr "重置(&S)"
+
+#: MErrorMessage.module:133
 msgid "Read error"
 msgstr "读取出错"
 
-#: Project.module:1246
+#: Project.module:1523
 msgid "read-only"
 msgstr "只读"
 
-#: FOpenProject.class:413
+#: FOpenProject.form:88
 msgid "Recent"
 msgstr "最近"
 
-#: FWelcome.class:50
+#: FWelcome.class:51
 msgid "Recent projects"
 msgstr "最近的工程"
 
-#: FIconEditor.class:2271
+#: FIconEditor.form:209
 msgid "Rectangle"
 msgstr "矩形"
 
-#: FOutput.class:367 FTextEditor.class:663
+#: FTextEditor.form:96
 msgid "Redo"
 msgstr "重做"
 
-#: FMain.class:2044
-msgid "&Refresh"
-msgstr "(&R)刷新"
-
-#: FMain.class:2569
+#: FMain.form:923
 msgid "Refresh project"
 msgstr "刷新工程"
 
-#: FSearch.class:822
+#: FSearch.form:116
 msgid "Regular e&xpression"
-msgstr ""
+msgstr "正则表达式(&X)"
 
-#: FCreateProject.class:575
+#: FCreateProject.form:310
 msgid "Regular expressions"
 msgstr "正则表达式"
 
-#: FTextEditor.class:450 FTranslate.class:711
+#: FTextEditor.form:226 FTranslate.class:730
 msgid "Reload"
 msgstr "重载"
 
-#: FTranslate.class:1718
-msgid "&Reload"
-msgstr "重新载入(&R)"
-
-#: FTranslate.class:1717
+#: FTranslate.form:305
 msgid "Reload translation"
 msgstr "重载翻译"
 
-#: FCommit.class:354 FNewConnection.class:491
+#: FCommit.form:197 FNewConnection.form:167
 msgid "Remember password"
 msgstr "记住口令"
 
-#: FConnectionEditor.class:1399 FMakeInstall.class:933
+#: FConnectionEditor.form:131 FMakeInstall.class:1005
 msgid "Remove"
 msgstr "删除"
 
-#: FPropertyProject.class:1963
-msgid "&Remove"
-msgstr "删除(&R)"
-
-#: FDebugInfo.class:1088
+#: FDebugInfo.form:135
 msgid "Remove all"
 msgstr "全部删除"
 
-#: FPropertyProject.class:2154
+#: FPropertyComponent.form:196
 msgid "Remove All"
 msgstr "全部移除"
 
-#: FDebugInfo.class:1124
+#: FDebugInfo.form:183
 msgid "Remove all breakpoints"
 msgstr "删除所有断点"
 
-#: FDebugInfo.class:1086
+#: FDebugInfo.form:133
 msgid "Remove all expressions"
 msgstr "删除所有表达式"
 
-#: FDebugInfo.class:1116
+#: FDebugInfo.form:175
 msgid "Remove current breakpoint"
 msgstr "删除当前断点"
 
-#: FDebugInfo.class:1078
+#: FDebugInfo.form:125
 msgid "Remove current expression"
 msgstr "删除当前表达式"
 
-#: FMain.class:2435
-msgid "&Rename..."
-msgstr "(&R)重命名..."
+#: FReportBrushChooser.form:102
+msgid "Remove gradient stop"
+msgstr ""
 
-#: FConnectionEditor.class:1592
-msgid "Rename..."
-msgstr "重命名..."
+#: FOption.form:938
+msgid "Remove useless spaces at end of line"
+msgstr ""
 
-#: FConnectionEditor.class:1590 FNewTable.class:30
+#: FConnectionEditor.form:137 FNewTable.class:30
 msgid "Rename table"
 msgstr "重命名表"
 
-#: FSearch.class:789
+#: FConnectionEditor.form:139
+msgid "Rename..."
+msgstr "重命名..."
+
+#: FSearch.form:76
 msgid "Replace"
 msgstr "替换"
 
-#: FSearch.class:875
-msgid "&Replace"
-msgstr ""
-
-#: FMain.class:2222
-msgid "&Replace..."
-msgstr ""
-
-#: FTextEditor.class:712
-msgid "Replace..."
-msgstr "替换..."
-
-#: FSearch.class:881
+#: FSearch.form:217
 msgid "Replace &all"
 msgstr ""
 
-#: FIconEditor.class:2360
+#: FIconEditor.form:298
 msgid "Replace color"
 msgstr "替换颜色"
 
-#: CModule.class:30 FCreateFile.class:688
+#: CModule.class:30 FCreateFile.form:192
 msgid "Report"
 msgstr "报表"
 
-#: FMain.class:2351
-msgid "&Report..."
-msgstr "(&R)报表..."
-
-#: CComponent.class:114
+#: CComponent.class:128
 msgid "Report designer"
 msgstr "报表设计器"
 
@@ -3686,371 +4423,415 @@ msgstr "报表设计器"
 msgid "Reports"
 msgstr "报表"
 
-#: FCreateProject.class:673
+#: FCreateProject.form:431
 msgid "Repository"
 msgstr "存储于"
 
-#: CComponentBox.class:207 FPropertyProject.class:2064
+#: CComponentBox.class:242 FPropertyComponent.form:106 LibraryItem.class:63
 msgid "Requires"
 msgstr "需要"
 
-#: FPropertyProject.class:1917
-msgid "&Reset"
-msgstr "重置(&R)"
+#: FDebugInfo.form:230 FOption.class:927
+msgid "Reset"
+msgstr "重置"
 
-#: FConflict.class:410
+#: FMain.form:1250
+msgid "Reset filter"
+msgstr ""
+
+#: FConflict.form:138
 msgid "Resolve conflict with"
 msgstr "解决冲突"
 
-#: FMakeInstall.class:260
-msgid "Retry"
-msgstr "重试"
-
-#: MErrorMessage.module:111
+#: MErrorMessage.module:134
 msgid "Return value datatype not specified in function declaration"
 msgstr ""
 
-#: FPropertyProject.class:2053
-msgid "&Revert..."
-msgstr "(&R)还原..."
+#: FReportBorderChooser.form:125 FReportPaddingChooser.form:43
+msgid "Right"
+msgstr "右侧"
 
-#: FIconEditor.class:2384
+#: Language.module:96
+msgid "Romanian (Romania)"
+msgstr "罗马尼亚语(罗马尼亚)"
+
+#: FIconEditor.form:322
 msgid "Rotate clockwise"
 msgstr "顺时针旋转"
 
-#: FIconEditor.class:2392
+#: FIconEditor.form:330
 msgid "Rotate counter-clockwise"
 msgstr "逆时针旋转"
 
-#: FForm.class:3470
+#: FForm.form:308
 msgid "Rows"
 msgstr "行数"
-
-#: Package.module:1067
-msgid "'rpmbuild' has returned the following error code:"
-msgstr "'rpmbuild'返回错误代码:"
 
 #: FOption.class:4
 msgid "Ruby"
 msgstr "红宝石"
 
-#: FMain.class:2686
+#: FMain.form:1053
 msgid "Run"
 msgstr "运行"
 
-#: FMain.class:2071
-msgid "&Run"
-msgstr "(&R)运行"
-
-#: FConnectionEditor.class:1801
-msgid "Run query"
-msgstr "运行查询"
-
-#: FMakeExecutable.class:102
-msgid "Run this command after"
-msgstr "然后运行命令："
-
-#: FMain.class:2116
-msgid "Run &until"
-msgstr "(&U)运行到当前行"
-
-#: FEditor.class:3182
+#: FEditor.form:191
 msgid "Run &until current line"
 msgstr "(&U)运行到当前行"
 
-#: FMain.class:2729
+#: FConnectionEditor.form:352
+msgid "Run query"
+msgstr "运行查询"
+
+#: FMakeExecutable.form:39
+msgid "Run this command after"
+msgstr "然后运行命令："
+
+#: FMain.form:1096
 msgid "Run until current line"
 msgstr "运行到当前行"
 
-#: Language.module:90
+#: Language.module:98
 msgid "Russian (Russia)"
 msgstr "俄语(俄罗斯)"
 
-#: FMakeInstall.class:1513
-msgid "Same dependencies for all targets"
-msgstr "对所有目标使用相同的从属部分"
-
-#: FMakeInstall.class:1573
-msgid "Same files for all targets"
-msgstr "对所有目标使用相同的文件"
-
-#: FForm.class:3729
-msgid "Same height"
-msgstr "同高"
-
-#: FForm.class:3526
+#: FForm.form:379
 msgid "Same &height"
 msgstr "(&H)同高"
 
-#: FForm.class:3722
-msgid "Same width"
-msgstr "同宽"
-
-#: FForm.class:3520
+#: FForm.form:373
 msgid "Same &width"
 msgstr "(&W)同宽"
+
+#: FMakeInstall.form:543
+msgid "Same dependencies for all targets"
+msgstr "对所有目标使用相同的从属部分"
+
+#: FMakeInstall.form:603
+msgid "Same files for all targets"
+msgstr "对所有目标使用相同的文件"
+
+#: FForm.form:580
+msgid "Same height"
+msgstr "同高"
+
+#: FForm.form:573
+msgid "Same width"
+msgstr "同宽"
 
 #: FOption.class:4
 msgid "Sapphire"
 msgstr "蓝宝石"
 
-#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:764
+#: FTextEditor.form:232
 msgid "Save"
 msgstr "保存"
 
-#: FConflict.class:444
-msgid "&Save"
-msgstr "保存(&S)"
-
-#: FSave.class:132
+#: FSave.form:42
 msgid "Save &All"
 msgstr "全部保存(&A)"
 
-#: FSave.class:104
+#: FSave.form:14
 msgid "Save modified files"
 msgstr "保存修改过的文件"
 
-#: FMain.class:1955
-msgid "&Save project"
-msgstr "(&S)保存工程"
-
-#: FMain.class:2547
+#: FMain.form:895
 msgid "Save project"
 msgstr "保存工程"
 
-#: FMain.class:2554 Project.module:1993
-msgid "Save project as"
-msgstr "另存工程"
-
-#: FMain.class:1962
+#: FMain.form:250
 msgid "Save project &as..."
 msgstr "(&A)另存工程为..."
 
-#: FTranslate.class:1558
+#: FMain.form:902 FSaveProjectAs.form:18
+msgid "Save project as"
+msgstr "另存工程"
+
+#: FTranslate.form:101
 msgid "Save translation"
 msgstr "保存翻译"
 
-#: Package.module:160
+#: Package.module:168
 msgid "Saving CHANGELOG file."
 msgstr "保存修改日志"
 
-#: FIconEditor.class:2231
+#: FIconEditor.form:169
 msgid "Scroll"
 msgstr "滚动"
 
-#: FCreateProject.class:476
+#: FCreateProject.form:209
 msgid "SDL application"
 msgstr "SDL应用程序"
 
-#: CComponent.class:115
+#: CComponent.class:129
 msgid "SDL library"
 msgstr "SDL库"
 
-#: CComponent.class:116
+#: CComponent.class:130
 msgid "SDL sound & CD-ROM management"
 msgstr "SDL声音和CD-ROM管理"
 
-#: FSearch.class:763
+#: FMain.form:1022 FSearch.form:62
 msgid "Search"
 msgstr "搜索"
 
-#: FMain.class:2769
-msgid "Search in project"
-msgstr "在工程中查找"
-
-#: FMain.class:2776
-msgid "Search & replace"
-msgstr ""
-
-#: FSearch.class:91
+#: FSearch.form:43
 msgid "Search & Replace"
+msgstr "搜索和替换"
+
+#: FDebugInfo.form:223
+msgid "Search again"
 msgstr ""
 
-#: FMain.class:2763
-msgid "Search string"
+#: FSearch.form:146
+msgid "Search in"
 msgstr ""
 
-#: FFindList.class:279 FSearch.class:388 FTranslate.class:578
+#: FDebugInfo.form:205
+msgid "Search list"
+msgstr ""
+
+#: FDebugInfo.form:279 FSearch.class:467 FTranslate.class:597
 msgid "Search string cannot be found."
 msgstr "找不到你要查找的字符串"
 
-#: FSearch.class:392
+#: FSearch.class:471
 msgid "Search string replaced &1 times."
 msgstr "你要替换的字符串被替换了&1次."
 
-#: FSearch.class:390
+#: FSearch.class:469
 msgid "Search string replaced once."
 msgstr "你要替换的字符串被替换了一次."
 
-#: Project.module:1676
+#: FOutput.form:151
+msgid "Search..."
+msgstr "搜索..."
+
+#: Design.module:153 Project.module:2038
 msgid "second"
 msgstr ""
 
-#: FForm.class:3314 FIconEditor.class:2244
+#: FForm.form:120 FIconEditor.form:182
 msgid "Select"
 msgstr "选择"
 
-#: FReportBorderChooser.class:201
-msgid "Select a border"
-msgstr ""
-
-#: FColorChooser.class:161
-msgid "Select a color"
-msgstr "选择颜色"
-
-#: FReportCoordChooser.class:100
-msgid "Select a dimension"
-msgstr ""
-
-#: FNewConnection.class:158
-msgid "Select a directory"
-msgstr "选择一个目录"
-
-#: FFontChooser.class:57
-msgid "Select a font"
-msgstr "选择字体"
-
-#: FForm.class:3391
-msgid "Select all"
-msgstr "全选"
-
-#: FEditor.class:3251 FTextEditor.class:697
+#: FEditor.form:166 FTextEditor.form:130
 msgid "Select &All"
 msgstr "(&A)全选"
 
-#: FSelectExtraFile.class:50
-msgid "Select an extra file"
-msgstr "选择一个附加文件"
+#: FColorChooser.form:14
+msgid "Select a color"
+msgstr "选择颜色"
 
-#: FSelectIcon.class:203
+#: FReportCoordChooser.form:12
+msgid "Select a dimension"
+msgstr ""
+
+#: FNewConnection.class:160
+msgid "Select a directory"
+msgstr "选择一个目录"
+
+#: FFieldChooser.class:72
+msgid "Select a field"
+msgstr ""
+
+#: FProperty.class:949
+msgid "Select a file"
+msgstr ""
+
+#: FFontChooser.form:12
+msgid "Select a font"
+msgstr "选择字体"
+
+#: FPropertyProject.class:1087
+msgid "Select a Gambas application"
+msgstr ""
+
+#: FSelectIcon.form:18
 msgid "Select a picture"
 msgstr "选择一个图片"
 
-#: FOpenProject.class:360
+#: FOpenProject.form:29
 msgid "Select a project"
 msgstr "选择一个工程"
 
-#: FOption.class:59
+#: FOption.class:72
 msgid "Select a theme"
 msgstr "选择主题"
 
-#: FOption.class:285
+#: FOption.class:334
 msgid "Select a theme file"
 msgstr "选择主题文件"
+
+#: FForm.form:198
+msgid "Select all"
+msgstr "全选"
+
+#: FSelectExtraFile.form:12
+msgid "Select an extra file"
+msgstr "选择一个附加文件"
+
+#: FReportBrushChooser.form:62
+msgid "Select an image inside the project"
+msgstr ""
+
+#: FReportBrushChooser.form:108
+msgid "Select gradient stop color..."
+msgstr ""
+
+#: FConnectionEditor.class:1423
+msgid "Select the CSV file to import"
+msgstr "选择导入的CSV文件"
+
+#: FMakeInstall.class:1162
+msgid "Select the destination directory"
+msgstr "选择目的目录"
 
 #: MTheme.module:6
 msgid "Selection"
 msgstr "选择"
 
-#: FConnectionEditor.class:1376
-msgid "Select the CSV file to import"
-msgstr "选择导入的CSV文件"
+#: FProfile.class:570
+msgid "Self"
+msgstr "自身"
 
-#: FMakeInstall.class:982
-msgid "Select the destination directory"
-msgstr "选择目的目录"
-
-#: FForm.class:3453
+#: FForm.form:291
 msgid "Send to background"
 msgstr "送到底层"
 
-#: Language.module:96
+#: Language.module:104
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "塞尔维亚语(塞尔维亚和黑山)"
 
-#: FConnectionEditor.class:530 MConnection.module:98
+#: FConnectionEditor.class:571 MConnection.module:99
 msgid "Serial"
 msgstr "序列"
 
-#: FCreateProject.class:569
+#: MErrorMessage.module:137
+msgid "Serialization error"
+msgstr ""
+
+#: FCreateProject.form:304
 msgid "Settings files management"
 msgstr "设置文件管理"
 
-#: FMenu.class:960
+#: FMenu.form:261
 msgid "SHIFT"
 msgstr "SHIFT"
 
-#: FMain.class:2585
+#: FMain.form:939
 msgid "Shortcuts"
 msgstr "快捷键"
 
-#: FMain.class:2255
-msgid "&Shortcuts..."
-msgstr "(&S)快捷键..."
+#: FMain.form:1262
+msgid "Show added files"
+msgstr ""
 
-#: FPropertyProject.class:1893
+#: FDebugExpr.form:31
+msgid "Show all symbols"
+msgstr ""
+
+#: FProfile.form:75
+msgid "Show average"
+msgstr ""
+
+#: FPropertyProject.form:518
 msgid "Show components in beta version"
 msgstr "在beta版本中显示组件"
 
-#: FOption.class:1208
+#: FOption.form:778
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FHelpBrowser.class:282
+#: FMain.form:1256
+msgid "Show exported classes"
+msgstr ""
+
+#: FHelpBrowser.form:74
 msgid "Show help tree"
 msgstr ""
 
-#: FDebugExpr.class:772
-msgid "Show hidden symbols"
-msgstr "显示隐藏符号"
-
-#: FOption.class:1032
+#: FOption.form:462
 msgid "Show line numbers"
 msgstr "显示行号"
 
-#: FMain.class:2752
-msgid "Show menu bar"
-msgstr "显示菜单条"
-
-#: FPropertyProject.class:1887
+#: FPropertyProject.form:512
 msgid "Show only components used in project"
 msgstr "只显示工程中使用过的组件"
 
-#: FForm.class:3346
+#: FProfile.form:68
+msgid "Show relative durations"
+msgstr ""
+
+#: FDebugInfo.form:237
+msgid "Show search window"
+msgstr ""
+
+#: FOption.form:483
+msgid "Show spaces at end of line with dots"
+msgstr ""
+
+#: FConnectionEditor.form:115
+msgid "Show system tables"
+msgstr ""
+
+#: FForm.form:153
 msgid "Show tab"
 msgstr "显示标签页"
 
-#: FTips.class:215
+#: FTips.form:67
 msgid "Show tips on startup"
 msgstr "显示今日知识"
 
-#: FOption.class:1186
+#: FOption.form:757
 msgid "Show tooltips"
 msgstr "显示工具提示"
 
-#: Language.module:108
+#: CComponent.class:132
+msgid "Signals management"
+msgstr ""
+
+#: Language.module:116
 msgid "Simplified chinese (China)"
 msgstr "简体中文(中华人民共和国)"
 
-#: FInfo.class:340 FSelectIcon.class:237 FTranslate.class:69
+#: FInfo.form:97 FSelectIcon.form:53 FTranslate.class:69
 msgid "Size"
 msgstr "大小"
 
-#: FMakeInstall.class:1415
+#: FMakeInstall.form:422
 msgid "Slackware"
 msgstr "-"
 
-#: Language.module:92
+#: Language.module:100
 msgid "Slovenian (Slovenia)"
 msgstr "Slovenian (Slovenia)"
 
-#: FOption.class:808
+#: FOption.form:232
 msgid "Small"
 msgstr "小"
 
-#: CComponent.class:105
+#: FOption.form:243
+msgid "Small font size"
+msgstr ""
+
+#: CComponent.class:117
 msgid "SMTP client"
 msgstr "SMTP客户机"
 
-#: FPropertyProject.class:258
+#: FPropertyProject.class:273
 msgid "Snapping value is incorrect."
 msgstr "锁定值不正确"
 
-#: FConflict.class:450
+#: FProxy.form:76
+msgid "SOCKS5 proxy"
+msgstr ""
+
+#: FConflict.form:178
 msgid "Sol&ve"
 msgstr "(&V)解决"
 
-#: Project.module:2668
+#: Project.module:3162
 msgid "Some components are missing: &1"
 msgstr "部份组件缺失:&1"
 
@@ -4058,63 +4839,67 @@ msgstr "部份组件缺失:&1"
 msgid "Some conflicts are not yet resolved."
 msgstr "一些冲突仍未解决。"
 
-#: FCommit.class:219
+#: FCommit.form:76
 msgid "Some files are not versioned and should be added manually to the repository."
 msgstr ""
 
-#: Project.module:1844
+#: Project.module:2257
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "工程某些源文件冲突。\n请解决这个问题，以便编译工程。"
 
-#: FMain.class:479
-msgid "&Sort by path"
-msgstr "(&S)按路径排序"
+#: FMain.class:566 FOpenProject.form:112 FWelcome.form:35
+msgid "Sort by date"
+msgstr ""
 
-#: FOpenProject.class:421 FWelcome.class:528
+#: FMain.class:566 FOpenProject.form:121 FWelcome.form:42
+msgid "Sort by name"
+msgstr ""
+
+#: FMain.class:566 FOpenProject.form:129 FWelcome.form:48
 msgid "Sort by path"
 msgstr "按路径排序"
 
-#: FDebugInfo.class:999
-msgid "Sort local variables"
-msgstr "排序局部变量"
+#: FMain.class:562
+msgid "Sort history"
+msgstr ""
 
-#: FDebugInfo.class:1029
-msgid "Sort object variables"
-msgstr "排序对象变量"
+#: FEditor.form:270
+msgid "Sort procedures..."
+msgstr ""
 
-#: FOption.class:856
+#: FOption.form:277
 msgid "Sort properties"
 msgstr "属性排序"
 
-#: Project.module:154
+#: Project.module:199
 msgid "Sound"
 msgstr "声音"
 
-#: FImportTable.class:494
+#: FImportTable.form:56 FPasteTable.form:40
 msgid "Source"
 msgstr "源"
 
-#: FMain.class:2020
-msgid "&Source archive..."
-msgstr "(&S)源归档文件..."
+#: FOption.form:973
+msgid "Source Archives"
+msgstr ""
 
-#: Project.module:3700
+#: Project.module:4195
 msgid "Source packages"
 msgstr "源代码包"
 
-#: Project.module:1286
+#: CProjectTree.class:293 Project.module:1629
 msgid "Sources"
 msgstr "源代码"
 
-#: Package.module:502
+#: Package.module:612
 msgid "Sources are being debianizated."
 msgstr ""
 
-#: FImportTable.class:540
+#: FExportData.form:37 FImportTable.form:103
 msgid "Space"
 msgstr "空"
 
-#: FOption.class:958 FPropertyProject.class:1686
+#: FOption.form:392 FPropertyProject.form:276
 msgid "space(s)"
 msgstr "个空格"
 
@@ -4126,103 +4911,95 @@ msgstr "西班牙语(阿根廷)"
 msgid "Spanish (Spain)"
 msgstr "西班牙语(西班牙)"
 
-#: FNewConnection.class:414
-msgid "SQLite"
-msgstr "-"
-
-#: CComponent.class:82
-msgid "SQLite 2 database driver"
-msgstr "SQLite 2数据库驱动"
-
-#: CComponent.class:83
-msgid "SQLite 3 database driver"
-msgstr "SQLite 3数据库驱动"
-
-#: FConnectionEditor.class:1606
+#: FConnectionEditor.form:169
 msgid "SQL request"
 msgstr "SQL请求"
 
-#: FDebugInfo.class:1160
-msgid "Stack backtrace"
-msgstr "堆栈回溯"
+#: FNewConnection.form:81
+msgid "SQLite"
+msgstr "-"
 
-#: MErrorMessage.module:114
-msgid "Stack overflow"
-msgstr "堆栈溢出"
+#: CComponent.class:89
+msgid "SQLite 2 database driver"
+msgstr "SQLite 2数据库驱动"
 
-#: FPropertyProject.class:359
-msgid "Standard components"
-msgstr "标准组件"
+#: CComponent.class:90
+msgid "SQLite 3 database driver"
+msgstr "SQLite 3数据库驱动"
 
-#: FEditor.class:3174 FForm.class:3338 FMain.class:2461
-msgid "&Startup class"
-msgstr "(&S)启动类"
-
-#: FDebugInfo.class:866
-msgid "Static variables"
-msgstr "静态变量"
-
-#: FTranslate.class:1648
-msgid "Statistics"
-msgstr "统计"
-
-#: FMain.class:2192
-msgid "Status bar"
-msgstr "状态条"
-
-#: FMain.class:2707
-msgid "Step"
-msgstr "步进"
-
-#: FMain.class:2095
+#: FMain.form:402
 msgid "St&ep"
 msgstr "(&E)步进"
 
-#: FSelectIcon.class:224
+#: FDebugInfo.form:313
+msgid "Stack backtrace"
+msgstr "堆栈回溯"
+
+#: MErrorMessage.module:138
+msgid "Stack overflow"
+msgstr "堆栈溢出"
+
+#: FDebugInfo.class:944
+msgid "Static variables"
+msgstr "静态变量"
+
+#: FTranslate.form:240
+msgid "Statistics"
+msgstr "统计"
+
+#: FMain.form:468
+msgid "Status bar"
+msgstr "状态条"
+
+#: FMain.form:1074
+msgid "Step"
+msgstr "步进"
+
+#: FSelectIcon.form:40
 msgid "Stock"
 msgstr "库存"
 
-#: FMain.class:2700
+#: FMain.form:1067
 msgid "Stop"
 msgstr "停止"
 
-#: FMain.class:2088
-msgid "&Stop"
-msgstr "(&S)停止"
-
-#: MErrorMessage.module:112
+#: MErrorMessage.module:135
 msgid "STOP instruction encountered"
 msgstr ""
 
-#: MErrorMessage.module:115
+#: MErrorMessage.module:139
 msgid "Stream is closed"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:96
+#: FConnectionEditor.class:571 MConnection.module:97
 msgid "String"
 msgstr "字符串"
+
+#: MErrorMessage.module:140
+msgid "String expected"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Strings"
 msgstr "字符串"
 
-#: FImportTable.class:557
+#: FImportTable.form:120
 msgid "Strip useless white spaces"
 msgstr "剔除无用的空白"
 
-#: FOption.class:1237
-msgid "Style"
+#: MErrorMessage.module:141
+msgid "Structures must be public"
 msgstr ""
 
-#: FMain.class:2376
-msgid "&Style sheet..."
-msgstr "(&S)样式表..."
+#: FOption.form:560
+msgid "Style"
+msgstr "风格"
 
-#: FCreateFile.class:768
+#: FCreateFile.form:276
 msgid "Style sheet"
 msgstr "样式表"
 
-#: MErrorMessage.module:116
+#: MErrorMessage.module:142
 msgid "Subroutine arguments cannot be passed by reference"
 msgstr ""
 
@@ -4230,201 +5007,233 @@ msgstr ""
 msgid "Subroutines"
 msgstr "子循环"
 
-#: MErrorMessage.module:113
+#: MErrorMessage.module:136
 msgid "SUPER cannot be used alone"
 msgstr ""
 
-#: FIconEditor.class:2412
+#: FSelectIcon.class:30
+msgid "SVG image files"
+msgstr ""
+
+#: FIconEditor.form:350
 msgid "Swap colors"
 msgstr "交换颜色"
 
-#: Language.module:98
+#: Language.module:106
 msgid "Swedish (Sweden)"
 msgstr "瑞士语(瑞士)"
 
-#: FDebugExpr.class:437
+#: FDebugExpr.class:484
 msgid "Symbol"
 msgstr "符号"
 
-#: MTheme.module:6
+#: MHelp.module:644 MTheme.module:6
 msgid "Symbols"
 msgstr "符号"
 
-#: MErrorMessage.module:117
+#: FReportBorderChooser.form:60 FReportPaddingChooser.form:64
+msgid "Synchronize"
+msgstr "同步"
+
+#: MErrorMessage.module:143
 msgid "Syntax error"
 msgstr "语法错误"
 
-#: MErrorMessage.module:122
-msgid "Syntax error. &1 expected"
-msgstr ""
-
-#: MErrorMessage.module:118
+#: MErrorMessage.module:144
 msgid "Syntax error at function declaration"
 msgstr ""
 
-#: MErrorMessage.module:124
-msgid "Syntax error. Bad property type"
-msgstr ""
-
-#: MErrorMessage.module:127
-msgid "Syntax error. Cannot use this syntax in assignment"
-msgstr ""
-
-#: MErrorMessage.module:125
-msgid "Syntax error. CASE or DEFAULT expected after SELECT"
-msgstr ""
-
-#: MErrorMessage.module:126
-msgid "Syntax error. CLASS needs an identifier"
-msgstr ""
-
-#: MErrorMessage.module:128
-msgid "Syntax error. Duplicated array declaration"
-msgstr ""
-
-#: MErrorMessage.module:119
+#: MErrorMessage.module:145
 msgid "Syntax error in event name"
 msgstr ""
 
-#: MErrorMessage.module:120
+#: MErrorMessage.module:146
 msgid "Syntax error in file open mode"
 msgstr ""
 
-#: MErrorMessage.module:129
-msgid "Syntax error. INHERITS needs a class name"
-msgstr ""
-
-#: MErrorMessage.module:121
+#: MErrorMessage.module:147
 msgid "Syntax error in return type"
 msgstr ""
 
-#: MErrorMessage.module:130
-msgid "Syntax error. Invalid identifier in function name"
-msgstr ""
-
-#: MErrorMessage.module:131
-msgid "Syntax error. Invalid identifier in property name"
-msgstr ""
-
-#: MErrorMessage.module:132
-msgid "Syntax error. Invalid optional parameter"
-msgstr ""
-
-#: MErrorMessage.module:133
-msgid "Syntax error. Invalid return type"
-msgstr ""
-
-#: MErrorMessage.module:134
-msgid "Syntax error. Invalid type description of &1 argument"
-msgstr ""
-
-#: MErrorMessage.module:135
-msgid "Syntax error. Missing &1"
-msgstr ""
-
-#: MErrorMessage.module:123
+#: MErrorMessage.module:149
 msgid "Syntax error. '...' must be the last argument"
 msgstr ""
 
-#: MErrorMessage.module:136
+#: MErrorMessage.module:148
+msgid "Syntax error. &1 expected"
+msgstr ""
+
+#: MErrorMessage.module:150
+msgid "Syntax error. Bad property type"
+msgstr ""
+
+#: MErrorMessage.module:153
+msgid "Syntax error. Cannot use this syntax in assignment"
+msgstr ""
+
+#: MErrorMessage.module:151
+msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+msgstr ""
+
+#: MErrorMessage.module:152
+msgid "Syntax error. CLASS needs an identifier"
+msgstr ""
+
+#: MErrorMessage.module:155
+msgid "Syntax error. Identifier expected."
+msgstr ""
+
+#: MErrorMessage.module:154
+msgid "Syntax error. INHERITS needs a class name"
+msgstr ""
+
+#: MErrorMessage.module:156
+msgid "Syntax error. Invalid identifier in function name"
+msgstr ""
+
+#: MErrorMessage.module:157
+msgid "Syntax error. Invalid identifier in property name"
+msgstr ""
+
+#: MErrorMessage.module:158
+msgid "Syntax error. Invalid optional parameter"
+msgstr ""
+
+#: MErrorMessage.module:159
+msgid "Syntax error. Invalid return type"
+msgstr ""
+
+#: MErrorMessage.module:160
+msgid "Syntax error. Invalid type description of &1 argument"
+msgstr ""
+
+#: MErrorMessage.module:161
+msgid "Syntax error. Invalid type description of &1 field"
+msgstr ""
+
+#: MErrorMessage.module:162
+msgid "Syntax error. Missing &1"
+msgstr ""
+
+#: MErrorMessage.module:163
 msgid "Syntax error. Needless arguments"
 msgstr ""
 
-#: MErrorMessage.module:137
+#: MErrorMessage.module:164
 msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr ""
 
-#: MErrorMessage.module:138
+#: MErrorMessage.module:165
+msgid "Syntax error. STRUCT needs an identifier"
+msgstr ""
+
+#: MErrorMessage.module:166
 msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr ""
 
-#: MErrorMessage.module:139
+#: MErrorMessage.module:167
+msgid "Syntax error. The &1 field is not a valid identifier"
+msgstr ""
+
+#: MErrorMessage.module:168
 msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr ""
 
-#: CComponent.class:88
+#: CComponent.class:95
 msgid "Syntax highlighter routines"
 msgstr "语法高亮例程"
 
-#: FColorChooser.class:174
+#: FColorChooser.form:27
 msgid "System"
 msgstr "系统"
 
-#: MErrorMessage.module:140
+#: MErrorMessage.module:169
 msgid "System error #&1: &2"
 msgstr ""
 
-#: FAbout.class:574
+#: FSystemInfo.form:18
 msgid "System information"
 msgstr ""
 
-#: FImportTable.class:540
+#: FExportData.form:37 FImportTable.form:103
 msgid "Tab"
 msgstr "标签页"
 
-#: FImportTable.class:574 FTableChooser.class:112
-msgid "Table"
-msgstr "表"
-
-#: FNewTable.class:59 MConnection.module:272
-msgid "Table '&1' already exists."
-msgstr "表'&1'已经存在。"
-
-#: FPropertyProject.class:1674
+#: FPropertyProject.form:264
 msgid "Tab size"
 msgstr "TAB大小"
 
-#: FForm.class:3770
-msgid "Tabstrip"
-msgstr "标签条"
+#: FFieldChooser.form:50 FImportTable.form:152 FPasteTable.form:67
+msgid "Table"
+msgstr "表"
 
-#: FOption.class:820
-msgid "Tabstrip font size"
-msgstr "标签条字体大小"
+#: FNewTable.class:59 MConnection.module:273
+msgid "Table '&1' already exists."
+msgstr "表'&1'已经存在。"
 
-#: FMakeInstall.class:1317
+#: FPasteTable.class:133
+msgid "Table already exists"
+msgstr ""
+
+#: FMakeInstall.form:265
 msgid "Target distribution"
 msgstr "目标发行版"
 
-#: Package.module:1300
-msgid "'tar' has returned the following error code:"
-msgstr "'tar' 返回错误代码:"
-
-#: FOption.class:1122
+#: FOption.form:680
 msgid "Terminal"
 msgstr "终端"
 
-#: FSearch.class:36
+#: FConflict.form:112 FCreateFile.form:234 FDebugInfo.class:70
 msgid "Text"
 msgstr "文本"
 
-#: FImageEditor.class:54 FTextEditor.class:773
+#: FImageEditor.form:48 FTextEditor.form:248
 msgid "Text editor"
 msgstr "文本编辑器"
 
-#: FInfo.class:94
+#: FInfo.class:103
 msgid "Text file"
 msgstr "文本文件"
 
-#: FAbout.class:147
+#: FAbout.class:232
 msgid "Thanks to"
 msgstr "鸣谢"
 
-#: FPropertyProject.class:472
+#: MErrorMessage.module:170
+msgid "The '!' operator must be followed by an identifier"
+msgstr ""
+
+#: MErrorMessage.module:171
+msgid "The '.' operator must be followed by an identifier"
+msgstr ""
+
+#: FTranslate.class:1183
+msgid "The 'msgmerge' command has failed"
+msgstr "'msgmerge'命令失败了"
+
+#: FPropertyProject.class:488
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr " &1组件需要下列组件之一 :<br>&2。"
 
-#: FPropertyProject.class:479
+#: FPropertyProject.class:495
 msgid "The &1 component needs the &2 component."
 msgstr "&1组件需要&2组件。"
 
-#: Project.module:3163
+#: Project.module:3645
 msgid "The directory will be removed at the next commit."
 msgstr "在下一次提交时目录将被移除。"
 
-#: FProperty.class:586
+#: FProperty.class:596
 msgid "The event group that the control belongs to."
 msgstr "控件属于的事件组。"
+
+#: FTextEditor.class:701
+msgid "The file has been compressed from &1 to &2 bytes (&3)."
+msgstr ""
+
+#: FEditor.class:2404 FIconEditor.class:2048 FTextEditor.class:506
+msgid "The file has been modified.\n\nAll your changes will be lost."
+msgstr "此文件己被修改.\n\n你所做的改变将会丢失."
 
 #: FConflict.class:191
 msgid "The file has been modified.\nDo you really want to close the dialog?"
@@ -4434,91 +5243,83 @@ msgstr "文件已被修改。\n确定关闭对话框吗？"
 msgid "The file has been modified.\nDo you really want to open another file?"
 msgstr "文件已被修改。\n确定打开另一个文件吗？"
 
-#: FEditor.class:2111 FIconEditor.class:2035 FTextEditor.class:450
-msgid "The file has been modified.\n\nAll your changes will be lost."
-msgstr "此文件己被修改.\n\n你所做的改变将会丢失."
-
-#: FImportTable.class:589
+#: FImportTable.form:167
 msgid "The first line contains field names"
 msgstr "第一行包含字段名"
 
-#: Project.module:3641
+#: Project.module:4130
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "下列字符禁止用于工程名称: ? * / \\ SPACE"
 
-#: Project.module:1084
+#: Project.module:1360
 msgid "The following classes have circular inheritance:"
 msgstr "下列类存在循环继承:"
 
-#: FForm.class:2831
+#: FSave.form:55
+msgid "The following files have been modified. Do you want to save them?"
+msgstr ""
+
+#: FMakeInstall.form:531
+msgid "The following will be added to the end of the desktop configuration file."
+msgstr ""
+
+#: FForm.class:3210
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "窗口己被修改。\n\n将会丢弃所有改变。"
 
-#: FMain.class:764
+#: FMain.class:817
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr "系统没有安装GNU翻译工具。\n\n请安装它们以便进行翻译。"
 
-#: FConnectionEditor.class:638
+#: FConnectionEditor.class:680
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "长度必须大于1并小于255。"
 
-#: FOption.class:1285
-msgid "Theme"
-msgstr "主题"
-
-#: FTranslate.class:1158
-msgid "The 'msgmerge' command has failed"
-msgstr "'msgmerge'命令失败了"
-
-#: Project.module:3222
+#: Project.module:3701
 msgid "The name cannot begins with a dot."
 msgstr "名称不能用\".\"开头。"
 
-#: FProperty.class:575
+#: FProperty.class:585
 msgid "The name of the control."
 msgstr "控件名称。"
 
-#: MErrorMessage.module:141
-msgid "The '!' operator must be followed by an identifier"
-msgstr ""
-
-#: MErrorMessage.module:142
-msgid "The '.' operator must be followed by an identifier"
-msgstr ""
-
-#: Package.module:421
+#: Package.module:547
 msgid "The package build has failed."
 msgstr "建包失败."
 
-#: FMakeInstall.class:387
+#: FMakeInstall.class:454
 msgid "The package cannot be stored inside the project directory."
 msgstr "包无法保存在工程目录。"
 
-#: FMakeInstall.class:260 Package.module:178
+#: FMakeInstall.class:302 Package.module:186
 msgid "The packages have been successfully created."
 msgstr "建包成功."
 
-#: Design.module:324
+#: Design.module:352
 msgid "The program has returned\nthe value: &1"
 msgstr "程序返回\n的值为:&1"
 
-#: Design.module:320
+#: Design.module:348
 msgid "The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."
 msgstr "此程序意外中止\n错误代号#&1.\n\n请发送错误报告至:\ngambas@users.sourceforge.net."
 
-#: FCommit.class:61
+#: FCommit.class:62
 msgid "The project could not be committed."
 msgstr "工程不能被提交。"
 
-#: Project.module:3651
+#: Project.module:4140
 msgid "The project directory already exists."
 msgstr "工程目录已经存在。"
 
-#: Project.module:3653
+#: Project.module:4142
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "由于有同名的文件存在，无法创建工程目录。"
 
-#: FCreateProject.class:251
+#: FCreateProject.form:390 FSaveProjectAs.form:59
+msgid "The project final directory is :"
+msgstr ""
+
+#: FCreateProject.class:255
 msgid "The project has been successfully created."
 msgstr "创建工程成功。"
 
@@ -4526,111 +5327,139 @@ msgstr "创建工程成功。"
 msgid "The project is void. There is nothing to translate."
 msgstr "此工程无效,没什么可翻译的."
 
-#: Project.module:3637
+#: Project.module:4126
 msgid "The project name cannot begin with a dot."
 msgstr "工程名称不能用“.”开头。"
 
-#: FMakeInstall.class:309
-msgid "There is no CHANGELOG entry for this release."
-msgstr "本次发布没有更新日志。"
-
-#: FPropertyProject.class:2038
-msgid "There is no change to commit."
+#: FCreateProject.form:379 FSaveProjectAs.form:48
+msgid "The project name is the name of the project directory."
 msgstr ""
 
-#: FPropertyProject.class:459
-msgid "These components are incompatible:<br>&1."
-msgstr "这些组件存在冲突:<br>&1。"
-
-#: FSave.class:145
-msgid "These files have been modified.<br>\nDo you want to save them?"
+#: FCreateProject.form:442
+msgid "The project repository is directly sent to the 'svn checkout' command."
 msgstr ""
 
-#: MErrorMessage.module:143
+#: FCreateProject.form:414
+msgid "The project title is the true name of the application."
+msgstr ""
+
+#: MErrorMessage.module:172
 msgid "The special method &1 cannot be a function"
 msgstr ""
 
-#: MErrorMessage.module:144
+#: MErrorMessage.module:173
 msgid "The special method &1 cannot be implemented"
 msgstr ""
 
-#: MErrorMessage.module:145
+#: MErrorMessage.module:174
 msgid "The special method &1 cannot be static"
 msgstr ""
 
-#: MErrorMessage.module:146
+#: MErrorMessage.module:175
 msgid "The special method &1 must be a function"
 msgstr ""
 
-#: MErrorMessage.module:147
+#: MErrorMessage.module:176
 msgid "The special method &1 must be public"
 msgstr ""
 
-#: MErrorMessage.module:148
+#: MErrorMessage.module:177
 msgid "The special method &1 must be static"
 msgstr ""
 
-#: MErrorMessage.module:150
-msgid "The special method &1 must take at least one argument"
+#: MErrorMessage.module:178
+msgid "The special method &1 must return a boolean"
 msgstr ""
 
-#: MErrorMessage.module:149
+#: MErrorMessage.module:179
 msgid "The special method &1 must take a variable number of arguments only"
 msgstr ""
 
-#: MErrorMessage.module:151
+#: MErrorMessage.module:180
+msgid "The special method &1 must take at least one argument"
+msgstr ""
+
+#: MErrorMessage.module:181
 msgid "The special method &1 takes no arguments"
 msgstr ""
 
-#: MErrorMessage.module:152
+#: MErrorMessage.module:182
 msgid "The special method must return an integer"
 msgstr ""
 
-#: MErrorMessage.module:153
+#: MErrorMessage.module:183
 msgid "The special method must take exactly one argument"
 msgstr ""
 
-#: MErrorMessage.module:154
+#: MErrorMessage.module:184
 msgid "The special method must take exactly two arguments"
 msgstr ""
 
-#: MErrorMessage.module:155
+#: MErrorMessage.module:185
 msgid "The special method signature is incorrect"
 msgstr ""
 
-#: FConnectionEditor.class:261
+#: FConnectionEditor.class:294
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr "表'&1'已被修改。是否保存？"
 
-#: FConnectionEditor.class:1134
+#: FConnectionEditor.class:1176
 msgid "The table '&1' has no primary key."
 msgstr "表'&1'没有主键。"
 
-#: Project.module:1678
+#: FOption.form:608
+msgid "Theme"
+msgstr "主题"
+
+#: FPropertyProject.class:796
+msgid "There is no change to commit."
+msgstr ""
+
+#: FMakeInstall.class:356
+msgid "There is no CHANGELOG entry for this release."
+msgstr "本次发布没有更新日志。"
+
+#: FPropertyProject.class:475
+msgid "These components are incompatible:<br>&1."
+msgstr "这些组件存在冲突:<br>&1。"
+
+#: Design.module:155 Project.module:2040
 msgid "third"
 msgstr ""
 
-#: MHelp.module:542
+#: MHelp.module:605
 msgid "This class can be used like an object by creating an hidden instance on demand.<br>"
 msgstr ""
 
-#: MHelp.module:543
+#: MHelp.module:629
+msgid "This class inherits &1."
+msgstr ""
+
+#: MHelp.module:606
 msgid "This class is creatable.<br>"
 msgstr ""
 
-#: MErrorMessage.module:156
+#: FPropertyComponent.form:84
+msgid "This component is hidden"
+msgstr ""
+
+#: MErrorMessage.module:186
 msgid "This expression cannot be a statement"
 msgstr ""
 
-#: MErrorMessage.module:157
+#: MErrorMessage.module:187
 msgid "This expression cannot be passed by reference"
 msgstr ""
 
-#: FConnectionEditor.class:781
+#: FConnectionEditor.class:825
 msgid "This field is used in an index."
 msgstr "该字段被用于一个索引。"
 
-#: FInfo.class:236
+#: FExportData.class:126
+msgid "This file already exists.\n\nDo you want to overwrite it?"
+msgstr ""
+
+#: FInfo.class:244
 msgid "This file has not been modified since the last commit."
 msgstr "该文件自最近的提交后没有被修改。"
 
@@ -4638,23 +5467,27 @@ msgstr "该文件自最近的提交后没有被修改。"
 msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
 msgstr "该文件和修订版#&1有冲突。\n你必须解决冲突以便使用文件。"
 
-#: FInfo.class:232
+#: FInfo.class:240
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr ""
 
-#: FInfo.class:234
+#: FInfo.class:242
 msgid "This file is not versioned, and must be added to the repository."
 msgstr ""
 
-#: FIconEditor.class:1415
+#: FIconEditor.class:1428
 msgid "This image has been modified.\nDo you want to save it ?"
 msgstr "此图片己修改.\n是否保存?"
 
-#: Project.module:353
-msgid "This is a Gambas &1 project.\n\nDo you want to open it anyway?"
-msgstr "这是一个Gambas &1工程。\n\n确定要打开吗？"
+#: Project.module:430
+msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
+msgstr ""
 
-#: Project.module:351
+#: Project.module:433
+msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
+msgstr ""
+
+#: Project.module:427
 msgid "This is not a Gambas project."
 msgstr "这不是一个Gambas工程。"
 
@@ -4662,283 +5495,319 @@ msgstr "这不是一个Gambas工程。"
 msgid "This line and the following will be ignored"
 msgstr "该行及其后内容将被忽略"
 
-#: FMenu.class:559
+#: FMenu.class:572
 msgid "This menu is too deep !"
 msgstr "此菜单太深!"
 
-#: CRecentFile.class:52
+#: CRecentFile.class:77
 msgid "This month"
 msgstr ""
 
-#: FConnectionEditor.class:702
+#: FConnectionEditor.class:744
 msgid "This name already exists."
 msgstr "该名称已经存在。"
 
-#: Project.module:3218
+#: Project.module:3697
 msgid "This name contains a forbidden character:"
 msgstr "该名称包含禁用字符:"
 
-#: FProperty.class:358
+#: FProperty.class:359
 msgid "This name is already in use."
 msgstr "此名己使用."
 
-#: FConnectionEditor.class:608
+#: FConnectionEditor.class:650
 msgid "This name is already in used."
 msgstr "该名称已经被使用。"
 
-#: Project.module:3226
+#: Project.module:3705
 msgid "This name is already used. Choose another one."
 msgstr "此名己使用,请另选项一个."
 
-#: CWelcome.class:66
+#: CWelcome.class:39
 msgid "This program is published under\nthe GNU General Public License."
 msgstr ""
 
-#: Project.module:1999
+#: Project.module:4137
 msgid "This project already exists."
 msgstr "此工程己存在."
 
-#: Project.module:336
+#: Project.module:412
 msgid "This project does not exist."
 msgstr "该工程不存在。"
 
-#: FPropertyProject.class:1855
-msgid "This project is a component"
-msgstr "该工程是一个组件"
-
-#: Project.module:385
+#: Project.module:471
 msgid "This project is read-only."
 msgstr "此工程是只读的."
 
-#: Project.module:364
+#: Project.module:445
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "该工程看来已经打开。\n\n两次打开同一工程将导致数据丢失。"
 
-#: FProperty.class:624
+#: FProperty.class:635
 msgid "This property is virtual: it is only implemented in the IDE, and has no existence at runtime."
 msgstr ""
 
-#: FTranslate.class:1570
+#: FTranslate.form:113
 msgid "This string must not be translated"
 msgstr "该字符串不必翻译"
 
-#: CRecentFile.class:50
+#: FSnippet.class:31
+msgid "This trigger string is already in use."
+msgstr ""
+
+#: CRecentFile.class:75
 msgid "This week"
 msgstr ""
 
-#: FOption.class:808
+#: FOption.form:232
 msgid "Tiny"
 msgstr "极小"
 
-#: FTips.class:47
-msgid "Tip of the day"
-msgstr "今日知识"
+#: FTips.class:46
+msgid "Tip of the day #&1"
+msgstr ""
 
-#: FMain.class:2281
-msgid "&Tips of the day"
-msgstr "(&T)今日知识"
-
-#: FTips.class:173
+#: FTips.form:18
 msgid "Tips of the day"
 msgstr "今日知识"
 
-#: FCreateProject.class:650 FPropertyProject.class:1627
+#: FPropertyProject.form:210
 msgid "Title"
 msgstr "标题"
 
-#: CRecentFile.class:44
+#: FMain.class:1748
+msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
+msgstr ""
+
+#: CRecentFile.class:69 FMain.class:541
 msgid "Today"
 msgstr "今天"
 
-#: FMenu.class:1023
+#: FMenu.form:324
 msgid "Toggle"
 msgstr "可切换"
 
-#: FMain.class:2126
-msgid "&Toggle breakpoint"
-msgstr "(&T)设置断点"
-
-#: FMain.class:2744
-msgid "Toggle breakpoint"
-msgstr "使用断点"
-
-#: FEditor.class:3189
+#: FEditor.form:198
 msgid "Toggle &breakpoint"
 msgstr "(&B)使用断点"
 
-#: FForm.class:3665
+#: FEditor.form:480
+msgid "Toggle breakpoint"
+msgstr "使用断点"
+
+#: FForm.form:518
 msgid "Toggle grid"
 msgstr "显示网格"
 
-#: FMain.class:2650
-msgid "Toolbox"
-msgstr "工具箱"
-
-#: FMain.class:2174
-msgid "&Toolbox"
-msgstr "(&T)工具箱"
-
-#: FOption.class:838
-msgid "Toolbox size"
-msgstr "工具箱大小"
-
-#: FMain.class:2212
-msgid "&Tools"
-msgstr "(&T)工具"
-
-#: MErrorMessage.module:158
+#: MErrorMessage.module:188
 msgid "Too many arguments"
 msgstr ""
 
-#: MErrorMessage.module:159
+#: MErrorMessage.module:189
 msgid "Too many arguments to &1()"
 msgstr ""
 
-#: MErrorMessage.module:160
+#: MErrorMessage.module:190
 msgid "Too many array declarations"
 msgstr ""
 
-#: MErrorMessage.module:161
+#: MErrorMessage.module:191
 msgid "Too many constants"
 msgstr ""
 
-#: MErrorMessage.module:162
+#: MErrorMessage.module:192
 msgid "Too many different classes used"
 msgstr ""
 
-#: MErrorMessage.module:163
+#: MErrorMessage.module:193
 msgid "Too many dimensions"
 msgstr ""
 
-#: MErrorMessage.module:164
+#: MErrorMessage.module:194
 msgid "Too many dynamic variables"
 msgstr ""
 
-#: MErrorMessage.module:165
+#: MErrorMessage.module:195
 msgid "Too many events"
 msgstr ""
 
-#: MErrorMessage.module:166
+#: MErrorMessage.module:196
 msgid "Too many expressions in CASE"
 msgstr ""
 
-#: MErrorMessage.module:167
+#: MErrorMessage.module:197
 msgid "Too many external functions"
 msgstr ""
 
-#: MErrorMessage.module:168
+#: MErrorMessage.module:198
 msgid "Too many functions"
 msgstr ""
 
-#: MErrorMessage.module:169
+#: MErrorMessage.module:199
+msgid "Too many imbricated #If...#Endif"
+msgstr ""
+
+#: MErrorMessage.module:200
 msgid "Too many nested control structures."
 msgstr ""
 
-#: MErrorMessage.module:170
+#: MErrorMessage.module:201
+msgid "Too many property synonymous"
+msgstr ""
+
+#: MErrorMessage.module:202
 msgid "Too many simultaneous new strings"
 msgstr ""
 
-#: MErrorMessage.module:171
+#: MErrorMessage.module:203
 msgid "Too many static variables"
 msgstr ""
 
-#: MErrorMessage.module:172
+#: MErrorMessage.module:204
 msgid "Too many unknown symbols"
 msgstr ""
 
-#: FImportTable.class:376
+#: FImportTable.class:391
 msgid "Too many values"
 msgstr "太多的值"
 
-#: Language.module:109
+#: FMain.form:1004
+msgid "Toolbox"
+msgstr "工具箱"
+
+#: FOption.form:260
+msgid "Toolbox size"
+msgstr "工具箱大小"
+
+#: FReportBorderChooser.form:115 FReportPaddingChooser.form:23
+msgid "Top"
+msgstr "顶部"
+
+#: FReportBorderChooser.form:179
+msgid "TopLeft"
+msgstr ""
+
+#: FReportBorderChooser.form:148
+msgid "TopRight"
+msgstr ""
+
+#: FProfile.class:346
+msgid "Total time &1 μs"
+msgstr ""
+
+#: Language.module:117
 msgid "Traditional chinese (Taiwan)"
 msgstr "繁体中文(中华人民共和国台湾省)"
 
-#: FMain.class:2596
+#: FMain.form:950
 msgid "Translate"
 msgstr "翻译"
 
-#: FMain.class:2000
-msgid "&Translate..."
-msgstr "(&T)翻译..."
-
-#: FTranslate.class:1004
+#: FTranslate.class:1019
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "翻译后的字符串符号与未翻译的字符串不匹配."
 
-#: FPropertyProject.class:1752 FTranslate.class:1520
+#: FPropertyProject.form:326 FTranslate.form:64
 msgid "Translation"
 msgstr "翻译成:"
 
-#: FTranslate.class:728
+#: FTranslate.class:153
 msgid "Translation files"
 msgstr "翻译文件"
 
-#: FIconEditor.class:2338
+#: FIconEditor.form:276
 msgid "Transparent"
 msgstr "透明"
 
-#: Language.module:100
+#: FSnippet.form:26
+msgid "Trigger string"
+msgstr ""
+
+#: Language.module:108
 msgid "Turkish (Turkey)"
 msgstr "土耳其语(土耳其)"
 
-#: CRecentFile.class:48
+#: CRecentFile.class:73
 msgid "Two days ago"
 msgstr ""
 
-#: FInfo.class:327 FNewConnection.class:407 FNewTable.class:127
+#: FInfo.form:84 FNewConnection.form:74 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "类型"
 
-#: MErrorMessage.module:173
+#: MErrorMessage.module:205
 msgid "Type mismatch"
 msgstr ""
 
-#: FConnectionEditor.class:662
-msgid "Type mismatch."
-msgstr "类型错误"
-
-#: MErrorMessage.module:174
+#: MErrorMessage.module:206
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr ""
 
-#: FMakeInstall.class:1434
+#: FConnectionEditor.class:704
+msgid "Type mismatch."
+msgstr "类型错误"
+
+#: FMakeInstall.form:441
 msgid "Ubuntu"
 msgstr "-"
 
-#: Language.module:102
+#: Language.module:110
 msgid "Ukrainian (Ukrain)"
 msgstr ""
 
-#: FConnectionEditor.class:183
+#: Project.module:548
+msgid "Unable to apply conversion"
+msgstr ""
+
+#: FTextEditor.class:707
+msgid "Unable to compress file."
+msgstr ""
+
+#: FConnectionEditor.class:204
 msgid "Unable to connect to database."
 msgstr "不能连接到数据库。"
 
-#: FNewConnection.class:308
+#: Project.module:5306
+msgid "Unable to convert &1"
+msgstr ""
+
+#: FNewConnection.class:316
 msgid "Unable to create database."
 msgstr "不能创建数据库。"
 
-#: Project.module:2902
+#: Project.module:3399
 msgid "Unable to create desktop shortcut."
 msgstr "无法创建桌面快捷方式。"
 
-#: FNewConnection.class:328
+#: Project.module:492
+msgid "Unable to create temporary directory"
+msgstr ""
+
+#: FNewConnection.class:336
 msgid "Unable to delete database."
 msgstr "不能删除数据库。"
 
-#: Project.module:2982
-msgid "Unable to install component."
-msgstr "无法安装组件。"
+#: FMain.class:1433
+msgid "Unable to drop file into the project."
+msgstr ""
 
-#: FConnectionEditor.class:370
+#: FExportData.class:113
+msgid "Unable to export data."
+msgstr ""
+
+#: FFieldChooser.class:63
+msgid "Unable to get table fields."
+msgstr ""
+
+#: FConnectionEditor.class:409
 msgid "Unable to load table '&1'."
 msgstr "不能加载表'&1'。"
 
-#: FTableChooser.class:56
+#: FFieldChooser.class:56 FTableChooser.class:66
 msgid "Unable to open connection."
 msgstr "不能打开连接。"
 
-#: FPasteSpecial.class:67
+#: FPasteSpecial.class:69
 msgid "Unable to paste text."
 msgstr "不能粘贴文本。"
 
@@ -4946,7 +5815,7 @@ msgstr "不能粘贴文本。"
 msgid "Unable to read tip of the day !"
 msgstr "无法读今日知识."
 
-#: Project.module:3507
+#: Project.module:4002
 msgid "Unable to rename '&1'"
 msgstr "无法更名'&1'"
 
@@ -4954,191 +5823,199 @@ msgstr "无法更名'&1'"
 msgid "Unable to resolve the conflict."
 msgstr "无法解决冲突。"
 
-#: FConnectionEditor.class:415
+#: FConnectionEditor.class:459
 msgid "Unable to run query."
 msgstr "不能运行查询。"
 
-#: Project.module:2012
+#: FSaveProjectAs.class:49
 msgid "Unable to save the project."
 msgstr "无法保存工程。"
 
-#: Project.module:3020
-msgid "Unable to uninstall component."
-msgstr "无法卸载组件。"
-
-#: Project.module:4724
-msgid "Unable to update all forms."
-msgstr "无法更新所有窗体。"
-
-#: FPropertyProject.class:1231
+#: FPropertyProject.class:830
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FEditor.class:3267
+#: FEditor.form:241
 msgid "Uncomment"
 msgstr "取消注释"
 
-#: FOpenProject.class:151
-msgid "Uncompress"
+#: FTextEditor.form:188
+msgid "Uncompress file"
 msgstr ""
 
-#: FOption.class:765
+#: FOption.form:206
 msgid "Underline"
 msgstr "下划线"
 
-#: FTextEditor.class:656
+#: FOption.form:638 FOutput.form:41 FTextEditor.form:89
 msgid "Undo"
 msgstr "撤消"
 
-#: FList.class:320
-msgid "&Undo"
-msgstr "(&U)撤销"
-
-#: FOutput.class:427
+#: FOutput.form:108
 msgid "Undock console"
 msgstr "分离控制台"
 
-#: MErrorMessage.module:175
+#: MErrorMessage.module:207
 msgid "Unexpected &1"
 msgstr ""
 
-#: FTextEditor.class:849
+#: MErrorMessage.module:208
+msgid "Unexpected end of line"
+msgstr ""
+
+#: MErrorMessage.module:209
+msgid "Unexpected string"
+msgstr ""
+
+#: FTextEditor.form:327
 msgid "Unindent"
 msgstr "无缩进"
 
-#: FConnectionEditor.class:63
+#: FConnectionEditor.class:65
 msgid "Unique"
 msgstr "无重复"
 
-#: FImportTable.class:529
+#: FImportTable.form:92
 msgid "Unix"
 msgstr "-"
 
-#: Language.module:156
+#: Language.module:164
 msgid "Unknown"
 msgstr "未知的"
 
-#: MErrorMessage.module:176
+#: MErrorMessage.module:210
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: MErrorMessage.module:177
+#: MErrorMessage.module:211
 msgid "Unknown event"
 msgstr ""
 
-#: MErrorMessage.module:178
+#: MErrorMessage.module:212
 msgid "Unknown file extension"
 msgstr ""
 
-#: MMime.module:30
+#: MMime.module:33
 msgid "Unknown format"
 msgstr "未知格式"
 
-#: MErrorMessage.module:179
+#: MErrorMessage.module:213
 msgid "Unknown identifier: &1"
 msgstr ""
 
-#: MErrorMessage.module:180
+#: MErrorMessage.module:214
 msgid "Unknown operator"
 msgstr ""
 
-#: MErrorMessage.module:181
+#: MErrorMessage.module:215
 msgid "Unknown symbol '&1' in class '&2'"
 msgstr ""
 
-#: FConnectionEditor.class:447
+#: MErrorMessage.module:216
+msgid "Unknown user or group"
+msgstr ""
+
+#: FConnectionEditor.class:491
 msgid "unlimited"
 msgstr "无限制"
 
-#: FForm.class:3397
+#: FForm.form:204
 msgid "Unselect all"
 msgstr "取消所选"
 
-#: MErrorMessage.module:182
+#: MErrorMessage.module:217
 msgid "Unsupported string conversion"
 msgstr ""
 
-#: FTranslate.class:51
-msgid "Untranslated"
-msgstr "未翻译的"
-
-#: FConnectionEditor.class:1701
+#: FConnectionEditor.form:252
 msgid "Up"
 msgstr "上"
 
-#: FList.class:286 FMakeInstall.class:1551
-msgid "&Up"
-msgstr "(&U)上"
+#: FEditor.form:224 FTextEditor.form:159
+msgid "Upper case"
+msgstr ""
 
-#: FMain.class:1239
-msgid "Update"
-msgstr "更新"
-
-#: FPropertyProject.class:2047
-msgid "&Update"
-msgstr "更新(&U)"
-
-#: FMain.class:2246
-msgid "&Update all forms"
-msgstr "(&U)更新所有窗体"
-
-#: MMime.module:19
+#: MMime.module:22
 msgid "URI list"
 msgstr "URI列表"
 
-#: FText.class:95
+#: FMakeInstall.form:203 FOption.form:1102
+msgid "URL"
+msgstr "URL"
+
+#: FMain.form:373
+msgid "Use &terminal emulator"
+msgstr ""
+
+#: FText.form:30
 msgid "Use a fixed font"
 msgstr "使用固定字体"
 
-#: FPropertyProject.class:1830
+#: FPropertyProject.form:397
 msgid "Use a terminal emulator"
 msgstr "使用终端仿真器"
 
-#: MErrorMessage.module:183
-msgid "Useless LOCK"
-msgstr ""
-
-#: FCommit.class:326 FNewConnection.class:457
-msgid "User"
-msgstr "用户"
-
-#: FPropertyProject.class:357
-msgid "User components"
-msgstr "用户组件"
-
-#: FOutput.class:470
+#: FOutput.form:165
 msgid "Use system charset"
 msgstr "使用系统字符集"
 
-#: FImportTable.class:517
+#: FOption.form:335
+msgid "Use utility windows"
+msgstr ""
+
+#: MErrorMessage.module:218
+msgid "Useless LOCK"
+msgstr ""
+
+#: FCommit.form:169 FNewConnection.form:133 FProxy.form:42
+msgid "User"
+msgstr "用户"
+
+#: FImportTable.form:80
 msgid "UTF-8"
 msgstr "-"
 
-#: Language.module:88
+#: FInfo.class:87
+msgid "UTF-8 &1"
+msgstr ""
+
+#: FInfo.class:99
+msgid "UTF-8 Gambas class"
+msgstr ""
+
+#: FInfo.class:95
+msgid "UTF-8 Gambas module"
+msgstr ""
+
+#: Language.module:94
 msgid "Valencian (Valencian Community, Spain)"
 msgstr "巴伦西亚语(巴伦西亚社区，西班牙)"
 
-#: FDebugExpr.class:427 FDebugInfo.class:30 FPropertyProject.class:132
+#: FDebugExpr.class:474 FDebugInfo.class:34 FPropertyProject.class:141
 msgid "Value"
 msgstr "值"
 
-#: FPropertyProject.class:131
+#: FPropertyProject.class:138
 msgid "Variable"
 msgstr "变量"
 
-#: MErrorMessage.module:184
+#: MHelp.module:575
+msgid "Variables"
+msgstr "变量"
+
+#: MErrorMessage.module:219
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr ""
 
-#: FMakeInstall.class:1256
+#: FMakeInstall.form:188 FOption.form:1052
 msgid "Vendor name"
 msgstr "销售商名称"
 
-#: FTranslate.class:1582
+#: FTranslate.form:125
 msgid "Verify the translation"
 msgstr "校验翻译"
 
-#: FPropertyProject.class:1605
+#: FPropertyProject.form:177
 msgid "Version"
 msgstr "版本"
 
@@ -5146,43 +6023,39 @@ msgstr "版本"
 msgid "Version conflict"
 msgstr "版本冲突"
 
-#: FInfo.class:390 FPropertyProject.class:2020
+#: FInfo.form:147 FPropertyProject.form:647
 msgid "Versioning"
 msgstr "版本"
 
-#: FForm.class:3476
+#: FForm.form:314
 msgid "Vertical"
 msgstr "竖的"
 
-#: FIconEditor.class:2376
+#: FIconEditor.form:314
 msgid "Vertical flip"
 msgstr "垂直翻转"
 
-#: FEditor.class:3311 FTextEditor.class:753
+#: FEditor.form:294 FTextEditor.form:214
 msgid "Vertical split"
 msgstr "垂直拆分"
 
-#: Project.module:155
+#: Project.module:200
 msgid "Video"
 msgstr "视频"
 
-#: CComponent.class:118
+#: CComponent.class:133
 msgid "Video capture"
 msgstr "视频截取"
 
-#: Language.module:104
+#: Language.module:112
 msgid "Vietnamese (Vietnam)"
 msgstr "越语(越南)"
 
-#: FEditor.class:3293 FTextEditor.class:735
+#: FEditor.form:276 FTextEditor.form:196
 msgid "View"
 msgstr "查看"
 
-#: FMain.class:2153
-msgid "&View"
-msgstr "(&V)视图"
-
-#: FMenu.class:1013
+#: FMenu.form:314
 msgid "Visible"
 msgstr "可见的."
 
@@ -5190,55 +6063,47 @@ msgstr "可见的."
 msgid "Visual"
 msgstr "可视化的"
 
-#: CComponent.class:119
+#: CComponent.class:134
 msgid "Visual Basic compatibility"
 msgstr "Visual Basic兼容"
 
-#: FCreateProject.class:599
+#: FCreateProject.form:334
 msgid "Visual Basic™ conversion help"
 msgstr "Visual Basic™转换帮助"
 
-#: MErrorMessage.module:185
+#: MErrorMessage.module:220
 msgid "Void key"
 msgstr ""
 
-#: Language.module:106
+#: Language.module:114
 msgid "Wallon (Belgium)"
 msgstr "Wallon (Belgium)"
 
-#: FDebugInfo.class:1057
+#: LibraryItem.class:59
+msgid "WARNING! Library not found."
+msgstr ""
+
+#: FDebugInfo.form:104
 msgid "Watch"
 msgstr "监视"
 
-#: FMain.class:2142
-msgid "&Watch expression"
-msgstr "(&W)监视表达式"
-
-#: FEditor.class:3196
-msgid "&Watch expression..."
-msgstr "(&W)监视表达式"
-
-#: FMain.class:2737
+#: FEditor.form:488
 msgid "Watch expression"
 msgstr "监视表达式"
 
-#: CComponent.class:123
+#: CComponent.class:140
 msgid "Web applications tools"
 msgstr "Web应用程序工具"
 
-#: CModule.class:29 FCreateFile.class:668
+#: CModule.class:29 FCreateFile.form:171
 msgid "WebPage"
 msgstr "WEB页面"
-
-#: FMain.class:2343
-msgid "&WebPage..."
-msgstr "(&W)WEB页面..."
 
 #: CModule.class:29
 msgid "WebPages"
 msgstr "WEB页面"
 
-#: FWelcome.class:482
+#: FWelcome.form:27
 msgid "Welcome to Gambas 3"
 msgstr "欢迎使用Gambas 3"
 
@@ -5250,83 +6115,75 @@ msgstr "欢迎使用Gambas控制台.\n要得到任何表达式的值,输入?和�
 msgid "Welsh (United Kingdom)"
 msgstr "Welsh (英国)"
 
-#: FCreateFile.class:800 FReportBorderChooser.class:235
+#: FCreateFile.form:308
 msgid "Width"
 msgstr "宽度"
 
-#: FImportTable.class:529
+#: FImportTable.form:92
 msgid "Windows"
 msgstr "-"
 
-#: FImportTable.class:517
+#: FImportTable.form:80
 msgid "WINDOWS-1252"
 msgstr "-"
 
-#: FSearch.class:817
-msgid "&Words only"
-msgstr ""
-
-#: MErrorMessage.module:186
+#: MErrorMessage.module:221
 msgid "Write error"
 msgstr "写入出错"
 
-#: FInfo.class:103
-msgid "XML file"
-msgstr "XML文件"
-
-#: CComponent.class:121
-msgid "XML-RPC protocol"
-msgstr "XML-RPC协议"
-
-#: CComponent.class:120
-msgid "XML tools based on libxml"
-msgstr "基于libxml的XML工具"
-
-#: FCreateProject.class:581
+#: FCreateProject.form:316
 msgid "XML / XSLT programming"
 msgstr "XML/XSLT编程"
 
-#: FCreateFile.class:838
+#: FInfo.class:112
+msgid "XML file"
+msgstr "XML文件"
+
+#: CComponent.class:136
+msgid "XML tools"
+msgstr ""
+
+#: CComponent.class:135
+msgid "XML tools based on libxml"
+msgstr "基于libxml的XML工具"
+
+#: CComponent.class:138
+msgid "XML-RPC protocol"
+msgstr "XML-RPC协议"
+
+#: FCreateFile.form:346
 msgid "XPM"
 msgstr "-"
 
-#: CComponent.class:122
-msgid "XSLT tools based on libxslt"
-msgstr "基于libxslt的XSLT工具"
+#: CComponent.class:139
+msgid "XSLT tools based on libxslt and libxml"
+msgstr ""
 
-#: FOption.class:862 FPropertyProject.class:1711
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:301
 msgid "Yes"
 msgstr "是"
 
-#: CRecentFile.class:46
+#: CRecentFile.class:71
 msgid "Yesterday"
 msgstr "昨日"
 
-#: FPropertyProject.class:1240
+#: FPropertyProject.class:839
 msgid "You are going to cancel your changes!"
 msgstr "改变将被取消！"
 
-#: Project.module:3182
+#: Project.module:3662
 msgid "You must define a startup class or form!"
 msgstr "你必须定义一个自动运行的类或窗口"
 
-#: FOption.class:315
+#: FOption.class:357
 msgid "You need to restart the application to see your changes."
 msgstr "需要重启应用程序使改变生效。"
 
-#: FMakeInstall.class:1241
-msgid "Your e-mail address"
-msgstr "您的电子邮件地址"
-
-#: FMakeInstall.class:1226
-msgid "Your name"
-msgstr "您的姓名"
-
-#: FHelpBrowser.class:293 FIconEditor.class:2215 FImageEditor.class:124
+#: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:119
 msgid "Zoom in"
 msgstr "放大"
 
-#: FHelpBrowser.class:299 FIconEditor.class:2223 FImageEditor.class:136
+#: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:131
 msgid "Zoom out"
 msgstr "缩小"
 

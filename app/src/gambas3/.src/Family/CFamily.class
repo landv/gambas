@@ -139,34 +139,7 @@ Private Sub IsInside(hCtrl As Control) As Boolean
     hParent = hParent.Parent
   Wend
   
-  ' XC = hCtrl.ScreenX
-  ' YC = hCtrl.ScreenY
-  ' 
-  ' If hCtrl Is Container Then
-  '   aSize = GetContainerSize(hCtrl)
-  '   WC = aSize[0]
-  '   HC = aSize[1]
-  ' Else
-  '   WC = hCtrl.W
-  '   HC = hCtrl.H
-  ' Endif
-  ' 
-  ' aPos = GetControlPos(hCtrl)
-  ' If aPos[0] < 0 Then
-  '   XC -= aPos[0]
-  '   WC += aPos[0]
-  ' Endif
-  ' 
-  ' If aPos[1] < 0 Then
-  '   XC -= aPos[1]
-  '   WC += aPos[1]
-  ' Endif
-  
-  'Debug "  "; hCtrl.Name;; X;; Y;; "->";; hRect.X;; hRect.Y;; hRect.Right;; hRect.Bottom;; "(";; hRect.W;; hRect.H;; ")";; "=>";; hRect.Contains(X, Y)
-  
   Return hRect.Contains(X, Y)
-  
-  'If X >= XC And If X < (XC + WC) And If Y >= YC And If Y < (YC + HC) Then Return True
   
 End
 
@@ -190,9 +163,13 @@ Private Sub CheckIcons()
   
 End
 
-Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
+Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage As String)
   
-  DrawIcon(hCont, hCCtrl, "")  
+  DrawIcon(hCont, hCCtrl, sImage)  
+  
+  If $bTrigger Then Return
+  $bTrigger = True
+  $hTimer.Trigger
   
 End
 
@@ -320,4 +297,3 @@ Public Sub Timer_Timer()
   $bTrigger = False
   
 End
-

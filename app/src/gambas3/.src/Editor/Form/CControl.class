@@ -984,7 +984,6 @@ Public Sub Select(hForm As FForm, Optional bMaster As Boolean)
   CreatePanel(6, "SW", Mouse.SizeSW, bMaster)
   CreatePanel(7, "W", Mouse.SizeW, bMaster)
 
-  Try Control.ToolTip = Subst("&1 ( &2 x &3 )", Name, Control.Width, Control.Height)
   Selected = True
 
   hForm.Selection[Name] = Me

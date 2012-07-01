@@ -91,6 +91,8 @@ Private $hFamily As CFamily
 
 Private $hUndo As New CUndo
 
+Private $hCtrlFrame As Control
+
 Public Sub _new(sPath As String)
 
   'dim sFamily as string
@@ -1017,7 +1019,7 @@ Public Sub Control_MouseMove()
 
   'Dim hForm As CControl = Control[Me.Name]
   'Debug Last;; Mouse.ScreenX - hForm.Control.ScreenX;; Mouse.ScreenY - hForm.Control.ScreenY
-
+  
   If Not Mouse.Left Then Return
   If Not $hCurrent Then Return
   
@@ -1233,6 +1235,8 @@ Public Sub Control_MouseUp()
   
   If $hUndo.IsDisabled() Then $hUndo.Enable
   $hUndo.End
+  
+  CheckHovered
 
 End
 
@@ -1403,6 +1407,7 @@ Public Sub RemoveControl(sName As String)
   hCCtrl.Delete
   Modify
   RefreshProperty
+  CheckHovered
   'PRINT "< RemoveControl "; sName; " "; Control[sName]
 
 End
@@ -1516,39 +1521,45 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
 End
 
-' Private Sub DrawControlFrame(hCtrl As Control)
-'   
-'   Dim X, Y, W, H As Integer
-'   Dim aFrame As Control[] = [panSelectN, panSelectS, panSelectW, panSelectE]
-'   Dim hFrame As Control
-'   
-'   Debug hCtrl
-'   
-'   If Not hCtrl Then
-'     If panSelectN.Visible Then 
-'       For Each hFrame In aFrame
-'         hFrame.Hide
-'       Next
-'     Endif
-'     Return
-'   Endif
-'   
-'   X = hCtrl.ScreenX - panBorder.ScreenX - 2
-'   Y = hCtrl.ScreenY - panBorder.ScreenY - 2
-'   W = hCtrl.Width + 4
-'   H = hCtrl.Height + 4
-'   
-'   panSelectN.Move(X, Y, W, 2)
-'   panSelectS.Move(X, Y + H - 2, W, 2)
-'   panSelectW.Move(X, Y + 2, 2, H - 4)
-'   panSelectE.Move(X + W - 2, Y + 2, 2, H - 4)
-'   For Each hFrame In aFrame
-'     hFrame.Raise
-'     hFrame.Show
-'   Next
-'   
-' End
+Private Sub HideControlFrame()
 
+  Dim hCtrl As Control
+
+  For Each hCtrl In [panSelectN, panSelectS, panSelectW, panSelectE]
+    hCtrl.Hide
+  Next
+  
+  $hCtrlFrame = Null
+
+End
+
+Private Sub DrawControlFrame(hCCtrl As CControl)
+  
+  Dim hRoot As Container = RootControl.Control
+  Dim hCtrl As Control = hCCtrl.Control
+  
+  If hCtrl = hRoot Or If hCtrl.W < 3 Or If hCtrl.H < 3 Then
+    
+    HideControlFrame
+    
+  Else 
+    
+    $hCtrlFrame = hCtrl
+    Try hCtrl.ToolTip = Subst("&1 ( &2 x &3 )", hCCtrl.Name, hCtrl.Width, hCtrl.Height)
+    
+    panSelectN.Move(hCtrl.ScreenX - hRoot.ScreenX + 2, hCtrl.ScreenY - hRoot.ScreenY, hCtrl.W, 2)
+    panSelectS.Move(panSelectN.X, panSelectN.Y + hCtrl.H - 2, panSelectN.W, 2)
+    panSelectW.Move(panSelectN.X, panSelectN.Y + 2, 2, hCtrl.H - 4)
+    panSelectE.Move(panSelectW.X + hCtrl.W - 2, panSelectW.Y, 2, panSelectW.H)
+    
+    For Each hCtrl In [panSelectN, panSelectS, panSelectW, panSelectE]
+      hCtrl.Show
+      hCtrl.Raise
+    Next
+    
+  Endif
+  
+End
 
 Private Sub DrawRectSelect(W As Integer, H As Integer)
 
@@ -1600,39 +1611,13 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
       panSelectE.Show
       'panSelectInside.Show
     Endif
-    ' panSelectN.Move(X, Y, W, H)
-    ' panSelectN.Raise
-    ' panSelectN.Show
-    ' panSelectS.Hide
-    ' panSelectW.Hide
-    ' panSelectE.Hide
 
   Else
 
-    panSelectN.Hide
-    panSelectS.Hide
-    panSelectW.Hide
-    panSelectE.Hide
+    HideControlFrame
     'panSelectInside.Hide
 
   Endif
-
-  ' Draw.Begin(Me)
-  ' Draw.Invert = True
-  ' Draw.ForeColor = Color.White
-  ' Draw.LineWidth = 1
-  ' Draw.LineStyle = Line.Dot
-  '
-  ' X = $MX - Me.ScreenX
-  ' Y = $MY - Me.ScreenY
-  '
-  ' If $W <> 0 And $H <> 0 Then Draw.Rect(X, Y, $W, $H)
-  ' If W <> 0 And H <> 0 Then Draw.Rect(X, Y, W, H)
-  '
-  ' Draw.End
-  '
-  ' $W = W
-  ' $H = H
 
 End
 
@@ -2417,48 +2402,14 @@ End
 
 Public Sub Control_Enter()
 
-  Dim hCtrl As Control = Last
-  Dim hCCtrl As CControl
-
-  'If Not hCtrl Is DrawingArea Then Return
-
-  hCCtrl = Control[hCtrl.Tag]
-  If Not hCCtrl Then Return
-
-  $hFamily.EnterControl(RootControl.Control, hCCtrl)
-  
-  'If hCtrl.Hovered Then DrawControlFrame(hCtrl)
+  CheckHovered(Last)
 
 End
 
 Public Sub Control_Leave()
 
-  Dim hCtrl As Control = Last
-  Dim hCCtrl As CControl
-  Dim bHovered As Boolean
+  CheckHovered
 
-  'If Not hCtrl Is DrawingArea Then Return
-
-  hCCtrl = Control[hCtrl.Tag]
-  If Not hCCtrl Then Return
-
-  'If hCCtrl = RootControl Then DrawControlFrame(Null)
-  $hFamily.LeaveControl(RootControl.Control, hCCtrl)
-  
-  ' Do
-  '   hCtrl = hCtrl.Parent
-  '   If Not hCtrl Then Break
-  '   If hCtrl.Hovered Then bHovered = True
-  '   hCCtrl = Control[hCtrl.Tag]
-  '   If Not hCCtrl Then Continue
-  '   If bHovered Then
-  '     DrawControlFrame(hCtrl)
-  '     Return
-  '   Endif
-  ' Loop
-  ' 
-  ' DrawControlFrame(Null)
-  
 End
 
 Public Sub Control_Draw(Optional iIndex As Integer)
@@ -3660,23 +3611,27 @@ Public Sub panSelect_Draw()
     Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 192))
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Fill
-  ' Else
-  '   Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
-  '   Paint.Rectangle(0, 0, Paint.W, Paint.H)
-  '   Paint.Fill
+  Else
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 240))
+    'Paint.Operator = Paint.OperatorXor
+    Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    Paint.Fill
+    ' Paint.Brush = Paint.Color(Color.RGB(255, 255, 255, 64))
+    ' Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    ' Paint.Fill
+    ' Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 64))
+    ' Paint.Dash = [1.0, 1.0]
+    ' Paint.LineWidth = 1.0
+    ' Paint.MoveTo(0, 0)
+    ' If Paint.W > Paint.H Then
+    '   Paint.RelLineTo(Paint.W, 0)
+    ' Else
+    '   Paint.RelLineTo(0, Paint.H)
+    ' Endif
+    ' Paint.Stroke    
   Endif
-
+  
 End
-
-' Public Sub panSelectInside_Draw()
-' 
-'   If $iMode = MODE_SELECT Then
-'     Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 240))
-'     Paint.Rectangle(0, 0, Paint.W, Paint.H)
-'     Paint.Fill
-'   Endif
-' 
-' End
 
 Public Sub svwWorkspace_Arrange()
 
@@ -3732,6 +3687,7 @@ End
 
 Public Sub Form_Close()
 
+  HideControlFrame
   '$hUndo = Null
 
 End
@@ -3758,4 +3714,52 @@ Public Sub mnuClose_Click()
 
   Me.Close
 
+End
+
+Private Sub CheckHovered(Optional hCtrl As Control)
+  
+  Dim X, Y As Integer
+  Dim hRoot, hCont As Container
+  Dim hCCtrl As CControl
+  
+  If Not hCtrl Then
+  
+    X = Mouse.ScreenX
+    Y = Mouse.ScreenY
+    
+    hRoot = RootControl.Control
+    
+    hCont = hRoot
+    Do
+      hCtrl = hCont.Find(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY)
+      If Not hCtrl Then
+        hCtrl = hCont
+        Break
+      Endif
+      If Not hCtrl Is Container Then Break
+      hCont = hCtrl
+    Loop
+    
+  Endif
+  
+  If $hCtrlFrame Then
+    If hCtrl = panSelectN Or If hCtrl = panSelectS Or If hCtrl = panSelectW Or If hCtrl = panSelectE Then
+      hCtrl = $hCtrlFrame
+    Endif
+  Endif
+  
+  Do
+    hCCtrl = Null
+    If hCtrl.Tag Then
+      hCCtrl = Control[hCtrl.Tag]
+      If hCCtrl Then Break
+    Endif
+    hCtrl = hCtrl.Parent
+  Loop
+  
+  'Debug X;; Y;; "->";; hCCtrl.Name
+  
+  $hFamily.EnterControl(RootControl.Control, hCCtrl)
+  DrawControlFrame(hCCtrl)
+  
 End

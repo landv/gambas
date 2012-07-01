@@ -291,77 +291,102 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FImportTable.class:544
+#: FExportData.form:37 FImportTable.form:103
 msgid ","
 msgstr ", "
 
-#: FImportTable.class:544
+#: FExportData.form:37 FImportTable.form:103
 msgid ";"
 msgstr ", "
 
-#: FImportTable.class:544
+#: FExportData.form:37 FImportTable.form:103 FNewConnection.form:100
 msgid ":"
 msgstr ":"
 
-#: FProperty.class:1219
+#: FProperty.form:121
 msgid "..."
 msgstr "..."
 
-#: FImportTable.class:556
+#: FExportData.form:48 FImportTable.form:114
 msgid "'"
 msgstr "'"
 
-#: FImportTable.class:556
-msgid "\""
-msgstr "\""
-
-#: FMain.class:2186
-msgid "&?"
-msgstr "-"
-
-#: FInfo.class:12
-msgid "&1: &2"
-msgstr ""
-
-#: MErrorMessage.module:15
-msgid "'&1.&2' is badly overridden in class '&3'"
-msgstr ""
-
 #: MErrorMessage.module:16
-msgid "'&1.&2' is not a property"
+msgid "'&1.&2' is incorrectly overridden in class '&3'"
 msgstr ""
 
 #: MErrorMessage.module:17
-msgid "'&1.&2' is not static"
+msgid "'&1.&2' is not a property"
 msgstr ""
 
 #: MErrorMessage.module:18
-msgid "'&1.&2' is read only"
+msgid "'&1.&2' is not static"
 msgstr ""
 
 #: MErrorMessage.module:19
-msgid "'&1.&2' is static"
+msgid "'&1.&2' is read only"
 msgstr ""
 
 #: MErrorMessage.module:20
+msgid "'&1.&2' is static"
+msgstr ""
+
+#: MErrorMessage.module:21
 msgid "'&1.&2' is write only"
 msgstr ""
 
-#: FInfo.class:132
-msgid "&1, &2 line(s)"
-msgstr ""
-
-#: MErrorMessage.module:14
+#: MErrorMessage.module:15
 msgid "'&1' already declared"
 msgstr ""
 
-#: Package.module:60
+#: Package.module:72
 msgid "'&1' and '&2' are missing."
 msgstr ""
+
+#: Package.module:63
+msgid "'&1' is missing."
+msgstr ""
+
+#: Package.module:767
+msgid "'dpkg-buildpackage' has failed."
+msgstr ""
+
+#: Package.module:1136
+msgid "'rpmbuild' has returned the following error code:"
+msgstr ""
+
+#: Package.module:1356
+msgid "'tar' has returned the following error code:"
+msgstr ""
+
+#: FImportTable.class:136
+msgid "(Automatic key)"
+msgstr ""
+
+#: FEditor.class:2830 FTextEditor.class:848
+msgid "(Declarations)"
+msgstr ""
+
+#: FOption.class:74 FTranslate.class:135
+msgid "(Default)"
+msgstr "(Alapértelmezés)"
+
+#: FCreateFile.class:143
+msgid "(No parent)"
+msgstr ""
+
+#: FExportData.form:48 FImportTable.form:114
+msgid "\""
+msgstr "\""
+
+#: FMain.form:823
+msgid "&?"
+msgstr "-"
 
 #: MErrorMessage.module:4
 msgid "&1 cannot be static"
@@ -379,159 +404,595 @@ msgstr ""
 msgid "&1 is declared but is not a function"
 msgstr ""
 
-#: Package.module:51
-msgid "'&1' is missing."
-msgstr ""
-
 #: MErrorMessage.module:8
-msgid "&1 is not declared"
+msgid "&1 is not a structure"
 msgstr ""
 
 #: MErrorMessage.module:9
-msgid "&1 must be static"
+msgid "&1 is not declared"
+msgstr ""
+
+#: FProfile.class:346
+msgid "&1 Mb"
 msgstr ""
 
 #: MErrorMessage.module:10
-msgid "&1: not in archive"
+msgid "&1 must be static"
 msgstr ""
 
-#: FImportTable.class:408
+#: FImportTable.class:428
 msgid "&1 records imported."
 msgstr ""
 
-#: FTranslate.class:1029
-msgid "&1 strings (&2 not translated) - &3 % done"
-msgstr "&1 sztring (&2 nincs lefordítva) - &3 % kész"
-
-#: MErrorMessage.module:11
-msgid "&1: syntax error"
+#: FTranslate.class:1059
+msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: MErrorMessage.module:12
-msgid "&1: syntax error in form file"
+#: FTranslate.class:1055
+msgid "&1 strings. Everything is translated!"
 msgstr ""
 
-#: Project.module:1653
-msgid "&1th"
+#: FTranslate.class:1057
+msgid "&1 strings. One is not translated. &3% done."
 msgstr ""
 
-#: MErrorMessage.module:13
-msgid "&1: too many nested containers"
-msgstr ""
-
-#: FTranslate.class:937
+#: FTranslate.class:958
 msgid "&1 translations were picked up."
 msgstr ""
 
-#: CComponent.class:107
-msgid "3D programming with OpenGL"
+#: FInfo.class:146
+msgid "&1, &2 line(s)"
 msgstr ""
 
-#: FAbout.class:495
-msgid "About"
-msgstr "Névjegy"
-
-#: FPropertyProject.class:1920
-msgid "About &component..."
+#: FInfo.class:12
+msgid "&1: &2"
 msgstr ""
 
-#: FMain.class:2207
+#: MErrorMessage.module:11
+msgid "&1: not in archive"
+msgstr ""
+
+#: MErrorMessage.module:12
+msgid "&1: syntax error"
+msgstr ""
+
+#: MErrorMessage.module:13
+msgid "&1: syntax error in form file"
+msgstr ""
+
+#: MErrorMessage.module:14
+msgid "&1: too many nested containers"
+msgstr ""
+
+#: Project.module:2042
+msgid "&1th"
+msgstr ""
+
+#: FMain.form:854
 msgid "&About Gambas..."
 msgstr "&A Gambas névjegye..."
 
-#: FAbout.class:487
-msgid "About Gambas..."
-msgstr "A Gambas névjegye..."
-
-#: MErrorMessage.module:24
-msgid "Access forbidden"
-msgstr ""
-
-#: Project.module:3180
-msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
-msgstr ""
-
-#: FConnectionEditor.class:1687 FMain.class:1667
-msgid "Add"
-msgstr "Hozzáadás"
-
-#: FDebugInfo.class:1073 FMakeInstall.class:1558 FPropertyProject.class:2159
+#: FPropertyComponent.form:184
 msgid "&Add"
 msgstr "&Hozzáadás"
 
-#: FDebugInfo.class:1071
-msgid "Add expression"
-msgstr ""
-
-#: FMakeInstall.class:1654
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr ""
-
-#: FMain.class:2380
+#: FMain.form:730
 msgid "&Add to repository"
 msgstr ""
 
-#: Language.module:94
-msgid "Albanian (Albania)"
+#: FPropertyProject.form:615
+msgid "&Add..."
+msgstr "&Hozzáadás…"
+
+#: FSearch.form:205
+msgid "&Browse"
 msgstr ""
 
+#: FMain.form:524
+msgid "&Browse project..."
+msgstr ""
+
+#: FSearch.form:106
+msgid "&Case sensitive"
+msgstr "Nagybetűér&zékeny"
+
+#: FMain.form:587
+msgid "&Class..."
+msgstr "&Osztály..."
+
+#: FMain.form:326
+msgid "&Clean up"
+msgstr ""
+
+#: FMakeInstall.form:593
+msgid "&Clear"
+msgstr ""
+
+#: FMain.class:577
+msgid "&Clear history"
+msgstr "Előzmények ürí&tése"
+
+#: FTranslate.form:335
+msgid "&Close"
+msgstr "&Bezárás"
+
+#: FPropertyProject.form:690
+msgid "&Commit..."
+msgstr "El&tárolás..."
+
+#: FMain.form:271
+msgid "&Compile"
+msgstr "&Fordítás"
+
+#: FMain.form:458
+msgid "&Console"
+msgstr "&Konzol"
+
+#: FList.form:92 FMain.form:681 FSystemInfo.form:75
+msgid "&Copy"
+msgstr "&Másolás"
+
+#: FNewConnection.class:195
+msgid "&Create database '&1'"
+msgstr ""
+
+#: FMain.form:674
+msgid "&Cut"
+msgstr "&Kivágás"
+
+#: FMain.form:362
+msgid "&Debug"
+msgstr "&Hibakeresés"
+
+#: FList.form:64 FMenu.form:97 FTranslate.form:315
+msgid "&Delete"
+msgstr "&Törlés"
+
+#: FNewConnection.class:199
+msgid "&Delete database '&1'"
+msgstr ""
+
+#: FMain.form:702
+msgid "&Delete..."
+msgstr "&Törlés..."
+
+#: FMain.form:562
+msgid "&Directory"
+msgstr ""
+
+#: FList.form:76 FMakeInstall.form:587
+msgid "&Down"
+msgstr "&Le"
+
+#: FConflict.class:25 FMain.form:654
+msgid "&Edit"
+msgstr "&Szerkesztés"
+
+#: FOption.form:849
+msgid "&Edit..."
+msgstr "Sz&erkesztés…"
+
+#: FTranslate.form:323
+msgid "&Export..."
+msgstr "E&xportálás..."
+
+#: FMain.form:208
+msgid "&File"
+msgstr "&Fájl"
+
+#: FMain.form:508
+msgid "&Find..."
+msgstr "K&eresés…"
+
+#: FForm.form:166
+msgid "&First"
+msgstr "&Első"
+
+#: FMain.form:595
+msgid "&Form..."
+msgstr "Űr&lap..."
+
+#: FMain.form:409
+msgid "&Forward"
+msgstr "&Előre"
+
+#: FMain.form:832
+msgid "&Help browser"
+msgstr "&Súgó-böngésző"
+
+#: FSearch.form:121
+msgid "&Highlight result"
+msgstr ""
+
+#: FMain.form:629
+msgid "&HTML file..."
+msgstr ""
+
+#: FSearch.form:126
+msgid "&Ignore strings"
+msgstr ""
+
+#: FMain.form:622
+msgid "&Image..."
+msgstr "&Kép..."
+
+#: FImportTable.form:211 FTranslate.form:284
+msgid "&Import"
+msgstr "&Importálás"
+
+#: FOption.form:880
+msgid "&Import..."
+msgstr "&Importálás..."
+
+#: FList.form:58 FMenu.form:82 FPropertyProject.form:437
+msgid "&Insert"
+msgstr "&Beillesztés"
+
+#: FMain.form:315
+msgid "&Installation package..."
+msgstr ""
+
+#: FForm.form:187
+msgid "&Last"
+msgstr "&Utolsó"
+
+#: FMain.form:579
+msgid "&Module..."
+msgstr "&Modul..."
+
+#: FMain.form:755
+msgid "&New connection..."
+msgstr ""
+
+#: FMain.form:212
+msgid "&New project..."
+msgstr "Ú&j projekt..."
+
+#: FOption.form:842 FTranslate.form:299
+msgid "&New..."
+msgstr "Ú&j..."
+
+#: FForm.form:180 FSearch.form:192 FTips.form:78
+msgid "&Next"
+msgstr "&Következő"
+
+#: FMain.form:763
+msgid "&Open"
+msgstr "Megny&itás"
+
+#: FMain.form:531
+msgid "&Open a terminal..."
+msgstr ""
+
+#: FMain.form:219
+msgid "&Open project..."
+msgstr "Projekt &megnyitása"
+
+#: FMain.form:644
+msgid "&Other..."
+msgstr "&Egyéb..."
+
+#: FExportData.class:126
+msgid "&Overwrite"
+msgstr "Fe&lülírás"
+
+#: FList.form:98 FMain.form:688
+msgid "&Paste"
+msgstr "B&eillesztés"
+
+#: FMain.form:388
+msgid "&Pause"
+msgstr "&Szünet"
+
+#: FMain.form:547
+msgid "&Preferences..."
+msgstr "Beá&llítások..."
+
+#: FForm.form:173 FSearch.form:198 FTips.form:72
+msgid "&Previous"
+msgstr "&Előző"
+
+#: FMain.form:267
+msgid "&Project"
+msgstr "&Projekt"
+
+#: FMain.form:568
+msgid "&Project link..."
+msgstr ""
+
+#: FMain.form:449
+msgid "&Properties"
+msgstr "&Tulajdonságok"
+
+#: FMain.form:348
+msgid "&Properties..."
+msgstr "&Tulajdonságok..."
+
+#: FMain.form:260
+msgid "&Quit"
+msgstr "&Kilépés"
+
+#: FMain.form:332
+msgid "&Refresh"
+msgstr "&Frissítés"
+
+#: FTranslate.form:307
+msgid "&Reload"
+msgstr "Új&ratöltés"
+
+#: FPropertyComponent.form:190 FPropertyProject.form:443
+msgid "&Remove"
+msgstr "&Eltávolítás"
+
+#: FMain.form:695
+msgid "&Rename..."
+msgstr "Át&nevezés..."
+
+#: FSearch.form:211
+msgid "&Replace"
+msgstr "&Csere"
+
+#: FMain.form:514
+msgid "&Replace..."
+msgstr "Cse&re..."
+
+#: FMain.form:611
+msgid "&Report..."
+msgstr ""
+
+#: FPropertyProject.form:553
+msgid "&Reset"
+msgstr "&Alapállapotba"
+
+#: FPropertyProject.form:684
+msgid "&Revert..."
+msgstr ""
+
+#: FMain.form:366
+msgid "&Run"
+msgstr "&Futtatás"
+
+#: FConflict.form:172 FSaveProjectAs.form:82
+msgid "&Save"
+msgstr "Men&tés"
+
+#: FMain.form:243
+msgid "&Save project"
+msgstr ""
+
+#: FMain.form:541
+msgid "&Shortcuts..."
+msgstr ""
+
+#: FMain.form:308
+msgid "&Source archive..."
+msgstr ""
+
+#: FSearch.form:166
+msgid "&Source files"
+msgstr ""
+
+#: FEditor.form:117 FForm.form:144 FMain.form:721
+msgid "&Startup class"
+msgstr "&Induló osztály"
+
+#: FMain.form:395
+msgid "&Stop"
+msgstr "&Megállítás"
+
+#: FMain.form:636
+msgid "&Style sheet..."
+msgstr ""
+
+#: FMain.form:848
+msgid "&System informations..."
+msgstr ""
+
+#: FMain.form:840
+msgid "&Tips of the day"
+msgstr "A nap &tippjei"
+
+#: FMain.form:505
+msgid "&Tools"
+msgstr "&Eszközök"
+
+#: FMain.form:288
+msgid "&Translate..."
+msgstr "&Lefordítás..."
+
+#: FFieldChooser.form:121 FList.form:104
+msgid "&Undo"
+msgstr "&Visszavonás"
+
+#: FList.form:70 FMakeInstall.form:581
+msgid "&Up"
+msgstr "&Fel"
+
+#: FPropertyProject.form:678
+msgid "&Update"
+msgstr "&Frissítés"
+
+#: FMain.form:436
+msgid "&View"
+msgstr "&Nézet"
+
+#: FEditor.form:205
+msgid "&Watch expression"
+msgstr ""
+
+#: FMain.form:603
+msgid "&WebPage..."
+msgstr ""
+
+#: FSearch.form:111
+msgid "&Words only"
+msgstr ""
+
+#: FReportCoordChooser.form:21
+msgid "%"
+msgstr "%"
+
+#: FPropertyProject.class:1104
+msgid "<b>&1</b> does not export any class."
+msgstr ""
+
+#: FPropertyProject.class:1098
+msgid "<b>&1</b> is already used as a library."
+msgstr ""
+
+#: FMakeExecutable.form:44
+msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
+msgstr ""
+
+#: FPropertyProject.form:593
+msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
+msgstr ""
+
+#: FAbout.form:63
+msgid "<h2 align=center>Authors</h2>\n"
+msgstr "<h2 align=center>Szerzők</h2>\n"
+
+#: FAbout.form:57
+msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr ""
+
+#: CComponent.class:118
+msgid "3D programming with OpenGL"
+msgstr ""
+
+#: Project.module:3741
+msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
+msgstr ""
+
+#: MErrorMessage.module:22
+msgid "A module cannot raise events"
+msgstr ""
+
+#: MErrorMessage.module:23
+msgid "A property implementation cannot be public"
+msgstr ""
+
+#: MErrorMessage.module:24
+msgid "A property must be public"
+msgstr ""
+
+#: FSearch.form:172
+msgid "A&ll files"
+msgstr ""
+
+#: FPropertyProject.form:542
+msgid "About &component..."
+msgstr ""
+
+#: FAbout.form:21
+msgid "About Gambas..."
+msgstr "A Gambas névjegye..."
+
 #: MErrorMessage.module:25
+msgid "Access forbidden"
+msgstr "Hozzáférés megtiltva"
+
+#: FOption.form:821
+msgid "Activate code snippets"
+msgstr ""
+
+#: FMain.form:379
+msgid "Activate profilin&g"
+msgstr ""
+
+#: FPropertyProject.form:380
+msgid "Activate profiling"
+msgstr ""
+
+#: FConnectionEditor.form:231 FMain.class:1850
+msgid "Add"
+msgstr "Hozzáadás"
+
+#: FDebugInfo.form:117
+msgid "Add expression"
+msgstr ""
+
+#: FMakeInstall.form:680
+msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr ""
+
+#: FReportBrushChooser.form:96
+msgid "Add gradient stop"
+msgstr ""
+
+#: FMakeInstall.form:523
+msgid "Additional configuration"
+msgstr ""
+
+#: FEditor.form:213 FTextEditor.form:155
+msgid "Advanced"
+msgstr "Speciális"
+
+#: Language.module:102
+msgid "Albanian (Albania)"
+msgstr "Albán (Albánia)"
+
+#: MErrorMessage.module:26
 msgid "Alias name must be a string"
 msgstr ""
 
-#: FForm.class:3388
-msgid "Alignment"
-msgstr "Igazítás"
-
-#: FForm.class:3600
-msgid "Align to bottom"
-msgstr ""
-
-#: FForm.class:3410
+#: FForm.form:364
 msgid "Align to &bottom"
 msgstr "&Alsó oldal igazítása"
 
-#: FForm.class:3607
-msgid "Align to left"
-msgstr ""
-
-#: FForm.class:3392
+#: FForm.form:346
 msgid "Align to &left"
 msgstr "&Bal oldal igazítása"
 
-#: FForm.class:3614
-msgid "Align to right"
-msgstr ""
-
-#: FForm.class:3398
+#: FForm.form:352
 msgid "Align to &right"
 msgstr "&Jobb oldal igazítása"
 
-#: FForm.class:3593
-msgid "Align to top"
-msgstr ""
-
-#: FForm.class:3404
+#: FForm.form:358
 msgid "Align to &top"
 msgstr "&Fölső oldal igazítása"
 
-#: FMain.class:1389
+#: FForm.form:552
+msgid "Align to bottom"
+msgstr ""
+
+#: FForm.form:559
+msgid "Align to left"
+msgstr ""
+
+#: FForm.form:566
+msgid "Align to right"
+msgstr ""
+
+#: FForm.form:545
+msgid "Align to top"
+msgstr ""
+
+#: FForm.form:342
+msgid "Alignment"
+msgstr "Igazítás"
+
+#: FMain.class:1553
 msgid "All backup or generated files will be removed from the project directory."
 msgstr ""
 
-#: FConnectionEditor.class:1377 FTranslate.class:1234
+#: FConnectionEditor.class:1424 FTranslate.class:1266
 msgid "All files"
 msgstr "Minden fájl"
 
-#: FMakeInstall.class:1681
+#: FMakeInstall.form:706
 msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr ""
 
-#: Project.module:1230
+#: Project.module:1525
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr ""
 
-#: FMenu.class:1015
+#: FPasteTable.form:78
+msgid "Also copy table &data"
+msgstr ""
+
+#: FMenu.form:266
 msgid "ALT"
 msgstr "ALT"
 
@@ -539,11 +1000,15 @@ msgstr "ALT"
 msgid "Alternate background"
 msgstr ""
 
+#: FOption.form:356
+msgid "Always display optional messages"
+msgstr ""
+
 #: FOption.class:4
 msgid "Amber"
 msgstr ""
 
-#: MErrorMessage.module:26
+#: MErrorMessage.module:27
 msgid "Ambiguous expression. Please use brackets"
 msgstr ""
 
@@ -551,32 +1016,24 @@ msgstr ""
 msgid "Amethyst"
 msgstr ""
 
-#: MErrorMessage.module:21
-msgid "A module cannot raise events"
-msgstr ""
-
-#: CComponent.class:85
+#: CComponent.class:91
 msgid "Application debugger helper"
 msgstr ""
 
-#: FOption.class:866
-msgid "Applications"
-msgstr "Alkalmazások"
-
-#: CComponent.class:118
+#: CComponent.class:131
 msgid "Application settings management"
 msgstr ""
 
-#: FCreateProject.class:522
+#: FCreateProject.form:257
 msgid "Application stored in a\nSubversion repository"
 msgstr ""
 
-#: MErrorMessage.module:22
-msgid "A property implementation cannot be public"
-msgstr ""
+#: FOption.form:654
+msgid "Applications"
+msgstr "Alkalmazások"
 
-#: MErrorMessage.module:23
-msgid "A property must be public"
+#: Project.module:542
+msgid "Applying conversion..."
 msgstr ""
 
 #: Language.module:7
@@ -587,143 +1044,147 @@ msgstr "Arab (Egyiptom)"
 msgid "Arabic (Tunisia)"
 msgstr "Arab (Tunézia)"
 
-#: FFind.class:114
-msgid "Are you sure to want to replace all?"
-msgstr ""
+#: FMakeInstall.form:289
+msgid "Archlinux"
+msgstr "Archlinux"
 
-#: MErrorMessage.module:27
+#: MErrorMessage.module:28
 msgid "Argument cannot be passed by reference"
 msgstr ""
 
-#: FPropertyProject.class:1962
+#: FPropertyProject.form:418
 msgid "Arguments"
 msgstr "Paraméterek"
 
-#: FForm.class:3341
+#: FForm.form:280
 msgid "Arrangement"
 msgstr "Elrendezés"
 
-#: MErrorMessage.module:28
+#: MErrorMessage.module:29
 msgid "Array declaration is forbidden with typed collection"
 msgstr ""
 
-#: MErrorMessage.module:29
-msgid "Arrays are forbidden here"
+#: MErrorMessage.module:30
+msgid "Arrays of structure are not supported"
 msgstr ""
 
-#: FCommit.class:326
+#: FCommit.form:160
 msgid "Authentification"
 msgstr ""
 
-#: ProjectItem.class:70
+#: ProjectItem.class:63
 msgid "Author"
 msgstr "Szerző"
 
-#: CComponentBox.class:200 ProjectItem.class:70
-msgid "Authors"
-msgstr "Szerzők"
-
-#: FPropertyProject.class:1653
+#: FPropertyProject.form:233
 msgid "Author(s)"
 msgstr "Szerző(k)"
 
-#: FCreateFile.class:888
+#: CComponentBox.class:235 ProjectItem.class:63
+msgid "Authors"
+msgstr "Szerzők"
+
+#: FCreateFile.form:396
 msgid "Automatic extension"
 msgstr ""
 
-#: FImportTable.class:127
-msgid "(Automatic key)"
-msgstr ""
-
-#: Project.module:145
+#: Project.module:189
 msgid "Automation"
 msgstr ""
 
-#: FMakeInstall.class:1469
+#: FMakeInstall.form:308
 msgid "Autotools"
 msgstr ""
+
+#: FProfile.class:572
+msgid "Average"
+msgstr "Közepes"
 
 #: Language.module:10
 msgid "Azerbaijani (Azerbaijan)"
 msgstr ""
 
-#: MTheme.module:6
+#: FOption.form:409 MTheme.module:6
 msgid "Background"
 msgstr "Háttér"
 
-#: FOption.class:698
+#: FOption.form:191
 msgid "Background color..."
 msgstr ""
 
-#: MErrorMessage.module:30
+#: MErrorMessage.module:31
 msgid "Bad archive: &1: &2"
 msgstr ""
 
-#: MErrorMessage.module:31
+#: MErrorMessage.module:32
 msgid "Bad argument"
 msgstr ""
 
-#: MErrorMessage.module:32
+#: MErrorMessage.module:33
 msgid "Bad character constant in string"
 msgstr ""
 
-#: MErrorMessage.module:33
+#: MErrorMessage.module:34
 msgid "Bad constant type"
 msgstr ""
 
-#: MErrorMessage.module:34
+#: MErrorMessage.module:35
 msgid "Bad event handler in &1.&2(): &3"
 msgstr ""
 
-#: MErrorMessage.module:35
+#: MErrorMessage.module:36
 msgid "Bad expression: &1"
 msgstr ""
 
-#: MErrorMessage.module:37
-msgid "Bad format string"
-msgstr ""
-
-#: FForm.class:117
+#: FForm.class:129
 msgid "Bad form file"
 msgstr "Rossz űrlapfájl"
 
-#: MErrorMessage.module:36
+#: MErrorMessage.module:37
 msgid "Bad form file version"
 msgstr ""
 
-#: FMenu.class:288
+#: MErrorMessage.module:38
+msgid "Bad format string"
+msgstr ""
+
+#: FMenu.class:312
 msgid "Bad group name !"
 msgstr "Rossz a csoport neve!"
 
-#: FMenu.class:282
+#: FMenu.class:306
 msgid "Bad menu name !"
 msgstr "Rossz a menü neve!"
 
-#: MErrorMessage.module:38
+#: MErrorMessage.module:39
 msgid "Bad number of dimensions"
 msgstr ""
 
-#: MErrorMessage.module:39
+#: MErrorMessage.module:40
 msgid "Bad project file: line &1: &2"
 msgstr ""
 
-#: MErrorMessage.module:40
+#: MErrorMessage.module:41
 msgid "Bad regular expression: &1"
 msgstr ""
 
-#: MErrorMessage.module:41
+#: MErrorMessage.module:42
 msgid "Bad string conversion"
 msgstr ""
 
-#: MErrorMessage.module:42
+#: MErrorMessage.module:43
 msgid "Bad subscript range"
 msgstr ""
 
-#: MErrorMessage.module:43
+#: MErrorMessage.module:44
 msgid "Bad use of virtual class"
 msgstr ""
 
-#: Project.module:146
+#: MErrorMessage.module:45
+msgid "Bad version string"
+msgstr ""
+
+#: Project.module:190
 msgid "Basic"
 msgstr "Egyszerű"
 
@@ -731,555 +1192,667 @@ msgstr "Egyszerű"
 msgid "Basque (Basque country)"
 msgstr ""
 
-#: FPropertyProject.class:1893
-msgid "Beta version"
-msgstr ""
-
-#: FMakeExecutable.class:107
-msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
-msgstr ""
-
-#: FOption.class:1038
+#: FOption.form:409
 msgid "Blend"
 msgstr "Összeolvasztás"
 
-#: FConnectionEditor.class:530 MConnection.module:100
+#: FConnectionEditor.class:571 MConnection.module:101
 msgid "Blob"
 msgstr ""
 
-#: FOption.class:706
+#: FOption.form:198
 msgid "Bold"
 msgstr "Félkövér"
 
-#: FConnectionEditor.class:530 MConnection.module:94
+#: FConnectionEditor.class:571 MConnection.module:95
 msgid "Boolean"
 msgstr "Logikai"
 
-#: FIconEditor.class:2333
+#: FReportBorderChooser.form:67
+msgid "Border"
+msgstr "Szegély"
+
+#: FIconEditor.form:249
 msgid "Border only"
 msgstr ""
 
-#: FDebugInfo.class:1105 MTheme.module:6
+#: FReportBorderChooser.form:79 FReportPaddingChooser.form:53
+msgid "Bottom"
+msgstr "Alul"
+
+#: FReportBorderChooser.form:166
+msgid "BottomLeft"
+msgstr ""
+
+#: FReportBorderChooser.form:157
+msgid "BottomRight"
+msgstr ""
+
+#: FDebugInfo.form:167 MTheme.module:6
 msgid "Breakpoints"
 msgstr "Töréspontok"
 
-#: FForm.class:3345
+#: FForm.form:284
 msgid "Bring to foreground"
 msgstr "Előtérbe helyezés"
 
-#: FMain.class:2149
-msgid "&Browse project..."
+#: FMain.form:1131
+msgid "Browse project"
 msgstr ""
 
-#: FOption.class:876
+#: FMain.form:1107
+msgid "Browse project..."
+msgstr ""
+
+#: FOption.form:664
 msgid "Browser"
 msgstr "Böngésző"
-
-#: FTranslate.class:1679
-msgid "Browse recursively"
-msgstr ""
 
 #: Language.module:12
 msgid "Bulgarian (Bulgaria)"
 msgstr "Bolgár (Bulgária)"
 
-#: CComponent.class:72
+#: FSearch.form:153
+msgid "C&urrent procedure"
+msgstr ""
+
+#: CComponent.class:79
 msgid "Cairo graphic library"
 msgstr ""
 
-#: FTranslate.class:617 Project.module:351
+#: FProfile.form:138
+msgid "Callees"
+msgstr "Hívók"
+
+#: FProfile.form:150
+msgid "Callers"
+msgstr "Hívók"
+
+#: FProfile.class:566
+msgid "Calls"
+msgstr "Hívások"
+
+#: FTextEditor.class:506 FTranslate.class:636 Project.module:433
 msgid "Cancel"
 msgstr "Mégsem"
 
-#: FImportTable.class:395
+#: FDebugInfo.form:214
+msgid "Cancel current search"
+msgstr ""
+
+#: FImportTable.class:415
 msgid "Cancelled by user"
 msgstr ""
 
-#: FCreateFile.class:441
+#: FCreateFile.class:456
 msgid "Cannot add file."
 msgstr ""
 
-#: Project.module:1623
-msgid "Cannot compile the project."
+#: MErrorMessage.module:46
+msgid "Cannot change current directory to '&1': &2"
 msgstr ""
 
-#: Project.module:3886
+#: Project.module:4486
 msgid "Cannot copy file &1."
 msgstr "Nem tudom átmásolni a &1 fájlt."
 
-#: Project.module:2072
+#: Project.module:2527
 msgid "Cannot copy template file."
 msgstr "Nem tudom átmásolni a sablonfájlt."
 
-#: MErrorMessage.module:45
-msgid "Cannot create action file: &1"
-msgstr ""
-
-#: MErrorMessage.module:46
-msgid "Cannot create class information: &1: &2"
-msgstr ""
-
 #: MErrorMessage.module:47
-msgid "Cannot create file: &1"
-msgstr ""
-
-#: Project.module:3928
-msgid "Cannot create link &1."
-msgstr ""
-
-#: FCreateProject.class:182
-msgid "Cannot create project!"
-msgstr "Nem tudom létrehozni a projektet!"
-
-#: MErrorMessage.module:44
 msgid "Cannot create .startup file"
 msgstr ""
 
-#: MConnection.module:285
-msgid "Cannot create table '&1'."
-msgstr ""
-
 #: MErrorMessage.module:48
-msgid "Cannot create temporary archive file: &1"
-msgstr ""
-
-#: FMain.class:223
-msgid "Cannot delete file or directory"
-msgstr "Nem tudom letörölni a fájlt vagy a könyvtárat"
-
-#: FConnectionEditor.class:1340
-msgid "Cannot delete table '&1'."
+msgid "Cannot create action file: &1"
 msgstr ""
 
 #: MErrorMessage.module:49
-msgid "Cannot find dynamic library '&1': &2"
+msgid "Cannot create callback: &1"
 msgstr ""
 
 #: MErrorMessage.module:50
-msgid "Cannot find symbol '&2' in dynamic library '&1'"
+msgid "Cannot create class information: &1: &2"
 msgstr ""
 
-#: FTranslate.class:946
-msgid "Cannot import translation file."
-msgstr "Nem tudom importálni a fordításfájlt."
-
 #: MErrorMessage.module:51
-msgid "Cannot inherit twice"
+msgid "Cannot create file: &1"
+msgstr ""
+
+#: Project.module:4535
+msgid "Cannot create link &1."
+msgstr ""
+
+#: FCreateProject.class:185
+msgid "Cannot create project!"
+msgstr "Nem tudom létrehozni a projektet!"
+
+#: MConnection.module:286
+msgid "Cannot create table '&1'."
 msgstr ""
 
 #: MErrorMessage.module:52
-msgid "Cannot instanciate native types"
+msgid "Cannot create temporary archive file: &1"
+msgstr ""
+
+#: FMain.class:220
+msgid "Cannot delete file or directory"
+msgstr "Nem tudom letörölni a fájlt vagy a könyvtárat"
+
+#: FConnectionEditor.class:1387
+msgid "Cannot delete table '&1'."
 msgstr ""
 
 #: MErrorMessage.module:53
-msgid "Cannot load class '&1': &2&3"
+msgid "Cannot find dynamic library '&1': &2"
 msgstr ""
 
 #: MErrorMessage.module:54
-msgid "Cannot load component '&1': &2"
+msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr ""
 
-#: Project.module:2287
-msgid "Cannot make executable."
+#: FMakeInstall.class:435
+msgid "Cannot found extra file: &1"
 msgstr ""
+
+#: FTranslate.class:967
+msgid "Cannot import translation file."
+msgstr "Nem tudom importálni a fordításfájlt."
 
 #: MErrorMessage.module:55
-msgid "Cannot make executable: &1"
+msgid "Cannot inherit twice"
 msgstr ""
 
 #: MErrorMessage.module:56
-msgid "Cannot mix NEW and array declaration"
+msgid "Cannot instantiate native types"
 msgstr ""
 
-#: Project.module:3945
-msgid "Cannot move a directory inside itself."
-msgstr ""
-
-#: Project.module:4009
-msgid "Cannot move file &1."
-msgstr "Nem tudom áthelyezni a &1 fájlt."
-
-#: Project.module:1458
-msgid "Cannot open file."
-msgstr "Nem tudom kinyitni a fájlt."
-
-#: MErrorMessage.module:58
-msgid "Cannot open file: &1"
+#: Project.module:2521
+msgid "Cannot link template file."
 msgstr ""
 
 #: MErrorMessage.module:57
-msgid "Cannot open file '&1': &2"
+msgid "Cannot load class '&1': &2&3"
 msgstr ""
 
-#: Project.module:438
-msgid "Cannot open project file :\n"
-msgstr "Nem tudom kinyitni a projekt-fájlt:\n"
+#: MErrorMessage.module:58
+msgid "Cannot load component '&1': &2"
+msgstr ""
 
 #: MErrorMessage.module:59
-msgid "Cannot raise events in static function"
+msgid "Cannot load source file: &1"
 msgstr ""
 
 #: MErrorMessage.module:60
-msgid "Cannot read file: &1"
+msgid "Cannot make executable: &1: &2"
+msgstr ""
+
+#: Project.module:2782
+msgid "Cannot make executable."
 msgstr ""
 
 #: MErrorMessage.module:61
+msgid "Cannot mix NEW and embedded array"
+msgstr ""
+
+#: MErrorMessage.module:62
+msgid "Cannot mix NEW and embedded structure"
+msgstr ""
+
+#: Project.module:4552
+msgid "Cannot move a directory inside itself."
+msgstr ""
+
+#: Project.module:4620
+msgid "Cannot move file &1."
+msgstr "Nem tudom áthelyezni a &1 fájlt."
+
+#: Project.module:1839
+msgid "Cannot open a binary file."
+msgstr ""
+
+#: MErrorMessage.module:63
+msgid "Cannot open file '&1': &2"
+msgstr ""
+
+#: MErrorMessage.module:64
+msgid "Cannot open file: &1"
+msgstr ""
+
+#: Project.module:1872
+msgid "Cannot open file."
+msgstr "Nem tudom kinyitni a fájlt."
+
+#: Project.module:646
+msgid "Cannot open project file :\n"
+msgstr "Nem tudom kinyitni a projekt-fájlt:\n"
+
+#: MErrorMessage.module:65
+msgid "Cannot raise events in static function"
+msgstr ""
+
+#: MErrorMessage.module:66
+msgid "Cannot read file: &1"
+msgstr ""
+
+#: MErrorMessage.module:67
 msgid "Cannot read file: &1: &2"
 msgstr ""
 
-#: FTranslate.class:354
+#: FTranslate.class:377
 msgid "Cannot read translation file for language '&1'"
 msgstr "Nem tudom beolvasni a(z) '&1' nyelvhez tartozó fordításfájlt."
 
-#: MErrorMessage.module:62
+#: MErrorMessage.module:68
 msgid "Cannot register class '&1'"
+msgstr ""
+
+#: MErrorMessage.module:69
+msgid "Cannot remove file '&1': &2"
+msgstr ""
+
+#: MErrorMessage.module:70
+msgid "Cannot rename file '&1' to '&2': &3"
+msgstr ""
+
+#: MErrorMessage.module:71
+msgid "Cannot run child process: &1&2"
+msgstr ""
+
+#: FSaveProjectAs.class:35
+msgid "Cannot save a project inside its own directory."
 msgstr ""
 
 #: Save.module:39
 msgid "Cannot save file !"
 msgstr "Nem tudom kimenteni a fájlt!"
 
-#: FTranslate.class:503
+#: FTranslate.class:524
 msgid "Cannot save translation."
 msgstr "Nem tudom a fordítást kimenteni."
 
-#: MErrorMessage.module:63
+#: MErrorMessage.module:72
 msgid "Cannot set file owner: &1: &2"
 msgstr ""
 
-#: MErrorMessage.module:64
+#: MErrorMessage.module:73
 msgid "Cannot use NEW operator there"
 msgstr ""
 
-#: MErrorMessage.module:65
+#: MErrorMessage.module:74
 msgid "Cannot use TRY twice"
 msgstr ""
 
-#: FPropertyProject.class:881
+#: MErrorMessage.module:75
+msgid "Cannot use TRY with &1"
+msgstr ""
+
+#: FPropertyComponent.class:148
 msgid "Cannot write component description file."
 msgstr ""
 
-#: Project.module:2792
+#: Project.module:3356
 msgid "Cannot write project file."
 msgstr "Nem tudom kiírni a projekt-fájlt."
 
-#: FConnectionEditor.class:1217
+#: FConnectionEditor.class:1263
 msgid "Cannot write table '&1'."
 msgstr ""
 
-#: FCreateFile.class:87
+#: FCreateFile.class:124
 msgid "Cascading style sheets"
 msgstr ""
-
-#: FFind.class:798 FOutput.class:602
-msgid "Case sensitive"
-msgstr "Nagybetűérzékeny"
 
 #: Language.module:14
 msgid "Catalan (Catalonia, Spain)"
 msgstr "Katalán (Katalónia, Spanyolország)"
 
-#: FMakeInstall.class:1518
+#: FMakeInstall.form:488
 msgid "Categories"
 msgstr "Kategóriák"
 
-#: FCreateProject.class:497
+#: FForm.form:330
+msgid "Center horizontally"
+msgstr ""
+
+#: FForm.form:336
+msgid "Center vertically"
+msgstr ""
+
+#: FCreateProject.form:231
 msgid "CGI Web application"
 msgstr ""
 
-#: FForm.class:3230
+#: FForm.form:131
 msgid "Change into"
 msgstr ""
 
-#: FMakeInstall.class:1297
+#: FMakeInstall.form:238
 msgid "Changelog"
 msgstr "Változási napló"
 
-#: FInfo.class:107
+#: FInfo.class:119
 msgid "ChangeLog"
 msgstr "ChangeLog"
 
-#: FCommit.class:368
+#: FCommit.form:200
 msgid "Changes"
 msgstr "Változások"
 
-#: FPropertyProject.class:2041
+#: FPropertyProject.form:655
 msgid "Changes since last commit"
 msgstr ""
 
-#: FImportTable.class:512
+#: FImportTable.form:74
 msgid "Charset"
 msgstr "Karakterkészlet"
 
-#: CComponent.class:73
+#: CComponent.class:80
 msgid "Chart drawing"
 msgstr ""
 
-#: FMenu.class:1100
+#: FMenu.form:329
 msgid "Checked"
 msgstr "Kiválasztott"
 
-#: FTableChooser.class:86
+#: FTableChooser.form:16
 msgid "Choose a table"
 msgstr ""
 
-#: FCreateFile.class:628 FDebugInfo.class:49 FFindList.class:71 FInfo.class:84
-msgid "Class"
-msgstr "Osztály"
-
-#: FMain.class:2238
-msgid "&Class..."
-msgstr "&Osztály..."
-
-#: MErrorMessage.module:66
-msgid "Class '&1' is not creatable"
-msgstr ""
-
-#: FInfo.class:68
-msgid "Classes"
-msgstr "Osztályok"
-
-#: FMain.class:1389
-msgid "Clean"
-msgstr "tiszta"
-
-#: FMain.class:1961
-msgid "&Clean up"
-msgstr ""
-
-#: FCommit.class:283
-msgid "Clean up"
-msgstr ""
-
-#: FOption.class:579 FOutput.class:494
-msgid "Clear"
-msgstr "Ürítés"
-
-#: FMakeInstall.class:1582
-msgid "&Clear"
-msgstr ""
-
-#: FList.class:304
+#: FList.form:86
 msgid "Cl&ear"
 msgstr "Tö&rlés"
 
-#: FIconEditor.class:2159
-msgid "Clear all"
-msgstr "Minden ürítése"
+#: FCreateFile.form:129 FDebugInfo.class:53
+msgid "Class"
+msgstr "Osztály"
 
-#: FMain.class:2057
+#: MErrorMessage.module:76
+msgid "Class '&1' is not creatable"
+msgstr ""
+
+#: FInfo.class:69
+msgid "Classes"
+msgstr "Osztályok"
+
+#: FMain.class:1553
+msgid "Clean"
+msgstr "tiszta"
+
+#: FCommit.form:133
+msgid "Clean up"
+msgstr ""
+
+#: FOption.class:644 FOutput.form:79
+msgid "Clear"
+msgstr "Ürítés"
+
+#: FMain.form:426
 msgid "Clear &all breakpoints"
 msgstr ""
 
-#: FOutput.class:534
+#: FIconEditor.form:95
+msgid "Clear all"
+msgstr "Minden ürítése"
+
+#: FOutput.form:122
 msgid "Clear console"
 msgstr ""
 
-#: FOption.class:996
+#: FOption.form:799
 msgid "Clear documentation cache"
 msgstr ""
 
-#: FMain.class:453
-msgid "&Clear history"
-msgstr "Előzmények ürí&tése"
-
-#: FTranslate.class:1558
+#: FTranslate.form:107
 msgid "Clear this translation"
 msgstr "Fordítás ürítése"
 
-#: FProperty.class:1148
+#: FProperty.form:40
 msgid "Click on a form or a control to modify its properties..."
 msgstr "Kattintson egy űrlapra vagy űrlapelemre,\nhogy a tulajdonságait módosítsa."
 
-#: FFormStack.class:301
+#: FFormStack.form:23
 msgid "Click on a form to display the hierarchy of its controls..."
 msgstr "Kattintson egy űrlapra, hogy megjelenjen az űrlapelemek hierarchiája."
 
-#: FMenu.class:1107
+#: FMenu.form:352
 msgid "Click on Insert to add a new menu."
 msgstr "Kattintson a Beszúrás parancsra az új menü hozzáadásához."
 
-#: FPasteSpecial.class:287
+#: FPasteSpecial.form:85
 msgid "Clipboard contents"
 msgstr "A vágólap tartalma"
 
-#: FTips.class:232
+#: FTips.form:84
 msgid "Close"
 msgstr "Bezárás"
 
-#: FTranslate.class:1740
-msgid "&Close"
-msgstr "&Bezárás"
-
-#: FMain.class:2071
-msgid "Close all &debug windows"
-msgstr ""
-
-#: FMain.class:2129
+#: FMain.form:499
 msgid "Close &all windows"
 msgstr "&Minden ablak bezárása"
 
-#: FForm.class:3486 FTextEditor.class:788
+#: FMain.form:431
+msgid "Close all &debug windows"
+msgstr ""
+
+#: FReportCoordChooser.form:21
+msgid "cm"
+msgstr "cm"
+
+#: FForm.form:444 FTextEditor.form:270
 msgid "Code"
 msgstr "Programkód"
 
-#: FFindList.class:75
-msgid "Column"
-msgstr "Oszlop"
+#: FOption.form:886
+msgid "Code formatting"
+msgstr ""
 
-#: FForm.class:3382
+#: FOption.form:816
+msgid "Code snippets"
+msgstr ""
+
+#: FDebugInfo.class:68
+msgid "Col."
+msgstr ""
+
+#: FReportBrushChooser.form:47
+msgid "Color"
+msgstr "Szín"
+
+#: FForm.form:321
 msgid "Columns"
 msgstr "Oszlopok"
 
-#: FCreateProject.class:455
+#: FCreateProject.form:187
 msgid "Command-line application"
 msgstr ""
 
-#: FEditor.class:3259
+#: FEditor.form:234
 msgid "Comment"
 msgstr "Megjegyzés"
 
-#: FTranslate.class:52 MTheme.module:6
+#: MTheme.module:6
 msgid "Comments"
 msgstr "Megjegyzések"
 
-#: FPropertyProject.class:2075
-msgid "&Commit..."
-msgstr "El&tárolás..."
-
-#: FCommit.class:200
+#: FCommit.form:57
 msgid "Commit description"
 msgstr ""
 
-#: FPropertyProject.class:1699
+#: MErrorMessage.module:77
+msgid "Comparison operator expected"
+msgstr ""
+
+#: FPropertyProject.form:284
 msgid "Compilation"
 msgstr "Fordítás"
 
-#: FMain.class:2590
+#: FMain.form:1039
 msgid "Compile"
 msgstr "Fordítás"
 
-#: FMain.class:1906
-msgid "&Compile"
-msgstr "&Fordítás"
-
-#: FMain.class:2597
-msgid "Compile all"
-msgstr "Minden fordítása"
-
-#: FMain.class:1913
+#: FMain.form:278
 msgid "Compile &All"
 msgstr "&Minden fordítása"
 
-#: Project.module:1821
+#: FMain.form:1046
+msgid "Compile all"
+msgstr "Minden fordítása"
+
+#: Project.module:2261
 msgid "Compiling project"
 msgstr "Projekt fordítása"
 
-#: FPropertyProject.class:1856
+#: FPropertyProject.form:171
 msgid "Component"
 msgstr "Komponens"
 
-#: FPropertyProject.class:1885
+#: FPropertyComponent.form:66
 msgid "Component advancement"
 msgstr ""
 
-#: FCreateProject.class:609
+#: FForm.class:1306
+msgid "Component missing for control &1"
+msgstr ""
+
+#: MErrorMessage.module:78
+msgid "Component not found: &1"
+msgstr ""
+
+#: FCreateProject.form:344
 msgid "Component programming"
 msgstr ""
 
-#: FPropertyProject.class:1897
+#: FMain.class:1071 FPropertyComponent.form:37
+msgid "Component properties"
+msgstr ""
+
+#: FPropertyComponent.form:152 FPropertyProject.form:503
 msgid "Components"
 msgstr "Komponensek"
 
-#: CComponent.class:74
+#: FTextEditor.form:182
+msgid "Compress file"
+msgstr ""
+
+#: CComponent.class:81
 msgid "Compression & decompression"
+msgstr ""
+
+#: FReportBorderChooser.form:43
+msgid "Configure border"
+msgstr ""
+
+#: FReportBrushChooser.form:29
+msgid "Configure brush"
+msgstr ""
+
+#: FReportPaddingChooser.form:18
+msgid "Configure padding"
 msgstr ""
 
 #: FConflict.class:262
 msgid "Conflict files"
 msgstr ""
 
-#: FTableChooser.class:100
+#: FFieldChooser.form:38 FTableChooser.form:30
 msgid "Connection"
 msgstr "Kapcsolat"
 
-#: FConnectionEditor.class:1558
+#: FConnectionEditor.form:94
 msgid "Connection editor"
 msgstr ""
 
-#: FNewConnection.class:127
+#: FNewConnection.class:129
 msgid "Connection properties"
 msgstr ""
 
-#: Project.module:1270
+#: CProjectTree.class:296 Project.module:1632
 msgid "Connections"
 msgstr "Kapcsolatok"
 
-#: FDebugInfo.class:981 FMain.class:2570
+#: FDebugInfo.form:59 FMain.form:1013 FOption.form:595 FSearch.class:94
 msgid "Console"
 msgstr "Konzol"
 
-#: FMain.class:2105
-msgid "&Console"
-msgstr "&Konzol"
-
-#: FOutput.class:442
+#: FOutput.form:30
 msgid "Console - Gambas"
 msgstr ""
 
-#: Project.module:2592
+#: MHelp.module:645
+msgid "Constants"
+msgstr "Konstansok"
+
+#: Project.module:3163
 msgid "Continue"
 msgstr "Folytatás"
 
-#: Project.module:156
+#: FOption.form:546
+msgid "Control structure automatic completion"
+msgstr ""
+
+#: Project.module:201
 msgid "Controls"
 msgstr ""
 
-#: FImageEditor.class:86 FOutput.class:480 FTextEditor.class:667
+#: Project.module:433
+msgid "Convert"
+msgstr "Konvertálás"
+
+#: Project.module:513
+msgid "Converting project structure..."
+msgstr ""
+
+#: FMenu.form:113 FOutput.form:65 FTextEditor.form:113
 msgid "Copy"
 msgstr "Másolás"
 
-#: FAbout.class:585 FList.class:310 FMain.class:2332
-msgid "&Copy"
-msgstr "&Másolás"
+#: FForm.form:244
+msgid "Copy at the same place"
+msgstr ""
 
-#: FConnectionEditor.class:1716
+#: FConnectionEditor.form:260
 msgid "Copy field list"
 msgstr ""
 
-#: FMain.class:2363
+#: FMain.form:712
 msgid "Copy file pat&h"
 msgstr ""
 
-#: FTranslate.class:1570
+#: FConnectionEditor.form:145
+msgid "Copy table"
+msgstr ""
+
+#: FTranslate.form:119
 msgid "Copy untranslated string"
 msgstr "Lefordítatlan szöveg másolása"
 
-#: CComponent.class:75
-msgid "CORBA Client"
+#: Project.module:489
+msgid "Copying project inside a temporary directory..."
 msgstr ""
 
-#: FMakeExecutable.class:26
+#: FReportBorderChooser.form:141
+msgid "Corner"
+msgstr ""
+
+#: FMakeExecutable.form:62
 msgid "Create a shortcut on the desktop"
 msgstr ""
 
-#: FCreateFile.class:907
+#: FCreateFile.form:424
 msgid "Create a symbolic link"
 msgstr ""
 
-#: FNewConnection.class:193
-msgid "&Create database '&1'"
-msgstr ""
-
-#: FMakeInstall.class:1673
+#: FMakeInstall.form:697
 msgid "Create directories for each distribution"
 msgstr ""
 
-#: FMakeInstall.class:1676
+#: FMakeInstall.form:700
 msgid "Create package"
 msgstr ""
 
-#: Project.module:3617
+#: Project.module:4194
 msgid "Create source package"
 msgstr "Forráscsomag létrehozása"
 
@@ -1287,79 +1860,75 @@ msgstr "Forráscsomag létrehozása"
 msgid "Create table"
 msgstr ""
 
-#: Package.module:463
-msgid "Creating desktop file..."
-msgstr ""
-
-#: Package.module:637
-msgid "Creating package..."
-msgstr ""
-
-#: Package.module:387
-msgid "Creating package for &1."
-msgstr "Csomag létrehozása ehhez: &1."
-
-#: Package.module:752
-msgid "Creating source package."
-msgstr "Forráscsomag létrehozása."
-
-#: Package.module:776
+#: Package.module:911
 msgid "Creating .spec file."
 msgstr ".spec fájl létrehozása."
 
-#: Language.module:58
+#: Package.module:604
+msgid "Creating desktop file..."
+msgstr ""
+
+#: Package.module:518
+msgid "Creating package for &1."
+msgstr "Csomag létrehozása ehhez: &1."
+
+#: Package.module:759
+msgid "Creating package..."
+msgstr ""
+
+#: Package.module:887
+msgid "Creating source package."
+msgstr "Forráscsomag létrehozása."
+
+#: Language.module:60
 msgid "Croatian (Croatia)"
 msgstr "Horvát (Horvátország)"
 
-#: FInfo.class:100
+#: FInfo.class:109
 msgid "CSS file"
 msgstr ""
 
-#: FConnectionEditor.class:1377
+#: FConnectionEditor.class:1424 FExportData.class:21
 msgid "CSV files"
 msgstr ""
 
-#: FMenu.class:1005
+#: FMenu.form:256
 msgid "CTRL"
 msgstr "CTRL"
+
+#: FSearch.form:159
+msgid "Current &file"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Current line"
 msgstr "Aktív sor"
 
-#: FDebugInfo.class:1019
+#: FDebugInfo.form:86
 msgid "Current object"
 msgstr ""
 
-#: FImageEditor.class:77 FOutput.class:473 FTextEditor.class:660
+#: FMenu.form:107 FOutput.form:58 FTextEditor.form:106
 msgid "Cut"
 msgstr "Kivágás"
-
-#: FMain.class:2325
-msgid "&Cut"
-msgstr "&Kivágás"
 
 #: Language.module:19
 msgid "Czech (Czech Republic)"
 msgstr "Cseh (Cseh Köztársaság)"
 
+#: CComponent.class:93
+msgid "D-Bus interface"
+msgstr ""
+
 #: Language.module:21
 msgid "Danish (Denmark)"
 msgstr "Dán (Dánia)"
 
-#: Project.module:1279
+#: CProjectTree.class:305 Project.module:1641
 msgid "Data"
 msgstr "Adat"
 
-#: FNewConnection.class:509 Project.module:147
-msgid "Database"
-msgstr "Adatbázis"
-
-#: CComponent.class:77 FCreateProject.class:557
-msgid "Database access"
-msgstr ""
-
-#: CComponent.class:79
+#: CComponent.class:85
 msgid "Data bound controls"
 msgstr ""
 
@@ -1367,167 +1936,175 @@ msgstr ""
 msgid "Data types"
 msgstr "Adattípusok"
 
-#: FConnectionEditor.class:530 MConnection.module:92
+#: FNewConnection.form:177 Project.module:191
+msgid "Database"
+msgstr "Adatbázis"
+
+#: CComponent.class:83 FCreateProject.form:292
+msgid "Database access"
+msgstr ""
+
+#: FConnectionEditor.class:571 MConnection.module:93
 msgid "Date"
 msgstr "Dátum"
 
-#: CComponent.class:87
-msgid "D-Bus interface"
-msgstr ""
-
-#: FMakeInstall.class:1349
+#: FMakeInstall.form:327
 msgid "Debian"
 msgstr "-"
 
-#: FDebugInfo.class:968 FMain.class:2712
+#: FDebugInfo.form:45 FMain.form:1320
 msgid "Debug"
 msgstr "Hibakeresés"
 
-#: FMain.class:1990
-msgid "&Debug"
-msgstr "&Hibakeresés"
-
-#: FPropertyProject.class:1830
+#: FPropertyProject.form:369
 msgid "Debugging"
 msgstr "Nyomkövetés"
 
-#: FEditor.class:2532
-msgid "(Declarations)"
+#: MErrorMessage.module:79
+msgid "Default case already defined"
 msgstr ""
 
-#: FOption.class:59
-msgid "(Default)"
-msgstr "(Alapértelmezés)"
+#: MErrorMessage.module:80
+msgid "Default case must be the last one"
+msgstr ""
 
-#: FPropertyProject.class:1789
+#: FOption.form:226
+msgid "Default font size"
+msgstr ""
+
+#: CComponent.class:99
+msgid "Default icon theme"
+msgstr ""
+
+#: FHelpBrowser.class:24 FPropertyProject.form:354
 msgid "Default language"
 msgstr ""
 
-#: FOption.class:1121
+#: FOption.form:1025
+msgid "Default maintainer information"
+msgstr ""
+
+#: FProxy.form:76
+msgid "Default proxy"
+msgstr ""
+
+#: FOption.form:380
 msgid "Default tab size"
 msgstr "Alapértelmezett tabulátor-távolság"
 
-#: FConnectionEditor.class:47
+#: FConnectionEditor.class:49
 msgid "Default value"
 msgstr "Alapértelmezett érték"
 
-#: FOption.class:102
+#: FOption.class:126
 msgid "Define..."
 msgstr ""
 
-#: FNewConnection.class:317 FTranslate.class:617
+#: FNewConnection.class:325 FOption.class:791 FTranslate.class:636
 msgid "Delete"
 msgstr "Törlés"
 
-#: FList.class:282 FMenu.class:855 FTranslate.class:1722
-msgid "&Delete"
-msgstr "&Törlés"
-
-#: FMain.class:2353
-msgid "&Delete..."
-msgstr "&Törlés..."
-
-#: FNewConnection.class:197
-msgid "&Delete database '&1'"
+#: FForm.form:264
+msgid "Delete container only"
 msgstr ""
 
-#: FConnectionEditor.class:1588
+#: FConnectionEditor.form:129
 msgid "Delete table"
 msgstr ""
 
-#: FTranslate.class:1721
+#: FTranslate.form:313
 msgid "Delete translation"
 msgstr "Fordítás törlése"
 
-#: FImportTable.class:537
+#: FExportData.form:31 FImportTable.form:97
 msgid "Delimiter character"
 msgstr ""
 
-#: FCommit.class:195 FMakeInstall.class:1272 FPropertyProject.class:1640
+#: FCommit.form:52 FMakeInstall.form:215 FPropertyProject.form:221
 msgid "Description"
 msgstr "Leírás"
 
-#: FOption.class:58
+#: FOption.class:73
 msgid "Desktop"
 msgstr "Asztal"
 
-#: CComponent.class:86
+#: FMakeInstall.form:497
+msgid "Desktop configuration file"
+msgstr ""
+
+#: CComponent.class:92
 msgid "Desktop-neutral routines from Portland project"
 msgstr ""
 
-#: FImportTable.class:569
+#: FImportTable.form:142 FPasteTable.form:51
 msgid "Destination"
 msgstr "Célmappa"
 
-#: Project.module:3228
+#: Project.module:3789
 msgid "Destination already exists"
 msgstr ""
 
-#: FMakeInstall.class:100
+#: FMakeInstall.form:688
 msgid "Destination directory"
 msgstr ""
 
-#: FConflict.class:411 FInfo.class:385
+#: FConflict.form:129 FInfo.form:136
 msgid "Details"
 msgstr "Részletek"
 
-#: MErrorMessage.module:67
+#: MErrorMessage.module:81
 msgid "Device is full"
 msgstr ""
 
-#: FCreateFile.class:858
+#: FCreateFile.form:366
 msgid "Dialog box management"
 msgstr ""
 
-#: FInfo.class:71
+#: FInfo.form:123
 msgid "Directory"
 msgstr "Könyvtár"
 
-#: FMain.class:2220
-msgid "&Directory"
-msgstr ""
-
-#: Project.module:2091
+#: Project.module:2509
 msgid "Directory already exists."
 msgstr "A könyvtár már létezik."
 
-#: FDebugInfo.class:1036
+#: MErrorMessage.module:82
+msgid "Directory is not empty"
+msgstr ""
+
+#: FDebugInfo.form:143
+msgid "Display"
+msgstr "Képernyő"
+
+#: FDebugInfo.form:141
 msgid "Display ME"
 msgstr ""
 
-#: FOption.class:941
+#: FOption.form:736
 msgid "Display property help"
 msgstr ""
 
-#: MErrorMessage.module:68
+#: MErrorMessage.module:83
 msgid "Division by zero"
 msgstr ""
 
-#: Project.module:362
-msgid "Do not open"
-msgstr "Ne nyissa ki"
-
-#: FSave.class:125
+#: FSave.form:35
 msgid "Do &not save"
 msgstr ""
 
-#: FConnectionEditor.class:261
+#: Project.module:445
+msgid "Do not open"
+msgstr "Ne nyissa ki"
+
+#: FConnectionEditor.class:294
 msgid "Do not save"
 msgstr ""
 
-#: FConnectionEditor.class:1701
-msgid "Down"
-msgstr "Le"
-
-#: FList.class:294 FMakeInstall.class:1576
-msgid "&Down"
-msgstr "&Le"
-
-#: FMain.class:1667
+#: FMain.class:1850
 msgid "Do you really want to add this file to the repository?"
 msgstr ""
 
-#: FOption.class:579
+#: FOption.class:644
 msgid "Do you really want to clear the documentation cache?"
 msgstr ""
 
@@ -1535,147 +2112,179 @@ msgstr ""
 msgid "Do you really want to clear the list?"
 msgstr ""
 
-#: FConnectionEditor.class:1330
+#: FConnectionEditor.class:1376
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FNewConnection.class:317
+#: FNewConnection.class:325
 msgid "Do you really want to delete the database '&1'?"
 msgstr ""
 
-#: FMain.class:204
+#: FMain.class:201
 msgid "Do you really want to delete this directory ?"
 msgstr "Biztos, hogy le akarja törölni ezt a könyvtárat?"
 
-#: FMain.class:215
+#: FMain.class:213
 msgid "Do you really want to delete this file ?"
 msgstr "Biztos, hogy le akarja törölni ezt a fájlt?"
 
-#: FTranslate.class:617
+#: FMain.class:198
+msgid "Do you really want to delete this link ?"
+msgstr ""
+
+#: FOption.class:791
+msgid "Do you really want to delete this snippet?"
+msgstr ""
+
+#: FTranslate.class:636
 msgid "Do you really want to delete this translation ?"
 msgstr "Biztos, hogy le akarja törölni ezt a fordítást?"
 
-#: FTranslate.class:711
+#: FTranslate.class:730
 msgid "Do you really want to reload this translation ?"
 msgstr "Biztos, hogy újra be akarja tölteni ezt a fordítást?"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:1005
 msgid "Do you really want to remove all extra dependencies?"
 msgstr ""
 
-#: FMakeInstall.class:1056
+#: FMakeInstall.class:1106
 msgid "Do you really want to remove all extra files?"
 msgstr ""
 
-#: FConnectionEditor.class:1399
+#: FConnectionEditor.class:1447
 msgid "Do you really want to remove the selected rows?"
 msgstr ""
 
-#: FMain.class:1212
-msgid "Do you really want to update all forms?"
+#: FSearch.class:838
+msgid "Do you really want to replace every string?"
 msgstr ""
 
-#: FDebugInfo.class:490
+#: FOption.class:927
+msgid "Do you really want to reset the list to its default value?"
+msgstr ""
+
+#: FDebugInfo.class:533
 msgid "Do you want to clear the expression list ?"
 msgstr "Ki akarja üríteni a kifejezések listáját?"
 
-#: FIconEditor.class:1393
+#: FIconEditor.class:1415
 msgid "Do you want to clear the image ?"
 msgstr "Ki akarja üríteni a képet?"
 
-#: FOpenProject.class:151
-msgid "Do you want to uncompress this archive?"
-msgstr ""
+#: FConnectionEditor.form:245
+msgid "Down"
+msgstr "Le"
 
-#: Package.module:640
-msgid "'dpkg-buildpackage' has failed."
-msgstr ""
-
-#: FIconEditor.class:2268
+#: FIconEditor.form:191
 msgid "Draw"
 msgstr "Rajzolás"
 
-#: Project.module:148
+#: Project.module:192
 msgid "Drawing"
 msgstr ""
 
-#: FPropertyProject.class:1815
-msgid "Dump stack on error"
-msgstr ""
+#: FProfile.class:568
+msgid "Duration"
+msgstr "Időtartam"
 
-#: Language.module:77
+#: Language.module:83
 msgid "Dutch (Belgium)"
 msgstr "Holland (Belgium)"
 
-#: Language.module:76
+#: Language.module:82
 msgid "Dutch (Netherlands)"
 msgstr "Holland (Hollandia)"
 
-#: MErrorMessage.module:69
+#: MErrorMessage.module:84
 msgid "Dynamic symbols cannot be used in static function"
 msgstr ""
 
-#: FDebugInfo.class:866
+#: FDebugInfo.class:944
 msgid "Dynamic variables"
 msgstr ""
 
-#: FConflict.class:25 FMain.class:2305
-msgid "&Edit"
-msgstr "&Szerkesztés"
+#: FMakeInstall.form:173 FOption.form:1068
+msgid "E-mail"
+msgstr ""
 
-#: FMain.class:2310
+#: FMain.form:301
+msgid "E&xecutable..."
+msgstr ""
+
+#: FOption.form:872
+msgid "E&xport..."
+msgstr "&Exportálás..."
+
+#: FMain.form:659
 msgid "Edit &code"
 msgstr ""
 
-#: FProperty.class:916
+#: FSnippet.class:66
+msgid "Edit code snippet"
+msgstr ""
+
+#: FFieldChooser.class:69
 msgid "Edit field list"
+msgstr ""
+
+#: FList.form:24
+msgid "Edit list property"
+msgstr "Lista formájú tulajdonság szerkesztése"
+
+#: FText.form:12
+msgid "Edit text property"
+msgstr "Szöveges tulajdonság szerkesztése"
+
+#: FMain.form:663
+msgid "Edit with"
 msgstr ""
 
 #: MTheme.module:6
 msgid "Editing line"
 msgstr "Sor szerkesztése"
 
-#: FPropertyProject.class:1668
+#: FPropertyProject.form:253
 msgid "Edition"
 msgstr "Kiadás"
 
-#: FList.class:240
-msgid "Edit list property"
-msgstr "Lista formájú tulajdonság szerkesztése"
-
-#: FEditor.class:3371 FOption.class:1001
+#: FEditor.form:346 FOption.form:370
 msgid "Editor"
 msgstr "Szerkesztő"
 
-#: FText.class:77
-msgid "Edit text property"
-msgstr "Szöveges tulajdonság szerkesztése"
-
-#: FMain.class:2314
-msgid "Edit with"
-msgstr ""
-
-#: FIconEditor.class:2298
+#: FIconEditor.form:218
 msgid "Ellipse"
 msgstr "Ellipszis"
+
+#: FForm.form:271
+msgid "Embed into a container"
+msgstr ""
+
+#: MErrorMessage.module:85
+msgid "Embedded array"
+msgstr ""
+
+#: MErrorMessage.module:86
+msgid "Embedded arrays are forbidden here"
+msgstr ""
 
 #: FOption.class:4
 msgid "Emerald"
 msgstr "-"
 
-#: FMenu.class:1090
+#: FMenu.form:319
 msgid "Enabled"
 msgstr "Megengedett"
 
-#: FImportTable.class:549
+#: FExportData.form:42 FImportTable.form:108
 msgid "Enclose character"
 msgstr ""
 
-#: MErrorMessage.module:70
+#: MErrorMessage.module:87
 msgid "End of file"
 msgstr ""
 
-#: FImportTable.class:524
+#: FImportTable.form:85
 msgid "End of line"
 msgstr "Sor vége"
 
@@ -1691,24 +2300,32 @@ msgstr "Angol (Kanada)"
 msgid "English (common)"
 msgstr "Angol (közös)"
 
-#: Language.module:29
-msgid "English (United Kingdom)"
-msgstr "Angol (Egyesült Királyság)"
-
 #: Language.module:30
 msgid "English (U.S.A.)"
 msgstr "Angol (Amerikai Egyesült Államok)"
 
-#: CComponent.class:91
+#: Language.module:29
+msgid "English (United Kingdom)"
+msgstr "Angol (Egyesült Királyság)"
+
+#: CComponent.class:97
 msgid "Enhanced standard dialogs"
 msgstr ""
 
-#: FPropertyProject.class:1949
+#: FMakeInstall.form:511
+msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
+msgstr ""
+
+#: FPropertyProject.form:408
 msgid "Environment"
 msgstr ""
 
-#: FPropertyProject.class:2007
+#: FPropertyProject.form:471
 msgid "Environment variables"
+msgstr "Környezeti változók"
+
+#: MErrorMessage.module:88
+msgid "Equality or inequality operator expected"
 msgstr ""
 
 #: MTheme.module:6
@@ -1721,361 +2338,369 @@ msgstr "Eszperantó (mindenhol!)"
 
 #: Language.module:39
 msgid "Estonian (Estonia)"
+msgstr "Észt (Észtország)"
+
+#: CProfile.class:105
+msgid "Evaluator"
 msgstr ""
 
-#: FForm.class:3224
+#: FForm.form:125
 msgid "Event"
 msgstr "Esemény"
 
-#: CComponent.class:127 FPropertyProject.class:2106
+#: CProfile.class:107
+msgid "Event loop"
+msgstr ""
+
+#: CComponent.class:147 FPropertyComponent.form:132
 msgid "Event loop management"
 msgstr ""
 
-#: FTranslate.class:1011
+#: MHelp.module:577
+msgid "Events"
+msgstr "Események"
+
+#: FTranslate.class:1032
 msgid "Everything seems to be correct."
 msgstr "Úgy látszik, minden rendben van."
 
-#: FOpenProject.class:430 FWelcome.class:52
+#: FOpenProject.form:144 FWelcome.class:52
 msgid "Examples"
 msgstr "Példák"
 
-#: CComponentBox.class:209
+#: CComponentBox.class:244
 msgid "Excludes"
 msgstr ""
 
-#: FMain.class:1936
-msgid "E&xecutable..."
-msgstr ""
-
-#: FPropertyProject.class:1804
-msgid "Execution"
-msgstr "Végrehajtás"
-
-#: FCreateFile.class:895
+#: FCreateFile.form:403
 msgid "Existing"
 msgstr "Létező"
 
-#: CComponentBox.class:92
+#: CComponentBox.class:221 FPropertyComponent.form:73
 msgid "Experimental"
 msgstr "Kísérleti"
 
-#: FTranslate.class:1729
-msgid "&Export..."
-msgstr "E&xportálás..."
-
-#: FConnectionEditor.class:1919
-msgid "Export..."
-msgstr "Exportálás..."
-
-#: FOption.class:132
+#: FOption.class:173
 msgid "Export a theme file"
 msgstr ""
 
-#: FTranslate.class:726
+#: FTranslate.class:745
 msgid "Export a translation"
 msgstr "Fordítás exportálása"
 
-#: FCreateFile.class:878
-msgid "Exported"
+#: FExportData.form:54
+msgid "Export field names"
 msgstr ""
 
-#: FOption.class:1186
+#: FExportData.form:60
+msgid "Export selected records only"
+msgstr ""
+
+#: FOption.form:632
 msgid "Export theme"
 msgstr ""
 
-#: FTranslate.class:1728
+#: FTranslate.form:321
 msgid "Export to a translation file"
 msgstr ""
 
-#: FDebugInfo.class:43
+#: FConnectionEditor.form:451 FExportData.form:15
+msgid "Export to CSV file"
+msgstr ""
+
+#: FConnectionEditor.form:453
+msgid "Export..."
+msgstr "Exportálás..."
+
+#: FCreateFile.form:386
+msgid "Exported"
+msgstr ""
+
+#: FPropertyComponent.form:97
+msgid "Exported classes"
+msgstr ""
+
+#: FDebugInfo.class:47
 msgid "Expression"
 msgstr "Kifejezés"
 
-#: CComponent.class:88
+#: CComponent.class:94
 msgid "Expression evaluator"
 msgstr ""
 
-#: MErrorMessage.module:71
+#: MErrorMessage.module:89
 msgid "Expression too complex"
 msgstr ""
 
-#: MErrorMessage.module:72
+#: MErrorMessage.module:90
 msgid "Expression too complex. Too many operands"
 msgstr ""
 
-#: FMakeInstall.class:1649
+#: FMakeInstall.form:674
 msgid "Extra autoconf tests"
 msgstr ""
 
-#: FMakeInstall.class:1528
+#: FMakeInstall.form:539
 msgid "Extra dependencies"
 msgstr ""
 
-#: FMakeInstall.class:1588
+#: FMakeInstall.form:599
 msgid "Extra files"
+msgstr ""
+
+#: FMakeInstall.form:616
+msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr ""
 
 #: Language.module:43
 msgid "Farsi (Iran)"
 msgstr "Fárszi (Irán)"
 
-#: FPropertyProject.class:2085
+#: FPropertyComponent.form:111
 msgid "Features"
 msgstr ""
 
-#: FMakeInstall.class:1369
+#: FMakeInstall.form:346
 msgid "Fedora"
-msgstr ""
+msgstr "Fedora"
 
-#: FConnectionEditor.class:68 FImportTable.class:346
+#: FConnectionEditor.class:70 FImportTable.class:361
 msgid "Field"
-msgstr ""
+msgstr "Mező"
 
-#: FImportTable.class:260
+#: FImportTable.class:273
 msgid "Field_&1"
 msgstr ""
 
-#: FConnectionEditor.class:1670
+#: FConnectionEditor.form:215
 msgid "Fields"
 msgstr ""
 
-#: FInfo.class:110 FTranslate.class:68
+#: FDebugInfo.class:64 FInfo.class:122 FTranslate.class:68
 msgid "File"
 msgstr "Fájl"
 
-#: FMain.class:1843
-msgid "&File"
-msgstr "&Fájl"
-
-#: MErrorMessage.module:73
+#: MErrorMessage.module:91
 msgid "File already exists"
 msgstr "Már létezik ilyen nevű fájl"
 
-#: Project.module:2027
+#: Project.module:2476
 msgid "File already exists."
 msgstr "A fájl már létezik."
 
-#: MErrorMessage.module:74
+#: MErrorMessage.module:92
 msgid "File is a directory"
 msgstr ""
 
-#: MErrorMessage.module:75
+#: MErrorMessage.module:93
 msgid "File is locked"
 msgstr ""
 
-#: FMakeInstall.class:99
-msgid "File name"
-msgstr "Fájlnév"
-
-#: MErrorMessage.module:76
+#: MErrorMessage.module:94
 msgid "File name is too long"
 msgstr ""
 
-#: Project.module:1517
+#: Project.module:1930
 msgid "File not found!"
 msgstr ""
 
-#: MErrorMessage.module:77
+#: FMakeInstall.class:114
+msgid "File or directory"
+msgstr ""
+
+#: MErrorMessage.module:95
 msgid "File or directory does not exist"
 msgstr ""
 
-#: FIconEditor.class:2343
+#: FMain.class:237
+msgid "File or directory does not exist anymore."
+msgstr ""
+
+#: FIconEditor.form:258
 msgid "Filled"
 msgstr ""
 
-#: FIconEditor.class:2353
+#: FIconEditor.form:267
 msgid "Filled with border"
 msgstr ""
 
-#: FFind.class:704 FOutput.class:504
-msgid "Find"
-msgstr "Keresés"
+#: FAbout.class:189
+msgid "Financial support"
+msgstr ""
 
-#: FEditor.class:3277 FTextEditor.class:695
-msgid "Find..."
-msgstr "Keresés..."
-
-#: FTranslate.class:1603
-msgid "Find a string in translation"
-msgstr "Sztring keresése a fordításban"
-
-#: FEditor.class:3147
+#: FEditor.form:103
 msgid "Find definition"
 msgstr ""
 
-#: FFindList.class:238
-msgid "Find list"
-msgstr ""
-
-#: FFind.class:711 FOutput.class:586
+#: FEditor.form:175 FOutput.form:89 FTextEditor.form:139
 msgid "Find next"
 msgstr ""
 
-#: FEditor.class:3290 FTextEditor.class:708
-msgid "Find Next"
-msgstr "Következő találat"
-
-#: FTranslate.class:1582
+#: FTranslate.form:131
 msgid "Find next untranslated string"
 msgstr "Következő lefordítatlan sztring keresése"
 
-#: FFind.class:719 FOutput.class:594
+#: FEditor.form:182 FOutput.form:96 FTextEditor.form:146
 msgid "Find previous"
 msgstr ""
 
-#: FEditor.class:3297 FTextEditor.class:715
-msgid "Find Previous"
-msgstr "Előző találat"
-
-#: FTranslate.class:1588
+#: FTranslate.form:137
 msgid "Find previous untranslated string"
 msgstr ""
 
-#: FMain.class:2139
-msgid "&Find && replace"
-msgstr ""
-
-#: FMain.class:2578
-msgid "Find & replace"
-msgstr ""
-
-#: FMain.class:2032
+#: FMain.form:416
 msgid "Finis&h"
 msgstr ""
 
-#: FMain.class:2639
+#: FMain.form:1088
 msgid "Finish current function"
 msgstr ""
 
-#: FPropertyProject.class:1893
+#: FPropertyComponent.form:73
 msgid "Finished and stable"
 msgstr ""
 
-#: FNewConnection.class:417
+#: Language.module:45
+msgid "Finnish (Finland)"
+msgstr "Finn (Finnország)"
+
+#: FNewConnection.form:81
 msgid "Firebird"
 msgstr ""
 
-#: CComponent.class:78
+#: CComponent.class:84
 msgid "Firebird database driver"
 msgstr ""
 
-#: Project.module:1647
+#: Design.module:151 Project.module:2036
 msgid "first"
 msgstr ""
 
-#: FForm.class:3264
-msgid "&First"
-msgstr ""
-
-#: FConnectionEditor.class:530 MConnection.module:90
+#: FConnectionEditor.class:571 MConnection.module:91
 msgid "Float"
 msgstr "Lebegő"
 
-#: FIconEditor.class:2308
+#: FIconEditor.form:227
 msgid "Flood fill"
 msgstr "Kitöltés színnel"
 
-#: FOption.class:1103
+#: FOption.form:504
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1006
-msgid "Font"
+#: FOption.form:566
+msgid "Fonts"
 msgstr "Betűtípus"
 
-#: FOption.class:740
-msgid "Font size"
-msgstr "Betűméret"
-
-#: FProperty.class:368
+#: FProperty.class:369
 msgid "Forbidden characters in control group."
 msgstr "Tiltott karakterek vannak az űrlapelem-csoportban."
 
-#: FProperty.class:353
+#: FProperty.class:354
 msgid "Forbidden characters in control name."
 msgstr "Tiltott karakterek vannak az űrlapelem nevében."
 
-#: MErrorMessage.module:78
+#: MErrorMessage.module:96
+msgid "Forbidden GOSUB"
+msgstr ""
+
+#: MErrorMessage.module:97
 msgid "Forbidden GOTO"
 msgstr ""
 
-#: FOption.class:694
+#: FOption.form:187
 msgid "Foreground color..."
 msgstr ""
 
-#: FInfo.class:88
+#: CModule.class:28 FCreateFile.form:150 FEditor.form:368 FForm.form:422
 msgid "Form"
 msgstr "Űrlap"
 
-#: FMain.class:2246
-msgid "&Form..."
-msgstr "Űr&lap..."
-
-#: FPropertyProject.class:1728
+#: FPropertyProject.form:312
 msgid "Form controls are public"
 msgstr "Az űrlap űrlapelemei publikusak."
 
-#: CModule.class:28 FInfo.class:69
+#: FEditor.form:264
+msgid "Format code"
+msgstr ""
+
+#: FOption.form:896
+msgid "Format on load & save"
+msgstr ""
+
+#: CModule.class:28 FInfo.class:70
 msgid "Forms"
 msgstr "Űrlapok"
 
-#: FMain.class:2632
+#: FMain.form:1081
 msgid "Forward"
 msgstr "Előre"
 
-#: FMain.class:2025
-msgid "&Forward"
-msgstr "&Előre"
-
-#: FColorChooser.class:176
+#: FColorChooser.form:33
 msgid "Free"
 msgstr "Szabad"
 
-#: FMakeInstall.class:1293
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Freeware"
 msgstr ""
 
-#: Language.module:46
+#: Language.module:48
 msgid "French (Belgium)"
 msgstr "Francia (Belgium)"
 
-#: Language.module:47
+#: Language.module:49
 msgid "French (Canada)"
 msgstr "Francia (Kanada)"
 
-#: Language.module:45
+#: Language.module:47
 msgid "French (France)"
 msgstr "Francia (Franciaország)"
 
-#: Language.module:48
+#: Language.module:50
 msgid "French (Switzerland)"
 msgstr "Francia (Svájc)"
 
-#: FDebugInfo.class:50
+#: FDebugInfo.class:55 FProfile.class:564
 msgid "Function"
 msgstr "Funkció"
 
-#: Language.module:50
+#: Language.module:52
 msgid "Galician (Spain)"
 msgstr "Galíciai (Spanyolország)"
+
+#: FOption.class:4
+msgid "Gambas"
+msgstr ""
+
+#: FInfo.class:85
+msgid "Gambas &1"
+msgstr ""
 
 #: .project:1
 msgid "Gambas 3"
 msgstr ""
 
-#: FAbout.class:512
+#: FConvert.form:10
+msgid "Gambas 3 project conversion"
+msgstr ""
+
+#: FAbout.form:44
 msgid "Gambas Almost Means Basic!"
 msgstr "-"
 
-#: FMakeExecutable.class:18
+#: FMakeExecutable.class:18 FPropertyProject.class:1088
 msgid "Gambas applications"
 msgstr ""
 
-#: FCreateFile.class:77
+#: FInfo.class:97
+msgid "Gambas class"
+msgstr ""
+
+#: FCreateFile.class:110
 msgid "Gambas classes"
 msgstr "Gambas osztályok"
 
-#: MMime.module:17
+#: MMime.module:19
 msgid "Gambas form data"
 msgstr ""
 
@@ -2083,19 +2708,27 @@ msgstr ""
 msgid "Gambas forms"
 msgstr "Gambas űrlapok"
 
-#: FOption.class:131
+#: FOption.class:172
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FCreateFile.class:77
+#: MMime.module:20
+msgid "Gambas menu data"
+msgstr ""
+
+#: FInfo.class:93
+msgid "Gambas module"
+msgstr ""
+
+#: FCreateFile.class:110
 msgid "Gambas modules"
 msgstr "Gambas modulok"
 
-#: FInfo.class:66
+#: FInfo.class:67
 msgid "Gambas project"
 msgstr "Gambas projekt"
 
-#: MMime.module:18
+#: MMime.module:21
 msgid "Gambas project file path"
 msgstr ""
 
@@ -2107,16 +2740,28 @@ msgstr ""
 msgid "Gambas web pages"
 msgstr ""
 
-#: Project.module:149
+#: FHelpBrowser.form:107
+msgid "Gambas web site"
+msgstr ""
+
+#: Project.module:193
 msgid "Games"
 msgstr "Játékok"
 
-#: FInfo.class:305 FOption.class:725 FPropertyProject.class:1580
+#: FPropertyProject.form:123
+msgid "GB_GUI=gb.gtk"
+msgstr ""
+
+#: FPropertyProject.form:117
+msgid "GB_GUI=gb.qt4"
+msgstr ""
+
+#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:133
 msgid "General"
 msgstr "Általános"
 
-#: FMakeInstall.class:1293
-msgid "General Public Licence"
+#: FMakeInstall.form:234 FOption.form:1090
+msgid "General Public License"
 msgstr ""
 
 #: Language.module:24
@@ -2127,43 +2772,47 @@ msgstr "Német (Belgium)"
 msgid "German (Germany)"
 msgstr "Német (Németország)"
 
-#: FPropertyProject.class:1746
-msgid "Get version from program"
+#: FPropertyProject.form:203
+msgid "Get from 'VERSION' file"
 msgstr ""
 
-#: FCreateFile.class:838
+#: FCreateFile.form:346
 msgid "GIF"
 msgstr ""
 
-#: CComponent.class:108
+#: CComponent.class:121
 msgid "GNU command option parser"
 msgstr ""
 
-#: FEditor.class:3154 FHelpBrowser.class:259
+#: CComponent.class:100
+msgid "GNU Scientific Library"
+msgstr ""
+
+#: FHelpBrowser.form:41 FMain.form:485 FProfile.form:56
 msgid "Go back"
-msgstr ""
+msgstr "Vissza"
 
-#: FHelpBrowser.class:266
+#: FHelpBrowser.form:47 FMain.form:492 FProfile.form:62
 msgid "Go forward"
-msgstr ""
+msgstr "Előre"
 
-#: FEditor.class:3136
+#: FEditor.form:92
 msgid "Go to"
 msgstr "Ugrás"
 
-#: FGotoLine.class:52
+#: FGotoLine.form:12
 msgid "Go to line"
 msgstr "Ugrás sorra"
 
-#: FEditor.class:3141 FTextEditor.class:632
+#: FEditor.form:97 FTextEditor.form:73
 msgid "Go to line..."
 msgstr "Ugrás sorra..."
 
-#: FCreateProject.class:392
+#: FCreateProject.form:121
 msgid "Graphical application"
 msgstr ""
 
-#: CComponent.class:126 FPropertyProject.class:2100
+#: CComponent.class:146 FPropertyComponent.form:126
 msgid "Graphical form management"
 msgstr ""
 
@@ -2171,279 +2820,291 @@ msgstr ""
 msgid "Greek (Greece)"
 msgstr "Görög (Görögország)"
 
-#: FMakeInstall.class:737
+#: FMakeInstall.class:814
 msgid "Groups"
 msgstr "Csoportok"
 
-#: FCreateProject.class:434
+#: CComponent.class:112
+msgid "GStreamer multimedia component"
+msgstr ""
+
+#: FCreateProject.form:165
 msgid "GTK+ graphical application"
 msgstr ""
 
-#: CComponent.class:95
+#: CComponent.class:104
 msgid "GTK+ SVG renderer"
 msgstr ""
 
-#: CComponent.class:93
+#: CComponent.class:101
 msgid "GTK+ toolkit"
 msgstr ""
 
-#: CComponent.class:94
+#: CComponent.class:102
 msgid "GTK+ toolkit extension"
 msgstr ""
 
-#: FAbout.class:532
-msgid "<h2 align=center>Authors</h2>\n"
-msgstr "<h2 align=center>Szerzők</h2>\n"
-
-#: FAbout.class:526
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
-msgstr ""
-
-#: FAbout.class:560
-msgid "Hall Of Fame"
-msgstr ""
-
-#: FIconEditor.class:2318
+#: FIconEditor.form:236
 msgid "Hatched flood fill"
 msgstr ""
 
-#: Language.module:52
+#: Language.module:54
 msgid "Hebrew (Israel)"
-msgstr ""
+msgstr "Héber (Izrael)"
 
-#: FCreateFile.class:813
+#: FCreateFile.form:321
 msgid "Height"
 msgstr "Magasság"
 
-#: FOption.class:926 MTheme.module:6
+#: FOption.form:726 MTheme.module:6
 msgid "Help"
 msgstr "Súgó"
 
-#: FMain.class:2190
-msgid "&Help browser"
-msgstr "&Súgó-böngésző"
-
-#: FHelpBrowser.class:233
+#: FHelpBrowser.form:30 FMain.form:1031
 msgid "Help browser"
 msgstr ""
 
-#: FMain.class:2122
+#: FMain.form:476
 msgid "Hide menubar"
 msgstr ""
 
-#: FFormStack.class:293 FMain.class:2740
+#: FFormStack.form:15 FMain.form:1352
 msgid "Hierarchy"
 msgstr "Hierarchia"
 
-#: FOption.class:1049
+#: FOption.form:420
 msgid "Highlight current line"
 msgstr "Az aktív sor kiemelése"
+
+#: FOption.form:441
+msgid "Highlight modified lines"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Highlighting"
 msgstr "Kiemelés"
 
-#: FOption.class:1067
-msgid "Highlight modified lines"
-msgstr ""
-
-#: Language.module:54
+#: Language.module:56
 msgid "Hindi (India)"
-msgstr ""
+msgstr "Hindi (India)"
 
-#: FForm.class:3362
+#: FForm.form:301
 msgid "Horizontal"
 msgstr "Vízszintes"
 
-#: FIconEditor.class:2397
+#: FIconEditor.form:306
 msgid "Horizontal flip"
 msgstr ""
 
-#: FEditor.class:3318 FTextEditor.class:736
+#: FEditor.form:287 FTextEditor.form:207
 msgid "Horizontal split"
 msgstr ""
 
-#: FNewConnection.class:426
+#: FNewConnection.form:90 FProxy.form:32
 msgid "Host"
 msgstr "Gépnév"
 
-#: FMain.class:2280
-msgid "&HTML file..."
-msgstr ""
-
-#: FCreateFile.class:748 FInfo.class:97
+#: FCreateFile.form:255 FInfo.class:106
 msgid "HTML file"
 msgstr ""
 
-#: FCreateFile.class:87
+#: FCreateFile.class:124
 msgid "HTML files"
 msgstr ""
 
-#: MMime.module:16
+#: CComponent.class:137
+msgid "HTML generator"
+msgstr ""
+
+#: MMime.module:18
 msgid "HTML text"
 msgstr ""
 
-#: Language.module:56
+#: FProxy.form:76
+msgid "HTTP proxy"
+msgstr ""
+
+#: FHelpBrowser.form:109
+msgid "http://gambas.sourceforge.net"
+msgstr ""
+
+#: Language.module:58
 msgid "Hungarian (Hungary)"
 msgstr "Magyar (Magyarország)"
 
-#: FOption.class:851
+#: FSearch.form:131
+msgid "I&gnore comments"
+msgstr ""
+
+#: FOption.form:319
 msgid "Icon theme"
 msgstr ""
 
-#: FCreateProject.class:635
-msgid "Identification"
-msgstr "Azonosító"
-
-#: FProperty.class:604
+#: FProperty.class:614
 msgid "If the control is public."
 msgstr ""
 
-#: FProperty.class:600
+#: FProperty.class:610
 msgid "If the form and controls dimensions must follow the size of the default font."
 msgstr ""
 
-#: FNewConnection.class:571
+#: FMenu.class:64
+msgid "Ignore"
+msgstr "Kihagyás"
+
+#: FNewConnection.form:234
 msgid "Ignore database charset"
 msgstr ""
 
-#: MErrorMessage.module:79
-msgid "Illegal instruction"
+#: FImportTable.form:125
+msgid "Ignore first lines"
 msgstr ""
 
-#: FConflict.class:402 FCreateFile.class:708
+#: FOption.form:979
+msgid "Ignore these files in source archives"
+msgstr ""
+
+#: MErrorMessage.module:98
+msgid "Illegal instruction"
+msgstr "Illegális utasítás"
+
+#: Project.module:194
 msgid "Image"
 msgstr "kép"
 
-#: FMain.class:2273
-msgid "&Image..."
-msgstr "&Kép..."
-
-#: FOption.class:914
+#: FOption.form:696
 msgid "Image editor"
 msgstr ""
 
-#: CComponent.class:98
+#: FSelectIcon.class:32
+msgid "Image files"
+msgstr ""
+
+#: CComponent.class:108
 msgid "Image filtering component"
 msgstr ""
 
-#: CComponent.class:100 FPropertyProject.class:2112
+#: CComponent.class:110 FPropertyComponent.form:138
 msgid "Image loading and saving"
 msgstr ""
 
-#: CComponent.class:97
+#: CComponent.class:107
 msgid "Image management"
 msgstr ""
 
-#: FCreateProject.class:593
+#: FCreateProject.form:328
 msgid "Image processing"
 msgstr ""
 
-#: CComponent.class:99
+#: CComponent.class:109
 msgid "Image routines from the Imlib2 library"
 msgstr ""
 
-#: CComponentBox.class:215
+#: CComponentBox.class:250
 msgid "Implements"
 msgstr "Implementálja"
 
-#: FImportTable.class:41 FTranslate.class:1655
+#: FTranslate.form:254
 msgid "Import"
 msgstr "Importálás"
 
-#: FImportTable.class:649
-msgid "&Import"
-msgstr "&Importálás"
-
-#: FTranslate.class:1686
-msgid "&Import..."
-msgstr "&Importálás..."
-
-#: FConnectionEditor.class:1605
-msgid "Import..."
-msgstr "Importálás..."
-
-#: FTranslate.class:1684
+#: FTranslate.form:282
 msgid "Import a translation file"
 msgstr ""
 
-#: FImportTable.class:475
+#: FTranslate.form:277
+msgid "Import all translations  recursively"
+msgstr ""
+
+#: FImportTable.form:37
 msgid "Import file"
 msgstr ""
 
-#: FConnectionEditor.class:1603
+#: FConnectionEditor.form:161
 msgid "Import text file"
 msgstr ""
 
-#: FOption.class:1179
+#: FOption.form:626
 msgid "Import theme"
 msgstr ""
 
-#: Design.module:220 Project.module:1663
-msgid "In class &1 at line &2."
+#: FConnectionEditor.form:163
+msgid "Import..."
+msgstr "Importálás..."
+
+#: FReportCoordChooser.form:21
+msgid "in"
+msgstr "in"
+
+#: Design.module:243 Project.module:2099
+msgid "in &1:&2."
 msgstr ""
 
-#: FMakeInstall.class:861
-msgid "Incorrect characters"
+#: Project.module:2102
+msgid "in &1."
 msgstr ""
 
-#: FProperty.class:426
-msgid "Incorrect property value."
-msgstr "Nem megfelelő tulajdonságérték."
-
-#: FTextEditor.class:841
-msgid "Indent"
-msgstr "Behúzás"
-
-#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:245
-msgid "Index"
-msgstr "Index"
-
-#: FConnectionEditor.class:1733
-msgid "Indexes"
-msgstr ""
-
-#: Language.module:60
-msgid "Indonesian (Indonesia)"
-msgstr "Indonéz (Indonézia)"
-
-#: FConflict.class:437 FInfo.class:273
-msgid "Information"
-msgstr "Információ"
-
-#: CComponent.class:101
-msgid "Information about components"
-msgstr ""
-
-#: Project.module:1659
+#: Project.module:2095
 msgid "in form definition"
 msgstr ""
 
-#: Package.module:732
-msgid "Initializing ~/RPM directory."
-msgstr "~/RPM könyvtár előkészítése."
+#: FMakeInstall.class:932
+msgid "Incorrect characters"
+msgstr ""
 
-#: FMakeInstall.class:425
+#: FProperty.class:429
+msgid "Incorrect property value."
+msgstr "Nem megfelelő tulajdonságérték."
+
+#: FReportCoordChooser.class:22
+msgid "Incorrect value."
+msgstr ""
+
+#: FTextEditor.form:320
+msgid "Indent"
+msgstr "Behúzás"
+
+#: FOption.form:917
+msgid "Indent local variable declaration"
+msgstr ""
+
+#: FConnectionEditor.class:60 FDebugExpr.class:472 FHelpBrowser.form:53
+msgid "Index"
+msgstr "Index"
+
+#: FConnectionEditor.form:277
+msgid "Indexes"
+msgstr ""
+
+#: Language.module:62
+msgid "Indonesian (Indonesia)"
+msgstr "Indonéz (Indonézia)"
+
+#: FConflict.form:154 FInfo.form:30
+msgid "Information"
+msgstr "Információ"
+
+#: FMakeInstall.class:492
 msgid "Initial release"
 msgstr ""
 
-#: FList.class:276 FMenu.class:849 FPropertyProject.class:1971
-msgid "&Insert"
-msgstr "&Beillesztés"
+#: Package.module:867
+msgid "Initializing ~/RPM directory."
+msgstr "~/RPM könyvtár előkészítése."
 
-#: FMakeInstall.class:1209
-msgid "Insert release number in package version"
+#: CInsertColor.class:106 FEditor.form:414 FTextEditor.form:334
+msgid "Insert color"
 msgstr ""
 
-#: FMain.class:1950
-msgid "&Installation package..."
+#: FEditor.form:258 FTextEditor.form:176
+msgid "Insert color..."
 msgstr ""
 
-#: FMakeExecutable.class:24
-msgid "Install in the user component directory"
+#: FMenu.form:80
+msgid "Insert menu"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:86
+#: FConnectionEditor.class:571 MConnection.module:87
 msgid "Integer"
 msgstr "Egész"
 
@@ -2451,79 +3112,95 @@ msgstr "Egész"
 msgid "Integrated Development Environment for Gambas"
 msgstr "Integrált fejlesztési környezet a Gambas-hoz"
 
-#: FOption.class:730
+#: FOption.form:216
 msgid "Interface"
 msgstr "Felület"
 
-#: CComponent.class:71
+#: MErrorMessage.module:99
+msgid "Internal compiler error: Bad stack usage computed!"
+msgstr ""
+
+#: CComponent.class:78
 msgid "Internal native classes"
 msgstr ""
 
-#: FCreateProject.class:551
+#: FCreateProject.form:286
 msgid "Internationalization"
 msgstr ""
 
-#: MErrorMessage.module:80
+#: MErrorMessage.module:100
 msgid "Invalid assignment"
 msgstr ""
 
-#: MErrorMessage.module:81
+#: MErrorMessage.module:101
 msgid "Invalid date"
 msgstr "Érvénytelen dátum"
 
-#: MErrorMessage.module:82
+#: MErrorMessage.module:102
 msgid "Invalid object"
 msgstr ""
 
-#: MErrorMessage.module:83
+#: MErrorMessage.module:103
 msgid "Invalid path"
 msgstr ""
 
-#: Language.module:62
-msgid "Irish (Ireland)"
-msgstr "Ír (Írország)"
-
-#: FImportTable.class:519
-msgid "ISO 8859-1"
-msgstr ""
-
-#: FImportTable.class:519
-msgid "ISO 8859-15"
+#: FReportBrushChooser.form:114
+msgid "Invert gradient"
 msgstr ""
 
 #: Language.module:64
+msgid "Irish (Ireland)"
+msgstr "Ír (Írország)"
+
+#: FImportTable.form:80
+msgid "ISO 8859-1"
+msgstr ""
+
+#: FImportTable.form:80
+msgid "ISO 8859-15"
+msgstr ""
+
+#: Project.module:471
+msgid "It cannot be converted."
+msgstr ""
+
+#: Language.module:66
 msgid "Italian (Italy)"
 msgstr "Olasz (Olaszország)"
 
-#: FOption.class:710
+#: FOption.form:202
 msgid "Italic"
 msgstr "Dőlt"
-
-#: Project.module:383
-msgid "It cannot be converted."
-msgstr ""
 
 #: FList.class:105
 msgid "Item &1"
 msgstr ""
 
-#: Language.module:66
+#: Language.module:68
 msgid "Japanese (Japan)"
 msgstr "Japán (Japán)"
 
-#: FOutput.class:526
+#: FInfo.class:115
+msgid "Javascript file"
+msgstr ""
+
+#: FOutput.form:115
 msgid "Keep above"
 msgstr ""
 
-#: FMakeExecutable.class:118
+#: FMakeExecutable.form:56
 msgid "Keep debugging information in executable"
 msgstr "A hibakeresési információk maradjanak a futtatható programban"
 
-#: FDebugExpr.class:431
+#: FOption.form:959
+msgid "Keep successive void lines"
+msgstr ""
+
+#: FDebugExpr.class:478
 msgid "Key"
 msgstr "Kulcs"
 
-#: FImportTable.class:600
+#: FImportTable.form:172
 msgid "Key field"
 msgstr ""
 
@@ -2531,19 +3208,19 @@ msgstr ""
 msgid "Keywords"
 msgstr "Kulcsszavak"
 
-#: FOption.class:1145
+#: FOption.form:525
 msgid "Keywords in upper case"
 msgstr ""
 
-#: Language.module:68
-msgid "Khmer (Cambodia)"
-msgstr ""
-
 #: Language.module:70
+msgid "Khmer (Cambodia)"
+msgstr "Khmer (Kambodzsa)"
+
+#: Language.module:72
 msgid "Korean (Korea)"
 msgstr ""
 
-#: MErrorMessage.module:84
+#: MErrorMessage.module:104
 msgid "Label '&1' not declared"
 msgstr ""
 
@@ -2551,375 +3228,475 @@ msgstr ""
 msgid "Language"
 msgstr "Nyelv"
 
-#: FForm.class:3285
-msgid "&Last"
-msgstr ""
-
-#: FInfo.class:357
+#: FInfo.form:110
 msgid "Last modified"
-msgstr ""
+msgstr "Utolsó módosítás"
 
-#: FConnectionEditor.class:42
+#: Language.module:74
+msgid "Latin"
+msgstr "Latin"
+
+#: FReportBorderChooser.form:120 FReportPaddingChooser.form:33
+msgid "Left"
+msgstr "Balra"
+
+#: FConnectionEditor.class:44
 msgid "Length"
 msgstr "Hossz"
 
-#: FMakeInstall.class:1293
-msgid "Lesser General Public Licence"
+#: FMakeInstall.form:234 FOption.form:1090
+msgid "Lesser General Public License"
 msgstr ""
 
-#: MErrorMessage.module:85
+#: FPropertyProject.form:574
+msgid "Libraries"
+msgstr "Programkönyvtárak"
+
+#: FPropertyProject.form:171
+msgid "Library"
+msgstr "Programkönyvtár"
+
+#: MErrorMessage.module:105
 msgid "Library name must be a string"
 msgstr ""
 
-#: FMakeInstall.class:1286
-msgid "Licence"
+#: FMain.class:1067 FPropertyComponent.class:229
+msgid "Library properties"
 msgstr ""
 
-#: FOption.class:1038
+#: FMakeInstall.form:228 FOption.form:1084
+msgid "License"
+msgstr ""
+
+#: FOption.form:409
 msgid "Line"
 msgstr "Sor"
 
-#: Project.module:3898
-msgid "Linking a directory is forbidden."
+#: FImportTable.form:135
+msgid "Line(s)"
 msgstr ""
 
-#: FInfo.class:315
+#: FReportBrushChooser.form:47
+msgid "Linear gradient"
+msgstr ""
+
+#: FInfo.class:71
+msgid "Lines of code: &1"
+msgstr ""
+
+#: FInfo.form:71
 msgid "Link to"
 msgstr ""
 
-#: Project.module:1383
+#: Language.module:76
+msgid "Lithuanian (Lithuania)"
+msgstr "Litván (Litvánia)"
+
+#: Project.module:1790
 msgid "Loading &1..."
 msgstr ""
 
-#: CComponent.class:464
+#: CComponent.class:443
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: FDebugInfo.class:990
+#: FDebugInfo.form:68
 msgid "Local variables"
 msgstr ""
 
-#: FForm.class:3493
+#: LibraryItem.class:57
+msgid "Location"
+msgstr "Hely"
+
+#: FForm.form:451
 msgid "Lock form"
 msgstr ""
 
-#: FProperty.class:1164
+#: FProperty.form:56
 msgid "Lock property"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:88
+#: FConnectionEditor.class:571 MConnection.module:89
 msgid "Long"
 msgstr "Hosszú"
 
-#: MErrorMessage.module:86
+#: MErrorMessage.module:106
 msgid "Loop variable already in use"
 msgstr ""
 
-#: MErrorMessage.module:87
+#: MErrorMessage.module:107
 msgid "Loop variable must be local"
 msgstr ""
 
-#: FImportTable.class:532
+#: FEditor.form:217 FTextEditor.form:166
+msgid "Lower case"
+msgstr ""
+
+#: FImportTable.form:92
 msgid "Mac"
 msgstr ""
 
-#: Language.module:74
+#: Language.module:80
 msgid "Macedonian (Republic of Macedonia)"
 msgstr ""
 
-#: FMakeInstall.class:1217
+#: FMakeInstall.form:365
+msgid "Mageia"
+msgstr "Mageia"
+
+#: FMakeInstall.form:148
 msgid "Maintainer information"
 msgstr ""
 
-#: FMain.class:1932
+#: FMain.form:297
 msgid "Make"
 msgstr "Gyártó"
 
-#: FAbout.class:556
-msgid "Make a gift!"
-msgstr "Adakozzon!"
+#: FEditor.form:472
+msgid "Make code pretty"
+msgstr ""
 
-#: FMain.class:2531 FMakeExecutable.class:82
+#: FMain.form:965 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "Futtatható program létrehozása"
 
-#: FMain.class:2539 FMakeInstall.class:1168
+#: FMain.form:973 FMakeInstall.form:103
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2524
+#: FMain.form:958
 msgid "Make source archive"
 msgstr ""
 
-#: Package.module:442
+#: Package.module:583
 msgid "Making build directory."
 msgstr ""
 
-#: Project.module:2243
+#: Project.module:2738
 msgid "Making executable..."
 msgstr "Futtatható program létrehozása..."
 
-#: Language.module:72
+#: Language.module:78
 msgid "Malayalam (India)"
-msgstr ""
+msgstr "Malayalam (India)"
 
-#: FMakeInstall.class:1389
-msgid "Mandriva Linux"
-msgstr ""
+#: FMakeInstall.form:384
+msgid "Mandriva"
+msgstr "Mandriva"
 
-#: MErrorMessage.module:89
+#: MErrorMessage.module:109
 msgid "Mathematic error"
 msgstr ""
 
-#: FMakeInstall.class:93
+#: FMakeInstall.class:108
 msgid "Max. version"
 msgstr ""
 
-#: CComponent.class:76
+#: CComponent.class:82
 msgid "MD5/DES crypting"
 msgstr ""
 
-#: MErrorMessage.module:88
+#: MErrorMessage.module:108
 msgid "ME cannot be used in a static function"
 msgstr ""
 
-#: FForm.class:3557 FMenu.class:49
+#: FForm.form:511 FMenu.form:65
 msgid "Menu editor"
 msgstr "Menüszerkesztő"
 
-#: FForm.class:3435
+#: FForm.form:389
 msgid "Menu editor..."
 msgstr "Menüszerkesztő..."
 
-#: FMakeInstall.class:1495
+#: FMakeInstall.form:466
 msgid "Menu entry"
 msgstr ""
 
-#: FMakeInstall.class:669
+#: FMakeInstall.class:746
 msgid "Menus"
 msgstr ""
 
-#: FImportTable.class:621
+#: FMenu.class:64
+msgid "Menus have been modified!"
+msgstr ""
+
+#: FImportTable.class:70
+msgid "Message"
+msgstr "Üzenet"
+
+#: FImportTable.form:191
 msgid "Messages"
 msgstr "Üzenetek"
 
-#: FOption.class:833
-msgid "Minimize at runtime"
+#: MHelp.module:576
+msgid "Methods"
 msgstr ""
 
-#: FMakeInstall.class:92
+#: FMakeInstall.form:503
+msgid "Mimetypes"
+msgstr "MIME-típusok"
+
+#: FMakeInstall.class:107
 msgid "Min. version"
 msgstr ""
 
-#: Project.module:150
+#: FOption.form:298
+msgid "Minimize at runtime"
+msgstr ""
+
+#: Project.module:195
 msgid "Miscellaneous"
 msgstr "Egyéb"
 
-#: MErrorMessage.module:90
+#: MErrorMessage.module:111
 msgid "Missing &1"
 msgstr ""
 
-#: Project.module:4555
+#: MErrorMessage.module:110
+msgid "Missing #Endif"
+msgstr ""
+
+#: MErrorMessage.module:112
+msgid "Missing operator"
+msgstr ""
+
+#: MErrorMessage.module:113
+msgid "Missing right brace"
+msgstr ""
+
+#: FReportCoordChooser.form:21
+msgid "mm"
+msgstr "mm"
+
+#: FMenu.class:947 Project.module:5117
 msgid "modified"
 msgstr "megváltozott"
 
-#: FHelpBrowser.class:333
+#: FHelpBrowser.form:123
 msgid "Modify documentation..."
 msgstr ""
 
-#: FCreateFile.class:608 FInfo.class:80
+#: FCreateFile.form:108
 msgid "Module"
 msgstr "Modul"
 
-#: FMain.class:2230
-msgid "&Module..."
-msgstr "&Modul..."
-
-#: FInfo.class:67
-msgid "Modules"
-msgstr "Modulok"
-
-#: FPropertyProject.class:1710
+#: FPropertyProject.form:295
 msgid "Module symbols are public by default"
 msgstr ""
 
-#: CComponent.class:90
+#: FInfo.class:68
+msgid "Modules"
+msgstr "Modulok"
+
+#: CComponent.class:96
 msgid "More controls for graphical components"
 msgstr ""
 
-#: FFormStack.class:332
+#: FFormStack.form:50
 msgid "Move bottom"
 msgstr ""
 
-#: FFormStack.class:325
+#: FFormStack.form:44 FMenu.form:147
 msgid "Move down"
 msgstr "Lefelé"
 
-#: FForm.class:3259
+#: FForm.form:161
 msgid "Move tab"
 msgstr ""
 
-#: FForm.class:3674
+#: FForm.form:637
 msgid "Move tab first"
 msgstr ""
 
-#: FForm.class:3695
+#: FForm.form:658
 msgid "Move tab last"
 msgstr ""
 
-#: FForm.class:3681
+#: FForm.form:644
 msgid "Move tab left"
 msgstr ""
 
-#: FForm.class:3688
+#: FForm.form:651
 msgid "Move tab right"
 msgstr ""
 
-#: FFormStack.class:311
+#: FFormStack.form:32
 msgid "Move top"
 msgstr ""
 
-#: FFormStack.class:318
+#: FFormStack.form:38 FMenu.form:141
 msgid "Move up"
 msgstr "Felfelé"
 
-#: CComponent.class:92
+#: CComponent.class:98
 msgid "Multi Document Interface"
 msgstr ""
 
-#: FNewConnection.class:417
+#: Project.module:202
+msgid "Multimedia"
+msgstr "Multimédia"
+
+#: FNewConnection.form:81
 msgid "MySQL"
 msgstr ""
 
-#: CComponent.class:80
+#: CComponent.class:86
 msgid "MySQL database driver"
 msgstr ""
 
-#: CComponent.class:103
+#: CComponent.class:113
 msgid "MySQL specific routines"
 msgstr ""
 
-#: FDebugInfo.class:29 FNewConnection.class:394 FNewTable.class:112
+#: FOption.form:1036
 msgid "Name"
 msgstr "Név"
 
-#: FDebugInfo.class:115
+#: FDebugInfo.class:150
 msgid "native code"
 msgstr "gépi kód"
 
-#: CComponent.class:105
+#: CComponent.class:114
+msgid "NCurses library"
+msgstr ""
+
+#: CComponent.class:116
 msgid "Network high-level protocols management"
 msgstr ""
 
-#: CComponent.class:104 Project.module:151
-msgid "Networking"
-msgstr ""
-
-#: FCreateProject.class:563
+#: CComponent.class:115 FCreateProject.form:298
 msgid "Network programming"
 msgstr ""
 
-#: FCreateFile.class:582 FMain.class:2216
+#: Project.module:196
+msgid "Networking"
+msgstr ""
+
+#: FCreateFile.form:79 FMain.form:558
 msgid "New"
 msgstr "Új"
 
-#: FTranslate.class:1708
-msgid "&New..."
-msgstr "Ú&j..."
-
-#: MErrorMessage.module:91
+#: MErrorMessage.module:114
 msgid "NEW cannot have arguments passed by reference"
 msgstr ""
 
-#: FMain.class:2396
-msgid "&New connection..."
+#: FSnippet.class:69
+msgid "New code snippet"
 msgstr ""
 
-#: FNewConnection.class:139
+#: FNewConnection.class:141
 msgid "New connection"
 msgstr ""
 
-#: FCreateFile.class:567
+#: FCreateFile.form:66
 msgid "New file"
 msgstr ""
 
-#: FMain.class:673
+#: FMain.class:746
 msgid "New folder"
 msgstr "Új mappa"
 
-#: FConnectionEditor.class:1751
+#: FConnectionEditor.form:294
 msgid "New index"
 msgstr ""
 
-#: FMain.class:1847
-msgid "&New project..."
-msgstr "Ú&j projekt..."
-
-#: FCreateProject.class:336 FMain.class:2453
+#: FCreateProject.form:65 FMain.form:879
 msgid "New project"
 msgstr "Új projekt"
 
-#: FWelcome.class:46
+#: FSaveProjectAs.form:38
+msgid "New project name"
+msgstr ""
+
+#: FSaveProjectAs.form:27
+msgid "New project parent directory"
+msgstr ""
+
+#: FWelcome.class:49
 msgid "New project..."
 msgstr "Új projekt..."
 
-#: FConnectionEditor.class:1581 FNewTable.class:98
+#: FConnectionEditor.form:123 FNewTable.form:19
 msgid "New table"
 msgstr ""
 
-#: FNewTranslation.class:59 FTranslate.class:1707
+#: FNewTranslation.form:10 FTranslate.form:297
 msgid "New translation"
 msgstr ""
 
-#: FForm.class:3278 FMenu.class:843 FTips.class:226
-msgid "&Next"
-msgstr "&Következő"
+#: FMenu.form:89
+msgid "Next menu"
+msgstr ""
 
-#: FOption.class:804 FPropertyProject.class:1717
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:301
 msgid "No"
 msgstr "Nem"
 
-#: MHelp.module:267
+#: FDebugExpr.form:48
+msgid "No element"
+msgstr ""
+
+#: MHelp.module:282
 msgid "No help found."
 msgstr ""
 
-#: MErrorMessage.module:92
-msgid "No instanciation method"
+#: MErrorMessage.module:115
+msgid "No instantiation method"
 msgstr ""
 
-#: Project.module:3558
-msgid "Non-ASCII characters are forbidden in a project name."
-msgstr ""
-
-#: FOption.class:1038 FProperty.class:743
-msgid "None"
-msgstr "Nincs"
-
-#: FMakeInstall.class:1293
-msgid "Non-free Licence"
-msgstr ""
-
-#: MErrorMessage.module:96
-msgid "Non terminated string"
-msgstr ""
-
-#: FCreateFile.class:113
-msgid "(No parent)"
-msgstr ""
-
-#: MErrorMessage.module:93
+#: MErrorMessage.module:116
 msgid "No parent class"
 msgstr ""
 
-#: FImportTable.class:404
+#: FProxy.form:76
+msgid "No proxy"
+msgstr ""
+
+#: FImportTable.class:424
 msgid "No record imported."
 msgstr ""
 
-#: MErrorMessage.module:94
+#: MErrorMessage.module:117
 msgid "No return value"
 msgstr ""
 
-#: FOption.class:748
+#: FEditor.form:280 FTextEditor.form:200
+msgid "No split"
+msgstr ""
+
+#: MErrorMessage.module:118
+msgid "No startup method"
+msgstr ""
+
+#: Design.module:854
+msgid "No terminal emulator found."
+msgstr ""
+
+#: FTranslate.class:954
+msgid "No translation were picked up."
+msgstr ""
+
+#: FHelpBrowser.form:97
+msgid "No zoom"
+msgstr ""
+
+#: MErrorMessage.module:119
+msgid "Non terminated string"
+msgstr ""
+
+#: Project.module:4129
+msgid "Non-ASCII characters are forbidden in a project name."
+msgstr ""
+
+#: FMakeInstall.form:234 FOption.form:1090
+msgid "Non-free License"
+msgstr ""
+
+#: FOption.form:409 FProperty.class:749
+msgid "None"
+msgstr "Nincs"
+
+#: FOption.form:232 FPropertyProject.form:171
 msgid "Normal"
 msgstr "Normál"
 
@@ -2927,83 +3704,63 @@ msgstr "Normál"
 msgid "Normal text"
 msgstr "Egyszerű szöveg"
 
-#: Language.module:79
+#: Language.module:85
 msgid "Norwegian (Norway)"
 msgstr "Norvég (Norvégia)"
 
-#: FEditor.class:3311 FTextEditor.class:729
-msgid "No split"
-msgstr ""
-
-#: MErrorMessage.module:95
-msgid "No startup method"
-msgstr ""
-
-#: MErrorMessage.module:97
+#: MErrorMessage.module:120
 msgid "Not a directory: &1"
 msgstr ""
 
-#: MErrorMessage.module:98
+#: MErrorMessage.module:121
 msgid "Not a function"
 msgstr ""
 
-#: MErrorMessage.module:99
+#: MErrorMessage.module:122
 msgid "Not an array"
 msgstr ""
 
-#: MErrorMessage.module:100
+#: MErrorMessage.module:123
 msgid "Not an enumeration"
 msgstr ""
 
-#: MErrorMessage.module:101
+#: MErrorMessage.module:124
 msgid "Not an object"
 msgstr ""
 
 #: FDebugExpr.class:4
 msgid "not available"
-msgstr ""
+msgstr "nem érhető el"
 
-#: MErrorMessage.module:103
-msgid "Not enough arguments"
-msgstr ""
-
-#: MErrorMessage.module:104
-msgid "Not enough arguments to &1()"
-msgstr ""
-
-#: MErrorMessage.module:102
+#: MErrorMessage.module:125
 msgid "Not enough argument to New()"
 msgstr ""
 
-#: FImportTable.class:374
+#: MErrorMessage.module:126
+msgid "Not enough arguments"
+msgstr ""
+
+#: MErrorMessage.module:127
+msgid "Not enough arguments to &1()"
+msgstr ""
+
+#: FImportTable.class:389
 msgid "Not enough values"
 msgstr ""
 
-#: Design.module:806
-msgid "No terminal emulator found."
-msgstr ""
-
-#: CComponentBox.class:94 FPropertyProject.class:1893
+#: CComponentBox.class:223 FPropertyComponent.form:73
 msgid "Not finished but stable"
 msgstr ""
 
-#: Project.module:1833
-msgid "Nothing to do."
-msgstr "Nincs tennivaló."
-
-#: FTranslate.class:933
-msgid "No translation were picked up."
-msgstr ""
-
-#: FPropertyProject.class:108
+#: FPropertyProject.class:115
 msgid "Not translatable"
 msgstr ""
 
-#: FHelpBrowser.class:314
-msgid "No zoom"
-msgstr ""
+#: Project.module:2277
+msgid "Nothing to do."
+msgstr "Nincs tennivaló."
 
-#: MErrorMessage.module:105
+#: MErrorMessage.module:128
 msgid "Null object"
 msgstr ""
 
@@ -3015,103 +3772,107 @@ msgstr "Számok"
 msgid "Obsidian"
 msgstr ""
 
-#: FNewConnection.class:417
+#: FNewConnection.form:81
 msgid "ODBC"
 msgstr ""
 
-#: CComponent.class:81
+#: CComponent.class:87
 msgid "ODBC database driver"
 msgstr ""
 
-#: FText.class:101
+#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "OK"
 
-#: FCreateProject.class:700
-msgid "Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
-msgstr ""
-
-#: FImportTable.class:406
+#: FImportTable.class:426
 msgid "One record imported."
 msgstr ""
 
-#: FTranslate.class:935
+#: FTranslate.class:956
 msgid "One translation was picked up."
 msgstr ""
 
-#: FIconEditor.class:2373
+#: FIconEditor.form:285
 msgid "Opaque"
 msgstr "Nem áttetsző"
 
-#: FConflict.class:254 FOpenProject.class:374 Project.module:351
+#: FConflict.form:47 FOpenProject.form:42
 msgid "Open"
 msgstr "Megnyitás"
 
-#: FMain.class:2404
-msgid "&Open"
-msgstr "Megny&itás"
-
-#: Project.module:362
-msgid "Open after all"
-msgstr "Mégis nyissa ki"
-
-#: FMain.class:2156
-msgid "&Open a terminal..."
-msgstr ""
-
-#: FForm.class:3236
-msgid "Open code"
-msgstr ""
-
-#: FMain.class:1867
+#: FMain.form:232
 msgid "Open &example"
 msgstr "&Példa megnyitása"
 
-#: FEditor.class:3161
-msgid "Open form"
-msgstr ""
-
-#: Project.module:152
-msgid "OpenGL"
-msgstr "OpenGL"
-
-#: CComponent.class:129 FPropertyProject.class:2118
-msgid "OpenGL display"
-msgstr ""
-
-#: FCreateProject.class:587
-msgid "OpenGL programming"
-msgstr ""
-
-#: CComponent.class:114
-msgid "OpenGL with QT4 toolkit"
-msgstr ""
-
-#: FCreateProject.class:663 FOpenProject.class:445
-msgid "Open in another window"
-msgstr ""
-
-#: CComponent.class:102
-msgid "OpenLDAP client"
-msgstr ""
-
-#: FMain.class:1854
-msgid "&Open project..."
-msgstr "Projekt &megnyitása"
-
-#: FMain.class:2460
-msgid "Open project"
-msgstr "Projekt megnyitása"
-
-#: FWelcome.class:48
-msgid "Open project..."
-msgstr "Projekt megnyitása..."
-
-#: FMain.class:1860
+#: FMain.form:225
 msgid "Open &recent"
 msgstr "Újabb &keletű projekt betöltése"
 
-#: FMakeInstall.class:1409
+#: FMain.form:1139
+msgid "Open a terminal"
+msgstr ""
+
+#: Project.module:445
+msgid "Open after all"
+msgstr "Mégis nyissa ki"
+
+#: FForm.form:137 FTextEditor.form:79
+msgid "Open code"
+msgstr ""
+
+#: FEditor.form:110
+msgid "Open form"
+msgstr ""
+
+#: FCreateProject.form:419 FOpenProject.form:166
+msgid "Open in another window"
+msgstr ""
+
+#: FMain.form:886
+msgid "Open project"
+msgstr "Projekt megnyitása"
+
+#: FWelcome.class:50
+msgid "Open project..."
+msgstr "Projekt megnyitása..."
+
+#: Project.module:197
+msgid "OpenGL"
+msgstr "OpenGL"
+
+#: CComponent.class:149 FPropertyComponent.form:144
+msgid "OpenGL display"
+msgstr ""
+
+#: FCreateProject.form:322
+msgid "OpenGL programming"
+msgstr ""
+
+#: CComponent.class:120
+msgid "OpenGL shaders management"
+msgstr ""
+
+#: CComponent.class:119
+msgid "OpenGL utility component"
+msgstr ""
+
+#: CComponent.class:103
+msgid "OpenGL with GTK+ toolkit"
+msgstr ""
+
+#: CComponent.class:106
+msgid "OpenGL with QT/GTK+ switcher component"
+msgstr ""
+
+#: CComponent.class:127
+msgid "OpenGL with QT4 toolkit"
+msgstr ""
+
+#: CComponent.class:111
+msgid "OpenLDAP client"
+msgstr ""
+
+#: FMakeInstall.form:403
 msgid "OpenSUSE"
 msgstr ""
 
@@ -3119,179 +3880,199 @@ msgstr ""
 msgid "Operators"
 msgstr "Operátorok"
 
-#: FOption.class:1020 FPropertyProject.class:1663
+#: FPropertyComponent.form:56 FPropertyProject.form:243 FSearch.form:100
 msgid "Options"
 msgstr "Beállítások"
 
-#: FMain.class:2295
-msgid "&Other..."
-msgstr "&Egyéb..."
-
-#: FMakeInstall.class:1293
-msgid "Other Licence(s)"
+#: FTextEditor.class:701
+msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr ""
 
-#: MErrorMessage.module:106
+#: FMakeInstall.form:234 FOption.form:1090
+msgid "Other License(s)"
+msgstr ""
+
+#: MErrorMessage.module:129
 msgid "Out of bounds"
 msgstr ""
 
-#: MErrorMessage.module:107
+#: MErrorMessage.module:130
 msgid "Out of memory"
-msgstr ""
+msgstr "Nincs több memória"
 
-#: MErrorMessage.module:108
+#: MErrorMessage.module:131
 msgid "Out of range"
 msgstr ""
 
-#: Design.module:779
+#: Design.module:827
 msgid "Output terminal"
 msgstr ""
 
-#: MErrorMessage.module:109
+#: MErrorMessage.module:132
 msgid "Overflow"
-msgstr ""
+msgstr "Túlcsordulás"
 
-#: FMakeInstall.class:91
+#: FMakeInstall.class:106
 msgid "Package"
 msgstr "Csomag"
 
-#: FMakeInstall.class:1474
+#: FMakeInstall.form:446
 msgid "Package group"
 msgstr ""
 
-#: FMakeInstall.class:1181
+#: FMakeInstall.form:117
 msgid "Package information"
 msgstr ""
 
-#: FMakeInstall.class:1187
+#: FMakeInstall.form:123
 msgid "Package name"
 msgstr ""
 
-#: FCreateFile.class:868
+#: FOption.form:1019
+msgid "Packaging"
+msgstr ""
+
+#: FCreateFile.form:376
 msgid "Parent class"
 msgstr ""
 
-#: FCommit.class:351 FNewConnection.class:477
+#: FCommit.form:184 FNewConnection.form:147 FProxy.form:47
 msgid "Password"
 msgstr "Jelszó"
 
-#: FImageEditor.class:95 FOutput.class:487 FTextEditor.class:674
+#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:120
 msgid "Paste"
 msgstr "Beillesztés"
 
-#: FList.class:316 FMain.class:2339
-msgid "&Paste"
-msgstr "B&eillesztés"
-
-#: FEditor.class:3364 FPasteSpecial.class:243
+#: FEditor.form:339 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3359 FPasteSpecial.class:258
+#: FEditor.form:334 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.class:3354 FPasteSpecial.class:253
+#: FEditor.form:329 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr ""
 
-#: FPasteSpecial.class:237
+#: FPasteSpecial.form:35
 msgid "Paste normally"
 msgstr ""
 
-#: FPasteSpecial.class:221
+#: FEditor.form:405 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr ""
 
-#: FEditor.class:3239
+#: FEditor.form:251
 msgid "Paste special..."
 msgstr ""
 
-#: FPasteSpecial.class:248
+#: FConnectionEditor.form:153 FPasteTable.form:22
+msgid "Paste table"
+msgstr ""
+
+#: FPasteSpecial.form:46
 msgid "Paste with PRINT"
 msgstr ""
 
-#: FNewConnection.class:442
+#: FConnectionEditor.form:155
+msgid "Paste..."
+msgstr ""
+
+#: FNewConnection.form:115
 msgid "Path"
 msgstr "Elérési út"
 
-#: FMain.class:2611
+#: FMain.form:1060
 msgid "Pause"
 msgstr "Szünet"
 
-#: FMain.class:2004
-msgid "&Pause"
-msgstr "&Szünet"
-
-#: CComponent.class:110
+#: CComponent.class:123
 msgid "PDF renderer based on Poppler library"
 msgstr ""
 
-#: CComponent.class:109
+#: CComponent.class:122
 msgid "Perl-compatible Regular Expression Matching"
 msgstr ""
 
-#: FIconEditor.class:2455
+#: FIconEditor.form:358
 msgid "Pick a color"
 msgstr ""
 
-#: FInfo.class:92
+#: FInfo.class:101
 msgid "Picture"
 msgstr "Kép"
 
-#: FCreateFile.class:87 FSelectIcon.class:27
+#: FCreateFile.class:124
 msgid "Picture files"
 msgstr "Képfájlok"
 
-#: MMime.module:15
+#: MMime.module:17
 msgid "Plain text"
 msgstr "Egyszerű szöveg"
 
-#: FMakeInstall.class:361
+#: FMakeInstall.class:416
 msgid "Please choose a menu location."
 msgstr ""
 
-#: FMakeInstall.class:350
+#: FMakeInstall.class:404
 msgid "Please choose a package group."
 msgstr ""
 
-#: FMakeInstall.class:326
+#: FMakeInstall.class:440
+msgid "Please choose a target directory for each extra file."
+msgstr ""
+
+#: FMakeInstall.class:374
 msgid "Please choose at least one target distribution."
 msgstr ""
 
-#: FMakeInstall.class:359
+#: FMakeInstall.class:414
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:348
+#: FMakeInstall.class:402
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 
-#: FMenu.class:276
+#: FSystemInfo.form:45
+msgid "Please copy these informations in all your bug reports."
+msgstr ""
+
+#: FMenu.class:300
 msgid "Please enter a menu name."
 msgstr "Legyen szíves, adja meg a menü nevét."
 
-#: FConnectionEditor.class:633
+#: FConnectionEditor.class:675
 msgid "Please enter a number."
 msgstr ""
 
-#: FNewConnection.class:125
+#: FPasteTable.class:57
+msgid "Please enter a table name."
+msgstr ""
+
+#: FSnippet.class:25
+msgid "Please enter a trigger string."
+msgstr ""
+
+#: FNewConnection.class:127
 msgid "Please enter password"
 msgstr ""
 
-#: FMakeInstall.class:1302
+#: FMakeInstall.form:244
 msgid "Please enter the changes of your project."
 msgstr ""
 
-#: FMakeInstall.class:316
+#: FMakeInstall.class:363
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Legyen szíves, adja be az első CHANGELOG-bejegyzést."
 
-#: FCreateProject.class:226
+#: FCreateProject.class:230
 msgid "Please enter the location of the repository."
 msgstr ""
 
-#: FNewConnection.class:84
+#: FNewConnection.class:86
 msgid "Please enter the name of the database."
 msgstr ""
 
@@ -3299,192 +4080,208 @@ msgstr ""
 msgid "Please enter the name of the new table."
 msgstr ""
 
-#: FCommit.class:43
+#: FCommit.class:44
 msgid "Please enter the versioning user name"
 msgstr ""
 
-#: FMakeInstall.class:298
+#: FMakeInstall.class:344
 msgid "Please enter your e-mail address."
 msgstr "Legyen szíves, adja be az e-mail címét."
 
-#: FMakeInstall.class:293
+#: FMakeInstall.class:339
 msgid "Please enter your name."
 msgstr "Legyen szíves, adja be a nevét."
 
-#: Project.module:3137
+#: FTranslate.class:916
+msgid "Please select the translation file to import."
+msgstr ""
+
+#: Project.module:3693
 msgid "Please type a name."
 msgstr "Legyen szíves, adjon meg egy nevet."
 
-#: Project.module:3547
+#: Project.module:4118
 msgid "Please type a project name."
 msgstr "Legyen szíves, adja meg a projekt nevét."
 
-#: FCreateFile.class:838
+#: FCreateFile.form:346
 msgid "PNG"
-msgstr ""
+msgstr "PNG"
 
-#: Language.module:83
+#: Language.module:89
 msgid "Polish (Poland)"
 msgstr "Lengyel (Lengyelország)"
 
-#: Language.module:86
+#: FProxy.form:37
+msgid "Port"
+msgstr "Port"
+
+#: Language.module:92
 msgid "Portuguese (Brazil)"
 msgstr "Portugál (Brazília)"
 
-#: Language.module:85
+#: Language.module:91
 msgid "Portuguese (Portugal)"
 msgstr "Portugál (Portugália)"
 
-#: FNewConnection.class:417
+#: FNewConnection.form:81
 msgid "PostgreSQL"
 msgstr ""
 
-#: CComponent.class:82
+#: CComponent.class:88
 msgid "PostgreSQL database driver"
 msgstr ""
 
-#: FMain.class:2496 FOption.class:682
+#: FMain.form:930 FOption.form:175
 msgid "Preferences"
 msgstr "Beállítások"
 
-#: FMain.class:2178
-msgid "&Preferences..."
-msgstr "Beá&llítások..."
-
-#: FMakeInstall.class:1204
+#: FMakeInstall.form:140 FOption.form:1118
 msgid "Prefix package name with the vendor name"
 msgstr ""
 
-#: FImportTable.class:612
+#: MTheme.module:6
+msgid "Preprocessor"
+msgstr ""
+
+#: FImportTable.form:183
 msgid "Preview"
 msgstr "Előnézet"
 
-#: FForm.class:3271 FTips.class:220
-msgid "&Previous"
-msgstr "&Előző"
-
-#: FCommit.class:291
+#: FCommit.form:140
 msgid "Previous description"
 msgstr ""
 
-#: FHelpBrowser.class:326
+#: FHelpBrowser.form:116
 msgid "Print"
 msgstr "Nyomtatás"
 
-#: Project.module:153
+#: Project.module:198
 msgid "Printing"
 msgstr "Nyomtatás"
 
-#: FEditor.class:3520
-msgid "Procedure list"
-msgstr ""
-
-#: FOption.class:1030
-msgid "Procedure separation"
-msgstr ""
-
-#: FMain.class:2551 FSelectIcon.class:214 Project.module:1264
-msgid "Project"
-msgstr "Projekt"
-
-#: FMain.class:1902
-msgid "&Project"
-msgstr "&Projekt"
-
-#: FMain.class:2080
+#: FMain.form:440
 msgid "Pro&ject"
 msgstr "&Projekt"
 
-#: FCreateProject.class:123
+#: FEditor.form:541 FTextEditor.form:400
+msgid "Procedure list"
+msgstr ""
+
+#: FOption.form:403
+msgid "Procedure separation"
+msgstr ""
+
+#: Project.module:1626
+msgid "Project"
+msgstr "Projekt"
+
+#: FCreateProject.class:125
 msgid "Project checkout has failed."
 msgstr ""
 
-#: FCommit.class:181
+#: Project.module:5270
+msgid "Project cleanup..."
+msgstr ""
+
+#: FCommit.form:38
 msgid "Project commit"
 msgstr ""
 
-#: FCreateProject.class:615
-msgid "Project directory"
+#: Project.module:5276
+msgid "Project files conversion..."
 msgstr ""
 
-#: FPropertyProject.class:1233
+#: FPropertyProject.class:832
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FCreateProject.class:624
+#: FCreateProject.form:358
 msgid "Project information"
 msgstr ""
 
-#: FPropertyProject.class:1771
+#: FPropertyProject.form:337
 msgid "Project is translatable"
 msgstr "A projekt lefordítható"
 
-#: FMain.class:2481 FPropertyProject.class:52
+#: FCreateProject.form:368
+msgid "Project name"
+msgstr ""
+
+#: FCreateProject.form:350
+msgid "Project parent directory"
+msgstr ""
+
+#: FMain.form:909 FPropertyProject.form:108
 msgid "Project properties"
 msgstr "Projekt tulajdonságai"
 
-#: FTranslate.class:1478
+#: FCreateProject.form:403
+msgid "Project title"
+msgstr ""
+
+#: FTranslate.form:51
 msgid "Project translation"
 msgstr ""
 
-#: FCreateProject.class:352
+#: FCreateProject.form:80 FPropertyProject.form:164
 msgid "Project type"
 msgstr ""
 
-#: FMain.class:2721 FProperty.class:1138
+#: FMain.form:1331 FProperty.form:24 MHelp.module:574
 msgid "Properties"
 msgstr "Tulajdonságok"
 
-#: FMain.class:2089
-msgid "&Properties"
-msgstr "&Tulajdonságok"
-
-#: FMain.class:1983
-msgid "&Properties..."
-msgstr "&Tulajdonságok..."
-
-#: FMain.class:2561
+#: FMain.form:995
 msgid "Properties sheet"
 msgstr "Tulajdonság-lap"
 
-#: CComponentBox.class:228
+#: CComponentBox.class:263 LibraryItem.class:61
 msgid "Provides"
 msgstr ""
 
-#: FMakeInstall.class:1293
+#: FProxy.form:20
+msgid "Proxy configuration"
+msgstr ""
+
+#: FOption.form:811
+msgid "Proxy configuration..."
+msgstr ""
+
+#: FMakeInstall.form:234 FOption.form:1090
 msgid "Public Domain"
 msgstr ""
 
-#: Language.module:81
+#: Language.module:87
 msgid "Punjabi (India)"
-msgstr ""
+msgstr "Pandzsábi (India)"
 
-#: FMain.class:1973
+#: FMain.form:338
 msgid "Put on &version control"
 msgstr ""
 
-#: FCreateFile.class:843
+#: FCreateFile.form:351 FReportCoordChooser.form:21
 msgid "px"
 msgstr " képpont"
 
-#: CComponent.class:111
-msgid "QT4 toolkit"
-msgstr ""
-
-#: CComponent.class:112
-msgid "QT4 toolkit extension"
-msgstr ""
-
-#: CComponent.class:113
-msgid "QT4 WebKit component"
-msgstr ""
-
-#: FCreateProject.class:413
+#: FCreateProject.form:143
 msgid "QT graphical application"
 msgstr ""
 
-#: CComponent.class:96
+#: CComponent.class:105
 msgid "QT/GTK+ switcher component"
+msgstr ""
+
+#: CComponent.class:124
+msgid "QT4 toolkit"
+msgstr ""
+
+#: CComponent.class:125
+msgid "QT4 toolkit extension"
+msgstr ""
+
+#: CComponent.class:126
+msgid "QT4 WebKit component"
 msgstr ""
 
 #: FOption.class:4
@@ -3495,139 +4292,135 @@ msgstr ""
 msgid "Quick"
 msgstr "Gyors"
 
-#: FOption.class:815
+#: FOption.form:712
 msgid "Quiet external commands"
 msgstr ""
 
-#: FSave.class:30 FWelcome.class:54
+#: FMakeInstall.class:302 FSave.class:30 FWelcome.class:53
 msgid "Quit"
 msgstr "Kilépés"
 
-#: FMain.class:1895
-msgid "&Quit"
-msgstr "&Kilépés"
+#: FReportBrushChooser.form:47
+msgid "Radial gradient"
+msgstr ""
 
-#: MErrorMessage.module:110
+#: FReportBrushChooser.form:130
+msgid "Radius"
+msgstr "Sugár"
+
+#: FOption.form:864
+msgid "Re&set"
+msgstr "Alapállap&otba"
+
+#: MErrorMessage.module:133
 msgid "Read error"
 msgstr "Olvasási hiba"
 
-#: Project.module:1228
+#: Project.module:1523
 msgid "read-only"
 msgstr "csak olvasható"
 
-#: FOpenProject.class:413
+#: FOpenProject.form:88
 msgid "Recent"
 msgstr "Legutóbbi"
 
-#: FWelcome.class:50
+#: FWelcome.class:51
 msgid "Recent projects"
 msgstr "Újabb keletű projektek"
 
-#: FIconEditor.class:2288
+#: FIconEditor.form:209
 msgid "Rectangle"
 msgstr "Téglalap"
 
-#: FOutput.class:462 FTextEditor.class:649
+#: FTextEditor.form:96
 msgid "Redo"
 msgstr "Ismétlés"
 
-#: FMain.class:1967
-msgid "&Refresh"
-msgstr "&Frissítés"
-
-#: FMain.class:2489
+#: FMain.form:923
 msgid "Refresh project"
 msgstr ""
 
-#: FCreateProject.class:575
+#: FSearch.form:116
+msgid "Regular e&xpression"
+msgstr "Re&guláris kifejezésként"
+
+#: FCreateProject.form:310
 msgid "Regular expressions"
 msgstr ""
 
-#: FTextEditor.class:462 FTranslate.class:711
+#: FTextEditor.form:226 FTranslate.class:730
 msgid "Reload"
 msgstr "Újratöltés"
 
-#: FTranslate.class:1715
-msgid "&Reload"
-msgstr "Új&ratöltés"
-
-#: FTranslate.class:1714
+#: FTranslate.form:305
 msgid "Reload translation"
 msgstr "Fordítás újratöltése"
 
-#: FCommit.class:365 FNewConnection.class:499
+#: FCommit.form:197 FNewConnection.form:167
 msgid "Remember password"
 msgstr "A jelszó megjegyzése"
 
-#: FConnectionEditor.class:1399 FMakeInstall.class:933
+#: FConnectionEditor.form:131 FMakeInstall.class:1005
 msgid "Remove"
 msgstr "Eltávolítás"
 
-#: FPropertyProject.class:1977
-msgid "&Remove"
-msgstr "&Eltávolítás"
-
-#: FDebugInfo.class:1089
+#: FDebugInfo.form:135
 msgid "Remove all"
 msgstr "Minden eltávolítása"
 
-#: FPropertyProject.class:2171
+#: FPropertyComponent.form:196
 msgid "Remove All"
 msgstr "Minden eltávolítása"
 
-#: FDebugInfo.class:1121
+#: FDebugInfo.form:183
 msgid "Remove all breakpoints"
 msgstr ""
 
-#: FDebugInfo.class:1087
+#: FDebugInfo.form:133
 msgid "Remove all expressions"
 msgstr ""
 
-#: FDebugInfo.class:1113
+#: FDebugInfo.form:175
 msgid "Remove current breakpoint"
 msgstr ""
 
-#: FDebugInfo.class:1079
+#: FDebugInfo.form:125
 msgid "Remove current expression"
 msgstr ""
 
-#: FMain.class:2346
-msgid "&Rename..."
-msgstr "Át&nevezés..."
+#: FReportBrushChooser.form:102
+msgid "Remove gradient stop"
+msgstr ""
 
-#: FConnectionEditor.class:1597
-msgid "Rename..."
-msgstr "Átnevezés..."
+#: FOption.form:938
+msgid "Remove useless spaces at end of line"
+msgstr ""
 
-#: FConnectionEditor.class:1595 FNewTable.class:30
+#: FConnectionEditor.form:137 FNewTable.class:30
 msgid "Rename table"
 msgstr ""
 
-#: FFind.class:114
+#: FConnectionEditor.form:139
+msgid "Rename..."
+msgstr "Átnevezés..."
+
+#: FSearch.form:76
 msgid "Replace"
 msgstr "Csere"
 
-#: FEditor.class:3283 FTextEditor.class:701
-msgid "Replace..."
+#: FSearch.form:217
+msgid "Replace &all"
 msgstr ""
 
-#: FFind.class:750
-msgid "Replace all"
-msgstr ""
-
-#: FIconEditor.class:2388
+#: FIconEditor.form:298
 msgid "Replace color"
 msgstr ""
 
-#: CModule.class:30 FCreateFile.class:688
+#: CModule.class:30 FCreateFile.form:192
 msgid "Report"
 msgstr ""
 
-#: FMain.class:2262
-msgid "&Report..."
-msgstr ""
-
-#: CComponent.class:115
+#: CComponent.class:128
 msgid "Report designer"
 msgstr ""
 
@@ -3635,367 +4428,415 @@ msgstr ""
 msgid "Reports"
 msgstr ""
 
-#: FCreateProject.class:675
+#: FCreateProject.form:431
 msgid "Repository"
 msgstr "Adattár"
 
-#: CComponentBox.class:207 FPropertyProject.class:2080
+#: CComponentBox.class:242 FPropertyComponent.form:106 LibraryItem.class:63
 msgid "Requires"
 msgstr ""
 
-#: FPropertyProject.class:1931
-msgid "&Reset"
-msgstr "&Alapállapotba"
+#: FDebugInfo.form:230 FOption.class:927
+msgid "Reset"
+msgstr "Alapállapot"
 
-#: FConflict.class:420
+#: FMain.form:1250
+msgid "Reset filter"
+msgstr ""
+
+#: FConflict.form:138
 msgid "Resolve conflict with"
 msgstr ""
 
-#: FMakeInstall.class:260
-msgid "Retry"
-msgstr "Újra"
-
-#: MErrorMessage.module:111
+#: MErrorMessage.module:134
 msgid "Return value datatype not specified in function declaration"
 msgstr ""
 
-#: FPropertyProject.class:2069
-msgid "&Revert..."
-msgstr ""
+#: FReportBorderChooser.form:125 FReportPaddingChooser.form:43
+msgid "Right"
+msgstr "Jobbra"
 
-#: FIconEditor.class:2415
+#: Language.module:96
+msgid "Romanian (Romania)"
+msgstr "Román (Románia)"
+
+#: FIconEditor.form:322
 msgid "Rotate clockwise"
 msgstr ""
 
-#: FIconEditor.class:2424
+#: FIconEditor.form:330
 msgid "Rotate counter-clockwise"
 msgstr ""
 
-#: FForm.class:3369
+#: FForm.form:308
 msgid "Rows"
 msgstr "Sorok"
-
-#: Package.module:1058
-msgid "'rpmbuild' has returned the following error code:"
-msgstr ""
 
 #: FOption.class:4
 msgid "Ruby"
 msgstr "-"
 
-#: FMain.class:2604
+#: FMain.form:1053
 msgid "Run"
 msgstr "Futtatás"
 
-#: FMain.class:1994
-msgid "&Run"
-msgstr "&Futtatás"
-
-#: FConnectionEditor.class:1810
-msgid "Run query"
-msgstr ""
-
-#: FMakeExecutable.class:102
-msgid "Run this command after"
-msgstr ""
-
-#: FMain.class:2039
-msgid "Run &until"
-msgstr ""
-
-#: FEditor.class:3177
+#: FEditor.form:191
 msgid "Run &until current line"
 msgstr "Futtatás eddig a &sorig"
 
-#: FMain.class:2647
+#: FConnectionEditor.form:352
+msgid "Run query"
+msgstr "Lekérdezés futtatása"
+
+#: FMakeExecutable.form:39
+msgid "Run this command after"
+msgstr ""
+
+#: FMain.form:1096
 msgid "Run until current line"
 msgstr "Futtatás az aktív sorig"
 
-#: Language.module:90
+#: Language.module:98
 msgid "Russian (Russia)"
 msgstr "Orosz (Oroszország)"
 
-#: FMakeInstall.class:1532
-msgid "Same dependencies for all targets"
-msgstr ""
-
-#: FMakeInstall.class:1592
-msgid "Same files for all targets"
-msgstr ""
-
-#: FForm.class:3628
-msgid "Same height"
-msgstr ""
-
-#: FForm.class:3425
+#: FForm.form:379
 msgid "Same &height"
 msgstr "Azonos &magasság"
 
-#: FForm.class:3621
-msgid "Same width"
-msgstr ""
-
-#: FForm.class:3419
+#: FForm.form:373
 msgid "Same &width"
 msgstr "Azonos &szélesség"
+
+#: FMakeInstall.form:543
+msgid "Same dependencies for all targets"
+msgstr ""
+
+#: FMakeInstall.form:603
+msgid "Same files for all targets"
+msgstr ""
+
+#: FForm.form:580
+msgid "Same height"
+msgstr ""
+
+#: FForm.form:573
+msgid "Same width"
+msgstr ""
 
 #: FOption.class:4
 msgid "Sapphire"
 msgstr ""
 
-#: FIconEditor.class:1412 FImageEditor.class:60 FTextEditor.class:755
+#: FTextEditor.form:232
 msgid "Save"
 msgstr "Mentés"
 
-#: FConflict.class:455
-msgid "&Save"
-msgstr "Men&tés"
-
-#: FSave.class:132
+#: FSave.form:42
 msgid "Save &All"
 msgstr "Minden m&entése"
 
-#: FSave.class:104
+#: FSave.form:14
 msgid "Save modified files"
 msgstr "Megváltozott fájlok mentése"
 
-#: FMain.class:1878
-msgid "&Save project"
-msgstr ""
-
-#: FMain.class:2467
+#: FMain.form:895
 msgid "Save project"
 msgstr "Projekt mentése"
 
-#: FMain.class:2474 Project.module:1966
-msgid "Save project as"
-msgstr ""
-
-#: FMain.class:1885
+#: FMain.form:250
 msgid "Save project &as..."
 msgstr ""
 
-#: FTranslate.class:1552
+#: FMain.form:902 FSaveProjectAs.form:18
+msgid "Save project as"
+msgstr ""
+
+#: FTranslate.form:101
 msgid "Save translation"
 msgstr ""
 
-#: Package.module:156
+#: Package.module:168
 msgid "Saving CHANGELOG file."
 msgstr "CHANGELOG fájl mentése."
 
-#: FIconEditor.class:2243
+#: FIconEditor.form:169
 msgid "Scroll"
 msgstr "Görgetés"
 
-#: FCreateProject.class:476
+#: FCreateProject.form:209
 msgid "SDL application"
 msgstr ""
 
-#: CComponent.class:116
+#: CComponent.class:129
 msgid "SDL library"
 msgstr ""
 
-#: CComponent.class:117
+#: CComponent.class:130
 msgid "SDL sound & CD-ROM management"
 msgstr ""
 
-#: FFind.class:817
-msgid "Search in comments"
+#: FMain.form:1022 FSearch.form:62
+msgid "Search"
+msgstr "Keresés"
+
+#: FSearch.form:43
+msgid "Search & Replace"
+msgstr "Keresés és csere"
+
+#: FDebugInfo.form:223
+msgid "Search again"
 msgstr ""
 
-#: FFind.class:772
-msgid "Search in file"
+#: FSearch.form:146
+msgid "Search in"
 msgstr ""
 
-#: FFind.class:762
-msgid "Search in procedure"
-msgstr ""
-
-#: FFind.class:783
-msgid "Search in project"
-msgstr ""
-
-#: FFind.class:826
-msgid "Search in strings"
-msgstr ""
-
-#: FFind.class:727
+#: FDebugInfo.form:205
 msgid "Search list"
 msgstr ""
 
-#: FFind.class:395 FFindList.class:273 FOutput.class:309 FTranslate.class:578
+#: FDebugInfo.form:279 FSearch.class:467 FTranslate.class:597
 msgid "Search string cannot be found."
 msgstr "A keresett szöveg nem található."
 
-#: FFind.class:399
+#: FSearch.class:471
 msgid "Search string replaced &1 times."
 msgstr "A keresett szöveg &1 helyen lett cserélve."
 
-#: FFind.class:397
+#: FSearch.class:469
 msgid "Search string replaced once."
 msgstr "A keresett szöveg egy helyen lett cserélve."
 
-#: Project.module:1649
+#: FOutput.form:151
+msgid "Search..."
+msgstr "Keresés…"
+
+#: Design.module:153 Project.module:2038
 msgid "second"
 msgstr ""
 
-#: FForm.class:3219 FIconEditor.class:2258
+#: FForm.form:120 FIconEditor.form:182
 msgid "Select"
 msgstr "Kiválasztás"
 
-#: FColorChooser.class:157
-msgid "Select a color"
-msgstr "Válasszon ki egy színt"
-
-#: FNewConnection.class:158
-msgid "Select a directory"
-msgstr ""
-
-#: FFontChooser.class:57
-msgid "Select a font"
-msgstr "Válasszon ki egy betűtípust"
-
-#: FForm.class:3296
-msgid "Select all"
-msgstr "Mindent kijelöl"
-
-#: FEditor.class:3249 FTextEditor.class:685
+#: FEditor.form:166 FTextEditor.form:130
 msgid "Select &All"
 msgstr "&Mindent kijelöl"
 
-#: FSelectExtraFile.class:50
-msgid "Select an extra file"
+#: FColorChooser.form:14
+msgid "Select a color"
+msgstr "Válasszon ki egy színt"
+
+#: FReportCoordChooser.form:12
+msgid "Select a dimension"
 msgstr ""
 
-#: FSelectIcon.class:201
+#: FNewConnection.class:160
+msgid "Select a directory"
+msgstr ""
+
+#: FFieldChooser.class:72
+msgid "Select a field"
+msgstr ""
+
+#: FProperty.class:949
+msgid "Select a file"
+msgstr ""
+
+#: FFontChooser.form:12
+msgid "Select a font"
+msgstr "Válasszon ki egy betűtípust"
+
+#: FPropertyProject.class:1087
+msgid "Select a Gambas application"
+msgstr ""
+
+#: FSelectIcon.form:18
 msgid "Select a picture"
 msgstr "Válasszon ki egy képet"
 
-#: FOpenProject.class:360
+#: FOpenProject.form:29
 msgid "Select a project"
 msgstr "Válasszon ki egy projektet"
 
-#: FOption.class:57
+#: FOption.class:72
 msgid "Select a theme"
 msgstr ""
 
-#: FOption.class:279
+#: FOption.class:334
 msgid "Select a theme file"
+msgstr ""
+
+#: FForm.form:198
+msgid "Select all"
+msgstr "Mindent kijelöl"
+
+#: FSelectExtraFile.form:12
+msgid "Select an extra file"
+msgstr ""
+
+#: FReportBrushChooser.form:62
+msgid "Select an image inside the project"
+msgstr ""
+
+#: FReportBrushChooser.form:108
+msgid "Select gradient stop color..."
+msgstr ""
+
+#: FConnectionEditor.class:1423
+msgid "Select the CSV file to import"
+msgstr ""
+
+#: FMakeInstall.class:1162
+msgid "Select the destination directory"
 msgstr ""
 
 #: MTheme.module:6
 msgid "Selection"
 msgstr "Kijelölés"
 
-#: FConnectionEditor.class:1376
-msgid "Select the CSV file to import"
-msgstr ""
+#: FProfile.class:570
+msgid "Self"
+msgstr "Saját maga"
 
-#: FMakeInstall.class:982
-msgid "Select the destination directory"
-msgstr ""
-
-#: FForm.class:3352
+#: FForm.form:291
 msgid "Send to background"
 msgstr "Háttérbe helyezés"
 
-#: Language.module:96
+#: Language.module:104
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "Szerb (Szerbia és Montenegro)"
 
-#: FConnectionEditor.class:530 MConnection.module:98
+#: FConnectionEditor.class:571 MConnection.module:99
 msgid "Serial"
 msgstr "soros"
 
-#: FCreateProject.class:569
+#: MErrorMessage.module:137
+msgid "Serialization error"
+msgstr ""
+
+#: FCreateProject.form:304
 msgid "Settings files management"
 msgstr ""
 
-#: FMenu.class:1010
+#: FMenu.form:261
 msgid "SHIFT"
 msgstr "SHIFT"
 
-#: FMain.class:2505
+#: FMain.form:939
 msgid "Shortcuts"
 msgstr "Billentyűparancsok"
 
-#: FMain.class:2172
-msgid "&Shortcuts..."
+#: FMain.form:1262
+msgid "Show added files"
 msgstr ""
 
-#: FPropertyProject.class:1907
+#: FDebugExpr.form:31
+msgid "Show all symbols"
+msgstr ""
+
+#: FProfile.form:75
+msgid "Show average"
+msgstr ""
+
+#: FPropertyProject.form:518
 msgid "Show components in beta version"
 msgstr "Béta-verziójú komponensek megmutatása"
 
-#: FOption.class:977
+#: FOption.form:778
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FHelpBrowser.class:288
+#: FMain.form:1256
+msgid "Show exported classes"
+msgstr ""
+
+#: FHelpBrowser.form:74
 msgid "Show help tree"
 msgstr ""
 
-#: FDebugExpr.class:774
-msgid "Show hidden symbols"
-msgstr ""
-
-#: FOption.class:1085
+#: FOption.form:462
 msgid "Show line numbers"
-msgstr ""
+msgstr "Sorszámok megjelenítése"
 
-#: FMain.class:2670
-msgid "Show menu bar"
-msgstr ""
-
-#: FPropertyProject.class:1901
+#: FPropertyProject.form:512
 msgid "Show only components used in project"
 msgstr "Csak a projektben használt komponensek megmutatása"
 
-#: FForm.class:3251
+#: FProfile.form:68
+msgid "Show relative durations"
+msgstr ""
+
+#: FDebugInfo.form:237
+msgid "Show search window"
+msgstr ""
+
+#: FOption.form:483
+msgid "Show spaces at end of line with dots"
+msgstr ""
+
+#: FConnectionEditor.form:115
+msgid "Show system tables"
+msgstr ""
+
+#: FForm.form:153
 msgid "Show tab"
 msgstr ""
 
-#: FTips.class:215
+#: FTips.form:67
 msgid "Show tips on startup"
 msgstr "Tippek mutatása a program indításakor"
 
-#: FOption.class:959
+#: FOption.form:757
 msgid "Show tooltips"
 msgstr "Eszköz-tippek megmutatása"
 
-#: Language.module:108
+#: CComponent.class:132
+msgid "Signals management"
+msgstr ""
+
+#: Language.module:116
 msgid "Simplified chinese (China)"
 msgstr "Egyszerűsített kínai (Kína)"
 
-#: FInfo.class:343 FSelectIcon.class:235 FTranslate.class:69
+#: FInfo.form:97 FSelectIcon.form:53 FTranslate.class:69
 msgid "Size"
 msgstr "Méret"
 
-#: FMakeInstall.class:1429
+#: FMakeInstall.form:422
 msgid "Slackware"
-msgstr ""
+msgstr "Slackware"
 
-#: Language.module:92
+#: Language.module:100
 msgid "Slovenian (Slovenia)"
 msgstr "Szlovén (Szlovénia)"
 
-#: FOption.class:748
+#: FOption.form:232
 msgid "Small"
 msgstr "Kicsi"
 
-#: CComponent.class:106
+#: FOption.form:243
+msgid "Small font size"
+msgstr ""
+
+#: CComponent.class:117
 msgid "SMTP client"
 msgstr ""
 
-#: FPropertyProject.class:258
+#: FPropertyProject.class:273
 msgid "Snapping value is incorrect."
 msgstr "A rácshoz illesztés paramétere nem jó."
 
-#: FConflict.class:461
+#: FProxy.form:76
+msgid "SOCKS5 proxy"
+msgstr ""
+
+#: FConflict.form:178
 msgid "Sol&ve"
 msgstr ""
 
-#: Project.module:2591
+#: Project.module:3162
 msgid "Some components are missing: &1"
 msgstr "Néhány komponens hiányzik: &1"
 
@@ -4003,67 +4844,67 @@ msgstr "Néhány komponens hiányzik: &1"
 msgid "Some conflicts are not yet resolved."
 msgstr ""
 
-#: FCommit.class:219
+#: FCommit.form:76
 msgid "Some files are not versioned and should be added manually to the repository."
 msgstr ""
 
-#: Project.module:1817
+#: Project.module:2257
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr ""
 
-#: FMain.class:459
-msgid "&Sort by path"
+#: FMain.class:566 FOpenProject.form:112 FWelcome.form:35
+msgid "Sort by date"
 msgstr ""
 
-#: FOpenProject.class:421 FWelcome.class:529
+#: FMain.class:566 FOpenProject.form:121 FWelcome.form:42
+msgid "Sort by name"
+msgstr ""
+
+#: FMain.class:566 FOpenProject.form:129 FWelcome.form:48
 msgid "Sort by path"
 msgstr ""
 
-#: FDebugInfo.class:999
-msgid "Sort local variables"
+#: FMain.class:562
+msgid "Sort history"
 msgstr ""
 
-#: FDebugInfo.class:1029
-msgid "Sort object variables"
+#: FEditor.form:270
+msgid "Sort procedures..."
 msgstr ""
 
-#: FOption.class:797
+#: FOption.form:277
 msgid "Sort properties"
 msgstr ""
 
-#: Project.module:154
+#: Project.module:199
 msgid "Sound"
 msgstr "Hang"
 
-#: FImportTable.class:494
+#: FImportTable.form:56 FPasteTable.form:40
 msgid "Source"
 msgstr "Forrás"
 
-#: FMain.class:1943
-msgid "&Source archive..."
+#: FOption.form:973
+msgid "Source Archives"
 msgstr ""
 
-#: Project.module:3618
+#: Project.module:4195
 msgid "Source packages"
 msgstr "Forráscsomagok"
 
-#: Project.module:1267
+#: CProjectTree.class:293 Project.module:1629
 msgid "Sources"
 msgstr "Források"
 
-#: Package.module:493
+#: Package.module:612
 msgid "Sources are being debianizated."
 msgstr ""
 
-#: FImportTable.class:544
+#: FExportData.form:37 FImportTable.form:103
 msgid "Space"
 msgstr "Űr"
 
-#: FOption.class:1134
-msgid "spaces"
-msgstr ""
-
-#: FPropertyProject.class:1691
+#: FOption.form:392 FPropertyProject.form:276
 msgid "space(s)"
 msgstr ""
 
@@ -4075,99 +4916,95 @@ msgstr "Spanyol (Argentína)"
 msgid "Spanish (Spain)"
 msgstr "Spanyol (Spanyolország)"
 
-#: FNewConnection.class:417
-msgid "SQLite"
-msgstr ""
-
-#: CComponent.class:83
-msgid "SQLite 2 database driver"
-msgstr ""
-
-#: CComponent.class:84
-msgid "SQLite 3 database driver"
-msgstr ""
-
-#: FConnectionEditor.class:1611
+#: FConnectionEditor.form:169
 msgid "SQL request"
 msgstr ""
 
-#: FDebugInfo.class:1161
-msgid "Stack backtrace"
+#: FNewConnection.form:81
+msgid "SQLite"
 msgstr ""
 
-#: MErrorMessage.module:114
-msgid "Stack overflow"
-msgstr "Veremtúlcsordulás"
-
-#: FPropertyProject.class:359
-msgid "Standard components"
+#: CComponent.class:89
+msgid "SQLite 2 database driver"
 msgstr ""
 
-#: FEditor.class:3168 FForm.class:3243 FMain.class:2372
-msgid "&Startup class"
-msgstr "&Induló osztály"
-
-#: FDebugInfo.class:866
-msgid "Static variables"
+#: CComponent.class:90
+msgid "SQLite 3 database driver"
 msgstr ""
 
-#: FTranslate.class:1642
-msgid "Statistics"
-msgstr "Statisztika"
-
-#: FMain.class:2115
-msgid "Status bar"
-msgstr ""
-
-#: FMain.class:2625
-msgid "Step"
-msgstr "Lépés"
-
-#: FMain.class:2018
+#: FMain.form:402
 msgid "St&ep"
 msgstr ""
 
-#: FSelectIcon.class:222
+#: FDebugInfo.form:313
+msgid "Stack backtrace"
+msgstr ""
+
+#: MErrorMessage.module:138
+msgid "Stack overflow"
+msgstr "Veremtúlcsordulás"
+
+#: FDebugInfo.class:944
+msgid "Static variables"
+msgstr ""
+
+#: FTranslate.form:240
+msgid "Statistics"
+msgstr "Statisztika"
+
+#: FMain.form:468
+msgid "Status bar"
+msgstr ""
+
+#: FMain.form:1074
+msgid "Step"
+msgstr "Lépés"
+
+#: FSelectIcon.form:40
 msgid "Stock"
 msgstr ""
 
-#: FMain.class:2618
+#: FMain.form:1067
 msgid "Stop"
 msgstr "Megállítás"
 
-#: FMain.class:2011
-msgid "&Stop"
-msgstr "&Megállítás"
-
-#: MErrorMessage.module:112
+#: MErrorMessage.module:135
 msgid "STOP instruction encountered"
 msgstr ""
 
-#: MErrorMessage.module:115
+#: MErrorMessage.module:139
 msgid "Stream is closed"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:96
+#: FConnectionEditor.class:571 MConnection.module:97
 msgid "String"
 msgstr "Sztring"
+
+#: MErrorMessage.module:140
+msgid "String expected"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Strings"
 msgstr "Sztringek"
 
-#: FImportTable.class:562
+#: FImportTable.form:120
 msgid "Strip useless white spaces"
 msgstr ""
 
-#: FMain.class:2287
-msgid "&Style sheet..."
+#: MErrorMessage.module:141
+msgid "Structures must be public"
 msgstr ""
 
-#: FCreateFile.class:768
+#: FOption.form:560
+msgid "Style"
+msgstr "Stílus"
+
+#: FCreateFile.form:276
 msgid "Style sheet"
 msgstr "Stíluslap"
 
-#: MErrorMessage.module:116
+#: MErrorMessage.module:142
 msgid "Subroutine arguments cannot be passed by reference"
 msgstr ""
 
@@ -4175,201 +5012,233 @@ msgstr ""
 msgid "Subroutines"
 msgstr "Szubrutinok"
 
-#: MErrorMessage.module:113
+#: MErrorMessage.module:136
 msgid "SUPER cannot be used alone"
 msgstr ""
 
-#: FIconEditor.class:2446
+#: FSelectIcon.class:30
+msgid "SVG image files"
+msgstr ""
+
+#: FIconEditor.form:350
 msgid "Swap colors"
 msgstr "Színek cseréje"
 
-#: Language.module:98
+#: Language.module:106
 msgid "Swedish (Sweden)"
 msgstr "Svéd (Svédország)"
 
-#: FDebugExpr.class:437
+#: FDebugExpr.class:484
 msgid "Symbol"
 msgstr "Szimbólum"
 
-#: MTheme.module:6
+#: MHelp.module:644 MTheme.module:6
 msgid "Symbols"
 msgstr "Szimbólumok"
 
-#: MErrorMessage.module:117
+#: FReportBorderChooser.form:60 FReportPaddingChooser.form:64
+msgid "Synchronize"
+msgstr "Szinkronizálás"
+
+#: MErrorMessage.module:143
 msgid "Syntax error"
 msgstr "Szintaktikai hiba"
 
-#: MErrorMessage.module:122
-msgid "Syntax error. &1 expected"
-msgstr ""
-
-#: MErrorMessage.module:118
+#: MErrorMessage.module:144
 msgid "Syntax error at function declaration"
 msgstr ""
 
-#: MErrorMessage.module:124
-msgid "Syntax error. Bad property type"
-msgstr ""
-
-#: MErrorMessage.module:127
-msgid "Syntax error. Cannot use this syntax in assignment"
-msgstr ""
-
-#: MErrorMessage.module:125
-msgid "Syntax error. CASE or DEFAULT expected after SELECT"
-msgstr ""
-
-#: MErrorMessage.module:126
-msgid "Syntax error. CLASS needs an identifier"
-msgstr ""
-
-#: MErrorMessage.module:128
-msgid "Syntax error. Duplicated array declaration"
-msgstr ""
-
-#: MErrorMessage.module:119
+#: MErrorMessage.module:145
 msgid "Syntax error in event name"
 msgstr ""
 
-#: MErrorMessage.module:120
+#: MErrorMessage.module:146
 msgid "Syntax error in file open mode"
 msgstr ""
 
-#: MErrorMessage.module:129
-msgid "Syntax error. INHERITS needs a class name"
-msgstr ""
-
-#: MErrorMessage.module:121
+#: MErrorMessage.module:147
 msgid "Syntax error in return type"
 msgstr ""
 
-#: MErrorMessage.module:130
-msgid "Syntax error. Invalid identifier in function name"
-msgstr ""
-
-#: MErrorMessage.module:131
-msgid "Syntax error. Invalid identifier in property name"
-msgstr ""
-
-#: MErrorMessage.module:132
-msgid "Syntax error. Invalid optional parameter"
-msgstr ""
-
-#: MErrorMessage.module:133
-msgid "Syntax error. Invalid return type"
-msgstr ""
-
-#: MErrorMessage.module:134
-msgid "Syntax error. Invalid type description of &1 argument"
-msgstr ""
-
-#: MErrorMessage.module:135
-msgid "Syntax error. Missing &1"
-msgstr ""
-
-#: MErrorMessage.module:123
+#: MErrorMessage.module:149
 msgid "Syntax error. '...' must be the last argument"
 msgstr ""
 
-#: MErrorMessage.module:136
+#: MErrorMessage.module:148
+msgid "Syntax error. &1 expected"
+msgstr ""
+
+#: MErrorMessage.module:150
+msgid "Syntax error. Bad property type"
+msgstr ""
+
+#: MErrorMessage.module:153
+msgid "Syntax error. Cannot use this syntax in assignment"
+msgstr ""
+
+#: MErrorMessage.module:151
+msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+msgstr ""
+
+#: MErrorMessage.module:152
+msgid "Syntax error. CLASS needs an identifier"
+msgstr ""
+
+#: MErrorMessage.module:155
+msgid "Syntax error. Identifier expected."
+msgstr ""
+
+#: MErrorMessage.module:154
+msgid "Syntax error. INHERITS needs a class name"
+msgstr ""
+
+#: MErrorMessage.module:156
+msgid "Syntax error. Invalid identifier in function name"
+msgstr ""
+
+#: MErrorMessage.module:157
+msgid "Syntax error. Invalid identifier in property name"
+msgstr ""
+
+#: MErrorMessage.module:158
+msgid "Syntax error. Invalid optional parameter"
+msgstr ""
+
+#: MErrorMessage.module:159
+msgid "Syntax error. Invalid return type"
+msgstr ""
+
+#: MErrorMessage.module:160
+msgid "Syntax error. Invalid type description of &1 argument"
+msgstr ""
+
+#: MErrorMessage.module:161
+msgid "Syntax error. Invalid type description of &1 field"
+msgstr ""
+
+#: MErrorMessage.module:162
+msgid "Syntax error. Missing &1"
+msgstr ""
+
+#: MErrorMessage.module:163
 msgid "Syntax error. Needless arguments"
 msgstr ""
 
-#: MErrorMessage.module:137
+#: MErrorMessage.module:164
 msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr ""
 
-#: MErrorMessage.module:138
+#: MErrorMessage.module:165
+msgid "Syntax error. STRUCT needs an identifier"
+msgstr ""
+
+#: MErrorMessage.module:166
 msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr ""
 
-#: MErrorMessage.module:139
+#: MErrorMessage.module:167
+msgid "Syntax error. The &1 field is not a valid identifier"
+msgstr ""
+
+#: MErrorMessage.module:168
 msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr ""
 
-#: CComponent.class:89
+#: CComponent.class:95
 msgid "Syntax highlighter routines"
 msgstr ""
 
-#: FColorChooser.class:170
+#: FColorChooser.form:27
 msgid "System"
 msgstr "Rendszer"
 
-#: MErrorMessage.module:140
+#: MErrorMessage.module:169
 msgid "System error #&1: &2"
 msgstr ""
 
-#: FAbout.class:574
+#: FSystemInfo.form:18
 msgid "System information"
 msgstr ""
 
-#: FImportTable.class:544
+#: FExportData.form:37 FImportTable.form:103
 msgid "Tab"
 msgstr "Tabulátor"
 
-#: FImportTable.class:579 FTableChooser.class:113
-msgid "Table"
-msgstr "Táblázat"
-
-#: FNewTable.class:59 MConnection.module:272
-msgid "Table '&1' already exists."
-msgstr ""
-
-#: FPropertyProject.class:1679
+#: FPropertyProject.form:264
 msgid "Tab size"
 msgstr "Tabulátor-távolság"
 
-#: FForm.class:3669
-msgid "Tabstrip"
+#: FFieldChooser.form:50 FImportTable.form:152 FPasteTable.form:67
+msgid "Table"
+msgstr "Táblázat"
+
+#: FNewTable.class:59 MConnection.module:273
+msgid "Table '&1' already exists."
 msgstr ""
 
-#: FOption.class:759
-msgid "Tabstrip font size"
+#: FPasteTable.class:133
+msgid "Table already exists"
 msgstr ""
 
-#: FMakeInstall.class:1326
+#: FMakeInstall.form:265
 msgid "Target distribution"
 msgstr ""
 
-#: Package.module:1291
-msgid "'tar' has returned the following error code:"
-msgstr ""
-
-#: FOption.class:895
+#: FOption.form:680
 msgid "Terminal"
 msgstr "Terminál"
 
-#: FConflict.class:394 FCreateFile.class:728 FFindList.class:76
+#: FConflict.form:112 FCreateFile.form:234 FDebugInfo.class:70
 msgid "Text"
 msgstr "Szöveg"
 
-#: FImageEditor.class:54 FTextEditor.class:764
+#: FImageEditor.form:48 FTextEditor.form:248
 msgid "Text editor"
 msgstr ""
 
-#: FInfo.class:94
+#: FInfo.class:103
 msgid "Text file"
-msgstr ""
+msgstr "Szövegfájl"
 
-#: FAbout.class:147
+#: FAbout.class:232
 msgid "Thanks to"
 msgstr "Köszönet: "
 
-#: FPropertyProject.class:472
+#: MErrorMessage.module:170
+msgid "The '!' operator must be followed by an identifier"
+msgstr ""
+
+#: MErrorMessage.module:171
+msgid "The '.' operator must be followed by an identifier"
+msgstr ""
+
+#: FTranslate.class:1183
+msgid "The 'msgmerge' command has failed"
+msgstr "A 'msgmerge' program hibát jelzett"
+
+#: FPropertyProject.class:488
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr ""
 
-#: FPropertyProject.class:479
+#: FPropertyProject.class:495
 msgid "The &1 component needs the &2 component."
 msgstr ""
 
-#: Project.module:3086
+#: Project.module:3645
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: FProperty.class:586
+#: FProperty.class:596
 msgid "The event group that the control belongs to."
 msgstr ""
+
+#: FTextEditor.class:701
+msgid "The file has been compressed from &1 to &2 bytes (&3)."
+msgstr ""
+
+#: FEditor.class:2404 FIconEditor.class:2048 FTextEditor.class:506
+msgid "The file has been modified.\n\nAll your changes will be lost."
+msgstr "A fájl megváltozott.\n\nA változtatásai el fognak veszni."
 
 #: FConflict.class:191
 msgid "The file has been modified.\nDo you really want to close the dialog?"
@@ -4379,91 +5248,83 @@ msgstr ""
 msgid "The file has been modified.\nDo you really want to open another file?"
 msgstr ""
 
-#: FEditor.class:2135 FIconEditor.class:2032 FTextEditor.class:462
-msgid "The file has been modified.\n\nAll your changes will be lost."
-msgstr "A fájl megváltozott.\n\nA változtatásai el fognak veszni."
-
-#: FImportTable.class:595
+#: FImportTable.form:167
 msgid "The first line contains field names"
 msgstr ""
 
-#: Project.module:3559
+#: Project.module:4130
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:1066
+#: Project.module:1360
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: FForm.class:2767
+#: FSave.form:55
+msgid "The following files have been modified. Do you want to save them?"
+msgstr ""
+
+#: FMakeInstall.form:531
+msgid "The following will be added to the end of the desktop configuration file."
+msgstr ""
+
+#: FForm.class:3210
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr ""
 
-#: FMain.class:742
+#: FMain.class:817
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr ""
 
-#: FConnectionEditor.class:638
+#: FConnectionEditor.class:680
 msgid "The length must be greater than 1 and lower than 255."
 msgstr ""
 
-#: FOption.class:1156
-msgid "Theme"
-msgstr "Téma"
-
-#: FTranslate.class:1152
-msgid "The 'msgmerge' command has failed"
-msgstr "A 'msgmerge' program hibát jelzett"
-
-#: Project.module:3145
+#: Project.module:3701
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: FProperty.class:575
+#: FProperty.class:585
 msgid "The name of the control."
 msgstr ""
 
-#: MErrorMessage.module:141
-msgid "The '!' operator must be followed by an identifier"
-msgstr ""
-
-#: MErrorMessage.module:142
-msgid "The '.' operator must be followed by an identifier"
-msgstr ""
-
-#: Package.module:412
+#: Package.module:547
 msgid "The package build has failed."
 msgstr "A csomag létrehozása nem sikerült."
 
-#: FMakeInstall.class:387
+#: FMakeInstall.class:454
 msgid "The package cannot be stored inside the project directory."
 msgstr ""
 
-#: FMakeInstall.class:260 Package.module:174
+#: FMakeInstall.class:302 Package.module:186
 msgid "The packages have been successfully created."
 msgstr "A csomag sikeresen létre lett hozva."
 
-#: Design.module:328
+#: Design.module:352
 msgid "The program has returned\nthe value: &1"
 msgstr "A program a következő értéket\n adta vissza: &1"
 
-#: Design.module:324
+#: Design.module:348
 msgid "The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."
 msgstr "A program váratlanul kiszállt a\n#&1 szignállal.\n\nLegyen szíves, küldjön hibajelentést a\ngambas@users.sourceforge.net címre."
 
-#: FCommit.class:61
+#: FCommit.class:62
 msgid "The project could not be committed."
 msgstr ""
 
-#: Project.module:3569
+#: Project.module:4140
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3571
+#: Project.module:4142
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr ""
 
-#: FCreateProject.class:251
+#: FCreateProject.form:390 FSaveProjectAs.form:59
+msgid "The project final directory is :"
+msgstr ""
+
+#: FCreateProject.class:255
 msgid "The project has been successfully created."
 msgstr ""
 
@@ -4471,111 +5332,139 @@ msgstr ""
 msgid "The project is void. There is nothing to translate."
 msgstr "A projekt üres. Nincs lefordítható szöveg."
 
-#: Project.module:3555
+#: Project.module:4126
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: FMakeInstall.class:309
-msgid "There is no CHANGELOG entry for this release."
+#: FCreateProject.form:379 FSaveProjectAs.form:48
+msgid "The project name is the name of the project directory."
 msgstr ""
 
-#: FPropertyProject.class:2054
-msgid "There is no change to commit."
+#: FCreateProject.form:442
+msgid "The project repository is directly sent to the 'svn checkout' command."
 msgstr ""
 
-#: FPropertyProject.class:459
-msgid "These components are incompatible:<br>&1."
+#: FCreateProject.form:414
+msgid "The project title is the true name of the application."
 msgstr ""
 
-#: FSave.class:145
-msgid "These files have been modified.<br>\nDo you want to save them?"
-msgstr ""
-
-#: MErrorMessage.module:143
+#: MErrorMessage.module:172
 msgid "The special method &1 cannot be a function"
 msgstr ""
 
-#: MErrorMessage.module:144
+#: MErrorMessage.module:173
 msgid "The special method &1 cannot be implemented"
 msgstr ""
 
-#: MErrorMessage.module:145
+#: MErrorMessage.module:174
 msgid "The special method &1 cannot be static"
 msgstr ""
 
-#: MErrorMessage.module:146
+#: MErrorMessage.module:175
 msgid "The special method &1 must be a function"
 msgstr ""
 
-#: MErrorMessage.module:147
+#: MErrorMessage.module:176
 msgid "The special method &1 must be public"
 msgstr ""
 
-#: MErrorMessage.module:148
+#: MErrorMessage.module:177
 msgid "The special method &1 must be static"
 msgstr ""
 
-#: MErrorMessage.module:150
-msgid "The special method &1 must take at least one argument"
+#: MErrorMessage.module:178
+msgid "The special method &1 must return a boolean"
 msgstr ""
 
-#: MErrorMessage.module:149
+#: MErrorMessage.module:179
 msgid "The special method &1 must take a variable number of arguments only"
 msgstr ""
 
-#: MErrorMessage.module:151
+#: MErrorMessage.module:180
+msgid "The special method &1 must take at least one argument"
+msgstr ""
+
+#: MErrorMessage.module:181
 msgid "The special method &1 takes no arguments"
 msgstr ""
 
-#: MErrorMessage.module:152
+#: MErrorMessage.module:182
 msgid "The special method must return an integer"
 msgstr ""
 
-#: MErrorMessage.module:153
+#: MErrorMessage.module:183
 msgid "The special method must take exactly one argument"
 msgstr ""
 
-#: MErrorMessage.module:154
+#: MErrorMessage.module:184
 msgid "The special method must take exactly two arguments"
 msgstr ""
 
-#: MErrorMessage.module:155
+#: MErrorMessage.module:185
 msgid "The special method signature is incorrect"
 msgstr ""
 
-#: FConnectionEditor.class:261
+#: FConnectionEditor.class:294
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:1134
+#: FConnectionEditor.class:1176
 msgid "The table '&1' has no primary key."
 msgstr ""
 
-#: Project.module:1651
+#: FOption.form:608
+msgid "Theme"
+msgstr "Téma"
+
+#: FPropertyProject.class:796
+msgid "There is no change to commit."
+msgstr ""
+
+#: FMakeInstall.class:356
+msgid "There is no CHANGELOG entry for this release."
+msgstr ""
+
+#: FPropertyProject.class:475
+msgid "These components are incompatible:<br>&1."
+msgstr ""
+
+#: Design.module:155 Project.module:2040
 msgid "third"
 msgstr ""
 
-#: MHelp.module:542
+#: MHelp.module:605
 msgid "This class can be used like an object by creating an hidden instance on demand.<br>"
 msgstr ""
 
-#: MHelp.module:543
+#: MHelp.module:629
+msgid "This class inherits &1."
+msgstr ""
+
+#: MHelp.module:606
 msgid "This class is creatable.<br>"
 msgstr ""
 
-#: MErrorMessage.module:156
+#: FPropertyComponent.form:84
+msgid "This component is hidden"
+msgstr ""
+
+#: MErrorMessage.module:186
 msgid "This expression cannot be a statement"
 msgstr ""
 
-#: MErrorMessage.module:157
+#: MErrorMessage.module:187
 msgid "This expression cannot be passed by reference"
 msgstr ""
 
-#: FConnectionEditor.class:781
+#: FConnectionEditor.class:825
 msgid "This field is used in an index."
 msgstr ""
 
-#: FInfo.class:236
+#: FExportData.class:126
+msgid "This file already exists.\n\nDo you want to overwrite it?"
+msgstr ""
+
+#: FInfo.class:244
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
@@ -4583,23 +5472,27 @@ msgstr ""
 msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
 msgstr ""
 
-#: FInfo.class:232
+#: FInfo.class:240
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr ""
 
-#: FInfo.class:234
+#: FInfo.class:242
 msgid "This file is not versioned, and must be added to the repository."
 msgstr ""
 
-#: FIconEditor.class:1412
+#: FIconEditor.class:1428
 msgid "This image has been modified.\nDo you want to save it ?"
 msgstr "A kép megváltozott. \nMenti?"
 
-#: Project.module:351
-msgid "This is a Gambas &1 project.\n\nDo you want to open it anyway?"
+#: Project.module:430
+msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr ""
 
-#: Project.module:349
+#: Project.module:433
+msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
+msgstr ""
+
+#: Project.module:427
 msgid "This is not a Gambas project."
 msgstr ""
 
@@ -4607,283 +5500,319 @@ msgstr ""
 msgid "This line and the following will be ignored"
 msgstr ""
 
-#: FMenu.class:559
+#: FMenu.class:572
 msgid "This menu is too deep !"
 msgstr "Ez a menü túl mély!"
 
-#: CRecentFile.class:52
+#: CRecentFile.class:77
 msgid "This month"
 msgstr ""
 
-#: FConnectionEditor.class:702
+#: FConnectionEditor.class:744
 msgid "This name already exists."
 msgstr ""
 
-#: Project.module:3141
+#: Project.module:3697
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: FProperty.class:358
+#: FProperty.class:359
 msgid "This name is already in use."
 msgstr "Ez a név már használatban van."
 
-#: FConnectionEditor.class:608
+#: FConnectionEditor.class:650
 msgid "This name is already in used."
 msgstr ""
 
-#: Project.module:3149
+#: Project.module:3705
 msgid "This name is already used. Choose another one."
 msgstr "Ez a név már használatban van. Válasszon más nevet."
 
-#: CWelcome.class:66
-msgid "This program is published under\nthe GNU General Public Licence."
+#: CWelcome.class:39
+msgid "This program is published under\nthe GNU General Public License."
 msgstr ""
 
-#: Project.module:1972
+#: Project.module:4137
 msgid "This project already exists."
 msgstr "Ez a projekt már létezik."
 
-#: Project.module:334
+#: Project.module:412
 msgid "This project does not exist."
 msgstr ""
 
-#: FPropertyProject.class:1867
-msgid "This project is a component"
-msgstr ""
-
-#: Project.module:383
+#: Project.module:471
 msgid "This project is read-only."
 msgstr "Ez a projekt csak olvasható."
 
-#: Project.module:362
+#: Project.module:445
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr ""
 
-#: FProperty.class:624
+#: FProperty.class:635
 msgid "This property is virtual: it is only implemented in the IDE, and has no existence at runtime."
 msgstr ""
 
-#: FTranslate.class:1564
+#: FTranslate.form:113
 msgid "This string must not be translated"
 msgstr "Ez a szöveg nem lefordítható"
 
-#: CRecentFile.class:50
+#: FSnippet.class:31
+msgid "This trigger string is already in use."
+msgstr ""
+
+#: CRecentFile.class:75
 msgid "This week"
 msgstr ""
 
-#: FOption.class:767
+#: FOption.form:232
 msgid "Tiny"
 msgstr "Nagyon kicsi"
 
-#: FTips.class:47
-msgid "Tip of the day"
-msgstr "A nap tippje"
+#: FTips.class:46
+msgid "Tip of the day #&1"
+msgstr ""
 
-#: FMain.class:2198
-msgid "&Tips of the day"
-msgstr "A nap &tippjei"
-
-#: FTips.class:173
+#: FTips.form:18
 msgid "Tips of the day"
 msgstr "A nap tippjei"
 
-#: FCreateProject.class:651 FPropertyProject.class:1629
+#: FPropertyProject.form:210
 msgid "Title"
 msgstr "Cím"
 
-#: CRecentFile.class:44
+#: FMain.class:1748
+msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
+msgstr ""
+
+#: CRecentFile.class:69 FMain.class:541
 msgid "Today"
 msgstr "Ma"
 
-#: FMenu.class:1095
+#: FMenu.form:324
 msgid "Toggle"
 msgstr "Átváltás"
 
-#: FMain.class:2049
-msgid "&Toggle breakpoint"
-msgstr ""
-
-#: FMain.class:2662
-msgid "Toggle breakpoint"
-msgstr "Töréspont ki/bekapcsolása"
-
-#: FEditor.class:3184
+#: FEditor.form:198
 msgid "Toggle &breakpoint"
 msgstr "&Töréspont ki/bekapcsolása"
 
-#: FForm.class:3564
+#: FEditor.form:480
+msgid "Toggle breakpoint"
+msgstr "Töréspont ki/bekapcsolása"
+
+#: FForm.form:518
 msgid "Toggle grid"
 msgstr ""
 
-#: FMain.class:2445
-msgid "Toolbox"
-msgstr "Eszköztár"
-
-#: FMain.class:2097
-msgid "&Toolbox"
-msgstr "Eszköz&tár"
-
-#: FOption.class:778
-msgid "Toolbox size"
-msgstr ""
-
-#: FMain.class:2135
-msgid "&Tools"
-msgstr "&Eszközök"
-
-#: MErrorMessage.module:158
+#: MErrorMessage.module:188
 msgid "Too many arguments"
 msgstr ""
 
-#: MErrorMessage.module:159
+#: MErrorMessage.module:189
 msgid "Too many arguments to &1()"
 msgstr ""
 
-#: MErrorMessage.module:160
+#: MErrorMessage.module:190
 msgid "Too many array declarations"
 msgstr ""
 
-#: MErrorMessage.module:161
+#: MErrorMessage.module:191
 msgid "Too many constants"
 msgstr ""
 
-#: MErrorMessage.module:162
+#: MErrorMessage.module:192
 msgid "Too many different classes used"
 msgstr ""
 
-#: MErrorMessage.module:163
+#: MErrorMessage.module:193
 msgid "Too many dimensions"
 msgstr ""
 
-#: MErrorMessage.module:164
+#: MErrorMessage.module:194
 msgid "Too many dynamic variables"
 msgstr ""
 
-#: MErrorMessage.module:165
+#: MErrorMessage.module:195
 msgid "Too many events"
 msgstr ""
 
-#: MErrorMessage.module:166
+#: MErrorMessage.module:196
 msgid "Too many expressions in CASE"
 msgstr ""
 
-#: MErrorMessage.module:167
+#: MErrorMessage.module:197
 msgid "Too many external functions"
 msgstr ""
 
-#: MErrorMessage.module:168
+#: MErrorMessage.module:198
 msgid "Too many functions"
 msgstr ""
 
-#: MErrorMessage.module:169
+#: MErrorMessage.module:199
+msgid "Too many imbricated #If...#Endif"
+msgstr ""
+
+#: MErrorMessage.module:200
 msgid "Too many nested control structures."
 msgstr ""
 
-#: MErrorMessage.module:170
+#: MErrorMessage.module:201
+msgid "Too many property synonymous"
+msgstr ""
+
+#: MErrorMessage.module:202
 msgid "Too many simultaneous new strings"
 msgstr ""
 
-#: MErrorMessage.module:171
+#: MErrorMessage.module:203
 msgid "Too many static variables"
 msgstr ""
 
-#: MErrorMessage.module:172
+#: MErrorMessage.module:204
 msgid "Too many unknown symbols"
 msgstr ""
 
-#: FImportTable.class:376
+#: FImportTable.class:391
 msgid "Too many values"
 msgstr ""
 
-#: Language.module:109
+#: FMain.form:1004
+msgid "Toolbox"
+msgstr "Eszköztár"
+
+#: FOption.form:260
+msgid "Toolbox size"
+msgstr ""
+
+#: FReportBorderChooser.form:115 FReportPaddingChooser.form:23
+msgid "Top"
+msgstr "Felül"
+
+#: FReportBorderChooser.form:179
+msgid "TopLeft"
+msgstr ""
+
+#: FReportBorderChooser.form:148
+msgid "TopRight"
+msgstr ""
+
+#: FProfile.class:346
+msgid "Total time &1 μs"
+msgstr ""
+
+#: Language.module:117
 msgid "Traditional chinese (Taiwan)"
 msgstr "Hagyományos kínai (Tajvan)"
 
-#: FMain.class:2516
+#: FMain.form:950
 msgid "Translate"
 msgstr "Lefordítás"
 
-#: FMain.class:1923
-msgid "&Translate..."
-msgstr "&Lefordítás..."
-
-#: FTranslate.class:998
+#: FTranslate.class:1019
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "A lefordított szövegben a jelek nem illenek a lefordítatlanban találhatókhoz."
 
-#: FPropertyProject.class:1760 FTranslate.class:1514
+#: FPropertyProject.form:326 FTranslate.form:64
 msgid "Translation"
 msgstr "Fordítás"
 
-#: FTranslate.class:728
+#: FTranslate.class:153
 msgid "Translation files"
 msgstr "Fordításfájlok"
 
-#: FIconEditor.class:2363
+#: FIconEditor.form:276
 msgid "Transparent"
 msgstr "Áttetsző"
 
-#: Language.module:100
+#: FSnippet.form:26
+msgid "Trigger string"
+msgstr ""
+
+#: Language.module:108
 msgid "Turkish (Turkey)"
 msgstr "Török (Törökország)"
 
-#: CRecentFile.class:48
+#: CRecentFile.class:73
 msgid "Two days ago"
 msgstr ""
 
-#: FInfo.class:329 FNewConnection.class:409 FNewTable.class:128
+#: FInfo.form:84 FNewConnection.form:74 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "Típus"
 
-#: MErrorMessage.module:173
+#: MErrorMessage.module:205
 msgid "Type mismatch"
 msgstr ""
 
-#: FConnectionEditor.class:662
-msgid "Type mismatch."
-msgstr ""
-
-#: MErrorMessage.module:174
+#: MErrorMessage.module:206
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr ""
 
-#: FMakeInstall.class:1449
+#: FConnectionEditor.class:704
+msgid "Type mismatch."
+msgstr ""
+
+#: FMakeInstall.form:441
 msgid "Ubuntu"
 msgstr ""
 
-#: Language.module:102
+#: Language.module:110
 msgid "Ukrainian (Ukrain)"
 msgstr ""
 
-#: FConnectionEditor.class:183
-msgid "Unable to connect to database."
+#: Project.module:548
+msgid "Unable to apply conversion"
 msgstr ""
 
-#: FNewConnection.class:308
+#: FTextEditor.class:707
+msgid "Unable to compress file."
+msgstr ""
+
+#: FConnectionEditor.class:204
+msgid "Unable to connect to database."
+msgstr "Nem sikerült csatlakozni az adatbázishoz."
+
+#: Project.module:5306
+msgid "Unable to convert &1"
+msgstr ""
+
+#: FNewConnection.class:316
 msgid "Unable to create database."
 msgstr ""
 
-#: Project.module:2825
+#: Project.module:3399
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: FNewConnection.class:328
+#: Project.module:492
+msgid "Unable to create temporary directory"
+msgstr ""
+
+#: FNewConnection.class:336
 msgid "Unable to delete database."
 msgstr ""
 
-#: Project.module:2905
-msgid "Unable to install component."
+#: FMain.class:1433
+msgid "Unable to drop file into the project."
 msgstr ""
 
-#: FConnectionEditor.class:370
+#: FExportData.class:113
+msgid "Unable to export data."
+msgstr ""
+
+#: FFieldChooser.class:63
+msgid "Unable to get table fields."
+msgstr ""
+
+#: FConnectionEditor.class:409
 msgid "Unable to load table '&1'."
 msgstr ""
 
-#: FTableChooser.class:56
+#: FFieldChooser.class:56 FTableChooser.class:66
 msgid "Unable to open connection."
 msgstr ""
 
-#: FPasteSpecial.class:67
+#: FPasteSpecial.class:69
 msgid "Unable to paste text."
 msgstr ""
 
@@ -4891,7 +5820,7 @@ msgstr ""
 msgid "Unable to read tip of the day !"
 msgstr "Nem lehet beolvasni a \"nap tippje\" fájlt!"
 
-#: Project.module:3425
+#: Project.module:4002
 msgid "Unable to rename '&1'"
 msgstr "Nem tudom ezt átnevezni: '&1'"
 
@@ -4899,191 +5828,199 @@ msgstr "Nem tudom ezt átnevezni: '&1'"
 msgid "Unable to resolve the conflict."
 msgstr ""
 
-#: FConnectionEditor.class:415
+#: FConnectionEditor.class:459
 msgid "Unable to run query."
 msgstr ""
 
-#: Project.module:1985
+#: FSaveProjectAs.class:49
 msgid "Unable to save the project."
 msgstr ""
 
-#: Project.module:2943
-msgid "Unable to uninstall component."
-msgstr ""
-
-#: Project.module:4635
-msgid "Unable to update all forms."
-msgstr ""
-
-#: FPropertyProject.class:1231
+#: FPropertyProject.class:830
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FEditor.class:3266
+#: FEditor.form:241
 msgid "Uncomment"
 msgstr "Megjegyzés eltávolítása"
 
-#: FOpenProject.class:151
-msgid "Uncompress"
+#: FTextEditor.form:188
+msgid "Uncompress file"
 msgstr ""
 
-#: FOption.class:714
+#: FOption.form:206
 msgid "Underline"
 msgstr "Aláhúzott"
 
-#: FTextEditor.class:642
+#: FOption.form:638 FOutput.form:41 FTextEditor.form:89
 msgid "Undo"
 msgstr "Visszavonás"
 
-#: FList.class:322
-msgid "&Undo"
-msgstr "&Visszavonás"
-
-#: FOutput.class:518
+#: FOutput.form:108
 msgid "Undock console"
 msgstr ""
 
-#: MErrorMessage.module:175
+#: MErrorMessage.module:207
 msgid "Unexpected &1"
 msgstr ""
 
-#: FTextEditor.class:849
+#: MErrorMessage.module:208
+msgid "Unexpected end of line"
+msgstr ""
+
+#: MErrorMessage.module:209
+msgid "Unexpected string"
+msgstr ""
+
+#: FTextEditor.form:327
 msgid "Unindent"
 msgstr "Behúzás visszavonása"
 
-#: FConnectionEditor.class:63
+#: FConnectionEditor.class:65
 msgid "Unique"
-msgstr ""
+msgstr "Egyedülálló"
 
-#: FImportTable.class:532
+#: FImportTable.form:92
 msgid "Unix"
 msgstr ""
 
-#: Language.module:156
+#: Language.module:164
 msgid "Unknown"
 msgstr "Ismeretlen"
 
-#: MErrorMessage.module:176
+#: MErrorMessage.module:210
 msgid "Unknown error"
 msgstr "Ismeretlen hiba"
 
-#: MErrorMessage.module:177
+#: MErrorMessage.module:211
 msgid "Unknown event"
 msgstr ""
 
-#: MErrorMessage.module:178
+#: MErrorMessage.module:212
 msgid "Unknown file extension"
 msgstr ""
 
-#: MMime.module:30
+#: MMime.module:33
 msgid "Unknown format"
 msgstr ""
 
-#: MErrorMessage.module:179
+#: MErrorMessage.module:213
 msgid "Unknown identifier: &1"
 msgstr ""
 
-#: MErrorMessage.module:180
+#: MErrorMessage.module:214
 msgid "Unknown operator"
 msgstr ""
 
-#: MErrorMessage.module:181
+#: MErrorMessage.module:215
 msgid "Unknown symbol '&1' in class '&2'"
 msgstr ""
 
-#: FConnectionEditor.class:447
+#: MErrorMessage.module:216
+msgid "Unknown user or group"
+msgstr ""
+
+#: FConnectionEditor.class:491
 msgid "unlimited"
 msgstr "korlátlan"
 
-#: FForm.class:3302
+#: FForm.form:204
 msgid "Unselect all"
 msgstr ""
 
-#: MErrorMessage.module:182
+#: MErrorMessage.module:217
 msgid "Unsupported string conversion"
 msgstr ""
 
-#: FTranslate.class:51
-msgid "Untranslated"
-msgstr "Lefordítatlan"
-
-#: FConnectionEditor.class:1708
+#: FConnectionEditor.form:252
 msgid "Up"
 msgstr "Fel"
 
-#: FList.class:288 FMakeInstall.class:1570
-msgid "&Up"
-msgstr "&Fel"
-
-#: FMain.class:1212
-msgid "Update"
-msgstr "Frissítés"
-
-#: FPropertyProject.class:2063
-msgid "&Update"
-msgstr "&Frissítés"
-
-#: FMain.class:2163
-msgid "&Update all forms"
+#: FEditor.form:224 FTextEditor.form:159
+msgid "Upper case"
 msgstr ""
 
-#: MMime.module:19
+#: MMime.module:22
 msgid "URI list"
 msgstr ""
 
-#: FText.class:96
+#: FMakeInstall.form:203 FOption.form:1102
+msgid "URL"
+msgstr "Cím"
+
+#: FMain.form:373
+msgid "Use &terminal emulator"
+msgstr ""
+
+#: FText.form:30
 msgid "Use a fixed font"
 msgstr "Fix szélességű betűtípus használata"
 
-#: FPropertyProject.class:1841
+#: FPropertyProject.form:397
 msgid "Use a terminal emulator"
 msgstr ""
 
-#: MErrorMessage.module:183
-msgid "Useless LOCK"
-msgstr ""
-
-#: FCommit.class:335 FNewConnection.class:462
-msgid "User"
-msgstr "Felhasználó"
-
-#: FPropertyProject.class:357
-msgid "User components"
-msgstr ""
-
-#: FOutput.class:615
+#: FOutput.form:165
 msgid "Use system charset"
 msgstr ""
 
-#: FImportTable.class:519
+#: FOption.form:335
+msgid "Use utility windows"
+msgstr ""
+
+#: MErrorMessage.module:218
+msgid "Useless LOCK"
+msgstr ""
+
+#: FCommit.form:169 FNewConnection.form:133 FProxy.form:42
+msgid "User"
+msgstr "Felhasználó"
+
+#: FImportTable.form:80
 msgid "UTF-8"
 msgstr "UTF-8"
 
-#: Language.module:88
+#: FInfo.class:87
+msgid "UTF-8 &1"
+msgstr ""
+
+#: FInfo.class:99
+msgid "UTF-8 Gambas class"
+msgstr ""
+
+#: FInfo.class:95
+msgid "UTF-8 Gambas module"
+msgstr ""
+
+#: Language.module:94
 msgid "Valencian (Valencian Community, Spain)"
 msgstr ""
 
-#: FDebugExpr.class:427 FDebugInfo.class:30 FPropertyProject.class:132
+#: FDebugExpr.class:474 FDebugInfo.class:34 FPropertyProject.class:141
 msgid "Value"
 msgstr "Érték"
 
-#: FPropertyProject.class:131
+#: FPropertyProject.class:138
 msgid "Variable"
 msgstr "Változó"
 
-#: MErrorMessage.module:184
+#: MHelp.module:575
+msgid "Variables"
+msgstr "Változók"
+
+#: MErrorMessage.module:219
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr ""
 
-#: FMakeInstall.class:1259
+#: FMakeInstall.form:188 FOption.form:1052
 msgid "Vendor name"
 msgstr ""
 
-#: FTranslate.class:1576
+#: FTranslate.form:125
 msgid "Verify the translation"
 msgstr "A fordítás ellenőrzése"
 
-#: FPropertyProject.class:1607
+#: FPropertyProject.form:177
 msgid "Version"
 msgstr "Verzió"
 
@@ -5091,43 +6028,39 @@ msgstr "Verzió"
 msgid "Version conflict"
 msgstr ""
 
-#: FInfo.class:397 FPropertyProject.class:2036
+#: FInfo.form:147 FPropertyProject.form:647
 msgid "Versioning"
 msgstr ""
 
-#: FForm.class:3375
+#: FForm.form:314
 msgid "Vertical"
 msgstr "Függőleges"
 
-#: FIconEditor.class:2406
+#: FIconEditor.form:314
 msgid "Vertical flip"
 msgstr ""
 
-#: FEditor.class:3325 FTextEditor.class:743
+#: FEditor.form:294 FTextEditor.form:214
 msgid "Vertical split"
 msgstr ""
 
-#: Project.module:155
+#: Project.module:200
 msgid "Video"
 msgstr "Videó"
 
-#: CComponent.class:119
+#: CComponent.class:133
 msgid "Video capture"
 msgstr ""
 
-#: Language.module:104
+#: Language.module:112
 msgid "Vietnamese (Vietnam)"
-msgstr ""
+msgstr "Vietnami (Vietnam)"
 
-#: FEditor.class:3307 FTextEditor.class:725
+#: FEditor.form:276 FTextEditor.form:196
 msgid "View"
 msgstr "Megtekintés"
 
-#: FMain.class:2076
-msgid "&View"
-msgstr "&Nézet"
-
-#: FMenu.class:1085
+#: FMenu.form:314
 msgid "Visible"
 msgstr "Látható"
 
@@ -5135,55 +6068,47 @@ msgstr "Látható"
 msgid "Visual"
 msgstr "Vizuális"
 
-#: CComponent.class:120
+#: CComponent.class:134
 msgid "Visual Basic compatibility"
 msgstr ""
 
-#: FCreateProject.class:599
+#: FCreateProject.form:334
 msgid "Visual Basic™ conversion help"
 msgstr ""
 
-#: MErrorMessage.module:185
+#: MErrorMessage.module:220
 msgid "Void key"
 msgstr ""
 
-#: Language.module:106
+#: Language.module:114
 msgid "Wallon (Belgium)"
 msgstr "Vallon (Belgium)"
 
-#: FDebugInfo.class:1057
+#: LibraryItem.class:59
+msgid "WARNING! Library not found."
+msgstr ""
+
+#: FDebugInfo.form:104
 msgid "Watch"
 msgstr "Követés"
 
-#: FMain.class:2065
-msgid "&Watch expression"
-msgstr ""
-
-#: FEditor.class:3191
-msgid "&Watch expression..."
-msgstr "&Kifejezés értékének követése..."
-
-#: FMain.class:2655
+#: FEditor.form:488
 msgid "Watch expression"
 msgstr "Kifejezés értékének követése"
 
-#: CComponent.class:124
+#: CComponent.class:140
 msgid "Web applications tools"
 msgstr ""
 
-#: CModule.class:29 FCreateFile.class:668
+#: CModule.class:29 FCreateFile.form:171
 msgid "WebPage"
-msgstr ""
-
-#: FMain.class:2254
-msgid "&WebPage..."
 msgstr ""
 
 #: CModule.class:29
 msgid "WebPages"
 msgstr ""
 
-#: FWelcome.class:482
+#: FWelcome.form:27
 msgid "Welcome to Gambas 3"
 msgstr ""
 
@@ -5195,83 +6120,75 @@ msgstr "Üdvözli a Gambas konzol.\nHa egy kifejezés eredményét akarja látni
 msgid "Welsh (United Kingdom)"
 msgstr "Velszi (Egyesült Királyság)"
 
-#: FCreateFile.class:800
+#: FCreateFile.form:308
 msgid "Width"
 msgstr "Szélesség"
 
-#: FImportTable.class:532
+#: FImportTable.form:92
 msgid "Windows"
 msgstr "Ablakok"
 
-#: FImportTable.class:519
+#: FImportTable.form:80
 msgid "WINDOWS-1252"
 msgstr ""
 
-#: FFind.class:808
-msgid "Word only"
-msgstr ""
-
-#: MErrorMessage.module:186
+#: MErrorMessage.module:221
 msgid "Write error"
 msgstr "Írási hiba"
 
-#: FInfo.class:103
-msgid "XML file"
-msgstr ""
-
-#: CComponent.class:122
-msgid "XML-RPC protocol"
-msgstr ""
-
-#: CComponent.class:121
-msgid "XML tools based on libxml"
-msgstr ""
-
-#: FCreateProject.class:581
+#: FCreateProject.form:316
 msgid "XML / XSLT programming"
 msgstr ""
 
-#: FCreateFile.class:838
+#: FInfo.class:112
+msgid "XML file"
+msgstr ""
+
+#: CComponent.class:136
+msgid "XML tools"
+msgstr ""
+
+#: CComponent.class:135
+msgid "XML tools based on libxml"
+msgstr ""
+
+#: CComponent.class:138
+msgid "XML-RPC protocol"
+msgstr ""
+
+#: FCreateFile.form:346
 msgid "XPM"
 msgstr ""
 
-#: CComponent.class:123
-msgid "XSLT tools based on libxslt"
+#: CComponent.class:139
+msgid "XSLT tools based on libxslt and libxml"
 msgstr ""
 
-#: FOption.class:804 FPropertyProject.class:1717
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:301
 msgid "Yes"
 msgstr "Igen"
 
-#: CRecentFile.class:46
+#: CRecentFile.class:71
 msgid "Yesterday"
 msgstr "Tegnap"
 
-#: FPropertyProject.class:1240
+#: FPropertyProject.class:839
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: Project.module:3105
+#: Project.module:3662
 msgid "You must define a startup class or form!"
 msgstr "Ki kell választani egy indító osztályt vagy űrlapot!"
 
-#: FOption.class:309
+#: FOption.class:357
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FMakeInstall.class:1243
-msgid "Your e-mail address"
-msgstr "Az ön e-mail címe"
-
-#: FMakeInstall.class:1227
-msgid "Your name"
-msgstr "Az ön neve"
-
-#: FHelpBrowser.class:300 FIconEditor.class:2225 FImageEditor.class:124
+#: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:119
 msgid "Zoom in"
 msgstr "Nagyítás"
 
-#: FHelpBrowser.class:307 FIconEditor.class:2234 FImageEditor.class:136
+#: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:131
 msgid "Zoom out"
 msgstr "Kicsinyítés"
 

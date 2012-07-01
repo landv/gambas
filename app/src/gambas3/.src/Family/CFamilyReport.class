@@ -406,9 +406,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
 End
 
-Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
-
-  Dim sImage As String
+Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage As String)
 
   Select hCCtrl.Kind
 
@@ -420,7 +418,7 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
 
   End Select
 
-  Me.DrawIcon(hCont, hCCtrl, sImage)
+  Super.EnterControl(hCont, hCCtrl, sImage)
 
 End
 
