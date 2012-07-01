@@ -102,7 +102,11 @@ llvm::Value* JIT_conv_to_variant(Expression* value, llvm::Value* val, bool on_st
 			
 			if (value->type != T_NULL){
 				addr = builder->CreateGEP(addr, getInteger(TARGET_BITS, 1));
-				if (value->type < T_OBJECT)
+				if (value->type == T_BYTE)
+					builder->CreateStore(builder->CreateZExt(val, llvmType(getInt32Ty)), builder->CreateBitCast(addr, llvmType(getInt32PtrTy)));
+				else if (value->type < T_INTEGER)
+					builder->CreateStore(builder->CreateSExt(val, llvmType(getInt32Ty)), builder->CreateBitCast(addr, llvmType(getInt32PtrTy)));
+				else if (value->type < T_OBJECT)
 					builder->CreateStore(val, builder->CreateBitCast(addr, pointer_t(TYPE_llvm(value->type))));
 				else
 					builder->CreateStore(extract_value(val, 1), builder->CreateBitCast(addr, charPP));

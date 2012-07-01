@@ -32,6 +32,7 @@
 #include "jit.h"
 
 #include "jit_runtime.h"
+#include "jit_gambas_pass.h"
 
 #define class klass
 extern "C" {
@@ -4258,11 +4259,71 @@ llvm::Value* CheckStringExpression::codegen_get_value(){
 		push_value(ret, type);
 	return ret;
 }
-llvm::Value* CheckIntegerExpression::codegen_get_value(){abort();
+llvm::Value* CheckIntegerExpression::codegen_get_value(){
+	llvm::Value* ret = expr->codegen_get_value();
+	llvm::Value* vtype = extract_value(ret, 0);
+	llvm::Value* data = extract_value(ret, 1);
+	llvm::Value* not_ok = builder->CreateICmpUGT(vtype, getInteger(TARGET_BITS, T_INTEGER));
+	
+	c_SP(-expr->on_stack);
+	
+	gen_if_noreturn(not_ok, [&](){
+		release(ret, T_VARIANT);
+		create_throw(E_TYPE, JIF.F_TYPE_get_name(T_INTEGER), "(unknown)");
+	});
+	
+	ret = builder->CreateTrunc(data, llvmType(getInt32Ty));
+	if (on_stack)
+		push_value(ret, T_INTEGER);
+	return ret;
 }
-llvm::Value* CheckFloatExpression::codegen_get_value(){abort();
+llvm::Value* CheckFloatExpression::codegen_get_value(){
+	llvm::Value* ret = expr->codegen_get_value();
+	llvm::Value* vtype = extract_value(ret, 0);
+	llvm::Value* data = extract_value(ret, 1);
+	llvm::Value* not_ok = builder->CreateICmpUGT(vtype, getInteger(TARGET_BITS, T_FLOAT));
+	
+	c_SP(-expr->on_stack);
+	
+	gen_if_noreturn(not_ok, [&](){
+		release(ret, T_VARIANT);
+		create_throw(E_TYPE, JIF.F_TYPE_get_name(T_INTEGER), "(unknown)");
+	});
+	
+	llvm::Value* low32 = builder->CreateTrunc(data, llvmType(getInt32Ty));
+	llvm::Value* float_from_int = builder->CreateSIToFP(low32, llvmType(getDoubleTy));
+	
+	ret = gen_if_phi(float_from_int, builder->CreateICmpSGT(vtype, getInteger(TARGET_BITS, T_INTEGER)), [&](){
+		llvm::Value* float_data = builder->CreateBitCast(data, llvmType(getDoubleTy));
+		llvm::Value* single_data = builder->CreateFPExt(builder->CreateBitCast(low32, llvmType(getFloatTy)), llvmType(getDoubleTy));
+		llvm::Value* long_data = builder->CreateSIToFP(data, llvmType(getDoubleTy));
+		return builder->CreateSelect(
+			builder->CreateICmpEQ(vtype, getInteger(TARGET_BITS, T_FLOAT)),
+				float_data,
+				builder->CreateSelect(builder->CreateICmpEQ(vtype, getInteger(TARGET_BITS, T_SINGLE)), single_data, long_data));
+	});
+	
+	if (on_stack)
+		push_value(ret, T_FLOAT);
+	return ret;
 }
-llvm::Value* CheckPointerExpression::codegen_get_value(){abort();
+llvm::Value* CheckPointerExpression::codegen_get_value(){
+	llvm::Value* ret = expr->codegen_get_value();
+	llvm::Value* vtype = extract_value(ret, 0);
+	llvm::Value* data = extract_value(ret, 1);
+	llvm::Value* not_ok = builder->CreateICmpNE(vtype, getInteger(TARGET_BITS, T_POINTER));
+	
+	c_SP(-expr->on_stack);
+	
+	gen_if_noreturn(not_ok, [&](){
+		release(ret, T_VARIANT);
+		create_throw(E_TYPE, JIF.F_TYPE_get_name(T_POINTER), "(unknown)");
+	});
+	
+	ret = builder->CreateIntToPtr(data, llvmType(getInt8PtrTy));
+	if (on_stack)
+		push_value(ret, T_POINTER);
+	return ret;
 }
 
 static llvm::Value* gen_max(llvm::Value* val1, llvm::Value* val2){
@@ -6243,6 +6304,30 @@ static void debug_print_line(){
 	fputc('\n', stderr);
 }
 
+static void run_optimizations(){
+	bool changed = true;
+	while(changed){
+		llvm::FunctionPassManager FPM(M);
+		llvm::PassManager MPM;
+		llvm::PassManagerBuilder PMB;
+		PMB.OptLevel = 2;
+		PMB.SizeLevel = 1;
+		PMB.populateFunctionPassManager(FPM);
+		PMB.populateModulePassManager(MPM);
+		
+		//FPM.add(createGambasPass());
+		
+		FPM.doInitialization();
+		FPM.run(*llvm_function);
+		FPM.doFinalization();
+		MPM.run(*M);
+	
+		llvm::FunctionPass* pass = createGambasPass();
+		changed = pass->runOnFunction(*llvm_function);
+		delete pass;
+	}
+}
+
 
 struct DynamicAllocatedString {
 	char* data;
@@ -6546,18 +6631,7 @@ void JIT_codegen(){
 		delete all_statements[i];
 	all_statements.clear();
 	
-	llvm::FunctionPassManager FPM(M);
-	llvm::PassManager MPM;
-	llvm::PassManagerBuilder PMB;
-	PMB.OptLevel = 2;
-	PMB.SizeLevel = 1;
-	PMB.populateFunctionPassManager(FPM);
-	PMB.populateModulePassManager(MPM);
-	
-	FPM.doInitialization();
-	FPM.run(*llvm_function);
-	FPM.doFinalization();
-	MPM.run(*M);
+	run_optimizations();
 	
 	//Print out the code after optimization
 	if (MAIN_debug){
