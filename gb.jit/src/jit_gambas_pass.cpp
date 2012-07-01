@@ -25,7 +25,7 @@
 
 #include "llvm/Pass.h"
 #include "llvm/Function.h"
-#include "llvm/IRBuilder.h"
+#include "llvm/Support/IRBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include "main.h"
