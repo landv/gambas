@@ -97,7 +97,7 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
       sKey = hCtrl.Name & "." & iTab
       tvwControl.Add(sKey, hTab[iTab].Text, GetControlIcon("TabStrip"), hCtrl.Name)
       For Each hChild In hTab[iTab].Children
-        If Not hChild.Tag Then Continue
+        If Not hChild.Tag Or If hChild.Ignore Then Continue
         FillTree($hForm.Control[hChild.Tag], sKey)
       Next
       tvwControl[sKey].Expanded = True
@@ -106,7 +106,7 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
   Else
 
     For Each hChild In hCtrl.Control.Children
-      If Not hChild.Tag Then Continue
+      If Not hChild.Tag Or If hChild.Ignore Then Continue
       FillTree($hForm.Control[hChild.Tag], hCtrl.Name)
     Next
 
