@@ -1495,7 +1495,7 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
   For Each hChild In hParent.Control.Children
 
-    If Not hCtrl.Tag Or If hCtrl.Ignore Then Continue
+    If Not hChild.Tag Or If hChild.Ignore Then Continue
     hCtrl = Control[hChild.Tag]
     If IsNull(hCtrl) Then Continue 'panel
 
@@ -3614,7 +3614,7 @@ Public Sub panSelect_Draw()
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Fill
   Else
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 232))
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 208))
     'Paint.Operator = Paint.OperatorXor
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Fill
