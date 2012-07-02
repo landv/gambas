@@ -2499,6 +2499,8 @@ void MyMainWindow::configure()
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QMenuBar *menuBar = THIS->menuBar;
+	bool arrange = false;
+	QRect geom;
 	
 	//qDebug("THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 
@@ -2507,7 +2509,14 @@ void MyMainWindow::configure()
 		//qDebug("action.count = %d", menuBar->actions().count());
 		//h = menuBar->sizeHint().height();
 		menuBar->show();
-		THIS->container->setGeometry(0, menuBar->height(), this->width(), this->height() - menuBar->height());
+		
+		geom = QRect(0, menuBar->height(), this->width(), this->height() - menuBar->height());
+		
+		if (THIS->container->geometry() != geom)
+		{
+			arrange = true;
+			THIS->container->setGeometry(geom);
+		}
 		menuBar->setGeometry(0, 0, this->width(), menuBar->height());
 	}
 	else
@@ -2518,12 +2527,20 @@ void MyMainWindow::configure()
 			menuBar->lower();
 		}
 		//qDebug("configure: %s (%d %d)", GB.GetClassName(THIS), this->width(), this->height());
-		THIS->container->setGeometry(0, 0, this->width(), this->height());
-		//THIS->container->setGeometry(0, 0, THIS->w, THIS->h);
+		
+		geom = QRect(0, 0, this->width(), this->height());
+		
+		if (THIS->container->geometry() != geom)
+		{
+			arrange = true;
+			THIS->container->setGeometry(geom);
+		}
+		
 		THIS->container->raise();
 	}
 	
-	CCONTAINER_arrange(THIS);
+	if (arrange)
+		CCONTAINER_arrange(THIS);
 
 	//qDebug(">>> THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 

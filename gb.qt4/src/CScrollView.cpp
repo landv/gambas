@@ -141,8 +141,27 @@ void MyContents::autoResize(void)
 	else //if (_mustfind)  // _mustfind is not set to true if we unhide a scrollview child control
 	{
 		findRightBottom();
+		
+		/*w = h = 0;
+		
+		if (right)
+			w = right->x() + right->width();
+		if (bottom)
+			h = bottom->y() + bottom->height();	
+		
+		sw->setHorizontalScrollBarPolicy(sw->horizontalScrollBarPolicy());
+		ww = sw->viewport()->width();
+		hh = sw->viewport()->height(); //visibleHeight();	
+
+		if (w <= ww && h <= hh)
+		{
+			if (!sw->horizontalScrollBar()->isVisible() && !sw->verticalScrollBar()->isVisible())
+				goto __END;
+		}*/
 	}
 
+	//qDebug("autoResize: %s", THIS->widget.name);
+	
 	for(i = 0; i < 3; i++)
 	{
 		if (THIS->arrangement.mode)
@@ -196,6 +215,9 @@ void MyContents::autoResize(void)
 			qDebug("resize %d %d", w, h);
 			#endif
 		
+			//if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
+			//	qDebug("resize %d %d", w, h);
+			
 			resize(w, h);
 			
 			//CCONTAINER_arrange(THIS);
@@ -215,6 +237,9 @@ void MyContents::autoResize(void)
 				qDebug("resize again %d %d", w, h);
 				#endif
 				
+				//if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
+				//	qDebug("resize again %d %d", w, h);
+			
 				resize(w, h);
 				
 				//THIS->arrangement.locked = locked;
@@ -227,6 +252,8 @@ void MyContents::autoResize(void)
 		break;
 	}
 
+__END:
+	
 	THIS->arrangement.locked = locked;
 	if (width() != oldw || height() != oldh)
 	{
@@ -257,7 +284,7 @@ void MyContents::autoResize(void)
 		sw->verticalScrollBar()->setValue(y);
 		sw->verticalScrollBar()->blockSignals(bv);
 	}*/
-	
+
 	sw->_noscroll = false;
 	if (x != sw->horizontalScrollBar()->value())
 		sw->horizontalScrollBar()->setValue(x);
