@@ -797,6 +797,7 @@ Private Sub SaveOne(hCtrl As CControl)
 
       For Each hChild In hCtrl.Control.Children
         'PRINT "SaveOne? "; Object.Type(hChild);; hChild.Tag; " "; Control[hChild.Tag]
+        If Not hChild.Tag Or If hChild.Ignore Then Continue
         SaveOne(Control[hChild.Tag])
       Next
 
@@ -821,6 +822,7 @@ Private Sub SaveOne(hCtrl As CControl)
         Endif
 
         For Each hChild In hTab[iTab].Children
+          If Not hChild.Tag Or If hChild.Ignore Then Continue
           SaveOne(Control[hChild.Tag])
         Next
 
@@ -838,6 +840,7 @@ Private Sub SaveOne(hCtrl As CControl)
     Else
 
       For Each hChild In hCtrl.Control.Children
+        If Not hChild.Tag Or If hChild.Ignore Then Continue
         SaveOne(Control[hChild.Tag])
       Next
 
@@ -3091,12 +3094,13 @@ End
 Public Sub Form_Activate()
 
   Project.SetCurrentPopup(mnuForm)
+  CheckHovered
 
 End
 
 Public Sub Form_Deactivate()
 
-  'mnuForm.Enabled = False
+  CheckHovered
 
 End
 

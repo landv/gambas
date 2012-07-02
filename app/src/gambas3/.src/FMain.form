@@ -181,6 +181,11 @@
     }
     { Menu9 Menu
     }
+    { mnuOpenProfile Menu
+      Action = "open-profile"
+      Text = ("&Open profile...")
+      Picture = Picture["icon:/small/clock"]
+    }
     { mnuClearBreakpoints Menu
       Action = "clear-break"
       Text = ("Clear &all breakpoints")
@@ -1210,6 +1215,11 @@
     Text = "&WebPage..."
     Shortcut = ""
     Picture = "img/16/webpage.png"
+  }
+  { Action open-profile
+    Text = "&Open profile..."
+    Shortcut = ""
+    Picture = "icon:/small/clock"
   }
   { Action open-project
     Text = "&Open project..."

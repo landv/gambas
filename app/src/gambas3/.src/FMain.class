@@ -1280,6 +1280,9 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.Profiling = Action["profile"].Value
       Project.WriteProject(True)
     
+    Case "open-profile"
+      OpenProfile
+    
     Case "menu-file"
       mnuFile.Popup(btnMnuFile.ScreenX, btnMnuFile.ScreenY + btnMnuFile.H)
     Case "menu-project"
@@ -1968,3 +1971,14 @@ Public Sub panProject_Resize()
 
 End
 
+Private Sub OpenProfile()
+  
+  Dialog.Title = ("Choose a profile")
+  Dialog.Filter = [Project.Name & "*.prof", Subst(("Profile for &1 project"), Project.Name)]
+  Dialog.Path = Settings["/FMain/OpenProfile"]
+  If Dialog.OpenFile() Then Return
+  
+  Settings["/FMain/OpenProfile"] = File.Dir(Dialog.Path)
+  FProfile.Open(Dialog.Path)
+  
+End

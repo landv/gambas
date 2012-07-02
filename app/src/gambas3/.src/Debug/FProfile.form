@@ -37,6 +37,13 @@
             Picture = Picture["img/16/average.png"]
             Toggle = True
           }
+          { btnSave ToolButton
+            MoveScaled(16,0,9,4)
+            ToolTip = ("Save profile")
+            AutoResize = True
+            Text = ("Save profile...")
+            Picture = Picture["icon:/small/save-as"]
+          }
         }
         { Separator5 Separator
           MoveScaled(3,8,25,0)
@@ -88,7 +95,7 @@
             Index = 0
             Text = ("Callees")
             { gvwCalled GridView
-              MoveScaled(2,1,27,11)
+              MoveScaled(1,1,27,11)
               Mode = Select.Single
               Header = GridView.Horizontal
               ScrollBar = Scroll.Vertical
