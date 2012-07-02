@@ -3,15 +3,21 @@
 { Form Form
   MoveScaled(0,0,72,56)
   { Panel1 Panel
-    MoveScaled(12,17,29,19)
-    Background = &HDFFFE7&
+    MoveScaled(6,7,50,32)
+    Arrangement = Arrange.Vertical
     Border = Border.Plain
+    { Label1 Label
+      MoveScaled(23,11,19,7)
+    }
     { Button1 Button
-      MoveScaled(6,-3,12,9)
+      MoveScaled(7,18,13,11)
       Picture = Picture["img/colormap.png"]
     }
     { TextBox1 TextBox
-      MoveScaled(28,12,18,5)
+      MoveScaled(31,24,18,5)
     }
+  }
+  { Button2 Button
+    MoveScaled(22,6,16,4)
   }
 }
