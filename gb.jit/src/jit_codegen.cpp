@@ -6253,6 +6253,15 @@ void NopExpression::codegen(){
 	}
 }
 
+void ProfileLineExpression::codegen(){
+	gen_if(builder->CreateICmpNE(read_global((void*)&EXEC_profile_instr, llvmType(getInt8Ty)), getInteger(8, false)), [&](){
+		builder->CreateCall3(get_global_function_jif(DEBUG_Profile_Add, 'v', "ppp"),
+			get_global((void*)CP, llvmType(getInt8Ty)),
+			get_global((void*)FP, llvmType(getInt8Ty)),
+			get_global((void*)pc, llvmType(getInt8Ty)));
+	});
+}
+
 void StopEventExpression::codegen(){
 	builder->CreateStore(getInteger(8, true), get_global((void*)&GAMBAS_StopEvent, llvmType(getInt8Ty)));	
 }

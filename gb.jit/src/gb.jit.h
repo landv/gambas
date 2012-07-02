@@ -192,6 +192,7 @@ typedef
 		void (*F_CLASS_run_inits)(CLASS *klass);
 		
 		const char *(*F_DEBUG_get_current_position)(void);
+		void (*F_DEBUG_Profile_Add)(void *cp, void *fp, void *pc);
 		
 		void (*F_EXEC_quit)(void);
 		
@@ -206,8 +207,8 @@ typedef
 		intptr_t version;
 		void (*Init)(GB_JIT_INTERFACE *jif, STACK_CONTEXT *EXEC_current, VALUE **SP, VALUE *TEMP,
 			VALUE *RET, char *GAMBAS_StopEvent, char **EXEC_enum, EXEC_GLOBAL *EXEC,
-			const char **EXEC_unknown_name, void **EVENT_Last, ERROR_CONTEXT **ERROR_current,
-			ERROR_HANDLER **ERROR_handler, const char *STRING_char_string);
+			const char **EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, void **EVENT_Last,
+			ERROR_CONTEXT **ERROR_current, ERROR_HANDLER **ERROR_handler, const char *STRING_char_string);
 		void (*CompileAndExecute)(void);
 		void (*LoadClass)(CLASS *klass);
 		}

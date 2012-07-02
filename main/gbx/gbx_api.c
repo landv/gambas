@@ -300,7 +300,7 @@ const void *GAMBAS_DebugApi[] =
 	NULL
 };
 
-const void *GAMBAS_JitApi[] =
+void *GAMBAS_JitApi[] =
 {
 	(void *)EXEC_release,
 	(void *)RELEASE_many,
@@ -460,6 +460,7 @@ const void *GAMBAS_JitApi[] =
 	(void *)CLASS_run_inits,
 	
 	(void *)DEBUG_get_current_position,
+	(void *)NULL, // Later set to DEBUG.Profile.Add
 	
 	(void *)EXEC_quit,
 	NULL

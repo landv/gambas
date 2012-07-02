@@ -40,6 +40,8 @@ char *_GAMBAS_StopEvent;
 char **_EXEC_enum;
 EXEC_GLOBAL *_EXEC;
 const char **_EXEC_unknown_name;
+char *_EXEC_profile;
+char *_EXEC_profile_instr;
 
 void **_EVENT_Last;
 
@@ -50,8 +52,8 @@ const char *_STRING_char_string;
 
 void JIT_init(GB_JIT_INTERFACE *jif, STACK_CONTEXT *__EXEC_current, VALUE **__SP, VALUE *__TEMP,
 	VALUE *__RET, char *__GAMBAS_StopEvent, char **__EXEC_enum, EXEC_GLOBAL *__EXEC,
-	const char **__EXEC_unknown_name, void **__EVENT_Last, ERROR_CONTEXT **__ERROR_current,
-	ERROR_HANDLER **__ERROR_handler, const char *__STRING_char_string)
+	const char **__EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, void **__EVENT_Last,
+	ERROR_CONTEXT **__ERROR_current, ERROR_HANDLER **__ERROR_handler, const char *__STRING_char_string)
 {
 	JIF = *jif;
 	_EXEC_current = __EXEC_current;
@@ -62,6 +64,8 @@ void JIT_init(GB_JIT_INTERFACE *jif, STACK_CONTEXT *__EXEC_current, VALUE **__SP
 	_EXEC_enum = __EXEC_enum;
 	_EXEC = __EXEC;
 	_EXEC_unknown_name = __EXEC_unknown_name;
+	_EXEC_profile = __EXEC_profile;
+	_EXEC_profile_instr = __EXEC_profile_instr;
 	_EVENT_Last = __EVENT_Last;
 	_ERROR_current = __ERROR_current;
 	_ERROR_handler = __ERROR_handler;

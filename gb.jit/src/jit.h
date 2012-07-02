@@ -886,6 +886,12 @@ struct NopExpression : Expression {
 	}
 };
 
+struct ProfileLineExpression : Expression {
+	unsigned short* pc;
+	ProfileLineExpression(unsigned short* pc) : pc(pc) {}
+	void codegen();
+};
+
 struct DropExpression : Expression {
 	Expression* expr;
 	DropExpression(Expression* expr) : expr(expr) {}

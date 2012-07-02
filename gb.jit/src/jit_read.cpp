@@ -919,7 +919,10 @@ static void JIT_read_statement(){
 					}
 					case C_BREAK:
 						//PC = code+pos;
-						push_statement(new NopExpression(true/*JIF.F_DEBUG_get_current_position()*/));
+						if (EXEC_profile)
+							push_statement(new ProfileLineExpression(code + pos));
+						else
+							push_statement(new NopExpression(true/*JIF.F_DEBUG_get_current_position()*/));
 						//PC = code;
 						//push_statement(new NopExpression());
 						NEXT

@@ -110,18 +110,36 @@ static void signal_user(int sig)
 
 bool DEBUG_calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
-	int i;
+	int lo = 0, hi = func->debug->nline - 1;
+	int mid;
 	ushort pos = addr - func->code;
 	ushort *post;
 
 	if (func->debug)
 	{
 		post =  func->debug->pos;
-		for (i = 0; i < (func->debug->nline - 1); i++)
+		/*for (i = 0; i < (func->debug->nline - 1); i++)
 		{
 			if (pos >= post[i] && pos < post[i + 1])
 			{
 				*line = i + func->debug->line;
+				return FALSE;
+			}
+		}*/
+		while (lo < hi)
+		{
+			mid = (lo + hi) >> 1;
+			if (pos < post[mid])
+			{
+				hi = mid;
+			}
+			else if (pos >= post[mid + 1])
+			{
+				lo = mid + 1;
+			}
+			else
+			{
+				*line = mid + func->debug->line;
 				return FALSE;
 			}
 		}
