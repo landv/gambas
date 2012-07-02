@@ -235,6 +235,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "-", "drawingarea", "panel", "vbox", "hbox", "vpanel", "hpanel", "vsplit", "hsplit", "embedder", "datasource"
       hCtrl = New DrawingArea(hParent)
+      hCtrl.NoBackground = True
       
       'hCtrl.Merge = True
 

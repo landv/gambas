@@ -117,25 +117,37 @@ Private Sub IsInside(hCtrl As Control) As Boolean
   
   Dim hRect, hRectParent As Rect
   Dim hParent As Container
+  Dim hObject As Object
   'Dim aPos, aSize As Integer[]
-  Dim X, Y As Integer
+  Dim X, Y, SX, SY As Integer
   'Dim XC, YC, WC, HC As Integer
   
   If Not Object.IsValid(hCtrl) Then Return
+  'Return hCtrl.Hovered
   
   X = Mouse.ScreenX
   Y = Mouse.ScreenY
+  SX = hCtrl.ScreenX
+  SY = hCtrl.ScreenY
   
-  hRect = New Rect(hCtrl.ScreenX, hCtrl.ScreenY, hCtrl.W, hCtrl.H)
+  hRect = New Rect(SX, SY, hCtrl.W, hCtrl.H)
   'Debug hCtrl.Name;; hRect.X;; hRect.Y;; hRect.W;; hRect.H
   hParent = hCtrl.Parent
+  
   While hParent
     
-    hRectParent = New Rect(hParent.ScreenX + hParent.ClientX, hParent.ScreenY + hParent.ClientY, hParent.ClientW, hParent.ClientH)
-    'Debug hParent.Name;; hRectParent.X;; hRectParent.Y;; hRectParent.W;; hRectParent.H
+    hObject = hParent
+    SX = SX - hCtrl.X - hParent.ClientX
+    Try SX += hObject.ScrollX
+    SY = SY - hCtrl.Y - hParent.ClientY
+    Try SY += hObject.ScrollY
+    
+    hRectParent = New Rect(SX + hParent.ClientX, SY + hParent.ClientY, hParent.ClientW, hParent.ClientH)
+    
     hRect = hRect.Intersection(hRectParent)
     If Not hRect Then Return
     
+    hCtrl = hParent
     hParent = hParent.Parent
   Wend
   
@@ -197,7 +209,7 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   Dim hCtrl As Control = hCCtrl.Control
   Dim hPict As Picture
   Dim hImage As Image
-  Dim hIcon As PictureBox
+  Dim hIcon As DrawingArea
   Dim hComp As Control
   Dim iWidth As Integer
   Dim X, Y As Integer
@@ -211,6 +223,8 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   Endif
   
   If Not sImage Then Return
+  
+  'Debug hCCtrl.Name;; sImage
   
   If hCCtrl.GetProperty("Invert") Then sImage &= "-invert"
   
@@ -252,11 +266,12 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
       Picture["$arr-" & sImage] = hPict
     Endif
     
-    hIcon = New PictureBox(hCont) As "Icon"
+    hIcon = New DrawingArea(hCont) As "Icon"
     hCCtrl["#icon"] = hIcon
     hIcon.Ignore = True
+    hIcon.Enabled = False
     'hIcon.Background = Color.Black
-    hIcon.Picture = hPict
+    hIcon.Tag = hPict
     'hIcon.Raise
     $cCtrlFromIcon[Str(hIcon)] = hCCtrl
   
@@ -276,7 +291,14 @@ End
 
 Public Sub Icon_Enter()
   
+  'Debug
   $hCurrentIcon = Last
+  
+End
+
+Public Sub Icon_Draw()
+  
+  Draw.Picture(Last.Tag, 0, 0)
   
 End
 

@@ -18,54 +18,10 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
   Select hCCtrl.Kind
   
-    Case "HBox"
+    Case "HBox", "VBox", "HPanel", "VPanel"
     
-      ' Draw.FillX = 0
-      ' Draw.FillY = 0
-      ' If hCtrl.H >= 32 Then
-      '   Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
-      '   Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
-      ' Else 
-      '   Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
-      ' Endif
-      Draw.Foreground = &HFF8080&
+      Draw.Foreground = &HFFB0B0&
     
-    Case "VBox"
-
-      ' Draw.FillX = 0
-      ' Draw.FillY = 0
-      ' If hCtrl.W >= 32 Then
-      '   Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
-      '   Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
-      ' Else 
-      '   Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
-      ' Endif
-      Draw.Foreground = &HFF8080&
-    
-    Case "HPanel"
-    
-      ' Draw.FillX = 0
-      ' Draw.FillY = 0
-      ' If hCtrl.H >= 32 Then
-      '   Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, 4, hCtrl.W - 8, 8)
-      '   Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
-      ' Else 
-      '   Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
-      ' Endif
-      Draw.Foreground = &HFF8080&
-    
-    Case "VPanel"
-
-      ' Draw.FillX = 0
-      ' Draw.FillY = 0
-      ' If hCtrl.W >= 32 Then
-      '   Draw.Tile(Picture["img/16/red-arrow-c.png"], 4, 4, 8, hCtrl.H - 8)
-      '   Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
-      ' Else 
-      '   Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
-      ' Endif
-      Draw.Foreground = &HFF8080&
-      
     Case "Panel"
     
       Select Case hCCtrl.GetProperty("Border")
@@ -86,7 +42,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         Return
       Endif
       'If hCCtrl.GetProperty("Background") Then Return
-      Draw.Foreground = &HFF8080&
+      Draw.Foreground = &HFFB0B0&
       'Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
     
     Case Else
@@ -95,13 +51,9 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
 
   End Select
 
-  'If hCCtrl["#icon"] Then
-  '  Draw.LineStyle = Line.Solid
-  'Else
-  Draw.LineStyle = Line.Dash
-  'Endif
   Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-  Draw.LineStyle = Line.None
+  'Draw.LineStyle = Line.Dash
+  'Draw.LineStyle = Line.None
   
 End
 

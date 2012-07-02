@@ -1525,6 +1525,8 @@ Private Sub HideControlFrame()
 
   Dim hCtrl As Control
 
+  'Debug System.Backtrace.Join(" ")
+
   For Each hCtrl In [panSelectN, panSelectS, panSelectW, panSelectE]
     hCtrl.Hide
   Next
@@ -3612,7 +3614,7 @@ Public Sub panSelect_Draw()
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Fill
   Else
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 240))
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 232))
     'Paint.Operator = Paint.OperatorXor
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Fill
@@ -3719,18 +3721,22 @@ End
 Private Sub CheckHovered(Optional hCtrl As Control)
   
   Dim X, Y As Integer
-  Dim hRoot, hCont As Container
+  Dim hCont As Container
   Dim hCCtrl As CControl
   
-  If Not hCtrl Then
-  
+  If Not hCtrl Then  
+    hCont = RootControl.Control
+  Else If hCtrl Is Container Then
+    hCont = hCtrl
+  Endif
+
+  If hCont Then
+    
     X = Mouse.ScreenX
     Y = Mouse.ScreenY
-    
-    hRoot = RootControl.Control
-    
-    hCont = hRoot
+  
     Do
+      'Debug hCont;; hCont.Tag
       hCtrl = hCont.Find(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY)
       If Not hCtrl Then
         hCtrl = hCont
@@ -3740,24 +3746,26 @@ Private Sub CheckHovered(Optional hCtrl As Control)
       hCont = hCtrl
     Loop
     
+    'Debug "-->";; hCtrl.Name;; hCtrl.Tag
+    
   Endif
   
-  If $hCtrlFrame Then
-    If hCtrl = panSelectN Or If hCtrl = panSelectS Or If hCtrl = panSelectW Or If hCtrl = panSelectE Then
-      hCtrl = $hCtrlFrame
-    Endif
+  If hCtrl = panSelectN Or If hCtrl = panSelectS Or If hCtrl = panSelectW Or If hCtrl = panSelectE Then
+    'Debug "in ghost frame"
+    If $hCtrlFrame Then hCtrl = $hCtrlFrame
   Endif
   
   Do
     hCCtrl = Null
-    If hCtrl.Tag Then
+    If Not hCtrl.Ignore And If hCtrl.Tag Then
       hCCtrl = Control[hCtrl.Tag]
       If hCCtrl Then Break
     Endif
     hCtrl = hCtrl.Parent
   Loop
   
-  'Debug X;; Y;; "->";; hCCtrl.Name
+  'Debug X;; Y;; "-->";; hCCtrl.Name
+  'Debug System.Backtrace.Join(" ")
   
   $hFamily.EnterControl(RootControl.Control, hCCtrl)
   DrawControlFrame(hCCtrl)
