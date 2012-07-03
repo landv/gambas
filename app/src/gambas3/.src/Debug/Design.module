@@ -345,7 +345,7 @@ Public Sub Process_Kill()
   If $hProcess.State = Process.Crashed Then
     ' SIGKILL and SIGTERM are not considered as bugs in the program
     If $hProcess.Value <> 9 And $hProcess.Value <> 15 Then
-      sMsg = Subst(("The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."), $hProcess.Value)
+      sMsg = ("The program has stopped unexpectedly:") & "\n" & Debug.GetSignal($hProcess.Value) & " (" & $hProcess.Value & ")\n\n" & Subst(("Please send a bug report to the following mail address: &1"), "gambas@users.sourceforge.net.")
       Message.Error(sMsg)
     Endif
   Else If $hProcess.Value Then

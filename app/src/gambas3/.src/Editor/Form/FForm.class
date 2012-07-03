@@ -2439,9 +2439,9 @@ Public Sub Control_Draw(Optional iIndex As Integer)
     Endif
     Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
 
-    Draw.LineStyle = Line.Dash
+    'Draw.LineStyle = Line.Dash
     Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-    Draw.LineStyle = Line.None
+    'Draw.LineStyle = Line.None
 
     If Paint.Device Then Draw.End
 
@@ -3774,4 +3774,16 @@ Private Sub CheckHovered(Optional hCtrl As Control)
   $hFamily.EnterControl(RootControl.Control, hCCtrl)
   DrawControlFrame(hCCtrl)
   
+End
+
+Public Sub panBorder_Leave()
+
+  CheckHovered
+
+End
+
+Public Sub panBorder_Enter()
+
+  CheckHovered
+
 End
