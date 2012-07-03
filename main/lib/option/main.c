@@ -32,11 +32,10 @@
 
 #include "main.h"
 
-typedef  void (*type_hook_old)(int*,char**);
-static type_hook_old old_hook;
+static void *_old_hook_main;
+
 char** cmd_arg;
 int arg_count;
-
 
 
 GB_INTERFACE GB EXPORT;
@@ -48,33 +47,30 @@ GB_DESC *GB_CLASSES[] EXPORT =
   GetOptionsDesc,
   NULL
 };
-void hook_main(int *argc,char ** argv)
+
+static void hook_main(int *argc, char ***argv)
 {
 	int i;
 	char **tmp;
 
-	if(old_hook!=NULL)
-	{
-		old_hook(argc,argv);
-	}
+	CALL_HOOK_MAIN(_old_hook_main, argc, argv);
 
-	arg_count=*argc;
+	arg_count = *argc;
 			
-	GB.NewArray((void*)(&cmd_arg),sizeof(*cmd_arg),0);
+	GB.NewArray(POINTER(&cmd_arg), sizeof(*cmd_arg), 0);
 
-	for(i=0;i<*argc;i++)
+	for(i=0; i<*argc; i++)
 	{
-		tmp=(char **)GB.Add((void*)(&cmd_arg));
-		*tmp = GB.NewZeroString(argv[i]);
-
+		tmp = (char **)GB.Add((void*)(&cmd_arg));
+		*tmp = GB.NewZeroString((*argv)[i]);
 	}
-	*argc=1;
-	return;
+	
+	*argc = 1;
 }
 
 int EXPORT GB_INIT(void)
 {
-  old_hook= (type_hook_old) GB.Hook ( GB_HOOK_MAIN, (void *)hook_main );
+	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
   return 0;
 }
 
