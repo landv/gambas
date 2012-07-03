@@ -57,7 +57,16 @@ bool GambasPass::runOnFunction(Function &F){
 	bool changed = false;
 	for(Function::iterator BB = F.begin(), E = F.end(); BB != E; ++BB) {
 		for(BasicBlock::iterator I = BB->begin(), E = BB->end(); I != E; ){
+			ICmpInst* ICI = dyn_cast<ICmpInst>(I);
 			CallInst* CI = dyn_cast<CallInst>(I++);
+			
+			if (ICI && ICI->hasMetadata() && ICI->getMetadata("unref_slt") && dyn_cast<LoadInst>(ICI->getOperand(0))){
+				ICI->replaceAllUsesWith(ConstantInt::get(ICI->getType(), false));
+				ICI->eraseFromParent();
+				changed = true;
+				continue;
+			}
+			
 			if (!CI)
 				continue;
 			

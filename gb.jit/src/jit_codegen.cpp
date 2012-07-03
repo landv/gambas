@@ -964,7 +964,12 @@ static void unref_string_no_nullcheck(llvm::Value* ptr){
 	});*/
 	ref = builder->CreateSub(ref, getInteger(32, 1));
 	builder->CreateStore(ref, ref_addr);
-	gen_if(builder->CreateICmpSLE(ref, getInteger(32, 0)), [&](){
+	llvm::Value* slt = builder->CreateICmpSLT(ref, getInteger(32, 1));
+	if (llvm::Instruction* inst = dyn_cast<llvm::Instruction>(slt)){
+		llvm::Value* arr[1] = {getInteger(32, 1)};
+		inst->setMetadata("unref_slt", llvm::MDNode::get(llvm_context, arr));
+	}
+	gen_if(slt, [&](){
 		llvm::Value* free_func = get_global_function_jif(STRING_free_real, 'v', "p");
 		builder->CreateCall(free_func, ptr);
 	}, "release_str", "release_done");
@@ -988,7 +993,12 @@ static void unref_object_no_nullcheck(llvm::Value* ptr){
 	builder->CreateStore(ref, ref_addr);
 	/*builder->CreateCall3(get_global_function_vararg(printf, 'v', "p"),
 		get_global((void*)"%p %ld -\n", llvmType(getInt8Ty)), ptr, ref);*/
-	gen_if(builder->CreateICmpSLE(ref, getInteger(TARGET_BITS, 0)), [&](){
+	llvm::Value* slt = builder->CreateICmpSLT(ref, getInteger(TARGET_BITS, 1));
+	if (llvm::Instruction* inst = dyn_cast<llvm::Instruction>(slt)){
+		llvm::Value* arr[1] = {getInteger(32, 1)};
+		inst->setMetadata("unref_slt", llvm::MDNode::get(llvm_context, arr));
+	}
+	gen_if(slt, [&](){
 		llvm::Value* free_func = get_global_function_jif(CLASS_free, 'v', "p");
 		builder->CreateCall(free_func, ptr);
 	}, "release_obj", "release_done");
