@@ -271,7 +271,8 @@ typedef
 		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
 		unsigned must_check : 1;          //          The class has a check function
 		unsigned has_child : 1;           //          The class has an inherited child class
-		unsigned _reserved : 5;           //  24  36 
+		unsigned unknown_static : 1;      //          if  _unknown is static
+		unsigned _reserved : 4;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events

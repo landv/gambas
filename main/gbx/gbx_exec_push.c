@@ -89,6 +89,15 @@ _PUSH_GENERIC:
 			THROW(E_NSYMBOL, name, class->name);
 		}
 
+		if (class->unknown_static && object)
+			THROW(E_STATIC, class->name, name);
+		else if (!class->unknown_static && object == NULL)
+		{
+			if (!class->auto_create)
+				THROW(E_DYNAMIC, class->name, name);
+			object = EXEC_auto_create(class, TRUE);
+		}
+
 		if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		{
 			EXEC_unknown_name = name;
@@ -165,7 +174,7 @@ _PUSH_GENERIC:
 
 			if (object == NULL)
 			{
-				if (UNLIKELY(!class->auto_create))
+				if (!class->auto_create)
 					THROW(E_DYNAMIC, class->name, name);
 				object = EXEC_auto_create(class, TRUE);
 				*PC |= 7;
