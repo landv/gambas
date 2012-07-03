@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include "main.h"
 #include "gb_limit.h"
@@ -259,6 +260,12 @@ __ERROR:
 END_METHOD
 
 
+BEGIN_METHOD(Debug_GetSignal, GB_INTEGER signal)
+
+	GB.ReturnNewZeroString(strsignal(VARG(signal)));
+
+END_METHOD
+
 
 GB_DESC CDebugDesc[] =
 {
@@ -271,6 +278,8 @@ GB_DESC CDebugDesc[] =
   GB_STATIC_METHOD("End", NULL, CDEBUG_end, NULL),
   GB_STATIC_METHOD("Start", NULL, CDEBUG_start, NULL),
   GB_STATIC_METHOD("Stop", NULL, CDEBUG_stop, NULL),
+
+  GB_STATIC_METHOD("GetSignal", "s", Debug_GetSignal, "(Signal)i"),
 
   GB_STATIC_METHOD("Write", NULL, CDEBUG_write, "(Data)s"),
 	

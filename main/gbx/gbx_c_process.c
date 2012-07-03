@@ -287,9 +287,9 @@ static void stop_process_after(CPROCESS *_object)
 		}
 	}
 
-	GB_Raise(THIS, EVENT_Kill, 0);
-
 	exit_process(THIS);
+
+	GB_Raise(THIS, EVENT_Kill, 0);
 
 	OBJECT_detach((OBJECT *)THIS);
 
