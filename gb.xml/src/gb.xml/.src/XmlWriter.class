@@ -12,6 +12,7 @@ Private $indent As Boolean
 Private $TagEnded As Boolean = True
 
 Private $opened As Boolean = False
+Private $lastWasElement As Boolean = False
 
 Private PileElements As New String[]
 
@@ -34,7 +35,7 @@ Private Sub Write(Data As String, Optional IgnoreIndent As Boolean, Optional Lin
   
   If Not $opened Then Error.Raise("Document not opened")
   LineBreak = LineBreak And $indent
-  If $indent And Not IgnoreIndent Then Data = String$(PileElements.Count, "\t") & Data
+  If $indent And Not IgnoreIndent Then Data = String$(PileElements.Count, " ") & Data
   If LineBreak Then Data &= "\n"
   If $stream Then
     Write #$stream, Data
@@ -67,7 +68,7 @@ Public Sub Element(TagName As String, Optional Value As String, Optional Prefix 
   Endif
   sData = "<" & TagName & Xmlns
   If Value Then
-    sData &= ">" & If($indent, "\n", "") & Value & If($indent, "\n", "") & "</" & TagName & "> "
+    sData &= ">" & Value & "</" & TagName & "> "
   Else
     sData &= " />"
   Endif
@@ -121,8 +122,10 @@ Public Sub EndElement()
     Write(" />" & If($indent, "\n", ""), True) 'Pas de contenu
     $TagEnded = True
   Else
-    Write("</" & tag & ">")
+    Write("</" & tag & ">" & If($indent, "\n", ""), Not $lastWasElement)
   Endif
+  
+  $lastWasElement = True
   
 End
 
@@ -151,16 +154,19 @@ Public Sub Comment(Comment As String)
   Endif
   Write("<!--" & Comment & "-->",, True)
   
+  $lastWasElement = False
+  
 End
 
 Public Sub Text(Text As String)
   
   
   If Not $TagEnded Then 
-    Write(">" & If($indent, "\n", ""), True)
+    Write(">", True)
     $TagEnded = True
   Endif
   Write(Text, True)
+  $lastWasElement = False
   
 End
 
@@ -172,6 +178,7 @@ Public Sub CDATA(data As String)
   Endif
   Write("<![CDATA[" & data & "]]>", True)
   
+  $lastWasElement = False
 End
 
 Public Sub PI(Target As String, Content As String)
@@ -182,6 +189,7 @@ Public Sub PI(Target As String, Content As String)
   Endif
   Write("<?" & Target & " " & Content & "?>", True, True)
   
+  $lastWasElement = True
 End
 
 

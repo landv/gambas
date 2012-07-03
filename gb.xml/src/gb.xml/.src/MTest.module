@@ -8,15 +8,21 @@ Dim writer As New XmlWriter
 writer.Open("", True)
 
 
-writer.StartElement("toto", ["titi", "tutu", "truc"], "tata", "http://")
+writer.StartElement("toto")
 writer.StartElement("titi")
-writer.Attribute("tutu", "toto", "muche", "ftp://")
-
+writer.Text("hello")
 writer.EndElement()
-writer.Comment("Test")
-writer.CDATA("Test")
-writer.Comment("test")
-writer.PI("tut", "toto")
+writer.StartElement("titi")
+writer.Text("hello")
+writer.EndElement()
+writer.Element("toto", "hello")
+writer.StartElement("titi")
+writer.Text("hello")
+writer.EndElement()
+writer.Element("toto", "hello")
+writer.StartElement("titi")
+writer.Text("hello")
+writer.EndElement()
 
 writer.EndDocument()
 
