@@ -261,12 +261,16 @@ _POP_PROPERTY_2:
 
 _POP_UNKNOWN_PROPERTY:
 
+	if (class->special[SPEC_PROPERTY] == NO_SYMBOL)
+		goto _NOT_A_PROPERTY;
+	
 	EXEC_unknown_name = name;
 	EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
+
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;
 	if (!SP->_boolean.value)
-		THROW(E_NPROPERTY, class->name, name);
+		goto _NOT_A_PROPERTY;
 		
 	EXEC_unknown_name = name;
 
@@ -274,6 +278,11 @@ _POP_UNKNOWN_PROPERTY:
 	PUSH();
 
 	EXEC_special(SPEC_UNKNOWN, class, object, 1, TRUE);
+	goto _FIN;
+	
+_NOT_A_PROPERTY:
+
+	THROW(E_NPROPERTY, class->name, name);
 
 _FIN:
 
