@@ -185,14 +185,16 @@ Static Private Sub GetDesktop() As String
       Endif
     Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
       $sDesktop = "GNOME"
-    Else If InStr(_Desktop.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
-      $sDesktop = "XFCE"
+    Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
+      $sDesktop = "MATE"
     Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
       $sDesktop = "ENLIGHTENMENT"
     Else If Application.Env["WMAKER_BIN_NAME"] Then
       $sDesktop = "WINDOWMAKER"
     Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
       $sDesktop = "LXDE"
+    Else If InStr(_Desktop.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
+      $sDesktop = "XFCE"
     Else
       $sDesktop = "?"
     Endif
@@ -224,6 +226,8 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
       Endif
     Case "GNOME"
       sExec = "gnome-terminal"
+    Case "MATE"
+      sExec = "mate-terminal"
     Case "XFCE"
       sExec = "Terminal"
     Case "LXDE"

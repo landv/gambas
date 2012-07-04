@@ -42,6 +42,8 @@ typedef
 		Qt::KeyboardModifiers modifier;
     int orientation;
     int delta;
+		int screenX;
+		int screenY;
     }
   CMOUSE_INFO;
 

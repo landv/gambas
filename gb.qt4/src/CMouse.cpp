@@ -170,14 +170,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_ScreenX)
 
-	GB.ReturnInteger(QCursor::pos().x());
+	GB.ReturnInteger(CMOUSE_info.valid ? CMOUSE_info.screenX : QCursor::pos().x());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Mouse_ScreenY)
 
-	GB.ReturnInteger(QCursor::pos().y());
+	GB.ReturnInteger(CMOUSE_info.valid ? CMOUSE_info.screenY : QCursor::pos().y());
 
 END_PROPERTY
 

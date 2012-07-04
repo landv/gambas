@@ -2604,6 +2604,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
+			CMOUSE_info.screenX = mevent->globalX();
+			CMOUSE_info.screenY = mevent->globalY();
 			CMOUSE_info.button = mevent->buttons() | mevent->button();
 			CMOUSE_info.modifier = mevent->modifiers();
 
@@ -2630,6 +2632,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
+			CMOUSE_info.screenX = mevent->globalX();
+			CMOUSE_info.screenY = mevent->globalY();
 			CMOUSE_info.button = mevent->buttons();
 			CMOUSE_info.modifier = mevent->modifiers();
 		
