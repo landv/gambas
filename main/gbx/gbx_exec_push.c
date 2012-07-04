@@ -108,7 +108,7 @@ _PUSH_GENERIC:
 				if (SP->_boolean.value)
 				{
 					SP--;
-					EXEC_special(SPEC_UNKNOWN, class, object, 0, FALSE);
+					EXEC_special(SPEC_UNKNOWN, class, class->unknown_static ? NULL : object, 0, FALSE);
 					VALUE_conv_variant(&SP[-1]);
 					OBJECT_UNREF(object, "EXEC_push_unknown");
 					goto _FIN;

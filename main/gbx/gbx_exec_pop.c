@@ -278,7 +278,7 @@ _POP_UNKNOWN_PROPERTY:
 	*SP = SP[-2];
 	PUSH();
 
-	EXEC_special(SPEC_UNKNOWN, class, object, 1, TRUE);
+	EXEC_special(SPEC_UNKNOWN, class, class->unknown_static ? NULL : object, 1, TRUE);
 	goto _FIN;
 	
 _NOT_A_PROPERTY:
