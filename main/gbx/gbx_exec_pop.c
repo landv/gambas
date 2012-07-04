@@ -265,7 +265,8 @@ _POP_UNKNOWN_PROPERTY:
 		goto _NOT_A_PROPERTY;
 	
 	EXEC_unknown_name = name;
-	EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
+	if (EXEC_special(SPEC_PROPERTY, class, class->property_static ? NULL : object, 0, FALSE))
+		goto _NOT_A_PROPERTY;
 
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;

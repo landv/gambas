@@ -101,16 +101,18 @@ _PUSH_GENERIC:
 		if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		{
 			EXEC_unknown_name = name;
-			EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
-			VALUE_conv_boolean(&SP[-1]);
-			SP--;
-			if (SP->_boolean.value)
+			if (EXEC_special(SPEC_PROPERTY, class, class->property_static ? NULL : object, 0, FALSE))
 			{
+				VALUE_conv_boolean(&SP[-1]);
 				SP--;
-				EXEC_special(SPEC_UNKNOWN, class, object, 0, FALSE);
-				VALUE_conv_variant(&SP[-1]);
-				OBJECT_UNREF(object, "EXEC_push_unknown");
-				goto _FIN;
+				if (SP->_boolean.value)
+				{
+					SP--;
+					EXEC_special(SPEC_UNKNOWN, class, object, 0, FALSE);
+					VALUE_conv_variant(&SP[-1]);
+					OBJECT_UNREF(object, "EXEC_push_unknown");
+					goto _FIN;
+				}
 			}
 		}
 

@@ -272,7 +272,8 @@ typedef
 		unsigned must_check : 1;          //          The class has a check function
 		unsigned has_child : 1;           //          The class has an inherited child class
 		unsigned unknown_static : 1;      //          if  _unknown is static
-		unsigned _reserved : 4;           //  24  36 
+		unsigned property_static : 1;     //          if _property is static
+		unsigned _reserved : 3;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events

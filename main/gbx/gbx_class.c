@@ -1284,6 +1284,8 @@ void CLASS_search_special(CLASS *class)
 		class->enum_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_NEXT])) == CD_STATIC_METHOD;
 	if (class->special[SPEC_UNKNOWN] != NO_SYMBOL)
 		class->unknown_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_UNKNOWN])) == CD_STATIC_METHOD;
+	if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
+		class->property_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_PROPERTY])) == CD_STATIC_METHOD;
 }
 
 
