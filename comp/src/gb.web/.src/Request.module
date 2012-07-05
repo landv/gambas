@@ -12,7 +12,7 @@ Property Delimiter As String
 Property Read InternetExplorer As Integer
 Property Read Get As _Request_Get
 Property Read Post As _Request_Post
-
+Property Debug As Boolean
 
 Private $cCookies As Collection
 Private $cVal As Collection
@@ -25,6 +25,7 @@ Private $sDelimiter As String = "&"
 Private $iIE As Integer
 Private $bDecoded As Boolean
 Private $bPost As Boolean
+Private $bDebug As Boolean
 
 Private Sub Decode()
 
@@ -171,5 +172,17 @@ End
 Private Function Post_Read() As _Request_Post
 
   Return _Request_Post
+
+End
+
+Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = True
 
 End

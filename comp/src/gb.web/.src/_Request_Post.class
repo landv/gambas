@@ -5,6 +5,7 @@ Create Static
 
 Property Read Fields As String[]
 Property Read Files As Collection
+Property Read Contents As String
 
 Static Private $cVal As Collection
 Static Private $cFiles As Collection
@@ -13,6 +14,8 @@ Static Private $aField As New String[]
 Static Private $iMaxLength As Integer
 Static Private $sBuffer As String
 Static Private $bEOF As Boolean
+
+Static Private $sContents As String
 
 Private Sub ReadLine() As String
   
@@ -39,6 +42,7 @@ Private Sub ReadLine() As String
     sData = Read Min(4096, $iMaxLength)
     $iMaxLength -= Len(sData)
     $sBuffer &= sData
+    If Request.Debug Then $sContents &= sData
     
   Loop
 
@@ -96,6 +100,8 @@ Private Sub Decode()
   
   'SHELL "echo MaxLength = " & CStr($iMaxLength) & " >> /var/log/thttpd/debug.log" WAIT
   'sType = Scan(sType, "*boundary=*")[1]
+  
+  $sContents = ""
   
   sType = ReadLine()
   'IF sLine <> sType THEN RETURN
@@ -215,4 +221,10 @@ Public Sub Exist(Field As String) As Boolean
   Decode
   Return $aField.Exist(Field)
   
+End
+
+Private Function Contents_Read() As String
+
+  Return $sContents
+
 End
