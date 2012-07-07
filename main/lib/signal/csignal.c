@@ -40,10 +40,12 @@
 #define SIGPWR -1
 #endif
 
-#if !defined(OS_BSD) && !defined(OS_CYGWIN)
+// How could the following fix a BSD warning if it is not compiled on BSD systems?
+
+/*#if !defined(OS_BSD) && !defined(OS_CYGWIN)
 typedef
 	struct siginfo siginfo_t;
-#endif
+#endif*/
 
 // The -1 signal is used for ignored signal numbers
 
