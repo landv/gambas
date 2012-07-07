@@ -352,6 +352,7 @@ Private Sub RefreshComponents()
   Dim hOld As ListContainer
   Dim iUser As Integer
   Dim hLibInfo As CLibraryInfo
+  Dim aNotFound As New String[]
 
   'If Not $bCanInitLibrary Then Return
 
@@ -385,14 +386,22 @@ Private Sub RefreshComponents()
   For Each sLib In Project.Components
     $cComp[sLib].Check("")
     For Each sDep In GetRequire(sLib)
-      $cComp[sDep].Check(sLib)
+      If Not $cComp.Exist(sDep) Then
+        aNotFound.Add(sDep)
+      Else
+        $cComp[sDep].Check(sLib)
+      Endif
     Next
   Next
   
   For Each sLib In $aLibraries
     hLibInfo = New CLibraryInfo(sLib)
     For Each sDep In hLibInfo.Require
-      $cComp[sDep].Check(sLib)
+      If Not $cComp.Exist(sDep) Then
+        aNotFound.Add(sDep)
+      Else
+        $cComp[sDep].Check(sLib)
+      Endif
     Next
   Next
   
@@ -407,6 +416,10 @@ Private Sub RefreshComponents()
   CComponentBox.ResizeNames(lstComponent)
   
   lstComponent.Unlock
+
+  If aNotFound Then
+    Message.Warning(Subst(("Some components are missing: &1"), aNotFound.Join(", ")))
+  Endif
 
   'IF hOld THEN hOld.Delete
 

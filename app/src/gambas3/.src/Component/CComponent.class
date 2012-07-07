@@ -455,7 +455,11 @@ Public Sub Load()
     
     Require = hLibraryInfo.Require
     For Each sLig In Require
-      All[sLig].Load
+      If Not All.Exist(sLig) Then
+        Error "gambas3: warning: component not found: "; sLig
+      Else
+        All[sLig].Load
+      Endif
     Next
   
   Else
