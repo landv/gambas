@@ -10,6 +10,7 @@ Private $buffer As String
 Private $stream As Stream
 Private $indent As Boolean
 Private $TagEnded As Boolean = True
+Private $encoding As String = "UTF-8"
 
 Private $opened As Boolean = False
 Private $lastWasElement As Boolean = False
@@ -27,7 +28,9 @@ Public Sub Open(Optional fileName As String, Optional Indent As Boolean, Optiona
   
   $opened = True
   
-  Write("<?xml version=\"1.0\"?>\n")
+  If Encoding Then $encoding = Encoding
+  
+  Write("<?xml version=\"1.0\" encoding=\"" & $encoding & "\"?>\n")
   
 End
 
