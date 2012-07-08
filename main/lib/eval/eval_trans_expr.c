@@ -81,18 +81,20 @@ static void push_number(int index)
 	if (number.type == T_INTEGER)
 	{
 		CODE_push_number(number.ival);
-		return;
 	}
+	else
+	{
+		cst.type = number.type;
+		if (cst.type == T_FLOAT)
+			cst._float.value = number.dval;
+		else if (cst.type == T_LONG)
+			cst._long.value = number.lval;
 
-	//sym = TABLE_get_symbol(EVAL->table, index);
-
-	cst.type = number.type;
-	if (cst.type == T_FLOAT)
-		cst._float.value = number.dval;
-	else if (cst.type == T_LONG)
-		cst._long.value = number.lval;
-
-	CODE_push_const(EVAL_add_constant(&cst));
+		CODE_push_const(EVAL_add_constant(&cst));
+	}
+	
+	if (number.complex)
+		CODE_push_complex();
 }
 
 

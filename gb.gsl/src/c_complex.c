@@ -48,6 +48,11 @@ GSLCOMPLEX *COMPLEX_create(gsl_complex number)
 	return c;
 }
 
+GSLCOMPLEX *COMPLEX_push_complex(double value)
+{
+	return COMPLEX_create(gsl_complex_rect(0, value));
+}
+
 //---- Arithmetic operators -------------------------------------------------
 
 static GSLCOMPLEX *_addf(GSLCOMPLEX *a, double f)
@@ -149,7 +154,7 @@ static GB_OPERATOR_DESC _operators =
 
 //---- Conversions ----------------------------------------------------------
 
-static char *_to_string(GSLCOMPLEX *_object, bool local)
+char *COMPLEX_to_string(gsl_complex number, bool local)
 {
 	char buffer[64];
 	char *p;
@@ -157,11 +162,8 @@ static char *_to_string(GSLCOMPLEX *_object, bool local)
 	int len;
 	double real, imag;
 	
-	if (!THIS)
-		return NULL;
-	
-	real = THIS->number.dat[0];
-	imag = THIS->number.dat[1];
+	real = number.dat[0];
+	imag = number.dat[1];
 	
 	if (real == 0.0 && imag == 0.0)
 		return GB.NewString("0", 1);
@@ -223,7 +225,7 @@ static bool _convert(GSLCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 				
 			case GB_T_STRING:
 			case GB_T_CSTRING:
-				conv->_string.value.addr = _to_string(a, type == GB_T_CSTRING);
+				conv->_string.value.addr = COMPLEX_to_string(a->number, type == GB_T_CSTRING);
 				conv->_string.value.start = 0;
 				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 				return FALSE;

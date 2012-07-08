@@ -299,6 +299,7 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 						case CPM_STRING: fprintf(out, "PUSH NULL STRING"); break;
 						case CPM_PINF: fprintf(out, "PUSH +INF"); break;
 						case CPM_MINF: fprintf(out, "PUSH -INF"); break;
+						case CPM_COMPLEX: fprintf(out, "PUSH COMPLEX"); break;
 					}
 					break;
 

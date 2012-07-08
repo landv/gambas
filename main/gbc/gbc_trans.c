@@ -260,6 +260,7 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
   int type;
   int base = 10;
   bool minus = FALSE;
+	bool complex = FALSE;
 
 	sym = TABLE_get_symbol(JOB->class->table, index);
 	if (sym->len > 66)
@@ -308,6 +309,12 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
   errno = 0;
 	number--;
 
+	if (base == 10 && tolower(buffer[sym->len - 1]) == 'i')
+	{
+		buffer[sym->len - 1] = 0;
+		complex = TRUE;
+	}
+	
 	if (!read_integer(number, base, minus, &val))
 	{
 		if (minus) val = (-val);
@@ -339,6 +346,7 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 __END:
 
   result->type = type;
+	result->complex = complex;
 
   if (type == T_INTEGER)
     result->lval = result->ival = val;

@@ -164,8 +164,17 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 {
   GB_VALUE value;
   SYMBOL *sym = TABLE_get_symbol(EVAL->table, index);
+	int len = sym->len;
 
-  if (GB.NumberFromString(GB_NB_READ_ALL | GB_NB_READ_HEX_BIN, sym->name, sym->len, &value))
+	if (len > 0 && tolower(sym->name[len - 1]) == 'i')
+	{
+		len--;
+		result->complex = TRUE;
+	}
+	else
+		result->complex = FALSE;
+	
+  if (GB.NumberFromString(GB_NB_READ_ALL | GB_NB_READ_HEX_BIN, sym->name, len, &value))
     return TRUE;
 
   if (value.type == T_INTEGER)

@@ -41,5 +41,7 @@ typedef
 	GSLCOMPLEX;
 
 GSLCOMPLEX *COMPLEX_create(gsl_complex number);
+GSLCOMPLEX *COMPLEX_push_complex(double value);
+char *COMPLEX_to_string(gsl_complex number, bool local);
 
 #endif /* __C_COMPLEX_H */

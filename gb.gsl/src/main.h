@@ -30,6 +30,7 @@
 #include "gb_common.h"
 
 #include <gsl/gsl_math.h>
+#include <gsl/gsl_blas.h>
 #include <gsl/gsl_cblas.h>
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_vector.h>

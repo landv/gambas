@@ -42,6 +42,7 @@ typedef
 		int ival;
 		int64_t lval;
 		double dval;
+		bool complex;
 		}
 	TRANS_NUMBER;
 

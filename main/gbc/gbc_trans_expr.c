@@ -102,16 +102,20 @@ static void push_number(int index)
 	if (number.type == T_INTEGER)
 	{
 		CODE_push_number(number.ival);
-		return;
 	}
-
-	CLEAR(&decl);
-	decl.type = TYPE_make(number.type, 0, 0);
-	decl.index = NO_SYMBOL;
-	decl.value = index;
-	if (number.type == T_LONG)
-		decl.lvalue = number.lval;
-	CODE_push_const(CLASS_add_constant(JOB->class, &decl));
+	else
+	{
+		CLEAR(&decl);
+		decl.type = TYPE_make(number.type, 0, 0);
+		decl.index = NO_SYMBOL;
+		decl.value = index;
+		if (number.type == T_LONG)
+			decl.lvalue = number.lval;
+		CODE_push_const(CLASS_add_constant(JOB->class, &decl));
+	}
+	
+	if (number.complex)
+		CODE_push_complex();
 }
 
 

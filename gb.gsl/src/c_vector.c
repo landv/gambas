@@ -29,12 +29,15 @@
 #include "c_vector.h"
 
 #define THIS ((GSLVECTOR *)_object)
+#define VECTOR THIS->vector
+#define VECTORC ((gsl_vector_complex *)VECTOR)
+
 #define SIZE(_ob) ((int)((GSLVECTOR *)_ob)->vector->size)
 
 
 //---- Utility functions ----------------------------------------------
 
-int gsl_vector_has_zero(gsl_vector *a)
+/*int gsl_vector_has_zero(gsl_vector *a)
 {
 	int i;
 	int size = (int)a->size;
@@ -42,6 +45,22 @@ int gsl_vector_has_zero(gsl_vector *a)
 	for (i = 0; i < size; i++)
 	{
 		if (gsl_vector_get(a, i) == 0.0)
+			return TRUE;
+	}
+	
+	return FALSE;
+}
+
+int gsl_vector_complex_has_zero(gsl_vector *a)
+{
+	int i;
+	int size = (int)a->size;
+	gsl_complex *p:
+	
+	for (i = 0; i < size; i++)
+	{
+		p = gsl_vector_complex_ptr((gsl_vector_complext *)a, i);
+		if (p->dat[0] == 0.0 && p->dat[1] == 0.0)
 			return TRUE;
 	}
 	
@@ -61,6 +80,19 @@ void gsl_vector_inverse(gsl_vector *a)
 	}
 }
 
+void gsl_vector_complex_inverse(gsl_vector *a)
+{
+	int i;
+	int size = (int)a->size;
+	gsl_complex *p;
+	
+	for (i = 0; i < size; i++)
+	{
+		p = gsl_vector_complex_ptr((gsl_vector_complex *)a, i);
+		*p = gsl_complex_inverse(*p);
+	}
+}
+
 void gsl_vector_negative(gsl_vector *a)
 {
 	int i;
@@ -74,91 +106,127 @@ void gsl_vector_negative(gsl_vector *a)
 	}
 }
 
-double gsl_vector_abs(gsl_vector *a)
+void gsl_vector_complex_negative(gsl_vector *a)
 {
 	int i;
 	int size = (int)a->size;
-	double val;
-	double norm = 0;
+	gsl_complex *p;
 	
 	for (i = 0; i < size; i++)
 	{
-		val = gsl_vector_get(a, i);
-		norm += val * val;
+		p = gsl_vector_complex_ptr((gsl_vector_complext *)a, i);
+		*p = gsl_complex_negative(*p);
 	}
-	
-	return sqrt(norm);
-}
+}*/
 
 //---- Vector creation ------------------------------------------------------
 
 static bool _do_not_init = FALSE;
 
-static GSLVECTOR *VECTOR_create(int size, bool init)
+static GSLVECTOR *VECTOR_create(GB_TYPE type, int size, bool init)
 {
-	static GB_CLASS _klass = (GB_CLASS)NULL;
-
+	GB_CLASS klass;
 	GSLVECTOR *v;
 	
-	if (!_klass)
-		_klass = GB.FindClass("Vector");
+	if (type == GB_T_FLOAT)
+		klass = GB.FindClass("FloatVector");
+	else if (type == GB.FindClass("Complex"))
+		klass = GB.FindClass("ComplexVector");
+	else
+		return NULL;
 	
 	_do_not_init = TRUE;
-	v = (GSLVECTOR *)GB.New(_klass, NULL, NULL);
-	v->vector = init ? gsl_vector_calloc(size) : gsl_vector_alloc(size);
+	v = (GSLVECTOR *)GB.New(klass, NULL, NULL);
+	
+	v->type = type;
+	
+	if (type == GB_T_FLOAT)
+		v->vector = init ? gsl_vector_calloc(size) : gsl_vector_alloc(size);
+	else
+		v->vector = (gsl_vector *)(init ? gsl_vector_complex_calloc(size) : gsl_vector_complex_alloc(size));
 	
 	return v;
-	
 }
 
 static GSLVECTOR *VECTOR_copy(GSLVECTOR *_object)
 {
-	GSLVECTOR *copy = VECTOR_create((int)THIS->vector->size, FALSE);
-	gsl_vector_memcpy(copy->vector, THIS->vector);
+	GSLVECTOR *copy = VECTOR_create(THIS->type, (int)VECTOR->size, FALSE);
+	if (THIS->type == GB_T_FLOAT)
+		gsl_vector_memcpy(copy->vector, VECTOR);
+	else
+		gsl_vector_complex_memcpy((gsl_vector_complex *)copy->vector, VECTORC);
+	
 	return copy;
 }
 
 //---- Arithmetic operators -------------------------------------------------
 
+#if 0
 static GSLVECTOR *_addf(GSLVECTOR *a, double f)
 {
 	GSLVECTOR *r = VECTOR_copy(a);
-	gsl_vector_add_constant(r->vector, f);
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_add_constant(r->vector, f);
+	else
+		gsl_vector_complex_add_constant((gsl_vector_complex *)r->vector, gsl_complex_rect(f, 0));
 	return r;
 }
 
 static GSLVECTOR *_add(GSLVECTOR *a, GSLVECTOR *b)
 {
 	GSLVECTOR *r = VECTOR_copy(a);
-	gsl_vector_add(r->vector, b->vector);
+	
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_add(r->vector, b->vector);
+	else
+		gsl_vector_complex_add((gsl_vector_complex *)r->vector, (gsl_vector_complex *)b->vector);
+	
 	return r;
 }
 
 static GSLVECTOR *_subf(GSLVECTOR *a, double f)
 {
 	GSLVECTOR *r = VECTOR_copy(a);
-	gsl_vector_add_constant(r->vector, -f);
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_add_constant(r->vector, -f);
+	else
+		gsl_vector_complex_add_constant((gsl_vector_complex *)r->vector, gsl_complex_rect(-f, 0));
 	return r;
 }
 
 static GSLVECTOR *_sub(GSLVECTOR *a, GSLVECTOR *b)
 {
 	GSLVECTOR *r = VECTOR_copy(a);
-	gsl_vector_sub(r->vector, b->vector);
+
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_sub(r->vector, b->vector);
+	else
+		gsl_vector_complex_sub((gsl_vector_complex *)r->vector, (gsl_vector_complex *)b->vector);
+	
 	return r;
 }
 
 static GSLVECTOR *_mulf(GSLVECTOR *a, double f)
 {
 	GSLVECTOR *r = VECTOR_copy(a);
-	gsl_vector_scale(r->vector, f);
+	
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_scale(r->vector, f);
+	else
+		gsl_vector_complex_scale((gsl_vector_complex *)r->vector, gsl_complex_rect(f, 0));
+	
 	return r;
 }
 
 static GSLVECTOR *_mul(GSLVECTOR *a, GSLVECTOR *b)
 {
 	GSLVECTOR *r = VECTOR_copy(a);
-	gsl_vector_mul(r->vector, b->vector);
+
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_mul(r->vector, b->vector);
+	else
+		gsl_vector_complex_mul((gsl_vector_complex *)r->vector, (gsl_vector_complex *)b->vector);
+	
 	return r;
 }
 
@@ -170,7 +238,11 @@ static GSLVECTOR *_divf(GSLVECTOR *a, double f)
 		return NULL;
 	
 	r = VECTOR_copy(a);
-	gsl_vector_scale(r->vector, 1 / f);
+	if (r->type == GB_T_FLOAT)
+		gsl_vector_scale(r->vector, 1 / f);
+	else
+		gsl_vector_complex_scale((gsl_vector_complex *)r->vector, gsl_complex_rect(1 / f, 0));
+	
 	return r;
 }
 
@@ -178,12 +250,30 @@ static GSLVECTOR *_idivf(GSLVECTOR *a, double f)
 {
 	GSLVECTOR *r;
 	
-	if (gsl_vector_has_zero(a->vector))
-		return NULL;
+	if (a->type == GB_T_FLOAT)
+	{
+		if (gsl_vector_has_zero(a->vector))
+			return NULL;
+	}
+	else
+	{
+		if (gsl_vector_complex_has_zero((gsl_vector_complex *)a->vector))
+			return NULL;
+	}
 	
 	r = VECTOR_copy(a);
-	gsl_vector_inverse(r->vector);
-	gsl_vector_scale(r->vector, f);
+
+	if (a->type == GB_T_FLOAT)
+	{
+		gsl_vector_inverse(r->vector);
+		gsl_vector_scale(r->vector, f);
+	}
+	else
+	{
+		gsl_vector_complex_inverse((gsl_vector_complext *)r->vector);
+		gsl_vector_complex_scale((gsl_vector_complex *)r->vector, gsl_complex_rect(f, 0));
+	}
+	
 	return r;
 }
 
@@ -191,8 +281,16 @@ static GSLVECTOR *_div(GSLVECTOR *a, GSLVECTOR *b)
 {
 	GSLVECTOR *r;
 	
-	if (gsl_vector_has_zero(b->vector))
-		return NULL;
+	if (a->type == GB_T_FLOAT)
+	{
+		if (gsl_vector_has_zero(a->vector))
+			return NULL;
+	}
+	else
+	{
+		if (gsl_vector_complex_has_zero((gsl_vector_complex *)a->vector))
+			return NULL;
+	}
 	
 	r = VECTOR_copy(a);
 	gsl_vector_div(r->vector, b->vector);
@@ -227,7 +325,7 @@ static GSLVECTOR *_neg(GSLVECTOR *a)
 
 static double _abs(GSLVECTOR *a)
 {
-	return gsl_vector_abs(a->vector);
+	return gsl_blas_dnrm2(a->vector);
 }
 
 static GB_OPERATOR_DESC _operators =
@@ -246,6 +344,7 @@ static GB_OPERATOR_DESC _operators =
 	abs: (void *)_abs,
 	neg: (void *)_neg
 };
+#endif
 
 //---- Conversions ----------------------------------------------------------
 
@@ -264,8 +363,17 @@ static char *_to_string(GSLVECTOR *_object, bool local)
 		if (i)
 			result = GB.AddChar(result, ' ');
 		
-		GB.NumberToString(local, gsl_vector_get(THIS->vector, i), NULL, &str, &len);
-		result = GB.AddString(result, str, len);
+		if (THIS->type == GB_T_FLOAT)
+		{
+			GB.NumberToString(local, gsl_vector_get(VECTOR, i), NULL, &str, &len);
+			result = GB.AddString(result, str, len);
+		}
+		else
+		{
+			str = COMPLEX_to_string(gsl_vector_complex_get(VECTORC, i), local);
+			result = GB.AddString(result, str, GB.StringLength(str));
+			GB.FreeString(&str);
+		}
 	}
 	
 	result = GB.AddChar(result, ']');
@@ -273,39 +381,75 @@ static char *_to_string(GSLVECTOR *_object, bool local)
 	return result;
 }
 
-static bool _convert(GSLVECTOR *a, GB_TYPE type, GB_VALUE *conv)
+static bool _convert(GSLVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 {
-	if (a)
+	if (THIS)
 	{
-		switch (type)
+		if (THIS->type == GB_T_FLOAT)
 		{
-			case GB_T_FLOAT:
-				conv->_float.value = gsl_vector_abs(a->vector);
-				return FALSE;
-				
-			case GB_T_SINGLE:
-				conv->_single.value = gsl_vector_abs(a->vector);
-				return FALSE;
-				
-			case GB_T_INTEGER:
-			case GB_T_SHORT:
-			case GB_T_BYTE:
-				conv->_integer.value = gsl_vector_abs(a->vector);
-				return FALSE;
-				
-			case GB_T_LONG:
-				conv->_long.value = gsl_vector_abs(a->vector);
-				return FALSE;
-				
-			case GB_T_STRING:
-			case GB_T_CSTRING:
-				conv->_string.value.addr = _to_string(a, type == GB_T_CSTRING);
-				conv->_string.value.start = 0;
-				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
-				return FALSE;
-				
-			default:
-				return TRUE;
+			switch (type)
+			{
+				case GB_T_FLOAT:
+					conv->_float.value = gsl_blas_dnrm2(VECTOR);
+					return FALSE;
+					
+				case GB_T_SINGLE:
+					conv->_single.value = gsl_blas_dnrm2(VECTOR);
+					return FALSE;
+					
+				case GB_T_INTEGER:
+				case GB_T_SHORT:
+				case GB_T_BYTE:
+					conv->_integer.value = gsl_blas_dnrm2(VECTOR);
+					return FALSE;
+					
+				case GB_T_LONG:
+					conv->_long.value = gsl_blas_dnrm2(VECTOR);
+					return FALSE;
+					
+				case GB_T_STRING:
+				case GB_T_CSTRING:
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
+					conv->_string.value.start = 0;
+					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
+					return FALSE;
+					
+				default:
+					return TRUE;
+			}
+		}
+		else
+		{
+			switch (type)
+			{
+				case GB_T_FLOAT:
+					conv->_float.value = gsl_blas_dznrm2(VECTORC);
+					return FALSE;
+					
+				case GB_T_SINGLE:
+					conv->_single.value = gsl_blas_dznrm2(VECTORC);
+					return FALSE;
+					
+				case GB_T_INTEGER:
+				case GB_T_SHORT:
+				case GB_T_BYTE:
+					conv->_integer.value = gsl_blas_dznrm2(VECTORC);
+					return FALSE;
+					
+				case GB_T_LONG:
+					conv->_long.value = gsl_blas_dznrm2(VECTORC);
+					return FALSE;
+					
+				case GB_T_STRING:
+				case GB_T_CSTRING:
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
+					conv->_string.value.start = 0;
+					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
+					return FALSE;
+					
+				default:
+					return TRUE;
+			}
 		}
 	}
 	else if (type >= GB_T_OBJECT)
@@ -314,7 +458,7 @@ static bool _convert(GSLVECTOR *a, GB_TYPE type, GB_VALUE *conv)
 		{
 			GB_ARRAY array = (GB_ARRAY)conv->_object.value;
 			int size = GB.Array.Count(array);
-			GSLVECTOR *v = VECTOR_create(size, FALSE);
+			GSLVECTOR *v;
 			int i;
 			GB_VALUE temp;
 			void *data;
@@ -322,6 +466,8 @@ static bool _convert(GSLVECTOR *a, GB_TYPE type, GB_VALUE *conv)
 			
 			if (atype > GB_T_BOOLEAN && atype <= GB_T_FLOAT)
 			{
+				v = VECTOR_create(GB_T_FLOAT, size, FALSE);
+				
 				for (i = 0; i < size; i++)
 				{
 					data = GB.Array.Get(array, i);
@@ -333,13 +479,29 @@ static bool _convert(GSLVECTOR *a, GB_TYPE type, GB_VALUE *conv)
 				conv->_object.value = v;
 				return FALSE;
 			}
+			else if (atype == GB.FindClass("Complex"))
+			{
+				GSLCOMPLEX *c;
+				v = VECTOR_create(atype, size, FALSE);
+				
+				for (i = 0; i < size; i++)
+				{
+					c = *((GSLCOMPLEX **)GB.Array.Get(array, i));
+					if (c)
+						gsl_vector_complex_set((gsl_vector_complex *)v->vector, i, c->number);
+					else
+						gsl_vector_complex_set((gsl_vector_complex *)v->vector, i, gsl_complex_rect(0, 0));
+				}
+				
+				conv->_object.value = v;
+				return FALSE;
+			}
 		}
 		else if (type == GB.FindClass("Complex"))
 		{
 			GSLCOMPLEX *c = (GSLCOMPLEX *)conv->_object.value;
-			GSLVECTOR *v = VECTOR_create(2, FALSE);
-			gsl_vector_set(v->vector, 0, c->number.dat[0]);
-			gsl_vector_set(v->vector, 1, c->number.dat[1]);
+			GSLVECTOR *v = VECTOR_create(type, 1, FALSE);
+			gsl_vector_complex_set((gsl_vector_complex *)v->vector, 0, c->number);
 			conv->_object.value = v;
 			return FALSE;
 		}
@@ -350,24 +512,18 @@ static bool _convert(GSLVECTOR *a, GB_TYPE type, GB_VALUE *conv)
 
 //---------------------------------------------------------------------------
 
-BEGIN_METHOD(Vector_new, GB_INTEGER size)
-
-	if (_do_not_init)
-		_do_not_init = FALSE;
-	else
-		THIS->vector = gsl_vector_calloc(VARGOPT(size, 1));
-
-END_METHOD
-
 BEGIN_METHOD_VOID(Vector_free)
 
-	gsl_vector_free(THIS->vector);
+	if (THIS->type == GB_T_FLOAT)
+		gsl_vector_free(VECTOR);
+	else
+		gsl_vector_complex_free(VECTORC);
 
 END_METHOD
 
 BEGIN_PROPERTY(Vector_Count)
 
-	GB.ReturnInteger((int)THIS->vector->size);
+	GB.ReturnInteger(SIZE(THIS));
 
 END_PROPERTY
 
@@ -388,11 +544,16 @@ BEGIN_METHOD(Vector_get, GB_INTEGER index)
 		return;
 	}
 	
-	GB.ReturnFloat(gsl_vector_get(THIS->vector, index));
+	if (THIS->type == GB_T_FLOAT)
+		GB.ReturnFloat(gsl_vector_get(VECTOR, index));
+	else
+		GB.ReturnObject(COMPLEX_create(gsl_vector_complex_get(VECTORC, index)));
+
+	GB.ReturnConvVariant();
 
 END_METHOD
 
-BEGIN_METHOD(Vector_put, GB_FLOAT value; GB_INTEGER index)
+BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 
 	int size = SIZE(THIS);
 	int index = VARG(index);
@@ -403,26 +564,155 @@ BEGIN_METHOD(Vector_put, GB_FLOAT value; GB_INTEGER index)
 		return;
 	}
 	
-	gsl_vector_set(THIS->vector, index, VARG(value));
+	GB.Conv((GB_VALUE *)ARG(value), THIS->type);
+	
+	if (THIS->type == GB_T_FLOAT)
+		gsl_vector_set(VECTOR, index, ((GB_FLOAT *)ARG(value))->value);
+	else
+	{
+		GSLCOMPLEX *c = (GSLCOMPLEX *)((GB_OBJECT *)ARG(value))->value;
+		if (GB.CheckObject(c))
+			gsl_vector_complex_set(VECTORC, index, gsl_complex_rect(0, 0));
+		else
+			gsl_vector_complex_set(VECTORC, index, c->number);
+	}
 
 END_METHOD
 
+//---------------------------------------------------------------------------
+
+BEGIN_METHOD(FloatVector_new, GB_INTEGER size)
+
+	if (_do_not_init)
+		_do_not_init = FALSE;
+	else
+	{
+		THIS->type = GB_T_FLOAT;
+		THIS->vector = gsl_vector_calloc(VARGOPT(size, 1));
+	}
+
+END_METHOD
+
+BEGIN_METHOD(FloatVector_get, GB_INTEGER index)
+
+	int size = SIZE(THIS);
+	int index = VARG(index);
+	
+	if (index < 0 || index >= size)
+	{
+		GB.Error(GB_ERR_ARG);
+		return;
+	}
+	
+	GB.ReturnFloat(gsl_vector_get(VECTOR, index));
+
+END_METHOD
+
+/*BEGIN_METHOD(FloatVector_put, GB_FLOAT value; GB_INTEGER index)
+
+	int size = SIZE(THIS);
+	int index = VARG(index);
+	
+	if (index < 0 || index >= size)
+	{
+		GB.Error(GB_ERR_ARG);
+		return;
+	}
+	
+	gsl_vector_set(VECTOR, index, VARG(value));
+
+END_METHOD*/
+
+//---------------------------------------------------------------------------
+
+BEGIN_METHOD(ComplexVector_new, GB_INTEGER size)
+
+	if (_do_not_init)
+		_do_not_init = FALSE;
+	else
+	{
+		THIS->type = GB.FindClass("Complex");
+		THIS->vector = (gsl_vector *)gsl_vector_complex_calloc(VARGOPT(size, 1));
+	}
+
+END_METHOD
+
+BEGIN_METHOD(ComplexVector_get, GB_INTEGER index)
+
+	int size = SIZE(THIS);
+	int index = VARG(index);
+	
+	if (index < 0 || index >= size)
+	{
+		GB.Error(GB_ERR_ARG);
+		return;
+	}
+	
+	GB.ReturnObject(COMPLEX_create(gsl_vector_complex_get(VECTORC, index)));
+
+END_METHOD
+
+/*BEGIN_METHOD(ComplexVector_put, GB_OBJECT value; GB_INTEGER index)
+
+	int size = SIZE(THIS);
+	int index = VARG(index);
+	GSLCOMPLEX *value;
+	
+	if (index < 0 || index >= size)
+	{
+		GB.Error(GB_ERR_ARG);
+		return;
+	}
+	
+	value = (GSLCOMPLEX *)VARG(value);
+	if (GB.CheckObject(value))
+		return;
+	
+	gsl_vector_complex_set(VECTORC, index, value->number);
+
+END_METHOD*/
+
 GB_DESC VectorDesc[] =
 {
-	GB_DECLARE("Vector", sizeof(GSLVECTOR)),
+	GB_DECLARE("Vector", sizeof(GSLVECTOR)), GB_NOT_CREATABLE(),
 	
-	GB_METHOD("_new", NULL, Vector_new, "[(Size)i]"),
+	//GB_METHOD("_new", NULL, Vector_new, "[(Size)i]"),
 	GB_METHOD("_free", NULL, Vector_free, NULL),
 	//GB_STATIC_METHOD("_call", "Vector", Vector_call, "(Value)f."),
 	GB_METHOD("Copy", "Vector", Vector_Copy, NULL),
 	
-	GB_METHOD("_get", "f", Vector_get, "(Index)i"),
+	GB_PROPERTY_READ("Count", "i", Vector_Count),
+	
+	GB_METHOD("_get", "v", Vector_get, "(Index)i"),
+	GB_METHOD("_put", NULL, Vector_put, "(Value)v(Index)i"),
+
+	GB_INTERFACE("_convert", &_convert),
+	
+	GB_END_DECLARE
+};
+
+GB_DESC FloatVectorDesc[] =
+{
+	GB_DECLARE("FloatVector", sizeof(GSLVECTOR)),
+	GB_INHERITS("Vector"),
+	
+	GB_METHOD("_new", NULL, FloatVector_new, "[(Size)i]"),
+	
+	GB_METHOD("_get", "f", FloatVector_get, "(Index)i"),
 	GB_METHOD("_put", NULL, Vector_put, "(Value)f(Index)i"),
 	
-	GB_PROPERTY_READ("Count", "i", Vector_Count),
-																	
-	GB_INTERFACE("_operators", &_operators),
-	GB_INTERFACE("_convert", &_convert),
+	GB_END_DECLARE
+};
+
+GB_DESC ComplexVectorDesc[] =
+{
+	GB_DECLARE("ComplexVector", sizeof(GSLVECTOR)),
+	GB_INHERITS("Vector"),
+	
+	GB_METHOD("_new", NULL, ComplexVector_new, "[(Size)i]"),
+	
+	GB_METHOD("_get", "Complex", ComplexVector_get, "(Index)i"),
+	GB_METHOD("_put", NULL, Vector_put, "(Value)Complex(Index)i"),
 	
 	GB_END_DECLARE
 };

@@ -44,6 +44,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CGslDesc, /* The Elementary math functions */
   ComplexDesc,
 	VectorDesc,
+	FloatVectorDesc,
+	ComplexVectorDesc,
   CPolynomialDesc,
   CComplexPolynomialDesc,
   /* Other classes go here as completed */
@@ -57,6 +59,17 @@ int EXPORT GB_INIT(void)
 
 void EXPORT GB_EXIT()
 {
+}
+
+int EXPORT GB_INFO(const char *key, void **value)
+{
+	if (!strcasecmp(key, "PUSH_COMPLEX"))
+	{
+		*value = (void *)COMPLEX_push_complex;
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
 
 #ifdef _cpluscplus

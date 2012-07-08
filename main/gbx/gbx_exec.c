@@ -1963,3 +1963,32 @@ void EXEC_dup(int n)
 		n--;
 	}
 }
+
+void EXEC_push_complex(void)
+{
+	static void *(*func)(double) = NULL;
+	void *ob;
+	
+	SP--;
+	if (SP->type < T_INTEGER || SP->type > T_FLOAT)
+		THROW_ILLEGAL();
+	SP++;
+	
+	if (!func)
+	{
+		if (COMPONENT_get_info("PUSH_COMPLEX", POINTER(&func)))
+		{
+			COMPONENT_load(COMPONENT_create("gb.gsl"));
+			if (COMPONENT_get_info("PUSH_COMPLEX", POINTER(&func)))
+				THROW(E_MATH);
+		}
+	}
+	
+	SP--;
+	VALUE_conv_float(SP);
+	ob = (*func)(SP->_float.value);
+	SP->_object.object = ob;
+	SP->_object.class = OBJECT_class(ob);
+	OBJECT_REF(ob, "EXEC_push_complex");
+	SP++;
+}

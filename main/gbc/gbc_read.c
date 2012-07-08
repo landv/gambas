@@ -570,6 +570,10 @@ READ_NUMBER:
 		while (isdigit(car))
 			car = next_char();
 	}
+	else if (toupper(car) == 'I')
+	{
+		car = next_char();
+	}
 
 	goto END;
 

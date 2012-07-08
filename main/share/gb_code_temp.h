@@ -1355,10 +1355,21 @@ void CODE_push_inf(bool neg)
 	use_stack(1);
 
 	#ifdef DEBUG
-	printf("PUSH cINF\n", neg ? '-' : '+');
+	printf("PUSH %cINF\n", neg ? '-' : '+');
 	#endif
 
 	write_ZZxx(C_PUSH_MISC, neg ? CPM_MINF : CPM_PINF);
+}
+
+void CODE_push_complex(void)
+{
+	LAST_CODE;
+
+	#ifdef DEBUG
+	printf("PUSH COMPLEX\n");
+	#endif
+
+	write_ZZxx(C_PUSH_MISC, CPM_COMPLEX);
 }
 
 #ifdef CODE_DUMP

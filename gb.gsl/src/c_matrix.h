@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	c_vector.h
+	c_matrix.h
 
 	gb.gsl component
 
@@ -23,24 +23,21 @@ MA 02110-1301, USA.
 
 ***************************************************************************/
 
-#ifndef __C_VECTOR_H
-#define __C_VECTOR_H
+#ifndef __C_MATRIX_H
+#define __C_MATRIX_H
 
 #include "main.h"
 
-#ifndef __C_VECTOR_C
-extern GB_DESC VectorDesc[];
-extern GB_DESC FloatVectorDesc[];
-extern GB_DESC ComplexVectorDesc[];
+#ifndef __C_MATRIX_C
+extern GB_DESC MatrixDesc[];
 #endif
 
 typedef
 	struct
 	{
 		GB_BASE ob;
-		GB_TYPE type;
-		gsl_vector *vector;
+		gsl_matrix *matrix;
 	}
-	GSLVECTOR;
+	GSLMATRIX;
 
-#endif /* __C_VECTOR_H */
+#endif /* __C_MATRIX_H */

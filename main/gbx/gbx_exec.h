@@ -212,6 +212,8 @@ void UNBORROW(VALUE *val);
 void EXEC_release(TYPE type, VALUE *val);
 void RELEASE_many(VALUE *val, int n);
 
+void EXEC_push_complex(void);
+
 #define BORROW(_value) \
 do { \
 	VALUE *_v = (_value); \
