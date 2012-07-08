@@ -27,15 +27,16 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb_common.h"
 
-#include "c_gsl.h"
-#include "c_complex.h"
-#include "c_polynomial.h"
-#include "c_complexpolynomial.h"
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_cblas.h>
+#include <gsl/gsl_complex.h>
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_complex_math.h>
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
-extern GB_CLASS CGslDesc[];
 #endif
 
 #endif /* __MAIN_H */

@@ -27,6 +27,12 @@
 
 #include "main.h"
 
+#include "c_gsl.h"
+#include "c_complex.h"
+#include "c_vector.h"
+#include "c_polynomial.h"
+#include "c_complexpolynomial.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,7 +45,8 @@ GB_CLASS GSL;
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   CGslDesc, /* The Elementary math functions */
-  CComplexDesc,
+  ComplexDesc,
+	VectorDesc,
   CPolynomialDesc,
   CComplexPolynomialDesc,
   /* Other classes go here as completed */

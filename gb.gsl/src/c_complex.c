@@ -22,16 +22,11 @@
 	MA 02110-1301, USA.
 
 ***************************************************************************/
-#ifndef __C_GSL_COMPLEX_C
-#define __C_GSL_COMPLEX_C
-#endif
+
+#define __C_COMPLEX_C
 
 #include "c_complex.h"
-#include "../gambas.h"
-#include "gb_common.h"
 #include "c_gsl.h"
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_cblas.h>
 #include <stdio.h>
 
 #define THIS ((GSLCOMPLEX *)_object)
@@ -204,35 +199,60 @@ static char *_to_string(GSLCOMPLEX *_object, bool local)
 
 static bool _convert(GSLCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 {
-	switch (type)
+	if (a)
 	{
-		case GB_T_FLOAT:
-			conv->_float.value = gsl_complex_abs(a->number);
-			return FALSE;
-			
-		case GB_T_SINGLE:
-			conv->_single.value = gsl_complex_abs(a->number);
-			return FALSE;
-			
-		case GB_T_INTEGER:
-		case GB_T_SHORT:
-		case GB_T_BYTE:
-			conv->_integer.value = gsl_complex_abs(a->number);
-			return FALSE;
-			
-		case GB_T_LONG:
-			conv->_long.value = gsl_complex_abs(a->number);
-			return FALSE;
-			
-		case GB_T_STRING:
-		case GB_T_CSTRING:
-			conv->_string.value.addr = _to_string(a, type == GB_T_CSTRING);
-			conv->_string.value.start = 0;
-			conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
-			return FALSE;
-			
-		default:
-			return TRUE;
+		switch (type)
+		{
+			case GB_T_FLOAT:
+				conv->_float.value = gsl_complex_abs(a->number);
+				return FALSE;
+				
+			case GB_T_SINGLE:
+				conv->_single.value = gsl_complex_abs(a->number);
+				return FALSE;
+				
+			case GB_T_INTEGER:
+			case GB_T_SHORT:
+			case GB_T_BYTE:
+				conv->_integer.value = gsl_complex_abs(a->number);
+				return FALSE;
+				
+			case GB_T_LONG:
+				conv->_long.value = gsl_complex_abs(a->number);
+				return FALSE;
+				
+			case GB_T_STRING:
+			case GB_T_CSTRING:
+				conv->_string.value.addr = _to_string(a, type == GB_T_CSTRING);
+				conv->_string.value.start = 0;
+				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
+				return FALSE;
+				
+			default:
+				return TRUE;
+		}
+	}
+	else
+	{
+		switch(type)
+		{
+			case GB_T_FLOAT:
+				conv->_object.value = COMPLEX_create(gsl_complex_rect(conv->_float.value, 0));
+				return FALSE;
+
+			case GB_T_SINGLE:
+				conv->_object.value = COMPLEX_create(gsl_complex_rect(conv->_single.value, 0));
+				return FALSE;
+
+			case GB_T_INTEGER:
+			case GB_T_SHORT:
+			case GB_T_BYTE:
+				conv->_object.value = COMPLEX_create(gsl_complex_rect(conv->_integer.value, 0));
+				return FALSE;
+				
+			default:
+				return TRUE;
+		}
 	}
 }
 
@@ -455,7 +475,8 @@ IMPLEMENT_FUNC(Arccoth, gsl_complex_arccoth)
 /**************************************************
   Describe Class properties and methods to Gambas
 **************************************************/
-GB_DESC CComplexDesc[] =
+
+GB_DESC ComplexDesc[] =
 {
 	GB_DECLARE("Complex", sizeof(GSLCOMPLEX)),
 	
@@ -465,18 +486,15 @@ GB_DESC CComplexDesc[] =
 	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
 	GB_STATIC_METHOD("Polar", "Complex", Complex_Polar, "[(Real)f(Imag)f]"),
 	//GB_METHOD("Set", NULL, Complex_Set, "[(Real)f(Imag)f]"),
-	GB_METHOD("Arg", "f", Complex_Arg, NULL),
 	
-	GB_INTERFACE("_operators", &_operators),
-	GB_INTERFACE("_convert", &_convert),
-	
-	GB_METHOD("Abs", "f", Complex_Abs, NULL),
-	GB_METHOD("Abs2", "f", Complex_Abs2, NULL),
-	GB_METHOD("LogAbs", "f", Complex_LogAbs, NULL),
-
 	// Properties
 	GB_PROPERTY("Real", "f", Complex_Real),
 	GB_PROPERTY("Imag", "f", Complex_Imagined),
+
+	GB_METHOD("Abs", "f", Complex_Abs, NULL),
+	GB_METHOD("Abs2", "f", Complex_Abs2, NULL),
+	GB_METHOD("LogAbs", "f", Complex_LogAbs, NULL),
+	GB_METHOD("Arg", "f", Complex_Arg, NULL),
 
 	/* Operations on gsl_complex */
 	// Elementary Math Functions
@@ -545,5 +563,8 @@ GB_DESC CComplexDesc[] =
 	GB_METHOD("Arccsch", "Complex", Complex_Arccsch, NULL),
 	GB_METHOD("Arccoth", "Complex", Complex_Arccoth, NULL),
 
+	GB_INTERFACE("_operators", &_operators),
+	GB_INTERFACE("_convert", &_convert),
+	
 	GB_END_DECLARE
 };

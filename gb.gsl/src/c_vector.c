@@ -1,10 +1,10 @@
 /***************************************************************************
 
-	c_complex.h
+	c_vector.c
 
 	gb.gsl component
 
-	(c) 2012 Randall Morgan <rmorgan62@gmail.com>
+	(c) 2012 Benoît Minisini <gambas@users.sourceforge.net>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,27 +19,28 @@
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-MA 02110-1301, USA.
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
-#ifndef __C_COMPLEX_H
-#define __C_COMPLEX_H
+#define __C_VECTOR_C
 
-#include "main.h"
+#include "c_vector.h"
 
-#ifndef _C_COMPLEX_C
-extern GB_DESC ComplexDesc[];
-#endif
+#define THIS ((GSLVECTOR *)_object)
 
-typedef
-	struct
-	{
-		GB_BASE ob;
-		gsl_complex number;
-	}
-	GSLCOMPLEX;
-
-GSLCOMPLEX *COMPLEX_create(gsl_complex number);
-
-#endif /* __C_COMPLEX_H */
+GB_DESC VectorDesc[] =
+{
+	GB_DECLARE("Vector", sizeof(GSLVECTOR)),
+	
+	// Utility Methods 
+	/*GB_METHOD("_new", NULL, Complex_new, "[(Real)f(Imag)f]"),
+	GB_STATIC_METHOD("_call", "Complex", Complex_call, "[(Real)f(Imag)f]"),
+	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
+	GB_STATIC_METHOD("Polar", "Complex", Complex_Polar, "[(Real)f(Imag)f]"),
+	
+	GB_INTERFACE("_operators", &_operators),
+	GB_INTERFACE("_convert", &_convert),*/
+	
+	GB_END_DECLARE
+};

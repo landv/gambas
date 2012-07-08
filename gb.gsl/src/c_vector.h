@@ -1,10 +1,10 @@
 /***************************************************************************
 
-	c_complex.h
+	c_vector.h
 
 	gb.gsl component
 
-	(c) 2012 Randall Morgan <rmorgan62@gmail.com>
+	(c) 2012 Benoît Minisini <gambas@users.sourceforge.net>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,23 +23,21 @@ MA 02110-1301, USA.
 
 ***************************************************************************/
 
-#ifndef __C_COMPLEX_H
-#define __C_COMPLEX_H
+#ifndef __C_VECTOR_H
+#define __C_VECTOR_H
 
 #include "main.h"
 
-#ifndef _C_COMPLEX_C
-extern GB_DESC ComplexDesc[];
+#ifndef __C_VECTOR_C
+extern GB_DESC VectorDesc[];
 #endif
 
 typedef
 	struct
 	{
 		GB_BASE ob;
-		gsl_complex number;
+		gsl_vector vector;
 	}
-	GSLCOMPLEX;
+	GSLVECTOR;
 
-GSLCOMPLEX *COMPLEX_create(gsl_complex number);
-
-#endif /* __C_COMPLEX_H */
+#endif /* __C_VECTOR_H */

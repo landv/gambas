@@ -1407,7 +1407,7 @@ static bool array_convert(CARRAY *src, CLASS *class, VALUE *conv)
 	void *data;
 	VALUE temp;
 	
-	if (!TYPE_is_pure_object((TYPE)class) || !CLASS_inherits(class, CLASS_Array))
+	if (!src || !TYPE_is_pure_object((TYPE)class) || !CLASS_inherits(class, CLASS_Array))
 		return TRUE;
 	
 	_converted_array = array = OBJECT_create(class, NULL, NULL, 0);

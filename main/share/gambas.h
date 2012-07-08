@@ -835,7 +835,7 @@ typedef
 		void *(*neg)(void *);
 		void *(*pow)(void *, void *);
 		void *(*powf)(void *, double);
-		void *(*abs)(void *);
+		double (*abs)(void *);
 		void *(*max)(void *, void *);
 		void *(*min)(void *, void *);
 	}

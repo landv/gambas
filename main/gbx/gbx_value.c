@@ -770,7 +770,23 @@ __OBJECT:
 			/* on continue... */
 		}
 		else
+		{
+			if (TYPE_is_pure_object(type))
+			{
+				class = (CLASS *)type;
+
+				if (class->has_convert)
+				{
+					if (!((bool (*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(NULL, value->type, value))
+					{
+						OBJECT_REF(value->_object.object, "VALUE_convert");
+						goto __TYPE;
+					}
+				}
+			}
+			
 			goto __N;
+		}
 	}
 
 	if (value->_object.object == NULL)

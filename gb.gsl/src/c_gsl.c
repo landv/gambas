@@ -23,17 +23,11 @@
 
 ***************************************************************************/
 
-#ifndef __C_GSL_C
 #define __C_GSL_C
 
-#include "gambas.h"
-#include "gb_common.h"
 #include "c_gsl.h"
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf.h>
-
-#endif
-
 
 
 /*--------------------------------

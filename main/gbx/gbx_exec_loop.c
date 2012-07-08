@@ -196,7 +196,7 @@ static int check_operators(VALUE *P1, VALUE *P2)
 {
 	if (TYPE_is_number(P1->type) && TYPE_is_object(P2->type))
 	{
-		if (OBJECT_class(P2->_object.object)->has_operators)
+		if (P2->_object.object && OBJECT_class(P2->_object.object)->has_operators)
 		{
 			//*dynamic = P2->type == T_OBJECT;
 			return OP_FLOAT_OBJECT;
@@ -204,13 +204,13 @@ static int check_operators(VALUE *P1, VALUE *P2)
 	}
 	else if (TYPE_is_number(P2->type) && TYPE_is_object(P1->type))
 	{
-		if (OBJECT_class(P1->_object.object)->has_operators)
+		if (P1->_object.object && OBJECT_class(P1->_object.object)->has_operators)
 		{
 			//*dynamic = P1->type == T_OBJECT;
 			return OP_OBJECT_FLOAT;
 		}
 	}
-	else if (TYPE_is_object(P1->type) && TYPE_is_object(P2->type))
+	else if (TYPE_is_object(P1->type) && TYPE_is_object(P2->type) && P1->_object.object && P2->_object.object)
 	{
 		CLASS *class1 = OBJECT_class(P1->_object.object);
 		CLASS *class2 = OBJECT_class(P2->_object.object);
@@ -232,33 +232,48 @@ static int check_operators(VALUE *P1, VALUE *P2)
 
 static void operator_object_float(VALUE *P1, VALUE *P2, uchar op)
 {
-	void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	VALUE_conv_float(P2);
-	void *result = (*func)(P1->_object.object, P2->_float.value);
-	OBJECT_REF(result, "operator_object_float");
-	OBJECT_UNREF(P1->_object.object, "operator_object_float");
-	P1->_object.object = result;
+	if (P1->_object.object)
+	{
+		void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+		VALUE_conv_float(P2);
+		void *result = (*func)(P1->_object.object, P2->_float.value);
+		OBJECT_REF(result, "operator_object_float");
+		OBJECT_UNREF(P1->_object.object, "operator_object_float");
+		P1->_object.object = result;
+	}
+	else
+		THROW(E_NULL);
 }
 
 static void operator_float_object(VALUE *P1, VALUE *P2, uchar op)
 {
-	void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P2->_object.object)->operators))[op];
-	VALUE_conv_float(P1);
-	void *result = (*func)(P2->_object.object, P1->_float.value);
-	OBJECT_REF(result, "operator_float_object");
-	P1->_object.class = P2->_object.class;
-	OBJECT_UNREF(P2->_object.object, "operator_float_object");
-	P1->_object.object = result;
+	if (P2->_object.object)
+	{
+		void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P2->_object.object)->operators))[op];
+		VALUE_conv_float(P1);
+		void *result = (*func)(P2->_object.object, P1->_float.value);
+		OBJECT_REF(result, "operator_float_object");
+		P1->_object.class = P2->_object.class;
+		OBJECT_UNREF(P2->_object.object, "operator_float_object");
+		P1->_object.object = result;
+	}
+	else
+		THROW(E_NULL);
 }
 
 static void operator_object(VALUE *P1, VALUE *P2, uchar op)
 {
-	void *(*func)(void *, void *) = (void *(*)(void *, void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	void *result = (*func)(P1->_object.object, P2->_object.object);
-	OBJECT_REF(result, "operator_object");
-	OBJECT_UNREF(P1->_object.object, "operator_object");
-	OBJECT_UNREF(P2->_object.object, "operator_object");
-	P1->_object.object = result;
+	if (P1->_object.object && P2->_object.object)
+	{
+		void *(*func)(void *, void *) = (void *(*)(void *, void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+		void *result = (*func)(P1->_object.object, P2->_object.object);
+		OBJECT_REF(result, "operator_object");
+		OBJECT_UNREF(P1->_object.object, "operator_object");
+		OBJECT_UNREF(P2->_object.object, "operator_object");
+		P1->_object.object = result;
+	}
+	else
+		THROW(E_NULL);
 }
 
 static void operator_object_conv(VALUE *P1, VALUE *P2, char op)

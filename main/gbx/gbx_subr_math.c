@@ -59,20 +59,30 @@ static bool check_operators(VALUE *P1)
 
 static void operator_object_abs(VALUE *P1)
 {
-	double (*func)(void *) = (double (*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[CO_ABS];
-	double result = (*func)(P1->_object.object);
-	OBJECT_UNREF(P1->_object.object, "operator_object_abs");
-	P1->type = T_FLOAT;
-	P1->_float.value = result;
+	if (P1->_object.object)
+	{
+		double (*func)(void *) = (double (*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[CO_ABS];
+		double result = (*func)(P1->_object.object);
+		OBJECT_UNREF(P1->_object.object, "operator_object_abs");
+		P1->type = T_FLOAT;
+		P1->_float.value = result;
+	}
+	else
+		THROW(E_NULL);
 }
 
 static void operator_object(VALUE *P1, uchar op)
 {
-	void *(*func)(void *) = (void *(*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	void *result = (*func)(P1->_object.object);
-	OBJECT_REF(result, "operator_object");
-	OBJECT_UNREF(P1->_object.object, "operator_object");
-	P1->_object.object = result;
+	if (P1->_object.object)
+	{
+		void *(*func)(void *) = (void *(*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+		void *result = (*func)(P1->_object.object);
+		OBJECT_REF(result, "operator_object");
+		OBJECT_UNREF(P1->_object.object, "operator_object");
+		P1->_object.object = result;
+	}
+	else
+		THROW(E_NULL);
 }
 
 
