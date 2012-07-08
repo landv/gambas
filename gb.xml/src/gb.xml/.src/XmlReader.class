@@ -29,7 +29,7 @@ Public Sub FromString(data As String)
   
   $DataBuffer = data
   $posBuffer = 0
-  $lenBuffer = String.Len(data)
+  $lenBuffer = Len(data)
   
 End
 
@@ -44,7 +44,7 @@ Public Function Read() As Integer
     
     Do
       Inc $posBuffer
-      sBuf = String.Mid($DataBuffer, $posBuffer, 1)
+      sBuf = Mid($DataBuffer, $posBuffer, 1)
       $state = Me._ReadChar(sBuf)
     Loop Until ($state <> 0 And Me.ReadFlags[$state]) Or $posBuffer = $lenBuffer
   
