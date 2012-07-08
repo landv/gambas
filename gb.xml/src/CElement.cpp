@@ -79,7 +79,7 @@ BEGIN_METHOD(CElement_getAttribute, GB_STRING attrName)
     Attribute *attr = THIS->getAttribute(STRING(attrName), LENGTH(attrName));
     if(attr)
     {
-        GB.ReturnNewString(attr->attrName, attr->lenAttrName);
+        GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
     }
     else
     {
