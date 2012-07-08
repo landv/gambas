@@ -379,7 +379,7 @@ __f2s:
 		builder->CreateBitCast(temp_voidptr, llvmType(getInt8PtrTy)),
 		builder->CreateBitCast(temp_int, llvmType(getInt8PtrTy)), getInteger(8, 0)
 	};
-	llvm::Value* got_error = builder->CreateCall(get_global_function_jif(LOCAL_format_number, 'c', "dipippc"), args);
+	/*llvm::Value* got_error =*/ builder->CreateCall(get_global_function_jif(LOCAL_format_number, 'c', "dipippc"), args);
 	
 	llvm::Value* addr = on_stack ? get_value_on_top_addr() : temp_value;
 	
@@ -609,7 +609,7 @@ __OBJECT:
 	if (val == NULL)
 		val = value->codegen_get_value();
 	
-	llvm::Value* klass = extract_value(val, 0);
+	/*llvm::Value* klass = extract_value(val, 0);*/
 	llvm::Value* object = extract_value(val, 1);
 	llvm::Value* to_class = get_global((void*)type, llvmType(getInt8Ty));
 		

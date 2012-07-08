@@ -28,6 +28,95 @@
 #include "jit.h"
 #include "jit_runtime.h"
 
+static void ref_variant(Expression* expr){
+	if (expr->no_ref_variant) return;
+	ref_stack();
+}
+
+static void check_string(Expression*& expr){
+	TYPE t = expr->type;
+	if (!TYPE_is_string(t) && t != T_NULL && t != T_VARIANT)
+		THROW(E_TYPE, JIF.F_TYPE_get_name(T_STRING), JIF.F_TYPE_get_name(t));
+	if (TYPE_is_string(t))
+		return;
+	if (t == T_NULL){
+		//abort();
+		//FIXME is this good?
+		assert(isa<PushNullExpression>(expr));
+		//delete expr;
+		expr = new PushCStringExpression(NULL, 0, 0);
+		return;
+	}
+	if (t == T_VARIANT){
+		ref_variant(expr);
+		expr->must_on_stack();
+	}
+	expr = new CheckStringExpression(expr);
+}
+
+static void check_integer(Expression*& expr){
+	TYPE t = expr->type;
+	if (!TYPE_is_integer(t) && t != T_VARIANT)
+		THROW(E_TYPE, JIF.F_TYPE_get_name(T_INTEGER), JIF.F_TYPE_get_name(t));
+	if (t == T_VARIANT){
+		ref_variant(expr);
+		expr->must_on_stack();
+		expr = new CheckIntegerExpression(expr);
+	}
+}
+
+static void check_float(Expression*& expr){
+	TYPE t = expr->type;
+	if (!TYPE_is_number(t) && t != T_VARIANT)
+		THROW(E_TYPE, JIF.F_TYPE_get_name(T_FLOAT), JIF.F_TYPE_get_name(t));
+	if (t == T_VARIANT){
+		ref_variant(expr);
+		expr->must_on_stack();
+		expr = new CheckFloatExpression(expr);
+	} else
+		JIT_conv(expr, T_FLOAT);
+}
+
+static void check_pointer(Expression*& expr){
+	TYPE t = expr->type;
+	if (t != T_POINTER && t != T_VARIANT)
+		THROW(E_TYPE, "Pointer", JIF.F_TYPE_get_name(t));
+	if (t == T_VARIANT){
+		ref_variant(expr);
+		expr->must_on_stack();
+		expr = new CheckPointerExpression(expr);
+	}
+}
+
+static TYPE check_good_type(TYPE t1, TYPE t2){
+	if (t1 == T_CSTRING) t1 = T_STRING;
+	if (t2 == T_CSTRING) t2 = T_STRING;
+	
+	if (t1 == t2){
+		
+	} else if (t1 == T_NULL){
+		if (t2 <= T_FLOAT)
+			return T_VARIANT;
+		t1 = t2;
+	} else if (t1 <= T_FLOAT && t2 <= T_FLOAT){
+		if (t2 > t1)
+			t1 = t2;
+	} else if (t2 == T_NULL){
+		if (t1 <= T_FLOAT)
+			return T_VARIANT;
+	} else if (TYPE_is_object(t1) && TYPE_is_object(t2)){
+		return T_OBJECT;
+	} else
+		return T_VARIANT;
+	
+	if (t1 == T_VOID)
+		THROW(E_NRETURN);
+	else if (t1 > T_VARIANT && t1 < T_OBJECT)
+		THROW(E_TYPE, "Standard type", JIF.F_TYPE_get_name(t1));
+	
+	return t1;
+}
+
 AddQuickExpression::AddQuickExpression(Expression* val, int add) : expr(val), add(add) {
 	no_ref_variant = true;
 	
@@ -80,6 +169,7 @@ PushFunctionExpression::PushFunctionExpression(int index) : index(index) {
 	function_object = NULL; //Will be set later
 	function_kind = FUNCTION_PRIVATE;
 	function_defined = true;
+	function_unknown = NULL;
 	function_index = index;
 	function_expr_type = PrivateFn;
 }
@@ -378,7 +468,21 @@ PopArrayExpression::PopArrayExpression(Expression** it, int nargs, Expression* v
 		this->val->must_on_stack();
 	}
 }
-PushPureObjectFunctionExpression::PushPureObjectFunctionExpression(Expression* obj, int index)
+/*PushPureObjectUnknownFunctionExpression::PushPureObjectUnknownFunctionExpression(Expression* obj) : obj(obj){
+	CLASS* klass = (CLASS*)(void*)obj->type;
+	
+	type = T_FUNCTION;
+	if (klass->must_check){
+		ref_stack();
+		obj->must_on_stack();
+	}
+	
+	function_class = klass;
+	function_object = obj;
+	function_defined = true;
+	function_expr_type = UnknownFn;
+}*/
+PushPureObjectFunctionExpression::PushPureObjectFunctionExpression(Expression* obj, int index, const char* unknown_name)
 : PushPureObjectExpression(obj, index){
 	type = T_FUNCTION;
 	if (klass()->must_check){
@@ -390,11 +494,12 @@ PushPureObjectFunctionExpression::PushPureObjectFunctionExpression(Expression* o
 	function_object = obj;
 	function_desc = desc();
 	function_kind = desc()->method.native ? -1 : FUNCTION_PUBLIC;
-	function_defined = true;
+	function_defined = !unknown_name;
+	function_unknown = unknown_name;
 	function_index = index;
 	function_expr_type = PureObjectFn;
 }
-PushPureObjectStaticFunctionExpression::PushPureObjectStaticFunctionExpression(Expression* obj, int index)
+PushPureObjectStaticFunctionExpression::PushPureObjectStaticFunctionExpression(Expression* obj, int index, const char* unknown_name)
 : PushPureObjectExpression(obj, index){
 	type = T_FUNCTION;
 	
@@ -402,11 +507,12 @@ PushPureObjectStaticFunctionExpression::PushPureObjectStaticFunctionExpression(E
 	function_object = obj;
 	function_desc = desc();
 	function_kind = desc()->method.native ? -1 : FUNCTION_PUBLIC;
-	function_defined = true;
+	function_defined = !unknown_name;
+	function_unknown = unknown_name;
 	function_index = index;
 	function_expr_type = PureObjectStaticFn;
 }
-PushVirtualFunctionExpression::PushVirtualFunctionExpression(Expression* obj, int index)
+PushVirtualFunctionExpression::PushVirtualFunctionExpression(Expression* obj, int index, const char* unknown_name)
 : PushPureObjectExpression(obj, index) {
 	type = T_FUNCTION;
 	
@@ -414,11 +520,12 @@ PushVirtualFunctionExpression::PushVirtualFunctionExpression(Expression* obj, in
 	function_object = obj;
 	function_desc = desc();
 	function_kind = FUNCTION_NATIVE;
-	function_defined = true;
+	function_defined = !unknown_name;
+	function_unknown = unknown_name;
 	function_index = index;
 	function_expr_type = VirtualObjectFn;
 }
-PushVirtualStaticFunctionExpression::PushVirtualStaticFunctionExpression(Expression* obj, int index)
+PushVirtualStaticFunctionExpression::PushVirtualStaticFunctionExpression(Expression* obj, int index, const char* unknown_name)
 : PushPureObjectExpression(obj, index) {
 	//type = desc()->method.type;
 	type = T_FUNCTION;
@@ -427,7 +534,8 @@ PushVirtualStaticFunctionExpression::PushVirtualStaticFunctionExpression(Express
 	function_object = obj;
 	function_desc = desc();
 	function_kind = FUNCTION_NATIVE;
-	function_defined = true;
+	function_defined = !unknown_name;
+	function_unknown = unknown_name;
 	function_index = index;
 	function_expr_type = VirtualObjectStaticFn;
 }
@@ -439,7 +547,7 @@ PushStaticPropertyExpression::PushStaticPropertyExpression(Expression* obj, int 
 	ref_stack();
 	obj->must_on_stack();
 }
-PushStaticFunctionExpression::PushStaticFunctionExpression(Expression* obj, int index)
+PushStaticFunctionExpression::PushStaticFunctionExpression(Expression* obj, int index, const char* unknown_name)
 : obj(obj), index(index) {
 	//type = desc()->method.type;
 	type = T_FUNCTION;
@@ -451,6 +559,7 @@ PushStaticFunctionExpression::PushStaticFunctionExpression(Expression* obj, int 
 	function_desc = desc();
 	function_kind = function_desc->method.native ? (function_desc->method.subr ? FUNCTION_SUBR : FUNCTION_NATIVE) : FUNCTION_PUBLIC;
 	function_defined = true;
+	function_unknown = unknown_name;
 	function_index = index;
 	function_expr_type = StaticFn;
 }
@@ -535,6 +644,7 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 	}
 	
 	if (TYPE_is_pure_object(func->type)){
+		JIT_load_class((CLASS*)(void*)func->type);
 		CLASS_DESC_METHOD* method_desc = JR_CLASS_get_special_desc((CLASS*)(void*)func->type, SPEC_CALL);
 		if (method_desc == NULL)
 			THROW(E_NFUNC);
@@ -551,15 +661,15 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 		switch(CLASS_DESC_get_type(desc)){
 			case CD_METHOD:
 				if (klass->is_virtual)
-					func = new PushVirtualFunctionExpression(func, index);
+					func = new PushVirtualFunctionExpression(func, index, NULL);
 				else
-					func = new PushPureObjectFunctionExpression(func, index);
+					func = new PushPureObjectFunctionExpression(func, index, NULL);
 				break;
 			case CD_STATIC_METHOD:
 				if (klass->is_virtual)
-					func = new PushVirtualStaticFunctionExpression(func, index);
+					func = new PushVirtualStaticFunctionExpression(func, index, NULL);
 				else
-					func = new PushPureObjectStaticFunctionExpression(func, index);
+					func = new PushPureObjectStaticFunctionExpression(func, index, NULL);
 				break;
 			default:
 				THROW(E_NFUNC);
@@ -595,11 +705,15 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 				goto _SET_ON_STACK;
 				return;
 			}
+			/*case UnknownFn: {
+				type = T_VARIANT;
+				goto _SET_ON_STACK;
+			}*/
 		}
 		desc = fe->function_desc;
 		index = fe->function_index;
 		klass = fe->function_class;
-		type = desc->method.type;
+		type = fe->function_unknown ? T_VARIANT : desc->method.type;
 		
 		goto _NORMAL_METHOD;
 	}
@@ -656,7 +770,7 @@ CallExpression::CallExpression(Expression* function, int nargs, Expression** it,
 	}
 }
 JumpFirstExpression::JumpFirstExpression(int ctrl_to, Expression* to_expr, Expression* step_expr, int local_var, int body_addr, int done_addr)
-: ctrl_to(ctrl_to), to(to_expr), step(step_expr), local_var(local_var), body_addr(body_addr), done_addr(done_addr) {
+: to(to_expr), step(step_expr), ctrl_to(ctrl_to), local_var(local_var), body_addr(body_addr), done_addr(done_addr) {
 	TYPE type = FP->local[local_var].type.id;
 	
 	if (type < T_BYTE || type > T_FLOAT)
@@ -676,7 +790,7 @@ JumpFirstExpression::JumpFirstExpression(int ctrl_to, Expression* to_expr, Expre
 	mark_address_taken(done_addr);
 }
 JumpEnumNextExpression::JumpEnumNextExpression(JumpEnumFirstExpression* jfirst, int cont_addr, int addr, unsigned short* pc, bool drop, OnStackExpression* retval)
-: jfirst(jfirst), cont_addr(cont_addr), addr(addr), pc(pc), drop(drop), retval(retval) {
+: jfirst(jfirst), retval(retval), cont_addr(cont_addr), addr(addr), pc(pc), drop(drop) {
 	mark_address_taken(cont_addr);
 	mark_address_taken(addr);
 	TYPE obj_type = get_ctrl_type(jfirst->ctrl);
@@ -1705,7 +1819,7 @@ QuoRemBaseExpression::QuoRemBaseExpression(Expression** it) : BinOpExpression(it
 	
 	if (TYPE_is_integer_long(type)){
 		JIT_conv(left, type);
-		JIT_conv(right, type, left);	
+		JIT_conv(right, type, left);
 	} else {
 		THROW(E_TYPE, "Number", JIF.F_TYPE_get_name(type));
 	}

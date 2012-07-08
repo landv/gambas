@@ -239,17 +239,19 @@ static void JIT_push_unknown(){
 		
 		int index = CLASS_find_symbol(klass, name);
 		
+		bool is_unknown = false;
+		
 		if (index == NO_SYMBOL){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
 				THROW(E_NSYMBOL, name, klass->name);
 			
 			if (klass->special[SPEC_PROPERTY] != NO_SYMBOL){
-				//FIXME
-				abort();
+				push(new PushPureObjectUnknownExpression(pop(), name, code[pos-1]));
+				return;
 			}
 			
-			//Goto unknown method FIXME
-			abort();
+			index = klass->special[SPEC_UNKNOWN];
+			is_unknown = true;
 		}
 		
 		CLASS_DESC* desc = klass->table[index].desc;
@@ -299,16 +301,16 @@ static void JIT_push_unknown(){
 				
 			case CD_METHOD:
 				if (klass->is_virtual)
-					push(new PushVirtualFunctionExpression(pop(), index));
+					push(new PushVirtualFunctionExpression(pop(), index, is_unknown ? name : NULL));
 				else
-					push(new PushPureObjectFunctionExpression(pop(), index));
+					push(new PushPureObjectFunctionExpression(pop(), index, is_unknown ? name : NULL));
 				return;
 				
 			case CD_STATIC_METHOD:
 				if (klass->is_virtual)
-					push(new PushVirtualStaticFunctionExpression(pop(), index));
+					push(new PushVirtualStaticFunctionExpression(pop(), index, is_unknown ? name : NULL));
 				else
-					push(new PushPureObjectStaticFunctionExpression(pop(), index));
+					push(new PushPureObjectStaticFunctionExpression(pop(), index, is_unknown ? name : NULL));
 				return;
 				
 			case CD_EXTERN:
@@ -336,12 +338,30 @@ static void JIT_push_unknown(){
 				THROW(E_NSYMBOL, name, klass->name);
 			
 			if (klass->special[SPEC_PROPERTY] != NO_SYMBOL){
-				//FIXME
-				abort();
+				pop();
+				if (!klass->unknown_static || !klass->property_static){
+					if (!klass->auto_create)
+						THROW(E_DYNAMIC);
+					push(new PushPureObjectUnknownExpression(new PushAutoCreateExpression(klass), name, code[pos-1]));
+					return;
+				}
+				push(new PushStaticUnknownExpression(klass, name, code[pos-1]));
+				return;
 			}
 			
-			//Goto unknown method FIXME
-			abort();
+			index = klass->special[SPEC_UNKNOWN];
+			
+			if (!klass->unknown_static){
+				pop();
+				if (!klass->auto_create)
+					THROW(E_DYNAMIC);
+				
+				push(new PushPureObjectFunctionExpression(new PushAutoCreateExpression(klass), index, name));
+				return;
+			}
+			
+			push(new PushStaticFunctionExpression(pop(), index, name));
+			return;
 		}
 		
 		CLASS_DESC* desc = klass->table[index].desc;
@@ -384,7 +404,7 @@ static void JIT_push_unknown(){
 				if (!klass->auto_create)
 					THROW(E_DYNAMIC, klass->name, name);
 				/*delete*/ pop();
-				push(new PushPureObjectFunctionExpression(new PushAutoCreateExpression(klass), index));
+				push(new PushPureObjectFunctionExpression(new PushAutoCreateExpression(klass), index, NULL));
 				return;
 				
 			case CD_STATIC_METHOD:
@@ -444,8 +464,14 @@ static void JIT_pop_unknown(){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
 				THROW(E_NSYMBOL, name, klass->name);
 			
-			//Goto unknown property FIXME
-			abort();
+			if (klass->special[SPEC_PROPERTY] == NO_SYMBOL)
+				THROW(E_NPROPERTY, klass->name, name);
+			
+			//Unknown property
+			Expression* obj = pop();
+			Expression* val = pop();
+			push_statement(new PopUnknownPropertyUnknownExpression(obj, val, name));
+			return;
 		}
 		
 		CLASS_DESC* desc = klass->table[index].desc;
@@ -512,13 +538,19 @@ static void JIT_pop_unknown(){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
 				THROW(E_NSYMBOL, name, klass->name);
 			
-			//Goto unknown property FIXME
-			abort();
+			if (klass->special[SPEC_PROPERTY] == NO_SYMBOL)
+				THROW(E_NPROPERTY, klass->name, name);
+			
+			//Unknown property
+			Expression* obj = pop();
+			Expression* val = pop();
+			push_statement(new PopUnknownPropertyUnknownExpression(obj, val, name));
+			return;
 		}
 		
 		CLASS_DESC* desc = klass->table[index].desc;
 		
-		Expression* obj = pop();
+		pop();
 		Expression* val = pop();
 		
 		switch(CLASS_DESC_get_type(desc)){

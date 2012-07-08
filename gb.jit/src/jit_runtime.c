@@ -784,6 +784,55 @@ __END:
 	SP--;
 }
 
+void JR_push_unknown_property_unknown(const char *name, int name_id, CLASS *class, void *object){
+	bool call_static = object == NULL;
+	EXEC_unknown_name = name;
+	JIF.F_EXEC_special(SPEC_PROPERTY, class, class->property_static ? NULL : object, 0, FALSE);
+	if (class->unknown_static){
+		JR_OBJECT_unref(object);
+		object = NULL;
+	}
+	if (SP[-1]._boolean.value){
+		SP--;
+		EXEC_unknown_name = name;
+		JIF.F_EXEC_special(SPEC_UNKNOWN, class, object, 0, FALSE);
+		JIF.F_VALUE_convert_variant(&SP[-1]);
+		if (!call_static){
+			SP[-2]._variant = SP[-1]._variant;
+			SP--;
+		}
+		JR_OBJECT_unref(object);
+	} else {
+		SP -= call_static ? 1 : 2;
+		SP->type = T_FUNCTION;
+		SP->_function.class = class;
+		SP->_function.object = object;
+		SP->_function.kind = FUNCTION_UNKNOWN;
+		SP->_function.index = name_id;
+		SP->_function.defined = FALSE;
+		SP++;
+	}
+}
+
+void JR_pop_unknown_property_unknown(CLASS *class, void *object, const char *name){
+	EXEC_unknown_name = name;
+	JIF.F_EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
+	SP--;
+	if (!SP->_boolean.value)
+		THROW(E_NPROPERTY, class->name, name);
+		
+	EXEC_unknown_name = name;
+
+	*SP = SP[-2];
+	SP[-2].type = T_VOID;
+	SP++;
+
+	JIF.F_EXEC_special(SPEC_UNKNOWN, class, object, 1, TRUE);
+	JR_OBJECT_unref(object);
+	
+	SP -= 2;
+}
+
 void JR_call(int nparam){
 	static const void *call_jump[] = 
 	{

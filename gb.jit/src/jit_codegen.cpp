@@ -1527,7 +1527,7 @@ static void create_check(CLASS* klass, llvm::Value* effective_class, llvm::Value
 		check_func = builder->CreateBitCast(check_func, pointer_t(get_function_type('i', "p")));
 		gen_if_noreturn(builder->CreateICmpNE(builder->CreateCall(check_func, object), getInteger(32, 0)), [&](){
 			
-			static int counter = 0;
+			//static int counter = 0;
 			
 			//builder->CreateCall3(get_global_function_vararg(printf, 'v', "ppi"),
 			//	get_global((void*)"Illegal: %p %d\n", llvmType(getInt8Ty)), object, getInteger(32, counter++));
@@ -1978,6 +1978,37 @@ void PopStaticPropertyExpression::codegen(){
 	}
 }
 
+void PopUnknownPropertyUnknownExpression::codegen(){
+	val->codegen_on_stack();
+	
+	llvm::Value* effective_class;
+	llvm::Value* object;
+	
+	if (PushClassExpression* pce = dyn_cast<PushClassExpression>(obj)){
+		effective_class = builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(intptr_t)(void*)pce->klass), llvmType(getInt8PtrTy));
+		object = get_nullptr();
+		push_value(NULL, T_VOID);
+	} else {
+		llvm::Value* ob = obj->codegen_get_value();
+		object = extract_value(ob, 1);
+		CLASS* k = (CLASS*)(void*)obj->type;
+		
+		if (isa<PushSuperExpression>(obj)){
+			effective_class = builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(intptr_t)(void*)k), llvmType(getInt8PtrTy));
+		} else if (!k->is_virtual){
+			make_nullcheck(object);
+			effective_class = load_element(builder->CreateBitCast(object, pointer_t(OBJECT_type)), 0);
+		} else {
+			effective_class = builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(intptr_t)(void*)k), llvmType(getInt8PtrTy));
+		}
+		
+		create_check(k, effective_class, object);
+	}
+	
+	builder->CreateCall3(get_global_function(JR_pop_unknown_property_unknown, 'v', "ppj"),
+		effective_class, object, getInteger(TARGET_BITS, (uint64_t)(void*)name));
+}
+
 void PopUnknownExpression::codegen(){
 	val->codegen_on_stack();
 	obj->codegen_on_stack();
@@ -2067,6 +2098,7 @@ llvm::Value* AddQuickExpression::codegen_get_value(){
 		case T_SINGLE: new_val = builder->CreateFAdd(orig, getFloat((float)add)); break;
 		case T_FLOAT: new_val = builder->CreateFAdd(orig, getFloat((double)add)); break;
 		case T_POINTER: new_val = builder->CreateGEP(orig, getInteger(TARGET_BITS, add)); break;
+		default: __builtin_unreachable();
 	}
 	if (on_stack)
 		push_value(new_val, type);
@@ -2363,6 +2395,50 @@ llvm::Value* PushAutoCreateExpression::codegen_get_value(){
 	if (on_stack)
 		push_value(ret, type);
 	return ret;
+}
+
+void PushPureObjectUnknownExpression::codegen_on_stack(){
+	llvm::Value* ob = obj->codegen_get_value();
+	llvm::Value* object = extract_value(ob, 1);
+	CLASS* k = (CLASS*)(void*)obj->type;
+	llvm::Value* effective_class;
+	
+	if (isa<PushSuperExpression>(obj)){
+		effective_class = builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(intptr_t)(void*)k), llvmType(getInt8PtrTy));
+	} else if (!k->is_virtual){
+		make_nullcheck(object);
+		effective_class = load_element(builder->CreateBitCast(object, pointer_t(OBJECT_type)), 0);
+	} else {
+		effective_class = builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(intptr_t)(void*)k), llvmType(getInt8PtrTy));
+	}
+	
+	create_check(k, effective_class, object);
+	
+	/*llvm::Value* func = insert_value(get_new_struct(function_type), object, 1);*/
+	
+	builder->CreateCall4(get_global_function(JR_push_unknown_property_unknown, 'v', "pipp"),
+		builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(void*)name), llvmType(getInt8PtrTy)),
+		getInteger(32, name_id),
+		effective_class,
+		object);
+}
+
+llvm::Value* PushPureObjectUnknownExpression::codegen_get_value(){
+	codegen_on_stack();
+	return ret_top_stack(T_VARIANT, true);
+}
+
+void PushStaticUnknownExpression::codegen_on_stack(){
+	builder->CreateCall4(get_global_function(JR_push_unknown_property_unknown, 'v', "pipp"),
+		builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(void*)name), llvmType(getInt8PtrTy)),
+		getInteger(32, name_id),
+		builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(void*)klass), llvmType(getInt8PtrTy)),
+		get_nullptr());
+}
+
+llvm::Value* PushStaticUnknownExpression::codegen_get_value(){
+	codegen_on_stack();
+	return ret_top_stack(T_VARIANT, true);
 }
 
 llvm::Value* PushPureObjectFunctionExpression::codegen_get_value(){
@@ -2854,7 +2930,7 @@ void CallExpression::codegen_on_stack(){
 		codegen_raise_event(args, ((PushEventExpression*)func)->index, on_stack);
 		return;
 	}
-	if (PushExternExpression* ee = dynamic_cast<PushExternExpression*>(func)){
+	if (isa<PushExternExpression>(func)){
 		codegen_get_value();
 		return;
 	}
@@ -2914,7 +2990,14 @@ void CallExpression::codegen_on_stack(){
 				builder->CreateCall(get_global_function(JR_EXEC_jit_execute_function, 'v', ""));
 			else
 				builder->CreateCall(get_global_function_jif(EXEC_function_loop, 'v', ""));
-		} else {
+		} /*else if (fe->function_expr_type == UnknownFn){
+			*pc |= CODE_CALL_VARIANT;
+		} */else {
+			if (fe->function_unknown){
+				builder->CreateStore(getInteger(TARGET_BITS, (int64_t)(intptr_t)fe->function_unknown), get_global((void*)&EXEC_unknown_name, LONG_TYPE));
+				*pc |= CODE_CALL_VARIANT;
+			}
+			
 			if (fe->function_kind == FUNCTION_PUBLIC){
 				if (can_quick)
 					builder->CreateCall3(get_global_function(JR_exec_enter_quick, 'v', "ppi"), fe->effective_class, object, getInteger(32, index));
@@ -3811,10 +3894,10 @@ llvm::Value* LessExpression::codegen_get_value(){
 			ret = LessDate(op.first, op.second);
 		} else if (t == T_SINGLE || t == T_FLOAT){
 			ret = builder->CreateFCmpULT(op.first, op.second);
-		} else if (TYPE_is_object(t)){
+		} /*else if (TYPE_is_object(t)){
 			//FIXME the interpreter does not allow this ..
 			abort();
-		} else if (TYPE_is_string(t)){
+		} */else if (TYPE_is_string(t)){
 			llvm::Value* addr1 = extract_value(op.first, 1);
 			llvm::Value* addr2 = extract_value(op.second, 1);
 			llvm::Value* offset1 = extract_value(op.first, 2);
@@ -3894,7 +3977,7 @@ llvm::Value* AddExpression::codegen_get_value(){
 			ret = builder->CreateOr(op.first, op.second);
 		} else if (type <= T_LONG || type == T_POINTER){
 			ret = builder->CreateAdd(op.first, op.second);
-		} else if (type <= T_FLOAT){
+		} else /*if (type <= T_FLOAT)*/{
 			ret = builder->CreateFAdd(op.first, op.second);
 		}
 		if (on_stack)
@@ -3917,7 +4000,7 @@ llvm::Value* SubExpression::codegen_get_value(){
 			ret = builder->CreateXor(op.first, op.second);
 		} else if (type <= T_LONG || type == T_POINTER){
 			ret = builder->CreateSub(op.first, op.second);
-		} else if (type <= T_FLOAT){
+		} else /*if (type <= T_FLOAT)*/{
 			ret = builder->CreateFSub(op.first, op.second);
 		}
 		if (on_stack)
@@ -3940,7 +4023,7 @@ llvm::Value* MulExpression::codegen_get_value(){
 			ret = builder->CreateAnd(op.first, op.second);
 		} else if (type <= T_LONG || type == T_POINTER){
 			ret = builder->CreateMul(op.first, op.second);
-		} else if (type <= T_FLOAT){
+		} else /*if (type <= T_FLOAT)*/{
 			ret = builder->CreateFMul(op.first, op.second);
 		}
 		if (on_stack)
@@ -3971,7 +4054,7 @@ llvm::Value* QuoExpression::codegen_get_value(){
 			create_throw(E_ZERO);
 		}, "div_zero", "not_div_zero");
 		ret = op.first;
-	} else if (type <= T_LONG){
+	} else {
 		static const int bits[] = {0, 1, 8, 16, 32, 64};
 		gen_if_noreturn(builder->CreateICmpEQ(op.second, getInteger(bits[type], 0)), [&](){
 			create_throw(E_ZERO);
@@ -3994,7 +4077,7 @@ llvm::Value* RemExpression::codegen_get_value(){
 			create_throw(E_ZERO);
 		}, "div_zero", "not_div_zero");
 		ret = op.first;
-	} else if (type <= T_LONG){
+	} else {
 		static const int bits[] = {0, 1, 8, 16, 32, 64};
 		gen_if_noreturn(builder->CreateICmpEQ(op.second, getInteger(bits[type], 0)), [&](){
 			create_throw(E_ZERO);
@@ -4662,7 +4745,7 @@ llvm::Value* PushArrayExpression::codegen_get_value(){
 			llvm::Value* sp = builder->CreateGEP(read_sp(), getInteger(TARGET_BITS, -args[0]->on_stack-args[1]->on_stack));
 			llvm::Value* sp_int8 = builder->CreateBitCast(sp, llvmType(getInt8PtrTy));
 			
-			llvm::Value* is_null = builder->CreateCall4(get_global_function(GB.Collection.Get, 'c', "ppip"),
+			/*llvm::Value* is_null =*/ builder->CreateCall4(get_global_function(GB.Collection.Get, 'c', "ppip"),
 				obj, str.first, str.second, sp_int8);
 			
 			//type is always T_VARIANT, not T_NULL
@@ -5333,6 +5416,7 @@ llvm::Value* SubrExpression::codegen_get_value(){
 								builder->CreateSelect(builder->CreateFCmpOLT(param[0], zero[t]), getInteger(32, -1), zero[T_INTEGER]));
 						break;
 					}
+					default: __builtin_unreachable();
 				}
 				c_SP(-args[0]->on_stack+on_stack);
 				if (on_stack)

@@ -41,6 +41,9 @@ void JR_sub(ushort code);
 void JR_mul(ushort code);
 void JR_call(int nparam);
 
+void JR_push_unknown_property_unknown(const char *name, int name_id, CLASS *klass, void *object);
+void JR_pop_unknown_property_unknown(CLASS *klass, void *object, const char *name);
+
 void* JR_extern_dispatch_object(OBJECT* object, int index);
 
 void JR_exec_enter_quick(CLASS* klass, void* object, int index);

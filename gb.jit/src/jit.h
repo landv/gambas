@@ -151,11 +151,6 @@ struct Expression {
 	virtual ~Expression(){}
 };
 
-static void ref_variant(Expression* expr){
-	if (expr->no_ref_variant) return;
-	ref_stack();
-}
-
 struct ConvExpression : Expression {
 	Expression* expr;
 	ConvExpression(Expression* expr, TYPE type) : expr(expr) {
@@ -176,6 +171,7 @@ enum FunctionType {
 	
 	ClassFn,
 	ObjectAsFn
+	//UnknownFn
 };
 
 struct FunctionExpression {
@@ -183,10 +179,11 @@ struct FunctionExpression {
 	CLASS* function_class;
 	Expression* function_object;
 	CLASS_DESC* function_desc;
+	const char* function_unknown;
 	char function_kind;
 	char function_defined;
 	short function_index;
-	char function_expr_type;
+	char function_expr_type; //Contains enum FunctionType
 };
 
 struct PushCStringExpression : Expression {
@@ -536,14 +533,28 @@ struct PushPureObjectStructFieldExpression : PushPureObjectExpression {
 	void codegen_on_stack(){ codegen_get_value(); }
 };
 
+struct PushPureObjectUnknownExpression : Expression {
+	Expression* obj;
+	const char* name;
+	int name_id;
+	PushPureObjectUnknownExpression(Expression* obj, const char* name, int name_id) : obj(obj), name(name), name_id(name_id) {
+		type = T_VARIANT;
+		ref_stack();
+		obj->must_on_stack();
+		on_stack = true;
+	}
+	llvm::Value* codegen_get_value();
+	void codegen_on_stack();
+};
+
 struct PushPureObjectFunctionExpression : PushPureObjectExpression, FunctionExpression {
-	PushPureObjectFunctionExpression(Expression* obj, int index);
+	PushPureObjectFunctionExpression(Expression* obj, int index, const char* unknown_name);
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
 };
 
 struct PushPureObjectStaticFunctionExpression : PushPureObjectExpression, FunctionExpression {
-	PushPureObjectStaticFunctionExpression(Expression* obj, int index);
+	PushPureObjectStaticFunctionExpression(Expression* obj, int index, const char* unknown_name);
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
 };
@@ -566,13 +577,13 @@ struct PushVirtualPropertyExpression : PushPureObjectExpression {
 };
 
 struct PushVirtualFunctionExpression : PushPureObjectExpression, FunctionExpression {
-	PushVirtualFunctionExpression(Expression* obj, int index);
+	PushVirtualFunctionExpression(Expression* obj, int index, const char* unknown_name);
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
 };
 
 struct PushVirtualStaticFunctionExpression : PushPureObjectExpression, FunctionExpression {
-	PushVirtualStaticFunctionExpression(Expression* obj, int index);
+	PushVirtualStaticFunctionExpression(Expression* obj, int index, const char* unknown_name);
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
 };
@@ -613,7 +624,7 @@ struct PushStaticPropertyExpression : Expression {
 struct PushStaticFunctionExpression : Expression, FunctionExpression {
 	Expression* obj;
 	int index;
-	PushStaticFunctionExpression(Expression* obj, int index);
+	PushStaticFunctionExpression(Expression* obj, int index, const char* unknown_name = NULL);
 	CLASS* klass(){
 		return ((PushClassExpression*)obj)->klass;
 		//return (CLASS*)(void*)obj->type;
@@ -624,6 +635,19 @@ struct PushStaticFunctionExpression : Expression, FunctionExpression {
 	}
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
+};
+
+struct PushStaticUnknownExpression : Expression {
+	CLASS* klass;
+	const char* name;
+	int name_id;
+	PushStaticUnknownExpression(CLASS* klass, const char* name, int name_id) : klass(klass), name(name), name_id(name_id) {
+		type = T_VARIANT;
+		ref_stack();
+		on_stack = true;
+	}
+	llvm::Value* codegen_get_value();
+	void codegen_on_stack();
 };
 
 //Base class, not to be used directly
@@ -697,6 +721,20 @@ struct PopStaticPropertyExpression : Expression {
 	Expression* val;
 	int index;
 	PopStaticPropertyExpression(CLASS* klass, Expression* val, int index);
+	void codegen();
+};
+
+struct PopUnknownPropertyUnknownExpression : Expression {
+	Expression* obj;
+	Expression* val;
+	const char* name;
+	PopUnknownPropertyUnknownExpression(Expression* obj, Expression* val, const char* name)
+	: obj(obj), val(val), name(name) {
+		//type = T_VARIANT;
+		ref_stack();
+		val->must_on_stack();
+		obj->must_on_stack();
+	}
 	void codegen();
 };
 
@@ -816,7 +854,7 @@ struct JumpIfExpression : Expression {
 };
 
 struct JumpFirstExpression : Expression {
-	Expression *step, *to;
+	Expression *to, *step;
 	int ctrl_to, local_var;
 	int body_addr, done_addr;
 	JumpFirstExpression(int ctrl_to, Expression* to_expr, Expression* step_expr, int local_var, int body_addr, int done_addr);
@@ -877,7 +915,7 @@ struct NopExpression : Expression {
 	}
 	
 	NopExpression(bool test_stack) : test_stack(test_stack) {
-		buf = "...";
+		buf = (char*)"...";
 	}
 	
 	void codegen();
@@ -1009,90 +1047,6 @@ struct CheckPointerExpression : UnaryExpression {
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
 };
-
-static void check_string(Expression*& expr){
-	TYPE t = expr->type;
-	if (!TYPE_is_string(t) && t != T_NULL && t != T_VARIANT)
-		THROW(E_TYPE, JIF.F_TYPE_get_name(T_STRING), JIF.F_TYPE_get_name(t));
-	if (TYPE_is_string(t))
-		return;
-	if (t == T_NULL){
-		//abort();
-		//FIXME is this good?
-		assert(isa<PushNullExpression>(expr));
-		//delete expr;
-		expr = new PushCStringExpression(NULL, 0, 0);
-		return;
-	}
-	if (t == T_VARIANT){
-		ref_variant(expr);
-		expr->must_on_stack();
-	}
-	expr = new CheckStringExpression(expr);
-}
-
-static void check_integer(Expression*& expr){
-	TYPE t = expr->type;
-	if (!TYPE_is_integer(t) && t != T_VARIANT)
-		THROW(E_TYPE, JIF.F_TYPE_get_name(T_INTEGER), JIF.F_TYPE_get_name(t));
-	if (t == T_VARIANT){
-		ref_variant(expr);
-		expr->must_on_stack();
-		expr = new CheckIntegerExpression(expr);
-	}
-}
-
-static void check_float(Expression*& expr){
-	TYPE t = expr->type;
-	if (!TYPE_is_number(t) && t != T_VARIANT)
-		THROW(E_TYPE, JIF.F_TYPE_get_name(T_FLOAT), JIF.F_TYPE_get_name(t));
-	if (t == T_VARIANT){
-		ref_variant(expr);
-		expr->must_on_stack();
-		expr = new CheckFloatExpression(expr);
-	} else
-		JIT_conv(expr, T_FLOAT);
-}
-
-static void check_pointer(Expression*& expr){
-	TYPE t = expr->type;
-	if (t != T_POINTER && t != T_VARIANT)
-		THROW(E_TYPE, "Pointer", JIF.F_TYPE_get_name(t));
-	if (t == T_VARIANT){
-		ref_variant(expr);
-		expr->must_on_stack();
-		expr = new CheckPointerExpression(expr);
-	}
-}
-
-static TYPE check_good_type(TYPE t1, TYPE t2){
-	if (t1 == T_CSTRING) t1 = T_STRING;
-	if (t2 == T_CSTRING) t2 = T_STRING;
-	
-	if (t1 == t2){
-		
-	} else if (t1 == T_NULL){
-		if (t2 <= T_FLOAT)
-			return T_VARIANT;
-		t1 = t2;
-	} else if (t1 <= T_FLOAT && t2 <= T_FLOAT){
-		if (t2 > t1)
-			t1 = t2;
-	} else if (t2 == T_NULL){
-		if (t1 <= T_FLOAT)
-			return T_VARIANT;
-	} else if (TYPE_is_object(t1) && TYPE_is_object(t2)){
-		return T_OBJECT;
-	} else
-		return T_VARIANT;
-	
-	if (t1 == T_VOID)
-		THROW(E_NRETURN);
-	else if (t1 > T_VARIANT && t1 < T_OBJECT)
-		THROW(E_TYPE, "Standard type", JIF.F_TYPE_get_name(t1));
-	
-	return t1;
-}
 
 
 struct SubrExpression : Expression {
