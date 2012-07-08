@@ -54,7 +54,7 @@
 
 static bool check_operators(VALUE *P1)
 {
-	return (TYPE_is_object(P1->type) && OBJECT_class(P1->_object.object)->has_operators);
+	return (TYPE_is_object(P1->type) && P1->_object.object && OBJECT_class(P1->_object.object)->has_operators);
 }
 
 static void operator_object_abs(VALUE *P1)
