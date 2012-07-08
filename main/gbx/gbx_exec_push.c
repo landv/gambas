@@ -101,7 +101,7 @@ _PUSH_GENERIC:
 		if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		{
 			EXEC_unknown_name = name;
-			if (EXEC_special(SPEC_PROPERTY, class, class->property_static ? NULL : object, 0, FALSE))
+			if (!EXEC_special(SPEC_PROPERTY, class, class->property_static ? NULL : object, 0, FALSE))
 			{
 				VALUE_conv_boolean(&SP[-1]);
 				SP--;
