@@ -93,7 +93,6 @@ typedef
 		void (*F_VALUE_convert_float)(VALUE *value);
 		void (*F_VALUE_convert_variant)(VALUE *value);
 		void (*F_VALUE_convert_string)(VALUE *value);
-		void (*F_VALUE_convert_object)(VALUE *value, TYPE type);
 		char (*F_VALUE_is_null)(VALUE *val);
 		void (*F_VALUE_undo_variant)(VALUE *value);
 		

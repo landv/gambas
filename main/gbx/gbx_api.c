@@ -361,7 +361,6 @@ void *GAMBAS_JitApi[] =
 	(void *)VALUE_convert_float,
 	(void *)VALUE_convert_variant,
 	(void *)VALUE_convert_string,
-	(void *)VALUE_convert_object,
 	(void *)VALUE_is_null,
 	(void *)VALUE_undo_variant,
 	

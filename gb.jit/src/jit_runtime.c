@@ -949,7 +949,7 @@ __CALL_CALL:
 	{
 		SP[-2] = SP[-1];
 		SP--;
-		JIF.F_VALUE_convert_object(SP - 1, (TYPE)EXEC.class);
+		JIF.F_VALUE_convert(SP - 1, (TYPE)EXEC.class);
 		return;
 	}
 	
