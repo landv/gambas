@@ -215,7 +215,7 @@ BEGIN_METHOD_VOID(CComplexPolynomial_ComplexSolve)
 	gsl_complex z[THIS->len];
 	GB_ARRAY cArray;
 	GSLCOMPLEX *cx;
-
+	GSLCOMPLEX *elt;
 
 	gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(THIS->len);
 
@@ -225,27 +225,14 @@ BEGIN_METHOD_VOID(CComplexPolynomial_ComplexSolve)
 
 	GB.Array.New(&cArray, GB.FindClass("Complex"), (long)(THIS->len-1));
 
-	for(i = 0; i < THIS->len-1; i++)
+	for (i = 0; i < THIS->len-1; i++)
 	{
 		printf ("z%d = %+.18f %+.18f\n", i, GSL_REAL(z[i]), GSL_IMAG(z[i]));
-		cx = COMPLEX_create();
-		if(cx)
-		{
-			GSLCOMPLEX *elt;
-			cx->number.dat[0] = GSL_REAL(z[i]);
-			cx->number.dat[1] = GSL_IMAG(z[i]);
-			printf ("cx[%d] = %+.18f %+.18f\n", i, cx->number.dat[0], cx->number.dat[1]);
-			elt = (GSLCOMPLEX *)GB.Array.Get(&cArray, i);
-			elt = cx;
-			GB.Ref(cx);
-		}
-		else
-		{
-			GB.Error("Could not create result array", NULL, NULL);
-			return;
-		}
-
-    }
+		cx = COMPLEX_create(z[i]);
+		GB.Ref(cx);
+		printf ("cx[%d] = %+.18f %+.18f\n", i, cx->number.dat[0], cx->number.dat[1]);
+		elt = *((GSLCOMPLEX **)GB.Array.Get(cArray, i)) = cx;
+	}
 
 	return GB.ReturnObject(cArray);
 

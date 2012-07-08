@@ -45,6 +45,6 @@ typedef
 	}
 	GSLCOMPLEX;
 
-GSLCOMPLEX *COMPLEX_create();
+GSLCOMPLEX *COMPLEX_create(gsl_complex number);
 
 #endif /* __C_GSL_COMPLEX_H */
