@@ -52,6 +52,30 @@
 #include "gbx_subr_math_temp.h"
 
 
+static bool check_operators(VALUE *P1)
+{
+	return (TYPE_is_object(P1->type) && OBJECT_class(P1->_object.object)->has_operators);
+}
+
+static void operator_object_abs(VALUE *P1)
+{
+	double (*func)(void *) = (double (*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[CO_ABS];
+	double result = (*func)(P1->_object.object);
+	OBJECT_UNREF(P1->_object.object, "operator_object_abs");
+	P1->type = T_FLOAT;
+	P1->_float.value = result;
+}
+
+static void operator_object(VALUE *P1, uchar op)
+{
+	void *(*func)(void *) = (void *(*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+	void *result = (*func)(P1->_object.object);
+	OBJECT_REF(result, "operator_object");
+	OBJECT_UNREF(P1->_object.object, "operator_object");
+	P1->_object.object = result;
+}
+
+
 void SUBR_pi(ushort code)
 {
   SUBR_ENTER();
@@ -135,7 +159,6 @@ void SUBR_round(ushort code)
 
 void SUBR_math(ushort code)
 {
-
 	static void *jump[] = {
 		NULL, &&__FRAC, &&__LOG, &&__EXP, &&__SQRT, &&__SIN, &&__COS, &&__TAN, &&__ATAN, &&__ASIN, &&__ACOS,
 		&&__DEG, &&__RAD, &&__LOG10, &&__SINH, &&__COSH, &&__TANH, &&__ASINH, &&__ACOSH, &&__ATANH,
@@ -493,6 +516,41 @@ __END:
   } \
 })
 
+#define MANAGE_VARIANT_OBJECT(_func) \
+({ \
+  type = P1->type; \
+	\
+  if (TYPE_is_number_date(type)) \
+  { \
+    *PC |= type; \
+    goto *jump[type]; \
+  } \
+  \
+	if (check_operators(P1)) \
+	{ \
+		*PC |= T_DATE + 1; \
+		goto *jump[T_DATE + 1]; \
+	} \
+	\
+  if (TYPE_is_variant(type)) \
+  { \
+    VARIANT_undo(P1); \
+    type = P1->type; \
+    if (TYPE_is_number_date(type)) \
+    { \
+			(_func)(code | type); \
+			VALUE_conv_variant(P1); \
+			return; \
+    } \
+		if (check_operators(P1)) \
+		{ \
+			(_func)(T_DATE + 1); \
+			VALUE_conv_variant(P1); \
+			return; \
+		} \
+  } \
+})
+
 
 void SUBR_sgn(ushort code)
 {
@@ -550,7 +608,7 @@ __END:
 void SUBR_neg(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
     };
 
   VALUE *P1;
@@ -590,9 +648,14 @@ __FLOAT:
 	
 	P1->_float.value = (-P1->_float.value); return;
 
+__OBJECT:
+	
+	operator_object(P1, CO_NEG);
+	return;
+	
 __VARIANT:
 
-	MANAGE_VARIANT(SUBR_neg);
+	MANAGE_VARIANT_OBJECT(SUBR_neg);
 
 __ERROR:
 
@@ -603,7 +666,7 @@ __ERROR:
 void SUBR_abs(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
     };
 
   VALUE *P1;
@@ -643,9 +706,14 @@ __FLOAT:
 	
 	P1->_float.value = fabs(P1->_float.value); return;
 
+__OBJECT:
+
+	operator_object_abs(P1);
+	return;
+	
 __VARIANT:
 
-	MANAGE_VARIANT(SUBR_abs);
+	MANAGE_VARIANT_OBJECT(SUBR_abs);
 
 __ERROR:
 

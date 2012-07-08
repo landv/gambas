@@ -53,7 +53,7 @@ typedef
 #define OBJECT_is(_object, _class) (OBJECT_class(_object) == _class)
 #define OBJECT_is_class(_object) OBJECT_is(_object, CLASS_Class)
 #define OBJECT_class(_object) ((_object) ? ((OBJECT *)_object)->class : NULL)
-#define OBJECT_count(_object) ((_object) ? ((OBJECT *)_object)->ref : 0)
+#define OBJECT_count(_object) (((OBJECT *)_object)->ref)
 
 void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent);
 void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name);

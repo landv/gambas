@@ -26,6 +26,87 @@
 #define STATIC_SUBR static
 #endif
 
+#define OP_OBJECT_FLOAT (T_POINTER + 1)
+#define OP_FLOAT_OBJECT (T_POINTER + 2)
+#define OP_OBJECT_CONV  (T_POINTER + 3)
+#define OP_CONV_OBJECT  (T_POINTER + 4)
+#define OP_OBJECT       (T_POINTER + 5)
+
+static int check_operators(VALUE *P1, VALUE *P2)
+{
+	if (TYPE_is_number(P1->type))
+	{
+		if (OBJECT_class(P2->_object.object)->operators)
+			return OP_FLOAT_OBJECT;
+	}
+	else if (TYPE_is_number(P2->type))
+	{
+		if (OBJECT_class(P1->_object.object)->operators)
+			return OP_OBJECT_FLOAT;
+	}
+	else
+	{
+		CLASS *class1 = OBJECT_class(P1->_object.object);
+		CLASS *class2 = OBJECT_class(P2->_object.object);
+		
+		if (class1->operators)
+		{
+			if (class1 == class2)
+				return OP_OBJECT;
+			
+			if (class2->operators)
+			{
+				if (class1->operators->strength > class2->operators->strength)
+					return OP_OBJECT_CONV;
+				else
+					return OP_CONV_OBJECT;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+static void operator_object_float(VALUE *P1, VALUE *P2, uchar op)
+{
+	void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+	VALUE_conv_float(P2);
+	void *result = (*func)(P1->_object.object, P2->_float.value);
+	OBJECT_unref(P1->_object.object);
+	P1->_object.object = result;
+}
+
+static void operator_float_object(VALUE *P1, VALUE *P2, uchar op)
+{
+	void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P2->_object.object)->operators))[op];
+	VALUE_conv_float(P1);
+	void *result = (*func)(P2->_object.object, P1->_float.value);
+	P1->_object.class = P2->_object.class;
+	OBJECT_unref(P2->_object.object);
+	P1->_object.object = result;
+}
+
+static void operator_object(VALUE *P1, VALUE *P2, uchar op)
+{
+	void *(*func)(void *, void *) = (void *(*)(void *, void *))((void **)(OBJECT_class(P2->_object.object)->operators))[op];
+	void *result = (*func)(P1->_object.object, P2->_object.object);
+	OBJECT_unref(P1->_object.object);
+	OBJECT_unref(P2->_object.object);
+	P1->_object.object = result;
+}
+
+static void operator_object_conv(VALUE *P1, VALUE *P2, char op)
+{
+	VALUE_conv(P2, (TYPE)P1->_object.class);
+	operator_object(P1, P2, op);
+}
+
+static void operator_conv_object(VALUE *P1, VALUE *P2, char op)
+{
+	VALUE_conv(P1, (TYPE)P2->_object.class);
+	operator_object(P1, P2, op);
+}
+
 #define MANAGE_VARIANT(_func) \
 ({ \
 	type = Max(P1->type, P2->type); \
@@ -95,10 +176,57 @@
 })
 
 
+#define MANAGE_VARIANT_POINTER_OBJECT(_func) \
+({ \
+	type = Max(P1->type, P2->type); \
+	if (TYPE_is_void(P1->type) || TYPE_is_void(P2->type)) \
+		THROW(E_NRETURN); \
+	\
+	if (TYPE_is_number_date(type) || TYPE_is_pointer(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
+	VARIANT_undo(P1); \
+	VARIANT_undo(P2); \
+	\
+	if (TYPE_is_string(P1->type)) \
+		VALUE_conv_float(P1); \
+	\
+	if (TYPE_is_string(P2->type)) \
+		VALUE_conv_float(P2); \
+	\
+	if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type)) \
+		type = T_NULL; \
+	else \
+		type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type) || TYPE_is_pointer(type)) \
+	{ \
+		(_func)(code | type); \
+		VALUE_conv_variant(P1); \
+		return; \
+	} \
+	\
+	if (TYPE_is_object(type)) \
+	{ \
+		type = check_operators(P1, P2); \
+		if (type) \
+		{ \
+			*PC |= type; \
+			goto *jump[type]; \
+		} \
+	} \
+})
+
+
 STATIC_SUBR void _SUBR_add(ushort code)
 {
 	static void *jump[] = {
-		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, NULL, NULL, &&__POINTER
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
+		&&__DATE, NULL, NULL, &&__POINTER,
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT
 		};
 
 	TYPE type;
@@ -161,11 +289,36 @@ __POINTER:
 
 	P1->_pointer.value += (intptr_t)P2->_pointer.value; goto __END;
 
+__OBJECT_FLOAT:
+	
+	operator_object_float(P1, P2, CO_ADDF);
+	goto __END;
+
+__FLOAT_OBJECT:
+
+	operator_float_object(P1, P2, CO_ADDF);
+	goto __END;
+	
+__OBJECT_CONV:
+
+	operator_object_conv(P1, P2, CO_ADDF);
+	goto __END;
+
+__CONV_OBJECT:
+
+	operator_conv_object(P1, P2, CO_ADDF);
+	goto __END;
+	
+__OBJECT:
+
+	operator_object(P1, P2, CO_ADDF);
+	goto __END;
+	
 __VARIANT:
 
-	MANAGE_VARIANT_POINTER(_SUBR_add);
+	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_add);
 	goto __ERROR;
-
+	
 __ERROR:
 
 	THROW(E_TYPE, "Number", TYPE_get_name(type));

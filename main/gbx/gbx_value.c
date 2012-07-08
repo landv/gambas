@@ -728,7 +728,13 @@ __OBJECT:
 		if (type == T_VARIANT)
 			goto __2v;
 		
-		goto __N;
+		if (value->type == T_OBJECT)
+			class = OBJECT_class(value->_object.object);
+		else
+			class = value->_object.class;
+
+		goto __CONVERT;
+		//goto __N;
 	}
 
 	if (!TYPE_is_object(value->type))
@@ -771,13 +777,7 @@ __OBJECT:
 		goto __TYPE;
 
 	if (value->type == T_OBJECT)
-	{
-		/*if (value->_object.object == NULL)
-			goto __TYPE;*/
-
 		class = OBJECT_class(value->_object.object);
-		/* on continue */
-	}
 	else
 		class = value->_object.class;
 
@@ -799,14 +799,14 @@ __RETRY:
 		goto __RETRY;
 	}
 
-	if (class->special[SPEC_CONVERT] != NO_SYMBOL)
+__CONVERT:
+	
+	if (class->has_convert)
 	{
-		void *conv = ((void *(*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, type);
-		if (conv)
+		void *unref = value->_object.object;
+		if (!((bool (*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, type, value))
 		{
-			OBJECT_REF(conv, "VALUE_conv");
-			OBJECT_UNREF(value->_object.object, "VALUE_conv");
-			value->_object.object = conv;
+			OBJECT_UNREF(unref, "VALUE_conv");
 			goto __TYPE;
 		}
 	}
@@ -1175,12 +1175,29 @@ __STRING:
 
 __OBJECT:
 
-	if (VALUE_is_null(value))
-		goto __NULL;
+	{
+		CLASS *class;
+		
+		if (VALUE_is_null(value))
+			goto __NULL;
 
-	*len = sprintf(COMMON_buffer, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
-	*addr = COMMON_buffer;
-	return;
+		class = OBJECT_class(value->_object.object);
+		if (class->has_convert)
+		{
+			VALUE temp;
+			if (!((bool (*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, T_CSTRING, &temp))
+			{
+				*addr = temp._string.addr + temp._string.start;
+				*len = temp._string.len;
+				STRING_free_later(*addr);
+				return;
+			}
+		}
+		
+		*len = sprintf(COMMON_buffer, "(%s %p)", class->name, value->_object.object);
+		*addr = COMMON_buffer;
+		return;
+	}
 
 __POINTER:
 

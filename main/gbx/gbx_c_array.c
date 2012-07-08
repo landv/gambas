@@ -1400,15 +1400,15 @@ static void error_array_convert()
 	OBJECT_UNREF(_converted_array, "error_array_convert");
 }
 
-static void *array_convert(CARRAY *src, CLASS *class)
+static bool array_convert(CARRAY *src, CLASS *class, VALUE *conv)
 {
 	CARRAY *array;
 	int i;
 	void *data;
 	VALUE temp;
 	
-	if (!CLASS_inherits(class, CLASS_Array))
-		return NULL;
+	if (!TYPE_is_pure_object((TYPE)class) || !CLASS_inherits(class, CLASS_Array))
+		return TRUE;
 	
 	_converted_array = array = OBJECT_create(class, NULL, NULL, 0);
 	
@@ -1429,7 +1429,9 @@ static void *array_convert(CARRAY *src, CLASS *class)
 	}
 	END_ERROR
 	
-	return array;
+	conv->_object.object = array;
+	OBJECT_REF(array, "array_convert");
+	return FALSE;
 }
 
 #else

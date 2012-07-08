@@ -238,6 +238,28 @@ enum
 	CS_READY = 2
 };
 
+enum {
+	CO_EQUAL,
+	CO_EQUALF,
+	CO_COMP,
+	CO_COMPF,
+	CO_ADD,
+	CO_ADDF,
+	CO_SUB,
+	CO_SUBF,
+	CO_MUL,
+	CO_MULF,
+	CO_DIV,
+	CO_DIVF,
+	CO_IDIVF,
+	CO_NEG,
+	CO_POW,
+	CO_POWF,
+	CO_ABS,
+	CO_MAX,
+	CO_MIN
+};
+
 typedef
 	struct _CLASS {                     // 32b 64b
 		struct _CLASS *class;             //   4   8  Points at the 'Class' class !
@@ -271,9 +293,11 @@ typedef
 		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
 		unsigned must_check : 1;          //          The class has a check function
 		unsigned has_child : 1;           //          The class has an inherited child class
-		unsigned unknown_static : 1;      //          if  _unknown is static
+		unsigned unknown_static : 1;      //          if _unknown is static
 		unsigned property_static : 1;     //          if _property is static
-		unsigned _reserved : 3;           //  24  36 
+		unsigned has_convert : 1;         //          if the _convert interface is implemented
+		unsigned has_operators : 1;       //          if the _operators interface is implemented
+		unsigned _reserved : 1;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
@@ -309,17 +333,18 @@ typedef
 		struct _CLASS *astruct_class;     // 112 176  array of struct class
 		
 		void *instance;                   // 116 184  automatically created instance
+		void *operators;                  // 120 192  arithmetic interface
 		
-		COMPONENT *component;             // 120 192 The component the class belongs to
+		COMPONENT *component;             // 124 200  The component the class belongs to
 		
-		struct _CLASS *override;          // 124 200 The overridden class
+		struct _CLASS *override;          // 128 208  The overridden class
 		
-		struct _CLASS *next;              // 128 208 next class
+		struct _CLASS *next;              // 132 216  next class
 		
-		void (**jit_functions)(void);     // 132 216 array of jit functions
+		void (**jit_functions)(void);     // 136 224  array of jit functions
 		}
 	CLASS;
-
+	
 typedef
 	struct {
 		SYMBOL sym;

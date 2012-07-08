@@ -228,7 +228,7 @@ BEGIN_METHOD_VOID(CComplexPolynomial_ComplexSolve)
 	for(i = 0; i < THIS->len-1; i++)
 	{
 		printf ("z%d = %+.18f %+.18f\n", i, GSL_REAL(z[i]), GSL_IMAG(z[i]));
-		cx = GSLComplex_create();
+		cx = COMPLEX_create();
 		if(cx)
 		{
 			GSLCOMPLEX *elt;

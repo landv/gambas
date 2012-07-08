@@ -297,6 +297,7 @@ typedef
 		GB_BOOLEAN _boolean;
 		GB_INTEGER _integer;
 		GB_LONG _long;
+		GB_SINGLE _single;
 		GB_FLOAT _float;
 		GB_DATE _date;
 		GB_STRING _string;
@@ -314,6 +315,7 @@ typedef
 #define GB_ERR_NPROPERTY  ((char *)17)
 #define GB_ERR_ARG        ((char *)20)
 #define GB_ERR_BOUND      ((char *)21)
+#define GB_ERR_ZERO       ((char *)26)
 
 
 /* Gambas description start macro */
@@ -812,6 +814,34 @@ typedef
    strict aliasing rules */
 	
 #define POINTER(_pointer) (void **)(void *)_pointer
+
+/* For classes that implements arithmetic operators (e.g. complex numbers...) */
+
+typedef
+	struct {
+		int (*equal)(void *, void *);
+		int (*equalf)(void *, double);
+		int (*comp)(void *, void *);
+		int (*compf)(void *, double);
+		void *(*add)(void *, void *);
+		void *(*addf)(void *, double);
+		void *(*sub)(void *, void *);
+		void *(*subf)(void *, double);
+		void *(*mul)(void *, void *);
+		void *(*mulf)(void *, double);
+		void *(*div)(void *, void *);
+		void *(*divf)(void *, double);
+		void *(*idivf)(void *, double);
+		void *(*neg)(void *);
+		void *(*pow)(void *, void *);
+		void *(*powf)(void *, double);
+		void *(*abs)(void *);
+		void *(*max)(void *, void *);
+		void *(*min)(void *, void *);
+	}
+	PACKED
+	GB_OPERATOR_DESC;
+
 
 /* Gambas Application Programming Interface */
 
