@@ -417,7 +417,7 @@ Private Sub RefreshComponents()
   
   lstComponent.Unlock
 
-  If aNotFound Then
+  If aNotFound.Count Then
     Message.Warning(Subst(("Some components are missing: &1"), aNotFound.Join(", ")))
   Endif
 
