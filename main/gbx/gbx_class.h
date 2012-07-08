@@ -334,14 +334,15 @@ typedef
 		
 		void *instance;                   // 116 184  automatically created instance
 		void *operators;                  // 120 192  arithmetic interface
+		bool (*convert)();                // 124 200  convert method
 		
-		COMPONENT *component;             // 124 200  The component the class belongs to
+		COMPONENT *component;             // 128 208  The component the class belongs to
 		
-		struct _CLASS *override;          // 128 208  The overridden class
+		struct _CLASS *override;          // 132 216  The overridden class
 		
-		struct _CLASS *next;              // 132 216  next class
+		struct _CLASS *next;              // 136 224  next class
 		
-		void (**jit_functions)(void);     // 136 224  array of jit functions
+		void (**jit_functions)(void);     // 140 232  array of jit functions
 		}
 	CLASS;
 	
@@ -366,8 +367,7 @@ typedef
 		SPEC_PROPERTY,
 		SPEC_COMPARE,
 		SPEC_ATTACH,
-		SPEC_CONVERT,
-		MAX_SPEC = 12
+		MAX_SPEC = 11
 		}
 	CLASS_SPECIAL;
 

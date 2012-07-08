@@ -1280,9 +1280,13 @@ void CLASS_search_special(CLASS *class)
 	class->special[SPEC_COMPARE] = CLASS_get_symbol_index_kind(class, "_compare", CD_METHOD, 0);
 	class->special[SPEC_ATTACH] = CLASS_get_symbol_index_kind(class, "_attach", CD_METHOD, 0);
 	
-	class->special[SPEC_CONVERT] = CLASS_get_symbol_index_kind(class, "_@_convert", CD_CONSTANT, 0);
-	class->has_convert = class->special[SPEC_CONVERT] != NO_SYMBOL;
-
+	sym = CLASS_get_symbol_index_kind(class, "_@_convert", CD_CONSTANT, 0);
+	if (sym != NO_SYMBOL)
+	{
+		class->has_convert = TRUE;
+		class->convert = CLASS_get_desc(class, sym)->constant.value._pointer;
+	}
+	
 	sym = CLASS_get_symbol_index_kind(class, "_@_operators", CD_CONSTANT, 0);
 	if (sym != NO_SYMBOL)
 	{

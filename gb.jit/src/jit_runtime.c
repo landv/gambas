@@ -991,8 +991,8 @@ OBJECT* JR_object_cast(OBJECT* object, CLASS* target_class){
 	if ((class == target_class) || JIF.F_CLASS_inherits(class, target_class))
 		return object;
 	
-	if (class->special[SPEC_CONVERT] != NO_SYMBOL){
-		OBJECT* conv = ((OBJECT *(*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(object, target_class);
+	if (class->has_convert){
+		OBJECT* conv = ((OBJECT *(*)())(class->convert))(object, target_class);
 		if (conv){
 			OBJECT_REF(conv, "JR_object_cast");
 			JR_OBJECT_unref(object);

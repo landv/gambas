@@ -1430,7 +1430,6 @@ static bool array_convert(CARRAY *src, CLASS *class, VALUE *conv)
 	END_ERROR
 	
 	conv->_object.object = array;
-	OBJECT_REF(array, "array_convert");
 	return FALSE;
 }
 

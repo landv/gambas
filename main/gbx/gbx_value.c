@@ -733,8 +733,18 @@ __OBJECT:
 		else
 			class = value->_object.class;
 
-		goto __CONVERT;
-		//goto __N;
+		if (class->has_convert)
+		{
+			void *unref = value->_object.object;
+			if (!((*class->convert)(value->_object.object, type, value)))
+			{
+				OBJECT_UNREF(unref, "VALUE_convert");
+				//OBJECT_REF(value->_object.object, "VALUE_convert");
+				goto __TYPE;
+			}
+		}
+		
+		goto __N;
 	}
 
 	if (!TYPE_is_object(value->type))
@@ -777,7 +787,7 @@ __OBJECT:
 
 				if (class->has_convert)
 				{
-					if (!((bool (*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(NULL, value->type, value))
+					if (!((*class->convert)(NULL, value->type, value)))
 					{
 						OBJECT_REF(value->_object.object, "VALUE_convert");
 						goto __TYPE;
@@ -815,14 +825,25 @@ __RETRY:
 		goto __RETRY;
 	}
 
-__CONVERT:
-	
 	if (class->has_convert)
 	{
 		void *unref = value->_object.object;
-		if (!((bool (*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, type, value))
+		if (!((*class->convert)(value->_object.object, type, value)))
 		{
-			OBJECT_UNREF(unref, "VALUE_conv");
+			OBJECT_UNREF(unref, "VALUE_convert");
+			OBJECT_REF(value->_object.object, "VALUE_convert");
+			goto __TYPE;
+		}
+	}
+	
+	CLASS *class2 = (CLASS *)type;
+	if (class2->has_convert)
+	{
+		void *unref = value->_object.object;
+		if (!((*class2->convert)(NULL, OBJECT_class(unref), value)))
+		{
+			OBJECT_UNREF(unref, "VALUE_convert");
+			OBJECT_REF(value->_object.object, "VALUE_convert");
 			goto __TYPE;
 		}
 	}
@@ -1201,7 +1222,7 @@ __OBJECT:
 		if (class->has_convert)
 		{
 			VALUE temp;
-			if (!((bool (*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, T_CSTRING, &temp))
+			if (!((*class->convert)(value->_object.object, T_CSTRING, &temp)))
 			{
 				*addr = temp._string.addr + temp._string.start;
 				*len = temp._string.len;
@@ -1789,7 +1810,7 @@ __NR:
 	THROW(E_NRETURN);
 }
 
-
+#if 0
 void VALUE_convert_object(VALUE *value, TYPE type)
 {
 	CLASS *class;
@@ -1918,7 +1939,7 @@ __N:
 
 	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name(value->type));
 }
-
+#endif
 
 void VALUE_undo_variant(VALUE *value)
 {

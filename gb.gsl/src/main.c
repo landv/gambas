@@ -39,9 +39,6 @@ extern "C" {
 
 GB_INTERFACE GB EXPORT;
 
-
-GB_CLASS GSL;
-
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   CGslDesc, /* The Elementary math functions */

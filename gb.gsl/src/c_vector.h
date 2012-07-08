@@ -36,7 +36,7 @@ typedef
 	struct
 	{
 		GB_BASE ob;
-		gsl_vector vector;
+		gsl_vector *vector;
 	}
 	GSLVECTOR;
 

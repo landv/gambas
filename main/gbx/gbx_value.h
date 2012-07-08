@@ -238,7 +238,6 @@ void VALUE_convert_integer(VALUE *value);
 void VALUE_convert_float(VALUE *value);
 void VALUE_convert_string(VALUE *value);
 void VALUE_convert_variant(VALUE *value);
-void VALUE_convert_object(VALUE *value, TYPE type);
 
 void VALUE_read(VALUE *value, void *addr, TYPE type);
 void VALUE_write(VALUE *value, void *addr, TYPE type);
