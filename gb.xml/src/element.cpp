@@ -815,6 +815,7 @@ void Element::addTextContentLen(size_t &len)
 {
     for(Node *node = firstChild; node != 0; node = node->nextNode)
     {
+        if(node->isComment()) continue;
         node->addTextContentLen(len);
     }
 }
@@ -823,6 +824,7 @@ void Element::addTextContent(char *&data)
 {
     for(Node *node = firstChild; node != 0; node = node->nextNode)
     {
+        if(node->isComment()) continue;
         node->addTextContent(data);
     }
 }
