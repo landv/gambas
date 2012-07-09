@@ -1978,7 +1978,7 @@ void EXEC_push_complex(void)
 	{
 		if (COMPONENT_get_info("PUSH_COMPLEX", POINTER(&func)))
 		{
-			COMPONENT_load(COMPONENT_create("gb.gsl"));
+			COMPONENT_load(COMPONENT_create("gb.complex"));
 			if (COMPONENT_get_info("PUSH_COMPLEX", POINTER(&func)))
 				THROW(E_MATH);
 		}

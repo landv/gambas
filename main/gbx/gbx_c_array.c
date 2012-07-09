@@ -1395,27 +1395,32 @@ END_METHOD
 
 static CARRAY *_converted_array;
 
-static void error_array_convert()
+static void error_convert()
 {
 	OBJECT_UNREF(_converted_array, "error_array_convert");
 }
 
-static bool array_convert(CARRAY *src, CLASS *class, VALUE *conv)
+static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 {
 	CARRAY *array;
 	int i;
 	void *data;
 	VALUE temp;
 	
-	if (!src || !TYPE_is_pure_object((TYPE)class) || !CLASS_inherits(class, CLASS_Array))
+	if (!src || !TYPE_is_pure_object((TYPE)class))
+		return TRUE;
+	
+	CLASS_load(class); // Force creation of array classes
+	
+	if (!class->is_array) //CLASS_inherits(class, CLASS_Array))
 		return TRUE;
 	
 	_converted_array = array = OBJECT_create(class, NULL, NULL, 0);
 	
 	ARRAY_add_many_void(&array->data, src->count);
 	array->count = src->count;
-		
-	ON_ERROR(error_array_convert)
+	
+	ON_ERROR(error_convert)
 	{
 		for (i = 0; i < src->count; i++)
 		{
@@ -1437,7 +1442,7 @@ static bool array_convert(CARRAY *src, CLASS *class, VALUE *conv)
 
 #include "gbx_c_array.h"
 
-#define array_convert NULL
+#define _convert NULL
 
 #endif /* #ifndef GBX_INFO */
 
@@ -1485,7 +1490,7 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Delete", "Array", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)v[(Start)i(Length)i]"),*/
 	
-	GB_INTERFACE("_convert", array_convert),
+	GB_INTERFACE("_convert", _convert),
 
 	GB_END_DECLARE
 };

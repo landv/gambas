@@ -110,6 +110,7 @@ lib/gui.opengl/Makefile \
 lib/image/Makefile \
 lib/image.effect/Makefile \
 lib/signal/Makefile \
+lib/complex/Makefile \
 ])
 AC_OUTPUT
 
