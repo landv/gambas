@@ -277,6 +277,13 @@ BEGIN_METHOD_VOID(Complex_Copy)
 END_METHOD
 
 
+BEGIN_METHOD_VOID(Complex_Conj)
+
+	GB.ReturnObject(COMPLEX_create(gsl_complex_rect(THIS->number.dat[0], -THIS->number.dat[1])));
+	
+END_METHOD
+
+
 BEGIN_METHOD(Complex_Polar, GB_FLOAT real; GB_FLOAT imag)
 
 	GB.ReturnObject(COMPLEX_create(gsl_complex_polar(VARG(real), VARG(imag))));
@@ -482,6 +489,7 @@ GB_DESC ComplexDesc[] =
 	GB_STATIC_METHOD("_call", "Complex", Complex_call, "[(Real)f(Imag)f]"),
 	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
 	GB_STATIC_METHOD("Polar", "Complex", Complex_Polar, "[(Real)f(Imag)f]"),
+	GB_METHOD("Conj", "Complex", Complex_Conj, NULL),
 	//GB_METHOD("Set", NULL, Complex_Set, "[(Real)f(Imag)f]"),
 	
 	// Properties
