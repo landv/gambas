@@ -74,9 +74,9 @@ BEGIN_METHOD(CElement_appendChild, GB_OBJECT newChild)
 
 END_METHOD
 
-BEGIN_METHOD(CElement_getAttribute, GB_STRING attrName)
+BEGIN_METHOD(CElement_getAttribute, GB_STRING attrName; GB_INTEGER mode)
 
-    Attribute *attr = THIS->getAttribute(STRING(attrName), LENGTH(attrName));
+Attribute *attr = THIS->getAttribute(STRING(attrName), LENGTH(attrName), VARG(mode));
     if(attr)
     {
         GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);

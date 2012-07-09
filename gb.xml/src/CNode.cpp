@@ -199,7 +199,14 @@ if(!THIS->isElement()) return;
 
 Attribute *attr = THIS->toElement()->getAttribute(STRING(name), LENGTH(name));
 
-GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+if(attr)
+{
+    GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+}
+else
+{
+    GB.ReturnNull();
+}
 
 END_METHOD
 
