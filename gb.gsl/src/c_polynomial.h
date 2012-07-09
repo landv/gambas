@@ -23,16 +23,12 @@
 
 ***************************************************************************/
 
-#ifndef __C_GSL_POLYNOMIAL_H
-#define __C_GSL_POLYNOMIAL_H
+#ifndef __C_POLYNOMIAL_H
+#define __C_POLYNOMIAL_H
 
-#include "gambas.h"
-#include "gb_common.h"
+#include "main.h"
 #include <gsl/gsl_poly.h>
 #include <gsl/gsl_sf_result.h>
-#include "c_complex.h"
-#include <stdio.h>
-#include <stdlib.h>
  
 GB_INTERFACE GB EXPORT;
 
@@ -41,11 +37,8 @@ extern GB_DESC CPolynomialDesc[];
 typedef
   struct {
     GB_BASE ob;
-    double *c; // coefficients
-    int len;
-	int max;
-	int alloc_size;
+		GB_ARRAY_BASE array;
     }
   CPOLYNOMIAL;
 
-#endif /* __C_GSL_POLYNOMIAL_H */
+#endif /* __C_POLYNOMIAL_H */

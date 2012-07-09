@@ -23,350 +23,429 @@
 
 ***************************************************************************/
 
-#define __C_GSL_POLYNOMIAL_C
+#define __C_POLYNOMIAL_C
 
-#include <gsl/gsl_poly.h>
 #include "c_polynomial.h"
 #include "c_complex.h"
-#include <gsl/gsl_blas.h>
-
 
 #define THIS ((CPOLYNOMIAL *)_object)
+#define DATA(_p) ((double *)(_p)->array.data)
+#define COUNT(_p) ((_p)->array.count)
 
+//---- Utility methods ------------------------------------------------------
 
-/**************************************************
-                 Utility Methods
-**************************************************/
-
-static CPOLYNOMIAL *create_polynomial()
+static CPOLYNOMIAL *POLYNOMIAL_create(int size)
 {
-	return (CPOLYNOMIAL *)GB.New(GB.FindClass("Polynomial"), NULL,  NULL);
+	if (size > 0) GB.Push(1, GB_T_INTEGER, size);
+	return (CPOLYNOMIAL *)GB.New(GB.FindClass("Polynomial"), NULL, (void *)(intptr_t)((size > 0) ? 1 : 0));
 }
 
-
-BEGIN_METHOD_VOID(CPolynomial_new)
-
-	// May change to take init array of floats
-	THIS->alloc_size = 32;
-	THIS->max = 32;
-	GB.NewArray((void *)&THIS->c, sizeof(double), THIS->alloc_size);
-	THIS->len = 0;
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CPolynomial_call)
-	// May be changed to take init array of floats
-	CPOLYNOMIAL *c = create_polynomial();
+static CPOLYNOMIAL *POLYNOMIAL_copy(CPOLYNOMIAL *_object)
+{
+	int size = COUNT(THIS);
+	CPOLYNOMIAL *p = POLYNOMIAL_create(size);
 	
-	GB.ReturnObject(c);
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CPolynomial_free)
-
-	if(THIS->c != NULL && THIS->c != 0)
-		GB.FreeArray((void *)&THIS->c);
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CPolynomial_exit)
-
-	if(THIS->c != NULL)
-		GB.FreeArray((GB_FLOAT *)&THIS->c);
-
-END_METHOD
-
-
-
-/**************************************************
-                Property Methods
-**************************************************/
-
-BEGIN_PROPERTY(CPolynomial_Length)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger((THIS->len));
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CPolynomial_MaxCoef)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger((THIS->max));
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CPolynomial_AllocSize)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger((THIS->alloc_size));
-	else
-		THIS->alloc_size = (VPROP(GB_INTEGER));
+	if (size > 0)
+		memcpy(DATA(p), DATA(THIS), size * sizeof(double));
 	
-END_PROPERTY
+	return p;
+}
 
-
-BEGIN_METHOD_VOID(CPolynomial_ToString)
-
-    // Do we have anything to print
-    if(THIS->len == 0)
-    {
-        // P(x) = c[0] + c[1] x + c[2] x^2 + \dots + c[len-1] x^{len-1}
-        GB.ReturnConstZeroString("c[0] = NULL");
-		return;
-    }
-    else
-    {
-        // TODO Improve memory mangement of string
-        // We have coefficiants to display.
-        // P(x) = c[0] + c[1] x + c[2] x^2 + ... + c[len-1] x^{len-1}
-        char buffer[(32*THIS->len)]; // A bit wasteful but it works for now....
-    	  char *p;
-    	  int i, len = 0;
-        
-        p = buffer;
-        
-        for(i = 0; i < THIS->len; i++)
-        {
-            if(i == 0)
-            {
-                len = sprintf(p , "c[%d] = %f", i, THIS->c[i]);
-                p+=len;
-            }
-            else
-            {
-                len = sprintf(p , ", c[%d] = %f", i, THIS->c[i]);
-                p+=len;
-            }
-                
-        }
-        
-        return GB.ReturnNewZeroString(buffer);
-    }
-
-END_METHOD
-
-
-
-/**************************************************
-                  Data Methods
-**************************************************/
-
-BEGIN_METHOD(CPolynomial_AddCoef, GB_FLOAT x;)
+static int get_degree(CPOLYNOMIAL *_object)
+{
+	int i;
+	double *d = DATA(THIS);
 	
-	double *elm;
-
-	// Add a value to coeficent array
-	if(THIS->max > THIS->len)
+	for (i = COUNT(THIS) - 1; i >= 0; i--)
 	{
-		THIS->c[THIS->len] = (double)VARG(x);
-		THIS->len++;		
-		return GB.ReturnInteger(THIS->len);
+		if (d[i] != 0.0)
+			return i;
 	}
-	else
-	{
-		if(THIS->c != NULL && THIS->c != 0)
-		{
-			elm = (double *)GB.Add((void *)&THIS->c);
-			THIS->max++;
-			// *elm = VARG(x);
-			THIS->c[THIS->len] = (double)VARG(x);
-			THIS->len++;			
-		}
-		return GB.ReturnInteger(THIS->len);
-	}
-
-END_METHOD
-
-
-BEGIN_METHOD(CPolynomial_GetCoef, GB_INTEGER i;)
-
-	int i = (int)VARG(i);
-
-	if(THIS->len <= i)
-	{
-		GB.Error("Index out of range", NULL, NULL);
-		return;
-	}
-	else
-	{
-		GB.ReturnFloat(THIS->c[i]);
-	}
-
-END_METHOD
-
-
-/**************************************************
-             Implementation Methods
-**************************************************/
-
-BEGIN_METHOD(CPolynomial_Eval, GB_FLOAT x;)
-	double r;
-
-	if(3 > THIS->len)
-	{
-		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
-		GB.Error(GB_ERR_BOUND);
-		return GB.ReturnFloat(0);
-	}
-
-	r = gsl_poly_eval(THIS->c, THIS->len, VARG(x));
 	
-	return GB.ReturnFloat(r);
+	return 0;
+}
 
-END_METHOD
+//---- Arithmetic operators -------------------------------------------------
 
+#if 0
+static CPOLYNOMIAL *_addf(CPOLYNOMIAL *a, double f)
+{
+	return COMPLEX_create(gsl_complex_add_real(a->number, f));
+}
 
-BEGIN_METHOD(CPolynomial_ComplexEval, GB_OBJECT z)
-	GSLCOMPLEX *z = (GSLCOMPLEX *)VARG(z);
-	GSLCOMPLEX *obj;
+static CPOLYNOMIAL *_add(CPOLYNOMIAL *a, CPOLYNOMIAL *b)
+{
+	return COMPLEX_create(gsl_complex_add(a->number, b->number));
+}
 
-	if (GB.CheckObject(z))
-		return;
+static CPOLYNOMIAL *_subf(CPOLYNOMIAL *a, double f)
+{
+	return COMPLEX_create(gsl_complex_sub_real(a->number, f));
+}
 
-	obj = GSLComplex_create();
+static CPOLYNOMIAL *_sub(CPOLYNOMIAL *a, CPOLYNOMIAL *b)
+{
+	return COMPLEX_create(gsl_complex_sub(a->number, b->number));
+}
 
-	if(1 <= THIS->len)
-	{
-		obj->number = gsl_poly_complex_eval(THIS->c, THIS->len, z->number);
-	}
-	else
-	{
-		//GB.Error("Method takes a minimum of 1 coefficients &1 given.", THIS->len);
-		GB.Error(GB_ERR_BOUND);
-		return GB.ReturnObject(obj);
-	}
+static CPOLYNOMIAL *_mulf(CPOLYNOMIAL *a, double f)
+{
+	return COMPLEX_create(gsl_complex_mul_real(a->number, f));
+}
 
-    GB.ReturnObject(obj);
+static CPOLYNOMIAL *_mul(CPOLYNOMIAL *a, CPOLYNOMIAL *b)
+{
+	return COMPLEX_create(gsl_complex_mul(a->number, b->number));
+}
+
+static CPOLYNOMIAL *_divf(CPOLYNOMIAL *a, double f)
+{
+	gsl_complex c = gsl_complex_div_real(a->number, f);
 	
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CPolynomial_SolveQuadratic)
-	double x[2];
-	int r = 0;
-	int i = 0;
-	GB_ARRAY arr;
-
-	x[0] = 0.0;
-	x[1] = 0.0;
-
-	GB.Array.New(&arr, GB_T_FLOAT, (long)2);
-
-	*((double *)GB.Array.Get(arr, 0)) = x[0];
-	*((double *)GB.Array.Get(arr, 1)) = x[1];
-
-	if(3 == THIS->len)
-	{
-
-		r = gsl_poly_solve_quadratic(THIS->c[0], THIS->c[1], THIS->c[2], &x[0], &x[1]);
-
-		if(0 <= r)
-		{
-			for(i=0; i<r; i++)
-				*((double *)GB.Array.Get(arr, i)) = x[i];
-
-			return GB.ReturnObject(arr);
-		}
-		else
-		{
-			//GB.Error(GB_ERR_ARG);
-			return GB.ReturnObject(arr);;
-		}
-
-	}
+	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+		return COMPLEX_create(c);
 	else
-	{
-		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
-		GB.Error(GB_ERR_BOUND);
-		return GB.ReturnObject(arr);
-	}
+		return NULL;
+}
 
+static CPOLYNOMIAL *_idivf(CPOLYNOMIAL *a, double f)
+{
+	gsl_complex c = gsl_complex_inverse(a->number);
+	
+	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+		return COMPLEX_create(gsl_complex_mul_real(c, f));
+	else
+		return NULL;
+}
+
+static CPOLYNOMIAL *_div(CPOLYNOMIAL *a, CPOLYNOMIAL *b)
+{
+	gsl_complex c = gsl_complex_div(a->number, b->number);
+	
+	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+		return COMPLEX_create(c);
+	else
+		return NULL;
+}
+
+static int _equal(CPOLYNOMIAL *a, CPOLYNOMIAL *b)
+{
+	return a->number.dat[0] == b->number.dat[0] && a->number.dat[1] == b->number.dat[1];
+}
+
+static int _equalf(CPOLYNOMIAL *a, double f)
+{
+	return a->number.dat[0] == f && a->number.dat[1] == 0.0;
+}
+
+static CPOLYNOMIAL *_neg(CPOLYNOMIAL *a)
+{
+	return COMPLEX_create(gsl_complex_negative(a->number));
+}
+
+static double _abs(CPOLYNOMIAL *a)
+{
+	return gsl_complex_abs(a->number);
+}
+
+static GB_OPERATOR_DESC _operators =
+{
+	add: (void *)_add,
+	addf: (void *)_addf,
+	sub: (void *)_sub,
+	subf: (void *)_subf,
+	mul: (void *)_mul,
+	mulf: (void *)_mulf,
+	div: (void *)_div,
+	divf: (void *)_divf,
+	idivf: (void *)_idivf,
+	equal: (void *)_equal,
+	equalf: (void *)_equalf,
+	abs: (void *)_abs,
+	neg: (void *)_neg
+};
+#endif
+
+//---- Conversions ----------------------------------------------------------
+
+char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
+{
+	int i;
+	int size = COUNT(p);
+	char *result = NULL;
+	char *str;
+	int len;
+	char buffer[16];
+	double coef;
+	bool add = FALSE;
+	
+	i = size;
+	while (i > 0)
+	{
+		i--;
 		
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CPolynomial_SolveCubic)
-	double x[3];
-	int r = 0;
-	int i = 0;
-	GB_ARRAY arr;
-
-	x[0] = 0.0;
-	x[1] = 0.0;
-	x[2] = 0.0;
-
-	GB.Array.New(&arr, GB_T_FLOAT, (long)3);
-
-	*((double *)GB.Array.Get(arr, 0)) = x[0];
-	*((double *)GB.Array.Get(arr, 1)) = x[1];
-	*((double *)GB.Array.Get(arr, 2)) = x[2];
-
-	if(3 == THIS->len)
-	{
-		r = gsl_poly_solve_cubic(THIS->c[0], THIS->c[1], THIS->c[2], &x[0], &x[1], &x[2]);
-
-		if(0 <= r)
+		coef = DATA(p)[i];
+		if (coef != 0.0)
 		{
-			for(i=0; i<r; i++)
-				*((double *)GB.Array.Get(arr, i)) = x[i];
-
-			return GB.ReturnObject(arr);
+			if (!add)
+				add = TRUE;
+			else if (coef > 0.0)
+				result = GB.AddChar(result, '+');
+			
+			GB.NumberToString(local, coef, NULL, &str, &len);
+			result = GB.AddString(result, str, len);
+			
+			if (i > 0)
+			{
+				result = GB.AddChar(result, 'x');
+				if (i > 1)
+				{
+					result = GB.AddChar(result, '^');
+					len = sprintf(buffer, "%d", i);
+					result = GB.AddString(result, buffer, len);
+				}
+			}
 		}
-		else
+	}
+	
+	if (!result)
+		result = GB.NewString("0", 1);
+	
+	return result;
+}
+
+static bool _convert(CPOLYNOMIAL *a, GB_TYPE type, GB_VALUE *conv)
+{
+	if (a)
+	{
+		switch (type)
 		{
-			//GB.Error(GB_ERR_ARG);
-			return GB.ReturnObject(arr);
+			case GB_T_STRING:
+			case GB_T_CSTRING:
+				conv->_string.value.addr = POLYNOMIAL_to_string(a, type == GB_T_CSTRING);
+				conv->_string.value.start = 0;
+				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
+				return FALSE;
+				
+			default:
+				return TRUE;
 		}
 	}
 	else
 	{
-		//GB.Error("Method takes a minimum of 3 coefficients &1 given.", THIS->len);
-		GB.Error(GB_ERR_BOUND);
-		return GB.ReturnObject(arr);
+		double coef;
+		
+		switch(type)
+		{
+			case GB_T_FLOAT: coef = conv->_float.value; break;
+			case GB_T_SINGLE: coef = conv->_single.value; break;
+			case GB_T_INTEGER: case GB_T_SHORT: 	case GB_T_BYTE: coef = conv->_integer.value;
+				return FALSE;
+				
+			default:
+				if (type >= GB_T_OBJECT)
+				{
+					if (GB.Is(conv->_object.value, GB.FindClass("Array")))
+					{
+						CPOLYNOMIAL *p;
+						GB_ARRAY array = (GB_ARRAY)conv->_object.value;
+						int size = GB.Array.Count(array);
+						int i;
+						GB_VALUE temp;
+						void *data;
+						GB_TYPE atype = GB.Array.Type(array);
+						
+						if (atype > GB_T_BOOLEAN && atype <= GB_T_FLOAT)
+						{
+							p = POLYNOMIAL_create(size);
+							
+							for (i = 0; i < size; i++)
+							{
+								data = GB.Array.Get(array, i);
+								GB.ReadValue(&temp, data, atype);
+								GB.Conv(&temp, GB_T_FLOAT);
+								DATA(p)[i] = temp._float.value;
+							}
+							
+							conv->_object.value = p;
+							return FALSE;
+						}
+						/*else if (atype == CLASS_Complex)
+						{
+							GSLCOMPLEX *c;
+							v = VECTOR_create(atype, size, FALSE);
+							
+							for (i = 0; i < size; i++)
+							{
+								c = *((GSLCOMPLEX **)GB.Array.Get(array, i));
+								if (c)
+									gsl_vector_complex_set((gsl_vector_complex *)v->vector, i, c->number);
+								else
+									gsl_vector_complex_set((gsl_vector_complex *)v->vector, i, gsl_complex_rect(0, 0));
+							}
+							
+							conv->_object.value = v;
+							return FALSE;
+						}*/
+					}
+				}
+				
+				return TRUE;
+		}
+		
+		a = POLYNOMIAL_create(1);
+		*DATA(a) = coef;
+		conv->_object.value = a;
+		return FALSE;
 	}
+}
+
+//---------------------------------------------------------------------------
+
+BEGIN_METHOD_VOID(Polynomial_new)
+
+	if (THIS->array.dim)
+		GB.Error("Too many dimensions");
+	
+END_METHOD
+
+BEGIN_PROPERTY(Polynomial_Degree)
+
+	GB.ReturnInteger(get_degree(THIS));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(Polynomial_ToString)
+
+	GB.ReturnString(POLYNOMIAL_to_string(THIS, FALSE));
+
+END_METHOD
+
+BEGIN_METHOD(Polynomial_Eval, GB_FLOAT x)
+
+	GB.ReturnFloat(gsl_poly_eval(DATA(THIS), COUNT(THIS), VARG(x)));
+
+END_METHOD
+
+BEGIN_METHOD(Polynomial_EvalComplex, GB_OBJECT x)
+
+	GSLCOMPLEX *c = VARG(x);
+	
+	if (GB.CheckObject(c))
+		return;
+
+	GB.ReturnObject(COMPLEX_create(gsl_poly_complex_eval(DATA(THIS), COUNT(THIS), c->number)));
 
 END_METHOD
 
 
-// Maybe should be in complexpolynomial....
+BEGIN_METHOD_VOID(Polynomial_Solve)
 
-/**************************************************
-  Describe Class properties and methods to Gambas
-**************************************************/
+	double *data = DATA(THIS);
+	int nr, i, dg, ret;
+	GB_ARRAY result;
+	double r[3];
+	double *z = NULL;
+	gsl_poly_complex_workspace *work;
+	
+	dg = get_degree(THIS) + 1;
+	
+	switch(dg)
+	{
+		case 1:
+			GB.ReturnNull();
+			return;
+			
+		case 2:
+			r[0] = -data[0] / data[1];
+			nr = 1;
+			break;
+			
+		case 3:
+			nr = gsl_poly_solve_quadratic(data[2], data[1], data[0], &r[0], &r[1]);
+			break;
+			
+		case 4:
+			if (data[3] == 1.0)
+			{
+				nr = gsl_poly_solve_cubic(data[2], data[1], data[0], &r[0], &r[1], &r[2]);
+				break;
+			}
+			
+		default:
+			work = gsl_poly_complex_workspace_alloc(dg);
+			GB.Alloc(POINTER(&z), sizeof(double) * (dg - 1) * 2);
+			
+			ret = gsl_poly_complex_solve(data, dg, work, z);
+			
+			gsl_poly_complex_workspace_free(work);
+			
+			if (ret != GSL_SUCCESS)
+			{
+				GB.Free(POINTER(&z));
+				return;
+			}
+			
+			nr = 0;
+			for (i = 0; i < (dg - 1); i++)
+			{
+				if (z[i * 2 + 1] == 0.0)
+					nr++;
+			}
+	}
+	
+	GB.Array.New(&result, GB_T_FLOAT, nr);
+	
+	if (nr > 0)
+		data = (double *)GB.Array.Get(result, 0);
+	
+	if (!z)
+	{
+		if (nr >= 1) data[0] = r[0];
+		if (nr >= 2) data[1] = r[1];
+		if (nr >= 3) data[2] = r[2];
+	}
+	else
+	{
+		if (nr > 0)
+		{
+			nr = 0;
+			
+			for (i = 0; i < (dg - 1); i++)
+			{
+				if (z[i * 2 + 1] == 0.0)
+					data[nr++] = z[i * 2];
+			}
+		}
+		
+		GB.Free(POINTER(&z));
+	}
+			
+	GB.ReturnObject(result);
+
+END_METHOD
+
+//---------------------------------------------------------------------------
 
 GB_DESC CPolynomialDesc[] =
 {
-	GB_DECLARE("Polynomial", sizeof(CPOLYNOMIAL)),
+	GB_DECLARE("Polynomial", sizeof(CPOLYNOMIAL)), GB_INHERITS("Float[]"),
 
-	// Utility Methods 
-	GB_METHOD("_new", NULL, CPolynomial_new, NULL),
-	GB_METHOD("_call", "Polynomial", CPolynomial_call, NULL),
-	GB_METHOD("_free", NULL, CPolynomial_free, NULL),
-   GB_METHOD("_exit", NULL, CPolynomial_exit, NULL),
+	GB_METHOD("_new", NULL, Polynomial_new, NULL),
+	GB_METHOD("ToString", "s", Polynomial_ToString, NULL),
 
-	// Property Methods
-	GB_PROPERTY_READ("Len", "i", CPolynomial_Length),
-	GB_PROPERTY_READ("MaxCoef", "i", CPolynomial_MaxCoef),
-	GB_PROPERTY("AllocSize", "i", CPolynomial_AllocSize),
-	
-	// Data Methods
-	GB_METHOD("AddCoef", "i", CPolynomial_AddCoef, "(X)f"),
-	GB_METHOD("GetCoef", "f", CPolynomial_GetCoef, "(I)i"),
-	GB_METHOD("ToString", "s", CPolynomial_ToString, NULL),
-
+	GB_PROPERTY("Degree", "i", Polynomial_Degree),
+										 
 	// Implementation Methods
-	GB_METHOD("Eval", "f", CPolynomial_Eval, "(X)f"),
-	GB_METHOD("ComplexEval", "Complex", CPolynomial_ComplexEval, "(Z)Complex"),
-	GB_METHOD("SolveQuadratic", "f[];", CPolynomial_SolveQuadratic, NULL),
-	GB_METHOD("SolveCubic", "f[];", CPolynomial_SolveCubic, NULL),
-//	GB_METHOD("ComplexSolve", "Complex[];", CPolynomial_ComplexSolve, NULL),
+	GB_METHOD("Eval", "f", Polynomial_Eval, "(X)f"),
+	GB_METHOD("EvalComplex", "Complex", Polynomial_EvalComplex, "(Z)Complex;"),
+	GB_METHOD("Solve", "Float[]", Polynomial_Solve, NULL),
+	//GB_METHOD("Eval", "Complex", ComplexPolynomial_Eval, "(Z)Complex"),
+	//GB_METHOD("Solve", "Complex[];", ComplexPolynomial_Solve, NULL),
 
+	//GB_INTERFACE("_operators", &_operators),
+	GB_INTERFACE("_convert", &_convert),
+	
 	GB_END_DECLARE
 };
 

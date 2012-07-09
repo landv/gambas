@@ -57,6 +57,12 @@ GB_CLASS CLASS_Vector;
 GB_CLASS CLASS_FloatVector;
 GB_CLASS CLASS_ComplexVector;
 
+static void error_handler(const char *reason, const char *file, int line, int gsl_errno)
+{
+	//fprintf(stderr, "gb.gsl: error: %s: %s\n", gsl_strerror(gsl_errno), reason);
+	GB.Error("&1: &2", gsl_strerror(gsl_errno), reason);
+}
+
 int EXPORT GB_INIT(void)
 {
 	CLASS_Complex = GB.FindClass("Complex");
@@ -64,11 +70,14 @@ int EXPORT GB_INIT(void)
 	CLASS_FloatVector = GB.FindClass("FloatVector");
 	CLASS_ComplexVector = GB.FindClass("ComplexVector");
 	
+	gsl_set_error_handler(error_handler);
+	
 	return 0;
 }
 
 void EXPORT GB_EXIT()
 {
+	
 }
 
 int EXPORT GB_INFO(const char *key, void **value)
