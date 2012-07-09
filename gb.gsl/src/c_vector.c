@@ -129,9 +129,9 @@ static GSLVECTOR *VECTOR_create(GB_TYPE type, int size, bool init)
 	GSLVECTOR *v;
 	
 	if (type == GB_T_FLOAT)
-		klass = GB.FindClass("FloatVector");
-	else if (type == GB.FindClass("Complex"))
-		klass = GB.FindClass("ComplexVector");
+		klass = CLASS_FloatVector;
+	else if (type == CLASS_Complex)
+		klass = CLASS_ComplexVector;
 	else
 		return NULL;
 	
@@ -157,6 +157,17 @@ static GSLVECTOR *VECTOR_copy(GSLVECTOR *_object)
 		gsl_vector_complex_memcpy((gsl_vector_complex *)copy->vector, VECTORC);
 	
 	return copy;
+}
+
+static GSLVECTOR *VECTOR_convert_to_complex(GSLVECTOR *_object)
+{
+	GSLVECTOR *v = VECTOR_create(CLASS_Complex, SIZE(THIS), FALSE);
+	int i;
+	
+	for (i = 0; i < SIZE(THIS); i++)
+		gsl_vector_complex_set((gsl_vector_complex *)v->vector, i, gsl_complex_rect(gsl_vector_get(VECTOR, i), 0));
+	
+	return v;
 }
 
 //---- Arithmetic operators -------------------------------------------------
@@ -415,6 +426,13 @@ static bool _convert(GSLVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					return FALSE;
 					
 				default:
+					
+					if (type == CLASS_ComplexVector)
+					{
+						conv->_object.value = VECTOR_convert_to_complex(THIS);
+						return FALSE;
+					}
+					
 					return TRUE;
 			}
 		}
@@ -479,7 +497,7 @@ static bool _convert(GSLVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 				conv->_object.value = v;
 				return FALSE;
 			}
-			else if (atype == GB.FindClass("Complex"))
+			else if (atype == CLASS_Complex)
 			{
 				GSLCOMPLEX *c;
 				v = VECTOR_create(atype, size, FALSE);
@@ -497,7 +515,7 @@ static bool _convert(GSLVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 				return FALSE;
 			}
 		}
-		else if (type == GB.FindClass("Complex"))
+		else if (type == CLASS_Complex)
 		{
 			GSLCOMPLEX *c = (GSLCOMPLEX *)conv->_object.value;
 			GSLVECTOR *v = VECTOR_create(type, 1, FALSE);
@@ -579,6 +597,155 @@ BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 
 END_METHOD
 
+BEGIN_METHOD(Vector_Scale, GB_VALUE value)
+
+	GB_VALUE *value = ARG(value);
+	GSLVECTOR *v;
+	
+	if (value->type == GB_T_VARIANT)
+		GB.Conv(value, value->_variant.value.type);
+	
+	if (THIS->type == GB_T_FLOAT && value->type < GB_T_OBJECT)
+	{
+		GB.Conv(value, GB_T_FLOAT);
+		v = VECTOR_copy(THIS);
+		gsl_vector_scale(v->vector, value->_float.value);
+	}
+	else
+	{
+		GSLCOMPLEX *c;
+		
+		GB.Conv(value, CLASS_Complex);
+		c = (GSLCOMPLEX *)value->_object.value;
+		
+		if (THIS->type == GB_T_FLOAT)
+			v = VECTOR_convert_to_complex(THIS);
+		else
+			v = VECTOR_copy(THIS);
+		
+		gsl_vector_complex_scale((gsl_vector_complex *)v->vector, c->number);
+	}
+
+	GB.ReturnObject(v);
+		
+END_METHOD
+
+static void do_dot(GSLVECTOR *_object, GSLVECTOR *v, bool conj)
+{
+	bool ca, cb;
+	
+	if (GB.CheckObject(v))
+		return;
+	
+	ca = THIS->type == GB_T_FLOAT; 
+	cb = v->type == GB_T_FLOAT; 
+	
+	if (ca && cb)
+	{
+		double result;
+		gsl_blas_ddot(VECTOR, v->vector, &result);
+		GB.ReturnFloat(result);
+	}
+	else
+	{
+		GSLVECTOR *a, *b;
+		gsl_complex result;
+		
+		if (ca)
+			a = VECTOR_convert_to_complex(THIS);
+		else
+			a = THIS;
+		
+		if (cb)
+			b = VECTOR_convert_to_complex(v);
+		else
+			b = v;
+		
+		if (conj)
+			gsl_blas_zdotc((gsl_vector_complex *)a->vector, (gsl_vector_complex *)b->vector, &result);
+		else
+			gsl_blas_zdotu((gsl_vector_complex *)a->vector, (gsl_vector_complex *)b->vector, &result);
+		
+		GB.ReturnObject(COMPLEX_create(result));
+		
+		if (ca) GB.Unref(POINTER(&a));
+		if (cb) GB.Unref(POINTER(&b));
+	}
+
+	GB.ReturnConvVariant();
+}
+
+BEGIN_METHOD(Vector_Dot, GB_OBJECT vector)
+
+	do_dot(THIS, VARG(vector), FALSE);
+
+END_METHOD
+
+BEGIN_METHOD(Vector_ConjDot, GB_OBJECT vector)
+
+	do_dot(THIS, VARG(vector), TRUE);
+	
+END_METHOD
+
+BEGIN_METHOD_VOID(Vector_Norm)
+
+	if (THIS->type == GB_T_FLOAT)
+		GB.ReturnFloat(gsl_blas_dnrm2(VECTOR));
+	else
+		GB.ReturnFloat(gsl_blas_dznrm2(VECTORC));
+
+END_METHOD
+
+BEGIN_METHOD(Vector_Equal, GB_OBJECT vector)
+
+	GSLVECTOR *v = VARG(vector);
+	bool ca, cb;
+	
+	if (GB.CheckObject(v))
+		return;
+	
+	if (SIZE(THIS) != SIZE(v))
+	{
+		GB.ReturnBoolean(FALSE);
+		return;
+	}
+	
+	ca = THIS->type == GB_T_FLOAT; 
+	cb = v->type == GB_T_FLOAT; 
+	
+	if (ca && cb)
+	{
+		GB.ReturnBoolean(gsl_vector_equal(VECTOR, v->vector));
+	}
+	else
+	{
+		GSLVECTOR *a, *b;
+		
+		if (ca)
+			a = VECTOR_convert_to_complex(THIS);
+		else
+			a = THIS;
+		
+		if (cb)
+			b = VECTOR_convert_to_complex(v);
+		else
+			b = v;
+		
+		GB.ReturnBoolean(gsl_vector_complex_equal((gsl_vector_complex *)a->vector, (gsl_vector_complex *)b->vector));
+		
+		if (ca) GB.Unref(POINTER(&a));
+		if (cb) GB.Unref(POINTER(&b));
+	}
+
+
+END_METHOD
+
+BEGIN_PROPERTY(Vector_Handle)
+
+	GB.ReturnPointer(VECTOR);
+	
+END_PROPERTY
+
 //---------------------------------------------------------------------------
 
 BEGIN_METHOD(FloatVector_new, GB_INTEGER size)
@@ -631,7 +798,7 @@ BEGIN_METHOD(ComplexVector_new, GB_INTEGER size)
 		_do_not_init = FALSE;
 	else
 	{
-		THIS->type = GB.FindClass("Complex");
+		THIS->type = CLASS_Complex;
 		THIS->vector = (gsl_vector *)gsl_vector_complex_calloc(VARGOPT(size, 1));
 	}
 
@@ -682,10 +849,17 @@ GB_DESC VectorDesc[] =
 	GB_METHOD("Copy", "Vector", Vector_Copy, NULL),
 	
 	GB_PROPERTY_READ("Count", "i", Vector_Count),
+	GB_PROPERTY_READ("Handle", "p", Vector_Handle),
 	
 	GB_METHOD("_get", "v", Vector_get, "(Index)i"),
 	GB_METHOD("_put", NULL, Vector_put, "(Value)v(Index)i"),
 
+	GB_METHOD("Scale", "Vector", Vector_Scale, "(Value)v"),
+	GB_METHOD("Dot", "v", Vector_Dot, "(Vector)Vector"),
+	GB_METHOD("ConjDot", "v", Vector_ConjDot, "(Vector)Vector"),
+	GB_METHOD("Norm", "f", Vector_Norm, NULL),
+	GB_METHOD("Equal", "b", Vector_Equal, "(Vector)Vector"),
+	
 	GB_INTERFACE("_convert", &_convert),
 	
 	GB_END_DECLARE

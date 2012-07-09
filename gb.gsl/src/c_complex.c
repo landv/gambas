@@ -35,14 +35,9 @@
 
 GSLCOMPLEX *COMPLEX_create(gsl_complex number)
 {
-	static GB_CLASS _klass = (GB_CLASS)NULL;
-
 	GSLCOMPLEX *c;
 	
-	if (!_klass)
-		_klass = GB.FindClass("Complex");
-	
-	c = (GSLCOMPLEX *)GB.New(_klass, NULL, NULL);
+	c = (GSLCOMPLEX *)GB.New(CLASS_Complex, NULL, NULL);
 	c->number = number;
 	
 	return c;

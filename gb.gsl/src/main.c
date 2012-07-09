@@ -52,8 +52,18 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL // Must have a null entry for the end of the structure
 };
 
+GB_CLASS CLASS_Complex;
+GB_CLASS CLASS_Vector;
+GB_CLASS CLASS_FloatVector;
+GB_CLASS CLASS_ComplexVector;
+
 int EXPORT GB_INIT(void)
 {
+	CLASS_Complex = GB.FindClass("Complex");
+	CLASS_Vector = GB.FindClass("Vector");
+	CLASS_FloatVector = GB.FindClass("FloatVector");
+	CLASS_ComplexVector = GB.FindClass("ComplexVector");
+	
 	return 0;
 }
 
