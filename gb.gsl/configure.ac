@@ -6,7 +6,7 @@ GB_INIT(gb.gsl)
 AC_PROG_LIBTOOL
 
 GB_COMPONENT_SEARCH(
-  gslcblas, GSLCBLAS, gb.gsl, [src],
+  gsl, GSL, gb.gsl, [src],
   gsl,
   [GB_FIND(gsl/gsl_cblas.h gsl/gsl_math.h, /usr /usr/local `gsl-config --prefix`, include include/gsl)],
   [GB_FIND(libgslcblas.$SHLIBEXT libgsl.$SHLIBEXT, /usr/lib /usr/local /usr/local/lib `gsl-config --prefix`, lib)],
