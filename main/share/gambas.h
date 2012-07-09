@@ -668,6 +668,17 @@ typedef
 typedef
 	void *GB_ARRAY;
 
+typedef
+	struct {
+		int size;
+		int count;
+		GB_TYPE type;
+		void *data;
+		int *dim;
+		void *ref;
+		}
+	GB_ARRAY_BASE;
+
 
 /* Opaque type of a Gambas Collection */
 

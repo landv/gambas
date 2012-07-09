@@ -1698,7 +1698,16 @@ void *GB_New(void *class, const char *name, void *parent)
 	}
 
 	if (!((CLASS *)class)->no_create)
-		object = OBJECT_create(class, name, parent, 0);
+	{
+		int nparam = 0;
+		if (!name && parent)
+		{
+			nparam = (int)(intptr_t)parent;
+			parent = NULL;
+		}
+		
+		object = OBJECT_create(class, name, parent, nparam);
+	}
 	else
 	{
 		object = OBJECT_new(class, name, parent);

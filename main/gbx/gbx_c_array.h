@@ -33,17 +33,19 @@
 #include "gbx_type.h"
 #include "gbx_class.h"
 
+// Do not forget to modify GB_ARRAY_BASE in gambas.h
+
 typedef
-  struct {
-    OBJECT object;
+	struct {
+		OBJECT object;
 		int size;
 		int count;
-    TYPE type;
-    void *data;
-    int *dim;
+		TYPE type;
+		void *data;
+		int *dim;
 		void *ref;
-    }
-  CARRAY;
+		}
+	CARRAY;
 
 #ifndef __GBX_C_ARRAY_C
 extern GB_DESC NATIVE_ArrayBounds[];

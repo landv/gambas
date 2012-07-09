@@ -50,6 +50,23 @@ CCOMPLEX *COMPLEX_create(double re, double im)
 	return c;
 }
 
+CCOMPLEX *COMPLEX_make(CCOMPLEX *a, double re, double im)
+{
+	if (a->ob.ref == 1)
+	{
+		//fprintf(stderr, "reuse %p %g %g -> %g %g\n", a, a->v[0], a->v[1], re, im);
+		a->v[0] = re;
+		a->v[1] = im;
+	}
+	else
+	{
+		a = COMPLEX_create(re, im);
+		//fprintf(stderr, "create %p %g %g\n", a, re, im);
+	}
+	
+	return a;
+}
+
 CCOMPLEX *COMPLEX_push_complex(double value)
 {
 	return COMPLEX_create(0, value);
@@ -59,32 +76,32 @@ CCOMPLEX *COMPLEX_push_complex(double value)
 
 static CCOMPLEX *_addf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(RE(a) + f, IM(a));
+	return COMPLEX_make(a, RE(a) + f, IM(a));
 }
 
 static CCOMPLEX *_add(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(RE(a) + RE(b), IM(a) + IM(b));
+	return COMPLEX_make(a, RE(a) + RE(b), IM(a) + IM(b));
 }
 
 static CCOMPLEX *_subf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(RE(a) - f, IM(a));
+	return COMPLEX_make(a, RE(a) - f, IM(a));
 }
 
 static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(RE(a) - RE(b), IM(a) - IM(b));
+	return COMPLEX_make(a, RE(a) - RE(b), IM(a) - IM(b));
 }
 
 static CCOMPLEX *_mulf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(RE(a) * f, IM(a) * f);
+	return COMPLEX_make(a, RE(a) * f, IM(a) * f);
 }
 
 static CCOMPLEX *_mul(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(RE(a) * RE(b) - IM(a) * IM(b), RE(a) * IM(b) + IM(a) * RE(b));
+	return COMPLEX_make(a, RE(a) * RE(b) - IM(a) * IM(b), RE(a) * IM(b) + IM(a) * RE(b));
 }
 
 static CCOMPLEX *_divf(CCOMPLEX *a, double f)
@@ -92,7 +109,7 @@ static CCOMPLEX *_divf(CCOMPLEX *a, double f)
 	if (f == 0.0)
 		return NULL;
 	
-	return COMPLEX_create(RE(a) / f, IM(a) / f);
+	return COMPLEX_make(a, RE(a) / f, IM(a) / f);
 }
 
 static CCOMPLEX *_idivf(CCOMPLEX *a, double f)
@@ -106,7 +123,7 @@ static CCOMPLEX *_idivf(CCOMPLEX *a, double f)
 	re = RE(a) / s;
 	im = -IM(a) / s;
 	
-	return COMPLEX_create(re * f, im * f);
+	return COMPLEX_make(a, re * f, im * f);
 }
 
 static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
@@ -125,7 +142,7 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
   double zr = (ar * sbr + ai * sbi) * s;
   double zi = (ai * sbr - ar * sbi) * s;
 
-	return COMPLEX_create(zr, zi);
+	return COMPLEX_make(a, zr, zi);
 }
 
 static int _equal(CCOMPLEX *a, CCOMPLEX *b)
@@ -145,7 +162,7 @@ static double _abs(CCOMPLEX *a)
 
 static CCOMPLEX *_neg(CCOMPLEX *a)
 {
-	return COMPLEX_create(-RE(a), -IM(a));
+	return COMPLEX_make(a, -RE(a), -IM(a));
 }
 
 static GB_OPERATOR_DESC _operators =
