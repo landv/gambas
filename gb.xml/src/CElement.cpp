@@ -251,6 +251,18 @@ GB.ReturnObject(array);
 
 END_METHOD
 
+BEGIN_PROPERTY(CElement_firstChild)
+
+GBI::Return(THIS->firstChild);
+
+END_METHOD
+
+BEGIN_PROPERTY(CElement_lastChild)
+
+GBI::Return(THIS->lastChild);
+
+END_PROPERTY
+
 
 
 GB_DESC CElementDesc[] =
@@ -280,6 +292,8 @@ GB_DESC CElementDesc[] =
     GB_PROPERTY_READ("Children", "XmlNode[]", CElement_childNodes),
     GB_PROPERTY_READ("ChildElements", "XmlElement[]", CElement_childElements),
     GB_PROPERTY_READ("AllChildNodes", "XmlNode[]", CElement_allChildNodes),
+    GB_PROPERTY_READ("FirstChild", "XmlNode", CElement_firstChild),
+    GB_PROPERTY_READ("LastChild", "XmlNode", CElement_lastChild),
     GB_PROPERTY_READ("FirstChildElement", "XmlElement", CElement_firstChildElement),
     GB_PROPERTY_READ("LastChildElement", "XmlElement", CElement_lastChildElement),
     
