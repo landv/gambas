@@ -78,6 +78,7 @@ public:
     bool insertAfter(Node *child, Node *newChild);
     bool insertBefore(Node *child, Node *newChild);
     void appendText(const char *data, const size_t lenData);
+    void clearChildren();
     
     void appendFromText(char *data, const size_t lenData);
     

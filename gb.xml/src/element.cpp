@@ -787,18 +787,9 @@ void Element::addString(char **data, int indent)
 void Element::setTextContent(const char *ncontent, const size_t nlen)
 {
     Node *newText = 0;
+    if(nlen == 0) return;
     
-    for(Node *node = firstChild; node != 0; node = node->nextNode)
-    {
-        if(node->isTextNode() && !newText)
-        {
-            newText = node;
-        }
-        else
-        {
-            removeChild(node);
-        }
-    }
+    clearChildren();
     
     if(!newText)
     {
@@ -843,6 +834,27 @@ void Element::appendText(const char *data, const size_t lenData)
         TextNode *text = new TextNode(data, lenData);
         appendChild(text);
     }
+}
+
+void Element::clearChildren()
+{
+    if(childCount == 0) return;
+    register Node* prevChild = 0;
+    register Node* child = 0;
+    for(child = firstChild->nextNode; child != 0; child = child->nextNode)
+    {
+        prevChild = child->previousNode;
+        prevChild->nextNode = 0;
+        prevChild->previousNode = 0;
+        prevChild->DestroyParent();
+    }
+    lastChild->nextNode = 0;
+    lastChild->previousNode = 0;
+    lastChild->DestroyParent();
+    
+    childCount = 0;
+    lastChild = 0;
+    firstChild = 0;
 }
 
 /*****    Parser     *****/

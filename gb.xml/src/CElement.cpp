@@ -155,6 +155,12 @@ THIS->appendText(STRING(data), LENGTH(data));
 
 END_METHOD
 
+BEGIN_METHOD_VOID(CElement_clearChildren)
+
+THIS->clearChildren();
+
+END_METHOD
+
 BEGIN_PROPERTY(CElement_previousSibling)
 
 GBI::Return(THIS->previousSibling());
@@ -260,6 +266,7 @@ GB_DESC CElementDesc[] =
     GB_METHOD("InsertBefore", "", CElement_insertBefore, "(Child)XmlNode;(NewChild)XmlNode"),
     GB_METHOD("RemoveChild", "", CElement_removeChild, "(OldChild)XmlNode"),
     GB_METHOD("ReplaceChild", "", CElement_replaceChild, "(OldChild)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("ClearChildren", "", CElement_clearChildren, ""),
     
     GB_METHOD("AppendText", "", CElement_appendText, "(Data)s"),
     GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s"),
