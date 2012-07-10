@@ -40,6 +40,7 @@
 #include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/IRBuilder.h"
+#include "llvm/Support/DynamicLibrary.h"
 #include "llvm/PassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
@@ -276,6 +277,15 @@ struct PushLastExpression : Expression {
 	}
 	llvm::Value* codegen_get_value();
 	void codegen_on_stack(){ codegen_get_value(); }
+};
+
+struct PushComplexExpression : Expression {
+	Expression* op;
+	PushComplexExpression(Expression* op) : op(op) {
+		JIT_conv(this->op, T_FLOAT);
+		//FIXME
+		abort();
+	}
 };
 
 struct ReadVariableExpression : Expression {

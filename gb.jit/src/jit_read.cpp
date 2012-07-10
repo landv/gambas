@@ -862,6 +862,7 @@ static void JIT_read_statement(){
 							case CPM_STRING: push(new PushCStringExpression(NULL, 0, 0)); NEXT
 							case CPM_PINF: push(new PushFloatExpression(64, INFINITY)); NEXT
 							case CPM_MINF: push(new PushFloatExpression(64, -INFINITY)); NEXT
+							case CPM_COMPLEX: push(new PushComplexExpression(pop())); NEXT
 						}
 						assert(false && "Illegal Push Misc");
 						push_false_true: {

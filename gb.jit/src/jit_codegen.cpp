@@ -204,6 +204,8 @@ static llvm::BasicBlock* create_bb(const char* name){
 	return llvm::BasicBlock::Create(llvm_context, name, llvm_function);
 }
 
+extern "C" double __powidf2(double, int);
+
 static void llvm_init(){
 	llvm::InitializeNativeTarget();
 	
@@ -236,6 +238,8 @@ static void llvm_init(){
 		llvm_args.push_back(pointer_t(value_type));
 		gosub_stack_node_type = llvm::StructType::create(llvm_context, llvm_args, "GosubStackNode");
 	}
+	
+	llvm::sys::DynamicLibrary::AddSymbol("__powidf2", (void*)__powidf2);
 }
 
 void register_global_symbol(llvm::StringRef name, llvm::GlobalValue* value, void* address){
@@ -4096,7 +4100,10 @@ llvm::Value* PowExpression::codegen_get_value(){
 	auto op = codegen_operands();
 	llvm::Value* func;
 	if (right->type == T_INTEGER){
-		func = M->getOrInsertFunction("llvm.powi.f64", get_function_type('d', "di"));
+		llvm::Type* types[] = {llvmType(getDoubleTy)};
+		func = llvm::Intrinsic::getDeclaration(M, llvm::Intrinsic::powi, types);
+		//func = get_global_function(__powidf2, 'd', "di");
+		//func = M->getOrInsertFunction("llvm.powi.f64", get_function_type('d', "di"));
 	} else {
 		func = M->getOrInsertFunction("llvm.pow.f64", get_function_type('d', "dd"));
 	}
@@ -6676,7 +6683,7 @@ void JIT_codegen(){
 	if (EE)
 		EE->addModule(M);
 	else
-		EE = llvm::EngineBuilder(M).create();
+		EE = llvm::EngineBuilder(M)/*.setOptLevel(llvm::CodeGenOpt::Aggressive)*/.create();
 	
 	
 	static int counter = 0;
