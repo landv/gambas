@@ -705,7 +705,7 @@ __FLOAT:
 
 __OBJECT:
 	
-	EXEC_operator_object_single(P1, CO_NEG);
+	EXEC_operator_object_single(CO_NEG, P1);
 	return;
 	
 __VARIANT:
