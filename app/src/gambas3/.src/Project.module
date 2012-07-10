@@ -172,7 +172,7 @@ Private $hCurrentPopup As Menu
 Private $hLock As File
 
 ' Path of source files
-Private $cSourceDir As Collection
+Private $cSourceDir As New Collection
 
 ' Subversion state of files
 Public LockedPaths As Collection
@@ -763,6 +763,8 @@ Private Function CloseProject() As Boolean
 
     'FFind.WriteConfig
     Try Config = Null
+    
+    $cSourceDir.Clear
 
     CPosition.Clear
     Files.Clear

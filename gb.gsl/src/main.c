@@ -31,7 +31,6 @@
 #include "c_complex.h"
 #include "c_vector.h"
 #include "c_polynomial.h"
-#include "c_complexpolynomial.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,8 +45,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	VectorDesc,
 	FloatVectorDesc,
 	ComplexVectorDesc,
-  CPolynomialDesc,
-  CComplexPolynomialDesc,
+  PolynomialDesc,
   /* Other classes go here as completed */
   NULL // Must have a null entry for the end of the structure
 };
@@ -56,6 +54,7 @@ GB_CLASS CLASS_Complex;
 GB_CLASS CLASS_Vector;
 GB_CLASS CLASS_FloatVector;
 GB_CLASS CLASS_ComplexVector;
+GB_CLASS CLASS_Polynomial;
 
 static void error_handler(const char *reason, const char *file, int line, int gsl_errno)
 {
@@ -69,6 +68,7 @@ int EXPORT GB_INIT(void)
 	CLASS_Vector = GB.FindClass("Vector");
 	CLASS_FloatVector = GB.FindClass("FloatVector");
 	CLASS_ComplexVector = GB.FindClass("ComplexVector");
+	CLASS_Polynomial = GB.FindClass("Polynomial");
 	
 	gsl_set_error_handler(error_handler);
 	

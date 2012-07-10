@@ -32,12 +32,14 @@
  
 GB_INTERFACE GB EXPORT;
 
-extern GB_DESC CPolynomialDesc[];
+extern GB_DESC PolynomialDesc[];
 
 typedef
   struct {
     GB_BASE ob;
-		GB_ARRAY_BASE array;
+		int size;
+		void *data;
+		bool complex;
     }
   CPOLYNOMIAL;
 

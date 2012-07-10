@@ -530,7 +530,7 @@ Public Sub Load()
         ' Ce test peut foirer si une classe veut hériter d'une autre classe
         ' du même composant, qui existe déjà dans un composant déjà déclaré.
         
-        If sParent And If Not Classes.Exist(sParent) Then
+        If sParent And If Not ExistClassEvenArray(sParent) Then
           If Not cClass.Exist(sParent) Then 
             Error.Raise("'" & sParent & "' class is missing in " & Key & " component exported classes")
           Endif
@@ -1170,6 +1170,13 @@ Static Public Sub GetClassDescription(sClass As String) As CClassInfo
   
 End
 
+Static Public Sub GetLastClass() As CClassInfo
+  
+  Return $hClass
+  
+End
+
+
 Static Public Function GetClassSymbols(sClass As String) As Collection
   
   Dim hClass As CClassInfo
@@ -1353,5 +1360,16 @@ Public Sub GetHelpURL() As String
     Return sPath & "?help&v3&" & MHelp.GetLanguage()
     
   Endif
+  
+End
+
+Public Sub ExistClassEvenArray(sClass As String) As Boolean
+  
+  Do
+    If Classes.Exist(sClass) Then Return True
+    If Right(sClass, 2) <> "[]" Then Return
+    sClass = Left(sClass, -2)
+    If Not sClass Then Return
+  Loop
   
 End

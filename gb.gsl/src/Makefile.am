@@ -12,5 +12,4 @@ gb_gsl_la_SOURCES = \
  c_gsl.c c_gsl.h \
  c_complex.c c_complex.h \
  c_vector.c c_vector.h \
- c_polynomial.c c_polynomial.h \
- c_complexpolynomial.c c_complexpolynomial.h
+ c_polynomial.c c_polynomial.h

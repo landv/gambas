@@ -30,6 +30,8 @@ MA 02110-1301, USA.
 
 #ifndef _C_COMPLEX_C
 extern GB_DESC ComplexDesc[];
+extern gsl_complex COMPLEX_zero;
+//extern GB_DESC ComplexArrayDesc[];
 #endif
 
 typedef
@@ -38,10 +40,19 @@ typedef
 		GB_BASE ob;
 		gsl_complex number;
 	}
-	GSLCOMPLEX;
+	CCOMPLEX;
 
-GSLCOMPLEX *COMPLEX_create(gsl_complex number);
-GSLCOMPLEX *COMPLEX_push_complex(double value);
+/*typedef
+  struct {
+    GB_BASE ob;
+		GB_ARRAY_BASE array;
+    }
+  CCOMPLEXARRAY;*/
+
+CCOMPLEX *COMPLEX_create(gsl_complex number);
+CCOMPLEX *COMPLEX_push_complex(double value);
 char *COMPLEX_to_string(gsl_complex number, bool local);
+
+#define COMPLEX_get(_c) ((_c) ? (_c)->number : COMPLEX_zero)
 
 #endif /* __C_COMPLEX_H */

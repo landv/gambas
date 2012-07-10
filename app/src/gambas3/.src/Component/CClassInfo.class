@@ -34,14 +34,14 @@ Public Sub _new(sName As String, Optional sParent As String)
 
   If {Parent} Then
     'IF Parent = "GridView" THEN STOP
-    ParentComponent = CComponent.Classes[sParent].Component
     'IF ERROR THEN
     '  STOP
     '  Error.Raise(Error.Text)
     'ENDIF
-    For Each hSym In CComponent.Classes[sParent].Symbols
+    For Each hSym In CComponent.GetClassSymbols(sParent) ' CComponent.Classes[sParent].Symbols
       Symbols[hSym.Name] = hSym
     Next
+    ParentComponent = CComponent.GetLastClass().Component
   Endif
 
 End

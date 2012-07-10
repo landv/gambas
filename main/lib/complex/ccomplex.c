@@ -89,6 +89,11 @@ static CCOMPLEX *_subf(CCOMPLEX *a, double f)
 	return COMPLEX_make(a, RE(a) - f, IM(a));
 }
 
+static CCOMPLEX *_isubf(CCOMPLEX *a, double f)
+{
+	return COMPLEX_make(a, f - RE(a), -IM(a));
+}
+
 static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b)
 {
 	return COMPLEX_make(a, RE(a) - RE(b), IM(a) - IM(b));
@@ -171,6 +176,7 @@ static GB_OPERATOR_DESC _operators =
 	addf: (void *)_addf,
 	sub: (void *)_sub,
 	subf: (void *)_subf,
+	isubf: (void *)_isubf,
 	mul: (void *)_mul,
 	mulf: (void *)_mulf,
 	div: (void *)_div,
@@ -364,7 +370,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Complex_Inv)
 
-	GB.ReturnObject(_divf(THIS, 1));
+	GB.ReturnObject(_idivf(THIS, 1));
 
 END_METHOD
 

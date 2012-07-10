@@ -499,12 +499,12 @@ static bool _convert(GSLVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 			}
 			else if (atype == CLASS_Complex)
 			{
-				GSLCOMPLEX *c;
+				CCOMPLEX *c;
 				v = VECTOR_create(atype, size, FALSE);
 				
 				for (i = 0; i < size; i++)
 				{
-					c = *((GSLCOMPLEX **)GB.Array.Get(array, i));
+					c = *((CCOMPLEX **)GB.Array.Get(array, i));
 					if (c)
 						gsl_vector_complex_set((gsl_vector_complex *)v->vector, i, c->number);
 					else
@@ -517,7 +517,7 @@ static bool _convert(GSLVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 		}
 		else if (type == CLASS_Complex)
 		{
-			GSLCOMPLEX *c = (GSLCOMPLEX *)conv->_object.value;
+			CCOMPLEX *c = (CCOMPLEX *)conv->_object.value;
 			GSLVECTOR *v = VECTOR_create(type, 1, FALSE);
 			gsl_vector_complex_set((gsl_vector_complex *)v->vector, 0, c->number);
 			conv->_object.value = v;
@@ -588,7 +588,7 @@ BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 		gsl_vector_set(VECTOR, index, ((GB_FLOAT *)ARG(value))->value);
 	else
 	{
-		GSLCOMPLEX *c = (GSLCOMPLEX *)((GB_OBJECT *)ARG(value))->value;
+		CCOMPLEX *c = (CCOMPLEX *)((GB_OBJECT *)ARG(value))->value;
 		if (GB.CheckObject(c))
 			gsl_vector_complex_set(VECTORC, index, gsl_complex_rect(0, 0));
 		else
@@ -613,10 +613,10 @@ BEGIN_METHOD(Vector_Scale, GB_VALUE value)
 	}
 	else
 	{
-		GSLCOMPLEX *c;
+		CCOMPLEX *c;
 		
 		GB.Conv(value, CLASS_Complex);
-		c = (GSLCOMPLEX *)value->_object.value;
+		c = (CCOMPLEX *)value->_object.value;
 		
 		if (THIS->type == GB_T_FLOAT)
 			v = VECTOR_convert_to_complex(THIS);
@@ -823,7 +823,7 @@ END_METHOD
 
 	int size = SIZE(THIS);
 	int index = VARG(index);
-	GSLCOMPLEX *value;
+	CCOMPLEX *value;
 	
 	if (index < 0 || index >= size)
 	{
@@ -831,7 +831,7 @@ END_METHOD
 		return;
 	}
 	
-	value = (GSLCOMPLEX *)VARG(value);
+	value = (CCOMPLEX *)VARG(value);
 	if (GB.CheckObject(value))
 		return;
 	

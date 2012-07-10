@@ -42,6 +42,7 @@ extern GB_CLASS CLASS_Complex;
 extern GB_CLASS CLASS_Vector;
 extern GB_CLASS CLASS_FloatVector;
 extern GB_CLASS CLASS_ComplexVector;
+extern GB_CLASS CLASS_Polynomial;
 #endif
 
 #endif /* __MAIN_H */

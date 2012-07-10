@@ -247,6 +247,7 @@ enum {
 	CO_ADDF,
 	CO_SUB,
 	CO_SUBF,
+	CO_ISUBF,
 	CO_MUL,
 	CO_MULF,
 	CO_DIV,

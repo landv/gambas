@@ -3014,7 +3014,7 @@ __OBJECT_FLOAT:
 
 __FLOAT_OBJECT:
 
-	operator_float_object(P1, P2, CO_SUBF);
+	operator_float_object(P1, P2, CO_ISUBF);
 	goto __END;
 	
 __OBJECT_CONV:

@@ -838,6 +838,7 @@ typedef
 		void *(*addf)(void *, double);
 		void *(*sub)(void *, void *);
 		void *(*subf)(void *, double);
+		void *(*isubf)(void *, double);
 		void *(*mul)(void *, void *);
 		void *(*mulf)(void *, double);
 		void *(*div)(void *, void *);
