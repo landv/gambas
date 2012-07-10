@@ -72,6 +72,16 @@ typedef
 		}
 	EXEC_HOOK;
 
+enum {
+	OP_NOTHING = 0,
+	OP_OBJECT_FLOAT,
+	OP_FLOAT_OBJECT,
+	OP_OBJECT_CONV,
+	OP_CONV_OBJECT,
+	OP_OBJECT_OBJECT
+	};
+
+	
 #ifndef __GBX_EXEC_C
 
 EXTERN STACK_CONTEXT EXEC_current;
@@ -292,5 +302,13 @@ do { \
 
 #define EXEC_set_native_error(_err) (ERROR_current->info.native = (_err))
 #define EXEC_has_native_error() (ERROR_current->info.native)
+
+bool EXEC_check_operator_single(VALUE *P1);
+int EXEC_check_operator(VALUE *P1, VALUE *P2);
+void EXEC_operator(uchar what, uchar op, VALUE *P1, VALUE *P2);
+void EXEC_operator_object_add_quick(VALUE *P1, double val);
+bool EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2);
+void EXEC_operator_object_abs(VALUE *P1);
+void EXEC_operator_object_single(uchar op, VALUE *P1);
 
 #endif /* */

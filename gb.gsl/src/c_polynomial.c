@@ -751,90 +751,6 @@ BEGIN_METHOD(Polynomial_Solve, GB_BOOLEAN want_croot)
 
 END_METHOD
 
-#if 0
-BEGIN_METHOD_VOID(Polynomial_SolveComplex)
-
-	double *data = DATA(THIS);
-	int nr, i, dg, ret;
-	GB_ARRAY result;
-	double r[3];
-	double *z = NULL;
-	gsl_poly_complex_workspace *work;
-	CCOMPLEX **root = NULL;
-	
-	dg = get_degree(THIS) + 1;
-	
-	switch(dg)
-	{
-		case 1:
-			GB.ReturnNull();
-			return;
-			
-		case 2:
-			r[0] = -data[0] / data[1];
-			nr = 1;
-			break;
-			
-		case 3:
-			nr = gsl_poly_solve_quadratic(data[2], data[1], data[0], &r[0], &r[1]);
-			break;
-			
-		case 4:
-			if (data[3] == 1.0)
-			{
-				nr = gsl_poly_solve_cubic(data[2], data[1], data[0], &r[0], &r[1], &r[2]);
-				break;
-			}
-			
-		default:
-			work = gsl_poly_complex_workspace_alloc(dg);
-			GB.Alloc(POINTER(&z), sizeof(double) * (dg - 1) * 2);
-			
-			ret = gsl_poly_complex_solve(data, dg, work, z);
-			
-			gsl_poly_complex_workspace_free(work);
-			
-			if (ret != GSL_SUCCESS)
-			{
-				GB.Free(POINTER(&z));
-				return;
-			}
-			
-			nr = dg - 1;
-	}
-	
-	GB.Array.New(&result, CLASS_Complex, nr);
-	
-	if (nr > 0)
-		root = (CCOMPLEX **)GB.Array.Get(result, 0);
-	
-	if (!z)
-	{
-		for (i = 0; i < nr; i++)
-		{
-			root[i] = COMPLEX_create(gsl_complex_rect(r[i], 0));
-			GB.Ref(root[i]);
-		}
-	}
-	else
-	{
-		if (nr > 0)
-		{
-			for (i = 0; i < nr; i++)
-			{
-				root[i] = COMPLEX_create(gsl_complex_rect(z[i * 2], z[i * 2 + 1]));
-				GB.Ref(root[i]);
-			}
-		}
-		
-		GB.Free(POINTER(&z));
-	}
-			
-	GB.ReturnObject(result);
-
-END_METHOD
-#endif
-
 //---------------------------------------------------------------------------
 
 GB_DESC PolynomialDesc[] =
@@ -852,6 +768,7 @@ GB_DESC PolynomialDesc[] =
 	GB_METHOD("_get", "v", Polynomial_get, "(Index)i"),
 	GB_METHOD("_put", NULL, Polynomial_put, "(Value)v(Index)i"),
 										 
+	GB_METHOD("_call", "v", Polynomial_Eval, "(X)v"),
 	GB_METHOD("Eval", "v", Polynomial_Eval, "(X)v"),
 	GB_METHOD("Solve", "Array", Polynomial_Solve, "[(Complex)b]"),
 

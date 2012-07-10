@@ -182,153 +182,6 @@ static void *SubrTable[] =
 	SUBR_ptr,        /* 95 9F */
 };
 
-
-//---- Object arithmetic helpers --------------------------------------------
-
-#define OP_NONE          0
-#define OP_OBJECT_FLOAT  1
-#define OP_FLOAT_OBJECT  2
-#define OP_OBJECT_CONV   3
-#define OP_CONV_OBJECT   4
-#define OP_OBJECT        5
-
-static int check_operators(VALUE *P1, VALUE *P2)
-{
-	if (TYPE_is_number(P1->type) && TYPE_is_object(P2->type))
-	{
-		if (P2->_object.object && OBJECT_class(P2->_object.object)->has_operators)
-		{
-			//*dynamic = P2->type == T_OBJECT;
-			return OP_FLOAT_OBJECT;
-		}
-	}
-	else if (TYPE_is_number(P2->type) && TYPE_is_object(P1->type))
-	{
-		if (P1->_object.object && OBJECT_class(P1->_object.object)->has_operators)
-		{
-			//*dynamic = P1->type == T_OBJECT;
-			return OP_OBJECT_FLOAT;
-		}
-	}
-	else if (TYPE_is_object(P1->type) && TYPE_is_object(P2->type) && P1->_object.object && P2->_object.object)
-	{
-		CLASS *class1 = OBJECT_class(P1->_object.object);
-		CLASS *class2 = OBJECT_class(P2->_object.object);
-		
-		//*dynamic = P1->type == T_OBJECT || P2->type = T_OBJECT;
-		
-		if (class1 && class1->has_operators)
-		{
-			if (class1 == class2)
-				return OP_OBJECT;
-			
-			if (class2 && class2->has_operators)
-				return OP_OBJECT_CONV;
-		}
-	}
-	
-	return OP_NONE;
-}
-
-static void operator_object_float(VALUE *P1, VALUE *P2, uchar op)
-{
-	if (P1->_object.object)
-	{
-		void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-		VALUE_conv_float(P2);
-		void *result = (*func)(P1->_object.object, P2->_float.value);
-		OBJECT_REF(result, "operator_object_float");
-		OBJECT_UNREF(P1->_object.object, "operator_object_float");
-		P1->_object.object = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-static void operator_float_object(VALUE *P1, VALUE *P2, uchar op)
-{
-	if (P2->_object.object)
-	{
-		void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P2->_object.object)->operators))[op];
-		VALUE_conv_float(P1);
-		void *result = (*func)(P2->_object.object, P1->_float.value);
-		OBJECT_REF(result, "operator_float_object");
-		P1->_object.class = P2->_object.class;
-		OBJECT_UNREF(P2->_object.object, "operator_float_object");
-		P1->_object.object = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-static void operator_object(VALUE *P1, VALUE *P2, uchar op)
-{
-	if (P1->_object.object && P2->_object.object)
-	{
-		void *(*func)(void *, void *) = (void *(*)(void *, void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-		void *result = (*func)(P1->_object.object, P2->_object.object);
-		OBJECT_REF(result, "operator_object");
-		OBJECT_UNREF(P1->_object.object, "operator_object");
-		OBJECT_UNREF(P2->_object.object, "operator_object");
-		P1->_object.object = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-static void operator_object_conv(VALUE *P1, VALUE *P2, char op)
-{
-	VALUE_conv(P2, (TYPE)P1->_object.class);
-	operator_object(P1, P2, op);
-}
-
-static void operator_conv_object(VALUE *P1, VALUE *P2, char op)
-{
-	VALUE_conv(P1, (TYPE)P2->_object.class);
-	operator_object(P1, P2, op);
-}
-
-static int comparator_object_float(VALUE *P1, VALUE *P2, uchar op)
-{
-	int (*func)(void *, double) = (int (*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	VALUE_conv_float(P2);
-	int result = (*func)(P1->_object.object, P2->_float.value);
-	OBJECT_UNREF(P1->_object.object, "comparator_object_float");
-	return result;
-}
-
-static int comparator_float_object(VALUE *P1, VALUE *P2, uchar op)
-{
-	int (*func)(void *, double) = (int (*)(void *, double))((void **)(OBJECT_class(P2->_object.object)->operators))[op];
-	VALUE_conv_float(P1);
-	int result = (*func)(P2->_object.object, P1->_float.value);
-	OBJECT_UNREF(P2->_object.object, "comparator_float_object");
-	return result;
-}
-
-static int comparator_object(VALUE *P1, VALUE *P2, uchar op)
-{
-	int (*func)(void *, void *) = (int (*)(void *, void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	int result = (*func)(P1->_object.object, P2->_object.object);
-	OBJECT_UNREF(P1->_object.object, "comparator_object");
-	OBJECT_UNREF(P2->_object.object, "comparator_object");
-	return result;
-}
-
-static int comparator_object_conv(VALUE *P1, VALUE *P2, char op)
-{
-	VALUE_conv(P2, (TYPE)P1->_object.class);
-	return comparator_object(P1, P2, op);
-}
-
-static int comparator_conv_object(VALUE *P1, VALUE *P2, char op)
-{
-	VALUE_conv(P1, (TYPE)P2->_object.class);
-	return comparator_object(P1, P2, op);
-}
-
-
-
 //---- Main interpreter loop ------------------------------------------------
 
 void EXEC_loop(void)
@@ -1839,7 +1692,7 @@ _ADD_QUICK:
 	{
 		static void *_aq_jump[] = {
 			&&__AQ_VOID, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, 
-			&&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING, &&__AQ_POINTER
+			&&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING, &&__AQ_POINTER, &&__AQ_VARIANT, &&__AQ_BOOLEAN, &&__AQ_BOOLEAN, &&__AQ_BOOLEAN
 			};
 	
 		TYPE NO_WARNING(type);
@@ -1849,24 +1702,17 @@ _ADD_QUICK:
 	
 		P1 = SP - 1;
 	
-		if (UNLIKELY(TYPE_is_variant(P1->type)))
-		{
-			jump_end = &&__AQ_VARIANT_END;
-			VARIANT_undo(P1);
-		}
-		else
-			jump_end = &&__AQ_END;
-	
+		jump_end = &&__AQ_END;
 		type = P1->type;
 		value = GET_XXX();
 	
-		if (LIKELY(type <= T_POINTER))
+	__AQ_JUMP:
+		
+		if (TYPE_is_object(type))
+			goto __AQ_OBJECT;
+		else
 			goto *_aq_jump[type];
 		
-	__AQ_BOOLEAN:
-		
-		THROW(E_TYPE, "Number", TYPE_get_name(type));
-	
 	__AQ_VOID:
 	
 		THROW(E_NRETURN);
@@ -1910,6 +1756,25 @@ _ADD_QUICK:
 	
 		P1->_pointer.value += value;
 		goto *jump_end;
+		
+	__AQ_VARIANT:
+		
+		jump_end = &&__AQ_VARIANT_END;
+		VARIANT_undo(P1);
+		type = P1->type;
+		goto __AQ_JUMP;
+			
+	__AQ_OBJECT:
+	
+		if (EXEC_check_operator_single(P1))
+		{
+			EXEC_operator_object_add_quick(P1, value);
+			goto *jump_end;
+		}
+	
+	__AQ_BOOLEAN:
+		
+		THROW(E_TYPE, "Number", TYPE_get_name(type));
 	
 	__AQ_VARIANT_END:
 	
@@ -2296,27 +2161,27 @@ _SUBR_COMP:
 
 	__SC_OBJECT_FLOAT:
 		
-		result = comparator_object_float(P1, P2, CO_EQUALF);
+		result = EXEC_comparator(OP_OBJECT_FLOAT, CO_EQUALF, P1, P2);
 		goto __SC_END;
 
 	__SC_FLOAT_OBJECT:
 
-		result = comparator_float_object(P1, P2, CO_EQUALF);
+		result = EXEC_comparator(OP_FLOAT_OBJECT, CO_EQUALF, P1, P2);
 		goto __SC_END;
 		
 	__SC_OBJECT_CONV:
 
-		result = comparator_object_conv(P1, P2, CO_EQUAL);
+		result = EXEC_comparator(OP_OBJECT_CONV, CO_EQUAL, P1, P2);
 		goto __SC_END;
 
 	__SC_CONV_OBJECT:
 
-		result = comparator_conv_object(P1, P2, CO_EQUAL);
+		result = EXEC_comparator(OP_CONV_OBJECT, CO_EQUAL, P1, P2);
 		goto __SC_END;
 		
 	__SC_OBJECT_OBJECT:
 
-		result = comparator_object(P1, P2, CO_EQUAL);
+		result = EXEC_comparator(OP_OBJECT_OBJECT, CO_EQUAL, P1, P2);
 		goto __SC_END;
 		
 	__SC_VARIANT:
@@ -2337,7 +2202,7 @@ _SUBR_COMP:
 				variant = TRUE;
 			}
 
-			code = check_operators(P1, P2);
+			code = EXEC_check_operator(P1, P2);
 			if (code)
 			{
 				code += T_OBJECT;
@@ -2637,27 +2502,27 @@ __OBJECT:
 
 __OBJECT_FLOAT:
 	
-	result = comparator_object_float(P1, P2, CO_EQUALF);
+	result = EXEC_comparator(OP_OBJECT_FLOAT, CO_EQUALF, P1, P2);
 	goto __END;
 
 __FLOAT_OBJECT:
 
-	result = comparator_float_object(P1, P2, CO_EQUALF);
+	result = EXEC_comparator(OP_FLOAT_OBJECT, CO_EQUALF, P1, P2);
 	goto __END;
 	
 __OBJECT_CONV:
 
-	result = comparator_object_conv(P1, P2, CO_EQUAL);
+	result = EXEC_comparator(OP_OBJECT_CONV, CO_EQUAL, P1, P2);
 	goto __END;
 
 __CONV_OBJECT:
 
-	result = comparator_conv_object(P1, P2, CO_EQUAL);
+	result = EXEC_comparator(OP_CONV_OBJECT, CO_EQUAL, P1, P2);
 	goto __END;
 	
 __OBJECT_OBJECT:
 
-	result = comparator_object(P1, P2, CO_EQUAL);
+	result = EXEC_comparator(OP_OBJECT_OBJECT, CO_EQUAL, P1, P2);
 	goto __END;
 		
 __VARIANT:
@@ -2678,7 +2543,7 @@ __VARIANT:
 			variant = TRUE;
 		}
 
-		code = check_operators(P1, P2);
+		code = EXEC_check_operator(P1, P2);
 		if (code)
 		{
 			code += T_OBJECT;
@@ -2746,7 +2611,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		goto *jump[type]; \
 	} \
 	\
-	code = check_operators(P1, P2); \
+	code = EXEC_check_operator(P1, P2); \
 	if (code) \
 	{ \
 		code += T_DATE; \
@@ -2776,7 +2641,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		return; \
 	} \
 	\
-	code = check_operators(P1, P2); \
+	code = EXEC_check_operator(P1, P2); \
 	if (code) \
 	{ \
 		(_func)(code + T_DATE); \
@@ -2797,7 +2662,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		goto *jump[type]; \
 	} \
 	\
-	code = check_operators(P1, P2); \
+	code = EXEC_check_operator(P1, P2); \
 	if (code) \
 	{ \
 		code += T_POINTER; \
@@ -2826,7 +2691,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		return; \
 	} \
 	\
-	code = check_operators(P1, P2); \
+	code = EXEC_check_operator(P1, P2); \
 	if (code) \
 	{ \
 		(_func)(code + T_POINTER); \
@@ -2905,27 +2770,27 @@ __POINTER:
 
 __OBJECT_FLOAT:
 	
-	operator_object_float(P1, P2, CO_ADDF);
+	EXEC_operator(OP_OBJECT_FLOAT, CO_ADDF, P1, P2);
 	goto __END;
 
 __FLOAT_OBJECT:
 
-	operator_float_object(P1, P2, CO_ADDF);
+	EXEC_operator(OP_FLOAT_OBJECT, CO_ADDF, P1, P2);
 	goto __END;
 	
 __OBJECT_CONV:
 
-	operator_object_conv(P1, P2, CO_ADD);
+	EXEC_operator(OP_OBJECT_CONV, CO_ADD, P1, P2);
 	goto __END;
 
 __CONV_OBJECT:
 
-	operator_conv_object(P1, P2, CO_ADD);
+	EXEC_operator(OP_CONV_OBJECT, CO_ADD, P1, P2);
 	goto __END;
 	
 __OBJECT:
 
-	operator_object(P1, P2, CO_ADD);
+	EXEC_operator(OP_OBJECT_OBJECT, CO_ADD, P1, P2);
 	goto __END;
 	
 __VARIANT:
@@ -3009,27 +2874,27 @@ __POINTER:
 
 __OBJECT_FLOAT:
 	
-	operator_object_float(P1, P2, CO_SUBF);
+	EXEC_operator(OP_OBJECT_FLOAT, CO_SUBF, P1, P2);
 	goto __END;
 
 __FLOAT_OBJECT:
 
-	operator_float_object(P1, P2, CO_ISUBF);
+	EXEC_operator(OP_FLOAT_OBJECT, CO_ISUBF, P1, P2);
 	goto __END;
 	
 __OBJECT_CONV:
 
-	operator_object_conv(P1, P2, CO_SUB);
+	EXEC_operator(OP_OBJECT_CONV, CO_SUB, P1, P2);
 	goto __END;
 
 __CONV_OBJECT:
 
-	operator_conv_object(P1, P2, CO_SUB);
+	EXEC_operator(OP_CONV_OBJECT, CO_SUB, P1, P2);
 	goto __END;
 	
 __OBJECT:
 
-	operator_object(P1, P2, CO_SUB);
+	EXEC_operator(OP_OBJECT_OBJECT, CO_SUB, P1, P2);
 	goto __END;
 	
 __VARIANT:
@@ -3107,27 +2972,27 @@ __FLOAT:
 
 __OBJECT_FLOAT:
 	
-	operator_object_float(P1, P2, CO_MULF);
+	EXEC_operator(OP_OBJECT_FLOAT, CO_MULF, P1, P2);
 	goto __END;
 
 __FLOAT_OBJECT:
 
-	operator_float_object(P1, P2, CO_MULF);
+	EXEC_operator(OP_FLOAT_OBJECT, CO_MULF, P1, P2);
 	goto __END;
 	
 __OBJECT_CONV:
 
-	operator_object_conv(P1, P2, CO_MUL);
+	EXEC_operator(OP_OBJECT_CONV, CO_MUL, P1, P2);
 	goto __END;
 
 __CONV_OBJECT:
 
-	operator_conv_object(P1, P2, CO_MUL);
+	EXEC_operator(OP_CONV_OBJECT, CO_MUL, P1, P2);
 	goto __END;
 	
 __OBJECT:
 
-	operator_object(P1, P2, CO_MUL);
+	EXEC_operator(OP_OBJECT_OBJECT, CO_MUL, P1, P2);
 	goto __END;
 	
 __VARIANT:
@@ -3179,27 +3044,27 @@ __FLOAT:
 
 __OBJECT_FLOAT:
 	
-	operator_object_float(P1, P2, CO_DIVF);
+	EXEC_operator(OP_OBJECT_FLOAT, CO_DIVF, P1, P2);
 	goto __CHECK_OBJECT;
 
 __FLOAT_OBJECT:
 
-	operator_float_object(P1, P2, CO_IDIVF);
+	EXEC_operator(OP_FLOAT_OBJECT, CO_IDIVF, P1, P2);
 	goto __CHECK_OBJECT;
 	
 __OBJECT_CONV:
 
-	operator_object_conv(P1, P2, CO_DIV);
+	EXEC_operator(OP_OBJECT_CONV, CO_DIV, P1, P2);
 	goto __CHECK_OBJECT;
 
 __CONV_OBJECT:
 
-	operator_conv_object(P1, P2, CO_DIV);
+	EXEC_operator(OP_CONV_OBJECT, CO_DIV, P1, P2);
 	goto __CHECK_OBJECT;
 	
 __OBJECT:
 
-	operator_object(P1, P2, CO_DIV);
+	EXEC_operator(OP_OBJECT_OBJECT, CO_DIV, P1, P2);
 	goto __CHECK_OBJECT;
 	
 __VARIANT:

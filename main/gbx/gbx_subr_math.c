@@ -51,73 +51,6 @@
 
 #include "gbx_subr_math_temp.h"
 
-
-static bool check_operators(VALUE *P1)
-{
-	return (TYPE_is_object(P1->type) && P1->_object.object && OBJECT_class(P1->_object.object)->has_operators);
-}
-
-static void operator_object_abs(VALUE *P1)
-{
-	if (P1->_object.object)
-	{
-		double (*func)(void *) = (double (*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[CO_ABS];
-		double result = (*func)(P1->_object.object);
-		OBJECT_UNREF(P1->_object.object, "operator_object_abs");
-		P1->type = T_FLOAT;
-		P1->_float.value = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-static void operator_object(VALUE *P1, uchar op)
-{
-	if (P1->_object.object)
-	{
-		void *(*func)(void *) = (void *(*)(void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-		void *result = (*func)(P1->_object.object);
-		OBJECT_REF(result, "operator_object");
-		OBJECT_UNREF(P1->_object.object, "operator_object");
-		P1->_object.object = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-// TODO: merge with operator_*() functions in gbx_exec_loop.c, or move SUBR_pow() in gbx_exec_loop.c
-
-static void operator_object_float(VALUE *P1, VALUE *P2, uchar op)
-{
-	if (P1->_object.object)
-	{
-		void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-		VALUE_conv_float(P2);
-		void *result = (*func)(P1->_object.object, P2->_float.value);
-		OBJECT_REF(result, "operator_object_float");
-		OBJECT_UNREF(P1->_object.object, "operator_object_float");
-		P1->_object.object = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-static void operator_object_object(VALUE *P1, VALUE *P2, uchar op)
-{
-	if (P1->_object.object && P2->_object.object)
-	{
-		void *(*func)(void *, void *) = (void *(*)(void *, void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-		void *result = (*func)(P1->_object.object, P2->_object.object);
-		OBJECT_REF(result, "operator_object");
-		OBJECT_UNREF(P1->_object.object, "operator_object");
-		OBJECT_UNREF(P2->_object.object, "operator_object");
-		P1->_object.object = result;
-	}
-	else
-		THROW(E_NULL);
-}
-
-
 void SUBR_pi(ushort code)
 {
 	SUBR_ENTER();
@@ -306,11 +239,11 @@ __VARIANT:
 		variant = TRUE;
 	}
 
-	if (check_operators(P1) && CLASS_has_operator(OBJECT_class(P1->_object.object), CO_POW))
+	if (EXEC_check_operator_single(P1) && CLASS_has_operator(OBJECT_class(P1->_object.object), CO_POW))
 	{
 		if (TYPE_is_number(P2->type))
 			type = 3;
-		else if (check_operators(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
+		else if (EXEC_check_operator_single(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
 		{
 			VALUE_conv(P2, (TYPE)OBJECT_class(P1->_object.object));
 			type = 4;
@@ -324,7 +257,7 @@ __VARIANT:
 			type = 1;
 		else if (!TYPE_is_object(P2->type))
 			type = 2;
-		else if (check_operators(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
+		else if (EXEC_check_operator_single(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
 		{
 			VALUE_conv(P1, (TYPE)OBJECT_class(P2->_object.object));
 			type = 4;
@@ -377,12 +310,12 @@ __NUMBER_FLOAT:
 
 __OBJECT_FLOAT:
 
-	operator_object_float(P1, P2, CO_POWF);
+	EXEC_operator(OP_OBJECT_FLOAT, CO_POWF, P1, P2);
 	goto __END;
 
 __OBJECT_OBJECT:
 
-	operator_object_object(P1, P2, CO_POW);
+	EXEC_operator(OP_OBJECT_OBJECT, CO_POW, P1, P2);
 	goto __END;
 
 __END_NUMBER:
@@ -648,7 +581,7 @@ __END:
 		goto *jump[type]; \
 	} \
 	\
-	if (check_operators(P1)) \
+	if (EXEC_check_operator_single(P1)) \
 	{ \
 		*PC |= T_DATE + 1; \
 		goto *jump[T_DATE + 1]; \
@@ -664,7 +597,7 @@ __END:
 			VALUE_conv_variant(P1); \
 			return; \
 		} \
-		if (check_operators(P1)) \
+		if (EXEC_check_operator_single(P1)) \
 		{ \
 			(_func)(T_DATE + 1); \
 			VALUE_conv_variant(P1); \
@@ -772,7 +705,7 @@ __FLOAT:
 
 __OBJECT:
 	
-	operator_object(P1, CO_NEG);
+	EXEC_operator_object_single(P1, CO_NEG);
 	return;
 	
 __VARIANT:
@@ -830,7 +763,7 @@ __FLOAT:
 
 __OBJECT:
 
-	operator_object_abs(P1);
+	EXEC_operator_object_abs(P1);
 	return;
 	
 __VARIANT:
