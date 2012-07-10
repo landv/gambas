@@ -2965,6 +2965,7 @@ void CallExpression::codegen_on_stack(){
 		fe->function_expr_type = ClassFn;
 		fe->function_kind = desc->method.native ? FUNCTION_NATIVE : FUNCTION_PUBLIC;
 		fe->effective_class = get_global((void*)klass, llvmType(getInt8Ty));
+		fe->function_unknown = NULL;
 	} else if (fe != NULL){
 		func_value = func->codegen_get_value();
 		object = extract_value(func_value, 1);
