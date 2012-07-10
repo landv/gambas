@@ -50,22 +50,7 @@ CCOMPLEX *COMPLEX_create(double re, double im)
 	return c;
 }
 
-CCOMPLEX *COMPLEX_make(CCOMPLEX *a, double re, double im)
-{
-	if (a->ob.ref <= 1)
-	{
-		//fprintf(stderr, "reuse %p %g %g -> %g %g\n", a, a->v[0], a->v[1], re, im);
-		a->v[0] = re;
-		a->v[1] = im;
-	}
-	else
-	{
-		a = COMPLEX_create(re, im);
-		//fprintf(stderr, "create %p %g %g\n", a, re, im);
-	}
-	
-	return a;
-}
+#define COMPLEX_make(_a, _re, _im) (((_a)->ob.ref <= 1) ? ((_a)->v[0] = (_re), (_a)->v[1] = (_im), (_a)) : COMPLEX_create(_re, _im))
 
 CCOMPLEX *COMPLEX_push_complex(double value)
 {

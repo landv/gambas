@@ -1006,19 +1006,23 @@ Public Sub mnuInsertEnv_Click()
   Dim aNewEnv As String[]
   Dim aEnv As String[]
   
-  aNewEnv = Scan(sNewEnv, "*=*")
-  For iInd = 0 To $aEnv.Max
-    aEnv = Scan($aEnv[iInd], "*=*")
-    If aEnv[0] = aNewEnv[0] Then
-      aEnv[1] = aNewEnv[1]
-      $aEnv[iInd] = aEnv[0] & "=" & aEnv[1]
-      tvwEnv.Refresh
-      Return
-    Endif
-  Next
+  For Each sNewEnv In Split(sNewEnv)
   
-  $aEnv.Add(sNewEnv)
-  Inc tvwEnv.Rows.Count
+    aNewEnv = Scan(sNewEnv, "*=*")
+    For iInd = 0 To $aEnv.Max
+      aEnv = Scan($aEnv[iInd], "*=*")
+      If aEnv[0] = aNewEnv[0] Then
+        aEnv[1] = aNewEnv[1]
+        $aEnv[iInd] = aEnv[0] & "=" & aEnv[1]
+        tvwEnv.Refresh
+        Continue
+      Endif
+    Next
+  
+    $aEnv.Add(sNewEnv)
+    Inc tvwEnv.Rows.Count
+    
+  Next
   
 End
 

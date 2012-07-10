@@ -20,6 +20,12 @@
     { mnuInsertEnvJIT Menu mnuInsertEnv
       Name = "mnuInsertEnvJIT"
       Text = ("GB_JIT=debug")
+      Tag = "GB_JIT=debug"
+    }
+    { mnuInsertEnvLANG Menu mnuInsertEnv
+      Name = "mnuInsertEnvLANG"
+      Text = ("LANG=C ; LC_ALL=C")
+      Tag = "LANG=C,LC_ALL=C"
     }
   }
   { tabProject TabPanel

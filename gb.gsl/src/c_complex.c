@@ -45,6 +45,8 @@ CCOMPLEX *COMPLEX_create(gsl_complex number)
 	return c;
 }
 
+#define COMPLEX_make(_a, _number) (((_a)->ob.ref <= 1) ? ((_a)->number = (_number), (_a)) : COMPLEX_create(_number))
+
 CCOMPLEX *COMPLEX_push_complex(double value)
 {
 	return COMPLEX_create(gsl_complex_rect(0, value));
@@ -86,37 +88,37 @@ int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z)
 
 static CCOMPLEX *_addf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(gsl_complex_add_real(a->number, f));
+	return COMPLEX_make(a, gsl_complex_add_real(a->number, f));
 }
 
 static CCOMPLEX *_add(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(gsl_complex_add(a->number, b->number));
+	return COMPLEX_make(a, gsl_complex_add(a->number, b->number));
 }
 
 static CCOMPLEX *_subf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(gsl_complex_sub_real(a->number, f));
+	return COMPLEX_make(a, gsl_complex_sub_real(a->number, f));
 }
 
 static CCOMPLEX *_isubf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(gsl_complex_add_real(gsl_complex_negative(a->number), f));
+	return COMPLEX_make(a, gsl_complex_add_real(gsl_complex_negative(a->number), f));
 }
 
 static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(gsl_complex_sub(a->number, b->number));
+	return COMPLEX_make(a, gsl_complex_sub(a->number, b->number));
 }
 
 static CCOMPLEX *_mulf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(gsl_complex_mul_real(a->number, f));
+	return COMPLEX_make(a, gsl_complex_mul_real(a->number, f));
 }
 
 static CCOMPLEX *_mul(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(gsl_complex_mul(a->number, b->number));
+	return COMPLEX_make(a, gsl_complex_mul(a->number, b->number));
 }
 
 static CCOMPLEX *_divf(CCOMPLEX *a, double f)
@@ -124,7 +126,7 @@ static CCOMPLEX *_divf(CCOMPLEX *a, double f)
 	gsl_complex c = gsl_complex_div_real(a->number, f);
 	
 	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
-		return COMPLEX_create(c);
+		return COMPLEX_make(a, c);
 	else
 		return NULL;
 }
@@ -134,7 +136,7 @@ static CCOMPLEX *_idivf(CCOMPLEX *a, double f)
 	gsl_complex c = gsl_complex_inverse(a->number);
 	
 	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
-		return COMPLEX_create(gsl_complex_mul_real(c, f));
+		return COMPLEX_make(a, gsl_complex_mul_real(c, f));
 	else
 		return NULL;
 }
@@ -144,7 +146,7 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
 	gsl_complex c = gsl_complex_div(a->number, b->number);
 	
 	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
-		return COMPLEX_create(c);
+		return COMPLEX_make(a, c);
 	else
 		return NULL;
 }
@@ -201,12 +203,12 @@ static double _abs(CCOMPLEX *a)
 
 static CCOMPLEX *_pow(CCOMPLEX *a, CCOMPLEX *b)
 {
-	return COMPLEX_create(gsl_complex_pow(a->number, b->number));
+	return COMPLEX_make(a, gsl_complex_pow(a->number, b->number));
 }
 
 static CCOMPLEX *_powf(CCOMPLEX *a, double f)
 {
-	return COMPLEX_create(gsl_complex_pow_real(a->number, f));
+	return COMPLEX_make(a, gsl_complex_pow_real(a->number, f));
 }
 
 
