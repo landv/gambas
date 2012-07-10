@@ -621,6 +621,7 @@ BEGIN_METHOD(Vector_Equal, GB_OBJECT vector)
 
 END_METHOD
 
+
 BEGIN_PROPERTY(Vector_Handle)
 
 	GB.ReturnPointer(THIS->vector);
@@ -653,29 +654,3 @@ GB_DESC VectorDesc[] =
 	
 	GB_END_DECLARE
 };
-
-/*GB_DESC FloatVectorDesc[] =
-{
-	GB_DECLARE("FloatVector", sizeof(CVECTOR)),
-	GB_INHERITS("Vector"),
-	
-	GB_METHOD("_new", NULL, FloatVector_new, "[(Size)i]"),
-	
-	GB_METHOD("_get", "f", FloatVector_get, "(Index)i"),
-	GB_METHOD("_put", NULL, Vector_put, "(Value)f(Index)i"),
-	
-	GB_END_DECLARE
-};
-
-GB_DESC ComplexVectorDesc[] =
-{
-	GB_DECLARE("ComplexVector", sizeof(CVECTOR)),
-	GB_INHERITS("Vector"),
-	
-	GB_METHOD("_new", NULL, ComplexVector_new, "[(Size)i]"),
-	
-	GB_METHOD("_get", "Complex", ComplexVector_get, "(Index)i"),
-	GB_METHOD("_put", NULL, Vector_put, "(Value)Complex(Index)i"),
-	
-	GB_END_DECLARE
-};*/

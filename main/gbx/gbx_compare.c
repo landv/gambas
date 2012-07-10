@@ -478,8 +478,8 @@ int COMPARE_object(void **a, void **b)
 		STACK_free_backtrace(&bt);
 	}*/
 	
-	ca = OBJECT_class(*a);
-	cb = OBJECT_class(*b);
+	ca = OBJECT_class_null(*a);
+	cb = OBJECT_class_null(*b);
 
 	if (ca && cb && ca->special[SPEC_COMPARE] != NO_SYMBOL)
 	{

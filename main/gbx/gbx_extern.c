@@ -339,7 +339,12 @@ void EXTERN_call(void)
 		{
 			void *ob = value->_object.object;
 			void *addr;
-			CLASS *class = OBJECT_class(ob);
+			CLASS *class;
+			
+			if (!ob)
+				goto __NULL;
+			
+			class = OBJECT_class(ob);
 			
 			if (class == CLASS_Class && !CLASS_is_native((CLASS *)ob))
 				addr = ((CLASS *)ob)->stat;

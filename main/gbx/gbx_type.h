@@ -60,7 +60,10 @@ EXTERN void *TYPE_joker;
 EXTERN const size_t TYPE_sizeof_memory_tab[];
 #endif
 
+#define TYPE_is_void(type)         ((type) == T_VOID)
+#define TYPE_is_null(type)         ((type) == T_NULL)
 #define TYPE_is_object(type)       ((type) >= T_OBJECT)
+#define TYPE_is_object_null(type)  ((type) >= T_NULL)
 #define TYPE_is_pure_object(type)  ((type) > T_OBJECT)
 #define TYPE_is_boolean(type)      ((type) == T_BOOLEAN)
 #define TYPE_is_integer(type)      ((type) >= T_BOOLEAN && (type) <= T_INTEGER)
@@ -73,10 +76,10 @@ EXTERN const size_t TYPE_sizeof_memory_tab[];
 #define TYPE_is_number_date(type)  ((type) >= T_BOOLEAN && (type) <= T_DATE)
 #define TYPE_is_string(type)       ((type) == T_STRING || (type) == T_CSTRING)
 #define TYPE_is_function(type)     ((type) == T_FUNCTION)
-#define TYPE_is_null(type)         ((type) == T_NULL)
-#define TYPE_is_object_null(type)  ((type) >= T_OBJECT || (type) == T_NULL)
 #define TYPE_is_pointer(type)      ((type) == T_POINTER)
-#define TYPE_is_void(type)         ((type) == T_VOID)
+
+#define TYPE_are_objects(_t1, _t2) (((_t1) & (_t2)) >= T_OBJECT)
+#define TYPE_are_not_objects(_t1, _t2) (((_t1) | (_t2)) < T_OBJECT)
 
 size_t TYPE_sizeof(TYPE type);
 #define TYPE_sizeof_memory(_type) (TYPE_is_object(_type) ? sizeof(void *) : TYPE_sizeof_memory_tab[_type])

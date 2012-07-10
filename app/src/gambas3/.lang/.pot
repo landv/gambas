@@ -411,7 +411,7 @@ msgstr ""
 #: FList.form:121 FMain.class:198 FMakeInstall.class:356 FMenu.form:377
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:177 FOption.class:644 FPasteSpecial.form:77
-#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:705
+#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:711
 #: FProxy.form:57 FReportBorderChooser.form:48 FReportBrushChooser.form:34
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
 #: FSaveProjectAs.form:76 FSearch.class:838 FSelectExtraFile.form:43
@@ -462,7 +462,7 @@ msgstr ""
 #: FMain.class:1751 FMakeInstall.class:302 FMenu.form:372
 #: FNewConnection.form:249 FNewTable.form:80 FNewTranslation.form:15
 #: FOpenProject.form:171 FPasteSpecial.form:71 FPropertyComponent.form:215
-#: FPropertyProject.form:699 FProxy.form:63 FReportBorderChooser.form:54
+#: FPropertyProject.form:705 FProxy.form:63 FReportBorderChooser.form:54
 #: FReportBrushChooser.form:40 FReportCoordChooser.form:32
 #: FReportPaddingChooser.form:69 FSelectExtraFile.form:37 FSelectIcon.form:82
 #: FSnippet.form:51 FTableChooser.form:62 FText.form:35
@@ -532,7 +532,7 @@ msgstr ""
 msgid "Project commit"
 msgstr ""
 
-#: FCommit.form:52 FMakeInstall.form:215 FPropertyProject.form:221
+#: FCommit.form:52 FMakeInstall.form:215 FPropertyProject.form:227
 msgid "Description"
 msgstr ""
 
@@ -979,7 +979,7 @@ msgid "Style sheet"
 msgstr ""
 
 #: FCreateFile.form:299 FCreateProject.form:272 FImportTable.form:51
-#: FPropertyComponent.form:56 FPropertyProject.form:243 FSearch.form:100
+#: FPropertyComponent.form:56 FPropertyProject.form:249 FSearch.form:100
 msgid "Options"
 msgstr ""
 
@@ -1063,7 +1063,7 @@ msgstr ""
 msgid "New project"
 msgstr ""
 
-#: FCreateProject.form:80 FPropertyProject.form:164
+#: FCreateProject.form:80 FPropertyProject.form:170
 msgid "Project type"
 msgstr ""
 
@@ -1243,7 +1243,7 @@ msgid "Remove current expression"
 msgstr ""
 
 #: FDebugInfo.form:127 FMain.form:776 FMakeInstall.form:575 FOption.form:856
-#: FPropertyComponent.form:190 FPropertyProject.form:443
+#: FPropertyComponent.form:190 FPropertyProject.form:449
 msgid "&Remove"
 msgstr ""
 
@@ -1850,7 +1850,7 @@ msgstr ""
 msgid "Modify documentation..."
 msgstr ""
 
-#: FHelpBrowser.class:24 FPropertyProject.form:354
+#: FHelpBrowser.class:24 FPropertyProject.form:360
 msgid "Default language"
 msgstr ""
 
@@ -2060,7 +2060,7 @@ msgstr ""
 msgid "&1 records imported."
 msgstr ""
 
-#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:133
+#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:139
 msgid "General"
 msgstr ""
 
@@ -2080,7 +2080,7 @@ msgstr ""
 msgid "Directory"
 msgstr ""
 
-#: FInfo.form:147 FPropertyProject.form:647
+#: FInfo.form:147 FPropertyProject.form:653
 msgid "Versioning"
 msgstr ""
 
@@ -2172,7 +2172,7 @@ msgstr ""
 msgid "Edit list property"
 msgstr ""
 
-#: FList.form:58 FMenu.form:82 FPropertyProject.form:437
+#: FList.form:58 FMenu.form:82 FPropertyProject.form:443
 msgid "&Insert"
 msgstr ""
 
@@ -2504,7 +2504,7 @@ msgstr ""
 msgid "Save project as"
 msgstr ""
 
-#: FMain.form:916 FPropertyProject.form:108
+#: FMain.form:916 FPropertyProject.form:109
 msgid "Project properties"
 msgstr ""
 
@@ -3263,7 +3263,7 @@ msgstr ""
 msgid "Default font size"
 msgstr ""
 
-#: FOption.form:232 FPropertyProject.form:171
+#: FOption.form:232 FPropertyProject.form:177
 msgid "Normal"
 msgstr ""
 
@@ -3287,11 +3287,11 @@ msgstr ""
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:301
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:307
 msgid "No"
 msgstr ""
 
-#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:301
+#: FOption.form:283 FPropertyComponent.form:90 FPropertyProject.form:307
 msgid "Yes"
 msgstr ""
 
@@ -3315,7 +3315,7 @@ msgstr ""
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.form:392 FPropertyProject.form:276
+#: FOption.form:392 FPropertyProject.form:282
 msgid "space(s)"
 msgstr ""
 
@@ -3726,7 +3726,7 @@ msgstr ""
 msgid "Features"
 msgstr ""
 
-#: FPropertyComponent.form:152 FPropertyProject.form:503
+#: FPropertyComponent.form:152 FPropertyProject.form:509
 msgid "Components"
 msgstr ""
 
@@ -3738,134 +3738,138 @@ msgstr ""
 msgid "Cannot write component description file."
 msgstr ""
 
-#: FPropertyProject.form:117
+#: FPropertyProject.form:118
 msgid "GB_GUI=gb.qt4"
 msgstr ""
 
-#: FPropertyProject.form:123
+#: FPropertyProject.form:124
 msgid "GB_GUI=gb.gtk"
 msgstr ""
 
-#: FPropertyProject.form:171
-msgid "Library"
-msgstr ""
-
-#: FPropertyProject.form:171
-msgid "Component"
+#: FPropertyProject.form:130
+msgid "GB_JIT=debug"
 msgstr ""
 
 #: FPropertyProject.form:177
+msgid "Library"
+msgstr ""
+
+#: FPropertyProject.form:177
+msgid "Component"
+msgstr ""
+
+#: FPropertyProject.form:183
 msgid "Version"
 msgstr ""
 
-#: FPropertyProject.form:203
+#: FPropertyProject.form:209
 msgid "Get from 'VERSION' file"
 msgstr ""
 
-#: FPropertyProject.form:210
+#: FPropertyProject.form:216
 msgid "Title"
 msgstr ""
 
-#: FPropertyProject.form:233
+#: FPropertyProject.form:239
 msgid "Author(s)"
 msgstr ""
 
-#: FPropertyProject.form:253
+#: FPropertyProject.form:259
 msgid "Edition"
 msgstr ""
 
-#: FPropertyProject.form:264
+#: FPropertyProject.form:270
 msgid "Tab size"
 msgstr ""
 
-#: FPropertyProject.form:284
+#: FPropertyProject.form:290
 msgid "Compilation"
 msgstr ""
 
-#: FPropertyProject.form:295
+#: FPropertyProject.form:301
 msgid "Module symbols are public by default"
 msgstr ""
 
-#: FPropertyProject.form:312
+#: FPropertyProject.form:318
 msgid "Form controls are public"
 msgstr ""
 
-#: FPropertyProject.form:326 FTranslate.form:64
+#: FPropertyProject.form:332 FTranslate.form:64
 msgid "Translation"
 msgstr ""
 
-#: FPropertyProject.form:337
+#: FPropertyProject.form:343
 msgid "Project is translatable"
 msgstr ""
 
-#: FPropertyProject.form:369
+#: FPropertyProject.form:375
 msgid "Debugging"
 msgstr ""
 
-#: FPropertyProject.form:380
+#: FPropertyProject.form:386
 msgid "Activate profiling"
 msgstr ""
 
-#: FPropertyProject.form:397
+#: FPropertyProject.form:403
 msgid "Use a terminal emulator"
 msgstr ""
 
-#: FPropertyProject.form:408
+#: FPropertyProject.form:414
 msgid "Environment"
 msgstr ""
 
-#: FPropertyProject.form:418
+#: FPropertyProject.form:424
 msgid "Arguments"
 msgstr ""
 
-#: FPropertyProject.form:471
+#: FPropertyProject.form:477
 msgid "Environment variables"
 msgstr ""
 
-#: FPropertyProject.form:512
+#: FPropertyProject.form:518
 msgid "Show only components used in project"
 msgstr ""
 
-#: FPropertyProject.form:518
+#: FPropertyProject.form:524
 msgid "Show components in beta version"
 msgstr ""
 
-#: FPropertyProject.form:542
+#: FPropertyProject.form:548
 msgid "About &component..."
 msgstr ""
 
-#: FPropertyProject.form:553
+#: FPropertyProject.form:559
 msgid "&Reset"
 msgstr ""
 
-#: FPropertyProject.form:574
+#: FPropertyProject.form:580
 msgid "Libraries"
 msgstr ""
 
-#: FPropertyProject.form:593
+#: FPropertyProject.form:599
 msgid ""
 "<b>WARNING!</b> The project executable and the libraries it depends on must "
 "be stored inside the same directory. Otherwise the libraries will not be "
 "found."
 msgstr ""
 
-#: FPropertyProject.form:615
+#: FPropertyProject.form:621
 msgid "&Add..."
 msgstr ""
 
-#: FPropertyProject.form:655
+#: FPropertyProject.form:661
 msgid "Changes since last commit"
 msgstr ""
 
-#: FPropertyProject.form:678
+#: FPropertyProject.form:684
 msgid "&Update"
 msgstr ""
 
-#: FPropertyProject.form:684
+#: FPropertyProject.form:690
 msgid "&Revert..."
 msgstr ""
 
-#: FPropertyProject.form:690
+#: FPropertyProject.form:696
 msgid "&Commit..."
 msgstr ""
 

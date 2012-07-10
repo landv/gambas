@@ -68,7 +68,7 @@ int EXEC_check_operator(VALUE *P1, VALUE *P2)
 			return OP_OBJECT_FLOAT;
 		}
 	}
-	else if (TYPE_is_object(P1->type) && TYPE_is_object(P2->type) && P1->_object.object && P2->_object.object)
+	else if (TYPE_are_objects(P1->type, P2->type) && OBJECT_are_not_null(P1->_object.object, P2->_object.object))
 	{
 		CLASS *class1 = OBJECT_class(P1->_object.object);
 		CLASS *class2 = OBJECT_class(P2->_object.object);
@@ -134,7 +134,7 @@ __CONV_OBJECT:
 
 __OBJECT_OBJECT:
 
-	if (!P1->_object.object || !P2->_object.object)
+	if (!OBJECT_are_not_null(P1->_object.object, P2->_object.object))
 		THROW(E_NULL);
 	
 	func = ((void **)(OBJECT_class(P1->_object.object)->operators))[op];

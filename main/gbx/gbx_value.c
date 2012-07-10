@@ -728,6 +728,9 @@ __OBJECT:
 		if (type == T_VARIANT)
 			goto __2v;
 		
+		if (!value->_object.object)
+			goto __N;
+		
 		if (value->type == T_OBJECT)
 			class = OBJECT_class(value->_object.object);
 		else
