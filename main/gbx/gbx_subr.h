@@ -107,7 +107,7 @@ TYPE SUBR_check_good_type(VALUE *param, int count);
 //void SUBR_div(ushort code);
 void SUBR_quo(ushort code);
 void SUBR_rem(ushort code);
-void SUBR_pow(void);
+void SUBR_pow(ushort code);
 
 void SUBR_and_(ushort code);
 void SUBR_not(ushort code);

@@ -390,7 +390,7 @@ void EXEC_loop(void)
 		/* 34 NEG             */  &&_SUBR_CODE,
 		/* 35 \               */  &&_SUBR_CODE,
 		/* 36 MOD             */  &&_SUBR_CODE,
-		/* 37 ^               */  &&_SUBR,
+		/* 37 ^               */  &&_SUBR_CODE,
 		/* 38 AND             */  &&_SUBR_CODE,
 		/* 39 OR              */  &&_SUBR_CODE,
 		/* 3A XOR             */  &&_SUBR_CODE,

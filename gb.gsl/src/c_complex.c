@@ -137,6 +137,47 @@ static double _abs(CCOMPLEX *a)
 	return gsl_complex_abs(a->number);
 }
 
+/*static CCOMPLEX *_powi(CCOMPLEX *a, int i)
+{
+	CCOMPLEX *r;
+	bool inv;
+	
+	inv = i < 0;
+	i = abs(i);
+	
+	if (i == 2)
+		r = _mul(a, a);
+	else if (i == 3)
+	{
+		r = COMPLEX_create(RE(a), IM(a));
+		r = _mul(r, a);
+		r = _mul(r, a);
+	}
+	else if (i == 4)
+	{
+		a = _mul(a, a);
+		r = _mul(a, a);
+	}
+	else
+		r = COMPLEX_make(a, RE(a), IM(a));
+	
+	if (inv)
+		return _idivf(r, 1);
+	else
+		return r;
+}*/
+
+static CCOMPLEX *_pow(CCOMPLEX *a, CCOMPLEX *b)
+{
+	return COMPLEX_create(gsl_complex_pow(a->number, b->number));
+}
+
+static CCOMPLEX *_powf(CCOMPLEX *a, double f)
+{
+	return COMPLEX_create(gsl_complex_pow_real(a->number, f));
+}
+
+
 static GB_OPERATOR_DESC _operators =
 {
 	add: (void *)_add,
@@ -149,6 +190,8 @@ static GB_OPERATOR_DESC _operators =
 	div: (void *)_div,
 	divf: (void *)_divf,
 	idivf: (void *)_idivf,
+	pow: (void *)_pow,
+	powf: (void *)_powf,
 	equal: (void *)_equal,
 	equalf: (void *)_equalf,
 	abs: (void *)_abs,

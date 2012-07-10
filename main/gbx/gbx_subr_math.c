@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_subr_math.c
+	gbx_subr_math.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -85,22 +85,54 @@ static void operator_object(VALUE *P1, uchar op)
 		THROW(E_NULL);
 }
 
+// TODO: merge with operator_*() functions in gbx_exec_loop.c, or move SUBR_pow() in gbx_exec_loop.c
+
+static void operator_object_float(VALUE *P1, VALUE *P2, uchar op)
+{
+	if (P1->_object.object)
+	{
+		void *(*func)(void *, double) = (void *(*)(void *, double))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+		VALUE_conv_float(P2);
+		void *result = (*func)(P1->_object.object, P2->_float.value);
+		OBJECT_REF(result, "operator_object_float");
+		OBJECT_UNREF(P1->_object.object, "operator_object_float");
+		P1->_object.object = result;
+	}
+	else
+		THROW(E_NULL);
+}
+
+static void operator_object_object(VALUE *P1, VALUE *P2, uchar op)
+{
+	if (P1->_object.object && P2->_object.object)
+	{
+		void *(*func)(void *, void *) = (void *(*)(void *, void *))((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+		void *result = (*func)(P1->_object.object, P2->_object.object);
+		OBJECT_REF(result, "operator_object");
+		OBJECT_UNREF(P1->_object.object, "operator_object");
+		OBJECT_UNREF(P2->_object.object, "operator_object");
+		P1->_object.object = result;
+	}
+	else
+		THROW(E_NULL);
+}
+
 
 void SUBR_pi(ushort code)
 {
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM == 0)
-  {
-    SP->type = T_FLOAT;
-    SP->_float.value = M_PI;
+	if (NPARAM == 0)
+	{
+		SP->type = T_FLOAT;
+		SP->_float.value = M_PI;
 		SP++;
-  }
-  else
-  {
-    VALUE_conv_float(PARAM);
-    PARAM->_float.value = M_PI * PARAM->_float.value;
-  }
+	}
+	else
+	{
+		VALUE_conv_float(PARAM);
+		PARAM->_float.value = M_PI * PARAM->_float.value;
+	}
 }
 
 
@@ -113,57 +145,57 @@ void SUBR_randomize(ushort code)
 	else
 		randomize(TRUE, (uint)SUBR_get_integer(PARAM));
 
-  RETURN->type = T_VOID;
+	RETURN->type = T_VOID;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_rnd(ushort code)
 {
-  double min = 0.0, max = 1.0;
+	double min = 0.0, max = 1.0;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM >= 1)
-  {
-    VALUE_conv_float(&PARAM[0]);
-    max = PARAM->_float.value;
-  }
+	if (NPARAM >= 1)
+	{
+		VALUE_conv_float(&PARAM[0]);
+		max = PARAM->_float.value;
+	}
 
-  if (NPARAM == 2)
-  {
-    min = max;
-    VALUE_conv_float(&PARAM[1]);
-    max = PARAM[1]._float.value;
-  }
+	if (NPARAM == 2)
+	{
+		min = max;
+		VALUE_conv_float(&PARAM[1]);
+		max = PARAM[1]._float.value;
+	}
 
-  RETURN->type = T_FLOAT;
-  RETURN->_float.value = (rnd() * (max - min)) + min;
+	RETURN->type = T_FLOAT;
+	RETURN->_float.value = (rnd() * (max - min)) + min;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
 void SUBR_round(ushort code)
 {
-  int val = 0;
-  double power;
+	int val = 0;
+	double power;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM == 2)
-    val = SUBR_get_integer(&PARAM[1]);
+	if (NPARAM == 2)
+		val = SUBR_get_integer(&PARAM[1]);
 
-  power = pow(10, val);
+	power = pow(10, val);
 
-  VALUE_conv_float(&PARAM[0]);
+	VALUE_conv_float(&PARAM[0]);
 
-  RETURN->type = T_FLOAT;
-  /*RETURN->_float.value = rint(PARAM->_float.value / power) * power;*/
-  RETURN->_float.value = floor(PARAM->_float.value / power + 0.5) * power;
+	RETURN->type = T_FLOAT;
+	/*RETURN->_float.value = rint(PARAM->_float.value / power) * power;*/
+	RETURN->_float.value = floor(PARAM->_float.value / power + 0.5) * power;
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
@@ -175,9 +207,9 @@ void SUBR_math(ushort code)
 		&&__EXP2, &&__EXP10, &&__LOG2, &&__CBRT, &&__EXPM1, &&__LOG1P, &&__FLOOR, &&__CEIL
 	};
 
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
-  VALUE_conv_float(PARAM);
+	VALUE_conv_float(PARAM);
 	goto *jump[code & 0x1F];
 
 __FRAC: PARAM->_float.value = frac(PARAM->_float.value); goto __END;
@@ -201,9 +233,9 @@ __ACOSH: PARAM->_float.value = __builtin_acosh(PARAM->_float.value); goto __END;
 __ATANH: PARAM->_float.value = __builtin_atanh(PARAM->_float.value); goto __END;
 __EXP2: PARAM->_float.value = __builtin_exp2(PARAM->_float.value); goto __END;
 #ifdef OS_FREEBSD
-  __EXP10: PARAM->_float.value = exp10(PARAM->_float.value); goto __END;
+	__EXP10: PARAM->_float.value = exp10(PARAM->_float.value); goto __END;
 #else
-  __EXP10: PARAM->_float.value = __builtin_exp10(PARAM->_float.value); goto __END;
+	__EXP10: PARAM->_float.value = __builtin_exp10(PARAM->_float.value); goto __END;
 #endif
 __LOG2: PARAM->_float.value = __builtin_log2(PARAM->_float.value); goto __END;
 __CBRT: PARAM->_float.value = __builtin_cbrt(PARAM->_float.value); goto __END;
@@ -215,8 +247,8 @@ __CEIL: PARAM->_float.value = __builtin_ceil(PARAM->_float.value); goto __END;
 __END:
 
 	//fprintf(stderr, "m: %.24g\n", PARAM->_float.value);
-  if (!isfinite(PARAM->_float.value))
-    THROW(E_MATH);
+	if (!isfinite(PARAM->_float.value))
+		THROW(E_MATH);
 }
 
 
@@ -226,8 +258,8 @@ void SUBR_math2(ushort code)
 
 	SUBR_ENTER_PARAM(2);
 
-  VALUE_conv_float(&PARAM[0]);
-  VALUE_conv_float(&PARAM[1]);
+	VALUE_conv_float(&PARAM[0]);
+	VALUE_conv_float(&PARAM[1]);
 
 	goto *jump[code & 0x1F];
 	
@@ -237,343 +269,423 @@ __HYPOT: PARAM->_float.value = sqrt(PARAM[0]._float.value * PARAM[0]._float.valu
 
 __END:
 
-  if (!finite(PARAM->_float.value))
-    THROW(E_MATH);
+	if (!finite(PARAM->_float.value))
+		THROW(E_MATH);
 
-  SP--;
+	SP--;
 }
 
 
-void SUBR_pow(void)
+void SUBR_pow(ushort code)
 {
-  SUBR_ENTER_PARAM(2);
-
-  VALUE_conv_float(&PARAM[0]);
+	static void *jump[] = {
+		&&__VARIANT, &&__NUMBER_INTEGER, &&__NUMBER_FLOAT, &&__OBJECT_FLOAT, &&__OBJECT_OBJECT
+		};
 	
-	if (TYPE_is_integer(PARAM[1].type))
+	VALUE *P1, *P2;
+	uchar type;
+	bool variant = FALSE;
+
+	P1 = SP - 2;
+	P2 = P1 + 1;
+
+	type = code & 0x0F;
+	goto *jump[type];
+
+__VARIANT:
+
+	if (TYPE_is_variant(P1->type))
 	{
-		static void *jump[] = { &&__M4, &&__M3, &&__M2, &&__M1, &&__P0, &&__END, &&__P2, &&__P3, &&__P4 };
-		int val = PARAM[1]._integer.value;
-		
-		if (val >= -4 && val <= 4)
-			goto *jump[val + 4];
-		else
-			goto __FLOAT;
-		
-		__P0: PARAM->_float.value = 1.0; goto __END;
-		__P2: PARAM->_float.value *= PARAM->_float.value; goto __END;
-		__P3: PARAM->_float.value *= PARAM->_float.value * PARAM->_float.value; goto __END;
-		__P4: PARAM->_float.value = PARAM->_float.value * PARAM->_float.value * PARAM->_float.value * PARAM->_float.value; goto __END;
-		__M1: PARAM->_float.value = 1.0 / PARAM->_float.value; goto __END;
-		__M2: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value; goto __END;
-		__M3: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value; goto __END;
-		__M4: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value; goto __END;
+		VARIANT_undo(P1);
+		variant = TRUE;
 	}
 
-__FLOAT:
+	if (TYPE_is_variant(P2->type))
+	{
+		VARIANT_undo(P1);
+		variant = TRUE;
+	}
 
-  VALUE_conv_float(&PARAM[1]);
-  PARAM->_float.value = pow(PARAM[0]._float.value, PARAM[1]._float.value);
-
-__END:
+	if (check_operators(P1) && CLASS_has_operator(OBJECT_class(P1->_object.object), CO_POW))
+	{
+		if (TYPE_is_number(P2->type))
+			type = 3;
+		else if (check_operators(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
+		{
+			VALUE_conv(P2, (TYPE)OBJECT_class(P1->_object.object));
+			type = 4;
+		}
+		else
+			VALUE_conv(P2, T_FLOAT);
+	}
+	else
+	{
+		if (TYPE_is_integer(P2->type))
+			type = 1;
+		else if (!TYPE_is_object(P2->type))
+			type = 2;
+		else if (check_operators(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
+		{
+			VALUE_conv(P1, (TYPE)OBJECT_class(P2->_object.object));
+			type = 4;
+		}
+		else
+			THROW(E_MATH);
+	}
 	
-  if (!finite(PARAM->_float.value))
-    THROW(E_MATH);
+	if (!variant)
+	{
+		*PC |= type;
+		goto *jump[type];
+	}
+	else
+	{
+		SUBR_pow(type);
+		VALUE_conv_variant(P1);
+		return;
+	}
 
-  SP--;
+__NUMBER_INTEGER:
+	
+	{
+		static void *ni_jump[] = { &&__M4, &&__M3, &&__M2, &&__M1, &&__P0, &&__END, &&__P2, &&__P3, &&__P4 };
+		int val = P2->_integer.value;
+		
+		VALUE_conv_float(P1);
+		
+		if (val >= -4 && val <= 4)
+			goto *ni_jump[val + 4];
+		else
+			goto __NUMBER_FLOAT;
+		
+		__P0: P1->_float.value = 1.0; goto __END;
+		__P2: P1->_float.value *= P1->_float.value; goto __END_NUMBER;
+		__P3: P1->_float.value *= P1->_float.value * P1->_float.value; goto __END_NUMBER;
+		__P4: P1->_float.value = P1->_float.value * P1->_float.value * P1->_float.value * P1->_float.value; goto __END_NUMBER;
+		__M1: P1->_float.value = 1.0 / P1->_float.value; goto __END_NUMBER;
+		__M2: P1->_float.value = 1.0 / P1->_float.value / P1->_float.value; goto __END_NUMBER;
+		__M3: P1->_float.value = 1.0 / P1->_float.value / P1->_float.value / P1->_float.value; goto __END_NUMBER;
+		__M4: P1->_float.value = 1.0 / P1->_float.value / P1->_float.value / P1->_float.value / P1->_float.value; goto __END_NUMBER;
+	}
+
+__NUMBER_FLOAT:
+
+	VALUE_conv_float(P1);
+	VALUE_conv_float(P2);
+	P1->_float.value = pow(P1->_float.value, P2->_float.value);
+	goto __END;
+
+__OBJECT_FLOAT:
+
+	operator_object_float(P1, P2, CO_POWF);
+	goto __END;
+
+__OBJECT_OBJECT:
+
+	operator_object_object(P1, P2, CO_POW);
+	goto __END;
+
+__END_NUMBER:
+	
+	if (!finite(P1->_float.value))
+		THROW(E_MATH);
+	
+__END:
+
+	SP--;
 }
 
 
 void SUBR_not(ushort code)
 {
-  static void *jump[17] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL,
-    &&__OBJECT
-    };
+	static void *jump[17] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL,
+		&&__OBJECT
+		};
 
-  VALUE *P1;
-  void *jump_end;
-  TYPE type = code & 0x1F;
-  bool test;
+	VALUE *P1;
+	void *jump_end;
+	TYPE type = code & 0x1F;
+	bool test;
 
-  P1 = SP - 1;
-  jump_end = &&__END;
-  goto *jump[type];
+	P1 = SP - 1;
+	jump_end = &&__END;
+	goto *jump[type];
 
 __BOOLEAN:
 
-  P1->_integer.value = P1->_integer.value ? 0 : (-1);
-  goto *jump_end;
+	P1->_integer.value = P1->_integer.value ? 0 : (-1);
+	goto *jump_end;
 
 __BYTE:
 
-  P1->_integer.value = (unsigned char)~P1->_integer.value;
-  goto *jump_end;
+	P1->_integer.value = (unsigned char)~P1->_integer.value;
+	goto *jump_end;
 
 __SHORT:
 
-  P1->_integer.value = (short)~P1->_integer.value;
-  goto *jump_end;
+	P1->_integer.value = (short)~P1->_integer.value;
+	goto *jump_end;
 
 __INTEGER:
 
-  P1->_integer.value = ~P1->_integer.value;
-  goto *jump_end;
+	P1->_integer.value = ~P1->_integer.value;
+	goto *jump_end;
 
 __LONG:
 
-  P1->_long.value = ~P1->_long.value;
-  goto *jump_end;
+	P1->_long.value = ~P1->_long.value;
+	goto *jump_end;
 
 __SINGLE:
 __FLOAT:
 __DATE:
-  goto __ERROR;
+	goto __ERROR;
 
 __STRING:
 __OBJECT:
 __NULL:
 
-  test = VALUE_is_null(P1);
-  RELEASE(P1);
+	test = VALUE_is_null(P1);
+	RELEASE(P1);
 
-  P1->_integer.value =  test ? (-1) : 0;
-  P1->type = T_BOOLEAN;
-  goto *jump_end;
+	P1->_integer.value =  test ? (-1) : 0;
+	P1->type = T_BOOLEAN;
+	goto *jump_end;
 
 __VARIANT:
 
-  type = P1->type;
+	type = P1->type;
 
-  if (TYPE_is_variant(type))
-  {
-    type = P1->_variant.vtype;
-    jump_end = &&__VARIANT_END;
-    VARIANT_undo(P1);
-  }
-  else if (TYPE_is_object(type))
-    *PC |= T_OBJECT;
-  else if (type)
-    *PC |= type;
-  else
-    goto __ERROR;
+	if (TYPE_is_variant(type))
+	{
+		type = P1->_variant.vtype;
+		jump_end = &&__VARIANT_END;
+		VARIANT_undo(P1);
+	}
+	else if (TYPE_is_object(type))
+		*PC |= T_OBJECT;
+	else if (type)
+		*PC |= type;
+	else
+		goto __ERROR;
 
-  if (TYPE_is_object(type))
-    goto __OBJECT;
-  else
-    goto *jump[type];
+	if (TYPE_is_object(type))
+		goto __OBJECT;
+	else
+		goto *jump[type];
 
 __ERROR:
 
-  THROW(E_TYPE, "Number, String or Object", TYPE_get_name(type));
+	THROW(E_TYPE, "Number, String or Object", TYPE_get_name(type));
 
 __VARIANT_END:
 
-  VALUE_conv_variant(P1);
+	VALUE_conv_variant(P1);
 
 __END:
-  return;
+	return;
 }
 
 void SUBR_and_(ushort code)
 {
-  static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__ERROR, &&__ERROR, &&__ERROR
-    };
+	static void *jump[] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__ERROR, &&__ERROR, &&__ERROR
+		};
 
-  TYPE type;
-  VALUE *P1, *P2;
-  void *jump_end;
-  short op;
+	TYPE type;
+	VALUE *P1, *P2;
+	void *jump_end;
+	short op;
 
-  P1 = SP - 2;
-  P2 = P1 + 1;
+	P1 = SP - 2;
+	P2 = P1 + 1;
 
-  jump_end = &&__END;
-  type = code & 0x0F;
-  op = (code >> 8)  - (C_AND >> 8);
-  goto *jump[type];
+	jump_end = &&__END;
+	type = code & 0x0F;
+	op = (code >> 8)  - (C_AND >> 8);
+	goto *jump[type];
 
 __BYTE:
 
-  P1->type = type;
+	P1->type = type;
 
-  {
-    static void *exec[] = { &&__AND_C, && __OR_C, &&__XOR_C };
-    goto *exec[op];
+	{
+		static void *exec[] = { &&__AND_C, && __OR_C, &&__XOR_C };
+		goto *exec[op];
 
-    __AND_C: P1->_integer.value = (unsigned char)(P1->_integer.value & P2->_integer.value); goto *jump_end;
-    __OR_C: P1->_integer.value = (unsigned char)(P1->_integer.value | P2->_integer.value); goto *jump_end;
-    __XOR_C: P1->_integer.value = (unsigned char)(P1->_integer.value ^ P2->_integer.value); goto *jump_end;
-  }
+		__AND_C: P1->_integer.value = (unsigned char)(P1->_integer.value & P2->_integer.value); goto *jump_end;
+		__OR_C: P1->_integer.value = (unsigned char)(P1->_integer.value | P2->_integer.value); goto *jump_end;
+		__XOR_C: P1->_integer.value = (unsigned char)(P1->_integer.value ^ P2->_integer.value); goto *jump_end;
+	}
 
-  goto *jump_end;
+	goto *jump_end;
 
 __SHORT:
 
-  P1->type = type;
+	P1->type = type;
 
-  {
-    static void *exec[] = { &&__AND_H, && __OR_H, &&__XOR_H };
-    goto *exec[op];
+	{
+		static void *exec[] = { &&__AND_H, && __OR_H, &&__XOR_H };
+		goto *exec[op];
 
-    __AND_H: P1->_integer.value = (short)(P1->_integer.value & P2->_integer.value); goto *jump_end;
-    __OR_H: P1->_integer.value = (short)(P1->_integer.value | P2->_integer.value); goto *jump_end;
-    __XOR_H: P1->_integer.value = (short)(P1->_integer.value ^ P2->_integer.value); goto *jump_end;
-  }
+		__AND_H: P1->_integer.value = (short)(P1->_integer.value & P2->_integer.value); goto *jump_end;
+		__OR_H: P1->_integer.value = (short)(P1->_integer.value | P2->_integer.value); goto *jump_end;
+		__XOR_H: P1->_integer.value = (short)(P1->_integer.value ^ P2->_integer.value); goto *jump_end;
+	}
 
-  goto *jump_end;
+	goto *jump_end;
 
 __BOOLEAN:
 __INTEGER:
 
-  P1->type = type;
+	P1->type = type;
 
-  {
-    static void *exec[] = { &&__AND_I, && __OR_I, &&__XOR_I };
-    goto *exec[op];
+	{
+		static void *exec[] = { &&__AND_I, && __OR_I, &&__XOR_I };
+		goto *exec[op];
 
-    __AND_I: P1->_integer.value &= P2->_integer.value; goto *jump_end;
-    __OR_I: P1->_integer.value |= P2->_integer.value; goto *jump_end;
-    __XOR_I: P1->_integer.value ^= P2->_integer.value; goto *jump_end;
-  }
+		__AND_I: P1->_integer.value &= P2->_integer.value; goto *jump_end;
+		__OR_I: P1->_integer.value |= P2->_integer.value; goto *jump_end;
+		__XOR_I: P1->_integer.value ^= P2->_integer.value; goto *jump_end;
+	}
 
-  goto *jump_end;
+	goto *jump_end;
 
 __LONG:
 
-  VALUE_conv(P1, T_LONG);
-  VALUE_conv(P2, T_LONG);
+	VALUE_conv(P1, T_LONG);
+	VALUE_conv(P2, T_LONG);
 
-  P1->type = type;
+	P1->type = type;
 
-  {
-    static void *exec[] = { &&__AND_L, && __OR_L, &&__XOR_L };
-    goto *exec[op];
+	{
+		static void *exec[] = { &&__AND_L, && __OR_L, &&__XOR_L };
+		goto *exec[op];
 
-    __AND_L: P1->_long.value &= P2->_long.value; goto *jump_end;
-    __OR_L: P1->_long.value |= P2->_long.value; goto *jump_end;
-    __XOR_L: P1->_long.value ^= P2->_long.value; goto *jump_end;
-  }
+		__AND_L: P1->_long.value &= P2->_long.value; goto *jump_end;
+		__OR_L: P1->_long.value |= P2->_long.value; goto *jump_end;
+		__XOR_L: P1->_long.value ^= P2->_long.value; goto *jump_end;
+	}
 
 __VARIANT:
 
-  type = Max(P1->type, P2->type);
+	type = Max(P1->type, P2->type);
 
-  if (TYPE_is_number_date(type))
-  {
-    *PC |= type;
-    goto *jump[type];
-  }
+	if (TYPE_is_number_date(type))
+	{
+		*PC |= type;
+		goto *jump[type];
+	}
 
-  if (TYPE_is_variant(P1->type))
-    VARIANT_undo(P1);
+	if (TYPE_is_variant(P1->type))
+		VARIANT_undo(P1);
 
-  if (TYPE_is_variant(P2->type))
-    VARIANT_undo(P2);
+	if (TYPE_is_variant(P2->type))
+		VARIANT_undo(P2);
 
-  if (TYPE_is_string(P1->type))
-    VALUE_convert_boolean(P1);
+	if (TYPE_is_string(P1->type))
+		VALUE_convert_boolean(P1);
 
-  if (TYPE_is_string(P2->type))
-    VALUE_convert_boolean(P2);
+	if (TYPE_is_string(P2->type))
+		VALUE_convert_boolean(P2);
 
-  if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type))
-    type = T_NULL;
-  else
-    type = Max(P1->type, P2->type);
+	if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type))
+		type = T_NULL;
+	else
+		type = Max(P1->type, P2->type);
 
-  if (TYPE_is_number_date(type))
-  {
-    jump_end = &&__VARIANT_END;
-    goto *jump[type];
-  }
+	if (TYPE_is_number_date(type))
+	{
+		jump_end = &&__VARIANT_END;
+		goto *jump[type];
+	}
 
 __ERROR:
 
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	THROW(E_TYPE, "Number", TYPE_get_name(type));
 
 __VARIANT_END:
 
-  VALUE_conv_variant(P1);
+	VALUE_conv_variant(P1);
 
 __END:
 
-  SP--;
+	SP--;
 }
 
 #define MANAGE_VARIANT(_func) \
 ({ \
-  type = P1->type; \
+	type = P1->type; \
 	\
-  if (TYPE_is_number_date(type)) \
-  { \
-    *PC |= type; \
-    goto *jump[type]; \
-  } \
-  \
-  if (TYPE_is_variant(type)) \
-  { \
-    type = P1->_variant.vtype; \
-    if (TYPE_is_number_date(type)) \
-    { \
-      VARIANT_undo(P1); \
+	if (TYPE_is_number_date(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
+	if (TYPE_is_variant(type)) \
+	{ \
+		type = P1->_variant.vtype; \
+		if (TYPE_is_number_date(type)) \
+		{ \
+			VARIANT_undo(P1); \
 			(_func)(code | type); \
 			VALUE_conv_variant(P1); \
 			return; \
-    } \
-  } \
+		} \
+	} \
 })
 
 #define MANAGE_VARIANT_OBJECT(_func) \
 ({ \
-  type = P1->type; \
+	type = P1->type; \
 	\
-  if (TYPE_is_number_date(type)) \
-  { \
-    *PC |= type; \
-    goto *jump[type]; \
-  } \
-  \
+	if (TYPE_is_number_date(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
 	if (check_operators(P1)) \
 	{ \
 		*PC |= T_DATE + 1; \
 		goto *jump[T_DATE + 1]; \
 	} \
 	\
-  if (TYPE_is_variant(type)) \
-  { \
-    VARIANT_undo(P1); \
-    type = P1->type; \
-    if (TYPE_is_number_date(type)) \
-    { \
+	if (TYPE_is_variant(type)) \
+	{ \
+		VARIANT_undo(P1); \
+		type = P1->type; \
+		if (TYPE_is_number_date(type)) \
+		{ \
 			(_func)(code | type); \
 			VALUE_conv_variant(P1); \
 			return; \
-    } \
+		} \
 		if (check_operators(P1)) \
 		{ \
 			(_func)(T_DATE + 1); \
 			VALUE_conv_variant(P1); \
 			return; \
 		} \
-  } \
+	} \
 })
 
 
 void SUBR_sgn(ushort code)
 {
-  static void *jump[] = {
-    &&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
-    };
+	static void *jump[] = {
+		&&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+		};
 
-  VALUE *P1;
-  TYPE type;
+	VALUE *P1;
+	TYPE type;
 
-  P1 = SP - 1;
-  type = code & 0x0F;
-  goto *jump[type];
+	P1 = SP - 1;
+	type = code & 0x0F;
+	goto *jump[type];
 
 __INTEGER:  P1->_integer.value = lsgn(P1->_integer.value); goto __END;
 
@@ -585,50 +697,50 @@ __FLOAT: P1->_integer.value = fsgn(P1->_float.value); goto __END;
 
 __VARIANT:
 
-  type = P1->type;
+	type = P1->type;
 
-  if (TYPE_is_number(type))
-  {
-    *PC |= type;
-    goto *jump[type];
-  }
+	if (TYPE_is_number(type))
+	{
+		*PC |= type;
+		goto *jump[type];
+	}
 
-  if (TYPE_is_variant(type))
-  {
-    type = P1->_variant.vtype;
-    if (TYPE_is_number(type))
-    {
-      VARIANT_undo(P1);
-      goto *jump[type];
-    }
-  }
+	if (TYPE_is_variant(type))
+	{
+		type = P1->_variant.vtype;
+		if (TYPE_is_number(type))
+		{
+			VARIANT_undo(P1);
+			goto *jump[type];
+		}
+	}
 
-  goto __ERROR;
+	goto __ERROR;
 
 __ERROR:
 
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	THROW(E_TYPE, "Number", TYPE_get_name(type));
 
 __END:
 
-  P1->type = T_INTEGER;
+	P1->type = T_INTEGER;
 }
 
 
 void SUBR_neg(ushort code)
 {
-  static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
-    };
+	static void *jump[] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
+		};
 
-  VALUE *P1;
-  TYPE type;
+	VALUE *P1;
+	TYPE type;
 
-  P1 = SP - 1;
+	P1 = SP - 1;
 
-  type = code & 0x0F;
+	type = code & 0x0F;
 
-  goto *jump[type];
+	goto *jump[type];
 
 __BOOLEAN:
 
@@ -669,24 +781,24 @@ __VARIANT:
 
 __ERROR:
 
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	THROW(E_TYPE, "Number", TYPE_get_name(type));
 }
 
 
 void SUBR_abs(ushort code)
 {
-  static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
-    };
+	static void *jump[] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
+		};
 
-  VALUE *P1;
-  TYPE type;
+	VALUE *P1;
+	TYPE type;
 
-  P1 = SP - 1;
+	P1 = SP - 1;
 
-  type = code & 0x0F;
+	type = code & 0x0F;
 
-  goto *jump[type];
+	goto *jump[type];
 
 __BOOLEAN:
 
@@ -727,24 +839,24 @@ __VARIANT:
 
 __ERROR:
 
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	THROW(E_TYPE, "Number", TYPE_get_name(type));
 }
 
 
 void SUBR_int(ushort code)
 {
-  static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
-    };
+	static void *jump[] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+		};
 
-  VALUE *P1;
-  TYPE type;
+	VALUE *P1;
+	TYPE type;
 
-  P1 = SP - 1;
+	P1 = SP - 1;
 
-  type = code & 0x0F;
+	type = code & 0x0F;
 
-  goto *jump[type];
+	goto *jump[type];
 
 __BOOLEAN:
 __BYTE:
@@ -768,24 +880,24 @@ __VARIANT:
 
 __ERROR:
 
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	THROW(E_TYPE, "Number", TYPE_get_name(type));
 }
 
 
 void SUBR_fix(ushort code)
 {
-  static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
-    };
+	static void *jump[] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+		};
 
-  VALUE *P1;
-  TYPE type;
+	VALUE *P1;
+	TYPE type;
 
-  P1 = SP - 1;
+	P1 = SP - 1;
 
-  type = code & 0x0F;
+	type = code & 0x0F;
 
-  goto *jump[type];
+	goto *jump[type];
 
 __BOOLEAN:
 __BYTE:
@@ -809,5 +921,5 @@ __VARIANT:
 
 __ERROR:
 
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	THROW(E_TYPE, "Number", TYPE_get_name(type));
 }

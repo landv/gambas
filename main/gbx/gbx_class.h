@@ -548,4 +548,6 @@ CLASS *CLASS_register(GB_DESC *desc);
 
 #define CLASS_is_virtual(class)  (class->is_virtual)
 
+#define CLASS_has_operator(_class, _op) (((void **)(_class)->operators)[_op] != NULL)
+
 #endif /* _CLASS_H */

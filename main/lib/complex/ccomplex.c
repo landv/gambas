@@ -52,7 +52,7 @@ CCOMPLEX *COMPLEX_create(double re, double im)
 
 CCOMPLEX *COMPLEX_make(CCOMPLEX *a, double re, double im)
 {
-	if (a->ob.ref == 1)
+	if (a->ob.ref <= 1)
 	{
 		//fprintf(stderr, "reuse %p %g %g -> %g %g\n", a, a->v[0], a->v[1], re, im);
 		a->v[0] = re;
@@ -170,6 +170,115 @@ static CCOMPLEX *_neg(CCOMPLEX *a)
 	return COMPLEX_make(a, -RE(a), -IM(a));
 }
 
+double _logabs(CCOMPLEX *a)
+{
+	double xabs = fabs(RE(a));
+	double yabs = fabs(IM(a));
+	double max, u;
+
+	if (xabs >= yabs)
+	{
+		max = xabs;
+		u = yabs / xabs;
+	}
+	else
+	{
+		max = yabs;
+		u = xabs / yabs;
+	}
+
+	/* Handle underflow when u is close to 0 */
+	return log(max) + 0.5 * log1p (u * u);
+}
+
+static double _arg(CCOMPLEX *a)
+{
+	if (ZERO(a))
+		return 0.0;
+	else
+		return atan2(IM(a), RE(a));
+}
+
+static CCOMPLEX *_powi(CCOMPLEX *a, int i)
+{
+	CCOMPLEX *r;
+	bool inv;
+	
+	inv = i < 0;
+	i = abs(i);
+	
+	if (i == 2)
+		r = _mul(a, a);
+	else if (i == 3)
+	{
+		r = COMPLEX_create(RE(a), IM(a));
+		r = _mul(r, a);
+		r = _mul(r, a);
+	}
+	else if (i == 4)
+	{
+		a = _mul(a, a);
+		r = _mul(a, a);
+	}
+	else
+		r = COMPLEX_make(a, RE(a), IM(a));
+	
+	if (inv)
+		return _idivf(r, 1);
+	else
+		return r;
+}
+
+static CCOMPLEX *_pow(CCOMPLEX *a, CCOMPLEX *b)
+{
+	if (RE(a) == 0.0 && IM(a) == 0.0)
+	{
+		if (RE(b) == 0.0 && IM(b) == 0.0)
+			return COMPLEX_make(a, 1.0, 0.0);
+		else 
+			return COMPLEX_make(a, 0.0, 0.0);
+	}
+	else if (IM(b) == 0.0)
+	{
+		if (RE(b) >= 4.0 && RE(b) <= -4.0 && RE(b) == (int)RE(b))
+			return _powi(a, (int)RE(b));
+	}
+	
+	double logr = _logabs (a);
+	double theta = _arg(a);
+
+	double br = RE(b), bi = IM(b);
+
+	double rho = exp(logr * br - bi * theta);
+	double beta = theta * br + bi * logr;
+
+	return COMPLEX_make(a, rho * cos (beta), rho * sin (beta));
+}
+
+static CCOMPLEX *_powf(CCOMPLEX *a, double b)
+{
+	if (RE(a) == 0.0 && IM(a) == 0.0)
+	{
+		if (b == 0.0)
+			return COMPLEX_make(a, 1.0, 0.0);
+		else
+			return COMPLEX_make(a, 0.0, 0.0);
+	}
+	else if (b == 0.0)
+		return COMPLEX_make(a, 1.0, 0.0);
+	else if (b <= 4.0 && b >= -4.0 && b == (int)b)
+		return _powi(a, (int)b);
+	else
+	{
+		double logr = _logabs (a);
+		double theta = _arg (a);
+		double rho = exp (logr * b);
+		double beta = theta * b;
+		
+		return COMPLEX_make(a, rho * cos(beta), rho * sin(beta));
+	}
+}
+
 static GB_OPERATOR_DESC _operators =
 {
 	add: (void *)_add,
@@ -182,6 +291,8 @@ static GB_OPERATOR_DESC _operators =
 	div: (void *)_div,
 	divf: (void *)_divf,
 	idivf: (void *)_idivf,
+	pow: (void *)_pow,
+	powf: (void *)_powf,
 	equal: (void *)_equal,
 	equalf: (void *)_equalf,
 	abs: (void *)_abs,
@@ -326,10 +437,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Complex_Arg)
 
-	if (ZERO(THIS))
-		GB.ReturnFloat(0.0);
-	else
-		GB.ReturnFloat(atan2(IM(THIS), RE(THIS)));
+	GB.ReturnFloat(_arg(THIS));
 	
 END_METHOD
 
