@@ -6762,9 +6762,6 @@ void JIT_codegen(){
 #ifndef GOSUB_ON_STACK
 		builder->CreateCall3(get_global_function(GB.NewArray, 'v', "pii"),
 			get_global(&GP, llvmType(getInt8Ty)), getInteger(32, sizeof(STACK_GOSUB)), getInteger(32, 0));
-#else
-		gp = builder->CreateAlloca(pointer_t(value_type));
-		builder->CreateStore(builder->CreateGEP(read_global((void*)&BP, pointer_t(value_type)), getInteger(TARGET_BITS, FP->n_local + FP->n_ctrl)), gp);
 #endif
 		
 		/*gosub_return_point = builder->CreateAlloca(llvmType(getInt8PtrTy));
@@ -6772,11 +6769,10 @@ void JIT_codegen(){
 		gosub_return_point = builder->CreateAlloca(llvmType(getInt16Ty));
 		builder->CreateStore(getInteger(16, 0), gosub_return_point);
 	}
-#ifndef GOSUB_ON_STACK
-	//For JR_try_unwind
+	//For GoSubs and JR_try_unwind
 	gp = builder->CreateAlloca(pointer_t(value_type));
 		builder->CreateStore(builder->CreateGEP(read_global((void*)&BP, pointer_t(value_type)), getInteger(TARGET_BITS, FP->n_local + FP->n_ctrl)), gp);
-#endif
+		
 	init_locals();
 	
 	codegen_statements();
