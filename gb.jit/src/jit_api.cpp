@@ -31,6 +31,7 @@ extern "C" {
 
 GB_JIT_INTERFACE JIF;
 
+char **_STACK_limit;
 STACK_CONTEXT *_EXEC_current;
 VALUE **_SP;
 VALUE *_TEMP;
@@ -50,12 +51,13 @@ ERROR_HANDLER **_ERROR_handler;
 
 const char *_STRING_char_string;
 
-void JIT_init(GB_JIT_INTERFACE *jif, STACK_CONTEXT *__EXEC_current, VALUE **__SP, VALUE *__TEMP,
+void JIT_init(GB_JIT_INTERFACE *jif, char **__STACK_limit, STACK_CONTEXT *__EXEC_current, VALUE **__SP, VALUE *__TEMP,
 	VALUE *__RET, char *__GAMBAS_StopEvent, char **__EXEC_enum, EXEC_GLOBAL *__EXEC,
 	const char **__EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, void **__EVENT_Last,
 	ERROR_CONTEXT **__ERROR_current, ERROR_HANDLER **__ERROR_handler, const char *__STRING_char_string)
 {
 	JIF = *jif;
+	_STACK_limit = __STACK_limit;
 	_EXEC_current = __EXEC_current;
 	_SP = __SP;
 	_TEMP = __TEMP;

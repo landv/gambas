@@ -54,7 +54,7 @@ bool JIT_load()
 		if (EXEC_debug)
 			GAMBAS_JitApi[offsetof(GB_JIT_INTERFACE, F_DEBUG_Profile_Add) / sizeof(void *)] = DEBUG.Profile.Add;
 		
-		JIT.Init((GB_JIT_INTERFACE *)(void *)GAMBAS_JitApi, &EXEC_current, &SP, &TEMP, &RET,
+		JIT.Init((GB_JIT_INTERFACE *)(void *)GAMBAS_JitApi, &STACK_limit, &EXEC_current, &SP, &TEMP, &RET,
 			&GAMBAS_StopEvent, (char **)&EXEC_enum, &EXEC, &EXEC_unknown_name, &EXEC_profile,
 			&EXEC_profile_instr, &EVENT_Last, &ERROR_current, &ERROR_handler, &STRING_char_string[0]);
 		

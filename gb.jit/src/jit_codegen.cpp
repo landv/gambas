@@ -3225,6 +3225,12 @@ void GosubExpression::codegen(){
 		
 		int diff = 1 + end_ctrl - FP->n_local;
 		llvm::Value* new_gp = builder->CreateGEP(stack_addr, getInteger(TARGET_BITS, diff));
+		gen_if_noreturn(builder->CreateICmpUGE(
+			builder->CreateGEP(stack_addr, getInteger(TARGET_BITS, 1 + FP->stack_usage - FP->n_local + 8)),
+			builder->CreateIntToPtr(getInteger(TARGET_BITS, (int64_t)(void*)STACK_limit), pointer_t(value_type))), [&](){
+			
+			create_throw(E_STACK);
+		});
 		builder->CreateStore(new_gp, gp);
 		//c_SP(diff);
 		builder->CreateStore(new_gp, get_global(&SP, pointer_t(value_type)));

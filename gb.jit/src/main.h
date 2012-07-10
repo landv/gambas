@@ -104,6 +104,7 @@ typedef
 
 #ifndef __JIT_API_CPP
 extern GB_JIT_INTERFACE JIF;
+extern char **_STACK_limit;
 extern STACK_CONTEXT *_EXEC_current;
 extern VALUE **_SP;
 extern VALUE *_TEMP;
@@ -128,6 +129,7 @@ extern const char *_STRING_char_string;
 }
 #endif
 
+#define STACK_limit (*_STACK_limit)
 #define EXEC_current (*_EXEC_current)
 #define SP (*_SP)
 #define TEMP (*_TEMP)
@@ -238,7 +240,7 @@ do { \
 extern "C" {
 #endif
 
-void JIT_init(GB_JIT_INTERFACE *jif, STACK_CONTEXT *__EXEC_current, VALUE **__SP, VALUE *__TEMP,
+void JIT_init(GB_JIT_INTERFACE *jif, char **__STACK_limit, STACK_CONTEXT *__EXEC_current, VALUE **__SP, VALUE *__TEMP,
 	VALUE *__RET, char *__GAMBAS_StopEvent, char ** __EXEC_enum, EXEC_GLOBAL *__EXEC,
 	const char **__EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, void **__EVENT_Last,
 	ERROR_CONTEXT **__ERROR_current, ERROR_HANDLER **__ERROR_handler, const char *__STRING_char_string);
