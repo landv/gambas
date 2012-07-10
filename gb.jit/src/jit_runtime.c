@@ -1073,14 +1073,14 @@ void JR_end_try(ERROR_CONTEXT* err){
 
 //FIXME Can this happen: Try native_call -> do non_native call -> non_native throw, directly back to first try?
 //FIXME FIXME exec_function_keep måste ju sätta upp en try catch .. väl ..
-void JR_try_unwind(){
+void JR_try_unwind(VALUE* stack_start){
 	JIF.F_ERROR_set_last(EP != NULL ? FALSE : TRUE);
 	
 	JIF.F_ERROR_lock();
 	while(EC == NULL){
 		JIF.F_EXEC_leave_drop();
 	}
-	while(SP > BP + FP->n_local + FP->n_ctrl){
+	while(SP > stack_start){
 		SP--;
 		JR_RELEASE(SP);
 	}

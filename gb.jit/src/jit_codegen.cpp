@@ -53,6 +53,8 @@ extern "C" {
 #define TARGET_BITS 32
 #endif
 
+#define GOSUB_ON_STACK
+
 #define llvmType(t) llvm::Type::t(llvm_context)
 #define pointer_t(type) llvm::PointerType::get((type), 0)
 #define charPP llvm::PointerType::get(llvmType(getInt8PtrTy), 0)
@@ -101,6 +103,7 @@ static llvm::Value* temp_got_error;
 static llvm::Value* temp_got_error2;
 //static llvm::Value* temp_gosub_stack;
 //static llvm::Value* temp_num_gosubs_on_stack;
+static llvm::Value* gp;
 static llvm::Value* gosub_return_point;
 
 static std::vector<llvm::BasicBlock*> return_points;
@@ -3204,7 +3207,8 @@ void GosubExpression::codegen(){
 		
 		index = builder->CreateAdd(index, getInteger(32, 1));
 		builder->CreateStore(index, temp_num_gosubs_on_stack);*/
-		
+
+#ifndef GOSUB_ON_STACK
 		llvm::Value* gosub_stack_node = builder->CreateBitCast(builder->CreateCall(get_global_function(GB.Add, 'p', "p"), get_global(&GP, llvmType(getInt8Ty))), pointer_t(gosub_stack_node_type));
 		
 		/*builder->CreateStore(builder->CreateLoad(gosub_return_point), create_gep(gosub_stack_node, TARGET_BITS, 0, 32, 0));
@@ -3212,13 +3216,30 @@ void GosubExpression::codegen(){
 		unsigned int gosub_return_id = gosub_continue_points.size() + 1;
 		builder->CreateStore(builder->CreateLoad(gosub_return_point), create_gep(gosub_stack_node, TARGET_BITS, 0, 32, 0));
 		builder->CreateStore(getInteger(16, gosub_return_id), gosub_return_point);
+#else
+		llvm::Value* stack_addr = builder->CreateLoad(gp);
+		unsigned int gosub_return_id = gosub_continue_points.size() + 1;
+		store_value(stack_addr, builder->CreateLoad(gosub_return_point), T_SHORT);
+		builder->CreateStore(getInteger(16, gosub_return_id), gosub_return_point);
+		
+		int diff = 1 + end_ctrl - FP->n_local;
+		llvm::Value* new_gp = builder->CreateGEP(stack_addr, getInteger(TARGET_BITS, diff));
+		builder->CreateStore(new_gp, gp);
+		//c_SP(diff);
+		builder->CreateStore(new_gp, get_global(&SP, pointer_t(value_type)));
+#endif
+		
 		
 		if (FP->n_ctrl){
+#ifndef GOSUB_ON_STACK
 			llvm::Value* gp_ctrl_addr = create_gep(gosub_stack_node, TARGET_BITS, 0, 32, 1);
 			
 			builder->CreateCall2(get_global_function(GB.Alloc, 'v', "pj"), builder->CreateBitCast(gp_ctrl_addr, llvmType(getInt8PtrTy)), getInteger(TARGET_BITS, sizeof(VALUE) * FP->n_ctrl));
 			
 			llvm::Value* gp_ctrl = builder->CreateLoad(gp_ctrl_addr);
+#else
+			llvm::Value* gp_ctrl = builder->CreateGEP(stack_addr, getInteger(TARGET_BITS, 1));
+#endif
 			
 			
 			for(int i=FP->n_local; i<end_ctrl; i++){
@@ -3272,6 +3293,7 @@ void GosubExpression::codegen(){
 	builder->SetInsertPoint(contpoint);
 	
 	//On return:
+#ifndef GOSUB_ON_STACK
 	llvm::Value* gp = read_global(&GP, pointer_t(gosub_stack_node_type));
 	llvm::Value* gp_array = builder->CreateBitCast(gp, llvmType(getInt32PtrTy));
 	llvm::Value* count_addr = builder->CreateGEP(gp_array, getInteger(TARGET_BITS, -4)); //((int*)GP)[-4] == ARRAY_count(GP)
@@ -3281,10 +3303,26 @@ void GosubExpression::codegen(){
 	
 	llvm::Value* old_return_point = builder->CreateLoad(create_gep(gosub_stack_node, TARGET_BITS, 0, 32, 0));
 	builder->CreateStore(old_return_point, gosub_return_point);
+#else
+	
+	int diff = 1 + end_ctrl - FP->n_local;
+	llvm::Value* new_gp = builder->CreateGEP(builder->CreateLoad(gp), getInteger(TARGET_BITS, -diff));
+	builder->CreateStore(new_gp, gp);
+	//c_SP(-diff)
+	builder->CreateStore(new_gp, get_global(&SP, pointer_t(value_type)));
+	
+	llvm::Value* old_return_point = read_value(new_gp, T_SHORT);
+	builder->CreateStore(old_return_point, gosub_return_point);
+#endif
+	
 		
 	if (FP->n_ctrl){
+#ifndef GOSUB_ON_STACK
 		llvm::Value* gp_ctrl_addr = create_gep(gosub_stack_node, TARGET_BITS, 0, 32, 1);
 		llvm::Value* gp_ctrl = builder->CreateLoad(gp_ctrl_addr);
+#else
+		llvm::Value* gp_ctrl = builder->CreateGEP(new_gp, getInteger(TARGET_BITS, 1));
+#endif
 		
 		for(int i=FP->n_local; i<end_ctrl; i++){
 			llvm::Value* val = read_value(i == FP->n_local ? gp_ctrl : builder->CreateGEP(gp_ctrl, getInteger(TARGET_BITS, i - FP->n_local)), get_ctrl_type(i));
@@ -3299,8 +3337,10 @@ void GosubExpression::codegen(){
 		for(int i=end_ctrl; i<FP->n_local+FP->n_ctrl; i++){
 			builder->CreateStore(getInteger(32, 0), current_ctrl_types[i - FP->n_local]);
 		}
-		
+
+#ifndef GOSUB_ON_STACK
 		builder->CreateCall(get_global_function(GB.Free, 'v', "p"), builder->CreateBitCast(gp_ctrl_addr, llvmType(getInt8PtrTy)));
+#endif
 	}
 	
 }
@@ -3568,7 +3608,7 @@ void TryExpression::codegen(){
 	llvm::Value* second_time = builder->CreateICmpNE(setjmp_return, getInteger(32, 0));
 	
 	gen_if_else(second_time, [&](){
-		builder->CreateCall(get_global_function(JR_try_unwind, 'v', ""));
+		builder->CreateCall(get_global_function(JR_try_unwind, 'v', "p"), builder->CreateBitCast(builder->CreateLoad(gp), llvmType(getInt8PtrTy)));
 		builder->CreateStore(getInteger(1, true), temp_got_error);
 	}, [&](){
 		builder->CreateStore(getInteger(1, false), temp_got_error);
@@ -3608,7 +3648,7 @@ void LargeTryExpression::codegen(){
 	llvm::Value* second_time = builder->CreateICmpNE(setjmp_return, getInteger(32, 0));
 	
 	gen_if_else(second_time, [&](){
-		builder->CreateCall(get_global_function(JR_try_unwind, 'v', ""));
+		builder->CreateCall(get_global_function(JR_try_unwind, 'v', "p"), builder->CreateBitCast(builder->CreateLoad(gp), llvmType(getInt8PtrTy)));
 		builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
 			create_gep(temp_errcontext2, TARGET_BITS, 0, TARGET_BITS, 0));
 		builder->CreateStore(get_nullptr(), get_global((void*)&EC));
@@ -6344,9 +6384,14 @@ void NopExpression::codegen(){
 		read_global((void*)&BP));*/
 	
 	if (test_stack){
+#ifndef GOSUB_ON_STACK
 		llvm::Value* sp = read_global((void*)&SP);
 		llvm::Value* bp = read_global((void*)&BP);
 		bp = builder->CreateGEP(bp, getInteger(TARGET_BITS, sizeof(VALUE)*(FP->n_local+FP->n_ctrl)));
+#else
+		llvm::Value* sp = builder->CreateBitCast(read_global((void*)&SP), pointer_t(value_type));
+		llvm::Value* bp = builder->CreateLoad(gp);
+#endif
 		gen_if_noreturn(builder->CreateICmpNE(bp, sp), [&](){
 			builder->CreateCall(get_global_function(stack_corrupted_abort, 'v', ""));
 			builder->CreateUnreachable();
@@ -6714,14 +6759,24 @@ void JIT_codegen(){
 		/*temp_num_gosubs_on_stack = builder->CreateAlloca(llvmType(getInt32Ty));
 		builder->CreateStore(getInteger(32, 0), temp_num_gosubs_on_stack);*/
 		
+#ifndef GOSUB_ON_STACK
 		builder->CreateCall3(get_global_function(GB.NewArray, 'v', "pii"),
 			get_global(&GP, llvmType(getInt8Ty)), getInteger(32, sizeof(STACK_GOSUB)), getInteger(32, 0));
+#else
+		gp = builder->CreateAlloca(pointer_t(value_type));
+		builder->CreateStore(builder->CreateGEP(read_global((void*)&BP, pointer_t(value_type)), getInteger(TARGET_BITS, FP->n_local + FP->n_ctrl)), gp);
+#endif
 		
 		/*gosub_return_point = builder->CreateAlloca(llvmType(getInt8PtrTy));
 		builder->CreateStore(get_nullptr(), gosub_return_point);*/
 		gosub_return_point = builder->CreateAlloca(llvmType(getInt16Ty));
 		builder->CreateStore(getInteger(16, 0), gosub_return_point);
 	}
+#ifndef GOSUB_ON_STACK
+	//For JR_try_unwind
+	gp = builder->CreateAlloca(pointer_t(value_type));
+		builder->CreateStore(builder->CreateGEP(read_global((void*)&BP, pointer_t(value_type)), getInteger(TARGET_BITS, FP->n_local + FP->n_ctrl)), gp);
+#endif
 	init_locals();
 	
 	codegen_statements();

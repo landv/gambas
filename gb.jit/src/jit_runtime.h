@@ -54,7 +54,7 @@ void JR_EXEC_jit_execute_function(void);
 
 void* JR_try(ERROR_CONTEXT* err);
 void JR_end_try(ERROR_CONTEXT* err);
-void JR_try_unwind(void);
+void JR_try_unwind(VALUE* stack_start);
 
 CLASS_DESC_METHOD *JR_CLASS_get_special_desc(CLASS *klass, int spec);
 #ifdef __cplusplus
