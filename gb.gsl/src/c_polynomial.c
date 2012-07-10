@@ -116,7 +116,7 @@ static bool ensure_not_complex(CPOLYNOMIAL *_object)
 		
 		for (i = 0; i < size; i++)
 		{
-			if (cd[i].dat[1] != 0.0)
+			if (GSL_IMAG(cd[i]) != 0.0)
 				return TRUE;
 		}
 		
@@ -131,43 +131,6 @@ static bool ensure_not_complex(CPOLYNOMIAL *_object)
 	
 	THIS->complex = FALSE;
 	return FALSE;
-}
-
-enum
-{
-	V_ERR,
-	V_FLOAT,
-	V_COMPLEX
-};
-
-static int get_value(GB_VALUE *value, double *x, gsl_complex *z)
-{
-	GB.Conv(value, value->_variant.value.type);
-	
-	if (value->type >= GB_T_OBJECT && GB.Is(value->_object.value, CLASS_Complex))
-	{
-		CCOMPLEX *c = (CCOMPLEX *)(value->_object.value);
-		if (GB.CheckObject(c))
-			return V_ERR;
-		*z = c->number;
-		if (GSL_IMAG(*z) == 0.0)
-		{
-			*x = GSL_REAL(*z);
-			return V_FLOAT;
-		}
-		else
-			return V_COMPLEX;
-	}
-	else
-	{
-		if (GB.Conv(value, GB_T_FLOAT))
-			return V_ERR;
-		
-		*x = value->_float.value;
-		z->dat[0] = *x;
-		z->dat[1] = 0.0;
-		return V_FLOAT;
-	}
 }
 
 //---- Arithmetic operators -------------------------------------------------
@@ -535,14 +498,14 @@ BEGIN_METHOD(Polynomial_put, GB_VARIANT value; GB_INTEGER index)
 		return;
 	}
 	
-	type = get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &x, &z);
 	
-	if (type == V_ERR)
+	if (type == CGV_ERR)
 		return;
 	
 	ensure_size(THIS, index + 1);
 	
-	if (type == V_COMPLEX)
+	if (type == CGV_COMPLEX)
 	{
 		ensure_complex(THIS);
 		CDATA(THIS)[index] = z;
@@ -565,8 +528,8 @@ BEGIN_METHOD(Polynomial_Eval, GB_VARIANT value)
 	double x;
 	gsl_complex z;
 
-	type = get_value(value, &x, &z);
-	if (type == V_ERR)
+	type = COMPLEX_get_value(value, &x, &z);
+	if (type == CGV_ERR)
 		return;
 									 
 	if (COMPLEX(THIS))
@@ -575,7 +538,7 @@ BEGIN_METHOD(Polynomial_Eval, GB_VARIANT value)
 	}
 	else
 	{
-		if (type == V_COMPLEX)
+		if (type == CGV_COMPLEX)
 			GB.ReturnObject(COMPLEX_create(gsl_poly_complex_eval(DATA(THIS), COUNT(THIS), z)));
 		else
 			GB.ReturnFloat(gsl_poly_eval(DATA(THIS), COUNT(THIS), x));

@@ -30,17 +30,15 @@ MA 02110-1301, USA.
 
 #ifndef __C_VECTOR_C
 extern GB_DESC VectorDesc[];
-extern GB_DESC FloatVectorDesc[];
-extern GB_DESC ComplexVectorDesc[];
 #endif
 
 typedef
 	struct
 	{
 		GB_BASE ob;
-		GB_TYPE type;
-		gsl_vector *vector;
+		void *vector;
+		bool complex;
 	}
-	GSLVECTOR;
+	CVECTOR;
 
 #endif /* __C_VECTOR_H */

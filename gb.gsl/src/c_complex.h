@@ -42,17 +42,19 @@ typedef
 	}
 	CCOMPLEX;
 
-/*typedef
-  struct {
-    GB_BASE ob;
-		GB_ARRAY_BASE array;
-    }
-  CCOMPLEXARRAY;*/
+enum
+{
+	CGV_ERR,
+	CGV_FLOAT,
+	CGV_COMPLEX
+};
 
 CCOMPLEX *COMPLEX_create(gsl_complex number);
 CCOMPLEX *COMPLEX_push_complex(double value);
 char *COMPLEX_to_string(gsl_complex number, bool local);
 
 #define COMPLEX_get(_c) ((_c) ? (_c)->number : COMPLEX_zero)
+
+int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z);
 
 #endif /* __C_COMPLEX_H */

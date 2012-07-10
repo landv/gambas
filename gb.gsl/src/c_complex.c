@@ -50,6 +50,38 @@ CCOMPLEX *COMPLEX_push_complex(double value)
 	return COMPLEX_create(gsl_complex_rect(0, value));
 }
 
+//---- Utility functions ----------------------------------------------------
+
+int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z)
+{
+	GB.Conv(value, value->_variant.value.type);
+	
+	if (value->type >= GB_T_OBJECT && GB.Is(value->_object.value, CLASS_Complex))
+	{
+		CCOMPLEX *c = (CCOMPLEX *)(value->_object.value);
+		if (GB.CheckObject(c))
+			return CGV_ERR;
+		*z = c->number;
+		if (GSL_IMAG(*z) == 0.0)
+		{
+			*x = GSL_REAL(*z);
+			return CGV_FLOAT;
+		}
+		else
+			return CGV_COMPLEX;
+	}
+	else
+	{
+		if (GB.Conv(value, GB_T_FLOAT))
+			return CGV_ERR;
+		
+		*x = value->_float.value;
+		z->dat[0] = *x;
+		z->dat[1] = 0.0;
+		return CGV_FLOAT;
+	}
+}
+
 //---- Arithmetic operators -------------------------------------------------
 
 static CCOMPLEX *_addf(CCOMPLEX *a, double f)
