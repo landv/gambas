@@ -2666,7 +2666,8 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 	if (code) \
 	{ \
 		code += T_POINTER; \
-		*PC |= code; \
+		if (P1->type != T_OBJECT && P2->type != T_OBJECT) \
+			*PC |= code; \
 		goto *jump[code]; \
 	} \
 	\

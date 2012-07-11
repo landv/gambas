@@ -268,7 +268,8 @@ __VARIANT:
 	
 	if (!variant)
 	{
-		*PC |= type;
+		if (P1->type != T_OBJECT && P2->type != T_OBJECT)
+			*PC |= type;
 		goto *jump[type];
 	}
 	else
@@ -583,7 +584,8 @@ __END:
 	\
 	if (EXEC_check_operator_single(P1)) \
 	{ \
-		*PC |= T_DATE + 1; \
+		if (P1->type != T_OBJECT) \
+			*PC |= T_DATE + 1; \
 		goto *jump[T_DATE + 1]; \
 	} \
 	\
