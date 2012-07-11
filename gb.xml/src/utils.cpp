@@ -154,7 +154,7 @@ void Trim(char *&str, size_t &len)
     
     if(!len) return;
     
-    while(isWhiteSpace(*(str + len)))
+    while(isWhiteSpace(*(str + len - 1)) && len > 0)
         --len;
 }
 

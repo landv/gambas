@@ -910,19 +910,15 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         
         if(tag && (tag - pos) != 0)//On ajoute le texte, s'il existe
         {
-            TextNode *text = new TextNode;
-            text->setEscapedTextContent(pos, tag - pos);
             //Checking length
             char *textpos = pos;
             size_t textlen = tag - pos;
             Trim(textpos, textlen);
             if(textlen != 0)
             {
+                TextNode *text = new TextNode;
+                text->setEscapedTextContent(textpos, textlen);
                 APPEND(text);
-            }
-            else
-            {
-                delete text;
             }
         }
         
@@ -930,19 +926,15 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         {
             if(pos < endData)//Il reste du texte
             {
-                TextNode *text = new TextNode;
-                text->setEscapedTextContent(pos, endData - pos);
                 //Checking length
                 char *textpos = pos;
                 size_t textlen = endData - pos;
                 Trim(textpos, textlen);
                 if(textlen != 0)
                 {
+                    TextNode *text = new TextNode;
+                    text->setEscapedTextContent(textpos, textlen);
                     APPEND(text);
-                }
-                else
-                {
-                    delete text;
                 }
             }
             break;

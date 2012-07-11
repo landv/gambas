@@ -47,6 +47,11 @@ BEGIN_PROPERTY(CElement_tagName)
 if(READ_PROPERTY)
 {
     GB.ReturnNewString(THIS->tagName, THIS->lenTagName);
+    if(!THIS->tagName || !THIS->lenTagName)
+    {
+        GB.ReturnNull();
+        return;
+    }
 }
 else
 {
@@ -59,6 +64,11 @@ BEGIN_PROPERTY(CElement_prefix)
 
 if(READ_PROPERTY)
 {
+    if(!THIS->prefix || !THIS->lenPrefix)
+    {
+        GB.ReturnNull();
+        return;
+    }
     GB.ReturnNewString(THIS->prefix, THIS->lenPrefix);
 }
 else
