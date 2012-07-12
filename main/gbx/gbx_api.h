@@ -120,6 +120,7 @@ void GB_ReleaseValue(GB_VALUE *value);
 
 void GB_Watch(int fd, int flag, void *callback, intptr_t param);
 
+void *GB_Create(void *class_name, const char *name, void *parent);
 void *GB_New(void *class_name, const char *name, void *parent);
 bool GB_CheckObject(void *object);
 bool GB_Is(void *object, void *class);

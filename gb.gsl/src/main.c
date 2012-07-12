@@ -30,6 +30,7 @@
 #include "c_gsl.h"
 #include "c_complex.h"
 #include "c_vector.h"
+#include "c_matrix.h"
 #include "c_polynomial.h"
 
 #ifdef __cplusplus
@@ -43,12 +44,15 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CGslDesc, /* The Elementary math functions */
   ComplexDesc,
 	VectorDesc,
+	MatrixDesc,
   PolynomialDesc,
   /* Other classes go here as completed */
   NULL // Must have a null entry for the end of the structure
 };
 
+GB_CLASS CLASS_Array;
 GB_CLASS CLASS_Complex;
+GB_CLASS CLASS_Matrix;
 GB_CLASS CLASS_Vector;
 GB_CLASS CLASS_Polynomial;
 
@@ -60,8 +64,10 @@ static void error_handler(const char *reason, const char *file, int line, int gs
 
 int EXPORT GB_INIT(void)
 {
+	CLASS_Array = GB.FindClass("Array");
 	CLASS_Complex = GB.FindClass("Complex");
 	CLASS_Vector = GB.FindClass("Vector");
+	CLASS_Matrix = GB.FindClass("Matrix");
 	CLASS_Polynomial = GB.FindClass("Polynomial");
 	
 	gsl_set_error_handler(error_handler);

@@ -177,14 +177,14 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 
 	if (quality >= 0)
 	{
-		if (!strcmp(format, "jpeg"))
+		if (strcmp(format, "jpeg") == 0)
 		{
 			if (quality > 100)
 				quality = 100;
 			sprintf(arg, "%d", quality);
 			b = gdk_pixbuf_save(image, path, format, &error, "quality", arg, (void *)NULL);
 		}
-		else if (!strcmp(format, "png"))
+		else if (strcmp(format, "png") == 0)
 		{
 			if (quality > 9)
 				quality = 9;

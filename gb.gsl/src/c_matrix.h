@@ -36,8 +36,9 @@ typedef
 	struct
 	{
 		GB_BASE ob;
-		gsl_matrix *matrix;
+		void *matrix;
+		bool complex;
 	}
-	GSLMATRIX;
+	CMATRIX;
 
 #endif /* __C_MATRIX_H */

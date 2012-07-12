@@ -41,4 +41,12 @@ typedef
 	}
 	CVECTOR;
 
+#define VEC(_v) ((gsl_vector *)(_v)->vector)
+#define CVEC(_v) ((gsl_vector_complex *)(_v)->vector)
+#define SIZE(_v) ((int)(VEC(_v)->size))
+
+CVECTOR *VECTOR_create(int size, bool complex, bool init);
+void VECTOR_ensure_complex(CVECTOR *_object);
+bool VECTOR_ensure_not_complex(CVECTOR *_object);
+
 #endif /* __C_VECTOR_H */

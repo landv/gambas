@@ -1259,16 +1259,16 @@ int php_getimagetype(IMAGE_STREAM * stream)
 	}
 
 /* BYTES READ: 3 */
-	if (!memcmp(filetype, _signature_gif, 3)) {
+	if (memcmp(filetype, _signature_gif, 3) == 0) {
 		return IMAGE_FILETYPE_GIF;
-	} else if (!memcmp(filetype, _signature_jpg, 3)) {
+	} else if (memcmp(filetype, _signature_jpg, 3) == 0) {
 		return IMAGE_FILETYPE_JPEG;
-	} else if (!memcmp(filetype, _signature_png, 3)) {
+	} else if (memcmp(filetype, _signature_png, 3) == 0) {
 		if (stream_read(stream, filetype+3, 5) != 5) {
 			IMAGE_error = "Read error";
 			return IMAGE_FILETYPE_ERROR;
 		}
-		if (!memcmp(filetype, _signature_png, 8)) {
+		if (memcmp(filetype, _signature_png, 8) == 0) {
 			return IMAGE_FILETYPE_PNG;
 		} else {
 			IMAGE_error = "PNG file corrupted by ASCII conversion";
@@ -1282,7 +1282,7 @@ int php_getimagetype(IMAGE_STREAM * stream)
 	} else if (!memcmp(filetype, _signature_psd, 3)) {
 		return IMAGE_FILETYPE_PSD;
 	*/
-	} else if (!memcmp(filetype, _signature_bmp, 2)) {
+	} else if (memcmp(filetype, _signature_bmp, 2) == 0) {
 		return IMAGE_FILETYPE_BMP;
 	/*
 	} else if (!memcmp(filetype, _signature_jpc, 3)) {
@@ -1295,10 +1295,10 @@ int php_getimagetype(IMAGE_STREAM * stream)
 		return IMAGE_FILETYPE_ERROR;
 	}
 /* BYTES READ: 4 */
-	if (!memcmp(filetype, _signature_tif_ii, 4)) {
+	if (memcmp(filetype, _signature_tif_ii, 4) == 0) {
 		return IMAGE_FILETYPE_TIFF_II;
 	} else
-	if (!memcmp(filetype, _signature_tif_mm, 4)) {
+	if (memcmp(filetype, _signature_tif_mm, 4) == 0) {
 		return IMAGE_FILETYPE_TIFF_MM;
 	}
 	/*

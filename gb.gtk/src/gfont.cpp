@@ -220,7 +220,7 @@ void gFont::initFlags()
 	
 	_bold_set = comp->bold() != bold();
 	_italic_set = comp->italic() != italic();
-	_name_set = strcmp(comp->name(), name());
+	_name_set = strcmp(comp->name(), name()) != 0;
 	_size_set = comp->size() != size();
 	_strikeout_set = comp->strikeout() != strikeout();
 	_underline_set = comp->underline() != underline();

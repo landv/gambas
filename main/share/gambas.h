@@ -916,6 +916,7 @@ typedef
 		void (*Detach)(void *);
 		void (*Attach)(void *, void *, const char *);
 		void *(*Parent)(void *);
+		void *(*Create)(GB_CLASS, char *, void *);
 		void *(*New)(GB_CLASS, char *, void *);
 		void *(*AutoCreate)(GB_CLASS, int);
 		bool (*CheckObject)(void *);

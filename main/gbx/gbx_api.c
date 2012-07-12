@@ -128,6 +128,7 @@ const void *GAMBAS_Api[] =
 	(void *)GB_Detach,
 	(void *)GB_Attach,
 	(void *)OBJECT_parent,
+	(void *)GB_Create,
 	(void *)GB_New,
 	(void *)CLASS_auto_create,
 	(void *)GB_CheckObject,
@@ -1686,10 +1687,18 @@ void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 }
 
 
-void *GB_New(void *class, const char *name, void *parent)
+void *GB_Create(void *class, const char *name, void *parent)
 {
 	void *object;
 	
+	object = OBJECT_new(class, name, parent);
+	OBJECT_UNREF_KEEP(object, "GB_Create");
+	
+	return object;
+}
+
+void *GB_New(void *class, const char *name, void *parent)
+{
 	if (name && !parent)
 	{
 		parent = OP;
@@ -1706,17 +1715,11 @@ void *GB_New(void *class, const char *name, void *parent)
 			parent = NULL;
 		}
 		
-		object = OBJECT_create(class, name, parent, nparam);
+		return OBJECT_create(class, name, parent, nparam);
 	}
 	else
-	{
-		object = OBJECT_new(class, name, parent);
-		OBJECT_UNREF_KEEP(object, "GB_New");
-	}
-	
-	return object;
+		return GB_Create(class, name, parent);
 }
-
 
 bool GB_CheckObject(void *object)
 {
