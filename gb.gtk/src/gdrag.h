@@ -63,8 +63,8 @@ public:
 	
 	static int getType();
 	static char *getFormat(int n = 0);
-	static char *getText(int *len, const char *format);
-	static gPicture *getImage();
+	static char *getText(int *len, const char *format, bool fromOutside = false);
+	static gPicture *getImage(bool fromOutside = false);
 	
 	static int getDropX() { return _x; }
 	static int getDropY() { return _y; }
