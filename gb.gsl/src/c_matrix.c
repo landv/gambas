@@ -38,26 +38,44 @@
 
 //---- Matrix creation ------------------------------------------------------
 
-static CMATRIX *MATRIX_create(int width, int height, bool complex)
+static CMATRIX *MATRIX_create(int width, int height, bool complex, bool init)
 {
-	GB.Push(3, GB_T_INTEGER, width, GB_T_INTEGER, height, GB_T_BOOLEAN, complex);
-	return (CMATRIX *)GB.New(CLASS_Matrix, NULL, (void *)(intptr_t)3);
+	CMATRIX *m = GB.Create(CLASS_Matrix, NULL,NULL);
+	
+	if (complex)
+		m->matrix = init ? gsl_matrix_complex_calloc(height, width) : gsl_matrix_complex_alloc(height, width);
+	else
+		m->matrix = init ? gsl_matrix_calloc(height, width) : gsl_matrix_alloc(height, width);
+	
+	m->complex = complex;
+	return m;
+}
+
+static CMATRIX *MATRIX_create_from(void *matrix, bool complex)
+{
+	CMATRIX *m = GB.Create(CLASS_Matrix, NULL,NULL);
+	
+	m->matrix = matrix;
+	m->complex = complex;
+	return m;
 }
 
 static CMATRIX *MATRIX_copy(CMATRIX *_object)
 {
-	CMATRIX *copy = MATRIX_create(WIDTH(THIS), HEIGHT(THIS), COMPLEX(THIS));
+	CMATRIX *copy = MATRIX_create(WIDTH(THIS), HEIGHT(THIS), COMPLEX(THIS), FALSE);
 	if (COMPLEX(THIS))
-		gsl_matrix_memcpy(MAT(copy), MAT(THIS));
-	else
 		gsl_matrix_complex_memcpy(CMAT(copy), CMAT(THIS));
+	else
+		gsl_matrix_memcpy(MAT(copy), MAT(THIS));
 	
 	return copy;
 }
 
+#define MATRIX_make(_ma) (((_ma)->ob.ref <= 1) ? (_ma) : MATRIX_copy(_ma))
+
 static CMATRIX *MATRIX_convert_to_complex(CMATRIX *_object)
 {
-	CMATRIX *m = MATRIX_create(WIDTH(THIS), HEIGHT(THIS), TRUE);
+	CMATRIX *m = MATRIX_create(WIDTH(THIS), HEIGHT(THIS), TRUE, FALSE);
 	int i, j;
 	
 	for (i = 0; i < HEIGHT(THIS); i++)
@@ -67,7 +85,7 @@ static CMATRIX *MATRIX_convert_to_complex(CMATRIX *_object)
 	return m;
 }
 
-static void ensure_complex(CMATRIX *_object)
+static void MATRIX_ensure_complex(CMATRIX *_object)
 {
 	gsl_matrix_complex *v;
 	int w = WIDTH(THIS);
@@ -88,33 +106,380 @@ static void ensure_complex(CMATRIX *_object)
 }
 
 
-/*static bool ensure_not_complex(CMATRIX *_object)
+/*static bool MATRIX_ensure_not_complex(CMATRIX *_object)
 {
-	gsl_matrix *v;
-	int size = SIZE(THIS);
-	int i;
+	gsl_matrix *m;
+	int w = WIDTH(THIS);
+	int h = HEIGHT(THIS);
+	int i, j;
 	gsl_complex c;
 	
 	if (!COMPLEX(THIS))
 		return FALSE;
 	
-	for (i = 0; i < size; i++)
-	{
-		c = gsl_matrix_complex_get(CMAT(THIS), i);
-		if (GSL_IMAG(c) != 0.0)
-			return TRUE;
-	}
+	for (i = 0; i < h; i++)
+		for (j = 0; j < w; j++)
+		{
+			c = gsl_matrix_complex_get(CMAT(THIS), i, j);
+			if (GSL_IMAG(c) != 0.0)
+				return TRUE;
+		}
 	
-	v = gsl_matrix_alloc(size);
+	m = gsl_matrix_alloc(h, w);
 	
-	for (i = 0; i < size; i++)
-		gsl_matrix_set(v, i, GSL_REAL(gsl_matrix_complex_get(CMAT(THIS), i)));
+	for (i = 0; i < h; i++)
+		for (j = 0; j < w; j++)
+			gsl_matrix_set(m, i, j, GSL_REAL(gsl_matrix_complex_get(CMAT(THIS), i, j)));
 	
 	gsl_matrix_complex_free(CMAT(THIS));
-	THIS->matrix = v;
+	THIS->matrix = m;
 	THIS->complex = FALSE;
 	return FALSE;
 }*/
+
+static void matrix_negative(void *m, bool complex)
+{
+	uint i;
+	gsl_matrix *mm = (gsl_matrix *)m;
+	double *d = mm->data;
+	uint n = (uint)(mm->size1 * mm->size2);
+	
+	if (complex)
+		n *= 2;
+	
+	for (i = 0; i < n; i++)
+		d[i] = -d[i];
+}
+
+static bool get_determinant(CMATRIX *m, COMPLEX_VALUE *det) 
+{
+  int sign = 0; 
+	int size = WIDTH(m);
+	
+	if (size != HEIGHT(m))
+		return TRUE;
+	
+  gsl_permutation *p = gsl_permutation_calloc(size);
+	
+	if (COMPLEX(m))
+	{
+		gsl_matrix_complex *tmp = gsl_matrix_complex_alloc(size, size);
+		gsl_matrix_complex_memcpy(tmp, CMAT(m));
+		gsl_linalg_complex_LU_decomp(tmp, p, &sign);
+		det->z = gsl_linalg_complex_LU_det(tmp, sign);
+		gsl_matrix_complex_free(tmp);
+	}
+	else
+	{
+		gsl_matrix *tmp = gsl_matrix_alloc(size, size);
+		gsl_matrix_memcpy(tmp, MAT(m));
+		gsl_linalg_LU_decomp(tmp, p, &sign);
+		det->x = gsl_linalg_LU_det(tmp, sign);
+		det->z.dat[1] = 0;
+		gsl_matrix_free(tmp);
+	}
+	
+  gsl_permutation_free(p);
+  return FALSE;
+}
+
+static void *matrix_invert(void *m, bool complex) 
+{
+  int sign = 0; 
+	int size = ((gsl_matrix *)m)->size1;
+	void *result;
+	
+	if (size != ((gsl_matrix *)m)->size2)
+		return NULL;
+	
+  gsl_permutation *p = gsl_permutation_calloc(size);
+	
+	if (!complex)
+	{
+		gsl_matrix *tmp = gsl_matrix_alloc(size, size);
+		result = gsl_matrix_alloc(size, size);
+		gsl_matrix_memcpy(tmp, (gsl_matrix *)m);
+		gsl_linalg_LU_decomp(tmp, p, &sign);
+		if (gsl_linalg_LU_invert(tmp, p, (gsl_matrix *)result) != GSL_SUCCESS)
+		{
+			gsl_matrix_free(result);
+			return NULL;
+		}
+		gsl_matrix_free(tmp);
+	}
+	else
+	{
+		gsl_matrix_complex *tmp = gsl_matrix_complex_alloc(size, size);
+		result = gsl_matrix_complex_alloc(size, size);
+		gsl_matrix_complex_memcpy(tmp, (gsl_matrix_complex *)m);
+		gsl_linalg_complex_LU_decomp(tmp, p, &sign);
+		if (gsl_linalg_complex_LU_invert(tmp, p, (gsl_matrix_complex *)result) != GSL_SUCCESS)
+		{
+			gsl_matrix_complex_free(result);
+			return NULL;
+		}
+		gsl_matrix_complex_free(tmp);
+	}
+	
+  gsl_permutation_free(p);
+  return result;
+}
+
+//---- Arithmetic operators -------------------------------------------------
+
+#define IMPLEMENT_OP(_name) \
+static CMATRIX *_name(CMATRIX *a, CMATRIX *b, bool invert) \
+{ \
+	CMATRIX *m; \
+	\
+	if (COMPLEX(a) || COMPLEX(b)) \
+	{ \
+		MATRIX_ensure_complex(a); \
+		MATRIX_ensure_complex(b); \
+		m = MAKE_MATRIX(a); \
+		CFUNC(CMAT(m), CMAT(a), CMAT(b)); \
+	} \
+	else \
+	{ \
+		m = MAKE_MATRIX(a); \
+		FUNC(MAT(m), MAT(a), MAT(b)); \
+	} \
+	 \
+	return m; \
+}
+
+#define IMPLEMENT_OP_FLOAT(_name) \
+static CMATRIX *_name(CMATRIX *a, double f, bool invert) \
+{ \
+	CMATRIX *m = MAKE_MATRIX(a); \
+	\
+	if (COMPLEX(a)) \
+	{ \
+		CFUNC(CMAT(m), CMAT(a), f); \
+	} \
+	else \
+	{ \
+		FUNC(MAT(m), MAT(a), f); \
+	} \
+	 \
+	return m; \
+}
+
+#define IMPLEMENT_OP_OTHER(_name) \
+static CMATRIX *_name(CMATRIX *a, void *b, bool invert) \
+{ \
+	CMATRIX *m = MAKE_MATRIX(a); \
+	\
+	if (GB.Is(b, CLASS_Complex)) \
+	{ \
+		MATRIX_ensure_complex(m); \
+		CFUNC(CMAT(m), CMAT(a), ((CCOMPLEX *)b)->number); \
+		return m; \
+	} \
+	else \
+		return NULL; \
+}
+
+#define MAKE_MATRIX(_a) MATRIX_make(_a)
+
+#define FUNC(_m, _a, _b) gsl_matrix_add(_m, _b)
+#define CFUNC(_m, _a, _b) gsl_matrix_complex_add(_m, _b)
+IMPLEMENT_OP(_add)
+#undef FUNC
+#undef CFUNC
+
+#define FUNC(_m, _a, _f) gsl_matrix_add_constant(_m, _f)
+#define CFUNC(_m, _a, _f) gsl_matrix_complex_add_constant(_m, gsl_complex_rect(_f, 0))
+IMPLEMENT_OP_FLOAT(_addf)
+#undef FUNC
+#undef CFUNC
+
+#define CFUNC(_m, _a, _c) gsl_matrix_complex_add_constant(_m, _c)
+IMPLEMENT_OP_OTHER(_addo)
+#undef CFUNC
+
+#define FUNC(_m, _a, _b) gsl_matrix_sub(_m, _b)
+#define CFUNC(_m, _a, _b) gsl_matrix_complex_sub(_m, _b)
+IMPLEMENT_OP(_sub)
+#undef FUNC
+#undef CFUNC
+
+#define FUNC(_m, _a, _f) \
+	if (invert) \
+	{ \
+		matrix_negative(_m, FALSE); \
+		gsl_matrix_add_constant(_m, _f); \
+	} \
+	else \
+		gsl_matrix_add_constant(_m, -(_f));
+
+#define CFUNC(_m, _a, _f) \
+	if (invert) \
+	{ \
+		matrix_negative(_m, TRUE); \
+		gsl_matrix_complex_add_constant(_m, gsl_complex_rect((_f), 0)); \
+	} \
+	else \
+		gsl_matrix_complex_add_constant(_m, gsl_complex_rect(-(_f), 0));
+
+IMPLEMENT_OP_FLOAT(_subf)
+#undef FUNC
+#undef CFUNC
+
+#define CFUNC(_m, _a, _c) \
+	if (invert) \
+		matrix_negative(_m, TRUE); \
+	else \
+		gsl_complex_negative(_c); \
+	gsl_matrix_complex_add_constant(_m, _c);
+
+IMPLEMENT_OP_OTHER(_subo)
+#undef CFUNC
+
+#define FUNC(_m, _a, _f) gsl_matrix_scale(_m, _f)
+#define CFUNC(_m, _a, _f) gsl_matrix_complex_scale(_m, gsl_complex_rect(_f, 0))
+IMPLEMENT_OP_FLOAT(_mulf)
+#undef FUNC
+#undef CFUNC
+
+#define CFUNC(_m, _a, _c) gsl_matrix_complex_scale(_m, _c)
+IMPLEMENT_OP_OTHER(_mulo)
+#undef CFUNC
+
+#undef MAKE_MATRIX
+#define MAKE_MATRIX(_a) MATRIX_copy(_a)
+
+#define FUNC(_m, _a, _b) gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, _a, _b, 0.0, _m);
+#define CFUNC(_m, _a, _b) 	gsl_blas_zgemm(CblasNoTrans, CblasNoTrans, COMPLEX_one, _a, _b, COMPLEX_zero, _m);
+IMPLEMENT_OP(_mul)
+#undef FUNC
+#undef CFUNC
+
+#define FUNC(_m, _a, _b) \
+{ \
+	gsl_matrix *inv = matrix_invert(_b, FALSE); \
+	if (!inv) \
+		return NULL; \
+	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, _a, inv, 0.0, _m); \
+	gsl_matrix_free(inv); \
+}
+
+#define CFUNC(_m, _a, _b) \
+{ \
+	gsl_matrix_complex *inv = matrix_invert(_b, TRUE); \
+	if (!inv) \
+		return NULL; \
+	gsl_blas_zgemm(CblasNoTrans, CblasNoTrans, COMPLEX_one, _a, inv, COMPLEX_zero, _m); \
+	gsl_matrix_complex_free(inv); \
+}
+
+IMPLEMENT_OP(_div)
+#undef FUNC
+#undef CFUNC
+
+static CMATRIX *_divf(CMATRIX *a, double f, bool invert)
+{
+	bool complex = COMPLEX(a);
+	CMATRIX *m;
+	
+	if (invert)
+	{
+		void *inv = matrix_invert(MAT(a), complex);
+		
+		if (!inv)
+			return NULL;
+		
+		m = MATRIX_create_from(inv, complex);
+	}
+	else
+	{
+		if (f == 0.0)
+			return NULL;
+		
+		f = 1 / f;
+		m = MATRIX_make(a);
+	}
+	
+	if (complex)
+		gsl_matrix_complex_scale(CMAT(m), gsl_complex_rect(f, 0));
+	else
+		gsl_matrix_scale(MAT(m), f);
+	
+	return m;
+}
+
+static CMATRIX *_divo(CMATRIX *a, void *b, bool invert)
+{
+	bool complex = COMPLEX(a);
+	CMATRIX *m;
+	gsl_complex c;
+	
+	if (!GB.Is(b, CLASS_Complex))
+		return NULL;
+	
+	c = ((CCOMPLEX *)b)->number;
+	
+	if (invert)
+	{
+		void *inv = matrix_invert(MAT(a), complex);
+		
+		if (!inv)
+			return NULL;
+		
+		m = MATRIX_create_from(inv, complex);
+	}
+	else
+	{
+		if (c.dat[0] == 0 && c.dat[1] == 0)
+			return NULL;
+		
+		c = gsl_complex_inverse(c);
+		m = MATRIX_make(a);
+	}
+	
+	MATRIX_ensure_complex(m);
+	gsl_matrix_complex_scale(CMAT(m), c);
+	
+	return m;
+}
+
+static int _equal(CMATRIX *a, CMATRIX *b)
+{
+	if (COMPLEX(a) || COMPLEX(b))
+	{
+		MATRIX_ensure_complex(a);
+		MATRIX_ensure_complex(b);
+		return gsl_matrix_complex_equal(CMAT(a), CMAT(b));
+	}
+	else
+		return gsl_matrix_equal(MAT(a), MAT(b));
+}
+
+static CMATRIX *_neg(CMATRIX *a)
+{
+	CMATRIX *m = MATRIX_make(a);
+	matrix_negative(m->matrix, m->complex);
+	return m;
+}
+
+static GB_OPERATOR_DESC _operator =
+{
+	.equal   = (void *)_equal,
+	//.equalf  = (void *)_equalf,
+	.add     = (void *)_add,
+	.addf    = (void *)_addf,
+	.addo    = (void *)_addo,
+	.sub     = (void *)_sub,
+	.subf    = (void *)_subf,
+	.subo    = (void *)_subo,
+	.mul     = (void *)_mul,
+	.mulf    = (void *)_mulf,
+	.mulo    = (void *)_mulo,
+	.div     = (void *)_div,
+	.divf    = (void *)_divf,
+	.divo    = (void *)_divo,
+	.neg     = (void *)_neg
+};
 
 //---- Conversions ----------------------------------------------------------
 
@@ -129,11 +494,11 @@ static char *_to_string(CMATRIX *_object, bool local)
 	
 	result = GB.AddChar(result, '[');
 	
-	for (i = 0; i < w; i++)
+	for (i = 0; i < h; i++)
 	{
 		result = GB.AddChar(result, '[');
 	
-		for (j = 0; j < h; j++)
+		for (j = 0; j < w; j++)
 		{
 			if (j)
 				result = GB.AddChar(result, ' ');
@@ -232,10 +597,10 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 	}
 	else if (type >= GB_T_OBJECT)
 	{
-		if (type == CLASS_Complex)
+		/*if (type == CLASS_Complex)
 		{
 			CCOMPLEX *c = (CCOMPLEX *)conv->_object.value;
-			CMATRIX *m = MATRIX_create(2, 2, FALSE);
+			CMATRIX *m = MATRIX_create(2, 2, FALSE, FALSE);
 			
 			gsl_matrix_set(MAT(m), 0, 0, GSL_REAL(c->number));
 			gsl_matrix_set(MAT(m), 1, 1, GSL_REAL(c->number));
@@ -245,7 +610,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 			conv->_object.value = m;
 			return FALSE;
 		}
-		else if (GB.Is(conv->_object.value, CLASS_Array))
+		else*/ if (GB.Is(conv->_object.value, CLASS_Array))
 		{
 			GB_ARRAY array = (GB_ARRAY)conv->_object.value;
 			GB_ARRAY array2;
@@ -284,7 +649,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 				}
 				
 				//fprintf(stderr, "create: %d %d %d\n", width, height, complex);
-				m = MATRIX_create(width, height, complex);
+				m = MATRIX_create(width, height, complex, TRUE);
 				
 				for (i = 0; i < height; i++)
 				{
@@ -338,9 +703,9 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 			}
 		}
 	}
-	else if (type > GB_T_BOOLEAN && type <= GB_T_FLOAT)
+	/*else if (type > GB_T_BOOLEAN && type <= GB_T_FLOAT)
 	{
-		CMATRIX *m = MATRIX_create(2, 2, FALSE);
+		CMATRIX *m = MATRIX_create(2, 2, FALSE, TRUE);
 		double value;
 		
 		if (type == GB_T_FLOAT)
@@ -355,7 +720,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 		
 		conv->_object.value = m;
 		return FALSE;
-	}		
+	}*/
 	
 	return TRUE;
 }
@@ -439,8 +804,7 @@ BEGIN_METHOD(Matrix_put, GB_VARIANT value; GB_INTEGER i; GB_INTEGER j)
 	int i = VARG(i), j = VARG(j);
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
-	gsl_complex z;
-	double x;
+	COMPLEX_VALUE cv;
 	
 	if (i < 0 || i >= h || j < 0 || j >= w)
 	{
@@ -448,22 +812,22 @@ BEGIN_METHOD(Matrix_put, GB_VARIANT value; GB_INTEGER i; GB_INTEGER j)
 		return;
 	}
 	
-	type = COMPLEX_get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &cv);
 	
 	if (type == CGV_ERR)
 		return;
 
 	if (type == CGV_COMPLEX)
 	{
-		ensure_complex(THIS);
-		gsl_matrix_complex_set(CMAT(THIS), i, j, z);
+		MATRIX_ensure_complex(THIS);
+		gsl_matrix_complex_set(CMAT(THIS), i, j, cv.z);
 	}
 	else
 	{
 		if (COMPLEX(THIS))
-			gsl_matrix_complex_set(CMAT(THIS), i, j, z);
+			gsl_matrix_complex_set(CMAT(THIS), i, j, cv.z);
 		else
-			gsl_matrix_set(MAT(THIS), i, j, x);
+			gsl_matrix_set(MAT(THIS), i, j, cv.x);
 	}
 	
 END_METHOD
@@ -473,25 +837,24 @@ BEGIN_METHOD(Matrix_Scale, GB_VALUE value)
 
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
-	gsl_complex z;
-	double x;
+	COMPLEX_VALUE cv;
 	
-	type = COMPLEX_get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &cv);
 	
 	if (type == CGV_ERR)
 		return;
 
 	if (type == CGV_COMPLEX)
 	{
-		ensure_complex(THIS);
-		gsl_matrix_complex_scale(CMAT(THIS), z);
+		MATRIX_ensure_complex(THIS);
+		gsl_matrix_complex_scale(CMAT(THIS), cv.z);
 	}
 	else
 	{
 		if (COMPLEX(THIS))
-			gsl_matrix_complex_scale(CMAT(THIS), z);
+			gsl_matrix_complex_scale(CMAT(THIS), cv.z);
 		else
-			gsl_matrix_scale(MAT(THIS), x);
+			gsl_matrix_scale(MAT(THIS), cv.x);
 	}
 	
 	GB.ReturnObject(THIS);
@@ -552,7 +915,7 @@ END_PROPERTY
 
 BEGIN_METHOD(Matrix_Identity, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN complex)
 
-	CMATRIX *m = MATRIX_create(VARGOPT(width, 2), VARGOPT(height, 2), VARGOPT(complex, FALSE));
+	CMATRIX *m = MATRIX_create(VARGOPT(width, 2), VARGOPT(height, 2), VARGOPT(complex, FALSE), FALSE);
 	
 	if (COMPLEX(m))
 		gsl_matrix_complex_set_identity(CMAT(m));
@@ -688,6 +1051,95 @@ BEGIN_METHOD(Matrix_SetColumn, GB_INTEGER column; GB_OBJECT vector)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Matrix_Determinant)
+
+	COMPLEX_VALUE cv;
+	
+	if (get_determinant(THIS, &cv))
+	{
+		GB.Error("Matrix is not square");
+		return;
+	}
+	
+	if (COMPLEX(THIS))
+		GB.ReturnObject(COMPLEX_create(cv.z));
+	else
+		GB.ReturnFloat(cv.x);
+	
+	GB.ReturnConvVariant();
+
+END_METHOD
+
+
+BEGIN_METHOD(Matrix_call, GB_OBJECT vector)
+
+	CVECTOR *v = VARG(vector);
+	CVECTOR *result;
+	
+	if (GB.CheckObject(v))
+		return;
+	
+	if (COMPLEX(THIS) || v->complex)
+	{
+		MATRIX_ensure_complex(THIS);
+		VECTOR_ensure_complex(v);
+		result = VECTOR_create(SIZE(v), TRUE, FALSE);
+		gsl_blas_zgemv(CblasNoTrans, COMPLEX_one, CMAT(THIS), CVEC(v), COMPLEX_zero, CVEC(result));
+		GB.ReturnObject(result);
+	}
+	else
+	{
+		result = VECTOR_create(SIZE(v), FALSE, FALSE);
+		gsl_blas_dgemv(CblasNoTrans, 1.0, MAT(THIS), VEC(v), 0.0, VEC(result));
+		GB.ReturnObject(result);
+	}
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Matrix_Transpose)
+
+	if (!COMPLEX(THIS))
+	{
+		gsl_matrix *m = gsl_matrix_alloc(WIDTH(THIS), HEIGHT(THIS));
+		gsl_matrix_transpose_memcpy(m, MAT(THIS));
+		gsl_matrix_free(MAT(THIS));
+		THIS->matrix = m;
+	}
+	else
+	{
+		gsl_matrix_complex *m = gsl_matrix_complex_alloc(WIDTH(THIS), HEIGHT(THIS));
+		gsl_matrix_complex_transpose_memcpy(m, CMAT(THIS));
+		gsl_matrix_complex_free(CMAT(THIS));
+		THIS->matrix = m;
+	}
+	
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Matrix_Invert)
+
+	void *m = matrix_invert(THIS->matrix, COMPLEX(THIS));
+
+	if (!m)
+	{
+		GB.ReturnNull();
+		return;
+	}
+	
+	if (COMPLEX(THIS))
+		gsl_matrix_complex_free(CMAT(THIS));
+	else
+		gsl_matrix_free(MAT(THIS));
+	
+	THIS->matrix = m;
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+//---------------------------------------------------------------------------
 
 GB_DESC MatrixDesc[] =
 {
@@ -704,9 +1156,13 @@ GB_DESC MatrixDesc[] =
 	GB_PROPERTY_READ("Height", "i", Matrix_Height),
 	GB_PROPERTY_READ("Handle", "p", Matrix_Handle),
 	
+	GB_METHOD("Determinant", "v", Matrix_Determinant, NULL),
+	
 	GB_METHOD("_get", "v", Matrix_get, "(I)i(J)i"),
 	GB_METHOD("_put", NULL, Matrix_put, "(Value)v(I)i(J)i"),
 
+	GB_METHOD("_call", "Vector", Matrix_call, "(Vector)Vector"),
+	
 	GB_METHOD("Scale", "Matrix", Matrix_Scale, "(Value)v"),
 	GB_METHOD("Equal", "b", Matrix_Equal, "(Matrix)Matrix;"),
 	
@@ -715,7 +1171,11 @@ GB_DESC MatrixDesc[] =
 	GB_METHOD("SetRow", NULL, Matrix_SetRow, "(Row)i(Vector)Vector;"),
 	GB_METHOD("SetColumn", NULL, Matrix_SetColumn, "(Column)i(Vector)Vector;"),
 	
+	GB_METHOD("Transpose", "Matrix", Matrix_Transpose, NULL),
+	GB_METHOD("Invert", "Matrix", Matrix_Invert, NULL),
+	
 	GB_INTERFACE("_convert", &_convert),
+	GB_INTERFACE("_operator", &_operator),
 	
 	GB_END_DECLARE
 };

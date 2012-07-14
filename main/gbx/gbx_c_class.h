@@ -27,14 +27,12 @@
 #include "gambas.h"
 
 #ifndef __GBX_C_CLASS_C
-
-EXTERN GB_DESC NATIVE_Component[];
-EXTERN GB_DESC NATIVE_Components[];
-EXTERN GB_DESC NATIVE_Class[];
-EXTERN GB_DESC NATIVE_Classes[];
-EXTERN GB_DESC NATIVE_Object[];
-EXTERN GB_DESC NATIVE_Symbol[];
-
+extern GB_DESC NATIVE_Component[];
+extern GB_DESC NATIVE_Components[];
+extern GB_DESC NATIVE_Class[];
+extern GB_DESC NATIVE_Classes[];
+extern GB_DESC NATIVE_Object[];
+extern GB_DESC NATIVE_Symbol[];
 #endif
 
 #endif

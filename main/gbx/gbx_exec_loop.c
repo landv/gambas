@@ -2065,7 +2065,7 @@ _SUBR_COMP:
 		static void *jump[] = {
 			&&__SC_VARIANT, &&__SC_BOOLEAN, &&__SC_BYTE, &&__SC_SHORT, &&__SC_INTEGER, &&__SC_LONG, &&__SC_SINGLE, &&__SC_FLOAT, &&__SC_DATE,
 			&&__SC_STRING, &&__SC_STRING, &&__SC_POINTER, &&__SC_ERROR, &&__SC_ERROR, &&__SC_ERROR, &&__SC_NULL, &&__SC_OBJECT,
-			&&__SC_OBJECT_FLOAT, &&__SC_FLOAT_OBJECT, &&__SC_OBJECT_CONV, &&__SC_CONV_OBJECT, &&__SC_OBJECT_OBJECT
+			&&__SC_OBJECT_FLOAT, &&__SC_FLOAT_OBJECT, &&__SC_OBJECT_OTHER, &&__SC_OTHER_OBJECT, &&__SC_OBJECT_OBJECT
 			};
 
 		char NO_WARNING(result);
@@ -2169,14 +2169,14 @@ _SUBR_COMP:
 		result = EXEC_comparator(OP_FLOAT_OBJECT, CO_EQUALF, P1, P2);
 		goto __SC_END;
 		
-	__SC_OBJECT_CONV:
+	__SC_OBJECT_OTHER:
 
-		result = EXEC_comparator(OP_OBJECT_CONV, CO_EQUAL, P1, P2);
+		result = EXEC_comparator(OP_OBJECT_OTHER, CO_EQUALO, P1, P2);
 		goto __SC_END;
 
-	__SC_CONV_OBJECT:
+	__SC_OTHER_OBJECT:
 
-		result = EXEC_comparator(OP_CONV_OBJECT, CO_EQUAL, P1, P2);
+		result = EXEC_comparator(OP_OTHER_OBJECT, CO_EQUALO, P1, P2);
 		goto __SC_END;
 		
 	__SC_OBJECT_OBJECT:
@@ -2404,7 +2404,7 @@ static void _SUBR_compn(ushort code)
 	static void *jump[] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
 		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT,
-		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT_OBJECT
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT_OBJECT
 		};
 
 	//static void *test[] = { &&__EQ, &&__NE, &&__GT, &&__LE, &&__LT, &&__GE };
@@ -2510,14 +2510,14 @@ __FLOAT_OBJECT:
 	result = EXEC_comparator(OP_FLOAT_OBJECT, CO_EQUALF, P1, P2);
 	goto __END;
 	
-__OBJECT_CONV:
+__OBJECT_OTHER:
 
-	result = EXEC_comparator(OP_OBJECT_CONV, CO_EQUAL, P1, P2);
+	result = EXEC_comparator(OP_OBJECT_OTHER, CO_EQUALO, P1, P2);
 	goto __END;
 
-__CONV_OBJECT:
+__OTHER_OBJECT:
 
-	result = EXEC_comparator(OP_CONV_OBJECT, CO_EQUAL, P1, P2);
+	result = EXEC_comparator(OP_OTHER_OBJECT, CO_EQUALO, P1, P2);
 	goto __END;
 	
 __OBJECT_OBJECT:
@@ -2706,7 +2706,7 @@ static void _SUBR_add(ushort code)
 {
 	static void *jump[] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, NULL, NULL, &&__POINTER,
-		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT
 		};
 
 	TYPE type;
@@ -2779,14 +2779,14 @@ __FLOAT_OBJECT:
 	EXEC_operator(OP_FLOAT_OBJECT, CO_ADDF, P1, P2);
 	goto __END;
 	
-__OBJECT_CONV:
+__OBJECT_OTHER:
 
-	EXEC_operator(OP_OBJECT_CONV, CO_ADD, P1, P2);
+	EXEC_operator(OP_OBJECT_OTHER, CO_ADDO, P1, P2);
 	goto __END;
 
-__CONV_OBJECT:
+__OTHER_OBJECT:
 
-	EXEC_operator(OP_CONV_OBJECT, CO_ADD, P1, P2);
+	EXEC_operator(OP_OTHER_OBJECT, CO_ADDO, P1, P2);
 	goto __END;
 	
 __OBJECT:
@@ -2812,7 +2812,7 @@ static void _SUBR_sub(ushort code)
 {
 	static void *jump[] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, NULL, NULL, &&__POINTER,
-		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT
 		};
 
 	TYPE type;
@@ -2880,17 +2880,17 @@ __OBJECT_FLOAT:
 
 __FLOAT_OBJECT:
 
-	EXEC_operator(OP_FLOAT_OBJECT, CO_ISUBF, P1, P2);
+	EXEC_operator(OP_FLOAT_OBJECT, CO_SUBF, P1, P2);
 	goto __END;
 	
-__OBJECT_CONV:
+__OBJECT_OTHER:
 
-	EXEC_operator(OP_OBJECT_CONV, CO_SUB, P1, P2);
+	EXEC_operator(OP_OBJECT_OTHER, CO_SUBO, P1, P2);
 	goto __END;
 
-__CONV_OBJECT:
+__OTHER_OBJECT:
 
-	EXEC_operator(OP_CONV_OBJECT, CO_SUB, P1, P2);
+	EXEC_operator(OP_OTHER_OBJECT, CO_SUBO, P1, P2);
 	goto __END;
 	
 __OBJECT:
@@ -2916,7 +2916,7 @@ static void _SUBR_mul(ushort code)
 {
 	static void *jump[] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, 
-		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT
 		};
 
 	TYPE type;
@@ -2981,14 +2981,14 @@ __FLOAT_OBJECT:
 	EXEC_operator(OP_FLOAT_OBJECT, CO_MULF, P1, P2);
 	goto __END;
 	
-__OBJECT_CONV:
+__OBJECT_OTHER:
 
-	EXEC_operator(OP_OBJECT_CONV, CO_MUL, P1, P2);
+	EXEC_operator(OP_OBJECT_OTHER, CO_MULO, P1, P2);
 	goto __END;
 
-__CONV_OBJECT:
+__OTHER_OBJECT:
 
-	EXEC_operator(OP_CONV_OBJECT, CO_MUL, P1, P2);
+	EXEC_operator(OP_OTHER_OBJECT, CO_MULO, P1, P2);
 	goto __END;
 	
 __OBJECT:
@@ -3014,7 +3014,7 @@ static void _SUBR_div(ushort code)
 {
 	static void *jump[] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, 
-		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT
 		};
 
 	TYPE type;
@@ -3050,17 +3050,17 @@ __OBJECT_FLOAT:
 
 __FLOAT_OBJECT:
 
-	EXEC_operator(OP_FLOAT_OBJECT, CO_IDIVF, P1, P2);
+	EXEC_operator(OP_FLOAT_OBJECT, CO_DIVF, P1, P2);
 	goto __CHECK_OBJECT;
 	
-__OBJECT_CONV:
+__OBJECT_OTHER:
 
-	EXEC_operator(OP_OBJECT_CONV, CO_DIV, P1, P2);
+	EXEC_operator(OP_OBJECT_OTHER, CO_DIVO, P1, P2);
 	goto __CHECK_OBJECT;
 
-__CONV_OBJECT:
+__OTHER_OBJECT:
 
-	EXEC_operator(OP_CONV_OBJECT, CO_DIV, P1, P2);
+	EXEC_operator(OP_OTHER_OBJECT, CO_DIVO, P1, P2);
 	goto __CHECK_OBJECT;
 	
 __OBJECT:

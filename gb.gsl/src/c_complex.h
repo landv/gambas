@@ -31,6 +31,7 @@ MA 02110-1301, USA.
 #ifndef _C_COMPLEX_C
 extern GB_DESC ComplexDesc[];
 extern gsl_complex COMPLEX_zero;
+extern gsl_complex COMPLEX_one;
 //extern GB_DESC ComplexArrayDesc[];
 #endif
 
@@ -42,6 +43,14 @@ typedef
 	}
 	CCOMPLEX;
 
+typedef
+	union
+	{
+		gsl_complex z;
+		double x;
+	}
+	COMPLEX_VALUE;
+	
 enum
 {
 	CGV_ERR,
@@ -55,6 +64,6 @@ char *COMPLEX_to_string(gsl_complex number, bool local);
 
 #define COMPLEX_get(_c) ((_c) ? (_c)->number : COMPLEX_zero)
 
-int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z);
+int COMPLEX_get_value(GB_VALUE *value, COMPLEX_VALUE *v);
 
 #endif /* __C_COMPLEX_H */

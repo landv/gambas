@@ -35,6 +35,8 @@
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_complex_math.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_matrix.h>
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;

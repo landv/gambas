@@ -76,8 +76,8 @@ enum {
 	OP_NOTHING = 0,
 	OP_OBJECT_FLOAT,
 	OP_FLOAT_OBJECT,
-	OP_OBJECT_CONV,
-	OP_CONV_OBJECT,
+	OP_OBJECT_OTHER,
+	OP_OTHER_OBJECT,
 	OP_OBJECT_OBJECT
 	};
 
@@ -303,6 +303,8 @@ do { \
 #define EXEC_set_native_error(_err) (ERROR_current->info.native = (_err))
 #define EXEC_has_native_error() (ERROR_current->info.native)
 
+void *EXEC_no_operator_O_OO(void *a, void *b, bool invert);
+void *EXEC_no_operator_O_OF(void *a, double b, bool invert);
 bool EXEC_check_operator_single(VALUE *P1);
 int EXEC_check_operator(VALUE *P1, VALUE *P2);
 void EXEC_operator(uchar what, uchar op, VALUE *P1, VALUE *P2);

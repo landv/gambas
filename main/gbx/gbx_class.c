@@ -1264,8 +1264,11 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 	return class->instance;
 }
 
+#define SET_OPTIONAL_OPERATOR(_class, _op, _func) if (!CLASS_has_operator(_class, _op)) (_class)->operators[_op] = (EXEC_no_operator##_func)
+
 void CLASS_search_special(CLASS *class)
 {
+	static int _operator_strength = 0;
 	int sym;
 	
 	class->special[SPEC_NEW] = CLASS_get_symbol_index_kind(class, "_new", CD_METHOD, 0);
@@ -1287,11 +1290,28 @@ void CLASS_search_special(CLASS *class)
 		class->convert = CLASS_get_desc(class, sym)->constant.value._pointer;
 	}
 	
-	sym = CLASS_get_symbol_index_kind(class, "_@_operators", CD_CONSTANT, 0);
+	sym = CLASS_get_symbol_index_kind(class, "_@_operator", CD_CONSTANT, 0);
 	if (sym != NO_SYMBOL)
 	{
 		class->has_operators = TRUE;
 		class->operators = CLASS_get_desc(class, sym)->constant.value._pointer;
+		_operator_strength++;
+		CLASS_set_operator_strength(class, _operator_strength);
+		//fprintf(stderr, "%s: strength = %ld\n", class->name, CLASS_get_operator_strength(class));
+		
+		SET_OPTIONAL_OPERATOR(class, CO_EQUALF, _O_OF);
+		SET_OPTIONAL_OPERATOR(class, CO_EQUALO, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_ADDF, _O_OF);
+		SET_OPTIONAL_OPERATOR(class, CO_ADDO, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_SUBF, _O_OF);
+		SET_OPTIONAL_OPERATOR(class, CO_SUBO, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_MULF, _O_OF);
+		SET_OPTIONAL_OPERATOR(class, CO_MULO, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_DIVF, _O_OF);
+		SET_OPTIONAL_OPERATOR(class, CO_DIVO, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_POW, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_POWF, _O_OF);
+		SET_OPTIONAL_OPERATOR(class, CO_POWO, _O_OO);
 	}
 	
 	if (class->special[SPEC_NEXT] != NO_SYMBOL)

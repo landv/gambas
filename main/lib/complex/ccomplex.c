@@ -59,64 +59,64 @@ CCOMPLEX *COMPLEX_push_complex(double value)
 
 //---- Arithmetic operators -------------------------------------------------
 
-static CCOMPLEX *_addf(CCOMPLEX *a, double f)
+static CCOMPLEX *_addf(CCOMPLEX *a, double f, bool invert)
 {
 	return COMPLEX_make(a, RE(a) + f, IM(a));
 }
 
-static CCOMPLEX *_add(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_add(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, RE(a) + RE(b), IM(a) + IM(b));
 }
 
-static CCOMPLEX *_subf(CCOMPLEX *a, double f)
+static CCOMPLEX *_subf(CCOMPLEX *a, double f, bool invert)
 {
-	return COMPLEX_make(a, RE(a) - f, IM(a));
+	if (invert)
+		return COMPLEX_make(a, f - RE(a), -IM(a));
+	else
+		return COMPLEX_make(a, RE(a) - f, IM(a));
 }
 
-static CCOMPLEX *_isubf(CCOMPLEX *a, double f)
-{
-	return COMPLEX_make(a, f - RE(a), -IM(a));
-}
-
-static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, RE(a) - RE(b), IM(a) - IM(b));
 }
 
-static CCOMPLEX *_mulf(CCOMPLEX *a, double f)
+static CCOMPLEX *_mulf(CCOMPLEX *a, double f, bool invert)
 {
 	return COMPLEX_make(a, RE(a) * f, IM(a) * f);
 }
 
-static CCOMPLEX *_mul(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_mul(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, RE(a) * RE(b) - IM(a) * IM(b), RE(a) * IM(b) + IM(a) * RE(b));
 }
 
-static CCOMPLEX *_divf(CCOMPLEX *a, double f)
+static CCOMPLEX *_divf(CCOMPLEX *a, double f, bool invert)
 {
-	if (f == 0.0)
-		return NULL;
-	
-	return COMPLEX_make(a, RE(a) / f, IM(a) / f);
+	if (invert)
+	{
+		if (ZERO(a))
+			return NULL;
+		
+		double s = ABS2(a);
+		double re, im;
+
+		re = RE(a) / s;
+		im = -IM(a) / s;
+		
+		return COMPLEX_make(a, re * f, im * f);
+	}
+	else
+	{
+		if (f == 0.0)
+			return NULL;
+		
+		return COMPLEX_make(a, RE(a) / f, IM(a) / f);
+	}
 }
 
-static CCOMPLEX *_idivf(CCOMPLEX *a, double f)
-{
-	if (ZERO(a))
-		return NULL;
-	
-  double s = ABS2(a);
-	double re, im;
-
-	re = RE(a) / s;
-	im = -IM(a) / s;
-	
-	return COMPLEX_make(a, re * f, im * f);
-}
-
-static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
   double ar = RE(a), ai = IM(a);
   double br = RE(b), bi = IM(b);
@@ -135,12 +135,12 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
 	return COMPLEX_make(a, zr, zi);
 }
 
-static int _equal(CCOMPLEX *a, CCOMPLEX *b)
+static int _equal(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return RE(a) == RE(b) && IM(a) == IM(b);
 }
 
-static int _equalf(CCOMPLEX *a, double f)
+static int _equalf(CCOMPLEX *a, double f, bool invert)
 {
 	return RE(a) == f && IM(a) == 0;
 }
@@ -193,23 +193,23 @@ static CCOMPLEX *_powi(CCOMPLEX *a, int i)
 	i = abs(i);
 	
 	if (i == 2)
-		r = _mul(a, a);
+		r = _mul(a, a, FALSE);
 	else if (i == 3)
 	{
 		r = COMPLEX_create(RE(a), IM(a));
-		r = _mul(r, a);
-		r = _mul(r, a);
+		r = _mul(r, a, FALSE);
+		r = _mul(r, a, FALSE);
 	}
 	else if (i == 4)
 	{
-		a = _mul(a, a);
-		r = _mul(a, a);
+		a = _mul(a, a, FALSE);
+		r = _mul(a, a, FALSE);
 	}
 	else
 		r = COMPLEX_make(a, RE(a), IM(a));
 	
 	if (inv)
-		return _idivf(r, 1);
+		return _divf(r, 1, TRUE);
 	else
 		return r;
 }
@@ -264,24 +264,22 @@ static CCOMPLEX *_powf(CCOMPLEX *a, double b)
 	}
 }
 
-static GB_OPERATOR_DESC _operators =
+static GB_OPERATOR_DESC _operator =
 {
-	add: (void *)_add,
-	addf: (void *)_addf,
-	sub: (void *)_sub,
-	subf: (void *)_subf,
-	isubf: (void *)_isubf,
-	mul: (void *)_mul,
-	mulf: (void *)_mulf,
-	div: (void *)_div,
-	divf: (void *)_divf,
-	idivf: (void *)_idivf,
-	pow: (void *)_pow,
-	powf: (void *)_powf,
-	equal: (void *)_equal,
-	equalf: (void *)_equalf,
-	abs: (void *)_abs,
-	neg: (void *)_neg
+	.equal   = (void *)_equal,
+	.equalf  = (void *)_equalf,
+	.add     = (void *)_add,
+	.addf    = (void *)_addf,
+	.sub     = (void *)_sub,
+	.subf    = (void *)_subf,
+	.mul     = (void *)_mul,
+	.mulf    = (void *)_mulf,
+	.div     = (void *)_div,
+	.divf    = (void *)_divf,
+	.pow     = (void *)_pow,
+	.powf    = (void *)_powf,
+	.abs     = (void *)_abs,
+	.neg     = (void *)_neg
 };
 
 //---- Conversions ----------------------------------------------------------
@@ -463,7 +461,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Complex_Inv)
 
-	GB.ReturnObject(_idivf(THIS, 1));
+	GB.ReturnObject(_divf(THIS, 1, TRUE));
 
 END_METHOD
 
@@ -497,7 +495,7 @@ GB_DESC ComplexDesc[] =
 	GB_METHOD("Abs2", "f", Complex_Abs2, NULL),
 	GB_METHOD("Arg", "f", Complex_Arg, NULL),
 
-	GB_INTERFACE("_operators", &_operators),
+	GB_INTERFACE("_operator", &_operator),
 	GB_INTERFACE("_convert", &_convert),
 	
 	GB_END_DECLARE

@@ -61,7 +61,7 @@ static CLASS_DESC *get_desc(CLASS *class, const char *name)
 		return class->table[index].desc;
 }
 
-/**** Components ***********************************************************/
+//---- Components ---------------------------------------------------------
 
 BEGIN_METHOD(Components_get, GB_STRING name)
 
@@ -129,7 +129,7 @@ BEGIN_METHOD(Component_IsLoaded, GB_STRING name)
 END_METHOD
 
 
-/**** Classes **************************************************************/
+//---- Classes ------------------------------------------------------------
 
 BEGIN_METHOD(Classes_get, GB_STRING name)
 
@@ -166,13 +166,6 @@ BEGIN_METHOD(Class_Load, GB_STRING name)
 END_METHOD
 
 
-BEGIN_PROPERTY(Class_Name)
-
-	GB_ReturnConstZeroString(OBJECT(CLASS)->name);
-
-END_PROPERTY
-
-
 BEGIN_METHOD_VOID(Classes_next)
 
 	TABLE *table = CLASS_get_table();
@@ -206,7 +199,15 @@ BEGIN_PROPERTY(Classes_count)
 
 END_PROPERTY
 
-/**** Class ****************************************************************/
+
+//---- Class --------------------------------------------------------------
+
+BEGIN_PROPERTY(Class_Name)
+
+	GB_ReturnConstZeroString(OBJECT(CLASS)->name);
+
+END_PROPERTY
+
 
 BEGIN_PROPERTY(Class_Count)
 
@@ -214,11 +215,13 @@ BEGIN_PROPERTY(Class_Count)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Class_Hidden)
 
 	GB_ReturnBoolean(*(OBJECT(CLASS)->name) == '.');
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Class_Native)
 
@@ -226,17 +229,20 @@ BEGIN_PROPERTY(Class_Native)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Class_Component)
 
 	GB_ReturnObject(OBJECT(CLASS)->component);
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Class_Parent)
 
 	GB_ReturnObject(OBJECT(CLASS)->parent);
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Class_Symbols)
 
@@ -258,6 +264,7 @@ BEGIN_PROPERTY(Class_Symbols)
 	GB_ReturnObject(array);
 
 END_PROPERTY
+
 
 BEGIN_METHOD(Class_get, GB_STRING name)
 
@@ -286,6 +293,7 @@ BEGIN_PROPERTY(Class_Instance)
 
 END_PROPERTY
 
+
 BEGIN_METHOD_VOID(Class_AutoCreate)
 
 	CLASS *class = OBJECT(CLASS);
@@ -296,6 +304,7 @@ BEGIN_METHOD_VOID(Class_AutoCreate)
 		GB_ReturnObject(CLASS_auto_create(class, 0));
 
 END_METHOD
+
 
 BEGIN_METHOD(Class_New, GB_OBJECT params)
 
@@ -325,7 +334,7 @@ BEGIN_METHOD(Class_New, GB_OBJECT params)
 END_METHOD
 
 
-/**** Symbol ***************************************************************/
+//---- Symbol -------------------------------------------------------------
 
 BEGIN_PROPERTY(Symbol_Name)
 
@@ -452,7 +461,7 @@ BEGIN_PROPERTY(Symbol_Value)
 END_PROPERTY
 
 
-/**** Object ***************************************************************/
+//---- Object -------------------------------------------------------------
 
 BEGIN_METHOD(Object_GetProperty, GB_OBJECT object; GB_STRING property)
 
@@ -642,6 +651,7 @@ BEGIN_METHOD(Object_SetProperty, GB_OBJECT object; GB_STRING property; GB_VARIAN
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_Attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
 
 	void *object = VARG(object);
@@ -667,6 +677,7 @@ BEGIN_METHOD(Object_Attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_Detach, GB_OBJECT object)
 
 	void *object = VARG(object);
@@ -681,6 +692,7 @@ BEGIN_METHOD(Object_Detach, GB_OBJECT object)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_Parent, GB_OBJECT object)
 
 	void *object = VARG(object);
@@ -691,6 +703,7 @@ BEGIN_METHOD(Object_Parent, GB_OBJECT object)
 	GB_ReturnObject(OBJECT_parent(object));
 
 END_METHOD
+
 
 BEGIN_METHOD(Object_Class, GB_OBJECT object)
 
@@ -703,6 +716,7 @@ BEGIN_METHOD(Object_Class, GB_OBJECT object)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_Type, GB_OBJECT object)
 
 	void *object = VARG(object);
@@ -713,6 +727,7 @@ BEGIN_METHOD(Object_Type, GB_OBJECT object)
 	GB_ReturnConstZeroString(OBJECT_class(object)->name);
 
 END_METHOD
+
 
 BEGIN_METHOD(Object_Is, GB_OBJECT object; GB_STRING class)
 
@@ -731,6 +746,7 @@ BEGIN_METHOD(Object_Is, GB_OBJECT object; GB_STRING class)
 	GB_ReturnBoolean(OBJECT_class(object) == class || CLASS_inherits(OBJECT_class(object), class));
 
 END_METHOD
+
 
 BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 
@@ -771,11 +787,13 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_IsValid, GB_OBJECT object)
 
 	GB_ReturnBoolean(OBJECT_is_valid(VARG(object)));
 
 END_METHOD
+
 
 BEGIN_METHOD(Object_Lock, GB_OBJECT object)
 
@@ -788,6 +806,7 @@ BEGIN_METHOD(Object_Lock, GB_OBJECT object)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_Unlock, GB_OBJECT object)
 
 	void *object = VARG(object);
@@ -799,6 +818,7 @@ BEGIN_METHOD(Object_Unlock, GB_OBJECT object)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_IsLocked, GB_OBJECT object)
 
 	void *object = VARG(object);
@@ -809,6 +829,7 @@ BEGIN_METHOD(Object_IsLocked, GB_OBJECT object)
 	GB_ReturnBoolean(OBJECT_is_locked(object));
 
 END_METHOD
+
 
 BEGIN_METHOD(Object_Count, GB_OBJECT object)
 
@@ -822,6 +843,7 @@ BEGIN_METHOD(Object_Count, GB_OBJECT object)
 
 END_METHOD
 
+
 BEGIN_METHOD(Object_SizeOf, GB_OBJECT object)
 
 	void *object = VARG(object);
@@ -832,6 +854,7 @@ BEGIN_METHOD(Object_SizeOf, GB_OBJECT object)
 	GB_ReturnInteger(CLASS_sizeof(OBJECT_class(object)));
 
 END_METHOD
+
 
 BEGIN_METHOD(Object_New, GB_STRING class; GB_OBJECT params)
 
@@ -866,6 +889,7 @@ BEGIN_METHOD(Object_New, GB_STRING class; GB_OBJECT params)
 
 END_METHOD
 
+
 BEGIN_PROPERTY(Object_Address)
 
 	GB_ReturnPointer(VPROP(GB_OBJECT));
@@ -875,7 +899,7 @@ END_PROPERTY
 #endif
 
 
-/***************************************************************************/
+//-------------------------------------------------------------------------
 
 GB_DESC NATIVE_Symbol[] =
 {

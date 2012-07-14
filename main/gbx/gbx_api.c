@@ -1106,6 +1106,7 @@ void GB_Error(const char *error, ...)
 	EXEC_set_native_error(TRUE);
 }
 
+
 #if DEBUG_REF
 
 #include <execinfo.h>

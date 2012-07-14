@@ -25,8 +25,9 @@
 
 #define __C_POLYNOMIAL_C
 
-#include "c_polynomial.h"
 #include "c_complex.h"
+#include "c_vector.h"
+#include "c_polynomial.h"
 
 #define THIS ((CPOLYNOMIAL *)_object)
 #define DATA(_p) ((double *)(_p)->data)
@@ -313,7 +314,7 @@ char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
 	return result;
 }
 
-static bool _convert(CPOLYNOMIAL *a, GB_TYPE type, GB_VALUE *conv)
+bool POLYNOMIAL_convert(CPOLYNOMIAL *a, GB_TYPE type, GB_VALUE *conv)
 {
 	if (a)
 	{
@@ -344,7 +345,7 @@ static bool _convert(CPOLYNOMIAL *a, GB_TYPE type, GB_VALUE *conv)
 			default:
 				if (type >= GB_T_OBJECT)
 				{
-					if (GB.Is(conv->_object.value, GB.FindClass("Array")))
+					if (GB.Is(conv->_object.value, CLASS_Array))
 					{
 						CPOLYNOMIAL *p;
 						CCOMPLEX *c;
@@ -489,8 +490,7 @@ BEGIN_METHOD(Polynomial_put, GB_VARIANT value; GB_INTEGER index)
 	int index = VARG(index);
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
-	gsl_complex z;
-	double x;
+	COMPLEX_VALUE cv;
 	
 	if (index < 0 || index > 65535)
 	{
@@ -498,7 +498,7 @@ BEGIN_METHOD(Polynomial_put, GB_VARIANT value; GB_INTEGER index)
 		return;
 	}
 	
-	type = COMPLEX_get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &cv);
 	
 	if (type == CGV_ERR)
 		return;
@@ -508,14 +508,14 @@ BEGIN_METHOD(Polynomial_put, GB_VARIANT value; GB_INTEGER index)
 	if (type == CGV_COMPLEX)
 	{
 		ensure_complex(THIS);
-		CDATA(THIS)[index] = z;
+		CDATA(THIS)[index] = cv.z;
 	}
 	else
 	{
 		if (COMPLEX(THIS))
-			CDATA(THIS)[index] = gsl_complex_rect(x, 0);
+			CDATA(THIS)[index] = cv.z;
 		else
-			DATA(THIS)[index] = x;
+			DATA(THIS)[index] = cv.x;
 	}
 	
 END_METHOD
@@ -525,23 +525,22 @@ BEGIN_METHOD(Polynomial_Eval, GB_VARIANT value)
 
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
-	double x;
-	gsl_complex z;
+	COMPLEX_VALUE cv;
 
-	type = COMPLEX_get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &cv);
 	if (type == CGV_ERR)
 		return;
 									 
 	if (COMPLEX(THIS))
 	{
-		GB.ReturnObject(COMPLEX_create(gsl_complex_poly_complex_eval(CDATA(THIS), COUNT(THIS), z)));
+		GB.ReturnObject(COMPLEX_create(gsl_complex_poly_complex_eval(CDATA(THIS), COUNT(THIS), cv.z)));
 	}
 	else
 	{
 		if (type == CGV_COMPLEX)
-			GB.ReturnObject(COMPLEX_create(gsl_poly_complex_eval(DATA(THIS), COUNT(THIS), z)));
+			GB.ReturnObject(COMPLEX_create(gsl_poly_complex_eval(DATA(THIS), COUNT(THIS), cv.z)));
 		else
-			GB.ReturnFloat(gsl_poly_eval(DATA(THIS), COUNT(THIS), x));
+			GB.ReturnFloat(gsl_poly_eval(DATA(THIS), COUNT(THIS), cv.x));
 	}
 
 END_METHOD
@@ -736,7 +735,7 @@ GB_DESC PolynomialDesc[] =
 	GB_METHOD("Solve", "Array", Polynomial_Solve, "[(Complex)b]"),
 
 	//GB_INTERFACE("_operators", &_operators),
-	GB_INTERFACE("_convert", &_convert),
+	GB_INTERFACE("_convert", &POLYNOMIAL_convert),
 	
 	GB_END_DECLARE
 };

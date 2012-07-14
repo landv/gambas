@@ -32,6 +32,7 @@
 #define THIS ((CCOMPLEX *)_object)
 
 gsl_complex COMPLEX_zero = {{ 0.0, 0.0 }};
+gsl_complex COMPLEX_one = {{ 1.0, 0.0 }};
 
 //---- Complex number creation ----------------------------------------------
 
@@ -54,7 +55,7 @@ CCOMPLEX *COMPLEX_push_complex(double value)
 
 //---- Utility functions ----------------------------------------------------
 
-int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z)
+int COMPLEX_get_value(GB_VALUE *value, COMPLEX_VALUE *v)
 {
 	GB.Conv(value, value->_variant.value.type);
 	
@@ -63,12 +64,9 @@ int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z)
 		CCOMPLEX *c = (CCOMPLEX *)(value->_object.value);
 		if (GB.CheckObject(c))
 			return CGV_ERR;
-		*z = c->number;
-		if (GSL_IMAG(*z) == 0.0)
-		{
-			*x = GSL_REAL(*z);
+		v->z = c->number;
+		if (GSL_IMAG(v->z) == 0.0)
 			return CGV_FLOAT;
-		}
 		else
 			return CGV_COMPLEX;
 	}
@@ -77,71 +75,70 @@ int COMPLEX_get_value(GB_VALUE *value, double *x, gsl_complex *z)
 		if (GB.Conv(value, GB_T_FLOAT))
 			return CGV_ERR;
 		
-		*x = value->_float.value;
-		z->dat[0] = *x;
-		z->dat[1] = 0.0;
+		v->z.dat[0] = value->_float.value;
+		v->z.dat[1] = 0.0;
 		return CGV_FLOAT;
 	}
 }
 
 //---- Arithmetic operators -------------------------------------------------
 
-static CCOMPLEX *_addf(CCOMPLEX *a, double f)
+static CCOMPLEX *_addf(CCOMPLEX *a, double f, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_add_real(a->number, f));
 }
 
-static CCOMPLEX *_add(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_add(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_add(a->number, b->number));
 }
 
-static CCOMPLEX *_subf(CCOMPLEX *a, double f)
+static CCOMPLEX *_subf(CCOMPLEX *a, double f, bool invert)
 {
-	return COMPLEX_make(a, gsl_complex_sub_real(a->number, f));
+	if (invert)
+		return COMPLEX_make(a, gsl_complex_add_real(gsl_complex_negative(a->number), f));
+	else
+		return COMPLEX_make(a, gsl_complex_sub_real(a->number, f));
 }
 
-static CCOMPLEX *_isubf(CCOMPLEX *a, double f)
-{
-	return COMPLEX_make(a, gsl_complex_add_real(gsl_complex_negative(a->number), f));
-}
-
-static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_sub(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_sub(a->number, b->number));
 }
 
-static CCOMPLEX *_mulf(CCOMPLEX *a, double f)
+static CCOMPLEX *_mulf(CCOMPLEX *a, double f, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_mul_real(a->number, f));
 }
 
-static CCOMPLEX *_mul(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_mul(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_mul(a->number, b->number));
 }
 
-static CCOMPLEX *_divf(CCOMPLEX *a, double f)
+static CCOMPLEX *_divf(CCOMPLEX *a, double f, bool invert)
 {
-	gsl_complex c = gsl_complex_div_real(a->number, f);
-	
-	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
-		return COMPLEX_make(a, c);
+	if (invert)
+	{
+		gsl_complex c = gsl_complex_inverse(a->number);
+		
+		if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+			return COMPLEX_make(a, gsl_complex_mul_real(c, f));
+		else
+			return NULL;
+	}
 	else
-		return NULL;
+	{
+		gsl_complex c = gsl_complex_div_real(a->number, f);
+		
+		if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+			return COMPLEX_make(a, c);
+		else
+			return NULL;
+	}
 }
 
-static CCOMPLEX *_idivf(CCOMPLEX *a, double f)
-{
-	gsl_complex c = gsl_complex_inverse(a->number);
-	
-	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
-		return COMPLEX_make(a, gsl_complex_mul_real(c, f));
-	else
-		return NULL;
-}
-
-static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	gsl_complex c = gsl_complex_div(a->number, b->number);
 	
@@ -151,12 +148,12 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b)
 		return NULL;
 }
 
-static int _equal(CCOMPLEX *a, CCOMPLEX *b)
+static int _equal(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return a->number.dat[0] == b->number.dat[0] && a->number.dat[1] == b->number.dat[1];
 }
 
-static int _equalf(CCOMPLEX *a, double f)
+static int _equalf(CCOMPLEX *a, double f, bool invert)
 {
 	return a->number.dat[0] == f && a->number.dat[1] == 0.0;
 }
@@ -201,35 +198,33 @@ static double _abs(CCOMPLEX *a)
 		return r;
 }*/
 
-static CCOMPLEX *_pow(CCOMPLEX *a, CCOMPLEX *b)
+static CCOMPLEX *_pow(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_pow(a->number, b->number));
 }
 
-static CCOMPLEX *_powf(CCOMPLEX *a, double f)
+static CCOMPLEX *_powf(CCOMPLEX *a, double f, bool invert)
 {
 	return COMPLEX_make(a, gsl_complex_pow_real(a->number, f));
 }
 
 
-static GB_OPERATOR_DESC _operators =
+static GB_OPERATOR_DESC _operator =
 {
-	add: (void *)_add,
-	addf: (void *)_addf,
-	sub: (void *)_sub,
-	subf: (void *)_subf,
-	isubf: (void *)_isubf,
-	mul: (void *)_mul,
-	mulf: (void *)_mulf,
-	div: (void *)_div,
-	divf: (void *)_divf,
-	idivf: (void *)_idivf,
-	pow: (void *)_pow,
-	powf: (void *)_powf,
-	equal: (void *)_equal,
-	equalf: (void *)_equalf,
-	abs: (void *)_abs,
-	neg: (void *)_neg
+	.equal   = (void *)_equal,
+	.equalf  = (void *)_equalf,
+	.add     = (void *)_add,
+	.addf    = (void *)_addf,
+	.sub     = (void *)_sub,
+	.subf    = (void *)_subf,
+	.mul     = (void *)_mul,
+	.mulf    = (void *)_mulf,
+	.div     = (void *)_div,
+	.divf    = (void *)_divf,
+	.pow     = (void *)_pow,
+	.powf    = (void *)_powf,
+	.abs     = (void *)_abs,
+	.neg     = (void *)_neg
 };
 
 //---- Conversions ----------------------------------------------------------
@@ -650,7 +645,7 @@ GB_DESC ComplexDesc[] =
 	GB_METHOD("Arccsch", "Complex", Complex_Arccsch, NULL),
 	GB_METHOD("Arccoth", "Complex", Complex_Arccoth, NULL),
 
-	GB_INTERFACE("_operators", &_operators),
+	GB_INTERFACE("_operator", &_operator),
 	GB_INTERFACE("_convert", &_convert),
 	
 	GB_END_DECLARE

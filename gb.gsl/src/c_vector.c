@@ -26,6 +26,7 @@
 #define __C_VECTOR_C
 
 #include "c_complex.h"
+#include "c_polynomial.h"
 #include "c_vector.h"
 
 #define THIS ((CVECTOR *)_object)
@@ -288,7 +289,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					return FALSE;
 					
 				default:
-					return TRUE;
+					break;
 			}
 		}
 		else
@@ -321,9 +322,62 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					return FALSE;
 					
 				default:
-					return TRUE;
+					break;
 			}
 		}
+		
+		// Vector ---> Float[]
+		if ((type == GB.FindClass("Float[]") || type == CLASS_Polynomial) && !COMPLEX(THIS))
+		{
+			GB_ARRAY a;
+			int i;
+			double *data;
+			
+			GB.Array.New(&a, GB_T_FLOAT, SIZE(THIS));
+			data = (double *)GB.Array.Get(a, 0);
+			for(i = 0; i < SIZE(THIS); i++)
+				data[i] = gsl_vector_get(VEC(THIS), i);
+			
+			conv->_object.value = a;
+			if (type != CLASS_Polynomial)
+				return FALSE;
+		}
+		// Vector ---> Complex[]
+		else if (type == GB.FindClass("Complex[]") || type == CLASS_Polynomial)
+		{
+			GB_ARRAY a;
+			int i;
+			void **data;
+			CCOMPLEX *c;
+			
+			GB.Array.New(&a, CLASS_Complex, SIZE(THIS));
+			data = (void **)GB.Array.Get(a, 0);
+			for(i = 0; i < SIZE(THIS); i++)
+			{
+				c = COMPLEX_create(COMPLEX(THIS) ? gsl_vector_complex_get(CVEC(THIS), i) : gsl_complex_rect(gsl_vector_get(VEC(THIS), i), 0));
+				data[i] = c;
+				GB.Ref(c);
+			}
+			
+			conv->_object.value = a;
+			if (type != CLASS_Polynomial)
+				return FALSE;
+		}
+		else
+			return TRUE;
+		
+		// Vector ---> Polynomial
+		if (type == CLASS_Polynomial)
+		{
+			void *unref = conv->_object.value;
+			GB.Ref(unref); // Will be unref by the next GB.Conv()
+			POLYNOMIAL_convert(FALSE, type, conv);
+			GB.Unref(&unref); // Will be unref by the next GB.Conv()
+			//GB.Conv(conv, type);
+			//GB.UnrefKeep(&conv->_object.value, FALSE); // Will be ref again after the current GB.Conv()
+			return FALSE;
+		}
+		
 	}
 	else if (type >= GB_T_OBJECT)
 	{
@@ -337,6 +391,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 			void *data;
 			GB_TYPE atype = GB.Array.Type(array);
 			
+			// Float[] Integer[] ... ---> Vector
 			if (atype > GB_T_BOOLEAN && atype <= GB_T_FLOAT)
 			{
 				v = VECTOR_create(size, FALSE, FALSE);
@@ -352,6 +407,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 				conv->_object.value = v;
 				return FALSE;
 			}
+			// Variant[] ---> Vector
 			else if (atype == GB_T_VARIANT)
 			{
 				CCOMPLEX *c;
@@ -373,6 +429,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 				conv->_object.value = v;
 				return FALSE;
 			}
+			// Complex[] ---> Vector
 			else if (atype == CLASS_Complex)
 			{
 				CCOMPLEX *c;
@@ -391,6 +448,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 				return FALSE;
 			}
 		}
+		// Float Integer... ---> Vector
 		else if (type > GB_T_BOOLEAN && type <= GB_T_FLOAT)
 		{
 			CVECTOR *v = VECTOR_create(1, FALSE, FALSE);
@@ -403,6 +461,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 			conv->_object.value = v;
 			return FALSE;
 		}
+		// Complex ---> Vector
 		else if (type == CLASS_Complex)
 		{
 			CCOMPLEX *c = (CCOMPLEX *)conv->_object.value;
@@ -486,8 +545,7 @@ BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 	int size = SIZE(THIS);
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
-	gsl_complex z;
-	double x;
+	COMPLEX_VALUE cv;
 	
 	if (index < 0 || index > size)
 	{
@@ -495,7 +553,7 @@ BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 		return;
 	}
 	
-	type = COMPLEX_get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &cv);
 	
 	if (type == CGV_ERR)
 		return;
@@ -503,14 +561,14 @@ BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 	if (type == CGV_COMPLEX)
 	{
 		VECTOR_ensure_complex(THIS);
-		gsl_vector_complex_set(CVEC(THIS), index, z);
+		gsl_vector_complex_set(CVEC(THIS), index, cv.z);
 	}
 	else
 	{
 		if (COMPLEX(THIS))
-			gsl_vector_complex_set(CVEC(THIS), index, z);
+			gsl_vector_complex_set(CVEC(THIS), index, cv.z);
 		else
-			gsl_vector_set(VEC(THIS), index, x);
+			gsl_vector_set(VEC(THIS), index, cv.x);
 	}
 	
 END_METHOD
@@ -520,10 +578,9 @@ BEGIN_METHOD(Vector_Scale, GB_VALUE value)
 
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
-	gsl_complex z;
-	double x;
+	COMPLEX_VALUE cv;
 	
-	type = COMPLEX_get_value(value, &x, &z);
+	type = COMPLEX_get_value(value, &cv);
 	
 	if (type == CGV_ERR)
 		return;
@@ -531,14 +588,14 @@ BEGIN_METHOD(Vector_Scale, GB_VALUE value)
 	if (type == CGV_COMPLEX)
 	{
 		VECTOR_ensure_complex(THIS);
-		gsl_vector_complex_scale(CVEC(THIS), z);
+		gsl_vector_complex_scale(CVEC(THIS), cv.z);
 	}
 	else
 	{
 		if (COMPLEX(THIS))
-			gsl_vector_complex_scale(CVEC(THIS), z);
+			gsl_vector_complex_scale(CVEC(THIS), cv.z);
 		else
-			gsl_vector_scale(VEC(THIS), x);
+			gsl_vector_scale(VEC(THIS), cv.x);
 	}
 	
 	GB.ReturnObject(THIS);

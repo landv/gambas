@@ -239,26 +239,14 @@ enum
 };
 
 enum {
-	CO_EQUAL,
-	CO_EQUALF,
-	CO_COMP,
-	CO_COMPF,
-	CO_ADD,
-	CO_ADDF,
-	CO_SUB,
-	CO_SUBF,
-	CO_ISUBF,
-	CO_MUL,
-	CO_MULF,
-	CO_DIV,
-	CO_DIVF,
-	CO_IDIVF,
-	CO_NEG,
-	CO_POW,
-	CO_POWF,
-	CO_ABS,
-	CO_MAX,
-	CO_MIN
+	CO_EQUAL, CO_EQUALF, CO_EQUALO,
+	CO_ADD, CO_ADDF, CO_ADDO,
+	CO_SUB, CO_SUBF, CO_SUBO,
+	CO_MUL, CO_MULF, CO_MULO,
+	CO_DIV, CO_DIVF, CO_DIVO,
+	CO_POW, CO_POWF, CO_POWO,
+	CO_NEG, CO_ABS,
+	CO_STRENGTH
 };
 
 typedef
@@ -334,7 +322,7 @@ typedef
 		struct _CLASS *astruct_class;     // 112 176  array of struct class
 		
 		void *instance;                   // 116 184  automatically created instance
-		void *operators;                  // 120 192  arithmetic interface
+		void **operators;                 // 120 192  arithmetic interface
 		bool (*convert)();                // 124 200  convert method
 		
 		COMPONENT *component;             // 128 208  The component the class belongs to
@@ -549,5 +537,7 @@ CLASS *CLASS_register(GB_DESC *desc);
 #define CLASS_is_virtual(class)  (class->is_virtual)
 
 #define CLASS_has_operator(_class, _op) (((void **)(_class)->operators)[_op] != NULL)
+#define CLASS_get_operator_strength(_class) (((intptr_t *)(_class)->operators)[CO_STRENGTH])
+#define CLASS_set_operator_strength(_class, _strength) (((intptr_t *)(_class)->operators)[CO_STRENGTH] = (_strength))
 
 #endif /* _CLASS_H */

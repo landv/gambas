@@ -830,26 +830,27 @@ typedef
 
 typedef
 	struct {
-		int (*equal)(void *, void *);
+		int (*equal)(void *, void *, bool);
 		int (*equalf)(void *, double);
-		int (*comp)(void *, void *);
-		int (*compf)(void *, double);
-		void *(*add)(void *, void *);
-		void *(*addf)(void *, double);
-		void *(*sub)(void *, void *);
-		void *(*subf)(void *, double);
-		void *(*isubf)(void *, double);
-		void *(*mul)(void *, void *);
-		void *(*mulf)(void *, double);
-		void *(*div)(void *, void *);
-		void *(*divf)(void *, double);
-		void *(*idivf)(void *, double);
+		int (*equalo)(void *, void *, bool);
+		void *(*add)(void *, void *, bool);
+		void *(*addf)(void *, double, bool);
+		void *(*addo)(void *, void *, bool);
+		void *(*sub)(void *, void *, bool);
+		void *(*subf)(void *, double, bool);
+		void *(*subo)(void *, void *, bool);
+		void *(*mul)(void *, void *, bool);
+		void *(*mulf)(void *, double, bool);
+		void *(*mulo)(void *, void *, bool);
+		void *(*div)(void *, void *, bool);
+		void *(*divf)(void *, double, bool);
+		void *(*divo)(void *, void *, bool);
+		void *(*pow)(void *, void *, bool);
+		void *(*powf)(void *, double, bool);
+		void *(*powo)(void *, void *, bool);
 		void *(*neg)(void *);
-		void *(*pow)(void *, void *);
-		void *(*powf)(void *, double);
 		double (*abs)(void *);
-		void *(*max)(void *, void *);
-		void *(*min)(void *, void *);
+		intptr_t _reserved;
 	}
 	PACKED
 	GB_OPERATOR_DESC;

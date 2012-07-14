@@ -43,4 +43,6 @@ typedef
     }
   CPOLYNOMIAL;
 
+bool POLYNOMIAL_convert(CPOLYNOMIAL *a, GB_TYPE type, GB_VALUE *conv);
+
 #endif /* __C_POLYNOMIAL_H */

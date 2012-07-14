@@ -212,7 +212,7 @@ __END:
 void SUBR_pow(ushort code)
 {
 	static void *jump[] = {
-		&&__VARIANT, &&__NUMBER_INTEGER, &&__NUMBER_FLOAT, &&__OBJECT_FLOAT, &&__OBJECT_OBJECT
+		&&__VARIANT, &&__NUMBER_INTEGER, &&__NUMBER_FLOAT, &&__OBJECT_FLOAT, &&__OBJECT_OTHER, &&__OBJECT_OBJECT
 		};
 	
 	VALUE *P1, *P2;
@@ -239,31 +239,25 @@ __VARIANT:
 		variant = TRUE;
 	}
 
-	if (EXEC_check_operator_single(P1) && CLASS_has_operator(OBJECT_class(P1->_object.object), CO_POW))
-	{
-		if (TYPE_is_number(P2->type))
-			type = 3;
-		else if (EXEC_check_operator_single(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
-		{
-			VALUE_conv(P2, (TYPE)OBJECT_class(P1->_object.object));
-			type = 4;
-		}
-		else
-			VALUE_conv(P2, T_FLOAT);
-	}
-	else
+	if (TYPE_is_number(P1->type) && TYPE_is_number(P2->type))
 	{
 		if (TYPE_is_integer(P2->type))
 			type = 1;
-		else if (!TYPE_is_object(P2->type))
-			type = 2;
-		else if (EXEC_check_operator_single(P2) && CLASS_has_operator(OBJECT_class(P2->_object.object), CO_POW))
-		{
-			VALUE_conv(P1, (TYPE)OBJECT_class(P2->_object.object));
-			type = 4;
-		}
 		else
-			THROW(E_MATH);
+			type = 2;
+	}
+	else
+	{
+		type = EXEC_check_operator(P1, P2);
+		
+		if (type == OP_OBJECT_FLOAT)
+			type = 3;
+		else if (type == OP_OBJECT_OTHER)
+			type = 4;
+		else if (type == OP_OBJECT_OBJECT)
+			type = 5;
+		else
+			THROW(E_TYPE, "Number", TYPE_get_name(P2->type));
 	}
 	
 	if (!variant)
@@ -312,6 +306,11 @@ __NUMBER_FLOAT:
 __OBJECT_FLOAT:
 
 	EXEC_operator(OP_OBJECT_FLOAT, CO_POWF, P1, P2);
+	goto __END;
+
+__OBJECT_OTHER:
+
+	EXEC_operator(OP_OBJECT_OTHER, CO_POWO, P1, P2);
 	goto __END;
 
 __OBJECT_OBJECT:

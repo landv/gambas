@@ -24,19 +24,21 @@
 #define __GBX_EXEC_OPERATOR_C
 
 #include "gb_common.h"
+#include "gbx_type.h"
+#include "gbx_api.h"
 #include "gbx_exec.h"
 
 typedef
-	void *(*FUNC_O_OF)(void *, double);
+	void *(*FUNC_O_OF)(void *, double, bool);
 
 typedef
-	void *(*FUNC_O_OO)(void *, void *);
+	void *(*FUNC_O_OO)(void *, void *, bool);
 
 typedef
-	int (*FUNC_I_OF)(void *, double);
+	int (*FUNC_I_OF)(void *, double, bool);
 
 typedef
-	int (*FUNC_I_OO)(void *, void *);
+	int (*FUNC_I_OO)(void *, void *, bool);
 
 typedef
 	void *(*FUNC_O_O)(void *);
@@ -44,6 +46,18 @@ typedef
 typedef
 	double (*FUNC_F_O)(void *);
 
+void *EXEC_no_operator_O_OO(void *a, void *b, bool invert)
+{
+	GB_Error((char *)E_TYPE, TYPE_get_name((TYPE)OBJECT_class(a)), TYPE_get_name((TYPE)OBJECT_class(b)));
+	return NULL;
+}
+
+void *EXEC_no_operator_O_OF(void *a, double b, bool invert)
+{
+	GB_Error((char *)E_TYPE, TYPE_get_name((TYPE)OBJECT_class(a)), "Number");
+	return NULL;
+}
+	
 	
 bool EXEC_check_operator_single(VALUE *P1)
 {
@@ -81,7 +95,12 @@ int EXEC_check_operator(VALUE *P1, VALUE *P2)
 				return OP_OBJECT_OBJECT;
 			
 			if (class2 && class2->has_operators)
-				return OP_OBJECT_CONV;
+			{
+				if (CLASS_get_operator_strength(class1) > CLASS_get_operator_strength(class2))
+					return OP_OBJECT_OTHER;
+				else
+					return OP_OTHER_OBJECT;
+			}
 		}
 	}
 	
@@ -90,128 +109,170 @@ int EXEC_check_operator(VALUE *P1, VALUE *P2)
 
 void EXEC_operator(uchar what, uchar op, VALUE *P1, VALUE *P2)
 {
-	static void *jump[] = { NULL, &&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT_OBJECT };
+	static void *jump[] = { NULL, &&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT_OBJECT };
 	
 	void *func;
 	void *result;
+	bool invert;
+	void *o1, *o2;
 	
 	goto *jump[what];
 	
 __OBJECT_FLOAT:
 
-	if (!P1->_object.object)
+	o1 = P1->_object.object;
+	if (!o1)
 		THROW(E_NULL);
 	
-	func = ((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
-	result = (*(FUNC_O_OF)func)(P1->_object.object, P2->_float.value);
+	result = (*(FUNC_O_OF)func)(o1, P2->_float.value, FALSE);
 	OBJECT_REF(result, "EXEC_operator");
-	OBJECT_UNREF(P1->_object.object, "EXEC_operator");
+	OBJECT_UNREF(o1, "EXEC_operator");
 	goto __END;
 	
 __FLOAT_OBJECT:
 
-	if (!P2->_object.object)
+	o2 = P2->_object.object;
+	if (!o2)
 		THROW(E_NULL);
 
-	func = ((void **)(OBJECT_class(P2->_object.object)->operators))[op];
+	func = OBJECT_class(o2)->operators[op];
 	VALUE_conv_float(P1);
-	result = (*(FUNC_O_OF)func)(P2->_object.object, P1->_float.value);
+	result = (*(FUNC_O_OF)func)(o2, P1->_float.value, TRUE);
 	OBJECT_REF(result, "EXEC_operator");
 	P1->_object.class = P2->_object.class;
-	OBJECT_UNREF(P2->_object.object, "EXEC_operator");
+	OBJECT_UNREF(o2, "EXEC_operator");
 	goto __END;
 	
-__OBJECT_CONV:
+__OTHER_OBJECT:
 
-	VALUE_conv(P2, (TYPE)P1->_object.class);
-	goto __OBJECT_OBJECT;
+	o2 = P1->_object.object;
+	o1 = P2->_object.object;
 	
-__CONV_OBJECT:
+	invert = TRUE;
+	goto __OTHER;
 
-	VALUE_conv(P1, (TYPE)P2->_object.class);
-	goto __OBJECT_OBJECT;
-
+__OBJECT_OTHER:
 __OBJECT_OBJECT:
 
-	if (!OBJECT_are_not_null(P1->_object.object, P2->_object.object))
+	o1 = P1->_object.object;
+	o2 = P2->_object.object;
+
+	invert = FALSE;
+	goto __OTHER;
+
+__OTHER:
+
+	if (!OBJECT_are_not_null(o1, o2))
 		THROW(E_NULL);
 	
-	func = ((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	result = (*(FUNC_O_OO)func)(P1->_object.object, P2->_object.object);
+	func = OBJECT_class(o1)->operators[op];
+	result = (*(FUNC_O_OO)func)(o1, o2, invert);
 	OBJECT_REF(result, "EXEC_operator");
-	OBJECT_UNREF(P1->_object.object, "EXEC_operator");
-	OBJECT_UNREF(P2->_object.object, "EXEC_operator");
+	OBJECT_UNREF(o1, "EXEC_operator");
+	OBJECT_UNREF(o2, "EXEC_operator");
 
 __END:
 	
 	P1->_object.object = result;
+
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
 }
 
 void EXEC_operator_object_add_quick(VALUE *P1, double val)
 {
 	if (P1->_object.object)
 	{
-		void *func = ((void **)(OBJECT_class(P1->_object.object)->operators))[CO_ADDF];
-		void *result = (*(FUNC_O_OF)func)(P1->_object.object, val);
+		void *func = OBJECT_class(P1->_object.object)->operators[CO_ADDF];
+		void *result = (*(FUNC_O_OF)func)(P1->_object.object, val, FALSE);
 		OBJECT_REF(result, "EXEC_operator_object_float_direct");
 		OBJECT_UNREF(P1->_object.object, "EXEC_operator_object_float_direct");
 		P1->_object.object = result;
 	}
 	else
 		THROW(E_NULL);
+
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
 }
 
 
 bool EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2)
 {
-	static void *jump[] = { NULL, &&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_CONV, &&__CONV_OBJECT, &&__OBJECT_OBJECT };
+	static void *jump[] = { NULL, &&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT_OBJECT };
 	
 	void *func;
 	int result;
+	bool invert;
+	void *o1, *o2;
 	
 	goto *jump[what];
 	
 __OBJECT_FLOAT:
 
-	func = ((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+	o1 = P1->_object.object;
+	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
-	result = (*(FUNC_I_OF)func)(P1->_object.object, P2->_float.value);
-	OBJECT_UNREF(P1->_object.object, "EXEC_comparator");
-	return result;
+	result = (*(FUNC_I_OF)func)(o1, P2->_float.value, FALSE);
+	OBJECT_UNREF(o1, "EXEC_comparator");
+	goto __END;
 	
 __FLOAT_OBJECT:
 
-	func = ((void **)(OBJECT_class(P2->_object.object)->operators))[op];
+	o2 = P2->_object.object;
+	func = OBJECT_class(o2)->operators[op];
 	VALUE_conv_float(P1);
-	result = (*(FUNC_I_OF)func)(P2->_object.object, P1->_float.value);
-	OBJECT_UNREF(P2->_object.object, "EXEC_comparator");
-	return result;
+	result = (*(FUNC_I_OF)func)(o2, P1->_float.value, TRUE);
+	OBJECT_UNREF(o2, "EXEC_comparator");
+	goto __END;
 	
-__OBJECT_CONV:
+__OTHER_OBJECT:
 
-	VALUE_conv(P2, (TYPE)P1->_object.class);
-	goto __OBJECT_OBJECT;
-	
-__CONV_OBJECT:
+	o2 = P1->_object.object;
+	o1 = P2->_object.object;
+	invert = TRUE;
+	goto __OTHER;
 
-	VALUE_conv(P1, (TYPE)P2->_object.class);
-	goto __OBJECT_OBJECT;
-
+__OBJECT_OTHER:
 __OBJECT_OBJECT:
 
-	func = ((void **)(OBJECT_class(P1->_object.object)->operators))[op];
-	result = (*(FUNC_I_OO)func)(P1->_object.object, P2->_object.object);
-	OBJECT_UNREF(P1->_object.object, "EXEC_comparator");
-	OBJECT_UNREF(P2->_object.object, "EXEC_comparator");
-	return result != 0;
+	o1 = P1->_object.object;
+	o2 = P2->_object.object;
+	invert = FALSE;
+	goto __OTHER;
+
+__OTHER:
+
+	func = OBJECT_class(o1)->operators[op];
+	result = (*(FUNC_I_OO)func)(o1, o2, invert);
+	OBJECT_UNREF(o1, "EXEC_comparator");
+	OBJECT_UNREF(o2, "EXEC_comparator");
+	result = !!result; // result != 0;
+	
+__END:
+
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
+
+	return result;
 }
 
 void EXEC_operator_object_abs(VALUE *P1)
 {
 	if (P1->_object.object)
 	{
-		void *func = ((void **)(OBJECT_class(P1->_object.object)->operators))[CO_ABS];
+		void *func = OBJECT_class(P1->_object.object)->operators[CO_ABS];
 		double result = (*(FUNC_F_O)func)(P1->_object.object);
 		OBJECT_UNREF(P1->_object.object, "EXEC_operator_object_abs");
 		P1->type = T_FLOAT;
@@ -219,13 +280,19 @@ void EXEC_operator_object_abs(VALUE *P1)
 	}
 	else
 		THROW(E_NULL);
+
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
 }
 
 void EXEC_operator_object_single(uchar op, VALUE *P1)
 {
 	if (P1->_object.object)
 	{
-		void *func = ((void **)(OBJECT_class(P1->_object.object)->operators))[op];
+		void *func = OBJECT_class(P1->_object.object)->operators[op];
 		void *result = (*(FUNC_O_O)func)(P1->_object.object);
 		OBJECT_REF(result, "EXEC_operator_object_single");
 		OBJECT_UNREF(P1->_object.object, "EXEC_operator_object_single");
@@ -233,4 +300,10 @@ void EXEC_operator_object_single(uchar op, VALUE *P1)
 	}
 	else
 		THROW(E_NULL);
+	
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
 }
