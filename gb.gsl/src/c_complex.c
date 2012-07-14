@@ -122,7 +122,7 @@ static CCOMPLEX *_divf(CCOMPLEX *a, double f, bool invert)
 	{
 		gsl_complex c = gsl_complex_inverse(a->number);
 		
-		if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+		if (isfinite(GSL_REAL(c)) && isfinite(GSL_IMAG(c)))
 			return COMPLEX_make(a, gsl_complex_mul_real(c, f));
 		else
 		{
@@ -134,7 +134,7 @@ static CCOMPLEX *_divf(CCOMPLEX *a, double f, bool invert)
 	{
 		gsl_complex c = gsl_complex_div_real(a->number, f);
 		
-		if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+		if (isfinite(GSL_REAL(c)) && isfinite(GSL_IMAG(c)))
 			return COMPLEX_make(a, c);
 		else
 		{
@@ -148,7 +148,7 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
 	gsl_complex c = gsl_complex_div(a->number, b->number);
 	
-	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
+	if (isfinite(GSL_REAL(c)) && isfinite(GSL_IMAG(c)))
 		return COMPLEX_make(a, c);
 	else
 	{
@@ -159,12 +159,12 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 
 static int _equal(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 {
-	return a->number.dat[0] == b->number.dat[0] && a->number.dat[1] == b->number.dat[1];
+	return GSL_REAL(a->number) == GSL_REAL(b->number) && GSL_IMAG(a->number) == GSL_IMAG(b->number);
 }
 
 static int _equalf(CCOMPLEX *a, double f, bool invert)
 {
-	return a->number.dat[0] == f && a->number.dat[1] == 0.0;
+	return GSL_REAL(a->number) == f && GSL_IMAG(a->number) == 0.0;
 }
 
 static CCOMPLEX *_neg(CCOMPLEX *a)
