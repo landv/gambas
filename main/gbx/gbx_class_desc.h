@@ -199,9 +199,11 @@ typedef
 
 
 #define CLASS_DESC_get_type(d) (*(d)->gambas.name)
+#define CLASS_DESC_is_static_method(d) (CLASS_DESC_get_type((CLASS_DESC *)d) == 'M')
 #define CLASS_DESC_SELF (-1)
 
 char *CLASS_DESC_get_signature(CLASS_DESC *cd);
 const char *CLASS_DESC_get_type_name(const CLASS_DESC *desc);
+
 
 #endif

@@ -1055,7 +1055,7 @@ _CALL:
 		ind = GET_3X();
 		val = &SP[-(ind + 1)];
 
-		if (UNLIKELY(!TYPE_is_function(val->type)))
+		if (!TYPE_is_function(val->type))
 		{
 			bool defined = EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object);
 			
@@ -1169,7 +1169,7 @@ _CALL:
 	__CALL_CALL:
 
 		EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_CALL);
-		if (UNLIKELY(!EXEC.desc && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual))
+		if ((!EXEC.desc || !CLASS_DESC_is_static_method(EXEC.desc)) && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual)
 		{
 			SP[-2] = SP[-1];
 			SP--;
@@ -1766,7 +1766,7 @@ _ADD_QUICK:
 			
 	__AQ_OBJECT:
 	
-		if (EXEC_check_operator_single(P1))
+		if (EXEC_check_operator_single(P1, CO_ADDF))
 		{
 			EXEC_operator_object_add_quick(P1, value);
 			goto *jump_end;
@@ -2202,7 +2202,7 @@ _SUBR_COMP:
 				variant = TRUE;
 			}
 
-			code = EXEC_check_operator(P1, P2);
+			code = EXEC_check_operator(P1, P2, CO_EQUAL);
 			if (code)
 			{
 				code += T_OBJECT;
@@ -2543,7 +2543,7 @@ __VARIANT:
 			variant = TRUE;
 		}
 
-		code = EXEC_check_operator(P1, P2);
+		code = EXEC_check_operator(P1, P2, CO_EQUAL);
 		if (code)
 		{
 			code += T_OBJECT;
@@ -2599,7 +2599,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 	VALUE_class_constant_inline(class, value, ind);
 }
 
-#define MANAGE_VARIANT_OBJECT(_func) \
+#define MANAGE_VARIANT_OBJECT(_func, _op) \
 ({ \
 	type = Max(P1->type, P2->type); \
 	if (TYPE_is_void(P1->type) || TYPE_is_void(P2->type)) \
@@ -2611,7 +2611,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		goto *jump[type]; \
 	} \
 	\
-	code = EXEC_check_operator(P1, P2); \
+	code = EXEC_check_operator(P1, P2, _op); \
 	if (code) \
 	{ \
 		code += T_DATE; \
@@ -2641,7 +2641,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		return; \
 	} \
 	\
-	code = EXEC_check_operator(P1, P2); \
+	code = EXEC_check_operator(P1, P2, _op); \
 	if (code) \
 	{ \
 		(_func)(code + T_DATE); \
@@ -2650,7 +2650,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 	} \
 })
 
-#define MANAGE_VARIANT_POINTER_OBJECT(_func) \
+#define MANAGE_VARIANT_POINTER_OBJECT(_func, _op) \
 ({ \
 	type = Max(P1->type, P2->type); \
 	if (TYPE_is_void(P1->type) || TYPE_is_void(P2->type)) \
@@ -2662,7 +2662,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		goto *jump[type]; \
 	} \
 	\
-	code = EXEC_check_operator(P1, P2); \
+	code = EXEC_check_operator(P1, P2, _op); \
 	if (code) \
 	{ \
 		code += T_POINTER; \
@@ -2692,7 +2692,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 		return; \
 	} \
 	\
-	code = EXEC_check_operator(P1, P2); \
+	code = EXEC_check_operator(P1, P2, _op); \
 	if (code) \
 	{ \
 		(_func)(code + T_POINTER); \
@@ -2796,7 +2796,7 @@ __OBJECT:
 	
 __VARIANT:
 
-	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_add);
+	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_add, CO_ADD);
 	goto __ERROR;
 	
 __ERROR:
@@ -2900,7 +2900,7 @@ __OBJECT:
 	
 __VARIANT:
 
-	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_sub);
+	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_sub, CO_SUB);
 	goto __ERROR;
 
 __ERROR:
@@ -2998,7 +2998,7 @@ __OBJECT:
 	
 __VARIANT:
 
-	MANAGE_VARIANT_OBJECT(_SUBR_mul);
+	MANAGE_VARIANT_OBJECT(_SUBR_mul, CO_MUL);
 	goto __ERROR;
 
 __ERROR:
@@ -3070,7 +3070,7 @@ __OBJECT:
 	
 __VARIANT:
 
-	MANAGE_VARIANT_OBJECT(_SUBR_div);
+	MANAGE_VARIANT_OBJECT(_SUBR_div, CO_DIV);
 	goto __ERROR;
 
 __ERROR:

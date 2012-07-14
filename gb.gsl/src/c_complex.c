@@ -125,7 +125,10 @@ static CCOMPLEX *_divf(CCOMPLEX *a, double f, bool invert)
 		if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
 			return COMPLEX_make(a, gsl_complex_mul_real(c, f));
 		else
+		{
+			GB.Error(GB_ERR_ZERO);
 			return NULL;
+		}
 	}
 	else
 	{
@@ -134,7 +137,10 @@ static CCOMPLEX *_divf(CCOMPLEX *a, double f, bool invert)
 		if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
 			return COMPLEX_make(a, c);
 		else
+		{
+			GB.Error(GB_ERR_ZERO);
 			return NULL;
+		}
 	}
 }
 
@@ -145,7 +151,10 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 	if (isfinite(c.dat[0]) && isfinite(c.dat[1]))
 		return COMPLEX_make(a, c);
 	else
+	{
+		GB.Error(GB_ERR_ZERO);
 		return NULL;
+	}
 }
 
 static int _equal(CCOMPLEX *a, CCOMPLEX *b, bool invert)
@@ -417,6 +426,13 @@ BEGIN_PROPERTY(Complex_Imagined)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Complex_Handle)
+
+	GB.ReturnPointer(&THIS->number);
+
+END_PROPERTY
+
+
 /**************************************************
 			Complex arithmetic operators
 **************************************************/
@@ -572,6 +588,7 @@ GB_DESC ComplexDesc[] =
 	// Properties
 	GB_PROPERTY("Real", "f", Complex_Real),
 	GB_PROPERTY("Imag", "f", Complex_Imagined),
+	GB_PROPERTY("Handle", "p", Complex_Handle),
 
 	GB_METHOD("Abs", "f", Complex_Abs, NULL),
 	GB_METHOD("Abs2", "f", Complex_Abs2, NULL),

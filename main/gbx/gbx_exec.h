@@ -303,10 +303,8 @@ do { \
 #define EXEC_set_native_error(_err) (ERROR_current->info.native = (_err))
 #define EXEC_has_native_error() (ERROR_current->info.native)
 
-void *EXEC_no_operator_O_OO(void *a, void *b, bool invert);
-void *EXEC_no_operator_O_OF(void *a, double b, bool invert);
-bool EXEC_check_operator_single(VALUE *P1);
-int EXEC_check_operator(VALUE *P1, VALUE *P2);
+bool EXEC_check_operator_single(VALUE *P1, uchar op);
+int EXEC_check_operator(VALUE *P1, VALUE *P2, uchar op);
 void EXEC_operator(uchar what, uchar op, VALUE *P1, VALUE *P2);
 void EXEC_operator_object_add_quick(VALUE *P1, double val);
 bool EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2);

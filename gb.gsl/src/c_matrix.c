@@ -368,7 +368,10 @@ IMPLEMENT_OP(_mul)
 { \
 	gsl_matrix_complex *inv = matrix_invert(_b, TRUE); \
 	if (!inv) \
+	{ \
+		GB.Error(GB_ERR_ZERO); \
 		return NULL; \
+	} \
 	gsl_blas_zgemm(CblasNoTrans, CblasNoTrans, COMPLEX_one, _a, inv, COMPLEX_zero, _m); \
 	gsl_matrix_complex_free(inv); \
 }
@@ -387,14 +390,20 @@ static CMATRIX *_divf(CMATRIX *a, double f, bool invert)
 		void *inv = matrix_invert(MAT(a), complex);
 		
 		if (!inv)
+		{
+			GB.Error(GB_ERR_ZERO);
 			return NULL;
+		}
 		
 		m = MATRIX_create_from(inv, complex);
 	}
 	else
 	{
 		if (f == 0.0)
+		{
+			GB.Error(GB_ERR_ZERO);
 			return NULL;
+		}
 		
 		f = 1 / f;
 		m = MATRIX_make(a);
@@ -424,14 +433,20 @@ static CMATRIX *_divo(CMATRIX *a, void *b, bool invert)
 		void *inv = matrix_invert(MAT(a), complex);
 		
 		if (!inv)
+		{
+			GB.Error(GB_ERR_ZERO);
 			return NULL;
+		}
 		
 		m = MATRIX_create_from(inv, complex);
 	}
 	else
 	{
-		if (c.dat[0] == 0 && c.dat[1] == 0)
+		if (GSL_REAL(c) == 0 && GSL_IMAG(c) == 0)
+		{
+			GB.Error(GB_ERR_ZERO);
 			return NULL;
+		}
 		
 		c = gsl_complex_inverse(c);
 		m = MATRIX_make(a);
@@ -838,26 +853,29 @@ BEGIN_METHOD(Matrix_Scale, GB_VALUE value)
 	GB_VALUE *value = (GB_VALUE *)ARG(value);
 	int type;
 	COMPLEX_VALUE cv;
+	CMATRIX *m;
 	
 	type = COMPLEX_get_value(value, &cv);
 	
 	if (type == CGV_ERR)
 		return;
 
+	m = MATRIX_copy(THIS);
+	
 	if (type == CGV_COMPLEX)
 	{
-		MATRIX_ensure_complex(THIS);
-		gsl_matrix_complex_scale(CMAT(THIS), cv.z);
+		MATRIX_ensure_complex(m);
+		gsl_matrix_complex_scale(CMAT(m), cv.z);
 	}
 	else
 	{
 		if (COMPLEX(THIS))
-			gsl_matrix_complex_scale(CMAT(THIS), cv.z);
+			gsl_matrix_complex_scale(CMAT(m), cv.z);
 		else
-			gsl_matrix_scale(MAT(THIS), cv.x);
+			gsl_matrix_scale(MAT(m), cv.x);
 	}
 	
-	GB.ReturnObject(THIS);
+	GB.ReturnObject(m);
 		
 END_METHOD
 
@@ -1103,18 +1121,15 @@ BEGIN_METHOD_VOID(Matrix_Transpose)
 	{
 		gsl_matrix *m = gsl_matrix_alloc(WIDTH(THIS), HEIGHT(THIS));
 		gsl_matrix_transpose_memcpy(m, MAT(THIS));
-		gsl_matrix_free(MAT(THIS));
-		THIS->matrix = m;
+		GB.ReturnObject(MATRIX_create_from(m, TRUE));
 	}
 	else
 	{
 		gsl_matrix_complex *m = gsl_matrix_complex_alloc(WIDTH(THIS), HEIGHT(THIS));
 		gsl_matrix_complex_transpose_memcpy(m, CMAT(THIS));
 		gsl_matrix_complex_free(CMAT(THIS));
-		THIS->matrix = m;
+		GB.ReturnObject(MATRIX_create_from(m, FALSE));
 	}
-	
-	GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -1124,18 +1139,9 @@ BEGIN_METHOD_VOID(Matrix_Invert)
 	void *m = matrix_invert(THIS->matrix, COMPLEX(THIS));
 
 	if (!m)
-	{
 		GB.ReturnNull();
-		return;
-	}
-	
-	if (COMPLEX(THIS))
-		gsl_matrix_complex_free(CMAT(THIS));
 	else
-		gsl_matrix_free(MAT(THIS));
-	
-	THIS->matrix = m;
-	GB.ReturnObject(THIS);
+		GB.ReturnObject(MATRIX_create_from(m, COMPLEX(THIS)));
 
 END_METHOD
 
@@ -1156,14 +1162,13 @@ GB_DESC MatrixDesc[] =
 	GB_PROPERTY_READ("Height", "i", Matrix_Height),
 	GB_PROPERTY_READ("Handle", "p", Matrix_Handle),
 	
-	GB_METHOD("Determinant", "v", Matrix_Determinant, NULL),
+	GB_METHOD("Det", "v", Matrix_Determinant, NULL),
 	
 	GB_METHOD("_get", "v", Matrix_get, "(I)i(J)i"),
 	GB_METHOD("_put", NULL, Matrix_put, "(Value)v(I)i(J)i"),
 
 	GB_METHOD("_call", "Vector", Matrix_call, "(Vector)Vector"),
 	
-	GB_METHOD("Scale", "Matrix", Matrix_Scale, "(Value)v"),
 	GB_METHOD("Equal", "b", Matrix_Equal, "(Matrix)Matrix;"),
 	
 	GB_METHOD("Row", "Vector", Matrix_Row, "(Row)i"),
@@ -1171,8 +1176,9 @@ GB_DESC MatrixDesc[] =
 	GB_METHOD("SetRow", NULL, Matrix_SetRow, "(Row)i(Vector)Vector;"),
 	GB_METHOD("SetColumn", NULL, Matrix_SetColumn, "(Column)i(Vector)Vector;"),
 	
-	GB_METHOD("Transpose", "Matrix", Matrix_Transpose, NULL),
-	GB_METHOD("Invert", "Matrix", Matrix_Invert, NULL),
+	GB_METHOD("Scale", "Matrix", Matrix_Scale, "(Value)v"),
+	GB_METHOD("Trans", "Matrix", Matrix_Transpose, NULL),
+	GB_METHOD("Inv", "Matrix", Matrix_Invert, NULL),
 	
 	GB_INTERFACE("_convert", &_convert),
 	GB_INTERFACE("_operator", &_operator),

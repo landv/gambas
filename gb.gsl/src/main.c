@@ -44,8 +44,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CGslDesc, /* The Elementary math functions */
   ComplexDesc,
 	VectorDesc,
-	MatrixDesc,
   PolynomialDesc,
+	MatrixDesc,
   /* Other classes go here as completed */
   NULL // Must have a null entry for the end of the structure
 };

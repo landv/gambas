@@ -154,13 +154,15 @@ CVECTOR *VECTOR_create(int size, bool complex, bool init)
 static CVECTOR *VECTOR_copy(CVECTOR *_object)
 {
 	CVECTOR *copy = VECTOR_create(SIZE(THIS), COMPLEX(THIS), FALSE);
-	if (COMPLEX(THIS))
+	if (!COMPLEX(THIS))
 		gsl_vector_memcpy(VEC(copy), VEC(THIS));
 	else
 		gsl_vector_complex_memcpy(CVEC(copy), CVEC(THIS));
 	
 	return copy;
 }
+
+#define VECTOR_make(_a) (((_a)->ob.ref <= 1) ? (_a) : VECTOR_copy(_a))
 
 static CVECTOR *VECTOR_convert_to_complex(CVECTOR *_object)
 {
@@ -219,6 +221,132 @@ bool VECTOR_ensure_not_complex(CVECTOR *_object)
 	THIS->complex = FALSE;
 	return FALSE;
 }
+
+//---- Arithmetic operators -------------------------------------------------
+
+static CVECTOR *_add(CVECTOR *a, CVECTOR *b, bool invert)
+{
+	CVECTOR *v = VECTOR_make(a);
+	
+	if (COMPLEX(v) || COMPLEX(b))
+	{
+		VECTOR_ensure_complex(v);
+		VECTOR_ensure_complex(b);
+		gsl_vector_complex_add(CVEC(v), CVEC(b));
+	}
+	else
+		gsl_vector_add(VEC(v), VEC(b));
+	
+	return v;
+}
+
+static CVECTOR *_sub(CVECTOR *a, CVECTOR *b, bool invert)
+{
+	CVECTOR *v = VECTOR_make(a);
+	
+	if (COMPLEX(v) || COMPLEX(b))
+	{
+		VECTOR_ensure_complex(v);
+		VECTOR_ensure_complex(b);
+		gsl_vector_complex_sub(CVEC(v), CVEC(b));
+	}
+	else
+		gsl_vector_sub(VEC(v), VEC(b));
+	
+	return v;
+}
+
+static CVECTOR *_mulf(CVECTOR *a, double f, bool invert)
+{
+	CVECTOR *v = VECTOR_make(a);
+	
+	if (COMPLEX(v))
+		gsl_vector_complex_scale(CVEC(v), gsl_complex_rect(f, 0));
+	else
+		gsl_vector_scale(VEC(v), f);
+	
+	return v;
+}
+
+static CVECTOR *_mulo(CVECTOR *a, void *b, bool invert)
+{
+	CVECTOR *v = VECTOR_make(a);
+	
+	if (!GB.Is(b, CLASS_Complex))
+		return NULL;
+	
+	VECTOR_ensure_complex(v);
+	gsl_vector_complex_scale(CVEC(v), ((CCOMPLEX *)b)->number);
+	
+	return v;
+}
+
+static CVECTOR *_divf(CVECTOR *a, double f, bool invert)
+{
+	if (invert)
+		return NULL;
+		
+	if (f == 0.0)
+	{
+		GB.Error(GB_ERR_ZERO);
+		return NULL;
+	}
+
+	return _mulf(a, 1 / f, FALSE);
+}
+
+static CVECTOR *_divo(CVECTOR *a, void *b, bool invert)
+{
+	if (!GB.Is(b, CLASS_Complex))
+		return NULL;
+	
+	CCOMPLEX *c = (CCOMPLEX *)b;
+	
+	if (invert)
+		return NULL;
+	
+	if (GSL_REAL(c->number) == 0 && GSL_IMAG(c->number) == 0)
+	{
+		GB.Error(GB_ERR_ZERO);
+		return NULL;
+	}
+
+	CVECTOR *v = VECTOR_make(a);
+
+	VECTOR_ensure_complex(v);
+	gsl_vector_complex_scale(CVEC(v), gsl_complex_inverse(c->number));
+	
+	return v;
+}
+
+static int _equal(CVECTOR *a, CVECTOR *b, bool invert)
+{
+	if (COMPLEX(a) || COMPLEX(b))
+	{
+		VECTOR_ensure_complex(a);
+		VECTOR_ensure_complex(b);
+		return gsl_vector_complex_equal(CVEC(a), CVEC(b));
+	}
+	else
+		return gsl_vector_equal(VEC(a), VEC(b));
+}
+
+static CVECTOR *_neg(CVECTOR *a)
+{
+	return _mulf(a, -1, FALSE);
+}
+
+static GB_OPERATOR_DESC _operator =
+{
+	.equal   = (void *)_equal,
+	.add     = (void *)_add,
+	.sub     = (void *)_sub,
+	.mulf    = (void *)_mulf,
+	.mulo    = (void *)_mulo,
+	.divf    = (void *)_divf,
+	.divo    = (void *)_divo,
+	.neg     = (void *)_neg
+};
 
 //---- Conversions ----------------------------------------------------------
 
@@ -742,6 +870,7 @@ GB_DESC VectorDesc[] =
 	GB_METHOD("Equal", "b", Vector_Equal, "(Vector)Vector;"),
 	
 	GB_INTERFACE("_convert", &_convert),
+	GB_INTERFACE("_operator", &_operator),
 	
 	GB_END_DECLARE
 };

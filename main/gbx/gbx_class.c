@@ -1264,7 +1264,7 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 	return class->instance;
 }
 
-#define SET_OPTIONAL_OPERATOR(_class, _op, _func) if (!CLASS_has_operator(_class, _op)) (_class)->operators[_op] = (EXEC_no_operator##_func)
+//#define SET_OPTIONAL_OPERATOR(_class, _op, _func) if (!CLASS_has_operator(_class, _op)) (_class)->operators[_op] = (EXEC_no_operator##_func)
 
 void CLASS_search_special(CLASS *class)
 {
@@ -1299,7 +1299,7 @@ void CLASS_search_special(CLASS *class)
 		CLASS_set_operator_strength(class, _operator_strength);
 		//fprintf(stderr, "%s: strength = %ld\n", class->name, CLASS_get_operator_strength(class));
 		
-		SET_OPTIONAL_OPERATOR(class, CO_EQUALF, _O_OF);
+		/*SET_OPTIONAL_OPERATOR(class, CO_EQUALF, _O_OF);
 		SET_OPTIONAL_OPERATOR(class, CO_EQUALO, _O_OO);
 		SET_OPTIONAL_OPERATOR(class, CO_ADDF, _O_OF);
 		SET_OPTIONAL_OPERATOR(class, CO_ADDO, _O_OO);
@@ -1312,6 +1312,8 @@ void CLASS_search_special(CLASS *class)
 		SET_OPTIONAL_OPERATOR(class, CO_POW, _O_OO);
 		SET_OPTIONAL_OPERATOR(class, CO_POWF, _O_OF);
 		SET_OPTIONAL_OPERATOR(class, CO_POWO, _O_OO);
+		SET_OPTIONAL_OPERATOR(class, CO_NEG, _O_O);*/
+		//SET_OPTIONAL_OPERATOR(class, CO_ABS, _F_O);
 	}
 	
 	if (class->special[SPEC_NEXT] != NO_SYMBOL)

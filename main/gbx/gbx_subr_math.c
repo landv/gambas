@@ -248,7 +248,7 @@ __VARIANT:
 	}
 	else
 	{
-		type = EXEC_check_operator(P1, P2);
+		type = EXEC_check_operator(P1, P2, CO_POW);
 		
 		if (type == OP_OBJECT_FLOAT)
 			type = 3;
@@ -571,7 +571,7 @@ __END:
 	} \
 })
 
-#define MANAGE_VARIANT_OBJECT(_func) \
+#define MANAGE_VARIANT_OBJECT(_func, _op) \
 ({ \
 	type = P1->type; \
 	\
@@ -581,7 +581,7 @@ __END:
 		goto *jump[type]; \
 	} \
 	\
-	if (EXEC_check_operator_single(P1)) \
+	if (EXEC_check_operator_single(P1, _op)) \
 	{ \
 		if (P1->type != T_OBJECT) \
 			*PC |= T_DATE + 1; \
@@ -598,7 +598,7 @@ __END:
 			VALUE_conv_variant(P1); \
 			return; \
 		} \
-		if (EXEC_check_operator_single(P1)) \
+		if (EXEC_check_operator_single(P1, _op)) \
 		{ \
 			(_func)(T_DATE + 1); \
 			VALUE_conv_variant(P1); \
@@ -711,7 +711,7 @@ __OBJECT:
 	
 __VARIANT:
 
-	MANAGE_VARIANT_OBJECT(SUBR_neg);
+	MANAGE_VARIANT_OBJECT(SUBR_neg, CO_NEG);
 
 __ERROR:
 
@@ -769,7 +769,7 @@ __OBJECT:
 	
 __VARIANT:
 
-	MANAGE_VARIANT_OBJECT(SUBR_abs);
+	MANAGE_VARIANT_OBJECT(SUBR_abs, CO_ABS);
 
 __ERROR:
 

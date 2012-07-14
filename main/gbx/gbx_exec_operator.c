@@ -46,29 +46,27 @@ typedef
 typedef
 	double (*FUNC_F_O)(void *);
 
-void *EXEC_no_operator_O_OO(void *a, void *b, bool invert)
+static void raise_error(void *o1, void *o2)
 {
-	GB_Error((char *)E_TYPE, TYPE_get_name((TYPE)OBJECT_class(a)), TYPE_get_name((TYPE)OBJECT_class(b)));
-	return NULL;
+	if (OBJECT_class(o2) == OBJECT_class(o1))
+		GB_Error((char *)E_TYPE, "Number", TYPE_get_name((TYPE)OBJECT_class(o1)));
+	else
+		GB_Error((char *)E_TYPE, TYPE_get_name((TYPE)OBJECT_class(o1)), o2 ? TYPE_get_name((TYPE)OBJECT_class(o2)) : "Number");
 }
 
-void *EXEC_no_operator_O_OF(void *a, double b, bool invert)
+bool EXEC_check_operator_single(VALUE *P1, uchar op)
 {
-	GB_Error((char *)E_TYPE, TYPE_get_name((TYPE)OBJECT_class(a)), "Number");
-	return NULL;
-}
-	
-	
-bool EXEC_check_operator_single(VALUE *P1)
-{
-	return (TYPE_is_object(P1->type) && P1->_object.object && OBJECT_class(P1->_object.object)->has_operators);
+	return (TYPE_is_object(P1->type) && P1->_object.object && OBJECT_class(P1->_object.object)->has_operators 
+		&& CLASS_has_operator(OBJECT_class(P1->_object.object), op));
 }
 
-int EXEC_check_operator(VALUE *P1, VALUE *P2)
+int EXEC_check_operator(VALUE *P1, VALUE *P2, uchar op)
 {
+	CLASS *class1, *class2;
+	
 	if (TYPE_is_number(P1->type) && TYPE_is_object(P2->type))
 	{
-		if (P2->_object.object && OBJECT_class(P2->_object.object)->has_operators)
+		if (P2->_object.object && OBJECT_class(P2->_object.object)->has_operators && CLASS_has_operator(OBJECT_class(P2->_object.object), op + 1))
 		{
 			//*dynamic = P2->type == T_OBJECT;
 			return OP_FLOAT_OBJECT;
@@ -76,7 +74,7 @@ int EXEC_check_operator(VALUE *P1, VALUE *P2)
 	}
 	else if (TYPE_is_number(P2->type) && TYPE_is_object(P1->type))
 	{
-		if (P1->_object.object && OBJECT_class(P1->_object.object)->has_operators)
+		if (P1->_object.object && OBJECT_class(P1->_object.object)->has_operators && CLASS_has_operator(OBJECT_class(P1->_object.object), op + 1))
 		{
 			//*dynamic = P1->type == T_OBJECT;
 			return OP_OBJECT_FLOAT;
@@ -84,24 +82,28 @@ int EXEC_check_operator(VALUE *P1, VALUE *P2)
 	}
 	else if (TYPE_are_objects(P1->type, P2->type) && OBJECT_are_not_null(P1->_object.object, P2->_object.object))
 	{
-		CLASS *class1 = OBJECT_class(P1->_object.object);
-		CLASS *class2 = OBJECT_class(P2->_object.object);
+		class1 = OBJECT_class(P1->_object.object);
+		class2 = OBJECT_class(P2->_object.object);
 		
 		//*dynamic = P1->type == T_OBJECT || P2->type = T_OBJECT;
 		
-		if (class1 && class1->has_operators)
+		if (class1->has_operators)
 		{
-			if (class1 == class2)
+			if (class1 == class2 && CLASS_has_operator(class1, op))
 				return OP_OBJECT_OBJECT;
 			
-			if (class2 && class2->has_operators)
+			if (class2->has_operators)
 			{
-				if (CLASS_get_operator_strength(class1) > CLASS_get_operator_strength(class2))
+				if (CLASS_get_operator_strength(class1) > CLASS_get_operator_strength(class2) && CLASS_has_operator(class1, op + 2))
 					return OP_OBJECT_OTHER;
-				else
+				else if (CLASS_has_operator(class2, op + 2))
 					return OP_OTHER_OBJECT;
 			}
+			else if (CLASS_has_operator(class1, op))
+				return OP_OBJECT_OTHER;
 		}
+		else if (class2->has_operators && CLASS_has_operator(class2, op + 2))
+			return OP_OTHER_OBJECT;
 	}
 	
 	return OP_NOTHING;
@@ -129,20 +131,31 @@ __OBJECT_FLOAT:
 	result = (*(FUNC_O_OF)func)(o1, P2->_float.value, FALSE);
 	OBJECT_REF(result, "EXEC_operator");
 	OBJECT_UNREF(o1, "EXEC_operator");
+
+	if (!result)
+	{
+		if (op != CO_DIVF)
+			raise_error(o1, NULL);
+	}
+	
 	goto __END;
 	
 __FLOAT_OBJECT:
 
-	o2 = P2->_object.object;
-	if (!o2)
+	o1 = P2->_object.object;
+	if (!o1)
 		THROW(E_NULL);
 
-	func = OBJECT_class(o2)->operators[op];
+	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P1);
-	result = (*(FUNC_O_OF)func)(o2, P1->_float.value, TRUE);
+	result = (*(FUNC_O_OF)func)(o1, P1->_float.value, TRUE);
 	OBJECT_REF(result, "EXEC_operator");
 	P1->_object.class = P2->_object.class;
-	OBJECT_UNREF(o2, "EXEC_operator");
+	OBJECT_UNREF(o1, "EXEC_operator");
+	
+	if (!result && !EXEC_has_native_error())
+		raise_error(o1, NULL);
+	
 	goto __END;
 	
 __OTHER_OBJECT:
@@ -173,6 +186,9 @@ __OTHER:
 	OBJECT_UNREF(o1, "EXEC_operator");
 	OBJECT_UNREF(o2, "EXEC_operator");
 
+	if (!result && !EXEC_has_native_error())
+		raise_error(o1, o2);
+	
 __END:
 	
 	P1->_object.object = result;
