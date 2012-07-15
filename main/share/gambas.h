@@ -953,6 +953,7 @@ typedef
 		char *(*NewZeroString)(const char *);
 		char *(*TempString)(const char *, int);
 		void (*FreeString)(char **);
+		char *(*FreeStringLater)(char *);
 		char *(*ExtendString)(char *, int);
 		char *(*AddString)(char *, const char *, int);
 		char *(*AddChar)(char *, char);

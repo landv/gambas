@@ -350,7 +350,7 @@ static GB_OPERATOR_DESC _operator =
 
 //---- Conversions ----------------------------------------------------------
 
-static char *_to_string(CVECTOR *_object, bool local)
+static char *_to_string(CVECTOR *_object, bool local, bool eval)
 {
 	char *result = NULL;
 	int i;
@@ -372,7 +372,7 @@ static char *_to_string(CVECTOR *_object, bool local)
 		}
 		else
 		{
-			str = COMPLEX_to_string(gsl_vector_complex_get(CVEC(THIS), i), local);
+			str = COMPLEX_to_string(gsl_vector_complex_get(CVEC(THIS), i), local, eval);
 			result = GB.AddString(result, str, GB.StringLength(str));
 			GB.FreeString(&str);
 		}
@@ -411,7 +411,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -444,7 +444,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -848,6 +848,15 @@ BEGIN_PROPERTY(Vector_Handle)
 END_PROPERTY
 
 
+BEGIN_METHOD(Vector_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
+
+	GB.ReturnString(GB.FreeStringLater(_to_string(THIS, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
+
+END_METHOD
+
+
+//---------------------------------------------------------------------
+
 GB_DESC VectorDesc[] =
 {
 	GB_DECLARE("Vector", sizeof(CVECTOR)),
@@ -856,6 +865,7 @@ GB_DESC VectorDesc[] =
 	GB_METHOD("_free", NULL, Vector_free, NULL),
 	//GB_STATIC_METHOD("_call", "Vector", Vector_call, "(Value)f."),
 	GB_METHOD("Copy", "Vector", Vector_Copy, NULL),
+	GB_METHOD("ToString", "s", Vector_ToString, "[(Local)b(ForEval)b]"),
 	
 	GB_PROPERTY_READ("Count", "i", Vector_Count),
 	GB_PROPERTY_READ("Handle", "p", Vector_Handle),

@@ -51,6 +51,18 @@ static CMATRIX *MATRIX_create(int width, int height, bool complex, bool init)
 	return m;
 }
 
+static CMATRIX *MATRIX_identity(int width, int height, bool complex)
+{
+	CMATRIX *m = MATRIX_create(width, height, complex, FALSE);
+	
+	if (complex)
+		gsl_matrix_complex_set_identity(CMAT(m));
+	else
+		gsl_matrix_set_identity(MAT(m));
+	
+	return m;
+}
+
 static CMATRIX *MATRIX_create_from(void *matrix, bool complex)
 {
 	CMATRIX *m = GB.Create(CLASS_Matrix, NULL,NULL);
@@ -151,7 +163,7 @@ static void matrix_negative(void *m, bool complex)
 		d[i] = -d[i];
 }
 
-static bool get_determinant(CMATRIX *m, COMPLEX_VALUE *det) 
+static bool matrix_determinant(CMATRIX *m, COMPLEX_VALUE *det) 
 {
   int sign = 0; 
 	int size = WIDTH(m);
@@ -225,6 +237,26 @@ static void *matrix_invert(void *m, bool complex)
   return result;
 }
 
+static void matrix_add_identity(gsl_matrix *m, double f)
+{
+	gsl_matrix *id = gsl_matrix_alloc(m->size1, m->size2);
+	gsl_matrix_set_identity(id);
+	gsl_matrix_scale(id, f);
+	gsl_matrix_add(m, id);
+	gsl_matrix_free(id);
+}
+
+static void matrix_complex_add_identity(gsl_matrix_complex *m, gsl_complex c)
+{
+	gsl_matrix_complex *id = gsl_matrix_complex_alloc(m->size1, m->size2);
+	gsl_matrix_complex_set_identity(id);
+	gsl_matrix_complex_scale(id, c);
+	gsl_matrix_complex_add(m, id);
+	gsl_matrix_complex_free(id);
+}
+
+
+
 //---- Arithmetic operators -------------------------------------------------
 
 #define IMPLEMENT_OP(_name) \
@@ -288,13 +320,13 @@ IMPLEMENT_OP(_add)
 #undef FUNC
 #undef CFUNC
 
-#define FUNC(_m, _a, _f) gsl_matrix_add_constant(_m, _f)
-#define CFUNC(_m, _a, _f) gsl_matrix_complex_add_constant(_m, gsl_complex_rect(_f, 0))
+#define FUNC(_m, _a, _f) matrix_add_identity(_m, _f)
+#define CFUNC(_m, _a, _f) matrix_complex_add_identity(_m, gsl_complex_rect(_f, 0))
 IMPLEMENT_OP_FLOAT(_addf)
 #undef FUNC
 #undef CFUNC
 
-#define CFUNC(_m, _a, _c) gsl_matrix_complex_add_constant(_m, _c)
+#define CFUNC(_m, _a, _c) matrix_complex_add_identity(_m, _c)
 IMPLEMENT_OP_OTHER(_addo)
 #undef CFUNC
 
@@ -308,19 +340,19 @@ IMPLEMENT_OP(_sub)
 	if (invert) \
 	{ \
 		matrix_negative(_m, FALSE); \
-		gsl_matrix_add_constant(_m, _f); \
+		matrix_add_identity(_m, _f); \
 	} \
 	else \
-		gsl_matrix_add_constant(_m, -(_f));
+		matrix_add_identity(_m, -(_f));
 
 #define CFUNC(_m, _a, _f) \
 	if (invert) \
 	{ \
 		matrix_negative(_m, TRUE); \
-		gsl_matrix_complex_add_constant(_m, gsl_complex_rect((_f), 0)); \
+		matrix_complex_add_identity(_m, gsl_complex_rect(_f, 0)); \
 	} \
 	else \
-		gsl_matrix_complex_add_constant(_m, gsl_complex_rect(-(_f), 0));
+		matrix_complex_add_identity(_m, gsl_complex_rect(-(_f), 0));
 
 IMPLEMENT_OP_FLOAT(_subf)
 #undef FUNC
@@ -331,7 +363,7 @@ IMPLEMENT_OP_FLOAT(_subf)
 		matrix_negative(_m, TRUE); \
 	else \
 		gsl_complex_negative(_c); \
-	gsl_matrix_complex_add_constant(_m, _c);
+	matrix_complex_add_identity(_m, _c);
 
 IMPLEMENT_OP_OTHER(_subo)
 #undef CFUNC
@@ -477,6 +509,65 @@ static CMATRIX *_neg(CMATRIX *a)
 	return m;
 }
 
+static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
+{
+	if (invert || f != (double)(int)f)
+		return NULL;
+	
+	CMATRIX *m;
+	int i;
+	int n = (int)f;
+	
+	if (n == 0)
+	{
+		m = MATRIX_make(a);
+		if (COMPLEX(m))
+			gsl_matrix_complex_set_identity(CMAT(m));
+		else
+			gsl_matrix_set_identity(MAT(m));
+	}
+	else if (n == 1)
+	{
+		m = a;
+	}
+	else if (n > 0)
+	{
+		CMATRIX *m2;
+		
+		m = MATRIX_copy(a);
+		for (i = 1; i < n; i++)
+		{
+			m2 = _mul(m, a, FALSE);
+			GB.Unref(POINTER(&m));
+			m = m2;
+		}
+	}
+	else if (n < 0)
+	{
+		void *inv = matrix_invert(a->matrix, COMPLEX(a));
+		if (inv == NULL)
+		{
+			GB.Error(GB_ERR_ZERO);
+			return NULL;
+		}
+		
+		m = MATRIX_make(a);
+		if (COMPLEX(m))
+			gsl_matrix_complex_memcpy(CMAT(m), inv);
+		else
+			gsl_matrix_memcpy(MAT(m), inv);
+		
+		a = MATRIX_create_from(inv, COMPLEX(a));
+		
+		for (i = 1; i < (-n); i++)
+			m = _mul(m, a, FALSE);
+		
+		GB.Unref(POINTER(&a));
+	}
+	
+	return m;
+}
+
 static GB_OPERATOR_DESC _operator =
 {
 	.equal   = (void *)_equal,
@@ -493,12 +584,13 @@ static GB_OPERATOR_DESC _operator =
 	.div     = (void *)_div,
 	.divf    = (void *)_divf,
 	.divo    = (void *)_divo,
+	.powf    = (void *)_powf,
 	.neg     = (void *)_neg
 };
 
 //---- Conversions ----------------------------------------------------------
 
-static char *_to_string(CMATRIX *_object, bool local)
+static char *_to_string(CMATRIX *_object, bool local, bool eval)
 {
 	char *result = NULL;
 	int i, j;
@@ -525,7 +617,7 @@ static char *_to_string(CMATRIX *_object, bool local)
 			}
 			else
 			{
-				str = COMPLEX_to_string(gsl_matrix_complex_get(CMAT(THIS), i, j), local);
+				str = COMPLEX_to_string(gsl_matrix_complex_get(CMAT(THIS), i, j), local, eval);
 				result = GB.AddString(result, str, GB.StringLength(str));
 				GB.FreeString(&str);
 			}
@@ -567,7 +659,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -600,7 +692,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -933,14 +1025,7 @@ END_PROPERTY
 
 BEGIN_METHOD(Matrix_Identity, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN complex)
 
-	CMATRIX *m = MATRIX_create(VARGOPT(width, 2), VARGOPT(height, 2), VARGOPT(complex, FALSE), FALSE);
-	
-	if (COMPLEX(m))
-		gsl_matrix_complex_set_identity(CMAT(m));
-	else
-		gsl_matrix_set_identity(MAT(m));
-	
-	GB.ReturnObject(m);
+	GB.ReturnObject(MATRIX_identity(VARGOPT(width, 2), VARGOPT(height, 2), VARGOPT(complex, FALSE)));
 
 END_METHOD
 
@@ -1073,7 +1158,7 @@ BEGIN_METHOD_VOID(Matrix_Determinant)
 
 	COMPLEX_VALUE cv;
 	
-	if (get_determinant(THIS, &cv))
+	if (matrix_determinant(THIS, &cv))
 	{
 		GB.Error("Matrix is not square");
 		return;
@@ -1145,6 +1230,14 @@ BEGIN_METHOD_VOID(Matrix_Invert)
 
 END_METHOD
 
+
+BEGIN_METHOD(Matrix_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
+
+	GB.ReturnString(GB.FreeStringLater(_to_string(THIS, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
+
+END_METHOD
+
+
 //---------------------------------------------------------------------------
 
 GB_DESC MatrixDesc[] =
@@ -1155,6 +1248,7 @@ GB_DESC MatrixDesc[] =
 	GB_METHOD("_free", NULL, Matrix_free, NULL),
 	//GB_STATIC_METHOD("_call", "Vector", Matrix_call, "(Value)f."),
 	GB_METHOD("Copy", "Matrix", Matrix_Copy, NULL),
+	GB_METHOD("ToString", "s", Matrix_ToString, "[(Local)b(ForEval)b]"),
 
 	GB_STATIC_METHOD("Identity", "Matrix", Matrix_Identity, "[(Width)i(Height)i(Complex)b]"),
 	

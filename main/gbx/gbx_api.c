@@ -164,6 +164,7 @@ const void *GAMBAS_Api[] =
 	(void *)GB_NewZeroString,
 	(void *)GB_TempString,
 	(void *)GB_FreeString,
+	(void *)STRING_free_later,
 	(void *)STRING_extend,
 	(void *)STRING_add,
 	(void *)STRING_add_char,

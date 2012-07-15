@@ -238,7 +238,7 @@ static GB_OPERATOR_DESC _operator =
 
 //---- Conversions ----------------------------------------------------------
 
-char *COMPLEX_to_string(gsl_complex number, bool local)
+char *COMPLEX_to_string(gsl_complex number, bool local, bool eval)
 {
 	char buffer[64];
 	char *p;
@@ -250,7 +250,7 @@ char *COMPLEX_to_string(gsl_complex number, bool local)
 	imag = number.dat[1];
 	
 	if (real == 0.0 && imag == 0.0)
-		return GB.NewString("0", 1);
+		return GB.TempString("0", 1);
 	
 	p = buffer;
 	
@@ -271,7 +271,7 @@ char *COMPLEX_to_string(gsl_complex number, bool local)
 		else if (p != buffer)
 			*p++ = '+';
 		
-		if (imag != 1.0)
+		if (imag != 1.0 || eval)
 		{
 			GB.NumberToString(local, imag, NULL, &str, &len);
 			strncpy(p, str, len);
@@ -309,7 +309,7 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 				
 			case GB_T_STRING:
 			case GB_T_CSTRING:
-				conv->_string.value.addr = COMPLEX_to_string(a->number, type == GB_T_CSTRING);
+				conv->_string.value.addr = COMPLEX_to_string(a->number, type == GB_T_CSTRING, FALSE);
 				conv->_string.value.start = 0;
 				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 				return FALSE;
@@ -362,6 +362,13 @@ END_METHOD
 BEGIN_METHOD_VOID(Complex_Copy)
 
 	GB.ReturnObject(COMPLEX_create(THIS->number));
+
+END_METHOD
+
+
+BEGIN_METHOD(Complex_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
+
+	GB.ReturnString(GB.FreeStringLater(COMPLEX_to_string(THIS->number, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
 
 END_METHOD
 
@@ -579,6 +586,7 @@ GB_DESC ComplexDesc[] =
 	GB_STATIC_METHOD("Polar", "Complex", Complex_Polar, "[(Abs)f(Arg)f]"),
 	
 	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
+	GB_METHOD("ToString", "s", Complex_ToString, "[(Local)b(ForEval)b]"),
 	
 	GB_METHOD("Conj", "Complex", Complex_Conjugate, NULL),
 	GB_METHOD("Neg", "Complex", Complex_Negative, NULL),

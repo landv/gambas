@@ -391,7 +391,7 @@ static GB_OPERATOR_DESC _operator =
 
 //---- Conversions ----------------------------------------------------------
 
-char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
+char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local, bool eval)
 {
 	int i;
 	int size = COUNT(p);
@@ -404,7 +404,6 @@ char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
 	bool complex = COMPLEX(p);
 	gsl_complex c;
 	bool par;
-	int l;
 	
 	i = size;
 	while (i > 0)
@@ -433,7 +432,7 @@ char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
 		else if (re > 0.0 || (re == 0.0 && im > 0.0) || par)
 			result = GB.AddChar(result, '+');
 		
-		l = GB.StringLength(result);
+		//l = GB.StringLength(result);
 		
 		if (par)
 			result = GB.AddChar(result, '(');
@@ -455,9 +454,9 @@ char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
 				if (re != 0.0 && im > 0.0)
 					result = GB.AddChar(result, '+');
 				
-				if (im == -1.0)
+				if (!eval && im == -1.0)
 					result = GB.AddChar(result, '-');
-				else if (im != 1.0)
+				else if (eval || im != 1.0)
 				{
 					GB.NumberToString(local, im, NULL, &str, &len);
 					result = GB.AddString(result, str, len);
@@ -471,7 +470,7 @@ char *POLYNOMIAL_to_string(CPOLYNOMIAL *p, bool local)
 		
 		if (i > 0)
 		{
-			if (GB.StringLength(result) > l)
+			if (eval && ((im == 0 && re != 0 && re != 1 && re != -1) || (im != 0)))
 				result = GB.AddChar(result, '*');
 			result = GB.AddChar(result, 'x');
 			if (i > 1)
@@ -497,7 +496,7 @@ bool POLYNOMIAL_convert(CPOLYNOMIAL *a, GB_TYPE type, GB_VALUE *conv)
 		{
 			case GB_T_STRING:
 			case GB_T_CSTRING:
-				conv->_string.value.addr = POLYNOMIAL_to_string(a, type == GB_T_CSTRING);
+				conv->_string.value.addr = POLYNOMIAL_to_string(a, type == GB_T_CSTRING, FALSE);
 				conv->_string.value.start = 0;
 				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 				return FALSE;
@@ -629,9 +628,9 @@ BEGIN_PROPERTY(Polynomial_Degree)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(Polynomial_ToString)
+BEGIN_METHOD(Polynomial_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
 
-	GB.ReturnString(POLYNOMIAL_to_string(THIS, FALSE));
+	GB.ReturnString(GB.FreeStringLater(POLYNOMIAL_to_string(THIS, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
 
 END_METHOD
 
@@ -897,7 +896,7 @@ GB_DESC PolynomialDesc[] =
 	GB_METHOD("_new", NULL, Polynomial_new, "[(Size)i(Complex)b]"),
 	GB_METHOD("_free", NULL, Polynomial_free, NULL),
 	
-	GB_METHOD("ToString", "s", Polynomial_ToString, NULL),
+	GB_METHOD("ToString", "s", Polynomial_ToString, "[(Local)b(ForEval)b]"),
 
 	GB_PROPERTY_READ("Degree", "i", Polynomial_Degree),
 	GB_PROPERTY_READ("Count", "i", Polynomial_Count),
