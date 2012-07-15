@@ -450,8 +450,7 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 	//CWidget::removeFilter(wid->verticalScrollBar());
 
 	wid->setFrameStyle(QFrame::NoFrame);
-	wid->show();
-	
+	CWIDGET_set_visible((CWIDGET *)THIS, true);	
 	// Border.Sunken by default
 	wid->setLineWidth(2);
 	wid->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
