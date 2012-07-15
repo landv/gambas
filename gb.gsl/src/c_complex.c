@@ -250,7 +250,7 @@ char *COMPLEX_to_string(gsl_complex number, bool local, bool eval)
 	imag = number.dat[1];
 	
 	if (real == 0.0 && imag == 0.0)
-		return GB.TempString("0", 1);
+		return GB.NewString("0", 1);
 	
 	p = buffer;
 	

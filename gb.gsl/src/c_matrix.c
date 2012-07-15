@@ -509,13 +509,45 @@ static CMATRIX *_neg(CMATRIX *a)
 	return m;
 }
 
+static CMATRIX *_powi(CMATRIX *m, int n)
+{
+	if (n == 1)
+		return m;
+	
+	CMATRIX *m2 = _mul(m, m, FALSE);
+	CMATRIX *r;
+	
+	if ((n & 1) == 0)
+	{
+		n /= 2;
+		if (n > 1)
+			r = _powi(m2, n);
+		else
+			r = m2;
+	}
+	else
+	{
+		n /= 2;
+		if (n > 1)
+			r = _powi(m2, n);
+		else
+			r = m2;
+		
+		m2 = _mul(r, m, FALSE);
+		GB.Unref(POINTER(&r));
+		r = m2;
+	}
+	
+	GB.Unref(POINTER(&m));
+	return r;
+}
+
 static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
 {
 	if (invert || f != (double)(int)f)
 		return NULL;
 	
 	CMATRIX *m;
-	int i;
 	int n = (int)f;
 	
 	if (n == 0)
@@ -532,15 +564,7 @@ static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
 	}
 	else if (n > 0)
 	{
-		CMATRIX *m2;
-		
-		m = MATRIX_copy(a);
-		for (i = 1; i < n; i++)
-		{
-			m2 = _mul(m, a, FALSE);
-			GB.Unref(POINTER(&m));
-			m = m2;
-		}
+		m = _powi(MATRIX_copy(a), n);
 	}
 	else if (n < 0)
 	{
@@ -551,18 +575,7 @@ static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
 			return NULL;
 		}
 		
-		m = MATRIX_make(a);
-		if (COMPLEX(m))
-			gsl_matrix_complex_memcpy(CMAT(m), inv);
-		else
-			gsl_matrix_memcpy(MAT(m), inv);
-		
-		a = MATRIX_create_from(inv, COMPLEX(a));
-		
-		for (i = 1; i < (-n); i++)
-			m = _mul(m, a, FALSE);
-		
-		GB.Unref(POINTER(&a));
+		m = _powi(MATRIX_create_from(inv, COMPLEX(a)), (-n));
 	}
 	
 	return m;
@@ -1206,15 +1219,32 @@ BEGIN_METHOD_VOID(Matrix_Transpose)
 	{
 		gsl_matrix *m = gsl_matrix_alloc(WIDTH(THIS), HEIGHT(THIS));
 		gsl_matrix_transpose_memcpy(m, MAT(THIS));
-		GB.ReturnObject(MATRIX_create_from(m, TRUE));
+		GB.ReturnObject(MATRIX_create_from(m, FALSE));
 	}
 	else
 	{
 		gsl_matrix_complex *m = gsl_matrix_complex_alloc(WIDTH(THIS), HEIGHT(THIS));
 		gsl_matrix_complex_transpose_memcpy(m, CMAT(THIS));
-		gsl_matrix_complex_free(CMAT(THIS));
-		GB.ReturnObject(MATRIX_create_from(m, FALSE));
+		GB.ReturnObject(MATRIX_create_from(m, TRUE));
 	}
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Matrix_Conjugate)
+
+	CMATRIX *m = MATRIX_copy(THIS);
+
+	if (COMPLEX(THIS))
+	{
+		int i, j;
+		
+		for (i = 0; i < HEIGHT(m); i++)
+			for (j = 0; j < WIDTH(m); j++)
+				gsl_matrix_complex_set(CMAT(m), i, j, gsl_complex_conjugate(gsl_matrix_complex_get(CMAT(m), i, j)));
+	}
+		
+	GB.ReturnObject(m);
 
 END_METHOD
 
@@ -1272,6 +1302,7 @@ GB_DESC MatrixDesc[] =
 	
 	GB_METHOD("Scale", "Matrix", Matrix_Scale, "(Value)v"),
 	GB_METHOD("Trans", "Matrix", Matrix_Transpose, NULL),
+	GB_METHOD("Conj", "Matrix", Matrix_Conjugate, NULL),
 	GB_METHOD("Inv", "Matrix", Matrix_Invert, NULL),
 	
 	GB_INTERFACE("_convert", &_convert),
