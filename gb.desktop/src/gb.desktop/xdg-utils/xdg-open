@@ -305,6 +305,7 @@ detectDE()
 {
     if [ x"$KDE_FULL_SESSION" = x"true" ]; then DE=kde;
     elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DE=gnome;
+    elif [ x"$MATE_DESKTOP_SESSION_ID" != x"" ]; then DE=mate;
     elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DE=gnome;
     elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
     elif [ x"$DESKTOP_SESSION" == x"LXDE" ]; then DE=lxde;
@@ -363,6 +364,21 @@ open_gnome()
         gvfs-open "$1"
     else
         gnome-open "$1"
+    fi
+
+    if [ $? -eq 0 ]; then
+        exit_success
+    else
+        exit_failure_operation_failed
+    fi
+}
+
+open_mate()
+{
+    if gvfs-open --help 2>/dev/null 1>&2; then
+        gvfs-open "$1"
+    else
+        mate-open "$1"
     fi
 
     if [ $? -eq 0 ]; then
@@ -538,6 +554,10 @@ case "$DE" in
 
     gnome)
     open_gnome "$url"
+    ;;
+
+    mate)
+    open_mate "$url"
     ;;
 
     xfce)
