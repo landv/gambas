@@ -1,7 +1,7 @@
 COMPONENT = gb.xml
 include $(top_srcdir)/component.am
  
-SUBDIRS = @XMLHTML_DIR@  @XMLXSLT_DIR@ rpc
+SUBDIRS = . @XMLHTML_DIR@  @XMLXSLT_DIR@ rpc
 gblib_LTLIBRARIES = gb.xml.la
  
 gb_xml_la_LIBADD = @XML_LIB@ 

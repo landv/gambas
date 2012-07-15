@@ -2,7 +2,7 @@ COMPONENT = gb.qt4
 include $(top_srcdir)/component.am
 include $(top_srcdir)/gb.qt.am
 
-SUBDIRS = @QTEXT_DIR@ @QTWEBKIT_DIR@ @QTOPENGL_DIR@
+SUBDIRS = . @QTEXT_DIR@ @QTWEBKIT_DIR@ @QTOPENGL_DIR@
 EXTRA_DIST = trayicon.xpm
 
 gblib_LTLIBRARIES = gb.qt4.la
