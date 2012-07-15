@@ -97,9 +97,11 @@ _PUSH_GENERIC:
 			SP--;
 			if (SP->_boolean.value)
 			{
-				SP--;
+				//SP--; Keep the object on the stack so that it is automatically freed if an error is raised
 				EXEC_special(SPEC_UNKNOWN, class, object, 0, FALSE);
 				VALUE_conv_variant(&SP[-1]);
+				SP--;
+				SP[-1] = *SP;
 				OBJECT_UNREF(object, "EXEC_push_unknown");
 				goto _FIN;
 			}

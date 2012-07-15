@@ -784,7 +784,7 @@ void TRANS_case(void)
 
 	control_enter(RS_CASE);
 	
-	like = FALSE;
+	like = TRANS_is(RS_LIKE);
 	
 	for(i = 0; ; i++)
 	{
@@ -798,18 +798,17 @@ void TRANS_case(void)
 		TRANS_expression(FALSE);
 		CODE_op(C_EQ, 2);*/
 		
-		if (TRANS_is(RS_TO))
+		if (like)
+		{
+			CODE_push_local(local);
+			TRANS_expression(FALSE);
+			CODE_op(C_LIKE, 0, 2, TRUE);
+		}
+		else if (TRANS_is(RS_TO))
 		{
 			CODE_push_local(local);
 			TRANS_expression(FALSE);
 			CODE_op(C_LE, 0, 2, TRUE);
-		}
-		else if (TRANS_is(RS_LIKE) || like)
-		{
-			like = TRUE;
-			CODE_push_local(local);
-			TRANS_expression(FALSE);
-			CODE_op(C_LIKE, 0, 2, TRUE);
 		}
 		else
 		{

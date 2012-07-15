@@ -118,7 +118,7 @@ static bool check_crypt(const char *passwd, const char *crypted)
   if (!result)
     return TRUE;
   else
-    return strcmp(result, crypted);
+    return strcmp(result, crypted) != 0;
 }
 
 
