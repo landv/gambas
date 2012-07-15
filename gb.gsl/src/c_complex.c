@@ -238,7 +238,7 @@ static GB_OPERATOR_DESC _operator =
 
 //---- Conversions ----------------------------------------------------------
 
-char *COMPLEX_to_string(gsl_complex number, bool local, bool eval)
+char *COMPLEX_to_string(gsl_complex number, bool local)
 {
 	char buffer[64];
 	char *p;
@@ -271,7 +271,7 @@ char *COMPLEX_to_string(gsl_complex number, bool local, bool eval)
 		else if (p != buffer)
 			*p++ = '+';
 		
-		if (imag != 1.0 || eval)
+		if (imag != 1.0 || !local)
 		{
 			GB.NumberToString(local, imag, NULL, &str, &len);
 			strncpy(p, str, len);
@@ -309,7 +309,7 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 				
 			case GB_T_STRING:
 			case GB_T_CSTRING:
-				conv->_string.value.addr = COMPLEX_to_string(a->number, type == GB_T_CSTRING, FALSE);
+				conv->_string.value.addr = COMPLEX_to_string(a->number, type == GB_T_CSTRING);
 				conv->_string.value.start = 0;
 				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 				return FALSE;
@@ -366,16 +366,16 @@ BEGIN_METHOD_VOID(Complex_Copy)
 END_METHOD
 
 
-BEGIN_METHOD(Complex_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
+BEGIN_METHOD(Complex_ToString, GB_BOOLEAN local)
 
-	GB.ReturnString(GB.FreeStringLater(COMPLEX_to_string(THIS->number, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
+	GB.ReturnString(GB.FreeStringLater(COMPLEX_to_string(THIS->number, VARGOPT(local, FALSE))));
 
 END_METHOD
 
 
 BEGIN_METHOD(Complex_Polar, GB_FLOAT real; GB_FLOAT imag)
 
-	GB.ReturnObject(COMPLEX_create(gsl_complex_polar(VARG(real), VARG(imag))));
+	GB.ReturnObject(COMPLEX_create(gsl_complex_polar(VARGOPT(real, 0.0), VARGOPT(imag, 0.0))));
 
 END_METHOD 
 
@@ -586,10 +586,10 @@ GB_DESC ComplexDesc[] =
 	GB_STATIC_METHOD("Polar", "Complex", Complex_Polar, "[(Abs)f(Arg)f]"),
 	
 	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
-	GB_METHOD("ToString", "s", Complex_ToString, "[(Local)b(ForEval)b]"),
+	GB_METHOD("ToString", "s", Complex_ToString, "[(Local)b]"),
 	
 	GB_METHOD("Conj", "Complex", Complex_Conjugate, NULL),
-	GB_METHOD("Neg", "Complex", Complex_Negative, NULL),
+	//GB_METHOD("Neg", "Complex", Complex_Negative, NULL),
 	GB_METHOD("Inv", "Complex", Complex_Inverse, NULL),
 	//GB_METHOD("Set", NULL, Complex_Set, "[(Real)f(Imag)f]"),
 	
@@ -605,28 +605,28 @@ GB_DESC ComplexDesc[] =
 
 	/* Operations on gsl_complex */
 	// Elementary Math Functions
-	GB_METHOD("Add", "Complex", Complex_Add, "(X)Complex"),
-	GB_METHOD("Sub", "Complex", Complex_Sub, "(X)Complex"),
-	GB_METHOD("Mul", "Complex", Complex_Mul, "(X)Complex"),
-	GB_METHOD("Div", "Complex", Complex_Div, "(X)Complex"),
+	//GB_METHOD("Add", "Complex", Complex_Add, "(X)Complex"),
+	//GB_METHOD("Sub", "Complex", Complex_Sub, "(X)Complex"),
+	//GB_METHOD("Mul", "Complex", Complex_Mul, "(X)Complex"),
+	//GB_METHOD("Div", "Complex", Complex_Div, "(X)Complex"),
 	
 	// Operations On Real
-	GB_METHOD("AddReal", "Complex", Complex_AddReal, "(X)f"),
-	GB_METHOD("SubReal", "Complex", Complex_SubReal, "(X)f"),
-	GB_METHOD("MulReal", "Complex", Complex_MulReal, "(X)f"),
-	GB_METHOD("DivReal", "Complex", Complex_DivReal, "(X)f"),
+	//GB_METHOD("AddReal", "Complex", Complex_AddReal, "(X)f"),
+	//GB_METHOD("SubReal", "Complex", Complex_SubReal, "(X)f"),
+	//GB_METHOD("MulReal", "Complex", Complex_MulReal, "(X)f"),
+	//GB_METHOD("DivReal", "Complex", Complex_DivReal, "(X)f"),
 
 	// Operations On Imaginary
-	GB_METHOD("AddImag", "Complex", Complex_AddImag, "(X)f"),
-	GB_METHOD("SubImag", "Complex", Complex_SubImag, "(X)f"),
-	GB_METHOD("MulImag", "Complex", Complex_MulImag, "(X)f"),
-	GB_METHOD("DivImag", "Complex", Complex_DivImag, "(X)f"),
+	//GB_METHOD("AddImag", "Complex", Complex_AddImag, "(X)f"),
+	//GB_METHOD("SubImag", "Complex", Complex_SubImag, "(X)f"),
+	//GB_METHOD("MulImag", "Complex", Complex_MulImag, "(X)f"),
+	//GB_METHOD("DivImag", "Complex", Complex_DivImag, "(X)f"),
 
 	// Elementary Complex Functions
 	GB_METHOD("Sqrt", "Complex", Complex_Sqrt, NULL),
 	GB_STATIC_METHOD("SqrtReal", "Complex", Complex_SqrtReal, "(X)f"),
-	GB_METHOD("Pow", "Complex", Complex_Pow, "(X)Complex"),
-	GB_METHOD("PowReal", "Complex", Complex_PowReal, "(X)f"),
+	//GB_METHOD("Pow", "Complex", Complex_Pow, "(X)Complex"),
+	//GB_METHOD("PowReal", "Complex", Complex_PowReal, "(X)f"),
 	GB_METHOD("Exp", "Complex", Complex_Exp, NULL),
 	GB_METHOD("Log", "Complex", Complex_Log, NULL),
 	GB_METHOD("Log10", "Complex", Complex_Log10, NULL),
@@ -641,16 +641,16 @@ GB_DESC ComplexDesc[] =
 	GB_METHOD("Cot", "Complex", Complex_Cot, NULL),
 
 	// Inverse Complex Trigonometric Functions
-	GB_METHOD("Arcsin", "Complex", Complex_Arcsin, NULL),
-	GB_STATIC_METHOD("ArcsinReal", "Complex", Complex_ArcsinReal, "(X)f"),
-	GB_METHOD("Arccos", "Complex", Complex_Arccos, NULL),
-	GB_STATIC_METHOD("ArccosReal", "Complex", Complex_ArccosReal, "(X)f"),
-	GB_METHOD("Arctan", "Complex", Complex_Arctan, NULL),
-	GB_METHOD("Arcsec", "Complex", Complex_Arcsec, NULL),
-	GB_STATIC_METHOD("ArcsecReal", "Complex", Complex_ArcsecReal, "(X)f"),
-	GB_METHOD("Arccsc", "Complex", Complex_Arccsc, NULL),
-	GB_STATIC_METHOD("ArccscReal", "Complex", Complex_ArccscReal, "(X)f"),
-	GB_METHOD("Arccot", "Complex", Complex_Arccot, NULL),
+	GB_METHOD("ASin", "Complex", Complex_Arcsin, NULL),
+	GB_STATIC_METHOD("ASinReal", "Complex", Complex_ArcsinReal, "(X)f"),
+	GB_METHOD("ACos", "Complex", Complex_Arccos, NULL),
+	GB_STATIC_METHOD("ACosReal", "Complex", Complex_ArccosReal, "(X)f"),
+	GB_METHOD("ATan", "Complex", Complex_Arctan, NULL),
+	GB_METHOD("ASec", "Complex", Complex_Arcsec, NULL),
+	GB_STATIC_METHOD("ASecReal", "Complex", Complex_ArcsecReal, "(X)f"),
+	GB_METHOD("ACsc", "Complex", Complex_Arccsc, NULL),
+	GB_STATIC_METHOD("ACscReal", "Complex", Complex_ArccscReal, "(X)f"),
+	GB_METHOD("ACot", "Complex", Complex_Arccot, NULL),
 
 	// Complex Hyperbolic Functions
 	GB_METHOD("Sinh", "Complex", Complex_Sinh, NULL),
@@ -661,14 +661,14 @@ GB_DESC ComplexDesc[] =
 	GB_METHOD("Coth", "Complex", Complex_Coth, NULL),
 
 	// Inverse Complex Hyperbolic Functions
-	GB_METHOD("Arcsinh", "Complex", Complex_Arcsinh, NULL),
-	GB_METHOD("Arccosh", "Complex", Complex_Arccosh, NULL),
-	GB_STATIC_METHOD("ArccoshReal", "Complex", Complex_ArccoshReal, "(X)f"),
-	GB_METHOD("Arctanh", "Complex", Complex_Arctanh, NULL),
-	GB_STATIC_METHOD("ArctanhReal", "Complex", Complex_ArctanhReal, "(X)f"),
-	GB_METHOD("Arcsech", "Complex", Complex_Arcsech, NULL),
-	GB_METHOD("Arccsch", "Complex", Complex_Arccsch, NULL),
-	GB_METHOD("Arccoth", "Complex", Complex_Arccoth, NULL),
+	GB_METHOD("ASinh", "Complex", Complex_Arcsinh, NULL),
+	GB_METHOD("ACosh", "Complex", Complex_Arccosh, NULL),
+	GB_STATIC_METHOD("ACoshReal", "Complex", Complex_ArccoshReal, "(X)f"),
+	GB_METHOD("ATanh", "Complex", Complex_Arctanh, NULL),
+	GB_STATIC_METHOD("ATanhReal", "Complex", Complex_ArctanhReal, "(X)f"),
+	GB_METHOD("ASech", "Complex", Complex_Arcsech, NULL),
+	GB_METHOD("ACsch", "Complex", Complex_Arccsch, NULL),
+	GB_METHOD("ACoth", "Complex", Complex_Arccoth, NULL),
 
 	GB_INTERFACE("_operator", &_operator),
 	GB_INTERFACE("_convert", &_convert),

@@ -60,7 +60,7 @@ enum
 
 CCOMPLEX *COMPLEX_create(gsl_complex number);
 CCOMPLEX *COMPLEX_push_complex(double value);
-char *COMPLEX_to_string(gsl_complex number, bool local, bool eval);
+char *COMPLEX_to_string(gsl_complex number, bool local);
 
 #define COMPLEX_get(_c) ((_c) ? (_c)->number : COMPLEX_zero)
 

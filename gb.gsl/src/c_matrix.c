@@ -85,7 +85,7 @@ static CMATRIX *MATRIX_copy(CMATRIX *_object)
 
 #define MATRIX_make(_ma) (((_ma)->ob.ref <= 1) ? (_ma) : MATRIX_copy(_ma))
 
-static CMATRIX *MATRIX_convert_to_complex(CMATRIX *_object)
+/*static CMATRIX *MATRIX_convert_to_complex(CMATRIX *_object)
 {
 	CMATRIX *m = MATRIX_create(WIDTH(THIS), HEIGHT(THIS), TRUE, FALSE);
 	int i, j;
@@ -95,7 +95,7 @@ static CMATRIX *MATRIX_convert_to_complex(CMATRIX *_object)
 			gsl_matrix_complex_set(CMAT(m), i, j, gsl_complex_rect(gsl_matrix_get(MAT(THIS), i, j), 0));
 	
 	return m;
-}
+}*/
 
 static void MATRIX_ensure_complex(CMATRIX *_object)
 {
@@ -492,6 +492,9 @@ static CMATRIX *_divo(CMATRIX *a, void *b, bool invert)
 
 static int _equal(CMATRIX *a, CMATRIX *b)
 {
+	if (WIDTH(a) != WIDTH(b) || HEIGHT(a) != HEIGHT(b))
+		return FALSE;
+	
 	if (COMPLEX(a) || COMPLEX(b))
 	{
 		MATRIX_ensure_complex(a);
@@ -603,7 +606,7 @@ static GB_OPERATOR_DESC _operator =
 
 //---- Conversions ----------------------------------------------------------
 
-static char *_to_string(CMATRIX *_object, bool local, bool eval)
+static char *_to_string(CMATRIX *_object, bool local)
 {
 	char *result = NULL;
 	int i, j;
@@ -616,12 +619,18 @@ static char *_to_string(CMATRIX *_object, bool local, bool eval)
 	
 	for (i = 0; i < h; i++)
 	{
+		if (i)
+		{
+			if (!local)
+				result = GB.AddChar(result, ',');
+		}
+		
 		result = GB.AddChar(result, '[');
 	
 		for (j = 0; j < w; j++)
 		{
 			if (j)
-				result = GB.AddChar(result, ' ');
+				result = GB.AddChar(result, local ? ' ' : ',');
 			
 			if (!COMPLEX(THIS))
 			{
@@ -630,7 +639,7 @@ static char *_to_string(CMATRIX *_object, bool local, bool eval)
 			}
 			else
 			{
-				str = COMPLEX_to_string(gsl_matrix_complex_get(CMAT(THIS), i, j), local, eval);
+				str = COMPLEX_to_string(gsl_matrix_complex_get(CMAT(THIS), i, j), local);
 				result = GB.AddString(result, str, GB.StringLength(str));
 				GB.FreeString(&str);
 			}
@@ -672,7 +681,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -705,7 +714,7 @@ static bool _convert(CMATRIX *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -953,82 +962,6 @@ BEGIN_METHOD(Matrix_put, GB_VARIANT value; GB_INTEGER i; GB_INTEGER j)
 END_METHOD
 
 
-BEGIN_METHOD(Matrix_Scale, GB_VALUE value)
-
-	GB_VALUE *value = (GB_VALUE *)ARG(value);
-	int type;
-	COMPLEX_VALUE cv;
-	CMATRIX *m;
-	
-	type = COMPLEX_get_value(value, &cv);
-	
-	if (type == CGV_ERR)
-		return;
-
-	m = MATRIX_copy(THIS);
-	
-	if (type == CGV_COMPLEX)
-	{
-		MATRIX_ensure_complex(m);
-		gsl_matrix_complex_scale(CMAT(m), cv.z);
-	}
-	else
-	{
-		if (COMPLEX(THIS))
-			gsl_matrix_complex_scale(CMAT(m), cv.z);
-		else
-			gsl_matrix_scale(MAT(m), cv.x);
-	}
-	
-	GB.ReturnObject(m);
-		
-END_METHOD
-
-BEGIN_METHOD(Matrix_Equal, GB_OBJECT matrix)
-
-	CMATRIX *m = VARG(matrix);
-	bool ca, cb;
-	
-	if (GB.CheckObject(m))
-		return;
-	
-	if (WIDTH(THIS) != WIDTH(m) || HEIGHT(THIS) != HEIGHT(m))
-	{
-		GB.ReturnBoolean(FALSE);
-		return;
-	}
-	
-	ca = !COMPLEX(THIS);
-	cb = !COMPLEX(m);
-	
-	if (ca && cb)
-	{
-		GB.ReturnBoolean(gsl_matrix_equal(MAT(THIS), MAT(m)));
-	}
-	else
-	{
-		CMATRIX *a, *b;
-		
-		if (ca)
-			a = MATRIX_convert_to_complex(THIS);
-		else
-			a = THIS;
-		
-		if (cb)
-			b = MATRIX_convert_to_complex(m);
-		else
-			b = m;
-		
-		GB.ReturnBoolean(gsl_matrix_complex_equal(CMAT(a), CMAT(b)));
-		
-		if (ca) GB.Unref(POINTER(&a));
-		if (cb) GB.Unref(POINTER(&b));
-	}
-
-
-END_METHOD
-
-
 BEGIN_PROPERTY(Matrix_Handle)
 
 	GB.ReturnPointer(THIS->matrix);
@@ -1261,9 +1194,9 @@ BEGIN_METHOD_VOID(Matrix_Invert)
 END_METHOD
 
 
-BEGIN_METHOD(Matrix_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
+BEGIN_METHOD(Matrix_ToString, GB_BOOLEAN local)
 
-	GB.ReturnString(GB.FreeStringLater(_to_string(THIS, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
+	GB.ReturnString(GB.FreeStringLater(_to_string(THIS, VARGOPT(local, FALSE))));
 
 END_METHOD
 
@@ -1278,7 +1211,7 @@ GB_DESC MatrixDesc[] =
 	GB_METHOD("_free", NULL, Matrix_free, NULL),
 	//GB_STATIC_METHOD("_call", "Vector", Matrix_call, "(Value)f."),
 	GB_METHOD("Copy", "Matrix", Matrix_Copy, NULL),
-	GB_METHOD("ToString", "s", Matrix_ToString, "[(Local)b(ForEval)b]"),
+	GB_METHOD("ToString", "s", Matrix_ToString, "[(Local)b]"),
 
 	GB_STATIC_METHOD("Identity", "Matrix", Matrix_Identity, "[(Width)i(Height)i(Complex)b]"),
 	
@@ -1293,14 +1226,14 @@ GB_DESC MatrixDesc[] =
 
 	GB_METHOD("_call", "Vector", Matrix_call, "(Vector)Vector"),
 	
-	GB_METHOD("Equal", "b", Matrix_Equal, "(Matrix)Matrix;"),
+	//GB_METHOD("Equal", "b", Matrix_Equal, "(Matrix)Matrix;"),
 	
 	GB_METHOD("Row", "Vector", Matrix_Row, "(Row)i"),
 	GB_METHOD("Column", "Vector", Matrix_Column, "(Column)i"),
 	GB_METHOD("SetRow", NULL, Matrix_SetRow, "(Row)i(Vector)Vector;"),
 	GB_METHOD("SetColumn", NULL, Matrix_SetColumn, "(Column)i(Vector)Vector;"),
 	
-	GB_METHOD("Scale", "Matrix", Matrix_Scale, "(Value)v"),
+	//GB_METHOD("Scale", "Matrix", Matrix_Scale, "(Value)v"),
 	GB_METHOD("Trans", "Matrix", Matrix_Transpose, NULL),
 	GB_METHOD("Conj", "Matrix", Matrix_Conjugate, NULL),
 	GB_METHOD("Inv", "Matrix", Matrix_Invert, NULL),

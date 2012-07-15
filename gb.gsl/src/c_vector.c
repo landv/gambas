@@ -350,7 +350,7 @@ static GB_OPERATOR_DESC _operator =
 
 //---- Conversions ----------------------------------------------------------
 
-static char *_to_string(CVECTOR *_object, bool local, bool eval)
+static char *_to_string(CVECTOR *_object, bool local)
 {
 	char *result = NULL;
 	int i;
@@ -363,7 +363,7 @@ static char *_to_string(CVECTOR *_object, bool local, bool eval)
 	for (i = 0; i < size; i++)
 	{
 		if (i)
-			result = GB.AddChar(result, ' ');
+			result = GB.AddChar(result, local ? ' ' : ',');
 		
 		if (!COMPLEX(THIS))
 		{
@@ -372,7 +372,7 @@ static char *_to_string(CVECTOR *_object, bool local, bool eval)
 		}
 		else
 		{
-			str = COMPLEX_to_string(gsl_vector_complex_get(CVEC(THIS), i), local, eval);
+			str = COMPLEX_to_string(gsl_vector_complex_get(CVEC(THIS), i), local);
 			result = GB.AddString(result, str, GB.StringLength(str));
 			GB.FreeString(&str);
 		}
@@ -411,7 +411,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -444,7 +444,7 @@ static bool _convert(CVECTOR *_object, GB_TYPE type, GB_VALUE *conv)
 					
 				case GB_T_STRING:
 				case GB_T_CSTRING:
-					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING, FALSE);
+					conv->_string.value.addr = _to_string(THIS, type == GB_T_CSTRING);
 					conv->_string.value.start = 0;
 					conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 					return FALSE;
@@ -702,34 +702,6 @@ BEGIN_METHOD(Vector_put, GB_VARIANT value; GB_INTEGER index)
 END_METHOD
 
 
-BEGIN_METHOD(Vector_Scale, GB_VALUE value)
-
-	GB_VALUE *value = (GB_VALUE *)ARG(value);
-	int type;
-	COMPLEX_VALUE cv;
-	
-	type = COMPLEX_get_value(value, &cv);
-	
-	if (type == CGV_ERR)
-		return;
-
-	if (type == CGV_COMPLEX)
-	{
-		VECTOR_ensure_complex(THIS);
-		gsl_vector_complex_scale(CVEC(THIS), cv.z);
-	}
-	else
-	{
-		if (COMPLEX(THIS))
-			gsl_vector_complex_scale(CVEC(THIS), cv.z);
-		else
-			gsl_vector_scale(VEC(THIS), cv.x);
-	}
-	
-	GB.ReturnObject(THIS);
-		
-END_METHOD
-
 static void do_dot(CVECTOR *_object, CVECTOR *v, bool conj)
 {
 	bool ca, cb;
@@ -775,11 +747,13 @@ static void do_dot(CVECTOR *_object, CVECTOR *v, bool conj)
 	GB.ReturnConvVariant();
 }
 
+
 BEGIN_METHOD(Vector_Dot, GB_OBJECT vector)
 
 	do_dot(THIS, VARG(vector), FALSE);
 
 END_METHOD
+
 
 BEGIN_METHOD(Vector_ConjDot, GB_OBJECT vector)
 
@@ -787,56 +761,13 @@ BEGIN_METHOD(Vector_ConjDot, GB_OBJECT vector)
 	
 END_METHOD
 
+
 BEGIN_METHOD_VOID(Vector_Norm)
 
 	if (!COMPLEX(THIS))
 		GB.ReturnFloat(gsl_blas_dnrm2(VEC(THIS)));
 	else
 		GB.ReturnFloat(gsl_blas_dznrm2(CVEC(THIS)));
-
-END_METHOD
-
-BEGIN_METHOD(Vector_Equal, GB_OBJECT vector)
-
-	CVECTOR *v = VARG(vector);
-	bool ca, cb;
-	
-	if (GB.CheckObject(v))
-		return;
-	
-	if (SIZE(THIS) != SIZE(v))
-	{
-		GB.ReturnBoolean(FALSE);
-		return;
-	}
-	
-	ca = !COMPLEX(THIS);
-	cb = !COMPLEX(v);
-	
-	if (ca && cb)
-	{
-		GB.ReturnBoolean(gsl_vector_equal(VEC(THIS), VEC(v)));
-	}
-	else
-	{
-		CVECTOR *a, *b;
-		
-		if (ca)
-			a = VECTOR_convert_to_complex(THIS);
-		else
-			a = THIS;
-		
-		if (cb)
-			b = VECTOR_convert_to_complex(v);
-		else
-			b = v;
-		
-		GB.ReturnBoolean(gsl_vector_complex_equal(CVEC(a), CVEC(b)));
-		
-		if (ca) GB.Unref(POINTER(&a));
-		if (cb) GB.Unref(POINTER(&b));
-	}
-
 
 END_METHOD
 
@@ -848,9 +779,9 @@ BEGIN_PROPERTY(Vector_Handle)
 END_PROPERTY
 
 
-BEGIN_METHOD(Vector_ToString, GB_BOOLEAN local; GB_BOOLEAN eval)
+BEGIN_METHOD(Vector_ToString, GB_BOOLEAN local)
 
-	GB.ReturnString(GB.FreeStringLater(_to_string(THIS, VARGOPT(local, FALSE), VARGOPT(eval, FALSE))));
+	GB.ReturnString(GB.FreeStringLater(_to_string(THIS, VARGOPT(local, FALSE))));
 
 END_METHOD
 
@@ -873,11 +804,11 @@ GB_DESC VectorDesc[] =
 	GB_METHOD("_get", "v", Vector_get, "(Index)i"),
 	GB_METHOD("_put", NULL, Vector_put, "(Value)v(Index)i"),
 
-	GB_METHOD("Scale", "Vector", Vector_Scale, "(Value)v"),
+	//GB_METHOD("Scale", "Vector", Vector_Scale, "(Value)v"),
 	GB_METHOD("Dot", "v", Vector_Dot, "(Vector)Vector"),
 	GB_METHOD("ConjDot", "v", Vector_ConjDot, "(Vector)Vector"),
 	GB_METHOD("Norm", "f", Vector_Norm, NULL),
-	GB_METHOD("Equal", "b", Vector_Equal, "(Vector)Vector;"),
+	//GB_METHOD("Equal", "b", Vector_Equal, "(Vector)Vector;"),
 	
 	GB_INTERFACE("_convert", &_convert),
 	GB_INTERFACE("_operator", &_operator),
