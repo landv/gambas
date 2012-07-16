@@ -95,19 +95,19 @@ void Document::setContent(char *content, size_t len) throw(XMLParseException)
     //On cherche le début du prologue XML
     posStart = (char*)memchrs(content, len, "<?xml ", 6);
     
-    if(!posStart) 
-        throw(XMLParseException("No valid XML prolog found",
-        0, 0, 0));;
-
-    //On cherche la fin du prologue XML
-    posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
-    if(!posEnd) 
-        throw(XMLParseException("No valid XML prolog found",
-        0, 0, 0));;
+    if(posStart)//On cherche la fin du prologue XML
+        posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
 
     Node** elements = 0;
     size_t elementCount = 0;
-    elements = Element::fromText(posEnd, len - (posEnd - content), &elementCount);
+    if(posEnd)
+    {
+        elements = Element::fromText(posEnd, len - (posEnd - content), &elementCount);
+    }
+    else
+    {
+        elements = Element::fromText(content, len, &elementCount);
+    }
 
     Element *newRoot = 0;
     Node *node = 0;

@@ -79,6 +79,19 @@ Document* Node::GetOwnerDocument()
     return node->parentDocument;
 }
 
+void Node::getGBChildren(GB_ARRAY *array)
+{
+    GB.Array.New(array, GB.FindClass("XmlNode"), this->isElement() ? this->toElement()->childCount : 0);
+    if(!this->isElement()) return;
+    int i = 0;
+    for(Node *node = this->toElement()->firstChild; node != 0; node = node->nextNode)
+    {
+        *(reinterpret_cast<void **>((GB.Array.Get(*array, i)))) = node->GetGBObject();
+        GB.Ref(node->GBObject);
+        ++i;
+    }
+}
+
 /***** Node types *****/
 
 bool Node::isElement()

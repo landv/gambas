@@ -98,7 +98,6 @@ public:
     void addChildrenByTagName(const char *compTagName, const size_t compLenTagName, Element** &array, size_t &lenArray, const int depth = -1);
     void getGBAllChildren(GB_ARRAY *array);
     void addGBAllChildren(GB_ARRAY *array);
-    void getGBChildren(GB_ARRAY *array);
     void getGBChildElements(GB_ARRAY *array);
     
     Element* firstChildElement();

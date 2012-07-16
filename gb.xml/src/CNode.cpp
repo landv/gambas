@@ -257,6 +257,15 @@ GBI::Return(attr);
 
 END_METHOD
 
+BEGIN_PROPERTY(CNode_childNodes)
+
+GB_ARRAY array;
+THIS->getGBChildren(&array);
+
+GB.ReturnObject(array);
+
+END_PROPERTY
+
 GB_DESC CElementAttributeNodeDesc[] =
 {
     GB_DECLARE("_XmlAttrNode", sizeof(CNode)), GB_INHERITS("XmlNode"),
@@ -295,6 +304,8 @@ GB_DESC CNodeDesc[] =
     
     GB_PROPERTY_READ("Element", "XmlElement", CNode_element),
     GB_PROPERTY_READ("OwnerDocument", "XmlDocument", CNode_ownerDocument),
+    GB_PROPERTY_READ("ChildNodes", "XmlNode[]", CNode_childNodes),
+    GB_PROPERTY_READ("Children", "XmlNode[]", CNode_childNodes),
     GB_PROPERTY_READ("Parent", "XmlElement", CNode_parent),
     GB_PROPERTY_READ("Previous", "XmlNode", CNode_previous),
     GB_PROPERTY_READ("Next", "XmlNode", CNode_next),

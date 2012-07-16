@@ -189,15 +189,6 @@ GB.ReturnBoolean((bool)(THIS->getAttribute(STRING(name), LENGTH(name))));
 
 END_METHOD
 
-BEGIN_PROPERTY(CElement_childNodes)
-
-GB_ARRAY array;
-THIS->getGBChildren(&array);
-
-GB.ReturnObject(array);
-
-END_PROPERTY
-
 BEGIN_PROPERTY(CElement_allChildNodes)
 
 GB_ARRAY array;
@@ -298,8 +289,6 @@ GB_DESC CElementDesc[] =
     
     GB_METHOD("IsAttributeSet", "b", CElement_isAttributeSet, "(Name)s"),
     
-    GB_PROPERTY_READ("ChildNodes", "XmlNode[]", CElement_childNodes),
-    GB_PROPERTY_READ("Children", "XmlNode[]", CElement_childNodes),
     GB_PROPERTY_READ("ChildElements", "XmlElement[]", CElement_childElements),
     GB_PROPERTY_READ("AllChildNodes", "XmlNode[]", CElement_allChildNodes),
     GB_PROPERTY_READ("FirstChild", "XmlNode", CElement_firstChild),

@@ -43,6 +43,7 @@ public:
     CNode *GetGBObject();
     
     //Node tree
+    void getGBChildren(GB_ARRAY *array);
     Document* GetOwnerDocument();
     Document *parentDocument;
     Element *parent;

@@ -353,18 +353,6 @@ void Element::addGBChildrenByAttributeValue(const char *attrName, const size_t l
             
 }
 
-void Element::getGBChildren(GB_ARRAY *array)
-{
-    GB.Array.New(array, GB.FindClass("XmlNode"), childCount);
-    int i = 0;
-    for(Node *node = firstChild; node != 0; node = node->nextNode)
-    {
-        *(reinterpret_cast<void **>((GB.Array.Get(*array, i)))) = node->GetGBObject();
-        GB.Ref(node->GBObject);
-        ++i;
-    }
-}
-
 void Element::getGBChildElements(GB_ARRAY *array)
 {
     GB.Array.New(array, GB.FindClass("XmlElement"), 0);
@@ -1039,6 +1027,20 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                     CDATANode *cdata = new CDATANode;
                     cdata->setEscapedTextContent(pos, tag - pos);
                     APPEND(cdata);
+                    pos = tag + 3;
+                    continue;
+                }
+                else if(memcmp(pos, "DOCTYPE", 7) == 0)//Doctypes are silently ignored for the moment
+                {
+                    pos += 7;
+                    tag = (char*)memchr(pos, '>', endData - pos);
+                    if(!tag)//Doctype sans fin
+                    {
+                        throw(XMLParseException("Never-ending DOCTYPE",
+                        data, lendata, pos - 1));
+                    }
+                    
+                    pos = tag + 1;
                     continue;
                 }
                 else// ... ?
