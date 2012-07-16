@@ -1026,6 +1026,10 @@ Public Sub Editors_KeyPress()
       Endif
       Stop Event
       
+    ' Else If Key.Code = Key["L"] Then
+    '   
+    '   FMain.SearchProject
+    '   
     Else If Key.Code = Key.F12 Then
       
       For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
@@ -1034,7 +1038,7 @@ Public Sub Editors_KeyPress()
           Message("Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes.")
         Endif
       Next
-
+      
     Endif
 
     Return

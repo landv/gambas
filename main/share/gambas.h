@@ -376,6 +376,9 @@ typedef
 #define GB_CONSTANT(symbol, type, value) \
 	{ "C" symbol, (intptr_t)type, (intptr_t)value }
 
+#define GB_FLOAT_CONSTANT(symbol, value) \
+	{ "C" symbol, (intptr_t)"f", (intptr_t)0, (intptr_t)0, (double)value }
+
 #define GB_PROPERTY(symbol, type, proc) \
 	{ "p" symbol, (intptr_t)type, (intptr_t)proc }
 
@@ -526,9 +529,14 @@ typedef
 		intptr_t val1;
 		intptr_t val2;
 		intptr_t val3;
-		intptr_t val4;
+		#if __WORDSIZE == 64
+		double val4;
 		intptr_t val5;
+		#else
+		double val4;
+		#endif
 		}
+	PACKED
 	GB_DESC;
 
 

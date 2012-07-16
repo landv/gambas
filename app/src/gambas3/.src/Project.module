@@ -1686,11 +1686,28 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Next
 
   If $cProjectFilter Then
+    
     For Each $cProjectFilter
       sPath = $cProjectFilter.Key
       EnsureKey(sPath)
       Try ProjectTree[sPath].EnsureVisible
     Next
+    
+    ' Move to the first available item if the root item is selected
+    
+    If ProjectTree[Project.Dir].Selected Then
+      With ProjectTree
+        .MoveFirst()
+        Do
+          If .MoveBelow() Then Break
+          If Left(.Item.Key) <> "$" And Not IsDir(.Item.Key) Then
+            .Item.Selected = True
+            Break
+          Endif
+        Loop
+      End With
+    Endif
+    
   Endif
 
   UpdateTitle

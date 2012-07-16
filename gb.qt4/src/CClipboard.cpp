@@ -173,6 +173,52 @@ static void paste(const QMimeData *data, const char *fmt)
 
 ***************************************************************************/
 
+static GB_ARRAY _clipboard_formats = NULL;
+
+void CLIPBOARD_has_changed()
+{
+	GB.Unref(POINTER(&_clipboard_formats));
+}
+
+static GB_ARRAY load_clipboard_formats()
+{
+	if (!_clipboard_formats)
+	{
+		//qDebug("load clipboard formats");
+		GB.Array.New(&_clipboard_formats, GB_T_STRING, 0);
+		get_formats(QApplication::clipboard()->mimeData(), _clipboard_formats);
+		GB.Ref(_clipboard_formats);
+	}
+	
+	return _clipboard_formats;
+}
+
+static int get_clipboard_type()
+{
+	int i;
+	QString format;
+	
+	load_clipboard_formats();
+	
+	for (i = 0; i < GB.Array.Count(_clipboard_formats); i++)
+	{
+		format = *((char **)GB.Array.Get(_clipboard_formats, i));
+		if (format.startsWith("text/"))
+			return MIME_TEXT;
+		else if (format.startsWith("image/"))
+			return MIME_IMAGE;
+	}
+	
+	return MIME_UNKNOWN;
+}
+
+BEGIN_METHOD_VOID(Clipboard_exit)
+
+	CLIPBOARD_has_changed();
+
+END_METHOD
+
+
 BEGIN_METHOD_VOID(CCLIPBOARD_clear)
 
 	QApplication::clipboard()->clear();
@@ -182,25 +228,25 @@ END_METHOD
 
 BEGIN_PROPERTY(CCLIPBOARD_format)
 
-	GB.ReturnNewZeroString(TO_UTF8(get_format(QApplication::clipboard()->mimeData())));
+	load_clipboard_formats();
+	if (GB.Array.Count(_clipboard_formats) == 0)
+		GB.ReturnVoidString();
+	else
+		GB.ReturnString(*((char **)GB.Array.Get(_clipboard_formats, 0)));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCLIPBOARD_formats)
 
-	GB_ARRAY array;
-	
-	GB.Array.New(&array, GB_T_STRING, 0);
-	get_formats(QApplication::clipboard()->mimeData(), array);
-	GB.ReturnObject(array);
+	GB.ReturnObject(load_clipboard_formats());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCLIPBOARD_type)
 
-	GB.ReturnInteger(get_type(QApplication::clipboard()->mimeData()));
+	GB.ReturnInteger(get_clipboard_type());
 
 END_PROPERTY
 
@@ -256,9 +302,12 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 
 END_METHOD
 
+
 GB_DESC CClipboardDesc[] =
 {
 	GB_DECLARE("Clipboard", 0), GB_VIRTUAL_CLASS(),
+
+	GB_STATIC_METHOD("_exit", NULL, Clipboard_exit, NULL),
 
 	GB_CONSTANT("None", "i", 0),
 	GB_CONSTANT("Text", "i", 1),

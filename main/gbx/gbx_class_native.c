@@ -174,8 +174,16 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 					desc->constant.type = T_CSTRING;
 				else if (desc->constant.type == T_FLOAT || desc->constant.type == T_SINGLE)
 				{
-					if (NUMBER_from_string(NB_READ_FLOAT, desc->constant.value._string, strlen(desc->constant.value._string), &value))
-						THROW(E_CLASS, class->name, "Bad constant", "");
+					if (desc->gambas.val1 == 0)
+					{
+						value._float.value = (double)desc->gambas.val3;
+					}
+					else
+					{
+						if (NUMBER_from_string(NB_READ_FLOAT, desc->constant.value._string, strlen(desc->constant.value._string), &value))
+							THROW(E_CLASS, class->name, "Bad constant", "");
+					}
+					
 					if (desc->constant.type == T_SINGLE)
 						desc->constant.value._single = (float)value._float.value;
 					else

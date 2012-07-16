@@ -95,12 +95,15 @@ public:
   
   static bool isTooltipEnabled() { return !_tooltip_disable; }
   static void setTooltipEnabled(bool b);
+	
+	static void initClipboard();
   
   static QEventLoop *eventLoop;
 	
 public slots:
 	
 	void linkDestroyed(QObject *);
+	void clipboardHasChanged();
   
 private:
   static bool _tooltip_disable;

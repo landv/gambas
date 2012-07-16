@@ -330,6 +330,16 @@ MyApplication::MyApplication(int &argc, char **argv)
 {
 }
 
+void MyApplication::initClipboard()
+{
+  QObject::connect(clipboard(), SIGNAL(dataChanged()), qApp, SLOT(clipboardHasChanged()));
+}
+
+void MyApplication::clipboardHasChanged()
+{
+	CLIPBOARD_has_changed();
+}
+
 static bool QT_EventFilter(QEvent *e)
 {
 	bool cancel;
@@ -649,6 +659,8 @@ static void QT_Init(void)
 	//Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");
 
 	qApp->setQuitOnLastWindowClosed(false);
+	
+	MyApplication::initClipboard();
 	
 	init = true;
 }

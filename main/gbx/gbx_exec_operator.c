@@ -239,6 +239,10 @@ __OBJECT_FLOAT:
 	VALUE_conv_float(P2);
 	result = (*(FUNC_I_OF)func)(o1, P2->_float.value, FALSE);
 	OBJECT_UNREF(o1, "EXEC_comparator");
+
+	if (result < 0)
+		raise_error(o1, NULL);
+	
 	goto __END;
 	
 __FLOAT_OBJECT:
@@ -248,6 +252,10 @@ __FLOAT_OBJECT:
 	VALUE_conv_float(P1);
 	result = (*(FUNC_I_OF)func)(o2, P1->_float.value, TRUE);
 	OBJECT_UNREF(o2, "EXEC_comparator");
+
+	if (result < 0)
+		raise_error(o2, NULL);
+	
 	goto __END;
 	
 __OTHER_OBJECT:
@@ -271,7 +279,10 @@ __OTHER:
 	result = (*(FUNC_I_OO)func)(o1, o2, invert);
 	OBJECT_UNREF(o1, "EXEC_comparator");
 	OBJECT_UNREF(o2, "EXEC_comparator");
-	result = !!result; // result != 0;
+	//result = !!result; // result != 0;
+	
+	if (result < 0)
+		raise_error(o1, o2);
 	
 __END:
 

@@ -505,6 +505,60 @@ static int _equal(CMATRIX *a, CMATRIX *b)
 		return gsl_matrix_equal(MAT(a), MAT(b));
 }
 
+static int _equalf(CMATRIX *a, double f)
+{
+	bool result;
+	
+	if (COMPLEX(a))
+	{
+		if (f == 0.0)
+			return gsl_matrix_complex_isnull(CMAT(a));
+		
+		gsl_matrix_complex *m = gsl_matrix_complex_alloc(WIDTH(a), HEIGHT(a));
+		gsl_matrix_complex_set_identity(m);
+		gsl_matrix_complex_scale(m, gsl_complex_rect(f, 0));
+		result = gsl_matrix_complex_equal(CMAT(a), m);
+		gsl_matrix_complex_free(m);
+	}
+	else
+	{
+		if (f == 0.0)
+			return gsl_matrix_isnull(MAT(a));
+		
+		gsl_matrix *m = gsl_matrix_alloc(WIDTH(a), HEIGHT(a));
+		gsl_matrix_set_identity(m);
+		gsl_matrix_scale(m, f);
+		result = gsl_matrix_equal(MAT(a), m);
+		gsl_matrix_free(m);
+	}
+	
+	return result;
+}
+
+static int _equalo(CMATRIX *a, void *b)
+{
+	bool result;
+	CCOMPLEX *c;
+	
+	if (!GB.Is(b, CLASS_Complex))
+		return -1;
+	
+	c = (CCOMPLEX *)b;
+	
+	if (GSL_IMAG(c->number) == 0.0)
+		return _equalf(a, GSL_REAL(c->number));
+	
+	if (!COMPLEX(a))
+		return FALSE;
+	
+	gsl_matrix_complex *m = gsl_matrix_complex_alloc(WIDTH(a), HEIGHT(a));
+	gsl_matrix_complex_set_identity(m);
+	gsl_matrix_complex_scale(m, c->number);
+	result = gsl_matrix_complex_equal(CMAT(a), m);
+	gsl_matrix_complex_free(m);
+	return result;
+}
+
 static CMATRIX *_neg(CMATRIX *a)
 {
 	CMATRIX *m = MATRIX_make(a);
@@ -587,7 +641,8 @@ static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
 static GB_OPERATOR_DESC _operator =
 {
 	.equal   = (void *)_equal,
-	//.equalf  = (void *)_equalf,
+	.equalf  = (void *)_equalf,
+	.equalo  = (void *)_equalo,
 	.add     = (void *)_add,
 	.addf    = (void *)_addf,
 	.addo    = (void *)_addo,

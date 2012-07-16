@@ -18,7 +18,7 @@
     Index = 0
     Text = ("Project type")
     { HBox5 HBox
-      MoveScaled(1,1,81,55)
+      MoveScaled(1,0,81,58)
       Expand = True
       Spacing = True
       { VBox3 VBox
@@ -173,7 +173,7 @@
         }
       }
       { VBox1 VBox
-        MoveScaled(37,1,41,53)
+        MoveScaled(37,1,41,56)
         Expand = True
         Spacing = True
         { Label12 Label
@@ -183,7 +183,7 @@
           Text = ("Options")
         }
         { svwOption ScrollView
-          MoveScaled(1,5,39,47)
+          MoveScaled(1,5,39,50)
           Background = Color.TextBackground
           Expand = True
           Arrangement = Arrange.Vertical
@@ -229,16 +229,21 @@
             Tag = "IMAGE"
             Text = ("Image processing")
           }
-          { chkCtrlPublic CheckBox
+          { chkCtrlPublic2 CheckBox
             MoveScaled(1,32,37,4)
+            Tag = "SCIENCE"
+            Text = ("Scientific computing")
+          }
+          { chkCtrlPublic CheckBox
+            MoveScaled(1,36,37,4)
             Tag = "VISUAL"
             Text = ("Visual Basic™ conversion help")
           }
           { Separator1 Separator
-            MoveScaled(1,36,37,3)
+            MoveScaled(1,41,37,3)
           }
           { CheckBox8 CheckBox
-            MoveScaled(1,39,35,4)
+            MoveScaled(1,44,35,4)
             Tag = "COMPONENT"
             Text = ("Component programming")
           }

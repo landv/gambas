@@ -485,16 +485,15 @@ GB_DESC ComplexDesc[] =
 
 	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
 
-	GB_METHOD("Conj", "Complex", Complex_Conj, NULL),
-	GB_METHOD("Inv", "Complex", Complex_Inv, NULL),
-	
 	GB_PROPERTY("Real", "f", Complex_Real),
 	GB_PROPERTY("Imag", "f", Complex_Imag),
 
-	GB_METHOD("Abs", "f", Complex_Abs, NULL),
 	GB_METHOD("Abs2", "f", Complex_Abs2, NULL),
 	GB_METHOD("Arg", "f", Complex_Arg, NULL),
 
+	GB_METHOD("Conj", "Complex", Complex_Conj, NULL),
+	GB_METHOD("Inv", "Complex", Complex_Inv, NULL),
+	
 	GB_INTERFACE("_operator", &_operator),
 	GB_INTERFACE("_convert", &_convert),
 	

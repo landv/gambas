@@ -34,6 +34,10 @@ Component=gb.pcre
 Component=gb.settings
 @ENDIF
 @
+@IF SCIENCE
+Component=gb.gsl
+@ENDIF
+@
 @IF VISUAL
 Component=gb.vb
 @ENDIF
@@ -51,6 +55,9 @@ Component=gb.image
   @IF GTK
 Component=gb.gtk
 Component=gb.form
+    @IF OPENGL
+Component=gb.gtk.opengl
+    @ENDIF
   @ENDIF
   @IF QT
 Component=gb.qt4
@@ -63,6 +70,9 @@ Component=gb.qt4.opengl
   @IF GUI
 Component=gb.gui
 Component=gb.form
+    @IF OPENGL
+Component=gb.gui.opengl
+    @ENDIF
   @ENDIF
   @IF DATABASE
 Component=gb.db.form

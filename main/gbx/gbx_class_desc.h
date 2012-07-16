@@ -168,8 +168,10 @@ typedef
 		intptr_t type;
 		intptr_t val1;
 		intptr_t val2;
-		intptr_t val3;
+		double val3;
+		#ifdef OS_64BITS
 		intptr_t val4;
+		#endif
 		}
 	CLASS_DESC_GAMBAS;
 

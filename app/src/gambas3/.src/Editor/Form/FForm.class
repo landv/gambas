@@ -2745,6 +2745,8 @@ Public Sub Form_KeyPress()
         MoveSelection(D, 0, bFree)
       Endif
       Stop Event
+    ' Case Key["L"]
+    '   If Key.Control Then FMain.SearchProject
   End Select
 
 End
