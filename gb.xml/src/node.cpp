@@ -25,13 +25,16 @@
 
 bool Node::NoInstanciate = false;
 
-Node::Node() : parentDocument(0), parent(0), nextNode(0), previousNode(0), GBObject(0)
+Node::Node() : parentDocument(0), parent(0), nextNode(0), previousNode(0), GBObject(0), userData(0)
 {
 }
 
 Node::~Node()
 {
-    
+    if(userData)
+    {
+        GB.Unref(POINTER(&userData));
+    }
 }
 
 CNode* Node::GetGBObject()
@@ -154,4 +157,22 @@ void Node::GBTextContent(char *&output, size_t &len)
     output = GB.TempString(0, len);
     addTextContent(output);
     output -= len;
+}
+
+GB_VARIANT* Node::getUserData(const char *key, const size_t lenkey)
+{
+    if(!userData) return 0;
+    GB_VARIANT *srcValue = new GB_VARIANT;
+    if (GB.Collection.Get(userData, key, lenkey, srcValue)) return 0;
+    return srcValue;
+}
+
+void Node::addUserData(const char *key, const size_t lenkey, GB_VARIANT *value)
+{
+    if(!userData)
+    {
+        GB.Collection.New(POINTER(&userData), GB_COMP_BINARY);
+    }
+    
+    GB.Collection.Set(userData, key, lenkey, value);
 }

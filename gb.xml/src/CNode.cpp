@@ -266,6 +266,28 @@ GB.ReturnObject(array);
 
 END_PROPERTY
 
+BEGIN_METHOD(CNode_getUserData, GB_STRING key)
+
+GB_VARIANT *value = THIS->getUserData(STRING(key), LENGTH(key));
+
+if(value) 
+{
+    GB.ReturnVariant(&(value->value));
+    delete value;
+}
+else
+{
+    GB.ReturnNull();
+}
+
+END_METHOD
+
+BEGIN_METHOD(CNode_setUserData, GB_STRING key; GB_VARIANT value)
+
+THIS->addUserData(STRING(key), LENGTH(key), ARG(value));
+
+END_METHOD
+
 GB_DESC CElementAttributeNodeDesc[] =
 {
     GB_DECLARE("_XmlAttrNode", sizeof(CNode)), GB_INHERITS("XmlNode"),
@@ -313,6 +335,8 @@ GB_DESC CNodeDesc[] =
     GB_PROPERTY_READ("NextSibling", "XmlNode", CNode_next),
     
     GB_METHOD("ToString", "s", CNode_tostring, "[(Indent)b]"),
+    GB_METHOD("GetUserData", "v", CNode_getUserData, "(Key)s"),
+    GB_METHOD("SetUserData", "", CNode_setUserData, "(Key)s(Value)v"),
     GB_PROPERTY("TextContent", "s", CNode_textContent),
     GB_PROPERTY("Value", "s", CNode_textContent),
     GB_PROPERTY("Name", "s", CNode_name),

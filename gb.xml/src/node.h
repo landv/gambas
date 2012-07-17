@@ -74,6 +74,11 @@ public:
     //Gambas object
     virtual void NewGBObject() = 0;//Instanciates a new Gambas XmlElement object linked to the element
     CNode *GBObject;
+    
+    //User data
+    GB_COLLECTION userData;
+    GB_VARIANT *getUserData(const char *key, const size_t lenkey);
+    void addUserData(const char *key, const size_t lenkey, GB_VARIANT *value);
 };
 
 #endif // NODE_H
