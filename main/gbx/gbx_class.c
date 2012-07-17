@@ -911,7 +911,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 
 const char *CLASS_DESC_get_type_name(const CLASS_DESC *desc)
 {
-	switch (desc->gambas.val4)
+	switch (desc->gambas.val3._int[1])
 	{
 		case CD_PROPERTY_ID: return desc->gambas.val2 < 0 ? "r" : "p";
 		case CD_VARIABLE_ID: return "v";

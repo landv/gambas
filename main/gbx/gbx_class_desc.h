@@ -168,10 +168,10 @@ typedef
 		intptr_t type;
 		intptr_t val1;
 		intptr_t val2;
-		double val3;
-		#ifdef OS_64BITS
-		intptr_t val4;
-		#endif
+		union {
+			double _double;
+			intptr_t _int[2];
+			}	val3;
 		}
 	CLASS_DESC_GAMBAS;
 

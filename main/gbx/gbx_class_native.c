@@ -176,7 +176,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 				{
 					if (desc->gambas.val1 == 0)
 					{
-						value._float.value = (double)desc->gambas.val3;
+						value._float.value = desc->gambas.val3._double;
 					}
 					else
 					{
