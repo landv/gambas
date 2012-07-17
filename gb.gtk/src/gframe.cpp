@@ -36,16 +36,96 @@ Panel
 
 ****************************************************************************/
 
+void gPanel::create(void)
+{
+	int i;
+	GtkWidget *ch, *box;
+	bool doReparent = false;
+	bool was_visible = isVisible();
+	GdkRectangle rect;
+	int bg, fg;
+	
+	if (border)
+	{
+		getGeometry(&rect);
+		bg = background();
+		fg = foreground();
+		parent()->remove(this);
+		
+		for (i = 0; i < childCount(); i++)
+		{
+			ch = child(i)->border;
+			g_object_ref(G_OBJECT(ch));
+			gtk_container_remove(GTK_CONTAINER(widget), ch);
+		}
+		
+		_no_delete = true;
+		gtk_widget_destroy(border);
+		_no_delete = false;
+		doReparent = true;
+	}
+	
+	if (_bg_set)
+	{
+		border = gtk_event_box_new();
+		widget = gtk_fixed_new();
+		box = widget;
+		//gtk_widget_set_app_paintable(border, TRUE);
+		//gtk_widget_set_app_paintable(box, TRUE);
+	}
+	else
+	{
+		border = widget = gtk_fixed_new();
+		box = NULL;
+	}
+
+	frame = widget;
+	realize(true);
+	
+	//g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
+	//g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+	
+	if (doReparent)
+	{
+		if (box)
+			gtk_widget_realize(box);
+				
+		setBackground(bg);
+		setForeground(fg);
+		setFont(font());
+		bufX = bufY = bufW = bufH = -1;
+		setGeometry(&rect);
+		
+		for (i = 0; i < childCount(); i++)
+		{
+			ch = child(i)->border;
+			gtk_container_add(GTK_CONTAINER(widget), ch);
+			moveChild(child(i), child(i)->x(), child(i)->y());
+			g_object_unref(G_OBJECT(ch));
+		}
+		
+		if (was_visible)
+			show();
+		else
+			hide();
+	}
+}
+
 gPanel::gPanel(gContainer *parent) : gContainer(parent)
 {
 	g_typ = Type_gPanel;
-
-	border = //gtk_event_box_new();
-	widget = gtk_fixed_new();
-	frame = widget;
-	realize(true);
+	create();
 }
 
+void gPanel::setBackground(gColor color)
+{
+	bool set = _bg_set;
+	
+	gControl::setBackground(color);
+	
+	if (set != _bg_set)
+		create();
+}
 
 /****************************************************************************
 
