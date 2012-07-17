@@ -470,7 +470,8 @@ static void gambas_handle_event(GdkEvent *event)
 	/*if (event->type == GDK_BUTTON_PRESS)
 		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);
 	else if (event->type == GDK_BUTTON_RELEASE)
-		fprintf(stderr, "GDK_BUTTON_RELEASE: %p %s\n", widget, control ? control->name() : NULL);*/
+		fprintf(stderr, "GDK_BUTTON_RELEASE: %p %s\n", widget, control ? control->name() : NULL);
+	*/
 	/*else if (event->type == GDK_KEY_PRESS)
 		fprintf(stderr, "GDK_KEY_PRESS: %p %s (%s)\n", widget, control ? control->name() : NULL, gApplication::activeControl() ? gApplication::activeControl()->name() : NULL);
 	*/
@@ -598,6 +599,7 @@ static void gambas_handle_event(GdkEvent *event)
 		{
 			//fprintf(stderr, "grab = %p\n", grab);
 			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			//fprintf(stderr, "save_control = %p %s\n", control, control ? control->name() : NULL);
 			
 			bool menu = false;
 			

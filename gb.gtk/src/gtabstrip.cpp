@@ -222,10 +222,10 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	updateColors();
 	updateFont();
 	
-	g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
-	g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
-	g_signal_connect(G_OBJECT(fix),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
-	g_signal_connect(G_OBJECT(fix),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
+	//g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
+	//g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
+	//g_signal_connect(G_OBJECT(fix),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
+	//g_signal_connect(G_OBJECT(fix),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
 	g_signal_connect_after(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)parent);	
 	
 	g_object_ref(widget);
@@ -460,9 +460,12 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 	
 	realize();
 
+	gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
+		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK
+		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK);
+	
 	setCount(1);
   
-	gtk_widget_add_events(widget,GDK_BUTTON_RELEASE_MASK);
 	g_signal_connect_after(G_OBJECT(widget), "switch-page", G_CALLBACK(cb_click), (gpointer)this);
 }
 

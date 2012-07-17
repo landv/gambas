@@ -495,6 +495,9 @@ gControl *gContainer::find(int x, int y)
 	int i;
 	gControl *ch;
 	
+	x -= clientX();
+	y -= clientY();
+	
 	if (gApplication::_button_grab != this)
 	{
 		if (x < 0 || y < 0 || x >= clientWidth() || y >= clientHeight())
