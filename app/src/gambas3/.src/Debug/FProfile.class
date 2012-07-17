@@ -20,10 +20,12 @@ Private $aHistory As New String[]
 Private $iHistory As Integer
 Private $iNoHistory As Integer
 
+Private $aIndex As New String[]
 Private $cLines As New Collection
 Private $cCount As New Collection
 Private $sCurrentClass As String
 Private $iFirstLine As Integer
+
 
 Static Public Sub Open(sPath As String)
   
@@ -43,19 +45,51 @@ Private Sub GetClass(sFunc As String) As String
 End
 
 
-Private Sub EnterFunction(sFunc As String, iTime As Long) As CProfile
+Fast Private Sub EnterFunction(sWhere As String, iTime As Long) As CProfile
   
   Dim hProf As CProfile
+  Dim iPos As Integer
+  Dim sKlass As String
+  Dim sFunc As String
   
-  hProf = $cFunc[sFunc]
+  If sWhere = "0" Then
+    sWhere = "@"
+  Else
+  
+    iPos = InStr(sWhere, ".", 2)
+    sKlass = Left$(sWhere, iPos - 1)
+    sWhere = Mid$(sWhere, iPos + 1)
+    sFunc = sWhere
+    
+    If IsDigit(Left(sKlass)) Then
+      If sKlass = "0" Then
+        sKlass = "@"
+      Else
+        sKlass = $aIndex[CInt(sKlass) - 1]
+      Endif
+    Else
+      $aIndex.Add(sKlass)
+    Endif
+    
+    If IsDigit(Left(sFunc)) Then
+      sFunc = $aIndex[CInt(sFunc) - 1]
+    Else
+      $aIndex.Add(sFunc)
+    Endif
+    
+    sWhere = sKlass & "." & sFunc
+    
+  Endif
+  
+  hProf = $cFunc[sWhere]
   If Not hProf Then
     hProf = New CProfile
-    $cFunc[sFunc] = hProf
-    hProf.Name = sFunc
+    $cFunc[sWhere] = hProf
+    hProf.Name = sWhere
     $aFunc.Add(hProf)
   Endif
   
-  $aLevel.Add(sFunc)
+  $aLevel.Add(sWhere)
   $aLevelTime.Add(iTime)
   
   Inc hProf.Count
@@ -64,7 +98,7 @@ Private Sub EnterFunction(sFunc As String, iTime As Long) As CProfile
   
 End
 
-Private Sub ExitFunction(iTime As Long) As CProfile
+Fast Private Sub ExitFunction(iTime As Long) As CProfile
   
   Dim hProf As CProfile
   Dim hCaller As CProfile
@@ -109,6 +143,7 @@ Fast Public Sub Init(sPath As String)
   Dim I, N As Integer
   Dim iMax As Long
   Dim sTitle As String
+  Dim bVer As Boolean
   
   Inc Application.Busy
   
@@ -118,13 +153,16 @@ Fast Public Sub Init(sPath As String)
   
   For Each sLine In hFile.Lines
     
-    If Left(sLine) = " " Then
+    If Not bVer Then
+      If sLine <> "[1]" Then Error.Raise(("Bad profile file format"))
+      bVer = True
+    Endif
+    
+    If Left(sLine) = "(" Or If Left(sLine) = ")" Then
       
-      sLine = Mid$(sLine, 2)
-       
       iLastTime = iOldTime
       
-      If Left(sLine) = ">" Then
+      If Left(sLine) = "(" Then
       
         aLastLine.Push(iLastLine)
         aLastTime.Push(iOldTime)
@@ -362,10 +400,10 @@ Fast Public Sub Init(sPath As String)
   
   Dec Application.Busy
   
-'Catch
-'  
-'  Dec Application.Busy
-'  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Text)
+Catch
+  
+  Dec Application.Busy
+  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Where & ": " & Error.Text)
   
 End
 
@@ -412,7 +450,7 @@ Public Sub gvwProfile_Sort()
   CProfile.Ascending = gvwProfile.Columns.Ascending
   $aFunc.Sort
   
-  If sCurrent Then gvwProfile.Row = $aFunc.Find($cFunc[sCurrent])
+  'If sCurrent Then gvwProfile.Row = $aFunc.Find($cFunc[sCurrent])
 
 End
 
@@ -536,7 +574,7 @@ Public Sub ReadOneConfig()
   edtSource.Flags[Editor.HideMargin] = Not edtSource.Flags[Editor.ShowLineNumbers]
   edtSource.Flags[Editor.NoFolding] = True
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
-  Project.SetEditorFont(gvwSource)
+  Project.SetSmallFont(gvwSource)
   gvwSource.Width = gvwSource.Font.TextWidth("999999") * 4
     
 End

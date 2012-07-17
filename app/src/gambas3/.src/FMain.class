@@ -2004,6 +2004,18 @@ End
 
 Public Sub txtSearchProject_KeyPress()
 
+  Dim I As Integer
+
+  If Key.Text = "+" Then
+    Try tvwProject.Current.Expanded = True
+    Stop Event
+    Return
+  Else If Key.Text = "-"
+    Try tvwProject.Current.Expanded = False
+    Stop Event
+    Return
+  Endif
+
   Select Case Key.Code
     
     Case Key.Esc
@@ -2013,29 +2025,54 @@ Public Sub txtSearchProject_KeyPress()
     Case Key.Up
       tvwProject.MoveCurrent()
       tvwProject.MoveAbove()
+      
+    Case Key.PageUp
+      tvwProject.MoveCurrent()
+      For I = 1 To tvwProject.ClientHeight \ tvwProject.Item.Height
+        If tvwProject.MoveAbove() Then 
+          GoSub GOTO_TOP
+          Break
+        Endif
+      Next
     
     Case Key.Down
       tvwProject.MoveCurrent()
       tvwProject.MoveBelow()
       
+    Case Key.PageDown
+      tvwProject.MoveCurrent()
+      For I = 1 To tvwProject.ClientHeight \ tvwProject.Item.Height
+        If tvwProject.MoveBelow() Then
+          GoSub GOTO_BOTTOM
+          Break
+        Endif
+      Next
+    
     Case Key.Home
-      If Key.Control Then
-        tvwProject.MoveFirst()
-      Endif
+      If Key.Control Then GoSub GOTO_TOP
     
-    Case Key.End
-      If Key.Control Then
-        tvwProject.MoveFirst()
-        Do
-          tvwProject.MoveLast()
-          If tvwProject.Item.Count = 0 Then Break
-          tvwProject.MoveChild()
-        Loop
-      Endif
-    
+    Case Key.End, Key.PageDown
+      If Key.Control Then GoSub GOTO_BOTTOM
+      
   End Select
 
    Try tvwProject.Item.Selected = True
    Try tvwProject.Item.EnsureVisible()
+   Return
+   
+GOTO_TOP:
+
+  tvwProject.MoveFirst()
+  Return
+  
+GOTO_BOTTOM:
+
+  tvwProject.MoveFirst()
+  Do
+    tvwProject.MoveLast()
+    If tvwProject.Item.Count = 0 Then Break
+    tvwProject.MoveChild()
+  Loop
+  Return
    
 End

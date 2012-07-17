@@ -103,7 +103,7 @@ Public Sub GetTitle() As String
   
   If Name Begins ".Eval." Then
     Return "<i>" & ("Evaluator") & "</i>"
-  Else If Name Begins ".System." Then
+  Else If Name = "@" Then
     Return "<i>" & ("Event loop") & "</i>"
   Else
     Return Name

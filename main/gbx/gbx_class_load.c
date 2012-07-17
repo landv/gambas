@@ -605,6 +605,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		{
 			func = &class->load->func[i];
 			func->debug = &debug[i];
+			func->debug->index = i;
 		}
 
 		for (i = 0; i < class->load->n_func; i++)
@@ -620,7 +621,12 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		}
 	}
 
-	/* Source file path, ingored now! */
+	// Profile information
+	
+	if (EXEC_profile)
+		ALLOC_ZERO(&class->load->prof, sizeof(uint) * (class->debug ? (1 + class->load->n_func) : 1), "load_and_relocate");
+	
+	/* Source file path, ignored now! */
 
 	if (class->debug)
 		get_section("debug file name", &section, NULL, NULL);

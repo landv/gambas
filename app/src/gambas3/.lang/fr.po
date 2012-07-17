@@ -303,7 +303,7 @@ msgstr "'tar' a retourné le code d'erreur suivant:"
 msgid "(Automatic key)"
 msgstr "(Clef automatique)"
 
-#: FEditor.class:2830 FTextEditor.class:848
+#: FEditor.class:2834 FTextEditor.class:852
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -347,7 +347,7 @@ msgstr "&1 n'est pas une structure"
 msgid "&1 is not declared"
 msgstr "&1 n'est pas déclaré"
 
-#: FProfile.class:349
+#: FProfile.class:370
 msgid "&1 Mb"
 msgstr "&1 Mo"
 
@@ -399,7 +399,7 @@ msgstr "&1: erreur de syntaxe dans le fichier formulaire"
 msgid "&1: too many nested containers"
 msgstr "&1: trop de conteneurs imbriqués"
 
-#: Project.module:2044
+#: Project.module:2061
 msgid "&1th"
 msgstr "&1ème"
 
@@ -799,7 +799,7 @@ msgstr "<h2 align=center>Licence</h2><p align=center>Ce programme est un LOGICIE
 msgid "3D programming with OpenGL"
 msgstr "Programmation 3D avec OpenGL"
 
-#: Project.module:3743
+#: Project.module:3760
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et être suivi par des lettres ou des chiffres. "
 
@@ -843,7 +843,7 @@ msgstr "Activer le profila&ge"
 msgid "Activate profiling"
 msgstr "Activer le profilage"
 
-#: FConnectionEditor.form:231 FMain.class:1853
+#: FConnectionEditor.form:231 FMain.class:1859
 msgid "Add"
 msgstr "Ajouter"
 
@@ -911,7 +911,7 @@ msgstr "Aligner sur le haut"
 msgid "Alignment"
 msgstr "Alignement"
 
-#: FMain.class:1556
+#: FMain.class:1557
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont être supprimés."
 
@@ -1035,7 +1035,7 @@ msgstr "Automatisation"
 msgid "Autotools"
 msgstr "-"
 
-#: FProfile.class:575
+#: FProfile.class:596
 msgid "Average"
 msgstr "Moyenne"
 
@@ -1098,6 +1098,10 @@ msgstr "Nom de menu incorrect !"
 #: MErrorMessage.module:39
 msgid "Bad number of dimensions"
 msgstr "Nombre de dimensions incorrect"
+
+#: FProfile.class:138
+msgid "Bad profile file format"
+msgstr "Format de fichier de profilage incorrect"
 
 #: MErrorMessage.module:40
 msgid "Bad project file: line &1: &2"
@@ -1207,11 +1211,11 @@ msgstr "Fonctions appelées"
 msgid "Callers"
 msgstr "Fonctions appelantes"
 
-#: FProfile.class:569
+#: FProfile.class:590
 msgid "Calls"
 msgstr "Appels"
 
-#: FTextEditor.class:506 FTranslate.class:636 Project.module:433
+#: FTextEditor.class:510 FTranslate.class:636 Project.module:433
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1231,11 +1235,11 @@ msgstr "Impossible d'ajouter le fichier."
 msgid "Cannot change current directory to '&1': &2"
 msgstr "Impossible de changer le répertoire courant vers '&1': &2"
 
-#: Project.module:4488
+#: Project.module:4505
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:2529
+#: Project.module:2546
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
@@ -1259,7 +1263,7 @@ msgstr "Impossible de créer le fichier des informations sur la classe: &1: &2"
 msgid "Cannot create file: &1"
 msgstr "Impossible de créer le fichier: &1"
 
-#: Project.module:4537
+#: Project.module:4554
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
@@ -1307,7 +1311,7 @@ msgstr "Impossible d'hériter deux fois"
 msgid "Cannot instantiate native types"
 msgstr "Impossible d'instancier les types natifs"
 
-#: Project.module:2523
+#: Project.module:2540
 msgid "Cannot link template file."
 msgstr "Impossible de créer le lien vers le fichier modèle."
 
@@ -1327,7 +1331,7 @@ msgstr "Impossible de charger le fichier source: &1"
 msgid "Cannot make executable: &1: &2"
 msgstr "Impossible de créer l'exécutable: &1: &2"
 
-#: Project.module:2784
+#: Project.module:2801
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
@@ -1339,15 +1343,15 @@ msgstr "Impossible de mélanger NEW et les tableaux incorporés"
 msgid "Cannot mix NEW and embedded structure"
 msgstr "Impossible de mélanger NEW et les structures incorporées"
 
-#: Project.module:4554
+#: Project.module:4571
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:4622
+#: Project.module:4639
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:1841
+#: Project.module:1858
 msgid "Cannot open a binary file."
 msgstr "Impossible d'ouvrir un fichier binaire."
 
@@ -1359,7 +1363,7 @@ msgstr "Impossible d'ouvrir le fichier '&1': &2"
 msgid "Cannot open file: &1"
 msgstr "Imposible d'ouvrir le fichier: &1"
 
-#: Project.module:1874
+#: Project.module:1891
 msgid "Cannot open file."
 msgstr "Impossible d'ouvrir le fichier."
 
@@ -1431,7 +1435,7 @@ msgstr "Impossible d'utiliser TRY avec &1"
 msgid "Cannot write component description file."
 msgstr "Impossible d'écrire le fichier de description du composant."
 
-#: Project.module:3358
+#: Project.module:3375
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
@@ -1495,7 +1499,7 @@ msgstr "Dessin de graphes"
 msgid "Checked"
 msgstr "Checked"
 
-#: FMain.class:1976
+#: FMain.class:1983
 msgid "Choose a profile"
 msgstr "Choisissez un profilage"
 
@@ -1519,7 +1523,7 @@ msgstr "La classe '&1' n'est pas instanciable"
 msgid "Classes"
 msgstr "Classes"
 
-#: FMain.class:1556
+#: FMain.class:1557
 msgid "Clean"
 msgstr "Nettoyer"
 
@@ -1643,7 +1647,7 @@ msgstr "&Tout Compiler"
 msgid "Compile all"
 msgstr "Tout compiler"
 
-#: Project.module:2263
+#: Project.module:2280
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
@@ -1731,7 +1735,7 @@ msgstr "-"
 msgid "Constants"
 msgstr "Constantes"
 
-#: Project.module:3165
+#: Project.module:3182
 msgid "Continue"
 msgstr "Continuer"
 
@@ -1799,7 +1803,7 @@ msgstr "Créer des répertoires pour chaque distribution"
 msgid "Create package"
 msgstr "Création du paquetage"
 
-#: Project.module:4196
+#: Project.module:4213
 msgid "Create source package"
 msgstr "Générer une archive des sources du projet"
 
@@ -1987,7 +1991,7 @@ msgstr "Routines indépendantes du bureau du projet Portland"
 msgid "Destination"
 msgstr "Destination"
 
-#: Project.module:3791
+#: Project.module:3808
 msgid "Destination already exists"
 msgstr "La destination existe déjà."
 
@@ -2011,7 +2015,7 @@ msgstr "Gestion de boîte de dialogue"
 msgid "Directory"
 msgstr "Répertoire"
 
-#: Project.module:2511
+#: Project.module:2528
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
@@ -2047,7 +2051,7 @@ msgstr "Ne pas ouvrir"
 msgid "Do not save"
 msgstr "Ne pas enregistrer"
 
-#: FMain.class:1853
+#: FMain.class:1859
 msgid "Do you really want to add this file to the repository?"
 msgstr "Désirez-vous réellement ajouter ce fichier au référentiel ?"
 
@@ -2131,7 +2135,7 @@ msgstr "Dessiner"
 msgid "Drawing"
 msgstr "Dessin"
 
-#: FProfile.class:571
+#: FProfile.class:592
 msgid "Duration"
 msgstr "Durée"
 
@@ -2431,7 +2435,7 @@ msgstr "Fichier"
 msgid "File already exists"
 msgstr "Le fichier existe déjà"
 
-#: Project.module:2478
+#: Project.module:2495
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
@@ -2447,7 +2451,7 @@ msgstr "Le fichier est verrouillé"
 msgid "File name is too long"
 msgstr "Le nom de fichier est trop long"
 
-#: Project.module:1932
+#: Project.module:1949
 msgid "File not found!"
 msgstr "Fichier introuvable !"
 
@@ -2519,7 +2523,7 @@ msgstr "-"
 msgid "Firebird database driver"
 msgstr "Pilote de base de données Firebird"
 
-#: Design.module:151 Project.module:2038
+#: Design.module:151 Project.module:2055
 msgid "first"
 msgstr "premier"
 
@@ -2607,7 +2611,7 @@ msgstr "Français (France)"
 msgid "French (Switzerland)"
 msgstr "Français (Suisse)"
 
-#: FDebugInfo.class:55 FProfile.class:567
+#: FDebugInfo.class:55 FProfile.class:588
 msgid "Function"
 msgstr "Fonction"
 
@@ -2987,15 +2991,15 @@ msgstr "Importer..."
 msgid "in"
 msgstr "-"
 
-#: Design.module:243 Project.module:2101
+#: Design.module:243 Project.module:2118
 msgid "in &1:&2."
 msgstr "dans &1:&2."
 
-#: Project.module:2104
+#: Project.module:2121
 msgid "in &1."
 msgstr "dans &1."
 
-#: Project.module:2097
+#: Project.module:2114
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
@@ -3247,7 +3251,7 @@ msgstr "Lien vers"
 msgid "Lithuanian (Lithuania)"
 msgstr "Lithuanien (Lithuanie)"
 
-#: Project.module:1792
+#: Project.module:1809
 msgid "Loading &1..."
 msgstr "Chargement de &1..."
 
@@ -3327,7 +3331,7 @@ msgstr "Générer une archive des sources"
 msgid "Making build directory."
 msgstr "Fabrication du répertoire de construction."
 
-#: Project.module:2740
+#: Project.module:2757
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
@@ -3423,7 +3427,7 @@ msgstr "Parenthèse fermante manquante"
 msgid "mm"
 msgstr "-"
 
-#: FMenu.class:947 Project.module:5119
+#: FMenu.class:947 Project.module:5136
 msgid "modified"
 msgstr "modifié"
 
@@ -3639,7 +3643,7 @@ msgstr "Taille normale"
 msgid "Non terminated string"
 msgstr "Chaîne de caractères non terminée"
 
-#: Project.module:4131
+#: Project.module:4148
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
@@ -3711,7 +3715,7 @@ msgstr "Non terminé mais stable"
 msgid "Not translatable"
 msgstr "Non traduisible"
 
-#: Project.module:2279
+#: Project.module:2296
 msgid "Nothing to do."
 msgstr "Rien à faire."
 
@@ -3839,7 +3843,7 @@ msgstr "Opérateurs"
 msgid "Options"
 msgstr "Options"
 
-#: FTextEditor.class:701
+#: FTextEditor.class:705
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "Le fichier d'origine a été sauvegardé dans le répertoire <b>Projet</b>."
 
@@ -4055,11 +4059,11 @@ msgstr "Veuillez sélectionner le fichier de traduction à importer."
 msgid "Please send a bug report to the following mail address: &1"
 msgstr "Veuillez envoyer un rapport de bug à l'adresse électronique suivante : &1"
 
-#: Project.module:3695
+#: Project.module:3712
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:4120
+#: Project.module:4137
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
@@ -4131,11 +4135,11 @@ msgstr "Liste des procédures"
 msgid "Procedure separation"
 msgstr "Séparation des procédures"
 
-#: FProfile.class:943
+#: FProfile.class:964
 msgid "Profile files"
 msgstr "Fichiers de profilage"
 
-#: FMain.class:1977
+#: FMain.class:1984
 msgid "Profile for &1 project"
 msgstr "Profilage pour le projet &1"
 
@@ -4147,7 +4151,7 @@ msgstr "Projet"
 msgid "Project checkout has failed."
 msgstr "La récupération du projet a échoué."
 
-#: Project.module:5272
+#: Project.module:5289
 msgid "Project cleanup..."
 msgstr "Nettoyage du projet..."
 
@@ -4155,7 +4159,7 @@ msgstr "Nettoyage du projet..."
 msgid "Project commit"
 msgstr "Envoi du projet"
 
-#: Project.module:5278
+#: Project.module:5295
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
@@ -4591,7 +4595,7 @@ msgstr "La chaîne de caractères recherchée à été remplacée une fois."
 msgid "Search..."
 msgstr "Rechercher..."
 
-#: Design.module:153 Project.module:2040
+#: Design.module:153 Project.module:2057
 msgid "second"
 msgstr "deuxième"
 
@@ -4675,7 +4679,7 @@ msgstr "Sélectionnez le répertoire destination"
 msgid "Selection"
 msgstr "Sélection"
 
-#: FProfile.class:573
+#: FProfile.class:594
 msgid "Self"
 msgstr "Propre"
 
@@ -4815,7 +4819,7 @@ msgstr "Proxy SOCKS5"
 msgid "Sol&ve"
 msgstr "&Résoudre"
 
-#: FPropertyProject.class:421 Project.module:3164
+#: FPropertyProject.class:421 Project.module:3181
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés : &1"
 
@@ -4827,7 +4831,7 @@ msgstr "Tous les conflits ne sont pas résolus."
 msgid "Some files are not versioned and should be added manually to the repository."
 msgstr "Certains fichiers ne sont pas versionnés et doivent être ajoutés manuellement au référentiel."
 
-#: Project.module:2259
+#: Project.module:2276
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Certains fichiers sources du projet sont en conflit.\nVeuillez résoudre ces conflits pour pouvoir compiler le projet."
 
@@ -4867,7 +4871,7 @@ msgstr "Source"
 msgid "Source Archives"
 msgstr "Archives sources"
 
-#: Project.module:4197
+#: Project.module:4214
 msgid "Source packages"
 msgstr "Paquetages sources"
 
@@ -5203,7 +5207,7 @@ msgstr "Le composant &1 nécessite un des composants suivants:<br>&2."
 msgid "The &1 component needs the &2 component."
 msgstr "Le composant &1 nécessite le composant &2."
 
-#: Project.module:3647
+#: Project.module:3664
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
@@ -5211,11 +5215,11 @@ msgstr "Le répertoire sera supprimé au prochain 'commit'."
 msgid "The event group that the control belongs to."
 msgstr "Le groupe d'évènements auquel le control appartient."
 
-#: FTextEditor.class:701
+#: FTextEditor.class:705
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "La taille du fichier a été réduite de &1 à &2 octets (&3)."
 
-#: FEditor.class:2404 FIconEditor.class:2048 FTextEditor.class:506
+#: FEditor.class:2408 FIconEditor.class:2048 FTextEditor.class:510
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
@@ -5231,7 +5235,7 @@ msgstr "Le fichier a été modifié.\nDésirez-vous réellement ouvrir un autre 
 msgid "The first line contains field names"
 msgstr "La première ligne contient les noms des champs"
 
-#: Project.module:4132
+#: Project.module:4149
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
 
@@ -5247,7 +5251,7 @@ msgstr "Les fichiers suivants ont été modifiés. Désirez-vous les enregistrer
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Le texte suivant sera ajouté à la fin du fichier de configuration du bureau."
 
-#: FForm.class:3110
+#: FForm.class:3112
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 
@@ -5259,7 +5263,7 @@ msgstr "Les outils de traduction GNU ne sont pas installés sur votre système.\
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "La longueur doit être comprise entre 1 et 255."
 
-#: Project.module:3703
+#: Project.module:3720
 msgid "The name cannot begins with a dot."
 msgstr "Le nom ne peut pas commencer par un point."
 
@@ -5291,11 +5295,11 @@ msgstr "Le programme s'est arrêté inopinément :"
 msgid "The project could not be committed."
 msgstr "Le projet n'a pu être envoyé."
 
-#: Project.module:4142
+#: Project.module:4159
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:4144
+#: Project.module:4161
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Le répertoire du projet ne peut être créé car un fichier avec le même nom existe déjà."
 
@@ -5311,7 +5315,7 @@ msgstr "Le projet a été créé avec succès."
 msgid "The project is void. There is nothing to translate."
 msgstr "Le projet est vide. Il n'y a rien à traduire."
 
-#: Project.module:4128
+#: Project.module:4145
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
@@ -5407,7 +5411,7 @@ msgstr "Il n'y aucune information de changement pour cette version."
 msgid "These components are incompatible:<br>&1."
 msgstr "Ces composants sont incompatibles entre eux:<br>&1."
 
-#: Design.module:155 Project.module:2042
+#: Design.module:155 Project.module:2059
 msgid "third"
 msgstr "troisième"
 
@@ -5491,7 +5495,7 @@ msgstr "Ce mois-ci"
 msgid "This name already exists."
 msgstr "Ce nom existe déjà."
 
-#: Project.module:3699
+#: Project.module:3716
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
@@ -5503,7 +5507,7 @@ msgstr "Ce nom de contrôle est déjà utilisé."
 msgid "This name is already in used."
 msgstr "Ce nom est déjà utilisé."
 
-#: Project.module:3707
+#: Project.module:3724
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
@@ -5511,7 +5515,7 @@ msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 msgid "This program is published under\nthe GNU General Public License."
 msgstr "Ce programme est publié sous\nla Licence Publique Générale GNU"
 
-#: Project.module:4139
+#: Project.module:4156
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
@@ -5559,7 +5563,7 @@ msgstr "Astuces du jour"
 msgid "Title"
 msgstr "Titre"
 
-#: FMain.class:1751
+#: FMain.class:1757
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr "Pour afficher de nouveau la barre de menus, appuyez sur les touches suivantes&nbsp;:<p><b>&1</b>"
 
@@ -5675,7 +5679,7 @@ msgstr "-"
 msgid "TopRight"
 msgstr "-"
 
-#: FProfile.class:349
+#: FProfile.class:370
 msgid "Total time &1 μs"
 msgstr "Durée totale &1 μs"
 
@@ -5743,7 +5747,7 @@ msgstr "Ukrainien (Ukraine)"
 msgid "Unable to apply conversion"
 msgstr "Impossible d'appliquer la conversion"
 
-#: FTextEditor.class:707
+#: FTextEditor.class:711
 msgid "Unable to compress file."
 msgstr "Impossible de compresser le fichier."
 
@@ -5751,7 +5755,7 @@ msgstr "Impossible de compresser le fichier."
 msgid "Unable to connect to database."
 msgstr "Impossible de se connecter à la base de données."
 
-#: Project.module:5308
+#: Project.module:5325
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
 
@@ -5759,7 +5763,7 @@ msgstr "Impossible de convertir &1"
 msgid "Unable to create database."
 msgstr "Impossible de créer la base de données."
 
-#: Project.module:3401
+#: Project.module:3418
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
@@ -5771,7 +5775,7 @@ msgstr "Impossible de créer le répertoire temporaire"
 msgid "Unable to delete database."
 msgstr "Impossible de supprimer la base de données."
 
-#: FMain.class:1436
+#: FMain.class:1437
 msgid "Unable to drop file into the project."
 msgstr "Impossible de déposer le fichier à l'intérieur du projet."
 
@@ -5782,6 +5786,10 @@ msgstr "Impossible d'exporter les données."
 #: FFieldChooser.class:63
 msgid "Unable to get table fields."
 msgstr "Impossible de récupérer les champs de la table."
+
+#: FProfile.class:389
+msgid "Unable to load profile file: &1"
+msgstr "Impossible de charger le fichier de profilage : &1"
 
 #: FConnectionEditor.class:409
 msgid "Unable to load table '&1'."
@@ -5799,7 +5807,7 @@ msgstr "Impossible de coller le texte."
 msgid "Unable to read tip of the day !"
 msgstr "Impossible de lire l'astuce du jour !"
 
-#: Project.module:4004
+#: Project.module:4021
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer « &1 »"
 
@@ -5811,7 +5819,7 @@ msgstr "Impossible de résoudre le conflit."
 msgid "Unable to run query."
 msgstr "Impossible d'exécuter la requête."
 
-#: FProfile.class:950
+#: FProfile.class:971
 msgid "Unable to save profile."
 msgstr "Impossible d'enregistrer le profilage"
 
@@ -6159,7 +6167,7 @@ msgstr "Hier"
 msgid "You are going to cancel your changes!"
 msgstr "Tous les changements vont être annulés !"
 
-#: Project.module:3664
+#: Project.module:3681
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 

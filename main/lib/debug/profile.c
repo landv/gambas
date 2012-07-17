@@ -85,6 +85,8 @@ void PROFILE_init(const char *path)
 		abort();
 	}
 	
+	fprintf(_file, "[1]\n");
+	
 	//_ticks_per_sec = sysconf(_SC_CLK_TCK);
 	//fprintf(stderr, "_ticks_per_sec = %ld\n", _ticks_per_sec);
 	
@@ -194,11 +196,11 @@ void PROFILE_add(void *cp, void *fp, void *pc)
 void PROFILE_begin(void *cp, void *fp)
 {
 	uint64_t time = get_time();
-	const char *where = cp ? DEBUG_get_position(cp, fp, NULL) : ".System.EventLoop";
+	const char *where = cp ? DEBUG_get_profile_position(cp, fp, NULL) : "0";
 	
 	if (!_new_line)
 		fputc('\n', _file);
-	fprintf(_file, " >%s %" PRId64 "\n", where, time);
+	fprintf(_file, "(%s %" PRId64 "\n", where, time);
 	_last_line = 0;
 	_new_line = TRUE;
 	
@@ -228,7 +230,7 @@ void PROFILE_end(void *cp, void *fp)
 
 	if (!_new_line)
 		fputc('\n', _file);
-	fprintf(_file, " <\n");
+	fprintf(_file, ")\n");
 	_last_line = 0;
 	_new_line = TRUE;
 }

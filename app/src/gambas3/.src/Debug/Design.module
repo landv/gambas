@@ -352,11 +352,11 @@ Public Sub Process_Kill()
     FMain.ShowInfo(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
   Endif
 
+  $hProcess = Null
+
   If Project.Profiling Then
     FProfile.Open($sProfilePath)
   Endif
-
-  $hProcess = Null
 
 End
 

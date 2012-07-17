@@ -157,11 +157,14 @@ static void unload_class(CLASS *class)
 
 		#endif
 		
+		if (class->load)
+			FREE(&class->load->prof, "unload_class");
+		
 		FREE(&class->jit_functions, "unload_class");
 		
 		FREE(&class->load, "unload_class");
-		if (!class->mmapped)
-			FREE(&class->data, "unload_class");
+		//if (!class->mmapped)
+		FREE(&class->data, "unload_class");
 	}
 	else
 	{

@@ -1029,6 +1029,70 @@ const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 	return DEBUG_buffer;
 }
 
+const char *DEBUG_get_profile_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
+{
+	static uint prof_index = 0;
+	const char *name;
+	const char *func;
+	char buffer[16], buffer2[16];
+	
+	if (cp)
+	{
+		if (cp->load)
+		{
+			if (cp->load->prof[0] == 0)
+			{
+				prof_index++;
+				cp->load->prof[0] = prof_index;
+				name = cp->name;
+			}
+			else
+			{
+				sprintf(buffer, "%u", cp->load->prof[0]);
+				name = buffer;
+			}
+		}
+		else
+			name = cp->name;
+	}
+	else
+		name = "?";
+	
+	if (fp && fp->debug)
+	{
+		int i = fp->debug->index + 1;
+		if (cp->load->prof[i] == 0)
+		{
+			prof_index++;
+			cp->load->prof[i] = prof_index;
+			func = fp->debug->name;
+		}
+		else
+		{
+			sprintf(buffer2, "%u", cp->load->prof[i]);
+			func = buffer2;
+		}
+	}
+	else
+		func = "?";
+	
+	if (pc)
+	{
+		ushort line = 0;
+
+		if (fp != NULL && fp->debug)
+			DEBUG_calc_line_from_position(cp, fp, pc, &line);
+
+		snprintf(DEBUG_buffer, sizeof(DEBUG_buffer), "%.64s.%.64s.%d", name, func, line);
+	}
+	else
+	{
+		snprintf(DEBUG_buffer, sizeof(DEBUG_buffer), "%.64s.%.64s", name, func);
+	}
+
+	return DEBUG_buffer;
+}
+
 
 const char *DEBUG_get_current_position(void)
 {

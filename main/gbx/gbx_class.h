@@ -102,7 +102,7 @@ typedef
 		char *name;
 		LOCAL_SYMBOL *local;
 		short n_local;
-		unsigned short _reserved;
+		unsigned short index; // Function index in its class. Used by the profiler
 	}
 	PACKED
 	FUNC_DEBUG;
@@ -222,6 +222,7 @@ typedef
 		ushort *sort;
 		short n_global;
 		short n_ext;
+		uint *prof; // Shortcut indexes attributed during profiling. The first one is for the class, the other ones for the functions
 		#ifdef OS_64BITS
 		CLASS_DESC *desc;
 		CLASS_PARAM *local;
@@ -267,7 +268,6 @@ typedef
 		unsigned auto_create : 1;         //          Automatically instanciated
 		unsigned no_create : 1;           //          Cannot instanciate this class
 		unsigned is_virtual : 1;          //          Virtual class (name beginning with a dot)
-		unsigned mmapped : 1;             //          mmap() was used to load the class
 		unsigned swap : 1;                //          class endianness was swapped
 		unsigned enum_static : 1;         //          if class enumeration is static
 		unsigned quick_array : 2;         //          array accessor optimization type
@@ -286,7 +286,7 @@ typedef
 		unsigned property_static : 1;     //          if _property is static
 		unsigned has_convert : 1;         //          if the _convert interface is implemented
 		unsigned has_operators : 1;       //          if the _operators interface is implemented
-		unsigned _reserved : 1;           //  24  36 
+		unsigned _reserved : 2;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
