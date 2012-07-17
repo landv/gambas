@@ -102,8 +102,8 @@ public:
     
     Element* firstChildElement();
     Element* lastChildElement();
-    Element* previousSibling();
-    Element* nextSibling();
+    Element* previousElement();
+    Element* nextElement();
     
     
     Node *firstChild;

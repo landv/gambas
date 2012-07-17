@@ -171,15 +171,15 @@ THIS->clearChildren();
 
 END_METHOD
 
-BEGIN_PROPERTY(CElement_previousSibling)
+BEGIN_PROPERTY(CElement_previousElement)
 
-GBI::Return(THIS->previousSibling());
+GBI::Return(THIS->previousElement());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CElement_nextSibling)
+BEGIN_PROPERTY(CElement_nextElement)
 
-GBI::Return(THIS->nextSibling());
+GBI::Return(THIS->nextElement());
 
 END_PROPERTY
 
@@ -298,8 +298,8 @@ GB_DESC CElementDesc[] =
     
     GB_PROPERTY("TagName", "s", CElement_tagName),
     GB_PROPERTY("Prefix", "s", CElement_prefix),
-    GB_PROPERTY("PerviousSibling", "XmlElement", CElement_previousSibling),
-    GB_PROPERTY("NextSibling", "XmlElement", CElement_nextSibling),
+    GB_PROPERTY("PerviousElement", "XmlElement", CElement_previousElement),
+    GB_PROPERTY("NextElement", "XmlElement", CElement_nextElement),
 
     GB_METHOD("GetChildrenByNamespace", "XmlElement[]", CElement_getChildrenByNamespace, "(Namespace)s[(Mode)i(Depth)i]"),
     GB_METHOD("GetChildrenByTagName", "XmlElement[]", CElement_getChildrenByTagName, "(TagName)s[(Mode)i(Depth)i]"),

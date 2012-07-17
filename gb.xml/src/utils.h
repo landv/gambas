@@ -58,8 +58,8 @@ const void* memchrs(const char *source, size_t lensource, const char *comp, size
 const void* memrchrs(const void *source, size_t lensource, const void *comp, size_t lencomp);
 
 
-bool isNameStartChar(const wchar_t s);
-bool isNameChar(const wchar_t s);
+bool isNameStartChar(const wchar_t car);
+bool isNameChar(const wchar_t car);
 bool isWhiteSpace(const wchar_t s);
 bool isWhiteSpace(const char s);
 

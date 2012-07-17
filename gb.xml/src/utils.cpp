@@ -64,15 +64,13 @@ wchar_t nextUTF8Char(char *&data, size_t len)
   */
 
 #define INTER(min, max) (car >= min && car <= max)
-#define INTERCAR(min, max) (car >= *(min) && car <= *(max))
-#define CAR(c) (car == *(c))
+#define CAR(c) (car == c)
 
-bool isNameStartChar(const wchar_t s)
+bool isNameStartChar(const wchar_t car)
 {
-    register const wchar_t car = s;
-    if(INTER(CHAR_a, CHAR_z)) return true;
+    if(INTER('a', 'z')) return true;
 
-    return CAR(":") || INTERCAR("A", "Z") || CAR("_") || CAR("Ø") ||
+    return CAR(':') || INTER('A', 'Z') || CAR('_') || 
             INTER(0xC0, 0xD6) || INTER(0xD8, 0xF6) || INTER(0xF8, 0x2FF) ||
             INTER(0x370, 0x37D) || INTER(0x37F, 0x1FFF) || INTER(0x200C, 0x200D) ||
             INTER(0x2070, 0x218F) || INTER(0x2C00, 0x2FEF) || INTER(0x3001, 0xD7FF) ||
@@ -87,12 +85,11 @@ bool isNameStartChar(const wchar_t s)
 
   */
 
-bool isNameChar(const wchar_t s)
+bool isNameChar(const wchar_t car)
 {
-    register const wchar_t car = s;
-    if(INTER(CHAR_a, CHAR_z)) return true;
-    if(isNameStartChar(s)) return true;
-    return  CAR("-") || CAR(".") || INTERCAR("0", "9") ||
+    if(INTER('a', 'z')) return true;
+    if(isNameStartChar(car)) return true;
+    return  CAR('-') || CAR('.') || INTER('0', '9') ||
             (car == 0xB7) || INTER(0x0300, 0x036F) || INTER(0x203F, 0x2040);
 }
 /* http://www.w3.org/TR/REC-xml/#NT-S

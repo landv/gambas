@@ -439,7 +439,7 @@ Element* Element::lastChildElement()
     return 0;
 }
 
-Element* Element::nextSibling()
+Element* Element::nextElement()
 {
     Node *child = this->nextNode;
     while(child != 0)
@@ -451,7 +451,7 @@ Element* Element::nextSibling()
     return 0;
 }
 
-Element* Element::previousSibling()
+Element* Element::previousElement()
 {
     Node *child = this->previousNode;
     while(child != 0)

@@ -228,7 +228,7 @@ bool Element::matchFilter(char *filter, size_t lenFilter)
     pos = (char*)memrchr(filter, CHAR_PLUS, lenFilter);
     if(pos)
     {
-        Element *elmt = this->previousSibling();
+        Element *elmt = this->previousElement();
         if(!elmt) return false;
         return elmt->matchFilter(filter, (pos - filter))  &&
                 matchFilter(pos, lenFilter - (pos + 1 - filter));

@@ -309,6 +309,8 @@ GB_DESC CNodeDesc[] =
     GB_PROPERTY_READ("Parent", "XmlElement", CNode_parent),
     GB_PROPERTY_READ("Previous", "XmlNode", CNode_previous),
     GB_PROPERTY_READ("Next", "XmlNode", CNode_next),
+    GB_PROPERTY_READ("PreviousSibling", "XmlNode", CNode_previous),
+    GB_PROPERTY_READ("NextSibling", "XmlNode", CNode_next),
     
     GB_METHOD("ToString", "s", CNode_tostring, "[(Indent)b]"),
     GB_PROPERTY("TextContent", "s", CNode_textContent),

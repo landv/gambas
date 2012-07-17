@@ -278,6 +278,18 @@ GB.ReturnObject(0);
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CReader_isEmptyElement)
+
+if(!THIS->foundNode->isElement()) 
+{
+    GB.ReturnBoolean(false);
+    return;
+}
+
+GB.ReturnBoolean(THIS->foundNode->toElement()->childCount == 0);
+
+END_PROPERTY
+
 
 
 GB_DESC CReaderNodeTypeDesc[] =
