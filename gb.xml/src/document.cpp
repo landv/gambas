@@ -126,13 +126,15 @@ void Document::setContent(const char *content, size_t len) throw(XMLParseExcepti
 
     }
     
+    
+    free(elements);
+    
     if(!newRoot)
     {
         throw XMLParseException("No valid element root found", 0, 0, 0);
     }
     
     this->setRoot(newRoot);
-    free(elements);
 
     //if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
 }
