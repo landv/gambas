@@ -875,7 +875,7 @@ else \
     curElement->appendChild(_elmt);\
 }
 
-Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException)
+Node** Element::fromText(char const *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException)
 {
     *nodeCount = 0;
     if(!lendata || !data) return 0; //Empty ?
@@ -887,7 +887,7 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
     
     
     register char s = 0;//Current byte (value)
-    register char *pos = data;//Current byte (position)
+    register char const *pos = data;//Current byte (position)
     register wchar_t ws = 0;//Current character (value)
     
     char *tag = 0;//First '<' character found
@@ -899,7 +899,7 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
         if(tag && (tag - pos) != 0)//On ajoute le texte, s'il existe
         {
             //Checking length
-            char *textpos = pos;
+            char const *textpos = pos;
             size_t textlen = tag - pos;
             Trim(textpos, textlen);
             if(textlen != 0)
@@ -915,7 +915,7 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
             if(pos < endData)//Il reste du texte
             {
                 //Checking length
-                char *textpos = pos;
+                char const *textpos = pos;
                 size_t textlen = endData - pos;
                 Trim(textpos, textlen);
                 if(textlen != 0)
@@ -1087,10 +1087,10 @@ Node** Element::fromText(char *data, const size_t lendata, size_t *nodeCount) th
                 
                 if(isNameStartChar(s))//Début d'attribut
                 {
-                    char *attrNamestart = pos;
+                    const char *attrNamestart = pos;
                     while(isNameChar(nextUTF8Char(pos, endData - pos)) && pos < endData){}//On parcourt le nom d'attribut
                     pos--;
-                    char *attrNameEnd = pos;
+                    const char *attrNameEnd = pos;
                     s = *pos;
                     while(isWhiteSpace(s) && pos < endData){pos++; s = *pos;}//On ignore les espaces blancs
                     

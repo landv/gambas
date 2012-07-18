@@ -88,7 +88,7 @@ void Document::Open(const char *fileName, const size_t lenFileName) throw(XMLPar
     
 }
 
-void Document::setContent(char *content, size_t len) throw(XMLParseException)
+void Document::setContent(const char *content, size_t len) throw(XMLParseException)
 {
     char *posStart = 0, *posEnd = 0;
     
@@ -124,6 +124,11 @@ void Document::setContent(char *content, size_t len) throw(XMLParseException)
             delete node;
         }
 
+    }
+    
+    if(!newRoot)
+    {
+        throw XMLParseException("No valid element root found", 0, 0, 0);
     }
     
     this->setRoot(newRoot);

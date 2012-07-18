@@ -133,7 +133,7 @@ public:
     
     //Parser
     static void GBfromText(char *data, const size_t lendata, GB_ARRAY *array);
-    static Node** fromText(char *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException);
+    static Node** fromText(char const *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException);
     
     //Gambas object    
     virtual void NewGBObject();

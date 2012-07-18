@@ -53,7 +53,7 @@ typedef unsigned int uint;
 
 #define CHAR_ERROR 0xFFFD // �
 
-wchar_t nextUTF8Char(char *&data, size_t len);
+wchar_t nextUTF8Char(const char *&data, size_t len);
 const void* memchrs(const char *source, size_t lensource, const char *comp, size_t lencomp);
 const void* memrchrs(const void *source, size_t lensource, const void *comp, size_t lencomp);
 
@@ -63,7 +63,7 @@ bool isNameChar(const wchar_t car);
 bool isWhiteSpace(const wchar_t s);
 bool isWhiteSpace(const char s);
 
-void Trim(char *&str, size_t &len);
+void Trim(const char *&str, size_t &len);
 void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInsert, char *&posInsert);
 
 #include <exception>

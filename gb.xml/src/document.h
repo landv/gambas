@@ -38,7 +38,7 @@ public:
     
     //Document loading
     void Open(const char *fileName, const size_t lenFileName) throw(XMLParseException);
-    virtual void setContent(char *content, size_t len) throw(XMLParseException);
+    virtual void setContent(const char *content, size_t len) throw(XMLParseException);
     
     //String output
     virtual void toString(char **output, size_t *len, int indent = -1);
