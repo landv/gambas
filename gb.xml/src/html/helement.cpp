@@ -27,7 +27,7 @@
 //    return split(this->getClassName(), " ");
 //}
 
-bool Element::hasClassName(char *className, size_t lenClassName)
+bool Element::hasClassName(const char *className, size_t lenClassName)
 {
     return attributeContains("class", 5, className, lenClassName);
     
@@ -38,12 +38,12 @@ void Element::getGBChildrenByClassName(char* className, size_t lenClassName, GB_
     getGBChildrenByAttributeValue("class", 5, className, lenClassName, array, depth);
 }
 
-void Element::setId(char *value, size_t len)
+void Element::setId(const char *value, size_t len)
 {
     setAttribute("id", 2, value, len);
 }
 
-void Element::setClassName(char *value, size_t len)
+void Element::setClassName(const char *value, size_t len)
 {
     setAttribute("class", 5, value, len);
 }
@@ -64,13 +64,13 @@ Attribute* Element::getClassName()
 #define CHAR_BEGINS 0x5E // ^
 #define CHAR_ENDS 0x24 // $
 
-bool Element::matchSubFilter(char *filter, size_t lenFilter)
+bool Element::matchSubFilter(const char *filter, size_t lenFilter)
 {
     if(!lenFilter) return true;
     Trim(filter, lenFilter);
     if(!lenFilter) return true;
     char s = 0;
-    char *pos = 0;
+    char const *pos = 0;
     
     for(pos = filter + 1; pos < filter + lenFilter; ++pos)
     {
@@ -130,7 +130,7 @@ bool Element::matchSubFilter(char *filter, size_t lenFilter)
     else if(s == CHAR_STARTATTRIBUTE)//Attribut
     {
         //Syntax : [foo="bar"]
-        char *endPos = (char*)memchr(filter, CHAR_ENDATTRIBUTE, lenFilter);//On cherche le crochet fermant
+        char const *endPos = (char*)memchr(filter, CHAR_ENDATTRIBUTE, lenFilter);//On cherche le crochet fermant
         
         endPos = endPos ? endPos : filter + lenFilter - 1;
         pos = (endPos + 1);
@@ -141,8 +141,8 @@ bool Element::matchSubFilter(char *filter, size_t lenFilter)
         if(equalPos)//Si trouvé
         {
             s = *(equalPos - 1);//Le signe avant le signe égal
-            char *attrName = filter + 1; size_t lenAttrName = (equalPos - filter - 1);
-            char *attrValue = equalPos + 2; size_t lenAttrValue = (endPos - equalPos - 3);
+            char const *attrName = filter + 1; size_t lenAttrName = (equalPos - filter - 1);
+            char const *attrValue = equalPos + 2; size_t lenAttrValue = (endPos - equalPos - 3);
             if(s == CHAR_CONTAINS)//Comparaison ~=
             {
                 if(!attributeContains(attrName, lenAttrName - 1, attrValue, lenAttrValue)) return false;
@@ -203,7 +203,7 @@ bool Element::matchSubFilter(char *filter, size_t lenFilter)
 #define CHAR_GREATER 0x3E // >
 
 
-bool Element::matchFilter(char *filter, size_t lenFilter)
+bool Element::matchFilter(const char *filter, size_t lenFilter)
 {
     if(!lenFilter) return true;
     Trim(filter, lenFilter);

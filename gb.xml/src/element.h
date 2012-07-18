@@ -117,7 +117,7 @@ public:
     Attribute* getAttribute(const char *nattrName, const size_t nlenAttrName, const int mode = GB_STRCOMP_BINARY);//Looks for attribute, and returns its value
     void setAttribute(const char *nattrName, const size_t nlenAttrName,
                        const char *nattrVal, const size_t nlenAttrVal);//Looks for attribute, sets its value or add it if attribute is not found
-    bool attributeContains(const char *attrName, size_t lenAttrName, char *value, size_t lenValue);
+    bool attributeContains(const char *attrName, size_t lenAttrName, const char *value, size_t lenValue);
     Attribute *firstAttribute;
     Attribute *lastAttribute;
     size_t attributeCount;

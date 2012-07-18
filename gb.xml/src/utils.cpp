@@ -141,7 +141,7 @@ const void* memrchrs(const void *source, size_t lensource, const void *comp, siz
     }while(1);
 }
 
-void Trim(const char *&str, size_t &len)
+void Trim(const char* &str, size_t &len)
 {
     while(isWhiteSpace(*str) && len)
     {

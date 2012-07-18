@@ -640,7 +640,7 @@ void Element::setAttribute(const char *nattrName, const size_t nlenAttrName,
     }
 }
 
-bool Element::attributeContains(const char *attrName, size_t lenAttrName, char *value, size_t lenValue)
+bool Element::attributeContains(const char *attrName, size_t lenAttrName, const char *value, size_t lenValue)
 {
         Attribute *attr = getAttribute(attrName, lenAttrName);
         if(!attr) return false;

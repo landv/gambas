@@ -31,14 +31,14 @@
 
     Attribute* getClassName();
     //void getClassNames(char ** &names, size_t* &lenNames, size_t &namesCount);
-    bool hasClassName(char *className, size_t lenClassName);
-    void setClassName(char *value, size_t len);
+    bool hasClassName(const char *className, const size_t lenClassName);
+    void setClassName(const char *value, const size_t len);
 
     Attribute* getId();
-    void setId(char *value, size_t len);
+    void setId(const char *value, size_t len);
 
-    bool matchSubFilter(char *filter, size_t lenFilter);
-    bool matchFilter(char *filter, size_t lenFilter);
+    bool matchSubFilter(const char *filter, size_t lenFilter);
+    bool matchFilter(const char *filter, size_t lenFilter);
     void addGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
     void getGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
 

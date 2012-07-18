@@ -134,7 +134,7 @@ int Reader::ReadChar(char car)
             {
                 APPEND(foundNode);
             }
-            char *trimmedText = curNode->toTextNode()->content;
+            const char *trimmedText = curNode->toTextNode()->content;
             size_t lenTrimmedText = curNode->toTextNode()->lenContent;
 
             Trim(trimmedText, lenTrimmedText);

@@ -116,6 +116,7 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     }
     catch(XMLParseException &e)
     {
+            DEBUG << string((char*)(buffer),size) << endl;
         outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>", 32);
         std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
         return;
