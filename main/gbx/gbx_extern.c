@@ -782,5 +782,12 @@ void *EXTERN_get_symbol(const char *library, const char *symbol)
 	return NULL;
 }
 
+
+EXTERN_FUNC_INFO EXTERN_get_function_info(CLASS_EXTERN *ext)
+{
+	EXTERN_FUNC_INFO func_info = { NULL, NULL };
+	
+	return func_info;
+}
 #endif
 
