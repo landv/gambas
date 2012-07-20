@@ -130,7 +130,7 @@ Static Private Sub InitTheme()
   
   Select Case LCase(Application.Theme)
       
-    Case "gnome", "mate"
+    Case "gnome"
       
       Try Exec ["gconftool-2", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
       
@@ -139,6 +139,20 @@ Static Private Sub InitTheme()
         GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
       Endif
       
+      AddPath("gnome", "/usr/share/icons/gnome")
+      AddPath("gnome", "/usr/share/icons/hicolor")
+      'AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
+      
+    Case "mate"
+      
+      Try Exec ["mateconftool-2", "-g", "/desktop/mate/interface/icon_theme"] To sTheme
+      
+      If sTheme Then 
+        sTheme = Trim(sTheme)
+        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      Endif
+      
+      AddPath("gnome", "/usr/share/icons/mate")
       AddPath("gnome", "/usr/share/icons/gnome")
       AddPath("gnome", "/usr/share/icons/hicolor")
       'AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
