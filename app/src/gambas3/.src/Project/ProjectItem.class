@@ -38,6 +38,7 @@ Private Sub SetPath(sPath As String)
   
   $sPath = sPath
   $hProjectInfo = New CProjectInfo(sPath)
+  $hIcon = Null
   
   $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
   Me.H = Me.IdealHeight

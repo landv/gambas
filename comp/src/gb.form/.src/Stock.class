@@ -1,5 +1,7 @@
 ' Gambas class file
 
+' Gambas class file
+
 Export
 
 Static Property Debug As Boolean
@@ -15,26 +17,44 @@ Static Private $bDebug As Boolean
 
 Class _DefaultStock
 
-Static Private Sub SearchDesktop()
+Static Private Sub GetDesktop() As String
   
   Dim sOutput As String
   
-  If Application.Theme Then Return
-  
   If Application.Env["KDE_FULL_SESSION"] Then
     If Application.Env["KDE_SESSION_VERSION"] = "4" Then
-      Application.Theme = "kde4"
+      Return "KDE4"
     Else
-      Application.Theme = "kde"
+      Return "KDE"
     Endif
-  Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then 
-    Application.Theme = "gnome"
-  Else 
+  Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+    Return "GNOME"
+  Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
+    Return "MATE"
+  Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
+    Return "ENLIGHTENMENT"
+  Else If Application.Env["WMAKER_BIN_NAME"] Then
+    Return "WINDOWMAKER"
+  Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
+    Return "LXDE"
+  Else
     Shell "xprop -root XFCE_DESKTOP_WINDOW" To sOutput
-    If sOutput Then Application.Theme = "xfce"
+    If sOutput Then Return "XFCE"
   Endif
   
+  Return ""
+  
 Catch
+  
+End
+
+Static Private Sub SearchDesktop()
+  
+  Dim sDesktop As String
+  If Application.Theme Then Return
+  sDesktop = GetDesktop()
+  If $bDebug Then Error "gb.form: desktop is " & sDesktop
+  Application.Theme = LCase(sDesktop)
   
 End
 
@@ -83,7 +103,7 @@ Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As
   If sMap Then sPath = sMap & ":" & sPath
   If Not $aIconPath.Exist(sPath) Then 
     $aIconPath.Add(sPath)
-    If $bDebug Then Debug sPath
+    If $bDebug Then Error "gb.form: add icon path: "; sPath
   Endif
   
 End
@@ -100,7 +120,7 @@ Static Private Sub InitTheme()
   Dim sTheme As String
   
   If Not $bDebug Then
-    If Application.Env["GB_STOCK_DEBUG"] Then $bDebug = True
+    If Application.Env["GB_STOCK"] Then $bDebug = True
   Endif
   
   $aIconPath = New String[]
@@ -110,7 +130,7 @@ Static Private Sub InitTheme()
   
   Select Case LCase(Application.Theme)
       
-    Case "gnome"
+    Case "gnome", "mate"
       
       Try Exec ["gconftool-2", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
       
