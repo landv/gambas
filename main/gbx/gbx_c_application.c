@@ -250,7 +250,7 @@ END_PROPERTY
 
 GB_DESC NATIVE_AppArgs[] =
 {
-  GB_DECLARE(".Application.Args", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE_VIRTUAL("Args"),
 
   GB_STATIC_PROPERTY_READ("Count", "i", Application_Args_Count),
   GB_STATIC_METHOD("_get", "s", Application_Args_get, "(Index)i"),
@@ -262,7 +262,7 @@ GB_DESC NATIVE_AppArgs[] =
 
 GB_DESC NATIVE_AppEnv[] =
 {
-  GB_DECLARE(".Application.Env", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE_VIRTUAL("Env"),
 
   GB_STATIC_PROPERTY_READ("Count", "i", Application_Env_Count),
   GB_STATIC_METHOD("_get", "s", Application_Env_get, "(Key)s"),
@@ -275,10 +275,10 @@ GB_DESC NATIVE_AppEnv[] =
 
 GB_DESC NATIVE_App[] =
 {
-  GB_DECLARE("Application", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE_VIRTUAL("Application"),
 
-  GB_STATIC_PROPERTY_SELF("Args", ".Application.Args"),
-  GB_STATIC_PROPERTY_SELF("Env", ".Application.Env"),
+  GB_STATIC_PROPERTY_SELF("Args", "Args"),
+  GB_STATIC_PROPERTY_SELF("Env", "Env"),
   GB_STATIC_PROPERTY_READ("Path", "s", Application_Path),
   GB_STATIC_PROPERTY_READ("Name", "s", Application_Name),
   GB_STATIC_PROPERTY_READ("Title", "s", Application_Title),

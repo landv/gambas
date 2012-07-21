@@ -251,14 +251,14 @@ Public Sub Main()
 
   RefreshBreakpointPicture
 
-  For iInd = 1 To Application.Args.Count - 1
-    sArg = Application.Args[iInd]
+  For iInd = 1 To Args.Count - 1
+    sArg = Args[iInd]
     If sArg = "-t" Then
       $bTesting = True
       Continue
     Endif
     If Left(sArg) <> "-" Then
-      sPath = Application.Args[iInd]
+      sPath = Args[iInd]
       Break
     Endif
   Next
@@ -4878,11 +4878,11 @@ Public Sub OpenWebPage(sLink As String)
 
       Case Else
 
-        aTest = [Application.Env["BROWSER"]]
+        aTest = [Env["BROWSER"]]
 
-        If Application.Env["KDE_FULL_SESSION"] Then
+        If Env["KDE_FULL_SESSION"] Then
           aTest.Add("konqueror")
-        Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+        Else If Env["GNOME_DESKTOP_SESSION_ID"] Then
           aTest.Add("epiphany")
           aTest.Add("firefox")
         Endif

@@ -791,7 +791,6 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim bExport As Boolean
   
   'Debug "ScanClass "; hModule.Name
-  'DEBUG "> "; hModule.Name
   
   hEditor = hModule.Editor
   hModule.AutoCreatable = False
@@ -799,18 +798,15 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   'DEBUG hModule.Name; " := "; hModule.AutoCreatable
   
   If bCanInherit Then
+    
     hClass = Classes[hModule.Name]
     
-    ' If hClass And If hClass.Component = Project.Name And If hClass.Parent Then 
-    '   hClass = Classes[hClass.Parent]
-    ' Endif
-    
-    If hClass Then
-      If hClass.Component <> Project.Name And If hClass.Component <> CComponent.PROJECT_NAME Then
-        MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
-        bCanInherit = False
-      Endif
+    If hClass And If hClass.Component = CComponent.PROJECT_NAME Then
+      hClass = Classes[hClass.ParentComponent &/ hClass.Parent]
+      MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
+      bCanInherit = False
     Endif 
+    
   Endif
   
   For iLine = 0 To hEditor.Lines.Count - 1

@@ -21,28 +21,28 @@ Static Private Sub GetDesktop() As String
   
   Dim sOutput As String
   
-  If Application.Env["KDE_FULL_SESSION"] Then
-    If Application.Env["KDE_SESSION_VERSION"] = "4" Then
+  If Env["KDE_FULL_SESSION"] Then
+    If Env["KDE_SESSION_VERSION"] = "4" Then
       Return "KDE4"
     Else
       Return "KDE"
     Endif
-  Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+  Else If Env["GNOME_DESKTOP_SESSION_ID"] Then
     Return "GNOME"
-  Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
+  Else If Env["MATE_DESKTOP_SESSION_ID"] Or If Env["MATECORBA_SOCKETDIR"] Then
     Return "MATE"
-  Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
+  Else If Env["E_BIN_DIR"] And If Env["E_LIB_DIR"] Then
     Return "ENLIGHTENMENT"
-  Else If Application.Env["WMAKER_BIN_NAME"] Then
+  Else If Env["WMAKER_BIN_NAME"] Then
     Return "WINDOWMAKER"
-  Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
+  Else If Env["DESKTOP_SESSION"] = "LXDE" Then
     Return "LXDE"
   Else
     Shell "xprop -root XFCE_DESKTOP_WINDOW" To sOutput
     If sOutput Then Return "XFCE"
   Endif
   
-  Select Case Application.Env["XDG_CURRENT_DESKTOP"]
+  Select Case Env["XDG_CURRENT_DESKTOP"]
     Case "LXDE"
       Return "LXDE"
   End Select
@@ -141,7 +141,7 @@ Static Private Sub InitTheme()
   Dim aFind As String[]
   
   If Not $bDebug Then
-    If Application.Env["GB_STOCK"] Then $bDebug = True
+    If Env["GB_STOCK"] Then $bDebug = True
   Endif
   
   $aIconPath = New String[]

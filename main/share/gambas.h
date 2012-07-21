@@ -349,6 +349,9 @@ typedef
 
 #define GB_VIRTUAL_CLASS() { GB_VIRTUAL_CLASS_ID }, { GB_NOT_CREATABLE_ID }
 
+#define GB_DECLARE_VIRTUAL(name) \
+	{ name, (intptr_t)GB_VERSION, (intptr_t)0 }, GB_VIRTUAL_CLASS()
+
 
 /* Not creatable class macro */
 
