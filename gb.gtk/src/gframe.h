@@ -25,6 +25,7 @@
 #define __GFRAME_H
 
 #include "gcontainer.h"
+#include "gcolor.h"
 
 class gPanel : public gContainer
 {
@@ -33,6 +34,11 @@ public:
 
 	int getBorder() { return getFrameBorder(); }
 	void setBorder(int vl) { setFrameBorder(vl); }
+	virtual void setBackground(gColor color = COLOR_DEFAULT);
+
+private:
+	
+	void create();
 };
 
 class gFrame : public gContainer

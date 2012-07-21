@@ -753,6 +753,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 #else /* HAVE_FFI_COMPONENT */
 
 #include "gbx_value.h"
+#include "gbx_extern.h"
 
 void EXTERN_call(void)
 {
@@ -777,5 +778,12 @@ void *EXTERN_get_symbol(const char *library, const char *symbol)
 	return NULL;
 }
 
+
+EXTERN_FUNC_INFO EXTERN_get_function_info(CLASS_EXTERN *ext)
+{
+	EXTERN_FUNC_INFO func_info = { NULL, NULL };
+	
+	return func_info;
+}
 #endif
 

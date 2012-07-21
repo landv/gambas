@@ -264,12 +264,18 @@ bool gb_raise_DragMove(gControl *sender)
 	return GB.Raise(THIS, EVENT_DragMove, 0);
 }
 
-void gb_raise_Drop(gControl *sender)
+bool gb_raise_Drop(gControl *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *_object = GetObject(sender);
 	
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Drop,0);
+	if (!THIS)
+		return false;
+	
+	if (!GB.CanRaise(THIS, EVENT_Drop))
+		return false;
+	
+	GB.Raise(THIS, EVENT_Drop, 0);
+	return true;
 }
 
 void DeleteControl(gControl *control)

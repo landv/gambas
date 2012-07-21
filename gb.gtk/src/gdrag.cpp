@@ -717,14 +717,14 @@ bool gDrag::getData(const char *prefix)
 	return true;
 }
 
-char *gDrag::getText(int *len, const char *format)
+char *gDrag::getText(int *len, const char *format, bool fromOutside)
 {
 	//setDropText(NULL);
 	
 	if (!format)
 		format = "text/";
 	
-	if (getData(format))
+	if (!fromOutside && getData(format))
 	{
 		*len = 0;
 		return NULL;
@@ -736,12 +736,12 @@ char *gDrag::getText(int *len, const char *format)
 	}
 }
 
-gPicture *gDrag::getImage()
+gPicture *gDrag::getImage(bool fromOutside)
 {
 	if (_picture)
 		return _picture;
 		
-	if (getData("image/"))
+	if (!fromOutside && getData("image/"))
 		return NULL;
 	
 	return _picture;

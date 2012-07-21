@@ -78,25 +78,29 @@ gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
  Drag 
 *****************************************************/
 
-static void sg_drag_data_get(GtkWidget *widget,GdkDragContext *ct,GtkSelectionData *dt, guint i,guint t,gControl *data)
+static void sg_drag_data_get(GtkWidget *widget, GdkDragContext *context, GtkSelectionData *dt, guint i, guint time, gControl *data)
 {
 	char *text;
 	int len;
 	gPicture *pic;
 	//g_debug("sg_drag_data_get\n");
 	
-	text = gDrag::getText(&len, NULL);
+	context = gDrag::enable(context, data, time);
+	
+	text = gDrag::getText(&len, NULL, true);
 	if (text)
 	{
 		gtk_selection_data_set_text(dt, text, len);
 		return;
 	}
 	
-	pic = gDrag::getImage();
+	pic = gDrag::getImage(true);
 	if (pic)
 	{
 		gtk_selection_data_set_pixbuf(dt, pic->getPixbuf());
 	}
+	
+	gDrag::disable(context);
 }
 
 static void sg_drag_end(GtkWidget *widget,GdkDragContext *ct,gControl *data)
@@ -194,9 +198,8 @@ void sg_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time, gCont
 gboolean sg_drag_drop(GtkWidget *widget,GdkDragContext *context,gint x,gint y,guint time,gControl *data)
 {
 	gControl *source;
+	bool cancel;
 
-	if (!gApplication::allEvents()) return true;
-	
 	//g_debug("sg_drag_drop\n");
 	
 	source = gApplication::controlItem(gtk_drag_get_source_widget(context));
@@ -206,21 +209,22 @@ gboolean sg_drag_drop(GtkWidget *widget,GdkDragContext *context,gint x,gint y,gu
 	context = gDrag::enable(context, data, time);
 	data->_drag_get_data = true;
 	
-	if (data->onDrop) 
-	{
-		//fprintf(stderr, "sg_drag_drop: getDropText: %s\n", gDrag::getDropText());
-		data->onDrop(data);
-	}
+	if (data->onDrop)
+		cancel = data->onDrop(data);
+	else
+		cancel = false;
 	
 	context = gDrag::disable(context);
-	//gDrag::cancel();
+
+	//fprintf(stderr, "cancel = %d\n", cancel);
 	
-	gtk_drag_finish (context, true, false, time);
+	if (cancel)
+		gtk_drag_finish(context, true, false, time);
 	
 	data->_drag_enter = false;
 	data->_drag_get_data = false;
 	
-	return true;
+	return cancel;
 }
 
 // void sg_size(GtkWidget *widget,GtkRequisition *req, gContainer *data)
