@@ -758,6 +758,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 #else /* HAVE_FFI_COMPONENT */
 
 #include "gbx_value.h"
+#include "gbx_extern.h"
 
 void EXTERN_call(void)
 {
