@@ -754,10 +754,22 @@ __OBJECT:
 	{
 		if (value->type == T_NULL)
 		{
-			OBJECT_null(value, (CLASS *)type); /* marche aussi pour type = T_OBJECT */
+			OBJECT_null(value, (CLASS *)type); // Also works if type == T_OBJECT
 			goto __TYPE;
 		}
 
+		if (value->type == T_POINTER)
+		{
+			class = (CLASS *)type;
+			
+			if (CLASS_is_struct(class))
+			{
+				value->_object.object = CSTRUCT_create_static(STRUCT_CONST, class, value->_pointer.value);
+				goto __TYPE;
+			}
+			
+		}
+		
 		if (value->type == T_VARIANT)
 			goto __v2;
 
