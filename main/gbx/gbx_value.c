@@ -765,6 +765,7 @@ __OBJECT:
 			if (CLASS_is_struct(class))
 			{
 				value->_object.object = CSTRUCT_create_static(STRUCT_CONST, class, value->_pointer.value);
+				OBJECT_REF(value->_object.object, "VALUE_convert");
 				goto __TYPE;
 			}
 			
