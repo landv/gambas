@@ -42,6 +42,11 @@ Static Private Sub GetDesktop() As String
     If sOutput Then Return "XFCE"
   Endif
   
+  Select Case Application.Env["XDG_CURRENT_DESKTOP"]
+    Case "LXDE"
+      Return "LXDE"
+  End Select
+  
   Return ""
   
 Catch
@@ -108,6 +113,21 @@ Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As
   
 End
 
+Static Private Sub FindInConfigFile(sPath As String, sPattern As String) As String[]
+  
+  Dim hFile As File
+  Dim sLine As String
+  
+  If Not Exist(sPath) Then Return
+  
+  hFile = Open sPath
+  For Each sLine In hFile.Lines
+    If sLine Like sPattern Then Return Scan(sLine, sPattern)
+  Next
+  
+End
+
+
 Static Private Sub InitTheme()
   
   Dim hFile As File
@@ -118,6 +138,7 @@ Static Private Sub InitTheme()
   Dim sPath As String
   Dim cMap As Collection
   Dim sTheme As String
+  Dim aFind As String[]
   
   If Not $bDebug Then
     If Application.Env["GB_STOCK"] Then $bDebug = True
@@ -238,35 +259,23 @@ Static Private Sub InitTheme()
       
     Case "xfce"
       
-      Try hFile = Open "~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
-      If Not Error Then
-        While Not Eof(hFile)
-          Line Input #hFile, sLig
-          If sLig Like "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*" Then
-            Try sTheme = Trim(Scan(sLig, "*<property name=\"IconThemeName\" type=\"String\" value=\"*\"/>*")[1])
-            Break
-          Endif
-        Wend
-        Close #hFile
-      Else
-        Try hFile = Open "~/.config/xfce4/mcs_settings/gtk.xml"
-        If Not Error Then 
-          While Not Eof(hFile)
-            Line Input #hFile, sLig
-            If sLig Like "*<option*name=\"Net/IconThemeName\"*" Then 
-              Try sTheme = Trim(Scan(sLig, "*<option*value=\"*\"*")[2])
-              Break
-            Endif          
-          Wend
-          Close #hFile
-        Endif
-      Endif
+      aFind = FindInConfigFile("~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
+      If Not aFind Then FindInConfigFile("~/.config/xfce4/mcs_settings/gtk.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
+      If aFind Then sTheme = Trim(aFind[2])
       
-      If sTheme Then 
-        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
-        'GetAllThemePath("gnome", "/usr/X11R6/share/icons", sTheme)
-      Endif 
+      If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      'GetAllThemePath("gnome", "/usr/X11R6/share/icons", sTheme)
       
+      AddPath("gnome", "/usr/share/icons/gnome")
+    
+    Case "lxde"
+      
+      aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
+      If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
+      If aFind Then sTheme = Trim(aFind[0])
+      
+      If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+    
       AddPath("gnome", "/usr/share/icons/gnome")
       
     Case "gambas"

@@ -196,7 +196,12 @@ Static Private Sub GetDesktop() As String
     Else If InStr(_Desktop.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
       $sDesktop = "XFCE"
     Else
-      $sDesktop = "?"
+      Select Case Application.Env["XDG_CURRENT_DESKTOP"]
+        Case "LXDE"
+          $sDesktop = "LXDE"
+        Default
+          $sDesktop = "?"
+      End Select
     Endif
     
   Endif
@@ -226,8 +231,16 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
       Endif
     Case "GNOME"
       sExec = "gnome-terminal"
+      If {Dir} Then
+        sExec &= "--working-directory=" & Shell$({Dir})
+        bNoDir = True
+      Endif
     Case "MATE"
       sExec = "mate-terminal"
+      If {Dir} Then
+        sExec &= "--working-directory=" & Shell$({Dir})
+        bNoDir = True
+      Endif
     Case "XFCE"
       sExec = "Terminal"
     Case "LXDE"
