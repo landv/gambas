@@ -520,14 +520,15 @@ static int find_last_non_space(const QString &s)
 void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 {
 	QPoint pa[ls];
-	int i, x, y, w;
+	int i, y;
+	double x, w;
 
-	x = lineWidth(row, ps) + 1;
-	y = //fm.ascent();
 	w = _charWidth[' '];
+	x = lineWidth(row, ps) + w / 2;
+	y = _cellh / 2;
 	for (i = 0; i < ls; i++)
 	{
-		pa[i].setX(x);
+		pa[i].setX(ROUND_WIDTH(x));
 		pa[i].setY(y);
 		x += w;
 	}
