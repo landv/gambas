@@ -199,7 +199,7 @@ STACK_BACKTRACE *STACK_get_backtrace(void)
 	return bt;
 }
 
-void STACK_free_gosub_stack(STACK_GOSUB *gosub)
+/*void STACK_free_gosub_stack(STACK_GOSUB *gosub)
 {
 	int i, j;
 	STACK_GOSUB *p;
@@ -216,4 +216,4 @@ void STACK_free_gosub_stack(STACK_GOSUB *gosub)
 	}
 	
 	ARRAY_delete(&gosub);
-}
+}*/

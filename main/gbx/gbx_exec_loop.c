@@ -914,11 +914,27 @@ _ON_GOTO_GOSUB:
 _GOSUB:
 	
 	{
-		STACK_GOSUB *gp;
 		VALUE *ctrl;
 		int i;
 		
-		if (!GP)
+		STACK_check(1 + FP->stack_usage - FP->n_local);
+		
+		SP->type = T_VOID;
+		SP->_void.value[0] = (intptr_t)PC;
+		SP->_void.value[1] = (intptr_t)GP;
+		
+		GP = SP;
+		
+		SP++;
+		
+		ctrl = &BP[FP->n_local];
+		for (i = 0; i < FP->n_ctrl; i++)
+		{
+			*SP++ = ctrl[i];
+			ctrl[i].type = T_NULL;
+		}
+		
+		/*if (!GP)
 			ARRAY_create(&GP);
 	
 		gp = ARRAY_add(&GP);
@@ -926,7 +942,6 @@ _GOSUB:
 		if (FP->n_ctrl)
 		{
 			ALLOC(&gp->ctrl, sizeof(VALUE) * FP->n_ctrl, "EXEC_loop._GOSUB");
-			ctrl = &BP[FP->n_local];
 			for (i = 0; i < FP->n_ctrl; i++)
 			{
 				gp->ctrl[i] = ctrl[i];
@@ -934,7 +949,7 @@ _GOSUB:
 			}
 		}
 		else
-			gp->ctrl = NULL;
+			gp->ctrl = NULL;*/
 	}
 
 /*-----------------------------------------------*/
@@ -977,9 +992,8 @@ _RETURN:
 		static const void *return_jump[] = { &&__RETURN_GOSUB, &&__RETURN_VALUE, &&__RETURN_VOID };
 		
 		TYPE type;
-		STACK_GOSUB *gp;
 		VALUE *ctrl;
-		int i, n;
+		int i;
 		
 		goto *return_jump[GET_UX()];
 		
@@ -988,27 +1002,20 @@ _RETURN:
 		if (!GP)
 			goto __RETURN_VOID;
 		
-		n = ARRAY_count(GP);
-		if (n == 0)
-			goto __RETURN_VOID;
+		ctrl = &BP[FP->n_local];
+		GP++;
 
-		gp = &GP[n - 1];
-		PC = FP->code + gp->pc + 2;
-		if (FP->n_ctrl)
+		for (i = 0; i < FP->n_ctrl; i++)
 		{
-			ctrl = &BP[FP->n_local];
-			for (i = 0; i < FP->n_ctrl; i++)
-			{
-				RELEASE(&ctrl[i]);
-				ctrl[i] = gp->ctrl[i];
-			}
-			FREE(&gp->ctrl, "EXEC_loop._RETURN");
+			RELEASE(&ctrl[i]);
+			ctrl[i] = GP[i];
 		}
 		
-		if (n == 1)
-			ARRAY_delete(&GP);
-		else
-			ARRAY_remove_last(&GP);
+		GP--;
+		
+		SP = GP;
+		PC = (PCODE *)GP->_void.value[0] + 2;
+		GP = (VALUE *)GP->_void.value[1];
 		
 		goto _MAIN;
 

@@ -768,7 +768,6 @@ __OBJECT:
 				OBJECT_REF(value->_object.object, "VALUE_convert");
 				goto __TYPE;
 			}
-			
 		}
 		
 		if (value->type == T_VARIANT)

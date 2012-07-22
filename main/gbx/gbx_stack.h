@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_stack.h
+	gbx_stack.h
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -37,29 +37,22 @@ typedef
 	STACK_BACKTRACE;
 
 typedef
-	struct _STACK_GOSUB {
-		ushort pc;
-		VALUE *ctrl;
-	}
-	STACK_GOSUB;
-
-typedef
-  struct _stack_context {
-  	struct _stack_context *next;
-    VALUE *bp;        /* local variables */
-    VALUE *pp;        /* local parameters */
-    CLASS *cp;        /* current class */
-    char *op;         /* current object */
-    VALUE *ep;        /* error pointer */
-    FUNCTION *fp;     /* current function */
-    PCODE *pc;        /* instruction */
-    PCODE *ec;        /* instruction if error */
-    PCODE *et;        /* TRY save */
-    PCODE *tc;        /* Last break in the function */
-    VALUE *tp;        /* Stack at the last break in the function */
-    STACK_GOSUB *gp;  /* GOSUB pointer */
-    }
-  PACKED STACK_CONTEXT;
+	struct _stack_context {
+		struct _stack_context *next;
+		VALUE *bp;        // local variables
+		VALUE *pp;        // local parameters
+		CLASS *cp;        // current class
+		char *op;         // current object
+		VALUE *ep;        // error pointer
+		FUNCTION *fp;     // current function
+		PCODE *pc;        // instruction
+		PCODE *ec;        // instruction if error
+		PCODE *et;        // TRY save
+		PCODE *tc;        // Last break in the function
+		VALUE *tp;        // Stack at the last break in the function
+		VALUE *gp;        // GOSUB stack pointer
+		}
+	PACKED STACK_CONTEXT;
 
 #ifndef __GBX_STACK_C
 
@@ -105,7 +98,7 @@ STACK_BACKTRACE *STACK_get_backtrace(void);
 
 STACK_CONTEXT *STACK_get_frame(int frame);
 
-void STACK_free_gosub_stack(STACK_GOSUB *gosub);
+//void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
 #define STACK_get_previous_pc() ((STACK_frame_count <= 0) ? NULL : STACK_frame->pc)
 
@@ -133,11 +126,10 @@ void STACK_free_gosub_stack(STACK_GOSUB *gosub);
 
 #define STACK_pop_frame(_context) \
 ({ \
-  if ((_context)->gp) STACK_free_gosub_stack((_context)->gp); \
-  STACK_copy(_context, STACK_frame); \
-  STACK_frame++; \
-  STACK_frame_count--; \
-  STACK_limit = (char *)STACK_frame; \
+	STACK_copy(_context, STACK_frame); \
+	STACK_frame++; \
+	STACK_frame_count--; \
+	STACK_limit = (char *)STACK_frame; \
 })
 
 #endif
