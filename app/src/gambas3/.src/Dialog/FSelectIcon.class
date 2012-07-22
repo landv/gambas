@@ -100,7 +100,7 @@ Private Sub RefreshStock()
   sKey = icwStock.Key
   icwStock.Clear
 
-  For Each sIcon In Stock.List
+  For Each sIcon In Stock.Icons
     icwStock.Add(sIcon, sIcon, Stock[$sSize &/ sIcon])
   Next
   

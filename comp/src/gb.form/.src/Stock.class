@@ -7,6 +7,8 @@ Export
 Static Property Debug As Boolean
 Static Property Read List As String[]
 Static Property Theme As String
+Static Property Read Themes As String[]
+Static Property Read Icons As String[]
 
 Static Private $bInit As Boolean
 Static Private $sTheme As String
@@ -593,5 +595,25 @@ Static Private Sub Theme_Write(Value As String)
   $sTheme = Value
   InitTheme
   Picture.Flush
+
+End
+
+Static Private Function Themes_Read() As String[]
+
+  Dim aTheme As New String[]
+  Dim sDir As String
+  
+  For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
+    If Exist("/usr/share/icons" &/ sDir &/ "index.theme") Then aTheme.Add(sDir)
+  Next
+  
+  aTheme.Sort
+  Return aTheme
+
+End
+
+Static Private Function Icons_Read() As String[]
+
+  Return List_Read()
 
 End
