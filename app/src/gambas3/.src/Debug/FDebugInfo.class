@@ -577,11 +577,12 @@ Public Sub ReadConfig()
   Settings.Read(splDebug,, [4, 1])
   tabDebug.TextFont = Project.GetSmallFont()
   
-  Project.SetNormalFont(tbvLocal)
+  Project.SetSmallFont(tbvLocal)
   tbvObject.Font = tbvLocal.Font
   lvwStack.Font = tbvLocal.Font
   cvwWatch.Font = tbvLocal.Font
   cvwBreak.Font = tbvLocal.Font
+  tabStack.TextFont = tabDebug.TextFont
   
   For Each hCtrl In [panBreakpoint, panSearch, panWatch]
     Project.SetSmallFont(hCtrl)
@@ -793,13 +794,13 @@ Public Sub UpdateView()
   tabDebug[TAB_WATCH].Visible = Project.Running
   tabDebug[TAB_BREAK].Visible = True 'Project.Running
   
-  If panStack.Visible <> Project.Running Then
+  If tabStack.Visible <> Project.Running Then
     If Project.Running Then
-      panStack.Visible = True
+      tabStack.Visible = True
       Settings.Read(splDebug,, [4, 1])
     Else 
       Settings.Write(splDebug)
-      panStack.Visible = False
+      tabStack.Visible = False
     Endif
   Endif 
         

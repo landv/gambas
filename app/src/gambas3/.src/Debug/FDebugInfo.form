@@ -209,40 +209,18 @@
       }
       Index = 0
     }
-    { panStack ScrollView
-      MoveScaled(94,2,22,41)
-      Visible = False
-      Background = Color.TextBackground
-      Expand = True
-      Arrangement = Arrange.Vertical
-      Border = False
-      ScrollBar = Scroll.None
-      { HBox3 HBox
-        MoveScaled(1,1,19,4)
-        AutoResize = True
-        Spacing = True
-        Margin = True
-        Padding = 4
-        { PictureBox1 PictureBox
-          MoveScaled(0,0,4,3)
-          Picture = Picture["img/16/stack.png"]
-          AutoResize = True
-          Alignment = Align.Center
-        }
-        { Label1 Label
-          MoveScaled(4,0,14,3)
-          Font = Font["Bold,-2"]
-          Expand = True
-          AutoResize = True
-          Text = ("Stack backtrace")
-        }
-      }
+    { tabStack TabPanel
+      MoveScaled(93,2,21,42)
+      Arrangement = Arrange.Fill
+      Index = 0
+      Text = ("Stack backtrace")
+      Picture = Picture["img/16/stack.png"]
       { lvwStack ListView
-        MoveScaled(2,7,16,30)
+        MoveScaled(2,4,16,30)
         Mouse = Mouse.Pointing
-        Expand = True
         Border = False
       }
+      Index = 0
     }
   }
 }

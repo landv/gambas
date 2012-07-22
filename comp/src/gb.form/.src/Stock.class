@@ -6,8 +6,10 @@ Export
 
 Static Property Debug As Boolean
 Static Property Read List As String[]
+Static Property Theme As String
 
 Static Private $bInit As Boolean
+Static Private $sTheme As String
 Static Private $aIconPath As String[]
 Static Private $cIconMap As Collection
 Static Private $aList As String[]
@@ -63,41 +65,55 @@ Static Private Sub SearchDesktop()
   
 End
 
-Static Private Sub LoadMap(sMap As String)
+Static Private Sub LoadMap()
   
   Dim hFile As File
   Dim sLig As String
   Dim aMap As String[]
   Dim cMap As New Collection
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sIcon As String
   
-  If $cIconMap.Exist(sMap) Then Return
+  $cIconMap = New Collection
+  $aList = New String[]
   
-  hFile = Open "map" &/ sMap & ".map"
-  While Not Eof(hFile)
-    Line Input #hFile, sLig
+  hFile = Open "map" &/ "icon.map"
+  For Each sLig In hFile.Lines
     sLig = Trim(sLig)
     If InStr("';#", Left(sLig)) Then Continue
-    aMap = Scan(sLig, "* *")
-    If aMap.Count >= 2 Then
-      cMap[aMap[0]] = aMap[1]
+    
+    iPos = InStr(sLig, " ")
+    If iPos Then
+      sIcon = Trim(Mid$(sLig, iPos + 1))
+      sKey = Left(sLig, iPos - 1)
+    Else
+      sIcon = ""
+      sKey = sLig
     Endif
-  Wend
-  Close #hFile
+    
+    $cIconMap[sKey] = sIcon
+    $aList.Add(sKey)
+    
+  Next
   
-  $cIconMap[sMap] = cMap
+  $aList.Sort
   
 End
 
 Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As String)
   
   Dim aDir As String[]
+  Dim iPos As Integer
   
   If Not Exist(sPath) Then Return
   
   If Not sPattern Then
     aDir = Dir(sPath, "[1-9]*", gb.Directory) 
     If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
-      sPattern = "&1x&1!&2" 
+      sPattern = "&1x&1!&2"
+    Else If Exist(sPath &/ "scalable") Then
+      sPattern = "&1x&1!&2"
     Else
       sPattern = "&2!&1"
     Endif
@@ -108,7 +124,11 @@ Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As
   If sMap Then sPath = sMap & ":" & sPath
   If Not $aIconPath.Exist(sPath) Then 
     $aIconPath.Add(sPath)
-    If $bDebug Then Error "gb.form: add icon path: "; sPath
+    If $bDebug Then 
+      iPos = InStr(sPath, ":")
+      If iPos Then sPath = Mid$(sPath, iPos + 1)
+      Error "gb.form: add icon path: "; sPath
+    Endif
   Endif
   
 End
@@ -133,7 +153,6 @@ Static Private Sub InitTheme()
   Dim hFile As File
   Dim sLig As String
   Dim aMap As String[]
-  Dim sStyle As String
   Dim sIconPath As String
   Dim sPath As String
   Dim cMap As Collection
@@ -145,15 +164,19 @@ Static Private Sub InitTheme()
   Endif
   
   $aIconPath = New String[]
-  $cIconMap = New Collection
+  LoadMap
+  
+  If $bDebug Then Error "gb.form: init stock with icon theme: '"; $sTheme; "'"
   
   SearchDesktop
+  
+  sTheme = $sTheme
   
   Select Case LCase(Application.Theme)
       
     Case "gnome"
       
-      Try Exec ["gconftool-2", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
+      If Not sTheme Then Try Exec ["gconftool-2", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
       
       If sTheme Then 
         sTheme = Trim(sTheme)
@@ -166,7 +189,7 @@ Static Private Sub InitTheme()
       
     Case "mate"
       
-      Try Exec ["mateconftool-2", "-g", "/desktop/mate/interface/icon_theme"] To sTheme
+      If Not sTheme Then Try Exec ["mateconftool-2", "-g", "/desktop/mate/interface/icon_theme"] To sTheme
       
       If sTheme Then 
         sTheme = Trim(sTheme)
@@ -185,33 +208,37 @@ Static Private Sub InitTheme()
         
         sIconPath = Trim(sIconPath)
         
-        Try hFile = Open "~/.kde/share/config/kdeglobals"
-        If Not Error Then
-          While Not Eof(hFile)
-            Line Input #hFile, sLig
-            If sLig = "[Icons]" Then 
-              While Not Eof(hFile)
-                Line Input #hFile, sLig
-                If Left(sLig) = "[" Then Break
-                If sLig Begins "Theme=" Then 
-                  sStyle = Mid$(sLig, 7)
-                  Break
-                Endif 
-              Wend
-              Break
-            Endif 
-          Wend
-          Close #hFile
-          
-          If sStyle Then
-            GetAllThemePath("kde", Split(sIconPath, ":"), sStyle)
-            'For Each sPath In Split(sIconPath, ":")
-            '  AddPath("gnome", sPath &/ sStyle)
-            'Next
-          Endif 
-          
+        If Not sTheme Then
+      
+          Try hFile = Open "~/.kde/share/config/kdeglobals"
+          If Not Error Then
+            
+            While Not Eof(hFile)
+              Line Input #hFile, sLig
+              If sLig = "[Icons]" Then 
+                While Not Eof(hFile)
+                  Line Input #hFile, sLig
+                  If Left(sLig) = "[" Then Break
+                  If sLig Begins "Theme=" Then 
+                    sTheme = Mid$(sLig, 7)
+                    Break
+                  Endif 
+                Wend
+                Break
+              Endif 
+            Wend
+            Close #hFile
+            
+          Endif
         Endif
         
+        If sTheme Then
+          GetAllThemePath("kde", Split(sIconPath, ":"), sTheme)
+          'For Each sPath In Split(sIconPath, ":")
+          '  AddPath("gnome", sPath &/ sStyle)
+          'Next
+        Endif 
+            
         For Each sPath In Split(sIconPath, ":")
           AddPath("kde", sPath &/ "crystalsvg") ' default theme hardcoded in KDE sources
         Next
@@ -225,30 +252,36 @@ Static Private Sub InitTheme()
         
         sIconPath = Trim(sIconPath)
         
-        Try hFile = Open "~/.kde4/share/config/kdeglobals"
-        If Not Error Then
-          While Not Eof(hFile)
-            Line Input #hFile, sLig
-            If sLig = "[Icons]" Then 
-              While Not Eof(hFile)
-                Line Input #hFile, sLig
-                If Left(sLig) = "[" Then Break
-                If sLig Begins "Theme=" Then 
-                  sStyle = Mid$(sLig, 7)
-                  Break
-                Endif 
-              Wend
-              Break
-            Endif 
-          Wend
-          Close #hFile
-          
-          If sStyle Then
-            GetAllThemePath("kde4", Split(sIconPath, ":"), sStyle)
-          Endif 
+        If Not sTheme Then
+        
+          Try hFile = Open "~/.kde4/share/config/kdeglobals"
+          If Error Then Try hFile = Open "~/.kde/share/config/kdeglobals"
+          If Not Error Then
+            
+            While Not Eof(hFile)
+              Line Input #hFile, sLig
+              If sLig = "[Icons]" Then 
+                While Not Eof(hFile)
+                  Line Input #hFile, sLig
+                  If Left(sLig) = "[" Then Break
+                  If sLig Begins "Theme=" Then 
+                    sTheme = Mid$(sLig, 7)
+                    Break
+                  Endif 
+                Wend
+                Break
+              Endif 
+            Wend
+            Close #hFile
+            
+          Endif
           
         Endif
         
+        If sTheme Then
+          GetAllThemePath("kde4", Split(sIconPath, ":"), sTheme)
+        Endif 
+          
         For Each sPath In Split(sIconPath, ":")
           AddPath("kde4", sPath &/ "oxygen") ' default theme hardcoded in KDE sources
         Next
@@ -259,9 +292,11 @@ Static Private Sub InitTheme()
       
     Case "xfce"
       
-      aFind = FindInConfigFile("~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
-      If Not aFind Then FindInConfigFile("~/.config/xfce4/mcs_settings/gtk.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
-      If aFind Then sTheme = Trim(aFind[2])
+      If Not sTheme Then
+        aFind = FindInConfigFile("~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
+        If Not aFind Then FindInConfigFile("~/.config/xfce4/mcs_settings/gtk.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
+        If aFind Then sTheme = Trim(aFind[2])
+      Endif
       
       If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
       'GetAllThemePath("gnome", "/usr/X11R6/share/icons", sTheme)
@@ -270,9 +305,11 @@ Static Private Sub InitTheme()
     
     Case "lxde"
       
-      aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
-      If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
-      If aFind Then sTheme = Trim(aFind[0])
+      If Not sTheme Then
+        aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
+        If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
+        If aFind Then sTheme = Trim(aFind[0])
+      Endif
       
       If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
     
@@ -285,6 +322,7 @@ Static Private Sub InitTheme()
   AddPath("", "stock", "&2")
   $aIconPath.Add("#")
   
+  $sTheme = sTheme
   $bInit = True
   
 End
@@ -373,7 +411,9 @@ Static Public Function _get(Key As String) As Picture
   Dim sImagePath As String
   Dim sDirPattern As String
   
-  If Not $bInit Then InitTheme
+  If Not $bInit Then 
+    InitTheme
+  Endif
   
   iSize = 16
   iPos = InStr(Key, "/")
@@ -410,8 +450,7 @@ Static Public Function _get(Key As String) As Picture
       iPos = InStr(sPath, ":")
       If iPos Then 
         sMap = Left$(sPath, iPos - 1)
-        LoadMap(sMap)  
-        sFile = $cIconMap[sMap][Key]
+        sFile = $cIconMap[Key]
         If Not sFile Then sFile = Key
         sPath = Mid$(sPath, iPos + 1)
       Else 
@@ -540,5 +579,19 @@ End
 Static Private Sub Debug_Write(Value As Boolean)
 
   $bDebug = Value
+
+End
+
+Static Private Function Theme_Read() As String
+
+  Return $sTheme
+
+End
+
+Static Private Sub Theme_Write(Value As String)
+
+  $sTheme = Value
+  InitTheme
+  Picture.Flush
 
 End

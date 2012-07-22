@@ -38,8 +38,64 @@ Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
   
 End
 
+Private Sub AddUnique(aStr As String[], sVal As String)
+  
+  If Not aStr.Exist(sVal) Then aStr.Add(sVal)
+  
+End
+
+
+Private Sub MakeMap()
+  
+  Dim aKey As New String[]
+  Dim sPath As String
+  Dim sLine As String
+  Dim hFile As File
+  Dim aLine As String[]
+  Dim sKey As String
+  Dim sIcon As String
+  Dim aIcon As String[]
+  Dim cIcon As New Collection
+  
+  For Each sPath In ["map/gnome.map", "map/kde4.map"]
+    
+    hFile = Open sPath
+    For Each sLine In hFile.Lines
+      
+      If Left(sLine) = ";" Then Continue
+      
+      aLine = Split(sLine, " ", "", True)
+      sKey = Trim(aLine[0])
+      AddUnique(aKey, sKey)
+      
+      If Not cIcon.Exist(sKey) Then cIcon[sKey] = New String[]
+      If aLine.Count >= 2 Then
+        aIcon = cIcon[sKey]
+        For Each sIcon In Split(Trim(aLine[1]), ";")
+          AddUnique(aIcon, sIcon)
+        Next
+      Endif
+      
+    Next
+    
+  Next
+  
+  hFile = Open Application.Path &/ "map/icon.map" For Create
+  aKey.Sort
+  For Each sKey In aKey
+    Print #hFile, sKey; Space$(Max(1, 24 - Len(sKey))); cIcon[sKey].Join(";")
+  Next
+  Close #hFile
+  
+End
+
 Public Sub Main()
   
-  Dialog.OpenFile  
+  Dim hPict As Picture
+  
+  Application.Theme = "kde4"
+  Stock.Theme = "Nuvola"
+  
+  hPict = Picture["icon:/small/directory"]
   
 End
