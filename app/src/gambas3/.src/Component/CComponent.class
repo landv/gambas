@@ -448,7 +448,7 @@ Public Sub Load()
   
   If {Library} Then
     
-    hLibraryInfo = New CLibraryInfo(Path)
+    hLibraryInfo = CLibraryInfo[Path]
     hLibraryInfo.GetInfo()
     sPath = Temp$()
     File.Save(sPath, hLibraryInfo.Info)

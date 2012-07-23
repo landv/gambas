@@ -4,53 +4,87 @@
   MoveScaled(0,0,85,52)
   Icon = Picture["icon:/medium/clock"]
   Utility = True
-  Arrangement = Arrange.Fill
-  { splProfile HSplit
-    MoveScaled(1,1,78,50)
+  Arrangement = Arrange.Horizontal
+  { spnProfile SidePanel
+    MoveScaled(1,1,46,49)
+    Arrangement = Arrange.Vertical
+    Orientation = Align.Left
+    Separator = True
+    Transparent = True
+    { HBox2 HBox
+      MoveScaled(1,2,34,4)
+      { btnPrev ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Go back")
+        Picture = Picture["icon:/small/left"]
+      }
+      { btnNext ToolButton
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Go forward")
+        Picture = Picture["icon:/small/right"]
+      }
+      { btnPercent ToolButton
+        MoveScaled(8,0,4,4)
+        ToolTip = ("Show relative durations")
+        Picture = Picture["img/16/percent.png"]
+        Toggle = True
+      }
+      { btnAverage ToolButton
+        MoveScaled(12,0,4,4)
+        ToolTip = ("Show average")
+        Picture = Picture["img/16/average.png"]
+        Toggle = True
+      }
+      { btnSave ToolButton
+        MoveScaled(16,0,15,4)
+        ToolTip = ("Save profile")
+        AutoResize = True
+        Text = ("Save profile...")
+        Picture = Picture["icon:/small/save-as"]
+      }
+    }
+    { Separator5 Separator
+      MoveScaled(1,7,25,0)
+    }
+    { gvwProfile GridView
+      MoveScaled(1,9,41,38)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+      ScrollBar = Scroll.Vertical
+      Border = False
+      AutoResize = False
+      Sorted = True
+    }
+  }
+  { panCurrent VBox
+    MoveScaled(49,1,35,49)
+    Visible = False
     Expand = True
-    { Panel3 HBox
-      MoveScaled(1,6,35,34)
-      { Panel2 VBox
-        MoveScaled(0,2,31,30)
+    { lblCurrent TextLabel
+      MoveScaled(1,1,24,4)
+      Font = Font["Bold"]
+      Padding = 4
+      Alignment = Align.Normal
+      Wrap = False
+    }
+    { Separator3 Separator
+      MoveScaled(4,6,16,0)
+    }
+    { splSource VSplit
+      MoveScaled(1,7,33,41)
+      Expand = True
+      { tabInfo TabPanel
+        MoveScaled(1,2,29,17)
         Expand = True
-        { HBox2 HBox
-          MoveScaled(2,2,27,4)
-          { btnPrev ToolButton
-            MoveScaled(0,0,4,4)
-            ToolTip = ("Go back")
-            Picture = Picture["icon:/small/left"]
-          }
-          { btnNext ToolButton
-            MoveScaled(4,0,4,4)
-            ToolTip = ("Go forward")
-            Picture = Picture["icon:/small/right"]
-          }
-          { btnPercent ToolButton
-            MoveScaled(8,0,4,4)
-            ToolTip = ("Show relative durations")
-            Picture = Picture["img/16/percent.png"]
-            Toggle = True
-          }
-          { btnAverage ToolButton
-            MoveScaled(12,0,4,4)
-            ToolTip = ("Show average")
-            Picture = Picture["img/16/average.png"]
-            Toggle = True
-          }
-          { btnSave ToolButton
-            MoveScaled(16,0,9,4)
-            ToolTip = ("Save profile")
-            AutoResize = True
-            Text = ("Save profile...")
-            Picture = Picture["icon:/small/save-as"]
-          }
-        }
-        { Separator5 Separator
-          MoveScaled(3,8,25,0)
-        }
-        { gvwProfile GridView
-          MoveScaled(3,10,24,17)
-          Expand = True
+        Arrangement = Arrange.Fill
+        Border = False
+        Count = 2
+        Highlight = True
+        Index = 0
+        Text = ("Callees")
+        { gvwCalled GridView
+          MoveScaled(1,1,27,11)
           Mode = Select.Single
           Header = GridView.Horizontal
           ScrollBar = Scroll.Vertical
@@ -58,102 +92,55 @@
           AutoResize = False
           Sorted = True
         }
-      }
-      { Separator2 Separator
-        MoveScaled(33,1,0,32)
-      }
-    }
-    { Panel1 HBox
-      MoveScaled(38,1,38,48)
-      { Separator1 Separator
-        MoveScaled(2,10,0,24)
-      }
-      { panCurrent VBox
-        MoveScaled(4,1,33,46)
-        Visible = False
-        Expand = True
-        { lblCurrent TextLabel
-          MoveScaled(1,1,24,4)
-          Font = Font["Bold"]
-          Padding = 4
-          Alignment = Align.Normal
-          Wrap = False
+        Index = 1
+        Text = ("Callers")
+        { gvwCaller GridView
+          MoveScaled(1,2,27,11)
+          Mode = Select.Single
+          Header = GridView.Horizontal
+          ScrollBar = Scroll.Vertical
+          Border = False
+          AutoResize = False
+          Sorted = True
         }
-        { Separator3 Separator
-          MoveScaled(4,6,16,0)
+        Index = 0
+      }
+      { panSource HBox
+        MoveScaled(1,20,29,20)
+        { gvwSource GridView
+          MoveScaled(1,1,7,14)
+          Mode = Select.Single
+          Grid = False
+          Header = GridView.Horizontal
+          ScrollBar = Scroll.None
+          Border = False
         }
-        { splSource VSplit
-          MoveScaled(1,7,31,38)
+        { Separator4 Separator
+          MoveScaled(9,1,0,14)
+        }
+        { Panel4 VBox
+          MoveScaled(10,1,18,15)
           Expand = True
-          { tabInfo TabPanel
-            MoveScaled(1,2,29,17)
-            Expand = True
-            Arrangement = Arrange.Fill
-            Border = False
-            Count = 2
-            Highlight = True
-            Index = 0
-            Text = ("Callees")
-            { gvwCalled GridView
-              MoveScaled(1,1,27,11)
-              Mode = Select.Single
-              Header = GridView.Horizontal
-              ScrollBar = Scroll.Vertical
-              Border = False
-              AutoResize = False
-              Sorted = True
-            }
-            Index = 1
-            Text = ("Callers")
-            { gvwCaller GridView
-              MoveScaled(1,2,27,11)
-              Mode = Select.Single
-              Header = GridView.Horizontal
-              ScrollBar = Scroll.Vertical
-              Border = False
-              AutoResize = False
-              Sorted = True
-            }
-            Index = 0
+          { panSourceHeader Panel
+            MoveScaled(2,1,10,1)
           }
-          { panSource HBox
-            MoveScaled(1,20,29,17)
-            { gvwSource GridView
-              MoveScaled(1,1,7,14)
-              Mode = Select.Single
-              Grid = False
-              Header = GridView.Horizontal
-              ScrollBar = Scroll.None
-              Border = False
+          { Separator6 Separator
+            MoveScaled(2,3,11,0)
+          }
+          { Panel5 HBox
+            MoveScaled(1,4,16,10)
+            Expand = True
+            { panSepSource Panel
+              MoveScaled(2,1,1,8)
+              Background = Color.TextBackground
             }
-            { Separator4 Separator
-              MoveScaled(9,1,0,14)
-            }
-            { Panel4 VBox
-              MoveScaled(10,1,18,15)
+            { edtSource Editor
+              MoveScaled(4,1,11,8)
               Expand = True
-              { panSourceHeader Panel
-                MoveScaled(2,1,10,1)
-              }
-              { Separator6 Separator
-                MoveScaled(2,3,11,0)
-              }
-              { Panel5 HBox
-                MoveScaled(1,4,16,10)
-                Expand = True
-                { panSepSource Panel
-                  MoveScaled(2,1,1,8)
-                  Background = Color.TextBackground
-                }
-                { edtSource Editor
-                  MoveScaled(4,1,11,8)
-                  Expand = True
-                  Border = False
-                  ScrollBar = Scroll.Vertical
-                  Highlight = Highlight.Gambas
-                  ReadOnly = True
-                }
-              }
+              Border = False
+              ScrollBar = Scroll.Vertical
+              Highlight = Highlight.Gambas
+              ReadOnly = True
             }
           }
         }

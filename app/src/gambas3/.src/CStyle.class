@@ -25,7 +25,7 @@ End
 
 
 Public Sub Reset()
-  
+
   Foreground = Color.Default
   Background = Color.Default
   Bold = False
@@ -62,7 +62,7 @@ Public Sub FromString(sStyle As String)
 End
 
 Public Sub ToString() As String
-  
+
   Dim sStr As String
   
   sStr = "#" & Hex$(Foreground, 6)

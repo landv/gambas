@@ -35,7 +35,7 @@ End
 Private Sub SetPath(sPath As String)
   
   $sPath = sPath
-  $hLibraryInfo = New CLibraryInfo(sPath)
+  $hLibraryInfo = CLibraryInfo[sPath]
   Me.Refresh
   
 End

@@ -9,6 +9,26 @@ Public Libraries As String[]
 Public Info As String
 Public Require As String[]
 
+Static Private $cAll As New Collection
+
+Static Public Sub _get(sPath As String) As CLibraryInfo
+  
+  Dim hLib As CLibraryInfo = $cAll[sPath]
+  If Not hLib Then 
+    hLib = New CLibraryInfo(sPath)
+    $cAll[sPath] = hLib
+  Endif
+  Return hLib
+  
+End
+
+Static Public Sub Clear()
+  
+  $cAll.Clear
+  
+End
+
+
 Public Sub _new(sPath As String)
   
   Dim hFile As File
@@ -40,7 +60,7 @@ Public Sub _new(sPath As String)
   Next
   
   While iPos <= aData.Max
-    If Left(aData[iPos]) = "/" Then Libraries.Add(File.Name(aData[iPos]))
+    If Left(aData[iPos]) = "/" Then Libraries.Add(aData[iPos])
     Inc iPos
   Wend
     

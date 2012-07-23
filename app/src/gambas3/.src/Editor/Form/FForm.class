@@ -1278,7 +1278,7 @@ Public Sub Control_Click()
     
     If hCCtrl.Selected Then
       'SelectControl(hCCtrl.Name)
-    Else
+    Else If Not $bSelectNew Then ' We must not unselect anything during PutSelection()
       UnSelectAll
     Endif
     RefreshProperty

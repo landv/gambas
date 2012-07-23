@@ -562,7 +562,7 @@ Public Sub Form_Close()
   $aAll.Remove($aAll.Find($sPath))
 
   Settings.Write(Me)
-  Settings.Write(splProfile)
+  Settings.Write(spnProfile)
 
 End
 
@@ -596,7 +596,7 @@ End
 Public Sub Form_Open()
 
   Settings.Read(Me)
-  Settings.Read(splProfile)
+  Settings.Read(spnProfile)
   splSource.Layout = [1, 2]
   ReadOneConfig
 

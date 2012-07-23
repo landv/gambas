@@ -151,7 +151,7 @@ Public Browser As String
 Public ImageEditors As String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
 Private IMAGE_EXT As String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
 
-Private $sOldRefreshLibrary As String
+Private $sOldRefreshComponents As String
 
 Public ExampleTitle As New Collection
 
@@ -466,7 +466,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Endif
 
   If bConvert Then
-    
+  
     If ReadOnly Then
       Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
       Return True
@@ -582,6 +582,7 @@ _INIT_AGAIN:
   '   If bConvert Then WriteProject(True)
   ' Endif
 
+  CLibraryInfo.Clear
   ReadProject
   
   If Not ReadOnly Then
@@ -2323,7 +2324,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   sAfter = GetInfoFile()
 
   If sAfter <> sBefore Then
-    RefreshLibrary(True)
+    RefreshComponents(True)
   Endif
 
   UnlockIt()
@@ -3185,7 +3186,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Endif
 
   If Not $bTesting Then FMain.UpdateTranslate
-  RefreshLibrary
+  RefreshComponents
+  UpdateLibraries(Libraries)
   'CreateConnectionDirectory
 
 End
@@ -3246,7 +3248,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     ' Endif
   Else
     MakeShortcut(bMakeShortcut)
-    If Not bComponentDoNotChange Then RefreshLibrary
+    If Not bComponentDoNotChange Then RefreshComponents
   Endif
 
   ' Creates the .project file
@@ -3429,7 +3431,7 @@ Private Sub RefreshForComponent()
 
   Dim hForm As Object
 
-  RefreshLibrary(True)
+  RefreshComponents(True)
 
   FFormStack.RefreshAll(, True)
 
@@ -4253,7 +4255,7 @@ Public Sub RefreshEditor()
 
 End
 
-Public Sub RefreshLibrary(Optional bForce As Boolean)
+Public Sub RefreshComponents(Optional bForce As Boolean)
 
   Dim sLib As String
   Dim sClass As String
@@ -4276,7 +4278,7 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
 
   sLibComp = aLib.Join(" ")
 
-  If sLibComp <> $sOldRefreshLibrary Or If bForce Then
+  If sLibComp <> $sOldRefreshComponents Or If bForce Then
 
     CComponent.Reset
 
@@ -4291,13 +4293,13 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
     If Not $bTesting Then
       CComponent.LoadProjectComponent
       FToolBox.RefreshToolbar(bForce)
-      FCompletion.RefreshLibrary
+      FCompletion.OnRefreshComponents()
       FProperty.RefreshAll
       'Why refreshing the project?
       'Project.Refresh
     Endif
 
-    $sOldRefreshLibrary = sLibComp
+    $sOldRefreshComponents = sLibComp
 
   Endif
 
@@ -5356,4 +5358,34 @@ Public Sub SetEditorFont(hCtrl As Control)
   
   hCtrl.Font = Font[Settings["/Editor/Font", DEFAULT_FONT]]  
   
+End
+
+Public Sub UpdateLibraries(aLib As String[]) As Boolean
+
+  Dim sPath As String
+  Dim hLib As CLibraryInfo
+  Dim aAdd As String[]
+  Dim bChange As Boolean
+  
+  Do
+    
+    aAdd = New String[]
+    
+    For Each sPath In aLib
+      hLib = CLibraryInfo[sPath]
+      If hLib.NotFound Then Continue
+      For Each sPath In hLib.Libraries
+        If Not aLib.Exist(sPath) And If Not aAdd.Exist(sPath) Then aAdd.Add(sPath)
+      Next
+    Next
+    
+    If aAdd.Count = 0 Then Break
+    
+    aLib.Insert(aAdd)
+    bChange = True
+    
+  Loop
+  
+  Return bChange
+
 End

@@ -410,7 +410,7 @@ Private Function GetDependency(sLib As String) As String
     
     ' The package name dependency must not include the version!
     
-    hLibrary = New CLibraryInfo(sLib)
+    hLibrary = CLibraryInfo[sLib]
     sPackageName = hLibrary.GetDependencyName()
     sVersion = hLibrary.Version
     

@@ -95,7 +95,7 @@ Public Sub Form_Open()
   $hUncheck = Picture["img/16/unchecked.png"]
 
   chkShowUsed.Value = $bShowUsed
-  chkShowBeta.Value = $bShowBeta
+  'chkShowBeta.Value = $bShowBeta
   $bCanInitComponents = True
 
   tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
@@ -308,7 +308,7 @@ Private Sub SaveComponents()
 
   Project.Components.Sort
 
-  Project.RefreshLibrary
+  Project.RefreshComponents
 
 End
 
@@ -395,7 +395,7 @@ Private Sub RefreshComponents()
   Next
   
   For Each sLib In $aLibraries
-    hLibInfo = New CLibraryInfo(sLib)
+    hLibInfo = CLibraryInfo[sLib]
     For Each sDep In hLibInfo.Require
       If Not $cComp.Exist(sDep) Then
         aNotFound.Add(sDep)
@@ -694,12 +694,12 @@ Public Sub btnIcon_Click()
   
 End
 
-Public Sub chkShowBeta_Click()
-
-  $bShowBeta = chkShowBeta.Value
-  RefreshComponents
-
-End
+' Public Sub chkShowBeta_Click()
+' 
+'   $bShowBeta = chkShowBeta.Value
+'   RefreshComponents
+' 
+' End
 
 Private Sub AboutComponent()
   
@@ -1116,7 +1116,7 @@ Public Sub btnInsertLib_Click()
     Return
   Endif
   
-  hLib = New CLibraryInfo(sPath)
+  hLib = CLibraryInfo[sPath]
   If hLib.Classes.Count = 0 Then
     Message.Warning(Subst(("<b>&1</b> does not export any class."), File.Name(sPath)))
     Return
@@ -1124,6 +1124,7 @@ Public Sub btnInsertLib_Click()
   
   $aLibraries.Add(sPath)
   
+  Project.UpdateLibraries($aLibraries)
   RefreshLibraries
   RefreshComponents
 
@@ -1135,6 +1136,7 @@ Private Sub RefreshLibraries()
   Dim hLib As LibraryItem
   Dim hSep As Separator
   
+  lstLibraries.Lock
   lstLibraries.Clear
   
   For Each sPath In $aLibraries
@@ -1143,6 +1145,8 @@ Private Sub RefreshLibraries()
     hSep = New Separator(lstLibraries)
     hSep.H = 4
   Next
+  
+  lstLibraries.Unlock
   
 End
 
@@ -1156,6 +1160,7 @@ Public Sub btnRemoveLib_Click()
   iPos = $aLibraries.Find(hLib.Path)
   If iPos >= 0 Then
     $aLibraries.Remove(iPos)
+    Project.UpdateLibraries($aLibraries)
     RefreshLibraries
     RefreshComponents
   Endif
