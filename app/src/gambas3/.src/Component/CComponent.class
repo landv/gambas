@@ -801,7 +801,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     
     hClass = Classes[hModule.Name]
     
-    If hClass And If hClass.Component = CComponent.PROJECT_NAME Then
+    If hClass And If hClass.Component = CComponent.PROJECT_NAME And If hClass.Parent Then
       hClass = Classes[hClass.ParentComponent &/ hClass.Parent]
       MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
       bCanInherit = False
