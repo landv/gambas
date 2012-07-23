@@ -298,7 +298,7 @@ GB_DESC CElementDesc[] =
     
     GB_PROPERTY("TagName", "s", CElement_tagName),
     GB_PROPERTY("Prefix", "s", CElement_prefix),
-    GB_PROPERTY("PerviousElement", "XmlElement", CElement_previousElement),
+    GB_PROPERTY("PreviousElement", "XmlElement", CElement_previousElement),
     GB_PROPERTY("NextElement", "XmlElement", CElement_nextElement),
 
     GB_METHOD("GetChildrenByNamespace", "XmlElement[]", CElement_getChildrenByNamespace, "(Namespace)s[(Mode)i(Depth)i]"),

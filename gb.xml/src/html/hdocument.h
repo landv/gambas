@@ -34,8 +34,8 @@ public:
     HtmlDocument(const char *fileName, const size_t lenFileName);
     
 
-    virtual void toString(char **output, size_t *len);
-    virtual void toGBString(char **output, size_t *len);
+    //virtual void toString(char **output, size_t *len);
+    //virtual void toGBString(char **output, size_t *len);
 
 
     Element* getBody();

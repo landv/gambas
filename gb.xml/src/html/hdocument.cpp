@@ -276,7 +276,7 @@ void HtmlDocument::setLang(char *content, size_t len)
 }
 
 /***** String output *****/
-void HtmlDocument::toString(char **output, size_t *len)
+/*void HtmlDocument::toString(char **output, size_t *len)
 {
     //<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n //Len = 110
     //<!DOCTYPE html>\n //Len = 16
@@ -316,7 +316,7 @@ void HtmlDocument::toGBString(char **output, size_t *len)
     }
     root->addString(output);
     (*output) -= (*len);
-}
+}*/
 
 void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException)
 {

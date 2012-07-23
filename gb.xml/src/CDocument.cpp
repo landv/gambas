@@ -20,6 +20,7 @@
 ***************************************************************************/
 
 #include "CDocument.h"
+#include "CNode.h"
 
 #include "gbi.h"
 #include "document.h"
@@ -70,7 +71,7 @@ BEGIN_METHOD(CDocument_tostring, GB_BOOLEAN indent)
     char *str = 0;
     size_t len = 0;
     
-    THIS->toGBString(&str, &len, VARG(indent) ? 0 : -1);
+    THIS->toGBString(str, len, VARG(indent) ? 0 : -1);
     
     GB.ReturnString(str);
 
@@ -83,7 +84,7 @@ if(READ_PROPERTY)
     char *str = 0;
     size_t len = 0;
     
-    THIS->toGBString(&str, &len);
+    THIS->toGBString(str, len);
     
     GB.ReturnString(str);
 }
@@ -103,7 +104,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_root)
 
+if(READ_PROPERTY)
+{
     GBI::Return((Node*)(THIS->root));
+}
+else
+{
+    THIS->setRoot(VPROPOBJ(CNode)->node->toElement());
+}
 
 END_PROPERTY
 
@@ -173,7 +181,7 @@ GB_DESC CDocumentDesc[] =
     GB_METHOD("_free", "", CDocument_free, ""),
     
     GB_METHOD("CreateElement", "XmlElement", CDocument_createElement, "(TagName)s"),
-    GB_PROPERTY_READ("Root", "XmlElement", CDocument_root),
+    GB_PROPERTY("Root", "XmlElement", CDocument_root),
     GB_PROPERTY_READ("All", "XmlElement[]", CDocument_getAll),
     GB_METHOD("GetElementsByTagName", "XmlElement[]", CDocument_getElementsByTagName, "(TagName)s[(Mode)i(Depth)i]"),
     GB_METHOD("GetElementsByNamespace", "XmlElement[]", CDocument_getElementsByNamespace, "(Namespace)s[(Mode)i(Depth)i]"),

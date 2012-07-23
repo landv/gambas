@@ -24,6 +24,9 @@
 
 #include <memory.h>
 #include "main.h"
+#include "utils.h"
+
+#define SUPPORT_CHILDREN(__node) ((__node->getType() == Node::ElementNode) || (__node->getType() == Node::DocumentNode))
 
 class Element;
 class TextNode;
@@ -45,13 +48,52 @@ public:
     //Node tree
     void getGBChildren(GB_ARRAY *array);
     Document* GetOwnerDocument();
+    void appendChild(Node *newChild);//Adds a new child after the last one
+    void prependChild(Node *newChild);
+    void removeChild(Node *child);//Removes a child from the node
+    void removeKeepChild(Node *child);//Removes a child from the node, but doesn't destroys it
+    void replaceChild(Node *oldChild, Node *newChild);
+    bool insertAfter(Node *child, Node *newChild);
+    bool insertBefore(Node *child, Node *newChild);
+    void appendText(const char *data, const size_t lenData);
+    void clearChildren();
+    
+    void appendFromText(char *data, const size_t lenData);
+    
+    void getGBChildrenByNamespace(const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void addGBChildrenByNamespace(const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void getGBChildrenByTagName(const char *ctagName, const size_t clenTagName,  GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void addGBChildrenByTagName(const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void getGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
+                                       const char *attrValue, const size_t lenAttrValue,
+                                       GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    void addGBChildrenByAttributeValue(const char *attrName, const size_t lenAttrName,
+                                       const char *attrValue, const size_t lenAttrValue,
+                                       GB_ARRAY *array, const int mode = GB_STRCOMP_BINARY, const int depth = -1);
+    
+    Element** getChildrenByTagName(const char *ctagName, const size_t clenTagName, size_t &lenArray, const int depth = -1);
+    Element* getFirstChildByTagName(const char *ctagName, const size_t clenTagName, const int depth = -1);
+    void addChildrenByTagName(const char *compTagName, const size_t compLenTagName, Element** &array, size_t &lenArray, const int depth = -1);
+    void getGBAllChildren(GB_ARRAY *array);
+    void addGBAllChildren(GB_ARRAY *array);
+    void getGBChildElements(GB_ARRAY *array);
+    
+    Element* firstChildElement();
+    Element* lastChildElement();
+    Element* previousElement();
+    Element* nextElement();
+    
+    
+    Node *firstChild;
+    Node *lastChild;
+    size_t childCount;
     Document *parentDocument;
-    Element *parent;
+    Node *parent;
     Node *nextNode;
     Node *previousNode;
     
     //Node Types
-    enum Type {ElementNode, NodeText, Comment, CDATA, AttributeNode};
+    enum Type {ElementNode, NodeText, Comment, CDATA, AttributeNode, DocumentNode};
     virtual Type getType() = 0;//Returns the type of the node
     bool isElement();
     bool isText();
@@ -61,11 +103,15 @@ public:
     Element* toElement();
     TextNode* toTextNode();
     
+    //Parser
+    static void GBfromText(char *data, const size_t lendata, GB_ARRAY *array);
+    static Node** fromText(char const *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException);    
+    
     //String output
-    virtual void addStringLen(size_t *len, int indent = 0) = 0;//Calculates the node's string representation length, and adds it to len (recursive)
-    virtual void addString(char **data, int indent = 0) = 0;//Puts the string represenetation into data, and increments it (recursive)
-    void toString(char **output, size_t *len);//Converts the node to its string representation
-    void toGBString(char *&output, size_t &len, int indent = 0);
+    virtual void addStringLen(size_t &len, int indent = -1) = 0;//Calculates the node's string representation length, and adds it to len (recursive)
+    virtual void addString(char *&data, int indent = -1) = 0;//Puts the string represenetation into data, and increments it (recursive)
+    void toString(char *&output, size_t &len,int indent = -1);//Converts the node to its string representation
+    void toGBString(char *&output, size_t &len, int indent = -1);
     
     virtual void setTextContent(const char *ncontent, const size_t nlen) = 0;//Sets the plain text conent of a node
     virtual void addTextContentLen(size_t &len) = 0;

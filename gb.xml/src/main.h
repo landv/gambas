@@ -31,6 +31,7 @@
 #define GB_STRCOMP_NATURAL  8
 
 #define VARGOBJ(_type, _ob) ((_type*)VARG(_ob))
+#define VPROPOBJ(_type) ((_type*)VPROP(GB_OBJECT)) 
 
 #include <iostream>
 

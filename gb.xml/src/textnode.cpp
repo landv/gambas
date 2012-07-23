@@ -151,26 +151,26 @@ void TextNode::setEscapedTextContent(const char *ncontent, const size_t nlen)
 
 /***** String output *****/
 
-void TextNode::addStringLen(size_t *len, int indent)
+void TextNode::addStringLen(size_t &len, int indent)
 {
     checkEscapedContent();
-    *len += lenEscapedContent;
-    if(indent >= 0) *len += indent + 1;
+    len += lenEscapedContent;
+    if(indent >= 0) len += indent + 1;
 }
 
 #undef ADD
-#define ADD(_car) **data = _car; ++(*data);
+#define ADD(_car) *data = _car; ++(data);
 
-void TextNode::addString(char **data, int indent)
+void TextNode::addString(char *&data, int indent)
 {
     checkEscapedContent();
     if(indent >= 0) 
     {
-        memset(*data, CHAR_SPACE, indent); 
-        *data += indent;
+        memset(data, CHAR_SPACE, indent); 
+        data += indent;
     }
-    memcpy(*data, escapedContent, lenEscapedContent);
-    *data += lenEscapedContent;
+    memcpy(data, escapedContent, lenEscapedContent);
+    data += lenEscapedContent;
     if(indent >= 0)
     {
         ADD(SCHAR_N);
@@ -241,28 +241,28 @@ void CommentNode::NewGBObject()
     NoInstanciate = false;
 }
 
-void CommentNode::addStringLen(size_t *len, int indent)
+void CommentNode::addStringLen(size_t &len, int indent)
 {
     checkEscapedContent();
     // <!-- + content + -->
-    *len += lenEscapedContent + 7;
-    if(indent > 0) *len += indent + 1;
+    len += lenEscapedContent + 7;
+    if(indent > 0) len += indent + 1;
 }
 
-void CommentNode::addString(char **data, int indent)
+void CommentNode::addString(char *&data, int indent)
 {
     checkEscapedContent();
     if(indent >= 0) 
     {
-        memset(*data, CHAR_SPACE, indent); 
-        *data += indent;
+        memset(data, CHAR_SPACE, indent); 
+        data += indent;
     }
-    memcpy(*data, "<!--", 4);
-    *data += 4;
-    memcpy(*data, escapedContent, lenEscapedContent);
-    *data += lenEscapedContent;
-    memcpy(*data, "-->", 3);
-    *data += 3;
+    memcpy(data, "<!--", 4);
+    data += 4;
+    memcpy(data, escapedContent, lenEscapedContent);
+    data += lenEscapedContent;
+    memcpy(data, "-->", 3);
+    data += 3;
     if(indent >= 0)
     {
         ADD(SCHAR_N);
@@ -300,28 +300,28 @@ void CDATANode::NewGBObject()
     NoInstanciate = false;
 }
 
-void CDATANode::addStringLen(size_t *len, int indent)
+void CDATANode::addStringLen(size_t &len, int indent)
 {
     checkEscapedContent();
     // <![CDATA[ + content + ]]>
-    *len += lenContent + 12;
-    if(indent) *len += indent + 1;
+    len += lenContent + 12;
+    if(indent) len += indent + 1;
 }
 
-void CDATANode::addString(char **data, int indent)
+void CDATANode::addString(char *&data, int indent)
 {
     checkEscapedContent();
     if(indent >= 0) 
     {
-        memset(*data, CHAR_SPACE, indent); 
-        *data += indent;
+        memset(data, CHAR_SPACE, indent); 
+        data += indent;
     }
-    memcpy(*data, "<![CDATA[", 9);
-    *data += 9;
-    memcpy(*data, escapedContent, lenEscapedContent);
-    *data += lenEscapedContent;
-    memcpy(*data, "]]>", 3);
-    *data += 3;
+    memcpy(data, "<![CDATA[", 9);
+    data += 9;
+    memcpy(data, content, lenContent);
+    data += lenContent;
+    memcpy(data, "]]>", 3);
+    data += 3;
     if(indent >= 0)
     {
         ADD(SCHAR_N);

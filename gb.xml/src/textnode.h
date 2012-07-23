@@ -43,8 +43,8 @@ public:
     void setEscapedTextContent(const char *ncontent, const size_t nlen);
     
     //String output
-    virtual void addStringLen(size_t *len, int indent = 0);
-    virtual void addString(char **data, int indent = 0);
+    virtual void addStringLen(size_t &len, int indent = -1);
+    virtual void addString(char *&data, int indent = -1);
     
     //Text content
     virtual void setTextContent(const char *ncontent, const size_t nlen);
@@ -70,8 +70,8 @@ public:
     virtual Node::Type getType();
     
     //String output
-    virtual void addStringLen(size_t *len, int indent = 0);
-    virtual void addString(char **data, int indent = 0);
+    virtual void addStringLen(size_t &len, int indent = -1);
+    virtual void addString(char *&data, int indent = -1);
     
     //Gambas object
     virtual void NewGBObject();
@@ -87,8 +87,8 @@ public:
     virtual Node::Type getType();
     
     //String output
-    virtual void addStringLen(size_t *len, int indent = 0);
-    virtual void addString(char **data, int indent = 0);
+    virtual void addStringLen(size_t &len, int indent = -1);
+    virtual void addString(char *&data, int indent = -1);
     
     //Gambas object
     virtual void NewGBObject();

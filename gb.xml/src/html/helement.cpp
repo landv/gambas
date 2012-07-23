@@ -219,7 +219,7 @@ bool Element::matchFilter(const char *filter, size_t lenFilter)
     pos = (char*)memrchr(filter, CHAR_GREATER, lenFilter);
     if(pos)
     {
-        Element *elmt = this->parent;
+        Element *elmt = this->parent->toElement();
         if(!elmt) return false;
         return elmt->matchFilter(filter, (pos - filter))  &&
                 matchFilter(pos, lenFilter - (pos + 1 - filter));
@@ -238,11 +238,11 @@ bool Element::matchFilter(const char *filter, size_t lenFilter)
     if(pos)
     {
         if(!matchFilter(pos, lenFilter - (pos + 1 - filter))) return false;
-        Element *elmt = this->parent;
+        Element *elmt = this->parent->toElement();
         while(elmt)
         {
             if(elmt->matchFilter(filter, (pos - filter))) return true;
-            elmt = elmt->parent;
+            elmt = elmt->parent->toElement();
         }
 
         return false;

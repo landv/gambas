@@ -55,13 +55,13 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
 	
 
 	
-    if (!doc->root->childCount)
+    if (!doc->childCount)
 	{
 		GB.Error("Void document");
 		return;
 	}
 	
-    if (!stylesheet->root->childCount)
+    if (!stylesheet->childCount)
 	{
 		GB.Error("Void Style Sheet");
 		return;
@@ -71,7 +71,7 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     
     char *StyleSheetOutput;
     size_t StyleSheetLen;
-    stylesheet->toString(&StyleSheetOutput, &StyleSheetLen);
+    stylesheet->toString(StyleSheetOutput, StyleSheetLen);
     
     StyleSheetOutput =(char*)realloc(StyleSheetOutput, StyleSheetLen + 1);
     StyleSheetOutput[StyleSheetLen] = 0;
@@ -88,7 +88,7 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     
     char *DocumentOutput;
     size_t DocumentLen;
-    doc->toString(&DocumentOutput, &DocumentLen);
+    doc->toString(DocumentOutput, DocumentLen);
     
     DocumentOutput =(char*)realloc(DocumentOutput, DocumentLen + 1);
     DocumentOutput[DocumentLen] = 0;

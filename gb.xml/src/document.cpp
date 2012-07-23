@@ -28,32 +28,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Document::Document() : GBObject(0)
+Document::Document() : Node(), GBObject(0)
 {
     root = new Element("xml", 3);
     root->parentDocument = this;
+    appendChild(root);
     
 }
 
-Document::Document(const char *fileName, const size_t lenFileName)
+Document::Document(const char *fileName, const size_t lenFileName) : Node()
 {
+    clearChildren();
     root = 0;
     Open(fileName, lenFileName);
 }
 
 Document::~Document()
 {
-    root->DestroyParent();
+    clearChildren();
+    //root->DestroyParent();
 }
 
 /***** Node tree *****/
 void Document::setRoot(Element *newRoot)
 {
-    if(root) root->DestroyParent();
-    
-    if(newRoot->parent) newRoot->parent->removeKeepChild(newRoot);
-    
-    newRoot->parentDocument = this;
+    if(!root)
+    {
+        appendChild(newRoot);
+    }
+    else
+    {
+        replaceChild(root, newRoot);
+    }
     root = newRoot;
 }
 
@@ -102,44 +108,95 @@ void Document::setContent(const char *content, size_t len) throw(XMLParseExcepti
     size_t elementCount = 0;
     if(posEnd)
     {
-        elements = Element::fromText(posEnd, len - (posEnd - content), &elementCount);
+        elements = Element::fromText(posEnd + 2, len - (posEnd + 2 - content), &elementCount);
     }
     else
     {
         elements = Element::fromText(content, len, &elementCount);
     }
 
-    Element *newRoot = 0;
+    Node *newRoot = 0;
     Node *node = 0;
+    
+    clearChildren();
+    root = 0;
     
     for(size_t i = 0; i < elementCount; i++)
     {
         node = elements[i];
-        if(node->isElement() && !newRoot)
+        if(node->isElement())
         {
-            newRoot = node->toElement();
+            if(!newRoot)
+            {
+                newRoot = node;
+            }
+            else
+            {
+                throw XMLParseException("Extra root element", 0, 0, 0);
+            }
+                
         }
-        else
-        {
-            delete node;
-        }
+            appendChild(node);
 
     }
     
     
     free(elements);
+    if(newRoot) root = newRoot->toElement();
     
-    if(!newRoot)
+    /*if(!newRoot)
     {
         throw XMLParseException("No valid element root found", 0, 0, 0);
-    }
+    }*/
     
-    this->setRoot(newRoot);
+    //this->setRoot(newRoot);
 
     //if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
 }
 
 /***** String output *****/
+void Document::addStringLen(size_t &len, int indent)
+{
+    len = 38 + (indent >= 0 ? 1 : 0);// root->addStringLen(len, indent);
+    //Content
+    for(register Node *child = firstChild; child != 0; child = child->nextNode)
+    {
+        child->addStringLen(len, indent >= 0 ? indent : -1);
+    }
+}
+
+void Document::addString(char *&data, int indent)
+{
+    memcpy(data, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
+    data += 38;
+    if(indent >= 0) 
+    {
+        *data = SCHAR_N;
+        ++data;
+    }
+    //Content
+    for(register Node *child = firstChild; child != 0; child = child->nextNode)
+    {
+        child->addString(data, indent >= 0 ? indent : -1);
+    }
+}
+
+void Document::setTextContent(const char *ncontent, const size_t nlen)
+{
+    //NULL
+}
+
+void Document::addTextContent(char *&data)
+{
+    //NULL
+}
+
+void Document::addTextContentLen(size_t &len)
+{
+    //NULL
+}
+
+/*
 void Document::toString(char **output, size_t *len, int indent)
 {
     //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
@@ -170,7 +227,7 @@ void Document::toGBString(char **output, size_t *len, int indent)
     }
     root->addString(output, indent);
     (*output) -= (*len);
-}
+}*/
 
 void Document::save(const char *fileName, bool indent)
 {
@@ -185,7 +242,7 @@ void Document::save(const char *fileName, bool indent)
     
     char *data = 0;
     size_t lenData = 0;
-    toString(&data, &lenData, indent ? 0 : -1);
+    toString(data, lenData, indent ? 0 : -1);
     data = (char*)realloc(data, lenData + 1);
     data[lenData] = 0;
     

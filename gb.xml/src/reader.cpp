@@ -222,7 +222,7 @@ int Reader::ReadChar(char car)
         inTag = false;
         inTagName = false;
         inEndTag = false;
-        if(curElmt) curElmt = curElmt->parent;
+        if(curElmt) curElmt = curElmt->parent->toElement();
         FREE(content); lenContent = 0;
         if(depth > 0) --depth;
         waitClosingElmt = true;
@@ -243,7 +243,7 @@ int Reader::ReadChar(char car)
         if(curElmt && lenContent == curElmt->lenTagName)
         {
             if(memcmp(curElmt->tagName, content, lenContent))
-                curElmt = curElmt->parent;
+                curElmt = curElmt->parent->toElement();
         }
         FREE(content); lenContent = 0;
         if(depth > 0) --depth;

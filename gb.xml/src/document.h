@@ -24,26 +24,34 @@
 
 #include "main.h"
 #include "utils.h"
+#include "node.h"
 
 class Element;
 struct CDocument;
 class XMLParseException;
 
-class Document 
+class Document : public Node
 {
 public:
     Document();
     Document(const char *fileName, const size_t lenFileName);
     virtual ~Document();
+    virtual Node::Type getType(){return Node::DocumentNode;}
     
     //Document loading
     void Open(const char *fileName, const size_t lenFileName) throw(XMLParseException);
     virtual void setContent(const char *content, size_t len) throw(XMLParseException);
     
     //String output
-    virtual void toString(char **output, size_t *len, int indent = -1);
-    virtual void toGBString(char **output, size_t *len, int indent = -1);
+    /*virtual void toString(char **output, size_t *len, int indent = -1);
+    virtual void toGBString(char **output, size_t *len, int indent = -1);*/
     void save(const char *fileName, bool indent = false);
+    virtual void addStringLen(size_t &len, int indent = -1);
+    virtual void addString(char *&data, int indent = -1);
+    virtual void setTextContent(const char *ncontent, const size_t nlen);
+    virtual void addTextContent(char *&data);
+    virtual void addTextContentLen(size_t &len);
+    
     
     
     //Node tree
