@@ -309,6 +309,7 @@ Static Private Sub InitTheme()
       
       If Not sTheme Then
         aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
+        If Not aFind Then aFind = FindInConfigFile("~/.config/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
         If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
         If aFind Then sTheme = Trim(aFind[0])
       Endif

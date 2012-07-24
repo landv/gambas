@@ -39,6 +39,15 @@ Private Sub AnalyzeCode(sText As String) As String
 
 End
 
+Private Sub IsMarkup(sStr As String, iPos As Integer, sMarkup As String) As Boolean
+  
+  Dim sTest As String = String.Mid$(sStr, iPos, Len(sMarkup))
+  
+  If sTest = sMarkup Or If sTest = (Left(sMarkup, -1) & " ") Then Return True
+  
+End
+
+
 Public Sub Run(iStyle As Integer)
 
   Dim iState As Integer
@@ -268,11 +277,11 @@ Public Sub Run(iStyle As Integer)
                   bMarkup = True
                   sMarkup = ""
                   sStr = String.Mid$(sText, iInd, 5)
-                  If sStr = "<body" Or If sStr = "<head" Or If sStr = "<html" Then 
+                  If IsMarkup(sText, iInd, "<body>") Or If IsMarkup(sText, iInd, "<head>") Or If IsMarkup(sText, iInd, "<html>") Then
                     bLimit = True
-                  Else If String.Mid$(sText, iInd, 7) = "<script" Then
+                  Else If IsMarkup(sText, iInd, "<script>") Then
                     sMarkup = "script"
-                  Else If String.Mid$(sText, iInd, 6) = "<style" Then
+                  Else If IsMarkup(sText, iInd, "<style>") Then
                     sMarkup = "style"
                   Endif
                 Endif
