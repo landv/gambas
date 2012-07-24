@@ -297,7 +297,7 @@ Static Private Sub InitTheme()
       If Not sTheme Then
         aFind = FindInConfigFile("~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
         If Not aFind Then FindInConfigFile("~/.config/xfce4/mcs_settings/gtk.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
-        If aFind Then sTheme = Trim(aFind[2])
+        If aFind Then sTheme = Trim(aFind[1])
       Endif
       
       If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
@@ -310,6 +310,7 @@ Static Private Sub InitTheme()
       If Not sTheme Then
         aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
         If Not aFind Then aFind = FindInConfigFile("~/.config/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
+        If Not aFind Then aFind = FindInConfigFile("/usr/share/lxde/config", "sNet/IconThemeName=*")
         If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
         If aFind Then sTheme = Trim(aFind[0])
       Endif
