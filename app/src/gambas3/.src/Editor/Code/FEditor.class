@@ -353,8 +353,10 @@ Public Sub Modify(Optional bReset As Boolean)
     Inc Age
     $cProc.Clear ' = New Collection
     $aProc.Clear ' = New String[]
-    FDebugInfo.RefreshBreakpoint(Me.Name)
+
     FSearch.OnFileChange(Me.Path)
+    FDebugInfo.RefreshTask(Me.Path)
+    FDebugInfo.RefreshBreakpoint(Me.Name)
 
   Endif
 

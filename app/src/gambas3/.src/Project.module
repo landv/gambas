@@ -172,6 +172,7 @@ Private $hCurrentPopup As Menu
 Private $hLock As File
 
 ' Path of source files
+Property Read Sources As Collection
 Private $cSourceDir As New Collection
 
 ' Subversion state of files
@@ -613,6 +614,7 @@ _INIT_AGAIN:
     'FOpenProject.OnUpdateRecent
     Design.ClearOutput
     Design.ReadBreakpoints
+    FDebugInfo.OnProjectChange
   Endif
 
   $hLock = hLock
@@ -5387,5 +5389,11 @@ Public Sub UpdateLibraries(aLib As String[]) As Boolean
   Loop
   
   Return bChange
+
+End
+
+Private Function Sources_Read() As Collection
+
+  Return $cSourceDir
 
 End

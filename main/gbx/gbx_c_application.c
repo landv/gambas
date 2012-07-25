@@ -176,7 +176,7 @@ END_PROPERTY
 
 BEGIN_METHOD(Application_Env_get, GB_STRING key)
 
-  GB_ReturnConstZeroString(getenv(GB_ToZeroString(ARG(key))));
+  GB_ReturnNewZeroString(getenv(GB_ToZeroString(ARG(key))));
 
 END_METHOD
 

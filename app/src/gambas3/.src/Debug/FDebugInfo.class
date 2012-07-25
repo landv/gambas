@@ -7,9 +7,13 @@ Private Const TAB_LOCAL As Integer = 1
 Private Const TAB_ME As Integer = 2
 Private Const TAB_WATCH As Integer = 3
 Private Const TAB_BREAK As Integer = 4
-Private Const TAB_SEARCH As Integer = 5
+Private Const TAB_TASK As Integer = 5
+Private Const TAB_SEARCH As Integer = 6
 
-Private $cRefresh As New Collection
+Private $cRefreshBreakpoint As New Collection
+
+Private $cRefreshTask As New Collection
+Private $aTask As CTask[]
 
 Private $aLocal As New String[] ' keys
 Private $aValLocal As New String[]
@@ -70,6 +74,19 @@ Public Sub _new()
     .Columns[3].Text = ("Text")
   End With
   
+  With gvwTask
+    .Columns.Count = 4
+    .Columns[0].Width = Desktop.Scale * 6
+    .Columns[0].Text = ("Type")
+    .Columns[1].Width = 32
+    .Columns[1].Text = ("Text")
+    .Columns[1].Expand = True
+    .Columns[2].Width = Desktop.Scale * 16
+    .Columns[2].Text = ("Class")
+    .Columns[3].Width = Desktop.Scale * 6
+    .Columns[3].Text = ("Line")
+  End With
+  
   ReadConfig
   
 End
@@ -77,10 +94,8 @@ End
 
 Public Sub Form_Open()
 
-
   FOutput.Load(panConsole)
   UpdateView
-  
 
 End
 
@@ -101,18 +116,22 @@ Private Sub ClearView(hView As TableView)
 End
 
 
-Public Sub Clear()
-
-  ClearView(tbvLocal)
-  tbvLocal.Tag = ""
-  ClearView(tbvObject)
-  tbvObject.Tag = ""
-
-  lvwStack.Clear
-  cvwWatch.Clear
-  $cRefresh.Clear
-
-End
+' Public Sub Clear()
+' 
+'   ClearView(tbvLocal)
+'   tbvLocal.Tag = ""
+'   ClearView(tbvObject)
+'   tbvObject.Tag = ""
+' 
+'   lvwStack.Clear
+'   cvwWatch.Clear
+'   $cRefreshBreakpoint.Clear
+'   $cRefreshTask.Clear
+'   $aTask = Null
+'   gvwTask.Rows.Count = 0
+'   gvwTask.Refresh
+' 
+' End
 
 Public Sub ClearBreakpoints()
   
@@ -582,6 +601,7 @@ Public Sub ReadConfig()
   lvwStack.Font = tbvLocal.Font
   cvwWatch.Font = tbvLocal.Font
   cvwBreak.Font = tbvLocal.Font
+  gvwTask.Font = tbvLocal.Font
   tabStack.TextFont = tabDebug.TextFont
   
   For Each hCtrl In [panBreakpoint, panSearch, panWatch]
@@ -689,6 +709,12 @@ Public Sub tabDebug_Click()
       FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
+    Case TAB_TASK
+      If Not $aTask Then
+        UpdateTask
+      Else
+        timTask_Timer
+      Endif
     Case TAB_SEARCH
       FSearch.RefreshBrowse
     ' Case TAB_HELP
@@ -833,7 +859,7 @@ End
 
 Public Sub RefreshBreakpoint(sClass As String)
   
-  $cRefresh[sClass] = sClass
+  $cRefreshBreakpoint[sClass] = sClass
   If tabDebug.Index = TAB_BREAK Then 
     timBreakpoint.Stop
     timBreakpoint.Start
@@ -851,7 +877,7 @@ Public Sub timBreakpoint_Timer()
   Dim sProc As String
   Dim sText As String
   
-  For Each sClass In $cRefresh
+  For Each sClass In $cRefreshBreakpoint
     
     cvwBreak.MoveFirst
     While cvwBreak.Available
@@ -875,7 +901,7 @@ Public Sub timBreakpoint_Timer()
   'cvwBreak.Columns[0].Width = -1
   'cvwBreak.Columns[1].Width = -1
   
-  $cRefresh.Clear
+  $cRefreshBreakpoint.Clear
   timBreakpoint.Stop
 
 End
@@ -1160,4 +1186,131 @@ Public Sub ShowConsole()
   If FOutput.Parent Then tabDebug.Index = TAB_CONSOLE
   FOutput.SetFocus
 
+End
+
+Public Sub RefreshTask(sPath As String)
+  
+  $cRefreshTask[sPath] = sPath
+  If tabDebug.Index = TAB_TASK Then
+    timTask.Stop
+    timTask.Start
+  Endif
+  
+End
+
+Public Sub UpdateTask()
+  
+  Dim sPath As String
+  
+  If tabDebug.Index <> TAB_TASK Then Return
+  
+  Inc Application.Busy
+  
+  $aTask = New CTask[]
+  For Each sPath In Project.Sources
+    $aTask.Insert(CTask.ScanFile(sPath))
+  Next
+  
+  $aTask.Sort
+  $cRefreshTask.Clear
+  gvwTask.Rows.Count = $aTask.Count
+  gvwTask.Refresh
+  
+  Dec Application.Busy
+
+End
+
+
+Public Sub timTask_Timer()
+
+  Dim sPath As String
+  Dim sClass As String
+  Dim I As Integer
+
+  If Not $aTask Then Return
+  If $cRefreshTask.Count = 0 Then Return
+
+  For Each sPath In $cRefreshTask
+    
+    sClass = File.BaseName(sPath)
+    
+    I = 0
+    While I < $aTask.Count
+      If $aTask[I].Class = sClass Then
+        $aTask.Remove(I)
+      Else
+        Inc I
+      Endif
+    Wend
+    
+    $aTask.Insert(CTask.ScanFile(sPath))
+    
+  Next
+  
+  $aTask.Sort
+  $cRefreshTask.Clear
+  gvwTask.Rows.Count = $aTask.Count
+  gvwTask.Refresh
+  
+  timTask.Stop
+
+End
+
+Public Sub gvwTask_Data(Row As Integer, Column As Integer)
+
+  Dim hTask As CTask = $aTask[Row]
+
+  With gvwTask.Data
+
+    Select Case hTask.Type
+      Case CTask.TYPE_NOTE
+        .Foreground = Color.Default
+      Case CTask.TYPE_FIXME
+        .Foreground = Color.Red
+      Case CTask.TYPE_TODO
+        .Foreground = Color.Green
+    End Select
+    
+    Select Case Column
+      
+      Case 2
+        .Text = hTask.Class
+        
+      Case 3
+        .Text = CStr(hTask.Line)
+        
+      Case 0
+        Select Case hTask.Type
+          Case CTask.TYPE_NOTE
+            .Text = "NOTE"
+          Case CTask.TYPE_FIXME
+            .Text = "FIXME"
+          Case CTask.TYPE_TODO
+            .Text = "TODO"
+        End Select
+        
+      Case 1
+        .Text = hTask.Text
+      
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwTask_Activate()
+
+  Dim hTask As CTask = $aTask[gvwTask.Row]
+
+  Project.OpenFile(hTask.Name, hTask.Line)
+
+Catch  
+
+End
+
+Public Sub OnProjectChange()
+  
+  $aTask = Null
+  UpdateTask
+  
 End
