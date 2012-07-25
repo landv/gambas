@@ -166,17 +166,17 @@
           Text = ("Cancel")
           Picture = Picture["icon:/small/halt"]
         }
+        { btnClearSearch ToolButton
+          MoveScaled(11,0,10,4)
+          AutoResize = True
+          Text = ("Close")
+          Picture = Picture["icon:/small/close"]
+        }
         { btnRefreshSearch ToolButton
-          MoveScaled(11,0,13,4)
+          MoveScaled(22,0,18,4)
           AutoResize = True
           Text = ("Search again")
           Picture = Picture["icon:/small/refresh"]
-        }
-        { btnClearSearch ToolButton
-          MoveScaled(26,0,13,4)
-          AutoResize = True
-          Text = ("Reset")
-          Picture = Picture["icon:/small/clear"]
         }
         { btnShowSearch ToolButton
           MoveScaled(41,0,19,4)
@@ -185,7 +185,7 @@
           Picture = Picture["icon:/small/find"]
         }
         { Panel1 Panel
-          MoveScaled(62,1,2,3)
+          MoveScaled(62,0,2,4)
           Expand = True
         }
         { lblBrowse Label

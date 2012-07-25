@@ -87,6 +87,8 @@ Public Sub _new()
     .Columns[3].Text = ("Line")
   End With
   
+  tabDebug[TAB_SEARCH].Hide
+  
   ReadConfig
   
 End
@@ -115,23 +117,18 @@ Private Sub ClearView(hView As TableView)
   
 End
 
+Public Sub Clear()
 
-' Public Sub Clear()
-' 
-'   ClearView(tbvLocal)
-'   tbvLocal.Tag = ""
-'   ClearView(tbvObject)
-'   tbvObject.Tag = ""
-' 
-'   lvwStack.Clear
-'   cvwWatch.Clear
-'   $cRefreshBreakpoint.Clear
-'   $cRefreshTask.Clear
-'   $aTask = Null
-'   gvwTask.Rows.Count = 0
-'   gvwTask.Refresh
-' 
-' End
+  ClearView(tbvLocal)
+  tbvLocal.Tag = ""
+  ClearView(tbvObject)
+  tbvObject.Tag = ""
+
+  lvwStack.Clear
+  cvwWatch.Clear
+  $cRefreshBreakpoint.Clear
+
+End
 
 Public Sub ClearBreakpoints()
   
@@ -1059,6 +1056,7 @@ Public Sub ShowSearchList()
   gvwFind.Show
   lblNotFound.Hide
   lblBrowse.Hide
+  tabDebug[TAB_SEARCH].Show
   tabDebug.Index = TAB_SEARCH
   
 End
@@ -1172,6 +1170,7 @@ End
 Public Sub btnClearSearch_Click()
 
   FSearch.ResetBrowse
+  tabDebug[TAB_SEARCH].Hide
 
 End
 
