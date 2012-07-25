@@ -99,29 +99,33 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
     memcpy(dst, src, lenSrc);
     char *posFound = (char*)memchr(dst, CHAR_AND, lenDst);
     
-    while(posFound != 0 && (posFound + 3) < lenDst + dst);//(posFound - dst) < lenDst - 3
+    //register bool cond = ((posFound != 0) && ((posFound + 3) < lenDst + dst));
+    while(((posFound != 0) && ((posFound + 3) < lenDst + dst)))//(posFound - dst) < lenDst - 3
+    //while(cond)//Don't ask ...
     {
         if(memcmp(posFound + 1, "lt;", 3) == 0)// <   &lt;
         {
             *posFound = CHAR_STARTTAG;
             memmove(posFound + 1, posFound + 4, lenDst - (posFound - dst));
             lenDst -= 3;
-            posFound += 1;
+            posFound -= 3;
         }
         else if(memcmp(posFound + 1, "gt;", 3) == 0)// >   &gt;
         {
             *posFound = CHAR_ENDTAG;
             memmove(posFound + 1, posFound + 4, lenDst - (posFound - dst));
             lenDst -= 3; 
-            posFound += 1;
+            posFound -= 3;
         }
         else if(memcmp(posFound + 1, "amp;", 4) == 0)// &   &amp;
         {
             memmove(posFound + 1, posFound + 5, lenDst - (posFound - dst));
             lenDst -= 4; 
-            posFound += 1;
+            posFound -= 4;
         }
-        posFound = (char*)memchr(posFound, CHAR_AND, lenDst);
+        if(posFound + 1 >= dst + lenDst) break;
+        posFound = (char*)memchr(posFound + 1, CHAR_AND, lenDst - (posFound + 1 - dst));
+        //cond = ((posFound != 0) && ((posFound + 3) < lenDst + dst));
     }
 }
 
