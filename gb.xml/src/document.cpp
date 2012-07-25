@@ -248,6 +248,7 @@ void Document::save(const char *fileName, bool indent)
     
     fputs(data, newFile);
     fclose(newFile);
+    free(data);
     
 }
 

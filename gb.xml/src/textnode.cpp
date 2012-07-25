@@ -99,7 +99,7 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
     memcpy(dst, src, lenSrc);
     char *posFound = (char*)memchr(dst, CHAR_AND, lenDst);
     
-    while(posFound != 0)
+    while(posFound != 0 && (posFound + 3) < lenDst + dst);//(posFound - dst) < lenDst - 3
     {
         if(memcmp(posFound + 1, "lt;", 3) == 0)// <   &lt;
         {
