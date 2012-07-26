@@ -130,9 +130,11 @@ Private Sub UpdateLayout()
   End Select
   
   For Each hCtrl In $aButton
-    hCtrl.Orientation = $iOrientation
-    hCtrl.UpdateLayout
-    hCtrl.Refresh
+    If hCtrl.Visible Then
+      hCtrl.Orientation = $iOrientation
+      hCtrl.UpdateLayout
+      hCtrl.Refresh
+    Endif
   Next
   
   'Debug Me.Name;; $hTabBar.Font.Height;; "'"; $hTabBar.Font.ToString(); "'"

@@ -87,8 +87,6 @@ Public Sub _new()
     .Columns[3].Text = ("Line")
   End With
   
-  tabDebug[TAB_SEARCH].Hide
-  
   ReadConfig
   
 End
@@ -97,6 +95,7 @@ End
 Public Sub Form_Open()
 
   FOutput.Load(panConsole)
+  tabDebug[TAB_SEARCH].Visible = False
   UpdateView
 
 End
@@ -1056,7 +1055,7 @@ Public Sub ShowSearchList()
   gvwFind.Show
   lblNotFound.Hide
   lblBrowse.Hide
-  tabDebug[TAB_SEARCH].Show
+  tabDebug[TAB_SEARCH].Visible = True
   tabDebug.Index = TAB_SEARCH
   
 End
@@ -1170,7 +1169,7 @@ End
 Public Sub btnClearSearch_Click()
 
   FSearch.ResetBrowse
-  tabDebug[TAB_SEARCH].Hide
+  tabDebug[TAB_SEARCH].Visible = False
 
 End
 
@@ -1265,9 +1264,9 @@ Public Sub gvwTask_Data(Row As Integer, Column As Integer)
       Case CTask.TYPE_NOTE
         .Foreground = Color.Default
       Case CTask.TYPE_FIXME
-        .Foreground = Color.Red
+        .Foreground = Color.Gradient(Color.Red, Color.TextForeground)
       Case CTask.TYPE_TODO
-        .Foreground = Color.Green
+        .Foreground = Color.Gradient(Color.Green, Color.TextForeground)
     End Select
     
     Select Case Column
