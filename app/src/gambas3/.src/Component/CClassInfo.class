@@ -24,12 +24,14 @@ Public Similars As String[]
 Public Structure As Boolean
 Public DeclareIn As String
 
-Public Sub _new(sName As String, Optional sParent As String)
+Public Sub _new(sName As String, sComp As String, Optional sParent As String)
 
   Dim hSym As CSymbolInfo
+  Dim hParent As CClassInfo
 
   Name = sName
   {Parent} = sParent
+  Component = sComp
   Symbols = New Collection(gb.IgnoreCase)
 
   If {Parent} Then
@@ -41,7 +43,10 @@ Public Sub _new(sName As String, Optional sParent As String)
     For Each hSym In CComponent.GetClassSymbols(sParent) ' CComponent.Classes[sParent].Symbols
       Symbols[hSym.Name] = hSym
     Next
-    ParentComponent = CComponent.GetLastClass().Component
+    
+    hParent = CComponent.Classes[sComp &/ sParent]
+    If Not hParent Then hParent = CComponent.Classes[sParent]
+    ParentComponent = hParent.Component
   Endif
 
 End
@@ -94,6 +99,7 @@ Public Sub InitControl()
   Dim aCont As String[]
   Dim sKind As String
   Dim bDoNotApply As Boolean
+  Dim bTranslate As Boolean
 
   'DEBUG Component;; Name
 
@@ -153,6 +159,11 @@ Public Sub InitControl()
       Endif 
     Endif
     sParent = CComponent.Classes[sParent].ParentComponent &/ CComponent.Classes[sParent].Parent
+    ' If Error Then
+    '   Debug Error.Text; " !"
+    '   Debug System.Backtrace.Join(" ")
+    '   Debug Name;; Parent;; sParent
+    ' Endif
   Wend
 
 '   IF Left$(sProp) = "*" THEN
@@ -254,6 +265,7 @@ Public Sub InitControl()
 
   For Each hProp In Properties
     PropertyList.Add(hProp.Name)
+    If hProp.Translate Then bTranslate = True
   Next
 
   Properties["#X"] = New CPropertyInfo("", Name, "#X", "", Null, True, True)
@@ -277,6 +289,13 @@ Public Sub InitControl()
     
   Endif
 
+  CPropertyInfo.CreatingSpecialProperty = True
+  
+  If bTranslate Then
+    Properties[CPropertyInfo.TRANSLATE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.TRANSLATE_NAME, "", Null)
+    PropertyList.Add(CPropertyInfo.TRANSLATE_NAME, 0)
+  Endif
+
   If {Form} Then 
     If Family = "Form" Then
       Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", Null)
@@ -290,6 +309,8 @@ Public Sub InitControl()
   Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "", Null)
   PropertyList.Add(CPropertyInfo.EVENT_NAME, 0)
 
+  CPropertyInfo.CreatingSpecialProperty = False
+  
   'IF Name = "Timer" THEN
   Try DrawWith = Symbols["_DrawWith"].Value
   If Family <> "Form" And If MultiContainer And If Not DrawWith Then DrawWith = "TabStrip"

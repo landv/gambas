@@ -239,16 +239,19 @@
           }
           { cmbImageType ComboBox
             MoveScaled(13,10,17,4)
+            #Translate = False
             ReadOnly = True
-            List = [("PNG"), ("XPM"), ("GIF")]
+            List = ["PNG", "XPM", "GIF"]
           }
           { Label13 Label
             MoveScaled(23,0,4,4)
-            Text = ("px")
+            #Translate = False
+            Text = "px"
           }
           { Label14 Label
             MoveScaled(23,5,4,4)
-            Text = ("px")
+            #Translate = False
+            Text = "px"
           }
         }
         { panFormOption Panel

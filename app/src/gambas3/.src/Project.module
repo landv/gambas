@@ -230,14 +230,7 @@ Public Sub Main()
 
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
 
-  Select Case LCase(Settings["/Theme"])
-    Case "kde"
-      Application.Theme = "kde4"
-    Case "gnome"
-      Application.Theme = "gnome"
-    Case "gambas"
-      Application.Theme = "gambas"
-  End Select
+  Application.Theme = Settings["/Theme"]
   
   'DB.Debug = True
 

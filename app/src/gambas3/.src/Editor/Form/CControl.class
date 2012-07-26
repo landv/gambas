@@ -1496,6 +1496,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim iInd As Integer
   Dim X, Y, W, H As Integer
   Dim bHasSize As Boolean
+  Dim bTranslate As Boolean
 
   cProp = CComponent.Classes[Kind].Properties
   'If Not CComponent.Classes[Kind].PropertyList Then Stop
@@ -1536,12 +1537,19 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
     sLine = sProp & " = "
 
+    If hProp.Translate Then
+      bTranslate = GetPropertyDefault("Translate")
+    Else
+      bTranslate = False
+    Endif
+          
     Select Case hProp.Type
 
       Case "s", "v", "List", "Path", "Table", "Menu", "ReportCoord", "Field"
+
         vVal = Quote(vVal)
 
-        If hProp.Translate Then
+        If bTranslate Then
           sLine = sLine & "(" & vVal & ")"
         Else
           sLine = sLine & vVal
@@ -1551,7 +1559,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
       
         'aVal = vVal.Copy()
         
-        sLine &= StringArrayPropertyToString(vVal, hProp.Translate)
+        sLine &= StringArrayPropertyToString(vVal, bTranslate)
 
       Case "Font"
         sLine = sLine & "Font[" & Quote(vVal) & "]"

@@ -402,11 +402,10 @@ Static Private Sub CreateClass(sClass As String, sParent As String, sComp As Str
   Dim hClass As CClassInfo
   Dim hComp As CComponent
   
-  hClass = New CClassInfo(sClass, sParent)
+  hClass = New CClassInfo(sClass, sComp, sParent)
   
   Classes[sComp &/ sClass] = hClass
   Classes[sClass] = hClass
-  hClass.Component = sComp
   
   hComp = All[sComp]
   If hComp Then  
@@ -554,7 +553,7 @@ Public Sub Load()
       
       sSymbol = sLig
       hSym = New CSymbolInfo
-      Classes[sClass].Symbols[sSymbol] = hSym
+      Classes[Key &/ sClass].Symbols[sSymbol] = hSym
       
       hSym.Name = sSymbol
       hSym.Class = sClass
@@ -593,7 +592,7 @@ Public Sub Load()
     
     If Not IsLetter(Left(sClass)) Then Continue
     
-    hClass = Classes[sClass]
+    hClass = Classes[Key &/ sClass]
     
     hSym = hClass.Symbols["_IsControl"]
     If hSym And If hSym.Value Then
@@ -610,14 +609,14 @@ Public Sub Load()
   
   For Each sClass In Hiddens
     If Classes.Exist(sClass) Then
-      Classes[sClass].InitControl()
+      Classes[Key &/ sClass].InitControl()
       iPos = Controls.Find(sClass)
       If iPos >= 0 Then Controls.Remove(iPos)
     Endif
   Next
   
   For Each sClass In Controls
-    Classes[sClass].InitControl()
+    Classes[Key &/ sClass].InitControl()
   Next
   
   ClassList.Sort
@@ -755,7 +754,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   hClass = Classes[sClass]
   If hClass And If Not hClass.Structure Then Return
   
-  hClass = New CClassInfo(sClass)
+  hClass = New CClassInfo(sClass, PROJECT_NAME)
   'hClass.Component = hModuleClass.Component
   hClass.Structure = True
   hClass.Symbols = cSymbol
@@ -1233,7 +1232,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   
   cSymbol = New Collection
   
-  If Not $hDumbClass Then $hDumbClass = New CClassInfo("")
+  If Not $hDumbClass Then $hDumbClass = New CClassInfo("", "")
   $hClass = $hDumbClass
   $hDumbClass.Name = sClass
   

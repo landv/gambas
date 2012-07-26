@@ -22,6 +22,11 @@
   { panBrush Panel
     MoveScaled(1,6,47,46)
     Arrangement = Arrange.Fill
+    { cchColor ColorChooser
+      MoveScaled(0,0,47,42)
+      Tag = "0"
+      ShowAlpha = True
+    }
     { pnlImage Panel
       MoveScaled(0,0,47,42)
       Tag = "1"
@@ -103,11 +108,6 @@
           Painted = True
         }
       }
-    }
-    { cchColor ColorChooser
-      MoveScaled(0,0,47,42)
-      Tag = "0"
-      ShowAlpha = True
     }
   }
 }

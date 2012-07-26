@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,52,20)
+  MoveScaled(0,0,51,20)
   Visible = False
   Action = "help"
   Text = ("Help browser")
@@ -68,9 +68,10 @@
     }
     { btnWebSite ToolButton
       MoveScaled(52,0,21,4)
-      ToolTip = ("Gambas web site")
+      #Translate = False
+      ToolTip = "Gambas web site"
       AutoResize = True
-      Text = ("http://gambas.sourceforge.net")
+      Text = "http://gambas.sourceforge.net"
       Picture = Picture["icon:/small/gambas"]
     }
     { btnPrint ToolButton

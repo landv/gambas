@@ -111,7 +111,8 @@
     }
     { txtLicense ComboBox
       MoveScaled(1,63,71,4)
-      List = [("General Public License"), ("Freeware"), ("Public Domain"), ("Lesser General Public License"), ("Other License(s)"), ("Non-free License")]
+      #Translate = False
+      List = ["General Public License", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-free License"]
       Sorted = True
     }
     Index = 1
@@ -157,8 +158,9 @@
         { CheckBox5 CheckBox chkDistro
           Name = "CheckBox5"
           MoveScaled(9,1,26,4)
+          #Translate = False
           Expand = True
-          Text = ("Archlinux")
+          Text = "Archlinux"
         }
       }
       { HBox15 HBox panDistro
@@ -173,8 +175,9 @@
         { CheckBox6 CheckBox chkDistro
           Name = "CheckBox6"
           MoveScaled(9,1,26,4)
+          #Translate = False
           Expand = True
-          Text = ("Autotools")
+          Text = "Autotools"
         }
       }
       { HBox5 HBox panDistro
@@ -189,8 +192,9 @@
         { chkDebian CheckBox chkDistro
           Name = "chkDebian"
           MoveScaled(9,2,26,4)
+          #Translate = False
           Expand = True
-          Text = ("Debian")
+          Text = "Debian"
         }
       }
       { HBox6 HBox panDistro
@@ -205,8 +209,9 @@
         { CheckBox3 CheckBox chkDistro
           Name = "CheckBox3"
           MoveScaled(9,1,26,4)
+          #Translate = False
           Expand = True
-          Text = ("Fedora")
+          Text = "Fedora"
         }
       }
       { HBox3 HBox panDistro
@@ -221,8 +226,9 @@
         { chkMageia CheckBox chkDistro
           Name = "chkMageia"
           MoveScaled(9,1,33,4)
+          #Translate = False
           Expand = True
-          Text = ("Mageia")
+          Text = "Mageia"
         }
       }
       { HBox17 HBox panDistro
@@ -237,8 +243,9 @@
         { chkMandriva CheckBox chkDistro
           Name = "chkMandriva"
           MoveScaled(9,1,33,4)
+          #Translate = False
           Expand = True
-          Text = ("Mandriva")
+          Text = "Mandriva"
         }
       }
       { HBox7 HBox panDistro
@@ -253,8 +260,9 @@
         { CheckBox4 CheckBox chkDistro
           Name = "CheckBox4"
           MoveScaled(9,2,26,4)
+          #Translate = False
           Expand = True
-          Text = ("OpenSUSE")
+          Text = "OpenSUSE"
         }
       }
       { HBox4 HBox panDistro
@@ -269,8 +277,9 @@
         { CheckBox2 CheckBox chkDistro
           Name = "CheckBox2"
           MoveScaled(9,1,26,4)
+          #Translate = False
           Expand = True
-          Text = ("Slackware")
+          Text = "Slackware"
         }
       }
       { HBox9 HBox panDistro
@@ -285,8 +294,9 @@
         { CheckBox1 CheckBox chkDistro
           Name = "CheckBox1"
           MoveScaled(9,1,26,4)
+          #Translate = False
           Expand = True
-          Text = ("Ubuntu")
+          Text = "Ubuntu"
         }
       }
     }

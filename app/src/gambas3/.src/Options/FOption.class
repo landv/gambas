@@ -2,7 +2,7 @@
 
 Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", "ruby", "sapphire", "visual", "obsidian", "quest", "quick"]
 Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick")]
-Static Private $aBrowser As String[] = ["konqueror", "firefox", "epiphany", "seamonkey", "opera"]
+Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "epiphany", "seamonkey", "opera"]
 Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "lxterminal", "xterm"]
 Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
 
@@ -70,7 +70,7 @@ Public Sub _new()
 
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
-  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE"]
+  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
   cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
@@ -108,7 +108,7 @@ Public Sub _new()
   
   $bNoChange = True
   ReadConfig
-  cmbIconTheme.Index = ["gambas", "gnome", "kde"].Find(Settings["/Theme"]) + 1
+  cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
@@ -362,7 +362,7 @@ End
 Public Sub cmbIconTheme_Click()
 
   If cmbIconTheme.Index > 0
-    Settings["/Theme"] = LCase(cmbIconTheme.Text)
+    Settings["/Theme"] = cmbIconTheme.Text
   Else 
     Settings["/Theme"] = ""
   Endif

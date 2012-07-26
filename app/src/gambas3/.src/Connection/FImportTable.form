@@ -38,8 +38,9 @@
       }
       { cmbCharset ComboBox
         MoveScaled(29,5,31,4)
+        #Translate = False
         Expand = True
-        List = [("UTF-8"), ("ISO 8859-1"), ("ISO 8859-15"), ("WINDOWS-1252")]
+        List = ["UTF-8", "ISO 8859-1", "ISO 8859-15", "WINDOWS-1252"]
       }
       { Label7 Label
         MoveScaled(0,10,28,3)
@@ -47,9 +48,10 @@
       }
       { cmbEndOfLine ComboBox
         MoveScaled(29,10,31,4)
+        #Translate = False
         Expand = True
         ReadOnly = True
-        List = [("Unix"), ("Windows"), ("Mac")]
+        List = ["Unix", "Windows", "Mac"]
       }
       { Label2 Label
         MoveScaled(0,15,28,3)
@@ -57,8 +59,9 @@
       }
       { cmbDelim ComboBox
         MoveScaled(29,15,31,4)
+        #Translate = False
         Expand = True
-        List = [("Tab"), ("Space"), (","), (";"), (":")]
+        List = ["Tab", "Space", ",", ";", ":"]
       }
       { Label3 Label
         MoveScaled(0,20,28,3)
@@ -66,8 +69,9 @@
       }
       { cmbEscape ComboBox
         MoveScaled(29,20,31,4)
+        #Translate = False
         Expand = True
-        List = [(""), ("'"), ("\"")]
+        List = ["", "'", "\""]
       }
       { chkStrip CheckBox
         MoveScaled(0,24,47,4)

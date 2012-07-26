@@ -157,15 +157,18 @@
           Spacing = True
           { chkCtrl CheckBox
             MoveScaled(0,0,10,4)
-            Text = ("CTRL")
+            #Translate = False
+            Text = "CTRL"
           }
           { chkShift CheckBox
             MoveScaled(10,0,11,4)
-            Text = ("SHIFT")
+            #Translate = False
+            Text = "SHIFT"
           }
           { chkAlt CheckBox
             MoveScaled(21,0,9,4)
-            Text = ("ALT")
+            #Translate = False
+            Text = "ALT"
           }
           { cmbShortcut ComboBox
             MoveScaled(30,0,8,4)
@@ -204,19 +207,23 @@
         MoveScaled(58,1,13,34)
         { chkVisible CheckBox
           MoveScaled(0,0,12,4)
-          Text = ("Visible")
+          #Translate = False
+          Text = "Visible"
         }
         { chkEnabled CheckBox
           MoveScaled(0,4,12,4)
-          Text = ("Enabled")
+          #Translate = False
+          Text = "Enabled"
         }
         { chkToggle CheckBox
           MoveScaled(0,8,12,4)
-          Text = ("Toggle")
+          #Translate = False
+          Text = "Toggle"
         }
         { chkChecked CheckBox
           MoveScaled(0,12,12,4)
-          Text = ("Checked")
+          #Translate = False
+          Text = "Checked"
         }
         { Panel3 Panel
           MoveScaled(2,16,5,3)

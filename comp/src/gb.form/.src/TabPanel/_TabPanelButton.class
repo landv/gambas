@@ -211,6 +211,7 @@ Private Sub Picture_Write(Value As Picture)
 
   $hPicture = Value
   UpdateLayout
+  $hDrawingArea.Refresh
 
 End
 

@@ -19,8 +19,9 @@
     }
     { cmbDelim ComboBox
       MoveScaled(29,0,31,4)
+      #Translate = False
       Expand = True
-      List = [("Tab"), ("Space"), (","), (";"), (":")]
+      List = ["Tab", "Space", ",", ";", ":"]
     }
     { Label3 Label
       MoveScaled(0,5,28,3)
@@ -28,8 +29,9 @@
     }
     { cmbEscape ComboBox
       MoveScaled(29,5,31,4)
+      #Translate = False
       Expand = True
-      List = [(""), ("'"), ("\"")]
+      List = ["", "'", "\""]
     }
     { chkName CheckBox
       MoveScaled(0,10,38,4)

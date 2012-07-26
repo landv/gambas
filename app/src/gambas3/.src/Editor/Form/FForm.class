@@ -388,6 +388,8 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
             vValue = False
           Else If sValue Begins "CDate(" Then
             vValue = CDate(Mid$(sValue, 8, -2))
+          Else If UCase(sValue) = "NULL" Then
+            vValue = Null
           Else
 
             For Each sProp In CControl.COMPLEX_STRING_PROPERTIES

@@ -6,12 +6,11 @@ Export
 
 Static Property Debug As Boolean
 Static Property Read List As String[]
-Static Property Theme As String
 Static Property Read Themes As String[]
 Static Property Read Icons As String[]
 
 Static Private $bInit As Boolean
-Static Private $sTheme As String
+'Static Private $sTheme As String
 Static Private $aIconPath As String[]
 Static Private $cIconMap As Collection
 Static Private $aList As String[]
@@ -170,11 +169,9 @@ Static Private Sub InitTheme()
   $aIconPath = New String[]
   LoadMap
   
-  If $bDebug Then Error "gb.form: init stock with icon theme: '"; $sTheme; "'"
+  If $bDebug Then Error "gb.form: init stock with application theme: '"; Application.Theme; "'"
   
   SearchDesktop
-  
-  sTheme = $sTheme
   
   Select Case LCase(Application.Theme)
       
@@ -321,14 +318,18 @@ Static Private Sub InitTheme()
     
       AddPath("gnome", "/usr/share/icons/gnome")
       
-    Case "gambas"
+    'Case "gambas"
+    Case Else
+      
+      If Application.Theme <> "gambas" Then
+        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], Application.Theme)
+      Endif
       
   End Select 
   
   AddPath("", "stock", "&2")
   $aIconPath.Add("#")
   
-  $sTheme = sTheme
   $bInit = True
   
 End
@@ -381,6 +382,10 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
       Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
       If Not Error Then Return hPict
       
+      sName = File.SetExt(sName, "svgz")
+      Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
+      If Not Error Then Return hPict
+      
       sName = File.SetExt(sName, "png")
       Try hImage = Image.Load(sDir &/ sName)
       If Not Error Then Return hImage.Stretch(iRealSize, iRealSize).Picture
@@ -392,6 +397,10 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
       If Not Error Then Return hImage.Picture
       
       sName = File.SetExt(sName, "svg")
+      Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
+      If Not Error Then Return hPict
+      
+      sName = File.SetExt(sName, "svgz")
       Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
       If Not Error Then Return hPict
       
@@ -588,15 +597,8 @@ Static Private Sub Debug_Write(Value As Boolean)
 
 End
 
-Static Private Function Theme_Read() As String
+Static Public Sub Refresh()
 
-  Return $sTheme
-
-End
-
-Static Private Sub Theme_Write(Value As String)
-
-  $sTheme = Value
   InitTheme
   Picture.Flush
 
@@ -606,12 +608,18 @@ Static Private Function Themes_Read() As String[]
 
   Dim aTheme As New String[]
   Dim sDir As String
+  Dim sPath As String
   
   For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
-    If Exist("/usr/share/icons" &/ sDir &/ "index.theme") Then aTheme.Add(sDir)
+    sPath = "/usr/share/icons" &/ sDir &/ "cursors"
+    If Exist(sPath) Then Continue
+    sPath = "/usr/share/icons" &/ sDir &/ "index.theme"
+    If Not Exist(sPath) Then Continue
+    If InStr(File.Load(sPath), "\nHidden=True") Then Continue
+    aTheme.Add(sDir)
   Next
   
-  aTheme.Sort
+  aTheme.Sort(gb.IgnoreCase)
   Return aTheme
 
 End

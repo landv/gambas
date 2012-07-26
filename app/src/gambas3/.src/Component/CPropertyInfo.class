@@ -3,13 +3,17 @@
 Public Const EVENT_NAME As String = "Group"
 Public Const SCALE_NAME As String = "Scaled"
 Public Const PUBLIC_NAME As String = "Public"
+Public Const TRANSLATE_NAME As String = "Translate"
 
 Static Public MULTI_CONTAINER_PROP As String[] = ["Index", "Count", "Text", "Picture"]
+
+Static Public CreatingSpecialProperty As Boolean
 
 Static Private $cRedirect As New Collection
 Static Private $cTranslate As New Collection
 Static Private $cUpdateName As New Collection
 Static Private $cAlwaysRead As New Collection
+
 
 Public Name As String
 Public Type As String
@@ -139,26 +143,37 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
   Name = sName
 
-  If Name = EVENT_NAME Then
-    Type = "s"
-    Virtual = True
-    Exclude = True
-    DoNotApply = True
-    Return
-  Else If Name = SCALE_NAME Then 
-    Type = "b"
-    Virtual = True
-    Exclude = False
-    DoNotApply = True
-    DefaultValue = True
-    Return
-  Else If Name = PUBLIC_NAME Then
-    Type = "b"
-    Virtual = True
-    Exclude = False
-    DoNotApply = True
-    DefaultValue = False
-    Return
+  If CreatingSpecialProperty Then
+    
+    If Name = EVENT_NAME Then
+      Type = "s"
+      Virtual = True
+      Exclude = True
+      DoNotApply = True
+      Return
+    Else If Name = SCALE_NAME Then 
+      Type = "b"
+      Virtual = True
+      Exclude = False
+      DoNotApply = True
+      DefaultValue = True
+      Return
+    Else If Name = PUBLIC_NAME Then
+      Type = "b"
+      Virtual = True
+      Exclude = False
+      DoNotApply = True
+      DefaultValue = False
+      Return
+    Else If Name = TRANSLATE_NAME Then
+      Type = "b"
+      Virtual = True
+      Exclude = False
+      DoNotApply = True
+      DefaultValue = True
+      Return
+    Endif
+    
   Endif
 
   If sComponent Then

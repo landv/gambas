@@ -10,13 +10,6 @@
     { Menu1 Menu
     }
   }
-  { lblMessage TextLabel
-    MoveScaled(1,1,31,12)
-    Visible = False
-    Padding = 8
-    AutoResize = True
-    Text = ("Click on a form or a control to modify its properties...")
-  }
   { panProperty Panel
     MoveScaled(4,16,54,4)
     AutoResize = True
@@ -82,9 +75,10 @@
       }
       { btnProperty ToolButton
         MoveScaled(12,9,3,3)
+        #Translate = False
         Visible = False
         Font = Font["Bold,-2"]
-        Text = ("...")
+        Text = "..."
       }
     }
   }
