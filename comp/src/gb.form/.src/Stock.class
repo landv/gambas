@@ -307,10 +307,10 @@ Static Private Sub InitTheme()
     Case "lxde"
       
       If Not sTheme Then
-        aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
-        If Not aFind Then aFind = FindInConfigFile("~/.config/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
-        If Not aFind Then aFind = FindInConfigFile("/usr/share/lxde/config", "sNet/IconThemeName=*")
+        aFind = FindInConfigFile("~/.config/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
         If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
+        If Not aFind Then aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
+        If Not aFind Then aFind = FindInConfigFile("/usr/share/lxde/config", "sNet/IconThemeName=*")
         If aFind Then sTheme = Trim(aFind[0])
       Endif
       
@@ -474,6 +474,7 @@ Static Public Function _get(Key As String) As Picture
       sDirPattern = Replace(File.Name(sPath), "!", "/")
       
       sPath = File.Dir(sPath)
+      If sPath Begins "~/" Then sPath = User.Home &/ Mid$(sPath, 3)
       If Not Exist(sPath) Then Continue
       
       If Left(sPath) = "/" Then   
@@ -610,14 +611,27 @@ Static Private Function Themes_Read() As String[]
   Dim sDir As String
   Dim sPath As String
   
-  For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
-    sPath = "/usr/share/icons" &/ sDir &/ "cursors"
-    If Exist(sPath) Then Continue
-    sPath = "/usr/share/icons" &/ sDir &/ "index.theme"
-    If Not Exist(sPath) Then Continue
-    If InStr(File.Load(sPath), "\nHidden=True") Then Continue
-    aTheme.Add(sDir)
+  For Each sDir In Dir("~/.icons", "*", gb.Directory)
+    sPath = "~/.icons" &/ sDir
+    GoSub ADD_THEME
   Next
+  
+  For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
+    sPath = "/usr/share/icons" &/ sDir
+    GoSub ADD_THEME
+  Next
+  
+  aTheme.Sort(gb.IgnoreCase)
+  Return aTheme
+  
+ADD_THEME:
+  
+  If Exist(sPath &/ "cursors") Then Return
+  sPath &/= "index.theme"
+  If Not Exist(sPath) Then Return
+  If InStr(File.Load(sPath), "\nHidden=True") Then Return
+  aTheme.Add(sDir)
+  Return
   
   aTheme.Sort(gb.IgnoreCase)
   Return aTheme
