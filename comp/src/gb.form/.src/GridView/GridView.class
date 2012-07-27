@@ -345,9 +345,9 @@ Public Sub ScrollArea_Draw()
             WA = Min(16, H - F)
             Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Top, Align.Bottom))
             Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
-            If Draw.ClipRect Then Draw.Text(.Text, X + 2, F, .Width - WA - 4, H - F, .Alignment)
+            If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
           Else
-            Draw.Text(.Text, X + 2, F, .Width - 4, H - F, .Alignment)
+            Draw.Text(.Text, X + 4, F, .Width - 8, H - F, .Alignment)
           Endif
         Endif
         X += .Width

@@ -14,6 +14,7 @@ Event _Refresh
 
 Private $aColumns As New _GridView_Column[]
 Private $iWidth As Integer
+Private $iHeight As Integer
 Private $bResizable As Boolean = True
 Private $bLayouting As Boolean
 Private $iSort As Integer = -1
@@ -66,7 +67,7 @@ Private Function Height_Read() As Integer
 
   With GetView()
     If $aColumns.Count Then
-      If .Header = .Horizontal Or If .Header = .Both Then Return GetView().Font.Height + 8
+      If .Header = .Horizontal Or If .Header = .Both Then Return $iHeight + 8
     Endif
   End With
 
@@ -115,9 +116,10 @@ End
 Public Sub _Layout()
 
   Dim hView As GridView = GetView()
-  Dim I, W, WX, N, NX, VW As Integer
+  Dim I, W, WX, N, NX, VW, H As Integer
   Dim hCol As _GridView_Column
   Dim X As Integer
+  Dim FH As Integer
   
   N = $aColumns.Count - 1
 
@@ -168,13 +170,16 @@ Public Sub _Layout()
     
   Endif
   
+  FH = GetView().Font.Height
   For Each hCol In $aColumns
     hCol._X = X
     X += hCol.Width
+    H = Max(H, hView.Font.TextHeight(hCol.Text))
   Next
   
-  If X <> $iWidth Then
+  If X <> $iWidth Or If H <> $iHeight Then
     $iWidth = X
+    $iHeight = H
     hView._ResizeContents
   Endif
   
