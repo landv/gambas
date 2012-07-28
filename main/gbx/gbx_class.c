@@ -650,17 +650,14 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 	return res;
 }
 
-// The _free method can be called during a conversion, so we must save the EXEC structure
-
-static void *_CLASS_free_object;
-static EXEC_GLOBAL *_CLASS_free_exec;
+// NOTE: The _free method can be called during a conversion, so we must save the EXEC structure
 
 static void error_CLASS_free()
 {
-	void *object = _CLASS_free_object;
+	void *object = (void *)ERROR_handler->arg1;
+	EXEC = *((EXEC_GLOBAL *)ERROR_handler->arg2);
 	((OBJECT *)object)->ref = 0;
 	OBJECT_release(OBJECT_class(object), object);
-	EXEC = *_CLASS_free_exec;
 }
 
 void CLASS_free(void *object)
@@ -668,24 +665,18 @@ void CLASS_free(void *object)
 	CLASS *class = OBJECT_class(object);
 	EXEC_GLOBAL save = EXEC;
 
-	void *save_object = _CLASS_free_object;
-	void *save_exec = _CLASS_free_exec;
-	
-	_CLASS_free_object = object;
-	_CLASS_free_exec = &save;
-	
-	ON_ERROR(error_CLASS_free)
+	ON_ERROR_2(error_CLASS_free, object, &save)
 	{
 		((OBJECT *)object)->ref = 1; /* Prevents anybody from freeing the object ! */
+		
+		// FIXME: CLASS_free can be called recursively, so error_CLASS_free should be made reentrant!!
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
+		
 		((OBJECT *)object)->ref = 0;
 		EXEC = save;
 		OBJECT_release(class, object);
 	}
 	END_ERROR
-	
-	_CLASS_free_object = save_object;
-	_CLASS_free_exec = save_exec;
 }
 
 #if DEBUG_REF

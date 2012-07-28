@@ -611,10 +611,12 @@ Static Private Function Themes_Read() As String[]
   Dim sDir As String
   Dim sPath As String
   
-  For Each sDir In Dir("~/.icons", "*", gb.Directory)
-    sPath = "~/.icons" &/ sDir
-    GoSub ADD_THEME
-  Next
+  If IsDir("~/.icons") Then
+    For Each sDir In Dir("~/.icons", "*", gb.Directory)
+      sPath = "~/.icons" &/ sDir
+      GoSub ADD_THEME
+    Next
+  Endif
   
   For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
     sPath = "/usr/share/icons" &/ sDir
