@@ -129,7 +129,10 @@ END_METHOD
 BEGIN_METHOD_VOID(CERROR_propagate)
 
 	if (ERROR_last.code)
+	{
+		ERROR_define_last();
 		EXEC_set_native_error(TRUE);
+	}
 
 END_METHOD
 

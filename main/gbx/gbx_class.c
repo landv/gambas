@@ -667,9 +667,8 @@ void CLASS_free(void *object)
 
 	ON_ERROR_2(error_CLASS_free, object, &save)
 	{
-		((OBJECT *)object)->ref = 1; /* Prevents anybody from freeing the object ! */
+		((OBJECT *)object)->ref = 1; // Prevents anybody from freeing the object!
 		
-		// FIXME: CLASS_free can be called recursively, so error_CLASS_free should be made reentrant!!
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
 		
 		((OBJECT *)object)->ref = 0;

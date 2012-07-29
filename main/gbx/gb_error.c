@@ -630,6 +630,14 @@ void ERROR_set_last(bool bt)
 	}
 }
 
+void ERROR_define_last(void)
+{
+	ERROR_reset(&ERROR_current->info);
+	ERROR_current->info = ERROR_last;
+	if (ERROR_last.free)
+		STRING_ref(ERROR_last.msg);
+}
+
 void ERROR_warning(const char *warning, ...)
 {
 	va_list args;
