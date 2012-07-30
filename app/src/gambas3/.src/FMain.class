@@ -1229,6 +1229,8 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.Compile(True)
     Case "archive"
       Project.MakePackage
+    Case "send-mail"
+      Project.SendMail
     Case "exec"
       Project.MakeExecutable
     Case "install"
@@ -1739,11 +1741,11 @@ End
 
 Public Sub mnuTerminal_Click()
   
-  If Desktop.Type = "KDE4" Then
-    Exec ["konsole", "--workdir", Project.Dir, "--notransparency"]
-  Else
-    Desktop.OpenTerminal(Project.Dir)  
-  Endif
+  ' If Desktop.Type = "KDE4" Then
+  '   Exec ["konsole", "--workdir", Project.Dir, "--notransparency"]
+  ' Else
+  Desktop.OpenTerminal(Project.Dir)  
+  'Endif
   
 End
 

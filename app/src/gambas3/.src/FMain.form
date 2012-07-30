@@ -279,6 +279,11 @@
       Picture = Picture["icon:/16/terminal"]
       Shortcut = "Ctrl+Alt+T"
     }
+    { mnuSendMail Menu
+      Action = "send-mail"
+      Text = ("Send project by &mail...")
+      Picture = Picture["icon:/small/mail"]
+    }
     { Menu20 Menu
     }
     { mnuShortcut Menu
@@ -784,6 +789,13 @@
         ToolTip = ("Open a terminal")
         Action = "open-terminal"
         Picture = Picture["icon:/small/terminal"]
+      }
+      { ToolButton13 ToolButton
+        MoveScaled(140,0,4,4)
+        Visible = False
+        ToolTip = ("Send project by mail")
+        Action = "send-mail"
+        Picture = Picture["icon:/small/mail"]
       }
       { btnMnuFile MenuButton
         MoveScaled(143,0,8,4)
@@ -1295,6 +1307,11 @@
     Shortcut = "Ctrl+Shift+Alt+S"
     Picture = "icon:/small/save-as"
   }
+  { Action send-mail
+    Text = "Send project by &mail..."
+    Shortcut = ""
+    Picture = "icon:/small/mail"
+  }
   { Action shortcut
     Text = "&Shortcuts..."
     Shortcut = ""
@@ -1348,7 +1365,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,component-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    List = "new-project,open-project,save-project,save-project-as,project-property,component-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
     Default = "new-project,open-project,save-project,save-project-as,project-property,component-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
   }
 }

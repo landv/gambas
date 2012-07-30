@@ -347,7 +347,7 @@ Private Sub ImportDependencies(sName As String, sExt As String, sOrig As String,
   hIn = Open sForm
   hOut = Open Temp$(sExt) For Create 
   
-  'TODO: Import Image.Load(*) and SvgImage.Load(*)
+  ' TODO: Import Image.Load(*) and SvgImage.Load(*)
   
   While Not Eof(hIn)
   

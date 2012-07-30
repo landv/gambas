@@ -4201,13 +4201,20 @@ Public Sub MakeSourcePackageTo(sPath As String)
 
 End
 
+Private Sub GetDefaultSourceArchiveBaseName() As String
+  
+  Return Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "")
+  
+End
+
+
 Public Sub MakePackage()
 
   Dim sDir As String = SourcePath
 
   If Not sDir Then sDir = System.User.Home
 
-  Dialog.Path = sDir &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
+  Dialog.Path = sDir &/ GetDefaultSourceArchiveBaseName() & ".tar.gz"
   Dialog.Title = ("Create source package")
   Dialog.Filter = ["*.tar.gz", ("Source packages"), "*.tar.bz2", ("Source packages"), "*.tar.xz", ("Source packages")]
   Dialog.AutoExt = True
@@ -5390,4 +5397,14 @@ Private Function Sources_Read() As Collection
 
   Return $cSourceDir
 
+End
+
+Public Sub SendMail()
+
+  Dim sTemp As String = Temp$()
+  sTemp = File.SetBaseName(Temp, GetDefaultSourceArchiveBaseName()) & ".tar.gz"
+  Try Kill sTemp
+  MakeSourcePackageTo(sTemp)
+  Desktop.SendMail(Null,,, If(Project.Title, Project.Title, Project.Name),, sTemp)
+  
 End
