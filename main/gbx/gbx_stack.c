@@ -58,11 +58,7 @@ void STACK_init(void)
 		max = (uintptr_t)limit.rlim_cur;
 	
 	STACK_size = max;
-#ifdef OS_MACOSX
 	STACK_base = mmap(NULL, STACK_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
-#else
-	STACK_base = mmap(NULL, STACK_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-#endif
 
 	//fprintf(stderr, "Stack = %p %ld\n", STACK_base, STACK_size);
 
