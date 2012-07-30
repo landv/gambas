@@ -32,7 +32,7 @@
 
 static SIGNAL_HANDLER *_handlers = NULL;
 static int _pipe[2];
-static int _count = 0;
+static volatile int _count = 0;
 static bool _raising_callback = FALSE;
 
 void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, siginfo_t *, void *))
@@ -110,15 +110,18 @@ static void handle_signal(int signum, siginfo_t *info, void *context)
 	int save_errno;
 
 	save_errno = errno;
-			
-	buffer = signum;
-	for(;;)
+	
+	if (_count)
 	{
-		if (write(_pipe[1], &buffer, 1) == 1)
-			break;
-		
-		if (errno != EINTR)
-			ERROR_panic("Cannot write into signal pipe: %s", strerror(errno));
+		buffer = signum;
+		for(;;)
+		{
+			if (write(_pipe[1], &buffer, 1) == 1)
+				break;
+			
+			if (errno != EINTR)
+				ERROR_panic("Cannot write into signal pipe: %s", strerror(errno));
+		}
 	}
 	
 	SIGNAL_previous(find_handler(signum), signum, info, context);
