@@ -53,6 +53,11 @@ typedef unsigned int uint;
 
 #define CHAR_ERROR 0xFFFD // �
 
+#ifdef OS_MACOSX
+#include <string.h>
+void *memrchr(const void *s, int c, size_t n);
+#endif
+
 wchar_t nextUTF8Char(const char *&data, size_t len);
 const void* memchrs(const char *source, size_t lensource, const char *comp, size_t lencomp);
 const void* memrchrs(const void *source, size_t lensource, const void *comp, size_t lencomp);

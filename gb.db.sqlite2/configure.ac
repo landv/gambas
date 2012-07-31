@@ -14,8 +14,8 @@ dnl ---- SQLite driver
 
 GB_COMPONENT(
   sqlite2, SQLITE2, gb.db.sqlite2, [src],
-  [GB_FIND(sqlite.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include sqlite*/include)],
-  [GB_FIND(libsqlite.$SHLIBEXT, /usr/local /opt /usr, lib sqlite*/lib)],
+  [GB_FIND(sqlite.h, /usr/local/lib /usr/local /opt /usr/lib /usr /opt/local, include sqlite*/include)],
+  [GB_FIND(libsqlite.$SHLIBEXT, /usr/local /opt /usr /opt/local, lib sqlite*/lib)],
   [$C_LIB $CXX_LIB -lsqlite])
 
 dnl ---- Create makefiles

@@ -7,7 +7,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT(
   pcre, PCRE, gb.pcre, [src],
-  [GB_FIND(pcre.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
+  [GB_FIND(pcre.h, /usr/local/lib /usr/local /usr/lib /usr /opt/local, include)],
   [GB_FIND(libpcre.$SHLIBEXT, /usr/local /usr /, lib)],
   [-lpcre])
  

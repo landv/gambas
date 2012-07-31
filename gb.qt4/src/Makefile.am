@@ -10,7 +10,7 @@ gblib_LTLIBRARIES = gb.qt4.la
 gb_qt4_la_LIBADD = @QT_LIB@
 gb_qt4_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@
 gb_qt4_la_CXXFLAGS = -DGB_QT_COMPONENT $(AM_CXXFLAGS)
-gb_qt4_la_CPPFLAGS = -DQT3_SUPPORT @QT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
+gb_qt4_la_CPPFLAGS = -DQT3_SUPPORT @QT_INC@ -I$(top_srcdir)/share/
 
 gb_qt4_la_SOURCES = \
  x11.h x11.c \

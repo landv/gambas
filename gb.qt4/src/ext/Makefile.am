@@ -6,7 +6,7 @@ gblib_LTLIBRARIES = gb.qt4.ext.la
 
 gb_qt4_ext_la_LIBADD = @QTEXT_LIB@
 gb_qt4_ext_la_LDFLAGS = -module @LD_FLAGS@ @QTEXT_LDFLAGS@
-gb_qt4_ext_la_CPPFLAGS = -DQT3_SUPPORT @QTEXT_INC@-I$(top_srcdir)/share -I$(top_srcdir)/src/share
+gb_qt4_ext_la_CPPFLAGS = -DQT3_SUPPORT @QTEXT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
 
 gb_qt4_ext_la_SOURCES = \
  main.h main.cpp \

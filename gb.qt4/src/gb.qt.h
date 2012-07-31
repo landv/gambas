@@ -27,7 +27,7 @@
 #include "gambas.h"
 
 #ifdef OS_MACOSX
-#define NO_X_WINDOW 1
+//#define NO_X_WINDOW 1
 #endif
 
 #include <QWidget>

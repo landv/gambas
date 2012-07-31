@@ -24,11 +24,14 @@
 #define __C_CRYPT_C
 
 #include <stdlib.h>
-#include <crypt.h>
 #include <errno.h>
 #include <time.h>
 
 #include "gb_common.h"
+
+#ifndef OS_BSD
+  #include <crypt.h>
+#endif
 
 #include "c_crypt.h"
 #include "main.h"
