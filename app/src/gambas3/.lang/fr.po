@@ -233,7 +233,7 @@ msgstr ""
 
 #: MErrorMessage.module:16
 msgid "'&1.&2' is incorrectly overridden in class '&3'"
-msgstr "'&1.&2' est surchargé incorrectement dans la classe '&3'."
+msgstr "'&1.&2' est surchargé incorrectement dans la classe '&3'"
 
 #: MErrorMessage.module:17
 msgid "'&1.&2' is not a property"
@@ -743,11 +743,11 @@ msgstr "&Page Web..."
 msgid "&Words only"
 msgstr "&Mots seulements"
 
-#: FPropertyProject.class:1121
+#: FPropertyProject.class:1125
 msgid "<b>&1</b> does not export any class."
 msgstr "<b>&1</b> ne contient aucune classe exportée."
 
-#: FPropertyProject.class:1115
+#: FPropertyProject.class:1119
 msgid "<b>&1</b> is already used as a library."
 msgstr "<b>&1</b> est déjà utilisé comme bibliothèque."
 
@@ -1920,7 +1920,7 @@ msgid "Destination"
 msgstr "Destination"
 
 #: Project.module:3806
-msgid "Destination already exists"
+msgid "Destination already exists."
 msgstr "La destination existe déjà."
 
 #: FMakeInstall.form:688
@@ -2551,7 +2551,7 @@ msgstr "Conversion en projet Gambas 3"
 msgid "Gambas Almost Means Basic!"
 msgstr "-"
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1105
+#: FMakeExecutable.class:18 FPropertyProject.class:1109
 msgid "Gambas applications"
 msgstr "Applications Gambas"
 
@@ -2857,7 +2857,7 @@ msgstr "Traitement d'images"
 
 #: CComponent.class:110
 msgid "Image routines from the Imlib2 library"
-msgstr "Gestion des images basée sur la librairie Imlib2"
+msgstr "Gestion des images basée sur la bibliothèque Imlib2"
 
 #: CComponentBox.class:250
 msgid "Implements"
@@ -3030,6 +3030,10 @@ msgstr "Japonais (Japon)"
 #: FInfo.class:115
 msgid "Javascript file"
 msgstr "Fichier Javascript"
+
+#: CComponentBox.class:387
+msgid "Keep"
+msgstr "Conserver"
 
 #: FOutput.form:115
 msgid "Keep above"
@@ -3571,7 +3575,7 @@ msgstr "Pas assez de valeurs"
 msgid "Not finished but stable"
 msgstr "Non terminé mais stable"
 
-#: FPropertyProject.class:115
+#: FPropertyProject.class:117
 msgid "Not translatable"
 msgstr "Non traduisible"
 
@@ -4003,7 +4007,7 @@ msgstr "Envoi du projet"
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
-#: FPropertyProject.class:845
+#: FPropertyProject.class:849
 msgid "Project has been updated from repository successfully."
 msgstr "Le projet a été mis à-jour depuis le référentiel avec succès."
 
@@ -4167,7 +4171,7 @@ msgstr "Se souvenir du mot de passe"
 msgid "Remove"
 msgstr "Supprimer"
 
-#: FDebugInfo.form:134
+#: CComponentBox.class:387 FDebugInfo.form:134
 msgid "Remove all"
 msgstr "Tout supprimer"
 
@@ -4459,7 +4463,7 @@ msgstr "Choisissez un fichier"
 msgid "Select a font"
 msgstr "Choisissez une police"
 
-#: FPropertyProject.class:1104
+#: FPropertyProject.class:1108
 msgid "Select a Gambas application"
 msgstr "Choisissez une application Gambas"
 
@@ -4493,7 +4497,7 @@ msgstr "Sélectionnez une image située à l'intérieur du projet"
 
 #: FReportBrushChooser.form:114
 msgid "Select gradient stop color..."
-msgstr "Sélectionnez la couleur de dégradé"
+msgstr "Sélectionnez la couleur de dégradé..."
 
 #: FConnectionEditor.class:1423
 msgid "Select the CSV file to import"
@@ -4631,7 +4635,7 @@ msgstr "Petite taille de police"
 msgid "SMTP client"
 msgstr "Client SMTP"
 
-#: FPropertyProject.class:273
+#: FPropertyProject.class:275
 msgid "Snapping value is incorrect."
 msgstr "Le pas de la grille est incorrecte."
 
@@ -4643,7 +4647,7 @@ msgstr "Proxy SOCKS5"
 msgid "Sol&ve"
 msgstr "&Résoudre"
 
-#: FPropertyProject.class:421 Project.module:3178
+#: FPropertyProject.class:425 Project.module:3178
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés : &1"
 
@@ -4909,7 +4913,7 @@ msgstr "Erreur de syntaxe. Description du type du &1 argument incorrecte"
 
 #: MErrorMessage.module:161
 msgid "Syntax error. Invalid type description of &1 field"
-msgstr "Erreur de syntaxe. Description du type du &1 champ incorrecte."
+msgstr "Erreur de syntaxe. Description du type du &1 champ incorrecte"
 
 #: MErrorMessage.module:162
 msgid "Syntax error. Missing &1"
@@ -4925,19 +4929,19 @@ msgstr "Erreur de syntaxe. Une expression ne peut commencer par un point en deho
 
 #: MErrorMessage.module:165
 msgid "Syntax error. STRUCT needs an identifier"
-msgstr "Erreur de syntaxe. STRUCT doit être suivi d'un identificateur."
+msgstr "Erreur de syntaxe. STRUCT doit être suivi d'un identificateur"
 
 #: MErrorMessage.module:166
 msgid "Syntax error. The &1 argument is not a valid identifier"
-msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide."
+msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide"
 
 #: MErrorMessage.module:167
 msgid "Syntax error. The &1 field is not a valid identifier"
-msgstr "Erreur de syntaxe. Le &1 champ n'est pas un identificateur valide."
+msgstr "Erreur de syntaxe. Le &1 champ n'est pas un identificateur valide"
 
 #: MErrorMessage.module:168
 msgid "Syntax error. VarPtr() takes only one identifier"
-msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur."
+msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur"
 
 #: CComponent.class:96
 msgid "Syntax highlighter routines"
@@ -5011,11 +5015,11 @@ msgstr "L'opérateur '.' doit être suivi d'un identificateur"
 msgid "The 'msgmerge' command has failed"
 msgstr "La commande 'msgmerge' a échoué"
 
-#: FPropertyProject.class:501
+#: FPropertyProject.class:505
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr "Le composant &1 nécessite un des composants suivants:<br>&2."
 
-#: FPropertyProject.class:508
+#: FPropertyProject.class:512
 msgid "The &1 component needs the &2 component."
 msgstr "Le composant &1 nécessite le composant &2."
 
@@ -5063,7 +5067,7 @@ msgstr "Les fichiers suivants ont été modifiés. Désirez-vous les enregistrer
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Le texte suivant sera ajouté à la fin du fichier de configuration du bureau."
 
-#: FForm.class:3114
+#: FForm.class:3131
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 
@@ -5185,19 +5189,19 @@ msgstr "La méthode spéciale &1 ne prend pas d'arguments"
 
 #: MErrorMessage.module:182
 msgid "The special method must return an integer"
-msgstr "La méthode spéciale &1 doit retourner un Integer"
+msgstr "La méthode spéciale doit retourner un Integer"
 
 #: MErrorMessage.module:183
 msgid "The special method must take exactly one argument"
-msgstr "La méthode spéciale &1 doit prendre un argument et un seul"
+msgstr "La méthode spéciale doit prendre un argument et un seul"
 
 #: MErrorMessage.module:184
 msgid "The special method must take exactly two arguments"
-msgstr "La méthode spéciale &1 doit prendre deux arguments exactement"
+msgstr "La méthode spéciale doit prendre deux arguments exactement"
 
 #: MErrorMessage.module:185
 msgid "The special method signature is incorrect"
-msgstr "La signature de la méthode spéciale &1 est incorrecte"
+msgstr "La signature de la méthode spéciale est incorrecte"
 
 #: FConnectionEditor.class:294
 msgid "The table '&1' has been modified. Do you want to save it?"
@@ -5211,7 +5215,7 @@ msgstr "La table « &1 » n'a pas de clef primaire."
 msgid "Theme"
 msgstr "Thème"
 
-#: FPropertyProject.class:809
+#: FPropertyProject.class:813
 msgid "There is no change to commit."
 msgstr "Il n'y aucun changement à envoyer."
 
@@ -5219,7 +5223,7 @@ msgstr "Il n'y aucun changement à envoyer."
 msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
-#: FPropertyProject.class:488
+#: FPropertyProject.class:492
 msgid "These components are incompatible:<br>&1."
 msgstr "Ces composants sont incompatibles entre eux:<br>&1."
 
@@ -5246,6 +5250,18 @@ msgstr "Cette classe est instanciable.<br>"
 #: FPropertyComponent.form:84
 msgid "This component is hidden"
 msgstr "Ce composant est caché"
+
+#: CComponentBox.class:377
+msgid "This component is required by the following libraries:<p>&1"
+msgstr "Ce composant est requis par les bibliothèques suivantes :<p>&1"
+
+#: CComponentBox.class:375
+msgid "This component is required by the following library:<p>&1"
+msgstr "Ce composant est requis par la bibliothèque suivante : <p>&1"
+
+#: CComponentBox.class:386
+msgid "This component is required by:<p>&1"
+msgstr "Ce composant est requis par :<p>&1"
 
 #: MErrorMessage.module:186
 msgid "This expression cannot be a statement"
@@ -5329,7 +5345,7 @@ msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
 #: CWelcome.class:39
 msgid "This program is published under\nthe GNU General Public License."
-msgstr "Ce programme est publié sous\nla Licence Publique Générale GNU"
+msgstr "Ce programme est publié sous\nla Licence Publique Générale GNU."
 
 #: Project.module:4154
 msgid "This project already exists."
@@ -5617,13 +5633,13 @@ msgstr "Impossible d'exécuter la requête."
 
 #: FProfile.class:988
 msgid "Unable to save profile."
-msgstr "Impossible d'enregistrer le profilage"
+msgstr "Impossible d'enregistrer le profilage."
 
 #: FSaveProjectAs.class:49
 msgid "Unable to save the project."
 msgstr "Impossible d'enregistrer le projet."
 
-#: FPropertyProject.class:843
+#: FPropertyProject.class:847
 msgid "Unable to update project from repository."
 msgstr "Impossible de mettre à-jour le projet à partir du référentiel."
 
@@ -5775,11 +5791,11 @@ msgstr "Module Gambas encodé en UTF-8"
 msgid "Valencian (Valencian Community, Spain)"
 msgstr "Valencien (Communauté Valencienne, Espagne)"
 
-#: FDebugExpr.class:474 FDebugInfo.class:38 FPropertyProject.class:141
+#: FDebugExpr.class:474 FDebugInfo.class:38 FPropertyProject.class:143
 msgid "Value"
 msgstr "Valeur"
 
-#: FPropertyProject.class:138
+#: FPropertyProject.class:140
 msgid "Variable"
 msgstr "Variable"
 
@@ -5935,7 +5951,7 @@ msgstr "Oui"
 msgid "Yesterday"
 msgstr "Hier"
 
-#: FPropertyProject.class:852
+#: FPropertyProject.class:856
 msgid "You are going to cancel your changes!"
 msgstr "Tous les changements vont être annulés !"
 

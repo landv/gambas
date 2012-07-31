@@ -31,6 +31,8 @@ Private $sVerCtrlDiff As String
 
 Private $aLibraries As String[]
 
+Private $iDoNotRefreshComponent As Integer
+
 'Private Const LIBRARY_TAB As Integer = 2
 Private Const VERSION_TAB As Integer = 5
 
@@ -353,6 +355,8 @@ Private Sub RefreshComponents()
   Dim iUser As Integer
   Dim hLibInfo As CLibraryInfo
   Dim aNotFound As New String[]
+
+  If $iDoNotRefreshComponent Then Return
 
   'If Not $bCanInitLibrary Then Return
 
@@ -1136,6 +1140,8 @@ Private Sub RefreshLibraries()
   Dim hLib As LibraryItem
   Dim hSep As Separator
   
+  If $iDoNotRefreshComponent Then Return
+  
   lstLibraries.Lock
   lstLibraries.Clear
   
@@ -1150,20 +1156,27 @@ Private Sub RefreshLibraries()
   
 End
 
-Public Sub btnRemoveLib_Click()
-
-  Dim hLib As LibraryItem = lstLibraries.Current
-  Dim iPos As Integer
-
-  If Not hLib Then Return
+Private Sub RemoveLibrary(sPath As String)
   
-  iPos = $aLibraries.Find(hLib.Path)
+  Dim iPos As Integer
+  
+  iPos = $aLibraries.Find(sPath)
   If iPos >= 0 Then
     $aLibraries.Remove(iPos)
     Project.UpdateLibraries($aLibraries)
     RefreshLibraries
     RefreshComponents
   Endif
+  
+End
+
+
+Public Sub btnRemoveLib_Click()
+
+  Dim hLib As LibraryItem = lstLibraries.Current
+
+  If Not hLib Then Return
+  RemoveLibrary(hLib.Path)
   
 End
 
@@ -1213,4 +1226,15 @@ Public Sub chkGetVersionFromFile_Click()
   txtMinor.Enabled = Not chkGetVersionFromFile.Value
   txtRelease.Enabled = Not chkGetVersionFromFile.Value
 
+End
+
+Public Sub UncheckComponents(aComp As String[])
+  
+  Dim sComp As String
+  Dim bLib As Boolean
+  
+  For Each sComp In aComp
+    If Left(sComp) <> "/" Then $cComp[sComp].Uncheck("")
+  Next
+  
 End

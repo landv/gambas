@@ -3803,7 +3803,7 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   If sExt Then sNewPath = sNewPath & "." & sExt
 
   If Exist(sNewPath) Then
-    Error.Raise(("Destination already exists"))
+    Error.Raise(("Destination already exists."))
   Endif
 
   If IsDir(sPath) Then
@@ -4571,7 +4571,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
   If sSrc = sDst Then Return
 
-  If Exist(sDst) Then Error.Raise(("Destination already exists"))
+  If Exist(sDst) Then Error.Raise(("Destination already exists."))
 
   If Len(sDst) > Len(sSrc) And If Left(sDst, Len(sSrc)) = sSrc Then Error.Raise(("Cannot move a directory inside itself."))
 

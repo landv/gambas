@@ -333,16 +333,67 @@ Public Sub Check(Optional sComponent As String)
   
 End
 
+Private Sub GetDependencies(Optional bLib As Boolean) As String[]
+  
+  Dim aDep As New String[]
+  Dim sComp As String
+  
+  For Each sComp In $aComp
+    
+    If Not sComp Then Continue
+    If Left(sComp) = "/" Then
+      aDep.Add(File.Name(sComp))
+    Else If Not bLib Then
+      aDep.Add(sComp)
+    Endif
+    
+  Next
+  
+  Return aDep
+  
+End
+
+
 Public Sub Uncheck(Optional sComponent As String)
   
   Dim iFind As Integer = $aComp.Find(sComponent)
+  Dim sMsg As String
+  Dim aDep As String[]
   
   If iFind < 0 Then Return
   
   $aComp.Remove(iFind)
   
   $bCheck = $aComp.Count > 0
-  If sComponent = "" Then $bGray = $bCheck
+  If sComponent = "" Then 
+    If Not $bGray And If $bCheck Then
+      
+      aDep = GetDependencies(True)
+      
+      If aDep.Count Then
+        If aDep.Count = 1 Then
+          sMsg = Subst(("This component is required by the following library:<p>&1"), "<b>" & aDep[0] & "</b>")
+        Else
+          sMsg = Subst(("This component is required by the following libraries:<p>&1"), "<b>" & aDep.Join("</b>, <b>") & "</b>")
+        Endif
+        Message.Warning(sMsg)
+        $aComp.Add("")
+        Return
+      Endif
+      
+      aDep = GetDependencies()
+      
+      sMsg = Subst(("This component is required by:<p>&1"), "<b>" & aDep.Join("</b>, <b>") & "</b>")
+      If Message.Warning(sMsg, ("Keep"), ("Remove all")) = 2 Then
+        FPropertyProject.UncheckComponents($aComp)
+        $aComp.Clear
+        $bCheck = False
+        Return
+      Endif
+      
+    Endif
+    $bGray = $bCheck
+  Endif
   RefreshCheck
 
 End
