@@ -1133,7 +1133,7 @@ Public Sub Control_MouseMove()
 
   Else If $iMode = MODE_SELECT Then
 
-    DrawRectSelect(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+    DrawRectSelect
 
   Endif
 
@@ -1171,7 +1171,7 @@ Public Sub Control_MouseUp()
     $WS = $W
     $HS = $H
 
-    DrawRectSelect(0, 0)
+    HideControlFrame
 
     If Abs($WS) > 1 And Abs($HS) > 1 Then
 
@@ -1568,10 +1568,26 @@ Private Sub DrawControlFrame(hCCtrl As CControl)
   
 End
 
-Private Sub DrawRectSelect(W As Integer, H As Integer)
+Private Sub DrawRectSelect()
 
-  Dim X As Integer
-  Dim Y As Integer
+  Dim X, Y, W, H As Integer
+
+  X = $XS
+  Y = $YS
+  
+  If $hCurrent Then
+    X += $hCurrent.Control.ScreenX
+    Y += $hCurrent.Control.ScreenY
+  Else
+    X += RootControl.Control.ScreenX
+    Y += RootControl.Control.ScreenY
+  Endif
+
+  W = Mouse.ScreenX - X
+  H = Mouse.ScreenY - Y
+  
+  X -= panBorder.ScreenX
+  Y -= panBorder.ScreenY
 
   If W = $W And H = $H Then Return
 
@@ -1580,9 +1596,9 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
     $W = W
     $H = H
 
-    X = $MX - panBorder.ScreenX
-    Y = $MY - panBorder.ScreenY
-
+    'X = $MX - panBorder.ScreenX
+    'Y = $MY - panBorder.ScreenY
+    
     If W < 0 Then
       X += W
       W = - W
@@ -2510,6 +2526,7 @@ Public Sub mnuSelectAll_Click()
   bFirst = True
 
   For Each hChild In hParent.Control.Children
+    If Not hChild.Tag Or If hChild.Ignore Then Continue
     hCtrl = Control[hChild.Tag]
     If IsNull(hCtrl) Then Continue 'panel
     aSelect.Add(hCtrl)
@@ -3789,5 +3806,11 @@ End
 Public Sub panBorder_Enter()
 
   CheckHovered
+
+End
+
+Public Sub svwWorkspace_Scroll()
+
+  If $iMode = MODE_SELECT Then DrawRectSelect
 
 End
