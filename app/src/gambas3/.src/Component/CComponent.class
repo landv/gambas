@@ -607,11 +607,28 @@ Public Sub Load()
     
   Next
   
+  ' For Each sClass In Hiddens
+  '   If Classes.Exist(sClass) Then
+  '     Classes[Key &/ sClass].InitControl()
+  '     iPos = Controls.Find(sClass)
+  '     If iPos >= 0 Then Controls.Remove(iPos)
+  '   Endif
+  ' Next
+  ' 
+  ' the upper code is the original code, I expanded 
+  ' this hack is because I can not load my projects into the IDE any more 
+  ' the worst is, once loaded they work well
+  ' Charlie 03/08/2012  (after rev.5004)
   For Each sClass In Hiddens
     If Classes.Exist(sClass) Then
-      Classes[Key &/ sClass].InitControl()
-      iPos = Controls.Find(sClass)
-      If iPos >= 0 Then Controls.Remove(iPos)
+      ' check if key exists in Classes 
+      If Classes.Exist(Key &/ sClass) Then
+        Classes[Key &/ sClass].InitControl()
+        iPos = Controls.Find(sClass)
+        If iPos >= 0 Then Controls.Remove(iPos)
+      Else 
+        FMain.ShowWarning("Classes[" & Key &/ sClass & "]\n\n Not Exists !")
+      End If 
     Endif
   Next
   
