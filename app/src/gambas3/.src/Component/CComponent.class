@@ -605,7 +605,7 @@ Public Sub Load()
       If hSym Then Hiddens = Split(hSym.Value, ",")
     Endif
     
-  NextRequire
+  Next
   
   ' For Each sClass In Hiddens
   '   If Classes.Exist(sClass) Then
