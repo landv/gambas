@@ -827,7 +827,8 @@ JumpEnumNextExpression::JumpEnumNextExpression(JumpEnumFirstExpression* jfirst, 
 		type = desc->method.type;
 	}
 	
-	retval->type = type;
+	if (!drop)
+		retval->type = type;
 	
 	set_ctrl_type(T_OBJECT, jfirst->ctrl+1);
 }
