@@ -41,7 +41,9 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/IRBuilder.h"
 #include "llvm/Support/DynamicLibrary.h"
+#include "llvm/Support/CFG.h"
 #include "llvm/PassManager.h"
+#include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 #include <typeinfo>

@@ -28,6 +28,8 @@
 #include <array>
 #include <set>
 #include <map>
+#include <queue>
+#include <algorithm>
 
 #include "jit.h"
 
@@ -132,6 +134,8 @@ static std::vector<llvm::Value*> params;
 static llvm::Value* current_op;
 
 static bool in_try = false;
+static bool has_tries = false;
+static std::vector<llvm::BasicBlock*> try_blocks;
 
 static unsigned short* statement_pc;
 
@@ -794,7 +798,7 @@ static void finish_gosub_returns(){
 			gen_if(builder->CreateICmpNE(old_type, getInteger(32, 0)), [&](){
 				llvm::Value* stack_addr = builder->CreateGEP(read_global(&BP), getInteger(TARGET_BITS, (i + FP->n_local)*sizeof(VALUE)));
 				store_value(stack_addr, NULL, T_VOID);
-			}, "old_ctrl_needs_to_be_cleaned");
+			}, "old_ctrl_needs_to_be_cleaned1");
 		}
 		//And return
 		/*llvm::Value* addr = builder->CreateLoad(gosub_return_point);
@@ -972,7 +976,7 @@ static void unref_string_no_nullcheck(llvm::Value* ptr){
 	ref = builder->CreateSub(ref, getInteger(32, 1));
 	builder->CreateStore(ref, ref_addr);
 	llvm::Value* slt = builder->CreateICmpSLT(ref, getInteger(32, 1));
-	if (llvm::Instruction* inst = dyn_cast<llvm::Instruction>(slt)){
+	if (llvm::Instruction* inst = llvm::dyn_cast<llvm::Instruction>(slt)){
 		llvm::Value* arr[1] = {getInteger(32, 1)};
 		inst->setMetadata("unref_slt", llvm::MDNode::get(llvm_context, arr));
 	}
@@ -1001,7 +1005,7 @@ static void unref_object_no_nullcheck(llvm::Value* ptr){
 	/*builder->CreateCall3(get_global_function_vararg(printf, 'v', "p"),
 		get_global((void*)"%p %ld -\n", llvmType(getInt8Ty)), ptr, ref);*/
 	llvm::Value* slt = builder->CreateICmpSLT(ref, getInteger(TARGET_BITS, 1));
-	if (llvm::Instruction* inst = dyn_cast<llvm::Instruction>(slt)){
+	if (llvm::Instruction* inst = llvm::dyn_cast<llvm::Instruction>(slt)){
 		llvm::Value* arr[1] = {getInteger(32, 1)};
 		inst->setMetadata("unref_slt", llvm::MDNode::get(llvm_context, arr));
 	}
@@ -2260,7 +2264,7 @@ static void set_ctrl(llvm::Value* v, TYPE type, int index){
 		gen_if(builder->CreateICmpNE(old_type, getInteger(32, 0)), [&](){
 			llvm::Value* stack_addr = builder->CreateGEP(read_global(&BP), getInteger(TARGET_BITS, index*sizeof(VALUE)));
 			store_value(stack_addr, v, type);
-		}, "old_ctrl_needs_to_be_cleaned");
+		}, "old_ctrl_needs_to_be_cleaned2");
 	}
 	
 	if (type != T_NULL)
@@ -2311,7 +2315,7 @@ static void codegen_pop_ctrl(llvm::Value* v, Expression* val, int index){
 		gen_if(builder->CreateICmpNE(old_type, getInteger(32, 0)), [&](){
 			llvm::Value* stack_addr = builder->CreateGEP(read_global(&BP), getInteger(TARGET_BITS, index*sizeof(VALUE)));
 			store_value(stack_addr, v, type);
-		}, "old_ctrl_needs_to_be_cleaned");
+		}, "old_ctrl_needs_to_be_cleaned3");
 	}
 	
 	if (val->on_stack) c_SP(-1);
@@ -3256,6 +3260,7 @@ void GosubExpression::codegen(){
 					llvm::Value* stack_addr = builder->CreateGEP(read_global(&BP), getInteger(TARGET_BITS, i*sizeof(VALUE)));
 					store_value(stack_addr, NULL, T_VOID);
 				}
+				builder->CreateStore(getInteger(32, 0), current_ctrl_types[i - FP->n_local]);
 			}
 			for(int i=end_ctrl; i<FP->n_local+FP->n_ctrl; i++){
 				store_value(builder->CreateGEP(gp_ctrl, getInteger(TARGET_BITS, i - FP->n_local)), NULL, T_VOID);
@@ -3265,7 +3270,7 @@ void GosubExpression::codegen(){
 				gen_if(builder->CreateICmpNE(old_type, getInteger(32, 0)), [&](){
 					llvm::Value* stack_addr = builder->CreateGEP(read_global(&BP), getInteger(TARGET_BITS, i*sizeof(VALUE)));
 					store_value(stack_addr, NULL, T_VOID);
-				}, "old_ctrl_needs_to_be_cleaned");
+				}, "old_ctrl_needs_to_be_cleaned4");
 			}
 		}
 	}, [&](){
@@ -3597,6 +3602,10 @@ void JumpEnumNextExpression::codegen(){
 
 void TryExpression::codegen(){
 	in_try = true;
+	has_tries = true;
+	
+	try_blocks.push_back(builder->GetInsertBlock());
+	
 	builder->CreateStore(read_sp(), get_global((void*)&EP, pointer_t(value_type)));
 	//We only want it to be non-null, so let's put in 1:
 	builder->CreateStore(get_global((void*)1, llvmType(getInt8Ty)), get_global((void*)&EC));
@@ -3632,8 +3641,15 @@ void TryExpression::codegen(){
 
 void EndTryExpression::codegen(){
 	in_try = false;
-	builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
+	
+	llvm::Value* call = builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
 		create_gep(temp_errcontext1, TARGET_BITS, 0, TARGET_BITS, 0));
+		
+	if (llvm::Instruction* inst = llvm::dyn_cast<llvm::Instruction>(call)){
+		llvm::Value* arr[1] = {getInteger(32, 1)};
+		inst->setMetadata("end_try", llvm::MDNode::get(llvm_context, arr));
+	}
+		
 	builder->CreateStore(get_nullptr(), get_global((void*)&EP));
 	//We only need to store NULL (no catch) or something whatever else inside EC (there is a catch)
 	llvm::Value* got_large_error = builder->CreateZExt(builder->CreateXor(builder->CreateLoad(temp_got_error2), getInteger(1, 1)), LONG_TYPE);
@@ -3641,6 +3657,10 @@ void EndTryExpression::codegen(){
 }
 
 void LargeTryExpression::codegen(){
+	has_tries = true;
+	
+	builder->CreateStore(getInteger(1, false), temp_got_error2);
+	
 	llvm::Value* jmpbuf = builder->CreateCall(get_global_function(JR_try, 'p', "p"),
 		create_gep(temp_errcontext2, TARGET_BITS, 0, TARGET_BITS, 0));
 	
@@ -3654,14 +3674,12 @@ void LargeTryExpression::codegen(){
 	
 	llvm::Value* second_time = builder->CreateICmpNE(setjmp_return, getInteger(32, 0));
 	
-	gen_if_else(second_time, [&](){
+	gen_if(second_time, [&](){
 		builder->CreateCall(get_global_function(JR_try_unwind, 'v', "p"), builder->CreateBitCast(builder->CreateLoad(gp), llvmType(getInt8PtrTy)));
 		builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
 			create_gep(temp_errcontext2, TARGET_BITS, 0, TARGET_BITS, 0));
 		builder->CreateStore(get_nullptr(), get_global((void*)&EC));
 		builder->CreateStore(getInteger(1, true), temp_got_error2);
-	}, [&](){
-		builder->CreateStore(getInteger(1, false), temp_got_error2);
 	}, "Try_cleanup");
 	
 	PendingBranch p;
@@ -6435,8 +6453,13 @@ void ReturnExpression::codegen(){
 				create_gep(temp_errcontext1, TARGET_BITS, 0, TARGET_BITS, 0));
 		if (EC != NULL){
 			gen_if(builder->CreateXor(builder->CreateLoad(temp_got_error2), getInteger(1, 1)), [&](){
-				builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
+				llvm::Value* call = builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
 					create_gep(temp_errcontext2, TARGET_BITS, 0, TARGET_BITS, 0));
+				
+				if (llvm::Instruction* inst = llvm::dyn_cast<llvm::Instruction>(call)){
+					llvm::Value* arr[1] = {getInteger(32, 1)};
+					inst->setMetadata("large_end_try", llvm::MDNode::get(llvm_context, arr));
+				}
 			}, "return_in_large_try");
 		}
 		return_points.push_back(builder->GetInsertBlock());
@@ -6487,6 +6510,101 @@ static void run_optimizations(){
 		llvm::FunctionPass* pass = createGambasPass();
 		changed = pass->runOnFunction(*llvm_function);
 		delete pass;
+	}
+}
+
+template <typename T>
+static void do_search(llvm::BasicBlock* block, T func){
+	std::queue<llvm::BasicBlock*> q;
+	std::set<llvm::BasicBlock*> vis;
+	
+	q.push(block);
+	vis.insert(block);
+	
+	while(!q.empty()){
+		llvm::BasicBlock* BB = q.front(); q.pop();
+		
+		for(llvm::BasicBlock::iterator I = BB->begin(), E = BB->end(); I != E; ){
+			if (func(I++))
+				goto next_block_in_queue;
+		}
+		
+		for(llvm::succ_iterator SI = succ_begin(BB), E = succ_end(BB); SI != E; ++SI){
+			if (vis.count(*SI) == 0){
+				q.push(*SI);
+				vis.insert(*SI);
+			}
+		}
+		next_block_in_queue:;
+	}
+}
+
+static void fix_setjmp(llvm::BasicBlock* catch_block, llvm::BasicBlock* try_block, const char* end_try_string){
+	std::set<llvm::AllocaInst*> vars;
+	std::set<llvm::AllocaInst*> volatile_vars;
+	std::vector<llvm::StoreInst*> stores;
+	
+	do_search(try_block, [&](llvm::Value* value){
+		if (llvm::StoreInst* si = llvm::dyn_cast<llvm::StoreInst>(value)){
+			if (llvm::AllocaInst* ai = llvm::dyn_cast<llvm::AllocaInst>(si->getPointerOperand())){
+				vars.insert(ai);
+				stores.push_back(si);
+			}
+		} else if (llvm::CallInst* ci = llvm::dyn_cast<llvm::CallInst>(value)){
+			if (ci->hasMetadata() && ci->getMetadata(end_try_string))
+				return true;
+		}
+		return false;
+	});
+	
+	do_search(catch_block, [&](llvm::Value* value){
+		if (llvm::LoadInst* li = llvm::dyn_cast<llvm::LoadInst>(value)){
+			if (llvm::AllocaInst* ai = llvm::dyn_cast<llvm::AllocaInst>(li->getPointerOperand())){
+				if (vars.count(ai) != 0){
+					li->setVolatile(true);
+					volatile_vars.insert(ai);
+				}
+			}
+		}
+		return false;
+	});
+	
+	for(size_t i=0, e=stores.size(); i!=e; i++){
+		llvm::StoreInst* si = stores[i];
+		llvm::AllocaInst* ai = llvm::dyn_cast<llvm::AllocaInst>(si->getPointerOperand());
+		if (volatile_vars.count(ai) != 0){
+			si->setVolatile(true);
+		}
+	}
+}
+
+static void fix_setjmps(){
+	if (!has_tries)
+		return;
+	
+	if (EC != NULL){
+		//There is a Catch/Finally in the function, so a setjmp is somewhere in the entry block
+		//and the first branch is a conditional branch: true -> catch part, false -> try part
+		
+		llvm::BranchInst* br = llvm::dyn_cast<llvm::BranchInst>(entry_block->getTerminator());
+		assert(br && br->isConditional());
+		
+		llvm::BasicBlock* catch_block = br->getSuccessor(0);
+		llvm::BasicBlock* try_block = br->getSuccessor(1);
+		
+		fix_setjmp(catch_block, try_block, "large_end_try");
+	}
+	
+	for(size_t i=0, e=try_blocks.size(); i!=e; i++){
+		llvm::BasicBlock* BB = try_blocks[i];
+		
+		llvm::BranchInst* br = llvm::dyn_cast<llvm::BranchInst>(BB->getTerminator());
+		assert(br && br->isConditional());
+		
+		llvm::BasicBlock* catch_block = br->getSuccessor(0);
+		llvm::BasicBlock* try_block = br->getSuccessor(1);
+		
+		fix_setjmp(catch_block, try_block, "end_try");
 	}
 }
 
@@ -6779,7 +6897,10 @@ void JIT_codegen(){
 	//For GoSubs and JR_try_unwind
 	gp = builder->CreateAlloca(pointer_t(value_type));
 		builder->CreateStore(builder->CreateGEP(read_global((void*)&BP, pointer_t(value_type)), getInteger(TARGET_BITS, FP->n_local + FP->n_ctrl)), gp);
-		
+	
+	has_tries = false;
+	try_blocks.clear();
+	
 	init_locals();
 	
 	codegen_statements();
@@ -6798,6 +6919,8 @@ void JIT_codegen(){
 	for(size_t i=0, e=all_statements.size(); i!=e; i++)
 		delete all_statements[i];
 	all_statements.clear();
+	
+	fix_setjmps();
 	
 	run_optimizations();
 	
