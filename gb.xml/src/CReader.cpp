@@ -278,9 +278,15 @@ GB.ReturnObject(0);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CReader_isEmptyElement)
+BEGIN_PROPERTY(CReaderNode_IsEmptyElement)
 
-if(!THIS->foundNode->isElement()) 
+if(!THIS->foundNode)
+{
+    GB.ReturnBoolean(false);
+    return;
+}
+
+if(!THIS->foundNode->isElement())
 {
     GB.ReturnBoolean(false);
     return;
@@ -349,7 +355,7 @@ GB_DESC CReaderNodeDesc[] =
 	//GB_PROPERTY_READ("BaseUri","s",CRNODE_BaseUri),
 	GB_PROPERTY_READ("Depth","i",CReader_Depth),
 	//GB_PROPERTY_READ("IsDefault","b",CRNODE_IsDefault),
-	//GB_PROPERTY_READ("IsEmptyElement","b",CRNODE_IsEmptyElement),
+    GB_PROPERTY_READ("IsEmptyElement","b",CReaderNode_IsEmptyElement),
 	//GB_PROPERTY_READ("LocalName","s",CRNODE_LocalName),
 	GB_PROPERTY_READ("Name", "s", CReaderNode_Name),
 	//GB_PROPERTY_READ("NamespaceUri", "s", CRNODE_NamespaceUri),
