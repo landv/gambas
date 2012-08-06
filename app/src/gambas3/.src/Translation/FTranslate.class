@@ -681,6 +681,7 @@ Public Sub btnNew_Click()
 End
 
 Public Sub txtTranslate_KeyPress()
+  
   If Key.Alt Then
     With cvwTranslate
         If Key.Code = Key["Up"] Then
@@ -723,6 +724,7 @@ Public Sub txtTranslate_KeyPress()
         btnClear_Click
     End Select 
   Endif
+  
 End
 
 Public Sub btnUndo_Click()

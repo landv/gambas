@@ -656,7 +656,7 @@ Private Function MakeDebPackage(sSys As String)
   hFile = Open sPackagePath &/ "debian/install" For Create
   If Project.Type = Project.TYPE_COMPONENT Then 
     Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/lib/gambas" & System.Version
-    If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
+    If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "src/"; $sName; "/.hidden/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
   Else 
     Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/bin"
     If Project.Type = Project.TYPE_NORMAL Then 
@@ -970,7 +970,7 @@ Private Function MakeRpmPackage(sSys As String)
 
     If Exist(Project.Dir &/ ".hidden/control") Then 
       Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName)
-      Print #hFile, "install -p "; "control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Shell$($sName)
+      Print #hFile, "install -p "; ".hidden/control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Shell$($sName)
     Endif
 
   Else 
@@ -1535,7 +1535,7 @@ Private Function MakeArchPackage(sSys As String)
       Print #hFile, "  chmod a-x ${pkgdir}/usr/share/gambas" & System.Version &/ "info" &/ $sName & ".list" 
       Print #hFile, "  if test -d control; then"
       Print #hFile, "    install -d ${pkgdir}/usr/share/gambas" & System.Version &/ "control" &/ $sName
-      Print #hFile, "    install control/*.png ${pkgdir}/usr/share/gambas" & System.Version &/ "control" &/ $sName
+      Print #hFile, "    install .hidden/control/*.png ${pkgdir}/usr/share/gambas" & System.Version &/ "control" &/ $sName
       Print #hFile, "    chmod a-x ${pkgdir}/usr/share/gambas" & System.Version &/ "control" &/ $sName &/ "*.png"
       Print #hFile, "  fi"
     Else  
