@@ -42,7 +42,7 @@
 
 static char _buffer[MAX_SYMBOL_LEN + 1];
 
-int TABLE_compare(const char *s1, int len1, const char *s2, int len2)
+char TABLE_compare(const char *s1, int len1, const char *s2, int len2)
 {
 	int i;
 	int len = (len1 < len2) ? len1 : len2;
@@ -66,13 +66,13 @@ int TABLE_compare(const char *s1, int len1, const char *s2, int len2)
 		return 0;
 }
 
-int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2)
+char TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2)
 {
 	unsigned int len = (len1 < len2) ? len1 : len2;
 	unsigned int i;
 	int result;
 
-	for(i = 0; len > 0; i++)
+	for (i = 0; len > 0; i++)
 	{
 		result = toupper(s1[i]) - toupper(s2[i]);
 		if (LIKELY(result))
@@ -88,7 +88,7 @@ int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2
 		return 0;
 }
 
-int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int len2)
+char TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int len2)
 {
 	int result;
 

@@ -235,6 +235,9 @@ bool EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2)
 __OBJECT_FLOAT:
 
 	o1 = P1->_object.object;
+	if (!o1)
+		THROW(E_NULL);
+	
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
 	result = (*(FUNC_I_OF)func)(o1, P2->_float.value, FALSE);
@@ -248,6 +251,9 @@ __OBJECT_FLOAT:
 __FLOAT_OBJECT:
 
 	o2 = P2->_object.object;
+	if (!o2)
+		THROW(E_NULL);
+	
 	func = OBJECT_class(o2)->operators[op];
 	VALUE_conv_float(P1);
 	result = (*(FUNC_I_OF)func)(o2, P1->_float.value, TRUE);
@@ -275,6 +281,9 @@ __OBJECT_OBJECT:
 
 __OTHER:
 
+	if (!OBJECT_are_not_null(o1, o2))
+		THROW(E_NULL);
+	
 	func = OBJECT_class(o1)->operators[op];
 	result = (*(FUNC_I_OO)func)(o1, o2, invert);
 	OBJECT_UNREF(o1, "EXEC_comparator");

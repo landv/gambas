@@ -78,8 +78,8 @@ EXTERN const size_t TYPE_sizeof_memory_tab[];
 #define TYPE_is_function(type)     ((type) == T_FUNCTION)
 #define TYPE_is_pointer(type)      ((type) == T_POINTER)
 
-#define TYPE_are_objects(_t1, _t2) (((_t1) & (_t2)) >= T_OBJECT)
-#define TYPE_are_not_objects(_t1, _t2) (((_t1) | (_t2)) < T_OBJECT)
+#define TYPE_are_objects(_t1, _t2) (TYPE_is_object(_t1) && TYPE_is_object(_t2))
+//#define TYPE_are_not_objects(_t1, _t2) (((_t1) | (_t2)) < T_OBJECT)
 
 size_t TYPE_sizeof(TYPE type);
 #define TYPE_sizeof_memory(_type) (TYPE_is_object(_type) ? sizeof(void *) : TYPE_sizeof_memory_tab[_type])

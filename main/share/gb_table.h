@@ -59,9 +59,9 @@ void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag);
 void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABLE_FLAG flag);
 void TABLE_delete(TABLE **table);
 
-int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2);
-int TABLE_compare(const char *s1, int len1, const char *s2, int len2);
-int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int len2);
+char TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2);
+char TABLE_compare(const char *s1, int len1, const char *s2, int len2);
+char TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int len2);
 
 //int TABLE_count(TABLE *table);
 #define TABLE_count(_table) (ARRAY_count((_table)->symbol))
