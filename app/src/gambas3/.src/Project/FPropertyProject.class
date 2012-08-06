@@ -1019,12 +1019,15 @@ Public Sub mnuInsertEnv_Click()
         aEnv[1] = aNewEnv[1]
         $aEnv[iInd] = aEnv[0] & "=" & aEnv[1]
         tvwEnv.Refresh
-        Continue
+        sNewEnv = ""
+        Break
       Endif
     Next
   
-    $aEnv.Add(sNewEnv)
-    Inc tvwEnv.Rows.Count
+    If sNewEnv Then
+      $aEnv.Add(sNewEnv)
+      Inc tvwEnv.Rows.Count
+    Endif
     
   Next
   
