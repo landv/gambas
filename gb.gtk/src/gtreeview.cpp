@@ -23,6 +23,7 @@
 
 #include "widgets.h"
 #include "widgets_private.h"
+#include "gapplication.h"
 #include "gtree.h"
 #include "gtreeview.h"
 
@@ -34,6 +35,7 @@ gTreeView
 
 static void cb_activate(GtkTreeView *widget, GtkTreePath *path, GtkTreeViewColumn *column, gTreeView *control)
 {
+	//fprintf(stderr, "cb_activate\n");
 	char *key = control->find(path);
 	control->setItemExpanded(key, !control->isItemExpanded(key));
 	// Be careful, do not reuse key, as it can be destroyed during the Expand event
@@ -45,9 +47,23 @@ static void cb_select(GtkTreeSelection *selection, gTreeView *control)
 	control->emit(SIGNAL(control->onSelect));
 }
 
+static void cb_click(GtkTreeSelection *selection, gTreeView *control)
+{
+	if ((gApplication::lastEventTime() - control->_last_click_time) >= 500)
+	{
+		//fprintf(stderr, "cb_click\n");
+		control->emit(SIGNAL(control->onClick));
+	}
+	
+	control->_last_click_time = gApplication::lastEventTime();
+}
+
+/*
 static gboolean cb_button_press(GtkWidget *widget, GdkEventButton *e, gTreeView *control)
 {
 	char *key;
+	
+	fprintf(stderr, "cb_button_press\n");
 	
 	if (e->type == GDK_BUTTON_PRESS && e->window == gtk_tree_view_get_bin_window(GTK_TREE_VIEW(control->widget)))
 	{
@@ -55,17 +71,17 @@ static gboolean cb_button_press(GtkWidget *widget, GdkEventButton *e, gTreeView 
 		
 		if (key)
 		{
-			control->setCurrent(key);
+			//control->setCurrent(key);
 			if ((e->time - control->_last_click_time) >= 500)
 				control->emit(SIGNAL(control->onClick));
 			control->_last_click_time = e->time;
 			//fprintf(stderr, "cb_button_press: cancel\n");
-			return true;
 		}
 	}
 	
 	return false;
 }
+*/
 
 static void cb_expand(GtkTreeView *widget, GtkTreeIter *iter, GtkTreePath *path, gTreeView *control)
 {
@@ -125,9 +141,8 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	
 	treeview = tree->widget;
 	realizeScrolledWindow(treeview, true);
-	// BM: must occurs before!
-	g_signal_connect(G_OBJECT(treeview),"button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
 	realize(false);
+	//g_signal_connect(G_OBJECT(treeview), "button-press-event", G_CALLBACK(cb_button_press), (gpointer)this);
 		
 	setMode(SELECT_SINGLE);
 	setBorder(true);
@@ -148,7 +163,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	g_signal_connect(G_OBJECT(sel),"changed",G_CALLBACK(cb_select),(gpointer)this);
 	g_signal_connect(G_OBJECT(treeview),"row-expanded",G_CALLBACK(cb_expand),(gpointer)this);
 	g_signal_connect(G_OBJECT(treeview),"row-collapsed",G_CALLBACK(cb_collapse),(gpointer)this);
-	//g_signal_connect(G_OBJECT(treeview),"cursor-changed",G_CALLBACK(cb_click),(gpointer)this);
+	g_signal_connect(G_OBJECT(treeview), "cursor-changed", G_CALLBACK(cb_click), (gpointer)this);
 	g_signal_connect_after(G_OBJECT(treeview), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 }
 
