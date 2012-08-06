@@ -57,7 +57,7 @@ typedef
 #define OBJECT_count(_object) (((OBJECT *)_object)->ref)
 
 #define OBJECT_are_null(_o1, _o2) (((intptr_t)(_o1) | (intptr_t)(_o2)) == 0)
-#define OBJECT_are_not_null(_o1, _o2) (((intptr_t)(_o1) & (intptr_t)(_o2)) != 0)
+#define OBJECT_are_not_null(_o1, _o2) ((_o1) && (_o2))
 	
 void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent);
 void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name);
