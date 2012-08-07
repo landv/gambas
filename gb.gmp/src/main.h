@@ -1,17 +1,19 @@
 /***************************************************************************
 
-  CTabStrip.h
+  main.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  gb.gmp component
+
+  (c) 2012 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
+  the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
@@ -21,33 +23,13 @@
 
 ***************************************************************************/
 
-#ifndef __CTABSTRIP_H
-#define __CTABSTRIP_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
-#include "main.h"
-#include "gtabstrip.h"
-#include "CWidget.h"
-#include "CContainer.h"
+#include "gambas.h"
 
-#ifndef __CTABSTRIP_CPP
-extern GB_DESC CTabStripDesc[];
-extern GB_DESC CTabStripContainerDesc[];
-extern GB_DESC CTabStripContainerChildrenDesc[];
-#else
-
-
-#define THIS ((CTABSTRIP*)_object)
-#define TABSTRIP ((gTabStrip*)THIS->ob.widget)
-
+#ifndef __MAIN_C
+extern GB_INTERFACE GB;
 #endif
 
-typedef  
-	struct
-	{
-		CWIDGET ob;
-		int index;
-		void *textFont;
-	}  
-	CTABSTRIP;
-
-#endif
+#endif /* __MAIN_H */

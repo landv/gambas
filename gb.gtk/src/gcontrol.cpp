@@ -969,8 +969,9 @@ void gControl::lower()
 	gpointer *p;
 	GList *chd;
 	GtkWidget *child;
-	gControl *Br;
+	gControl *br;
 	int x,y;
+	GtkContainer *parent;
 
 	if (!pr) return;
 	if (pr->getClass()==Type_gSplitter) return;
@@ -993,17 +994,23 @@ void gControl::lower()
 		{
 			child = (GtkWidget*)chd->data;
 			
-			Br = (gControl *)g_object_get_data(G_OBJECT(child), "gambas-control");;
+			br = (gControl *)g_object_get_data(G_OBJECT(child), "gambas-control");;
 			
-			if (Br && Br != this)
+			if (br && br != this)
 			{
-				x = Br->x();
-				y = Br->y();
-				g_object_ref(G_OBJECT(Br->border));
-				gtk_container_remove(GTK_CONTAINER(pr->getContainer()),Br->border);
-				gtk_container_add(GTK_CONTAINER(pr->getContainer()),Br->border);
-				pr->moveChild(Br, x, y);
-				g_object_unref(G_OBJECT(Br->border));
+				x = br->x();
+				y = br->y();
+				parent = GTK_CONTAINER(gtk_widget_get_parent(br->border));
+				g_object_ref(G_OBJECT(br->border));
+				gtk_container_remove(parent, br->border);
+				gtk_container_add(parent, br->border);
+				
+				if (GTK_IS_LAYOUT(parent))
+					gtk_layout_move(GTK_LAYOUT(parent), br->border, x, y);
+				else
+					gtk_fixed_move(GTK_FIXED(parent), br->border, x, y);
+				
+				g_object_unref(G_OBJECT(br->border));
 			}
 			
 			chd = g_list_next(chd);
@@ -1025,7 +1032,8 @@ void gControl::lower()
 
 void gControl::raise()
 {
-	int x,y;
+	int x, y;
+	GtkContainer *parent;
 
 	if (!pr) return;
 	if (pr->getClass()==Type_gSplitter) return;
@@ -1040,17 +1048,23 @@ void gControl::raise()
 	{	
 		//fprintf(stderr, "gb.gtk: warning: gControl::raise(): no window\n");
 		
-		x=left();
-		y=top();
+		x = left();
+		y = top();
+		parent = GTK_CONTAINER(gtk_widget_get_parent(border));
 		g_object_ref(G_OBJECT(border));
-		gtk_container_remove(GTK_CONTAINER(pr->getContainer()),border);
-		gtk_container_add(GTK_CONTAINER(pr->getContainer()),border);
-		pr->moveChild(this, x, y);
+		gtk_container_remove(parent, border);
+		gtk_container_add(parent, border);
+
+		//pr->moveChild(this, x, y);
+		if (GTK_IS_LAYOUT(parent))
+			gtk_layout_move(GTK_LAYOUT(parent), border, x, y);
+		else
+			gtk_fixed_move(GTK_FIXED(parent), border, x, y);
+		
 		g_object_unref(G_OBJECT(border));
 	}
 	
 	g_ptr_array_remove(pr->_children, this);
-	
 	g_ptr_array_add(pr->_children, this);
 	
 	pr->updateFocusChain();

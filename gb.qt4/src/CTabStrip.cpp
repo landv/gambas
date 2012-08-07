@@ -430,7 +430,7 @@ static int get_real_index(CTABSTRIP *_object)
 }
 
 
-BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
+BEGIN_METHOD(TabStrip_new, GB_OBJECT parent)
 
 	MyTabWidget *wid = new MyTabWidget(QCONTAINER(VARG(parent))); //, 0, Qt::WNoMousePropagation);
 
@@ -456,7 +456,7 @@ BEGIN_METHOD_VOID(TabStrip_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(CTABSTRIP_count)
+BEGIN_PROPERTY(TabStrip_Count)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET->stack.count());
@@ -466,7 +466,7 @@ BEGIN_PROPERTY(CTABSTRIP_count)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_index)
+BEGIN_PROPERTY(TabStrip_Index)
 
 	if (READ_PROPERTY)
 	{
@@ -491,7 +491,7 @@ BEGIN_PROPERTY(CTABSTRIP_index)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_current)
+BEGIN_PROPERTY(TabStrip_Current)
 
 	THIS->index = get_real_index(THIS);
 	if (THIS->index < 0)
@@ -502,7 +502,7 @@ BEGIN_PROPERTY(CTABSTRIP_current)
 END_PROPERTY
 
 
-BEGIN_METHOD(CTABSTRIP_get, GB_INTEGER index)
+BEGIN_METHOD(TabStrip_get, GB_INTEGER index)
 
 	int index = VARG(index);
 
@@ -515,7 +515,7 @@ BEGIN_METHOD(CTABSTRIP_get, GB_INTEGER index)
 END_METHOD
 
 
-BEGIN_PROPERTY(CTABSTRIP_orientation)
+BEGIN_PROPERTY(TabStrip_Orientation)
 
 	if (READ_PROPERTY) 
 	{
@@ -726,7 +726,7 @@ BEGIN_METHOD_VOID(CTAB_delete)
 END_METHOD
 
 
-BEGIN_PROPERTY(CTABSTRIP_enabled)
+BEGIN_PROPERTY(TabStrip_Enabled)
 
 	int i;
 
@@ -742,7 +742,7 @@ BEGIN_PROPERTY(CTABSTRIP_enabled)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_text)
+BEGIN_PROPERTY(TabStrip_Text)
 
 	THIS->index = -1;
 	CTAB_text(_object, _param);
@@ -755,7 +755,7 @@ BEGIN_PROPERTY(CTABSTRIP_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_picture)
+BEGIN_PROPERTY(TabStrip_Picture)
 
 	THIS->index = -1;
 	CTAB_picture(_object, _param);
@@ -772,33 +772,57 @@ BEGIN_PROPERTY(TabStrip_Closable)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_client_x)
+BEGIN_PROPERTY(TabStrip_ClientX)
 
 	Container_X(_object, _param);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_client_y)
+BEGIN_PROPERTY(TabStrip_ClientY)
 
 	Container_Y(_object, _param);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_client_width)
+BEGIN_PROPERTY(TabStrip_ClientWidth)
 
 	GB.ReturnInteger(THIS->container->width());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTABSTRIP_client_height)
+BEGIN_PROPERTY(TabStrip_ClientHeight)
 
 	GB.ReturnInteger(THIS->container->height());
 
 END_PROPERTY
 
+
+BEGIN_METHOD(TabStrip_FindIndex, GB_OBJECT child)
+
+	void *child = VARG(child);
+	int i;
+	QWidget *parent;
+	
+	if (GB.CheckObject(child))
+		return;
+	
+	parent = QWIDGET(child)->parentWidget();
+	
+	for (i = 0; i < WIDGET->stack.count(); i++)
+	{
+		if (parent == WIDGET->stack.at(i)->widget)
+		{
+			GB.ReturnInteger(i);
+			return;
+		}
+	}
+	
+	GB.ReturnInteger(-1);
+
+END_METHOD
 
 
 /** Class CTabStrip ******************************************************/
@@ -841,9 +865,9 @@ void CTabStrip::tabCloseRequested(int index)
 
 /** Descriptions *********************************************************/
 
-GB_DESC CTabChildrenDesc[] =
+GB_DESC CTabStripContainerChildrenDesc[] =
 {
-	GB_DECLARE(".Tab.Children", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".TabStripContainer.Children"),
 
 	GB_METHOD("_next", "Control", CTAB_next, NULL),
 	GB_PROPERTY_READ("Count", "i", CTAB_count),
@@ -853,16 +877,16 @@ GB_DESC CTabChildrenDesc[] =
 };
 
 
-GB_DESC CTabDesc[] =
+GB_DESC CTabStripContainerDesc[] =
 {
-	GB_DECLARE(".Tab", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".TabStripContainer"),
 
 	GB_PROPERTY("Text", "s", CTAB_text),
 	GB_PROPERTY("Picture", "Picture", CTAB_picture),
 	GB_PROPERTY("Caption", "s", CTAB_text),
 	GB_PROPERTY("Enabled", "b", CTAB_enabled),
 	GB_PROPERTY("Visible", "b", CTAB_visible),
-	GB_PROPERTY_SELF("Children", ".Tab.Children"),
+	GB_PROPERTY_SELF("Children", ".TabStripContainer.Children"),
 	GB_METHOD("Delete", NULL, CTAB_delete, NULL),
 
 	GB_END_DECLARE
@@ -873,26 +897,26 @@ GB_DESC CTabStripDesc[] =
 {
 	GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
 
-	GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, TabStrip_new, "(Parent)Container;"),
 	GB_METHOD("_free", NULL, TabStrip_free, NULL),
 
-	GB_PROPERTY("Count", "i", CTABSTRIP_count),
-	GB_PROPERTY("Text", "s", CTABSTRIP_text),
+	GB_PROPERTY("Count", "i", TabStrip_Count),
+	GB_PROPERTY("Text", "s", TabStrip_Text),
 	GB_PROPERTY("TextFont", "Font", TabStrip_TextFont),
-	GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
+	GB_PROPERTY("Picture", "Picture", TabStrip_Picture),
   GB_PROPERTY("Closable", "b", TabStrip_Closable),
-	GB_PROPERTY("Caption", "s", CTABSTRIP_text),
-	GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
-	GB_PROPERTY("Index", "i", CTABSTRIP_index),
-	GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
-	GB_PROPERTY("Enabled", "b", CTABSTRIP_enabled),
+	GB_PROPERTY("Caption", "s", TabStrip_Text),
+	GB_PROPERTY_READ("Current", ".TabStripContainer", TabStrip_Current),
+	GB_PROPERTY("Index", "i", TabStrip_Index),
+	GB_PROPERTY("Orientation", "i", TabStrip_Orientation),
+	GB_PROPERTY("Enabled", "b", TabStrip_Enabled),
 
-	GB_PROPERTY_READ("ClientX", "i", CTABSTRIP_client_x),
-	GB_PROPERTY_READ("ClientY", "i", CTABSTRIP_client_y),
-	GB_PROPERTY_READ("ClientW", "i", CTABSTRIP_client_width),
-	GB_PROPERTY_READ("ClientWidth", "i", CTABSTRIP_client_width),
-	GB_PROPERTY_READ("ClientH", "i", CTABSTRIP_client_height),
-	GB_PROPERTY_READ("ClientHeight", "i", CTABSTRIP_client_height),
+	GB_PROPERTY_READ("ClientX", "i", TabStrip_ClientX),
+	GB_PROPERTY_READ("ClientY", "i", TabStrip_ClientY),
+	GB_PROPERTY_READ("ClientW", "i", TabStrip_ClientWidth),
+	GB_PROPERTY_READ("ClientWidth", "i", TabStrip_ClientWidth),
+	GB_PROPERTY_READ("ClientH", "i", TabStrip_ClientHeight),
+	GB_PROPERTY_READ("ClientHeight", "i", TabStrip_ClientHeight),
 
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
@@ -902,7 +926,8 @@ GB_DESC CTabStripDesc[] =
 	GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
-	GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
+	GB_METHOD("_get", ".TabStripContainer", TabStrip_get, "(Index)i"),
+	GB_METHOD("FindIndex", "i", TabStrip_FindIndex, "(Child)Control;"),
 
 	TABSTRIP_DESCRIPTION,
 

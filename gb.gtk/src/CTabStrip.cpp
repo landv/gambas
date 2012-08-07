@@ -302,6 +302,17 @@ BEGIN_PROPERTY(CTAB_visible)
 
 END_PROPERTY
 
+BEGIN_METHOD(TabStrip_FindIndex, GB_OBJECT child)
+
+	CWIDGET *child = (CWIDGET *)VARG(child);
+	
+	if (GB.CheckObject(child))
+		return;
+	
+	GB.ReturnInteger(TABSTRIP->findIndex(child->widget));
+	
+END_METHOD
+
 
 /***************************************************************************
 
@@ -309,9 +320,9 @@ END_PROPERTY
 
 ***************************************************************************/
 
-GB_DESC CTabChildrenDesc[] =
+GB_DESC CTabStripContainerChildrenDesc[] =
 {
-	GB_DECLARE(".Tab.Children", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".TabStripContainer.Children"),
 
 	GB_METHOD("_next", "Control", CTAB_next, NULL),
 	GB_PROPERTY_READ("Count", "i", CTAB_count),
@@ -321,16 +332,16 @@ GB_DESC CTabChildrenDesc[] =
 };
 
 
-GB_DESC CTabDesc[] =
+GB_DESC CTabStripContainerDesc[] =
 {
-	GB_DECLARE(".Tab", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".TabStripContainer"),
 
 	GB_PROPERTY("Text", "s", CTAB_text),
 	GB_PROPERTY("Picture", "Picture", CTAB_picture),
 	GB_PROPERTY("Caption", "s", CTAB_text),
 	GB_PROPERTY("Enabled", "b", CTAB_enabled),
 	GB_PROPERTY("Visible", "b", CTAB_visible),
-	GB_PROPERTY_SELF("Children", ".Tab.Children"),
+	GB_PROPERTY_SELF("Children", ".TabStripContainer.Children"),
 	GB_METHOD("Delete", 0, CTAB_delete, 0),
 
 	GB_END_DECLARE
@@ -350,7 +361,7 @@ GB_DESC CTabStripDesc[] =
 	GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
 	GB_PROPERTY("Closable", "b", TabStrip_Closable),
 	GB_PROPERTY("Caption", "s", CTABSTRIP_text),
-	GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
+	GB_PROPERTY_READ("Current", ".TabStripContainer", CTABSTRIP_current),
 	GB_PROPERTY("Index", "i", CTABSTRIP_index),
 	GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
 	
@@ -362,7 +373,8 @@ GB_DESC CTabStripDesc[] =
 	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 	GB_PROPERTY("Invert", "b", Container_Invert),
 
-	GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
+	GB_METHOD("_get", ".TabStripContainer", CTABSTRIP_get, "(Index)i"),
+	GB_METHOD("FindIndex", "i", TabStrip_FindIndex, "(Child)Control;"),
 
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
 	GB_EVENT("Close", NULL, "(Index)i", &EVENT_Close),

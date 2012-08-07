@@ -37,8 +37,8 @@
 
 #ifndef __CTABSTRIP_CPP
 extern GB_DESC CTabStripDesc[];
-extern GB_DESC CTabDesc[];
-extern GB_DESC CTabChildrenDesc[];
+extern GB_DESC CTabStripContainerDesc[];
+extern GB_DESC CTabStripContainerChildrenDesc[];
 #else
 
 #define QTABWIDGET(object) ((MyTabWidget *)((CWIDGET *)object)->widget)
@@ -60,9 +60,7 @@ typedef
     QWidget *container;
     CARRANGEMENT arrangement;
 		CFONT *textFont;
-    int index;
-    int id;
-    unsigned geom : 1;
+		int index;
     unsigned lock : 1;
     }
   CTABSTRIP;

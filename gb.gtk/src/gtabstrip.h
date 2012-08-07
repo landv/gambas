@@ -45,6 +45,7 @@ public:
 	char *tabText(int ind) const;
 	int tabCount(int ind) const;
 	gControl *tabChild(int ind, int n) const;
+	int findIndex(gControl *child) const;
 	
 	bool setCount(int vl);
 	void setIndex(int vl);

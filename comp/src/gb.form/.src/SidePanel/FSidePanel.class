@@ -336,6 +336,9 @@ End
 Private Sub RefreshAll()
 
   Dim D As Integer
+  Dim hParent As Container
+  Dim hTabStrip As TabStrip
+  Dim iIndex As Integer
 
   If Not $bOpened Then Return
   
@@ -358,7 +361,18 @@ Private Sub RefreshAll()
     
     If Not $hShowPanel Then
       
-      $hShowPanel = New Panel(Me.Parent.Parent) As "panMove"
+      hParent = Me.Parent.Parent
+      
+      If hParent Is TabStrip Then
+        hTabStrip = hParent
+        iIndex = hTabStrip.Index
+        hTabStrip.Index = hTabStrip.FindIndex(Me.Parent)
+      Endif
+      
+      $hShowPanel = New Panel(hParent) As "panMove"
+      
+      If hTabStrip Then hTabStrip.Index = iIndex
+      
       $hShowPanel.Ignore = True
       $hShowPanel.Mouse = Mouse.Pointing
       $hShowButtonLeft = CreateShowButton()

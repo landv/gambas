@@ -576,12 +576,14 @@ static QColor calc_color(QColor ca, QColor cb, QColor cd)
 	if (!cb.isValid())
 		return ca;
 	
-	#define test(x) r *= x.red(); g *= x.green(); b *= x.blue(); n++;
+	return QColor((ca.red() + cb.red()) / 2, (ca.green() + cb.green()) / 2, (ca.blue() + cb.blue()) / 2);
+
+	/*#define test(x) r *= x.red(); g *= x.green(); b *= x.blue(); n++;
 
 	test(ca);
 	test(cb);
 	n = (n == 2) ? 255 : (n == 3) ? 255*255 : 1;
-	return QColor(r / n, g / n, b / n);
+	return QColor(r / n, g / n, b / n);*/
 }
 
 void GEditor::drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &s)

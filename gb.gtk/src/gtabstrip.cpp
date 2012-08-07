@@ -28,7 +28,7 @@
 #include "gdesktop.h"
 #include "gtabstrip.h"
 
-
+#if 0
 static int gTabStrip_buttonRelease(GtkWidget *wid,GdkEventButton *e,gTabStrip *d)
 {
 	if (!gApplication::userEvents()) return false;
@@ -59,6 +59,7 @@ static int gTabStrip_buttonPress(GtkWidget *wid,GdkEventButton *e,gTabStrip *d)
 	}
 	return false;
 }
+#endif
 
 static void cb_click(GtkNotebook *nb,GtkNotebookPage *pg,guint pnum,gTabStrip *data)
 {
@@ -688,7 +689,6 @@ gControl *gTabStrip::tabChild(int ind, int n) const
 	}
 	
 	return NULL;
-	
 }
 
 int gTabStrip::childCount() const
@@ -788,4 +788,18 @@ void gTabStrip::setClosable(bool v)
 		get(i)->updateButton();
 }
 
-
+int gTabStrip::findIndex(gControl *child) const
+{
+	int i;
+	GtkWidget *page;
+	
+	page = gtk_widget_get_parent(child->border); 
+	
+	for (i = 0; i < count(); i++)
+	{
+		if (get(i)->widget == page)
+			return i;
+	}
+	
+	return -1;
+}
