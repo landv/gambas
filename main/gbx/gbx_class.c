@@ -1328,6 +1328,9 @@ CLASS *CLASS_check_global(char *name)
 		if (COMPONENT_current && class->component == COMPONENT_current)
 			ERROR_panic("Class '%s' declared twice in the component '%s'.", class->name, class->component->name);
 
+		if (class->has_child)
+			THROW(E_CLASS, name, "Overriding an already inherited class is forbidden", "");
+			
 		parent = class;
 		class = class_replace_global(name);
 

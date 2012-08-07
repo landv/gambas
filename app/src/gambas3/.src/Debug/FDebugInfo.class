@@ -202,7 +202,7 @@ Public Sub lvwStack_Select()
   If iPos = 0 Then Return
   iLine = Val(Mid$(sLoc, iPos + 1))
 
-  Project.OpenFile(sFile, iLine)
+  If Project.ExistClass(sFile) Then Project.OpenFile(sFile, iLine)
 
 Catch
 
@@ -1312,3 +1312,15 @@ Public Sub OnProjectChange()
   UpdateTask
   
 End
+
+Public Sub ShowError(sMsg As String)
+  
+  If Me.Visible Then
+    Balloon(sMsg, lvwStack, Picture["icon:/32/error"], 8, 8)
+  Else
+    sMsg = Replace(sMsg, "\n", "<br>")
+    Message.Error(sMsg)
+  Endif
+  
+End
+

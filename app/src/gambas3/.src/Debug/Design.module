@@ -67,7 +67,7 @@ Public Sub CheckErrorMessage(hEditor As FEditor)
       FMain.ShowError($sError, sPath)
     Endif
   Else
-    FMain.ShowError($sError)
+    FDebugInfo.ShowError($sError)
   Endif
   
 End
@@ -143,7 +143,7 @@ Public Sub MakeErrorMessage(sErr As String) As String
   
   For iInd = aErr.Max - 4 DownTo 0
     If iInd = 0 Or If InStr(aErr[iInd], "&1") Then
-      aErr[iInd] = Subst(Tr$(aErr[iInd]), aErr[iInd + 1], aErr[iInd + 2], aErr[iInd + 3], aErr[iInd + 4])
+      aErr[iInd] = Subst(Tr$(aErr[iInd]), Tr$(aErr[iInd + 1]), Tr$(aErr[iInd + 2]), Tr$(aErr[iInd + 3]), Tr$(aErr[iInd + 4]))
     Endif
     If Left(aErr[iInd]) = "#" Then
       Select Case Mid(aErr[iInd], 2)

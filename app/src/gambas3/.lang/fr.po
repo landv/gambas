@@ -231,31 +231,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: MErrorMessage.module:16
+#: MErrorMessage.module:21
+msgid "',' or ')'"
+msgstr "',' ou ')'"
+
+#: MErrorMessage.module:15
 msgid "'&1.&2' is incorrectly overridden in class '&3'"
 msgstr "'&1.&2' est surchargé incorrectement dans la classe '&3'"
 
-#: MErrorMessage.module:17
+#: MErrorMessage.module:16
 msgid "'&1.&2' is not a property"
 msgstr "'&1.&2' n'est pas une propriété"
 
-#: MErrorMessage.module:18
+#: MErrorMessage.module:17
 msgid "'&1.&2' is not static"
 msgstr "'&1.&2' n'est pas statique"
 
-#: MErrorMessage.module:19
+#: MErrorMessage.module:18
 msgid "'&1.&2' is read only"
 msgstr "'&1.&2' est en lecture seule"
 
-#: MErrorMessage.module:20
+#: MErrorMessage.module:19
 msgid "'&1.&2' is static"
 msgstr "'&1.&2' est statique"
 
-#: MErrorMessage.module:21
+#: MErrorMessage.module:20
 msgid "'&1.&2' is write only"
 msgstr "'&1.&2' est en écriture seule"
 
-#: MErrorMessage.module:15
+#: MErrorMessage.module:14
 msgid "'&1' already declared"
 msgstr "'&1' est déjà déclaré"
 
@@ -308,18 +312,14 @@ msgid "&1 declaration does not match"
 msgstr "La déclaration de &1 ne correspond pas"
 
 #: MErrorMessage.module:6
-msgid "&1 expected"
-msgstr "&1 attendu"
-
-#: MErrorMessage.module:7
 msgid "&1 is declared but is not a function"
 msgstr "&1 est déclaré mais n'est pas une fonction"
 
-#: MErrorMessage.module:8
+#: MErrorMessage.module:7
 msgid "&1 is not a structure"
 msgstr "&1 n'est pas une structure"
 
-#: MErrorMessage.module:9
+#: MErrorMessage.module:8
 msgid "&1 is not declared"
 msgstr "&1 n'est pas déclaré"
 
@@ -327,7 +327,7 @@ msgstr "&1 n'est pas déclaré"
 msgid "&1 Mb"
 msgstr "&1 Mo"
 
-#: MErrorMessage.module:10
+#: MErrorMessage.module:9
 msgid "&1 must be static"
 msgstr "&1 doit être statique"
 
@@ -335,19 +335,19 @@ msgstr "&1 doit être statique"
 msgid "&1 records imported."
 msgstr "&1 enregistrements importés."
 
-#: FTranslate.class:1059
+#: FTranslate.class:1061
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 chaînes de caractères. &2 ne sont pas traduites. &3% effectué."
 
-#: FTranslate.class:1055
+#: FTranslate.class:1057
 msgid "&1 strings. Everything is translated!"
 msgstr "&1 chaînes de caractères. Tout est traduit !"
 
-#: FTranslate.class:1057
+#: FTranslate.class:1059
 msgid "&1 strings. One is not translated. &3% done."
 msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 
-#: FTranslate.class:958
+#: FTranslate.class:960
 msgid "&1 translations were picked up."
 msgstr "&1 traductions ont été récupérées."
 
@@ -359,19 +359,19 @@ msgstr "&1, &2 ligne(s)"
 msgid "&1: &2"
 msgstr "&1: &2"
 
-#: MErrorMessage.module:11
+#: MErrorMessage.module:10
 msgid "&1: not in archive"
 msgstr "&1: introuvable dans l'archive"
 
-#: MErrorMessage.module:12
+#: MErrorMessage.module:11
 msgid "&1: syntax error"
 msgstr "&1: erreur de syntaxe"
 
-#: MErrorMessage.module:13
+#: MErrorMessage.module:12
 msgid "&1: syntax error in form file"
 msgstr "&1: erreur de syntaxe dans le fichier formulaire"
 
-#: MErrorMessage.module:14
+#: MErrorMessage.module:13
 msgid "&1: too many nested containers"
 msgstr "&1: trop de conteneurs imbriqués"
 
@@ -743,11 +743,11 @@ msgstr "&Page Web..."
 msgid "&Words only"
 msgstr "&Mots seulements"
 
-#: FPropertyProject.class:1125
+#: FPropertyProject.class:1128
 msgid "<b>&1</b> does not export any class."
 msgstr "<b>&1</b> ne contient aucune classe exportée."
 
-#: FPropertyProject.class:1119
+#: FPropertyProject.class:1122
 msgid "<b>&1</b> is already used as a library."
 msgstr "<b>&1</b> est déjà utilisé comme bibliothèque."
 
@@ -887,7 +887,7 @@ msgstr "Alignement"
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont être supprimés."
 
-#: FConnectionEditor.class:1424 FTranslate.class:1266
+#: FConnectionEditor.class:1424 FTranslate.class:1268
 msgid "All files"
 msgstr "Tous les fichiers"
 
@@ -1024,14 +1024,22 @@ msgid "Bad character constant in string"
 msgstr "Constante de caractère incorrecte au sein de la chaîne"
 
 #: MErrorMessage.module:34
+msgid "Bad constant"
+msgstr "Constante incorrecte"
+
+#: MErrorMessage.module:35
 msgid "Bad constant type"
 msgstr "Type de constante incorrect"
 
-#: MErrorMessage.module:35
+#: MErrorMessage.module:36
+msgid "Bad description"
+msgstr "Description incorrecte"
+
+#: MErrorMessage.module:37
 msgid "Bad event handler in &1.&2(): &3"
 msgstr "Gestionnaire d'évènement incorrect dans &1.&2(): &3"
 
-#: MErrorMessage.module:36
+#: MErrorMessage.module:38
 msgid "Bad expression: &1"
 msgstr "Expression incorrecte: &1"
 
@@ -1039,11 +1047,15 @@ msgstr "Expression incorrecte: &1"
 msgid "Bad form file"
 msgstr "Le fichier formulaire contient une erreur"
 
-#: MErrorMessage.module:37
+#: MErrorMessage.module:39
 msgid "Bad form file version"
 msgstr "Format du fichier de formulaire incorrect"
 
-#: MErrorMessage.module:38
+#: MErrorMessage.module:40
+msgid "Bad format in section: "
+msgstr "Format incorrect dans la section:"
+
+#: MErrorMessage.module:41
 msgid "Bad format string"
 msgstr "Chaîne de formatage incorrecte"
 
@@ -1051,11 +1063,15 @@ msgstr "Chaîne de formatage incorrecte"
 msgid "Bad group name !"
 msgstr "Nom de groupe incorrect !"
 
+#: MErrorMessage.module:42
+msgid "Bad header"
+msgstr "Entête incorrect"
+
 #: FMenu.class:306
 msgid "Bad menu name !"
 msgstr "Nom de menu incorrect !"
 
-#: MErrorMessage.module:39
+#: MErrorMessage.module:43
 msgid "Bad number of dimensions"
 msgstr "Nombre de dimensions incorrect"
 
@@ -1063,27 +1079,27 @@ msgstr "Nombre de dimensions incorrect"
 msgid "Bad profile file format"
 msgstr "Format de fichier de profilage incorrect"
 
-#: MErrorMessage.module:40
+#: MErrorMessage.module:44
 msgid "Bad project file: line &1: &2"
 msgstr "Fichier projet incorrect à la ligne &1: &2"
 
-#: MErrorMessage.module:41
+#: MErrorMessage.module:45
 msgid "Bad regular expression: &1"
 msgstr "Expression rationnelle incorrecte: &1"
 
-#: MErrorMessage.module:42
+#: MErrorMessage.module:46
 msgid "Bad string conversion"
 msgstr "Conversion de chaîne impossible"
 
-#: MErrorMessage.module:43
+#: MErrorMessage.module:47
 msgid "Bad subscript range"
 msgstr "Index de tableau incorrect"
 
-#: MErrorMessage.module:44
+#: MErrorMessage.module:48
 msgid "Bad use of virtual class"
 msgstr "Utilisation de classe virtuelle incorrecte"
 
-#: MErrorMessage.module:45
+#: MErrorMessage.module:49
 msgid "Bad version string"
 msgstr "Mauvaise chaîne de version"
 
@@ -1107,7 +1123,7 @@ msgstr "Blob"
 msgid "Bold"
 msgstr "Gras"
 
-#: FConnectionEditor.class:571 MConnection.module:95
+#: FConnectionEditor.class:571 MConnection.module:95 MErrorMessage.module:50
 msgid "Boolean"
 msgstr "Booléen"
 
@@ -1142,6 +1158,14 @@ msgstr "Navigateur"
 #: Language.module:12
 msgid "Bulgarian (Bulgaria)"
 msgstr "Bulgare (Bulgarie)"
+
+#: MErrorMessage.module:51
+msgid "Bytecode too old. Please recompile the project."
+msgstr "Bytecode trop ancien. Veuillez recompiler le projet."
+
+#: MErrorMessage.module:52
+msgid "Bytecode too recent. Please upgrade Gambas."
+msgstr "Bytecode trop récent. Veuillez mettre à-jour Gambas."
 
 #: FSearch.form:153
 msgid "C&urrent procedure"
@@ -1179,7 +1203,7 @@ msgstr "Annulé par l'utilisateur"
 msgid "Cannot add file."
 msgstr "Impossible d'ajouter le fichier."
 
-#: MErrorMessage.module:46
+#: MErrorMessage.module:53
 msgid "Cannot change current directory to '&1': &2"
 msgstr "Impossible de changer le répertoire courant vers '&1': &2"
 
@@ -1191,23 +1215,23 @@ msgstr "Impossible de copier le fichier &1."
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: MErrorMessage.module:47
+#: MErrorMessage.module:54
 msgid "Cannot create .startup file"
 msgstr "Impossible de créer le fichier .startup"
 
-#: MErrorMessage.module:48
+#: MErrorMessage.module:55
 msgid "Cannot create action file: &1"
 msgstr "Impossible de créer le fichier des actions: &1"
 
-#: MErrorMessage.module:49
+#: MErrorMessage.module:56
 msgid "Cannot create callback: &1"
 msgstr "Impossible de créer le callback: &1"
 
-#: MErrorMessage.module:50
+#: MErrorMessage.module:57
 msgid "Cannot create class information: &1: &2"
 msgstr "Impossible de créer le fichier des informations sur la classe: &1: &2"
 
-#: MErrorMessage.module:51
+#: MErrorMessage.module:58
 msgid "Cannot create file: &1"
 msgstr "Impossible de créer le fichier: &1"
 
@@ -1223,7 +1247,7 @@ msgstr "Impossible de créer le projet !"
 msgid "Cannot create table '&1'."
 msgstr "Impossible de créer la table « &1 »."
 
-#: MErrorMessage.module:52
+#: MErrorMessage.module:59
 msgid "Cannot create temporary archive file: &1"
 msgstr "Impossible de créer le fichier d'archive temporaire: &1"
 
@@ -1235,11 +1259,19 @@ msgstr "Impossible de supprimer le fichier ou le répertoire"
 msgid "Cannot delete table '&1'."
 msgstr "Impossible de supprimer la table « &1 »."
 
-#: MErrorMessage.module:53
+#: MErrorMessage.module:255
+msgid "cannot find component"
+msgstr "impossible de trouver le composant"
+
+#: MErrorMessage.module:60
 msgid "Cannot find dynamic library '&1': &2"
 msgstr "Impossible de trouver la bibliothèque dynamique '&1': &2"
 
-#: MErrorMessage.module:54
+#: MErrorMessage.module:256
+msgid "cannot find library"
+msgstr "impossible de trouver la bibliothèque"
+
+#: MErrorMessage.module:61
 msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr "Impossible de trouver le symbole '&2' dans la bibliothèque dynamque '&1'"
 
@@ -1247,15 +1279,15 @@ msgstr "Impossible de trouver le symbole '&2' dans la bibliothèque dynamque '&1
 msgid "Cannot found extra file: &1"
 msgstr "Impossible de trouver le fichier supplémentaire : &1"
 
-#: FTranslate.class:967
+#: FTranslate.class:969
 msgid "Cannot import translation file."
 msgstr "Impossible d'importer le fichier de traduction."
 
-#: MErrorMessage.module:55
+#: MErrorMessage.module:62
 msgid "Cannot inherit twice"
 msgstr "Impossible d'hériter deux fois"
 
-#: MErrorMessage.module:56
+#: MErrorMessage.module:63
 msgid "Cannot instantiate native types"
 msgstr "Impossible d'instancier les types natifs"
 
@@ -1263,19 +1295,23 @@ msgstr "Impossible d'instancier les types natifs"
 msgid "Cannot link template file."
 msgstr "Impossible de créer le lien vers le fichier modèle."
 
-#: MErrorMessage.module:57
+#: MErrorMessage.module:64
 msgid "Cannot load class '&1': &2&3"
 msgstr "Impossible de charger la classe '&1': &2&3"
 
-#: MErrorMessage.module:58
+#: MErrorMessage.module:65
 msgid "Cannot load component '&1': &2"
 msgstr "Impossible de charger le composant '&1': &2"
 
-#: MErrorMessage.module:59
+#: MErrorMessage.module:66
+msgid "Cannot load parent class: "
+msgstr "Impossible de charger la classe parente :"
+
+#: MErrorMessage.module:67
 msgid "Cannot load source file: &1"
 msgstr "Impossible de charger le fichier source: &1"
 
-#: MErrorMessage.module:60
+#: MErrorMessage.module:68
 msgid "Cannot make executable: &1: &2"
 msgstr "Impossible de créer l'exécutable: &1: &2"
 
@@ -1283,11 +1319,11 @@ msgstr "Impossible de créer l'exécutable: &1: &2"
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: MErrorMessage.module:61
+#: MErrorMessage.module:69
 msgid "Cannot mix NEW and embedded array"
 msgstr "Impossible de mélanger NEW et les tableaux incorporés"
 
-#: MErrorMessage.module:62
+#: MErrorMessage.module:70
 msgid "Cannot mix NEW and embedded structure"
 msgstr "Impossible de mélanger NEW et les structures incorporées"
 
@@ -1303,11 +1339,11 @@ msgstr "Impossible de déplacer le fichier &1."
 msgid "Cannot open a binary file."
 msgstr "Impossible d'ouvrir un fichier binaire."
 
-#: MErrorMessage.module:63
+#: MErrorMessage.module:71
 msgid "Cannot open file '&1': &2"
 msgstr "Impossible d'ouvrir le fichier '&1': &2"
 
-#: MErrorMessage.module:64
+#: MErrorMessage.module:72
 msgid "Cannot open file: &1"
 msgstr "Imposible d'ouvrir le fichier: &1"
 
@@ -1319,15 +1355,11 @@ msgstr "Impossible d'ouvrir le fichier."
 msgid "Cannot open project file :\n"
 msgstr "Impossible d'ouvrir le projet :\n"
 
-#: MErrorMessage.module:65
+#: MErrorMessage.module:73
 msgid "Cannot raise events in static function"
 msgstr "Impossible d'émettre des évènements depuis une fonction statique"
 
-#: MErrorMessage.module:66
-msgid "Cannot read file: &1"
-msgstr "Impossible de lire le fichier: &1"
-
-#: MErrorMessage.module:67
+#: MErrorMessage.module:74
 msgid "Cannot read file: &1: &2"
 msgstr "Impossible de lire le fichier: &1: &2"
 
@@ -1335,19 +1367,19 @@ msgstr "Impossible de lire le fichier: &1: &2"
 msgid "Cannot read translation file for language '&1'"
 msgstr "Impossible de lire le fichier de traduction pour la langue « &1 »"
 
-#: MErrorMessage.module:68
+#: MErrorMessage.module:75
 msgid "Cannot register class '&1'"
 msgstr "Impossible d'enregistrer la classe '&1'"
 
-#: MErrorMessage.module:69
+#: MErrorMessage.module:76
 msgid "Cannot remove file '&1': &2"
 msgstr "Impossible de supprimer le fichier '&1': &2"
 
-#: MErrorMessage.module:70
+#: MErrorMessage.module:77
 msgid "Cannot rename file '&1' to '&2': &3"
 msgstr "Impossible de renommer le fichier '&1' en '&2': &3"
 
-#: MErrorMessage.module:71
+#: MErrorMessage.module:78
 msgid "Cannot run child process: &1&2"
 msgstr "Impossible d'exécuter le processus enfant: &1&2"
 
@@ -1363,19 +1395,19 @@ msgstr "Impossible d'enregistrer le fichier !"
 msgid "Cannot save translation."
 msgstr "Impossible de sauvegarder la traduction."
 
-#: MErrorMessage.module:72
+#: MErrorMessage.module:79
 msgid "Cannot set file owner: &1: &2"
 msgstr "Impossible de changer le propriétaire du fichier: &1: &2"
 
-#: MErrorMessage.module:73
+#: MErrorMessage.module:80
 msgid "Cannot use NEW operator there"
 msgstr "Impossible d'utiliser l'opérateur NEW ici"
 
-#: MErrorMessage.module:74
+#: MErrorMessage.module:81
 msgid "Cannot use TRY twice"
 msgstr "Impossible d'utiliser TRY deux fois"
 
-#: MErrorMessage.module:75
+#: MErrorMessage.module:82
 msgid "Cannot use TRY with &1"
 msgstr "Impossible d'utiliser TRY avec &1"
 
@@ -1451,6 +1483,10 @@ msgstr "Choisissez un profilage"
 msgid "Choose a table"
 msgstr "Choisissez une table"
 
+#: MErrorMessage.module:83
+msgid "Circular reference"
+msgstr "Référence circulaire"
+
 #: FList.form:86
 msgid "Cl&ear"
 msgstr "&Effacer"
@@ -1459,9 +1495,13 @@ msgstr "&Effacer"
 msgid "Class"
 msgstr "Classe"
 
-#: MErrorMessage.module:76
+#: MErrorMessage.module:84
 msgid "Class '&1' is not creatable"
 msgstr "La classe '&1' n'est pas instanciable"
+
+#: MErrorMessage.module:85
+msgid "Class already exists: "
+msgstr "Cette classe existe déjà :"
 
 #: FInfo.class:69
 msgid "Classes"
@@ -1563,7 +1603,7 @@ msgstr "Commentaires"
 msgid "Commit description"
 msgstr "Description de l'envoi"
 
-#: MErrorMessage.module:77
+#: MErrorMessage.module:86
 msgid "Comparison operator expected"
 msgstr "Opérateur de comparaison attendu"
 
@@ -1603,7 +1643,7 @@ msgstr "Avancement du composant"
 msgid "Component missing for control &1"
 msgstr "Composant introuvable pour le contrôle &1"
 
-#: MErrorMessage.module:78
+#: MErrorMessage.module:87
 msgid "Component not found: &1"
 msgstr "Composant introuvable: &1"
 
@@ -1839,11 +1879,11 @@ msgstr "Débogage"
 msgid "Debugging"
 msgstr "Débogage"
 
-#: MErrorMessage.module:79
+#: MErrorMessage.module:88
 msgid "Default case already defined"
 msgstr "Le cas par défaut est déjà défini"
 
-#: MErrorMessage.module:80
+#: MErrorMessage.module:89
 msgid "Default case must be the last one"
 msgstr "Le cas par défaut doit être le dernier"
 
@@ -1931,7 +1971,7 @@ msgstr "Répertoire de destination"
 msgid "Details"
 msgstr "Détails"
 
-#: MErrorMessage.module:81
+#: MErrorMessage.module:90
 msgid "Device is full"
 msgstr "Périphérique plein"
 
@@ -1947,7 +1987,7 @@ msgstr "Répertoire"
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: MErrorMessage.module:82
+#: MErrorMessage.module:91
 msgid "Directory is not empty"
 msgstr "Le répertoire n'est pas vide"
 
@@ -1963,7 +2003,7 @@ msgstr "Afficher ME"
 msgid "Display property help"
 msgstr "Afficher l'aide des propriétés"
 
-#: MErrorMessage.module:83
+#: MErrorMessage.module:92
 msgid "Division by zero"
 msgstr "Division par zéro"
 
@@ -2019,7 +2059,7 @@ msgstr "Voulez-vous vraiment supprimer ce fragment ?"
 msgid "Do you really want to delete this translation ?"
 msgstr "Voulez-vous vraiment supprimer cette traduction ?"
 
-#: FTranslate.class:730
+#: FTranslate.class:732
 msgid "Do you really want to reload this translation ?"
 msgstr "Voulez-vous vraiment recharger cette traduction ?"
 
@@ -2075,7 +2115,7 @@ msgstr "Hollandais (Belgique)"
 msgid "Dutch (Netherlands)"
 msgstr "Hollandais (Pays-bas)"
 
-#: MErrorMessage.module:84
+#: MErrorMessage.module:93
 msgid "Dynamic symbols cannot be used in static function"
 msgstr "Les symboles dynamiques ne peuvent être utilisées au sein d'une fonction statique"
 
@@ -2139,11 +2179,11 @@ msgstr "Ellipse"
 msgid "Embed into a container"
 msgstr "Imbriquer dans un conteneur"
 
-#: MErrorMessage.module:85
+#: MErrorMessage.module:94
 msgid "Embedded array"
 msgstr "Tableau incorporé"
 
-#: MErrorMessage.module:86
+#: MErrorMessage.module:95
 msgid "Embedded arrays are forbidden here"
 msgstr "Les tableaux incorporés sont interdits ici"
 
@@ -2155,7 +2195,7 @@ msgstr "Emeraude"
 msgid "Enclose character"
 msgstr "Caractère d'échappement"
 
-#: MErrorMessage.module:87
+#: MErrorMessage.module:96
 msgid "End of file"
 msgstr "Fin de fichier atteinte"
 
@@ -2199,7 +2239,7 @@ msgstr "Environnement"
 msgid "Environment variables"
 msgstr "Variables d'environnement"
 
-#: MErrorMessage.module:88
+#: MErrorMessage.module:97
 msgid "Equality or inequality operator expected"
 msgstr "Opérateur d'égalité ou d'inégalité attendu"
 
@@ -2235,7 +2275,7 @@ msgstr "Gestion de la boucle d'évènements"
 msgid "Events"
 msgstr "Evènements"
 
-#: FTranslate.class:1032
+#: FTranslate.class:1034
 msgid "Everything seems to be correct."
 msgstr "Tout semble correct."
 
@@ -2259,7 +2299,7 @@ msgstr "Expérimental"
 msgid "Export a theme file"
 msgstr "Exporter un fichier thème"
 
-#: FTranslate.class:745
+#: FTranslate.class:747
 msgid "Export a translation"
 msgstr "Exporter une traduction"
 
@@ -2303,11 +2343,11 @@ msgstr "Expression"
 msgid "Expression evaluator"
 msgstr "Evaluateur d'expressions"
 
-#: MErrorMessage.module:89
+#: MErrorMessage.module:98
 msgid "Expression too complex"
 msgstr "Expression trop complexe"
 
-#: MErrorMessage.module:90
+#: MErrorMessage.module:99
 msgid "Expression too complex. Too many operands"
 msgstr "Expression trop complexe. Trop d'opérandes"
 
@@ -2351,7 +2391,7 @@ msgstr "Champs"
 msgid "File"
 msgstr "Fichier"
 
-#: MErrorMessage.module:91
+#: MErrorMessage.module:100
 msgid "File already exists"
 msgstr "Le fichier existe déjà"
 
@@ -2359,15 +2399,15 @@ msgstr "Le fichier existe déjà"
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: MErrorMessage.module:92
+#: MErrorMessage.module:101
 msgid "File is a directory"
 msgstr "Le fichier est un répertoire"
 
-#: MErrorMessage.module:93
+#: MErrorMessage.module:102
 msgid "File is locked"
 msgstr "Le fichier est verrouillé"
 
-#: MErrorMessage.module:94
+#: MErrorMessage.module:103
 msgid "File name is too long"
 msgstr "Le nom de fichier est trop long"
 
@@ -2379,7 +2419,7 @@ msgstr "Fichier introuvable !"
 msgid "File or directory"
 msgstr "Fichier ou répertoire"
 
-#: MErrorMessage.module:95
+#: MErrorMessage.module:104
 msgid "File or directory does not exist"
 msgstr "Le fichier ou le répertoire n'existe pas"
 
@@ -2467,11 +2507,11 @@ msgstr "Le nom du groupe contient des caractères interdits."
 msgid "Forbidden characters in control name."
 msgstr "Le nom du contrôle contient des caractères interdits."
 
-#: MErrorMessage.module:96
+#: MErrorMessage.module:105
 msgid "Forbidden GOSUB"
 msgstr "GOSUB interdit"
 
-#: MErrorMessage.module:97
+#: MErrorMessage.module:106
 msgid "Forbidden GOTO"
 msgstr "GOTO interdit"
 
@@ -2551,7 +2591,7 @@ msgstr "Conversion en projet Gambas 3"
 msgid "Gambas Almost Means Basic!"
 msgstr "-"
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1109
+#: FMakeExecutable.class:18 FPropertyProject.class:1112
 msgid "Gambas applications"
 msgstr "Applications Gambas"
 
@@ -2823,7 +2863,7 @@ msgstr "Ignorer le jeu de caractères de la base de données"
 msgid "Ignore first lines"
 msgstr "Ignorer les premières lignes"
 
-#: MErrorMessage.module:98
+#: MErrorMessage.module:107
 msgid "Illegal instruction"
 msgstr "Instruction illégale"
 
@@ -2971,7 +3011,7 @@ msgstr "Environnement de développement intégré pour Gambas"
 msgid "Interface"
 msgstr "Interface"
 
-#: MErrorMessage.module:99
+#: MErrorMessage.module:108
 msgid "Internal compiler error: Bad stack usage computed!"
 msgstr "Erreur interne du compilateur : calcul incorrect de la quantité de pile utilisée !"
 
@@ -2983,19 +3023,19 @@ msgstr "Classes natives internes"
 msgid "Internationalization"
 msgstr "Internationalisation"
 
-#: MErrorMessage.module:100
+#: MErrorMessage.module:109
 msgid "Invalid assignment"
 msgstr "Affectation invalide"
 
-#: MErrorMessage.module:101
+#: MErrorMessage.module:110
 msgid "Invalid date"
 msgstr "Date invalide"
 
-#: MErrorMessage.module:102
+#: MErrorMessage.module:111
 msgid "Invalid object"
 msgstr "Object invalide"
 
-#: MErrorMessage.module:103
+#: MErrorMessage.module:112
 msgid "Invalid path"
 msgstr "Chemin invalide"
 
@@ -3071,7 +3111,7 @@ msgstr "Khmer (Cambodge)"
 msgid "Korean (Korea)"
 msgstr "Coréen (Corée)"
 
-#: MErrorMessage.module:104
+#: MErrorMessage.module:113
 msgid "Label '&1' not declared"
 msgstr "L'étiquette '&1' n'est pas déclarée"
 
@@ -3103,7 +3143,7 @@ msgstr "Bibliothèques"
 msgid "Library"
 msgstr "Bibliothèque"
 
-#: MErrorMessage.module:105
+#: MErrorMessage.module:114
 msgid "Library name must be a string"
 msgstr "Le nom de la bibliothèque doit être une chaîne de caractères"
 
@@ -3143,6 +3183,10 @@ msgstr "Lithuanien (Lithuanie)"
 msgid "Loading &1..."
 msgstr "Chargement de &1..."
 
+#: MErrorMessage.module:115
+msgid "Loading has already failed"
+msgstr "Le chargement a déjà échoué"
+
 #: CComponent.class:443
 msgid "Loading information on component &1..."
 msgstr "Chargement des informations sur le composant &1..."
@@ -3167,11 +3211,11 @@ msgstr "Verrouiller la propriété"
 msgid "Long"
 msgstr "Entier long"
 
-#: MErrorMessage.module:106
+#: MErrorMessage.module:116
 msgid "Loop variable already in use"
 msgstr "Variable de boucle déjà utilisée"
 
-#: MErrorMessage.module:107
+#: MErrorMessage.module:117
 msgid "Loop variable must be local"
 msgstr "La variable de boucle doit être une variable locale"
 
@@ -3219,7 +3263,7 @@ msgstr "Génération de l'exécutable..."
 msgid "Malayalam (India)"
 msgstr "Malayalam (Inde)"
 
-#: MErrorMessage.module:109
+#: MErrorMessage.module:119
 msgid "Mathematic error"
 msgstr "Erreur mathématique"
 
@@ -3231,7 +3275,7 @@ msgstr "Version max."
 msgid "MD5/DES crypting"
 msgstr "Chiffrement MD5/DES"
 
-#: MErrorMessage.module:108
+#: MErrorMessage.module:118
 msgid "ME cannot be used in a static function"
 msgstr "ME ne peut être utilisé au sein d'une fonction statique"
 
@@ -3283,19 +3327,23 @@ msgstr "Minimiser à l'exécution"
 msgid "Miscellaneous"
 msgstr "Divers"
 
-#: MErrorMessage.module:111
-msgid "Missing &1"
-msgstr "&1 manquant"
+#: MErrorMessage.module:121
+msgid "Missing ']'"
+msgstr "']' manquant"
 
-#: MErrorMessage.module:110
+#: MErrorMessage.module:122
+msgid "Missing '}'"
+msgstr "'}' manquant"
+
+#: MErrorMessage.module:120
 msgid "Missing #Endif"
 msgstr "#Endif manquant"
 
-#: MErrorMessage.module:112
+#: MErrorMessage.module:123
 msgid "Missing operator"
 msgstr "Opérateur manquant"
 
-#: MErrorMessage.module:113
+#: MErrorMessage.module:124
 msgid "Missing right brace"
 msgstr "Parenthèse fermante manquante"
 
@@ -3367,6 +3415,10 @@ msgstr "Interface multi-documents"
 msgid "Multimedia"
 msgstr "Multimedia"
 
+#: MErrorMessage.module:125
+msgid "Multiple inheritance"
+msgstr "Héritage multiple"
+
 #: CComponent.class:87
 msgid "MySQL database driver"
 msgstr "Pilote de base de données MySQL"
@@ -3403,7 +3455,7 @@ msgstr "Programmation réseau"
 msgid "New"
 msgstr "Nouveau"
 
-#: MErrorMessage.module:114
+#: MErrorMessage.module:126
 msgid "NEW cannot have arguments passed by reference"
 msgstr "Les arguments de NEW ne peuvent être passés par référence"
 
@@ -3467,11 +3519,11 @@ msgstr "Aucun élément"
 msgid "No help found."
 msgstr "Aide introuvable."
 
-#: MErrorMessage.module:115
+#: MErrorMessage.module:127
 msgid "No instantiation method"
 msgstr "Aucune méthode d'instanciation"
 
-#: MErrorMessage.module:116
+#: MErrorMessage.module:128
 msgid "No parent class"
 msgstr "Classe parente introuvable"
 
@@ -3483,7 +3535,7 @@ msgstr "Aucun proxy"
 msgid "No record imported."
 msgstr "Aucun enregistrement importé."
 
-#: MErrorMessage.module:117
+#: MErrorMessage.module:129
 msgid "No return value"
 msgstr "Aucune valeur de retour"
 
@@ -3491,7 +3543,7 @@ msgstr "Aucune valeur de retour"
 msgid "No split"
 msgstr "Affichage complet"
 
-#: MErrorMessage.module:118
+#: MErrorMessage.module:130
 msgid "No startup method"
 msgstr "Méthode de démarrage introuvable"
 
@@ -3499,7 +3551,7 @@ msgstr "Méthode de démarrage introuvable"
 msgid "No terminal emulator found."
 msgstr "Aucun émulateur de terminal n'a été trouvé."
 
-#: FTranslate.class:954
+#: FTranslate.class:956
 msgid "No translation were picked up."
 msgstr "Aucune traduction n'a été récupérée."
 
@@ -3507,7 +3559,7 @@ msgstr "Aucune traduction n'a été récupérée."
 msgid "No zoom"
 msgstr "Taille normale"
 
-#: MErrorMessage.module:119
+#: MErrorMessage.module:131
 msgid "Non terminated string"
 msgstr "Chaîne de caractères non terminée"
 
@@ -3531,23 +3583,27 @@ msgstr "Texte normal"
 msgid "Norwegian (Norway)"
 msgstr "Norvégien (Norvège)"
 
-#: MErrorMessage.module:120
+#: MErrorMessage.module:132
 msgid "Not a directory: &1"
 msgstr "'&1' n'est pas un répertoire"
 
-#: MErrorMessage.module:121
+#: MErrorMessage.module:133
 msgid "Not a function"
 msgstr "Fonction attendue"
 
-#: MErrorMessage.module:122
+#: MErrorMessage.module:134
+msgid "Not a procedure"
+msgstr "Procédure attendue"
+
+#: MErrorMessage.module:135
 msgid "Not an array"
 msgstr "Tableau attendu"
 
-#: MErrorMessage.module:123
+#: MErrorMessage.module:136
 msgid "Not an enumeration"
 msgstr "Enumération attendue"
 
-#: MErrorMessage.module:124
+#: MErrorMessage.module:137
 msgid "Not an object"
 msgstr "Objet attendu"
 
@@ -3555,15 +3611,15 @@ msgstr "Objet attendu"
 msgid "not available"
 msgstr "non disponible"
 
-#: MErrorMessage.module:125
+#: MErrorMessage.module:138
 msgid "Not enough argument to New()"
 msgstr "Pas assez d'arguments à New()"
 
-#: MErrorMessage.module:126
+#: MErrorMessage.module:139
 msgid "Not enough arguments"
 msgstr "Pas assez d'arguments"
 
-#: MErrorMessage.module:127
+#: MErrorMessage.module:140
 msgid "Not enough arguments to &1()"
 msgstr "Pas assez d'arguments à &1()"
 
@@ -3575,6 +3631,14 @@ msgstr "Pas assez de valeurs"
 msgid "Not finished but stable"
 msgstr "Non terminé mais stable"
 
+#: MErrorMessage.module:141
+msgid "Not implemented yet"
+msgstr "Fonctionnalité non encore implémentée"
+
+#: MErrorMessage.module:142
+msgid "Not supported"
+msgstr "Fonctionnalité non supportée"
+
 #: FPropertyProject.class:117
 msgid "Not translatable"
 msgstr "Non traduisible"
@@ -3583,13 +3647,33 @@ msgstr "Non traduisible"
 msgid "Nothing to do."
 msgstr "Rien à faire."
 
-#: MErrorMessage.module:128
+#: MErrorMessage.module:143
 msgid "Null object"
 msgstr "Référence d'objet NULL"
+
+#: MErrorMessage.module:144
+msgid "Number"
+msgstr "Nombre"
+
+#: MErrorMessage.module:145
+msgid "Number or date"
+msgstr "Nombre ou date"
+
+#: MErrorMessage.module:146
+msgid "Number, Date or String"
+msgstr "Nombre, Date ou String"
+
+#: MErrorMessage.module:147
+msgid "Number, String or Object"
+msgstr "Nombre, String ou Object"
 
 #: MTheme.module:6
 msgid "Numbers"
 msgstr "Nombres"
+
+#: MErrorMessage.module:148
+msgid "Object"
+msgstr "Object"
 
 #: FOption.class:4
 msgid "Obsidian"
@@ -3607,7 +3691,7 @@ msgstr "OK"
 msgid "One record imported."
 msgstr "Un enregistrement importé."
 
-#: FTranslate.class:956
+#: FTranslate.class:958
 msgid "One translation was picked up."
 msgstr "Une traduction a été récupérée."
 
@@ -3703,15 +3787,15 @@ msgstr "Options"
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "Le fichier d'origine a été sauvegardé dans le répertoire <b>Projet</b>."
 
-#: MErrorMessage.module:129
+#: MErrorMessage.module:149
 msgid "Out of bounds"
 msgstr "Dépassement de tableau"
 
-#: MErrorMessage.module:130
+#: MErrorMessage.module:150
 msgid "Out of memory"
 msgstr "Mémoire pleine"
 
-#: MErrorMessage.module:131
+#: MErrorMessage.module:151
 msgid "Out of range"
 msgstr "Dépassement de capacité"
 
@@ -3719,9 +3803,13 @@ msgstr "Dépassement de capacité"
 msgid "Output terminal"
 msgstr "Terminal de sortie"
 
-#: MErrorMessage.module:132
+#: MErrorMessage.module:152
 msgid "Overflow"
 msgstr "Dépassement de capacité"
+
+#: MErrorMessage.module:153
+msgid "Overriding an already inherited class is forbidden"
+msgstr "Réimplémenter une classe déjà héritée est interdit"
 
 #: FMakeInstall.class:106
 msgid "Package"
@@ -3903,7 +3991,7 @@ msgstr "Veuillez saisir votre adresse e-mail."
 msgid "Please enter your name."
 msgstr "Veuillez saisir votre nom."
 
-#: FTranslate.class:916
+#: FTranslate.class:918
 msgid "Please select the translation file to import."
 msgstr "Veuillez sélectionner le fichier de traduction à importer."
 
@@ -3918,6 +4006,10 @@ msgstr "Veuillez saisir un nom."
 #: Project.module:4135
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
+
+#: MErrorMessage.module:154
+msgid "Pointer"
+msgstr "Pointer"
 
 #: Language.module:89
 msgid "Polish (Poland)"
@@ -4119,7 +4211,7 @@ msgstr "Rayon"
 msgid "Re&set"
 msgstr "Réini&tialiser"
 
-#: MErrorMessage.module:133
+#: MErrorMessage.module:155
 msgid "Read error"
 msgstr "Erreur de lecture"
 
@@ -4155,7 +4247,7 @@ msgstr "E&xpression rationnelle"
 msgid "Regular expressions"
 msgstr "Expressions rationnelles"
 
-#: FTextEditor.form:226 FTranslate.class:730
+#: FTextEditor.form:226 FTranslate.class:732
 msgid "Reload"
 msgstr "Recharger"
 
@@ -4255,7 +4347,7 @@ msgstr "Réinitialiser le filtre"
 msgid "Resolve conflict with"
 msgstr "Résoudre le conflit avec"
 
-#: MErrorMessage.module:134
+#: MErrorMessage.module:156
 msgid "Return value datatype not specified in function declaration"
 msgstr "Le type de la valeur de retour n'a pas été spécifié dans la déclaration de la fonction"
 
@@ -4463,7 +4555,7 @@ msgstr "Choisissez un fichier"
 msgid "Select a font"
 msgstr "Choisissez une police"
 
-#: FPropertyProject.class:1108
+#: FPropertyProject.class:1111
 msgid "Select a Gambas application"
 msgstr "Choisissez une application Gambas"
 
@@ -4535,7 +4627,7 @@ msgstr "Serbe (Serbie & Montenegro)"
 msgid "Serial"
 msgstr "Série"
 
-#: MErrorMessage.module:137
+#: MErrorMessage.module:159
 msgid "Serialization error"
 msgstr "Erreur de sérialisation"
 
@@ -4743,9 +4835,13 @@ msgstr "P&as-à-pas"
 msgid "Stack backtrace"
 msgstr "Pile des appels"
 
-#: MErrorMessage.module:138
+#: MErrorMessage.module:160
 msgid "Stack overflow"
 msgstr "Débordement de pile"
+
+#: MErrorMessage.module:161
+msgid "Standard type"
+msgstr "Type standard"
 
 #: FDebugInfo.class:967
 msgid "Static variables"
@@ -4771,19 +4867,19 @@ msgstr "Stock"
 msgid "Stop"
 msgstr "Arrêter"
 
-#: MErrorMessage.module:135
+#: MErrorMessage.module:157
 msgid "STOP instruction encountered"
 msgstr "Instruction STOP rencontrée"
 
-#: MErrorMessage.module:139
+#: MErrorMessage.module:162
 msgid "Stream is closed"
 msgstr "Flux déjà fermé"
 
-#: FConnectionEditor.class:571 MConnection.module:97
+#: FConnectionEditor.class:571 MConnection.module:97 MErrorMessage.module:163
 msgid "String"
 msgstr "Chaîne"
 
-#: MErrorMessage.module:140
+#: MErrorMessage.module:164
 msgid "String expected"
 msgstr "Chaîne de caractères attendue"
 
@@ -4795,7 +4891,11 @@ msgstr "Chaînes"
 msgid "Strip useless white spaces"
 msgstr "Supprimer les espaces inutiles"
 
-#: MErrorMessage.module:141
+#: MErrorMessage.module:165
+msgid "Structure is declared elsewhere differently: "
+msgstr "La structure est déclarée autre part de manière différente :"
+
+#: MErrorMessage.module:166
 msgid "Structures must be public"
 msgstr "Les structures doivent être publiques"
 
@@ -4803,7 +4903,7 @@ msgstr "Les structures doivent être publiques"
 msgid "Style sheet"
 msgstr "Feuille de style"
 
-#: MErrorMessage.module:142
+#: MErrorMessage.module:167
 msgid "Subroutine arguments cannot be passed by reference"
 msgstr "Les arguments des routines prédéfinies ne peuvent être passées par référence"
 
@@ -4811,7 +4911,7 @@ msgstr "Les arguments des routines prédéfinies ne peuvent être passées par r
 msgid "Subroutines"
 msgstr "Routines"
 
-#: MErrorMessage.module:136
+#: MErrorMessage.module:158
 msgid "SUPER cannot be used alone"
 msgstr "SUPER ne peut être utilisé seul"
 
@@ -4839,107 +4939,103 @@ msgstr "Symboles"
 msgid "Synchronize"
 msgstr "Synchroniser"
 
-#: MErrorMessage.module:143
+#: MErrorMessage.module:168
 msgid "Syntax error"
 msgstr "Erreur de syntaxe"
 
-#: MErrorMessage.module:144
+#: MErrorMessage.module:169
 msgid "Syntax error at function declaration"
 msgstr "Erreur de syntaxe dans la déclaration de fonction"
 
-#: MErrorMessage.module:145
+#: MErrorMessage.module:170
 msgid "Syntax error in event name"
 msgstr "Erreur de syntaxe dans le nom d'évènement"
 
-#: MErrorMessage.module:146
+#: MErrorMessage.module:171
 msgid "Syntax error in file open mode"
 msgstr "Erreur de syntaxe dans le mode d'ouverture du fichier"
 
-#: MErrorMessage.module:147
+#: MErrorMessage.module:172
 msgid "Syntax error in return type"
 msgstr "Erreur de syntaxe dans le type de retour"
 
-#: MErrorMessage.module:149
+#: MErrorMessage.module:174
 msgid "Syntax error. '...' must be the last argument"
 msgstr "Erreur de syntaxe. '...' doit être le dernier argument"
 
-#: MErrorMessage.module:148
+#: MErrorMessage.module:173
 msgid "Syntax error. &1 expected"
 msgstr "Erreur de syntaxe. &1 attendu"
 
-#: MErrorMessage.module:150
+#: MErrorMessage.module:175
 msgid "Syntax error. Bad property type"
 msgstr "Erreur de syntaxe. Type de propriété incorrect"
 
-#: MErrorMessage.module:153
+#: MErrorMessage.module:178
 msgid "Syntax error. Cannot use this syntax in assignment"
 msgstr "Erreur de syntaxe. Impossible d'utiliser cette syntaxe au sein d'une affection"
 
-#: MErrorMessage.module:151
+#: MErrorMessage.module:176
 msgid "Syntax error. CASE or DEFAULT expected after SELECT"
 msgstr "Erreur de syntaxe. CASE ou DEFAULT attendu après SELECT"
 
-#: MErrorMessage.module:152
+#: MErrorMessage.module:177
 msgid "Syntax error. CLASS needs an identifier"
 msgstr "Erreur de syntaxe. CLASS doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:155
+#: MErrorMessage.module:180
 msgid "Syntax error. Identifier expected."
 msgstr "Erreur de syntaxe. Identificateur attendu."
 
-#: MErrorMessage.module:154
+#: MErrorMessage.module:179
 msgid "Syntax error. INHERITS needs a class name"
 msgstr "Erreur de syntaxe. INHERITS doit être suivi d'un nom de classe"
 
-#: MErrorMessage.module:156
+#: MErrorMessage.module:181
 msgid "Syntax error. Invalid identifier in function name"
 msgstr "Erreur de syntaxe. Le nom de fonction est un identificateur invalide"
 
-#: MErrorMessage.module:157
+#: MErrorMessage.module:182
 msgid "Syntax error. Invalid identifier in property name"
 msgstr "Erreur de syntaxe. Le nom de la propriété est un identificateur invalide"
 
-#: MErrorMessage.module:158
+#: MErrorMessage.module:183
 msgid "Syntax error. Invalid optional parameter"
 msgstr "Erreur de syntaxe. Paramètre optionnel invalide"
 
-#: MErrorMessage.module:159
+#: MErrorMessage.module:184
 msgid "Syntax error. Invalid return type"
 msgstr "Erreur de syntaxe. Type de retour invalide"
 
-#: MErrorMessage.module:160
+#: MErrorMessage.module:185
 msgid "Syntax error. Invalid type description of &1 argument"
 msgstr "Erreur de syntaxe. Description du type du &1 argument incorrecte"
 
-#: MErrorMessage.module:161
+#: MErrorMessage.module:186
 msgid "Syntax error. Invalid type description of &1 field"
 msgstr "Erreur de syntaxe. Description du type du &1 champ incorrecte"
 
-#: MErrorMessage.module:162
-msgid "Syntax error. Missing &1"
-msgstr "Erreur de syntaxe. &1 manquant"
-
-#: MErrorMessage.module:163
+#: MErrorMessage.module:187
 msgid "Syntax error. Needless arguments"
 msgstr "Erreur de syntaxe. Argument inutile"
 
-#: MErrorMessage.module:164
+#: MErrorMessage.module:188
 msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr "Erreur de syntaxe. Une expression ne peut commencer par un point en dehors d'un bloc WITH / END WITH"
 
-#: MErrorMessage.module:165
+#: MErrorMessage.module:189
 msgid "Syntax error. STRUCT needs an identifier"
 msgstr "Erreur de syntaxe. STRUCT doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:166
+#: MErrorMessage.module:190
 msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide"
 
-#: MErrorMessage.module:167
+#: MErrorMessage.module:191
 msgid "Syntax error. The &1 field is not a valid identifier"
 msgstr "Erreur de syntaxe. Le &1 champ n'est pas un identificateur valide"
 
-#: MErrorMessage.module:168
+#: MErrorMessage.module:192
 msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur"
 
@@ -4951,7 +5047,7 @@ msgstr "Routines de coloration syntaxique"
 msgid "System"
 msgstr "Système"
 
-#: MErrorMessage.module:169
+#: MErrorMessage.module:193
 msgid "System error #&1: &2"
 msgstr "Erreur système n°&1: &2"
 
@@ -5003,15 +5099,15 @@ msgstr "Fichier texte"
 msgid "Thanks to"
 msgstr "Merci à"
 
-#: MErrorMessage.module:170
+#: MErrorMessage.module:194
 msgid "The '!' operator must be followed by an identifier"
 msgstr "L'opérateur '!' doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:171
+#: MErrorMessage.module:195
 msgid "The '.' operator must be followed by an identifier"
 msgstr "L'opérateur '.' doit être suivi d'un identificateur"
 
-#: FTranslate.class:1183
+#: FTranslate.class:1185
 msgid "The 'msgmerge' command has failed"
 msgstr "La commande 'msgmerge' a échoué"
 
@@ -5070,6 +5166,10 @@ msgstr "Le texte suivant sera ajouté à la fin du fichier de configuration du b
 #: FForm.class:3131
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
+
+#: MErrorMessage.module:196
+msgid "The function must take a fixed number of arguments"
+msgstr "La fonction doit prendre un nombre d'arguments fixe"
 
 #: FMain.class:817
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
@@ -5147,59 +5247,59 @@ msgstr "Le référentiel du projet est directement envoyé à la commande 'svn c
 msgid "The project title is the true name of the application."
 msgstr "Le titre du projet est le nom complet de l'application."
 
-#: MErrorMessage.module:172
+#: MErrorMessage.module:197
 msgid "The special method &1 cannot be a function"
 msgstr "La méthode spéciale &1 ne peut être une fonction"
 
-#: MErrorMessage.module:173
+#: MErrorMessage.module:198
 msgid "The special method &1 cannot be implemented"
 msgstr "La méthode spéciale &1 ne peut être implémentée"
 
-#: MErrorMessage.module:174
+#: MErrorMessage.module:199
 msgid "The special method &1 cannot be static"
 msgstr "La méthode spéciale &1 ne peut être statique"
 
-#: MErrorMessage.module:175
+#: MErrorMessage.module:200
 msgid "The special method &1 must be a function"
 msgstr "La méthode spéciale &1 doit être une fonction"
 
-#: MErrorMessage.module:176
+#: MErrorMessage.module:201
 msgid "The special method &1 must be public"
 msgstr "La méthode spéciale &1 doit être publique"
 
-#: MErrorMessage.module:177
+#: MErrorMessage.module:202
 msgid "The special method &1 must be static"
 msgstr "La méthode spéciale &1 doit être statique"
 
-#: MErrorMessage.module:178
+#: MErrorMessage.module:203
 msgid "The special method &1 must return a boolean"
 msgstr "La méthode spéciale &1 doit retourner un Boolean"
 
-#: MErrorMessage.module:179
+#: MErrorMessage.module:204
 msgid "The special method &1 must take a variable number of arguments only"
 msgstr "La méthode spéciale &1 doit prendre un nombre variable d'arguments"
 
-#: MErrorMessage.module:180
+#: MErrorMessage.module:205
 msgid "The special method &1 must take at least one argument"
 msgstr "La méthode spéciale &1 doit prendre au moins un argument"
 
-#: MErrorMessage.module:181
+#: MErrorMessage.module:206
 msgid "The special method &1 takes no arguments"
 msgstr "La méthode spéciale &1 ne prend pas d'arguments"
 
-#: MErrorMessage.module:182
+#: MErrorMessage.module:207
 msgid "The special method must return an integer"
 msgstr "La méthode spéciale doit retourner un Integer"
 
-#: MErrorMessage.module:183
+#: MErrorMessage.module:208
 msgid "The special method must take exactly one argument"
 msgstr "La méthode spéciale doit prendre un argument et un seul"
 
-#: MErrorMessage.module:184
+#: MErrorMessage.module:209
 msgid "The special method must take exactly two arguments"
 msgstr "La méthode spéciale doit prendre deux arguments exactement"
 
-#: MErrorMessage.module:185
+#: MErrorMessage.module:210
 msgid "The special method signature is incorrect"
 msgstr "La signature de la méthode spéciale est incorrecte"
 
@@ -5263,11 +5363,11 @@ msgstr "Ce composant est requis par la bibliothèque suivante : <p>&1"
 msgid "This component is required by:<p>&1"
 msgstr "Ce composant est requis par :<p>&1"
 
-#: MErrorMessage.module:186
+#: MErrorMessage.module:211
 msgid "This expression cannot be a statement"
 msgstr "Cette expression ne peut être une instruction"
 
-#: MErrorMessage.module:187
+#: MErrorMessage.module:212
 msgid "This expression cannot be passed by reference"
 msgstr "Cette expression ne peut pas être passée par référence"
 
@@ -5415,71 +5515,75 @@ msgstr "Basculer un point d'arrêt"
 msgid "Toggle grid"
 msgstr "Bascule l'affichage de la grille"
 
-#: MErrorMessage.module:188
+#: MErrorMessage.module:213
 msgid "Too many arguments"
 msgstr "Trop d'arguments"
 
-#: MErrorMessage.module:189
+#: MErrorMessage.module:214
 msgid "Too many arguments to &1()"
 msgstr "Trop d'arguments à &1()"
 
-#: MErrorMessage.module:190
+#: MErrorMessage.module:215
 msgid "Too many array declarations"
 msgstr "Trop de déclarations de tableaux"
 
-#: MErrorMessage.module:191
+#: MErrorMessage.module:216
 msgid "Too many constants"
 msgstr "Trop de constantes"
 
-#: MErrorMessage.module:192
+#: MErrorMessage.module:217
 msgid "Too many different classes used"
 msgstr "Trop de classes différentes utilisées"
 
-#: MErrorMessage.module:193
+#: MErrorMessage.module:218
 msgid "Too many dimensions"
 msgstr "Trop de dimensions"
 
-#: MErrorMessage.module:194
+#: MErrorMessage.module:219
 msgid "Too many dynamic variables"
 msgstr "Trop de variables dynamiques"
 
-#: MErrorMessage.module:195
+#: MErrorMessage.module:220
 msgid "Too many events"
 msgstr "Trop d'évènements"
 
-#: MErrorMessage.module:196
+#: MErrorMessage.module:221
 msgid "Too many expressions in CASE"
 msgstr "Trop d'expressions dans CASE"
 
-#: MErrorMessage.module:197
+#: MErrorMessage.module:222
 msgid "Too many external functions"
 msgstr "Trop de fonctions externes"
 
-#: MErrorMessage.module:198
+#: MErrorMessage.module:223
 msgid "Too many functions"
 msgstr "Trop de fonctions"
 
-#: MErrorMessage.module:199
+#: MErrorMessage.module:224
 msgid "Too many imbricated #If...#Endif"
 msgstr "Trop d'imbrications de #If...#Endif"
 
-#: MErrorMessage.module:200
+#: MErrorMessage.module:225
+msgid "Too many labels"
+msgstr "Trop d'étiquettes"
+
+#: MErrorMessage.module:226
 msgid "Too many nested control structures."
 msgstr "Trop de structure de contrôles imbriquées"
 
-#: MErrorMessage.module:201
+#: MErrorMessage.module:227
 msgid "Too many property synonymous"
 msgstr "Trop de synonymes à la propriété"
 
-#: MErrorMessage.module:202
+#: MErrorMessage.module:228
 msgid "Too many simultaneous new strings"
 msgstr "Trop de créations simultanées de chaînes de caractères"
 
-#: MErrorMessage.module:203
+#: MErrorMessage.module:229
 msgid "Too many static variables"
 msgstr "Trop de variables statiques"
 
-#: MErrorMessage.module:204
+#: MErrorMessage.module:230
 msgid "Too many unknown symbols"
 msgstr "Trop de symboles inconnus"
 
@@ -5503,11 +5607,15 @@ msgstr "Durée totale &1 μs"
 msgid "Traditional chinese (Taiwan)"
 msgstr "Chinois traditionnel (Taiwan)"
 
+#: MErrorMessage.module:231
+msgid "Trailing backslash"
+msgstr "'\\' en fin de chaîne"
+
 #: FMain.form:965
 msgid "Translate"
 msgstr "Traduire"
 
-#: FTranslate.class:1019
+#: FTranslate.class:1021
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Les symboles de la chaîne traduite ne correspondent pas à ceux de la chaîne non traduite."
 
@@ -5539,11 +5647,11 @@ msgstr "Avant-hier"
 msgid "Type"
 msgstr "Type"
 
-#: MErrorMessage.module:205
+#: MErrorMessage.module:232
 msgid "Type mismatch"
 msgstr "Type incorrect"
 
-#: MErrorMessage.module:206
+#: MErrorMessage.module:233
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr "Type incorrect: &1 attendu à la place de &2"
 
@@ -5570,6 +5678,10 @@ msgstr "Impossible de se connecter à la base de données."
 #: Project.module:5330
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
+
+#: MErrorMessage.module:234
+msgid "Unable to create closure"
+msgstr "Impossible de créer la fermeture"
 
 #: FNewConnection.class:316
 msgid "Unable to create database."
@@ -5599,6 +5711,10 @@ msgstr "Impossible d'exporter les données."
 msgid "Unable to get table fields."
 msgstr "Impossible de récupérer les champs de la table."
 
+#: MErrorMessage.module:235
+msgid "Unable to load class file"
+msgstr "Impossible de charger le fichier classe"
+
 #: FProfile.class:406
 msgid "Unable to load profile file: &1"
 msgstr "Impossible de charger le fichier de profilage : &1"
@@ -5614,6 +5730,10 @@ msgstr "Impossible d'ouvrir la connexion."
 #: FPasteSpecial.class:69
 msgid "Unable to paste text."
 msgstr "Impossible de coller le texte."
+
+#: MErrorMessage.module:236
+msgid "Unable to prepare function description"
+msgstr "Impossible de préparer la description de la fonction"
 
 #: FTips.class:107
 msgid "Unable to read tip of the day !"
@@ -5663,15 +5783,15 @@ msgstr "Annuler"
 msgid "Undock console"
 msgstr "Console flottante"
 
-#: MErrorMessage.module:207
+#: MErrorMessage.module:237
 msgid "Unexpected &1"
 msgstr "&1 inattendu"
 
-#: MErrorMessage.module:208
+#: MErrorMessage.module:238
 msgid "Unexpected end of line"
 msgstr "Fin de ligne inattendue"
 
-#: MErrorMessage.module:209
+#: MErrorMessage.module:239
 msgid "Unexpected string"
 msgstr "Chaîne de caractères inattendue"
 
@@ -5687,15 +5807,19 @@ msgstr "Unique"
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: MErrorMessage.module:210
+#: MErrorMessage.module:257
+msgid "unknown error"
+msgstr "erreur inconnue"
+
+#: MErrorMessage.module:240
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
-#: MErrorMessage.module:211
+#: MErrorMessage.module:241
 msgid "Unknown event"
 msgstr "Evènement inconnu"
 
-#: MErrorMessage.module:212
+#: MErrorMessage.module:242
 msgid "Unknown file extension"
 msgstr "Extension de fichier inconnue"
 
@@ -5703,19 +5827,23 @@ msgstr "Extension de fichier inconnue"
 msgid "Unknown format"
 msgstr "Format inconnu"
 
-#: MErrorMessage.module:213
+#: MErrorMessage.module:243
 msgid "Unknown identifier: &1"
 msgstr "Identificateur inconnu: &1"
 
-#: MErrorMessage.module:214
+#: MErrorMessage.module:244
 msgid "Unknown operator"
 msgstr "Opérateur inconnu"
 
-#: MErrorMessage.module:215
+#: MErrorMessage.module:245
+msgid "Unknown section"
+msgstr "Section inconnue"
+
+#: MErrorMessage.module:246
 msgid "Unknown symbol '&1' in class '&2'"
 msgstr "Symbole '&1' inconnu dans la classe '&2'"
 
-#: MErrorMessage.module:216
+#: MErrorMessage.module:247
 msgid "Unknown user or group"
 msgstr "Utilisateur ou groupe inconnu"
 
@@ -5727,7 +5855,11 @@ msgstr "illimité"
 msgid "Unselect all"
 msgstr "Déselectionner tout"
 
-#: MErrorMessage.module:217
+#: MErrorMessage.module:248
+msgid "Unsupported datatype"
+msgstr "Type de donnée non supporté"
+
+#: MErrorMessage.module:249
 msgid "Unsupported string conversion"
 msgstr "Conversion de chaîne de caractères non supportée"
 
@@ -5767,7 +5899,7 @@ msgstr "Utiliser le jeu de caractères du système"
 msgid "Use utility windows"
 msgstr "Utiliser des fenêtres utilitaires"
 
-#: MErrorMessage.module:218
+#: MErrorMessage.module:250
 msgid "Useless LOCK"
 msgstr "LOCK inutile"
 
@@ -5803,7 +5935,11 @@ msgstr "Variable"
 msgid "Variables"
 msgstr "Variables"
 
-#: MErrorMessage.module:219
+#: MErrorMessage.module:252
+msgid "Variant"
+msgstr "Variant"
+
+#: MErrorMessage.module:251
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "L'argument de VarPtr() doit être une variable dynamique, une variable statique ou bien une variable locale"
 
@@ -5867,7 +6003,7 @@ msgstr "Compatibilité avec Visual Basic"
 msgid "Visual Basic™ conversion help"
 msgstr "Conversion depuis Visual Basic™"
 
-#: MErrorMessage.module:220
+#: MErrorMessage.module:253
 msgid "Void key"
 msgstr "Clef vide"
 
@@ -5915,7 +6051,7 @@ msgstr "Gallois (Royaume-Uni)"
 msgid "Width"
 msgstr "Largeur"
 
-#: MErrorMessage.module:221
+#: MErrorMessage.module:254
 msgid "Write error"
 msgstr "Erreur d'écriture"
 
