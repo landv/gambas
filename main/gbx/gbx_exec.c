@@ -927,6 +927,12 @@ void EXEC_function_loop()
 					#endif
 					ERROR_set_last(FALSE);
 					
+					// No need to unwind the Gosub stack until the TRY stack position, because TRY GOSUB is forbidden
+					/*while (GP > EP)
+					{
+						...
+					}*/
+					
 					// The stack is popped until reaching the stack position before the TRY
 					while (SP > EP)
 						POP();
@@ -949,6 +955,9 @@ void EXEC_function_loop()
 					// The stack is popped until reaching the stack position at the function start
 					while (SP > (BP + FP->n_local + FP->n_ctrl))
 						POP();
+					
+					// Reset the Gosub stack pointer as all Gosub control variables saved have been released
+					GP = NULL;
 					
 					PC = EC;
 					EC = NULL;

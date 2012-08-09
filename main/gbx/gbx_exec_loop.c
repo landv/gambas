@@ -933,23 +933,6 @@ _GOSUB:
 			*SP++ = ctrl[i];
 			ctrl[i].type = T_NULL;
 		}
-		
-		/*if (!GP)
-			ARRAY_create(&GP);
-	
-		gp = ARRAY_add(&GP);
-		gp->pc = PC - FP->code;
-		if (FP->n_ctrl)
-		{
-			ALLOC(&gp->ctrl, sizeof(VALUE) * FP->n_ctrl, "EXEC_loop._GOSUB");
-			for (i = 0; i < FP->n_ctrl; i++)
-			{
-				gp->ctrl[i] = ctrl[i];
-				ctrl[i].type = T_NULL;
-			}
-		}
-		else
-			gp->ctrl = NULL;*/
 	}
 
 /*-----------------------------------------------*/
