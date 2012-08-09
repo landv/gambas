@@ -160,6 +160,15 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 
 END_METHOD
 
+BEGIN_PROPERTY(DrawingArea_UseTablet)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->useTablet());
+	else
+		WIDGET->setUseTablet(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 GB_DESC CDrawingAreaDesc[] =
 {
 	GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
@@ -179,8 +188,10 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
+	
+	GB_PROPERTY("UseTablet", "b", DrawingArea_UseTablet),
 
-	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
+	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_EVENT("Draw", 0, 0, &EVENT_draw),

@@ -133,6 +133,7 @@ extern "C"
 		CDragDesc,
 		CCursorDesc,
 		CMouseDesc,
+		CPointerDesc,
 		CMessageDesc,
 		CDialogDesc,
 		CWatcherDesc,

@@ -635,6 +635,7 @@ static void gambas_handle_event(GdkEvent *event)
 					y = (int)event->button.y_root - yc;
 					
 					gMouse::validate();
+					gMouse::setEvent(event);
 					gMouse::setStart(x, y);
 					gMouse::setMouse(x, y, event->button.button, event->button.state);
 					//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
@@ -733,6 +734,7 @@ static void gambas_handle_event(GdkEvent *event)
 				y = (int)event->motion.y_root - yc;
 				
 				gMouse::validate();
+				gMouse::setEvent(event);
 				gMouse::setMouse(x, y, 0, event->motion.state);
 				cancel = control->onMouseEvent(control, gEvent_MouseMove);
 				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
@@ -782,6 +784,7 @@ static void gambas_handle_event(GdkEvent *event)
 				}
 				
 				gMouse::validate();
+				gMouse::setEvent(event);
 				gMouse::setMouse(x, y, 0, event->scroll.state);
 				gMouse::setWheel(dt, ort);
 				cancel = control->onMouseEvent(control, gEvent_MouseWheel);

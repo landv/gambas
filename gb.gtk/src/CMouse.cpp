@@ -25,11 +25,7 @@
 
 #include "CMouse.h"
 
-/************************************************************************************
-
-Cursor Class
-
-*************************************************************************************/
+//-------------------------------------------------------------------------
 
 BEGIN_METHOD(CCURSOR_new, GB_OBJECT picture; GB_INTEGER x; GB_INTEGER y)
 
@@ -67,11 +63,7 @@ BEGIN_PROPERTY(CCURSOR_y)
 END_PROPERTY
 
 
-/********************************************************************************
-
-Mouse Class
-
-*********************************************************************************/
+//-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Mouse_ScreenX)
 
@@ -237,6 +229,59 @@ BEGIN_METHOD(Mouse_Inside, GB_OBJECT control)
 
 END_METHOD
 
+//-------------------------------------------------------------------------
+
+BEGIN_PROPERTY(Pointer_X)
+
+	CHECK_VALID();
+	GB.ReturnFloat(gMouse::getAxis(GDK_AXIS_X));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Y)
+
+	CHECK_VALID();
+	GB.ReturnFloat(gMouse::getAxis(GDK_AXIS_Y));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_XTilt)
+
+	CHECK_VALID();
+	GB.ReturnFloat(gMouse::getAxis(GDK_AXIS_XTILT));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_YTilt)
+
+	CHECK_VALID();
+	GB.ReturnFloat(gMouse::getAxis(GDK_AXIS_YTILT));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Pressure)
+
+	CHECK_VALID();
+	GB.ReturnFloat(gMouse::getAxis(GDK_AXIS_PRESSURE));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Rotation)
+
+	CHECK_VALID();
+	GB.ReturnFloat(gMouse::getAxis(GDK_AXIS_WHEEL));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Type)
+
+	CHECK_VALID();
+	GB.ReturnInteger(gMouse::getType());
+
+END_PROPERTY
+
+//-------------------------------------------------------------------------
+
 GB_DESC CCursorDesc[] =
 {
 	GB_DECLARE("Cursor", sizeof(CCURSOR)),
@@ -253,7 +298,7 @@ GB_DESC CCursorDesc[] =
 
 GB_DESC CMouseDesc[] =
 {
-	GB_DECLARE("Mouse", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL("Mouse"),
 
 	GB_STATIC_PROPERTY_READ("ScreenX", "i", Mouse_ScreenX),
 	GB_STATIC_PROPERTY_READ("ScreenY", "i", Mouse_ScreenY),
@@ -309,7 +354,27 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Orientation", "i", Mouse_Orientation),
 	GB_STATIC_PROPERTY_READ("Delta", "f", Mouse_Delta),
 	GB_STATIC_PROPERTY_READ("Forward", "b", Mouse_Forward),
-
+	
+	GB_END_DECLARE
+};
+	
+GB_DESC CPointerDesc[] =
+{
+	GB_DECLARE_VIRTUAL("Pointer"),
+	
+	GB_CONSTANT("Mouse", "i", POINTER_MOUSE),
+	GB_CONSTANT("Pen", "i", POINTER_PEN),
+	GB_CONSTANT("Eraser", "i", POINTER_ERASER),
+	GB_CONSTANT("Cursor", "i", POINTER_CURSOR),
+	
+	GB_STATIC_PROPERTY_READ("Type", "i", Pointer_Type),
+	GB_STATIC_PROPERTY_READ("X", "f", Pointer_X),
+	GB_STATIC_PROPERTY_READ("Y", "f", Pointer_Y),
+	GB_STATIC_PROPERTY_READ("XTilt", "f", Pointer_XTilt),
+	GB_STATIC_PROPERTY_READ("YTitt", "f", Pointer_YTilt),
+	GB_STATIC_PROPERTY_READ("Pressure", "f", Pointer_Pressure),
+	GB_STATIC_PROPERTY_READ("Rotation", "f", Pointer_Rotation),
+	
 	GB_END_DECLARE
 };
 

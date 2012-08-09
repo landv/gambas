@@ -49,13 +49,17 @@ public:
 	static int startX() { return _start_x; }
 	static int startY() { return _start_y; }
 
+	static double getAxis(GdkAxisUse axis);
+	static int getType();
+	
 //"Methods"
-	static void move(int x,int y);
+	static void move(int x, int y);
 
 //"Private"
 	static void setWheel(int dt, int orn);
 	static void setStart(int sx, int sy);
 	static void setMouse(int x, int y, int button, int state);
+	static void setEvent(GdkEvent *event);
 	static void validate() { _isValid++; }
 	static void invalidate() { _isValid--; }
 
@@ -69,6 +73,7 @@ private:
 	static int _orientation;
 	static int _start_x;
 	static int _start_y;
+	static GdkEvent *_event;
 };
 
 #endif

@@ -112,5 +112,12 @@ enum {
 	SCROLL_VERTICAL = 2,
 	SCROLL_BOTH = 3
 	};
+
+enum {
+	POINTER_MOUSE = 0,
+	POINTER_PEN = 1,
+	POINTER_ERASER = 2,
+	POINTER_CURSOR = 3
+};
 	
 #endif

@@ -33,10 +33,12 @@ public:
 	int getBorder() const { return getFrameBorder(); }
 	bool cached() const { return _cached; }
 	bool hasNoBackground() const { return _no_background; }
+	bool useTablet() const { return _use_tablet; }
 
 	void setBorder(int vl) { setFrameBorder(vl); }
 	void setCached(bool vl);
 	void setNoBackground(bool vl);
+	void setUseTablet(bool vl);
 	
 	bool inDrawEvent() const { return _in_draw_event; }
 
@@ -57,6 +59,8 @@ public:
 	void refreshCache();
 	void updateEventMask();
 	void setCache();
+	void updateUseTablet();
+	
 	GdkPixmap *buffer;
 	GtkWidget *box;
 	uint _event_mask;
@@ -65,6 +69,7 @@ public:
 	unsigned _resize_cache : 1;
 	unsigned _in_draw_event : 1;
 	unsigned _no_background : 1;
+	unsigned _use_tablet : 1;
 };
 
 #endif

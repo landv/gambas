@@ -2416,6 +2416,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 			else
 				goto _STANDARD;
+		case QEvent::TabletMove:
+		case QEvent::TabletPress:
+		case QEvent::TabletRelease:
+			jump = &&__TABLET; break;
 		default:
 			goto _STANDARD;
 	}
@@ -2597,8 +2601,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.screenX = mevent->globalX();
-			CMOUSE_info.screenY = mevent->globalY();
+			CMOUSE_info.tx = CMOUSE_info.screenX = mevent->globalX();
+			CMOUSE_info.ty = CMOUSE_info.screenY = mevent->globalY();
+			CMOUSE_info.type = POINTER_MOUSE;
 			CMOUSE_info.button = mevent->buttons() | mevent->button();
 			CMOUSE_info.modifier = mevent->modifiers();
 
@@ -2625,10 +2630,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.screenX = mevent->globalX();
-			CMOUSE_info.screenY = mevent->globalY();
+			CMOUSE_info.tx = CMOUSE_info.screenX = mevent->globalX();
+			CMOUSE_info.ty = CMOUSE_info.screenY = mevent->globalY();
 			CMOUSE_info.button = mevent->buttons();
 			CMOUSE_info.modifier = mevent->modifiers();
+			CMOUSE_info.type = POINTER_MOUSE;
 		
 			cancel = GB.Raise(control, EVENT_MouseDrag, 0);
 			
@@ -2653,6 +2659,115 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		}
 		
 		goto __NEXT;
+	}
+	
+	__TABLET:
+	{
+		QTabletEvent *tevent = (QTabletEvent *)event;
+
+		if (!original)
+			goto _DESIGN;
+
+		if (!real)
+		{
+			CWIDGET *cont = CWidget::get(widget);
+			if (CWIDGET_test_flag(cont, WF_SCROLLVIEW))
+			{
+				if (qobject_cast<QScrollBar *>(widget))
+					goto _STANDARD;
+				/*if (widget != get_viewport(QWIDGET(cont)))
+				{
+					if (!widget->objectName().isNull())
+						goto _STANDARD;
+				}*/
+			}
+		}
+		
+	__TABLET_TRY_PROXY:
+	
+		if (control->flag.use_tablet)
+		{
+			p.setX(tevent->globalX());
+			p.setY(tevent->globalY());
+			p = QWIDGET(control)->mapFromGlobal(p);
+			
+			if (type == QEvent::TabletPress)
+			{
+				//qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
+
+				event_id = EVENT_MouseDown;
+				//state = mevent->buttons();
+				
+				CMOUSE_info.sx = p.x();
+				CMOUSE_info.sy = p.y();
+				//qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
+			}
+			else if (type == QEvent::TabletMove)
+			{
+				event_id = EVENT_MouseMove;
+			}
+			else //if (type == QEvent::TabletRelease)
+			{
+				event_id = EVENT_MouseUp;
+				//state = mevent->buttons();
+			}
+
+			//if (event_id == EVENT_MouseMove && mevent->buttons() == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
+			//	goto _DESIGN;
+
+
+			cancel = false;
+
+			if (GB.CanRaise(control, event_id))
+			{
+				CMOUSE_clear(true);
+				CMOUSE_info.x = p.x();
+				CMOUSE_info.y = p.y();
+				CMOUSE_info.screenX = tevent->globalX();
+				CMOUSE_info.screenY = tevent->globalY();
+				//CMOUSE_info.button = mevent->buttons() | mevent->button();
+				CMOUSE_info.modifier = tevent->modifiers();
+				CMOUSE_info.tx = tevent->hiResGlobalX();
+				CMOUSE_info.ty = tevent->hiResGlobalY();
+				CMOUSE_info.pressure = tevent->pressure();
+				CMOUSE_info.rotation = tevent->rotation();
+				CMOUSE_info.xtilt = tevent->xTilt();
+				CMOUSE_info.ytilt = tevent->yTilt();
+				
+				switch(tevent->pointerType())
+				{
+					case QTabletEvent::Pen: CMOUSE_info.type = POINTER_PEN; break;
+					case QTabletEvent::Eraser: CMOUSE_info.type = POINTER_ERASER; break;
+					case QTabletEvent::Cursor: CMOUSE_info.type = POINTER_CURSOR; break;
+					default: CMOUSE_info.type = POINTER_MOUSE;
+				}
+
+				cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+
+				CMOUSE_clear(false);
+			}
+			
+			if (!control)
+				return true;
+			
+			if (control->flag.grab && event_id == EVENT_MouseUp)
+				MyApplication::eventLoop->exit();
+			
+			if (cancel)
+				return true;
+			
+			if (EXT(control) && EXT(control)->proxy_for)
+			{
+				control = (CWIDGET *)(EXT(control)->proxy_for);
+				goto __TABLET_TRY_PROXY;
+			}
+			
+			goto __NEXT;
+
+			
+		}
+			
+	
 	}
 	
 	/*

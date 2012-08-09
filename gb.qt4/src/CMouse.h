@@ -34,6 +34,7 @@
 typedef
   struct {
     int valid;
+		int type;
     int x;
     int y;
     int sx;
@@ -44,12 +45,20 @@ typedef
     int delta;
 		int screenX;
 		int screenY;
+		double tx;
+		double ty;
+		int xtilt;
+		int ytilt;
+		double pressure;
+		double rotation;
     }
   CMOUSE_INFO;
 
 #ifndef __CMOUSE_CPP
 extern GB_DESC CMouseDesc[];
 extern GB_DESC CCursorDesc[];
+extern GB_DESC CPointerDesc[];
+
 extern CMOUSE_INFO CMOUSE_info;
 #else
 

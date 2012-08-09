@@ -137,6 +137,8 @@ void gDrawingArea::create(void)
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
 	g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	
+	updateUseTablet();
+	
 	if (doReparent)
 	{
 		if (_cached)
@@ -171,6 +173,7 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	_old_bg_id = 0;
 	_resize_cache = false;
 	_no_background = false;
+	_use_tablet = false;
 	
 	onExpose = NULL;
 		
@@ -365,3 +368,15 @@ void gDrawingArea::setRealBackground(gColor color)
 	clear();
 }
 
+void gDrawingArea::updateUseTablet()
+{
+	gtk_widget_set_extension_events(widget, _use_tablet ? GDK_EXTENSION_EVENTS_ALL : GDK_EXTENSION_EVENTS_NONE);
+}
+
+void gDrawingArea::setUseTablet(bool vl)
+{
+	if (vl == _use_tablet)
+		return;
+	_use_tablet = vl;
+	updateUseTablet();
+}

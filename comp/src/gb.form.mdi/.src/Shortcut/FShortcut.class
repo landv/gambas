@@ -22,6 +22,9 @@ Public Sub Form_Open()
 
   Dim iInd As Integer
   Dim hAction As CAction
+  Dim hIcon As Picture
+  Dim hImage As Image
+  Dim hVoid As Picture
   
   $aAction = New CAction[]
   For Each hAction In MAction.Actions
@@ -37,19 +40,24 @@ Public Sub Form_Open()
   tvwShortcut.Columns[0].Text = ("Action")
   tvwShortcut.Columns[1].Text = ("Shortcut")
   
+  hImage = New Image(16, 16, Color.Transparent)
+  hVoid = hImage.Picture
+  
   For iInd = 0 To $aAction.Max
   
     hAction = $aAction[iInd]
   
     tvwShortcut[iInd, 0].Text = hAction.Display
     tvwShortcut[iInd, 0].Padding = 4
-    tvwShortcut[iInd, 0].Picture = hAction.Icon
+    hIcon = hAction.Icon
+    If Not hIcon Then hIcon = hVoid
+    tvwShortcut[iInd, 0].Picture = hIcon
     tvwShortcut[iInd, 1].Text = hAction.Shortcut
     tvwShortcut[iInd, 1].Padding = 4
 
   Next
   
-  tvwShortcut.Columns[0].Width = tvwShortcut.Width - Desktop.Scale * 24
+  tvwShortcut.Columns[0].Width = -1 'tvwShortcut.Width - Desktop.Scale * 24
   tvwShortcut.Rows.Height = -1
 
   '$hSettings = New Settings("gb.form.mdi")
@@ -71,7 +79,7 @@ Public Sub btnOK_Click()
 
 End
 
-Public Sub tvwShortcut_Change()
+Public Sub tvwShortcut_Click()
 
   Dim hAction As CAction 
   
@@ -122,7 +130,7 @@ Public Sub btnFind_Click()
     tvwShortcut.Cancel
     btnFind.SetFocus
   Else
-    tvwShortcut_Change
+    tvwShortcut_Click
   Endif
 
 End
@@ -203,7 +211,7 @@ End
 
 Public Sub timAfter_Timer()
 
-  tvwShortcut_Change
+  tvwShortcut_Click
 
 End
 

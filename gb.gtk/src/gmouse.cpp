@@ -45,6 +45,7 @@ int gMouse::_delta;
 int gMouse::_orientation;
 int gMouse::_start_x;
 int gMouse::_start_y;
+GdkEvent *gMouse::_event;
 
 void gMouse::move(int x, int y)
 {
@@ -183,6 +184,57 @@ void gMouse::setMouse(int x, int y, int button, int state)
 			if (_state & GDK_BUTTON2_MASK) _button += 4;
 			if (_state & GDK_BUTTON3_MASK) _button += 2;
 	}
-	
 }
 
+void gMouse::setEvent(GdkEvent *event)
+{
+	_event = event;
+}
+
+double gMouse::getAxis(GdkAxisUse axis)
+{
+	double value;
+	
+	if (gdk_event_get_axis(_event, axis, &value))
+		return value;
+	else
+		return 0.0;
+}
+
+int gMouse::getType()
+{
+	GdkDevice *device;
+	
+	switch(_event->type)
+	{
+		case GDK_BUTTON_PRESS: case GDK_2BUTTON_PRESS: case GDK_3BUTTON_PRESS: case GDK_BUTTON_RELEASE: 
+			device = ((GdkEventButton *)_event)->device; 
+			break;
+			
+		case GDK_SCROLL:
+			device = ((GdkEventScroll *)_event)->device; 
+			break;
+		
+		case GDK_MOTION_NOTIFY:
+			device = ((GdkEventMotion *)_event)->device; 
+			break;
+		
+		case GDK_PROXIMITY_IN: case GDK_PROXIMITY_OUT:
+			device = ((GdkEventProximity *)_event)->device; 
+			break;
+		
+		default:
+			device = NULL;
+	}
+	
+	if (!device)
+		return POINTER_MOUSE;
+	
+	switch(gdk_device_get_source(device))
+	{
+		case GDK_SOURCE_PEN: return POINTER_PEN;
+		case GDK_SOURCE_ERASER: return POINTER_ERASER;
+		case GDK_SOURCE_CURSOR: return POINTER_CURSOR;
+		default: return POINTER_MOUSE;
+	}
+}

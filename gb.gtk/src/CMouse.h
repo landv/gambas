@@ -32,6 +32,7 @@
 
 extern GB_DESC CMouseDesc[];
 extern GB_DESC CCursorDesc[];
+extern GB_DESC CPointerDesc[];
 
 #else
 
@@ -39,14 +40,13 @@ extern GB_DESC CCursorDesc[];
 
 #endif
 
-typedef struct 
-{
-    GB_BASE ob;
-    gCursor *cur;
-	
-
-}  CCURSOR;
-
+typedef
+	struct 
+	{
+		GB_BASE ob;
+		gCursor *cur;
+	}
+	CCURSOR;
 
 #define MOUSE_CONSTANTS \
   "<Mouse,Default,Blank,Arrow,Cross,Wait,Text,SizeAll,SizeH,SizeV,SizeN,SizeS,SizeW,SizeE,SizeNWSE," \

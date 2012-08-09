@@ -31,6 +31,7 @@
 #include "gambas.h"
 #include "main.h"
 
+#include "gb.form.const.h"
 #include "CWidget.h"
 #include "CPicture.h"
 #include "CMouse.h"
@@ -95,6 +96,8 @@ static int get_state()
 	return 0;
 }
 #endif
+
+//-------------------------------------------------------------------------
 
 BEGIN_METHOD(Cursor_new, GB_OBJECT picture; GB_INTEGER x; GB_INTEGER y)
 
@@ -167,6 +170,8 @@ END_PROPERTY
 //
 // END_METHOD
 
+
+//-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Mouse_ScreenX)
 
@@ -326,6 +331,59 @@ BEGIN_METHOD(Mouse_Inside, GB_OBJECT control)
 
 END_METHOD
 
+//-------------------------------------------------------------------------
+
+BEGIN_PROPERTY(Pointer_X)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.tx);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Y)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.ty);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_XTilt)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.xtilt);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_YTilt)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.ytilt);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Pressure)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.pressure);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Rotation)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.rotation);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_Type)
+
+	CHECK_VALID();
+	GB.ReturnInteger(CMOUSE_info.type);
+
+END_PROPERTY
+
+
+//-------------------------------------------------------------------------
 
 GB_DESC CCursorDesc[] =
 {
@@ -401,6 +459,26 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Delta", "f", Mouse_Delta),
 	GB_STATIC_PROPERTY_READ("Forward", "b", Mouse_Forward),
 
+	GB_END_DECLARE
+};
+
+GB_DESC CPointerDesc[] =
+{
+	GB_DECLARE_VIRTUAL("Pointer"),
+	
+	GB_CONSTANT("Mouse", "i", POINTER_MOUSE),
+	GB_CONSTANT("Pen", "i", POINTER_PEN),
+	GB_CONSTANT("Eraser", "i", POINTER_ERASER),
+	GB_CONSTANT("Cursor", "i", POINTER_CURSOR),
+	
+	GB_STATIC_PROPERTY_READ("Type", "i", Pointer_Type),
+	GB_STATIC_PROPERTY_READ("X", "f", Pointer_X),
+	GB_STATIC_PROPERTY_READ("Y", "f", Pointer_Y),
+	GB_STATIC_PROPERTY_READ("XTilt", "f", Pointer_XTilt),
+	GB_STATIC_PROPERTY_READ("YTitt", "f", Pointer_YTilt),
+	GB_STATIC_PROPERTY_READ("Pressure", "f", Pointer_Pressure),
+	GB_STATIC_PROPERTY_READ("Rotation", "f", Pointer_Rotation),
+	
 	GB_END_DECLARE
 };
 

@@ -70,7 +70,8 @@ typedef
 			unsigned noTabFocus : 1;
 			unsigned inside : 1;
 			unsigned inside_later : 1;
-			unsigned _reserved : 2;
+			unsigned use_tablet : 1;
+			unsigned _reserved : 1;
 			} flag;
 		int level;
 		char *name;
