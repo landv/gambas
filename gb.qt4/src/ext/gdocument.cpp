@@ -262,7 +262,10 @@ void GDocument::reset(bool saved)
 	if (saved)
 	{
 		for (uint i = 0; i < lines.count(); i++)
+		{
 			lines.at(i)->saved |= lines.at(i)->changed;
+			lines.at(i)->changed = false;
+		}
 	}
 	else
 	{

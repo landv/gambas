@@ -824,7 +824,7 @@ static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 	return QColor(f(red), f(green), f(blue));
 }*/
 
-static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s, QColor color)
+static void highlight_text(QPainter &p, int x, int x2, int h, QColor color, QColor border)
 {
 	//int i, j;
 	
@@ -834,7 +834,10 @@ static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s,
 		for (j = -1; j <= 1; j++)
 			p.drawText(x + i, y + j, s);*/
 		
-	p.fillRect(x, 0, x2 - x, yy, color);
+	p.fillRect(x, 0, x2 - x, h, color);
+	border.setAlpha(128);
+	p.setPen(QColor(border));
+	p.drawRect(x, 0, x2 - x, h);
 }
 
 void GEditor::paintCell(QPainter &p, int row, int)
@@ -995,9 +998,11 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	if (getFlag(HighlightBraces))
 	{
 		if (realRow == y1m && x1m >= 0)
-			highlight_text(p, lineWidth(y1m, x1m), _ytext, lineWidth(y1m, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
+			//highlight_text(p, lineWidth(y1m, x1m), _ytext, lineWidth(y1m, x1m + 1), _cellh - 1, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color, styles[GLine::Normal].color);
+			highlight_text(p, lineWidth(y1m, x1m), lineWidth(y1m, x1m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
 		if (realRow == y2m && x2m >= 0)
-			highlight_text(p, lineWidth(y2m, x2m), _ytext, lineWidth(y2m, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+			//highlight_text(p, lineWidth(y2m, x2m), _ytext, lineWidth(y2m, x2m + 1), _cellh - 1, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color, styles[GLine::Normal].color);
+			highlight_text(p, lineWidth(y2m, x2m), lineWidth(y2m, x2m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
 		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
 	}
@@ -1057,11 +1062,11 @@ void GEditor::paintCell(QPainter &p, int row, int)
 
 		if (getFlag(ShowModifiedLines))
 		{
-			if (l->changed)
+			if (l->changed || l->saved)
 			{
 				int w = qMax(2, margin - qMin(_cellh, 12) - 1);
 				p.setOpacity(0.5);
-				p.fillRect(0, 0, w, _cellh, styles[l->saved ? GLine::Highlight : GLine::Breakpoint].color);
+				p.fillRect(0, 0, w, _cellh, styles[l->changed ? GLine::Breakpoint : GLine::Highlight].color);
 				p.setOpacity(1);
 			}
 			//if (l->modified)
@@ -1136,13 +1141,15 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	// Text cursor
 	if (cursor && realRow == y)
 	{
+		QColor color = styles[GLine::Normal].color;
 		int xc = lineWidth(realRow, x);
 		int wc = 2;
 		//p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 1, _cellh, styles[GLine::Normal].color);
 		if (_insertMode)
 			wc = lineWidth(realRow, x + 1) - xc;
 		
-		p.fillRect(xc, 0, wc, _cellh, styles[GLine::Normal].color);
+		color.setAlpha(160);
+		p.fillRect(xc, 0, wc, _cellh, color);
 	}
 
 	p.translate(contentsX(), 0);
@@ -2464,6 +2471,9 @@ void GEditor::setFlag(int f, bool v)
 	else
 		flags &= ~(1 << f);
 
+	if (getFlag(NoFolding))
+		unfoldAll();
+	
 	updateMargin();
 	updateContents();
 }
@@ -2742,6 +2752,9 @@ void GEditor::foldLine(int row, bool no_refresh)
 	GFoldedProc *fp;
 	int ny;
 	
+	if (getFlag(NoFolding))
+		return;
+	
 	if (!doc->hasLimit(row))
 		row = doc->getPreviousLimit(row);
 	
@@ -2946,6 +2959,9 @@ void GEditor::foldAll()
 {
 	int row;
 	
+	if (getFlag(NoFolding))
+		return;
+	
 	row = 0;
 	for(;;)
 	{
@@ -2973,6 +2989,9 @@ void GEditor::foldRemove(int y1, int y2)
 	uint i;
 	GFoldedProc *fp;
 	int n;
+	
+	if (getFlag(NoFolding))
+		return;
 	
 	if (y2 < 0)
 	{
@@ -3005,6 +3024,9 @@ void GEditor::foldInsert(int y, int n)
 {
 	uint i;
 	GFoldedProc *fp;
+	
+	if (getFlag(NoFolding))
+		return;
 	
 	if (n == 0)
 	{
