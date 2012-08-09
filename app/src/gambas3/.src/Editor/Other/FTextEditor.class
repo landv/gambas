@@ -656,10 +656,12 @@ End
 
 Private Sub SetText(sText As String)
   
-  Editor.Begin
-  Editor.SelectAll
-  Editor.Insert(sText)
-  Editor.End
+  Editor.Text = sText
+  Me.Save
+  'Editor.Begin
+  'Editor.SelectAll
+  'Editor.Insert(sText)
+  'Editor.End
   
 End
 

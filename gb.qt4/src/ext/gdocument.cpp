@@ -50,6 +50,7 @@ GLine::GLine()
 	alternate = false;
 	modified = false;
 	changed = false;
+	saved = false;
 	flag = 0;
 	tag = 0;
 	proc = false;
@@ -256,14 +257,21 @@ void GDocument::clear()
 }
 
 
-void GDocument::reset()
+void GDocument::reset(bool saved)
 {
-	for (uint i = 0; i < lines.count(); i++)
-		lines.at(i)->changed = false;
+	if (saved)
+	{
+		for (uint i = 0; i < lines.count(); i++)
+			lines.at(i)->saved |= lines.at(i)->changed;
+	}
+	else
+	{
+		for (uint i = 0; i < lines.count(); i++)
+			lines.at(i)->saved = lines.at(i)->changed = false;
+	}
 
 	updateViews();
 }
-
 
 GString GDocument::getText()
 {
@@ -627,7 +635,7 @@ void GDocument::setText(const GString & text)
 	clearUndo();
 	undoLevel++; // Prevent textChanged emission
 	insert(0, 0, text, true);
-	reset();
+	reset(false);
 	undoLevel--;
 
 	blockUndo = false;

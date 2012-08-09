@@ -229,7 +229,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CEDITOR_reset)
 
-	DOC->reset();
+	DOC->reset(true);
 
 END_METHOD
 

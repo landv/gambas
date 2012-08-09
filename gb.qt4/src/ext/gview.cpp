@@ -565,8 +565,6 @@ static QColor merge_color(const QColor &ca, const QColor &cb)
 
 static QColor calc_color(QColor ca, QColor cb, QColor cd)
 {
-	int r = 1, g = 1, b = 1, n = 0;
-
 	if (!ca.isValid() && !cb.isValid())
 		return cd;
 	
@@ -577,13 +575,6 @@ static QColor calc_color(QColor ca, QColor cb, QColor cd)
 		return ca;
 	
 	return QColor((ca.red() + cb.red()) / 2, (ca.green() + cb.green()) / 2, (ca.blue() + cb.blue()) / 2);
-
-	/*#define test(x) r *= x.red(); g *= x.green(); b *= x.blue(); n++;
-
-	test(ca);
-	test(cb);
-	n = (n == 2) ? 255 : (n == 3) ? 255*255 : 1;
-	return QColor(r / n, g / n, b / n);*/
 }
 
 void GEditor::drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &s)
@@ -1070,7 +1061,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 			{
 				int w = qMax(2, margin - qMin(_cellh, 12) - 1);
 				p.setOpacity(0.5);
-				p.fillRect(0, 0, w, _cellh, styles[GLine::Highlight].color);
+				p.fillRect(0, 0, w, _cellh, styles[l->saved ? GLine::Highlight : GLine::Breakpoint].color);
 				p.setOpacity(1);
 			}
 			//if (l->modified)

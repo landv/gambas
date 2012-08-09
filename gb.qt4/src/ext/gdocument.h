@@ -65,13 +65,13 @@ public:
 	unsigned alternate : 1;
 	unsigned modified : 1;
 	unsigned changed : 1;
+	unsigned saved : 1;
 	unsigned flag : 2;
 	unsigned proc : 1;
 	unsigned unicode : 1;
 	unsigned tab : 1;
 	unsigned baptized : 1;
 	unsigned nobreak : 1;
-	unsigned _reserved : 1;
 	signed tag : 16;
 
 	GLine();
@@ -136,7 +136,7 @@ public:
 	~GDocument();
 
 	void clear();
-	void reset();
+	void reset(bool saved);
 	GString getText();
 	void setText(const GString & text);
 	int getLength() const;
