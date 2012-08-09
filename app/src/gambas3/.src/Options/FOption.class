@@ -91,6 +91,7 @@ Public Sub _new()
     [cmbShowChange, "/Editor/ShowChange", 1],
     [cmbShowCurrent, "/Editor/ShowCurrent", 1],
     [cmbShowDots, "/Editor/ShowDots", 1],
+    [cmbFold, "/Editor/ShowFolding", 1],
     [cmbFoldProc, "/Editor/Fold", 0],
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbUtility, "/UseUtilityWindows", 1],
@@ -623,6 +624,13 @@ Public Sub cmbControlStructCompletion_Click()
 
   Settings["/Editor/ControlStructCompletion"] = cmbControlStructCompletion.Index = 1
   FEditor.StructControlCompletion = cmbControlStructCompletion.Index = 1
+
+End
+
+Public Sub cmbFold_Click()
+
+  Settings["/Editor/ShowFolding"] = cmbFold.Index = 1  
+  RefreshEditor
 
 End
 
