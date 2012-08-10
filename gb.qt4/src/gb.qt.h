@@ -131,6 +131,7 @@ typedef
 		void (*ScrollBarProperty)(void *, void *);
 		void (*FontProperty)(void *, void *);
 		QT_FONT *(*CreateFont)(const QFont &, QT_FONT_FUNC, void *);
+		void (*SetFont)(QT_FONT_FUNC, void*, void *);
 		QT_PICTURE (*CreatePicture)(const QPixmap &);
 		//QMimeSourceFactory *(*MimeSourceFactory)(void);
 		QPixmap *(*GetPixmap)(QT_PICTURE);

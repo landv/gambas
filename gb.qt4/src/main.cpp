@@ -968,11 +968,6 @@ const char *QT_ToUTF8(const QString &str)
 	return res;
 }
 
-static void *QT_CreateFont(const QFont &f, FONT_FUNC func, void *object)
-{
-	return CFONT_create(f, func, object);
-}
-
 static void *QT_CreatePicture(const QPixmap &p)
 {
 	return CPICTURE_create(&p);
@@ -1061,7 +1056,8 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)CWIDGET_border_full,
 	(void *)CWIDGET_scrollbar,
 	(void *)Control_Font,
-	(void *)QT_CreateFont,
+	(void *)CFONT_create,
+	(void *)CFONT_set,
 	(void *)QT_CreatePicture,
 	//(void *)QT_MimeSourceFactory,
 	(void *)QT_GetPixmap,

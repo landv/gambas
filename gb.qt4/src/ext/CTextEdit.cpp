@@ -584,7 +584,7 @@ BEGIN_PROPERTY(CTEXTEDIT_format_font)
   if (READ_PROPERTY)
     GB.ReturnObject(QT.CreateFont(WIDGET->currentFont(), set_font, _object));
   else
-    SET_FONT(set_font, VPROP(GB_OBJECT));
+    QT.SetFont(set_font, VPROP(GB_OBJECT), THIS);
 
 END_PROPERTY
 

@@ -143,7 +143,7 @@ BEGIN_PROPERTY(Application_Font)
 	if (READ_PROPERTY)
 		GB.ReturnObject(CFONT_create(qApp->font(), set_font));
 	else
-		SET_FONT(set_font, VPROP(GB_OBJECT));
+		CFONT_set(set_font, (CFONT *)VPROP(GB_OBJECT), NULL);
 
 END_PROPERTY
 

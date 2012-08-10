@@ -824,7 +824,7 @@ static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 	return QColor(f(red), f(green), f(blue));
 }*/
 
-static void highlight_text(QPainter &p, int x, int x2, int h, QColor color, QColor border)
+static void highlight_text(QPainter &p, int x, int x2, int h, QColor color, QColor)
 {
 	//int i, j;
 	
@@ -835,9 +835,9 @@ static void highlight_text(QPainter &p, int x, int x2, int h, QColor color, QCol
 			p.drawText(x + i, y + j, s);*/
 		
 	p.fillRect(x, 0, x2 - x, h, color);
-	border.setAlpha(128);
-	p.setPen(QColor(border));
-	p.drawRect(x, 0, x2 - x, h);
+	//border.setAlpha(128);
+	//p.setPen(QColor(border));
+	//p.drawRect(x, 0, x2 - x, h);
 }
 
 void GEditor::paintCell(QPainter &p, int row, int)

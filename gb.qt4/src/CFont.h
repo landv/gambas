@@ -73,17 +73,12 @@ typedef
 //#define CFONT_DRAW          2
   
 CFONT *CFONT_create(const QFont &font, FONT_FUNC func = 0, void *object = 0);
+void CFONT_set(FONT_FUNC func, void *font, void *object);
 //CFONT *CFONT_create_control(CWIDGET *control);
 double CFONT_size_real_to_virtual(double);
 double CFONT_size_virtual_to_real(double);
 
 #define SIZE_REAL_TO_VIRTUAL(_size) CFONT_size_real_to_virtual((double)(_size))
 #define SIZE_VIRTUAL_TO_REAL(_size) CFONT_size_virtual_to_real((double)(_size))
-
-#define SET_FONT(_method_font, _object)  \
-{ \
-  if (_object) \
-    _method_font(*(((CFONT *)_object)->font)); \
-}
 
 #endif

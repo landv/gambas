@@ -78,17 +78,17 @@ CFONT *CFONT_create(const QFont &font, FONT_FUNC func, void *object)
   return THIS;
 }
 
-/*CFONT *CFONT_create_control(CWIDGET *control)
+void CFONT_set(FONT_FUNC func, void *font, void *object)
 {
-  CFONT *_object;
+	if (!font)
+	{
+		QFont f;
+		(*func)(f, object);
+	}
+	else
+		(*func)(*(((CFONT *)font)->font), object);
+}
 
-  GB.New(POINTER(&_object), CLASS_Font, NULL, NULL);
-  *(THIS->font) = ((CWIDGET *)control)->widget->font();
-  THIS->control = (CWIDGET *)control;
-  GB.Ref(control);
-
-  return THIS;
-}*/
 
 double CFONT_size_real_to_virtual(double size)
 {
