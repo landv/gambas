@@ -47,6 +47,7 @@ public:
     virtual void addString(char *&data, int indent = -1);
     
     //Text content
+    void TrimContent();
     virtual void setTextContent(const char *ncontent, const size_t nlen);
     virtual void addTextContentLen(size_t &len);
     virtual void addTextContent(char *&data);

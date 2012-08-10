@@ -183,6 +183,14 @@ void TextNode::addString(char *&data, int indent)
 
 /***** Text Content *****/
 
+void TextNode::TrimContent()
+{
+    const char *oldcontent = content;
+    Trim(oldcontent, lenContent);
+    memmove(content, oldcontent, lenContent);
+    content = (char*)realloc(content, sizeof(char)*lenContent);
+}
+
 void TextNode::setTextContent(const char *ncontent, const size_t nlen)
 {
     content = (char*)realloc(content, sizeof(char)*nlen);

@@ -28,6 +28,7 @@
 #define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
 #define FREE(_ob) if(_ob) {free(_ob); _ob = 0;}
 #define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
+#define DESTROYPARENT(_ob) if(_ob) {delete _ob; _ob = 0;}
 
 void Reader::ClearReader()
 {
@@ -53,7 +54,9 @@ void Reader::ClearReader()
     this->specialTagLevel = 0;
     this->state = 0;
 
+DESTROYPARENT(foundNode);
     foundNode = 0;
+    DESTROYPARENT(curNode);
     curNode = 0;
     curElmt = 0;
     storedDocument = 0;
@@ -85,6 +88,8 @@ void Reader::InitReader()
     content = 0;
     storedDocument = 0;
     storedElements = 0;
+    curNode = 0;
+    foundNode = 0;
 
     ClearReader();
 
@@ -128,17 +133,18 @@ int Reader::ReadChar(char car)
         inTagName = true;
         if(curNode && curNode->isText()) //Si il y avait du texte avant
         {
-            //if(foundNode) GB.Unref(POINTER(&foundNode));
+            DESTROYPARENT(foundNode);
             foundNode = curNode;
             if(keepMemory)
             {
                 APPEND(foundNode);
             }
-            const char *trimmedText = curNode->toTextNode()->content;
-            size_t lenTrimmedText = curNode->toTextNode()->lenContent;
+            //const char *trimmedText = curNode->toTextNode()->content;
+            //size_t lenTrimmedText = curNode->toTextNode()->lenContent;
 
-            Trim(trimmedText, lenTrimmedText);
-            curNode->toTextNode()->setTextContent(trimmedText, lenTrimmedText);
+            //Trim(trimmedText, lenTrimmedText);
+
+            curNode->toTextNode()->TrimContent();
 
             curNode = 0;
             this->state = NODE_TEXT;
@@ -147,6 +153,7 @@ int Reader::ReadChar(char car)
     }
     else if(car == CHAR_ENDTAG && inTag && !inEndTag && !inComment)//Fin de tag (de nouvel élément)
     {
+        DESTROYPARENT(foundNode);
         //UNREF(foundNode);
         foundNode = curNode;//On a trouvé un élément complet
         //curNode = 0;
@@ -311,6 +318,7 @@ int Reader::ReadChar(char car)
     {
         specialTagLevel = 0;
         inTag = false;
+        DESTROYPARENT(foundNode);
         //UNREF(foundNode);
         foundNode = curNode;
         inCDATA = false;
@@ -330,6 +338,7 @@ int Reader::ReadChar(char car)
         {
             inCommentTag = false;
             inComment = true;
+            //DESTROYPARENT(curNode);
             //UNREF(curNode);
             curNode = new CommentNode;
             //GB.Ref(curNode);
@@ -354,6 +363,8 @@ int Reader::ReadChar(char car)
     {
         specialTagLevel = 0;
         inTag = false;
+
+        DESTROYPARENT(foundNode);
         //UNREF(foundNode);
         foundNode = curNode;
         inComment = false;
@@ -389,6 +400,7 @@ int Reader::ReadChar(char car)
             Element* newNode = new Element(&car, 1);
             inTag = true;
             inNewTag = false;
+            //DESTROYPARENT(curNode);
             //UNREF(curNode);
             curNode = newNode;
             //GB.Ref(curNode);
@@ -397,10 +409,7 @@ int Reader::ReadChar(char car)
         {
             if(isWhiteSpace(car)) return 0;
             TextNode* newNode = new TextNode(&car, 1);
-            if(curNode) 
-            { /*if(curNode->isElement()) this->curNode->toElement()->appendChild((newNode));*/
-                //GB.Unref(POINTER(&curNode));
-            }
+            //DESTROYPARENT(curNode);
             curNode = newNode;
             //GB.Ref(curNode);
         }
