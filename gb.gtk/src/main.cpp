@@ -224,10 +224,6 @@ extern "C"
 		GB.Hook(GB_HOOK_ERROR,(void*)my_error);
 		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
 
-		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
-		//putenv((char *)"GDK_NATIVE_WINDOWS=1");
-		#endif
-		
 		GB.Component.Load("gb.draw");
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);

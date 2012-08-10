@@ -28,7 +28,7 @@
 #include "gtree.h"
 #include "gtreeview.h"
 	
-#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 12
+#if GTK_CHECK_VERSION(2, 12, 0)
 
 #define HIDDEN_COL 0
 
@@ -649,7 +649,7 @@ static gint tree_compare(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gT
 
 void gTree::showExpanders()
 {
-	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 12
+	#if GTK_CHECK_VERSION(2, 12, 0)
 	gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(widget), true);
 	#else
 	gtk_tree_view_set_expander_column(GTK_TREE_VIEW(widget), gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0));
@@ -703,7 +703,7 @@ gTree::gTree(gTreeView *v)
 	
 	if (view)
 	{
-		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 12
+		#if GTK_CHECK_VERSION(2, 12, 0)
 		gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(widget), false);
 		#else
 		GtkTreeViewColumn *column = gtk_tree_view_column_new();
