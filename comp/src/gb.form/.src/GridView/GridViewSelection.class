@@ -42,12 +42,12 @@ Public Sub Select(iStart As Integer, Optional iLength As Integer = 1)
     
     If iStart >= S And If iStart <= (S + L) Then
       $aSel[I + 1] = iStart + iLength - S
-      Dump
+      'Dump
       Return
     Else If (iStart + iLength) >= S And If (iStart + iLength) <= (S + L) Then
       $aSel[I + 1] += $aSel[I] - iStart
       $aSel[I] = iStart
-      Dump
+      'Dump
       Return
     Endif
     
@@ -55,7 +55,7 @@ Public Sub Select(iStart As Integer, Optional iLength As Integer = 1)
   
   $aSel.Add(iStart)
   $aSel.Add(iLength)
-  Dump
+  'Dump
   
 End
 
@@ -91,14 +91,14 @@ Public Sub UnSelect(iStart As Integer, Optional iLength As Integer = 1)
     
     I += 2
   Wend
-  Dump
+  'Dump
   
 End
 
 Public Sub UnSelectAll()
   
   $aSel.Clear
-  Dump
+  'Dump
   
 End
 

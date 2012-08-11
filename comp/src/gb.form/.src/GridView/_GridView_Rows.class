@@ -18,6 +18,7 @@ Property Read Max As Integer
 Property Width, W As Integer
 Property Resizable As Boolean
 Property Height, H As Integer
+Property Read Selection As Integer[]
 
 Event _Refresh
 
@@ -370,9 +371,10 @@ Public Sub _Clear()
   
 End
 
-''Return an integer array of all the selected rows
-Public Function GetSelected() As Integer[]
-  
- Return $hSel._GetSelectedRows()
-  
+'' Return an integer array of all the selected rows
+
+Private Function Selection_Read() As Integer[]
+
+  Return $hSel._GetSelectedRows()
+
 End
