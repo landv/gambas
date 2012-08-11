@@ -43,6 +43,7 @@ Public Sub _new()
   
   gvwView[10, 0].RichText = "<b>G</b>ambas almost means BASic!<br>La nuit tous les chats sont bleux!"
   gvwView[10, 0].WordWrap = True
+  gvwView.Rows[10].Height = -1
   
 End
 
@@ -74,9 +75,10 @@ Public Sub gvwView_Change()
 End
 
 Public Sub gvwView_Select()
-  
-  Debug
-  
+  Dim i As Integer
+  For i = 0 To gvwView.Rows.GetSelected().max
+  Debug gvwView.Rows.GetSelected()[i]
+  Next
 End
 
 Public Sub gvwView_Scroll()

@@ -4,10 +4,10 @@ Private $aSel As New Integer[]
 
 Private Sub Dump()
   
-  ' Dim I As Integer
-  ' 
-  ' Print System.Backtrace.Join(" ")
-  ' 
+  '  Dim I As Integer
+  ' ' 
+  ' ' Print System.Backtrace.Join(" ")
+  ' ' 
   ' Print "Selection = ";
   ' For I = 0 To $aSel.Max Step 2
   '   Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
@@ -22,15 +22,14 @@ Public Sub SetSelection(aSel As Integer[])
   
 End
 
-
 Public Sub Copy() As GridViewSelection
   
   Dim hSel As GridViewSelection = New GridViewSelection
+
   hSel.SetSelection($aSel.Copy())
   Return hSel
   
 End
-
 
 Public Sub Select(iStart As Integer, Optional iLength As Integer = 1)
   
@@ -71,7 +70,7 @@ Public Sub UnSelect(iStart As Integer, Optional iLength As Integer = 1)
     L = $aSel[I + 1]
     
     If (iStart + iLength) > S And If iStart < (S + L) Then 
-    
+      
       If iStart <= S And If (iStart + iLength) >= (S + L) Then
         $aSel.Remove(I, 2)
         Continue
@@ -104,7 +103,7 @@ Public Sub UnSelectAll()
 End
 
 Public Sub IsSelected(iIndex As Integer) As Boolean
-
+  
   Dim I, S, L As Integer  
   
   For I = 0 To $aSel.Max Step 2
@@ -116,4 +115,22 @@ Public Sub IsSelected(iIndex As Integer) As Boolean
     
   Next
   
+End
+
+Public Function _GetSelectedRows() As Integer[]
+  
+  Dim aRet As New Integer[]
+  Dim I, J, S, L As Integer
+  
+  For I = 0 To $aSel.Max Step 2
+    S = $aSel[i]
+    L = $aSel[I + 1]
+    
+    For J = 0 To L - 1
+      aRet.Add(S + J)
+    Next
+  Next
+  
+  Return aRet
+
 End
