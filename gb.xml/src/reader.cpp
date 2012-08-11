@@ -28,7 +28,7 @@
 #define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
 #define FREE(_ob) if(_ob) {free(_ob); _ob = 0;}
 #define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
-#define DESTROYPARENT(_ob) if(_ob) {delete _ob; _ob = 0;}
+#define DESTROYPARENT(_ob) if(_ob) {_ob->DestroyParent(); _ob = 0;}
 
 void Reader::ClearReader()
 {
@@ -54,10 +54,15 @@ void Reader::ClearReader()
     this->specialTagLevel = 0;
     this->state = 0;
 
-DESTROYPARENT(foundNode);
-    foundNode = 0;
-    DESTROYPARENT(curNode);
-    curNode = 0;
+    if(curNode != foundNode)
+    {
+        DESTROYPARENT(curNode);
+    }
+    else
+    {
+        curNode = 0;
+    }
+    DESTROYPARENT(foundNode);
     curElmt = 0;
     storedDocument = 0;
     FREE(attrName);
@@ -233,6 +238,7 @@ int Reader::ReadChar(char car)
         FREE(content); lenContent = 0;
         if(depth > 0) --depth;
         waitClosingElmt = true;
+        DESTROYPARENT(foundNode);
         foundNode = curNode;
         this->state = NODE_ELEMENT;
         return NODE_ELEMENT;
