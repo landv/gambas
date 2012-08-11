@@ -231,6 +231,7 @@ static void post_cancel_event(void *_object)
 void MyListViewItem::cancelRename(int col)
 {
 	Q3ListViewItem::cancelRename(col);
+	container->widget.flag.no_keyboard = FALSE;
 	if (GB.CanRaise(container, EVENT_Cancel))
 	{
 		GB.Ref(container);
@@ -1046,6 +1047,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CTREEVIEWITEM_rename)
 
+	THIS->widget.flag.no_keyboard = TRUE;
   THIS->item->startRename(0);
 
 END_METHOD
@@ -2027,6 +2029,8 @@ void CTreeView::renamed(Q3ListViewItem *it, int col)
 {
   GET_SENDER();
 
+	THIS->widget.flag.no_keyboard = FALSE;
+	
   if (it == 0)
     return;
 

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(70,26.5,52,60)
+  MoveScaled(70,26.5714,52,60)
   Text = ("Serial Port")
   { TextLabel1 TextLabel
     MoveScaled(1,1,21,4)
@@ -17,7 +17,6 @@
   }
   { CmbSpeed ComboBox
     MoveScaled(23,6,15,4)
-    Text = ("")
     ReadOnly = True
     List = [("1200"), ("2400"), ("9600"), ("19200"), ("38400")]
   }
@@ -35,19 +34,16 @@
   }
   { CmbParity ComboBox
     MoveScaled(23,11,15,4)
-    Text = ("")
     ReadOnly = True
     List = [("None"), ("Even"), ("Odd")]
   }
   { CmbData ComboBox
     MoveScaled(23,16,15,4)
-    Text = ("")
     ReadOnly = True
     List = [("8"), ("7"), ("6"), ("5")]
   }
   { CmbStop ComboBox
     MoveScaled(23,21,15,4)
-    Text = ("")
     ReadOnly = True
     List = [("1"), ("2")]
   }
@@ -57,7 +53,6 @@
   }
   { TxtSend TextBox
     MoveScaled(1,37,43,4)
-    Text = ("")
   }
   { TextLabel6 TextLabel
     MoveScaled(1,32,50,4)
@@ -71,7 +66,6 @@
   }
   { TextArea1 TextArea
     MoveScaled(1,42,50,17)
-    Text = ("")
   }
   { ChkDSR CheckBox
     MoveScaled(40,17,11,4)
@@ -103,12 +97,11 @@
   }
   { ComboBox1 ComboBox
     MoveScaled(23,26,15,4)
-    Text = (" ")
     ReadOnly = True
     List = [("NONE"), ("CRTSCTS"), ("XON/XOFF"), ("CRTSCTS + XON/XOFF")]
+    Text = (" ")
   }
   { SPort #SerialPort
-    #X = 336
-    #Y = 200
+    #MoveScaled(4,30)
   }
 }

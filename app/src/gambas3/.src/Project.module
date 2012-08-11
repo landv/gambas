@@ -1413,6 +1413,8 @@ End
 
 Public Sub FillDir(sDir As String)
 
+  If Not sDir Then Return
+  If Left(sDir) = "$" Then Return
   If Not IsDir(sDir) Then Return
   
   ProjectTree.MoveTo(sDir)
@@ -3925,7 +3927,7 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
 
   If Not sKey Then Return
 
-  If Not ProjectTree.Exist(sKey) And If IsSourcePath(sKey) Then 
+  If Not ProjectTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then 
     sKey = FindForm(File.BaseName(sKey))
   Endif
 

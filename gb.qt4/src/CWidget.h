@@ -71,7 +71,7 @@ typedef
 			unsigned inside : 1;
 			unsigned inside_later : 1;
 			unsigned use_tablet : 1;
-			unsigned _reserved : 1;
+			unsigned no_keyboard : 1;
 			} flag;
 		int level;
 		char *name;

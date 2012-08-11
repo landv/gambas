@@ -226,6 +226,7 @@ Public Sub tvwProject_Menu()
   'mnuPopup.Enabled = TRUE
   GetCurrent()
   If Not $sKey Then Return
+  Project.FillDir($sKey)
   
   If $sKey And If Project.IsLocked($sKey) Then Return
   
@@ -1379,7 +1380,7 @@ Public Sub tvwProject_DragMove()
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
     Else If Drag.Format = MMime.CLASS And If Drag.Source Then
       If $sKey <> Project.KEY_SOURCE Then
-        If Not Project.IsSourcePath($sKey) Then Goto STOP_EVENT
+        If Not Project.IsSourcePath($sKey, True) Then Goto STOP_EVENT
       Endif
     Else If Drag.Format = MMime.URI Then
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
@@ -1536,11 +1537,7 @@ End
 
 Public Sub tvwProject_Expand()
   
-  Dim sKey As String = tvwProject.Item.Key
-  
-  If Not sKey Then Return
-  If Left(sKey) = "$" Then Return
-  Project.FillDir(sKey)  
+  Project.FillDir(tvwProject.Item.Key)
   
 End
 

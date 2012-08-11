@@ -2794,6 +2794,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (!real || !original)
 			goto _DESIGN;
 		#endif
+			
+		if (control->flag.no_keyboard)
+			goto _DESIGN;
 
 		event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
 		cancel = false;
