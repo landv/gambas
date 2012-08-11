@@ -63,6 +63,7 @@ typedef
 		int dataBits;
 		int stopBits;
 		int flow;
+		int polling;
 		SERIAL_SIGNAL signals;
 		struct termios oldtio;
 	}  
