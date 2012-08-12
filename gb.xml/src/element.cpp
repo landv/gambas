@@ -44,8 +44,17 @@ Element::Element() : Node()
     lenLocalName = 0;
 }
 
-Element::Element(const char *ntagName, size_t nlenTagName) : Element()
+Element::Element(const char *ntagName, size_t nlenTagName) : Node()
 {
+    tagName = 0;
+    lenTagName = 0;
+    firstAttribute = 0;
+    lastAttribute = 0;
+    attributeCount = 0;
+    prefix = 0;
+    lenPrefix = 0;
+    localName = 0;
+    lenLocalName = 0;
     setTagName(ntagName, nlenTagName);
 
 }
