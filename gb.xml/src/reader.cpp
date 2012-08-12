@@ -36,7 +36,7 @@ void Reader::ClearReader()
     //UNREF(curNode);
     this->keepMemory = false;
     this->pos = 0;
-    this->depth = 0;
+    this->depth = -1;
     this->inTag = false;
     this->inTagName = false;
     this->inAttr = false;
@@ -128,8 +128,9 @@ int Reader::ReadChar(char car)
     {
         if(car != CHAR_ENDTAG) return 0;
         waitClosingElmt = false;
-        this->state = READ_END_CUR_ELEMENT;
-        return READ_END_CUR_ELEMENT;
+        depth--;
+//        this->state = READ_END_CUR_ELEMENT;
+        return 0;
     }
     
     if(car == CHAR_STARTTAG && !inComment)//Début de tag
@@ -164,7 +165,7 @@ int Reader::ReadChar(char car)
         //curNode = 0;
         //GB.Ref(foundNode);
         inTag = false;
-        ++depth;
+        depth++;
         if(keepMemory)
         {
             APPEND(foundNode);
@@ -172,14 +173,14 @@ int Reader::ReadChar(char car)
         }
         if(attrName && attrVal)
         {
-            curNode->toElement()->setAttribute(attrName, lenAttrName,
+            curNode->toElement()->addAttribute(attrName, lenAttrName,
                                                attrVal, lenAttrVal);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
             FREE(attrVal); lenAttrVal = 0; inAttrVal = false;
         }
         else if(attrName) 
         {
-            curNode->toElement()->setAttribute(attrName, lenAttrName,  "", 0);
+            curNode->toElement()->addAttribute(attrName, lenAttrName,  "", 0);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
         }
         this->state = NODE_ELEMENT;
@@ -188,19 +189,20 @@ int Reader::ReadChar(char car)
     else if(isWhiteSpace(car) && inTag && inTagName && !inComment)// Fin de tagName
     {
         inTagName = false;
+        curNode->toElement()->refreshPrefix();
     }
     else if(isNameStartChar(car) && inTag && !inTagName && !inEndTag && !inAttrVal && !inAttrName && !inComment)//Début de nom d'attribut
     {
         if(attrName && attrVal)
         {
-            curNode->toElement()->setAttribute(attrName, lenAttrName,
+            curNode->toElement()->addAttribute(attrName, lenAttrName,
                                                attrVal, lenAttrVal);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
             FREE(attrVal); lenAttrVal = 0; inAttrVal = false;
         }
         else if(attrName) 
         {
-            curNode->toElement()->setAttribute(attrName, lenAttrName,  "", 0);
+            curNode->toElement()->addAttribute(attrName, lenAttrName,  "", 0);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
         }
         inAttr = true;
@@ -236,11 +238,13 @@ int Reader::ReadChar(char car)
         inEndTag = false;
         if(curElmt) curElmt = curElmt->parent->toElement();
         FREE(content); lenContent = 0;
-        if(depth > 0) --depth;
+        //depth--;
         waitClosingElmt = true;
         DESTROYPARENT(foundNode);
         foundNode = curNode;
+        curNode->toElement()->refreshPrefix();
         this->state = NODE_ELEMENT;
+        depth++;
         return NODE_ELEMENT;
     }
     else if(car == CHAR_SLASH && inNewTag && !inComment)//C'est un tag de fin
@@ -259,7 +263,7 @@ int Reader::ReadChar(char car)
                 curElmt = curElmt->parent->toElement();
         }
         FREE(content); lenContent = 0;
-        if(depth > 0) --depth;
+        depth--;
         this->state = READ_END_CUR_ELEMENT;
         return READ_END_CUR_ELEMENT;
     }

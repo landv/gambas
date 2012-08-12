@@ -67,8 +67,11 @@ public:
     void setPrefix(const char *nprefix, size_t nlenPrefix);
     char *prefix;
     size_t lenPrefix;
+
+    char* localName;
+    size_t lenLocalName;
    
-    
+    void refreshPrefix();
     
     //Attributes
     void addAttribute(const char *nattrName, const size_t nlenAttrName);//Adds a new attribute

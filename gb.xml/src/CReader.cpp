@@ -96,6 +96,7 @@ if(attr == 0)
 {
     attr = THIS->foundNode->toElement()->firstAttribute;
     *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
+    (THIS->depth)++;
 }
 else
 {
@@ -103,9 +104,17 @@ else
     *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
 }    
 
-if(attr == 0) {GB.StopEnum(); THIS->curAttrEnum = 0; return;}
+if(attr == 0) {GB.StopEnum(); THIS->curAttrEnum = 0; (THIS->depth)--; return;}
 
-GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+if((attr->attrValue && attr->lenAttrValue))
+{
+        GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+}
+else
+{
+    GB.ReturnNewZeroString(0);
+}
+
 
 THIS->curAttrEnum = attr;
 
@@ -218,7 +227,14 @@ if(!THIS->foundNode)
 
 if(THIS->curAttrEnum)
 {
-    GB.ReturnNewString(THIS->curAttrEnum->attrValue, THIS->curAttrEnum->lenAttrValue);
+    if((THIS->curAttrEnum->attrValue && THIS->curAttrEnum->lenAttrValue))
+    {
+            GB.ReturnNewString(THIS->curAttrEnum->attrValue, THIS->curAttrEnum->lenAttrValue);
+    }
+    else
+    {
+        GB.ReturnNewZeroString(0);
+    }
     return;
 }
 
@@ -262,6 +278,11 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CReader_Depth)
 
+if(THIS->depth < 0)
+{
+    GB.ReturnInteger(0);
+    return;
+}
 GB.ReturnInteger(THIS->depth);
 
 END_PROPERTY
@@ -292,7 +313,7 @@ if(!THIS->foundNode->isElement())
     return;
 }
 
-GB.ReturnBoolean(THIS->foundNode->toElement()->childCount == 0);
+GB.ReturnBoolean(THIS->waitClosingElmt);
 
 END_PROPERTY
 

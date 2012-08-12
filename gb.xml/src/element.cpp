@@ -40,42 +40,22 @@ Element::Element() : Node()
     attributeCount = 0;
     prefix = 0;
     lenPrefix = 0;
+    localName = 0;
+    lenLocalName = 0;
 }
 
-Element::Element(const char *ntagName, size_t nlenTagName) : Node()
+Element::Element(const char *ntagName, size_t nlenTagName) : Element()
 {
-    register char* pos = (char*)memchr(ntagName, ':', nlenTagName);//Prefix
-    if(pos)
-    {
-        lenTagName = (ntagName + nlenTagName) - (pos + 1);
-        lenPrefix = pos - ntagName;
-        tagName = (char*)malloc(lenTagName);
-        prefix = (char*)malloc(lenPrefix);
-        memcpy(prefix, ntagName, lenPrefix);
-        memcpy(tagName, pos + 1, lenTagName);
-    }
-    else
-    {
-        lenTagName = nlenTagName;
-        tagName = (char*)malloc(sizeof(char) * lenTagName);
-        memcpy(tagName, ntagName, lenTagName);
-        prefix = 0;
-        lenPrefix = 0;
-    }
+    setTagName(ntagName, nlenTagName);
 
-    
-    firstChild = 0;
-    lastChild = 0;
-    childCount = 0;
-    firstAttribute = 0;
-    lastAttribute = 0;
-    attributeCount = 0;
 }
 
 Element::~Element()
 {
     //Releasing tag name
     if(tagName) free(tagName);
+    free(prefix);
+    free(localName);
     
     //Releasing children
     if(firstChild)
@@ -109,29 +89,66 @@ Node::Type Element::getType()
 
 void Element::setTagName(const char *ntagName, size_t nlenTagName)
 {
-    register char* pos = (char*)memchr(ntagName, ':', nlenTagName);//Prefix
-    if(pos)
-    {
-        lenTagName = (ntagName + nlenTagName) - (pos + 1);
-        lenPrefix = pos - ntagName;
-        tagName = (char*)realloc(tagName, lenTagName);
-        prefix = (char*)realloc(prefix, lenPrefix);
-        memcpy(prefix, ntagName, lenPrefix);
-        memcpy(tagName, pos + 1, lenTagName);
-    }
-    else
-    {
-        lenTagName = nlenTagName;
-        tagName = (char*)realloc(tagName, sizeof(char) * lenTagName);
-        memcpy(tagName, ntagName, lenTagName);
-    }
+    lenTagName = nlenTagName;
+    tagName = (char*)realloc(tagName, sizeof(char) * lenTagName);
+    memcpy(tagName, ntagName, lenTagName);
+
+refreshPrefix();
+
 }
 
 void Element::setPrefix(const char *nprefix, size_t nlenPrefix)
 {
+    if(nlenPrefix)
+    {
+        tagName = (char*)realloc(tagName, nlenPrefix + lenLocalName + 1);
+        memcpy(tagName, nprefix, nlenPrefix);
+        *(tagName + nlenPrefix) = ':';
+        memcpy(tagName + nlenPrefix + 1, localName, lenLocalName);
+    }
+    else if(lenPrefix)
+    {
+        tagName = (char*)realloc(tagName, lenLocalName);
+        memcpy(tagName, localName, lenLocalName);
+    }
+
+
     lenPrefix = nlenPrefix;
     prefix = (char*)realloc(prefix, lenPrefix);
-    memcpy(prefix, nprefix, lenPrefix);
+    if(nlenPrefix) memcpy(prefix, nprefix, nlenPrefix);
+}
+
+void Element::refreshPrefix()
+{
+    if(!lenTagName)
+    {
+        free(localName);
+        localName = 0;
+        lenLocalName = 0;
+        free(prefix);
+        prefix = 0;
+        lenPrefix = 0;
+        return;
+    }
+    register char* pos = (char*)memrchr(tagName, ':', lenTagName);//Prefix
+    if(pos)
+    {
+        lenLocalName = (tagName + lenTagName) - (pos + 1);
+        lenPrefix = pos - tagName;
+        localName = (char*)realloc(localName, lenLocalName);
+        prefix = (char*)realloc(prefix, lenPrefix);
+        memcpy(prefix, tagName, lenPrefix);
+        memcpy(localName, pos + 1, lenLocalName);
+    }
+    else
+    {
+        lenLocalName = lenTagName;
+        localName = (char*)realloc(localName, sizeof(char) * lenTagName);
+        memcpy(localName, tagName, lenTagName);
+        free(prefix);
+        prefix = 0;
+        lenPrefix = 0;
+    }
 }
 
 bool Element::isSingle()
@@ -183,7 +200,7 @@ void Element::addAttribute(const char *nattrName, const size_t nlenAttrName,
                            const char *nattrVal, const size_t nlenAttrVal)
 {
     attributeCount++;
-    Attribute *newAttribute = new Attribute(nattrName, nlenAttrName, 
+    Attribute *newAttribute = new Attribute(nattrName, nlenAttrName,
                                             nattrVal, nlenAttrVal);
     newAttribute->parent = this;
     if(!lastAttribute)//No attribute
