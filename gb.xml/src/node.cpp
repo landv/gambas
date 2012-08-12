@@ -655,7 +655,7 @@ Node** Node::fromText(char const *data, const size_t lendata, size_t *nodeCount)
                     throw(XMLParseException("Tag mismatch",
                     data, lendata, pos - 1));
                 }
-                else if(curElement->prefix)//Gestion  du préfixe
+                /*else if(curElement->prefix)//Gestion  du préfixe
                 {
                     if((endData) < pos + curElement->lenTagName + curElement->lenPrefix + 1)//Impossible que les tags correspondent
                     {
@@ -680,7 +680,7 @@ Node** Node::fromText(char const *data, const size_t lendata, size_t *nodeCount)
 
                         continue;
                     }
-                }
+                }*/
                 //Les tags ne correspondent pas
                 else if(memcmp(pos, curElement->tagName, curElement->lenTagName) != 0)
                 {

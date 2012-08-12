@@ -24,6 +24,7 @@
 #include "gbi.h"
 #include "document.h"
 #include "element.h"
+#include "textnode.h"
 
 #define THIS (static_cast<CNode*>(_object)->node)
 
@@ -288,6 +289,18 @@ THIS->addUserData(STRING(key), LENGTH(key), ARG(value));
 
 END_METHOD
 
+BEGIN_METHOD(CNode_escapeContent, GB_STRING data)
+
+char *escapedData; size_t lenEscapedData;
+
+TextNode::escapeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);
+
+GB.ReturnNewString(escapedData, lenEscapedData);
+
+free(escapedData);
+
+END_METHOD
+
 GB_DESC CElementAttributeNodeDesc[] =
 {
     GB_DECLARE("_XmlAttrNode", sizeof(CNode)), GB_INHERITS("XmlNode"),
@@ -340,6 +353,8 @@ GB_DESC CNodeDesc[] =
     GB_PROPERTY("TextContent", "s", CNode_textContent),
     GB_PROPERTY("Value", "s", CNode_textContent),
     GB_PROPERTY("Name", "s", CNode_name),
+
+    GB_STATIC_METHOD("Serialize", "s", CNode_escapeContent, "(Data)s"),
     
     //Obsolete methods
     GB_METHOD("NewElement", "", CNode_newElement, "(Name)s[(Value)s]"),

@@ -34,16 +34,24 @@ BEGIN_METHOD(CDocument_new, GB_STRING fileName)
 if(Node::NoInstanciate) return;
 if(GB.Is(_object, GB.FindClass("HtmlDocument"))) return;//Called as inherited HtmlDocument constructor
 
-if(!MISSING(fileName))
+try
 {
-    THIS = new Document(STRING(fileName), LENGTH(fileName));
+    if(!MISSING(fileName))
+    {
+        THIS = new Document(STRING(fileName), LENGTH(fileName));
+    }
+    else
+    {
+        THIS = new Document();
+    }
+
+    THIS->GBObject = (CDocument*)(_object);
+
 }
-else
+catch(XMLParseException &e)
 {
-    THIS = new Document();
+    GB.Error(e.what());
 }
-    
-THIS->GBObject = (CDocument*)(_object);
 
 END_METHOD
 

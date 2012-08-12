@@ -140,7 +140,7 @@ Public Sub Attribute(Name As String, Value As String, Optional Prefix As String,
     Name = Prefix & ":" & Name
   Endif
   
-  sData = " " & Name & "=\"" & Value & "\""
+  sData = " " & Name & "=\"" & XmlNode.Serialize(Value) & "\""
   
   If URI Then sData &= " xmlns" & If(Prefix, ":" & Prefix, "") & "=\"" & URI & "\""
   
@@ -168,7 +168,7 @@ Public Sub Text(Text As String)
     Write(">", True)
     $TagEnded = True
   Endif
-  Write(Text, True)
+  Write(XmlNode.Serialize(Text), True)
   $lastWasElement = False
   
 End
