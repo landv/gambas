@@ -9,8 +9,8 @@ GB_COMPONENT(
   GMP,
   gb.gmp,
   [src],
-  [GB_FIND(gmp.h, /usr/local /usr, include)],
-  [GB_FIND(libgmp.$SHLIBEXT, /usr/local /usr, lib)],
+  [GB_FIND(gmp.h, /usr/local /usr /opt/local, include)],
+  [GB_FIND(libgmp.$SHLIBEXT, /usr/local /usr /opt/local, lib)],
   [$C_LIB -lgmp],
   [ ])
 AC_OUTPUT( Makefile src/Makefile )
