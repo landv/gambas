@@ -463,11 +463,13 @@
     { lblDiff Label
       MoveScaled(1,2,75,4)
       Font = Font["Bold"]
-      Background = Color.TextBackground
       Foreground = Color.TextForeground
-      Padding = 4
+      AutoResize = True
       Text = ("Changes since last commit")
       Alignment = Align.TopNormal
+    }
+    { sepCommit Separator
+      MoveScaled(42,7,15,0)
     }
     { edtDiff Editor
       MoveScaled(2,9,43,11)

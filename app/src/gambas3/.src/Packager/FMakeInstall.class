@@ -213,7 +213,7 @@ Private Sub InitSystemControls()
   
   For Each hCont In panSystem.Children
   
-    hCont.H = Desktop.Scale * 7
+    hCont.H = Desktop.Scale * 6
     sMsg = Package.CheckSystem(hCont.Tag)
     
     hPanel = Null
@@ -245,8 +245,8 @@ Private Sub InitSystemControls()
       hPanel2.Margin = True
       
         hPict = New PictureBox(hPanel2)
-        hPict.Picture = Picture["icon:/24/warning"]
-        hPict.Width = 24
+        hPict.Picture = Picture["icon:/16/warning"]
+        hPict.Width = 16
         hPict.Alignment = Align.Center
         
         hLabel = New TextLabel(hPanel2)
@@ -270,7 +270,7 @@ Private Sub InitSystemControls()
     hTool.Design = True
     hTool.Enabled = hCheckBox.Value
     hTool.Width = hTool.Height
-    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 12, hTool.Height - 12).Picture
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 16, hTool.Height - 16).Picture
     
     hPanel.Visible = sMsg
 
@@ -365,7 +365,7 @@ Public Sub wizInstall_BeforeChange()
         Return
       Endif
 
-      InitSystemControls      
+      InitSystemControls
 
     Case 2
       

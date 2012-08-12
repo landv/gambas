@@ -1447,6 +1447,8 @@ Public Sub tvwProject_Drop()
   Dim sSrc As String = Drag.Data
   
   'Debug Drag.Format;; Drag.Data
+  '
+  Project.FillDir($sKey)
   
   If Drag.Format = MMime.URI Then
     

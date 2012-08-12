@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,81)
+  MoveScaled(0,0,92,71)
   Text = ("Make installation package")
   Icon = Picture["icon:/small/package"]
   Arrangement = Arrange.Fill
   Margin = True
   { wizInstall Wizard
-    MoveScaled(1,1,89,79)
+    MoveScaled(1,1,89,69)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 11
@@ -38,15 +38,16 @@
       }
     }
     { TextLabel2 TextLabel
-      MoveScaled(1,18,64,4)
+      MoveScaled(1,15,64,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Maintainer information")
       Alignment = Align.BottomNormal
     }
     { HBox1 HBox
-      MoveScaled(1,22,71,4)
+      MoveScaled(1,20,71,4)
       Spacing = True
+      Indent = True
       { Label1 Label
         MoveScaled(0,0,23,4)
         Text = ("Name")
@@ -57,8 +58,9 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(1,27,70,4)
+      MoveScaled(1,25,70,4)
       Spacing = True
+      Indent = True
       { Label2 Label
         MoveScaled(0,0,23,4)
         Text = ("E-mail")
@@ -69,8 +71,9 @@
       }
     }
     { HBox8 HBox
-      MoveScaled(1,32,70,4)
+      MoveScaled(1,30,70,4)
       Spacing = True
+      Indent = True
       { Label3 Label
         MoveScaled(0,0,23,4)
         Text = ("Vendor name")
@@ -81,8 +84,9 @@
       }
     }
     { HBox16 HBox
-      MoveScaled(1,37,70,4)
+      MoveScaled(1,35,70,4)
       Spacing = True
+      Indent = True
       { Label7 Label
         MoveScaled(0,0,23,4)
         Text = ("URL")
@@ -92,28 +96,38 @@
         Expand = True
       }
     }
-    { Label6 Label
-      MoveScaled(1,41,68,4)
-      Font = Font["Bold"]
-      Text = ("Description")
-      Alignment = Align.BottomNormal
+    { Panel1 HBox
+      MoveScaled(1,40,72,12)
+      Spacing = True
+      { Panel4 VBox
+        MoveScaled(0,0,24,10)
+        { Label6 Label
+          MoveScaled(0,0,23,4)
+          Font = Font["Bold"]
+          Text = ("Description")
+        }
+      }
+      { txtDescribe TextArea
+        MoveScaled(25,0,46,12)
+        Expand = True
+        Wrap = True
+      }
     }
-    { txtDescribe TextArea
-      MoveScaled(1,46,71,13)
-      Expand = True
-      Wrap = True
-    }
-    { Label5 Label
-      MoveScaled(1,58,70,4)
-      Font = Font["Bold"]
-      Text = ("License")
-      Alignment = Align.BottomNormal
-    }
-    { txtLicense ComboBox
-      MoveScaled(1,63,71,4)
-      #Translate = False
-      List = ["General Public License", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-free License"]
-      Sorted = True
+    { Panel2 HBox
+      MoveScaled(1,53,73,4)
+      Spacing = True
+      { Label5 Label
+        MoveScaled(0,0,24,4)
+        Font = Font["Bold"]
+        Text = ("License")
+      }
+      { txtLicense ComboBox
+        MoveScaled(25,0,46,4)
+        #Translate = False
+        Expand = True
+        List = ["General Public License", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-free License"]
+        Sorted = True
+      }
     }
     Index = 1
     Text = ("Changelog")
@@ -141,7 +155,7 @@
     Index = 2
     Text = ("Target distribution")
     { panSystem ScrollView
-      MoveScaled(1,0,88,66)
+      MoveScaled(1,0,88,56)
       Expand = True
       Arrangement = Arrange.Vertical
       Border = False
@@ -211,7 +225,7 @@
           MoveScaled(9,1,26,4)
           #Translate = False
           Expand = True
-          Text = "Fedora"
+          Text = "Fedora / RedHat / CentOS"
         }
       }
       { HBox3 HBox panDistro
@@ -296,7 +310,7 @@
           MoveScaled(9,1,26,4)
           #Translate = False
           Expand = True
-          Text = "Ubuntu"
+          Text = "Ubuntu / Mint"
         }
       }
     }
@@ -501,17 +515,17 @@
       Text = ("Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>")
     }
     { txtTests TextArea
-      MoveScaled(1,15,71,49)
+      MoveScaled(1,15,71,34)
       Expand = True
     }
     Index = 9
     Text = ("Destination directory")
     { dchInstall DirChooser
-      MoveScaled(1,0,72,58)
+      MoveScaled(1,0,72,50)
       Expand = True
     }
     { chkCreateDir CheckBox
-      MoveScaled(1,60,69,4)
+      MoveScaled(1,53,69,4)
       Text = ("Create directories for each distribution")
     }
     Index = 10

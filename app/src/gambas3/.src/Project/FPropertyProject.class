@@ -803,6 +803,7 @@ Public Sub tabProject_Click()
       If $sVerCtrlStatus Then
         edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
         edtDiff.Show
+        sepCommit.Show
         lblDiff.Text = ("Changes since last commit")
         lblDiff.Font.Italic = False
         lblDiff.Font.Bold = True
@@ -810,12 +811,14 @@ Public Sub tabProject_Click()
         'lblNoDiff.Hide
       Else
         edtDiff.Hide
+        sepCommit.Hide
         lblDiff.Text = ("There is no change to commit.")
         lblDiff.Font.Italic = True
         lblDiff.Font.Bold = False
         lblDiff.Expand = True
         'lblNoDiff.Show
       Endif
+      lblDiff.Padding = Desktop.Scale
       btnCommit.Enabled = Len($sVerCtrlStatus)
       btnRevert.Enabled = btnCommit.Enabled
       Dec Application.Busy
