@@ -299,12 +299,12 @@ void Element::addStringLen(size_t &len, int indent)
     // (indent) '<' + prefix:tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' \n
     if(isSingle())
     {
-        len += (4 + lenTagName + (prefix ? lenPrefix + 1 : 0));
+        len += (4 + lenTagName);
         if(indent >= 0) len += indent + 1;
     }
     else
     {
-        len += (5 + ((lenTagName + (prefix ? lenPrefix + 1 : 0)) * 2));
+        len += (5 + ((lenTagName) * 2));
         if(indent >= 0) len += indent * 2 + 2;
         for(Node *child = firstChild; child != 0; child = child->nextNode)
         {
@@ -334,11 +334,6 @@ void Element::addString(char *&content, int indent)
         content += indent;
     }
     ADD(CHAR_STARTTAG);
-    if(prefix)
-    {
-        memcpy(content, prefix, lenPrefix); content += lenPrefix;
-        ADD(':');
-    }
     memcpy(content, tagName, lenTagName); content += lenTagName;
     
     //Attributes
@@ -379,11 +374,6 @@ void Element::addString(char *&content, int indent)
         //Ending Tag    
         ADD(CHAR_STARTTAG);
         ADD(CHAR_SLASH);
-        if(prefix)
-        {
-            memcpy(content, prefix, lenPrefix); content += lenPrefix;
-            ADD(':');
-        }
         memcpy(content, tagName, lenTagName); content += lenTagName;
         ADD(CHAR_ENDTAG); 
         if(indent >= 0) { ADD(SCHAR_N); }
