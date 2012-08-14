@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  csignal.c
+	csignal.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -36,239 +36,132 @@
 #define SIGPOLL SIGIO
 #endif
 
+// The "-1" signal is used for ignoring signal numbers
+
 #ifndef SIGPWR
 #define SIGPWR -1
 #endif
 
-// How could the following fix a BSD warning if it is not compiled on BSD systems?
+#ifdef OS_CYGWIN
+#define SIGIOT -1
+#endif
 
-/*#if !defined(OS_BSD) && !defined(OS_CYGWIN)
-typedef
-	struct siginfo siginfo_t;
-#endif*/
 
-// The -1 signal is used for ignored signal numbers
+#define NUM_SIGNALS 32
 
-/*#define DEBUG*/
-
-#define SIGNAL_MAX 31
+enum {
+	SH_DEFAULT = 0,
+	SH_IGNORE = 1,
+	SH_CATCH = 2
+};
 
 typedef
 	struct SIGNAL_HANDLER {
-		struct SIGNAL_HANDLER *next;
-		struct SIGNAL_HANDLER *prev;
-		int num;
-		bool catch;
+		GB_SIGNAL_CALLBACK *handler;
 		struct sigaction action;
+		char state;
 	}
 	SIGNAL_HANDLER;
 
+static SIGNAL_HANDLER _signals[NUM_SIGNALS] = { { 0 } };
 static int _signal = -1;
-static SIGNAL_HANDLER *_handlers = NULL;
-static bool _init_signal = FALSE;
-static int _num_signal_watch = 0;
-static int _pipe_signal[2];
 static GB_FUNCTION _application_signal_func;
-
-static void callback_signal(int fd, int type, void *data)
-{
-	char num;
-
-	fprintf(stderr, "callback_signal\n");
-	if (read(fd, &num, 1) != 1)
-		return;
-
-	GB.Push(1, GB_T_INTEGER, num);
-	GB.Call(&_application_signal_func, 1, TRUE);
-}
+static bool _init_signal = FALSE;
 
 static void init_signal(void)
 {
-	_num_signal_watch++;
-	if (_num_signal_watch > 1)
-		return;
-
 	if (GB.GetFunction(&_application_signal_func, (void *)GB.Application.StartupClass(), "Application_Signal", "i", ""))
 	{
 		GB.Error("No Application_Signal event handler defined in startup class");
 		return;
 	}
 
-	if (pipe(_pipe_signal) != 0)
-	{
-		GB.Error("Cannot create signal handler pipes");
-		return;
-	}
-
-	fcntl(_pipe_signal[0], F_SETFD, FD_CLOEXEC);
-	fcntl(_pipe_signal[1], F_SETFD, FD_CLOEXEC);
-
-	GB.Watch(_pipe_signal[0], GB_WATCH_READ, (void *)callback_signal, 0);
 	_init_signal = TRUE;
+}
+
+static void catch_signal(int num, intptr_t data)
+{
+	GB.Push(1, GB_T_INTEGER, num);
+	GB.Call(&_application_signal_func, 1, TRUE);
+}
+
+static void handle_signal(int num, char state)
+{
+	struct sigaction action;
+	SIGNAL_HANDLER *sh;
+	
+	if (num < 0)
+		return;
+	
+	sh = &_signals[num];
+	
+	if (sh->state == state)
+		return;
+	
+	if (sh->state == SH_IGNORE)
+	{
+		if (sigaction(num, &sh->action, NULL))
+		{
+			GB.Error("Unable to reset signal handler");
+			return;
+		}
+	}
+	else if (sh->state == SH_CATCH)
+	{
+		if (sh->handler)
+		{
+			GB.Signal.Unregister(num, sh->handler);
+			sh->handler = NULL;
+		}
+	}
+	
+	if (state == SH_IGNORE)
+	{
+		action.sa_handler = SIG_IGN;
+		sigemptyset(&action.sa_mask);
+		action.sa_flags = 0;
+		
+		if (sigaction(num, &action, &sh->action))
+		{
+			GB.Error("Unable to modify signal handler");
+			return;
+		}
+	}
+	else if (state == SH_CATCH)
+	{
+		if (!_init_signal)
+			init_signal();
+		
+		sh->handler = GB.Signal.Register(num, catch_signal, 0);
+	}
+	
+	sh->state = state;
 }
 
 static void exit_signal(void)
 {
-	if (_num_signal_watch <= 0)
-		return;
-	_num_signal_watch--;
-	if (_num_signal_watch)
-		return;
-
-	GB.Watch(_pipe_signal[0], GB_WATCH_NONE, NULL, 0);
-	close(_pipe_signal[0]);
-	close(_pipe_signal[1]);
+	int i;
 	
-	_init_signal = FALSE;
+	for (i = 0; i < NUM_SIGNALS; i++)
+		handle_signal(i, SH_DEFAULT);
 }
 
-static SIGNAL_HANDLER *find_handler(int num)
-{
-	SIGNAL_HANDLER *sh;
-	
-	sh = _handlers;
-	while (sh)
-	{
-		if (sh->num == num)
-			return sh;
-		sh = sh->next;
-	}
-	
-	return NULL;
-}
-
-static void remove_handler(SIGNAL_HANDLER *handler)
-{
-	if (handler->prev)
-		handler->prev->next = handler->next;
-	if (handler->next)
-		handler->next->prev = handler->prev;
-	if (handler == _handlers)
-		_handlers = handler->next;
-	
-	if (handler->catch)
-		exit_signal();
-	
-	GB.Free(POINTER(&handler));
-}
-
-static void add_handler(int num, struct sigaction *action)
-{
-	SIGNAL_HANDLER *sh;
-	
-	sh = find_handler(num);
-	if (sh)
-	{
-		sigaction(num, action, NULL);
-		return;
-	}
-	
-	GB.Alloc(POINTER(&sh), sizeof(SIGNAL_HANDLER));
-	
-	sh->num = num;
-	sh->next = _handlers;
-	sh->prev = NULL;
-	_handlers = sh;
-	
-	sh->catch = (action->sa_flags & SA_SIGINFO) != 0;
-	if (sh->catch)
-		init_signal();
-	
-	if (sigaction(num, action, &sh->action))
-	{
-		GB.Error("Unable to modify signal handler");
-		exit_signal();
-		return;
-	}
-}
-
-static void handle_signal(int num, siginfo_t *info, void *context)
-{
-	SIGNAL_HANDLER *sh;
-	char cnum = (char)num;
-	int save_errno;
-	
-	save_errno = errno;
-
-	for(;;)
-	{
-		if (write(_pipe_signal[1], &cnum, 1) == 1)
-			break;
-		
-		if (errno != EINTR)
-			break;
-	}
-	
-	// Call old signal handler
-		
-	sh = find_handler(num);
-	
-	if (sh->action.sa_handler != SIG_DFL && sh->action.sa_handler != SIG_IGN)
-	{
-		if (sh->action.sa_flags & SA_SIGINFO)
-		{
-			//fprintf(stderr, "Calling old action %p\n", _old_SIGCHLD_action.sa_sigaction);
-			(*sh->action.sa_sigaction)(num, info, context);
-		}
-		else
-		{
-			//fprintf(stderr, "Calling old handler %p\n", _old_SIGCHLD_action.sa_handler);
-			(*sh->action.sa_handler)(num);
-		}
-	}
-	
-	errno = save_errno;
-}
 
 BEGIN_METHOD_VOID(Signal_Reset)
 
-	SIGNAL_HANDLER *sh;
-	
-	if (_signal < 0)
-		return;
-
-	sh = find_handler(_signal);
-	
-	if (!sh)
-		return;
-	
-	if (sigaction(_signal, &sh->action, NULL))
-	{
-		GB.Error("Unable to reset signal handler");
-		return;
-	}
-	
-	remove_handler(sh);
+	handle_signal(_signal, SH_DEFAULT);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(Signal_Ignore)
 
-	struct sigaction action;
-
-	if (_signal < 0)
-		return;
-	
-	action.sa_handler = SIG_IGN;
-	sigemptyset(&action.sa_mask);
-	action.sa_flags = 0;
-	
-	add_handler(_signal, &action);
+	handle_signal(_signal, SH_IGNORE);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(Signal_Catch)
 
-	struct sigaction action;
-
-	if (_signal < 0)
-		return;
-	
-	action.sa_sigaction = handle_signal;
-	sigemptyset(&action.sa_mask);
-	action.sa_flags = SA_SIGINFO;
-	
-	add_handler(_signal, &action);
+	handle_signal(_signal, SH_CATCH);
 
 END_METHOD
 
@@ -276,7 +169,7 @@ BEGIN_METHOD(Signal_get, GB_INTEGER num)
 
 	int num = VARG(num);
 
-	if (num < -1 || num > SIGNAL_MAX)
+	if (num < -1 || num >= NUM_SIGNALS)
 	{
 		GB.Error("Bad signal number");
 		return;
@@ -291,27 +184,23 @@ BEGIN_METHOD_VOID(Signal_exit)
 
 	exit_signal();
 
-	while (_handlers)
-		remove_handler(_handlers);
-
 END_METHOD
 
 
 GB_DESC CSignalHandlerDesc[] =
 {
-  GB_DECLARE(".SignalHandler", 0), GB_VIRTUAL_CLASS(),
-  
-  GB_STATIC_METHOD("Reset", NULL, Signal_Reset, NULL),
-  GB_STATIC_METHOD("Ignore", NULL, Signal_Ignore, NULL),
-  GB_STATIC_METHOD("Catch", NULL, Signal_Catch, NULL),
-  
-  GB_END_DECLARE
+	GB_DECLARE_VIRTUAL(".SignalHandler"),
+	
+	GB_STATIC_METHOD("Reset", NULL, Signal_Reset, NULL),
+	GB_STATIC_METHOD("Ignore", NULL, Signal_Ignore, NULL),
+	GB_STATIC_METHOD("Catch", NULL, Signal_Catch, NULL),
+	
+	GB_END_DECLARE
 };
 
 GB_DESC CSignalDesc[] =
 {
-  GB_DECLARE("Signal", 0),
-  GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL("Signal"),
 
 	GB_CONSTANT("SIGHUP", "i", SIGHUP),
 	GB_CONSTANT("SIGINT", "i", SIGINT),
@@ -319,10 +208,7 @@ GB_DESC CSignalDesc[] =
 	GB_CONSTANT("SIGILL", "i", SIGILL),
 	GB_CONSTANT("SIGTRAP", "i", SIGTRAP),
 	GB_CONSTANT("SIGABRT", "i", SIGABRT),
-#ifndef OS_CYGWIN
-	// Cygwin doesn't define this SIGNAL
 	GB_CONSTANT("SIGIOT", "i", SIGIOT),
-#endif
 	GB_CONSTANT("SIGBUS", "i", SIGBUS),
 	GB_CONSTANT("SIGFPE", "i", SIGFPE),
 	GB_CONSTANT("SIGKILL", "i", SIGKILL),
@@ -352,9 +238,9 @@ GB_DESC CSignalDesc[] =
 	GB_CONSTANT("SIGSYS", "i", SIGSYS),
 
 	GB_STATIC_METHOD("_exit", NULL, Signal_exit, NULL),
-  
-  GB_STATIC_METHOD("_get", ".SignalHandler", Signal_get, "(Signal)i"),
+	
+	GB_STATIC_METHOD("_get", ".SignalHandler", Signal_get, "(Signal)i"),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
