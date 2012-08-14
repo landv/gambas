@@ -967,7 +967,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 		}
 	}
 
-	func->object = object;
+	func->object = kind == CD_STATIC_METHOD ? NULL : object;
 	func->desc = &desc->method;
 
 	if (!func->desc)
