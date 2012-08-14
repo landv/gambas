@@ -1,11 +1,10 @@
 ' Gambas class file
 
 Private $sType As String
-Private $hSymbol As CSymbolInfo
 
 Static Private MAGIC_NUMBER As Integer = 314159265
 
-Static Public Sub Get(sType As String, Optional hSymbol As CSymbolInfo) As Variant
+Static Public Sub Get(sType As String) As Variant
   
   Dim vVal As Variant
   
@@ -24,7 +23,7 @@ Static Public Sub Get(sType As String, Optional hSymbol As CSymbolInfo) As Varia
     Case "l"
       vVal = CLong(MAGIC_NUMBER)
     Case "o"
-      vVal = New CExpressionSymbol("o", Null)
+      vVal = New CDatatype("o")
     Case "p"
       vVal = CPointer(MAGIC_NUMBER)
     Case "h"
@@ -34,9 +33,9 @@ Static Public Sub Get(sType As String, Optional hSymbol As CSymbolInfo) As Varia
     Case "s"
       vVal = "Gambas"
     Case "v"
-      vVal = New CExpressionSymbol("v", Null)
+      vVal = New CDatatype("v")
     Case Else
-      vVal = New CExpressionSymbol(sType, hSymbol)
+      vVal = New CDatatype(sType)
     
   End Select
 
@@ -44,11 +43,15 @@ Static Public Sub Get(sType As String, Optional hSymbol As CSymbolInfo) As Varia
   
 End
 
+Static Public Sub __Make(hArray As Object) As CDatatype
+  
+  Return New CDatatype(Object.Type(hArray))
+  
+End
 
-Public Sub _new(sType As String, hSymbol As CSymbolInfo)
+Public Sub _new(sType As String)
   
   $sType = sType
-  $hSymbol = hSymbol
   
 End
 
@@ -81,7 +84,7 @@ Public Sub _unknown(...) As Variant
   Dim hSymbol As CSymbolInfo  
 
   Try hSymbol = CComponent.GetClassSymbols($sType)[Param.Name]
-  If hSymbol Then Return Get(hSymbol.Type, hSymbol)
+  If hSymbol Then Return Get(hSymbol.Type)
   
 End
 
@@ -90,3 +93,4 @@ Public Sub __GetType() As String
   Return $sType
   
 End
+

@@ -1114,7 +1114,7 @@ Public Sub Editors_KeyPress()
       Endif
     Endif
 
-    CreateLocalVariable()
+    If CreateLocalVariable() Then iLine = Editor.Line
     
     If DoStructControlCompletion(iLine, sLine, aSymbol) Then Return
 
@@ -3444,19 +3444,39 @@ Public Sub GetFunctionSource(Optional sFunc As String) As String
   
 End
 
+Private Sub FindNextBracket(aSym As String[], I As Integer) As Integer
+  
+  Dim iLevel As Integer
+  
+  While I < aSym.Count
+    If aSym[I] = "[" Then
+      Inc iLevel
+    Else If aSym[I] = "]" Then
+      Dec iLevel
+      If iLevel = 0 Then Break
+    Endif
+    Inc I
+  Wend
+  
+  Return I
+  
+End
+
+
 Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As String
   
-  Dim I, N As Integer
+  Dim I, I2, N As Integer
   Dim cExpr As New Collection
   Dim sExpr As String
   Dim sType As String
   Dim hSymbol As CSymbolInfo
-  Dim hExpr As CExpressionSymbol
+  Dim hType As CDatatype
   Dim vVal As Variant
+  Dim bMakeArray As Boolean
   
-  For I = 0 To aSym.Max
+  While I < aSym.Count
     
-    hExpr = Null
+    hType = Null
     hSymbol = Null
     sType = ""
     
@@ -3472,22 +3492,38 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
       sType = GetSymbolType(aSym[I])
       
+    Else If aSym[I] = "[" Then
+      
+      bMakeArray = True
+      If I > 0 Then 
+        If aType[I - 1] = Highlight.Symbol Or If aSym[I - 1] = ")" Then bMakeArray = False
+      Endif
+      
+      If bMakeArray Then
+        I2 = FindNextBracket(aSym, I)
+        sExpr &= "CDatatype.__Make("
+        aSym.Add(")", I2 + 1)
+        aType.Add(Highlight.Operator, I2 + 1)
+      Endif
+      
     Endif
     
     If sType Then
       
       Inc N
       sExpr &= "__" & CStr(N)
-      cExpr["__" & CStr(N)] = CExpressionSymbol.Get(sType, $hSymbol)
+      cExpr["__" & CStr(N)] = CDatatype.Get(sType)
       
     Else
       sExpr &= aSym[I]
     Endif
     
-  Next
+    Inc I
+  Wend
   
+  Print sExpr
   vVal = Eval(sExpr, cExpr)
-  Try hExpr = vVal
+  Try hType = vVal
   If Error Then 
     Select TypeOf(vVal)
       Case gb.Boolean
@@ -3516,7 +3552,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
         Return "v"
     End Select
   Else
-    Return hExpr.__GetType()
+    Return hType.__GetType()
   Endif
   
 Catch
@@ -3527,9 +3563,13 @@ End
 
 Private Sub AddLocalVariable(sName As String, sType As String)
   
-  Dim I, iLine As Integer = GetCurrentProcLine(Editor.Line)
+  Dim iProc As Integer = GetCurrentProcLine(Editor.Line)
+  Dim iLine As Integer
+  Dim I As Integer
   Dim sLine As String
-  Dim iIndent As Integer
+  Dim iIndent As Integer = Project.TabSize
+  
+  I = iProc
   
   Do
     Inc I
@@ -3555,18 +3595,23 @@ Private Sub AddLocalVariable(sName As String, sType As String)
     Inc I
   Loop
   
-  Editor.Insert(Space$(iIndent) & "Dim " & sName & " As " & sType & "\n", iLine, 0)
+  sLine = Space$(iIndent) & "Dim " & sName & " As " & sType & "\n"
+  If Trim(Editor.Lines[iLine].Text) Then sLine &= Space$(iIndent) & "\n"
+  If iLine = (iProc + 1) Then sLine = "\n" & sLine
+  Editor.Insert(sLine, iLine, 0)
   
 End
 
 
-Private Sub CreateLocalVariable()
+Private Sub CreateLocalVariable() As Boolean
 
-  Dim aSym As String[] = Highlight.Symbols
-  Dim aType As Integer[] = Highlight.Types
+  Dim aSym As String[] = Highlight.Symbols.Copy()
+  Dim aType As Integer[] = Highlight.Types.Copy()
   Dim sName As String
   Dim sType As String
-
+  Dim I As Integer
+ 
+  ' Assignment
   If aSym.Count >= 3 And If aType[0] = Highlight.Symbol And If aSym[1] = "=" Then
     
     sName = aSym[0]
@@ -3575,9 +3620,60 @@ Private Sub CreateLocalVariable()
     
     aSym.Remove(0, 2)
     aType.Remove(0, 2)
+    
+    If aSym[0] = "NEW" Then
+      If aSym.Count >= 2 Then
+        sType = aSym[1]
+        If aSym.Count >= 3 And If aSym[2] = "[" Then sType = Left(sType) & LCase(Mid$(sType, 2)) & "[]"
+      Endif
+    Else If aSym[0] = "OPEN" Or If aSym[0] = "PIPE" Or If aSym[0] = "LOCK" Or If aSym[0] = "MEMORY" Then
+      sType = "File"
+    Else If aSym[0] = "SHELL" Or If aSym[0] = "EXEC" Then
+      sType = "Process"
+    Else If aSym[0] = "RAISE"
+      sType = "b"
+    Else
+      sType = GetExpressionTypeWithEval(aSym, aType)
+    Endif
+
+  ' For ... To
+  Else If aSym.Count >= 6 And If aSym[0] = "FOR" And If aType[1] = Highlight.Symbol And If aSym[2] = "=" Then
+    
+    sName = aSym[1]
+    sType = GetSymbolType(sName)
+    If sType Then Return
+  
+    aSym.Remove(0, 3)
+    aType.Remove(0, 3)
+    
+    For I = 0 To aSym.Max
+      If aSym[I] = "TO" Or If aSym[I] = "DOWNTO" Then
+        aSym.Remove(I, -1)
+        aType.Remove(I, -1)
+        Break
+      Endif
+    Next
+    
     sType = GetExpressionTypeWithEval(aSym, aType)
-    If sType Then AddLocalVariable(sName, CSymbolInfo.GetType(sType))
-      
+  
+  ' For Each ... In
+  Else If aSym.Count >= 5 And If aSym[0] = "FOR" And If asym[1] = "EACH" And If aType[2] = Highlight.Symbol And If aSym[3] = "IN" Then
+    
+    sName = aSym[2]
+    sType = GetSymbolType(sName)
+    If sType Then Return
+  
+    aSym.Remove(0, 4)
+    aType.Remove(0, 4)
+    
+    aSym.Insert([".", "_next", "(", ")"])
+    aType.Insert([Highlight.Operator, Highlight.Symbol, Highlight.Operator, Highlight.Operator])
+    
+    sType = GetExpressionTypeWithEval(aSym, aType)
+  
   Endif
 
+  If sType Then AddLocalVariable(sName, CSymbolInfo.GetType(sType))
+  Return True
+  
 End
