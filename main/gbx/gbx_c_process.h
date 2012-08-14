@@ -46,8 +46,6 @@ typedef
     CSTREAM ob;
     struct _CPROCESS *prev;
     struct _CPROCESS *next;
-    /*char *param[];*/
-    /*char *cmd;*/
     pid_t pid;
     int in;
     int out;

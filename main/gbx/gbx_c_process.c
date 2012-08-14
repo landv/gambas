@@ -1078,9 +1078,6 @@ GB_DESC NATIVE_Process[] =
 	GB_METHOD("Signal", NULL, Process_Signal, NULL),
 	GB_METHOD("Wait", NULL, Process_Wait, NULL),
 
-	//GB_METHOD("Send", NULL, CPROCESS_send, "(Input)s"),
-	//GB_METHOD("_print", NULL, CPROCESS_send, "(Input)s"),
-
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
 	GB_EVENT("Kill", NULL, NULL, &EVENT_Kill),

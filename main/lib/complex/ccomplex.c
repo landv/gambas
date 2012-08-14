@@ -50,7 +50,19 @@ CCOMPLEX *COMPLEX_create(double re, double im)
 	return c;
 }
 
-#define COMPLEX_make(_a, _re, _im) (((_a)->ob.ref <= 1) ? ((_a)->v[0] = (_re), (_a)->v[1] = (_im), (_a)) : COMPLEX_create(_re, _im))
+//#define COMPLEX_make(_a, _re, _im) (((_a)->ob.ref <= 1) ? ((_a)->v[0] = (_re), (_a)->v[1] = (_im), (_a)) : COMPLEX_create((_re), (_im)))
+
+static inline CCOMPLEX *COMPLEX_make(CCOMPLEX *a, const double re, const double im)
+{
+	if (a->ob.ref <= 1)
+	{
+		a->v[0] = re;
+		a->v[1] = im;
+		return a;
+	}
+	else
+		return COMPLEX_create(re, im);
+}
 
 CCOMPLEX *COMPLEX_push_complex(double value)
 {
