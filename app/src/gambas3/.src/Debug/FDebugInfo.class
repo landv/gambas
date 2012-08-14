@@ -1169,6 +1169,12 @@ End
 Public Sub btnClearSearch_Click()
 
   FSearch.ResetBrowse
+  If tabDebug[TAB_CONSOLE].Visible Then
+    tabDebug.Index = TAB_CONSOLE
+  Else
+    tabDebug.Index = TAB_BREAK
+  Endif
+  
   tabDebug[TAB_SEARCH].Visible = False
 
 End

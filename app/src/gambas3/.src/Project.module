@@ -408,6 +408,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Endif
 
   If bInAnotherWindow Then
+    Config.Save
+    Settings.Save
     Exec [Application.Path &/ Application.Name & ".gambas", sDir]
     Return True
   Endif

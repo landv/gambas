@@ -102,6 +102,7 @@ Public Sub _new()
     [cmbMinimize, "/MinimizeOnRun", 0],
     [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
     [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1],
+    [cmbLocalVarDecl, "/Editor/LocalVariableDeclaration", 1],
     [cmbIndentDim, "/FormatCode/IndentLocal", 1],
     [cmbRemoveSpace, "/FormatCode/RemoveSpaces", 0],
     [cmbKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
@@ -624,6 +625,13 @@ Public Sub cmbControlStructCompletion_Click()
 
   Settings["/Editor/ControlStructCompletion"] = cmbControlStructCompletion.Index = 1
   FEditor.StructControlCompletion = cmbControlStructCompletion.Index = 1
+
+End
+
+Public Sub cmbLocalVarDecl_Click()
+
+  Settings["/Editor/LocalVariableDeclaration"] = cmbLocalVarDecl.Index = 1
+  FEditor.LocalVariableDeclaration = cmbLocalVarDecl.Index = 1
 
 End
 

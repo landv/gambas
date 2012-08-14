@@ -36,6 +36,7 @@ Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
 Public Const NBR_COLOR As Integer = 15
 
 Static Public StructControlCompletion As Boolean = True
+Static Public LocalVariableDeclaration As Boolean = True
 Static Public ExpressionStart As Integer
 
 Static Private $cStructClose As New Collection(gb.IgnoreCase)
@@ -1113,6 +1114,8 @@ Public Sub Editors_KeyPress()
       Endif
     Endif
 
+    CreateLocalVariable()
+    
     If DoStructControlCompletion(iLine, sLine, aSymbol) Then Return
 
   Else If Key.Code = Key.Space Then
@@ -1660,10 +1663,9 @@ Static Public Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, 
           hSymbol.Type = sType & "[]"
           Return True
         Endif
-
-        If $cType.Exist(sType) Then sType = $cType[sType]
-
       Endif
+
+      If $cType.Exist(sType) Then sType = $cType[sType]
 
       hSymbol.Type = sType
       Return True
@@ -1959,44 +1961,6 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
 
   $hSymbol = Null
 
-  ' 'IF aExpr.Count = 0 THEN RETURN
-  '
-  ' iInd = aExpr.Count - 1
-  '
-  ' For iInd = iInd To 0 Step -1
-  '
-  '   sPattern = aExpr[iInd]
-  '   If sPattern = ")" Then
-  '     aWait.Push("(")
-  '     bLastSymbol = False
-  '     Continue
-  '   Else If sPattern = "]" Then
-  '     aWait.Push("[")
-  '     bLastSymbol = False
-  '     Continue
-  '   Else If aWait.Count Then
-  '     If sPattern = aWait[aWait.Count - 1] Then
-  '       aWait.Pop
-  '     Endif
-  '     bLastSymbol = False
-  '     Continue
-  '   Else If sPattern = "." Then
-  '     bLastSymbol = False
-  '     Continue
-  '   Else If IsTypeSymbol(sPattern, aType[iInd]) Then
-  '     If Not bLastSymbol Then
-  '       bLastSymbol = True
-  '       Continue
-  '     Endif
-  '   Endif
-  '
-  '   Break
-  '
-  ' Next
-  '
-  ' aWait.Clear
-  ' Inc iInd
-
   iInd = GetExpressionStart(aExpr, aType)
 
   If iInd >= aExpr.Count Then
@@ -2088,10 +2052,16 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
         $bLastStatic = False
       Endif
     Else If sPattern = "]" Then
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
-      If Not $hSymbol Then Return
-      sType = $hSymbol.Type
-      $bLastStatic = False ' A method cannot return static classes
+      
+      If Not sType Then ' Array constructor operator [ ... ]
+        Return
+      Else
+        Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+        If Not $hSymbol Then Return
+        sType = $hSymbol.Type
+        $bLastStatic = False ' A method cannot return static classes
+      Endif
+      
     Endif
 
   Next
@@ -3472,4 +3442,142 @@ Public Sub GetFunctionSource(Optional sFunc As String) As String
   
   Return sCode
   
+End
+
+Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As String
+  
+  Dim I, N As Integer
+  Dim cExpr As New Collection
+  Dim sExpr As String
+  Dim sType As String
+  Dim hSymbol As CSymbolInfo
+  Dim hExpr As CExpressionSymbol
+  Dim vVal As Variant
+  
+  For I = 0 To aSym.Max
+    
+    hExpr = Null
+    hSymbol = Null
+    sType = ""
+    
+    If aType[I] = Highlight.Keyword Then
+      
+      If aSym[I] = "ME" Then
+        sType = GetSymbolType("ME")
+      Else If aSym[I] = "SUPER" Then
+        sType = GetSymbolType("SUPER")
+      Endif
+      
+    Else If aType[I] = Highlight.Symbol Then
+      
+      sType = GetSymbolType(aSym[I])
+      
+    Endif
+    
+    If sType Then
+      
+      Inc N
+      sExpr &= "__" & CStr(N)
+      cExpr["__" & CStr(N)] = CExpressionSymbol.Get(sType, $hSymbol)
+      
+    Else
+      sExpr &= aSym[I]
+    Endif
+    
+  Next
+  
+  vVal = Eval(sExpr, cExpr)
+  Try hExpr = vVal
+  If Error Then 
+    Select TypeOf(vVal)
+      Case gb.Boolean
+        Return "b"
+      Case gb.Byte
+        Return "c"
+      Case gb.Date
+        Return "d"
+      Case gb.Float
+        Return "f"
+      Case gb.Integer
+        Return "i"
+      Case gb.Long
+        Return "l"
+      Case gb.Object
+        Return "o"
+      Case gb.Pointer
+        Return "p"
+      Case gb.Short
+        Return "h"
+      Case gb.Single
+        Return "g"
+      Case gb.String
+        Return "s"
+      Case gb.Variant
+        Return "v"
+    End Select
+  Else
+    Return hExpr.__GetType()
+  Endif
+  
+Catch
+  
+  'Debug Error.Where; ":"; Error.Text
+  
+End
+
+Private Sub AddLocalVariable(sName As String, sType As String)
+  
+  Dim I, iLine As Integer = GetCurrentProcLine(Editor.Line)
+  Dim sLine As String
+  Dim iIndent As Integer
+  
+  Do
+    Inc I
+    If I >= (Editor.Line - 1) Then Break
+    sLine = Trim(Highlight.Purge(Editor.Lines[I].Text))
+    If sLine And If Left(sLine) <> "'" Then Break
+  Loop
+  
+  iLine = I
+  
+  Do
+    If I >= (Editor.Line - 1) Then Break
+    
+    sLine = Trim(Highlight.Purge(Editor.Lines[I].Text))
+    
+    If sLine And If Left(sLine) <> "'" Then
+      Highlight.Analyze(sLine)
+      If Highlight.Symbols[0] <> "DIM" Then Break
+      iIndent = Editor.GetIndent(Editor.Lines[I].Text)
+      iLine = I + 1
+    Endif
+    
+    Inc I
+  Loop
+  
+  Editor.Insert(Space$(iIndent) & "Dim " & sName & " As " & sType & "\n", iLine, 0)
+  
+End
+
+
+Private Sub CreateLocalVariable()
+
+  Dim aSym As String[] = Highlight.Symbols
+  Dim aType As Integer[] = Highlight.Types
+  Dim sName As String
+  Dim sType As String
+
+  If aSym.Count >= 3 And If aType[0] = Highlight.Symbol And If aSym[1] = "=" Then
+    
+    sName = aSym[0]
+    sType = GetSymbolType(sName)
+    If sType Then Return
+    
+    aSym.Remove(0, 2)
+    aType.Remove(0, 2)
+    sType = GetExpressionTypeWithEval(aSym, aType)
+    If sType Then AddLocalVariable(sName, CSymbolInfo.GetType(sType))
+      
+  Endif
+
 End

@@ -409,8 +409,16 @@
         MoveScaled(59,0,7,4)
       }
     }
+    Index = 3
+    Text = ("Code formatting")
+    Picture = Picture["icon:/32/wizard"]
+    { Label52 Label
+      MoveScaled(0,0,63,3)
+      Font = Font["Bold"]
+      Text = ("Automatic formatting")
+    }
     { HBox25 HBox
-      MoveScaled(0,49,66,4)
+      MoveScaled(0,4,66,4)
       Spacing = True
       Indent = True
       { Label22 Label
@@ -427,7 +435,102 @@
         MoveScaled(59,0,7,4)
       }
     }
-    Index = 3
+    { HBox43 HBox
+      MoveScaled(0,9,66,4)
+      Spacing = True
+      Indent = True
+      { Label51 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Local variable automatic declaration")
+      }
+      { cmbLocalVarDecl ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel22 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { Label48 Label
+      MoveScaled(0,17,63,3)
+      Font = Font["Bold"]
+      Text = ("Explicit formating")
+    }
+    { HBox33 HBox
+      MoveScaled(0,25,66,4)
+      Spacing = True
+      Indent = True
+      { Label31 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Format on load & save")
+      }
+      { cmbFormatOnLoad ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel20 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox30 HBox
+      MoveScaled(0,30,66,4)
+      Spacing = True
+      Indent = True
+      { Label28 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Indent local variable declaration")
+      }
+      { cmbIndentDim ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel17 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox31 HBox
+      MoveScaled(0,35,66,4)
+      Spacing = True
+      Indent = True
+      { Label29 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Remove useless spaces at end of line")
+      }
+      { cmbRemoveSpace ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel18 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox32 HBox
+      MoveScaled(0,40,66,4)
+      Spacing = True
+      Indent = True
+      { Label30 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Keep successive void lines")
+      }
+      { cmbKeepVoidLine ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel19 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    Index = 4
     Text = ("Code snippets")
     Picture = Picture["icon:/large/insert-text"]
     { Label47 Label
@@ -490,86 +593,6 @@
           Text = ("&Import...")
           Picture = Picture["icon:/small/open"]
         }
-      }
-    }
-    Index = 4
-    Text = ("Code formatting")
-    Picture = Picture["icon:/32/wizard"]
-    { Label48 Label
-      MoveScaled(0,0,63,3)
-      Font = Font["Bold"]
-      Text = ("Code formatting")
-    }
-    { HBox33 HBox
-      MoveScaled(0,5,66,4)
-      Spacing = True
-      Indent = True
-      { Label31 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Format on load & save")
-      }
-      { cmbFormatOnLoad ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel20 Panel
-        MoveScaled(59,0,7,4)
-      }
-    }
-    { HBox30 HBox
-      MoveScaled(0,10,66,4)
-      Spacing = True
-      Indent = True
-      { Label28 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Indent local variable declaration")
-      }
-      { cmbIndentDim ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel17 Panel
-        MoveScaled(59,0,7,4)
-      }
-    }
-    { HBox31 HBox
-      MoveScaled(0,15,66,4)
-      Spacing = True
-      Indent = True
-      { Label29 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Remove useless spaces at end of line")
-      }
-      { cmbRemoveSpace ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel18 Panel
-        MoveScaled(59,0,7,4)
-      }
-    }
-    { HBox32 HBox
-      MoveScaled(0,20,66,4)
-      Spacing = True
-      Indent = True
-      { Label30 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Keep successive void lines")
-      }
-      { cmbKeepVoidLine ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel19 Panel
-        MoveScaled(59,0,7,4)
       }
     }
     Index = 5

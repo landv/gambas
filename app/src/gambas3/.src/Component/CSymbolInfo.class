@@ -76,6 +76,11 @@ Public Function IsStatic() As Boolean
 
 End
 
+Public Sub IsProperty() As Boolean
+  
+  Return InStr("rpRPv", Kind) > 0
+  
+End
 
 Public Function GetIcon() As String
 
@@ -569,7 +574,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
 End
 
 
-Static Private Function GetType(sType As String, Optional bBalise As Boolean) As String
+Static Public Function GetType(sType As String, Optional bBalise As Boolean) As String
 
   If Len(sType) = 1 Then
     sType = $cTypeName[sType]
