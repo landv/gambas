@@ -18,6 +18,22 @@ msgstr ""
 msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
+#: CBookmark.class:33
+msgid "Define bookmark"
+msgstr ""
+
+#: CBookmark.class:38
+msgid "Clear all bookmarks"
+msgstr ""
+
+#: CBookmark.class:42
+msgid "Previous bookmark"
+msgstr ""
+
+#: CBookmark.class:47
+msgid "Next bookmark"
+msgstr ""
+
 #: CComponent.class:78
 msgid "Internal native classes"
 msgstr ""
@@ -338,11 +354,11 @@ msgstr ""
 msgid "Remove all"
 msgstr ""
 
-#: CInsertColor.class:106 FEditor.form:450 FTextEditor.form:334
+#: CInsertColor.class:106 FEditor.form:419 FTextEditor.form:348
 msgid "Insert color"
 msgstr ""
 
-#: CModule.class:28 FCreateFile.form:150 FEditor.form:404 FForm.form:422
+#: CModule.class:28 FCreateFile.form:150 FEditor.form:373 FForm.form:422
 msgid "Form"
 msgstr ""
 
@@ -425,7 +441,7 @@ msgstr ""
 
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
 #: FConflict.class:191 FConnectionEditor.class:294 FCreateFile.form:437
-#: FDebugInfo.form:229 FEditor.class:2370 FExportData.class:126
+#: FDebugInfo.form:229 FEditor.class:2361 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3131
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
 #: FList.form:121 FMain.class:198 FMakeInstall.class:356 FMenu.form:377
@@ -436,7 +452,7 @@ msgstr ""
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
 #: FSaveProjectAs.form:76 FSearch.class:838 FSelectExtraFile.form:43
 #: FSelectIcon.form:86 FSnippet.form:57 FTableChooser.form:68 FText.form:41
-#: FTextEditor.class:510 FTranslate.class:636 Project.module:429
+#: FTextEditor.class:512 FTranslate.class:636 Project.module:429
 msgid "Cancel"
 msgstr ""
 
@@ -566,42 +582,42 @@ msgid ""
 msgstr ""
 
 #: FCommit.form:91 FConflict.form:53 FConnectionEditor.form:358
-#: FEditor.form:150 FForm.form:230 FIconEditor.form:103 FImageEditor.form:71
-#: FMenu.form:107 FOutput.form:58 FTextEditor.form:106
+#: FEditor.form:145 FForm.form:230 FIconEditor.form:103 FImageEditor.form:71
+#: FMenu.form:107 FOutput.form:58 FTextEditor.form:108
 msgid "Cut"
 msgstr ""
 
 #: FCommit.form:97 FConflict.form:59 FConnectionEditor.form:147
-#: FEditor.form:156 FForm.form:237 FIconEditor.form:111 FImageEditor.form:80
-#: FMenu.form:113 FOutput.form:65 FTextEditor.form:113
+#: FEditor.form:151 FForm.form:237 FIconEditor.form:111 FImageEditor.form:80
+#: FMenu.form:113 FOutput.form:65 FTextEditor.form:115
 msgid "Copy"
 msgstr ""
 
 #: FCommit.form:103 FConflict.form:65 FConnectionEditor.form:379
-#: FEditor.form:163 FForm.form:250 FIconEditor.form:119 FImageEditor.form:89
-#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:120
+#: FEditor.form:158 FForm.form:250 FIconEditor.form:119 FImageEditor.form:89
+#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:122
 msgid "Paste"
 msgstr ""
 
 #: FCommit.form:109 FConflict.form:71 FConnectionEditor.form:386
-#: FEditor.form:134 FForm.form:213 FIconEditor.form:87 FImageEditor.form:99
-#: FOption.form:463 FOutput.form:41 FTextEditor.form:89
+#: FEditor.form:129 FForm.form:213 FIconEditor.form:87 FImageEditor.form:99
+#: FOption.form:463 FOutput.form:41 FTextEditor.form:91
 msgid "Undo"
 msgstr ""
 
 #: FCommit.form:115 FConflict.form:77 FConnectionEditor.form:393
-#: FEditor.form:141 FForm.form:220 FImageEditor.form:107 FOutput.form:48
-#: FTextEditor.form:96
+#: FEditor.form:136 FForm.form:220 FImageEditor.form:107 FOutput.form:48
+#: FTextEditor.form:98
 msgid "Redo"
 msgstr ""
 
-#: FCommit.form:121 FConflict.form:83 FEditor.form:484 FMenu.form:129
-#: FTextEditor.form:320
+#: FCommit.form:121 FConflict.form:83 FEditor.form:453 FMenu.form:129
+#: FTextEditor.form:325
 msgid "Indent"
 msgstr ""
 
-#: FCommit.form:127 FConflict.form:89 FEditor.form:492 FMenu.form:135
-#: FTextEditor.form:327
+#: FCommit.form:127 FConflict.form:89 FEditor.form:461 FMenu.form:135
+#: FTextEditor.form:332
 msgid "Unindent"
 msgstr ""
 
@@ -674,9 +690,9 @@ msgstr ""
 msgid "Sol&ve"
 msgstr ""
 
-#: FConflict.form:184 FDebugInfo.form:236 FEditor.form:342 FForm.form:399
+#: FConflict.form:184 FDebugInfo.form:236 FEditor.form:311 FForm.form:399
 #: FIconEditor.class:1428 FImportTable.form:218 FSystemInfo.form:81
-#: FTextEditor.form:239 FTips.form:84
+#: FTextEditor.form:244 FTips.form:84
 msgid "Close"
 msgstr ""
 
@@ -722,15 +738,15 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.form:100 FEditor.form:355 FForm.form:412
+#: FConnectionEditor.form:100 FEditor.form:324 FForm.form:412
 #: FIconEditor.form:72 FImageEditor.form:54 FMenu.class:64
-#: FTextEditor.form:232
+#: FTextEditor.form:237
 msgid "Save"
 msgstr ""
 
-#: FConnectionEditor.form:108 FEditor.form:349 FForm.form:406
+#: FConnectionEditor.form:108 FEditor.form:318 FForm.form:406
 #: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:62
-#: FTextEditor.form:226 FTranslate.class:732
+#: FTextEditor.form:231 FTranslate.class:732
 msgid "Reload"
 msgstr ""
 
@@ -1350,166 +1366,150 @@ msgstr ""
 msgid "Dynamic variables"
 msgstr ""
 
-#: FEditor.form:99
+#: FEditor.form:94
 msgid "Go to"
 msgstr ""
 
-#: FEditor.form:104 FTextEditor.form:73
+#: FEditor.form:99 FTextEditor.form:75
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.form:110
+#: FEditor.form:105
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.form:117
+#: FEditor.form:112
 msgid "Open form"
 msgstr ""
 
-#: FEditor.form:124 FForm.form:144 FMain.form:737
+#: FEditor.form:119 FForm.form:144 FMain.form:737
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.form:173 FTextEditor.form:130
+#: FEditor.form:168 FTextEditor.form:132
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.form:182 FOutput.form:89 FTextEditor.form:139
+#: FEditor.form:177 FOutput.form:89 FTextEditor.form:141
 msgid "Find next"
 msgstr ""
 
-#: FEditor.form:189 FOutput.form:96 FTextEditor.form:146
+#: FEditor.form:184 FOutput.form:96 FTextEditor.form:148
 msgid "Find previous"
 msgstr ""
 
-#: FEditor.form:198
+#: FEditor.form:193
 msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.form:205
+#: FEditor.form:200
 msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.form:212
+#: FEditor.form:207
 msgid "&Watch expression"
 msgstr ""
 
-#: FEditor.form:220
+#: FEditor.form:215 FTextEditor.form:157
 msgid "Bookmarks"
 msgstr ""
 
-#: FEditor.form:223
-msgid "Define bookmark"
-msgstr ""
-
-#: FEditor.form:229
-msgid "Clear all bookmarks"
-msgstr ""
-
-#: FEditor.form:234
-msgid "Previous bookmark"
-msgstr ""
-
-#: FEditor.form:240
-msgid "Next bookmark"
-msgstr ""
-
-#: FEditor.form:250 FTextEditor.form:155
+#: FEditor.form:219 FTextEditor.form:161
 msgid "Advanced"
 msgstr ""
 
-#: FEditor.form:254 FTextEditor.form:166
+#: FEditor.form:223 FTextEditor.form:172
 msgid "Lower case"
 msgstr ""
 
-#: FEditor.form:261 FTextEditor.form:159
+#: FEditor.form:230 FTextEditor.form:165
 msgid "Upper case"
 msgstr ""
 
-#: FEditor.form:271
+#: FEditor.form:240
 msgid "Comment"
 msgstr ""
 
-#: FEditor.form:278
+#: FEditor.form:247
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.form:288
+#: FEditor.form:257
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.form:295 FTextEditor.form:176
+#: FEditor.form:264 FTextEditor.form:182
 msgid "Insert color..."
 msgstr ""
 
-#: FEditor.form:301
+#: FEditor.form:270
 msgid "Format code"
 msgstr ""
 
-#: FEditor.form:307
+#: FEditor.form:276
 msgid "Sort procedures..."
 msgstr ""
 
-#: FEditor.form:313 FTextEditor.form:196
+#: FEditor.form:282 FTextEditor.form:202
 msgid "View"
 msgstr ""
 
-#: FEditor.form:317 FTextEditor.form:200
+#: FEditor.form:286 FTextEditor.form:206
 msgid "No split"
 msgstr ""
 
-#: FEditor.form:323 FTextEditor.form:207
+#: FEditor.form:292 FTextEditor.form:212
 msgid "Horizontal split"
 msgstr ""
 
-#: FEditor.form:330 FTextEditor.form:214
+#: FEditor.form:299 FTextEditor.form:219
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.form:365 FPasteSpecial.form:51
+#: FEditor.form:334 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.form:370 FPasteSpecial.form:56
+#: FEditor.form:339 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.form:375 FPasteSpecial.form:41
+#: FEditor.form:344 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.form:382 FOption.form:250
+#: FEditor.form:351 FOption.form:250
 msgid "Editor"
 msgstr ""
 
-#: FEditor.form:441 FPasteSpecial.form:19
+#: FEditor.form:410 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr ""
 
-#: FEditor.form:517
+#: FEditor.form:486
 msgid "Make code pretty"
 msgstr ""
 
-#: FEditor.form:525
+#: FEditor.form:494
 msgid "Toggle breakpoint"
 msgstr ""
 
-#: FEditor.form:533
+#: FEditor.form:502
 msgid "Watch expression"
 msgstr ""
 
-#: FEditor.form:586 FTextEditor.form:400
+#: FEditor.form:555 FTextEditor.form:414
 msgid "Procedure list"
 msgstr ""
 
-#: FEditor.class:2370 FIconEditor.class:2048 FTextEditor.class:510
+#: FEditor.class:2361 FIconEditor.class:2048 FTextEditor.class:512
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2796 FTextEditor.class:854
+#: FEditor.class:2787 FTextEditor.class:856
 msgid "(Declarations)"
 msgstr ""
 
@@ -1588,7 +1588,7 @@ msgstr ""
 msgid "Change into"
 msgstr ""
 
-#: FForm.form:137 FTextEditor.form:79
+#: FForm.form:137 FTextEditor.form:81
 msgid "Open code"
 msgstr ""
 
@@ -1704,7 +1704,7 @@ msgstr ""
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.form:444 FTextEditor.form:270
+#: FForm.form:444 FTextEditor.form:284
 msgid "Code"
 msgstr ""
 
@@ -1929,7 +1929,7 @@ msgid ""
 "Do you want to save it ?"
 msgstr ""
 
-#: FImageEditor.form:48 FTextEditor.form:248
+#: FImageEditor.form:48 FTextEditor.form:253
 msgid "Text editor"
 msgstr ""
 
@@ -4082,23 +4082,23 @@ msgstr ""
 msgid "Use a fixed font"
 msgstr ""
 
-#: FTextEditor.form:182
+#: FTextEditor.form:188
 msgid "Compress file"
 msgstr ""
 
-#: FTextEditor.form:188
+#: FTextEditor.form:194
 msgid "Uncompress file"
 msgstr ""
 
-#: FTextEditor.class:707
+#: FTextEditor.class:709
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr ""
 
-#: FTextEditor.class:707
+#: FTextEditor.class:709
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr ""
 
-#: FTextEditor.class:713
+#: FTextEditor.class:715
 msgid "Unable to compress file."
 msgstr ""
 

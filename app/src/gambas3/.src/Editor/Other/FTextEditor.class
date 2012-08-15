@@ -42,6 +42,7 @@ Private Const VIEWMODE_VERTICAL As Integer = 2
 Private $hEditor1 As Editor
 Private $hEditor2 As Editor
 Private $hInsertColor As CInsertColor
+Private $hBookmark As CBookmark
 
 Private $cProc As Collection
 Private $aProc As String[]
@@ -98,6 +99,7 @@ Public Sub LoadFile() As Boolean
   Endif
 
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
+  $hBookmark = New CBookmark(Editor, btnBookmark, mnuBookmark)
 
   ReadConfig
 

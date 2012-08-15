@@ -1,0 +1,167 @@
+' Gambas class file
+
+Private $hEditor As Editor
+Private $hMenu As Menu
+Private $sName As String
+
+Public Sub _new(hEditor As Editor, hMenuButton As MenuButton, hMenu As Menu)
+  
+  $hEditor = hEditor
+  $hMenu = hMenu
+  $sName = Object.Parent(hEditor).Name
+  
+  Object.Attach(hMenuButton, Me, "btnBookmark")
+  
+  Load
+  
+End
+
+Private Sub FillMenu(aBook As Integer[])
+  
+  Dim hMenu As Menu
+  Dim iLine As Integer
+  Dim sLine As String
+  
+  $hMenu.Children.Clear
+  
+  ' mnuAddBookmark,2,"Define bookmark",,,T,T,,,T,,,"B","icon:/small/bookmark",""
+  ' mnuClearBookmarks,2,"Clear all bookmarks",,,T,T,,,,,,"","icon:/small/delete",""
+  ' mnuPreviousBookmark,2,"Previous bookmark",,,T,T,,,,,T,"PgUp","icon:/small/up",""
+  ' mnuNextBookmark,2,"Next bookmark",,,T,T,,,,,T,"PgDown","icon:/small/down",""
+  
+  hMenu = New Menu($hMenu) As "mnuAdd"
+  hMenu.Text = ("Define bookmark")
+  hMenu.Picture = Picture["icon:/small/bookmark"]
+  hMenu.Shortcut = "Ctrl+B"
+  
+  hMenu = New Menu($hMenu) As "mnuClear"
+  hMenu.Text = ("Clear all bookmarks")
+  hMenu.Picture = Picture["icon:/small/delete"]
+  
+  hMenu = New Menu($hMenu) As "mnuPrevious"
+  hMenu.Text = ("Previous bookmark")
+  hMenu.Picture = Picture["icon:/small/up"]
+  hMenu.Shortcut = "Alt+PgUp"
+  
+  hMenu = New Menu($hMenu) As "mnuNext"
+  hMenu.Text = ("Next bookmark")
+  hMenu.Picture = Picture["icon:/small/down"]
+  hMenu.Shortcut = "Alt+PgDown"
+  
+  If aBook Then
+    hMenu = New Menu($hMenu)
+    
+    For Each iLine In aBook
+      Try sLine = $hEditor.Lines[iLine].Text
+      If Error Then Continue
+      
+      hMenu = New Menu($hMenu) As "mnuGoto"
+      hMenu.Tag = iLine
+      If Len(sLine) > 36 Then sLine = Left(sLine, 32) & "..."
+      hMenu.Text = Format(iLine + 1, "######") & ": " & Replace(sLine, "&", "&&")
+    Next
+  Endif
+  
+End
+
+Private Sub Clear()
+  
+  Dim iLine As Integer
+  
+  For Each iLine In $hEditor.Bookmarks
+    $hEditor.Lines[iLine].Bookmark = False
+  Next
+  
+End
+
+Public Sub Load()
+  
+  Dim aBook As Integer[]
+  Dim iLine As Integer
+  
+  aBook = Project.Config["Bookmarks/" &/ $sName]
+  If aBook Then
+    aBook.Sort
+    For Each iLine In aBook
+      Try $hEditor.Lines[iLine].Bookmark = True
+    Next
+  Endif
+  
+  FillMenu(aBook)
+  
+End
+
+Private Sub Save()
+  
+  Dim aBook As Integer[] = $hEditor.Bookmarks
+  
+  Project.Config["Bookmarks/" &/ $sName] = aBook
+  FillMenu(aBook)
+  
+End
+
+Public Sub mnuAdd_Click()
+  
+  $hEditor.Lines[$hEditor.Line].Bookmark = Not $hEditor.Lines[$hEditor.Line].Bookmark  
+  Save
+  
+End
+
+Public Sub mnuClear_Click()
+
+  Clear
+  Save
+
+End
+
+Public Sub mnuGoto_Click()
+  
+  $hEditor.Goto(Last.Tag, 0, True)
+  
+End
+
+Public Sub btnBookmark_Click()
+
+  mnuAdd_Click
+
+End
+
+Public Sub MovePrevious()
+  
+  Dim iLine As Integer = $hEditor.Line
+  
+  While iLine > 0
+    Dec iLine
+    If $hEditor.Lines[iLine].Bookmark Then
+      $hEditor.Goto(iLine, 0, True)
+      Return
+    Endif
+  Wend
+  
+End
+
+Public Sub MoveNext()
+  
+  Dim iLine As Integer = $hEditor.Line
+  
+  While iLine < ($hEditor.Lines.Count - 1)
+    Inc iLine
+    If $hEditor.Lines[iLine].Bookmark Then
+      $hEditor.Goto(iLine, 0, True)
+      Return
+    Endif
+  Wend
+  
+End
+
+Public Sub mnuPrevious_Click()
+  
+  MovePrevious
+  
+End
+
+Public Sub mnuNext_Click()
+
+  MoveNext
+
+End

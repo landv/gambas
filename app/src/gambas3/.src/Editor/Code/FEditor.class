@@ -90,6 +90,8 @@ Private $iSampleEnd As Integer
 Private $iSamplePos As Integer
 
 Private $hInsertColor As CInsertColor
+Private $hBookmark As CBookmark
+
 
 Static Public Sub _init()
 
@@ -140,6 +142,7 @@ Public Sub _new(sPath As String)
   edtEditor.Highlight = Highlight.Gambas
 
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
+  $hBookmark = New CBookmark(Editor, btnBookmark, mnuBookmark)
 
   ' If Not frmCompletion Then
   '   frmCompletion = New FCompletion(Me)
@@ -1049,18 +1052,6 @@ Public Sub Editors_KeyPress()
 
     Return
     
-  Else If Key.Alt Then
-    
-    If Key.Code = Key.PageUp Then
-      MoveToPreviousBookmark
-      Stop Event
-      Return
-    Else If Key.Code = Key.PageDown Then
-      MoveToNextBookmark
-      Stop Event
-      Return
-    Endif
-
   Endif
 
   If Editor.ReadOnly Then Return
@@ -2350,7 +2341,7 @@ Public Sub Reload()
     If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
   Endif
   Editor.SetFocus
-  LoadBookmarks
+  $hBookmark.Load()
   Modify(True)
 
 End
@@ -3434,14 +3425,14 @@ Public Sub GetFunctionSource(Optional sFunc As String) As String
   
 End
 
-Private Sub FindNextBracket(aSym As String[], I As Integer) As Integer
+Private Sub FindNextBracket(aSym As String[], I As Integer, sCar1 As String, sCar2 As String) As Integer
   
   Dim iLevel As Integer
   
   While I < aSym.Count
-    If aSym[I] = "[" Then
+    If aSym[I] = sCar1 Then
       Inc iLevel
-    Else If aSym[I] = "]" Then
+    Else If aSym[I] = sCar2 Then
       Dec iLevel
       If iLevel = 0 Then Break
     Endif
@@ -3482,6 +3473,10 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
       sType = GetSymbolType(aSym[I])
       
+    Else If aType[I] = Highlight.Function Then
+      
+      I2 = FindNextBracket(aSym, I, "(", ")")
+        
     Else If aSym[I] = "[" Then
       
       bMakeArray = True
@@ -3490,7 +3485,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       Endif
       
       If bMakeArray Then
-        I2 = FindNextBracket(aSym, I)
+        I2 = FindNextBracket(aSym, I, "[", "]")
         sExpr &= "CDatatype.__Make("
         aSym.Add(")", I2 + 1)
         aType.Add(Highlight.Operator, I2 + 1)
@@ -3511,7 +3506,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
     Inc I
   Wend
   
-  Print sExpr
+  'Print sExpr
   vVal = Eval(sExpr, cExpr)
   Try hType = vVal
   If Error Then 
@@ -3666,134 +3661,4 @@ Private Sub CreateLocalVariable() As Boolean
   If sType Then AddLocalVariable(sName, CSymbolInfo.GetType(sType))
   Return True
   
-End
-
-Public Sub mnuAddBookmark_Click()
-  
-  Editor.Lines[Editor.Line].Bookmark = Not Editor.Lines[Editor.Line].Bookmark  
-  SaveBookmarks
-  
-End
-
-Public Sub mnuClearBookmarks_Click()
-
-  ClearBookmarks
-  SaveBookmarks
-
-End
-
-Private Sub ClearBookmarks()
-  
-  Dim iLine As Integer
-  
-  For Each iLine In Editor.Bookmarks
-    Editor.Lines[iLine].Bookmark = False
-  Next
-  
-End
-
-Private Sub FillBookmarkMenu(aBook As Integer[])
-
-  Dim hMenu As Menu
-  Dim iLine As Integer
-  Dim sLine As String
-  Dim I As Integer
-
-  While I < mnuBookmark.Children.Count
-    hMenu = mnuBookmark.Children[I]
-    If hMenu.Tag Then 
-      hMenu.Delete
-    Else
-      Inc I
-    Endif
-  Wend
-  
-  If Not aBook Then Return
-  
-  For Each iLine In aBook
-    hMenu = New Menu(mnuBookmark) As "mnuGotoBookmark"
-    hMenu.Tag = iLine
-    sLine = Editor.Lines[iLine].Text
-    If Len(sLine) > 36 Then sLine = Left(sLine, 32) & "..."
-    hMenu.Text = Format(iLine + 1, "######") & ": " & Replace(sLine, "&", "&&")
-  Next
-
-End
-
-Private Sub LoadBookmarks()
-  
-  Dim aBook As Integer[]
-  Dim iLine As Integer
-  
-  aBook = Project.Config["Bookmarks/" &/ Me.Name]
-  If aBook Then
-    aBook.Sort
-    For Each iLine In aBook
-      Editor.Lines[iLine].Bookmark = True
-    Next
-  Endif
-  
-  FillBookmarkMenu(aBook)
-  
-End
-
-Private Sub SaveBookmarks()
-  
-  Dim aBook As Integer[] = Editor.Bookmarks
-  
-  Project.Config["Bookmarks/" &/ Me.Name] = aBook
-  FillBookmarkMenu(aBook)
-  
-End
-
-Public Sub mnuGotoBookmark_Click()
-  
-  Editor.Goto(Last.Tag, 0, True)
-  
-End
-
-Public Sub btnBookmark_Click()
-
-  mnuAddBookmark_Click
-
-End
-
-Private Sub MoveToPreviousBookmark()
-  
-  Dim iLine As Integer = Editor.Line
-  
-  While iLine > 0
-    Dec iLine
-    If Editor.Lines[iLine].Bookmark Then
-      Editor.Goto(iLine, 0, True)
-      Return
-    Endif
-  Wend
-  
-End
-
-Private Sub MoveToNextBookmark()
-  
-  Dim iLine As Integer = Editor.Line
-  
-  While iLine < (Editor.Lines.Count - 1)
-    Inc iLine
-    If Editor.Lines[iLine].Bookmark Then
-      Editor.Goto(iLine, 0, True)
-      Return
-    Endif
-  Wend
-  
-End
-
-Public Sub mnuPreviousBookmark_Click()
-  
-  MoveToPreviousBookmark
-  
-End
-
-Public Sub mnuNextBookmark_Click()
-
-  MoveToNextBookmark
-
 End

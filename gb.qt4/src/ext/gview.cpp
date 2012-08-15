@@ -2529,7 +2529,7 @@ void GEditor::updateMargin()
 	{
 		nm = 2;
 	
-		if (doc->getHighlightMode() != GDocument::None)
+		//if (doc->getHighlightMode() != GDocument::None)
 		{
 			int bw = 8;
 			
@@ -2541,8 +2541,8 @@ void GEditor::updateMargin()
 			
 			nm += bw;
 		}
-		else if (getFlag(ShowLineNumbers))
-			nm += 4;
+		//else if (getFlag(ShowLineNumbers))
+		//	nm += 4;
 		
 		if (getFlag(ShowLineNumbers))
 		{
