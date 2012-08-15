@@ -3476,6 +3476,9 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
     Else If aType[I] = Highlight.Function Then
       
       I2 = FindNextBracket(aSym, I, "(", ")")
+      hSymbol = CComponent.GetClassSymbols(".")[aSym[I]]
+      Try sType = hSymbol.Type
+      If sType Then I = I2
         
     Else If aSym[I] = "[" Then
       
@@ -3595,6 +3598,8 @@ Private Sub CreateLocalVariable() As Boolean
   Dim sName As String
   Dim sType As String
   Dim I As Integer
+ 
+  ' TODO: Support for X = Read ...
  
   ' Assignment
   If aSym.Count >= 3 And If aType[0] = Highlight.Symbol And If aSym[1] = "=" Then
