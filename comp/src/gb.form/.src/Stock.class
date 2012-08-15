@@ -445,7 +445,7 @@ Static Public Function _get(Key As String) As Picture
     
     If sPath = "#" Then
       
-      If Not Stock.List.Exist(Key) Then Break
+      If Not Stock.Icons.Exist(Key) Then Break
       
       Try Component.Load("gb.form.stock")
       If Error Then
@@ -521,12 +521,9 @@ End
 
 Static Private Function List_Read() As String[]
   
-  If Not $aList Then 
-    $aList = Split(File.Load("map/map"), "\n", "", True)
-  Endif 
-  
-  Return $aList  
-  
+  Error "gb.form: warning: Stock.List is deprecated. Use Stock.Icons instead"
+  Return Icons_Read()
+
 End
 
 Static Private Sub GetInheritance(aPath As String[], sTheme As String) As String[]
@@ -642,6 +639,10 @@ End
 
 Static Private Function Icons_Read() As String[]
 
-  Return List_Read()
-
+  If Not $aList Then 
+    $aList = Split(File.Load("map/map"), "\n", "", True)
+  Endif 
+  
+  Return $aList  
+  
 End

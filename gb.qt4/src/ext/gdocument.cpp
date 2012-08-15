@@ -216,6 +216,7 @@ void GDocument::init()
 	selector = NULL;
 	colorizeFrom = 0;
 	_disableColorize = 0;
+	_currentLine = -1;
 }
 
 GDocument::GDocument()
@@ -1402,13 +1403,7 @@ void GDocument::colorize(int y, bool force)
 		updateViews(updateFrom, yy - updateFrom + 1);
 	
 	if (updateAll)
-	{
-		FOR_EACH_VIEW(v)
-		{
-			//if (v->getFlag(GEditor::ChangeBackgroundAtLimit))
-				v->updateContents();
-		}
-	}
+		updateContents();
 }
 
 void GDocument::colorizeAll()
@@ -1624,4 +1619,18 @@ void GDocument::enableColorize()
 		colorize(_disableColorizeStart);
 		_disableColorizeStart = -1;
 	}
+}
+
+void GDocument::updateContents()
+{
+	FOR_EACH_VIEW(v)
+	{
+		v->updateContents();
+	}
+}
+
+void GDocument::setCurrentLine(int y)
+{
+	_currentLine = y;
+	updateContents();
 }

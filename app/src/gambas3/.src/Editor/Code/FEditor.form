@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(4,12,142,80)
+  MoveScaled(4,12,151,80)
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
@@ -103,7 +103,31 @@
       Text = ("&Watch expression")
       Picture = Picture["icon:/small/watch"]
     }
-    { mnuSepWatch Menu
+    { mnuSepBookmark Menu
+    }
+    { mnuBookmark Menu
+      Text = ("Bookmarks")
+      { mnuAddBookmark Menu
+        Text = ("Define bookmark")
+        Picture = Picture["icon:/small/bookmark"]
+        Shortcut = "Ctrl+B"
+      }
+      { mnuClearBookmarks Menu
+        Text = ("Clear all bookmarks")
+        Picture = Picture["icon:/small/delete"]
+      }
+      { mnuPreviousBookmark Menu
+        Text = ("Previous bookmark")
+        Picture = Picture["icon:/small/up"]
+        Shortcut = "Alt+PgUp"
+      }
+      { mnuNextBookmark Menu
+        Text = ("Next bookmark")
+        Picture = Picture["icon:/small/down"]
+        Shortcut = "Alt+PgDown"
+      }
+      { mnuSepBookmarkList Menu
+      }
     }
     { Menu1 Menu
       Text = ("Advanced")
@@ -163,7 +187,6 @@
           Action = ".view-nosplit"
           Text = ("No split")
           Picture = Picture["icon:/small/view-normal"]
-          Shortcut = "Ctrl+B"
         }
         { mnuHorizontalSplit Menu
           Action = ".view-hsplit"
@@ -214,7 +237,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,141,4)
+    MoveScaled(0,0,149,4)
     Key = "editor"
     Text = ("Editor")
     Separator = True
@@ -281,29 +304,37 @@
       Picture = Picture["icon:/small/color"]
       Border = False
     }
+    { btnBookmark MenuButton
+      MoveScaled(40,0,6,4)
+      ToolTip = ("Bookmarks")
+      Action = ".bookmark"
+      Picture = Picture["icon:/small/bookmark"]
+      Border = False
+      Menu = "mnuBookmark"
+    }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(39,0,4,4)
+      MoveScaled(46,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(42,0,4,4)
+      MoveScaled(49,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(45,0,4,4)
+      MoveScaled(52,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(48,0,4,4)
+      MoveScaled(55,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -311,21 +342,21 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(51,0,4,4)
+      MoveScaled(58,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Picture = Picture["img/16/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(54,0,4,4)
+      MoveScaled(61,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Picture = Picture["img/16/uncomment.png"]
     }
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
-      MoveScaled(57,0,4,4)
+      MoveScaled(64,0,4,4)
       Visible = False
       ToolTip = ("Make code pretty")
       Action = ".pretty"
@@ -333,32 +364,32 @@
     }
     { btnBreakpoint ToolButton mnuBreakpoint
       Name = "btnBreakpoint"
-      MoveScaled(60,0,4,4)
+      MoveScaled(67,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(63,0,4,4)
+      MoveScaled(70,0,4,4)
       ToolTip = ("Watch expression")
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(66,0,4,4)
+      MoveScaled(73,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
       Picture = Picture["icon:/16/info"]
     }
     { Separator2 Separator
-      MoveScaled(70,0,1,4)
+      MoveScaled(77,0,1,4)
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(71,0,4,4)
+      MoveScaled(78,0,4,4)
       Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
@@ -366,7 +397,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(74,0,4,4)
+      MoveScaled(81,0,4,4)
       Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
@@ -374,24 +405,24 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(77,0,4,4)
+      MoveScaled(84,0,4,4)
       Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
     { Separator1 Separator
-      MoveScaled(81,0,1,4)
+      MoveScaled(88,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(83,0,44,4)
+      MoveScaled(90,0,44,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["icon:/small/bottom"]
     }
     { lblInfo Label
-      MoveScaled(131,0,9,4)
+      MoveScaled(140,0,9,4)
       Expand = True
       Padding = 4
       Alignment = Align.Right
@@ -431,6 +462,10 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action bookmark
+    Text = "Bookmarks"
+    Picture = "icon:/small/bookmark"
+  }
   { Action break
     Text = "Toggle &breakpoint"
     Shortcut = "F9"
@@ -573,7 +608,7 @@
   }
   { Action view-nosplit
     Text = "No split"
-    Shortcut = "Ctrl+B"
+    Shortcut = ""
     Picture = "icon:/small/view-normal"
   }
   { Action view-vsplit
@@ -591,7 +626,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,|,proc,$lblInfo"
+    List = "save,reload,show-form,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
+    Default = "save,reload,show-form,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,|,proc,$lblInfo"
   }
 }

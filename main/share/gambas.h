@@ -914,6 +914,7 @@ typedef
 		
 		void (*Error)(const char *, ...);
 		void (*Propagate)(void);
+		void (*Deprecated)(const char *, const char *, const char *);
 
 		GB_CLASS (*GetClass)(void *);
 		char *(*GetClassName)(void *);

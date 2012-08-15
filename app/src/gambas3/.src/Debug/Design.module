@@ -131,6 +131,14 @@ Public Sub Process_Read()
   
 End
 
+Private Sub Translate(sErr As String) As String
+  
+  If InStr(sErr, " ") Then Return Tr$(sErr)
+  Return sErr
+  
+End
+
+
 Public Sub MakeErrorMessage(sErr As String) As String
   
   Dim aErr As String[]
@@ -143,7 +151,7 @@ Public Sub MakeErrorMessage(sErr As String) As String
   
   For iInd = aErr.Max - 4 DownTo 0
     If iInd = 0 Or If InStr(aErr[iInd], "&1") Then
-      aErr[iInd] = Subst(Tr$(aErr[iInd]), Tr$(aErr[iInd + 1]), Tr$(aErr[iInd + 2]), Tr$(aErr[iInd + 3]), Tr$(aErr[iInd + 4]))
+      aErr[iInd] = Subst(Tr$(aErr[iInd]), Translate(aErr[iInd + 1]), Translate(aErr[iInd + 2]), Translate(aErr[iInd + 3]), Translate(aErr[iInd + 4]))
     Endif
     If Left(aErr[iInd]) = "#" Then
       Select Case Mid(aErr[iInd], 2)
@@ -512,7 +520,8 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     sPath = Project.FindPath($sPosClass)
 
     With Project.Files[sPath]
-      Try .Editor.Lines[$iPosLine - 1].Current = False
+      .Editor.CurrentLine = -1
+      'Try .Editor.Lines[$iPosLine - 1].Current = False
     End With
 
   Endif
@@ -541,7 +550,7 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     With Project.Files[sPath]
       If $iPosLine <= .Editor.Lines.Count Then
         Project.OpenFile(sPath, $iPosLine)
-        .Editor.Lines[$iPosLine - 1].Current = True
+        .Editor.CurrentLine = $iPosLine - 1
         Return
       Endif
     End With

@@ -621,24 +621,24 @@
       { Separator3 Separator
         MoveScaled(29,0,1,4)
       }
-      { btnTranslate ToolButton
+      { ToolButton5 ToolButton
         MoveScaled(30,0,4,4)
+        ToolTip = ("Make executable")
+        Action = "exec"
+        Picture = Picture["icon:/small/exec"]
+      }
+      { btnTranslate ToolButton
+        MoveScaled(33,0,4,4)
         ToolTip = ("Translate")
         Action = "translate"
         Picture = Picture["icon:/small/language"]
       }
       { ToolButton4 ToolButton
-        MoveScaled(33,0,4,4)
+        MoveScaled(36,0,4,4)
         Visible = False
         ToolTip = ("Make source archive")
         Action = "archive"
         Picture = Picture["icon:/small/archive"]
-      }
-      { ToolButton5 ToolButton
-        MoveScaled(36,0,4,4)
-        ToolTip = ("Make executable")
-        Action = "exec"
-        Picture = Picture["icon:/small/exec"]
       }
       { ToolButton14 ToolButton
         MoveScaled(39,0,4,4)
@@ -1366,7 +1366,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,component-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,component-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
   }
 }

@@ -11,7 +11,7 @@ Static Private $iGlobalLock As Integer
 
 Property Enabled As Boolean
 Property Visible As Boolean
-Property ToolTip As String
+Property Tooltip As String
 Property Text As String
 Property Picture As Picture
 Property Value As Boolean
@@ -394,22 +394,22 @@ Private Sub Visible_Write(Value As Boolean)
 
 End
 
-Private Function ToolTip_Read() As String
+Private Function Tooltip_Read() As String
 
   Dim hCtrl As Object
   
   For Each hCtrl In GetControls()
-    If hCtrl.ToolTip Then Return hCtrl.ToolTip
+    If hCtrl.Tooltip Then Return hCtrl.Tooltip
   Next
 
 End
 
-Private Sub ToolTip_Write(Value As String)
+Private Sub Tooltip_Write(Value As String)
 
   Dim hCtrl As Object
   
   For Each hCtrl In GetControls()
-    hCtrl.ToolTip = Value
+    hCtrl.Tooltip = Value
   Next
 
 End

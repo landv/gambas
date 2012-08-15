@@ -55,7 +55,7 @@ public:
 
 	enum
 	{
-		CurrentFlag = 0,
+		BookmarkFlag = 0,
 		BreakpointFlag = 1
 	};
 
@@ -109,6 +109,7 @@ private:
 	int colorizeFrom;
 	int _disableColorize;
 	int _disableColorizeStart;
+	int _currentLine;
 
 	void init();
 	void clearUndo();
@@ -116,6 +117,7 @@ private:
 	void addRedo(GCommand *);
 	void updateViews(int row = -1, int count = 1);
 	void updateMargin();
+	void updateContents();
 
 public:
 
@@ -152,6 +154,9 @@ public:
 
 	GString getLine(int y) const;
 	void setLine(int y, GString & str);
+	
+	int currentLine() const { return _currentLine; }
+	void setCurrentLine(int y);
 
 	bool getLineFlag(int y, int f) const;
 	void setLineFlag(int y, int f, bool b);

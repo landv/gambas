@@ -85,6 +85,7 @@ static QString _highlight_text = "";
 static GHighlightArray *_highlight_data = NULL;
 
 static QT_PICTURE _breakpoint_picture = 0;
+static QT_PICTURE _bookmark_picture = 0;
 
 static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
@@ -404,6 +405,8 @@ BEGIN_METHOD(CEDITOR_find_next_breakpoint, GB_INTEGER line)
 
 	int line = VARG(line);
 
+	GB.Deprecated("gb.qt4.ext", "Editor.FindNextBreakpoint", "Editor.Breakpoints");
+	
 	for(;;)
 	{
 		if (line >= DOC->numLines())
@@ -422,6 +425,43 @@ BEGIN_METHOD(CEDITOR_find_next_breakpoint, GB_INTEGER line)
 	}
 
 END_METHOD
+
+static void return_flagged_lines(CEDITOR *_object, int flag)
+{
+	GB_ARRAY array;
+	int i;
+	
+	GB.Array.New(&array, GB_T_INTEGER, 0);
+	
+	for (i = 0; i < DOC->numLines(); i++)
+	{
+		if (DOC->getLineFlag(i, flag))
+			*((int *)GB.Array.Add(array)) = i;
+	}
+	
+	GB.ReturnObject(array);
+}
+
+BEGIN_PROPERTY(Editor_Breakpoints)
+
+	return_flagged_lines(THIS, GLine::BreakpointFlag);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Editor_Bookmarks)
+
+	return_flagged_lines(THIS, GLine::BookmarkFlag);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Editor_CurrentLine)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(DOC->currentLine());
+	else
+		DOC->setCurrentLine(VPROP(GB_INTEGER));
+
+END_PROPERTY
 
 BEGIN_METHOD(CEDITOR_find_next_limit, GB_INTEGER line)
 
@@ -678,16 +718,16 @@ BEGIN_METHOD_VOID(CEDITOR_line_refresh)
 
 END_METHOD
 
-BEGIN_PROPERTY(CEDITOR_line_current)
+BEGIN_PROPERTY(EditorLine_Bookmark)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(DOC->getLineFlag(THIS->line, GLine::CurrentFlag));
+		GB.ReturnBoolean(DOC->getLineFlag(THIS->line, GLine::BookmarkFlag));
 	else
-		DOC->setLineFlag(THIS->line, GLine::CurrentFlag, VPROP(GB_BOOLEAN));
+		DOC->setLineFlag(THIS->line, GLine::BookmarkFlag, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CEDITOR_line_breakpoint)
+BEGIN_PROPERTY(EditorLine_Breakpoint)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(DOC->getLineFlag(THIS->line, GLine::BreakpointFlag));
@@ -764,6 +804,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CEDITOR_exit)
 
 	GB.Unref((void **)&_breakpoint_picture);	
+	GB.Unref((void **)&_bookmark_picture);	
 
 END_METHOD
 
@@ -1038,7 +1079,7 @@ BEGIN_PROPERTY(CEDITOR_char_width)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CEDITOR_breakpoint_picture)
+BEGIN_PROPERTY(Editor_BreakpointPicture)
 
 	if (READ_PROPERTY)
 		GB.ReturnObject(_breakpoint_picture);
@@ -1046,6 +1087,18 @@ BEGIN_PROPERTY(CEDITOR_breakpoint_picture)
 	{
 		GB.StoreObject(PROP(GB_OBJECT), (void **)&_breakpoint_picture);
 		GEditor::setBreakpointPixmap(QT.GetPixmap(_breakpoint_picture));
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Editor_BookmarkPicture)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(_bookmark_picture);
+	else
+	{
+		GB.StoreObject(PROP(GB_OBJECT), (void **)&_bookmark_picture);
+		GEditor::setBookmarkPixmap(QT.GetPixmap(_bookmark_picture));
 	}
 
 END_PROPERTY
@@ -1286,8 +1339,8 @@ GB_DESC CEditorLineDesc[] =
 	GB_PROPERTY("Text", "s", CEDITOR_line_text),
 	GB_PROPERTY_READ("Length", "i", CEDITOR_line_length),
 	GB_PROPERTY("Expanded", "b", CEDITOR_line_expanded),
-	GB_PROPERTY("Current", "b", CEDITOR_line_current),
-	GB_PROPERTY("Breakpoint", "b", CEDITOR_line_breakpoint),
+	GB_PROPERTY("Bookmark", "b", EditorLine_Bookmark),
+	GB_PROPERTY("Breakpoint", "b", EditorLine_Breakpoint),
 	GB_PROPERTY_READ("Limit", "b", EditorLine_Limit),
 	//GB_PROPERTY_READ("Edited", "b", EditorLine_Edited),
 	GB_METHOD("GetInitialState", NULL, CEDITOR_line_get_initial_state, NULL),
@@ -1344,9 +1397,6 @@ GB_DESC CEditorDesc[] =
 {
 	GB_DECLARE("Editor", sizeof(CEDITOR)), GB_INHERITS("Control"),
 
-	//GB_CONSTANT("Current", "i", GLine::CurrentFlag),
-	//GB_CONSTANT("Breakpoint", "i", GLine::BreakpointFlag),
-
 	GB_CONSTANT("ShowLimits", "i", GEditor::ShowProcedureLimits),
 	GB_CONSTANT("BlendedLimits", "i", GEditor::BlendedProcedureLimits),
 	GB_CONSTANT("BackgroundLimits", "i", GEditor::ChangeBackgroundAtLimit),
@@ -1366,7 +1416,8 @@ GB_DESC CEditorDesc[] =
 	GB_METHOD("_free", NULL, CEDITOR_free, NULL),
 	GB_STATIC_METHOD("_exit", NULL, CEDITOR_exit, NULL),
 	
-	GB_STATIC_PROPERTY("BreakpointPicture", "Picture", CEDITOR_breakpoint_picture),
+	GB_STATIC_PROPERTY("BreakpointPicture", "Picture", Editor_BreakpointPicture),
+	GB_STATIC_PROPERTY("BookmarkPicture", "Picture", Editor_BookmarkPicture),
 
 	GB_PROPERTY("View", "Editor", CEDITOR_view),
 
@@ -1450,6 +1501,10 @@ GB_DESC CEditorDesc[] =
 	GB_METHOD("FindNextWord", "i", CEDITOR_find_next_word, "(Word)s(Line)i"),
 	GB_METHOD("FindNextLimit", "i", CEDITOR_find_next_limit, "(Line)i"),
 	//GB_METHOD("FindPreviousLimit", "i", CEDITOR_find_next_limit, "(Line)i"),
+	
+	GB_PROPERTY_READ("Breakpoints", "Integer[]", Editor_Breakpoints),
+	GB_PROPERTY_READ("Bookmarks", "Integer[]", Editor_Bookmarks),
+	GB_PROPERTY("CurrentLine", "i", Editor_CurrentLine),
 	
 	GB_PROPERTY("ScrollX", "i", Editor_ScrollX),
 	GB_PROPERTY("ScrollY", "i", Editor_ScrollY),

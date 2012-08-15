@@ -67,7 +67,8 @@ class GEditor : public Q3ScrollView
 private:
 
 	static QPixmap *_cache;
-	static QPixmap *breakpoint;
+	static QPixmap *_breakpoint;
+	static QPixmap *_bookmark;
 	static QStyle *_style;
 	static int count;
 
@@ -93,7 +94,7 @@ private:
 	int _cellw, _cellh;
 	int _nrows;
 	bool _insertMode;
-	double _charWidth[256];
+	double *_charWidth;
 	double _sameWidth;
 	int _tabWidth;
 	bool _oddLine;
@@ -200,6 +201,7 @@ public:
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);
+	static void setBookmarkPixmap(QPixmap *p);
 	
 	GEditor(QWidget *parent);
 	~GEditor();

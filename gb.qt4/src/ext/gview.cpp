@@ -97,7 +97,8 @@ static QColor defaultColors[GLine::NUM_STATE] =
 /**---- GEditor -----------------------------------------------------------*/
 
 QPixmap *GEditor::_cache = 0;
-QPixmap *GEditor::breakpoint = 0;
+QPixmap *GEditor::_breakpoint = 0;
+QPixmap *GEditor::_bookmark = 0;
 int GEditor::count = 0;
 QStyle *GEditor::_style = 0;
 
@@ -209,19 +210,29 @@ GEditor::~GEditor()
 	if (count == 0)
 	{
 		delete _cache;
-		delete breakpoint;
+		delete _breakpoint;
+		delete _bookmark;
 		_cache = 0;
-		breakpoint = 0;
+		_breakpoint = 0;
+		_bookmark = 0;
 		delete _style;
 	}
 }
 
 void GEditor::setBreakpointPixmap(QPixmap *p)
 {
-	if (!breakpoint)
-		breakpoint = new QPixmap;
+	if (!_breakpoint)
+		_breakpoint = new QPixmap;
 		
-	*breakpoint = *p;
+	*_breakpoint = *p;
+}
+
+void GEditor::setBookmarkPixmap(QPixmap *p)
+{
+	if (!_bookmark)
+		_bookmark = new QPixmap;
+		
+	*_bookmark = *p;
 }
 
 void GEditor::setDocument(GDocument *d)
@@ -427,6 +438,35 @@ void GEditor::redrawContents()
 	//	repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
 }
 
+static double *get_char_width_table(QFontMetrics &fm, QFont &font)
+{
+	static QHash<QString, double *> cache;
+	
+	int i;
+	QString c, fd;
+	double *cw;
+	
+	fd = font.toString();
+	
+	if (cache.contains(fd))
+		return cache[fd];
+		
+	//qDebug("get_char_width_table: %s", (const char *)fd.toUtf8());
+
+	cw = new double[256];
+	
+	for (i = 0; i < 256; i++)
+	{
+		c = QChar(i);
+		c = c.repeated(64);
+		cw[i] = (double)fm.width(c) / 64;
+		//qDebug("_charWidth[%d] = %g", i, _charWidth[i]);
+	}
+	
+	cache.insert(fd, cw);
+	return cw;
+}
+
 void GEditor::updateFont()
 {
 	QFont f;
@@ -442,13 +482,7 @@ void GEditor::updateFont()
 	fm = QFontMetrics(normalFont);
 	_ytext = fm.ascent() + 1;
 	
-	for (int i = 0; i < 256; i++)
-	{
-		c = QChar(i);
-		c = c.repeated(64);
-		_charWidth[i] = (double)fm.width(c) / 64;
-		//qDebug("_charWidth[%d] = %g", i, _charWidth[i]);
-	}
+	_charWidth = get_char_width_table(fm, normalFont);
 	
 	_sameWidth = _charWidth[' '];
 	_tabWidth = _charWidth['m'] * 8;
@@ -925,7 +959,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	//	qDebug("%d: %d %d %d %d (%d %d)", row, ur.left(), ur.top(), ur.width(), ur.height(), xmin, lmax);
 
 	// Line background
-	if (l->flag & (1 << GLine::CurrentFlag))
+	if (realRow == doc->currentLine()) //l->flag & (1 << GLine::CurrentFlag))
 		a = styles[GLine::Current].color;
 
 	if (getFlag(ShowCurrentLine) && realRow == y)
@@ -1131,11 +1165,19 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 	
 	// Breakpoint symbol
-	if ((l->flag & (1 << GLine::BreakpointFlag)) && breakpoint && !breakpoint->isNull())
+	if ((l->flag & (1 << GLine::BreakpointFlag)) && _breakpoint && !_breakpoint->isNull())
 	{
 		//p.fillRect(margin - 10, 0, 8, _cellh, styles[GLine::Breakpoint].color);
 		//updateBreakpoint(styles[GLine::Background].color.rgb(), styles[GLine::Breakpoint].color.rgb());
-		p.drawPixmap(margin - breakpoint->width() - 2, (_cellh - breakpoint->height()) / 2, *breakpoint);
+		p.drawPixmap(margin - _breakpoint->width() - 2, (_cellh - _breakpoint->height()) / 2, *_breakpoint);
+	}
+
+	// Bookmark symbol
+	if ((l->flag & (1 << GLine::BookmarkFlag)) && _bookmark && !_bookmark->isNull())
+	{
+		//p.fillRect(margin - 10, 0, 8, _cellh, styles[GLine::Breakpoint].color);
+		//updateBreakpoint(styles[GLine::Background].color.rgb(), styles[GLine::Breakpoint].color.rgb());
+		p.drawPixmap(margin - _bookmark->width() - 2, (_cellh - _bookmark->height()) / 2, *_bookmark);
 	}
 
 	// Text cursor
@@ -2489,10 +2531,15 @@ void GEditor::updateMargin()
 	
 		if (doc->getHighlightMode() != GDocument::None)
 		{
-			if (breakpoint && !breakpoint->isNull())
-				nm += breakpoint->width() + 2;
-			else
-				nm += 8;
+			int bw = 8;
+			
+			if (_breakpoint && !_breakpoint->isNull())
+				bw = qMax(bw, _breakpoint->width() + 2);
+			
+			if (_bookmark && !_bookmark->isNull())
+				bw = qMax(bw, _bookmark->width() + 2);
+			
+			nm += bw;
 		}
 		else if (getFlag(ShowLineNumbers))
 			nm += 4;

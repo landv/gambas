@@ -922,6 +922,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim hProject As CProjectInfo
   Dim sLink As String
   Dim bExported As Boolean
+  Dim fRapport As Float
   
   If iSize Then
     sPrefix = "icon:/" & iSize
@@ -1012,22 +1013,32 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     Try hImage = Image.Load(sIcon)
     If hImage Then
 
-      If iSize Then
-        hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-      Else
-        iSize = 32
-        If hImage.Height > iSize Then
-          hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-        Endif
-        If hImage.Width > iSize Then
-          hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width)
-        Endif
-      Endif
+      fRapport = hImage.Width / hImage.Height
+      If fRapport < 1 Then fRapport = 1 / fRapport
+      
+      If fRapport < 8 Then
 
-      'hPict = hImage.Picture
-    Else
-      hImage = Picture[sPrefix &/ "image"].Image
+        If iSize Then
+          hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+        Else
+          iSize = 32
+          If hImage.Height > iSize Then
+            hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+          Endif
+          If hImage.Width > iSize Then
+            hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width)
+          Endif
+        Endif
+        
+      Else
+        
+        hImage = Null
+        
+      Endif
+      
     Endif
+
+    If Not hImage Then hImage = Picture[sPrefix &/ "image"].Image
 
     If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
     If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
@@ -5115,12 +5126,20 @@ End
 Public Sub RefreshBreakpointPicture()
 
   Dim iSize As Integer
+  Dim hImage As Image
   Dim hPict As Picture
 
   iSize = Font[Settings["/Editor/Font"]].Height
-  hPict = Picture["icon:/small/halt"]
-  If iSize < Stock.GetSize("small") Then hPict = hPict.Image.Stretch(iSize, iSize).Picture
-  Try Editor.BreakpointPicture = hPict
+  
+  hImage = Picture["icon:/small/halt"].Image
+  'hImage.Opacity(0.75)
+  If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
+  Try Editor.BreakpointPicture = hImage.Picture
+  
+  hImage = Picture["icon:/small/apply"].Image
+  'hImage.Opacity(0.75)
+  If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
+  Try Editor.BookmarkPicture = hImage.Picture
 
 End
 

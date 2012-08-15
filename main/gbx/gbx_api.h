@@ -52,6 +52,7 @@ void GB_GetProperty(void *object, const char *property);
 void GB_SetProperty(void *object, const char *property, ...);
 
 void GB_Error(const char *msg, ...);
+void GB_Deprecated(const char *msg, const char *func, const char *repl);
 
 void GB_Ref(void *object);
 void GB_Unref(void **object);

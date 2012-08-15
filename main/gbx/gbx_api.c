@@ -114,6 +114,7 @@ const void *GAMBAS_Api[] =
 
 	(void *)GB_Error,
 	(void *)ERROR_propagate,
+	(void *)GB_Deprecated,
 
 	(void *)GB_GetClass,
 	(void *)GB_GetClassName,
@@ -1107,6 +1108,13 @@ void GB_Error(const char *error, ...)
 	EXEC_set_native_error(TRUE);
 }
 
+void GB_Deprecated(const char *msg, const char *func, const char *repl)
+{
+	if (EXEC_debug)
+		GB_Error("&1: &2 is deprecated. Use &3 instead", msg, func, repl);
+	else
+		fprintf(stderr, "%s: %s is deprecated. Use %s instead\n", msg, func, repl);
+}
 
 #if DEBUG_REF
 
