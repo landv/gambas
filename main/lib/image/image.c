@@ -1293,6 +1293,83 @@ void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
 	MODIFY(dst);
 }
 
+void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left)
+{
+	if (dst->width != src->height || dst->width != src->height || dst->format != src->format || IMAGE_is_void(src))
+		return;
+
+	int x, y;
+	int w = dst->width;
+	int h = dst->height;
+
+	SYNCHRONIZE(src);
+
+	if (GB_IMAGE_FMT_IS_24_BITS(src->format))
+	{
+		if (left)
+		{
+			for (y = 0; y < h; y++)
+			{
+				uint24 *pd = (uint24 *)(dst->data + y * w * 3);
+				uint24 *ps = (uint24 *)(src->data + (h - 1 - y) * 3);
+				
+				for (x = 0; x < w; x++)
+				{
+					pd[x] = *ps;
+					ps += h;
+				}
+			}
+		}
+		else
+		{
+			for (y = 0; y < h; y++)
+			{
+				uint *pd = (uint *)(dst->data + y * w * 3);
+				uint *ps = (uint *)(src->data + (w * (h - 1) + y) * 3);
+				
+				for (x = 0; x < w; x++)
+				{
+					pd[x] = *ps;
+					ps -= h;
+				}
+			}
+		}
+	}
+	else 
+	{
+		if (left)
+		{
+			for (y = 0; y < h; y++)
+			{
+				uint *pd = (uint *)(dst->data + y * w * 4);
+				uint *ps = (uint *)(src->data + (h - 1 - y) * 4);
+				
+				for (x = 0; x < w; x++)
+				{
+					pd[x] = *ps;
+					ps += h;
+				}
+			}
+		}
+		else
+		{
+			for (y = 0; y < h; y++)
+			{
+				uint *pd = (uint *)(dst->data + y * w * 4);
+				uint *ps = (uint *)(src->data + (w * (h - 1) + y) * 4);
+				
+				for (x = 0; x < w; x++)
+				{
+					pd[x] = *ps;
+					ps -= h;
+				}
+			}
+		}
+	}
+	
+	MODIFY(dst);
+}
+
 #if 0
 #define GET_RGBA(_col, _r, _g, _b, _a) { _r = RED(_col); _g = GREEN(_col); _b = BLUE(_col); _a = ALPHA(_col); }
 

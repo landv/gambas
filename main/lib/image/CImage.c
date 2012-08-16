@@ -205,7 +205,32 @@ BEGIN_METHOD(Image_Mirror, GB_BOOLEAN horz; GB_BOOLEAN vert)
 	tmp.ob = THIS_IMAGE->ob;
 	IMAGE_create(&tmp, THIS_IMAGE->width, THIS_IMAGE->height, THIS_IMAGE->format);
 	IMAGE_mirror(THIS_IMAGE, &tmp, VARG(horz), VARG(vert));
+	IMAGE_delete(THIS_IMAGE);
+	*THIS_IMAGE = tmp;
+	GB.ReturnObject(THIS);
 
+END_METHOD
+
+BEGIN_METHOD_VOID(Image_RotateLeft)
+
+	GB_IMG tmp;
+
+	tmp.ob = THIS_IMAGE->ob;
+	IMAGE_create(&tmp, THIS_IMAGE->height, THIS_IMAGE->width, THIS_IMAGE->format);
+	IMAGE_rotate(THIS_IMAGE, &tmp, TRUE);
+	IMAGE_delete(THIS_IMAGE);
+	*THIS_IMAGE = tmp;
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Image_RotateRight)
+
+	GB_IMG tmp;
+
+	tmp.ob = THIS_IMAGE->ob;
+	IMAGE_create(&tmp, THIS_IMAGE->height, THIS_IMAGE->width, THIS_IMAGE->format);
+	IMAGE_rotate(THIS_IMAGE, &tmp, FALSE);
 	IMAGE_delete(THIS_IMAGE);
 	*THIS_IMAGE = tmp;
 	GB.ReturnObject(THIS);
@@ -371,6 +396,8 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("Resize", "Image", Image_Resize, "(Width)i(Height)i"),
 
 	GB_METHOD("Mirror", "Image", Image_Mirror, "(Horizontal)b(Vertical)b"),
+	GB_METHOD("RotateLeft", "Image", Image_RotateLeft, NULL),
+	GB_METHOD("RotateRight", "Image", Image_RotateLeft, NULL),
 	
 	GB_METHOD("FillRect", "Image", Image_FillRect, "(X)i(Y)i(Width)i(Height)i(Color)i"),
 	GB_METHOD("PaintRect", "Image", Image_PaintRect, "(X)i(Y)i(Width)i(Height)i(Color)i"),

@@ -61,6 +61,7 @@ void IMAGE_compose(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int
 void IMAGE_colorize(GB_IMG *img, GB_COLOR color);
 void IMAGE_mask(GB_IMG *img, GB_COLOR color);
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical);
+void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left);
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
 const char *IMAGE_format_to_string(int fmt);
 void IMAGE_set_opacity(GB_IMG *dst, uchar opacity);
