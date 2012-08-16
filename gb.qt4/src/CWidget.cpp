@@ -2761,7 +2761,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 					default: CMOUSE_info.type = POINTER_MOUSE;
 				}
 
-				cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+				cancel = GB.Raise(control, event_id, 0);
 
 				CMOUSE_clear(false);
 			}
