@@ -578,9 +578,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->isAllowFocus());
+		GB.ReturnBoolean(CWIDGET_get_allow_focus(THIS));
 	else
-		WIDGET->setAllowFocus(VPROP(GB_BOOLEAN));
+		CWIDGET_set_allow_focus(THIS, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

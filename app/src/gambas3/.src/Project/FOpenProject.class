@@ -451,6 +451,8 @@ Public Sub txtFilter_KeyPress()
   Else If Key.Code = Key.Up Then
     lstRecent.ScrollView_KeyPress
     Stop Event
+  Else If Key.Code = Key.Return And If Key.Shift Then
+    btnOther.Value = True
   Endif
 
 End

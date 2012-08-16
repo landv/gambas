@@ -1239,6 +1239,10 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	//p->setClipRect(cx, cy, cw, ch);
 	p->drawPixmap(contentsX(), rowfirst * _cellh, *_cache, 0, 0, _cellw, _cellh * (rowlast - rowfirst + 1)); //, _cellw, _cellh);
 	
+	//qDebug("%d %d", contentsX(), contentsY());
+	//p->setPen(styles[GLine::Normal].color);
+	//p->drawText(contentsX(), contentsY() + 16, QString::number(y) + " : " + QString::number(x));
+	
 	if (_blend_pattern)
 	{
 		delete _blend_pattern;
@@ -2523,7 +2527,7 @@ void GEditor::setFlag(int f, bool v)
 void GEditor::updateMargin()
 {
 	int charWidth = _charWidth['m'];
-	int nm = 0, lnl = 0;
+	int nm = 1, lnl = 0;
 	
 	if (!getFlag(HideMargin))
 	{

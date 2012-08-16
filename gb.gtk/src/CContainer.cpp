@@ -497,6 +497,16 @@ BEGIN_PROPERTY(UserContainer_Invert)
 	
 END_PROPERTY
 
+BEGIN_PROPERTY(UserContainer_Focus)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->canFocus());
+	else
+		WIDGET->setCanFocus(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
 
 GB_DESC CUserControlDesc[] =
 {
@@ -530,6 +540,8 @@ GB_DESC CUserContainerDesc[] =
   GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
   GB_PROPERTY("Indent", "b", CUSERCONTAINER_indent),
   GB_PROPERTY("Invert", "b", UserContainer_Invert),
+  
+  //GB_PROPERTY("Focus", "b", UserContainer_Focus),
 
 	USERCONTAINER_DESCRIPTION,
 

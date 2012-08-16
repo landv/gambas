@@ -137,10 +137,15 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	WIDGET_TYPE wid;
 	int x, y, w, h, i;
 	int xc, yc, wc, hc;
+	#ifndef GET_MAX_SIZE
 	int wf, hf;
+	#endif
 	int dmax = 0, d;
 	int sexp, nexp;
-	bool swap, autoresize, has_expand_children = false;
+	bool swap, autoresize;
+	#ifndef GET_MAX_SIZE
+	bool has_expand_children = false;
+	#endif
 	bool redo;
 	bool first;
 	void *ob;
@@ -223,8 +228,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			redo = false;
 
 			GET_WIDGET_CONTENTS(cont, xc, yc, wc, hc);
+			#ifndef GET_MAX_SIZE
 			wf = GET_WIDGET_W(cont) - wc;
 			hf = GET_WIDGET_H(cont) - hc;
+			#endif
 			
 			//fprintf(stderr, "cont: %s: %d %d %d %d (%d %d)\n", ((gControl *)_object)->name(), xc, yc, wc, hc, wf, hf);
 			
@@ -318,7 +325,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						sexp += spacing;
 					}
 					
+					#ifndef GET_MAX_SIZE
 					has_expand_children = nexp > 0;
+					#endif
 
 					if (autoresize)
 					{

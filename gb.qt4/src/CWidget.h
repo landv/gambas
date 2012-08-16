@@ -212,6 +212,8 @@ void *CWIDGET_enter_popup();
 void CWIDGET_leave_popup(void *save);
 void CACTION_register(void *control, const char *old, const char *key);
 void CACTION_raise(void *control);
+bool CWIDGET_get_allow_focus(void *_object);
+void CWIDGET_set_allow_focus(void *_object, bool f);
 
 #ifndef DO_NOT_DECLARE_EVENTS
 #ifndef __CWIDGET_CPP

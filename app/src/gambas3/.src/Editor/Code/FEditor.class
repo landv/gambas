@@ -3599,8 +3599,6 @@ Private Sub CreateLocalVariable() As Boolean
   Dim sType As String
   Dim I As Integer
  
-  ' TODO: Support for X = Read ...
- 
   ' Assignment
   If aSym.Count >= 3 And If aType[0] = Highlight.Symbol And If aSym[1] = "=" Then
     
@@ -3622,6 +3620,12 @@ Private Sub CreateLocalVariable() As Boolean
       sType = "Process"
     Else If aSym[0] = "RAISE"
       sType = "b"
+    Else If aSym[0] = "READ" And If aSym.Count >= 4 Then
+      If aSym[aSym.Max - 1] = "AS" And If aType[aSym.Max] = Highlight.DataType Then
+        sType = CSymbolInfo.NameToType(aSym[aSym.Max])
+      Else
+        sType = "s"
+      Endif
     Else
       sType = GetExpressionTypeWithEval(aSym, aType)
     Endif
@@ -3660,6 +3664,23 @@ Private Sub CreateLocalVariable() As Boolean
     aType.Insert([Highlight.Operator, Highlight.Symbol, Highlight.Operator, Highlight.Operator])
     
     sType = GetExpressionTypeWithEval(aSym, aType)
+    
+  ' Line Input
+  Else If aSym.Count >= 3 And If aSym[0] = "LINE" And If aSym[1] = "INPUT" Then
+    
+    I = aSym.Max
+    While I > 2
+      If aType[I] = Highlight.Symbol Then Break
+      Dec I
+    Wend
+    
+    If I > 2 Then
+      sName = aSym[I]
+      sType = GetSymbolType(sName)
+      If sType Then Return
+  
+      sType = "s"
+    Endif
   
   Endif
 

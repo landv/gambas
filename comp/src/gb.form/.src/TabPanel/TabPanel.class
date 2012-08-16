@@ -55,6 +55,7 @@ Public Sub _new()
   ' $hRightArrow.Hide
 
   $hTabBarContainer = New DrawingArea($hTabBar) As "TabBarContainer"
+  $hTabBarContainer.Focus = True
 
   $hPanel = New DrawingArea(Me) As "Panel"
   $hPanel.Expand = True
@@ -616,5 +617,31 @@ End
 Public Sub _GetBackground() As Integer
   
   Return Color.Gradient(If(Me.Background = Color.Default, Color.Background, Me.Background), Color.LightForeground)  
+  
+End
+
+Public Sub TabBarContainer_KeyPress()
+  
+  If $aCont.Count = 0 Then Return
+  
+  Select Case Key.Code
+    
+    Case Key.Left, Key.PageUp
+      Try Dec Me.Index
+      Stop Event
+      
+    Case Key.Right, Key.PageDown
+      Try Inc Me.Index
+      Stop Event
+      
+    Case Key.Home
+      Me.Index = 0
+      Stop Event
+      
+    Case Key.End
+      Me.Index = $aCont.Max
+      Stop Event
+    
+  End Select
   
 End

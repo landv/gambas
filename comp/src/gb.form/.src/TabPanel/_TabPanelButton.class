@@ -111,6 +111,15 @@ Public Sub DrawingArea_Draw()
     Draw.Picture(hPict, Me.W - hPict.W - 2, (Me.H - hPict.H) \ 2)
   Endif
   
+  If $bSelected And If Me.Parent.HasFocus Then
+    Draw.Foreground = hTabPanel._GetBackground()
+    If hTabPanel.Border Then
+      Draw.Rect(2, 2, Draw.W - 4, Draw.H - 4)
+    Else
+      Draw.Rect(2, 1, Draw.W - 4, Draw.H - 3)
+    Endif
+  Endif
+  
 End
 
 Private Function Text_Read() As String

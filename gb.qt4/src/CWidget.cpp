@@ -349,6 +349,25 @@ static void CWIDGET_leave(void *_object)
 	}
 }
 
+bool CWIDGET_get_allow_focus(void *_object)
+{
+	return WIDGET->focusPolicy() != Qt::NoFocus;
+}
+
+void CWIDGET_set_allow_focus(void *_object, bool f)
+{
+	if (f)
+	{
+		WIDGET->setFocusPolicy(GB.CanRaise(THIS, EVENT_MouseWheel) ? Qt::WheelFocus : Qt::StrongFocus);
+		WIDGET->setAttribute(Qt::WA_InputMethodEnabled, true);
+	}
+	else
+	{
+		WIDGET->setFocusPolicy(Qt::NoFocus);
+	}
+}
+
+
 void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
 	//QAbstractScrollArea *sa;
@@ -2761,13 +2780,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				control = (CWIDGET *)(EXT(control)->proxy_for);
 				goto __TABLET_TRY_PROXY;
 			}
-			
-			goto __NEXT;
-
-			
 		}
-			
-	
+		
+		goto __NEXT;
 	}
 	
 	/*

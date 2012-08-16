@@ -113,8 +113,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->canFocus()); return; }
-	WIDGET->setCanFocus(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->canFocus());
+	else
+		WIDGET->setCanFocus(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

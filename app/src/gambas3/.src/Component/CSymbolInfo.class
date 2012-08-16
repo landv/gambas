@@ -41,6 +41,14 @@ Static Public Sub _init()
 
 End
 
+Static Public Sub NameToType(sType As String) As String
+  
+  If $cNameType.Exist(sType) Then sType = $cNameType[sType]
+  Return sType
+  
+End
+
+
 Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
   
   Dim hSym As New CSymbolInfo

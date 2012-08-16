@@ -395,6 +395,7 @@ static void gms_move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 #define RESIZE_CONTAINER(_object, _cont, _w, _h) (0)
 //#undef IS_WIDGET_VISIBLE
 //#define IS_WIDGET_VISIBLE(_cont) (1)
+#define GET_MAX_SIZE
 
 #include "gb.form.arrangement.h"
 
@@ -934,6 +935,14 @@ BEGIN_PROPERTY(UserContainer_Arrangement)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(UserContainer_Focus)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(CWIDGET_get_allow_focus(THIS));
+	else
+		CWIDGET_set_allow_focus(THIS, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 
 BEGIN_PROPERTY(Container_AutoResize)
 
@@ -1304,6 +1313,8 @@ GB_DESC CUserContainerDesc[] =
 	GB_PROPERTY("Invert", "b", UserContainer_Invert),
 	
 	GB_PROPERTY("Design", "b", UserContainer_Design),
+
+	//GB_PROPERTY("Focus", "b", UserContainer_Focus),
 
 	USERCONTAINER_DESCRIPTION,
 	

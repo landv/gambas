@@ -2,34 +2,36 @@
 
 Private $sType As String
 
-Static Private MAGIC_NUMBER As Integer = 314159265
+Static Private $iMagicNumber As Integer = 314159265
 
 Static Public Sub Get(sType As String) As Variant
   
   Dim vVal As Variant
+  
+  Inc $iMagicNumber
   
   Select Case sType
     
     Case "b"
       vVal = True
     Case "c"
-      vVal = CByte(MAGIC_NUMBER)
+      vVal = CByte($iMagicNumber)
     Case "d"
       vVal = Now
     Case "f"
       vVal = Pi
     Case "i"
-      vVal = MAGIC_NUMBER
+      vVal = $iMagicNumber
     Case "l"
-      vVal = CLong(MAGIC_NUMBER)
+      vVal = CLong($iMagicNumber)
     Case "o"
       vVal = New CDatatype("o")
     Case "p"
-      vVal = CPointer(MAGIC_NUMBER)
+      vVal = CPointer($iMagicNumber)
     Case "h"
-      vVal = CShort(MAGIC_NUMBER)
+      vVal = CShort($iMagicNumber)
     Case "g"
-      vVal = CSingle(MAGIC_NUMBER)
+      vVal = CSingle($iMagicNumber)
     Case "s"
       vVal = "Gambas"
     Case "v"

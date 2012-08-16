@@ -1989,7 +1989,11 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   '  hForm.Editor.SetFocus
   'ENDIF
 
-  If iLine Then Try hForm.GotoCenter(iLine - 1, iColumn)
+  If iLine Then 
+    Try hForm.GotoCenter(iLine - 1, iColumn)
+  Else If hForm.Name = Startup Then
+    Try hForm.GotoFunction(hForm.GetFunctionLine("Main"))
+  Endif
 
   CPosition.Enable
 
