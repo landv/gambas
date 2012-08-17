@@ -67,6 +67,7 @@ End
 Public Sub AddAction(sAction As String)
   
   Dim hItem As Control
+  Dim W As Integer
 
   'Debug sAction
 
@@ -82,7 +83,9 @@ Public Sub AddAction(sAction As String)
   hItem = New DrawingArea(svwAction) As "Item"
   hItem.Tag = sAction
   hItem.Mouse = Mouse.Pointing
-  hItem.Resize(Desktop.Scale * 32, Desktop.Scale * 5)
+  
+  W = hItem.Font.TextWidth(GetActionText(sAction)) + Stock.GetSize("small") + Desktop.Scale * 3
+  hItem.Resize(W, Desktop.Scale * 5)
   
 End
 
@@ -114,7 +117,7 @@ Private Sub InitAction()
     
   Next
   
-  svwAction.Arrangement = Arrange.Vertical
+  svwAction.Arrangement = Arrange.Row
   
 End
 
@@ -133,9 +136,25 @@ Public Sub Item_Leave()
   
 End
 
-Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolean)
+Private Sub GetActionText(sAction As String) As String
   
-  'Dim hAction As CAction
+  Select Case sAction
+    Case "|"
+      Return ("Separator")
+    Case "~"
+      Return ("Expander")
+    Case "-"
+      Return ("Space")
+    Case Else
+      Return MAction.Actions[sAction].Text
+  End Select
+
+End
+
+
+Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean)
+  
+  Dim hAction As CAction
   Dim hIcon As Picture
   Dim sText As String
   Dim W As Integer
@@ -144,13 +163,19 @@ Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolea
   'If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
    bText = Draw.W > (Draw.H * 2)
   
-  'If $hInside = hItem Then 
-  'Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
   
-  Draw.Foreground = Color.LightForeground
-  Draw.Rect(0, 0, Draw.W, Draw.H)
-  Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+  Draw.FillRect(1, 1, Draw.W - 2, Draw.H - 2, Color.Background)
+  
   Draw.Foreground = hCtrl.Foreground
+  Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+  If hCtrl.Hovered Then
+    Draw.Foreground = Color.LightForeground
+    Draw.Rect(0, 0, Draw.W, Draw.H)
+  Endif
+  
+  Draw.Foreground = hCtrl.Foreground
+  
+  hAction = MAction.Actions[sAction]
   
   If hAction Then
     
@@ -169,17 +194,16 @@ Private Sub DrawItem(hCtrl As Control, hAction As CAction, bScreenshot As Boolea
   
   Else
     
-    Select Case Last.Tag
+    Select Case sAction
       Case "|"
         hIcon = Picture["img/separator.png"]
-        sText = ("Separator")
       Case "~"
         hIcon = Picture["img/expander.png"]
-        sText = ("Expander")
       Case "-"
         hIcon = Picture["img/space.png"]
-        sText = ("Space")
     End Select
+    
+    sText = GetActionText(sAction)
     
     If bText Then
       Draw.Picture(hIcon, 8, (Draw.H - hIcon.H) / 2)
@@ -196,7 +220,7 @@ End
 
 Public Sub Item_Draw()
   
-  DrawItem(Last, MAction.Actions[Last.Tag], False)
+  DrawItem(Last, Last.Tag, False)
   
 End
 
@@ -204,54 +228,12 @@ Private Sub GetItemScreenshot(hAction As CAction) As Picture
   
   Dim hPict As Picture
   Dim hItem As Control
-  ' Dim hObject As Object
-  ' Dim bVisible As Boolean
-  ' Dim hParent As Control
-  ' Dim hWindow As Window
-  ' Dim X, Y As Integer
-  
-  ' hWindow = New Window
-  ' hWindow.Border = False
-  ' hWindow.Move(Mouse.ScreenX - 4, Mouse.ScreenY - 4, hItem.W, hItem.H)
-  ' 
-  ' bVisible = hItem.Visible
-  ' hParent = hItem.Parent
-  ' X = hItem.X
-  ' Y = hItem.Y
-  ' hObject = hItem
-  ' Try hObject.Border = True
-  ' hItem.Reparent(hWindow, 0, 0)
-  ' hItem.Show
-  ' hWindow.Show
-  ' Wait
-  ' hPict = hItem.Screenshot()
-  ' hWindow.Close
-  ' hItem.Reparent(hParent, X, Y)
-  ' hItem.Visible = bVisible
-  
-  ' bVisible = hItem.Visible
-  ' X = hItem.X
-  ' Y = hItem.Y
-  ' hParent = hItem.Parent
-  ' 
-  ' hItem.Ignore = True
-  ' hItem.Reparent($hForm, 0, 0)
-  ' hItem.Raise
-  ' hItem.Background = Color.Background
-  ' hItem.Show
-  ' Wait
-  ' hPict = hItem.Screenshot()
-  ' 
-  ' hItem.Reparent(hParent, X, Y)
-  ' hItem.Visible = bVisible
-  ' hItem.Ignore = False
-  ' hItem.Background = Color.Default
   
   hItem = $hForm.FindControl(hAction.Key)
   hPict = New Picture(hItem.W, hItem.H)
   Draw.Begin(hPict)
   Draw.FillRect(0, 0, Draw.W, Draw.H, Color.Background)
-  DrawItem(hItem, hAction, True)
+  DrawItem(hItem, hAction.Key, True)
   Draw.End
   
   Return hPict
@@ -275,7 +257,7 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
 
   If Not sAction Then Return
 
-  bOutside = hCtrl.Parent = svwAction
+  bOutside = hCtrl.Window = Me
   ' If bOutside Then
   '   If sAction <> "|" Then hCtrl.Hide
   ' Else

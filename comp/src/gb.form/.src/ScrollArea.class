@@ -31,6 +31,12 @@ Property Read View As DrawingArea
 Event Scroll
 Event Draw
 
+Static Private $hFadeN As Picture
+Static Private $hFadeS As Picture
+Static Private $hFadeW As Picture
+Static Private $hFadeE As Picture
+Static Private $iFadeColor As Integer = -1
+
 Private $hDrawingArea As DrawingArea
 Private $hHBar As ScrollBar
 Private $hVBar As ScrollBar
@@ -43,9 +49,42 @@ Private $bPainted As Boolean
 Private $W As Integer
 Private $H As Integer
 
+Private $iShadowN As Integer
+Private $iShadowS As Integer
+Private $iShadowW As Integer
+Private $iShadowE As Integer
+
+Private Sub LoadFades()
+  
+  Dim hImage As Image
+  Dim Y As Integer
+  Dim iColor As Integer
+  
+  iColor = Color.Desaturate(If(Me.Foreground = Color.Default, Color.TextForeground, Me.Foreground))
+  
+  If iColor = $iFadeColor Then Return
+  
+  hImage = New Image(16, 16, Color.Transparent)
+  For Y = 0 To 15
+    hImage.FillRect(0, Y, 16, 1, Color.SetAlpha(iColor, 192 + Y * 4))
+  Next
+  
+  $hFadeN = hImage.Picture
+  hImage.RotateLeft
+  $hFadeW = hImage.Picture
+  hImage.RotateLeft
+  $hFadeS = hImage.Picture
+  hImage.RotateLeft
+  $hFadeE = hImage.Picture
+  
+  $iFadeColor = iColor
+  
+End
+
+
 Public Sub _new()
   
-  'Debug ">>>>>"
+  Dim hImage As Image
   
   Me.Arrangement = Arrange.None
   
@@ -74,11 +113,22 @@ Public Sub ScrollArea_Arrange()
   
   Dim SB, SP, FW, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
+  ' Dim hChild As Control
+  ' Dim iMargin As Integer
   
   'Debug "ScrollArea:";; Me.W;; Me.H
   'Debug "DrawingArea:";; $hDrawingArea.W;; $hDrawingArea.H
   
   'Error "\t" & System.Backtrace.Join("\n\t")
+  
+  ' If $hDrawingArea.Children.Count Then
+  '   iMargin = If($hDrawingArea.Margin, If($hDrawingArea.Padding, $hDrawingArea.Padding, Desktop.Scale), 0)
+  '   For Each hChild In $hDrawingArea.Children
+  '     If Not hChild.Visible Then Continue
+  '     $W = Max($W, hChild.X + hChild.W + iMargin)
+  '     $H = Max($H, hChild.Y + hChild.H + iMargin)
+  '   Next
+  ' Endif
   
   SB = Style.ScrollbarSize
   SP = Style.ScrollbarSpacing
@@ -233,11 +283,24 @@ Public Sub DrawingArea_Draw()
   hClip = hClip.Intersection(hFrame)
   
   If hClip Then
+
     Draw.Clip(hClip.X, hClip.Y, hClip.W, hClip.H)
+
     If $bPainted Then Paint.Begin($hDrawingArea)
     Raise Draw
     If $bPainted Then Paint.End
+
+    LoadFades()
+    
+    Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+
+    If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)
+    If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - 16 - $iShadowS + Max(0, 16 - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, 16)
+    If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
+    If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
+
     Draw.Clip.Enabled = False
+
   Endif
   
   If $bBorder Then 
@@ -431,33 +494,26 @@ Private Sub Background_Write(Value As Integer)
 
 End
 
-' Private Function ClientWidth_Read() As Integer
-' 
-'   Return $hDrawingArea.Width - If($bBorder, Style.FrameWidth * 2, 0)
-' 
-' End
-' 
-' Private Function ClientHeight_Read() As Integer
-' 
-'   Return $hDrawingArea.Height - If($bBorder, Style.FrameWidth * 2, 0)
-' 
-' End
-' 
-' Private Function ClientW_Read() As Integer
-' 
-'   Return ClientWidth_Read()
-' 
-' End
-' 
-' Private Function ClientH_Read() As Integer
-' 
-'   Return ClientHeight_Read()
-' 
-' End
-
 Private Function View_Read() As DrawingArea
 
   Return $hDrawingArea
 
 End
 
+Public Sub _SetShadowOffset(North As Integer, South As Integer, West As Integer, East As Integer)
+  
+  Dim FW As Integer
+  
+  If $bBorder Then FW = Style.FrameWidth
+  
+  If North Then North += FW
+  If South Then South += FW
+  If West Then West += FW
+  If East Then East += FW
+  
+  $iShadowN = North
+  $iShadowS = South
+  $iShadowW = West
+  $iShadowE = East
+  
+End

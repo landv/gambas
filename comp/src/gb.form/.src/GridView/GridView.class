@@ -583,6 +583,7 @@ Public Sub _ResizeContents()
   Dim F As Integer = GetFrameWidth()
   
   $hView.ResizeContents($hColumns._GetWidth() + $hRows.Width + F * 2, $hRows._GetHeight() + $hColumns.Height + F * 2)
+  $hView._SetShadowOffset($hColumns.H, 0, $hRows.W, 0)
   
 End
 

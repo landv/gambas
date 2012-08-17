@@ -75,10 +75,6 @@ Public Sub gvwView_Change()
 End
 
 Public Sub gvwView_Select()
-  Dim i As Integer
-  For i = 0 To gvwView.Rows.GetSelected().max
-  Debug gvwView.Rows.GetSelected()[i]
-  Next
 End
 
 Public Sub gvwView_Scroll()

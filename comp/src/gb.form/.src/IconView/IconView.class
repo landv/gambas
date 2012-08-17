@@ -98,6 +98,8 @@ Private $fFindTime As Float
 
 Public Sub _new()
   
+  Dim hImage As Image
+  
   $hView = New ScrollArea(Me) As "ScrollArea"
   $hView.Background = Color.TextBackground
   $hView.Focus = True

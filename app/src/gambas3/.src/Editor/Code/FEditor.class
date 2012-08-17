@@ -46,7 +46,6 @@ Static Private $hVirtualSymbol As New CSymbolInfo
 Static Private $bPublic As Boolean
 Static Private $bStatic As Boolean
 Static Private $sName As String
-Static Private $cType As New Collection(gb.IgnoreCase)
 
 Private $bModify As Boolean
 'PRIVATE $cLine AS NEW Collection
@@ -94,19 +93,6 @@ Private $hBookmark As CBookmark
 
 
 Static Public Sub _init()
-
-  $cType["Boolean"] = "b"
-  $cType["Byte"] = "c"
-  $cType["Short"] = "h"
-  $cType["Integer"] = "i"
-  $cType["Long"] = "l"
-  $cType["Single"] = "g"
-  $cType["Float"] = "f"
-  $cType["Date"] = "d"
-  $cType["String"] = "s"
-  $cType["Variant"] = "v"
-  $cType["Object"] = "o"
-  $cType["Pointer"] = "p"
 
   $cStructClose["DO"] = "Loop"
   $cStructClose["WHILE"] = "Wend"
@@ -1596,7 +1582,7 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
 
   If bArray Then Return sType & "[]"
 
-  If $cType.Exist(sType) Then sType = $cType[sType]
+  sType = CSymbolInfo.NameToType(sType)
   Return sType
 
 Catch
@@ -1645,8 +1631,7 @@ Static Public Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, 
         Endif
       Endif
 
-      If $cType.Exist(sType) Then sType = $cType[sType]
-
+      sType = CSymbolInfo.NameToType(sType)
       hSymbol.Type = sType
       Return True
     Endif

@@ -115,7 +115,7 @@ Private Sub LoadAction(sFile As String)
     Else
       aLine = Scan(sLine, "* = *")
       If aLine.Count <> 2 Then Continue
-      cSlot[aLine[0]] = Unquote(aLine[1])
+      cSlot[aLine[0]] = UnQuote(aLine[1])
       If aLine[0] = "Shortcut" Then bHasShortcut = True
     Endif
   Wend
