@@ -336,11 +336,25 @@ END_METHOD
 BEGIN_PROPERTY(Pointer_X)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.tx);
+	GB.ReturnFloat((double)CMOUSE_info.x + (CMOUSE_info.tx - (int)CMOUSE_info.tx));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_Y)
+
+	CHECK_VALID();
+	GB.ReturnFloat((double)CMOUSE_info.y + (CMOUSE_info.ty - (int)CMOUSE_info.ty));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_ScreenX)
+
+	CHECK_VALID();
+	GB.ReturnFloat(CMOUSE_info.tx);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Pointer_ScreenY)
 
 	CHECK_VALID();
 	GB.ReturnFloat(CMOUSE_info.ty);
@@ -474,6 +488,8 @@ GB_DESC CPointerDesc[] =
 	GB_STATIC_PROPERTY_READ("Type", "i", Pointer_Type),
 	GB_STATIC_PROPERTY_READ("X", "f", Pointer_X),
 	GB_STATIC_PROPERTY_READ("Y", "f", Pointer_Y),
+	GB_STATIC_PROPERTY_READ("ScreenX", "f", Pointer_ScreenX),
+	GB_STATIC_PROPERTY_READ("ScreenY", "f", Pointer_ScreenY),
 	GB_STATIC_PROPERTY_READ("XTilt", "f", Pointer_XTilt),
 	GB_STATIC_PROPERTY_READ("YTitt", "f", Pointer_YTilt),
 	GB_STATIC_PROPERTY_READ("Pressure", "f", Pointer_Pressure),

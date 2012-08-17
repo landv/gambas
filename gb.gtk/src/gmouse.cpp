@@ -242,3 +242,47 @@ int gMouse::getType()
 		default: return POINTER_MOUSE;
 	}
 }
+
+void gMouse::initDevices()
+{
+	static bool done = false;
+	
+	GList *devices;
+	GdkDevice *device;
+	
+	if (done)
+		return;
+	
+	devices = gdk_devices_list();
+	
+	while (devices)
+	{
+		device = (GdkDevice *)devices->data;
+		fprintf(stderr, "%s\n", gdk_device_get_name(device));
+		gdk_device_set_mode(device, GDK_MODE_SCREEN);
+		devices = devices->next;
+	}
+	
+	done = true;
+}
+
+double gMouse::getPointerX()
+{
+	return ((GdkEventMotion *)_event)->x;
+}
+
+double gMouse::getPointerY()
+{
+	return ((GdkEventMotion *)_event)->y;
+}
+
+double gMouse::getPointerScreenX()
+{
+	return getAxis(GDK_AXIS_X);
+}
+
+double gMouse::getPointerScreenY()
+{
+	return getAxis(GDK_AXIS_Y);
+}
+

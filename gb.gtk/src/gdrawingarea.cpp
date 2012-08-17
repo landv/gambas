@@ -23,6 +23,7 @@
 
 #include "widgets.h"
 #include "gdraw.h"
+#include "gmouse.h"
 #include "gdrawingarea.h"
 
 /****************************************************************************************
@@ -370,6 +371,8 @@ void gDrawingArea::setRealBackground(gColor color)
 
 void gDrawingArea::updateUseTablet()
 {
+	if (_use_tablet)
+		gMouse::initDevices();
 	gtk_widget_set_extension_events(widget, _use_tablet ? GDK_EXTENSION_EVENTS_ALL : GDK_EXTENSION_EVENTS_NONE);
 }
 

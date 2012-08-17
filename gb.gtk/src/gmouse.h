@@ -51,6 +51,12 @@ public:
 
 	static double getAxis(GdkAxisUse axis);
 	static int getType();
+	static double getPointerX();
+	static double getPointerY();
+	static double getPointerScreenX();
+	static double getPointerScreenY();
+	
+	static void initDevices();
 	
 //"Methods"
 	static void move(int x, int y);
