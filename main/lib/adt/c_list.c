@@ -21,7 +21,7 @@
 
 #define __C_LIST_C
 
-#include "../gambas.h"
+#include "gambas.h"
 #include "c_list.h"
 
 static DECLARE_CLIST_ROOT(free_nodes);

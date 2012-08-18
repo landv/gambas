@@ -21,7 +21,7 @@
 
 #define __C_DEQUE_C
 
-#include "../gambas.h"
+#include "gambas.h"
 #include "c_list.h"
 #include "c_deque.h"
 

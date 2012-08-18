@@ -39,7 +39,6 @@ GB_CONFIG_SUBDIRS(gsl, gb.gsl)
 GB_CONFIG_SUBDIRS(ncurses, gb.ncurses)
 GB_CONFIG_SUBDIRS(media, gb.media)
 GB_CONFIG_SUBDIRS(jit, gb.jit)
-GB_CONFIG_SUBDIRS(adt, gb.adt)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)

@@ -22,7 +22,7 @@
 #ifndef __C_CIRCULAR_H
 #define __C_CIRCULAR_H
 
-#include "../gambas.h"
+#include "gambas.h"
 
 extern GB_INTERFACE GB;
 

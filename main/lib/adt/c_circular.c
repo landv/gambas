@@ -21,7 +21,7 @@
 
 #define __C_CIRCULAR_C
 
-#include "../gambas.h"
+#include "gambas.h"
 #include "c_circular.h"
 
 typedef struct {
