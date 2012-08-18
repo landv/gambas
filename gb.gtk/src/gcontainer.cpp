@@ -478,8 +478,8 @@ void gContainer::insert(gControl *child, bool realize)
 		gtk_widget_show_all(child->border);
 	}
     
-	if (hasBackground()) child->setBackground();
-	if (hasForeground()) child->setForeground();
+	if (hasBackground() && !child->_bg_set) child->setBackground();
+	if (hasForeground() && !child->_fg_set) child->setForeground();
   if (hasFont()) child->setFont(font());
 }
 
