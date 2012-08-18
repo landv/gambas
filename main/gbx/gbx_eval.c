@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_eval.c
+	gbx_eval.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -41,22 +41,22 @@ static EXPRESSION *EVAL;
 
 static void EVAL_enter()
 {
-  STACK_push_frame(&EXEC_current, EVAL->func.stack_usage);
+	STACK_push_frame(&EXEC_current, EVAL->func.stack_usage);
 
-  BP = SP;
-  PP = SP;
-  FP = &EVAL->func;
-  PC = EVAL->func.code;
-  
-  OP = NULL;
-  CP = &EVAL->exec_class;
-  //AP = ARCH_from_class(CP);
+	BP = SP;
+	PP = SP;
+	FP = &EVAL->func;
+	PC = EVAL->func.code;
+	
+	OP = NULL;
+	CP = &EVAL->exec_class;
+	//AP = ARCH_from_class(CP);
 
-  EP = NULL;
-  EC = NULL;
-  GP = NULL;
+	EP = NULL;
+	EC = NULL;
+	GP = NULL;
 
-  RP->type = T_VOID;
+	RP->type = T_VOID;
 	
 	PROFILE_ENTER_FUNCTION();
 }
@@ -89,40 +89,40 @@ static void EVAL_exec()
 
 bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 {
-  int i;
-  EVAL_SYMBOL *sym;
-  bool debug;
-  bool error;
-  int nvar;
-  /*HASH_TABLE *hash_table;
-  char *name;
-  CCOL_ENUM enum_state;*/
+	int i;
+	EVAL_SYMBOL *sym;
+	bool debug;
+	bool error;
+	int nvar;
+	/*HASH_TABLE *hash_table;
+	char *name;
+	CCOL_ENUM enum_state;*/
 
-  EVAL = expr;
+	EVAL = expr;
 
-  #ifdef DEBUG
-  fprintf(stderr, "EVAL: %s\n", EVAL->source);
-  #endif
+	#ifdef DEBUG
+	fprintf(stderr, "EVAL: %s\n", EVAL->source);
+	#endif
 
 	nvar = EVAL->nvar;
 
-  STACK_check(nvar);
+	STACK_check(nvar);
 
-  for (i = 0; i < nvar; i++)
-  {
-    SP[i].type = T_VARIANT;
-    SP[i]._variant.vtype = T_NULL;
+	for (i = 0; i < nvar; i++)
+	{
+		SP[i].type = T_VARIANT;
+		SP[i]._variant.vtype = T_NULL;
 
-    sym = (EVAL_SYMBOL *)TABLE_get_symbol(EVAL->table, EVAL->var[EVAL->nvar - i - 1]);
-    if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)&SP[i]))
-    {
-      GB_Error("Unknown symbol");
-      return TRUE;
-    }
-  }
-  
-  for (i = 0; i < nvar; i++)
-  	BORROW(&SP[i]);
+		sym = (EVAL_SYMBOL *)TABLE_get_symbol(EVAL->table, EVAL->var[EVAL->nvar - i - 1]);
+		if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)&SP[i]))
+		{
+			GB_Error("Unknown symbol");
+			return TRUE;
+		}
+	}
+	
+	for (i = 0; i < nvar; i++)
+		BORROW(&SP[i]);
 	SP += nvar;
 
 	debug = EXEC_debug;
@@ -131,14 +131,14 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 
 	TRY
 	{
-  	EVAL_exec();
-  }
-  CATCH
-  {
-  	error = TRUE;
-  }
-  END_TRY
-  
-  EXEC_debug = debug;
-  return error;
+		EVAL_exec();
+	}
+	CATCH
+	{
+		error = TRUE;
+	}
+	END_TRY
+	
+	EXEC_debug = debug;
+	return error;
 }

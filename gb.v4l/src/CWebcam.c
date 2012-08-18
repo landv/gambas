@@ -43,6 +43,10 @@
 #undef EXTERN
 #endif
 
+#ifdef INLINE
+#undef INLINE
+#endif
+
 #include "main.h"
 #include "CWebcam.h"
 

@@ -151,6 +151,8 @@ const void *GAMBAS_Api[] =
 	(void *)GB_ReturnFloat,
 	(void *)GB_ReturnVariant,
 	(void *)GB_ReturnConvVariant,
+	(void *)GB_ReturnBorrow,
+	(void *)GB_ReturnRelease,
 	(void *)GB_ReturnPtr,
 	(void *)GB_ReturnSelf,
 
@@ -1453,6 +1455,15 @@ void GB_ReturnConvVariant(void)
 	VALUE_conv(&TEMP, T_VARIANT);
 }
 
+void GB_ReturnBorrow(void)
+{
+	BORROW(&TEMP);
+}
+
+void GB_ReturnRelease(void)
+{
+	UNBORROW(&TEMP);
+}
 
 void GB_ReturnPtr(GB_TYPE type, void *value)
 {

@@ -1036,9 +1036,11 @@ const char *DEBUG_get_profile_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 	const char *func;
 	char buffer[16], buffer2[16];
 	
+	func = "?";
+	
 	if (cp)
 	{
-		if (cp->load)
+		if (cp->load && cp->load->prof)
 		{
 			if (cp->load->prof[0] == 0)
 			{
@@ -1051,30 +1053,30 @@ const char *DEBUG_get_profile_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 				sprintf(buffer, "%u", cp->load->prof[0]);
 				name = buffer;
 			}
+
+			if (fp && fp->debug)
+			{
+				int i = fp->debug->index + 1;
+				if (cp->load->prof[i] == 0)
+				{
+					prof_index++;
+					cp->load->prof[i] = prof_index;
+					func = fp->debug->name;
+				}
+				else
+				{
+					sprintf(buffer2, "%u", cp->load->prof[i]);
+					func = buffer2;
+				}
+			}
+			else
+				func = "?";
 		}
 		else
 			name = cp->name;
 	}
 	else
 		name = "?";
-	
-	if (fp && fp->debug)
-	{
-		int i = fp->debug->index + 1;
-		if (cp->load->prof[i] == 0)
-		{
-			prof_index++;
-			cp->load->prof[i] = prof_index;
-			func = fp->debug->name;
-		}
-		else
-		{
-			sprintf(buffer2, "%u", cp->load->prof[i]);
-			func = buffer2;
-		}
-	}
-	else
-		func = "?";
 	
 	if (pc)
 	{

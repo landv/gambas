@@ -951,6 +951,8 @@ typedef
 		void (*ReturnFloat)(double);
 		void (*ReturnVariant)(GB_VARIANT_VALUE *);
 		void (*ReturnConvVariant)();
+		void (*ReturnBorrow)();
+		void (*ReturnRelease)();
 		void (*ReturnPtr)(GB_TYPE, void *);
 		void (*ReturnSelf)(void *);
 
