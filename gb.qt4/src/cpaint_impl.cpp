@@ -816,12 +816,14 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 	//PAINTER(d)->setBrushOrigin(QPointF((qreal)x, (qreal)y));
 }
 
-static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h)
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity)
 {
 	QImage *img = CIMAGE_get((CIMAGE *)image);
 	QRectF rect(x, y, w, h);
 	
+	PAINTER(d)->setOpacity(opacity);
 	PAINTER(d)->drawImage(rect, *img);
+	PAINTER(d)->setOpacity(1.0);
 }
 		
 static void BrushFree(GB_BRUSH brush)

@@ -578,10 +578,13 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 			p = WIDGET->mapFromGlobal(p);
 
 			CMOUSE_clear(true);
-			CMOUSE_info.x = p.x();
-			CMOUSE_info.y = p.y();
-			CMOUSE_info.button = mevent->buttons();
-			CMOUSE_info.modifier = mevent->modifiers();
+			MOUSE_info.x = p.x();
+			MOUSE_info.y = p.y();
+			MOUSE_info.screenX = mevent->globalX();
+			MOUSE_info.screenY = mevent->globalY();
+			MOUSE_info.button = mevent->button();
+			MOUSE_info.state = mevent->buttons();
+			MOUSE_info.modifier = mevent->modifiers();
 
 			GB.Raise(THIS, event_id, 0);
 
@@ -613,12 +616,14 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 			//p = WIDGET->mapTo(QWIDGET(control), p);
 
 			CMOUSE_clear(true);
-			CMOUSE_info.x = p.x();
-			CMOUSE_info.y = p.y();
-			CMOUSE_info.button = ev->buttons();
-			CMOUSE_info.modifier = ev->modifiers();
-			CMOUSE_info.orientation = ev->orientation();
-			CMOUSE_info.delta = ev->delta();
+			MOUSE_info.x = p.x();
+			MOUSE_info.y = p.y();
+			MOUSE_info.screenX = ev->globalX();
+			MOUSE_info.screenY = ev->globalY();
+			MOUSE_info.state = ev->buttons();
+			MOUSE_info.modifier = ev->modifiers();
+			MOUSE_info.orientation = ev->orientation();
+			MOUSE_info.delta = ev->delta();
 
 			GB.Raise(THIS, EVENT_MouseWheel, 0);
 

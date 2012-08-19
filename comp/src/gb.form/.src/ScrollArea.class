@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Painted,Focus,NoBackground"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Painted,Focus,NoBackground,Tablet"
 Public Const _DefaultEvent As String = "Draw"
 Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
@@ -26,6 +26,7 @@ Property NoBackground As Boolean
 Property ScrollBar As Integer
 Property Tracking As Boolean
 Property Background As Integer
+Property Tablet As Boolean
 Property Read View As DrawingArea
 
 Event Scroll
@@ -292,10 +293,11 @@ Public Sub DrawingArea_Draw()
 
     LoadFades()
     
-    Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-
+    Draw.Clip(hClip.X, hClip.Y + $iShadowN, hClip.W, hClip.H - $iShadowN - $iShadowS)
     If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)
     If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - 16 - $iShadowS + Max(0, 16 - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, 16)
+    
+    Draw.Clip(hClip.X + $iShadowW, hClip.Y, hClip.W - $iShadowW - $iShadowE, hClip.H)
     If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
     If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
 
@@ -516,4 +518,16 @@ Public Sub _SetShadowOffset(North As Integer, South As Integer, West As Integer,
   $iShadowW = West
   $iShadowE = East
   
+End
+
+Private Function Tablet_Read() As Boolean
+
+  Return $hDrawingArea.Tablet
+
+End
+
+Private Sub Tablet_Write(Value As Boolean)
+
+  $hDrawingArea.Tablet = Value
+
 End

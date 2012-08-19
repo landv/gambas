@@ -415,7 +415,7 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 }
 
 
-/* FIXME: The _new are methods called differently from EXEC_special_inheritance */
+/* FIXME: The _new methods are called differently from EXEC_special_inheritance */
 
 void *OBJECT_create_native(CLASS *class, VALUE *param)
 {

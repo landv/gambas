@@ -30,6 +30,7 @@ public:
 
 //"Properties"
 	static int button();
+	static int state();
 	static bool left();
 	static bool right();
 	static bool middle();
@@ -64,15 +65,17 @@ public:
 //"Private"
 	static void setWheel(int dt, int orn);
 	static void setStart(int sx, int sy);
-	static void setMouse(int x, int y, int button, int state);
+	static void setMouse(int x, int y, int sx, int sy, int button, int state);
 	static void setEvent(GdkEvent *event);
 	static void validate() { _isValid++; }
-	static void invalidate() { _isValid--; }
+	static void invalidate();
 
 private:
 	static int _isValid;
 	static int _x;
 	static int _y;
+	static int _screen_x;
+	static int _screen_y;
 	static int _button;
 	static int _state;
 	static int _delta;

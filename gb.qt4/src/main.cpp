@@ -125,6 +125,8 @@ int MAIN_scale = 6;
 int MAIN_x11_last_key_code = 0;
 #endif
 
+bool MAIN_debug_busy = false;
+
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
 GB_CLASS CLASS_UserControl;
@@ -1095,9 +1097,15 @@ int EXPORT GB_INIT(void)
 {
 	// Do not disable GLib support
 	
-	char *env = getenv("KDE_FULL_SESSION");
+	char *env;
+	
+	env = getenv("KDE_FULL_SESSION");
 	if (env && !strcasecmp(env, "true"))
 		putenv((char *)"QT_NO_GLIB=1");
+	
+	env = getenv("GB_GUI_BUSY");
+	if (env && atoi(env))
+		MAIN_debug_busy = true;
 	
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 

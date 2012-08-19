@@ -372,7 +372,7 @@ static void gambas_handle_event(GdkEvent *event)
   GtkWidget *widget;
   GtkWidget *grab;
 	gControl *control, *save_control;
-	int x, y, xc, yc;
+	int x, y, xs, ys, xc, yc;
 	bool cancel;
 	int type;
 	
@@ -631,17 +631,19 @@ static void gambas_handle_event(GdkEvent *event)
 				if (control->canRaise(control, type))
 				{
 					control->getScreenPos(&xc, &yc);
-					x = (int)event->button.x_root - xc;
-					y = (int)event->button.y_root - yc;
+					xs = (int)event->button.x_root;
+					ys = (int)event->button.y_root;
+					x = xs - xc;
+					y = ys - yc;
 					
 					gMouse::validate();
 					gMouse::setEvent(event);
-					gMouse::setStart(x, y);
-					gMouse::setMouse(x, y, event->button.button, event->button.state);
 					//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
+					gMouse::setMouse(x, y, xs, ys, event->button.button, event->button.state);
 					switch ((int)event->type)
 					{
 						case GDK_BUTTON_PRESS: 
+							gMouse::setStart(x, y);
 							cancel = control->onMouseEvent(control, gEvent_MousePress);
 							break;
 						
@@ -664,8 +666,10 @@ static void gambas_handle_event(GdkEvent *event)
 				if (win->isPopup())
 				{
 					control->getScreenPos(&xc, &yc);
-					x = (int)event->button.x_root - xc;
-					y = (int)event->button.y_root - yc;
+					xs = (int)event->button.x_root;
+					ys = (int)event->button.y_root;
+					x = xs - xc;
+					y = ys - yc;
 				
 					if (x < 0 || y < 0 || x >= win->width() || y >= win->height())
 						win->close();
@@ -684,6 +688,7 @@ static void gambas_handle_event(GdkEvent *event)
 				if (control->_proxy_for)
 				{
 					control = control->_proxy_for;
+					//fprintf(stderr, "PRESS: try %s\n", control->name());
 					goto __BUTTON_TRY_PROXY;
 				}
 			}
@@ -722,6 +727,8 @@ static void gambas_handle_event(GdkEvent *event)
 			
 			save_control = control;
 			
+			//fprintf(stderr, "MOVE: %g %g\n", event->motion.x_root, event->motion.y_root);
+			
 			check_hovered_control(control);
 			
 		__MOTION_TRY_PROXY:
@@ -730,12 +737,17 @@ static void gambas_handle_event(GdkEvent *event)
 					&& (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
 			{
 				control->getScreenPos(&xc, &yc);
-				x = (int)event->motion.x_root - xc;
-				y = (int)event->motion.y_root - yc;
+				xs = (int)event->motion.x_root;
+				ys = (int)event->motion.y_root;
+				x = xs - xc;
+				y = ys - yc;
 				
 				gMouse::validate();
 				gMouse::setEvent(event);
-				gMouse::setMouse(x, y, 0, event->motion.state);
+				gMouse::setMouse(x, y, xs, ys, 0, event->motion.state);
+				
+				//fprintf(stderr, "pressure = %g\n", gMouse::getAxis(GDK_AXIS_PRESSURE));
+				
 				cancel = control->onMouseEvent(control, gEvent_MouseMove);
 				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
 				if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
@@ -753,6 +765,7 @@ static void gambas_handle_event(GdkEvent *event)
 			if (control->_proxy_for)
 			{
 				control = control->_proxy_for;
+				//fprintf(stderr, "MOVE: try %s\n", control->name());
 				goto __MOTION_TRY_PROXY;
 			}
 			
@@ -772,8 +785,10 @@ static void gambas_handle_event(GdkEvent *event)
 				int dt, ort;
 				
 				control->getScreenPos(&xc, &yc);
-				x = (int)event->scroll.x_root - xc;
-				y = (int)event->scroll.y_root - yc;
+				xs = (int)event->scroll.x_root;
+				ys = (int)event->scroll.y_root;
+				x = xs - xc;
+				y = ys - yc;
 
 				switch (event->scroll.direction)
 				{
@@ -785,7 +800,7 @@ static void gambas_handle_event(GdkEvent *event)
 				
 				gMouse::validate();
 				gMouse::setEvent(event);
-				gMouse::setMouse(x, y, 0, event->scroll.state);
+				gMouse::setMouse(x, y, xs, ys, 0, event->scroll.state);
 				gMouse::setWheel(dt, ort);
 				cancel = control->onMouseEvent(control, gEvent_MouseWheel);
 				gMouse::invalidate();

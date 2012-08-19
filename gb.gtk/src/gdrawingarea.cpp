@@ -119,7 +119,7 @@ void gDrawingArea::create(void)
 		doReparent = true;
 	}
 	
-	if (_cached)
+	if (_cached || _use_tablet)
 	{
 		border = gtk_event_box_new();
 		widget = gtk_fixed_new();
@@ -142,7 +142,7 @@ void gDrawingArea::create(void)
 	
 	if (doReparent)
 	{
-		if (_cached)
+		if (box)
 			gtk_widget_realize(box);
 				
 		setBackground(bg);
@@ -295,18 +295,10 @@ void gDrawingArea::resizeCache()
 
 void gDrawingArea::setCache()
 {
-	GdkWindow *win;
-	
-	if (!box)
+	if (!_cached)
 		return;
-	
-	win = box->window;
-	if (!win)
-		return;
-	
-	//fprintf(stderr, "set back pixmap: %p\n", buffer);
-	
-	gdk_window_set_back_pixmap(win, buffer, FALSE);
+
+	gdk_window_set_back_pixmap(box->window, buffer, FALSE);
 	refreshCache();
 }
 
@@ -373,7 +365,8 @@ void gDrawingArea::updateUseTablet()
 {
 	if (_use_tablet)
 		gMouse::initDevices();
-	gtk_widget_set_extension_events(widget, _use_tablet ? GDK_EXTENSION_EVENTS_ALL : GDK_EXTENSION_EVENTS_NONE);
+	gtk_widget_set_extension_events(border, _use_tablet ? GDK_EXTENSION_EVENTS_CURSOR : GDK_EXTENSION_EVENTS_NONE);
+	//fprintf(stderr, "gtk_widget_set_extension_events: %s %p: %d\n", name(), border, _use_tablet);
 }
 
 void gDrawingArea::setUseTablet(bool vl)
@@ -381,5 +374,5 @@ void gDrawingArea::setUseTablet(bool vl)
 	if (vl == _use_tablet)
 		return;
 	_use_tablet = vl;
-	updateUseTablet();
+	create();
 }

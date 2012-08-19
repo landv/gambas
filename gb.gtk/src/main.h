@@ -42,6 +42,7 @@ extern GB_CLASS CLASS_Window;
 extern GB_CLASS CLASS_Printer;
 extern GB_CLASS CLASS_SvgImage;
 
+extern bool MAIN_debug_busy;
 #endif
 
 void MAIN_do_iteration(bool do_not_block, bool do_not_sleep = false);

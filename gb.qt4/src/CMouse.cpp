@@ -36,17 +36,18 @@
 #include "CPicture.h"
 #include "CMouse.h"
 
-CMOUSE_INFO CMOUSE_info = { 0 };
+MOUSE_INFO MOUSE_info = { 0 };
+POINTER_INFO POINTER_info = { 0 };
 
 void CMOUSE_clear(int valid)
 {
 	if (valid)
-		CMOUSE_info.valid++;
+		MOUSE_info.valid++;
 	else
-		CMOUSE_info.valid--;
+		MOUSE_info.valid--;
 
-	/*if (CMOUSE_info.valid == 0)
-		CLEAR(&CMOUSE_info);*/
+	if (MOUSE_info.valid == 0)
+		CLEAR(&POINTER_info);
 }
 
 
@@ -175,14 +176,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_ScreenX)
 
-	GB.ReturnInteger(CMOUSE_info.valid ? CMOUSE_info.screenX : QCursor::pos().x());
+	GB.ReturnInteger(MOUSE_info.valid ? MOUSE_info.screenX : QCursor::pos().x());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Mouse_ScreenY)
 
-	GB.ReturnInteger(CMOUSE_info.valid ? CMOUSE_info.screenY : QCursor::pos().y());
+	GB.ReturnInteger(MOUSE_info.valid ? MOUSE_info.screenY : QCursor::pos().y());
 
 END_PROPERTY
 
@@ -194,7 +195,7 @@ BEGIN_METHOD(Mouse_Move, GB_INTEGER x; GB_INTEGER y)
 END_PROPERTY
 
 #define CHECK_VALID() \
-	if (CMOUSE_info.valid == 0) \
+	if (MOUSE_info.valid == 0) \
 	{ \
 		GB.Error("No mouse event data"); \
 		return; \
@@ -203,112 +204,119 @@ END_PROPERTY
 BEGIN_PROPERTY(Mouse_X)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CMOUSE_info.x);
+	GB.ReturnInteger(MOUSE_info.x);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Y)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CMOUSE_info.y);
+	GB.ReturnInteger(MOUSE_info.y);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_StartX)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CMOUSE_info.sx);
+	GB.ReturnInteger(MOUSE_info.sx);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_StartY)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CMOUSE_info.sy);
+	GB.ReturnInteger(MOUSE_info.sy);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Button)
 
 	CHECK_VALID();
-	GB.ReturnInteger((int)CMOUSE_info.button);
+	GB.ReturnInteger((int)MOUSE_info.button);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Mouse_State)
+
+	CHECK_VALID();
+	GB.ReturnInteger((int)MOUSE_info.state);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Left)
 
 	CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.button & Qt::LeftButton);
+	GB.ReturnBoolean((MOUSE_info.state | MOUSE_info.button) & Qt::LeftButton);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Right)
 
 	CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.button & Qt::RightButton);
+	GB.ReturnBoolean((MOUSE_info.state | MOUSE_info.button) & Qt::RightButton);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Middle)
 
 	CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.button & Qt::MidButton);
+	GB.ReturnBoolean((MOUSE_info.state | MOUSE_info.button) & Qt::MidButton);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Shift)
 
 	//CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.modifier & Qt::ShiftModifier);
+	GB.ReturnBoolean(MOUSE_info.modifier & Qt::ShiftModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Control)
 
 	//CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.modifier & Qt::ControlModifier);
+	GB.ReturnBoolean(MOUSE_info.modifier & Qt::ControlModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Alt)
 
 	//CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.modifier & Qt::AltModifier);
+	GB.ReturnBoolean(MOUSE_info.modifier & Qt::AltModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Meta)
 
 	//CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.modifier & Qt::MetaModifier);
+	GB.ReturnBoolean(MOUSE_info.modifier & Qt::MetaModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Normal)
 
 	//CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.modifier == Qt::NoModifier);
+	GB.ReturnBoolean(MOUSE_info.modifier == Qt::NoModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Orientation)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CMOUSE_info.orientation);
+	GB.ReturnInteger(MOUSE_info.orientation);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Delta)
 
 	CHECK_VALID();
-	GB.ReturnFloat((double)CMOUSE_info.delta / 120);
+	GB.ReturnFloat((double)MOUSE_info.delta / 120);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Forward)
 
 	CHECK_VALID();
-	GB.ReturnBoolean(CMOUSE_info.delta > 0);
+	GB.ReturnBoolean(MOUSE_info.delta > 0);
 
 END_PROPERTY
 
@@ -336,63 +344,63 @@ END_METHOD
 BEGIN_PROPERTY(Pointer_X)
 
 	CHECK_VALID();
-	GB.ReturnFloat((double)CMOUSE_info.x + (CMOUSE_info.tx - (int)CMOUSE_info.tx));
+	GB.ReturnFloat((double)MOUSE_info.x + (POINTER_info.tx - (int)POINTER_info.tx));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_Y)
 
 	CHECK_VALID();
-	GB.ReturnFloat((double)CMOUSE_info.y + (CMOUSE_info.ty - (int)CMOUSE_info.ty));
+	GB.ReturnFloat((double)MOUSE_info.y + (POINTER_info.ty - (int)POINTER_info.ty));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_ScreenX)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.tx);
+	GB.ReturnFloat(POINTER_info.tx);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_ScreenY)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.ty);
+	GB.ReturnFloat(POINTER_info.ty);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_XTilt)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.xtilt);
+	GB.ReturnFloat(POINTER_info.xtilt);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_YTilt)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.ytilt);
+	GB.ReturnFloat(POINTER_info.ytilt);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_Pressure)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.pressure);
+	GB.ReturnFloat(POINTER_info.pressure);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_Rotation)
 
 	CHECK_VALID();
-	GB.ReturnFloat(CMOUSE_info.rotation);
+	GB.ReturnFloat(POINTER_info.rotation);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_Type)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CMOUSE_info.type);
+	GB.ReturnInteger(POINTER_info.type);
 
 END_PROPERTY
 
@@ -463,6 +471,7 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Left", "b", Mouse_Left),
 	GB_STATIC_PROPERTY_READ("Right", "b", Mouse_Right),
 	GB_STATIC_PROPERTY_READ("Middle", "b", Mouse_Middle),
+	GB_STATIC_PROPERTY_READ("State", "i", Mouse_State),
 	GB_STATIC_PROPERTY_READ("Button", "i", Mouse_Button),
 	GB_STATIC_PROPERTY_READ("Shift", "b", Mouse_Shift),
 	GB_STATIC_PROPERTY_READ("Control", "b", Mouse_Control),
@@ -491,7 +500,7 @@ GB_DESC CPointerDesc[] =
 	GB_STATIC_PROPERTY_READ("ScreenX", "f", Pointer_ScreenX),
 	GB_STATIC_PROPERTY_READ("ScreenY", "f", Pointer_ScreenY),
 	GB_STATIC_PROPERTY_READ("XTilt", "f", Pointer_XTilt),
-	GB_STATIC_PROPERTY_READ("YTitt", "f", Pointer_YTilt),
+	GB_STATIC_PROPERTY_READ("YTilt", "f", Pointer_YTilt),
 	GB_STATIC_PROPERTY_READ("Pressure", "f", Pointer_Pressure),
 	GB_STATIC_PROPERTY_READ("Rotation", "f", Pointer_Rotation),
 	

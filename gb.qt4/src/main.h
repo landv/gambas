@@ -42,6 +42,7 @@ extern int MAIN_in_wait;
 extern int MAIN_in_message_box;
 extern int MAIN_loop_level;
 extern int MAIN_scale;
+extern bool MAIN_debug_busy;
 #ifndef NO_X_WINDOW
 extern int MAIN_x11_last_key_code;
 #endif

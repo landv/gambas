@@ -179,6 +179,8 @@ BEGIN_PROPERTY(Application_Busy)
 			qApp->restoreOverrideCursor();
 
 		screen_busy = busy;
+		if (MAIN_debug_busy)
+			qDebug("%s: Application.Busy = %d", GB.Debug.GetCurrentPosition(), busy);
 	}
 
 END_PROPERTY

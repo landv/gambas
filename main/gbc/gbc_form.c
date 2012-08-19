@@ -310,22 +310,6 @@ char *FORM_get_file_family(const char *file, const FORM_FAMILY **family)
 	return form;
 }
 
-/*
-static bool FORM_init(void)
-{
-	BUFFER_create(&_source);
-	BUFFER_load_file(&_source, JOB->form);
-	BUFFER_add(&_source, "\n\0", 2);
-	_current = _source;
-	return FALSE;
-}
-
-
-static void FORM_exit(void)
-{
-	BUFFER_delete(&_source);
-}
-*/
 
 void FORM_do(char *source, bool ctrl_public)
 {

@@ -153,7 +153,7 @@ static gboolean tray_down (GtkWidget *widget,GdkEventButton *event,gTrayIcon *da
 	if (data->onMousePress)
 	{
 		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, event->button, event->state);
+		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, event->button, event->state);
 		data->onMousePress(data);
 		gMouse::invalidate();
 	}
@@ -173,7 +173,7 @@ static gboolean tray_up (GtkWidget *widget,GdkEventButton *event,gTrayIcon *data
 	if (data->onMouseRelease)
 	{
 		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, event->button, event->state);
+		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, event->button, event->state);
 		data->onMouseRelease(data);
 		gMouse::invalidate();
 	}
@@ -229,7 +229,7 @@ static gboolean cb_scroll(GtkWidget *widget, GdkEventScroll *event, gTrayIcon *d
 		}
 		
 		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, 0, event->state);
+		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, 0, event->state);
 		gMouse::setWheel(dt, ort);
 		data->onMouseWheel(data);
 		gMouse::invalidate();

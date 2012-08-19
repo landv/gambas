@@ -127,6 +127,13 @@ BEGIN_PROPERTY(Mouse_Button)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Mouse_State)
+	
+	CHECK_VALID();
+	GB.ReturnInteger(gMouse::state());
+
+END_PROPERTY
+
 BEGIN_PROPERTY(Mouse_Left)
 
 	CHECK_VALID();
@@ -360,6 +367,7 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Right", "b", Mouse_Right),
 	GB_STATIC_PROPERTY_READ("Middle", "b", Mouse_Middle),
 	GB_STATIC_PROPERTY_READ("Button", "i", Mouse_Button),
+	GB_STATIC_PROPERTY_READ("State", "i", Mouse_State),
 	GB_STATIC_PROPERTY_READ("Shift", "b", Mouse_Shift),
 	GB_STATIC_PROPERTY_READ("Control", "b", Mouse_Control),
 	GB_STATIC_PROPERTY_READ("Alt", "b", Mouse_Alt),
@@ -387,7 +395,7 @@ GB_DESC CPointerDesc[] =
 	GB_STATIC_PROPERTY_READ("ScreenX", "f", Pointer_ScreenX),
 	GB_STATIC_PROPERTY_READ("ScreenY", "f", Pointer_ScreenY),
 	GB_STATIC_PROPERTY_READ("XTilt", "f", Pointer_XTilt),
-	GB_STATIC_PROPERTY_READ("YTitt", "f", Pointer_YTilt),
+	GB_STATIC_PROPERTY_READ("YTilt", "f", Pointer_YTilt),
 	GB_STATIC_PROPERTY_READ("Pressure", "f", Pointer_Pressure),
 	GB_STATIC_PROPERTY_READ("Rotation", "f", Pointer_Rotation),
 	

@@ -2583,8 +2583,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			event_id = EVENT_MouseDown;
 			//state = mevent->buttons();
 			
-			CMOUSE_info.sx = p.x();
-			CMOUSE_info.sy = p.y();
+			MOUSE_info.sx = p.x();
+			MOUSE_info.sy = p.y();
 			//qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
 		}
 		else if (type == QEvent::MouseButtonDblClick)
@@ -2618,13 +2618,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}*/
 			
 			CMOUSE_clear(true);
-			CMOUSE_info.x = p.x();
-			CMOUSE_info.y = p.y();
-			CMOUSE_info.tx = CMOUSE_info.screenX = mevent->globalX();
-			CMOUSE_info.ty = CMOUSE_info.screenY = mevent->globalY();
-			CMOUSE_info.type = POINTER_MOUSE;
-			CMOUSE_info.button = mevent->buttons() | mevent->button();
-			CMOUSE_info.modifier = mevent->modifiers();
+			MOUSE_info.x = p.x();
+			MOUSE_info.y = p.y();
+			MOUSE_info.screenX = mevent->globalX();
+			MOUSE_info.screenY = mevent->globalY();
+			MOUSE_info.button = mevent->button();
+			MOUSE_info.state = mevent->buttons();
+			MOUSE_info.modifier = mevent->modifiers();
 
 			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
 
@@ -2635,7 +2635,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		}
 		
 		if (event_id == EVENT_MouseMove && !cancel && (mevent->buttons() != Qt::NoButton) && GB.CanRaise(control, EVENT_MouseDrag) && !CDRAG_dragging
-				&& ((abs(p.x() - CMOUSE_info.sx) + abs(p.y() - CMOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
+				&& ((abs(p.x() - MOUSE_info.sx) + abs(p.y() - MOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
 		{		
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
 			{
@@ -2647,13 +2647,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}*/
 			
 			CMOUSE_clear(true);
-			CMOUSE_info.x = p.x();
-			CMOUSE_info.y = p.y();
-			CMOUSE_info.tx = CMOUSE_info.screenX = mevent->globalX();
-			CMOUSE_info.ty = CMOUSE_info.screenY = mevent->globalY();
-			CMOUSE_info.button = mevent->buttons();
-			CMOUSE_info.modifier = mevent->modifiers();
-			CMOUSE_info.type = POINTER_MOUSE;
+			MOUSE_info.x = p.x();
+			MOUSE_info.y = p.y();
+			MOUSE_info.screenX = mevent->globalX();
+			MOUSE_info.screenY = mevent->globalY();
+			MOUSE_info.button = mevent->button();
+			MOUSE_info.state = mevent->buttons();
+			MOUSE_info.modifier = mevent->modifiers();
 		
 			cancel = GB.Raise(control, EVENT_MouseDrag, 0);
 			
@@ -2702,104 +2702,91 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 		}
 		
+		if (!control->flag.use_tablet)
+			goto __NEXT;
+		
 	__TABLET_TRY_PROXY:
 	
-		if (control->flag.use_tablet)
+		p.setX(tevent->globalX());
+		p.setY(tevent->globalY());
+		p = QWIDGET(control)->mapFromGlobal(p);
+		
+		if (type == QEvent::TabletPress)
 		{
-			p.setX(tevent->globalX());
-			p.setY(tevent->globalY());
-			p = QWIDGET(control)->mapFromGlobal(p);
+			//qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
+
+			event_id = EVENT_MouseDown;
+			//state = mevent->buttons();
 			
-			if (type == QEvent::TabletPress)
-			{
-				//qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
-
-				event_id = EVENT_MouseDown;
-				//state = mevent->buttons();
-				
-				CMOUSE_info.sx = p.x();
-				CMOUSE_info.sy = p.y();
-				//qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
-			}
-			else if (type == QEvent::TabletMove)
-			{
-				event_id = EVENT_MouseMove;
-			}
-			else //if (type == QEvent::TabletRelease)
-			{
-				event_id = EVENT_MouseUp;
-				//state = mevent->buttons();
-			}
-
-			//if (event_id == EVENT_MouseMove && mevent->buttons() == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
-			//	goto _DESIGN;
-
-
-			cancel = false;
-
-			if (GB.CanRaise(control, event_id))
-			{
-				CMOUSE_clear(true);
-				CMOUSE_info.x = p.x();
-				CMOUSE_info.y = p.y();
-				CMOUSE_info.screenX = tevent->globalX();
-				CMOUSE_info.screenY = tevent->globalY();
-				//CMOUSE_info.button = mevent->buttons() | mevent->button();
-				CMOUSE_info.modifier = tevent->modifiers();
-				CMOUSE_info.tx = tevent->hiResGlobalX();
-				CMOUSE_info.ty = tevent->hiResGlobalY();
-				CMOUSE_info.pressure = tevent->pressure();
-				CMOUSE_info.rotation = tevent->rotation();
-				CMOUSE_info.xtilt = tevent->xTilt();
-				CMOUSE_info.ytilt = tevent->yTilt();
-				
-				switch(tevent->pointerType())
-				{
-					case QTabletEvent::Pen: CMOUSE_info.type = POINTER_PEN; break;
-					case QTabletEvent::Eraser: CMOUSE_info.type = POINTER_ERASER; break;
-					case QTabletEvent::Cursor: CMOUSE_info.type = POINTER_CURSOR; break;
-					default: CMOUSE_info.type = POINTER_MOUSE;
-				}
-
-				cancel = GB.Raise(control, event_id, 0);
-
-				CMOUSE_clear(false);
-			}
+			//MOUSE_info.sx = p.x();
+			//MOUSE_info.sy = p.y();
 			
-			if (!control)
-				return true;
+			control->flag.tablet_pressed = true;
+			//qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
+		}
+		else if (type == QEvent::TabletMove)
+		{
+			//if (!control->flag.tracking && !control->flag.tablet_pressed)
+			//	return false;
 			
-			if (control->flag.grab && event_id == EVENT_MouseUp)
-				MyApplication::eventLoop->exit();
+			event_id = EVENT_MouseMove;
+		}
+		else //if (type == QEvent::TabletRelease)
+		{
+			event_id = EVENT_MouseUp;
+			//state = mevent->buttons();
+		}
+
+		//if (event_id == EVENT_MouseMove && mevent->buttons() == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
+		//	goto _DESIGN;
+
+
+		cancel = false;
+
+		if (GB.CanRaise(control, event_id))
+		{
+			//MOUSE_info.x = p.x();
+			//MOUSE_info.y = p.y();
+			//POINTER_info.screenX = tevent->globalX();
+			//POINTER_info.screenY = tevent->globalY();
+			//MOUSE_info.modifier = tevent->modifiers();
+			POINTER_info.tx = tevent->hiResGlobalX();
+			POINTER_info.ty = tevent->hiResGlobalY();
+			POINTER_info.pressure = tevent->pressure();
+			POINTER_info.rotation = tevent->rotation();
+			POINTER_info.xtilt = tevent->xTilt();
+			POINTER_info.ytilt = tevent->yTilt();
 			
-			if (cancel)
-				return true;
-			
-			if (EXT(control) && EXT(control)->proxy_for)
+			switch(tevent->pointerType())
 			{
-				control = (CWIDGET *)(EXT(control)->proxy_for);
-				goto __TABLET_TRY_PROXY;
+				case QTabletEvent::Pen: POINTER_info.type = POINTER_PEN; break;
+				case QTabletEvent::Eraser: POINTER_info.type = POINTER_ERASER; break;
+				case QTabletEvent::Cursor: POINTER_info.type = POINTER_CURSOR; break;
+				default: POINTER_info.type = POINTER_MOUSE;
 			}
+
+			//cancel = GB.Raise(control, event_id, 0);
+
+			//CMOUSE_clear(false);
 		}
 		
-		goto __NEXT;
-	}
-	
-	/*
-	__DBL_CLICK:
-	{
-		if (!original)
-			goto _DESIGN;
-
-		//GB.Raise(control, EVENT_DblClick, 0);
-		if (GB.CanRaise(control, EVENT_DblClick))
+		//if (control->flag.grab && event_id == EVENT_MouseUp)
+		//	MyApplication::eventLoop->exit();
+		
+		if (event_id == EVENT_MouseUp)
+			control->flag.tablet_pressed = false;
+		
+		//if (cancel)
+		//	return true;
+		
+		if (EXT(control) && EXT(control)->proxy_for)
 		{
-			GB.Ref(control);
-			GB.Post((void (*)())post_dblclick_event, (intptr_t)control);
+			control = (CWIDGET *)(EXT(control)->proxy_for);
+			goto __TABLET_TRY_PROXY;
 		}
-		goto __NEXT;
+		
+		return false; // We fill the information, and then expect Qt to generate a Mouse event from the Tablet event
 	}
-	*/
 	
 	__KEY:
 	{
@@ -2954,12 +2941,14 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
 
 			CMOUSE_clear(true);
-			CMOUSE_info.x = p.x();
-			CMOUSE_info.y = p.y();
-			CMOUSE_info.button = ev->buttons();
-			CMOUSE_info.modifier = ev->modifiers();
-			CMOUSE_info.orientation = ev->orientation();
-			CMOUSE_info.delta = ev->delta();
+			MOUSE_info.x = p.x();
+			MOUSE_info.y = p.y();
+			MOUSE_info.screenX = ev->globalX();
+			MOUSE_info.screenY = ev->globalY();
+			MOUSE_info.state = ev->buttons();
+			MOUSE_info.modifier = ev->modifiers();
+			MOUSE_info.orientation = ev->orientation();
+			MOUSE_info.delta = ev->delta();
 
 			cancel = GB.Raise(control, EVENT_MouseWheel, 0);
 

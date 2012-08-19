@@ -288,13 +288,14 @@ Public Sub Example11()
   W = 200
   H = 200
   
+  'Paint.DrawImage(hImage, X, Y, W, H)
+  
   hBrush = Paint.Image(hImage)
   hBrush.Translate(X, Y)
   hBrush.Scale(W / hImage.W, H / hImage.H)
   Paint.Brush = hBrush
   Paint.Rectangle(X, Y, W, H)
   Paint.Fill
-  'Paint.DrawImage(hImage, X, Y, W, H)
   
   Paint.Brush = Paint.Color(Color.RGB(255, 127, 127, 153))
   Paint.Arc(X, Y, 10)

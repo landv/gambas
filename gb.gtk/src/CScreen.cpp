@@ -183,6 +183,8 @@ BEGIN_PROPERTY(Application_Busy)
 			gApplication::setBusy(false);
 
 		_busy = busy;
+		if (MAIN_debug_busy)
+			fprintf(stderr, "%s: Application.Busy = %d\n", GB.Debug.GetCurrentPosition(), busy);
 	}
 
 END_PROPERTY

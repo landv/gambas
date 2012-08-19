@@ -1,0 +1,162 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,90,71)
+  Icon = Picture["Icon.png"]
+  Arrangement = Arrange.Horizontal
+  { dwgDraw ScrollArea
+    MoveScaled(1,1,52,47)
+    Expand = True
+    Border = False
+    NoBackground = True
+    Tablet = True
+  }
+  { timScroll #Timer
+    #MoveScaled(30,54)
+    Delay = 50
+  }
+  { Separator1 Separator
+    MoveScaled(54,27,0,12)
+    Visible = False
+  }
+  { Panel2 Panel
+    MoveScaled(56,8,30,59)
+    Arrangement = Arrange.Vertical
+    Margin = True
+    { panInfo Panel
+      MoveScaled(0,0,28,58)
+      Margin = True
+      Border = Border.Plain
+      { ToggleButton4 ToggleButton btnColor
+        Name = "ToggleButton4"
+        MoveScaled(4,43,6,6)
+        Background = &HFF0000&
+        Radio = True
+      }
+      { Label1 Label
+        MoveScaled(1,1,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("Type")
+        Alignment = Align.Right
+      }
+      { lblType Label
+        MoveScaled(13,1,14,3)
+        Expand = True
+      }
+      { Label2 Label
+        MoveScaled(1,4,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("X")
+        Alignment = Align.Right
+      }
+      { lblX Label
+        MoveScaled(13,4,14,3)
+        Expand = True
+      }
+      { Label3 Label
+        MoveScaled(1,7,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("Y")
+        Alignment = Align.Right
+      }
+      { lblY Label
+        MoveScaled(13,7,14,3)
+        Expand = True
+      }
+      { Label4 Label
+        MoveScaled(1,10,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("XTilt")
+        Alignment = Align.Right
+      }
+      { lblXTilt Label
+        MoveScaled(13,10,14,3)
+        Expand = True
+      }
+      { Label5 Label
+        MoveScaled(1,13,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("YTilt")
+        Alignment = Align.Right
+      }
+      { lblYTilt Label
+        MoveScaled(13,13,14,3)
+        Expand = True
+      }
+      { Label6 Label
+        MoveScaled(1,16,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("Pressure")
+        Alignment = Align.Right
+      }
+      { lblPressure Label
+        MoveScaled(13,16,14,3)
+        Expand = True
+      }
+      { Label7 Label
+        MoveScaled(1,19,10,3)
+        Foreground = &H7F7F7F&
+        Text = ("Rotation")
+        Alignment = Align.Right
+      }
+      { lblRotation Label
+        MoveScaled(13,19,14,3)
+        Expand = True
+      }
+      { Panel1 Panel
+        MoveScaled(9,25,10,5)
+        { panButton3 Panel
+          MoveScaled(8,0,2,5)
+          Border = Border.Plain
+        }
+        { panButton1 Panel
+          MoveScaled(0,0,2,5)
+          Border = Border.Plain
+        }
+        { panButton2 Panel
+          MoveScaled(4,0,2,5)
+          Border = Border.Plain
+        }
+      }
+      { btnClear Button
+        MoveScaled(5,34,18,7)
+        Text = ("Clear")
+        Picture = Picture["icon:/large/delete"]
+      }
+      { Separator2 Separator
+        MoveScaled(0,32,28,1)
+      }
+      { ToggleButton1 ToggleButton btnColor
+        Name = "ToggleButton1"
+        MoveScaled(18,50,6,6)
+        Background = &H000000&
+        Radio = True
+        Value = True
+      }
+      { ToggleButton2 ToggleButton btnColor
+        Name = "ToggleButton2"
+        MoveScaled(4,50,6,6)
+        Background = &HFF7F00&
+        Radio = True
+      }
+      { ToggleButton3 ToggleButton btnColor
+        Name = "ToggleButton3"
+        MoveScaled(11,50,6,6)
+        Background = &HFFFF00&
+        Radio = True
+      }
+      { ToggleButton5 ToggleButton btnColor
+        Name = "ToggleButton5"
+        MoveScaled(18,43,6,6)
+        Background = &H007FFF&
+        Radio = True
+      }
+      { ToggleButton6 ToggleButton btnColor
+        Name = "ToggleButton6"
+        MoveScaled(11,43,6,6)
+        Background = &H7FFF00&
+        Radio = True
+      }
+    }
+  }
+}

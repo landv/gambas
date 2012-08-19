@@ -1,16 +1,17 @@
 ' Gambas class file
 
-Public InAnotherWindow As Boolean
+Static Public InAnotherWindow As Boolean
 
-Private $sPath As String
+Static Private $sPath As String
 
-Private $cVar As New Collection(gb.IgnoreCase)
-Private $bRepository As Boolean
-Private $bAnother As Boolean
+Static Private $cVar As New Collection(gb.IgnoreCase)
+Static Private $bRepository As Boolean
+Static Private $bAnother As Boolean
 
-Public Sub Run(Optional bAnother As Boolean) As String
+Static Public Sub Run(Optional bAnother As Boolean) As String
   
   $bAnother = bAnother
+  Inc Application.Busy
   If Me.ShowModal() Then Return $sPath
 
 End
@@ -19,12 +20,13 @@ Public Sub Form_Open()
 
   'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
   Settings.Read(Me)
-  Settings.Read(dchProject, "dchProject")
   lstType.Select(panDefaultType)
   wizProject.Index = 0
   edtOutput.ReadConfig
   edtOutput.Text = ""
   chkOther.Visible = $bAnother
+  
+  Dec Application.Busy
 
 End
 
@@ -205,16 +207,22 @@ End
 
 Public Sub wizProject_BeforeChange()
   
-  If wizProject.Index = 1 Then 
-    panRepository.Visible = $bRepository
-    panIdent.Visible = Not $bRepository
-    If $bRepository Then  
-      txtRepository.SetFocus
-    Else 
-      txtName.SetFocus
-      txtName_Change
-    Endif
-  Endif
+  Select Case wizProject.Index
+    
+    Case 0
+      Settings.Read(dchProject, "dchProject")
+      
+    Case 1
+      panRepository.Visible = $bRepository
+      panIdent.Visible = Not $bRepository
+      If $bRepository Then  
+        txtRepository.SetFocus
+      Else 
+        txtName.SetFocus
+        txtName_Change
+      Endif
+      
+  End Select
   
 End
 

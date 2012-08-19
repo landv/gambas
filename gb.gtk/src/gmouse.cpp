@@ -39,24 +39,26 @@
 int gMouse::_isValid = 0;
 int gMouse::_x;
 int gMouse::_y;
+int gMouse::_screen_x;
+int gMouse::_screen_y;
 int gMouse::_button;
 int gMouse::_state;
 int gMouse::_delta;
 int gMouse::_orientation;
 int gMouse::_start_x;
 int gMouse::_start_y;
-GdkEvent *gMouse::_event;
+GdkEvent *gMouse::_event = 0;
 
 void gMouse::move(int x, int y)
 {
 	GdkDisplay* dpy;
-	GdkWindow*  win=gdk_get_default_root_window();
+	GdkWindow*  win = gdk_get_default_root_window();
 	#ifdef GAMBAS_DIRECTFB
 	stub("DIRECTFB/gMouse::move");
 	#else	
 	#ifdef GDK_WINDOWING_X11
-	dpy=gdk_display_get_default();
-	XWarpPointer(GDK_DISPLAY_XDISPLAY(dpy),GDK_WINDOW_XID(win),GDK_WINDOW_XID(win),0, 0,0, 0,x, y);
+	dpy = gdk_display_get_default();
+	XWarpPointer(GDK_DISPLAY_XDISPLAY(dpy), GDK_WINDOW_XID(win), GDK_WINDOW_XID(win), 0, 0, 0, 0, x, y);
 	#else
 	stub("no-X11/gMouse::move");
 	#endif
@@ -65,25 +67,27 @@ void gMouse::move(int x, int y)
 
 int gMouse::button()
 {
-	if (_isValid) 
-		return _button;
-	else
-		return 0; 
+	return _isValid ? _button : 0;
+}
+
+int gMouse::state()
+{
+	return _isValid ? _state : 0;
 }
 
 bool gMouse::left()
 {
-	return _isValid ? (_button & 1) : false;
+	return _isValid ? (_state & GDK_BUTTON1_MASK || _button == 1) : false;
 }
 
 bool gMouse::right()
 {
-	return _isValid ? (_button & 2) : false;
+	return _isValid ? (_state & GDK_BUTTON3_MASK || _button == 3) : false;
 }
 
 bool gMouse::middle()
 {
-	return _isValid ? (_button & 4) : false;
+	return _isValid ? (_state & GDK_BUTTON2_MASK || _button == 2) : false;
 }
 
 bool gMouse::shift()
@@ -123,20 +127,38 @@ int gMouse::y()
 
 void gMouse::getScreenPos(int *x, int *y)
 {
-	gdk_display_get_pointer(gdk_display_get_default(), NULL, x, y, NULL);
+	if (_isValid)
+	{
+		*x = _screen_x;
+		*y = _screen_y;
+	}
+	else
+	{
+		gdk_display_get_pointer(gdk_display_get_default(), NULL, x, y, NULL);
+	}
 }
 
 int gMouse::screenX()
 {
 	gint x;
-	gdk_display_get_pointer(gdk_display_get_default(), NULL, &x, NULL, NULL);
+	
+	if (_isValid)
+		x = _screen_x;
+	else
+		gdk_display_get_pointer(gdk_display_get_default(), NULL, &x, NULL, NULL);
+	
 	return x;
 }
 
 int gMouse::screenY()
 {
 	gint y;
-	gdk_display_get_pointer(gdk_display_get_default(), NULL, NULL, &y, NULL);
+	
+	if (_isValid)
+		y = _screen_y;
+	else
+		gdk_display_get_pointer(gdk_display_get_default(), NULL, NULL, &y, NULL);
+	
 	return y;
 }
 
@@ -164,7 +186,7 @@ void gMouse::setStart(int sx, int sy)
 	_start_y = sy;
 }
 
-void gMouse::setMouse(int x, int y, int button, int state)
+void gMouse::setMouse(int x, int y, int sx, int sy, int button, int state)
 {
 	_delta = 0;
 	_orientation = 0;
@@ -172,8 +194,9 @@ void gMouse::setMouse(int x, int y, int button, int state)
 	_x = x;
 	_y = y;
 	_state = state;
+	_button = button;
 
-	switch(button)
+	/*switch(button)
 	{
 		case 1: _button = 1; break;
 		case 2: _button = 4; break;
@@ -183,12 +206,34 @@ void gMouse::setMouse(int x, int y, int button, int state)
 			if (_state & GDK_BUTTON1_MASK) _button += 1;
 			if (_state & GDK_BUTTON2_MASK) _button += 4;
 			if (_state & GDK_BUTTON3_MASK) _button += 2;
+	}*/
+}
+
+static GdkDevice *get_event_device(GdkEvent *event)
+{
+	switch(event->type)
+	{
+		case GDK_BUTTON_PRESS: case GDK_2BUTTON_PRESS: case GDK_3BUTTON_PRESS: case GDK_BUTTON_RELEASE: 
+			return ((GdkEventButton *)event)->device; 
+			
+		case GDK_SCROLL:
+			return ((GdkEventScroll *)event)->device; 
+		
+		case GDK_MOTION_NOTIFY:
+			return ((GdkEventMotion *)event)->device; 
+		
+		case GDK_PROXIMITY_IN: case GDK_PROXIMITY_OUT:
+			return ((GdkEventProximity *)event)->device; 
+		
+		default:
+			return NULL;
 	}
 }
 
 void gMouse::setEvent(GdkEvent *event)
 {
-	_event = event;
+	_event = gdk_event_copy(event);
+	//fprintf(stderr, "device = %p\n", get_event_device(event));
 }
 
 double gMouse::getAxis(GdkAxisUse axis)
@@ -203,29 +248,7 @@ double gMouse::getAxis(GdkAxisUse axis)
 
 int gMouse::getType()
 {
-	GdkDevice *device;
-	
-	switch(_event->type)
-	{
-		case GDK_BUTTON_PRESS: case GDK_2BUTTON_PRESS: case GDK_3BUTTON_PRESS: case GDK_BUTTON_RELEASE: 
-			device = ((GdkEventButton *)_event)->device; 
-			break;
-			
-		case GDK_SCROLL:
-			device = ((GdkEventScroll *)_event)->device; 
-			break;
-		
-		case GDK_MOTION_NOTIFY:
-			device = ((GdkEventMotion *)_event)->device; 
-			break;
-		
-		case GDK_PROXIMITY_IN: case GDK_PROXIMITY_OUT:
-			device = ((GdkEventProximity *)_event)->device; 
-			break;
-		
-		default:
-			device = NULL;
-	}
+	GdkDevice *device = get_event_device(_event);
 	
 	if (!device)
 		return POINTER_MOUSE;
@@ -253,13 +276,20 @@ void gMouse::initDevices()
 	if (done)
 		return;
 	
+	//fprintf(stderr, "initDevices\n");
+	
 	devices = gdk_devices_list();
 	
 	while (devices)
 	{
 		device = (GdkDevice *)devices->data;
-		fprintf(stderr, "%s\n", gdk_device_get_name(device));
-		gdk_device_set_mode(device, GDK_MODE_SCREEN);
+		
+		if (gdk_device_get_source(device) != GDK_SOURCE_MOUSE)
+		{
+			//fprintf(stderr, "enable device '%s'\n", gdk_device_get_name(device));
+			gdk_device_set_mode(device, GDK_MODE_SCREEN);
+		}
+		
 		devices = devices->next;
 	}
 	
@@ -286,3 +316,16 @@ double gMouse::getPointerScreenY()
 	return getAxis(GDK_AXIS_Y);
 }
 
+void gMouse::invalidate()
+{
+	_isValid--;
+	
+	if (_isValid == 0)
+	{
+		if (_event)
+		{
+			gdk_event_free(_event);
+			_event = 0;
+		}
+	}
+}

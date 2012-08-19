@@ -103,6 +103,7 @@ static GB_FUNCTION _application_keypress_func;
 static void *_old_hook_main;
 
 int MAIN_scale = 0;
+bool MAIN_debug_busy = false;
 
 extern "C"
 {
@@ -214,6 +215,12 @@ extern "C"
 
 	int EXPORT GB_INIT(void)
 	{
+		char *env;
+		
+		env = getenv("GB_GUI_BUSY");
+		if (env && atoi(env))
+			MAIN_debug_busy = true;
+		
 		GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
 		_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_WAIT, (void *)my_wait);

@@ -1138,7 +1138,7 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 	cairo_matrix_multiply((cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix2);
 }
 
-static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h)
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity)
 {
 	cairo_pattern_t *pattern, *save;
 	cairo_matrix_t matrix;
@@ -1164,7 +1164,16 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_set_source(CONTEXT(d), pattern);
 	
 	cairo_rectangle(CONTEXT(d), x, y, w, h);
-	cairo_fill(CONTEXT(d));
+	
+	if (opacity == 1.0)
+	{
+		cairo_fill(CONTEXT(d));
+	}
+	else
+	{
+		cairo_clip(CONTEXT(d));
+		cairo_paint_with_alpha(CONTEXT(d), opacity);
+	}
 	
 	cairo_set_source(CONTEXT(d), save);
 	cairo_pattern_destroy(save);

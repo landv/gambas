@@ -31,7 +31,8 @@ Private $iSort As Integer
 Public Sub Run(Optional bAnother As Boolean) As String
 
   $bAnother = bAnother
-  'Debug
+  
+  Inc Application.Busy
   If Me.ShowModal() Then 
     'Debug
     Return $sPath
@@ -103,6 +104,8 @@ Public Sub Form_Open()
   For Each hCtrl In [radSortByDate, radSortByName, radSortByPath]
     If hCtrl.Tag = $iSort Then hCtrl.Value = True
   Next
+  
+  Dec Application.Busy
 
 End
 

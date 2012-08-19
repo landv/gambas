@@ -55,7 +55,7 @@ typedef
 		QWidget *widget;
 		CWIDGET_EXT *ext;
 		struct {
-			unsigned short f;
+			unsigned char f;
 			unsigned expand : 1;
 			unsigned ignore : 1;
 			unsigned notified : 1;
@@ -72,11 +72,14 @@ typedef
 			unsigned inside_later : 1;
 			unsigned use_tablet : 1;
 			unsigned no_keyboard : 1;
+			unsigned tablet_pressed : 1;
+			unsigned _reserved : 7;
 			} flag;
 		int level;
 		char *name;
 		void *font;
 		}
+	PACKED
 	CWIDGET; // BEWARE: gb.qt.h MUST be updated accordingly!
 
 typedef

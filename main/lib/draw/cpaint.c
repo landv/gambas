@@ -954,10 +954,11 @@ BEGIN_METHOD(Paint_Rotate, GB_FLOAT angle)
 
 END_METHOD
 
-BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height)
+BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height; GB_FLOAT opacity)
 
 	GB_IMG *image;
 	float x, y, w, h;
+	float opacity = VARGOPT(opacity, 1.0);
 
 	CHECK_DEVICE();
 	
@@ -980,7 +981,7 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	if (image->width <= 0 || image->height <= 0)
 		return;
 	
-	PAINT->DrawImage(THIS, VARG(image), x, y, w, h);
+	PAINT->DrawImage(THIS, VARG(image), x, y, w, h, opacity);
 
 END_METHOD
 
@@ -1051,7 +1052,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Stroke", NULL, Paint_Stroke, "[(Preserve)b]"),
 	//GB_STATIC_PROPERTY_READ("StrokeExtents", "PaintExtents", Paint_StrokeExtents),
 	//GB_STATIC_METHOD("InStroke", "b", Paint_InStroke, "(X)f(Y)f"),
-	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f[(Width)f(Height)f]"),
+	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f[(Width)f(Height)f(Opacity)f]"),
 
 	GB_STATIC_PROPERTY_READ("PathExtents", "PaintExtents", Paint_PathExtents),
 	GB_STATIC_METHOD("PathContains", "b", Paint_PathContains, "(X)f(Y)f"),
