@@ -66,6 +66,7 @@ public:
 	
 	virtual void setFont(gFont *ft);
 	virtual void setRealForeground(gColor color);
+	//virtual void setRealBackground(gColor color);
 
 //"Method"
 	void animateClick(bool on);

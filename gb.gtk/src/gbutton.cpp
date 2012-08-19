@@ -223,6 +223,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	switch(typ)
 	{
 		case Toggle:
+			_no_background = true;
 			rendtxt = gtk_cell_renderer_text_new();
 			border = gtk_toggle_button_new();
 			break;
@@ -247,12 +248,14 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 			break;
 		
 		case Tool:
+			_no_background = true;
 			rendtxt = gtk_cell_renderer_text_new();
 			border = gtk_toggle_button_new();
 			gtk_button_set_focus_on_click(GTK_BUTTON(border), false);
 			break;
 		
 		default:
+			_no_background = true;
 			border=gtk_button_new();
 			rendtxt=gtk_cell_renderer_text_new();
 			typ = Button;

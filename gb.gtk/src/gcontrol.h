@@ -226,6 +226,7 @@ public:
 	unsigned _no_tab_focus : 1;            // Don't put inside focus chain
 	unsigned _inside : 1;                  // if we got an enter event, but not a leave event yet.
 	unsigned _no_auto_grab : 1;            // do not automatically grab widget on button press event
+	unsigned _no_background : 1;           // Don't draw the background automatically
 	
   void removeParent() { pr = NULL; }
 	void initSignals();

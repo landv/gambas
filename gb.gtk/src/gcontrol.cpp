@@ -240,6 +240,7 @@ void gControl::initAll(gContainer *parent)
 	_no_tab_focus = false;
 	_inside = false;
 	_no_auto_grab = false;
+	_no_background = false;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -1389,7 +1390,7 @@ void gControl::realize(bool make_frame)
   if (frame)
 		g_signal_connect_after(G_OBJECT(frame), "expose-event", G_CALLBACK(cb_frame_expose), (gpointer)this);
 	
-	if (!gtk_widget_get_has_window(border))
+	if (!_no_background && !gtk_widget_get_has_window(border))
 		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
 	/*else if (!isTopLevel())
 	{

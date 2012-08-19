@@ -44,7 +44,7 @@ Conversion between GDK and long type colors
 #define SCALE(i) ((int)(i * 255.0 / 65535.0 + 0.5))
 #define UNSCALE(d) ((int)(d / 255.0 * 65535.0 + 0.5))
 
-static GtkStateType _color_style_bg[] = { GTK_STATE_INSENSITIVE, GTK_STATE_NORMAL };
+static GtkStateType _color_style_bg[] = { GTK_STATE_INSENSITIVE, GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
 static GtkStateType _color_style_fg[] = { GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
 
 void fill_gdk_color(GdkColor *gcol,gColor color, GdkColormap *cmap)
