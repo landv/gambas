@@ -1452,7 +1452,9 @@ void GB_ReturnVariant(GB_VARIANT_VALUE *val)
 
 void GB_ReturnConvVariant(void)
 {
+	BORROW(&TEMP);
 	VALUE_conv(&TEMP, T_VARIANT);
+	UNBORROW(&TEMP);
 }
 
 void GB_ReturnBorrow(void)
