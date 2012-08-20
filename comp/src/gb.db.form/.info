@@ -1,6 +1,10 @@
 #DataBrowser
 UserControl
 C
+:Data
+:
+
+(Row)i(Column)i(Value)v
 Columns
 p
 String[]
@@ -37,6 +41,10 @@ Grid
 p
 b
 
+Data
+r
+_GridView_Data
+
 _Properties
 C
 s
@@ -57,6 +65,10 @@ _OnDatabaseChange
 m
 
 
+DataView_Data
+m
+
+(Row)i(Column)i(Value)v
 #DataCombo
 UserControl
 C
@@ -484,6 +496,10 @@ Data
 :
 
 
+:Data
+:
+
+(Row)i(Column)i(Value)v
 Mode
 p
 i
@@ -539,6 +555,10 @@ Font
 Background
 p
 i
+
+Data
+r
+_GridView_Data
 
 _new
 m
@@ -617,6 +637,10 @@ m
 
 (Column)i
 _OnDatabaseChange
+m
+
+
+mnuComboBox_Click
 m
 
 

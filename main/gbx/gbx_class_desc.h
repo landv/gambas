@@ -99,7 +99,7 @@ typedef
 	struct {
 		char *name;
 		TYPE type;                  // return value datatype - N/A
-		int *index;                 // event index
+		intptr_t index;             // event index
 		TYPE *signature;            // event signature
 		char npmin;                 // minimum number of arguments
 		char npmax;                 // maximum number of arguments

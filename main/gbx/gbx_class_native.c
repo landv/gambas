@@ -284,7 +284,8 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 				event = &class->event[first_event];
 				event->name = class->table[i].name;
 				if (desc->event.index)
-					*desc->event.index = first_event;
+					*((int *)desc->event.index) = first_event;
+				desc->event.index = first_event;
 
 				event->type = desc->event.type;
 				event->param = (CLASS_PARAM *)desc->event.signature;

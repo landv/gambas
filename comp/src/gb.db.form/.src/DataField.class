@@ -8,7 +8,7 @@ Public Key As Boolean
 Public {Default} As Variant
 Public Serial As Boolean
 
-Public Function GetWidth(hCtrl As Control) As Integer
+Public Function GetWidth(hCtrl As Control, Optional bEdit As Boolean) As Integer
 
   Dim iWidth As Integer
   Dim iLen As Integer
@@ -17,6 +17,7 @@ Public Function GetWidth(hCtrl As Control) As Integer
 
     Case db.Boolean
       iWidth = hCtrl.Font.TextWidth(("False"))
+      If bEdit Then iWidth += 32
 
     Case db.Integer, db.Serial
       iWidth = hCtrl.Font.TextWidth("9") * 8

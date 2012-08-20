@@ -504,15 +504,6 @@ End
 
 Public Sub _SetShadowOffset(North As Integer, South As Integer, West As Integer, East As Integer)
   
-  Dim FW As Integer
-  
-  If $bBorder Then FW = Style.FrameWidth
-  
-  If North Then North += FW
-  If South Then South += FW
-  If West Then West += FW
-  If East Then East += FW
-  
   $iShadowN = North
   $iShadowS = South
   $iShadowW = West

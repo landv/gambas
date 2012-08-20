@@ -8,6 +8,7 @@ Public Const _DrawWith As String = "GridView"
 Public Const _Group As String = "Data"
 
 Event Activate
+Event Data(Row As Integer, Column As Integer, Value As Variant)
 
 Property Mode As Integer 
 Property Header As Integer
@@ -24,8 +25,9 @@ Property Read Index As Integer
 Property Read View As TableView
 Property Font As Font
 Property Background As Integer
+Property Read Data As _GridView_Data
 
-'Public _DataComboView As DataComboView
+'Property Read Column As _DataView_Columns
 
 Private Const NEW_RECORD As String = "*"
 
@@ -58,6 +60,9 @@ Private $iLastRow As Integer = -1
 Private $sCharset As String
 
 Private $hTextArea As TextArea
+Private $hComboBox As MenuButton
+Private $hComboBoxMenu As Menu
+
 Private $bEditable As Boolean
 Private $aNewRecord As Variant[]
 Private $bNewRecordModified As Boolean
@@ -69,6 +74,8 @@ Public Sub _new()
   
   $hCtrl = New TableView(Me) As "TableView"
   Me.Proxy = $hCtrl
+  
+  '$hColumns = New _DataView_Columns As "Columns"
   
   '$hTimer = New Timer As "TableView"
   $hCreateTimer = New Timer As "CreateTimer"
@@ -82,6 +89,18 @@ Public Sub _new()
   UpdateHighlightColor
   
 End
+
+' Public Sub _attach(Parent As Object, EventName As String)
+'   
+'   If Not EventName Then
+'     $bFormat = False
+'   Else
+'     $bFormat = Object.CanRaise(Me, "Format")
+'   Endif
+'   Debug $bFormat
+'   
+' End
+
 
 Private Sub UpdateHighlightColor()
   
@@ -124,7 +143,7 @@ Private Sub RefreshLabels()
     With $hTable.GetFieldInfo($aColumns[iInd])
       Try $hCtrl.Columns[iInd].Text = $aLabels[iInd]
       If Error Then $hCtrl.Columns[iInd].Text = .Name
-      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl)
+      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl, True)
     End With
   Next
 
@@ -365,53 +384,58 @@ End
 Public Sub TableView_Data(Row As Integer, Column As Integer)
   
   Dim iIndex As Integer
+  Dim iType As Integer
   Dim hField As DataField
   Dim sText As String
   Dim H As Integer
+  Dim vVal As Variant
+  Dim bCancel As Boolean
   
   If $iNoRefresh Then Return
   
   With $hCtrl.Data
+    
     iIndex = $aColumnsIndex[Column]
 
-    Select Case $aType[Column].Type
-      
-      Case db.Blob
-        .Text = "BLOB"
-        .Foreground = Color.LightForeground
-        ' If $bHighlight And If Row And 1 Then 
-        '   .Background = Color.Merge($iHighlight, Color.LightGray)
-        ' Else
-        '   .Background = Color.Merge(Color.TextBackground, Color.LightGray)
-        ' Endif
+    If $bHighlight And If Row And 1 Then .Background = $iHighlight
+    
+    iType = $aType[Column].Type
+    If iType = db.Blob Then
+      .Text = "BLOB"
+      .Foreground = Color.LightForeground
+      Return
+    Else If iType = db.Integer Or If iType = db.Float Then
+      .Alignment = Align.Right
+    Endif
 
+    If Row = $iRowNewRecord Then
+      vVal = $aNewRecord[Column]
+    Else
+      vVal = $hTable[Row][iIndex]
+    Endif
+    
+    Select Case iType
+      
       Case db.String
-        If Row = $iRowNewRecord Then
-          sText = $aNewRecord[Column]
-        Else
-          sText = $hTable[Row][iIndex]
-        Endif
         If Not $sCharset Then
-          .Text = Left(sText, 1024)
+          .Text = Left(vVal, 1024)
         Else
-          Try .Text = Conv$(Left(sText, 1024), $sCharset, Desktop.Charset)
+          Try .Text = Conv$(Left(vVal, 1024), $sCharset, Desktop.Charset)
         Endif
         If $aType[Column].Length = 0 Then .Alignment = Align.TopNormal
-
+        
+      Case db.Integer, db.Float
+        .Text = Str(vVal)
+        
       Case Else
-        If Row = $iRowNewRecord Then
-          sText = Str($aNewRecord[Column])
-        Else
-          sText = Str($hTable[Row][iIndex])
-        Endif
-        Try .Text = Left(sText, 1024)
+        Try .Text = Left(Str(vVal), 1024)
         
     End Select
     
-    If $bHighlight And If Row And 1 Then .Background = $iHighlight
-    
   End With
   
+  If Draw.Device Then Raise Data(Row, Column, vVal)
+    
   ' If Not $bAdjust Then
   '   If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
   '   If Not $bTimer Then 
@@ -445,6 +469,36 @@ Private Sub CanEdit() As Boolean
   
 End
 
+Private Sub InitComboBox()
+  
+  Dim hMenu As Menu
+  
+  $hComboBox = New MenuButton(Me.Window)
+  $hComboBox.Ignore = True
+  $hComboBox.Border = False
+  $hComboBox.Background = Color.TextBackground
+  $hComboBox.MenuOnly = True
+  $hComboBox.Hide
+  
+  $hComboBoxMenu = New Menu(Me.Window, True)
+  $hComboBoxMenu.Name = "mnuComboBox"
+  
+  hMenu = New Menu($hComboBoxMenu) As "mnuComboBox"
+  hMenu.Text = " "
+  
+  hMenu = New Menu($hComboBoxMenu) As "mnuComboBox"
+  hMenu.Text = ("False")
+  hMenu.Tag = False
+  
+  hMenu = New Menu($hComboBoxMenu) As "mnuComboBox"
+  hMenu.Text = ("True")
+  hMenu.Tag = True
+  
+  $hComboBox.Menu = "mnuComboBox"
+  
+End
+
+
 
 Public Sub TableView_Click()
   
@@ -457,6 +511,7 @@ Public Sub TableView_Click()
   TableView_Change
   
   If CanEdit() Then 
+    
     hField = $aType[$hCtrl.Column]
     
     ' Key fields must not be read-only during creation
@@ -464,13 +519,16 @@ Public Sub TableView_Click()
     
     Select Case hField.Type
       Case db.Blob, db.Serial
-        Return
+        
       Case db.Boolean
+        'If Not $hComboBox Then InitComboBox
+        '$hComboBoxMenu.Children[0].Visible = IsNull(hField.Default)
         If IsNull(hField.Default) Then
           $hCtrl.Edit(["", ("False"), ("True")], True)
         Else
           $hCtrl.Edit([("False"), ("True")], True)
         Endif
+        '$hCtrl.EditWith($hComboBox)
       Case db.String
         If hField.Length = 0 Then
           If Not $hTextArea Then 
@@ -1090,5 +1148,17 @@ Private Sub Background_Write(Value As Integer)
 
   Super.Background = Value
   If $bHighlight Then UpdateHighlightColor
+
+End
+
+Public Sub mnuComboBox_Click()
+  
+  $hComboBox.Text = Last.Text
+  
+End
+
+Private Function Data_Read() As _GridView_Data
+
+  Return $hCtrl.Data
 
 End

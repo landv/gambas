@@ -478,16 +478,6 @@ static void gambas_handle_event(GdkEvent *event)
 	
 	// Release possible button press grab
 	
-	if (event->type == GDK_BUTTON_RELEASE)
-	{
-		if (gApplication::_button_grab)
-		{
-			//fprintf(stderr, "ungrab %s\n", gApplication::_button_grab->name());
-			gtk_grab_remove(gApplication::_button_grab->border);
-			gApplication::_button_grab = NULL;
-		}
-	}
-	
 	if (grab && widget != grab)
 		goto __HANDLE_EVENT;
 	
@@ -598,7 +588,13 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_BUTTON_RELEASE:
 		{
 			//fprintf(stderr, "grab = %p\n", grab);
-			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			if (gApplication::_button_grab)
+				control = gApplication::_button_grab;
+			else
+				control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			
+			save_control = control;
+
 			//fprintf(stderr, "save_control = %p %s\n", control, control ? control->name() : NULL);
 			
 			bool menu = false;
@@ -897,6 +893,16 @@ __HANDLE_EVENT:
 	gtk_main_do_event(event);
 	
 __RETURN:
+	
+	if (event->type == GDK_BUTTON_RELEASE)
+	{
+		if (gApplication::_button_grab)
+		{
+			//fprintf(stderr, "ungrab %s\n", gApplication::_button_grab->name());
+			gtk_grab_remove(gApplication::_button_grab->border);
+			gApplication::_button_grab = NULL;
+		}
+	}
 	
 	(void)0;
 	//if (ungrab)

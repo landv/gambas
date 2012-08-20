@@ -462,7 +462,8 @@ BEGIN_PROPERTY(CCONTROL_font)
 	
 	if (READ_PROPERTY)
 	{
-    GB.ReturnObject(THIS->font);
+		CONTROL->font()->copyTo(((CFONT *)THIS->font)->font);
+		GB.ReturnObject(THIS->font);
 	}
 	else
 	{

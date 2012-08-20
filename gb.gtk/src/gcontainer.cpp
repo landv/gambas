@@ -633,7 +633,10 @@ void gContainer::setFont(gFont *ft)
 	{
 		ch = child(i);
 		if (!ch->_font_set)
+		{
 			ch->setFont(ch->font());
+			ch->_font_set = false;
+		}
 	}	
 }
 

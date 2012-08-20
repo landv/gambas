@@ -1080,6 +1080,13 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 	}
 
+	/* Event description */
+
+	CLASS_make_event(class, &first_event);
+
+	if (class->free_event && class->n_event > first_event)
+		memcpy(&class->event[first_event], class->load->event, (class->n_event - first_event) * sizeof(CLASS_EVENT));
+
 	/* Class public description */
 
 	for (i = 0; i < n_desc; i++)
@@ -1164,6 +1171,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 				desc->event.npmin = event->n_param;
 				desc->event.npmax = event->n_param;
 				desc->event.signature = (TYPE *)event->param;
+				desc->event.index = first_event++;
 				//desc->event.help = NULL;
 				break;
 
@@ -1188,6 +1196,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 	CLASS_make_description(class, start, n_desc, &first);
 
 	/* Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes */
+	// Define event index
 	
 	for (i = 0; i < n_desc; i++)
 	{
@@ -1195,13 +1204,6 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		desc->gambas.name = (char *)CLASS_DESC_get_type_name(desc);
 		desc->method.class = class;
 	}
-
-	/* Event description */
-
-	CLASS_make_event(class, &first_event);
-
-	if (class->free_event && class->n_event > first_event)
-		memcpy(&class->event[first_event], class->load->event, (class->n_event - first_event) * sizeof(CLASS_EVENT));
 
 	/* Sort the class description */
 

@@ -1,5 +1,7 @@
 ' Gambas class file
 
+' Gambas class file
+
 Inherits GridView
 Export 
 
@@ -17,6 +19,7 @@ Property NoKeyboard As Boolean
 Private $hTextBox As TextBox
 Private $hComboBox As ComboBox
 Private $hEditor As Object
+Private $hPanel As Panel
 Private $bTextBox As Boolean
 
 Private $iCol As Integer
@@ -33,15 +36,21 @@ Public Sub _new()
   hObs = New Observer(Me) As "GridView"
   $hWatcher = New Watcher(Me) As "GridView"
   
-  $hComboBox = New ComboBox(Me.Window) As "Editor"
-  $hComboBox.Ignore = True
-  $hComboBox.Background = Color.TextBackground
+  $hPanel = New Panel(Me.Window)
+  $hPanel.Background = Color.TextBackground
+  $hPanel.Ignore = True
+  $hPanel.Arrangement = Arrange.Fill
+  $hPanel.Hide
+  
+  $hComboBox = New ComboBox($hPanel) As "Editor"
+  '$hComboBox.Ignore = True
+  '$hComboBox.Background = Color.TextBackground
   $hComboBox.Hide
   
-  $hTextBox = New TextBox(Me.Window) As "Editor"
-  $hTextBox.Ignore = True
+  $hTextBox = New TextBox($hPanel) As "Editor"
+  '$hTextBox.Ignore = True
   $hTextBox.Border = False
-  $hTextBox.Background = Color.TextBackground
+  '$hTextBox.Background = Color.TextBackground
   $hTextBox.Hide
   
   $hTimer = New Timer As "Timer"
@@ -93,6 +102,7 @@ Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
       bCancel = SaveEditor()
     Endif
     If $hEditor Then
+      $hPanel.Hide
       $hEditor.Hide
       $hEditor = Null
     Endif
@@ -139,7 +149,7 @@ Private Sub MoveEditor()
     Endif
     
     
-    $hEditor.Move(X, Y, W, H)
+    $hPanel.Move(X, Y, W, H)
     ' Else
     '   $hEditor.Move(X, Y, .Width + 1, .Height + 1)
     ' Endif
@@ -153,6 +163,7 @@ Private Sub MoveEditor()
     ' Else
     $hEditor.Font = Me.Font
     $hEditor.Show
+    $hPanel.Show
     
     'Debug $iRow;; $iCol; " : ";; .Width;; .Height; " / "; $hEditor.Width;; $hEditor.Height
   End With
@@ -225,7 +236,10 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
     $bTextBox = True
   Endif
   
-  $hEditor.Text = Me[$iRow, $iCol].Text
+  With Me[$iRow, $iCol]
+    $hEditor.Text = .Text
+    Try $hEditor.Alignment = .Alignment
+  End With
   If $bTextBox Then $hEditor.SelectAll
   MoveEditor
   Try $hEditor.SetFocus
@@ -244,8 +258,8 @@ Public Sub EditWith(Editor As Control)
   If $iCol < 0 Or $iRow < 0 Then Return
   
   $hEditor = Editor
-  $hEditor.Ignore = True
-  $hEditor.Reparent(Me.Window)
+  $hEditor.Reparent($hPanel)
+  $hEditor.Ignore = False
   
   $bTextBox = False
   If Editor Is TextArea Or If Editor Is TextBox Or If Editor Is ButtonBox Then

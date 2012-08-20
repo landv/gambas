@@ -304,6 +304,8 @@ Public Sub ScrollArea_Draw()
   Dim iSort As Integer
   Dim bAscent As Boolean
   
+  'Debug Me.Font.ToString();; Draw.Font.ToString()
+  
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
   
   iCol = $hColumns._FindColumnFromPos($hView.ScrollX)

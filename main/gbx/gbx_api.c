@@ -1055,7 +1055,7 @@ int GB_GetEvent(void *class, char *name)
 	if (!cd)
 		return (-1);
 	else
-		return *cd->index;
+		return cd->index;
 }
 
 

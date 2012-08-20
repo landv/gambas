@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,76,93)
+  MoveScaled(0,0,117,104)
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
@@ -18,7 +18,9 @@
     Table = "color"
     { DataBrowser2 DataBrowser
       MoveScaled(7,2,54,16)
+      Font = Font["-1"]
       Control = False
+      Grid = True
     }
     { DataSource1 DataSource
       MoveScaled(2,19,62,67)
@@ -28,6 +30,7 @@
       Table = "test"
       { DataBrowser1 DataBrowser
         MoveScaled(2,5,59,17)
+        Font = Font["-1"]
         Expand = True
         Columns = ["id", "active", "color", "firstname", "salary", "comment"]
         Editable = True

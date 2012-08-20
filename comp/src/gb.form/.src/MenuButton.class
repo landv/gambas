@@ -41,6 +41,8 @@ Private $bArrow As Boolean
 Private $bAutoResize As Boolean
 Private $bMenuOnly As Boolean
 
+Private $hTimer As Timer
+
 Public Sub _new()
   
   'Dim hObs As Observer
@@ -183,6 +185,20 @@ Public Sub Arrow_Click()
   hMenu.Popup(Me.ScreenX, Me.ScreenY + Me.H)
   
 End
+
+' Public Sub ShowMenu()
+'   
+'   $hTimer = New Timer As "ShowMenuTimer"
+'   $hTimer.Trigger
+'   
+' End
+' 
+' Public Sub ShowMenuTimer_Timer()
+'   
+'   Arrow_Click
+'   $hTimer = Null
+'   
+' End
 
 Private Function Value_Read() As Boolean
 

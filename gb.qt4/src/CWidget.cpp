@@ -841,9 +841,10 @@ BEGIN_PROPERTY(Control_Font)
 		THIS->font = CFONT_create(WIDGET->font(), 0, THIS);
 		GB.Ref(THIS->font);
 	}
-
+	
 	if (READ_PROPERTY)
 	{
+		*(((CFONT *)THIS->font)->font) = WIDGET->font();
 		GB.ReturnObject(THIS->font);
 	}
 	else

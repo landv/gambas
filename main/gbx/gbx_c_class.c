@@ -896,6 +896,31 @@ BEGIN_PROPERTY(Object_Address)
 
 END_PROPERTY
 
+
+BEGIN_METHOD(Object_CanRaise, GB_OBJECT object; GB_STRING name)
+
+	void *object = VARG(object);
+	CLASS *class;
+	char *name;
+	int index;
+
+	if (!object)
+	{
+		GB_Error((char *)E_NULL);
+		return;
+	}
+
+	class = OBJECT_class(object);
+	name = GB_ToZeroString(ARG(name));
+	index = GB_GetEvent(class, name);
+	fprintf(stderr, "Object.CanRaise: %s %d\n", name, index);
+	if (index < 0)
+		GB_ReturnBoolean(FALSE);
+	else
+		GB_ReturnBoolean(GB_CanRaise(object, index));
+	
+END_METHOD
+
 #endif
 
 
@@ -1002,6 +1027,7 @@ GB_DESC NATIVE_Object[] =
 	GB_STATIC_METHOD("Count", "i", Object_Count, "(Object)o"),
 	GB_STATIC_METHOD("SizeOf", "i", Object_SizeOf, "(Object)o"),
 	GB_STATIC_METHOD("Address", "p", Object_Address, "(Object)o"),
+	GB_STATIC_METHOD("CanRaise", "b", Object_CanRaise, "(Object)o(Event)s"),
 
 	GB_END_DECLARE
 };

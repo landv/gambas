@@ -3,6 +3,8 @@
 Export
 Inherits UserControl
 
+Event Data(Row As Integer, Column As Integer, Value As Variant)
+
 'PROPERTY Border AS Integer "<Border>"
 Property Columns As String[]
 Property Labels As String[]
@@ -13,16 +15,19 @@ Property Orientation As Integer
 Property Editable As Boolean
 Property Border As Boolean
 Property Grid As Boolean
+Property Read Data As _GridView_Data
 
 Public Const _Properties As String = "*,Control=True,Columns{Field[]},Labels,Editable,Header=True,Grid,Orientation{Align.Bottom;Left;Right;Top}=Bottom,Border=True"
 Public Const _Group As String = "Data"
 
 Private $hForm As FBrowser
+Private $hObs As Observer
 
 Public Sub _new()
   
   $hForm = New FBrowser(Me)
   Me.Proxy = $hForm.DataView
+  $hObs = New Observer($hForm.DataView) As "DataView"
   
 End
 
@@ -163,5 +168,17 @@ End
 Private Sub Grid_Write(Value As Boolean)
 
   $hForm.DataView.Grid = Value
+
+End
+
+Public Sub DataView_Data(Row As Integer, Column As Integer, Value As Variant)
+  
+  Raise Data(Row, Column, Value)
+  
+End
+
+Private Function Data_Read() As _GridView_Data
+
+  Return $hForm.DataView.Data
 
 End
