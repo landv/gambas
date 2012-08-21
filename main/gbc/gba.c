@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gba.c
+	gba.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -50,13 +50,13 @@
 #if HAVE_GETOPT_LONG
 static struct option Long_options[] =
 {
-  { "version", 0, NULL, 'V' },
-  { "help", 0, NULL, 'h' },
-  { "swap", 0, NULL, 's' },
-  { "verbose", 0, NULL, 'v' },
-  { "output", 1, NULL, 'o' },
-  { "extract", 1, NULL, 'x' },
-  { 0 }
+	{ "version", 0, NULL, 'V' },
+	{ "help", 0, NULL, 'h' },
+	{ "swap", 0, NULL, 's' },
+	{ "verbose", 0, NULL, 'v' },
+	{ "output", 1, NULL, 'o' },
+	{ "extract", 1, NULL, 'x' },
+	{ 0 }
 };
 #endif
 
@@ -73,90 +73,94 @@ static char *_extract_file = NULL;
 
 static void get_arguments(int argc, char **argv)
 {
-  int opt;
-  #if HAVE_GETOPT_LONG
-  int index = 0;
-  #endif
+	int opt;
+	#if HAVE_GETOPT_LONG
+	int index = 0;
+	#endif
 
-  for(;;)
-  {
-    #if HAVE_GETOPT_LONG
-      opt = getopt_long(argc, argv, "vVLhso:x:", Long_options, &index);
-    #else
-      opt = getopt(argc, argv, "vVLhso:x:");
-    #endif
+	for(;;)
+	{
+		#if HAVE_GETOPT_LONG
+			opt = getopt_long(argc, argv, "vVLhso:x:", Long_options, &index);
+		#else
+			opt = getopt(argc, argv, "vVLhso:x:");
+		#endif
 
-    if (opt < 0) break;
+		if (opt < 0) break;
 
-    switch (opt)
-    {
-      case 'V':
-        printf(VERSION "\n");
-        exit(0);
+		switch (opt)
+		{
+			case 'V':
+				printf(VERSION "\n");
+				exit(0);
 
-      case 'v':
-        ARCH_verbose = TRUE;
-        break;
+			case 'v':
+				ARCH_verbose = TRUE;
+				break;
 
-      case 's':
-        ARCH_swap = TRUE;
-        break;
+			case 's':
+				ARCH_swap = TRUE;
+				break;
 
 			case 'o':
-        ARCH_define_output(optarg);
+				ARCH_define_output(optarg);
 				_extract = FALSE;
 				break;
 				
 			case 'x':
-        _extract_archive = optarg;
+				_extract_archive = optarg;
 				_extract = TRUE;
 				break;
 				
 			case 'L':
 				printf(
-					"GAMBAS Archiver version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Archiver version " VERSION " " __DATE__ " " __TIME__ "\n"
 					COPYRIGHT
 					);
 				exit(0);
 
-      case 'h': case '?':
-        printf(
-          "Usage: gba" GAMBAS_VERSION_STRING " [options] [<project directory>]\n"
-          "       gba" GAMBAS_VERSION_STRING " -x <archive path> <file>\n\n"
-          "Options:"
-          #if HAVE_GETOPT_LONG
-          "\n"
-          "  -o  --output=ARCHIVE       archive path [<project directory>/<project name>.gambas]\n"
-          "  -x  --extract=ARCHIVE      archive path\n"
-          "  -v  --verbose              verbose output\n"
-          "  -V  --version              display version\n"
-          "  -s  --swap                 swap endianness\n"
-          "  -h  --help                 display this help\n"
-          #else
-          " (no long options on this system)\n"
-          "  -o=ARCHIVE             archive path [<project directory>/<project name>.gambas]\n"
-          "  -x=ARCHIVE             archive path\n"
-          "  -v                     verbose output\n"
-          "  -V                     display version\n"
-          "  -s                     swap endianness\n"
-          "  -h                     display this help\n"
-          #endif
-          "\n"
-          );
+			case 'h': case '?':
+				printf(
+					"\nCreate a standalone one-file executable from a Gambas project.\n"
+					"Or extract a specific file from a Gambas executable (-x option).\n"
+					"\nUsage: gba" GAMBAS_VERSION_STRING " [options] [<project directory>]\n"
+					"       gba" GAMBAS_VERSION_STRING " -x <archive path> <file>\n\n"
+					"Options:"
+					#if HAVE_GETOPT_LONG
+					"\n"
+					"  -o  --output=ARCHIVE       archive path [<project directory>/<project name>.gambas]\n"
+					"  -x  --extract=ARCHIVE      archive path\n"
+					"  -v  --verbose              verbose output\n"
+					"  -s  --swap                 swap endianness\n"
+					"  -V  --version              display version\n"
+					"  -L  --license              display license\n"
+					"  -h  --help                 display this help\n"
+					#else
+					" (no long options on this system)\n"
+					"  -o=ARCHIVE             archive path [<project directory>/<project name>.gambas]\n"
+					"  -x=ARCHIVE             archive path\n"
+					"  -v                     verbose output\n"
+					"  -s                     swap endianness\n"
+					"  -V                     display version\n"
+					"  -L                     display license\n"
+					"  -h                     display this help\n"
+					#endif
+					"\n"
+					);
 
-        exit(0);
+				exit(0);
 
-      default:
-        exit(1);
+			default:
+				exit(1);
 
-    }
-  }
+		}
+	}
 
-  if (optind < (argc - 1))
-  {
-    fprintf(stderr, "gba: too many arguments.\n");
-    exit(1);
-  }
+	if (optind < (argc - 1))
+	{
+		fprintf(stderr, "gba: too many arguments.\n");
+		exit(1);
+	}
 
 	if (_extract)
 	{
@@ -185,56 +189,56 @@ static void get_arguments(int argc, char **argv)
 
 static void path_add(const char *path)
 {
-  *((char **)ARRAY_add(&path_list)) = STR_copy(path);
+	*((char **)ARRAY_add(&path_list)) = STR_copy(path);
 }
 
 
 static void path_init(const char *first)
 {
-  ARRAY_create(&path_list);
+	ARRAY_create(&path_list);
 
-  if (*first)
-    FILE_chdir(first);
+	if (*first)
+		FILE_chdir(first);
 
-  path_add(FILE_get_current_dir());
+	path_add(FILE_get_current_dir());
 
-  path_current = 0;
+	path_current = 0;
 }
 
 
 static void path_exit(void)
 {
-  ARRAY_delete(&path_list);
+	ARRAY_delete(&path_list);
 }
 
 
 static int path_count(void)
 {
-  return ARRAY_count(path_list);
+	return ARRAY_count(path_list);
 }
 
 
 int main(int argc, char **argv)
 {
-  DIR *dir;
-  const char *path;
-  struct dirent *dirent;
-  char *file_name;
-  const char *file;
-  struct stat info;
-  const char *ext;
-  int len;
-  const char **p;
-  int len_prefix;
-  const char **remove_ext;
+	DIR *dir;
+	const char *path;
+	struct dirent *dirent;
+	char *file_name;
+	const char *file;
+	struct stat info;
+	const char *ext;
+	int len;
+	const char **p;
+	int len_prefix;
+	const char **remove_ext;
 	ARCH *arch;
 	ARCH_FIND find;
 
-  get_arguments(argc, argv);
-  COMMON_init();
+	get_arguments(argc, argv);
+	COMMON_init();
 
-  TRY
-  {
+	TRY
+	{
 		if (_extract) // Extract a file from an archive
 		{
 			arch = ARCH_open(_extract_archive);
@@ -379,16 +383,16 @@ int main(int argc, char **argv)
 			ARCH_exit();
 			/*MEM_check();*/
 		}
-  }
-  CATCH
-  {
-    fflush(NULL);
-    fprintf(stderr, "gba: ERROR: ");
-    ERROR_print();
-    exit(1);
-  }
-  END_TRY
+	}
+	CATCH
+	{
+		fflush(NULL);
+		fprintf(stderr, "gba: ERROR: ");
+		ERROR_print();
+		exit(1);
+	}
+	END_TRY
 
-  return 0;
+	return 0;
 }
 

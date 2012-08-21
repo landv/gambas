@@ -854,7 +854,6 @@ Private Sub DrawArrow(hCtrl As Control, iOrient As Integer)
 
   Dim X, Y, W, H As Float
   
-  
   X = hCtrl.W / 2
   Y = hCtrl.H / 2
   
@@ -869,30 +868,43 @@ Private Sub DrawArrow(hCtrl As Control, iOrient As Integer)
   X -= W / 2
   Y -= H / 2
   
+  X += 1
+  Y += 1
+  W -= 2
+  H -= 2
+  
+  If iOrient = Align.Left Or If iOrient = Align.Right Then
+    Y += 1
+    H -= 2
+  Else
+    X += 1
+    W -= 2
+  Endif
+  
   Select Case iOrient
     
     Case Align.Right
       
-      Paint.MoveTo(X + W, Y + H / 2)
-      Paint.LineTo(X, Y)
+      Paint.MoveTo(X, Y)
+      Paint.LineTo(X + W, Y + H / 2)
       Paint.LineTo(X, Y + H)
     
     Case Align.Left
       
-      Paint.MoveTo(X, Y + H / 2)
-      Paint.LineTo(X + W, Y)
+      Paint.MoveTo(X + W, Y)
+      Paint.LineTo(X, Y + H / 2)
       Paint.LineTo(X + W, Y + H)
     
     Case Align.Bottom
       
-      Paint.MoveTo(X + W / 2, Y + H)
-      Paint.LineTo(X, Y)
+      Paint.MoveTo(X, Y)
+      Paint.LineTo(X + W / 2, Y + H)
       Paint.LineTo(X + W, Y)
     
     Case Align.Top
       
-      Paint.MoveTo(X + W / 2, Y)
-      Paint.LineTo(X, Y + H)
+      Paint.MoveTo(X, Y + H)
+      Paint.LineTo(X + W / 2, Y)
       Paint.LineTo(X + W, Y + H)
     
   End Select
@@ -901,7 +913,10 @@ Private Sub DrawArrow(hCtrl As Control, iOrient As Integer)
   'Paint.LineWidth = 3
   'Paint.Stroke(True)
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.TextForeground, 64))
-  Paint.Fill
+  Paint.LineCap = Paint.LineCapRound
+  Paint.LineJoin = Paint.LineJoinRound
+  Paint.LineWidth = 2
+  Paint.Stroke
   
 End
 

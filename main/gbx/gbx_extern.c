@@ -447,7 +447,6 @@ void EXTERN_call(void)
 	/* from EXEC_native() */
 		
 	BORROW(&TEMP);
-
 	VALUE_conv(&TEMP, ext->type);
 	*SP = TEMP;
 	SP++;

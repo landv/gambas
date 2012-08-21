@@ -231,21 +231,20 @@ int main(int argc, char *argv[])
 			if (EXEC_arch)
 			{
 				printf(
-					"Usage: gbr" GAMBAS_VERSION_STRING " [options] <executable file> [<arguments>]\n\n"
+					"\nExecute a Gambas executable.\n"
+					"\nUsage: gbr" GAMBAS_VERSION_STRING " [options] <executable file> [<arguments>]\n\n"
 					);
 			}
 			else
 			{
 				printf(
-					"Usage: gbx" GAMBAS_VERSION_STRING " [options] [<project file>] [-- <arguments>]\n"
+					"\nExecute a Gambas project or evaluate a Gambas expression (-e option).\n"
+					"\nUsage: gbx" GAMBAS_VERSION_STRING " [options] [<project file>] [-- <arguments>]\n"
 					"       gbx" GAMBAS_VERSION_STRING " -e <expression>\n\n"
 					);
 			}
 			printf(
 				"Options:\n"
-				"  -V --version   display version\n"
-				"  -h --help      display this help\n"
-				"  -L --license   display license\n"
 				"  -g             enter debugging mode\n"
 				"  -p <path>      activate profiling and debugging mode\n"
 				"  -k             do not unload shared libraries\n"
@@ -254,6 +253,12 @@ int main(int argc, char *argv[])
 			{
 				printf("  -e             evaluate an expression\n");
 			}
+			printf(
+				"  -V --version   display version\n"
+				"  -L --license   display license\n"
+				"  -h --help      display this help\n"
+				"\n"
+				);
 
 			my_exit(0);
 		}
@@ -265,7 +270,7 @@ int main(int argc, char *argv[])
 		else if (is_long_option(argv[1], 'L', "license"))
 		{
 			printf(
-				"Gambas interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
+				"\nGambas interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
 				COPYRIGHT
 				);
 			my_exit(0);

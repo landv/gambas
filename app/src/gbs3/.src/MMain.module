@@ -128,16 +128,37 @@ Private Function ParseArgs() As String
       If s = "--version" Or If s = "-V" Then 
         Print Application.Version
         Quit
-      Else If s = "--help" Or If s = "-h" Then
-        Print "GAMBAS Scripter version " & Application.Version 
-        Print File.Load("helptext")
+      Else If s = "--license" Or If s = "-L" Then 
+        Print
+        If File.Name(Args[0]) = ("gbs" & System.Version) Then
+          Print "GAMBAS Scripter version " & Application.Version 
+        Else
+          Print "GAMBAS Webpage Scripter version " & Application.Version 
+        Endif
+        Print File.Load("license")
         Quit
+      Else If s = "--help" Or If s = "-h" Then
+        
+        If File.Name(Args[0]) = ("gbs" & System.Version) Then
+          Print File.Load("usage-gbs")
+        Else
+          Print File.Load("usage-gbw")
+        Endif
+        
+        Quit
+        
       Else If s = "--nocache" Or If s = "-c" Then
+        
         $bNoCache = True
+        
       Else If s = "--verbose" Or If s = "-v" Then
+        
         $bVerbose = True
+        
       Else If s = "-e" Then
+        
         $bExecuteFromArgs = True
+        
       Endif
     Else 
       If Not IsNull(sApp) Then 

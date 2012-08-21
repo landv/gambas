@@ -164,14 +164,15 @@ static void get_arguments(int argc, char **argv)
 			
 			case 'L':
 				printf(
-					"GAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
 					COPYRIGHT
 					);
 				exit(0);
 				
 			case 'h': case '?':
 				printf(
-					"Usage: gbc" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
+					"\nCompile Gambas projects into architecture-independent bytecode.\n"
+					"\nUsage: gbc" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
 					"Options:"
 					#if HAVE_GETOPT_LONG
 					"\n"
@@ -183,11 +184,11 @@ static void get_arguments(int argc, char **argv)
 					"  -m  --public-module        module symbols are public by default\n"
 					"  -s  --swap                 swap endianness\n"
 					"  -r  --root <directory>     gives the gambas installation directory\n"
-					"  -V  --version              display version\n"
-					"  -h  --help                 display this help\n"
-					"  -L  --license              display license\n"
 					"  -e  --translate-errors     display translatable error messages\n"
 					"  -x  --exec                 define the 'Exec' preprocessor constant\n"
+					"  -V  --version              display version\n"
+					"  -L  --license              display license\n"
+					"  -h  --help                 display this help\n"
 					#else
 					" (no long options on this system)\n"
 					"  -g                         add debugging information\n"
@@ -198,11 +199,11 @@ static void get_arguments(int argc, char **argv)
 					"  -m                         module symbols are public by default\n"
 					"  -s                         swap endianness\n"
 					"  -r <directory>             gives the gambas installation directory\n"
-					"  -V                         display version\n"
-					"  -h                         display this help\n"
-					"  -L                         display license\n"
 					"  -e                         display translatable error messages\n"
 					"  -x                         define the 'Exec' preprocessor constant\n"
+					"  -V                         display version\n"
+					"  -L                         display license\n"
+					"  -h                         display this help\n"
 					#endif
 					"\n"
 					);

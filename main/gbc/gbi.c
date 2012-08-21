@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbi.c
+	gbi.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -730,29 +730,30 @@ int main(int argc, char **argv)
 				
 			case 'L':
 				printf(
-					"GAMBAS Component Informer version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Component Informer version " VERSION " " __DATE__ " " __TIME__ "\n"
 					COPYRIGHT
 					);
 				exit(0);
 
 			case 'h':
 				printf(
-					"Usage: gbi" GAMBAS_VERSION_STRING " [options] [components]\n"
+					"\nGenerate component description files.\n"
+					"\nUsage: gbi" GAMBAS_VERSION_STRING " [options] [components]\n"
 					"Options:"
 					#if HAVE_GETOPT_LONG
 					"\n"
-					"  -V  --version              display version\n"
-					"  -h  --help                 display this help\n"
-          "  -L  --license              display license\n"
 					"  -p                         disable preloading\n"
 					"  -r  --root <directory>     gives the gambas installation directory\n"
+					"  -V  --version              display version\n"
+					"  -L  --license              display license\n"
+					"  -h  --help                 display this help\n"
 					#else
 					" (no long options on this system)\n"
-					"  -V                         display version\n"
-					"  -h                         display this help\n"
-          "  -L                         display license\n"
 					"  -p                         disable preloading\n"
 					"  -r <directory>             gives the gambas installation directory\n"
+					"  -V                         display version\n"
+					"  -L                         display license\n"
+					"  -h                         display this help\n"
 					#endif
 					"\n"
 					);
@@ -798,7 +799,7 @@ int main(int argc, char **argv)
 				STR_free(name);
 			}
 			
-  		ARRAY_delete(&_components);
+			ARRAY_delete(&_components);
 		}
 		else
 		{
