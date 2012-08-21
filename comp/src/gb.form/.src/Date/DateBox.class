@@ -99,14 +99,17 @@ Private Function Value_Read() As Date
   Dim vVal As Variant = Val($hButtonBox.Text)
   
   If vVal And If TypeOf(vVal) = gb.Date Then Return vVal
-
+  Return Null
+  
 End
 
 Private Sub Value_Write(Value As Date)
 
-  If IsNull(Value) Then Value = Now
-  $hButtonBox.Text = Format(Value, GetDateFormat())
-
+  If IsNull(Value) Then 
+    $hButtonBox.Text = Null
+  Else
+    $hButtonBox.Text = Format(Value, GetDateFormat())
+  Endif
 End
 
 Public Sub ButtonBox_Click()
@@ -130,7 +133,7 @@ Public Sub ButtonBox_Click()
     Y = $hButtonBox.ScreenY - $hPopup.H
   Endif
   
-  dDate = Me.Value
+  dDate = IIf(Me.Value = Null, Now(), Me.Value)
   If dDate Then $hChooser.Value = dDate
   $hPopup.ShowPopup(X, Y)
   '$hPopup.ShowModal
