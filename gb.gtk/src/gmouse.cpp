@@ -246,6 +246,15 @@ double gMouse::getAxis(GdkAxisUse axis)
 		return 0.0;
 }
 
+#if GTK_CHECK_VERSION(2, 22, 0)
+#else
+static int gdk_device_get_source(GdkDevice *device)
+{
+	return device->source;
+}
+#endif
+
+
 int gMouse::getType()
 {
 	GdkDevice *device = get_event_device(_event);
@@ -253,11 +262,7 @@ int gMouse::getType()
 	if (!device)
 		return POINTER_MOUSE;
 	
-	#if GTK_CHECK_VERSION(2, 22, 0)
 	switch(gdk_device_get_source(device))
-	#else
-	switch(device->source)
-	#endif
 	{
 		case GDK_SOURCE_PEN: return POINTER_PEN;
 		case GDK_SOURCE_ERASER: return POINTER_ERASER;
