@@ -10,6 +10,9 @@ Private $cDateColor As New Collection
 Private $cDateFormat As New Collection
 Private $bShort As Boolean
 
+Private $iCurrentTime As Integer = -1
+Private $dCurrentDate As Date
+
 Private Sub FillMonth(bShort As Boolean)
   
   Dim iMonth As Integer
@@ -244,7 +247,14 @@ Public Sub dwgMonth_Draw()
 
       Draw.Text(Day(dDate), X, Y, W, H, Align.Center)
       
-      If bToday Then 
+      If dDate = $dCurrentDate Then
+        Draw.LineStyle = Line.Solid
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = Color.LightForeground
+        Draw.Rect(X, Y, W, H)
+        Draw.FillStyle = Fill.Solid
+        Draw.LineStyle = Line.None
+      Else If bToday Then 
         Draw.LineStyle = Line.Solid
         Draw.FillStyle = Fill.None
         Draw.Foreground = iForeground
@@ -337,10 +347,12 @@ Public Sub dwgMonth_KeyPress()
 
 End
 
-Public Sub dwgMonth_MouseDown()
-
+Private Sub CalcCurrenDate()
+  
   Dim W, H As Integer
   Dim XD, YD As Integer
+  
+  $dCurrentDate = Null
   
   W = dwgMonth.ClientW / 7
   H = dwgMonth.ClientH / 7
@@ -352,7 +364,17 @@ Public Sub dwgMonth_MouseDown()
 
   If Mouse.Y < YD Then Return 
   
-  $dDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
+  $dCurrentDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
+  
+End
+
+
+Public Sub dwgMonth_MouseDown()
+
+  CalcCurrenDate
+  If Not $dCurrentDate Then Return
+  
+  $dDate = $dCurrentDate
   SetDate
 
 End
@@ -493,6 +515,14 @@ Public Sub dwgTime_Draw()
     Endif
       
     Draw.Text(Format$(dTime, sFormat), X, Y, DW, DH, Align.Center)
+    
+    If iInd = $iCurrentTime Then
+      Draw.Foreground = Color.LightForeground
+      Draw.FillStyle = Fill.None
+      Draw.LineStyle = Line.Solid
+      Draw.Rect(X, Y, DW, DH)
+    Endif
+    
     Y += DH
     If (Y + DH) > dwgTime.H Then
       X += DW
@@ -505,15 +535,16 @@ Public Sub dwgTime_Draw()
   
 End
 
-Public Sub dwgTime_MouseDown()
-
+Private Sub CalcCurrenTime()
+  
   Dim X, Y, DX, DY, DW, DH, S As Integer
-  Dim sFormat As String = GetTimeFormat()
   
   DW = dwgTime.W \ 4
   DH = dwgTime.H \ 12
   DX = (dwgTime.W - DW * 4) \ 2
   DY = (dwgTime.H - DH * 12) \ 2
+  
+  $iCurrentTime = -1
   
   X = Mouse.X - DX
   If X < 0 Then Return
@@ -524,8 +555,18 @@ Public Sub dwgTime_MouseDown()
   Y = (Y - DY) \ DH
   
   If X > 3 Or If Y > 11 Then Return
+
+  $iCurrentTime = 6 * X * 2 + Y
   
-  SetTime(Time(6 * X + (Y \ 2), 30 * (Y Mod 2), 0))
+End
+
+
+Public Sub dwgTime_MouseDown()
+
+  CalcCurrenTime
+  If $iCurrentTime >= 0 Then
+    SetTime(Time($iCurrentTime \ 2, 30 * ($iCurrentTime Mod 2), 0))
+  Endif
 
 End
 
@@ -620,5 +661,35 @@ End
 Public Sub GetShowDate() As Boolean
 
   Return panDate.Visible
+
+End
+
+Public Sub dwgTime_MouseMove()
+
+  Dim iLast As Integer = $iCurrentTime
+  
+  CalcCurrenTime
+  If $iCurrentTime <> iLast Then dwgTime.Refresh
+
+End
+
+Public Sub dwgMonth_MouseMove()
+
+  CalcCurrenDate
+  dwgMonth.Refresh
+
+End
+
+Public Sub dwgMonth_Leave()
+
+  $dCurrentDate = Null
+  dwgMonth.Refresh
+
+End
+
+Public Sub dwgTime_Leave()
+
+  $iCurrentTime = -1
+  dwgTime.Refresh
 
 End

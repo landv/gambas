@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  main.c
+	main.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -62,28 +62,28 @@ DB_DATABASE *DB_CurrentDatabase = NULL;
 
 int DB_CheckNameWith(const char *name, const char *msg, const char *more)
 {
-  unsigned char c;
-  const char *p = name;
+	unsigned char c;
+	const char *p = name;
 
 	if (!name || !*name)
 	{
-    GB.Error("Void &1 name", msg);
-    return TRUE;
+		GB.Error("Void &1 name", msg);
+		return TRUE;
 	}
 
-  while ((c = *p++))
-  {
-    if ((c >= 'A' && c <='Z') || (c >= 'a' && c <='z') || (c >= '0' && c <= '9') || c == '_')
-      continue;
+	while ((c = *p++))
+	{
+		if ((c >= 'A' && c <='Z') || (c >= 'a' && c <='z') || (c >= '0' && c <= '9') || c == '_')
+			continue;
 
 		if (more && index(more, c))
 			continue;
 
-    GB.Error("Bad &1 name: &2", msg, name);
-    return TRUE;
-  }
+		GB.Error("Bad &1 name: &2", msg, name);
+		return TRUE;
+	}
 
-  return FALSE;
+	return FALSE;
 }
 
 
@@ -102,58 +102,58 @@ int DB_CheckNameWith(const char *name, const char *msg, const char *more)
 
 void DB_FreeStringArray(char ***parray)
 {
-  int i;
-  char **array = *parray;
+	int i;
+	char **array = *parray;
 
-  if (!*parray)
-    return;
+	if (!*parray)
+		return;
 
-  for (i = 0; i < GB.Count(array); i++)
-    GB.FreeString(&array[i]);
+	for (i = 0; i < GB.Count(array); i++)
+		GB.FreeString(&array[i]);
 
-  GB.FreeArray(parray);
+	GB.FreeArray(parray);
 }
 
 GB_ARRAY DB_StringArrayToGambasArray(char **array)
 {
-  GB_ARRAY garray;
-  int i, n;
-  char *str;
+	GB_ARRAY garray;
+	int i, n;
+	char *str;
 
-  n = GB.Count(array);
+	n = GB.Count(array);
 
-  GB.Array.New(&garray, GB_T_STRING, n);
+	GB.Array.New(&garray, GB_T_STRING, n);
 
-  for (i = 0; i < n; i++)
-  {
-    str = GB.NewZeroString(array[i]);
-    *((char **)GB.Array.Get(garray, i)) = str;
-  }
+	for (i = 0; i < n; i++)
+	{
+		str = GB.NewZeroString(array[i]);
+		*((char **)GB.Array.Get(garray, i)) = str;
+	}
 
-  return garray;
+	return garray;
 }
 
 int DB_FindStringArray(char **array, const char *elt)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < GB.Count(array); i++)
-  {
-    if (!strcasecmp(elt, array[i]))
-      return i;
-  }
+	for (i = 0; i < GB.Count(array); i++)
+	{
+		if (!strcasecmp(elt, array[i]))
+			return i;
+	}
 
-  return -1;
+	return -1;
 }
 
 
 static void DB_Register(DB_DRIVER *driver)
 {
-  if (_drivers_count >= MAX_DRIVER)
-    return;
+	if (_drivers_count >= MAX_DRIVER)
+		return;
 
-  _drivers[_drivers_count] = driver;
-  _drivers_count++;
+	_drivers[_drivers_count] = driver;
+	_drivers_count++;
 }
 
 
@@ -164,52 +164,52 @@ void DB_TryAnother(const char *driver)
 
 static DB_DRIVER *DB_GetDriver(const char *type)
 {
-  int i;
-  char comp[type ? strlen(type) + 8 : 1];
+	int i;
+	char comp[type ? strlen(type) + 8 : 1];
 
-  if (!type)
-  {
-    GB.Error("Driver name missing");
-    return NULL;
-  }
+	if (!type)
+	{
+		GB.Error("Driver name missing");
+		return NULL;
+	}
 
-  strcpy(comp, "gb.db.");
-  strcat(comp, type);
+	strcpy(comp, "gb.db.");
+	strcat(comp, type);
 
-  GB.Component.Load(comp);
-  GB.Error(NULL); // reset the error flag;
-  
-  for (i = 0; i < _drivers_count; i++)
-  {
-    if (strcasecmp(_drivers[i]->name, type) == 0)
-      return _drivers[i];
-  }
+	GB.Component.Load(comp);
+	GB.Error(NULL); // reset the error flag;
+	
+	for (i = 0; i < _drivers_count; i++)
+	{
+		if (strcasecmp(_drivers[i]->name, type) == 0)
+			return _drivers[i];
+	}
 
-  GB.Error("Cannot find driver for database: &1", type);
-  return NULL;
+	GB.Error("Cannot find driver for database: &1", type);
+	return NULL;
 }
 
 
 bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db)
 {
-  DB_DRIVER *d;
-  int res;
-  const char *type = desc->type;
+	DB_DRIVER *d;
+	int res;
+	const char *type = desc->type;
 
 	CLEAR(db);
 
-  for(;;)
-  {
-  	d = DB_GetDriver(type);
-  	if (!d)
-    	return TRUE;
+	for(;;)
+	{
+		d = DB_GetDriver(type);
+		if (!d)
+			return TRUE;
 
-  	*driver = d;
+		*driver = d;
 
 		_try_another = NULL;
-  	res = (*d->Open)(desc, db);
-  	if (!res)
-  		return FALSE;
+		res = (*d->Open)(desc, db);
+		if (!res)
+			return FALSE;
 
 		if (!_try_another)
 			return TRUE;
@@ -220,14 +220,14 @@ bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db)
 
 void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 {
-  static char buffer[32];
+	static char buffer[32];
 
-  char *s;
-  int l;
-  int i;
+	char *s;
+	int l;
+	int i;
 
-  if (arg->type == GB_T_VARIANT)
-    GB.Conv(arg, ((GB_VARIANT *)arg)->value.type);
+	if (arg->type == GB_T_VARIANT)
+		GB.Conv(arg, ((GB_VARIANT *)arg)->value.type);
 
 	if (arg->type == (GB_TYPE)CLASS_Blob)
 	{
@@ -235,103 +235,106 @@ void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 		return;
 	}
 
-  if (!(*driver->Format)(arg, add))
-  {
-    switch (arg->type)
-    {
-      case GB_T_BOOLEAN:
+	if ((arg->type == GB_T_DATE && arg->_date.value.date == 0 && arg->_date.value.time == 0)
+			|| (arg->type == GB_T_STRING && arg->_string.value.len == 0)
+			|| (arg->type == GB_T_NULL))
+	{
+		add("NULL", 4);
+		return;
+	}
+	
+	if (!(*driver->Format)(arg, add))
+	{
+		switch (arg->type)
+		{
+			case GB_T_BOOLEAN:
 
-        if (VALUE((GB_BOOLEAN *)arg))
-          add("TRUE", 4);
-        else
-          add("FALSE", 5);
+				if (VALUE((GB_BOOLEAN *)arg))
+					add("TRUE", 4);
+				else
+					add("FALSE", 5);
 
-        return;
+				return;
 
-      case GB_T_BYTE:
-      case GB_T_SHORT:
-      case GB_T_INTEGER:
+			case GB_T_BYTE:
+			case GB_T_SHORT:
+			case GB_T_INTEGER:
 
-        l = sprintf(buffer, "%d", VALUE((GB_INTEGER *)arg));
-        add(buffer, l);
-        return;
+				l = sprintf(buffer, "%d", VALUE((GB_INTEGER *)arg));
+				add(buffer, l);
+				return;
 
-      case GB_T_LONG:
+			case GB_T_LONG:
 
-        l = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)arg));
-        add(buffer, l);
-        return;
+				l = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)arg));
+				add(buffer, l);
+				return;
 
-      case GB_T_FLOAT:
-        
-        GB.NumberToString(FALSE, VALUE((GB_FLOAT *)arg), NULL, &s, &l);
-        add(s, l);
+			case GB_T_FLOAT:
+				
+				GB.NumberToString(FALSE, VALUE((GB_FLOAT *)arg), NULL, &s, &l);
+				add(s, l);
 
-        return;
+				return;
 
-      case GB_T_STRING:
-      case GB_T_CSTRING:
+			case GB_T_STRING:
+			case GB_T_CSTRING:
 
-        s = VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start;
-        l = VALUE((GB_STRING *)arg).len;
+				s = VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start;
+				l = VALUE((GB_STRING *)arg).len;
 
-        add("'", 1);
+				add("'", 1);
 
-        for (i = 0; i < l; i++, s++)
-        {
-          add(s, 1);
-          if (*s == '\'' || *s == '\\')
-            add(s, 1);
-        }
+				for (i = 0; i < l; i++, s++)
+				{
+					add(s, 1);
+					if (*s == '\'' || *s == '\\')
+						add(s, 1);
+				}
 
-        add("'", 1);
-        return;
+				add("'", 1);
+				return;
 
-      case GB_T_NULL:
-
-        add("NULL", 4);
-        return;
-
-      default:
-      	fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", (int)arg->type);
-        return;
-    }
-  }
+			default:
+				fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", (int)arg->type);
+				return;
+		}
+	}
 }
 
 
 void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBACK add)
 {
-  GB_VALUE value;
+	GB_VALUE value;
 
-  value.type = arg->type;
+	value.type = arg->type;
 
-  switch(arg->type)
-  {
-    case GB_T_NULL:
-      break;
+	switch(arg->type)
+	{
+		case GB_T_NULL:
+			break;
 
-    case GB_T_STRING:
-    case GB_T_CSTRING:
-      {
-        GB_STRING *val = (GB_STRING *)(void *)&value;
-        val->value.addr = arg->value._string;
-        val->value.start = 0;
-        if (arg->type == GB_T_STRING)
-          val->value.len = GB.StringLength(arg->value._string);
-        else
-          val->value.len = strlen(arg->value._string);
-      }
-      break;
+		case GB_T_STRING:
+		case GB_T_CSTRING:
+			{
+				GB_STRING *val = (GB_STRING *)(void *)&value;
+				val->value.addr = arg->value._string;
+				val->value.start = 0;
+				if (arg->type == GB_T_STRING)
+					val->value.len = GB.StringLength(arg->value._string);
+				else
+					val->value.len = strlen(arg->value._string);
+			}
+			break;
 
-    default:
+		default:
 			value.type = GB_T_VARIANT;
 			value._variant.value = *arg;
 			GB.Conv(&value, arg->type);
-      break;
-  }
+			break;
+	}
 
-  DB_Format(driver, &value, add);
+	DB_Format(driver, &value, add);
 }
 
 
@@ -341,40 +344,40 @@ static DB_DRIVER *query_driver;
 
 static void mq_add_param(int index)
 {
-  if (index < 1 || index > query_narg)
-    return;
+	if (index < 1 || index > query_narg)
+		return;
 
-  DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAddCallback);
+	DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAddCallback);
 }
 
 char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB_VALUE *arg)
 {
-  char *query;
+	char *query;
 
-  query_narg = narg;
-  query_arg = arg;
-  query_driver = driver;
+	query_narg = narg;
+	query_arg = arg;
+	query_driver = driver;
 
 	if (narg == 0)
 		query = GB.TempString(pattern, len);
 	else
-  	query = GB.SubstStringAdd(pattern, len, mq_add_param);
+		query = GB.SubstStringAdd(pattern, len, mq_add_param);
 
-  if (!query || *query == 0)
-  {
-    GB.Error("Void query");
-    return NULL;
-  }
-  else
-    return query;
+	if (!query || *query == 0)
+	{
+		GB.Error("Void query");
+		return NULL;
+	}
+	else
+		return query;
 }
 
 
 void q_init(void)
 {
-  GB.FreeString(&_query);
-  _query = NULL;
-  _temp_len = 0;
+	GB.FreeString(&_query);
+	_query = NULL;
+	_temp_len = 0;
 }
 
 static void q_dump_temp(void)
@@ -388,14 +391,14 @@ static void q_dump_temp(void)
 
 void q_add_length(const char *str, int len)
 {
-  if (!str)
-  	return;
+	if (!str)
+		return;
 	
 	if ((_temp_len + len) > TEMP_MAX)
-    q_dump_temp();
+		q_dump_temp();
 	
 	if (len > TEMP_MAX)
-    _query = GB.AddString(_query, str, len);
+		_query = GB.AddString(_query, str, len);
 	else
 	{
 		memcpy(&_temp[_temp_len], str, len);
@@ -405,8 +408,8 @@ void q_add_length(const char *str, int len)
 
 void q_add(const char *str)
 {
-  if (str)
-    q_add_length(str, strlen(str));
+	if (str)
+		q_add_length(str, strlen(str));
 }
 
 char *q_get(void)
@@ -421,22 +424,22 @@ char *q_steal(void)
 	q_dump_temp();
 	s = _query;
 	_query = NULL;
-  return s;
+	return s;
 }
 
 int q_length(void)
 {
-  return GB.StringLength(_query) + _temp_len;
+	return GB.StringLength(_query) + _temp_len;
 }
 
 void DB_SetDebug(int debug)
 {
-  _debug = debug;
+	_debug = debug;
 }
 
 int DB_IsDebug(void)
 {
-  return _debug;
+	return _debug;
 }
 
 static char *_quote;
@@ -599,23 +602,23 @@ char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
 
 GB_DESC *GB_CLASSES [] EXPORT =
 {
-  CIndexDesc,
-  CFieldDesc,
-  CTableFieldsDesc,
-  CTableIndexesDesc,
-  CTableDesc,
-  CUserDesc,
-  CDatabaseDesc,
-  CConnectionUsersDesc,
-  CConnectionDatabasesDesc,
-  CConnectionTablesDesc,
-  CConnectionDesc,
-  CDBDesc,
-  CBlobDesc,
-  CResultFieldDesc,
-  CResultFieldsDesc,
-  CResultDesc,
-  NULL
+	CIndexDesc,
+	CFieldDesc,
+	CTableFieldsDesc,
+	CTableIndexesDesc,
+	CTableDesc,
+	CUserDesc,
+	CDatabaseDesc,
+	CConnectionUsersDesc,
+	CConnectionDatabasesDesc,
+	CConnectionTablesDesc,
+	CConnectionDesc,
+	CDBDesc,
+	CBlobDesc,
+	CResultFieldDesc,
+	CResultFieldsDesc,
+	CResultDesc,
+	NULL
 };
 
 void *GB_DB_1[] EXPORT = {
@@ -648,12 +651,12 @@ void *GB_DB_1[] EXPORT = {
 int EXPORT GB_INIT(void)
 {
 	DB_Register(&DB_sqlite_pseudo_driver);
-  return 0;
+	return 0;
 }
 
 
 void EXPORT GB_EXIT()
 {
-  GB.FreeString(&_query);
+	GB.FreeString(&_query);
 }
 

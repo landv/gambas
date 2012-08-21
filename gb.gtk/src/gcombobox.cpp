@@ -154,6 +154,7 @@ void gComboBox::create(bool readOnly)
 	{
 		widget = gtk_combo_box_new_with_model(GTK_TREE_MODEL(tree->store));
 		entry = NULL;
+		use_base = false;
 
 		cell = gtk_cell_renderer_text_new ();
 		g_object_ref_sink(cell);
@@ -168,6 +169,7 @@ void gComboBox::create(bool readOnly)
 		
 		widget = gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(tree->store), 0);
 		entry = gtk_bin_get_child(GTK_BIN(widget));
+		use_base = true;
 
 		g_signal_handler_disconnect(widget, g_signal_handler_find(widget, G_SIGNAL_MATCH_ID, g_signal_lookup("changed", G_OBJECT_TYPE(widget)), 0, 0, 0, 0));
 		

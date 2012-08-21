@@ -305,6 +305,44 @@ extern "C"
 		else
 			return FALSE;
 	}
+
+	static void activate_main_window(intptr_t)
+	{
+		if (gMainWindow::_active)
+			gtk_window_present(GTK_WINDOW(gMainWindow::_active->border));
+	}
+	
+	void EXPORT GB_SIGNAL(int signal, void *param)
+	{
+		static GtkWidget *save_popup_grab = NULL;
+		
+		switch(signal)
+		{
+			case GB_SIGNAL_DEBUG_BREAK:
+				if (gApplication::_popup_grab)
+				{
+					save_popup_grab = gApplication::_popup_grab;
+					gApplication::ungrabPopup();
+				}
+				break;
+				
+			case GB_SIGNAL_DEBUG_FORWARD:
+				//while (qApp->activePopupWidget())
+				//	delete qApp->activePopupWidget();
+				gdk_display_sync(gdk_display_get_default());
+				break;
+				
+			case GB_SIGNAL_DEBUG_CONTINUE:
+				GB.Post((GB_POST_FUNC)activate_main_window, 0);
+				if (save_popup_grab)
+				{
+					gApplication::_popup_grab = save_popup_grab;
+					save_popup_grab = NULL;
+					gApplication::grabPopup();
+				}
+				break;
+		}
+	}
 }
 
 void my_quit (void)

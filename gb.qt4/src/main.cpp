@@ -1190,7 +1190,7 @@ int EXPORT GB_INFO(const char *key, void **value)
 extern Time	qt_x_time;
 #endif*/
 
-static void activate_main_window(int value)
+static void activate_main_window(intptr_t value)
 {
 	CWINDOW *active;
 	

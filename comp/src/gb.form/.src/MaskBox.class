@@ -175,7 +175,11 @@ Private Sub Mask_Write(Value As String)
   
   If Not $sMaskOrg Then Return
   
-  Me.Text = MakeDefault()
+  If Me.HasFocus Then
+    Me.Text = MakeDefault()
+  Else
+    Me.Text = ""
+  Endif
   Me.Pos = GetFirstCharacterPos()
 
 End
@@ -415,7 +419,7 @@ Public Sub TextBox_KeyPress()
     
   End Select
   
-  If sInsert Or If bDelete Then
+  If sInsert Or If Key.Code = Key.Delete Or If Key.Code = Key.BackSpace Then
     If Me.Selected Then
       If Me.Selection.Length = Me.Length Then sText = MakeDefault()
       'sText = String.Left$(sText, Me.Selection.Start) & String.Mid$(sDefault, Me.Selection.Start + 1, Me.Selection.Length) & String.Mid$(sText, Me.Selection.Start + Me.Selection.Length + 1)
@@ -539,6 +543,14 @@ End
 
 Public Sub TextBox_GotFocus()
   
+  TextBox_Change
+  GotoCursor($iPosFocus)
+  
+End
+
+Public Sub TextBox_LostFocus()
+  
+  TextBox_Change
   GotoCursor($iPosFocus)
   
 End
@@ -549,3 +561,14 @@ Public Sub TextBox_Menu()
   
 End
 
+Public Sub TextBox_Change()
+  
+  Object.Lock(Me)
+  If Me.HasFocus Then
+    If Me.Text = "" Then Me.Text = MakeDefault()
+  Else
+    If Me.Text = MakeDefault() Then Me.Text = ""
+  Endif
+  Object.Unlock(Me)
+  
+End

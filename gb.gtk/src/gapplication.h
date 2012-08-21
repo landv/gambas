@@ -86,7 +86,7 @@ public:
 	static char *_title;
 	static int _loopLevel;
 	static int _in_popup;
-	static GdkWindow *_popup_grab_window;
+	static GtkWidget *_popup_grab;
 	static void *_loop_owner;
 	static GtkWindowGroup *_group;
 	static GtkWindowGroup *currentGroup();

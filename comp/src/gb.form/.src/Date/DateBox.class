@@ -45,6 +45,25 @@ Private Sub GetDateFormat() As String
   
 End
 
+Private Sub GetNullDate() As String
+  
+  Dim sFormat As String
+  
+  If $bShowDate Then
+    sFormat = Format(Date(1111, 11, 11), gb.ShortDate)
+    sFormat = Replace(sFormat, "1", "0")
+  Endif
+
+  If $bShowTime Then 
+    sFormat &= " " & Format(Time(11, 11, 11), gb.ShortTime)
+    sFormat = Replace(sFormat, "1", "0")
+  Endif
+  
+  Return LTrim(sFormat)
+  
+End
+
+
 Private Sub UpdateMask()
   
   Dim sMask As String
@@ -99,14 +118,13 @@ Private Function Value_Read() As Date
   Dim vVal As Variant = Val($hButtonBox.Text)
   
   If vVal And If TypeOf(vVal) = gb.Date Then Return vVal
-  Return Null
   
 End
 
 Private Sub Value_Write(Value As Date)
 
   If IsNull(Value) Then 
-    $hButtonBox.Text = Null
+    $hButtonBox.Text = GetNullDate()
   Else
     $hButtonBox.Text = Format(Value, GetDateFormat())
   Endif
@@ -133,8 +151,13 @@ Public Sub ButtonBox_Click()
     Y = $hButtonBox.ScreenY - $hPopup.H
   Endif
   
-  dDate = IIf(Me.Value = Null, Now(), Me.Value)
-  If dDate Then $hChooser.Value = dDate
+  dDate = Me.Value
+  If dDate Then 
+    $hChooser.Value = dDate
+  Else
+    $hChooser.Value = Now
+  Endif
+  
   $hPopup.ShowPopup(X, Y)
   '$hPopup.ShowModal
   
@@ -145,6 +168,12 @@ Public Sub ButtonBox_KeyPress()
   If Key.Code = Key.Space Then
     ButtonBox_Click
     Stop Event
+  ' Else If Key.Code = Key.BackSpace Or If Key.Code = Key.Delete Then
+  '   Debug
+  '   If $hButtonBox.Editor.Selection.Length = $hButtonBox.Editor.Length Then
+  '     Me.Value = Null
+  '     Stop Event
+  '   Endif
   Endif
   
 End

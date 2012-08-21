@@ -36,14 +36,18 @@ Private Sub CreateControl()
   Dim hTextArea As TextArea
   Dim hComboBox As ComboBox
   Dim hSpinBox As SpinBox
+  Dim hDateBox As DateBox
   Dim sType As String
   Dim bFocus As Boolean
   Dim bReadOnly As Boolean
   
   Select $hInfo.Type
   
-    Case db.Integer, db.Long, db.Date, db.Float
+    Case db.Integer, db.Long, db.Float
       sType = "TextBox"
+      
+    Case db.Date
+      sType = "DateBox"
     
     Case db.Boolean
       sType = "ComboBox"
@@ -71,10 +75,12 @@ Private Sub CreateControl()
   
   Select $hInfo.Type
   
-    Case db.Integer, db.Long, db.Date
+    Case db.Integer, db.Long
       hTextBox = $hCtrl
     
     Case db.Date
+      hDateBox = $hCtrl
+      hDateBox.Mode = DateChooser.DateTime
     
     Case db.Boolean
       hComboBox = $hCtrl
@@ -240,7 +246,7 @@ Private Sub SetValue(vVal As Variant)
       $hCtrl.Text = Str(vVal)
     
     Case db.Date
-      $hCtrl.Text = Str(vVal)
+      $hCtrl.Value = vVal
     
     Case db.Boolean
       If IsNull(vVal) Then
@@ -289,13 +295,14 @@ Private Function GetValue() As Variant
       Endif
     
     Case db.Date
-      If Not Trim($hCtrl.Text) Then
-        Return Null
-      Else
-        vVal = Val($hCtrl.Text)
-        If TypeOf(vVal) <> gb.Date Then Error.Raise("Bad date")
-        Return vVal
-      Endif
+      Return $hCtrl.Value
+      ' If Not Trim($hCtrl.Text) Then
+      '   Return Null
+      ' Else
+      '   vVal = Val($hCtrl.Text)
+      '   If TypeOf(vVal) <> gb.Date Then Error.Raise("Bad date")
+      '   Return vVal
+      ' Endif
     
     Case db.Boolean
       Return Choose($hCtrl.Index + 1, True, False, Null)
