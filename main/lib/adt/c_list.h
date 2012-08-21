@@ -27,10 +27,8 @@
 extern GB_INTERFACE GB;
 
 typedef struct clist {
-	union {
-		GB_BASE ob; /* C functions maintain the memory themselves */
-		intptr_t uptr; /* They get a private data pointer instead */
-	};
+	GB_BASE ob; /* C functions maintain the memory themselves */
+	intptr_t uptr;
 	struct clist *prev, *next;
 	void *data;
 	int embedded : 1;
