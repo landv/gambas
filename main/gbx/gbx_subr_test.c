@@ -333,7 +333,7 @@ void SUBR_choose(ushort code)
   VALUE_conv_integer(PARAM);
   val = PARAM->_integer.value;
 
-  if (val >= 1 && val <= NPARAM)
+  if (val >= 1 && val < NPARAM)
   {
     VALUE_conv_variant(&PARAM[val]);
     *RETURN = PARAM[val];
