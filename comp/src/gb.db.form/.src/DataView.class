@@ -250,7 +250,12 @@ Private Sub Load()
   
   Try $hCtrl.Rows[$iRowNewRecord].Text = "" '$iRowNewRecord + 1
   $iRowNewRecord = -1
-  If CanEdit() Then CreateNewRecord
+  If CanEdit() Then
+    CreateNewRecord
+    $bNoActivate = True
+    If hSrc.Index < 0 Then $hCtrl.Row = $iRowNewRecord
+    $bNoActivate = False
+  Endif
 
   Dec $iNoRefresh 
   $hCtrl.Refresh
@@ -514,11 +519,15 @@ Public Sub TableView_Click()
     
     hField = $aType[$hCtrl.Column]
     
-    ' Key fields must not be read-only during creation
-    If hField.ReadOnly And If Not InNewRecord() Then Return
+    ' Key fields must not be read-only during creation, except Serial fields
+    If hField.ReadOnly 
+      If Not InNewRecord() Then Return
+      If hField.Serial Then Return
+    Endif
     
     Select Case hField.Type
       Case db.Blob, db.Serial
+        Return
         
       Case db.Boolean
         'If Not $hComboBox Then InitComboBox
@@ -574,8 +583,11 @@ Public Sub TableView_Change()
   Dim I, H As Integer
 
   If $bNoActivate Then Return
-
-  $bCreate = False
+  
+  If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Count - 1 Then 
+  Else
+    $bCreate = False
+  Endif
   
   If $hCtrl.Row <> $iLastRow Then
     
@@ -673,7 +685,7 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
     $aNewRecord[Column] = vVal
     $bNewRecordModified = True
   Else
-    rData[hField.Name] = vVal  
+    rData[hField.Name] = vVal
     hSrc._UpdateCurrent(rData)
   Endif
 

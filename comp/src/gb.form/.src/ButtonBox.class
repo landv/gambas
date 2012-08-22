@@ -33,7 +33,6 @@ Public Sub _new()
   
   $hBackground = New DrawingArea(Me) As "Background"
   '$hBackground.Arrangement = Arrange.Horizontal
-  Border_Write(True)
 
   $hTextBox = New MaskBox($hBackground) As "TextBox"
   $hTextBox.Border = False
@@ -44,6 +43,8 @@ Public Sub _new()
   $hButton = New ToolButton($hBackground) As "Button"
   $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
+  
+  Border_Write(True)
   
 End
 
@@ -127,7 +128,7 @@ Private Sub Border_Write(Value As Boolean)
   '$hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
   '$hBackground.Margin = Value
   'Debug $hBackground.Padding
-  'Background_Arrange
+  Background_Arrange
   Me.Refresh
 
 End
@@ -155,17 +156,14 @@ Public Sub Background_Draw()
   
   If Me.Background <> Color.Default Then iBg = Me.Background
   
-  FW = If($bBorder, Style.BoxFrameWidth, 0)
-  FH = If($bBorder, Style.BoxFrameHeight, 0)
-  
-  'Debug FW;; FH
-  
-  If $bBorder Then 
-    '$hBackground.Background = Me.Background
-    Draw.Style.Box(0, 0, Me.W, Me.H)
-  Endif
+  FW = If($bBorder, Style.FrameWidth, 0)
+  FH = If($bBorder, Style.FrameWidth, 0)
   
   Draw.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
+  If $bBorder Then 
+    '$hBackground.Background = Me.Background
+    Draw.Style.Panel(0, 0, Me.W, Me.H, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
+  Endif
   
 End
 
@@ -200,6 +198,19 @@ Private Sub Alignment_Write(Value As Integer)
 
 End
 
+Public Sub TextBox_GotFocus()
+  
+  Me.Refresh
+  
+End
+
+Public Sub TextBox_LostFocus()
+  
+  Me.Refresh
+  
+End
+
+
 Public Sub TextBox_Activate()
   
   Raise Activate
@@ -215,8 +226,9 @@ End
 Public Sub Background_Arrange()
   
   Dim FW, FH As Integer
-  FW = If($bBorder, Style.BoxFrameWidth, 0)
-  FH = If($bBorder, Style.BoxFrameHeight, 0)
+  
+  FW = If($bBorder, Style.FrameWidth, 0)
+  FH = If($bBorder, Style.FrameWidth, 0)
   
   If System.RightToLeft Then
     $hButton.Move(FW, FH, 24, Me.H - FH * 2)

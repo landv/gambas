@@ -74,6 +74,7 @@ public:
 	static int getFrameWidth();
 	static int getInnerWidth();
 	static void getBoxFrame(int *w, int *h);
+	static char *getStyleName();
 	
 	static void grabPopup();
 	static void ungrabPopup();

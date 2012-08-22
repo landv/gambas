@@ -730,8 +730,6 @@ static void gambas_handle_event(GdkEvent *event)
 			
 			save_control = control;
 			
-			//fprintf(stderr, "MOVE: %g %g\n", event->motion.x_root, event->motion.y_root);
-			
 			check_hovered_control(control);
 			
 		__MOTION_TRY_PROXY:
@@ -752,6 +750,7 @@ static void gambas_handle_event(GdkEvent *event)
 				//fprintf(stderr, "pressure = %g\n", gMouse::getAxis(GDK_AXIS_PRESSURE));
 				
 				cancel = control->onMouseEvent(control, gEvent_MouseMove);
+			
 				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
 				if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
 						//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
@@ -1404,20 +1403,14 @@ int gApplication::getFrameWidth()
   g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
 	
 	if (!strcmp(theme, "oxygen-gtk"))
-		return 3;
+		return 2;
 	else
 		return 2;
 }
 
 int gApplication::getInnerWidth()
 {
-  GtkSettings *settings;
-	char *theme;
-
-  settings = gtk_settings_get_default();
-  g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
-	
-	if (!strcmp(theme, "oxygen-gtk"))
+	if (!strcmp(getStyleName(), "oxygen-gtk"))
 		return 2;
 	else
 		return 0;
@@ -1450,3 +1443,14 @@ void gApplication::getBoxFrame(int *w, int *h)
 	*w += inner;
 	*h += inner;
 }
+
+char *gApplication::getStyleName()
+{
+  GtkSettings *settings;
+	char *theme;
+
+  settings = gtk_settings_get_default();
+  g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
+	return theme;
+}
+

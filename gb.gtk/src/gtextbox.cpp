@@ -156,7 +156,21 @@ void gTextBox::setBorder(bool vl)
 {
 	if (!entry)
 		return;
+	
+	if (vl == hasBorder())
+		return;
+	
 	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
+	
+	/*if (vl)
+		gtk_entry_set_inner_border(GTK_ENTRY(entry), NULL);
+	else
+	{*/
+		GtkBorder *border = gtk_border_new();
+		gtk_entry_set_inner_border(GTK_ENTRY(entry), border);
+		gtk_border_free(border);
+	//}
+	
 }
 
 void gTextBox::insert(char *txt, int len)

@@ -178,8 +178,7 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 	switch(type)
 	{
 		case gEvent_MouseDrag:
-			if (gMouse::button() && GB.CanRaise(ob, EVENT_MouseDrag))
-				ret = GB.Raise(ob, EVENT_MouseDrag, 0);
+			ret = GB.Raise(ob, EVENT_MouseDrag, 0);
 			break;
 			
 		case gEvent_MouseMenu:

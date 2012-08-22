@@ -427,6 +427,20 @@ BEGIN_PROPERTY(Style_BoxFrameWidth)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Style_Name)
+
+	const char *name = qApp->style()->metaObject()->className();
+	int len = strlen(name);
+	
+	if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
+		len -= 5;
+	if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)
+		len -= 2;
+
+	GB.ReturnNewString(name, len);
+
+END_PROPERTY
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
@@ -437,7 +451,7 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_FrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameWidth),
-	//GB_STATIC_PROPERTY_READ("InnerWidth", "i", Style_InnerWidth),
+	GB_STATIC_PROPERTY_READ("Name", "s", Style_Name),
 	
 	GB_END_DECLARE
 };

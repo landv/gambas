@@ -24,9 +24,11 @@ Private Const PADDING As Integer = 6
 
 Private $bCanHighlight As Boolean = True
 Private $bHighlight As Boolean
+Private $bSquare As Boolean
 
-Public Sub _new()
+Public Sub _new(Optional bSquare As Boolean)
   
+  $bSquare = bSquare
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Mouse = Mouse.Pointing
   $hDrawingArea.Focus = True
@@ -110,11 +112,13 @@ Public Sub DrawingArea_Draw()
   End With
   
   If $hDrawingArea.HasFocus Then
-    Paint.Begin(Draw.Device)
-    Paint.Rectangle(0, 0, Paint.W, Paint.H)
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
-    Paint.Fill
-    Paint.End
+    Draw.Foreground = Color.Gradient(Color.SelectedBackground, Me.Background)
+    Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+    'Paint.Begin(Draw.Device)
+    'Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    'Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+    'Paint.Fill
+    'Paint.End
   Endif
   ' If $hDrawingArea.HasFocus Then
   '   Draw.Foreground = Color.SelectedBackground

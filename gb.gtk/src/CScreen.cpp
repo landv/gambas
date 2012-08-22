@@ -440,6 +440,12 @@ BEGIN_PROPERTY(Style_BoxFrameHeight)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Style_Name)
+
+	GB.ReturnNewZeroString(gApplication::getStyleName());
+
+END_PROPERTY
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
@@ -450,7 +456,7 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_BoxFrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameHeight),
-	//GB_STATIC_PROPERTY_READ("InnerWidth", "i", Style_InnerWidth),
+	GB_STATIC_PROPERTY_READ("Name", "s", Style_Name),
 	
 	GB_END_DECLARE
 };

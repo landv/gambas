@@ -49,3 +49,21 @@ Public Sub panSelect_Leave()
 
 End
 
+
+Public Sub Form_Open()
+
+  Print Style.Name
+
+End
+
+Public Sub Button2_Click()
+
+  ButtonBox1.Border = Not ButtonBox1.Border
+
+End
+
+Public Sub Button3_Click()
+
+  ComboBox1.ReadOnly = Not ComboBox1.ReadOnly
+
+End

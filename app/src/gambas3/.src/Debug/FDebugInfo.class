@@ -1054,7 +1054,7 @@ Public Sub ShowSearchList()
   FMain.ShowDebug(True)
   gvwFind.Show
   lblNotFound.Hide
-  lblBrowse.Hide
+  'lblBrowse.Hide
   tabDebug[TAB_SEARCH].Visible = True
   tabDebug.Index = TAB_SEARCH
   
@@ -1070,7 +1070,7 @@ End
 Public Sub SetSearchListInfo(sText As String)
   
   lblBrowse.Text = sText
-  lblBrowse.Show
+  'lblBrowse.Show
   
 End
 
@@ -1148,7 +1148,7 @@ End
 
 Public Sub EnableGUI(bOn As Boolean)
   
-  lblBrowse.Visible = Not bOn
+  'lblBrowse.Visible = Not bOn
   btnCancelSearch.Visible = Not bOn
   DisableEverything(bOn)
   
@@ -1316,6 +1316,7 @@ Public Sub OnProjectChange()
   
   $aTask = Null
   UpdateTask
+  btnClearSearch_Click  
   
 End
 

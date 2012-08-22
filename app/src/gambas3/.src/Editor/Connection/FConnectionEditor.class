@@ -251,6 +251,8 @@ End
 
 Public Sub Form_Close()
 
+  Settings.Write(spnTable)
+
   datData.Enabled = False 
   splTable.Hide
   Try $hConn.Close
@@ -274,6 +276,8 @@ Public Sub ReadConfig()
     Project.SetSmallFont(hCtrl)
   Next
   Project.SetNormalFont(lvwTable)
+  
+  Settings.Read(spnTable)
   
 End
 
@@ -1575,3 +1579,9 @@ Public Sub btnShowSystem_Click()
 
 End
 
+
+Public Sub Form_Open()
+
+  
+
+End

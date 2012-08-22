@@ -1,30 +1,49 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,72,56)
+  MoveScaled(0,0,90,77)
   { Panel1 Panel
     MoveScaled(6,4,50,32)
     Border = Border.Plain
     { ComboBox1 ComboBox
       MoveScaled(4,6,23,4)
+      ReadOnly = True
       List = [("Élément 1"), ("Élément 2"), ("Élément 3")]
     }
     { Label1 Label
-      MoveScaled(23,10,19,7)
+      MoveScaled(28,4,19,7)
     }
     { Button1 Button
       MoveScaled(7,18,13,11)
       Picture = Picture["img/colormap.png"]
     }
-    { TextBox1 TextBox
-      MoveScaled(31,24,18,5)
+    { Panel2 Panel
+      MoveScaled(28,24,19,7)
+      Background = &HFFDFDF&
+      Arrangement = Arrange.Fill
+      Margin = True
+      { TextBox1 TextBox
+        MoveScaled(0,0,18,5)
+        Border = False
+      }
+    }
+    { Panel3 Panel
+      MoveScaled(24,16,22,7)
+      Arrangement = Arrange.Fill
+      Margin = True
+      { ButtonBox1 ButtonBox
+        MoveScaled(0,0,21,5)
+      }
     }
   }
   { Button2 Button
-    MoveScaled(22,2,16,4)
+    MoveScaled(12,2,16,4)
   }
-  { DateBox1 DateBox
-    MoveScaled(22,42,37,5)
-    Mode = DateChooser.DateTime
+  { ScrollArea1 ScrollArea
+    MoveScaled(60,10,21,21)
+    Background = Color.TextBackground
+  }
+  { Button3 Button
+    MoveScaled(31,2,16,4)
   }
 }

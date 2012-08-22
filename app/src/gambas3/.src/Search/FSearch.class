@@ -236,7 +236,7 @@ End
 '   
 ' End
 
-Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As CFindResult[]
+Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseReplaceString As Boolean) As CFindResult[]
   
   Dim sText As String
   Dim aGrep As String[]
@@ -246,14 +246,21 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
   Dim sTemp As String
   Dim iAge As Integer
   Dim hGrepResult As CGrepResult
-  Dim sPath As String
   Dim iPos As Integer
 
-  Try sText = hFile.GetText()
-  If Error Then Return aResult
-  
-  sTemp = Temp$("grep")
-  
+  If sPath Then
+    If Not hFile Or If Not hFile.IsModified() Then
+      sTemp = sPath
+    Endif
+  Endif
+    
+  If Not sTemp Then
+    Try sText = hFile.GetText()
+    If Error Then Return aResult
+    sTemp = Temp$("grep")
+    File.Save(sTemp, sText)
+  Endif
+
   aGrep = ["grep", "-nobs"]
   
   If bUseReplaceString Then
@@ -274,7 +281,6 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
   
   aGrep.Add(sTemp)
   
-  Try sPath = hFile.Path
   If sPath Then
     hGrepResult = $cGrepCache[sPath]
     
@@ -290,8 +296,6 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
   
   'grep -nR -F -I -i -w -ob --exclude=*~ --exclude-dir=.svn -s -- "Date" * .src
   
-  File.Save(sTemp, sText)
-  
   Exec aGrep To $sGrep 'For Read Write As "Grep"
   ' Print #hProcess, sText;
   ' Close #hProcess
@@ -303,12 +307,17 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
     
     hResult = New CFindResult
     
-    If hFile Is FOutput Then
-      hResult.Path = ""
-      hResult.File = "Console"
+    If hFile Then
+      If hFile Is FOutput Then
+        hResult.Path = ""
+        hResult.File = "Console"
+      Else
+        hResult.Path = sPath
+        hResult.File = hFile.Name
+      Endif
     Else
-      hResult.Path = hFile.Path
-      hResult.File = hFile.Name
+      hResult.Path = sPath
+      hResult.File = If(Project.IsSourcePath(sPath), File.BaseName(sPath), File.Name(sPath))
     Endif
 
     iPos = InStr(sFind, ":")
@@ -329,8 +338,8 @@ Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As 
     
   Next
   
-  Try iAge = hFile.Age
-  If Not Error And If sPath Then
+  If sPath Then
+    If hFile Then Try iAge = hFile.Age
     hGrepResult = New CGrepResult
     With hGrepResult
       .Result = aResult.Copy()
@@ -568,17 +577,18 @@ Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As 
   Dim hResult As CFindResult
   Dim iStart As Integer
   
-  Try hFile = Project.LoadFile(sPath)
-  If Not hFile Then Return
-  
   If iIndex < 0 Then
     iStart = $aBrowse.Count
   Else
     iStart = iIndex
   Endif
   
-  aResult = GrepFile(hFile)
+  hFile = Project.Files[sPath]
+  aResult = GrepFile(hFile, sPath)
   If aResult.Count = 0 Then Return
+  
+  Try hFile = Project.LoadFile(sPath)
+  If Not hFile Then Return
   
   If bReplace Then
     
@@ -588,7 +598,7 @@ Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As 
       hFile.Replace(ReplaceString)
     Next
     
-    aResult = GrepFile(hFile, True)
+    aResult = GrepFile(hFile, sPath, True)
     
   Endif
   
@@ -631,6 +641,7 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   Dim aFind As String[]
   Dim sName As String
   Dim sExt As String
+  Dim fTime As Float
   
   If Not bAgain Then
     If InitSearch() Then Return
@@ -663,6 +674,8 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
     sDir = Project.Dir
   Endif
   
+  fTime = Timer
+  
   For Each sFile In RDir(sDir)
   
     If Left(sFile) = "." And If Not (sFile Begins ".src/") Then Continue
@@ -689,7 +702,10 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
     Endif
   
     BrowseFile(sPath, bReplace)
-    Wait 0.01
+    If (Timer - fTime) > 0.2 Then
+      fTime = Timer
+      Wait 0.01
+    Endif
     If $bCancel Then Break
     
     'Debug sName
@@ -706,8 +722,13 @@ Finally
   
   Dec FMain.NoMessage
   
-  If gvwFind.Rows.Count = 0 Then
+  iLen = gvwFind.Rows.Count
+  If iLen = 0 Then
     FDebugInfo.HideSearchList
+  Else If iLen = 1 Then
+    FDebugInfo.SetSearchListInfo(("One match"))
+  Else
+    FDebugInfo.SetSearchListInfo(Subst(("&1 matches"), iLen))
   Endif
 
   'lblBrowse.Hide

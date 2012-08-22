@@ -309,7 +309,7 @@ extern "C"
 	static void activate_main_window(intptr_t)
 	{
 		if (gMainWindow::_active)
-			gtk_window_present(GTK_WINDOW(gMainWindow::_active->border));
+			gtk_window_present(GTK_WINDOW(gMainWindow::_active->topLevel()->border));
 	}
 	
 	void EXPORT GB_SIGNAL(int signal, void *param)

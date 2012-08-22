@@ -5,6 +5,7 @@ Export
 Inherits Panel
 
 Event Change
+Event BeforeSave(Data As Result)
 
 Property Connection As Connection
 Property Table As String
@@ -367,6 +368,7 @@ End
 
 Public Sub _UpdateCurrent(rData As Result)
   
+  Raise BeforeSave(rData)
   rData.Update
   $hTable.Refresh
 
@@ -445,6 +447,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
       aVal[iInd] = rData[aKey[iInd]]
     Next
     
+    Raise BeforeSave(rData)
     rData.Update
   
     Redraw(True)

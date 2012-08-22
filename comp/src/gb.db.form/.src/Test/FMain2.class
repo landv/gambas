@@ -51,3 +51,9 @@ Public Sub DataBrowser1_Data(Row As Integer, Column As Integer, Value As Variant
   End Select
   
 End
+
+Public Sub DataSource1_BeforeSave(Data As Result)
+
+  Data["color"] = DataSource2["color"]
+
+End
