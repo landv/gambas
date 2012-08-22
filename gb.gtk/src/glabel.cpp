@@ -31,7 +31,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	GtkStyle *style = gtk_widget_get_style(draw);
 	GdkGC *gc;
 	int vw, vh, lw, lh;
-	int fw = d->getFrameWidth();
+	int fw = Max(d->getFramePadding(), d->getFrameWidth());
 	
 	gc = gdk_gc_new(draw->window);
 	gdk_gc_set_clip_rectangle(gc, &e->area);	
@@ -82,7 +82,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	vw += draw->allocation.x;
 	vh += draw->allocation.y;
 	
-	if (d->_transparent && d->_mask_dirty)
+	/*if (d->_transparent && d->_mask_dirty)
 	{
 		GdkBitmap *mask = gt_make_text_mask(draw->window, d->width(), d->height(), d->layout, vw, vh);
 		
@@ -105,7 +105,7 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 		gtk_widget_shape_combine_mask(d->border, mask, 0, 0);
 		g_object_unref(mask);
 		d->_mask_dirty = false;
-	}
+	}*/
 	
 	//fprintf(stderr, "draw label: %s: %d %d\n", d->name(), vw, vh);
 	gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
@@ -179,7 +179,7 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 	if (_locked || !textdata || !*textdata)
 		return;
 	
-	fw = getFrameWidth();
+	fw = Max(getFrameWidth(), getFramePadding());
 	
 	if (markup && _wrap)
 	{
@@ -234,8 +234,8 @@ void gLabel::setTransparent(bool vl)
 		return;
 		
 	_transparent = vl;
-	gtk_widget_shape_combine_mask(border, NULL, 0, 0);
-	refresh();
+	//gtk_widget_shape_combine_mask(border, NULL, 0, 0);
+	//refresh();
 }
 
 char *gLabel::text()
@@ -245,7 +245,7 @@ char *gLabel::text()
 
 void gLabel::setText(char *vl)
 {
-	bool no_text_before = !textdata || !*textdata;
+	//bool no_text_before = !textdata || !*textdata;
 	
 	g_free(textdata);
 	
@@ -257,11 +257,11 @@ void gLabel::setText(char *vl)
 	updateLayout();
 	updateSize();
 	
-	if (_transparent)
+	/*if (_transparent)
 	{
 		if (no_text_before)
 			gtk_widget_shape_combine_mask(border, NULL, 0, 0);
-	}
+	}*/
 	
 	refresh();
 }
