@@ -138,12 +138,19 @@ gPicture *gt_grab_window(GdkWindow *win, int x = 0, int y = 0, int w = 0, int h 
 
 void gt_layout_alignment(PangoLayout *layout, float w, float h, float *tw, float *th, int align, float *offX, float *offY);
 
-#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
+#if GTK_CHECK_VERSION(2, 18, 0)
 #else
 void
 gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus);
 #endif
 
 void gt_lower_widget(GtkWidget *widget);
+
+#if GTK_CHECK_VERSION(2, 22, 0)
+#else
+int gdk_device_get_source(GdkDevice *device);
+GtkWidget *gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
+#endif
+
 
 #endif

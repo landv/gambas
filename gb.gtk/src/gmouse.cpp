@@ -246,14 +246,6 @@ double gMouse::getAxis(GdkAxisUse axis)
 		return 0.0;
 }
 
-#if GTK_CHECK_VERSION(2, 22, 0)
-#else
-static int gdk_device_get_source(GdkDevice *device)
-{
-	return device->source;
-}
-#endif
-
 
 int gMouse::getType()
 {

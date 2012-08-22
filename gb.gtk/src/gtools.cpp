@@ -1673,3 +1673,19 @@ void gt_lower_widget(GtkWidget *widget)
 	if (parent)
 		gtk_container_foreach(parent, (GtkCallback)add_again, widget);
 }
+
+#if GTK_CHECK_VERSION(2, 22, 0)
+#else
+int gdk_device_get_source(GdkDevice *device)
+{
+	return device->source;
+}
+
+GtkWidget *_gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
+
+GtkWidget *gtk_window_group_get_current_grab(GtkWindowGroup *window_group)
+{
+	return _gtk_window_group_get_current_grab(window_group);
+}
+#endif
+
