@@ -1012,8 +1012,8 @@ static void get_clipping(GB_DRAW *d, int *x, int *y, int *w, int *h)
 
 static void set_clipping(GB_DRAW *d, int x, int y, int w, int h)
 {
-	DP(d)->setClipRect(x, y, w, h);
-	if DPM(d) DPM(d)->setClipRect(x, y, w, h);
+	DP(d)->setClipRect(x, y, Max(0, w), Max(0, h));
+	if DPM(d) DPM(d)->setClipRect(x, y, Max(0, w), Max(0, h));
 }
 
 static int is_clipping_enabled(GB_DRAW *d)

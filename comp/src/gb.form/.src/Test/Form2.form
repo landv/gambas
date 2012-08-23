@@ -17,16 +17,6 @@
       MoveScaled(7,18,13,11)
       Picture = Picture["img/colormap.png"]
     }
-    { Panel2 Panel
-      MoveScaled(28,24,19,7)
-      Background = &HFFDFDF&
-      Arrangement = Arrange.Fill
-      Margin = True
-      { TextBox1 TextBox
-        MoveScaled(0,0,18,5)
-        Border = False
-      }
-    }
     { Panel3 Panel
       MoveScaled(24,16,22,7)
       Arrangement = Arrange.Fill
@@ -45,5 +35,24 @@
   }
   { Button3 Button
     MoveScaled(31,2,16,4)
+  }
+  { Panel2 Panel
+    MoveScaled(15,42,19,6)
+    Background = &HFFDFDF&
+    Arrangement = Arrange.Fill
+    Margin = True
+    { TextBox1 TextBox
+      MoveScaled(0,0,18,5)
+    }
+  }
+  { Panel4 Panel
+    MoveScaled(35,50,19,6)
+    Background = &HFFDFDF&
+    Arrangement = Arrange.Fill
+    Margin = True
+    { TextBox2 TextBox
+      MoveScaled(0,0,18,5)
+      Border = False
+    }
   }
 }
