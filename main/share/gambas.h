@@ -640,12 +640,6 @@ typedef
 	void (*GB_SIGNAL_CALLBACK)(int, intptr_t);
 
 
-/* Type of a posted function */
-
-typedef
-	void (*GB_POST_FUNC)();
-
-
 /* A structure for the components of a date */
 
 typedef
@@ -868,6 +862,14 @@ typedef
 	PACKED
 	GB_OPERATOR_DESC;
 
+/* Double-linked list API */
+
+typedef
+	struct {
+		void *next;
+		void *prev;
+	}
+	GB_LIST;
 
 /* Gambas Application Programming Interface */
 
@@ -896,6 +898,7 @@ typedef
 		void (*SetProperty)(void *, const char *, ...);
 
 		bool (*Loop)(int);
+		void (*Wait)(int);
 		void (*Post)(GB_CALLBACK, intptr_t);
 		void (*Post2)(GB_CALLBACK, intptr_t, intptr_t);
 		GB_TIMER *(*Every)(int, GB_TIMER_CALLBACK, intptr_t);
@@ -1051,6 +1054,7 @@ typedef
 			char *(*DomainName)(void);
 			bool (*IsRightToLeft)(void);
 			char *(*Path)(void);
+			void (*HasForked)(void);
 			}
 		System;
 
@@ -1113,7 +1117,13 @@ typedef
 		}
 		Signal;
 		
+		struct {
+			void (*Add)(void *p_first, void *node, GB_LIST *list);
+			void (*Remove)(void *p_first, void *node, GB_LIST *list);
 		}
+		List;
+	
+	}
 	GB_INTERFACE;
 
 

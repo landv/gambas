@@ -601,7 +601,7 @@ void MAIN_check_quit(void)
 	if (_check_quit_posted)
 		return;
 	
-	GB.Post((GB_POST_FUNC)check_quit_now, 0);
+	GB.Post((GB_CALLBACK)check_quit_now, 0);
 	_check_quit_posted = true;
 }
 
@@ -1231,7 +1231,7 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 			break;
 			
 		case GB_SIGNAL_DEBUG_CONTINUE:
-			GB.Post((GB_POST_FUNC)activate_main_window, 0);
+			GB.Post((GB_CALLBACK)activate_main_window, 0);
 			unrelease_grab();
 			break;
 	}

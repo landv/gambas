@@ -35,6 +35,7 @@ void *GB_Hook(int type, void *hook);
 bool GB_LoadComponent(const char *name);
 const char *GB_CurrentComponent(void);
 
+void GB_Wait(int);
 void GB_Push(int nval, ...);
 bool GB_CanRaise(void *object, int event_id);
 bool GB_Raise(void *object, int event_id, int nparam, ...);

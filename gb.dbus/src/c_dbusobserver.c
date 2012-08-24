@@ -70,7 +70,7 @@ static void set_filter(char **property, const char *str, int len)
 
 static void update_match(CDBUSOBSERVER *_object, bool noerr)
 {
-	static char *type[] = { "method_call", "method_return", "signal", "error" };
+	//static char *type[] = { "method_call", "method_return", "signal", "error" };
 	char *match = NULL;
 	DBusError error;
 

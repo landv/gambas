@@ -460,7 +460,7 @@ void CListBox::selected(void)
 	else if (!THIS->posted)
 	{
 		GB.Ref(THIS);
-		GB.Post((GB_POST_FUNC)post_select_event, (intptr_t)THIS);
+		GB.Post((GB_CALLBACK)post_select_event, (intptr_t)THIS);
 		THIS->posted = TRUE;
 	}
 	//RAISE_EVENT(EVENT_Select);

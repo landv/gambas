@@ -48,4 +48,6 @@ bool DBUS_reply(DBusConnection *connection, DBusMessage *message, const char *si
 
 const char *DBUS_to_dbus_type(GB_TYPE type);
 
+bool DBUS_error(DBusConnection *connection, DBusMessage *message, const char *type, const char *error);
+
 #endif

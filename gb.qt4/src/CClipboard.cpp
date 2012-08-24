@@ -505,7 +505,7 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 	//qDebug("end drag");
 	
 	hide_frame(NULL);
-	GB.Post((GB_POST_FUNC)post_exit_drag, 0);
+	GB.Post((GB_CALLBACK)post_exit_drag, 0);
 
 	if (CDRAG_destination)
 		GB.Unref(POINTER(&CDRAG_destination));

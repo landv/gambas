@@ -28,6 +28,7 @@
 #include "gb_common_buffer.h"
 #include "gb_error.h"
 #include "gb_alloc.h"
+#include "gb_list.h"
 
 #include <stdarg.h>
 
@@ -94,6 +95,7 @@ const void *GAMBAS_Api[] =
 	(void *)GB_SetProperty,
 
 	(void *)WATCH_one_loop,
+	(void *)GB_Wait,
 	(void *)EVENT_post,
 	(void *)EVENT_post2,
 	(void *)CTIMER_every,
@@ -242,6 +244,7 @@ const void *GAMBAS_Api[] =
 	(void *)GB_SystemDomainName,
 	(void *)GB_IsRightToLeft,
 	(void *)GB_SystemPath,
+	(void *)FILE_init,
 
 	(void *)GB_ArrayNew,
 	(void *)GB_ArrayCount,
@@ -280,6 +283,9 @@ const void *GAMBAS_Api[] =
 	
 	(void *)SIGNAL_register,
 	(void *)SIGNAL_unregister,
+	
+	(void *)LIST_insert,
+	(void *)LIST_remove,
 
 	NULL
 };
@@ -2227,12 +2233,41 @@ bool GB_ExistClassLocal(const char *name)
 	return CLASS_look(name, strlen(name)) != NULL;
 }
 
-/*void GB_AddString(char **ptr, const char *src, int len)
+void GB_Wait(int delay)
 {
-	*ptr = STRING_add(*ptr, src, len);
-}
+	struct timespec rem;
+	double wait;
+	double stop, time;
 
-void GB_ExtendString(char **ptr, int new_len)
-{
-	*ptr = STRING_extend(*ptr, new_len);
-}*/
+	DEBUG_enter_event_loop();
+		
+	if (delay == 0)
+	{
+		HOOK_DEFAULT(wait, WATCH_wait)(0);
+	}
+	else
+	{
+		wait = delay / 1000.0;
+		
+		DATE_timer(&stop, FALSE);
+		stop += wait;
+
+		for(;;)
+		{
+			HOOK_DEFAULT(wait, WATCH_wait)((int)(wait * 1000 + 0.5));
+
+			if (DATE_timer(&time, FALSE))
+				break;
+
+			wait = stop - time;
+			if (wait <= 0.0)
+				break;
+			
+			rem.tv_sec = 0;
+			rem.tv_nsec = 1000000;
+			nanosleep(&rem, &rem);
+		}
+	}
+
+	DEBUG_leave_event_loop();
+}

@@ -65,43 +65,16 @@ void SUBR_error(void)
 
 void SUBR_wait(ushort code)
 {
-	struct timespec rem;
-	double wait;
-	double stop, time;
-
 	SUBR_ENTER();
 
-	DEBUG_enter_event_loop();
-		
 	if (NPARAM == 0)
-	{
-		HOOK_DEFAULT(wait, WATCH_wait)(0);
-	}
+		GB_Wait(0);
 	else
-	{
-		wait = SUBR_get_float(PARAM);
-		DATE_timer(&stop, FALSE);
-		stop += wait;
-
-		for(;;)
-		{
-			HOOK_DEFAULT(wait, WATCH_wait)((int)(wait * 1000 + 0.5));
-
-			if (DATE_timer(&time, FALSE))
-				break;
-
-			wait = stop - time;
-			if (wait <= 0.0)
-				break;
-			
-			rem.tv_sec = 0;
-			rem.tv_nsec = 1000000;
-			nanosleep(&rem, &rem);
-		}
-	}
+		GB_Wait((int)(SUBR_get_float(PARAM) * 1000 + 0.5));
+	
+	SUBR_LEAVE_VOID();
 
 	DEBUG_leave_event_loop();
-	SUBR_LEAVE_VOID();
 }
 
 

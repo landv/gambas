@@ -42,7 +42,7 @@ static void gb_tabstrip_post_click(gTabStrip *sender)
 	CWIDGET *_object = GetObject(sender);
 	
 	GB.Ref(THIS);
-	GB.Post((GB_POST_FUNC)gb_tabstrip_raise_click, (long)THIS);
+	GB.Post((GB_CALLBACK)gb_tabstrip_raise_click, (long)THIS);
 }
 
 static void handle_close(gTabStrip *sender, int index)

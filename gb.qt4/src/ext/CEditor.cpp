@@ -1540,14 +1540,14 @@ void CEditor::moved(void)
 {
 	void *_object = QT.GetObject((QWidget *)sender());
 	GB.Ref(THIS);
-	GB.Post2((GB_POST_FUNC)post_event, (intptr_t)THIS, EVENT_Cursor);
+	GB.Post2((GB_CALLBACK)post_event, (intptr_t)THIS, EVENT_Cursor);
 }
 
 void CEditor::scrolled(int, int)
 {
 	void *_object = QT.GetObject((QWidget *)sender());
 	GB.Ref(THIS);
-	GB.Post2((GB_POST_FUNC)post_event, (intptr_t)THIS, EVENT_Scroll);
+	GB.Post2((GB_CALLBACK)post_event, (intptr_t)THIS, EVENT_Scroll);
 }
 
 void CEditor::marginDoubleClicked(int line)

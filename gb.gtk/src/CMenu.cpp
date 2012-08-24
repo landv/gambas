@@ -77,7 +77,7 @@ static void cb_click(gMenu *sender)
 {
 	void *_object = sender->hFree;
 	GB.Ref(THIS);
-	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)THIS);
+	GB.Post((GB_CALLBACK)send_click_event, (intptr_t)THIS);
 }
 
 static void cb_show(gMenu *sender)

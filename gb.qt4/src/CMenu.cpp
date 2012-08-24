@@ -770,7 +770,7 @@ void CMenu::slotTriggered(QAction *action)
 	if (_popup_immediate)
 		_popup_menu_clicked = menu;
 	else
-		GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
+		GB.Post((GB_CALLBACK)send_click_event, (intptr_t)menu);
 }
 
 void CMenu::slotShown(void)
@@ -787,7 +787,7 @@ void CMenu::slotHidden(void)
 	if (GB.CanRaise(menu, EVENT_Hide))
 	{
 	  GB.Ref(menu);
-  	GB.Post2((GB_POST_FUNC)send_menu_event, (intptr_t)menu, EVENT_Hide);
+  	GB.Post2((GB_CALLBACK)send_menu_event, (intptr_t)menu, EVENT_Hide);
 	}
 }
 

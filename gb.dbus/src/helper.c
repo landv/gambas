@@ -60,7 +60,7 @@ static void check_message_now(DBusConnection *connection)
 
 static void check_message(DBusConnection *connection)
 {
-	GB.Post((GB_POST_FUNC)check_message_now, (intptr_t)connection);
+	GB.Post((GB_CALLBACK)check_message_now, (intptr_t)connection);
 }
 
 
@@ -712,14 +712,14 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 											const char *signature_in, const char *signature_out, GB_ARRAY arguments)
 {
 	DBusMessage *message;
-	int n;
+	//int n;
 	DBusMessageIter iter;
 	DBusMessage *reply;
 	DBusError error;
-	DBusSignatureIter siter;
+	//DBusSignatureIter siter;
 	bool ret;
-	GB_TYPE type;
-	int nparam;
+	//GB_TYPE type;
+	//int nparam;
 	
 	message = dbus_message_new_method_call(application, path, interface, method);
 	if (!message)
@@ -835,7 +835,7 @@ bool DBUS_reply(DBusConnection *connection, DBusMessage *message, const char *si
 {
 	bool ret = TRUE;
 	DBusMessage *reply;
-	DBusError error;
+	//DBusError error;
 	dbus_uint32_t serial = 0;
 
 	reply = dbus_message_new_method_return(message);
@@ -1083,11 +1083,10 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 bool DBUS_unregister(DBusConnection *connection, const char *name)
 {
 	DBusError error;
-	int ret, socket;
 	
 	dbus_error_init(&error);
 	
-	ret = dbus_bus_release_name(connection, name, &error);
+	dbus_bus_release_name(connection, name, &error);
 	
 	if (dbus_error_is_set(&error))
 	{

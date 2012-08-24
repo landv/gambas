@@ -333,7 +333,7 @@ extern "C"
 				break;
 				
 			case GB_SIGNAL_DEBUG_CONTINUE:
-				GB.Post((GB_POST_FUNC)activate_main_window, 0);
+				GB.Post((GB_CALLBACK)activate_main_window, 0);
 				if (save_popup_grab)
 				{
 					gApplication::_popup_grab = save_popup_grab;

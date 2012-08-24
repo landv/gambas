@@ -196,7 +196,7 @@ void MyTreeWidgetItem::cancelRename(int col)
 	if (GB.CanRaise(container, EVENT_Cancel))
 	{
 		GB.Ref(container);
-		GB.Post((GB_POST_FUNC)post_cancel_event, (intptr_t)container);
+		GB.Post((GB_CALLBACK)post_cancel_event, (intptr_t)container);
 	}
 }
 */
@@ -1920,7 +1920,7 @@ void CListView::selected(void)
 	else
 	{
   	GB.Ref(_object);
-  	GB.Post((GB_POST_FUNC)post_select_event, (intptr_t)THIS);
+  	GB.Post((GB_CALLBACK)post_select_event, (intptr_t)THIS);
 	}
 }
 
