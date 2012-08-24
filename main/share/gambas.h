@@ -829,7 +829,9 @@ typedef
 		void (*callback)(intptr_t);
 		intptr_t data;
 		void *old;
+		int level;
 	}
+	PACKED
 	GB_RAISE_HANDLER;
 
 /* A macro for preventing gcc from warning about breaks in the

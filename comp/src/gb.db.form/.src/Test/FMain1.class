@@ -1,0 +1,16 @@
+' Gambas class file
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+End
+
+Public Sub DataView1_Data(Row As Integer, Column As Integer, Value As Variant)
+
+  Print "Yeah"
+  Last.Database.background = Color.yellow
+
+End

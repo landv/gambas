@@ -475,6 +475,7 @@ bool GAMBAS_DoNotRaiseEvent = FALSE;
 bool GAMBAS_StopEvent = FALSE;
 
 static bool _event_stopped = FALSE;
+static int _raise_event_level = 0;
 
 #define CATCH_ERROR \
 	bool ret = FALSE; \
@@ -745,7 +746,9 @@ static void error_GB_Raise()
 	RELEASE_MANY(SP, (int)(ERROR_handler->arg2));
 	OBJECT_UNREF(object, "error_GB_Raise");
 	
-	if (_GB_Raise_handler)
+	_raise_event_level--;
+	
+	if (_GB_Raise_handler && _GB_Raise_handler->level == _raise_event_level)
 	{
 		(*_GB_Raise_handler->callback)(_GB_Raise_handler->data);
 		_GB_Raise_handler = _GB_Raise_handler->old;
@@ -755,6 +758,7 @@ static void error_GB_Raise()
 void GB_RaiseBegin(GB_RAISE_HANDLER *handler)
 {
 	handler->old = _GB_Raise_handler;
+	handler->level = _raise_event_level;
 	_GB_Raise_handler = handler;
 }
 
@@ -782,6 +786,8 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 
 	arg = nparam < 0;
 	nparam = abs(nparam);
+	
+	_raise_event_level++;
 	
 	ON_ERROR_2(error_GB_Raise, object, nparam)
 	{
@@ -887,6 +893,8 @@ __RETURN:
 	}
 	END_ERROR
 
+	_raise_event_level--;
+	
 	return result;
 }
 
