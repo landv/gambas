@@ -9,6 +9,8 @@ Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
 'Public Const _Group As String = "View"
 
+Static Property Shadow As Boolean
+
 Property ScrollX As Integer
 Property ScrollY As Integer
 Property Read ScrollWidth, ScrollW As Integer
@@ -50,6 +52,7 @@ Private $bPainted As Boolean
 Private $W As Integer
 Private $H As Integer
 
+Static Private $bShadow As Boolean
 Private $iShadowN As Integer
 Private $iShadowS As Integer
 Private $iShadowW As Integer
@@ -291,23 +294,27 @@ Public Sub DrawingArea_Draw()
     Raise Draw
     If $bPainted Then Paint.End
 
-    LoadFades()
-    
-    ' Draw.Clip(hClip.X, hClip.Y + $iShadowN, hClip.W, hClip.H - $iShadowN - $iShadowS)
-    ' If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)
-    ' If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - 16 - $iShadowS + Max(0, 16 - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, 16)
-    ' 
-    ' Draw.Clip(hClip.X + $iShadowW, hClip.Y, hClip.W - $iShadowW - $iShadowE, hClip.H)
-    ' If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
-    ' If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
-
-    Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-    If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), Draw.W, $hFadeN.H)
-    If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, $hFadeS.H)
-    
-    Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-    If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, Draw.H)
-    If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, Draw.H)
+    If $bShadow Then
+      
+      LoadFades()
+      
+      ' Draw.Clip(hClip.X, hClip.Y + $iShadowN, hClip.W, hClip.H - $iShadowN - $iShadowS)
+      ' If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)
+      ' If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - 16 - $iShadowS + Max(0, 16 - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, 16)
+      ' 
+      ' Draw.Clip(hClip.X + $iShadowW, hClip.Y, hClip.W - $iShadowW - $iShadowE, hClip.H)
+      ' If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
+      ' If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
+  
+      Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+      If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), Draw.W, $hFadeN.H)
+      If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, $hFadeS.H)
+      
+      Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+      If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, Draw.H)
+      If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, Draw.H)
+      
+    Endif
 
     Draw.Clip.Enabled = False
 
@@ -528,5 +535,17 @@ End
 Private Sub Tablet_Write(Value As Boolean)
 
   $hDrawingArea.Tablet = Value
+
+End
+
+Static Private Function Shadow_Read() As Boolean
+
+  Return $bShadow
+
+End
+
+Static Private Sub Shadow_Write(Value As Boolean)
+
+  $bShadow = Value
 
 End

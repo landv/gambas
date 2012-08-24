@@ -1681,11 +1681,13 @@ int gdk_device_get_source(GdkDevice *device)
 	return device->source;
 }
 
-GtkWidget *_gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
+//GtkWidget *_gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
 
 GtkWidget *gtk_window_group_get_current_grab(GtkWindowGroup *window_group)
 {
-	return _gtk_window_group_get_current_grab(window_group);
+  if (window_group->grabs)
+    return GTK_WIDGET(window_group->grabs->data);
+  return NULL;
 }
 #endif
 
