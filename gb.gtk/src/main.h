@@ -31,7 +31,7 @@
 #include "CWidget.h"
 
 #ifndef __MAIN_C
-extern GB_INTERFACE GB;
+extern const GB_INTERFACE *GB_PTR;
 extern IMAGE_INTERFACE IMAGE;
 
 extern GB_CLASS CLASS_Picture;
@@ -44,6 +44,8 @@ extern GB_CLASS CLASS_SvgImage;
 
 extern bool MAIN_debug_busy;
 #endif
+
+#define GB (*GB_PTR)
 
 void MAIN_do_iteration(bool do_not_block, bool do_not_sleep = false);
 void MAIN_do_iteration_just_events();

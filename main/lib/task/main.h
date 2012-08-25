@@ -28,7 +28,8 @@
 #include "gb_common.h"
 
 #ifndef __MAIN_C
-extern GB_INTERFACE GB;
+extern GB_INTERFACE *GB_PTR;
+#define GB (*GB_PTR)
 #endif
 
 #endif

@@ -27,7 +27,7 @@
 #include "c_task.h"
 #include "main.h"
 
-GB_INTERFACE GB EXPORT;
+GB_INTERFACE *GB_PTR EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {

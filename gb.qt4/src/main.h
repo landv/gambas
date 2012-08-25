@@ -36,7 +36,7 @@
 #include "gb.image.h"
 
 #ifndef __MAIN_CPP
-extern "C" GB_INTERFACE GB;
+extern "C" const GB_INTERFACE *GB_PTR;
 extern "C" IMAGE_INTERFACE IMAGE;
 extern int MAIN_in_wait;
 extern int MAIN_in_message_box;
@@ -65,6 +65,8 @@ extern GB_CLASS CLASS_SvgImage;
 extern GB_CLASS CLASS_TextArea;
 
 #endif
+
+#define GB (*GB_PTR)
 
 class MyPostCheck: public QObject
 {

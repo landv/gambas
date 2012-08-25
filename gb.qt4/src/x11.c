@@ -35,9 +35,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern GB_INTERFACE GB;
+
+extern const GB_INTERFACE *GB_PTR;
+#define GB (*GB_PTR)
+
 #ifdef __cplusplus
 }
+
 #endif
 
 

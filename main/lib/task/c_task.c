@@ -24,17 +24,90 @@
 #define __C_TASK_C
 
 #include <sys/wait.h>
+#include <sys/ioctl.h>
 #include <errno.h>
 
 #include "c_task.h"
 
-//DECLARE_EVENT(EVENT_Read);
-//DECLARE_EVENT(EVENT_Error);
+DECLARE_EVENT(EVENT_Read);
+DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Kill);
 
 static GB_SIGNAL_CALLBACK *_signal_handler = NULL;
 static CTASK *_task_list = NULL;
 static int _task_count = 0;
+
+//-------------------------------------------------------------------------
+
+static int stream_open(GB_STREAM *stream, const char *path, int mode, void *_object)
+{
+	GB.Stream.Block(stream, FALSE);
+	return FALSE;
+}
+
+static int stream_close(GB_STREAM *stream)
+{
+	void *_object = stream->tag;
+	close(THIS->fd_out);
+	THIS->fd_out = -1;
+	return FALSE;
+}
+
+static int stream_read(GB_STREAM *stream, char *addr, int len)
+{
+	void *_object = stream->tag;
+	int n;
+	
+	n = read(THIS->fd_out, addr, len);
+	if (n < 0)
+		return TRUE;
+	
+	GB.Stream.SetBytesRead(stream, n);
+	if (n > 0)
+		THIS->something_read = TRUE;
+	return FALSE;
+	
+	//if (STREAM_eff_read > 0)
+	//	stream->process.read_something = TRUE;
+}
+
+static int stream_write(GB_STREAM *stream, char *addr, int len)
+{
+	return TRUE;
+}
+
+static int stream_seek(GB_STREAM *stream, int64_t pos, int whence)
+{
+	return TRUE;
+}
+
+static int stream_tell(GB_STREAM *stream, int64_t *pos)
+{
+	return TRUE;
+}
+
+static int stream_flush(GB_STREAM *stream)
+{
+  return FALSE;
+}
+
+static int stream_handle(GB_STREAM *stream)
+{
+	void *_object = stream->tag;
+  return THIS->fd_out;
+}
+
+GB_STREAM_DESC TaskStream = 
+{
+	open: stream_open,
+	close: stream_close,
+	read: stream_read,
+	write: stream_write,
+	seek: stream_seek,
+	tell: stream_tell,
+	flush: stream_flush,
+	handle: stream_handle
+};
 
 //-------------------------------------------------------------------------
 
@@ -55,6 +128,38 @@ static void callback_child(int signum, intptr_t data)
 		}
 		_object = next;
 	}
+}
+
+static void callback_write(int fd, int type, CTASK *_object)
+{
+	int len;
+	
+	//fprintf(stderr, "callback_write: %d %p\n", fd, THIS);
+	
+	if (!THIS->stream.desc)
+		return;
+	
+	if (GB.Stream.GetReadable(&THIS->stream, &len) || len <= 0)
+		return;
+
+	GB.Raise(THIS, EVENT_Read, 0);
+}
+
+
+static int callback_error(int fd, int type, CTASK *_object)
+{
+	char buffer[256];
+	int n;
+
+	//fprintf(stderr, "callback_error: %d %p\n", fd, THIS);
+
+	n = read(fd, buffer, sizeof(buffer));
+
+	if (n <= 0)
+		return TRUE;
+
+	GB.Raise(THIS, EVENT_Error, 1, GB_T_STRING, buffer, n);
+	return FALSE;
 }
 
 static void init_task(void)
@@ -78,24 +183,36 @@ static void exit_task(void)
 	_signal_handler = NULL;
 }
 
+static void prepare_task(CTASK *_object)
+{
+	THIS->stream.desc = &TaskStream;
+	THIS->stream.tag = THIS;
+	THIS->fd_out = -1;
+	THIS->fd_err = -1;
+}
+
 static bool start_task(CTASK *_object)
 {
 	pid_t pid;
 	sigset_t sig, old;
 	GB_FUNCTION func;
+	int fd_out[2], fd_err[2];
+	bool has_read, has_error;
 
 	init_task();
 
 	GB.List.Add(&_task_list, THIS, &THIS->list);
-	//process->running = TRUE;
 
-	/*{
-		if ((mode & PM_WRITE) && pipe(fdin) != 0)
-			THROW_SYSTEM(errno, NULL);
+	// Create pipes
+	
+	has_read = GB.CanRaise(THIS, EVENT_Read);
+	has_error = GB.CanRaise(THIS, EVENT_Error);
+	
+	if (has_read && pipe(fd_out) != 0)
+		goto __ERROR;
 
-		if ((mode & PM_READ) && (pipe(fdout) != 0 || pipe(fderr) != 0))
-			THROW_SYSTEM(errno, NULL);
-	}*/
+	if (has_error && pipe(fd_err) != 0)
+		goto __ERROR;
 
 	// Block SIGCHLD
 
@@ -109,91 +226,55 @@ static bool start_task(CTASK *_object)
 	{
 		stop_task(THIS);
 		sigprocmask(SIG_SETMASK, &old, &sig);
-		GB.Error("Cannot run task: &1", strerror(errno));
-		return TRUE;
+		goto __ERROR;
 	}
 
 	if (pid)
 	{
 		THIS->pid = pid;
 
-		#ifdef DEBUG_ME
-		fprintf(stderr, "fork: pid = %d\n", pid);
-		#endif
-
-		/*if (mode & PM_WRITE)
+		if (has_read)
 		{
-			if (mode & PM_TERM)
-			{
-				process->in = fd_master;
-			}
-			else
-			{
-				close(fdin[0]);
-				process->in = fdin[1];
-			}
+			close(fd_out[1]);
+			THIS->fd_out = fd_out[0];
+
+			GB.Watch(THIS->fd_out, GB_WATCH_READ, (void *)callback_write, (intptr_t)THIS);
 		}
 
-		if (mode & PM_READ)
+		if (has_error)
 		{
-			if (mode & PM_TERM)
-			{
-				process->out = fd_master;
-				process->err = -1;
-			}
-			else
-			{
-				close(fdout[1]);
-				close(fderr[1]);
+			close(fd_err[1]);
+			THIS->fd_err = fd_err[0];
 
-				process->out = fdout[0];
-				process->err = fderr[0];
-			}
-
-			GB_Watch(process->out, GB_WATCH_READ, (void *)callback_write, (intptr_t)process);
-			if (process->err >= 0)
-			{
-				fcntl(process->err, F_SETFL, fcntl(process->err, F_GETFL) | O_NONBLOCK);
-				GB_Watch(process->err, GB_WATCH_READ, (void *)callback_error, (intptr_t)process);
-			}
+			fcntl(THIS->fd_err, F_SETFL, fcntl(THIS->fd_err, F_GETFL) | O_NONBLOCK);
+			GB.Watch(THIS->fd_err, GB_WATCH_READ, (void *)callback_error, (intptr_t)THIS);
 		}
-
-		if ((mode & PM_SHELL) == 0)
-		{
-			FREE(&argv, "run_process");
-		}*/
 
 		sigprocmask(SIG_SETMASK, &old, &sig);
 	}
 	else // child task
 	{
-		//bool stdin_isatty = isatty(STDIN_FILENO);
-		
 		THIS->pid = getpid();
 		
 		GB.System.HasForked();
 		
 		sigprocmask(SIG_SETMASK, &old, &sig);
 		
-		/*{
-			if (mode & PM_WRITE)
-			{
-				close(fdin[1]);
+		if (has_read)
+		{
+			close(fd_out[0]);
 
-				if (dup2(fdin[0], STDIN_FILENO) == -1)
-					abort_child(CHILD_CANNOT_PLUG_INPUT);
-			}
+			if (dup2(fd_out[1], STDOUT_FILENO) == -1)
+				exit(1);
+		}
 
-			if (mode & PM_READ)
-			{
-				close(fdout[0]);
-				close(fderr[0]);
+		if (has_error)
+		{
+			close(fd_err[0]);
 
-				if ((dup2(fdout[1], STDOUT_FILENO) == -1)
-						|| (dup2(fderr[1], STDERR_FILENO) == -1))
-					abort_child(CHILD_CANNOT_PLUG_OUTPUT);
-			}
-		}*/
+			if (dup2(fd_err[1], STDERR_FILENO) == -1)
+				exit(2);
+		}
 
 		GB.GetFunction(&func, THIS, "Main", "", NULL);
 		GB.Call(&func, 0, TRUE);
@@ -201,11 +282,38 @@ static bool start_task(CTASK *_object)
 	}
 	
 	return FALSE;
+
+__ERROR:
+
+	// TODO: as the routine is posted, nobody will see the error!
+	GB.Error("Cannot run task: &1", strerror(errno));
+	return TRUE;
 }
 
 
 static void stop_task(CTASK *_object)
 {
+	int len;
+	
+	// Flush standard error
+	if (THIS->fd_err >= 0)
+		while (callback_error(THIS->fd_err, 0, THIS) == 0);
+
+	// Flush standard output
+	if (THIS->fd_out >= 0)
+	{
+		for(;;)
+		{
+			if (GB.Stream.GetReadable(&THIS->stream, &len) || len <= 0)
+				break;
+			
+			THIS->something_read = FALSE;
+			callback_write(THIS->fd_out, 0, THIS);
+			if (!THIS->something_read)
+				break;
+		}
+	}
+
 	GB.List.Remove(&_task_list, THIS, &THIS->list);
 
 	GB.Raise(THIS, EVENT_Kill, 0);
@@ -225,6 +333,8 @@ BEGIN_METHOD_VOID(Task_new)
 	
 	if (GB.GetFunction(&func, THIS, "Main", "", NULL))
 		return;
+	
+	prepare_task(THIS);
 	
 	GB.Ref(THIS);
 	GB.Post((GB_CALLBACK)start_task, (intptr_t)THIS);
@@ -262,7 +372,8 @@ END_METHOD
 GB_DESC TaskDesc[] =
 {
 	GB_DECLARE("Task", sizeof(CTASK)), GB_NOT_CREATABLE(),
-
+	GB_INHERITS("Stream"), 
+	
 	GB_METHOD("_new", NULL, Task_new, NULL),
 	//GB_METHOD("_free", NULL, Task_free, NULL),
 
@@ -271,8 +382,8 @@ GB_DESC TaskDesc[] =
 	GB_METHOD("Stop", NULL, Task_Stop, NULL),
 	GB_METHOD("Wait", NULL, Task_Wait, NULL),
 
-	//GB_EVENT("Read", NULL, "(Data)s", &EVENT_Read),
-	//GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
+	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
 	GB_EVENT("Kill", NULL, NULL, &EVENT_Kill),
 
 	GB_END_DECLARE

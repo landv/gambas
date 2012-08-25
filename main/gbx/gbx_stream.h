@@ -240,8 +240,6 @@ void STREAM_unmap(char *addr, int len);
 
 int STREAM_read_direct(int fd, char *buffer, int len);
 int STREAM_write_direct(int fd, char *buffer, int len);
-//int STREAM_read_buffered(FILE *file, char *buffer, long len);
-//int STREAM_write_buffered(FILE *file, char *buffer, long len);
 
 void STREAM_lock(STREAM *stream);
 
@@ -250,6 +248,8 @@ void STREAM_lock(STREAM *stream);
 void STREAM_blocking(STREAM *stream, bool block);
 #define STREAM_is_blocking(_stream) ((_stream)->common.blocking)
 void STREAM_check_blocking(STREAM *stream);
+
+int STREAM_get_readable(STREAM *stream, int *len);
 
 void STREAM_exit(void);
 

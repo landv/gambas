@@ -177,11 +177,11 @@ Public Function EvalReply(sCad As String) As Variant
 
   If hAtom = Null Then
     If Method.ReturnType = Null Then Return Null
-    Error.Raise("Invalid Return Type, wanted VOID, got " & XmlRpc.ToString(hAtom.Type))
+    Error.Raise("Invalid return type, wanted VOID, got " & XmlRpc.ToString(hAtom.Type))
   End If
 
   If Method.ReturnType <> hAtom.Type Then
-    Error.Raise("Invalid Return Type, wanted " & XmlRpc.ToString(Method.ReturnType) & ", got " & XmlRpc.ToString(hAtom.Type))
+    Error.Raise("Invalid return type, wanted " & XmlRpc.ToString(Method.ReturnType) & ", got " & XmlRpc.ToString(hAtom.Type))
     Return
   End If
 
@@ -282,7 +282,7 @@ Public Sub hHttp_GotError()
     Return
   End If
 
-  If Me.Mode = RpcClient.httpAsync Then Raise BadReply("Unable to contact with server, or bad reply from server")
+  If Me.Mode = RpcClient.httpAsync Then Raise BadReply("Unable to contact server, or bad reply from server")
 
 End
 
@@ -353,7 +353,7 @@ Public Function Call(Data As Variant[]) As Variant
 
   If hMode = RpcClient.httpSync Then
     If sCad = "" Then
-      Error.Raise("Unable to contact with server, or bad reply from server")
+      Error.Raise("Unable to contact server, or bad reply from server")
       Return Null
     End If
     Return EvalReply(sCad)

@@ -245,10 +245,10 @@ int LIBRARY_load(LIBRARY *lib)
 
   /* Interface de Gambas */
 
-  //iface = get_symbol(lib, LIB_GAMBAS_PTR, FALSE);
-	//if (iface)
-	//	*((void **)iface) = &GAMBAS_Api;
-	//else
+  iface = get_symbol(lib, LIB_GAMBAS_PTR, FALSE);
+	if (iface)
+		*((void **)iface) = &GAMBAS_Api;
+	else
 	{
 		iface = get_symbol(lib, LIB_GAMBAS, TRUE);
 		copy_interface(GAMBAS_Api, iface);

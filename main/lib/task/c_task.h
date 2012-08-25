@@ -36,9 +36,13 @@ extern GB_DESC TaskDesc[];
 typedef
 	struct {
 		GB_BASE ob;
+		GB_STREAM stream;
 		GB_LIST list;
 		pid_t pid;
+		int fd_out;
+		int fd_err;
 		volatile sig_atomic_t stopped;
+		unsigned something_read : 1;
 	}
 	CTASK;
 

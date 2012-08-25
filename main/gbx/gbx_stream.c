@@ -90,7 +90,7 @@ bool STREAM_in_archive(const char *path)
 	return FALSE;
 }
 
-static int STREAM_get_readable(STREAM *stream, int *len)
+int STREAM_get_readable(STREAM *stream, int *len)
 {
 	int fd;
 	off_t off;

@@ -73,7 +73,7 @@ typedef
 		}
 	GB_API_FUNCTION;
 
-const void *GAMBAS_Api[] =
+const void *const GAMBAS_Api[] =
 {
 	(void *)GB_VERSION,
 
@@ -272,6 +272,7 @@ const void *GAMBAS_Api[] =
 	(void *)GB_StreamBlock,
 	(void *)GB_StreamRead,
 	(void *)GB_StreamWrite,
+	(void *)STREAM_get_readable,
 
 	(void *)STRING_start_len,
 	(void *)STRING_end,

@@ -1094,6 +1094,7 @@ typedef
 			bool (*Block)(GB_STREAM *stream, int block);
 			int (*Read)(GB_STREAM *stream, void *addr, int len);
 			int (*Write)(GB_STREAM *stream, void *addr, int len);
+			int (*GetReadable)(GB_STREAM *stream, int *len);
 			}
 		Stream;
 
