@@ -93,6 +93,8 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_GetClassInterface,
 	(void *)GB_GetProperty,
 	(void *)GB_SetProperty,
+	(void *)GB_Serialize,
+	(void *)GB_UnSerialize,
 
 	(void *)WATCH_one_loop,
 	(void *)GB_Wait,
@@ -2271,4 +2273,30 @@ void GB_Wait(int delay)
 	}
 
 	DEBUG_leave_event_loop();
+}
+
+bool GB_Serialize(const char *path, GB_VALUE *value)
+{
+	STREAM stream;
+	
+	CATCH_ERROR
+	{
+		STREAM_open(&stream, path, ST_CREATE);
+		STREAM_write_type(&stream, T_VARIANT, (VALUE *)value);
+		STREAM_close(&stream);
+	}
+	END_CATCH_ERROR
+}
+
+bool GB_UnSerialize(const char *path, GB_VALUE *value)
+{
+	STREAM stream;
+	
+	CATCH_ERROR
+	{
+		STREAM_open(&stream, path, ST_READ);
+		STREAM_read_type(&stream, T_VARIANT, (VALUE *)value);
+		STREAM_close(&stream);
+	}
+	END_CATCH_ERROR
 }

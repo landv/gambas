@@ -896,6 +896,8 @@ typedef
 		void *(*GetClassInterface)(GB_CLASS, const char *);
 		void (*GetProperty)(void *, const char *);
 		void (*SetProperty)(void *, const char *, ...);
+		bool (*Serialize)(const char *path, GB_VALUE *value);
+		bool (*UnSerialize)(const char *path, GB_VALUE *value);
 
 		bool (*Loop)(int);
 		void (*Wait)(int);

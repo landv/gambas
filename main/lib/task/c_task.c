@@ -33,12 +33,20 @@ DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Kill);
 
+enum {
+	CHILD_OK = 0,
+	CHILD_STDOUT = 1,
+	CHILD_STDERR = 2,
+	CHILD_RETURN = 3
+};
+
 static GB_SIGNAL_CALLBACK *_signal_handler = NULL;
 static CTASK *_task_list = NULL;
 static int _task_count = 0;
 
 //-------------------------------------------------------------------------
 
+#if 0
 static int stream_open(GB_STREAM *stream, const char *path, int mode, void *_object)
 {
 	GB.Stream.Block(stream, FALSE);
@@ -108,6 +116,7 @@ GB_STREAM_DESC TaskStream =
 	flush: stream_flush,
 	handle: stream_handle
 };
+#endif
 
 //-------------------------------------------------------------------------
 
@@ -124,25 +133,54 @@ static void callback_child(int signum, intptr_t data)
 		next = THIS->list.next;
 		if (wait4(THIS->pid, &status, WNOHANG, NULL) == THIS->pid)
 		{
+			THIS->status = status;
 			stop_task(THIS);
 		}
 		_object = next;
 	}
 }
 
-static void callback_write(int fd, int type, CTASK *_object)
+static int get_readable(int fd)
 {
 	int len;
 	
+	if (ioctl(fd, FIONREAD, &len) < 0 || len <= 0)
+		return 0;
+	else
+		return len;
+}
+
+static void callback_write(int fd, int type, CTASK *_object)
+{
+	int len;
+	char *data;
+	char *p;
+	int n;
+	
 	//fprintf(stderr, "callback_write: %d %p\n", fd, THIS);
 	
-	if (!THIS->stream.desc)
-		return;
+	len = get_readable(fd);
 	
-	if (GB.Stream.GetReadable(&THIS->stream, &len) || len <= 0)
-		return;
-
-	GB.Raise(THIS, EVENT_Read, 0);
+	data = GB.NewString(NULL, len);
+	p = data;
+	
+	while (len > 0)
+	{
+		n = read(fd, p, len);
+		if (n < 0)
+		{
+			if (errno == EINTR)
+				continue;
+			else
+				break;
+		}
+		len -= n;
+		p += n;
+	}
+	
+	GB.Raise(THIS, EVENT_Read, 1, GB_T_STRING, data, GB.StringLength(data) - len);
+	
+	GB.FreeString(&data);
 }
 
 
@@ -159,6 +197,27 @@ static int callback_error(int fd, int type, CTASK *_object)
 		return TRUE;
 
 	GB.Raise(THIS, EVENT_Error, 1, GB_T_STRING, buffer, n);
+	return FALSE;
+}
+
+static bool create_return_directory(void)
+{
+	static bool mkdir_done = FALSE;
+
+	char buf[PATH_MAX];
+	
+	if (mkdir_done)
+		return FALSE;
+
+	sprintf(buf, RETURN_DIR_PATTERN, getuid(), getpid());
+	
+	if (mkdir(buf, S_IRWXU) != 0)
+	{
+		GB.Error("Cannot create task return directory");
+		return TRUE;
+	}
+	
+	mkdir_done = TRUE;
 	return FALSE;
 }
 
@@ -185,19 +244,19 @@ static void exit_task(void)
 
 static void prepare_task(CTASK *_object)
 {
-	THIS->stream.desc = &TaskStream;
-	THIS->stream.tag = THIS;
 	THIS->fd_out = -1;
 	THIS->fd_err = -1;
 }
 
 static bool start_task(CTASK *_object)
 {
+	const char *err = NULL;
 	pid_t pid;
 	sigset_t sig, old;
 	GB_FUNCTION func;
 	int fd_out[2], fd_err[2];
 	bool has_read, has_error;
+	GB_VALUE *ret;
 
 	init_task();
 
@@ -254,6 +313,7 @@ static bool start_task(CTASK *_object)
 	}
 	else // child task
 	{
+		THIS->child = TRUE;
 		THIS->pid = getpid();
 		
 		GB.System.HasForked();
@@ -265,7 +325,9 @@ static bool start_task(CTASK *_object)
 			close(fd_out[0]);
 
 			if (dup2(fd_out[1], STDOUT_FILENO) == -1)
-				exit(1);
+				exit(CHILD_STDOUT);
+			
+			setlinebuf(stdout);
 		}
 
 		if (has_error)
@@ -273,12 +335,28 @@ static bool start_task(CTASK *_object)
 			close(fd_err[0]);
 
 			if (dup2(fd_err[1], STDERR_FILENO) == -1)
-				exit(2);
+				exit(CHILD_STDERR);
+			
+			setlinebuf(stderr);
 		}
 
 		GB.GetFunction(&func, THIS, "Main", "", NULL);
-		GB.Call(&func, 0, TRUE);
-		exit(0);
+		
+		ret = GB.Call(&func, 0, FALSE);
+		if (ret->type != GB_T_VOID)
+		{
+			char buf[PATH_MAX];
+			sprintf(buf, RETURN_FILE_PATTERN, getuid(), getppid(), getpid());
+			//fprintf(stderr, "serialize to: %s\n", buf);
+			GB.ReturnConvVariant();
+			if (GB.Serialize(buf, ret))
+			{
+				//fprintf(stderr, "gb.task: serialization has failed\n");
+				exit(CHILD_RETURN);
+			}
+		}
+		
+		exit(CHILD_OK);
 	}
 	
 	return FALSE;
@@ -286,10 +364,25 @@ static bool start_task(CTASK *_object)
 __ERROR:
 
 	// TODO: as the routine is posted, nobody will see the error!
-	GB.Error("Cannot run task: &1", strerror(errno));
+	if (!err)
+		err = strerror(errno);
+	fprintf(stderr, "gb.task: cannot run task: %s\n", err);
+	GB.Error("Cannot run task: &1", err);
+	
 	return TRUE;
 }
 
+static void close_fd(int *pfd)
+{
+	int fd = *pfd;
+	
+	if (fd >= 0)
+	{
+		GB.Watch(fd, GB_WATCH_NONE, NULL, 0);
+		close(fd);
+		*pfd = -1;
+	}
+}
 
 static void stop_task(CTASK *_object)
 {
@@ -304,7 +397,8 @@ static void stop_task(CTASK *_object)
 	{
 		for(;;)
 		{
-			if (GB.Stream.GetReadable(&THIS->stream, &len) || len <= 0)
+			len = get_readable(THIS->fd_out);
+			if (len <= 0)
 				break;
 			
 			THIS->something_read = FALSE;
@@ -320,6 +414,9 @@ static void stop_task(CTASK *_object)
 
 	THIS->stopped = TRUE;
 	
+	close_fd(&THIS->fd_out);
+	close_fd(&THIS->fd_err);
+	
 	GB.Unref(POINTER(&_object));
 	
 	exit_task();
@@ -330,6 +427,9 @@ static void stop_task(CTASK *_object)
 BEGIN_METHOD_VOID(Task_new)
 
 	GB_FUNCTION func;
+	
+	if (create_return_directory())
+		return;
 	
 	if (GB.GetFunction(&func, THIS, "Main", "", NULL))
 		return;
@@ -367,23 +467,46 @@ BEGIN_METHOD_VOID(Task_Wait)
 
 END_METHOD
 
+BEGIN_PROPERTY(Task_Value)
+
+	if (!THIS->child)
+	{
+		char buf[PATH_MAX];
+		GB_VALUE ret;
+		
+		sprintf(buf, RETURN_FILE_PATTERN, getuid(), getpid(), THIS->pid);
+		if (!GB.UnSerialize(buf, &ret))
+		{
+			unlink(buf);
+			GB.ReturnVariant(&ret._variant.value);
+			return;
+		}
+		else
+			unlink(buf);
+	}
+	
+	GB.ReturnNull();
+	GB.ReturnConvVariant();
+	
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 GB_DESC TaskDesc[] =
 {
 	GB_DECLARE("Task", sizeof(CTASK)), GB_NOT_CREATABLE(),
-	GB_INHERITS("Stream"), 
 	
 	GB_METHOD("_new", NULL, Task_new, NULL),
 	//GB_METHOD("_free", NULL, Task_free, NULL),
 
 	GB_PROPERTY_READ("Handle", "i", Task_Handle),
+	GB_PROPERTY_READ("Value", "v", Task_Value),
 
 	GB_METHOD("Stop", NULL, Task_Stop, NULL),
 	GB_METHOD("Wait", NULL, Task_Wait, NULL),
 
-	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
-	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
+	GB_EVENT("Read", NULL, "(Data)s", &EVENT_Read),
+	GB_EVENT("Error", NULL, "(Data)s", &EVENT_Error),
 	GB_EVENT("Kill", NULL, NULL, &EVENT_Kill),
 
 	GB_END_DECLARE

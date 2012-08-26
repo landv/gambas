@@ -639,10 +639,7 @@ End
 
 Static Private Function Icons_Read() As String[]
 
-  If Not $aList Then 
-    $aList = Split(File.Load("map/map"), "\n", "", True)
-  Endif 
-  
+  If Not $aList Then LoadMap
   Return $aList  
   
 End

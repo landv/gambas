@@ -52,6 +52,9 @@ const char *GB_GetUnknown(void);
 void GB_GetProperty(void *object, const char *property);
 void GB_SetProperty(void *object, const char *property, ...);
 
+bool GB_Serialize(const char *path, GB_VALUE *value);
+bool GB_UnSerialize(const char *path, GB_VALUE *value);
+
 void GB_Error(const char *msg, ...);
 void GB_Deprecated(const char *msg, const char *func, const char *repl);
 

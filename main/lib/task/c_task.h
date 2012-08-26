@@ -36,16 +36,20 @@ extern GB_DESC TaskDesc[];
 typedef
 	struct {
 		GB_BASE ob;
-		GB_STREAM stream;
 		GB_LIST list;
 		pid_t pid;
 		int fd_out;
 		int fd_err;
+		int status;
 		volatile sig_atomic_t stopped;
 		unsigned something_read : 1;
+		unsigned child : 1;
 	}
 	CTASK;
 
 #define THIS ((CTASK *)_object)
-	
+
+#define RETURN_DIR_PATTERN "/tmp/gambas.%d/%d/task"
+#define RETURN_FILE_PATTERN "/tmp/gambas.%d/%d/task/%d"
+
 #endif
