@@ -70,6 +70,7 @@ gbx3_SOURCES = \
  gbx_c_subcollection.h gbx_c_subcollection.c \
  gbx_c_string.h gbx_c_string.c \
  gbx_c_observer.h gbx_c_observer.c \
+ gbx_c_task.h gbx_c_task.c \
  gbx_component.h gbx_component.c \
  gbx_extern.h gbx_extern.c \
  gbx_c_enum.h gbx_c_enum.c \
@@ -94,4 +95,5 @@ gb_la_SOURCES = \
  gbx_c_subcollection.h gbx_c_subcollection.c \
  gbx_c_enum.h gbx_c_enum.c \
  gbx_c_timer.h gbx_c_timer.c \
+ gbx_c_task.h gbx_c_task.c \
  gbx_class_info.c

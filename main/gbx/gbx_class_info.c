@@ -319,50 +319,51 @@ static GB_DESC NATIVE_GambasLanguage[] =
 };
 
 
-EXTERN GB_DESC NATIVE_GambasLanguage[];
-EXTERN GB_DESC NATIVE_Gambas[];
-EXTERN GB_DESC NATIVE_Param[];
-EXTERN GB_DESC NATIVE_Enum[];
-EXTERN GB_DESC NATIVE_Symbol[];
-EXTERN GB_DESC NATIVE_Class[];
-EXTERN GB_DESC NATIVE_Classes[];
-EXTERN GB_DESC NATIVE_Component[];
-EXTERN GB_DESC NATIVE_Components[];
-EXTERN GB_DESC NATIVE_Object[];
-EXTERN GB_DESC NATIVE_Collection[];
-EXTERN GB_DESC NATIVE_Error[];
-EXTERN GB_DESC NATIVE_Stream[];
-EXTERN GB_DESC NATIVE_StreamLines[];
-EXTERN GB_DESC NATIVE_StatPerm[];
-EXTERN GB_DESC NATIVE_Stat[];
-EXTERN GB_DESC NATIVE_File[];
-EXTERN GB_DESC NATIVE_AppEnv[];
-EXTERN GB_DESC NATIVE_AppArgs[];
-EXTERN GB_DESC NATIVE_App[];
-EXTERN GB_DESC NATIVE_System[];
-EXTERN GB_DESC NATIVE_User[];
-EXTERN GB_DESC NATIVE_ArrayBounds[];
-EXTERN GB_DESC NATIVE_Array[];
-EXTERN GB_DESC NATIVE_Process[];
-EXTERN GB_DESC NATIVE_BooleanArray[];
-EXTERN GB_DESC NATIVE_ByteArray[];
-EXTERN GB_DESC NATIVE_ShortArray[];
-EXTERN GB_DESC NATIVE_IntegerArray[];
-EXTERN GB_DESC NATIVE_SingleArray[];
-EXTERN GB_DESC NATIVE_FloatArray[];
-EXTERN GB_DESC NATIVE_DateArray[];
-EXTERN GB_DESC NATIVE_StringArray[];
-EXTERN GB_DESC NATIVE_ObjectArray[];
-EXTERN GB_DESC NATIVE_VariantArray[];
-EXTERN GB_DESC NATIVE_TemplateArray[];
-EXTERN GB_DESC NATIVE_TemplateArrayOfStruct[];
-EXTERN GB_DESC NATIVE_LongArray[];
-EXTERN GB_DESC NATIVE_PointerArray[];
-EXTERN GB_DESC NATIVE_SubCollection[];
-EXTERN GB_DESC NATIVE_String[];
-EXTERN GB_DESC NATIVE_Timer[];
-EXTERN GB_DESC NATIVE_Observer[];
-EXTERN GB_DESC NATIVE_Proxy[];
+extern GB_DESC NATIVE_GambasLanguage[];
+extern GB_DESC NATIVE_Gambas[];
+extern GB_DESC NATIVE_Param[];
+extern GB_DESC NATIVE_Enum[];
+extern GB_DESC NATIVE_Symbol[];
+extern GB_DESC NATIVE_Class[];
+extern GB_DESC NATIVE_Classes[];
+extern GB_DESC NATIVE_Component[];
+extern GB_DESC NATIVE_Components[];
+extern GB_DESC NATIVE_Object[];
+extern GB_DESC NATIVE_Collection[];
+extern GB_DESC NATIVE_Error[];
+extern GB_DESC NATIVE_Stream[];
+extern GB_DESC NATIVE_StreamLines[];
+extern GB_DESC NATIVE_StatPerm[];
+extern GB_DESC NATIVE_Stat[];
+extern GB_DESC NATIVE_File[];
+extern GB_DESC NATIVE_AppEnv[];
+extern GB_DESC NATIVE_AppArgs[];
+extern GB_DESC NATIVE_App[];
+extern GB_DESC NATIVE_System[];
+extern GB_DESC NATIVE_User[];
+extern GB_DESC NATIVE_ArrayBounds[];
+extern GB_DESC NATIVE_Array[];
+extern GB_DESC NATIVE_Process[];
+extern GB_DESC NATIVE_BooleanArray[];
+extern GB_DESC NATIVE_ByteArray[];
+extern GB_DESC NATIVE_ShortArray[];
+extern GB_DESC NATIVE_IntegerArray[];
+extern GB_DESC NATIVE_SingleArray[];
+extern GB_DESC NATIVE_FloatArray[];
+extern GB_DESC NATIVE_DateArray[];
+extern GB_DESC NATIVE_StringArray[];
+extern GB_DESC NATIVE_ObjectArray[];
+extern GB_DESC NATIVE_VariantArray[];
+extern GB_DESC NATIVE_TemplateArray[];
+extern GB_DESC NATIVE_TemplateArrayOfStruct[];
+extern GB_DESC NATIVE_LongArray[];
+extern GB_DESC NATIVE_PointerArray[];
+extern GB_DESC NATIVE_SubCollection[];
+extern GB_DESC NATIVE_String[];
+extern GB_DESC TaskDesc[];
+extern GB_DESC NATIVE_Timer[];
+extern GB_DESC NATIVE_Observer[];
+extern GB_DESC NATIVE_Proxy[];
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -407,6 +408,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_PointerArray,
 	NATIVE_SubCollection,
 	NATIVE_String,
+	TaskDesc,
 	NATIVE_Timer,
 	NATIVE_Observer,
 	//NATIVE_Proxy,

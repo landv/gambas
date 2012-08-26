@@ -44,6 +44,7 @@
 #include "gbx_c_string.h"
 #include "gbx_c_enum.h"
 #include "gbx_c_timer.h"
+#include "gbx_c_task.h"
 
 #include "gbx_class.h"
 
@@ -113,6 +114,7 @@ static const CLASS_INIT init_list[] =
   { NATIVE_System, NULL },
   { NATIVE_User, NULL },
   { NATIVE_String, NULL },
+  { TaskDesc, NULL },
   { NATIVE_Timer, &CLASS_Timer },
   { NATIVE_Observer, &CLASS_Observer },
   //{ NATIVE_Proxy, &CLASS_Proxy },
@@ -169,5 +171,3 @@ void CLASS_init_native(void)
 	//CLASS_Proxy->is_observer = TRUE;
 	//CLASS_Proxy->size += sizeof(OBJECT_EVENT);
 }
-
-

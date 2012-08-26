@@ -62,6 +62,7 @@ bool EXEC_big_endian;
 CENUM *EXEC_enum;
 
 bool EXEC_debug = FALSE; // debugging mode
+bool EXEC_task = FALSE; // I am a background task
 bool EXEC_profile = FALSE; // profiling mode
 bool EXEC_profile_instr = FALSE; // profiling mode at instruction level
 const char *EXEC_profile_path = NULL; // profile file path

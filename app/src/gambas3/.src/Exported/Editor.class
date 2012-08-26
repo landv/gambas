@@ -192,7 +192,7 @@ Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional
     $hLabel.Padding = 2
     $hLabel.Wrap = False
     $hLabelTimer = New Timer As "LabelTimer"
-    $hLabelTimer.Delay = 5000
+    $hLabelTimer.Delay = 10000
   Endif
 
   X = Me.ScreenX + X - $hLabel.Parent.ScreenX
@@ -211,6 +211,7 @@ Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional
   
   $hLabel.Show
   $hLabel.Raise
+  $hLabelTimer.Stop
   $hLabelTimer.Start
   Me.SetFocus
 

@@ -84,36 +84,37 @@ enum {
 	
 #ifndef __GBX_EXEC_C
 
-EXTERN STACK_CONTEXT EXEC_current;
-EXTERN VALUE *SP;
-EXTERN VALUE TEMP;
-EXTERN VALUE RET;
+extern STACK_CONTEXT EXEC_current;
+extern VALUE *SP;
+extern VALUE TEMP;
+extern VALUE RET;
 
-EXTERN VALUE *EXEC_super;
+extern VALUE *EXEC_super;
 
-EXTERN bool EXEC_debug;
-EXTERN bool EXEC_profile;
-EXTERN const char *EXEC_profile_path;
-EXTERN bool EXEC_profile_instr;
-EXTERN bool EXEC_arch;
-EXTERN bool EXEC_fifo;
-EXTERN const char *EXEC_fifo_name;
-EXTERN bool EXEC_keep_library;
+extern bool EXEC_debug;
+extern bool EXEC_task;
+extern bool EXEC_profile;
+extern const char *EXEC_profile_path;
+extern bool EXEC_profile_instr;
+extern bool EXEC_arch;
+extern bool EXEC_fifo;
+extern const char *EXEC_fifo_name;
+extern bool EXEC_keep_library;
 
-EXTERN EXEC_HOOK EXEC_Hook;
+extern EXEC_HOOK EXEC_Hook;
 
-EXTERN CENUM *EXEC_enum;
+extern CENUM *EXEC_enum;
 
-EXTERN bool EXEC_big_endian;
-EXTERN bool EXEC_main_hook_done;
-EXTERN bool EXEC_got_error;
+extern bool EXEC_big_endian;
+extern bool EXEC_main_hook_done;
+extern bool EXEC_got_error;
 
-EXTERN const char EXEC_should_borrow[];
+extern const char EXEC_should_borrow[];
 
-EXTERN const char *EXEC_unknown_name;
-EXTERN char EXEC_unknown_nparam;
+extern const char *EXEC_unknown_name;
+extern char EXEC_unknown_nparam;
 
-EXTERN EXEC_GLOBAL EXEC;
+extern EXEC_GLOBAL EXEC;
 
 #endif
 
