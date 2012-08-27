@@ -181,11 +181,11 @@ void gDraw::connect(gControl *wid)
 
 	switch (wid->getClass())
 	{
-		case Type_gMainWindow: 
+		/*case Type_gMainWindow: 
 			
 			dr = GTK_LAYOUT(wid->widget)->bin_window; 
 			mode = GDK_INCLUDE_INFERIORS;
-			break;
+			break;*/
 			
 		case Type_gDrawingArea:
 			

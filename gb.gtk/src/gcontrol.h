@@ -43,7 +43,7 @@ public:
 	int getClass() const { return g_typ; }
 	
 	bool isContainer() const { return (g_typ & 0x100) != 0; }
-	bool isWindow();
+	bool isWindow() const;
 	bool isTopLevel() const { return pr == NULL; }
 	bool isDestroyed() const { return _destroyed; }
 	

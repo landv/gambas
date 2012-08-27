@@ -642,12 +642,12 @@ void gContainer::setFont(gFont *ft)
 
 void gContainer::moveChild(gControl *child, int x, int y)
 {
-	GtkWidget *parent = getContainer();
+	GtkWidget *cont = gtk_widget_get_parent(child->border); //getContainer();
 	
-	if (GTK_IS_LAYOUT(parent))
-		gtk_layout_move(GTK_LAYOUT(parent), child->border, x, y);
+	if (GTK_IS_LAYOUT(cont))
+		gtk_layout_move(GTK_LAYOUT(cont), child->border, x, y);
 	else
-		gtk_fixed_move(GTK_FIXED(parent), child->border, x, y);
+		gtk_fixed_move(GTK_FIXED(cont), child->border, x, y);
 }
 
 bool gContainer::hasBackground() const

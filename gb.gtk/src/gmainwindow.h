@@ -142,6 +142,7 @@ public:
 	int menuBarHeight();
 	void configure();
 	void embedMenuBar(GtkWidget *border);
+	void emitResize();
 	
 	GtkWindowGroup *group;
 	GtkAccelGroup *accel;
@@ -159,8 +160,8 @@ public:
 	gButton *_default;
 	gButton *_cancel;
 	
-	int _next_w, _next_h;
-	guint _next_timer;
+	int _resize_last_w;
+	int _resize_last_h;
 	
 	unsigned _mask : 1;
 	unsigned top_only : 1;

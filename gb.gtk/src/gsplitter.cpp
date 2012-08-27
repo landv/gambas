@@ -24,6 +24,7 @@
 #include "widgets.h"
 #include "widgets_private.h"
 #include "gapplication.h"
+#include "gmainwindow.h"
 #include "gsplitter.h"
 
 static void cb_notify(GtkPaned *paned, GParamSpec *arg1, gSplitter *data)
@@ -34,7 +35,7 @@ static void cb_notify(GtkPaned *paned, GParamSpec *arg1, gSplitter *data)
 
 static void cb_size_allocate(GtkPaned *widget, GtkAllocation *allocation, gSplitter *data)
 {
-	data->updateChild(gtk_paned_get_child1(widget));
+	data->updateChild(); //gtk_paned_get_child1(widget));
 }
 
 static void cb_child_visibility(GtkWidget *widget, gSplitter *data)
@@ -157,18 +158,20 @@ void gSplitter::insert(gControl *child, bool realize)
 	else
 	{	
 		if (!vertical)
-			tmp=gtk_hpaned_new();
+			tmp = gtk_hpaned_new();
 		else
-			tmp=gtk_vpaned_new();
+			tmp = gtk_vpaned_new();
 			
 		//gtk_widget_show_all(tmp);
 		gtk_paned_pack2(curr, tmp, TRUE, TRUE);
-		curr=GTK_PANED(tmp);
-		gtk_paned_pack1(curr, w, TRUE, TRUE);	
-		gtk_paned_set_position(curr, child->width());
+		
+		curr = GTK_PANED(tmp);
 		//g_signal_connect_after(G_OBJECT(curr),"notify",G_CALLBACK(slt_notify),(gpointer)this);
   	g_signal_connect_after(G_OBJECT(curr), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 		g_signal_connect_after(G_OBJECT(curr), "notify", G_CALLBACK(cb_notify), (gpointer)this);
+		
+		gtk_paned_pack1(curr, w, TRUE, TRUE);	
+		gtk_paned_set_position(curr, child->width());
 	}
 	
 	g_signal_connect_after(G_OBJECT(w), "show", G_CALLBACK(cb_child_visibility), (gpointer)this);
@@ -181,6 +184,8 @@ void gSplitter::insert(gControl *child, bool realize)
 	free(layout);
 	
 	unlock();
+	
+	//performArrange();
 }
 
 void gSplitter::remove(gControl *child)
@@ -407,7 +412,9 @@ void gSplitter::updateChild(GtkWidget *w)
 		//chd->resize(chd->border->allocation.width, chd->border->allocation.height);
 		//gApplication::setDirty();
 		//g_debug("gSplitter::updateChild: %s -> (%d %d %d %d)", chd->name(), chd->x(), chd->y(), chd->width(), chd->height());
-		if (chd->isContainer())
+		if (chd->isWindow())
+			((gMainWindow *)chd)->emitResize();
+		else if (chd->isContainer())
 			((gContainer*)chd)->performArrange();
 	}
 }

@@ -55,6 +55,7 @@ static void cb_show (GtkWidget *widget, gMainWindow *data)
 	if (data->opened)
 	{
 		//data->performArrange();
+		data->emitResize();
 		data->emit(SIGNAL(data->onShow));
 		data->_not_spontaneous = false;
 	}
@@ -76,25 +77,11 @@ static gboolean win_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
 	return true;
 }
 
-static gboolean resize_later(gMainWindow *data)
-{
-	data->bufW = data->_next_w;
-	data->bufH = data->_next_h;
-	data->_next_timer = 0;
-	data->configure();
-	data->performArrange();
-
-	if (data->onResize) 
-		data->onResize(data);
-	
-	//data->refresh();
-	
-	return false;
-}
-
 static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainWindow *data)
 {
 	gint x, y;
+	
+	//fprintf(stderr, "cb_configure: %s: (%d %d) -> (%d %d) window = %p resized = %d\n", data->name(), data->bufW, data->bufH, event->width, event->height, event->window, data->_resized);
 	
 	if (data->opened)
 	{
@@ -107,6 +94,7 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 			x = event->x;
 			y = event->y;
 		}
+		
 		if (x != data->bufX || y != data->bufY)
 		{
 			data->bufX = x;
@@ -116,24 +104,10 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 		
 		if ((event->width != data->bufW) || (event->height != data->bufH) || (data->_resized) || !event->window)
 		{
-			data->_next_w = event->width;
-			data->_next_h = event->height;
-/*			data->bufW=event->width;
-			data->bufH=event->height;
-			//g_debug("gMainWindow: cb_configure: %d", event->send_event);
-			data->performArrange();
-			if (data->onResize) data->onResize(data);*/
-			//if (data->_resized || data->parent())
-			//{
-				data->_resized = false;
-				resize_later(data);
-			/*}
-			else
-			{
-				//resize_later(data);
-				if (!data->_next_timer)
-					data->_next_timer = g_timeout_add(50, (GSourceFunc)resize_later, data);
-			}*/
+			data->_resized = false;
+			data->bufW = event->width;
+			data->bufH = event->height;
+			data->emitResize();
 		}
 	}
 	
@@ -185,7 +159,6 @@ void gMainWindow::initialize()
 	_current = NULL;
 	_background = NULL;
 	_style = NULL;
-	_next_timer = 0;
 	_xembed = false;
 	_activate = false;
 	_hidden = false;
@@ -193,6 +166,7 @@ void gMainWindow::initialize()
 	_showMenuBar = true;
 	_popup = false;
 	_maximized = _minimized = _fullscreen = false;
+	_resize_last_w = _resize_last_h = -1;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -287,9 +261,6 @@ gMainWindow::~gMainWindow()
 			gApplication::exitLoop(this);
 	}
 	
-	if (_next_timer)
-		g_source_remove(_next_timer);
-	
 	gPicture::assign(&_picture);
 	gPicture::assign(&_icon);
 	if (_title) g_free(_title);
@@ -377,8 +348,11 @@ void gMainWindow::move(int x, int y)
 		oy = y + oy - bufY;
 		bufX = x;
 		bufY = y;
-		if (!X11_send_move_resize_event(GDK_WINDOW_XID(border->window), ox, oy, width(), height()))
-			return;
+		if (bufW > 0 && bufH > 0)
+		{
+			if (!X11_send_move_resize_event(GDK_WINDOW_XID(border->window), ox, oy, width(), height()))
+				return;
+		}
 		#else
 		bufX = x;
 		bufY = y;
@@ -402,6 +376,8 @@ void gMainWindow::resize(int w, int h)
 		
 	if (isTopLevel())
 	{
+		//fprintf(stderr, "resize: %s: %d %d\n", name(), w, h);
+	
 		//gdk_window_enable_synchronized_configure (border->window);
 		
 		bufW = w < 0 ? 0 : w;
@@ -414,7 +390,6 @@ void gMainWindow::resize(int w, int h)
 		}
 		else
 		{
-			//fprintf(stderr, "resize: %d %d (%d)\n", w, h, gtk_window_get_resizable(GTK_WINDOW(border)));
 			if (isResizable())
 				gtk_window_resize(GTK_WINDOW(border), w, h);
 			else
@@ -445,6 +420,7 @@ void gMainWindow::emitOpen()
 	{
 		//fprintf(stderr, "emit Open: %p (%d %d) resizable = %d\n", this, width(), height(), isResizable());
 		opened = true;
+		//_no_resize_event = true; // If the event loop is run during emitOpen(), some spurious configure events are received.
 		
 		if (isTopLevel()) 
 		{
@@ -468,9 +444,11 @@ void gMainWindow::emitOpen()
 		{
 			//fprintf(stderr, "emit Move & Resize: %p\n", this);			
 			emit(SIGNAL(onMove));
-			emit(SIGNAL(onResize));
+			emitResize();
 		}
 	}
+	
+	//_no_resize_event = false;
 }
 
 void gMainWindow::afterShow()
@@ -1322,13 +1300,18 @@ void gMainWindow::configure()
 	
 	h = menuBarHeight();
 	
+	//fprintf(stderr, "configure: %s: %d %d - %d %d\n", name(), isMenuBarVisible(), h, width(), height());
+	
+	//if (strcmp(name(), "FIDE") == 0 && (width() <= 32 || height() <= 32))
+	//	BREAKPOINT();
+	
 	if (isMenuBarVisible())
 	{
 		gtk_fixed_move(layout, GTK_WIDGET(menuBar), 0, 0);
 		if (h > 1)
 			gtk_widget_set_size_request(GTK_WIDGET(menuBar), width(), h);
 		gtk_fixed_move(layout, widget, 0, h);
-		gtk_widget_set_size_request(widget, width(), height() - h);
+		gtk_widget_set_size_request(widget, width(), Max(0, height() - h));
 	}
 	else
 	{
@@ -1386,6 +1369,7 @@ void gMainWindow::checkMenuBar()
 	}
 		
 	configure();
+	performArrange();
 }
 
 void gMainWindow::embedMenuBar(GtkWidget *border)
@@ -1443,4 +1427,16 @@ int gMainWindow::screen()
 {
 	gMainWindow *tl = topLevel();
 	return gdk_screen_get_number(gtk_window_get_screen(GTK_WINDOW(tl->border)));
+}
+
+void gMainWindow::emitResize()
+{
+	if (bufW == _resize_last_w && bufH == _resize_last_h)
+		return;
+	
+	_resize_last_w = bufW;
+	_resize_last_h = bufH;
+	configure();
+	performArrange();
+	emit(SIGNAL(onResize));
 }

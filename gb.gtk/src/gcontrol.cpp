@@ -805,7 +805,7 @@ HANDLES
 
 ******************************************************************/
 
-bool gControl::isWindow()
+bool gControl::isWindow() const
 {
 	return g_typ == Type_gMainWindow; 
 }
