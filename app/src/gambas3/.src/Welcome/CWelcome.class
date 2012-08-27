@@ -6,6 +6,8 @@ Private $hText As Image
 Static Private BACKGROUND_COLOR As Integer = &H3398C3& '&HFFAF5F&
 Static Private TEXT_COLOR As Integer = &HDF6B00& ' &HDF6B00 '&HFFAF5F&
 
+Private $hObs As Observer
+
 Public Sub _new(hDrawingArea As DrawingArea)
   
   Dim hSvgLogo As SvgImage
@@ -41,11 +43,11 @@ Public Sub _new(hDrawingArea As DrawingArea)
     
   Endif
 
-  Object.Attach(hDrawingArea, Me, "dwgWelcome")
+  $hObs = New Observer(hDrawingArea) As "dwgWelcome"
   
 End
 
-Private Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Integer) As Integer
+Static Public Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Integer) As Integer
   
   Dim hColor As ColorInfo
   Dim XR As Integer

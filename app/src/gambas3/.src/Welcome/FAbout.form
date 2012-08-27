@@ -1,16 +1,16 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,6,82,65)
+  MoveScaled(3,6,67,65)
   Background = &HFFFFFF&
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
   { dwgWelcome DrawingArea
-    MoveScaled(0,0,82,21)
+    MoveScaled(0,0,67,21)
   }
   { svwAuthor ScrollView
-    MoveScaled(3,23,76,41)
+    MoveScaled(3,23,62,41)
     Arrangement = Arrange.Vertical
     Spacing = True
     Border = False
@@ -31,12 +31,12 @@
       Alignment = Align.Center
     }
     { TextLabel2 TextLabel
-      MoveScaled(9,84,58,29)
+      MoveScaled(2,85,58,29)
       AutoResize = True
       Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
     }
     { TextLabel3 TextLabel
-      MoveScaled(0,113,76,8)
+      MoveScaled(0,113,61,8)
       Padding = 8
       Text = ("<h2 align=center>Authors</h2>\n")
       Alignment = Align.Bottom

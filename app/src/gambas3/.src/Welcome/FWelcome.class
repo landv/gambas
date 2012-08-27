@@ -7,6 +7,7 @@ Private btnOpen As CCoolButton
 Private btnRecent As CCoolButton
 Private btnExample As CCoolButton
 Private btnQuit As CCoolButton
+Private btnAbout As CCoolButton
 
 Private $iRecent As Integer
 Private $aExample As String[]
@@ -21,7 +22,7 @@ Private Const LIST_EXAMPLE As Integer = 2
 Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
-Private $hWelcome As CWelcome
+'Private $hWelcome As CWelcome
 Private $iSort As Integer = CRecentFile.SORT_BY_DATE
 
 Static Public Function Run() As String
@@ -50,11 +51,12 @@ Public Sub Form_Open()
   btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) As "btnOpen"
   btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
   btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
-  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
+  btnAbout = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("About Gambas..."), "icon:/large/gambas", sFont) As "btnAbout"
+  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 5, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
 
-  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnQuit]
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnAbout, btnQuit]
     hCtrl.Foreground = Color.White
-    hCtrl.Highlight = &H3398C3& ' &HDF6B00&
+    hCtrl.Highlight = &H61A7C3&
   Next
 
   ' Fill recent list
@@ -69,9 +71,10 @@ Public Sub Form_Open()
     Toggle(LIST_EXAMPLE)
   Endif
 
-  $hWelcome = New CWelcome(dwgWelcome)
+  '$hWelcome = New CWelcome(dwgWelcome)
 
   Settings.Read(Me)
+  Me.Center
   
 End
 
@@ -550,5 +553,22 @@ Public Sub txtFilter_Activate()
   If Not $hFirst Then Return
   $sPath = $hFirst.Path
   Me.Close
+
+End
+
+Public Sub btnAbout_Click()
+  
+  FAbout.Run
+  
+End
+
+Public Sub dwgTitle_Draw()
+
+  Dim sText As String = "<font size=\"7\"><b>Gambas " & System.FullVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " / " & System.Architecture & " / " & System.Language & "</b></font>"
+
+  Draw.Foreground = Color.Gradient(Draw.Background, Color.Black)
+  Draw.RichText(sText, 12, 4, Draw.W - 16, Draw.H - 16, Align.TopLeft)
+  Draw.Foreground = Color.White
+  Draw.RichText(sText, 8, 0, Draw.W - 16, Draw.H - 16, Align.TopLeft)
 
 End

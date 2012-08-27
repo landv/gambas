@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,81,74)
+  MoveScaled(0,2,83,67)
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
@@ -27,25 +27,37 @@
   }
   { dwgWelcome DrawingArea
     MoveScaled(1,1,66,21)
+    Visible = False
   }
   { Panel1 Panel
     MoveScaled(19,23,14,0)
+    Visible = False
     Background = &H000000&
   }
   { HBox1 HBox
-    MoveScaled(1,25,66,41)
+    MoveScaled(1,25,73,41)
     Expand = True
     { panButton Panel
-      MoveScaled(3,5,28,35)
+      MoveScaled(1,5,37,35)
       Background = &HDF6B00&
       Foreground = Color.TextForeground
+      Arrangement = Arrange.Vertical
+      { dwgTitle DrawingArea
+        MoveScaled(2,2,25,12)
+        Background = &H3398C3&
+        Foreground = &H000000&
+      }
+      { Panel6 Panel
+        MoveScaled(6,19,21,0)
+        Background = &H000000&
+      }
     }
     { Panel2 Panel
-      MoveScaled(34,10,0,7)
+      MoveScaled(39,10,0,16)
       Background = &H000000&
     }
     { panList Panel
-      MoveScaled(37,2,28,30)
+      MoveScaled(43,5,28,30)
       Visible = False
       Mouse = Mouse.Arrow
       Expand = True
@@ -95,7 +107,7 @@
         Border = False
       }
       { lstExample ListContainer
-        MoveScaled(8,9,17,20)
+        MoveScaled(8,8,17,20)
         Expand = True
         Border = False
       }

@@ -54,7 +54,7 @@ Public Sub Form_Open()
     E = 1 - (Y / hImage.H)
     hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, E * 255))
   Next
-  picGradientBottom.Picture = hImage.Picture
+  picGradientBottom.Picture = hImage.Stretch(hImage.W, picGradientBottom.H).Picture
 
   'lblMessage.Text = "© 2000-" & Year(Now) & " Benoît Minisini"
   
@@ -527,3 +527,16 @@ Public Sub timAuthor_Timer()
 
 End
 
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then Me.Close
+
+End
+
+
+Public Sub dwgWelcome_MouseDown()
+
+  Me.Close
+
+End
