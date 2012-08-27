@@ -38,6 +38,7 @@ Export
 Property Encrypt As Integer
 Private $iEncrypt As Integer
 
+''Returns the status of the client as defined by the POP3 class
 Property Read Status As Integer
 Private $iStatus As Integer
 
@@ -55,37 +56,48 @@ Static Public CRLF As String = CR & LF
 
 Static Public END_MULTILINE As String = CRLF & Chr(46) & CRLF
 
+''Returns or sets the username used to authenticate to the server.
+''It cannot be modified after Open() is executed
 Property Username As String
 Private $sUsername As String
 
+''Returns or sets the password used to authenticate to the server.
+''It cannot be modified after Open() is executed
 Property Password As String
 Private $sPassword As String
 
+''Returns or sets the server used to connect to the server.
+''It cannot be modified after Open() is executed
 Property Server As String
 Private $sServer As String
 
+''Returns or sets the port used to connect to the server.
+''It cannot be modified after Open() is executed
 Property Port As Integer
 Private $iPort As String = 110
 
-''Inbox status
-
+''Returns the message count
 Property Read Count As Integer
 Private $iCount As Integer
 
+''Returns the size of the inbox in bytes
 Property Read Size As Integer
 Private $iSize As Integer
 
 ''Welcome message returned by the server
 Public Welcome As String
 
+''Collection used to cache the request of single messages
 Private $msgCache As New Collection
 
+''Returns True if _Text_ begins with "+OK"
 Static Public Function isPositive(Text As String) As Boolean
 
   Return (Text Begins SERVER_POSITIVE_RESPONSE)
 
 End
 
+''Returns True if _Text_ begins with "-ERR"
 Static Public Function isNegative(Text As String) As Boolean
 
   Return (Text Begins SERVER_NEGATIVE_RESPONSE)
@@ -183,14 +195,6 @@ Public Function Open() As Boolean
 
 End
 
-''Authenticate to the server
-''If =Hardened \= True= (Default) then the client probes the
-''status with an aditional call.
-''*@deprecated to be replaced with separate calls*
-' Public Function Authenticate() As Boolean
-'
-' End
-
 ''Send Data to the server and wait for a response, then return it.
 Public Function Exec(Data As String, Optional Multiline As Boolean = False) As String
 
@@ -209,7 +213,7 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
 
 End
 
-''Logout from the server
+''Logout from the server and disconnect
 Public Function Close() As Boolean
 
   Dim Response As String
@@ -228,20 +232,6 @@ Public Function Close() As Boolean
   Return isPositive(Response)
 
 End
-
-' ''Disconnect from the server
-' Public Sub Close()
-'
-' End
-
-''Wait for an established connection
-' Public Sub WaitForConnection()
-'
-'   Do While Client.Ready = False
-'     Wait 0.1
-'   Loop
-'
-' End
 
 Public Function Stat() As Integer[]
 
@@ -274,6 +264,8 @@ Private Function _NOOP() As Boolean
 
 End
 
+''Returns a positive response if the Client is in Transaction state.
+''Can be used as a keep-alive feature
 Public Function Ping() As Boolean
 
   Return _NOOP()
@@ -444,6 +436,7 @@ Private Sub Port_Write(Value As Integer)
 
 End
 
+''Clears inbox and message cache
 Private Sub _Refresh()
 
   Dim sResponse As Integer[][]

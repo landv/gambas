@@ -1,16 +1,20 @@
 ' Gambas class file
 
+''Returns the ID used to list the message as per the LIST command
 Property Read ListingID As Integer
 Private $msgid As Integer
 
 Private $oPOPClient As Pop3Client
 
+''Returns the content of the message. It is cached after the first request.
 Property Read Text As String
 Private $sText As String
 
+''Returns the size of the message. It is cached after the first request.
 Property Read Size As Integer
 Private $iSize As Integer
 
+''Returns the unique id of the message. It is cached after the first request.
 Property Read UniqueID As String
 Private $sUID As String
 
@@ -62,6 +66,7 @@ Private Function Size_Read() As Integer
 
 End
 
+''Deletes the message from the mailbox
 Public Function Delete() As Boolean
 
   Dim sResponse As String
@@ -72,6 +77,7 @@ Public Function Delete() As Boolean
 
 End
 
+''Returns _Lines_ from the tom of the message
 Public Function Top(Lines As Integer) As String
 
   Dim sResponse As String
@@ -112,6 +118,7 @@ Private Function ListingID_Read() As Integer
 
 End
 
+''Clears the cached data
 Public Sub Clear()
 
   $iSize = 0

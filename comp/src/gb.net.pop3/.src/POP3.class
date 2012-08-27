@@ -1,9 +1,15 @@
 ' Gambas class file
 
-'
 Export
 
 Public Const Disconnected As Integer = 0
+
+''A conenction has been opened and the server
+''is waiting for one of the auth commands to be issued
 Public Const Authorization As Integer = 1
+
+''The mailbox is locked and the server is ready to receive any command
 Public Const Transaction As Integer = 2
+
+''The client has issued the QUIT command and is waiting for a response
 Public Const Update As Integer = 3

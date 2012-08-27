@@ -15,8 +15,6 @@ Inherits POPClient
 ''Socket instance
 Public sSocket As New Socket As "Client"
 
-Public Ready As Boolean
-
 Public Sub _new()
 
   Ready = False
@@ -120,6 +118,7 @@ Public Function Send(Data As String, Multiline As Boolean) As String
 
 End
 
+''Get data from the stream until the EOL is reached
 Public Function GetLine() As String
 
   Dim Response As String
@@ -145,6 +144,8 @@ Public Function GetLine() As String
 
 End
 
+''Get data from the stream until the EOF as defined
+''by the specifications is reached.
 Public Function GetResponse() As String
 
   Dim Response As String
