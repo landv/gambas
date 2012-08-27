@@ -29,15 +29,55 @@ Public Sub _init()
   
 End
 
-Public Sub Run(sText As String, Optional iLevel As Integer) As String
+Private Sub RemoveLine(aPos As Integer[], iLine As Integer)
+
+  Dim I As Integer
   
-  Dim aLine As String[] = Split(sText, "\n")
+  While I < aPos.Count
+    If aPos[I] = iLine Then
+      aPos.Remove(I)
+    Else
+      If aPos[I] > iLine Then Dec aPos[I]
+      Inc I
+    Endif
+  Wend
+  
+End
+
+Private Sub InsertLine(aPos As Integer[], iLine As Integer, Optional iCount As Integer = 1)
+
+  Dim I As Integer
+  
+  While I < aPos.Count
+    If aPos[I] >= iLine Then aPos[I] += iCount
+    Inc I
+  Wend
+  
+End
+
+
+Public Sub Run(hEditor As Editor, Optional iStart As Integer, Optional iEnd As Integer = -1)
+  
   Dim sLine As String
+  Dim aLine As String[]
   Dim iLine As Integer
+  Dim iLevel As Integer
+  Dim aBookmark As Integer[]
+  Dim bBookmark As Boolean
+  Dim aBreakpoint As Integer[]
+  Dim bBreakpoint As Boolean
+  Dim I As Integer
   
+  aBreakpoint = hEditor.Breakpoints
+  aBookmark = hEditor.Bookmarks
+    
   $bIndentDim = Settings["/FormatCode/IndentLocal", 1]
   $bRemoveSpace = Settings["/FormatCode/RemoveSpaces", 0]
   $bKeepVoidLine = Settings["/FormatCode/KeepVoidLines", 0]
+  
+  If iEnd < 0 Then
+    iEnd = hEditor.Lines.Count - 1
+  Endif
   
   $iLevel = iLevel
   $bLastNewLine = True
@@ -45,21 +85,79 @@ Public Sub Run(sText As String, Optional iLevel As Integer) As String
   $iLastSelect = -1
   $bLastWrap = False
   
-  While iLine < aLine.Count
+  hEditor.Begin
+  
+  iLine = 0
+  While iLine <= iEnd
     
     $iLine = iLine
-    aLine[iLine] = IndentLine(aLine[iLine])
-    If $bRemoveSpace Then aLine[iLine] = RTrim(aLine[iLine])
+    sLine = hEditor.Lines[iLine].Text
+    sLine = IndentLine(sLine)
     
-    If Not $bKeepVoidLine And If iLine > 0 And If Not Trim(aLine[iLine]) And If Not Trim$(aLine[iLine - 1]) Then
-      aLine.Remove(iLine)
-    Else
+    If iLine < iStart Then
       Inc iLine
+      Continue
     Endif
     
+    If $bRemoveSpace Then sLine = RTrim(sLine)
+    aLine = Split(sLine, "\n")
+    
+    If aLine.Count <= 1 Then
+      hEditor.Lines[iLine].Text = sLine
+    Else
+      hEditor.Lines[iLine].Text = aLine[0]
+      For I = 1 To aLine.Max
+        hEditor.Insert(aLine[I] & "\n", iLine + I, 0)
+      Next
+      
+      If aBookmark.Count Then
+        InsertLine(aBookmark, iLine + 1, aLine.Max)
+        bBookmark = True
+      Endif
+      If aBreakpoint.Count Then
+        InsertLine(aBreakpoint, iLine + 1, aLine.Max)
+        bBreakpoint = True
+      Endif
+      
+      iLine += aLine.Max
+    Endif
+    
+    Inc iLine
   Wend
   
-  Return aLine.Join("\n")
+  If Not $bKeepVoidLine Then
+    
+    iLine = Max(1, iStart)
+    While iLine <= iEnd
+      
+      If Not Trim(hEditor.Lines[iLine].Text) And If Not Trim$(hEditor.Lines[iLine - 1].Text) Then
+        
+        hEditor.Remove(iLine - 1, 0, iLine, 0)
+        Dec iEnd
+        
+        If aBookmark.Count Then
+          RemoveLine(aBookmark, iLine)
+          bBookmark = True
+        Endif
+        If aBreakpoint.Count Then
+          RemoveLine(aBreakpoint, iLine)
+          bBookmark = True
+        Endif
+        
+      Else
+        
+        Inc iLine
+        
+      Endif
+      
+    Wend
+    
+  Endif
+  
+  If bBookmark Then hEditor.Bookmarks = aBookmark
+  If bBreakpoint Then hEditor.Breakpoints = aBreakpoint
+    
+  hEditor.End
   
 End
 

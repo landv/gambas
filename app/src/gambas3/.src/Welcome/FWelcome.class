@@ -158,12 +158,13 @@ Private Sub Toggle(iState As Integer)
     panList.Visible = True
     If $iRecent = LIST_RECENT Then
       lblList.Text = ("Recent projects")
-      panFilter.Show
-      txtFilter.SetFocus
+      'panFilter.Show
     Else
       lblList.Text = ("Examples")
-      panFilter.Hide
+      'panFilter.Hide
     Endif
+    FilterList
+    txtFilter.SetFocus
     lblList2.Text = lblList.Text
     panList_Arrange
   Else
@@ -369,17 +370,24 @@ End
 
 Public Sub txtFilter_Change()
 
-  FilterRecent
+  FilterList
 
 End
 
-Private Sub FilterRecent()
+Private Sub FilterList()
 
+  Dim hList As ListContainer
   Dim sFilter As String = Trim(txtFilter.Text)
   Dim hCtrl, hLast As Control
   Dim hFirst, hProjectItem As ProjectItem
   
-  lstRecent.Lock
+  If $iRecent = LIST_RECENT Then
+    hList = lstRecent
+  Else
+    hList = lstExample
+  Endif
+  
+  hList.Lock
   
   If Not sFilter Then
     sFilter = "*"
@@ -387,7 +395,7 @@ Private Sub FilterRecent()
     sFilter = "*" & String.LCase(sFilter) & "*"
   Endif
   
-  For Each hCtrl In lstRecent.Children
+  For Each hCtrl In hList.Children
     
     If hCtrl Is ProjectItem Then
       hProjectItem = hCtrl
@@ -399,7 +407,7 @@ Private Sub FilterRecent()
     
   Next
   
-  For Each hCtrl In lstRecent.Children
+  For Each hCtrl In hList.Children
     
     If hCtrl Is DrawingArea Then
       If hLast Then hLast.Hide
@@ -416,7 +424,7 @@ Private Sub FilterRecent()
   $hFirst = hFirst
   
   'lstRecent.Select(hFirst)
-  lstRecent.Unlock
+  hList.Unlock
   
 End
 
@@ -488,6 +496,7 @@ Private Sub FillExample()
   Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectItem
   Dim hLabel As Label
+  Dim sGroup As String
   'Dim bHighlight As Boolean
   
   If lstExample.Children.Count Then Return
@@ -503,7 +512,8 @@ Private Sub FillExample()
       hDrawingArea = New DrawingArea(lstExample) As "dwgExample"
       With hDrawingArea
         .Enabled = False
-        .Tag = Project.ExampleTitle[sDir]
+        sGroup = Project.ExampleTitle[sDir]
+        .Tag = sGroup
         .Font = Font["Bold"]
         .H = .Font.Height + If(sLastDir, 16, 8)
         .Foreground = Color.SelectedBackground
@@ -516,6 +526,7 @@ Private Sub FillExample()
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
     hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
+    hProjectItem.Group = sGroup
   
   Next
 

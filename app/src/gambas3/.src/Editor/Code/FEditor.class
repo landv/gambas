@@ -297,11 +297,9 @@ Public Function Save(Optional bReset As Boolean) As Boolean
 
   Editor.End
   
-  If Settings["/FormatCode/FormatOnLoad"] Then 
-    File.Save(Path, MPrettyCode.Run(GetHighlightedText()))
-  Else
-    File.Save(Path, GetHighlightedText())
-  Endif
+  Editor.HighlightAll
+  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(edtEditor)
+  File.Save(Path, Editor.Text)
 
   ' ENDIF
 
@@ -2320,13 +2318,15 @@ Public Sub Reload()
 
   sText = File.Load(Path)
   If Right(sText) <> "\n" Then sText &= "\n"
-  If Settings["/FormatCode/FormatOnLoad"] Then sText = MPrettyCode.Run(sText)
   edtEditor.Text = sText
+  $hBookmark.Load()
   If Not Project.RestoringFiles Then
     If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
   Endif
+
+  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(edtEditor)
+
   Editor.SetFocus
-  $hBookmark.Load()
   Modify(True)
 
 End
@@ -3266,17 +3266,6 @@ Public Sub GetText() As String
 
 End
 
-Public Sub GetHighlightedText(Optional bSelected As Boolean) As String
-
-  Editor.HighlightAll
-  If bSelected Then
-    Return Editor.Selection.Text 
-  Else
-    Return Editor.Text
-  Endif
-
-End
-
 Public Sub GetPosition() As Integer
 
   Return Editor.GetPosition()
@@ -3342,20 +3331,17 @@ Public Sub mnuPretty_Click()
   Dim X, Y As Integer
   Dim sText, sNewText As String
   Dim bSelected As Boolean
+  Dim iStart, iEnd As Integer
 
-  bSelected = Editor.Selected
+  If Editor.Selected Then
+    iStart = Editor.Selection.StartLine
+    iEnd = Editor.Selection.EndLine
+  Else
+    iStart = 0
+    iEnd = Editor.Lines.Count - 1
+  Endif
 
-  sText = GetHighlightedText(bSelected)
-  sNewText = MPrettyCode.Run(sText)
-  If sNewText = sText Then Return
-
-  X = Editor.Column
-  Y = Editor.Line
-  Editor.Begin
-  If Not bSelected Then Editor.SelectAll
-  Editor.Insert(sNewText)
-  Editor.Goto(Y, X)
-  Editor.End
+  MPrettyCode.Run(Editor, iStart, iEnd)
 
 End
 
@@ -3671,5 +3657,11 @@ Private Sub CreateLocalVariable() As Boolean
 
   If sType Then AddLocalVariable(sName, CSymbolInfo.GetType(sType))
   Return True
+  
+End
+
+Public Sub mnuBookmark_Show()
+  
+  $hBookmark.Update
   
 End

@@ -62,14 +62,23 @@
         { Panel4 Panel
           MoveScaled(14,0,2,4)
         }
-        { panFilter Panel
-          MoveScaled(17,0,10,4)
+        { Panel5 Panel
+          MoveScaled(17,0,11,5)
           Expand = True
           Arrangement = Arrange.Fill
-          { txtFilter ButtonBox
-            MoveScaled(1,0,9,4)
-            Foreground = Color.LightForeground
-            Picture = Picture["icon:/small/clear"]
+          Padding = 1
+          { panFilter Panel
+            MoveScaled(0,0,10,4)
+            Expand = True
+            Arrangement = Arrange.Fill
+            Padding = 1
+            Border = Border.Plain
+            { txtFilter ButtonBox
+              MoveScaled(1,0,9,4)
+              Foreground = Color.LightForeground
+              Picture = Picture["icon:/small/clear"]
+              Border = False
+            }
           }
         }
         { lblList2 Label

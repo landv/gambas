@@ -11,6 +11,7 @@ Property Background As Integer
 Property Read IdealHeight As Integer
 Property ShowAuthors As Boolean
 Property Read Info As CProjectInfo
+Public Group As String ' for examples
 
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
@@ -264,6 +265,7 @@ Public Sub Match(sFilter As String) As Boolean
     If .Name Like sFilter Then Return True
     If String.LCase(.Title) Like sFilter Then Return True
     If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
+    If String.LCase(Group) Like sFilter Then Return True
   End With
   
 End

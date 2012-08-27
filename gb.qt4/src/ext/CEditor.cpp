@@ -442,15 +442,41 @@ static void return_flagged_lines(CEDITOR *_object, int flag)
 	GB.ReturnObject(array);
 }
 
+static void set_flagged_lines(CEDITOR *_object, int flag, GB_ARRAY array)
+{
+	int i, line;
+	
+	if (GB.CheckObject(array))
+		return;
+	
+	for (i = 0; i < DOC->numLines(); i++)
+	{
+		if (DOC->getLineFlag(i, flag))
+			DOC->setLineFlag(i, flag, false);
+	}
+	
+	for (i = 0; i < GB.Array.Count(array); i++)
+	{
+		line = *((int *)GB.Array.Get(array, i));
+		DOC->setLineFlag(line, flag, true);
+	}
+}
+
 BEGIN_PROPERTY(Editor_Breakpoints)
 
-	return_flagged_lines(THIS, GLine::BreakpointFlag);
+	if (READ_PROPERTY)
+		return_flagged_lines(THIS, GLine::BreakpointFlag);
+	else
+		set_flagged_lines(THIS, GLine::BreakpointFlag, VPROP(GB_OBJECT));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Editor_Bookmarks)
 
-	return_flagged_lines(THIS, GLine::BookmarkFlag);
+	if (READ_PROPERTY)
+		return_flagged_lines(THIS, GLine::BookmarkFlag);
+	else
+		set_flagged_lines(THIS, GLine::BookmarkFlag, VPROP(GB_OBJECT));
 
 END_PROPERTY
 
@@ -1502,8 +1528,8 @@ GB_DESC CEditorDesc[] =
 	GB_METHOD("FindNextLimit", "i", CEDITOR_find_next_limit, "(Line)i"),
 	//GB_METHOD("FindPreviousLimit", "i", CEDITOR_find_next_limit, "(Line)i"),
 	
-	GB_PROPERTY_READ("Breakpoints", "Integer[]", Editor_Breakpoints),
-	GB_PROPERTY_READ("Bookmarks", "Integer[]", Editor_Bookmarks),
+	GB_PROPERTY("Breakpoints", "Integer[]", Editor_Breakpoints),
+	GB_PROPERTY("Bookmarks", "Integer[]", Editor_Bookmarks),
 	GB_PROPERTY("CurrentLine", "i", Editor_CurrentLine),
 	
 	GB_PROPERTY("ScrollX", "i", Editor_ScrollX),
