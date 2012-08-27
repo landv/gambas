@@ -372,7 +372,7 @@ GB_DESC DesktopDesc[] =
 	GB_STATIC_PROPERTY_READ("Resolution", "i", Desktop_Resolution),
 	GB_STATIC_PROPERTY_READ("Scale", "i", Desktop_Scale),
 
-	GB_STATIC_PROPERTY("HasSystemTray", "s", Desktop_HasSystemTray),
+	GB_STATIC_PROPERTY_READ("HasSystemTray", "b", Desktop_HasSystemTray),
 	
 	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
 

@@ -1819,7 +1819,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	if (true) //(sqlite3_table_column_metadata(db_handle, NULL, table, field, NULL, NULL, NULL, NULL, &autoinc) != SQLITE_OK)
 	{
 		// [BM] We use INTEGER only when creating the AUTOINCREMENT field.
-		autoinc = strcasecmp(_fieldType, "INTEGER") == 0;
+		autoinc = strstr(_fieldType, "INTEGER") && strstr(_fieldType, "AUTOINCREMENT");
 	}
 	
 	type = GetFieldType(_fieldType, (unsigned int *) &info->length);
