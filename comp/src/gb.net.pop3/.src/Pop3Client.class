@@ -35,14 +35,15 @@ Export
 
 ''Use plaintext or an ssl encrypted conenction
 'TODO: Add to the constructor
-Public Encrypt As Boolean
+Property Encrypt As Integer
+Private $iEncrypt As Integer
+
+Property Read Status As Integer
+Private $iStatus As Integer
 
 ''Used to store the client instance. Either TCPClient or SSLClient.
 ''Both share the same API.
-Public Client As POPClient
-
-''Evaluates to True after Authenticate() with valid login options.
-Public Authenticated As Boolean
+Private $oClient As POPClient
 
 Public Const SERVER_POSITIVE_RESPONSE As String = "+OK"
 
@@ -54,21 +55,30 @@ Static Public CRLF As String = CR & LF
 
 Static Public END_MULTILINE As String = CRLF & Chr(46) & CRLF
 
-Public Username As String
-Public Password As String
+Property Username As String
+Private $sUsername As String
 
-Public Server As String
-Public Port As Integer = 110
+Property Password As String
+Private $sPassword As String
 
-''True to probe the connection for a positive response
-Public Hardened As Boolean
+Property Server As String
+Private $sServer As String
+
+Property Port As Integer
+Private $iPort As String = 110
+
+''Inbox status
 
 Property Read Count As Integer
+Private $iCount As Integer
 
 Property Read Size As Integer
+Private $iSize As Integer
 
 ''Welcome message returned by the server
 Public Welcome As String
+
+Private $msgCache As New Collection
 
 Static Public Function isPositive(Text As String) As Boolean
 
@@ -95,50 +105,81 @@ End
 
 Public Sub _get(msgid As Integer) As _POPMessage
 
-  Return New _POPMessage(msgid, Me)
+  Dim oPOPMInstance As _POPMessage
+
+  If Not $msgCache.Exist(msgid) Then
+
+    oPOPMInstance = New _POPMessage(msgid, Me)
+
+    $msgCache.Add(oPOPMInstance, msgid)
+
+  Endif
+
+  Return $msgCache[msgid]
 
 End
 
 ''Establish a connection. Choose Client depending on Encrypt
 ''Port defaults to 110 for TCPClient and 995 for SSLClient
-Public Sub Connect()
+Public Function Open() As Boolean
 
-  If Not Server Then
+  Dim $bUser, $bPass As Boolean
+
+  If Not Me.Server Then
     Error.Raise("Server not set")
   Endif
 
-  If Not Port Then
+  If Not Me.Port Then
     Error.Raise("Port not set")
   Endif
 
-  If Not Username Then
+  If Not Me.Username Then
     Error.Raise("Username not set")
   Endif
 
-  If Not Password Then
+  If Not Me.Password Then
     Error.Raise("Password not set")
   Endif
 
-  Debug "Conencting"
+  Debug "Conencting to " & Me.Server
 
-  If Not Encrypt Then
+  Select Case Me.Encrypt
 
-    Client = New TCPClient
+    Case Net.None
+      $oClient = New TCPClient
 
-  Else
+    Case Net.SSL
+      If $iPort = 110 Then
+        $iPort = 995
+        Debug "Port not specified, using 995"
+      Endif
 
-    If Port = 110 Then
-      Port = 995
-      Debug "Port not specified, using 995"
-    Endif
+      $oClient = New SSLClient
 
-    Client = New SSLClient
+    Case Else
+      Error.Raise("Invalid connection type")
 
-  Endif
+  End Select
 
-  Client.Connect(Server, Port)
+  $oClient.Connect(Me.Server, Me.Port)
 
-  Authenticate()
+  $iStatus = POP3.Authorization
+
+  Welcome = Trim($oClient.GetLine())
+
+  Debug "Logging in"
+
+  If _User(Me.Username) Then $bUser = True
+
+  If _Pass(Me.Password) Then $bPass = True
+
+  'If Hardened Then
+  ' If UserOK And PassOK And NOOP() Then $iStatus = POP3.Transaction
+  ' Else
+  If $bUser And $bPass Then $iStatus = POP3.Transaction
+  ' Endif
+
+  Return ($iStatus = POP3.Transaction)
 
 End
 
@@ -146,30 +187,9 @@ End
 ''If =Hardened \= True= (Default) then the client probes the
 ''status with an aditional call.
 ''*@deprecated to be replaced with separate calls*
-Public Function Authenticate() As Boolean
-
-  Dim UserOK As Boolean
-  Dim PassOK As Boolean
-
-  Debug "Logging in"
-
-  Welcome = Client.GetLine()
-
-  If User(Username) Then UserOK = True
-
-  If Pass(Password) Then PassOK = True
-
-  Authenticated = False
-
-  If Hardened Then
-    If UserOK And PassOK And NOOP() Then Authenticated = True
-  Else
-    If UserOK And PassOK Then Authenticated = True
-  Endif
-
-  Return Authenticated
-
-End
+' Public Function Authenticate() As Boolean
+'
+' End
 
 ''Send Data to the server and wait for a response, then return it.
 Public Function Exec(Data As String, Optional Multiline As Boolean = False) As String
@@ -177,7 +197,7 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
   Dim Response As String
 
   'Send the data
-  Response = Client.Send(Data, Multiline)
+  Response = $oClient.Send(Data, Multiline)
 
   ' If Not Response Begins "+" Then
   '   Error.Raise("Invalid POP response: " & Response)
@@ -190,28 +210,38 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
 End
 
 ''Logout from the server
-Public Sub Quit()
+Public Function Close() As Boolean
 
-  Exec("QUIT")
+  Dim Response As String
 
-End
+  If $iStatus < POP3.Transaction Then
+    Error.Raise("Not connected")
+  Else If $iStatus > POP3.Transaction Then
+    Error.Raise("Already in UPDATE state")
+  Endif
 
-''Disconnect from the server
-Public Sub Disconnect()
+  Response = Exec("QUIT")
 
   Debug "Disconnecting"
-  Client.Disconnect()
+  $oClient.Disconnect()
+
+  Return isPositive(Response)
 
 End
+
+' ''Disconnect from the server
+' Public Sub Close()
+'
+' End
 
 ''Wait for an established connection
-Public Sub WaitForConnection()
-
-  Do While Client.Ready = False
-    Wait 0.1
-  Loop
-
-End
+' Public Sub WaitForConnection()
+'
+'   Do While Client.Ready = False
+'     Wait 0.1
+'   Loop
+'
+' End
 
 Public Function Stat() As Integer[]
 
@@ -234,28 +264,19 @@ Public Function Stat() As Integer[]
 
 End
 
-Public Function Retrieve(msgid As Integer) As String
-
-  Dim Response As String
-
-  Response = Exec("RETR " & msgid, True)
-
-  If isPositive(Response) Then
-    Response = StripOK(Response)
-
-    Return Response
-
-  Endif
-
-End
-
-Public Function NOOP() As Boolean
+Private Function _NOOP() As Boolean
 
   Dim Response As String
 
   Response = Exec("NOOP")
 
   Return isPositive(Response)
+
+End
+
+Public Function Ping() As Boolean
+
+  Return _NOOP()
 
 End
 
@@ -269,17 +290,7 @@ Public Function Reset() As Boolean
 
 End
 
-Public Function Delete(msgid As Integer) As Boolean
-
-  Dim Response As String
-
-  Response = Exec("DELE " & msgid)
-
-  Return isPositive(Response)
-
-End
-
-Private Function User(Username As String) As Boolean
+Private Function _User(Username As String) As Boolean
 
   Dim Response As String
 
@@ -289,7 +300,7 @@ Private Function User(Username As String) As Boolean
 
 End
 
-Private Function Pass(Password As String) As Boolean
+Private Function _Pass(Password As String) As Boolean
 
   Dim Response As String
 
@@ -299,76 +310,43 @@ Private Function Pass(Password As String) As Boolean
 
 End
 
-Public Function List(Optional msgid As Integer) As String[]
+Public Function List() As String[]
 
   Dim Response As String
 
   Dim list_data As String[]
 
-  If msgid Then
-    Response = Exec("LIST " & msgid, False)
-  Else
-    Response = Exec("LIST", True)
-  Endif
+  Response = Exec("LIST", True)
 
   If isPositive(Response) Then
     Response = StripOK(Response)
 
-    If msgid Then
-      Try list_data = Split(Response, " ")
-      If Error Then Return Response
+    list_data = Split(Response, "\n")
 
-      Return [CInt(list_data[0]), CInt(list_data[1])]
-    Else
-      list_data = Split(Response, "\n")
+    list_data.Remove(list_data.Count - 1)
 
-      Return list_data
-    Endif
+    Return list_data
 
   Endif
 
 End
 
-Public Function Top(msgid As Integer, Lines As Integer) As String
-
-  Dim Response As String
-
-  Response = Exec(Subst("TOP &1 &2", msgid, Lines), True)
-
-  If isPositive(Response) Then
-    Response = StripOK(Response)
-
-    Return Response
-
-  Endif
-
-End
-
-Public Function UniqueID(Optional msgid As Integer) As String[]
+Public Function UniqueID() As String[]
 
   Dim Response As String
 
   Dim list_data As String[]
 
-  If msgid Then
-    Response = Exec("UIDL " & msgid, False)
-  Else
-    Response = Exec("UIDL", True)
-  Endif
+  Response = Exec("UIDL", True)
 
   If isPositive(Response) Then
     Response = StripOK(Response)
 
-    If msgid Then
-      Try list_data = Split(Response, " ")
-      If Error Then Return Response
+    list_data = Split(Response, "\n")
 
-      Return [CInt(list_data[0]), list_data[1]]
-    Else
-      list_data = Split(Response, "\n")
+    list_data.Remove(list_data.Count - 1)
 
-      Return list_data
-    Endif
+    Return list_data
 
   Endif
 
@@ -376,12 +354,123 @@ End
 
 Private Function Count_Read() As Integer
 
-  Return Me.Stat()[0]
+  If Not $iCount Then _Refresh()
+
+  Return $iCount
 
 End
 
 Private Function Size_Read() As Integer
 
-  Return Me.Stat()[1]
+  If Not $iSize Then _Refresh()
+
+  Return $iSize
+
+End
+
+Private Function Encrypt_Read() As Integer
+
+  Return $iEncrypt
+
+End
+
+Private Sub Encrypt_Write(Value As Integer)
+
+  If $iEncrypt Then Error.Raise("Cannot modify encryption")
+
+  $iEncrypt = Value
+
+End
+
+Private Function Status_Read() As Integer
+
+  Return $iStatus
+
+End
+
+Private Function Username_Read() As String
+
+  Return $sUsername
+
+End
+
+Private Sub Username_Write(Value As String)
+
+  If $sUsername Then Error.Raise("Cannot modify username")
+
+  $sUsername = Value
+
+End
+
+Private Function Password_Read() As String
+
+  Return $sPassword
+
+End
+
+Private Sub Password_Write(Value As String)
+
+  If $sPassword Then Error.Raise("Cannot modify password")
+
+  $sPassword = Value
+
+End
+
+Private Function Server_Read() As String
+
+  Return $sServer
+
+End
+
+Private Sub Server_Write(Value As String)
+
+  If $sServer Then Error.Raise("Cannot modify Server")
+
+  $sServer = Value
+
+End
+
+Private Function Port_Read() As Integer
+
+  Return $iPort
+
+End
+
+Private Sub Port_Write(Value As Integer)
+
+  If $iPort Then Error.Raise("Cannot modify port")
+
+  $iPort = Value
+
+End
+
+Private Sub _Refresh()
+
+  Dim sResponse As Integer[][]
+
+  'Dim sMessage As String
+
+  'Dim iSize As Integer
+
+  Debug "Refreshing inbox cache"
+
+  $msgCache.Clear()
+
+  sResponse = Me.Stat()
+
+  $iCount = sResponse[0]
+  $iSize = sResponse[1]
+
+  '
+  ' If sResponse.Count > 0 Then
+  '   $iCount = sResponse.Count
+  '   For Each sMessage In sResponse
+  '     iSize += CInt(Split(sMessage, " ")[1])
+  '
+  '   Next
+  '
+  '   $iSize = iSize
+  '
+  ' Endif
 
 End

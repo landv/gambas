@@ -1,41 +1,123 @@
 ' Gambas class file
 
+Property Read ListingID As Integer
 Private $msgid As Integer
 
-Private POPClient As Pop3Client
+Private $oPOPClient As Pop3Client
 
 Property Read Text As String
+Private $sText As String
 
 Property Read Size As Integer
+Private $iSize As Integer
 
-Public Sub _new(msgid As Integer, client As Pop3Client)
+Property Read UniqueID As String
+Private $sUID As String
+
+Public Sub _new(msgid As Integer, $oClient As Pop3Client)
+
+  Debug "Creating new message instance for " & msgid
 
   $msgid = msgid
 
-  POPClient = client
+  $oPOPClient = $oClient
 
 End
 
 Private Function Text_Read() As String
 
-  Return POPClient.Retrieve($msgid)
+  Dim sResponse As String
+
+  If $sText Then Return $sText
+
+  sResponse = $oPOPClient.Exec("RETR " & $msgid, True)
+
+  If Pop3Client.isPositive(sResponse) Then
+    sResponse = Pop3Client.StripOK(sResponse)
+
+    $sText = sResponse
+
+    Return sResponse
+
+  Endif
 
 End
 
 Private Function Size_Read() As Integer
 
-  Return POPClient.List($msgid)[1]
+  Dim sResponse As String
+
+  If $iSize Then Return $iSize
+
+  sResponse = $oPOPClient.Exec("LIST " & $msgid, False)
+
+  If Pop3Client.isPositive(sResponse) Then
+    sResponse = Pop3Client.StripOK(sResponse)
+
+    $iSize = CInt(Split(sResponse, " ")[1])
+
+    Return $iSize
+
+  Endif
 
 End
 
-Public Function Delete()
+Public Function Delete() As Boolean
 
-  POPClient.Delete($msgid)
+  Dim sResponse As String
+
+  sResponse = $oPOPClient.Exec("DELE " & $msgid)
+
+  Return Pop3Client.isPositive(sResponse)
 
 End
 
-Public Function Top(Lines As Integer)
+Public Function Top(Lines As Integer) As String
 
-  POPClient.Top($msgid, Lines)
+  Dim sResponse As String
+
+  sResponse = $oPOPClient.Exec(Subst("TOP &1 &2", $msgid, Lines), True)
+
+  If Pop3Client.isPositive(sResponse) Then
+    sResponse = Pop3Client.StripOK(sResponse)
+
+    Return sResponse
+
+  Endif
+
+End
+
+Private Function UniqueID_Read() As String
+
+  Dim Response As String
+
+  If $sUID Then Return $sUID
+
+  Response = $oPOPClient.Exec("UIDL " & $msgid, False)
+
+  If Pop3Client.isPositive(Response) Then
+    Response = Pop3Client.StripOK(Response)
+
+    $sUID = Split(Response, " ")[1]
+
+    Return $sUID
+
+  Endif
+
+End
+
+Private Function ListingID_Read() As Integer
+
+  Return $msgid
+
+End
+
+Public Sub Clear()
+
+  $iSize = 0
+
+  $sText = ""
+
+  $sUID = ""
 
 End

@@ -1,17 +1,43 @@
+#Net
+
+C
+None
+C
+i
+0
+SSL
+C
+i
+1
+#POP3
+
+C
+Disconnected
+C
+i
+0
+Authorization
+C
+i
+1
+Transaction
+C
+i
+2
+Update
+C
+i
+3
 #Pop3Client
 
 C
 Encrypt
-v
-b
+p
+i
 
-Client
-v
-POPClient
-
-Authenticated
-v
-b
+Status
+r
+i
 
 SERVER_POSITIVE_RESPONSE
 C
@@ -38,24 +64,20 @@ V
 s
 
 Username
-v
+p
 s
 
 Password
-v
+p
 s
 
 Server
-v
+p
 s
 
 Port
-v
+p
 i
-
-Hardened
-v
-b
 
 Count
 r
@@ -85,15 +107,7 @@ _get
 m
 _POPMessage
 (msgid)i
-Connect
-m
-
-
-Authenticate
-m
-b
-
-NOOP
+Open
 m
 b
 
@@ -101,43 +115,27 @@ Exec
 m
 s
 (Data)s[(Multiline)b]
-Quit
+Close
 m
-
-
-Disconnect
-m
-
-
-WaitForConnection
-m
-
+b
 
 Stat
 m
 Integer[]
 
-Retrieve
+Ping
 m
-s
-(msgid)i
+b
+
 Reset
 m
 b
 
-Delete
-m
-b
-(msgid)i
 List
 m
 String[]
-[(msgid)i]
-Top
-m
-s
-(msgid)i(Lines)i
+
 UniqueID
 m
 String[]
-[(msgid)i]
+

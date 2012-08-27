@@ -18,38 +18,39 @@ Public Sub Main()
 
   Dim a As Variant
 
-  POP.Encrypt = False
+  POP.Encrypt = Net.None
 
-  POP.Username = "USERNAME"
+  POP.Username = "USER"
   POP.Password = "PASSWORD"
-
-  POP.Hardened = False
 
   POP.Server = "pop3.SERVER.com"
 
-  POP.Connect()
+  POP.Open()
 
   'POP.WaitForConnection()
 
-  'POP.Authenticate("betina@exarq.com", "plastar", False)
-
-  'POP.Stat()
+  'i = POP.Stat()
 
   'POP.NOOP()
 
-  ' POP.List()
+  ' Print POP.Size, POP.Count
+
+  'Print POP.Size, POP.Count
+
+  'a = POP.List()
   ' POP.List(4)
   '
   '
   ' Wait 3
   '
-  'i = POP[4].Text
+  'i = POP[4]
 
-  ' a = POP[4].Size
+  a = POP[4].Size
+  i = POP[4].UniqueID
   '
-  i = POP.UniqueID(4)
+  ' i = POP.UniqueID(4)
 
-  a = POP.UniqueID()
+  'a = POP.UniqueID()
 
   Stop
   '
