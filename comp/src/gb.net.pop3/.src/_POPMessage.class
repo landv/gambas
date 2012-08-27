@@ -1,0 +1,41 @@
+' Gambas class file
+
+Private $msgid As Integer
+
+Private POPClient As Pop3Client
+
+Property Read Text As String
+
+Property Read Size As Integer
+
+Public Sub _new(msgid As Integer, client As Pop3Client)
+
+  $msgid = msgid
+
+  POPClient = client
+
+End
+
+Private Function Text_Read() As String
+
+  Return POPClient.Retrieve($msgid)
+
+End
+
+Private Function Size_Read() As Integer
+
+  Return POPClient.List($msgid)[1]
+
+End
+
+Public Function Delete()
+
+  POPClient.Delete($msgid)
+
+End
+
+Public Function Top(Lines As Integer)
+
+  POPClient.Top($msgid, Lines)
+
+End

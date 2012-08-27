@@ -1,0 +1,387 @@
+' Gambas class file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+''POP3 protocol implementation in Gambas
+'Author: sebikul <sebikul@gmail.com>
+'Protocol specifications: http://tools.ietf.org/html/rfc1939
+
+'Minimal Command Set:
+'    USER name         user(name)        DONE
+'    PASS string       pass_(string)     DONE
+'    STAT              stat()            DONE
+'    LIST [msg]        list(msg = None)  DONE
+'    RETR msg          retr(msg)         DONE
+'    DELE msg          dele(msg)         DONE
+'    NOOP              noop()            DONE
+'    RSET              rset()            DONE
+'    QUIT              quit()            DONE
+'
+'Optional Commands:
+'    RPOP name         rpop(name)
+'    APOP name digest  apop(name, digest)
+'    TOP msg n         top(msg, n)       DONE
+'    UIDL [msg]        uidl(msg = None)  DONE
+
+Export
+
+''Use plaintext or an ssl encrypted conenction
+'TODO: Add to the constructor
+Public Encrypt As Boolean
+
+''Used to store the client instance. Either TCPClient or SSLClient.
+''Both share the same API.
+Public Client As POPClient
+
+''Evaluates to True after Authenticate() with valid login options.
+Public Authenticated As Boolean
+
+Public Const SERVER_POSITIVE_RESPONSE As String = "+OK"
+
+Public Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
+
+Static Public CR As String = "\r"
+Static Public LF As String = "\n"
+Static Public CRLF As String = CR & LF
+
+Static Public END_MULTILINE As String = CRLF & Chr(46) & CRLF
+
+Public Username As String
+Public Password As String
+
+Public Server As String
+Public Port As Integer = 110
+
+''True to probe the connection for a positive response
+Public Hardened As Boolean
+
+Property Read Count As Integer
+
+Property Read Size As Integer
+
+''Welcome message returned by the server
+Public Welcome As String
+
+Static Public Function isPositive(Text As String) As Boolean
+
+  Return (Text Begins SERVER_POSITIVE_RESPONSE)
+
+End
+
+Static Public Function isNegative(Text As String) As Boolean
+
+  Return (Text Begins SERVER_NEGATIVE_RESPONSE)
+
+End
+
+''Strips the +OK part of the response
+Static Public Function StripOK(Text As String) As String
+
+  If Not isPositive(Text) Then Return
+
+  Text = Trim(Mid(Text, 4))
+
+  Return Text
+
+End
+
+Public Sub _get(msgid As Integer) As _POPMessage
+
+  Return New _POPMessage(msgid, Me)
+
+End
+
+''Establish a connection. Choose Client depending on Encrypt
+''Port defaults to 110 for TCPClient and 995 for SSLClient
+Public Sub Connect()
+
+  If Not Server Then
+    Error.Raise("Server not set")
+  Endif
+
+  If Not Port Then
+    Error.Raise("Port not set")
+  Endif
+
+  If Not Username Then
+    Error.Raise("Username not set")
+  Endif
+
+  If Not Password Then
+    Error.Raise("Password not set")
+  Endif
+
+  Debug "Conencting"
+
+  If Not Encrypt Then
+
+    Client = New TCPClient
+
+  Else
+
+    If Port = 110 Then
+      Port = 995
+      Debug "Port not specified, using 995"
+    Endif
+
+    Client = New SSLClient
+
+  Endif
+
+  Client.Connect(Server, Port)
+
+  Authenticate()
+
+End
+
+''Authenticate to the server
+''If =Hardened \= True= (Default) then the client probes the
+''status with an aditional call.
+''*@deprecated to be replaced with separate calls*
+Public Function Authenticate() As Boolean
+
+  Dim UserOK As Boolean
+  Dim PassOK As Boolean
+
+  Debug "Logging in"
+
+  Welcome = Client.GetLine()
+
+  If User(Username) Then UserOK = True
+
+  If Pass(Password) Then PassOK = True
+
+  Authenticated = False
+
+  If Hardened Then
+    If UserOK And PassOK And NOOP() Then Authenticated = True
+  Else
+    If UserOK And PassOK Then Authenticated = True
+  Endif
+
+  Return Authenticated
+
+End
+
+''Send Data to the server and wait for a response, then return it.
+Public Function Exec(Data As String, Optional Multiline As Boolean = False) As String
+
+  Dim Response As String
+
+  'Send the data
+  Response = Client.Send(Data, Multiline)
+
+  ' If Not Response Begins "+" Then
+  '   Error.Raise("Invalid POP response: " & Response)
+  ' Endif
+
+  'Print Response
+
+  Return Response
+
+End
+
+''Logout from the server
+Public Sub Quit()
+
+  Exec("QUIT")
+
+End
+
+''Disconnect from the server
+Public Sub Disconnect()
+
+  Debug "Disconnecting"
+  Client.Disconnect()
+
+End
+
+''Wait for an established connection
+Public Sub WaitForConnection()
+
+  Do While Client.Ready = False
+    Wait 0.1
+  Loop
+
+End
+
+Public Function Stat() As Integer[]
+
+  Dim Response As String
+
+  Dim stat_data As String[]
+
+  Response = Exec("STAT", False)
+
+  If isPositive(Response) Then
+    Response = StripOK(Response)
+
+    If Not Response Then Return
+
+    stat_data = Split(Response, " ")
+
+    Return [CInt(stat_data[0]), CInt(stat_data[1])]
+
+  Endif
+
+End
+
+Public Function Retrieve(msgid As Integer) As String
+
+  Dim Response As String
+
+  Response = Exec("RETR " & msgid, True)
+
+  If isPositive(Response) Then
+    Response = StripOK(Response)
+
+    Return Response
+
+  Endif
+
+End
+
+Public Function NOOP() As Boolean
+
+  Dim Response As String
+
+  Response = Exec("NOOP")
+
+  Return isPositive(Response)
+
+End
+
+Public Function Reset() As Boolean
+
+  Dim Response As String
+
+  Response = Exec("RSET")
+
+  Return isPositive(Response)
+
+End
+
+Public Function Delete(msgid As Integer) As Boolean
+
+  Dim Response As String
+
+  Response = Exec("DELE " & msgid)
+
+  Return isPositive(Response)
+
+End
+
+Private Function User(Username As String) As Boolean
+
+  Dim Response As String
+
+  Response = Exec("USER " & Username)
+
+  Return isPositive(Response)
+
+End
+
+Private Function Pass(Password As String) As Boolean
+
+  Dim Response As String
+
+  Response = Exec("PASS " & Password)
+
+  Return isPositive(Response)
+
+End
+
+Public Function List(Optional msgid As Integer) As String[]
+
+  Dim Response As String
+
+  Dim list_data As String[]
+
+  If msgid Then
+    Response = Exec("LIST " & msgid, False)
+  Else
+    Response = Exec("LIST", True)
+  Endif
+
+  If isPositive(Response) Then
+    Response = StripOK(Response)
+
+    If msgid Then
+      Try list_data = Split(Response, " ")
+      If Error Then Return Response
+
+      Return [CInt(list_data[0]), CInt(list_data[1])]
+    Else
+      list_data = Split(Response, "\n")
+
+      Return list_data
+    Endif
+
+  Endif
+
+End
+
+Public Function Top(msgid As Integer, Lines As Integer) As String
+
+  Dim Response As String
+
+  Response = Exec(Subst("TOP &1 &2", msgid, Lines), True)
+
+  If isPositive(Response) Then
+    Response = StripOK(Response)
+
+    Return Response
+
+  Endif
+
+End
+
+Public Function UniqueID(Optional msgid As Integer) As String[]
+
+  Dim Response As String
+
+  Dim list_data As String[]
+
+  If msgid Then
+    Response = Exec("UIDL " & msgid, False)
+  Else
+    Response = Exec("UIDL", True)
+  Endif
+
+  If isPositive(Response) Then
+    Response = StripOK(Response)
+
+    If msgid Then
+      Try list_data = Split(Response, " ")
+      If Error Then Return Response
+
+      Return [CInt(list_data[0]), list_data[1]]
+    Else
+      list_data = Split(Response, "\n")
+
+      Return list_data
+    Endif
+
+  Endif
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return Me.Stat()[0]
+
+End
+
+Private Function Size_Read() As Integer
+
+  Return Me.Stat()[1]
+
+End

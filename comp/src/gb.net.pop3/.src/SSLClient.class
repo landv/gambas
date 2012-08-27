@@ -1,0 +1,143 @@
+' Gambas class file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+Inherits POPClient
+
+Private OpenSSLPath As String
+
+''Instance of the OpenSSL process
+Public sProcess As Process
+
+Public Ready As Boolean
+
+Public Sub _new()
+
+  OpenSSLPath = GetOpenSSLPath()
+
+End
+
+''Execute the OpenSSL process and connect to Host:Port
+Public Sub Connect(Host As String, Port As Integer)
+
+  Debug "Executing OpenSSL"
+  sProcess = Exec [OpenSSLPath, "s_client", "-quiet", "-connect", Shell(Host) & ":" & Shell(Port)] For Read Write As "Client"
+
+  sProcess.Blocking = True
+  sProcess.EndOfLine = gb.Windows
+
+End
+
+''Get the path of the OpenSSL binary
+''Taken from gb.net.smtp ;)
+Private Sub GetOpenSSLPath() As String
+
+  If Not OpenSSLPath Then
+    If Exist("/usr/bin/openssl") Then
+      OpenSSLPath = "/usr/bin/openssl"
+    Else If Exist("/bin/openssl") Then
+      OpenSSLPath = "/bin/openssl"
+    Else
+      Error.Raise("Unable to find openssl")
+    Endif
+  Endif
+
+  Return OpenSSLPath
+
+End
+
+''Send data to the OpenSSL process, this is then
+''sent to the server.
+Public Function Send(Data As String, Multiline As Boolean) As String
+
+  Dim Response, sLine As String
+
+  If sProcess.State = Process.Running Then
+
+    Debug "Sending " & Data
+    Print #sProcess, Data
+
+    Debug "Receiving response"
+
+    If Multiline Then
+
+      Return GetResponse()
+
+    Else
+
+      Return GetLine()
+
+    Endif
+
+  End If
+
+End
+
+Public Function GetLine() As String
+
+  Dim Response As String
+  Dim sLine As String
+
+  ' Do While Lof(sSocket) = 0
+  '   Wait 0.1
+  ' Loop
+
+  While Response Not Ends Pop3Client.CRLF
+    Read #sProcess, sLine, Lof(sProcess)
+
+    Response &= sLine
+  Wend
+
+  If Response Not Begins "+" Then
+    Error.Raise("Invalid POP response: " & Response)
+  Endif
+
+  Print Response
+
+  Return Response
+
+End
+
+Public Function GetResponse() As String
+
+  Dim Response As String
+  Dim sLine As String
+
+  While sLine <> Chr(46)
+
+    'If Lof(sSocket) = 0 Then Continue
+
+    ' Read #sSocket, Response, Lof(sSocket)
+    Line Input #sProcess, sLine
+    Response &= sLine & "\n"
+
+    'Print sLine
+
+  Wend
+
+  Print Response
+
+  Return Response
+
+End
+
+''Close the stream to the process and kill it.
+Public Sub Disconnect()
+
+  sProcess.Kill()
+
+End
+
+Public Sub Client_Kill()
+
+  sProcess = Null
+
+End

@@ -1,0 +1,79 @@
+' Gambas module file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+Public Sub Main()
+
+  Dim POP As New Pop3Client
+
+  Dim i As Variant
+
+  Dim a As Variant
+
+  POP.Encrypt = False
+
+  POP.Username = "USERNAME"
+  POP.Password = "PASSWORD"
+
+  POP.Hardened = False
+
+  POP.Server = "pop3.SERVER.com"
+
+  POP.Connect()
+
+  'POP.WaitForConnection()
+
+  'POP.Authenticate("betina@exarq.com", "plastar", False)
+
+  'POP.Stat()
+
+  'POP.NOOP()
+
+  ' POP.List()
+  ' POP.List(4)
+  '
+  '
+  ' Wait 3
+  '
+  'i = POP[4].Text
+
+  ' a = POP[4].Size
+  '
+  i = POP.UniqueID(4)
+
+  a = POP.UniqueID()
+
+  Stop
+  '
+  ' POP.List()
+  '
+  'Wait
+  'Print POP.Retrieve(4)
+
+  'POP.NOOP()
+
+  For i = 1 To 10
+    '
+    a = POP.List()
+    'Print POP.Send("NOOP")
+
+    'Wait 0.1
+  Next
+
+  'Wait 2
+
+  POP.Quit()
+
+  POP.Disconnect()
+
+  ' Stop
+
+End
