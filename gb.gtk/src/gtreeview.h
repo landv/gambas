@@ -136,6 +136,7 @@ public:
 	
 	unsigned _fix_border : 1;
 	int _last_click_time;
+	GtkTreePath *_last_click_path;
 
 protected:
 	gTree *tree;

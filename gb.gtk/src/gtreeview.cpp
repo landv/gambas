@@ -47,15 +47,26 @@ static void cb_select(GtkTreeSelection *selection, gTreeView *control)
 	control->emit(SIGNAL(control->onSelect));
 }
 
-static void cb_click(GtkTreeSelection *selection, gTreeView *control)
+static void cb_click(GtkTreeView *widget, gTreeView *control)
 {
-	if ((gApplication::lastEventTime() - control->_last_click_time) >= 500)
+	GtkTreePath *path;
+	
+	gtk_tree_view_get_cursor(widget, &path, NULL);
+	
+	if (path && control->_last_click_path && gtk_tree_path_compare(path, control->_last_click_path) == 0)
 	{
-		//fprintf(stderr, "cb_click\n");
-		control->emit(SIGNAL(control->onClick));
+		if ((gApplication::lastEventTime() - control->_last_click_time) < 500)
+			goto __IGNORE;
 	}
 	
+	control->emit(SIGNAL(control->onClick));
+
+__IGNORE:
+
 	control->_last_click_time = gApplication::lastEventTime();
+	if (control->_last_click_path)
+		gtk_tree_path_free(control->_last_click_path);
+	control->_last_click_path = path;
 }
 
 /*
@@ -131,6 +142,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	use_base = true;
 	_fix_border = false;
 	_last_click_time = 0;
+	_last_click_path = NULL;
 
 	tree = new gTree(this);
 	tree->addColumn();
@@ -169,6 +181,8 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 
 gTreeView::~gTreeView()
 {
+	if (_last_click_path)
+		gtk_tree_path_free(_last_click_path);
   delete tree;
 }
 
