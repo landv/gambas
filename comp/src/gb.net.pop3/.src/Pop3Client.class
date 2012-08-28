@@ -34,7 +34,6 @@
 Export
 
 ''Use plaintext or an ssl encrypted conenction
-'TODO: Add to the constructor
 Property Encrypt As Integer
 Private $iEncrypt As Integer
 
@@ -45,16 +44,6 @@ Private $iStatus As Integer
 ''Used to store the client instance. Either TCPClient or SSLClient.
 ''Both share the same API.
 Private $oClient As POPClient
-
-Public Const SERVER_POSITIVE_RESPONSE As String = "+OK"
-
-Public Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
-
-Static Public CR As String = "\r"
-Static Public LF As String = "\n"
-Static Public CRLF As String = CR & LF
-
-Static Public END_MULTILINE As String = CRLF & Chr(46) & CRLF
 
 ''Returns or sets the username used to authenticate to the server.
 ''It cannot be modified after Open() is executed
@@ -93,14 +82,14 @@ Private $msgCache As New Collection
 ''Returns True if _Text_ begins with "+OK"
 Static Public Function isPositive(Text As String) As Boolean
 
-  Return (Text Begins SERVER_POSITIVE_RESPONSE)
+  Return (Text Begins POP3.SERVER_POSITIVE_RESPONSE)
 
 End
 
 ''Returns True if _Text_ begins with "-ERR"
 Static Public Function isNegative(Text As String) As Boolean
 
-  Return (Text Begins SERVER_NEGATIVE_RESPONSE)
+  Return (Text Begins POP3.SERVER_NEGATIVE_RESPONSE)
 
 End
 
@@ -115,9 +104,13 @@ Static Public Function StripOK(Text As String) As String
 
 End
 
-Public Sub _get(msgid As Integer) As _POPMessage
+Public Function _get(msgid As Integer) As _POPMessage
 
   Dim oPOPMInstance As _POPMessage
+
+  If msgid = 0 Then msgid = 1
+
+  If msgid > Me.Count Then Return
 
   If Not $msgCache.Exist(msgid) Then
 
@@ -131,11 +124,31 @@ Public Sub _get(msgid As Integer) As _POPMessage
 
 End
 
+Public Sub _next() As _PopMessage
+
+  Dim i As Integer
+  Dim oPOPMInstance As _POPMessage
+
+  If IsNull(Enum.Index) Then
+    Enum.Index = 1
+  Endif
+
+  If Enum.Index > Me.Count Then
+    Enum.Stop()
+    Return
+  Endif
+
+  oPOPMInstance = _get(Enum.Index)
+
+  Inc Enum.Index
+
+  Return oPOPMInstance
+
+End
+
 ''Establish a connection. Choose Client depending on Encrypt
 ''Port defaults to 110 for TCPClient and 995 for SSLClient
 Public Function Open() As Boolean
-
-  Dim $bUser, $bPass As Boolean
 
   If Not Me.Server Then
     Error.Raise("Server not set")
@@ -177,21 +190,20 @@ Public Function Open() As Boolean
 
   $iStatus = POP3.Authorization
 
+  'Set welcome message
   Welcome = Trim($oClient.GetLine())
 
   Debug "Logging in"
 
-  If _User(Me.Username) Then $bUser = True
+  If Not _User(Me.Username) Then
+    $iStatus = POP3.WrongUsername
+  Else If Not _Pass(Me.Password) Then
+    $iStatus = POP3.WrongPassword
+  Else
+    $iStatus = POP3.Transaction
+  Endif
 
-  If _Pass(Me.Password) Then $bPass = True
-
-  'If Hardened Then
-  ' If UserOK And PassOK And NOOP() Then $iStatus = POP3.Transaction
-  ' Else
-  If $bUser And $bPass Then $iStatus = POP3.Transaction
-  ' Endif
-
-  Return ($iStatus = POP3.Transaction)
+  Return $iStatus
 
 End
 
@@ -229,6 +241,8 @@ Public Function Close() As Boolean
   Debug "Disconnecting"
   $oClient.Disconnect()
 
+  $msgCache = Null
+
   Return isPositive(Response)
 
 End
@@ -254,21 +268,15 @@ Public Function Stat() As Integer[]
 
 End
 
-Private Function _NOOP() As Boolean
+''Returns a positive response if the Client is in Transaction state.
+''Can be used as a keep-alive feature
+Public Function Ping() As Boolean
 
   Dim Response As String
 
   Response = Exec("NOOP")
 
   Return isPositive(Response)
-
-End
-
-''Returns a positive response if the Client is in Transaction state.
-''Can be used as a keep-alive feature
-Public Function Ping() As Boolean
-
-  Return _NOOP()
 
 End
 
@@ -439,7 +447,7 @@ End
 ''Clears inbox and message cache
 Private Sub _Refresh()
 
-  Dim sResponse As Integer[][]
+  Dim sResponse As Integer[]
 
   'Dim sMessage As String
 

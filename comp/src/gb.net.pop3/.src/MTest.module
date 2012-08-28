@@ -16,16 +16,18 @@ Public Sub Main()
 
   Dim i As Variant
 
-  Dim a As Variant
+  Dim a As _POPMessage
 
   POP.Encrypt = Net.None
 
-  POP.Username = "USER"
+  POP.Username = "USERNAME"
   POP.Password = "PASSWORD"
 
   POP.Server = "pop3.SERVER.com"
 
   POP.Open()
+
+  'Print POP.Exec("CAPA")
 
   'POP.WaitForConnection()
 
@@ -37,22 +39,26 @@ Public Sub Main()
 
   'Print POP.Size, POP.Count
 
-  'a = POP.List()
+  ' i = POP.List()
   ' POP.List(4)
   '
   '
   ' Wait 3
   '
-  'i = POP[4]
+  ' a = POP[0]
 
-  a = POP[4].Size
-  i = POP[4].UniqueID
+  'a = POP[4].Size
+
+  'Stop
+
+  Print POP[1].ListingID
+  ' Print POP[2].ListingID
+  ' Print POP[3].ListingID
+  ' Print POP[4].ListingID
   '
   ' i = POP.UniqueID(4)
 
   'a = POP.UniqueID()
-
-  Stop
   '
   ' POP.List()
   '
@@ -60,21 +66,24 @@ Public Sub Main()
   'Print POP.Retrieve(4)
 
   'POP.NOOP()
+  '
+  ' i = POP.UniqueID()
 
-  For i = 1 To 10
+  For Each a In POP
     '
-    a = POP.List()
-    'Print POP.Send("NOOP")
-
-    'Wait 0.1
+    Print a.ListingID
+    'Print a.UniqueID
   Next
+  '   a = POP.List()
+  '   'Print POP.Send("NOOP")
+  '
+  '   'Wait 0.1
+  ' Next
 
   'Wait 2
 
-  POP.Quit()
+  POP.Close()
 
-  POP.Disconnect()
-
-  ' Stop
+  POP = Null
 
 End

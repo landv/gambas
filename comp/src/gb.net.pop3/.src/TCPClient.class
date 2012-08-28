@@ -119,23 +119,25 @@ End
 ''Get data from the stream until the EOL is reached
 Public Function GetLine() As String
 
-  Dim Response As String
+  Dim sResponse As String
   Dim sLine As String
 
-  While Response Not Ends Pop3Client.CRLF
+  Line Input #sSocket, sResponse
 
-    Read #sSocket, sLine, Lof(sSocket)
+  'While Response Not Ends Pop3Client.CRLF
 
-    Response &= sLine
-  Wend
+  'Read #sSocket, sLine, Lof(sSocket)
 
-  If Response Not Begins "+" Then
-    Error.Raise("Invalid POP response: " & Response)
+  'Response &= sLine
+  ' Wend
+
+  If sResponse Not Begins "+" Then
+    Error.Raise("Invalid POP response: " & sResponse)
   Endif
 
-  'Print Response
+  'Print sResponse
 
-  Return Response
+  Return sResponse
 
 End
 

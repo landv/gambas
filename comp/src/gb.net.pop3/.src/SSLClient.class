@@ -85,12 +85,14 @@ Public Function GetLine() As String
   Dim Response As String
   Dim sLine As String
 
-  While Response Not Ends Pop3Client.CRLF
+  ' While Response Not Ends Pop3Client.CRLF
+  '
+  '   Read #sProcess, sLine, Lof(sProcess)
+  '
+  '   Response &= sLine
+  ' Wend
 
-    Read #sProcess, sLine, Lof(sProcess)
-
-    Response &= sLine
-  Wend
+  Line Input #sProcess, sLine
 
   If Response Not Begins "+" Then
     Error.Raise("Invalid POP response: " & Response)
