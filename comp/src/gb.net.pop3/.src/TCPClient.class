@@ -17,8 +17,6 @@ Public sSocket As New Socket As "Client"
 
 Public Sub _new()
 
-  Ready = False
-
   'Wait 10 seconds before timing out
   sSocket.Timeout = 10000
 
@@ -124,11 +122,8 @@ Public Function GetLine() As String
   Dim Response As String
   Dim sLine As String
 
-  ' Do While Lof(sSocket) = 0
-  '   Wait 0.1
-  ' Loop
-
   While Response Not Ends Pop3Client.CRLF
+
     Read #sSocket, sLine, Lof(sSocket)
 
     Response &= sLine
@@ -138,7 +133,7 @@ Public Function GetLine() As String
     Error.Raise("Invalid POP response: " & Response)
   Endif
 
-  Print Response
+  'Print Response
 
   Return Response
 
@@ -153,9 +148,6 @@ Public Function GetResponse() As String
 
   While sLine <> Chr(46)
 
-    'If Lof(sSocket) = 0 Then Continue
-
-    ' Read #sSocket, Response, Lof(sSocket)
     Line Input #sSocket, sLine
     Response &= sLine & "\n"
 
@@ -163,7 +155,7 @@ Public Function GetResponse() As String
 
   Wend
 
-  Print Response
+  'Print Response
 
   Return Response
 
