@@ -53,6 +53,11 @@ Attribute* Element::getClassName()
     return getAttribute("class", 5);
 }
 
+Attribute* Element::getId()
+{
+    return getAttribute("id", 2);
+}
+
 #define CHAR_UNIVERSAL 0x2A // *
 #define CHAR_PSEUDOCLASS 0x3A // :
 #define CHAR_ID 0x23 // #
