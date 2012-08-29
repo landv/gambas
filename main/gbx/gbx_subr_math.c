@@ -235,7 +235,7 @@ __VARIANT:
 
 	if (TYPE_is_variant(P2->type))
 	{
-		VARIANT_undo(P1);
+		VARIANT_undo(P2);
 		variant = TRUE;
 	}
 
