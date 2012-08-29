@@ -1021,6 +1021,7 @@ IMPLEMENT_find(Long, GB_LONG)
 IMPLEMENT_find(Float, GB_FLOAT)
 IMPLEMENT_find(Single, GB_SINGLE)
 IMPLEMENT_find(Date, GB_DATE)
+IMPLEMENT_find(Variant, GB_VARIANT)
 
 static int find_object(CARRAY *_object, void *value, int start, bool byref)
 {
@@ -1876,6 +1877,8 @@ GB_DESC NATIVE_VariantArray[] =
 	GB_METHOD("Add", NULL, Array_Variant_Add, "(Value)v[(Index)i]"),
 	GB_METHOD("Push", NULL, Array_Variant_Push, "(Value)v"),
 	GB_METHOD("_put", NULL, Array_Variant_put, "(Value)v(Index)i."),
+	GB_METHOD("Find", "i", Array_Variant_Find, "(Value)v[(Start)i]"),
+	GB_METHOD("Exist", "b", Array_Variant_Exist, "(Value)v"),
 
 	GB_METHOD("Pop", "v", Array_Pop, NULL),
 	GB_METHOD("_get", "v", Array_get, "(Index)i."),

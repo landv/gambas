@@ -513,6 +513,56 @@ int COMPARE_object(void **a, void **b)
 	return _descent ? (-comp) : comp;
 }
 
+int compare_variant(VARIANT *a, VARIANT *b)
+{
+	TYPE type;
+	VALUE value;
+	int comp;
+	
+	if (a->type == T_NULL)
+		return b->type == T_NULL ? 0 : -1;
+	else if (b->type == T_NULL)
+		return 1;
+	
+	if (TYPE_is_object(a->type))
+	{
+		if (TYPE_is_object(b->type))
+			return COMPARE_object(&a->value._object, &b->value._object);
+		else
+			return 1;
+	}
+	else if (TYPE_is_object(b->type))
+		return -1;
+	
+	if (a->type == b->type)
+		return (*COMPARE_get(a->type, 0))(&a->value, &b->value);
+	
+	type = Max(a->type, b->type);
+	
+	if (b->type == type)
+	{
+		VARIANT *c;
+		
+		c = a;
+		a = b;
+		b = c;
+		_descent = !_descent;
+	}
+	
+	value.type = T_VARIANT;
+	value._variant.vtype = b->type;
+	value._variant.value.data = b->value.data;
+	
+	BORROW(&value);
+	VALUE_conv(&value, type);
+	VALUE_conv_variant(&value);
+	comp = (*COMPARE_get(type, 0))(&a->value, &value._variant.value);
+	RELEASE(&value);
+	
+	return comp;
+}
+
+
 COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 {
   _descent = (mode & GB_COMP_DESCENT) != 0;
@@ -555,6 +605,16 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_lang_case : compare_string_lang);
 			else
 				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_case : compare_string_binary);
+			
+		case T_POINTER:
+			#ifdef OS_64BITS
+				return (COMPARE_FUNC)compare_long;
+			#else
+				return (COMPARE_FUNC)compare_integer;
+			#endif
+			
+		case T_VARIANT:
+			return (COMPARE_FUNC)compare_variant;
 
     default:
       return (COMPARE_FUNC)compare_nothing;
