@@ -44,7 +44,6 @@ typedef
 		int fd_err;
 		int status;
 		volatile sig_atomic_t stopped;
-		unsigned something_read : 1;
 		unsigned child : 1;
 	}
 	CTASK;
@@ -53,5 +52,7 @@ typedef
 
 #define RETURN_DIR_PATTERN FILE_TEMP_DIR "/task"
 #define RETURN_FILE_PATTERN FILE_TEMP_DIR "/task/%d"
+
+#define MAX_TASK 256
 
 #endif

@@ -73,6 +73,7 @@ Public Sub Run(iStyle As Integer)
   Dim sMarkup As String
   Dim bWebComment As Boolean
   Dim sStr As String
+  Dim bCodeMarkup As Boolean
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -104,7 +105,7 @@ Public Sub Run(iStyle As Integer)
         'sCar = String.Left(sText)
         'sText = String.Mid$(sText, 2)
     
-        If bCode And If Not bMarkup Then
+        If bCode And If Not bCodeMarkup Then
         
           If bQuote Then
             If sCar = Chr$(34) Then 
@@ -174,9 +175,11 @@ Public Sub Run(iStyle As Integer)
         Else If iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<%" Then
         
           bWebComment = False
+          bCodeMarkup = False
           
           If String.Mid$(sText, iInd + 2, 1) = ":" Then
             bMarkup = True
+            bCodeMarkup = True
             sMarkup = ""
             iCount = 3
             iTag = TAG_CODE_MARKUP
@@ -250,6 +253,7 @@ Public Sub Run(iStyle As Integer)
             bQuoteMarkup = True
           Else If bCode And If sCar = "%" And If String.Mid$(sText, iInd + 1, 1) = ">" Then
             bMarkup = False
+            bCodeMarkup = False
             bCode = False
             Highlight.Add(Highlight.Preprocessor, 2)
             Inc iInd

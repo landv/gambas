@@ -955,7 +955,7 @@ BEGIN_METHOD_VOID(Process_Kill)
 	else
 		kill(THIS->pid, SIGKILL);
 	
-	CPROCESS_wait_for(THIS);
+	//CPROCESS_wait_for(THIS);
 
 END_METHOD
 

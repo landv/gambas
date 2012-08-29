@@ -53,7 +53,7 @@ static void print_quoted_string(const char *str, int len)
 {
 	int i;
 	char buf[8];
-	char c;
+	uchar c;
 	
 	if (len == 0)
 		return;
@@ -62,7 +62,7 @@ static void print_quoted_string(const char *str, int len)
 	
 	for (i = 0; i < len; i++)
 	{
-		c = str[i];
+		c = (uchar)str[i];
 		//if (c >= ' ' && c <= 126 && c != '\\' && c != '"')
 		if (c >= ' ' && c != '\\' && c != '"')
 			FORM_print_char(c);

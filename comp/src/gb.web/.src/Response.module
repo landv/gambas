@@ -140,9 +140,62 @@ Public Sub End()
   
 End
 
+Private Sub GetContentType(sPath As String) As String
+  
+  Select Case Lower(File.Ext(sPath))
+    Case "css"
+      Return "text/css"
+    Case "jpg", "jpeg", "jpe", "thumb"
+      Return "image/jpeg"
+    Case "png"
+      Return "image/png"
+    Case "gif"
+      Return "image/gif"
+    Case "tiff", "tif"
+      Return "image/tiff"
+    Case "odt"
+      Return "application/vnd.oasis.opendocument.text"
+    Case "doc"
+      Return "application/msword"
+    Case "ods"
+      Return "application/vnd.oasis.opendocument.spreadsheet"
+    Case "xls"
+      Return "application/msexcel"
+    Case "pdf"
+      Return "application/pdf"
+    Case "zip"
+      Return "application/zip"
+    Case "html", "htm"
+      Return "text/html"
+    Case "txt"
+      Return "text/plain"
+    Case "avi"
+      Return "video/x-msvideo"
+    Case "mpg", "mpeg"
+      Return "video/mpeg"
+    Case "ps"
+      Return "application/postscript"
+    Case "dwg"
+      Return "application/acad"
+    Case "wav"
+      Return "audio/x-wav"
+    Case "ogg"
+      Return "application/ogg"
+    Case "jar"
+      Return "application/x-jar"
+    'Case "xml", "kml"
+    '  Return "text/plain"
+    Case Else 
+      Return "application/octet-stream"
+  End Select
+  
+End
+
 Public Sub SendFile(Path As String, Optional ContentType As String)
   
   Dim sBuffer As String
+
+  If Left(Path) <> "/" Then Path = ".." &/ Path
 
   If Not Exist(Path) Then
     Print "Status: 404 Not Found"
@@ -150,7 +203,7 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
     Return
   Endif
 
-  If Not ContentType Then ContentType = $sContentType
+  If Not ContentType Then ContentType = GetContentType(Path)
   Print "Content-type: "; ContentType
   Print $sHeader;
   'IF Name THEN PRINT "Content-location: "; "/" & CGI.Encode(Name)
@@ -164,6 +217,7 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
     Print sBuffer;
   Wend
   Close #$hFile
+  
   
 End
 

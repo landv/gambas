@@ -242,7 +242,7 @@ Private Sub CreateSession()
   
   CheckUnique
   
-  Response.SetCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]),, True)
+  Response.SetCookie("SESSION", $sId, "", CGI["SCRIPT_NAME"],, True)
   
   $cVal = New Collection
   $eStartup = Now

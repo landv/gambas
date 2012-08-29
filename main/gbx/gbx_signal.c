@@ -120,7 +120,7 @@ static void handle_signal(int signum, siginfo_t *info, void *context)
 				break;
 			
 			if (errno != EINTR)
-				ERROR_panic("Cannot write into signal pipe: %s", strerror(errno));
+				ERROR_panic("Cannot write signal #%d into signal pipe: %s", signum, strerror(errno));
 		}
 	}
 	
@@ -202,6 +202,8 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 
 		fcntl(_pipe[0], F_SETFD, FD_CLOEXEC);
 		fcntl(_pipe[1], F_SETFD, FD_CLOEXEC);
+		// Allows to read the signal pipe without blocking
+		fcntl(_pipe[0], F_SETFL, fcntl(_pipe[0], F_GETFL) | O_NONBLOCK);
 
 		GB_Watch(_pipe[0], GB_WATCH_READ, (void *)SIGNAL_raise_callbacks, 0);
 	}

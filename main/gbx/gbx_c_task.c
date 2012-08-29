@@ -27,9 +27,10 @@
 
 #ifndef GBX_INFO
 
+#include <errno.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
-#include <errno.h>
+#include <sys/time.h>
 
 #include "gb_common.h"
 #include "gb_list.h"
@@ -62,12 +63,28 @@ static int _task_count = 0;
 //-------------------------------------------------------------------------
 
 static void stop_task(CTASK *_object);
+static void close_fd(int *pfd);
 
 static void has_forked(void)
 {
+	CTASK *task;
+	pid_t pid = getpid();
+	
 	FILE_init();
 	EXEC_debug = FALSE;
 	EXEC_task = TRUE;
+	
+	task = _task_list;
+	while (task)
+	{
+		if (task->pid != pid)
+		{
+			close_fd(&task->fd_out);
+			close_fd(&task->fd_err);
+		}
+		
+		task = task->list.next;
+	}
 }
 
 static void callback_child(int signum, intptr_t data)
@@ -98,16 +115,18 @@ static int get_readable(int fd)
 		return len;
 }
 
-static void callback_write(int fd, int type, CTASK *_object)
+static bool callback_read(int fd, int type, CTASK *_object)
 {
 	int len;
 	char *data;
 	char *p;
 	int n;
 	
-	//fprintf(stderr, "callback_write: %d %p\n", fd, THIS);
+	//fprintf(stderr, "callback_read: %d %p\n", fd, THIS);
 	
 	len = get_readable(fd);
+	if (len == 0)
+		return TRUE;
 	
 	data = STRING_new(NULL, len);
 	p = data;
@@ -129,6 +148,7 @@ static void callback_write(int fd, int type, CTASK *_object)
 	GB_Raise(THIS, EVENT_Read, 1, GB_T_STRING, data, STRING_length(data) - len);
 	
 	STRING_free(&data);
+	return FALSE;
 }
 
 
@@ -207,7 +227,10 @@ static bool start_task(CTASK *_object)
 	GB_VALUE *ret;
 	char buf[PATH_MAX];
 	FILE *f;
-
+	
+	if (EXEC_task)
+		return TRUE;
+	
 	init_task();
 
 	LIST_insert(&_task_list, THIS, &THIS->list);
@@ -247,7 +270,7 @@ static bool start_task(CTASK *_object)
 			close(fd_out[1]);
 			THIS->fd_out = fd_out[0];
 
-			GB_Watch(THIS->fd_out, GB_WATCH_READ, (void *)callback_write, (intptr_t)THIS);
+			GB_Watch(THIS->fd_out, GB_WATCH_READ, (void *)callback_read, (intptr_t)THIS);
 		}
 
 		if (has_error)
@@ -265,8 +288,6 @@ static bool start_task(CTASK *_object)
 	{
 		THIS->child = TRUE;
 		THIS->pid = getpid();
-		
-		has_forked();
 		
 		sigprocmask(SIG_SETMASK, &old, &sig);
 		
@@ -290,6 +311,8 @@ static bool start_task(CTASK *_object)
 			setlinebuf(stderr);
 		}
 
+		has_forked(); // After the redirection
+		
 		GB_GetFunction(&func, THIS, "Main", "", NULL);
 		
 		TRY
@@ -371,9 +394,7 @@ static void stop_task(CTASK *_object)
 			if (len <= 0)
 				break;
 			
-			THIS->something_read = FALSE;
-			callback_write(THIS->fd_out, 0, THIS);
-			if (!THIS->something_read)
+			if (callback_read(THIS->fd_out, 0, THIS))
 				break;
 		}
 	}
@@ -396,11 +417,23 @@ BEGIN_METHOD_VOID(Task_new)
 
 	GB_FUNCTION func;
 	
+	if (EXEC_task)
+	{
+		GB_Error("A task cannot create other tasks");
+		return;
+	}
+	
 	if (create_return_directory())
 		return;
 	
 	if (GB_GetFunction(&func, THIS, "Main", "", NULL))
 		return;
+	
+	if (_task_count > MAX_TASK)
+	{
+		GB_Error("Too many tasks");
+		return;
+	}
 	
 	prepare_task(THIS);
 	
