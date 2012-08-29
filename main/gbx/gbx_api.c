@@ -203,6 +203,7 @@ const void *const GAMBAS_Api[] =
 	(void *)VALUE_read,
 	(void *)GB_BorrowValue,
 	(void *)GB_ReleaseValue,
+	(void *)COMPARE_variant,
 
 	(void *)DATE_split,
 	(void *)DATE_make,

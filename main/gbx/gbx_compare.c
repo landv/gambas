@@ -513,7 +513,7 @@ int COMPARE_object(void **a, void **b)
 	return _descent ? (-comp) : comp;
 }
 
-int compare_variant(VARIANT *a, VARIANT *b)
+int COMPARE_variant(VARIANT *a, VARIANT *b)
 {
 	TYPE type;
 	VALUE value;
@@ -614,7 +614,7 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 			#endif
 			
 		case T_VARIANT:
-			return (COMPARE_FUNC)compare_variant;
+			return (COMPARE_FUNC)COMPARE_variant;
 
     default:
       return (COMPARE_FUNC)compare_nothing;

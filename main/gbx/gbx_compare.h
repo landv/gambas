@@ -26,6 +26,7 @@
 
 #ifndef GBX_INFO
 #include "gbx_type.h"
+#include "gbx_variant.h"
 #endif
 
 #define GB_COMP_BINARY   0
@@ -48,6 +49,7 @@ int COMPARE_object(void **a, void **b);
 int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool nocase, bool throw);
 int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2);
 int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase);
+int COMPARE_variant(VARIANT *a, VARIANT *b);
 #endif
 
 #endif
