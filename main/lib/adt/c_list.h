@@ -23,66 +23,12 @@
 #define __C_LIST_H
 
 #include "gambas.h"
+#include "list.h"
 
 extern GB_INTERFACE GB;
 
-typedef struct clist {
-	GB_BASE ob; /* C functions maintain the memory themselves */
-	intptr_t uptr;
-	struct clist *prev, *next;
-	void *data;
-	int embedded : 1;
-	int has_link_ref : 1;
-} CLIST;
-
-typedef struct {
-	CLIST *(*New)(void *);
-#define DECLARE_CLIST(name, obj) \
-	CLIST name = {		\
-		.uptr = (intptr_t) NULL, \
-		.prev = &name,	\
-		.next = &name,	\
-		.data = obj,	\
-		.embedded = 0,	\
-		.has_link_ref = 0\
-	}
-
-	void  *(*Destroy)(CLIST *);
-	CLIST *(*NewRoot)(void);
-#define DECLARE_CLIST_ROOT(name) \
-	CLIST name = {		\
-		.uptr = (intptr_t) NULL, \
-		.prev = &name,	\
-		.next = &name,	\
-		.data = &name,	\
-		.embedded = 0,	\
-		.has_link_ref = 0 \
-	}
-
-	void   (*DestroyRoot)(CLIST *);
-	int    (*IsRoot)(CLIST *);
-	int    (*IsEmpty)(CLIST *);
-	void   (*AddBefore)(CLIST *, CLIST *);
-	void   (*AddAfter)(CLIST *, CLIST *);
-	void   (*Unlink)(CLIST *);
-	CLIST *(*Extract)(CLIST *, int);
-} CLIST_INTF;
-
-#define clist_for_each(node, list)	\
-	for (node = (list)->next; node != (list); node = node->next)
-
-#define clist_for_each_first(node, list, c)	\
-	for (node = (list), c = 1; node != (list) || c--; node = node->next)
-
-#define clist_for_each_safe(node, list, next)	\
-	for (node = (list)->next, next = node->next; node != (list);	\
-		node = next, next = node->next)
-
-
 #ifndef __C_LIST_C
 extern GB_DESC CListDesc[];
-extern GB_DESC CListRootDesc[];
-extern CLIST_INTF List;
 
 extern void CLIST_exit(void);
 #endif

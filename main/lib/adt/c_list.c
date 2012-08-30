@@ -1,5 +1,5 @@
 /*
- * c_list.c - (Embedded) circular double-linked lists
+ * c_list.c - Circular double-linked lists
  *
  * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -22,527 +22,487 @@
 #define __C_LIST_C
 
 #include "gambas.h"
+#include "list.h"
 #include "c_list.h"
 
-static DECLARE_CLIST_ROOT(free_nodes);
+#if 0
+#define CHUNK_SIZE	16
+#define CHUNK_SKIP	 2
 
-/* Component unload. Free all re-use nodes */
-void CLIST_exit(void)
+/*
+ * List implementation properties:
+ * - Speed up long traversals by maintaining links to the CHUNK_SKIP'th
+ *   chunk forwards and backwards.
+ * - Increase cache locality by saving CHUNK_SIZE values inside a single
+ *   chunk.
+ * Note that the two values must be chosen reasonably _together_.
+ */
+
+typedef struct {
+	LIST list;
+	LIST skip;
+	struct {	/* We don't want to bother reordering the array when
+			   elements are removed in the middle so we mark
+			   valid entries. */
+		GB_VARIANT_VALUE val;
+		int is_valid : 1;
+	} var[CHUNK_SIZE];
+	int avail;	/* First available in var */
+	int highest;	/* Highest available in var; will only be reduced
+			   when elements are removed from the end of the
+			   list */
+	int used;	/* Number of actually used elements, will reduce
+			   when elements are removed in the middle of var */
+} CHUNK;
+#endif
+
+typedef struct {
+	LIST list;
+	GB_VARIANT_VALUE val;
+} CHUNK;
+#define get_chunk(node)		LIST_data(node, CHUNK, list)
+
+typedef struct {
+	GB_BASE ob;
+	LIST list;	/* Beginning of linked CHUNKs */
+	CHUNK *current;	/* Current element */
+	CHUNK *found;	/* Last found chunk */
+	int count;	/* Do not iterate over all elements to get this */
+} CLIST;
+
+static void CHUNK_init(CHUNK *ck)
 {
-	CLIST *node, *next;
+	int i;
 
-	clist_for_each_safe(node, &free_nodes, next)
-		GB.Free((void **) &node);
+	LIST_init(&ck->list);
+	ck->val.type = GB_T_NULL;
 }
 
-static int CLIST_is_root(CLIST *list)
+static CHUNK *CHUNK_new(void)
 {
-	/* Root nodes have their data member point to their structure. This
-	 * means that they carry no information and that is pointless for
-	 * real nodes. */
-	return list->data == list;
-}
+	CHUNK *new;
 
-static int CLIST_is_empty(CLIST *list)
-{
-	return list->next == list;
-}
-
-static int CLIST_is_linked(CLIST *node)
-{
-	return node->has_link_ref;
-}
-
-static void CLIST_init(CLIST *node, void *data)
-{
-	node->prev = node->next = node;
-	node->data = data;
-}
-
-/* Forward */
-static CLIST *CLIST_extract(CLIST *, int);
-static void CLIST_add_after(CLIST *, CLIST *);
-static void CLIST_unlink(CLIST *);
-
-static CLIST *CLIST_new(void *data)
-{
-	CLIST *new;
-
-	/* Try to get a recycled node first */
-	if (!CLIST_is_empty(&free_nodes))
-		new = CLIST_extract(free_nodes.next, 1);
-	else
-		GB.Alloc((void **) &new, sizeof(*new));
-	CLIST_init(new, data);
+	GB.Alloc((void **) &new, sizeof(*new));
+	CHUNK_init(new);
 	return new;
 }
 
-static void *CLIST_destroy(CLIST *node)
+static void CHUNK_free_all(CHUNK *ck)
 {
-	void *data = node->data;
-
-	/* Recycle */
-	CLIST_unlink(node);
-	CLIST_add_after(&free_nodes, node);
-	return data;
+	GB.StoreVariant(NULL, &ck->val);
 }
 
-static void CLIST_init_root(CLIST *node)
+static void CHUNK_destroy(CHUNK *ck)
 {
-	node->prev = node->next = node->data = node;
-}
-
-static CLIST *CLIST_new_root(void)
-{
-	CLIST *new;
-
-	new = CLIST_new(NULL);
-	CLIST_init_root(new);
-	return new;
-}
-
-static void CLIST_destroy_root(CLIST *node)
-{
-	CLIST_destroy(node);
+	/* We require that the chunk is unlinked */
+	CHUNK_free_all(ck);
+	GB.Free((void **) &ck);
 }
 
 #define THIS	((CLIST *) _object)
 
-BEGIN_METHOD(List_new, GB_OBJECT obj; /* Usually 'Me' from container obj */
-		       GB_BOOLEAN embedded) /* obj is container of THIS? */
+BEGIN_METHOD_VOID(List_new)
 
-	int embedded = VARGOPT(embedded, 0);
-
-	CLIST_init(THIS, VARG(obj));
-	THIS->embedded = embedded;
-	THIS->has_link_ref = 0;
-	/* If the list embedded, we must not reference the container as that
-	 * would cause not-so-easy to resolve circular references and thus
-	 * memory errors. */
-	if (!embedded)
-		GB.Ref(THIS->data);
+	LIST_init(&THIS->list);
+	THIS->current = NULL;
+	THIS->found = NULL;
+	THIS->count = 0;
 
 END_METHOD
 
 BEGIN_METHOD_VOID(List_free)
 
-	if (!THIS->embedded)
-		GB.Unref(&THIS->data);
+	LIST *node, *next;
+	CHUNK *ck;
+
+	list_for_each_safe(node, &THIS->list, next) {
+		LIST_unlink(node);
+		ck = get_chunk(node);
+		CHUNK_destroy(ck);
+	}
 
 END_METHOD
 
-static CLIST *CLIST_next_node(CLIST *node)
+/*
+ * Modify @ck and @index so that they point to the next valid value. @first
+ * is used to detect the end of an enumeration, i.e. where no other elements
+ * can be found. In this case, NULL is written to @ck.
+ */
+
+/*
+ * Currently, @index is not used, see CHUNK definitions above.
+ */
+
+static void CHUNK_next_val(CLIST *list, CHUNK *first, CHUNK **ck,int *index)
 {
-	CLIST *next;
+	register CHUNK *c;
+	LIST *node;
 
-	if (CLIST_is_empty(node))
-		return NULL;
-
-	next = node->next;
-	/* Erroneously more root nodes in the list? It should not be
-	 * possible but catch it with that loop nevertheless. */
-	while (CLIST_is_root(next)) {
-		next = next->next;
-		if (next == node)
-			return NULL;
+	if (LIST_is_empty(&list->list)) {
+		*ck = NULL;
+		return;
 	}
-	return next;
+	if ((node = (*ck)->list.next) == &list->list)
+		node = node->next;
+	c = get_chunk(node);
+	if (c == first)
+		*ck = NULL;
+	else
+		*ck = c;
 }
 
-/* I prefer storing a pointer to this struct in GB.GetEnum() */
+static void CHUNK_prev_val(CLIST *list, CHUNK *first, CHUNK **ck,int *index)
+{
+	register CHUNK *c = *ck;
+	LIST *node;
+
+	if (LIST_is_empty(&list->list)) {
+		*ck = NULL;
+		return;
+	}
+	if ((node = (*ck)->list.prev) == &list->list)
+		node = node->prev;
+	c = get_chunk(node);
+	if (c == first)
+		*ck = NULL;
+	else
+		*ck = c;
+}
+
 struct enum_state {
-	CLIST *first, *next; /* Be able to Unlink() in For Each */
+	CHUNK *first, *next;	/* Be able to Take() in For Each and resume
+				   with the right Current when BREAKing
+				   nested enumerations */
+	int index;
 };
 
 /*
- * We can either enumerate a list of embedded list nodes which have no root
- * node or a list containing a root node which is then skipped.
- * In both cases, we can enter the enumeration at any node in the list and
- * all nodes in the list are enumerated.
+ * XXX: Breaking nested enumerations may confuse user's view of Current.
+ *      After a broken nested enumeration, the outer enumeration inherits
+ *      the Current from the nested loop but after this enumeration, it
+ *      continues with the one it had originally next... - Bad!
  */
 
 BEGIN_METHOD_VOID(List_next)
 
-	struct enum_state **statep = GB.GetEnum(), *state;
-	CLIST *cur;
+	struct enum_state *state = GB.GetEnum();
+	CHUNK *cur, *next;
 
-	state = *statep;
-	if (!state) { /* Beginning */
-		GB.Alloc((void **) statep, sizeof(*state));
-		state = *statep;
-		/* Catch the 'root' case and skip the node */
-		if (CLIST_is_root(THIS))
-			cur = CLIST_next_node(THIS);
-		else
-			cur = THIS;
+	if (!*((char *) state)) { /* Beginning */
+		/* No elements? */
+		if (LIST_is_empty(&THIS->list))
+			goto no_enum;
+		cur = next = get_chunk(THIS->current);
+		state->first = cur;
+	} else {
+		cur = next = state->next;
 		if (!cur)
 			goto stop_enum;
-		state->first = cur;
-		goto done;
 	}
 
-	cur = state->next;
-	if (!cur || cur == state->first)
-		goto stop_enum;
-
-done:
-	state->next = CLIST_next_node(cur);
-	GB.ReturnObject(cur->data);
+	CHUNK_next_val(THIS, state->first, &next, NULL);
+	state->next = next;
+	THIS->current = cur;
+	GB.ReturnVariant(&cur->val);
 	return;
 
 stop_enum:
-	GB.Free((void **) statep);
+no_enum:
 	GB.StopEnum();
 	return;
 
 END_METHOD
 
-/*
- * There are no particular 'nodes' when adding because each node is a fully
- * capable list itself. When we pass a @new node, we always add the entire
- * list it is currently linked to. In particular this is a yet unlinked list
- * containing only one node in most cases but it is possible to create
- * sub-lists individually and add some sub-lists to a global root later.
- */
-
-static void CLIST_add_before(CLIST *list, CLIST *new)
+static CHUNK *CLIST_get(CLIST *list, int index)
 {
-	CLIST *new_end = new->prev;
+	LIST *node;
 
-	list->prev->next = new;
-	new->prev = list->prev;
-	new_end->next = list;
-	list->prev = new_end;
-}
-
-static void CLIST_add_after(CLIST *list, CLIST *new)
-{
-	CLIST *new_end = new->prev;
-
-	new_end->next = list->next;
-	list->next->prev = new_end;
-	new->prev = list;
-	list->next = new;
-}
-
-static void CLIST_ref_once(CLIST *node)
-{
-	if (!CLIST_is_linked(node)) {
-		node->has_link_ref = 1;
-		/* ListRoots do not receive ref. This makes almost automatic
-		 * cleanup possible. The list may be fully linked but when
-		 * the root loses its last ref, the list is cleared. */
-		if (CLIST_is_root(node))
-			return;
-		GB.Ref(node);
-		/* It is time now, at the latest, to Ref() the object of an
-		 * embedded node because all other refs could get lost */
-		if (node->embedded)
-			GB.Ref(node->data);
-	}
-}
-
-static void CLIST_unref_once(CLIST **node)
-{
-	if (CLIST_is_linked(*node)) {
-		(*node)->has_link_ref = 0;
-		if (CLIST_is_root(*node))
-			return;
-		/* Take the ref off from data of embedded node again */
-		if ((*node)->embedded)
-			GB.Unref(&(*node)->data);
-		GB.Unref((void **) node);
-	}
-}
-
-enum {
-	CLIST_BEFORE,
-	CLIST_AFTER
-};
-
-static void CLIST_add_and_ref(CLIST *node, CLIST *new, int mode)
-{
-	if (mode == CLIST_BEFORE)
-		CLIST_add_before(node, new);
-	else /* This function is save from passing invalid modes */
-		CLIST_add_after(node, new);
-	/* Each node gets Ref()'d once when in a list. */
-	CLIST_ref_once(node);
-	CLIST_ref_once(new);
-}
-
-/* @node and @buf should be variables */
-#define CHECK_ADD_ROOT(node, new, buf)				\
-	do {							\
-		CLIST *_new = (new);				\
-		clist_for_each_first((node), _new, (buf)) {	\
-			if (CLIST_is_root((node))) {		\
-				GB.Error("Attempt to Add a root node."); \
-				return;				\
-			}					\
-		}						\
-	} while (0)
-
-BEGIN_METHOD(List_AddPrev, GB_OBJECT new)
-
-	CLIST *new = (CLIST *) VARG(new), *node;
-	int buf;
-
-	CHECK_ADD_ROOT(node, new, buf);
-	CLIST_add_and_ref(THIS, new, CLIST_BEFORE);
-
-END_METHOD
-
-BEGIN_METHOD(List_AddNext, GB_OBJECT new)
-
-	CLIST *new = (CLIST *) VARG(new), *node;
-	int buf;
-
-	CHECK_ADD_ROOT(node, new, buf);
-	CLIST_add_and_ref(THIS, new, CLIST_AFTER);
-
-END_METHOD
-
-/*
- * This operates on the exact node.
- */
-
-static void CLIST_unlink(CLIST *node)
-{
-	node->prev->next = node->next;
-	node->next->prev = node->prev;
-	/* Link to itself again to form a valid empty list */
-	node->prev = node->next = node;
-}
-
-static void CLIST_unlink_and_unref(CLIST *node)
-{
-	CLIST *list;
-
-	/* list is only meaningful if the list gets empty after this
-	 * Unlink() so it doesn't matter if THIS->prev or THIS->next
-	 * is used. */
-	list = node->prev;
-	CLIST_unlink(node);
-	CLIST_unref_once(&node);
-
-	if (CLIST_is_empty(list))
-		CLIST_unref_once(&list);
-}
-
-#define CHECK_NOT_LINKED(node)			\
-	do {					\
-		if (!CLIST_is_linked(node)) {	\
-			GB.Error("List node not linked"); \
-			return;			\
-		}				\
-	} while (0)
-
-BEGIN_METHOD_VOID(List_Unlink)
-
-	CHECK_NOT_LINKED(THIS);
-	CLIST_unlink_and_unref(THIS);
-
-END_METHOD
-
-/*
- * Extract a sub-list from a list. The @start gets returned if successful.
- */
-
-static CLIST *CLIST_extract(CLIST *start, int count)
-{
-	int i = count, buf;
-	CLIST *last;
-
-	if (!count)
-		return NULL;
-
-	clist_for_each_first(last, start, buf) {
-		if (!--i)
+	list_for_each(node, &list->list) {
+		if (!index)
 			break;
+		index--;
 	}
-	/* Too few nodes in the entire list? */
-	if (i)
+	if (index) /* Not enough elements */
 		return NULL;
-
-	/* Unlink new list */
-	start->prev->next = last->next;
-	last->next->prev = start->prev;
-	/* Relink new list circularly to itself */
-	start->prev = last;
-	last->next = start;
-	return start;
+	return get_chunk(node);
 }
 
-BEGIN_METHOD(List_Extract, GB_INTEGER count)
+BEGIN_METHOD(List_get, GB_INTEGER index)
 
-	int count = VARG(count);
-	CLIST *node;
-	CLIST *start;
+	CHUNK *ck = CLIST_get(THIS, VARG(index));
 
-	if (!count) {
-		GB.Error(GB_ERR_ARG);
+	if (!ck) {
+		GB.Error(GB_ERR_BOUND);
 		return;
 	}
+	GB.ReturnVariant(&ck->val);
 
-	CHECK_NOT_LINKED(THIS);
+END_METHOD
 
-	if (count == 1) { /* Is actually Unlink()? */
-		GB.ReturnObject(THIS); /* Prevent from vanish */
-		CLIST_unlink_and_unref(THIS);
-	} else { /* Real Extract() */
-		node = THIS->prev;
-		start = CLIST_extract(THIS, count);
-		if (!start) {
+BEGIN_METHOD(List_put, GB_VARIANT var; GB_INTEGER index)
+
+	CHUNK *ck;
+
+	ck = CLIST_get(THIS, VARG(index));
+	if (!ck) {
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+	GB.StoreVariant(ARG(var), &ck->val);
+
+END_METHOD
+
+/*
+ * XXX: Append and Prepend may confuse the user's view of the Current
+ *      property. The first inserted elements get the Current status,
+ *      however, it remains Current unless one of the Move*() methods is
+ *      invoked - no matter if any other nodes are Prepend()'d.
+ */
+
+static void CLIST_append(CLIST *list, GB_VARIANT *val)
+{
+	CHUNK *ck = CHUNK_new();
+
+	GB.StoreVariant(val, &ck->val);
+	LIST_append(&list->list, &ck->list);
+	if (!list->count)
+		list->current = ck;
+	list->count++;
+}
+
+BEGIN_METHOD(List_Append, GB_VARIANT value)
+
+	CLIST_append(THIS, ARG(value));
+
+END_METHOD
+
+static void CLIST_prepend(CLIST *list, GB_VARIANT *val)
+{
+	CHUNK *ck = CHUNK_new();
+
+	GB.StoreVariant(val, &ck->val);
+	LIST_prepend(&list->list, &ck->list);
+	if (!list->count)
+		list->current = ck;
+	list->count++;
+}
+
+BEGIN_METHOD(List_Prepend, GB_VARIANT value)
+
+	CLIST_prepend(THIS, ARG(value));
+
+END_METHOD
+
+static GB_VARIANT_VALUE *CLIST_take(CLIST *list, CHUNK *ck)
+{
+	GB_VARIANT_VALUE *val = &ck->val;
+	LIST *node;
+	CHUNK *new;
+
+	/*
+	 * Do we operate on the cursor itself? Set a new one. The cursor
+	 * remains always relative to the end - arbitrarily.
+	 */
+	if (ck == list->current) {
+		/* At End? */
+		if ((node = list->current->list.next) == &list->list)
+			node = list->current->list.prev;
+		if (node == &list->list) /* Empty */
+			list->current = NULL;
+		else
+			list->current = get_chunk(node);
+	}
+
+	/* TODO: Tell enumerations of gone nodes */
+
+	LIST_unlink(&ck->list);
+	list->count--;
+	return val;
+}
+
+#define CHECK_CURRENT()				\
+	if (!THIS->current) {			\
+		GB.Error("No current element");	\
+		return;				\
+	}
+
+BEGIN_METHOD(List_Take, GB_INTEGER index)
+
+	CHUNK *ck;
+
+	if (MISSING(index)) {
+		CHECK_CURRENT();
+		ck = THIS->current;
+	} else {
+		ck = CLIST_get(THIS, VARG(index));
+		if (!ck) {
 			GB.Error(GB_ERR_BOUND);
 			return;
 		}
-		GB.ReturnObject(start);
-		/* Made old list empty? */
-		if (CLIST_is_empty(node))
-			CLIST_unref_once(&node);
 	}
+	GB.ReturnVariant(CLIST_take(THIS, ck));
+	GB.ReturnBorrow();
+	GB.StoreVariant(NULL, &ck->val);
+	GB.ReturnRelease();
+	CHUNK_destroy(ck);
 
 END_METHOD
 
-static void CLIST_unlink_and_unref_all(CLIST *list)
-{
-	if (!CLIST_is_linked(list))
-		return;
+#define IMPLEMENT_Move(which, magic, magic2)		\
+BEGIN_METHOD_VOID(List_Move ## which)			\
+							\
+	LIST *node;					\
+							\
+	magic;						\
+	if (node == &THIS->list) {			\
+		magic2;					\
+	}						\
+	THIS->current = get_chunk(node);		\
+							\
+END_METHOD
 
-	while (!CLIST_is_empty(list))
-		CLIST_unlink_and_unref(list->next);
-	/* We get automatically Unref()'d by CLIST_unlink_and_unref() */
+IMPLEMENT_Move(Next, CHECK_CURRENT(); node = THIS->current->list.next,
+	node = node->next)
+IMPLEMENT_Move(Prev, CHECK_CURRENT(); node = THIS->current->list.prev,
+	node = node->prev)
+IMPLEMENT_Move(First, node = THIS->list.next,
+	node = node->next)
+IMPLEMENT_Move(Last, node = THIS->list.prev,
+	node = node->prev)
+
+/* XXX: Quite cumbersome... */
+static int CLIST_find_forward(CLIST *list, LIST *start, GB_VARIANT *val)
+{
+	LIST *node;
+	CHUNK *ck;
+	int i = 0;
+
+	/* We need to get the index */
+	list_for_each(node, &list->list) {
+		if (node == start) {
+			i++; break;
+		}
+		i++;
+	}
+	list_for_each(node, start) {
+		if (node == &list->list) {
+			i = 0; continue;
+		}
+		ck = get_chunk(node);
+		if (!GB.CompVariant(&val->value, &ck->val))
+			goto found;
+		i++;
+	}
+	/* The @start at last */
+	if (start != &list->list) {
+		ck = get_chunk(start);
+		if (!GB.CompVariant(&val->value, &ck->val))
+			goto found;
+	}
+	list->found = NULL;
+	return -1;
+
+found:
+	list->found = ck;
+	return i;
 }
 
-BEGIN_METHOD_VOID(List_Clear)
+static int CLIST_find_backward(CLIST *list, LIST *start, GB_VARIANT *val)
+{
+	LIST *node;
+	CHUNK *ck;
+	int i = 0;
 
-	/*
-	 * This must be called to prevent circular references at program
-	 * termination. It is tricky to avoid circular references on
-	 * circular linked lists. Therefore, alas, this function must be
-	 * called explicitly or all containing nodes must be removed another
-	 * way (see ListRoot_free).
-	 */
-	CLIST_unlink_and_unref_all(THIS);
+	list_for_each_prev(node, &list->list) {
+		if (node == start) {
+			i++; break;
+		}
+		i++;
+	}
+	list_for_each_prev(node, start) {
+		if (node == &list->list) {
+			i = 0; continue;
+		}
+		ck = get_chunk(node);
+		if (!GB.CompVariant(&val->value, &ck->val))
+			goto found;
+		i++;
+	}
+	if (start != &list->list) {
+		ck = get_chunk(start);
+		if (!GB.CompVariant(&val->value, &ck->val))
+			goto found;
+	}
+	list->found = NULL;
+	return -1;
 
+found:
+	list->found = ck;
+	return list->count - i - 1;
+}
+
+#define IMPLEMENT_Find(which, which2, magic)				\
+									\
+BEGIN_METHOD(List_Find ## which, GB_VARIANT value)			\
+									\
+	LIST *node;							\
+									\
+	magic;								\
+	GB.ReturnInteger(CLIST_find_ ## which2 (THIS, node, ARG(value)));\
+									\
 END_METHOD
 
-BEGIN_PROPERTY(List_Next)
+IMPLEMENT_Find(Next, forward,
+	node = THIS->found ? &THIS->found->list : &THIS->list)
+IMPLEMENT_Find(Prev, backward,
+	node = THIS->found ? &THIS->found->list : &THIS->list)
+IMPLEMENT_Find(First, forward, node = THIS->list.next)
+IMPLEMENT_Find(Last, backward, node = THIS->list.prev)
 
-	GB.ReturnObject(THIS->next);
+BEGIN_PROPERTY(List_Current)
 
-END_PROPERTY
-
-BEGIN_PROPERTY(List_Previous)
-
-	GB.ReturnObject(THIS->prev);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(List_IsLinked)
-
-	GB.ReturnBoolean(CLIST_is_linked(THIS));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(List_IsEmbedded)
-
-	GB.ReturnBoolean(THIS->embedded);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(List_Data)
-
+	CHECK_CURRENT();
 	if (READ_PROPERTY) {
-		GB.ReturnObject(THIS->data);
+		GB.ReturnVariant(&THIS->current->val);
 		return;
 	}
-	if (THIS->embedded) {
-		GB.Error("Attempt to change Data on embedded node");
-		return;
-	}
-	GB.Unref((void **) &THIS->data);
-	THIS->data = VPROP(GB_OBJECT);
-	GB.Ref(THIS->data);
+	GB.StoreVariant(PROP(GB_VARIANT), &THIS->current->val);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(List_Count)
+
+	GB.ReturnInteger(THIS->count);
 
 END_PROPERTY
 
 GB_DESC CListDesc[] = {
 	GB_DECLARE("List", sizeof(CLIST)),
 
-	GB_CONSTANT("Embedded", "b", 1),
-
-	GB_METHOD("_new", NULL, List_new, "(Obj)o[(Embedded)b]"),
+	GB_METHOD("_new", NULL, List_new, NULL),
 	GB_METHOD("_free", NULL, List_free, NULL),
-	GB_METHOD("_next", "o", List_next, NULL),
+	GB_METHOD("_next", "v", List_next, NULL),
+	GB_METHOD("_get", "v", List_get, "(Index)i"),
+	GB_METHOD("_put", NULL, List_put, "(Value)v(Index)i"),
 
-	GB_METHOD("AddPrev", NULL, List_AddPrev, "(Node)List;"),
-	GB_METHOD("AddNext", NULL, List_AddNext, "(Node)List;"),
-	GB_METHOD("Unlink", NULL, List_Unlink, NULL),
-	GB_METHOD("Extract", "List", List_Extract, "(Count)i"),
-	GB_METHOD("Clear", NULL, List_Clear, NULL),
+	GB_METHOD("Append", NULL, List_Append, "(Value)v"),
+	GB_METHOD("Prepend", NULL, List_Prepend, "(Value)v"),
+	GB_METHOD("Take", "v", List_Take, "[(Index)i]"),
 
-	GB_PROPERTY_READ("Next", "List", List_Next),
-	GB_PROPERTY_READ("Previous", "List", List_Previous),
-	GB_PROPERTY_READ("Prev", "List", List_Previous),
-	GB_PROPERTY_READ("IsLinked", "b", List_IsLinked),
-	GB_PROPERTY_READ("IsEmbedded", "b", List_IsEmbedded),
+	GB_METHOD("MoveNext", NULL, List_MoveNext, NULL),
+	GB_METHOD("MovePrev", NULL, List_MovePrev, NULL),
+	GB_METHOD("MovePrevious", NULL, List_MovePrev, NULL),
+	GB_METHOD("MoveFirst", NULL, List_MoveFirst, NULL),
+	GB_METHOD("MoveLast", NULL, List_MoveLast, NULL),
 
-	GB_PROPERTY("Data", "o", List_Data),
+	GB_METHOD("FindNext", "i", List_FindNext, "(Value)v"),
+	GB_METHOD("FindPrev", "i", List_FindPrev, "(Value)v"),
+	GB_METHOD("FindPrevious", "i", List_FindPrev, "(Value)v"),
+	GB_METHOD("FindFirst", "i", List_FindFirst, "(Value)v"),
+	GB_METHOD("FindLast", "i", List_FindLast, "(Value)v"),
 
-	GB_END_DECLARE
-};
-
-BEGIN_METHOD_VOID(ListRoot_new)
-
-	CLIST_init_root(THIS);
-	THIS->embedded = 0;
-	THIS->has_link_ref = 0;
-
-END_METHOD
-
-BEGIN_METHOD_VOID(ListRoot_free)
-
-	CLIST_unlink_and_unref_all(THIS);
-
-END_METHOD
-
-BEGIN_PROPERTY(ListRoot_IsEmpty)
-
-	GB.ReturnBoolean(CLIST_is_empty(THIS));
-
-END_PROPERTY
-
-GB_DESC CListRootDesc[] = {
-	GB_DECLARE("ListRoot", sizeof(CLIST)),
-
-	GB_METHOD("_new", NULL, ListRoot_new, NULL),
-	GB_METHOD("_free", NULL, ListRoot_free, NULL),
-	GB_METHOD("_next", "o", List_next, NULL),
-
-	GB_METHOD("AddEnd", NULL, List_AddPrev, "(Node)List;"),
-	GB_METHOD("AddStart", NULL, List_AddNext, "(Node)List;"),
-	GB_METHOD("Unlink", NULL, List_Unlink, NULL),
-	GB_METHOD("Extract", "List", List_Extract, "(Count)i"),
-	GB_METHOD("Clear", NULL, List_Clear, NULL),
-
-	GB_PROPERTY_READ("First", "List", List_Next),
-	GB_PROPERTY_READ("Last", "List", List_Previous),
-	GB_PROPERTY_READ("IsEmpty", "b", ListRoot_IsEmpty),
+	GB_PROPERTY("Current", "v", List_Current),
+	GB_PROPERTY_READ("Count", "i", List_Count),
 
 	GB_END_DECLARE
-};
-
-CLIST_INTF List = {
-	.New		= CLIST_new,
-	.Destroy	= CLIST_destroy,
-	.NewRoot	= CLIST_new_root,
-	.DestroyRoot	= CLIST_destroy_root,
-	.IsRoot		= CLIST_is_root,
-	.IsEmpty	= CLIST_is_empty,
-	.AddBefore	= CLIST_add_before,
-	.AddAfter	= CLIST_add_after,
-	.Unlink		= CLIST_unlink,
-	.Extract	= CLIST_extract
 };

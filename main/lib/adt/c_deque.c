@@ -27,8 +27,10 @@
 
 typedef struct {
 	GB_VARIANT_VALUE var;
-	CLIST *list;
+	LIST list;
+	int prio;	/* FIXME: only used in priority queue */
 } CDEQUE_ELEM;
+#define get_elem(node)		LIST_data(node, CDEQUE_ELEM, list)
 
 static CDEQUE_ELEM *CDEQUE_new_elem(GB_VARIANT *variant)
 {
@@ -36,38 +38,31 @@ static CDEQUE_ELEM *CDEQUE_new_elem(GB_VARIANT *variant)
 
 	GB.Alloc((void **) &new, sizeof(*new));
 	new->var.type = GB_T_NULL;
-	new->list = List.New(new);
+	LIST_init(&new->list);
 	GB.StoreVariant(variant, &new->var);
 	return new;
 }
 
-static void CDEQUE_real_destroy_elem(CDEQUE_ELEM *elem)
-{
-	GB.StoreVariant(NULL, &elem->var);
-	List.Destroy(elem->list);
-	GB.Free((void **) &elem);
-}
-
 static void CDEQUE_destroy_elem(CDEQUE_ELEM *elem)
 {
-	List.Unlink(elem->list);
-	/* FIXME: This is a 'horrible hack' */
-	GB.Post(CDEQUE_real_destroy_elem, (intptr_t) elem);
+	LIST_unlink(&elem->list);
+	GB.StoreVariant(NULL, &elem->var);
+	GB.Free((void **) &elem);
 }
 
 typedef struct {
 	GB_BASE ob;
-	CLIST *elements;
+	LIST elements;
 } CDEQUE;
 
 static int CDEQUE_is_empty(CDEQUE *dq)
 {
-	return List.IsEmpty(dq->elements);
+	return LIST_is_empty(&dq->elements);
 }
 
 static void CDEQUE_init(CDEQUE *dq)
 {
-	dq->elements = List.NewRoot();
+	LIST_init(&dq->elements);
 }
 
 #define THIS	((CDEQUE *) _object)
@@ -84,27 +79,26 @@ static CDEQUE_ELEM *CDEQUE_pop_front(CDEQUE *dq)
 
 	if (CDEQUE_is_empty(dq))
 		return NULL;
-	elem = dq->elements->next->data;
-	CDEQUE_destroy_elem(elem);
+	elem = get_elem(dq->elements.next);
+	LIST_unlink(&elem->list);
 	return elem;
 }
 
 static void CDEQUE_pop_and_free_all(CDEQUE *dq)
 {
 	while (!CDEQUE_is_empty(dq))
-		CDEQUE_pop_front(dq);
+		CDEQUE_destroy_elem(CDEQUE_pop_front(dq));
 }
 
 BEGIN_METHOD_VOID(Deque_free)
 
 	CDEQUE_pop_and_free_all(THIS);
-	List.DestroyRoot(THIS->elements);
 
 END_METHOD
 
 static void CDEQUE_push_front(CDEQUE *dq, CDEQUE_ELEM *elem)
 {
-	List.AddAfter(dq->elements, elem->list);
+	LIST_append(&dq->elements, &elem->list);
 }
 
 BEGIN_METHOD(Deque_PushFront, GB_VARIANT value)
@@ -118,7 +112,7 @@ END_METHOD
 
 static void CDEQUE_push_back(CDEQUE *dq, CDEQUE_ELEM *elem)
 {
-	List.AddBefore(dq->elements, elem->list);
+	LIST_prepend(&dq->elements, &elem->list);
 }
 
 BEGIN_METHOD(Deque_PushBack, GB_VARIANT value)
@@ -141,6 +135,10 @@ BEGIN_METHOD_VOID(Deque_PopFront)
 	}
 	elem = CDEQUE_pop_front(THIS);
 	GB.ReturnVariant(&elem->var);
+	GB.ReturnBorrow();
+	GB.StoreVariant(NULL, &elem->var);
+	GB.ReturnRelease();
+	CDEQUE_destroy_elem(elem);
 
 END_METHOD
 
@@ -150,8 +148,8 @@ static CDEQUE_ELEM *CDEQUE_pop_back(CDEQUE *dq)
 
 	if (CDEQUE_is_empty(dq))
 		return NULL;
-	elem = dq->elements->prev->data;
-	CDEQUE_destroy_elem(elem);
+	elem = get_elem(dq->elements.prev);
+	LIST_unlink(&elem->list);
 	return elem;
 }
 
@@ -166,6 +164,10 @@ BEGIN_METHOD_VOID(Deque_PopBack)
 	}
 	elem = CDEQUE_pop_back(THIS);
 	GB.ReturnVariant(&elem->var);
+	GB.ReturnBorrow();
+	GB.StoreVariant(NULL, &elem->var);
+	GB.ReturnRelease();
+	CDEQUE_destroy_elem(elem);
 
 END_METHOD
 
@@ -177,7 +179,7 @@ BEGIN_METHOD_VOID(Deque_PeekFront)
 		GB.ReturnNull();
 		GB.ReturnConvVariant();
 	} else {
-		elem = (CDEQUE_ELEM *) THIS->elements->next->data;
+		elem = get_elem(THIS->elements.next);
 		GB.ReturnVariant(&elem->var);
 	}
 
@@ -191,7 +193,7 @@ BEGIN_METHOD_VOID(Deque_PeekBack)
 		GB.ReturnNull();
 		GB.ReturnConvVariant();
 	} else {
-		elem = (CDEQUE_ELEM *) THIS->elements->prev->data;
+		elem = get_elem(THIS->elements.prev);
 		GB.ReturnVariant(&elem->var);
 	}
 
@@ -212,10 +214,10 @@ END_PROPERTY
 BEGIN_PROPERTY(Deque_Size)
 
 	size_t size;
-	CLIST *node;
+	LIST *node;
 
 	size = 0;
-	clist_for_each(node, THIS->elements)
+	list_for_each(node, &THIS->elements)
 		size++;
 	GB.ReturnInteger(size);
 
@@ -301,15 +303,17 @@ GB_DESC CQueueDesc[] = {
 
 static void CPRIOQ_enqueue(CDEQUE *dq, CDEQUE_ELEM *elem, int prio)
 {
-	CLIST *next;
+	LIST *next;
+	CDEQUE_ELEM *e;
 
 	/* Just find the right node to prepend the new value to */
-	clist_for_each(next, dq->elements)
-		/* We use CLIST's uptr for the prio */
-		if (prio > (int) next->uptr)
+	list_for_each(next, &dq->elements) {
+		e = get_elem(next);
+		if (prio > e->prio)
 			break;
-	elem->list->uptr = prio;
-	List.AddBefore(next, elem->list);
+	}
+	elem->prio = prio;
+	LIST_prepend(next, &elem->list);
 }
 
 BEGIN_METHOD(PrioQueue_Enqueue, GB_VARIANT value; GB_INTEGER prio)

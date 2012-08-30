@@ -4,7 +4,8 @@ include $(top_srcdir)/component.am
 gblib_LTLIBRARIES = gb.adt.la
 
 gb_adt_la_LDFLAGS = -module @LD_FLAGS@
-gb_adt_la_CFLAGS  = -I$(top_srcdir)/share
+gb_adt_la_CPPFLAGS  = -I$(top_srcdir)/share
+gb_adt_la_CFLAGS = $(AM_CFLAGS)
 
 gb_adt_la_SOURCES = \
  main.h main.c \

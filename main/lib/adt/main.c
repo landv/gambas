@@ -30,7 +30,6 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT = {
 	CListDesc,
-	CListRootDesc,
 
 	CDequeDesc,
 	CStackDesc,
@@ -50,5 +49,4 @@ int EXPORT GB_INIT()
 
 void EXPORT GB_EXIT()
 {
-	CLIST_exit();
 }
