@@ -71,6 +71,6 @@ enum
 };
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env);
-void CPROCESS_wait_for(CPROCESS *process);
+void CPROCESS_wait_for(CPROCESS *process, int timeout);
 
 #endif

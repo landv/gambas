@@ -479,20 +479,32 @@ BEGIN_METHOD_VOID(Task_Stop)
 
 END_METHOD
 
+static void error_Task_Wait(CTASK *task)
+{
+	OBJECT_UNREF(task, "Task_Wait");
+}
+
 BEGIN_METHOD_VOID(Task_Wait)
 
 	OBJECT_REF(THIS, "Task_Wait");
+	
 	//printf("Task_Wait: %p\n", THIS); fflush(stdout);
-	for(;;)
+	
+	ON_ERROR_1(error_Task_Wait, THIS)
 	{
-		//printf("GB_Wait\n"); fflush(stdout);
-		GB_Wait(0);
-		//printf("stopped = %d\n", THIS->stopped); fflush(stdout);
-		if (THIS->stopped)
-			break;
-		//printf("sleep\n"); fflush(stdout);
-		sleep(10);
+		for(;;)
+		{
+			//printf("GB_Wait\n"); fflush(stdout);
+			GB_Wait(0);
+			//printf("stopped = %d\n", THIS->stopped); fflush(stdout);
+			if (THIS->stopped)
+				break;
+			//printf("sleep\n"); fflush(stdout);
+			sleep(10);
+		}
 	}
+	END_ERROR
+	
 	OBJECT_UNREF(_object, "Task_Wait");
 
 END_METHOD

@@ -158,7 +158,7 @@ void SUBR_exec(ushort code)
 		_error_subr_exec_process = process;
 		ON_ERROR(error_subr_exec)
 		{
-			CPROCESS_wait_for(process);
+			CPROCESS_wait_for(process, 0);
 		}
 		END_ERROR
 

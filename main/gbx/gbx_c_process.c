@@ -844,14 +844,12 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	return process;
 }
 
-static CPROCESS *_error_CPROCESS_wait_for_process;
-
-static void error_CPROCESS_wait_for()
+static void error_CPROCESS_wait_for(CPROCESS *process)
 {
-	OBJECT_UNREF(_error_CPROCESS_wait_for_process, "CPROCESS_wait_for");
+	OBJECT_UNREF(process, "CPROCESS_wait_for");
 }
 
-void CPROCESS_wait_for(CPROCESS *process)
+void CPROCESS_wait_for(CPROCESS *process, int timeout)
 {
 	int ret;
 	int sigfd;
@@ -861,19 +859,20 @@ void CPROCESS_wait_for(CPROCESS *process)
 	#endif
 
 	OBJECT_REF(process, "CPROCESS_wait_for");
-	_error_CPROCESS_wait_for_process = process;
 	
 	sigfd = SIGNAL_get_fd();
 	
-	ON_ERROR(error_CPROCESS_wait_for)
+	ON_ERROR_1(error_CPROCESS_wait_for, process)
 	{
 		while (process->running)
 		{
-			ret = WATCH_process(sigfd, process->out);
+			ret = WATCH_process(sigfd, process->out, timeout);
 			if (ret & WP_OUTPUT)
 				callback_write(process->out, GB_WATCH_READ, process);
 			if (ret & WP_END)
 				SIGNAL_raise_callbacks(sigfd, GB_WATCH_READ, 0);
+			if (ret & WP_TIMEOUT)
+				break;
 			if (ret == 0)
 				usleep(1000);
 		}
@@ -1043,9 +1042,9 @@ BEGIN_PROPERTY(Process_LastValue)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(Process_Wait)
+BEGIN_METHOD(Process_Wait, GB_FLOAT timeout)
 
-	CPROCESS_wait_for(THIS);
+	CPROCESS_wait_for(THIS, (int)(VARGOPT(timeout, 0.0) * 1000));
 
 END_METHOD
 
@@ -1075,7 +1074,7 @@ GB_DESC NATIVE_Process[] =
 
 	GB_METHOD("Kill", NULL, Process_Kill, NULL),
 	GB_METHOD("Signal", NULL, Process_Signal, NULL),
-	GB_METHOD("Wait", NULL, Process_Wait, NULL),
+	GB_METHOD("Wait", NULL, Process_Wait, "[(Timeout)f]"),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
