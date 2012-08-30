@@ -300,6 +300,8 @@ static bool start_task(CTASK *_object)
 			
 			setlinebuf(stdout);
 		}
+		else
+			close(CHILD_STDOUT);
 
 		if (has_error)
 		{
@@ -310,6 +312,8 @@ static bool start_task(CTASK *_object)
 			
 			setlinebuf(stderr);
 		}
+		else
+			close(CHILD_STDERR);
 
 		has_forked(); // After the redirection
 		
@@ -375,9 +379,19 @@ static void close_fd(int *pfd)
 	}
 }
 
+static void cleanup_task(CTASK *_object)
+{
+	//printf("cleanup task %p\n", THIS); fflush(stdout);
+
+	OBJECT_UNREF(_object, "stop_task");
+}
+
 static void stop_task(CTASK *_object)
 {
 	int len;
+	GB_RAISE_HANDLER handler;
+	
+	//printf("stop_task: %p\n", THIS); fflush(stdout);
 	
 	THIS->stopped = TRUE;
 	
@@ -399,16 +413,25 @@ static void stop_task(CTASK *_object)
 		}
 	}
 
-	LIST_remove(&_task_list, THIS, &THIS->list);
-
-	GB_Raise(THIS, EVENT_Kill, 0);
-
 	close_fd(&THIS->fd_out);
 	close_fd(&THIS->fd_err);
 	
-	OBJECT_UNREF(_object, "stop_task");
-	
+	LIST_remove(&_task_list, THIS, &THIS->list);
 	exit_task();
+
+	//printf("Kill event...\n"); fflush(stdout);
+	
+	if (GB_CanRaise(THIS, EVENT_Kill))
+	{
+		handler.callback = (GB_CALLBACK)cleanup_task;
+		handler.data = (intptr_t)THIS;
+	
+		GB_RaiseBegin(&handler);
+		GB_Raise(THIS, EVENT_Kill, 0);
+		GB_RaiseEnd(&handler);
+	}
+
+	cleanup_task(THIS);
 }
 
 //-------------------------------------------------------------------------
@@ -458,13 +481,19 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Task_Wait)
 
+	OBJECT_REF(THIS, "Task_Wait");
+	//printf("Task_Wait: %p\n", THIS); fflush(stdout);
 	for(;;)
 	{
+		//printf("GB_Wait\n"); fflush(stdout);
 		GB_Wait(0);
+		//printf("stopped = %d\n", THIS->stopped); fflush(stdout);
 		if (THIS->stopped)
 			break;
+		//printf("sleep\n"); fflush(stdout);
 		sleep(10);
 	}
+	OBJECT_UNREF(_object, "Task_Wait");
 
 END_METHOD
 
@@ -542,6 +571,11 @@ __ERROR:
 	
 END_PROPERTY
 
+BEGIN_PROPERTY(Task_Running)
+
+	GB_ReturnBoolean(!THIS->stopped);
+
+END_PROPERTY
 
 //-------------------------------------------------------------------------
 
@@ -556,6 +590,7 @@ GB_DESC TaskDesc[] =
 
 	GB_PROPERTY_READ("Handle", "i", Task_Handle),
 	GB_PROPERTY_READ("Value", "v", Task_Value),
+	GB_PROPERTY_READ("Running", "b", Task_Running),
 
 	GB_METHOD("Stop", NULL, Task_Stop, NULL),
 	GB_METHOD("Wait", NULL, Task_Wait, NULL),

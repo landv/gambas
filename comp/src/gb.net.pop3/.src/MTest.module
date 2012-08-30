@@ -16,14 +16,14 @@ Public Sub Main()
 
   Dim i As Variant
 
-  Dim a As _POPMessage
+  Dim a As _Pop3Client_Message
 
   POP.Encrypt = Net.None
 
-  POP.Username = "USERNAME"
+  POP.User = "USERNAME"
   POP.Password = "PASSWORD"
 
-  POP.Server = "pop3.SERVER.com"
+  POP.Host = "pop3.SERVER.com"
 
   POP.Open()
 

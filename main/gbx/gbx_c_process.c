@@ -102,6 +102,20 @@ static const char *const _child_error[] = {
 	"cannot exec program: "
 };
 
+//-------------------------------------------------------------------------
+
+static void close_fd(int *pfd)
+{
+	int fd = *pfd;
+	
+	if (fd >= 0)
+	{
+		GB_Watch(fd, GB_WATCH_NONE, NULL, 0);
+		close(fd);
+		*pfd = -1;
+	}
+}
+
 static void callback_write(int fd, int type, CPROCESS *process)
 {
 	#ifdef DEBUG_ME
@@ -119,6 +133,8 @@ static void callback_write(int fd, int type, CPROCESS *process)
 	}
 	else if (!STREAM_is_closed(CSTREAM_stream(process)) && !STREAM_eof(CSTREAM_stream(process))) //process->running &&
 		GB_Raise(process, EVENT_Read, 0);
+	else
+		close_fd(&process->out);
 }
 
 
@@ -178,22 +194,9 @@ static void exit_process(CPROCESS *_object)
 		THIS->in = -1;
 	}
 
-	if (THIS->out >= 0)
-	{
-		GB_Watch(THIS->out, GB_WATCH_NONE, NULL, 0);
-		close(THIS->out);
-		THIS->out = -1;
-	}
+	close_fd(&THIS->out);
+	close_fd(&THIS->err);
 
-	if (THIS->err >= 0)
-	{
-		GB_Watch(THIS->err, GB_WATCH_NONE, NULL, 0);
-		close(THIS->err);
-		THIS->err = -1;
-	}
-
-	// Why that ? This should be done only at process creation
-	// update_stream(THIS);
 	STREAM_close(&THIS->ob.stream);
 }
 
@@ -866,16 +869,12 @@ void CPROCESS_wait_for(CPROCESS *process)
 	{
 		while (process->running)
 		{
-			//HOOK_DEFAULT(wait, WATCH_wait)(0);
-			#ifdef DEBUG_ME
-			fprintf(stderr, "watching _pipe_child[0] = %d\n", _pipe_child[0]);
-			#endif
 			ret = WATCH_process(sigfd, process->out);
-			if (ret == sigfd)
-				SIGNAL_raise_callbacks(sigfd, GB_WATCH_READ, 0);
-			else if (ret == process->out)
+			if (ret & WP_OUTPUT)
 				callback_write(process->out, GB_WATCH_READ, process);
-			else
+			if (ret & WP_END)
+				SIGNAL_raise_callbacks(sigfd, GB_WATCH_READ, 0);
+			if (ret == 0)
 				usleep(1000);
 		}
 	}

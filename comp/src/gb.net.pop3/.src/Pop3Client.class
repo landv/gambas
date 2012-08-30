@@ -33,6 +33,9 @@
 
 Export
 
+Public Const SERVER_POSITIVE_RESPONSE As String = "+OK"
+Public Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
+
 ''Use plaintext or an ssl encrypted conenction
 Property Encrypt As Integer
 Private $iEncrypt As Integer
@@ -47,7 +50,7 @@ Private $oClient As POPClient
 
 ''Returns or sets the username used to authenticate to the server.
 ''It cannot be modified after Open() is executed
-Property Username As String
+Property User As String
 Private $sUsername As String
 
 ''Returns or sets the password used to authenticate to the server.
@@ -57,13 +60,13 @@ Private $sPassword As String
 
 ''Returns or sets the server used to connect to the server.
 ''It cannot be modified after Open() is executed
-Property Server As String
+Property Host As String
 Private $sServer As String
 
 ''Returns or sets the port used to connect to the server.
 ''It cannot be modified after Open() is executed
 Property Port As Integer
-Private $iPort As String = 110
+Private $iPort As Integer
 
 ''Returns the message count
 Property Read Count As Integer
@@ -74,22 +77,30 @@ Property Read Size As Integer
 Private $iSize As Integer
 
 ''Welcome message returned by the server
-Public Welcome As String
+Property Read Welcome As String
+Private $sWelcome As String
+
+'' If debugging mode is activated for this client
+Property Debug As Boolean
+Private $bDebug As Boolean
 
 ''Collection used to cache the request of single messages
 Private $msgCache As New Collection
 
+'' If connection has been closed
+Private $bClosed As Boolean
+
 ''Returns True if _Text_ begins with "+OK"
 Static Public Function isPositive(Text As String) As Boolean
 
-  Return (Text Begins POP3.SERVER_POSITIVE_RESPONSE)
+  Return (Text Begins SERVER_POSITIVE_RESPONSE)
 
 End
 
 ''Returns True if _Text_ begins with "-ERR"
 Static Public Function isNegative(Text As String) As Boolean
 
-  Return (Text Begins POP3.SERVER_NEGATIVE_RESPONSE)
+  Return (Text Begins SERVER_NEGATIVE_RESPONSE)
 
 End
 
@@ -104,9 +115,16 @@ Static Public Function StripOK(Text As String) As String
 
 End
 
-Public Function _get(msgid As Integer) As _POPMessage
+Static Public Sub _PrintDebug(sMsg As String)
+  
+  Error "gb.net.pop3: "; sMsg
+  
+End
 
-  Dim oPOPMInstance As _POPMessage
+
+Public Function _get(msgid As Integer) As _Pop3Client_Message
+
+  Dim oPOPMInstance As _Pop3Client_Message
 
   If msgid = 0 Then msgid = 1
 
@@ -114,7 +132,7 @@ Public Function _get(msgid As Integer) As _POPMessage
 
   If Not $msgCache.Exist(msgid) Then
 
-    oPOPMInstance = New _POPMessage(msgid, Me)
+    oPOPMInstance = New _Pop3Client_Message(msgid, Me)
 
     $msgCache.Add(oPOPMInstance, msgid)
 
@@ -124,10 +142,10 @@ Public Function _get(msgid As Integer) As _POPMessage
 
 End
 
-Public Sub _next() As _PopMessage
+Public Sub _next() As _Pop3Client_Message
 
   Dim i As Integer
-  Dim oPOPMInstance As _POPMessage
+  Dim oPOPMInstance As _Pop3Client_Message
 
   If IsNull(Enum.Index) Then
     Enum.Index = 1
@@ -150,33 +168,37 @@ End
 ''Port defaults to 110 for TCPClient and 995 for SSLClient
 Public Function Open() As Boolean
 
-  If Not Me.Server Then
+  Dim iPort As Integer
+  
+  If Not $sServer Then
     Error.Raise("Server not set")
   Endif
 
-  If Not Me.Port Then
-    Error.Raise("Port not set")
-  Endif
-
-  If Not Me.Username Then
+  If Not $sUsername Then
     Error.Raise("Username not set")
   Endif
 
-  If Not Me.Password Then
+  If Not $sPassword Then
     Error.Raise("Password not set")
   Endif
 
-  Debug "Conencting to " & Me.Server
+  If $bDebug Then _PrintDebug("Connecting to " & Me.Server)
+
+  iPort = $iPort
 
   Select Case Me.Encrypt
 
     Case Net.None
       $oClient = New TCPClient
+      If iPort = 0 Then 
+        iPort = 110
+        If $bDebug Then _PrintDebug("Port not specified, using 110")
+      Endif
 
     Case Net.SSL
-      If $iPort = 110 Then
-        $iPort = 995
-        Debug "Port not specified, using 995"
+      If iPort = 0 Then 
+        iPort = 995
+        If $bDebug Then _PrintDebug("Port not specified, using 995")
       Endif
 
       $oClient = New SSLClient
@@ -186,21 +208,22 @@ Public Function Open() As Boolean
 
   End Select
 
-  $oClient.Connect(Me.Server, Me.Port)
-
-  $iStatus = POP3.Authorization
+  $oClient.Connect(Me.Server, iPort)
 
   'Set welcome message
-  Welcome = Trim($oClient.GetLine())
+  $sWelcome = Trim($oClient.GetLine())
 
-  Debug "Logging in"
+  If $bDebug Then _PrintDebug("Authenticating...")
 
   If Not _User(Me.Username) Then
-    $iStatus = POP3.WrongUsername
+    $iStatus = Net.CannotAuthenticate
+    If $bDebug Then _PrintDebug("Bad username")
   Else If Not _Pass(Me.Password) Then
-    $iStatus = POP3.WrongPassword
+    $iStatus = Net.CannotAuthenticate
+    If $bDebug Then _PrintDebug("Bad password")
   Else
-    $iStatus = POP3.Transaction
+    $iStatus = Net.Connected
+    If $bDebug Then _PrintDebug("OK")
   Endif
 
   Return $iStatus
@@ -211,7 +234,9 @@ End
 Public Function Exec(Data As String, Optional Multiline As Boolean = False) As String
 
   Dim Response As String
+  Dim iPos As Integer
 
+  If $bDebug Then _PrintDebug("Sending: " & Data)
   'Send the data
   Response = $oClient.Send(Data, Multiline)
 
@@ -219,7 +244,18 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
   '   Error.Raise("Invalid POP response: " & Response)
   ' Endif
 
-  'Print Response
+  If $bDebug Then 
+    If Multiline Then
+      iPos = InStr(Response, "\n")
+      If iPos Then
+        _PrintDebug(RTrim(Left(Response, iPos - 1)) & "...")
+      Else
+        _PrintDebug(Response)
+      Endif
+    Else
+      _PrintDebug(Response)
+    Endif
+  Endif
 
   Return Response
 
@@ -230,18 +266,20 @@ Public Function Close() As Boolean
 
   Dim Response As String
 
-  If $iStatus < POP3.Transaction Then
+  If $iStatus <> Net.Connected Then
     Error.Raise("Not connected")
-  Else If $iStatus > POP3.Transaction Then
+  Else If $bClosed Then
     Error.Raise("Already in UPDATE state")
   Endif
 
   Response = Exec("QUIT")
 
-  Debug "Disconnecting"
+  If $bDebug Then _PrintDebug("Disconnecting...")
   $oClient.Disconnect()
 
   $msgCache = Null
+  
+  $bClosed = True
 
   Return isPositive(Response)
 
@@ -388,15 +426,15 @@ Private Function Status_Read() As Integer
 
 End
 
-Private Function Username_Read() As String
+Private Function User_Read() As String
 
   Return $sUsername
 
 End
 
-Private Sub Username_Write(Value As String)
+Private Sub User_Write(Value As String)
 
-  If $sUsername Then Error.Raise("Cannot modify username")
+  'If $sUsername Then Error.Raise("Cannot modify username")
 
   $sUsername = Value
 
@@ -410,21 +448,21 @@ End
 
 Private Sub Password_Write(Value As String)
 
-  If $sPassword Then Error.Raise("Cannot modify password")
+  'If $sPassword Then Error.Raise("Cannot modify password")
 
   $sPassword = Value
 
 End
 
-Private Function Server_Read() As String
+Private Function Host_Read() As String
 
   Return $sServer
 
 End
 
-Private Sub Server_Write(Value As String)
+Private Sub Host_Write(Value As String)
 
-  If $sServer Then Error.Raise("Cannot modify Server")
+  'If $sServer Then Error.Raise("Cannot modify Server")
 
   $sServer = Value
 
@@ -438,7 +476,7 @@ End
 
 Private Sub Port_Write(Value As Integer)
 
-  If $iPort Then Error.Raise("Cannot modify port")
+  'If $iPort Then Error.Raise("Cannot modify port")
 
   $iPort = Value
 
@@ -453,7 +491,7 @@ Private Sub _Refresh()
 
   'Dim iSize As Integer
 
-  Debug "Refreshing inbox cache"
+  If $bDebug Then _PrintDebug("Refreshing inbox cache")
 
   $msgCache.Clear()
 
@@ -473,5 +511,23 @@ Private Sub _Refresh()
   '   $iSize = iSize
   '
   ' Endif
+
+End
+
+Private Function Welcome_Read() As String
+
+  Return $sWelcome
+
+End
+
+Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
 
 End

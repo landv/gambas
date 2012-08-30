@@ -662,12 +662,11 @@ int WATCH_process(int fd_end, int fd_output)
 			break;
 	}
 
-	if (FD_ISSET(fd_end, &rfd))
-		return fd_end;
-	else if (FD_ISSET(fd_output, &rfd))
-		return fd_output;
-	else
-		return -1;
+	ret = WP_NOTHING;
+	
+	if (FD_ISSET(fd_end, &rfd)) ret += WP_END;
+	if (fd_output >= 0 && FD_ISSET(fd_output, &rfd)) ret += WP_OUTPUT;
+	return ret;
 }
 
 

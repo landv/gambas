@@ -31,9 +31,9 @@
 //#define DEBUG_ME 1
 
 static SIGNAL_HANDLER *_handlers = NULL;
-static int _pipe[2];
+static int _pipe[2] = { -1, -1 };
 static volatile int _count = 0;
-static bool _raising_callback = FALSE;
+static int _raising_callback = 0;
 
 void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, siginfo_t *, void *))
 {
@@ -129,7 +129,7 @@ static void handle_signal(int signum, siginfo_t *info, void *context)
 	errno = save_errno;
 }
 
-static bool _must_purge_callbacks;
+static bool _must_purge_callbacks = FALSE;
 static int _purge_signum;
 static SIGNAL_HANDLER *_purge_handler;
 
@@ -137,7 +137,9 @@ static void purge_callbacks(void)
 {
 	SIGNAL_CALLBACK *cb, *next_cb;
 	
-	_raising_callback = FALSE;
+	_raising_callback--;
+	if (_raising_callback)
+		return;
 	
 	if (_must_purge_callbacks)
 	{
@@ -169,10 +171,9 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	
 	handler = find_handler(signum);
 	
-	_raising_callback = TRUE;
+	_raising_callback++;
 	_purge_signum = signum;
 	_purge_handler = handler;
-	_must_purge_callbacks = FALSE;
 	
 	ON_ERROR(purge_callbacks)
 	{
@@ -272,7 +273,10 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 		GB_Watch(_pipe[0], GB_WATCH_NONE, NULL, 0);
 		close(_pipe[0]);
 		close(_pipe[1]);
+		_pipe[0] = -1;
+		_pipe[1] = -1;
 	}
+	
 }
 
 void SIGNAL_exit(void)

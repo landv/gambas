@@ -38,6 +38,12 @@ enum {
   WATCH_WRITE = 2,
   };
 
+enum {
+	WP_NOTHING = 0,
+	WP_END = 1,
+	WP_OUTPUT = 2
+};
+	
 typedef
   struct {
     int fd;

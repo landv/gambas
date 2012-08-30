@@ -47,6 +47,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
   FILE *file;
   char *fmode;
   struct stat info;
+	int fd;
 
   if (mode & ST_CREATE)
     fmode = "w+";
@@ -61,7 +62,9 @@ static int stream_open(STREAM *stream, const char *path, int mode)
   if (file == NULL)
     return TRUE;
 
-  if (fstat(fileno(file), &info) < 0)
+	fd = fileno(file);
+	
+  if (fstat(fd, &info) < 0)
     return TRUE;
 
   if (S_ISDIR(info.st_mode))
@@ -70,6 +73,8 @@ static int stream_open(STREAM *stream, const char *path, int mode)
     return TRUE;
   }
 
+  //fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+  
 	stream->common.available_now = TRUE;
   FD = file;
   return FALSE;

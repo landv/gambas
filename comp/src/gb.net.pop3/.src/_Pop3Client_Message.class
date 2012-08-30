@@ -1,7 +1,9 @@
 ' Gambas class file
 
+Export
+
 ''Returns the ID used to list the message as per the LIST command
-Property Read ListingID As Integer
+Property Read ID As Integer
 Private $msgid As Integer
 
 Private $oPOPClient As Pop3Client
@@ -20,7 +22,7 @@ Private $sUID As String
 
 Public Sub _new(msgid As Integer, $oClient As Pop3Client)
 
-  Debug "Creating new message instance for " & msgid
+  If $oClient.Debug Then $oClient._PrintDebug("Creating new message instance for " & msgid)
 
   $msgid = msgid
 
@@ -112,19 +114,17 @@ Private Function UniqueID_Read() As String
 
 End
 
-Private Function ListingID_Read() As Integer
+Private Function ID_Read() As Integer
 
   Return $msgid
 
 End
 
 ''Clears the cached data
-Public Sub Clear()
+Public Sub Refresh()
 
   $iSize = 0
-
   $sText = ""
-
   $sUID = ""
 
 End

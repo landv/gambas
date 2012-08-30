@@ -9,33 +9,9 @@ SSL
 C
 i
 1
-#POP3
+#Pop3Client
 
 C
-Disconnected
-C
-i
-0
-Authorization
-C
-i
-1
-Transaction
-C
-i
-2
-Update
-C
-i
-3
-WrongUsername
-C
-i
-4
-WrongPassword
-C
-i
-5
 SERVER_POSITIVE_RESPONSE
 C
 s
@@ -44,9 +20,6 @@ SERVER_NEGATIVE_RESPONSE
 C
 s
 -ERR
-#Pop3Client
-
-C
 Encrypt
 p
 i
@@ -55,7 +28,7 @@ Status
 r
 i
 
-Username
+User
 p
 s
 
@@ -63,7 +36,7 @@ Password
 p
 s
 
-Server
+Host
 p
 s
 
@@ -80,8 +53,12 @@ r
 i
 
 Welcome
-v
+r
 s
+
+Debug
+p
+b
 
 isPositive
 M
@@ -95,13 +72,17 @@ StripOK
 M
 s
 (Text)s
+_PrintDebug
+M
+
+(sMsg)s
 _get
 m
-_POPMessage
+_Pop3Client_Message
 (msgid)i
 _next
 m
-_POPMessage
+_Pop3Client_Message
 
 Open
 m
@@ -134,4 +115,43 @@ String[]
 UniqueID
 m
 String[]
+
+#_Pop3Client_Message
+
+C
+ID
+r
+i
+
+Text
+r
+s
+
+Size
+r
+i
+
+UniqueID
+r
+s
+
+_new
+m
+
+(msgid)i($oClient)Pop3Client;
+Delete
+m
+b
+
+Top
+m
+s
+(Lines)i
+Refresh
+m
+
+
+_free
+m
+
 
