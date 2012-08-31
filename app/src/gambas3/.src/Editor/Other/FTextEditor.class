@@ -47,6 +47,8 @@ Private $hBookmark As CBookmark
 Private $cProc As Collection
 Private $aProc As String[]
 
+Private $bWebPage As Boolean
+
 Public Sub _new(sPath As String, Optional bModule As Boolean)
 
   Path = sPath
@@ -75,6 +77,8 @@ Public Sub LoadFile() As Boolean
     .Flags[Editor.HighlightBraces] = True
   End With
   
+  $bWebPage = False
+  
   If $aExt.Exist(sExt) Then
 
     Select Case sExt
@@ -83,6 +87,7 @@ Public Sub LoadFile() As Boolean
         $bShowCompress = Not Project.IsHiddenPath(Path)
       Case "webpage"
         edtEditor.Highlight = Highlight.WebPage
+        $bWebPage = True
       Case "js"
         edtEditor.Highlight = Highlight.JavaScript
         $bShowCompress = Not Project.IsHiddenPath(Path)
@@ -214,6 +219,75 @@ Public Sub Editors_Change()
 End
 
 
+Private Sub InAlternate() As Boolean
+
+  Dim sText As String = String.Left(Editor.Lines[Editor.Line].Text, Editor.Column)
+  Dim bAlt As Boolean
+  Dim I As Integer
+  Dim bQuote As Boolean
+  Dim sCar As String
+  
+  Editor.Lines[Editor.Line].GetInitialState()
+  bAlt = Highlight.AlternateState
+  
+  
+  I = 1
+  While I <= String.Len(sText)
+    
+    sCar = String.Mid$(sText, I, 1)
+    
+    If bAlt Then
+      
+      If bQuote Then
+        If sCar = "\\" Then
+          Inc I
+        Else If sCar = Chr$(34) Then
+          bQuote = False
+        Endif
+      Else
+        If sCar = Chr$(34) Then
+          bQuote = True
+        Else If String.Mid$(sText, I, 2) = "%>" Then
+          bAlt = False
+        Endif
+      Endif
+      
+    Else
+      If String.Mid$(sText, I, 2) = "<%" Then
+        bAlt = True
+        Inc I
+      Endif
+    Endif
+    
+    Inc I
+    
+  Wend
+  
+  Return bAlt
+
+End
+
+Private Sub FindCloseAlternate() As Boolean
+  
+  Dim sLine As String
+  Dim I, J, A, B As Integer
+  
+  I = Editor.Line 
+  J = Editor.Column
+  
+  While I < Editor.Lines.Count
+    sLine = Editor.Lines[I].Text
+    A = String.InStr(sLine, "<%", J + 1)
+    B = String.InStr(sLine, "%>", J + 1)
+    If B > 0 And If A = 0 Or A > B Then Return True
+    If A > 0 Then Return False
+    Inc I
+    J = 0
+  Wend
+    
+End
+
+
 Public Sub Editors_KeyPress()
   
   If Key.Code = Key.Escape Then 
@@ -260,7 +334,21 @@ Public Sub Editors_KeyPress()
   '   FMain.SearchProject
   '   
   Endif 
-
+  
+  If Editor.ReadOnly Then Return
+   
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    If Key.Normal Then
+      If $bWebPage Then
+        If InAlternate() And If Not FindCloseAlternate() Then
+          Editor.Insert("\n%>")
+          Editor.Goto(Editor.Line, 0)
+          Stop Event
+        Endif
+      Endif
+    Endif
+  Endif
+  
 End
 
 

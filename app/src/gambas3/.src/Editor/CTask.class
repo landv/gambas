@@ -51,7 +51,7 @@ Static Public Sub ScanFile(sPath As String) As CTask[]
     sLine = Highlight.Purge(sLine, True)
     iPos = InStr(sLine, "'")
     If iPos Then
-      If Mid$(sLine, iPos, 1) = "'" Then Inc iPos
+      If Mid$(sLine, iPos + 1, 1) = "'" Then Inc iPos
       sLine = Trim(Mid$(sLine, iPos + 1))
       iPos = InStr(sLine, ":")
       If iPos Then
