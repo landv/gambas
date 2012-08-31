@@ -12,78 +12,8 @@
 
 Public Sub Main()
 
-  Dim POP As New Pop3Client
+  Dim msg As MIMEMessage
 
-  Dim i As Variant
-
-  Dim a As _Pop3Client_Message
-
-  POP.Encrypt = Net.None
-
-  POP.User = "USERNAME"
-  POP.Password = "PASSWORD"
-
-  POP.Host = "pop3.SERVER.com"
-
-  POP.Open()
-
-  'Print POP.Exec("CAPA")
-
-  'POP.WaitForConnection()
-
-  'i = POP.Stat()
-
-  'POP.NOOP()
-
-  ' Print POP.Size, POP.Count
-
-  'Print POP.Size, POP.Count
-
-  ' i = POP.List()
-  ' POP.List(4)
-  '
-  '
-  ' Wait 3
-  '
-  ' a = POP[0]
-
-  'a = POP[4].Size
-
-  'Stop
-
-  Print POP[1].ListingID
-  ' Print POP[2].ListingID
-  ' Print POP[3].ListingID
-  ' Print POP[4].ListingID
-  '
-  ' i = POP.UniqueID(4)
-
-  'a = POP.UniqueID()
-  '
-  ' POP.List()
-  '
-  'Wait
-  'Print POP.Retrieve(4)
-
-  'POP.NOOP()
-  '
-  ' i = POP.UniqueID()
-
-  For Each a In POP
-    '
-    Print a.ListingID
-    'Print a.UniqueID
-  Next
-  '   a = POP.List()
-  '   'Print POP.Send("NOOP")
-  '
-  '   'Wait 0.1
-  ' Next
-
-  'Wait 2
-
-  POP.Close()
-
-  POP = Null
+  msg = New MIMEMessage(File.Load("sample_message"))
 
 End

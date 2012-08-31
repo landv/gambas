@@ -150,6 +150,14 @@ Public Function GetResponse() As String
 
   While sLine <> Chr(46)
 
+    'While Response Not Ends Pop3Client.CRLF
+
+    'Read #sSocket, sLine, Lof(sSocket)
+
+    'Response &= sLine
+    ' Wend
+
+    '#FIXME: EOL character is not returned, EOF may be confused with message content
     Line Input #sSocket, sLine
     Response &= sLine & "\n"
 

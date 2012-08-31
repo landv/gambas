@@ -1,0 +1,279 @@
+' Gambas class file
+
+Export
+
+Private $aHeaders As New Collection
+
+''Space character
+Private WSP_SP As String = Chr(32)
+
+''Horizontal tab character
+Private WSP_HTAB As String = Chr(9)
+
+''Original message stored as a string
+Private $sOriginal As String
+
+''Original message stored as an array (\n)
+Private $aOriginal As String[]
+
+''Line(-1) or array index that separates the header section from the body
+Private $iSplitLine As String
+
+''TODO: Detect base64 text encoding
+''TODO: .Body or .Text ?
+Property Read Body As String
+Private $sBody As String
+
+Property Read From As String
+
+Property Read To As String
+
+Property Read Subject As String
+
+''FIXME: Parse into date
+Property Read Date As String
+
+''TODO test for mime version header
+
+Public Sub _new(sMessage As String)
+
+  $sOriginal = sMessage
+
+  _parseHeaders()
+
+  _parseBody()
+
+End
+
+''Parse the headers of the message into a collection
+Private Sub _parseHeaders()
+
+  Dim i, iPos As Integer
+
+  Dim aMsg As New String[]
+
+  Dim sMsgLine, sFirstChar As String
+
+  Dim sFieldName, sFieldBody, sTempVal As String
+
+  'Debug "Parsing message headers"
+
+  $aOriginal = Split($sOriginal, "\n")
+
+  For Each sMsgLine In $aOriginal
+
+    'sMsgLine = Trim(sMsgLine)
+
+    If Not Trim(sMsgLine) And i = 0 Then
+      'aOriginal.Remove(0)
+      Inc i
+      Continue
+    Endif
+
+    'Exit the loop if we reached the message body
+    If Not Trim(sMsgLine) Then Break
+
+    sFirstChar = Left(sMsgLine)
+
+    'If the first character is a space, we asume we are in a multiline
+    'header. Add a new line character and append it to the last element of the array
+    If sFirstChar = WSP_HTAB Or sFirstChar = WSP_SP Then
+
+      aMsg[aMsg.Count - 1] &= "\n" & Trim(sMsgLine)
+
+    Else
+      aMsg.Add(sMsgLine)
+    Endif
+
+    Inc i
+
+  Next
+
+  ''We now have multiline headers grouped itno single lines, parse
+  ''the array and populate the collection
+  For Each sMsgLine In aMsg
+
+    iPos = InStr(sMsgLine, ":")
+    If Not iPos Then Continue
+
+    sFieldName = Mid(sMsgLine, 1, iPos - 1)
+
+    sFieldBody = Trim(Mid(sMsgLine, iPos + 1))
+
+    ''An element with this key already exist, store it into a temporary
+    ''value and replace it with an array structure
+    If $aHeaders.Exist(sFieldName) Then
+
+      If TypeOf($aHeaders[sFieldName]) = gb.String Then
+
+        sTempVal = $aHeaders[sFieldName]
+
+        $aHeaders[sFieldName] = New String[]
+
+        ''Restore the temporary value as the first element of the new array
+        $aHeaders[sFieldName].Add(sTempVal)
+
+      Endif
+
+      $aHeaders[sFieldName].Add(sFieldBody)
+
+    Else
+
+      $aHeaders.Add(sFieldBody, sFieldName)
+
+    Endif
+
+  Next
+
+  ''Parse body using _i_ as a marker for the end of the headers section
+
+  $iSplitLine = i
+
+  $aOriginal.Extract(0, i + 1)
+
+End
+
+Private Sub _parseBody()
+
+  Dim sMsgLine, sEscapeChar As String
+
+  Dim iPos, i, iLine As Integer
+
+  For Each sMsgLine In $aOriginal
+
+    If sMsgLine Begins "--=" Then Continue
+
+    If sMsgLine Ends "=" Then
+      sMsgLine = Mid(sMsgLine, 1, -1) & "\n"
+    Endif
+
+    i = InStr(sMsgLine, "=", i)
+
+    While i
+
+      ''This is not an escape character!
+      If Trim(Mid(sMsgLine, i, i + 1)) Then
+
+        sEscapeChar = Trim(Mid(sMsgLine, i + 1, 2))
+
+        If Len(sEscapeChar) = 2 And sEscapeChar <> "==" And IsHexa(sEscapeChar) Then
+
+          'Print Trim(sMsgLine), sEscapeChar, Eval("&" & sEscapeChar), QuoteDecode(sEscapeChar)
+
+          ''Escape character is valid.
+          sMsgLine = Mid(sMsgLine, 1, i - 1) & QuoteDecode(sEscapeChar) & Mid(sMsgLine, i + 3)
+
+          'Print
+
+          Wait
+        Else
+          'Debug "Invalid escape character detected[" & Trim(sMsgLine) & "]: " & sEscapeChar
+        Endif
+
+        'Debug "Escape character detected: " & sEscapeChar
+
+        'Print i, sMsgLine
+
+      Endif
+      ''False when we reach EOL
+      i = InStr(sMsgLine, "=", i + 1)
+    Wend
+
+    $aOriginal[iLine] = Trim(sMsgLine)
+
+    Inc iLine
+
+  Next
+
+  $sBody = Trim($aOriginal.Join("\n"))
+
+  'Print $sText
+
+End
+
+''Return the header with matching _sKey_ field name
+'TODO: Return array for String[] or use the iKey parameter?
+Public Function _get(sKey As String) As Variant 'Optional iKey As Integer) As Variant
+
+  If Not $aHeaders.Exist(sKey) Then Return
+
+  Return $aHeaders[sKey]
+
+  ' If iKey Then
+  '   Return $aHeaders[sKey][iKey]
+  ' Else
+  '
+  '   Return $aHeaders[sKey]
+  ' Endif
+
+End
+
+Public Function ToString() As String
+
+End
+
+Private Function Body_Read() As String
+
+  Return $sBody
+
+End
+
+Private Function From_Read() As String
+
+  If $aHeaders.Exist("from") Then
+    Return $aHeaders["from"]
+  Else If $aHeaders.Exist("From")
+    Return $aHeaders["From"]
+  Endif
+
+  Return
+
+End
+
+Private Function QuoteDecode(Text As String) As String
+
+  If Len(Text) <> 2 Or Not IsHexa(Text) Then Return
+
+  Return Chr(Eval("&" & Text))
+
+End
+
+Private Function QuoteEncode(Text As String) As String
+
+End
+
+Private Function Subject_Read() As String
+
+  If $aHeaders.Exist("subject") Then
+    Return $aHeaders["subject"]
+  Else If $aHeaders.Exist("Subject")
+    Return $aHeaders["Subject"]
+  Endif
+
+  Return
+
+End
+
+Private Function To_Read() As String
+
+  If $aHeaders.Exist("to") Then
+    Return $aHeaders["to"]
+  Else If $aHeaders.Exist("To")
+    Return $aHeaders["To"]
+  Endif
+
+  Return
+
+End
+
+Private Function Date_Read() As String
+
+  If $aHeaders.Exist("date") Then
+    Return $aHeaders["date"]
+  Else If $aHeaders.Exist("Date")
+    Return $aHeaders["Date"]
+  Endif
+
+  Return
+
+End
