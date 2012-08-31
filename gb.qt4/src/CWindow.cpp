@@ -98,7 +98,6 @@ DECLARE_EVENT(EVENT_Show);
 DECLARE_EVENT(EVENT_Hide);
 DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
-//DECLARE_EVENT(EVENT_State);
 
 DECLARE_METHOD(CWINDOW_show);
 
@@ -254,10 +253,20 @@ static void handle_focus(CWINDOW *_object)
 	}
 }
 
+static void raise_resize_event(void *_object)
+{
+	if (WINDOW->width() != THIS->last_resize_w || WINDOW->height() != THIS->last_resize_h)
+	{
+		THIS->last_resize_w = WINDOW->width();
+		THIS->last_resize_h = WINDOW->height();
+		GB.Raise(THIS, EVENT_Resize, 0);
+	}
+}
+
 static void post_show_event(void *_object)
 {
 	GB.Raise(THIS, EVENT_Move, 0);
-	GB.Raise(THIS, EVENT_Resize, 0);
+	raise_resize_event(THIS);
 	handle_focus(THIS);
 }
 
@@ -391,10 +400,6 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 
 	THIS->container = container;
 	CWIDGET_new(win, (void *)_object, true);
-	//container->setPaletteBackgroundColor(Qt::yellow);
-	//container->setBackgroundOrigin(QWidget::WindowOrigin);
-
-	//qDebug("CWINDOW_new: %p: %s", THIS, GB.Debug.GetCurrentPosition());
 	
 	if (win)
 	{
@@ -910,44 +915,6 @@ BEGIN_PROPERTY(CWINDOW_mask)
 
 END_PROPERTY
 
-#if 0
-BEGIN_PROPERTY(CWINDOW_state)
-
-	if (!THIS->toplevel)
-	{
-		if (READ_PROPERTY)
-			GB.ReturnInteger(0);
-	}
-	else
-	{
-		if (READ_PROPERTY)
-			GB.ReturnInteger(WINDOW->getState());
-		else
-			WINDOW->setState(VPROP(GB_INTEGER));
-	}
-
-END_PROPERTY
-
-static void show_window_state(void *_object)
-{
-	THIS->stateChange = false;
-	
-	if (WINDOW)
-	{
-		if (WINDOW->windowState() & Qt::WindowMinimized)
-			WINDOW->showMinimized();
-		else if (WINDOW->windowState() & Qt::WindowFullScreen)
-			WINDOW->showFullScreen();
-		else if (WINDOW->windowState() & Qt::WindowMaximized)
-			WINDOW->showMaximized();
-		else
-			WINDOW->showNormal();
-	}
-	
-	//qDebug("show_window_state %s %p", GB.GetClassName(THIS), THIS);
-	GB.Unref(POINTER(&_object));
-}
-#endif
 
 static void manage_window_state(void *_object, void *_param, Qt::WindowState state)
 {
@@ -959,33 +926,13 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 	else
 	{
 		if (READ_PROPERTY)
-			GB.ReturnBoolean(WINDOW->windowState() & state);
+			GB.ReturnBoolean(WINDOW->getState() & state);
 		else
 		{
 			if (VPROP(GB_BOOLEAN))
-				WINDOW->setWindowState(WINDOW->windowState() | state);
+				WINDOW->setState(WINDOW->getState() | state);
 			else
-				WINDOW->setWindowState(WINDOW->windowState() & ~state);
-			
-			/*if (WINDOW->isVisible())
-			{
-				if (WINDOW->windowState() & Qt::WindowMinimized)
-					WINDOW->showMinimized();
-				else if (WINDOW->windowState() & Qt::WindowFullScreen)
-					WINDOW->showFullScreen();
-				else if (WINDOW->windowState() & Qt::WindowMaximized)
-					WINDOW->showMaximized();
-				else
-					WINDOW->showNormal();
-			}*/
-			
-			/*if (WINDOW->isVisible() && !THIS->stateChange)
-			{
-				THIS->stateChange = true;
-				//qDebug("post show_window_state %s %p", GB.GetClassName(THIS), THIS);
-				GB.Ref(THIS);
-				GB.Post((GB_POST_FUNC)show_window_state, (intptr_t)THIS);
-			}*/
+				WINDOW->setState(WINDOW->getState() & ~state);
 		}
 	}
 }
@@ -1527,7 +1474,6 @@ GB_DESC CWindowDesc[] =
 	GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
 	GB_EVENT("Title", NULL, NULL, &EVENT_Title),
 	GB_EVENT("Icon", NULL, NULL, &EVENT_Icon),
-	//GB_EVENT("State", NULL, NULL, &EVENT_State),
 	
 	GB_INTERFACE("Draw", &DRAW_Interface),
 
@@ -1572,15 +1518,13 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	QWidget::QWidget(parent, embedded ? Qt::Widget : Qt::Window)
 {
 	sg = 0;
-	//shown = false;
-	//border = BorderResizable;
 	_border = true;
 	_resizable = true;
-	//state = StateNormal;
 	_deleted = false;
 	_type = _NET_WM_WINDOW_TYPE_NORMAL;
 	_enterLoop = false;
 	_utility = false;
+	_state = windowState();
 	
 	//setAttribute(Qt::WA_KeyCompression, true);
 	//setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1755,11 +1699,11 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			setSizeGrip(false);
 		
-		if (windowState() & Qt::WindowMinimized)
+		if (getState() & Qt::WindowMinimized)
 			showMinimized();
-		else if (windowState() & Qt::WindowFullScreen)
+		else if (getState() & Qt::WindowFullScreen)
 			showFullScreen();
-		else if (windowState() & Qt::WindowMaximized)
+		else if (getState() & Qt::WindowMaximized)
 			showMaximized();
 		else
 			show();
@@ -1780,18 +1724,18 @@ void MyMainWindow::showActivate(QWidget *transient)
 			//usleep(50000);
 			//_activate = TRUE;
 			//if (isToolbar())
-			QTimer::singleShot(50, this, SLOT(activateLater()));
+			//QTimer::singleShot(50, this, SLOT(activateLater()));
 			//else
-			//	activateWindow();
+			activateWindow();
 		}
 	}
 	else
 	{
 		//_activate = true;
 		
-		if (windowState() & Qt::WindowMinimized)
+		if (getState() & Qt::WindowMinimized)
 		{
-			setWindowState(windowState() & ~Qt::WindowMinimized);
+			setState(windowState() & ~Qt::WindowMinimized);
 			//qDebug("_activate set #2");
 		}
 		
@@ -2125,16 +2069,7 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
 	//qDebug("THIS->h = %ld  THIS->container->height() = %ld  height() = %ld", THIS->h, THIS->container->height(), height());
 
 	if (THIS->opened)
-	{
-		/*w = THIS->w;
-		h = THIS->h;*/
-		GB.Raise(THIS, EVENT_Resize, 0);
-		/*if (w != THIS->w || h != THIS->h)
-		{
-			GB.Ref(THIS);
-			GB.Post((void (*)())post_resize_event, (intptr_t)THIS);
-		}*/
-	}
+		raise_resize_event(THIS);
 }
 
 
@@ -2598,6 +2533,18 @@ void MyMainWindow::changeEvent(QEvent *e)
 	}*/
 }
 
+Qt::WindowStates MyMainWindow::getState() const
+{
+	return isVisible() ? windowState() : _state;
+}
+
+void MyMainWindow::setState(Qt::WindowStates state)
+{
+	if (isVisible())
+		setWindowState(state);
+	else
+		_state = state;
+}
 
 /***************************************************************************
 

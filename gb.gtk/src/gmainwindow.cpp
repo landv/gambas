@@ -416,9 +416,10 @@ void gMainWindow::moveResize(int x, int y, int w, int h)
 
 void gMainWindow::emitOpen()
 {
+	//fprintf(stderr, "emit Open: %p (%d %d) %d resizable = %d fullscreen = %d\n", this, width(), height(), opened, isResizable(), fullscreen());
+	
 	if (!opened)
 	{
-		//fprintf(stderr, "emit Open: %p (%d %d) resizable = %d\n", this, width(), height(), isResizable());
 		opened = true;
 		//_no_resize_event = true; // If the event loop is run during emitOpen(), some spurious configure events are received.
 		
@@ -573,7 +574,8 @@ void gMainWindow::setFullscreen(bool vl)
 	if (vl)
 	{
 		gtk_window_fullscreen(GTK_WINDOW(border));
-		gtk_window_present(GTK_WINDOW(border));
+		if (opened)
+			gtk_window_present(GTK_WINDOW(border));
 	}
 	else
 		gtk_window_unfullscreen(GTK_WINDOW(border));

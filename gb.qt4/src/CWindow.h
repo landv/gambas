@@ -66,6 +66,8 @@ typedef
 		int h;
 		int minw;
 		int minh;
+		int last_resize_w;
+		int last_resize_h;
 		unsigned toplevel : 1;
 		unsigned embedded : 1;
 		unsigned xembed : 1;
@@ -163,6 +165,7 @@ private:
 	bool _enterLoop;
 	bool _utility;
 	int _type;
+	Qt::WindowStates _state;
 
 protected:
 
@@ -224,6 +227,9 @@ public:
 	void configure(void);
 	
 	void setName(const char *, CWIDGET *);
+	
+	void setState(Qt::WindowStates state);
+	Qt::WindowStates getState() const;
 	
 	virtual void resize(int w, int h);
 	virtual void setGeometry(int x, int y, int w, int h);
