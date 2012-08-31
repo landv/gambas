@@ -74,6 +74,13 @@ static void has_forked(void)
 	EXEC_debug = FALSE;
 	EXEC_task = TRUE;
 	
+	EXEC_Hook.loop = NULL;
+	EXEC_Hook.wait = NULL;
+	EXEC_Hook.timer = NULL;
+	EXEC_Hook.watch = NULL;
+	EXEC_Hook.post = NULL;
+	//EXEC_Hook.quit = NULL;
+	
 	task = _task_list;
 	while (task)
 	{
