@@ -16,4 +16,8 @@ Public Sub Main()
 
   msg = New MIMEMessage(File.Load("sample_message"))
 
+  '  File.Save("/home/sebi/Desktop/asd", msg.Body)
+
+  Print msg.Date
+
 End

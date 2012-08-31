@@ -1,9 +1,9 @@
 #MIMEMessage
 
 C
-Body
+Message
 r
-s
+v
 
 From
 r
@@ -19,7 +19,15 @@ s
 
 Date
 r
-s
+d
+
+ContentType
+r
+String[]
+
+isMultipart
+r
+b
 
 _new
 m
@@ -29,10 +37,33 @@ _get
 m
 v
 (sKey)s
+QuoteDecode
+M
+s
+(Text)s
 ToString
 m
 s
 
+#MIMEPart_Message
+
+C
+Body
+r
+s
+
+Headers
+r
+Collection
+
+Charset
+r
+s
+
+_new
+m
+
+(sBody)s(cHeaders)Collection;
 #Net
 
 C
@@ -152,7 +183,7 @@ m
 String[]
 
 #_Pop3Client_Message
-MIMEMessage
+
 C
 ID
 r
