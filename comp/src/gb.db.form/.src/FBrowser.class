@@ -8,6 +8,8 @@ Private $hSrc As DataSource
 Private $bLock As Boolean
 Private $iOrientation As Integer
 Private $W As Integer
+Private $bCanCreate As Boolean = True
+Private $bCanDelete As Boolean = True
 
 Public Sub _new()
   
@@ -74,17 +76,16 @@ Public Sub _OnDatabaseChange()
   
 End
 
-
-Public Sub Update()
+Private Sub UpdateControls()
 
   Dim bEnabled As Boolean  
   Dim bVisible As Boolean
   
-  If Not Me.Parent.Design Then $hSrc = Common.GetSource(Me)
-  
   If $hSrc Then
     bEnabled = True '$hSrc.Index >= 0
     bVisible = Not $hSrc.ReadOnly
+  Else If Me.Parent.Design Then
+    bVisible = True
   Endif
 
   btnFirst.Enabled = bEnabled
@@ -97,12 +98,23 @@ Public Sub Update()
   btnNew.Enabled = $hSrc
   
   btnSave.Visible = bVisible
-  btnNew.Visible = bVisible
-  btnRemove.Visible = bVisible
+  btnNew.Visible = bVisible And $bCanCreate
+  btnRemove.Visible = bVisible And $bCanDelete
+
+End
+
+Public Sub Update()
+
+  If Me.Parent.Design Then
+    $hSrc = Null
+  Else
+    $hSrc = Common.GetSource(Me)
+  Endif
   
+  UpdateControls
   dvwBrowser.Update
   
-  If $hSrc And If Not bVisible Then btnFirst_Click
+  If $hSrc And If $hSrc.ReadOnly Then btnFirst_Click
   
 End
 
@@ -228,3 +240,30 @@ Public Sub HasBorder() As Boolean
   Return panBorder.Border <> Border.None
   
 End
+
+Public Sub GetCanCreate() As Boolean
+  
+  Return $bCanCreate
+  
+End
+
+Public Sub GetCanDelete() As Boolean
+  
+  Return $bCanDelete
+  
+End
+
+Public Sub SetCanCreate(bCanCreate As Boolean)
+  
+  $bCanCreate = bCanCreate
+  UpdateControls
+  
+End
+
+Public Sub SetCanDelete(bCanDelete As Boolean)
+  
+  $bCanDelete = bCanDelete
+  UpdateControls
+  
+End
+

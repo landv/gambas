@@ -16,8 +16,10 @@ Property Editable As Boolean
 Property Border As Boolean
 Property Grid As Boolean
 Property Read Data As _GridView_Data
+Property CanCreate As Boolean
+Property CanDelete As Boolean
 
-Public Const _Properties As String = "*,Control=True,Columns{Field[]},Labels,Editable,Header=True,Grid,Orientation{Align.Bottom;Left;Right;Top}=Bottom,Border=True"
+Public Const _Properties As String = "*,Control=True,CanCreate=True,CanDelete=True,Columns{Field[]},Labels,Editable,Header=True,Grid,Orientation{Align.Bottom;Left;Right;Top}=Bottom,Border=True"
 Public Const _Group As String = "Data"
 
 Private $hForm As FBrowser
@@ -180,5 +182,29 @@ End
 Private Function Data_Read() As _GridView_Data
 
   Return $hForm.DataView.Data
+
+End
+
+Private Function CanCreate_Read() As Boolean
+
+  Return $hForm.GetCanCreate()
+
+End
+
+Private Sub CanCreate_Write(Value As Boolean)
+
+  $hForm.SetCanCreate(Value)
+
+End
+
+Private Function CanDelete_Read() As Boolean
+
+  $hForm.GetCanDelete()
+
+End
+
+Private Sub CanDelete_Write(Value As Boolean)
+
+  $hForm.SetCanDelete(Value)
 
 End

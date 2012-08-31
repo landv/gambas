@@ -41,7 +41,10 @@ Private $aColumns As String[]
 Private $aLabels As String[]
 Private $aType As DataField[]
 Private $aColumnsIndex As Integer[]
-Private $bCreate As Boolean
+
+Private $bCreate As Boolean = True
+Private $iMode As Integer
+
 'Private $bRefreshColumn As Boolean
 Private $bNoActivate As Boolean
 Private $iHighlight As Integer
@@ -182,8 +185,6 @@ Private Sub RefreshColumns()
   $bNoActivate = False
   'Object.Unlock($hCtrl)
   
-  If $bCreate Then UnSelect()
-  
 End
 
 Private Sub UpdateObserver()
@@ -236,8 +237,7 @@ Private Sub Load()
   $hCtrl.Refresh
 
   If hSrc.Index < 0 Then 
-    $bCreate = True
-    $hCtrl.Rows.UnselectAll
+    SetCreate(True)
     If bReset Then 
       $bNoActivate = True
       $hCtrl.MoveTo(0, 0)
@@ -585,8 +585,9 @@ Public Sub TableView_Change()
   If $bNoActivate Then Return
   
   If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Count - 1 Then 
+    SetCreate(True)
   Else
-    $bCreate = False
+    SetCreate(False)
   Endif
   
   If $hCtrl.Row <> $iLastRow Then
@@ -706,13 +707,14 @@ End
 
 Private Function Mode_Read() As Integer
   
-  Return $hCtrl.Mode
+  Return $iMode
   
 End
 
 Private Sub Mode_Write(iMode As Integer)
   
-  $hCtrl.Mode = iMode
+  $iMode = iMode
+  UpdateMode
   
 End
 
@@ -744,14 +746,12 @@ End
 Public Sub MoveFirst()
 
   MoveTo(0)
-  $bCreate = False
   
 End
 
 Public Sub MoveLast()
   
-  MoveTo($hCtrl.Rows.Count - 1)
-  $bCreate = False
+  MoveTo(Max(0, $hCtrl.Rows.Count - If(HasNewRecord(), 2, 1)))
   
 End
 
@@ -879,27 +879,36 @@ Public Sub Save() As Boolean
   
 End
 
-
-Private Sub UnSelect()
-  
-  $bCreate = True
-  $hCtrl.Rows.UnselectAll
-  
-End
-
 Public Sub CreateTimer_Timer()
   
   TableView_Click
   
 End
 
+Private Sub UpdateMode()
+  
+  If $bCreate And If Not HasNewRecord() Then
+    $hCtrl.Mode = Select.None
+  Else
+    $hCtrl.Mode = $iMode
+  Endif
+  
+End
+
+
+Private Sub SetCreate(bCreate As Boolean)
+  
+  If bCreate = $bCreate Then Return
+  $bCreate = bCreate
+  UpdateMode
+  
+End
+
 
 Public Sub Create()
   
-  If Not CanEdit() Then
-    UnSelect
-    Return
-  Endif
+  SetCreate(True)
+  If Not CanEdit() Then Return
     
   If $hCtrl.Save() Then Goto _EDIT
   
@@ -909,7 +918,7 @@ Public Sub Create()
   Endif
     
   CreateNewRecord()
-  $bCreate = False
+  SetCreate(False)
   $hCtrl.MoveTo($hCtrl.Rows.Count - 1, 0)
   $hCtrl.Current.EnsureVisible
 
@@ -1012,7 +1021,7 @@ Public Function Remove() As Boolean
     
   Endif
     
-  UnSelect
+  'UnSelect
   
 Catch
 
