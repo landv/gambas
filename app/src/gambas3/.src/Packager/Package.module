@@ -603,7 +603,7 @@ Private Function MakeDebPackage(sSys As String)
   If Project.Type = Project.TYPE_NORMAL Then
     AddLog(("Creating desktop file..."))
     hFile = Open sPackagePath &/ "debian/" & $sPackageName & ".desktop" For Create
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName & ".gambas", "/usr/share/pixmaps/" & sIcon)
+    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & sIcon)
     Close #hFile
   Endif 
   
@@ -636,7 +636,7 @@ Private Function MakeDebPackage(sSys As String)
     hFile = Open sPackagePath &/ "debian/menu" For Create 
     Print #hFile, "?package("; $sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
     Print #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
-    Print #hFile, "command=\"/usr/bin/"; $sPackageName; ".gambas\"\\"
+    Print #hFile, "command=\"/usr/bin/"; $sPackageName; "\"\\"
     Print #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
     Close #hFile
   Endif 
@@ -1086,7 +1086,7 @@ Private Function MakeRpmPackage(sSys As String)
 
   Else
   
-    If Project.TYpe = Project.TYPE_NORMAL Then
+    If Project.Type = Project.TYPE_NORMAL Then
       Print #hFile, "%{_bindir}" &/ Shell$($sName)
     Else ' TYPE_LIBRARY
       Print #hFile, "%{_bindir}" &/ Shell$($sName) & ".gambas"
@@ -1302,7 +1302,7 @@ Private Sub MakeTgzPackage(sSys As String)
     
     If Project.Type = Project.TYPE_NORMAL Then
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName
-      Chmod sBuildDir &/ "/usr/bin" &/ $sName To ".. x..x..x"
+      Chmod sBuildDir &/ "/usr/bin" &/ $sName To "..x..x..x"
     Else ' TYPE_LIBRARY
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName & ".gambas"
       Chmod sBuildDir &/ "/usr/bin" &/ $sName & ".gambas" To "..x..x..x"
