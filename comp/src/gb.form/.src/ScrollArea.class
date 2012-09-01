@@ -117,6 +117,7 @@ Public Sub ScrollArea_Arrange()
   
   Dim SB, SP, FW, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
+  Dim OW, OH As Integer
   ' Dim hChild As Control
   ' Dim iMargin As Integer
   
@@ -138,12 +139,14 @@ Public Sub ScrollArea_Arrange()
   SP = Style.ScrollbarSpacing
   'If $bBorder Then FW = Style.FrameWidth
   
+  bHBarAllowed = $iScroll = Scroll.Horizontal Or $iScroll = Scroll.Both
+  bVBarAllowed = $iScroll = Scroll.Vertical Or $iScroll = Scroll.Both
+
+RETRY:
+  
   W = Me.Width - FW * 2
   H = Me.Height - FW * 2
   'Debug W;; H;; "/";; $W;; $H
-  
-  bHBarAllowed = $iScroll = Scroll.Horizontal Or $iScroll = Scroll.Both
-  bVBarAllowed = $iScroll = Scroll.Vertical Or $iScroll = Scroll.Both
   
   If W >= $W And If H >= $H Then
     
@@ -212,6 +215,12 @@ Public Sub ScrollArea_Arrange()
   
   W += FW * 2
   H += FW * 2
+  
+  If W <> OW Or If H <> OH Then
+    OW = W
+    OH = H
+    Goto RETRY
+  Endif
   
   $hDrawingArea.Move(0, 0, W, H)
   If $hHBar.Visible Then $hHBar.Move(0, H + SP, W, SB)

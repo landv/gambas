@@ -10,26 +10,32 @@
     Move(7,7,595,28)
     { Button1 Button
       Move(0,0,84,28)
-      Text = ("Clear")
+      #Translate = False
+      Text = "Clear"
     }
     { Button2 Button
       Move(91,0,77,28)
-      Text = ("Width")
+      #Translate = False
+      Text = "Width"
     }
     { Button3 Button
       Move(175,0,91,28)
-      Text = ("EnsureVisible")
+      #Translate = False
+      Text = "EnsureVisible"
     }
     { ButtonBox1 ButtonBox
       Move(273,0,168,28)
+      #Translate = False
       Picture = Picture["stock/16/gambas.png"]
     }
     { MenuButton1 MenuButton
       Move(448,0,84,28)
-      Text = ("Test")
+      #Translate = False
+      Text = "Test"
     }
     { Button4 Button
       Move(539,0,42,28)
+      #Translate = False
       Picture = Picture["img/select.png"]
     }
   }

@@ -4,40 +4,50 @@
   MoveScaled(0,0,90,77)
   { Panel1 Panel
     MoveScaled(6,4,50,32)
+    #Translate = False
     Border = Border.Plain
     { ComboBox1 ComboBox
       MoveScaled(4,6,23,4)
+      #Translate = False
       ReadOnly = True
-      List = [("Élément 1"), ("Élément 2"), ("Élément 3")]
+      List = ["Élément 1", "Élément 2", "Élément 3"]
     }
     { Label1 Label
       MoveScaled(28,4,19,7)
+      #Translate = False
     }
     { Button1 Button
       MoveScaled(7,18,13,11)
+      #Translate = False
       Picture = Picture["img/colormap.png"]
     }
     { Panel3 Panel
       MoveScaled(24,16,22,7)
+      #Translate = False
       Arrangement = Arrange.Fill
       Margin = True
       { ButtonBox1 ButtonBox
         MoveScaled(0,0,21,5)
+        #Translate = False
       }
     }
   }
   { Button2 Button
     MoveScaled(12,2,16,4)
+    #Translate = False
   }
   { ScrollArea1 ScrollArea
     MoveScaled(60,10,21,21)
+    #Translate = False
     Background = Color.TextBackground
   }
   { Button3 Button
     MoveScaled(31,2,16,4)
+    #Translate = False
   }
   { Panel2 Panel
     MoveScaled(15,42,19,6)
+    #Translate = False
     Background = &HFFDFDF&
     Arrangement = Arrange.Fill
     Margin = True
@@ -47,6 +57,7 @@
   }
   { Panel4 Panel
     MoveScaled(35,50,19,6)
+    #Translate = False
     Background = &HFFDFDF&
     Arrangement = Arrange.Fill
     Margin = True

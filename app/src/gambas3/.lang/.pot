@@ -306,55 +306,64 @@ msgstr ""
 msgid "OpenGL display"
 msgstr ""
 
-#: CComponent.class:445
+#: CComponent.class:152
+msgid "Complex numbers"
+msgstr ""
+
+#: CComponent.class:153
+msgid "XML management"
+msgstr ""
+
+#: CComponent.class:447
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponentBox.class:221 FPropertyComponent.form:73
+#: CComponentBox.class:221 ComponentItem.class:140 FPropertyComponent.form:73
 msgid "Experimental"
 msgstr ""
 
-#: CComponentBox.class:223 FPropertyComponent.form:73
+#: CComponentBox.class:223 ComponentItem.class:142 FPropertyComponent.form:73
 msgid "Not finished but stable"
 msgstr ""
 
-#: CComponentBox.class:235 ProjectItem.class:67
+#: CComponentBox.class:235 ComponentItem.class:145 ProjectItem.class:67
 msgid "Authors"
 msgstr ""
 
-#: CComponentBox.class:242 FPropertyComponent.form:106 LibraryItem.class:63
+#: CComponentBox.class:242 ComponentItem.class:152 FPropertyComponent.form:106
+#: LibraryItem.class:63
 msgid "Requires"
 msgstr ""
 
-#: CComponentBox.class:244
+#: CComponentBox.class:244 ComponentItem.class:154
 msgid "Excludes"
 msgstr ""
 
-#: CComponentBox.class:250
+#: CComponentBox.class:250 ComponentItem.class:160
 msgid "Implements"
 msgstr ""
 
-#: CComponentBox.class:263 LibraryItem.class:61
+#: CComponentBox.class:263 ComponentItem.class:173 LibraryItem.class:61
 msgid "Provides"
 msgstr ""
 
-#: CComponentBox.class:375
+#: CComponentBox.class:375 ComponentItem.class:241
 msgid "This component is required by the following library:<p>&1"
 msgstr ""
 
-#: CComponentBox.class:377
+#: CComponentBox.class:377 ComponentItem.class:243
 msgid "This component is required by the following libraries:<p>&1"
 msgstr ""
 
-#: CComponentBox.class:386
+#: CComponentBox.class:386 ComponentItem.class:252
 msgid "This component is required by:<p>&1"
 msgstr ""
 
-#: CComponentBox.class:387
+#: CComponentBox.class:387 ComponentItem.class:253
 msgid "Keep"
 msgstr ""
 
-#: CComponentBox.class:387 FDebugInfo.form:134
+#: CComponentBox.class:387 ComponentItem.class:253 FDebugInfo.form:134
 msgid "Remove all"
 msgstr ""
 
@@ -446,12 +455,12 @@ msgstr ""
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
 #: FConflict.class:191 FConnectionEditor.class:298 FCreateFile.form:437
 #: FDebugInfo.form:229 FEditor.class:2346 FExportData.class:126
-#: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3131
+#: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3138
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1415
 #: FList.form:121 FMain.class:198 FMakeInstall.class:356 FMenu.form:377
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:177 FOption.class:660 FPasteSpecial.form:77
-#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:723
+#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:725
 #: FProxy.form:57 FReportBorderChooser.form:48 FReportBrushChooser.form:34
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
 #: FSaveProjectAs.form:76 FSearch.class:859 FSelectExtraFile.form:43
@@ -502,7 +511,7 @@ msgstr ""
 #: FMain.class:1758 FMakeInstall.class:302 FMenu.form:372
 #: FNewConnection.form:249 FNewTable.form:80 FNewTranslation.form:15
 #: FOpenProject.form:171 FPasteSpecial.form:71 FPropertyComponent.form:215
-#: FPropertyProject.form:717 FProxy.form:63 FReportBorderChooser.form:54
+#: FPropertyProject.form:719 FProxy.form:63 FReportBorderChooser.form:54
 #: FReportBrushChooser.form:40 FReportCoordChooser.form:32
 #: FReportPaddingChooser.form:69 FSelectExtraFile.form:37 FSelectIcon.form:81
 #: FSnippet.form:51 FTableChooser.form:62 FText.form:35
@@ -1226,7 +1235,7 @@ msgstr ""
 msgid "No element"
 msgstr ""
 
-#: FDebugExpr.class:474 FDebugInfo.class:38 FPropertyProject.class:143
+#: FDebugExpr.class:474 FDebugInfo.class:38 FPropertyProject.class:144
 msgid "Value"
 msgstr ""
 
@@ -1768,11 +1777,11 @@ msgstr ""
 msgid "Bad form file"
 msgstr ""
 
-#: FForm.class:1315
+#: FForm.class:1322
 msgid "Component missing for control &1"
 msgstr ""
 
-#: FForm.class:3131
+#: FForm.class:3138
 msgid ""
 "The form has been modified.\n"
 "\n"
@@ -2045,7 +2054,7 @@ msgstr ""
 msgid "Directory"
 msgstr ""
 
-#: FInfo.form:147 FPropertyProject.form:662
+#: FInfo.form:147 FPropertyProject.form:664
 msgid "Versioning"
 msgstr ""
 
@@ -2689,7 +2698,7 @@ msgstr ""
 msgid "Create a shortcut on the desktop"
 msgstr ""
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1115
+#: FMakeExecutable.class:18 FPropertyProject.class:1165
 msgid "Gambas applications"
 msgstr ""
 
@@ -2867,7 +2876,7 @@ msgstr ""
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:356 FPropertyProject.class:859 FSave.form:21
+#: FMakeInstall.class:356 FPropertyProject.class:909 FSave.form:21
 #: Project.module:3200
 msgid "Continue"
 msgstr ""
@@ -3731,98 +3740,98 @@ msgstr ""
 msgid "Show only components used in project"
 msgstr ""
 
-#: FPropertyProject.form:557
+#: FPropertyProject.form:559
 msgid "About &component..."
 msgstr ""
 
-#: FPropertyProject.form:568
+#: FPropertyProject.form:570
 msgid "&Reset"
 msgstr ""
 
-#: FPropertyProject.form:589
+#: FPropertyProject.form:591
 msgid "Libraries"
 msgstr ""
 
-#: FPropertyProject.form:608
+#: FPropertyProject.form:610
 msgid ""
 "<b>WARNING!</b> The project executable and the libraries it depends on must "
 "be stored inside the same directory. Otherwise the libraries will not be "
 "found."
 msgstr ""
 
-#: FPropertyProject.form:630
+#: FPropertyProject.form:632
 msgid "&Add..."
 msgstr ""
 
-#: FPropertyProject.form:669
+#: FPropertyProject.form:671
 msgid "Changes since last commit"
 msgstr ""
 
-#: FPropertyProject.form:696
+#: FPropertyProject.form:698
 msgid "&Update"
 msgstr ""
 
-#: FPropertyProject.form:702
+#: FPropertyProject.form:704
 msgid "&Revert..."
 msgstr ""
 
-#: FPropertyProject.form:708
+#: FPropertyProject.form:710
 msgid "&Commit..."
 msgstr ""
 
-#: FPropertyProject.class:117
+#: FPropertyProject.class:118
 msgid "Not translatable"
 msgstr ""
 
-#: FPropertyProject.class:140
+#: FPropertyProject.class:141
 msgid "Variable"
 msgstr ""
 
-#: FPropertyProject.class:275
+#: FPropertyProject.class:276
 msgid "Snapping value is incorrect."
 msgstr ""
 
-#: FPropertyProject.class:425 Project.module:3199
+#: FPropertyProject.class:424 Project.module:3199
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: FPropertyProject.class:492
+#: FPropertyProject.class:535
 msgid "These components are incompatible:<br>&1."
 msgstr ""
 
-#: FPropertyProject.class:505
+#: FPropertyProject.class:548
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr ""
 
-#: FPropertyProject.class:512
+#: FPropertyProject.class:555
 msgid "The &1 component needs the &2 component."
 msgstr ""
 
-#: FPropertyProject.class:815
+#: FPropertyProject.class:865
 msgid "There is no change to commit."
 msgstr ""
 
-#: FPropertyProject.class:850
+#: FPropertyProject.class:900
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FPropertyProject.class:852
+#: FPropertyProject.class:902
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FPropertyProject.class:859
+#: FPropertyProject.class:909
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: FPropertyProject.class:1114
+#: FPropertyProject.class:1164
 msgid "Select a Gambas application"
 msgstr ""
 
-#: FPropertyProject.class:1125
+#: FPropertyProject.class:1175
 msgid "<b>&1</b> is already used as a library."
 msgstr ""
 
-#: FPropertyProject.class:1131
+#: FPropertyProject.class:1181
 msgid "<b>&1</b> does not export any class."
 msgstr ""
 

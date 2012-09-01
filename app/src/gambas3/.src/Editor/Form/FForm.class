@@ -716,6 +716,7 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim sGroup As String
   Dim sAction As String
   Dim bPublic As Boolean
+  Dim bTranslate As Boolean
 
   'hCtrl = Control[sName]
   'PRINT "SaveOne: hCtrl = "; hCtrl
@@ -807,19 +808,25 @@ Private Sub SaveOne(hCtrl As CControl)
     Else If hCtrl.IsMultiContainer() Then
 
       hTab = hCtrl.Control
+      bTranslate = hCtrl.GetPropertyDefault("Translate")
 
       For iTab = 0 To hTab.Count - 1
 
         AddLine("Index = " & CStr(iTab))
-        sVal = Replace(hTab[iTab].Text, "\\", "\\\\")
-        sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
-        sVal = Replace(sVal, gb.NewLine, "\\n")
-        AddLine("Text = (" & Chr$(34) & sVal & Chr$(34) & ")")
+        'sVal = Replace(hTab[iTab].Text, "\\", "\\\\")
+        'sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
+        'sVal = Replace(sVal, gb.NewLine, "\\n")
+        sVal = Quote(sVal)
+        If bTranslate Then
+          AddLine("Text = (" & sVal & ")")
+        Else
+          AddLine("Text = " & sVal)
+        Endif
 
         If hCtrl.Tag Then
           sVal = hCtrl.Tag[iTab]
           If sVal Then
-            AddLine("Picture = Picture[" & Chr$(34) & sVal & Chr$(34) & "]")
+            AddLine("Picture = Picture[" & Quote(sVal) & "]")
           Endif
         Endif
 

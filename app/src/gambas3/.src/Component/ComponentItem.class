@@ -1,21 +1,20 @@
 ' Gambas class file
 
-Inherits UserControl
-
 Event Click
 
 Property Read Key As String
 Property Read Value As Boolean
 Property Locked As Boolean
 Property Expanded As Boolean
+Property Read Picture As Picture
 
 Static Private $iMaxWidth As Integer
 
 'Private panName As HPanel
-Private picCheck As PictureBox
-Private txtName As Label
-Private txtDesc As TextLabel
-Private sepComp As Separator
+'Private picCheck As PictureBox
+'Private txtName As Label
+'Private txtDesc As TextLabel
+'Private sepComp As Separator
 'Private panInfo As Panel
 'Private txtInfo As TextLabel
 'Private panVBox As VBox
@@ -43,111 +42,25 @@ Private Sub AddInfo(aInfo As String[], sTitle As String)
   
 End
 
-Static Public Sub ResizeNames(hCont As Container)
-  
-  Dim hCtrl As Control
-  Dim hCompBox As CComponentBox
-  
-  For Each hCtrl In hCont.Children
-    Try hCompBox = hCtrl
-    If Not Error Then hCompBox._SetLabelWidth
-  Next
-  
-End
+' Static Public Sub ResizeNames(hCont As Container)
+'   
+'   Dim hCtrl As Control
+'   Dim hCompItem As ComponentItem
+'   
+'   For Each hCtrl In hCont.Children
+'     Try hCompItem = hCtrl
+'     If Not Error Then hCompBox._SetLabelWidth
+'   Next
+'   
+' End
 
-Public Sub _new(hComp As CComponent, bDark As Boolean)
+Public Sub _new(hComp As CComponent)
 
-  Dim W, H As Integer
-  Dim hSpace As Panel
-  Dim hVBox As VBox
-  
   $sKey = hComp.Key
   
-  H = 3 * Desktop.Scale
-  
-  If hComp.ThirdParty Then
-    Me.Background = IIf(bDark, Color.Lighter(Color.Pink), Color.Lighter(Color.Lighter(Color.Pink)))
-  Else
-    If bDark Then Me.Background = Color.Merge(Color.LightBackground, Color.TextBackground)
-  Endif
-  
-  Me._Arrangement = Arrange.None
-  
-  picCheck = New PictureBox(Me) As "picCheck"
-  picCheck.Alignment = Align.Top
-  picCheck.Picture = Picture["img/16/unchecked.png"]
-  'picCheck.Resize(24, 16)
-  
-  txtName = New Label(Me)
-  txtName.Padding = 2
-
-  If hComp.State = CComponent.UNSTABLE Then
-    txtName.Foreground = Color.LightForeground
-  Endif
-  txtName.Font.Bold = True
-  txtName.Text = hComp.Key
-  txtName.Alignment = Align.TopNormal
-  'txtName.Background = Color.Yellow
-  txtName.Adjust
-  
-  txtDesc = New TextLabel(Me)
-  txtDesc.Expand = True
-  txtDesc.Padding = 2
-  txtDesc.Alignment = Align.TopNormal
-  'txtDesc.Background = Color.Yellow
-  txtDesc.AutoResize = True
-  
-  sepComp = New Separator(Me)
-  
-  Expanded_Write(False)
-
-  $hWatch = New Observer(Me) As "Watcher"
-  ' 
-  ' panInfo = New Panel(panVBox)
-  ' panInfo.Visible = False
-  ' 
-  ' txtInfo = New TextLabel(panInfo)
-  ' txtInfo.Padding = 2
-  ' txtInfo.AutoResize = True
-  ' 'txtInfo.Background = Color.Yellow
-
-  W = txtName.Font.TextWidth(txtName.Text) + 12
-  If W > $iMaxWidth Then 
-    $iMaxWidth = W
-  Endif
-  
-  ' $bAnim = True
-  
 End
 
-Public Sub _SetLabelWidth()
-  
-  txtName.Width = $iMaxWidth + 16
-  $bCanArrange = True
-  Watcher_Arrange
-  
-End
-
-
-Private Sub RefreshCheck()
-  
-  Dim sImage As String
-  
-  If $bCheck Then
-    If $bGray Then
-      sImage = "checked-gray"
-    Else
-      sImage = "checked"
-    Endif
-  Else
-    sImage = "unchecked"
-  Endif
-  
-  picCheck.Picture = Picture["img/16/" & sImage & ".png"]
-  
-End
-
-Public Sub picCheck_MouseDown()
+Public Sub Click()
   
   If $bLock Then Return
   If $bCheck And If Not $bGray Then
@@ -155,8 +68,6 @@ Public Sub picCheck_MouseDown()
   Else
     Check("")
   Endif
-  RefreshCheck
-  Raise Click
   
 End
 
@@ -191,12 +102,6 @@ Private Function Key_Read() As String
 
 End
 
-Static Public Sub Reset()
-  
-  $iMaxWidth = 0
-  
-End
-
 Private Function Expanded_Read() As Boolean
 
   Return $bExpanded
@@ -204,27 +109,25 @@ Private Function Expanded_Read() As Boolean
 End
 
 Private Sub Expanded_Write(Value As Boolean)
+  
+  $bExpanded = Value
+  
+End
+
+Public Sub GetDescription() As String
 
   Dim hComp As CComponent
   Dim aInfo As String[]
   Dim I As Integer
   Dim H As Integer
 
-  $bExpanded = Value
-
   hComp = CComponent.All[$sKey]
 
   If Not $sDesc Then
     $sDesc = hComp.Name
-    Select Case hComp.State
-      Case CComponent.UNSTABLE
-        $sDesc &= " <b>(" & ("Experimental") & ")</b>"
-      Case CComponent.STABLE_NOT_FINISHED
-        $sDesc &= " <b>(" & ("Not finished but stable") & ")</b>"
-    End Select 
   Endif
   
-  If Value Then 
+  If $bExpanded Then 
       
     If Not $sInfo Then 
     
@@ -232,6 +135,13 @@ Private Sub Expanded_Write(Value As Boolean)
       ' we won't mismatch the automatic completion
       ' hComp.Load
       
+      Select Case hComp.State
+        Case CComponent.UNSTABLE
+          $sInfo = "<i>" & ("Experimental") & "</i>"
+        Case CComponent.STABLE_NOT_FINISHED
+          $sInfo = "<i>" & ("Not finished but stable") & "</i>"
+      End Select 
+
       AddInfo(hComp.Authors, ("Authors"))
       
       aInfo = hComp.Need.Copy()
@@ -265,56 +175,14 @@ Private Sub Expanded_Write(Value As Boolean)
       
     Endif
     
-    txtDesc.Text = $sDesc & "<br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
+    Return $sDesc & "<br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
     
   Else
     
-    txtDesc.Text = $sDesc
+    Return $sDesc
     
   Endif
 
-  'txtInfo.Move(txtDesc.X, 0, panInfo.W - txtDesc.X - 24, 8)
-  'txtInfo.Adjust
-  'panInfo.H = txtInfo.H
-  'H = panInfo.Height + panName.Height + panVBox.Padding * 2
-  ' 
-  ' If False '$bAnim Then  
-  '   While Abs(Me.Height - H) >= 2
-  '     If Me.Height > H Then
-  '       Me.Height -= 2
-  '     Else
-  '       Me.Height += 2
-  '     Endif
-  '     Wait
-  '   Wend
-  ' Endif
-  
-  ' Me.Height = H
-  
-  Watcher_Arrange
-  
-End
-
-Public Sub Watcher_Arrange()
-
-  If Not $bCanArrange Then Return
-  
-  picCheck.Move(0, 4, 24, 16)
-  txtName.Move(24, 0, $iMaxWidth, txtName.H)
-  txtDesc.Move(24 + $iMaxWidth, 0, Me.W - 24 - $iMaxWidth)
-  Me.H = Max(24, Max(txtName.H, txtDesc.H)) + 2
-  sepComp.Move(0, Me.H - 1, Me.W, 2)
-
-  ' If txtDesc.W = $iLastW Then Return
-  ' txtDesc.Adjust
-  ' $iLastW = txtDesc.W
-  ' If panName.H <> txtDesc.H Then
-  '   panName.H = txtDesc.H
-  '   $bAnim = False
-  '   Expanded_Write(panInfo.Visible)
-  '   $bAnim = True
-  ' Endif
-  
 End
 
 Public Sub Check(Optional sComponent As String)
@@ -328,8 +196,6 @@ Public Sub Check(Optional sComponent As String)
   Else
     If Not sComponent Then $bGray = False
   Endif
-  
-  RefreshCheck
   
 End
 
@@ -394,6 +260,23 @@ Public Sub Uncheck(Optional sComponent As String)
     Endif
     $bGray = $bCheck
   Endif
-  RefreshCheck
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Dim sImage As String
+  
+  If $bCheck Then
+    If $bGray Then
+      sImage = "checked-gray"
+    Else
+      sImage = "checked"
+    Endif
+  Else
+    sImage = "unchecked"
+  Endif
+  
+  Return Picture["img/16/" & sImage & ".png"]
 
 End

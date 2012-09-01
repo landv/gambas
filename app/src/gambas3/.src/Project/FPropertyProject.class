@@ -23,8 +23,8 @@ Private $iCol As Integer
 Private $aArg As String[]
 Private $aEnv As String[]
 
+Private $aComp As String[]
 Private $cComp As New Collection
-Private $hLastComp As CComponentBox
 Private $bLockComp As Boolean
 Private $sVerCtrlStatus As String
 Private $sVerCtrlDiff As String
@@ -50,14 +50,7 @@ Public Sub Form_Open()
 
   Me.Title = ("Project properties") & " - " & Project.Name
 
-  ' lblName.Text = Project.Name
-  ' lblPath.Text = File.Dir(Project.Dir)
-  ' lblPath.Tooltip = File.Dir(Project.Dir)
   txtName.Text = "<font size=\"+2\"><b>" & Project.Name & "</b></font><br>" & File.Dir(Project.Dir)
-
-  'cmbStackSize.List = [("(Default)"), "1 K", "2 K", "4 K", "8 K", "16 K", "32 K", "64 K"]
-  
-  'cmbComponent_Click
 
   With Project
 
@@ -95,6 +88,14 @@ Public Sub Form_Open()
   
   $hCheck = Picture["img/16/checked.png"]
   $hUncheck = Picture["img/16/unchecked.png"]
+
+  gvwComponent.Columns.Count = 4
+  gvwComponent.Columns[0].Width = 24
+  gvwComponent.Columns[0].Expand = False
+  gvwComponent.Columns[1].Expand = False
+  gvwComponent.Columns[2].Expand = True
+  gvwComponent.Columns[3].Width = 24
+  gvwComponent.Columns[3].Expand = False
 
   chkShowUsed.Value = $bShowUsed
   'chkShowBeta.Value = $bShowBeta
@@ -348,22 +349,22 @@ Private Sub RefreshComponents()
   Dim hSep As Label
   Dim aRemove As New String[]
   Dim sParent As String
-  Dim hCompBox As CComponentBox
+  Dim hCompItem As ComponentItem
   Dim aComp As New String[]
   Dim bDark As Boolean
   Dim hOld As ListContainer
   Dim iUser As Integer
   Dim hLibInfo As CLibraryInfo
   Dim aNotFound As New String[]
+  Dim I As Integer
 
   If $iDoNotRefreshComponent Then Return
 
   'If Not $bCanInitLibrary Then Return
 
-  lstComponent.Clear
+  gvwComponent.Clear
   
   $cComp.Clear
-  $hLastComp = Null
   
   For Each hComp In CComponent.All
     If hComp.Library Then Continue
@@ -372,19 +373,19 @@ Private Sub RefreshComponents()
   Next 
   aComp.Sort
   
-  lstComponent.Lock
-  CComponentBox.Reset
-
+  $aComp = New String[]
+  
   For Each sLib In aComp
     hComp = CComponent.All[sLib]
     If hComp.Hidden Then Continue
     'If $bShowUsed Then
     '  If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
     'Endif
-    hCompBox = New CComponentBox(lstComponent, hComp, bDark) As "Component"
+    hCompItem = New ComponentItem(hComp) As "Component"
     'bDark = Not bDark
-    $cComp[hComp.Key] = hCompBox 
-    hCompBox.Locked = sLib = "gb" Or $bShowUsed
+    $cComp[hComp.Key] = hCompItem
+    hCompItem.Locked = sLib = "gb" Or $bShowUsed
+    
   Next
   
   For Each sLib In Project.Components
@@ -411,23 +412,65 @@ Private Sub RefreshComponents()
   
   $cComp["gb"].Check("") 
   
-  If $bShowUsed Then
-    For Each hCompBox In lstComponent.Children
-      If Not hCompBox.Value Then hCompBox.Hide
-    Next
-  Endif
+  For Each sLib In aComp
+    hComp = CComponent.All[sLib]
+    If hComp.Hidden Then Continue
+    If Not $bShowUsed Or If $cComp[hComp.Key].Value Then
+      $aComp.Add(hComp.Key)
+    Endif
+  Next
   
-  CComponentBox.ResizeNames(lstComponent)
-  
-  lstComponent.Unlock
-
   If aNotFound.Count Then
     Message.Warning(Subst(("Some components are missing: &1"), aNotFound.Join(", ")))
   Endif
 
-  'IF hOld THEN hOld.Delete
-
+  gvwComponent.Rows.Count = $aComp.Count
+  gvwComponent.Columns[1].Width = -1
+  
+  tabProject_Arrange
+  
 End
+
+Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
+  
+  Dim hCompItem As ComponentItem = $cComp[$aComp[Row]]
+  Dim hComp As CComponent = CComponent.All[$aComp[Row]]
+  
+  With gvwComponent.Data
+  
+    Select Case Column
+      
+      Case 0
+        .Picture = hCompItem.Picture
+        .Alignment = Align.Top
+        
+      Case 1
+        .Text = hCompItem.Key
+        .Font.Bold = True
+        If hComp.State = CComponent.UNSTABLE Then .Foreground = Color.LightForeground
+        
+      Case 2
+        .WordWrap = True
+        .RichText = hCompItem.GetDescription()
+        
+      Case 3
+        Select Case hComp.State
+          Case CComponent.STABLE_NOT_FINISHED
+            .Picture = Picture["img/16/unfinished.png"]
+          Case CComponent.UNSTABLE
+            .Picture = Picture["img/16/experimental.png"]
+        End Select
+      
+    End Select
+    
+    .Padding = 4
+    .Alignment = Align.TopNormal
+    .Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground)
+    
+  End With
+  
+End
+
 
 
 Private Function IsChecked(sKey As String) As Boolean
@@ -538,18 +581,25 @@ End
 '   
 ' End
 
-Public Sub Component_Click()
+Public Sub gvwComponent_Click()
   
-  Dim hCompBox As CComponentBox = Last
+  Dim hCompItem As ComponentItem
   Dim sDep As String
   
-  For Each sDep In GetRequire(hCompBox.Key)
-    If hCompBox.Value Then
-      $cComp[sDep].Check(hCompBox.Key)
+  If gvwComponent.Column <> 0 Then Return
+  
+  hCompItem = $cComp[$aComp[gvwComponent.Row]]
+  hCompItem.Click
+  
+  For Each sDep In GetRequire(hCompItem.Key)
+    If hCompItem.Value Then
+      $cComp[sDep].Check(hCompItem.Key)
     Else
-      $cComp[sDep].Uncheck(hCompBox.Key)
+      $cComp[sDep].Uncheck(hCompItem.Key)
     Endif
   Next
+  
+  gvwComponent.Refresh
 
 End
 
@@ -707,11 +757,11 @@ End
 
 Private Sub AboutComponent()
   
-  Dim hCompBox As CComponentBox
+  Dim hCompItem As ComponentItem
   Dim sKey As String
   
-  hCompBox = CComponentBox(lstComponent.Current)
-  Try sKey = hCompBox.Key
+  hCompItem = $cComp[$aComp[gvwComponent.Row]]
+  Try sKey = hCompItem.Key
   If Not sKey Then Return 
   'MHelp.GotoComponent(sKey)
   MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey)
@@ -730,7 +780,7 @@ Public Sub btnHelp_Click()
   
     AboutComponent
     panAboutComponent.Show
-    lstComponent.EnsureVisible
+    gvwComponent.Current.EnsureVisible
     btnHelp.Picture = Picture["icon:/small/down"]
     
   Endif
@@ -1068,15 +1118,15 @@ End
 '     
 ' End
 
-Public Sub lstComponent_Activate()
+Public Sub gvwComponent_Activate()
 
-  Dim hCurrent As CComponentBox = lstComponent.Current
+  Dim hCurrent As ComponentItem = $cComp[$aComp[gvwComponent.Row]]
   
-  If hCurrent.Find(Mouse.ScreenX - hCurrent.ScreenX, Mouse.ScreenY - hCurrent.ScreenY) Is PictureBox Then Return
-  'lstComponent.Lock
+  If gvwComponent.Column = 0 Then Return
+  
   hCurrent.Expanded = Not hCurrent.Expanded
-  'lstComponent.Unlock
-  lstComponent.EnsureVisible
+  gvwComponent.Rows[gvwComponent.Row].Height = -1
+  gvwComponent.Current.EnsureVisible
     
 End
 
@@ -1243,4 +1293,14 @@ Public Sub UncheckComponents(aComp As String[])
     If Left(sComp) <> "/" Then $cComp[sComp].Uncheck("")
   Next
   
+End
+
+Public Sub tabProject_Arrange()
+
+  Dim I As Integer
+
+  For I = 0 To $aComp.Max
+    gvwComponent.Rows[I].H = -1
+  Next
+
 End
