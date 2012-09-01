@@ -365,8 +365,9 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Endif
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
+  'TODO: Onepiece partially desactivated
   If Not Me.OnePiece Then
-    hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+    'hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
   Endif
 
   hSizeInt.Height = Min(TotalHeight, hSizeInt.Height)

@@ -93,11 +93,11 @@ Public Sub _New()
   ReportControl._ObjectFromId[Me.id] = Me
   hSection = New ReportSection
   hSection._ReportId = Me.Id
-
+  
   ReportControl._ObjectFromId[hSection.Id] = hSection
   TSection.Ctrl = hSection
   $aSections.Add(TSection)
-
+  hSection.Text = ("Section ") & $aSections.Max
   _Container = hSection
   Me.paper = Printer.A4
   'Me.Orientation = Printer.Landscape
@@ -402,6 +402,7 @@ Private Sub Count_Write(Value As Integer)
       hSection.Height = Me.Height
       hSection.Width = Me.Width
       $aSections.Add(TSection)
+      hSection.Text = ("Section ") & $aSections.Max
     Next
   Endif
 

@@ -2,6 +2,7 @@
 
 { Report Report
   #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Index = 0
   Text = ("")
   { ReportPanel1 ReportHBox
@@ -46,6 +47,13 @@
       #MoveScaled(52,1,9,9)
       Expand = True
     }
+  }
+  { ReportLabel1 ReportLabel
+    #MoveScaled(5,18,57,13)
+    Height = "2cm"
+    Font = Font["Bold,+6"]
+    Text = ("coucou")
+    Alignment = Align.Center
   }
   Index = 0
 }

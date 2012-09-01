@@ -20,7 +20,7 @@
     Font = Font["Bold,+10"]
     Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
     AutoResize = True
-    Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000;TopLeftCorner:5mm;TopRightCorner:5mm;BottomRightCorner:5mm;BottomLeftCorner:5mm"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:5mm;TopRightCorner:5mm;BottomRightCorner:5mm;BottomLeftCorner:5mm"]
     Background = ReportBrush["#1FFF8F"]
     Text = ("List Of My Friends")
     Alignment = Align.Center
@@ -41,7 +41,9 @@
         #MoveScaled(2,1,54,8)
         Fixed = True
         Font = Font["Bold,+3"]
+        Padding = ReportPadding["Left:5mm"]
         AutoResize = True
+        Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000;TopLeftCorner:3mm;TopRightCorner:3mm;BottomRightCorner:3mm;BottomLeftCorner:3mm"]
         Background = ReportBrush["#1FFF8F"]
       }
       { ReportHBox1 ReportHBox
