@@ -27,12 +27,14 @@
 
 #include <string.h>
 
+#include "c_mimemessage.h"
 #include "c_mimepart.h"
 
 #define THIS ((CMIMEPART *)_object)
 #define PART THIS->part
 #define MPART ((GMimePart *)THIS->part)
 #define MMPART ((GMimeMultipart *)THIS->part)
+#define MSPART ((GMimeMessagePart *)THIS->part)
 
 //-------------------------------------------------------------------------
 
@@ -58,8 +60,6 @@ CMIMEPART *CMIMEPART_create(GMimeObject *part)
 	
 	return mpart;
 }
-
-//-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ BEGIN_METHOD(MimePart_new, GB_STRING ctype)
 	}
 	
 	PART = part;
-	g_object_ref(part);
+	//g_object_ref(part);
 	g_object_set_data(G_OBJECT(part), "gambas-object", (gpointer)THIS);
 	
 END_METHOD
@@ -190,10 +190,14 @@ BEGIN_PROPERTY(MimePart_Data)
 	GMimeStream *stream;
 	GByteArray *array;
 	
-	CHECK_PART();
-
 	if (READ_PROPERTY)
 	{
+		if (!GMIME_IS_PART(PART))
+		{
+			GB.ReturnNull();
+			return;
+		}
+		
 		content = g_mime_part_get_content_object(MPART);
 	
 		array = g_byte_array_new();
@@ -213,6 +217,8 @@ BEGIN_PROPERTY(MimePart_Data)
 	}
 	else
 	{
+		CHECK_PART();
+
 		/* create the parts' content stream */
 		stream = g_mime_stream_mem_new_with_buffer(PSTRING(), PLENGTH());
 	
@@ -236,12 +242,18 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MimePart_FileName)
 
-	CHECK_PART();
-	
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(g_mime_part_get_filename(MPART));
+	{
+		if (GMIME_IS_PART(PART))
+			GB.ReturnNewZeroString(g_mime_part_get_filename(MPART));
+		else
+			GB.ReturnNull();
+	}
 	else
+	{
+		CHECK_PART();
 		g_mime_part_set_filename(MPART, GB.ToZeroString(PROP(GB_STRING)));
+	}
 
 END_PROPERTY
 
@@ -326,6 +338,33 @@ END_METHOD
 
 //-------------------------------------------------------------------------
 
+BEGIN_PROPERTY(MimePart_Message)
+
+	if (READ_PROPERTY)
+	{
+		if (!GMIME_IS_MESSAGE_PART(PART))
+			GB.ReturnNull();
+		else
+			GB.ReturnObject(CMIMEMESSAGE_create(g_mime_message_part_get_message(MSPART)));
+	}
+	else
+	{
+		CMIMEMESSAGE *mmsg;
+		
+		if (!GMIME_IS_MESSAGE_PART(PART))
+		{
+			GB.Error("Not a message part");
+			return;
+		}
+		
+		mmsg = VPROP(GB_OBJECT);
+		g_mime_message_part_set_message(MSPART, mmsg ? mmsg->message : NULL);
+	}
+
+END_PROPERTY
+
+//-------------------------------------------------------------------------
+
 BEGIN_METHOD(MimePart_Headers_get, GB_STRING name)
 
 	GB.ReturnNewZeroString(g_mime_object_get_header(PART, GB.ToZeroString(ARG(name))));
@@ -377,6 +416,7 @@ GB_DESC MimePartDesc[] =
 	GB_PROPERTY("ContentEncoding", "i", MimePart_ContentEncoding),
 	GB_PROPERTY("FileName", "s", MimePart_FileName),
 	GB_PROPERTY("Data", "s", MimePart_Data),
+	GB_PROPERTY("Message", "MimeMessage", MimePart_Message),
 	
 	GB_PROPERTY_READ("Count", "i", MimePart_Count),
 	//GB_METHOD("Clear", NULL, MimePart_Clear, NULL),

@@ -43,4 +43,6 @@ typedef
 	}
 	CMIMEMESSAGE;
 	
+CMIMEMESSAGE *CMIMEMESSAGE_create(GMimeMessage *message);
+
 #endif /* __MAIN_H */

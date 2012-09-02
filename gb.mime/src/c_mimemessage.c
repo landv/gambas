@@ -32,43 +32,71 @@
 
 //-------------------------------------------------------------------------
 
+static GMimeMessage *_message = NULL;
+
+CMIMEMESSAGE *CMIMEMESSAGE_create(GMimeMessage *message)
+{
+	CMIMEMESSAGE *mmsg;
+	
+	if (!message)
+		return NULL;
+	
+	mmsg = (CMIMEMESSAGE *)g_object_get_data(G_OBJECT(message), "gambas-object");
+	if (!mmsg)
+	{
+		_message = message;
+		g_object_ref(message);
+		mmsg = (CMIMEMESSAGE *)GB.New(GB.FindClass("MimeMessage"), NULL, NULL);
+		_message = NULL;
+	}
+	
+	return mmsg;
+}
+
+//-------------------------------------------------------------------------
+
 BEGIN_METHOD(MimeMessage_new, GB_STRING contents)
 
-	GMimeMessage *message;
+	GMimeMessage *message = _message;
 	
-	if (MISSING(contents))
+	if (!message)
 	{
-		message = g_mime_message_new(FALSE);
-		// Add a default part?
-	}
-	else
-	{
-		GMimeParser *parser;
-		GMimeStream *stream;
-	
-		/* create a stream to read from memory */
-		stream = g_mime_stream_mem_new_with_buffer(STRING(contents), LENGTH(contents));
-	
-		/* create a new parser object to parse the stream */
-		parser = g_mime_parser_new_with_stream (stream);
-	
-		/* unref the stream (parser owns a ref, so this object does not actually get free'd until we destroy the parser) */
-		g_object_unref (stream);
-	
-		/* parse the message from the stream */
-		message = g_mime_parser_construct_message (parser);
-	
-		/* free the parser (and the stream) */
-		g_object_unref (parser);
+		if (MISSING(contents))
+		{
+			message = g_mime_message_new(FALSE);
+			// Add a default part?
+		}
+		else
+		{
+			GMimeParser *parser;
+			GMimeStream *stream;
+		
+			/* create a stream to read from memory */
+			stream = g_mime_stream_mem_new_with_buffer(STRING(contents), LENGTH(contents));
+		
+			/* create a new parser object to parse the stream */
+			parser = g_mime_parser_new_with_stream (stream);
+		
+			/* unref the stream (parser owns a ref, so this object does not actually get free'd until we destroy the parser) */
+			g_object_unref(stream);
+		
+			/* parse the message from the stream */
+			message = g_mime_parser_construct_message (parser);
+		
+			/* free the parser (and the stream) */
+			g_object_unref(parser);
+		}
 	}
 	
 	THIS->message = message;
+	g_object_set_data(G_OBJECT(message), "gambas-object", THIS);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(MimeMessage_free)
 
+	g_object_set_data(G_OBJECT(MESSAGE), "gambas-object", NULL);
 	g_object_unref(MESSAGE);
 
 END_METHOD
@@ -143,6 +171,28 @@ BEGIN_METHOD_VOID(MimeMessage_ToString)
 	g_free(str);
 
 END_METHOD
+
+/*BEGIN_PROPERTY(MimeMessage_Date)
+
+	if (READ_PROPERTY)
+	{
+		time_t time;
+		GB_DATE date;
+	
+		g_mime_message_get_date(MESSAGE, &time, NULL);
+		GB.MakeDateFromTime(time, 0, &date);
+		GB.ReturnDate(&date);
+	}
+	else
+	{
+		GB_DATE_SERIAL *date;
+		struct tm time;
+		
+		date = GB.SplitDate(PROP(GB_DATE));
+		time.tm_sec = date.
+	}
+
+END_PROPERTY*/
 
 //-------------------------------------------------------------------------
 
