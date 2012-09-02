@@ -27,15 +27,19 @@
 #define __C_MIMEMESSAGE_H
 
 #include "main.h"
+#include "c_mimepart.h"
 
 #ifndef __C_MIMEMESSAGE_C
 extern GB_DESC MimeMessageDesc[];
+extern GB_DESC MimeMessageHeadersDesc[];
 #endif
 
 typedef
 	struct {
 		GB_BASE ob;
 		GMimeMessage *message;
+		CMIMEPART *part;
+		CMIMEPART *body;
 	}
 	CMIMEMESSAGE;
 	

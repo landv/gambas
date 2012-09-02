@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_mime.h
 
   gb.mime component
 
@@ -23,35 +23,13 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __C_MIME_H
+#define __C_MIME_H
 
 #include "main.h"
 
-#include "c_mime.h"
-#include "c_mimemessage.h"
-#include "c_mimepart.h"
-#include "main.h"
+#ifndef __C_MIME_C
+extern GB_DESC MimeDesc[];
+#endif
 
-GB_INTERFACE GB EXPORT;
-
-GB_DESC *GB_CLASSES[] EXPORT = 
-{
-	MimeDesc,
-	MimePartHeadersDesc,
-	MimePartDesc,
-	MimeMessageHeadersDesc,
-	MimeMessageDesc,
-	NULL
-};
-
-int EXPORT GB_INIT()
-{
-	g_mime_init(0);
-	return 0;
-}
-
-
-void EXPORT GB_EXIT()
-{
-	g_mime_shutdown();
-}
+#endif /* __C_MIME_H */

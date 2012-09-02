@@ -30,6 +30,7 @@
 
 #ifndef __C_MIMEPART_C
 extern GB_DESC MimePartDesc[];
+extern GB_DESC MimePartHeadersDesc[];
 #endif
 
 typedef
@@ -38,5 +39,7 @@ typedef
 		GMimeObject *part;
 	}
 	CMIMEPART;
+
+CMIMEPART *CMIMEPART_create(GMimeObject *part);
 	
 #endif /* __MAIN_H */

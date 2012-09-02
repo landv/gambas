@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_mime.c
 
   gb.mime component
 
@@ -23,35 +23,21 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
-
-#include "main.h"
+#define __C_MIME_C
 
 #include "c_mime.h"
-#include "c_mimemessage.h"
-#include "c_mimepart.h"
-#include "main.h"
 
-GB_INTERFACE GB EXPORT;
-
-GB_DESC *GB_CLASSES[] EXPORT = 
+GB_DESC MimeDesc[] = 
 {
-	MimeDesc,
-	MimePartHeadersDesc,
-	MimePartDesc,
-	MimeMessageHeadersDesc,
-	MimeMessageDesc,
-	NULL
+	GB_DECLARE_VIRTUAL("Mime"),
+	
+	GB_CONSTANT("Default", "i", GMIME_CONTENT_ENCODING_DEFAULT),
+	GB_CONSTANT("7Bit", "i", GMIME_CONTENT_ENCODING_7BIT),
+	GB_CONSTANT("8Bit", "i", GMIME_CONTENT_ENCODING_8BIT),
+	GB_CONSTANT("Binary", "i", GMIME_CONTENT_ENCODING_BINARY),
+	GB_CONSTANT("Base64", "i", GMIME_CONTENT_ENCODING_BASE64),
+	GB_CONSTANT("QuotedPrintable", "i", GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE),
+	GB_CONSTANT("UUEncode", "i", GMIME_CONTENT_ENCODING_UUENCODE),
+	
+	GB_END_DECLARE
 };
-
-int EXPORT GB_INIT()
-{
-	g_mime_init(0);
-	return 0;
-}
-
-
-void EXPORT GB_EXIT()
-{
-	g_mime_shutdown();
-}

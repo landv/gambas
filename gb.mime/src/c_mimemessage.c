@@ -39,6 +39,7 @@ BEGIN_METHOD(MimeMessage_new, GB_STRING contents)
 	if (MISSING(contents))
 	{
 		message = g_mime_message_new(FALSE);
+		// Add a default part?
 	}
 	else
 	{
@@ -117,6 +118,60 @@ IMPLEMENT_RECIPIENT_PROPERTY(To, GMIME_RECIPIENT_TYPE_TO);
 IMPLEMENT_RECIPIENT_PROPERTY(Cc, GMIME_RECIPIENT_TYPE_CC);
 IMPLEMENT_RECIPIENT_PROPERTY(Bcc, GMIME_RECIPIENT_TYPE_BCC);
 
+BEGIN_PROPERTY(MimeMessage_Part)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(CMIMEPART_create(g_mime_message_get_mime_part(MESSAGE)));
+	else
+	{
+		CMIMEPART *mpart = VPROP(GB_OBJECT);
+		g_mime_message_set_mime_part(MESSAGE, mpart ? mpart->part : NULL);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MimeMessage_Body)
+
+	GB.ReturnObject(CMIMEPART_create(g_mime_message_get_body(MESSAGE)));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(MimeMessage_ToString)
+
+	char *str = g_mime_object_to_string((GMimeObject *)MESSAGE);
+	GB.ReturnNewZeroString(str);
+	g_free(str);
+
+END_METHOD
+
+//-------------------------------------------------------------------------
+
+BEGIN_METHOD(MimeMessage_Headers_get, GB_STRING name)
+
+	GB.ReturnNewZeroString(g_mime_object_get_header((GMimeObject *)MESSAGE, GB.ToZeroString(ARG(name))));
+
+END_METHOD
+
+BEGIN_METHOD(MimeMessage_Headers_put, GB_STRING value; GB_STRING name)
+
+	if (LENGTH(name))
+		g_mime_object_set_header((GMimeObject *)MESSAGE, GB.ToZeroString(ARG(name)), GB.ToZeroString(ARG(value)));
+	else
+		g_mime_object_remove_header((GMimeObject *)MESSAGE, GB.ToZeroString(ARG(name)));
+
+END_METHOD
+
+//-------------------------------------------------------------------------
+
+GB_DESC MimeMessageHeadersDesc[] = 
+{
+	GB_DECLARE_VIRTUAL(".MimeMessage.Headers"),
+	
+	GB_METHOD("_get", "s", MimeMessage_Headers_get, "(Name)s"),
+	GB_METHOD("_put", NULL, MimeMessage_Headers_put, "(Value)s(Name)s"),
+
+	GB_END_DECLARE
+};
 
 //-------------------------------------------------------------------------
 
@@ -136,8 +191,12 @@ GB_DESC MimeMessageDesc[] =
 	//GB_PROPERTY("Date", "d", MimeMessage_Date),
 	GB_PROPERTY("Id", "s", MimeMessage_Id),
 	
-	//GB_PROPERTY("Part", "MimePart", MimeMessage_Part),
-	//GB_PROPERTY_Read("Body", "MimePart", MimeMessage_Body)
+	GB_PROPERTY_SELF("Headers", ".MimeMessage.Headers"),
+	
+	GB_PROPERTY("Part", "MimePart", MimeMessage_Part),
+	GB_PROPERTY_READ("Body", "MimePart", MimeMessage_Body),
+	
+	GB_METHOD("ToString", "s", MimeMessage_ToString, NULL),
 	
 	GB_END_DECLARE
 };
