@@ -171,7 +171,7 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global)
 	CLASS_SYMBOL *sym = CLASS_get_symbol(class, index);
 
 	if ((global && !TYPE_is_null(sym->global.type))
-			|| (!global && (!TYPE_is_null(sym->local.type) || !TYPE_is_null(sym->global.type))))
+			|| (!global && !TYPE_is_null(sym->local.type))) // || !TYPE_is_null(sym->global.type))))
 	{
 		char name[sym->symbol.len + 1];
 		memcpy(name, sym->symbol.name, sym->symbol.len);
