@@ -932,7 +932,6 @@ Public Function GetHelpHTML() As String
   ' Convert into HTML using the markup syntax
   Try sHelp = Markup.Convert(sHelp)
   If Error Then sHelp = "<b>" & Error.Text & "</b>"
-  Print sHelp
   
   'If Not s Then s = ("No help found.")
   

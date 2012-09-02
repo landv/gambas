@@ -67,6 +67,29 @@ Public Sub Convert(sMarkup As String) As String
     
     sLine = RTrim(sLine)
     
+    ' Blockquote
+    
+    I = 0
+    Do
+      If Left(sLine) <> ">" Then Break
+      sCar = Mid$(sLine, 2, 1)
+      If sCar <> " " And If sCar <> gb.Tab Then Break
+      Inc I
+      sLine = LTrim(Mid$(sLine, 3))
+    Loop
+    
+    If I > iBlockQuote Then
+      While I > iBlockQuote
+        aResult.Add("<blockquote>")
+        Inc iBlockQuote
+      Wend
+    Else If I < iBlockQuote Then
+      While I < iBlockQuote
+        aResult.Add("</blockquote>")
+        Dec iBlockQuote
+      Wend
+    Endif
+    
     ' Lists
     
     If Trim(sLine) Then
@@ -77,22 +100,50 @@ Public Sub Convert(sMarkup As String) As String
       sLine = Mid$(sLine, iCurrentIndent + 1)
       
       If sLine Begins "* " Or If sLine Begins "+ " Or If sLine Begins "- " Then
-        hMarkupList = New MarkupList
-        hMarkupList.sType = "ul"
-        hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
-        $aList.Add(hMarkupList)
-        If aResult.Count And If Trim(aResult[aResult.Max]) = "</ul>" Then
-          aResult.Remove(aResult.Max)
-        Else
-          GoSub CLOSE_PARA
-          aResult.Add(Space$(iCurrentIndent) & "<ul>")
+        If InStr("*+-", Right(sLine)) = 0 Then
+          hMarkupList = New MarkupList
+          hMarkupList.sType = "ul"
+          hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
+          $aList.Add(hMarkupList)
+          bJustList = True
+          If aResult.Count And If Trim(aResult[aResult.Max]) = "</ul>" Then
+            If Not Trim(aLine[iLine - 1]) And If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
+              bJustList = False
+            Endif
+            aResult.Remove(aResult.Max)
+          Else
+            GoSub CLOSE_PARA
+            aResult.Add(Space$(iCurrentIndent) & "<ul>")
+          Endif
+          iCurrentIndent = hMarkupList.iIndent
+          aResult.Add(Space$(iCurrentIndent) & "<li>")
+          sLine = Mid$(sLine, 3)
         Endif
-        iCurrentIndent = hMarkupList.iIndent
-        aResult.Add(Space$(iCurrentIndent) & "<li>")
-        bJustList = True
-        sLine = Mid$(sLine, 3)
       Endif
       
+    Endif
+    
+    ' Blockquote again!
+    
+    I = iBlockQuote
+    Do
+      If Left(sLine) <> ">" Then Break
+      sCar = Mid$(sLine, 2, 1)
+      If sCar <> " " And If sCar <> gb.Tab Then Break
+      Inc I
+      sLine = LTrim(Mid$(sLine, 3))
+    Loop
+    
+    If I > iBlockQuote Then
+      While I > iBlockQuote
+        aResult.Add("<blockquote>")
+        Inc iBlockQuote
+      Wend
+    Else If I < iBlockQuote Then
+      While I < iBlockQuote
+        aResult.Add("</blockquote>")
+        Dec iBlockQuote
+      Wend
     Endif
     
     If sLine Begins "==" And If sLine = String$(Len(sLine), "=") Then
@@ -144,29 +195,6 @@ Public Sub Convert(sMarkup As String) As String
     
     GoSub CLOSE_CODE
   
-    ' Blockquote
-    
-    I = 0
-    Do
-      If Left(sLine) <> ">" Then Break
-      sCar = Mid$(sLine, 2, 1)
-      If sCar <> " " And If sCar <> gb.Tab Then Break
-      Inc I
-      sLine = LTrim(Mid$(sLine, 3))
-    Loop
-    
-    If I > iBlockQuote Then
-      While I > iBlockQuote
-        aResult.Add("<blockquote>")
-        Inc iBlockQuote
-      Wend
-    Else If I < iBlockQuote Then
-      While I < iBlockQuote
-        aResult.Add("</blockquote>")
-        Dec iBlockQuote
-      Wend
-    Endif
-    
     ' Horizontal lines
     
     If Left(sLine) = "*" And If Right(sLine) = "*" Then
@@ -211,6 +239,8 @@ Public Sub Convert(sMarkup As String) As String
       If Not bInsidePar And If LTrim(sLine) Not Begins "<h" Then
         If Not bJustList Then
           bAddPar = True
+        'Else
+        '  bAddPar = Not Trim(aLine[iLine - 1])
         Endif
       Endif
     Else
@@ -222,7 +252,7 @@ Public Sub Convert(sMarkup As String) As String
     sLine = ConvertLine(sLine)
     
     If bAddPar Then
-      sLine = Left(sLine, Len(sLine) - Len(LTrim(sLine))) & "<p>" & LTrim(sLine)
+      sLine = Left(sLine, GetIndent(sLine)) & "<p>" & LTrim(sLine)
       bInsidePar = True
       bAddPar = False
     Endif
