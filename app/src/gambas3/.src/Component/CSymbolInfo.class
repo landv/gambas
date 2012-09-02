@@ -908,7 +908,7 @@ Public Function GetHelpHTML() As String
     If Highlight.Types[i] = Highlight.Help Then
       sLine = Trim(Highlight.Symbols[i])
       'If sLine Begins "''" Then
-        sHelp = DecodeHelpLine(Trim(Mid$(sLine, 3)))
+        sHelp = Trim(Mid$(sLine, 3))
       'Endif
     Endif
   Endif
@@ -919,8 +919,8 @@ Public Function GetHelpHTML() As String
   
     For i = iLine - 1 To 0 Step -1
       sLine = Trim(hEdit.Lines[i].Text)
-      If sLine Begins "''" Then 
-        sHelp = DecodeHelpLine(Trim(Mid(sLine, 3))) & "\n" & sHelp
+      If sLine Begins "'' " Then 
+        sHelp = RTrim(Mid(sLine, 4)) & "\n" & sHelp
       Else
         If Trim(sLine) = "" Then Continue
         Break
@@ -928,6 +928,11 @@ Public Function GetHelpHTML() As String
     Next
     
   Endif
+  
+  ' Convert into HTML using the markup syntax
+  Try sHelp = Markup.Convert(sHelp)
+  If Error Then sHelp = "<b>" & Error.Text & "</b>"
+  Print sHelp
   
   'If Not s Then s = ("No help found.")
   

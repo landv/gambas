@@ -322,55 +322,6 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponentBox.class:221 ComponentItem.class:140 FPropertyComponent.form:73
-msgid "Experimental"
-msgstr ""
-
-#: CComponentBox.class:223 ComponentItem.class:142 FPropertyComponent.form:73
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:235 ComponentItem.class:145 ProjectItem.class:67
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:242 ComponentItem.class:152 FPropertyComponent.form:106
-#: LibraryItem.class:63
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:244 ComponentItem.class:154
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:250 ComponentItem.class:160
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:263 ComponentItem.class:173 LibraryItem.class:61
-msgid "Provides"
-msgstr ""
-
-#: CComponentBox.class:375 ComponentItem.class:241
-msgid "This component is required by the following library:<p>&1"
-msgstr ""
-
-#: CComponentBox.class:377 ComponentItem.class:243
-msgid "This component is required by the following libraries:<p>&1"
-msgstr ""
-
-#: CComponentBox.class:386 ComponentItem.class:252
-msgid "This component is required by:<p>&1"
-msgstr ""
-
-#: CComponentBox.class:387 ComponentItem.class:253
-msgid "Keep"
-msgstr ""
-
-#: CComponentBox.class:387 ComponentItem.class:253 FDebugInfo.form:134
-msgid "Remove all"
-msgstr ""
-
 #: CInsertColor.class:106 FEditor.form:419 FTextEditor.form:348
 msgid "Insert color"
 msgstr ""
@@ -477,6 +428,54 @@ msgstr ""
 msgid ""
 "This program is published under\n"
 "the GNU General Public License."
+msgstr ""
+
+#: ComponentItem.class:140 FPropertyComponent.form:73
+msgid "Experimental"
+msgstr ""
+
+#: ComponentItem.class:142 FPropertyComponent.form:73
+msgid "Not finished but stable"
+msgstr ""
+
+#: ComponentItem.class:145 ProjectItem.class:67
+msgid "Authors"
+msgstr ""
+
+#: ComponentItem.class:152 FPropertyComponent.form:106 LibraryItem.class:63
+msgid "Requires"
+msgstr ""
+
+#: ComponentItem.class:154
+msgid "Excludes"
+msgstr ""
+
+#: ComponentItem.class:160
+msgid "Implements"
+msgstr ""
+
+#: ComponentItem.class:173 LibraryItem.class:61
+msgid "Provides"
+msgstr ""
+
+#: ComponentItem.class:241
+msgid "This component is required by the following library:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:243
+msgid "This component is required by the following libraries:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:252
+msgid "This component is required by:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:253
+msgid "Keep"
+msgstr ""
+
+#: ComponentItem.class:253 FDebugInfo.form:134
+msgid "Remove all"
 msgstr ""
 
 #: Design.module:159 Project.module:2073
@@ -2598,7 +2597,7 @@ msgstr ""
 msgid "Show added files"
 msgstr ""
 
-#: FMain.form:1355 FProperty.form:23 MHelp.module:574
+#: FMain.form:1355 FProperty.form:23 MHelp.module:577
 msgid "Properties"
 msgstr ""
 
@@ -2702,7 +2701,7 @@ msgstr ""
 msgid "Create a shortcut on the desktop"
 msgstr ""
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1165
+#: FMakeExecutable.class:18 FPropertyProject.class:1170
 msgid "Gambas applications"
 msgstr ""
 
@@ -2880,7 +2879,7 @@ msgstr ""
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:356 FPropertyProject.class:909 FSave.form:21
+#: FMakeInstall.class:356 FPropertyProject.class:914 FSave.form:21
 #: Project.module:3200
 msgid "Continue"
 msgstr ""
@@ -3799,43 +3798,43 @@ msgstr ""
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: FPropertyProject.class:535
+#: FPropertyProject.class:537
 msgid "These components are incompatible:<br>&1."
 msgstr ""
 
-#: FPropertyProject.class:548
+#: FPropertyProject.class:550
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr ""
 
-#: FPropertyProject.class:555
+#: FPropertyProject.class:557
 msgid "The &1 component needs the &2 component."
 msgstr ""
 
-#: FPropertyProject.class:865
+#: FPropertyProject.class:870
 msgid "There is no change to commit."
 msgstr ""
 
-#: FPropertyProject.class:900
+#: FPropertyProject.class:905
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FPropertyProject.class:902
+#: FPropertyProject.class:907
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FPropertyProject.class:909
+#: FPropertyProject.class:914
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: FPropertyProject.class:1164
+#: FPropertyProject.class:1169
 msgid "Select a Gambas application"
 msgstr ""
 
-#: FPropertyProject.class:1175
+#: FPropertyProject.class:1180
 msgid "<b>&1</b> is already used as a library."
 msgstr ""
 
-#: FPropertyProject.class:1181
+#: FPropertyProject.class:1186
 msgid "<b>&1</b> does not export any class."
 msgstr ""
 
@@ -5583,37 +5582,37 @@ msgstr ""
 msgid "No help found."
 msgstr ""
 
-#: MHelp.module:575
+#: MHelp.module:578
 msgid "Variables"
 msgstr ""
 
-#: MHelp.module:576
+#: MHelp.module:579
 msgid "Methods"
 msgstr ""
 
-#: MHelp.module:577
+#: MHelp.module:580
 msgid "Events"
 msgstr ""
 
-#: MHelp.module:605
+#: MHelp.module:608
 msgid ""
 "This class can be used like an object by creating an hidden instance on "
 "demand.<br>"
 msgstr ""
 
-#: MHelp.module:606
+#: MHelp.module:609
 msgid "This class is creatable.<br>"
 msgstr ""
 
-#: MHelp.module:629
+#: MHelp.module:632
 msgid "This class inherits &1."
 msgstr ""
 
-#: MHelp.module:644 MTheme.module:6
+#: MHelp.module:647 MTheme.module:6
 msgid "Symbols"
 msgstr ""
 
-#: MHelp.module:645
+#: MHelp.module:648
 msgid "Constants"
 msgstr ""
 

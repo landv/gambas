@@ -459,6 +459,8 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
             .Picture = Picture["img/16/unfinished.png"]
           Case CComponent.UNSTABLE
             .Picture = Picture["img/16/experimental.png"]
+          Case CComponent.STABLE
+            .Picture = Picture["img/16/finished.png"]
         End Select
       
     End Select
@@ -585,6 +587,8 @@ Public Sub gvwComponent_Click()
   
   Dim hCompItem As ComponentItem
   Dim sDep As String
+  
+  If panAboutComponent.Visible Then AboutComponent
   
   If gvwComponent.Column <> 0 Then Return
   
@@ -760,7 +764,8 @@ Private Sub AboutComponent()
   Dim hCompItem As ComponentItem
   Dim sKey As String
   
-  hCompItem = $cComp[$aComp[gvwComponent.Row]]
+  Try hCompItem = $cComp[$aComp[gvwComponent.Row]]
+  If Not hCompItem Then Return
   Try sKey = hCompItem.Key
   If Not sKey Then Return 
   'MHelp.GotoComponent(sKey)
@@ -780,7 +785,7 @@ Public Sub btnHelp_Click()
   
     AboutComponent
     panAboutComponent.Show
-    gvwComponent.Current.EnsureVisible
+    Try gvwComponent.Current.EnsureVisible
     btnHelp.Picture = Picture["icon:/small/down"]
     
   Endif
