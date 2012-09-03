@@ -355,6 +355,35 @@ Public Sub Modify(Optional bReset As Boolean)
 
 End
 
+Public Sub Delete()
+  
+  FSearch.OnFileChange(Me.Path)
+  FDebugInfo.RefreshTask(Me.Path)
+  FDebugInfo.RefreshBreakpoint(Me.Name)
+  Super.Delete
+  
+End
+
+Public Sub Rename(sNewName As String, sNewPath As String)
+
+  Dim sOldName As String = Me.Name
+  Dim sOldPath As String = Me.Path
+
+  Me.Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
+  DrawTitle
+
+  FSearch.OnFileChange(sOldPath)
+  FDebugInfo.RefreshTask(sOldPath)
+  FDebugInfo.RefreshBreakpoint(sOldName)
+
+  FSearch.OnFileChange(Me.Path)
+  FDebugInfo.RefreshTask(Me.Path)
+  FDebugInfo.RefreshBreakpoint(Me.Name)
+
+End
+
+
 Public Function IsModified() As Boolean
 
   Return $bModify
@@ -1302,14 +1331,6 @@ Public Function GetBreakpoints(Optional bCheck As Boolean) As Integer[]
   If bCheck Then CheckBreakpoints
   Return Editor.Breakpoints
   
-End
-
-Public Sub Rename(sNewName As String, sNewPath As String)
-
-  Me.Name = sNewName
-  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
-  DrawTitle
-
 End
 
 Private Sub GetIndentWidth(iStart As Integer, iEnd As Integer) As Integer

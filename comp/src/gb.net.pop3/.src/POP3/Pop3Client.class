@@ -33,6 +33,11 @@
 
 Export
 
+Public Const _IsControl As Boolean = True
+Public Const _IsVirtual As Boolean = True
+Public Const _Group As String = "Network"
+Public Const _Properties As String = "Host,Port,Debug,Encrypt{Net.None;SSL}"
+
 Public Const SERVER_POSITIVE_RESPONSE As String = "+OK"
 Public Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
 

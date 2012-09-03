@@ -2301,3 +2301,4 @@ bool GB_UnSerialize(const char *path, GB_VALUE *value)
 	}
 	END_CATCH_ERROR
 }
+

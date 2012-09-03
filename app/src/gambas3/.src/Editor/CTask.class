@@ -42,7 +42,8 @@ Static Public Sub ScanFile(sPath As String) As CTask[]
   
   If hModule Then
     aLine = Split(hModule.GetText(), "\n")
-  Else 
+  Else
+    If Not Exist(sPath) Then Return aTask
     aLine = Split(File.Load(sPath), "\n")
   Endif
   

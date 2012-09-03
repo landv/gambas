@@ -485,7 +485,7 @@ Public Sub ScrollArea_Draw()
       
     NEXT_CELL:
       
-      If $bShowCursor And If I = $iRow And If J = $iCol Then
+      If I = $iRow And If J = $iCol Then
         hCursor = Rect(X, Y, Max(0, W - 1), Max(0, H - 1))
         ' Paint.Begin(Draw.Device)
         ' Paint.ClipRect = hClip
@@ -504,9 +504,11 @@ Public Sub ScrollArea_Draw()
   Next
   
   If hCursor Then
-    Draw.ClipRect = hClip
-    Draw.Foreground = iGrid 'Color.LightForeground
-    Draw.Rect(hCursor.X, hCursor.Y, hCursor.W, hCursor.H)
+    If $bShowCursor Then
+      Draw.ClipRect = hClip
+      Draw.Foreground = iGrid 'Color.LightForeground
+      Draw.Rect(hCursor.X, hCursor.Y, hCursor.W, hCursor.H)
+    Endif
   Endif
   
   $hData = Null
@@ -557,6 +559,12 @@ Public Sub ScrollArea_Draw()
     
     Paint.End
     
+  Endif
+  
+  If Me.HasFocus And If Not $hView.Border Then
+    Draw.ClipRect = Null
+    Draw.Foreground = Color.LightBackground 'Color.LightForeground
+    Draw.Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
   Endif
 
 End
