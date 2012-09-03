@@ -405,14 +405,8 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
       Endif
 
       If iPos = 0 Then Break
-
-      If bFirst Then
-        bFirst = False
-        NextArg
-      Else
-        sRes &= $sArgAfter & ", "
-        NextArg
-      Endif
+      
+      GoSub ADD_COMMA
 
       sSym = Mid$(sSign, iInd + 1, iPos - iInd - 1)
 
@@ -468,29 +462,26 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
     
     Endif
 
+    If sCar = "." Then
+      
+      GoSub ADD_COMMA
+      'NextArg
+      If bBalise And If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
+      sRes &= $sArgBefore & "..."
+      If bBalise And If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
+      Continue
+      
+    Endif
+
     If Not bName Then
 
-      If bFirst Then
-        bFirst = False
-      Else
-        sRes &= $sArgAfter & ", "
-        NextArg
-      Endif
+      GoSub ADD_COMMA
 
       sRes &= $sArgBefore & "? " & sKeywordAs & " " 
       bName = False
 
     Endif
     
-    If sCar = "." Then
-      sRes &= $sArgAfter & ", " 
-      NextArg
-      If bBalise And If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
-      sRes &= $sArgBefore & "..."
-      If bBalise And If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
-      Continue
-    Endif
-
     If (sCar >= "A" And sCar <= "Z") Or sCar = "." Then
 
       iPos = InStr(sSign, ";", iInd)
@@ -518,6 +509,16 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
   If Type Then sRes &= " " & sKeywordAs & " " & GetType(Type)
 
   Return sRes
+  
+ADD_COMMA:
+
+  If bFirst Then
+    bFirst = False
+  Else
+    sRes &= $sArgAfter & ", "
+  Endif
+  NextArg
+  Return
 
 End
 

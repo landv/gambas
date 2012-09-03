@@ -99,26 +99,44 @@ Public Sub Convert(sMarkup As String) As String
     
       sLine = Mid$(sLine, iCurrentIndent + 1)
       
-      If sLine Begins "* " Or If sLine Begins "+ " Or If sLine Begins "- " Then
-        If InStr("*+-", Right(sLine)) = 0 Then
-          hMarkupList = New MarkupList
-          hMarkupList.sType = "ul"
-          hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
-          $aList.Add(hMarkupList)
-          bJustList = True
-          If aResult.Count And If Trim(aResult[aResult.Max]) = "</ul>" Then
-            If Not Trim(aLine[iLine - 1]) And If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
-              bJustList = False
-            Endif
-            aResult.Remove(aResult.Max)
-          Else
-            GoSub CLOSE_PARA
-            aResult.Add(Space$(iCurrentIndent) & "<ul>")
-          Endif
-          iCurrentIndent = hMarkupList.iIndent
-          aResult.Add(Space$(iCurrentIndent) & "<li>")
-          sLine = Mid$(sLine, 3)
+      ' Horizontal lines
+      
+      If Left(sLine) = "*" And If Right(sLine) = "*" Then
+        sText = Replace(sLine, " ", "")
+        If Len(sText) >= 3 And If sText = String$(Len(sText), "*") Then
+          GoSub CLOSE_PARA
+          aResult.Add("<hr />")
+          Continue
         Endif
+      Endif
+  
+      If Left(sLine) = "-" And If Right(sLine) = "-" Then
+        sText = Replace(sLine, " ", "")
+        If Len(sText) >= 3 And If sText = String$(Len(sText), "-") Then
+          GoSub CLOSE_PARA
+          aResult.Add("<hr />")
+          Continue
+        Endif
+      Endif
+      
+      If sLine Begins "* " Or If sLine Begins "+ " Or If sLine Begins "- " Then
+        hMarkupList = New MarkupList
+        hMarkupList.sType = "ul"
+        hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
+        $aList.Add(hMarkupList)
+        bJustList = True
+        If aResult.Count And If Trim(aResult[aResult.Max]) = "</ul>" Then
+          If Not Trim(aLine[iLine - 1]) And If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
+            bJustList = False
+          Endif
+          aResult.Remove(aResult.Max)
+        Else
+          GoSub CLOSE_PARA
+          aResult.Add(Space$(iCurrentIndent) & "<ul>")
+        Endif
+        iCurrentIndent = hMarkupList.iIndent
+        aResult.Add(Space$(iCurrentIndent) & "<li>")
+        sLine = Mid$(sLine, 3)
       Endif
       
     Endif
@@ -195,26 +213,6 @@ Public Sub Convert(sMarkup As String) As String
     
     GoSub CLOSE_CODE
   
-    ' Horizontal lines
-    
-    If Left(sLine) = "*" And If Right(sLine) = "*" Then
-      sText = Replace(sLine, " ", "")
-      If Len(sText) >= 3 And If sText = String$(Len(sText), "*") Then
-        GoSub CLOSE_PARA
-        aResult.Add("<hr />")
-        Continue
-      Endif
-    Endif
-
-    If Left(sLine) = "-" And If Right(sLine) = "-" Then
-      sText = Replace(sLine, " ", "")
-      If Len(sText) >= 3 And If sText = String$(Len(sText), "-") Then
-        GoSub CLOSE_PARA
-        aResult.Add("<hr />")
-        Continue
-      Endif
-    Endif
-    
     ' Title
     
     If Left(sLine) = "#" Then
@@ -347,8 +345,12 @@ MAIN_LOOP:
   GoSub NEXT_CAR
   
   If sCar = "\\" Then
-    GoSub NEXT_CAR
-    sResult &= sCar
+    If I = Len(sLine) Then
+      sResult &= "<br>"
+    Else
+      GoSub NEXT_CAR
+      sResult &= sCar
+    Endif
     Goto MAIN_LOOP
   Endif
   
@@ -495,6 +497,10 @@ ENTER_LINK:
   I1 = InStr(sLine, "]", I + 1)
   If I1 = 0 Then
     I = Len(sLine)
+    Goto MAIN_LOOP
+  Else If I1 = (I + 1) Then
+    sResult &= "[]"
+    Inc I
     Goto MAIN_LOOP
   Endif
   
