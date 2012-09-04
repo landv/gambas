@@ -11,7 +11,7 @@ Property Alignment As Integer
 
 Private $sText As String
 Private $iAlignment As Integer = Align.TopNormal
-Private $fZoom As Float
+
 
 Public Data As String
 Event Data(Index As Integer)
@@ -40,7 +40,7 @@ Private Sub Alignment_Write(Value As Integer)
 
 End
 
-Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
   Dim hMyHints As New TSizeHint
   Dim fTextHeight As Float
@@ -66,7 +66,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   Dim iX, iY, iW, iH As Integer
   Dim sTmp As String

@@ -9,7 +9,7 @@ Public Const _DefaultEvent As String = "Data"
 Private $sText As String
 Private $iAlignment As Integer = Align.Normal
 Private $bIsSpecial As Boolean
-Private $bGetValueAuto As Boolean = True
+
 Private $sKey As String
 Private $sFormat As String
 Private $bUseField As Boolean
@@ -51,14 +51,14 @@ Private Sub Alignment_Write(Value As Integer)
 
 End
 
-Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
   Dim hMyHints As New TSizeHint
   Dim fTextHeight As Float
   Dim fTextWidth As Float
   Dim hext As PaintExtents
-  Dim bRaiseRes As Boolean
-  Dim $sTempText As String
+
+
   Dim sText As String
 
   'On Récupère la taille standard
@@ -96,7 +96,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   Dim sTempText As Variant
   'Dim iPadding As Integer
@@ -182,17 +182,17 @@ Private Sub IsSpecial_Write(Value As Boolean)
 
 End
 
-Private Function Key_Read() As String
-
-  Return $sKey
-
-End
-
-Private Sub Key_Write(Value As String)
-
-  $sKey = Value
-
-End
+' Private Function Key_Read() As String
+' 
+'   Return $sKey
+' 
+' End
+' 
+' Private Sub Key_Write(Value As String)
+' 
+'   $sKey = Value
+' 
+' End
 
 Private Function Format_Read() As String
 
@@ -206,7 +206,7 @@ Private Sub Format_Write(Value As String)
 
 End
 
-Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False) As String
+Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False ) As String
 
   If ForSize Then
     If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")

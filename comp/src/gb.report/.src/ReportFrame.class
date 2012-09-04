@@ -3,7 +3,7 @@
 Export
 Create Private
 Inherits ReportControl
-Static Private iLevel As Integer
+' Static Private iLevel As Integer
 Public Const _Properties As String = "*,Border,Background{ReportBrush}"
 
 ' Private $fLeftBorderWidth As Float
@@ -32,11 +32,10 @@ Private Sub Border_Write(Value As ReportBorder)
 
 End
 
-Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   Dim X1, Y1, X2, Y2 As Float
-  Dim hImage As Picture
-  Dim fradius As Float
+ 
 
   'If Me.tag = "*" Then Stop
 
@@ -79,7 +78,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
       paint.Clip
       Return
     Else
-      paint.Clip(True)
+      paint.Clip(True )
     Endif
     paint.Brush = Me.BackGround._PaintBrush(X1, Y1, X2, Y2)
 
@@ -89,7 +88,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
 
 End
 
-Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   _PaintBefore(Page, X, Y, hControl, VirtualId)
   Me._Paint(Page, X, Y, hControl, VirtualId)
@@ -97,7 +96,7 @@ Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TCon
 
 End
 
-Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   Dim X1, Y1, X2, Y2 As Float
   'Dim fWidth As Float
@@ -183,8 +182,8 @@ End
 Public Sub _SetUnifiedValues()
 
   Dim hSizeParse As TSizeParse
-  Dim sValue As String
-  Dim ars As String[]
+
+
 
   Super._SetUnifiedValues()
 
@@ -200,7 +199,7 @@ Public Sub _SetUnifiedValues()
 
 End
 
-Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
   Dim hMyHints As TSizeHint
 

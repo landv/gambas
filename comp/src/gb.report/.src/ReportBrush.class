@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Export
 
 Public _Type As Integer
@@ -42,8 +43,8 @@ Static Public Sub _get(sValue As String) As ReportBrush
   Dim sType As String
   
   Dim ars As String[]
-  Dim i, j As Integer
-  Dim hLabel As Label
+  
+ 
   
   If Not svalue Then Return Null
   

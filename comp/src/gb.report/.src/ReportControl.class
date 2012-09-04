@@ -21,7 +21,7 @@ Static Private $iLastId As Integer
 
 Private $iMyId As Integer
 Private $iParentId As Integer
-Private $iRelPage As Integer
+
 Private $vTag As Variant
 Private $fPadding As Float
 Private $iReportId As Integer
@@ -91,7 +91,7 @@ Property Read {Report} As Report
 Property _ReportId As Integer
 Property Read DataIndex As Integer
 
-Public Sub _New(Optional Parent As ReportContainer = Null)
+Public Sub _New(Optional Parent As ReportContainer = Null )
 
   Dim hRep As Report
 
@@ -188,7 +188,7 @@ Private Sub Expand_Write(Value As Boolean)
 
 End
 
-Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
   'Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
   'Implementaion standart du sizeInt hors autoresize et hbox
@@ -211,21 +211,21 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
 End
 
-Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
 End
 
-Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   Me._Paint(Page, X, Y, hControl, VirtualId)
 
 End
 
-Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
 End
 
@@ -316,7 +316,7 @@ Private Function _Padding_Read() As Float
 
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
+Public Function _SetChildGeometry((X) As Float, (Y) As Float, (W) As Float, (H) As Float, (ContPage) As Integer, (TCont) As TControl, (bInFixed) As Boolean)
 
 End
 
@@ -356,22 +356,22 @@ Public Sub _SetUnifiedValues()
   Dim hSizeParse As TSizeParse
 
   'Left
-  hSizeParse = New TSizeParse($sLeft, True)
+  hSizeParse = New TSizeParse($sLeft, True )
   $fLeft = hSizeParse.GetValue()
   $bRelativeLeft = hSizeParse.IsRelative()
 
   'Right
-  hSizeParse = New TSizeParse($sTop, True)
+  hSizeParse = New TSizeParse($sTop, True )
   $fTop = hSizeParse.GetValue()
   $bRelativeTop = hSizeParse.IsRelative()
 
   'Width
-  hSizeParse = New TSizeParse($sWidth, True)
+  hSizeParse = New TSizeParse($sWidth, True )
   $fWidth = hSizeParse.GetValue()
   $bRelativeWidth = hSizeParse.IsRelative()
 
   'Height
-  hSizeParse = New TSizeParse($sHeight, True)
+  hSizeParse = New TSizeParse($sHeight, True )
   $fHeight = hSizeParse.GetValue()
   $bRelativeHeight = hSizeParse.IsRelative()
 
@@ -380,16 +380,16 @@ Public Sub _SetUnifiedValues()
   ' $fPadding = hSizeParse.GetValue()
   ' $bRelativePadding = hSizeParse.IsRelative()
 
-  hSizeParse = New TSizeParse($hPadding.Left, True)
+  hSizeParse = New TSizeParse($hPadding.Left, True )
   $hPadding._Left = hSizeParse.GetValue()
 
-  hSizeParse = New TSizeParse($hPadding.Right, True)
+  hSizeParse = New TSizeParse($hPadding.Right, True )
   $hPadding._Right = hSizeParse.GetValue()
 
-  hSizeParse = New TSizeParse($hPadding.Top, True)
+  hSizeParse = New TSizeParse($hPadding.Top, True )
   $hPadding._Top = hSizeParse.GetValue()
 
-  hSizeParse = New TSizeParse($hPadding.Bottom, True)
+  hSizeParse = New TSizeParse($hPadding.Bottom, True )
   $hPadding._Bottom = hSizeParse.GetValue()
 
   '
@@ -474,17 +474,17 @@ Private Sub Brush_Write(Value As ReportBrush)
 
 End
 
-Private Function Color_Read() As Integer
-
-  Return $iColor
-
-End
-
-Private Sub Color_Write(Value As Integer)
-
-  $iColor = Value
-
-End
+' Private Function Color_Read() As Integer
+' 
+'   Return $iColor
+' 
+' End
+' 
+' Private Sub Color_Write(Value As Integer)
+' 
+'   $iColor = Value
+' 
+' End
 
 Public Function _GetActualBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As PaintBrush
 

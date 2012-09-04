@@ -20,7 +20,7 @@ Private $aChild As New ReportControl[]
 Private $fSpacing As Float
 Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
-Private $bRepeat As Boolean
+
 Private $aChildCopy As TControl[]
 Private $bOnePiece As Boolean
 Private $iIndex As Integer
@@ -39,7 +39,7 @@ Property Read _Spacing As Float
 Property Read _RelativeSpacing As Boolean
 Property OnePiece As Boolean
 Public _RealSpacing As Integer
-Static Private $iLevel As Integer
+
 Event BeforeData
 Event AfterData
 
@@ -139,7 +139,7 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
 
 End
 
-Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, (VirtualId) As Integer)
 
   Dim hChild As TControl
 
@@ -182,7 +182,7 @@ Public Sub _SetUnifiedValues()
 
   Super._SetUnifiedValues()
 
-  hSizeParse = New TSizeParse($sSpacing, True)
+  hSizeParse = New TSizeParse($sSpacing, True )
   $fSpacing = hSizeParse.GetValue()
   $bRelativeSpacing = hSizeParse.IsRelative()
 
@@ -195,12 +195,12 @@ End
 
 Public Sub _GenerateClones()
 
-  Dim hTControl, hNewTControl, hTc As TControl
-  Dim o As Object
+  Dim hNewTControl, hTc As TControl
+  
   Dim i As Integer
   Dim hCont As ReportContainer
   Dim aNewChild As TControl[]
-  Dim bRaiseRet As Boolean
+  
   Dim aCopy As TControl[]
 
   If $aChildCopy Then
@@ -234,14 +234,14 @@ Public Sub _GenerateClones()
 End
 
 
-Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
-  Dim hChild As TControl
-  Dim fHeight As Float
-  Dim hChildHints As TSizeHint
+  
+  
+  
   Dim hMyHints As New TSizeHint
-  Dim fSpacing As Float
-  Dim fPadding As Float
+  
+  
 
   'If Me._SizeInt.StoreSize Then Return Me._SizeInt
   'If Me.tag = "*" Then Stop
@@ -272,7 +272,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
   Dim hChild As ReportControl
   Dim fHeight, fWidth As Float
@@ -300,7 +300,7 @@ Private Function GetHSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
 
 End
 
-Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
   Dim hSizeInt As New TSizeHint
   Dim htmpInts As TSizeHint
@@ -365,7 +365,7 @@ Private Function GetVSizeInt(AvailableW As Float, AvailableH As Float, TotalWidt
   Endif
 
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
-  'TODO: Onepiece partially desactivated
+  'FIXME: Onepiece partially desactivated
   If Not Me.OnePiece Then
     'hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
   Endif
@@ -400,31 +400,31 @@ Public Function _GetData(sKey As String) As Variant
 
 End
 
-Private Function Data_Read() As Object
-
-  Return $hData
-
-End
-
-Private Sub Data_Write(Value As Object)
-
-  If Not (Object.Type(Value) = "Collection[]") Then
-    If Object.Type(Value) = "Result" Then
-      $bDataIsResult = True
-    Else
-      Print Error.Text
-      $bDataIsResult = False
-
-    Endif
-    If Not $bDataIsResult Then
-      Error.Raise("You must give a Collection[] object or a Result Object")
-      Return
-    Endif
-  Endif
-  Me._Count = Value.Count
-  $hData = Value
-
-End
+' Private Function Data_Read() As Object
+' 
+'   Return $hData
+' 
+' End
+' 
+' Private Sub Data_Write(Value As Object)
+' 
+'   If Not (Object.Type(Value) = "Collection[]") Then
+'     If Object.Type(Value) = "Result" Then
+'       $bDataIsResult = True
+'     Else
+'       Print Error.Text
+'       $bDataIsResult = False
+' 
+'     Endif
+'     If Not $bDataIsResult Then
+'       Error.Raise("You must give a Collection[] object or a Result Object")
+'       Return
+'     Endif
+'   Endif
+'   Me._Count = Value.Count
+'   $hData = Value
+' 
+' End
 
 Public Sub _Reset()
 
@@ -486,13 +486,13 @@ Private Sub SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim TH, fHeight, fSpc As Float
   Dim fExp As Float
   Dim iNExp As Integer
-  Dim O As Object
+ 
   Dim i, j, k As Integer
   Dim hTItem As TControl
   'Dim bPass As Boolean
   Dim fX, fY, fTmpY As Float
   Dim bExitLoop As Boolean
-  Dim AllowNextCol As Boolean
+  
   Dim fNextColStartPos, fCurColX As Float
 
   'Initialisation des variables
@@ -620,7 +620,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim TH, fHeight, fSpc As Float
   Dim fExp As Float
   Dim iNExp As Integer
-  Dim O As Object
+ 
   Dim i, j As Integer
   Dim hTItem As TControl
   'Dim bPass As Boolean
@@ -921,8 +921,8 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim TW, fWidth, fSpc As Float
   Dim fExp As Float
   Dim iNExp As Integer
-  Dim O As Object
-  Dim i, j, itmpItem As Integer
+  
+  Dim i, j As Integer
   Dim fTmpX, fX, fY As Float
   Dim hTItem As TControl
 

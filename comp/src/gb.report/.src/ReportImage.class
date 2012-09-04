@@ -18,11 +18,11 @@ Public Data As Image
 
 Event Data(Index As Integer)
 
-Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
 
   Dim hMyHints As New TSizeHint
 
-  Dim Scale As Float
+
   Dim hPic As Image
 
   hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
@@ -46,14 +46,14 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
 End
 
-Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
 
   Dim ix, iy As Float
   Dim hBrush As PaintBrush
   Dim hPic As Image
-  Dim fScale As Integer
+
   Dim w, h As Float
-  Dim fTemp As Float
+
 
   ix = x + hControl.RealLeft '+ MTools.UnitsToPixels(Me.Padding._Left)
   iy = y + hControl.RealTop '+ MTools.UnitsToPixels(Me.Padding._Top)

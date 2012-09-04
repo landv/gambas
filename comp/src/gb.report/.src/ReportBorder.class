@@ -30,24 +30,24 @@ Property Brush As ReportBrush
 
 Public Style As Integer
 
-Static Private Sub ResetBorder(hReportBorder As ReportBorder) As Boolean
-
-  With hReportBorder
-    .Bottom = False
-    .Top = False
-    .Left = False
-    .Right = False
-  End With
-
-  Return True
-
-End
+' Static Private Sub ResetBorder(hReportBorder As ReportBorder) As Boolean
+' 
+'   With hReportBorder
+'     .Bottom = False
+'     .Top = False
+'     .Left = False
+'     .Right = False
+'   End With
+' 
+'   Return True
+' 
+' End
 
 Static Public Function _get(sValue As String) As ReportBorder
 
-  Dim sElt As String
+  
   Dim hReportBorder As New ReportBorder
-  Dim bReset As Boolean
+  
   Dim sBorder As String
   Dim aScan As String[]
 
