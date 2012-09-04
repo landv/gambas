@@ -45,7 +45,6 @@ Private Sub Count_Write(iCount As Integer)
 
   Dim iInd As Integer
   Dim hToolbar As ToolPanelContainer
-  Dim hCont As Container
   Dim hFont As Font
 
   If iCount < 1 Then Error.Raise("Bad argument")
@@ -233,7 +232,7 @@ Private Sub Font_Write(hFont As Font)
     hToolBar.Text = hToolBar.Text
   Next
 
-  MoveToolBar(False)
+  MoveToolBar(False )
 
 End
 
@@ -246,7 +245,7 @@ End
 Private Sub Border_Write(bBorder As Boolean)
 
   $hPanel.Border = If(bBorder, Border.Sunken, Border.None)
-  MoveToolbar(False)
+  MoveToolbar(False )
 
 End
 
@@ -266,6 +265,6 @@ Private Sub TextFont_Write(Value As Font)
     hToolBar.TextFont = Value
   Next
 
-  MoveToolBar(False)
+  MoveToolBar(False )
   
 End

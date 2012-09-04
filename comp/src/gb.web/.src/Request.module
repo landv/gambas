@@ -18,9 +18,6 @@ Private $cCookies As Collection
 Private $cVal As Collection
 Private $cKey As Collection
 Private $aField As String[]
-Private $iMaxLength As Integer
-Private $sBuffer As String
-Private $bEOF As Boolean
 Private $sDelimiter As String = "&"
 Private $iIE As Integer
 Private $bDecoded As Boolean
@@ -183,6 +180,6 @@ End
 
 Private Sub Debug_Write(Value As Boolean)
 
-  $bDebug = True
+  $bDebug = Value
 
 End

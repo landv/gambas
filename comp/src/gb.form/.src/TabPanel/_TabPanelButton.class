@@ -14,7 +14,6 @@ Private $sText As String
 Private $bSelected As Boolean
 Private $iOrientation As Integer = Align.Top
 Private $hPicture As Picture
-Private $bHidden As Boolean
 Private $bShowClose As Boolean
 Private $bInClose As Boolean
 
@@ -41,7 +40,7 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim iFg, iBg As Integer
+  Dim iFg As Integer
   Dim X, W As Integer
   Dim bBorder As Boolean
   Dim hTabPanel As TabPanel

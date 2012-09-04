@@ -13,37 +13,37 @@ Public Sub _init()
 End
 
 
-Private Sub AnalyzeCode(sText As String) As String
-  
-  Dim iInd As Integer
-  Dim iPos As Integer
-  Dim iLen As Integer
-  
-  If Not sText Then Return
-  
-  Highlight.Analyze(sText, True)
-  
-  iPos = 0
-  For iInd = 0 To Highlight.Symbols.Max
-    
-    If iPos < Highlight.Positions[iInd] Then 
-      Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
-      iPos = Highlight.Positions[iInd]
-    Endif
-    
-    iLen = String.Len(Highlight.Symbols[iInd])
-    Highlight.Add(Highlight.Types[iInd], iLen)
-    iPos += iLen
-    
-  Next
-
-  If iPos < String.Len(Highlight.TextAfter) Then 
-    Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
-  Endif
-  
-  Return Highlight.TextAfter
-
-End
+' Private Sub AnalyzeCode(sText As String) As String
+'   
+'   Dim iInd As Integer
+'   Dim iPos As Integer
+'   Dim iLen As Integer
+'   
+'   If Not sText Then Return
+'   
+'   Highlight.Analyze(sText, True)
+'   
+'   iPos = 0
+'   For iInd = 0 To Highlight.Symbols.Max
+'     
+'     If iPos < Highlight.Positions[iInd] Then 
+'       Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
+'       iPos = Highlight.Positions[iInd]
+'     Endif
+'     
+'     iLen = String.Len(Highlight.Symbols[iInd])
+'     Highlight.Add(Highlight.Types[iInd], iLen)
+'     iPos += iLen
+'     
+'   Next
+' 
+'   If iPos < String.Len(Highlight.TextAfter) Then 
+'     Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
+'   Endif
+'   
+'   Return Highlight.TextAfter
+' 
+' End
 
 Public Sub Run()
 
@@ -52,7 +52,7 @@ Public Sub Run()
   Dim iInd As Integer
   Dim sText As String
   Dim sOrgText As String
-  Dim sCar, sNextCar As String
+  Dim sCar As String
   Dim bLimit As Boolean
   Dim iTag As Integer
   Dim sProperty As String

@@ -238,7 +238,7 @@ Private Sub GetForeground(hIconView As IconView, Optional bSelected As Boolean) 
 
 End
 
-Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
+Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, (bFocus) As Boolean, bHover As Boolean)
   
   Dim X, Y, W, H, HT, PW, PH As Integer
   Dim iColor As Integer
@@ -429,7 +429,7 @@ End
 
 Public Sub _Inside(hRect As Rect, hIconView As IconView, bHorizontal As Boolean, X As Integer, Y As Integer) As Boolean
   
-  Dim W, H, YT, HT, PW, PH As Integer
+  Dim H, YT, HT, PW, PH As Integer
   Dim hInside As Rect
   Dim sText As String
   

@@ -38,8 +38,6 @@ Private $sDefault As String
 Private $sSeparator As String
 Private $sAlign As String
 
-Private $bUpperCase As Boolean
-Private $bLowerCase As Boolean
 Private $iPosFocus As Integer
 
 Public Sub _new()
@@ -66,7 +64,6 @@ End
 Private Sub MakeDefault() As String
   
   Dim sDefault As String
-  Dim sCar As String
   Dim iInd As Integer
   
   For iInd = 0 To $aMask.Max
@@ -329,8 +326,6 @@ Public Sub TextBox_KeyPress()
   Dim sInsert As String
   Dim bDelete As Boolean
   Dim bBefore As Boolean
-  Dim sDefault As String
-  Dim bChange As Boolean
   
   If Not $sMaskOrg Then Return
   

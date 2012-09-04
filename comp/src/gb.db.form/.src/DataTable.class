@@ -78,9 +78,7 @@ Private Sub LoadUntil(iIndex As Integer)
   
   Dim hReq As Request
   Dim rData As Result
-  Dim sKey As String
   Dim aVal As Variant[]
-  Dim sReq As String
   Dim iInd As Integer
   Dim iCount As Integer
   Dim iPos As Integer
@@ -153,7 +151,6 @@ Public Function _get(Index As Integer) As Result
   
   Dim hReq As Request
   Dim sCol As String
-  Dim sReq As String
   
   If $aCol And If $aCol.Count Then
     sCol = $aCol.Join(",")
@@ -254,7 +251,6 @@ End
 Public Sub SetKeys(Value As Variant[]) As Integer
 
   Dim iInd, iIndex As Integer
-  Dim rData As Result
   Dim aComp As Variant[]
   
   Do

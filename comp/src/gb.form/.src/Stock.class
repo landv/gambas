@@ -70,8 +70,6 @@ Static Private Sub LoadMap()
   
   Dim hFile As File
   Dim sLig As String
-  Dim aMap As String[]
-  Dim cMap As New Collection
   Dim iPos As Integer
   Dim sKey As String
   Dim sIcon As String
@@ -155,10 +153,8 @@ Static Private Sub InitTheme()
   
   Dim hFile As File
   Dim sLig As String
-  Dim aMap As String[]
   Dim sIconPath As String
   Dim sPath As String
-  Dim cMap As Collection
   Dim sTheme As String
   Dim aFind As String[]
   
@@ -412,18 +408,15 @@ End
 
 Static Public Function _get(Key As String) As Picture
   
-  Dim sPrefix As String
   Dim sPath As String
   Dim hPict As Picture
   Dim iPos As Integer
   Dim iSize As Integer
   Dim sSize As String
   Dim iTry As Integer
-  Dim hImage As Image
   Dim sTemplate As String
   Dim sFile As String
   Dim sMap As String
-  Dim sImagePath As String
   Dim sDirPattern As String
   
   If Not $bInit Then 

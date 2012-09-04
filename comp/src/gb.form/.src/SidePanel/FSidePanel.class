@@ -14,7 +14,6 @@ Private $bVisible As Boolean
 Private $MX As Integer
 Private $MY As Integer
 Private $iMax As Integer
-Private $iColor As Integer
 Private $bOpened As Boolean
 Private $hArrow As Image
 Private $bSeparator As Boolean
@@ -714,8 +713,6 @@ End
 
 Public Sub btnSide_Draw()
 
-  Dim S As Integer
-  
   If Me.Parent.Design Or If Not $bTransparent Or If $bInside Then 
     
     DrawArrow(Last, $iOrientation)
@@ -828,8 +825,6 @@ End
 
 
 Public Sub ShowButton_Draw()
-  
-  Dim iOrient As Integer
   
   If $bTransparent And If Not $bInside And If Not Last.Hovered Then Return
   

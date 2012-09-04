@@ -38,12 +38,12 @@ Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
   
 End
 
+#If False
 Private Sub AddUnique(aStr As String[], sVal As String)
   
   If Not aStr.Exist(sVal) Then aStr.Add(sVal)
   
 End
-
 
 Private Sub MakeMap()
   
@@ -64,7 +64,7 @@ Private Sub MakeMap()
       
       If Left(sLine) = ";" Then Continue
       
-      aLine = Split(sLine, " ", "", True)
+      aLine = Split(sLine, " ", "", True )
       sKey = Trim(aLine[0])
       AddUnique(aKey, sKey)
       
@@ -88,6 +88,7 @@ Private Sub MakeMap()
   Close #hFile
   
 End
+#Endif
 
 Public Sub Main()
   

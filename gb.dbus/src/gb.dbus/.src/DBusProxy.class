@@ -122,7 +122,6 @@ Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
   
   Dim aSign As String[]
   Dim hApp As DBusApplication
-  Dim iInd As Integer
   Dim vVal As Variant
   Dim sSign As String
   Dim bProperty As Boolean
@@ -167,7 +166,6 @@ End
 Public Sub _unknown(...) As Variant
   
   Dim aArg As Variant[]
-  Dim iInd As Integer
   
   If Param.Count Then aArg = Param.All
   Return _Invoke(Param.Name, aArg)

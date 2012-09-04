@@ -6,7 +6,6 @@ Static Property Read List As String[]
 
 Static Private $aWindow As New Window[]
 Static Private $iId As Integer
-Static Private $cId As New Collection
 
 
 Static Public Sub Configure() As Boolean
@@ -41,8 +40,6 @@ End
 
 Static Public Sub _Register(Control As Object, Old As String, Key As String)
   
-  Dim sShortcut As String
-  Dim sAction As String
   Dim hObs As Observer
   Dim hWin As Window
   

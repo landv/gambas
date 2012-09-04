@@ -105,9 +105,6 @@ End
 Static Public Sub _Register(Control As Object, Old As String, Key As String)
   
   Dim aCtrl As Object[]
-  Dim hWin As Window
-  Dim hObs As Observer
-  Dim sType As String
   
   If Old = Key Then Return
   
@@ -234,15 +231,15 @@ Static Public Sub _get(Key As String, Optional Parent As Control) As Action ', O
   
 End
 
-Static Private Sub IsChildOfWindow(hWindow As Window, hMain As Window) As Boolean
-  
-  Do
-    If hWindow = hMain Then Return True
-    Try hWindow = hWindow.Parent.Window
-    If Error Then Return
-  Loop
-  
-End
+' Static Private Sub IsChildOfWindow(hWindow As Window, hMain As Window) As Boolean
+'   
+'   Do
+'     If hWindow = hMain Then Return True
+'     Try hWindow = hWindow.Parent.Window
+'     If Error Then Return
+'   Loop
+'   
+' End
 
 Static Private Sub FindKey(sPattern As String) As String[]
   

@@ -164,8 +164,6 @@ Private Sub Count_Write(iCount As Integer)
   Dim iInd As Integer
   Dim hTab As _TabPanelContainer
   Dim hButton As _TabPanelButton
-  Dim hCont As Container
-  Dim sText As String
   Dim iCurrent As Integer
 
   If iCount < 1 Then Error.Raise("Bad argument")
@@ -255,9 +253,7 @@ End
 
 Private Sub UpdateContainer()
 
-  Dim hTab As _TabPanelContainer
   Dim iInd As Integer
-  Dim bCurrent As Boolean
 
   For iInd = 0 To $aCont.Max
 

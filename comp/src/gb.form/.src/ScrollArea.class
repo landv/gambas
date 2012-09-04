@@ -88,8 +88,6 @@ End
 
 Public Sub _new()
   
-  Dim hImage As Image
-  
   Me.Arrangement = Arrange.None
   
   '$hBorder = New DrawingArea(Me) As "Border"
@@ -106,7 +104,7 @@ Public Sub _new()
   Me.Proxy = $hDrawingArea
   Me._Container = $hDrawingArea
 
-  Border_Write(True)
+  Border_Write(True )
   'ScrollArea_Arrange
   '
   'Debug "<<<<<"

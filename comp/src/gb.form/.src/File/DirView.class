@@ -30,8 +30,6 @@ Private $hPict As Picture
 Private $bDeleteOnCancel As Boolean
 Private $bNoExpand As Boolean
 Private $bNoEvent As Boolean
-Private $bExpandOnMouseUp As Boolean
-Private $bNoExpandOnMouseUp As Boolean
 Private $hTimerExpand As Timer
 Private $bInRename As Boolean
 
@@ -62,7 +60,7 @@ Private Sub ClearView()
 
   $bNoEvent = True
   $hTreeView.Clear
-  AddDir(File.Dir(sRoot), File.Name(sRoot), True)
+  AddDir(File.Dir(sRoot), File.Name(sRoot), True )
   '$hTreeView.Add(sRoot, sRoot, $hRootPict)
   '$hTreeView.Add(sRoot & "/", "",, sRoot)
 
@@ -264,7 +262,7 @@ Private Sub Current_Write(sDir As String)
 
   $bNoEvent = True
   sSubDir = "/"
-  For Each sElt In Split(File.Dir(sDir), "/", "", True)
+  For Each sElt In Split(File.Dir(sDir), "/", "", True )
     sSubDir &/= sElt
     Try $hTreeView[sSubDir].Expanded = True
   Next

@@ -60,7 +60,7 @@ Public Sub SetTitle(sText As String, hPict As Picture)
 
 End
 
-Public Sub SetPosition(iPos As Integer, bPrevious As Boolean, bNext As Boolean)
+Public Sub SetPosition((iPos) As Integer, bPrevious As Boolean, bNext As Boolean)
 
   btnPrevious.Enabled = bPrevious
   If bNext Then

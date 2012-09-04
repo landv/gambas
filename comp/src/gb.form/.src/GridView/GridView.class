@@ -180,7 +180,7 @@ Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W A
 End
 
 
-Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRow As Integer, iCol As Integer, hData As _GridView_Data)
+Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iRow) As Integer, iCol As Integer, hData As _GridView_Data)
 
   Dim hRect As Rect = Rect(X, Y, W, H)
   Dim hPict As Picture
@@ -1043,14 +1043,14 @@ Private Sub Column_Write(Value As Integer)
 End
 
 
-Private Sub EnsureRowVisible(iRow As Integer)
-  
-  'Debug iRow; ": "; $hView.ScrollX, $hRows._GetRowY(iRow), $hView.ClientW, $hRows._GetRowHeight(iRow)
-  Dim F As Integer = GetFrameWidth()
-  
-  $hView.EnsureVisible($hView.ScrollX - F, $hRows._GetRowY(iRow) - F, $hView.ClientW + F * 2, $hRows._GetRowHeight(iRow) + $hColumns.Height + F * 2)
-  
-End
+' Private Sub EnsureRowVisible(iRow As Integer)
+'   
+'   'Debug iRow; ": "; $hView.ScrollX, $hRows._GetRowY(iRow), $hView.ClientW, $hRows._GetRowHeight(iRow)
+'   Dim F As Integer = GetFrameWidth()
+'   
+'   $hView.EnsureVisible($hView.ScrollX - F, $hRows._GetRowY(iRow) - F, $hView.ClientW + F * 2, $hRows._GetRowHeight(iRow) + $hColumns.Height + F * 2)
+'   
+' End
 
 Public Sub _EnsureVisible(iRow As Integer, iCol As Integer)
   
@@ -1452,7 +1452,7 @@ End
 
 Private Sub ShowCursor_Write(Value As Boolean)
 
-  $bShowCursor = True
+  $bShowCursor = Value
   $hView.Refresh
 
 End
@@ -1525,7 +1525,6 @@ End
 Private Sub MoveCell(iRowSrc As Integer, iColSrc As Integer, iRowDst As Integer, iColDst As Integer)
   
   Dim S, D As String
-  Dim aSpan As String[]
   
   S = GetCellKey(iRowSrc, iColSrc)
   D = GetCellKey(iRowDst, iColDst)
@@ -1595,18 +1594,18 @@ Private Sub Font_Write(Value As Font)
 
 End
 
-Private Function Mouse_Read() As Integer
-
-  Return Super.Mouse
-
-End
-
-Private Sub Mouse_Write(Value As Integer)
-
-  Super.Mouse = Value
-  $iDefaultMouse = Value
-
-End
+' Private Function Mouse_Read() As Integer
+' 
+'   Return Super.Mouse
+' 
+' End
+' 
+' Private Sub Mouse_Write(Value As Integer)
+' 
+'   Super.Mouse = Value
+'   $iDefaultMouse = Value
+' 
+' End
 
 Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   

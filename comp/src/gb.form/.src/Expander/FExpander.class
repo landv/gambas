@@ -2,8 +2,6 @@
 
 Private $bHidden As Boolean
 Private $H As Integer
-Private $hIcon As Picture
-Private $hIconVoid As Picture
 Private $bInside As Boolean
 Private $bAnim As Boolean
 
@@ -57,7 +55,6 @@ End
 
 Public Sub SetHidden(bHidden As Boolean)
 
-  Dim Y As Integer
   Dim DY As Integer
   Dim eTime As Float
 

@@ -9,7 +9,6 @@ Private $cInfo As Collection
 Private $cKey As Collection
 Private $cFields As Collection
 Private $cTable As Collection
-Private $cBlob As Collection
 
 Static Public Sub Get(sConnection As String) As DataConnection
   
@@ -45,8 +44,6 @@ Public Function _get(sTable As String, sField As String, Optional bCreate As Boo
   
   Dim hTable As Table
   Dim hField As Field
-  Dim iType As Integer
-  Dim bReadOnly As Boolean
   Dim hInfo As DataField
   Dim sKey As String
   Dim cInfoTable As Collection
@@ -119,8 +116,6 @@ End
 
 
 Public Sub Reset(Optional sTable As String)
-  
-  Dim hDataField As DataField
   
   If sTable Then
     If $cInfo Then 

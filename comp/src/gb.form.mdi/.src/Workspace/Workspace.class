@@ -80,17 +80,17 @@ Public Sub _Activate()
   
 End
 
-Private Function ShowTitle_Read() As Boolean
-
-  Return $hWorkspace.IsShowTitle()
-
-End
-
-Private Sub ShowTitle_Write(Value As Boolean)
-
-  $hWorkspace.SetShowTitle(Value)
-
-End
+' Private Function ShowTitle_Read() As Boolean
+' 
+'   Return $hWorkspace.IsShowTitle()
+' 
+' End
+' 
+' Private Sub ShowTitle_Write(Value As Boolean)
+' 
+'   $hWorkspace.SetShowTitle(Value)
+' 
+' End
 
 Private Function Font_Read() As Font
 

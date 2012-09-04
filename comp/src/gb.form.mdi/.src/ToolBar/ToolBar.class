@@ -48,29 +48,29 @@ Private Sub Design_Write(Value As Boolean)
   
 End
 
-Private Function Hidden_Read() As Boolean
+' Private Function Hidden_Read() As Boolean
+' 
+'   Return $hForm.IsHidden()  
+' 
+' End
+' 
+' Private Sub Hidden_Write(Value As Boolean)
+' 
+'     $hForm.SetHidden(Value)
+' 
+' End
 
-  Return $hForm.IsHidden()  
-
-End
-
-Private Sub Hidden_Write(Value As Boolean)
-
-    $hForm.SetHidden(Value)
-
-End
-
-Private Function Action_Read() As String
-
-  Return Action.Get(Me)  
-
-End
-
-Private Sub Action_Write(Value As String)
-
-  Action.Register(Me, Value)
-
-End
+' Private Function Action_Read() As String
+' 
+'   Return Action.Get(Me)  
+' 
+' End
+' 
+' Private Sub Action_Write(Value As String)
+' 
+'   Action.Register(Me, Value)
+' 
+' End
 
 Private Function Orientation_Read() As Integer
 

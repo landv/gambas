@@ -125,7 +125,6 @@ Private Function GetFilter() As String
   Dim sReq As String
   Dim vVal As Variant
   Dim sField As String
-  Dim iPos As Integer
   
   hSrc = Common.GetSource(Me)
   If hSrc Then 
@@ -148,11 +147,10 @@ Private Function GetFilter() As String
 
 End
 
-Private Function CheckModified(Optional bSave As Boolean = True) As Boolean
+Private Function CheckModified(Optional bSave As Boolean = True ) As Boolean
 
   Dim hChild As Object
   Dim bModified As Boolean
-  Dim iAction As Integer
   
   For Each hChild In GetChildren()
     If Common.IsControl(hChild) Or If hChild Is DataSource Then
@@ -299,10 +297,6 @@ End
 
 Private Function Load() As Boolean
   
-  Dim sReq As String
-  Dim hSrc As DataSource
-  Dim sField As String
-  Dim iPos As Integer
   
   If _Check() Then Goto VOID
   
@@ -314,7 +308,7 @@ Private Function Load() As Boolean
 
   $iIndex = -1
   
-  Redraw(True)
+  Redraw(True )
   
   $bNotVoid = True
   Return
@@ -325,7 +319,7 @@ VOID:
   $iIndex = -1
   If $bNotVoid Then
     $bNotVoid = False
-    Redraw(True)
+    Redraw(True )
   Endif
   Return True
   
@@ -372,7 +366,7 @@ Public Sub _UpdateCurrent(rData As Result)
   rData.Update
   $hTable.Refresh
 
-  Redraw(True)
+  Redraw(True )
     
 End
 
@@ -395,14 +389,11 @@ Public Sub _CreateCurrent() As Result
   
 End
 
-Public Function Save(Optional bMessage As Boolean = True) As Boolean
+Public Function Save(Optional bMessage As Boolean = True ) As Boolean
   
   Dim aKey As String[]  
   Dim hChild As Object
-  Dim bModified As Boolean
   Dim rData As Result
-  Dim sReq As String
-  Dim hSrc As DataSource
   Dim sKey As String
   Dim iInd As Integer
   Dim aVal As Variant[]
@@ -450,8 +441,8 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
     Raise BeforeSave(rData)
     rData.Update
   
-    Redraw(True)
-    If Not $bCheckModified Then Create(True)
+    Redraw(True )
+    If Not $bCheckModified Then Create(True )
 
   Else
 
@@ -481,7 +472,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
     
     _UpdateCurrent(rData)
     If $iIndex >= $hTable.Count Then
-      Create(True)
+      Create(True )
     Endif
     '$iIndex = -1
     'MoveTo($iIndex)
@@ -506,7 +497,6 @@ Public Sub _DeleteCurrent()
   Dim hSrc As DataSource
   Dim sKey As String
   Dim iPos As Integer
-  Dim sReq As String
 
   aVal = Me.Current
   If Not aVal Then Return
@@ -535,7 +525,7 @@ Public Function Remove() As Boolean
   
   If $iIndex >= 0 And $iIndex < $hTable.Count Then
     _DeleteCurrent()
-    Create(True)
+    Create(True )
   Else
     Create()
   Endif
@@ -696,19 +686,19 @@ Private Sub Sort_Write(Value As String)
 
 End
 
-Private Function CacheSize_Read() As Integer
-
-  Return $hTable.LIMIT_INC
-
-End
-
-Private Sub CacheSize_Write(Value As Integer)
-
-  If Value <= 0 Then Value = 64
-  
-  $hTable.LIMIT_INC = Value
-
-End
+' Private Function CacheSize_Read() As Integer
+' 
+'   Return $hTable.LIMIT_INC
+' 
+' End
+' 
+' Private Sub CacheSize_Write(Value As Integer)
+' 
+'   If Value <= 0 Then Value = 64
+'   
+'   $hTable.LIMIT_INC = Value
+' 
+' End
 
 Public Sub Reset()
   

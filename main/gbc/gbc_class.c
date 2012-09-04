@@ -179,8 +179,27 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global)
 		THROW("'&1' already declared", name);
 	}
 	
-	if (!global && !TYPE_is_null(sym->global.type) && TYPE_get_kind(sym->global.type) != TK_PROPERTY)
-		COMPILE_print(MSG_WARNING, -1, "global variable hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+	if (!global && !TYPE_is_null(sym->global.type))
+	{
+		switch (TYPE_get_kind(sym->global.type))
+		{
+			case TK_VARIABLE:
+				COMPILE_print(MSG_WARNING, -1, "global variable hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				break;
+				
+			case TK_FUNCTION:
+				COMPILE_print(MSG_WARNING, -1, "function hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				break;
+			
+			case TK_EXTERN:
+				COMPILE_print(MSG_WARNING, -1, "extern function hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				break;
+
+			case TK_CONST:
+				COMPILE_print(MSG_WARNING, -1, "constant hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				break;
+		}
+	}
 
 	if (global)
 		sym->global.line = JOB->line;

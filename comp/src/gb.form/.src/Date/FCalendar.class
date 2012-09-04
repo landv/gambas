@@ -7,7 +7,6 @@ Private $dMonth As Date
 Private $dLast As Date
 Private $iDisabledColor As Integer
 Private $cDateColor As New Collection
-Private $cDateFormat As New Collection
 Private $bShort As Boolean
 
 Private $iCurrentTime As Integer = -1
@@ -53,7 +52,7 @@ Public Sub _new()
   
   dwgTime.W = Desktop.Scale * 16
   
-  FillMonth(False)
+  FillMonth(False )
   
   $dDate = Now  
   SetDate()
@@ -95,7 +94,6 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
   
   Dim dMonth As Date
   Dim dDate As Date
-  Dim sText As String
 
   If iYear <= 0 Then iYear = Year($dDate)
   If iMonth <= 0 Then iMonth = Month($dDate)
@@ -537,7 +535,7 @@ End
 
 Private Sub CalcCurrenTime()
   
-  Dim X, Y, DX, DY, DW, DH, S As Integer
+  Dim X, Y, DX, DY, DW, DH As Integer
   
   DW = dwgTime.W \ 4
   DH = dwgTime.H \ 12

@@ -23,7 +23,6 @@ Static Property Read Path As String
 
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
-Static Private $hWatch As _DesktopWatcher
 
 Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional Bcc As String[], Optional Subject As String, Optional Body As String, Optional Attachment As String)
   
@@ -73,18 +72,18 @@ Static Public Sub {Open}(URL As String, Optional {Wait} As Boolean)
   
 End
 
-Static Private Function Menus_Read() As _DesktopMenus
-
-  Return _DesktopMenus  
-
-End
-
-
-Static Private Function Icons_Read() As _DesktopIcons
-
-  Return _DesktopIcons
-
-End
+' Static Private Function Menus_Read() As _DesktopMenus
+' 
+'   Return _DesktopMenus  
+' 
+' End
+' 
+' 
+' Static Private Function Icons_Read() As _DesktopIcons
+' 
+'   Return _DesktopIcons
+' 
+' End
 
 Static Private Function ScreenSaver_Read() As _Desktop_ScreenSaver
 
@@ -323,11 +322,10 @@ End
 
 Static Private Sub ActiveWindow_Write(Value As Integer)
 
-  Dim iActiveWindow As Integer
-  
-  Try iActiveWindow = Application.ActiveWindow.Id
+  'Dim iActiveWindow As Integer
+  'Try iActiveWindow = Application.ActiveWindow.Id
 
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [2, _Desktop.CurrentTime, iActiveWindow])
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [2, _Desktop.CurrentTime, Value])
 
 End
 
@@ -343,37 +341,37 @@ Static Private Sub Showing_Write(Value As Boolean)
 
 End
 
-Static Private Function Width_Read() As Integer
+' Static Private Function Width_Read() As Integer
+' 
+'   Dim iWidth As Integer
+'   
+'   Try iWidth = _Desktop.GetWindowProperty(Atom["_NET_DESKTOP_GEOMETRY"])[0]
+'   If iWidth = 0 Then iWidth = Super.Width
+'   Return iWidth
+' 
+' End
+' 
+' Static Private Function Height_Read() As Integer
+' 
+'   Dim iHeight As Integer
+' 
+'   Try iHeight = _Desktop.GetWindowProperty(Atom["_NET_DESKTOP_GEOMETRY"])[1]
+'   If iHeight = 0 Then iHeight = Super.Height
+'   Return iHeight
+' 
+' End
 
-  Dim iWidth As Integer
-  
-  Try iWidth = _Desktop.GetWindowProperty(Atom["_NET_DESKTOP_GEOMETRY"])[0]
-  If iWidth = 0 Then iWidth = Super.Width
-  Return iWidth
-
-End
-
-Static Private Function Height_Read() As Integer
-
-  Dim iHeight As Integer
-
-  Try iHeight = _Desktop.GetWindowProperty(Atom["_NET_DESKTOP_GEOMETRY"])[1]
-  If iHeight = 0 Then iHeight = Super.Height
-  Return iHeight
-
-End
-
-Static Private Function W_Read() As Integer
-
-  Return Width_Read()
-
-End
-
-Static Private Function H_Read() As Integer
-
-  Return Height_Read()
-
-End
+' Static Private Function W_Read() As Integer
+' 
+'   Return Width_Read()
+' 
+' End
+' 
+' Static Private Function H_Read() As Integer
+' 
+'   Return Height_Read()
+' 
+' End
 
 Static Private Function Passwords_Read() As _Desktop_Passwords
 

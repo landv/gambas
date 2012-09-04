@@ -10,7 +10,6 @@ Private $Y As Integer
 Private $W As Integer
 Private $H As Integer
 Private $iNoWait As Integer
-Private $hWatcher As Watcher
 Private $iBackground As Integer = Color.Default
 Private $bNoClose As Boolean
 Private $iLock As Integer
@@ -61,8 +60,6 @@ End
 Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As Integer)
   
   Dim iInd As Integer
-  Dim hScrollview As ScrollView
-  Dim hWatcher As Watcher
   Dim hWindow As CWindow
 
   If GetIndex(hWin) >= 0 Then Return
@@ -420,7 +417,6 @@ Public Sub btnCloseOther_Click()
   
   Dim hWindow As CWindow
   Dim hCurrent As CWindow
-  Dim iCpt As Integer
   
   hCurrent = $aWindow[tabWorkspace.Index]
   
@@ -557,7 +553,6 @@ End
 Public Sub tabWorkspace_Menu()
 
   Dim iInd As Integer
-  Dim hWin As CWindow
   Dim hMenu As Menu
   Dim aTitle As New String[]
   Dim sTitle As String
@@ -692,9 +687,7 @@ Public Sub btnSort_Click()
   Dim iInd As Integer
   Dim aTitle As New String[]
   Dim aWindow As CWindow[]
-
   Dim hWin As Window
-  Dim hMenu As Menu
   Dim sTitle As String
   
   hWin = GetActiveWindow()

@@ -2,7 +2,6 @@
 
 Private $hToolbar As ToolBar
 Private $hForm As FToolBar
-Private $aDefault As String[]
 Private $hInside As DrawingArea
 Private $hPopupToolbar As ToolBar
 Static Private $aDeleteLater As New Control[]
@@ -93,7 +92,6 @@ End
 Private Sub InitAction()
   
   Dim hCtrl As Control
-  Dim hItem As DrawingArea
   Dim sAction As String
   
   'For Each hCtrl In svwAction.Children
@@ -253,7 +251,6 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   Dim bOutside As Boolean
   Dim hDest As Control
   Dim bAnim As Boolean
-  Dim hItem As Control
 
   If Not sAction Then Return
 
@@ -410,8 +407,6 @@ Public Sub cmbSize_Click()
 End
 
 Public Sub OpenMenu(hToolbar As ToolBar)
-  
-  Dim hForm As FToolBar
   
   If $hForm Then Return
   If Not hToolbar.Key Then Return

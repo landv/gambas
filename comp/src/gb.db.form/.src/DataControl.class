@@ -35,7 +35,6 @@ Private Sub CreateControl()
   Dim hTextBox As TextBox
   Dim hTextArea As TextArea
   Dim hComboBox As ComboBox
-  Dim hSpinBox As SpinBox
   Dim hDateBox As DateBox
   Dim sType As String
   Dim bFocus As Boolean
@@ -269,8 +268,6 @@ End
 
 Private Function GetValue() As Variant
   
-  Dim vVal As Variant
-  
   Select $hInfo.Type
   
     Case db.Integer
@@ -305,7 +302,7 @@ Private Function GetValue() As Variant
       ' Endif
     
     Case db.Boolean
-      Return Choose($hCtrl.Index + 1, True, False, Null)
+      Return Choose($hCtrl.Index + 1, True , False , Null )
         
     Case db.String
       Return $hCtrl.Text

@@ -5,7 +5,6 @@ Private Const PADDING As Integer = 8
 Private Const BACKGROUND_COLOR As Integer = &HFFFFDF&
 
 Static Private $iDelay As Integer = 5000
-Static Private $bQtBug As Boolean
 
 Private ARROW_HEIGHT As Integer
 
@@ -30,11 +29,11 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
 
   hRound = $hRound.Copy()
   Draw.Image(hRound, X, Y)
-  hRound.Mirror(True, False)
+  hRound.Mirror(True , False )
   Draw.Image(hRound, X + W - ROUND_SIZE, Y)
-  hRound.Mirror(False, True)
+  hRound.Mirror(False , True )
   Draw.Image(hRound, X + W - ROUND_SIZE, Y + H - ROUND_SIZE)
-  hRound.Mirror(True, False)
+  hRound.Mirror(True , False )
   Draw.Image(hRound, X, Y + H - ROUND_SIZE)
 
   Draw.FillStyle = Fill.Solid
@@ -308,7 +307,7 @@ End
 
 Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer, DY As Integer)
   
-  Dim X, Y, W, H As Integer
+  Dim W, H As Integer
   Dim hWin As Window
   
   'IF hCtrl <> $hCtrl THEN 
@@ -420,8 +419,6 @@ Public Sub Window_Hide()
 End
 
 Public Sub timCheck_Timer()
-
-  Dim hWin As Window
 
   'Debug Me.X;; Me.Y;; Me.Visible;; Me.Picture.W;; Me.Picture.H
   If $bInside Then 

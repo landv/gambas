@@ -40,7 +40,6 @@ Private $vVal As Variant
 Private $vCurrent As Variant
 
 Private $hObserver As Observer
-Private $hObsMenu As Observer
 
 Private $sField As String
 
@@ -50,8 +49,6 @@ Private $bPressed As Boolean
 
 
 Public Sub _new()
-  
-  Dim hPanel As Panel
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Focus = True
@@ -178,7 +175,7 @@ Public Sub TableView_MouseUp()
   If $hView.Current Then
     SetValue($hView.Current[0])
   Else
-    SetValue(Null)
+    SetValue(Null )
   Endif
   
   $hPopup.Close
@@ -386,8 +383,6 @@ End
 
 Public Sub DrawingArea_MouseDown()
   
-  Dim X, Y As Integer
-  
   If Not Mouse.Left Then Return
   If Not Me.Enabled Then Return
   
@@ -429,7 +424,7 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim X, X2, Y As Integer
+  Dim X As Integer
   Dim iFlag As Integer
   Dim sText As String
   Dim bFlat As Boolean

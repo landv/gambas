@@ -236,7 +236,7 @@ void FORM_webpage(char *source)
 	line = FORM_FIRST_LINE;
 	
 	FORM_print("Inherits WebPage\n\n");
-	FORM_print("Public Sub _Render(Optional _Arg As Collection = New Collection)\n\n");
+	FORM_print("Public Sub _Render(Optional (_Arg) As Collection = New Collection)\n\n");
 	
 	p = source;
 	

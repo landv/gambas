@@ -29,8 +29,6 @@ Private $iHandleSize As Integer
 
 Private $iLock As Integer
 
-Private $iBackground As Integer = Color.Default
-
 Private $aHidden As Control[]
 
 Public Sub _new()
@@ -102,7 +100,7 @@ End
 Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
   
   Dim hCtrl As Control
-  Dim X, Y, W, H As Integer
+  Dim H As Integer
   Dim HH As Integer
 
   If $bReallyVertical Then
@@ -171,13 +169,13 @@ Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
   
 End
 
-Private Sub GetMaxWidth() As Integer
-  
-  Dim W As Integer = Me.Parent.Width
-  If sepToolbar.Visible Then Dec W
-  Return W
-  
-End
+' Private Sub GetMaxWidth() As Integer
+'   
+'   Dim W As Integer = Me.Parent.Width
+'   If sepToolbar.Visible Then Dec W
+'   Return W
+'   
+' End
 
 
 Private Function GetFreeWidth() As Integer
@@ -195,7 +193,6 @@ End
 Private Sub SetArrangement()
   
   Dim hToolbar As ToolBar = Me.Parent
-  Dim hCtrl As Control
   
   If $bDesign Then Return
   hToolBar.Padding = 0
@@ -210,7 +207,7 @@ Private Sub Update()
 
   Dim W, H As Integer
   Dim XH, YH, WH, HH As Integer 
-  Dim XP, YP, WP, HP As Integer 
+  Dim XP, YP As Integer 
 
   If Not Object.IsValid(Me.Parent) Then Return
   If Not Object.IsValid(Me.Parent.Parent) Then Return
@@ -475,8 +472,6 @@ End
 Private Sub InitToolbar()
   
   Dim hCtrl As Control
-  Dim hCont As Container
-  Dim hObs As Observer
   Dim sAction As String
   Dim aList As String[]
   Dim aReparent As Control[]
@@ -611,9 +606,6 @@ End
 Public Sub SetConfigureMode(bConfigure As Boolean)
 
   Dim hChild As Control
-  Dim hObs As Observer
-  Dim hToolButton As ToolButton
-  Dim hColor As ColorInfo
 
   If $bConfigure = bConfigure Then Return
   
@@ -781,7 +773,6 @@ End
 Public Sub Form_DragMove()
   
   Dim hCtrl As Control
-  Dim D As Integer
   Dim bBefore As Boolean
   Dim bAnim As Boolean
   Dim X, Y As Integer
@@ -863,7 +854,6 @@ End
 
 Private Sub OnMouseDrag(hCtrl As Control)
   
-  Dim iArr As Integer
   Dim sAction As String
   
   While hCtrl.Parent <> panToolBar
@@ -971,8 +961,6 @@ End
 
 Public Sub DragEnd(bAnim As Boolean)
   
-  Dim hSep As Separator
-  Dim hObs As Observer
   Dim hCtrl As Control
   
   If $sDropAction Then
@@ -1254,7 +1242,6 @@ Private Sub CheckSeparators()
   
   Dim hLast As Control
   Dim hChild As Control
-  Dim aDelete As New Control[]
   
   If $bDesign Then Return
   
@@ -1296,7 +1283,6 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Dim sAction As String
   Dim iInd As Integer
   Dim bEnabled As Boolean
-  Dim bVisible As Boolean
   Dim iDim As Integer
   
   If Not ToolbarKey Then Return
@@ -1403,8 +1389,6 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   
   Dim aConfig As String[]
   Dim aOldConfig As String[]
-  Dim hCtrl As Control
-  Dim sAction As String
   Dim hForm As FToolBar
   Dim bChange As Boolean
   Dim sVal As String

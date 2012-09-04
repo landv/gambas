@@ -309,11 +309,6 @@ End
 
 Public Sub Clear()
   
-  Dim hChild As Control
-  
-  'For Each hChild In $hScrollView.Children
-  '  hChild.Delete
-  'Next
   Lock()
   $hScrollView.Children.Clear
   $hSelected = Null
@@ -354,7 +349,6 @@ End
 
 Public Sub ScrollView_KeyPress()
 
-  Dim hCurrent As Control
   Dim iIndex As Integer
 
   If Not Key.Normal Then Return

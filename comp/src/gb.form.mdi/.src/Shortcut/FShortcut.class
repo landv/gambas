@@ -100,7 +100,6 @@ End
 Private Sub SaveShortcut()
   
   Dim hAction As CAction
-  Dim sKey As String
   
   For Each hAction In MAction.Actions
     hAction.Save
@@ -115,7 +114,7 @@ Public Sub Form_Close()
   
 End
 
-Public Sub tvwShortcut_Save(Row As Integer, Column As Integer, Value As String)
+Public Sub tvwShortcut_Save(Row As Integer, (Column) As Integer, Value As String)
 
   If $hEditor.BadShortcut Then Return
   

@@ -44,7 +44,7 @@ Public Sub _new()
   $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
   
-  Border_Write(True)
+  Border_Write(True )
   
 End
 
@@ -152,7 +152,6 @@ Public Sub Background_Draw()
   
   Dim FW, FH As Integer
   Dim iBg As Integer = Color.TextBackground
-  Dim iFlag As Integer
   
   If Me.Background <> Color.Default Then iBg = Me.Background
   

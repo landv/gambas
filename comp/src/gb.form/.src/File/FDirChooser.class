@@ -12,10 +12,8 @@ Event OK
 'EVENT ShowHiddenChange
 
 Private $bView As Boolean
-Private $sActivate As String
 Private $aFilter As String[]
 Private $bFile As Boolean
-Private $iMaxWidth As Integer
 Private $hBookmarkList As CBookmarkList
 Private $hCurrentBookmark As CBookmark
 Private $bShowBookmark As Boolean
@@ -24,11 +22,9 @@ Private mnuEditBookmark As Menu
 Private mnuShowHiddenFiles As Menu
 Private mnuShowDetailed As Menu
 Private mnuUncompress As Menu
-Private $iIconSize As Integer
 Private $hWatch As Watcher
 Private $bPressed As Boolean
 
-Static Private $aHistory As New String[]
 Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
 Public Sub _new(Optional bFile As Boolean)
@@ -58,8 +54,8 @@ Public Sub _new(Optional bFile As Boolean)
     btnView.Visible = False
     txtFile.Visible = True
     cmbFilter.Visible = True
-    SetMulti(False)
-    SetFont(Me.Font)
+    SetMulti(False )
+    'SetFont(Me.Font)
     SetFilter()
   Endif
   
@@ -311,9 +307,6 @@ End
 
 Public Function GetPath() As String
 
-  Dim sPath As String
-  'Dim sExt As String
-
   If GetMulti() Then Return
 
   If txtFile.Text Then 
@@ -385,12 +378,12 @@ Public Function GetShowDirectory() As Boolean
 End
 
 
-Public Sub SetFont(hFont As Font)
-
-  'fvwChoose.Font = hFont
- ' DEC fvwChoose.Font.Grade
-
-End
+' Public Sub SetFont(hFont As Font)
+' 
+'   'fvwChoose.Font = hFont
+'  ' DEC fvwChoose.Font.Grade
+' 
+' End
 
 Public Sub fvwChoose_Activate()
 
@@ -462,7 +455,7 @@ End
 
 Public Sub cmbFilter_Click()
 
-  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True)
+  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True )
 
 End
 
@@ -518,13 +511,12 @@ Public Sub txtFile_GotFocus()
 
 End
 
-Private Sub GetRealLink(sLink As String) As String
-  
-  If Left(sLink) <> "/" Then sLink = Mid$(sLink, 2)
-  Return sLink  
-  
-End
-
+' Private Sub GetRealLink(sLink As String) As String
+'   
+'   If Left(sLink) <> "/" Then sLink = Mid$(sLink, 2)
+'   Return sLink  
+'   
+' End
 
 Public Sub mnuBookmark_Click()
 
@@ -603,7 +595,7 @@ End
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, Null, $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
+    Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, Null , $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
   Else
     Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
   Endif 
@@ -813,13 +805,6 @@ End
 Private Sub FillMenu()
   
   Dim hBookmark As CBookmark
-  
-  Dim iInd As Integer
-  Dim sLink As String
-  Dim sName As String
-  Dim sIcon As String
-  Dim hSettings As Settings 
-  Dim aBookmark As String[]
   Dim hMenu As Menu
   
   mnuPopup.Children.Clear
@@ -1098,7 +1083,7 @@ Public Sub btnParent_Click()
       SetBookmark(hBookmark)
     Else
       dvwChoose.Root = File.Dir(sDir)
-      SetBookmark(Null)
+      SetBookmark(Null )
     Endif
 
   Endif
@@ -1115,7 +1100,7 @@ Public Sub btnParent_Draw()
   If Not btnParent.Enabled Then iFlag += Draw.Disabled
   If btnParent.HasFocus Then iFlag += Draw.Focus
   
-  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, $bPressed, iFlag, True)
+  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, $bPressed, iFlag, True )
   Draw.Style.Arrow((btnParent.W - 8) \ 2, (btnParent.H - 8) \ 2, 8, 8, Align.Left, iFlag)
 
 End
