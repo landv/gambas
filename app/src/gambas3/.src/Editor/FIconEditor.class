@@ -85,11 +85,9 @@ End
 
 Public Sub _new(sPath As String)
 
-  Dim sText As String
   Dim iScale As Integer
   Dim iColor As Integer
   Dim hColor As DrawingArea
-  Dim hCtrl As Control
 
   Path = sPath
   Me.Name = File.Name(sPath) 'Mid$(sPath, Len(File.Dir(Project.Path)) + 1)
@@ -118,7 +116,7 @@ Public Sub _new(sPath As String)
   SetBackground(Color.White)
   SetForeground(Color.Black)
 
-  SetTransparent(True)
+  SetTransparent(True )
   SetMode(0)
   SetTool(btnMove)
   SetReadOnly
@@ -230,18 +228,11 @@ End
 
 Public Sub dwgIcon_Draw()
 
-  Dim X As Integer
-  Dim Y As Integer
-  Dim XR As Integer
-  Dim YR As Integer
   Dim SX As Integer
   Dim SY As Integer
   Dim DX As Integer
   Dim DY As Integer
-  Dim C As Integer
   Dim SW, SH As Integer
-
-  Dim hZoom As Image
 
   If Not $hImage Then Return
 
@@ -285,16 +276,10 @@ End
 
 Public Sub dwgPaste_Draw()
 
-  Dim X As Integer
-  Dim Y As Integer
-  Dim XR As Integer
-  Dim YR As Integer
   Dim SX As Integer
   Dim SY As Integer
   Dim DX As Integer
   Dim DY As Integer
-  Dim C As Integer
-  Dim CP As Integer
   Dim W As Integer
   Dim hTemp As Image
   Dim XD, WD As Integer
@@ -501,11 +486,8 @@ End
 
 Public Sub dwgIcon_MouseMove()
 
-  Dim C As Integer
   Dim X As Integer
   Dim Y As Integer
-  Dim NX As Integer
-  Dim NY As Integer
 
   X = Mouse.X
   Y = Mouse.Y
@@ -726,8 +708,6 @@ Private Sub DrawLine(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer,
   Dim D As Integer
   Dim XX As Float
   Dim YY As Float
-  Dim LX As Integer
-  Dim LY As Integer
   Dim bCalc As Boolean
 
   $bNoPreview = True
@@ -1187,25 +1167,10 @@ Public Sub ShowPaste(Optional bReset As Boolean)
 
 End
 
-
-Private Sub HidePaste()
-
-  dwgPaste.Hide
-
-End
-
-Private Sub PrintColor(C As Integer)
-  
-  Print "("; Color[C].Red; ","; Color[C].Green; ","; Color[C].Blue; ","; Color[C].Alpha; ") ";
-  
-End
-
-
 Private Sub PasteSelection()
 
   Dim X As Integer
   Dim Y As Integer
-  Dim C As Integer
 
   If $bTrans Then
 
@@ -1240,10 +1205,8 @@ End
 
 Public Sub DoPaste()
 
-  Dim bTrans As Boolean
-
   If Not dwgPaste.Visible Then
-    ShowPaste(True)
+    ShowPaste(True )
     $bPrivate = False
     Return
   Endif
@@ -1326,17 +1289,15 @@ End
 
 Public Sub DoFlip(iMode As Integer)
 
-  Dim iAngle As Float
-
   If dwgPaste.Visible Then
 
     Select Case iMode
 
       Case 0
-        $hPaste = $hPaste.Mirror(True, False)
+        $hPaste = $hPaste.Mirror(True , False )
 
       Case 1
-        $hPaste = $hPaste.Mirror(False, True)
+        $hPaste = $hPaste.Mirror(False , True )
 
       Case 2
         $hPaste = $hPaste.Rotate(Rad(-90))
@@ -1355,10 +1316,10 @@ Public Sub DoFlip(iMode As Integer)
     Select Case iMode
 
       Case 0
-        $hImage = $hImage.Mirror(True, False)
+        $hImage = $hImage.Mirror(True , False )
 
       Case 1
-        $hImage = $hImage.Mirror(False, True)
+        $hImage = $hImage.Mirror(False , True )
 
       Case 2
         $hImage = $hImage.Rotate(Rad(-90))
@@ -1592,10 +1553,10 @@ Public Sub btnTool_Click()
       SetTool(Last)
   
     Case "opaque"
-      SetTransparent(False)
+      SetTransparent(False )
 
     Case "transparent"
-      SetTransparent(True)
+      SetTransparent(True )
       
     Case "border"
       SetMode(0)
@@ -1952,7 +1913,7 @@ End
 
 Public Sub dwgForeground_MouseUp()
 
-  If FColorChooser.Run("&H" & Hex$($iForeground, 8), True) Then Return
+  If FColorChooser.Run("&H" & Hex$($iForeground, 8), True ) Then Return
   $iForeground = FColorChooser.Value
   RefreshColor
 
@@ -1960,7 +1921,7 @@ End
 
 Public Sub dwgBackground_MouseUp()
 
-  If FColorChooser.Run("&H" & Hex$($iBackground, 8), True) Then Return
+  If FColorChooser.Run("&H" & Hex$($iBackground, 8), True ) Then Return
   $iBackground = FColorChooser.Value
   RefreshColor
 
@@ -2035,7 +1996,7 @@ Public Sub Reload()
   $XD = COORD_HIDE
   $YD = COORD_HIDE
 
-  Modify(True)
+  Modify(True )
   
   dwgIcon.Refresh
 

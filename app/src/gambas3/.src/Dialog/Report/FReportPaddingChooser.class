@@ -7,10 +7,7 @@ Private Enum BORDER_TOP, BORDER_BOTTOM, BORDER_LEFT, BORDER_RIGHT
 
 Private $aCoordBox As New CoordBox[4]
 Private $aBrush As New CReportBrush[4]
-Private $aWidth As New String[4]
 Private $aBorder As String[] = ["Top", "Bottom", "Left", "Right"]
-
-
 
 Public Sub Run(sPadding As String) As Boolean
   
@@ -63,7 +60,6 @@ Public Sub Form_Open()
   Dim sBorder As String
   Dim aScan As String[]
   Dim iBorder As Integer
-  Dim sBrush As String
   Dim aComp As New String[4]
   
   $aCoordBox[BORDER_TOP] = crdTop

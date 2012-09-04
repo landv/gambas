@@ -73,7 +73,7 @@ Public Sub CheckErrorMessage(hEditor As FEditor)
 End
 
 
-Private Sub SetState(iState As Integer, Optional bDoNotMinimize As Boolean)
+Private Sub SetState(iState As Integer)
 
   Dim bDebug As Boolean
   Dim bEnable As Boolean
@@ -139,7 +139,7 @@ Private Sub Translate(sErr As String) As String
 End
 
 
-Public Sub MakeErrorMessage(sErr As String) As String
+Public Sub MakeMessage(sErr As String) As String
   
   Dim aErr As String[]
   Dim iInd As Integer
@@ -178,7 +178,7 @@ Public Sub Debug_Read(Data As String)
   Dim aPos As String[]
   Dim sPos As String
   Dim aFrame As String[]
-  Dim aLocal As String[]
+  'Dim aLocal As String[]
   Dim sClass As String
   Dim iLine As Integer
   Dim sVar As String
@@ -247,21 +247,20 @@ Public Sub Debug_Read(Data As String)
 
       If FDebugInfo.FillStack(aPos) Then
         If aData[1] Then 
-          $sError = "<b>" & MakeErrorMessage(aData[1]) & "</b>"
+          $sError = "<b>" & MakeMessage(aData[1]) & "</b>"
           If sClass Then $sError &= " " & Subst(("in &1:&2."), $sPosClass, $iPosLine)
           If sClass Then
             Try CheckErrorMessage(Project.ActiveForm)
           Else
-            Try CheckErrorMessage(Null)
+            Try CheckErrorMessage(Null )
           Endif
         Endif
       Endif
 
       SetState(STATE_DEBUG)
 
-    Case "I", "W"
-    
-      FDebugInfo.Message(aData[1])
+    'Case "I", "W"
+      'FDebugInfo.Message(aData[1])
     
     Case "?", "&"
     
@@ -279,7 +278,7 @@ Public Sub Debug_Read(Data As String)
           FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1])
 
         Case "I"
-          FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1], True)
+          FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1], True )
           
         Case "X"
           FDebugExpr.AddResult(Mid$(sVar, 2), aData[1])
@@ -293,13 +292,13 @@ Public Sub Debug_Read(Data As String)
       Select Case Left(sVar)
       
         Case "X"
-          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1], True)
+          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1], True )
           
         Case "L"
-          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1], True)
+          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1], True )
  
         Case "O"
-          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True)
+          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True )
  
       End Select
       
@@ -312,7 +311,7 @@ Public Sub Debug_Read(Data As String)
         Case "X"
           If Not aData[1] Then
             ' sending to Ballon
-            Design.Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
+            Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
             
           Else
             If Left(aData[1]) = "!" Then
@@ -320,7 +319,7 @@ Public Sub Debug_Read(Data As String)
               If FDebugExpr.Exist(Mid$(sVar, 2)) Then
                 FDebugExpr.Disable(Mid$(sVar, 2), Mid$(aData[1], 2))
               Else 
-                Design.Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
+                Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
               End If
                           
             Else 
@@ -405,7 +404,7 @@ Private Sub AfterStop()
   'Settings["/FMain/Splitter"] = hForm.Layout
   'FDebugInfo.Hide
   
-  If Not $bConsole Then FMain.ShowDebug(False)
+  If Not $bConsole Then FMain.ShowDebug(False )
   FDebugInfo.UpdateView
 
   ' FOR EACH hForm IN $cShow
@@ -715,13 +714,9 @@ End
 Private Sub Start(sCmd As String)
 
   Dim hForm As Object
-  Dim hEdit As FEditor
-  Dim iLine As Integer
+  'Dim hEdit As FEditor
   Dim aExec As String[]
-  Dim sExec As String
-  Dim sArg As String
   Dim bValgrind As Boolean '= True
-  Dim iInd As Integer
   Dim sTitle As String
   Dim sProg As String
   Dim sBreakpoint As String
@@ -783,7 +778,7 @@ Private Sub Start(sCmd As String)
   FMain.OnProjectDebug
   FSearch.OnProjectDebug
 
-  FMain.ShowDebug(True)
+  FMain.ShowDebug(True )
   FDebugInfo.UpdateView
 
   If Project.Profiling Then FProfile.CleanProfileFiles
@@ -929,7 +924,7 @@ Private Sub UpdateMinimize()
   
 End
 
-Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST, Optional sPrefix As String)
+Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST)
 
   'IF Start(sCmd) THEN RETURN
 
@@ -946,7 +941,7 @@ Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST, O
   
   If iNewState <> STATE_LAST Then
     If iNewState <> $iState Then
-      SetState(iNewState, True)
+      SetState(iNewState)
       SetPosition("", 0)
     Endif
   Endif
@@ -1016,12 +1011,12 @@ End
 
 
 
-Private Sub ToggleChild(hChild As Object)
-
-  'hChild.Visible = TRUE 'NOT hChild.Visible
-  hChild.Show
-
-End
+' Private Sub ToggleChild(hChild As Object)
+' 
+'   'hChild.Visible = TRUE 'NOT hChild.Visible
+'   hChild.Show
+' 
+' End
 
 
 ' PRIVATE SUB SaveChild(hChild AS Object)
@@ -1161,7 +1156,7 @@ Public Sub ReadBreakpoints()
 
   FDebugInfo.ClearBreakpoints
   For iInd = 1 To Project.Config["/Breakpoints/Count", 0]
-    SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True)
+    SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True )
   Next
   
 End
@@ -1180,7 +1175,7 @@ Public Sub WriteBreakpoints()
   For Each hFile In Project.Files
     If Not Project.IsEditor(hFile) Then Continue 
     hEditor = hFile
-    For Each iLine In hEditor.GetBreakpoints(True)
+    For Each iLine In hEditor.GetBreakpoints(True )
       Inc iCount
       Project.Config["/Breakpoints/Breakpoint[" & CStr(iCount) & "]"] = hEditor.Name & "." & CStr(iLine)
     Next
@@ -1201,7 +1196,7 @@ Public Sub ClearBreakpoints()
     hEditor = hFile
 
     For Each iLine In hEditor.GetBreakpoints()
-      SetBreakpoint(hEditor.Name, iLine, False)
+      SetBreakpoint(hEditor.Name, iLine, False )
     Next
 
   Next

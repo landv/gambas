@@ -83,7 +83,7 @@ Public Sub Form_Open()
   If Project.Prefix
     chkPrefix.Value = True
   Else
-    chkPrefix.Value = Settings["FMakeInstall/Prefix", False]
+    chkPrefix.Value = Settings["FMakeInstall/Prefix", False ]
   Endif
 
   'InitSystemControls
@@ -91,7 +91,7 @@ Public Sub Form_Open()
 
   UpdatePackageName
 
-  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", True)
+  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", True )
 
   txtLicense.List = ["General Public License", "Freeware", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-Free License"]
   
@@ -181,7 +181,6 @@ Private Sub GetSystemControls() As Control[]
   Dim aObject As New Control[]
   Dim hCtrl As Control
   Dim hCont As Container
-  Dim hCheck As CheckBox
 
   For Each hCont In panSystem.Children
     For Each hCtrl In hCont.Children
@@ -284,8 +283,6 @@ End
 Private Sub InitSystems()
 
   Dim hCtrl As CheckBox
-  Dim hCont As Container
-  Dim hCheck As CheckBox
 
   For Each hCtrl In GetSystemControls()
     hCtrl.Value = hCtrl.Enabled And Project.Systems.Find(hCtrl.Parent.Tag) >= 0
@@ -301,7 +298,7 @@ Public Sub wizInstall_Close()
   
   If Message.Warning(("The packages have been successfully created."), ("OK"), ("Quit")) = 1 Then Return
   
-  Me.Close(True)
+  Me.Close(True )
 
 End
 
@@ -319,9 +316,6 @@ End
 
 Public Sub wizInstall_BeforeChange()
 
-  Dim sName As String
-  Dim sDir As String
-  Dim iSize As Integer
   Dim sFile As String
   Dim aFile As String[]
 
@@ -592,7 +586,7 @@ Private Sub FillComboWithSystems(hCombo As ComboBox)
 
   hCombo.Clear
 
-  For Each sSys In GetSystemNames(True)
+  For Each sSys In GetSystemNames(True )
     hCombo.Add(sSys)
   Next
 
@@ -743,7 +737,7 @@ Public Sub cmbMenu_Click()
   $sMenuSystem = GetSystemFromName(cmbMenu.Text)
 
   cmbCategories.Text = Project.Categories[$sMenuSystem]
-  FillTreeWith(tvwMenu, ("Menus"), "img/16/menu.png", "install/menu" &/ $sMenuSystem, txtMenu, Project.Menus[$sMenuSystem], True)
+  FillTreeWith(tvwMenu, ("Menus"), "img/16/menu.png", "install/menu" &/ $sMenuSystem, txtMenu, Project.Menus[$sMenuSystem], True )
 
 End
 
@@ -1076,7 +1070,6 @@ Public Sub btnRemoveFile_Click()
 End
 
 Public Sub btnUpFile_Click()
-  Dim fic As String
 
   If tvwFile.Row >= 1 Then
     tvwFile.Save
@@ -1089,7 +1082,6 @@ Public Sub btnUpFile_Click()
 End
 
 Public Sub btnDownFile_Click()
-  Dim fic As String
 
   If tvwFile.Row < $aFile.Max Then
     tvwFile.Save

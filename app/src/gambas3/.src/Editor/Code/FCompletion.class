@@ -111,7 +111,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   H = lvwComp.Item.H
   
   If sMode = "<" Or sMode = "A" Then 
-    If FindItem(True) Then 
+    If FindItem(True ) Then 
       Dec Application.Busy
       Return
     Endif 
@@ -189,7 +189,7 @@ End
 Public Sub SetText(sText As String)
   
   $sText = sText
-  FindItem(True)
+  FindItem(True )
   
 End
 
@@ -268,8 +268,6 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
   Dim hSymbol As CSymbolInfo
   Dim aSymbol As New String[]
   Dim sSymbol As String
-  Dim sName As String
-  Dim hClass As CClassInfo
 
   lvwComp.Clear
 
@@ -304,7 +302,6 @@ End
 
 Private Sub GetEvents(sCtrl As String) As String[]
   
-  Dim sName As String
   Dim hForm As FForm
   Dim aEvent As String[]
   Dim iLine As Integer
@@ -330,7 +327,7 @@ Private Sub GetEvents(sCtrl As String) As String[]
   
   If Not aEvent Then
     For iLine = 0 To $hEditor.Lines.Count - 1
-      sLine = $hEditor.Lines[iLine].Purge(False, True)
+      sLine = $hEditor.Lines[iLine].Purge(False , True )
       
       aLine = Scan(sLine, "*NEW * AS \"*\"*")
       If aLine.Count <> 4 Then Continue
@@ -369,19 +366,15 @@ End
 
 Private Sub FillWithIdent(sWord As String)
 
-  Dim iInd As Integer
   Dim sLine As String
   Dim iPos As Integer
-  Dim iUPos As Integer
   Dim iPos2 As Integer
-  Dim iPos3 As Integer
   Dim sCar As String
   Dim aResult As New String[]
   Dim cKey As New Collection
   Dim hSymbol As CSymbolInfo
   Dim cSymbol As Collection
   Dim sOrg As String
-  Dim sText As String
   Dim iLine As Integer
   Dim sUCaseLine As String
 
@@ -596,7 +589,7 @@ Public Function ManageKey() As Boolean
     Case Key.Space
       If Key.Control Then
         If UCase($sText) = "NEW" Then Return
-        InsertItem(True)
+        InsertItem(True )
       Else
         Me.Hide
       Endif
@@ -692,7 +685,7 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
   lvwComp.Item.EnsureVisible
   
   If nComp = 1 And iLevel = 3 Then
-    If Not bNoInsert Then InsertItem(True)
+    If Not bNoInsert Then InsertItem(True )
     Return True
   Endif
   

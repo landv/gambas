@@ -341,14 +341,14 @@ void COMPILE_begin(const char *file, bool trans)
 	size = 0;
 
 	if (stat(JOB->name, &info))
-		fprintf(stderr, "gbc: warning: Cannot stat file: %s\n", JOB->name);
+		ERROR_warning("cannot stat file: %s", JOB->name);
 	else
 		size += info.st_size;
 	
 	if (JOB->form)
 	{
 		if (stat(JOB->form, &info))
-			fprintf(stderr, "gbc: warning: Cannot stat file: %s\n", JOB->form);
+			ERROR_warning("cannot stat file: %s", JOB->form);
 		else
 			size += info.st_size * 2;
 	}
@@ -420,3 +420,61 @@ void COMPILE_enum_class(char **name, int *len)
 	*len = *p;
 	*name = p + 1;
 }
+
+void COMPILE_print(int type, int line, const char *msg, ...)
+{
+	int i;
+  va_list args;
+	const char *arg[4];
+	bool col;
+
+	if (!JOB->warnings)
+		return;
+	
+  va_start(args, msg);
+
+	if (line < 0)
+	{
+		line = JOB->line;
+		col = JOB->column;
+	}
+	else
+		col = FALSE;
+	
+	if (JOB->name)
+	{
+		const char *name = FILE_get_name(JOB->name);
+		if (line)
+		{
+			if (line > JOB->max_line && JOB->form)
+			{
+				name = FILE_get_name(JOB->form);
+				fprintf(stderr, "%s:%d: ", name, line - FORM_FIRST_LINE + 1);
+			}
+			else
+			{
+				if (col)
+					fprintf(stderr, "%s:%d:%d: ", name, line, READ_get_column());
+				else
+					fprintf(stderr, "%s:%d: ", name, line);
+			}
+		}
+		else
+			fprintf(stderr, "%s: ", name);
+	}
+	else
+		fprintf(stderr, "gbc: ");
+	
+	fprintf(stderr, "%s: ", type ? "warning" : "error");
+  
+	if (msg)
+	{
+		for (i = 0; i < 4; i++)
+			arg[i] = va_arg(args, const char *);
+
+		ERROR_define(msg, arg);
+		fputs(ERROR_info.msg, stderr);
+		putc('\n', stderr);
+	}
+}
+

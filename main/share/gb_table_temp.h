@@ -317,20 +317,23 @@ bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 }
 #endif
 
-const char *TABLE_get_symbol_name(TABLE *table, int index)
+const char *SYMBOL_get_name(SYMBOL *sym)
 {
-	SYMBOL *sym;
 	int len;
 
+	len = Min(MAX_SYMBOL_LEN, sym->len);
+	memcpy(_buffer, sym->name, len);
+	_buffer[len] = 0;
+
+	return _buffer;
+}
+
+const char *TABLE_get_symbol_name(TABLE *table, int index)
+{
 	if (UNLIKELY((index < 0) || (index >= ARRAY_count(table->symbol))))
 		strcpy(_buffer, "?");
 	else
-	{
-		sym = SYM(table, index);
-		len = Min(MAX_SYMBOL_LEN, sym->len);
-		memcpy(_buffer, sym->name, len);
-		_buffer[len] = 0;
-	}
+		SYMBOL_get_name(SYM(table, index));
 
 	return _buffer;
 }

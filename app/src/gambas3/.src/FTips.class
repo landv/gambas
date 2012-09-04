@@ -34,7 +34,7 @@ Public Sub Form_Open()
   txtTip.Background = Me.Background
 
   $iTip = Settings["/LastTip", 0]
-  chkShowTip.Value = Settings["/ShowTipOnStartup", True]
+  chkShowTip.Value = Settings["/ShowTipOnStartup", True ]
 
   ShowNextTip
 
@@ -49,9 +49,6 @@ End
 
 Private Function GetNextTip(Optional bPrev As Boolean) As String
 
-  Dim iInd As Integer
-  Dim hFile As File
-  Dim sLig As String
   Dim sTip As String
   Dim sFile As String
   Dim sLang As String
@@ -146,7 +143,7 @@ End
 
 Public Sub btnPrev_Click()
 
-  ShowNextTip(True)
+  ShowNextTip(True )
 
 End
 

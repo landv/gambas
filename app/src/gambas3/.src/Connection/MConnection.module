@@ -4,8 +4,6 @@ Public Password As New Collection
 
 Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean)
   
-  Dim sPassword As String
-  
   hConn.Type = LCase(hConfig["Connection/Type"])
   If hConn.Type = "sqlite" Then
     hConn.Host = hConfig["Connection/Path"]
@@ -38,7 +36,7 @@ Public Sub LoadPassword(sName As String, bDesktop As Boolean) As String
   
 End
 
-Public Sub SavePassword(sName As String, sPassword As String, bDesktop As Boolean)
+Public Sub SavePassword(sName As String, sPassword As String, (bDesktop) As Boolean)
   
   Password[sName] = sPassword
   If sPassword Then Desktop.Passwords[Project.Name &/ sName] = sPassword
@@ -158,7 +156,6 @@ Public Function CopyTableData(Handle As Connection, sTable As String) As String
   Dim hDst As Table
   Dim rSrc As Result
   Dim rDst As Result
-  Dim sField As String
   Dim hField As Field
   Dim sError As String
 
@@ -257,7 +254,6 @@ End
 Public Function CountTableData(Handle As Connection, sTable As String) As Integer
 
   Dim rResult As Result
-  Dim iPos As Integer
 
   rResult = Handle.Exec("SELECT COUNT(*) AS nRecord FROM " & Handle.Quote(sTable, True))
   Return rResult!nRecord

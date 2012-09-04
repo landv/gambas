@@ -4,7 +4,6 @@ Private $sPath As String
 Private $sDir As String
 Private $sType As String
 Private $bDoNotSetName As Boolean
-Private $bInit As Boolean
 Private $iFilter As Integer 
 Private $aFilter As String[]
 Private $aFilterType As String[]
@@ -69,9 +68,6 @@ End
 
 Public Sub InitExistingTab()
   
-  Dim aFilter As String[]
-  Dim hModule As CModule
-  
   If $bInitExistingTab Then Return
 
   Settings.Read(fchExisting)
@@ -87,7 +83,6 @@ End
 Public Sub Form_Open()
 
   Dim hCtrl As Control
-  Dim sParent As String
   Dim hModule As CModule
   'Dim aFilter As String[]
   Dim hPanel As Container
@@ -148,7 +143,7 @@ Public Sub Form_Open()
   $bInitExistingTab = False
   UpdateExistingTab
   
-  lstType.Select(Null)
+  lstType.Select(Null )
   If Not $sType Then $sType = "module"
   For Each hCtrl In lstType.Children
     If hCtrl.Tag = $sType Then 
@@ -208,7 +203,7 @@ Private Sub CreateFile() As Boolean
   
     Case Else
 
-      sMsg = Project.CheckClassName(sName, True)
+      sMsg = Project.CheckClassName(sName, True )
       If sMsg Then 
         txtName.SetFocus
         Balloon.Warning(sMsg, txtName)
@@ -251,7 +246,7 @@ Private Sub CreateFile() As Boolean
         sTemp = Replace(sTemp, "\t", Space$(Project.TabSize))
       Endif
       
-      Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
+      Project.InsertSource(sName, "class", $sDir, sTemp, True , True )
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
               "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n"
@@ -297,7 +292,7 @@ Private Sub CreateFile() As Boolean
       
     Case "webpage"
 
-      Project.InsertSource(sName, "class", $sDir, "' Gambas class file\n\n", True, True)
+      Project.InsertSource(sName, "class", $sDir, "' Gambas class file\n\n", True , True )
       Project.InsertSource(sName, "webpage", $sDir, "<html>\n<body>\n<%\nPrint \"<h1>Gambas</h1>\";\n%>\n</body>\n</html>\n")
       
     Case "text"
@@ -332,7 +327,7 @@ Private Sub ImportDependencies(sName As String, sExt As String, sOrig As String,
   Dim hIn As File
   Dim hOut As File
   Dim sLine As String
-  Dim iPos, iPos2 As Integer
+  Dim iPos As Integer
   Dim sImg As String
   Dim sImportDir As String
   Dim sDestImg As String
@@ -368,7 +363,7 @@ Private Sub ImportDependencies(sName As String, sExt As String, sOrig As String,
     
     If Exist(sOrig &/ sImg) Then
       If Not Exist(sDestImg) Then
-        Project.InsertFile(File.Name(sDestImg), File.Dir(sDestImg), sOrig &/ sImg, True, bLink)
+        Project.InsertFile(File.Name(sDestImg), File.Dir(sDestImg), sOrig &/ sImg, True , bLink)
       Endif
       sLine = Left(sLine, iPos + 7) & Chr$(34) & "import" &/ sName &/ File.Name(sDestImg) & Chr$(34) & "]"    
       bSave = True
@@ -401,7 +396,6 @@ Private Sub ImportFile() As Boolean
   Dim sDir As String
   Dim sName As String
   Dim sTemp As String
-  Dim sType As String
   Dim sExt As String
   
   sTemp = fchExisting.Value
@@ -421,15 +415,15 @@ Private Sub ImportFile() As Boolean
   
     Case "form", "report"
       sName = File.BaseName(Project.GetUniqueSourceName(sName))
-      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)
+      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True , True , chkLink.Value)
+      Project.InsertSource(sName, sExt, $sDir, sTemp, False , True , chkLink.Value)
       ImportDependencies(sName, sExt, sTemp, chkLink.Value)
       Project.OpenForm(sName)
           
     Case "webpage"
       sName = File.BaseName(Project.GetUniqueSourceName(sName))
-      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, "webpage", $sDir, sTemp, False, False, chkLink.Value)
+      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True , True , chkLink.Value)
+      Project.InsertSource(sName, "webpage", $sDir, sTemp, False , False , chkLink.Value)
   
     Default
       sName = Project.GetUniqueName($sDir, sName)
@@ -449,7 +443,7 @@ Public Sub btnOK_Click()
     If ImportFile() Then Return
   Endif
 
-  Me.Close(True)
+  Me.Close(True )
 
 Catch 
 

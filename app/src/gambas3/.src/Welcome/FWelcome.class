@@ -10,8 +10,6 @@ Private btnQuit As CCoolButton
 Private btnAbout As CCoolButton
 
 Private $iRecent As Integer
-Private $aExample As String[]
-Private $bExample As Boolean
 Private $hFirst As ProjectItem
 'Private $hPicture As Picture
 
@@ -40,8 +38,6 @@ Public Sub Form_Open()
 
   Dim W As Integer
   Dim sFont As String
-  Dim hImage As Image
-  Dim hLogo As SvgImage
   Dim hCtrl As CCoolButton
 
   sFont = "Bold"
@@ -240,13 +236,13 @@ End
 '   
 ' End
 
-Private Sub GetTitle(hProjectInfo As CProjectInfo) As String
-  
-  With hProjectInfo
-    Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"#404040\">" & .Title & "</font>"
-  End With
-  
-End
+' Private Sub GetTitle(hProjectInfo As CProjectInfo) As String
+'   
+'   With hProjectInfo
+'     Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"#404040\">" & .Title & "</font>"
+'   End With
+'   
+' End
 
 Public Sub chkSortRecent_Click()
 
@@ -438,7 +434,6 @@ Private Sub FillRecent()
   Dim aRecent As CRecentFile[]
   Dim hRecent As CRecentFile
   'Dim bHighlight As Boolean
-  Dim fTime As Float
   Dim sTitle As String
   Dim sLastTitle As String
   Dim Y As Integer
@@ -498,7 +493,6 @@ Private Sub FillExample()
   Dim sLastDir As String
   Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectItem
-  Dim hLabel As Label
   Dim sGroup As String
   'Dim bHighlight As Boolean
   

@@ -291,45 +291,6 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 			{
 				switch (r->record_header[i].type)
 				{
-					/*case ft_String:
-						r->records[sz][i].set_asString(reslt[i]);
-						break;
-					case ft_Boolean:
-						r->records[sz][i].set_asString(reslt[i]);
-						if (reslt[i][0] == 't' || reslt[i][0] == 'T')
-							r->records[sz][i].set_asBool(1);
-						else
-							r->records[sz][i].set_asBool(atoi(reslt[i]));
-						break;
-					case ft_Char:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asChar(reslt[i][0]);
-						break;
-					case ft_Short:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asShort(atoi(reslt[i]));
-						break;
-					case ft_UShort:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asUShort(atoi(reslt[i]));	//Not sure if this will work
-						break;
-					case ft_Long:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asLong(strtol(reslt[i], NULL, 0));
-						break;
-					case ft_ULong:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asULong(strtol(reslt[i], NULL, 0));
-						break;
-					case ft_Float:
-					case ft_Double:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asDouble(strtod(reslt[i], NULL));
-						break;
-					case ft_Date:
-						r->records[sz][i].set_asString(reslt[i]);
-						r->records[sz][i].set_asDate(reslt[i]);
-						break;*/
 					case ft_Blob:
 						if (stmt)
 							r->records[sz][i].set_asBlob(reslt[i], sqlite3_column_bytes(stmt, i));

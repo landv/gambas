@@ -1,4 +1,5 @@
 ' Gambas class file
+
 '
 ' Copyright (C) Benoît Minisini
 '
@@ -69,12 +70,7 @@ End
 
 Static Public Sub Init()
   
-  Dim hSampleCode As CSampleCode
   Dim hSettings As Settings
-  Dim iInd As Integer
-  Dim sSnippet As String
-  Dim iPos As Integer
-  Dim sTrigger As String
   'Dim sTemp As String
   
   If All Then Return
@@ -85,9 +81,9 @@ Static Public Sub Init()
   'sTemp = Temp$()
   'Copy "snippets" To sTemp
 
-  Load(Settings, False)
+  Load(Settings, False )
   hSettings = New Settings("../snippets")
-  Load(hSettings, True)
+  Load(hSettings, True )
 
   'Kill sTemp
   
@@ -114,7 +110,6 @@ Public Sub _new(sStart As String, sPattern As String)
   Dim iInd As Integer
   Dim sCar As String
   Dim bVar As Boolean
-  Dim iPos As Integer
   
   If All.Exist(sStart) Then All[sStart].Delete
   
@@ -198,7 +193,7 @@ Private Sub Make(Optional iIndent As Integer) As String
         Else If sVar = "$DESCRIPTION" Then
           sCar = Project.Description
         Else If sVar = "$AUTHOR" Or If sVar = "$AUTHORS" Then
-          sCar = Split(Project.Authors, "\n", "", True).Join(", ")
+          sCar = Split(Project.Authors, "\n", "", True ).Join(", ")
         Else
           sCar = sVar
         Endif
@@ -221,7 +216,6 @@ Public Sub Insert(hEditor As Editor)
   
   Dim iIndent As Integer
   Dim sLine As String
-  Dim sMake As String
   
   sLine = hEditor.Lines[hEditor.Line].Text
   iIndent = Len(sLine) - Len(LTrim(sLine))
@@ -286,8 +280,6 @@ End
 
 Private Sub NewLinePattern(sText As String, iPos As Integer) As Integer
   
-  Dim iFind As Integer
-  
   ' Ignore space, Ignore new lines, Ignore spaces
   
   Inc iPos
@@ -313,7 +305,6 @@ Public Sub GotoNextPos(hEditor As Editor, iStart As Integer, iEnd As Integer, iP
   Dim iPosText, iPosTextEnd As Integer
   Dim sText As String
   Dim iInd As Integer
-  Dim sLine As String
   Dim sPattern As String
   Dim iPosCursor As Integer
   Dim iIndexPattern As Integer

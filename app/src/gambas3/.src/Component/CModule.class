@@ -25,9 +25,9 @@ Static Public Sub _init()
   
   Ext = ["module", "class"]
   
-  hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"), True)
-  hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"), False)
-  hModule = New CModule("report", ("Report"), ("Reports"), ("Gambas reports"), False)
+  hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"))
+  hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"))
+  hModule = New CModule("report", ("Report"), ("Reports"), ("Gambas reports"))
   
 End
 
@@ -44,7 +44,7 @@ Static Public Sub _get(sKey As String) As CModule
   
 End
 
-Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFilter As String, bHasFormEditor As Boolean)
+Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFilter As String)
   
   Key = sKey
   Name = sName
@@ -63,7 +63,6 @@ End
 Static Public Sub Reset()
   
   Dim hModule As CModule
-  Dim sComp As String
   
   For Each hModule In All
     hModule.Component = ""

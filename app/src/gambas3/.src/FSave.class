@@ -1,7 +1,5 @@
 ' Gambas class file
 
-Static cFile As New String[]
-
 Static Public Function Run(Optional bQuit As Boolean) As Boolean
 
   Dim hForm As Form
@@ -45,7 +43,6 @@ End
 
 Public Sub btnQuit_Click()
 
-  Dim bSaved As Boolean
   Dim hFile As Object
   
   For Each hFile In Project.Files

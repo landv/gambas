@@ -38,6 +38,11 @@
 
 #include "gbc_class.h"
 
+enum {
+	MSG_ERROR = 0,
+	MSG_WARNING = 1
+};
+
 typedef
 	struct {
 		char *name;                        // source file name
@@ -60,7 +65,8 @@ typedef
 		unsigned no_old_read_syntax : 1;   // do not compile the old read syntax
 		unsigned column : 1;               // search column where there is an error
 		unsigned exec : 1;                 // we are compiling for an executable
-		unsigned _reserved : 17;           // reserved
+		unsigned warnings : 1;             // if warnings must be printed
+		unsigned _reserved : 16;           // reserved
 		char *output;                      // output file
 		PATTERN *pattern;                  // lexical analyze
 		int pattern_count;                 // number of patterns
@@ -98,5 +104,6 @@ void COMPILE_export_class(char *name);
 void COMPILE_add_class(const char *name, int len);
 void COMPILE_end_class();
 void COMPILE_enum_class(char **name, int *len);
+void COMPILE_print(int type, int line, const char *msg, ...);
 
 #endif

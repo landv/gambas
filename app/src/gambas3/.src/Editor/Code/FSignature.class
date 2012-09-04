@@ -18,7 +18,6 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
   
   Dim iX, iY As Integer
   Dim hCont As Container
-  Dim sIcon As String
 
   panSignature.H = lblNewSignature.H + 4
   If $bShowHelp And $bUseHelp Then
@@ -89,7 +88,7 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
 End
 
 
-Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
+Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer)
   
   Dim sSign As String
   Dim sName As String
@@ -145,8 +144,6 @@ End
 
 
 Public Function ManageKey() As Boolean
-  
-  Dim iInd As Integer
   
   Select Case Key.Code
   

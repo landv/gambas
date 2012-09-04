@@ -181,10 +181,13 @@ static void trans_identifier(int index, bool first, bool point, PATTERN next)
 	if (!TYPE_is_null(sym->local.type) && !point)
 	{
 		CODE_push_local(sym->local.value);
+		sym->local_used = TRUE;
 	}
 	else if (!TYPE_is_null(sym->global.type) && !point)
 	{
 		type = TYPE_get_kind(sym->global.type);
+		if (!TYPE_is_public(sym->global.type))
+			sym->global_used = TRUE;
 
 		if (type == TK_CONST)
 		{

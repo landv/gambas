@@ -23,15 +23,13 @@ Public Sub Convert(sMarkup As String) As String
   Dim aResult As String[]
   Dim sLine As String
   Dim sText As String
-  Dim sResult As String
-  Dim I, I2 As Integer
-  Dim iPara As Integer
+  Dim I As Integer
   Dim bCode As Boolean
   Dim iBlockQuote As Integer
   Dim sCar As String
   Dim bInsidePar As Boolean
   Dim bAddPar As Boolean
-  Dim iIndent, iCurrentIndent, iLastIndent As Integer
+  Dim iIndent, iCurrentIndent As Integer
   Dim hMarkupList As MarkupList
   Dim bJustList As Boolean
   
@@ -322,10 +320,9 @@ Private Sub ConvertLine(sLine As String) As String
   
   Dim sResult As String
   Dim I As Integer
-  Dim sCar, sNextCar As String
+  Dim sCar As String
   Dim I1, I2 As Integer
   Dim sPattern As String
-  Dim iLine As Integer
   Dim bCode, bCodeExit As Boolean
   Dim bEmph As Boolean
   Dim bStrong As Boolean

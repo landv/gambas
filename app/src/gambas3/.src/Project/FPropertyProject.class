@@ -1,31 +1,19 @@
 ' Gambas class file
 
 Static Private $bShowUsed As Boolean
-Static Private $bShowBeta As Boolean
-
-Private $cCheckBox As New Collection
 
 Private $hCheck As Picture
 Private $hUncheck As Picture
 
-Private $sLibName As String
-
-'PRIVATE $hProcess AS Process
-Private $sTemp As String
 Private $sIcon As String
 
 Private $bCanInitComponents As Boolean
-'PRIVATE $bLibModify AS Boolean
-
-Private $iRow As Integer
-Private $iCol As Integer
 
 Private $aArg As String[]
 Private $aEnv As String[]
 
 Private $aComp As String[]
 Private $cComp As New Collection
-Private $bLockComp As Boolean
 Private $sVerCtrlStatus As String
 Private $sVerCtrlDiff As String
 
@@ -44,8 +32,6 @@ End
 
 Public Sub Form_Open()
 
-  Dim sClass As String
-  Dim sLib As String
   Dim sLang As String
 
   Me.Title = ("Project properties") & " - " & Project.Name
@@ -59,6 +45,7 @@ Public Sub Form_Open()
     txtAuthor.Text = .Authors
     cmbControlPublic.Index = If(.ControlPublic, 0, 1)
     cmbModulePublic.Index = If(.ModulePublic, 0, 1)
+    cmbWarning.Index = If(.Warnings, 0, 1)
     txtMajor.Value = .MajorVersion
     txtMinor.Value = .MinorVersion
     txtRelease.Value = .ReleaseVersion
@@ -174,11 +161,8 @@ End
 
 Private Function DoApply() As Boolean
 
-  Dim bCheck As Boolean
-  Dim vVal As Variant
   Dim bRefreshForm As Boolean
   Dim bRefreshEditor As Boolean
-  Dim hFile As Object
 
 '   IF chkSnap.Value THEN
 '
@@ -214,6 +198,7 @@ Private Function DoApply() As Boolean
 
     .ControlPublic = cmbControlPublic.Index = 0
     .ModulePublic = cmbModulePublic.Index = 0
+    .Warnings = cmbWarning.Index = 0
     .MajorVersion = txtMajor.Value
     .MinorVersion = txtMinor.Value
     .ReleaseVersion = txtRelease.Value
@@ -283,7 +268,7 @@ Public Sub btnOK_Click()
 
   If DoApply() Then Return
   
-  Me.Close(True)
+  Me.Close(True )
 
 End
 
@@ -346,17 +331,10 @@ Private Sub RefreshComponents()
   Dim sLib As String
   Dim sDep As String
   Dim hComp As CComponent
-  Dim hSep As Label
-  Dim aRemove As New String[]
-  Dim sParent As String
   Dim hCompItem As ComponentItem
   Dim aComp As New String[]
-  Dim bDark As Boolean
-  Dim hOld As ListContainer
-  Dim iUser As Integer
   Dim hLibInfo As CLibraryInfo
   Dim aNotFound As New String[]
-  Dim I As Integer
 
   If $iDoNotRefreshComponent Then Return
 
@@ -741,10 +719,8 @@ End
 Public Sub btnIcon_Click()
 
   Dim sIcon As String
-  Dim hImage As Image
-  Dim hBackground As Image
 
-  sIcon = FSelectIcon.Run($sIcon, True)
+  sIcon = FSelectIcon.Run($sIcon, True )
   If Not sIcon Then Return
 
   $sIcon = sIcon
@@ -942,7 +918,7 @@ Public Sub btnUndo_Click()
 
 End
 
-Public Sub tvwArg_Data(Row As Integer, Column As Integer)
+Public Sub tvwArg_Data(Row As Integer, (Column) As Integer)
 
   tvwArg.Data.Text = $aArg[Row]  
 
@@ -971,7 +947,7 @@ Public Sub btnRemoveArg_Click()
 End
 
 
-Public Sub tvwArg_Save(Row As Integer, Column As Integer, Value As String)
+Public Sub tvwArg_Save(Row As Integer, (Column) As Integer, Value As String)
 
   $aArg[Row] = Value  
 
@@ -1292,7 +1268,6 @@ End
 Public Sub UncheckComponents(aComp As String[])
   
   Dim sComp As String
-  Dim bLib As Boolean
   
   For Each sComp In aComp
     If Left(sComp) <> "/" Then $cComp[sComp].Uncheck("")

@@ -9,12 +9,8 @@ Private Enum BORDER_TOP, BORDER_BOTTOM, BORDER_LEFT, BORDER_RIGHT, TOPLEFTCORNER
 
 Private $aCoordBox As New CoordBox[12]
 Private $aBrush As New CReportBrush[4]
-Private $aWidth As New String[4]
-Private $achkSynchro As New CheckBox[4]
 Private $aBorder As String[] = ["Top", "Bottom", "Left", "Right", "TopLeftCorner", "TopLeftCorner2",
   "TopRightCorner", "TopRightCorner2", "BottomRightCorner", "BottomRightCorner2", "BottomLeftCorner", "BottomLeftCorner2"]
-
-Private $iCurBorder As Integer
 
 Public Sub Run(sBorder As String) As Boolean
 
@@ -356,67 +352,67 @@ Public Sub btnOK_Click()
 
 End
 
-Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
-
-  Dim ARC_TO_BEZIER As Float = 0.55228475
-  Dim c1, c2 As Float
-  Dim i As Integer
-
-  For i = 0 To 3
-    If radius_x[i] > w - radius_x[i] Then
-      radius_x[i] = w / 2
-    Endif
-
-    If radius_y[i] > h - radius_y[i] Then
-      radius_y[i] = h / 2
-    Endif
-  Next
-  'approximate(quite Close )the arc using a bezier curve
-
-  '        A**********B
-  '       H            C
-  '       *            *
-  '       *            *
-  '       G            D
-  '        F**********E
-
-  '-->A
-  paint.moveto(x + radius_x[0], y)
-
-  '-->B
-  paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
-
-  '-->C
-  c1 = ARC_TO_BEZIER * radius_x[1]
-  c2 = ARC_TO_BEZIER * radius_y[1]
-  paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
-
-  '-->D
-  paint.rellineto(0, h - radius_y[1] - radius_y[2])
-
-  '-->E
-  c1 = ARC_TO_BEZIER * radius_x[2]
-  c2 = ARC_TO_BEZIER * radius_y[2]
-  paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
-
-  '-->F
-  paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
-
-  '-->G
-  c1 = ARC_TO_BEZIER * radius_x[3]
-  c2 = ARC_TO_BEZIER * radius_y[3]
-  paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
-  '-->H
-  paint.rellineto(0, - h + radius_y[3] + radius_y[0])
-
-  '-->A
-  c1 = ARC_TO_BEZIER * radius_x[0]
-  c2 = ARC_TO_BEZIER * radius_y[0]
-  paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
-
-  'paint.closepath()
-
-End
+' Private Sub RoundRect(x As Integer, y As Integer, w As Integer, h As Integer, Radius_X As Float[], radius_y As Float[])
+' 
+'   Dim ARC_TO_BEZIER As Float = 0.55228475
+'   Dim c1, c2 As Float
+'   Dim i As Integer
+' 
+'   For i = 0 To 3
+'     If radius_x[i] > w - radius_x[i] Then
+'       radius_x[i] = w / 2
+'     Endif
+' 
+'     If radius_y[i] > h - radius_y[i] Then
+'       radius_y[i] = h / 2
+'     Endif
+'   Next
+'   'approximate(quite Close )the arc using a bezier curve
+' 
+'   '        A**********B
+'   '       H            C
+'   '       *            *
+'   '       *            *
+'   '       G            D
+'   '        F**********E
+' 
+'   '-->A
+'   paint.moveto(x + radius_x[0], y)
+' 
+'   '-->B
+'   paint.rellineto(w - radius_x[0] - radius_x[1], 0.0)
+' 
+'   '-->C
+'   c1 = ARC_TO_BEZIER * radius_x[1]
+'   c2 = ARC_TO_BEZIER * radius_y[1]
+'   paint.relcurveto(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+' 
+'   '-->D
+'   paint.rellineto(0, h - radius_y[1] - radius_y[2])
+' 
+'   '-->E
+'   c1 = ARC_TO_BEZIER * radius_x[2]
+'   c2 = ARC_TO_BEZIER * radius_y[2]
+'   paint.relcurveto(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+' 
+'   '-->F
+'   paint.rellineto(- w + radius_x[2] + Radius_X[3], 0)
+' 
+'   '-->G
+'   c1 = ARC_TO_BEZIER * radius_x[3]
+'   c2 = ARC_TO_BEZIER * radius_y[3]
+'   paint.relcurveto(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+'   '-->H
+'   paint.rellineto(0, - h + radius_y[3] + radius_y[0])
+' 
+'   '-->A
+'   c1 = ARC_TO_BEZIER * radius_x[0]
+'   c2 = ARC_TO_BEZIER * radius_y[0]
+'   paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+' 
+'   'paint.closepath()
+' 
+' End
 
 Public Sub crdCorner_Change()
 

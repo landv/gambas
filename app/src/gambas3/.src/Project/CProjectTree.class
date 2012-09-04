@@ -34,12 +34,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim bShow As Boolean
   Dim sExt As String
   Dim sParent As String
-  Dim hImage As Image
   Dim hPict As Picture
   Dim bChecked As Boolean
   Dim bDir As Boolean
   Dim sAfter As String
-  Dim hForm As Object
   Dim hModule As CModule
   Dim bSource As Boolean
 
@@ -252,7 +250,7 @@ Private Procedure AddDir(Optional sDir As String)
     For Each sFile In aFile
   
       sFile = Mid$(sFile, 2)
-      If AddFile(sDir, sFile, True) Then cDir.Add(sDir &/ sFile)
+      If AddFile(sDir, sFile, True ) Then cDir.Add(sDir &/ sFile)
       'AddFile(sDir, sFile, True)
       
     Next
@@ -267,14 +265,8 @@ End
 
 Private Sub FillTree()
 
-  Dim sFile As String
-  Dim sDir As String
   Dim sKey As String
   Dim sKeyReset As String
-  Dim hFile As Object
-  Dim sPath As String
-  Dim sFamily As String
-  Dim hModule As CModule
 
   '$bDisplayForm = Settings["/DisplayForm"]
 
@@ -361,8 +353,6 @@ Private Sub FindKey(sClass As String) As String
   Dim hModule As CModule
   
   Dim sPath As String
-  Dim aDir As String[]
-  Dim iInd As Integer
 
   If Not sClass Then Return
 
@@ -378,11 +368,10 @@ End
 Private Sub RefreshSourceCache()
 
   Dim sPath As String
-  Dim hForm As Object
   
   $cSourceDir = New Collection(gb.IgnoreCase)
   
-  For Each sPath In RDir($sSourceDir, "*", gb.File + gb.Directory, True)
+  For Each sPath In RDir($sSourceDir, "*", gb.File + gb.Directory, True )
     If CModule.Ext.Exist(File.Ext(sPath)) Then
       $cSourceDir[File.Name(sPath)] = $sSourceDir &/ sPath
     Endif
@@ -410,7 +399,7 @@ Private Sub DoRefreshAfter()
     For iInd = 0 To iCount - 1
       sKey = $aRefreshAfter[0]
       $aRefreshAfter.Remove(0)
-      AddFile(File.Dir(sKey), File.Name(sKey), True)
+      AddFile(File.Dir(sKey), File.Name(sKey), True )
     Next
     If $aRefreshAfter.Count >= iCount Then Break
   Loop
@@ -418,7 +407,7 @@ Private Sub DoRefreshAfter()
   If $aRefreshAfter.Count Then 
     For iInd = 0 To $aRefreshAfter.Max
       sKey = $aRefreshAfter[iInd]
-      AddFile(File.Dir(sKey), File.Name(sKey), True, True)
+      AddFile(File.Dir(sKey), File.Name(sKey), True , True )
       $aRefreshAfter[iInd] = File.BaseName(sKey)
     Next
     'FMain.ShowError(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
@@ -464,7 +453,6 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   
   Dim hImage As Image
   Dim hPict As Picture
-  Dim hStartup As Picture
   Dim sKey As String
   Dim sCacheKey As String
   Dim bLink As Boolean
@@ -475,15 +463,11 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim hFile As File
   Dim sPrefix As String
   Dim bNoStartup As Boolean
-  Dim iDim As Integer
   Dim bConflict As Boolean
-  Dim hConflict As Image
   Dim sModule As String
   Dim sLocalPrefix As String
   Dim bLocked As Boolean
   Dim bAdded As Boolean
-  Dim hProject As CProjectInfo
-  Dim sLink As String
   Dim bExported As Boolean
   
   If iSize Then 

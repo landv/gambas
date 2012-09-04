@@ -8,7 +8,7 @@ Property Locked As Boolean
 Property Expanded As Boolean
 Property Read Picture As Picture
 
-Static Private $iMaxWidth As Integer
+'Static Private $iMaxWidth As Integer
 
 'Private panName As HPanel
 'Private picCheck As PictureBox
@@ -27,11 +27,11 @@ Private $bLock As Boolean
 Private $sKey As String
 Private $sDesc As String
 Private $sInfo As String
-Private $hWatch As Observer
-Private $bAnim As Boolean
-Private $iLastW As Integer
+'Private $hWatch As Observer
+'Private $bAnim As Boolean
+'Private $iLastW As Integer
 Private $bExpanded As Boolean
-Private $bCanArrange As Boolean
+'Private $bCanArrange As Boolean
 
 Private Sub AddInfo(aInfo As String[], sTitle As String)
 
@@ -119,7 +119,6 @@ Public Sub GetDescription() As String
   Dim hComp As CComponent
   Dim aInfo As String[]
   Dim I As Integer
-  Dim H As Integer
 
   hComp = CComponent.All[$sKey]
 

@@ -99,7 +99,6 @@ Private Sub CreateMenu(hCCtrl As CControl)
 
   Dim hCMenu As CMenu
   Dim hMenu As Menu
-  Dim iPos As Integer
   
   hCMenu = New CMenu
   
@@ -158,8 +157,6 @@ End
 Private Sub LoadAllMenu()
 
   Dim hCtrl As CControl
-  Dim hCMenu As CMenu
-  Dim iInd As Integer
 
   $bFreeze = True
 
@@ -183,7 +180,7 @@ Private Sub LoadAllMenu()
   ' 
   ' lstMenu.Index = 0
   
-  $aMenu.Add(Null)
+  $aMenu.Add(Null )
   gvwMenu.Rows.Count = $aMenu.Count
   gvwMenu.Rows.Height = Max(18, gvwMenu.Font.Height)
   
@@ -201,7 +198,6 @@ Private Sub SaveAllMenu()
   Dim hCMenu As CMenu
   Dim hParent As CControl
   Dim iLevel As Integer
-  Dim sText As String
 
   $hForm.GetUndo().Begin
 
@@ -603,8 +599,6 @@ End
 
 Public Sub btnNext_Click()
 
-  Dim iIndex As Integer
-
   If $iCurrent < $aMenu.Count Then
     Inc gvwMenu.Row
   Endif
@@ -626,8 +620,6 @@ End
 Public Sub btnUp_Click()
 
   Dim iInd As Integer
-  Dim sItem As String
-  Dim hCMenu As CMenu
   Dim iCount As Integer
   Dim aSel As New Integer[]
 
@@ -660,8 +652,6 @@ End
 Public Sub btnDown_Click()
 
   Dim iInd As Integer
-  Dim sItem As String
-  Dim hCMenu As CMenu
   Dim iCount As Integer
   Dim aSel As New Integer[]
 

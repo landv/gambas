@@ -74,13 +74,13 @@ Public Sub _new(sExpr As String, sInfo As String)
   $sInfo = sInfo
   
   'Project.Config.Read(ME, $sKey)
-  btnShowAll.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False]
+  btnShowAll.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False ]
   
   If sInfo = YW_DUMMY_INFO Then
     Me.Enabled = False
     Me.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
   Else 
-    If Init(sInfo, True) Then
+    If Init(sInfo, True ) Then
       Me.Close
       Return
     Endif
@@ -262,7 +262,6 @@ Public Sub gvwExpr_Activate()
 
   Dim sText As String
   Dim sVal As String
-  Dim sExpr As String
   Dim sSym As String
 
   If gvwExpr.Row >= 0 Then
@@ -311,7 +310,6 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   Dim aDynamic As New String[]
   Dim sSym As String
   Dim sType As String
-  Dim iCol As Integer
   Dim nRow As Integer
   Dim iSize As Integer
   Dim nRowAsArray As Integer = -1
@@ -510,7 +508,7 @@ Public Sub RefreshInfo(sInfo As String)
     Next 
 
     $cVal.Clear
-    Init(sInfo, False) 
+    Init(sInfo, False ) 
 
 End
 
@@ -619,7 +617,6 @@ Static Public Sub ReadSettings()
   Dim iCount As Integer
   Dim iInd As Integer
   Dim sString As String
-  Dim sArg As String[]
   Dim sFlag As String
   
   sFlag = "/DebugWindow"
@@ -718,7 +715,7 @@ End
 Public Sub btnShowAll_Click()
 
   $cVal.Clear
-  Init($sInfo, False)
+  Init($sInfo, False )
 
 End
 
@@ -751,10 +748,9 @@ Public Sub gvwExpr_Scroll()
 
 End
 
-Public Sub gvwExpr_Save(Row As Integer, Column As Integer, Value As String)
+Public Sub gvwExpr_Save(Row As Integer, (Column) As Integer, Value As String)
 
   Dim sSym As String
-  Dim sVal As String
 
   Value = Trim(Value)
   If Value Then

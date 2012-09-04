@@ -84,7 +84,6 @@ End
 
 Public Sub InitControl()
 
-  Dim aProp As String[]
   Dim sProp As String
   Dim sStr As String
   Dim sParent As String
@@ -94,7 +93,6 @@ Public Sub InitControl()
   Dim sDefVal As String
   Dim iPos As Integer
   Dim iPos2 As Integer
-  Dim hClass As CClassInfo
   Dim bRemove As Boolean
   Dim aCont As String[]
   Dim sKind As String
@@ -229,7 +227,7 @@ Public Sub InitControl()
         bDoNotApply = VirtualControl
       Endif
       
-      hProp = New CPropertyInfo(Component, Name, sProp, sKind, Null, False, bDoNotApply, sDefVal)
+      hProp = New CPropertyInfo(Component, Name, sProp, sKind, False, bDoNotApply, sDefVal)
       Properties[sProp] = hProp
     Endif
 
@@ -268,21 +266,21 @@ Public Sub InitControl()
     If hProp.Translate Then bTranslate = True
   Next
 
-  Properties["#X"] = New CPropertyInfo("", Name, "#X", "", Null, True, True)
-  Properties["#Y"] = New CPropertyInfo("", Name, "#Y", "", Null, True, True)
+  Properties["#X"] = New CPropertyInfo("", Name, "#X", "", True, True)
+  Properties["#Y"] = New CPropertyInfo("", Name, "#Y", "", True, True)
   If Not VirtualControl Then
-    Properties["#Width"] = New CPropertyInfo("", Name, "#Width", "", Null, True, True)
-    Properties["#Height"] = New CPropertyInfo("", Name, "#Height", "", Null, True, True)
+    Properties["#Width"] = New CPropertyInfo("", Name, "#Width", "", True, True)
+    Properties["#Height"] = New CPropertyInfo("", Name, "#Height", "", True, True)
   Endif
   
   If VirtualControl Then
     
-    hProp = New CPropertyInfo("", Name, "X", "", Null, True, True, "0")
+    hProp = New CPropertyInfo("", Name, "X", "", True, True, "0")
     hProp.Exclude = True
     Properties["X"] = hProp
     PropertyList.Add("X")
     
-    hProp = New CPropertyInfo("", Name, "Y", "", Null, True, True, "0")
+    hProp = New CPropertyInfo("", Name, "Y", "", True, True, "0")
     hProp.Exclude = True
     Properties["Y"] = hProp
     PropertyList.Add("Y")
@@ -292,21 +290,21 @@ Public Sub InitControl()
   CPropertyInfo.CreatingSpecialProperty = True
   
   If bTranslate Then
-    Properties[CPropertyInfo.TRANSLATE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.TRANSLATE_NAME, "", Null)
+    Properties[CPropertyInfo.TRANSLATE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.TRANSLATE_NAME, "")
     PropertyList.Add(CPropertyInfo.TRANSLATE_NAME, 0)
   Endif
 
   If {Form} Then 
     If Family = "Form" Then
-      Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", Null)
+      Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "")
       PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
     Endif
   Else
-    Properties[CPropertyInfo.PUBLIC_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.PUBLIC_NAME, "", Null)
+    Properties[CPropertyInfo.PUBLIC_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.PUBLIC_NAME, "")
     PropertyList.Add(CPropertyInfo.PUBLIC_NAME, 0)
   Endif
 
-  Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "", Null)
+  Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "")
   PropertyList.Add(CPropertyInfo.EVENT_NAME, 0)
 
   CPropertyInfo.CreatingSpecialProperty = False

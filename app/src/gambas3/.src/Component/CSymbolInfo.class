@@ -137,96 +137,96 @@ Private Sub NextArg()
 
 End
 
-Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
-  
-  Dim sCar As String
-  Dim iInd As Integer
-  Dim aWait As New String[]
-  Dim bString As Boolean
-  Dim sSign As String
-  Dim bOptional As Boolean
-  
-  If iShowArg < 0 Then Return sCode
-  
-  $iArg = -1
-  $iShowArg = iShowArg
-  NextArg
-  sSign = $sArgBefore
-
-  Do
-    
-    Inc iInd
-    If iInd > Len(sCode) Then Break
-    
-    sCar = Mid$(sCode, iInd, 1)
-
-    If bString Then
-      sSign &= sCar
-      If sCar = "\\" Then
-        Inc iInd
-        If iInd > Len(sCode) Then Break
-        sSign &= Mid$(sCode, iInd, 1)
-      Endif
-      Continue
-    Endif
-    
-    If sCar = Chr$(34) Then
-      sSign &= sCar
-      bString = Not bString
-      Continue
-    Endif
-    
-    If sCar = "(" Then
-      sSign &= sCar
-      aWait.Push(")")
-    Else If sCar = "[" Then
-      sSign &= sCar
-      aWait.Push("]")
-    Else If aWait.Count Then
-      sSign &= sCar
-      If sCar = aWait[aWait.Max] Then
-        aWait.Pop
-      Endif
-    Else If Mid$(sCode, iInd, 9) = "OPTIONAL " Then
-      iInd += 7
-      If Not bOptional Then 
-        sSign &= " ["
-      Endif
-      bOptional = True
-    Else If Mid$(sCode, iInd, 2) = ", " Then
-      sSign &= $sArgAfter 
-      If Mid$(sCode, iInd, 11) = ", OPTIONAL " Then
-        If Not bOptional Then 
-          sSign &= " ["
-          bOptional = True
-        Endif 
-        iInd += 9
-      Endif
-      sSign &= ", "
-      NextArg
-      sSign &= $sArgBefore
-    Else If Mid$(sCode, iInd, 3) = "..." Then 
-      If $iShowArg > $iArg Then
-        sSign &= "<u>...</u>"
-      Else 
-        sSign &= "..."
-      Endif 
-      iInd += 2
-    Else
-      sSign &= sCar
-    Endif
-    
-  Loop
-  
-  If bOptional Then
-    sSign &= $sArgAfter & " ]"
-  Else 
-    sSign &= $sArgAfter
-  Endif
-  
-  Return sSign  
-  
-End
+' Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
+'   
+'   Dim sCar As String
+'   Dim iInd As Integer
+'   Dim aWait As New String[]
+'   Dim bString As Boolean
+'   Dim sSign As String
+'   Dim bOptional As Boolean
+'   
+'   If iShowArg < 0 Then Return sCode
+'   
+'   $iArg = -1
+'   $iShowArg = iShowArg
+'   NextArg
+'   sSign = $sArgBefore
+' 
+'   Do
+'     
+'     Inc iInd
+'     If iInd > Len(sCode) Then Break
+'     
+'     sCar = Mid$(sCode, iInd, 1)
+' 
+'     If bString Then
+'       sSign &= sCar
+'       If sCar = "\\" Then
+'         Inc iInd
+'         If iInd > Len(sCode) Then Break
+'         sSign &= Mid$(sCode, iInd, 1)
+'       Endif
+'       Continue
+'     Endif
+'     
+'     If sCar = Chr$(34) Then
+'       sSign &= sCar
+'       bString = Not bString
+'       Continue
+'     Endif
+'     
+'     If sCar = "(" Then
+'       sSign &= sCar
+'       aWait.Push(")")
+'     Else If sCar = "[" Then
+'       sSign &= sCar
+'       aWait.Push("]")
+'     Else If aWait.Count Then
+'       sSign &= sCar
+'       If sCar = aWait[aWait.Max] Then
+'         aWait.Pop
+'       Endif
+'     Else If Mid$(sCode, iInd, 9) = "OPTIONAL " Then
+'       iInd += 7
+'       If Not bOptional Then 
+'         sSign &= " ["
+'       Endif
+'       bOptional = True
+'     Else If Mid$(sCode, iInd, 2) = ", " Then
+'       sSign &= $sArgAfter 
+'       If Mid$(sCode, iInd, 11) = ", OPTIONAL " Then
+'         If Not bOptional Then 
+'           sSign &= " ["
+'           bOptional = True
+'         Endif 
+'         iInd += 9
+'       Endif
+'       sSign &= ", "
+'       NextArg
+'       sSign &= $sArgBefore
+'     Else If Mid$(sCode, iInd, 3) = "..." Then 
+'       If $iShowArg > $iArg Then
+'         sSign &= "<u>...</u>"
+'       Else 
+'         sSign &= "..."
+'       Endif 
+'       iInd += 2
+'     Else
+'       sSign &= sCar
+'     Endif
+'     
+'   Loop
+'   
+'   If bOptional Then
+'     sSign &= $sArgAfter & " ]"
+'   Else 
+'     sSign &= $sArgAfter
+'   Endif
+'   
+'   Return sSign  
+'   
+' End
 
 Private Sub MakeSignature(sSign As String) As String
   
@@ -364,7 +364,6 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
   Dim sKeywordByRef As String
   Dim sSym As String
   Dim hClass As CClassInfo
-  Dim sParent As String
   Dim hSym As CSymbolInfo
 
   sKeywordAs = If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As")
@@ -568,7 +567,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
   Endif
   
   If InStr(":mx", LCase(Kind)) Then 
-    sSign = GetSignature(False)
+    sSign = GetSignature(False )
     If sSign Then
       sDesc &= sSign
     Else
@@ -715,7 +714,6 @@ Public Function GetHelpURL() As String
   
   Dim sPath As String
   Dim sName As String
-  Dim sRes As String
   Dim sComp As String
   
   If Component = "gb" And If Class = "." Then
@@ -752,124 +750,124 @@ End
 ''
 '' The HTML is returned.
 
-Private Sub DecodeHelpLine(sLine As String) As String
-  
-  Dim iPos As Integer
-  Dim iLen As Integer = String.Len(sLine)
-  Dim sChar As String
-  Dim sHtml As String
-  Dim sWait As String
-  Dim bBold, bItalic, bMonospace, bUnderline As Boolean
-  Dim iSavePos As Integer
-  Dim sLink As String
-  Dim iPoint As Integer
-  Dim hClass As CClassInfo
-  Dim hSymbol As CSymbolInfo
-  Dim sHtmlAfter As String
-  
-  sLine = RTrim(sLine)
-  If Not sLine Then Return "<p>"
-  If sLine = "--" Then Return "<hr>"
-  
-  If sLine Begins "-" Then 
-    sHtml = "<li>"
-    sHtmlAfter = "</li>"
-    sLine = Mid$(sLine, 2)
-  Else If sLine Begins "+" Then
-    iPoint = 2
-    While Left(sLine) = "+" 
-      sLine = Mid$(sLine, 2)
-      Inc iPoint
-    Wend
-    sHtml = "<h" & iPoint & ">"
-    sHtmlAfter &= "</h" & iPoint & ">"
-  Endif
-  
-  Do
-  
-    Inc iPos
-    If iPos > iLen Then Break
-
-    sChar = String.Mid(sLine, iPos, 1)
-  
-    If sWait = ">" Then
-      sHtml &= sChar
-      If sChar = ">" Then sWait = ""
-      Continue
-    Else If sWait = "]" Then
-      If sChar <> "]" Then Continue
-      sWait = ""
-      sLink = String.Mid$(sLine, iSavePos, iPos - iSavePos)
-      sChar = sLink
-      If sLink Like "*://*" Then
-      Else
-        iPoint = InStr(sLink, "|")
-        If iPoint Then
-          sChar = Mid$(sLink, iPoint + 1)
-          sLink = Left(sLink, iPoint - 1)
-        Endif
-        iPoint = RInStr(sLink, ".")
-        If iPoint = 0 Then
-          If UCase(sLink) = sLink Then
-            sLink = MHelp.GetLangURL(sLink)
-          Else
-            hClass = Null
-            Try hClass = CComponent.Classes[sLink]
-            If hClass Then
-              sLink = hClass.GetHelpURL()
-            Else
-              sLink = ""
-            Endif
-          Endif
-        Else
-          hSymbol = Null
-          Try hSymbol = CComponent.Classes[Trim(Left(sLink, iPoint - 1))].Symbols[Trim(Mid$(sLink, iPoint + 1))]
-          If hSymbol Then
-            sLink = hSymbol.GetHelpURL()
-          Else
-            sLink = ""
-          Endif
-        Endif
-      Endif
-      If sLink Then
-        sHtml &= "<a href=\"" & sLink & "\">" & Html(sChar) & "</a>"
-      Else
-        sHtml &= "<i>" & Html(sChar) & "?</i>"
-      Endif
-      Continue
-    Endif
-    
-    If sChar = "\\" Then
-      sHtml &= Html(String.Mid$(sLine, iPos + 1, 1))
-      Inc iPos
-    Else If sChar = "<" Then
-      sHtml &= sChar
-      sWait = ">"
-    Else If sChar = "*" Then
-      bBold = Not bBold
-      sHtml &= If(bBold, "<b>", "</b>")
-    Else If sChar = "=" Then
-      bMonospace = Not bMonospace
-      sHtml &= If(bMonospace, "<tt>", "</tt>")
-    Else If sChar = "'" Then
-      bItalic = Not bItalic
-      sHtml &= If(bItalic, "<i>", "</i>")
-    Else If sChar = "#" Then
-      bUnderline = Not bUnderline
-      sHtml &= If(bUnderline, "<u>", "</u>")
-    Else If sChar = "[" Then
-      sWait = "]"
-      iSavePos = iPos + 1
-    Else
-      sHtml &= Html(sChar)
-    Endif
-  
-  Loop
-  
-  sHtml &= sHtmlAfter
-  Return sHtml
-  
-End
+' Private Sub DecodeHelpLine(sLine As String) As String
+'   
+'   Dim iPos As Integer
+'   Dim iLen As Integer = String.Len(sLine)
+'   Dim sChar As String
+'   Dim sHtml As String
+'   Dim sWait As String
+'   Dim bBold, bItalic, bMonospace, bUnderline As Boolean
+'   Dim iSavePos As Integer
+'   Dim sLink As String
+'   Dim iPoint As Integer
+'   Dim hClass As CClassInfo
+'   Dim hSymbol As CSymbolInfo
+'   Dim sHtmlAfter As String
+'   
+'   sLine = RTrim(sLine)
+'   If Not sLine Then Return "<p>"
+'   If sLine = "--" Then Return "<hr>"
+'   
+'   If sLine Begins "-" Then 
+'     sHtml = "<li>"
+'     sHtmlAfter = "</li>"
+'     sLine = Mid$(sLine, 2)
+'   Else If sLine Begins "+" Then
+'     iPoint = 2
+'     While Left(sLine) = "+" 
+'       sLine = Mid$(sLine, 2)
+'       Inc iPoint
+'     Wend
+'     sHtml = "<h" & iPoint & ">"
+'     sHtmlAfter &= "</h" & iPoint & ">"
+'   Endif
+'   
+'   Do
+'   
+'     Inc iPos
+'     If iPos > iLen Then Break
+' 
+'     sChar = String.Mid(sLine, iPos, 1)
+'   
+'     If sWait = ">" Then
+'       sHtml &= sChar
+'       If sChar = ">" Then sWait = ""
+'       Continue
+'     Else If sWait = "]" Then
+'       If sChar <> "]" Then Continue
+'       sWait = ""
+'       sLink = String.Mid$(sLine, iSavePos, iPos - iSavePos)
+'       sChar = sLink
+'       If sLink Like "*://*" Then
+'       Else
+'         iPoint = InStr(sLink, "|")
+'         If iPoint Then
+'           sChar = Mid$(sLink, iPoint + 1)
+'           sLink = Left(sLink, iPoint - 1)
+'         Endif
+'         iPoint = RInStr(sLink, ".")
+'         If iPoint = 0 Then
+'           If UCase(sLink) = sLink Then
+'             sLink = MHelp.GetLangURL(sLink)
+'           Else
+'             hClass = Null
+'             Try hClass = CComponent.Classes[sLink]
+'             If hClass Then
+'               sLink = hClass.GetHelpURL()
+'             Else
+'               sLink = ""
+'             Endif
+'           Endif
+'         Else
+'           hSymbol = Null
+'           Try hSymbol = CComponent.Classes[Trim(Left(sLink, iPoint - 1))].Symbols[Trim(Mid$(sLink, iPoint + 1))]
+'           If hSymbol Then
+'             sLink = hSymbol.GetHelpURL()
+'           Else
+'             sLink = ""
+'           Endif
+'         Endif
+'       Endif
+'       If sLink Then
+'         sHtml &= "<a href=\"" & sLink & "\">" & Html(sChar) & "</a>"
+'       Else
+'         sHtml &= "<i>" & Html(sChar) & "?</i>"
+'       Endif
+'       Continue
+'     Endif
+'     
+'     If sChar = "\\" Then
+'       sHtml &= Html(String.Mid$(sLine, iPos + 1, 1))
+'       Inc iPos
+'     Else If sChar = "<" Then
+'       sHtml &= sChar
+'       sWait = ">"
+'     Else If sChar = "*" Then
+'       bBold = Not bBold
+'       sHtml &= If(bBold, "<b>", "</b>")
+'     Else If sChar = "=" Then
+'       bMonospace = Not bMonospace
+'       sHtml &= If(bMonospace, "<tt>", "</tt>")
+'     Else If sChar = "'" Then
+'       bItalic = Not bItalic
+'       sHtml &= If(bItalic, "<i>", "</i>")
+'     Else If sChar = "#" Then
+'       bUnderline = Not bUnderline
+'       sHtml &= If(bUnderline, "<u>", "</u>")
+'     Else If sChar = "[" Then
+'       sWait = "]"
+'       iSavePos = iPos + 1
+'     Else
+'       sHtml &= Html(sChar)
+'     Endif
+'   
+'   Loop
+'   
+'   sHtml &= sHtmlAfter
+'   Return sHtml
+'   
+' End
 
 
 Public Function GetHelpHTML() As String
@@ -943,7 +941,7 @@ Public Function GetHelpHTML() As String
   
   'If Me.IsStatic() Then sHTML &= "<font color=\"blue\">STATIC </font>"
 
-  sSyntax &= Me.GetDescription(False)
+  sSyntax &= Me.GetDescription(False )
   sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
   
   Highlight.Analyze(sSyntax)

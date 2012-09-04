@@ -40,7 +40,6 @@ End
 Public Sub Form_Open()
 
   Dim iPos As Integer
-  Dim sCar As Integer
   
   For iPos = 1 To Len(Coord)
     If InStr("0123456789.", Mid$(Coord, iPos, 1)) = 0 Then Break

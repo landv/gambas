@@ -159,8 +159,6 @@ End
 
 Public Sub cmbTheme_Click()
 
-  Dim cColor As Collection
-
   If cmbTheme.Index <= 0 Then Return
 
   $cCurrent = MTheme.ReadFile($aTheme[$aThemeName.Find(cmbTheme.Text)])
@@ -480,7 +478,6 @@ Public Sub dwgStyle_Draw()
   Dim hDraw As DrawingArea = Last
   Dim sKey As String = hDraw.Parent.Tag
   Dim hStyle As CStyle = CStyle[$cCurrent[sKey]]
-  Dim hStyle2 As CStyle
   Dim sName As String
   Dim iForeground As Integer
   Dim iBackground As Integer

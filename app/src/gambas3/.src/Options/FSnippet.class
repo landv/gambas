@@ -16,8 +16,6 @@ End
 Public Sub btnOK_Click()
 
   Dim sTrigger As String
-  Dim iFind As Integer
-  Dim sPattern As String
 
   sTrigger = String.LCase(Trim(txtTrigger.Text))
   txtTrigger.Text = sTrigger

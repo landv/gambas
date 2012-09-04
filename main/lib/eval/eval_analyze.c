@@ -61,12 +61,16 @@ static int get_type(PATTERN *pattern)
 	return type;
 }
 
-static int is_me_last(PATTERN pattern)
+static int is_me_last_kind(PATTERN pattern)
 {
 	return PATTERN_is(pattern, RS_ME)
 				|| PATTERN_is(pattern, RS_SUPER)
-				|| PATTERN_is(pattern, RS_LAST)
-				|| PATTERN_is(pattern, RS_OPTIONAL)
+				|| PATTERN_is(pattern, RS_LAST);
+}
+
+static int is_optional_kind(PATTERN pattern)
+{
+	return PATTERN_is(pattern, RS_OPTIONAL)
 				|| PATTERN_is(pattern, RS_TRUE)
 				|| PATTERN_is(pattern, RS_FALSE)
 				|| PATTERN_is(pattern, RS_PINF)
@@ -323,14 +327,29 @@ static void analyze(EVAL_ANALYZE *result)
 				//state = Keyword;
 				//if (old_type != EVAL_TYPE_OPERATOR)
 				//me = is_me_last(*pattern);
-				if (!is_me_last(*pattern))
-					space_before = TRUE;
-				else
+				
+				if (is_me_last_kind(*pattern))
 				{
+					if (old_type != EVAL_TYPE_OPERATOR)
+						space_before = TRUE;
 					next_type = EVAL_TYPE_IDENTIFIER;
+				}
+				else if (is_optional_kind(*pattern))
+				{
 					if (old_type != EVAL_TYPE_OPERATOR)
 						space_before = TRUE;
 				}
+				else
+					space_before = TRUE;
+				
+				/*if (!is_me_last_kind(*pattern))
+					space_before = TRUE;
+				else
+				{
+					if (*pattern != RS_OPTIONAL)
+					if (old_type != EVAL_TYPE_OPERATOR)
+						space_before = TRUE;
+				}*/
 				
 				if (preprocessor && PATTERN_is(pattern[-1], RS_SHARP))
 					space_before = FALSE;

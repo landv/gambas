@@ -77,10 +77,6 @@ End
 
 Private Sub LoadList(Optional sTable As String)
   
-  Dim hTable As Table
-  Dim hPict As Picture
-  Dim sKey As String
-  
   MConnection.FillViewWithTables(lvwTable, $hConn, $bShowSystem)
   
   If sTable Then
@@ -163,7 +159,7 @@ Public Sub Reload() As Boolean
   Endif
 
   $hConn = New Connection
-  MConnection.InitFrom($hConn, hConfig, Me.Name, True)
+  MConnection.InitFrom($hConn, hConfig, Me.Name, True )
 
   Inc Application.Busy
 
@@ -227,7 +223,7 @@ End
 
 Private Sub DrawTitle()
 
-  Project.DrawTitle(Me, True)
+  Project.DrawTitle(Me, True )
 
 End
 
@@ -264,7 +260,6 @@ End
 Public Sub ReadConfig()
   
   Dim hCtrl As Control
-  Dim iGrade As Integer
   
   edtRequest.ReadConfig
   edtRequest.Flags[Editor.ShowLimits] = False
@@ -299,7 +294,7 @@ Private Sub CheckCurrent() As Boolean
       Case 1
         If Save() Then Goto CANCEL
       Case 2
-        Modify(True)
+        Modify(True )
       Case 3
         Goto CANCEL
     End Select
@@ -572,7 +567,7 @@ Public Sub tbvField_Click()
 
     Case 2
       '.ShowComboBox([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True, True)
-      tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True)
+      tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True )
 
     Case 3
       If hField.Type = gb.String Then
@@ -610,11 +605,11 @@ Public Sub tbvIndex_Click()
 
     Case 1
       If hIndex.Index Then
-        tbvIndex.Edit(["True", "False"], True)
+        tbvIndex.Edit(["True", "False"], True )
       Endif
 
     Case 2
-      tbvIndex.Edit(FreeIndexFields(True), True)
+      tbvIndex.Edit(FreeIndexFields(True ), True )
 
   End Select
 
@@ -959,7 +954,7 @@ Public Sub btnNewIndexField_Click()
 
   If tbvIndex.Save() Then Return
 
-  aField = FreeIndexFields(False)
+  aField = FreeIndexFields(False )
   If aField.Count = 0 Then Return
 
   hIndexField = New CIndexField
@@ -991,7 +986,6 @@ Public Sub btnKillIndex_Click()
   Dim sIndex As String
   Dim bUnique As Boolean
   Dim iRow As Integer
-  Dim hIndex As CIndexField
 
   If $bReadOnly Then Return
   If $aIndexField.Count = 0 Then Return
@@ -1164,7 +1158,6 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   Dim sTemp As String
   Dim rTemp As Result
   Dim rTable As Result
-  Dim hForm As Object
   Dim sError As String
 
   ' If $hFieldEditor.Hide() Then Return True
@@ -1205,7 +1198,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
       sTemp = MConnection.CopyTableData($hConn, $sTable)
     Endif
   
-    WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+    WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True )
     WriteTableDef($sTable, $sType, aPrimaryKey)
     
   Endif
@@ -1243,7 +1236,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   datData.Reset
   'datRequest.Reset
 
-  Modify(True)
+  Modify(True )
   ReloadTable
 
 Finally
@@ -1304,7 +1297,6 @@ End
 Public Sub btnNewTable_Click()
 
   Dim aType As String[]
-  Dim sTable As String
   Dim sName As String
 
   If CheckCurrent() Then Return
@@ -1371,7 +1363,7 @@ Public Sub btnRequest_Click()
   datData.Hide
   datRequest.Show
   tlbData.Hide
-  SetReadOnly(True)
+  SetReadOnly(True )
 
 End
 
@@ -1499,7 +1491,7 @@ End
 
 Public Sub edtRequest_GotFocus()
 
-  Project.SetCurrentPopup(Null)
+  Project.SetCurrentPopup(Null )
 
 End
 

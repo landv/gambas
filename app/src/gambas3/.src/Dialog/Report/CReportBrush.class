@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Export
 
 Public Enum TYPE_COLOR, TYPE_IMAGE, TYPE_LINEAR_GRADIENT, TYPE_RADIAL_GRADIENT
@@ -49,10 +50,7 @@ Static Public Sub _get(sValue As String) As CReportBrush
   Dim hBrush As New CReportBrush
   Dim iPos As Integer
   Dim sType As String
-  
   Dim ars As String[]
-  Dim i, j As Integer
-  Dim hLabel As Label
   
   sValue = Trim(sValue)
   
@@ -74,7 +72,7 @@ Static Public Sub _get(sValue As String) As CReportBrush
       
       hBrush.Type = TYPE_IMAGE
       'hBrush.Pattern = Image.Load(ars[0])
-      hBrush.Path = Unquote(ars[0])
+      hBrush.Path = UnQuote(ars[0])
       
     Case "radialgradient"
       

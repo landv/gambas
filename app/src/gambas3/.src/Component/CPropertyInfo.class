@@ -127,15 +127,13 @@ Private Sub GetFlag(cCol As Collection, sClass As String, sName As String) As Bo
 End
 
 
-Public Sub _new(sComponent As String, sClass As String, sName As String, sKind As String, hCtrl As Object, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
+Public Sub _new(sComponent As String, sClass As String, sName As String, sKind As String, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
 
   Dim iPos As Integer
-  Dim sType As String
   Dim sList As String
   Dim cList As String[]
   Dim hSym As CSymbolInfo
   'DIM sDefVal AS String
-  Dim bError As Boolean
   Dim sSign As String
   Dim sFirst As String
   Dim sArg As String

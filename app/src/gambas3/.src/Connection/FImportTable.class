@@ -15,8 +15,6 @@ Private $iIgnore As Integer
 Private $iLine As Integer
 Private $bImport As Boolean
 
-Private $cCar As New Collection
-
 Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅàáâãäå[a]Ææ[ae]Çç[c]ÈÉÊËèéêë[e]ÌÍÎÏìíîï[i]Ññ[n]ÒÓÔÕÖòóôõö[o]ÙÚÛÜùúûü[u]Ýýÿ[y]ß[ss]°[]"
 
 Static Public Function Run(hConn As Connection, aTable As String[], sPath As String) As Boolean
@@ -45,9 +43,7 @@ End
 Public Sub Form_Open()
 
   Dim hFile As File
-  Dim sLine As String
   Dim sData As String
-  Dim I As Integer
 
   txtPath.Text = $sPath
   'txtPath.Pos = txtPath.Length
@@ -295,8 +291,7 @@ End
 Private Sub DoImport()
   
   Dim hFile As File
-  Dim sLig, sPart As String
-  Dim nEsc As Integer
+  Dim sLig As String
   Dim aField As String[]
   Dim aLine As String[]
   Dim rData As Result
@@ -308,7 +303,6 @@ Private Sub DoImport()
   Dim sName As String
   Dim sKey As String
   Dim nImport As Integer
-  Dim cField As New Collection
   Dim sDestCharset As String
   Dim hWaiting As CWaitingAnimation
 

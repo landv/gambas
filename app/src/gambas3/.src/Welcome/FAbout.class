@@ -1,14 +1,14 @@
 ' Gambas class file
 
 Static Private $aSupport As String[]
-Static Private $iWait As Integer
-Static Private $iSupport As Integer
+'Static Private $iWait As Integer
+'Static Private $iSupport As Integer
 
-Private $aUser As New CUser[]
-Private $hBack As Picture
-Private $iStep As Integer
-Private $iFirst As Integer
-Private $bDrawAbout As Boolean
+'Private $aUser As New CUser[]
+'Private $hBack As Picture
+'Private $iStep As Integer
+'Private $iFirst As Integer
+'Private $bDrawAbout As Boolean
 
 Private Const NSTEP As Integer = 100
 
@@ -26,7 +26,6 @@ End
 
 Public Sub Form_Open()
 
-  Dim sText As String
   Dim hImage As Image
   Dim Y As Integer
   Dim E As Float
@@ -247,19 +246,19 @@ Public Sub btnGift_Click()
 End
 
 
-Private Sub DrawText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer, iShadow As Integer)
-
-  If iShadow <> Color.Default Then  
-    Draw.Foreground = iShadow
-    Draw.Text(sText, X, Y, W, H)
-    Draw.Text(sText, X + 2, Y, W, H)
-    Draw.Text(sText, X, Y + 2, W, H)
-    Draw.Text(sText, X + 2, Y + 2, W, H)
-  Endif
-  Draw.Foreground = iColor
-  Draw.Text(sText, X + 1, Y + 1, W, H)
-  
-End
+' Private Sub DrawText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer, iShadow As Integer)
+' 
+'   If iShadow <> Color.Default Then  
+'     Draw.Foreground = iShadow
+'     Draw.Text(sText, X, Y, W, H)
+'     Draw.Text(sText, X + 2, Y, W, H)
+'     Draw.Text(sText, X, Y + 2, W, H)
+'     Draw.Text(sText, X + 2, Y + 2, W, H)
+'   Endif
+'   Draw.Foreground = iColor
+'   Draw.Text(sText, X + 1, Y + 1, W, H)
+'   
+' End
 
 
 ' Private Sub InitUser()
@@ -379,12 +378,12 @@ End
 ' 
 ' End
 
-Private Sub GetFontSize(hUser As CUser) As Float
-  
-  Return 8 + Min(32, hUser.Score)
-  
-End
-
+' Private Sub GetFontSize(hUser As CUser) As Float
+'   
+'   Return 8 + Min(32, hUser.Score)
+'   
+' End
+' 
 ' Private Sub DisplayText(iIndex As Integer) As Boolean
 '   
 '   Dim hUser As CUser

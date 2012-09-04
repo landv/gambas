@@ -43,7 +43,7 @@ Private Sub LoadConnection()
   
 End
 
-Private Sub FillConfig(hConfig As Object, Optional bPassword As Boolean)
+Private Sub FillConfig(hConfig As Object)
   
   hConfig["Connection/Type"] = LCase(cmbType.Text)
   hConfig["Connection/Host"] = txtHost.Text
@@ -233,7 +233,7 @@ Public Sub txtDatabase_Click()
   
     Inc Application.Busy
     lvwDatabase.Clear
-    FillConfig(hConfig, True)
+    FillConfig(hConfig)
     MConnection.InitFrom($hConn, hConfig, txtName.Text)
     $hConn.Open
     FillDatabaseList

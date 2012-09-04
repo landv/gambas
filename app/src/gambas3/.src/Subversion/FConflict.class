@@ -2,7 +2,6 @@
 
 Private $sPath As String
 Private $sLoadedPath As String
-Private $bArrange As Boolean
 Private $bModify As Boolean
 Private $iType As Integer
 Private $hForm As FInfo
@@ -128,10 +127,6 @@ End
 
 Public Sub Form_Open()
 
-  Dim sFile As String
-  Dim iRev As Integer
-  Dim iMaxRev As Integer
-
   Me.Title = Mid$($sPath, Len(Project.Dir) + 2) & " - " & ("Version conflict")
   Me.Icon = Project.GetFileIcon($sPath)
   
@@ -157,7 +152,6 @@ Public Sub edtConflict_Highlight()
 
   Dim iState As Integer
   Dim sText As String
-  Dim iPos As Integer
 
   iState = Highlight.State
   sText = Highlight.Text

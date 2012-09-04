@@ -19,7 +19,6 @@ Private $bDoNotModify As Boolean
 Private $bModify As Boolean
 Private $bSelChange As Boolean
 Private $bReadOnly As Boolean
-Private $bActivate As Boolean
 Private $bLocked As Boolean
 Private $bScaled As Boolean
 Private $bNoRefreshMenu As Boolean
@@ -60,7 +59,6 @@ Private $iSaveY As Integer
 'PRIVATE $iIndent AS INTEGER
 Private $iSaveLevel As Integer
 Private $bSelectNew As Boolean
-Private $aSelectNew As CControl[]
 Private $bDoNotArrange As Boolean
 Private $cAction As Collection
 Private $cToolbar As Collection
@@ -119,7 +117,6 @@ End
 Public Sub Reload()
 
   Dim sData As String
-  Dim hCtrl As CControl
 
   sData = File.Load(Path)
 
@@ -232,15 +229,12 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim sOldClass As String
   Dim iPos, iPos2, iPos3 As Integer
   Dim sLine As String
-  Dim hData As CControl
   Dim sProperty As String
   Dim sValue As String
   Dim vValue As Variant
   Dim aVal As String[]
-  Dim iInd As Integer
   Dim iLevel As Integer
   Dim sEventName As String
-  Dim bBackport As Boolean
   Dim cCoord As String[]
   Dim eW, eH As Float
   Dim iW, iH As Integer
@@ -296,7 +290,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       sOldClass = ""
 
       If IsNull(hCtrl) Then
-        hCtrl = CreateControl(sClass, Null, Me.Name)
+        hCtrl = CreateControl(sClass, Null , Me.Name)
         RootControl = hCtrl
       Else
         hCtrl = CreateControl(sClass, hCtrl, sName)
@@ -308,7 +302,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       If sOldClass Then
         Print sOldClass; " -> "; sClass
         If sOldClass = "TextView" Then
-          hCtrl.SetProperty("ReadOnly", True)
+          hCtrl.SetProperty("ReadOnly", True )
         Else If sOldClass = "DateBox" Then
           hCtrl.SetProperty("Type", ValueBox.Date)
         Else If sOldClass = "TimeBox" Then
@@ -422,10 +416,10 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
                       vValue = False
                     Case "Resizable"
                       vValue = True
-                      hCtrl.SetProperty("Resizable", True)
+                      hCtrl.SetProperty("Resizable", True )
                     Case "Fixed"
                       vValue = True
-                      hCtrl.SetProperty("Resizable", False)
+                      hCtrl.SetProperty("Resizable", False )
                   End Select
 
                 Endif
@@ -447,11 +441,11 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
         If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
         cCoord = Split(Mid$(sLine, 6, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        Try hCtrl.Move(CInt(cCoord[0]) / Project.Snap * Desktop.Scale, CInt(cCoord[1]) / Project.Snap * Desktop.Scale, True)
+        Try hCtrl.Move(CInt(cCoord[0]) / Project.Snap * Desktop.Scale, CInt(cCoord[1]) / Project.Snap * Desktop.Scale, True )
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
         If cCoord.Count = 4 Then
-          Try hCtrl.Resize(CInt(cCoord[2]) / Project.Snap * Desktop.Scale, CInt(cCoord[3]) / Project.Snap * Desktop.Scale, True)
+          Try hCtrl.Resize(CInt(cCoord[2]) / Project.Snap * Desktop.Scale, CInt(cCoord[3]) / Project.Snap * Desktop.Scale, True )
         Endif
 
         If Error Then Print "Error: Syntax error: "; sLine
@@ -461,7 +455,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
         If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
         cCoord = Split(Mid$(sLine, 12, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        Try hCtrl.Move(Round(CFloat(cCoord[0]) * Desktop.Scale), Round(CFloat(cCoord[1]) * Desktop.Scale), True)
+        Try hCtrl.Move(Round(CFloat(cCoord[0]) * Desktop.Scale), Round(CFloat(cCoord[1]) * Desktop.Scale), True )
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
         If cCoord.Count = 4 Then
@@ -481,7 +475,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           Else
             iH = Round(eH * Desktop.Scale)
           Endif
-          Try hCtrl.Resize(iW, iH, True)
+          Try hCtrl.Resize(iW, iH, True )
         Endif
 
         If Error Then
@@ -520,7 +514,6 @@ End
 
 Private Sub SaveAction()
 
-  Dim hFile As File
   Dim cAction As Collection
   Dim cToolbar As Collection
   Dim sAction As String
@@ -704,17 +697,13 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim cProp As String[]
 
   Dim hTab As Object
-  Dim hSubTab As Object
   Dim iTab As Integer
   Dim sVal As String
-  Dim vVal As Variant
   Dim sArr As String
   Dim iArr As Integer
   Dim bInvert As Boolean
-  Dim sText As String
   Dim sName As String
   Dim sGroup As String
-  Dim sAction As String
   Dim bPublic As Boolean
   Dim bTranslate As Boolean
 
@@ -777,12 +766,12 @@ Private Sub SaveOne(hCtrl As CControl)
             hTab = hCtrl.Control
 
             For iTab = 0 To hTab.Count - 1
-              ArrangeContainer(hCtrl.Control, iArr, bInvert, False, iTab)
+              ArrangeContainer(hCtrl.Control, iArr, bInvert, False , iTab)
             Next
 
           Else
 
-            ArrangeContainer(hCtrl.Control, iArr, bInvert, False)
+            ArrangeContainer(hCtrl.Control, iArr, bInvert, False )
 
           Endif
 
@@ -813,10 +802,7 @@ Private Sub SaveOne(hCtrl As CControl)
       For iTab = 0 To hTab.Count - 1
 
         AddLine("Index = " & CStr(iTab))
-        'sVal = Replace(hTab[iTab].Text, "\\", "\\\\")
-        'sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
-        'sVal = Replace(sVal, gb.NewLine, "\\n")
-        sVal = Quote(sVal)
+        sVal = Quote(hTab[iTab].Text)
         If bTranslate Then
           AddLine("Text = (" & sVal & ")")
         Else
@@ -882,35 +868,6 @@ Public Sub Control_Resize()
 
 End
 
-Private $bInFormMove As Boolean
-
-' PUBLIC SUB Form_Move()
-'
-'   DIM X, Y AS Integer
-'
-'   IF NOT LAST.Visible THEN RETURN
-'   IF $bInFormMove THEN RETURN
-'
-'   $bInFormMove = TRUE
-'
-'   'DEBUG ME.Name;; ME.X;; ME.Y
-'
-'   WITH Control[Name]
-'
-'     X = .GetProperty("X")
-'     Y = .GetProperty("Y")
-'
-'     'DEBUG X;; Y;; "->";; ME.X;; ME.Y;; X <> ME.X;; Y <> ME.Y
-'
-'     IF X <> ME.X THEN .SetProperty("X", ME.X, TRUE)
-'     IF Y <> ME.Y THEN .SetProperty("Y", ME.Y, TRUE)
-'
-'   END WITH
-'
-'   $bInFormMove = FALSE
-'
-' END
-
 Public Sub Control_MouseDown()
 
   'PRINT "> Control_MouseDown"
@@ -969,7 +926,7 @@ Public Sub Control_MouseDown()
           UnSelectAll
         Endif
 
-        SelectCurrent(True)
+        SelectCurrent(True )
 
       Endif
 
@@ -1027,7 +984,6 @@ Public Sub Control_MouseMove()
   Dim bMoveX As Boolean
   Dim bMoveY As Boolean
   Dim hParent As CControl
-  Dim hControl As Control
 
   'Dim hForm As CControl = Control[Me.Name]
   'Debug Last;; Mouse.ScreenX - hForm.Control.ScreenX;; Mouse.ScreenY - hForm.Control.ScreenY
@@ -1037,7 +993,7 @@ Public Sub Control_MouseMove()
   
   'PRINT "Control_MouseMove  Mode ="; $iMode
 
-  If Mouse.Shift Then CControl.SetGrid(False)
+  If Mouse.Shift Then CControl.SetGrid(False )
 
   X = svwWorkspace.ScrollX + Mouse.ScreenX - svwWorkspace.ScreenX
   Y = svwWorkspace.ScrollY + Mouse.ScreenY - svwWorkspace.ScreenY
@@ -1055,7 +1011,7 @@ Public Sub Control_MouseMove()
       Last.Mouse = Mouse.Cross
 
       hParent = $hCurrent
-      $hCurrent = CreateControl($sTool, hParent,, True)
+      $hCurrent = CreateControl($sTool, hParent,, True )
 
       FindContainer(hParent, $X, $Y, COORD_INSIDE_TO_CONTROL)
       $X = $iContX
@@ -1074,7 +1030,7 @@ Public Sub Control_MouseMove()
       $hCurrent.Control.Mouse = Mouse.Cross
       
       UnselectAll
-      SelectCurrent(True)
+      SelectCurrent(True )
 
       FFormStack.RefreshAll
 
@@ -1127,7 +1083,7 @@ Public Sub Control_MouseMove()
         If iDepX <> 0 Or iDepY <> 0 Then
           For Each hCtrl In Selection
             If hCtrl <> Master Then
-              hCtrl.Move(hCtrl.Control.X + iDepX, hCtrl.Control.Y + iDepY, True)
+              hCtrl.Move(hCtrl.Control.X + iDepX, hCtrl.Control.Y + iDepY, True )
             Endif
           Next
           
@@ -1144,13 +1100,12 @@ Public Sub Control_MouseMove()
 
   Endif
 
-  CControl.SetGrid(True)
+  CControl.SetGrid(True )
 
 End
 
 Public Sub Control_MouseUp()
 
-  Dim hCont As Container
   Dim hCtrl As CControl
   Dim hPrevious As CControl
   Dim sFocus As String
@@ -1215,7 +1170,7 @@ Public Sub Control_MouseUp()
             For Each hPrevious In Selection
             Next
           Endif
-          hPrevious.Select(Me, True)
+          hPrevious.Select(Me, True )
         Endif
 
         UnselectCurrent
@@ -1223,12 +1178,12 @@ Public Sub Control_MouseUp()
       Else
 
         If Master = Null Then
-          SelectCurrent(True)
+          SelectCurrent(True )
         Else If $hCurrent.Parent = Master.Parent Then
           SelectCurrent
         Else
           UnSelectAll
-          SelectCurrent(True)
+          SelectCurrent(True )
         Endif
 
       Endif
@@ -1326,7 +1281,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   Endif
 
   Control[sName] = hCtrl
-  'If bSetText Then Try hCtrl.SetProperty("Text", sName)
+  If bSetText Then Try hCtrl.SetProperty("Text", sName)
 
   If sClass = "Menu" Then
     If hParent = RootControl Then
@@ -1372,7 +1327,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
   Endif
 
   $hUndo.Begin
-  hCtrl = CreateControl(sClass, hParent,, True)
+  hCtrl = CreateControl(sClass, hParent,, True )
 
   hCtrl.Move(X, Y)
 
@@ -1389,7 +1344,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
 
   $hCurrent = hCtrl
   UnSelectAll
-  SelectCurrent(True)
+  SelectCurrent(True )
   RefreshProperty
   FProperty.FocusOn("Name")
 
@@ -1403,7 +1358,7 @@ Public Sub RemoveControl(sName As String)
   Dim hCCtrl As CControl = Control[sName]
   Dim hParent As CControl
   
-  sCtrl = GetSelection(True, [hCCtrl])
+  sCtrl = GetSelection(True , [hCCtrl])
   hParent = hCCtrl.Parent
   If hParent.IsMultiContainer() Then
     $hUndo.Add("PutSelection", [sCtrl, hCCtrl.Parent.Name, hParent.Control.Index])
@@ -1428,7 +1383,6 @@ Private Function GetName(sClass As String) As String
 
   Dim iNum As Integer
   Dim sName As String
-  Dim hCtrl As CControl
 
   If Control.Exist(sClass) Then Inc iNum
 
@@ -1450,7 +1404,7 @@ Public Procedure UnSelectAll()
   Dim hCtrl As CControl
 
   For Each hCtrl In Selection
-    hCtrl.UnSelect(Me, True)
+    hCtrl.UnSelect(Me, True )
   Next
 
   Selection.Clear
@@ -1674,7 +1628,7 @@ Private Sub KillSelection()
 
     Modify
 
-    hParent.Select(Me, True)
+    hParent.Select(Me, True )
     $hUndo.End
 
     ResetClassScan
@@ -1761,8 +1715,6 @@ End
 
 Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As Integer = -1)
 
-  Dim iInd As Integer
-
   If Not sData Then Return
 
   'PRINT Clipboard.Text
@@ -1780,7 +1732,7 @@ Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As I
 
 End
 
-Public Sub PasteSelection(bSameCoord As Boolean)
+Private Sub PasteSelection()
 
   Dim hParent As CControl
 
@@ -1902,10 +1854,8 @@ Private Function GetSortKey(hCtrl As Control, iArr As Integer, bInvert As Boolea
 
 End
 
-Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bInvert As Boolean, Optional bRec As Boolean = True, Optional iIndex As Integer = -1)
+Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bInvert As Boolean, Optional bRec As Boolean = True , Optional iIndex As Integer = -1)
 
-  Dim X As Integer
-  Dim Y As Integer
   Dim aPos As New String[]
   Dim sPos As String
   Dim hCtrl As Control
@@ -2008,10 +1958,10 @@ Private Sub CenterChildren(aCCtrl As CControl[], bVertical As Boolean)
     Dec nSpace
 
     If Not bVertical Then
-      hCCtrl.Move(iPos, hCCtrl.Y, True)
+      hCCtrl.Move(iPos, hCCtrl.Y, True )
       iPos += hCCtrl.W
     Else
-      hCCtrl.Move(hCCtrl.X, iPos, True)
+      hCCtrl.Move(hCCtrl.X, iPos, True )
       iPos += hCCtrl.H
     Endif
 
@@ -2137,7 +2087,6 @@ End
 
 Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
 
-  Dim sPath As String
   Dim sGroup As String
   Dim hEditor As FEditor
 
@@ -2149,11 +2098,11 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
     sGroup = hCtrl.GetGroup()
   Endif
 
-  hEditor = GetEditor(True)
+  hEditor = GetEditor(True )
   If Not hEditor Then Return
 
   '' TODO: Undo should remove the possibly created event handler
-  If Not hEditor.GotoEvent(sGroup, sEvent, CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, False)) Then
+  If Not hEditor.GotoEvent(sGroup, sEvent, CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, False )) Then
     Project.ShowFile(hEditor)
   Endif
 
@@ -2163,7 +2112,6 @@ Public Sub Control_DblClick()
 
   Dim sEvent As String
   Dim hCurrent As CControl
-  Dim sGroup As String
 
   If Mouse.Control Or Mouse.Shift Then Return
 
@@ -2194,7 +2142,6 @@ Private Sub CreateMenu()
   Dim hClass As CClassInfo
   Dim hSymbol As CSymbolInfo
   Dim sGroup As String
-  Dim aSimilar As String[]
 
   mnuSelect.Children.Clear
 
@@ -2308,7 +2255,6 @@ End
 Sub RefreshMenu()
 
   Dim bOn As Boolean
-  Dim bEnabled As Boolean
   Dim hCtrl As CControl
 
   If $bNoRefreshMenu Then Return
@@ -2392,7 +2338,7 @@ End
 Public Sub mnuControl_Click()
 
   UnselectAll
-  Control[Last.Text].Select(Me, True)
+  Control[Last.Text].Select(Me, True )
   RefreshProperty
 
 End
@@ -2442,7 +2388,7 @@ Public Sub Control_Leave()
 
 End
 
-Public Sub Control_Draw(Optional iIndex As Integer)
+Public Sub Control_Draw(Optional (iIndex) As Integer)
 
   Dim hCtrl As Control = Last
   Dim hCCtrl As CControl = Control[hCtrl.Tag]
@@ -2577,7 +2523,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.Y
 
       For Each hCtrl In Selection
-        hCtrl.Move(hCtrl.Control.X, iPos, True)
+        hCtrl.Move(hCtrl.Control.X, iPos, True )
       Next
 
     Case ".align-bottom"
@@ -2585,7 +2531,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.Y + Master.Control.H
 
       For Each hCtrl In Selection
-        hCtrl.Move(hCtrl.Control.X, iPos - hCtrl.Control.H, True)
+        hCtrl.Move(hCtrl.Control.X, iPos - hCtrl.Control.H, True )
       Next
 
     Case ".align-left"
@@ -2593,7 +2539,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.X
 
       For Each hCtrl In Selection
-        hCtrl.Move(iPos, hCtrl.Control.Y, True)
+        hCtrl.Move(iPos, hCtrl.Control.Y, True )
       Next
 
     Case ".align-right"
@@ -2601,7 +2547,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.X + Master.Control.W
 
       For Each hCtrl In Selection
-        hCtrl.Move(iPos - hCtrl.Control.W, hCtrl.Control.Y, True)
+        hCtrl.Move(iPos - hCtrl.Control.W, hCtrl.Control.Y, True )
       Next
 
     Case ".same-width"
@@ -2609,7 +2555,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.W
 
       For Each hCtrl In Selection
-        hCtrl.Resize(iPos, hCtrl.Control.H, True)
+        hCtrl.Resize(iPos, hCtrl.Control.H, True )
       Next
 
     Case ".same-height"
@@ -2617,7 +2563,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.H
 
       For Each hCtrl In Selection
-        hCtrl.Resize(hCtrl.Control.W, iPos, True)
+        hCtrl.Resize(hCtrl.Control.W, iPos, True )
       Next
 
   End Select
@@ -2633,7 +2579,7 @@ Private Sub SetReadOnly()
     $bReadOnly = True
   Endif
   FFormStack.RefreshReadOnly
-  RefreshProperty(True)
+  RefreshProperty(True )
 
 End
 
@@ -2644,7 +2590,7 @@ Private Sub SetLock(bLock As Boolean)
   $bLocked = bLock
 
   If Not $bDoNotModify Then
-    If Me.Save(True) Then
+    If Me.Save(True ) Then
       $bLocked = Not bLock
       Return
     Endif
@@ -3041,12 +2987,12 @@ Public Sub Action_Activate(Key As String) As Boolean
       RefreshProperty
 
     Case ".copy-same"
-      CopySelection(True)
+      CopySelection(True )
       UnSelectAll
       RefreshProperty
 
     Case ".paste"
-      PasteSelection(False)
+      PasteSelection()
 
     Case ".cut"
       CopySelection
@@ -3062,22 +3008,22 @@ Public Sub Action_Activate(Key As String) As Boolean
       DoAlign(Key)
 
     Case ".arrange-horizontal"
-      ArrangeContainer(Null, Arrange.Horizontal)
+      ArrangeContainer(Null , Arrange.Horizontal)
 
     Case ".arrange-vertical"
-      ArrangeContainer(Null, Arrange.Vertical)
+      ArrangeContainer(Null , Arrange.Vertical)
 
     Case ".arrange-row"
-      ArrangeContainer(Null, Arrange.Row)
+      ArrangeContainer(Null , Arrange.Row)
 
     Case ".arrange-column"
-      ArrangeContainer(Null, Arrange.Column)
+      ArrangeContainer(Null , Arrange.Column)
 
     Case ".arrange-hcenter"
-      CenterContainer(Null, False)
+      CenterContainer(Null , False )
 
     Case ".arrange-vcenter"
-      CenterContainer(Null, True)
+      CenterContainer(Null , True )
 
     Case ".raise"
       DoRaise
@@ -3177,8 +3123,7 @@ Public Sub Control_Drop()
   Dim hCtrl As CControl
   Dim hParent As CControl
   Dim hImage As Image
-  Dim X, Y, W, H As Integer
-  Dim sClass As String
+  Dim X, Y As Integer
 
   hParent = Control[Last.Tag]
   X = Drag.X
@@ -3214,14 +3159,14 @@ Public Sub Control_Drop()
     ' Y -= hParent.Control.ClientY
 
     $hUndo.Begin
-    hCtrl = CreateControl($hFamily.DropImageClass, hParent,, True)
+    hCtrl = CreateControl($hFamily.DropImageClass, hParent,, True )
     hCtrl.MoveAndResize(Max(0, X - hImage.Width / 2), Max(0, Y - hImage.Height / 2), hImage.Width, hImage.Height)
     hCtrl.SetProperty($hFamily.DropImageProperty, Mid$(sPath, Len(Project.Dir) + 2))
     $hUndo.End
 
     $hCurrent = hCtrl
     UnSelectAll
-    SelectCurrent(True)
+    SelectCurrent(True )
     RefreshProperty
 
   Else If Drag.Format = MMime.CONTROL Then
@@ -3311,7 +3256,6 @@ Private Sub MoveTab(hCtrl As CControl, iWhere As Integer)
   Dim hChild As Control
   Dim aChildSrc As New Control[]
   Dim aChildDest As New Control[]
-  Dim iUndoWhere As Integer
 
   If Not hCtrl Then hCtrl = RootControl
   hTabStrip = hCtrl.Control
@@ -3415,7 +3359,7 @@ End
 Public Sub SelectControl(sControl As String)
 
   UnselectAll
-  Control[sControl].Select(Me, True)
+  Control[sControl].Select(Me, True )
   RefreshProperty
 
 End
@@ -3444,8 +3388,6 @@ Public Sub mnuChange_Click()
   Dim sNewClass As String
   Dim hParent As CControl
   Dim sStr As String
-  Dim hCtrl As CControl
-  Dim sName As String
   Dim sClass As String
   Dim sFind As String
   Dim iPos As Integer
@@ -3456,7 +3398,7 @@ Public Sub mnuChange_Click()
 
   sNewClass = Last.Text
 
-  sStr = GetSelection(True)
+  sStr = GetSelection(True )
 
   sClass = Master.Kind
   If Master.Virtual Then sClass = "#" & sClass
@@ -3543,7 +3485,7 @@ Public Sub GetPosition() As Integer
 
 End
 
-Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
+Public Sub SetPosition((hResult) As CFindResult, Optional (bJustCheck) As Boolean) As Boolean
 
 End
 
@@ -3570,7 +3512,7 @@ Private Sub DeleteContainer()
 
   X = Master.X
   Y = Master.Y
-  sChildren = GetSelection(True, GetChildren(Master.Name))
+  sChildren = GetSelection(True , GetChildren(Master.Name))
   If Not sChildren Then Return
   
   $hUndo.Begin
@@ -3602,7 +3544,7 @@ Private Sub EmbedIntoContainer()
     Y2 = Max(Y2, hCtrl.Y + hCtrl.H - 1)
   Next
 
-  sChildren = GetSelection(True)
+  sChildren = GetSelection(True )
   
   $hUndo.Begin
   hParent = CreateControl($hFamily.EmbedContainer, Master.Parent)

@@ -56,29 +56,27 @@ Static Public Function ToPixel(sSize As String) As Float
 
 End
 
-Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
-
-  Dim aBorder As String[] = Split(LCase(sBorder))
-  Dim sTest As String
-  Dim bBorder As Boolean
-
-  For Each sTest In ["left", "right", "top", "bottom", "border"]
-    If aBorder.Exist(sTest, gb.IgnoreCase) Then
-      bBorder = True
-      If UCase(sTest) = UCase(sSide) Then Return True
-    Endif
-  Next
-
-  Return Not bBorder
-
-End
+' Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
+' 
+'   Dim aBorder As String[] = Split(LCase(sBorder))
+'   Dim sTest As String
+'   Dim bBorder As Boolean
+' 
+'   For Each sTest In ["left", "right", "top", "bottom", "border"]
+'     If aBorder.Exist(sTest, gb.IgnoreCase) Then
+'       bBorder = True
+'       If UCase(sTest) = UCase(sSide) Then Return True
+'     Endif
+'   Next
+' 
+'   Return Not bBorder
+' 
+' End
 
 Static Public Sub PaintBorder(sBorder As String) As Float
 
   Dim sElt As String
   Dim fWidth As Float
-  Dim cBorder As New Collection
-  Dim iColor As Integer
   Dim ars, ars2 As String[]
   Dim aX, aY As New Integer[4]
   Dim B As Integer
@@ -251,7 +249,6 @@ End
 
 Public Sub DrawControl(hCtrl As CControl) As Boolean
 
-  Dim sAlign As String
   Dim X, Y, W, H, W2, H2 As Float
   Dim fVal As Float
   Dim sPath As String

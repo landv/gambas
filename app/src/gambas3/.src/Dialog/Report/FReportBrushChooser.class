@@ -53,10 +53,6 @@ End
 
 Public Sub Form_Open()
   
-  Dim iPos As Integer
-  Dim sType As String
-  Dim sValue As String
-  Dim ars As String[]
   Dim I As Integer
   Dim hLabel As Label
   
@@ -263,7 +259,7 @@ Private Sub SelectColor(iColor As Integer)
 
   Dim hLabel As Label = FindLabel(iColor)
 
-  If Not FColorChooser.Run($aGradientColors[iColor], True) Then
+  If Not FColorChooser.Run($aGradientColors[iColor], True ) Then
     hLabel.Background = FColorChooser.Value
     $aGradientColors[iColor] = FColorChooser.Value
     dwgGradientColor.Refresh
@@ -277,7 +273,7 @@ Public Sub Label_DblClick()
   
 End
 
-Private Sub RemoveGradient(iColor As Integer)
+Private Sub RemoveGradient()
 
   Dim I As Integer
   
@@ -300,7 +296,7 @@ Public Sub dwgGradientColor_KeyPress()
   If Key.Code <> Key.Delete Then Return
   If $iCurrentColor < 0 Then Return
   
-  RemoveGradient($iCurrentColor)
+  RemoveGradient()
   
 End
 
@@ -356,7 +352,7 @@ Public Sub btnOK_Click()
   End Select
   
   Value = sValue
-  Me.Close(True)
+  Me.Close(True )
   
 End
 
@@ -546,7 +542,7 @@ Public Sub btnRemoveGradient_Click()
 
   If $iCurrentColor < 0 Then Return
   If $aGradientPos.Count <= 2 Then Return
-  RemoveGradient($iCurrentColor)
+  RemoveGradient()
 
 End
 

@@ -54,10 +54,10 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
   Settings.Read(splHelp)
-  btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False]
+  btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False ]
   ReadConfig
   
-  sLang = MHelp.GetLanguage(True)
+  sLang = MHelp.GetLanguage(True )
   If sLang Then
     btnHome.Text = Language.ToName(sLang)
   Else
@@ -157,7 +157,7 @@ End
 
 Public Sub webHelp_Error()
   
-  ShowWaiting(False)
+  ShowWaiting(False )
   
   If $sLastUrl Begins "gambas://" Then 
     webHelp.Stop
@@ -172,7 +172,7 @@ End
 
 Public Sub webHelp_Load()
   
-  ShowWaiting(False)
+  ShowWaiting(False )
   $bError = False
   btnModify.Enabled = webHelp.Url Begins "http://gambasdoc.org"
   
@@ -215,7 +215,6 @@ End
 
 Private Sub FillTree()
 
-  Dim hComp As CComponent
   Dim hClass As CClassInfo
   Dim sComponent As String
   Dim sClass As String
@@ -255,7 +254,6 @@ End
 Public Sub tvwClasses_MouseUp()
   
   Dim ars As String[]
-  Dim iType As Integer
   Dim sKey As String
 
   sKey = tvwClasses.Current.Key
@@ -322,7 +320,7 @@ Public Sub OnProjectChange()
   
 End
 
-Public Sub webHelp_NewWindow(Modal As Boolean)
+Public Sub webHelp_NewWindow((Modal) As Boolean)
 
   Project.OpenWebPage($sLastUrl)
 
@@ -353,7 +351,7 @@ End
 
 Public Sub movWaiting_MouseDown()
 
-  ShowWaiting(False)
+  ShowWaiting(False )
 
 End
 

@@ -10,7 +10,7 @@ Public Tag As Variant
 Private $hPanel As DrawingArea
 Private $hPict As Picture
 Private $sText As String
-Private $iColor As Integer
+'Private $iColor As Integer
 Private $bInside As Boolean
 Private $iHighlight As Integer = Color.SelectedBackground
 
@@ -90,43 +90,26 @@ Public Sub Panel_LostFocus()
   
 End
 
-Public Sub Panel_KeyPress()
-  
-  If Key.Code = Key.Space Then Pressed(True)
-  
-End
+' Public Sub Panel_KeyPress()
+'   
+'   If Key.Code = Key.Space Then Pressed(True)
+'   
+' End
 
 Public Sub Panel_KeyRelease()
   
   If Key.Code = Key.Space Then
-    Pressed(False)
+    'Pressed(False)
     Panel_Leave
     Raise Click
   Endif
   
 End
 
-
-Private Sub Pressed(bOff As Boolean)
-  
-  ' If bOff Then
-  '   With GetPanel()
-  '     .Background = Color.SelectedBackground
-  '     .Foreground = Color.SelectedForeground
-  '   End With
-  ' Else
-  '   GetPanel().Background = $iHighlight 'Color.LightBackground
-  '   'hPanel.Foreground = $iColor
-  ' Endif
-  ' Wait
-
-End
-
-
 Public Sub Panel_MouseDown()
 
   If Not Mouse.Left Then Return
-  Pressed(True)
+  'Pressed(True)
 
 End
 
@@ -138,7 +121,7 @@ Public Sub Panel_MouseUp()
 
   If Not Mouse.Left Then Return
 
-  Pressed(False)
+  'Pressed(False)
 
   X = Mouse.X
   Y = Mouse.Y

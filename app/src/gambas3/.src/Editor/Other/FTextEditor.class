@@ -32,7 +32,6 @@ Private $bShowCompress As Boolean
 Private $bModule As Boolean
 
 Private $bModify As Boolean
-Private $iLastLine As Integer = -1
 
 Private $iViewMode As Integer
 Private Const VIEWMODE_NORMAL As Integer = 0 
@@ -107,8 +106,6 @@ Public Sub LoadFile() As Boolean
   $hBookmark = New CBookmark(Editor, btnBookmark, mnuBookmark)
 
   ReadConfig
-
-  Project.InitMove(Me)
 
   Reload
 
@@ -373,7 +370,7 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
 
   'DEC iLine
   If iColumn < 0 Then iColumn = Editor.Column
-  Editor.Goto(iLine, iColumn, True)
+  Editor.Goto(iLine, iColumn, True )
 
 End
 
@@ -528,37 +525,37 @@ Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
   
 End
 
-Private Sub AnalyzeCode(sText As String) As String
-  
-  Dim iInd As Integer
-  Dim iPos As Integer
-  Dim iLen As Integer
-  
-  If Not sText Then Return
-  
-  Highlight.Analyze(sText, True)
-  
-  iPos = 0
-  For iInd = 0 To Highlight.Symbols.Max
-    
-    If iPos < Highlight.Positions[iInd] Then 
-      Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
-      iPos = Highlight.Positions[iInd]
-    Endif
-    
-    iLen = String.Len(Highlight.Symbols[iInd])
-    Highlight.Add(Highlight.Types[iInd], iLen)
-    iPos += iLen
-    
-  Next
-
-  If iPos < String.Len(Highlight.TextAfter) Then 
-    Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
-  Endif
-  
-  Return Highlight.TextAfter
-
-End
+' Private Sub AnalyzeCode(sText As String) As String
+'   
+'   Dim iInd As Integer
+'   Dim iPos As Integer
+'   Dim iLen As Integer
+'   
+'   If Not sText Then Return
+'   
+'   Highlight.Analyze(sText, True)
+'   
+'   iPos = 0
+'   For iInd = 0 To Highlight.Symbols.Max
+'     
+'     If iPos < Highlight.Positions[iInd] Then 
+'       Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
+'       iPos = Highlight.Positions[iInd]
+'     Endif
+'     
+'     iLen = String.Len(Highlight.Symbols[iInd])
+'     Highlight.Add(Highlight.Types[iInd], iLen)
+'     iPos += iLen
+'     
+'   Next
+' 
+'   If iPos < String.Len(Highlight.TextAfter) Then 
+'     Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
+'   Endif
+'   
+'   Return Highlight.TextAfter
+' 
+' End
 
 
 Public Sub Form_Activate()
@@ -590,7 +587,7 @@ Public Sub Reload()
   edtEditor.Text = sText
   Editor.SetFocus
   Editors_Cursor
-  Modify(True)
+  Modify(True )
 
 End
 
@@ -653,7 +650,7 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
-      edtEditor.Goto(Editor.Line, Editor.Column, True)
+      edtEditor.Goto(Editor.Line, Editor.Column, True )
       Editor = edtEditor  
       
     Case VIEWMODE_HORIZONTAL
@@ -662,8 +659,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Show
       splVertical.Hide
-      $hEditor1.Goto(Editor.Line, Editor.Column, True)
-      $hEditor2.Goto(Editor.Line, Editor.Column, True)
+      $hEditor1.Goto(Editor.Line, Editor.Column, True )
+      $hEditor2.Goto(Editor.Line, Editor.Column, True )
       Editor = $hEditor1
   
     Case VIEWMODE_VERTICAL
@@ -672,8 +669,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Hide
       splVertical.Show
-      $hEditor1.Goto(Editor.Line, Editor.Column, True)
-      $hEditor2.Goto(Editor.Line, Editor.Column, True)
+      $hEditor1.Goto(Editor.Line, Editor.Column, True )
+      $hEditor2.Goto(Editor.Line, Editor.Column, True )
       Editor = $hEditor1
   
   End Select   
@@ -789,7 +786,7 @@ Public Sub mnuCompress_Click()
     sPath = GetUncompressPath()
     If Not Exist(File.Dir(sPath)) Then Project.InsertDirectory(File.Dir(sPath))
     If Not Exist(sPath) Then 
-      Project.InsertFile(File.Name(sPath), File.Dir(sPath), Path, True)
+      Project.InsertFile(File.Name(sPath), File.Dir(sPath), Path, True )
     Else
       File.Save(sPath, Editor.Text)
     Endif
@@ -865,24 +862,23 @@ Public Sub mnuUpperCase_Click()
   
 End
 
-Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
+Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   Editor.SetFocus
   Wait
-  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
+  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True )
 
 End
 
-Private Sub RemoveFromBegin(sStr As String, sBegin As String) As String
-  
-  If sStr Begins sBegin Then
-    Return Mid$(sStr, Len(sBegin) + 1)
-  Else
-    Return sStr
-  Endif
-  
-End
-
+' Private Sub RemoveFromBegin(sStr As String, sBegin As String) As String
+'   
+'   If sStr Begins sBegin Then
+'     Return Mid$(sStr, Len(sBegin) + 1)
+'   Else
+'     Return sStr
+'   Endif
+'   
+' End
 
 Private Sub GetProc(sLine As String) As String
 
@@ -957,7 +953,6 @@ Private Sub FillProc()
 
   Dim iLine As Integer
   Dim sText As String
-  Dim sName As String
   Dim sProc, sProcNum As String
   Dim iNum As String
 
@@ -1030,7 +1025,7 @@ End
 
 Private Sub GotoProc(iLine As Integer)
   
-  Editor.Goto(iLine, 0, True)
+  Editor.Goto(iLine, 0, True )
   
 End
 

@@ -33,7 +33,6 @@ Public Sub GetLanguage(Optional bReturnVoidIfDefault As Boolean) As String
   
   Dim sLang As String
   Dim iPos As Integer
-  Dim sCar As String
   
   sLang = Settings["/HelpLanguage"]
   If sLang Then Return sLang
@@ -331,13 +330,11 @@ End
 
 Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String, Optional hEditor As FEditor)
   
-  Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim hClass As CClassInfo
   Dim hComp As CComponent
   Dim sUrl As String
   Dim sHtml As String
-  Dim sLang As String
   Dim iPos As Integer
   Dim sTemp As String
   
@@ -477,9 +474,9 @@ End
 '' - #sClass# is the class to analyze
 '' - #hWebView# is the WebView control to use.
 
-Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As WebView) As String
+Private Function GetProjectClassHelpHTML(sClass As String) As String
   
-  Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo, sInherit As String
+  Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo As String
   Dim hForm As FEditor
   Dim hEdit As Editor
   Dim i As Integer
@@ -490,7 +487,6 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
   Dim sComp, sSymbolName As String
   Dim hArray As String[]
-  Dim sLink As String
   Dim sParent As String
 
   'Getting help
@@ -625,7 +621,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
     hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
     If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
     
-    sHtml = SubstPart(sHtml, "ShowInherits", True)
+    sHtml = SubstPart(sHtml, "ShowInherits", True )
     sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
     sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
     
@@ -634,7 +630,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
     
   Else
     
-    sHtml = SubstPart(sHtml, "ShowInherits", False)
+    sHtml = SubstPart(sHtml, "ShowInherits", False )
     
   Endif
   
@@ -659,7 +655,6 @@ Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
   
   Dim sClass As String
   Dim sSymbol As String
-  Dim sComp As String 
   Dim iLine As Integer
   Dim iPos As Integer
   Dim aValues As String[]

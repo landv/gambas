@@ -166,11 +166,25 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 			look++;
 		}
 
+		if (PATTERN_is(*look, RS_LBRA))
+		{
+			param->ignore = TRUE;
+			look++;
+		}
+		
 		if (!PATTERN_is_identifier(*look))
 			THROW("Syntax error. The &1 argument is not a valid identifier", TRANS_get_num_desc(func->nparam + 1));
-
+		
 		param->index = PATTERN_index(*look);
 		look++;
+		
+		if (param->ignore)
+		{
+			if (!PATTERN_is(*look, RS_RBRA))
+				THROW(E_MISSING, "')'");
+			look++;
+		}
+
 		JOB->current = look;
 
 		if (!TRANS_type(TT_NOTHING, &ttyp))

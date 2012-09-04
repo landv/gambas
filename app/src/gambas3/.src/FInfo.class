@@ -4,7 +4,6 @@ Private $sPath As String
 
 Private Sub GetCount(sName As String, sExt As String, Optional sSub As String) As String
   
-  Dim sPath As String
   Dim iCount As Integer
   
   iCount = Project.GetCount(sExt)
@@ -34,7 +33,6 @@ Private Sub GetInfo(sPath As String)
   Dim bLine As Boolean
   Dim sLine As Integer
   Dim sOutput As String
-  Dim sName As String
   Dim hPict As Picture
   Dim sFile As String
   Dim hModule As CModule
@@ -60,7 +58,7 @@ Private Sub GetInfo(sPath As String)
   
   End With
     
-  With Stat(sPath, True)
+  With Stat(sPath, True )
   
     If .Type = gb.Directory Then
       If sPath = Project.Dir Then 

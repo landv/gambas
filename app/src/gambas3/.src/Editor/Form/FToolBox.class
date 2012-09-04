@@ -1,16 +1,11 @@
 ' Gambas class file
 
-Private $sTool As String
-
 Private Const WIDTH As Integer = 40
 
 Private $cToolBar As New Collection
 Private $sToolBar As String
 Private $sLastToolBar As String
 Private $sFamily As String
-
-Private $W As Integer
-Private $H As Integer
 
 Private $sLastLib As String
 Private $iSize As Integer
@@ -26,9 +21,6 @@ Private $aOrder As New String[]
 
 
 Public Sub Form_Open()
-
-  Dim iInd As Integer
-  Dim hCtrl As Control
 
   $aOrder = ["Form", "View", "Report", "Dialog", "Chooser", "Container", "Data", "Network", "Special"]
 
@@ -112,7 +104,6 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim sLib As String
   Dim sCtrl As String
   Dim sNewLib As String
-  Dim aLib As String[]
   Dim hComp As CComponent
   Dim hClass As CClassInfo
   Dim sGroup As String
@@ -122,7 +113,6 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim iLast As Integer
   Dim bExist As Boolean
   Dim sOldTab As String
-  Dim iInd As Integer
   'Dim sType As String
 
   If Project.Components Then
@@ -340,7 +330,6 @@ Public Sub OnProjectActivate()
   Dim nVisible As Integer
   Dim hCtrl As Control
   Dim sType As String
-  Dim hPanel As Container
   Dim sTitle As String
   Dim sOldTab As String
   Dim iIndex As Integer

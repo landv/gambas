@@ -35,6 +35,7 @@ typedef
 	struct {
 		TYPE type;
 		int value;
+		int line;
 		}
 	PACKED
 	CLASS_SYMBOL_INFO;
@@ -46,8 +47,9 @@ typedef
 		CLASS_SYMBOL_INFO local;
 		int class;
 		int unknown;
-		unsigned used : 1;
-		unsigned _reserved : 31;
+		unsigned global_used : 1;
+		unsigned local_used : 1;
+		unsigned _reserved : 30;
 		}
 	PACKED
 	CLASS_SYMBOL;
@@ -222,6 +224,7 @@ void CLASS_create(CLASS **result);
 void CLASS_delete(CLASS **class);
 
 CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global);
+void CLASS_check_unused_global(CLASS *class);
 
 void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
 void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);

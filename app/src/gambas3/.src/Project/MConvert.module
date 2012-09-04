@@ -57,7 +57,7 @@ Private Sub ConvertForm(sPath As String)
     
     If Left(sLine) = "{" Then
       
-      aVal = Split(Mid$(sLine, 2), " ", "", True)
+      aVal = Split(Mid$(sLine, 2), " ", "", True )
       sName = aVal[0]
       sClass = aVal[1]
       sGroup = ""
@@ -130,7 +130,7 @@ Private Sub ConvertForm(sPath As String)
         If sClass = "ListBox" Or If sClass = "ComboBox" Then
           sVal = UnQuote$(Trim(Mid$(sLine, 7)))
           aVal = Split(sVal, "\n")
-          sFullLine = "List = " & CControl.StringArrayPropertyToString(aVal, True)
+          sFullLine = "List = " & CControl.StringArrayPropertyToString(aVal, True )
         Endif
       Else If sLine = "Text = (\"\")" Then
         Continue
@@ -207,7 +207,7 @@ Private Sub CheckArrayInstanciation(sLine As String) As String
   Dim aSym As String[]
   Dim iPos As Integer
   
-  aSym = Highlight.Analyze(sLine, True)
+  aSym = Highlight.Analyze(sLine, True )
   
   If aSym.Count < 6 Then Return
   If Not ["DIM", "PRIVATE", "PUBLIC"].Exist(aSym[0], gb.IgnoreCase) Then Return
@@ -234,7 +234,7 @@ Private Sub CheckOpen(sLine As String) As String
   Dim sVar As String
   Dim sTry As String
   
-  aSym = Highlight.Analyze(sLine, True)
+  aSym = Highlight.Analyze(sLine, True )
   
   If aSym.Count < 5 Then Return
   
@@ -284,7 +284,7 @@ Private Sub CheckQuestionMark(sLine As String) As String
   Dim I As Integer
   Dim bFound As Boolean
   
-  aSym = Highlight.Analyze(sLine, True)
+  aSym = Highlight.Analyze(sLine, True )
   
   For I = aSym.Max - 1 DownTo 0
     If $aTestFunc.Exist(aSym[I], gb.IgnoreCase) And aSym[I + 1] = "(" Then
@@ -309,7 +309,7 @@ Private Sub CheckIsType(sLine As String) As String
   Dim I, J As Integer
   Dim bFound As Boolean
   
-  aSym = Highlight.Analyze(sLine, True)
+  aSym = Highlight.Analyze(sLine, True )
   
   For I = aSym.Max DownTo 0 
     If $aIsType.Exist(aSym[I], gb.IgnoreCase) Then 
@@ -340,7 +340,7 @@ Private Sub CheckQuoteShell(sLine As String) As String
   Dim I As Integer
   Dim bFound As Boolean
   
-  aSym = Highlight.Analyze(sLine, True)
+  aSym = Highlight.Analyze(sLine, True )
   
   For I = aSym.Max - 3 DownTo 0 
     If aSym[I] = "Quote" And If aSym[I + 1] = "." And If aSym[I + 2] = "Shell" And If aSym[I + 3] = "(" Then
@@ -363,7 +363,7 @@ Private Sub FindClassSymbol(sClass As String, sSymbol As String, aSym As String[
   
   If aSym[I] == sSymbol And If aSym[I - 1] = "." Then
     
-    sType = $hForm.GetExpressionType(aSym.Copy(0, I - 1), aType.Copy(0, I - 1), True)
+    sType = $hForm.GetExpressionType(aSym.Copy(0, I - 1), aType.Copy(0, I - 1), True )
     
     If Not sType Then
       If bAllowAnonymous Then
@@ -394,7 +394,7 @@ Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As St
   Dim aType As Integer[]
   Dim sRest As String
   
-  aSym = Highlight.Analyze(sLine, False).Copy()
+  aSym = Highlight.Analyze(sLine, False ).Copy()
   aType = Highlight.Types.Copy()
   aPos = Highlight.Positions.Copy()
   
@@ -422,7 +422,7 @@ Private Sub CheckUdpSocketBind(sId As String, sLine As String) As String
   Dim aType As Integer[]
   Dim sRest As String
   
-  aSym = Highlight.Analyze(sLine, False).Copy()
+  aSym = Highlight.Analyze(sLine, False ).Copy()
   aType = Highlight.Types.Copy()
   aPos = Highlight.Positions.Copy()
   
@@ -454,7 +454,7 @@ Private Sub CheckSplitterLayout(sId As String, sLine As String) As String
   Dim iPos As Integer
   Dim iStart As Integer
   
-  aSym = Highlight.Analyze(sLine, False).Copy()
+  aSym = Highlight.Analyze(sLine, False ).Copy()
   aType = Highlight.Types.Copy()
   aPos = Highlight.Positions.Copy()
   
@@ -495,13 +495,10 @@ Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String
   Dim aSym As String[]
   Dim I As Integer
   Dim bFound As Boolean
-  Dim sType As String
   Dim aPos As Integer[]
-  Dim aType As Integer[]
   Dim sRest As String
-  Dim hClass As CClassInfo
   
-  aSym = Highlight.Analyze(sLine, False)
+  aSym = Highlight.Analyze(sLine, False )
   aPos = Highlight.Positions
   
   For I = 1 To aSym.Max - 1
@@ -513,7 +510,7 @@ Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String
       sLine = Left$(sLine, aPos[I]) & sNewFunc & sRest
       bFound = True
       
-      aSym = Highlight.Analyze(sLine, False)
+      aSym = Highlight.Analyze(sLine, False )
       aPos = Highlight.Positions
       
     Endif
@@ -530,12 +527,9 @@ End
 
 Private Sub ConvertClass(sPath As String)
   
-  Dim hFile As File
   Dim sLine As String
-  Dim hForm As FEditor
   Dim hEditor As Editor
   Dim iLine As Integer
-  Dim sOldLine As String
   Dim sNewLine As String
   Dim sIndent As String
   Dim aLine As String[]
@@ -567,12 +561,12 @@ Private Sub ConvertClass(sPath As String)
         If Not sNewLine Then sNewLine = CheckQuoteShell(sLine)
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FNTH", sLine, "Font", "Height", "TextHeight")
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FNTW", sLine, "Font", "Width", "TextWidth")
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Control", "BackColor", "Background", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Control", "ForeColor", "Foreground", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, ".GridViewData", "BackColor", "Background", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, ".GridViewData", "ForeColor", "Foreground", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Draw", "BackColor", "Background", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Draw", "ForeColor", "Foreground", True)
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Control", "BackColor", "Background", True )
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Control", "ForeColor", "Foreground", True )
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, ".GridViewData", "BackColor", "Background", True )
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, ".GridViewData", "ForeColor", "Foreground", True )
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Draw", "BackColor", "Background", True )
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Draw", "ForeColor", "Foreground", True )
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("DBGV", sLine, "DataBrowser", "GridView", "View")
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")

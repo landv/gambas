@@ -7,7 +7,6 @@ Private $iTime As Long
 Private $aFunc As New CProfile[]
 Private $cFunc As New Collection
 
-Private $iLevel As Integer
 Private $aLevel As New String[]
 Private $aLevelTime As New Long[]
 
@@ -138,10 +137,7 @@ Fast Public Sub Init(sPath As String)
   Dim iTime, iOldTime, iLastTime As Long
   Dim aLastLine As New Integer[]
   Dim aLastTime As New Long[]
-  Dim iCount As Integer
-  Dim aSplitLine As String[]
   Dim I, N As Integer
-  Dim iMax As Long
   Dim sTitle As String
   Dim bVer As Boolean
   
@@ -454,7 +450,7 @@ Public Sub gvwProfile_Sort()
 
 End
 
-Private Sub GotoFunction(sFunc As String, Optional bNoHistory As Boolean)
+Private Sub GotoFunction(sFunc As String)
   
   Dim hEditor As FEditor
   Dim aWhere As String[]
@@ -475,9 +471,7 @@ End
 Private Sub GetNumberOfLines(sClass As String) As Integer
   
   Dim hEditor As FEditor
-  Dim aWhere As String[]
   Dim sPath As String
-  Dim sSource As String
   
   sPath = Project.FindPath(sClass)
   If Not Exist(sPath) Then Return
@@ -495,7 +489,6 @@ Private Sub LoadCurrentSourceCode() As String
   Dim hEditor As FEditor
   Dim aWhere As String[]
   Dim sPath As String
-  Dim sSource As String
   Dim aDuration As Long[]
   Dim iTime As Long
   Dim I As Integer

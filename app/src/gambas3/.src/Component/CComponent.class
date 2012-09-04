@@ -202,17 +202,11 @@ Static Private Sub InitComponent(sFile As String)
   
   Dim hComponent As CComponent
   Dim hFic As File
-  Dim sInfo As String
   Dim sLig As String
   Dim sKey As String
   Dim sPath As String
   Dim iPos As Integer
-  Dim sLib As String
-  Dim iKey As Integer
   Dim sGroup As String
-  Dim aChange As String[]
-  Dim aStr As String[]
-  Dim sChange As String
   
   sPath = Component.Path &/ sFile 
   
@@ -431,16 +425,13 @@ Public Sub Load()
   Dim hClass As CClassInfo
   Dim hParent As CClassInfo
   Dim hSym As CSymbolInfo
-  Dim hProp As CPropertyInfo
   Dim sParent As String
-  Dim hForm As Form
   Dim sPath As String
   Dim bAgain As Boolean
   Dim bNextClass As Boolean
   Dim cClass As New Collection
   Dim aList As String[]
   Dim hLibraryInfo As CLibraryInfo
-  Dim sTemp As String
   
   If Loaded Then Return
   
@@ -486,7 +477,7 @@ Public Sub Load()
     
     ' List of exported classes
     
-    Try aList = Split(File.Load(File.SetExt(sPath, "list")), "\n", "", True)
+    Try aList = Split(File.Load(File.SetExt(sPath, "list")), "\n", "", True )
     If Error Then
       Error "gambas3: warning: cannot read "; File.SetExt(sPath, "list")
       Return
@@ -783,7 +774,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   
 End
 
-Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True)
+Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True )
   
   Dim hEditor As Editor
   Dim iLine As Integer
@@ -795,9 +786,6 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim hSymbol, hSymbol2 As CSymbolInfo
   'Dim aSymbol As CSymbolInfo[]
   Dim iStart As Integer
-  Dim iEnd As Integer
-  Dim iSign As Integer
-  Dim cClassSymbol As Collection
   Dim hClass As CClassInfo
   Dim sName, sName2 As String
   Dim aName As String[]
@@ -1079,24 +1067,24 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   
 End
 
-Static Private Function GetHelpLine(iLine As Integer, hEditor As Editor) As Integer
-
-  Dim aSym As String[]
-  Dim HelpLine As Integer
-
-  Do
-    Dec iLine
-    If iLine < 0 Then Return HelpLine
-    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
-    If aSym.Count = 1 Then
-      If Left(aSym[0], 2) = "''" Then HelpLine = iLine
-    Else
-      Return HelpLine
-    Endif
-    
-  Loop
-
-End
+' Static Private Function GetHelpLine(iLine As Integer, hEditor As Editor) As Integer
+' 
+'   Dim aSym As String[]
+'   Dim HelpLine As Integer
+' 
+'   Do
+'     Dec iLine
+'     If iLine < 0 Then Return HelpLine
+'     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+'     If aSym.Count = 1 Then
+'       If Left(aSym[0], 2) = "''" Then HelpLine = iLine
+'     Else
+'       Return HelpLine
+'     Endif
+'     
+'   Loop
+' 
+' End
 
 Static Private Sub ScanForm(hForm As FForm, cSymbol As Collection)
   
@@ -1193,7 +1181,6 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   
   Dim hClass As CClassInfo
   Dim bClass As Boolean
-  Dim sName As String
   Dim sPath As String
   Dim hPForm As Object
   Dim hPModule As FEditor
@@ -1201,7 +1188,6 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   'Dim hModule As Object
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
-  Dim iFind As Integer
   'Dim aClass As String[]
   Dim sFamily As String
   
@@ -1258,7 +1244,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
     If MustScan(hPModule) Then
       cSymbol = New Collection(gb.IgnoreCase)
       hPModule.Scan = cSymbol
-      ScanClass(hPModule, cSymbol, True)
+      ScanClass(hPModule, cSymbol, True )
     Endif
     $hDumbClass.Parent = hPModule.ParentClass
     '$hDumbClass.ParentComponent = hPModule.ParentComponent
@@ -1274,7 +1260,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
         hPClass.ParentClass = sFamily
         If hPForm Is FForm Then ScanForm(hPForm, cSymbol)
       Endif
-      ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
+      ScanClass(hPClass, cSymbol, False , IsNull(hPForm))
     Endif
     $hDumbClass.Parent = hPClass.ParentClass
   Endif

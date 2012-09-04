@@ -83,6 +83,7 @@ static bool main_exec = FALSE;
 static bool main_verbose = FALSE;
 static bool main_compile_all = FALSE;
 static bool main_trans = FALSE;
+static bool main_warnings = FALSE;
 static bool main_public = FALSE;
 static bool main_public_module = FALSE;
 static bool main_swap = FALSE;
@@ -102,9 +103,9 @@ static void get_arguments(int argc, char **argv)
 	for(;;)
 	{
 		#if HAVE_GETOPT_LONG
-			opt = getopt_long(argc, argv, "gxvaVhLtpmser:", Long_options, &index);
+			opt = getopt_long(argc, argv, "gxvaVhLwtpmser:", Long_options, &index);
 		#else
-			opt = getopt(argc, argv, "gxvaVhLtpmser:");
+			opt = getopt(argc, argv, "gxvaVhLwtpmser:");
 		#endif
 		if (opt < 0) break;
 
@@ -132,6 +133,10 @@ static void get_arguments(int argc, char **argv)
 
 			case 't':
 				main_trans = TRUE;
+				break;
+
+			case 'w':
+				main_warnings = TRUE;
 				break;
 
 			case 'p':
@@ -179,6 +184,7 @@ static void get_arguments(int argc, char **argv)
 					"  -g  --debug                add debugging information\n"
 					"  -v  --verbose              verbose output\n"
 					"  -a  --all                  compile all\n"
+					"  -w  --warnings             display warnings\n"
 					"  -t  --translate            output translation files\n"
 					"  -p  --public-control       form controls are public\n"
 					"  -m  --public-module        module symbols are public by default\n"
@@ -194,6 +200,7 @@ static void get_arguments(int argc, char **argv)
 					"  -g                         add debugging information\n"
 					"  -v                         verbose output\n"
 					"  -a                         compile all\n"
+					"  -w                         display warnings\n"
 					"  -t                         output translation files\n"
 					"  -p                         form controls are public\n"
 					"  -m                         module symbols are public by default\n"
@@ -277,6 +284,7 @@ static void compile_file(const char *file)
 	JOB->debug = main_debug;
 	JOB->exec = main_exec;
 	JOB->verbose = main_verbose;
+	JOB->warnings = main_warnings;
 	JOB->swap = main_swap;
 	JOB->public_module = main_public_module;
 	JOB->no_old_read_syntax = main_no_old_read_syntax;
@@ -481,30 +489,8 @@ int main(int argc, char **argv)
 	CATCH
 	{
 		fflush(NULL);
-		if (JOB->name)
-		{
-			const char *name = FILE_get_name(JOB->name);
-			if (JOB->line)
-			{
-				if (JOB->line > JOB->max_line && JOB->form)
-				{
-					name = FILE_get_name(JOB->form);
-					fprintf(stderr, "%s:%d: error: ", name, JOB->line - FORM_FIRST_LINE + 1);
-				}
-				else
-				{
-					if (JOB->column)
-						fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());
-					else
-						fprintf(stderr, "%s:%d: error: ", name, JOB->line);
-				}
-			}
-			else
-				fprintf(stderr, "%s: error: ", name);
-		}
-		else
-			fprintf(stderr, "gbc: error: ");
 		
+		COMPILE_print(MSG_ERROR, -1, NULL);
 		ERROR_print();
 		exit(1);
 	}

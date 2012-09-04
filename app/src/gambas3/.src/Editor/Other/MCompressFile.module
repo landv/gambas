@@ -59,7 +59,7 @@ End
 Public Sub Javascript(sText As String) As String
   
   Dim sRes As String
-  Dim iPos, iPos2 As Integer
+  Dim iPos As Integer
   Dim sCar As String
   Dim sCar2 As String
   Dim bComment As Boolean
@@ -306,14 +306,13 @@ End
 Public Sub Css(sText As String) As String
   
   Dim sRes As String
-  Dim iPos, iPos2 As Integer
+  Dim iPos As Integer
   Dim sCar As String
   Dim sCar2 As String
   Dim bComment As Boolean
   Dim bOneLineComment As Boolean
   Dim sString As String
   Dim iLen As Integer
-  Dim iLastNewLine As Integer
   
   iLen = Len(sText)
   sText = sText & "  "

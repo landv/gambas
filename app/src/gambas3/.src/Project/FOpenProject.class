@@ -253,7 +253,6 @@ Private Sub FillRecent()
   Dim aRecent As CRecentFile[]
   Dim hRecent As CRecentFile
   'Dim bHighlight As Boolean
-  Dim fTime As Float
   Dim sTitle As String
   Dim sLastTitle As String
   Dim Y As Integer
@@ -332,7 +331,6 @@ Private Sub FillExample()
   Dim sLastDir As String
   Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectItem
-  Dim hLabel As Label
   'Dim bHighlight As Boolean
   
   If lstExample.Children.Count Then Return

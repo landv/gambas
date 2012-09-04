@@ -178,10 +178,44 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global)
 		name[sym->symbol.len] = 0;
 		THROW("'&1' already declared", name);
 	}
+	
+	if (!global && !TYPE_is_null(sym->global.type) && TYPE_get_kind(sym->global.type) != TK_PROPERTY)
+		COMPILE_print(MSG_WARNING, -1, "global variable hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
 
+	if (global)
+		sym->global.line = JOB->line;
+	else
+		sym->local.line = JOB->line;
+	
 	return sym;
 }
 
+
+void CLASS_check_unused_global(CLASS *class)
+{
+	CLASS_SYMBOL *sym;
+	int i;
+	TYPE type;
+	
+	for (i = 0; i < TABLE_count(class->table); i++)
+	{
+		sym = CLASS_get_symbol(class, i);
+		type = sym->global.type;
+		
+		if (sym->global_used)
+			continue;
+		
+		if (TYPE_is_null(type) || TYPE_is_public(type))
+			continue;
+		
+		if (TYPE_get_kind(type) == TK_VARIABLE)
+			COMPILE_print(MSG_WARNING, sym->global.line, "unused global variable: &1", SYMBOL_get_name(&sym->symbol));
+		else if (TYPE_get_kind(type) == TK_FUNCTION)
+			COMPILE_print(MSG_WARNING, sym->global.line, "unused function: &1", SYMBOL_get_name(&sym->symbol));
+		else if (TYPE_get_kind(type) == TK_EXTERN)
+			COMPILE_print(MSG_WARNING, sym->global.line, "unused extern function: &1", SYMBOL_get_name(&sym->symbol));
+	}
+}
 
 
 void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
@@ -598,8 +632,6 @@ int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
 	return num;
 }
 
-
-
 void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 {
 	CLASS_SYMBOL *sym = CLASS_declare(class, decl->index, TRUE);
@@ -796,6 +828,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 	}
 
 	STR_free(name);
+	sym->global_used = TRUE;
 	return sym->global.value;
 
 _BAD_SIGNATURE:

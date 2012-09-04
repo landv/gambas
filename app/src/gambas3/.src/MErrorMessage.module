@@ -254,7 +254,13 @@ Private Const ERR_250 As String = ("Void key")
 Private Const ERR_251 As String = ("Write error")
 Private Const ERR_252 As String = ("cannot find component")
 Private Const ERR_253 As String = ("cannot find library")
-Private Const ERR_254 As String = ("unknown error")
+Private Const ERR_254 As String = ("global variable hidden by local declaration: &1")
+Private Const ERR_255 As String = ("unknown error")
+Private Const ERR_256 As String = ("unused argument: &1")
+Private Const ERR_257 As String = ("unused extern function: &1")
+Private Const ERR_258 As String = ("unused function: &1")
+Private Const ERR_259 As String = ("unused global variable: &1")
+Private Const ERR_260 As String = ("unused variable: &1")
 '}
 
 Private $aErr As String[]
@@ -273,7 +279,6 @@ Public Sub Main()
   
   Dim sErr As String
   Dim hFile As File
-  Dim sFile As String
   Dim sLine As String
   Dim iPos, iPos2 As Integer
   Dim sGrep As String
@@ -313,6 +318,25 @@ Public Sub Main()
     If Not sLine Then Continue
     If Left(sLine, 2) = "//" Then Continue
     iPos = InStr(sLine, "THROW(")
+    sLine = Mid$(sLine, iPos)
+    While sLine
+      iPos = InStr(sLine, Chr$(34))
+      If iPos = 0 Then Break
+      'If Mid$(sLine, iPos - 1, 1) <> "(" Then Continue
+      iPos2 = InStr(sLine, Chr$(34), iPos + 1)
+      sErr = Mid$(sLine, iPos + 1, iPos2 - iPos - 1)
+      sLine = Mid$(sLine, iPos2 + 1)
+      AddError(sErr)
+    Wend
+  Next
+  
+  Shell "cd ~/gambas/3.0/trunk/main; grep -h \"COMPILE_print(MSG_WARNING,\" gbc/*.c" To sGrep
+  
+  For Each sLine In Split(sGrep, "\n")
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If Left(sLine, 2) = "//" Then Continue
+    iPos = InStr(sLine, "COMPILE_print(")
     sLine = Mid$(sLine, iPos)
     While sLine
       iPos = InStr(sLine, Chr$(34))

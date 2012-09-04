@@ -28,7 +28,6 @@ Private $nTrans As Integer
 Private $sErrMerge As String
 Private cvwTranslateOrg As ColumnView
 Private $bDeleteIfVoid As Boolean
-Private $iLangW As Integer
 Private $cCacheImport As Collection
 Private $bStatValid As Boolean
 
@@ -118,7 +117,6 @@ End
 Public Sub Form_Open()
 
   Dim sLang As String
-  Dim iIndex As Integer
   Dim sPath As String
 
   Inc Application.Busy
@@ -168,14 +166,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   Dim sDir As String
   Dim sPath As String
-  Dim hFic As File
-  Dim sLine As String
-  Dim bFuzzy As Boolean
-  Dim bHeader As Boolean
-  Dim iMode As Integer
   Dim sMsgId As String
-  Dim sMsgStr As String
-  Dim sMsgComment As String
   Dim iIndex As Integer
   Dim sMsg As String
   Dim sCurrent As String
@@ -337,7 +328,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   $nTrans = hTrans.Translations.Count
 
   MakeFileChoice
-  UpdateOrg(True)
+  UpdateOrg(True )
   
   'cvwTranslate.Columns[1].Text = Language.ToName(sLang)
 
@@ -441,10 +432,10 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
   bExistMO = Exist(sPathMO)
   
   If $nTrans = 0 Then 
-    VersionControl.RemoveFile($sPath, True)
+    VersionControl.RemoveFile($sPath, True )
     Try Kill $sPath
     If bExistMO Then 
-      VersionControl.RemoveFile(sPathMO, True)
+      VersionControl.RemoveFile(sPathMO, True )
       Try Kill sPathMO
     Endif
     Return    
@@ -504,7 +495,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
     Try Kill $sPath & ".new"
     If bExistMO Then
-      VersionControl.RemoveFile(sPathMO, True)
+      VersionControl.RemoveFile(sPathMO, True )
       Try Kill sPathMO
     Endif
 
@@ -555,7 +546,7 @@ End
 
 Public Sub btnSave_Click()
 
-  SaveTranslate(True)
+  SaveTranslate(True )
 
 End
 
@@ -651,7 +642,7 @@ Public Sub btnDelete_Click()
 
   End With
 
-  SaveTranslate(True)
+  SaveTranslate(True )
   cvwLang.Remove($sLang)
   SetLang()
 
@@ -793,8 +784,6 @@ Private Sub ImportMessage(sPath As String) As Integer
   Dim sMsgStr As String
   Dim iIndex As Integer
   Dim nTrans As Integer
-  Dim sTemp As String
-  Dim sOutput As String
   Dim sCharset As String
   
   ' sTemp = Temp$()
@@ -1000,8 +989,6 @@ End
 Public Sub btnVerify_Click()
 
   Dim sKey As String
-  Dim sOrig As String
-  Dim sTrans As String
 
   If Not cvwTranslate.Key Then Return
 
@@ -1168,7 +1155,6 @@ End
 Private Sub MergeMessage(sPath As String, sOption As String)
 
   Dim sTemp As String
-  Dim sErr As String
 
   sTemp = Temp$
 

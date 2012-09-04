@@ -88,8 +88,6 @@ Public Sub RefreshAll()
   Dim iRow As Integer
   Dim sProp As String
   Dim sVal As String
-  Dim hCtrlAlone As CControl
-  Dim cKeyProp As Collection
   Dim iInd As Integer
 
   '   DIM aColor AS NEW Integer[]
@@ -330,7 +328,6 @@ End
 
 Public Function SaveProperty() As Boolean
 
-  Dim hTabStrip As TabStrip
   Dim vVal As Variant
   Dim hCtrl As CControl
   Dim sMsg As String
@@ -470,8 +467,6 @@ End
 
 Private Sub MoveProperty()
 
-  Dim iW As Integer
-
   If IsNull($hEditor) Then Return
 
   With grdProperty[grdProperty.Row, 1]
@@ -549,9 +544,6 @@ Private Sub ShowProperty(Optional sFocus As String)
   Dim sOption As String
   Dim bButton As Boolean
   Dim sProp As String
-  Dim sConst As String
-  Dim aElt As String[]
-  Dim sCtrl As String
   Dim aArg As String[]
   Dim hEditor As Object
   Dim hSymbol As CSymbolInfo
@@ -892,9 +884,6 @@ End
 
 Public Sub btnProperty_Click()
 
-  Dim sDir As String
-  Dim sVal As String
-  Dim sSrc As String
   Dim sDest As String
   Dim sFont As String
   Dim sColor As String
@@ -945,7 +934,7 @@ Public Sub btnProperty_Click()
     Case "Path"
       
       If $sClass = "MovieBox" Then
-        sDest = FSelectIcon.Run($sOldVal, True) 'GetPicture()
+        sDest = FSelectIcon.Run($sOldVal, True ) 'GetPicture()
         If Not sDest Then Goto _EXIT
         $hEditor.Text = sDest
       Else
@@ -970,7 +959,7 @@ Public Sub btnProperty_Click()
       sConnection = GetConnection()
       sTable = GetTable($sOption)
       If sConnection And If sTable Then
-        If FFieldChooser.Run(sConnection, sTable, False, $sOldVal) Then Goto _EXIT
+        If FFieldChooser.Run(sConnection, sTable, False , $sOldVal) Then Goto _EXIT
         $hEditor.Text = FFieldChooser.Value
       Endif
 
@@ -979,7 +968,7 @@ Public Sub btnProperty_Click()
       sConnection = GetConnection()
       sTable = GetTable()
       If sConnection And If sTable Then
-        If FFieldChooser.Run(sConnection, sTable, True, $sOldVal) Then Goto _EXIT
+        If FFieldChooser.Run(sConnection, sTable, True , $sOldVal) Then Goto _EXIT
         $hEditor.Text = FFieldChooser.Value
       Else
         If FText.Run($sOldVal) Then Goto _EXIT
@@ -1036,7 +1025,7 @@ End
 Public Sub grdProperty_DblClick()
 
   If cmbProperty.Visible Then
-    NextComboProperty(False)
+    NextComboProperty(False )
   Else If btnProperty.Visible Then
     btnProperty_Click
   Endif
@@ -1100,7 +1089,7 @@ End
 
 Public Sub ReadConfig()
 
-  $bSort = Settings["/SortProperties", True]
+  $bSort = Settings["/SortProperties", True ]
   Project.SetNormalFont(grdProperty)
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
@@ -1121,7 +1110,7 @@ End
 
 Public Sub CheckIntegratedHelpSetting()
 
-  $bDisableIntegratedHelp = Not Settings["/PropertyHelp", True]
+  $bDisableIntegratedHelp = Not Settings["/PropertyHelp", True ]
   If $bDisableIntegratedHelp Then
     webHelp.Stop
     webHelp.HTML = ""

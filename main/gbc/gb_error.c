@@ -267,7 +267,7 @@ void ERROR_warning(const char *warning, ...)
 
   fflush(NULL);
 
-  fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": warning: ");
+  fprintf(stderr, "gbc: warning: ");
   vfprintf(stderr, warning, args);
   putc('\n', stderr);
 }

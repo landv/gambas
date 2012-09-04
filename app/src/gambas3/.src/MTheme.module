@@ -40,7 +40,6 @@ End
 
 Public Sub WriteSettings(hSettings As Settings, sParent As String, cColor As Collection)
   
-  Dim sColor As String
   Dim sKey As String
   
   For Each sKey In ColorKeys
@@ -71,7 +70,6 @@ End
 Public Sub WriteFile(sPath As String, cColor As Collection)
   
   Dim hSettings As Settings
-  Dim hCtrl As Control
   
   hSettings = New Settings(sPath)
   WriteSettings(hSettings, "Theme", cColor)  

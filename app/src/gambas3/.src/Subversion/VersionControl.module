@@ -149,7 +149,6 @@ Private Sub UpdatePathFromStatus(sStatus As String)
   Dim sFile As String
   Dim sExt As String
   Dim sPath As String
-  Dim sForm As String
 
   For Each sStatus In Split(sStatus, "\n")
 
@@ -205,7 +204,6 @@ End
 Public Sub CheckPaths()
 
   Dim sStatus As String
-  Dim iPos As Integer
 
   Project.LockedPaths = New Collection
   Project.AddedPaths = New Collection
@@ -220,8 +218,6 @@ Public Sub CheckPaths()
 End
 
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
-
-  Dim sDir As String
 
   If $bSVN Then
     Run("svn move --force " & SvnShell$(sOld) & " " & SvnShell$(sNew))
@@ -352,19 +348,19 @@ Public Sub GetVersion(sDir As String) As String
 
 End
 
-Private Sub RemoveFirstLines(sStr As String, iCount As Integer) As String
-
-  Dim iPos As Integer
-
-  While iCount
-    iPos = InStr(sStr, "\n", iPos + 1)
-    If iPos = 0 Then Return
-    Dec iCount
-  Wend
-
-  Return Mid$(sStr, iPos + 1)
-
-End
+' Private Sub RemoveFirstLines(sStr As String, iCount As Integer) As String
+' 
+'   Dim iPos As Integer
+' 
+'   While iCount
+'     iPos = InStr(sStr, "\n", iPos + 1)
+'     If iPos = 0 Then Return
+'     Dec iCount
+'   Wend
+' 
+'   Return Mid$(sStr, iPos + 1)
+' 
+' End
 
 Public Sub Diff(sPath As String) As String
 

@@ -5,7 +5,6 @@
 Private $iCol As Integer
 Private $iLine As Integer
 Private $bWelcome As Boolean
-Private $bOpened As Boolean
 
 Public Sub _new()
 
@@ -80,7 +79,6 @@ End
 Public Sub edtOutput_KeyPress()
 
   Dim sText As String
-  Dim iPos As Integer
   Dim sVal As String
   Dim bSemiColon As Boolean
 

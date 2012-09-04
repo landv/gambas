@@ -67,6 +67,7 @@ char TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int
 #define TABLE_count(_table) (ARRAY_count((_table)->symbol))
 const char *TABLE_get_symbol_name(TABLE *table, int index);
 const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix);
+const char *SYMBOL_get_name(SYMBOL *sym);
 
 bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index);
 bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index);

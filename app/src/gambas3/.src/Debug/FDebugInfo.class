@@ -7,8 +7,9 @@ Private Const TAB_LOCAL As Integer = 1
 Private Const TAB_ME As Integer = 2
 Private Const TAB_WATCH As Integer = 3
 Private Const TAB_BREAK As Integer = 4
-Private Const TAB_TASK As Integer = 5
-Private Const TAB_SEARCH As Integer = 6
+Private Const TAB_COMPILATION As Integer = 5
+Private Const TAB_TASK As Integer = 6
+Private Const TAB_SEARCH As Integer = 7
 
 Private $cRefreshBreakpoint As New Collection
 
@@ -18,12 +19,12 @@ Private $aTask As CTask[]
 Private $aLocal As New String[] ' keys
 Private $aValLocal As New String[]
 Private $cLocal As New Collection ' key -> row
-Private $bSortLocal As Boolean
+'Private $bSortLocal As Boolean
 
 Private $aObject As New String[]
 Private $aValObject As New String[]
 Private $cObject As New Collection
-Private $bSortObject As Boolean
+'Private $bSortObject As Boolean
 
 Private $hForm As FEditor
 Private $iX As Integer
@@ -86,6 +87,17 @@ Public Sub _new()
     .Columns[3].Width = Desktop.Scale * 6
     .Columns[3].Text = ("Line")
   End With
+  
+  With gvwCompilation
+    .Columns.Count = 3
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Text = ("Class")
+    .Columns[1].Width = Desktop.Scale * 6
+    .Columns[1].Text = ("Line")
+    .Columns[2].Text = ("Message")
+  End With
+  
+  tabDebug[TAB_COMPILATION].Visible = False
   
   ReadConfig
   
@@ -236,7 +248,6 @@ Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iInde
 
   Dim sVar As String
   Dim aVar As String[]
-  Dim sParent As String
   Dim bFill As Boolean
   Dim iPos As Integer
   Dim cCol As Collection
@@ -409,7 +420,6 @@ End
 Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As Boolean)
 
   Dim sVal As String
-  Dim hEditor As Editor
   
   'IF Left$(sRes, 1) = "=" THEN
   '  sVal = Mid$(sRes, 2)
@@ -443,40 +453,40 @@ Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As B
 
 End
 
-Private Sub ShowAsBalloon(sMsg As String)
-
-  Dim hIcon As Picture
-  Dim iInd As Integer
-  Dim iPos As Integer
-
-  If Left(sMsg) = "!" Then
-    sMsg = Design.MakeErrorMessage(Mid$(sMsg, 2))
-    hIcon = Picture["icon:/32/error"]
-  Else
-    hIcon = Picture["icon:/32/info"]
-  Endif 
-  
-  sMsg = Replace(sMsg, "&", "&amp;")
-  sMsg = Replace(sMsg, "<", "&lt;")
-  sMsg = Replace(sMsg, ">", "&gt;")
-  
-  iPos = 0
-  While iInd < String.Len(sMsg)
-    Inc iInd
-    If InStr(" -\n\t", Mid$(sMsg, iInd, 1)) Then
-      iPos = iInd
-    Else If (iInd - iPos) >= 32 Then
-      sMsg = String.Left$(sMsg, iInd) & " <br>" & String.Mid$(sMsg, iInd + 1)
-      iInd += 4
-      iPos = iInd
-    Endif
-  Wend
-
-  'sMsg = Replace(sMsg, "\t", "\n")
-  'sMsg = Replace(sMsg, "    ", "&nbsp;")
-  Balloon(sMsg, Design.BalloonControl, hIcon, Design.BalloonX, Design.BalloonY)
-
-End
+' Private Sub ShowAsBalloon(sMsg As String)
+' 
+'   Dim hIcon As Picture
+'   Dim iInd As Integer
+'   Dim iPos As Integer
+' 
+'   If Left(sMsg) = "!" Then
+'     sMsg = Design.MakeErrorMessage(Mid$(sMsg, 2))
+'     hIcon = Picture["icon:/32/error"]
+'   Else
+'     hIcon = Picture["icon:/32/info"]
+'   Endif 
+'   
+'   sMsg = Replace(sMsg, "&", "&amp;")
+'   sMsg = Replace(sMsg, "<", "&lt;")
+'   sMsg = Replace(sMsg, ">", "&gt;")
+'   
+'   iPos = 0
+'   While iInd < String.Len(sMsg)
+'     Inc iInd
+'     If InStr(" -\n\t", Mid$(sMsg, iInd, 1)) Then
+'       iPos = iInd
+'     Else If (iInd - iPos) >= 32 Then
+'       sMsg = String.Left$(sMsg, iInd) & " <br>" & String.Mid$(sMsg, iInd + 1)
+'       iInd += 4
+'       iPos = iInd
+'     Endif
+'   Wend
+' 
+'   'sMsg = Replace(sMsg, "\t", "\n")
+'   'sMsg = Replace(sMsg, "    ", "&nbsp;")
+'   Balloon(sMsg, Design.BalloonControl, hIcon, Design.BalloonX, Design.BalloonY)
+' 
+' End
 
 Public Sub RefreshAllWatch()
 
@@ -598,6 +608,7 @@ Public Sub ReadConfig()
   cvwWatch.Font = tbvLocal.Font
   cvwBreak.Font = tbvLocal.Font
   gvwTask.Font = tbvLocal.Font
+  gvwCompilation.Font = tbvLocal.Font
   tabStack.TextFont = tabDebug.TextFont
   
   For Each hCtrl In [panBreakpoint, panSearch, panWatch]
@@ -640,14 +651,13 @@ End
 Public Sub btnRemoveBreak_Click()
 
   Dim aText As String[]
-  Dim hEdit As FEditor
   Dim sText As String
   
   sText = cvwBreak.Key
   If Not sText Then Return
   
   aText = Scan(sText, "*.*.*")
-  Design.SetBreakpoint(aText[0], CInt(aText[2]), False)
+  Design.SetBreakpoint(aText[0], CInt(aText[2]), False )
 
 End
 
@@ -674,24 +684,6 @@ Catch
 
 End
 
-Public Sub Message(sMsg As String)
-  
-  'lstDebugMsg.Add(sMsg)
-  
-End
-
-' Public Sub chkSortLocal_Click()
-' 
-'   DefineLocal
-' 
-' End
-' 
-' Public Sub chkSortObject_Click()
-' 
-'   DefineObject
-' 
-' End
-
 Public Sub tabDebug_Click()
 
   If Design.IsRunning() Then Return
@@ -705,6 +697,7 @@ Public Sub tabDebug_Click()
       FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
+    Case TAB_COMPILATION
     Case TAB_TASK
       If Not $aTask Then
         UpdateTask
@@ -797,7 +790,7 @@ Public Sub UpdateView()
   
   If bUndock Then  
     If FOutput.Parent Then 
-      FOutput.Reparent(Null)
+      FOutput.Reparent(Null )
       'DEBUG "Read: "; Settings["/FOutput/Geometry"][0];; Settings["/FOutput/Geometry"][1]
       Settings.Read(FOutput)
       FOutput.OnProjectDebug
@@ -842,7 +835,7 @@ Public Sub UpdateView()
     FOutput.SetFocus
   Endif 
   
-  FMain.UpdateConsoleAction(Project.Running)
+  FMain.UpdateConsoleAction()
   
 End
 
@@ -904,7 +897,6 @@ End
 
 Public Sub GetBreakpoints() As String[]
 
-  Dim iInd As Integer
   Dim aBreak As String[]
   Dim aBreakPoint As New String[]
   Dim hEditor As FEditor
@@ -983,7 +975,7 @@ Public Sub tbvObject_Data(Row As Integer, Column As Integer)
 
 End
 
-Public Sub tbvLocal_Save(Row As Integer, Column As Integer, Value As String)
+Public Sub tbvLocal_Save(Row As Integer, (Column) As Integer, Value As String)
 
   Dim sVar As String = tbvLocal[Row, 0].Text
   With tbvLocal[Row, 1]
@@ -993,7 +985,7 @@ Public Sub tbvLocal_Save(Row As Integer, Column As Integer, Value As String)
 
 End
 
-Public Sub tbvObject_Save(Row As Integer, Column As Integer, Value As String)
+Public Sub tbvObject_Save(Row As Integer, (Column) As Integer, Value As String)
 
   Dim sVar As String = tbvObject[Row, 0].Text
   Design.Command("=O" & sVar & "\t" & sVar & " = " & Value)
@@ -1051,7 +1043,7 @@ End
 
 Public Sub ShowSearchList()
   
-  FMain.ShowDebug(True)
+  FMain.ShowDebug(True )
   gvwFind.Show
   lblNotFound.Hide
   'lblBrowse.Hide
@@ -1076,7 +1068,7 @@ End
 
 Public Sub btnShowSearch_Click()
 
-  FSearch.WakeUp(False)
+  FSearch.WakeUp(False )
 
 End
 
@@ -1166,15 +1158,21 @@ Public Sub IsSearchListVisible() As Boolean
   
 End
 
-Public Sub btnClearSearch_Click()
-
-  FSearch.ResetBrowse
+Private Sub GotoConsole()
+  
   If tabDebug[TAB_CONSOLE].Visible Then
     tabDebug.Index = TAB_CONSOLE
   Else
     tabDebug.Index = TAB_BREAK
   Endif
   
+End
+
+
+Public Sub btnClearSearch_Click()
+
+  FSearch.ResetBrowse
+  GotoConsole
   tabDebug[TAB_SEARCH].Visible = False
 
 End
@@ -1191,6 +1189,14 @@ Public Sub ShowConsole()
   FOutput.SetFocus
 
 End
+
+Public Sub RefreshTabs(sPath As String, sName As String)
+  
+  RefreshBreakpoint(sName)
+  RefreshTask(sPath)
+  
+End
+
 
 Public Sub RefreshTask(sPath As String)
   
@@ -1316,6 +1322,7 @@ Public Sub OnProjectChange()
   
   $aTask = Null
   UpdateTask
+  SetCompilation
   btnClearSearch_Click  
   
 End
@@ -1331,3 +1338,62 @@ Public Sub ShowError(sMsg As String)
   
 End
 
+Public Sub SetCompilation(Optional sOutput As String)
+  
+  Dim aOutput As String[]
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim I As Integer
+  
+  gvwCompilation.Clear
+  If Not sOutput Then 
+    tabDebug[TAB_COMPILATION].Visible = False
+    GotoConsole
+    Return
+  Endif
+  
+  aOutput = Split(Trim(sOutput), "\n")
+  gvwCompilation.Rows.Count = aOutput.Count
+  
+  For Each sLine In aOutput
+    
+    aLine = Scan(sLine, "*:*: warning: *")
+    If aLine.Count <> 3 Then Continue
+    
+    gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
+    gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]) + 1)
+    gvwCompilation[I, 2].Text = Project.TranslateMessage(Trim(aLine[2]))
+    gvwCompilation[I, 2].Font = Project.GetEditorFont()
+    Inc I
+    
+  Next
+  
+  gvwCompilation.Rows.Count = I
+  gvwCompilation.Columns[0].Width = -1
+  gvwCompilation.Columns[1].Width = -1
+  
+  tabDebug[TAB_COMPILATION].Visible = True
+  tabDebug[TAB_COMPILATION].Text = ("Warnings") & " (" & gvwCompilation.Rows.Count & ")"
+  
+  Action["console"].Value = True
+  tabDebug.Index = TAB_COMPILATION
+  
+End
+
+Public Sub gvwCompilation_Activate()
+
+  Dim I As Integer = gvwCompilation.Row
+  
+  Project.OpenFile(gvwCompilation[I, 0].Text, CInt(gvwCompilation[I, 1].Text) - 1)
+
+Catch  
+
+End
+
+Public Sub GotoFirstWarning()
+  
+  If gvwCompilation.Rows.Count = 0 Then Return
+  gvwCompilation.Row = 0
+  gvwCompilation_Activate
+  
+End

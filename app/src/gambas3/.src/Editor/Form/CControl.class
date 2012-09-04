@@ -29,13 +29,6 @@ Property Read Height As Integer
 Property Read W As Integer
 Property Read H As Integer
 
-'STATIC PUBLIC Properties AS NEW Collection
-'STATIC PUBLIC PropertiesInOrder AS NEW Collection
-'STATIC PUBLIC ControlLibrary AS NEW Collection
-
-'Static Private $cSynonymous As New Collection
-Static Private $cLibRef As New Collection
-
 Private $cValue As New Collection
 
 Private $aPanel As New Panel[8] 'DrawingArea[1] '8
@@ -139,10 +132,6 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   Dim bVirtual As Boolean
   Dim hWindow As Window
   Dim hClass As CClassInfo
-  Dim hLabel As Label
-  Dim hProp As CPropertyInfo
-  Dim sProp As String
-  'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
 
@@ -315,7 +304,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 End
 
 
-Private Sub InitControl(hCtrl As Object)
+Private Sub InitControl()
 
   Dim hProp As CPropertyInfo
 
@@ -408,7 +397,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   
   VirtualCoord = hClass.Family <> "Form" And Not Virtual
 
-  InitControl(hCtrl)
+  InitControl()
 
   If IsMultiContainer() Then
     Tag = New Collection
@@ -508,8 +497,6 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Dim vDefault As Variant
   Dim hProp As CPropertyInfo
   Dim vRealVal As Variant
-  Dim bDoNotRedirect As Boolean
-  Dim bApply As Boolean
 
   'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
@@ -752,7 +739,6 @@ Public Function GetPropertyString(sProp As String) As String
 
   Dim vVal As Variant
   Dim hProp As CPropertyInfo
-  Dim iInd As Integer
 
   Try hProp = CComponent.Classes[Kind].Properties[sProp]
   If IsNull(hProp) Then Return
@@ -863,8 +849,6 @@ End
 
 Public Sub UpdateName()
   
-  Dim hLabel As Label
-  
   If Virtual Then Return
   
   Select Case Object.Type(Control)
@@ -943,7 +927,7 @@ Public Function Rename(sNewName As String) As Boolean
 
   ' Don't look in the class when renaming the form!
   If Parent Then
-    hForm.GetEditor(True).RenameControl(Name, sNewName)
+    hForm.GetEditor(True ).RenameControl(Name, sNewName)
   Endif
   
   If Name Then hForm.Control[Name] = Null
@@ -1031,7 +1015,6 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
 
   Dim hPanel As Panel
   Dim hCont As Object
-  Dim iInd As Integer
   
   hCont = Control.Parent
 
@@ -1063,8 +1046,7 @@ Private Sub MovePanel(iPanel As Integer)
 
   Dim hCtrl As Control
   Dim hPanel As Panel
-  Dim X, Y, D As Integer
-  Dim iInd As Integer
+  Dim X, Y As Integer
 
   hCtrl = Control
   hPanel = $aPanel[iPanel]
@@ -1120,7 +1102,7 @@ Private Sub MoveAllHandle()
     MovePanel(iInd)
   Next
   
-  If HasIcon() Then $hFamily.EnterControl(Null, Me)
+  If HasIcon() Then $hFamily.EnterControl(Null , Me)
   
 End
 
@@ -1275,9 +1257,6 @@ Public Procedure Panel_MouseMove()
   Dim hPanel As Panel = Last
   Dim hCtrl As Control
 
-  Dim iXP As Integer
-  Dim iYP As Integer
-  
   Dim bSomethingDone As Boolean
   Dim hUndo As CUndo
 
@@ -1357,7 +1336,7 @@ Public Procedure Panel_MouseMove()
 
   Endif
 
-  CControl.SetGrid(True)
+  CControl.SetGrid(True )
 
 End
 
@@ -1491,9 +1470,6 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim cProp As Collection
   Dim hProp As CPropertyInfo
   Dim sLine As String
-  Dim sVal As String
-  Dim aVal As String[]
-  Dim iInd As Integer
   Dim X, Y, W, H As Integer
   Dim bHasSize As Boolean
   Dim bTranslate As Boolean
@@ -1628,7 +1604,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     Else
   
       sLine = "MoveScaled(" & FormatScaledCoord(GetCoord(X)) & "," & FormatScaledCoord(GetCoord(Y))
-      If bHasSize Then sLine = sLine & "," & FormatScaledCoord(GetCoord(W, True)) & "," & FormatScaledCoord(GetCoord(H, True))
+      If bHasSize Then sLine = sLine & "," & FormatScaledCoord(GetCoord(W, True )) & "," & FormatScaledCoord(GetCoord(H, True ))
       sLine = sLine & ")"
   
     Endif
@@ -1787,7 +1763,6 @@ Public Sub AddAction(cActionSet As Collection)
   
   Dim sAction As String
   Dim cAction As Collection
-  Dim sVal As String
   Dim sPicture As String
   
   sAction = GetProperty("Action")

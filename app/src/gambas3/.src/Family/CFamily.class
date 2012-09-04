@@ -50,18 +50,18 @@ End
 
 
 '' If a control must be drawn with a painted DrawingArea
-Public Sub IsPainted(hCtrl As CControl) As Boolean
-  
+Public Sub IsPainted((hCtrl) As CControl) As Boolean
+
 End
 
 '' If a control must be drawn with a transparent DrawingArea
-Public Sub IsTransparent(hCtrl As CControl) As Boolean
+Public Sub IsTransparent((hCtrl) As CControl) As Boolean
   
 End
 
 '' Draw event implementation of a specific control
 '' Return TRUE if the control is not managed: then a default frame with the control icon and the control name will be drawn.
-Public Sub DrawControl(hCtrl As CControl) As Boolean
+Public Sub DrawControl((hCtrl) As CControl) As Boolean
 
   Return True
 
@@ -185,7 +185,7 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage 
   
 End
 
-Public Sub LeaveControl(hCont As Container, hCCtrl As CControl)
+Public Sub LeaveControl((hCont) As Container, hCCtrl As CControl)
   
   Dim iCount As Integer
   Dim hIconCtrl As CControl
@@ -211,7 +211,6 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   Dim hImage As Image
   Dim hIcon As DrawingArea
   Dim hComp As Control
-  Dim iWidth As Integer
   Dim X, Y As Integer
   Dim XI, YI, XC, YC As Integer
 

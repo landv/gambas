@@ -23,8 +23,6 @@ Private $bCancel As Boolean
 
 Private $cGrepCache As New Collection
 Private $cRefreshBrowse As New Collection
-Private $bMustRefreshBrowse As Boolean
-Private $bNoRefreshBrowse As Boolean
 Private $hFont As Font
 
 Private gvwFind As GridView
@@ -49,14 +47,14 @@ Public Sub Form_Open()
 
   Settings.Read(Me)
   
-  chkCaseSensitive.Value = Settings["/FSearch/CaseSensitive", False]
-  radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
-  chkHighlight.Value = Settings["/FSearch/Highlight", False]
-  chkIgnoreComments.Value = Settings["/FSearch/IgnoreComments", False]
-  chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
-  chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
-  chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
-  radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
+  chkCaseSensitive.Value = Settings["/FSearch/CaseSensitive", False ]
+  radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False ]
+  chkHighlight.Value = Settings["/FSearch/Highlight", False ]
+  chkIgnoreComments.Value = Settings["/FSearch/IgnoreComments", False ]
+  chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False ]
+  chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False ]
+  chkWordOnly.Value = Settings["/FSearch/WordOnly", False ]
+  radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False ]
   
 End
 
@@ -105,7 +103,6 @@ End
 
 Public Sub Update(Optional bForce As Boolean)
   
-  Dim hCtrl As Control
   Dim bCode As Boolean
   Dim hWindow As Window
   Dim bAllProject As Boolean
@@ -303,7 +300,7 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
   '   Wait 0.01
   ' Until hProcess.State <> Process.Running
 
-  For Each sFind In Split($sGrep, "\n", "", True)
+  For Each sFind In Split($sGrep, "\n", "", True )
     
     hResult = New CFindResult
     
@@ -390,16 +387,11 @@ End
 
 Private Sub Run(iAction As Integer)
   
-  Dim sResult As String
   Dim aResult As CFindResult[]
-  Dim aFind As String[]
-  Dim iLine As Integer
-  Dim iCol As Integer
   Dim iCurrentPos, iPos, iInd As Integer
   Dim iTry As Integer
   Dim nReplace As Integer
   Dim hEditor As FEditor
-  Dim sProc As String
   
   If InitSearch() Then Return
   ResetBrowse
@@ -455,7 +447,7 @@ DO_IT_AGAIN:
         
       Endif
     
-      If Not $hCurrent.SetPosition(aResult[iInd], False) Then 
+      If Not $hCurrent.SetPosition(aResult[iInd], False ) Then 
         If iAction And DO_REPLACE Then 
           $hCurrent.Replace(ReplaceString)
           DoReplace(aResult, iInd, ReplaceString)
@@ -485,44 +477,42 @@ DO_IT_AGAIN:
   
 End
 
-Private Sub UpdateSpan(iRow As Integer)
-  
-  Dim hResult As CFindResult
-  Dim iLastFile, iLastLine As Integer
-  
-  If iRow >= $aBrowse.Count Then Return
-  
-  iLastFile = iRow
-  iLastLine = iRow
-  
-  gvwFind[iRow, 0].RowSpan = 1
-  gvwFind[iRow, 1].RowSpan = 1
-  
-  Inc iRow
-  
-  While iRow < $aBrowse.Count
-    
-    hResult = $aBrowse[iRow]
-    
-    If hResult.File <> $aBrowse[iLastFile].File Then
-      iLastFile = iRow
-      iLastLine = iRow
-    Else If hResult.Line <> $aBrowse[iLastLine].Line Then
-      iLastLine = iRow
-    Endif
-    gvwFind[iLastFile, 0].RowSpan = iRow - iLastFile + 1
-    gvwFind[iLastLine, 1].RowSpan = iRow - iLastLine + 1
-    
-    Inc iRow
-    
-  Wend
-  
-End
+' Private Sub UpdateSpan(iRow As Integer)
+'   
+'   Dim hResult As CFindResult
+'   Dim iLastFile, iLastLine As Integer
+'   
+'   If iRow >= $aBrowse.Count Then Return
+'   
+'   iLastFile = iRow
+'   iLastLine = iRow
+'   
+'   gvwFind[iRow, 0].RowSpan = 1
+'   gvwFind[iRow, 1].RowSpan = 1
+'   
+'   Inc iRow
+'   
+'   While iRow < $aBrowse.Count
+'     
+'     hResult = $aBrowse[iRow]
+'     
+'     If hResult.File <> $aBrowse[iLastFile].File Then
+'       iLastFile = iRow
+'       iLastLine = iRow
+'     Else If hResult.Line <> $aBrowse[iLastLine].Line Then
+'       iLastLine = iRow
+'     Endif
+'     gvwFind[iLastFile, 0].RowSpan = iRow - iLastFile + 1
+'     gvwFind[iLastLine, 1].RowSpan = iRow - iLastLine + 1
+'     
+'     Inc iRow
+'     
+'   Wend
+'   
+' End
 
 
 Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
-  
-  Dim iInd As Integer
   
   If iIndex < 0 Then
     iIndex = $aBrowse.Count
@@ -598,13 +588,13 @@ Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As 
       hFile.Replace(ReplaceString)
     Next
     
-    aResult = GrepFile(hFile, sPath, True)
+    aResult = GrepFile(hFile, sPath, True )
     
   Endif
   
   For iInd = 0 To aResult.Max
     hResult = aResult[iInd]
-    If Not hFile.SetPosition(hResult, True) Then 
+    If Not hFile.SetPosition(hResult, True ) Then 
       hResult.Path = sPath
       AddFound(hResult, iIndex)
       If bRefresh Then 
@@ -636,9 +626,7 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   Dim sDir As String
   Dim sFile As String
   Dim sPath As String
-  Dim iPos As Integer
   Dim iLen As Integer
-  Dim aFind As String[]
   Dim sName As String
   Dim sExt As String
   Dim fTime As Float
@@ -658,7 +646,7 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   FDebugInfo.ShowSearchList
   
   Inc Application.Busy
-  FDebugInfo.EnableGUI(False)
+  FDebugInfo.EnableGUI(False )
   'tabSearch.Enabled = False
   
   'btnClose.Text = ("Cancel")
@@ -732,7 +720,7 @@ Finally
   Endif
 
   'lblBrowse.Hide
-  FDebugInfo.EnableGUI(True)
+  FDebugInfo.EnableGUI(True )
   'btnClose.Text = ("Close")
   Dec Application.Busy
   
@@ -769,14 +757,14 @@ End
 
 Public Sub FindNext()
   
-  Update(True)
+  Update(True )
   Run(GO_FORWARD)
   
 End
 
 Public Sub FindPrevious()
   
-  Update(True)
+  Update(True )
   Run(GO_BACKWARD)
   
 End
@@ -791,7 +779,7 @@ End
 
 Public Sub BrowseAgain()
   
-  Browse(False, True)
+  Browse(False , True )
   
 End
 
@@ -831,7 +819,7 @@ Public Sub OnNewForm(hForm As Object)
   
   If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
   
-  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False)
+  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False )
   
 End
 
@@ -859,7 +847,7 @@ Public Sub btnReplaceAll_Click()
   If Message.Question(("Do you really want to replace every string?"), ("Replace"), ("Cancel")) <> 1 Then Return
   
   If btnBrowse.Visible Then
-    Browse(True)
+    Browse(True )
   Else
     Run(GO_FORWARD + DO_REPLACE + DO_ALL)
   Endif
@@ -905,7 +893,7 @@ End
 
 Public Sub btnBrowse_Click()
 
-  Browse(False)
+  Browse(False )
 
 End
 
@@ -962,7 +950,6 @@ End
 Public Sub gvwFind_Select()
 
   Dim hFind As CFindResult
-  Dim sPath As String
   Dim hForm As Object
 
   If $aBrowse.Count = 0 Then Return
@@ -974,7 +961,7 @@ Public Sub gvwFind_Select()
   Try hForm = Project.OpenFile(hFind.Path)
   If Not hForm Then Return
   
-  hForm.SetPosition(hFind, False)
+  hForm.SetPosition(hFind, False )
   Project.Activate(hForm)
 
   gvwFind.ScrollX = 0
@@ -1045,7 +1032,7 @@ Public Sub RefreshBrowse()
         If iIndex >= $aBrowse.Count Then Break
       Wend
     Endif
-    BrowseFile(sPath, False, iIndex)
+    BrowseFile(sPath, False , iIndex)
     
   Next
   

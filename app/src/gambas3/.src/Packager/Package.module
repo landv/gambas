@@ -12,7 +12,6 @@ Private MAKEPKG_PROG As String
 
 Private $sOutput As String
 Private $bEnd As Boolean
-Private $bChecked As Boolean
 
 Private $sName As String            ' Project name
 Private $sPrefix As String          ' Prefix
@@ -53,10 +52,6 @@ End
 
 Public Sub CheckSystem(sSys As String) As String
   
-  Dim sProg As String
-  
-  'CheckProgram
-  
   Select Case sSys
   
     Case "mageia", "mandriva", "fedora", "suse"
@@ -91,7 +86,7 @@ End
 
 Private Sub RemoveEmptyLines(sText As String) As String
   
-  Return Split(sText, "\n", "", True).Join("\n")
+  Return Split(sText, "\n", "", True ).Join("\n")
   
 End
 
@@ -147,7 +142,7 @@ Public Function Make() As Boolean
   Dim sPath As String
 
   If Project.Systems.Exist("slackware") Then 
-    If Project.MakeExecutable(True, True) Then Return True
+    If Project.MakeExecutable(True , True ) Then Return True
   Endif  
   
   ' Save old rpm macro file
@@ -228,8 +223,6 @@ Private Function GetDependencies() As String
   
   Dim sRes As String
   Dim sComp As String
-  Dim hLib As CLibraryInfo
-  Dim aVer As String[]
   
   For Each sComp In Project.Components
     If sComp = "gb.debug" Or If sComp = "gb.eval" Then Continue 
@@ -247,7 +240,6 @@ End
 
 Private Function GetExtraDependencies(sSys As String) As String
   
-  Dim iIndex As Integer
   Dim sDep As String
   Dim aDep As String[]
   Dim sRes As String
@@ -286,7 +278,6 @@ End
 
 Private Function GetExtraFiles(sSys As String, sFormat As String, Optional sFormatDir As String) As String
   
-  Dim iIndex As Integer
   Dim sFile As String
   Dim aFile As String[]
   Dim sRes As String
@@ -323,7 +314,6 @@ End
 
 Private Function GetExtraFilesList(sSys As String, sPrefix As String, sFormat As String, Optional bDebian As Boolean) As String
   
-  Dim iIndex As Integer
   Dim sFile As String
   Dim aFile As String[]
   Dim sRes As String
@@ -349,10 +339,8 @@ End
 
 Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   
-  Dim iIndex As Integer
   Dim sFile As String
   Dim aFile As String[]
-  Dim sRes As String
   Dim sSrc As String
   Dim sDst As String
   
@@ -377,7 +365,6 @@ End
 
 Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
   
-  Dim iIndex As Integer
   Dim sFile As String
   Dim aFile As String[]
   Dim sRes As String
@@ -446,7 +433,7 @@ End
 
 Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
   
-  Dim aCat As String[] = Split(sCategories, ";", "", True)
+  Dim aCat As String[] = Split(sCategories, ";", "", True )
   Dim sCat As String
   Dim aOnly As New String[]
   
@@ -553,19 +540,13 @@ End
 
 Private Function MakeDebPackage(sSys As String)
 
-  Dim sBuildDir As String
   Dim hFile As File
-  Dim sPrefix As String
   Dim sCmd As String
   Dim sIcon As String
-  Dim sData As String
-  Dim sLib As String
-  Dim sPackage As String
   Dim sArch As String
   Dim sPackagePath As String
   Dim aLine As String[]
   Dim n As Integer
-  Dim aVer As String[]
       
   Inc Application.Busy
   
@@ -674,7 +655,7 @@ Private Function MakeDebPackage(sSys As String)
 
   End Select
   
-  Print #hFile, GetExtraFilesList(sSys, "src/" & $sName & "/.hidden", "&1 &3", True)
+  Print #hFile, GetExtraFilesList(sSys, "src/" & $sName & "/.hidden", "&1 &3", True )
   
   Close #hFile  
  
@@ -734,7 +715,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "#!/usr/bin/make -f"
   Print #hFile, "build: build-stamp\nbuild-stamp:"
   Print #hFile, "\tdh_testdir\n\ttouch build-stamp"
-  Print #hFile, "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & " src" &/ $sName
+  Print #hFile, "\t"; Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ) & " src" &/ $sName
   Print #hFile, "\tgba"; System.Version;
   If Project.Type = Project.TYPE_NORMAL Then Print #hFile, " -o " & Shell$("src" &/ $sName &/ $sName);
   Print #hFile, " src" &/ $sName
@@ -841,9 +822,6 @@ Private Function MakeRpmPackage(sSys As String)
   Dim sDistribution As String
   Dim sVendor As String
   Dim sRelease As String
-  Dim sLib As String
-  Dim sMacro As String
-  Dim aVer As String[]
 
   Inc Application.Busy
 
@@ -970,7 +948,7 @@ Private Function MakeRpmPackage(sSys As String)
     ' How can we do that? Hardcode installation path according to the distribution?
 
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ) & "\ngba"; System.Version
      
     Print #hFile, "\n%install"
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
@@ -991,7 +969,7 @@ Private Function MakeRpmPackage(sSys As String)
   Else 
   
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ) & "\ngba"; System.Version
   
     Print #hFile, "\n%install"
   
@@ -1236,11 +1214,9 @@ Private Sub MakeTgzPackage(sSys As String)
   Dim sCmd As String
   Dim sIcon As String
   Dim sData As String
-  Dim sLib As String
   Dim sTempPackage As String
   Dim sPackage As String
   Dim sFile As String 
-  Dim aVer As String[]
       
   Inc Application.Busy
 
@@ -1392,7 +1368,7 @@ Private Sub MakeTgzPackage(sSys As String)
   
 End
 
-Private Sub MakeAutotoolsPackage(sSys As String)
+Private Sub MakeAutotoolsPackage((sSys) As String)
 
   Dim sBuildDir As String
   Dim sFile As String
@@ -1411,7 +1387,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   
   ' 2. Copy needed files 
 
-  Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False), "*/bin/gbc" & System.Version & " *")[1]
+  Try sCmd = Scan(Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ), "*/bin/gbc" & System.Version & " *")[1]
 
   'Mkdir sBuildDir &/ Project.Name
   Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
@@ -1471,7 +1447,6 @@ Private Function MakeArchPackage(sSys As String)
   Dim sBuildDir As String
   Dim sPkgTgz As String
   Dim hFile As File
-  Dim sLib As String
   Dim sCmd As String
   Dim sDependencies As String
   Dim sPkgDesc As String
@@ -1550,7 +1525,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, "build() {"
     Print #hFile, "  cd ${srcdir}/${_realname}"
     Print #hFile, ""
-    Print #hFile, "  "; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False); " && gba"; System.Version
+    Print #hFile, "  "; Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ); " && gba"; System.Version
     Print #hFile, "}"
     Print #hFile, ""
     Print #hFile, "package() {"
@@ -1639,13 +1614,13 @@ Public Sub Process_Read()
   
   sData = Read #Last, -256
   $sOutput &= sData
-  FMakeInstall.AddLog(sData, True)
+  FMakeInstall.AddLog(sData, True )
   
 End
 
 Public Sub Process_Error(sData As String)
 
-  FMakeInstall.AddLog(sData, True)
+  FMakeInstall.AddLog(sData, True )
 
 End
 

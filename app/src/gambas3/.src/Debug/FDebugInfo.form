@@ -12,12 +12,12 @@
       Expand = True
       Arrangement = Arrange.Vertical
       Border = False
-      Count = 7
+      Count = 8
       Index = 0
       Text = ("Console")
       Picture = Picture["icon:/small/terminal"]
       { panConsole Panel
-        MoveScaled(4,4,24,24)
+        MoveScaled(5,4,24,24)
         Expand = True
         Arrangement = Arrange.Fill
       }
@@ -141,6 +141,16 @@
         Delay = 250
       }
       Index = 5
+      Text = ("")
+      Picture = Picture["icon:/small/make"]
+      { gvwCompilation GridView
+        MoveScaled(28,9,41,23)
+        Expand = True
+        Mode = Select.Single
+        Header = GridView.Horizontal
+        Border = False
+      }
+      Index = 6
       Text = ("Tasks")
       Picture = Picture["icon:/small/ok"]
       { gvwTask GridView
@@ -153,7 +163,7 @@
       { timTask #Timer
         #MoveScaled(73,17)
       }
-      Index = 6
+      Index = 7
       Text = ("Search list")
       Picture = Picture["icon:/small/find"]
       { panSearch HBox

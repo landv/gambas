@@ -16,8 +16,6 @@ End
 
 Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
   
-  Dim iRow As Integer
-  
   $sClass = sClass
   ' Copy it, as it can disappear during the Editor_Change() method
   $aProc = aProc.Copy()
@@ -38,7 +36,7 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
   
 End
 
-Public Sub gvwProc_Data(Row As Integer, Column As Integer)
+Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
   
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo

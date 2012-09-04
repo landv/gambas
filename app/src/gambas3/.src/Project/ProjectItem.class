@@ -77,10 +77,8 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim hIcon As Picture
   Dim sTitle As String
   Dim X, W, H As Integer
-  Dim sPath As String
   Dim bSelected As Boolean
   
   If Not $hProjectInfo Then Return
@@ -185,7 +183,7 @@ End
 
 Private Sub ShowPath_Write(Value As Boolean)
 
-  $bShowPath = True
+  $bShowPath = Value
   Refresh
 
 End
@@ -218,7 +216,6 @@ End
 Private Function IdealHeight_Read() As Integer
   
   Dim X, H As Integer
-  Dim sTitle As String
 
   X = ICON_SIZE + PADDING * 2
   'If $hProjectInfo Then

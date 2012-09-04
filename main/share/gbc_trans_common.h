@@ -29,7 +29,8 @@ typedef
 		TYPE type;
 		int index;
 		PATTERN *optional;
-		int value;
+		short value;
+		unsigned ignore : 1;
 		}
 	TRANS_PARAM;  /* must be the same as PARAM in class.h */
 
