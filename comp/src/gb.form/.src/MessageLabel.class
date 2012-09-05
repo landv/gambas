@@ -44,7 +44,7 @@ Public Sub hTimer_Timer()
 
 End
 
-Public Procedure Message(Message As String, Optional State As Integer)
+Public Procedure Message((Message) As String, Optional State As Integer)
 
   $bGetColor = False
   Me.Text = Message

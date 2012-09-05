@@ -42,13 +42,18 @@ static void add_local(int sym_index, TYPE type, int value, bool used)
 {
 	CLASS_SYMBOL *sym;
 	PARAM *loc;
+	bool warnings = JOB->warnings;
 
 	loc = ARRAY_add(&func->local);
 	loc->index = sym_index;
 	loc->type = type;
 	loc->value = value;
 
+	if (used)
+		JOB->warnings = FALSE;
 	sym = CLASS_declare(JOB->class, sym_index, FALSE);
+	if (used)
+		JOB->warnings = warnings;
 
 	sym->local.type = type;
 	sym->local.value = value;

@@ -100,6 +100,8 @@ Private Sub RefreshPanel()
   'IF NOT $bVisible THEN panSide.Hide
   If Not $bOpened Then Return
 
+  'If $bSeparator Then S = 1
+
   Select Case $iOrientation
 
     Case Align.Top, Align.Bottom
@@ -123,13 +125,13 @@ Private Sub RefreshPanel()
   Select Case $iOrientation
 
     Case Align.Bottom, Align.Right
-      Y = 1
+      Y = 0
 
     Case Align.Top
-      Y = Me.ClientH - BUTTON_H - 1
+      Y = Me.ClientH - BUTTON_H
 
     Case Align.Left
-      Y = Me.ClientW - BUTTON_H - 1
+      Y = Me.ClientW - BUTTON_H
 
   End Select
 
@@ -185,25 +187,35 @@ Private Sub RefreshPanel()
 
   End Select
 
-  If $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH)
+  'If $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH)
+  
+  If $bTransparent Then
+    If $bSeparator Then
+      D = 1
+    Else
+      D = 0
+    Endif
+  Else
+    D = BUTTON_H
+  Endif
   
   Select Case $iOrientation
 
     Case Align.Bottom
       sepSide.Move(0, 0, Me.ClientW, 1)
-      If Not $bTransparent Then panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
+      panSide.Move(0, D, Me.ClientW, Me.ClientH - D)
 
     Case Align.Top
       sepSide.Move(0, Me.ClientH - 1, Me.ClientW, 1)
-      If Not $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
+      panSide.Move(0, 0, Me.ClientW, Me.ClientH - D)
 
     Case Align.Right
       sepSide.Move(0, 0, 1, Me.ClientH)
-      If Not $bTransparent Then panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+      panSide.Move(D, 0, Me.ClientW - D, Me.ClientH)
 
     Case Align.Left
       sepSide.Move(Me.ClientW - 1, 0, 1, Me.ClientH)
-      If Not $bTransparent Then panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
+      panSide.Move(0, 0, Me.ClientW - D, Me.ClientH)
 
   End Select
   

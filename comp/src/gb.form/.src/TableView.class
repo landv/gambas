@@ -81,13 +81,13 @@ End
 Public Sub Save() As Boolean
   
   If SaveEditor() Then Return True
-  HideEditor(True )
+  HideEditor(True)
   
 End
 
 Public Sub Cancel()
   
-  HideEditor(True )
+  HideEditor(True)
   
 End
 
@@ -300,7 +300,7 @@ Public Sub Editor_KeyPress()
       
     Case Key.Escape
       If $hEditor.Text = Me[$iRow, $iCol].Text Then
-        HideEditor(True )
+        HideEditor(True)
       Else
         $hEditor.Text = Me[$iRow, $iCol].Text
       Endif

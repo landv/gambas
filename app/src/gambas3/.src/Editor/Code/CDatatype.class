@@ -64,7 +64,7 @@ Public Sub _get(...) As Variant
   If $sType = "o" Or If $sType = "v" Then Return Get("v")
   
   Try hSymbol = CComponent.GetClassSymbols($sType)["_get"]
-  If hSymbol Then Return Get(hSymbol.Type, hSymbol)
+  If hSymbol Then Return Get(hSymbol.Type)
   
 End
 

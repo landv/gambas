@@ -104,7 +104,7 @@ Public Sub _new()
   Me.Proxy = $hDrawingArea
   Me._Container = $hDrawingArea
 
-  Border_Write(True )
+  Border_Write(True)
   'ScrollArea_Arrange
   '
   'Debug "<<<<<"
@@ -303,8 +303,6 @@ Public Sub DrawingArea_Draw()
 
     If $bShadow Then
       
-      LoadFades()
-      
       ' Draw.Clip(hClip.X, hClip.Y + $iShadowN, hClip.W, hClip.H - $iShadowN - $iShadowS)
       ' If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)
       ' If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - 16 - $iShadowS + Max(0, 16 - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, 16)
@@ -313,13 +311,19 @@ Public Sub DrawingArea_Draw()
       ' If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
       ' If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
   
-      Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-      If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), Draw.W, $hFadeN.H)
-      If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, $hFadeS.H)
+      If $hVBar.Visible Then
+        LoadFades()
+        Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+        If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), Draw.W, $hFadeN.H)
+        If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, $hFadeS.H)
+      Endif
       
-      Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-      If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, Draw.H)
-      If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, Draw.H)
+      If $hHBar.Visible Then
+        LoadFades()
+        Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+        If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, Draw.H)
+        If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, Draw.H)
+      Endif
       
     Endif
 

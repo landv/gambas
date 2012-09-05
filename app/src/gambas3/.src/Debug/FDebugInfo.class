@@ -657,7 +657,7 @@ Public Sub btnRemoveBreak_Click()
   If Not sText Then Return
   
   aText = Scan(sText, "*.*.*")
-  Design.SetBreakpoint(aText[0], CInt(aText[2]), False )
+  Design.SetBreakpoint(aText[0], CInt(aText[2]), False)
 
 End
 
@@ -790,7 +790,7 @@ Public Sub UpdateView()
   
   If bUndock Then  
     If FOutput.Parent Then 
-      FOutput.Reparent(Null )
+      FOutput.Reparent(Null)
       'DEBUG "Read: "; Settings["/FOutput/Geometry"][0];; Settings["/FOutput/Geometry"][1]
       Settings.Read(FOutput)
       FOutput.OnProjectDebug
@@ -1043,7 +1043,7 @@ End
 
 Public Sub ShowSearchList()
   
-  FMain.ShowDebug(True )
+  FMain.ShowDebug(True)
   gvwFind.Show
   lblNotFound.Hide
   'lblBrowse.Hide
@@ -1068,7 +1068,7 @@ End
 
 Public Sub btnShowSearch_Click()
 
-  FSearch.WakeUp(False )
+  FSearch.WakeUp(False)
 
 End
 
@@ -1362,7 +1362,7 @@ Public Sub SetCompilation(Optional sOutput As String)
     
     gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
     gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]) + 1)
-    gvwCompilation[I, 2].Text = Project.TranslateMessage(Trim(aLine[2]))
+    gvwCompilation[I, 2].Text = String.UCaseFirst(Project.TranslateMessage(Trim(aLine[2])))
     gvwCompilation[I, 2].Font = Project.GetEditorFont()
     Inc I
     

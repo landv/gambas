@@ -569,6 +569,41 @@ BEGIN_METHOD(String_Upper, GB_STRING str)
 END_METHOD
 
 
+BEGIN_METHOD(String_UCaseFirst, GB_STRING str)
+
+	char *str = STRING(str);
+	int len = LENGTH(str);
+	char *result;
+	int lc;
+	wchar_t wc;
+	
+	if (len <= 0)
+	{
+		GB_ReturnVoidString();
+		return;
+	}
+	
+	result = STRING_new_temp(str, len);
+	
+	lc = utf8_get_char_length(result[0]);
+	
+	if (lc == 1)
+	{
+		result[0] = toupper(result[0]);
+	}
+	else
+	{
+		wc = (wchar_t)utf8_to_unicode(result, lc);
+		wc = towupper(wc);
+		// We suppose that the conversion does not change the number of bytes!
+		utf8_from_unicode((uint)wc, result);
+	}
+
+	GB_ReturnString(result);
+
+END_METHOD
+
+
 BEGIN_METHOD(String_Chr, GB_INTEGER code)
 
 	char temp[8];
@@ -734,6 +769,8 @@ GB_DESC NATIVE_String[] =
 	GB_STATIC_METHOD("Upper$", "s", String_Upper, "(String)s"),
 	GB_STATIC_METHOD("UCase", "s", String_Upper, "(String)s"),
 	GB_STATIC_METHOD("UCase$", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("UCaseFirst", "s", String_UCaseFirst, "(String)s"),
+	GB_STATIC_METHOD("UCaseFirst$", "s", String_UCaseFirst, "(String)s"),
 	GB_STATIC_METHOD("Lower", "s", String_Lower, "(String)s"),
 	GB_STATIC_METHOD("Lower$", "s", String_Lower, "(String)s"),
 	GB_STATIC_METHOD("LCase", "s", String_Lower, "(String)s"),

@@ -106,7 +106,7 @@ Public Sub _new()
   
   Me.Proxy = $hView
   
-  Border_Write(True )
+  Border_Write(True)
   '$hObserver = New Observer(Me) As "ScrollArea"
   
   $hSelChangedTimer = New Timer As "SelectionChanged"
@@ -412,12 +412,12 @@ Public Sub ScrollArea_Draw()
   iPos = FindIcon(X, Y)
   
   If $bHorizontal Then
-    nCol = FindIcon(X, Y + H - 1, True ) - iPos + 1
+    nCol = FindIcon(X, Y + H - 1, True) - iPos + 1
   Else
-    nCol = FindIcon(X + W - 1, Y, True ) - iPos + 1
+    nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
   Endif
 
-  iLast = FindIcon(X + W - 1, Y + H - 1, True )
+  iLast = FindIcon(X + W - 1, Y + H - 1, True)
   iCol = 0
   
   While iPos <= iLast
@@ -432,7 +432,7 @@ Public Sub ScrollArea_Draw()
       If hClip Then
         bHover = iPos = $iHover
         If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
-        hItem._Draw(hRect, hClip, Me, $bHorizontal, False , bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, Me, $bHorizontal, False, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
       Endif
       
     Endif
@@ -642,9 +642,9 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
   Else
     
     If iCurrent >= 0 Then
-      SelectRect(False )
+      SelectRect(False)
       $iCurrent = iCurrent
-      SelectRect(True )
+      SelectRect(True)
     Endif
     
   Endif
@@ -751,31 +751,31 @@ Public Sub ScrollArea_KeyPress()
     Select iCode
       
       Case Key.Left
-        SetCurrentItem($iCurrent - 1, True , bShift)
+        SetCurrentItem($iCurrent - 1, True, bShift)
         Stop Event
         
       Case Key.Right
-        SetCurrentItem($iCurrent + 1, True , bShift)
+        SetCurrentItem($iCurrent + 1, True, bShift)
         Stop Event
         
       Case Key.Up
-        SetCurrentItem($iCurrent - $nColumn, True , bShift)
+        SetCurrentItem($iCurrent - $nColumn, True, bShift)
         Stop Event
       
       Case Key.Down
         If $iCurrent < 0 Then
-          SetCurrentItem(0, True , bShift)
+          SetCurrentItem(0, True, bShift)
         Else
-          SetCurrentItem($iCurrent + $nColumn, True , bShift)
+          SetCurrentItem($iCurrent + $nColumn, True, bShift)
         Endif
         Stop Event
         
       Case Key.Home
-        SetCurrentItem(0, True , bShift)
+        SetCurrentItem(0, True, bShift)
         Stop Event
         
       Case Key.End
-        SetCurrentItem($aItems.Max, True , bShift)
+        SetCurrentItem($aItems.Max, True, bShift)
         Stop Event
         
       Case Key["A"]
@@ -810,7 +810,7 @@ Public Sub ScrollArea_KeyPress()
         With $aItems[iPos]
           'Debug iInd;; .Text
           If String.LCase(.Text) Begins $sFindItem Then
-            SetCurrentItem(iPos, True )
+            SetCurrentItem(iPos, True)
             Break
           Endif
         End With
@@ -952,11 +952,11 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
   
   iPos = FindIcon(X, Y)
   If $bHorizontal Then
-    nCol = FindIcon(X, Y + H - 1, True ) - iPos + 1
+    nCol = FindIcon(X, Y + H - 1, True) - iPos + 1
   Else
-    nCol = FindIcon(X + W - 1, Y, True ) - iPos + 1
+    nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
   Endif
-  iLast = FindIcon(X + W - 1, Y + H - 1, True )
+  iLast = FindIcon(X + W - 1, Y + H - 1, True)
     
   iCol = 0
   

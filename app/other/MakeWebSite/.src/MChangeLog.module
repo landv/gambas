@@ -3,19 +3,19 @@
 Private $hIn As File
 Private $hOut As File
 
-Private Sub Terminate(aStack As String[], Optional sMark As String, Optional iNeed As Integer)
-
-  Dim sElt As String
-
-  While aStack.Count > iNeed
-
-    sElt = aStack.Pop()
-    Print #$hOut, sElt
-    If sElt = sMark Then Break
-
-  Wend
-
-End
+' Private Sub Terminate(aStack As String[], Optional sMark As String, Optional iNeed As Integer)
+' 
+'   Dim sElt As String
+' 
+'   While aStack.Count > iNeed
+' 
+'     sElt = aStack.Pop()
+'     Print #$hOut, sElt
+'     If sElt = sMark Then Break
+' 
+'   Wend
+' 
+' End
 
 
 Private Function UnCapitalize(sLig As String) As String
@@ -48,17 +48,11 @@ End
 Public Sub MakeChangeLog(sDir As String, iVer As Integer)
 
   Dim sLig As String
-  Dim iPos As Integer
   Dim aElt As String[]
-  Dim aLast As New String[]
   Dim bVer As Boolean
   Dim bList As Boolean
   Dim sOut As String
   Dim sVer As String
-  Dim sOld As String
-  Dim sData As String
-  Dim sLang As String
-  Dim sTemp As String
 
   sOut = sDir &/ "changelog" & iVer & ".html"
 

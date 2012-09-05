@@ -200,13 +200,12 @@ End
 '
 ' End
 
-Private Sub FilterRecent()
+Private Sub ApplyFilter(hList As ListContainer, sFilter As String)
 
-  Dim sFilter As String = Trim(txtFilter.Text)
   Dim hCtrl, hLast As Control
   Dim hFirst, hProjectItem As ProjectItem
   
-  lstRecent.Lock
+  hList.Lock
   
   If Not sFilter Then
     sFilter = "*"
@@ -215,7 +214,7 @@ Private Sub FilterRecent()
   Endif
   
   
-  For Each hCtrl In lstRecent.Children
+  For Each hCtrl In hList.Children
     
     If hCtrl Is ProjectItem Then
       hProjectItem = hCtrl
@@ -227,7 +226,7 @@ Private Sub FilterRecent()
     
   Next
   
-  For Each hCtrl In lstRecent.Children
+  For Each hCtrl In hList.Children
     
     If hCtrl Is DrawingArea Then
       If hLast Then hLast.Hide
@@ -241,8 +240,8 @@ Private Sub FilterRecent()
   
   If hLast Then hLast.Hide
   
-  lstRecent.Select(hFirst)
-  lstRecent.Unlock
+  hList.Select(hFirst)
+  hList.Unlock
   
 End
 
@@ -310,10 +309,12 @@ Public Sub tabProject_Click()
 
   If tabProject.Index = 1 Then 
     FillRecent
-    FilterRecent
+    ApplyFilter(lstRecent, txtFilter.Text)
     txtFilter.SetFocus
   Else If tabProject.Index = 2 Then 
     FillExample
+    ApplyFilter(lstExample, txtFilterExample.Text)
+    txtFilterExample.SetFocus
   Endif  
 
 End
@@ -331,6 +332,7 @@ Private Sub FillExample()
   Dim sLastDir As String
   Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectItem
+  Dim sGroup As String
   'Dim bHighlight As Boolean
   
   If lstExample.Children.Count Then Return
@@ -346,6 +348,7 @@ Private Sub FillExample()
       With hDrawingArea
         .Enabled = False
         .Tag = Project.ExampleTitle[sDir]
+        sGroup = .Tag
         .Font = Font["Bold"]
         .H = .Font.Height + If(sLastDir, 16, 8)
         .Foreground = Color.SelectedBackground
@@ -359,6 +362,7 @@ Private Sub FillExample()
     'bHighlight = Not bHighlight
     hProjectItem.ShowAuthors = True
     hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
+    hProjectItem.Group = sGroup
   
   Next
 
@@ -425,7 +429,7 @@ Public Sub radSort_Click()
   If tabProject.Index = 1 Then
     lstRecent.Clear
     FillRecent
-    FilterRecent
+    ApplyFilter(lstRecent, txtFilter.Text)
     txtFilter.SetFocus
   Endif
 
@@ -439,7 +443,7 @@ End
 
 Public Sub txtFilter_Change()
 
-  FilterRecent
+  ApplyFilter(lstRecent, txtFilter.Text)
 
 End
 
@@ -465,3 +469,30 @@ Public Sub ProjectItem_Click()
   hListContainer.Select(Last)
   
 End
+
+Public Sub txtFilterExample_Change()
+
+  ApplyFilter(lstExample, txtFilterExample.Text)
+
+End
+
+Public Sub txtFilterExample_Click()
+
+  txtFilterExample.Text = ""
+
+End
+
+Public Sub txtFilterExample_KeyPress()
+
+  If Key.Code = Key.Down Then
+    lstExample.ScrollView_KeyPress
+    Stop Event
+  Else If Key.Code = Key.Up Then
+    lstExample.ScrollView_KeyPress
+    Stop Event
+  Else If Key.Code = Key.Return And If Key.Shift Then
+    btnOther.Value = True
+  Endif
+
+End
+

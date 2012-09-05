@@ -8,7 +8,7 @@ Static Private $sText As String
 
 Static Public Sub Run(sIcon As String, sText As String, aButtons As String[], Optional sKey As String, Optional Force As Boolean) As Integer
   
-  If sKey And If Settings["/HiddenMessage" &/ sKey, False ] And If Not Force Then Return
+  If sKey And If Settings["/HiddenMessage" &/ sKey, False] And If Not Force Then Return
   
   $sIcon = sIcon
   $aButtons = aButtons
@@ -33,7 +33,7 @@ Public Sub _new()
   picIcon.W = 64
   
   chkDoNotDisplayAnymore.Visible = $sKey
-  If $sKey Then chkDoNotDisplayAnymore.Value = Settings["/HiddenMessage" &/ $sKey, False ]
+  If $sKey Then chkDoNotDisplayAnymore.Value = Settings["/HiddenMessage" &/ $sKey, False]
   
   panButton.Children.Clear
   

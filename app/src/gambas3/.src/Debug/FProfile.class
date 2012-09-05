@@ -445,6 +445,7 @@ Public Sub gvwProfile_Sort()
   CProfile.Sort = gvwProfile.Columns.Sort
   CProfile.Ascending = gvwProfile.Columns.Ascending
   $aFunc.Sort
+  gvwProfile_Select
   
   'If sCurrent Then gvwProfile.Row = $aFunc.Find($cFunc[sCurrent])
 

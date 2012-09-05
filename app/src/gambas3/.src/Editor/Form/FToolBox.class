@@ -253,7 +253,6 @@ End
 ' 
 ' End
 
-
 Private Sub SelectToolBar(sToolBar As String)
 
   If Not $cToolBar.Exist(sToolBar) Then Return
@@ -263,15 +262,6 @@ Private Sub SelectToolBar(sToolBar As String)
   'MoveToolBar(ME.Visible)
 
 End
-
-
-
-Public Sub Form_Resize()
-
-  'MoveToolbar
-
-End
-
 
 Public Function GetTool() As String
 

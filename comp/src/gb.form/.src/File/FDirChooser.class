@@ -54,7 +54,7 @@ Public Sub _new(Optional bFile As Boolean)
     btnView.Visible = False
     txtFile.Visible = True
     cmbFilter.Visible = True
-    SetMulti(False )
+    SetMulti(False)
     'SetFont(Me.Font)
     SetFilter()
   Endif
@@ -455,7 +455,7 @@ End
 
 Public Sub cmbFilter_Click()
 
-  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True )
+  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True)
 
 End
 
@@ -595,7 +595,7 @@ End
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, Null , $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
+    Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, Null, $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
   Else
     Return [1, CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.Settings, GetFilterIndex()]
   Endif 
@@ -1083,7 +1083,7 @@ Public Sub btnParent_Click()
       SetBookmark(hBookmark)
     Else
       dvwChoose.Root = File.Dir(sDir)
-      SetBookmark(Null )
+      SetBookmark(Null)
     Endif
 
   Endif
@@ -1100,7 +1100,7 @@ Public Sub btnParent_Draw()
   If Not btnParent.Enabled Then iFlag += Draw.Disabled
   If btnParent.HasFocus Then iFlag += Draw.Focus
   
-  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, $bPressed, iFlag, True )
+  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, $bPressed, iFlag, True)
   Draw.Style.Arrow((btnParent.W - 8) \ 2, (btnParent.H - 8) \ 2, 8, 8, Align.Left, iFlag)
 
 End
