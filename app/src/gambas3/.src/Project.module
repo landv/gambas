@@ -625,7 +625,7 @@ _INIT_AGAIN:
 
   If bStopConvert Then FConvert.Stop
 
-  LastOpenedFiles
+  If Settings["/RestoreFiles", 1] Then LastOpenedFiles
   CPosition.Clear
   
   Dec Application.Busy
@@ -717,38 +717,42 @@ Private Function CloseProject() As Boolean
 
     Design.WriteBreakpoints
 
-    Config.Clear("/OpenFile")
-    For Each hForm In Workspace.Windows
+    If Settings["/RestoreFiles", 1] Then
 
-      If Not hForm.Closed Then
-
-        If Not hForm.Path Then
-          Debug "hForm.Path = NULL ?"
-          'Stop
+      Config.Clear("/OpenFile")
+      For Each hForm In Workspace.Windows
+  
+        If Not hForm.Closed Then
+  
+          If Not hForm.Path Then
+            Debug "hForm.Path = NULL ?"
+            'Stop
+          Endif
+  
+          Inc nOpen
+          If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
+  
+          sState = ""
+          Try sState = hForm.GetState()
+  
+          aFold = Null
+          Try aFold = hForm.GetFoldedProc()
+  
+          If sState Then sState = ":" & sState
+          sPath = hForm.Path
+          If sPath Begins Project.Dir Then
+            sPath = Mid$(sPath, Len(Project.Dir) + 1)
+            If Left(sPath) = "/" Then sPath = Mid$(sPath, 2)
+          Endif
+          Config["/OpenFile/File[" & CStr(nOpen) & "]"] = sPath & sState
+  
+          If aFold And If aFold.Count Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
+  
         Endif
-
-        Inc nOpen
-        If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
-
-        sState = ""
-        Try sState = hForm.GetState()
-
-        aFold = Null
-        Try aFold = hForm.GetFoldedProc()
-
-        If sState Then sState = ":" & sState
-        sPath = hForm.Path
-        If sPath Begins Project.Dir Then
-          sPath = Mid$(sPath, Len(Project.Dir) + 1)
-          If Left(sPath) = "/" Then sPath = Mid$(sPath, 2)
-        Endif
-        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = sPath & sState
-
-        If aFold And If aFold.Count Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
-
-      Endif
-
-    Next
+  
+      Next
+      
+    Endif
 
     If Not $bTesting Then
       CloseAllWindows

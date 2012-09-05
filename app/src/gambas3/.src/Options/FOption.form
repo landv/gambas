@@ -196,6 +196,24 @@
         List = [("Normal"), ("Small")]
       }
     }
+    { HBox44 HBox
+      MoveScaled(0,55,66,4)
+      Spacing = True
+      Indent = True
+      { Label53 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Restore files when loading a project")
+      }
+      { cmbStartupLoad ComboBox
+        MoveScaled(43,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel23 Panel
+        MoveScaled(54,0,12,4)
+      }
+    }
     Index = 1
     Text = ("Theme")
     Picture = Picture["icon:/large/color"]
