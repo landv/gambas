@@ -230,85 +230,106 @@ End
 
 Private Sub MakeSignature(sSign As String) As String
   
+  Dim aSym As String[]
   Dim iInd As Integer
   Dim aWait As New String[]
   Dim bOptional As Boolean
   Dim sSym As String
   Dim sType As String
   Dim sDefault As String
-
+  Dim bByRef As Boolean
+  Dim iPos, iPos2 As Integer
+  Dim sResult As String
+  
   Highlight.Analyze(sSign)
-  sSign = ""
+  aSym = Highlight.Symbols
   
-  For iInd = 0 To Highlight.Symbols.Max
-  
-    sSym = Highlight.Symbols[iInd]
+  Do
     
-    If sSym = "(" Then
-      aWait.Push(")")
-    Else If sSym = "[" Then
-      aWait.Push("]")
-    Else If aWait.Count Then
-      If sSym = aWait[aWait.Max] Then
-        aWait.Pop
-      Endif
-    Else 
+    If iInd > aSym.Max Then Break
     
-      If iInd > 0 And If sSym <> "," Then Continue
+    sSym = aSym[iInd]
     
-      If iInd Then
-        Inc iInd
-        sSym = Highlight.Symbols[iInd]
-      Endif
-      
-      If sSym = "..." Then
-        sSign &= "."
-        Break
-      Endif
-      
-      If UCase(sSym) = "OPTIONAL" Then
-        If Not bOptional Then
-          sSign &= "["
-          bOptional = True
-        Endif
-        Inc iInd
-        sSym = Highlight.Symbols[iInd]
-      Endif
-      
-      If UCase(sSym) = "BYREF" Then
-        Inc iInd
-        sSym = "&" & Highlight.Symbols[iInd]
-      Endif
+    If sSym = "..." Then
+      sResult &= "."
+      Break
+    Endif
     
+    If UCase(sSym) = "OPTIONAL" Then
+      If Not bOptional Then
+        sResult &= "["
+        bOptional = True
+      Endif
+      Inc iInd
+      sSym = aSym[iInd]
+    Endif
+    
+    bByRef = False
+    If UCase(sSym) = "BYREF" Then
+      bByRef = True
+      Inc iInd
+      sSym = aSym[iInd]
+    Endif
+    
+    If sSym = "(" And If aSym[iInd + 2] = ")" Then
+      sSym = aSym[iInd + 1]
       iInd += 2
-      sType = Highlight.Symbols[iInd]
-      If $cNameType.Exist(sType) Then
-        sType = $cNameType[sType]
-      Else
-        sType = UCase(Left(sType)) & Mid$(sType, 2) & ";"
-      Endif
-      sSign &= "(" & sSym & ")" & sType
-      
-      If bOptional And If iInd < Highlight.Symbols.Max Then
-        If Highlight.Symbols[iInd + 1] = "=" Then
-          iInd += 2
-          sDefault = Highlight.Symbols[iInd]
-          If Highlight.Types[iInd] = Highlight.Keyword Then
-            If Not Settings["/Editor/KeywordsUseUpperCase"] Then
-              Mid$(sDefault, 2) = LCase(Mid$(sDefault, 2))
+    Endif
+    
+    If bByRef Then sSym = "&" & sSym
+    
+    Inc iInd
+    If aSym[iInd] <> "AS" Then Break
+    
+    Inc iInd
+    sType = aSym[iInd]
+    If $cNameType.Exist(sType) Then
+      sType = $cNameType[sType]
+    Else
+      sType = UCase(Left(sType)) & Mid$(sType, 2) & ";"
+    Endif
+    sResult &= "(" & sSym & ")" & sType
+    
+    If bOptional And If iInd < aSym.Max Then
+      If aSym[iInd + 1] = "=" Then
+        iInd += 2
+        sDefault = ""
+        iPos = Highlight.Positions[iInd]
+        While iInd < aSym.Max
+          sSym = aSym[iInd]
+          If sSym = "(" Then
+            aWait.Push(")")
+          Else If sSym = "[" Then
+            aWait.Push("]")
+          Else If aWait.Count Then
+            If sSym = aWait[aWait.Max] Then
+              aWait.Pop
+            Endif
+          Else
+            If sSym = ")" Or If sSym = "," Then 
+              iPos2 = Highlight.Positions[iInd]
+              sDefault = Trim(Mid$(sSign, iPos + 1, iPos2 - iPos))
+              Dec iInd
+              Break
             Endif
           Endif
-          sSign &= "=" & sDefault & "\t"
-        Endif
+          Inc iInd
+        Wend
+        sResult &= "=" & sDefault & "\t"
       Endif
-
     Endif
+    
+    Inc iInd
+    If iInd > aSym.Max Then Break
+    sSym = aSym[iInd]
+    If sSym <> "," Then Break
+    Inc iInd
+
+  Loop
   
-  Next
+  If bOptional Then sResult &= "]"
   
-  If bOptional Then sSign &= "]"
-  
-  Return sSign
+  Return sResult
   
 Catch
 
@@ -567,7 +588,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
   Endif
   
   If InStr(":mx", LCase(Kind)) Then 
-    sSign = GetSignature(False )
+    sSign = GetSignature(False)
     If sSign Then
       sDesc &= sSign
     Else
@@ -941,7 +962,7 @@ Public Function GetHelpHTML() As String
   
   'If Me.IsStatic() Then sHTML &= "<font color=\"blue\">STATIC </font>"
 
-  sSyntax &= Me.GetDescription(False )
+  sSyntax &= Me.GetDescription(False)
   sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
   
   Highlight.Analyze(sSyntax)
