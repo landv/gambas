@@ -4,6 +4,8 @@ Inherits UserControl
 
 Event Click
 
+Static Private $hSmallFont As Font
+
 Property ShowPath As Boolean
 Property Path As String
 Property Highlight As Boolean
@@ -27,12 +29,24 @@ Private $bCanHighlight As Boolean = True
 Private $bHighlight As Boolean
 Private $bSquare As Boolean
 
+Private $hObs As Observer
+
+Private $iIdealH As Integer
+Private $iIdealW As Integer
+
 Public Sub _new(Optional bSquare As Boolean)
   
   $bSquare = bSquare
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Mouse = Mouse.Pointing
   $hDrawingArea.Focus = True
+  
+  $hObs = New Observer(Me) As "ProjectItem"
+  
+  If Not $hSmallFont Then
+    $hSmallFont = Me.Font.Copy()
+    $hSmallFont.Size *= 0.75
+  Endif
   
 End
 
@@ -44,8 +58,9 @@ Private Sub SetPath(sPath As String)
   $hIcon = Null
   
   $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
+  $iIdealW = 0
   Me.H = Me.IdealHeight
-  Refresh
+  Me.Refresh
   
 End
 
@@ -61,7 +76,7 @@ Private Sub GetTitle() As String
     sTitle = .Title
     If Not sTitle Then sTitle = .Name
     sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
-    sTitle &= Subst("<br><font size=\"-1\" color=\"&1\">", If(bSelected, "white", "gray")) & .Title
+    sTitle &= Subst("<br><font size=\"-1\" color=\"#&1\">", Hex$(If(bSelected, Color.SelectedForeground, Color.Gradient(Color.TextBackground, Color.TextForeground, 0.75)), 6)) & .Title
     If $bShowAuthors And If .Authors And If .Authors.Count Then
       If .Title Then sTitle &= " - "
       sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
@@ -78,8 +93,9 @@ End
 Public Sub DrawingArea_Draw()
   
   Dim sTitle As String
-  Dim X, W, H As Integer
+  Dim X, Y, W, H As Integer
   Dim bSelected As Boolean
+  Dim sText As String
   
   If Not $hProjectInfo Then Return
   
@@ -105,8 +121,18 @@ Public Sub DrawingArea_Draw()
     W = Min(Me.W - X, Draw.RichTextWidth(sTitle))
     If bSelected Then Draw.Foreground = Color.SelectedForeground
     
+    Y = PADDING
     H = Draw.RichTextHeight(sTitle, W)
-    Draw.RichText(sTitle, X, PADDING, W, H, Align.TopLeft)
+    Draw.RichText(sTitle, X, Y, W, H, Align.TopLeft)
+    
+    sText = Html$($hProjectInfo.Description)
+    If sText Then
+      Draw.Font = $hSmallFont
+      Y += H
+      W = Me.W - X - PADDING
+      H = Draw.RichTextHeight(sText, W)
+      Draw.RichText(sText, X, Y, W, H, Align.TopLeft)
+    Endif
     
   End With
   
@@ -168,13 +194,6 @@ Private Sub Background_Write(Value As Integer)
 
 End
 
-Private Sub Refresh()
-  
-  Super.Refresh
-  
-End
-
-
 Private Function ShowPath_Read() As Boolean
 
   Return $bShowPath
@@ -184,7 +203,7 @@ End
 Private Sub ShowPath_Write(Value As Boolean)
 
   $bShowPath = Value
-  Refresh
+  Me.Refresh
 
 End
 
@@ -217,6 +236,13 @@ Private Function IdealHeight_Read() As Integer
   
   Dim X, H As Integer
 
+  If $hProjectInfo.Description Then
+    If Me.W = $iIdealW Then Return $iIdealH
+  Else
+    If $iIdealW Then Return $iIdealH
+  Endif
+  $iIdealW = Me.W
+
   X = ICON_SIZE + PADDING * 2
   'If $hProjectInfo Then
   '  sTitle = GetTitle()
@@ -226,6 +252,12 @@ Private Function IdealHeight_Read() As Integer
 
   H = Max(H, X)
   If $bShowPath Then H += Desktop.Scale * 2
+  
+  If $hProjectInfo.Description Then
+    H += $hSmallFont.RichTextHeight(Html($hProjectInfo.Description), Me.W - X - PADDING)
+  Endif
+  
+  $iIdealH = H
   Return H
   
 End
@@ -264,5 +296,12 @@ Public Sub Match(sFilter As String) As Boolean
     If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
     If String.LCase(Group) Like sFilter Then Return True
   End With
+  
+End
+
+Public Sub ProjectItem_BeforeArrange()
+  
+  If Not Me.Visible Then Return
+  Me.H = Me.IdealHeight
   
 End

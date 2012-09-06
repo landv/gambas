@@ -116,19 +116,19 @@ Public Sub DrawingArea_Draw()
       'Draw.Line(1, Draw.H - 1, 1, 1)
       'Draw.Line(1, 1, Draw.W - 2, 1)
       'Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
-      Draw.Rect(1, 1, Draw.W - 2, Draw.H - 1)
+      Draw.Rect(2, 2, Draw.W - 4, Draw.H - 2)
       'Draw.Rect(2, 2, Draw.W - 4, Draw.H - 4)
     Else If iIndex = 0 Then
       ' Draw.Line(0, Draw.H - 1, 0, 0)
       ' Draw.Line(0, 0, Draw.W - 2, 0)
       ' Draw.Line(Draw.W - 2, 0, Draw.W - 2, Draw.H - 1)
-      Draw.Rect(0, 0, Draw.W - 1, Draw.H)
+      Draw.Rect(1, 1, Draw.W - 3, Draw.H - 1)
     Else
       ' Draw.Line(1, Draw.H - 1, 1, 0)
       ' Draw.Line(1, 0, Draw.W - 2, 0)
       ' Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
       'Draw.Rect(2, 1, Draw.W - 4, Draw.H - 3)
-      Draw.Rect(1, 0, Draw.W - 2, Draw.H)
+      Draw.Rect(2, 1, Draw.W - 4, Draw.H - 1)
     Endif
   Endif
   
