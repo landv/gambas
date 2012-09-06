@@ -4,6 +4,7 @@ Export
 
 Class Stock
 
+Static Private $aLang As String[]
 Static Private $aProgDir As String[]
 Static Private $cProgCache As New Collection
 Static Private $cMimeCache As New Collection
@@ -25,20 +26,14 @@ Private $bTerminal As Boolean
 Private $bHidden As Boolean
 Private $sIcon As String
 
-Public Sub _new(Path As String)
-  
-  Dim sLine As String
-  Dim iPos As Integer
+Static Public Sub _init()
+
   Dim sLang As String
-  Dim sKey As String
+  Dim iPos As Integer
   Dim sModifier As String
   Dim sCountry As String
-  Dim aLang As New String[]
-  Dim iNameLevel As Integer
-  Dim iLevel As Integer
-  Dim bInDesktopEntry As Boolean
   
-  $sPath = Path
+  $aLang = New String[]
   
   sLang = System.Language
   iPos = RInStr(sLang, ".")
@@ -56,12 +51,27 @@ Public Sub _new(Path As String)
     sLang = Left$(sLang, iPos - 1)
   Endif
   
-  If sCountry And If sModifier Then aLang.Add(sLang & "_" & sCountry & "@" & sModifier)
-  If sCountry Then aLang.Add(sLang & "_" & sCountry)
-  If sModifier Then aLang.Add(sLang & "@" & sModifier)
-  aLang.Add(sLang)
+  If sCountry And If sModifier Then $aLang.Add(sLang & "_" & sCountry & "@" & sModifier)
+  If sCountry Then $aLang.Add(sLang & "_" & sCountry)
+  If sModifier Then $aLang.Add(sLang & "@" & sModifier)
+  $aLang.Add(sLang)
   
-  iNameLevel = aLang.Count
+End
+
+
+Public Sub _new(Path As String)
+  
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sLang As String
+  Dim sKey As String
+  Dim iNameLevel As Integer
+  Dim iLevel As Integer
+  Dim bInDesktopEntry As Boolean
+  
+  $sPath = Path
+  
+  iNameLevel = $aLang.Count
   
   For Each sLine In Split(File.Load($sPath), "\n")
     
@@ -84,9 +94,9 @@ Public Sub _new(Path As String)
       iPos = InStr(sLine, "=")
       sLang = Mid$(sLine, 5, iPos - 5)
       If Not sLang Then
-        If iNameLevel = aLang.Count Then $sName = Trim(Mid$(sLine, iPos + 1))
-      Else If Left(sKey) = "[" And If Right(sKey) = "]" Then
-        iLevel = aLang.Find(Mid$(sKey, 2, -1))
+        If iNameLevel = $aLang.Count Then $sName = Trim(Mid$(sLine, iPos + 1))
+      Else If Left(sLang) = "[" And If Right(sLang) = "]" Then
+        iLevel = $aLang.Find(Mid$(sLang, 2, -1))
         If iLevel >= 0 And If iLevel < iNameLevel Then
           iNameLevel = iLevel
           $sName = Trim(Mid$(sLine, iPos + 1))
