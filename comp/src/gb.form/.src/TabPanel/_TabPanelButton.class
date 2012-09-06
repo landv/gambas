@@ -113,19 +113,22 @@ Public Sub DrawingArea_Draw()
   If $bSelected And If Me.Parent.HasFocus Then
     Draw.Foreground = Color.LightBackground
     If hTabPanel.Border Then
-      Draw.Line(1, Draw.H - 1, 1, 1)
-      Draw.Line(1, 1, Draw.W - 2, 1)
-      Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
+      'Draw.Line(1, Draw.H - 1, 1, 1)
+      'Draw.Line(1, 1, Draw.W - 2, 1)
+      'Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
+      Draw.Rect(1, 1, Draw.W - 2, Draw.H - 1)
       'Draw.Rect(2, 2, Draw.W - 4, Draw.H - 4)
     Else If iIndex = 0 Then
-      Draw.Line(0, Draw.H - 1, 0, 0)
-      Draw.Line(0, 0, Draw.W - 2, 0)
-      Draw.Line(Draw.W - 2, 0, Draw.W - 2, Draw.H - 1)
+      ' Draw.Line(0, Draw.H - 1, 0, 0)
+      ' Draw.Line(0, 0, Draw.W - 2, 0)
+      ' Draw.Line(Draw.W - 2, 0, Draw.W - 2, Draw.H - 1)
+      Draw.Rect(0, 0, Draw.W - 1, Draw.H)
     Else
-      Draw.Line(1, Draw.H - 1, 1, 0)
-      Draw.Line(1, 0, Draw.W - 2, 0)
-      Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
+      ' Draw.Line(1, Draw.H - 1, 1, 0)
+      ' Draw.Line(1, 0, Draw.W - 2, 0)
+      ' Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
       'Draw.Rect(2, 1, Draw.W - 4, Draw.H - 3)
+      Draw.Rect(1, 0, Draw.W - 2, Draw.H)
     Endif
   Endif
   
@@ -205,6 +208,7 @@ Public Sub DrawingArea_MouseDown()
       If $bSelected Then Return
       hTabPanel.Index = GetIndex()
     Endif
+    Me.Parent.SetFocus()
   Endif
   
 End
@@ -216,6 +220,7 @@ Public Sub DrawingArea_MouseWheel()
   Else
     Try GetParent()._MoveNext()
   Endif
+  Me.Parent.SetFocus()
   
 End
 

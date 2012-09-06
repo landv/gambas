@@ -35,22 +35,27 @@
 
 *******************************************************************************/
 
-BEGIN_METHOD(CSTOCK_get, GB_STRING path)
+BEGIN_METHOD(CSTOCK_get, GB_STRING path; GB_STRING def)
 
 	CPICTURE *Pic;
 	gPicture *pic;
 	
-	pic=gStock::get( GB.ToZeroString(ARG(path)) );
+	pic=gStock::get(GB.ToZeroString(ARG(path)));
 	
 	if (!pic)
 	{
-		GB.ReturnNull();
-		return;
+		if (!MISSING(def))
+			pic = gStock::get(GB.ToZeroString(ARG(def)));
+		if (!pic)
+		{
+			GB.ReturnNull();
+			return;
+		}
 	}
 	
 	Pic = (CPICTURE *)GB.New(GB.FindClass("Picture"), 0, 0);
 	if (Pic->picture) Pic->picture->unref();
-	Pic->picture=pic;
+	Pic->picture = pic;
 	GB.ReturnObject(Pic);
 
 END_METHOD
@@ -63,7 +68,7 @@ GB_DESC CStockDesc[] =
   GB_DECLARE("Stock", 0), GB_NOT_CREATABLE(),
 
  
-  GB_STATIC_METHOD("_get", "Picture", CSTOCK_get, "(Key)s"),
+  GB_STATIC_METHOD("_get", "Picture", CSTOCK_get, "(Key)s[(Default)s]"),
   
 
   GB_END_DECLARE
