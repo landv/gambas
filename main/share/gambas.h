@@ -943,7 +943,8 @@ typedef
 
 		void *(*GetEnum)();
 		void (*StopEnum)();
-		void (*ListEnum)(void *);
+		void *(*BeginEnum)(void *);
+		void (*EndEnum)(void *);
 		bool (*NextEnum)();
 		void (*StopAllEnum)(void *);
 

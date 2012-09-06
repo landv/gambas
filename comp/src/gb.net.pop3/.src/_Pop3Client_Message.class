@@ -2,35 +2,33 @@
 
 Export
 
-Inherits MIMEMessage
-
-''Returns the ID used to list the message as per the LIST command
-' Property Read ID As Integer
-Private $msgid As Integer
-
-Private $oPOPClient As Pop3Client
-
 ''Returns the content of the message. It is cached after the first request.
+Property Read Index As Integer
 Property Read Text As String
-Private $sText As String
+Property Read Message As MimeMessage
+Property Read Deleted As Boolean
 
 ''Returns the size of the message. It is cached after the first request.
 Property Read Size As Integer
-Private $iSize As Integer
 
 ''Returns the unique id of the message. It is cached after the first request.
 Property Read UniqueID As String
+
+Private $iMsgId As Integer
+Private $oPOPClient As Pop3Client
+Private $iSize As Integer
 Private $sUID As String
+Private $sText As String
+Private $hMessage As MimeMessage
+Private $bDeleted As Boolean
 
 Public Sub _new(msgid As Integer, $oClient As Pop3Client)
 
   If $oClient.Debug Then $oClient._PrintDebug("Creating new message instance for " & msgid)
 
-  $msgid = msgid
+  $iMsgId = msgid + 1
 
   $oPOPClient = $oClient
-
-  Super._new(Me.Text)
 
 End
 
@@ -38,18 +36,15 @@ Private Function Text_Read() As String
 
   Dim sResponse As String
 
+  If $bDeleted Then Return
   If $sText Then Return $sText
 
-  sResponse = $oPOPClient.Exec("RETR " & $msgid, True)
+  sResponse = $oPOPClient.Exec("RETR " & $iMsgId, True)
+  Pop3Client._CheckResponse(sResponse)
 
-  If Pop3Client.isPositive(sResponse) Then
-    sResponse = Pop3Client.StripOK(sResponse)
-
-    $sText = sResponse
-
-    Return sResponse
-
-  Endif
+  sResponse = Pop3Client._StripOK(sResponse, True)
+  $sText = sResponse
+  Return sResponse
 
 End
 
@@ -58,28 +53,25 @@ Private Function Size_Read() As Integer
   Dim sResponse As String
 
   If $iSize Then Return $iSize
+  If $bDeleted Then Return 0
 
-  sResponse = $oPOPClient.Exec("LIST " & $msgid, False)
+  sResponse = $oPOPClient.Exec("LIST " & $iMsgId, False)
+  Pop3Client._CheckResponse(sResponse)
 
-  If Pop3Client.isPositive(sResponse) Then
-    sResponse = Pop3Client.StripOK(sResponse)
-
-    $iSize = CInt(Split(sResponse, " ")[1])
-
-    Return $iSize
-
-  Endif
+  sResponse = Pop3Client._StripOK(sResponse)
+  $iSize = CInt(Split(sResponse, " ")[1])
+  Return $iSize
 
 End
 
 ''Deletes the message from the mailbox
-Public Function Delete() As Boolean
+Public Function Delete() 
 
   Dim sResponse As String
 
-  sResponse = $oPOPClient.Exec("DELE " & $msgid)
-
-  Return Pop3Client.isPositive(sResponse)
+  sResponse = $oPOPClient.Exec("DELE " & $iMsgId)
+  Pop3Client._CheckResponse(sResponse)
+  $bDeleted = True
 
 End
 
@@ -88,14 +80,10 @@ Public Function Top(Lines As Integer) As String
 
   Dim sResponse As String
 
-  sResponse = $oPOPClient.Exec(Subst("TOP &1 &2", $msgid, Lines), True)
+  sResponse = $oPOPClient.Exec(Subst("TOP &1 &2", $iMsgId, Lines), True)
+  Pop3Client._CheckResponse(sResponse)
 
-  If Pop3Client.isPositive(sResponse) Then
-    sResponse = Pop3Client.StripOK(sResponse)
-
-    Return sResponse
-
-  Endif
+  Return Pop3Client._StripOK(sResponse, True)
 
 End
 
@@ -105,16 +93,12 @@ Private Function UniqueID_Read() As String
 
   If $sUID Then Return $sUID
 
-  Response = $oPOPClient.Exec("UIDL " & $msgid, False)
+  Response = $oPOPClient.Exec("UIDL " & $iMsgId, False)
+  Pop3Client._CheckResponse(Response)
 
-  If Pop3Client.isPositive(Response) Then
-    Response = Pop3Client.StripOK(Response)
-
-    $sUID = Split(Response, " ")[1]
-
-    Return $sUID
-
-  Endif
+  Response = Pop3Client._StripOK(Response)
+  $sUID = Split(Response, " ")[1]
+  Return $sUID
 
 End
 
@@ -131,4 +115,30 @@ Public Sub _free()
 
   $oPOPClient = Null
 
+End
+
+Private Function Message_Read() As MimeMessage
+
+  If $bDeleted Then Return
+  If Not $hMessage Then $hMessage = New MimeMessage(Me.Text)
+  Return $hMessage
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iMsgId - 1
+
+End
+
+Private Function Deleted_Read() As Boolean
+
+  Return $bDeleted
+
+End
+
+Public Sub _Reset()
+  
+  $bDeleted = False
+  
 End

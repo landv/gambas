@@ -13,27 +13,40 @@
 Public Sub Main()
 
   Dim msg As New Pop3Client
-
   Dim message As _Pop3Client_Message
+  Dim hMsg As MimeMessage
 
-  msg.Debug = False
+  'msg.Debug = True
 
-  msg.User = "USER"
-  msg.Password = "PASS"
+  msg.User = "test.gambas@gmail.com"
+  msg.Password = "gambasrules!"
 
-  msg.Host = "pop3.SERVER.com"
+  msg.Host = "pop.googlemail.com"
+  msg.Encrypt = Net.SSL
 
   msg.Open()
+  
+  Print msg.List().Join("\n")
+  Print
+  Print msg.ListUniqueID().Join("\n")
 
   ' Print msg[0].Sender
   ' Print msg[0].Part[0].ContentEncodin
 
+  msg[2].Delete
+  
+  Print msg.Stat()[0]
+  
+  msg.Reset
+
   For Each message In msg
-
-    Print message.ID
-
+    Print message.Index;; message.Size
+    hMsg = message.Message
+    Try Print hMsg.Sender
   Next
 
-  msg.Close()
+  Print msg.List().Join("\n")
+
+  msg.Abort()
 
 End

@@ -707,6 +707,7 @@ BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 
 	DB_INFO *info = &THIS->info;
 	int *pos;
+	void *save_enum;
 
 	if (check_available(THIS))
 		return;
@@ -735,13 +736,14 @@ BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 				THIS->count--;
 				reload_buffer(THIS);
 
-				GB.ListEnum(THIS);
+				save_enum = GB.BeginEnum(THIS);
 				while (!GB.NextEnum())
 				{
 					pos = (int *)GB.GetEnum();
 					if (*pos > THIS->pos)
 						(*pos)--;
 				}
+				GB.EndEnum(save_enum);
 			}
 
 			break;

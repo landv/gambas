@@ -85,6 +85,12 @@ BEGIN_METHOD(MimeMessage_new, GB_STRING contents)
 		
 			/* free the parser (and the stream) */
 			g_object_unref(parser);
+			
+			if (!message)
+			{
+				GB.Error("Unable to parse message");
+				return;
+			}
 		}
 	}
 	
@@ -96,8 +102,11 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MimeMessage_free)
 
-	g_object_set_data(G_OBJECT(MESSAGE), "gambas-object", NULL);
-	g_object_unref(MESSAGE);
+	if (MESSAGE)
+	{
+		g_object_set_data(G_OBJECT(MESSAGE), "gambas-object", NULL);
+		g_object_unref(MESSAGE);
+	}
 
 END_METHOD
 

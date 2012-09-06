@@ -96,27 +96,30 @@ Private $msgCache As New Collection
 Private $bClosed As Boolean
 
 ''Returns True if _Text_ begins with "+OK"
-Static Public Function isPositive(Text As String) As Boolean
+Static Public Function _IsPositive(Text As String) As Boolean
 
   Return (Text Begins SERVER_POSITIVE_RESPONSE)
 
 End
 
 ''Returns True if _Text_ begins with "-ERR"
-Static Public Function isNegative(Text As String) As Boolean
+Static Public Function _IsNegative(Text As String) As Boolean
 
-  Return (Text Begins SERVER_NEGATIVE_RESPONSE)
+  Return Text Begins SERVER_NEGATIVE_RESPONSE
 
 End
 
 ''Strips the +OK part of the response
-Static Public Function StripOK(Text As String) As String
+Static Public Function _StripOK(Text As String, Optional bMultiline As Boolean) As String
 
-  If Not isPositive(Text) Then Return
+  Dim iPos As Integer
+  
+  If bMultiline Then
+    iPos = InStr(Text, "\n")
+    If iPos Then Return Mid$(Text, iPos + 1)
+  Endif
 
-  Text = Trim(Mid(Text, 4))
-
-  Return Text
+  Return Trim(Mid(Text, 4))
 
 End
 
@@ -126,50 +129,53 @@ Static Public Sub _PrintDebug(sMsg As String)
 
 End
 
-Public Function _get(msgid As Integer) As _Pop3Client_Message
+Static Public Sub _CheckResponse(sResponse As String)
+  
+  If sResponse Not Begins "+OK" Then
+    If sResponse Begins "-ERR" Then
+      sResponse = Mid$(sResponse, 5)
+    Endif
+    Error.Raise(Trim(sResponse))
+  Endif
+  
+End
 
-  Dim oPOPMInstance As _Pop3Client_Message
 
-  If msgid = 0 Then msgid = 1
+Public Function _get(Index As Integer) As _Pop3Client_Message
 
-  If msgid > Me.Count Then Return
+  Dim hMessage As _Pop3Client_Message
 
-  If Not $msgCache.Exist(msgid) Then
+  If Index < 0 Or If Index >= Me.Count Then 
+    Error.Raise("Out of bounds")
+  Endif
 
-    oPOPMInstance = New _Pop3Client_Message(msgid, Me)
+  hMessage = $msgCache[Index]
+  If Not hMessage Then
 
-    $msgCache.Add(oPOPMInstance, msgid)
+    hMessage = New _Pop3Client_Message(Index, Me)
+    $msgCache[Index] = hMessage
 
   Endif
 
-  Return $msgCache[msgid]
+  Return hMessage
 
 End
 
 Public Function _next() As _Pop3Client_Message
 
-  Dim oPOPMInstance As _Pop3Client_Message
+  Dim hMessage As _Pop3Client_Message
 
-  Dim i As Integer
+  If IsNull(Enum.Index) Then Enum.Index = 0
 
-  If IsNull(Enum.Index) Then
-    Enum.Index = 1
-  Endif
-
-  If Enum.Index > Me.Count Then
+  If Enum.Index >= Me.Count Then
     Enum.Stop()
     Return
   Endif
 
-  'oPOPMInstance = New _Pop3Client_Message(Enum.Index, Me)
-
-  i = Enum.Index
-
-  oPOPMInstance = _get(i)
-
+  hMessage = _get(Enum.Index)
   Inc Enum.Index
 
-  Return oPOPMInstance
+  Return hMessage
 
 End
 
@@ -245,7 +251,13 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
   Dim Response As String
   Dim iPos As Integer
 
-  If $bDebug Then _PrintDebug("Sending: " & Data)
+  If $bDebug Then 
+    If Data Begins "PASS " Then
+      _PrintDebug("Sending: PASS ********")
+    Else
+      _PrintDebug("Sending: " & Data)
+    Endif
+  Endif
   'Send the data
   Response = $oClient.Send(Data, Multiline)
 
@@ -270,6 +282,18 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
 
 End
 
+Public Sub Abort()
+  
+  If $bDebug Then _PrintDebug("Aborting...")
+  $oClient.Disconnect()
+
+  $msgCache = Null
+
+  $bClosed = True
+  
+End
+
+
 ''Logout from the server and disconnect
 Public Function Close() As Boolean
 
@@ -282,6 +306,7 @@ Public Function Close() As Boolean
   Endif
 
   Response = Exec("QUIT")
+  _CheckResponse(Response)
 
   If $bDebug Then _PrintDebug("Disconnecting...")
   $oClient.Disconnect()
@@ -290,7 +315,7 @@ Public Function Close() As Boolean
 
   $bClosed = True
 
-  Return isPositive(Response)
+  Return Not _IsPositive(Response)
 
 End
 
@@ -301,17 +326,12 @@ Public Function Stat() As Integer[]
   Dim stat_data As String[]
 
   Response = Exec("STAT", False)
+  _CheckResponse(Response)
 
-  If isPositive(Response) Then
-    Response = StripOK(Response)
-
-    If Not Response Then Return
-
-    stat_data = Split(Response, " ")
-
-    Return [CInt(stat_data[0]), CInt(stat_data[1])]
-
-  Endif
+  Response = _StripOK(Response)
+  If Not Response Then Error.Raise("Void answer")
+  stat_data = Split(Response, " ")
+  Return [CInt(stat_data[0]), CInt(stat_data[1])]
 
 End
 
@@ -322,38 +342,34 @@ Public Function Ping() As Boolean
   Dim Response As String
 
   Response = Exec("NOOP")
-
-  Return isPositive(Response)
+  Return Not _IsPositive(Response)
 
 End
 
-Public Function Reset() As Boolean
+Public Function Reset()
 
   Dim Response As String
+  Dim hMsg As _Pop3Client_Message
 
   Response = Exec("RSET")
-
-  Return isPositive(Response)
+  _CheckResponse(Response)
+  
+  ' Reset the deleted flag in each message
+  For Each hMsg In $msgCache
+    hMsg._Reset
+  Next
 
 End
 
 Private Function _User(Username As String) As Boolean
 
-  Dim Response As String
-
-  Response = Exec("USER " & Username)
-
-  Return isPositive(Response)
+  Return _IsPositive(Exec("USER " & Username))
 
 End
 
 Private Function _Pass(Password As String) As Boolean
 
-  Dim Response As String
-
-  Response = Exec("PASS " & Password)
-
-  Return isPositive(Response)
+  Return _IsPositive(Exec("PASS " & Password))
 
 End
 
@@ -361,50 +377,29 @@ Public Function List() As String[]
 
   Dim Response As String
 
-  Dim list_data As String[]
-
   Response = Exec("LIST", True)
+  _CheckResponse(Response)
 
-  If isPositive(Response) Then
-    Response = StripOK(Response)
-
-    list_data = Split(Response, "\n")
-
-    list_data.Remove(list_data.Count - 1)
-
-    Return list_data
-
-  Endif
+  Response = _StripOK(Response, True)
+  Return Split(Trim(Response), "\n")
 
 End
 
-Public Function UniqueID() As String[]
+Public Function ListUniqueID() As String[]
 
   Dim Response As String
 
-  Dim list_data As String[]
-
   Response = Exec("UIDL", True)
+  _CheckResponse(Response)
 
-  If isPositive(Response) Then
-    Response = StripOK(Response)
-
-    list_data = Split(Response, "\n")
-
-    list_data.Remove(list_data.Count - 1)
-
-    Return list_data
-
-  Endif
+  Response = _StripOK(Response)
+  Return Split(Trim(Response), "\n")
 
 End
 
 Private Function Count_Read() As Integer
 
   If Not $iCount Then _Refresh()
-
-  'Debug $iCount
-
   Return $iCount
 
 End
@@ -412,7 +407,6 @@ End
 Private Function Size_Read() As Integer
 
   If Not $iSize Then _Refresh()
-
   Return $iSize
 
 End
@@ -424,8 +418,6 @@ Private Function Encrypt_Read() As Integer
 End
 
 Private Sub Encrypt_Write(Value As Integer)
-
-  If $iEncrypt Then Error.Raise(("Cannot modify encryption"))
 
   $iEncrypt = Value
 
@@ -445,8 +437,6 @@ End
 
 Private Sub User_Write(Value As String)
 
-  'If $sUsername Then Error.Raise("Cannot modify username")
-
   $sUsername = Value
 
 End
@@ -458,8 +448,6 @@ Private Function Password_Read() As String
 End
 
 Private Sub Password_Write(Value As String)
-
-  'If $sPassword Then Error.Raise("Cannot modify password")
 
   $sPassword = Value
 
@@ -473,8 +461,6 @@ End
 
 Private Sub Host_Write(Value As String)
 
-  'If $sServer Then Error.Raise("Cannot modify Server")
-
   $sServer = Value
 
 End
@@ -487,8 +473,6 @@ End
 
 Private Sub Port_Write(Value As Integer)
 
-  'If $iPort Then Error.Raise("Cannot modify port")
-
   $iPort = Value
 
 End
@@ -498,10 +482,6 @@ Private Sub _Refresh()
 
   Dim sResponse As Integer[]
 
-  'Dim sMessage As String
-
-  'Dim iSize As Integer
-
   If $bDebug Then _PrintDebug("Refreshing inbox cache")
 
   $msgCache.Clear()
@@ -510,18 +490,6 @@ Private Sub _Refresh()
 
   $iCount = sResponse[0]
   $iSize = sResponse[1]
-
-  '
-  ' If sResponse.Count > 0 Then
-  '   $iCount = sResponse.Count
-  '   For Each sMessage In sResponse
-  '     iSize += CInt(Split(sMessage, " ")[1])
-  '
-  '   Next
-  '
-  '   $iSize = iSize
-  '
-  ' Endif
 
 End
 

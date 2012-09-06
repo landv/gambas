@@ -140,7 +140,8 @@ const void *const GAMBAS_Api[] =
 
 	(void *)GB_GetEnum,
 	(void *)GB_StopEnum,
-	(void *)GB_ListEnum,
+	(void *)GB_BeginEnum,
+	(void *)GB_EndEnum,
 	(void *)GB_NextEnum,
 	(void *)GB_StopAllEnum,
 
@@ -1269,10 +1270,17 @@ void *GB_GetEnum(void)
 
 static void *_enum_object;
 
-void GB_ListEnum(void *enum_object)
+void *GB_BeginEnum(void *enum_object)
 {
+	CENUM *old = EXEC_enum;
 	EXEC_enum = NULL;
 	_enum_object = enum_object;
+	return old;
+}
+
+void GB_EndEnum(void *old_enum)
+{
+	EXEC_enum = old_enum;
 }
 
 
@@ -1290,9 +1298,10 @@ bool GB_NextEnum(void)
 
 void GB_StopAllEnum(void *enum_object)
 {
-	GB_ListEnum(enum_object);
+	void *save = GB_BeginEnum(enum_object);
 	while (!GB_NextEnum())
 		GB_StopEnum();
+	GB_EndEnum(save);
 }
 
 

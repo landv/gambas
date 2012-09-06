@@ -69,6 +69,7 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 {
 	void *value;
 	HASH_NODE *last;
+	void *save_enum;
 
 	if (len == 0)
 	{
@@ -82,13 +83,14 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 
 	last = col->hash_table->last;
 
-	GB_ListEnum(col);
+	save_enum = GB_BeginEnum(col);
 	while (!GB_NextEnum())
 	{
 		HASH_ENUM *iter = (HASH_ENUM *)GB_GetEnum();
 		if (iter->next == last)
 			iter->next = iter->next->snext;
 	}
+	GB_EndEnum(save_enum);
 
 	VARIANT_free((VARIANT *)value);
 	

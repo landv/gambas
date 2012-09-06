@@ -21,6 +21,8 @@ Public Sub _new()
   sSocket.Timeout = 10000
 
   sSocket.EndOfLine = gb.Windows
+  
+  Me.SetStream(sSocket)
 
 End
 
@@ -95,67 +97,6 @@ End
 ''Send data to the server.
 Public Function Send(Data As String, Multiline As Boolean) As String
 
-  If sSocket.Status = Net.Connected Then
-
-    Debug "Sending " & Data
-    Print #sSocket, Data
-
-    'Debug "Receiving response"
-
-    If Multiline Then
-
-      Return GetResponse()
-
-    Else
-
-      Return GetLine()
-
-    Endif
-
-  End If
-
-End
-
-''Get data from the stream until the EOL is reached
-Public Function GetLine() As String
-
-  Dim sResponse As String
-
-  Line Input #sSocket, sResponse
-
-  If sResponse Not Begins "+" Then
-    Error.Raise("Invalid POP response: " & sResponse)
-  Endif
-
-  'Print sResponse
-
-  Return sResponse
-
-End
-
-''Get data from the stream until the EOF as defined
-''by the specifications is reached.
-Public Function GetResponse() As String
-
-  Dim Response As String
-  Dim sLine As String
-
-  While sLine <> Chr(46)
-
-    'While Response Not Ends Pop3Client.CRLF
-
-    'Read #sSocket, sLine, Lof(sSocket)
-
-    'Response &= sLine
-    ' Wend
-
-    Line Input #sSocket, sLine
-    Response &= sLine & "\n"
-
-  Wend
-
-  'Print Response
-
-  Return Response
+  If sSocket.Status = Net.Connected Then Return Super.Send(Data, Multiline)
 
 End

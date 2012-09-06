@@ -76,26 +76,30 @@ Debug
 p
 b
 
-isPositive
+_IsPositive
 M
 b
 (Text)s
-isNegative
+_IsNegative
 M
 b
 (Text)s
-StripOK
+_StripOK
 M
 s
-(Text)s
+(Text)s[(bMultiline)b]
 _PrintDebug
 M
 
 (sMsg)s
+_CheckResponse
+M
+
+(sResponse)s
 _get
 m
 _Pop3Client_Message
-(msgid)i
+(Index)i
 _next
 m
 _Pop3Client_Message
@@ -108,6 +112,10 @@ Exec
 m
 s
 (Data)s[(Multiline)b]
+Abort
+m
+
+
 Close
 m
 b
@@ -122,22 +130,34 @@ b
 
 Reset
 m
-b
+
 
 List
 m
 String[]
 
-UniqueID
+ListUniqueID
 m
 String[]
 
 #_Pop3Client_Message
-MIMEMessage
+
 C
+Index
+r
+i
+
 Text
 r
 s
+
+Message
+r
+MimeMessage
+
+Deleted
+r
+b
 
 Size
 r
@@ -153,7 +173,7 @@ m
 (msgid)i($oClient)Pop3Client;
 Delete
 m
-b
+
 
 Top
 m
@@ -164,6 +184,10 @@ m
 
 
 _free
+m
+
+
+_Reset
 m
 
 

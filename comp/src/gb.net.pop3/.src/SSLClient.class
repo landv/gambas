@@ -31,6 +31,8 @@ Public Sub Connect(Host As String, Port As Integer)
 
   sProcess.Blocking = True
   sProcess.EndOfLine = gb.Windows
+  
+  Me.SetStream(sProcess)
 
 End
 
@@ -56,69 +58,7 @@ End
 ''sent to the server.
 Public Function Send(Data As String, Multiline As Boolean) As String
 
-  If sProcess.State = Process.Running Then
-
-    Debug "Sending " & Data
-    Print #sProcess, Data
-
-    'Debug "Receiving response"
-
-    If Multiline Then
-
-      Return GetResponse()
-
-    Else
-
-      Return GetLine()
-
-    Endif
-
-  End If
-
-End
-
-''Get data from the stream until the EOL is reached
-Public Function GetLine() As String
-
-  Dim Response As String
-  Dim sLine As String
-
-  ' While Response Not Ends Pop3Client.CRLF
-  '
-  '   Read #sProcess, sLine, Lof(sProcess)
-  '
-  '   Response &= sLine
-  ' Wend
-
-  Line Input #sProcess, sLine
-
-  If Response Not Begins "+" Then
-    Error.Raise("Invalid POP response: " & Response)
-  Endif
-
-  'Print Response
-
-  Return Response
-
-End
-
-''Get data from the stream until the EOF as defined
-''by the specifications is reached.
-Public Function GetResponse() As String
-
-  Dim Response As String
-  Dim sLine As String
-
-  While sLine <> Chr(46)
-
-    Line Input #sProcess, sLine
-    Response &= sLine & "\n"
-
-  Wend
-
-  'Print Response
-
-  Return Response
+  If sProcess.State = Process.Running Then Return Super.Send(Data, Multiline)
 
 End
 

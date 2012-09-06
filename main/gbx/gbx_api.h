@@ -64,7 +64,8 @@ void GB_UnrefKeep(void **object, int);
 
 void GB_StopEnum(void);
 void *GB_GetEnum(void);
-void GB_ListEnum(void *);
+void *GB_BeginEnum(void *);
+void GB_EndEnum(void *);
 bool GB_NextEnum(void);
 void GB_StopAllEnum(void *);
 
