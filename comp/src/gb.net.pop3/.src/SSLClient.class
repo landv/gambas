@@ -26,7 +26,7 @@ End
 ''Execute the OpenSSL process and connect to Host:Port
 Public Sub Connect(Host As String, Port As Integer)
 
-  Debug "Executing OpenSSL"
+  'Debug "Executing OpenSSL"
   sProcess = Exec [OpenSSLPath, "s_client", "-quiet", "-connect", Shell(Host) & ":" & Shell(Port)] For Read Write As "Client"
 
   sProcess.Blocking = True
@@ -56,14 +56,12 @@ End
 ''sent to the server.
 Public Function Send(Data As String, Multiline As Boolean) As String
 
-  Dim Response, sLine As String
-
   If sProcess.State = Process.Running Then
 
     Debug "Sending " & Data
     Print #sProcess, Data
 
-    Debug "Receiving response"
+    'Debug "Receiving response"
 
     If Multiline Then
 
@@ -115,8 +113,6 @@ Public Function GetResponse() As String
 
     Line Input #sProcess, sLine
     Response &= sLine & "\n"
-
-    'Print sLine
 
   Wend
 

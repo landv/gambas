@@ -27,7 +27,7 @@ End
 ''Raised when the socket is ready to connect. Starts the timer.
 Public Sub Client_Ready()
 
-  Debug "Connected to remote host " & sSocket.Path
+  'Debug "Connected to remote host " & sSocket.Path
 
 End
 
@@ -41,7 +41,7 @@ End
 ''Raised when the host has been resolved.
 Public Sub Client_Found()
 
-  Debug "Host Found. Connecting..."
+  'Debug "Host Found. Connecting..."
 
 End
 
@@ -75,7 +75,7 @@ Public Sub Connect(Host As String, Port As Integer)
   sSocket.Connect(Host, Port)
   sSocket.Blocking = True
 
-  Debug "Looking up host name..."
+  'Debug "Looking up host name..."
 
   'Loop until the socket is connected and ready
   Do While (sSocket.Status <> Net.Connected And sSocket.Status > 0)
@@ -88,7 +88,7 @@ End
 Public Sub Disconnect()
 
   Close sSocket
-  Debug "Connection closed by user"
+  'Debug "Connection closed by user"
 
 End
 
@@ -100,7 +100,7 @@ Public Function Send(Data As String, Multiline As Boolean) As String
     Debug "Sending " & Data
     Print #sSocket, Data
 
-    Debug "Receiving response"
+    'Debug "Receiving response"
 
     If Multiline Then
 
@@ -120,16 +120,8 @@ End
 Public Function GetLine() As String
 
   Dim sResponse As String
-  Dim sLine As String
 
   Line Input #sSocket, sResponse
-
-  'While Response Not Ends Pop3Client.CRLF
-
-  'Read #sSocket, sLine, Lof(sSocket)
-
-  'Response &= sLine
-  ' Wend
 
   If sResponse Not Begins "+" Then
     Error.Raise("Invalid POP response: " & sResponse)
@@ -157,11 +149,8 @@ Public Function GetResponse() As String
     'Response &= sLine
     ' Wend
 
-    '#FIXME: EOL character is not returned, EOF may be confused with message content
     Line Input #sSocket, sLine
     Response &= sLine & "\n"
-
-    'Print sLine
 
   Wend
 

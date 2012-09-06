@@ -12,12 +12,28 @@
 
 Public Sub Main()
 
-  Dim msg As MIMEMessage
+  Dim msg As New Pop3Client
 
-  msg = New MIMEMessage(File.Load("sample_message"))
+  Dim message As _Pop3Client_Message
 
-  '  File.Save("/home/sebi/Desktop/asd", msg.Body)
+  msg.Debug = False
 
-  Print msg.Date
+  msg.User = "USER"
+  msg.Password = "PASS"
+
+  msg.Host = "pop3.SERVER.com"
+
+  msg.Open()
+
+  ' Print msg[0].Sender
+  ' Print msg[0].Part[0].ContentEncodin
+
+  For Each message In msg
+
+    Print message.ID
+
+  Next
+
+  msg.Close()
 
 End

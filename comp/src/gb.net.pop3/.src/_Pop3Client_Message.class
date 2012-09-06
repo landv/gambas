@@ -2,11 +2,10 @@
 
 Export
 
-''Makes the compoent unstable.To be implemented in 3.4
-'Inherits MIMEMessage
+Inherits MIMEMessage
 
 ''Returns the ID used to list the message as per the LIST command
-Property Read ID As Integer
+' Property Read ID As Integer
 Private $msgid As Integer
 
 Private $oPOPClient As Pop3Client
@@ -30,6 +29,8 @@ Public Sub _new(msgid As Integer, $oClient As Pop3Client)
   $msgid = msgid
 
   $oPOPClient = $oClient
+
+  Super._new(Me.Text)
 
 End
 
@@ -114,12 +115,6 @@ Private Function UniqueID_Read() As String
     Return $sUID
 
   Endif
-
-End
-
-Private Function ID_Read() As Integer
-
-  Return $msgid
 
 End
 

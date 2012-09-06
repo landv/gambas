@@ -121,11 +121,10 @@ Static Public Function StripOK(Text As String) As String
 End
 
 Static Public Sub _PrintDebug(sMsg As String)
-  
-  Error "gb.net.pop3: "; sMsg
-  
-End
 
+  Error "gb.net.pop3: "; sMsg
+
+End
 
 Public Function _get(msgid As Integer) As _Pop3Client_Message
 
@@ -147,10 +146,11 @@ Public Function _get(msgid As Integer) As _Pop3Client_Message
 
 End
 
-Public Sub _next() As _Pop3Client_Message
+Public Function _next() As _Pop3Client_Message
+
+  Dim oPOPMInstance As _Pop3Client_Message
 
   Dim i As Integer
-  Dim oPOPMInstance As _Pop3Client_Message
 
   If IsNull(Enum.Index) Then
     Enum.Index = 1
@@ -161,7 +161,11 @@ Public Sub _next() As _Pop3Client_Message
     Return
   Endif
 
-  oPOPMInstance = _get(Enum.Index)
+  'oPOPMInstance = New _Pop3Client_Message(Enum.Index, Me)
+
+  i = Enum.Index
+
+  oPOPMInstance = _get(i)
 
   Inc Enum.Index
 
@@ -174,20 +178,20 @@ End
 Public Function Open() As Boolean
 
   Dim iPort As Integer
-  
+
   If Not $sServer Then
-    Error.Raise("Server not set")
+    Error.Raise(("Server not set"))
   Endif
 
   If Not $sUsername Then
-    Error.Raise("Username not set")
+    Error.Raise(("Username not set"))
   Endif
 
   If Not $sPassword Then
-    Error.Raise("Password not set")
+    Error.Raise(("Password not set"))
   Endif
 
-  If $bDebug Then _PrintDebug("Connecting to " & Me.Server)
+  If $bDebug Then _PrintDebug("Connecting to " & Me.Host)
 
   iPort = $iPort
 
@@ -195,32 +199,32 @@ Public Function Open() As Boolean
 
     Case Net.None
       $oClient = New TCPClient
-      If iPort = 0 Then 
+      If iPort = 0 Then
         iPort = 110
-        If $bDebug Then _PrintDebug("Port not specified, using 110")
+        If $bDebug Then _PrintDebug(("Port not specified, using 110"))
       Endif
 
     Case Net.SSL
-      If iPort = 0 Then 
+      If iPort = 0 Then
         iPort = 995
-        If $bDebug Then _PrintDebug("Port not specified, using 995")
+        If $bDebug Then _PrintDebug(("Port not specified, using 995"))
       Endif
 
       $oClient = New SSLClient
 
     Case Else
-      Error.Raise("Invalid connection type")
+      Error.Raise(("Invalid connection type"))
 
   End Select
 
-  $oClient.Connect(Me.Server, iPort)
+  $oClient.Connect(Me.Host, iPort)
 
   'Set welcome message
   $sWelcome = Trim($oClient.GetLine())
 
   If $bDebug Then _PrintDebug("Authenticating...")
 
-  If Not _User(Me.Username) Then
+  If Not _User(Me.User) Then
     $iStatus = Net.CannotAuthenticate
     If $bDebug Then _PrintDebug("Bad username")
   Else If Not _Pass(Me.Password) Then
@@ -249,7 +253,7 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
   '   Error.Raise("Invalid POP response: " & Response)
   ' Endif
 
-  If $bDebug Then 
+  If $bDebug Then
     If Multiline Then
       iPos = InStr(Response, "\n")
       If iPos Then
@@ -272,9 +276,9 @@ Public Function Close() As Boolean
   Dim Response As String
 
   If $iStatus <> Net.Connected Then
-    Error.Raise("Not connected")
+    Error.Raise(("Not connected"))
   Else If $bClosed Then
-    Error.Raise("Already in UPDATE state")
+    Error.Raise(("Already in UPDATE state"))
   Endif
 
   Response = Exec("QUIT")
@@ -283,7 +287,7 @@ Public Function Close() As Boolean
   $oClient.Disconnect()
 
   $msgCache = Null
-  
+
   $bClosed = True
 
   Return isPositive(Response)
@@ -399,6 +403,8 @@ Private Function Count_Read() As Integer
 
   If Not $iCount Then _Refresh()
 
+  'Debug $iCount
+
   Return $iCount
 
 End
@@ -419,7 +425,7 @@ End
 
 Private Sub Encrypt_Write(Value As Integer)
 
-  If $iEncrypt Then Error.Raise("Cannot modify encryption")
+  If $iEncrypt Then Error.Raise(("Cannot modify encryption"))
 
   $iEncrypt = Value
 
