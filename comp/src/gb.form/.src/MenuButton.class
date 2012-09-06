@@ -359,7 +359,7 @@ Public Sub DrawingArea_Draw()
   bFlat = Not $bBorder 'And Not $bInside
 
   If $bInsideArrow Or If $bMenuOnly Then
-    Draw.Style.Button(0, 0, Me.W, Me.H, False , iFlag, bFlat)
+    Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, bFlat)
     'Draw.Save
     'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
     'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)

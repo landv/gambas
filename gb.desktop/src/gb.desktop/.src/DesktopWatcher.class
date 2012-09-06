@@ -67,7 +67,7 @@ Public Sub DesktopWatcher_Change(Window As Integer, {Property} As Integer)
   
 End
 
-Public Sub DesktopWatcher_Window(Window As Integer, X As Integer, Y As Integer, Width As Integer, Height As Integer)
+Public Sub DesktopWatcher_Window(Window As Integer, (X) As Integer, (Y) As Integer, (Width) As Integer, (Height) As Integer)
   
   Dim hWin As DesktopWindow = Desktop.Windows[Window]
   

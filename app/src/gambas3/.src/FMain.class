@@ -96,7 +96,7 @@ Private Sub OpenProject()
   
   Dim sPath As String
   
-  sPath = FOpenProject.Run(True )
+  sPath = FOpenProject.Run(True)
   If Not sPath Then Return
   
   Project.Open(sPath, FOpenProject.InAnotherWindow)
@@ -284,6 +284,8 @@ Public Sub mnuPopup_Show()
   Dim bCanStoreFile As Boolean
   Dim hMenu As Menu
   Dim sParent As String
+  Dim sMime As String
+  Dim hProgList As DesktopFile[]
   
   sCurrent = GetCurrent()
   bCurrent = sCurrent
@@ -378,7 +380,18 @@ Public Sub mnuPopup_Show()
       mnuPaste.Enabled = Clipboard.Format = MMime.FILE
     Endif
     
-    mnuEditWith.Visible = Project.IsImagePath(sCurrent) And mnuEditFile.Visible
+    mnuEditWith.Visible = False
+    If mnuEditFile.Visible Then
+      sMime = MMime.GetMime(sCurrent)
+      If sMime Then
+        hProgList = DesktopFile.FindMime(sMime)
+        If hProgList And If hProgList.Count Then
+          mnuEditWith.Visible = sMime
+          mnuEditWith.Tag = hProgList
+        Endif
+      Endif
+    Endif
+    
     mnuCopyPath.Visible = mnuCopy.Visible
     
     If mnuNew.Visible Then 
@@ -691,7 +704,7 @@ Private Sub NewProject()
   
   Dim sPath As String
   
-  sPath = FCreateProject.Run(True )
+  sPath = FCreateProject.Run(True)
   If Not sPath Then Return
   
   Project.Open(sPath, FCreateProject.InAnotherWindow)
@@ -738,7 +751,7 @@ Public Sub mnuAddDirectory_Click()
     sPath = GetCurrentDir() &/ ("New folder") & " (" & iInd & ")"
   Wend
   
-  If Not Project.InsertDirectory(sPath, True ) Then Return
+  If Not Project.InsertDirectory(sPath, True) Then Return
   $sDeleteKey = sPath
   
   Rename(sPath)  
@@ -981,7 +994,7 @@ Public Sub ReadConfig()
   ' panMessage.Visible = bShow
   ' mnuStatusBar.Value = bShow
   
-  Me.Menus.Visible = Settings["/ShowMenus", True ]
+  Me.Menus.Visible = Settings["/ShowMenus", True]
   
 End
 
@@ -1173,17 +1186,17 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "project"
       panProject.Hidden = Not Action[Key].Value
     Case "start"
-      Project.Run(False )
+      Project.Run(False)
     Case "pause"
       Design.Pause
     Case "stop"
       Design.Stop
     Case "forward"
-      Project.Run(False , 2)
+      Project.Run(False, 2)
     Case "step"
-      Project.Run(False , 1)
+      Project.Run(False, 1)
     Case "return"
-      Project.Run(False , 3)
+      Project.Run(False, 3)
     Case "new-project"
       NewProject
     Case "open-project"
@@ -1203,7 +1216,7 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "compile"
       Project.Compile()
     Case "compile-all"
-      Project.Compile(True )
+      Project.Compile(True)
     Case "archive"
       Project.MakePackage
     Case "send-mail"
@@ -1253,11 +1266,11 @@ Public Sub Action_Activate(Key As String) As Boolean
     
     Case "terminal"
       Project.UseTerminal = Action["terminal"].Value
-      Project.WriteProject(True )
+      Project.WriteProject(True)
       
     Case "profile"
       Project.Profiling = Action["profile"].Value
-      Project.WriteProject(True )
+      Project.WriteProject(True)
     
     Case "open-profile"
       OpenProfile
@@ -1314,7 +1327,7 @@ Public Sub tvwProject_Rename()
   'DEBUG Before;; tvwProject.Item.Text
   If $sDeleteKey Then
     sNew = File.Dir($sDeleteKey) &/ tvwProject.Item.Text
-    Project.DeleteDir(sPath, True )
+    Project.DeleteDir(sPath, True)
     Project.InsertDirectory(sNew)
     $sDeleteKey = ""
   Else
@@ -1354,7 +1367,7 @@ Public Sub tvwProject_DragMove()
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
     Else If Drag.Format = MMime.CLASS And If Drag.Source Then
       If $sKey <> Project.KEY_SOURCE Then
-        If Not Project.IsSourcePath($sKey, True ) Then Goto STOP_EVENT
+        If Not Project.IsSourcePath($sKey, True) Then Goto STOP_EVENT
       Endif
     Else If Drag.Format = MMime.URI Then
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
@@ -1400,7 +1413,7 @@ Private Sub AddDataFiles(aFile As String[], bLink As Boolean)
     If IsDir(sPath) Then Continue
     
     sName = Project.GetUniqueName(sDir, File.Name(sPath))
-    Project.InsertFile(sName, sDir, sPath, True , bLink)
+    Project.InsertFile(sName, sDir, sPath, True, bLink)
     
   Next
   
@@ -1428,9 +1441,9 @@ Public Sub tvwProject_Drop()
     
     aFile = Split(Replace(sSrc, "\r", ""), "\n")
     If Drag.Action = Drag.Copy Or If Drag.Action = Drag.Move Then
-      AddDataFiles(aFile, False )
+      AddDataFiles(aFile, False)
     Else If Drag.Action = Drag.Link Then
-      AddDataFiles(aFile, True )
+      AddDataFiles(aFile, True)
     Endif
     
   Else 'If Drag.Format = MMime.CLASS Then
@@ -1494,7 +1507,7 @@ Public Sub mnuAddProjectLink_Click()
   sPath = FOpenProject.Run() 
   If Not sPath Then Return
   
-  Project.InsertFile(File.Name(sPath), GetCurrentDir(), sPath &/ ".src", True , True )
+  Project.InsertFile(File.Name(sPath), GetCurrentDir(), sPath &/ ".src", True, True)
   
 End
 
@@ -1506,7 +1519,7 @@ Public Sub tvwProject_Cancel()
   sPath = GetCurrent()
   If Not sPath Then Return
   
-  If sPath = $sDeleteKey Then Project.DeleteDir(sPath, True )
+  If sPath = $sDeleteKey Then Project.DeleteDir(sPath, True)
   $sDeleteKey = ""
   
 End
@@ -1677,13 +1690,15 @@ End
 
 Public Sub mnuEditWith_Show()
   
-  Dim sApp As String
+  Dim hProg As DesktopFile
   Dim hMenu As Menu
   
   mnuEditWith.Children.Clear
-  For Each sApp In Project.ImageEditors
+  For Each hProg In mnuEditWith.Tag
     hMenu = New Menu(mnuEditWith) As "mnuEditWithProg"
-    hMenu.Caption = sApp
+    hMenu.Caption = hProg.Name & " (" & hProg.ProgramName & ")"
+    Try hMenu.Picture = hProg.GetIcon().Picture
+    hMenu.Tag = hProg
   Next
   
 End
@@ -1694,7 +1709,7 @@ Public Sub mnuEditWithProg_Click()
   
   If sKey Then
     If CanEdit(sKey) Then
-      Project.OpenImage(sKey, Last.Text)
+      Last.Tag.Run(sKey)
     Endif
   Endif
   
@@ -1829,7 +1844,7 @@ End
 
 Public Sub mnuAddVersion_Click()
   
-  If Not Project.IsAdded($sKey, True ) Then Return
+  If Not Project.IsAdded($sKey, True) Then Return
   
   If Message.Question(("Do you really want to add this file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
   
@@ -1859,13 +1874,13 @@ End
 
 Public Sub mnuFind_Click()
   
-  FSearch.WakeUp(False )
+  FSearch.WakeUp(False)
   
 End
 
 Public Sub mnuReplace_Click()
   
-  FSearch.WakeUp(True )
+  FSearch.WakeUp(True)
   
 End
 
@@ -1898,7 +1913,7 @@ Public Sub txtSearch_Click()
   If txtSearch.Text Then
     FSearch.FindProject(txtSearch.Text)
   Else
-    FSearch.WakeUp(False )
+    FSearch.WakeUp(False)
   Endif
   
 End

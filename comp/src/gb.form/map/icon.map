@@ -1,9 +1,9 @@
 access                  apps/preferences-desktop-accessibility
 add                     actions/list-add
 apply                   actions/dialog-apply;actions/dialog-ok-apply
-archive                 mimetypes/package-x-generic;apps/utilities-file-archiver
+archive                 mimetypes/package-x-generic;mimes/package-x-generic;apps/utilities-file-archiver
 attach                  status/mail-attachment
-audio                   mimetypes/audio-x-generic
+audio                   mimetypes/audio-x-generic;mimes/audio-x-generic
 battery                 devices/battery
 book                    apps/accessories-dictionary
 bookmark                places/user-bookmarks;places/bookmarks
@@ -55,8 +55,8 @@ harddisk                devices/drive-harddisk
 hardware                devices/audio-card
 help                    apps/help-browser
 home                    actions/go-home
-html                    mimetypes/text-html
-image                   mimetypes/image-x-generic
+html                    mimetypes/text-html;mimes/text-html
+image                   mimetypes/image-x-generic;mimes/image-x-generic
 important               emblems/emblem-important
 indent                  actions/format-indent-more
 info                    status/dialog-information
@@ -97,6 +97,7 @@ play                    actions/media-playback-start
 previous                actions/go-previous;actions/go-previous-view
 print                   actions/document-print
 printer                 devices/printer
+program                 mimetypes/application-x-executable;mimes/application-x-executable
 properties              actions/document-properties
 question                status/dialog-question;actions/svn-status;#
 quit                    actions/application-exit
@@ -128,7 +129,7 @@ stop                    actions/media-playback-stop
 sun                     status/weather-clear
 system                  devices/computer
 terminal                apps/utilities-terminal
-text                    mimetypes/text-x-generic;mimes/text-x-generic;mimetypes/text-plain
+text                    mimetypes/text-x-generic;mimes/text-x-generic;mimetypes/text-plain;mimes/text-plain
 text-bold               actions/format-text-bold
 text-center             actions/format-justify-center
 text-fill               actions/format-justify-fill
@@ -144,7 +145,7 @@ undo                    actions/edit-undo
 unindent                actions/format-indent-less
 unlock                  actions/object-unlocked
 up                      actions/go-up
-video                   mimetypes/video-x-generic
+video                   mimetypes/video-x-generic;mimes/video-x-generic
 view-detail             actions/view-list-details
 view-icon               actions/view-list-icons
 view-normal             actions/view-close

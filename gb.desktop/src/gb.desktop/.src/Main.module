@@ -9,7 +9,6 @@ Private _NET_CLIENT_LIST As Integer
 Public Sub RunXdgUtil(sProg As String, aArg As String[], Optional bWait As Boolean) 
   
   Dim sCmd As String
-  Dim sPath As String
   Dim sDir As String
   Dim aCmd As String[]
   Dim bAgain As Boolean
@@ -94,7 +93,6 @@ Private Function SearchPathVariable(sFileConfig As String, sDirectory As String)
 
   Dim hFile As File
   Dim sLine As String
-  Dim iPos As Integer
   Dim aLine As String[]
   
   hFile = Open sFileConfig For Input
@@ -119,8 +117,7 @@ End
 
 Public Sub GetDesktopPath() As String
 
-  Dim hFile As File
-  Dim sLine, sDir, sXdgConfigHome, sXdgConfigDirs, sFileConfig As String
+  Dim sDir, sXdgConfigHome, sXdgConfigDirs, sFileConfig As String
   
   sXdgConfigHome = Application.Env["XDG_CONFIG_HOME"] ' $XDG_CONFIG_HOME définie ?
   If Not sXdgConfigHome Then sXdgConfigHome = User.Home & "/.config" ' Sinon val. par défaut
@@ -142,13 +139,15 @@ End
 
 Public Sub Main()
 
-  Dim hWindow As DesktopWindow
+  ' Dim hWindow As DesktopWindow
+  ' 
+  ' 'Print Desktop.Path
+  ' 
+  ' For Each hWindow In Desktop.Windows
+  '   Print Hex$(hWindow.Id, 8);; Quote(hWindow.Name); ": "; hWindow.X;; hWindow.Y;; hWindow.Height;; hWindow.Width
+  ' Next
   
-  'Print Desktop.Path
-  
-  For Each hWindow In Desktop.Windows
-    Print Hex$(hWindow.Id, 8);; Quote(hWindow.Name); ": "; hWindow.X;; hWindow.Y;; hWindow.Height;; hWindow.Width
-  Next
+  DesktopFile.FindMime("application/vnd.oasis.opendocument.text")
   
 End
 

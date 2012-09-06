@@ -149,7 +149,7 @@ End
 ' TODO: Vérifier les thèmes
 ' FIXME: Mettre à jour
 
-Static Private Sub InitTheme()
+Static Private Sub SearchTheme(sDesktop As String)
   
   Dim hFile As File
   Dim sLig As String
@@ -157,19 +157,8 @@ Static Private Sub InitTheme()
   Dim sPath As String
   Dim sTheme As String
   Dim aFind As String[]
-  
-  If Not $bDebug Then
-    If Env["GB_STOCK"] Then $bDebug = True
-  Endif
-  
-  $aIconPath = New String[]
-  LoadMap
-  
-  If $bDebug Then Error "gb.form: init stock with application theme: '"; Application.Theme; "'"
-  
-  SearchDesktop
-  
-  Select Case LCase(Application.Theme)
+
+  Select Case LCase(sDesktop)
       
     Case "gnome"
       
@@ -317,7 +306,7 @@ Static Private Sub InitTheme()
     'Case "gambas"
     Case Else
       
-      If Application.Theme <> "gambas" Then
+      If sDesktop <> "gambas" Then
         GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], Application.Theme)
       Endif
       
@@ -325,6 +314,24 @@ Static Private Sub InitTheme()
   
   AddPath("", "stock", "&2")
   $aIconPath.Add("#")
+  
+End
+
+
+Static Private Sub InitTheme()
+  
+  If Not $bDebug Then
+    If Env["GB_STOCK"] Then $bDebug = True
+  Endif
+  
+  $aIconPath = New String[]
+  LoadMap
+  
+  If $bDebug Then Error "gb.form: init stock with application theme: '"; Application.Theme; "'"
+  
+  SearchDesktop
+  
+  SearchTheme(Application.Theme)
   
   $bInit = True
   
@@ -371,7 +378,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
     sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
     sName = File.Name(sPath)
     sDir = File.Dir(sPath)
-  
+    
     If iRealSize Then
       
       sName = File.SetExt(sName, "svg")
@@ -406,7 +413,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   
 End
 
-Static Public Function _get(Key As String) As Picture
+Static Public Function _get(Key As String, Optional {Default} As String) As Picture
   
   Dim sPath As String
   Dim hPict As Picture
@@ -458,12 +465,19 @@ Static Public Function _get(Key As String) As Picture
       iPos = InStr(sPath, ":")
       If iPos Then 
         sMap = Left$(sPath, iPos - 1)
-        sFile = $cIconMap[Key]
-        If Not sFile Then sFile = Key
+        If Left(Key) <> "." Then
+          sFile = $cIconMap[Key]
+          If Not sFile Then sFile = Key
+        Else
+          sFile = Mid$(Key, 2)
+        Endif
         sPath = Mid$(sPath, iPos + 1)
       Else 
         sFile = Key
+        If Left(sFile) = "." Then sFile = Mid$(sFile, 2)
       Endif
+      
+      
       sDirPattern = Replace(File.Name(sPath), "!", "/")
       
       sPath = File.Dir(sPath)
@@ -501,6 +515,7 @@ Static Public Function _get(Key As String) As Picture
 __RETURN:
 
   If Not hPict Then
+    If {Default} Then Return _get({Default})
     Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key
     hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
   Endif
@@ -621,6 +636,7 @@ ADD_THEME:
   If Exist(sPath &/ "cursors") Then Return
   sPath &/= "index.theme"
   If Not Exist(sPath) Then Return
+  If Stat(sPath).Type = gb.Link Then Return
   If InStr(File.Load(sPath), "\nHidden=True") Then Return
   aTheme.Add(sDir)
   Return

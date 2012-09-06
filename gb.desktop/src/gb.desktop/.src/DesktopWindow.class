@@ -21,7 +21,7 @@ Property Sticky As Boolean
 
 Private $iId As Integer
 Private $aDim As Integer[]
-Private $sName As String
+'Private $sName As String
 
 Public Sub _new(Window As Integer)
   
@@ -137,11 +137,11 @@ Private Sub ClearState(State As String, Optional State2 As String)
   
 End
 
-Private Sub ToggleState(State As String, Optional State2 As String)
-  
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_TOGGLE"], Atom[State], Atom[State2], 2], $iId)
-  
-End
+' Private Sub ToggleState(State As String, Optional State2 As String)
+'   
+'   _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_TOGGLE"], Atom[State], Atom[State2], 2], $iId)
+'   
+' End
 
 Private Function Id_Read() As Integer
 

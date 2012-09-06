@@ -55,3 +55,63 @@ Public Sub UnEscapeURI(URL As String) As String
   Return sRes  
   
 End
+
+Public Sub GetMime(sPath As String) As String
+  
+  Select Case Lower(File.Ext(sPath))
+    Case "css"
+      Return "text/css"
+    Case "jpg", "jpeg", "jpe"
+      Return "image/jpeg"
+    Case "png"
+      Return "image/png"
+    Case "svg"
+      Return "image/svg+xml"
+    Case "gif"
+      Return "image/gif"
+    Case "tiff", "tif"
+      Return "image/tiff"
+    Case "js"
+      Return "text/javascript"
+    Case "odt"
+      Return "application/vnd.oasis.opendocument.text"
+    Case "doc"
+      Return "application/msword"
+    Case "ods"
+      Return "application/vnd.oasis.opendocument.spreadsheet"
+    Case "xls"
+      Return "application/msexcel"
+    Case "pdf"
+      Return "application/pdf"
+    Case "zip"
+      Return "application/zip"
+    Case "html", "htm"
+      Return "text/html"
+    Case "txt", ""
+      Return "text/plain"
+    Case "avi"
+      Return "video/x-msvideo"
+    Case "mpg", "mpeg"
+      Return "video/mpeg"
+    Case "ps"
+      Return "application/postscript"
+    Case "dwg"
+      Return "application/acad"
+    Case "wav"
+      Return "audio/x-wav"
+    Case "ogg"
+      Return "application/ogg"
+    Case "jar"
+      Return "application/x-jar"
+    Case "kml"
+      Return "text/kml"
+    Case "xml"
+      Return "text/xml"
+    Case Else 
+      Return ""
+  End Select
+  
+End
+  
+  
+

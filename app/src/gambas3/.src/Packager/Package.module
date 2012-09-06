@@ -86,7 +86,7 @@ End
 
 Private Sub RemoveEmptyLines(sText As String) As String
   
-  Return Split(sText, "\n", "", True ).Join("\n")
+  Return Split(sText, "\n", "", True).Join("\n")
   
 End
 
@@ -142,7 +142,7 @@ Public Function Make() As Boolean
   Dim sPath As String
 
   If Project.Systems.Exist("slackware") Then 
-    If Project.MakeExecutable(True , True ) Then Return True
+    If Project.MakeExecutable(True, True) Then Return True
   Endif  
   
   ' Save old rpm macro file
@@ -197,7 +197,6 @@ Public Function GetChangeDate() As String
   Return sDate
 
 End
-
 
 Private Function IsConsoleProject() As Boolean
 
@@ -433,7 +432,7 @@ End
 
 Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
   
-  Dim aCat As String[] = Split(sCategories, ";", "", True )
+  Dim aCat As String[] = Split(sCategories, ";", "", True)
   Dim sCat As String
   Dim aOnly As New String[]
   
@@ -655,7 +654,7 @@ Private Function MakeDebPackage(sSys As String)
 
   End Select
   
-  Print #hFile, GetExtraFilesList(sSys, "src/" & $sName & "/.hidden", "&1 &3", True )
+  Print #hFile, GetExtraFilesList(sSys, "src/" & $sName & "/.hidden", "&1 &3", True)
   
   Close #hFile  
  
@@ -715,7 +714,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "#!/usr/bin/make -f"
   Print #hFile, "build: build-stamp\nbuild-stamp:"
   Print #hFile, "\tdh_testdir\n\ttouch build-stamp"
-  Print #hFile, "\t"; Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ) & " src" &/ $sName
+  Print #hFile, "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & " src" &/ $sName
   Print #hFile, "\tgba"; System.Version;
   If Project.Type = Project.TYPE_NORMAL Then Print #hFile, " -o " & Shell$("src" &/ $sName &/ $sName);
   Print #hFile, " src" &/ $sName
@@ -948,7 +947,7 @@ Private Function MakeRpmPackage(sSys As String)
     ' How can we do that? Hardcode installation path according to the distribution?
 
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
      
     Print #hFile, "\n%install"
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
@@ -969,7 +968,7 @@ Private Function MakeRpmPackage(sSys As String)
   Else 
   
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
   
     Print #hFile, "\n%install"
   
@@ -1387,7 +1386,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   
   ' 2. Copy needed files 
 
-  Try sCmd = Scan(Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ), "*/bin/gbc" & System.Version & " *")[1]
+  Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False), "*/bin/gbc" & System.Version & " *")[1]
 
   'Mkdir sBuildDir &/ Project.Name
   Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
@@ -1525,7 +1524,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, "build() {"
     Print #hFile, "  cd ${srcdir}/${_realname}"
     Print #hFile, ""
-    Print #hFile, "  "; Project.GetCompileCommand(True , Not Project.KeepDebugInfo, True , False ); " && gba"; System.Version
+    Print #hFile, "  "; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False); " && gba"; System.Version
     Print #hFile, "}"
     Print #hFile, ""
     Print #hFile, "package() {"
@@ -1614,13 +1613,13 @@ Public Sub Process_Read()
   
   sData = Read #Last, -256
   $sOutput &= sData
-  FMakeInstall.AddLog(sData, True )
+  FMakeInstall.AddLog(sData, True)
   
 End
 
 Public Sub Process_Error(sData As String)
 
-  FMakeInstall.AddLog(sData, True )
+  FMakeInstall.AddLog(sData, True)
 
 End
 

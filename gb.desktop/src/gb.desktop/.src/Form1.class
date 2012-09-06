@@ -12,7 +12,6 @@ Public Sub Button1_Click()
   Dim hPictureBox As PictureBox
   Dim iCurrentDesktop As Integer
   Dim iDesktop As Integer
-  Dim iInd As Integer
   Dim hWindow As DesktopWindow
   
   iCurrentDesktop = _Desktop.GetWindowProperty("_NET_CURRENT_DESKTOP", _Desktop.RootWindow)[0]
