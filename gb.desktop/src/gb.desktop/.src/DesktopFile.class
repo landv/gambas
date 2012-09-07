@@ -64,7 +64,6 @@ Public Sub _new(Path As String)
   Dim sLine As String
   Dim iPos As Integer
   Dim sLang As String
-  Dim sKey As String
   Dim iNameLevel As Integer
   Dim iLevel As Integer
   Dim bInDesktopEntry As Boolean
@@ -252,7 +251,7 @@ Static Private Sub FindInMimeInfoCache(sPath As String, sMime As String) As Stri
   iPos = InStr(sData, "=", iPos + 1)
   Return Mid$(sData, iPos + 1, iPos2 - iPos - 1)
   
-'Catch
+Catch
   
 End
 
@@ -273,8 +272,11 @@ Static Public Sub FindMime(MimeType As String) As DesktopFile[]
     If MimeType Begins "text/" And If MimeType <> "text/plain" Then aMime.Add("text/plain")
     
     For Each sMime In aMime
+      
       sList = FindInMimeInfoCache("~/.local/share/applications/mimeinfo.cache", sMime)
       If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeinfo.cache", sMime)
+      If Not sList Then sList = FindInMimeInfoCache("~/.local/share/applications/mimeapps.list", sMime)
+      If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeapps.list", sMime)
       
       For Each sList In Split(sList, ";", "", True)
         hProg = DesktopFile[sList]

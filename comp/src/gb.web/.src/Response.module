@@ -135,6 +135,10 @@ Public Sub End()
     Wend
     Close #$hFile
     
+  Else
+    
+    Flush
+    
   Endif
   
 End
