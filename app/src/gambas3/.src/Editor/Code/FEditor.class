@@ -1095,7 +1095,7 @@ Public Sub Editors_KeyPress()
       Endif
     Endif
 
-    If Not Key.Shift Then
+    If Not Key.Shift And If LocalVariableDeclaration Then
       If CreateLocalVariable() Then iLine = Editor.Line
     Endif
 
