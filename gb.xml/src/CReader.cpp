@@ -136,7 +136,7 @@ GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
 
 END_METHOD
 
-BEGIN_METHOD(CReaderNodeAttr_put, GB_STRING value; GB_STRING name)
+/*BEGIN_METHOD(CReaderNodeAttr_put, GB_STRING value; GB_STRING name)
 
 if(!THIS->foundNode) 
 {
@@ -146,7 +146,7 @@ if(!THIS->foundNode->isElement()) return;
 THIS->foundNode->toElement()->setAttribute(STRING(name), LENGTH(name), 
                                            STRING(value), LENGTH(value));
 
-END_METHOD
+END_METHOD*/
 
 BEGIN_PROPERTY(CReaderNodeAttr_count)
 
@@ -361,7 +361,7 @@ GB_DESC CReaderNodeAttributesDesc[] =
 	GB_DECLARE(".XmlReader.Node.Attributes", 0), GB_VIRTUAL_CLASS(),
 
     GB_METHOD("_get", "s", CReaderNodeAttr_get, "(Name)s"),
-    GB_METHOD("_put", "s", CReaderNodeAttr_put, "(Value)s(Name)s"),
+    //GB_METHOD("_put", "s", CReaderNodeAttr_put, "(Value)s(Name)s"),
     GB_METHOD("_next", "s", CReaderNodeAttr_next, ""),
     GB_PROPERTY_READ("Count", "i", CReaderNodeAttr_count),
 
