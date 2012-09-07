@@ -113,15 +113,27 @@ static void update_alignment(void *_object)
 
 static void set_text_color(void *_object)
 {
+	QTextCharFormat fmt;
 	QBrush col;
 	int fg = CWIDGET_get_foreground((CWIDGET *)THIS);
 	
-	if (fg == COLOR_DEFAULT)
-		col = WIDGET->palette().text();
-	else
-		col = QColor((QRgb)fg);
+	fmt = WIDGET->currentCharFormat();
 	
-	WIDGET->setTextColor(col);
+	if (fg == COLOR_DEFAULT)
+	{
+		fmt.clearForeground();
+		//col = WIDGET->palette().text();
+	}
+	else
+	{
+		col = QColor((QRgb)fg);
+		fmt.setForeground(col);
+	}
+	
+	//WIDGET->setTextColor(col);
+	THIS->no_change = TRUE;
+	WIDGET->setCurrentCharFormat(fmt);
+	THIS->no_change = FALSE;
 }
 
 void CTEXTAREA_set_foreground(void *_object)
@@ -641,21 +653,20 @@ void CTextArea::changed(void)
 	if (THIS->no_change)
 		return;
 	
+	set_text_color(THIS);
 	THIS->length = -1;
-	//CTEXTAREA_set_foreground(THIS);
 	GB.Raise(THIS, EVENT_Change, 0);
 }
 
 void CTextArea::cursor(void)
 {
 	GET_SENDER();
-	set_text_color(THIS);
+	//set_text_color(THIS);
 	GB.Raise(THIS, EVENT_Cursor, 0);
 }
 
 void CTextArea::link(const QString &path)
 {
 	GET_SENDER();
-
 	GB.Raise(THIS, EVENT_Link, 1, GB_T_STRING, TO_UTF8(path), 0);
 }
