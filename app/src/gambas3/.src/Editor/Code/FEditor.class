@@ -3204,6 +3204,10 @@ Public Sub RenameControl(sOld As String, sNew As String)
 
       If sSym <> sOld Then
         If Not (sSym Begins (sOld & "_")) Then Continue
+      Else
+        If iInd > 0 Then
+          If aSym[iInd - 1] = "." Or If aSym[iInd - 1] = "!" Then Continue
+        Endif
       Endif
 
       sLine = Left$(sLine, Highlight.Positions[iInd]) & sNew & Mid$(sLine, Highlight.Positions[iInd] + Len(sOld) + 1)

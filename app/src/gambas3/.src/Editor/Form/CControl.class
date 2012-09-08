@@ -927,7 +927,7 @@ Public Function Rename(sNewName As String) As Boolean
 
   ' Don't look in the class when renaming the form!
   If Parent Then
-    hForm.GetEditor(True ).RenameControl(Name, sNewName)
+    hForm.GetEditor(True).RenameControl(Name, sNewName)
   Endif
   
   If Name Then hForm.Control[Name] = Null
@@ -1102,7 +1102,7 @@ Private Sub MoveAllHandle()
     MovePanel(iInd)
   Next
   
-  If HasIcon() Then $hFamily.EnterControl(Null , Me)
+  If HasIcon() Then $hFamily.EnterControl(Null, Me)
   
 End
 
@@ -1336,7 +1336,7 @@ Public Procedure Panel_MouseMove()
 
   Endif
 
-  CControl.SetGrid(True )
+  CControl.SetGrid(True)
 
 End
 
@@ -1604,7 +1604,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     Else
   
       sLine = "MoveScaled(" & FormatScaledCoord(GetCoord(X)) & "," & FormatScaledCoord(GetCoord(Y))
-      If bHasSize Then sLine = sLine & "," & FormatScaledCoord(GetCoord(W, True )) & "," & FormatScaledCoord(GetCoord(H, True ))
+      If bHasSize Then sLine = sLine & "," & FormatScaledCoord(GetCoord(W, True)) & "," & FormatScaledCoord(GetCoord(H, True))
       sLine = sLine & ")"
   
     Endif
