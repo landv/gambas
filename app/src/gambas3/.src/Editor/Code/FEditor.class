@@ -3185,6 +3185,7 @@ Public Sub RenameControl(sOld As String, sNew As String)
   Dim iInd As Integer
   Dim sSym As String
   Dim bChange As Boolean
+  Dim bInProc As Boolean
 
   sOld = UCase(sOld)
 
@@ -3195,6 +3196,23 @@ Public Sub RenameControl(sOld As String, sNew As String)
     sLine = Editor.Lines[iLine].Text
     aSym = Highlight.Analyze(sLine)
     bChange = False
+    
+    If Not bInProc Then
+      If IsCurrentProc() Then
+        bInProc = True
+      Else
+        Continue
+      Endif
+    Else
+      If IsCurrentEndProc() Then
+        bInProc = False
+        Continue
+      Endif
+    Endif
+    
+    If aSym.Count Then
+     If aSym[0] = "Dim" Then Continue
+    Endif
 
     For iInd = aSym.Max DownTo 0
 
@@ -3206,7 +3224,12 @@ Public Sub RenameControl(sOld As String, sNew As String)
         If Not (sSym Begins (sOld & "_")) Then Continue
       Else
         If iInd > 0 Then
-          If aSym[iInd - 1] = "." Or If aSym[iInd - 1] = "!" Then Continue
+          sSym = aSym[iInd - 1]
+          If sSym = "." Then
+            If iInd <= 1 Or If aSym[iInd - 2] <> "ME" Then Continue
+          Else If sSym = "!" Or If sSym = "AS" Or If sSym = "NEW" Then 
+            Continue
+          Endif
         Endif
       Endif
 

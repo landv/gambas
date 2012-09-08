@@ -140,6 +140,7 @@ Public Sub Run(sPath As String)
     sExec = Replace(sExec, "%u", sPath)
     sExec = Replace(sExec, "%F", sPath)
     sExec = Replace(sExec, "%f", sPath)
+    '' TODO: implement %i, %c & %k
     sExec = Replace(sExec, "%i", "")
     sExec = Replace(sExec, "%c", $sName)
     sExec = Replace(sExec, "%k", $sName)
@@ -273,10 +274,17 @@ Static Public Sub FindMime(MimeType As String) As DesktopFile[]
     
     For Each sMime In aMime
       
-      sList = FindInMimeInfoCache("~/.local/share/applications/mimeinfo.cache", sMime)
+      sList = ""
+
+      If Desktop.Type = "LXDE" Then
+        If Not sList Then sList = FindInMimeInfoCache("~/.local/share/applications/mimeapps.list", sMime)
+      Endif
+      If Not sList Then sList = FindInMimeInfoCache("~/.local/share/applications/mimeinfo.cache", sMime)
+      
+      If Desktop.Type = "LXDE" Then
+        If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeapps.list", sMime)
+      Endif
       If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeinfo.cache", sMime)
-      If Not sList Then sList = FindInMimeInfoCache("~/.local/share/applications/mimeapps.list", sMime)
-      If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeapps.list", sMime)
       
       For Each sList In Split(sList, ";", "", True)
         hProg = DesktopFile[sList]
