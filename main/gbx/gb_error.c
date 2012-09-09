@@ -279,7 +279,7 @@ void ERROR_propagate()
 		
 		//fprintf(stderr, "ERROR_propagate: %p @ %p (%p)\n", ERROR_handler, ERROR_handler->context, ERROR_current);
 		prev = ph->prev;
-		(*ph->handler)();
+		(*ph->handler)(ph->arg1, ph->arg2);
 		ERROR_handler = prev;
 	}
 	
@@ -661,3 +661,4 @@ void ERROR_exit(void)
 	ERROR_reset(&ERROR_last);
 	STACK_free_backtrace(&ERROR_backtrace);
 }
+
