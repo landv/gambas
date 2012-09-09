@@ -111,7 +111,7 @@ lib/image/Makefile \
 lib/image.effect/Makefile \
 lib/signal/Makefile \
 lib/complex/Makefile \
-lib/adt/Makefile \
+lib/data/Makefile \
 ])
 AC_OUTPUT
 
