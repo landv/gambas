@@ -236,6 +236,8 @@ Private Function IdealHeight_Read() As Integer
   
   Dim X, H As Integer
 
+  If Not $hProjectInfo Then Return 0
+
   If $hProjectInfo.Description Then
     If Me.W = $iIdealW Then Return $iIdealH
   Else
