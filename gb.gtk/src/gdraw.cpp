@@ -819,9 +819,12 @@ void gDraw::ellipse(int x, int y, int w, int h, double start, double end)
 		int xs, ys;
 		int xe, ye;
 		
-		#define CROP_XY(_x, _y) \
-			if (_x < x) _x = x; else if (_x >= (x + w)) _x = x + w - 1; \
-			if (_y < y) _y = y; else if (_y >= (y + h)) _y = y + h - 1;
+		x -= _x;
+		y -= _y;
+		
+		#define CROP_XY(__x, __y) \
+			if (__x < x) __x = x; else if (__x >= (x + w)) __x = x + w - 1; \
+			if (__y < y) __y = y; else if (__y >= (y + h)) __y = y + h - 1;
 		
 		xc = (x + x + w) / 2; //+ cos(start) / 2;
 		yc = (y + y + h) / 2; //- sin(start) / 2;

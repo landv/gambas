@@ -583,14 +583,17 @@ void gMainWindow::setFullscreen(bool vl)
 
 void gMainWindow::center()
 {
-	int myx,myy;
+	GdkRectangle rect;
+	int x, y;
 	
 	if (!isTopLevel()) return;
 	
-	myx = (gDesktop::width() - width()) / 2;
-	myy = (gDesktop::height() - height()) / 2;
+	gDesktop::availableGeometry(screen(), &rect);
 	
-	move(myx, myy);
+	x = rect.x + (rect.width - width()) / 2;
+	y = rect.y + (rect.height - height()) / 2;
+	
+	move(x, y);
 }
 
 bool gMainWindow::isModal() const
@@ -607,24 +610,30 @@ void gMainWindow::showModal()
 	if (!isTopLevel()) return;
 	if (isModal()) return;
 	
-	save = _current;
-	_current = this;
-	
-	gtk_window_set_modal(GTK_WINDOW(border), true);
-  
-  center();
 	//show();
 
 	//fprintf(stderr, "showModal: begin %p\n", this);
 
-	gApplication::enterLoop(this, true);
+	gtk_window_set_modal(GTK_WINDOW(border), true);
+  center();
+	show();
+	gtk_grab_add(border);
 	
-	//fprintf(stderr, "showModal: end %p\n", this);
+	if (_active)
+		gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(_active->border));
+	
+	save = _current;
+	_current = this;
 
+	gApplication::enterLoop(this);
+	
 	_current = save;
 	
+	gtk_grab_remove(border);
 	gtk_window_set_modal(GTK_WINDOW(border), false);
-	
+
+	//fprintf(stderr, "showModal: end %p\n", this);
+
 	if (!persistent)
 		destroyNow();
 	else

@@ -39,222 +39,7 @@
 #include "gprinter.h"
 #include "gmainwindow.h"
 
-//#define DEBUG_IM 1
 //#define DEBUG_ENTER_LEAVE 1
-
-/*************************************************************************
-
-gKey
-
-**************************************************************************/
-
-bool gKey::_valid = false;
-bool gKey::_no_input_method = false;
-GdkEventKey gKey::_event;
-GtkIMContext *gKey::_im_context = NULL;
-gControl *gKey::_im_control = NULL;
-char *_im_text = NULL;
-
-const char *gKey::text()
-{
-	if (!_valid) 
-		return 0;
-	else
-		return _event.string;
-}
-
-int gKey::code()
-{
-	if (!_valid)
-		return 0;
-	
-	int code = _event.keyval;
-	
-	if (code >= GDK_a && code <= GDK_z)
-		code += GDK_A - GDK_a;
-	else if (code == GDK_Alt_L || code == GDK_Alt_R || code == GDK_Control_L || code == GDK_Control_R 
-		       || code == GDK_Meta_L || code == GDK_Meta_R || code == GDK_Shift_L || code == GDK_Shift_R)
-		code = 0;
-	
-	return code;
-}
-
-int gKey::state()
-{
-	if (!_valid)
-		return 0;
-	else
-		return _event.state;
-}
-
-bool gKey::alt()
-{
-	return state() & GDK_MOD1_MASK || _event.keyval == GDK_Alt_L || _event.keyval == GDK_Alt_R;
-}
-
-bool gKey::control()
-{
-	return state() & GDK_CONTROL_MASK || _event.keyval == GDK_Control_L || _event.keyval == GDK_Control_R;
-}
-
-bool gKey::meta()
-{
-	return state() & GDK_MOD2_MASK || _event.keyval == GDK_Meta_L || _event.keyval == GDK_Meta_R;
-}
-
-bool gKey::normal()
-{
-	return (state() & 0xFF) != 0;
-}
-
-bool gKey::shift()
-{
-	return state() & GDK_SHIFT_MASK || _event.keyval == GDK_Shift_L || _event.keyval == GDK_Shift_R;
-}
-
-int gKey::fromString(char *str)
-{
-	char *lstr;
-	int key;
-	
-	if (!str || !*str)
-		return 0;
-	
-	lstr = g_ascii_strup(str, -1);
-	key = gdk_keyval_from_name(lstr);
-	g_free(lstr);
-	if (key) return key;
-	
-	lstr = g_ascii_strdown(str, -1);
-	key = gdk_keyval_from_name(lstr);
-	g_free(lstr);
-	if (key) return key;
-
-	key = gdk_keyval_from_name(str);
-	return key;
-}
-
-void gKey::disable()
-{
-	if (!_valid)
-		return;
-		
-	_valid = false;
-	_event.keyval = 0;
-	_event.state = 0;
-	g_free(_event.string);
-}
-
-bool gKey::enable(gControl *control, GdkEventKey *event)
-{
-	bool filter;
-	
-	//if (widget != _im_widget)
-	//	return true;
-	
-	if (_valid)
-		disable();
-		
-	_valid = true;
-	_event = *event;
-	
-	if (_event.type == GDK_KEY_PRESS && !_no_input_method && control == _im_control)
-	{
-		#if DEBUG_IM
-		fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
-		#endif
-		filter = gtk_im_context_filter_keypress(_im_context, &_event);
-		#if DEBUG_IM
-		fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", filter, event->string);
-		#endif
-	}
-	else
-		filter = false;
-  
-  if (filter && _im_text)
-  {
-		_event.string = g_strdup(_im_text);
-		//_event.keyval = 0;
-		filter = false;
-  }
-  else
-  	_event.string = g_strdup(_event.string);
-  
-  if (!filter)
-  {
-		//#if DEBUG_IM
-  	//fprintf(stderr, "gKey::enable: gtk_im_context_reset\n");
-		//#endif
-  	//gtk_im_context_reset(_im_context);
-  	if (_im_text)
-  	{
-  		g_free(_im_text);
-  		_im_text = NULL;
-  	}
-  }
-  
-  //fprintf(stderr, "gKey::enable: --> %d\n", filter);
-  return filter;
-}
-
-static void cb_im_commit(GtkIMContext *context, const gchar *str, gpointer pointer)
-{
-	#if DEBUG_IM
-	fprintf(stderr, "cb_im_commit: %s\n", str);
-	#endif
-	
-	if (_im_text)
-		g_free(_im_text);
-		
-	_im_text = g_strdup(str);
-}
-
-void gKey::init()
-{
-	_im_context = gtk_im_multicontext_new();
-  g_signal_connect (_im_context, "commit", G_CALLBACK(cb_im_commit), NULL);
-}
-
-void gKey::exit()
-{
-	disable();
-	if (_im_text)
-		g_free(_im_text);
-	g_object_unref(_im_context);
-}
-
-void gKey::setActiveControl(gControl *control)
-{
-	if (_im_control)
-	{
-		if (!_no_input_method)
-		{
-			#if DEBUG_IM
-			fprintf(stderr, "gtm_im_context_focus_out\n");
-			#endif
-	  	gtk_im_context_set_client_window (_im_context, 0);
-			gtk_im_context_focus_out(_im_context);
-		}
-		_im_control = NULL;
-		_no_input_method = false;
-	}
-	
-	if (control)
-	{
-		_im_control = control;
-		_no_input_method = control->noInputMethod();
-		
-		if (!_no_input_method)
-		{
-	  	gtk_im_context_set_client_window (_im_context, _im_control->widget->window);
-			gtk_im_context_focus_in(_im_context);
-			gtk_im_context_reset(_im_context);
-			#if DEBUG_IM
-			fprintf(stderr, "gtm_im_context_focus_in\n");
-			#endif
-		}		
-	}
-}
 
 /**************************************************************************
 	
@@ -424,12 +209,12 @@ static void gambas_handle_event(GdkEvent *event)
 		grab = gApplication::_popup_grab;
 		//gdk_window_get_user_data(gApplication::_popup_grab_window, (gpointer *)&grab);
 	
-	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE)
+	if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE)
 	{
 		fprintf(stderr, "widget = %p grab = %p _popup_grab = %p _button_grab = %p\n", widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
 		//fprintf(stderr, "widget = %p (%p) grab = %p (%p)\n", widget, widget ? g_object_get_data(G_OBJECT(widget), "gambas-control") : 0, 
 		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
-	}*/
+	}
 	
 	if (grab && !gApplication::_popup_grab && !gApplication::_button_grab)
 		goto __HANDLE_EVENT;
@@ -1193,16 +978,16 @@ void gApplication::exitGroup(GtkWindowGroup *oldGroup)
 	_group = oldGroup;	
 }
 
-void gApplication::enterLoop(void *owner, bool showIt)
+void gApplication::enterLoop(void *owner, bool showIt, GtkWindow *modal)
 {
 	void *old_owner = _loop_owner;
 	int l = _loopLevel;
 	GtkWindowGroup *oldGroup;
 	
-	oldGroup = enterGroup();
-	
 	if (showIt) ((gControl *)owner)->show();
 
+	oldGroup = enterGroup();
+	
 	_loopLevel++;
 	_loop_owner = owner;
 	

@@ -56,7 +56,7 @@ gb_gtk_la_SOURCES = \
 	cprinter.h cprinter.cpp \
 	csvgimage.h csvgimage.cpp \
 	main.h main.cpp \
-	gkey.h \
+	gkey.h gkey.cpp \
 	gcursor.h gcursor.cpp \
 	gmouse.h gmouse.cpp \
 	gdesktop.h \

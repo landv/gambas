@@ -67,6 +67,7 @@
 #include <QAbstractEventDispatcher>
 #include <QListWidget>
 #include <QComboBox>
+#include <QSpinBox>
 #include <QSet>
  
 #ifndef NO_X_WINDOW
@@ -1465,7 +1466,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			w->setPalette(palette);
 			get_viewport(WIDGET)->setPalette(vpalette);
 		}
-		else if (qobject_cast<QComboBox *>(w))
+		else if (qobject_cast<QComboBox *>(w) || qobject_cast<QSpinBox *>(w))
 		{
 			palette = QPalette();
 		
