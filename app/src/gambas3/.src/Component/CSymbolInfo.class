@@ -90,6 +90,12 @@ Public Sub IsProperty() As Boolean
   
 End
 
+Public Sub IsFunction() As Boolean
+  
+  Return InStr("mMx", Kind) > 0
+  
+End
+
 Public Function GetIcon() As String
 
   Dim bStatic As Boolean

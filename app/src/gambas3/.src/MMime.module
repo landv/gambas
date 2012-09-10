@@ -87,7 +87,7 @@ Public Sub GetMime(sPath As String) As String
       Return "application/zip"
     Case "html", "htm"
       Return "text/html"
-    Case "txt", ""
+    Case "txt", "", "am", "in", "sh", "m4"
       Return "text/plain"
     Case "avi"
       Return "video/x-msvideo"

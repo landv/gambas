@@ -3424,7 +3424,14 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
     Else If aType[I] = Highlight.Symbol Then
       
-      sType = GetSymbolType(aSym[I])
+      If I < aSym.Max And If aSym[I + 1] = "." Then
+        sType = GetSymbolType(aSym[I], True)
+      Else
+        sType = GetSymbolType(aSym[I])
+        If $hSymbol And If $hSymbol.IsFunction() And If I < aSym.Max And If aSym[I + 1] = "(" Then
+          I = FindNextBracket(aSym, I, "(", ")")
+        Endif
+      Endif
       'If $bLastStatic Then sType = ""
       
     Else If aType[I] = Highlight.Function Then

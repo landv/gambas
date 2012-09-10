@@ -206,8 +206,8 @@ Public Sub DrawingArea_MouseDown()
       hTabPanel._Close(GetIndex())
     Else
       If $bSelected Then Return
-      hTabPanel.Index = GetIndex()
       Me.Parent.SetFocus()
+      hTabPanel.Index = GetIndex()
     Endif
   Endif
   

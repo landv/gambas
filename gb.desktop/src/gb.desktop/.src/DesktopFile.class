@@ -4,6 +4,7 @@ Export
 
 Class Stock
 
+Static Private $aDataDir As String[]
 Static Private $aLang As String[]
 Static Private $aProgDir As String[]
 Static Private $cProgCache As New Collection
@@ -58,6 +59,11 @@ Static Public Sub _init()
   
 End
 
+Public Sub _compare(hDesktopFile As DesktopFile) As Integer
+  
+  Return String.Comp($sName, hDesktopFile.Name)
+  
+End
 
 Public Sub _new(Path As String)
   
@@ -192,6 +198,15 @@ Private Function ProgramName_Read() As String
 
 End
 
+Static Private Sub GetDataDir() As String[]
+  
+  If Not $aDataDir Then $aDataDir = ["~/.local/share"].Insert(Split(Env["XDG_DATA_DIRS"], ":"))
+  Return $aDataDir
+  
+End
+
+
+
 Static Private Sub GetDesktopFileDirectories() As String[]
   
   Dim sDir As String
@@ -200,7 +215,8 @@ Static Private Sub GetDesktopFileDirectories() As String[]
   If Not $aProgDir Then
     
     $aProgDir = New String[]
-    For Each sRoot In ["~/.local/share/applications", "/usr/share/applications"]
+    For Each sRoot In GetDataDir()
+      sRoot &/= "applications"
       $aProgDir.Add(sRoot)
       For Each sDir In RDir(sRoot, "*", gb.Directory)
         $aProgDir.Add(sRoot &/ sDir)
@@ -263,6 +279,8 @@ Static Public Sub FindMime(MimeType As String) As DesktopFile[]
   Dim sList As String
   Dim aMime As String[]
   Dim sMime As String
+  Dim sDir As String
+  Dim sFound As String
   
   hProgList = $cMimeCache[MimeType]
   
@@ -275,17 +293,23 @@ Static Public Sub FindMime(MimeType As String) As DesktopFile[]
     For Each sMime In aMime
       
       sList = ""
-
-      If Desktop.Type = "LXDE" Then
-        If Not sList Then sList = FindInMimeInfoCache("~/.local/share/applications/mimeapps.list", sMime)
-      Endif
-      If Not sList Then sList = FindInMimeInfoCache("~/.local/share/applications/mimeinfo.cache", sMime)
       
-      If Desktop.Type = "LXDE" Then
-        If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeapps.list", sMime)
-      Endif
-      If Not sList Then sList = FindInMimeInfoCache("/usr/share/applications/mimeinfo.cache", sMime)
+      'Print "["; sMime; "]"
       
+      For Each sDir In GetDataDir()
+        sFound = FindInMimeInfoCache(sDir &/ "applications/mimeapps.list", sMime)
+        If sFound Then sList &= ";" & sFound
+      Next
+     
+      If Not sList Then
+        For Each sDir In GetDataDir()
+          sFound = FindInMimeInfoCache(sDir &/ "applications/mimeinfo.cache", sMime)
+          If sFound Then sList &= ";" & sFound
+        Next
+      Endif
+      
+      'Print "--> "; sList
+     
       For Each sList In Split(sList, ";", "", True)
         hProg = DesktopFile[sList]
         If Not hProg Then hProg = DesktopFile[Replace(sList, "-", "/")]
@@ -294,13 +318,14 @@ Static Public Sub FindMime(MimeType As String) As DesktopFile[]
         If hProgList.Exist(hProg) Then Continue
         hProgList.Add(hProg)
       Next
+      
     Next
     
     $cMimeCache[sMime] = hProgList
   
   Endif
   
-  Return hProgList
+  Return hProgList '.Sort()
   
 End
 
