@@ -574,7 +574,7 @@ void gMainWindow::setFullscreen(bool vl)
 	if (vl)
 	{
 		gtk_window_fullscreen(GTK_WINDOW(border));
-		if (opened)
+		if (isVisible())
 			gtk_window_present(GTK_WINDOW(border));
 	}
 	else
