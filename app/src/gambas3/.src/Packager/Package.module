@@ -150,15 +150,6 @@ Public Function Make() As Boolean
   Try Move sMacro To sMacro & ".save"
   Try Kill sMacro
 
-  $sSavePath = Path
-  For Each sSys In Project.Systems
-    If MakePackage(sSys) Then Return True
-  Next
-
-  ' Restore old rpm macro file
-  Try Kill sMacro
-  Try Move sMacro & ".save" To sMacro
-
   AddLog("\n" & String(40, "=") & "\n")
   AddLog(("Saving CHANGELOG file."))
   sPath = Project.Dir &/ ".hidden" &/ "CHANGELOG"
@@ -168,6 +159,15 @@ Public Function Make() As Boolean
   Project.RefreshKey(sPath)
   If bAdd Then VersionControl.AddFile(sPath)
   
+  $sSavePath = Path
+  For Each sSys In Project.Systems
+    If MakePackage(sSys) Then Return True
+  Next
+
+  ' Restore old rpm macro file
+  Try Kill sMacro
+  Try Move sMacro & ".save" To sMacro
+
   ' sPath = Project.Dir &/ ".extratest"
   ' bAdd = Not Exist(sPath)
   ' If Len(ExtraTest) > 0 Then
