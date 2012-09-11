@@ -209,12 +209,12 @@ static void gambas_handle_event(GdkEvent *event)
 		grab = gApplication::_popup_grab;
 		//gdk_window_get_user_data(gApplication::_popup_grab_window, (gpointer *)&grab);
 	
-	if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE)
+	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE)
 	{
 		fprintf(stderr, "widget = %p grab = %p _popup_grab = %p _button_grab = %p\n", widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
 		//fprintf(stderr, "widget = %p (%p) grab = %p (%p)\n", widget, widget ? g_object_get_data(G_OBJECT(widget), "gambas-control") : 0, 
 		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
-	}
+	}*/
 	
 	if (grab && !gApplication::_popup_grab && !gApplication::_button_grab)
 		goto __HANDLE_EVENT;

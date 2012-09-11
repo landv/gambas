@@ -413,7 +413,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Settings.Save
     
     sExec = Application.Path &/ Args[0]
-    'If Not Exist(sExec) Then sExec = Application.Path &/ Args[0] & ".gambas"
+    If Not Exist(sExec) Then sExec = Application.Path &/ Args[0] & ".gambas"
     If Not Exist(sExec) Then
       Message.Error(Subst(("Unable to find Gambas IDE executable in directory:\n\n&1"), Application.Path))
       Return
@@ -1790,8 +1790,8 @@ Private Sub IsTextFile(sPath As String) As Boolean
       If iCode < 32 And If iCode <> 10 And If iCode <> 9 Then Return False
     Else If sStr Then
       Try sTest = Conv(sCar, "UTF-8", "UCS-4LE")
+      If Error Then Return False
     Endif
-    If Error Then Return False
   Wend
 
   Return True

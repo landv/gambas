@@ -78,7 +78,7 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
       paint.Clip
       Return
     Else
-      paint.Clip(True )
+      paint.Clip(True)
     Endif
     paint.Brush = Me.BackGround._PaintBrush(X1, Y1, X2, Y2)
 
