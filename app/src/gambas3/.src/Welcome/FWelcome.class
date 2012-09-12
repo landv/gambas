@@ -40,6 +40,9 @@ Public Sub Form_Open()
   Dim sFont As String
   Dim hCtrl As CCoolButton
 
+  Settings.Read(Me)
+  Me.Center
+  
   sFont = "Bold"
   W = panButton.ClientW
 
@@ -69,9 +72,6 @@ Public Sub Form_Open()
 
   '$hWelcome = New CWelcome(dwgWelcome)
 
-  Settings.Read(Me)
-  Me.Center
-  
 End
 
 
@@ -436,7 +436,6 @@ Private Sub FillRecent()
   'Dim bHighlight As Boolean
   Dim sTitle As String
   Dim sLastTitle As String
-  Dim Y As Integer
   Dim hDrawingArea As DrawingArea
   
   If lstRecent.Count And If Not CRecentFile.OutOfDate Then Return
@@ -462,14 +461,15 @@ Private Sub FillRecent()
         .Font = Font["Bold"]
         .H = .Font.Height + If(sLastTitle, 16, 8)
         .Foreground = Color.SelectedBackground
-        Y += .H
+        'Y += .H
       End With
       sLastTitle = sTitle
     Endif
     
     hProjectItem = New ProjectItem(lstRecent) As "ProjectItem"
-    hProjectItem.Y = Y
-    Y += hProjectItem.H
+    Object.Lock(hProjectItem)
+    'hProjectItem.Y = Y
+    'Y += hProjectItem.H
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
     If Not hFirst Then hFirst = hProjectItem
@@ -483,6 +483,8 @@ Private Sub FillRecent()
   'panRecent.Show
   
   Dec Application.Busy
+  
+  timLayout.Trigger
   
 End
 
@@ -522,6 +524,7 @@ Private Sub FillExample()
     hProjectItem = New ProjectItem(lstExample) As "ProjectItem"
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
+    Object.Lock(hProjectItem)
     hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
     hProjectItem.Group = sGroup
   
@@ -532,6 +535,8 @@ Private Sub FillExample()
   Object.Unlock(lstExample)
 
   Dec Application.Busy
+  
+  timLayout.Trigger
 
 End
 
@@ -564,5 +569,33 @@ Public Sub dwgTitle_Draw()
   Draw.RichText(sText, 12, 4, Draw.W - 16, Draw.H - 16, Align.TopLeft)
   Draw.Foreground = Color.White
   Draw.RichText(sText, 8, 0, Draw.W - 16, Draw.H - 16, Align.TopLeft)
+
+End
+
+Public Sub timLayout_Timer()
+
+  Dim hList As ListContainer
+  Dim hCtrl As Control
+  Dim hProjectItem As ProjectItem
+  
+  If $iRecent = LIST_RECENT Then
+    hList = lstRecent
+  Else
+    hList = lstExample
+  Endif
+  
+  hList.Lock
+  
+  For Each hCtrl In hList.Children
+    
+    If hCtrl Is ProjectItem Then
+      hProjectItem = hCtrl
+      Object.Unlock(hProjectItem)
+      hProjectItem.ProjectItem_BeforeArrange
+    Endif
+    
+  Next
+  
+  hList.Unlock
 
 End

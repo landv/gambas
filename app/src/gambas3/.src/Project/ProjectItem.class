@@ -260,6 +260,9 @@ Private Function IdealHeight_Read() As Integer
   Endif
   
   $iIdealH = H
+  
+  'Debug File.Name($sPath);; $iIdealW;; $iIdealH
+
   Return H
   
 End
@@ -303,7 +306,6 @@ End
 
 Public Sub ProjectItem_BeforeArrange()
   
-  If Not Me.Visible Then Return
   Me.H = Me.IdealHeight
   
 End
