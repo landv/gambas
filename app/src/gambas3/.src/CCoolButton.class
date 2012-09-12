@@ -3,18 +3,17 @@
 Property Enabled As Boolean
 Property ToolTip As String
 Property Foreground As Integer
+Property Background As Integer
 Property Highlight As Integer
-Property Arrow As Boolean
 
 Public Tag As Variant
 
 Private $hPanel As DrawingArea
 Private $hPict As Picture
 Private $sText As String
-'Private $iColor As Integer
+Private $iBackground As Integer = Color.Default
 Private $bInside As Boolean
 Private $iHighlight As Integer = Color.SelectedBackground
-Private $bArrow As Boolean
 
 Event Click
 
@@ -48,21 +47,24 @@ End
 
 Public Sub Panel_Draw()
   
-  If $bInside Then Draw.FillRect(0, 0, Draw.W, Draw.H, $iHighlight)
+  If $iBackground <> Color.Default Then
+    Draw.FillRect(0, 0, Draw.W, Draw.H, $iBackground)
+  Endif
   
   Draw.Picture($hPict, 8, ($hPanel.H - $hPict.H) \ 2)
   Draw.Text($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
   
-  If $bArrow Then
-    Draw.Picture(Picture["img/16/white-arrow.png"], Draw.W - 24, (Draw.H - 16) \ 2)
-    'Draw.Style.Arrow(Draw.W - 32, (Draw.H - 32) \ 2, 32, 32, Align.Right)
-  Endif
+  ' If $bArrow Then
+  '   Draw.Picture(Picture["img/16/white-arrow.png"], Draw.W - 24, (Draw.H - 16) \ 2)
+  '   'Draw.Style.Arrow(Draw.W - 32, (Draw.H - 32) \ 2, 32, 32, Align.Right)
+  ' Endif
   
-  If $hPanel.HasFocus Then
+  If $hPanel.HasFocus Or If $bInside Then
     Paint.Begin(Draw.Device)
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Brush = Paint.Color(Color.SetAlpha($iHighlight, 192))
-    Paint.Fill
+    Paint.Fill(True)
+    If $hPanel.HasFocus And If $bInside Then Paint.Fill
     Paint.End
   Endif
   
@@ -205,15 +207,15 @@ Private Sub Highlight_Write(Value As Integer)
 
 End
 
-Private Function Arrow_Read() As Boolean
+Private Function Background_Read() As Integer
 
-  Return $bArrow
+  Return $iBackground
 
 End
 
-Private Sub Arrow_Write(Value As Boolean)
+Private Sub Background_Write(Value As Integer)
 
-  $bArrow = Value
+  $iBackground = Value
   $hPanel.Refresh
 
 End

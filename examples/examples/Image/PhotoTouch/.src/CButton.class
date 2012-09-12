@@ -36,7 +36,7 @@ End
 
 Public Sub DrawingArea_Enter()
   
-  Debug
+  'Debug
   
   If Not Me.Enabled Then Return
   CAnimation.Start(Me, "Opacity", MAX_OPACITY, 250)
@@ -45,7 +45,7 @@ End
 
 Public Sub DrawingArea_Leave()
   
-  Debug
+  'Debug
   
   If Not Me.Enabled Then Return
   CAnimation.Start(Me, "Opacity", MIN_OPACITY, 250)
@@ -154,7 +154,7 @@ End
 
 Private Sub Opacity_Write(Value As Float)
 
-  Debug Value
+  'Debug Value
   $fOpacity = Max(0, Min(1, Value))
   SetOpacity
 

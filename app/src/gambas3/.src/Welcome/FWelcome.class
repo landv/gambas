@@ -174,8 +174,10 @@ Private Sub Toggle(iState As Integer)
     FillExample
   Endif
   
-  btnExample.Arrow = $iRecent = LIST_EXAMPLE
-  btnRecent.Arrow = $iRecent = LIST_RECENT
+  btnExample.Background = If($iRecent = LIST_EXAMPLE, Color.TextBackground, Color.Default)
+  btnExample.Foreground = If($iRecent = LIST_EXAMPLE, Color.TextForeground, Color.White)
+  btnRecent.Background = If($iRecent = LIST_RECENT, Color.TextBackground, Color.Default)
+  btnRecent.Foreground = If($iRecent = LIST_RECENT, Color.TextForeground, Color.White)
   
 End
 
@@ -183,6 +185,14 @@ Public Sub Form_KeyPress()
 
   If Key.Code = Key.Escape Then
     btnQuit_Click
+  Else If Key.Alt Then
+    If Key.Code = Key["P"] Then
+      Toggle(LIST_RECENT)
+      Stop Event
+    Else If Key.Code = Key["E"] Then
+      Toggle(LIST_EXAMPLE)
+      Stop Event
+    Endif
   Endif
 
 End

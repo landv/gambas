@@ -117,7 +117,7 @@ End
 Public Sub Editor1_Menu()
 
   hEditor = Editor1
-  mnuImmediately.Checked = hEditor.Flags[Editor.HighlightCurrent]
+  mnuImmediately.Checked = hEditor.Flags[Editor.HighlightImmediately]
   mnuPopup.Popup
 
 End
@@ -144,8 +144,8 @@ End
 Public Sub mnuImmediately_Click()
 
   mnuImmediately.Checked = Not mnuImmediately.Checked
-  Editor1.Flags[Editor.HighlightCurrent] = mnuImmediately.Checked
-  Editor2.Flags[Editor.HighlightCurrent] = mnuImmediately.Checked
+  Editor1.Flags[Editor.HighlightImmediately] = mnuImmediately.Checked
+  Editor2.Flags[Editor.HighlightImmediately] = mnuImmediately.Checked
 
 End
 
