@@ -240,7 +240,7 @@ static void gambas_handle_event(GdkEvent *event)
 		goto __HANDLE_EVENT;
 	}
 	
-	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE)
+	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE || event->type == GDK_MOTION_NOTIFY)
 	{
 		fprintf(stderr, "widget = %p grab = %p _popup_grab = %p _button_grab = %p\n", widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
 		//fprintf(stderr, "widget = %p (%p) grab = %p (%p)\n", widget, widget ? g_object_get_data(G_OBJECT(widget), "gambas-control") : 0, 
@@ -268,9 +268,6 @@ static void gambas_handle_event(GdkEvent *event)
 	/*else if (event->type == GDK_KEY_PRESS)
 		fprintf(stderr, "GDK_KEY_PRESS: %p %s (%s)\n", widget, control ? control->name() : NULL, gApplication::activeControl() ? gApplication::activeControl()->name() : NULL);
 	*/
-	
-	/*if (grab && widget != grab)
-		goto __HANDLE_EVENT;*/
 	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;

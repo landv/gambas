@@ -85,7 +85,7 @@ Private Sub UpdateLabelDir()
     
     txtDir.Text = ""
     txtDir.Hide
-    btnParent.Hide
+    btnParent.Enabled = False
     
   Else
 
@@ -98,7 +98,7 @@ Private Sub UpdateLabelDir()
   
     txtDir.Text = sDir
     txtDir.Visible = sDir
-    btnParent.Show
+    btnParent.Enabled = True
     
   Endif
   
@@ -533,6 +533,8 @@ End
 Public Sub SetRoot(Optional sRoot As String)
   
   Dim hBookmark As CBookmark
+
+  If sRoot <> "/" And If Right(sRoot) = "/" Then sRoot = Left(sRoot, -1)
 
   If sRoot = dvwChoose.Root Then Return
 
@@ -1105,32 +1107,32 @@ Public Sub btnParent_Draw()
 
 End
 
-Public Sub btnParent_Enter()
+' Public Sub btnParent_Enter()
+' 
+'   btnParent.Refresh
+' 
+' End
+' 
+' Public Sub btnParent_Leave()
+' 
+'   btnParent.Refresh
+' 
+' End
 
-  btnParent.Refresh
-
-End
-
-Public Sub btnParent_Leave()
-
-  btnParent.Refresh
-
-End
-
-Public Sub btnParent_MouseDown()
-
-  $bPressed = True
-  btnParent.Refresh
-
-End
-
-Public Sub btnParent_MouseUp()
-
-  $bPressed = False
-  btnParent.Refresh
-  If btnParent.Hovered Then btnParent_Click
-
-End
+' Public Sub btnParent_MouseDown()
+' 
+'   $bPressed = True
+'   btnParent.Refresh
+' 
+' End
+' 
+' Public Sub btnParent_MouseUp()
+' 
+'   $bPressed = False
+'   btnParent.Refresh
+'   If btnParent.Hovered Then btnParent_Click
+' 
+' End
 
 Public Sub SetBorder(bBorder As Boolean)
   

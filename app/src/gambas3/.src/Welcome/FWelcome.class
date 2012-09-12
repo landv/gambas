@@ -174,6 +174,9 @@ Private Sub Toggle(iState As Integer)
     FillExample
   Endif
   
+  btnExample.Arrow = $iRecent = LIST_EXAMPLE
+  btnRecent.Arrow = $iRecent = LIST_RECENT
+  
 End
 
 Public Sub Form_KeyPress()
@@ -563,12 +566,17 @@ End
 
 Public Sub dwgTitle_Draw()
 
-  Dim sText As String = "<font size=\"7\"><b>Gambas " & System.FullVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " / " & System.Architecture & " / " & System.Language & "</b></font>"
+  Dim sVersion As String = System.FullVersion 'WithRevision
+  Dim sText As String
 
-  Draw.Foreground = Color.Gradient(Draw.Background, Color.Black)
-  Draw.RichText(sText, 12, 4, Draw.W - 16, Draw.H - 16, Align.TopLeft)
+  If sVersion Ends ".0" Then sVersion = Left(sVersion, -2)
+
+  sText = "<font size=\"7\"><b>Gambas " & sVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " · " & System.Architecture & " · " & System.Language & "</b></font>"
+
+  Draw.Foreground = Color.Gradient(Draw.Background, Color.Black, 0.2)
+  Draw.RichText(sText, 12, 8, Draw.W - 16, Draw.H, Align.TopLeft)
   Draw.Foreground = Color.White
-  Draw.RichText(sText, 8, 0, Draw.W - 16, Draw.H - 16, Align.TopLeft)
+  Draw.RichText(sText, 8, 4, Draw.W - 16, Draw.H, Align.TopLeft)
 
 End
 

@@ -321,8 +321,9 @@ Private Sub InitVersion()
   Dim sVer As String
   Dim aVer As String[]
 
-  Shell "gbx" & System.Version & " -V" To sVer
-  FullVersion = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  'Shell "gbx" & System.Version & " -V" To sVer
+  'FullVersion = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  FullVersion = System.FullVersion
   aVer = Split(FullVersion, ".")
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")

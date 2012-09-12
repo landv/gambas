@@ -495,7 +495,7 @@ Public Sub panMove_MouseDown()
   If $bFixed Then Return
   If Not $bVisible Then Return
 
-  $MX = Mouse.ScreenX - Me.Parent.W
+  '$MX = Mouse.ScreenX - Me.Parent.W
 
   Select Case $iOrientation
     Case Align.Top

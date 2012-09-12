@@ -195,6 +195,8 @@ void gMouse::setMouse(int x, int y, int sx, int sy, int button, int state)
 	_y = y;
 	_state = state;
 	_button = button;
+	_screen_x = sx;
+	_screen_y = sy;
 
 	/*switch(button)
 	{

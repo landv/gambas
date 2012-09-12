@@ -40,23 +40,30 @@
   { HBox1 HBox
     MoveScaled(1,25,73,41)
     Expand = True
-    { panButton Panel
-      MoveScaled(1,5,37,35)
-      Background = &HDF6B00&
-      Foreground = Color.TextForeground
-      Arrangement = Arrange.Vertical
-      { dwgTitle DrawingArea
-        MoveScaled(2,2,25,12)
-        Background = &H3398C3&
-        Foreground = &H000000&
-      }
-      { Panel6 Panel
-        MoveScaled(6,19,21,0)
-        Background = &H000000&
+    { Panel7 Panel
+      MoveScaled(1,2,39,37)
+      Background = &H000000&
+      Arrangement = Arrange.Fill
+      Padding = 1
+      { panButton Panel
+        MoveScaled(1,1,37,35)
+        Background = &HDF6B00&
+        Foreground = Color.TextForeground
+        Arrangement = Arrange.Vertical
+        { dwgTitle DrawingArea
+          MoveScaled(2,2,25,12)
+          Background = &H3398C3&
+          Foreground = &H000000&
+        }
+        { Panel6 Panel
+          MoveScaled(6,19,21,0)
+          Background = &H000000&
+        }
       }
     }
     { Panel2 Panel
-      MoveScaled(39,10,0,16)
+      MoveScaled(41,10,0,16)
+      Visible = False
       Background = &H000000&
     }
     { panList Panel
@@ -69,6 +76,7 @@
         MoveScaled(0,0,27,4)
         { lblList Label
           MoveScaled(0,0,10,4)
+          Visible = False
           Font = Font["Bold,+2"]
           Foreground = &H3398C3&
           Padding = 4
@@ -76,6 +84,7 @@
         }
         { Panel4 Panel
           MoveScaled(14,0,2,4)
+          Visible = False
         }
         { Panel5 Panel
           MoveScaled(17,0,11,5)
@@ -98,6 +107,7 @@
         }
         { lblList2 Label
           MoveScaled(0,2,11,5)
+          Visible = False
           Font = Font["Bold,+2"]
           Foreground = &HDF6B00&
           Ignore = True
