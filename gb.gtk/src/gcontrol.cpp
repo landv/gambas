@@ -345,11 +345,14 @@ bool gControl::isReallyVisible()
 
 void gControl::setEnabled(bool vl)
 {
-	gtk_widget_set_sensitive (border, vl);	
+	gtk_widget_set_sensitive(border, vl);
 }
 
 void gControl::setVisible(bool vl)
 {
+	if (vl == visible)
+		return;
+	
 	visible = vl;
 	
 	if (vl)
@@ -551,10 +554,7 @@ void gControl::moveResize(int x, int y, int w, int h)
 	move(x, y);
 	
 	if (pr)
-	{
 		pr->enableArrangement();
-		pr->performArrange();
-	}
 }
 
 void gControl::updateGeometry()

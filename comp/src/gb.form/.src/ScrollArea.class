@@ -58,6 +58,8 @@ Private $iShadowS As Integer
 Private $iShadowW As Integer
 Private $iShadowE As Integer
 
+Static Private $iArrangeCount As Integer
+
 Private Sub LoadFades()
   
   Dim hImage As Image
@@ -118,6 +120,9 @@ Public Sub ScrollArea_Arrange()
   Dim OW, OH As Integer
   ' Dim hChild As Control
   ' Dim iMargin As Integer
+  
+  'Inc $iArrangeCount
+  'Print Format($iArrangeCount, "###0");; System.Backtrace.Join(" ")
   
   'Debug "ScrollArea:";; Me.W;; Me.H
   'Debug "DrawingArea:";; $hDrawingArea.W;; $hDrawingArea.H

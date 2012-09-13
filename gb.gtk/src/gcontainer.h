@@ -101,8 +101,8 @@ public:
 	gContainer *proxyContainer() { return _proxyContainer ? _proxyContainer : this; }
 	void setProxyContainer(gContainer *proxy) { if (_proxyContainer != this) _proxyContainer = proxy; else _proxyContainer = 0; }
 	
-	void disableArrangement() { _no_arrangement++; }
-	void enableArrangement() { _no_arrangement--; }
+	void disableArrangement();
+	void enableArrangement();
 
 //"Signals"
 	void (*onArrange)(gContainer *sender);
@@ -122,13 +122,13 @@ public:
 	void updateFocusChain();
 
 	static int _arrangement_level;
-	
 
 private:
   void initialize();
 	gContainerArrangement arrangement;
   gContainer *_proxyContainer;
-	char _no_arrangement;
+	unsigned _did_arrangement : 1;
+	unsigned _no_arrangement : 7;
 };
 
 #endif

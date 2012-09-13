@@ -137,9 +137,15 @@ int gContainer::_arrangement_level = 0;
 
 void gContainer::performArrange()
 {
-	if (_no_arrangement) return;
+	if (_no_arrangement)
+	{
+		_did_arrangement = true;
+		return;
+	}
+	
 	if (!gApplication::allEvents()) return;
 
+	_did_arrangement = false;
 	//if (!CAN_ARRANGE(this))
 	//	return;
 	
@@ -672,4 +678,19 @@ void gContainer::setFullArrangement(gContainerArrangement *arr)
 	arrangement = *arr;
 	arrangement.locked = locked;
 	performArrange();
+}
+
+void gContainer::disableArrangement()
+{
+	if (_no_arrangement == 0)
+		_did_arrangement = false;
+	
+	_no_arrangement++;
+}
+
+void gContainer::enableArrangement()
+{
+	_no_arrangement--;
+	if (_no_arrangement == 0 && _did_arrangement)
+		performArrange();
 }
