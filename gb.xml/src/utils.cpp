@@ -193,14 +193,16 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
     memcpy(error, nerror, lenError);
     
     //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
-    errorWhat = (char*)malloc(61 + lenError + lenNear);
-    memset(errorWhat, 0, 61 + lenError + lenNear);
-    sprintf(errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", error, line, column, near);
-    errorWhat[60 + lenError + lenNear] = 0;
     
     if(posFailed == 0) return;
     if(posFailed > data + lenData || posFailed < data) return;
     AnalyzeText(data, lenData, posFailed);
+
+
+    errorWhat = (char*)malloc(61 + lenError + lenNear);
+    memset(errorWhat, 0, 61 + lenError + lenNear);
+    sprintf(errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", error, line, column, near);
+    errorWhat[60 + lenError + lenNear] = 0;
     
     
     
@@ -214,7 +216,6 @@ XMLParseException::~XMLParseException() throw()
 
 void XMLParseException::AnalyzeText(const char *text, const size_t lenText, const char *posFailed) throw()
 {
-    
     for(const char *pos = text; pos < posFailed; ++pos)
     {
         ++column;

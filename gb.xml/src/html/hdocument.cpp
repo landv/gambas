@@ -136,8 +136,16 @@ Element* HtmlDocument::getFaviconElement()
 void HtmlDocument::getGBBase(char *&base, size_t &len)
 {
     Attribute *attr = getBaseElement()->getAttribute("href", 4);
-    base = attr->attrValue; 
-    len = attr->lenAttrValue;
+    if(attr)
+    {
+        base = attr->attrValue;
+        len = attr->lenAttrValue;
+    }
+    else
+    {
+        base = 0;
+        len = 0;
+    }
 }
 
 void HtmlDocument::setBase(char *content, size_t len)
@@ -148,8 +156,16 @@ void HtmlDocument::setBase(char *content, size_t len)
 void HtmlDocument::getGBFavicon(char *&base, size_t &len)
 {
     Attribute *attr = getFaviconElement()->getAttribute("href", 4);
-    base = attr->attrValue; 
-    len = attr->lenAttrValue;
+    if(attr)
+    {
+        base = attr->attrValue;
+        len = attr->lenAttrValue;
+    }
+    else
+    {
+        base = 0;
+        len = 0;
+    }
 }
 
 void HtmlDocument::setFavicon(char *content, size_t len)
