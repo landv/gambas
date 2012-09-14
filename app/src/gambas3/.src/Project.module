@@ -2437,11 +2437,19 @@ Public Sub CopyProject(sSrc As String, sDst As String)
 
   For Each sFile In Dir(sSrc)
     If sFile = ".svn" Or sFile = "CVS" Or sFile = ".lock" Then Continue
-    If IsDir(sSrc &/ sFile) Then
-      CopyProject(sSrc &/ sFile, sDst &/ sFile)
-    Else
-      Copy sSrc &/ sFile To sDst &/ sFile
-    Endif
+
+    With Stat(sSrc &/ sFile)
+      
+      If .Type = gb.Directory Then
+        CopyProject(sSrc &/ sFile, sDst &/ sFile)
+      Else If .Type = gb.Link Then
+        Link .Link To sDst &/ sFile
+      Else
+        Copy sSrc &/ sFile To sDst &/ sFile
+      Endif
+      
+    End With
+    
   Next
 
 End
