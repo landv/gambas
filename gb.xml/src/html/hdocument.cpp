@@ -340,11 +340,13 @@ void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException
     
     //On cherche le début du prologue XML
     posStart = (char*)memchrs(content, len, "<!DOCTYPE ", 10);
-    throw XMLParseException("No valid Doctype found", 0, 0, 0);
+    if(!posStart) throw XMLParseException("No valid Doctype found", 0, 0, 0);
+
+    DEBUG << (void*)posStart << endl;
 
     //On cherche la fin du prologue XML
     posEnd = (char*)memchr(posStart, CHAR_ENDTAG, len - (posStart - content));
-    throw XMLParseException("No valid Doctype found", 0, 0, 0);
+    if(!posEnd) throw XMLParseException("No valid Doctype found", 0, 0, 0);
     
     //HTML5 ? (<!DOCTYPE html>)
     html5 = (posEnd - posStart == 4);
@@ -385,6 +387,8 @@ void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException
             appendChild(node);
 
     }
+
+    DEBUG << newRoot << endl;
 
 
 

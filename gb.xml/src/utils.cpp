@@ -131,16 +131,13 @@ bool isWhiteSpace(const char s)
 const void* memchrs(const char *source, size_t lensource, const char *comp, size_t lencomp)
 {
     const char *pos = source - 1;
-    register size_t i = 0;
     do
     {
         pos = (char*)(memchr((void*)(pos + 1), ((comp))[0], lensource));
         if(!pos) return 0;
         if(pos + lencomp > source + lensource) return 0;
-        for(i = 1; i < lencomp; i++)
-        {
-            if(*((pos + i)) == (comp)[i]) return pos;
-        }
+        if(memcmp(pos, comp, lencomp) != 0) continue;
+        return pos;
 
     }while(1);
 }
@@ -194,7 +191,13 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
     
     //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
     
-    if(posFailed == 0) return;
+    if(posFailed == 0)
+    {
+        errorWhat = (char*)malloc(17 + lenError);
+        sprintf(errorWhat, "Parse error : %s !", error);
+        errorWhat[16 + lenError] = 0;
+        return;
+    }
     if(posFailed > data + lenData || posFailed < data) return;
     AnalyzeText(data, lenData, posFailed);
 
