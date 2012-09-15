@@ -232,6 +232,19 @@ THIS->setBase(PSTRING(), PLENGTH());
 
 END_PROPERTY
 
+BEGIN_METHOD(CDocument_fromString, GB_STRING content)
+
+try
+{
+    THIS->setContent(STRING(content), LENGTH(content));
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
+}
+
+END_METHOD
+
 
 GB_DESC CDocumentStyleSheetsDesc[] =
 {
@@ -272,6 +285,9 @@ GB_DESC CDocumentDesc[] =
     GB_PROPERTY("Base", "s", CDocument_base),
     GB_PROPERTY_READ("Head", "XmlElement", CDocument_head),
     GB_PROPERTY_READ("Body", "XmlElement", CDocument_body),
+
+    GB_METHOD("FromString", "", CDocument_fromString, "(Data)s"),
+    GB_METHOD("HtmlFromString", "", CDocument_fromString, "(Data)s"),
 
     GB_PROPERTY_SELF("StyleSheets", ".HtmlDocumentStyleSheets"),
     GB_PROPERTY_SELF("Scripts", ".HtmlDocumentScripts"),

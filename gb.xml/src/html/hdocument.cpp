@@ -340,11 +340,11 @@ void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException
     
     //On cherche le début du prologue XML
     posStart = (char*)memchrs(content, len, "<!DOCTYPE ", 10);
-    //if(!posStart) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
+    throw XMLParseException("No valid Doctype found", 0, 0, 0);
 
     //On cherche la fin du prologue XML
     posEnd = (char*)memchr(posStart, CHAR_ENDTAG, len - (posStart - content));
-    //if(!posEnd) throw HTMLParseException(0, 0, "nowhere", "No valid XML prolog found.");
+    throw XMLParseException("No valid Doctype found", 0, 0, 0);
     
     //HTML5 ? (<!DOCTYPE html>)
     html5 = (posEnd - posStart == 4);
@@ -352,29 +352,46 @@ void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException
 
     Node** elements = 0;
     size_t elementCount = 0;
-    elements = Element::fromText(posEnd, len - (posEnd - content), &elementCount);
+    if(posEnd)
+    {
+        elements = Element::fromText(posEnd, len - (posEnd - content), &elementCount);
+    }
+    else
+    {
+        elements = Element::fromText(content, len, &elementCount);
+    }
 
-    Element *newRoot = 0;
+    Node *newRoot = 0;
     Node *node = 0;
-    
+
+    clearChildren();
+    root = 0;
+
     for(size_t i = 0; i < elementCount; i++)
     {
         node = elements[i];
-        if(node->isElement() && !newRoot)
+        if(node->isElement())
         {
-            newRoot = node->toElement();
+            if(!newRoot)
+            {
+                newRoot = node;
+            }
+            else
+            {
+                throw XMLParseException("Extra root element", 0, 0, 0);
+            }
+
         }
-        else
-        {
-            delete node;
-        }
+            appendChild(node);
 
     }
-    
-    this->setRoot(newRoot);
-    free(elements);
 
-    //if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
+
+
+    free(elements);
+    if(newRoot) root = newRoot->toElement();
+
+    if(!root) throw XMLParseException("No valid root (html) Element found", 0, 0, 0);
     
 
 }
