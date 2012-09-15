@@ -1,6 +1,6 @@
 ' Gambas module file
 
-' Gambas module file
+'Fast
 
 Public Const STYLE_HTML As Integer = 1
 Public Const STYLE_WEB As Integer = 2
@@ -73,6 +73,7 @@ Public Sub Run(iStyle As Integer)
   Dim bWebComment As Boolean
   Dim sStr As String
   Dim bCodeMarkup As Boolean
+  Dim sBufferAfter As String
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -99,6 +100,8 @@ Public Sub Run(iStyle As Integer)
     
       For iInd = 1 To String.Len(sText)
     
+        'If iInd Mod 10000 = 0 Then Print iInd
+    
         iNextState = iState
         sCar = String.Mid$(sText, iInd, 1)
         'sCar = String.Left(sText)
@@ -119,15 +122,19 @@ Public Sub Run(iStyle As Integer)
             
             Select Case iTag
               Case TAG_COMMENT
-                sTextAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+                sBufferAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+                GoSub ADD_TEXT_AFTER
                 Highlight.Add(Highlight.Comment, iInd - iCodeStart + 2)
               Case TAG_VARIABLE
-                sTextAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+                sBufferAfter &= String.Mid$(sText, iCodeStart, iInd - iCodeStart) & "%>"
+                GoSub ADD_TEXT_AFTER
                 Highlight.Add(Highlight.Datatype, iInd - iCodeStart + 2)
               Case Else
-                sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
+                sBufferAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
+                GoSub ADD_TEXT_AFTER
                 Highlight.Add(Highlight.Preprocessor, 2)
-                sTextAfter &= "%>"
+                sBufferAfter &= "%>"
+                GoSub ADD_TEXT_AFTER
             End Select
             
             Inc iInd
@@ -144,11 +151,13 @@ Public Sub Run(iStyle As Integer)
             Highlight.AlternateState = False
             Highlight.Add(Highlight.Keyword, 9)
             iInd += 8
-            sTextAfter &= "</script>"
+            sBufferAfter &= "</script>"
+            GoSub ADD_TEXT_AFTER
             iState = iSaveState 'Highlight.Normal
             iNextState = iState
           Else
-            sTextAfter &= sCar
+            sBufferAfter &= sCar
+            GoSub ADD_TEXT_AFTER
             Highlight.Add(iState)
             iState = iNextState
           Endif
@@ -161,11 +170,13 @@ Public Sub Run(iStyle As Integer)
             Highlight.AlternateState = False
             Highlight.Add(Highlight.Keyword, 8)
             iInd += 7
-            sTextAfter &= "</style>"
+            sBufferAfter &= "</style>"
+            GoSub ADD_TEXT_AFTER
             iState = iSaveState 'Highlight.Normal
             iNextState = iState
           Else
-            sTextAfter &= sCar
+            sBufferAfter &= sCar
+            GoSub ADD_TEXT_AFTER
             Highlight.Add(iState)
             iState = iNextState
           Endif
@@ -204,7 +215,8 @@ Public Sub Run(iStyle As Integer)
           
           Highlight.AlternateState = True
           Highlight.Add(If(iTag = TAG_CODE, Highlight.Preprocessor, iNextState), iCount)
-          sTextAfter &= String.Mid$(sText, iInd, iCount)
+          sBufferAfter &= String.Mid$(sText, iInd, iCount)
+          GoSub ADD_TEXT_AFTER
           iInd += iCount - 1
           
           iSaveState = iState
@@ -229,7 +241,8 @@ Public Sub Run(iStyle As Integer)
             Endif
             If sMarkup Then
               Highlight.Add(Highlight.Keyword, 1)
-              sTextAfter &= sCar
+              sBufferAfter &= sCar
+              GoSub ADD_TEXT_AFTER
               iSaveState = iState
               iState = Highlight.Normal
               iNextState = Highlight.Normal
@@ -256,7 +269,8 @@ Public Sub Run(iStyle As Integer)
             bCode = False
             Highlight.Add(Highlight.Preprocessor, 2)
             Inc iInd
-            sTextAfter &= "%>"
+            sBufferAfter &= "%>"
+            GoSub ADD_TEXT_AFTER
             Highlight.AlternateState = False
             iState = iSaveState 'Highlight.Normal
             iNextState = iState
@@ -302,7 +316,8 @@ Public Sub Run(iStyle As Integer)
                   Next
                   If J = iPos Then
                     Highlight.Add(Highlight.Number, iPos - iInd + 1)
-                    sTextAfter &= String.Mid$(sText, iInd, iPos - iInd + 1)
+                    sBufferAfter &= String.Mid$(sText, iInd, iPos - iInd + 1)
+                    GoSub ADD_TEXT_AFTER
                     iInd = iPos
                     Continue
                   Else
@@ -322,7 +337,8 @@ Public Sub Run(iStyle As Integer)
     
         Endif
     
-        sTextAfter &= sCar
+        sBufferAfter &= sCar
+        GoSub ADD_TEXT_AFTER
         Highlight.Add(iState)
         iState = iNextState
     
@@ -333,7 +349,8 @@ Public Sub Run(iStyle As Integer)
           iNextState = Highlight.Normal
           iTag = TAG_HTML
         Else
-          sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart))
+          sBufferAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart))
+          GoSub ADD_TEXT_AFTER
           iTag = TAG_CODE
         Endif
       Else If bScript Then
@@ -351,12 +368,21 @@ Public Sub Run(iStyle As Integer)
         Endif
       Endif
       
-      Highlight.Text = sTextAfter
+      Highlight.Text = sTextAfter & sBufferAfter
       
   End Select 
 
   Highlight.State = iNextState
   Highlight.Tag = iTag
   Highlight.ShowLimit = bLimit
+  Return
+  
+ADD_TEXT_AFTER:
+
+  If Len(sBufferAfter) > 1024 Then
+    sTextAfter &= sBufferAfter
+    sBufferAfter = ""
+  Endif
+  Return
 
 End

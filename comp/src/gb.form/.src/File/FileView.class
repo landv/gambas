@@ -230,6 +230,7 @@ Private Sub RefreshView()
     iSize = 16
   Else
     $hIconView.Clear
+    $hIconView._Begin
     hPictFile = Picture["icon:/" & $iIconSize & "/file"]
     hPictFolder = Picture["icon:/" & $iIconSize & "/directory"]
     iSize = $iIconSize
@@ -273,11 +274,12 @@ Private Sub RefreshView()
 
 Finally
 
+  If Not $hColumnView.Visible Then $hIconView._End
   Dec Application.Busy
   
 Catch 
 
-  Debug Error.Where; ": "; Error.Text 
+  Error "gb.form: "; Error.Where; ": "; Error.Text 
 
 End
 
@@ -341,6 +343,7 @@ End
 
 Private Sub ShowDirectory_Write(bShow As Boolean)
 
+  If $bShowDir = bShow Then Return
   $bShowDir = bShow
   RefreshViewLater
 
@@ -631,7 +634,7 @@ Private Sub Settings_Write(Value As Variant[])
   
 Catch
 
-  Debug Error.Where; ": "; Error.Text
+  Error "gb.form :"; Error.Where; ": "; Error.Text
 
 End
 

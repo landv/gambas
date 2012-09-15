@@ -9,9 +9,25 @@ Private Const TAG_CODE As Integer = 1
 
 Public Sub Main()
 
-  Highlight.Text = "select * from 'toto';"
-  Highlight.State = Highlight.Normal
-  HighlightSQL.Run
+  Dim sLine As String
+  Dim iLine As Integer
+  Dim fTime As Float
+  
+  fTime = Timer
+  
+  For Each sLine In Split(File.Load("carta.html"), "\n")
+
+    Inc iLine
+    Debug iLine;; Len(sLine)
+
+    Highlight.Text = sLine
+    Highlight.State = Highlight.Normal
+  
+    HighlightHTML.Run(STYLE_HTML)
+    
+  Next
+  
+  Print Timer - fTime
 
 End
 

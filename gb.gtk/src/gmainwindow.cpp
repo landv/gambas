@@ -463,8 +463,13 @@ void gMainWindow::afterShow()
 
 void gMainWindow::setVisible(bool vl)
 {
+	if (vl == isVisible())
+		return;
+
 	if (vl)
 	{
+		bool arr = !isVisible();
+	
 		emitOpen();
 		if (!opened)
 			return;
@@ -526,6 +531,9 @@ void gMainWindow::setVisible(bool vl)
 		
 		if (skipTaskBar())
 			_activate = true;
+
+		if (arr)
+			performArrange();
 	}
 	else
 	{
@@ -534,7 +542,7 @@ void gMainWindow::setVisible(bool vl)
 			
 		_not_spontaneous = visible;
 		_hidden = true;
-		gControl::setVisible(false);
+		gContainer::setVisible(false);
 		
 		if (_popup)
 			gApplication::exitLoop(this);

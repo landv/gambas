@@ -96,6 +96,8 @@ Private $hPicture As Picture
 Private $sFindItem As String
 Private $fFindTime As Float
 
+Private $iLock As Integer
+
 Public Sub _new()
   
   $hView = New ScrollArea(Me) As "ScrollArea"
@@ -217,8 +219,6 @@ Public Sub _UpdateIconSize({Picture} As Picture)
   Endif
   
 End
-
-
 
 Public Function Add(Key As String, Text As String, Optional {Picture} As Picture, Optional After As String) As _IconView_Item
   
@@ -395,6 +395,7 @@ Public Sub ScrollArea_Draw()
   Dim bHover As Boolean
   
   If $aItems.Count = 0 Then Return
+  If $iLock Then Return
   
   hSaveClip = Draw.ClipRect
   
@@ -487,9 +488,13 @@ End
 
 Public Sub ScrollArea_Arrange()
   
-  Dim W As Integer = $hView.ClientWidth
-  Dim H As Integer = $hView.ClientHeight
+  Dim W, H As Integer
   Dim nRow As Integer
+  
+  If $iLock Then Return
+  
+  W = $hView.ClientWidth
+  H = $hView.ClientHeight
   
   If $aItems.Count = 0 Then 
     $hView.ResizeContents(4, 4)
@@ -563,6 +568,7 @@ Private Sub RefreshIcon(iPos As Integer)
   
   Dim hRect As New Rect
   
+  If $iLock Then Return
   If iPos < 0 Then Return
   GetIconGeometry(iPos, hRect)
   hRect.Translate(- $hView.ScrollX, - $hView.ScrollY)
@@ -1418,3 +1424,20 @@ Private Sub Key_Write(Value As String)
   Endif
 
 End
+
+Public Sub _Begin()
+
+  Inc $iLock
+  
+End
+
+Public Sub _End()
+  
+  Dec $iLock
+  If $iLock = 0 Then 
+    ScrollArea_Arrange
+    $hView.Refresh
+  Endif
+  
+End
+

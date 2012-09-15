@@ -600,8 +600,15 @@ void gContainer::resize(int w, int h)
 
 void gContainer::setVisible(bool vl)
 {
-	bool arr = vl && !isVisible();
+	bool arr;
+	
+	if (vl == isVisible())
+		return;
+	
+	arr = vl && !isVisible();
+	
 	gControl::setVisible(vl);
+	
 	if (arr)
 		performArrange();
 }

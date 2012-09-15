@@ -182,54 +182,130 @@ static void utf8_from_unicode(uint code, char *sstr)
 /***************************************************************************/
 
 char *STRING_utf8_current = NULL;
-#define UTF8_POS_COUNT 256
-static ushort _utf8_pos[UTF8_POS_COUNT];
-static int _utf8_last_pos;
+
+#define UTF8_MAX_COUNT 256
+#define UTF8_MAX_CACHE 64
+
+struct {
+	ushort pos[UTF8_MAX_COUNT];
+	ushort last_pos;
+	ushort cnext;
+	int lpos;
+	int lindex;
+	int cindex[UTF8_MAX_CACHE];
+	int cpos[UTF8_MAX_CACHE];
+	}
+_utf8 = { { 0 } };
 
 static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
 {
 	const uchar *str = (const uchar *)sstr;
-	int i, pos;
+	int i, j, pos;
+	int min_index, min_i;
 	
 	if (index <= 0)
 		return 0;
 	
-	//fprintf(stderr, "utf8_get_pos: %p %d %d '%s'\n", sstr, len, index, sstr);
+	//fprintf(stderr, "utf8_get_pos: %p %d %d\n", sstr, len, index);
 	
 	if (ref != STRING_utf8_current || sstr != STRING_utf8_current)
 	{
+		//fprintf(stderr, "STRING_utf8_current = %p\n", STRING_utf8_current);
 		STRING_utf8_current = (char *)ref;
-		_utf8_last_pos = 0;
-		_utf8_pos[0] = 0;
+		CLEAR(&_utf8);
 	}
 	
-	if (index > len)
-		index = len;
+	if (index < UTF8_MAX_COUNT)
+	{
+		if (index <= _utf8.last_pos)
+			return _utf8.pos[index];
+		
+		pos = _utf8.pos[_utf8.last_pos];
+		
+		for(;;)
+		{
+			if (pos >= len)
+				return len;
+
+			pos += utf8_get_char_length(str[pos]);
+			_utf8.pos[++_utf8.last_pos] = pos;
+
+			if (index == _utf8.last_pos)
+				return pos;
+		}
+	}
 	
-	if (index <= _utf8_last_pos)
-		return _utf8_pos[index];
+	//fprintf(stderr, "index = %d\n", index);
 	
-	pos = _utf8_pos[_utf8_last_pos];
+	if (index == _utf8.lindex)
+		return _utf8.lpos;
 	
-	while (_utf8_last_pos < (UTF8_POS_COUNT - 1))
+	min_index = 0;
+	min_i = -1;
+	
+	for (j = 0; j < UTF8_MAX_CACHE; j++)
+	{
+		i = (_utf8.cnext + UTF8_MAX_CACHE - j - 1) % UTF8_MAX_CACHE;
+		
+		if (_utf8.cindex[i] == 0)
+			break;
+		if ((index >= _utf8.cindex[i]) && (index < (_utf8.cindex[i] + 256)))
+		{
+			//fprintf(stderr, "use cache %d (%d)\n", i, _utf8.cindex[i]);
+			pos = _utf8.cpos[i];
+			j = _utf8.cindex[i];
+			goto __CALC_POS;
+		}
+		else if (_utf8.cindex[i] > min_index && _utf8.cindex[i] < index)
+		{
+			min_index = _utf8.cindex[i];
+			min_i = i;
+		}
+	}
+	
+	j = index & ~0xFF;
+
+	if (min_i < 0)
+	{
+		pos = 0;
+		i = 0;
+	}
+	else
+	{
+		pos = _utf8.cpos[min_i];
+		i = _utf8.cindex[min_i];
+	}
+	
+	//fprintf(stderr, "add cache %d: %d / %d\n", _utf8.cnext, j, index - i);
+
+	for (; i < j; i++)
 	{
 		if (pos >= len)
-			return len;
-
+		{
+			pos = len;
+			break;
+		}
 		pos += utf8_get_char_length(str[pos]);
-		_utf8_pos[++_utf8_last_pos] = pos;
-
-		if (index == _utf8_last_pos)
-			return pos;
 	}
 	
-	for (i = UTF8_POS_COUNT - 1; i < index; i++)
+	_utf8.cindex[_utf8.cnext] = j;
+	_utf8.cpos[_utf8.cnext] = pos;
+	_utf8.cnext = (_utf8.cnext + 1) % UTF8_MAX_CACHE;
+
+__CALC_POS:
+	
+	for (i = j; i < index; i++)
 	{
 		if (pos >= len)
-			return len;
-
+		{
+			pos = len;
+			break;
+		}
 		pos += utf8_get_char_length(str[pos]);
 	}
+	
+	_utf8.lindex = index;
+	_utf8.lpos = pos;
 	
 	return pos;
 }
