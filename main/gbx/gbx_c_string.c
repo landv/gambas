@@ -249,6 +249,7 @@ static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
 		
 		if (_utf8.cindex[i] == 0)
 			break;
+		
 		if ((index >= _utf8.cindex[i]) && (index < (_utf8.cindex[i] + 256)))
 		{
 			//fprintf(stderr, "use cache %d (%d)\n", i, _utf8.cindex[i]);

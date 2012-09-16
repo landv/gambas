@@ -145,7 +145,6 @@
 #define CODE_MAX         (CODE_FIRST_SUBR + 30)
 #define CODE_CONV        (CODE_FIRST_SUBR + 39)
 #define CODE_BIN         (CODE_FIRST_SUBR + 40)
-#define CODE_ASSIGN      (CODE_FIRST_SUBR + 94)
 
 
 typedef

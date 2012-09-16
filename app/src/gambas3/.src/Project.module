@@ -1004,6 +1004,9 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
         Case "txt", "text"
           sIcon = sPrefix &/ "text"
+          
+        Case "pdf"
+          sIcon = sPrefix &/ "pdf"
 
         Case "connection"
           sIcon = sLocalPrefix &/ "database.png"

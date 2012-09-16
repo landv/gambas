@@ -531,6 +531,12 @@ void gPrinter::getPrintPages(int *from, int *to) const
 	GtkPageRange *range;
 	int nrange;
 	
+	if (gtk_print_settings_get_print_pages(_settings) == GTK_PRINT_PAGES_ALL)
+	{
+		*from = *to = -1;
+		return;
+	}
+	
 	range = gtk_print_settings_get_page_ranges(_settings, &nrange);
 	
 	if (nrange <= 0)

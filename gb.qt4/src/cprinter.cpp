@@ -46,7 +46,6 @@ static bool configure_printer(CPRINTER *_object)
 
 static bool run_printer(CPRINTER *_object)
 {
-	QPrinter *printer = THIS->printer;
 	QEventLoop loop;
 	bool ret = true;
 	int page;
@@ -73,24 +72,24 @@ static bool run_printer(CPRINTER *_object)
 	if (THIS->cancel)
 		goto __CANCEL;
 	
-	if (printer->fromPage() == 0)
+	if (PRINTER->fromPage() == 0)
 	{
 		firstPage = 1;
 		lastPage = THIS->page_count;
 	}
-	else if (printer->toPage() == 0)
+	else if (PRINTER->toPage() == 0)
 	{
-		firstPage = printer->fromPage();
+		firstPage = PRINTER->fromPage();
 		lastPage = THIS->page_count;
 	}
 	else
 	{
-		firstPage = printer->fromPage();
-		lastPage = printer->toPage();
+		firstPage = PRINTER->fromPage();
+		lastPage = PRINTER->toPage();
 	}
 	
 	if (firstPage > THIS->page_count)
-		goto __EXIT;
+		goto __CANCEL;
 	if (lastPage > THIS->page_count)
 		lastPage = THIS->page_count;
 	
@@ -124,7 +123,7 @@ static bool run_printer(CPRINTER *_object)
 				GB.Raise(THIS, EVENT_Draw, 0);
 				
 				if (page != lastPage)
-					printer->newPage();
+					PRINTER->newPage();
 			}
 		}
 	}
@@ -137,8 +136,6 @@ __CANCEL:
 	
 	THIS->page_count_set = false;
 
-__EXIT:
-	
 	THIS->printing = false;
 	
 	return ret;
