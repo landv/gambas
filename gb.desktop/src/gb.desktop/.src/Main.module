@@ -145,7 +145,7 @@ Public Sub Main()
     'Print hWin.VisibleName
     If hWin.VisibleName Like "gambas3 3.3.0 - *" Then
       Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
-      hWin.Move(200, 100, 800, 500)
+      hWin.Resize(400, 400)
       hWin.Refresh
       Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
     Endif

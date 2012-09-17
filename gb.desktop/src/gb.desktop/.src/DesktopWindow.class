@@ -97,7 +97,7 @@ End
 
 Public Sub Resize(Width As Integer, Height As Integer)
   
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10110000000000, Width, Height], $iId)
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10110000000000, 0, 0, Width, Height], $iId)
   _Desktop.Flush
   Refresh
   
