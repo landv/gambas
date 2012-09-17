@@ -265,17 +265,37 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CFONTS_next)
 
-	long *pos;
+	int *pos;
 	
-	pos=(long*)GB.GetEnum();
-	if ( pos[0]>=gFont::count() )
+	pos = (int *)GB.GetEnum();
+	
+	if (pos[0] >= gFont::count())
 	{
 		GB.StopEnum ();
 		return;
 	}
 	
-	GB.ReturnNewZeroString ( gFont::familyItem(pos[0]++));
+	GB.ReturnNewZeroString(gFont::familyItem(pos[0]++));
 	
+END_METHOD
+
+
+BEGIN_METHOD(Fonts_Exist, GB_STRING family)
+
+	int i;
+	char *family = GB.ToZeroString(ARG(family));
+	
+	for (i = 0; i < gFont::count(); i++)
+	{
+		if (strcmp(gFont::familyItem(i), family) == 0)
+		{
+			GB.ReturnBoolean(TRUE);
+			return;
+		}
+	}
+	
+	GB.ReturnBoolean(FALSE);
+
 END_METHOD
 
 
@@ -320,7 +340,8 @@ GB_DESC CFontsDesc[] =
 	GB_DECLARE("Fonts", 0), 
 	GB_NOT_CREATABLE(),
 
-	GB_STATIC_METHOD("_next", "s", CFONTS_next, 0),
+	GB_STATIC_METHOD("_next", "s", CFONTS_next, NULL),
+	GB_STATIC_METHOD("Exist", "b", Fonts_Exist, "(Family)s"),
 	GB_STATIC_PROPERTY_READ("Count", "i", CFONTS_count),
 	
 	GB_END_DECLARE

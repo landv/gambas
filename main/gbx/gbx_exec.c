@@ -70,6 +70,7 @@ bool EXEC_arch = FALSE; // executing an archive
 bool EXEC_fifo = FALSE; // debugging through a fifo
 const char *EXEC_fifo_name = NULL; // fifo name
 bool EXEC_keep_library = FALSE; // do not unload libraries
+bool EXEC_string_add = FALSE; // next '&' operator is done for a '&='
 
 EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_GLOBAL EXEC;

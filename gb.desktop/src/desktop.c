@@ -333,7 +333,7 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 							#if OS_64BITS
 							padded_data = (long *)alloca(sizeof(long) * count);
 							for (i = 0; i < count; i++)
-								padded_data[i] = *((long *)data + i);
+								padded_data[i] = *((int *)data + i);
 							data = padded_data;
 							#endif
 							break;
@@ -396,7 +396,7 @@ BEGIN_METHOD(CDESKTOP_intern_atom, GB_STRING atom; GB_BOOLEAN create)
 	if (X11_init())
 		return;
 	
-	GB.ReturnInteger(X11_intern_atom(GB.ToZeroString(ARG(atom)), !VARGOPT(create, FALSE)));
+	GB.ReturnInteger(X11_intern_atom(GB.ToZeroString(ARG(atom)), VARGOPT(create, FALSE)));
 
 END_METHOD
 
@@ -448,7 +448,7 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB
 				#if OS_64BITS
 					padded_data = (long *)alloca(sizeof(long) * count);
 					for (i = 0; i < count; i++)
-						padded_data[i] = *((long *)data + i);
+						padded_data[i] = *((int *)data + i);
 					data = padded_data;
 				#endif
 				break;
@@ -459,6 +459,7 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB
 				break;*/
 				
 			default:
+				fprintf(stderr, "gb.desktop: unsupported array datatype for 'Data' argument");
 				return;
 		}
 	}

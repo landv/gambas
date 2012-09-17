@@ -127,13 +127,13 @@ End
 
 Private Sub SetState(State As String, Optional State2 As String)
   
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_ADD"], Atom[State], Atom[State2], 2], $iId)
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [1, Atom[State], Atom[State2], 2], $iId)
   
 End
 
 Private Sub ClearState(State As String, Optional State2 As String)
   
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_REMOVE"], Atom[State], Atom[State2], 2], $iId)
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [0, Atom[State], Atom[State2], 2], $iId)
   
 End
 

@@ -588,7 +588,11 @@ bool TRANS_affectation(void)
 		after = EVAL->current;
 
 		if (op != RS_NONE)
+		{
+			/*if (op == RS_AMP)
+				CODE_string_add();*/
 			trans_operation(op, 2, NULL_PATTERN);
+		}
 	//}
 
 	after = EVAL->current;

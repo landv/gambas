@@ -38,6 +38,8 @@
 #include "gbx_local.h"
 #include "gbx_compare.h"
 
+//static int _count = 0;
+
 void SUBR_cat(ushort code)
 {
 	SUBR_ENTER();
@@ -51,10 +53,57 @@ void SUBR_cat(ushort code)
 		len = PARAM[0]._string.len ;
 		VALUE_conv_string(&PARAM[1]);
 		len2 = PARAM[1]._string.len;
+		
+		#if 0
+		if (EXEC_string_add)
+		{
+			EXEC_string_add = FALSE;
+			
+			str = PARAM[0]._string.addr;
+			
+			if (0 && PARAM[0].type == T_STRING && PARAM[0]._string.start == 0 && STRING_length(str) == len)
+			{
+				if (str && !STRING_extend_will_realloc(str, len + len2))
+				{
+					//_count++;
+					//fprintf(stderr, "[%d] &= optimization: str = %p (%d) param2 = %p (%d)\n", _count, str, len, PARAM[1]._string.addr + PARAM[1]._string.start, len2);
+					str = STRING_add(str, PARAM[1]._string.addr + PARAM[1]._string.start, len2);
+					/*if (str != PARAM[0]._string.addr)
+					{
+						//fprintf(stderr, "--> %p !\n", str);
+						BREAKPOINT();
+					}*/
+					RELEASE_STRING(&PARAM[1]);
+
+					SP -= 2;
+					//SP->type = T_STRING;
+					//SP->_string.addr = str;
+					//SP->_string.start = 0;
+					SP->_string.len += len2;
+					SP++;
+					return;
+				}
+			}
+			/*else
+			{
+				if (PARAM[0].type != T_STRING)
+					fprintf(stderr, "PARAM[0].type == %ld\n", PARAM[0].type);
+				else if (PARAM[0]._string.start)
+					fprintf(stderr, "PARAM[0]._string.start == %d\n", PARAM[0]._string.start);
+				else if (STRING_length(str) != len)
+					fprintf(stderr, "len == %d / %d\n", len, STRING_length(str));
+			}*/
+		}
+		#endif
+		
 		str = STRING_new(NULL, len + len2);
+
+		//fprintf(stderr, "normal: str = %p p0 = %p p1 = %p\n", str, PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[1]._string.addr + PARAM[1]._string.start);
+		
 		memcpy(str, PARAM[0]._string.addr + PARAM[0]._string.start, len);
-		RELEASE_STRING(&PARAM[0]);
 		memcpy(&str[len], PARAM[1]._string.addr + PARAM[1]._string.start, len2);
+		
+		RELEASE_STRING(&PARAM[0]);
 		RELEASE_STRING(&PARAM[1]);
 
 		SP -= 2;

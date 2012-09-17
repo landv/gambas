@@ -165,7 +165,7 @@ BEGIN_METHOD(Class_Load, GB_STRING name)
 
 END_METHOD
 
-
+/*
 BEGIN_METHOD_VOID(Classes_next)
 
 	TABLE *table = CLASS_get_table();
@@ -190,6 +190,39 @@ BEGIN_METHOD_VOID(Classes_next)
 		}
 	}
 
+END_METHOD
+*/
+
+BEGIN_METHOD_VOID(Classes_next)
+
+	CLASS **pcurrent = (CLASS **)GB_GetEnum();
+	CLASS *class;
+
+	class = *pcurrent;
+	
+	for(;;)
+	{
+		if (!class)
+			class = CLASS_get_list();
+		else
+			class = class->next;
+		
+		if (!class)
+		{
+			GB_StopEnum();
+			break;
+		}
+
+		if (class->state)
+		{
+			GB_ReturnObject(class);
+			break;
+		}
+		
+	}
+
+	*pcurrent = class;
+	
 END_METHOD
 
 

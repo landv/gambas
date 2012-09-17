@@ -12,22 +12,48 @@ Public Sub Main()
   Dim sLine As String
   Dim iLine As Integer
   Dim fTime As Float
+  Dim aScan As String[]
+  Dim I As Integer
   
-  fTime = Timer
+  For I = 1 To 10
   
-  For Each sLine In Split(File.Load("carta.html"), "\n")
-
-    Inc iLine
-    Debug iLine;; Len(sLine)
-
-    Highlight.Text = sLine
-    Highlight.State = Highlight.Normal
+    fTime = Timer
+    
+    For Each sLine In Split(File.Load("~/gambas/3.0/contrib/Sebastian Kulesz/gbcrash/carta.html"), "\n")
   
-    HighlightHTML.Run(STYLE_HTML)
+      'Inc iLine
+      'Debug iLine;; Len(sLine)
+  
+      Highlight.Text = sLine
+      Highlight.State = Highlight.Normal
+    
+      HighlightHTML.Run(STYLE_HTML)
+      
+    Next
+    
+    Print Timer - fTime
+  
+    For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
+      If InStr(sLine, "[heap]") Then
+        aScan = Scan(sLine, "*-* *")
+        Print "Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
+        Break
+      Endif
+    Next
     
   Next
   
-  Print Timer - fTime
-
 End
 
+' Public Sub Main()
+' 
+'   Dim sTest As String
+'   Dim I As Integer
+'   
+'   For I = 1 To 26
+'     sTest &= Chr$(64 + I)
+'   Next
+'   
+'   Print sTest
+' 
+' End

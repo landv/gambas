@@ -82,6 +82,10 @@ TABLE *CLASS_get_table(void)
 	return &_global_table;
 }
 
+CLASS *CLASS_get_list(void)
+{
+	return _classes;
+}
 
 static void exit_class(CLASS *class, bool native)
 {

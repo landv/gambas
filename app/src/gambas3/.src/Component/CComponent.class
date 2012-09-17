@@ -436,6 +436,8 @@ Public Sub Load()
   
   If Loaded Then Return
   
+  If Key = Project.Name Then Return
+  
   'Debug "Loading: "; Key
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
   

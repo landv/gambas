@@ -52,7 +52,7 @@ End
 Public Sub chkFont_Click()
 
   If chkFont.Value Then
-    txtText.Font = Font["Monospace"]
+    txtText.Font = Project.DEFAULT_FONT
   Else
     txtText.Font = Null
   Endif

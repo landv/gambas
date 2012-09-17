@@ -146,8 +146,18 @@ Public Sub Main()
   ' For Each hWindow In Desktop.Windows
   '   Print Hex$(hWindow.Id, 8);; Quote(hWindow.Name); ": "; hWindow.X;; hWindow.Y;; hWindow.Height;; hWindow.Width
   ' Next
+  Dim aWin As Integer[]
+  Dim hWin As DesktopWindow
   
-  DesktopFile.FindMime("application/vnd.oasis.opendocument.text")
+  For Each hWin In Desktop.Windows
+    'Print hWin.VisibleName
+    If hWin.VisibleName Like "gambas3 3.3.0 - *" Then
+      hWin.Maximized = True
+      'hWin.Move(200, 100, 800, 500)
+    Endif
+  Next
+  
+  'hWin.Maximized = True
   
 End
 

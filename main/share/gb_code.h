@@ -142,4 +142,6 @@ void CODE_push_return(void);
 
 void CODE_nop(void);
 
+void CODE_string_add(void);
+
 #endif

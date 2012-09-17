@@ -1010,21 +1010,6 @@ void CODE_push_char(char car)
 }
 
 
-/*
-void CODE_push_zero(void)
-{
-	LAST_CODE;
-
-	use_stack(1);
-	write_short(C_PUSH_ZERO);
-
-	#ifdef DEBUG
-	printf("PUSH ZERO\n");
-	#endif
-}
-*/
-
-
 void CODE_push_void(void)
 {
 	LAST_CODE;
@@ -1039,17 +1024,6 @@ void CODE_push_void(void)
 
 
 #ifdef PROJECT_COMP
-
-/*void CODE_event(bool on)
-{
-	LAST_CODE;
-
-	write_ZZxx(C_EVENT, on ? 1 : 0);
-
-	#ifdef DEBUG
-	printf("EVENT %s\n", on ? "ON" : "OFF");
-	#endif
-}*/
 
 void CODE_stop_event(void)
 {
@@ -1389,16 +1363,14 @@ void CODE_dump(PCODE *code, int count)
 
 #endif
 
-/* void CODE_case(short local) */
-/* { */
-/*   LAST_CODE; */
-/*  */
-/*   use_stack(0); */
-/*  */
-/*   #ifdef DEBUG */
-/*   printf("CASE (%d)\n", local); */
-/*   #endif */
-/*  */
-/*   write_ZZxx(C_CASE, local); */
-/* } */
+void CODE_string_add(void)
+{
+	LAST_CODE;
+
+	#ifdef DEBUG
+	printf("STOP\n");
+	#endif
+
+	write_ZZxx(C_QUIT, 3);
+}
 

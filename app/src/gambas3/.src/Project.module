@@ -110,7 +110,7 @@ Public Const PROJECT_MAGIC As String = "# Gambas Project File 3.0"
 Public Const ACTION_MAGIC As String = "# Gambas Action File 3.0"
 Public Const CONNECTION_MAGIC As String = "# Gambas Connection File 3.0"
 
-Public Const DEFAULT_FONT As String = "Monospace,9"
+Public DEFAULT_FONT As String = "Monospace,9"
 
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
 
@@ -269,6 +269,8 @@ Public Sub Main()
     Project.Exit
     Return
   Endif
+
+  If Fonts.Exist("Terminus") Then DEFAULT_FONT = "Terminus,9"
 
   InitVersion
   InitWebView

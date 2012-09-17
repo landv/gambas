@@ -87,6 +87,8 @@ int STRING_get_free_index(void);
 #define STRING_new_temp_zero(_src) STRING_free_later(STRING_new_zero(_src))
 
 char *STRING_extend(char *str, int new_len);
+bool STRING_extend_will_realloc(char *str, int new_len);
+
 //void STRING_extend_end(char *str);
 char *STRING_add(char *str, const char *src, int len);
 char *STRING_add_char(char *str, char c);

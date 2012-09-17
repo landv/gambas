@@ -89,6 +89,8 @@ Private $iSamplePos As Integer
 Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
 
+Static Private $cLastClassCount As New Collection
+
 
 Static Public Sub _init()
 
@@ -919,6 +921,10 @@ Public Sub Editors_KeyPress()
   Dim bStop As Boolean
   Dim aSymbol As String[]
   Dim aScan As String[]
+  Dim hClass As Class
+  Dim aClass As String[]
+  Dim sClass As String
+  Dim iOldCount As Integer
 
   If Not Editor.ReadOnly Then
 
@@ -1019,8 +1025,27 @@ Public Sub Editors_KeyPress()
       For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
         If InStr(sLine, "[heap]") Then
           aScan = Scan(sLine, "*-* *")
-          Message("Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes.")
+          Print "Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
+          Break
         Endif
+      Next
+      
+      aClass = New String[]
+      
+      For Each hClass In Classes
+        aClass.Add(hClass.Name)
+      Next
+      
+      aClass.Sort
+      
+      For Each sClass In aClass
+        With Classes[sClass]
+          iOldCount = 0
+          Try iOldCount = $cLastClassCount[sClass]
+          If .Count = iOldCount Then Continue
+          Print sClass; ": "; .Count;; "("; Format(.Count - iOldCount, "+0"); ")"
+          $cLastClassCount[sClass] = .Count
+        End With
       Next
       
     Endif

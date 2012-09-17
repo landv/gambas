@@ -744,7 +744,11 @@ bool TRANS_affectation(bool dup)
 		after = JOB->current;
 
 		if (op != RS_NONE)
+		{
+			/*if (op == RS_AMP)
+				CODE_string_add();*/
 			trans_operation(op, 2, NULL_PATTERN);
+		}
 	}
 
 	after = JOB->current;

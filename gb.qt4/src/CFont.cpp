@@ -514,6 +514,27 @@ BEGIN_METHOD_VOID(CFONTS_next)
 END_METHOD
 
 
+BEGIN_METHOD(Fonts_Exist, GB_STRING family)
+
+	int i;
+	char *family = GB.ToZeroString(ARG(family));
+	
+	init_font_database();
+	
+	for (i = 0; i < _families.count(); i++)
+	{
+		if (_families[i] == family)
+		{
+			GB.ReturnBoolean(true);
+			return;
+		}
+	}
+
+	GB.ReturnBoolean(false);
+
+END_METHOD
+
+
 BEGIN_PROPERTY(CFONTS_count)
 
   init_font_database();
@@ -562,6 +583,7 @@ GB_DESC CFontsDesc[] =
   GB_DECLARE("Fonts", 0),
   GB_NOT_CREATABLE(),
 
+  GB_STATIC_METHOD("Exist", "b", Fonts_Exist, "(Family)s"),
   GB_STATIC_METHOD("_next", "s", CFONTS_next, NULL),
   GB_STATIC_PROPERTY_READ("Count", "i", CFONTS_count),
 

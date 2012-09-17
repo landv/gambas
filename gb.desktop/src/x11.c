@@ -126,6 +126,11 @@ static void init_atoms()
 	}
 #endif
 
+static size_t sizeof_format(int format)
+{
+	return format == 32 ? sizeof(long) : (format == 16 ? sizeof(short) : sizeof(char));
+}
+
 char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcount)
 {
 	uchar *data;
@@ -143,7 +148,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	
 	*pcount += count;
 	
-	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
+	size = sizeof_format(*format);
 	offset_size = *format == 32 ? sizeof(int32_t) : ( *format == 16 ? sizeof(short) : 1 );
 	
 	//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld\n", *format, size, count, after);
@@ -356,19 +361,22 @@ void X11_send_client_message(Window dest, Window window, Atom message, char *dat
   XEvent e;
   int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
 
+	//fprintf(stderr, "X11_send_client_message: dest = %ld window = %ld message = %ld format = %d count = %d\n", dest, window, message, format, count);
+	
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = message;
 	e.xclient.display = X11_display;
 	e.xclient.window = window;
 	e.xclient.format = format;
 	
-	memset(&e.xclient.data.l[0], 0, 20);
+	memset(&e.xclient.data.l[0], 0, sizeof(long) * 5);
 	if (data)
 	{
-		count *= format / 8;
-		if (count > 20)
-			count = 20;
+		count *= sizeof_format(format);
+		if (count > (sizeof(long) * 5))
+			count = sizeof(long) * 5;
 		memcpy(&e.xclient.data.l[0], data, count);
+		//fprintf(stderr, "%ld %ld %ld %ld %ld\n", e.xclient.data.l[0], e.xclient.data.l[1], e.xclient.data.l[2], e.xclient.data.l[3], e.xclient.data.l[4]);
 	}
 
 	XSendEvent(X11_display, dest, False, mask, &e);

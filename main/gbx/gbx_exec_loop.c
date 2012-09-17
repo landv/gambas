@@ -1879,9 +1879,14 @@ _QUIT:
 			break;
 			
 		case 2:
-		default:
 			GAMBAS_StopEvent = TRUE;
 			break;
+		
+		#if 0
+		case 3:
+			EXEC_string_add = TRUE;
+			break;
+		#endif
 	}
 
 	goto _NEXT;

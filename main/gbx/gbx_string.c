@@ -427,6 +427,24 @@ char *STRING_extend(char *str, int new_len)
 }
 
 
+bool STRING_extend_will_realloc(char *str, int new_len)
+{
+	STRING *sstr;
+	int size;
+	int new_size;
+	
+	if (!str)
+		return new_len != 0;
+	
+	sstr = STRING_from_ptr(str);
+	
+	if (new_len == sstr->len)
+		return FALSE;
+		
+	size = REAL_SIZE(sstr->len + 1 + sizeof(STRING));
+	new_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
+	return size != new_size;
+}
 
 
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
