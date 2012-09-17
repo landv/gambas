@@ -599,6 +599,21 @@ BEGIN_METHOD(CDESKTOP_minimize_window, GB_INTEGER window; GB_BOOLEAN minimized)
 
 END_METHOD
 
+
+BEGIN_METHOD_VOID(Desktop_Flush)
+
+	XFlush(X11_display);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Desktop_Sync)
+
+	XSync(X11_display, FALSE);
+
+END_METHOD
+
+
 GB_DESC CDesktopDesc[] =
 {
   GB_DECLARE("_Desktop", 0), GB_VIRTUAL_CLASS(),
@@ -623,6 +638,8 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_METHOD("GetWindowGeometry", "Integer[]", CDESKTOP_get_window_geometry, "(Window)i"),
   GB_STATIC_METHOD("MakeIcon", "Image", CDESKTOP_make_icon, "(Data)Array;[(Width)i(Height)h]"),
   GB_STATIC_METHOD("MinimizeWindow", NULL, CDESKTOP_minimize_window, "(Window)i(Minimized)b"),
+  GB_STATIC_METHOD("Sync", NULL, Desktop_Sync, NULL),
+  GB_STATIC_METHOD("Flush", NULL, Desktop_Flush, NULL),
   
   GB_END_DECLARE
 };

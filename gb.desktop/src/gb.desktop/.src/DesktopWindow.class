@@ -4,8 +4,8 @@ Export
 
 Property Read X As Integer
 Property Read Y As Integer
-Property Read Width As Integer
-Property Read Height As Integer
+Property Read Width, W As Integer
+Property Read Height, H As Integer
 Property Read Name As String
 Property Read VisibleName As String
 Property Desktop As Integer
@@ -37,7 +37,14 @@ End
 
 Private Sub GetDimensions()
   
-  If Not $aDim Then $aDim = _Desktop.GetWindowGeometry($iId)
+  Dim aExt As Integer[]
+  
+  If Not $aDim Then 
+    $aDim = _Desktop.GetWindowGeometry($iId)
+    aExt = _Desktop.GetWindowProperty(Atom["_NET_FRAME_EXTENTS"], $iId)
+    $aDim[0] -= aExt[0]
+    $aDim[1] -= aExt[2]
+  Endif
   
 End
 
@@ -83,12 +90,16 @@ Public Sub Move(X As Integer, Y As Integer, Optional Width As Integer, Optional 
   Else
     _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10001100000000, X, Y], $iId)
   Endif
+  _Desktop.Flush
+  Refresh
   
 End
 
 Public Sub Resize(Width As Integer, Height As Integer)
   
   _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10110000000000, Width, Height], $iId)
+  _Desktop.Flush
+  Refresh
   
 End
 

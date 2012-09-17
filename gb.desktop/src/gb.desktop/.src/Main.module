@@ -139,21 +139,15 @@ End
 
 Public Sub Main()
 
-  ' Dim hWindow As DesktopWindow
-  ' 
-  ' 'Print Desktop.Path
-  ' 
-  ' For Each hWindow In Desktop.Windows
-  '   Print Hex$(hWindow.Id, 8);; Quote(hWindow.Name); ": "; hWindow.X;; hWindow.Y;; hWindow.Height;; hWindow.Width
-  ' Next
-  Dim aWin As Integer[]
   Dim hWin As DesktopWindow
   
   For Each hWin In Desktop.Windows
     'Print hWin.VisibleName
     If hWin.VisibleName Like "gambas3 3.3.0 - *" Then
-      hWin.Maximized = True
-      'hWin.Move(200, 100, 800, 500)
+      Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
+      hWin.Move(200, 100, 800, 500)
+      hWin.Refresh
+      Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
     Endif
   Next
   
