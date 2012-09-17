@@ -16,6 +16,9 @@ Public Sub btnOK_Click()
   Dim sDir As String
   Dim sName As String
   Dim sMsg As String
+  Dim aLine As String[]
+  Dim iCount As Integer
+  Dim I As Integer
   
   sName = Trim(txtName.Text)
   sDir = dchProject.Value
@@ -39,6 +42,17 @@ Public Sub btnOK_Click()
   Inc Application.Busy
   Project.Save
   Project.CopyProject(Project.Dir, sDir)
+
+  aLine = Split(File.Load(sDir &/ ".project"), "\n")
+  iCount = aLine.Count
+  I = aLine.Find("ExecPath=*", gb.Like)
+  If I >= 0 Then aLine.Remove(I)
+  I = aLine.Find("SourcePath=*", gb.Like)
+  If I >= 0 Then aLine.Remove(I)
+  If aLine.Count <> iCount Then File.Save(sDir &/ ".project", aLine.Join("\n"))
+
+  Project.CleanUp(sDir)
+
   Dec Application.Busy
   $sNewPath = sDir
   Me.Close(True)
