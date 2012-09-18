@@ -36,9 +36,12 @@
 
 ***************************************************************************/
 
+static CIMAGE *_clipboard_image = NULL;
+
 BEGIN_METHOD_VOID(CCLIPBOARD_clear)
 
 	gClipboard::clear();
+	GB.StoreObject(NULL, POINTER(&_clipboard_image));
 
 END_METHOD
 
@@ -160,6 +163,9 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 			goto _BAD_FORMAT;
 		
 		img = (CIMAGE *)VARG(data).value._object;
+		GB.Unref(POINTER(&_clipboard_image));
+		GB.Ref(img);
+		_clipboard_image = img;
 		gClipboard::setImage(CIMAGE_get(img));
 		return;
 	}
@@ -221,6 +227,7 @@ GB_DESC CClipboardDesc[] =
   GB_CONSTANT("Text", "i", 1),
   GB_CONSTANT("Image", "i", 2),
 
+  GB_STATIC_METHOD("_exit", 0, CCLIPBOARD_clear, 0),
   GB_STATIC_METHOD("Clear", 0, CCLIPBOARD_clear, 0),
 
   GB_STATIC_PROPERTY_READ("Format", "s", CCLIPBOARD_format),
