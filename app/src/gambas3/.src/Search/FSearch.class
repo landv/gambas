@@ -392,6 +392,7 @@ Private Sub Run(iAction As Integer)
   Dim iTry As Integer
   Dim nReplace As Integer
   Dim hEditor As FEditor
+  Dim iLastPos As Integer
   
   If InitSearch() Then Return
   ResetBrowse
@@ -404,62 +405,78 @@ Private Sub Run(iAction As Integer)
   Endif
   
   aResult = GrepFile($hCurrent)
-
-DO_IT_AGAIN:
   
-  iCurrentPos = $hCurrent.GetPosition()
-  
-  If iAction And DO_REPLACE And If nReplace = 0 Then
-    If iAction And GO_BACKWARD Then
-      Inc iCurrentPos
-    Else
-      Dec iCurrentPos
-    Endif
-  Endif
-
-  If aResult.Count Then
-  
-    For iTry = 1 To aResult.Count
+  If iAction And DO_REPLACE And If iAction And DO_ALL Then
     
+    Try $hCurrent.Editor.Begin
+    While aResult.Count
+      If $hCurrent.SetPosition(aResult[0], False) Then Break
+      Inc nReplace
+      $hCurrent.Replace(ReplaceString)
+      DoReplace(aResult, 0, ReplaceString)
+    Wend
+    Try $hCurrent.Editor.End
+    
+  Else
+
+    iCurrentPos = $hCurrent.GetPosition()
+    iLastPos = iCurrentPos
+    
+    If Not $hCurrent.GetSelection() Or If iAction And DO_REPLACE Then
       If iAction And GO_BACKWARD Then
-      
-        For iInd = aResult.Max To 0 Step -1
-          iPos = aResult[iInd].Pos
-          If iPos < iCurrentPos Then Break
-        Next
-        
-        If iPos >= iCurrentPos Then 
-          iInd = aResult.Max
-          iPos = aResult[iInd].Pos
-        Endif
-    
+        Inc iCurrentPos
       Else
-      
-        For iInd = 0 To aResult.Max
-          iPos = aResult[iInd].Pos
-          If iPos > iCurrentPos Then Break
-        Next
-         
-        If iPos <= iCurrentPos Then 
-          iInd = 0
-          iPos = aResult[iInd].Pos
-        Endif
-        
+        Dec iCurrentPos
       Endif
+    Endif
+  
+    If aResult.Count Then
     
-      If Not $hCurrent.SetPosition(aResult[iInd], False) Then 
-        If iAction And DO_REPLACE Then 
+      For iTry = 1 To aResult.Count
+      
+        If iAction And GO_BACKWARD Then
+        
+          For iInd = aResult.Max To 0 Step -1
+            iPos = aResult[iInd].Pos
+            If iPos < iCurrentPos Then Break
+          Next
+          
+          If iPos >= iCurrentPos Then 
+            iInd = aResult.Max
+            iPos = aResult[iInd].Pos
+          Endif
+      
+        Else
+        
+          For iInd = 0 To aResult.Max
+            iPos = aResult[iInd].Pos
+            If iPos > iCurrentPos Then Break
+          Next
+           
+          If iPos <= iCurrentPos Then 
+            iInd = 0
+            iPos = aResult[iInd].Pos
+          Endif
+          
+        Endif
+      
+        If $hCurrent.SetPosition(aResult[iInd], False) Then Goto FIND_NEXT
+        
+        If iAction And DO_REPLACE And If iPos = iLastPos Then 
           $hCurrent.Replace(ReplaceString)
           DoReplace(aResult, iInd, ReplaceString)
+          iAction = iAction And Not DO_REPLACE
+        Else
+          Return
         Endif
-        Inc nReplace
-        If (iAction And DO_ALL) = 0 Then Return
-        Goto DO_IT_AGAIN
-      Endif
+        
+      FIND_NEXT:
       
-      iCurrentPos = iPos
+        iCurrentPos = iPos
+        
+      Next
       
-    Next
+    Endif
     
   Endif
   
