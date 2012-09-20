@@ -103,6 +103,7 @@ End
 Public Sub btnNew_Click()
 
   $sPath = FCreateProject.Run()
+  txtFilter.SetFocus
   If $sPath Then Me.Close
 
 End
@@ -111,6 +112,7 @@ End
 Public Sub btnOpen_Click()
 
   $sPath = FOpenProject.Run()
+  txtFilter.SetFocus
   If $sPath Then Me.Close
 
 End
@@ -570,6 +572,7 @@ End
 Public Sub btnAbout_Click()
   
   FAbout.Run
+  txtFilter.SetFocus
   
 End
 

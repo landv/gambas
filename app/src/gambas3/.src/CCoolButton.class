@@ -53,7 +53,7 @@ Public Sub Panel_Draw()
   Endif
   
   Draw.Picture($hPict, 8, ($hPanel.H - $hPict.H) \ 2)
-  If $bInside Then Draw.Foreground = Color.Gradient($hPanel.Foreground, $iHighlight)
+  'If $bInside Then Draw.Foreground = Color.Gradient($hPanel.Foreground, $iHighlight)
   Draw.Text($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
   
   ' If $bArrow Then
@@ -61,13 +61,18 @@ Public Sub Panel_Draw()
   '   'Draw.Style.Arrow(Draw.W - 32, (Draw.H - 32) \ 2, 32, 32, Align.Right)
   ' Endif
   
-  If $hPanel.HasFocus Then
+  If $bInside Then
     Paint.Begin(Draw.Device)
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Brush = Paint.Color(Color.SetAlpha($iHighlight, 192))
     Paint.Fill
     'If $hPanel.HasFocus And If $bInside Then Paint.Fill
     Paint.End
+  Endif
+  
+  If $hPanel.HasFocus Then
+    Draw.Foreground = $iHighlight
+    Draw.Rect(2, 2, Draw.W - 4, Draw.H - 4)
   Endif
   
 End

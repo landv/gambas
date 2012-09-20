@@ -218,12 +218,14 @@
     }
     { btnIndent ToolButton
       MoveScaled(25,0,4,4)
+      Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
       MoveScaled(28,0,4,4)
+      Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
       Picture = Picture["icon:/small/unindent"]
@@ -453,6 +455,6 @@
   { Toolbar text
     Text = "Text editor"
     List = "save,reload,cut,show-class,copy,paste,undo,redo,indent,unindent,bookmark,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc"
-    Default = "save,reload,show-class,undo,redo,indent,unindent,bookmark,color,|,compress,uncompress,|,|,proc,$lblInfo"
+    Default = "save,reload,show-class,undo,redo,bookmark,color,|,compress,uncompress,|,|,proc,$lblInfo"
   }
 }

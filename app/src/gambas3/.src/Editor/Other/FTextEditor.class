@@ -1082,3 +1082,16 @@ Public Sub Form_Open()
   SetReadOnly
 
 End
+
+Public Sub btnIndent_Click()
+
+  Editor.Indent
+
+End
+
+Public Sub btnUnindent_Click()
+
+  Editor.Unindent
+
+End
+
