@@ -433,10 +433,11 @@ Public Sub Load()
   Dim cClass As New Collection
   Dim aList As String[]
   Dim hLibraryInfo As CLibraryInfo
+  Dim sErr As String
   
   If Loaded Then Return
   
-  If Key = Project.Name Then Return
+  If Key = Project.Name Then Goto HAS_BEEN_LOADED
   
   'Debug "Loading: "; Key
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
@@ -632,6 +633,10 @@ Public Sub Load()
   
   ClassList.Sort
   
+  Dec Application.Busy
+  
+HAS_BEEN_LOADED:
+  
   If Key = "gb.web" Then
     Family = "webpage"
     CModule.Activate(Family)
@@ -641,13 +646,11 @@ Public Sub Load()
   
   Loaded = True
   
-Finally
-  
-  Dec Application.Busy
-  
 Catch
   
-  FMain.ShowError(Error.Where & "\n\n" & Error.Text)
+  sErr = Error.Where & "\n\n" & Error.Text
+  Dec Application.Busy
+  FMain.ShowError(sErr)
   
 End
 
