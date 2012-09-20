@@ -98,6 +98,7 @@ private:
 	double _sameWidth;
 	int _tabWidth;
 	bool _oddLine;
+	QColor _altBackground;
 	QColor _oddBackground;
 	bool _checkCache;
 	bool _border;
@@ -133,7 +134,7 @@ private:
 	int findLargestLine();
 
 	void drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &s);
-	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row, QColor &);
+	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row, QColor &);
 	void paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row);
 	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
 	//void paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch);

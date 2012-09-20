@@ -191,6 +191,13 @@ BEGIN_METHOD(CHIGHLIGHT_add, GB_INTEGER state; GB_INTEGER len)
 
 END_METHOD
 
+BEGIN_PROPERTY(Highlight_Alternate)
+
+	GB.Deprecated("gb.qt4.ext", "Highlight.Alternate", NULL);
+	GB.ReturnInteger(-1);
+
+END_PROPERTY
+
 
 /****************************************************************************
 	
@@ -1329,8 +1336,9 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Highlight", "i", HIGHLIGHT_HIGHLIGHT),
 	GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
 	GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
-	GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
 	GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
+	GB_CONSTANT("Preprocessor", "i", HIGHLIGHT_PREPROCESSOR),
+	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),
 
 	GB_STATIC_PROPERTY("State", "i", CHIGHLIGHT_state),
 	GB_STATIC_PROPERTY("Tag", "i", CHIGHLIGHT_tag),

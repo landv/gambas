@@ -144,7 +144,6 @@ static int convState(int state)
 		case EVAL_TYPE_OPERATOR: return HIGHLIGHT_OPERATOR;
 		case EVAL_TYPE_DATATYPE: return HIGHLIGHT_DATATYPE;
 		case EVAL_TYPE_ERROR: return HIGHLIGHT_ERROR;
-		case EVAL_TYPE_ALTERNATE: return HIGHLIGHT_ALTERNATE;
 		case EVAL_TYPE_HELP: return HIGHLIGHT_HELP;
 		case EVAL_TYPE_PREPROCESSOR: return HIGHLIGHT_PREPROCESSOR;
 		default: return HIGHLIGHT_NORMAL;
@@ -266,6 +265,12 @@ BEGIN_PROPERTY(CHIGHLIGHT_analyze_text)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Highlight_Alternate)
+
+	GB.Deprecated("gb.eval", "Highlight.Alternate", NULL);
+	GB.ReturnInteger(-1);
+
+END_PROPERTY
 
 GB_DESC CHighlightDesc[] =
 {
@@ -287,9 +292,9 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Highlight", "i", HIGHLIGHT_HIGHLIGHT),
 	GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
 	GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
-	GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
 	GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
 	GB_CONSTANT("Preprocessor", "i", HIGHLIGHT_PREPROCESSOR),
+	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),
 	
 	GB_STATIC_METHOD("_exit", NULL, CHIGHLIGHT_exit, NULL),
 	GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s[(Rewrite)b(State)i]"),

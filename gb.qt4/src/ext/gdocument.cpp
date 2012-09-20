@@ -1144,7 +1144,6 @@ int GDocument::convState(int state)
 		case EVAL_TYPE_OPERATOR: return GLine::Operator;
 		case EVAL_TYPE_DATATYPE: return GLine::Datatype;
 		case EVAL_TYPE_ERROR: return GLine::Error;
-		case EVAL_TYPE_ALTERNATE: return GLine::Alternate;
 		case EVAL_TYPE_HELP: return GLine::Help;
 		case EVAL_TYPE_PREPROCESSOR: return GLine::Preprocessor;
 		default: return GLine::Normal;

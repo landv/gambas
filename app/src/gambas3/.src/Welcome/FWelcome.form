@@ -42,9 +42,7 @@
     Expand = True
     { Panel7 Panel
       MoveScaled(1,2,39,37)
-      Background = &H000000&
       Arrangement = Arrange.Fill
-      Padding = 1
       { panButton Panel
         MoveScaled(1,1,37,35)
         Background = &HDF6B00&
@@ -58,6 +56,10 @@
         { Panel6 Panel
           MoveScaled(6,19,21,0)
           Background = &H000000&
+        }
+        { dwgFrame DrawingArea
+          MoveScaled(16,23,14,10)
+          Ignore = True
         }
       }
     }

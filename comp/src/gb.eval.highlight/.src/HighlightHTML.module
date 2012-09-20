@@ -110,14 +110,21 @@ Public Sub Run(iStyle As Integer)
         If bCode And If Not bCodeMarkup Then
         
           If bQuote Then
+          
             If sCar = Chr$(34) Then 
               bQuote = False
             Endif
+          
           Else If sCar = Chr$(34) Then
+          
             bQuote = True
+          
           Else If sCar = "'" Then
+            
             Break
+            
           Else If String.Mid$(sText, iInd, 2) = "%>" Then
+            
             bCode = False
             
             Select Case iTag
@@ -141,6 +148,7 @@ Public Sub Run(iStyle As Integer)
             Highlight.AlternateState = False
             iState = iSaveState 'Highlight.Normal
             iNextState = iState
+          
           Endif
           Continue
           
@@ -187,14 +195,7 @@ Public Sub Run(iStyle As Integer)
           bWebComment = False
           bCodeMarkup = False
           
-          If String.Mid$(sText, iInd + 2, 1) = ":" Then
-            bMarkup = True
-            bCodeMarkup = True
-            sMarkup = ""
-            iCount = 3
-            iTag = TAG_CODE_MARKUP
-            iNextState = Highlight.Preprocessor
-          Else If String.Mid$(sText, iInd + 2, 2) = "--" Then
+          If String.Mid$(sText, iInd + 2, 2) = "--" Then
             iCount = 4
             bWebComment = True
             iTag = TAG_COMMENT
@@ -226,6 +227,29 @@ Public Sub Run(iStyle As Integer)
           iCodeStart = iInd + 1
           Continue
           
+        Else If iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<<" Then
+        
+          bWebComment = False
+          bMarkup = True
+          bCodeMarkup = True
+          sMarkup = ""
+          iCount = 2
+          iTag = TAG_CODE_MARKUP
+          iNextState = Highlight.Preprocessor
+          
+          'Highlight.AlternateState = True
+          Highlight.Add(iNextState, iCount)
+          sBufferAfter &= String.Mid$(sText, iInd, iCount)
+          GoSub ADD_TEXT_AFTER
+          iInd += iCount - 1
+          
+          iSaveState = iState
+          iState = iNextState
+          
+          bCode = True
+          iCodeStart = iInd + 1
+          Continue
+          
         Else If bMarkup Then
     
           If bQuoteMarkup Then
@@ -233,6 +257,18 @@ Public Sub Run(iStyle As Integer)
               bQuoteMarkup = False
               iNextState = Highlight.Operator
             Endif
+          Else If bCodeMarkup And If sCar = ">" And If String.Mid$(sText, iInd + 1, 1) = ">" Then
+            bMarkup = False
+            bCodeMarkup = False
+            bCode = False
+            Highlight.Add(Highlight.Preprocessor, 2)
+            Inc iInd
+            sBufferAfter &= ">>"
+            GoSub ADD_TEXT_AFTER
+            Highlight.AlternateState = False
+            iState = iSaveState 'Highlight.Normal
+            iNextState = iState
+            Continue
           Else If sCar = ">" Then
             bMarkup = False
             If bCode Then

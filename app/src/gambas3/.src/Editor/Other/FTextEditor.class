@@ -227,7 +227,6 @@ Private Sub InAlternate() As Boolean
   Editor.Lines[Editor.Line].GetInitialState()
   bAlt = Highlight.AlternateState
   
-  
   I = 1
   While I <= String.Len(sText)
     
@@ -370,7 +369,7 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
 
   'DEC iLine
   If iColumn < 0 Then iColumn = Editor.Column
-  Editor.Goto(iLine, iColumn, True )
+  Editor.Goto(iLine, iColumn, True)
 
 End
 
@@ -587,7 +586,7 @@ Public Sub Reload()
   edtEditor.Text = sText
   Editor.SetFocus
   Editors_Cursor
-  Modify(True )
+  Modify(True)
 
 End
 
@@ -650,7 +649,7 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
-      edtEditor.Goto(Editor.Line, Editor.Column, True )
+      edtEditor.Goto(Editor.Line, Editor.Column, True)
       Editor = edtEditor  
       
     Case VIEWMODE_HORIZONTAL
@@ -659,8 +658,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Show
       splVertical.Hide
-      $hEditor1.Goto(Editor.Line, Editor.Column, True )
-      $hEditor2.Goto(Editor.Line, Editor.Column, True )
+      $hEditor1.Goto(Editor.Line, Editor.Column, True)
+      $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
   
     Case VIEWMODE_VERTICAL
@@ -669,8 +668,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Hide
       splVertical.Show
-      $hEditor1.Goto(Editor.Line, Editor.Column, True )
-      $hEditor2.Goto(Editor.Line, Editor.Column, True )
+      $hEditor1.Goto(Editor.Line, Editor.Column, True)
+      $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
   
   End Select   
@@ -786,7 +785,7 @@ Public Sub mnuCompress_Click()
     sPath = GetUncompressPath()
     If Not Exist(File.Dir(sPath)) Then Project.InsertDirectory(File.Dir(sPath))
     If Not Exist(sPath) Then 
-      Project.InsertFile(File.Name(sPath), File.Dir(sPath), Path, True )
+      Project.InsertFile(File.Name(sPath), File.Dir(sPath), Path, True)
     Else
       File.Save(sPath, Editor.Text)
     Endif
@@ -866,7 +865,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   Editor.SetFocus
   Wait
-  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True )
+  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
 
 End
 
@@ -1025,7 +1024,7 @@ End
 
 Private Sub GotoProc(iLine As Integer)
   
-  Editor.Goto(iLine, 0, True )
+  Editor.Goto(iLine, 0, True)
   
 End
 

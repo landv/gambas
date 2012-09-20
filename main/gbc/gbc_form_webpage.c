@@ -45,7 +45,7 @@
 
 /*#define DEBUG*/
 
-enum { TYPE_CODE, TYPE_HTML, TYPE_COMMENT, TYPE_MARKUP, TYPE_ARG };
+enum { TYPE_CODE, TYPE_HTML, TYPE_COMMENT, TYPE_MARKUP, TYPE_ARG, TYPE_ROOT };
 
 static const char *_start;
 
@@ -116,6 +116,17 @@ static void flush_html(const char *end)
 	_start = end;
 }
 
+static bool check_contents(const char *str, int len)
+{
+	if (len < 4)
+		return FALSE;
+	
+	if (str[0] == '-' && str[1] == '-' && str[len - 1] == '-' && str[len - 2] == '-')
+		return TRUE;
+	else
+		return FALSE;
+}
+
 static void print_markup(const char *str, int len)
 {
 	int l;
@@ -123,13 +134,10 @@ static void print_markup(const char *str, int len)
 	const char *p;
 	bool comma;
 	bool quote;
+	bool end;
 	
 	if (len <= 0)
 		return;
-	
-	/*FORM_print_char('\'');
-	FORM_print_len(str, len);
-	FORM_print_char('\n');*/
 	
 	p = str;
 	while (len > 0)
@@ -141,10 +149,27 @@ static void print_markup(const char *str, int len)
 	}
 	
 	l = str - p - (c == ' ');	
+	
+	if (*p == '/')
+	{
+		end = TRUE;
+		p++;
+		l--;
+	}
+	else
+		end = FALSE;
+	
 	if (l <= 0)
 		THROW(E_SYNTAX);
 	
 	FORM_print_len(p, l);
+	
+	if (end)
+	{
+		FORM_print("._RenderEnd()\n");
+		return;
+	}
+	
 	FORM_print("._Render(");
 	
 	if (len > 0)
@@ -232,6 +257,7 @@ void FORM_webpage(char *source)
 	const char *p;
 	int line;
 	char buf[8];
+	bool has_contents = FALSE;
 	
 	line = FORM_FIRST_LINE;
 	
@@ -252,11 +278,32 @@ __PRINT:
 			goto __END;
 		}
 		
-		if (c == '<' && *p == '%')
+		if (c == '<')
 		{
-			flush_html(p - 1);
-			p++;
-			goto __CODE;
+			if (*p == '%')
+			{
+				flush_html(p - 1);
+				
+				if (p[1] == '/' && p[2] == '%' && p[3] == '>')
+				{
+					p += 4;
+					type = TYPE_ROOT;
+				}
+				else
+				{
+					p++;
+					type = TYPE_CODE;
+				}
+				
+				goto __CODE;
+			}
+			else if (*p == '<')
+			{
+				flush_html(p - 1);
+				p++;
+				type = TYPE_MARKUP;
+				goto __CODE;
+			}
 		}
 		
 		if (c == '\n')
@@ -273,29 +320,32 @@ __CODE:
 	sprintf(buf, "%d", line);
 	FORM_print(buf);
 	FORM_print_char('\n');
-				
-	if (*p == '=')
+	
+	if (type == TYPE_CODE)
 	{
-		type = TYPE_HTML;
-		p++;
+		if (*p == '=')
+		{
+			type = TYPE_HTML;
+			p++;
+		}
+		else if (*p == '!')
+		{
+			type = TYPE_ARG;
+			p++;
+		}
+		else if (*p == '-' && p[1] == '-')
+		{
+			type = TYPE_COMMENT;
+			p += 2;
+		}
+		else
+			type = TYPE_CODE;
 	}
-	else if (*p == ':')
+	else if (type == TYPE_ROOT)
 	{
-		type = TYPE_MARKUP;
-		p++;
+		FORM_print("Print Html$(Application.Root);\n");
+		goto __PRINT;
 	}
-	else if (*p == '!')
-	{
-		type=TYPE_ARG;
-		p++;
-	}
-	else if (*p == '-' && p[1] == '-')
-	{
-		type = TYPE_COMMENT;
-		p += 2;
-	}
-	else
-		type = TYPE_CODE;
 	
 	_start = p;
 	
@@ -315,7 +365,7 @@ __END_STRING:
 			continue;
 		}
 		
-		if (c == '%' && *p == '>')
+		if (c == '%' && *p == '>' && type != TYPE_MARKUP)
 		{
 			switch (type)
 			{
@@ -325,14 +375,17 @@ __END_STRING:
 					break;
 					
 				case TYPE_HTML:
-					FORM_print("Print Html$(");
-					FORM_print_len(_start, p - _start - 1);
-					FORM_print(");\n");
-					break;
 					
-				case TYPE_MARKUP:
-					print_markup(_start, p - _start - 1);
-					FORM_print_char('\n');
+					if ((p - _start) == 1)
+					{
+						FORM_print("Print Html$(Application.Root);\n");
+					}
+					else
+					{
+						FORM_print("Print Html$(");
+						FORM_print_len(_start, p - _start - 1);
+						FORM_print(");\n");
+					}
 					break;
 					
 				case TYPE_ARG:
@@ -344,6 +397,31 @@ __END_STRING:
 				case TYPE_COMMENT:
 				default:
 					break;
+			}
+			
+			p++;
+			if (*p == '\n')
+			{
+				line++;
+				p++;
+			}
+			goto __PRINT;
+		}
+		else if (c == '>' && *p == '>' && type == TYPE_MARKUP)
+		{
+			if (check_contents(_start, p - _start - 1))
+			{
+				if (has_contents)
+					THROW("Contents already declared");
+				has_contents = TRUE;
+
+				FORM_print("\nEnd\n\n");
+				FORM_print("Public Sub _RenderEnd()\n\n");
+			}
+			else
+			{
+				print_markup(_start, p - _start - 1);
+				FORM_print_char('\n');
 			}
 			
 			p++;

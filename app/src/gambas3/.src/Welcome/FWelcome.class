@@ -616,3 +616,15 @@ Public Sub timLayout_Timer()
   hList.Unlock
 
 End
+
+Public Sub panButton_BeforeArrange()
+
+  dwgFrame.Move(0, 0, panButton.W, panButton.H)
+
+End
+
+Public Sub dwgFrame_Draw()
+  
+  Draw.Rect(0, 0, panButton.W, panButton.H)
+  
+End

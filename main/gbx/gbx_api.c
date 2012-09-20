@@ -1132,9 +1132,19 @@ void GB_Error(const char *error, ...)
 void GB_Deprecated(const char *msg, const char *func, const char *repl)
 {
 	if (EXEC_debug)
-		GB_Error("&1: &2 is deprecated. Use &3 instead", msg, func, repl);
+	{
+		if (repl)
+			GB_Error("&1: &2 is deprecated. Use &3 instead", msg, func, repl);
+		else
+			GB_Error("&1: &2 is deprecated. Do not use it anymore", msg, func);
+	}
 	else
-		fprintf(stderr, "%s: %s is deprecated. Use %s instead\n", msg, func, repl);
+	{
+		if (repl)
+			fprintf(stderr, "%s: %s is deprecated. Use %s instead\n", msg, func, repl);
+		else
+			fprintf(stderr, "%s: %s is deprecated. Do not use it anymore\n", msg, func);
+	}
 }
 
 #if DEBUG_REF

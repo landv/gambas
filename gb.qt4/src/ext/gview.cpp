@@ -88,7 +88,6 @@ static QColor defaultColors[GLine::NUM_STATE] =
 	QColor(0xFF, 0xFF, 0x00),
 	QColor(0xE8, 0xE8, 0xF8),
 	Qt::red,
-	Qt::black,
 	Qt::gray,
 	Qt::green
 };
@@ -640,6 +639,24 @@ void GEditor::drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &
 	}
 }
 
+static void highlight_text(QPainter &p, int x, int x2, int h, QColor color, QColor)
+{
+	//int i, j;
+	
+	//p.setPen(color);
+	
+	/*for (i = -1; i <= 1; i++)
+		for (j = -1; j <= 1; j++)
+			p.drawText(x + i, y + j, s);*/
+	//color.setAlpha(192);
+	//p.setCompositionMode(QPainter::CompositionMode_Overlay);
+	p.fillRect(x, 0, x2 - x, h, color);
+	//p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+	//border.setAlpha(128);
+	//p.setPen(QColor(border));
+	//p.drawRect(x, 0, x2 - x, h);
+}
+
 void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row, QColor &fbg)
 {
 	int i;
@@ -671,7 +688,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			if (xd2 > x2)
 				xd2 = x2;
 
-			p.fillRect(x, 0, nx - x, h, merge_color(styles[GLine::Alternate].color, fbg));
+			p.fillRect(x, 0, nx - x, h, merge_color(_altBackground, fbg));
 			
 			if (xd2 > xd1)
 				p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
@@ -708,8 +725,8 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			else if (alternate)
 			{
 				draw_bg = true;
-				bg = styles[GLine::Alternate].color;
-				if (i == (GB.Count(l->highlight) - 1))
+				bg = _altBackground;
+				if (i == (GB.Count(l->highlight) - 1) && l->alternate)
 					nx = _cellw;
 			}
 			
@@ -736,6 +753,15 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 					p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
 			}
 			
+			// Highlight braces
+			if (getFlag(HighlightBraces))
+			{
+				if (row == y1m && x1m >= 0 && x1m >= pos && x1m < (pos + len))
+					highlight_text(p, lineWidth(y1m, x1m), lineWidth(y1m, x1m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
+				if (row == y2m && x2m >= 0 && x2m >= pos && x2m < (pos + len))
+					highlight_text(p, lineWidth(y2m, x2m), lineWidth(y2m, x2m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
+			}
+
 			if (ps >= 0 && pos >= ps)
 			{
 				if (show_dots)
@@ -857,22 +883,6 @@ static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 	#define f(c) ((a.c()*r.c() + (255 - a.c())*(255 - r.c())) * b.c() / 255 / 255)
 	return QColor(f(red), f(green), f(blue));
 }*/
-
-static void highlight_text(QPainter &p, int x, int x2, int h, QColor color, QColor)
-{
-	//int i, j;
-	
-	//p.setPen(color);
-	
-	/*for (i = -1; i <= 1; i++)
-		for (j = -1; j <= 1; j++)
-			p.drawText(x + i, y + j, s);*/
-		
-	p.fillRect(x, 0, x2 - x, h, color);
-	//border.setAlpha(128);
-	//p.setPen(QColor(border));
-	//p.drawRect(x, 0, x2 - x, h);
-}
 
 void GEditor::paintCell(QPainter &p, int row, int)
 {
@@ -1028,19 +1038,6 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		}
 	}
 
-	// Highlight braces
-	if (getFlag(HighlightBraces))
-	{
-		if (realRow == y1m && x1m >= 0)
-			//highlight_text(p, lineWidth(y1m, x1m), _ytext, lineWidth(y1m, x1m + 1), _cellh - 1, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color, styles[GLine::Normal].color);
-			highlight_text(p, lineWidth(y1m, x1m), lineWidth(y1m, x1m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
-		if (realRow == y2m && x2m >= 0)
-			//highlight_text(p, lineWidth(y2m, x2m), _ytext, lineWidth(y2m, x2m + 1), _cellh - 1, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color, styles[GLine::Normal].color);
-			highlight_text(p, lineWidth(y2m, x2m), lineWidth(y2m, x2m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
-		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);
-		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
-	}
-
 	// Procedure separation
 	
 	if (drawSep)
@@ -1127,6 +1124,15 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	// Line text
 	if (!highlight)
 	{
+		// Highlight braces
+		if (getFlag(HighlightBraces))
+		{
+			if (realRow == y1m && x1m >= 0)
+				highlight_text(p, lineWidth(y1m, x1m), lineWidth(y1m, x1m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
+			if (realRow == y2m && x2m >= 0)
+				highlight_text(p, lineWidth(y2m, x2m), lineWidth(y2m, x2m + 1), _cellh - 1, styles[GLine::Highlight].color, styles[GLine::Normal].color);
+		}
+
 		if (l->s.length())
 		{
 			p.setPen(styles[GLine::Normal].color);
@@ -2464,6 +2470,7 @@ void GEditor::scrollTimerTimeout()
 void GEditor::setStyle(int index, GHighlightStyle *style)
 {
 	int sat;
+	int gray;
 	
 	if (index < 0 || index >= GLine::NUM_STATE)
 		return;
@@ -2481,7 +2488,12 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 	if (index == GLine::Background)
 	{
 		_oddBackground = style->color;
+
 		sat = _oddBackground.saturation();
+		gray = 128 + (_oddBackground.value() - 128) * 3 / 4;
+
+		_altBackground = QColor(gray, gray, gray);
+		
 		if (_oddBackground.value() > 127)
 			_oddBackground.setHsv(_oddBackground.hue(), sat, _oddBackground.value() - 16);
 		else

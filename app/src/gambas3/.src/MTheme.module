@@ -2,8 +2,8 @@
 
 Public Const DEFAULT_THEME As String = "gambas"
 
-Public ColorKeys As String[] = ["Background", "Alternate", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
-Public ColorNames As String[] = [("Background"), ("Alternate background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
+Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
+Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
 
 Private $cDefault As Collection
 
@@ -15,7 +15,7 @@ End
 
 Public Sub IsBackgroundStyle(sKey As String) As Boolean
   
-  Return ["Background", "Selection", "CurrentLine", "Current", "Breakpoint", "Highlight", "Alternate"].Exist(sKey)
+  Return ["Background", "Selection", "CurrentLine", "Current", "Breakpoint", "Highlight"].Exist(sKey)
   
 End
 
