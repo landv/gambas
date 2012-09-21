@@ -252,7 +252,7 @@ Public Sub Debug_Read(Data As String)
           If sClass Then
             Try CheckErrorMessage(Project.ActiveForm)
           Else
-            Try CheckErrorMessage(Null )
+            Try CheckErrorMessage(Null)
           Endif
         Endif
       Endif
@@ -278,7 +278,7 @@ Public Sub Debug_Read(Data As String)
           FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1])
 
         Case "I"
-          FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1], True )
+          FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1], True)
           
         Case "X"
           FDebugExpr.AddResult(Mid$(sVar, 2), aData[1])
@@ -292,13 +292,13 @@ Public Sub Debug_Read(Data As String)
       Select Case Left(sVar)
       
         Case "X"
-          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1], True )
+          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1], True)
           
         Case "L"
-          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1], True )
+          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1], True)
  
         Case "O"
-          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True )
+          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True)
  
       End Select
       
@@ -392,6 +392,9 @@ Private Sub AfterStop()
   FDebugInfo.Clear
   FDebugExpr.Clear
 
+  $sError = ""
+  Balloon.Hide
+
   For Each hForm In Project.Workspace.Windows
     Try hForm.OnProjectDebug 
   Next
@@ -404,17 +407,13 @@ Private Sub AfterStop()
   'Settings["/FMain/Splitter"] = hForm.Layout
   'FDebugInfo.Hide
   
-  If Not $bConsole Then FMain.ShowDebug(False )
+  If Not $bConsole Then FMain.ShowDebug(False)
   FDebugInfo.UpdateView
 
   ' FOR EACH hForm IN $cShow
   '   'TRY PRINT "Design.AfterStop: SHOW "; hForm.Name
   '   hForm.Show
   ' NEXT
-
-  $sError = ""
-
-  Balloon.Hide
 
   Action["console"].Value = $bConsole
 
@@ -778,7 +777,7 @@ Private Sub Start(sCmd As String)
   FMain.OnProjectDebug
   FSearch.OnProjectDebug
 
-  FMain.ShowDebug(True )
+  FMain.ShowDebug(True)
   FDebugInfo.UpdateView
 
   If Project.Profiling Then FProfile.CleanProfileFiles
@@ -1156,7 +1155,7 @@ Public Sub ReadBreakpoints()
 
   FDebugInfo.ClearBreakpoints
   For iInd = 1 To Project.Config["/Breakpoints/Count", 0]
-    SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True )
+    SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True)
   Next
   
 End
@@ -1175,7 +1174,7 @@ Public Sub WriteBreakpoints()
   For Each hFile In Project.Files
     If Not Project.IsEditor(hFile) Then Continue 
     hEditor = hFile
-    For Each iLine In hEditor.GetBreakpoints(True )
+    For Each iLine In hEditor.GetBreakpoints(True)
       Inc iCount
       Project.Config["/Breakpoints/Breakpoint[" & CStr(iCount) & "]"] = hEditor.Name & "." & CStr(iLine)
     Next
@@ -1196,7 +1195,7 @@ Public Sub ClearBreakpoints()
     hEditor = hFile
 
     For Each iLine In hEditor.GetBreakpoints()
-      SetBreakpoint(hEditor.Name, iLine, False )
+      SetBreakpoint(hEditor.Name, iLine, False)
     Next
 
   Next

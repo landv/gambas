@@ -2501,6 +2501,7 @@ End
 Public Sub OnProjectDebug()
 
   SetReadOnly
+  If Not Project.Running Then Editor.HideMessageLabel
 
 End
 

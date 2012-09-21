@@ -145,7 +145,7 @@ Public Sub RefreshAll()
   'cProp = CControl.PropertiesInOrder[sClass]
   Try aProp = CComponent.Classes[sClass].PropertyList
   If Not aProp Then
-    Print "FProperty.RefreshAll: Cannot get property list of "; sClass
+    Error "gambas3: cannot get property list of "; sClass
     aProp = New String[]
   Else
     '     sClassColor = sClass
@@ -934,7 +934,7 @@ Public Sub btnProperty_Click()
     Case "Path"
       
       If $sClass = "MovieBox" Then
-        sDest = FSelectIcon.Run($sOldVal, True ) 'GetPicture()
+        sDest = FSelectIcon.Run($sOldVal, True) 'GetPicture()
         If Not sDest Then Goto _EXIT
         $hEditor.Text = sDest
       Else
@@ -959,7 +959,7 @@ Public Sub btnProperty_Click()
       sConnection = GetConnection()
       sTable = GetTable($sOption)
       If sConnection And If sTable Then
-        If FFieldChooser.Run(sConnection, sTable, False , $sOldVal) Then Goto _EXIT
+        If FFieldChooser.Run(sConnection, sTable, False, $sOldVal) Then Goto _EXIT
         $hEditor.Text = FFieldChooser.Value
       Endif
 
@@ -968,7 +968,7 @@ Public Sub btnProperty_Click()
       sConnection = GetConnection()
       sTable = GetTable()
       If sConnection And If sTable Then
-        If FFieldChooser.Run(sConnection, sTable, True , $sOldVal) Then Goto _EXIT
+        If FFieldChooser.Run(sConnection, sTable, True, $sOldVal) Then Goto _EXIT
         $hEditor.Text = FFieldChooser.Value
       Else
         If FText.Run($sOldVal) Then Goto _EXIT
@@ -1025,7 +1025,7 @@ End
 Public Sub grdProperty_DblClick()
 
   If cmbProperty.Visible Then
-    NextComboProperty(False )
+    NextComboProperty(False)
   Else If btnProperty.Visible Then
     btnProperty_Click
   Endif
@@ -1089,7 +1089,7 @@ End
 
 Public Sub ReadConfig()
 
-  $bSort = Settings["/SortProperties", True ]
+  $bSort = Settings["/SortProperties", True]
   Project.SetNormalFont(grdProperty)
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
@@ -1110,7 +1110,7 @@ End
 
 Public Sub CheckIntegratedHelpSetting()
 
-  $bDisableIntegratedHelp = Not Settings["/PropertyHelp", True ]
+  $bDisableIntegratedHelp = Not Settings["/PropertyHelp", True]
   If $bDisableIntegratedHelp Then
     webHelp.Stop
     webHelp.HTML = ""

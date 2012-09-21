@@ -766,8 +766,8 @@ Private Function CloseProject() As Boolean
     Endif
 
     If Not $bTesting Then
-      CloseAllWindows
       Workspace.Lock
+      CloseAllWindows
       For Each hForm In Files
         hForm.Delete
       Next
@@ -2696,7 +2696,7 @@ Public Sub Activate(hForm As Object)
 
   Try ActiveForm.SetFocus
 
-  FMain.HideDebug(sType = "FConnectionEditor")
+  If hForm Then FMain.HideDebug(sType = "FConnectionEditor")
 
   FSearch.Update
   
