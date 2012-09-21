@@ -1069,7 +1069,7 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 
 	if (dbus_error_is_set(&error))
 	{
-		GB.Error("Unable to register application name");
+		GB.Error("Unable to register application name: &1", error.message);
 		dbus_error_free(&error);
 		return TRUE;
 	}
@@ -1090,7 +1090,7 @@ bool DBUS_unregister(DBusConnection *connection, const char *name)
 	
 	if (dbus_error_is_set(&error))
 	{
-		GB.Error("Unable to unregister application name");
+		GB.Error("Unable to unregister application name: &1", error.message);
 		dbus_error_free(&error);
 		return TRUE;
 	}

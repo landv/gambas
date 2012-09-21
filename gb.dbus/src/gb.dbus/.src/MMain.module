@@ -1,6 +1,6 @@
 ' Gambas module file
 
-Public Sub Main()
+Public Sub Main2()
 
   Dim aVal As Variant[]
   Dim hSignal As DBusSignal
@@ -88,4 +88,14 @@ Public Sub MySignal_Signal(Method As String, Arguments As Variant[])
   
   Debug Method
   
+End
+
+Public Sub Main()
+
+  ' Dim hobject As New MyObject
+  ' 
+  ' DBus.Name = "org.gambas.somethingiswrong"
+  ' 
+  ' DBus.System.Register(hobject, "/path/object")
+
 End
