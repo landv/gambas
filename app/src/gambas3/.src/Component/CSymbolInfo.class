@@ -402,6 +402,7 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
     hClass = CComponent.GetClassDescription({Component} &/ {Class})
     Do
       If Not hClass.Parent Then Break
+      'If hClass.ParentComponent = hClass.Component Then Break
       hClass = CComponent.GetClassDescription(hClass.ParentComponent &/ hClass.Parent)
       'hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
       hSym = hClass.Symbols["_new"]

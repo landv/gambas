@@ -229,33 +229,38 @@ Public Sub Main()
 
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
 
-  Application.Theme = Settings["/Theme"]
-  ScrollArea.Shadow = True
-  
-  'DB.Debug = True
-
-  OUTPUT_FILE = Temp$()
-  'CLASSES_FILE = Temp$()
-
-  'EXAMPLES_DIR = "Ceci est une très longue phrase dont j'ai l'espoir qu'elle soit correctement coupée par le ballon affiché par la fenêtre de débogage"
-  'EXAMPLES_DIR = Replace(EXAMPLES_DIR, " ", "0")
-  EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
-
-  Application.ShowTooltips = Settings["/ShowTooltip", True]
-
-  RefreshBreakpointPicture
-
   For iInd = 1 To Args.Count - 1
     sArg = Args[iInd]
     If sArg = "-t" Then
       $bTesting = True
       Continue
-    Endif
-    If Left(sArg) <> "-" Then
+    Else If sArg = "--help" Or If sArg = "-h" Then
+      Print File.Load("usage")
+      Quit
+    Else If sArg = "--license" Or If sArg = "-L" Then
+      Print File.Load("license")
+      Quit
+    Else If sArg = "--version" Or If sArg = "-V" Then
+      Print Application.Version
+      Quit
+    Else If Left(sArg) = "-" Then
+      Error "gambas3: unknown option: " & sArg
+      Quit
+    Else
       sPath = Args[iInd]
       Break
     Endif
   Next
+
+  Application.Theme = Settings["/Theme"]
+  ScrollArea.Shadow = True
+  
+  OUTPUT_FILE = Temp$()
+  EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
+
+  Application.ShowTooltips = Settings["/ShowTooltip", True]
+
+  RefreshBreakpointPicture
 
   If $bTesting And If sPath Then
     InitVersion
@@ -522,7 +527,6 @@ _INIT_AGAIN:
 
     ' Needed for MoveFile()
     RefreshSourceCache
-    VersionControl.CheckPaths()
 
     InsertDirectory(SourceDir)
     aDir = Dir(Project.Dir, "*")
@@ -534,7 +538,6 @@ _INIT_AGAIN:
     Next
 
     RefreshSourceCache
-    VersionControl.CheckPaths()
 
     ReadProject(True)
     WriteProject(True)
@@ -569,7 +572,6 @@ _INIT_AGAIN:
 
     ' Needed for MoveFile()
     RefreshSourceCache
-    VersionControl.CheckPaths()
 
     InsertDirectory(SourceDir)
     aDir = Dir(Project.Dir, "*")
@@ -591,6 +593,8 @@ _INIT_AGAIN:
   ' Endif
 
   CLibraryInfo.Clear
+  ' Component loading needs to know which classes are declared by the project, in the case of a component project that uses itself
+  RefreshSourceCache
   ReadProject
   
   If Not ReadOnly Then
@@ -602,11 +606,8 @@ _INIT_AGAIN:
 
   MConnection.Password.Clear
 
-  If $bTesting Then 
-    RefreshSourceCache
-    VersionControl.CheckPaths()
-  Else
-    Refresh
+  If Not $bTesting Then 
+    DoRefresh(False, True)
   Endif
 
   DefineStartup(Startup, True)
@@ -1534,6 +1535,8 @@ Private Sub RefreshSourceCache()
     If IsSourcePath(hForm.Path) Then hForm.Path = $cSourceDir[File.Name(hForm.Path)]
   Next
 
+  VersionControl.CheckPaths()
+  
 End
 
 Private Sub UpdateTitle()
@@ -1611,7 +1614,7 @@ Private Sub InitProjectFilter()
 
 End
 
-Private Sub DoRefresh(Optional bReset As Boolean)
+Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As Boolean)
 
   Dim sKey As String
   Dim sKeyReset As String
@@ -1627,8 +1630,9 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     sKeyReset = ProjectTree.Key
   Endif
 
-  RefreshSourceCache
-  VersionControl.CheckPaths()
+  If Not bDoNotRefreshCache Then
+    RefreshSourceCache
+  Endif
   InitProjectFilter
 
   With ProjectTree

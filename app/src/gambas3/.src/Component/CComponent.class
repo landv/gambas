@@ -440,6 +440,8 @@ Public Sub Load()
   'Debug "Loading: "; Key
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
   
+  'If Key = Project.Name Then Goto HAS_BEEN_LOADED
+  
   ClassList = New String[]
   Controls = New String[]
   
@@ -515,12 +517,17 @@ Public Sub Load()
           Continue
         Endif
         
-        'IF sClass = "Dialog" THEN STOP
+        'If sClass = "Application" Then Stop
+        
+        If Key = Project.Name And If Project.ExistClass(sClass) Then
+          bNextClass = True
+          Continue
+        Endif
         
         Line Input #hFic, sParent
         If Not sParent Then
           hParent = Classes[sClass]
-          If hParent And If hParent.Component <> Key Then
+          If hParent And If hParent.Component <> Key And If hParent.Component <> Project.Name Then
             sParent = sClass
           Endif
         Endif
