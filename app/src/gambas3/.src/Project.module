@@ -415,8 +415,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Config.Save
     Settings.Save
     
-    sExec = Application.Path &/ Args[0]
-    If Not Exist(sExec) Then sExec = Application.Path &/ Args[0] & ".gambas"
+    sExec = Application.Path &/ File.Name(Args[0])
+    If Not Exist(sExec) Then sExec &= ".gambas"
     If Not Exist(sExec) Then
       Message.Error(Subst(("Unable to find Gambas IDE executable in directory:\n\n&1"), Application.Path))
       Return

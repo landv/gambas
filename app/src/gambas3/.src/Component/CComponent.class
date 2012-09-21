@@ -437,8 +437,6 @@ Public Sub Load()
   
   If Loaded Then Return
   
-  If Key = Project.Name Then Goto HAS_BEEN_LOADED
-  
   'Debug "Loading: "; Key
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
   
@@ -521,7 +519,8 @@ Public Sub Load()
         
         Line Input #hFic, sParent
         If Not sParent Then
-          If Classes.Exist(sClass) Then
+          hParent = Classes[sClass]
+          If hParent And If hParent.Component <> Key Then
             sParent = sClass
           Endif
         Endif
