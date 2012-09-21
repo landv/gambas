@@ -1819,7 +1819,7 @@ _BREAK:
 
 	//DEBUG_where(); fputc('\n', stderr);
 
-	if (EXEC_debug && CP && CP->component == COMPONENT_main)
+	if (EXEC_debug)
 	{
 		//TRACE.ec = PC + 1;
 		//TRACE.ep = SP;
@@ -1827,36 +1827,39 @@ _BREAK:
 		TC = PC + 1;
 		TP = SP;
 		
-		if (EXEC_profile_instr)
-			DEBUG.Profile.Add(CP, FP, PC);
-
-		ind = GET_UX();
-
-		if (ind == 0)
+		if (CP && CP->component == COMPONENT_main)
 		{
-			if (!DEBUG_info->stop)
-				goto _NEXT;
-			
-			// Return from (void stack)
-			if (DEBUG_info->leave)
-			{
-				if (STACK_get_current()->pc)
-					goto _NEXT;
-				if (FP == DEBUG_info->fp)
-					goto _NEXT;
-				if (BP > DEBUG_info->bp)
-					goto _NEXT;
-			}
-			// Forward or Return From
-			else if (DEBUG_info->fp != NULL)
-			{
-				if (BP > DEBUG_info->bp)
-					goto _NEXT;
-			}
-			// otherwise, Next
-		}
+			if (EXEC_profile_instr)
+				DEBUG.Profile.Add(CP, FP, PC);
 
-		DEBUG.Breakpoint(ind);
+			ind = GET_UX();
+
+			if (ind == 0)
+			{
+				if (!DEBUG_info->stop)
+					goto _NEXT;
+				
+				// Return from (void stack)
+				if (DEBUG_info->leave)
+				{
+					if (STACK_get_current()->pc)
+						goto _NEXT;
+					if (FP == DEBUG_info->fp)
+						goto _NEXT;
+					if (BP > DEBUG_info->bp)
+						goto _NEXT;
+				}
+				// Forward or Return From
+				else if (DEBUG_info->fp != NULL)
+				{
+					if (BP > DEBUG_info->bp)
+						goto _NEXT;
+				}
+				// otherwise, Next
+			}
+
+			DEBUG.Breakpoint(ind);
+		}
 	}
 	else
 		*PC = C_NOP;
