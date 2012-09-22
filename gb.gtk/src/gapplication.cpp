@@ -82,6 +82,7 @@ static bool raise_key_event_to_parent_window(gControl *control, int type)
 		win = control->parent()->window();
 		if (win->onKeyEvent && win->canRaise(win, type))
 		{
+			//fprintf(stderr, "onKeyEvent: %d %p %s\n", type, win, win->name());
 			if (win->onKeyEvent(win, type))
 				return true;
 		}
@@ -155,9 +156,11 @@ static void gambas_handle_event(GdkEvent *event)
   GtkWidget *widget;
   GtkWidget *grab;
 	gControl *control, *save_control;
+	gControl *button_grab;
 	int x, y, xs, ys, xc, yc;
 	bool cancel;
 	int type;
+	bool parent_got_it;
 	
 	if (gApplication::_fix_printer_dialog)
 	{
@@ -203,8 +206,15 @@ static void gambas_handle_event(GdkEvent *event)
 	widget = gtk_get_event_widget(event);
 	if (!widget)
 		goto __HANDLE_EVENT;
+
+	button_grab = gApplication::_button_grab;
+	if (event->type == GDK_BUTTON_RELEASE)
+		gApplication::_button_grab = NULL;
 	
 	grab = gtk_window_group_get_current_grab(get_window_group(widget));
+	if (grab && !GTK_IS_WINDOW(grab))
+		goto __HANDLE_EVENT;
+	
 	if (!grab && gApplication::_popup_grab)
 		grab = gApplication::_popup_grab;
 		//gdk_window_get_user_data(gApplication::_popup_grab_window, (gpointer *)&grab);
@@ -247,17 +257,17 @@ static void gambas_handle_event(GdkEvent *event)
 		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
 	}*/
 	
+	//fprintf(stderr, "grab = %p widget = %p %d\n", grab, widget, !gtk_widget_is_ancestor(widget, grab));
+	
 	if (grab && widget != grab && !gtk_widget_is_ancestor(widget, grab))
 		widget = grab;
 	
-	//real = true;
 	while (widget)
 	{
 		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
 		if (control)
 			break;
 		widget = widget->parent;
-		//real = false;
 	}
 	
 	/*if (event->type == GDK_BUTTON_PRESS)
@@ -375,9 +385,8 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 		{
-			//fprintf(stderr, "grab = %p\n", grab);
-			if (gApplication::_button_grab)
-				control = gApplication::_button_grab;
+			if (button_grab)
+				control = button_grab;
 			else
 				control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
@@ -403,6 +412,7 @@ static void gambas_handle_event(GdkEvent *event)
 					//gtk_grab_add(control->border);
 				}
 			}
+
 			
 		__BUTTON_TRY_PROXY:
 		
@@ -500,8 +510,8 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_MOTION_NOTIFY:
 
-			if (gApplication::_button_grab)
-				control = gApplication::_button_grab;
+			if (button_grab)
+				control = button_grab;
 			else
 				control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root);
 			
@@ -611,6 +621,8 @@ static void gambas_handle_event(GdkEvent *event)
 			
 			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 			
+			parent_got_it = false;
+			
 			if (control)
 			{
 			__KEY_TRY_PROXY:
@@ -619,13 +631,21 @@ static void gambas_handle_event(GdkEvent *event)
 				
 				if (!gKey::enable(control, &event->key))
 				{
-					if (gApplication::onKeyEvent)
-						cancel = gApplication::onKeyEvent(type);
-					if (!cancel)
-						cancel = raise_key_event_to_parent_window(control, type);
+					if (!parent_got_it)
+					{
+						parent_got_it = true;
+						
+						if (gApplication::onKeyEvent)
+							cancel = gApplication::onKeyEvent(type);
+						
+						if (!cancel)
+							cancel = raise_key_event_to_parent_window(control, type);
+					}
+					
 					if (!cancel && control->onKeyEvent && control->canRaise(control, type)) 
 					{
 						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
+						//fprintf(stderr, "onKeyEvent: %p %d %p %s\n", event, type, control, control->name());
 						cancel = control->onKeyEvent(control, type);
 					}
 				}
@@ -678,16 +698,6 @@ __HANDLE_EVENT:
 	gtk_main_do_event(event);
 	
 __RETURN:
-	
-	if (event->type == GDK_BUTTON_RELEASE)
-	{
-		if (gApplication::_button_grab)
-		{
-			//fprintf(stderr, "ungrab %s\n", gApplication::_button_grab->name());
-			//gtk_grab_remove(gApplication::_button_grab->border);
-			gApplication::_button_grab = NULL;
-		}
-	}
 	
 	(void)0;
 	//if (ungrab)
