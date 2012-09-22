@@ -2390,6 +2390,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	bool cancel;
 	QPoint p;
 	void *jump;
+	bool parent_got_it;
 
 	//if (widget->isA("MyMainWindow"))
 	//	getDesignDebug(widget);
@@ -2804,6 +2805,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
 		cancel = false;
+		parent_got_it = false;
 
 		#if QT_VERSION > 0x030005
 		if (!original && type != QEvent::InputMethod)
@@ -2843,8 +2845,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		
 		GB.Ref(control);
 		
-		if (!cancel)
-			cancel = raise_key_event_to_parent_window(control, event_id);
+		if (!parent_got_it)
+		{
+			parent_got_it = true;
+			if (!cancel)
+				cancel = raise_key_event_to_parent_window(control, event_id);
+		}
 		
 		if (!cancel)
 			cancel = GB.Raise(control, event_id, 0);
