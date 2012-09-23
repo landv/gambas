@@ -298,48 +298,57 @@
           MoveScaled(2,39,72,31)
           Arrangement = Arrange.Fill
           { datData DataSource
-            MoveScaled(2,1,66,26)
+            MoveScaled(2,1,66,20)
             Arrangement = Arrange.Vertical
             { tlbData ToolBar
               MoveScaled(2,2,61,4)
               Separator = True
-              { btnSaveData ToolButton
+              { btnEditData ToolButton
                 MoveScaled(0,0,9,4)
                 AutoResize = True
-                Text = ("Save")
-                Picture = Picture["icon:/small/save"]
-              }
-              { btnAddData ToolButton
-                MoveScaled(9,0,8,4)
-                AutoResize = True
-                Text = ("Add")
-                Picture = Picture["icon:/small/add"]
-              }
-              { btnRemoveData ToolButton
-                MoveScaled(18,0,10,4)
-                AutoResize = True
-                Text = ("Delete")
-                Picture = Picture["icon:/small/remove"]
+                Text = ("Edit")
+                Picture = Picture["icon:/small/edit"]
+                Toggle = True
               }
               { btnExportData ToolButton
-                MoveScaled(34,0,12,4)
+                MoveScaled(10,0,12,4)
                 ToolTip = ("Export to CSV file")
                 AutoResize = True
                 Text = ("Export...")
                 Picture = Picture["icon:/small/save-as"]
               }
+              { btnSaveData ToolButton
+                MoveScaled(22,0,9,4)
+                Enabled = False
+                AutoResize = True
+                Text = ("Save")
+                Picture = Picture["icon:/small/save"]
+              }
+              { btnAddData ToolButton
+                MoveScaled(31,0,8,4)
+                Enabled = False
+                AutoResize = True
+                Text = ("Add")
+                Picture = Picture["icon:/small/add"]
+              }
+              { btnRemoveData ToolButton
+                MoveScaled(40,0,10,4)
+                Enabled = False
+                AutoResize = True
+                Text = ("Delete")
+                Picture = Picture["icon:/small/remove"]
+              }
             }
             { dvwData DataView
-              MoveScaled(4,8,46,17)
+              MoveScaled(4,8,46,11)
               Expand = True
               Mode = Select.Multiple
-              Editable = True
               Grid = True
               Border = False
             }
           }
           { datRequest DataSource
-            MoveScaled(8,7,66,26)
+            MoveScaled(2,22,66,26)
             Visible = False
             Arrangement = Arrange.Vertical
             { tlbData3 ToolBar

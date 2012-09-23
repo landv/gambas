@@ -159,7 +159,7 @@ Public Sub Reload() As Boolean
   Endif
 
   $hConn = New Connection
-  MConnection.InitFrom($hConn, hConfig, Me.Name, True )
+  MConnection.InitFrom($hConn, hConfig, Me.Name, True)
 
   Inc Application.Busy
 
@@ -183,6 +183,7 @@ Public Sub Reload() As Boolean
   
   lblTitle.Text = "  " & sTitle & "  "
   
+  dvwData.Editable = False
   datData.Connection = $hConn
   datRequest.Connection = $hConn
 
@@ -223,7 +224,7 @@ End
 
 Private Sub DrawTitle()
 
-  Project.DrawTitle(Me, True )
+  Project.DrawTitle(Me, True)
 
 End
 
@@ -294,7 +295,7 @@ Private Sub CheckCurrent() As Boolean
       Case 1
         If Save() Then Goto CANCEL
       Case 2
-        Modify(True )
+        Modify(True)
       Case 3
         Goto CANCEL
     End Select
@@ -567,7 +568,7 @@ Public Sub tbvField_Click()
 
     Case 2
       '.ShowComboBox([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True, True)
-      tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True )
+      tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True)
 
     Case 3
       If hField.Type = gb.String Then
@@ -605,11 +606,11 @@ Public Sub tbvIndex_Click()
 
     Case 1
       If hIndex.Index Then
-        tbvIndex.Edit(["True", "False"], True )
+        tbvIndex.Edit(["True", "False"], True)
       Endif
 
     Case 2
-      tbvIndex.Edit(FreeIndexFields(True ), True )
+      tbvIndex.Edit(FreeIndexFields(True), True)
 
   End Select
 
@@ -954,7 +955,7 @@ Public Sub btnNewIndexField_Click()
 
   If tbvIndex.Save() Then Return
 
-  aField = FreeIndexFields(False )
+  aField = FreeIndexFields(False)
   If aField.Count = 0 Then Return
 
   hIndexField = New CIndexField
@@ -1198,7 +1199,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
       sTemp = MConnection.CopyTableData($hConn, $sTable)
     Endif
   
-    WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True )
+    WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
     WriteTableDef($sTable, $sType, aPrimaryKey)
     
   Endif
@@ -1236,7 +1237,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   datData.Reset
   'datRequest.Reset
 
-  Modify(True )
+  Modify(True)
   ReloadTable
 
 Finally
@@ -1363,7 +1364,7 @@ Public Sub btnRequest_Click()
   datData.Hide
   datRequest.Show
   tlbData.Hide
-  SetReadOnly(True )
+  SetReadOnly(True)
 
 End
 
@@ -1491,7 +1492,7 @@ End
 
 Public Sub edtRequest_GotFocus()
 
-  Project.SetCurrentPopup(Null )
+  Project.SetCurrentPopup(Null)
 
 End
 
@@ -1571,9 +1572,11 @@ Public Sub btnShowSystem_Click()
 
 End
 
+Public Sub btnEditData_Click()
 
-Public Sub Form_Open()
-
-  
+  dvwData.Editable = btnEditData.Value
+  btnSaveData.Enabled = btnEditData.Value
+  btnAddData.Enabled = btnEditData.Value
+  btnRemoveData.Enabled = btnEditData.Value
 
 End

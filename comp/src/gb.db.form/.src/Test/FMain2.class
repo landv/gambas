@@ -36,7 +36,7 @@ Public Sub Button1_Click()
 
 End
 
-Public Sub DataBrowser1_Data(Row As Integer, Column As Integer, Value As Variant)
+Public Sub DataBrowser1_Data((Row) As Integer, Column As Integer, Value As Variant)
 
   If IsNull(Value) Then Return
 

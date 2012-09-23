@@ -143,7 +143,7 @@ Private Sub RefreshLabels()
     With $hTable.GetFieldInfo($aColumns[iInd])
       Try $hCtrl.Columns[iInd].Text = $aLabels[iInd]
       If Error Then $hCtrl.Columns[iInd].Text = .Name
-      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl, True )
+      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl, True)
     End With
   Next
 
@@ -234,7 +234,7 @@ Private Sub Load()
   $hCtrl.Refresh
 
   If hSrc.Index < 0 Then 
-    SetCreate(True )
+    SetCreate(True)
     If bReset Then 
       $bNoActivate = True
       $hCtrl.MoveTo(0, 0)
@@ -526,9 +526,9 @@ Public Sub TableView_Click()
         'If Not $hComboBox Then InitComboBox
         '$hComboBoxMenu.Children[0].Visible = IsNull(hField.Default)
         If IsNull(hField.Default) Then
-          $hCtrl.Edit(["", ("False"), ("True")], True )
+          $hCtrl.Edit(["", ("False"), ("True")], True)
         Else
-          $hCtrl.Edit([("False"), ("True")], True )
+          $hCtrl.Edit([("False"), ("True")], True)
         Endif
         '$hCtrl.EditWith($hComboBox)
       Case db.String
@@ -576,9 +576,9 @@ Public Sub TableView_Change()
   If $bNoActivate Then Return
   
   If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Count - 1 Then 
-    SetCreate(True )
+    SetCreate(True)
   Else
-    SetCreate(False )
+    SetCreate(False)
   Endif
   
   If $hCtrl.Row <> $iLastRow Then
@@ -851,7 +851,7 @@ Private Sub SaveNewRecord(Optional bNoMessage As Boolean) As Boolean
   
 Catch
 
-  If Not bNoMessage Then Warning("<b>" & ("Unable to save record.") & "</b><p><font size=\"-1\">" & Error.Text & "</font>", True ) 
+  If Not bNoMessage Then Warning("<b>" & ("Unable to save record.") & "</b><p><font size=\"-1\">" & Error.Text & "</font>", True) 
   Return True
   
 End
@@ -897,7 +897,7 @@ End
 
 Public Sub Create()
   
-  SetCreate(True )
+  SetCreate(True)
   If Not CanEdit() Then Return
     
   If $hCtrl.Save() Then Goto _EDIT
@@ -908,7 +908,7 @@ Public Sub Create()
   Endif
     
   CreateNewRecord()
-  SetCreate(False )
+  SetCreate(False)
   $hCtrl.MoveTo($hCtrl.Rows.Count - 1, 0)
   $hCtrl.Current.EnsureVisible
 
@@ -1005,7 +1005,7 @@ Public Function Remove() As Boolean
         hSrc._DeleteCurrent()
       Next
       hSrc._GetDB().Commit
-      hSrc.Create(True )
+      hSrc.Create(True)
     
     Endif
     
@@ -1015,7 +1015,7 @@ Public Function Remove() As Boolean
   
 Catch
 
-  Warning("<b>" & ("Unable to delete record.") & "</b><p><font size=\"-1\">" & Error.Text & "</font>", True ) 
+  Warning("<b>" & ("Unable to delete record.") & "</b><p><font size=\"-1\">" & Error.Text & "</font>", True) 
   If bRollback Then hSrc._GetDB().Rollback
   Return True
   
@@ -1105,13 +1105,12 @@ End
 Private Sub Editable_Write(Value As Boolean)
 
   If $bEditable = Value Then Return
+  If Not Value Then HideNewRecord
   $bEditable = Value
   $hCtrl.ShowCursor = $bEditable
   If Value Then 
     'CreateNewRecord
     Me.Create
-  Else
-    HideNewRecord
   Endif
 
 End
