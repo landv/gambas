@@ -54,7 +54,7 @@ dist-hook:
 		( \
 			cp -pR $(COMPONENT) $(distdir)/$(COMPONENT); \
 			cd $(distdir)/$(COMPONENT); \
-			rm -rf .gambas .xvpics */.xvpics */*/.xvpics *~ */*~ */*/*~ *.out .*.out .lang/*.pot *.gambas core.* .svn */.svn */*/.svn */*/*/.svn; \
+			rm -rf .gambas .action .xvpics */.xvpics */*/.xvpics *~ */*~ */*/*~ *.out .*.out .lang/*.pot *.gambas core.* .svn */.svn */*/.svn */*/*/.svn; \
 		) \
 	fi
 	@rm -f $(distdir)/moc_*.cpp
