@@ -38,8 +38,8 @@ Public Const _IsVirtual As Boolean = True
 Public Const _Group As String = "Network"
 Public Const _Properties As String = "Host,Port,Debug,Encrypt{Net.None;SSL}"
 
-Public Const SERVER_POSITIVE_RESPONSE As String = "+OK"
-Public Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
+Private Const SERVER_POSITIVE_RESPONSE As String = "+OK"
+Private Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
 
 ''Use plaintext or an ssl encrypted conenction
 Property Encrypt As Integer
