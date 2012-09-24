@@ -12,12 +12,14 @@ Private $eStartup As Float
 Private $hLock As File
 Private $sPrefix As String
 Private $bUnique As Boolean
+Private $sCookiePath As String
 
 Property Id As String
 Property Timeout As Float
 Property Prefix As String
 Property Unique As Boolean
 Property Modified As Boolean
+Property CookiePath As String
 
 Private Sub LockSession() 
   
@@ -83,6 +85,7 @@ Private Sub SaveSession()
     Output To #hFile
     'WriteValue($cVal)
     Write #hFile, $cVal As Variant
+    Write #hFile, $sCookiePath As String
     Output To Default
     
     Close #hFile
@@ -143,6 +146,7 @@ Private Sub LoadSession()
   Endif
   
   $cVal = Read #hFile As Variant 
+  Try $sCookiePath = Read #hFile As String
   '$cVal = ReadValue()
   $bModify = False
   Close #hFile
@@ -241,7 +245,7 @@ Private Sub CreateSession()
   
   CheckUnique
   
-  Response.SetCookie("SESSION", $sId, "", CGI["SCRIPT_NAME"],, True)
+  Response.SetCookie("SESSION", $sId, "", GetCookiePath(),, True)
   
   $cVal = New Collection
   $eStartup = Now
@@ -278,6 +282,15 @@ Public Sub _exit()
   
 End
 
+Private Sub GetCookiePath() As String
+
+  If $sCookiePath Then
+    Return $sCookiePath
+  Else
+    Return CGI["SCRIPT_NAME"]
+  Endif
+
+End
 
 Public Sub Abandon()
   
@@ -289,7 +302,7 @@ Public Sub Abandon()
 
   Try Kill $sPath
   Try Kill $sPath & ".lock"
-  Response.RemoveCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]))
+  Response.RemoveCookie("SESSION", $sId, "", GetCookiePath())
   $sId = ""
   $sPath = ""
   $cVal = Null
@@ -385,5 +398,17 @@ End
 Private Sub Modified_Write(Value As Boolean)
 
   $bModify = Value
+
+End
+
+Private Function CookiePath_Read() As String
+
+  Return $sCookiePath
+
+End
+
+Private Sub CookiePath_Write(Value As String)
+
+  $sCookiePath = Value
 
 End
