@@ -255,7 +255,7 @@ Public Sub Main()
   Next
 
   Application.Theme = Settings["/Theme"]
-  ScrollArea.Shadow = True
+  'ScrollArea.Shadow = True
   
   OUTPUT_FILE = Temp$()
   EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
