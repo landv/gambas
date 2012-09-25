@@ -1040,6 +1040,22 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         
         .Type = FEditor.ReadSymbolType(aSym, iInd)
         
+        If .Kind = "C" Then
+          
+          Do
+            Inc iInd
+            If iInd >= aSym.Count Then Break
+            If aSym[iInd] = "=" Then
+              Inc iInd
+              If iInd < aSym.Count Then
+                .Value = aSym[iInd]
+                If .Type = "s" Then .Value = UnQuote(.Value)
+              Endif
+            Endif
+          Loop
+          
+        Endif
+        
       Endif
       
       If bStatic Then .Kind = UCase(.Kind)
