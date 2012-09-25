@@ -18,8 +18,11 @@
       #MoveScaled(0,8)
       Delay = 100
     }
-    { lvwComp ListView
+    { gvwComp GridView
       MoveScaled(1,1,7,6)
+      Mode = Select.Single
+      Grid = False
+      ScrollBar = Scroll.Vertical
       Border = False
     }
     { sepHelp Separator
