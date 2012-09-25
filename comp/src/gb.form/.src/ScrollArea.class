@@ -9,8 +9,6 @@ Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
 'Public Const _Group As String = "View"
 
-Static Property Shadow As Boolean
-
 Property ScrollX As Integer
 Property ScrollY As Integer
 Property Read ScrollWidth, ScrollW As Integer
@@ -29,6 +27,7 @@ Property ScrollBar As Integer
 Property Tracking As Boolean
 Property Background As Integer
 Property Tablet As Boolean
+Property Shadow As Boolean
 Property Read View As DrawingArea
 
 Event Scroll
@@ -52,7 +51,7 @@ Private $bPainted As Boolean
 Private $W As Integer
 Private $H As Integer
 
-Static Private $bShadow As Boolean
+Private $bShadow As Boolean
 Private $iShadowN As Integer
 Private $iShadowS As Integer
 Private $iShadowW As Integer
@@ -554,13 +553,13 @@ Private Sub Tablet_Write(Value As Boolean)
 
 End
 
-Static Private Function Shadow_Read() As Boolean
+Private Function Shadow_Read() As Boolean
 
   Return $bShadow
 
 End
 
-Static Private Sub Shadow_Write(Value As Boolean)
+Private Sub Shadow_Write(Value As Boolean)
 
   $bShadow = Value
 

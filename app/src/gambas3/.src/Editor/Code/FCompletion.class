@@ -5,6 +5,8 @@ Static Private $aSpecialMethods As String[] = ["_attach", "_call", "_compare", "
 
 Static Private $hClassPicture As Picture
 
+Private $aKey As String[]
+
 Private $iCol As Integer
 Private $sText As String
 Private $bLoaded As Boolean
@@ -24,6 +26,13 @@ Private $iMinH As Integer
 Private $iMaxY As Integer
 
 Private $hEditor As Editor
+
+Public Sub _new()
+  
+  gvwComp.Columns.Count = 1
+  
+End
+
 
 Public Sub OnRefreshComponents()
 
@@ -98,7 +107,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       FillWithIdent(Left$(sClass, $iLen))
   End Select
 
-  If lvwComp.Count = 0 Then
+  If gvwComp.Rows.Count = 0 Then
     Dec Application.Busy
     Return
   Endif
@@ -107,18 +116,20 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   
   'PRINT "Open: $hEditor = "; $hEditor
 
-  lvwComp.MoveFirst
-  H = lvwComp.Item.H
+  'lvwComp.MoveFirst
+  'H = lvwComp.Item.H
+  H = gvwComp.Rows.H
   
   If sMode = "<" Or sMode = "A" Then 
-    If FindItem(True ) Then 
+    If FindItem(True) Then 
       Dec Application.Busy
       Return
     Endif 
-  Else 
-    lvwComp.MoveFirst
-    lvwComp.Item.Selected = True
-    lvwComp.Item.EnsureVisible
+  Else
+    gvwComp.Row = 0
+    'lvwComp.MoveFirst
+    'lvwComp.Item.Selected = True
+    'lvwComp.Item.EnsureVisible
   Endif 
 
   W = $iMaxLen * Me.Font.TextWidth("A") + 16 + 16 + 12
@@ -129,15 +140,15 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     panRight.Show
     $iMinW = W + 4 + 128
     $iMinH = Desktop.Scale * 24
-    lvwComp.Expand = False
-    lvwComp.W = W
-    Me.Resize(Max($iMinW, Me.W), Max(Me.H, Max($iMinH, H * Min(8, lvwComp.Count) + 2)))
+    gvwComp.Expand = False
+    gvwComp.W = W
+    Me.Resize(Max($iMinW, Me.W), Max(Me.H, Max($iMinH, H * Min(8, gvwComp.Rows.Count) + 2)))
   Else
     sepHelp.Hide
     webHelp.Hide
     panRight.Hide
-    lvwComp.Expand = True
-    Me.Resize(W + 4, H * Min(8, lvwComp.Count) + 2)
+    gvwComp.Expand = True
+    Me.Resize(W + 4, H * Min(8, gvwComp.Rows.Count) + 2)
   Endif
 
   sText = String.Left($hEditor.Lines[$hEditor.Line].Text, $iCol)
@@ -189,7 +200,31 @@ End
 Public Sub SetText(sText As String)
   
   $sText = sText
-  FindItem(True )
+  FindItem(True)
+  
+End
+
+Private Sub ClearRows()
+  
+  gvwComp.Clear
+  gvwComp.Rows.Count = 0
+  $aKey = New String[]
+  
+End
+
+
+Private Sub AddRow(sKey As String, sText As String, hPic As Picture)
+  
+  Dim Y As Integer = gvwComp.Rows.Count
+  
+  Inc gvwComp.Rows.Count
+  
+  With gvwComp[Y, 0]
+    .Text = sText
+    .Picture = hPic
+  End With
+  
+  $aKey.Add(sKey)
   
 End
 
@@ -245,12 +280,12 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   hPic[5] = hPic[0]
   hPic[6] = Picture["img/symbol/special.png"]
   
-  lvwComp.Clear
+  ClearRows
 
   For Each sClass In aClass
     iType = Val(Right$(sClass))
     sClass = Left$(sClass, -2)
-    Try lvwComp.Add(CStr(iType) & sClass, sClass, hPic[iType])
+    AddRow(CStr(iType) & sClass, sClass, hPic[iType])
     $iMaxLen = Max($iMaxLen, Len(sClass))
   Next
   
@@ -269,7 +304,7 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
   Dim aSymbol As New String[]
   Dim sSymbol As String
 
-  lvwComp.Clear
+  ClearRows
 
   cSymbol = CComponent.GetClassSymbols(sClass)
   If Not cSymbol Then Return
@@ -293,7 +328,7 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
 
   For Each sSymbol In aSymbol
     hSymbol = cSymbol[sSymbol]
-    Try lvwComp.Add(CStr(MHelp.TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
+    AddRow(CStr(MHelp.TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
     $iMaxLen = Max($iMaxLen, Len(sSymbol))
   Next
 
@@ -327,7 +362,7 @@ Private Sub GetEvents(sCtrl As String) As String[]
   
   If Not aEvent Then
     For iLine = 0 To $hEditor.Lines.Count - 1
-      sLine = $hEditor.Lines[iLine].Purge(False , True )
+      sLine = $hEditor.Lines[iLine].Purge(False, True)
       
       aLine = Scan(sLine, "*NEW * AS \"*\"*")
       If aLine.Count <> 4 Then Continue
@@ -378,7 +413,7 @@ Private Sub FillWithIdent(sWord As String)
   Dim iLine As Integer
   Dim sUCaseLine As String
 
-  lvwComp.Clear
+  ClearRows
 
   sOrg = sWord
   sWord = UCase(sWord)
@@ -475,10 +510,10 @@ Private Sub FillWithSpecial()
   Dim sName As String
   Dim hPict As Picture = Picture["img/16/point.png"]
   
-  lvwComp.Clear
+  ClearRows
   
   For Each sName In $aSpecialMethods
-    Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
+    AddRow(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
   Next
   
 End
@@ -493,87 +528,43 @@ End
 
 Public Function ManageKey() As Boolean
 
-  Dim iInd As Integer
+  Dim iRow As Integer
 
   Select Case Key.Code
 
     Case Key.Up, Key.PageUp
 
-      lvwComp.MoveCurrent
-      If lvwComp.Item.Selected Then
-
-        For iInd = 1 To If(Key.Code = Key.Up, 1, 8)
-          If lvwComp.MoveAbove() Then Break
-        Next
-
-      Endif
-
-      If Not lvwComp.Available Then 
-        If Key.Code = Key.Up Then
-          lvwComp.MoveLast
-        Else
-          lvwComp.MoveFirst
-        Endif
-      Endif
-      If lvwComp.Available Then
-        lvwComp.Item.Selected = True
-        lvwComp.Item.EnsureVisible
-        $bUserChoice = True
-      Endif
+      iRow = gvwComp.Row - If(Key.Code = Key.Up, 1, 8)
+      If iRow < 0 Then iRow = gvwComp.Rows.Count - 1
+      gvwComp.Row = iRow
+      $bUserChoice = True
 
     Case Key.Down, Key.PageDown
 
-      lvwComp.MoveCurrent
-      If lvwComp.Item.Selected Then
-
-        For iInd = 1 To If(Key.Code = Key.Down, 1, 8)
-          If lvwComp.MoveBelow() Then Break
-        Next
-
-      Endif
-
-      If Not lvwComp.Available Then 
-        If Key.Code = Key.Down Then
-          lvwComp.MoveFirst
-        Else
-          lvwComp.MoveLast
-        Endif
-      Endif
-      If lvwComp.Available Then
-        lvwComp.Item.Selected = True
-        lvwComp.Item.EnsureVisible
-        $bUserChoice = True
-      Endif
+      iRow = gvwComp.Row + If(Key.Code = Key.Down, 1, 8)
+      If iRow >= gvwComp.Rows.Count Then iRow = 0
+      gvwComp.Row = iRow
+      $bUserChoice = True
 
     Case Key.Home
 
-      lvwComp.MoveCurrent
-      If lvwComp.MovePrevious() Then
+      If gvwComp.Row = 0 Then
         Me.Hide
         Return
       Endif
 
-      lvwComp.MoveFirst
-      If lvwComp.Available Then
-        lvwComp.Item.Selected = True
-        lvwComp.Item.EnsureVisible
-        $bUserChoice = True
-      Endif
+      gvwComp.Row = 0
+      $bUserChoice = True
 
     Case Key.End
 
-      lvwComp.MoveCurrent
-      If lvwComp.MoveNext() Then
+      If gvwComp.Row = gvwComp.Rows.Count - 1 Then
         Me.Hide
         Return
       Endif
 
-      lvwComp.MoveLast
-      If lvwComp.Available Then
-        lvwComp.Item.Selected = True
-        lvwComp.Item.EnsureVisible
-        $bUserChoice = True
-      Endif
+      gvwComp.Row = gvwComp.Rows.Count - 1
+      $bUserChoice = True
 
     Case Key.Escape
       Me.Hide
@@ -589,7 +580,7 @@ Public Function ManageKey() As Boolean
     Case Key.Space
       If Key.Control Then
         If UCase($sText) = "NEW" Then Return
-        InsertItem(True )
+        InsertItem(True)
       Else
         Me.Hide
       Endif
@@ -641,51 +632,48 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
 
   Dim sComp As String
   Dim iLevel As Integer
-  Dim sKey As String
   Dim nComp As Integer
   Dim sText As String
+  Dim I As Integer
+  Dim iRow As Integer
 
   'sComp = Replace($sText, "[", "[[]") & "*"
   sComp = UCase($sText)
 
-  lvwComp.MoveFirst
-  While lvwComp.Available
-    If UCase(lvwComp.Item.Text) Begins sComp Then Break
-    lvwComp.MoveNext
-  Wend
-  
-  If Not lvwComp.Available Then
+  For I = 0 To gvwComp.Rows.Max
+    If UCase(gvwComp[I, 0].Text) Begins sComp Then Break
+  Next
+
+  If I >= gvwComp.Rows.Count Then
     Me.Hide
     Return 
   Endif 
   
-  sKey = lvwComp.Item.Key
+  iRow = gvwComp.Row
 
-  While lvwComp.Available
-    With lvwComp.Item
+  For I = I To gvwComp.Rows.Max
+
+    With gvwComp[I, 0]
       sText = Trim(.Text)
       If Not (UCase(sText) Begins sComp) Then Break
       If iLevel <= 2 And If .Text = $sText Then
-        sKey = .Key
+        iRow = I
         iLevel = 3
       Else If iLevel <= 1 And If UCase(sText) = UCase($sText) Then
-        sKey = .Key
+        iRow = I
         iLevel = 2
       Else If iLevel <= 0 And If Left(sText, Len($sText)) = $sText Then 
-        sKey = .Key
+        iRow = I
         iLevel = 1
       Endif
     End With
     Inc nComp
-    lvwComp.MoveNext
-  Wend
+  Next
 
-  lvwComp.MoveTo(sKey)
-  lvwComp.Item.Selected = True
-  lvwComp.Item.EnsureVisible
-  
+  gvwComp.Row = iRow
+
   If nComp = 1 And iLevel = 3 Then
-    If Not bNoInsert Then InsertItem(True )
+    If Not bNoInsert Then InsertItem(True)
     Return True
   Endif
   
@@ -695,8 +683,7 @@ Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
 
   Dim sText As String
 
-  Try sText = lvwComp.Current.Text
-  If Not lvwComp.Current.Selected Then Return
+  Try sText = gvwComp.Current.Text
   If Not sText Then Return True
 
   If bNoSpace Then
@@ -706,19 +693,20 @@ Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
   With $hEditor
     .Select(.Line, $iCol, .Line, .Column)
     .Insert(sText)
+    .SetFocus
   End With
 
   Me.Hide
 
 End
 
-Public Sub lvwComp_Click()
+Public Sub gvwComp_Click()
 
   Try InsertItem
 
 End
 
-Public Sub lvwComp_KeyPress()
+Public Sub gvwComp_KeyPress()
 
   Dim hForm As FEditor
 
@@ -739,10 +727,8 @@ Private Sub CompleteItem() As Boolean
   Dim sText As String
   Dim iPos As Integer
   
-  sCurrent = lvwComp.Current.Text
-  lvwComp.MoveCurrent
-  lvwComp.MoveNext
-  Try sNext = lvwComp.Item.Text
+  sCurrent = gvwComp.Current.Text
+  Try sNext = gvwComp[gvwComp.Row + 1, 0].Text
   
   For iPos = Len($sText) + 1 To Min(Len(sCurrent), Len(sNext))
     If Comp(Mid$(sCurrent, iPos, 1), Mid$(sNext, iPos, 1), gb.IgnoreCase) Then Break
@@ -774,9 +760,9 @@ Public Sub timHelp_Timer()
   
   If Not $hEditor Then Return
   
-  Try sSymbol = lvwComp.Current.Text
+  Try sSymbol = gvwComp.Current.Text
   If sSymbol Then   
-    iType = CInt(Left(lvwComp.Key))
+    iType = CInt(Left($aKey[gvwComp.Row]))
     sClass = $sClass
     If Not sClass Then sClass = $sEventClass
     MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", $hEditor.Window)
@@ -786,7 +772,7 @@ Public Sub timHelp_Timer()
   
 End
 
-Public Sub lvwComp_Select()
+Public Sub gvwComp_Select()
 
   If Not $bShowHelp Then Return
   timHelp.Stop
@@ -798,7 +784,7 @@ End
 
 Public Sub webHelp_GotFocus()
 
-  lvwComp.SetFocus
+  gvwComp.SetFocus
 
 End
 

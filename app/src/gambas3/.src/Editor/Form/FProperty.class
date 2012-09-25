@@ -38,6 +38,8 @@ Public Sub _new()
   grdProperty.ScrollBar = Scroll.Vertical
   grdProperty.Columns.Resizable = True
 
+  ScrollArea(grdProperty.Proxy).Shadow = True
+
 End
 
 Public Sub Form_Open()
