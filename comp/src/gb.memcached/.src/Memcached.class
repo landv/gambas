@@ -1,0 +1,545 @@
+' Gambas class file
+
+Export
+
+Private Const ERROR_CODE As Integer = -1
+Private Const ERROR_GEN As String = "ERROR"
+Private Const ERROR_CLIENT As String = "CLIENT_ERROR"
+Private Const ERROR_SERVER As String = "SERVER_ERROR"
+
+Public Const STORED As Integer = 0
+Public Const NOT_STORED As Integer = 1
+Public Const EXISTS As Integer = 2
+Public Const NOT_FOUND As Integer = 3
+
+Public Const DELETED As Integer = 4
+
+Public Const TOUCHED As Integer = 5
+
+Private Const SLAB_OK As Integer = 6
+
+Private sSocket As New Socket As "Client"
+
+''Returns or sets the server used to connect to the server.
+''It cannot be modified after Open() is executed
+Property Host As String
+Private $sHost As String
+
+''Returns or sets the port used to connect to the server.
+''It cannot be modified after Open() is executed
+Property Port As Integer
+Private $iPort As Integer
+
+'' If debugging mode is activated for this client
+Property Debug As Boolean
+Private $bDebug As Boolean
+
+Property Read Status As Integer
+Private $iStatus As Integer
+
+'' If connection has been closed
+Private $bClosed As Boolean
+
+Property Read {Error} As String
+Private $sError As String
+
+Private $cTempArray As New Collection
+
+Property SlabsAutomove As Integer
+Private $iSlabsAutomove As Integer
+
+Property Read Version As String
+
+''Returns True if _Text_ begins with "+OK"
+Private Function _HadError(Text As String) As Boolean
+
+  If (Text Begins ERROR_CLIENT Or Text Begins ERROR_GEN Or Text Begins ERROR_SERVER) Then
+
+    $sError = Mid(Text, InStr(Text, " ") + 1)
+
+    Return True
+
+  Endif
+
+  Return False
+
+End
+
+Public Sub _new()
+
+  'Wait 10 seconds before timing out
+  sSocket.Timeout = 1000
+
+  sSocket.EndOfLine = gb.Windows
+
+End
+
+''Establish a connection
+Public Function Open() As Boolean
+
+  Dim iPort As Integer
+
+  If Not $sHost Then
+    _PrintDebug(("Server not set, using localhost"))
+    $sHost = "localhost"
+  Endif
+
+  iPort = $iPort
+
+  If iPort = 0 Then
+    iPort = 11211
+    If $bDebug Then _PrintDebug(("Port not specified, using 11211"))
+  Endif
+
+  If $bDebug Then _PrintDebug("Connecting to " & Me.Host)
+
+  $iStatus = Connect(Me.Host, iPort)
+  If $bDebug Then _PrintDebug("OK")
+
+  Return $iStatus
+
+End
+
+''Disconnect from the server
+Public Function Close() As Boolean
+
+  If $iStatus <> Net.Connected Then
+    Error.Raise(("Not connected"))
+  Else If $bClosed Then
+    Error.Raise(("Already disconnected"))
+  Endif
+
+  If $bDebug Then _PrintDebug("Disconnecting...")
+  Disconnect()
+
+  $bClosed = True
+
+  $cTempArray = Null
+
+  $iStatus = Net.Inactive
+
+  Return $iStatus
+
+End
+
+''Store this data
+' Public Function Set(sKey As String, vData As String) As Integer
+'
+'   If $bDebug Then _PrintDebug(Subst("Setting &1 => &2", sKey, vData))
+'
+'   Return Store("set", sKey, vData)
+'
+' End
+
+''Store this data, but only if the server *doesn't* already hold data for this key
+' Public Function Add(sKey As String, vData As String) As Integer
+'
+'   If $bDebug Then _PrintDebug(Subst("Adding &1 => &2", sKey, vData))
+'
+'   Return Store("add", sKey, vData)
+'
+' End
+
+' Public Function Replace(sKey As String, vData As String) As Integer
+'
+'   If $bDebug Then _PrintDebug(Subst("Replacing &1 => &2", sKey, vData))
+'
+'   Return Store("replace", sKey, vData)
+'
+' End
+
+Public Function Store(sCommand As String, sKey As String, vData As String, Optional iExpire As Integer = 0, Optional sFlags As Integer = 0, Optional iCas As Integer) As Integer
+
+  Dim iLen As Integer
+
+  If $iStatus <> Net.Connected Then
+    Error.Raise(("Not connected"))
+  Endif
+
+  If TypeOf(vData) <> gb.String Then
+    Error.Raise("Not implemented yet. Only strings!")
+  Endif
+
+  iLen = Len(vData)
+
+  If iLen <= 127 Then
+    iLen += 1
+  Else If iLen >= 128 And iLen <= 16383
+    iLen += 2
+  Else If iLen >= 16384 And iLen <= 1073741824
+    iLen += 4
+  Else
+    Error.Raise("String too long")
+  Endif
+
+  If iCas Then
+    sCommand = "cas"
+    sCommand = Subst("&1 &2 &3 &4 &5 &6\r\n", sCommand, sKey, sFlags, iExpire, iLen, iCas)
+  Else
+    sCommand = Subst("&1 &2 &3 &4 &5\r\n", sCommand, sKey, sFlags, iExpire, iLen)
+  Endif
+
+  ' Print Quote(sCommand)
+
+  Return Exec(sCommand, vData)
+
+End
+
+Public Function Exec(sCommand As String, Optional vData As String) As Integer
+
+  Dim sLine As String
+
+  Write #sSocket, sCommand
+
+  If vData Then
+    Write #sSocket, vData As String
+  Endif
+
+  Write #sSocket, gb.CrLf
+
+  While Lof(sSocket) = 0
+    Wait 0.01
+  Wend
+
+  Line Input #sSocket, sLine
+
+  If _HadError(sLine) Then
+    Error.Raise(Me.Error)
+  Endif
+
+  Select Case sLine
+    Case "STORED"
+      Return STORED
+
+    Case "NOT_STORED"
+      Return NOT_STORED
+
+    Case "EXISTS"
+      Return EXISTS
+
+    Case "NOT_FOUND"
+      Return NOT_FOUND
+
+    Case "DELETED"
+      Return DELETED
+
+    Case "TOUCHED"
+      Return TOUCHED
+
+  End Select
+
+End
+
+Public Function Get(aKey As String[]) As Collection
+
+  Return Retrieve("get", aKey)
+
+End
+
+Public Function Retrieve(sKey As Variant, Optional sCas As Integer) As Collection
+
+  Dim sResponse As New Collection
+  Dim sLine As String
+
+  Dim sCommand As String
+
+  Dim iCount As Integer
+
+  Dim sTemp As String[]
+
+  If $iStatus <> Net.Connected Then
+    Error.Raise(("Not connected"))
+  Endif
+
+  If sCas Then
+    sCommand = "get"
+  Else
+    sCommand = "gets"
+  Endif
+
+  If TypeOf(sKey) = gb.String Then
+    sCommand = Subst("&1 &2\r\n", sCommand, sKey)
+  Else
+
+    For Each sLine In sKey
+
+      If sResponse.Exist(sLine) Then
+        sKey.Remove(iCount)
+      Endif
+
+      sResponse.Add("", sLine)
+
+      Inc iCount
+
+    Next
+
+    sCommand = Subst("&1 &2\r\n", sCommand, sKey.Join(" "))
+
+  Endif
+
+  Write #sSocket, sCommand
+
+  While Lof(sSocket) = 0
+    Wait 0.01
+  Wend
+
+  Do
+    Line Input #sSocket, sLine
+
+    If sLine = "END" Then Break
+
+    If sLine Begins "VALUE" Then
+
+      sTemp = Split(sLine, " ")
+
+      If sTemp.Count = 5 Then
+        _get(sTemp[1]).CasID = sTemp[sTemp.Max]
+      Endif
+
+      ' iSize = CInt(sTemp[3])
+      '
+      ' If iSize <= 127 Then
+      '   iSize -= 1
+      ' Else If iSize >= 128 And iSize <= 16383
+      '   iSize -= 2
+      ' Else If iSize >= 16384 And iSize <= 1073741824
+      '   iSize -= 4
+      ' Else
+      '   Error.Raise("String too long")
+      ' Endif
+
+      sLine = ""
+
+      ' Do While Len(sLine) < iSize
+      '   sLine &= Read #sSocket As String
+      ' Loop
+      '
+      sLine = Read #sSocket As String
+
+      sResponse[sTemp[1]] = sLine
+    Endif
+
+  Loop
+
+  'Print sLine
+
+  'Response = Read #sSocket As String
+
+  Return sResponse
+
+End
+
+Private Function GetKey(sKey As String) As _Memcached_Key
+
+  Dim oTempKey As _Memcached_Key
+
+  If Not $cTempArray.Exist(sKey) Then
+
+    oTempKey = New _Memcached_Key(sKey, Me)
+
+    $cTempArray.Add(oTempKey, sKey)
+  Endif
+
+  Return $cTempArray[sKey]
+
+End
+
+Public Function _get(sKey As String) As _Memcached_Key
+
+  Return GetKey(sKey)
+
+End
+
+' Public Function GetCas(sKey As String) As String
+'
+'   Dim sLine As String
+'
+'   Dim sTemp As String[]
+'
+'   If $iStatus <> Net.Connected Then
+'     Error.Raise(("Not connected"))
+'   Endif
+'
+'   Write #sSocket, "get " & sKey
+'
+'   While Lof(sSocket) = 0
+'     Wait 0.01
+'   Wend
+'
+'   Line Input #sSocket, sLine
+'
+'   sTemp = Split(sLine, " ")
+'
+'   If sTemp.Count = 4 Then
+'     Return sTemp[sTemp.Max]
+'   Endif
+'
+' End
+
+Static Private Sub _PrintDebug(sMsg As String)
+
+  Error "gb.memcached: "; sMsg
+
+End
+
+Private Function Port_Read() As Integer
+
+  Return $iPort
+
+End
+
+Private Sub Port_Write(Value As Integer)
+
+  $iPort = Value
+
+End
+
+Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
+
+End
+
+Private Function Host_Read() As String
+
+  Return $sHost
+
+End
+
+Private Sub Host_Write(Value As String)
+
+  $sHost = Value
+
+End
+
+Private Function Status_Read() As Integer
+
+  Return $iStatus
+
+End
+
+Private Function Error_Read() As String
+
+  Return $sError
+
+End
+
+''Raised when the socket is ready to connect. Starts the timer.
+Public Sub Client_Ready()
+
+  ' Debug "Connected to server " & sSocket.Path
+
+End
+
+''Raised when the server closes the socket.
+Public Sub Client_Closed()
+
+  '  Debug "Connection Closed by foreign host."
+
+End
+
+''Raised when the host has been resolved.
+Public Sub Client_Found()
+
+  ' Debug "Host Found. Connecting..."
+
+End
+
+''Raised when an error occurs
+Public Sub Client_Error()
+
+  Select Case sSocket.Status
+
+    Case Net.CannotCreateSocket
+      Error.Raise("The system does not allow to create a socket")
+
+    Case Net.HostNotFound
+      Error.Raise("Host not Found")
+
+    Case Net.ConnectionRefused
+      Error.Raise("Unable to Connect. Connection Refused")
+
+    Case Net.CannotRead
+      Error.Raise("Error Reading Data")
+
+    Case Net.CannotWrite
+      Error.Raise("Error Writing Data")
+
+  End Select
+
+End
+
+''Connect to Host trough Port
+Private Function Connect(Host As String, Port As Integer) As Integer
+
+  sSocket.Connect(Host, Port)
+  'sSocket.Blocking = True
+
+  '  Debug "Looking up host name..."
+
+  'Loop until the socket is connected and ready
+  Do While (sSocket.Status <> Net.Connected And sSocket.Status > 0)
+    Wait 0.01
+  Loop
+
+  Return Net.Connected
+
+End
+
+''Close the socket. No further data can be sent or read.
+Public Sub Disconnect()
+
+  Close sSocket
+  '  Debug "Connection closed by user"
+
+End
+
+Private Function SlabsAutomove_Read() As Integer
+
+  Return $iSlabsAutomove
+
+End
+
+Private Sub SlabsAutomove_Write(Value As Integer)
+
+  If Value < 0 Or Value > 2 Then Return
+
+  If Exec("slabs automove " & Value) <> SLAB_OK Then
+    Error.Raise("Invalid response")
+  Endif
+
+End
+
+Public Sub Flush(Optional iDelay As Integer = 0)
+
+  Exec("flush_all " & iDelay)
+
+End
+
+Private Function Version_Read() As String
+
+  Dim sLine As String
+
+  Dim sTemp As String[]
+
+  If $iStatus <> Net.Connected Then
+    Error.Raise(("Not connected"))
+  Endif
+
+  Write #sSocket, "version\r\n"
+
+  While Lof(sSocket) = 0
+    Wait 0.01
+  Wend
+
+  Line Input #sSocket, sLine
+
+  Return Split(sLine, " ").Pop()
+
+End

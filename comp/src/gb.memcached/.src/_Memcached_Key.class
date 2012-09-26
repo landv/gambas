@@ -1,0 +1,84 @@
+' Gambas class file
+
+Property Value As String
+
+Private $sKey As String
+
+Private $oMemcached As Memcached
+
+Property CasID As Integer
+Private $iCasID As Integer
+
+' Public Function Append(sKey As String, vData As String) As Integer
+'
+'   'FIXME: workaround for storing the string size, retrieve and store again
+'
+'   If $bDebug Then _PrintDebug(Subst("Appending &1 => &2", sKey, vData))
+'
+'   Return Store("append", sKey, vData)
+'
+' End
+'
+' Public Function Prepend(sKey As String, vData As String) As Integer
+'
+'   If $bDebug Then _PrintDebug(Subst("Prepending &1 => &2", sKey, vData))
+'
+'   Return Store("prepend", sKey, vData)
+'
+' End
+
+Public Function Delete() As Boolean
+
+  Return $oMemcached.Exec("delete " & $sKey) = Memcached.DELETED
+
+End
+
+Public Function Touch(iExpire As Integer) As Boolean
+
+  Return $oMemcached.Exec(Subst("touch &1 &2", $sKey, iExpire)) = Memcached.TOUCHED
+
+End
+
+Public Sub _new(sKey As String, oClient As Memcached)
+
+  $sKey = sKey
+
+  $oMemcached = oClient
+
+End
+
+Private Function Value_Read() As String
+
+  Return $oMemcached.Retrieve($sKey)[$sKey]
+
+End
+
+Private Sub Value_Write(Value As String)
+
+  $oMemcached.Store("set", $sKey, Value)
+
+End
+
+Public Sub _free()
+
+  $oMemcached = Null
+
+End
+
+Public Function Cas(sData As String) As Boolean
+
+  Return Not $oMemcached.Store("set", $sKey, sData,,, $iCasID) = Memcached.EXISTS
+
+End
+
+Private Function CasID_Read() As Integer
+
+  Return $iCasID
+
+End
+
+Private Sub CasID_Write(Value As Integer)
+
+  $iCasID = Value
+
+End
