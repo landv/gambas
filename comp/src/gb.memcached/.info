@@ -1,27 +1,27 @@
 #Memcached
 
 C
-STORED
+Stored
 C
 i
 0
-NOT_STORED
+NotSotred
 C
 i
 1
-EXISTS
+Exists
 C
 i
 2
-NOT_FOUND
+NotFound
 C
 i
 3
-DELETED
+Deleted
 C
 i
 4
-TOUCHED
+Touched
 C
 i
 5
@@ -37,6 +37,10 @@ Debug
 p
 b
 
+SlabsAutomove
+p
+i
+
 Status
 r
 i
@@ -44,10 +48,6 @@ i
 Error
 r
 s
-
-SlabsAutomove
-p
-i
 
 Version
 r
@@ -72,11 +72,11 @@ m
 Store
 m
 i
-(sCommand)s(sKey)s(vData)s[(iExpire)i(sFlags)i(iCas)i]
+(sCommand)s(sKey)s(vData)v[(iExpire)i(sFlags)i(iCas)i]
 Exec
 m
-i
-(sCommand)s[(vData)s]
+v
+(sCommand)s[(vData)v(bRaw)b]
 Get
 m
 Collection
@@ -84,7 +84,7 @@ Collection
 Retrieve
 m
 Collection
-(sKey)v[(sCas)i]
+(sKey)v[(iCas)i]
 _get
 m
 _Memcached_Key

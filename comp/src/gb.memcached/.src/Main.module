@@ -6,7 +6,7 @@ Public Sub Main()
 
   Dim b As Collection
 
-  Dim c As String
+  Dim c As Float
 
   Dim d As Boolean
 
@@ -18,15 +18,34 @@ Public Sub Main()
   'Print a.Version
 
   ' a.Flush()
-  '
 
-  a["asd"].Value = "val1"
+  a["asd"].Value = 5
+
+  Debug a["asd"].Value = 5
 
   c = a["asd"].Value
 
-  a["asd"].Value = "val2"
+  a["asd"].Increment(3)
 
-  d = a["asd"].Cas("asd")
+  Debug a["asd"].Value = c + 3
+
+  a["asd"].Decrement(3)
+
+  Debug a["asd"].Value = c
+
+  a["asd"].Value = "asd"
+
+  Debug a["asd"].Value = "asd"
+  '
+  ' a["asd"].Value = "val1"
+
+  ' c = a["asd"].Value
+
+  ' a["asd"].Value = "val2"
+
+  'c = a["asd"].Value
+
+  'd = a["asd"].Cas("asd")
 
   'a["asd"].Value = "val2"
 

@@ -1,12 +1,11 @@
 ' Gambas class file
 
-Property Value As String
-
-Private $sKey As String
+Property Value As Variant
+Property CasID As Integer
 
 Private $oMemcached As Memcached
 
-Property CasID As Integer
+Private $sKey As String
 Private $iCasID As Integer
 
 ' Public Function Append(sKey As String, vData As String) As Integer
@@ -27,15 +26,39 @@ Private $iCasID As Integer
 '
 ' End
 
+Public Function Increment(Optional iStep As Integer = 1) As Integer
+
+  Dim sResponse As String
+
+  sResponse = $oMemcached.Exec(Subst("incr &1 &2", $sKey, iStep),, True)
+
+  If sResponse <> "NOT_FOUND" Then
+    Return Val(sResponse)
+  Endif
+
+End
+
+Public Function Decrement(Optional iStep As Integer = 1) As Integer
+
+  Dim sResponse As String
+
+  sResponse = $oMemcached.Exec(Subst("decr &1 &2", $sKey, iStep),, True)
+
+  If sResponse <> "NOT_FOUND" Then
+    Return Val(sResponse)
+  Endif
+
+End
+
 Public Function Delete() As Boolean
 
-  Return $oMemcached.Exec("delete " & $sKey) = Memcached.DELETED
+  Return $oMemcached.Exec("delete " & $sKey) = Memcached.Deleted
 
 End
 
 Public Function Touch(iExpire As Integer) As Boolean
 
-  Return $oMemcached.Exec(Subst("touch &1 &2", $sKey, iExpire)) = Memcached.TOUCHED
+  Return $oMemcached.Exec(Subst("touch &1 &2", $sKey, iExpire)) = Memcached.Touched
 
 End
 
@@ -47,13 +70,13 @@ Public Sub _new(sKey As String, oClient As Memcached)
 
 End
 
-Private Function Value_Read() As String
+Private Function Value_Read() As Variant
 
-  Return $oMemcached.Retrieve($sKey)[$sKey]
+  Return $oMemcached.Retrieve($sKey, $iCasID)[$sKey]
 
 End
 
-Private Sub Value_Write(Value As String)
+Private Sub Value_Write(Value As Variant)
 
   $oMemcached.Store("set", $sKey, Value)
 
@@ -67,7 +90,7 @@ End
 
 Public Function Cas(sData As String) As Boolean
 
-  Return Not $oMemcached.Store("set", $sKey, sData,,, $iCasID) = Memcached.EXISTS
+  Return Not $oMemcached.Store("set", $sKey, sData,,, $iCasID) = Memcached.Exists
 
 End
 
