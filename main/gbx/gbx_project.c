@@ -461,17 +461,23 @@ bool PROJECT_load()
 	if (len < 0)
 		return TRUE;
 
-	/* Loads all component */
+	// Loads all component
 	COMPONENT_load_all();
 
-	/* Loads main archive */
-	ARCHIVE_load_main();
-
-  /* Startup class */
-  PROJECT_class = CLASS_find(PROJECT_startup);
 	return FALSE;
 }
 
+void PROJECT_load_finish(void)
+{
+	// Load exported class of components written in Gambas
+	COMPONENT_load_all_finish();
+	
+	// Loads main archive
+	ARCHIVE_load_main();
+
+  // Startup class
+  PROJECT_class = CLASS_find(PROJECT_startup);
+}
 
 void PROJECT_exit(void)
 {

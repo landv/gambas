@@ -69,7 +69,7 @@ Public Sub _init()
   
   sRoot = CGI["SCRIPT_NAME"]
   If Right(sRoot) = "/" Then sRoot = Left$(sRoot, -1)
-  If Not sRoot Then sRoot = "/"
+  If Not sRoot Then sRoot = "/."
   CGI["SCRIPT_NAME"] = sRoot
   
 End

@@ -75,7 +75,7 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
   return arch;
 }
 
-static void load_exported_class(ARCHIVE *arch)
+void ARCHIVE_load_exported_class(ARCHIVE *arch)
 {
   /*STREAM stream;*/
   char *buffer;
@@ -84,11 +84,19 @@ static void load_exported_class(ARCHIVE *arch)
   CLASS *class;
 	CLASS **exported = NULL;
 	int i;
+	COMPONENT *current;
 
+	if (arch->exported_classes_loaded)
+		return;
+	
+	current = COMPONENT_current;
+	
+	COMPONENT_current = (COMPONENT *)arch->current_component;
+	
   /* COMPONENT_current is set => it will look in the archive */
 
   #if DEBUG_COMP
-    fprintf(stderr, "load_exported_class: %s (component: %s)\n", arch->name, COMPONENT_current ? COMPONENT_current->name : "?");
+		fprintf(stderr, "load_exported_class: %s (component: %s)\n", arch->name, COMPONENT_current ? COMPONENT_current->name : "?");
   #endif
 
 	if (!FILE_exist(".list"))
@@ -139,6 +147,10 @@ static void load_exported_class(ARCHIVE *arch)
 	
 	ARRAY_delete(&exported);
   FREE(&buffer, "load_exported_class");
+	
+	arch->exported_classes_loaded = TRUE;
+	
+	COMPONENT_current = current;
 }
 
 #if 0
@@ -161,14 +173,6 @@ static void load_component(char *name)
 	FREE(&buffer, "load_dependencies");
 }*/
 
-static void load_archive(ARCHIVE *arch, const char *path) //, bool dep)
-{
-	arch->arch = ARCH_open(path);
-	load_exported_class(arch);
-	//if (dep)
-	//	load_dependencies(arch);
-}
-
 static char *exist_library(const char *dir, const char *name)
 {
 	char *path;
@@ -180,7 +184,7 @@ static char *exist_library(const char *dir, const char *name)
 		return NULL;
 }
 
-void ARCHIVE_load(ARCHIVE *arch) //, bool dep)
+void ARCHIVE_load(ARCHIVE *arch, bool load_exp)
 {
   char *path;
 
@@ -204,7 +208,11 @@ void ARCHIVE_load(ARCHIVE *arch) //, bool dep)
 		sprintf(path, ARCH_PATTERN, COMPONENT_path, arch->name);
 	}
 
-	load_archive(arch, path); //, dep);
+	arch->arch = ARCH_open(path);
+	arch->current_component = COMPONENT_current;
+	
+	if (load_exp)
+		ARCHIVE_load_exported_class(arch); //, dep);
 }
 
 
@@ -221,7 +229,7 @@ void ARCHIVE_create_main(const char *path)
 
 void ARCHIVE_load_main()
 {
-	load_exported_class(ARCHIVE_main);
+	ARCHIVE_load_exported_class(ARCHIVE_main);
 }
 
 

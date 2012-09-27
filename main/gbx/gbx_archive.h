@@ -39,7 +39,9 @@ typedef
     char *domain;
     TABLE *classes;
 		const char *path;
+		void *current_component;
     unsigned translation_loaded : 1;
+		unsigned exported_classes_loaded : 1;
     }
   ARCHIVE;
 
@@ -65,7 +67,8 @@ void ARCHIVE_load_main(void);
 
 ARCHIVE *ARCHIVE_create(const char *name, const char *path);
 void ARCHIVE_delete(ARCHIVE *arch);
-void ARCHIVE_load(ARCHIVE *arch);
+void ARCHIVE_load(ARCHIVE *arch, bool load_exp);
+void ARCHIVE_load_exported_class(ARCHIVE *arch);
 
 bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 

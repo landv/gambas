@@ -6,7 +6,9 @@ Public Sub btnEmbed_Click()
   Dim aHandle As Integer[]
   Dim iHandle As Integer
   
-  sTitle = txtTitle.Text
+  sTitle = Trim(txtTitle.Text)
+  If Not sTitle Then Return
+  
   If Left(sTitle, 2) = "0x" Then 
     iHandle = Val("&" & Mid$(sTitle, 3))
   Else If Left(sTitle) = "&" Then 

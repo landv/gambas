@@ -65,6 +65,7 @@ char *COMPONENT_path;
 
 static COMPONENT *_component_list = NULL;
 
+static bool _load_all = FALSE;
 
 void COMPONENT_init(void)
 {
@@ -123,10 +124,25 @@ void COMPONENT_load_all(void)
   	COMPONENT_create("gb.debug");
 	}
 
+	_load_all = TRUE;
+	
   LIST_for_each(comp, _component_list)
   {
     comp->preload = TRUE;
     COMPONENT_load(comp);
+  }
+  
+  _load_all = FALSE;
+}
+
+void COMPONENT_load_all_finish(void)
+{
+  COMPONENT *comp;
+
+  LIST_for_each(comp, _component_list)
+  {
+    if (comp->preload && comp->archive)
+			ARCHIVE_load_exported_class(comp->archive);
   }
 }
 
@@ -265,7 +281,7 @@ void COMPONENT_load(COMPONENT *comp)
 	}
 	
   if (comp->archive)
-    ARCHIVE_load(comp->archive);
+    ARCHIVE_load(comp->archive, !_load_all);
 
 	comp->loading = FALSE;
   comp->loaded = TRUE;
@@ -341,3 +357,16 @@ bool COMPONENT_get_info(const char *key, void **value)
   
   return TRUE;
 }
+
+void COMPONENT_exec(const char *name, int argc, char **argv)
+{
+	COMPONENT *comp;
+	
+	comp = COMPONENT_create(name);
+	
+	COMPONENT_load(comp);
+	
+	if (comp->library)
+		LIBRARY_exec(comp->library, argc, argv);
+}
+

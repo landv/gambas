@@ -52,6 +52,7 @@ EXTERN char *PROJECT_user_home;
 
 void PROJECT_init(const char *file);
 bool PROJECT_load(void);
+void PROJECT_load_finish(void);
 void PROJECT_exit(void);
 char *PROJECT_get_home(void);
 void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb);

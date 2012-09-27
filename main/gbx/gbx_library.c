@@ -274,6 +274,15 @@ int LIBRARY_load(LIBRARY *lib)
 	return order;
 }
 
+void LIBRARY_exec(LIBRARY *lib, int argc, char **argv)
+{
+  void (*func)();
+	
+  func = get_symbol(lib, LIB_MAIN, FALSE);
+	if (func)
+		(*func)(argc, argv);
+}
+
 
 void LIBRARY_declare(GB_DESC **desc)
 {

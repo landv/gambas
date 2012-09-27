@@ -31,6 +31,7 @@ SUBDIRS = \
  @ncurses_dir@ \
  @media_dir@ \
  @jit_dir@ \
+ @httpd_dir@ \
  comp \
  app \
  examples \

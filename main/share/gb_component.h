@@ -43,6 +43,7 @@ typedef
 #define LIB_NEED         "GB_NEED"
 #define LIB_GAMBAS       "GB"
 #define LIB_GAMBAS_PTR   "GB_PTR"
+#define LIB_MAIN         "GB_MAIN"
 
 #ifdef DONT_USE_LTDL
  #if defined(OS_MACOSX)

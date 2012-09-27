@@ -1,15 +1,15 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(32.6667,25,84,60)
+  MoveScaled(32.7143,25,84,60)
   Text = ("Desktop application embedder")
   Icon = Picture["embedder.png"]
   Arrangement = Arrange.Vertical
   { Panel1 Panel
-    MoveScaled(0,0,82,5)
+    MoveScaled(0,0,82,6)
     Arrangement = Arrange.Horizontal
-    Spacing = 8
-    Padding = 4
+    Spacing = True
+    Margin = True
     { Label1 Label
       MoveScaled(2,1,16,4)
       Font = Font["Bold"]
@@ -20,7 +20,6 @@
       MoveScaled(19,1,17,4)
       ToolTip = ("Enter there the title of the window you want to embed.")
       Expand = True
-      Text = ("")
     }
     { btnEmbed Button
       MoveScaled(37,1,14,4)
@@ -37,7 +36,6 @@
     { lblID Label
       MoveScaled(69,1,11,4)
       Visible = False
-      Text = ("")
       Alignment = Align.Center
       Border = Border.Sunken
     }

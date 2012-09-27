@@ -30,7 +30,7 @@ Public Sub Redirect(URL As String)
   If URL Like "*://*" Then 
     AddHeader("Location", URL)
   Else 
-    AddHeader("Location", Application.Protocol & "://" & CGI["HTTP_HOST"] &/ URL)
+    AddHeader("Location", Main.GetAbsoluteURL(URL))
   Endif
   
   Response.Begin
@@ -113,7 +113,7 @@ Public Sub End()
     
     If ShouldCompress() Then
       If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
-        If Stat(sFile).Size >= 128 Then
+        If Stat(sFile).Size >= 1024 Then
           AddHeader("Content-Encoding", "gzip")
           AddHeader("Vary", "Accept-Encoding")
           Exec ["gzip", "-9", sFile] Wait
@@ -126,6 +126,7 @@ Public Sub End()
     'hLog = Open "/tmp/response." & CStr(Application.Id) For Create
     AddHeader("Content-Length", Lof($hFile))
     Print $sHeader
+    Main.Log("Header = " & $sHeader)
     $sHeader = ""
   
     While Not Eof($hFile)

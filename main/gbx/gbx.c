@@ -66,6 +66,7 @@ FILE *log_file;
 
 static bool _welcome = FALSE;
 static bool _quit_after_main = FALSE;
+static bool _run_httpd = FALSE;
 
 static void NORETURN my_exit(int ret)
 {
@@ -89,10 +90,11 @@ static void NORETURN fatal(const char *msg, ...)
 	my_exit(1);
 } 
 
-static void init(const char *file)
+static void init(const char *file, int argc, char **argv)
 {
 	COMPONENT_init();
 	FILE_init();
+	
 	EXEC_init();
 	CLASS_init();
 	CFILE_init();
@@ -112,6 +114,11 @@ static void init(const char *file)
 			else
 				fatal("no project file in '%s'.", file);
 		}
+
+		if (_run_httpd)
+			COMPONENT_exec("gb.httpd", argc, argv);
+		
+		PROJECT_load_finish();
 	}
 	else
 		STACK_init();
@@ -127,7 +134,7 @@ static void init(const char *file)
 
 static void main_exit(bool silent)
 {
-	// If the stack has not been initialized because the project could not be started, do it know
+	// If the stack has not been initialized because the project could not be started, do it now
 	if (!SP)
 		STACK_init();
 	
@@ -207,17 +214,6 @@ int main(int argc, char *argv[])
 	if (setrlimit(RLIMIT_CORE, &rl))
 		perror(strerror(errno));*/
 
-	/*VALUE c, s, a, b, r;
-	double v = (argc - 2) / 2.0;
-	c._float.value = cos(v);
-	s._float.value = __builtin_sin(v);
-	a._float.value = c._float.value * c._float.value;
-	b._float.value = s._float.value * s._float.value;
-	r._float.value = a._float.value + b._float.value;
-	
-	fprintf(stderr, "%.24g %.24g / %.24g + %.24g = %.24g %d\n", c._float.value, s._float.value, a._float.value, b._float.value, r._float.value, r._float.value == 1.0);
-	*/
-	
 	MEMORY_init();
 	COMMON_init();
 	//STRING_init();
@@ -245,18 +241,19 @@ int main(int argc, char *argv[])
 			}
 			printf(
 				"Options:\n"
-				"  -g             enter debugging mode\n"
-				"  -p <path>      activate profiling and debugging mode\n"
-				"  -k             do not unload shared libraries\n"
+				"  -g               enter debugging mode\n"
+				"  -p <path>        activate profiling and debugging mode\n"
+				"  -k               do not unload shared libraries\n"
+				"  -H --httpd       run through an embedded http server\n"
 				);
 			if (!EXEC_arch)
 			{
-				printf("  -e             evaluate an expression\n");
+				printf("  -e               evaluate an expression\n");
 			}
 			printf(
-				"  -V --version   display version\n"
-				"  -L --license   display license\n"
-				"  -h --help      display this help\n"
+				"  -V --version     display version\n"
+				"  -L --license     display license\n"
+				"  -h --help        display this help\n"
 				"\n"
 				);
 
@@ -284,7 +281,7 @@ int main(int argc, char *argv[])
 		
 		TRY
 		{
-			init(NULL);
+			init(NULL, argc, argv);
 			EVAL_string(argv[2]);
 		}
 		CATCH
@@ -323,6 +320,10 @@ int main(int argc, char *argv[])
 		{
 			_quit_after_main = TRUE;
 		}
+		else if (is_long_option(argv[i], 'H', "httpd"))
+		{
+			_run_httpd = TRUE;
+		}
 		else if (is_option(argv[i], '-'))
 		{
 			i++;
@@ -359,7 +360,7 @@ int main(int argc, char *argv[])
 	
 	TRY
 	{
-		init(file);
+		init(file, argc, argv);
 		
 		if (!EXEC_arch)
 			argv[0] = PROJECT_name;

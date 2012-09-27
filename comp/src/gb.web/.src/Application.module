@@ -3,6 +3,7 @@
 Export
 
 Property Read Host As String
+Property Read Port As String
 Property Read Root As String
 Property Read Request As String
 Property LogFile As String
@@ -22,9 +23,9 @@ Private Function Request_Read() As String
 
   Dim sReq As String
   
-  sReq = $sProtocol & "://" & CGI["HTTP_HOST"] &/ CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
+  sReq = CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
   If CGI["QUERY_STRING"] Then sReq &= "?" & CGI["QUERY_STRING"]
-  Return sReq
+  Return Main.GetAbsoluteURL(sReq)
   
 End
 
@@ -65,3 +66,9 @@ Private Sub Protocol_Write(Value As String)
 
 End
 
+
+Private Function Port_Read() As String
+
+  Return CGI["SERVER_PORT"]
+
+End

@@ -58,6 +58,20 @@ Public Sub DecodeURL(sUrl As String, aField As String[], cVal As Collection)
 '  
 End
 
+Public Sub GetAbsoluteURL(sPath As String) As String
+
+  Dim sReq As String
+  Dim sPort As String
+    
+  sReq = Application.Protocol & "://" & Application.Host
+  
+  sPort = Application.Port
+  If sPort And If sPort <> "80" Then sReq &= ":" & sPort
+  
+  Return sReq &/ sPath
+  
+End
+
 
 Public Sub Main()
 

@@ -67,8 +67,11 @@ COMPONENT *COMPONENT_find(const char *name);
 bool COMPONENT_exist(const char *name);
 
 void COMPONENT_load(COMPONENT *comp);
-void COMPONENT_load_all(void);
 void COMPONENT_unload(COMPONENT *comp);
+
+void COMPONENT_load_all(void);
+void COMPONENT_load_all_finish(void);
+
 
 COMPONENT *COMPONENT_next(COMPONENT *comp);
 
@@ -79,5 +82,7 @@ void COMPONENT_signal(int signal, void *param);
 #define COMPONENT_is_library(comp) ((comp)->library != NULL)
 
 bool COMPONENT_get_info(const char *key, void **value);
+
+void COMPONENT_exec(const char *name, int argc, char **argv);
 
 #endif

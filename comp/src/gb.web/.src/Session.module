@@ -13,6 +13,7 @@ Private $hLock As File
 Private $sPrefix As String
 Private $bUnique As Boolean
 Private $sCookiePath As String
+Private $bInit As Boolean
 
 Property Id As String
 Property Timeout As Float
@@ -261,11 +262,19 @@ Private Sub SelectSession()
 End
 
 
-Public Sub _init()
+Private Sub Init()
+  
+  If $bInit Then Return
+  
+  $bInit = True
   
   Main.AllowLog = Exist("/tmp/session.debug")
   
+  'Main.Log("Session.Init")
+  
+  'Main.Log("HTTP_COOKIE = " & CGI["HTTP_COOKIE"] & " / " & Env["HTTP_COOKIE"])
   $sId = Request.Cookies["SESSION"]
+  Main.Log("Cookie = " & $sId)
   '$sId = "9E2496B3AB6DDED93ABE6F0CF6E071B3@"
   If Not $sId Then Return
   
@@ -278,17 +287,21 @@ End
 
 Public Sub _exit()
   
+  Main.Log("Session._exit")
+  
   SaveSession
   
 End
 
 Private Sub GetCookiePath() As String
 
-  If $sCookiePath Then
-    Return $sCookiePath
-  Else
-    Return CGI["SCRIPT_NAME"]
-  Endif
+  Dim sPath As String
+  
+  If $sCookiePath Then Return $sCookiePath
+  
+  sPath = CGI["SCRIPT_NAME"]
+  If sPath = "/." Then sPath = "/"
+  Return sPath
 
 End
 
@@ -311,12 +324,14 @@ End
 
 Public Sub _get(Key As String) As Variant
   
+  Init
   If $cVal Then Return $cVal[Key]
   
 End
 
 Public Sub _put(Value As Variant, Key As String)
 
+  Init
   If Not $cVal Then CreateSession
   $cVal[Key] = Value
   $bModify = True
@@ -326,6 +341,7 @@ End
 
 Private Function Id_Read() As String
 
+  Init
   Return $sId  
 
 End
@@ -333,6 +349,7 @@ End
 
 Private Sub Id_Write(Value As String)
 
+  Init
   Abandon
   $sId = Value
   SelectSession    
@@ -341,24 +358,28 @@ End
 
 Private Function Timeout_Read() As Float
 
+  Init
   Return Int($eTimeout * 86400 + 0.5)
 
 End
 
 Private Sub Timeout_Write(Value As Float)
 
+  Init
   $eTimeout = Value / 86400
 
 End
 
 Public Sub Save()
   
+  Init
   SaveSession
   
 End
 
 Public Sub Load()
 
+  Init
   LoadSession
   
 End
@@ -384,6 +405,7 @@ End
 
 Private Sub Unique_Write(Value As Boolean)
 
+  Init
   $bUnique = Value
   CheckUnique
 
@@ -397,6 +419,7 @@ End
 
 Private Sub Modified_Write(Value As Boolean)
 
+  Init
   $bModify = Value
 
 End
