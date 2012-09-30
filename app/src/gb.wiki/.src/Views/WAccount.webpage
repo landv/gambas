@@ -1,0 +1,52 @@
+<<WHeader>>
+
+<form action="/account" method="post">
+
+<p>&nbsp;</p>
+
+
+<table class="table" cellpadding="8" cellspacing="0" border="0">
+<tr>
+<td>
+  <%=("Username")%>:&nbsp;&nbsp;
+</td>
+<td align="right">
+  <input type="text" name="sUsername" size="16" maxlength="16" readonly="readonly" value="<%=Users.Current.Username%>" />
+</td>
+</tr>
+
+<tr>
+<td align="top">
+<%=("Password")%>:&nbsp;&nbsp;
+</td>
+<td align="right">
+<input type="password" name="sPassword" size="16" maxlength="16" autocomplete="off" />
+</td>
+</tr>
+
+<tr>
+<td align="top">
+<%=("Repeat your password")%>:&nbsp;&nbsp;
+</td>
+<td align="right">
+<input type="password" name="sPasswordAgain" size="16" maxlength="16" autocomplete="off" />
+</td>
+</tr>
+
+<tr>
+<td align="top">
+<%=("Email")%>:&nbsp;&nbsp;
+</td>
+<td align="right">
+<input type="email" name="sEmail" size="16" maxlength="50" value="<%=Users.Current.Email%>" />
+</td>
+</tr>
+</table>
+
+<p>
+<input type="submit" value="<%=("Update")%>" />
+</p>
+
+<p>&nbsp;</p>
+
+<</WHeader>>

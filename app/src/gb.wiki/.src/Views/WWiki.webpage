@@ -1,0 +1,17 @@
+<<WHeader>>
+
+<%
+If Actions.Image Then
+%>
+<img border="1" src="/image<%=Pages.Current.Path%>" />
+<%
+Else
+
+Print IIf(Pages.Current.HTML, Pages.Current.HTML, Parser.Encode(Pages.Current.Content))
+
+'Print IIf(Pages.Current.HTML, Pages.Current.HTML, Parser.Encode(Pages.Current.Content))
+Endif
+
+%>
+
+<</WHeader>>

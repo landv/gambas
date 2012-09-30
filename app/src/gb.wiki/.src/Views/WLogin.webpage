@@ -1,0 +1,23 @@
+<<WHeader>>
+
+<form action="/login" method="post">
+
+<p>&nbsp;</p>
+
+<p>
+<%=("Username")%>:&nbsp;&nbsp;
+<input type="text" name="sUsername" size="16" maxlength="16" />
+</p>
+
+<p>
+<%=("Password")%>:&nbsp;&nbsp;
+<input type="password" name="sPassword" size="16" maxlength="16">
+</p>
+
+<p>
+<input type="submit" value="<%=("Login")%>" />
+</p>
+
+<p>&nbsp;</p>
+
+<</WHeader>>

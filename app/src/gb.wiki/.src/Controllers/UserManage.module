@@ -1,0 +1,109 @@
+' Gambas module file
+
+Public Sub Login()
+
+  If Request.Method = "POST" Then
+
+    Users.Login(Request.Post["sUsername"], Request.Post["sPassword"])
+
+    If Users.Current.Type > Users.USER_GUEST Then
+      Response.Redirect("/help")
+      Quit
+    Endif
+
+  Endif
+
+  WHeader.Title = "User Login"
+
+  WLogin.Render()
+
+End
+
+Public Sub Logout()
+
+  Users.Logout()
+
+  Response.Redirect("/help")
+  Quit
+
+End
+
+Public Sub Account()
+
+  WHeader.Title = "Account Managment"
+
+  If Request.Method = "POST" Then
+    usrEdit()
+    Return
+  Endif
+
+  WAccount.Render()
+
+End
+
+Public Sub usrEdit()
+
+  Dim sField As String
+  Dim sRequired As String[] = ["sEmail"]
+  Dim uUser As _User
+
+  If Request.Method <> "POST" Then
+    Main.ThrowError("Invalid method")
+  Endif
+
+  If Request.Post["sPassword"] Then
+    sRequired.Add("sPassword")
+    sRequired.Add("sPasswordAgain")
+  Endif
+
+  For Each sField In sRequired
+    If Not Request.Post[sField] Then
+      Error.Raise("Missing: " & sField)
+    Endif
+  Next
+
+  If Request.Post["sPassword"] Then
+
+    If Request.Post["sPassword"] <> Request.Post["sPasswordAgain"] Then
+      Error.Raise("Passwords do not match")
+    Endif
+
+    If Len(Request.Post["sPassword"]) < 6 Or Not IsAscii(Request.Post["sPassword"]) Then
+      Error.Raise("Passwords invalid. Too short or contains invalid characters.")
+    Endif
+
+  Endif
+
+  If Not Request.Post["sEmail"] Then
+    Error.Raise("Email not set.")
+  Endif
+
+  If Request.Post["sUsername"] <> Session["username"] Then
+    'TODO:
+    Main.ThrowError("Hacking attempt, the admin has been notified!")
+  Endif
+
+  uUser = Users.Get(Session["username"], False)
+
+  If Not uUser Then
+    Main.ThrowError("Username does not exist!")
+  Endif
+
+  If Request.Post["sPassword"] Then
+    uUser.Password = Request.Post["sPassword"]
+  Endif
+
+  uUser.Email = Request.Post["sEmail"]
+
+  uUser.Update()
+
+  Response.Redirect("/account")
+  Quit
+
+Catch
+
+  WHeader.Warning = Error.Text
+
+  WAccount.Render()
+
+End

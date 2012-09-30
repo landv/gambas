@@ -1,0 +1,120 @@
+' Gambas module file
+
+Property Read Section As Integer
+Property Read Page As String
+Property Read Components As String[]
+Property Read Path As String
+
+Public Enum PATH_404, PATH_MAIN, PATH_ADMIN, PATH_WIKI, PATH_IMAGE, PATH_LOGIN, PATH_LOGOUT, PATH_ACCOUNT
+
+Public Function Build(Optional sPath As String[]) As String
+
+  Dim sUrl As String
+
+  'sUrl = "/help"
+
+  ' If sPath Then sUrl = sUrl &/ sPath.Join("/")
+
+  sUrl = sPath.Join("/")
+
+  If CGI["QUERY_STRING"] Then sUrl &= "?" & CGI["QUERY_STRING"]
+
+  Return sUrl
+
+End
+
+Public Function Static(sPath As String) As String
+
+  'sPath = "static/" &/ sPath
+
+  'If Exist(sPath) Then Return Application.Root &/ sPath
+  '
+  Return "http://gambasdoc.org/" & sPath
+
+End
+
+Private Function Components_Read() As String[]
+
+  Dim sComponents As String[]
+
+  Dim sPath As String
+
+  sPath = Request.Path
+
+  If Left(sPath) = "/" Then
+
+    sPath = Mid(sPath, 2)
+
+  Endif
+
+  If Right(sPath) = "/" Then
+
+    sPath = Mid(sPath, 1, -1)
+
+  Endif
+
+  sComponents = Split(sPath, "/")
+
+  If sComponents[0] = "help" Then sComponents.Remove(0)
+
+  Return sComponents
+
+End
+
+Private Function Path_Read() As String
+
+  'Return Application.Protocol & "://" & Application.Host &/ Application.Root &/ Request.Path
+  '
+  Return Application.Protocol & "://" & Application.Host & IIf(Application.Port <> 80, ":" & Application.Port, "") &/ Request.Path
+
+End
+
+Private Function Section_Read() As Integer
+
+  Select Case Request.Path
+
+    Case Like "/admin*"
+      Return PATH_ADMIN
+
+    Case Like "/help*"
+      Return PATH_WIKI
+
+    Case Like "/account"
+      Return PATH_ACCOUNT
+
+    Case Like "/login"
+      Return PATH_LOGIN
+
+    Case Like "/logout"
+      Return PATH_LOGOUT
+
+    Case Like "/image*"
+      Return PATH_IMAGE
+
+    Case "/"
+      Return PATH_MAIN
+
+    Case Else
+      Return PATH_404
+
+  End Select
+
+End
+
+Private Function Page_Read() As String
+
+  Dim sPath As String
+
+  If Request.Path Like "/image*" Then Return Mid(Request.Path, 7)
+
+  If Request.Path Not Like "/help*" Then Return Request.Path
+
+  sPath = Mid(Request.Path, 6)
+
+  If Not sPath Then Return "/"
+
+  If sPath Not Begins "/" Then sPath = "/" & sPath
+
+  Return sPath
+
+End

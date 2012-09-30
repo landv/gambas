@@ -1,0 +1,1223 @@
+' Gambas module file
+
+Private Const LETTER_DIGIT As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+Private $sVersion As String[]
+Private $iIgnore As Integer
+
+'Private $sLangVerSuff As String
+
+Private $sPath As String
+
+Private $bExample As Boolean
+
+Private $cGotSpecial As Collection
+
+'Private $hComp As CComponent
+'Private $hClass As CClassInfo
+'Private $hSym As CSymbolInfo
+
+Private $sSection As String
+Private $aSection As String[]
+Private $bVerbatim As Boolean
+Private $bCode As Boolean
+Private $iNoWiki As Integer
+Private $sRes As String
+Private $sList As String
+Private $iPos As Integer
+Private $bWhite As Boolean
+
+Private $cCompRedirect As Collection
+Private $bSyntax As Boolean
+Private $sTitle As String
+Private $iNoEncode As Integer
+
+Private $sOnlyVersion As String
+
+Private Sub GetOnlyIn(sVer As String) As String
+
+  Return "<div class=\"only-in\">" & Subst(("Only in &1 version"), Html(sVer)) & "</div>\n"
+
+End
+
+Private Sub UCaseTitle(sTitle As String) As String
+
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  Dim bLastLetter As Boolean
+
+  If String.UCase(String.Left(sTitle)) = String.Left(sTitle) Then Return sTitle
+
+  If Main.Language <> "en" Then Return String.UCase(String.Left(sTitle)) & String.Mid$(sTitle, 2)
+
+  For iInd = 1 To String.Len(sTitle)
+
+    sCar = String.Mid$(sTitle, iInd, 1)
+    If String.UCase(sCar) <> String.LCase(sCar) Then
+      If Not bLastLetter Then
+        sCar = String.UCase(sCar)
+      Endif
+      bLastLetter = True
+    Else
+      If sCar = "(" Then
+        bLastLetter = True
+      Else
+        bLastLetter = False
+      Endif
+    Endif
+    sRes &= sCar
+
+  Next
+
+  Return sRes
+
+End
+
+Private Function GetRealPath(sPath As String) As String
+
+  Dim rPage As Result
+  Dim iInd As Integer
+
+  For iInd = 1 To 10
+
+    rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, Main.DEFAULT_LANG)
+
+    If rPage.Available And If Left$(rPage!sTitle) = "@" Then
+      sPath = GetAbsolutePath(sPath, Mid$(rPage!sTitle, 2))
+    Else
+      Break
+    Endif
+
+  Next
+
+  Return sPath
+
+End
+
+Private Function GetAbsolutePath(sRoot As String, sPath As String) As String
+
+  Dim sElt As String
+  Dim sRes As String
+
+  If Left(sPath, 2) <> "./" And Left(sPath, 3) <> "../" Then
+    If Left(sPath) <> "/" Then sPath = "/" & sPath
+    Return sPath
+  Endif
+
+  sRes = sRoot
+  If Right(sRes) = "/" And Len(sRes) > 1 Then sRes = Left(sRes, -1)
+
+  For Each sElt In Split(sPath, "/")
+    If sElt = "." Then Continue
+    If sElt = ".." Then
+      'IF sRes = sRoot THEN CONTINUE
+      sRes = File.Dir(sRes)
+      Continue
+    Endif
+    sRes &/= sElt
+  Next
+
+  Return sRes
+
+End
+
+Private Sub EncodeLink(sLink As String) As String
+
+  Return Replace$(sLink, "&", "&amp;")
+
+End
+
+Private Sub GetLinkClass(sClass As String, bLTR As Boolean, sTitle As String) As String
+
+  If System.RightToLeft And If Not bLTR And If IsAscii(sTitle) Then
+    sClass &= "lang=\"en\" "
+    bLTR = True
+  Endif
+  If bLTR Then sClass &= "dir=\"ltr\" "
+  Return sClass
+
+End
+
+Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional bNoImage As Boolean, Optional sClass As String, Optional bLTR As Boolean) As String
+
+  Dim sTitle As String
+  Dim sRelPath As String
+  Dim sSuff As String
+  Dim iPos As Integer
+  Dim sMoreSuff As String
+
+  If sClass Then sClass = "class=\"" & sClass & "\" "
+
+  If sPath Like "http://*" Or If sPath Like "https://*" Or If sPath Like "mailto:*" Then
+
+    If Not sMyTitle Then sMyTitle = sPath
+    Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"" & EncodeLink(sPath) & "\" target=\"_blank\">" & Html$(sMyTitle) & "</a>"
+
+  Else
+
+    iPos = RInStr(sPath, "?")
+    If iPos Then
+      sMoreSuff = Mid$(sPath, iPos + 1)
+      sPath = Left(sPath, iPos - 1)
+    Endif
+
+    If sPath = "/" Then
+    Else
+      If sPath Like (Replace($sPath, "[", "[[]") &/ "*") Then
+        sRelPath = "." &/ Mid$(sPath, Len($sPath) + 1)
+      Else
+        sRelPath = sPath
+      Endif
+
+      sPath = LCase(GetAbsolutePath(GetRealPath($sPath), sRelPath))
+    Endif
+
+    sTitle = GetTitle(sPath)
+    ' If Not sTitle Then
+    '   If sPath Like "/comp/gb.qt4*/*/*" Then
+    '     sPath2 = Replace(sPath, "/gb.qt4", "/gb.qt")
+    '     sTitle2 = GetTitle(sPath2)
+    '     If sTitle2 Then
+    '       sPath = sPath2
+    '       sTitle = sTitle2
+    '     Endif
+    '   Endif
+    ' Endif
+
+    If sMyTitle <> ("Cancel") Then
+    Else
+      sTitle = sMyTitle
+    Endif
+
+    'sSuff = AddParam($sLangSuff, sMoreSuff)
+    'If IsComponentPath(sPath) Then
+
+    'If InStr("?&", Left(Right$(sMoreSuff, 3))) And If Left$(Right$(sMoreSuff, 2)) = "v" And If IsDigit(Right$(sMoreSuff)) Then
+    If Left(Right$(sMoreSuff, 2)) = "v" And If IsDigit(Right$(sMoreSuff)) Then
+    Else
+      'If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
+    Endif
+    'Endif
+
+    If sTitle Then
+
+      If Left(File.Name(sPath)) = ":" And Not bNoImage Then
+
+        If Actions.NoImage Then Return ""
+
+        If sMyTitle Then sTitle = sMyTitle
+
+        sMoreSuff = ""
+        iPos = InStr(sTitle, "|")
+        If iPos Then
+          sMoreSuff = Mid$(sTitle, iPos + 1)
+          sTitle = Left(sTitle, iPos - 1)
+          If sMoreSuff = "<" Then
+            sMoreSuff = " align=\"left\""
+          Else If sMoreSuff = ">" Then
+            sMoreSuff = " align=\"right\""
+          Else
+            sMoreSuff = " class=\"" & sMoreSuff & "\""
+          Endif
+        Endif
+
+        Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & Html(sTitle) & "\" title=\"" & Html(sTitle) & "\" " & sMoreSuff & " />"
+
+      Else
+
+        If sMyTitle Then sTitle = sMyTitle
+
+        Return "<a " & GetLinkClass(sClass, bLTR, sTitle) & "href=\"/help" &/ EncodeLink(sPath) & "\">" & Html(sTitle) & "</a>"
+
+      Endif
+
+    Else
+
+      If Main.IsWget Then
+
+        If sMyTitle Then
+          Return "<i>" & Html(sMyTitle) & "</i>"
+        Else
+          Return "<i>" & Html(sRelPath) & "</i>"
+        Endif
+
+      Else
+
+        If sMyTitle Then
+          Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"/edit" &/ EncodeLink(sPath & sSuff) & "\"><i>" & Html(sMyTitle) & "</i></a>"
+        Else
+          Return "<a " & GetLinkClass(sClass, True, "a") & "href=\"/edit" &/ EncodeLink(sPath & sSuff) & "\"><i>" & Html(sRelPath) & "</i></a>"
+        Endif
+
+      Endif
+
+    Endif
+
+  Endif
+
+End
+
+Private Sub AddRedirect(sSrc As String, sDest As String)
+
+  If Not $cCompRedirect Then $cCompRedirect = New Collection
+  $cCompRedirect[sSrc] = sDest
+
+End
+
+Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
+
+  Dim sRes As String
+  Dim aSplit As String[]
+  Dim sPath As String
+  Dim sTitle As String
+  Dim sDisplay As String
+  Dim sOldTitle As String
+
+  aSplit = Split(aPath[iInd], "\n")
+  sTitle = aSplit[0]
+  sDisplay = aSplit[1]
+  sPath = aSplit[2]
+  If iInd Then
+    aSplit = Split(aPath[iInd - 1], "\n")
+    sOldTitle = aSplit[0]
+  Endif
+
+  If String.UCase(String.Left(sTitle)) <> String.UCase(String.Left(sOldTitle)) Then
+    If System.RightToLeft Then
+      sRes = "<td align=\"left\""
+    Else
+      sRes = "<td align=\"right\""
+    Endif
+    sRes &= " valign=\"top\"><b>" & String.UCase(String.Left(sTitle)) & "</b></td>\n"
+  Else
+    sRes = "<td></td>\n"
+  Endif
+
+  sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath, UCaseTitle(sDisplay), True, "arrow") & "</td>\n"
+  Return sRes
+
+End
+
+Private Function SubstitutePath(sPath As String) As String
+
+  If Actions.OnlineHelp Then
+
+    If sPath Like "/comp/gb.qt4*" Then
+      If sPath = $sPath Then AddRedirect("/comp/gb.qt", "/comp/gb.qt4")
+      sPath = Replace(sPath, "/comp/gb.qt4", "/comp/gb.qt")
+    Else If sPath Like "/comp/gb.gtk*" Then
+      If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gtk")
+      sPath = Replace(sPath, "/comp/gb.gtk", "/comp/gb.qt4")
+    Else If sPath Like "/comp/gb.gui*" Then
+      If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gui")
+      sPath = Replace(sPath, "/comp/gb.gui", "/comp/gb.qt4")
+    Endif
+
+  Endif
+
+  Return sPath
+
+End
+
+Private Function GetTitle(sPath As String, Optional bVersion As Boolean) As String
+
+  Dim rPage As Result
+  Dim sNewPath As String
+  Dim sTitle As String
+  Dim iPos As Integer
+  Dim sVer As String
+  Dim aVer As String[]
+
+  If sPath Not Begins "/" Then sPath = "/" & sPath
+
+  'Print System.Backtrace.Join("\n")
+
+  rPage = Pages.Find(sPath)
+  If rPage.Available Then
+    'IF sPath LIKE "/comp/*/*/*" THEN
+    '  RETURN GetTitle(File.Dir(sPath)) & "." & rPage!sTitle
+    'ELSE
+    sTitle = rPage!sTitle
+    iPos = RInStr(sTitle, "#")
+    If iPos > 1 Then
+      sVer = Mid$(sTitle, iPos + 1)
+      sTitle = Left(sTitle, iPos - 1)
+      If bVersion Then
+        aVer = Split(sVer, ",")
+        If aVer.Find($sVersion) < 0 And If aVer.Find(Left($sVersion)) < 0 Then
+          sTitle = ""
+        Endif
+      Endif
+    Endif
+    Return sTitle
+  Else
+    sNewPath = SubstitutePath(sPath)
+    If sNewPath <> sPath Then Return GetTitle(sNewPath)
+    'Print "<pre>GetTitle: " & $sPath & " " & sPath & " ?</pre>"
+    'ENDIF
+  Endif
+
+End
+
+Private Function GetIndex2(sRoot As String) As String
+
+  Dim rPage As Result
+  Dim sRes As String
+  Dim aPath As New String[]
+  Dim iInd As Integer
+  Dim iInd2 As Integer
+  Dim sPath As String
+  Dim sTitle As String
+  Dim sPrefix As String
+  Dim aArg As String[]
+  Dim sDisplay As String
+  Dim bKeepPrefix As Boolean
+
+  If Not sRoot Then Error.Raise("@index needs an argument")
+
+  aArg = Split(sRoot, " ", Chr$(34))
+  sRoot = aArg[0]
+  If aArg.Count >= 2 Then
+    sPrefix = aArg[1]
+    If Left(sPrefix) = "(" And If Right(sPrefix) = ")" Then
+      sPrefix = Mid$(sPrefix, 2, -1)
+      bKeepPrefix = True
+    Endif
+  Endif
+
+  rPage = DB.Find("page", "sLang = &1 AND sPath LIKE &2", Main.DEFAULT_LANG, sRoot &/ "%") ' $Lang
+  For Each rPage
+    If InStr(Mid$(rPage!sPath, Len(sRoot) + 2), "/") Then Continue
+    'If IsCommentPath(rPage!sPath) Then Continue
+    'FIXME:
+    sPath = rPage!sPath
+    If Left(rPage!sTitle) = "@" Then
+      If sPath Like (Replace(sRoot, "[", "[[]") &/ "*") Then Continue
+    Endif
+
+    sTitle = GetTitle(sPath, True)
+    If Not sTitle Then Continue
+
+    sDisplay = sTitle
+
+    If sPrefix Then
+      If sTitle Like (Replace(sPrefix, "[", "[[]") & "*") Then
+        sTitle = LTrim(Mid$(sTitle, Len(sPrefix) + 1))
+        If Not bKeepPrefix Then sDisplay = sTitle
+      Endif
+    Endif
+
+    aPath.Add(sTitle & "\n" & sDisplay & "\n" & rPage!sPath)
+  Next
+
+  aPath.Sort(gb.IgnoreCase)
+
+  sRes = "<table width=\"100%\">\n"
+
+  For iInd = 0 To aPath.Count \ 4
+
+    sRes &= "<tr>\n"
+
+    iInd2 = iInd
+    While iInd2 < aPath.Count
+      sRes &= AddIndexEntry(aPath, iInd2)
+      iInd2 += 1 + aPath.Count \ 4
+    Wend
+
+    sRes &= "</tr>\n"
+
+  Next
+
+  sRes &= "</table>\n"
+
+  Return sRes
+
+End
+
+Private Sub EnterSection(sSection As String)
+
+  Dim sParam As String
+  Dim iPos As Integer
+
+  'IF $sSection <> "example" AND IF $sSection <> "syntax" AND IF $sSection <> "title" THEN
+  '  AddPara
+  ' ENDIF
+
+  If sSection Then
+    iPos = InStr(sSection, " ")
+    If iPos Then
+      sParam = Mid$(sSection, iPos + 1)
+      sSection = Left$(sSection, iPos - 1)
+    Endif
+  Endif
+
+  sSection = LCase(sSection)
+
+  FinishList
+
+  'LeaveSection()
+  $aSection.Push($sSection)
+  $sSection = sSection
+  $bVerbatim = False
+  $sList = ""
+
+  If $iIgnore > 0 And If $sSection <> "only" Then Return
+
+  Select Case $sSection
+
+    Case "syntax"
+      If sParam <> "no-title" Then
+        If $bSyntax Then $sRes &= "<div class=\"title\">" & $sTitle & "</div>"
+      Endif
+      sParam = ("Syntax")
+      '$sRes &= "<div class=\"black\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
+      $sRes &= "<pre class=\"syntax\">"
+      $bSyntax = True
+
+    Case "example"
+      If Not $bExample Then
+        $bExample = True
+        $sRes &= "<h3>" & ("Example") & "</h3>\n"
+      Endif
+      $sRes &= "<div class=\"example\">"
+      $bVerbatim = True
+      ' IF NOT sParam THEN sParam = ("Example")
+      ' $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
+      ' $sRes &= "<pre class=\"example\">"
+      $iNoWiki = 1
+
+    Case "code"
+      $sRes &= "<div class=\"example\">"
+      $bVerbatim = True
+      $iNoWiki = 1
+      $bCode = True
+
+    Case "seealso"
+      '$sRes &= "<p><table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\">\n"
+      '$sRes &= "<tr><th>" & ("See also") & "</th></tr><tr><td valign=\"top\">\n"
+      $sRes &= "<div class=\"seealso\">\n"
+      $sRes &= "<h3>" & ("See also") & "</h3>\n"
+      $iPos = Len($sRes)
+
+    Case "error"
+      $sRes &= "<h3>" & ("Errors") & "</h3>\n"
+      '$sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & ("Errors") & "</b></font></div>\n"
+      $sRes &= "<table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\" width=\"100%\">\n"
+      $sRes &= "<tr><th>" & ("Message") & "</th><th>" & ("Description") & "</th></tr><tr class=\"dark\"><td valign=\"top\">\n"
+      $bWhite = True
+
+    Case "warning", "info", "vb", "critical", "tip"
+      $sRes &= "<div class=\"message " & $sSection & "\"><table class=\"none\" border=\"0\"><tr><td width=\"40\" valign=\"top\">" & Main.GetImage($sSection) & "</td><td valign=\"top\">\n"
+
+    Case "title"
+      If Not sParam Then sParam = "gray"
+      $sRes &= "<div class=\"" & sParam & "\"><font size=\"-2\"><b>"
+
+    Case "box"
+      If sParam Then $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & Html(sParam) & "</b></font></div>"
+      $sRes &= "<div class=\"box\">\n"
+
+    Case "only"
+      ' $cGotSpecial["only"] = True
+      If sParam <> $sVersion Then
+        'If IsComponentPath($sPath) Then
+        '  $sRes &= "<div style=\"display:none\">"
+        'Else
+        '  $sRes &= "<table class=\"only-" & Left(sParam) & "\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+        '  '$sRes &= "<tr><td class=\"only-" & Left(sParam) & "-title\" valign=\"top\">&nbsp;" & sParam & "&nbsp;</td><td width=\"100%\">&nbsp;</td></tr>"
+        '  $sRes &= "<tr><td class=\"only-contents\">"
+        '  $sRes &= "<div class=\"only-" & Left(sParam) & "-title\">&nbsp;" & sParam & "&nbsp;</div>"
+        'Endif
+        $sOnlyVersion = $sVersion
+        $sVersion = sParam
+        'InitVersion($sVersion)
+        Inc $iIgnore
+      Endif
+
+    Case "html"
+      Inc $iNoEncode
+
+  End Select
+
+End
+
+Private Sub FinishList()
+
+  If $sList Then
+    $sRes = $sRes & $sList & "\n"
+    $sList = ""
+  Endif
+
+End
+
+Private Sub RemovePara()
+
+  If Right($sRes, 5) = "<p/>\n" Then
+    $sRes = Left$($sRes, -5) & "\n"
+  Endif
+
+End
+
+Private Sub LeaveSection()
+
+  Dim sTmp As String
+
+  FinishList
+  RemovePara
+
+  If $iIgnore = 0 Or If $sSection = "only" Then
+
+    Select Case $sSection
+
+      Case "syntax"
+        $sRes = RTrim($sRes) & "</pre><p/>\n"
+
+      Case "example"
+        $sRes = RTrim($sRes) & "</div>\n"
+        $bVerbatim = False
+        $iNoWiki = 0
+
+      Case "code"
+        $sRes = RTrim($sRes) & "</div>\n"
+        $bVerbatim = False
+        $iNoWiki = 0
+        $bCode = False
+
+      Case "error"
+        $sRes &= "</td></tr>\n"
+        $sRes &= "</table>\n"
+
+      Case "seealso"
+        sTmp = Mid$($sRes, $iPos + 1, -4)
+        sTmp = Replace(sTmp, "</a>", "</a>, ")
+        sTmp = Replace(sTmp, ",,", ",")
+        sTmp = Replace(sTmp, ", ,", ",")
+        $sRes = Left$($sRes, $iPos) & sTmp & Right$($sRes, 4)
+        '$sRes &= "</td></tr>\n"
+        '$sRes &= "</table>\n"
+        $sRes &= "</div>\n"
+
+      Case "warning", "info", "vb", "critical", "tip"
+        $sRes &= "</td></tr></table></div>\n"
+
+      Case "title"
+        $sRes &= "</b></font></div>" ' no '\n' to prevent an '<p>' to be added
+
+      Case "box"
+        $sRes &= "</div>\n"
+
+      Case "only"
+        If $sOnlyVersion Then
+          'If IsComponentPath($sPath) Then
+          '  $sRes &= "</div>"
+          'Else
+          '  $sRes &= "</td></tr></table>"
+          'Endif
+          $sVersion = $sOnlyVersion
+          'InitVersion($sVersion)
+          $sOnlyVersion = ""
+          Dec $iIgnore
+        Endif
+
+      Case "html"
+        Dec $iNoEncode
+
+    End Select
+
+  Endif
+
+  Try $sSection = $aSection.Pop()
+
+End
+
+Public Function Encode(sText As String) As String
+
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim iPos3 As Integer
+  Dim sCar, sPrev, sNext As String
+  Dim bBold As Boolean
+  Dim bItalic As Boolean
+  Dim bUnderline As Boolean
+  Dim bTT As Boolean
+  Dim sTitle As String
+  Dim sLink As String
+  Dim sLinkTitle As String
+  Dim bLinkTitle As String
+  Dim bLastVoid As Boolean
+  Dim bHeader As Boolean
+  Dim sArg As String
+  'Dim hSym As CSymbolInfo
+  Dim iLevel As Integer
+  Dim iLevelLen As Integer
+  Dim bList As Boolean
+  Dim sStr As String
+  Dim iInTable As Integer
+
+  Dim bTitleIndex As Boolean
+  Dim bUseThisTitleForIndex As Boolean
+  Dim sTitleIndex As String
+  Dim sTitleIndexStamp As String
+  Dim iTitleIndex As Integer
+  Dim iTitleIndexStart As Integer
+  Dim iLastTitleLevel As Integer
+  Dim iTitleLevel As Integer
+  Dim bBegin, bEnd As Boolean
+
+  Actions.Parsed = True
+
+  $sRes = ""
+  $aSection = New String[]
+  EnterSection("")
+
+  For Each sStr In Split(RTrim(sText), "\n")
+
+    If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
+
+      EnterSection(Trim(Mid$(sStr, 2)))
+      Continue
+
+    Endif
+
+    If RTrim(sStr) = "}" Then
+
+      LeaveSection()
+      Continue
+
+    Endif
+
+    If $bVerbatim Then
+
+      If sStr = "==" Then
+        $bVerbatim = False
+        $sRes = $sRes & "</pre>\n"
+      Else If sStr = "--" Then
+        $sRes = $sRes & "<hr>"
+      Else
+        If Left(sStr, 4) = "<hr>" Then
+          $sRes &= "<hr>"
+          sStr = Mid$(sStr, 5)
+        Endif
+        If Left(sStr) = "\\" Then sStr = Mid$(sStr, 2)
+        If $sSection = "example" Or If $sSection = "code" Then
+          sStr = Html$(sStr)
+          iPos = Len(sStr) - Len(LTrim(sStr))
+          If iPos > 0 Then
+            sStr = String$(iPos, "&nbsp;") & Mid$(sStr, iPos + 1)
+          Endif
+          sStr = Replace(sStr, "  ", "&nbsp;&nbsp;")
+          $sRes &= sStr & "<br/>\n"
+        Else
+          $sRes &= sStr & "\n"
+        Endif
+      Endif
+      Continue
+
+    Endif
+
+    If $iIgnore Then Continue
+
+    If $iNoEncode Then
+      $sRes &= sStr & "\n"
+      Continue
+    Endif
+
+    If $bCode Then
+      '$sRes &= HighlightCode(sStr) & "\n"
+    Endif
+
+    If $iNoWiki = 0 Then
+
+      sStr = RTrim(sStr)
+      sTitle = ""
+
+      If Not sStr Then
+        '       IF bLastVoid THEN
+        '         $sRes = $sRes & "<br>\n"
+        '       ELSE
+        '         bLastVoid = TRUE
+        '         $sRes = $sRes & "\n"
+        '       ENDIF
+        If Right($sRes, 5) <> "<p/>\n" Then
+          $sRes = $sRes & "<p/>\n"
+        Else
+          $sRes = $sRes & "\n"
+        Endif
+        Continue
+      Endif
+
+      While Left(sStr) = " "
+        sStr = Mid$(sStr, 2)
+        $sRes &= "&nbsp;"
+      Wend
+
+      bLastVoid = False
+      bList = False
+
+      iPos = InStr(sStr, " ")
+
+      If iPos >= 2 Then
+        If Left$(sStr, iPos - 1) = String(iPos - 1, "*") Then
+
+          iLevel = iPos - 1
+          iLevelLen = iLevel * 6
+          If Len($sList) > iLevelLen Then
+            sCar = Mid$($sList, 1 + iLevelLen)
+            $sList = Left($sList, iLevelLen)
+          Else If Len($sList) < iLevelLen Then
+            sCar = String$((iLevelLen - Len($sList)) \ 6, "<ul>\n")
+            $sList &= String$((iLevelLen - Len($sList)) \ 6, "</ul>\n")
+          Else
+            sCar = ""
+          Endif
+
+          $sRes &= sCar & "<li>"
+          sStr = Trim(Mid$(sStr, iPos + 1))
+          bList = True
+
+        Else If Left$(sStr, iPos - 1) = String(iPos - 1, "#") Then
+
+          iLevel = iPos - 1
+          iLevelLen = iLevel * 6
+          If Len($sList) > iLevelLen Then
+            sCar = Mid$($sList, 1 + iLevelLen)
+            $sList = Left($sList, iLevelLen)
+          Else If Len($sList) < iLevelLen Then
+            sCar = String$((iLevelLen - Len($sList)) \ 6, "<ol>\n")
+            $sList &= String$((iLevelLen - Len($sList)) \ 6, "</ol>\n")
+          Else
+            sCar = ""
+          Endif
+
+          $sRes &= sCar & "<li>"
+          sStr = Trim(Mid$(sStr, iPos + 1))
+          bList = True
+
+        Endif
+
+      Endif
+
+      If Not bList Then FinishList
+
+      If Left$(sStr) = "@" Then
+
+        iPos = InStr(sStr, " ")
+        If iPos Then
+          sArg = Trim(Mid$(sStr, iPos + 1))
+          sStr = Left$(sStr, iPos - 1)
+        Endif
+
+        sStr = Mid$(sStr, 2)
+
+        Try $cGotSpecial[sStr] = True
+
+        Select Case sStr
+
+          Case "classes"
+            '$sRes &= GetClasses()
+            Continue
+
+          Case "no-classes"
+            Try $cGotSpecial["classes"] = False
+            Continue
+
+          Case "symbols"
+            '$sRes &= GetSymbols()
+            Continue
+
+          Case "components"
+            '$sRes &= GetComponents()
+            Continue
+
+          Case "redirect"
+            iPos = InStr(sArg, " ")
+            'If iPos Then AddRedirect(Trim(Left(sArg, iPos - 1)), Trim(Mid$(sArg, iPos + 1)))
+            Continue
+
+            ' @index /path prefix
+          Case "index"
+            $sRes &= GetIndex2(sArg)
+            Continue
+
+          Case "title-index"
+            sTitleIndexStamp = "{~" & Format(Int(Rnd(1000000)), "000000") & "~}"
+            $sRes &= sTitleIndexStamp
+            bTitleIndex = True
+            Continue
+
+            ' @list /path +-number
+          Case "list"
+            '$sRes = $sRes & GetList(sArg)
+            Continue
+
+            ' @header /path +-number
+          Case "header"
+            '$sRes = $sRes & GetList(sArg)
+            Continue
+
+          Case "syntax"
+            If sArg Then
+              'hSym = $hClass.Symbols[Replace(sArg, ".", ":")]
+              'If hSym Then EnterSection("syntax no-title")
+            Else
+              'hSym = $hSym
+              'If hSym Then EnterSection("syntax")
+            Endif
+            'If hSym Then
+            '$sRes &= GetSymbolSyntax(hSym)
+            'LeaveSection()
+            'Endif
+            Continue
+
+          Case "version"
+            '$sRes &= GetGambasVersion()
+            Continue
+
+          Case "only-in", "only"
+            $sRes &= GetOnlyIn(sArg)
+            Continue
+
+          Case "since"
+            '$sRes &= GetSince(sArg)
+            Continue
+
+          Case "changes"
+            '$sRes &= GetLastChanges()
+            Continue
+
+          Case "translate", "todo"
+            '$sRes &= GetTranslate()
+            Continue
+
+          Case "class-stat"
+            '$sRes &= GetClassStat(sArg)
+            Continue
+
+          Case "no-autolink"
+            Continue
+
+          Case "include"
+            '$sRes &= GetInclude(sArg)
+            Continue
+
+          Case Else
+            $sRes &= "<div style=\"background:solid yellow;\"><b><tt>" & sStr & " ?</tt></b></div>"
+            Continue
+
+        End Select
+
+      Else If Left$(sStr) = "+" Then
+
+        $bExample = False
+        iPos = 1
+        While Mid$(sStr, iPos, 1) = "+"
+          Inc iPos
+        Wend
+        sStr = LTrim(Mid$(sStr, iPos))
+        If Len(sStr) Then
+          'DEC iPos
+          If bTitleIndex And If iInTable = 0 Then
+            Inc iTitleIndex
+            iTitleLevel = iPos - 1
+            $sRes &= "<a name=\"t" & iTitleIndex & "\"></a>"
+            bUseThisTitleForIndex = True
+          Else
+            bUseThisTitleForIndex = False
+          Endif
+          $sRes &= "<h" & iPos & ">"
+          iTitleIndexStart = Len($sRes)
+          sTitle = "</h" & iPos & ">"
+        Endif
+
+      Endif
+
+      If Left(sStr, 2) = "[[" Then
+
+        $sRes = $sRes & "<table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"4\" cellspacing=\"0\"" & Trim(Mid$(sStr, 3)) & ">\n"
+        bHeader = True
+        $sRes = $sRes & "<tr><th>\n"
+        $bWhite = True
+        Inc iInTable
+        Continue
+
+      Else If Len(sStr) <= 2 Then
+
+        If sStr = "]]" Then
+          If bHeader Then
+            $sRes = $sRes & "</th></tr>\n"
+            bHeader = False
+          Else
+            $sRes = $sRes & "</td></tr>\n"
+          Endif
+          $sRes = $sRes & "</table>\n"
+          Dec iInTable
+          Continue
+        Else If sStr = "[]" Then
+          bHeader = False
+          Continue
+        Else If sStr = "--" Then
+          $sRes = $sRes & "<hr>\n"
+          Continue
+        Else If sStr = "==" Then
+          $bVerbatim = True
+          $sRes = $sRes & "<pre class=\"code\">"
+          Continue
+          '       ELSE IF sStr = "[" THEN
+          '         IF bHeader THEN
+          '           $sRes = $sRes & "<tr><th>\n"
+          '         ELSE
+          '           $sRes = $sRes & "<tr><td>\n"
+          '         ENDIF
+          '         CONTINUE
+          '       ELSE IF sStr = "]" THEN
+          '         IF bHeader THEN
+          '           $sRes = $sRes & "</th></tr>\n"
+          '           bHeader = FALSE
+          '         ELSE
+          '           $sRes = $sRes & "</td></tr>\n"
+          '         ENDIF
+          '         CONTINUE
+        Else If sStr = "][" Then
+          $bWhite = Not $bWhite
+          If bHeader Then
+            If Right($sRes, 9) = "<tr><th>\n" Then
+              If $bWhite Then
+                $sRes = Left$($sRes, -9) & "<tr class=\"dark\"><td valign=\"top\">\n"
+              Else
+                $sRes = Left$($sRes, -9) & "<tr><td valign=\"top\">\n"
+              Endif
+            Else
+              If $bWhite Then
+                $sRes = $sRes & "</th></tr>\n<tr class=\"dark\"><td valign=\"top\">\n"
+              Else
+                $sRes = $sRes & "</th></tr>\n<tr><td valign=\"top\">\n"
+              Endif
+            Endif
+            bHeader = False
+          Else
+            If $bWhite Then
+              $sRes = $sRes & "</td></tr>\n<tr class=\"dark\"><td valign=\"top\">\n"
+            Else
+              $sRes = $sRes & "</td></tr>\n<tr><td valign=\"top\">\n"
+            Endif
+          Endif
+          Continue
+        Else If sStr = "-" Then
+          If bHeader Then
+            $sRes = $sRes & "</th><th>\n"
+          Else
+            $sRes = $sRes & "</td><td valign=\"top\">\n"
+          Endif
+          Continue
+          'ELSE IF sStr = "_" THEN
+          '  $sRes = $sRes & "<br><br>"
+          '  CONTINUE
+        Endif
+
+      Endif
+    Endif
+
+    For iPos = 1 To Len(sStr)
+
+      sCar = Mid$(sStr, iPos, 1)
+
+      If sCar = "\\" Then
+        Inc iPos
+        sCar = Mid$(sStr, iPos, 1)
+        If sCar = "<" Then
+          sCar = "&lt;"
+        Else If sCar = ">" Then
+          sCar = "&gt;"
+        Else If sCar = "&" Then
+          sCar = "&amp;"
+        Endif
+      Else If sCar = "\"" Then
+        sCar = "&quot;"
+      Else If sCar = "<" Then
+        iPos2 = InStr(sStr, ">", iPos)
+        If iPos2 = 0 Then iPos2 = Len(sStr) + 1
+        sCar = Mid$(sStr, iPos, iPos2 - iPos + 1)
+        iPos = iPos2
+        If sCar Like "<math*" Then
+          Inc $iNoWiki
+        Else If sCar = "</math>" Then
+          Dec $iNoWiki
+        Endif
+      Else If $iNoWiki Then
+
+      Else If InStr("*_/=", sCar) > 0 Then
+
+        If iPos > 1 Then
+          sPrev = Mid$(sStr, iPos - 1, 1)
+        Else
+          sPrev = ""
+        Endif
+
+        If iPos < Len(sStr) Then
+          sNext = Mid$(sStr, iPos + 1, 1)
+        Else
+          sNext = ""
+        Endif
+
+        If InStr(LETTER_DIGIT, sPrev) And If InStr(LETTER_DIGIT, sNext) Then Goto NEXT_CAR
+        If Asc(sPrev) <= 32 And If Asc(sNext) <= 32 Then Goto NEXT_CAR
+
+        ' bBegin = False
+        ' bEnd = False
+        '
+        ' If Asc(sPrev) <= 32 Or If InStr("('\">", sPrev) Then bBegin = True
+        ' If Asc(sNext) <= 32 Or If InStr(".;:,)!?'\"<", sNext) Then bEnd = True
+        '
+        ' If Not bEnd And If Not bBegin
+        '   If InStr("*/_=", sPrev) Then bBegin = True
+        '   If InStr("*/_=", sNext) Then bEnd = True
+        ' Endif
+        '
+        ' If bBegin And bEnd And If Asc(sPrev) <= 32 And If Asc(sNext) <= 32 Then Goto NEXT_CAR
+
+        bBegin = Asc(sNext) > 32
+        bEnd = Asc(sPrev) > 32
+
+        If sCar = "*" Then
+          If Not bBold And If bBegin Then
+            bBold = True
+            sCar = "<b>"
+          Else If bBold And If bEnd Then
+            bBold = False
+            sCar = "</b>"
+          Endif
+        Else If sCar = "/" Then
+          If Not bItalic And If bBegin Then
+            bItalic = True
+            sCar = "<i>"
+          Else If bItalic And If bEnd Then
+            bItalic = False
+            sCar = "</i>"
+          Endif
+        Else If sCar = "_" Then
+          If iPos = Len(sStr) And If Not bUnderline Then
+            sCar = "<br/>"
+          Else If Not bUnderLine And If bBegin Then
+            bUnderline = True
+            sCar = "<u>"
+          Else If bUnderLine And If bEnd Then
+            bUnderline = False
+            sCar = "</u>"
+          Endif
+        Else If sCar = "=" Then
+          If Not bTT And If bBegin Then
+            bTT = True
+            sCar = "<tt>"
+          Else If bTT And If bEnd Then
+            bTT = False
+            sCar = "</tt>"
+          Endif
+        Endif
+
+      Else If sCar = "[" Then
+
+        If Mid$(sStr, iPos + 1, 1) <> " " Then
+
+          sLink = ""
+          sLinkTitle = ""
+          bLinkTitle = False
+          iPos2 = iPos + 1
+
+          While iPos2 <= Len(sStr)
+            sCar = Mid$(sStr, iPos2, 1)
+            If sCar = "]" Then Break
+            If sCar = "\\" Then
+              Inc iPos2
+              sCar = Mid$(sStr, iPos2, 1)
+            Endif
+            sLink &= sCar
+            Inc iPos2
+          Wend
+
+          iPos3 = InStr(sLink, "|")
+          If iPos3 Then
+            sLinkTitle = Mid$(sLink, iPos3 + 1)
+            sLink = Left$(sLink, iPos3 - 1)
+          Endif
+
+          sCar = "["
+
+          If iPos2 <= Len(sStr) And If Len(Trim(sLink)) Then
+
+            If sLink Begins "../" Then
+              sLink = File.Dir(Path.Page) &/ Mid(sLink, 4)
+            Endif
+
+            sCar = GetLink(Trim(sLink), Trim(sLinkTitle))
+            iPos = iPos2
+          Endif
+
+        Endif
+
+      Else If sCar = "%" Then
+        If Mid$(sStr, iPos + 1, 1) <> " " Then
+          iPos2 = InStr(sStr, "%", iPos + 1)
+          If iPos2 Then
+            sLink = Mid$(sStr, iPos + 1, iPos2 - iPos - 1)
+            sCar = Main.GetImage(sLink)
+            iPos = iPos2
+          Endif
+        Endif
+        'ELSE IF Asc(sCar) > 127 THEN
+        'sCar = "&#" & Asc(sCar) & ";"
+
+      Else If sCar = "&" Then
+        If Not IsLetter(Mid$(sStr, iPos + 1, 1)) Then
+          sCar = "&amp;"
+        Endif
+      Endif
+
+    NEXT_CAR:
+
+      $sRes &= sCar
+
+    Next
+
+    If bList Then $sRes &= "</li>"
+
+    If sTitle Then
+      If bUseThisTitleForIndex Then
+        While iTitleLevel > iLastTitleLevel
+          sTitleIndex &= "<ul>\n"
+          Inc iLastTitleLevel
+        Wend
+        While iTitleLevel < iLastTitleLevel
+          sTitleIndex &= "</ul>\n"
+          Dec iLastTitleLevel
+        Wend
+        sTitleIndex &= "<li><a href=\"#t" & iTitleIndex & "\">" & Mid$($sRes, iTitleIndexStart + 1, Len($sRes) - iTitleIndexStart) & "</a></li>\n"
+      Endif
+      $sRes &= sTitle
+    Endif
+    $sRes &= "\n"
+
+  Next
+
+BREAK_ALL:
+
+  While $aSection.Count
+    LeaveSection()
+  Wend
+
+  If bTitleIndex Then
+    sTitleIndex = "<div class=\"index-border\"><div class=\"index\"><div align=\"center\"><b>" & ("Contents") & "</b></div>\n" & sTitleIndex & "</div></div>"
+    $sRes = Replace($sRes, sTitleIndexStamp, sTitleIndex)
+  Endif
+
+  While Right$($sRes) = "\n"
+    $sRes = Left$($sRes, -1)
+  Wend
+
+  If Not $sRes And If $cGotSpecial.Exist("only") Then
+    Return Encode("{warning\n" & Subst(("This documentation page does not exist in version &1."), $sVersion) & "\n}\n")
+  Endif
+
+  Return $sRes
+
+End
