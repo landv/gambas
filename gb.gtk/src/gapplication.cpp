@@ -107,13 +107,18 @@ static bool check_crossing_event(GdkEvent *event)
 		return false;
 }
 
-static gControl *find_child(gControl *control, int rx, int ry)
+static gControl *find_child(gControl *control, int rx, int ry, gControl *button_grab = NULL)
 {
 	gContainer *cont;
 	gControl *child;
 	int x, y;
 	
 	//fprintf(stderr, "find_child: %s ", control->name());
+	
+	if (gApplication::_control_grab)
+		return gApplication::_control_grab;
+	if (button_grab)
+		return button_grab;
 	
 	control = control->topLevel();
 	
@@ -206,15 +211,22 @@ static void gambas_handle_event(GdkEvent *event)
 	widget = gtk_get_event_widget(event);
 	if (!widget)
 		goto __HANDLE_EVENT;
-
+	
 	button_grab = gApplication::_button_grab;
 	if (event->type == GDK_BUTTON_RELEASE)
 		gApplication::_button_grab = NULL;
 	
+	if (gApplication::_control_grab)
+	{
+		control = gApplication::_control_grab;
+		widget = control->border;
+		goto __FOUND_WIDGET;
+	}
+
 	grab = gtk_window_group_get_current_grab(get_window_group(widget));
 	if (grab && !GTK_IS_WINDOW(grab))
 		goto __HANDLE_EVENT;
-	
+
 	if (!grab && gApplication::_popup_grab)
 		grab = gApplication::_popup_grab;
 		//gdk_window_get_user_data(gApplication::_popup_grab_window, (gpointer *)&grab);
@@ -281,6 +293,8 @@ static void gambas_handle_event(GdkEvent *event)
 	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
+	
+__FOUND_WIDGET:
 	
 	/*switch ((int)event->type)
 	{
@@ -385,12 +399,7 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 		{
-			if (button_grab)
-				control = button_grab;
-			else
-				control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
-			
-			save_control = control;
+			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root, button_grab);
 
 			bool menu = false;
 			
@@ -510,14 +519,9 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_MOTION_NOTIFY:
 
-			if (button_grab)
-				control = button_grab;
-			else
-				control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root);
+			save_control = control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root, button_grab);
 			
 			//fprintf(stderr, "GDK_MOTION_NOTIFY: %s\n", control->name());
-			
-			save_control = control;
 			
 			check_hovered_control(control);
 			
@@ -724,6 +728,7 @@ GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
 gControl *gApplication::_button_grab = NULL;
+gControl *gApplication::_control_grab = NULL;
 gControl *gApplication::_active_control = NULL;
 gControl *gApplication::_old_active_control = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;

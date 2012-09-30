@@ -152,7 +152,7 @@ public:
 	void refresh();
 	void refresh(int x, int y, int w, int h);
 	virtual void afterRefresh();
-	bool grab(bool showIt = false);
+	bool grab();
 	void destroy();
 	void destroyNow() { destroy(); cleanRemovedControls(); }
 	
