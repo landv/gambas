@@ -315,6 +315,8 @@ gControl::~gControl()
 		gApplication::_old_active_control = NULL;
 	if (gApplication::_button_grab == this)
 		gApplication::_button_grab = NULL;
+	if (gApplication::_control_grab == this)
+		gApplication::_control_grab = NULL;
 }
 
 void gControl::destroy()
@@ -1850,9 +1852,11 @@ void gControl::setTracking(bool v)
 	*/
 }
 
-bool gControl::grab(bool showIt)
+bool gControl::grab()
 {
 	GdkWindow *win;
+	gControl *old_control_grab;
+	bool save_tracking;
 	
 	if (_grab)
 		return false;
@@ -1878,11 +1882,20 @@ bool gControl::grab(bool showIt)
 	}
 
 	_grab = true;
+	save_tracking = _tracking;
+	_tracking = true;
 	
-	gApplication::enterLoop(this, showIt);
+	old_control_grab = gApplication::_control_grab;
+	gApplication::_control_grab = this;
 
+	gApplication::enterLoop(this);
+
+	gApplication::_control_grab = old_control_grab;
+	
 	gdk_pointer_ungrab(GDK_CURRENT_TIME);
 	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	
+	_tracking = save_tracking;
 	_grab = false;
 	return false;
 }

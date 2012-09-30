@@ -182,7 +182,7 @@ Public Sub _SetUnifiedValues()
 
   Super._SetUnifiedValues()
 
-  hSizeParse = New TSizeParse($sSpacing, True )
+  hSizeParse = New TSizeParse($sSpacing, True)
   $fSpacing = hSizeParse.GetValue()
   $bRelativeSpacing = hSizeParse.IsRelative()
 
@@ -367,7 +367,7 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   'On ne peut pas dépasser la taille disponible (report sur prochaine page)
   'FIXME: Onepiece partially desactivated
   If Not Me.OnePiece Then
-    'hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
+    hSizeInt.Height = Min(hSizeInt.Height, AvailableH)
   Endif
 
   hSizeInt.Height = Min(TotalHeight, hSizeInt.Height)
@@ -377,6 +377,7 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   ' Print hSizeInt.Height
   ' Stop
   ' Endif
+  'If Me.tag = "toto" Then Stop
   Return hSizeInt
 
 End
@@ -705,7 +706,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       If Not hChild.Fixed And If Not hChild.Ignore Then
         'If Me.Tag = "Boite 1" Then Print TH - hChildHints.Height
         If (TH - hChildHints.Height) < 0 Or TH <= 0 Then
-
+         
           'Print "manque : " & (TH - hChildHints.Height)
           ' Print "sortie forcée, il reste : " & ((hchild._Count - 1) - j)
           hchild._DataIndex = j
@@ -736,7 +737,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       If hChildHints.NotFinished Then hchild._DataIndex = j
       'un élément fixe ou ignore ne peut être répété
       If hchild.Fixed Or hchild.Ignore Then Break
-
+     
       bInLoop = True
     Next
     If bExitLoop Then Break

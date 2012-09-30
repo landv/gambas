@@ -727,7 +727,8 @@ Private Sub CompleteItem() As Boolean
   Dim sText As String
   Dim iPos As Integer
   
-  sCurrent = gvwComp.Current.Text
+  Try sCurrent = gvwComp.Current.Text
+  If Not sCurrent Then Return
   Try sNext = gvwComp[gvwComp.Row + 1, 0].Text
   
   For iPos = Len($sText) + 1 To Min(Len(sCurrent), Len(sNext))

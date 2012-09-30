@@ -290,100 +290,624 @@ msgstr ""
 "PO-Revision-Date: 2011-12-24 12:17+0100\n"
 "Last-Translator: geniv <geniv.radek@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
-#: FProperty.form:120
-msgid "..."
-msgstr "-"
+#: MErrorMessage.module:21
+msgid "',' or ')'"
+msgstr "',' nebo ')'"
 
-#: FExportData.form:37 FImportTable.form:103
-msgid ","
-msgstr "-"
+#: MErrorMessage.module:15
+msgid "'&1.&2' is incorrectly overridden in class '&3'"
+msgstr "'&1.&2' je nekorektní přepis v třídě '&3'"
 
-#: FExportData.form:37 FImportTable.form:103
-msgid ";"
-msgstr "-"
+#: MErrorMessage.module:16
+msgid "'&1.&2' is not a property"
+msgstr "'&1.&2' není vlastnost"
 
-#: FExportData.form:37 FImportTable.form:103 FNewConnection.form:100
-msgid ":"
-msgstr "-"
+#: MErrorMessage.module:17
+msgid "'&1.&2' is not static"
+msgstr "'&1.&2' není statická"
 
-#: FExportData.form:48 FImportTable.form:114
-msgid "'"
-msgstr "-"
+#: MErrorMessage.module:18
+msgid "'&1.&2' is read only"
+msgstr "'&1.&2' je pouze pro čtení"
 
-#: FExportData.form:48 FImportTable.form:114
-msgid "\""
-msgstr "-"
+#: MErrorMessage.module:19
+msgid "'&1.&2' is static"
+msgstr "'&1.&2' je statická"
 
-#: FMain.form:813
+#: MErrorMessage.module:20
+msgid "'&1.&2' is write only"
+msgstr "'&1.&2' je pouze pro zápis"
+
+#: MErrorMessage.module:14
+msgid "'&1' already declared"
+msgstr "'&1' je již deklarováno"
+
+#: Package.module:67
+msgid "'&1' and '&2' are missing."
+msgstr "'&1' a '&2' chybí."
+
+#: Package.module:58
+msgid "'&1' is missing."
+msgstr "'&1' chybí."
+
+#: Package.module:762
+msgid "'dpkg-buildpackage' has failed."
+msgstr "'dpkg-buildpackage' selhalo."
+
+#: Package.module:1137
+msgid "'rpmbuild' has returned the following error code:"
+msgstr "'rpmbuild' vrací následující kód chyby:"
+
+#: Package.module:1361
+msgid "'tar' has returned the following error code:"
+msgstr "'tar' vrací následující kód chyby:"
+
+#: FImportTable.class:132
+msgid "(Automatic key)"
+msgstr "(Automatický klíč)"
+
+#: FEditor.class:2758 FTextEditor.class:939
+msgid "(Declarations)"
+msgstr "(Deklarace)"
+
+#: FOption.class:74 FTranslate.class:133
+msgid "(Default)"
+msgstr "(Výchozí)"
+
+#: FCreateFile.class:138
+msgid "(No parent)"
+msgstr "(Žádný rodič)"
+
+#: FMain.form:839
 msgid "&?"
 msgstr "-"
 
-#: FReportCoordChooser.form:21
-msgid "%"
+#: MErrorMessage.module:4
+msgid "&1 cannot be static"
+msgstr "&1 nemůže být statická"
+
+#: MErrorMessage.module:5
+msgid "&1 declaration does not match"
+msgstr "Deklarace &1 neodpovídá"
+
+#: MErrorMessage.module:6
+msgid "&1 is declared but is not a function"
+msgstr "&1 je deklarován ale není funkční"
+
+#: MErrorMessage.module:7
+msgid "&1 is not a structure"
+msgstr "&1 není struktura"
+
+#: MErrorMessage.module:8
+msgid "&1 is not declared"
+msgstr "&1 není deklarován"
+
+#: FSearch.class:736
+msgid "&1 matches"
+msgstr "&1 shody"
+
+#: FProfile.class:383
+msgid "&1 Mb"
 msgstr "-"
 
-#: FPropertyProject.form:528
-msgid "About &component..."
-msgstr "O &komponentě..."
+#: MErrorMessage.module:9
+msgid "&1 must be static"
+msgstr "&1 musí být statická"
 
-#: FAbout.form:21
-msgid "About Gambas..."
-msgstr "O aplikaci Gambas..."
+#: FImportTable.class:422
+msgid "&1 records imported."
+msgstr "&1 záznamů importováno."
 
-#: FMain.form:844
+#: FTranslate.class:1048
+msgid "&1 strings. &2 are not translated. &3% done."
+msgstr "&1 řetězců. &2 nepřeloženy. &3% hotovo."
+
+#: FTranslate.class:1044
+msgid "&1 strings. Everything is translated!"
+msgstr "&1 řetězců. Vše je přeloženo!"
+
+#: FTranslate.class:1046
+msgid "&1 strings. One is not translated. &3% done."
+msgstr "&1 řetězců. Jeden je nepřeložen. &3% hotovo."
+
+#: FTranslate.class:949
+msgid "&1 translations were picked up."
+msgstr "&1 překladů bylo zadrženo."
+
+#: FInfo.class:144
+msgid "&1, &2 line(s)"
+msgstr "&1, &2 řádků"
+
+#: FInfo.class:11
+msgid "&1: &2"
+msgstr "-"
+
+#: MErrorMessage.module:10
+msgid "&1: not in archive"
+msgstr "&1: není v archivu"
+
+#: MErrorMessage.module:11
+msgid "&1: syntax error"
+msgstr "Syntaktická chyba &1"
+
+#: MErrorMessage.module:12
+msgid "&1: syntax error in form file"
+msgstr "Syntaktická chyba &1 v souboru formuláře"
+
+#: MErrorMessage.module:13
+msgid "&1: too many nested containers"
+msgstr "&1: příliš mnoho vnořených kontejnerů"
+
+#: Project.module:2083
+msgid "&1th"
+msgstr "-"
+
+#: FMain.form:870
 msgid "&About Gambas..."
 msgstr "O &aplikaci Gambas..."
-
-#: MErrorMessage.module:25
-msgid "Access forbidden"
-msgstr "Přístup zakázán"
-
-#: Project.module:3702
-msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
-msgstr "Název třídy musí začínat písmenem nebo podtržítkem, následovaným libovolným písmenem nebo číslici."
-
-#: FOption.form:803
-msgid "Activate code snippets"
-msgstr "Aktivovat úryvky kódu"
-
-#: FConnectionEditor.form:236 FMain.class:1825
-msgid "Add"
-msgstr "Přidat"
 
 #: FPropertyComponent.form:184
 msgid "&Add"
 msgstr "Přid&at"
 
-#: FPropertyProject.form:601
-msgid "&Add..."
-msgstr "Přid&at..."
-
-#: FDebugInfo.form:116
-msgid "Add expression"
-msgstr "Přidat výraz"
-
-#: FMakeInstall.form:686
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr "Přidat další testy pro konfigurační proces.\n<p><b>Ponechte prázdné, pokud nepotřebujete, nebo pokud nic o <i>autoconf</i> skriptech nevíte.</b>"
-
-#: FReportBrushChooser.form:96
-msgid "Add gradient stop"
-msgstr "Přidej zarážku přechodu"
-
-#: FMakeInstall.form:529
-msgid "Additional configuration"
-msgstr "Další konfigurace"
-
-#: FMain.form:720
+#: FMain.form:746
 msgid "&Add to repository"
 msgstr "Přid&at do repositáře"
 
-#: FEditor.form:210 FTextEditor.form:151
+#: FPropertyProject.form:652
+msgid "&Add..."
+msgstr "Přid&at..."
+
+#: FSearch.form:205
+msgid "&Browse"
+msgstr "&Prohlížet"
+
+#: FMain.form:534
+msgid "&Browse project..."
+msgstr "&Procházet projekt..."
+
+#: FSearch.form:106
+msgid "&Case sensitive"
+msgstr "Rozlišovat &velikost"
+
+#: FMain.form:603
+msgid "&Class..."
+msgstr "&Třída..."
+
+#: FMain.form:329
+msgid "&Clean up"
+msgstr "&Uklidit"
+
+#: FMakeInstall.form:613
+msgid "&Clear"
+msgstr "&Vyčistit"
+
+#: FMain.class:582
+msgid "&Clear history"
+msgstr "&Vyčisti historii"
+
+#: FTranslate.form:335
+msgid "&Close"
+msgstr "&Zavřít"
+
+#: FPropertyProject.form:730
+msgid "&Commit..."
+msgstr "-"
+
+#: FMain.form:274
+msgid "&Compile"
+msgstr "&Kompilovat"
+
+#: FMain.form:468
+msgid "&Console"
+msgstr "&Konzole"
+
+#: FList.form:92 FMain.form:697 FSystemInfo.form:75
+msgid "&Copy"
+msgstr "&Kopírovat"
+
+#: FNewConnection.class:195
+msgid "&Create database '&1'"
+msgstr "&Vytvořit databázi '&1'"
+
+#: FMain.form:690
+msgid "&Cut"
+msgstr "&Vyjmout"
+
+#: FMain.form:366
+msgid "&Debug"
+msgstr "&Ladit"
+
+#: FList.form:64 FMenu.form:97 FTranslate.form:315
+msgid "&Delete"
+msgstr "&Smazat"
+
+#: FNewConnection.class:199
+msgid "&Delete database '&1'"
+msgstr "&Smazat databázi '&1'"
+
+#: FMain.form:718
+msgid "&Delete..."
+msgstr "&Smazat..."
+
+#: FMain.form:578
+msgid "&Directory"
+msgstr "&Adresář"
+
+#: FList.form:76 FMakeInstall.form:607
+msgid "&Down"
+msgstr "&Dolů"
+
+#: FConflict.class:24 FMain.form:670
+msgid "&Edit"
+msgstr "&Upravit"
+
+#: FOption.form:896
+msgid "&Edit..."
+msgstr "&Editovat..."
+
+#: FTranslate.form:323
+msgid "&Export..."
+msgstr "&Exportovat..."
+
+#: FMain.form:211
+msgid "&File"
+msgstr "&Soubor"
+
+#: FMain.form:518
+msgid "&Find..."
+msgstr "&Najít..."
+
+#: FForm.form:166
+msgid "&First"
+msgstr "&První"
+
+#: FMain.form:611
+msgid "&Form..."
+msgstr "&Formlulář..."
+
+#: FMain.form:413
+msgid "&Forward"
+msgstr "&Dopředu"
+
+#: FMain.form:848
+msgid "&Help browser"
+msgstr "&Nápověda"
+
+#: FSearch.form:121
+msgid "&Highlight result"
+msgstr "&Zvýrazni výsledek"
+
+#: FMain.form:645
+msgid "&HTML file..."
+msgstr "&HTML soubor..."
+
+#: FSearch.form:126
+msgid "&Ignore strings"
+msgstr "&Ignoruj řetězce"
+
+#: FMain.form:638
+msgid "&Image..."
+msgstr "&Obrázek..."
+
+#: FImportTable.form:211 FTranslate.form:284
+msgid "&Import"
+msgstr "&Importovat"
+
+#: FOption.form:927
+msgid "&Import..."
+msgstr "&Importovat..."
+
+#: FList.form:58 FMenu.form:82 FPropertyProject.form:478
+msgid "&Insert"
+msgstr "&Vložit"
+
+#: FMain.form:318
+msgid "&Installation package..."
+msgstr "&Instalační balíček..."
+
+#: FForm.form:187
+msgid "&Last"
+msgstr "Pos&lední"
+
+#: FMain.form:595
+msgid "&Module..."
+msgstr "&Modul..."
+
+#: FMain.form:771
+msgid "&New connection..."
+msgstr "&Nové spojení..."
+
+#: FMain.form:215
+msgid "&New project..."
+msgstr "&Nový projekt..."
+
+#: FOption.form:889 FTranslate.form:299
+msgid "&New..."
+msgstr "&Nový..."
+
+#: FForm.form:180 FSearch.form:192 FTips.form:78
+msgid "&Next"
+msgstr "&Další"
+
+#: FMain.form:779
+msgid "&Open"
+msgstr "&Otevřít"
+
+#: FMain.form:541
+msgid "&Open a terminal..."
+msgstr "&Otevři terminál..."
+
+#: FMain.form:430
+msgid "&Open profile..."
+msgstr "&Otevřít profil..."
+
+#: FMain.form:222
+msgid "&Open project..."
+msgstr "&Otevřít projekt..."
+
+#: FMain.form:660
+msgid "&Other..."
+msgstr "&Jiné..."
+
+#: FExportData.class:126
+msgid "&Overwrite"
+msgstr "&Přepsat"
+
+#: FList.form:98 FMain.form:704
+msgid "&Paste"
+msgstr "&Vložit"
+
+#: FMain.form:392
+msgid "&Pause"
+msgstr "&Pozastavit"
+
+#: FMain.form:563
+msgid "&Preferences..."
+msgstr "&Možnosti..."
+
+#: FForm.form:173 FSearch.form:198 FTips.form:72
+msgid "&Previous"
+msgstr "&Předchozí"
+
+#: FMain.form:270
+msgid "&Project"
+msgstr "&Projekt"
+
+#: FMain.form:584
+msgid "&Project link..."
+msgstr "Odkaz &projektu..."
+
+#: FMain.form:459
+msgid "&Properties"
+msgstr "&Vlastnosti"
+
+#: FMain.form:351
+msgid "&Properties..."
+msgstr "&Vlastnosti..."
+
+#: FMain.form:263
+msgid "&Quit"
+msgstr "&Ukončit"
+
+#: FMain.form:335
+msgid "&Refresh"
+msgstr "&Obnovit"
+
+#: FTranslate.form:307
+msgid "&Reload"
+msgstr "O&bnovit"
+
+#: FPropertyComponent.form:190 FPropertyProject.form:484
+msgid "&Remove"
+msgstr "Odeb&rat"
+
+#: FMain.form:711
+msgid "&Rename..."
+msgstr "Přej&menovat..."
+
+#: FSearch.form:211
+msgid "&Replace"
+msgstr "Nahrad&it"
+
+#: FMain.form:524
+msgid "&Replace..."
+msgstr "Nahrad&it..."
+
+#: FMain.form:627
+msgid "&Report..."
+msgstr "&Report..."
+
+#: FPropertyProject.form:590
+msgid "&Reset"
+msgstr "O&bnovit"
+
+#: FPropertyProject.form:724
+msgid "&Revert..."
+msgstr "&Vrátit..."
+
+#: FMain.form:370
+msgid "&Run"
+msgstr "&Spustit"
+
+#: FConflict.form:172 FSaveProjectAs.form:82
+msgid "&Save"
+msgstr "&Uložit"
+
+#: FMain.form:246
+msgid "&Save project"
+msgstr "&Uložit projekt"
+
+#: FMain.form:557
+msgid "&Shortcuts..."
+msgstr "&Zkratky..."
+
+#: FMain.form:311
+msgid "&Source archive..."
+msgstr "&Zdrojový archiv..."
+
+#: FSearch.form:166
+msgid "&Source files"
+msgstr "&Zdrojové soubory"
+
+#: FEditor.form:119 FForm.form:144 FMain.form:737
+msgid "&Startup class"
+msgstr "&Hlavní třída"
+
+#: FMain.form:399
+msgid "&Stop"
+msgstr "-"
+
+#: FMain.form:652
+msgid "&Style sheet..."
+msgstr "&Styly..."
+
+#: FMain.form:864
+msgid "&System informations..."
+msgstr "Informace o &systému..."
+
+#: FMain.form:856
+msgid "&Tips of the day"
+msgstr "&Tipy dne"
+
+#: FMain.form:515
+msgid "&Tools"
+msgstr "&Nástroje"
+
+#: FMain.form:291
+msgid "&Translate..."
+msgstr "&Přeložit..."
+
+#: FFieldChooser.form:121 FList.form:104
+msgid "&Undo"
+msgstr "&Zpět"
+
+#: FList.form:70 FMakeInstall.form:601
+msgid "&Up"
+msgstr "Nahor&u"
+
+#: FPropertyProject.form:718
+msgid "&Update"
+msgstr "Aktualiz&ovat"
+
+#: FMain.form:446
+msgid "&View"
+msgstr "&Zobrazit"
+
+#: FEditor.form:207
+msgid "&Watch expression"
+msgstr "&Hlídat výraz"
+
+#: FMain.form:619
+msgid "&WebPage..."
+msgstr "&Webová stránka..."
+
+#: FSearch.form:111
+msgid "&Words only"
+msgstr "Pouze &slova"
+
+#: FPropertyProject.class:1162
+msgid "<b>&1</b> does not export any class."
+msgstr "<b>&1</b> neexportuje žádnou třídu."
+
+#: FPropertyProject.class:1156
+msgid "<b>&1</b> is already used as a library."
+msgstr "Knihovna <b>&1</b> je již použivaná."
+
+#: FMakeExecutable.form:44
+msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
+msgstr "<b>$(FILE)</b> bude nahrazen cestou spustitelného"
+
+#: FPropertyProject.form:630
+msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
+msgstr "<b>UPOZORNĚNÍ:</b> Tento spustitelný projekt závisí na knihovnách, které musí být uloženy ve stejném adresáři. V opačném případě nebudou knihovny nalezeny."
+
+#: FAbout.form:63
+msgid "<h2 align=center>Authors</h2>\n"
+msgstr "<h2 align=center>Autoři</h2>\n"
+
+#: FAbout.form:57
+msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr "<h2 align=center> Licence </h2>\n\n<p align=center>Tento program je svobodný software; můžete jej šířit a/nebo upravovat podle podmínek GNU General Public License, vydávané Free Software Foundation; buď ve verzi 2 nebo (podle vašeho uvážení) kterékoli pozdější verze.</p>\n\n<p align=center>Tento program je rozšiřován v naději, že bude užitečný, ale BEZ JAKÉKOLIV ZÁRUKY; i bez odvozené záruky PRODEJNOSTI anebo VHODNOSTI PRO URČITÝ ÚČEL. Podívejte se na GNU General Public License pro bližší informace.</p>\n"
+
+#: CComponent.class:122
+msgid "3D programming with OpenGL"
+msgstr "3D programování s OpenGL"
+
+#: Project.module:3798
+msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
+msgstr "Název třídy musí začínat písmenem nebo podtržítkem, následovaným libovolným písmenem nebo číslici."
+
+#: MErrorMessage.module:22
+msgid "A module cannot raise events"
+msgstr "Modul nemůže získat události"
+
+#: MErrorMessage.module:23
+msgid "A property implementation cannot be public"
+msgstr "Implementované vlastnosti musí být veřejné"
+
+#: MErrorMessage.module:24
+msgid "A property must be public"
+msgstr "Vlastnosti musí být veřejné"
+
+#: FSearch.form:172
+msgid "A&ll files"
+msgstr "&Všechny soubory"
+
+#: FPropertyProject.form:579
+msgid "About &component..."
+msgstr "O &komponentě..."
+
+#: FAbout.form:21 FWelcome.class:53
+msgid "About Gambas..."
+msgstr "O aplikaci Gambas..."
+
+#: MErrorMessage.module:25
+msgid "Access forbidden"
+msgstr "Přístup zakázán"
+
+#: FOption.form:868
+msgid "Activate code snippets"
+msgstr "Aktivovat úryvky kódu"
+
+#: FMain.form:383
+msgid "Activate profilin&g"
+msgstr "Aktivovat &profilování"
+
+#: FPropertyProject.form:421
+msgid "Activate profiling"
+msgstr "Aktivovat profilování"
+
+#: FPropertyProject.form:353
+msgid "Activate warnings"
+msgstr "Aktivovat varování"
+
+#: FConnectionEditor.form:232 FMain.class:1849
+msgid "Add"
+msgstr "Přidat"
+
+#: FDebugInfo.form:117
+msgid "Add expression"
+msgstr "Přidat výraz"
+
+#: FMakeInstall.form:700
+msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr "Přidat další testy pro konfigurační proces.\n<p><b>Ponechte prázdné, pokud nepotřebujete, nebo pokud nic o <i>autoconf</i> skriptech nevíte.</b>"
+
+#: FReportBrushChooser.form:102
+msgid "Add gradient stop"
+msgstr "Přidej zarážku přechodu"
+
+#: FMakeInstall.form:543
+msgid "Additional configuration"
+msgstr "Další konfigurace"
+
+#: FEditor.form:219 FTextEditor.form:161
 msgid "Advanced"
 msgstr "Rozšířené"
 
@@ -395,59 +919,55 @@ msgstr "Albánský (Albánie)"
 msgid "Alias name must be a string"
 msgstr "Alias jméno musí být řetězec"
 
-#: FForm.form:340
-msgid "Alignment"
-msgstr "Zarovnání"
-
-#: FForm.form:543
-msgid "Align to bottom"
-msgstr "Zarovnat dolů"
-
-#: FForm.form:362
+#: FForm.form:364
 msgid "Align to &bottom"
 msgstr "Zarovnat &dolů"
 
-#: FForm.form:550
-msgid "Align to left"
-msgstr "Zarovnat vlevo"
-
-#: FForm.form:344
+#: FForm.form:346
 msgid "Align to &left"
 msgstr "Zarovnat v&levo"
 
-#: FForm.form:557
-msgid "Align to right"
-msgstr "Zarovnat vpravo"
-
-#: FForm.form:350
+#: FForm.form:352
 msgid "Align to &right"
 msgstr "Zarovnat v&pravo"
 
-#: FForm.form:536
-msgid "Align to top"
-msgstr "Zarovnat nahoru"
-
-#: FForm.form:356
+#: FForm.form:358
 msgid "Align to &top"
 msgstr "Zarovnat na&horu"
 
-#: FMain.class:1532
+#: FForm.form:552
+msgid "Align to bottom"
+msgstr "Zarovnat dolů"
+
+#: FForm.form:559
+msgid "Align to left"
+msgstr "Zarovnat vlevo"
+
+#: FForm.form:566
+msgid "Align to right"
+msgstr "Zarovnat vpravo"
+
+#: FForm.form:545
+msgid "Align to top"
+msgstr "Zarovnat nahoru"
+
+#: FForm.form:342
+msgid "Alignment"
+msgstr "Zarovnání"
+
+#: FMain.class:1545
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Všechny zálohy nebo vytvořené soubory budou odstraněny z adresáře projektu."
 
-#: FConnectionEditor.class:1424 FTranslate.class:1266
+#: FConnectionEditor.class:1421 FTranslate.class:1254
 msgid "All files"
 msgstr "Všechny soubory"
 
-#: FSearch.form:172
-msgid "A&ll files"
-msgstr "&Všechny soubory"
-
-#: FMakeInstall.form:712
+#: FMakeInstall.form:726
 msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr "Veškeré potřebné informace byly shromážděny. Nyní můžete vytvořit instalační balíčky pro vaši aplikaci... \n<p>Klikněte na <b>OK</b> tlačítko pro vytvoření balíčků.\n<p>Klikněte na <b>Předchozí</b> tlačítko, pokud jste udělali chybu.\n<p>Klikněte na <b>Zrušit</b> můžete zrušit operaci.\n\n"
 
-#: Project.module:1504
+#: Project.module:1551
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr "ALFA VERZE, POUŽITÍ JE NA VLASTNÍ NEBEZPEČÍ! :-)"
 
@@ -455,15 +975,7 @@ msgstr "ALFA VERZE, POUŽITÍ JE NA VLASTNÍ NEBEZPEČÍ! :-)"
 msgid "Also copy table &data"
 msgstr "Také kopírovat &data tabulky"
 
-#: FMenu.form:266
-msgid "ALT"
-msgstr "-"
-
-#: MTheme.module:6
-msgid "Alternate background"
-msgstr "Střídavé pozadí"
-
-#: FOption.form:338
+#: FOption.form:1261
 msgid "Always display optional messages"
 msgstr "Vždy zobrazit volitelné zprávy"
 
@@ -479,37 +991,25 @@ msgstr "Nejednoznačný výraz. Prosím, použijte závorky"
 msgid "Amethyst"
 msgstr "-"
 
-#: MErrorMessage.module:22
-msgid "A module cannot raise events"
-msgstr "Modul nemůže získat události"
-
-#: CComponent.class:91
+#: CComponent.class:93
 msgid "Application debugger helper"
 msgstr "Pomocník při ladění aplikace"
 
-#: FOption.form:636
-msgid "Applications"
-msgstr "Aplikace"
-
-#: CComponent.class:127
+#: CComponent.class:135
 msgid "Application settings management"
 msgstr "Správa nastavení aplikace "
 
-#: FCreateProject.form:257
+#: FCreateProject.form:258
 msgid "Application stored in a\nSubversion repository"
 msgstr "Aplikace uložená v\nSVN repositáři"
 
-#: Project.module:536
+#: FOption.form:1096
+msgid "Applications"
+msgstr "Aplikace"
+
+#: Project.module:555
 msgid "Applying conversion..."
 msgstr "Uplatni konverzi..."
-
-#: MErrorMessage.module:23
-msgid "A property implementation cannot be public"
-msgstr "Implementované vlastnosti musí být veřejné"
-
-#: MErrorMessage.module:24
-msgid "A property must be public"
-msgstr "Vlastnosti musí být veřejné"
 
 #: Language.module:7
 msgid "Arabic (Egypt)"
@@ -523,15 +1023,11 @@ msgstr "Arabsky (Tunisko)"
 msgid "Argument cannot be passed by reference"
 msgstr "Tento argument nemůže být předán odkazem"
 
-#: FPropertyProject.form:411
+#: FPropertyProject.form:459
 msgid "Arguments"
 msgstr "Argumenty"
 
-#: FMakeInstall.form:295
-msgid "Archlinux"
-msgstr "-"
-
-#: FForm.form:278
+#: FForm.form:280
 msgid "Arrangement"
 msgstr "Uspořádání"
 
@@ -547,43 +1043,43 @@ msgstr "Pole struktury nejsou podporovány"
 msgid "Authentification"
 msgstr "Autorizace"
 
-#: ProjectItem.class:63
+#: ProjectItem.class:82
 msgid "Author"
 msgstr "Autor"
 
-#: CComponentBox.class:235 ProjectItem.class:63
-msgid "Authors"
+#: FPropertyProject.form:257
+msgid "Author(s)"
 msgstr "Autoři"
 
-#: FPropertyProject.form:217
-msgid "Author(s)"
+#: ComponentItem.class:144 ProjectItem.class:82
+msgid "Authors"
 msgstr "Autoři"
 
 #: FCreateFile.form:396
 msgid "Automatic extension"
 msgstr "Automatické rozšíření"
 
-#: FImportTable.class:136
-msgid "(Automatic key)"
-msgstr "(Automatický klíč)"
+#: FOption.form:716
+msgid "Automatic formatting"
+msgstr "Automatické formátování"
 
-#: Project.module:185
+#: Project.module:190
 msgid "Automation"
 msgstr "Automatizace"
 
-#: FMakeInstall.form:314
-msgid "Autotools"
-msgstr "Auto nástroje"
+#: FProfile.class:607
+msgid "Average"
+msgstr "Průměr"
 
 #: Language.module:10
 msgid "Azerbaijani (Azerbaijan)"
 msgstr "Ázerbájdžánsky (Ázerbájdžán)"
 
-#: FOption.form:391 MTheme.module:6
+#: FOption.form:552 MTheme.module:6
 msgid "Background"
 msgstr "Pozadí"
 
-#: FOption.form:173
+#: FOption.form:212
 msgid "Background color..."
 msgstr "Barva pozadí..."
 
@@ -596,70 +1092,90 @@ msgid "Bad archive: &1: &2"
 msgstr "Chybný archív: &1: &2"
 
 #: MErrorMessage.module:34
+msgid "Bad constant"
+msgstr "Chybná konstanta"
+
+#: MErrorMessage.module:35
 msgid "Bad constant type"
 msgstr "Chybný typ konstanty"
 
-#: MErrorMessage.module:35
+#: MErrorMessage.module:36
+msgid "Bad description"
+msgstr "Chybná poznámka"
+
+#: MErrorMessage.module:37
 msgid "Bad event handler in &1.&2(): &3"
 msgstr "Chybné zpracování události v &1.&2(): &3"
 
-#: MErrorMessage.module:36
+#: MErrorMessage.module:38
 msgid "Bad expression: &1"
 msgstr "Chybný výraz: &1"
-
-#: MErrorMessage.module:38
-msgid "Bad format string"
-msgstr "Chybný formát řetězce"
 
 #: FForm.class:128
 msgid "Bad form file"
 msgstr "Chybný soubor formuláře"
 
-#: MErrorMessage.module:37
+#: MErrorMessage.module:39
 msgid "Bad form file version"
 msgstr "Chybná verze souboru formuláře"
 
-#: FMenu.class:312
+#: MErrorMessage.module:40
+msgid "Bad format in section: "
+msgstr "Chybný formát i sekci: "
+
+#: MErrorMessage.module:41
+msgid "Bad format string"
+msgstr "Chybný formát řetězce"
+
+#: FMenu.class:308
 msgid "Bad group name !"
 msgstr "Chybné jméno skupiny!"
+
+#: MErrorMessage.module:42
+msgid "Bad header"
+msgstr "Chybná hlavička"
 
 #: MErrorMessage.module:33
 msgid "Bad character constant in string"
 msgstr "Chybný znak v řetězci"
 
-#: FMenu.class:306
+#: FMenu.class:302
 msgid "Bad menu name !"
 msgstr "Chybné jméno menu!"
 
-#: MErrorMessage.module:39
+#: MErrorMessage.module:43
 msgid "Bad number of dimensions"
 msgstr "Chybný rozměr čísla"
 
-#: MErrorMessage.module:40
+#: FProfile.class:153
+msgid "Bad profile file format"
+msgstr "Chybný formát soubor profilu"
+
+#: MErrorMessage.module:44
 msgid "Bad project file: line &1: &2"
 msgstr "Chybný soubor projektu: řádek &1: &2"
 
-#: MErrorMessage.module:41
+#: MErrorMessage.module:45
 msgid "Bad regular expression: &1"
 msgstr "Chybný regulárný výraz: &1"
 
-#: MErrorMessage.module:42
+#: MErrorMessage.module:46
 msgid "Bad string conversion"
 msgstr "Chybný převáděný řetězec"
 
-#: MErrorMessage.module:43
+#: MErrorMessage.module:47
 msgid "Bad subscript range"
 msgstr "Chybný rozsah indexu"
 
-#: MErrorMessage.module:44
+#: MErrorMessage.module:48
 msgid "Bad use of virtual class"
 msgstr "Chybné použití virtuální třídy"
 
-#: MErrorMessage.module:45
+#: MErrorMessage.module:49
 msgid "Bad version string"
 msgstr "Chybná verze řetězce"
 
-#: Project.module:186
+#: Project.module:191
 msgid "Basic"
 msgstr "Základní"
 
@@ -667,23 +1183,23 @@ msgstr "Základní"
 msgid "Basque (Basque country)"
 msgstr "Basque (Baskicko)"
 
-#: FMakeExecutable.form:44
-msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
-msgstr "<b>$(FILE)</b> bude nahrazen cestou spustitelného"
-
-#: FOption.form:391
+#: FOption.form:552
 msgid "Blend"
 msgstr "Přechod"
 
-#: FConnectionEditor.class:571 MConnection.module:101
+#: FConnectionEditor.class:571 MConnection.module:99
 msgid "Blob"
 msgstr "-"
 
-#: FOption.form:180
+#: FOption.form:219
 msgid "Bold"
 msgstr "Tučné"
 
-#: FConnectionEditor.class:571 MConnection.module:95
+#: FEditor.form:215 FTextEditor.form:157
+msgid "Bookmarks"
+msgstr "Záložky"
+
+#: FConnectionEditor.class:571 MConnection.module:93 MErrorMessage.module:50
 msgid "Boolean"
 msgstr "-"
 
@@ -695,43 +1211,23 @@ msgstr "Okraj"
 msgid "Border only"
 msgstr "Pouze okraj"
 
-#: FReportBorderChooser.form:79 FReportPaddingChooser.form:53
-msgid "Bottom"
-msgstr "Spodek"
-
-#: FReportBorderChooser.form:166
-msgid "BottomLeft"
-msgstr "DoleVlevo"
-
-#: FReportBorderChooser.form:157
-msgid "BottomRight"
-msgstr "DoleVpravo"
-
-#: FDebugInfo.form:166 MTheme.module:6
+#: FDebugInfo.form:167 MTheme.module:6
 msgid "Breakpoints"
 msgstr "Body přerušení"
 
-#: FForm.form:282
+#: FForm.form:284
 msgid "Bring to foreground"
 msgstr "Přenést do popředí"
 
-#: FSearch.form:205
-msgid "&Browse"
-msgstr "&Prohlížet"
-
-#: FMain.form:1122
+#: FMain.form:1147
 msgid "Browse project"
 msgstr "Prohlížet projekt"
 
-#: FMain.form:1098
+#: FMain.form:1123
 msgid "Browse project..."
 msgstr "Prohlížet projekt..."
 
-#: FMain.form:515
-msgid "&Browse project..."
-msgstr "&Procházet projekt..."
-
-#: FOption.form:646
+#: FOption.form:1113
 msgid "Browser"
 msgstr "Prohlížeč"
 
@@ -739,95 +1235,115 @@ msgstr "Prohlížeč"
 msgid "Bulgarian (Bulgaria)"
 msgstr "Bulharsky (Bulharsko)"
 
-#: FPropertyProject.form:579
-msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
-msgstr "<b>UPOZORNĚNÍ:</b> Tento spustitelný projekt závisí na knihovnách, které musí být uloženy ve stejném adresáři. V opačném případě nebudou knihovny nalezeny."
+#: MErrorMessage.module:51
+msgid "Bytecode too old. Please recompile the project."
+msgstr "Bytecode je příliš starý. Prosím rekompilujte projekt."
 
-#: FPropertyProject.class:1084
-msgid "<b>&1</b> does not export any class."
-msgstr "<b>&1</b> neexportuje žádnou třídu."
+#: MErrorMessage.module:52
+msgid "Bytecode too recent. Please upgrade Gambas."
+msgstr "Bytecode příliš aktuální. Prosím upgrejdujte Gambas."
 
-#: FPropertyProject.class:1078
-msgid "<b>&1</b> is already used as a library."
-msgstr "Knihovna <b>&1</b> je již použivaná."
+#: FSearch.form:153
+msgid "C&urrent procedure"
+msgstr "Aktuální &procedura"
 
 #: CComponent.class:79
 msgid "Cairo graphic library"
 msgstr "Grafická knihovna Cairo"
 
-#: FTextEditor.class:498 FTranslate.class:636 Project.module:428
+#: FProfile.form:126
+msgid "Callees"
+msgstr "Volaný"
+
+#: FProfile.form:138
+msgid "Callers"
+msgstr "Volající"
+
+#: FProfile.class:601
+msgid "Calls"
+msgstr "Volání"
+
+#: FTextEditor.class:596 FTranslate.class:627 Project.module:447
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: FDebugInfo.form:213
+#: FDebugInfo.form:239
 msgid "Cancel current search"
 msgstr "Zrušit aktuální hledání"
 
-#: FImportTable.class:415
+#: FImportTable.class:409
 msgid "Cancelled by user"
 msgstr "Zrušeno uživatelem"
 
-#: FCreateFile.class:456
+#: FCreateFile.class:450
 msgid "Cannot add file."
 msgstr "Nelze přidat soubor."
 
-#: Project.module:4433
+#: Project.module:4546
 msgid "Cannot copy file &1."
 msgstr "Soubor &1 nelze kopírovat."
 
-#: Project.module:2502
+#: Project.module:2589
 msgid "Cannot copy template file."
 msgstr "Šablonu nelze zkopírovat."
 
-#: MErrorMessage.module:48
-msgid "Cannot create action file: &1"
-msgstr "Nelze vytvořit akční soubor: &1"
-
-#: MErrorMessage.module:49
-msgid "Cannot create callback: &1"
-msgstr "Nelze vytvořit callback: &1"
-
-#: MErrorMessage.module:50
-msgid "Cannot create class information: &1: &2"
-msgstr "Nelze vytvořit informační třídu: &1: &2"
-
-#: MErrorMessage.module:51
-msgid "Cannot create file: &1"
-msgstr "Nelze vytořit soubor: &1"
-
-#: Project.module:4482
-msgid "Cannot create link &1."
-msgstr "Nelze vytvořit odkaz &1."
-
-#: FCreateProject.class:185
-msgid "Cannot create project!"
-msgstr "Projekt nelze vytvořit!"
-
-#: MErrorMessage.module:47
+#: MErrorMessage.module:54
 msgid "Cannot create .startup file"
 msgstr "Nelze vytvořit soubor .startup"
 
-#: MConnection.module:286
+#: MErrorMessage.module:55
+msgid "Cannot create action file: &1"
+msgstr "Nelze vytvořit akční soubor: &1"
+
+#: MErrorMessage.module:56
+msgid "Cannot create callback: &1"
+msgstr "Nelze vytvořit callback: &1"
+
+#: MErrorMessage.module:57
+msgid "Cannot create class information: &1: &2"
+msgstr "Nelze vytvořit informační třídu: &1: &2"
+
+#: MErrorMessage.module:58
+msgid "Cannot create file: &1"
+msgstr "Nelze vytořit soubor: &1"
+
+#: Project.module:4594
+msgid "Cannot create link &1."
+msgstr "Nelze vytvořit odkaz &1."
+
+#: FCreateProject.class:186
+msgid "Cannot create project!"
+msgstr "Projekt nelze vytvořit!"
+
+#: MConnection.module:282
 msgid "Cannot create table '&1'."
 msgstr "Nelze vytvořit tabulku '&1'."
 
-#: MErrorMessage.module:52
+#: MErrorMessage.module:59
 msgid "Cannot create temporary archive file: &1"
 msgstr "Nelze vytvořit dočasný soubor archivu: &1"
 
-#: FMain.class:222
+#: FMain.class:214
 msgid "Cannot delete file or directory"
 msgstr "Soubor nebo adresář nelze smazat"
 
-#: FConnectionEditor.class:1387
+#: FConnectionEditor.class:1384
 msgid "Cannot delete table '&1'."
 msgstr "Nelze smazat tabulku '&1'."
 
-#: MErrorMessage.module:53
+#: MErrorMessage.module:255
+msgid "cannot find component"
+msgstr "Nelze najít komponentu"
+
+#: MErrorMessage.module:60
 msgid "Cannot find dynamic library '&1': &2"
 msgstr "Nelze najít dynamickou knihovnu '&1': &2"
 
-#: MErrorMessage.module:54
+#: MErrorMessage.module:256
+msgid "cannot find library"
+msgstr "Nelze najít knihovnu"
+
+#: MErrorMessage.module:61
 msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr "Nezle najít symbol '&2' v dynamické knihovně '&1'"
 
@@ -835,115 +1351,115 @@ msgstr "Nezle najít symbol '&2' v dynamické knihovně '&1'"
 msgid "Cannot found extra file: &1"
 msgstr "Nelze najít soubor navíc: &1"
 
-#: MErrorMessage.module:46
+#: MErrorMessage.module:53
 msgid "Cannot change current directory to '&1': &2"
 msgstr "Nelze změnit aktuální adresář na '&1': &2"
 
-#: FTranslate.class:967
+#: FTranslate.class:958
 msgid "Cannot import translation file."
 msgstr "Nelze importovat soubor s překladem."
 
-#: MErrorMessage.module:55
+#: MErrorMessage.module:62
 msgid "Cannot inherit twice"
-msgstr "Nemůže dědít dvakrát"
+msgstr "Nelze dědit dvakrát"
 
-#: MErrorMessage.module:56
+#: MErrorMessage.module:63
 msgid "Cannot instantiate native types"
 msgstr "Nelze vytvořit instanci nativních typů"
 
-#: Project.module:2496
+#: Project.module:2583
 msgid "Cannot link template file."
 msgstr "Nelze odkazát na soubor šablony."
 
-#: MErrorMessage.module:57
+#: MErrorMessage.module:64
 msgid "Cannot load class '&1': &2&3"
 msgstr "Nelze načíst třídy '&1': &2&3"
 
-#: MErrorMessage.module:58
+#: MErrorMessage.module:65
 msgid "Cannot load component '&1': &2"
 msgstr "Nelze načíst komponentu '&1': &2"
 
-#: MErrorMessage.module:59
+#: MErrorMessage.module:66
+msgid "Cannot load parent class: "
+msgstr "Nelze načíst rodičovskou třídu: "
+
+#: MErrorMessage.module:67
 msgid "Cannot load source file: &1"
 msgstr "Nelze načíst zdrojový soubor: &1"
 
-#: Project.module:2757
-msgid "Cannot make executable."
-msgstr "Spustitelný soubor nelze vytvořit."
-
-#: MErrorMessage.module:60
+#: MErrorMessage.module:68
 msgid "Cannot make executable: &1: &2"
 msgstr "Spustitelný soubor &1: &2 nelze vytvořit"
 
-#: MErrorMessage.module:61
+#: Project.module:2843
+msgid "Cannot make executable."
+msgstr "Spustitelný soubor nelze vytvořit."
+
+#: MErrorMessage.module:69
 msgid "Cannot mix NEW and embedded array"
 msgstr "Nelze kombinovat NEW a vložené pole"
 
-#: MErrorMessage.module:62
+#: MErrorMessage.module:70
 msgid "Cannot mix NEW and embedded structure"
 msgstr "Nelze kombinovat NEW a vloženou struktůru"
 
-#: Project.module:4499
+#: Project.module:4609
 msgid "Cannot move a directory inside itself."
 msgstr "Nelze přesunout adresář uvnitř sebe."
 
-#: Project.module:4567
+#: Project.module:4677
 msgid "Cannot move file &1."
 msgstr "Soubor &1 nejde přesunout."
 
-#: Project.module:1818
+#: Project.module:1878
 msgid "Cannot open a binary file."
 msgstr "Binární soubor nelze otevřít."
 
-#: Project.module:1851
-msgid "Cannot open file."
-msgstr "Soubor nelze otevřít."
-
-#: MErrorMessage.module:64
-msgid "Cannot open file: &1"
-msgstr "Soubor &1 nelze otevřít"
-
-#: MErrorMessage.module:63
+#: MErrorMessage.module:71
 msgid "Cannot open file '&1': &2"
 msgstr "Soubor '&1': &2 nezle otevřít"
 
-#: Project.module:628
+#: MErrorMessage.module:72
+msgid "Cannot open file: &1"
+msgstr "Soubor &1 nelze otevřít"
+
+#: Project.module:1911
+msgid "Cannot open file."
+msgstr "Soubor nelze otevřít."
+
+#: Project.module:659
 msgid "Cannot open project file :\n"
 msgstr "Projekt nelze otevřít:\n"
 
-#: MErrorMessage.module:65
+#: MErrorMessage.module:73
 msgid "Cannot raise events in static function"
-msgstr "Nemůžu získat události ve statické funkci"
+msgstr "Nelze získat události ve statické funkci"
 
-#: MErrorMessage.module:66
-msgid "Cannot read file: &1"
-msgstr "Soubor &1 nezle číst"
-
-#: MErrorMessage.module:67
+#: MErrorMessage.module:74
 msgid "Cannot read file: &1: &2"
 msgstr "Soubor &1: &2 nelze číst"
 
-#: FTranslate.class:377
+#: FTranslate.class:368
 msgid "Cannot read translation file for language '&1'"
 msgstr "Nelze načíst soubor s přeladem pro jazyk '&1'"
 
-#: MErrorMessage.module:68
+#: MErrorMessage.module:75
 msgid "Cannot register class '&1'"
 msgstr "Třída '&1' nelze registrovat"
 
-#: MErrorMessage.module:69
+#: MErrorMessage.module:76
 msgid "Cannot remove file '&1': &2"
 msgstr "Nelze odstranit soubor '&1': &2"
 
-#: MErrorMessage.module:70
+#: MErrorMessage.module:77
 msgid "Cannot rename file '&1' to '&2': &3"
 msgstr "Nelze přejmenovat soubor '&1' na '&2': &3"
 
-#: MErrorMessage.module:71
+#: MErrorMessage.module:78
 msgid "Cannot run child process: &1&2"
 msgstr "Nelze spustit potomka procesu: &1&2"
 
-#: FSaveProjectAs.class:35
+#: FSaveProjectAs.class:38
 msgid "Cannot save a project inside its own directory."
 msgstr "Nelze uložit projekt v rámci vlastního adresáře."
 
@@ -951,83 +1467,87 @@ msgstr "Nelze uložit projekt v rámci vlastního adresáře."
 msgid "Cannot save file !"
 msgstr "Soubor nelze uložit!"
 
-#: FTranslate.class:524
+#: FTranslate.class:515
 msgid "Cannot save translation."
 msgstr "Překlad nelze uložit."
 
-#: MErrorMessage.module:72
+#: MErrorMessage.module:79
 msgid "Cannot set file owner: &1: &2"
 msgstr "Nelze nastavit vlastníka souboru: &1: &2"
 
-#: MErrorMessage.module:73
+#: MErrorMessage.module:80
 msgid "Cannot use NEW operator there"
 msgstr "Nelze použít operátor NEW"
 
-#: MErrorMessage.module:74
+#: MErrorMessage.module:81
 msgid "Cannot use TRY twice"
 msgstr "Nelze použít TRY dvakrát"
 
-#: MErrorMessage.module:75
+#: MErrorMessage.module:82
 msgid "Cannot use TRY with &1"
 msgstr "Nelze použít TRY s &1"
 
-#: FPropertyComponent.class:149
+#: FPropertyComponent.class:141
 msgid "Cannot write component description file."
 msgstr "Nelze zapsat součást popisu souboru."
 
-#: Project.module:3317
+#: Project.module:3413
 msgid "Cannot write project file."
 msgstr "Projekt nelze uložit."
 
-#: FConnectionEditor.class:1263
+#: FConnectionEditor.class:1261
 msgid "Cannot write table '&1'."
 msgstr "Nelze zapsat tabulku '&1'."
 
-#: FCreateFile.class:124
+#: FCreateFile.class:119
 msgid "Cascading style sheets"
 msgstr "Kaskádové styly"
-
-#: FSearch.form:106
-msgid "&Case sensitive"
-msgstr "Rozlišovat &velikost"
 
 #: Language.module:14
 msgid "Catalan (Catalonia, Spain)"
 msgstr "Katalánsky (Katalánsko, Španělsko)"
 
-#: FMakeInstall.form:494
+#: FMakeInstall.form:508
 msgid "Categories"
 msgstr "Kategorie"
 
-#: FForm.form:328
+#: FForm.form:330
 msgid "Center horizontally"
 msgstr "Centrovat horizontálně"
 
-#: FForm.form:334
+#: FForm.form:336
 msgid "Center vertically"
 msgstr "Centrovat vertikálně"
 
-#: FCreateProject.form:231
+#: FCreateProject.form:232
 msgid "CGI Web application"
 msgstr "Webové aplikace CGI"
 
-#: FCreateFile.form:129 FDebugInfo.class:53
+#: MErrorMessage.module:83
+msgid "Circular reference"
+msgstr "Cyklickí odkaz"
+
+#: FList.form:86
+msgid "Cl&ear"
+msgstr "Vyči&stit"
+
+#: FCreateFile.form:129 FDebugInfo.class:58
 msgid "Class"
 msgstr "Třída"
 
-#: FMain.form:578
-msgid "&Class..."
-msgstr "&Třída..."
-
-#: FInfo.class:69
-msgid "Classes"
-msgstr "Třídy"
-
-#: MErrorMessage.module:76
+#: MErrorMessage.module:84
 msgid "Class '&1' is not creatable"
 msgstr "Třída '&1' není vytvořitelna"
 
-#: FMain.class:1532
+#: MErrorMessage.module:85
+msgid "Class already exists: "
+msgstr "Třída již existuje: "
+
+#: FInfo.class:67
+msgid "Classes"
+msgstr "Třídy"
+
+#: FMain.class:1545
 msgid "Clean"
 msgstr "Ukliď"
 
@@ -1035,95 +1555,71 @@ msgstr "Ukliď"
 msgid "Clean up"
 msgstr "Uklidit"
 
-#: FMain.form:328
-msgid "&Clean up"
-msgstr "&Uklidit"
-
-#: FOption.class:636 FOutput.form:79
+#: FOption.class:664 FOutput.form:79
 msgid "Clear"
 msgstr "Vyčistit"
 
-#: FList.form:86
-msgid "Cl&ear"
-msgstr "Vyči&stit"
-
-#: FMakeInstall.form:599
-msgid "&Clear"
-msgstr "&Vyčistit"
+#: FMain.form:436
+msgid "Clear &all breakpoints"
+msgstr "Vyčisti &všechy breakpointy"
 
 #: FIconEditor.form:95
 msgid "Clear all"
 msgstr "Vše vyčisti"
 
-#: FMain.form:417
-msgid "Clear &all breakpoints"
-msgstr "Vyčisti &všechy breakpointy"
+#: CBookmark.class:38
+msgid "Clear all bookmarks"
+msgstr "Vyčistit všechny záložky"
 
 #: FOutput.form:122
 msgid "Clear console"
-msgstr "Vyčisti konzoli"
+msgstr "Vyčistit konzoli"
 
-#: FOption.form:781
+#: FOption.form:1283
 msgid "Clear documentation cache"
 msgstr "Vyčistit cache dokumentace"
 
-#: FMain.class:578
-msgid "&Clear history"
-msgstr "&Vyčisti historii"
-
 #: FTranslate.form:107
 msgid "Clear this translation"
-msgstr "Vyčisti tento překlad"
-
-#: FProperty.form:40
-msgid "Click on a form or a control to modify its properties..."
-msgstr "Klikněte na formulář nebo ovládací prvek pro upravení jeho vlastností..."
+msgstr "Vyčistit tento překlad"
 
 #: FFormStack.form:23
 msgid "Click on a form to display the hierarchy of its controls..."
-msgstr "Kliknutím na formulář zobrazíte hierarchii ovládacích prvků..."
+msgstr "Kliknutím na formulář zobrazit hierarchii ovládacích prvků..."
 
-#: FMenu.form:352
+#: FMenu.form:351
 msgid "Click on Insert to add a new menu."
-msgstr "Klinutím na Vložit přidáte nové menu."
+msgstr "Kliknutím na Vložit přidat nové menu."
 
 #: FPasteSpecial.form:85
 msgid "Clipboard contents"
 msgstr "Obsah schránky"
 
-#: FMakeInstall.class:296 FSystemInfo.form:81 FTips.form:84
+#: FTextEditor.form:244 FTips.form:84
 msgid "Close"
 msgstr "Zavřít"
 
-#: FTranslate.form:335
-msgid "&Close"
-msgstr "&Zavřít"
-
-#: FMain.form:422
-msgid "Close all &debug windows"
-msgstr "Zavřít všechy &ladící okna"
-
-#: FMain.form:490
+#: FMain.form:509
 msgid "Close &all windows"
 msgstr "Zavřít &všechna okna"
 
-#: FReportCoordChooser.form:21
-msgid "cm"
-msgstr "-"
+#: FMain.form:441
+msgid "Close all &debug windows"
+msgstr "Zavřít všechy &ladící okna"
 
-#: FForm.form:435 FTextEditor.form:260
+#: FForm.form:444 FTextEditor.form:284
 msgid "Code"
 msgstr "Zdrojový kód"
 
-#: FOption.form:868
+#: FOption.form:710
 msgid "Code formatting"
 msgstr "Formátování kódu"
 
-#: FOption.form:798
+#: FOption.form:857
 msgid "Code snippets"
 msgstr "Úryvky kódu"
 
-#: FDebugInfo.class:68
+#: FDebugInfo.class:73
 msgid "Col."
 msgstr "-"
 
@@ -1131,15 +1627,15 @@ msgstr "-"
 msgid "Color"
 msgstr "Barva"
 
-#: FForm.form:319
+#: FForm.form:321
 msgid "Columns"
 msgstr "Sloupce"
 
-#: FCreateProject.form:187
+#: FCreateProject.form:188
 msgid "Command-line application"
 msgstr "Aplikace v konzoli"
 
-#: FEditor.form:231
+#: FEditor.form:240
 msgid "Comment"
 msgstr "Zakomentovat"
 
@@ -1147,43 +1643,43 @@ msgstr "Zakomentovat"
 msgid "Comments"
 msgstr "Komentáře"
 
-#: FPropertyProject.form:676
-msgid "&Commit..."
-msgstr "-"
-
 #: FCommit.form:57
 msgid "Commit description"
 msgstr "Commit popis"
 
-#: MErrorMessage.module:77
+#: MErrorMessage.module:86
 msgid "Comparison operator expected"
 msgstr "Očekáván operátor porovnávaní"
 
-#: FPropertyProject.form:268
+#: FPropertyProject.form:308
 msgid "Compilation"
 msgstr "Kompilace"
 
-#: FMain.form:1030
+#: FMain.form:1055
 msgid "Compile"
 msgstr "Kompilovat"
 
-#: FMain.form:273
-msgid "&Compile"
-msgstr "&Kompilovat"
-
-#: FMain.form:1037
-msgid "Compile all"
-msgstr "Kompilovat vše"
-
-#: FMain.form:280
+#: FMain.form:281
 msgid "Compile &All"
 msgstr "Kompilovat &vše"
 
-#: Project.module:2236
+#: FMain.form:1062
+msgid "Compile all"
+msgstr "Kompilovat vše"
+
+#: Project.module:2305
 msgid "Compiling project"
 msgstr "Kompiluji projekt"
 
-#: FPropertyProject.form:378
+#: CComponent.class:154
+msgid "Complex numbers"
+msgstr "Komplexní čísla"
+
+#: CComponent.class:81
+msgid "Complex numbers management"
+msgstr "Správa komplexních čísel"
+
+#: FPropertyProject.form:195
 msgid "Component"
 msgstr "Komponenta"
 
@@ -1191,35 +1687,31 @@ msgstr "Komponenta"
 msgid "Component advancement"
 msgstr "Rozšíření komponenty"
 
-#: FForm.class:1299
+#: FForm.class:1277
 msgid "Component missing for control &1"
 msgstr "Chybí komponenta pro kontolu &1"
 
-#: MErrorMessage.module:78
+#: MErrorMessage.module:87
 msgid "Component not found: &1"
 msgstr "Komponenta &1 nebyla nalezena"
 
-#: FCreateProject.form:344
+#: FCreateProject.form:351
 msgid "Component programming"
 msgstr "Programování komponent"
 
-#: FMain.form:906 FPropertyComponent.form:37
+#: FMain.form:358 FPropertyComponent.form:37
 msgid "Component properties"
 msgstr "Vlastnosti komponenty"
 
-#: FMain.form:357
-msgid "Co&mponent properties..."
-msgstr "Vlastnosti ko&mponenty..."
-
-#: FPropertyComponent.form:152 FPropertyProject.form:489
+#: FPropertyComponent.form:152 FPropertyProject.form:544
 msgid "Components"
 msgstr "Komponenty"
 
-#: FTextEditor.form:178
+#: FTextEditor.form:188
 msgid "Compress file"
 msgstr "Komprimace souboru"
 
-#: CComponent.class:81
+#: CComponent.class:82
 msgid "Compression & decompression"
 msgstr "Komprese & dekomprese"
 
@@ -1235,7 +1727,7 @@ msgstr "Konfigurace štětce"
 msgid "Configure padding"
 msgstr "Konfigurace okraje"
 
-#: FConflict.class:262
+#: FConflict.class:256
 msgid "Conflict files"
 msgstr "Konflikt souborů"
 
@@ -1251,69 +1743,61 @@ msgstr "Editor připojení"
 msgid "Connection properties"
 msgstr "Vlastnosti připojení"
 
-#: CProjectTree.class:296 Project.module:1611
+#: CProjectTree.class:288 Project.module:1655
 msgid "Connections"
 msgstr "Spojení"
 
-#: FDebugInfo.form:58 FMain.form:1004 FOption.form:577 FSearch.class:94
+#: FDebugInfo.form:59 FMain.form:1029 FOption.form:272 FSearch.class:92
 msgid "Console"
 msgstr "Konzole"
-
-#: FMain.form:449
-msgid "&Console"
-msgstr "&Konzole"
 
 #: FOutput.form:30
 msgid "Console - Gambas"
 msgstr "Konzole - Gambas"
 
-#: MHelp.module:645
+#: MErrorMessage.module:257
+msgid "constant hidden by local declaration: &1"
+msgstr "skrytá konstanta z lokální deklarace: &1"
+
+#: MHelp.module:644
 msgid "Constants"
 msgstr "Konstanty"
 
-#: Project.module:3129
+#: Project.module:3224
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: Project.module:197
-msgid "Controls"
-msgstr "Řízení"
-
-#: FOption.form:528
+#: FOption.form:727
 msgid "Control structure automatic completion"
 msgstr "Kontrola struktury automatického doplňování"
 
-#: Project.module:428
+#: Project.module:202
+msgid "Controls"
+msgstr "Řízení"
+
+#: Project.module:447
 msgid "Convert"
 msgstr "Převod"
 
-#: Project.module:507
+#: Project.module:528
 msgid "Converting project structure..."
 msgstr "Převodová struktura projektu..."
 
-#: FMenu.form:113 FOutput.form:65 FTextEditor.form:109
+#: FMenu.form:113 FOutput.form:65 FTextEditor.form:115
 msgid "Copy"
 msgstr "Kopírovat"
 
-#: FList.form:92 FMain.form:672 FSystemInfo.form:75
-msgid "&Copy"
-msgstr "&Kopírovat"
-
-#: FForm.form:242
+#: FForm.form:244
 msgid "Copy at the same place"
 msgstr "Kopírovat na to samé místo"
 
-#: FConnectionEditor.form:265
+#: FConnectionEditor.form:261
 msgid "Copy field list"
 msgstr "Kopírovat pole seznamu"
 
-#: FMain.form:703
+#: FMain.form:728
 msgid "Copy file pat&h"
 msgstr "Kopírovat cestu &souboru"
-
-#: Project.module:483
-msgid "Copying project inside a temporary directory..."
-msgstr "Zkopíruj projekt dovniř odkládacího adresáře..."
 
 #: FConnectionEditor.form:146
 msgid "Copy table"
@@ -1323,73 +1807,69 @@ msgstr "Kopírovat tabulku"
 msgid "Copy untranslated string"
 msgstr "Kopírovat nepřeložený řetězec"
 
+#: Project.module:503
+msgid "Copying project inside a temporary directory..."
+msgstr "Kopírovat projekt dovniř odkládacího adresáře..."
+
 #: FReportBorderChooser.form:141
 msgid "Corner"
 msgstr "Roh"
 
 #: FMakeExecutable.form:62
 msgid "Create a shortcut on the desktop"
-msgstr "Vytvoření zástupce na ploše"
+msgstr "Vytvořit zástupce na ploše"
 
 #: FCreateFile.form:424
 msgid "Create a symbolic link"
 msgstr "Vytvořít symbolický odkaz"
 
-#: FNewConnection.class:195
-msgid "&Create database '&1'"
-msgstr "&Vytvořit databázi '&1'"
-
-#: FMakeInstall.form:703
+#: FMakeInstall.form:717
 msgid "Create directories for each distribution"
 msgstr "Vytvořit adresáře pro jednotlivé distribuce"
 
-#: FMakeInstall.form:706
+#: FMakeInstall.form:720
 msgid "Create package"
 msgstr "Vytvořit balíček"
 
-#: Project.module:4155
+#: Project.module:4257
 msgid "Create source package"
 msgstr "Vytvořit zdrojový balíček"
 
 #: FNewTable.class:33
 msgid "Create table"
-msgstr "Vytvoření tabulky"
+msgstr "Vytvořit tabulku"
 
-#: Package.module:594
+#: Package.module:903
+msgid "Creating .spec file."
+msgstr "Vytvořit .spec soubor."
+
+#: Package.module:584
 msgid "Creating desktop file..."
 msgstr "Vytvořit zástupce na ploše..."
 
-#: Package.module:748
-msgid "Creating package..."
-msgstr "Vytvořit balíček..."
-
-#: Package.module:510
+#: Package.module:504
 msgid "Creating package for &1."
 msgstr "Vytvořit balíček pro &1."
 
-#: Package.module:875
+#: Package.module:754
+msgid "Creating package..."
+msgstr "Vytvořit balíček..."
+
+#: Package.module:879
 msgid "Creating source package."
 msgstr "Vytvořit zdrojový balíček."
-
-#: Package.module:899
-msgid "Creating .spec file."
-msgstr "Vytvořit .spec soubor."
 
 #: Language.module:60
 msgid "Croatian (Croatia)"
 msgstr "Chorvatsky (Chorvatsko)"
 
-#: FInfo.class:109
+#: FInfo.class:107
 msgid "CSS file"
 msgstr "CSS soubor"
 
-#: FConnectionEditor.class:1424 FExportData.class:21
+#: FConnectionEditor.class:1421 FExportData.class:21
 msgid "CSV files"
 msgstr "CSV soubory"
-
-#: FMenu.form:256
-msgid "CTRL"
-msgstr "-"
 
 #: FSearch.form:159
 msgid "Current &file"
@@ -1399,43 +1879,31 @@ msgstr "Aktuální &soubor"
 msgid "Current line"
 msgstr "Aktuální řádek"
 
-#: FDebugInfo.form:85
+#: FDebugInfo.form:86
 msgid "Current object"
 msgstr "Aktuální objekt"
 
-#: FSearch.form:153
-msgid "C&urrent procedure"
-msgstr "Aktuální &procedura"
-
-#: FMenu.form:107 FOutput.form:58 FTextEditor.form:102
+#: FMenu.form:107 FOutput.form:58 FTextEditor.form:108
 msgid "Cut"
 msgstr "Vyjmout"
-
-#: FMain.form:665
-msgid "&Cut"
-msgstr "&Vyjmout"
 
 #: Language.module:19
 msgid "Czech (Czech Republic)"
 msgstr "Česky (Česká republika)"
 
+#: CComponent.class:95
+msgid "D-Bus interface"
+msgstr "D-Bus rozhranní"
+
 #: Language.module:21
 msgid "Danish (Denmark)"
 msgstr "Dánsky (Dánsko)"
 
-#: CProjectTree.class:305 Project.module:1620
+#: CProjectTree.class:297 Project.module:1664
 msgid "Data"
 msgstr "Data"
 
-#: FNewConnection.form:177 Project.module:187
-msgid "Database"
-msgstr "Databáze"
-
-#: CComponent.class:83 FCreateProject.form:292
-msgid "Database access"
-msgstr "Přístup k databázím"
-
-#: CComponent.class:85
+#: CComponent.class:87
 msgid "Data bound controls"
 msgstr "Formuláře vázané na databázi"
 
@@ -1443,59 +1911,55 @@ msgstr "Formuláře vázané na databázi"
 msgid "Data types"
 msgstr "Typy dat"
 
-#: FConnectionEditor.class:571 MConnection.module:93
+#: FNewConnection.form:177 Project.module:192
+msgid "Database"
+msgstr "Databáze"
+
+#: CComponent.class:85 FCreateProject.form:293
+msgid "Database access"
+msgstr "Přístup k databázím"
+
+#: FConnectionEditor.class:571 MConnection.module:91
 msgid "Date"
 msgstr "-"
 
-#: CComponent.class:93
-msgid "D-Bus interface"
-msgstr "D-Bus rozhranní"
-
-#: FMakeInstall.form:333
-msgid "Debian"
-msgstr "-"
-
-#: FDebugInfo.form:45 FMain.form:1307
+#: FDebugInfo.form:45 FMain.form:1344
 msgid "Debug"
 msgstr "Ladit"
 
-#: FMain.form:365
-msgid "&Debug"
-msgstr "&Ladit"
-
-#: FPropertyProject.form:353
+#: FPropertyProject.form:410
 msgid "Debugging"
 msgstr "Ladění"
 
-#: FEditor.class:2820
-msgid "(Declarations)"
-msgstr "(Deklarace)"
-
-#: FOption.class:74 FTranslate.class:135
-msgid "(Default)"
-msgstr "(Výchozí)"
-
-#: MErrorMessage.module:79
+#: MErrorMessage.module:88
 msgid "Default case already defined"
 msgstr "Default case je již definován"
 
-#: MErrorMessage.module:80
+#: MErrorMessage.module:89
 msgid "Default case must be the last one"
 msgstr "Default case musí být poslední"
 
-#: FOption.form:208
+#: FOption.form:290
 msgid "Default font size"
 msgstr "Výchozí velikost fontu"
 
-#: FHelpBrowser.class:24 FPropertyProject.form:338
+#: CComponent.class:101
+msgid "Default icon theme"
+msgstr "Výchozí ikony tématu"
+
+#: FHelpBrowser.class:24 FPropertyProject.form:395
 msgid "Default language"
 msgstr "Výchozí jazyk"
+
+#: FOption.form:992
+msgid "Default maintainer information"
+msgstr "Výchozí správce informací"
 
 #: FProxy.form:76
 msgid "Default proxy"
 msgstr "Výchozí proxy"
 
-#: FOption.form:362
+#: FOption.form:522
 msgid "Default tab size"
 msgstr "Standardní velikost odsazení"
 
@@ -1503,29 +1967,21 @@ msgstr "Standardní velikost odsazení"
 msgid "Default value"
 msgstr "Výchozí hodnota"
 
-#: FOption.class:126
+#: CBookmark.class:33
+msgid "Define bookmark"
+msgstr "Nastavit záložku"
+
+#: FOption.class:129
 msgid "Define..."
 msgstr "Definovat..."
 
-#: FNewConnection.class:325 FOption.class:783 FTranslate.class:636
+#: FNewConnection.class:325 FOption.class:811 FTranslate.class:627
 msgid "Delete"
 msgstr "Smazat"
 
-#: FList.form:64 FMenu.form:97 FTranslate.form:315
-msgid "&Delete"
-msgstr "&Smazat"
-
-#: FMain.form:693
-msgid "&Delete..."
-msgstr "&Smazat..."
-
-#: FForm.form:262
+#: FForm.form:264
 msgid "Delete container only"
 msgstr "Smazat pouze kontejner"
-
-#: FNewConnection.class:199
-msgid "&Delete database '&1'"
-msgstr "&Smazat databázi '&1'"
 
 #: FConnectionEditor.form:130
 msgid "Delete table"
@@ -1539,7 +1995,7 @@ msgstr "Smazat překlad"
 msgid "Delimiter character"
 msgstr "Oddělovač"
 
-#: FCommit.form:52 FMakeInstall.form:221 FPropertyProject.form:205
+#: FCommit.form:52 FMakeInstall.form:229 FPropertyProject.form:245
 msgid "Description"
 msgstr "Popis"
 
@@ -1547,11 +2003,11 @@ msgstr "Popis"
 msgid "Desktop"
 msgstr "Pracovní plocha"
 
-#: FMakeInstall.form:503
+#: FMakeInstall.form:517
 msgid "Desktop configuration file"
 msgstr "Konfigurační soubor plochy"
 
-#: CComponent.class:92
+#: CComponent.class:94
 msgid "Desktop-neutral routines from Portland project"
 msgstr "Neutrální rutiny plochy z projektu Portland"
 
@@ -1559,11 +2015,11 @@ msgstr "Neutrální rutiny plochy z projektu Portland"
 msgid "Destination"
 msgstr "Cíl"
 
-#: Project.module:3750
-msgid "Destination already exists"
-msgstr "Cíl již existuje"
+#: Project.module:3846
+msgid "Destination already exists."
+msgstr "Cíl již existuje."
 
-#: FMakeInstall.form:694
+#: FMakeInstall.form:708
 msgid "Destination directory"
 msgstr "Cílový adresář"
 
@@ -1571,7 +2027,7 @@ msgstr "Cílový adresář"
 msgid "Details"
 msgstr "Detaily"
 
-#: MErrorMessage.module:81
+#: MErrorMessage.module:90
 msgid "Device is full"
 msgstr "Zařízení je plné"
 
@@ -1583,35 +2039,35 @@ msgstr "Správa dialogových boxů"
 msgid "Directory"
 msgstr "Adresář"
 
-#: FMain.form:553
-msgid "&Directory"
-msgstr "&Adresář"
-
-#: Project.module:2484
+#: Project.module:2571
 msgid "Directory already exists."
 msgstr "Adresář již existuje."
 
-#: MErrorMessage.module:82
+#: MErrorMessage.module:91
 msgid "Directory is not empty"
 msgstr "Adresář není prazdný"
 
-#: FDebugInfo.form:142
+#: FDebugInfo.form:143
 msgid "Display"
 msgstr "Zobrazit"
 
-#: FDebugInfo.form:140
+#: FDebugInfo.form:141
 msgid "Display ME"
 msgstr "Zobrazit ME"
 
-#: FOption.form:718
+#: FOption.form:1195
 msgid "Display property help"
 msgstr "Zobrazit vlastní nápovědu"
 
-#: MErrorMessage.module:83
+#: MErrorMessage.module:92
 msgid "Division by zero"
 msgstr "Dělení nulou"
 
-#: Project.module:440
+#: FSave.form:35
+msgid "Do &not save"
+msgstr "&Neukládat"
+
+#: Project.module:459
 msgid "Do not open"
 msgstr "Neotvírat"
 
@@ -1619,23 +2075,11 @@ msgstr "Neotvírat"
 msgid "Do not save"
 msgstr "Neukládat"
 
-#: FSave.form:35
-msgid "Do &not save"
-msgstr "&Neukládat"
-
-#: FConnectionEditor.form:250
-msgid "Down"
-msgstr "Dolů"
-
-#: FList.form:76 FMakeInstall.form:593
-msgid "&Down"
-msgstr "&Dolů"
-
-#: FMain.class:1825
+#: FMain.class:1849
 msgid "Do you really want to add this file to the repository?"
 msgstr "Opravdu chcete přidat tento soubor do repositáře?"
 
-#: FOption.class:636
+#: FOption.class:664
 msgid "Do you really want to clear the documentation cache?"
 msgstr "Opravdu chcete vyčistit cache dokumentace?"
 
@@ -1643,7 +2087,7 @@ msgstr "Opravdu chcete vyčistit cache dokumentace?"
 msgid "Do you really want to clear the list?"
 msgstr "Opravdu chcete vyčistit seznam?"
 
-#: FConnectionEditor.class:1376
+#: FConnectionEditor.class:1373
 msgid "Do you really want to delete table '&1'?"
 msgstr "Opravdu chcete smazat tabulku '&1'?"
 
@@ -1651,69 +2095,73 @@ msgstr "Opravdu chcete smazat tabulku '&1'?"
 msgid "Do you really want to delete the database '&1'?"
 msgstr "Opravdu chcete smazat databázi '&1'?"
 
-#: FMain.class:203
+#: FMain.class:195
 msgid "Do you really want to delete this directory ?"
 msgstr "Skutečně chcete smazat tento adresář ?"
 
-#: FMain.class:215
+#: FMain.class:207
 msgid "Do you really want to delete this file ?"
 msgstr "Skutečně chcete smazat tento soubor ?"
 
-#: FMain.class:200
+#: FMain.class:192
 msgid "Do you really want to delete this link ?"
 msgstr "Opravdu chcete smazat tento odkaz ?"
 
-#: FOption.class:783
+#: FOption.class:811
 msgid "Do you really want to delete this snippet?"
 msgstr "Opravdu chcete smazat tento úryvek?"
 
-#: FTranslate.class:636
+#: FTranslate.class:627
 msgid "Do you really want to delete this translation ?"
 msgstr "Skutečně chcete smazat tento překlad?"
 
-#: FTranslate.class:730
+#: FTranslate.class:723
 msgid "Do you really want to reload this translation ?"
 msgstr "Skutečně chcete obnovit tento překlad?"
 
-#: FMakeInstall.class:1005
+#: FMakeInstall.class:999
 msgid "Do you really want to remove all extra dependencies?"
 msgstr "Opravdu chcete odstranit všechny další závislosti?"
 
-#: FMakeInstall.class:1106
+#: FMakeInstall.class:1098
 msgid "Do you really want to remove all extra files?"
 msgstr "Opravdu chcete odstranit všechny další soubory?"
 
-#: FConnectionEditor.class:1447
+#: FConnectionEditor.class:1444
 msgid "Do you really want to remove the selected rows?"
 msgstr "Opravdu chcete odstranit vybraný řádek?"
 
-#: FSearch.class:838
+#: FSearch.class:864
 msgid "Do you really want to replace every string?"
 msgstr "Opravdu chcete nahradit všechny řetězce?"
 
-#: FOption.class:919
+#: FOption.class:947
 msgid "Do you really want to reset the list to its default value?"
 msgstr "Opravdu chcete obnovit seznam na výchozí hodnoty?"
 
-#: FDebugInfo.class:533
+#: FDebugInfo.class:558
 msgid "Do you want to clear the expression list ?"
 msgstr "Skutečně chcete vyčistit seznam výrazů?"
 
-#: FIconEditor.class:1415
+#: FIconEditor.class:1376
 msgid "Do you want to clear the image ?"
 msgstr "Skutečně chcete vyčistit tento obrázek?"
 
-#: Package.module:756
-msgid "'dpkg-buildpackage' has failed."
-msgstr "'dpkg-buildpackage' selhalo."
+#: FConnectionEditor.form:246
+msgid "Down"
+msgstr "Dolů"
 
 #: FIconEditor.form:191
 msgid "Draw"
 msgstr "Kreslit"
 
-#: Project.module:188
+#: Project.module:193
 msgid "Drawing"
 msgstr "Kreslení"
+
+#: FProfile.class:603
+msgid "Duration"
+msgstr "Prodleva"
 
 #: Language.module:83
 msgid "Dutch (Belgium)"
@@ -1723,87 +2171,87 @@ msgstr "Holandsky (Belgie)"
 msgid "Dutch (Netherlands)"
 msgstr "Holandsky (Nizozemí)"
 
-#: MErrorMessage.module:84
+#: MErrorMessage.module:93
 msgid "Dynamic symbols cannot be used in static function"
 msgstr "Dynamické symboly nelze ve statické funkci použít"
 
-#: FDebugInfo.class:944
+#: FDebugInfo.class:959
 msgid "Dynamic variables"
 msgstr "Dynamické proměnné"
 
-#: FConflict.class:25 FMain.form:645
-msgid "&Edit"
-msgstr "&Upravit"
+#: FMakeInstall.form:178 FOption.form:1035
+msgid "E-mail"
+msgstr "-"
 
-#: FOption.form:831
-msgid "&Edit..."
-msgstr "&Editovat..."
+#: FMain.form:304
+msgid "E&xecutable..."
+msgstr "S&pustitelný..."
 
-#: FMain.form:650
+#: FOption.form:919
+msgid "E&xport..."
+msgstr "E&xportovat..."
+
+#: FConnectionEditor.form:432
+msgid "Edit"
+msgstr "Upravit"
+
+#: FMain.form:675
 msgid "Edit &code"
 msgstr "Upravit &kód"
 
-#: FSnippet.class:66
+#: FSnippet.class:64
 msgid "Edit code snippet"
 msgstr "Upravit kód úryvku"
 
-#: FFieldChooser.class:69
+#: FFieldChooser.class:67
 msgid "Edit field list"
 msgstr "Editační pole seznamu"
-
-#: MTheme.module:6
-msgid "Editing line"
-msgstr "Upravován řádek"
-
-#: FPropertyProject.form:237
-msgid "Edition"
-msgstr "Vydání"
 
 #: FList.form:24
 msgid "Edit list property"
 msgstr "Upravit vlastnosti seznamu"
 
-#: FEditor.form:336 FOption.form:352
-msgid "Editor"
-msgstr "Editor"
-
 #: FText.form:12
 msgid "Edit text property"
 msgstr "Upravit vlatnosti textu"
 
-#: FMain.form:654
-msgid "Edit with"
-msgstr "Upravit s"
+#: MTheme.module:6
+msgid "Editing line"
+msgstr "Upravován řádek"
+
+#: FPropertyProject.form:277
+msgid "Edition"
+msgstr "Vydání"
+
+#: FEditor.form:351 FOption.form:254
+msgid "Editor"
+msgstr "Editor"
 
 #: FIconEditor.form:218
 msgid "Ellipse"
 msgstr "Elipsa"
 
-#: MErrorMessage.module:85
+#: FForm.form:271
+msgid "Embed into a container"
+msgstr "Vložit do kontejneru"
+
+#: MErrorMessage.module:94
 msgid "Embedded array"
 msgstr "Vložené pole"
 
-#: MErrorMessage.module:86
+#: MErrorMessage.module:95
 msgid "Embedded arrays are forbidden here"
 msgstr "Vložené pole je zde zakázáno"
-
-#: FForm.form:269
-msgid "Embed into a container"
-msgstr "Vložit do kontejneru"
 
 #: FOption.class:4
 msgid "Emerald"
 msgstr "-"
 
-#: FMenu.form:319
-msgid "Enabled"
-msgstr "Povolit"
-
 #: FExportData.form:42 FImportTable.form:108
 msgid "Enclose character"
 msgstr "Uzavírací znak"
 
-#: MErrorMessage.module:87
+#: MErrorMessage.module:96
 msgid "End of file"
 msgstr "Konec souboru"
 
@@ -1823,31 +2271,31 @@ msgstr "Anglicky (Kanada)"
 msgid "English (common)"
 msgstr "Anglicky (obecná anličtina)"
 
-#: Language.module:29
-msgid "English (United Kingdom)"
-msgstr "Anglicky (Velká Británie)"
-
 #: Language.module:30
 msgid "English (U.S.A.)"
 msgstr "Anglicky (U.S.A.)"
 
-#: CComponent.class:97
+#: Language.module:29
+msgid "English (United Kingdom)"
+msgstr "Anglicky (Velká Británie)"
+
+#: CComponent.class:99
 msgid "Enhanced standard dialogs"
 msgstr "Rozšíření standardních dialogů"
 
-#: FMakeInstall.form:517
+#: FMakeInstall.form:531
 msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
 msgstr "Zadejte MIME typy zpracovávané vaší aplikací.\nProsím zadejte jeden mimetyp na řádek.\n"
 
-#: FPropertyProject.form:400
+#: FPropertyProject.form:449
 msgid "Environment"
 msgstr "Prostředí"
 
-#: FPropertyProject.form:461
+#: FPropertyProject.form:512
 msgid "Environment variables"
 msgstr "Proměnné prostředí"
 
-#: MErrorMessage.module:88
+#: MErrorMessage.module:97
 msgid "Equality or inequality operator expected"
 msgstr "Je očekáván operátor rovnosti nebo nerovnosti"
 
@@ -1863,69 +2311,57 @@ msgstr "Esperanto (kdekoli!)"
 msgid "Estonian (Estonia)"
 msgstr "Estonsky (Estonsko)"
 
-#: FForm.form:124
+#: CProfile.class:105
+msgid "Evaluator"
+msgstr "Vyhodnocovač"
+
+#: FForm.form:125
 msgid "Event"
 msgstr "Událost"
 
-#: CComponent.class:141 FPropertyComponent.form:132
+#: CProfile.class:107
+msgid "Event loop"
+msgstr "Cyklické události"
+
+#: CComponent.class:151 FPropertyComponent.form:132
 msgid "Event loop management"
 msgstr "Správa cyklických událostí"
 
-#: MHelp.module:577
+#: MHelp.module:576
 msgid "Events"
 msgstr "Události"
 
-#: FTranslate.class:1032
+#: FTranslate.class:1021
 msgid "Everything seems to be correct."
 msgstr "Zdá se že je vše v pořádku."
 
-#: FOpenProject.form:142 FWelcome.class:52
+#: FOpenProject.form:148 FWelcome.class:52
 msgid "Examples"
 msgstr "Příklady"
 
-#: CComponentBox.class:244
+#: ComponentItem.class:153
 msgid "Excludes"
 msgstr "Nezahrnuje"
-
-#: FMain.form:303
-msgid "E&xecutable..."
-msgstr "S&pustitelný..."
 
 #: FCreateFile.form:403
 msgid "Existing"
 msgstr "Existuje"
 
-#: CComponentBox.class:221 FPropertyComponent.form:73
+#: ComponentItem.class:139 FPropertyComponent.form:73
 msgid "Experimental"
 msgstr "Experimentální"
 
-#: FConnectionEditor.form:458
-msgid "Export..."
-msgstr "Exportovat..."
+#: FOption.form:766
+msgid "Explicit formating"
+msgstr "Explicitní formátování"
 
-#: FOption.form:854
-msgid "E&xport..."
-msgstr "E&xportovat..."
-
-#: FTranslate.form:323
-msgid "&Export..."
-msgstr "&Exportovat..."
-
-#: FOption.class:166
+#: FOption.class:174
 msgid "Export a theme file"
 msgstr "Exportovat soubor tématu"
 
-#: FTranslate.class:745
+#: FTranslate.class:738
 msgid "Export a translation"
 msgstr "Exportovat preklad"
-
-#: FCreateFile.form:386
-msgid "Exported"
-msgstr "Exportováno"
-
-#: FPropertyComponent.form:97
-msgid "Exported classes"
-msgstr "Exportované třídy"
 
 #: FExportData.form:54
 msgid "Export field names"
@@ -1935,7 +2371,7 @@ msgstr "Exportuj pole názvů"
 msgid "Export selected records only"
 msgstr "Exportuj pouze vybrané záznamy"
 
-#: FOption.form:614
+#: FOption.form:483
 msgid "Export theme"
 msgstr "Exportovat téma"
 
@@ -1943,39 +2379,55 @@ msgstr "Exportovat téma"
 msgid "Export to a translation file"
 msgstr "Exportovat soubor překladu"
 
-#: FConnectionEditor.form:456 FExportData.form:15
+#: FConnectionEditor.form:439 FExportData.form:15
 msgid "Export to CSV file"
 msgstr "Exportovat do CSV souboru"
 
-#: FDebugInfo.class:47
+#: FConnectionEditor.form:441
+msgid "Export..."
+msgstr "Exportovat..."
+
+#: FCreateFile.form:386
+msgid "Exported"
+msgstr "Exportováno"
+
+#: FPropertyComponent.form:97
+msgid "Exported classes"
+msgstr "Exportované třídy"
+
+#: FDebugInfo.class:52
 msgid "Expression"
 msgstr "Výraz"
 
-#: CComponent.class:94
+#: CComponent.class:96
 msgid "Expression evaluator"
 msgstr "Vykonávač výrazů"
 
-#: MErrorMessage.module:89
+#: MErrorMessage.module:98
 msgid "Expression too complex"
 msgstr "Výraz je příliš složitý"
 
-#: MErrorMessage.module:90
+#: MErrorMessage.module:99
 msgid "Expression too complex. Too many operands"
 msgstr "Výraz je příliš složitý. Příliš mnoho operandů"
 
-#: FMakeInstall.form:680
+#: MErrorMessage.module:258
+msgid "extern function hidden by local declaration: &1"
+msgstr "externí skrytá funkce  z lokální deklarace: &1"
+
+#: FMakeInstall.form:694
 msgid "Extra autoconf tests"
 msgstr "Další autoconf testy"
 
-#: FMakeInstall.form:545
+#: FMakeInstall.form:559
 msgid "Extra dependencies"
 msgstr "Další závislosti"
 
-#: FMakeInstall.form:605
+#: FMakeInstall.form:619
 msgid "Extra files"
 msgstr "Další soubory"
 
-#: FMakeInstall.form:622
+#: FMakeInstall.form:636
 msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr "Extra soubory musí být umístěny ve složce <b>Project</b> aktuálního projektu, tedy adresář <tt>.hidden</tt> v projektu na disku."
 
@@ -1987,63 +2439,55 @@ msgstr "Perština (Írán)"
 msgid "Features"
 msgstr "Funkce"
 
-#: FMakeInstall.form:352
-msgid "Fedora"
-msgstr "-"
-
-#: FConnectionEditor.class:70 FImportTable.class:361
+#: FConnectionEditor.class:70 FImportTable.class:355
 msgid "Field"
 msgstr "Pole"
 
-#: FConnectionEditor.form:220
-msgid "Fields"
-msgstr "Pole"
-
-#: FImportTable.class:273
+#: FImportTable.class:269
 msgid "Field_&1"
 msgstr "Pole_&1"
 
-#: FDebugInfo.class:64 FInfo.class:122 FTranslate.class:68
+#: FConnectionEditor.form:216
+msgid "Fields"
+msgstr "Pole"
+
+#: FDebugInfo.class:69 FInfo.class:120 FTranslate.class:67
 msgid "File"
 msgstr "Soubor"
 
-#: FMain.form:210
-msgid "&File"
-msgstr "&Soubor"
-
-#: MErrorMessage.module:91
+#: MErrorMessage.module:100
 msgid "File already exists"
 msgstr "Soubor již existuje"
 
-#: Project.module:2451
+#: Project.module:2539
 msgid "File already exists."
 msgstr "Soubor již existuje."
 
-#: MErrorMessage.module:92
+#: MErrorMessage.module:101
 msgid "File is a directory"
 msgstr "Soubor je adresář"
 
-#: MErrorMessage.module:93
+#: MErrorMessage.module:102
 msgid "File is locked"
 msgstr "Soubor je uzamčen"
 
-#: MErrorMessage.module:94
+#: MErrorMessage.module:103
 msgid "File name is too long"
 msgstr "Název souboru je příliš dlouhý"
 
-#: Project.module:1909
+#: Project.module:1967
 msgid "File not found!"
 msgstr "Soubor nebyl nenalezen!"
 
-#: FMakeInstall.class:107
+#: FMakeInstall.class:114
 msgid "File or directory"
 msgstr "Soubor nebo adresář"
 
-#: MErrorMessage.module:95
+#: MErrorMessage.module:104
 msgid "File or directory does not exist"
 msgstr "Soubor nebo adresář neexistuje"
 
-#: FMain.class:238
+#: FMain.class:232
 msgid "File or directory does not exist anymore."
 msgstr "Soubor nebo adresář už neexistuje."
 
@@ -2055,19 +2499,15 @@ msgstr "Vyplň"
 msgid "Filled with border"
 msgstr "Výplň s okrajem"
 
-#: FAbout.class:189
+#: FAbout.class:188
 msgid "Financial support"
 msgstr "Finanční podpora"
 
-#: FMain.form:499
-msgid "&Find..."
-msgstr "&Najít..."
-
-#: FEditor.form:101
+#: FEditor.form:105
 msgid "Find definition"
 msgstr "Najdi definici"
 
-#: FEditor.form:172 FOutput.form:89 FTextEditor.form:135
+#: FEditor.form:177 FOutput.form:89 FTextEditor.form:141
 msgid "Find next"
 msgstr "Najít další"
 
@@ -2075,7 +2515,7 @@ msgstr "Najít další"
 msgid "Find next untranslated string"
 msgstr "Najít další nepřeložený řetězec"
 
-#: FEditor.form:179 FOutput.form:96 FTextEditor.form:142
+#: FEditor.form:184 FOutput.form:96 FTextEditor.form:148
 msgid "Find previous"
 msgstr "Najít předchozí"
 
@@ -2083,11 +2523,11 @@ msgstr "Najít předchozí"
 msgid "Find previous untranslated string"
 msgstr "Najít předchozí nepřeložený řetězec"
 
-#: FMain.form:407
+#: FMain.form:420
 msgid "Finis&h"
 msgstr "Doko&nčit"
 
-#: FMain.form:1079
+#: FMain.form:1104
 msgid "Finish current function"
 msgstr "Dokonči aktuální funkci"
 
@@ -2099,23 +2539,15 @@ msgstr "Dokončená a stabilní"
 msgid "Finnish (Finland)"
 msgstr "Finsky (Finsko)"
 
-#: FNewConnection.form:81
-msgid "Firebird"
-msgstr "-"
-
-#: CComponent.class:84
+#: CComponent.class:86
 msgid "Firebird database driver"
 msgstr "Ovladač databáze Firebird"
 
-#: Design.module:149 Project.module:2015
+#: Design.module:159 Project.module:2077
 msgid "first"
 msgstr "první"
 
-#: FForm.form:164
-msgid "&First"
-msgstr "&První"
-
-#: FConnectionEditor.class:571 MConnection.module:91
+#: FConnectionEditor.class:571 MConnection.module:89
 msgid "Float"
 msgstr "-"
 
@@ -2123,73 +2555,61 @@ msgstr "-"
 msgid "Flood fill"
 msgstr "Výplň"
 
-#: FOption.form:486
+#: FOption.form:674
 msgid "Fold procedures by default"
 msgstr "Procedury jsou v standartně sbaleny"
 
-#: FOption.form:548
+#: FOption.form:243
 msgid "Fonts"
 msgstr "Fonty"
 
-#: MErrorMessage.module:96
+#: MErrorMessage.module:105
 msgid "Forbidden GOSUB"
 msgstr "Zakázané GOSUB"
 
-#: MErrorMessage.module:97
+#: MErrorMessage.module:106
 msgid "Forbidden GOTO"
 msgstr "Zakázané GOTO"
 
-#: FProperty.class:364
+#: FProperty.class:368
 msgid "Forbidden characters in control group."
 msgstr "Nepovolené znaky ve skupině ovládacích prvků."
 
-#: FProperty.class:349
+#: FProperty.class:353
 msgid "Forbidden characters in control name."
 msgstr "Nepovolené znaky ve jménu ovládacího prvku."
 
-#: FOption.form:169
+#: FOption.form:208
 msgid "Foreground color..."
 msgstr "Barva popředí..."
 
-#: CModule.class:28 FCreateFile.form:150 FEditor.form:358 FForm.form:413
+#: CModule.class:28 FCreateFile.form:150 FEditor.form:373 FForm.form:422
 msgid "Form"
 msgstr "Formlulář"
 
-#: FMain.form:586
-msgid "&Form..."
-msgstr "&Formlulář..."
-
-#: FEditor.form:261
-msgid "Format code"
-msgstr "Formátování kódu"
-
-#: FOption.form:878
-msgid "Format on load & save"
-msgstr "Formátovat při načtení & ukládání"
-
-#: FPropertyProject.form:296
+#: FPropertyProject.form:336
 msgid "Form controls are public"
 msgstr "Ovládací prvky formuláře jsou veřejné"
 
-#: CModule.class:28 FInfo.class:70
+#: FEditor.form:270
+msgid "Format code"
+msgstr "Formátování kódu"
+
+#: FOption.form:777
+msgid "Format on load & save"
+msgstr "Formátovat při načtení & ukládání"
+
+#: CModule.class:28 FInfo.class:68
 msgid "Forms"
 msgstr "Formuláře"
 
-#: FMain.form:1072
+#: FMain.form:1097
 msgid "Forward"
 msgstr "Dopředu"
-
-#: FMain.form:400
-msgid "&Forward"
-msgstr "&Dopředu"
 
 #: FColorChooser.form:33
 msgid "Free"
 msgstr "Volná"
-
-#: FMakeInstall.form:240
-msgid "Freeware"
-msgstr "-"
 
 #: Language.module:48
 msgid "French (Belgium)"
@@ -2207,9 +2627,13 @@ msgstr "Francouzsky (Francie)"
 msgid "French (Switzerland)"
 msgstr "Francouzsky (Švýcarsko)"
 
-#: FDebugInfo.class:55
+#: FDebugInfo.class:60 FProfile.class:599
 msgid "Function"
 msgstr "Funkce"
+
+#: MErrorMessage.module:259
+msgid "function hidden by local declaration: &1"
+msgstr "skrytá funkce z lokální deklarace: &1"
 
 #: Language.module:52
 msgid "Galician (Spain)"
@@ -2219,19 +2643,31 @@ msgstr "Galsky (Španělsko)"
 msgid "Gambas"
 msgstr "-"
 
+#: FInfo.class:83
+msgid "Gambas &1"
+msgstr "-"
+
+#: .project:1
+msgid "Gambas 3"
+msgstr "-"
+
+#: FConvert.form:10
+msgid "Gambas 3 project conversion"
+msgstr "Konvertor projektů Gambas 3"
+
 #: FAbout.form:44
 msgid "Gambas Almost Means Basic!"
 msgstr "Gambas je téměř Basic!"
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1068
+#: FMakeExecutable.class:18 FPropertyProject.class:1146
 msgid "Gambas applications"
 msgstr "Gambas aplikace"
 
-#: FInfo.class:97
+#: FInfo.class:95
 msgid "Gambas class"
 msgstr "Třída Gambasu"
 
-#: FCreateFile.class:110
+#: FCreateFile.class:105
 msgid "Gambas classes"
 msgstr "Třídy Gambasu"
 
@@ -2243,7 +2679,7 @@ msgstr "Gambas data formuláře"
 msgid "Gambas forms"
 msgstr "Formuláře Gambasu"
 
-#: FOption.class:165
+#: FOption.class:173
 msgid "Gambas highlight theme files"
 msgstr "Gambas zvýrazňovací téma souborů"
 
@@ -2251,15 +2687,15 @@ msgstr "Gambas zvýrazňovací téma souborů"
 msgid "Gambas menu data"
 msgstr "Data menu Gambasu"
 
-#: FInfo.class:93
+#: FInfo.class:91
 msgid "Gambas module"
 msgstr "Modul Gambasu"
 
-#: FCreateFile.class:110
+#: FCreateFile.class:105
 msgid "Gambas modules"
 msgstr "Moduly Gambasu"
 
-#: FInfo.class:67
+#: FInfo.class:65
 msgid "Gambas project"
 msgstr "Projekt Gambasu"
 
@@ -2275,41 +2711,29 @@ msgstr "Reporty Gambasu"
 msgid "Gambas web pages"
 msgstr "Webové stránky Gambasu"
 
-#: FHelpBrowser.form:107
-msgid "Gambas web site"
-msgstr "Webová stránka Gambasu"
-
-#: FInfo.class:85
-msgid "Gambas &1"
-msgstr "-"
-
-#: .project:1
-msgid "Gambas 3"
-msgstr "-"
-
-#: FConvert.form:10
-msgid "Gambas 3 project conversion"
-msgstr "Konvertor projektů Gambas 3"
-
-#: Project.module:189
+#: Project.module:194
 msgid "Games"
 msgstr "Hry"
 
-#: FPropertyProject.form:120
+#: FPropertyProject.form:129
 msgid "GB_GUI=gb.gtk"
 msgstr "-"
 
-#: FPropertyProject.form:114
+#: FPropertyProject.form:123
 msgid "GB_GUI=gb.qt4"
 msgstr "-"
 
-#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:130
+#: FPropertyProject.form:141
+msgid "GB_JIT=debug"
+msgstr "-"
+
+#: FPropertyProject.form:135
+msgid "GB_STOCK=debug"
+msgstr "-"
+
+#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:157
 msgid "General"
 msgstr "Obecně"
-
-#: FMakeInstall.form:240
-msgid "General Public License"
-msgstr "-"
 
 #: Language.module:24
 msgid "German (Belgium)"
@@ -2319,31 +2743,31 @@ msgstr "Něměcky (Belgie)"
 msgid "German (Germany)"
 msgstr "Německy (Německo)"
 
-#: FPropertyProject.form:187
+#: FPropertyProject.form:227
 msgid "Get from 'VERSION' file"
 msgstr "Získat z 'VERSION' souboru"
 
-#: FCreateFile.form:346
-msgid "GIF"
-msgstr "-"
+#: MErrorMessage.module:260
+msgid "global variable hidden by local declaration: &1"
+msgstr "skrytá globální proměnná z lokání deklarace: &1"
 
-#: CComponent.class:117
+#: CComponent.class:125
 msgid "GNU command option parser"
 msgstr "Parser GNU argumentů"
 
-#: CComponent.class:99
+#: CComponent.class:102
 msgid "GNU Scientific Library"
 msgstr "Vědecká GNU knihovna"
 
-#: FHelpBrowser.form:41 FMain.form:476
+#: FHelpBrowser.form:41 FMain.form:495 FProfile.form:48
 msgid "Go back"
 msgstr "Přejít zpět"
 
-#: FHelpBrowser.form:47 FMain.form:483
+#: FHelpBrowser.form:47 FMain.form:502 FProfile.form:54
 msgid "Go forward"
 msgstr "Přejít vpřed"
 
-#: FEditor.form:90
+#: FEditor.form:94
 msgid "Go to"
 msgstr "Přejít na"
 
@@ -2351,15 +2775,15 @@ msgstr "Přejít na"
 msgid "Go to line"
 msgstr "Přejít na řádek"
 
-#: FEditor.form:95 FTextEditor.form:69
+#: FEditor.form:99 FTextEditor.form:75
 msgid "Go to line..."
 msgstr "Přejít na řádek..."
 
-#: FCreateProject.form:121
+#: FCreateProject.form:122
 msgid "Graphical application"
 msgstr "Grafická aplikace"
 
-#: CComponent.class:140 FPropertyComponent.form:126
+#: CComponent.class:150 FPropertyComponent.form:126
 msgid "Graphical form management"
 msgstr "Správa grafického formuláře"
 
@@ -2371,19 +2795,23 @@ msgstr "Řecky (Řecko)"
 msgid "Groups"
 msgstr "Skupiny"
 
-#: FCreateProject.form:165
+#: CComponent.class:114
+msgid "GStreamer multimedia component"
+msgstr "Multimediální komponenta GStreamer"
+
+#: FCreateProject.form:166
 msgid "GTK+ graphical application"
 msgstr "Grafická aplikace v GTK+"
 
-#: CComponent.class:103
+#: CComponent.class:106
 msgid "GTK+ SVG renderer"
 msgstr "Vykreslování GTK+ SVG"
 
-#: CComponent.class:100
+#: CComponent.class:103
 msgid "GTK+ toolkit"
 msgstr "Nástroje GTK+"
 
-#: CComponent.class:101
+#: CComponent.class:104
 msgid "GTK+ toolkit extension"
 msgstr "Rozšiřující nástroje GTK+"
 
@@ -2399,47 +2827,39 @@ msgstr "Hebrejština (Izrael)"
 msgid "Height"
 msgstr "Výška"
 
-#: FOption.form:708 MTheme.module:6
+#: FOption.form:1178 MTheme.module:6
 msgid "Help"
 msgstr "Nápověda"
 
-#: FHelpBrowser.form:30 FMain.form:1022
+#: FHelpBrowser.form:30 FMain.form:1047
 msgid "Help browser"
 msgstr "Prohlížeč nápovědy"
 
-#: FMain.form:822
-msgid "&Help browser"
-msgstr "&Nápověda"
-
-#: FMain.form:467
+#: FMain.form:486
 msgid "Hide menubar"
 msgstr "Schovat menu"
 
-#: FFormStack.form:15 FMain.form:1336
+#: FFormStack.form:15 FMain.form:1376
 msgid "Hierarchy"
 msgstr "Hierarchie"
 
-#: FOption.form:402
+#: FOption.form:564
 msgid "Highlight current line"
 msgstr "Zvýraznit aktuální řádek"
+
+#: FOption.form:586
+msgid "Highlight modified lines"
+msgstr "Podbarvení změněné oblasti"
 
 #: MTheme.module:6
 msgid "Highlighting"
 msgstr "Zvýrazňování"
 
-#: FOption.form:423
-msgid "Highlight modified lines"
-msgstr "Podbarvení změněné oblasti"
-
-#: FSearch.form:121
-msgid "&Highlight result"
-msgstr "&Zvýrazni výsledek"
-
 #: Language.module:56
 msgid "Hindi (India)"
 msgstr "Hindština (Indie)"
 
-#: FForm.form:299
+#: FForm.form:301
 msgid "Horizontal"
 msgstr "Horizontální"
 
@@ -2447,7 +2867,7 @@ msgstr "Horizontální"
 msgid "Horizontal flip"
 msgstr "Horizontální překlopení"
 
-#: FEditor.form:284 FTextEditor.form:203
+#: FEditor.form:292 FTextEditor.form:212
 msgid "Horizontal split"
 msgstr "Horizontální rozdělení"
 
@@ -2455,25 +2875,21 @@ msgstr "Horizontální rozdělení"
 msgid "Host"
 msgstr "Zdroj"
 
-#: FCreateFile.form:255 FInfo.class:106
+#: FCreateFile.form:255 FInfo.class:104
 msgid "HTML file"
 msgstr "HTML soubor"
 
-#: FMain.form:620
-msgid "&HTML file..."
-msgstr "&HTML soubor..."
-
-#: FCreateFile.class:124
+#: FCreateFile.class:119
 msgid "HTML files"
 msgstr "HTML soubory"
+
+#: CComponent.class:141
+msgid "HTML generator"
+msgstr "HTML generátor"
 
 #: MMime.module:18
 msgid "HTML text"
 msgstr "HTML text"
-
-#: FHelpBrowser.form:109
-msgid "http://gambas.sourceforge.net"
-msgstr "-"
 
 #: FProxy.form:76
 msgid "HTTP proxy"
@@ -2483,23 +2899,15 @@ msgstr "-"
 msgid "Hungarian (Hungary)"
 msgstr "Maďarsky (Maďarsko)"
 
-#: FAbout.form:63
-msgid "<h2 align=center>Authors</h2>\n"
-msgstr "<h2 align=center>Autoři</h2>\n"
-
-#: FAbout.form:57
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
-msgstr "<h2 align=center> Licence </h2>\n\n<p align=center>Tento program je svobodný software; můžete jej šířit a/nebo upravovat podle podmínek GNU General Public License, vydávané Free Software Foundation; buď ve verzi 2 nebo (podle vašeho uvážení) kterékoli pozdější verze.</p>\n\n<p align=center>Tento program je rozšiřován v naději, že bude užitečný, ale BEZ JAKÉKOLIV ZÁRUKY; i bez odvozené záruky PRODEJNOSTI anebo VHODNOSTI PRO URČITÝ ÚČEL. Podívejte se na GNU General Public License pro bližší informace.</p>\n"
-
-#: FForm.form:130
+#: FForm.form:131
 msgid "Change into"
 msgstr "Změňit v"
 
-#: FMakeInstall.form:244
+#: FMakeInstall.form:258
 msgid "Changelog"
 msgstr "-"
 
-#: FInfo.class:119
+#: FInfo.class:117
 msgid "ChangeLog"
 msgstr "-"
 
@@ -2507,7 +2915,7 @@ msgstr "-"
 msgid "Changes"
 msgstr "Změny"
 
-#: FPropertyProject.form:641
+#: FPropertyProject.form:691
 msgid "Changes since last commit"
 msgstr "Změna od posledního commitu"
 
@@ -2519,33 +2927,41 @@ msgstr "Znaková sada"
 msgid "Chart drawing"
 msgstr "Kreslení grafů"
 
-#: FMenu.form:329
-msgid "Checked"
-msgstr "Označovat"
+#: FMain.class:1973
+msgid "Choose a profile"
+msgstr "Výběr profilu"
 
 #: FTableChooser.form:16
 msgid "Choose a table"
-msgstr "Vybet tabulku"
+msgstr "Výběr tabulky"
 
-#: FOption.form:301
+#: FSearch.form:131
+msgid "I&gnore comments"
+msgstr "Ignorovat &komentáře"
+
+#: FOption.form:332
 msgid "Icon theme"
 msgstr "Téma ikon"
 
-#: FProperty.class:609
+#: FOption.form:321
+msgid "Icons"
+msgstr "Ikony"
+
+#: FProperty.class:608
 msgid "If the control is public."
 msgstr "Pokud je ovládací prvek veřejný."
 
-#: FProperty.class:605
+#: FProperty.class:604
 msgid "If the form and controls dimensions must follow the size of the default font."
 msgstr "Když formulář a kontrola rozměrů odpovídají velikosti výchozího písma."
+
+#: FProperty.class:612
+msgid "If the Text property must be translated."
+msgstr "Když je textová vlastnost musí být přeložena"
 
 #: FMenu.class:64
 msgid "Ignore"
 msgstr "Ignorovat"
-
-#: FSearch.form:131
-msgid "I&gnore comments"
-msgstr "Ignoruj &komentáře"
 
 #: FNewConnection.form:234
 msgid "Ignore database charset"
@@ -2555,27 +2971,15 @@ msgstr "Ignorovat znakovou sadu databáze"
 msgid "Ignore first lines"
 msgstr "Ignorovat první řádky"
 
-#: FSearch.form:126
-msgid "&Ignore strings"
-msgstr "&Ignoruj řetězce"
-
-#: FOption.form:960
-msgid "Ignore these files in source packages"
-msgstr "Ignorovat tyto soubory ve zdrojových balíčcích"
-
-#: MErrorMessage.module:98
+#: MErrorMessage.module:107
 msgid "Illegal instruction"
 msgstr "Neplatná instrukce"
 
-#: Project.module:190
+#: Project.module:195
 msgid "Image"
 msgstr "Obrázek"
 
-#: FMain.form:613
-msgid "&Image..."
-msgstr "&Obrázek..."
-
-#: FOption.form:678
+#: FOption.form:1147
 msgid "Image editor"
 msgstr "Editor obrázků"
 
@@ -2583,27 +2987,27 @@ msgstr "Editor obrázků"
 msgid "Image files"
 msgstr "Soubory obrázků"
 
-#: CComponent.class:106
+#: CComponent.class:110
 msgid "Image filtering component"
 msgstr "Komponenta obrázkových filtrů"
 
-#: CComponent.class:108 FPropertyComponent.form:138
+#: CComponent.class:112 FPropertyComponent.form:138
 msgid "Image loading and saving"
 msgstr "Načítání a ukládání obrázku"
 
-#: CComponent.class:105
+#: CComponent.class:109
 msgid "Image management"
 msgstr "Správa obrázku"
 
-#: FCreateProject.form:328
+#: FCreateProject.form:329
 msgid "Image processing"
 msgstr "Zpracování obrázků"
 
-#: CComponent.class:107
+#: CComponent.class:111
 msgid "Image routines from the Imlib2 library"
 msgstr "Rutiny obrazku z knihovny Imlib2"
 
-#: CComponentBox.class:250
+#: ComponentItem.class:159
 msgid "Implements"
 msgstr "Implementuje"
 
@@ -2611,25 +3015,13 @@ msgstr "Implementuje"
 msgid "Import"
 msgstr "Importovat"
 
-#: FConnectionEditor.form:164
-msgid "Import..."
-msgstr "Importovat..."
-
-#: FImportTable.form:211 FTranslate.form:284
-msgid "&Import"
-msgstr "&Importovat"
-
-#: FOption.form:862
-msgid "&Import..."
-msgstr "&Importovat..."
+#: FTranslate.form:282
+msgid "Import a translation file"
+msgstr "Importovat přeložený soubor"
 
 #: FTranslate.form:277
 msgid "Import all translations  recursively"
 msgstr "Importovat rekurzivně všechny překlady"
-
-#: FTranslate.form:282
-msgid "Import a translation file"
-msgstr "Importovat přeložený soubor"
 
 #: FImportTable.form:37
 msgid "Import file"
@@ -2639,19 +3031,31 @@ msgstr "Importovat soubor"
 msgid "Import text file"
 msgstr "Importovat textový soubor"
 
-#: FOption.form:608
+#: FOption.form:477
 msgid "Import theme"
 msgstr "Importovat téma"
 
-#: FReportCoordChooser.form:21
-msgid "in"
-msgstr "-"
+#: FConnectionEditor.form:164
+msgid "Import..."
+msgstr "Importovat..."
 
-#: FMakeInstall.class:932
+#: Design.module:251 Project.module:2140
+msgid "in &1:&2."
+msgstr "v &1:&2."
+
+#: Project.module:2143
+msgid "in &1."
+msgstr "v &1."
+
+#: Project.module:2136
+msgid "in form definition"
+msgstr "ve formě definice"
+
+#: FMakeInstall.class:926
 msgid "Incorrect characters"
 msgstr "Nekorektní znaky"
 
-#: FProperty.class:424
+#: FProperty.class:428
 msgid "Incorrect property value."
 msgstr "Nekorektní hodnota vlastnosti."
 
@@ -2659,19 +3063,19 @@ msgstr "Nekorektní hodnota vlastnosti."
 msgid "Incorrect value."
 msgstr "Nekorektní hodnota."
 
-#: FTextEditor.form:310
+#: FTextEditor.form:326
 msgid "Indent"
 msgstr "Odsazení"
 
-#: FOption.form:899
+#: FOption.form:799
 msgid "Indent local variable declaration"
 msgstr "Odsazovat deklarace lokální proměnné"
 
-#: FConnectionEditor.class:60 FDebugExpr.class:472 FHelpBrowser.form:53
+#: FConnectionEditor.class:60 FDebugExpr.class:470 FHelpBrowser.form:53
 msgid "Index"
 msgstr "Index"
 
-#: FConnectionEditor.form:282
+#: FConnectionEditor.form:278
 msgid "Indexes"
 msgstr "Indexy"
 
@@ -2683,27 +3087,19 @@ msgstr "Indonésky (Indonézie)"
 msgid "Information"
 msgstr "Informace"
 
-#: Project.module:2071
-msgid "in form definition"
-msgstr "ve formě definice"
-
-#: Package.module:855
-msgid "Initializing ~/RPM directory."
-msgstr "Inicializuji adresář ~/RPM."
-
 #: FMakeInstall.class:486
 msgid "Initial release"
 msgstr "-"
 
-#: FList.form:58 FMenu.form:82 FPropertyProject.form:426
-msgid "&Insert"
-msgstr "&Vložit"
+#: Package.module:859
+msgid "Initializing ~/RPM directory."
+msgstr "Inicializuji adresář ~/RPM."
 
-#: CInsertColor.class:106 FEditor.form:404 FTextEditor.form:351
+#: CInsertColor.class:106 FEditor.form:419 FTextEditor.form:350
 msgid "Insert color"
 msgstr "Vložit barvu"
 
-#: FEditor.form:255 FTextEditor.form:172
+#: FEditor.form:264 FTextEditor.form:182
 msgid "Insert color..."
 msgstr "Vložit barvu..."
 
@@ -2711,15 +3107,7 @@ msgstr "Vložit barvu..."
 msgid "Insert menu"
 msgstr "Vložit menu"
 
-#: FMakeInstall.form:146
-msgid "Insert release number in package version"
-msgstr "Vložte číslo vydání ve verzi balíku"
-
-#: FMain.form:317
-msgid "&Installation package..."
-msgstr "&Instalační balíček..."
-
-#: FConnectionEditor.class:571 MConnection.module:87
+#: FConnectionEditor.class:571 MConnection.module:85
 msgid "Integer"
 msgstr "-"
 
@@ -2727,11 +3115,11 @@ msgstr "-"
 msgid "Integrated Development Environment for Gambas"
 msgstr "Integrované vývojové prostředí pro Gambas"
 
-#: FOption.form:198
+#: FOption.form:237
 msgid "Interface"
 msgstr "Rozhraní"
 
-#: MErrorMessage.module:99
+#: MErrorMessage.module:108
 msgid "Internal compiler error: Bad stack usage computed!"
 msgstr "Chyba interního kompilátoru: Špatné užití zásobníku!"
 
@@ -2739,61 +3127,45 @@ msgstr "Chyba interního kompilátoru: Špatné užití zásobníku!"
 msgid "Internal native classes"
 msgstr "Vnitřní nativní třídy"
 
-#: FCreateProject.form:286
+#: FCreateProject.form:287
 msgid "Internationalization"
 msgstr "Vícejazyčný"
 
-#: MErrorMessage.module:100
+#: MErrorMessage.module:109
 msgid "Invalid assignment"
 msgstr "Neplatné přiřazení"
 
-#: MErrorMessage.module:101
+#: MErrorMessage.module:110
 msgid "Invalid date"
 msgstr "Neplatné datum"
 
-#: MErrorMessage.module:102
+#: MErrorMessage.module:111
 msgid "Invalid object"
 msgstr "Neplatný objekt"
 
-#: MErrorMessage.module:103
+#: MErrorMessage.module:112
 msgid "Invalid path"
 msgstr "Neplatná cesta"
 
-#: FReportBrushChooser.form:114
+#: FReportBrushChooser.form:120
 msgid "Invert gradient"
-msgstr "Invertuj přechod"
-
-#: Project.module:2078
-msgid "in &1."
-msgstr "v &1."
-
-#: Design.module:241 Project.module:2075
-msgid "in &1:&2."
-msgstr "v &1:&2."
+msgstr "Invertovat přechod"
 
 #: Language.module:64
 msgid "Irish (Ireland)"
 msgstr "Irsky (Irsko)"
 
-#: FImportTable.form:80
-msgid "ISO 8859-1"
-msgstr "-"
-
-#: FImportTable.form:80
-msgid "ISO 8859-15"
-msgstr "-"
+#: Project.module:485
+msgid "It cannot be converted."
+msgstr "Nelze zkonvertovat."
 
 #: Language.module:66
 msgid "Italian (Italy)"
 msgstr "Italsky (Itálie)"
 
-#: FOption.form:184
+#: FOption.form:223
 msgid "Italic"
 msgstr "Kurzíva"
-
-#: Project.module:466
-msgid "It cannot be converted."
-msgstr "Nelze zkonvertovat."
 
 #: FList.class:105
 msgid "Item &1"
@@ -2803,23 +3175,27 @@ msgstr "Položka &1"
 msgid "Japanese (Japan)"
 msgstr "Japonsky (Japonsko)"
 
-#: FInfo.class:115
+#: FInfo.class:113
 msgid "Javascript file"
 msgstr "Javascript soubor"
 
+#: ComponentItem.class:252
+msgid "Keep"
+msgstr "Ponechat"
+
 #: FOutput.form:115
 msgid "Keep above"
-msgstr "Vždy navrchu"
+msgstr "Ponechat navrchu"
 
 #: FMakeExecutable.form:56
 msgid "Keep debugging information in executable"
-msgstr "Nechat ladící informace v programu"
+msgstr "Ponechat ladící informace v programu"
 
-#: FOption.form:941
+#: FOption.form:843
 msgid "Keep successive void lines"
 msgstr "Ponechat po sobě jdoucí prázdné řádky"
 
-#: FDebugExpr.class:478
+#: FDebugExpr.class:476
 msgid "Key"
 msgstr "Klíč"
 
@@ -2831,7 +3207,7 @@ msgstr "Pole klíčů"
 msgid "Keywords"
 msgstr "Klíčová slova"
 
-#: FOption.form:507
+#: FOption.form:696
 msgid "Keywords in upper case"
 msgstr "Slova velkými písmeny"
 
@@ -2843,17 +3219,17 @@ msgstr "Khmer (Kambodža)"
 msgid "Korean (Korea)"
 msgstr "Korejština (Korea)"
 
-#: MErrorMessage.module:104
+#: MErrorMessage.module:113
 msgid "Label '&1' not declared"
 msgstr "Label '&1' není deklarován"
 
-#: FTranslate.class:65
+#: FPropertyProject.form:147
+msgid "LANG=C ; LC_ALL=C"
+msgstr "-"
+
+#: FTranslate.class:64
 msgid "Language"
 msgstr "Jazyk"
-
-#: FForm.form:185
-msgid "&Last"
-msgstr "Pos&lední"
 
 #: FInfo.form:110
 msgid "Last modified"
@@ -2863,43 +3239,43 @@ msgstr "Poslední změna"
 msgid "Latin"
 msgstr "Latina"
 
-#: FReportBorderChooser.form:120 FReportPaddingChooser.form:33
-msgid "Left"
-msgstr "Doleva"
-
 #: FConnectionEditor.class:44
 msgid "Length"
 msgstr "Délka"
 
-#: FMakeInstall.form:240
-msgid "Lesser General Public License"
-msgstr "-"
-
-#: FPropertyProject.form:560
+#: FPropertyProject.form:611
 msgid "Libraries"
 msgstr "Knihovny"
 
-#: MErrorMessage.module:105
+#: FPropertyProject.form:195
+msgid "Library"
+msgstr "Knihovna"
+
+#: MErrorMessage.module:114
 msgid "Library name must be a string"
 msgstr "Jméno knihovny musí být řetězec"
 
-#: FMakeInstall.form:234
+#: FMain.class:1057 FPropertyComponent.class:219
+msgid "Library properties"
+msgstr "Vlastnosti knihovny"
+
+#: FMakeInstall.form:247 FOption.form:1051
 msgid "License"
 msgstr "Licence"
 
-#: FOption.form:391
+#: FOption.form:552
 msgid "Line"
 msgstr "Linka"
-
-#: FReportBrushChooser.form:47
-msgid "Linear gradient"
-msgstr "Lineární přechod"
 
 #: FImportTable.form:135
 msgid "Line(s)"
 msgstr "Řádky"
 
-#: FInfo.class:71
+#: FReportBrushChooser.form:47
+msgid "Linear gradient"
+msgstr "Lineární přechod"
+
+#: FInfo.class:69
 msgid "Lines of code: &1"
 msgstr "Řádek kódu: &1"
 
@@ -2911,87 +3287,87 @@ msgstr "Odkaz na"
 msgid "Lithuanian (Lithuania)"
 msgstr "Litevsky (Litva)"
 
-#: CComponent.class:438
-msgid "Loading information on component &1..."
-msgstr "Načítání informací o komponentě &1..."
-
-#: Project.module:1769
+#: Project.module:1829
 msgid "Loading &1..."
 msgstr "Načítám &1..."
 
-#: FDebugInfo.form:67
+#: MErrorMessage.module:115
+msgid "Loading has already failed"
+msgstr "Načítání má již chybu"
+
+#: CComponent.class:441
+msgid "Loading information on component &1..."
+msgstr "Načítání informací o komponentě &1..."
+
+#: FOption.form:749
+msgid "Local variable automatic declaration"
+msgstr "Automaticky deklarovaná lokální proměnná"
+
+#: FDebugInfo.form:68
 msgid "Local variables"
 msgstr "Lokální proměnné"
 
-#: LibraryItem.class:57
+#: LibraryItem.class:54
 msgid "Location"
 msgstr "Umístění"
 
-#: FForm.form:442
+#: FForm.form:451
 msgid "Lock form"
 msgstr "Zámek formuláře"
 
-#: FProperty.form:55
+#: FProperty.form:47
 msgid "Lock property"
 msgstr "Zámek vlastnosti"
 
-#: FConnectionEditor.class:571 MConnection.module:89
+#: FConnectionEditor.class:571 MConnection.module:87
 msgid "Long"
 msgstr "-"
 
-#: MErrorMessage.module:106
+#: MErrorMessage.module:116
 msgid "Loop variable already in use"
 msgstr "Proměnná cyklu je již v použita"
 
-#: MErrorMessage.module:107
+#: MErrorMessage.module:117
 msgid "Loop variable must be local"
 msgstr "Proměnná cyklu musí být místní"
 
-#: FEditor.form:214 FTextEditor.form:162
+#: FEditor.form:223 FTextEditor.form:172
 msgid "Lower case"
 msgstr "Malá písmena"
-
-#: FImportTable.form:92
-msgid "Mac"
-msgstr "-"
 
 #: Language.module:80
 msgid "Macedonian (Republic of Macedonia)"
 msgstr "Makedonsky (Republika Makedonie)"
 
-#: FMakeInstall.form:371
-msgid "Mageia"
-msgstr "-"
-
-#: FMakeInstall.form:154
+#: FMakeInstall.form:151
 msgid "Maintainer information"
 msgstr "Správcovské informace"
 
-#: FMain.form:299
+#: FMain.form:300
 msgid "Make"
 msgstr "Vytvořit"
 
-#: FEditor.form:489
+#: FEditor.form:486
 msgid "Make code pretty"
 msgstr "Zpřehledni kód"
 
-#: FMain.form:956 FMakeExecutable.form:15
+#: FMain.form:966 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "Vytvoř spustitelný program"
 
-#: FMain.form:964 FMakeInstall.form:104
+#: FMain.form:989 FMakeInstall.form:106
 msgid "Make installation package"
 msgstr "Vytvořit instalační balíček"
 
-#: FMain.form:949
+#: FMain.form:981
 msgid "Make source archive"
 msgstr "Vytvořit archiv zdrojů"
 
-#: Package.module:573
+#: Package.module:563
 msgid "Making build directory."
 msgstr "Vytvořit kompilační adresář."
 
-#: Project.module:2713
+#: Project.module:2799
 msgid "Making executable..."
 msgstr "Vytvářím spustitelný soubor..."
 
@@ -2999,35 +3375,31 @@ msgstr "Vytvářím spustitelný soubor..."
 msgid "Malayalam (India)"
 msgstr "Malayalam (Indie)"
 
-#: FMakeInstall.form:390
-msgid "Mandriva"
-msgstr "-"
-
-#: MErrorMessage.module:109
+#: MErrorMessage.module:119
 msgid "Mathematic error"
 msgstr "Matematická chyba"
 
-#: FMakeInstall.class:101
+#: FMakeInstall.class:108
 msgid "Max. version"
 msgstr "Max. verze"
 
-#: CComponent.class:82
+#: CComponent.class:83
 msgid "MD5/DES crypting"
 msgstr "MD5/DES šifrování"
 
-#: MErrorMessage.module:108
+#: MErrorMessage.module:118
 msgid "ME cannot be used in a static function"
 msgstr "ME nelze použít ve statické funkce"
 
-#: FForm.form:502 FMenu.form:65
+#: FForm.form:511 FMenu.form:65
 msgid "Menu editor"
 msgstr "Editor menu"
 
-#: FForm.form:387
+#: FForm.form:389
 msgid "Menu editor..."
 msgstr "Editor menu..."
 
-#: FMakeInstall.form:472
+#: FMakeInstall.form:486
 msgid "Menu entry"
 msgstr "Položka menu"
 
@@ -3039,7 +3411,7 @@ msgstr "Menu"
 msgid "Menus have been modified!"
 msgstr "Menu bylo změněno!"
 
-#: FImportTable.class:70
+#: FDebugInfo.class:97 FImportTable.class:66
 msgid "Message"
 msgstr "Zpráva"
 
@@ -3047,47 +3419,51 @@ msgstr "Zpráva"
 msgid "Messages"
 msgstr "Zprávy"
 
-#: MHelp.module:576
+#: MHelp.module:575
 msgid "Methods"
 msgstr "Metody"
 
-#: FMakeInstall.form:509
+#: CComponent.class:115
+msgid "MIME format management based on GMime library"
+msgstr "Správa MIME formátu založeného na GMime knihovně"
+
+#: FMakeInstall.form:523
 msgid "Mimetypes"
 msgstr "-"
 
-#: FOption.form:280
-msgid "Minimize at runtime"
-msgstr "Minimalizovat za běhu"
-
-#: FMakeInstall.class:100
+#: FMakeInstall.class:107
 msgid "Min. version"
 msgstr "Min. verze"
 
-#: Project.module:191
+#: FOption.form:377
+msgid "Minimize at runtime"
+msgstr "Minimalizovat za běhu"
+
+#: FOption.form:344 Project.module:196
 msgid "Miscellaneous"
 msgstr "Různé"
 
-#: MErrorMessage.module:110
+#: MErrorMessage.module:121
+msgid "Missing ']'"
+msgstr "Chybí ']'"
+
+#: MErrorMessage.module:122
+msgid "Missing '}'"
+msgstr "Chybí '}'"
+
+#: MErrorMessage.module:120
 msgid "Missing #Endif"
 msgstr "Chybí #Endif"
 
-#: MErrorMessage.module:112
+#: MErrorMessage.module:123
 msgid "Missing operator"
 msgstr "Chybí operátor"
 
-#: MErrorMessage.module:113
+#: MErrorMessage.module:124
 msgid "Missing right brace"
 msgstr "Chybí pravá závorka"
 
-#: MErrorMessage.module:111
-msgid "Missing &1"
-msgstr "Chybí &1"
-
-#: FReportCoordChooser.form:21
-msgid "mm"
-msgstr "-"
-
-#: FMenu.class:947 Project.module:5065
+#: FMenu.class:937 Project.module:5173
 msgid "modified"
 msgstr "modifikován"
 
@@ -3099,21 +3475,21 @@ msgstr "Upravit dokumentaci..."
 msgid "Module"
 msgstr "Modul"
 
-#: FMain.form:570
-msgid "&Module..."
-msgstr "&Modul..."
-
-#: FInfo.class:68
-msgid "Modules"
-msgstr "Moduly"
-
-#: FPropertyProject.form:279
+#: FPropertyProject.form:319
 msgid "Module symbols are public by default"
 msgstr "Symboly modulů jsou defaultně veřejné"
 
-#: CComponent.class:96
+#: FInfo.class:66
+msgid "Modules"
+msgstr "Moduly"
+
+#: CComponent.class:98
 msgid "More controls for graphical components"
 msgstr "Více možností pro grafické komponenty"
+
+#: CComponent.class:84
+msgid "More data containers"
+msgstr "Více data kontejnerů"
 
 #: FFormStack.form:50
 msgid "Move bottom"
@@ -3123,23 +3499,23 @@ msgstr "Přesunout na dno"
 msgid "Move down"
 msgstr "Dolů"
 
-#: FForm.form:159
+#: FForm.form:161
 msgid "Move tab"
 msgstr "Přesunout panel"
 
-#: FForm.form:628
+#: FForm.form:637
 msgid "Move tab first"
 msgstr "Přesunout první panel"
 
-#: FForm.form:649
+#: FForm.form:658
 msgid "Move tab last"
 msgstr "Přesunout poslední panel"
 
-#: FForm.form:635
+#: FForm.form:644
 msgid "Move tab left"
 msgstr "Přesunout panel vlevo"
 
-#: FForm.form:642
+#: FForm.form:651
 msgid "Move tab right"
 msgstr "Přesunout panel vpravo"
 
@@ -3151,55 +3527,59 @@ msgstr "Přesunout nahoru"
 msgid "Move up"
 msgstr "Nahoru"
 
-#: CComponent.class:98
+#: CComponent.class:100
 msgid "Multi Document Interface"
 msgstr "MDI rozhranní"
 
-#: FNewConnection.form:81
-msgid "MySQL"
+#: Project.module:203
+msgid "Multimedia"
 msgstr "-"
 
-#: CComponent.class:86
+#: MErrorMessage.module:125
+msgid "Multiple inheritance"
+msgstr "Vícenásobná dědičnost"
+
+#: CComponent.class:88
 msgid "MySQL database driver"
 msgstr "Ovladač databáze MySQL"
 
-#: CComponent.class:110
+#: CComponent.class:116
 msgid "MySQL specific routines"
 msgstr "Speciální rutiny MySQL"
 
-#: FNewConnection.form:60 FNewTable.form:33
+#: FOption.form:1003
 msgid "Name"
 msgstr "Název projektu"
 
-#: FDebugInfo.class:150
+#: FDebugInfo.class:177
 msgid "native code"
 msgstr "přirozený kód"
 
-#: CComponent.class:112
+#: CComponent.class:117
+msgid "NCurses library"
+msgstr "NCurses knihovna"
+
+#: CComponent.class:119
 msgid "Network high-level protocols management"
 msgstr "Vysoko-úrovňová správa síťových protokolů"
 
-#: Project.module:192
-msgid "Networking"
-msgstr "Síťové nástroje"
-
-#: CComponent.class:111 FCreateProject.form:298
+#: CComponent.class:118 FCreateProject.form:299
 msgid "Network programming"
 msgstr "Síťové programování"
 
-#: FCreateFile.form:79 FMain.form:549
+#: Project.module:197
+msgid "Networking"
+msgstr "Síťové nástroje"
+
+#: FCreateFile.form:79 FMain.form:574
 msgid "New"
 msgstr "Nový"
 
-#: FOption.form:824 FTranslate.form:299
-msgid "&New..."
-msgstr "&Nový..."
-
-#: MErrorMessage.module:114
+#: MErrorMessage.module:126
 msgid "NEW cannot have arguments passed by reference"
 msgstr "NEW nemůže mít argumenty předané odkazem"
 
-#: FSnippet.class:69
+#: FSnippet.class:67
 msgid "New code snippet"
 msgstr "Nový úryvek kódu"
 
@@ -3207,33 +3587,21 @@ msgstr "Nový úryvek kódu"
 msgid "New connection"
 msgstr "Nové spojení"
 
-#: FMain.form:745
-msgid "&New connection..."
-msgstr "&Nové spojení..."
-
 #: FCreateFile.form:66
 msgid "New file"
 msgstr "Nový soubor"
 
-#: FMain.class:747
+#: FMain.class:748
 msgid "New folder"
 msgstr "Nová složka"
 
-#: FConnectionEditor.form:299
+#: FConnectionEditor.form:295
 msgid "New index"
 msgstr "Nový index"
 
-#: FCreateProject.form:65 FMain.form:869
+#: FCreateProject.form:66 FMain.form:895
 msgid "New project"
 msgstr "Nový projekt"
-
-#: FWelcome.class:49
-msgid "New project..."
-msgstr "Nový projekt..."
-
-#: FMain.form:214
-msgid "&New project..."
-msgstr "&Nový projekt..."
 
 #: FSaveProjectAs.form:38
 msgid "New project name"
@@ -3243,6 +3611,10 @@ msgstr "Nový název projektu"
 msgid "New project parent directory"
 msgstr "Nový rodičovský adresář projektu"
 
+#: FWelcome.class:49
+msgid "New project..."
+msgstr "Nový projekt..."
+
 #: FConnectionEditor.form:124 FNewTable.form:19
 msgid "New table"
 msgstr "Nová tabulka"
@@ -3251,15 +3623,15 @@ msgstr "Nová tabulka"
 msgid "New translation"
 msgstr "Nový překlad"
 
-#: FForm.form:178 FSearch.form:192 FTips.form:78
-msgid "&Next"
-msgstr "&Další"
+#: CBookmark.class:47
+msgid "Next bookmark"
+msgstr "Další záložka"
 
 #: FMenu.form:89
 msgid "Next menu"
 msgstr "Další menu"
 
-#: FOption.form:265 FPropertyComponent.form:90 FPropertyProject.form:285
+#: FOption.form:361 FPropertyComponent.form:90 FPropertyProject.form:325
 msgid "No"
 msgstr "Ne"
 
@@ -3267,35 +3639,15 @@ msgstr "Ne"
 msgid "No element"
 msgstr "Žádný element"
 
-#: MHelp.module:282
+#: MHelp.module:281
 msgid "No help found."
 msgstr "Nápověda nenalezena."
 
-#: MErrorMessage.module:115
+#: MErrorMessage.module:127
 msgid "No instantiation method"
 msgstr "Žádná metoda instance"
 
-#: Project.module:4090
-msgid "Non-ASCII characters are forbidden in a project name."
-msgstr "Ne-ASCII znaky jsou zakázány v názevu projektu."
-
-#: FOption.form:391 FProperty.class:744
-msgid "None"
-msgstr "Žádné"
-
-#: FMakeInstall.form:240
-msgid "Non-free License"
-msgstr "-"
-
-#: MErrorMessage.module:119
-msgid "Non terminated string"
-msgstr "Neukončený řetězec"
-
-#: FCreateFile.class:143
-msgid "(No parent)"
-msgstr "(Žádný rodič)"
-
-#: MErrorMessage.module:116
+#: MErrorMessage.module:128
 msgid "No parent class"
 msgstr "Žádná rodičovská třída"
 
@@ -3303,15 +3655,47 @@ msgstr "Žádná rodičovská třída"
 msgid "No proxy"
 msgstr "Zádná proxy"
 
-#: FImportTable.class:424
+#: FImportTable.class:418
 msgid "No record imported."
 msgstr "Žádný záznam importován."
 
-#: MErrorMessage.module:117
+#: MErrorMessage.module:129
 msgid "No return value"
 msgstr "Žádná návratová hodnota"
 
-#: FOption.form:214
+#: FEditor.form:286 FTextEditor.form:206
+msgid "No split"
+msgstr "Nerozdělovat"
+
+#: MErrorMessage.module:130
+msgid "No startup method"
+msgstr "Žádná spoštěcí metoda"
+
+#: Design.module:857
+msgid "No terminal emulator found."
+msgstr "Emulátor terminálu nenalezen."
+
+#: FTranslate.class:945
+msgid "No translation were picked up."
+msgstr "Žádný překlad nebyl zadržen."
+
+#: FHelpBrowser.form:97
+msgid "No zoom"
+msgstr "Původní velikost"
+
+#: MErrorMessage.module:131
+msgid "Non terminated string"
+msgstr "Neukončený řetězec"
+
+#: Project.module:4185
+msgid "Non-ASCII characters are forbidden in a project name."
+msgstr "Ne-ASCII znaky jsou zakázány v názevu projektu."
+
+#: FOption.form:552 FProperty.class:747
+msgid "None"
+msgstr "Žádné"
+
+#: FOption.form:296 FPropertyProject.form:195
 msgid "Normal"
 msgstr "Normální"
 
@@ -3323,31 +3707,27 @@ msgstr "Normální text"
 msgid "Norwegian (Norway)"
 msgstr "Norsky (Norsko)"
 
-#: FEditor.form:277 FTextEditor.form:196
-msgid "No split"
-msgstr "Nerozdělovat"
-
-#: MErrorMessage.module:118
-msgid "No startup method"
-msgstr "Žádná spoštěcí metoda"
-
-#: MErrorMessage.module:120
+#: MErrorMessage.module:132
 msgid "Not a directory: &1"
 msgstr "&1 není adresář "
 
-#: MErrorMessage.module:121
+#: MErrorMessage.module:133
 msgid "Not a function"
 msgstr "Není funkce"
 
-#: MErrorMessage.module:122
+#: MErrorMessage.module:134
+msgid "Not a procedure"
+msgstr "Není procedura"
+
+#: MErrorMessage.module:135
 msgid "Not an array"
 msgstr "Není pole"
 
-#: MErrorMessage.module:123
+#: MErrorMessage.module:136
 msgid "Not an enumeration"
 msgstr "Není enum výčet"
 
-#: MErrorMessage.module:124
+#: MErrorMessage.module:137
 msgid "Not an object"
 msgstr "Není objekt"
 
@@ -3355,75 +3735,87 @@ msgstr "Není objekt"
 msgid "not available"
 msgstr "Nedostupné"
 
-#: MErrorMessage.module:126
-msgid "Not enough arguments"
-msgstr "Nedostatek argumentů"
-
-#: MErrorMessage.module:127
-msgid "Not enough arguments to &1()"
-msgstr "Nedostatek argumentů v &1()"
-
-#: MErrorMessage.module:125
+#: MErrorMessage.module:138
 msgid "Not enough argument to New()"
 msgstr "Nedostatek argumentů v New()"
 
-#: FImportTable.class:389
+#: MErrorMessage.module:139
+msgid "Not enough arguments"
+msgstr "Nedostatek argumentů"
+
+#: MErrorMessage.module:140
+msgid "Not enough arguments to &1()"
+msgstr "Nedostatek argumentů v &1()"
+
+#: FImportTable.class:383
 msgid "Not enough values"
 msgstr "Nedostatek Hodnot"
 
-#: Design.module:825
-msgid "No terminal emulator found."
-msgstr "Emulátor terminálu nenalezen."
-
-#: CComponentBox.class:223 FPropertyComponent.form:73
+#: ComponentItem.class:141 FPropertyComponent.form:73
 msgid "Not finished but stable"
 msgstr "Nekompletní, ale stabilní"
 
-#: Project.module:2252
-msgid "Nothing to do."
-msgstr "Není potřeba nic dělat."
+#: MErrorMessage.module:141
+msgid "Not implemented yet"
+msgstr "Neimplementovaný"
 
-#: FTranslate.class:954
-msgid "No translation were picked up."
-msgstr "Žádný překlad nebyl zadržen."
+#: MErrorMessage.module:142
+msgid "Not supported"
+msgstr "Nepodporovaný"
 
-#: FPropertyProject.class:106
+#: FPropertyProject.class:105
 msgid "Not translatable"
 msgstr "Nepřeložitelný"
 
-#: FHelpBrowser.form:97
-msgid "No zoom"
-msgstr "Původní velikost"
-
-#: MErrorMessage.module:128
+#: MErrorMessage.module:143
 msgid "Null object"
 msgstr "Objekt Null"
+
+#: MErrorMessage.module:144
+msgid "Number"
+msgstr "Číslo"
+
+#: MErrorMessage.module:145
+msgid "Number or date"
+msgstr "Číslo nebo datum"
+
+#: MErrorMessage.module:146
+msgid "Number, Date or String"
+msgstr "Číslo, datum nebo řetězec"
+
+#: MErrorMessage.module:147
+msgid "Number, String or Object"
+msgstr "Číslo, řetězec nebo objekt"
 
 #: MTheme.module:6
 msgid "Numbers"
 msgstr "Čísla"
 
+#: MErrorMessage.module:148
+msgid "Object"
+msgstr "Objekt"
+
 #: FOption.class:4
 msgid "Obsidian"
 msgstr "-"
 
-#: FNewConnection.form:81
-msgid "ODBC"
-msgstr "-"
-
-#: CComponent.class:87
+#: CComponent.class:89
 msgid "ODBC database driver"
 msgstr "Ovladač databáze ODBC"
 
-#: FTableChooser.form:62 FText.form:35
+#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "-"
 
-#: FImportTable.class:426
+#: FSearch.class:734
+msgid "One match"
+msgstr "Jedna shoda"
+
+#: FImportTable.class:420
 msgid "One record imported."
 msgstr "Jeden záznam importován."
 
-#: FTranslate.class:956
+#: FTranslate.class:947
 msgid "One translation was picked up."
 msgstr "Jeden překlad byl zadržen."
 
@@ -3431,75 +3823,39 @@ msgstr "Jeden překlad byl zadržen."
 msgid "Opaque"
 msgstr "Neprůhledný"
 
-#: FConflict.form:47 FOpenProject.form:42
+#: FConflict.form:47 FOpenProject.form:46
 msgid "Open"
 msgstr "Otevřít"
 
-#: FMain.form:753
-msgid "&Open"
-msgstr "&Otevřít"
-
-#: Project.module:440
-msgid "Open after all"
-msgstr "Přesto otevřít"
-
-#: FMain.form:1130
-msgid "Open a terminal"
-msgstr "Otevřít terminál"
-
-#: FMain.form:522
-msgid "&Open a terminal..."
-msgstr "&Otevři terminál..."
-
-#: FForm.form:136 FTextEditor.form:75
-msgid "Open code"
-msgstr "Otevří kód"
-
-#: FMain.form:234
+#: FMain.form:235
 msgid "Open &example"
 msgstr "Otevřít &příklad"
 
-#: FEditor.form:108
+#: FMain.form:228
+msgid "Open &recent"
+msgstr "Otevřít p&oslední"
+
+#: FMain.form:1155
+msgid "Open a terminal"
+msgstr "Otevřít terminál"
+
+#: Project.module:459
+msgid "Open after all"
+msgstr "Přesto otevřít"
+
+#: FForm.form:137 FTextEditor.form:81
+msgid "Open code"
+msgstr "Otevří kód"
+
+#: FEditor.form:112
 msgid "Open form"
 msgstr "Otevřít formulář"
 
-#: Project.module:193
-msgid "OpenGL"
-msgstr "OpenGL"
-
-#: CComponent.class:143 FPropertyComponent.form:144
-msgid "OpenGL display"
-msgstr "Zobrazování OpenGL"
-
-#: FCreateProject.form:322
-msgid "OpenGL programming"
-msgstr "Programování OpenGL"
-
-#: CComponent.class:116
-msgid "OpenGL shaders management"
-msgstr "Řízení shaderu OpenGL"
-
-#: CComponent.class:115
-msgid "OpenGL utility component"
-msgstr "OpenGL utility"
-
-#: CComponent.class:102
-msgid "OpenGL with GTK+ toolkit"
-msgstr "OpenGL s GTK+ nástroji"
-
-#: CComponent.class:123
-msgid "OpenGL with QT4 toolkit"
-msgstr "OpenGL s QT4 nástroji"
-
-#: FCreateProject.form:419 FOpenProject.form:163
+#: FCreateProject.form:426 FOpenProject.form:192
 msgid "Open in another window"
 msgstr "Otevři v novém okně"
 
-#: CComponent.class:109
-msgid "OpenLDAP client"
-msgstr "OpenLDAP klient"
-
-#: FMain.form:876
+#: FMain.form:902
 msgid "Open project"
 msgstr "Otevřít projekt"
 
@@ -3507,81 +3863,101 @@ msgstr "Otevřít projekt"
 msgid "Open project..."
 msgstr "Otevřít projekt..."
 
-#: FMain.form:221
-msgid "&Open project..."
-msgstr "&Otevřít projekt..."
+#: FMain.form:679
+msgid "Open with"
+msgstr "Otevřít s"
 
-#: FMain.form:227
-msgid "Open &recent"
-msgstr "Otevřít p&oslední"
-
-#: FMakeInstall.form:409
-msgid "OpenSUSE"
+#: Project.module:198
+msgid "OpenGL"
 msgstr "-"
+
+#: CComponent.class:153 FPropertyComponent.form:144
+msgid "OpenGL display"
+msgstr "Zobrazování OpenGL"
+
+#: FCreateProject.form:323
+msgid "OpenGL programming"
+msgstr "Programování OpenGL"
+
+#: CComponent.class:124
+msgid "OpenGL shaders management"
+msgstr "Řízení shaderu OpenGL"
+
+#: CComponent.class:123
+msgid "OpenGL utility component"
+msgstr "OpenGL utility"
+
+#: CComponent.class:105
+msgid "OpenGL with GTK+ toolkit"
+msgstr "OpenGL s GTK+ nástroji"
+
+#: CComponent.class:108
+msgid "OpenGL with QT/GTK+ switcher component"
+msgstr "Přepínač komponent OpenGL s QT/GTK+"
+
+#: CComponent.class:131
+msgid "OpenGL with QT4 toolkit"
+msgstr "OpenGL s QT4 nástroji"
+
+#: CComponent.class:113
+msgid "OpenLDAP client"
+msgstr "OpenLDAP klient"
 
 #: MTheme.module:6
 msgid "Operators"
 msgstr "Operátory"
 
-#: FPropertyComponent.form:56 FPropertyProject.form:227 FSearch.form:100
+#: FPropertyComponent.form:56 FPropertyProject.form:267 FSearch.form:100
 msgid "Options"
 msgstr "Volby"
 
-#: FTextEditor.class:693
+#: FTextEditor.class:793
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "Původní soubor byl uložen ve složce <b>projektu</b>."
 
-#: FMain.form:635
-msgid "&Other..."
-msgstr "&Jiné..."
-
-#: FMakeInstall.form:240
-msgid "Other License(s)"
-msgstr "Jiné licence"
-
-#: MErrorMessage.module:129
+#: MErrorMessage.module:149
 msgid "Out of bounds"
 msgstr "Mimo meze"
 
-#: MErrorMessage.module:130
+#: MErrorMessage.module:150
 msgid "Out of memory"
 msgstr "Nedostatek paměti"
 
-#: MErrorMessage.module:131
+#: MErrorMessage.module:151
 msgid "Out of range"
 msgstr "Mimo rozsah"
 
-#: Design.module:798
+#: Design.module:830
 msgid "Output terminal"
 msgstr "Výstupní terminál"
 
-#: MErrorMessage.module:132
+#: MErrorMessage.module:152
 msgid "Overflow"
 msgstr "Přetečení"
 
-#: FExportData.class:126
-msgid "&Overwrite"
-msgstr "&Přepsat"
+#: MErrorMessage.module:153
+msgid "Overriding an already inherited class is forbidden"
+msgstr "Překrytí již zděděné třídy je zakázáno"
 
-#: FMakeInstall.class:99
+#: FMakeInstall.class:106
 msgid "Package"
 msgstr "Balíček"
 
-#: FMakeInstall.form:452
+#: FMakeInstall.form:466
 msgid "Package group"
 msgstr "Skupiny balíčků"
 
-#: FMakeInstall.form:118
+#: FMakeInstall.form:120
 msgid "Package information"
 msgstr "Informace o balíku"
 
-#: FMakeInstall.form:124
+#: FMakeInstall.form:126
 msgid "Package name"
 msgstr "Název balíčku"
 
-#: FOption.form:955
-msgid "Packages"
-msgstr "Balíčky"
+#: FOption.form:986
+msgid "Packaging"
+msgstr "Balíčkování"
 
 #: FCreateFile.form:376
 msgid "Parent class"
@@ -3591,27 +3967,19 @@ msgstr "Rodičovská třída"
 msgid "Password"
 msgstr "Heslo"
 
-#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:116
+#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:122
 msgid "Paste"
 msgstr "Vložit"
 
-#: FConnectionEditor.form:156
-msgid "Paste..."
-msgstr "Vložit..."
-
-#: FList.form:98 FMain.form:679
-msgid "&Paste"
-msgstr "&Vložit"
-
-#: FEditor.form:329 FPasteSpecial.form:41
+#: FEditor.form:344 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr "Vložit jako komentář"
 
-#: FEditor.form:324 FPasteSpecial.form:56
+#: FEditor.form:339 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr "Vložit jako víceřádkový řetězec"
 
-#: FEditor.form:319 FPasteSpecial.form:51
+#: FEditor.form:334 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr "Vložit jako řetězec"
 
@@ -3619,11 +3987,11 @@ msgstr "Vložit jako řetězec"
 msgid "Paste normally"
 msgstr "Vložit normálně"
 
-#: FEditor.form:395 FPasteSpecial.form:19
+#: FEditor.form:410 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr "Vložit jinak"
 
-#: FEditor.form:248
+#: FEditor.form:257
 msgid "Paste special..."
 msgstr "Vložit jinak..."
 
@@ -3635,23 +4003,23 @@ msgstr "Vložit tabulku"
 msgid "Paste with PRINT"
 msgstr "Vložit s PRINT"
 
+#: FConnectionEditor.form:156
+msgid "Paste..."
+msgstr "Vložit..."
+
 #: FNewConnection.form:115
 msgid "Path"
 msgstr "Cesta"
 
-#: FMain.form:1051
+#: FMain.form:1076
 msgid "Pause"
 msgstr "Pozastavit"
 
-#: FMain.form:379
-msgid "&Pause"
-msgstr "&Pozastavit"
-
-#: CComponent.class:119
+#: CComponent.class:127
 msgid "PDF renderer based on Poppler library"
 msgstr "PDF generátor založený na knihovně Poppler"
 
-#: CComponent.class:118
+#: CComponent.class:126
 msgid "Perl-compatible Regular Expression Matching"
 msgstr "Regulární výrazy kompatibilní s Perlem"
 
@@ -3659,11 +4027,11 @@ msgstr "Regulární výrazy kompatibilní s Perlem"
 msgid "Pick a color"
 msgstr "Vyberte barvu"
 
-#: FInfo.class:101
+#: FInfo.class:99
 msgid "Picture"
 msgstr "Obrázek"
 
-#: FCreateFile.class:124
+#: FCreateFile.class:119
 msgid "Picture files"
 msgstr "Obrázkové soubory"
 
@@ -3675,7 +4043,7 @@ msgstr "Prostý text"
 msgid "Please copy these informations in all your bug reports."
 msgstr "Prosím, zkopírujte tyto informace ve všech chybových hlášení."
 
-#: FMenu.class:300
+#: FMenu.class:296
 msgid "Please enter a menu name."
 msgstr "Prosím, zadejte název nabídky."
 
@@ -3687,7 +4055,7 @@ msgstr "Prosím, zadejte číslo."
 msgid "Please enter a table name."
 msgstr "Prosím, zadejte jmého tabulky."
 
-#: FSnippet.class:25
+#: FSnippet.class:23
 msgid "Please enter a trigger string."
 msgstr "Prosím, zadejte spouštěcí řetězec."
 
@@ -3695,15 +4063,15 @@ msgstr "Prosím, zadejte spouštěcí řetězec."
 msgid "Please enter password"
 msgstr "Prosím, zadejte heslo"
 
-#: FMakeInstall.class:358
+#: FMakeInstall.class:357
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Prosím, zadejte první položku CHANGELOGU."
 
-#: FMakeInstall.form:250
+#: FMakeInstall.form:264
 msgid "Please enter the changes of your project."
 msgstr "Prosím, zadejte změny vašeho projektu."
 
-#: FCreateProject.class:230
+#: FCreateProject.class:237
 msgid "Please enter the location of the repository."
 msgstr "Prosím, zadejte umístění repositáře."
 
@@ -3739,7 +4107,7 @@ msgstr "Vyberte si prosím balíček skupiny."
 msgid "Please choose a target directory for each extra file."
 msgstr "Prosím, vyberte adresář pro každý soubor navíc."
 
-#: FMakeInstall.class:369
+#: FMakeInstall.class:368
 msgid "Please choose at least one target distribution."
 msgstr "Prosím, vyberte alespoň jednu cílovou distribuci."
 
@@ -3751,25 +4119,33 @@ msgstr "Prosím, vyberte menu umístění pro každou cílovou distribuci."
 msgid "Please choose the package group for each target distribution."
 msgstr "Vyberte si prosím balíček skupiny pro jednotlivé cílové distribuce."
 
-#: FTranslate.class:916
+#: FTranslate.class:907
 msgid "Please select the translation file to import."
 msgstr "Prosím, vyberte překlad pro import."
 
-#: Project.module:3654
+#: Design.module:355
+msgid "Please send a bug report to the following mail address: &1"
+msgstr "Prosím pošlete hlášení o chybě na e-mailovou adresu:  &1"
+
+#: Project.module:3750
 msgid "Please type a name."
 msgstr "Prosím, napište jméno."
 
-#: Project.module:4079
+#: Project.module:4174
 msgid "Please type a project name."
 msgstr "Prosím, napište jméno projektu."
 
-#: FCreateFile.form:346
-msgid "PNG"
-msgstr "-"
+#: MErrorMessage.module:154
+msgid "Pointer"
+msgstr "Ukazatel"
 
 #: Language.module:89
 msgid "Polish (Poland)"
 msgstr "Polsky (Polsko)"
+
+#: CComponent.class:120
+msgid "POP3 client"
+msgstr "POP3 klient"
 
 #: FProxy.form:37
 msgid "Port"
@@ -3783,23 +4159,15 @@ msgstr "Portugalsky (Brazílie)"
 msgid "Portuguese (Portugal)"
 msgstr "Portugalsky (Portugalsko)"
 
-#: FNewConnection.form:81
-msgid "PostgreSQL"
-msgstr "-"
-
-#: CComponent.class:88
+#: CComponent.class:90
 msgid "PostgreSQL database driver"
 msgstr "Ovladač databaze PostgreSQL"
 
-#: FMain.form:921 FOption.form:157
+#: FMain.form:946 FOption.form:196
 msgid "Preferences"
 msgstr "Možnosti"
 
-#: FMain.form:538
-msgid "&Preferences..."
-msgstr "&Možnosti..."
-
-#: FMakeInstall.form:141
+#: FMakeInstall.form:143 FOption.form:1086
 msgid "Prefix package name with the vendor name"
 msgstr "Předpona balíčku s veřejným názvem"
 
@@ -3811,9 +4179,9 @@ msgstr "Preprocesor"
 msgid "Preview"
 msgstr "Náhled"
 
-#: FForm.form:171 FSearch.form:198 FTips.form:72
-msgid "&Previous"
-msgstr "&Předchozí"
+#: CBookmark.class:42
+msgid "Previous bookmark"
+msgstr "Předchozí záložka"
 
 #: FCommit.form:140
 msgid "Previous description"
@@ -3823,31 +4191,39 @@ msgstr "Předchozí popis"
 msgid "Print"
 msgstr "Tisk"
 
-#: Project.module:194
+#: Project.module:199
 msgid "Printing"
 msgstr "Tisk"
 
-#: FEditor.form:527
-msgid "Procedure list"
-msgstr "Seznam procedur"
-
-#: FOption.form:385
-msgid "Procedure separation"
-msgstr "Oddělování funkcí"
-
-#: Project.module:1605
-msgid "Project"
-msgstr "Projekt"
-
-#: FMain.form:431
+#: FMain.form:450
 msgid "Pro&ject"
 msgstr "Pro&jekt"
 
-#: FMain.form:269
-msgid "&Project"
-msgstr "&Projekt"
+#: FOption.form:652
+msgid "Procedure folding"
+msgstr "Skládání procedur"
 
-#: Project.module:5217
+#: FEditor.form:555 FTextEditor.form:416
+msgid "Procedure list"
+msgstr "Seznam procedur"
+
+#: FOption.form:546
+msgid "Procedure separation"
+msgstr "Oddělování funkcí"
+
+#: FProfile.class:975
+msgid "Profile files"
+msgstr "Soubor profilu"
+
+#: FMain.class:1974
+msgid "Profile for &1 project"
+msgstr "Profil pro projekt &1"
+
+#: Project.module:1649
+msgid "Project"
+msgstr "Projekt"
+
+#: Project.module:5326
 msgid "Project cleanup..."
 msgstr "Projekt vyčištěn..."
 
@@ -3855,43 +4231,39 @@ msgstr "Projekt vyčištěn..."
 msgid "Project commit"
 msgstr "Commit projektu"
 
-#: Project.module:5223
+#: Project.module:5332
 msgid "Project files conversion..."
 msgstr "Konverze souborů projektu..."
 
-#: FPropertyProject.class:813
+#: FPropertyProject.class:883
 msgid "Project has been updated from repository successfully."
 msgstr "Update projektu z svn byl úspěšný."
 
-#: FCreateProject.class:125
+#: FCreateProject.class:126
 msgid "Project checkout has failed."
 msgstr "Kontrola projektu selhala."
 
-#: FCreateProject.form:358
+#: FCreateProject.form:365
 msgid "Project information"
 msgstr "Informace o projektu"
 
-#: FPropertyProject.form:321
+#: FPropertyProject.form:378
 msgid "Project is translatable"
 msgstr "Přeložitelný projekt"
 
-#: FMain.form:559
-msgid "&Project link..."
-msgstr "Odkaz &projektu..."
-
-#: FCreateProject.form:368
+#: FCreateProject.form:375
 msgid "Project name"
 msgstr "Název projektu"
 
-#: FCreateProject.form:350
+#: FCreateProject.form:357
 msgid "Project parent directory"
 msgstr "Rodičovský adresář projektu"
 
-#: FMain.form:899 FPropertyProject.form:105
+#: FMain.form:925 FPropertyProject.form:114
 msgid "Project properties"
 msgstr "Vlastnosti projektu"
 
-#: FCreateProject.form:403
+#: FCreateProject.form:410
 msgid "Project title"
 msgstr "Jméno projektu"
 
@@ -3899,27 +4271,19 @@ msgstr "Jméno projektu"
 msgid "Project translation"
 msgstr "Překlad projektu"
 
-#: FCreateProject.form:80
+#: FCreateProject.form:81 FPropertyProject.form:188
 msgid "Project type"
 msgstr "Typ projektu"
 
-#: FMain.form:1316 FProperty.form:24 MHelp.module:574
+#: FMain.form:1355 FProperty.form:23 MHelp.module:573
 msgid "Properties"
 msgstr "Vlastnosti"
 
-#: FMain.form:440
-msgid "&Properties"
-msgstr "&Vlastnosti"
-
-#: FMain.form:350
-msgid "&Properties..."
-msgstr "&Vlastnosti..."
-
-#: FMain.form:986
+#: FMain.form:1011
 msgid "Properties sheet"
 msgstr "Seznam vlastností"
 
-#: CComponentBox.class:263 LibraryItem.class:61
+#: ComponentItem.class:172 LibraryItem.class:58
 msgid "Provides"
 msgstr "Poskytuje"
 
@@ -3927,43 +4291,35 @@ msgstr "Poskytuje"
 msgid "Proxy configuration"
 msgstr "Konfigurace proxy sítě"
 
-#: FOption.form:793
+#: FOption.form:1296
 msgid "Proxy configuration..."
 msgstr "Konfigurace proxy sítě..."
-
-#: FMakeInstall.form:240
-msgid "Public Domain"
-msgstr "Volně šiřitelné dílo"
 
 #: Language.module:87
 msgid "Punjabi (India)"
 msgstr "Punjabi (Indie)"
 
-#: FMain.form:340
+#: FMain.form:341
 msgid "Put on &version control"
 msgstr "Uveď kontrolní &verzi"
 
-#: FCreateFile.form:351 FReportCoordChooser.form:21
-msgid "px"
-msgstr "-"
-
-#: FCreateProject.form:143
+#: FCreateProject.form:144
 msgid "QT graphical application"
 msgstr "Grafická aplikace v QT"
 
-#: CComponent.class:104
+#: CComponent.class:107
 msgid "QT/GTK+ switcher component"
 msgstr "Přepínač komponent QT/GTK+"
 
-#: CComponent.class:120
+#: CComponent.class:128
 msgid "QT4 toolkit"
 msgstr "Nástroje QT4"
 
-#: CComponent.class:121
+#: CComponent.class:129
 msgid "QT4 toolkit extension"
 msgstr "Rozšířené nástroje QT4"
 
-#: CComponent.class:122
+#: CComponent.class:130
 msgid "QT4 WebKit component"
 msgstr "Komponenta QT4 WebKit"
 
@@ -3975,35 +4331,35 @@ msgstr "-"
 msgid "Quick"
 msgstr "-"
 
-#: FOption.form:694
+#: FOption.form:1164
 msgid "Quiet external commands"
 msgstr "Tiché externí příkazy"
 
-#: FSave.class:30 FWelcome.class:53
+#: FMakeInstall.class:299 FSave.class:28 FWelcome.class:54
 msgid "Quit"
 msgstr "Ukončit"
-
-#: FMain.form:262
-msgid "&Quit"
-msgstr "&Ukončit"
 
 #: FReportBrushChooser.form:47
 msgid "Radial gradient"
 msgstr "Radiální přechod"
 
-#: FReportBrushChooser.form:130
+#: FReportBrushChooser.form:136
 msgid "Radius"
 msgstr "Poloměr"
 
-#: MErrorMessage.module:133
+#: FOption.form:911
+msgid "Re&set"
+msgstr "Ob&novit"
+
+#: MErrorMessage.module:155
 msgid "Read error"
 msgstr "Chyba při načítání"
 
-#: Project.module:1502
+#: Project.module:1549
 msgid "read-only"
 msgstr "pouze ke čtení"
 
-#: FOpenProject.form:87
+#: FOpenProject.form:92
 msgid "Recent"
 msgstr "Nedávné"
 
@@ -4015,15 +4371,11 @@ msgstr "Poslední projekty"
 msgid "Rectangle"
 msgstr "Obdélník"
 
-#: FTextEditor.form:92
+#: FTextEditor.form:98
 msgid "Redo"
 msgstr "Znovu"
 
-#: FMain.form:334
-msgid "&Refresh"
-msgstr "&Obnovit"
-
-#: FMain.form:914
+#: FMain.form:939
 msgid "Refresh project"
 msgstr "Obnovit projekt"
 
@@ -4031,17 +4383,13 @@ msgstr "Obnovit projekt"
 msgid "Regular e&xpression"
 msgstr "Re&gulární výraz"
 
-#: FCreateProject.form:310
+#: FCreateProject.form:311
 msgid "Regular expressions"
 msgstr "Regulární výrazy"
 
-#: FTextEditor.form:222 FTranslate.class:730
+#: FTextEditor.form:231 FTranslate.class:723
 msgid "Reload"
 msgstr "Obnovit"
-
-#: FTranslate.form:307
-msgid "&Reload"
-msgstr "O&bnovit"
 
 #: FTranslate.form:305
 msgid "Reload translation"
@@ -4051,15 +4399,11 @@ msgstr "Obnovit překlad"
 msgid "Remember password"
 msgstr "Zapamatuj si heslo"
 
-#: FConnectionEditor.form:132 FMakeInstall.class:1005
+#: FConnectionEditor.form:132 FMakeInstall.class:999
 msgid "Remove"
 msgstr "Odstranit"
 
-#: FPropertyComponent.form:190 FPropertyProject.form:432
-msgid "&Remove"
-msgstr "Odeb&rat"
-
-#: FDebugInfo.form:134
+#: ComponentItem.class:252 FDebugInfo.form:135
 msgid "Remove all"
 msgstr "Odstranit vše"
 
@@ -4067,53 +4411,41 @@ msgstr "Odstranit vše"
 msgid "Remove All"
 msgstr "Odstranit vše"
 
-#: FDebugInfo.form:182
+#: FDebugInfo.form:183
 msgid "Remove all breakpoints"
 msgstr "Odstranit všechny breakpointy"
 
-#: FDebugInfo.form:132
+#: FDebugInfo.form:133
 msgid "Remove all expressions"
 msgstr "Odstranit všechny výrazy"
 
-#: FDebugInfo.form:174
+#: FDebugInfo.form:175
 msgid "Remove current breakpoint"
 msgstr "Odstranit akuální breakpoint"
 
-#: FDebugInfo.form:124
+#: FDebugInfo.form:125
 msgid "Remove current expression"
 msgstr "Odstranit aktuální výraz"
 
-#: FReportBrushChooser.form:102
+#: FReportBrushChooser.form:108
 msgid "Remove gradient stop"
 msgstr "Odebrat zarážku přechodu"
 
-#: FOption.form:920
+#: FOption.form:821
 msgid "Remove useless spaces at end of line"
 msgstr "Odstrani zbytečné mezery na konci řádku"
-
-#: FConnectionEditor.form:140
-msgid "Rename..."
-msgstr "Přejmenovat..."
-
-#: FMain.form:686
-msgid "&Rename..."
-msgstr "Přej&menovat..."
 
 #: FConnectionEditor.form:138 FNewTable.class:30
 msgid "Rename table"
 msgstr "Přejmenovat tabulku"
 
+#: FConnectionEditor.form:140
+msgid "Rename..."
+msgstr "Přejmenovat..."
+
 #: FSearch.form:76
 msgid "Replace"
 msgstr "Nahradit"
-
-#: FSearch.form:211
-msgid "&Replace"
-msgstr "Nahrad&it"
-
-#: FMain.form:505
-msgid "&Replace..."
-msgstr "Nahrad&it..."
 
 #: FSearch.form:217
 msgid "Replace &all"
@@ -4127,11 +4459,7 @@ msgstr "Nahradit barvu"
 msgid "Report"
 msgstr "Report"
 
-#: FMain.form:602
-msgid "&Report..."
-msgstr "&Report..."
-
-#: CComponent.class:124
+#: CComponent.class:132
 msgid "Report designer"
 msgstr "Návrhář reportů"
 
@@ -4139,27 +4467,19 @@ msgstr "Návrhář reportů"
 msgid "Reports"
 msgstr "Reporty"
 
-#: FCreateProject.form:431
+#: FCreateProject.form:438
 msgid "Repository"
 msgstr "SVN repositář"
 
-#: CComponentBox.class:242 FPropertyComponent.form:106 LibraryItem.class:63
+#: ComponentItem.class:151 FPropertyComponent.form:106 LibraryItem.class:60
 msgid "Requires"
 msgstr "Vyžaduje"
 
-#: FDebugInfo.form:229 FOption.class:919
+#: FOption.class:947
 msgid "Reset"
 msgstr "Obnovit"
 
-#: FOption.form:846
-msgid "Re&set"
-msgstr "Ob&novit"
-
-#: FPropertyProject.form:539
-msgid "&Reset"
-msgstr "O&bnovit"
-
-#: FMain.form:1240
+#: FMain.form:1274
 msgid "Reset filter"
 msgstr "Obnovit filtr"
 
@@ -4167,21 +4487,13 @@ msgstr "Obnovit filtr"
 msgid "Resolve conflict with"
 msgstr "Vyřešit konflikt s"
 
-#: FMakeInstall.class:296
-msgid "Retry"
-msgstr "Zkusit znovu"
+#: FOption.form:439
+msgid "Restore files when loading a project"
+msgstr "Obnovit soubory při načítání projektu"
 
-#: MErrorMessage.module:134
+#: MErrorMessage.module:156
 msgid "Return value datatype not specified in function declaration"
 msgstr "Datový typ návratové hodnoty, které není uvedeny v deklaraci funkce"
-
-#: FPropertyProject.form:670
-msgid "&Revert..."
-msgstr "&Vrátit..."
-
-#: FReportBorderChooser.form:125 FReportPaddingChooser.form:43
-msgid "Right"
-msgstr "Doprava"
 
 #: Language.module:96
 msgid "Romanian (Romania)"
@@ -4195,27 +4507,23 @@ msgstr "Rotace ve směru"
 msgid "Rotate counter-clockwise"
 msgstr "Rotace v protisměru"
 
-#: FForm.form:306
+#: FForm.form:308
 msgid "Rows"
 msgstr "Řádky"
-
-#: Package.module:1124
-msgid "'rpmbuild' has returned the following error code:"
-msgstr "'rpmbuild' vrací následující kód chyby:"
 
 #: FOption.class:4
 msgid "Ruby"
 msgstr "-"
 
-#: FMain.form:1044
+#: FMain.form:1069
 msgid "Run"
 msgstr "Spustit"
 
-#: FMain.form:369
-msgid "&Run"
-msgstr "&Spustit"
+#: FEditor.form:193
+msgid "Run &until current line"
+msgstr "Spustit &do aktuální řádky"
 
-#: FConnectionEditor.form:357
+#: FConnectionEditor.form:353
 msgid "Run query"
 msgstr "Spustit dotaz"
 
@@ -4223,53 +4531,45 @@ msgstr "Spustit dotaz"
 msgid "Run this command after"
 msgstr "Spusťte tento příkaz po"
 
-#: FMain.form:1087
+#: FMain.form:1112
 msgid "Run until current line"
 msgstr "Spustit do aktuální řádky"
-
-#: FEditor.form:188
-msgid "Run &until current line"
-msgstr "Spustit &do aktuální řádky"
 
 #: Language.module:98
 msgid "Russian (Russia)"
 msgstr "Rusky (Rusko)"
 
-#: FMakeInstall.form:549
-msgid "Same dependencies for all targets"
-msgstr "Stejné závislostí pro všechny cíle"
-
-#: FMakeInstall.form:609
-msgid "Same files for all targets"
-msgstr "Stejné soubory pro všechny cíle"
-
-#: FForm.form:571
-msgid "Same height"
-msgstr "Stejná výška"
-
-#: FForm.form:377
+#: FForm.form:379
 msgid "Same &height"
 msgstr "Stejná &výška"
 
-#: FForm.form:564
-msgid "Same width"
-msgstr "Stejná šířka"
-
-#: FForm.form:371
+#: FForm.form:373
 msgid "Same &width"
 msgstr "Stejná šír&ka"
+
+#: FMakeInstall.form:563
+msgid "Same dependencies for all targets"
+msgstr "Stejné závislostí pro všechny cíle"
+
+#: FMakeInstall.form:623
+msgid "Same files for all targets"
+msgstr "Stejné soubory pro všechny cíle"
+
+#: FForm.form:580
+msgid "Same height"
+msgstr "Stejná výška"
+
+#: FForm.form:573
+msgid "Same width"
+msgstr "Stejná šířka"
 
 #: FOption.class:4
 msgid "Sapphire"
 msgstr "-"
 
-#: FTextEditor.form:228
+#: FTextEditor.form:237
 msgid "Save"
 msgstr "Uložit"
-
-#: FConflict.form:172 FSaveProjectAs.form:82
-msgid "&Save"
-msgstr "&Uložit"
 
 #: FSave.form:42
 msgid "Save &All"
@@ -4279,55 +4579,63 @@ msgstr "Uložit &vše"
 msgid "Save modified files"
 msgstr "Uložit upravené soubory"
 
-#: FMain.form:885
+#: FProfile.form:74
+msgid "Save profile"
+msgstr "Uložit profil"
+
+#: FProfile.form:76
+msgid "Save profile..."
+msgstr "Uložit profil..."
+
+#: FMain.form:911
 msgid "Save project"
 msgstr "Uložit projekt"
 
-#: FMain.form:245
-msgid "&Save project"
-msgstr "&Uložit projekt"
-
-#: FMain.form:892 FSaveProjectAs.form:18
-msgid "Save project as"
-msgstr "Uložit projekt jako"
-
-#: FMain.form:252
+#: FMain.form:253
 msgid "Save project &as..."
 msgstr "Uložit projekt &jako..."
+
+#: FMain.form:918 FSaveProjectAs.form:18
+msgid "Save project as"
+msgstr "Uložit projekt jako"
 
 #: FTranslate.form:101
 msgid "Save translation"
 msgstr "Uložit překlad"
 
-#: Package.module:170
+#: Package.module:154
 msgid "Saving CHANGELOG file."
 msgstr "Uložit SOUBOR ZMĚN."
+
+#: FCreateProject.form:335
+msgid "Scientific computing"
+msgstr "Vědecké výpočty"
 
 #: FIconEditor.form:169
 msgid "Scroll"
 msgstr "Rolovat"
 
-#: FCreateProject.form:209
+#: FCreateProject.form:210
 msgid "SDL application"
 msgstr "SDL aplikace"
 
-#: CComponent.class:125
+#: CComponent.class:133
 msgid "SDL library"
 msgstr "Knihovna SDL"
 
-#: CComponent.class:126
+#: CComponent.class:134
 msgid "SDL sound & CD-ROM management"
 msgstr "Správa SDL zvuku & CD-ROM"
 
-#: FMain.form:1013 FSearch.form:62
+#: FMain.form:1038 FSearch.form:62
 msgid "Search"
 msgstr "Hledat"
 
-#: FOutput.form:151
-msgid "Search..."
-msgstr "Hledat..."
+#: FSearch.form:43
+msgid "Search & Replace"
+msgstr "Najít & Nahradit"
 
-#: FDebugInfo.form:222
+#: FDebugInfo.form:255
 msgid "Search again"
 msgstr "Hledat znovu"
 
@@ -4335,33 +4643,37 @@ msgstr "Hledat znovu"
 msgid "Search in"
 msgstr "Hedej v"
 
-#: FDebugInfo.form:204
+#: FDebugInfo.form:230
 msgid "Search list"
 msgstr "Výsledky hledání"
 
-#: FSearch.form:43
-msgid "Search & Replace"
-msgstr "Najít & Nahradit"
-
-#: FDebugInfo.form:278 FSearch.class:467 FTranslate.class:597
+#: FDebugInfo.form:303 FSearch.class:485 FTranslate.class:588
 msgid "Search string cannot be found."
 msgstr "Hledaný řetězec nenalezen."
 
-#: FSearch.class:469
-msgid "Search string replaced once."
-msgstr "Hledaný řetězec byl jednou nahrazen."
-
-#: FSearch.class:471
+#: FSearch.class:489
 msgid "Search string replaced &1 times."
 msgstr "Hledaný řetězec byl nahrazen &1 krát."
 
-#: Design.module:151 Project.module:2017
+#: FSearch.class:487
+msgid "Search string replaced once."
+msgstr "Hledaný řetězec byl jednou nahrazen."
+
+#: FOutput.form:151
+msgid "Search..."
+msgstr "Hledat..."
+
+#: Design.module:161 Project.module:2079
 msgid "second"
 msgstr "druhý"
 
-#: FForm.form:119 FIconEditor.form:182
+#: FForm.form:120 FIconEditor.form:182
 msgid "Select"
 msgstr "Výběř"
+
+#: FEditor.form:168 FTextEditor.form:132
+msgid "Select &All"
+msgstr "Vybrat &vše"
 
 #: FColorChooser.form:14
 msgid "Select a color"
@@ -4375,7 +4687,7 @@ msgstr "Vyberte rozměr"
 msgid "Select a directory"
 msgstr "Vybrat adresář"
 
-#: FFieldChooser.class:72
+#: FFieldChooser.class:70
 msgid "Select a field"
 msgstr "Vyber pole"
 
@@ -4387,31 +4699,15 @@ msgstr "Vyber soubor"
 msgid "Select a font"
 msgstr "Vybrat font"
 
-#: FPropertyProject.class:1067
+#: FPropertyProject.class:1145
 msgid "Select a Gambas application"
 msgstr "Vyberte aplikaci Gambas"
-
-#: FForm.form:196
-msgid "Select all"
-msgstr "Vybrat vše"
-
-#: FEditor.form:163 FTextEditor.form:126
-msgid "Select &All"
-msgstr "Vybrat &vše"
-
-#: FSelectExtraFile.form:12
-msgid "Select an extra file"
-msgstr "Zvolte další soubor"
-
-#: FReportBrushChooser.form:62
-msgid "Select an image inside the project"
-msgstr "Vyberte obrázek uvnitř projektu"
 
 #: FSelectIcon.form:18
 msgid "Select a picture"
 msgstr "Vybrat obrázek"
 
-#: FOpenProject.form:29
+#: FOpenProject.form:33
 msgid "Select a project"
 msgstr "Vybrat projekt"
 
@@ -4419,27 +4715,51 @@ msgstr "Vybrat projekt"
 msgid "Select a theme"
 msgstr "Vybrat tema"
 
-#: FOption.class:326
+#: FOption.class:335
 msgid "Select a theme file"
 msgstr "Vybrat soubor tematu"
 
-#: FReportBrushChooser.form:108
+#: FForm.form:198
+msgid "Select all"
+msgstr "Vybrat vše"
+
+#: FSelectExtraFile.form:12
+msgid "Select an extra file"
+msgstr "Zvolte další soubor"
+
+#: FReportBrushChooser.form:68
+msgid "Select an image inside the project"
+msgstr "Vyber obrázek uvnitř projektu"
+
+#: FReportBrushChooser.form:114
 msgid "Select gradient stop color..."
 msgstr "Vyber barvu koncoveho přechodu..."
+
+#: FConnectionEditor.class:1420
+msgid "Select the CSV file to import"
+msgstr "Vyber CSV soubor pro import"
+
+#: FMakeInstall.class:1154
+msgid "Select the destination directory"
+msgstr "Zvolit cílový adresář"
 
 #: MTheme.module:6
 msgid "Selection"
 msgstr "Výběr"
 
-#: FConnectionEditor.class:1423
-msgid "Select the CSV file to import"
-msgstr "Vyber CSV soubor pro import"
+#: FProfile.class:605
+msgid "Self"
+msgstr "Vlastní"
 
-#: FMakeInstall.class:1162
-msgid "Select the destination directory"
-msgstr "Zvolte cílový adresář"
+#: FMain.form:548
+msgid "Send project by &mail..."
+msgstr "Poslat projekt e-&mailem..."
 
-#: FForm.form:289
+#: FMain.form:1163
+msgid "Send project by mail"
+msgstr "Poslat projektu e-mailem"
+
+#: FForm.form:291
 msgid "Send to background"
 msgstr "Přenést do pozadí"
 
@@ -4447,31 +4767,23 @@ msgstr "Přenést do pozadí"
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "Srbská (Srbsko & Černá Hora)"
 
-#: FConnectionEditor.class:571 MConnection.module:99
+#: FConnectionEditor.class:571 MConnection.module:97
 msgid "Serial"
 msgstr "-"
 
-#: MErrorMessage.module:137
+#: MErrorMessage.module:159
 msgid "Serialization error"
 msgstr "Chyba serializace"
 
-#: FCreateProject.form:304
+#: FCreateProject.form:305
 msgid "Settings files management"
 msgstr "Management nastavení souborů"
 
-#: FMenu.form:261
-msgid "SHIFT"
-msgstr "-"
-
-#: FMain.form:930
+#: FMain.form:955
 msgid "Shortcuts"
 msgstr "Zkratky"
 
-#: FMain.form:532
-msgid "&Shortcuts..."
-msgstr "&Zkratky..."
-
-#: FMain.form:1252
+#: FMain.form:1286
 msgid "Show added files"
 msgstr "Zobrazit přidávné soubory"
 
@@ -4479,15 +4791,15 @@ msgstr "Zobrazit přidávné soubory"
 msgid "Show all symbols"
 msgstr "Zobrazit všechny symboly"
 
-#: FPropertyProject.form:504
-msgid "Show components in beta version"
-msgstr "Zobrazit komponenty v beta verzi"
+#: FProfile.form:67
+msgid "Show average"
+msgstr "Zobrazit průměr"
 
-#: FOption.form:760
+#: FOption.form:1239
 msgid "Show documentation in popups"
 msgstr "Zobrazit dokumentaci v bulbině"
 
-#: FMain.form:1246
+#: FMain.form:1280
 msgid "Show exported classes"
 msgstr "Zobrazit exportované třídy"
 
@@ -4495,19 +4807,23 @@ msgstr "Zobrazit exportované třídy"
 msgid "Show help tree"
 msgstr "Zobrazit strom nápovědy"
 
-#: FOption.form:444
+#: FOption.form:608
 msgid "Show line numbers"
 msgstr "Zobrazit čísla řádků"
 
-#: FPropertyProject.form:498
+#: FPropertyProject.form:553
 msgid "Show only components used in project"
 msgstr "Zobrazit pouze komponenty použité v projektu"
 
-#: FDebugInfo.form:236
+#: FProfile.form:60
+msgid "Show relative durations"
+msgstr "Zobrazit relativní prodlevu"
+
+#: FDebugInfo.form:262
 msgid "Show search window"
 msgstr "Zobrazit okno hledání"
 
-#: FOption.form:465
+#: FOption.form:630
 msgid "Show spaces at end of line with dots"
 msgstr "Zobrazit mezery na konci řádku tečkami"
 
@@ -4515,7 +4831,7 @@ msgstr "Zobrazit mezery na konci řádku tečkami"
 msgid "Show system tables"
 msgstr "Zobrazit systémové tabulky"
 
-#: FForm.form:151
+#: FForm.form:153
 msgid "Show tab"
 msgstr "Zobrazit kartu"
 
@@ -4523,11 +4839,11 @@ msgstr "Zobrazit kartu"
 msgid "Show tips on startup"
 msgstr "Zobrazit tipy při startu"
 
-#: FOption.form:739
+#: FOption.form:1217
 msgid "Show tooltips"
 msgstr "Zobrazit bublinovou nápovědu"
 
-#: CComponent.class:128
+#: CComponent.class:136
 msgid "Signals management"
 msgstr "Správa signálů"
 
@@ -4535,31 +4851,27 @@ msgstr "Správa signálů"
 msgid "Simplified chinese (China)"
 msgstr "Zjednodušená činština (Čína)"
 
-#: FInfo.form:97 FSelectIcon.form:53 FTranslate.class:69
+#: FInfo.form:97 FSelectIcon.form:53 FTranslate.class:68
 msgid "Size"
 msgstr "Velikost"
-
-#: FMakeInstall.form:428
-msgid "Slackware"
-msgstr "-"
 
 #: Language.module:100
 msgid "Slovenian (Slovenia)"
 msgstr "Slovinsky (Slovinsko)"
 
-#: FOption.form:214
+#: FOption.form:296
 msgid "Small"
 msgstr "Malá"
 
-#: FOption.form:225
+#: FOption.form:308
 msgid "Small font size"
 msgstr "Malé písmo"
 
-#: CComponent.class:113
+#: CComponent.class:121
 msgid "SMTP client"
 msgstr "SMTP klient"
 
-#: FPropertyProject.class:254
+#: FPropertyProject.class:261
 msgid "Snapping value is incorrect."
 msgstr "Sdělovací hodnota je nesprávná."
 
@@ -4571,11 +4883,11 @@ msgstr "-"
 msgid "Sol&ve"
 msgstr "&Vyřešit"
 
-#: Project.module:3128
+#: FPropertyProject.class:402 Project.module:3223
 msgid "Some components are missing: &1"
 msgstr "Nekteré komponenty chybějí: &1"
 
-#: FConflict.class:219
+#: FConflict.class:213
 msgid "Some conflicts are not yet resolved."
 msgstr "Některé konflikty jsou dosud vyřešeny."
 
@@ -4583,35 +4895,35 @@ msgstr "Některé konflikty jsou dosud vyřešeny."
 msgid "Some files are not versioned and should be added manually to the repository."
 msgstr "Některé soubory nejsou verzované, a měly by být ručně přidány do repositáře."
 
-#: Project.module:2232
+#: Project.module:2301
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Některé projekty zdrojové soubory jsou v konfliktu. \nProsím, vyřešte je, pokud chcete kompilovat projekt."
 
-#: FMain.class:567 FOpenProject.form:110 FWelcome.form:35
+#: FMain.class:571 FOpenProject.form:116 FWelcome.form:41
 msgid "Sort by date"
 msgstr "Seřadit podle data"
 
-#: FMain.class:567 FOpenProject.form:119 FWelcome.form:42
+#: FMain.class:571 FOpenProject.form:125 FWelcome.form:48
 msgid "Sort by name"
 msgstr "Seřadit podle jména"
 
-#: FMain.class:567 FOpenProject.form:127 FWelcome.form:48
+#: FMain.class:571 FOpenProject.form:133 FWelcome.form:54
 msgid "Sort by path"
 msgstr "Seřadit podle cesty"
 
-#: FMain.class:563
+#: FMain.class:567
 msgid "Sort history"
 msgstr "Řadit historii"
 
-#: FEditor.form:267
+#: FEditor.form:276
 msgid "Sort procedures..."
 msgstr "Seřaďit procedůry..."
 
-#: FOption.form:259
+#: FOption.form:355
 msgid "Sort properties"
 msgstr "Řadit vlastnosti"
 
-#: Project.module:195
+#: Project.module:200
 msgid "Sound"
 msgstr "Zvuk"
 
@@ -4619,31 +4931,23 @@ msgstr "Zvuk"
 msgid "Source"
 msgstr "Zdroj"
 
-#: FMain.form:310
-msgid "&Source archive..."
-msgstr "&Zdrojový archiv..."
+#: FOption.form:933
+msgid "Source archives"
+msgstr "Zdrojové archývy"
 
-#: FSearch.form:166
-msgid "&Source files"
-msgstr "&Zdrojové soubory"
-
-#: Project.module:4156
+#: Project.module:4258
 msgid "Source packages"
 msgstr "Zdrojové balíčky"
 
-#: CProjectTree.class:293 Project.module:1608
+#: CProjectTree.class:285 Project.module:1652
 msgid "Sources"
 msgstr "Zdroje"
 
-#: Package.module:602
+#: Package.module:592
 msgid "Sources are being debianizated."
 msgstr "Zdroje jsou debianizovány."
 
-#: FExportData.form:37 FImportTable.form:103
-msgid "Space"
-msgstr "Mezera"
-
-#: FOption.form:374 FPropertyProject.form:260
+#: FOption.form:534 FPropertyProject.form:300
 msgid "space(s)"
 msgstr "mezery"
 
@@ -4655,35 +4959,35 @@ msgstr "Španělsky (Argentina)"
 msgid "Spanish (Spain)"
 msgstr "Španělsky (Španělsko)"
 
-#: FNewConnection.form:81
-msgid "SQLite"
-msgstr "-"
-
-#: CComponent.class:89
-msgid "SQLite 2 database driver"
-msgstr "Ovladač databaze SQLite 2"
-
-#: CComponent.class:90
-msgid "SQLite 3 database driver"
-msgstr "Ovladač databaze SQLite 3"
-
 #: FConnectionEditor.form:170
 msgid "SQL request"
 msgstr "SQL dotaz"
 
-#: FDebugInfo.form:311
+#: CComponent.class:91
+msgid "SQLite 2 database driver"
+msgstr "Ovladač databaze SQLite 2"
+
+#: CComponent.class:92
+msgid "SQLite 3 database driver"
+msgstr "Ovladač databaze SQLite 3"
+
+#: FMain.form:406
+msgid "St&ep"
+msgstr "K&rok"
+
+#: FDebugInfo.form:313
 msgid "Stack backtrace"
 msgstr "Poslední kroky zásobníku"
 
-#: MErrorMessage.module:138
+#: MErrorMessage.module:160
 msgid "Stack overflow"
 msgstr "Přetečení zásobníku"
 
-#: FEditor.form:115 FForm.form:143 FMain.form:712
-msgid "&Startup class"
-msgstr "&Hlavní třída"
+#: MErrorMessage.module:161
+msgid "Standard type"
+msgstr "Standartní typy"
 
-#: FDebugInfo.class:944
+#: FDebugInfo.class:959
 msgid "Static variables"
 msgstr "Statická proměnná"
 
@@ -4691,43 +4995,35 @@ msgstr "Statická proměnná"
 msgid "Statistics"
 msgstr "Statistiky"
 
-#: FMain.form:459
+#: FMain.form:478
 msgid "Status bar"
 msgstr "Stavový řádek"
 
-#: FMain.form:1065
+#: FMain.form:1090
 msgid "Step"
 msgstr "Krok"
-
-#: FMain.form:393
-msgid "St&ep"
-msgstr "K&rok"
 
 #: FSelectIcon.form:40
 msgid "Stock"
 msgstr "Sklad"
 
-#: FMain.form:1058
+#: FMain.form:1083
 msgid "Stop"
 msgstr "-"
 
-#: FMain.form:386
-msgid "&Stop"
-msgstr "-"
-
-#: MErrorMessage.module:135
+#: MErrorMessage.module:157
 msgid "STOP instruction encountered"
 msgstr "Došlo k instrukci STOP"
 
-#: MErrorMessage.module:139
+#: MErrorMessage.module:162
 msgid "Stream is closed"
 msgstr "Stream je uzavřen"
 
-#: FConnectionEditor.class:571 MConnection.module:97
+#: FConnectionEditor.class:571 MConnection.module:95 MErrorMessage.module:163
 msgid "String"
 msgstr "-"
 
-#: MErrorMessage.module:140
+#: MErrorMessage.module:164
 msgid "String expected"
 msgstr "Očekáván řetězec"
 
@@ -4739,23 +5035,19 @@ msgstr "Řetězce"
 msgid "Strip useless white spaces"
 msgstr "Zbytečný proužek mezery"
 
-#: MErrorMessage.module:141
+#: MErrorMessage.module:165
+msgid "Structure is declared elsewhere differently: "
+msgstr "Struktura je deklarována jinde jinak:"
+
+#: MErrorMessage.module:166
 msgid "Structures must be public"
 msgstr "Struktury musí být veřejné"
-
-#: FOption.form:542
-msgid "Style"
-msgstr "Styl"
 
 #: FCreateFile.form:276
 msgid "Style sheet"
 msgstr "Kaskádový styl"
 
-#: FMain.form:627
-msgid "&Style sheet..."
-msgstr "&Styly..."
-
-#: MErrorMessage.module:142
+#: MErrorMessage.module:167
 msgid "Subroutine arguments cannot be passed by reference"
 msgstr "Argumenty podprogramu nemohou být předány odkazem"
 
@@ -4763,7 +5055,7 @@ msgstr "Argumenty podprogramu nemohou být předány odkazem"
 msgid "Subroutines"
 msgstr "Podprogramy"
 
-#: MErrorMessage.module:136
+#: MErrorMessage.module:158
 msgid "SUPER cannot be used alone"
 msgstr "SUPER nelze použít samostatně"
 
@@ -4779,11 +5071,11 @@ msgstr "Vyměnit barvy"
 msgid "Swedish (Sweden)"
 msgstr "Švédsky (Švédsko)"
 
-#: FDebugExpr.class:484
+#: FDebugExpr.class:482
 msgid "Symbol"
 msgstr "Symbol"
 
-#: MHelp.module:644 MTheme.module:6
+#: MHelp.module:643 MTheme.module:6
 msgid "Symbols"
 msgstr "Symboly"
 
@@ -4791,111 +5083,107 @@ msgstr "Symboly"
 msgid "Synchronize"
 msgstr "Synchronizovat"
 
-#: MErrorMessage.module:143
+#: MErrorMessage.module:168
 msgid "Syntax error"
 msgstr "Syntaktická chyba"
 
-#: MErrorMessage.module:144
+#: MErrorMessage.module:169
 msgid "Syntax error at function declaration"
 msgstr "Syntaktická chyba v deklaraci funkce"
 
-#: MErrorMessage.module:150
-msgid "Syntax error. Bad property type"
-msgstr "Syntaktická chyba. Špatný typ vlastnosti"
-
-#: MErrorMessage.module:153
-msgid "Syntax error. Cannot use this syntax in assignment"
-msgstr "Syntaktická chyba. Nemůže být použita syntaxe přiřazení"
-
-#: MErrorMessage.module:151
-msgid "Syntax error. CASE or DEFAULT expected after SELECT"
-msgstr "Syntaktická chyba. Po SELECT je očekáváno CASE nebo DEFAULT"
-
-#: MErrorMessage.module:152
-msgid "Syntax error. CLASS needs an identifier"
-msgstr "Syntaktická chyba. CLASS potřebuje identifikátor"
-
-#: MErrorMessage.module:155
-msgid "Syntax error. Identifier expected."
-msgstr "Syntaktická chyba. Očekáván identifikátor."
-
-#: MErrorMessage.module:145
+#: MErrorMessage.module:170
 msgid "Syntax error in event name"
 msgstr "Syntaktická chyba v názvu události"
 
-#: MErrorMessage.module:146
+#: MErrorMessage.module:171
 msgid "Syntax error in file open mode"
 msgstr "Syntaktická chyba v módu otevírání souboru"
 
-#: MErrorMessage.module:154
-msgid "Syntax error. INHERITS needs a class name"
-msgstr "Syntaktická chyba. INHERITS potřebuje název třídy"
-
-#: MErrorMessage.module:147
+#: MErrorMessage.module:172
 msgid "Syntax error in return type"
 msgstr "Syntaktická chyba v návratovém typu"
 
-#: MErrorMessage.module:156
-msgid "Syntax error. Invalid identifier in function name"
-msgstr "Syntaktická chyba. Neplatný identifikátor v názvu funkce"
-
-#: MErrorMessage.module:157
-msgid "Syntax error. Invalid identifier in property name"
-msgstr "Syntaktická chyba. Neplatný identifikátor v názvu vlastnosti"
-
-#: MErrorMessage.module:158
-msgid "Syntax error. Invalid optional parameter"
-msgstr "Syntaktická chyba. Neplatný volitelný parametr"
-
-#: MErrorMessage.module:159
-msgid "Syntax error. Invalid return type"
-msgstr "Syntaktická chyba. Neplatný návratový typ"
-
-#: MErrorMessage.module:160
-msgid "Syntax error. Invalid type description of &1 argument"
-msgstr "Syntaktická chyba. Neplatný typ popisu argumentu &1"
-
-#: MErrorMessage.module:161
-msgid "Syntax error. Invalid type description of &1 field"
-msgstr "Syntaktická chyba. Neplatný typ popisu pole &1"
-
-#: MErrorMessage.module:162
-msgid "Syntax error. Missing &1"
-msgstr "Syntaktická chyba. Chybí &1"
-
-#: MErrorMessage.module:149
+#: MErrorMessage.module:174
 msgid "Syntax error. '...' must be the last argument"
 msgstr "Syntaktická chyba. '...' musí být poslední argument"
 
-#: MErrorMessage.module:163
-msgid "Syntax error. Needless arguments"
-msgstr "Syntaktická chyba. Nepotřebné argumenty"
-
-#: MErrorMessage.module:164
-msgid "Syntax error. Point syntax used outside of WITH / END WITH"
-msgstr "Syntaktická chyba. Bod syntaxe používá misto WITH / END WITH"
-
-#: MErrorMessage.module:165
-msgid "Syntax error. STRUCT needs an identifier"
-msgstr "Syntaktická chyba. STRUCT potřebuje identifikátor"
-
-#: MErrorMessage.module:166
-msgid "Syntax error. The &1 argument is not a valid identifier"
-msgstr "Syntaktická chyba. Argument &1 není platný identifikátor"
-
-#: MErrorMessage.module:167
-msgid "Syntax error. The &1 field is not a valid identifier"
-msgstr "Syntaktická chyba. Pole &1 není platný identifikátor"
-
-#: MErrorMessage.module:168
-msgid "Syntax error. VarPtr() takes only one identifier"
-msgstr "Syntaktická chyba. VarPtr() má jen jeden identifikátor"
-
-#: MErrorMessage.module:148
+#: MErrorMessage.module:173
 msgid "Syntax error. &1 expected"
 msgstr "Syntaktická chyba. Očekáváno &1"
 
-#: CComponent.class:95
+#: MErrorMessage.module:175
+msgid "Syntax error. Bad property type"
+msgstr "Syntaktická chyba. Špatný typ vlastnosti"
+
+#: MErrorMessage.module:178
+msgid "Syntax error. Cannot use this syntax in assignment"
+msgstr "Syntaktická chyba. Nemůže být použita syntaxe přiřazení"
+
+#: MErrorMessage.module:176
+msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+msgstr "Syntaktická chyba. Po SELECT je očekáváno CASE nebo DEFAULT"
+
+#: MErrorMessage.module:177
+msgid "Syntax error. CLASS needs an identifier"
+msgstr "Syntaktická chyba. CLASS potřebuje identifikátor"
+
+#: MErrorMessage.module:180
+msgid "Syntax error. Identifier expected."
+msgstr "Syntaktická chyba. Očekáván identifikátor."
+
+#: MErrorMessage.module:179
+msgid "Syntax error. INHERITS needs a class name"
+msgstr "Syntaktická chyba. INHERITS potřebuje název třídy"
+
+#: MErrorMessage.module:181
+msgid "Syntax error. Invalid identifier in function name"
+msgstr "Syntaktická chyba. Neplatný identifikátor v názvu funkce"
+
+#: MErrorMessage.module:182
+msgid "Syntax error. Invalid identifier in property name"
+msgstr "Syntaktická chyba. Neplatný identifikátor v názvu vlastnosti"
+
+#: MErrorMessage.module:183
+msgid "Syntax error. Invalid optional parameter"
+msgstr "Syntaktická chyba. Neplatný volitelný parametr"
+
+#: MErrorMessage.module:184
+msgid "Syntax error. Invalid return type"
+msgstr "Syntaktická chyba. Neplatný návratový typ"
+
+#: MErrorMessage.module:185
+msgid "Syntax error. Invalid type description of &1 argument"
+msgstr "Syntaktická chyba. Neplatný typ popisu argumentu &1"
+
+#: MErrorMessage.module:186
+msgid "Syntax error. Invalid type description of &1 field"
+msgstr "Syntaktická chyba. Neplatný typ popisu pole &1"
+
+#: MErrorMessage.module:187
+msgid "Syntax error. Needless arguments"
+msgstr "Syntaktická chyba. Nepotřebné argumenty"
+
+#: MErrorMessage.module:188
+msgid "Syntax error. Point syntax used outside of WITH / END WITH"
+msgstr "Syntaktická chyba. Bod syntaxe používá misto WITH / END WITH"
+
+#: MErrorMessage.module:189
+msgid "Syntax error. STRUCT needs an identifier"
+msgstr "Syntaktická chyba. STRUCT potřebuje identifikátor"
+
+#: MErrorMessage.module:190
+msgid "Syntax error. The &1 argument is not a valid identifier"
+msgstr "Syntaktická chyba. Argument &1 není platný identifikátor"
+
+#: MErrorMessage.module:191
+msgid "Syntax error. The &1 field is not a valid identifier"
+msgstr "Syntaktická chyba. Pole &1 není platný identifikátor"
+
+#: MErrorMessage.module:192
+msgid "Syntax error. VarPtr() takes only one identifier"
+msgstr "Syntaktická chyba. VarPtr() má jen jeden identifikátor"
+
+#: CComponent.class:97
 msgid "Syntax highlighter routines"
 msgstr "Rutiny zvýrazňování syntaxe"
 
@@ -4903,7 +5191,7 @@ msgstr "Rutiny zvýrazňování syntaxe"
 msgid "System"
 msgstr "Systémová"
 
-#: MErrorMessage.module:169
+#: MErrorMessage.module:193
 msgid "System error #&1: &2"
 msgstr "Systémová chyba #&1: &2"
 
@@ -4911,87 +5199,99 @@ msgstr "Systémová chyba #&1: &2"
 msgid "System information"
 msgstr "Informace o systému"
 
-#: FMain.form:838
-msgid "&System informations..."
-msgstr "Informace o &systému..."
-
-#: FExportData.form:37 FImportTable.form:103
-msgid "Tab"
-msgstr "Tabulátor"
+#: FPropertyProject.form:288
+msgid "Tab size"
+msgstr "Velikost odsazení"
 
 #: FFieldChooser.form:50 FImportTable.form:152 FPasteTable.form:67
 msgid "Table"
 msgstr "Tabulka"
 
+#: FNewTable.class:59 MConnection.module:269
+msgid "Table '&1' already exists."
+msgstr "Tabulka '&1' již existuje."
+
 #: FPasteTable.class:133
 msgid "Table already exists"
 msgstr "Tabulka již existuje"
 
-#: FNewTable.class:59 MConnection.module:273
-msgid "Table '&1' already exists."
-msgstr "Tabulka '&1' již existuje."
-
-#: FPropertyProject.form:248
-msgid "Tab size"
-msgstr "Velikost odsazení"
-
-#: FMakeInstall.form:271
+#: FMakeInstall.form:285
 msgid "Target distribution"
 msgstr "Cílová distribuce"
 
-#: Package.module:1346
-msgid "'tar' has returned the following error code:"
-msgstr "'tar' vrací následující kód chyby:"
+#: FDebugInfo.form:216
+msgid "Tasks"
+msgstr "-"
 
-#: FOption.form:662
+#: FOption.form:1130
 msgid "Terminal"
 msgstr "Terminál"
 
-#: FConflict.form:112 FCreateFile.form:234 FDebugInfo.class:70
+#: FConflict.form:112 FCreateFile.form:234 FDebugInfo.class:75
 msgid "Text"
 msgstr "Text"
 
-#: FImageEditor.form:48 FTextEditor.form:238
+#: FImageEditor.form:48 FTextEditor.form:253
 msgid "Text editor"
 msgstr "Textu editor"
 
-#: FInfo.class:103
+#: FInfo.class:101
 msgid "Text file"
 msgstr "Textový soubor"
 
-#: FAbout.class:232
+#: FAbout.class:231
 msgid "Thanks to"
 msgstr "Poděkování"
 
-#: Project.module:3606
+#: MErrorMessage.module:194
+msgid "The '!' operator must be followed by an identifier"
+msgstr "Operátor '!' musí následovat za identifikátorem"
+
+#: MErrorMessage.module:195
+msgid "The '.' operator must be followed by an identifier"
+msgstr "Operátor '.' musí následovat za identifikátorem"
+
+#: FTranslate.class:1171
+msgid "The 'msgmerge' command has failed"
+msgstr "Příkaz 'msgmerge' selhal"
+
+#: FPropertyProject.class:528
+msgid "The &1 component needs one of the following components:<br>&2."
+msgstr "Komponenta &1 potřebuje jednu z následujících komponent:<br>&2."
+
+#: FPropertyProject.class:535
+msgid "The &1 component needs the &2 component."
+msgstr "Komponenta &1 potřebuje &2 komponentu."
+
+#: Project.module:3702
 msgid "The directory will be removed at the next commit."
 msgstr "Adresář bude odstraněn až v dalším commitu."
 
-#: FProperty.class:591
+#: FProperty.class:590
 msgid "The event group that the control belongs to."
 msgstr "Událost skupiny, na které patří kontroly."
 
-#: FTextEditor.class:693
+#: FTextEditor.class:793
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "Soubor byl komprimován od &1 do &2 bytů (&3)."
 
-#: FConflict.class:191
+#: FEditor.class:2336 FIconEditor.class:2009 FTextEditor.class:596
+msgid "The file has been modified.\n\nAll your changes will be lost."
+msgstr "Soubory byly změněny.\n\nVšechny vaše změny budou ztraceny."
+
+#: FConflict.class:185
 msgid "The file has been modified.\nDo you really want to close the dialog?"
 msgstr "Soubor byl změněn.\nOpravdu chcete zavřít dialog?"
 
-#: FConflict.class:254
+#: FConflict.class:248
 msgid "The file has been modified.\nDo you really want to open another file?"
 msgstr "Soubor byl změněn.\nOpravdu chcete otevřít jiný soubor?"
-
-#: FEditor.class:2394 FIconEditor.class:2048 FTextEditor.class:498
-msgid "The file has been modified.\n\nAll your changes will be lost."
-msgstr "Soubory byly změněny.\n\nVšechny vaše změny budou ztraceny."
 
 #: FImportTable.form:167
 msgid "The first line contains field names"
 msgstr "První řádek obsahuje názvy polí"
 
-#: Project.module:1341
+#: Project.module:1382
 msgid "The following classes have circular inheritance:"
 msgstr "Následující třídy mají kruhové dědičnost:"
 
@@ -4999,19 +5299,23 @@ msgstr "Následující třídy mají kruhové dědičnost:"
 msgid "The following files have been modified. Do you want to save them?"
 msgstr "Následující soubory byly změněny. Chcete je uložit?"
 
-#: Project.module:4091
+#: Project.module:4186
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Následující znaky jsou zakázány ve název projektu: ? * / \\ SPACE"
 
-#: FMakeInstall.form:537
+#: FMakeInstall.form:551
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Následující bude přidán na konec konfiguračního souboru plochy."
 
-#: FForm.class:3144
+#: FForm.class:3084
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Formulář byl změněn.\n\nVšechny vaše změny budou ztraceny."
 
-#: FMain.class:818
+#: MErrorMessage.module:196
+msgid "The function must take a fixed number of arguments"
+msgstr "Funkce musí mít pevný počet argumentů"
+
+#: FMain.class:819
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr "GNU překladatelské nástroje nejsou nainstalovány ve vašem systému.\n\nProsím nainstalujte je, aby jste byly schopni dělat překlad."
 
@@ -5019,31 +5323,15 @@ msgstr "GNU překladatelské nástroje nejsou nainstalovány ve vašem systému.
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "Délka musí být vetší jak 1 a menší jak 255."
 
-#: FOption.form:590
-msgid "Theme"
-msgstr "Motiv"
-
-#: FTranslate.class:1183
-msgid "The 'msgmerge' command has failed"
-msgstr "Příkaz 'msgmerge' selhal"
-
-#: Project.module:3662
+#: Project.module:3758
 msgid "The name cannot begins with a dot."
 msgstr "Název nesmí začínat tečkou."
 
-#: FProperty.class:580
+#: FProperty.class:579
 msgid "The name of the control."
 msgstr "Název ovládacího prvku."
 
-#: MErrorMessage.module:171
-msgid "The '.' operator must be followed by an identifier"
-msgstr "Operátor '.' musí následovat za identifikátorem"
-
-#: MErrorMessage.module:170
-msgid "The '!' operator must be followed by an identifier"
-msgstr "Operátor '!' musí následovat za identifikátorem"
-
-#: Package.module:538
+#: Package.module:533
 msgid "The package build has failed."
 msgstr "Chyba při vytváření balíku."
 
@@ -5051,155 +5339,155 @@ msgstr "Chyba při vytváření balíku."
 msgid "The package cannot be stored inside the project directory."
 msgstr "Balíček nesmí být uložen uvnitř adresáře projektu."
 
-#: FMakeInstall.class:296 Package.module:188
+#: FMakeInstall.class:299 Package.module:181
 msgid "The packages have been successfully created."
 msgstr "Instalační balíky byly úspěšně vytvořeny."
 
-#: Design.module:350
+#: Design.module:359
 msgid "The program has returned\nthe value: &1"
 msgstr "Program vrátil hodnotu:\n &1"
 
-#: Design.module:346
-msgid "The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."
-msgstr "Program byl neočekávaně zastaven\nsignálem #&1.\n\nProsím, zašlete hlášení o chybě na\ngambas@users.sourceforge.net."
+#: Design.module:355
+msgid "The program has stopped unexpectedly:"
+msgstr "Program byl neočekávaně ukončen:"
 
 #: FCommit.class:62
 msgid "The project could not be committed."
 msgstr "Commit nemohl být proveden, aktualizujte jej nejprve z svn, až potom proveďte commit."
 
-#: Project.module:4101
+#: Project.module:4196
 msgid "The project directory already exists."
 msgstr "Adresář projektu již existuje."
 
-#: Project.module:4103
+#: Project.module:4198
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Adresář projektu nelze vytvořit, protože soubor se stejným názvem již existuje."
 
-#: FCreateProject.form:390 FSaveProjectAs.form:59
+#: FCreateProject.form:397 FSaveProjectAs.form:59
 msgid "The project final directory is :"
 msgstr "Konečný adresář projektu je:"
 
-#: FCreateProject.class:255
+#: FCreateProject.class:262
 msgid "The project has been successfully created."
 msgstr "Projekt byl úspěšně vytvořen."
 
-#: FTranslate.class:38
+#: FTranslate.class:37
 msgid "The project is void. There is nothing to translate."
 msgstr "Tento projekt je prázdný. Není zde nic k přeložení."
 
-#: Project.module:4087
+#: Project.module:4182
 msgid "The project name cannot begin with a dot."
 msgstr "Název projektu nemůže začít s tečkou."
 
-#: FCreateProject.form:379 FSaveProjectAs.form:48
+#: FCreateProject.form:386 FSaveProjectAs.form:48
 msgid "The project name is the name of the project directory."
 msgstr "Název projektu je název adresáře projektu."
 
-#: FCreateProject.form:442
+#: FCreateProject.form:449
 msgid "The project repository is directly sent to the 'svn checkout' command."
 msgstr "Projekt repositáže je přímo poslán příkazem 'svn checkout'."
 
-#: FCreateProject.form:414
+#: FCreateProject.form:421
 msgid "The project title is the true name of the application."
 msgstr "Jméno projektu je pravý název aplikace."
 
-#: FMakeInstall.class:351
-msgid "There is no CHANGELOG entry for this release."
-msgstr "Neexistuje žádný CHANGELOG záznam pro tuto verzi."
-
-#: FPropertyProject.class:777
-msgid "There is no change to commit."
-msgstr "Nedošlo k žádné změně od commit-u."
-
-#: FPropertyProject.class:456
-msgid "These components are incompatible:<br>&1."
-msgstr "Komponenty <br>&1<br> jsou neslučitelné."
-
-#: MErrorMessage.module:182
-msgid "The special method must return an integer"
-msgstr "Speciální metoda musí vracet integer"
-
-#: MErrorMessage.module:183
-msgid "The special method must take exactly one argument"
-msgstr "Speciální metoda musí mít přesně jeden parametr"
-
-#: MErrorMessage.module:184
-msgid "The special method must take exactly two arguments"
-msgstr "Speciální metoda musí mít přesně dva parametry"
-
-#: MErrorMessage.module:185
-msgid "The special method signature is incorrect"
-msgstr "Popis speciální metody je nesprávný"
-
-#: MErrorMessage.module:172
+#: MErrorMessage.module:197
 msgid "The special method &1 cannot be a function"
 msgstr "Speciální metoda &1 nemůže být funkce"
 
-#: MErrorMessage.module:173
+#: MErrorMessage.module:198
 msgid "The special method &1 cannot be implemented"
 msgstr "Speciální metoda &1 nemůže být implementována"
 
-#: MErrorMessage.module:174
+#: MErrorMessage.module:199
 msgid "The special method &1 cannot be static"
 msgstr "Speciální metoda &1 nesmůže být statická"
 
-#: MErrorMessage.module:175
+#: MErrorMessage.module:200
 msgid "The special method &1 must be a function"
 msgstr "Speciální metoda &1 musí být funkce"
 
-#: MErrorMessage.module:176
+#: MErrorMessage.module:201
 msgid "The special method &1 must be public"
 msgstr "Speciální metoda &1 musí být veřejná"
 
-#: MErrorMessage.module:177
+#: MErrorMessage.module:202
 msgid "The special method &1 must be static"
 msgstr "Speciální metoda &1 musí být statická"
 
-#: MErrorMessage.module:178
+#: MErrorMessage.module:203
 msgid "The special method &1 must return a boolean"
 msgstr "Speciální metoda &1 musí vracet boolean"
 
-#: MErrorMessage.module:180
-msgid "The special method &1 must take at least one argument"
-msgstr "Speciální metoda &1 musí mít alespoň jeden parametr"
-
-#: MErrorMessage.module:179
+#: MErrorMessage.module:204
 msgid "The special method &1 must take a variable number of arguments only"
 msgstr "Speciální metoda &1 musí mít proměnný počet parametrů"
 
-#: MErrorMessage.module:181
+#: MErrorMessage.module:205
+msgid "The special method &1 must take at least one argument"
+msgstr "Speciální metoda &1 musí mít alespoň jeden parametr"
+
+#: MErrorMessage.module:206
 msgid "The special method &1 takes no arguments"
 msgstr "Speciální metoda &1 neakceptuje žádné argumenty"
+
+#: MErrorMessage.module:207
+msgid "The special method must return an integer"
+msgstr "Speciální metoda musí vracet integer"
+
+#: MErrorMessage.module:208
+msgid "The special method must take exactly one argument"
+msgstr "Speciální metoda musí mít přesně jeden parametr"
+
+#: MErrorMessage.module:209
+msgid "The special method must take exactly two arguments"
+msgstr "Speciální metoda musí mít přesně dva parametry"
+
+#: MErrorMessage.module:210
+msgid "The special method signature is incorrect"
+msgstr "Popis speciální metody je nesprávný"
 
 #: FConnectionEditor.class:294
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr "Tabulka '&1' byla upravena. Chcete ji uložit?"
 
-#: FConnectionEditor.class:1176
+#: FConnectionEditor.class:1174
 msgid "The table '&1' has no primary key."
 msgstr "Tabulka '&1' nemá primární klíč."
 
-#: FPropertyProject.class:469
-msgid "The &1 component needs one of the following components:<br>&2."
-msgstr "Komponenta &1 potřebuje jednu z následujících komponent:<br>&2."
+#: FOption.form:453
+msgid "Theme"
+msgstr "Motiv"
 
-#: FPropertyProject.class:476
-msgid "The &1 component needs the &2 component."
-msgstr "Komponenta &1 potřebuje &2 komponentu."
+#: FPropertyProject.class:846
+msgid "There is no change to commit."
+msgstr "Nedošlo k žádné změně od commit-u."
 
-#: Design.module:153 Project.module:2019
+#: FMakeInstall.class:350
+msgid "There is no CHANGELOG entry for this release."
+msgstr "Neexistuje žádný CHANGELOG záznam pro tuto verzi."
+
+#: FPropertyProject.class:515
+msgid "These components are incompatible:<br>&1."
+msgstr "Komponenty <br>&1<br> jsou neslučitelné."
+
+#: FOption.form:946
+msgid "These files will be ignored when making source archives."
+msgstr "Tyto soubory budou ignorovány při vytváření zdrojového archivu."
+
+#: Design.module:163 Project.module:2081
 msgid "third"
 msgstr "třetí"
 
-#: MHelp.module:605
+#: MHelp.module:604
 msgid "This class can be used like an object by creating an hidden instance on demand.<br>"
 msgstr "Tato třída může být použita jako objekt tím, že vytvoří skrytou instanci na požádání.<br>"
 
-#: MHelp.module:629
+#: MHelp.module:628
 msgid "This class inherits &1."
 msgstr "Tato třída dědí &1."
 
-#: MHelp.module:606
+#: MHelp.module:605
 msgid "This class is creatable.<br>"
 msgstr "Tato třída je vytvořitelná.<br>"
 
@@ -5207,11 +5495,23 @@ msgstr "Tato třída je vytvořitelná.<br>"
 msgid "This component is hidden"
 msgstr "Tato komponenta je skrytá"
 
-#: MErrorMessage.module:186
+#: ComponentItem.class:242
+msgid "This component is required by the following libraries:<p>&1"
+msgstr "Tato komponenta je vyžadována následujícími knihovnami:<p>&1"
+
+#: ComponentItem.class:240
+msgid "This component is required by the following library:<p>&1"
+msgstr "Tato komponenta je vyžadována následující knihovnou:<p>&1"
+
+#: ComponentItem.class:251
+msgid "This component is required by:<p>&1"
+msgstr "Tato komponenta je vyžadována:<p>&1"
+
+#: MErrorMessage.module:211
 msgid "This expression cannot be a statement"
 msgstr "Tento výraz nemůže být prohlášen"
 
-#: MErrorMessage.module:187
+#: MErrorMessage.module:212
 msgid "This expression cannot be passed by reference"
 msgstr "Tento výraz nemůže být předány odkazem"
 
@@ -5223,35 +5523,35 @@ msgstr "Toto pole se používá v indexu."
 msgid "This file already exists.\n\nDo you want to overwrite it?"
 msgstr "Tento soubor již existuje.\n\nChcete jej opravdu přepsat?"
 
-#: FInfo.class:244
+#: FInfo.class:242
 msgid "This file has not been modified since the last commit."
 msgstr "Tento soubor se nezměnil od posledního commit-u."
 
-#: FConflict.class:25
+#: FConflict.class:24
 msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
 msgstr "Tento soubor je v rozporu s revizí #&1.\nMusíte vyřešit konflikt, aby šlo používat daný soubor."
 
-#: FInfo.class:240
+#: FInfo.class:238
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr "Tento soubor je uzamčen, a bude smazán s příštím commit-em."
 
-#: FInfo.class:242
+#: FInfo.class:240
 msgid "This file is not versioned, and must be added to the repository."
 msgstr "Tento soubor není na svn, a musí být přidány do repositáře."
 
-#: FIconEditor.class:1428
+#: FIconEditor.class:1389
 msgid "This image has been modified.\nDo you want to save it ?"
 msgstr "Obrázek byl změněn.\nChcete jej uložit?"
 
-#: Project.module:425
+#: Project.module:444
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr "Jde o projekt Gambas 1.0. Použijte Gambas 2 pro převedení."
 
-#: Project.module:428
+#: Project.module:447
 msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
 msgstr "Jde o projekt Gambasu 2.0.\n\nChcete jej převést?"
 
-#: Project.module:422
+#: Project.module:441
 msgid "This is not a Gambas project."
 msgstr "Nejedná se o projekt Gambasu."
 
@@ -5259,7 +5559,7 @@ msgstr "Nejedná se o projekt Gambasu."
 msgid "This line and the following will be ignored"
 msgstr "Tento řádek a následující budou ignorovány"
 
-#: FMenu.class:572
+#: FMenu.class:568
 msgid "This menu is too deep !"
 msgstr "Toto menu má příliš mnoho úrovní!"
 
@@ -5271,11 +5571,11 @@ msgstr "Tento měsíc"
 msgid "This name already exists."
 msgstr "Název již existuje."
 
-#: Project.module:3658
+#: Project.module:3754
 msgid "This name contains a forbidden character:"
 msgstr "This name contains a forbidden character:"
 
-#: FProperty.class:354
+#: FProperty.class:358
 msgid "This name is already in use."
 msgstr "Toto jméno se již používý."
 
@@ -5283,35 +5583,31 @@ msgstr "Toto jméno se již používý."
 msgid "This name is already in used."
 msgstr "Jméno je již používáno."
 
-#: Project.module:3666
+#: Project.module:3762
 msgid "This name is already used. Choose another one."
 msgstr "Toto jméno se již používá. Vyberte jiné."
 
-#: CWelcome.class:39
+#: CWelcome.class:41
 msgid "This program is published under\nthe GNU General Public License."
 msgstr "Tento program je zveřejněn pod licencí\nGNU General Public License."
 
-#: Project.module:4098
+#: Project.module:4193
 msgid "This project already exists."
 msgstr "Tento projekt už existuje."
 
-#: Project.module:407
+#: Project.module:417
 msgid "This project does not exist."
 msgstr "Tento projekt neexistuje."
 
-#: FPropertyProject.form:389
-msgid "This project is a component or a library"
-msgstr "Tento projekt je komponentou nebo knihovnou."
-
-#: Project.module:466
+#: Project.module:485
 msgid "This project is read-only."
 msgstr "Tento projekt je pouze ke čtení."
 
-#: Project.module:440
+#: Project.module:459
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "Tento projekt vypadá že je již otevřeny.\n\nOtevření stejného projektu dvakrát může vést ke ztrátě dat."
 
-#: FProperty.class:630
+#: FProperty.class:633
 msgid "This property is virtual: it is only implemented in the IDE, and has no existence at runtime."
 msgstr "Tato vlastnost je virtuální: je realizován pouze v IDE, a za běhu neexistence."
 
@@ -5319,7 +5615,7 @@ msgstr "Tato vlastnost je virtuální: je realizován pouze v IDE, a za běhu ne
 msgid "This string must not be translated"
 msgstr "Tento řetězec se nepřekládá"
 
-#: FSnippet.class:31
+#: FSnippet.class:29
 msgid "This trigger string is already in use."
 msgstr "Tento spouštěcí řetězec je již použit."
 
@@ -5327,7 +5623,7 @@ msgstr "Tento spouštěcí řetězec je již použit."
 msgid "This week"
 msgstr "Tento týden"
 
-#: FOption.form:214
+#: FOption.form:296
 msgid "Tiny"
 msgstr "Drobná"
 
@@ -5339,155 +5635,139 @@ msgstr "Tip dne #&1"
 msgid "Tips of the day"
 msgstr "Tipy dne"
 
-#: FMain.form:830
-msgid "&Tips of the day"
-msgstr "&Tipy dne"
-
-#: FPropertyProject.form:194
+#: FPropertyProject.form:234
 msgid "Title"
 msgstr "Titulek"
 
-#: CRecentFile.class:69 FMain.class:542
+#: FMain.class:1747
+msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
+msgstr "Chcete-li opět zobrazit menu, zadejte následující kombinaci:<p><b>&1</b>"
+
+#: CRecentFile.class:69 FMain.class:546
 msgid "Today"
 msgstr "Dnes"
 
-#: FMenu.form:324
-msgid "Toggle"
-msgstr "Přepínat"
-
-#: FEditor.form:497
-msgid "Toggle breakpoint"
-msgstr "Nastavit breakpoint"
-
-#: FEditor.form:195
+#: FEditor.form:200
 msgid "Toggle &breakpoint"
 msgstr "Nastavit &breakpoint"
 
-#: FForm.form:509
+#: FEditor.form:494
+msgid "Toggle breakpoint"
+msgstr "Nastavit breakpoint"
+
+#: FForm.form:518
 msgid "Toggle grid"
 msgstr "Přepínač mřížky"
 
-#: FMain.form:995
-msgid "Toolbox"
-msgstr "Panel nástrojů"
-
-#: FOption.form:242
-msgid "Toolbox size"
-msgstr "Velikost panelu nástrojů"
-
-#: FMain.form:496
-msgid "&Tools"
-msgstr "&Nástroje"
-
-#: MErrorMessage.module:188
+#: MErrorMessage.module:213
 msgid "Too many arguments"
 msgstr "Příliš mnoho argumentů"
 
-#: MErrorMessage.module:189
+#: MErrorMessage.module:214
 msgid "Too many arguments to &1()"
 msgstr "Příliš mnoho argumentů pro &1()"
 
-#: MErrorMessage.module:190
+#: MErrorMessage.module:215
 msgid "Too many array declarations"
 msgstr "Příliš mnoho deklarací pole"
 
-#: MErrorMessage.module:191
+#: MErrorMessage.module:216
 msgid "Too many constants"
 msgstr "Příliš mnoho konstant"
 
-#: MErrorMessage.module:192
+#: MErrorMessage.module:217
 msgid "Too many different classes used"
 msgstr "Příliš mnoho různě užitých tříd"
 
-#: MErrorMessage.module:193
+#: MErrorMessage.module:218
 msgid "Too many dimensions"
 msgstr "Příliš mnoho rozměrů"
 
-#: MErrorMessage.module:194
+#: MErrorMessage.module:219
 msgid "Too many dynamic variables"
 msgstr "Příliš mnoho dynamických proměnných"
 
-#: MErrorMessage.module:195
+#: MErrorMessage.module:220
 msgid "Too many events"
 msgstr "Příliš mnoho událostí"
 
-#: MErrorMessage.module:196
+#: MErrorMessage.module:221
 msgid "Too many expressions in CASE"
 msgstr "Příliš mnoho výrazů v CASE"
 
-#: MErrorMessage.module:197
+#: MErrorMessage.module:222
 msgid "Too many external functions"
 msgstr "Příliš mnoho externích funkcí"
 
-#: MErrorMessage.module:198
+#: MErrorMessage.module:223
 msgid "Too many functions"
 msgstr "Příliš mnoho funkcí"
 
-#: MErrorMessage.module:199
+#: MErrorMessage.module:224
 msgid "Too many imbricated #If...#Endif"
 msgstr "Příliš mnoho maker #If...#Endif"
 
-#: MErrorMessage.module:200
+#: MErrorMessage.module:225
+msgid "Too many labels"
+msgstr "Přiliš mnoho popisků"
+
+#: MErrorMessage.module:226
 msgid "Too many nested control structures."
 msgstr "Příliš mnoho vnořených řídící struktury."
 
-#: MErrorMessage.module:201
+#: MErrorMessage.module:227
 msgid "Too many property synonymous"
 msgstr "Příliš mnoho podobných vlastností"
 
-#: MErrorMessage.module:202
+#: MErrorMessage.module:228
 msgid "Too many simultaneous new strings"
 msgstr "Příliš mnoho současně nových řetězců"
 
-#: MErrorMessage.module:203
+#: MErrorMessage.module:229
 msgid "Too many static variables"
 msgstr "Příliš mnoho statických proměnných"
 
-#: MErrorMessage.module:204
+#: MErrorMessage.module:230
 msgid "Too many unknown symbols"
 msgstr "Příliš mnoho neznámých symbolů"
 
-#: FImportTable.class:391
+#: FImportTable.class:385
 msgid "Too many values"
 msgstr "Příliš mnoho hodnot"
 
-#: FReportBorderChooser.form:115 FReportPaddingChooser.form:23
-msgid "Top"
-msgstr "Nahoře"
+#: FMain.form:1020
+msgid "Toolbox"
+msgstr "Panel nástrojů"
 
-#: FReportBorderChooser.form:179
-msgid "TopLeft"
-msgstr "NahořeVlevo"
+#: FOption.form:421
+msgid "Toolbox size"
+msgstr "Velikost panelu nástrojů"
 
-#: FReportBorderChooser.form:148
-msgid "TopRight"
-msgstr "NahořeVpravo"
-
-#: FMain.class:1723
-msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
-msgstr "Chcete-li opět zobrazit menu, zadejte následující kombinaci:<p><b>&1</b>"
+#: FProfile.class:383
+msgid "Total time &1 μs"
+msgstr "Celkový čas &1 μs"
 
 #: Language.module:117
 msgid "Traditional chinese (Taiwan)"
 msgstr "Tradiční čínština (Thajsko)"
 
-#: FMain.form:941
+#: MErrorMessage.module:231
+msgid "Trailing backslash"
+msgstr "Koncové zpětné lomítko"
+
+#: FMain.form:973
 msgid "Translate"
 msgstr "Přeložit"
 
-#: FMain.form:290
-msgid "&Translate..."
-msgstr "&Přeložit..."
-
-#: FTranslate.class:1019
+#: FTranslate.class:1008
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Symboly v přeloženém řetězci neodpovídají originálu."
 
-#: FPropertyProject.form:310 FTranslate.form:64
+#: FPropertyProject.form:367 FTranslate.form:64
 msgid "Translation"
 msgstr "Překlad"
 
-#: FTranslate.class:153
+#: FTranslate.class:151
 msgid "Translation files"
 msgstr "Soubory s překladem"
 
@@ -5507,55 +5787,55 @@ msgstr "Turecky (Turecko)"
 msgid "Two days ago"
 msgstr "Před dvěma dny"
 
-#: FInfo.form:84 FNewConnection.form:74 FNewTable.form:48 FProxy.form:27
+#: FProxy.form:27
 msgid "Type"
 msgstr "Typ"
 
-#: MErrorMessage.module:205
+#: MErrorMessage.module:232
 msgid "Type mismatch"
 msgstr "Neshoda typu"
+
+#: MErrorMessage.module:233
+msgid "Type mismatch: wanted &1, got &2 instead"
+msgstr "Neshoda typu: Dostal jsem &2, místo očekávaného &1"
 
 #: FConnectionEditor.class:704
 msgid "Type mismatch."
 msgstr "Neshoda typu."
 
-#: MErrorMessage.module:206
-msgid "Type mismatch: wanted &1, got &2 instead"
-msgstr "Neshoda typu: Dostal jsem &2, místo očekávaného &1"
-
-#: FMakeInstall.form:447
-msgid "Ubuntu"
-msgstr "-"
-
 #: Language.module:110
 msgid "Ukrainian (Ukrain)"
 msgstr "Ukrajinsky (Ukrajina)"
 
-#: Project.module:542
+#: Project.module:561
 msgid "Unable to apply conversion"
 msgstr "Nelze aplikovat konverzi"
 
-#: FTextEditor.class:699
+#: FTextEditor.class:799
 msgid "Unable to compress file."
 msgstr "Nelze komprimovat soubor."
 
-#: FConnectionEditor.class:204
+#: FConnectionEditor.class:201
 msgid "Unable to connect to database."
 msgstr "Nelze se připojit k databázi."
 
-#: Project.module:5253
+#: Project.module:5362
 msgid "Unable to convert &1"
 msgstr "Nelze konvertovat &1"
+
+#: MErrorMessage.module:234
+msgid "Unable to create closure"
+msgstr "Nelze vytvořit uzavření"
 
 #: FNewConnection.class:316
 msgid "Unable to create database."
 msgstr "Nelze vytvořit databázi."
 
-#: Project.module:3360
+#: Project.module:3456
 msgid "Unable to create desktop shortcut."
 msgstr "Nelze vytvořit zástupce na ploše."
 
-#: Project.module:486
+#: Project.module:506
 msgid "Unable to create temporary directory"
 msgstr "Nelze vytvořit dočasný adresář"
 
@@ -5563,7 +5843,7 @@ msgstr "Nelze vytvořit dočasný adresář"
 msgid "Unable to delete database."
 msgstr "Nelze smazat databázi."
 
-#: FMain.class:1412
+#: FMain.class:1427
 msgid "Unable to drop file into the project."
 msgstr "Nelze upustit soubor do projektu."
 
@@ -5571,15 +5851,27 @@ msgstr "Nelze upustit soubor do projektu."
 msgid "Unable to export data."
 msgstr "Nelze exportovat data."
 
-#: FFieldChooser.class:63
+#: Project.module:428
+msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
+msgstr "Nelze najít spustitelný Gambas IDE v adresáři:\n\n&1"
+
+#: FFieldChooser.class:61
 msgid "Unable to get table fields."
 msgstr "Nelze získat tabulku polí."
+
+#: MErrorMessage.module:235
+msgid "Unable to load class file"
+msgstr "Nelze načíst soubor třídy"
+
+#: FProfile.class:402
+msgid "Unable to load profile file: &1"
+msgstr "Nelze načíst soubor profilu: &1"
 
 #: FConnectionEditor.class:409
 msgid "Unable to load table '&1'."
 msgstr "Nelze načíst tabulku '&1'."
 
-#: FFieldChooser.class:56 FTableChooser.class:66
+#: FFieldChooser.class:54 FTableChooser.class:66
 msgid "Unable to open connection."
 msgstr "Nelze otevřít připojení."
 
@@ -5587,15 +5879,19 @@ msgstr "Nelze otevřít připojení."
 msgid "Unable to paste text."
 msgstr "Nelze vložit text."
 
-#: FTips.class:107
+#: MErrorMessage.module:236
+msgid "Unable to prepare function description"
+msgstr "Nelze připravit popis funkce"
+
+#: FTips.class:104
 msgid "Unable to read tip of the day !"
 msgstr "Nelze načíst tipy dne!"
 
-#: Project.module:3963
+#: Project.module:4058
 msgid "Unable to rename '&1'"
 msgstr "Soubor &1 nelze přejmenovat"
 
-#: FConflict.class:225
+#: FConflict.class:219
 msgid "Unable to resolve the conflict."
 msgstr "Nelze vyřešit konflikt."
 
@@ -5603,51 +5899,51 @@ msgstr "Nelze vyřešit konflikt."
 msgid "Unable to run query."
 msgstr "Nelze spustit dotaz."
 
-#: FSaveProjectAs.class:49
+#: FProfile.class:982
+msgid "Unable to save profile."
+msgstr "Nelze uložit profil."
+
+#: FSaveProjectAs.class:63
 msgid "Unable to save the project."
 msgstr "Nelze uložit projekt."
 
-#: FPropertyProject.class:811
+#: FPropertyProject.class:881
 msgid "Unable to update project from repository."
 msgstr "Nelze aktualizovat projekt z repositáře."
 
-#: FEditor.form:238
+#: FEditor.form:247
 msgid "Uncomment"
 msgstr "Odkomentovat"
 
-#: FTextEditor.form:184
+#: FTextEditor.form:194
 msgid "Uncompress file"
 msgstr "Rozbalte soubor"
 
-#: FOption.form:188
+#: FOption.form:227
 msgid "Underline"
 msgstr "Podtržené"
 
-#: FOption.form:620 FOutput.form:41 FTextEditor.form:85
+#: FOption.form:489 FOutput.form:41 FTextEditor.form:91
 msgid "Undo"
 msgstr "Zpět"
-
-#: FFieldChooser.form:121 FList.form:104
-msgid "&Undo"
-msgstr "&Zpět"
 
 #: FOutput.form:108
 msgid "Undock console"
 msgstr "Odpojit konzole"
 
-#: MErrorMessage.module:208
-msgid "Unexpected end of line"
-msgstr "Nečekaný konec řádku"
-
-#: MErrorMessage.module:209
-msgid "Unexpected string"
-msgstr "Nečekaný řetězec"
-
-#: MErrorMessage.module:207
+#: MErrorMessage.module:237
 msgid "Unexpected &1"
 msgstr "Nečekané &1"
 
-#: FTextEditor.form:317
+#: MErrorMessage.module:238
+msgid "Unexpected end of line"
+msgstr "Nečekaný konec řádku"
+
+#: MErrorMessage.module:239
+msgid "Unexpected string"
+msgstr "Nečekaný řetězec"
+
+#: FTextEditor.form:334
 msgid "Unindent"
 msgstr "Neodsazený"
 
@@ -5655,23 +5951,23 @@ msgstr "Neodsazený"
 msgid "Unique"
 msgstr "Unikátní"
 
-#: FImportTable.form:92
-msgid "Unix"
-msgstr "-"
-
-#: Language.module:164
+#: Language.module:163
 msgid "Unknown"
 msgstr "Neznámý"
 
-#: MErrorMessage.module:210
+#: MErrorMessage.module:261
+msgid "unknown error"
+msgstr "neznámá chyba"
+
+#: MErrorMessage.module:240
 msgid "Unknown error"
 msgstr "Neznámá chyba"
 
-#: MErrorMessage.module:211
+#: MErrorMessage.module:241
 msgid "Unknown event"
 msgstr "Neznámá událost"
 
-#: MErrorMessage.module:212
+#: MErrorMessage.module:242
 msgid "Unknown file extension"
 msgstr "Neznámá přípona souboru"
 
@@ -5679,19 +5975,23 @@ msgstr "Neznámá přípona souboru"
 msgid "Unknown format"
 msgstr "Neznámý formát"
 
-#: MErrorMessage.module:213
+#: MErrorMessage.module:243
 msgid "Unknown identifier: &1"
 msgstr "Neznámý identifikátor: &1"
 
-#: MErrorMessage.module:214
+#: MErrorMessage.module:244
 msgid "Unknown operator"
 msgstr "Neznámý operátor"
 
-#: MErrorMessage.module:215
+#: MErrorMessage.module:245
+msgid "Unknown section"
+msgstr "Neznámá sekce"
+
+#: MErrorMessage.module:246
 msgid "Unknown symbol '&1' in class '&2'"
 msgstr "Neznámý symbol '&1' ve třídě '&2'"
 
-#: MErrorMessage.module:216
+#: MErrorMessage.module:247
 msgid "Unknown user or group"
 msgstr "Neznámý uživatel nebo skupina"
 
@@ -5699,27 +5999,43 @@ msgstr "Neznámý uživatel nebo skupina"
 msgid "unlimited"
 msgstr "bez limitu"
 
-#: FForm.form:202
+#: FForm.form:204
 msgid "Unselect all"
 msgstr "Odznačit vše"
 
-#: MErrorMessage.module:217
+#: MErrorMessage.module:248
+msgid "Unsupported datatype"
+msgstr "Nepodporovaný datový typ"
+
+#: MErrorMessage.module:249
 msgid "Unsupported string conversion"
 msgstr "Nepodporovaná konverze řetězce"
 
-#: FConnectionEditor.form:257
+#: MErrorMessage.module:262
+msgid "unused argument: &1"
+msgstr "nepoužitý argument: &1"
+
+#: MErrorMessage.module:263
+msgid "unused extern function: &1"
+msgstr "nepoužitá externí funkce: &1"
+
+#: MErrorMessage.module:264
+msgid "unused function: &1"
+msgstr "nepoužitá funkce: &1"
+
+#: MErrorMessage.module:265
+msgid "unused global variable: &1"
+msgstr "nepoužitá globální proměnná: &1"
+
+#: MErrorMessage.module:266
+msgid "unused variable: &1"
+msgstr "nepoužitá proměnná: &1"
+
+#: FConnectionEditor.form:253
 msgid "Up"
 msgstr "Nahoru"
 
-#: FList.form:70 FMakeInstall.form:587
-msgid "&Up"
-msgstr "Nahor&u"
-
-#: FPropertyProject.form:664
-msgid "&Update"
-msgstr "Aktualiz&ovat"
-
-#: FEditor.form:221 FTextEditor.form:155
+#: FEditor.form:230 FTextEditor.form:165
 msgid "Upper case"
 msgstr "Velká písmena"
 
@@ -5727,15 +6043,31 @@ msgstr "Velká písmena"
 msgid "URI list"
 msgstr "URI seznam"
 
+#: FMakeInstall.form:210 FOption.form:1070
+msgid "URL"
+msgstr "-"
+
+#: FMain.form:377
+msgid "Use &terminal emulator"
+msgstr "Použít emulátor &terminálu"
+
 #: FText.form:30
 msgid "Use a fixed font"
 msgstr "Použít font s pevnou šířkou"
 
-#: FPropertyProject.form:364
+#: FPropertyProject.form:438
 msgid "Use a terminal emulator"
 msgstr "Použít emulátor terminálu"
 
-#: MErrorMessage.module:218
+#: FOutput.form:165
+msgid "Use system charset"
+msgstr "Použití systémové znakové sady"
+
+#: FOption.form:399
+msgid "Use utility windows"
+msgstr "Použít služby oken"
+
+#: MErrorMessage.module:250
 msgid "Useless LOCK"
 msgstr "Zbytečný LOCK"
 
@@ -5743,51 +6075,43 @@ msgstr "Zbytečný LOCK"
 msgid "User"
 msgstr "Uživatel"
 
-#: FOutput.form:165
-msgid "Use system charset"
-msgstr "Použití systémové znakové sady"
-
-#: FOption.form:317
-msgid "Use utility windows"
-msgstr "Použíj služby okna"
-
-#: FImportTable.form:80
-msgid "UTF-8"
+#: FInfo.class:85
+msgid "UTF-8 &1"
 msgstr "-"
 
-#: FInfo.class:99
+#: FInfo.class:97
 msgid "UTF-8 Gambas class"
 msgstr "UTF-8 Gambas třída"
 
-#: FInfo.class:95
+#: FInfo.class:93
 msgid "UTF-8 Gambas module"
 msgstr "UTF-8 Gambas modul"
-
-#: FInfo.class:87
-msgid "UTF-8 &1"
-msgstr "-"
 
 #: Language.module:94
 msgid "Valencian (Valencian Community, Spain)"
 msgstr "Valencian (Valencian Community, Spain)"
 
-#: FDebugExpr.class:474 FDebugInfo.class:34 FPropertyProject.class:130
+#: FDebugExpr.class:472 FDebugInfo.class:39 FPropertyProject.class:131
 msgid "Value"
 msgstr "Hodnota"
 
-#: FPropertyProject.class:129
+#: FPropertyProject.class:128
 msgid "Variable"
 msgstr "Proměnná"
 
-#: MHelp.module:575
+#: MHelp.module:574
 msgid "Variables"
 msgstr "Proměnné"
 
-#: MErrorMessage.module:219
+#: MErrorMessage.module:252
+msgid "Variant"
+msgstr "Variantní"
+
+#: MErrorMessage.module:251
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "Argument VarPtr() musí být dynamická, statická nebo lokální proměnná"
 
-#: FMakeInstall.form:194
+#: FMakeInstall.form:194 FOption.form:1019
 msgid "Vendor name"
 msgstr "Výstupní jméno"
 
@@ -5795,19 +6119,19 @@ msgstr "Výstupní jméno"
 msgid "Verify the translation"
 msgstr "Ověřit překlad"
 
-#: FPropertyProject.form:161
+#: FPropertyProject.form:201
 msgid "Version"
 msgstr "Verze"
 
-#: FConflict.class:135
+#: FConflict.class:130
 msgid "Version conflict"
 msgstr "Konfliktu verze"
 
-#: FInfo.form:147 FPropertyProject.form:633
+#: FInfo.form:147 FPropertyProject.form:684
 msgid "Versioning"
 msgstr "SVN"
 
-#: FForm.form:312
+#: FForm.form:314
 msgid "Vertical"
 msgstr "Vertikální"
 
@@ -5815,15 +6139,15 @@ msgstr "Vertikální"
 msgid "Vertical flip"
 msgstr "Vertikální překlopení"
 
-#: FEditor.form:291 FTextEditor.form:210
+#: FEditor.form:299 FTextEditor.form:219
 msgid "Vertical split"
 msgstr "Vertikální rozdělení"
 
-#: Project.module:196
+#: Project.module:201
 msgid "Video"
 msgstr "-"
 
-#: CComponent.class:129
+#: CComponent.class:137
 msgid "Video capture"
 msgstr "Zachytávání videa"
 
@@ -5831,31 +6155,23 @@ msgstr "Zachytávání videa"
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamsky (Vietnam)"
 
-#: FEditor.form:273 FTextEditor.form:192
+#: FEditor.form:282 FTextEditor.form:202
 msgid "View"
 msgstr "Pohled"
-
-#: FMain.form:427
-msgid "&View"
-msgstr "&Zobrazit"
-
-#: FMenu.form:314
-msgid "Visible"
-msgstr "Viditelné"
 
 #: FOption.class:4
 msgid "Visual"
 msgstr "-"
 
-#: CComponent.class:130
+#: CComponent.class:138
 msgid "Visual Basic compatibility"
 msgstr "Kompatibilita s Visual Basic"
 
-#: FCreateProject.form:334
+#: FCreateProject.form:341
 msgid "Visual Basic™ conversion help"
 msgstr "Pomoc s převodem z Visual Basic™"
 
-#: MErrorMessage.module:220
+#: MErrorMessage.module:253
 msgid "Void key"
 msgstr "Prázdný kíč"
 
@@ -5863,23 +6179,23 @@ msgstr "Prázdný kíč"
 msgid "Wallon (Belgium)"
 msgstr "Wallon (Belgie)"
 
-#: LibraryItem.class:59
+#: LibraryItem.class:56
 msgid "WARNING! Library not found."
 msgstr "VAROVÁNÍ! Knihovna nebyla nalezena."
 
-#: FDebugInfo.form:103
+#: FDebugInfo.class:1376
+msgid "Warnings"
+msgstr "Varování"
+
+#: FDebugInfo.form:104
 msgid "Watch"
 msgstr "Hlídat"
 
-#: FEditor.form:505
+#: FEditor.form:502
 msgid "Watch expression"
 msgstr "Hlídat výraz"
 
-#: FEditor.form:202
-msgid "&Watch expression"
-msgstr "&Hlídat výraz"
-
-#: CComponent.class:134
+#: CComponent.class:144
 msgid "Web applications tools"
 msgstr "Nástroje webových aplikací"
 
@@ -5887,25 +6203,17 @@ msgstr "Nástroje webových aplikací"
 msgid "WebPage"
 msgstr "Webová stránka"
 
-#: FMain.form:594
-msgid "&WebPage..."
-msgstr "&Webová stránka..."
-
 #: CModule.class:29
 msgid "WebPages"
 msgstr "Webové stránky"
 
-#: FMakeInstall.form:209
-msgid "Website"
-msgstr "Webová stránka"
-
-#: FWelcome.form:27
+#: FWelcome.form:33
 msgid "Welcome to Gambas 3"
 msgstr "Vítejte v Gambasu 3"
 
-#: FOutput.class:32
+#: FOutput.class:31
 msgid "Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"
-msgstr "Vítejte v terminálu Gambasu.\nPro vyhodnocení výrazu za něj napište '?'\na zmáčkněte Enter.\n\n"
+msgstr "Vítejte v terminálu Gambasu.\nPro vyhodnocení výrazu napište '?' následně výraz\na zmáčkněte Enter.\n\n"
 
 #: Language.module:17
 msgid "Welsh (United Kingdom)"
@@ -5915,47 +6223,39 @@ msgstr "Velšsky (Velká Británie)"
 msgid "Width"
 msgstr "Šířka"
 
-#: FImportTable.form:92
-msgid "Windows"
-msgstr "-"
-
-#: FImportTable.form:80
-msgid "WINDOWS-1252"
-msgstr "-"
-
-#: FSearch.form:111
-msgid "&Words only"
-msgstr "Pouze &slova"
-
-#: MErrorMessage.module:221
+#: MErrorMessage.module:254
 msgid "Write error"
 msgstr "Chyba při zápisu"
 
-#: FInfo.class:112
-msgid "XML file"
-msgstr "XML soubor"
-
-#: CComponent.class:132
-msgid "XML-RPC protocol"
-msgstr "Protokol XML-RPC"
-
-#: CComponent.class:131
-msgid "XML tools based on libxml"
-msgstr "Nástroje XML založené na libxml"
-
-#: FCreateProject.form:316
+#: FCreateProject.form:317
 msgid "XML / XSLT programming"
 msgstr "Programování XML / XSLT"
 
-#: FCreateFile.form:346
-msgid "XPM"
-msgstr "-"
+#: FInfo.class:110
+msgid "XML file"
+msgstr "XML soubor"
 
-#: CComponent.class:133
-msgid "XSLT tools based on libxslt"
-msgstr "Nástroje XSLT založené na libxslt"
+#: CComponent.class:155
+msgid "XML management"
+msgstr "Správa XML"
 
-#: FOption.form:265 FPropertyComponent.form:90 FPropertyProject.form:285
+#: CComponent.class:140
+msgid "XML tools"
+msgstr "XML nástroje"
+
+#: CComponent.class:139
+msgid "XML tools based on libxml"
+msgstr "Nástroje XML založené na libxml"
+
+#: CComponent.class:142
+msgid "XML-RPC protocol"
+msgstr "Protokol XML-RPC"
+
+#: CComponent.class:143
+msgid "XSLT tools based on libxslt and libxml"
+msgstr "XSLT nástroje založené na libxslt a libxml"
+
+#: FOption.form:361 FPropertyComponent.form:90 FPropertyProject.form:325
 msgid "Yes"
 msgstr "Ano"
 
@@ -5963,25 +6263,17 @@ msgstr "Ano"
 msgid "Yesterday"
 msgstr "Včera"
 
-#: FPropertyProject.class:820
+#: FPropertyProject.class:890
 msgid "You are going to cancel your changes!"
 msgstr "Chystáte se zrušit změny!"
 
-#: Project.module:3623
+#: Project.module:3719
 msgid "You must define a startup class or form!"
 msgstr "Musíte definovat hlavní třídu nebo formulář!"
 
-#: FOption.class:349
+#: FOption.class:358
 msgid "You need to restart the application to see your changes."
 msgstr "Aby byli změny vidět, musíte restartovat aplikaci."
-
-#: FMakeInstall.form:179
-msgid "Your e-mail address"
-msgstr "Vaše e-mailová adresa"
-
-#: FMakeInstall.form:164
-msgid "Your name"
-msgstr "Vaše jméno"
 
 #: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:119
 msgid "Zoom in"
@@ -5990,120 +6282,4 @@ msgstr "Přiblížit"
 #: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:131
 msgid "Zoom out"
 msgstr "Oddálit"
-
-#: MErrorMessage.module:15
-msgid "'&1' already declared"
-msgstr "'&1' je již deklarováno"
-
-#: Package.module:71
-msgid "'&1' and '&2' are missing."
-msgstr "'&1' a '&2' chybí."
-
-#: MErrorMessage.module:4
-msgid "&1 cannot be static"
-msgstr "&1 nemůže být statická"
-
-#: MErrorMessage.module:5
-msgid "&1 declaration does not match"
-msgstr "Deklarace &1 neodpovídá"
-
-#: MErrorMessage.module:6
-msgid "&1 expected"
-msgstr "Očekáváno &1"
-
-#: MErrorMessage.module:7
-msgid "&1 is declared but is not a function"
-msgstr "&1 je deklarován ale není funkční"
-
-#: Package.module:62
-msgid "'&1' is missing."
-msgstr "'&1' chybí."
-
-#: MErrorMessage.module:8
-msgid "&1 is not a structure"
-msgstr "&1 není struktura"
-
-#: MErrorMessage.module:9
-msgid "&1 is not declared"
-msgstr "&1 není deklarován"
-
-#: MErrorMessage.module:10
-msgid "&1 must be static"
-msgstr "&1 musí být statické"
-
-#: MErrorMessage.module:11
-msgid "&1: not in archive"
-msgstr "&1: není v archivu"
-
-#: FImportTable.class:428
-msgid "&1 records imported."
-msgstr "&1 záznamů importováno."
-
-#: FTranslate.class:1055
-msgid "&1 strings. Everything is translated!"
-msgstr "&1 řetězců. Vše je přeloženo!"
-
-#: FTranslate.class:1057
-msgid "&1 strings. One is not translated. &3% done."
-msgstr "&1 řetězců. Jeden je nepřeložen. &3% hotovo."
-
-#: FTranslate.class:1059
-msgid "&1 strings. &2 are not translated. &3% done."
-msgstr "&1 řetězců. &2 nepřeloženy. &3% hotovo."
-
-#: MErrorMessage.module:12
-msgid "&1: syntax error"
-msgstr "Syntaktická chyba &1"
-
-#: MErrorMessage.module:13
-msgid "&1: syntax error in form file"
-msgstr "Syntaktická chyba &1 v souboru formuláře"
-
-#: Project.module:2021
-msgid "&1th"
-msgstr "-"
-
-#: MErrorMessage.module:14
-msgid "&1: too many nested containers"
-msgstr "&1: příliš mnoho vnořených kontejnerů"
-
-#: FTranslate.class:958
-msgid "&1 translations were picked up."
-msgstr "&1 překladů bylo zadrženo."
-
-#: FInfo.class:12
-msgid "&1: &2"
-msgstr "-"
-
-#: MErrorMessage.module:16
-msgid "'&1.&2' is incorrectly overridden in class '&3'"
-msgstr "'&1.&2' je nekorektní přepis v třídě '&3'"
-
-#: MErrorMessage.module:17
-msgid "'&1.&2' is not a property"
-msgstr "'&1.&2' není vlastnost"
-
-#: MErrorMessage.module:18
-msgid "'&1.&2' is not static"
-msgstr "'&1.&2' není statická"
-
-#: MErrorMessage.module:19
-msgid "'&1.&2' is read only"
-msgstr "'&1.&2' je pouze pro čtení"
-
-#: MErrorMessage.module:20
-msgid "'&1.&2' is static"
-msgstr "'&1.&2' je statická"
-
-#: MErrorMessage.module:21
-msgid "'&1.&2' is write only"
-msgstr "'&1.&2' je pouze pro zápis"
-
-#: FInfo.class:146
-msgid "&1, &2 line(s)"
-msgstr "&1, &2 řádků"
-
-#: CComponent.class:114
-msgid "3D programming with OpenGL"
-msgstr "3D programování s OpenGL"
 
