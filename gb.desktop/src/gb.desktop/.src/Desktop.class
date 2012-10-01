@@ -322,10 +322,7 @@ End
 
 Static Private Sub ActiveWindow_Write(Value As Integer)
 
-  'Dim iActiveWindow As Integer
-  'Try iActiveWindow = Application.ActiveWindow.Id
-
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [2, _Desktop.CurrentTime, Value])
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [1, _Desktop.Time, Value, 0, 0], Value)
 
 End
 
