@@ -112,7 +112,7 @@ char *GB_TempDir(void);
 char *GB_TempFile(const char *pattern);
 bool GB_CopyFile(const char *src, const char *dst);
 //int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const char *));
-//int GB_StatFile(const char *path, GB_FILE_STAT *info, int follow);
+bool GB_StatFile(const char *path, GB_FILE_STAT *info, bool follow);
 void GB_BrowseProject(GB_BROWSE_CALLBACK func);
 
 int GB_IsMissing(int param);

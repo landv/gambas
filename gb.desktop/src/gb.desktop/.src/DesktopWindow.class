@@ -276,3 +276,9 @@ Public Sub GetIcon(Width As Integer, Height As Integer) As Image
   If hImage Then Return hImage.Stretch(Width, Height)
   
 End
+
+Public Sub Activate()
+  
+  Desktop.ActiveWindow = $iId
+  
+End

@@ -196,6 +196,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_TempFile,
 	(void *)GB_CopyFile,
 	(void *)GB_BrowseProject,
+	(void *)GB_StatFile,
 
 	(void *)GB_Store,
 	(void *)GB_StoreString,
@@ -2155,25 +2156,16 @@ int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const 
 	
 	return ret;
 }
+#endif
 
-int GB_StatFile(const char *path, GB_FILE_STAT *info, int follow)
+bool GB_StatFile(const char *path, GB_FILE_STAT *info, bool follow)
 {
-	int ret = 0;
-	
-	TRY
+	CATCH_ERROR
 	{
 		FILE_stat(path, (FILE_STAT *)info, follow);
 	}
-	CATCH
-	{
-		ret = 1;
-		GAMBAS_Error = TRUE;
-	}
-	END_TRY;
-	
-	return ret;
+	END_CATCH_ERROR
 }
-#endif
 
 char *GB_RealFileName(const char *name, int len)
 {

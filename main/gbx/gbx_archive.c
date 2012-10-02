@@ -384,8 +384,8 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
   info->mtime = (int)buf.st_mtime;
   info->ctime = (int)buf.st_mtime;
   info->hidden = (*FILE_get_name(path) == '.');
-  info->uid = buf.st_uid;
-  info->gid = buf.st_gid;
+  info->uid = (int)buf.st_uid;
+  info->gid = (int)buf.st_gid;
 }
 
 

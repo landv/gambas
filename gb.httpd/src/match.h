@@ -1,6 +1,6 @@
 /* match.h - simple shell-style filename patcher
 **
-** Copyright © 1995 by Jef Poskanzer <jef@mail.acme.com>.
+** (c) 1995 by Jef Poskanzer <jef@mail.acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,6 @@
 /* Simple shell-style filename pattern matcher.  Only does ? * and **, and
 ** multiple patterns separated by |.  Returns 1 or 0.
 */
-extern int match (const char *pattern, const char *string);
+extern int match(const char *pattern, const char *string);
 
 #endif /* _MATCH_H_ */

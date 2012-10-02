@@ -23,7 +23,7 @@ static char sccsid[] = "@(#)strerror.c  5.1 (Berkeley) 4/9/89";
 
 #include <stdio.h>
 
-char *strerror (errnum)
+char *strerror(errnum)
 		 int errnum;
 {
 	extern int sys_nerr;
@@ -32,6 +32,6 @@ char *strerror (errnum)
 
 	if ((unsigned int) errnum < sys_nerr)
 		return (sys_errlist[errnum]);
-	(void) sprintf (ebuf, "Unknown error: %d", errnum);
+	(void) sprintf(ebuf, "Unknown error: %d", errnum);
 	return (ebuf);
 }

@@ -38,8 +38,8 @@ typedef
     int atime;
     int mtime;
     int ctime;
-    uid_t uid;
-    gid_t gid;
+    int uid;
+    int gid;
     char hidden;
     }
   PACKED

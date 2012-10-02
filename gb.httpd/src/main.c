@@ -31,41 +31,41 @@
 
 #include "main.h"
 
-int thttpd_main (int argc, char **argv);
+int thttpd_main(int argc, char **argv);
 
 const GB_INTERFACE *GB_PTR EXPORT;
 
 static jmp_buf _setjmp_env;
 
-void syslog (int priority, const char *format, ...)
+void syslog(int priority, const char *format, ...)
 {
 	va_list args;
 
-	va_start (args, format);
+	va_start(args, format);
 
-	fprintf (stderr, "gb.httpd: ");
-	vfprintf (stderr, format, args);
-	putc ('\n', stderr);
+	fprintf(stderr, "gb.httpd: ");
+	vfprintf(stderr, format, args);
+	putc('\n', stderr);
 }
 
-void run_cgi (void)
+void run_cgi(void)
 {
-	longjmp (_setjmp_env, 1);
+	longjmp(_setjmp_env, 1);
 }
 
-void EXPORT GB_MAIN (int argc, char **argv)
+void EXPORT GB_MAIN(int argc, char **argv)
 {
-	if (setjmp (_setjmp_env) == 0)
-		thttpd_main (argc, argv);
+	if (setjmp(_setjmp_env) == 0)
+		thttpd_main(argc, argv);
 	else
-		GB.System.HasForked ();
+		GB.System.HasForked();
 }
 
-int EXPORT GB_INIT ()
+int EXPORT GB_INIT()
 {
 	return 0;
 }
 
-void EXPORT GB_EXIT ()
+void EXPORT GB_EXIT()
 {
 }

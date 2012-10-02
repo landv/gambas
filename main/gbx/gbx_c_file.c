@@ -263,7 +263,7 @@ END_PROPERTY
 static char *get_file_user(CFILE *_object)
 {
 	struct passwd *pwd;
-	uid_t uid = THIS_STAT->info.uid;
+	uid_t uid = (uid_t)THIS_STAT->info.uid;
 
 	if (uid == 0)
 		return "root";
@@ -290,7 +290,7 @@ END_PROPERTY
 static char *get_file_group(CFILE *_object)
 {
 	struct group *grp;
-	gid_t gid = THIS_STAT->info.gid;
+	gid_t gid = (gid_t)THIS_STAT->info.gid;
 
 	if (gid == 0)
 		return "root";

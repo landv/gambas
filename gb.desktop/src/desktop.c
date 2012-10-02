@@ -145,12 +145,23 @@ BEGIN_METHOD(CDESKTOP_sendkey, GB_STRING key; GB_BOOLEAN press)
 END_METHOD
 
 
-BEGIN_PROPERTY(CDESKTOP_root)
+BEGIN_PROPERTY(Desktop_Root)
 
 	if (X11_init())
 		return;
 	
 	GB.ReturnInteger(X11_root);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Desktop_Time)
+
+	intptr_t time;
+	
+	GB.Component.GetInfo("TIME", POINTER(&time));
+	
+	GB.ReturnInteger((int)time);
 
 END_PROPERTY
 
@@ -584,6 +595,9 @@ END_METHOD
 
 BEGIN_METHOD(CDESKTOP_minimize_window, GB_INTEGER window; GB_BOOLEAN minimized)
 
+	if (X11_init())
+		return;
+	
 	if (VARG(minimized))
 	{
 		long state = IconicState;
@@ -602,6 +616,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Desktop_Flush)
 
+	if (X11_init())
+		return;
+	
 	XFlush(X11_display);
 
 END_METHOD
@@ -609,7 +626,24 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Desktop_Sync)
 
+	if (X11_init())
+		return;
+	
 	XSync(X11_display, FALSE);
+
+END_METHOD
+
+
+BEGIN_METHOD(Desktop_ActivateWindow, GB_INTEGER window)
+
+	intptr_t time;
+	
+	if (X11_init())
+		return;
+	
+	GB.Component.GetInfo("TIME", POINTER(&time));
+	
+	XSetInputFocus(X11_display, (Window)VARG(window), RevertToParent, (Time)time);
 
 END_METHOD
 
@@ -624,7 +658,8 @@ GB_DESC CDesktopDesc[] =
   
 	GB_STATIC_METHOD("FindWindow", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
 	GB_STATIC_METHOD("SendKey", NULL, CDESKTOP_sendkey, "(Key)s(Press)b"),
-	GB_STATIC_PROPERTY_READ("RootWindow", "i", CDESKTOP_root),
+	GB_STATIC_PROPERTY_READ("RootWindow", "i", Desktop_Root),
+	GB_STATIC_PROPERTY_READ("Time", "i", Desktop_Time),
 	GB_STATIC_METHOD("GetWindowProperty", "v", CDESKTOP_get_window_property, "(Property)s[(Window)i]"),
 	//GB_STATIC_METHOD("GetWindowPropertyType", "s", CDESKTOP_get_window_property_type, "(Window)i(Property)s"),
 	GB_STATIC_METHOD("SetWindowProperty", NULL, CDESKTOP_set_window_property, "(Property)s(Type)s(Value)v[(Window)i]"),
@@ -640,6 +675,7 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_METHOD("MinimizeWindow", NULL, CDESKTOP_minimize_window, "(Window)i(Minimized)b"),
   GB_STATIC_METHOD("Sync", NULL, Desktop_Sync, NULL),
   GB_STATIC_METHOD("Flush", NULL, Desktop_Flush, NULL),
+  GB_STATIC_METHOD("ActivateWindow", NULL, Desktop_ActivateWindow, "(Window)i"),
   
   GB_END_DECLARE
 };

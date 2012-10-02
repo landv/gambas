@@ -1,6 +1,6 @@
 /* tdate_parse.h - parse string dates into internal form, stripped-down version
 **
-** Copyright © 1995 by Jef Poskanzer <jef@mail.acme.com>.
+** (c) 1995 by Jef Poskanzer <jef@mail.acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,6 @@
 #ifndef _TDATE_PARSE_H_
 #define _TDATE_PARSE_H_
 
-extern time_t tdate_parse (char *str);
+extern time_t tdate_parse(char *str);
 
 #endif /* _TDATE_PARSE_H_ */

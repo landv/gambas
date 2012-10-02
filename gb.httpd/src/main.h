@@ -43,9 +43,9 @@ extern const GB_INTERFACE *GB_PTR;
 #define	LOG_INFO	6							/* informational */
 #define	LOG_DEBUG	7							/* debug-level messages */
 
-void syslog (int priority, const char *format, ...);
+void syslog(int priority, const char *format, ...);
 #define closelog()
 
-void run_cgi ();
+void run_cgi();
 
 #endif /* __MAIN_H */

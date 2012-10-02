@@ -871,6 +871,24 @@ typedef
 	}
 	GB_LIST;
 
+/* Information about a file */
+	
+typedef
+	struct {
+		short type;
+		short mode;
+		int64_t size;
+		int atime;
+		int mtime;
+		int ctime;
+		uid_t uid;
+		gid_t gid;
+		char hidden;
+		}
+	PACKED
+	GB_FILE_STAT;
+	
+	
 /* Gambas Application Programming Interface */
 
 typedef
@@ -999,6 +1017,7 @@ typedef
 		char *(*TempFile)(const char *);
 		bool (*CopyFile)(const char *, const char *);
 		void (*BrowseProject)(GB_BROWSE_CALLBACK);
+		bool (*StatFile)(const char *, GB_FILE_STAT *, bool);
 
 		void (*Store)(GB_TYPE, GB_VALUE *, void *);
 		void (*StoreString)(GB_STRING *, char **);

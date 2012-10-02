@@ -302,6 +302,16 @@ extern "C"
 			*value = (void *)CWIDGET_get_handle;
 			return TRUE;
 		}
+		else if (!strcasecmp(key, "SET_EVENT_FILTER"))
+		{
+			*value = (void *)0;
+			return TRUE;
+		}
+		else if (!strcasecmp(key, "TIME"))
+		{
+			*value = (void *)(intptr_t)gtk_get_current_event_time(); //gdk_x11_display_get_user_time(gdk_display_get_default());
+			return TRUE;
+		}
 		else
 			return FALSE;
 	}

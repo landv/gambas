@@ -42,7 +42,7 @@ Public Sub _new()
     $hValue = Image.Load("img/valuemap.png")
   Endif
 
-  SetAlpha(False )
+  SetAlpha(False)
 
 End
 
@@ -69,7 +69,7 @@ Private Sub MoveCross()
 End
 
 
-Private Sub RefreshColor(Optional bRGB As Boolean = True , Optional bHSV As Boolean = True )
+Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boolean = True)
 
   $bLock = True
 
@@ -152,7 +152,7 @@ Public Sub txtRGB_Change()
 
   If $bLock Then Return
   $iColor = Color.RGB(txtR.Value, txtG.Value, txtB.Value, txtA.Value)
-  RefreshColor(False , True )
+  RefreshColor(False, True)
 
 End
 
@@ -160,7 +160,7 @@ Public Sub txtHSV_Change()
 
   If $bLock Then Return
   $iColor = Color.HSV(txtH.Value, txtS.Value, txtV.Value, txtA.Value)
-  RefreshColor(True , False )
+  RefreshColor(True, False)
 
 End
 
@@ -437,7 +437,7 @@ Public Sub SetAlpha(Value As Boolean)
   If panAlpha.Visible Then H += panAlpha.H + Desktop.Scale
   panInfo.H = H
 
-  RefreshColor(False , False )
+  RefreshColor(False, False)
 
 End
 
@@ -455,7 +455,7 @@ Public Sub txtHexa_Change()
   If Error Then Return
   If iColor = $iColor Then Return
   $iColor = iColor
-  RefreshColor(True , True )
+  RefreshColor(True, True)
 
 End
 

@@ -1181,6 +1181,11 @@ int EXPORT GB_INFO(const char *key, void **value)
 		*value = (void *)CWIDGET_get_handle;
 		return TRUE;
 	}
+	else if (!strcasecmp(key, "TIME"))
+	{
+		*value = (void *)QX11Info::appTime();
+		return TRUE;
+	}
 	else
 		return FALSE;
 }
