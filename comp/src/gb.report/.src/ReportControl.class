@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord}=1cm,Height{ReportCoord}=1cm,Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
+Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
 Public Const _Family As String = "Report"
 Public _SizeInt As TSizeHint
 Public _Count As Integer = 1
@@ -33,9 +33,9 @@ Private $fLeft As Float = 0.0
 Private $fTop As Float = 0.0
 Private $fWidth As Float = 0.0
 Private $fHeight As Float = 0.0
-Private $sHeight As String = "1cm"
+Private $sHeight As String = "0cm"
 Private $sLeft As String = "0cm"
-Private $sWidth As String = "1cm"
+Private $sWidth As String = "0cm"
 Private $sTop As String = "0cm"
 Private $hPadding As New ReportPadding
 'Private $sPadding As String = "0cm"
