@@ -3,6 +3,7 @@
 Public Const KEY_SOURCE As String = "$S"
 Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
+Public Const KEY_PUBLIC As String = "$B"
 Public Const KEY_CONNECTION As String = "$D"
 
 Private $hTree As TreeView
@@ -49,6 +50,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     sParent = KEY_MISC
   Else If sDir = $sDir &/ ".hidden" Then 
     sParent = KEY_PROJECT
+  Else If sDir = $sDir &/ ".public" Then 
+    sParent = KEY_PUBLIC
   Else If sDir = $sSourceDir Then 
     sParent = KEY_SOURCE
   Else If sDir = $sDir &/ ".connection" Then
@@ -250,7 +253,7 @@ Private Procedure AddDir(Optional sDir As String)
     For Each sFile In aFile
   
       sFile = Mid$(sFile, 2)
-      If AddFile(sDir, sFile, True ) Then cDir.Add(sDir &/ sFile)
+      If AddFile(sDir, sFile, True) Then cDir.Add(sDir &/ sFile)
       'AddFile(sDir, sFile, True)
       
     Next
@@ -284,9 +287,7 @@ Private Sub FillTree()
     '.Add(KEY_CLASS, ("Classes"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
     
-    If $hInfo.Components.Exist("gb.db") Then
-      .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
-    Endif
+    If $hInfo.Components.Exist("gb.db") Then .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
     
     ' For Each hModule In CModule.All
     '   If hModule.Used Then
@@ -294,6 +295,7 @@ Private Sub FillTree()
     '   Endif
     ' Next
     
+    If $hInfo.Components.Exist("gb.web") Then .Add(KEY_PUBLIC, ("Public"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_MISC, ("Data"), Picture["icon:/small/directory"], sKey)
 
     '$bGetSource = TRUE
@@ -301,6 +303,7 @@ Private Sub FillTree()
     AddDir()
     If Exist($sDir &/ ".hidden") Then AddDir($sDir &/ ".hidden")
     If Exist($sDir &/ ".connection") Then AddDir($sDir &/ ".connection")
+    If Exist($sDir &/ ".public") Then AddDir($sDir &/ ".public")
 
   End With
 
@@ -371,7 +374,7 @@ Private Sub RefreshSourceCache()
   
   $cSourceDir = New Collection(gb.IgnoreCase)
   
-  For Each sPath In RDir($sSourceDir, "*", gb.File + gb.Directory, True )
+  For Each sPath In RDir($sSourceDir, "*", gb.File + gb.Directory, True)
     If CModule.Ext.Exist(File.Ext(sPath)) Then
       $cSourceDir[File.Name(sPath)] = $sSourceDir &/ sPath
     Endif
@@ -399,7 +402,7 @@ Private Sub DoRefreshAfter()
     For iInd = 0 To iCount - 1
       sKey = $aRefreshAfter[0]
       $aRefreshAfter.Remove(0)
-      AddFile(File.Dir(sKey), File.Name(sKey), True )
+      AddFile(File.Dir(sKey), File.Name(sKey), True)
     Next
     If $aRefreshAfter.Count >= iCount Then Break
   Loop
@@ -407,7 +410,7 @@ Private Sub DoRefreshAfter()
   If $aRefreshAfter.Count Then 
     For iInd = 0 To $aRefreshAfter.Max
       sKey = $aRefreshAfter[iInd]
-      AddFile(File.Dir(sKey), File.Name(sKey), True , True )
+      AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aRefreshAfter[iInd] = File.BaseName(sKey)
     Next
     'FMain.ShowError(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))

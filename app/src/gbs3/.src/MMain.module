@@ -5,7 +5,6 @@ Private $sPrjPath As String
 Private $hOutFile As File
 Private $sPath As String
 
-Private $iClassCount As Integer
 Private $hOutClass As File
 Private $sMainScriptPath As String
 Private $aIncFiles As New String[]
@@ -17,11 +16,11 @@ Private $bNoCache As Boolean
 Private $bVerbose As Boolean
 Private $aImplemented As New String[]
 Private $bExecuteFromArgs As Boolean
+Private $bFast As Boolean
 
 Public Sub Main() As Integer
   
   Dim sName As String
-  Dim s As Integer
   Dim sCacheDir As String = File.Dir(File.Dir(Temp$())) &/ "script-cache"
   Dim sRes As String
   Dim bCompile As Boolean
@@ -62,6 +61,7 @@ Public Sub Main() As Integer
     Exec ["md5sum", $sPath] To $sMd5
   Endif
   $sMd5 = Scan($sMd5, "* *")[0]
+  If $bFast Then $sMd5 &= "-f"
   
   If $bNoCache Or $bExecuteFromArgs Then 
     
@@ -159,6 +159,10 @@ Private Function ParseArgs() As String
         
         $bExecuteFromArgs = True
         
+      Else If s = "-f" Or If s = "--fast" Then
+        
+        $bFast = True
+        
       Endif
     Else 
       If Not IsNull(sApp) Then 
@@ -177,7 +181,6 @@ End
 
 Private Sub MakeVirtualProject()
   
-  Dim hFile As File
   Dim s As String
   Dim sPrjFileContent As String
   Dim i As Integer
@@ -254,6 +257,8 @@ Private Sub GenerateFiles(Path As String)
   
   If $bVerbose Then Print "gbs: process file: "; Path
   
+  If $bFast Then sCodeBuf = "Fast\n"
+
   Inc $iLevel
   
   $aIncFiles.Add(Path)
@@ -297,6 +302,7 @@ Private Sub GenerateFiles(Path As String)
       Endif
       If $bVerbose Then Print "gbs: create class: "; sClass
       $hOutClass = Open $sPrjPath &/ ".src" &/ sClass & ".class" For Write Create
+      If $bFast Then Print #$hOutClass, "Fast"
       bInClass = True
       Continue       
     Endif
@@ -375,7 +381,6 @@ End
 
 Public Sub GetRequiredComp(sComp As String)
   
-  Dim hComp As CComponent  
   Dim s As String
   
   If Not CComponent.All.Exist(sComp) Then Return
@@ -394,7 +399,7 @@ End
 
 Private Sub GetNeededComp(sComp As String)
   
-  Dim s, t, u As String
+  Dim s, t As String
   Dim bExist As Boolean
   
   If Not CComponent.All.Exist(sComp) Then Return

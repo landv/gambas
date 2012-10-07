@@ -36,9 +36,6 @@ Public Path As String
 
 Static Public Features As New Collection
 
-Static Private $cName As Collection
-Static Private Similars As New Collection
-
 'Static Private $hDumbClass As CClassInfo
 'Static Private $hClass As CClassInfo
 
@@ -48,17 +45,11 @@ Static Private Sub InitComponent(sFile As String)
   
   Dim hComponent As CComponent
   Dim hFic As File
-  Dim sInfo As String
   Dim sLig As String
   Dim sKey As String
   Dim sPath As String
   Dim iPos As Integer
-  Dim sLib As String
-  Dim iKey As Integer
   Dim sGroup As String
-  Dim aChange As String[]
-  Dim aStr As String[]
-  Dim sChange As String
   
   sPath = Component.Path &/ sFile 
   
@@ -205,7 +196,6 @@ End
 
 Static Private Sub GetWhoImplement()
   
-  Dim sComp As String
   Dim s As String
   Dim hComp As CComponent
   

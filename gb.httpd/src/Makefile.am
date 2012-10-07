@@ -13,7 +13,6 @@ gb_httpd_la_SOURCES = main.c main.h \
  match.h match.c \
  mime_encodings.h \
  mime_types.h \
- mmc.h mmc.c \
  tdate_parse.h tdate_parse.c \
  thttpd.h thttpd.c \
  timers.h timers.c \

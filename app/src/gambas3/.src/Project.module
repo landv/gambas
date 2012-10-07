@@ -129,12 +129,10 @@ Public EXAMPLES_DIR As String
 
 Private Const IMAGE_DIR As String = "img/16"
 
-'Private Const KEY_MODULE As String = "$M"
-'Private Const KEY_CLASS As String = "$C"
-'Private Const KEY_FORM As String = "$F"
 Public Const KEY_SOURCE As String = "$S"
 Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
+Public Const KEY_PUBLIC As String = "$B"
 Public Const KEY_CONNECTION As String = "$D"
 
 Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -1175,6 +1173,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     sParent = KEY_MISC
   Else If sDir = Project.Dir &/ ".hidden" Then
     sParent = KEY_PROJECT
+  Else If sDir = Project.Dir &/ ".public" Then
+    sParent = KEY_PUBLIC
   Else If sDir = SourceDir Then
     sParent = KEY_SOURCE
   Else If sDir = Project.Dir &/ ".connection" Then
@@ -1647,27 +1647,17 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
     .Add(sKey, Name, GetIcon(Project.Dir, 16))
 
     .Add(KEY_PROJECT, ("Project"), Picture["icon:/small/directory"], sKey)
-    '.Add(KEY_MODULE, ("Modules"), Picture["icon:/small/directory"], sKey)
-    '.Add(KEY_CLASS, ("Classes"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
-
-    If Components.Exist("gb.db") Then
-      .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
-    Endif
-
-    ' For Each hModule In CModule.All
-    '   If hModule.Used Then
-    '     .Add(hModule.TreeKey, hModule.NamePlural, Picture["icon:/small/directory"], sKey)
-    '   Endif
-    ' Next
-
+    If Components.Exist("gb.db") Then .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
+    If Components.Exist("gb.web") Then .Add(KEY_PUBLIC, ("Public"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_MISC, ("Data"), Picture["icon:/small/directory"], sKey)
 
     '$bGetSource = TRUE
 
     AddDir()
     If Exist(Project.Dir &/ ".hidden") Then AddDir(Project.Dir &/ ".hidden")
-    If Exist(Project.Dir &/ ".connection") Then AddDir(Project.Dir &/ ".connection")
+    If Components.Exist("gb.db") And If Exist(Project.Dir &/ ".connection") Then AddDir(Project.Dir &/ ".connection")
+    If Components.Exist("gb.web") And If Exist(Project.Dir &/ ".public") Then AddDir(Project.Dir &/ ".public")
 
   End With
 
@@ -4339,6 +4329,9 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
       'Why refreshing the project?
       'Project.Refresh
     Endif
+    
+    If Components.Exist("gb.db") And If Not Exist(Project.Dir &/ ".connection") Then InsertDirectory(Project.Dir &/ ".connection")
+    If Components.Exist("gb.web") And If Not Exist(Project.Dir &/ ".public") Then InsertDirectory(Project.Dir &/ ".public")
 
     $sOldRefreshComponents = sLibComp
 
@@ -4833,41 +4826,6 @@ Public Sub CleanUp(Optional sDir As String = Project.Dir)
 
 End
 
-' Public Sub SetFormIcon(hForm As FForm)
-' '
-' '   DIM hPict AS Picture
-' '   DIM eRap AS Float
-' '
-' '   'hForm.Raise
-' '   hPict = hForm.Grab()
-' '   hForm.Refresh
-' '   eRap = hPict.Width / hPict.Height
-' '   IF eRap > 4 THEN
-' '     eRap = 4
-' '     hPict = hPict.Copy(0, 0, hPict.Height * eRap, hPict.Height)
-' '   ELSE IF eRap < 0.5 THEN
-' '     eRap = 0.5
-' '     hPict = hPict.Copy(0, 0, hPict.Width, hPict.Width / eRap)
-' '   ENDIF
-' '   IF eRap > 1 THEN
-' '     hPict = hPict.Image.Stretch(32 * eRap, 32).Picture
-' '   ELSE
-' '     hPict = hPict.Image.Stretch(32, 32 / eRap).Picture
-' '   ENDIF
-' '
-' '   Draw.Begin(hPict)
-' '   Draw.Foreground = &H808080&
-' '   Draw.Rect(0, 0, hPict.Width, hPict.Height)
-' '   Draw.End
-' '
-' '   ProjectTree[Project.Dir &/ hForm.Name & ".form"].Picture = hPict
-' '
-' ' CATCH
-' '
-' '   PRINT Error.Text
-' '
-' End
-
 Public Function CheckProgram(sProg As String) As Boolean
 
   Dim iPos As Integer
@@ -5003,90 +4961,6 @@ Catch
   Message.Error(Error.Text)
 
 End
-
-' PUBLIC SUB ClearFound()
-'
-'   DIM aKey AS NEW String[]
-'   DIM sKey AS String
-'
-'   IF $iFound = 0 THEN RETURN
-'
-'   WITH ProjectTree
-'     .MoveFirst
-'
-'     DO
-'
-'       IF NOT .MoveChild() THEN CONTINUE
-'       .MoveBack
-'
-'       IF Left(.Item.Key, 2) = KEY_FIND THEN aKey.Add(.Item.Key)
-'
-' NEXT_PARENT:
-'
-'       IF NOT .MoveNext() THEN CONTINUE
-'       .MoveBack
-'
-'       IF .MoveParent() THEN BREAK
-'       GOTO NEXT_PARENT
-'
-'     LOOP
-'
-'     FOR EACH sKey IN aKey
-'       ProjectTree.Remove(sKey)
-'     NEXT
-'
-'   END WITH
-'
-'   $iFound = 0
-'   ProjectTree.Columns.Count = 1
-'
-' END
-'
-' PUBLIC SUB AddFound(sName AS String, iLine AS Integer, iCol AS Integer, iLen AS Integer, sText AS String)
-'
-'   DIM sKey AS String
-'   'DIM sAfter AS String
-'   DIM sParent AS String
-'
-'   sParent = FindKey(sName)
-'   IF NOT sParent THEN RETURN
-'
-'   ProjectTree.Columns.Count = 2
-'
-'   sKey = KEY_FIND & sParent & "@" & Format(iLine, "000000") & "." & Format(iCol, "00000") & "." & iLen
-'
-' '   ProjectTree.MoveTo(sParent)
-' '   IF NOT ProjectTree.MoveChild() THEN
-' '     WHILE ProjectTree.Available
-' '       ProjectTree.MoveNext
-' '     WEND
-' '     ProjectTree.MoveBack
-' '     sAfter = ProjectTree.Item.Key
-' '   ENDIF
-' '
-' '   DEBUG sKey;; ":";; sAfter
-'
-'   ProjectTree.Add(sKey, (iLine + 1) & ":" & iCol, Picture["icon:/small/find"], sParent)
-'   ProjectTree[sKey][1] = sText
-'   ProjectTree[sParent].Expanded = TRUE
-'
-'   INC $iFound
-'
-' END
-'
-' PUBLIC SUB SelectFound(sName AS String, iLine AS Integer, iCol AS Integer, iLen AS Integer)
-'
-'   DIM sKey AS String
-'
-'   sKey = FindKey(sName)
-'   IF NOT sKey THEN RETURN
-'
-'   sKey = KEY_FIND & sKey & "@" & Format(iLine, "000000") & "." & Format(iCol, "00000") & "." & iLen
-'   TRY ProjectTree[sKey].Selected = TRUE
-'
-' END
-
-
 
 Public Sub GetPicture(sPict As String) As Picture
 

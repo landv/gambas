@@ -79,7 +79,6 @@
 extern char *crypt(const char *key, const char *setting);
 
 #include "libhttpd.h"
-#include "mmc.h"
 #include "timers.h"
 #include "match.h"
 #include "tdate_parse.h"
@@ -158,7 +157,7 @@ static int vhost_map(httpd_conn * hc);
 static char *bufgets(httpd_conn * hc);
 static void de_dotdot(char *file);
 static void init_mime(void);
-//static void figure_mime (httpd_conn * hc);
+static void figure_mime (httpd_conn * hc);
 #ifdef CGI_TIMELIMIT
 static void cgi_kill2(ClientData client_data, struct timeval *nowP);
 static void cgi_kill(ClientData client_data, struct timeval *nowP);
@@ -520,7 +519,7 @@ static char *err403form =
 #endif /* !EXPLICIT_ERROR_PAGES */
 
 static char *err404title = "Not Found";
-//static char *err404form =   "The requested URL '%.80s' was not found on this server.\n";
+static char *err404form =   "The requested URL '%.80s' was not found on this server.\n";
 
 char *httpd_err408title = "Request Timeout";
 char *httpd_err408form =
@@ -617,7 +616,7 @@ send_mime(httpd_conn * hc, int status, char *title, char *encodings,
 				(hc->last_byte_index >= hc->first_byte_index) &&
 				((hc->last_byte_index != length - 1) ||
 				 (hc->first_byte_index != 0)) &&
-				(hc->range_if == (time_t) - 1 || hc->range_if == hc->sb.st_mtime))
+				(hc->range_if == (time_t) - 1 || hc->range_if == hc->sb.mtime))
 		{
 			partial_content = 1;
 			hc->status = status = 206;
@@ -2421,7 +2420,8 @@ void httpd_close_conn(httpd_conn * hc, struct timeval *nowP)
 
 	if (hc->file_address != (char *) 0)
 	{
-		mmc_unmap(hc->file_address, &(hc->sb), nowP);
+		GB.ReleaseFile(hc->file_address, hc->file_len);
+		//mmc_unmap(hc->file_address, &(hc->sb), nowP);
 		hc->file_address = (char *) 0;
 	}
 	if (hc->conn_fd >= 0)
@@ -2506,7 +2506,6 @@ static void init_mime(void)
 
 }
 
-#if 0
 /* Figure out MIME encodings and type based on the filename.  Multiple
 ** encodings are separated by commas, and are listed in the order in
 ** which they were applied to the file.
@@ -2603,7 +2602,6 @@ done:
 	}
 
 }
-#endif
 
 #ifdef CGI_TIMELIMIT
 static void cgi_kill2(ClientData client_data, struct timeval *nowP)
@@ -2685,7 +2683,7 @@ static int ls(httpd_conn * hc)
 	{
 		closedir(dirp);
 		send_mime(hc, 200, ok200title, "", "", "text/html; charset=%s",
-							(off_t) - 1, hc->sb.st_mtime);
+							(off_t) - 1, hc->sb.mtime);
 	}
 	else if (hc->method == METHOD_GET)
 	{
@@ -2711,7 +2709,7 @@ static int ls(httpd_conn * hc)
 			sub_process = 1;
 			httpd_unlisten(hc->hs);
 			send_mime(hc, 200, ok200title, "", "", "text/html; charset=%s",
-								(off_t) - 1, hc->sb.st_mtime);
+								(off_t) - 1, hc->sb.mtime);
 			httpd_write_response(hc);
 
 #ifdef CGI_NICE
@@ -3620,8 +3618,7 @@ static int cgi(httpd_conn * hc)
 	}
 	else
 	{
-		httpd_send_err(hc, 501, err501title, "", err501form,
-									 httpd_method_str(hc->method));
+		httpd_send_err(hc, 501, err501title, "", err501form, httpd_method_str(hc->method));
 		return -1;
 	}
 
@@ -3642,37 +3639,39 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 	//size_t expnlen, indxlen;
 	//char *cp;
 	//char *pi;
-
-	//expnlen = strlen (hc->expnfilename);
+	char *public_file = NULL;
+	int public_file_len = 0;
 
 	if (hc->method != METHOD_GET && hc->method != METHOD_HEAD &&
 			hc->method != METHOD_POST)
 	{
-		httpd_send_err(hc, 501, err501title, "", err501form,
-									 httpd_method_str(hc->method));
+		httpd_send_err(hc, 501, err501title, "", err501form, httpd_method_str(hc->method));
 		return -1;
 	}
 
 	//--------------------------------------------------------------
 
-	/* Referer check. */
-	if (!check_referer(hc))
-		return -1;
-
-	/* Is it world-executable and in the CGI area? */
-	//if ( hc->hs->cgi_pattern != (char*) 0 && ( hc->sb.st_mode & S_IXOTH ) &&   match( hc->hs->cgi_pattern, hc->expnfilename ) )
-	return cgi(hc);
-
-	//--------------------------------------------------------------
-
-#if 0
-	/* Stat the file. */
-	if (stat(hc->expnfilename, &hc->sb) < 0)
+	if (strlen(hc->expnfilename) == 0)
 	{
-		httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
-		return -1;
+		public_file = NULL;
 	}
-
+	else
+	{
+		public_file_len = strlen(hc->expnfilename) + strlen(PUBLIC_PREFIX);
+		public_file = alloca(public_file_len + 1);
+		strcpy(public_file, PUBLIC_PREFIX);
+		strcpy(&public_file[strlen(PUBLIC_PREFIX)], hc->expnfilename);
+	}
+	
+	/* Stat the file. */
+	//if (stat(hc->expnfilename, &hc->sb) < 0)
+	/*{
+		httpd_send_err(hc, 404, err404title, "", err404form, hc->encodedurl);
+		//httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
+		return -1;
+	}*/
+	
+#if 0
 	/* Is it world-readable or world-executable?  We check explicitly instead
 	 ** of just trying to open it, so that no one ever gets surprised by
 	 ** a file that's not set world-readable and yet somehow is
@@ -3689,16 +3688,58 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 									 hc->encodedurl);
 		return -1;
 	}
+#endif
 
-	/* Is it a directory? */
-	if (S_ISDIR(hc->sb.st_mode))
+	if (public_file && !GB.StatFile(public_file, &hc->sb, FALSE))
 	{
-		/* If there's pathinfo, it's just a non-existent file. */
-		if (hc->pathinfo[0] != '\0')
+		/* Is it a directory? */
+		if (hc->sb.type == GB_STAT_DIRECTORY)
 		{
 			httpd_send_err(hc, 404, err404title, "", err404form, hc->encodedurl);
 			return -1;
 		}
+
+		/* Fill in last_byte_index, if necessary. */
+		if (hc->got_range &&
+				(hc->last_byte_index == -1 || hc->last_byte_index >= hc->sb.size))
+			hc->last_byte_index = hc->sb.size - 1;
+
+		figure_mime(hc);
+
+		if (hc->method == METHOD_HEAD)
+		{
+			send_mime(hc, 200, ok200title, hc->encodings, "", hc->type, hc->sb.size, hc->sb.mtime);
+		}
+		else if (hc->if_modified_since != (time_t) - 1 &&
+						hc->if_modified_since >= hc->sb.mtime)
+		{
+			send_mime(hc, 304, err304title, hc->encodings, "", hc->type, (off_t) - 1, hc->sb.mtime);
+		}
+		else
+		{
+			//hc->file_address = mmc_map(hc->expnfilename, &(hc->sb), nowP);
+			//if (hc->file_address == (char *) 0)
+		
+			syslog(LOG_DEBUG, "%.*s", public_file_len, public_file);
+		
+			if (GB.LoadFile(public_file, public_file_len, &hc->file_address, &hc->file_len))
+			{
+				httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
+				return -1;
+			}
+			send_mime(hc, 200, ok200title, hc->encodings, "", hc->type, hc->sb.size, hc->sb.mtime);
+		}
+
+		return 0;
+	}	
+
+#if 0
+		/* If there's pathinfo, it's just a non-existent file. */
+		/*if (hc->pathinfo[0] != '\0')
+		{
+			httpd_send_err(hc, 404, err404title, "", err404form, hc->encodedurl);
+			return -1;
+		}*/
 
 		/* Special handling for directory URLs that don't end in a slash.
 		 ** We send back an explicit redirect with the slash, because
@@ -3711,7 +3752,9 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 			send_dirredirect(hc);
 			return -1;
 		}
+#endif
 
+#if 0
 		/* Check for an index file. */
 		for (i = 0; i < sizeof(index_names) / sizeof(char *); ++i)
 		{
@@ -3834,11 +3877,19 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 		return -1;
 	}
 #endif /* AUTH_FILE */
+#endif
+
+	//--------------------------------------------------------------
 
 	/* Referer check. */
 	if (!check_referer(hc))
 		return -1;
 
+	/* Is it world-executable and in the CGI area? */
+	//if ( hc->hs->cgi_pattern != (char*) 0 && ( hc->sb.st_mode & S_IXOTH ) &&   match( hc->hs->cgi_pattern, hc->expnfilename ) )
+	return cgi(hc);
+
+#if 0
 	/* Is it world-executable and in the CGI area? */
 	if (hc->hs->cgi_pattern != (char *) 0 &&
 			(hc->sb.st_mode & S_IXOTH) &&
@@ -3872,21 +3923,21 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 
 	/* Fill in last_byte_index, if necessary. */
 	if (hc->got_range &&
-			(hc->last_byte_index == -1 || hc->last_byte_index >= hc->sb.st_size))
-		hc->last_byte_index = hc->sb.st_size - 1;
+			(hc->last_byte_index == -1 || hc->last_byte_index >= hc->sb.size))
+		hc->last_byte_index = hc->sb.size - 1;
 
 	figure_mime(hc);
 
 	if (hc->method == METHOD_HEAD)
 	{
 		send_mime(hc, 200, ok200title, hc->encodings, "", hc->type,
-							hc->sb.st_size, hc->sb.st_mtime);
+							hc->sb.size, hc->sb.mtime);
 	}
 	else if (hc->if_modified_since != (time_t) - 1 &&
-					 hc->if_modified_since >= hc->sb.st_mtime)
+					 hc->if_modified_since >= hc->sb.mtime)
 	{
 		send_mime(hc, 304, err304title, hc->encodings, "", hc->type, (off_t) - 1,
-							hc->sb.st_mtime);
+							hc->sb.mtime);
 	}
 	else
 	{
@@ -3897,7 +3948,7 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 			return -1;
 		}
 		send_mime(hc, 200, ok200title, hc->encodings, "", hc->type,
-							hc->sb.st_size, hc->sb.st_mtime);
+							hc->sb.size, hc->sb.mtime);
 	}
 
 	return 0;

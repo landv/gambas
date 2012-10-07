@@ -145,7 +145,7 @@
 ** You can override this in the config file with the "charset" setting,
 ** or on the command like with the -T flag.
 */
-#define DEFAULT_CHARSET "iso-8859-1"
+#define DEFAULT_CHARSET "utf-8"
 
 
 /* Most people won't want to change anything below here. */
@@ -399,5 +399,7 @@
 /* CONFIGURE: Pass the X-Cgi header to the CGI script
 */
 #define X_CGI_HEADER
+
+#define PUBLIC_PREFIX ".public/"
 
 #endif /* _THTTPD_H_ */

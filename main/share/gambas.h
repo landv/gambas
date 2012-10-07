@@ -887,7 +887,15 @@ typedef
 		}
 	PACKED
 	GB_FILE_STAT;
+
+/* Constants for the GB_FILE_STAT structure */
 	
+#define GB_STAT_FILE        1
+#define GB_STAT_DIRECTORY   2
+#define GB_STAT_DEVICE      3
+#define GB_STAT_PIPE        4
+#define GB_STAT_SOCKET      5
+#define GB_STAT_LINK        6
 	
 /* Gambas Application Programming Interface */
 

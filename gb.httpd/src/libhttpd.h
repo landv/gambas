@@ -145,9 +145,10 @@ typedef struct
 	off_t first_byte_index, last_byte_index;
 	int keep_alive;
 	int should_linger;
-	struct stat sb;
+	GB_FILE_STAT sb;
 	int conn_fd;
 	char *file_address;
+	int file_len;
 } httpd_conn;
 
 /* Methods. */

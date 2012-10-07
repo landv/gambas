@@ -634,7 +634,7 @@ BEGIN_METHOD_VOID(Desktop_Sync)
 END_METHOD
 
 
-BEGIN_METHOD(Desktop_ActivateWindow, GB_INTEGER window)
+/*BEGIN_METHOD(Desktop_ActivateWindow, GB_INTEGER window)
 
 	intptr_t time;
 	
@@ -645,7 +645,7 @@ BEGIN_METHOD(Desktop_ActivateWindow, GB_INTEGER window)
 	
 	XSetInputFocus(X11_display, (Window)VARG(window), RevertToParent, (Time)time);
 
-END_METHOD
+END_METHOD*/
 
 
 GB_DESC CDesktopDesc[] =
@@ -661,13 +661,10 @@ GB_DESC CDesktopDesc[] =
 	GB_STATIC_PROPERTY_READ("RootWindow", "i", Desktop_Root),
 	GB_STATIC_PROPERTY_READ("Time", "i", Desktop_Time),
 	GB_STATIC_METHOD("GetWindowProperty", "v", CDESKTOP_get_window_property, "(Property)s[(Window)i]"),
-	//GB_STATIC_METHOD("GetWindowPropertyType", "s", CDESKTOP_get_window_property_type, "(Window)i(Property)s"),
 	GB_STATIC_METHOD("SetWindowProperty", NULL, CDESKTOP_set_window_property, "(Property)s(Type)s(Value)v[(Window)i]"),
 	GB_STATIC_METHOD("InternAtom", "i", CDESKTOP_intern_atom, "(Atom)s[(Create)b]"),
 	GB_STATIC_METHOD("GetAtomName", "s", CDESKTOP_get_atom_name, "(Atom)i"),
 	GB_STATIC_METHOD("SendClientMessageToRootWindow", NULL, CDESKTOP_send_client_message, "(Message)s[(Data)Array;(Window)i]"),
-  //GB_STATIC_PROPERTY_SELF("Root", "._Desktop.Window"),
-  //GB_STATIC_METHOD("_get", "._Desktop.Window"),
   GB_STATIC_PROPERTY("EventFilter", "b", CDESKTOP_event_filter),
   GB_STATIC_METHOD("WatchWindow", NULL, CDESKTOP_watch_window, "(Window)i(Watch)b"),
   GB_STATIC_METHOD("GetWindowGeometry", "Integer[]", CDESKTOP_get_window_geometry, "(Window)i"),
@@ -675,7 +672,6 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_METHOD("MinimizeWindow", NULL, CDESKTOP_minimize_window, "(Window)i(Minimized)b"),
   GB_STATIC_METHOD("Sync", NULL, Desktop_Sync, NULL),
   GB_STATIC_METHOD("Flush", NULL, Desktop_Flush, NULL),
-  GB_STATIC_METHOD("ActivateWindow", NULL, Desktop_ActivateWindow, "(Window)i"),
   
   GB_END_DECLARE
 };

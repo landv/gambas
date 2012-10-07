@@ -56,7 +56,7 @@
 
 #include "fdwatch.h"
 #include "libhttpd.h"
-#include "mmc.h"
+//#include "mmc.h"
 #include "timers.h"
 #include "match.h"
 
@@ -1542,7 +1542,7 @@ static void shut_down(void)
 			fdwatch_del_fd(ths->listen6_fd);
 		httpd_terminate(ths);
 	}
-	mmc_destroy();
+	//mmc_destroy();
 	tmr_destroy();
 	free((void *) connects);
 	if (throttles != (throttletab *) 0)
@@ -1957,7 +1957,6 @@ static int check_throttles(connecttab * c)
 	return 1;
 }
 
-
 static void clear_throttles(connecttab * c, struct timeval *tvP)
 {
 	int tind;
@@ -2173,7 +2172,7 @@ linger_clear_connection(ClientData client_data, struct timeval *nowP)
 
 static void occasional(ClientData client_data, struct timeval *nowP)
 {
-	mmc_cleanup(nowP);
+	//mmc_cleanup(nowP);
 	tmr_cleanup();
 	watchdog_flag = 1;						/* let the watchdog know that we are alive */
 }
@@ -2210,7 +2209,7 @@ static void logstats(struct timeval *nowP)
 
 	thttpd_logstats(stats_secs);
 	httpd_logstats(stats_secs);
-	mmc_logstats(stats_secs);
+	//mmc_logstats(stats_secs);
 	fdwatch_logstats(stats_secs);
 	tmr_logstats(stats_secs);
 }
