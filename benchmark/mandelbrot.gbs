@@ -1,0 +1,77 @@
+#!/usr/bin/env gbs3
+
+Private Const MAXITER As Integer = 50
+Private Const LIMIT As Integer = 4
+
+Sub Mandelbrot(W As Integer, H As Integer)
+  
+  Dim XMin As Float = -1.5
+  Dim YMin As Float = -1
+  Dim InvN As Float = 2.0 / W
+  Dim CheckNext As Boolean = True
+  Dim X, Y, K As Integer
+  Dim Cr, Ci, Zr, Zi, {Tr}, Ti, T As Float
+  
+  For Y = 0 To H - 1
+    
+    Ci = Y * InvN + YMin
+    
+    For X = 0 To W - 1
+      
+      Zr = 0
+      Zi = 0
+      {Tr} = 0
+      Ti = 0
+      Cr = X * InvN + XMin
+      
+      If CheckNext Then
+        
+        For K = 1 To MAXITER
+          Zi = 2 * Zr * Zi + Ci
+          Zr = {Tr} - Ti + Cr
+          Ti = Zi * Zi
+          {Tr} = Zr * Zr
+          T = {Tr} + Ti
+          If IsNan(T) Or If T > LIMIT Then Break
+        Next
+        If K > MAXITER Then
+          Print "1";
+          CheckNext = False
+        Else
+          Print "0";
+        Endif
+        
+      Else
+        
+        For K = 1 To MAXITER
+          
+          Zi = 2 * Zr * Zi + Ci
+          Zr = {Tr} - Ti + Cr
+          Ti = Zi * Zi
+          {Tr} = Zr * Zr
+          
+        Next
+        
+        T = {Tr} + Ti
+        If IsNan(T) Or If T > LIMIT Then
+          Print "0"; 
+          CheckNext = True
+        Else
+          Print "1";
+        Endif
+        
+      Endif
+      
+    Next
+    
+    Print
+    
+  Next
+  
+End
+
+Dim I As Integer
+
+For I = 1 To 50
+  Mandelbrot(200, 200)
+Next
