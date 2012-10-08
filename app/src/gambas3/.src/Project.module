@@ -1646,11 +1646,11 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
     sKey = Project.Dir
     .Add(sKey, Name, GetIcon(Project.Dir, 16))
 
-    .Add(KEY_PROJECT, ("Project"), Picture["icon:/small/directory"], sKey)
-    .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
-    If Components.Exist("gb.db") Then .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
-    If Components.Exist("gb.web") Then .Add(KEY_PUBLIC, ("Public"), Picture["icon:/small/directory"], sKey)
-    .Add(KEY_MISC, ("Data"), Picture["icon:/small/directory"], sKey)
+    .Add(KEY_PROJECT, ("Project"), Picture["icon:/small/open"], sKey)
+    .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/open"], sKey)
+    If Components.Exist("gb.db") Then .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/open"], sKey)
+    If Components.Exist("gb.web") Then .Add(KEY_PUBLIC, ("Public"), Picture["icon:/small/open"], sKey)
+    .Add(KEY_MISC, ("Data"), Picture["icon:/small/open"], sKey)
 
     '$bGetSource = TRUE
 
