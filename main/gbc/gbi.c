@@ -76,6 +76,7 @@ static bool _format = FALSE;
 static bool _nopreload = FALSE;
 static bool _root_set = FALSE;
 static bool _analyze = FALSE;
+static bool _no_include_warning = FALSE;
 
 static char **_components = NULL;
 
@@ -497,7 +498,7 @@ __RETURN:
 	return ret;
 }
 
-
+#if 0
 static void preload(char **argv, char *lib)
 {
 #if DO_PRELOADING
@@ -511,6 +512,7 @@ static void preload(char **argv, char *lib)
 	execvp(argv[0], argv);
 #endif
 }
+#endif
 
 static bool find_native_component(const char *name)
 {
@@ -540,7 +542,8 @@ static void analyze(const char *comp, bool include)
 
 	if (!native && !gambas)
 	{
-		warning("component %s not found", name);
+		if (!include || !_no_include_warning)
+			warning("component %s not found", name);
 		STR_free(name);
 		return;
 	}
@@ -714,11 +717,16 @@ int main(int argc, char **argv)
 			case 'v':
 				_verbose = TRUE;
 				break;
-
+#if DO_PRELOADING
 			case 'p':
 				_nopreload = TRUE;
 				break;
-
+#endif
+				
+			case 'i':
+				_no_include_warning = TRUE;
+				break;
+				
 			case 'r':
 				strncpy(_root, optarg, PATH_MAX);
 				_root_set = TRUE;
@@ -742,14 +750,20 @@ int main(int argc, char **argv)
 					"Options:"
 					#if HAVE_GETOPT_LONG
 					"\n"
+					#if DO_PRELOADING
 					"  -p                         disable preloading\n"
+					#endif
+					"  -i                         ignore include warnings\n"
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					"  -V  --version              display version\n"
 					"  -L  --license              display license\n"
 					"  -h  --help                 display this help\n"
 					#else
 					" (no long options on this system)\n"
+					#if DO_PRELOADING
 					"  -p                         disable preloading\n"
+					#endif
+					"  -i                         ignore include warnings\n"
 					"  -r <directory>             gives the gambas installation directory\n"
 					"  -V                         display version\n"
 					"  -L                         display license\n"
@@ -770,6 +784,10 @@ int main(int argc, char **argv)
 			fprintf(stderr, "LD_PRELOAD=%s\n", getenv("LD_PRELOAD"));
 
 		analyze(argv[optind], FALSE);
+		/*if (strcmp(argv[optind], "gb.qt4") == 0)
+			analyze("gb.gui", FALSE);
+		else if (strcmp(argv[optind], "gb.qt4.opengl") == 0)
+			analyze("gb.gui.opengl", FALSE);*/
 	}
 	else
 	{
@@ -779,10 +797,10 @@ int main(int argc, char **argv)
 		#endif
 				)
 		{
-			preload(argv,
+			/*preload(argv,
 				"libqt-mt.so.3 "
 				"libkdecore.so.4 "
-				);
+				);*/
 	
 			if (_verbose)
 			{
@@ -808,10 +826,10 @@ int main(int argc, char **argv)
 				for (ind = optind; ind < argc; ind++)
 				{
 					name = argv[ind];			
-					if (strncmp(name, "gb.qt.kde", 9) == 0)
+					/*if (strncmp(name, "gb.qt.kde", 9) == 0)
 						preload(argv, "libqt-mt.so.3 libkdecore.so.4");
 					else if (strcmp(name, "gb.qt") == 0 || strncmp(name, "gb.qt.", 6) == 0)
-						preload(argv, "libqt-mt.so.3");
+						preload(argv, "libqt-mt.so.3");*/
 				}
 			}
 		
