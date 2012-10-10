@@ -428,7 +428,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 	const char *arg[4];
 	bool col;
 
-	if (!JOB->warnings)
+	if (!JOB->warnings && type == MSG_WARNING)
 		return;
 	
   va_start(args, msg);

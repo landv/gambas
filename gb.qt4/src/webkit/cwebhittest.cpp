@@ -85,7 +85,7 @@ GB_DESC CWebHitTestDesc[] =
 	GB_PROPERTY_READ("Image", "b", WebHitTest_Image),
 	//GB_PROPERTY_READ("Media", "b", WebHitTest_Media),
 	GB_PROPERTY_READ("Selected", "b", WebHitTest_Selected),
-	GB_PROPERTY_READ("Editable", "s", WebHitTest_Editable),
+	GB_PROPERTY_READ("Editable", "b", WebHitTest_Editable),
 	GB_PROPERTY_READ("Url", "s", WebHitTest_Url),
 
 	GB_END_DECLARE

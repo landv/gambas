@@ -113,7 +113,7 @@ static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int fl
 	int pos, deb, fin;
 	SYMBOL *sym;
 	int l;
-	char result;
+	int result; // must be an integer (or a short) because uchar - uchar may not fit in a char!
 	const uchar *s1;
 	const uchar *s2;
 
