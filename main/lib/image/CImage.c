@@ -397,7 +397,7 @@ GB_DESC CImageDesc[] =
 
 	GB_METHOD("Mirror", "Image", Image_Mirror, "(Horizontal)b(Vertical)b"),
 	GB_METHOD("RotateLeft", "Image", Image_RotateLeft, NULL),
-	GB_METHOD("RotateRight", "Image", Image_RotateLeft, NULL),
+	GB_METHOD("RotateRight", "Image", Image_RotateRight, NULL),
 	
 	GB_METHOD("FillRect", "Image", Image_FillRect, "(X)i(Y)i(Width)i(Height)i(Color)i"),
 	GB_METHOD("PaintRect", "Image", Image_PaintRect, "(X)i(Y)i(Width)i(Height)i(Color)i"),
