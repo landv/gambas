@@ -322,7 +322,7 @@ End
 
 Static Private Sub ActiveWindow_Write(Value As Integer)
 
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [1, _Desktop.Time, Value, 0, 0], Value)
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [1, 0, Value, 0, 0], Value)
 
 End
 
