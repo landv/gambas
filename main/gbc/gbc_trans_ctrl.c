@@ -545,6 +545,9 @@ static void trans_else_if(void)
 
 void TRANS_if(void)
 {
+	PATTERN *look;
+	bool has_else;
+	
 	control_enter(RS_IF);
 
 	trans_if();
@@ -552,7 +555,30 @@ void TRANS_if(void)
 	if (PATTERN_is_newline(*JOB->current))
 		return;
 
+	has_else = FALSE;
+	look = JOB->current;
+	for(;;)
+	{
+		look++;
+		if (PATTERN_is_newline(*look))
+			break;
+		if (PATTERN_is(*look, RS_ELSE))
+		{
+			has_else = TRUE;
+			*look = PATTERN_make(RT_NEWLINE, 0);
+			break;
+		}
+	}
+	
 	TRANS_statement();
+	
+	if (has_else)
+	{
+		JOB->current++;
+		trans_else();
+		TRANS_statement();
+	}
+	
 	TRANS_endif();
 }
 
