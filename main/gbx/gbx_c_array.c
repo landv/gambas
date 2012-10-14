@@ -99,7 +99,7 @@ static int get_dim(CARRAY *_object)
 {
 	int d;
 
-	if (LIKELY(THIS->dim == NULL))
+	if (THIS->dim == NULL)
 		return 1;
 	else
 	{
@@ -114,7 +114,7 @@ static int get_dim(CARRAY *_object)
 
 static int get_bound(CARRAY *_object, int d)
 {
-	if (LIKELY(THIS->dim == NULL))
+	if (THIS->dim == NULL)
 		return THIS->count;
 	else
 	{
@@ -1407,6 +1407,7 @@ static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 	int i;
 	void *data;
 	VALUE temp;
+	int dim;
 	
 	if (!src || !TYPE_is_pure_object((TYPE)class))
 		return TRUE;
@@ -1434,6 +1435,14 @@ static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 		}
 	}
 	END_ERROR
+	
+	dim = get_dim(src);
+	if (dim > 1)
+	{
+		ALLOC(&array->dim, dim * sizeof(int), "_convert");
+		for (i = 0; i < dim; i++)
+			array->dim[i] = src->dim[i];
+	}
 	
 	conv->_object.object = array;
 	return FALSE;
