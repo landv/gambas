@@ -2,7 +2,13 @@
 
 { Form Form
   MoveScaled(0,0,85,64)
-  { ColorChooser1 ColorChooser
-    MoveScaled(8,8,56,40)
+  { ButtonBox1 ButtonBox
+    MoveScaled(13,10,25,4)
+    Text = ("ButtonBox1")
+  }
+  { TextBox1 TextBox
+    MoveScaled(14,15,24,4)
+    Text = ("TextBox1")
+    Border = False
   }
 }
