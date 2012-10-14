@@ -1670,7 +1670,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 		{
 			if (newParentWidget && parentWidget() != newParentWidget)
 			{
-				//qDebug("showActivate");
 				doReparent(newParentWidget, pos());
 			}
 		}
@@ -1692,12 +1691,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
 
 		if (isUtility() && _resizable)
-		{
 			setMinimumSize(THIS->minw, THIS->minh);
-    	setSizeGrip(true);
-		}
-		else
-			setSizeGrip(false);
 		
 		if (getState() & Qt::WindowMinimized)
 			showMinimized();
@@ -1708,6 +1702,11 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			show();
 
+		if (isUtility() && _resizable)
+    	setSizeGrip(true);
+		else
+			setSizeGrip(false);
+		
 		/*if (_type == _NET_WM_WINDOW_TYPE_NORMAL
 			  || _type == _NET_WM_WINDOW_TYPE_DOCK
 			  || _type == _NET_WM_WINDOW_TYPE_TOOLBAR
