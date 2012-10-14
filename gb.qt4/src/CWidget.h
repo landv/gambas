@@ -73,7 +73,8 @@ typedef
 			unsigned use_tablet : 1;
 			unsigned no_keyboard : 1;
 			unsigned tablet_pressed : 1;
-			unsigned _reserved : 7;
+			unsigned has_action : 1;
+			unsigned _reserved : 6;
 			} flag;
 		int level;
 		char *name;
@@ -100,8 +101,7 @@ enum {
 	WF_CLOSED           = (1 << 3),
 	WF_DELETED          = (1 << 4),
 	WF_VISIBLE          = (1 << 5),  // Only for menus
-	WF_ACTION           = (1 << 6),  // Has an action
-	WF_SCROLLVIEW       = (1 << 7)   // Inherits QScrollView
+	WF_SCROLLVIEW       = (1 << 6)   // Inherits QScrollView
 	};
 
 

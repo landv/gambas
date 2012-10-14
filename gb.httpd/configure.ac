@@ -70,14 +70,14 @@ AC_CHECK_HEADERS(fcntl.h grp.h memory.h paths.h poll.h sys/poll.h sys/devpoll.h 
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 
-d="/usr/local/v6/lib"
-AC_MSG_CHECKING(for $d)
-if test -d $d; then
-	AC_MSG_RESULT(yes (Adding -L$d to LDFLAGS))
-	LDFLAGS="$LDFLAGS -L$d"
-else
-	AC_MSG_RESULT(no)
-fi
+dnl d="/usr/local/v6/lib"
+dnl AC_MSG_CHECKING(for $d)
+dnl if test -d $d; then
+dnl 	AC_MSG_RESULT(yes (Adding -L$d to LDFLAGS))
+dnl 	LDFLAGS="$LDFLAGS -L$d"
+dnl else
+dnl 	AC_MSG_RESULT(no)
+dnl fi
 
 dnl
 dnl Most operating systems have gethostbyname() in the default searched

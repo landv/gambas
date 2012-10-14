@@ -842,8 +842,8 @@ NewExpression::NewExpression(Expression** it, int nargs, bool event) : event(eve
 	}
 	
 	if (PushClassExpression* pce = dyn_cast<PushClassExpression>(args[0])){
-		if (pce->klass->override)
-			pce->klass = pce->klass->override;
+		/*if (pce->klass->override)
+			pce->klass = pce->klass->override;*/
 		type = (TYPE)(void*)pce->klass;
 	} else {
 		type = T_OBJECT;
@@ -853,8 +853,8 @@ ReturnExpression::ReturnExpression(Expression* expr, int kind) : retval(expr), k
 	pc = get_current_read_pos();
 	type = FP->type;
 	if (retval){
-		if (TYPE_is_pure_object(type) && ((CLASS*)type)->override)
-			type = (TYPE)(((CLASS*)type)->override);
+		/*if (TYPE_is_pure_object(type) && ((CLASS*)type)->override)
+			type = (TYPE)(((CLASS*)type)->override);*/
 		JIT_conv(retval, type);
 	}
 }

@@ -12,8 +12,8 @@ install-exec-local:
 	
 	@echo
 	@echo "Running the informer again twice because of dependencies between information files"
-	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix)
-	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix)
+	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
+	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
 	
 	@echo "Installing the components..."
 	@(cd $(srcdir)/src; d=`pwd`; for p in `cat order`; do \

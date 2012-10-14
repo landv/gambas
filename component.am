@@ -36,7 +36,7 @@ install-data-hook:
 		$(INSTALL) $(COMPONENT)/.hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
 	fi
 	@echo "Creating the information files for $(COMPONENT) component..."
-	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $(COMPONENT)
+	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
 	@echo
 
 uninstall-hook:

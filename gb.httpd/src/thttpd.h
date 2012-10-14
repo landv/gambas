@@ -179,7 +179,7 @@
 ** when returning into to browsers.  Instead it'll just say "thttpd" with
 ** no version.
 */
-#define SHOW_SERVER_VERSION
+//#define SHOW_SERVER_VERSION
 
 /* CONFIGURE: Define this if you want to always chroot(), without having
 ** to give the -r command line flag.  Some people like this as a security
@@ -277,7 +277,7 @@
 
 /* CONFIGURE: $PATH to use for CGI programs.
 */
-#define CGI_PATH "/usr/local/bin:/usr/ucb:/bin:/usr/bin"
+//#define CGI_PATH "/usr/local/bin:/usr/ucb:/bin:/usr/bin"
 
 /* CONFIGURE: If defined, $LD_LIBRARY_PATH to use for CGI programs.
 */

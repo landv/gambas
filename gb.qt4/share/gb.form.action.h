@@ -69,6 +69,7 @@ void CACTION_register(void *control, const char *old, const char *key)
 		GB_T_STRING, old, 0,
 		GB_T_STRING, key, 0);
 
+	// The register function must not raise an error, otherwise bad things may happen
 	GB.Call(&_action_register_func, 3, true);
 
 	SET_ACTION(control, key && *key);

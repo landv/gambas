@@ -770,6 +770,9 @@ _PUSH_ME:
 		}
 		
 		EXEC_super = SP;
+		
+		//fprintf(stderr, "%s\n", DEBUG_get_current_position());
+		//BREAKPOINT();
 	}
 
 	PUSH();
@@ -1005,8 +1008,8 @@ _RETURN:
 	__RETURN_VALUE:
 	
 		type = FP->type;
-		if (TYPE_is_pure_object(type) && ((CLASS *)type)->override)
-			type = (TYPE)(((CLASS *)type)->override);
+		//if (TYPE_is_pure_object(type) && ((CLASS *)type)->override)
+		//	type = (TYPE)(((CLASS *)type)->override);
 		
 		VALUE_conv(&SP[-1], type);
 		SP--;

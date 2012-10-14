@@ -327,11 +327,9 @@ typedef
 		
 		COMPONENT *component;             // 128 208  The component the class belongs to
 		
-		struct _CLASS *override;          // 132 216  The overridden class
-		
+		void (**jit_functions)(void);     // 132 216  array of jit functions
+
 		struct _CLASS *next;              // 136 224  next class
-		
-		void (**jit_functions)(void);     // 140 232  array of jit functions
 		}
 	CLASS;
 	

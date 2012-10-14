@@ -3060,12 +3060,8 @@ _STANDARD:
 
 /** Action *****************************************************************/
 
-#define HAS_ACTION(_control) CWIDGET_test_flag((CWIDGET *)(_control), WF_ACTION)
-#define SET_ACTION(_control, _flag) \
-	if (_flag) \
-		CWIDGET_set_flag((CWIDGET *)(_control), WF_ACTION); \
-	else \
-		CWIDGET_clear_flag((CWIDGET *)(_control), WF_ACTION);
+#define HAS_ACTION(_control) ((CWIDGET *)(_control))->flag.has_action
+#define SET_ACTION(_control, _flag) (((CWIDGET *)(_control))->flag.has_action = (_flag))
 
 #include "gb.form.action.h"
 

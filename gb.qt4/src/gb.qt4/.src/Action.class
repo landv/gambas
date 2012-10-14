@@ -106,6 +106,7 @@ Static Public Sub _Register(Control As Object, Old As String, Key As String)
   
   Dim aCtrl As Object[]
   
+  If Not $cControls Then Return
   If Old = Key Then Return
   
   If Old Then

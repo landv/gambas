@@ -767,3 +767,7 @@ bool X11_window_dock(Window window)
 	return FALSE;
 }
 
+void X11_flush()
+{
+	XFlush(_display);
+}

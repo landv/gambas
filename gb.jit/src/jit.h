@@ -579,9 +579,9 @@ struct PushVirtualPropertyExpression : PushPureObjectExpression {
 		ref_stack();
 		obj->must_on_stack();
 		
-		if (TYPE_is_pure_object(type))
+		/*if (TYPE_is_pure_object(type))
 			while (((CLASS*)(void*)type)->override)
-				type = (TYPE)(((CLASS*)(void*)type)->override);
+				type = (TYPE)(((CLASS*)(void*)type)->override);*/
 	}
 	llvm::Value* codegen_private(bool get_value);
 	llvm::Value* codegen_get_value(){ return codegen_private(true); }

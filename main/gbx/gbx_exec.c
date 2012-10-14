@@ -1143,8 +1143,8 @@ void EXEC_native_check(bool defined)
 		TYPE __type = (_type); \
 		if (TYPE_is_pure_object(_type) && TEMP.type != T_NULL && TEMP.type != T_VOID) \
 		{ \
-			while (((CLASS *)__type)->override) \
-				__type = (TYPE)(((CLASS *)__type)->override); \
+			/*while (((CLASS *)__type)->override) \
+				__type = (TYPE)(((CLASS *)__type)->override);*/ \
 			\
 			if (TEMP.type == T_CLASS) \
 				TEMP._class.class = (CLASS *)__type; \
@@ -1859,8 +1859,8 @@ void EXEC_new(void)
 	if (SP->type == T_CLASS)
 	{
 		class = SP->_class.class;
-		if (UNLIKELY(class->override != NULL))
-			class = class->override;
+		//if (UNLIKELY(class->override != NULL))
+		//	class = class->override;
 	}
 	else if (TYPE_is_string(SP->type))
 	{

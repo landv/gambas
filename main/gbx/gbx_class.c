@@ -187,28 +187,53 @@ static void unload_class(CLASS *class)
 	class->state = CS_NULL;
 }
 
-static CLASS *class_replace_global(const char *name)
+#define SWAP_FIELD(_v, _s, _d, _f) (_v = _s->_f, _s->_f = _d->_f, _d->_f = _v)
+
+static void class_replace_global(const char *name)
 {
-	CLASS_SYMBOL *csym;
-	char *new_name;
+	CLASS_DESC_SYMBOL *cds;
 	CLASS *class, *parent;
-	CLASS *new_class;
+	char *old_name;
+	CLASS *old_class;
 	int len;
-	int index;
+	//int index;
+	CLASS swap;
+	char *swap_name;
+	bool swap_free_name;
+	int nprefix;
+	int i;
 
 	class = CLASS_find_global(name);
 	if (class->state)
 	{
+		//fprintf(stderr, "class_replace_global: %p %s\n", class, name);
+		
 		len = strlen(name);
 
-		ALLOC(&new_name, len + 2, "class_replace_global");
-		snprintf(new_name, len + 2, ">%s", name);
-		new_class = class_replace_global(new_name);
-		FREE(&new_name, "class_replace_global");
+		nprefix = 0;
+		parent = class;
+		do
+		{
+			nprefix++;
+			parent = parent->parent;
+		}
+		while (parent);
+		
+		ALLOC(&old_name, len + nprefix + 1, "class_replace_global");
+		for (i = 0; i < nprefix; i++)
+			old_name[i] = '>';
+		strcpy(&old_name[i], name);
+		
+		old_class = CLASS_find_global(old_name);
+		//fprintf(stderr, "-> %p %s\n", old_class, old_name);
+		
+		//snprintf(new_name, len + 2, ">%s", name);
+		//new_class = class_replace_global(new_name);
+		FREE(&old_name, "class_replace_global");
 
-		new_name = (char *)new_class->name;
+		//new_name = (char *)new_class->name;
 
-		if (TABLE_find_symbol(&_global_table, name, len, &index))
+		/*if (TABLE_find_symbol(&_global_table, name, len, &index))
 		{
 			csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
 			csym->class = new_class;
@@ -221,9 +246,26 @@ static CLASS *class_replace_global(const char *name)
 		}
 
 		new_class->name = class->name;
-		class->name = new_name;
+		class->name = new_name;*/
 		
-		for(;;)
+		swap = *class;
+		*class = *old_class;
+		*old_class = swap;
+		
+		SWAP_FIELD(swap_name, class, old_class, name);
+		SWAP_FIELD(swap_free_name, class, old_class, free_name);
+		SWAP_FIELD(parent, class, old_class, next);
+		
+		for (i = 0; i < old_class->n_desc; i++)
+		{
+			cds = &old_class->table[i];
+			if (cds->desc && cds->desc->method.class == class)
+				cds->desc->method.class = old_class;
+		}
+		
+		CLASS_inheritance(class, old_class, FALSE);
+		
+		/*for(;;)
 		{
 			class->override = new_class;
 			parent = class->parent;
@@ -232,10 +274,10 @@ static CLASS *class_replace_global(const char *name)
 			class = parent;
 		}
 
-		class = new_class;
+		class = new_class;*/
 	}
 
-	return class;
+	//return class;
 }
 
 
@@ -858,8 +900,9 @@ void CLASS_sort(CLASS *class)
 		{
 			s = (SYMBOL *)&class->table[sym[i]];
 
-			fprintf(stderr, "[%d] %.*s\n", i, (int)s->len, s->name);
+			fprintf(stderr, "[%d] %.*s (%d)\n", i, (int)s->len, s->name, sym[i]);
 		}
+		fputc('\n', stderr);
 	}
 	#endif
 }
@@ -1324,7 +1367,7 @@ void CLASS_search_special(CLASS *class)
 
 CLASS *CLASS_check_global(char *name)
 {
-	CLASS *class, *parent;
+	CLASS *class;
 
 	class = CLASS_find_global(name);
 	if (class->state)
@@ -1335,10 +1378,7 @@ CLASS *CLASS_check_global(char *name)
 		if (class->has_child)
 			THROW(E_CLASS, name, "Overriding an already inherited class is forbidden", "");
 			
-		parent = class;
-		class = class_replace_global(name);
-
-		CLASS_inheritance(class, parent, FALSE);
+		class_replace_global(name);
 	}
 
 	return class;

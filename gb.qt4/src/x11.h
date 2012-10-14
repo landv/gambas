@@ -118,6 +118,8 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 bool X11_is_supported_by_WM(Atom atom);
 bool X11_send_move_resize_event(Window window, int x, int y, int w, int h);
 
+void X11_flush();
+
 #ifdef __cplusplus
 }
 #endif

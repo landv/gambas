@@ -32,7 +32,7 @@
 #ifdef SHOW_SERVER_VERSION
 #define EXPOSED_SERVER_SOFTWARE SERVER_SOFTWARE
 #else	/* SHOW_SERVER_VERSION */
-#define EXPOSED_SERVER_SOFTWARE "thttpd"
+#define EXPOSED_SERVER_SOFTWARE "gb.httpd"
 #endif /* SHOW_SERVER_VERSION */
 
 #include <sys/types.h>
@@ -364,11 +364,10 @@ httpd_server *httpd_initialize(char *hostname, httpd_sockaddr * sa4P,
 
 	/* Done initializing. */
 	if (hs->binding_hostname == (char *) 0)
-		syslog(LOG_NOTICE, "%.80s starting on port %d", SERVER_SOFTWARE,
-					 (int) hs->port);
+		syslog(LOG_NOTICE, "starting on port %d", (int) hs->port);
 	else
-		syslog(LOG_NOTICE, "%.80s starting on %.80s, port %d", SERVER_SOFTWARE,
-					 httpd_ntoa(hs->listen4_fd != -1 ? sa4P : sa6P), (int) hs->port);
+		syslog(LOG_NOTICE, "starting on %.80s, port %d", httpd_ntoa(hs->listen4_fd != -1 ? sa4P : sa6P), (int) hs->port);
+	
 	return hs;
 }
 
@@ -3001,7 +3000,7 @@ static char **make_envp(httpd_conn * hc)
 	char buf[256];
 
 	envn = 0;
-	envp[envn++] = build_env("PATH=%s", CGI_PATH);
+	//envp[envn++] = build_env("PATH=%s", CGI_PATH);
 #ifdef CGI_LD_LIBRARY_PATH
 	envp[envn++] = build_env("LD_LIBRARY_PATH=%s", CGI_LD_LIBRARY_PATH);
 #endif /* CGI_LD_LIBRARY_PATH */

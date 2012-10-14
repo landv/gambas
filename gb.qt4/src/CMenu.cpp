@@ -36,13 +36,15 @@
 #include "CWindow.h"
 #include "CMenu.h"
 
+//#define DEBUG_MENU 1
+
 DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Show);
 DECLARE_EVENT(EVENT_Hide);
 
 DECLARE_METHOD(Control_Window);
 DECLARE_METHOD(Control_Name);
-DECLARE_METHOD(CMENU_hide);
+DECLARE_METHOD(Menu_Hide);
 
 static bool _popup_immediate = false;
 static CMENU *_popup_menu_clicked = NULL;
@@ -91,8 +93,11 @@ static void refresh_menubar(CMENU *menu)
 
 static void unregister_menu(CMENU *_object)
 {
-	CACTION_register((CWIDGET *)THIS, THIS->action, NULL);
-	GB.FreeString(&THIS->action);
+	if (THIS->action)
+	{
+		CACTION_register((CWIDGET *)THIS, THIS->action, NULL);
+		GB.FreeString(&THIS->action);
+	}
 }
 
 static void set_menu_visible(void *_object, bool v)
@@ -241,19 +246,19 @@ static void toggle_menu(CMENU *_object)
 }
 #endif
 
-BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
+BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 	QAction *action;
   void *parent = VARG(parent);
   QWidget *topLevel = 0;
   QMenuBar *menuBar = 0;
 
-  //printf("CMENU_new %p\n", _object);
+  //printf("Menu_new %p\n", _object);
 
   if (GB.CheckObject(parent))
     return;
 
-	//qDebug("CMENU_new: (%s %p)", GB.GetClassName(THIS), THIS);
+	//qDebug("Menu_new: (%s %p)", GB.GetClassName(THIS), THIS);
 	
   if (GB.Is(parent, CLASS_Menu))
   {
@@ -317,33 +322,33 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 	CWIDGET_init_name((CWIDGET *)THIS);
   
 #ifdef DEBUG_MENU
-  qDebug("CMENU_new: item = %p (%d) parent = %p (%d) toplevel = %p", item, item->id, item->parent, item->parent ? item->parent->id : 0, item->toplevel);
+  //qDebug("Menu_new: item = %p (%d) parent = %p (%d) toplevel = %p", item, item->id, item->parent, item->parent ? item->parent->id : 0, item->toplevel);
 #endif
 
 	THIS->toplevel = topLevel;
 	refresh_menubar(THIS);
-  //qDebug("*** CMENU_new %p", _object);
+  //qDebug("*** Menu_new %p", _object);
   GB.Ref(THIS);
 
-	//qDebug("CMENU_new: (%s %p)", THIS->widget.name, THIS);
+	//qDebug("Menu_new: (%s %p)", THIS->widget.name, THIS);
 	
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CMENU_free)
+BEGIN_METHOD_VOID(Menu_free)
 
 #ifdef DEBUG_MENU
-  qDebug("CMENU_free: item = %p '%s' (%d) parent = %p (%d)", item, item->text, item->id, item->parent, item->parent ? item->parent->id : 0);
+  qDebug("Menu_free: item = %p", THIS);
 #endif
 
-	//qDebug("CMENU_free: (%s %p)", THIS->widget.name, THIS);
+	//qDebug("Menu_free: (%s %p)", THIS->widget.name, THIS);
 	
 	delete_menu(THIS);
 
   GB.StoreObject(NULL, POINTER(&(THIS->picture)));
 
 #ifdef DEBUG_MENU
-  qDebug("*** CMENU_free: free tag");
+  qDebug("*** Menu_free: free tag");
 #endif
 
 	if (THIS->widget.ext)
@@ -352,19 +357,19 @@ BEGIN_METHOD_VOID(CMENU_free)
 		GB.Free(POINTER(&THIS->widget.ext));
 	}
 	
-	//qDebug("free_name: %s %p (CMENU_free)", THIS->widget.name, THIS->widget.name);
+	//qDebug("free_name: %s %p (Menu_free)", THIS->widget.name, THIS->widget.name);
 	//if (!strcmp(THIS->widget.name, "mnuCut"))
 	//	BREAKPOINT();
 	GB.FreeString(&THIS->widget.name);
 
   #ifdef DEBUG_MENU
-    qDebug("CMENU_free: item = %p '%s' (%d) is freed!", item, item->text, item->id);
+    qDebug("Menu_free: item = %p is freed!", THIS);
   #endif
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CMENU_text)
+BEGIN_PROPERTY(Menu_Text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(ACTION->text()));
@@ -379,7 +384,7 @@ BEGIN_PROPERTY(CMENU_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_picture)
+BEGIN_PROPERTY(Menu_Picture)
 
   if (READ_PROPERTY)
     GB.ReturnObject(THIS->picture);
@@ -396,7 +401,7 @@ BEGIN_PROPERTY(CMENU_picture)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_enabled)
+BEGIN_PROPERTY(Menu_Enabled)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(!THIS->disabled);
@@ -411,7 +416,7 @@ BEGIN_PROPERTY(CMENU_enabled)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMENU_checked)
+BEGIN_PROPERTY(Menu_Checked)
 
 	if (CMENU_is_toplevel(THIS))
 	{
@@ -432,7 +437,7 @@ BEGIN_PROPERTY(CMENU_checked)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_toggle)
+BEGIN_PROPERTY(Menu_Toggle)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->toggle);
@@ -447,11 +452,11 @@ END_PROPERTY
 
 static void send_click_event(CMENU *_object);
 
-BEGIN_PROPERTY(CMENU_value)
+BEGIN_PROPERTY(Menu_Value)
 
   if (THIS->toggle)
   {
-    CMENU_checked(_object, _param);
+    Menu_Checked(_object, _param);
     return;
   }
 
@@ -461,7 +466,7 @@ BEGIN_PROPERTY(CMENU_value)
   }
   else if (!CMENU_is_toplevel(THIS))
   {
-		//qDebug("CMENU_value: %s", THIS->widget.name);
+		//qDebug("Menu_Value: %s", THIS->widget.name);
     GB.Ref(THIS);
     send_click_event(THIS);
   }
@@ -469,7 +474,7 @@ BEGIN_PROPERTY(CMENU_value)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_shortcut)
+BEGIN_PROPERTY(Menu_Shortcut)
 
   if (CMENU_is_toplevel(THIS) || THIS->menu)
   {
@@ -494,7 +499,7 @@ BEGIN_PROPERTY(CMENU_shortcut)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_visible)
+BEGIN_PROPERTY(Menu_Visible)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->visible);
@@ -504,28 +509,28 @@ BEGIN_PROPERTY(CMENU_visible)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CMENU_show)
+BEGIN_METHOD_VOID(Menu_Show)
 
 	set_menu_visible(THIS, true);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CMENU_hide)
+BEGIN_METHOD_VOID(Menu_Hide)
 
 	set_menu_visible(THIS, false);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CMENU_delete)
+BEGIN_METHOD_VOID(Menu_Delete)
 
 	delete_menu(THIS);
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CMENU_count)
+BEGIN_PROPERTY(MenuChildren_Count)
 
   if (THIS->menu)
     GB.ReturnInteger(THIS->menu->actions().count());
@@ -535,7 +540,7 @@ BEGIN_PROPERTY(CMENU_count)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CMENU_next)
+BEGIN_METHOD_VOID(MenuChildren_next)
 
   int index;
 
@@ -560,7 +565,7 @@ BEGIN_METHOD_VOID(CMENU_next)
 END_METHOD
 
 
-BEGIN_METHOD(CMENU_get, GB_INTEGER index)
+BEGIN_METHOD(MenuChildren_get, GB_INTEGER index)
 
   int index = VARG(index);
 
@@ -575,7 +580,7 @@ BEGIN_METHOD(CMENU_get, GB_INTEGER index)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CMENU_clear)
+BEGIN_METHOD_VOID(MenuChildren_Clear)
 
 	clear_menu(THIS);
 
@@ -635,7 +640,7 @@ BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
-BEGIN_PROPERTY(CMENU_window)
+BEGIN_PROPERTY(Menu_Window)
 
   GB.ReturnObject(CWidget::get(THIS->toplevel));
 
@@ -672,10 +677,10 @@ GB_DESC CMenuChildrenDesc[] =
 {
   GB_DECLARE(".Menu.Children", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Menu", CMENU_next, NULL),
-  GB_METHOD("_get", "Menu", CMENU_get, "(Index)i"),
-  GB_METHOD("Clear", NULL, CMENU_clear, NULL),
-  GB_PROPERTY_READ("Count", "i", CMENU_count),
+  GB_METHOD("_next", "Menu", MenuChildren_next, NULL),
+  GB_METHOD("_get", "Menu", MenuChildren_get, "(Index)i"),
+  GB_METHOD("Clear", NULL, MenuChildren_Clear, NULL),
+  GB_PROPERTY_READ("Count", "i", MenuChildren_Count),
 
   GB_END_DECLARE
 };
@@ -687,31 +692,31 @@ GB_DESC CMenuDesc[] =
   GB_HOOK_CHECK(check_menu),
 
   //GB_STATIC_METHOD("_init", NULL, CMENU_init, NULL),
-  GB_METHOD("_new", NULL, CMENU_new, "(Parent)o[(Hidden)b]"),
-  //GB_METHOD("_new", NULL, CMENU_new, "(Parent)o[(Visible)b]"),
-  GB_METHOD("_free", NULL, CMENU_free, NULL),
+  GB_METHOD("_new", NULL, Menu_new, "(Parent)o[(Hidden)b]"),
+  //GB_METHOD("_new", NULL, Menu_new, "(Parent)o[(Visible)b]"),
+  GB_METHOD("_free", NULL, Menu_free, NULL),
 
   //GB_PROPERTY("Name", "s", CWIDGET_name),
 
-  //GB_PROPERTY_READ("Count", "i", CMENU_count),
+  //GB_PROPERTY_READ("Count", "i", MenuChildren_Count),
 
   //GB_PROPERTY_READ("Parent", "Control", CWIDGET_parent),
 
   GB_PROPERTY("Name", "s", Control_Name),
-  GB_PROPERTY("Caption", "s", CMENU_text),
-  GB_PROPERTY("Text", "s", CMENU_text),
-  GB_PROPERTY("Enabled", "b", CMENU_enabled),
-  GB_PROPERTY("Checked", "b", CMENU_checked),
+  GB_PROPERTY("Caption", "s", Menu_Text),
+  GB_PROPERTY("Text", "s", Menu_Text),
+  GB_PROPERTY("Enabled", "b", Menu_Enabled),
+  GB_PROPERTY("Checked", "b", Menu_Checked),
   GB_PROPERTY("Tag", "v", Control_Tag),
-  GB_PROPERTY("Picture", "Picture", CMENU_picture),
+  GB_PROPERTY("Picture", "Picture", Menu_Picture),
   //GB_PROPERTY("Stretch", "b", CMENU_stretch),
-  GB_PROPERTY("Shortcut", "s", CMENU_shortcut),
-  GB_PROPERTY("Visible", "b", CMENU_visible),
-  GB_PROPERTY("Toggle", "b", CMENU_toggle),
-  GB_PROPERTY("Value", "b", CMENU_value),
+  GB_PROPERTY("Shortcut", "s", Menu_Shortcut),
+  GB_PROPERTY("Visible", "b", Menu_Visible),
+  GB_PROPERTY("Toggle", "b", Menu_Toggle),
+  GB_PROPERTY("Value", "b", Menu_Value),
   //GB_PROPERTY("TearOff", "b", CMENU_tear_off),
   GB_PROPERTY("Action", "s", Menu_Action),
-  GB_PROPERTY_READ("Window", "Window", CMENU_window),
+  GB_PROPERTY_READ("Window", "Window", Menu_Window),
 
   GB_PROPERTY_SELF("Children", ".Menu.Children"),
   //GB_PROPERTY_READ("Index", "i", CMENU_item_index),
@@ -719,9 +724,9 @@ GB_DESC CMenuDesc[] =
 	MENU_DESCRIPTION,
 
   GB_METHOD("Popup", NULL, Menu_Popup, "[(X)i(Y)i]"),
-  GB_METHOD("Delete", NULL, CMENU_delete, NULL),
-  GB_METHOD("Show", NULL, CMENU_show, NULL),
-  GB_METHOD("Hide", NULL, CMENU_hide, NULL),
+  GB_METHOD("Delete", NULL, Menu_Delete, NULL),
+  GB_METHOD("Show", NULL, Menu_Show, NULL),
+  GB_METHOD("Hide", NULL, Menu_Hide, NULL),
 
   //GB_EVENT("Delete", NULL, NULL, &EVENT_Destroy), // Must be first
   GB_EVENT("Click", NULL, NULL, &EVENT_Click),
@@ -891,7 +896,7 @@ void CMenu::slotDestroyed(void)
   CMENU *_object = dict[(QAction *)sender()];
 
   #ifdef DEBUG_MENU
-  qDebug("*** { CMenu::destroy %p", menu);
+  qDebug("*** { CMenu::destroy %p", THIS);
   #endif
 
 	//qDebug("CMenu::slotDestroyed: action = %p  THIS = %p", sender(), _object);
@@ -909,15 +914,14 @@ void CMenu::slotDestroyed(void)
   qDebug("UNREF (%s %p)", THIS->widget.name, THIS);
   #endif
 	
-	THIS->widget.widget = 0;
-
 	unregister_menu(THIS);
+	THIS->widget.widget = NULL;
   GB.Unref(POINTER(&_object));
 
   //menu->dict = dict;
 
   #ifdef DEBUG_MENU
-  qDebug("*** } CMenu::destroy: %p", menu);
+  qDebug("*** } CMenu::destroy: %p", THIS);
   #endif
 }
 

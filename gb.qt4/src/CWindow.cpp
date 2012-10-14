@@ -1683,11 +1683,10 @@ void MyMainWindow::showActivate(QWidget *transient)
 		setWindowTitle(TO_QSTRING(GB.Application.Title()));
 
 	initProperties();
+	//::sleep(1);
 
 	if (!isVisible())
 	{
-		//GB.Raise(THIS, EVENT_Open, 0);
-
 		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
 
 		if (isUtility() && _resizable)
@@ -1701,7 +1700,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 			showMaximized();
 		else
 			show();
-
+		
 		if (isUtility() && _resizable)
     	setSizeGrip(true);
 		else
