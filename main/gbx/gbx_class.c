@@ -255,6 +255,8 @@ static void class_replace_global(const char *name)
 		SWAP_FIELD(swap_name, class, old_class, name);
 		SWAP_FIELD(swap_free_name, class, old_class, free_name);
 		SWAP_FIELD(parent, class, old_class, next);
+		SWAP_FIELD(i, class, old_class, count);
+		SWAP_FIELD(i, class, old_class, ref);
 		
 		for (i = 0; i < old_class->n_desc; i++)
 		{

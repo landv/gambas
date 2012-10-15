@@ -10,6 +10,7 @@ Public Info As String
 Public Require As String[]
 
 Static Private $cAll As New Collection
+Static Private $sInfo As String
 
 Static Public Sub _get(sPath As String) As CLibraryInfo
   
@@ -101,3 +102,25 @@ Public Sub GetDependencyName() As String
   
 End
 
+Private Sub AddInfo(sTitle As String, sValue As String)
+  
+  If $sInfo Then $sInfo &= "<br>"
+  $sInfo &= Subst(("<b>&1:</b> &2"), sTitle, sValue)
+  
+End
+
+
+Public Sub GetDescription() As String
+  
+  $sInfo = ""
+  AddInfo(("Location"), Path)
+  If NotFound Then
+    $sInfo &= "<br><b><font color=\"red\">" & ("WARNING! Library not found.") & "</font></b>"
+  Else
+    AddInfo(("Provides"), Classes.Join(", "))
+    If Require.Count Then AddInfo(("Requires"), Require.Join(", "))
+  Endif
+  
+  Return "<font size=\"+1\"><b>" & Name & "</b> " & Version & "</font><br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
+  
+End

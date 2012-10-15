@@ -1,0 +1,13 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Args.Begin(("Usage: gbx3 <options> <project>\n       gbx3 -e <expression>"))
+  
+  Args.Has("k", "no-unload", ("Do not unload shared libraries"))
+  Print Args.Get("p", "profile", ("Activate profiling mode"), ("path"))
+  Print Args.GetInteger("s", "stack-size", ("Stack size [256]"), ("kilobytes"), 256)
+  
+  Print Args.End().Join(",")
+
+End

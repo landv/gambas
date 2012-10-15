@@ -268,7 +268,7 @@ Public Sub btnOK_Click()
 
   If DoApply() Then Return
   
-  Me.Close(True )
+  Me.Close(True)
 
 End
 
@@ -720,7 +720,7 @@ Public Sub btnIcon_Click()
 
   Dim sIcon As String
 
-  sIcon = FSelectIcon.Run($sIcon, True )
+  sIcon = FSelectIcon.Run($sIcon, True)
   If Not sIcon Then Return
 
   $sIcon = sIcon
@@ -1173,23 +1173,28 @@ End
 
 Private Sub RefreshLibraries()
   
-  Dim sPath As String
-  Dim hLib As LibraryItem
-  Dim hSep As Separator
+  Dim Y As Integer
   
   If $iDoNotRefreshComponent Then Return
   
-  lstLibraries.Lock
-  lstLibraries.Clear
+  gvwLibrary.Columns.Count = 1
+  gvwLibrary.Rows.Count = $aLibraries.Count
   
-  For Each sPath In $aLibraries
-    hLib = New LibraryItem(lstLibraries)
-    hLib.Path = sPath
-    hSep = New Separator(lstLibraries)
-    hSep.H = 4
+  For Y = 0 To $aLibraries.Max
+    
+    With gvwLibrary[Y, 0]
+      
+      .Picture = Picture["icon:/large/exec"]
+      .Alignment = Align.TopNormal
+      .RichText = CLibraryInfo[$aLibraries[Y]].GetDescription()
+      .Padding = 8
+      .WordWrap = True
+      
+    End With
+    
   Next
   
-  lstLibraries.Unlock
+  tabProject_Arrange
   
 End
 
@@ -1210,42 +1215,32 @@ End
 
 Public Sub btnRemoveLib_Click()
 
-  Dim hLib As LibraryItem = lstLibraries.Current
-
-  If Not hLib Then Return
-  RemoveLibrary(hLib.Path)
+  If gvwLibrary.Row < 0 Then Return
+  RemoveLibrary($aLibraries[gvwLibrary.Row])
   
 End
 
 Public Sub btnMoveUpLib_Click()
 
-  Dim hLib As LibraryItem = lstLibraries.Current
-  Dim iPos As Integer
+  Dim iPos As Integer = gvwLibrary.Row
 
-  If Not hLib Then Return
-  
-  iPos = $aLibraries.Find(hLib.Path)
   If iPos < 1 Then Return
   
   Swap $aLibraries[iPos], $aLibraries[iPos - 1]
   RefreshLibraries
-  lstLibraries.Index = (iPos - 1) * 2
+  Dec gvwLibrary.Row
   
 End
 
 Public Sub btnMoveDownLib_Click()
 
-  Dim hLib As LibraryItem = lstLibraries.Current
-  Dim iPos As Integer
+  Dim iPos As Integer = gvwLibrary.Row
 
-  If Not hLib Then Return
-  
-  iPos = $aLibraries.Find(hLib.Path)
   If iPos < 0 Or If iPos >= $aLibraries.Max Then Return
   
   Swap $aLibraries[iPos], $aLibraries[iPos + 1]
   RefreshLibraries
-  lstLibraries.Index = (iPos + 1) * 2
+  Inc gvwLibrary.Row
 
 End
 
@@ -1281,6 +1276,10 @@ Public Sub tabProject_Arrange()
 
   For I = 0 To $aComp.Max
     gvwComponent.Rows[I].H = -1
+  Next
+  
+  For I = 0 To $aLibraries.Max
+    gvwLibrary.Rows[I].H = -1
   Next
 
 End

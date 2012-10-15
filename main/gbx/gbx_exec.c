@@ -1141,11 +1141,8 @@ void EXEC_native_check(bool defined)
 	else \
 	{ \
 		TYPE __type = (_type); \
-		if (TYPE_is_pure_object(_type) && TEMP.type != T_NULL && TEMP.type != T_VOID) \
+		if (TYPE_is_pure_object(__type) && TEMP.type != T_NULL && TEMP.type != T_VOID) \
 		{ \
-			/*while (((CLASS *)__type)->override) \
-				__type = (TYPE)(((CLASS *)__type)->override);*/ \
-			\
 			if (TEMP.type == T_CLASS) \
 				TEMP._class.class = (CLASS *)__type; \
 			else \

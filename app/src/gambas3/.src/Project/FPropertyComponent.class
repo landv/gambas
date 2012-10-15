@@ -15,7 +15,7 @@ Public Sub btnOK_Click()
 
   If WriteComponent() Then Return 
 
-  Me.Close(True )
+  Me.Close(True)
 
 End
 
@@ -224,7 +224,7 @@ Public Sub Form_Open()
   'Me.Title = 
   'lblTitle.Text = Project.Name
   
-  Try aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True )
+  Try aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True)
   If Not Error Then
     For iInd = 0 To aClass.Max
       If Left(aClass[iInd]) = "?" Then aClass[iInd] = Mid$(aClass[iInd], 2)
