@@ -7,8 +7,12 @@
   Spacing = True
   Margin = True
   Padding = 10
+  { !MailClient #Pop3Client
+    #MoveScaled(23,1)
+    #Public = True
+  }
   { HSplit1 HSplit
-    MoveScaled(2,7,69,19)
+    MoveScaled(1,9,69,19)
     Expand = True
     { lvInbox ListView
       MoveScaled(2,3,29,14)
