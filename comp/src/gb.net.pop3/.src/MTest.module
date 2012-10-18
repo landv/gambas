@@ -18,26 +18,26 @@ Public Sub Main()
 
   'msg.Debug = True
 
-  msg.User = "test.gambas@gmail.com"
-  msg.Password = "gambasrules!"
+  msg.User = ""
+  msg.Password = ""
 
-  msg.Host = "pop.googlemail.com"
-  msg.Encrypt = Net.SSL
+  msg.Host = ""
+  msg.Encrypt = Net.None
 
   msg.Open()
-  
-  Print msg.List().Join("\n")
-  Print
-  Print msg.ListUniqueID().Join("\n")
+
+  ' Print msg.List().Join("\n")
+  ' Print
+  ' Print msg.ListUniqueID().Join("\n")
 
   ' Print msg[0].Sender
   ' Print msg[0].Part[0].ContentEncodin
 
-  msg[2].Delete
-  
-  Print msg.Stat()[0]
-  
-  msg.Reset
+  'msg[2].Delete
+
+  ' Print msg.Stat()[0]
+
+  '
 
   For Each message In msg
     Print message.Index;; message.Size
@@ -45,8 +45,10 @@ Public Sub Main()
     Try Print hMsg.Sender
   Next
 
-  Print msg.List().Join("\n")
+  msg.Reset()
 
-  msg.Abort()
+  'Print msg.List().Join("\n")
+
+  msg.Close()
 
 End

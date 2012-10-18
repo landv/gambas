@@ -90,7 +90,7 @@ Property Debug As Boolean
 Private $bDebug As Boolean
 
 ''Collection used to cache the request of single messages
-Private $msgCache As New Collection
+Private $msgCache As Collection
 
 '' If connection has been closed
 Private $bClosed As Boolean
@@ -113,7 +113,7 @@ End
 Static Public Function _StripOK(Text As String, Optional bMultiline As Boolean) As String
 
   Dim iPos As Integer
-  
+
   If bMultiline Then
     iPos = InStr(Text, "\n")
     If iPos Then Return Mid$(Text, iPos + 1)
@@ -130,22 +130,21 @@ Static Public Sub _PrintDebug(sMsg As String)
 End
 
 Static Public Sub _CheckResponse(sResponse As String)
-  
+
   If sResponse Not Begins "+OK" Then
     If sResponse Begins "-ERR" Then
       sResponse = Mid$(sResponse, 5)
     Endif
     Error.Raise(Trim(sResponse))
   Endif
-  
-End
 
+End
 
 Public Function _get(Index As Integer) As _Pop3Client_Message
 
   Dim hMessage As _Pop3Client_Message
 
-  If Index < 0 Or If Index >= Me.Count Then 
+  If Index < 0 Or If Index >= Me.Count Then
     Error.Raise("Out of bounds")
   Endif
 
@@ -239,6 +238,8 @@ Public Function Open() As Boolean
   Else
     $iStatus = Net.Connected
     If $bDebug Then _PrintDebug("OK")
+    $bClosed = False
+    $msgCache = New Collection
   Endif
 
   Return $iStatus
@@ -251,7 +252,7 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
   Dim Response As String
   Dim iPos As Integer
 
-  If $bDebug Then 
+  If $bDebug Then
     If Data Begins "PASS " Then
       _PrintDebug("Sending: PASS ********")
     Else
@@ -283,16 +284,15 @@ Public Function Exec(Data As String, Optional Multiline As Boolean = False) As S
 End
 
 Public Sub Abort()
-  
+
   If $bDebug Then _PrintDebug("Aborting...")
   $oClient.Disconnect()
 
   $msgCache = Null
 
   $bClosed = True
-  
-End
 
+End
 
 ''Logout from the server and disconnect
 Public Function Close() As Boolean
@@ -314,6 +314,8 @@ Public Function Close() As Boolean
   $msgCache = Null
 
   $bClosed = True
+
+  $iStatus = Net.Inactive
 
   Return Not _IsPositive(Response)
 
@@ -339,21 +341,16 @@ End
 ''Can be used as a keep-alive feature
 Public Function Ping() As Boolean
 
-  Dim Response As String
-
-  Response = Exec("NOOP")
-  Return Not _IsPositive(Response)
+  Return Not _IsPositive(Exec("NOOP"))
 
 End
 
 Public Function Reset()
 
-  Dim Response As String
   Dim hMsg As _Pop3Client_Message
 
-  Response = Exec("RSET")
-  _CheckResponse(Response)
-  
+  _CheckResponse(Exec("RSET"))
+
   ' Reset the deleted flag in each message
   For Each hMsg In $msgCache
     hMsg._Reset
