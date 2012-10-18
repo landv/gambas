@@ -1,0 +1,68 @@
+' Gambas class file
+
+Public Sub Form_Close()
+
+  Settings.Write(FSettings)
+
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(FSettings)
+
+  txtUsername.Text = Settings["LastUser", FMain.MailClient.User]
+
+  txtPassword.Text = FMain.MailClient.Password
+
+  txtServer.Text = Settings["LastServer", FMain.MailClient.Host]
+
+  vbPort.Value = IIf(FMain.MailClient.Port, FMain.MailClient.Port, vbPort.Value)
+
+End
+
+Public Sub btnSave_Click()
+
+  Balloon.Delay = 3000
+
+  If Not txtUsername.Text Then
+    Balloon.Error("Missing username", txtUsername)
+    Return
+  Endif
+
+  If Not txtPassword.Text Then
+    Balloon.Error("Missing password", txtPassword)
+    Return
+  Endif
+
+  If Not txtServer.Text Then
+    Balloon.Error("Missing server", txtServer)
+    Return
+  Endif
+
+  FMain.MailClient.User = txtUsername.Text
+  Settings["LastUser"] = FMain.MailClient.User
+
+  FMain.MailClient.Password = txtPassword.Text
+
+  FMain.MailClient.Host = txtServer.Text
+  Settings["LastServer"] = FMain.MailClient.Host
+
+  FMain.MailClient.Port = vbPort.Value
+
+  Me.Close
+
+End
+
+Public Sub chbSSL_Click()
+
+  Select Case chbSSL.Value
+
+    Case -1
+      If vbPort.Value = 110 Then vbPort.Value = 995
+
+    Case 0
+      If vbPort.Value = 995 Then vbPort.Value = 110
+
+  End Select
+
+End
