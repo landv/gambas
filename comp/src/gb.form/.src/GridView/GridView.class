@@ -408,6 +408,7 @@ Public Sub ScrollArea_Draw()
   If $iHeader And Vertical Then Draw.FillRect($hRows.Width + F - 1, 0, 1, $hView.ClientH, Color.LightForeground)
   
   If $hColumns.Count = 0 Or If $hRows.Count = 0 Then Return
+  If iRow < 0 Or If iRow2 < 0 Then Return
   
   ' Cells
   
