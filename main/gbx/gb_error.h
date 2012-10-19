@@ -153,10 +153,12 @@ const char *ERROR_get(void);
 void ERROR_define(const char *pattern, char *arg[]);
 
 void ERROR_propagate(void) NORETURN;
+
 void THROW(int code, ...) NORETURN;
 void THROW_SYSTEM(int err, const char *path);
 void THROW_ILLEGAL(void) NORETURN;
 void THROW_STACK(void) NORETURN;
+void THROW_CLASS(void *class, char *arg1, char *arg2) NORETURN;
 
 void ERROR_panic(const char *error, ...) NORETURN;
 void ERROR_warning(const char *warning, ...);

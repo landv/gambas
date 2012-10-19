@@ -167,9 +167,9 @@ static void conv_type_simple(CLASS *class, int *ptype)
 static void check_version(CLASS *class, int loaded)
 {
 	if (loaded > GAMBAS_PCODE_VERSION)
-		THROW(E_CLASS, _class_name, "Bytecode too recent. Please upgrade Gambas.", "");
+		THROW_CLASS(class, "Bytecode too recent. Please upgrade Gambas.", "");
 	if (loaded < GAMBAS_PCODE_VERSION_MIN)
-		THROW(E_CLASS, _class_name, "Bytecode too old. Please recompile the project.", "");
+		THROW_CLASS(class, "Bytecode too old. Please recompile the project.", "");
 }
 
 
@@ -348,7 +348,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	if (sclass->state)
 	{
 		if (!sclass->is_struct)
-			THROW(E_CLASS, _class_name, "Class already exists: ", name);
+			THROW_CLASS(class, "Class already exists: ", name);
 		
 		// Check compatibility with previous declaration
 		
@@ -472,7 +472,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	
 __MISMATCH:
 
-	THROW(E_CLASS, _class_name, "Structure is declared elsewhere differently: ", sclass->name);
+	THROW_CLASS(class, "Structure is declared elsewhere differently: ", CLASS_get_name(sclass));
 }
 
 
@@ -532,7 +532,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 			close(fd);
 		}
 		
-		THROW(E_CLASS, _class_name, "Bad header", "");
+		THROW_CLASS(class, "Bad header", "");
 	}
 	
 	check_version(class, header->version);
@@ -761,7 +761,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	if (section != &class->data[len_data])
 	{
 		/*printf("%d\n", &class->load[BUFFER_length(class->load)] - section);*/
-		THROW(E_CLASS, _class_name, "Unknown section", "");
+		THROW_CLASS(class, "Unknown section", "");
 	}
 
 
@@ -935,7 +935,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		return;
 
 	if (class->error)
-		THROW(E_CLASS, class->name, "Loading has already failed", "");
+		THROW_CLASS(class, "Loading has already failed", "");
 		
 	class->error = TRUE;
 
@@ -951,7 +951,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 	_class_name = class->name;
 
 	if (class->in_load)
-		THROW(E_CLASS, _class_name, "Circular reference", "");
+		THROW_CLASS(class, "Circular reference", "");
 
 	if (!class->component)
 	{
@@ -994,7 +994,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 		CATCH
 		{
-			THROW(E_CLASS, class->name, "Unable to load class file", "");
+			THROW_CLASS(class, "Unable to load class file", "");
 		}
 		END_TRY
 
@@ -1071,7 +1071,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 			case T_FLOAT: case T_SINGLE:
 				cc->_string.addr += (intptr_t)class->string;
 				if (NUMBER_from_string(NB_READ_FLOAT, cc->_string.addr, strlen(cc->_string.addr), &value))
-					THROW(E_CLASS, _class_name, "Bad constant", "");
+					THROW_CLASS(class, "Bad constant", "");
 				if (cc->type == T_SINGLE)
 					cc->_single.value = (float)value._float.value;
 				else
@@ -1187,7 +1187,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 			default:
 
-				THROW(E_CLASS, _class_name, "Bad description", "");
+				THROW_CLASS(class, "Bad description", "");
 		}
 	}
 

@@ -82,7 +82,7 @@ void CODE_next(bool drop);
 
 void CODE_new(ushort nparam, bool array, bool event);
 
-void CODE_quit(void);
+void CODE_quit(bool ret);
 void CODE_stop(void);
 
 void CODE_event(bool on);

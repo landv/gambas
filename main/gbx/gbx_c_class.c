@@ -44,17 +44,22 @@
 
 static CLASS_DESC_SYMBOL *_current_symbol = NULL;
 
+static void error(int code, CLASS *class, const char *name)
+{
+	GB_Error((char *)(intptr_t)code, CLASS_get_name(class), name);
+}
+
 static CLASS_DESC *get_desc(CLASS *class, const char *name)
 {
 	int index;
 
 	index = CLASS_find_symbol(class, name);
 
-	//fprintf(stderr, "CLASS_find_symbol('%s', '%s') = %ld\n", class->name, name, index);
+	//fprintf(stderr, "CLASS_find_symbol('%s', '%s') = %ld\n", CLASS_get_name(class), name, index);
 
 	if (index == NO_SYMBOL)
 	{
-		GB_Error((char *)E_NSYMBOL, name, class->name);
+		error(E_NSYMBOL, class, name);
 		return NULL;
 	}
 	else
@@ -251,7 +256,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Class_Hidden)
 
-	GB_ReturnBoolean(*(OBJECT(CLASS)->name) == '.');
+	GB_ReturnBoolean(*(CLASS_get_name(OBJECT(CLASS))) == '.');
 
 END_PROPERTY
 
@@ -529,7 +534,7 @@ BEGIN_METHOD(Object_GetProperty, GB_OBJECT object; GB_STRING property)
 	{
 		if (!object)
 		{
-			GB_Error((char *)E_DYNAMIC, class->name, name);
+			error(E_DYNAMIC, class, name);
 			return;
 		}
 	}
@@ -537,13 +542,13 @@ BEGIN_METHOD(Object_GetProperty, GB_OBJECT object; GB_STRING property)
 	{
 		if (object)
 		{
-			GB_Error((char *)E_STATIC, class->name, name);
+			error(E_STATIC, class, name);
 			return;
 		}
 	}
 	else
 	{
-		GB_Error((char *)E_NPROPERTY, class->name, name);
+		error(E_NPROPERTY, class, name);
 		return;
 	}
 
@@ -621,7 +626,7 @@ BEGIN_METHOD(Object_SetProperty, GB_OBJECT object; GB_STRING property; GB_VARIAN
 		{
 			if (!class->auto_create)
 			{
-				GB_Error((char *)E_DYNAMIC, class->name, name);
+				error(E_DYNAMIC, class, name);
 				return;
 			}
 			
@@ -632,18 +637,18 @@ BEGIN_METHOD(Object_SetProperty, GB_OBJECT object; GB_STRING property; GB_VARIAN
 	{
 		if (object)
 		{
-			GB_Error((char *)E_STATIC, class->name, name);
+			error(E_STATIC, class, name);
 			return;
 		}
 	}
 	else if (type == CD_PROPERTY_READ  || type == CD_STATIC_PROPERTY_READ)
 	{
-		GB_Error((char *)E_NWRITE, class->name, name);
+		error(E_NWRITE, class, name);
 		return;
 	}
 	else
 	{
-		GB_Error((char *)E_NPROPERTY, class->name, name);
+		error(E_NPROPERTY, class, name);
 		return;
 	}
 
@@ -795,7 +800,7 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 	
 	if (GB_GetFunction(&func, object, name, NULL, NULL))
 	{
-		GB_Error((char *)E_NSYMBOL, name, OBJECT_class(object)->name);
+		error(E_NSYMBOL, OBJECT_class(object), name);
 		return;
 	}
 

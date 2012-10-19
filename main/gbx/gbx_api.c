@@ -1000,7 +1000,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 
 _NOT_FOUND:
 
-	GB_Error("Unable to find method &1 in class &2. &3", name, class->name, err);
+	GB_Error("Unable to find method &1 in class &2. &3", name, CLASS_get_name(class), err);
 	func->object = NULL;
 	func->desc = NULL;
 	return TRUE;
@@ -1628,7 +1628,7 @@ void *GB_GetClass(void *object)
 char *GB_GetClassName(void *object)
 {
 	CLASS *class = GB_GetClass(object);
-	return class->name;
+	return CLASS_get_name(class);
 }
 
 

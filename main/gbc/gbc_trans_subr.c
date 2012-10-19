@@ -593,7 +593,16 @@ void TRANS_flush(void)
 
 void TRANS_quit(void)
 {
-	CODE_quit();
+	if (PATTERN_is_newline(*JOB->current))
+	{
+		CODE_quit(FALSE);
+	}
+	else
+	{
+		TRANS_expression(FALSE);
+		CODE_quit(TRUE);
+	}
+	
 }
 
 void TRANS_randomize(void)

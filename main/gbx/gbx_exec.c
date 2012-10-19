@@ -71,7 +71,7 @@ bool EXEC_fifo = FALSE; // debugging through a fifo
 const char *EXEC_fifo_name = NULL; // fifo name
 bool EXEC_keep_library = FALSE; // do not unload libraries
 bool EXEC_string_add = FALSE; // next '&' operator is done for a '&='
-
+uchar EXEC_quit_value = 0;
 EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_GLOBAL EXEC;
 bool EXEC_main_hook_done = FALSE;
@@ -1803,7 +1803,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 	CLASS_load(class);
 
 	if (UNLIKELY(class->no_create))
-		THROW(E_CSTATIC, class->name);
+		THROW(E_CSTATIC, CLASS_get_name(class));
 
 	object = OBJECT_new(class, event, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
 
@@ -1875,7 +1875,7 @@ void EXEC_new(void)
 	CLASS_load(class);
 
 	if (UNLIKELY(class->no_create))
-		THROW(E_CSTATIC, class->name);
+		THROW(E_CSTATIC, CLASS_get_name(class));
 
 	if (event)
 	{

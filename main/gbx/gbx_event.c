@@ -45,17 +45,17 @@ static void check_event_method(CLASS *class, const char *name, CLASS_DESC_METHOD
 	if (event->n_param < desc->npmin)
 	{
 		/*printf("event->n_param = %d  desc->npmin = %d  desc->npmax = %d\n", event->n_param, desc->npmin, desc->npmax);*/
-		THROW(E_EVENT, class->name, name, "Too many arguments");
+		THROW(E_EVENT, CLASS_get_name(class), name, "Too many arguments");
 	}
 
 	if (event->n_param > desc->npmax)
-		THROW(E_EVENT, class->name, name, "Not enough arguments");
+		THROW(E_EVENT, CLASS_get_name(class), name, "Not enough arguments");
 
 	if (TYPE_compare_signature(desc->signature, event->n_param, (TYPE *)event->param, event->n_param))
-		THROW(E_EVENT, class->name, name, "Type mismatch");
+		THROW(E_EVENT, CLASS_get_name(class), name, "Type mismatch");
 
 	if (desc->type != T_VOID)
-		THROW(E_EVENT, class->name, name, "Not a procedure");
+		THROW(E_EVENT, CLASS_get_name(class), name, "Not a procedure");
 }
 
 

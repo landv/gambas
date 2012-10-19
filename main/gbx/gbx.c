@@ -442,6 +442,8 @@ int main(int argc, char *argv[])
 				_exit(1);
 			}
 		}
+		
+		ret = EXEC_quit_value;
 	}
 	END_TRY
 

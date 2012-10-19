@@ -78,7 +78,7 @@ _POP_GENERIC:
     {
 			if (defined && object && !VALUE_is_super(val))
 				class = val->_object.class;
-			THROW(E_NSYMBOL, name, class->name);
+			THROW(E_NSYMBOL, CLASS_get_name(class), name);
 		}
 		goto _POP_UNKNOWN_PROPERTY;
 	}
@@ -89,14 +89,14 @@ _POP_GENERIC:
   {
     case CD_CONSTANT:
 
-      THROW(E_NPROPERTY, class->name, name);
+      THROW(E_NPROPERTY, CLASS_get_name(class), name);
 
     case CD_VARIABLE:
 
       if (object == NULL)
       {
         if (UNLIKELY(!class->auto_create))
-          THROW(E_DYNAMIC, class->name, name);
+          THROW(E_DYNAMIC, CLASS_get_name(class), name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 4;
       }
@@ -113,7 +113,7 @@ _POP_GENERIC:
     case CD_STRUCT_FIELD:
 
       if (object == NULL)
-        THROW(E_DYNAMIC, class->name, name);
+        THROW(E_DYNAMIC, CLASS_get_name(class), name);
       
       if (defined) 
 			{
@@ -122,14 +122,14 @@ _POP_GENERIC:
 			}
 			
 			if (desc->variable.ctype.id == TC_STRUCT || desc->variable.ctype.id == TC_ARRAY)
-				THROW(E_NWRITE, class->name, name);
+				THROW(E_NWRITE, CLASS_get_name(class), name);
 			
       goto _POP_STRUCT_FIELD_2;
 
     case CD_STATIC_VARIABLE:
 
       if (object)
-        THROW(E_STATIC, class->name, name);
+        THROW(E_STATIC, CLASS_get_name(class), name);
 
       if (defined) *PC |= 2;
 
@@ -143,7 +143,7 @@ _POP_GENERIC:
       if (object == NULL)
       {
         if (UNLIKELY(!class->auto_create))
-          THROW(E_DYNAMIC, class->name, name);
+          THROW(E_DYNAMIC, CLASS_get_name(class), name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 5;
       }
@@ -160,7 +160,7 @@ _POP_GENERIC:
     case CD_STATIC_PROPERTY:
 
       if (object)
-        THROW(E_STATIC, class->name, name);
+        THROW(E_STATIC, CLASS_get_name(class), name);
 
       if (defined) *PC |= 3;
 
@@ -172,16 +172,16 @@ _POP_GENERIC:
     case CD_PROPERTY_READ:
     case CD_STATIC_PROPERTY_READ:
 
-      THROW(E_NWRITE, class->name, name);
+      THROW(E_NWRITE, CLASS_get_name(class), name);
 
     case CD_METHOD:
     case CD_STATIC_METHOD:
 
-      THROW(E_NPROPERTY, class->name, name);
+      THROW(E_NPROPERTY, CLASS_get_name(class), name);
 
     default:
 
-      THROW(E_NSYMBOL, name, class->name);
+      THROW(E_NSYMBOL, CLASS_get_name(class), name);
   }
 
 
@@ -283,7 +283,7 @@ _POP_UNKNOWN_PROPERTY:
 	
 _NOT_A_PROPERTY:
 
-	THROW(E_NPROPERTY, class->name, name);
+	THROW(E_NPROPERTY, CLASS_get_name(class), name);
 
 _FIN:
 
@@ -398,7 +398,7 @@ __POP_ARRAY_2:
 	VALUE_copy(&val[-1], &swap);
 
 	if (UNLIKELY(EXEC_special(SPEC_PUT, class, object, np, TRUE)))
-		THROW(E_NARRAY, class->name);
+		THROW(E_NARRAY, CLASS_get_name(class));
 
 	POP(); /* free the object */
 }

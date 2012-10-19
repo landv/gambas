@@ -54,31 +54,6 @@ static bool _daemon = FALSE;
 
 extern char **environ;
 
-#if 0
-static void got_signal_after(intptr_t param)
-{
-  GB_Call(&signal_func, 0, FALSE);
-}
-
-
-void CAPP_got_signal(void)
-{
-  if (!has_signal_func)
-    return;
-
-  EVENT_post(got_signal_after, 0);
-}
-
-
-void CAPP_init()
-{
-  CLASS *class = PROJECT_class; //CLASS_find(PROJECT_startup);
-
-  has_signal_func = GB_GetFunction(&signal_func, class, "Application_Signal", "", "") == 0;
-
-  /*printf("has_signal_func = %d\n", has_signal_func);*/
-}
-#endif
 
 BEGIN_PROPERTY(Application_Path)
 

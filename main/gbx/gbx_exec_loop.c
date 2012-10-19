@@ -1887,6 +1887,13 @@ _QUIT:
 		case 2:
 			GAMBAS_StopEvent = TRUE;
 			break;
+			
+		case 3:
+			VALUE_conv(&SP[-1], T_BYTE);
+			SP--;
+			EXEC_quit_value = (uchar)SP->_integer.value;
+			EXEC_quit();
+			break;
 		
 		#if 0
 		case 3:

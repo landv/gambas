@@ -59,7 +59,7 @@ static const char *const _message[72] =
 	/*  8 E_ILLEGAL */ "Illegal instruction",
 	/*  9 E_NFUNC */ "Not a function",
 	/* 10 E_CSTATIC */ ".1Class '&1' is not creatable",
-	/* 11 E_NSYMBOL */ ".2Unknown symbol '&1' in class '&2'",
+	/* 11 E_NSYMBOL */ ".2Unknown symbol '&2' in class '&1'",
 	/* 12 E_NOBJECT */ "Not an object",
 	/* 13 E_NULL */ "Null object",
 	/* 14 E_STATIC */ ".2'&1.&2' is static",
@@ -465,6 +465,11 @@ void THROW(int code, ...)
 	ERROR_define((char *)(intptr_t)code, arg);
 
 	PROPAGATE();
+}
+
+void THROW_CLASS(void *class, char *arg1, char *arg2)
+{
+	THROW(E_CLASS, CLASS_get_name((CLASS *)class), arg1, arg2);
 }
 
 void THROW_ILLEGAL()

@@ -971,15 +971,18 @@ void CODE_return(int return_value)
 
 #ifdef PROJECT_COMP
 
-void CODE_quit(void)
+void CODE_quit(bool ret)
 {
 	LAST_CODE;
 
 	#ifdef DEBUG
-	printf("QUIT\n");
+	printf("QUIT (%d)\n", ret);
 	#endif
+	
+	if (ret)
+		use_stack(-1);
 
-	write_ZZxx(C_QUIT, 0);
+	write_ZZxx(C_QUIT, ret ? 3 : 0);
 }
 
 

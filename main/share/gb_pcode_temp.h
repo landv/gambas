@@ -380,6 +380,7 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 						case 0: fprintf(out, "QUIT"); break;
 						case 1: fprintf(out, "STOP"); break;
 						case 2: default: fprintf(out, "STOP EVENT"); break;
+						case 3: fprintf(out, "QUIT (1)"); break;
 					}
 					break;
 

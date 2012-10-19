@@ -442,6 +442,8 @@ CLASS *CLASS_get_list(void);
 CLASS *CLASS_get(const char *name);
 int CLASS_count(void);
 
+char *CLASS_get_name(CLASS *class);
+
 CLASS_DESC_SYMBOL *CLASS_get_symbol(CLASS *class, const char *name);
 CLASS_DESC *CLASS_get_symbol_desc(CLASS *class, const char *name);
 

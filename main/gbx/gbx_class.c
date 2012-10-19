@@ -227,9 +227,10 @@ static void class_replace_global(const char *name)
 		old_class = CLASS_find_global(old_name);
 		//fprintf(stderr, "-> %p %s\n", old_class, old_name);
 		
-		//snprintf(new_name, len + 2, ">%s", name);
-		//new_class = class_replace_global(new_name);
 		FREE(&old_name, "class_replace_global");
+		/*FREE(&old_class->name, "class_replace_global");
+		old_class->free_name = FALSE;
+		old_class->name = class->name;*/
 
 		//new_name = (char *)new_class->name;
 
@@ -912,7 +913,7 @@ void CLASS_sort(CLASS *class)
 void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 {
 	if (class->parent != NULL)
-		THROW(E_CLASS, class->name, "Multiple inheritance", "");
+		THROW_CLASS(class, "Multiple inheritance", "");
 
 	class->parent = parent;
 	parent->has_child = TRUE;
@@ -926,7 +927,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 	}
 	CATCH
 	{
-		THROW(E_CLASS, class->name, "Cannot load parent class: ", STRING_new_temp_zero(ERROR_current->info.msg));
+		THROW_CLASS(class, "Cannot load parent class: ", STRING_new_temp_zero(ERROR_current->info.msg));
 	}
 	END_TRY
 
@@ -1099,14 +1100,14 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 						#if DEBUG_DESC
 						fprintf(stderr, "type = '%c' parent_type = '%c'\n", type, parent_type);
 						#endif
-						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
+						THROW(E_OVERRIDE, CLASS_get_name(parent), cds->name, CLASS_get_name(class));
 					}
 					
 					if (!CLASS_is_native(class) && strcasecmp(name, "_new"))
 					{
 						//fprintf(stderr, "check_signature: %s\n", name);
 						if (check_signature(type, &desc[j], cds->desc))
-							THROW(E_OVERRIDE, parent->name, cds->name, class->name);
+							THROW(E_OVERRIDE, CLASS_get_name(parent), cds->name, CLASS_get_name(class));
 					}
 					
 					check = TRUE;
@@ -1375,7 +1376,7 @@ CLASS *CLASS_check_global(char *name)
 	if (class->state)
 	{
 		if (COMPONENT_current && class->component == COMPONENT_current)
-			ERROR_panic("Class '%s' declared twice in the component '%s'.", class->name, class->component->name);
+			ERROR_panic("Class '%s' declared twice in the component '%s'.", CLASS_get_name(class), class->component->name);
 
 		if (class->has_child)
 			THROW(E_CLASS, name, "Overriding an already inherited class is forbidden", "");
@@ -1529,4 +1530,14 @@ int CLASS_sizeof(CLASS *class)
 		return class->size - sizeof(CSTRUCT);
 	else
 		return class->size - sizeof(OBJECT);
+}
+
+char *CLASS_get_name(CLASS *class)
+{
+	char *name = class->name;
+	
+	while (*name == '>')
+		name++;
+	
+	return name;
 }

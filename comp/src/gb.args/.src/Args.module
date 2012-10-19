@@ -10,7 +10,7 @@ Private $sUsage As String
 Private Sub Abort(sErr As String)
   
   Error Application.Name; ": "; sErr
-  Quit
+  Quit 1
   
 End
 
@@ -70,7 +70,7 @@ Public Sub End() As String[]
   Dim aRest As New String[]
   Dim I As Integer
   
-  If Has("V", "--version", ("Display version")) Then
+  If Has("V", "version", ("Display version")) Then
     Print Application.Version
     Quit
   Endif

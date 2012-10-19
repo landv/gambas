@@ -86,15 +86,15 @@ _PUSH_GENERIC:
 		{
 			if (defined && object && !VALUE_is_super(val))
 				class = val->_object.class;
-			THROW(E_NSYMBOL, name, class->name);
+			THROW(E_NSYMBOL, CLASS_get_name(class), name);
 		}
 
 		if (class->unknown_static && object)
-			THROW(E_STATIC, class->name, name);
+			THROW(E_STATIC, CLASS_get_name(class), name);
 		else if (!class->unknown_static && object == NULL)
 		{
 			if (!class->auto_create)
-				THROW(E_DYNAMIC, class->name, name);
+				THROW(E_DYNAMIC, CLASS_get_name(class), name);
 			object = EXEC_auto_create(class, TRUE);
 		}
 
@@ -179,7 +179,7 @@ _PUSH_GENERIC:
 			if (object == NULL)
 			{
 				if (!class->auto_create)
-					THROW(E_DYNAMIC, class->name, name);
+					THROW(E_DYNAMIC, CLASS_get_name(class), name);
 				object = EXEC_auto_create(class, TRUE);
 				*PC |= 7;
 			}
@@ -196,7 +196,7 @@ _PUSH_GENERIC:
 		case CD_STRUCT_FIELD:
 
 			if (object == NULL)
-				THROW(E_DYNAMIC, class->name, name);
+				THROW(E_DYNAMIC, CLASS_get_name(class), name);
 			
 			if (defined) 
 			{
@@ -209,7 +209,7 @@ _PUSH_GENERIC:
 		case CD_STATIC_VARIABLE:
 
 			if (object)
-				THROW(E_STATIC, class->name, name);
+				THROW(E_STATIC, CLASS_get_name(class), name);
 
 			if (defined) *PC |= 3;
 
@@ -224,7 +224,7 @@ _PUSH_GENERIC:
 			if (object == NULL)
 			{
 				if (UNLIKELY(!class->auto_create))
-					THROW(E_DYNAMIC, class->name, name);
+					THROW(E_DYNAMIC, CLASS_get_name(class), name);
 				object = EXEC_auto_create(class, TRUE);
 				*PC |= 8;
 			}
@@ -242,7 +242,7 @@ _PUSH_GENERIC:
 		case CD_STATIC_PROPERTY_READ:
 
 			if (object)
-				THROW(E_STATIC, class->name, name);
+				THROW(E_STATIC, CLASS_get_name(class), name);
 
 			if (defined) *PC |= 4;
 
@@ -256,7 +256,7 @@ _PUSH_GENERIC:
 			if (object == NULL)
 			{
 				if (UNLIKELY(!class->auto_create))
-					THROW(E_DYNAMIC, class->name, name);
+					THROW(E_DYNAMIC, CLASS_get_name(class), name);
 				object = EXEC_auto_create(class, TRUE);
 				*PC |= 9;
 			}
@@ -302,7 +302,7 @@ _PUSH_GENERIC:
 
 		default:
 
-			THROW(E_NSYMBOL, name, class->name);
+			THROW(E_NSYMBOL, CLASS_get_name(class), name);
 	}
 
 	
@@ -635,7 +635,7 @@ __PUSH_ARRAY:
 __PUSH_ARRAY_2:
 
 	if (UNLIKELY(EXEC_special(SPEC_GET, class, object, np, FALSE)))
-		THROW(E_NARRAY, class->name);
+		THROW(E_NARRAY, CLASS_get_name(class));
 
 	OBJECT_UNREF(object, "EXEC_push_array");
 	SP--;

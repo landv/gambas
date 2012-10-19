@@ -82,7 +82,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 		return NULL;
 		
 	if (class->error)
-		THROW(E_CLASS, class->name, "Loading has already failed", "");
+		THROW_CLASS(class, "Loading has already failed", "");
 
 	class->error = TRUE;
 	
@@ -181,7 +181,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 					else
 					{
 						if (NUMBER_from_string(NB_READ_FLOAT, desc->constant.value._string, strlen(desc->constant.value._string), &value))
-							THROW(E_CLASS, class->name, "Bad constant", "");
+							THROW_CLASS(class, "Bad constant", "");
 					}
 					
 					if (desc->constant.type == T_SINGLE)

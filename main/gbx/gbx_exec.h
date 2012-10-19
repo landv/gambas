@@ -114,6 +114,7 @@ extern const char EXEC_should_borrow[];
 
 extern const char *EXEC_unknown_name;
 extern char EXEC_unknown_nparam;
+extern uchar EXEC_quit_value;
 
 extern EXEC_GLOBAL EXEC;
 
