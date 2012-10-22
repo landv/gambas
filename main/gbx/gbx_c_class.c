@@ -951,7 +951,7 @@ BEGIN_METHOD(Object_CanRaise, GB_OBJECT object; GB_STRING name)
 	class = OBJECT_class(object);
 	name = GB_ToZeroString(ARG(name));
 	index = GB_GetEvent(class, name);
-	fprintf(stderr, "Object.CanRaise: %s %d\n", name, index);
+	//fprintf(stderr, "Object.CanRaise: %s %d\n", name, index);
 	if (index < 0)
 		GB_ReturnBoolean(FALSE);
 	else

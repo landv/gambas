@@ -48,10 +48,10 @@ static void check_event_method(CLASS *class, const char *name, CLASS_DESC_METHOD
 		THROW(E_EVENT, CLASS_get_name(class), name, "Too many arguments");
 	}
 
-	if (event->n_param > desc->npmax)
+	if (event->n_param > desc->npmax && !desc->npvar)
 		THROW(E_EVENT, CLASS_get_name(class), name, "Not enough arguments");
 
-	if (TYPE_compare_signature(desc->signature, event->n_param, (TYPE *)event->param, event->n_param))
+	if (TYPE_compare_signature(desc->signature, desc->npmax, (TYPE *)event->param, desc->npmax))
 		THROW(E_EVENT, CLASS_get_name(class), name, "Type mismatch");
 
 	if (desc->type != T_VOID)
