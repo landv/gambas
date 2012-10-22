@@ -42,16 +42,23 @@ static EVENT_POST *_post_list = NULL;
 
 static void check_event_method(CLASS *class, const char *name, CLASS_DESC_METHOD *desc, CLASS_EVENT *event)
 {
-	if (event->n_param < desc->npmin)
+	int n = event->n_param;
+	
+	if (n < desc->npmin)
 	{
 		/*printf("event->n_param = %d  desc->npmin = %d  desc->npmax = %d\n", event->n_param, desc->npmin, desc->npmax);*/
 		THROW(E_EVENT, CLASS_get_name(class), name, "Too many arguments");
 	}
 
-	if (event->n_param > desc->npmax && !desc->npvar)
-		THROW(E_EVENT, CLASS_get_name(class), name, "Not enough arguments");
+	if (n > desc->npmax)
+	{
+		if (!desc->npvar)
+			THROW(E_EVENT, CLASS_get_name(class), name, "Not enough arguments");
+		
+		n = desc->npmax;
+	}
 
-	if (TYPE_compare_signature(desc->signature, desc->npmax, (TYPE *)event->param, desc->npmax))
+	if (TYPE_compare_signature(desc->signature, n, (TYPE *)event->param, n))
 		THROW(E_EVENT, CLASS_get_name(class), name, "Type mismatch");
 
 	if (desc->type != T_VOID)
