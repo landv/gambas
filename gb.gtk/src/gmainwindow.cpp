@@ -1223,7 +1223,7 @@ int gMainWindow::clientY()
 {
 	GtkRequisition req;
 
-	if (menuBar && GTK_WIDGET_VISIBLE(GTK_WIDGET(menuBar)))
+	if (isMenuBarVisible()) //menuBar && GTK_WIDGET_VISIBLE(GTK_WIDGET(menuBar)))
 	{
 		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
 		return req.height;
