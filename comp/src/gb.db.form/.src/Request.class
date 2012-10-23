@@ -84,7 +84,7 @@ Public Function OrderBy((OrderBy) As Variant) As Request
   
 End
 
-Public Function Get() As String
+Public Function Get(hConn As Connection) As String
   
   Dim sReq As String
   
@@ -103,7 +103,7 @@ Public Function Get() As String
         sReq = "DELETE "
     End Select
   
-    sReq &= $sField & " FROM " & $sTable
+    sReq &= $sField & " FROM " & hConn.Quote($sTable, True)
     If $sWhere Then sReq &= " WHERE " & $sWhere
     
   Endif

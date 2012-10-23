@@ -82,7 +82,7 @@ Private Sub Reload()
   
   If Not sDisp Then Return
   
-  rData = hSrc._GetDB().Exec(Request.Select([$sKey, sDisp]).From($sTable).Where($sFilter).Get())
+  rData = hSrc._GetDB().Exec(Request.Select([$sKey, sDisp]).From($sTable).Where($sFilter).Get(hSrc._GetDB()))
 
   $cKey.Clear
   $hCtrl.Clear
@@ -240,7 +240,7 @@ End
 Private Sub Table_Write(sTable As String)
   
   $sTable = sTable
-  _Update(True )
+  _Update(True)
   
 End
 
@@ -253,7 +253,7 @@ End
 Private Sub Filter_Write(sFilter As String)
   
   $sFilter = sFilter
-  _Update(True )
+  _Update(True)
   
 End
 
@@ -266,7 +266,7 @@ End
 Private Sub Display_Write(sDisplay As String)
   
   $sDisplay = sDisplay
-  _Update(True )
+  _Update(True)
   
 End
 
@@ -280,7 +280,7 @@ Private Sub Field_Write(sKey As String)
   
   If sKey = $sKey Then Return
   $sKey = sKey
-  _Update(True )
+  _Update(True)
   
 End
 
@@ -307,7 +307,7 @@ End
 Private Sub ReadOnly_Write(bReadOnly As Boolean)
   
   $hCtrl.ReadOnly = bReadOnly
-  _Update(True )
+  _Update(True)
   
 End
 
@@ -329,7 +329,7 @@ End
 Private Sub All_Write(Value As String)
 
   $sAll = Value
-  _Update(True )
+  _Update(True)
 
 End
 

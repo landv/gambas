@@ -66,6 +66,8 @@ Public Sub gvwView_Data(Row As Integer, Column As Integer)
   
   If $bBug And If Row = 4 And If Column = 2 Then gvwView.Data.Text = $aArr[3]
   
+  If Column = 1 Then gvwView.Data.Draw = True
+  
 End
 
 Public Sub gvwView_Change()
@@ -167,3 +169,11 @@ Public Sub gvwView_KeyPress()
   Debug Key.Code
 
 End
+
+' Public Sub gvwView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
+'   
+'   If Column = 1 Then
+'     Draw.FillRect(X, Y, 4, 4, Color.Red)
+'   Endif
+'   
+' End

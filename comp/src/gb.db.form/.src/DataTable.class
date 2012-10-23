@@ -94,13 +94,13 @@ Private Sub LoadUntil(iIndex As Integer)
   hReq = Request.Select($aKey).From($sTable).Where($sFilter).OrderBy($aKey)
   
   If $aVal.Count = 0 Then
-    rData = $DB.Limit(iLimit).Exec(hReq.Get())
+    rData = $DB.Limit(iLimit).Exec(hReq.Get($DB))
     iCount = rData.Count
   Else
     aVal = $aVal[$aVal.Max]
     'sReq &= " WHERE " & Where(aVal)
     hReq = hReq.Where(Common.MakeNextWhere($aKey, aVal))
-    rData = $DB.Limit(iLimit).Exec(hReq.Get())
+    rData = $DB.Limit(iLimit).Exec(hReq.Get($DB))
     ' TODO: ne pas faire MoveNext si l'enregistrement $aVal[$aVal.Max] a disparu
     'rData.MoveNext
     iCount = rData.Count '- 1
@@ -178,7 +178,7 @@ Public Function _get(Index As Integer) As Result
         Else
           hReq = Request.Select(sCol).From($sTable).Where($sFilter)
         Endif
-        $rData = $DB.Exec(hReq.Get())
+        $rData = $DB.Exec(hReq.Get($DB))
       Endif
       
       Raise CacheResize
@@ -206,10 +206,10 @@ Public Function _get(Index As Integer) As Result
   Else
     hReq = Request.Select(sCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex - 1])).OrderBy($aKey)
   Endif
-  $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get())
+  $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get($DB))
   
   'hReq = Request().Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex]))
-  '$rData = DB.Limit(LIMIT_INC).Edit($sTable, hReq.Get())
+  '$rData = DB.Limit(LIMIT_INC).Edit($sTable, hReq.Get(DB))
 
   $rData.MoveTo(Index - $iDataIndex)
   
@@ -298,7 +298,7 @@ Private Function Count_Read() As Integer
     If $bRequest Then
       $iCount = Me[0].Count
     Else
-      $iCount = $DB.Exec(Request.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter).Get())[0]
+      $iCount = $DB.Exec(Request.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter).Get($DB))[0]
     Endif
   Endif
 

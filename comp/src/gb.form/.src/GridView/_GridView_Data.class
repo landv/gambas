@@ -7,10 +7,11 @@ Public RichText As String
 
 Public Picture As Picture
 Public Alignment As Integer = Align.Normal
-Public Padding As Integer = 2
-Public WordWrap As Boolean
 Public Foreground As Integer = Color.Default
 Public Background As Integer = Color.Default
+Public Padding As Short = 2
+Public WordWrap As Boolean
+Public Draw As Boolean
 
 Property Font As Font
 

@@ -2388,7 +2388,7 @@ Public Sub Control_Leave()
 
 End
 
-Public Sub Control_Draw(Optional (iIndex) As Integer)
+Public Sub Control_Draw(...)
 
   Dim hCtrl As Control = Last
   Dim hCCtrl As CControl = Control[hCtrl.Tag]

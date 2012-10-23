@@ -147,7 +147,7 @@ Private Function GetFilter() As String
 
 End
 
-Private Function CheckModified(Optional bSave As Boolean = True ) As Boolean
+Private Function CheckModified(Optional bSave As Boolean = True) As Boolean
 
   Dim hChild As Object
   Dim bModified As Boolean
@@ -308,7 +308,7 @@ Private Function Load() As Boolean
 
   $iIndex = -1
   
-  Redraw(True )
+  Redraw(True)
   
   $bNotVoid = True
   Return
@@ -319,7 +319,7 @@ VOID:
   $iIndex = -1
   If $bNotVoid Then
     $bNotVoid = False
-    Redraw(True )
+    Redraw(True)
   Endif
   Return True
   
@@ -366,7 +366,7 @@ Public Sub _UpdateCurrent(rData As Result)
   rData.Update
   $hTable.Refresh
 
-  Redraw(True )
+  Redraw(True)
     
 End
 
@@ -389,7 +389,7 @@ Public Sub _CreateCurrent() As Result
   
 End
 
-Public Function Save(Optional bMessage As Boolean = True ) As Boolean
+Public Function Save(Optional bMessage As Boolean = True) As Boolean
   
   Dim aKey As String[]  
   Dim hChild As Object
@@ -441,8 +441,8 @@ Public Function Save(Optional bMessage As Boolean = True ) As Boolean
     Raise BeforeSave(rData)
     rData.Update
   
-    Redraw(True )
-    If Not $bCheckModified Then Create(True )
+    Redraw(True)
+    If Not $bCheckModified Then Create(True)
 
   Else
 
@@ -472,7 +472,7 @@ Public Function Save(Optional bMessage As Boolean = True ) As Boolean
     
     _UpdateCurrent(rData)
     If $iIndex >= $hTable.Count Then
-      Create(True )
+      Create(True)
     Endif
     '$iIndex = -1
     'MoveTo($iIndex)
@@ -511,7 +511,7 @@ Public Sub _DeleteCurrent()
     Next
   Endif
 
-  _GetDB().Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get())
+  _GetDB().Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get(_GetDB()))
   
 End
 
@@ -525,7 +525,7 @@ Public Function Remove() As Boolean
   
   If $iIndex >= 0 And $iIndex < $hTable.Count Then
     _DeleteCurrent()
-    Create(True )
+    Create(True)
   Else
     Create()
   Endif

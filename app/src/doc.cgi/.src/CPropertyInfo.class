@@ -65,13 +65,10 @@ End
 
 Public Sub _new(sComponent As String, sClass As String, sName As String, hCtrl As Object, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
 
-  Dim iPos As Integer
-  Dim sType As String
   Dim sList As String
   Dim cList As String[]
   Dim hSym As CSymbolInfo
   'DIM sDefVal AS String
-  Dim bError As Boolean
   Dim sSign As String
 
   'iPos = Instr(sName, "=")

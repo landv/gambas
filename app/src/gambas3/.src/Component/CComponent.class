@@ -993,6 +993,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       
     Endif
     
+    If sKind = ":" Then sName = ":" & sName
+    
     hSymbol = New CSymbolInfo
     With hSymbol
       .Name = sName

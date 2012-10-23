@@ -1,0 +1,49 @@
+' Gambas class file
+
+'Private tvwTest As MyTreeView
+
+
+Public Sub Form_Open()
+
+  Dim sDir As String = "/home/benoit/Documents"
+  Dim sFile As String
+  Dim sPath As String
+  Dim hDirPict As Picture
+  Dim hFilePict As Picture
+  Dim sParent As String
+  
+  hDirPict = Picture["icon:/48/directory"]
+  hFilePict = Picture["icon:/small/file"]
+  
+  'tvwTest = New MyTreeView(Me)
+  'tvwTest.Border = False
+  'tvwTest.NoTabFocus = True
+  
+  'tvwTest.Add(sDir, File.Name(sDir), Picture["icon:/small/directory"])
+  For Each sFile In RDir(sDir).Sort()
+    sPath = sDir &/ sFile
+    'Print File.Name(sPath); " -> "; File.Dir(sPath)
+    sParent = File.Dir(sPath)
+    If sParent = sDir Then sParent = ""
+    tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)
+  Next
+  
+End
+
+Public Sub tvwTest_Select()
+
+  Debug tvwTest.Key
+
+End
+
+Public Sub Button1_Click()
+
+  tvwTest.Remove(tvwTest.Key)
+
+End
+
+Public Sub tvwTest_KeyPress()
+
+  If Key.Code = Key.Delete Then Button1_Click
+
+End

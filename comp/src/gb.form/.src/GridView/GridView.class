@@ -19,7 +19,7 @@ Property Read Data As _GridView_Data
 Property Row As Integer
 Property Column As Integer
 Property Resizable As Boolean
-Property Scrollbar As Integer
+Property ScrollBar As Integer
 Property AutoResize As Boolean
 Property Header As Integer
 Property ShowCursor As Boolean
@@ -55,6 +55,7 @@ Event ColumnResize(Column As Integer)
 Event RowResize(Row As Integer)
 Event MouseDown
 Event Sort
+Event Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
 
 Private $hView As ScrollArea
 Private $bGrid As Boolean = True
@@ -104,7 +105,8 @@ Private $iRowEV As Integer = -1
 Private $iColEV As Integer = -1
 
 Private $bSorted As Boolean
-'Private $bHighlightSort As Boolean = True
+
+Private $bHasDrawEvent As Boolean
 
 Public Sub _new()
   
@@ -186,6 +188,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
   Dim hPict As Picture
   Dim A As Integer
   Dim iColor As Integer
+  Dim bCancel As Boolean
 
   Draw.Save
   
@@ -212,6 +215,19 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
     Endif
     
     If W > 0 And If H > 0 Then
+      
+      If .Foreground = Color.Default Then
+        Draw.Foreground = Me.Foreground
+      Else
+        Draw.Foreground = .Foreground
+      Endif
+      
+      If .Font Then Draw.Font = .Font
+
+      If $bHasDrawEvent Then
+        bCancel = Raise Draw(X, Y, W, H, iRow, iCol)
+        If bCancel Then Goto DRAW_GRID
+      Endif
       
       hPict = .Picture
   
@@ -242,13 +258,6 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
         
       Endif
         
-      If .Foreground = Color.Default Then
-        Draw.Foreground = Me.Foreground
-      Else
-        Draw.Foreground = .Foreground
-      Endif
-      
-      If .Font Then Draw.Font = .Font
       If .Text Then
         If .WordWrap Then
           Draw.RichText(Html(.Text), X, Y, W, H, .Alignment)
@@ -269,7 +278,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
           Endif
         Endif
       Endif
-          
+      
     Endif
     
   End With
@@ -418,6 +427,8 @@ Public Sub ScrollArea_Draw()
   hClip = hRect.Intersection(Draw.ClipRect)
   If Not hClip Then Return
   
+  $bHasDrawEvent = True 'Object.CanRaise(Me, "Draw")
+  
   hSaveClip = hClip.Copy()
   Draw.ClipRect = hClip
   
@@ -467,8 +478,6 @@ Public Sub ScrollArea_Draw()
         
       Endif
       
-      hData = _GetCellData(R, C)
-      
       If bHasSpan Then
       
         XS = XO + $hColumns[C].X
@@ -482,7 +491,10 @@ Public Sub ScrollArea_Draw()
       Endif
       
       Draw.ClipRect = hClip.Intersection(hSpan)
-      If Draw.ClipRect Then DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
+      If Draw.ClipRect Then 
+        hData = _GetCellData(R, C)
+        DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
+      Endif
       
     NEXT_CELL:
       
@@ -1213,7 +1225,7 @@ Public Sub SelectAll()
   
 End
 
-Public Sub UnSelectAll()
+Public Sub UnselectAll()
   
   $hRows.UnSelectAll
   

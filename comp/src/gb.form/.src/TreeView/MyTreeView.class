@@ -1,0 +1,651 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,ScrollBar{Scroll.*}=Both,Border=True,Sorted"
+Public Const _Group As String = "View"
+Public Const _DefaultEvent As String = "Click"
+
+Property Read Count As Integer
+Property Mode As Integer
+Property ScrollBar As Integer
+Property Border As Boolean
+Property Sorted As Boolean
+Property Read Current As _TreeView_Item
+Property Read Key As String
+Property Read Item As _TreeView_Item
+Property Read Available As Boolean
+Property Read ClientWidth, ClientW As Integer
+Property Read ClientHeight, ClientH As Integer
+
+Event Click
+Event Activate
+Event Select
+Event Expand
+Event Collapse
+
+Private $hView As GridView
+
+Private $cItem As New Collection
+Private $hRoot As _TreeView_Item
+Private $iLastRow As Integer = -2
+Private $sLastKey As String
+Private $hResizeColumnTimer As Timer
+Private $hResizeRowsTimer As Timer
+Private $cResizeRows As New Collection
+Private $sCursor As String
+Private $sSaveCursor As String
+
+Public Sub _new()
+  
+  $hView = New GridView(Me) As "GridView"
+  $hView.Columns.Count = 1
+  $hView.Mode = Select.Single
+  $hView.Grid = False
+  $hView.AutoResize = False
+  
+  $hRoot = New _TreeView_Item("", "") As "Item"
+  
+  Me.Proxy = $hView
+  
+End
+
+Public Sub _get(Key As String) As _TreeView_Item
+  
+  If Not Key Then Error.Raise("Null key")
+  If Not $cItem.Exist(Key) Then Error.Raise("Unknown item: " & Key)
+  Return $cItem[Key]
+  
+End
+
+Public Sub Clear()
+
+  $cItem.Clear
+  $hRoot = New _TreeView_Item("", "") As "Item"
+  $hView.Rows.Count = 0
+  
+End
+
+
+Public Sub Add(Key As String, Text As String, Optional Picture As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
+  
+  Dim hItem, hParent As _TreeView_Item
+  
+  If Not Key Then Error.Raise("Null key")
+  If $cItem.Exist(Key) Then Error.Raise("Key already used: " & Key)
+  If Parent And If Not $cItem.Exist(Parent) Then Error.Raise("Parent item does not exist: " & Parent)
+  If After And If Not $cItem.Exist(After) Then Error.Raise("After item does not exist: " & After)
+  
+  hItem = New _TreeView_Item(Key, Parent) As "Item"
+  
+  $cItem[Key] = hItem
+  
+  If Parent Then
+    hParent = $cItem[Parent]
+  Else
+    hParent = $hRoot
+  Endif
+  
+  hParent._AddChild(Key)
+  
+  hItem.Text = Text
+  hItem.Picture = Picture
+  
+  If Not $hResizeColumnTimer Then
+    $hResizeColumnTimer = New Timer As "ResizeColumns"
+    $hResizeColumnTimer.Trigger
+  Endif
+  
+End
+
+Private Sub RemoveRec(Key As String)
+  
+  Dim hItem As _TreeView_Item
+  Dim hParent As _TreeView_Item
+  Dim sKey As String
+
+  hItem = $cItem[Key]
+  
+  If hItem.Count Then
+    For Each sKey In hItem._GetChildren()
+      RemoveRec(sKey)
+    Next
+  Endif
+  
+  If hItem.ParentKey Then
+    hParent = $cItem[hItem.ParentKey]
+  Else
+    hParent = $hRoot
+  Endif
+  
+  $cItem.Remove(Key)
+  
+  hParent._RemoveChild(Key)
+  While hParent.Expanded 
+    Dec hParent._Rows
+    hParent = $cItem[hParent.ParentKey]
+    If Not hParent Then
+      Dec $hRoot._Rows
+      Break
+    Endif
+  Wend
+  
+End
+
+
+Public Sub Remove(Key As String)
+  
+  Dim hItem As _TreeView_Item
+  Dim iRows As Integer
+  
+  If Not Key Then Error.Raise("Null key")
+  If Not $cItem.Exist(Key) Then Error.Raise("Unknown item: " & Key)
+  
+  hItem = $cItem[Key]
+  iRows = hItem._Rows
+  
+  RemoveRec(Key)
+  
+  _AddCount(- iRows)
+  
+  If Not $hResizeColumnTimer Then
+    $hResizeColumnTimer = New Timer As "ResizeColumns"
+    $hResizeColumnTimer.Trigger
+  Endif
+  
+End
+
+
+Private Sub GetNextItem(hItem As _Treeview_Item) As _TreeView_Item
+  
+  Dim hParent As _TreeView_Item
+  Dim aChildren As String[]
+  Dim iPos As Integer
+  
+  If hItem.Count And If hItem.Expanded Then
+    aChildren = hItem._GetChildren()
+    Return $cItem[aChildren[0]]
+  Endif
+  
+  Do
+    If Not hItem.ParentKey Then 
+      hParent = $hRoot
+    Else
+      hParent = $cItem[hItem.ParentKey]
+    Endif
+    aChildren = hParent._GetChildren()
+    iPos = aChildren.Find(hItem.Key)
+    If iPos < aChildren.Max Then Return $cItem[aChildren[iPos + 1]]
+    If hParent = $hRoot Then Return
+    hItem = hParent
+  Loop
+  
+End
+
+Private Sub RowToItem(iRow As Integer) As _TreeView_Item
+  
+  Dim hParent As _TreeView_Item
+  Dim hChild As _TreeView_Item
+  Dim sKey As String
+  
+  If iRow < 0 Then Return
+  
+  'Print iRow;; $iLastRow
+  
+  If iRow = $iLastRow Then Return $cItem[$sLastKey]
+  
+  If iRow = ($iLastRow + 1) Then
+    $iLastRow = iRow
+    hChild = GetNextItem($cItem[$sLastKey])
+    $sLastKey = hChild.Key
+    Return hChild
+  Endif
+  
+  hParent = $hRoot
+  $iLastRow = iRow
+  
+  Do
+    For Each sKey In hParent._GetChildren()
+      hChild = $cItem[sKey]
+      If iRow = 0 Then 
+        $sLastKey = sKey
+        Return hChild
+      Endif
+      If iRow < hChild._Rows Then
+        Dec iRow
+        hParent = hChild
+        Break
+      Endif
+      iRow -= hChild._Rows
+    Next
+  Loop
+  
+End
+
+Public Sub _ItemToRow(hItem As _TreeView_Item) As Integer
+  
+  Dim hParent As _TreeView_Item
+  Dim iRow As Integer
+  Dim sKey As String
+  
+  If hItem = $hRoot Then Return -1
+  
+  If Not hItem.ParentKey Then
+    hParent = $hRoot
+    iRow = -1
+  Else
+    hParent = $cItem[hItem.ParentKey]
+    If Not hParent.Expanded Then Return -1
+    iRow = _ItemToRow(hParent)
+    If iRow < 0 Then Return iRow
+  Endif
+  
+  Inc iRow
+  For Each sKey In hParent._GetChildren()
+    If sKey = hItem.Key Then Return iRow
+    iRow += hItem._Rows
+  Next
+  
+  Return -1
+  
+End
+
+Public Sub _GetItemWidth(hItem As _TreeView_Item) As Integer
+  
+  Dim W As Integer
+  
+  W = hItem._Depth * 16 + 16
+  If hItem.Picture Then W += hItem.Picture.W + 2
+  Return W + Me.Font.TextWidth(hItem.Text)
+  
+End
+
+Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
+  
+  Dim PH As Integer
+
+  PH = Me.Font.Height + 4
+  If hItem.Picture Then PH = Max(PH, hItem.Picture.H + 4)
+  Return PH
+  
+End
+
+
+Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Integer, Row As Integer, (Column) As Integer)
+  
+  Dim hItem As _TreeView_Item = RowToItem(Row)
+  Dim PH As Integer
+  
+  If Not hItem Then Return
+  
+  PH = _GetItemHeight(hItem)
+  If PH <> $hView.Rows[Row].H Then 
+    If Not $hResizeRowsTimer Then
+      $hResizeRowsTimer = New Timer As "ResizeRows"
+      $hResizeRowsTimer.Trigger
+    Endif
+    $cResizeRows[Row] = hItem
+  Endif
+  
+  X += hItem._Depth * 16
+  
+  If hItem.Count Then
+    If hItem.Expanded Then
+      Draw.Style.Arrow(X, Y + H \ 2 - 8, 16, 16, Align.Bottom)
+    Else
+      Draw.Style.Arrow(X, Y + H \ 2 - 8, 16, 16, Align.Right)
+    Endif
+  Endif
+  
+  X += 16
+  
+  If hItem.Picture Then
+    Draw.Picture(hItem.Picture, X, Y + (H - hItem.Picture.H) \ 2)
+    X += hItem.Picture.W + 2
+  Endif
+  
+  Draw.Text(hItem.Text & " (" & hItem._Rows & ")", X, Y)
+  'Draw.Text(hItem.Text, X, Y, W, H, Align.Normal)
+  
+End
+
+Public Sub _AddCount(iCount As Integer)
+  
+  $hView.Rows.Count += iCount
+  $iLastRow = -2
+  
+End
+
+Public Sub GridView_Activate()
+  
+  Dim hItem As _TreeView_Item = RowToItem($hView.Row)
+  Dim bCancel As Boolean
+  
+  If Not hItem Then Return
+  
+  bCancel = Raise Activate
+  If bCancel Then Return
+  hItem.Expanded = Not hItem.Expanded
+  
+End
+
+Public Sub GridView_MouseDown()
+  
+  Dim hItem As _TreeView_Item = RowToItem($hView.RowAt(Mouse.Y))
+
+  If Not hItem Then Return
+  If hItem.Count = 0 Then Return
+  
+  If Mouse.X >= hItem._Depth * 16 And If Mouse.X < (hItem._Depth * 16 + 16) Then
+    GridView_Activate
+  Endif
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $cItem.Count
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $hView.Mode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  $hView.Mode = Value
+
+End
+
+Private Function ScrollBar_Read() As Integer
+
+  Return $hView.Scrollbar
+
+End
+
+Private Sub ScrollBar_Write(Value As Integer)
+
+  $hView.Scrollbar = Value
+  If $hView.ScrollBar And Scroll.Horizontal Then
+    $hView.AutoResize = False
+  Else
+    $hView.AutoResize = True
+  Endif
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = Value
+
+End
+
+Private Function Sorted_Read() As Boolean
+
+  
+
+End
+
+Private Sub Sorted_Write((Value) As Boolean)
+
+  
+
+End
+
+Public Sub ResizeColumns_Timer()
+
+  Dim hItem As Variant
+  Dim W As Integer
+  
+  $hResizeColumnTimer = Null
+  
+  If $cItem.Count = 0 Then Return
+  If ($hView.ScrollBar And Scroll.Horizontal) = 0 Then Return
+  
+  For Each hItem In $cItem
+    W = Max(W, _GetItemWidth(hItem))
+  Next
+  $hView.Columns[0].W = W + 8
+  
+End
+
+Private Function Current_Read() As _TreeView_Item
+
+  Return RowToItem($hView.Row)
+
+End
+
+Private Function Key_Read() As String
+
+  Dim hItem As _TreeView_Item = Current_Read()
+  If hItem Then Return hItem.Key
+
+End
+
+Public Sub GridView_Select()
+  
+  Raise Select
+  
+End
+
+Public Sub ResizeRows_Timer()
+  
+  Dim iRow As Integer
+  Dim hItem As _TreeView_Item
+  Dim PH As Integer
+  
+  $hResizeRowsTimer = Null
+  
+  For Each hItem In $cResizeRows
+    iRow = $cResizeRows.Key
+    PH = _GetItemHeight(hItem)
+    If PH <> $hView.Rows[iRow].H Then
+      $hView.Rows[iRow].H = PH
+    Endif
+  Next
+  
+  $cResizeRows.Clear
+  
+End
+
+Public Sub Exist(Key As String) As Boolean
+  
+  Return $cItem.Exist(Key)
+  
+End
+
+Public Sub GridView_Click()
+  
+  Raise Click
+  
+End
+
+Private Function Item_Read() As _TreeView_Item
+
+  Return $cItem[$sCursor]
+
+End
+
+Public Sub _RaiseExpand(sKey As String, bExpand As Boolean)
+  
+  Dim sCursor As String = $sCursor
+  
+  $sCursor = sKey
+  
+  If bExpand Then
+    Raise Expand
+  Else
+    Raise Collapse
+  Endif
+  
+  $sCursor = sCursor
+  
+End
+
+Public Sub _EnsureVisible(hItem As _TreeView_Item)
+  
+  Dim iRow As Integer = _ItemToRow(hItem)
+  
+  If iRow >= 0 Then $hView[iRow, 0].EnsureVisible
+  
+End
+
+Private Sub SetCursor(sKey As String) As Boolean
+  
+  If Not sKey Then $sSaveCursor = $sCursor
+  $sCursor = sKey
+  Return Not sKey
+  
+End
+
+
+Public Sub MoveFirst() As Boolean
+  
+  Dim sKey As String
+  
+  Try sKey = $hRoot._GetChildren()[0]
+  Return SetCursor(sKey)
+  
+End
+
+Public Sub MoveLast() As Boolean
+  
+  Dim aChildren As String[]
+  Dim sKey As String
+  
+  aChildren = $hRoot._GetChildren()
+  Try sKey = aChildren[aChildren.Max]
+  Return SetCursor(sKey)
+  
+End
+
+Public Sub MoveBack() As Boolean
+
+  Dim sKey As String
+  
+  sKey = $sSaveCursor
+  $sSaveCursor = ""
+  Return SetCursor(sKey)
+  
+End
+
+Public Sub MoveCurrent() As Boolean
+  
+  Return SetCursor(Key_Read())
+  
+End
+
+Public Sub MoveTo(Key As String) As Boolean
+  
+  If Not $cItem.Exist(Key) Then Key = ""
+  Return SetCursor(Key)
+  
+End
+
+' BEGIN_METHOD_VOID(CTREEVIEW_above)
+' 
+'   return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->itemAbove()) : 0);
+' 
+' END_METHOD
+' 
+' 
+' BEGIN_METHOD_VOID(CTREEVIEW_below)
+' 
+'   return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->itemBelow()) : 0);
+' 
+' END_METHOD
+' 
+' 
+Public Sub MoveChild() As Boolean
+  
+  Dim sKey As String
+  
+  Try sKey = $cItem[$sCursor]._GetChildren()[0]
+  Return SetCursor(sKey)
+  
+End
+
+Private Sub GetSibling(sKey As String, Optional iAdd As Integer) As String
+  
+  Dim hItem, hParent As _TreeView_Item
+  Dim aChildren As String[]
+  
+  If Not sKey Then Return
+  
+  hItem = $cItem[sKey]
+  
+  If hItem.ParentKey Then
+    hParent = $cItem[hItem.ParentKey]
+  Else
+    hParent = $hRoot
+  Endif
+  
+  aChildren = hParent._GetChildren() 
+  Try Return aChildren[aChildren.Find(hItem.Key) + iAdd]
+  
+End
+
+Public Sub MoveNext() As Boolean
+  
+  Return SetCursor(GetSibling($sCursor, 1))
+  
+End
+
+Public Sub MovePrevious() As Boolean
+  
+  Return SetCursor(GetSibling($sCursor, -1))
+  
+End
+
+Public Sub MoveParent() As Boolean
+  
+  Dim sKey As String
+  
+  Try sKey = $cItem[$sCursor].ParentKey
+  Return SetCursor(sKey)
+  
+End
+
+
+Private Function ClientWidth_Read() As Integer
+
+  Return $hView.ClientW
+
+End
+
+Private Function ClientHeight_Read() As Integer
+
+  Return $hView.ClientH
+
+End
+
+Private Function Available_Read() As Boolean
+
+  Return $sCursor
+
+End
+
+Public Sub SelectAll()
+  
+  $hView.SelectAll
+  
+End
+
+Public Sub UnselectAll()
+  
+  $hView.UnselectAll
+  
+End
+

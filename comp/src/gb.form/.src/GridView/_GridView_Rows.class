@@ -53,9 +53,21 @@ End
 
 Private Sub Count_Write(Value As Integer)
   
+  Dim iRow As Integer
+  
   If Value = $nRows Then Return
   
   $nRows = Value
+  
+  If $aHeight Then
+    While $aHeight.Count
+      If $aHeight[$aHeight.Max] < $nRows Then Break
+      iRow = $aHeight[$aHeight.Max]
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Max)
+    Wend
+  Endif
+  
   With GetView()
     ._ResizeContents()
     ._CheckCurrent()

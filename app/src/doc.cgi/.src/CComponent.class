@@ -169,8 +169,6 @@ Public Sub _new(sName As String)
   Dim sLang As String
   Dim sGroup As String
   Dim aCtrl As String[]
-  Dim sElt As String
-  Dim sType As String
 
   sPath = Main.InfoFilePath &/ sName & ".component"
   hFile = Open sPath For Input
@@ -268,13 +266,11 @@ Public Sub Load()
   Dim hFile As File
   Dim sPath As String
   Dim sLine As String
-  Dim sKey As String
   Dim sClass As String
   Dim sParent As String
   Dim hClass As CClassInfo
   Dim sSymbol As String
   Dim hSym As CSymbolInfo
-  Dim hForm As Object
   Dim bAgain As Boolean
   Dim bJumpNextClass As Boolean
   Dim sElt As String
@@ -312,6 +308,10 @@ Public Sub Load()
   ' Patch, as gb.qte and gb.qte.ext are unloadable at the moment
   If Not Exist(sPath) And If Name Like "gb.qte*" Then 
     sPath = Main.InfoFilePath &/ Replace(Name, ".qte", ".qt") & ".info"
+  Endif
+  If Not Exist(sPath) Then
+    Print "<pre>Cannot load info file: " & sPath & "\n</pre>"
+    Return
   Endif
   hFile = Open sPath For Read
 

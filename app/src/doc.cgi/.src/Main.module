@@ -15,7 +15,7 @@ Private Const ARROW As String = "<b>&gt;</b>" ' ►
 
 Private Const LETTER_DIGIT As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-Private $aHighlightClass As String[] = ["", "normal", "keyword", "function", "operator", "symbol", "number", "string", "comment", "", "", "datatype"]
+'Private $aHighlightClass As String[] = ["", "normal", "keyword", "function", "operator", "symbol", "number", "string", "comment", "", "", "datatype"]
 
 Private $hConn As New Connection
 
@@ -84,7 +84,7 @@ Private $eTime As Float
 
 Private $sOnlyVersion As String
 
-Private PARA As String
+'Private PARA As String
 
 Private $aDay As String[]
 Private $aMonth As String[]
@@ -160,10 +160,7 @@ End
 
 Public Sub Main()
 
-  Dim rPage As Result
-  Dim sPath As String
   Dim bPost As Boolean
-  Dim sDir As String
   Dim sErr As String
 
   'File.In.EndOfLine = gb.Windows
@@ -501,8 +498,6 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
   Dim sTitle As String
   Dim sRelPath As String
   Dim sSuff As String
-  Dim sPath2 As String
-  Dim sTitle2 As String
   Dim iPos As Integer
   Dim sMoreSuff As String
 
@@ -685,7 +680,6 @@ End
 
 Private Sub EnterSection(sSection As String)
 
-  Dim aSection As String[]
   Dim sParam As String
   Dim iPos As Integer
 
@@ -793,7 +787,6 @@ End
 
 Private Sub LeaveSection()
 
-  Dim sList As String
   Dim sTmp As String
 
   FinishList
@@ -878,7 +871,6 @@ Private Function Encode(sText As String) As String
   Dim sLink As String
   Dim sLinkTitle As String
   Dim bLinkTitle As String
-  Dim sLine As String
   Dim bLastVoid As Boolean
   Dim bHeader As Boolean
   Dim sArg As String
@@ -1667,11 +1659,9 @@ End
 
 Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
-  Dim iPos As Integer
   Dim sLang As String
   Dim rPage As Result
   Dim sSuff As String
-  Dim sUri As String
 
   $sTitle = sTitle
 
@@ -1983,7 +1973,6 @@ End
 
 Private Sub MakeFooter(Optional dDate As Date)
 
-  Dim sEnv As String
   Dim sData As String
 
   Print "</div>"
@@ -2135,10 +2124,7 @@ Private Sub DisplayImage()
 
   Dim rPage As Result
   Dim rPageDef As Result
-  Dim bWarn As Boolean
-  Dim sWarn As String
   Dim sPath As String
-  Dim sPage As String
 
   sPath = GetRealPath($sPath)
 
@@ -2196,10 +2182,8 @@ Private Sub DisplayPage()
 
   Dim rPage As Result
   Dim rPageDef As Result
-  Dim bWarn As Boolean
   Dim sWarn As String
   Dim sPath As String
-  Dim sPage As String
   Dim bRefresh As Boolean
 
   sPath = GetRealPath($sPath)
@@ -2297,7 +2281,6 @@ End
 
 Private Function MakePageWithoutHeader(rPage As Result) As String
 
-  Dim bExample As Boolean
   Dim bPrint As Boolean
   Dim hFile As File
   Dim sFile As String
@@ -2368,8 +2351,6 @@ Private Function GetOld(sPath As String, Optional bSyntax As Boolean) As String
   Dim sData As String
   Dim iPos As Integer
   Dim iPos2 As Integer
-  Dim sRes As String
-  Dim sCar As String
 
   sData = File.Load(sPath)
   iPos = InStr(sData, "</h1>")
@@ -2543,14 +2524,12 @@ End
 Private Sub EditPage()
 
   Dim rPage As Result
-  Dim rModel As Result
   Dim sSave As String
   Dim aFile As String[]
   Dim sName As String
   Dim iPos As Integer
   Dim sDir As String
   Dim sPath As String
-  Dim sKind As String
   Dim sTitle As String
 
   rPage = FindPage($sPath, True)
@@ -2723,7 +2702,6 @@ Private Function AutoLink(sStr As String) As String
   Dim sRes As String
   Dim iInd As Integer
   Dim rPage As Result
-  Dim rComp As Result
   Dim sCar As String
   Dim iWord As Integer
   Dim sWait As String
@@ -2731,13 +2709,10 @@ Private Function AutoLink(sStr As String) As String
   Dim sOrig As String
   Dim nSpace As Integer
   Dim aWord As String[]
-  Dim nWord As Integer
   Dim iPos As Integer
 
   'DIM bSkip AS Boolean
   Dim iLevelBrace As Integer
-  Dim sClass As String
-  Dim sSymbol As String
   Dim sTitle As String
   Dim sLink As String
 
@@ -2989,7 +2964,6 @@ Private Sub UpdatePage()
   Dim iPos2 As Integer
   Dim rPage As Result
   Dim sVal As String
-  Dim bCreate As Boolean
 
   'DIM bOK AS Boolean
   Dim bDelete As Boolean
@@ -3172,12 +3146,6 @@ Private Sub RenamePage()
 
   Dim rPage As Result
   Dim sSave As String
-  Dim aFile As String[]
-  Dim sName As String
-  Dim iPos As Integer
-  Dim sDir As String
-  Dim sPath As String
-  Dim sKind As String
 
   rPage = FindPage($sPath)
 
@@ -3295,7 +3263,6 @@ Private Sub DoRenamePage()
 
   Dim sNewPath As String
   Dim rPage As Result
-  Dim bUpdate As Boolean
   Dim cForm As Collection
   Dim bChild As Boolean
   Dim bKeep As Boolean
@@ -3508,7 +3475,6 @@ Private Function GetUser() As String[]
 
   Dim aUser As New String[]
   Dim sLine As String
-  Dim sPath As String
   Dim iPos As Integer
 
   For Each sLine In Split(File.Load(GetUserPath()), "\n")
@@ -3629,11 +3595,7 @@ Private Sub DoAdminPage()
 
   Dim cForm As Collection
   Dim hProcess As Process
-  Dim sSave As String
-  Dim rPage, rCopy As Result
-  Dim hField As ResultField
-  Dim hConn As Connection
-  Dim rOther As Result
+  Dim rPage As Result
 
   cForm = GetForm()
 
@@ -3808,7 +3770,6 @@ End
 Private Function GetComponents() As String
 
   Dim hComp As CComponent
-  Dim sPath As String
   Dim sRes As String
 
   CComponent.Init
@@ -3986,7 +3947,6 @@ Private Function GetIndex2(sRoot As String) As String
   Dim iInd2 As Integer
   Dim sPath As String
   Dim sTitle As String
-  Dim iPos As Integer
   Dim sPrefix As String
   Dim aArg As String[]
   Dim sDisplay As String
@@ -4294,8 +4254,6 @@ Private Function GetSymbols() As String
 
   Dim sSymbol As String
   Dim sRes As String
-  Dim iInd As Integer
-  Dim iPos As Integer
   Dim cSymbol As New Collection
   Dim hSym As CSymbolInfo
   Dim bSymbol As Boolean
@@ -4804,7 +4762,6 @@ End
 Private Function GetClassPageFromName(sClass As String) As String
 
   Dim sComp As String
-  Dim sName As String
 
   sComp = $hComp.Key
 
@@ -5097,8 +5054,6 @@ End
 
 Private Sub GetClassStat(sArg As String) As String
 
-  Dim sRes As String
-  Dim sVal As String
   Dim nClass As Integer
   Dim nSym As Integer
   Dim sFile As String
@@ -5138,11 +5093,8 @@ Private Sub GetPage()
 
   Dim rPage As Result
   Dim rPageDef As Result
-  Dim bWarn As Boolean
   Dim sWarn As String
   Dim sPath As String
-  Dim sPage As String
-  Dim bRefresh As Boolean
 
   sPath = GetRealPath($sPath)
 
@@ -5180,9 +5132,6 @@ Private Sub GetPage()
 End
 
 Private Sub HighlightCode(sLine As String) As String
-
-  Dim sRes As String
-  Dim I As Integer
 
   Return sLine
 
