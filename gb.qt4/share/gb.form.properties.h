@@ -39,20 +39,16 @@
 
 #define CBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border=True,Default,Cancel"
 #define CCHECKBOX_PROPERTIES "*,Action,AutoResize,Text,Tristate,Value{CheckBox.False;True;None}"
-#define CCOLUMNVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
 #define CCOMBOBOX_PROPERTIES "*,Action,ReadOnly,List,Text,Password,MaxLength,Sorted"
 #define CDIAL_PROPERTIES "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Wrap,Mark=True"
 #define CDRAWINGAREA_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*},Cached,Painted,Focus,NoBackground,Tablet"
 #define CEDITOR_PROPERTIES "*,Font{Font:Fixed},Border=True,ScrollBar{Scroll.*}=Both,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly=False,TabSize{Range:1;16}=2"
 #define CFRAME_PROPERTIES "*,Text"
-#define CGRIDVIEW_PROPERTIES "*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Vertical;Horizontal;Both}=None,Scrollbar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
 #define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES ",Invert"
 #define CHSPLIT_PROPERTIES "*"
-#define CICONVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
 #define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
 #define CLCDNUMBER_PROPERTIES "*,Value,Digits{Range:1;64}=1,SmallDecimalPoint,Style{LCDNumber.Outline;Filled;Flat}=Outline,Mode{LCDNumber.Decimal;Hexadecimal;Binary}=Decimal,Border{Border.*}"
 #define CLISTBOX_PROPERTIES "*,List,Border=True,Mode{Select.*}=Single,Sorted"
-#define CLISTVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
 #define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"
 #define CMOVIEBOX_PROPERTIES "*,Path,Playing,Alignment{Align.*}=TopLeft,Border{Border.*}"
 #define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*}"
@@ -73,7 +69,6 @@
 #define CTOGGLEBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border=True,Radio,Value"
 #define CTOOLBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
 #define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture"
-#define CTREEVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
 #define CVBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
 #define CVSPLIT_PROPERTIES "*"
 #define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Utility,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100," CWINDOW_ARRANGEMENT_PROPERTIES
@@ -126,22 +121,18 @@
 	
 #define BUTTON_DESCRIPTION DESCRIBE_CONTROL(CBUTTON_PROPERTIES, "Click", "16,4")
 #define CHECKBOX_DESCRIPTION DESCRIBE_CONTROL(CCHECKBOX_PROPERTIES, "Click", "24,4"), SIMILAR("Button")
-#define COLUMNVIEW_DESCRIPTION DESCRIBE_VIEW_CONTROL(CCOLUMNVIEW_PROPERTIES, "Click", "16,16"), SIMILAR("ListView")
 #define COMBOBOX_DESCRIPTION DESCRIBE_CONTROL(CCOMBOBOX_PROPERTIES, "Click", "24,4"), SIMILAR("TextBox")
 #define DIAL_DESCRIPTION DESCRIBE_CONTROL(CDIAL_PROPERTIES, "Change", "6,6"), SIMILAR("Slider")
 #define DRAWINGAREA_DESCRIPTION DESCRIBE_CONTAINER(CDRAWINGAREA_PROPERTIES, "Draw")
 #define EDITOR_DESCRIPTION DESCRIBE_CONTROL(CEDITOR_PROPERTIES, "KeyPress", "16,16"), SIMILAR("TextArea")
 #define EMBEDDER_DESCRIPTION DESCRIBE_CONTROL("*", "Embed", "24,24"), GB_CONSTANT("_Group", "s", "Special")
 #define FRAME_DESCRIPTION DESCRIBE_CONTAINER(CFRAME_PROPERTIES, "MouseDown")
-#define GRIDVIEW_DESCRIPTION DESCRIBE_VIEW_CONTROL(CGRIDVIEW_PROPERTIES, "Click", "16,16")
 #define HBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "H"), SIMILAR("Panel")
 #define HPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "R"), SIMILAR("Panel")
 #define HSPLIT_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHSPLIT_PROPERTIES, "Resize", "H")
-#define ICONVIEW_DESCRIPTION DESCRIBE_VIEW_CONTROL(CICONVIEW_PROPERTIES, "Click", "16,16")
 #define LABEL_DESCRIPTION DESCRIBE_CONTROL(CLABEL_PROPERTIES, "MouseDown", "24,4")
 #define LCDNUMBER_DESCRIPTION DESCRIBE_CONTROL(CLCDNUMBER_PROPERTIES, "MouseDown", "24,6"), SIMILAR("Label")
 #define LISTBOX_DESCRIPTION DESCRIBE_CONTROL(CLISTBOX_PROPERTIES, "Click", "16,16")
-#define LISTVIEW_DESCRIPTION DESCRIBE_VIEW_CONTROL(CLISTVIEW_PROPERTIES, "Click", "16,16")
 #define MOVIEBOX_DESCRIPTION DESCRIBE_CONTROL(CMOVIEBOX_PROPERTIES, "MouseDown", "16,16")
 #define PANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CPANEL_PROPERTIES, "MouseDown", "F")
 #define PICTUREBOX_DESCRIPTION DESCRIBE_CONTROL(CPICTUREBOX_PROPERTIES, "MouseDown", "16,16")
@@ -160,7 +151,6 @@
 #define TOGGLEBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOGGLEBUTTON_PROPERTIES, "Click", "16,4"), SIMILAR("Button")
 #define TOOLBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOOLBUTTON_PROPERTIES, "Click", "4,4"), SIMILAR("Button")
 #define TRAYICON_DESCRIPTION DESCRIBE_SPECIAL_CONTROL(CTRAYICON_PROPERTIES, "Menu", "4,4")
-#define TREEVIEW_DESCRIPTION DESCRIBE_VIEW_CONTROL(CTREEVIEW_PROPERTIES, "Click", "16,16"), SIMILAR("ListView")
 #define USERCONTAINER_DESCRIPTION DESCRIBE_CONTAINER_ARR(CUSERCONTAINER_PROPERTIES, "MouseDown", "F")
 #define VBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "V"), SIMILAR("Panel")
 #define VPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "C"), SIMILAR("Panel")

@@ -84,10 +84,11 @@ Public Sub _new()
   With $hColumnView = New ColumnView(Me) As "View"
     .Columns.Count = 3
     .Columns[0].Text = ("Name")
+    .Columns[0].Expand = False
     .Columns[1].Text = ("Size")
     .Columns[1].Alignment = Align.Right
     .Columns[2].Text = ("Last modified")
-    .Columns[2].Alignment = Align.Right
+    '.Columns[2].Alignment = Align.Right
     '.Columns[0].Width = 64
     '.Columns[1].Width = 64
     '.Columns[2].Width = 96
@@ -172,13 +173,13 @@ End
 Private Sub GetFileSize(iSize As Long) As String
   
   If iSize < 1000 Then
-    Return Subst("&1 B", CStr(iSize))
+    Return Subst(("&1 B"), CStr(iSize))
   Else If iSize < 1000000 Then
-    Return Subst("&1 KiB", Format(iSize / 1024, "#.#"))
+    Return Subst(("&1 KiB"), Format(iSize / 1024, "#.#"))
   Else If iSize < 1000000000 Then
-    Return Subst("&1 MiB", Format(iSize / 1048576, "#.#"))
+    Return Subst(("&1 MiB"), Format(iSize / 1048576, "#.#"))
   Else
-    Return Subst("&1 GiB", Format(iSize / 1073741824, "#.#"))
+    Return Subst(("&1 GiB"), Format(iSize / 1073741824, "#.#"))
   Endif
   
 End
@@ -218,6 +219,7 @@ Private Sub RefreshView()
   Dim iSize As Integer
   Dim aSel As String[]
   Dim aDir As New String[]
+  Dim I As Integer
 
   Inc Application.Busy
 
@@ -267,6 +269,12 @@ Private Sub RefreshView()
       Endif
     End With
   Next
+  
+  If $hColumnView.Visible Then
+    For I = 1 To $hColumnView.Columns.Max
+      $hColumnView.Columns[I].W = -1
+    Next
+  Endif
   
   For Each sFile In aSel
     Try GetView()[sFile].Selected = True
@@ -555,7 +563,10 @@ Private Sub TakeSelection()
 
   If $hIconView.Mode = Select.Single Then
     If hSrc.Current And If hSrc.Current.Selected Then
+      Object.Lock(hDst)
       hDst[hSrc.Key].Selected = True
+      hDst[hSrc.Key].EnsureVisible
+      Object.Unlock(hDst)
     Endif
     Return
   Endif

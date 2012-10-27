@@ -1,0 +1,337 @@
+' Gambas class file
+
+Export
+
+Property Read Key As String
+Property Read ParentKey As String
+Property Text As String
+Property Picture As Picture
+Property Read Count, Children As Integer
+Property Expanded As Boolean
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+Property Editable As Boolean
+Property Selected As Boolean
+
+Private $sKey As String
+Private $sParent As String
+Private $sText As String
+Private $hPicture As Picture
+Private $bExpanded As Boolean
+Private $bEditable As Boolean
+
+Private $aChildren As String[]
+Private $aText As String[]
+
+Static Public _Tree As _TreeView
+
+Public _Depth As Integer
+Public _Rows As Integer
+
+Event _Refresh
+
+Private Sub GetTree() As _TreeView
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Sub GetView() As GridView
+  
+  Return GetTree().Children[0]
+  
+End
+
+Public Sub _new(sKey As String, sParent As String)
+  
+  $sKey = sKey
+  $sParent = sParent
+  
+  If sParent Then _Depth = GetTree()[sParent]._Depth + 1
+  
+  If sKey Then 
+    _Rows = 1
+    ComputeRows(1)
+  Else
+    $bExpanded = True
+  Endif
+  
+End
+
+Public Sub _AddChild(sKey As String)
+  
+  If Not $aChildren Then $aChildren = New String[]
+  $aChildren.Add(sKey)
+  
+End
+
+Public Sub _RemoveChild(sKey As String)
+  
+  Try $aChildren.Remove($aChildren.Find(sKey))
+  If $aChildren.Count = 0 Then $aChildren = Null
+  
+End
+
+Public Sub _GetChildren() As String[]
+  
+  Return $aChildren
+  
+End
+
+
+Private Function Key_Read() As String
+
+  Return $sKey
+
+End
+
+Private Function ParentKey_Read() As String
+
+  Return $sParent
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+  
+End
+
+Private Function Count_Read() As Integer
+
+  If $aChildren Then Return $aChildren.Count
+
+End
+
+Private Function Expanded_Read() As Boolean
+
+  Return $bExpanded
+
+End
+
+Private Sub ComputeRows(iAdd As Integer)
+
+  Dim hTree As _TreeView = GetTree()
+  Dim sKey As String
+  Dim hItem As _TreeView_Item
+  
+  sKey = $sParent
+  While sKey
+    hItem = hTree[sKey]
+    If Not hItem.Expanded Then Return
+    hItem._Rows += iAdd
+    sKey = hItem.ParentKey
+  Wend
+
+  hTree._AddCount(iAdd)
+  
+End
+
+
+Private Sub Expanded_Write(Value As Boolean)
+
+  Dim hTree As _TreeView = GetTree()
+  Dim sKey As String
+  Dim iOldRows As Integer
+  Dim sCurrent As String
+  
+  If $bExpanded = Value Then Return
+  
+  sCurrent = hTree.Key
+  
+  $bExpanded = Value
+  
+  iOldRows = _Rows
+  _Rows = 1
+  If Value And If $aChildren Then
+    For Each sKey In $aChildren
+      _Rows += hTree[sKey]._Rows
+    Next
+  Endif
+
+  If _Rows = iOldRows Then Return
+  
+  ComputeRows(_Rows - iOldRows)
+
+  hTree._UpdateCurrent(sCurrent)
+  
+  hTree._RaiseExpand($sKey, $bExpanded)
+
+End
+
+Private Function X_Read() As Integer
+
+  Return GetTree()._GetItemX(Me) - GetView().ScrollX
+
+End
+
+Private Function Y_Read() As Integer
+
+  Dim hTree As _TreeView = GetTree()
+  Dim hView As GridView = GetView()
+  Return hView.Rows[hTree._ItemToRow(Me)].Y - hView.ScrollY
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return GetTree()._GetItemWidth(Me)
+  
+End
+
+Private Function Height_Read() As Integer
+
+  Dim hTree As _TreeView = GetTree()
+  Dim hView As GridView = GetView()
+  Return hView.Rows[hTree._ItemToRow(Me)].H
+
+End
+
+Public Sub Clear()
+  
+  Dim hTree As _TreeView = GetTree()
+  While $aChildren.Count
+    hTree.Remove($aChildren[0])
+  Wend
+  
+End
+
+Public Sub Delete()
+  
+  Dim hTree As _TreeView = GetTree()
+  hTree.Remove($sKey)
+  
+End
+
+Public Sub EnsureVisible()
+  
+  Dim hTree As _TreeView = GetTree()
+  hTree._EnsureVisible(Me)
+  
+End
+
+Public Sub MoveBefore(Optional Key As String)
+  
+  Dim hTree As _TreeView = GetTree()
+  hTree._MoveItem(Me, Key, True)
+  
+End
+
+Public Sub MoveAfter(Optional Key As String)
+  
+  Dim hTree As _TreeView = GetTree()
+  hTree._MoveItem(Me, Key, False)
+  
+End
+
+Public Sub MoveFirst()
+  
+  MoveBefore()
+  
+End
+
+Public Sub MoveLast()
+  
+  MoveAfter()
+  
+End
+
+
+Private Function Editable_Read() As Boolean
+
+  Return $bEditable 
+
+End
+
+Private Sub Editable_Write(Value As Boolean)
+
+  $bEditable = Value
+
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return GetTree()._IsItemSelected(Me)
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  GetTree()._SetItemSelected(Me, Value)
+
+End
+
+
+Public Sub Rename()
+  
+  If Not $bEditable Then Return
+  GetTree()._Rename(Me)
+  
+End
+
+Public Sub _compare(hOther As _TreeView_Item) As Integer
+  
+  If _Tree And If Not _Tree._RaiseCompare($sKey, hOther.Key) Then 
+    Return _Tree.Compare
+  Else
+    Return String.Comp($sText, hOther.Text, gb.Natural + gb.IgnoreCase)
+  Endif
+  
+End
+
+Public Sub _put(Text As String, Column As Integer)
+  
+  Dim hView As GridView
+  
+  If Column = 0 Then
+    $sText = Text
+    Return
+  Endif
+  
+  hView = GetTree().Children[0]
+  
+  If Column < 0 Or If Column >= hView.Columns.Count Then Error.Raise("Out of bounds")
+  
+  If Not $aText Then 
+    $aText = New String[Column]
+  Else
+    $aText.Resize(Column)
+  Endif
+  
+  $aText[Column - 1] = Text
+  
+End
+
+Public Sub _get(Column As Integer) As String
+  
+  Dim hView As GridView
+
+  If Column = 0 Then Return $sText
+  
+  hView = GetTree().Children[0]
+
+  If Column < 0 Or If Column >= hView.Columns.Count Then Error.Raise("Out of bounds")
+  
+  Try Return $aText[Column - 1]
+  
+End

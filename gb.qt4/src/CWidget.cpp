@@ -1762,8 +1762,15 @@ BEGIN_PROPERTY(Control_Drop)
 
 END_PROPERTY
 
+static bool has_tracking(CWIDGET *_object)
+{
+	HANDLE_PROXY(_object);
+	return THIS->flag.tracking;
+}
 
 BEGIN_PROPERTY(Control_Tracking)
+
+	HANDLE_PROXY(_object);
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(THIS->flag.tracking);
@@ -2600,7 +2607,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			//state = mevent->buttons();
 		}
 
-		if (event_id == EVENT_MouseMove && mevent->buttons() == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
+		if (event_id == EVENT_MouseMove && mevent->buttons() == Qt::NoButton && !has_tracking(control))
 			goto _DESIGN;
 
 

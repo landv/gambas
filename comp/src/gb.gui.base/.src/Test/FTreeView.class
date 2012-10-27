@@ -1,11 +1,11 @@
 ' Gambas class file
 
-'Private tvwTest As MyTreeView
+'Private tvwTest As _TreeView
 
 
 Public Sub Form_Open()
 
-  Dim sDir As String = "/home/benoit/Documents"
+  Dim sDir As String = "/home/benoit/Documents/arsene-lupin"
   Dim sFile As String
   Dim sPath As String
   Dim hDirPict As Picture
@@ -15,17 +15,15 @@ Public Sub Form_Open()
   hDirPict = Picture["icon:/48/directory"]
   hFilePict = Picture["icon:/small/file"]
   
-  'tvwTest = New MyTreeView(Me)
-  'tvwTest.Border = False
-  'tvwTest.NoTabFocus = True
+  tvwTest.Columns.Count = 3
   
-  'tvwTest.Add(sDir, File.Name(sDir), Picture["icon:/small/directory"])
-  For Each sFile In RDir(sDir).Sort()
+  For Each sFile In RDir(sDir)
     sPath = sDir &/ sFile
     'Print File.Name(sPath); " -> "; File.Dir(sPath)
     sParent = File.Dir(sPath)
     If sParent = sDir Then sParent = ""
     tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)
+    'ListView1.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict))
   Next
   
 End
@@ -46,4 +44,11 @@ Public Sub tvwTest_KeyPress()
 
   If Key.Code = Key.Delete Then Button1_Click
 
+End
+
+Public Sub tvwTest_Compare(Key As String, OtherKey As String)
+  
+  Try tvwTest.Compare = Sgn(Stat(Key).Size - Stat(OtherKey).Size)
+  'If Error Then Stop Event
+  
 End

@@ -5,8 +5,8 @@ Export
 Property Read Fields As String[]
 Property Read Cookies As Collection
 Property Read Method As String
-Property Read Path As String
-Property Read Query As String
+Property Path As String
+Property Query As String
 Property Read Files As Collection
 Property Delimiter As String
 Property Read InternetExplorer As Integer
@@ -181,5 +181,26 @@ End
 Private Sub Debug_Write(Value As Boolean)
 
   $bDebug = Value
+
+End
+
+Private Sub Reload()
+  
+  _Request_Get._Reload
+  
+End
+
+
+Private Sub Path_Write(Value As String)
+
+  CGI["PATH_INFO"] = Value
+  Reload
+
+End
+
+Private Sub Query_Write(Value As String)
+
+  CGI["QUERY_STRING"] = Value
+  Reload
 
 End

@@ -1167,12 +1167,16 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 			case CD_EVENT:
 
-				event = &class->load->event[desc->gambas.val1];
+				//fprintf(stderr, "event %s.%s: %d %d\n", class->name, desc->event.name, first_event, (int)desc->event.index);
+				
+				event = &class->load->event[desc->event.index];
+				if (class->parent)
+					desc->event.index += class->parent->n_event;
 				desc->event.npmin = event->n_param;
 				desc->event.npmax = event->n_param;
 				desc->event.signature = (TYPE *)event->param;
-				desc->event.index = first_event++;
 				//desc->event.help = NULL;
+				//desc->event.index = first_event++;
 				break;
 
 			case CD_EXTERN:

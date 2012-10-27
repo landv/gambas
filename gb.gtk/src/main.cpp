@@ -181,14 +181,14 @@ extern "C"
 		CTextAreaSelectionDesc,
 		CComboBoxDesc,
 		CComboBoxItemDesc,
-		CListViewItemDesc,
-		CListViewDesc,
-		CTreeViewItemDesc,
-		CTreeViewDesc,
-		CColumnViewItemDesc,
-		CColumnViewColumnDesc,
-		CColumnViewColumnsDesc,
-		CColumnViewDesc,
+		//CListViewItemDesc,
+		//CListViewDesc,
+		//CTreeViewItemDesc,
+		//CTreeViewDesc,
+		//CColumnViewItemDesc,
+		//CColumnViewColumnDesc,
+		//CColumnViewColumnsDesc,
+		//CColumnViewDesc,
 		CTabStripDesc,
 		CTabStripContainerDesc,
 		CTabStripContainerChildrenDesc,
@@ -211,7 +211,7 @@ extern "C"
 		NULL
 	};
 
-	const char *GB_INCLUDE EXPORT = "gb.draw";
+	const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 
 	int EXPORT GB_INIT(void)
 	{
@@ -232,6 +232,8 @@ extern "C"
 		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
 
 		GB.Component.Load("gb.draw");
+		GB.Component.Load("gb.image");
+		GB.Component.Load("gb.gui.base");
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
 		DRAW_init();

@@ -1039,7 +1039,9 @@ Public Sub Editors_KeyPress()
       aClass.Sort
       
       For Each sClass In aClass
-        With Classes[sClass]
+        Try hClass = Classes[sClass]
+        If Error Then Continue
+        With hClass
           iOldCount = 0
           Try iOldCount = $cLastClassCount[sClass]
           If .Count = iOldCount Then Continue

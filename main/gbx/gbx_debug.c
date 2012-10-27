@@ -104,6 +104,7 @@ const char *DEBUG_get_current_position(void)
 	return DEBUG_get_position(CP, FP, PC);
 }
 
+
 void DEBUG_init(void)
 {
 	if (!EXEC_debug)
@@ -460,6 +461,15 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 	
 	STACK_backtrace_set_end(end);
 }
+
+
+void DEBUG_print_current_backtrace(void)
+{
+	STACK_BACKTRACE *bt = STACK_get_backtrace();
+	DEBUG_print_backtrace(bt);
+	STACK_free_backtrace(&bt);
+}
+
 
 GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 {

@@ -3,6 +3,7 @@
 Export 
 
 Private $cCache As New Collection
+Private $cKey As New Collection
 
 Private $aDay As String[] 
 Private $aMonth As String[] 
@@ -25,7 +26,7 @@ Public Function _get(sVar As String) As String
   Dim sVal As String
 
   sVal = $cCache[sVar]
-  If Not sVal Then
+  If Not sVal And If Not $cKey.Exist(sVar) Then
     sVal = Application.Env[sVar]
     $cCache[sVar] = sVal
   Endif
@@ -36,10 +37,9 @@ End
 Public Sub _put(sVal As String, sVar As String)
 
   $cCache[sVar] = sVal
+  $cKey[sVar] = True
 
 End
-
-
 
 Public Sub Encode(Path As String) As String
   
@@ -52,8 +52,6 @@ Public Sub Decode(Path As String) As String
   Return URL.Decode(Path)
   
 End
-
-
 
 Public Sub _init()
   

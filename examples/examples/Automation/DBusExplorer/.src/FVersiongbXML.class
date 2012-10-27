@@ -32,11 +32,10 @@ End
 Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As String)
 
   Dim xmlDoc As New XmlDocument
-  Dim sInterface, sFullDbusPath, s, sAppPath As String
+  Dim sFullDbusPath, s, sAppPath As String
   Dim hattr, hattr2, hNode, hNode2 As XmlNode
   Dim i, j, k As Integer
   Dim aArgs As New String[]
-  Dim sArgs As String
   Dim sIntr As String
 
   'Dim haArgs As New Object[]
@@ -182,7 +181,6 @@ Public Function MakeSignature(sKey As String) As String
   Dim aArg As String[]
   Dim sName, sType As String
   Dim iArg As Integer
-  Dim sOut As String
   Dim aOut As New String[]
 
   ars = Split(skey, "|")
@@ -247,10 +245,10 @@ Public Sub tvDbus_MouseMove()
   Dim ix, iy As Integer
   Dim hcont As Object
 
-  If Not tvDbus.Findat(Mouse.x, Mouse.y) Then
+  If Not tvDbus.FindAt(Mouse.x, Mouse.y) Then
 
     s = MakeSignature(tvDbus.item.key)
-
+  
     hcont = tvDbus.Parent
     ix = tvDbus.Item.X + tvDbus.Item.w / 2
     iy = tvDbus.Item.Y

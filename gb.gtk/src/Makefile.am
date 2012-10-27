@@ -47,7 +47,6 @@ gb_gtk_la_SOURCES = \
 	CTextArea.h CTextArea.cpp \
 	CSpinBox.h CSpinBox.cpp \
 	CListBox.h CListBox.cpp \
-	CTreeView.h CTreeView.cpp \
 	CFrame.h CFrame.cpp \
 	CSplitter.h CSplitter.cpp \
 	CTabStrip.h CTabStrip.cpp \

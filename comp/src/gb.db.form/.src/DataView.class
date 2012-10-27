@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Labels,Border=True"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Labels,Border=True,Sorted=True"
 Public Const _DrawWith As String = "GridView"
 Public Const _Group As String = "Data"
 
@@ -16,6 +16,7 @@ Property Grid As Boolean
 Property Highlight As Boolean
 Property Border As Boolean
 Property Editable As Boolean
+Property Sorted As Boolean
 
 Property Columns As String[]
 Property Labels As String[]
@@ -81,6 +82,8 @@ Public Sub _new()
   $hCreateTimer = New Timer As "CreateTimer"
   $hCtrl.Header = TableView.Both
   $hCtrl.Grid = False
+  $hCtrl.Sorted = True
+  $hCtrl.Columns.Sort = -1
   $bAllColumns = True
   Update
   Create()
@@ -1028,14 +1031,24 @@ Public Sub TableView_ColumnClick(Column As Integer)
   hSrc = GetSource()
   If Not hSrc Then Return
   
+  If Not $hCtrl.Sorted Then Return
+  
   If hSrc.Sort <> $aColumns[Column] Then
     hSrc.Sort = $aColumns[Column]
-  Else
+    $hCtrl.Columns.Sort = Column
+    $hCtrl.Columns.Ascending = True
+  Else If Not hSrc.Ascending Then
     hSrc.Sort = ""
+    $hCtrl.Columns.Sort = -1
+  Else
+    hSrc.Ascending = False
+    $hCtrl.Columns.Ascending = False
   Endif
   
   $iLastSize = 0
   $hCtrl.Refresh
+  
+  Stop Event
 
 End
 
@@ -1170,5 +1183,17 @@ End
 Private Function Data_Read() As _GridView_Data
 
   Return $hCtrl.Data
+
+End
+
+Private Function Sorted_Read() As Boolean
+
+  Return $hCtrl.Sorted
+
+End
+
+Private Sub Sorted_Write(Value As Boolean)
+
+  $hCtrl.Sorted = Value
 
 End

@@ -335,6 +335,7 @@ MyDragFrame::MyDragFrame(QWidget *parent) :
 	QPalette pal(palette());
 	pal.setColor(QPalette::Window, Qt::black);
 	setPalette(pal);
+	//setWindowOpacity(0.5);
 }
 
 /*MyDragFrame::paintEvent(QPaintEvent *e)
@@ -529,8 +530,8 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 	//qDebug("CDRAG_drag_enter: (%s %p) %p", GB.GetClassName(control), control, qobject_cast<MyListView *>(QWIDGET(control)));
 
 	// Hack for QScrollView
-	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
-		((MyListView *)QWIDGET(control))->contentsDragEnterEvent((QDragEnterEvent *)e);
+	/*if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
+		((MyListView *)QWIDGET(control))->contentsDragEnterEvent((QDragEnterEvent *)e);*/
 
 	if (!GB.CanRaise(control, EVENT_Drag))
 	{
@@ -558,7 +559,6 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 {
-	bool accepted;
 	bool cancel;
 	QPoint p;
 
@@ -566,7 +566,7 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 	// Hack for QScrollView
 	
-	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
+	/*if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
 	{
 		accepted = e->isAccepted();
 		((MyListView *)QWIDGET(control))->contentsDragMoveEvent((QDragMoveEvent *)e);
@@ -574,7 +574,7 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 			e->acceptProposedAction();
 		else
 			e->ignore();
-	}
+	}*/
 
 	if (!GB.CanRaise(control, EVENT_DragMove))
 	{
@@ -613,8 +613,8 @@ bool CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 		return false;
 
 	// Hack for QScrollView
-	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
-		((MyListView *)QWIDGET(control))->contentsDropEvent((QDragMoveEvent *)e);
+	/*if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
+		((MyListView *)QWIDGET(control))->contentsDropEvent((QDragMoveEvent *)e);*/
 	
 	CDRAG_clear(true);
 	CDRAG_info.event = e;

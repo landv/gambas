@@ -1817,9 +1817,20 @@ int gControl::minimumHeight()
 	return 0;
 }
 
+bool gControl::isTracking() const
+{
+	if (_proxy)
+		return _proxy->isTracking();
+	else
+		return _tracking;
+}
+
 void gControl::setTracking(bool v)
 {
-	_tracking = v;
+	if (_proxy)
+		_proxy->setTracking(v);
+	else
+		_tracking = v;
 	/*
 	GtkWidget *wid;
 	

@@ -1,26 +1,89 @@
-' Gambas module file
+' Gambas class file
 
-Export 
+Export
+Inherits _TreeView
 
-' PRIVATE SUB Quote(sStr AS String) AS String
-'   
-'   RETURN Replace(sStr, "\"", "\"\"")
-'   
-' END
-' 
-' PRIVATE SUB UnQuote(sStr AS String) AS String
-'   
-'   RETURN Replace(sStr, "\"\"", "\"")
-'   
-' END
+Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Group As String = "View"
+Public Const _DefaultEvent As String = "Click"
+Public Const _Similar As String = "ListView"
 
+Property Header As Boolean
+Property Resizable As Boolean
+Property AutoResize As Boolean
+Property Read Columns As _ColumnView_Columns
+Property Settings As String
 
-Public Sub _GetColumnViewSettings(hColumnView As ColumnView) As String
+Private $hView As GridView
+Private $hColumns As _ColumnView_Columns
+
+Public Sub _new()
   
+  $hView = Me.Proxy
+  Me.Header = True
+  Me.Resizable = False
+  Me.AutoResize = True
+  
+  $hColumns = New _ColumnView_Columns As "Columns"
+  
+End
+
+
+Public Sub Add(Key As String, Text As String, Optional Picture As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
+  
+  Return Super._Add(Key, Text, Picture, Parent, After)
+  
+End
+
+
+Private Function Header_Read() As Boolean
+
+  Return $hView.Header
+
+End
+
+Private Sub Header_Write(Value As Boolean)
+
+  $hView.Header = If(Value, GridView.Horizontal, GridView.None)
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $hView.Resizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $hView.Resizable = Value
+
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $hView.AutoResize
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  $hView.AutoResize = Value
+
+End
+
+Private Function Columns_Read() As _ColumnView_Columns
+
+  Return $hColumns
+
+End
+
+Private Function Settings_Read() As String
+
   Dim sVal As String
   Dim iCol As Integer
 
-  With hColumnView
+  With Me
 
     sVal = CStr(.Columns.Count)
     
@@ -50,7 +113,7 @@ Public Sub _GetColumnViewSettings(hColumnView As ColumnView) As String
   
 End
 
-Public Sub _SetColumnViewSettings(hColumnView As ColumnView, sSettings As String)
+Private Sub Settings_Write(Value As String)
 
   Dim aVal As String[]
   Dim iInd As Integer
@@ -60,9 +123,9 @@ Public Sub _SetColumnViewSettings(hColumnView As ColumnView, sSettings As String
 
   'DEBUG sSettings
 
-  aVal = Split(sSettings, ",", "\"")
+  aVal = Split(Value, ",", "\"")
   
-  With hColumnView
+  With Me
 
     .Columns.Count = CInt(aVal[0])
     eWidth = New Float[.Columns.Count]
@@ -121,4 +184,3 @@ Catch
   Debug Error.Where; ": "; Error.Text
 
 End
-

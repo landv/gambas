@@ -8,6 +8,8 @@ Property Read Name As String
 Property Read Keys As String[]
 Property Read Count As Integer
 Property Sort As String
+Property Ascending As Boolean
+
 Property Read CacheSize As Integer
 
 Private $hConn As DataConnection
@@ -20,6 +22,7 @@ Private $aVal As Object[]
 'PRIVATE $iLastIndex AS Integer
 Private $iCount As Integer
 Private $sSort As String
+Private $bAscent As Boolean
 
 Private $rData As Result
 Private $iDataIndex As Integer
@@ -74,6 +77,22 @@ End
 '   
 ' END
 
+Private Sub GetSortKeys() As String[]
+  
+  Dim aSort As String[]
+  
+  If $sSort Then
+    aSort = $aKey.Copy()
+    If Not $bAscent Then aSort[0] &= " DESC"
+  Else
+    aSort = $aKey
+  Endif
+  
+  Return aSort
+  
+End
+
+
 Private Sub LoadUntil(iIndex As Integer)
   
   Dim hReq As Request
@@ -83,6 +102,7 @@ Private Sub LoadUntil(iIndex As Integer)
   Dim iCount As Integer
   Dim iPos As Integer
   Dim iLimit As Integer
+  Dim aSort As String[]
   
   If $aKey.Count = 0 Then Return
   
@@ -90,8 +110,10 @@ Private Sub LoadUntil(iIndex As Integer)
   
   iLimit = (((iIndex - $aVal.Count) \ LIMIT_INC) + 1) * LIMIT_INC
   
+  aSort = GetSortKeys()
+  
   'sReq = "SELECT " & $aKey.Join(",") & " FROM " & $sTable
-  hReq = Request.Select($aKey).From($sTable).Where($sFilter).OrderBy($aKey)
+  hReq = Request.Select($aKey).From($sTable).Where($sFilter).OrderBy(aSort)
   
   If $aVal.Count = 0 Then
     rData = $DB.Limit(iLimit).Exec(hReq.Get($DB))
@@ -99,7 +121,7 @@ Private Sub LoadUntil(iIndex As Integer)
   Else
     aVal = $aVal[$aVal.Max]
     'sReq &= " WHERE " & Where(aVal)
-    hReq = hReq.Where(Common.MakeNextWhere($aKey, aVal))
+    hReq = hReq.Where(Common.MakeNextWhere(aSort, aVal))
     rData = $DB.Limit(iLimit).Exec(hReq.Get($DB))
     ' TODO: ne pas faire MoveNext si l'enregistrement $aVal[$aVal.Max] a disparu
     'rData.MoveNext
@@ -151,6 +173,7 @@ Public Function _get(Index As Integer) As Result
   
   Dim hReq As Request
   Dim sCol As String
+  Dim aSort As String[]
   
   If $aCol And If $aCol.Count Then
     sCol = $aCol.Join(",")
@@ -164,7 +187,7 @@ Public Function _get(Index As Integer) As Result
       
       If $bRequest Then
         If $sSort Then
-          $rData = $DB.Exec($sTable & " ORDER BY " & $sSort)
+          $rData = $DB.Exec($sTable & " ORDER BY " & $sSort & If($bAscent, "", " DESC"))
         Else
           $rData = $DB.Exec($sTable)
         Endif
@@ -174,7 +197,7 @@ Public Function _get(Index As Integer) As Result
             If sCol Then sCol = "," & sCol
             sCol = $sSort & sCol
           Endif
-          hReq = Request.Select(sCol).From($sTable).Where($sFilter).OrderBy($sSort)
+          hReq = Request.Select(sCol).From($sTable).Where($sFilter).OrderBy($sSort & If($bAscent, "", " DESC"))
         Else
           hReq = Request.Select(sCol).From($sTable).Where($sFilter)
         Endif
@@ -191,6 +214,7 @@ Public Function _get(Index As Integer) As Result
   Endif
   
   LoadUntil(Index)
+
   If Index >= $aVal.Count Then Return
     
   If $rData Then
@@ -198,13 +222,16 @@ Public Function _get(Index As Integer) As Result
     If $rData.Available Then Return $rData
   Endif
 
+  ' 154,32 e + 10
   '$iDataIndex = Max(0, ((Index - (LIMIT_INC \ 2)) \ LIMIT_INC) * LIMIT_INC)
   $iDataIndex = Max(0, Index - (LIMIT_INC \ 2))
 
+  aSort = GetSortKeys()
+
   If $iDataIndex = 0 Then
-    hReq = Request.Select(sCol).From($sTable).Where($sFilter).OrderBy($aKey)
+    hReq = Request.Select(sCol).From($sTable).Where($sFilter).OrderBy(aSort)
   Else
-    hReq = Request.Select(sCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex - 1])).OrderBy($aKey)
+    hReq = Request.Select(sCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
   Endif
   $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get($DB))
   
@@ -281,13 +308,15 @@ End
 
 Private Function Sort_Read() As String
 
-  Return $sSort      
+  Return $sSort
 
 End
 
 Private Sub Sort_Write(Value As String)
 
+  If $sSort = Value Then Return
   $sSort = Value  
+  $bAscent = True
   RefreshKey
 
 End
@@ -359,4 +388,18 @@ Public Sub Reset()
     $hConn.Reset($sTable)
   Endif
   
+End
+
+Private Function Ascending_Read() As Boolean
+
+  Return $bAscent
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  If $bAscent = Value Then Return
+  $bAscent = Value
+  RefreshKey
+
 End

@@ -34,18 +34,18 @@
 typedef
   struct _COMPONENT {
     void *class;
-    int ref;
+    intptr_t ref;
     LIST list;
+		LIST load;
     char *name;
     LIBRARY *library;
     ARCHIVE *archive;
 		unsigned order : 8;
-    unsigned preload : 1;
     unsigned loaded : 1;
     unsigned user : 1;       // user library
     unsigned warning : 1;    // Set when the bytecode warning was displayed by the class loader for this component
     unsigned loading : 1;    // component is being loaded
-    unsigned _reserved : 19;
+    unsigned _reserved : 20;
     }
   PACKED
   COMPONENT;

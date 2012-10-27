@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,85,80)
+  Icon = Picture["icon:/medium/color"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Button1 Button
+    MoveScaled(3,1,16,4)
+    #Translate = False
+    Text = "Enabled"
+  }
+  { IconView1 IconView
+    MoveScaled(2,13,42,31)
+    Mouse = Mouse.Cross
+    Expand = True
+    Mode = Select.Multiple
+    Editable = True
+    IconLines = 3
+  }
+}

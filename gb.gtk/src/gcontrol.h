@@ -99,7 +99,7 @@ public:
 	void setPrevious(gControl *prev);
 	void setNext(gControl *next);
 	
-	bool isTracking() { return _tracking; }
+	bool isTracking() const;
 	void setTracking(bool vl);
 	
 	bool isNoTabFocus() const { return _no_tab_focus; }

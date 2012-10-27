@@ -199,7 +199,7 @@ Public Sub RefreshAll()
     grdProperty[iRow, 0].Text = sProp
     grdProperty[iRow, 0].Padding = PADDING
 
-    If sProp = "Filter" Then Stop
+    'If sProp = "Filter" Then Stop
     sVal = GetProperty(sProp)
 
     grdProperty[iRow, 0].Font = grdProperty.Font

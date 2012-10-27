@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_component.c
+	gbx_component.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -64,24 +64,27 @@ int COMPONENT_count = 0;
 char *COMPONENT_path;
 
 static COMPONENT *_component_list = NULL;
+static COMPONENT *_component_load = NULL;
 
 static bool _load_all = FALSE;
 
 void COMPONENT_init(void)
 {
-  LIBRARY_init();
-  ARCHIVE_init();
+	LIBRARY_init();
+	ARCHIVE_init();
 }
 
 
 void COMPONENT_exit(void)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 	int order;
 	int max_order = 0;
 
-  LIST_for_each(comp, _component_list)
-  {
+	_component_load = NULL;
+	
+	LIST_for_each(comp, _component_list)
+	{
 		if (comp->order > max_order)
 			max_order = comp->order;
 	}
@@ -103,65 +106,64 @@ void COMPONENT_exit(void)
 			COMPONENT_unload(comp);
 	}*/
 
-  while (_component_list)
-    COMPONENT_delete(_component_list);
+	while (_component_list)
+		COMPONENT_delete(_component_list);
 
-  LIBRARY_exit();
-  ARCHIVE_exit();
+	LIBRARY_exit();
+	ARCHIVE_exit();
 
-  STRING_free(&COMPONENT_path);
+	STRING_free(&COMPONENT_path);
 }
 
 
 
 void COMPONENT_load_all(void)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 
-  if (EXEC_debug)
-  {
-    COMPONENT_create("gb.eval");
-  	COMPONENT_create("gb.debug");
+	if (EXEC_debug)
+	{
+		COMPONENT_create("gb.eval");
+		COMPONENT_create("gb.debug");
 	}
 
 	_load_all = TRUE;
 	
-  LIST_for_each(comp, _component_list)
-  {
-    comp->preload = TRUE;
-    COMPONENT_load(comp);
-  }
-  
-  _load_all = FALSE;
+	LIST_for_each(comp, _component_list)
+	{
+		COMPONENT_load(comp);
+	}
+	
+	_load_all = FALSE;
 }
 
 void COMPONENT_load_all_finish(void)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 
-  LIST_for_each(comp, _component_list)
-  {
-    if (comp->preload && comp->archive)
-			ARCHIVE_load_exported_class(comp->archive);
-  }
+	LIST_for_each_name(comp, _component_load, load)
+	{
+		//fprintf(stderr, "load exported class: %s\n", comp->name);
+		ARCHIVE_load_exported_class(comp->archive);
+	}
 }
 
 
 COMPONENT *COMPONENT_find(const char *name)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 
 	/* A null name is the main archive */
 	if (!name)
 		return NULL;
 
-  LIST_for_each(comp, _component_list)
-  {
-    if (strcmp(comp->name, name) == 0)
-      return comp;
-  }
+	LIST_for_each(comp, _component_list)
+	{
+		if (strcmp(comp->name, name) == 0)
+			return comp;
+	}
 
-  return NULL;
+	return NULL;
 }
 
 bool COMPONENT_exist(const char *name)
@@ -171,9 +173,9 @@ bool COMPONENT_exist(const char *name)
 
 COMPONENT *COMPONENT_create(const char *name)
 {
-  COMPONENT *comp;
-  char *path = NULL;
-  bool can_archive;
+	COMPONENT *comp;
+	char *path = NULL;
+	bool can_archive;
 	bool library = FALSE;
 	bool same_name_as_project = FALSE;
 
@@ -184,16 +186,16 @@ COMPONENT *COMPONENT_create(const char *name)
 		name = FILE_get_name(name);
 	}
 	
-  comp = COMPONENT_find(name);
-  if (comp)
-    return comp;
+	comp = COMPONENT_find(name);
+	if (comp)
+		return comp;
 
-  ALLOC_ZERO(&comp, sizeof(COMPONENT), "COMPONENT_create");
+	ALLOC_ZERO(&comp, sizeof(COMPONENT), "COMPONENT_create");
 
-  comp->class = CLASS_Component;
-  comp->ref = 1;
+	comp->class = CLASS_Component;
+	comp->ref = 1;
 
-  comp->name = STRING_new_zero(name);
+	comp->name = STRING_new_zero(name);
 
 	if (library)
 	{
@@ -227,83 +229,92 @@ COMPONENT *COMPONENT_create(const char *name)
 		}
 	}
 
-  LIST_insert(&_component_list, comp, &comp->list);
-  COMPONENT_count++;
+	//fprintf(stderr, "insert %s\n", comp->name);
+	LIST_insert(&_component_list, comp, &comp->list);
+	COMPONENT_count++;
 
-  if (!comp->library && !comp->archive && !same_name_as_project)
+	if (!comp->library && !comp->archive && !same_name_as_project)
 	{
 		COMPONENT_delete(comp);
 		THROW(E_LIBRARY, name, "cannot find component");
 	}
 
-  return comp;
+	return comp;
 }
 
 
 void COMPONENT_delete(COMPONENT *comp)
 {
-  COMPONENT_unload(comp);
-  LIST_remove(&_component_list, comp, &comp->list);
-  COMPONENT_count--;
+	COMPONENT_unload(comp);
+	LIST_remove(&_component_list, comp, &comp->list);
+	COMPONENT_count--;
 
-  if (comp->library)
-    LIBRARY_delete(comp->library);
+	if (comp->library)
+		LIBRARY_delete(comp->library);
 
-  if (comp->archive)
-    ARCHIVE_delete(comp->archive);
+	if (comp->archive)
+		ARCHIVE_delete(comp->archive);
 
-  STRING_free(&comp->name);
+	STRING_free(&comp->name);
 
-  FREE(&comp, "COMPONENT_delete");
+	FREE(&comp, "COMPONENT_delete");
 }
 
 
 void COMPONENT_load(COMPONENT *comp)
 {
-  COMPONENT *current;
+	COMPONENT *current;
 
-  if (comp->loaded || comp->loading)
-    return;
+	if (comp->loaded || comp->loading)
+		return;
 
-  #if DEBUG_COMP
-    fprintf(stderr, "Loading component %s\n", comp->name);
-  #endif
+	#if DEBUG_COMP
+		fprintf(stderr, "Loading component %s\n", comp->name);
+	#endif
 		
 	comp->loading = TRUE;
 
-  current = COMPONENT_current;
-  COMPONENT_current = comp;
+	current = COMPONENT_current;
+	COMPONENT_current = comp;
 
-  if (comp->library)
+	if (comp->library)
 	{
-    comp->order = LIBRARY_load(comp->library);
-		comp->library->persistent = comp->preload;
+		comp->order = LIBRARY_load(comp->library);
+		comp->library->persistent = _load_all;
 	}
 	
-  if (comp->archive)
-    ARCHIVE_load(comp->archive, !_load_all);
+	if (comp->archive)
+	{
+		if (_load_all)
+		{
+			//fprintf(stderr, "load later: %s\n", comp->name);
+			LIST_insert(&_component_load, comp, &comp->load);
+		}
+		
+		ARCHIVE_load(comp->archive, !_load_all);
+	}
 
 	comp->loading = FALSE;
-  comp->loaded = TRUE;
-  COMPONENT_current = current;
+	comp->loaded = TRUE;
+	COMPONENT_current = current;
 }
 
 
 void COMPONENT_unload(COMPONENT *comp)
 {
-  if (!comp->loaded)
-    return;
+	if (!comp->loaded)
+		return;
 
-  #if DEBUG_COMP
-    fprintf(stderr, "Unloading component %s [%d]\n", comp->name, comp->order);
-  #endif
+	#if DEBUG_COMP
+		fprintf(stderr, "Unloading component %s [%d]\n", comp->name, comp->order);
+	#endif
 
-  if (comp->library)
-    LIBRARY_unload(comp->library);
+	if (comp->library)
+		LIBRARY_unload(comp->library);
 
-  /* Do not exist yet */
-  //if (comp->archive)
-  //  ARCHIVE_unload(comp->archive);
+	/* Do not exist yet */
+	//if (comp->archive)
+	//  ARCHIVE_unload(comp->archive);
 
 	comp->loaded = FALSE;
 }
@@ -311,51 +322,51 @@ void COMPONENT_unload(COMPONENT *comp)
 
 COMPONENT *COMPONENT_next(COMPONENT *comp)
 {
-  if (comp)
-    return (COMPONENT *)(comp->list.next);
-  else
-    return _component_list;
+	if (comp)
+		return (COMPONENT *)(comp->list.next);
+	else
+		return _component_list;
 }
 
 
 void COMPONENT_translation_must_be_reloaded(void)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 
-  LIST_for_each(comp, _component_list)
-  {
-    if (comp->archive)
-      comp->archive->translation_loaded = FALSE;
-  }
-  
-  if (ARCHIVE_main)
-  	ARCHIVE_main->translation_loaded = FALSE;
+	LIST_for_each(comp, _component_list)
+	{
+		if (comp->archive)
+			comp->archive->translation_loaded = FALSE;
+	}
+	
+	if (ARCHIVE_main)
+		ARCHIVE_main->translation_loaded = FALSE;
 }
 
 
 void COMPONENT_signal(int signal, void *param)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 
-  LIST_for_each(comp, _component_list)
-  {
-    if (comp->library && comp->library->signal)
-      (*comp->library->signal)(signal, param);
-  }
+	LIST_for_each(comp, _component_list)
+	{
+		if (comp->library && comp->library->signal)
+			(*comp->library->signal)(signal, param);
+	}
 }
 
 bool COMPONENT_get_info(const char *key, void **value)
 {
-  COMPONENT *comp;
-  
-  LIST_for_each(comp, _component_list)
-  {
-    if (comp->library && comp->library->info)
-      if ((*comp->library->info)(key, value))
-      	return FALSE;
-  }
-  
-  return TRUE;
+	COMPONENT *comp;
+	
+	LIST_for_each(comp, _component_list)
+	{
+		if (comp->library && comp->library->info)
+			if ((*comp->library->info)(key, value))
+				return FALSE;
+	}
+	
+	return TRUE;
 }
 
 void COMPONENT_exec(const char *name, int argc, char **argv)

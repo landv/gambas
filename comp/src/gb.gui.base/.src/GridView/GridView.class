@@ -10,6 +10,7 @@ Public Const _DefaultEvent As String = "Click"
 
 Public Enum None, Horizontal, Vertical, Both
 
+Property Background As Integer
 Property Read Rows As _GridView_Rows
 Property Read Columns As _GridView_Columns
 Property Border As Boolean
@@ -25,12 +26,7 @@ Property Header As Integer
 Property ShowCursor As Boolean
 Property Read Current As _GridView_Cell
 Property Font As Font
-'Property Mouse As Integer
 Property Sorted As Boolean
-'Property HighlightSort As Boolean
-
-'Property RowCount As Integer
-'Property ColumnCount As Integer
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -49,10 +45,15 @@ Event Select
 Event Click
 Event Activate
 Event Scroll
+
 Event ColumnClick(Column As Integer)
-Event RowClick(Row As Integer)
 Event ColumnResize(Column As Integer)
+Event ColumnSize(Column As Integer)
+
+Event RowClick(Row As Integer)
 Event RowResize(Row As Integer)
+Event RowSize(Row As Integer)
+
 Event MouseDown
 Event Sort
 Event Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
@@ -126,6 +127,15 @@ Public Sub _new()
   Me.Proxy = $hView
   
 End
+
+' Public Sub _attach(Parent As Object, EventName As String)
+'   
+'   If Parent Then
+'     $bHasDrawEvent = Object.CanRaise(Me, "Draw")
+'   Endif
+'   
+' End
+
 
 Private Sub GetCellKey(iRow As Integer, iCol As Integer) As String
   
@@ -327,7 +337,11 @@ Public Sub ScrollArea_Draw()
   YO = $hColumns.Height - $hView.ScrollY + F
   YY = YO + $hRows._GetRowY(iRow)
   
-  iGrid = Color.LightForeground 'Color.Merge(Color.LightForeground, $hView.Background)
+  If $bGrid Then
+    iGrid = Color.LightForeground
+  Else
+    iGrid = Color.Merge(Color.LightForeground, Color.ButtonBackground)
+  Endif
   
   hClip = Draw.ClipRect
   
@@ -351,10 +365,11 @@ Public Sub ScrollArea_Draw()
       With $hColumns[I]
         If .W > 0 And If $iHeader And Horizontal Then
           Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
-          If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+          'If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+          Draw.FillRect(X - 1, F, 1, H - F, iGrid)
           If iSort = I Then
             WA = Min(16, H - F)
-            Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Top, Align.Bottom))
+            Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
             Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
             If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
           Else
@@ -389,7 +404,7 @@ Public Sub ScrollArea_Draw()
       'Draw.Style.Separator(F, Y, W - F, 2)
       H = $hRows._GetRowHeight(I)
       If H > 0 And If $iHeader And Vertical Then
-        If $bGrid Then Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
+        Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
         Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
         If I = $iRow Then Draw.Font.Bold = True
         Draw.Text($hRows._GetRowText(I), F, Y + 2, W - F, H - 2, Align.Center)
@@ -427,7 +442,7 @@ Public Sub ScrollArea_Draw()
   hClip = hRect.Intersection(Draw.ClipRect)
   If Not hClip Then Return
   
-  $bHasDrawEvent = True 'Object.CanRaise(Me, "Draw")
+  $bHasDrawEvent = Object.CanRaise(Me, "Draw")
   
   hSaveClip = hClip.Copy()
   Draw.ClipRect = hClip
@@ -574,11 +589,11 @@ Public Sub ScrollArea_Draw()
     
   Endif
   
-  If Me.HasFocus And If Not $hView.Border Then
-    Draw.ClipRect = Null
-    Draw.Foreground = Color.LightBackground 'Color.LightForeground
-    Draw.Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
-  Endif
+  ' If Me.HasFocus And If Not $hView.Border Then
+  '   Draw.ClipRect = Null
+  '   Draw.Foreground = Color.LightBackground 'Color.LightForeground
+  '   Draw.Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
+  ' Endif
 
 End
 
@@ -886,7 +901,7 @@ Public Sub ScrollArea_MouseDown()
               $hColumns.Ascending = Not $hColumns.Ascending
             Else
               $hColumns.Sort = I
-              $hColumns.Ascending = False
+              $hColumns.Ascending = True
             Endif
           Endif
         Endif
@@ -1326,7 +1341,7 @@ Public Sub ScrollArea_KeyPress()
       Stop Event
     
     Case Key.Home
-      If Key.Control Then
+      If Key.Control Or If Not $bShowCursor Then
         MoveTo(0, 0)
       Else
         MoveTo($iRow, 0)
@@ -1334,7 +1349,7 @@ Public Sub ScrollArea_KeyPress()
       Stop Event
     
     Case Key.End
-      If Key.Control Then
+      If Key.Control Or If Not $bShowCursor Then
         MoveTo($hRows.Count - 1, $hColumns.Count - 1)
       Else
         MoveTo($iRow, $hColumns.Count - 1)
@@ -1780,7 +1795,7 @@ Private Sub Sorted_Write(Value As Boolean)
     $hColumns.Sort = -1
   Else
     $hColumns.Sort = 0
-    $hColumns.Ascending = False
+    $hColumns.Ascending = True
   Endif
   
   Me.Refresh
@@ -1791,4 +1806,37 @@ Public Sub Scroll(X As Integer, Y As Integer)
   
   $hView.Scroll(X, Y)
   
+End
+
+Public Sub _RaiseColumnSize(iCol As Integer) As Boolean
+
+  Dim bCancel As Boolean
+  
+  If Not Object.CanRaise(Me, "ColumnSize") Then Return True
+  bCancel = Raise ColumnSize(iCol)
+  Return bCancel
+  
+End
+
+Public Sub _RaiseRowSize(iRow As Integer) As Boolean
+
+  Dim bCancel As Boolean
+  
+  If Not Object.CanRaise(Me, "RowSize") Then Return True
+  bCancel = Raise RowSize(iRow)
+  Return bCancel
+  
+End
+
+Private Function Background_Read() As Integer
+
+  Return $hView.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  If Value = Color.Default Then Value = Color.TextBackground
+  $hView.Background = Value
+
 End

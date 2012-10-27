@@ -21,7 +21,7 @@ Public Sub _new()
   Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
   
-  tvwProject.Columns.Count = 2
+  'tvwProject.Columns.Count = 2
   
   Design.Init
   
@@ -1367,7 +1367,9 @@ End
 Public Sub tvwProject_DragMove()
   
   If Not tvwProject.FindAt(Drag.X, Drag.Y) Then 
+    
     $sKey = tvwProject.Item.Key
+    
     If Project.IsLocked($sKey) Then Goto STOP_EVENT
     If Drag.Format = MMime.DATA And If Drag.Source Then 
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
@@ -1968,11 +1970,11 @@ Public Sub mnuBackward_Show()
   
 End
 
-Public Sub panProject_Resize()
-
-  tvwProject.Columns[0].Width = panProject.W + 64
-
-End
+' Public Sub panProject_Resize()
+' 
+'   tvwProject.Columns[0].Width = panProject.W + 64
+' 
+' End
 
 Private Sub OpenProfile()
   

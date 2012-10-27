@@ -60,7 +60,7 @@ Private Sub ClearView()
 
   $bNoEvent = True
   $hTreeView.Clear
-  AddDir(File.Dir(sRoot), File.Name(sRoot), True )
+  AddDir(File.Dir(sRoot), File.Name(sRoot), True)
   '$hTreeView.Add(sRoot, sRoot, $hRootPict)
   '$hTreeView.Add(sRoot & "/", "",, sRoot)
 
@@ -119,7 +119,6 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
   
   With $hTreeView.Add(sDir &/ sFile, sName, hPict, sParent)
     .Editable = Not bNoEdit
-    'DEBUG sFile; " -> "; sAfter
     .MoveAfter(sAfter)
   End With
   
@@ -133,7 +132,10 @@ Public Sub TreeView_Expand()
   Dim sDir As String
   Dim sDelete As String
 
+  If Not $hTreeView.Item Then Stop
+
   $hTreeView.Item.Selected = True
+  
   sDir = $hTreeView.Item.Key
   If sDir = GetRoot() Then
     $hTreeView.Item.Picture = $hRootPict
@@ -184,7 +186,9 @@ End
 Public Sub TreeView_Select()
 
   If Not $bNoExpand And If Not $bInRename Then
-    If $hTreeView.Current And If Not $hTreeView.Current.Expanded Then $hTimerExpand.Trigger
+    If $hTreeView.Current And If Not $hTreeView.Current.Expanded Then 
+      $hTimerExpand.Trigger
+    Endif
   Endif
   If $bNoEvent Then Return 
   Raise {Select}
@@ -262,7 +266,7 @@ Private Sub Current_Write(sDir As String)
 
   $bNoEvent = True
   sSubDir = "/"
-  For Each sElt In Split(File.Dir(sDir), "/", "", True )
+  For Each sElt In Split(File.Dir(sDir), "/", "", True)
     sSubDir &/= sElt
     Try $hTreeView[sSubDir].Expanded = True
   Next

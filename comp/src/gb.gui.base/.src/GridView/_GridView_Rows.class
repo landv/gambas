@@ -18,7 +18,7 @@ Property Read Max As Integer
 Property Width, W As Integer
 Property Resizable As Boolean
 Property Height, H As Integer
-Property Read Selection As Integer[]
+Property Selection As Integer[]
 
 Event _Refresh
 
@@ -53,6 +53,7 @@ End
 
 Private Sub Count_Write(Value As Integer)
   
+  Dim hView As GridView = GetView()
   Dim iRow As Integer
   
   If Value = $nRows Then Return
@@ -65,13 +66,15 @@ Private Sub Count_Write(Value As Integer)
       iRow = $aHeight[$aHeight.Max]
       $cHeight.Remove(iRow)
       $aHeight.Remove($aHeight.Max)
+      If hView.Mode = Select.Multiple Then $hSel.UnSelect(iRow)
     Wend
   Endif
   
-  With GetView()
+  If hView.Row >= $nRows Then hView.Row = -1
+  
+  With hView
     ._ResizeContents()
     ._CheckCurrent()
-    $hSel.UnSelectAll
     .Refresh
   End With
   
@@ -90,7 +93,7 @@ End
 Public Sub _GetDefaultRowHeight() As Integer
   
   If $iDefaultHeight > 0 Then Return $iDefaultHeight
-  Return GetView().Font.Height + 6
+  Return GetView().Font.Height + 4
   
 End
 
@@ -157,6 +160,7 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   Dim hView As GridView = GetView()
   Dim DH As Integer = _GetDefaultRowHeight()
   Dim OH As Integer
+  Dim bCancel As Boolean
   
   H = Min(1024, H)
   
@@ -170,7 +174,11 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
     Return
   Endif
   
-  If H < 0 Then H = hView._GetPreferredHeight(iRow)
+  If H < 0 Then
+    bCancel = hView._RaiseRowSize(iRow)
+    If Not bCancel Then Return
+    H = hView._GetPreferredHeight(iRow)
+  Endif
   
   If H >= 0 Then
     OH = -1
@@ -381,12 +389,45 @@ Public Sub _Clear()
     $aHeight.Clear
   Endif
   
+  $hSel.UnSelectAll
+  
 End
 
 '' Return an integer array of all the selected rows
 
 Private Function Selection_Read() As Integer[]
 
-  Return $hSel._GetSelectedRows()
+  Dim hView As GridView = GetView()
+  
+  If hView.Mode = Select.Single Then
+    If hView.Row >= 0 Then
+      Return [hView.Row]
+    Endif
+  Else If hView.Mode = Select.Multiple Then
+    Return $hSel._GetSelectedRows()
+  Endif
+
+  Return New Integer[]
+
+End
+
+Private Sub Selection_Write(Value As Integer[])
+
+  Dim hView As GridView = GetView()
+  Dim iRow As Integer
+  
+  If hView.Mode = Select.Single Then
+    If Not Value Then 
+      hView.Row = -1
+    Else
+      hView.Row = Value[Value.Max]
+    Endif
+  Else If hView.Mode = Select.Multiple Then
+    $hSel.UnSelectAll
+    For Each iRow In Value
+      $hSel.Select(iRow)
+    Next
+    hView.Refresh
+  Endif
 
 End

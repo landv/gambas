@@ -37,3 +37,12 @@ Public Sub Exist(Field As String) As Boolean
   Return $aField.Exist(Field)
   
 End
+
+Public Sub _Reload()
+  
+  If Not $cVal Then Return
+  
+  $cVal = Null
+  Decode
+  
+End

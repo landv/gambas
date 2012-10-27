@@ -68,6 +68,7 @@ GB_CLASS DEBUG_find_class(const char *name);
 void DEBUG_enum_keys(void *object, char **key);
 
 void DEBUG_print_backtrace(STACK_BACKTRACE *bt);
+void DEBUG_print_current_backtrace(void);
 GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt);
 
 #define PROFILE_ENTER_FUNCTION() \

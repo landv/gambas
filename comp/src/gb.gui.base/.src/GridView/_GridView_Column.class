@@ -50,7 +50,14 @@ End
 
 Private Sub Width_Write(Value As Integer)
   
-  If Value < 0 Then Value = GetView()._GetPreferredWidth(_Column)
+  Dim bCancel As Boolean
+  
+  If Value < 0 Then
+    bCancel = GetView()._RaiseColumnSize(_Column)
+    If Not bCancel Then Return
+    Value = GetView()._GetPreferredWidth(_Column)
+  Endif
+  
   If Value < 0 Or If Value > 1024 Or If Value = $W Then Return
   $W = Max(0, Value)
   Raise _Refresh

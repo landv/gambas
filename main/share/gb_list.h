@@ -35,7 +35,9 @@ typedef
 void LIST_insert(void *p_first, void *node, LIST *list);
 void LIST_remove(void *p_first, void *node, LIST *list);
 
-#define LIST_for_each(_var, _first) \
-  for(_var = (_first); _var; _var = (_var)->list.next)
+#define LIST_for_each_name(_var, _first, _name) \
+  for(_var = (_first); _var; _var = (_var)->_name.next)
 
+#define LIST_for_each(_var, _first) LIST_for_each_name(_var, _first, list)
+  
 #endif

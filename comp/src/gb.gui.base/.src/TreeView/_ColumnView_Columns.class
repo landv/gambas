@@ -1,0 +1,66 @@
+' Gambas class file
+
+Export
+
+Property Count As Integer
+Property Read Max As Integer
+Property Sort As Integer
+Property Ascending As Boolean
+
+Event _Refresh
+
+Private Sub GetView() As GridView
+  
+  Dim hTree As _TreeView = Object.Parent(Me)
+  Return hTree.Children[0]
+  
+End
+
+Public Sub _get(Index As Integer) As _GridView_Column
+  
+  Return GetView().Columns[Index]
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return GetView().Columns.Count
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  GetView().Columns.Count = Max(1, Value)
+
+End
+
+Private Function Sort_Read() As Integer
+
+  Return GetView().Columns.Sort
+
+End
+
+Private Sub Sort_Write(Value As Integer)
+
+  GetView().Columns.Sort = Value
+
+End
+
+Private Function Ascending_Read() As Boolean
+
+  Return GetView().Columns.Ascending
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  GetView().Columns.Ascending = Value
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return Count_Read() - 1
+
+End

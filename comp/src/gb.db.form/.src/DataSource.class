@@ -16,6 +16,8 @@ Property Read Index As Integer
 Property Read Count As Integer
 Property ReadOnly As Boolean
 Property Sort As String
+Property Ascending As Boolean
+
 'Property CacheSize As Integer
 
 ' Pb si on fait de Connection une propriété de l'IDE: le controle
@@ -731,5 +733,21 @@ End
 Private Function Count_Read() As Integer
 
   If $hTable Then Return $hTable.Count
+
+End
+
+Private Function Ascending_Read() As Boolean
+
+  Return $hTable.Ascending
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  If CheckModified() Then
+    If Save() Then Return
+  Endif
+  $hTable.Ascending = Value
+  Redraw
 
 End

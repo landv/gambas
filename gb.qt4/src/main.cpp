@@ -76,8 +76,6 @@
 #include "CCheckBox.h"
 #include "CFrame.h"
 #include "CRadioButton.h"
-#include "CTreeView.h"
-#include "CListView.h"
 #include "CTabStrip.h"
 #include "CDialog.h"
 #include "CPicture.h"
@@ -1022,12 +1020,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTextBoxSelectionDesc, CTextBoxDesc, CComboBoxItemDesc, CComboBoxDesc,
 	CTextAreaSelectionDesc, CTextAreaDesc,
 	CListBoxItemDesc, CListBoxDesc,
-	CListViewItemDesc, CListViewDesc,
-	CTreeViewItemDesc, CTreeViewDesc,
-	CColumnViewItemDesc, CColumnViewColumnDesc, CColumnViewColumnsDesc, CColumnViewDesc,
-	//CListView2ItemDesc, CListView2Desc,
-	//CTreeView2ItemDesc, CTreeView2Desc,
-	//CColumnView2ItemDesc, CColumnView2ColumnDesc, CColumnView2ColumnsDesc, CColumnView2Desc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
 	CHSplitDesc, CVSplitDesc,
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,
@@ -1091,7 +1083,7 @@ static void myMessageHandler(QtMsgType type, const char *msg )
 #endif
 #endif
 
-const char *GB_INCLUDE EXPORT = "gb.draw";
+const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 
 int EXPORT GB_INIT(void)
 {
@@ -1120,6 +1112,8 @@ int EXPORT GB_INIT(void)
 	GB.Hook(GB_HOOK_LANG, (void *)hook_lang);
 
 	GB.Component.Load("gb.draw");
+	GB.Component.Load("gb.image");
+	GB.Component.Load("gb.gui.base");
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRA);
 	DRAW_init();
