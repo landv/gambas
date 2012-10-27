@@ -181,7 +181,8 @@ End
 
 Private Function X_Read() As Integer
 
-  Return GetTree()._GetItemX(Me) - GetView().ScrollX
+  Dim hView As GridView = GetView()
+  Return GetTree()._GetItemX(Me) - hView.ScrollX + hView.ClientX
 
 End
 
@@ -189,7 +190,7 @@ Private Function Y_Read() As Integer
 
   Dim hTree As _TreeView = GetTree()
   Dim hView As GridView = GetView()
-  Return hView.Rows[hTree._ItemToRow(Me)].Y - hView.ScrollY
+  Return hView.Rows[hTree._ItemToRow(Me)].Y - hView.ScrollY + hView.Columns.Height + hView.ClientY
 
 End
 

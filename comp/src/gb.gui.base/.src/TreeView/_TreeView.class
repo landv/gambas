@@ -171,13 +171,12 @@ Private Sub RemoveRec(Key As String)
   hItem = $cItem[Key]
   
   If hItem.Count Then
-    For Each sKey In hItem._GetChildren()
+    For Each sKey In hItem._GetChildren().Copy()
       RemoveRec(sKey)
     Next
   Endif
   
   hParent = GetParentItem(hItem)
-  $cItem.Remove(Key)
   
   hParent._RemoveChild(Key)
   While hParent.Expanded 
@@ -188,6 +187,8 @@ Private Sub RemoveRec(Key As String)
       Break
     Endif
   Wend
+  
+  $cItem.Remove(Key)
   
 End
 
