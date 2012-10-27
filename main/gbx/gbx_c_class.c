@@ -325,6 +325,16 @@ BEGIN_METHOD(Class_get, GB_STRING name)
 END_METHOD
 
 
+BEGIN_METHOD(Class_Exist, GB_STRING name)
+
+	CLASS *class = OBJECT(CLASS);
+	const char *name = GB_ToZeroString(ARG(name));
+
+	GB_ReturnBoolean(name != NULL && CLASS_get_symbol(class, name) != NULL);
+
+END_METHOD
+
+
 BEGIN_PROPERTY(Class_Instance)
 
 	GB_ReturnObject(OBJECT(CLASS)->instance);
@@ -1022,7 +1032,7 @@ GB_DESC NATIVE_Class[] =
 
 	GB_STATIC_METHOD("Load", "Class", Class_Load, "(Name)s"),
 
-	GB_METHOD("_get", ".Symbol", Class_get, "(Name)s"),
+	GB_METHOD("_get", ".Symbol", Class_get, "(Symbol)s"),
 
 	GB_PROPERTY_READ("Name", "s", Class_Name),
 	GB_PROPERTY_READ("Hidden", "b", Class_Hidden),
@@ -1034,6 +1044,7 @@ GB_DESC NATIVE_Class[] =
 	GB_PROPERTY_READ("Symbols", "String[]", Class_Symbols),
 	GB_METHOD("AutoCreate", "o", Class_AutoCreate, NULL),
 	GB_METHOD("New", "o", Class_New, "[(Arguments)Array;]"),
+	GB_METHOD("Exist", "b", Class_Exist, "(Symbol)s"),
 
 	GB_CONSTANT("Variable", "i", 1),
 	GB_CONSTANT("Property", "i", 2),

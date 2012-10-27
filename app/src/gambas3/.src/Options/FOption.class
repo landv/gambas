@@ -81,8 +81,9 @@ Public Sub _new()
   $aConfig = [
     [txtEditorFont, "/Editor/Font", Project.DEFAULT_FONT],
     [txtConsoleFont, "/ConsoleFont", Project.DEFAULT_FONT],
-    [cmbGlobalFont, "/GlobalFont", 0],
-    [cmbSmallFont, "/SmallFont", 0],
+    [txtGlobalFont, "/Font", ""],
+    [cmbProjectFontSize, "/ProjectFontSize", 0],
+    [cmbTitleFontSize, "/TitleFontSize", 0],
     [cmbToolbox, "/ToolboxSize", 0],
     [cmbSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
@@ -259,16 +260,16 @@ Private Sub RefreshWindow()
 
 End
 
-Public Sub cmbGlobalFont_Click()
+Public Sub cmbProjectFontSize_Click()
 
-  Settings["/GlobalFont"] = cmbGlobalFont.Index
+  Settings["/ProjectFontSize"] = cmbProjectFontSize.Index
   RefreshWindow
 
 End
 
-Public Sub cmbSmallFont_Click()
+Public Sub cmbTitleFontSize_Click()
 
-  Settings["/SmallFont"] = cmbSmallFont.Index
+  Settings["/TitleFontSize"] = cmbTitleFontSize.Index
   RefreshWindow
 
 End
@@ -690,6 +691,27 @@ Public Sub txtConsoleFont_Click()
 
 End
 
+Private Sub UpdateFont(sFont As String)
+  
+  txtGlobalFont.Text = sFont
+  Settings["/Font"] = txtGlobalFont.Text
+  Application.Font = Font[Settings["/Font"]]
+  RefreshWindow
+  'NeedRestart(txtGlobalFont)
+  
+End
+
+
+Public Sub txtGlobalFont_Click()
+
+  Dim sFont As String
+
+  sFont = FFontChooser.Run(txtGlobalFont.Text)
+  If Not sFont Then Return
+  UpdateFont(sFont)
+
+End
+
 ' Public Sub svwOption_Arrange()
 ' 
 '   panOption.Width = svwOption.ClientWidth - Desktop.Scale
@@ -1006,5 +1028,19 @@ End
 Public Sub cboPrefix_Click()
 
   Settings["FMakeInstall/Prefix"] = cboPrefix.Index = 1
+
+End
+
+Public Sub txtGlobalFont_KeyPress()
+
+  If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
+    btnClearGlobalFont_Click
+  Endif
+
+End
+
+Public Sub btnClearGlobalFont_Click()
+
+  If Settings["/Font"] Then UpdateFont("")
 
 End

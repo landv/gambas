@@ -236,7 +236,7 @@ Private Sub DoMouse()
   Y = Mouse.ScreenY - $hScrollView.ScreenY + $hScrollView.ScrollY
   Y = Max(0, Min($hScrollView.ScrollH, Y))
   
-  hChild = $hScrollView.Find(Mouse.ScreenX - $hScrollView.ScreenX + $hScrollView.ScrollX, Y)
+  hChild = $hScrollView.FindChild(Mouse.ScreenX - $hScrollView.ScreenX + $hScrollView.ScrollX, Y)
   hChild = GetReal(hChild)
   If hChild Then 
     $bNoMouse = True

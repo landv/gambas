@@ -43,8 +43,59 @@
       Font = Font["Bold"]
       Text = ("Fonts")
     }
-    { HBox23 HBox
+    { HBox6 HBox
       MoveScaled(0,3,66,4)
+      Spacing = True
+      Indent = True
+      { Label11 Label
+        MoveScaled(0,0,20,4)
+        Expand = True
+        Text = ("Default font")
+      }
+      { txtGlobalFont ButtonBox
+        MoveScaled(21,0,44,4)
+        Picture = Picture["icon:/small/font"]
+        ReadOnly = True
+      }
+    }
+    { HBox45 HBox
+      MoveScaled(0,8,66,4)
+      Spacing = True
+      Indent = True
+      { Label24 Label
+        MoveScaled(0,0,20,4)
+        Expand = True
+        Text = ("Project font size")
+      }
+      { cmbProjectFontSize ComboBox
+        MoveScaled(21,0,10,4)
+        ReadOnly = True
+        List = [("100 %"), ("90 %"), ("80 %"), ("70 %"), ("60 %"), ("50 %")]
+      }
+      { Panel25 Panel
+        MoveScaled(32,0,33,4)
+      }
+    }
+    { HBox19 HBox
+      MoveScaled(0,13,66,4)
+      Spacing = True
+      Indent = True
+      { Label19 Label
+        MoveScaled(0,0,21,4)
+        Expand = True
+        Text = ("Title font size")
+      }
+      { cmbTitleFontSize ComboBox
+        MoveScaled(21,0,10,4)
+        ReadOnly = True
+        List = [("100 %"), ("90 %"), ("80 %"), ("70 %"), ("60 %"), ("50 %")]
+      }
+      { Panel24 Panel
+        MoveScaled(32,0,33,4)
+      }
+    }
+    { HBox23 HBox
+      MoveScaled(0,18,66,4)
       Spacing = True
       Indent = True
       { Label26 Label
@@ -59,7 +110,7 @@
       }
     }
     { HBox24 HBox
-      MoveScaled(0,8,66,4)
+      MoveScaled(0,23,66,4)
       Spacing = True
       Indent = True
       { Label18 Label
@@ -70,55 +121,6 @@
       { txtConsoleFont ButtonBox
         MoveScaled(21,0,44,4)
         Picture = Picture["icon:/small/font"]
-        ReadOnly = True
-      }
-    }
-    { HBox6 HBox
-      MoveScaled(0,13,66,4)
-      Spacing = True
-      Indent = True
-      { Label11 Label
-        MoveScaled(0,0,42,4)
-        Expand = True
-        Text = ("Default font size")
-      }
-      { cmbGlobalFont ComboBox
-        MoveScaled(43,0,23,4)
-        ReadOnly = True
-        List = [("Normal"), ("Small"), ("Tiny")]
-      }
-    }
-    { HBox19 HBox
-      MoveScaled(0,18,66,4)
-      Spacing = True
-      Indent = True
-      { Label19 Label
-        MoveScaled(0,0,43,4)
-        Expand = True
-        Text = ("Small font size")
-      }
-      { cmbSmallFont ComboBox
-        MoveScaled(43,0,23,4)
-        ReadOnly = True
-        List = [("Normal"), ("Small"), ("Tiny")]
-      }
-    }
-    { Label24 Label
-      MoveScaled(0,23,63,3)
-      Font = Font["Bold"]
-      Text = ("Icons")
-    }
-    { HBox11 HBox
-      MoveScaled(0,26,66,4)
-      Spacing = True
-      Indent = True
-      { Label12 Label
-        MoveScaled(0,0,18,4)
-        Expand = True
-        Text = ("Icon theme")
-      }
-      { cmbIconTheme ComboBox
-        MoveScaled(21,0,45,4)
         ReadOnly = True
       }
     }
@@ -218,32 +220,51 @@
     Text = ("Theme")
     Picture = Picture["icon:/large/color"]
     { Label27 Label
-      MoveScaled(0,1,63,3)
+      MoveScaled(0,0,63,3)
       Font = Font["Bold"]
       Text = ("Theme")
     }
+    { HBox11 HBox
+      MoveScaled(1,3,65,4)
+      Spacing = True
+      Indent = True
+      { Label12 Label
+        MoveScaled(0,0,18,4)
+        Expand = True
+        Text = ("Icon theme")
+      }
+      { cmbIconTheme ComboBox
+        MoveScaled(20,0,45,4)
+        ReadOnly = True
+      }
+    }
     { HBox1 HBox
-      MoveScaled(1,6,65,4)
+      MoveScaled(1,9,65,4)
+      { Label54 Label
+        MoveScaled(0,0,18,4)
+        Expand = True
+        Text = ("Color theme")
+      }
       { cmbTheme ComboBox
-        MoveScaled(0,0,29,4)
+        MoveScaled(20,0,29,4)
         Expand = True
         ReadOnly = True
       }
       { Panel1 Panel
-        MoveScaled(32,0,2,4)
+        MoveScaled(50,0,2,4)
       }
       { btnImport ToolButton
-        MoveScaled(35,0,4,4)
+        MoveScaled(53,0,4,4)
         ToolTip = ("Import theme")
         Picture = Picture["icon:/small/open"]
       }
       { btnExport ToolButton
-        MoveScaled(39,0,4,4)
+        MoveScaled(57,0,4,4)
         ToolTip = ("Export theme")
         Picture = Picture["icon:/small/save"]
       }
       { btnUndo ToolButton
-        MoveScaled(43,0,4,4)
+        MoveScaled(61,0,4,4)
         ToolTip = ("Undo")
         Picture = Picture["icon:/small/undo"]
       }

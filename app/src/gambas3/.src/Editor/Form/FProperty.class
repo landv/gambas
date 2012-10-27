@@ -556,6 +556,7 @@ Private Sub ShowProperty(Optional sFocus As String)
   If Project.Running Then Return
   If Not $hForm Then Return
   If $hForm.ReadOnly Then Return
+  If grdProperty.Row < 0 Then Return
 
   If $sLast Then HideProperty()
 

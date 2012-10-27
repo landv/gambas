@@ -2395,6 +2395,7 @@ Public Sub Control_Draw(...)
   Dim hPict As Picture
 
   If Not hCCtrl Then Return
+  If Not hCtrl Is DrawingArea Then Return
 
   If $hFamily.DrawControl(hCCtrl) Then
 
@@ -3711,7 +3712,7 @@ Private Sub CheckHovered(Optional hCtrl As Control)
   
     Do
       'Debug hCont;; hCont.Tag
-      hCtrl = hCont.Find(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY)
+      hCtrl = hCont.FindChild(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY)
       If Not hCtrl Then
         hCtrl = hCont
         Break

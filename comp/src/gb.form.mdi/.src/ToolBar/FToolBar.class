@@ -783,7 +783,7 @@ Public Sub Form_DragMove()
     Return
   Endif
 
-  hCtrl = panToolBar.Find(Drag.X - panToolBar.X, Drag.Y - panToolBar.Y)
+  hCtrl = panToolBar.FindChild(Drag.X - panToolBar.X, Drag.Y - panToolBar.Y)
   If Not hCtrl Then
     Stop Event
     Return

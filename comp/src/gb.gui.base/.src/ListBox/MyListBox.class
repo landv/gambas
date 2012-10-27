@@ -1,0 +1,401 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,List,Border=True,Mode{Select.*}=Single,ScrollBar{Scroll.*}=Vertical,Sorted"
+Public Const _Group As String = "View"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "16,16"
+
+Property Read Count As Integer
+Property Mode As Integer
+Property ScrollBar As Integer
+Property Border As Boolean
+Property Sorted As Boolean
+Property Read Current As _ListBox_Item
+Property Index As Integer
+Property Read Text As String
+Property List As String[]
+
+Property ScrollX As Integer
+Property ScrollY As Integer
+Property Read ScrollW, ScrollWidth As Integer
+Property Read ScrollH, ScrollHeight As Integer
+
+Event Click
+Event Activate
+Event Select
+
+Static Private $bNoEvent As Boolean
+
+Private $hView As GridView
+Private $aText As New String[]
+Private $bSorted As Boolean
+Private $hSortTimer As Timer
+
+Public Sub _new()
+  
+  $hView = New GridView(Me) As "GridView"
+  $hView.Columns.Count = 1
+  $hView.Mode = Select.Single
+  $hView.Grid = False
+  $hView.AutoResize = True
+  
+  Me.Proxy = $hView
+  
+End
+
+Public Sub _get(Index As Integer) As _ListBox_Item
+  
+  Return New _ListBox_Item(Index)
+  
+End
+
+Public Sub Clear()
+
+  $aText.Clear
+  $hView.Rows.Count = 0
+  
+End
+
+Private Sub SortLater()
+  
+  If Not $hSortTimer Then
+    $hSortTimer = New Timer As "Sort"
+    $hSortTimer.Trigger
+  Endif
+  
+End
+
+
+Public Sub Add(Text As String, Optional Index As Integer = -1)
+  
+  If Index < 0 Then
+    $aText.Add(Text)
+  Else
+    $aText.Add(Text, Index)
+  Endif
+  
+  $hView.Rows.Count = $aText.Count
+  SortLater
+  
+End
+
+Public Sub Remove(Index As Integer)
+  
+  If Index < 0 Or If Index > $aText.Max Then Error.Raise("Out of bounds")
+  
+  $aText.Remove(Index)
+  $hView.Rows.Count = $aText.Count
+  
+End
+
+Public Sub GridView_Data(Row As Integer, (Column) As Integer)
+  
+  Try $hView.Data.Text = $aText[Row]
+  
+End
+
+Public Sub GridView_Activate()
+  
+  Raise Activate
+  
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aText.Count
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $hView.Mode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  $hView.Mode = Value
+
+End
+
+Private Function ScrollBar_Read() As Integer
+
+  Return $hView.Scrollbar
+
+End
+
+Private Sub ScrollBar_Write(Value As Integer)
+
+  $hView.Scrollbar = Value
+  If $hView.ScrollBar And Scroll.Horizontal Then
+    $hView.AutoResize = False
+    $hView.Columns[0].W = -1
+  Else
+    $hView.AutoResize = True
+  Endif
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = Value
+
+End
+
+Private Function Sorted_Read() As Boolean
+
+  Return $bSorted
+
+End
+
+Private Sub Sorted_Write(Value As Boolean)
+
+  $hView.Sorted = Value
+  $bSorted = Value
+  If $bSorted Then Sort
+
+End
+
+Private Function Current_Read() As _ListBox_Item
+
+  Try Return _get($hView.Row)
+
+End
+
+Public Sub GridView_Select()
+  
+  If $bNoEvent Then Return
+  If $hView.Row < 0 Then Return
+  
+  Raise Select
+  
+End
+
+Public Sub GridView_Click()
+  
+  Raise Click
+  
+End
+
+' Private Function ClientWidth_Read() As Integer
+' 
+'   Return $hView.ClientW
+' 
+' End
+' 
+' Private Function ClientHeight_Read() As Integer
+' 
+'   Return $hView.ClientH
+' 
+' End
+
+Public Sub SelectAll()
+  
+  $hView.SelectAll
+  
+End
+
+Public Sub UnselectAll()
+  
+  $hView.UnselectAll
+  
+End
+
+Public Sub Find(Text As String, Optional Mode As Integer) As Integer
+  
+  Return $aText.Find(Text, Mode)
+  
+End
+
+' Public Sub FindAt((X) As Integer, Y As Integer) As Boolean
+'   
+'   Dim iRow As Integer = $hView.RowAt(Y)
+' 
+'   If iRow < 0 Then Return True
+'   Return SetCursor(RowToItem(iRow).Key)
+'   
+' End
+
+Public Sub _IsSelected(iRow As Integer) As Boolean
+  
+  Try Return $hView.Rows[iRow].Selected
+  
+End
+
+Public Sub _SetSelected(iRow As Integer, bSelected As Boolean)
+  
+  Try $hView.Rows[iRow].Selected = bSelected
+  
+End
+
+Public Sub Sort_Timer()
+  
+  $hSortTimer = Null
+  If $bSorted Then Sort
+  $hView.Columns[0].W = -1
+  $hView.Refresh
+  
+End
+
+Private Sub Sort()
+
+  Dim sCurrent As String
+  Dim bSelect As Boolean
+  
+  If $hView.Row > 0 Then
+    sCurrent = $aText[$hView.Row]
+    bSelect = True
+  Endif
+
+  $aText.Sort
+  $hView.Refresh
+  
+  If bSelect Then $hView.Row = $aText.Find(sCurrent)
+  
+  If $hSortTimer Then 
+    $hSortTimer.Stop
+    $hSortTimer = Null
+  Endif
+  
+End
+
+' Private Function Selection_Read() As String[]
+' 
+'   Dim aSel As New String[]
+'   Dim iRow As Integer
+'   
+'   For Each iRow In $hView.Rows.Selection
+'     aSel.Add(RowToItem(iRow).Key)
+'   Next
+'   
+'   Return aSel
+' 
+' End
+' 
+' Private Sub Selection_Write(Value As String[])
+' 
+'   Dim sKey As String
+'   Dim hItem As _TreeView_Item
+'   
+'   UnselectAll
+'   For Each sKey In Value
+'     If Not sKey Then Continue
+'     hItem = $cItem[sKey]
+'     If hItem Then hItem.Selected = True
+'   Next
+' 
+' End
+
+Private Function ScrollX_Read() As Integer
+
+  Return $hView.ScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $hView.ScrollX = Value
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $hView.ScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $hView.ScrollY = Value
+
+End
+
+Private Function ScrollW_Read() As Integer
+
+  Return $hView.ScrollW
+
+End
+
+Private Function ScrollH_Read() As Integer
+
+  Return $hView.ScrollH
+
+End
+
+Public Sub Scroll(X As Integer, Y As Integer)
+  
+  $hView.Scroll(X, Y)
+  
+End
+
+Private Function Index_Read() As Integer
+
+  Return $hView.Row
+
+End
+
+Private Sub Index_Write(Value As Integer)
+
+  Try $hView.Row = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Try Return $aText[$hView.Row]
+
+End
+
+Private Function List_Read() As String[]
+
+  Return $aText.Copy()
+
+End
+
+Private Sub List_Write(Value As String[])
+
+  Object.Lock(Me)
+  $aText = Value.Copy()
+  $hView.Rows.Count = $aText.Count
+  $hView.Row = -1
+  '$hView.Refresh
+  Object.Unlock(Me)
+  SortLater
+
+End
+
+Public Sub _GetText(iIndex As Integer) As String
+  
+  Try Return $aText[iIndex]
+  
+End
+
+
+Public Sub _SetText(iIndex As Integer, sText As String)
+  
+  Try $aText[iIndex] = sText
+  SortLater
+  
+End
+
+Public Sub GridView_ColumnSize(Column As Integer)
+  
+  Dim W As Integer
+  Dim sText As String
+  
+  For Each sText In $aText
+    W = Max(W, Me.Font.TextWidth(sText))
+  Next
+  
+  $hView.Columns[Column].W = W + 8
+  
+End

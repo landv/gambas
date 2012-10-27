@@ -1036,159 +1036,91 @@ _RETURN:
 _CALL:
 
 	{
-		static const void *call_jump[] = 
-		{
-			&&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
-			&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
-			&&__CALL_SUBR 
-		};
-
 		VALUE * NO_WARNING(val);
 
-		ind = GET_3X();
-		val = &SP[-(ind + 1)];
-
-		if (!TYPE_is_function(val->type))
 		{
-			bool defined = EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object);
-			
-			val->type = T_FUNCTION;
-			val->_function.kind = FUNCTION_CALL;
-			val->_function.defined = defined;
-			val->_function.class = EXEC.class;
-			val->_function.object = EXEC.object;
-			//goto _CALL;
-		}
-		else
-		{
-			EXEC.class = val->_function.class;
-			EXEC.object = val->_function.object;
-		}
+			static const void *call_jump[] = 
+			{
+				&&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
+				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
+				&&__CALL_SUBR 
+			};
 
-		EXEC.nparam = ind;
-		EXEC.use_stack = TRUE;
+			ind = GET_3X();
+			val = &SP[-(ind + 1)];
 
-		if (UNLIKELY(!val->_function.defined))
-			*PC |= CODE_CALL_VARIANT;
+			if (!TYPE_is_function(val->type))
+			{
+				bool defined = EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object);
+				
+				val->type = T_FUNCTION;
+				val->_function.kind = FUNCTION_CALL;
+				val->_function.defined = defined;
+				val->_function.class = EXEC.class;
+				val->_function.object = EXEC.object;
+				//goto _CALL;
+			}
+			else
+			{
+				EXEC.class = val->_function.class;
+				EXEC.object = val->_function.object;
+			}
 
-		goto *call_jump[(int)val->_function.kind];
+			EXEC.nparam = ind;
+			EXEC.use_stack = TRUE;
 
-	__CALL_NULL:
+			if (UNLIKELY(!val->_function.defined))
+				*PC |= CODE_CALL_VARIANT;
 
-		while (ind > 0)
-		{
+			goto *call_jump[(int)val->_function.kind];
+
+		__CALL_NULL:
+
+			while (ind > 0)
+			{
+				POP();
+				ind--;
+			}
+
 			POP();
-			ind--;
-		}
 
-		POP();
+			//if (!PCODE_is_void(code))
+			{
+				/*VALUE_default(SP, (TYPE)(val->_function.function));*/
+				SP->type = T_NULL;
+				SP++;
+			}
 
-		//if (!PCODE_is_void(code))
-		{
-			/*VALUE_default(SP, (TYPE)(val->_function.function));*/
-			SP->type = T_NULL;
-			SP++;
-		}
-
-		goto _NEXT;
-
-	__CALL_NATIVE:
-
-		EXEC.native = TRUE;
-		EXEC.index = val->_function.index;
-		EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
-		//EXEC.use_stack = TRUE;
-
-		goto __EXEC_NATIVE;
-
-	__CALL_PRIVATE:
-
-		EXEC.native = FALSE;
-		EXEC.index = val->_function.index;
-
-		goto __EXEC_ENTER;
-
-	__CALL_PUBLIC:
-
-		EXEC.native = FALSE;
-		EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-		EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
-		EXEC.class = EXEC.desc->class;
-
-		goto __EXEC_ENTER;
-
-	__EXEC_ENTER:
-
-		EXEC_enter_check(val->_function.defined);
-		if (FP->fast)
-		{
-			(*CP->jit_functions[EXEC.index])();
 			goto _NEXT;
-		}
-		else
-			goto _MAIN;
 
-	__EXEC_NATIVE:
+		__CALL_NATIVE:
 
-		EXEC_native_check(val->_function.defined);
-		goto _NEXT;
+			EXEC.native = TRUE;
+			EXEC.index = val->_function.index;
+			EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
+			//EXEC.use_stack = TRUE;
 
-	__CALL_EVENT:
+			goto __EXEC_NATIVE;
 
-		//if (OP && !strcmp(OBJECT_class(OP)->name, "Workspace"))
-		//	BREAKPOINT();
-		ind = GB_Raise(OP, val->_function.index, (-EXEC.nparam));
+		__CALL_PRIVATE:
 
-		POP(); // function
+			EXEC.native = FALSE;
+			EXEC.index = val->_function.index;
 
-		//if (!PCODE_is_void(code))
-		{
-			SP->type = T_BOOLEAN;
-			SP->_boolean.value = ind ? -1 : 0;
-			SP++;
-		}
-		
-		//EVENT_Last = old_last;
+			goto __EXEC_ENTER;
 
-		goto _NEXT;
+		__CALL_PUBLIC:
 
-	__CALL_UNKNOWN:
-
-		EXEC_unknown_name = CP->load->unknown[val->_function.index];
-		EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_UNKNOWN);
-		//EXEC.use_stack = TRUE;
-		goto __CALL_SPEC;
-
-	__CALL_CALL:
-
-		EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_CALL);
-		if ((!EXEC.desc || !CLASS_DESC_is_static_method(EXEC.desc)) && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual)
-		{
-			SP[-2] = SP[-1];
-			SP--;
-			VALUE_conv_object(SP - 1, (TYPE)EXEC.class);
-			goto _NEXT;
-		}
-		
-		goto __CALL_SPEC;
-
-	__CALL_SPEC:
-
-		if (UNLIKELY(!EXEC.desc))
-			THROW(E_NFUNC);
-
-		EXEC.native = FUNCTION_is_native(EXEC.desc);
-
-		if (EXEC.native)
-		{
-			EXEC_native();
-			goto _NEXT;
-		}
-		else
-		{
+			EXEC.native = FALSE;
+			EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
 			EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
 			EXEC.class = EXEC.desc->class;
-			EXEC_enter();
+
+			goto __EXEC_ENTER;
+
+		__EXEC_ENTER:
+
+			EXEC_enter_check(val->_function.defined);
 			if (FP->fast)
 			{
 				(*CP->jit_functions[EXEC.index])();
@@ -1196,81 +1128,152 @@ _CALL:
 			}
 			else
 				goto _MAIN;
-		}
 
-	__CALL_EXTERN:
+		__EXEC_NATIVE:
 
-		EXEC.index = val->_function.index;
-		EXTERN_call();
-		goto _NEXT;
+			EXEC_native_check(val->_function.defined);
+			goto _NEXT;
+
+		__CALL_EVENT:
+
+			//if (OP && !strcmp(OBJECT_class(OP)->name, "Workspace"))
+			//	BREAKPOINT();
+			ind = GB_Raise(OP, val->_function.index, (-EXEC.nparam));
+
+			POP(); // function
+
+			//if (!PCODE_is_void(code))
+			{
+				SP->type = T_BOOLEAN;
+				SP->_boolean.value = ind ? -1 : 0;
+				SP++;
+			}
+			
+			//EVENT_Last = old_last;
+
+			goto _NEXT;
+
+		__CALL_UNKNOWN:
+
+			EXEC_unknown_name = CP->load->unknown[val->_function.index];
+			EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_UNKNOWN);
+			//EXEC.use_stack = TRUE;
+			goto __CALL_SPEC;
+
+		__CALL_CALL:
+
+			EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_CALL);
+			if ((!EXEC.desc || !CLASS_DESC_is_static_method(EXEC.desc)) && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual)
+			{
+				SP[-2] = SP[-1];
+				SP--;
+				VALUE_conv_object(SP - 1, (TYPE)EXEC.class);
+				goto _NEXT;
+			}
+			
+			goto __CALL_SPEC;
+
+		__CALL_SPEC:
+
+			if (UNLIKELY(!EXEC.desc))
+				THROW(E_NFUNC);
+
+			EXEC.native = FUNCTION_is_native(EXEC.desc);
+
+			if (EXEC.native)
+			{
+				EXEC_native();
+				goto _NEXT;
+			}
+			else
+			{
+				EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
+				EXEC.class = EXEC.desc->class;
+				EXEC_enter();
+				if (FP->fast)
+				{
+					(*CP->jit_functions[EXEC.index])();
+					goto _NEXT;
+				}
+				else
+					goto _MAIN;
+			}
+
+		__CALL_EXTERN:
+
+			EXEC.index = val->_function.index;
+			EXTERN_call();
+			goto _NEXT;
+			
+		__CALL_SUBR:
 		
-	__CALL_SUBR:
-	
-		((EXEC_FUNC_CODE)(EXEC.class->table[val->_function.index].desc->method.exec))(code);
-		SP[-2] = SP[-1];
-		SP--;
-		goto _NEXT;
-	}
+			((EXEC_FUNC_CODE)(EXEC.class->table[val->_function.index].desc->method.exec))(code);
+			SP[-2] = SP[-1];
+			SP--;
+			goto _NEXT;
+		}
 
 /*-----------------------------------------------*/
 
 _CALL_QUICK:
 
-	{
-		static const void *call_jump[] =
-			{ &&__CALL_NULL, &&__CALL_NATIVE_Q, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q };
-
-		VALUE * NO_WARNING(val);
-
-		ind = GET_3X();
-		val = &SP[-(ind + 1)];
-
-		EXEC.class = val->_function.class;
-		EXEC.object = val->_function.object;
-		EXEC.nparam = ind;
-
-		if (UNLIKELY(!val->_function.defined))
-			*PC |= CODE_CALL_VARIANT;
-
-		//if (call_jump[(int)val->_function.kind] == 0)
-		//  fprintf(stderr, "val->_function.kind = %d ?\n", val->_function.kind);
-
-		goto *call_jump[(int)val->_function.kind];
-
-	__CALL_PRIVATE_Q:
-
-		EXEC.native = FALSE;
-		EXEC.index = val->_function.index;
-
-		goto __EXEC_ENTER_Q;
-
-	__CALL_PUBLIC_Q:
-
-		EXEC.native = FALSE;
-		EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-		EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
-		EXEC.class = EXEC.desc->class;
-
-	__EXEC_ENTER_Q:
-
-		EXEC_enter_quick();
-		if (FP->fast)
 		{
-			(*CP->jit_functions[EXEC.index])();
+			static const void *call_jump[] = 
+			{
+				&&__CALL_NULL, &&__CALL_NATIVE_Q, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q,
+				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
+				&&__CALL_SUBR 
+			};
+
+			ind = GET_3X();
+			val = &SP[-(ind + 1)];
+
+			EXEC.class = val->_function.class;
+			EXEC.object = val->_function.object;
+			EXEC.nparam = ind;
+
+			if (UNLIKELY(!val->_function.defined))
+				*PC |= CODE_CALL_VARIANT;
+
+			//if (call_jump[(int)val->_function.kind] == 0)
+			//  fprintf(stderr, "val->_function.kind = %d ?\n", val->_function.kind);
+
+			goto *call_jump[(int)val->_function.kind];
+
+		__CALL_PRIVATE_Q:
+
+			EXEC.native = FALSE;
+			EXEC.index = val->_function.index;
+
+			goto __EXEC_ENTER_Q;
+
+		__CALL_PUBLIC_Q:
+
+			EXEC.native = FALSE;
+			EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
+			EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
+			EXEC.class = EXEC.desc->class;
+
+		__EXEC_ENTER_Q:
+
+			EXEC_enter_quick();
+			if (FP->fast)
+			{
+				(*CP->jit_functions[EXEC.index])();
+				goto _NEXT;
+			}
+			else
+				goto _MAIN;
+			
+		__CALL_NATIVE_Q:
+		
+			EXEC.native = TRUE;
+			EXEC.index = val->_function.index;
+			EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
+			
+			EXEC_native_quick();
 			goto _NEXT;
 		}
-		else
-			goto _MAIN;
-		
-	__CALL_NATIVE_Q:
-	
-		EXEC.native = TRUE;
-		EXEC.index = val->_function.index;
-		EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
-		
-		EXEC_native_quick();
-		goto _NEXT;
-	}
 
 /*-----------------------------------------------*/
 
@@ -1331,58 +1334,61 @@ _CALL_EASY:
 
 _CALL_SLOW:
 
-	{
-		static const void *call_jump[] =
-			{ &&__CALL_NULL, &&__CALL_NATIVE_S, &&__CALL_PRIVATE_S, &&__CALL_PUBLIC_S };
-
-		VALUE * NO_WARNING(val);
-
-		ind = GET_3X();
-		val = &SP[-(ind + 1)];
-
-		EXEC.class = val->_function.class;
-		EXEC.object = val->_function.object;
-		EXEC.nparam = ind;
-		EXEC.use_stack = TRUE;
-
-		if (UNLIKELY(!val->_function.defined))
-			*PC |= CODE_CALL_VARIANT;
-
-		goto *call_jump[(int)val->_function.kind];
-
-	__CALL_PRIVATE_S:
-
-		EXEC.native = FALSE;
-		EXEC.index = val->_function.index;
-
-		goto __EXEC_ENTER_S;
-
-	__CALL_PUBLIC_S:
-
-		EXEC.native = FALSE;
-		EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-		EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
-		EXEC.class = EXEC.desc->class;
-
-	__EXEC_ENTER_S:
-
-		EXEC_enter();
-		if (FP->fast)
 		{
-			(*CP->jit_functions[EXEC.index])();
+			static const void *call_jump[] = 
+			{
+				&&__CALL_NULL, &&__CALL_NATIVE_S, &&__CALL_PRIVATE_S, &&__CALL_PUBLIC_S,
+				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
+				&&__CALL_SUBR 
+			};
+
+			ind = GET_3X();
+			val = &SP[-(ind + 1)];
+
+			EXEC.class = val->_function.class;
+			EXEC.object = val->_function.object;
+			EXEC.nparam = ind;
+			EXEC.use_stack = TRUE;
+
+			if (UNLIKELY(!val->_function.defined))
+				*PC |= CODE_CALL_VARIANT;
+
+			goto *call_jump[(int)val->_function.kind];
+
+		__CALL_PRIVATE_S:
+
+			EXEC.native = FALSE;
+			EXEC.index = val->_function.index;
+
+			goto __EXEC_ENTER_S;
+
+		__CALL_PUBLIC_S:
+
+			EXEC.native = FALSE;
+			EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
+			EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
+			EXEC.class = EXEC.desc->class;
+
+		__EXEC_ENTER_S:
+
+			EXEC_enter();
+			if (FP->fast)
+			{
+				(*CP->jit_functions[EXEC.index])();
+				goto _NEXT;
+			}
+			else
+				goto _MAIN;
+			
+		__CALL_NATIVE_S:
+			
+			EXEC.native = TRUE;
+			EXEC.index = val->_function.index;
+			EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
+			
+			EXEC_native();
 			goto _NEXT;
 		}
-		else
-			goto _MAIN;
-		
-	__CALL_NATIVE_S:
-		
-		EXEC.native = TRUE;
-		EXEC.index = val->_function.index;
-		EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
-		
-		EXEC_native();
-		goto _NEXT;
 	}
 
 /*-----------------------------------------------*/

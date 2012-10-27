@@ -453,7 +453,15 @@ End
 
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
-  Dim PW, PH, CX, CY, CW, CH, FW As Integer
+  Dim PW, PH, CX, CY, CW, CH, F As Integer
+  
+  If $bBorder Then
+    F = Style.FrameWidth
+    X -= F
+    Y -= F
+    W += F * 2
+    H += F * 2
+  Endif
   
   'Debug X;; Y;; W;; H;; "[";; $hDrawingArea.W;; $hDrawingArea.H;; "]"
   
@@ -462,12 +470,10 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   X = X + W
   Y = Y + H
 
-  If $bBorder Then FW = Style.FrameWidth
-  
-  PW = $hDrawingArea.W - FW * 2
-  PH = $hDrawingArea.H - FW * 2
+  PW = $hDrawingArea.W '- F * 2
+  PH = $hDrawingArea.H '- F * 2
 
-  CX = - Me.ScrollX
+  CX = - Me.ScrollX 
   CY = - Me.ScrollY
   CW = Me.ScrollWidth
   CH = Me.ScrollHeight

@@ -110,7 +110,10 @@ End
 
 Private Sub Text_Write(Value As String)
 
+  Dim hTree As _TreeView = GetTree()
+
   $sText = Value
+  If hTree.Sorted Then hTree._SortParent($sParent)
 
 End
 

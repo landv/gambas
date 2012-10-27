@@ -78,7 +78,7 @@ BEGIN_METHOD_VOID(GL_unknown)
 	
 	if (strncasecmp(name, "GL_", 3))
 	{
-		GB.Error(GB_ERR_NSYMBOL, name, "Gl");
+		GB.Error(GB_ERR_NSYMBOL, "Gl", name);
 		return;
 	}
 	

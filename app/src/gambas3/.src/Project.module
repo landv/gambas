@@ -228,7 +228,7 @@ Public Sub Main()
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
   
   'DB.Debug = True
-
+  '
   For iInd = 1 To Args.Count - 1
     sArg = Args[iInd]
     If sArg = "-t" Then
@@ -253,6 +253,8 @@ Public Sub Main()
   Next
 
   Application.Theme = Settings["/Theme"]
+  Try Application.Font = Font[Settings["/Font"]]
+
   'ScrollArea.Shadow = True
   
   OUTPUT_FILE = Temp$()
@@ -5246,20 +5248,24 @@ End
 
 Public Sub GetSmallFont() As Font
   
-  Return Font[CStr(- Settings["/SmallFont", 0])]
+  Dim hFont As Font = Font[Settings["/Font"]]
+  Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 10
+  Return hFont
   
 End
 
 
 Public Sub SetSmallFont(hCtrl As Control)
   
-  hCtrl.Font.Grade = - Settings["/SmallFont", 0]
+  hCtrl.Font = GetSmallFont()
   
 End
 
 Public Sub SetNormalFont(hCtrl As Control)
   
-  hCtrl.Font.Grade = - Settings["/GlobalFont", 0]
+  Dim hFont As Font = Font[Settings["/Font"]]
+  Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 10
+  hCtrl.Font = hFont
   
 End
 

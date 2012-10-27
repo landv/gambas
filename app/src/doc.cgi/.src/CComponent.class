@@ -41,6 +41,8 @@ Static Public Sub Init()
   Dim aComp As String[]
   Dim iPos As Integer
 
+  If Classes Then Return
+
   Classes = New Collection(gb.Text)
   
   $cImplement.Clear

@@ -102,6 +102,20 @@ Private Sub ResizeColumns()
   
 End
 
+Public Sub _SortParent(sKey As String)
+  
+  If sKey Then
+    $cSort[sKey] = True
+  Else
+    $bSortRoot = True
+  Endif
+  If Not $hSortTimer Then
+    $hSortTimer = New Timer As "Sort"
+    $hSortTimer.Trigger
+  Endif
+  
+End
+
 
 Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
   
@@ -133,17 +147,7 @@ Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Opti
   
   ResizeColumns
   
-  If $bSorted Then
-    If Parent Then
-      $cSort[Parent] = True
-    Else
-      $bSortRoot = True
-    Endif
-    If Not $hSortTimer Then
-      $hSortTimer = New Timer As "Sort"
-      $hSortTimer.Trigger
-    Endif
-  Endif
+  If $bSorted Then _SortParent(Parent)
   
   $sCursor = Key
   
@@ -384,6 +388,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
       X += hItem.Picture.W + 2
     Endif
     
+    'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "]", X, Y, W, H, $hView.Columns[Column].Alignment)
     Draw.Text(hItem.Text, X, Y, W, H, $hView.Columns[Column].Alignment)
     
   Else
@@ -988,6 +993,8 @@ Public Sub _Rename(hItem As _TreeView_Item)
   Dim X As Integer
   Dim W As Integer
   Dim SX As Integer
+  
+  Key_Write(hItem.Key)
   
   $hTextBox = New TextBox(Me) As "Editor"
   $hTextBox.Ignore = True

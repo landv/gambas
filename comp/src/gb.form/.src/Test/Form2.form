@@ -3,7 +3,7 @@
 { Form Form
   MoveScaled(0,0,90,77)
   { Panel1 Panel
-    MoveScaled(6,4,50,32)
+    MoveScaled(2,2,50,32)
     #Translate = False
     Border = Border.Plain
     { ComboBox1 ComboBox
@@ -33,20 +33,20 @@
     }
   }
   { Button2 Button
-    MoveScaled(12,2,16,4)
+    MoveScaled(5,0,16,4)
     #Translate = False
   }
   { ScrollArea1 ScrollArea
-    MoveScaled(60,10,21,21)
+    MoveScaled(57,2,20,11)
     #Translate = False
     Background = Color.TextBackground
   }
   { Button3 Button
-    MoveScaled(31,2,16,4)
+    MoveScaled(24,0,16,4)
     #Translate = False
   }
   { Panel2 Panel
-    MoveScaled(15,42,19,6)
+    MoveScaled(57,19,19,6)
     #Translate = False
     Background = &HFFDFDF&
     Arrangement = Arrange.Fill
@@ -56,7 +56,7 @@
     }
   }
   { Panel4 Panel
-    MoveScaled(35,50,19,6)
+    MoveScaled(60,27,19,6)
     #Translate = False
     Background = &HFFDFDF&
     Arrangement = Arrange.Fill
@@ -67,7 +67,10 @@
     }
   }
   { DateBox1 DateBox
-    MoveScaled(53,39,24,4)
+    MoveScaled(61,14,24,4)
     Mode = DateChooser.DateTime
+  }
+  { FontChooser1 FontChooser
+    MoveScaled(17,36,57,38)
   }
 }

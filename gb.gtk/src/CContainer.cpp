@@ -169,7 +169,7 @@ static void get_client_area(gContainer *cont, int *x, int *y, int *w, int *h)
 	}
 }
 
-BEGIN_PROPERTY(CCONTAINER_x)
+BEGIN_PROPERTY(Container_X)
 
 	int x;
 	get_client_area(WIDGET, &x, NULL, NULL, NULL);
@@ -178,7 +178,7 @@ BEGIN_PROPERTY(CCONTAINER_x)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_y)
+BEGIN_PROPERTY(Container_Y)
 
 	int y;
 	get_client_area(WIDGET, NULL, &y, NULL, NULL);
@@ -187,7 +187,7 @@ BEGIN_PROPERTY(CCONTAINER_y)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_width)
+BEGIN_PROPERTY(Container_ClientWidth)
 
 	int w;
 	get_client_area(WIDGET, NULL, NULL, &w, NULL);
@@ -197,7 +197,7 @@ BEGIN_PROPERTY(CCONTAINER_width)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_height)
+BEGIN_PROPERTY(Container_ClientHeight)
 
 	int h;
 	get_client_area(WIDGET, NULL, NULL, NULL, &h);
@@ -206,14 +206,14 @@ BEGIN_PROPERTY(CCONTAINER_height)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_arrangement)
+BEGIN_PROPERTY(Container_Arrangement)
 
 	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->arrange()); return; }
 	WIDGET->setArrange(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCONTAINER_auto_resize)
+BEGIN_PROPERTY(Container_AutoResize)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->autoResize());
@@ -266,7 +266,7 @@ BEGIN_PROPERTY(Container_Invert)
 END_PROPERTY
 
 
-BEGIN_METHOD(CCONTAINER_find, GB_INTEGER x; GB_INTEGER y)
+BEGIN_METHOD(Container_Find, GB_INTEGER x; GB_INTEGER y)
 
 	gControl *child = WIDGET->find(VARG(x), VARG(y));
 	
@@ -274,6 +274,39 @@ BEGIN_METHOD(CCONTAINER_find, GB_INTEGER x; GB_INTEGER y)
 		GB.ReturnObject(child->hFree);
 	else
 		GB.ReturnNull();
+
+END_METHOD
+
+BEGIN_METHOD(Container_unknown, GB_VALUE x; GB_VALUE y)
+
+	char *name = GB.GetUnknown();
+	int nparam = GB.NParam();
+	
+	if (strcasecmp(name, "Find"))
+	{
+		GB.Error(GB_ERR_NSYMBOL, GB.GetClassName(NULL), name);
+		return;
+	}
+	
+	if (nparam < 2)
+	{
+		GB.Error("Not enough argument");
+		return;
+	}
+	else if (nparam > 2)
+	{
+		GB.Error("Too many argument");
+		return;
+	}
+	
+	GB.Deprecated("gb.gtk", "Container.Find", "Container.FindChild");
+	
+	if (GB.Conv(ARG(x), GB_T_INTEGER) || GB.Conv(ARG(y), GB_T_INTEGER))
+		return;
+	
+	Container_Find(_object, _param);
+	
+	GB.ReturnConvVariant();
 
 END_METHOD
 
@@ -299,14 +332,15 @@ GB_DESC CContainerDesc[] =
 
   GB_PROPERTY_SELF("Children", ".Container.Children"),
 
-  GB_PROPERTY_READ("ClientX", "i", CCONTAINER_x),
-  GB_PROPERTY_READ("ClientY", "i", CCONTAINER_y),
-  GB_PROPERTY_READ("ClientW", "i", CCONTAINER_width),
-  GB_PROPERTY_READ("ClientWidth", "i", CCONTAINER_width),
-  GB_PROPERTY_READ("ClientH", "i", CCONTAINER_height),
-  GB_PROPERTY_READ("ClientHeight", "i", CCONTAINER_height),
+  GB_PROPERTY_READ("ClientX", "i", Container_X),
+  GB_PROPERTY_READ("ClientY", "i", Container_Y),
+  GB_PROPERTY_READ("ClientW", "i", Container_ClientWidth),
+  GB_PROPERTY_READ("ClientWidth", "i", Container_ClientWidth),
+  GB_PROPERTY_READ("ClientH", "i", Container_ClientHeight),
+  GB_PROPERTY_READ("ClientHeight", "i", Container_ClientHeight),
 
-  GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
+  GB_METHOD("FindChild", "Control", Container_Find, "(X)i(Y)i"),
+  GB_METHOD("_unknown", "v", Container_unknown, "."),
 
 	CONTAINER_DESCRIPTION,
 
@@ -323,7 +357,7 @@ GB_DESC CContainerDesc[] =
 
 ****************************************************************************/
 
-BEGIN_METHOD(CUSERCONTROL_new, GB_OBJECT parent)
+BEGIN_METHOD(UserControl_new, GB_OBJECT parent)
 
 	InitControl(new gPanel(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
 	
@@ -335,7 +369,7 @@ BEGIN_METHOD(CUSERCONTROL_new, GB_OBJECT parent)
 END_METHOD
 
 	
-BEGIN_PROPERTY(CUSERCONTROL_container)
+BEGIN_PROPERTY(UserControl_Container)
 
 	CCONTAINER *ct;
 	gControl *test;
@@ -392,13 +426,13 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_container)
+BEGIN_PROPERTY(UserContainer_Container)
 
 	if (READ_PROPERTY)
-		CUSERCONTROL_container(_object, _param);
+		UserControl_Container(_object, _param);
 	else
 	{
-		CUSERCONTROL_container(_object, _param);
+		UserControl_Container(_object, _param);
 
 		WIDGET_CONT->setFullArrangement(&THIS_UC->save);
 		//qDebug("(%s %p): arrangement = %08X", GB.GetClassName(THIS), THIS, after->arrangement);
@@ -407,7 +441,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_container)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_arrangement)
+BEGIN_PROPERTY(UserContainer_Arrangement)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET_CONT->arrange());
@@ -420,7 +454,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_arrangement)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_auto_resize)
+BEGIN_PROPERTY(UserContainer_AutoResize)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET_CONT->autoResize());
@@ -433,7 +467,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_auto_resize)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_padding)
+BEGIN_PROPERTY(UserContainer_Padding)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET_CONT->padding());
@@ -446,7 +480,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_padding)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_spacing)
+BEGIN_PROPERTY(UserContainer_Spacing)
 	
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET_CONT->spacing());
@@ -459,7 +493,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_spacing)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_margin)
+BEGIN_PROPERTY(UserContainer_Margin)
 	
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET_CONT->margin());
@@ -472,7 +506,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_margin)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSERCONTAINER_indent)
+BEGIN_PROPERTY(UserContainer_Indent)
 	
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET_CONT->indent());
@@ -506,17 +540,17 @@ BEGIN_PROPERTY(UserContainer_Focus)
 
 END_PROPERTY
 
-
+//---------------------------------------------------------------------------
 
 GB_DESC CUserControlDesc[] =
 {
   GB_DECLARE("UserControl", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
   GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
-  GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
-  GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
-	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
+  GB_METHOD("_new", NULL, UserControl_new, "(Parent)Container;"),
+  GB_PROPERTY("_Container", "Container", UserControl_Container),
+  GB_PROPERTY("_AutoResize", "b", Container_AutoResize),
+	GB_PROPERTY("_Arrangement", "i", Container_Arrangement),
   
 	USERCONTROL_DESCRIPTION,
 
@@ -528,17 +562,17 @@ GB_DESC CUserContainerDesc[] =
   GB_DECLARE("UserContainer", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
   GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
+  GB_METHOD("_new", NULL, UserControl_new, "(Parent)Container;"),
 
-  GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
-	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
+  GB_PROPERTY("_Container", "Container", UserContainer_Container),
+	GB_PROPERTY("_Arrangement", "i", Container_Arrangement),
 
-  GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
-  GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),
-  GB_PROPERTY("Padding", "i", CUSERCONTAINER_padding),
-  GB_PROPERTY("Spacing", "b", CUSERCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
-  GB_PROPERTY("Indent", "b", CUSERCONTAINER_indent),
+  GB_PROPERTY("Arrangement", "i", UserContainer_Arrangement),
+  GB_PROPERTY("AutoResize", "b", UserContainer_AutoResize),
+  GB_PROPERTY("Padding", "i", UserContainer_Padding),
+  GB_PROPERTY("Spacing", "b", UserContainer_Spacing),
+  GB_PROPERTY("Margin", "b", UserContainer_Margin),
+  GB_PROPERTY("Indent", "b", UserContainer_Indent),
   GB_PROPERTY("Invert", "b", UserContainer_Invert),
   
   //GB_PROPERTY("Focus", "b", UserContainer_Focus),

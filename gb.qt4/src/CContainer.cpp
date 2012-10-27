@@ -1238,6 +1238,42 @@ BEGIN_METHOD(Container_Find, GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
+BEGIN_METHOD(Container_unknown, GB_VALUE x; GB_VALUE y)
+
+	char *name = GB.GetUnknown();
+	int nparam = GB.NParam();
+	
+	if (strcasecmp(name, "Find"))
+	{
+		GB.Error(GB_ERR_NSYMBOL, GB.GetClassName(NULL), name);
+		return;
+	}
+	
+	if (nparam < 2)
+	{
+		GB.Error("Not enough argument");
+		return;
+	}
+	else if (nparam > 2)
+	{
+		GB.Error("Too many argument");
+		return;
+	}
+	
+	GB.Deprecated("gb.qt4", "Container.Find", "Container.FindChild");
+	
+	if (GB.Conv(ARG(x), GB_T_INTEGER) || GB.Conv(ARG(y), GB_T_INTEGER))
+		return;
+	
+	Container_Find(_object, _param);
+	
+	GB.ReturnConvVariant();
+
+END_METHOD
+
+
+//---------------------------------------------------------------------------
+
 GB_DESC CChildrenDesc[] =
 {
 	GB_DECLARE(".Container.Children", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
@@ -1265,7 +1301,8 @@ GB_DESC CContainerDesc[] =
 	GB_PROPERTY_READ("ClientH", "i", Container_Height),
 	GB_PROPERTY_READ("ClientHeight", "i", Container_Height),
 	
-	GB_METHOD("Find", "Control", Container_Find, "(X)i(Y)i"),
+	GB_METHOD("_unknown", "v", Container_unknown, "."),
+	GB_METHOD("FindChild", "Control", Container_Find, "(X)i(Y)i"),
 	
 	CONTAINER_DESCRIPTION,
 

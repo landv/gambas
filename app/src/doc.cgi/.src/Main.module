@@ -290,6 +290,33 @@ Public Sub GetVersion() As String
 
 End
 
+Private Sub InitSymbol(sPath As String)
+  
+  Dim aPath As String[] = Split(sPath, "/")
+  
+  $iType = aPath.Count - 2
+  If aPath.Count > 2 Then
+
+    If Left(aPath[aPath.Count - 1]) = "~" Then
+      $iType = TYPE_COMMON
+    Else
+      CComponent.Init
+      $hComp = CComponent.All[aPath[2]]
+      If $hComp Then
+        $hComp.Load
+        If aPath.Count > 3 Then $hClass = CComponent.All[aPath[2]][aPath[3]]
+        If $hClass Then
+          If aPath.Count > 4 Then
+            $hSym = $hClass.Symbols[Replace(aPath[4], ".", ":")]
+          Endif
+        Endif
+      Endif
+    Endif
+  Endif
+  
+End
+
+
 Private Sub OpenDatabase()
 
   Dim aQuery As String[]
@@ -403,27 +430,7 @@ Private Sub OpenDatabase()
 
   InitVersion($sVersion)
 
-  If $sPath Like "/comp/*" Then
-    $iType = $aPath.Count - 2
-    If $aPath.Count > 2 Then
-
-      If Left($aPath[$aPath.Count - 1]) = "~" Then
-        $iType = TYPE_COMMON
-      Else
-        CComponent.Init
-        $hComp = CComponent.All[$aPath[2]]
-        If $hComp Then
-          $hComp.Load
-          If $aPath.Count > 3 Then $hClass = CComponent.All[$aPath[2]][$aPath[3]]
-          If $hClass Then
-            If $aPath.Count > 4 Then
-              $hSym = $hClass.Symbols[Replace($aPath[4], ".", ":")]
-            Endif
-          Endif
-        Endif
-      Endif
-    Endif
-  Endif
+  If $sPath Like "/comp/*" Then InitSymbol($sPath)
 
   If $bWget Then $bRefresh = True
 
@@ -2029,6 +2036,29 @@ Private Function GetRealPath(sPath As String) As String
 
   Dim rPage As Result
   Dim iInd As Integer
+  Dim aPath As String[]
+  Dim aPath2 As String[]
+
+  If sPath Like "/comp/*" Then
+    '$sError &= "#1\n"
+    aPath = Split(Mid$(sPath, 2), "/")
+    If aPath.Count >= 3 Then
+      '$sError &= "#2\n"
+      rPage = DB.Find("page", "sPath = &1 AND sLang = &2", "/" & aPath[0] &/ aPath[1] &/ aPath[2], DEFAULT_LANG)
+      If rPage.Available And If Left$(rPage!sTitle, 2) = "~/" Then
+        '$sError &= "#3\n"
+        aPath2 = Split(Mid$(rPage!sTitle, 3), "/")
+        If aPath2.Count >= 3 Then
+          '$sError &= "#4\n"
+          aPath[1] = aPath2[1]
+          aPath[2] = aPath2[2]
+          sPath = "/" & aPath.Join("/")
+          '$sError &= sPath & "\n"
+          InitSymbol(sPath)
+        Endif
+      Endif
+    Endif
+  Endif
 
   For iInd = 1 To 10
 
@@ -2629,8 +2659,9 @@ Private Sub EditPage()
 
       If $hComp Then
         If $hComp.Key = "gb.gtk" Or $hComp.Key = "gb.gui" Then
-          rPage!sTitle = "@" & Replace($sPath, "/" & $hComp.Key, "/gb.qt")
-          'rPage!sDesc = NULL
+          rPage!sTitle = "@" & Replace($sPath, "/" & $hComp.Key, "/gb.qt4")
+        Else If $hComp.Key = "gb.gtk.opengl" Or $hComp.Key = "gb.gui.opengl" Then
+          rPage!sTitle = "@" & Replace($sPath, "/" & $hComp.Key, "/gb.qt4.opengl")
         Else If $hComp.Key = "gb.opengl" Then
           If $hSym Then rPage!sDesc = GetOpenGL($hSym.Name, "gl")
         Else If $hComp.Key = "gb.opengl.glu" Then
@@ -4108,7 +4139,7 @@ Private Function GetToDo() As String
   Dim sComp As String
   Dim sName As String
   Dim iCpt As Integer
-  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.qt", "gb.corba", "gb.gtk.ext", "gb.qt.ext"]
+  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.qt", "gb.corba", "gb.gtk.ext", "gb.qt.ext", "gb.gui.opengl", "gb.gui.base"]
   Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
 
   $sVersion = "3.0"
@@ -4753,12 +4784,6 @@ Private Function GetOldData(sOld As String) As String
 
 End
 
-Private Function FormatClassName(sName As String) As String
-
-  Return Replace(sName, "]", "&#93;")
-
-End
-
 Private Function GetClassPageFromName(sClass As String) As String
 
   Dim sComp As String
@@ -5067,7 +5092,7 @@ Private Sub GetClassStat(sArg As String) As String
   If sArg = "2.0" Then
     aIgnore = ["gb.gui.info", "gb.gtk.info"]
   Else If sArg = "3.0" Then
-    aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.qt.info"]
+    aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.qt.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gui.base"]
   Endif
 
   For Each sFile In Dir(GetInfoFilePath(sArg), "*.info")

@@ -60,10 +60,7 @@ End
 
 Static Private Sub HasHandler(hForm As Object) As Boolean
   
-  Dim iType As Integer
-  
-  Try iType = TypeOf(hForm.Action_Activate)
-  Return iType <> 0
+  Try Return Object.Class(hForm).Exist("Action_Activate")
   
 End
 

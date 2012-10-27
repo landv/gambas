@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True,Sorted"
+Public Const _Properties As String = "*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 
@@ -1098,18 +1098,17 @@ End
 Public Sub TimerEnsureVisible_Timer()
   
   Dim iRowEV As Integer = $iRowEV
+  Dim F As Integer = GetFrameWidth()
   
   $iRowEV = -1
 
   With $hColumns[$iColEV]
-    $hView.EnsureVisible(.X, $hRows._GetRowY(iRowEV), Min($hView.ClientW - $hRows.W, .Width + $hRows.Width), $hRows._GetRowHeight(iRowEV) + $hColumns.Height)
+    $hView.EnsureVisible(.X, $hRows._GetRowY(iRowEV) + $hColumns.Height + F, Min($hView.ClientW - $hRows.W, .Width + $hRows.Width), $hRows._GetRowHeight(iRowEV) + $hColumns.Height)
   End With
   
 Catch
   
 End
-
-
 
 Public Sub _SelectRow(iRow As Integer, bSelect As Boolean)
   
