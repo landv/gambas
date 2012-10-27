@@ -5,7 +5,7 @@
 
 Public Sub Form_Open()
 
-  Dim sDir As String = "/home/benoit/Documents/arsene-lupin"
+  Dim sDir As String = "/home/benoit/Documents"
   Dim sFile As String
   Dim sPath As String
   Dim hDirPict As Picture
@@ -46,9 +46,9 @@ Public Sub tvwTest_KeyPress()
 
 End
 
-Public Sub tvwTest_Compare(Key As String, OtherKey As String)
-  
-  Try tvwTest.Compare = Sgn(Stat(Key).Size - Stat(OtherKey).Size)
-  'If Error Then Stop Event
-  
-End
+' Public Sub tvwTest_Compare(Key As String, OtherKey As String)
+'   
+'   Try tvwTest.Compare = Sgn(Stat(Key).Size - Stat(OtherKey).Size)
+'   'If Error Then Stop Event
+'   
+' End

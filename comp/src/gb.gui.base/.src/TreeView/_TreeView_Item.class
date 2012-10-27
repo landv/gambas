@@ -29,6 +29,7 @@ Static Public _Tree As _TreeView
 
 Public _Depth As Integer
 Public _Rows As Integer
+Public _Index As Integer
 
 Event _Refresh
 
@@ -67,9 +68,17 @@ Public Sub _AddChild(sKey As String)
   
 End
 
-Public Sub _RemoveChild(sKey As String)
+Public Sub _RemoveChild(hItem As _TreeView_Item)
   
-  Try $aChildren.Remove($aChildren.Find(sKey))
+  Dim hTree As _TreeView = GetTree()
+  Dim I As Integer
+  
+  Try $aChildren.Remove(hItem._Index)
+  
+  For I = hItem._Index To $aChildren.Max
+    hTree[$aChildren[I]]._Index = I
+  Next
+  
   If $aChildren.Count = 0 Then $aChildren = Null
   
 End
