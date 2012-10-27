@@ -219,16 +219,39 @@ End
 Public Sub Background_Arrange()
   
   Dim FW, FH As Integer
+  Dim hCtrl As Control
+  Dim aCtrl As New Control[]
+  Dim X As Integer
   
   FW = If($bBorder, Style.FrameWidth, 0)
   FH = If($bBorder, Style.FrameWidth, 0)
   
+  For Each hCtrl In $hBackground.Children
+    If hCtrl Is ToolButton Then aCtrl.Add(hCtrl)
+  Next
+  
   If System.RightToLeft Then
-    $hButton.Move(FW, FH, 24, Me.H - FH * 2)
-    $hTextBox.Move($hButton.X + $hButton.W, FH, Me.W - FW * 2 - $hButton.W, Me.H - FH * 2)
+    X = FW
+    For Each hCtrl In aCtrl
+      hCtrl.W = 24
+      hCtrl.Move(X, FH, hCtrl.W, Me.H - FH * 2)
+      X += hCtrl.W
+    Next
+    $hTextBox.Move(X, FH, Me.W - FW - X, Me.H - FH * 2)
   Else
-    $hTextBox.Move(FW, FH, Me.W - FW * 2 - $hButton.W, Me.H - FH * 2)
-    $hButton.Move($hTextBox.X + $hTextBox.W, FH, 24, Me.H - FH * 2)
+    X = Me.W - FW
+    For Each hCtrl In aCtrl
+      hCtrl.W = 24
+      X -= hCtrl.W
+      hCtrl.Move(X, FH, hCtrl.W, Me.H - FH * 2)
+    Next
+    $hTextBox.Move(FW, FH, X - FW, Me.H - FH * 2)
   Endif
+  
+End
+
+Public Sub _AddButton(hButton As ToolButton)
+  
+  hButton.Reparent($hBackground)
   
 End

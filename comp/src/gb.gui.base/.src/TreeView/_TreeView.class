@@ -224,7 +224,7 @@ Private Sub GetNextItem(hItem As _Treeview_Item) As _TreeView_Item
   Dim aChildren As String[]
   Dim iPos As Integer
   
-  If hItem.Count And If hItem.Expanded Then
+  If hItem.Count And If hItem.Expanded And If hItem.Count Then
     aChildren = hItem._GetChildren()
     Return $cItem[aChildren[0]]
   Endif
@@ -240,6 +240,24 @@ Private Sub GetNextItem(hItem As _Treeview_Item) As _TreeView_Item
   
 End
 
+Private Sub GetPreviousItem(hItem As _Treeview_Item) As _TreeView_Item
+  
+  Dim hParent As _TreeView_Item
+  Dim aChildren As String[]
+  
+  If hItem._Index = 0 Then Return $cItem[hItem.ParentKey]
+  
+  hParent = GetParentItem(hItem)
+  aChildren = hParent._GetChildren()
+  hItem = $cItem[aChildren[hItem._Index - 1]]
+  
+  Do
+    If Not hItem.Expanded Or If hItem.Count = 0 Then Return hItem
+    hItem = $cItem[hItem._GetChildren()[hItem.Count - 1]]
+  Loop
+
+End
+
 Private Sub RowToItem(iRow As Integer) As _TreeView_Item
   
   Dim hParent As _TreeView_Item
@@ -250,11 +268,20 @@ Private Sub RowToItem(iRow As Integer) As _TreeView_Item
   
   'Print iRow;; $iLastRow
   
-  If iRow = $iLastRow Then Return $cItem[$sLastKey]
+  If $sLastKey Then hChild = $cItem[$sLastKey]
+  
+  If iRow = $iLastRow Then Return hChild
   
   If iRow = ($iLastRow + 1) Then
     $iLastRow = iRow
-    hChild = GetNextItem($cItem[$sLastKey])
+    hChild = GetNextItem(hChild)
+    $sLastKey = hChild.Key
+    Return hChild
+  Endif
+  
+  If iRow = ($iLastRow - 1) Then
+    $iLastRow = iRow
+    hChild = GetPreviousItem(hChild)
     $sLastKey = hChild.Key
     Return hChild
   Endif
@@ -355,7 +382,6 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
   
   If Not hItem Then Return
   
-  
   PH = _GetItemHeight(hItem)
   If PH <> $hView.Rows[Row].H Then 
     If Not $hResizeRowsTimer Then
@@ -389,7 +415,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
     Endif
     
     'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "]", X, Y, W, H, $hView.Columns[Column].Alignment)
-    Draw.Text(hItem.Text, X, Y, W, H, $hView.Columns[Column].Alignment)
+    Draw.Text(hItem.Text, X, Y, W, H, Align.Normal) '$hView.Columns[Column].Alignment)
     
   Else
     
@@ -777,8 +803,10 @@ End
 Public Sub MoveAbove() As Boolean
   
   Dim sKey As String
+  Dim hItem As _TreeView_Item
   
-  Try sKey = RowToItem(_ItemToRow($cItem[$sCursor]) - 1).Key
+  hItem = $cItem[$sCursor]
+  Try sKey = GetPreviousItem(hItem).Key
   Return SetCursor(sKey)
   
 End
@@ -786,8 +814,10 @@ End
 Public Sub MoveBelow() As Boolean
   
   Dim sKey As String
+  Dim hItem As _TreeView_Item
   
-  Try sKey = RowToItem(_ItemToRow($cItem[$sCursor]) + 1).Key
+  hItem = $cItem[$sCursor]
+  Try sKey = GetNextItem(hItem).Key
   Return SetCursor(sKey)
   
 End

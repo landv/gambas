@@ -328,7 +328,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   $nTrans = hTrans.Translations.Count
 
   MakeFileChoice
-  UpdateOrg(True )
+  UpdateOrg(True)
   
   'cvwTranslate.Columns[1].Text = Language.ToName(sLang)
 
@@ -432,10 +432,10 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
   bExistMO = Exist(sPathMO)
   
   If $nTrans = 0 Then 
-    VersionControl.RemoveFile($sPath, True )
+    VersionControl.RemoveFile($sPath, True)
     Try Kill $sPath
     If bExistMO Then 
-      VersionControl.RemoveFile(sPathMO, True )
+      VersionControl.RemoveFile(sPathMO, True)
       Try Kill sPathMO
     Endif
     Return    
@@ -495,7 +495,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
     Try Kill $sPath & ".new"
     If bExistMO Then
-      VersionControl.RemoveFile(sPathMO, True )
+      VersionControl.RemoveFile(sPathMO, True)
       Try Kill sPathMO
     Endif
 
@@ -546,7 +546,7 @@ End
 
 Public Sub btnSave_Click()
 
-  SaveTranslate(True )
+  SaveTranslate(True)
 
 End
 
@@ -642,7 +642,7 @@ Public Sub btnDelete_Click()
 
   End With
 
-  SaveTranslate(True )
+  SaveTranslate(True)
   cvwLang.Remove($sLang)
   SetLang()
 

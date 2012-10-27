@@ -454,6 +454,7 @@ End
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   Dim PW, PH, CX, CY, CW, CH, F As Integer
+  Dim XX, YY, WW, HH As Float
   
   If $bBorder Then
     F = Style.FrameWidth
@@ -465,10 +466,10 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   'Debug X;; Y;; W;; H;; "[";; $hDrawingArea.W;; $hDrawingArea.H;; "]"
   
-  W = (W + 1) / 2
-  H = (H + 1) / 2
-  X = X + W
-  Y = Y + H
+  WW = W / 2
+  HH = H / 2
+  XX = X + WW
+  YY = Y + HH
 
   PW = $hDrawingArea.W '- F * 2
   PH = $hDrawingArea.H '- F * 2
@@ -478,29 +479,29 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   CW = Me.ScrollWidth
   CH = Me.ScrollHeight
 
-  If PW < (W * 2) Then W = PW / 2
-  If PH < (H * 2) Then H = PH / 2
+  If PW < (WW * 2) Then WW = PW / 2
+  If PH < (HH * 2) Then HH = PH / 2
 
   If CW <= PW Then
-    W = 0
+    WW = 0
     CX = 0
   Endif
   
   If CH <= PH Then
-    H = 0
+    HH = 0
     CY = 0
   Endif
 
-  If X < (- CX + W) Then
-    CX = - X + W
-  Else If X >= (- CX + PW - W) Then
-    CX = - X + PW - W
+  If XX < (- CX + WW) Then
+    CX = - XX + WW
+  Else If XX >= (- CX + PW - WW) Then
+    CX = - XX + PW - WW
   Endif
   
-  If Y < (- CY + H) Then
-    CY = - Y + H
-  Else If Y >= (- CY + PH - H) Then
-    CY = - Y + PH - H
+  If YY < (- CY + HH) Then
+    CY = - YY + HH
+  Else If YY >= (- CY + PH - HH) Then
+    CY = - YY + PH - HH
   Endif
 
   If CX > 0

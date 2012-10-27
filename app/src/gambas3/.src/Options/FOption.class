@@ -68,6 +68,8 @@ Public Sub _new()
   Dim hColor As DrawingArea
   Dim hButton As Button
 
+  txtGlobalFont._AddButton(btnClearGlobalFont)
+
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE"].Insert(Stock.Themes)
@@ -111,11 +113,16 @@ Public Sub _new()
     [cmbFormatOnLoad, "/FormatCode/FormatOnLoad", 0]]
   
   $bNoChange = True
+  
   ReadConfig
+  
   cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
+  
+  UpdateFont(txtGlobalFont.Text)
+  
   $bNoChange = False
   
   For iInd = 0 To MTheme.ColorKeys.Max
@@ -693,10 +700,24 @@ End
 
 Private Sub UpdateFont(sFont As String)
   
-  txtGlobalFont.Text = sFont
-  Settings["/Font"] = txtGlobalFont.Text
-  Application.Font = Font[Settings["/Font"]]
-  RefreshWindow
+  If sFont <> Settings["/Font"] Then
+    Settings["/Font"] = sFont
+    If sFont Then
+      Application.Font = Font[Settings["/Font"]]
+    Else
+      Application.Font = Font[Project.DESKTOP_FONT]
+    Endif
+    RefreshWindow
+  Endif
+
+  If sFont Then
+    txtGlobalFont.Text = sFont
+    txtGlobalFont.Foreground = Color.Default
+  Else
+    txtGlobalFont.Text = Project.DESKTOP_FONT
+    txtGlobalFont.Foreground = Color.LightForeground
+  Endif
+  
   'NeedRestart(txtGlobalFont)
   
 End
@@ -1044,3 +1065,4 @@ Public Sub btnClearGlobalFont_Click()
   If Settings["/Font"] Then UpdateFont("")
 
 End
+

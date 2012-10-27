@@ -1103,7 +1103,7 @@ Public Sub TimerEnsureVisible_Timer()
   $iRowEV = -1
 
   With $hColumns[$iColEV]
-    $hView.EnsureVisible(.X, $hRows._GetRowY(iRowEV) + $hColumns.Height + F, Min($hView.ClientW - $hRows.W, .Width + $hRows.Width), $hRows._GetRowHeight(iRowEV) + $hColumns.Height)
+    $hView.EnsureVisible(.X, $hRows._GetRowY(iRowEV) + F, Min($hView.ClientW - $hRows.W, .Width + $hRows.Width), $hRows._GetRowHeight(iRowEV) + $hColumns.Height + F)
   End With
   
 Catch

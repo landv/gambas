@@ -111,6 +111,7 @@ Public Const ACTION_MAGIC As String = "# Gambas Action File 3.0"
 Public Const CONNECTION_MAGIC As String = "# Gambas Connection File 3.0"
 
 Public DEFAULT_FONT As String = "Monospace,9"
+Public DESKTOP_FONT As String
 
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
 
@@ -253,6 +254,7 @@ Public Sub Main()
   Next
 
   Application.Theme = Settings["/Theme"]
+  DESKTOP_FONT = Application.Font.ToString()
   Try Application.Font = Font[Settings["/Font"]]
 
   'ScrollArea.Shadow = True

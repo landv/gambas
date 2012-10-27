@@ -48,9 +48,13 @@
       Spacing = True
       Indent = True
       { Label11 Label
-        MoveScaled(0,0,20,4)
+        MoveScaled(0,0,12,4)
         Expand = True
         Text = ("Default font")
+      }
+      { btnClearGlobalFont ToolButton
+        MoveScaled(16,0,4,4)
+        Picture = Picture["icon:/small/clear"]
       }
       { txtGlobalFont ButtonBox
         MoveScaled(21,0,44,4)
@@ -69,8 +73,9 @@
       }
       { cmbProjectFontSize ComboBox
         MoveScaled(21,0,10,4)
+        #Translate = False
         ReadOnly = True
-        List = [("100 %"), ("90 %"), ("80 %"), ("70 %"), ("60 %"), ("50 %")]
+        List = ["100 %", "90 %", "80 %", "70 %", "60 %", "50 %"]
       }
       { Panel25 Panel
         MoveScaled(32,0,33,4)
@@ -87,8 +92,9 @@
       }
       { cmbTitleFontSize ComboBox
         MoveScaled(21,0,10,4)
+        #Translate = False
         ReadOnly = True
-        List = [("100 %"), ("90 %"), ("80 %"), ("70 %"), ("60 %"), ("50 %")]
+        List = ["100 %", "90 %", "80 %", "70 %", "60 %", "50 %"]
       }
       { Panel24 Panel
         MoveScaled(32,0,33,4)
