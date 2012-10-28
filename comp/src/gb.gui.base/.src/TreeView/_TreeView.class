@@ -60,7 +60,7 @@ Public Sub _new()
   $hView.Columns.Count = 1
   $hView.Mode = Select.Single
   $hView.Grid = False
-  $hView.AutoResize = False
+  $hView.AutoResize = True
   
   Me.Proxy = $hView
   

@@ -103,6 +103,9 @@ void MyContents::autoResize(void)
 	int i;
 	int x, y;
 
+	if (!sw->isVisible())
+		return;
+	
 	#ifdef DEBUG
 	qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
 	#endif
@@ -305,6 +308,7 @@ void MyContents::findRightBottom(void)
 	QObject *ob;
 	int w = 0, h = 0;
 	int ww, hh;
+	void *_object;
 
 	right = 0;
 	bottom = 0;
@@ -312,26 +316,33 @@ void MyContents::findRightBottom(void)
 	for (i = 0; i < list.count(); i++)
 	{
 		ob = list.at(i);
-		if (ob->isWidgetType())
+		if (!ob->isWidgetType())
+			continue;
+		
+		wid = (QWidget *)ob;
+		_object = CWidget::get(ob);
+		if (!_object)
+			continue;
+		
+		if (wid->isHidden())
+			continue;
+		
+		if (THIS->widget.flag.ignore)
+			continue;
+		
+		ww = wid->x() + wid->width();
+		hh = wid->y() + wid->height();
+
+		if (ww > w)
 		{
-			wid = (QWidget *)ob;
-			if (!wid->isHidden())
-			{
-				ww = wid->x() + wid->width();
-				hh = wid->y() + wid->height();
+			w = ww;
+			right = wid;
+		}
 
-				if (ww > w)
-				{
-					w = ww;
-					right = wid;
-				}
-
-				if (hh > h)
-				{
-					h = hh;
-					bottom = wid;
-				}
-			}
+		if (hh > h)
+		{
+			h = hh;
+			bottom = wid;
 		}
 	}
 

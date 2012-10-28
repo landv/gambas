@@ -1019,7 +1019,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CCheckBoxDesc, CRadioButtonDesc,
 	CTextBoxSelectionDesc, CTextBoxDesc, CComboBoxItemDesc, CComboBoxDesc,
 	CTextAreaSelectionDesc, CTextAreaDesc,
-	CListBoxItemDesc, CListBoxDesc,
+	//CListBoxItemDesc, CListBoxDesc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
 	CHSplitDesc, CVSplitDesc,
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,

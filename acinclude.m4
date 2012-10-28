@@ -128,8 +128,6 @@ AC_DEFUN([GB_INIT_SHORT],
   
   GB_INIT_AUTOMAKE(gambas3-`echo $COMPONENT | sed s/"\."/"-"/g`)
 
-  AC_PREFIX_DEFAULT(/usr/local)
-
   AC_CANONICAL_HOST
   
   gbbindir=$bindir/gambas$GAMBAS_VERSION

@@ -473,12 +473,13 @@
     }
   }
   { svwWorkspace ScrollView
-    MoveScaled(4,8,58,39)
+    MoveScaled(6,8,58,39)
     Background = &H808080&
     Expand = True
     Border = False
     { dwgBackground DrawingArea
       MoveScaled(5,25,12,9)
+      Ignore = True
     }
     { panRight Panel Handle
       Name = "panRight"

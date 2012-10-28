@@ -3,8 +3,8 @@
 
 Public Sub Form_Open()
 
-  MyListBox1.List = Dir("~")
-  MyListBox2.List = MyListBox1.List
+  ListBox1.List = Dir("~")
+  ListBox2.List = ListBox1.List
   Me.Center
 
 End

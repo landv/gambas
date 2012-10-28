@@ -560,6 +560,9 @@ static void CWIDGET_after_geometry_change(void *_object, bool arrange)
 			((MyDrawingArea *)((CWIDGET *)_object)->widget)->updateBackground();
 	}
 	
+	if (THIS->flag.ignore)
+		return;
+	
   arrange_parent(THIS);
 }
 
