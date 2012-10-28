@@ -5251,7 +5251,7 @@ End
 Public Sub GetSmallFont() As Font
   
   Dim hFont As Font = Font[Settings["/Font"]]
-  Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 10
+  Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 20
   Return hFont
   
 End
@@ -5266,7 +5266,7 @@ End
 Public Sub SetNormalFont(hCtrl As Control)
   
   Dim hFont As Font = Font[Settings["/Font"]]
-  Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 10
+  Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 20
   hCtrl.Font = hFont
   
 End

@@ -6,7 +6,7 @@ Inherits UserControl
 Event Change
 Event Activate
 
-Public Const _Properties As String = "*,FixedOnly,ShowStyle=True,ShowPreview=True,ShowLabel=True"
+Public Const _Properties As String = "*,Border=True,FixedOnly,ShowStyle=True,ShowPreview=True,ShowLabel=True"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "Chooser"
@@ -17,6 +17,7 @@ Property FixedOnly As Boolean
 Property ShowStyle As Boolean
 Property ShowPreview As Boolean
 Property ShowLabel As Boolean
+Property Border As Boolean
 
 Private frmChooser As FFontChooser
 
@@ -123,5 +124,17 @@ End
 Private Sub ShowLabel_Write(Value As Boolean)
 
   frmChooser.SetShowLabel(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return frmChooser.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  frmChooser.SetBorder(Value)
 
 End

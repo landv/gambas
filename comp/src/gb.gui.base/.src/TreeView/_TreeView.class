@@ -40,8 +40,6 @@ Private $cItem As New Collection
 Private $hRoot As _TreeView_Item
 Private $sLastKey As String
 Private $hResizeColumnTimer As Timer
-Private $hResizeRowsTimer As Timer
-Private $cResizeRows As New Collection
 Private $sCursor As String
 Private $sSaveCursor As String
 Private $iLastRow As Integer = -2
@@ -54,6 +52,7 @@ Private $cSort As Collection
 Private $bSortRoot As Boolean
 Private $hSortTimer As Timer
 Private $bNoRoot As Boolean
+Private $hObserver As Observer
 
 Public Sub _new()
   
@@ -63,11 +62,13 @@ Public Sub _new()
   $hView.Grid = False
   $hView.AutoResize = False
   
+  Me.Proxy = $hView
+  
   $bNoRoot = Me Is ListView
   
   $hRoot = New _TreeView_Item("", "") As "Item"
   
-  Me.Proxy = $hView
+  $hObserver = New Observer($hView.Children[0]) As "ScrollArea"
   
 End
 
@@ -151,7 +152,7 @@ Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Opti
   
   $sCursor = Key
   
-  RefreshView
+  _RefreshView
   
   Return hItem
   
@@ -213,7 +214,7 @@ Public Sub Remove(Key As String)
   
   ResizeColumns
   
-  RefreshView
+  _RefreshView
   
 End
 
@@ -378,18 +379,8 @@ End
 Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Integer, Row As Integer, Column As Integer)
   
   Dim hItem As _TreeView_Item = RowToItem(Row)
-  Dim PH As Integer
   
   If Not hItem Then Return
-  
-  PH = _GetItemHeight(hItem)
-  If PH <> $hView.Rows[Row].H Then 
-    If Not $hResizeRowsTimer Then
-      $hResizeRowsTimer = New Timer As "ResizeRows"
-      $hResizeRowsTimer.Trigger
-    Endif
-    $cResizeRows[Row] = hItem
-  Endif
   
   If Column = 0 Then
   
@@ -682,25 +673,25 @@ Public Sub GridView_Select()
   
 End
 
-Public Sub ResizeRows_Timer()
-  
-  Dim iRow As Integer
-  Dim hItem As _TreeView_Item
-  Dim PH As Integer
-  
-  $hResizeRowsTimer = Null
-  
-  For Each hItem In $cResizeRows
-    iRow = $cResizeRows.Key
-    PH = _GetItemHeight(hItem)
-    If PH <> $hView.Rows[iRow].H Then
-      $hView.Rows[iRow].H = PH
-    Endif
-  Next
-  
-  $cResizeRows.Clear
-  
-End
+' Public Sub ResizeRows_Timer()
+'   
+'   Dim iRow As Integer
+'   Dim hItem As _TreeView_Item
+'   Dim PH As Integer
+'   
+'   $hResizeRowsTimer = Null
+'   
+'   For Each hItem In $cResizeRows
+'     iRow = $cResizeRows.Key
+'     PH = _GetItemHeight(hItem)
+'     If PH <> $hView.Rows[iRow].H Then
+'       $hView.Rows[iRow].H = PH
+'     Endif
+'   Next
+'   
+'   $cResizeRows.Clear
+'   
+' End
 
 Public Sub Exist(Key As String) As Boolean
   
@@ -966,7 +957,7 @@ Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean
     $cItem[aChildren[I]]._Index = I
   Next
   
-  RefreshView
+  _RefreshView
   
 End
 
@@ -1088,7 +1079,7 @@ Public Sub Editor_KeyPress()
   
 End
 
-Private Sub RefreshView()
+Public Sub _RefreshView()
   
   $iLastRow = -2
   $sLastKey = ""
@@ -1114,7 +1105,7 @@ Public Sub Sort_Timer()
   $bSortRoot = False
   $cSort = Null
   
-  RefreshView
+  _RefreshView
   
   If hItem Then _SetItemSelected(hItem, True)
   
@@ -1149,7 +1140,7 @@ Public Sub GridView_Sort()
   aSel = Selection_Read()
   
   SortItemRec($hRoot)
-  RefreshView
+  _RefreshView
   
   Selection_Write(aSel)
   
@@ -1244,5 +1235,22 @@ Public Sub GridView_ColumnSize(Column As Integer)
   Endif
   
   $hView.Columns[Column].W = W + 8
+  
+End
+
+Public Sub ScrollArea_Draw()
+
+  Dim iRow As Integer
+  Dim hItem As _TreeView_Item
+  
+  iRow = $hView.RowAt(0)
+  If iRow < 0 Then Return
+  
+  Do
+   If iRow > $hView.RowAt($hView.ClientH) Then Break
+   hItem = RowToItem(iRow)
+   $hView.Rows[iRow].H = _GetItemHeight(hItem)
+   Inc iRow
+  Loop
   
 End

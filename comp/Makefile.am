@@ -10,11 +10,6 @@ install-exec-local:
 	 ROOT=$DESTDIR; \
 	fi
 	
-	@echo
-	@echo "Running the informer again twice because of dependencies between information files"
-	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
-	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
-	
 	@echo "Installing the components..."
 	@(cd $(srcdir)/src; d=`pwd`; for p in `cat order`; do \
 	  echo "Compiling $$p..."; \
@@ -35,7 +30,9 @@ install-exec-local:
 	      $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
 	      $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$$p; \
 	      $(INSTALL) .hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$$p; \
-	    fi \
+	    fi; \
+	    $(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $$p > /dev/null; \
+	    $(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null; \
 	  else \
 	    echo "|| Unable to compile $$p" >> ../../../warnings.log; \
 	  fi \

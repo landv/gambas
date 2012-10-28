@@ -7,33 +7,47 @@
     MoveScaled(1,1,77,51)
     Arrangement = Arrange.Vertical
     Border = Border.Plain
+    { lblFont Label
+      MoveScaled(3,1,32,4)
+      Font = Font["Bold"]
+      Padding = 4
+    }
+    { Separator3 Separator
+      MoveScaled(3,7,35,0)
+    }
     { panFont HBox
-      MoveScaled(3,4,71,4)
+      MoveScaled(3,8,71,4)
       { panStyle HBox
-        MoveScaled(0,0,19,4)
-        AutoResize = True
+        MoveScaled(0,0,16,4)
         { btnBold ToolButton
-          MoveScaled(0,0,8,4)
-          AutoResize = True
-          Text = ("Bold")
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Bold")
           Picture = Picture["icon:/small/text-bold"]
           Toggle = True
         }
         { btnItalic ToolButton
-          MoveScaled(9,0,8,4)
-          AutoResize = True
-          Text = ("Italic")
+          MoveScaled(4,0,4,4)
+          ToolTip = ("Italic")
           Picture = Picture["icon:/small/text-italic"]
           Toggle = True
         }
+        { btnUnderline ToolButton
+          MoveScaled(8,0,4,4)
+          ToolTip = ("Underline")
+          Picture = Picture["icon:/small/text-underline"]
+          Toggle = True
+        }
+        { btnStrikeout ToolButton
+          MoveScaled(12,0,4,4)
+          ToolTip = ("Strikeout")
+          Picture = Picture["icon:/small/text-strike"]
+          Toggle = True
+        }
       }
-      { btnRelative ToolButton
+      { btnRelative CheckBox
         MoveScaled(20,0,11,4)
         AutoResize = True
         Text = ("Relative")
-        Picture = Picture["icon:/small/zoom-normal"]
-        Toggle = True
-        Value = True
       }
       { txtSize SpinBox
         MoveScaled(31,0,9,4)
@@ -44,7 +58,7 @@
       }
     }
     { Separator1 Separator
-      MoveScaled(17,12,35,0)
+      MoveScaled(17,14,35,0)
     }
     { lstFamily ListView
       MoveScaled(6,16,59,9)
@@ -54,11 +68,16 @@
     { Separator2 Separator
       MoveScaled(16,28,35,0)
     }
-    { txtExample TextBox
-      MoveScaled(3,38,68,6)
-      Text = ("How quickly daft jumping zebras vex")
-      Alignment = Align.Center
-      Border = False
+    { panExample Panel
+      MoveScaled(3,38,69,7)
+      Background = Color.TextBackground
+      Arrangement = Arrange.Fill
+      { txtExample TextBox
+        MoveScaled(0,0,68,6)
+        Text = ("How quickly daft jumping zebras vex")
+        Alignment = Align.Center
+        Border = False
+      }
     }
   }
 }

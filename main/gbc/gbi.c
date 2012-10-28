@@ -76,7 +76,7 @@ static bool _format = FALSE;
 static bool _nopreload = FALSE;
 static bool _root_set = FALSE;
 static bool _analyze = FALSE;
-static bool _no_include_warning = FALSE;
+static bool _no_include_warning = TRUE;
 
 static char **_components = NULL;
 
@@ -155,6 +155,7 @@ static void error(bool must_exit, const char *fmt, ...)
 static void init(void)
 {
 	const char *path;
+	char *env;
 
 	/* chemin d'installation de Gambas */
 
@@ -179,11 +180,9 @@ static void init(void)
 	if (lt_dlinit())
 		error(TRUE, "Cannot initialize plug-in management: %s", lt_dlerror());
 
-	/*if (putenv("LD_BIND_NOW=true"))
-		error2("Cannot set LD_BIND_NOW", strerror(errno));
-
-	if (putenv("KDE_MALLOC=0"))
-		error2("Cannot set KDE_MALLOC", strerror(errno));*/
+	env = getenv("GBI_DEBUG");
+	if (env && *env && atoi(env))
+		_no_include_warning = FALSE;
 }
 
 
@@ -723,10 +722,6 @@ int main(int argc, char **argv)
 				break;
 #endif
 				
-			case 'i':
-				_no_include_warning = TRUE;
-				break;
-				
 			case 'r':
 				strncpy(_root, optarg, PATH_MAX);
 				_root_set = TRUE;
@@ -753,7 +748,6 @@ int main(int argc, char **argv)
 					#if DO_PRELOADING
 					"  -p                         disable preloading\n"
 					#endif
-					"  -i                         ignore include warnings\n"
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					"  -V  --version              display version\n"
 					"  -L  --license              display license\n"
@@ -763,7 +757,6 @@ int main(int argc, char **argv)
 					#if DO_PRELOADING
 					"  -p                         disable preloading\n"
 					#endif
-					"  -i                         ignore include warnings\n"
 					"  -r <directory>             gives the gambas installation directory\n"
 					"  -V                         display version\n"
 					"  -L                         display license\n"

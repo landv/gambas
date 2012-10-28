@@ -25,7 +25,7 @@ Public Sub _new()
   'lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
   
   StylePanel = panStyle
-  Preview = txtExample
+  Preview = panExample
   
   SetFont("")
 
@@ -142,32 +142,35 @@ Public Sub SetFont(sFont As String)
 
   btnBold.Value = Bold
   btnItalic.Value = Italic
+  btnUnderline.Value = Underline
+  btnStrikeout.Value = StrikeOut
 
   'chkUnderline.Value = UnderLine
   'chkStrikeout.Value = StrikeOut
 
-  txtSize.Value = Size
+  If bRelative Then
+    txtSize.Value = Grade
+  Else
+    txtSize.Value = Size
+  Endif
+  
   RefreshExample
 
 End
 
-Public Function GetFont(Optional sGrade As String = "*") As String
+Public Function GetFont() As String
 
   Dim sFont As String
 
   sFont = Family
-  If sGrade <> "*" Then
-    sFont &= "," & sGrade
+  If Bold Then sFont &= ",Bold"
+  If Italic Then sFont &= ",Italic"
+  If Underline Then sFont &= ",Underline"
+  If Strikeout Then sFont &= ",Strikeout"
+  If btnRelative.Value Then
+    If Grade Then sFont &= "," & Trim(Format(Grade, "+#"))
   Else
-    If Bold Then sFont &= ",Bold"
-    If Italic Then sFont &= ",Italic"
-    If Underline Then sFont &= ",Underline"
-    If Strikeout Then sFont &= ",Strikeout"
-    If btnRelative.Value Then
-      If Grade Then sFont &= "," & Trim(Format(Grade, "+#"))
-    Else
-      sFont &= "," & Size
-    Endif
+    sFont &= "," & Size
   Endif
 
   Return sFont
@@ -192,13 +195,15 @@ Private Sub RefreshExample()
   txtExample.Font = Font[sFont]
   Size = Font[sFont].Size
   Grade = Font[sFont].Grade
-  txtExample.H = txtExample.Font.Height + 16
+  panExample.H = txtExample.Font.Height + 16
   
   sldSize.Value = txtSize.Value
 
   If Not $bNoChange Then GetParent()._Change
 
   $sLast = sFont
+  
+  lblFont.Text = sFont
 
 End
 
@@ -250,7 +255,7 @@ Public Sub btnRelative_Click()
   Object.Lock(sldSize)
   If btnRelative.Value Then
     txtSize.MinValue = -8
-    txtSize.MaxValue = 16
+    txtSize.MaxValue = 24
     txtSize.Value = Grade
     sldSize.PageStep = 1
   Else
@@ -317,7 +322,32 @@ Public Sub panFont_Arrange()
   Else
     sldSize.Show
   Endif
+
+End
+
+Public Sub HasBorder() As Boolean
   
+  Return panBorder.Border
   
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+
+Public Sub btnUnderline_Click()
+
+  Underline = btnUnderline.Value  
+  RefreshExample
+
+End
+
+Public Sub btnStrikeout_Click()
+
+  Strikeout = btnStrikeout.Value
+  RefreshExample
 
 End

@@ -32,6 +32,7 @@ Property Read View As DrawingArea
 
 Event Scroll
 Event Draw
+Event Resize
 
 Static Private $hFadeN As Picture
 Static Private $hFadeS As Picture
@@ -342,6 +343,13 @@ Public Sub DrawingArea_Draw()
   Endif
   
 End
+
+Public Sub DrawingArea_Arrange()
+  
+  Raise Resize
+  
+End
+
 
 Public Sub Scrollbar_Change()
   

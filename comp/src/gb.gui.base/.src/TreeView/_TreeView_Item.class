@@ -114,6 +114,7 @@ Private Sub Text_Write(Value As String)
 
   $sText = Value
   If hTree.Sorted Then hTree._SortParent($sParent)
+  hTree._RefreshView
 
 End
 
@@ -125,7 +126,9 @@ End
 
 Private Sub Picture_Write(Value As Picture)
 
+  Dim hTree As _TreeView = GetTree()
   $hPicture = Value
+  hTree._RefreshView
   
 End
 
@@ -314,24 +317,27 @@ End
 
 Public Sub _put(Text As String, Column As Integer)
   
+  Dim hTree As _TreeView
   Dim hView As GridView
+  
+  hTree = GetTree()
+  hView = GetView()
   
   If Column = 0 Then
     $sText = Text
-    Return
-  Endif
-  
-  hView = GetTree().Children[0]
-  
-  If Column < 0 Or If Column >= hView.Columns.Count Then Error.Raise("Out of bounds")
-  
-  If Not $aText Then 
-    $aText = New String[Column]
   Else
-    If Column >= $aText.Count Then $aText.Resize(Column)
+    If Column < 0 Or If Column >= hView.Columns.Count Then Error.Raise("Out of bounds")
+    
+    If Not $aText Then 
+      $aText = New String[Column]
+    Else
+      If Column >= $aText.Count Then $aText.Resize(Column)
+    Endif
+    
+    $aText[Column - 1] = Text
   Endif
   
-  $aText[Column - 1] = Text
+  hTree._RefreshView()
   
 End
 

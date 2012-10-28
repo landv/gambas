@@ -82,6 +82,8 @@ Public Sub _UpdateIconViewWidth()
   
   $hView.Rows.H = H + Desktop.Scale * 2
   
+  If $hView.ScrollH > ($hView.ClientH + Style.FrameWidth * 2) Then W += Style.ScrollbarSize + Style.ScrollbarSpacing
+  
   $hView.W = Min(W, Me.Width / 2)
   
 End

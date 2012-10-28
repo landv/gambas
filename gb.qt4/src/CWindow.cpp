@@ -2440,11 +2440,13 @@ void MyMainWindow::configure()
 
 	if (menuBar && THIS->showMenuBar && !THIS->hideMenuBar)
 	{
-		//qDebug("action.count = %d", menuBar->actions().count());
-		//h = menuBar->sizeHint().height();
-		menuBar->show();
+		int h = menuBar->sizeHint().height();
 		
-		geom = QRect(0, menuBar->height(), this->width(), this->height() - menuBar->height());
+		if (h == 0)
+			h = menuBar->height();
+		
+		menuBar->show();
+		geom = QRect(0, h, this->width(), this->height() - h);
 		
 		if (THIS->container->geometry() != geom)
 		{

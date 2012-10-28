@@ -1545,6 +1545,12 @@ Public Sub _GetVisibleWidth() As Integer
   
 End
 
+Public Sub ScrollArea_Resize()
+  
+  $hColumns.Column__Refresh
+  
+End
+
 Public Sub ScrollArea_Arrange()
   
   $hColumns.Column__Refresh

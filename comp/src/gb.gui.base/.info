@@ -471,6 +471,10 @@ _GetVisibleWidth
 m
 i
 
+ScrollArea_Resize
+m
+
+
 _RemoveRows
 m
 
@@ -695,6 +699,10 @@ m
 
 (hItem)_IconView_Item;(hRect)Rect;
 ScrollArea_Draw
+m
+
+
+ScrollArea_Resize
 m
 
 
@@ -1075,6 +1083,10 @@ DrawingArea
 :
 
 
+:Resize
+:
+
+
 Scroll
 m
 
@@ -1092,6 +1104,10 @@ m
 
 (Width)i(Height)i
 DrawingArea_Draw
+m
+
+
+DrawingArea_Arrange
 m
 
 
@@ -1888,6 +1904,10 @@ _MoveItem
 m
 
 (hItem)_TreeView_Item;(sKey)s(bBefore)b
+_RefreshView
+m
+
+
 Remove
 m
 
@@ -1953,10 +1973,6 @@ m
 
 (Column)i
 GridView_Select
-m
-
-
-ResizeRows_Timer
 m
 
 
@@ -2049,6 +2065,10 @@ m
 
 
 Sort_Timer
+m
+
+
+ScrollArea_Draw
 m
 
 
