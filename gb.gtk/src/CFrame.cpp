@@ -111,12 +111,12 @@ GB_DESC CPanelDesc[] =
   GB_METHOD("_new", 0, CPANEL_new, "(Parent)Container;"),
 
   GB_PROPERTY("Border", "i", CPANEL_border),
-  GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+  GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+  GB_PROPERTY("Padding", "i", Container_Padding),
+  GB_PROPERTY("Spacing", "b", Container_Spacing),
+  GB_PROPERTY("Margin", "b", Container_Margin),
+  GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
   PANEL_DESCRIPTION,
@@ -131,11 +131,11 @@ GB_DESC CHBoxDesc[] =
 
   GB_METHOD("_new", 0, CHBOX_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Spacing", "b", Container_Spacing),
+  GB_PROPERTY("Margin", "b", Container_Margin),
+  GB_PROPERTY("Padding", "i", Container_Padding),
+  GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+  GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
   HBOX_DESCRIPTION,
@@ -150,11 +150,11 @@ GB_DESC CVBoxDesc[] =
 
   GB_METHOD("_new", 0, CVBOX_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Spacing", "b", Container_Spacing),
+  GB_PROPERTY("Margin", "b", Container_Margin),
+  GB_PROPERTY("Padding", "i", Container_Padding),
+  GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+  GB_PROPERTY("Indent", "b", Container_Indent),
 
   VBOX_DESCRIPTION,
 
@@ -168,11 +168,11 @@ GB_DESC CHPanelDesc[] =
 
   GB_METHOD("_new", 0, CHPANEL_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Spacing", "b", Container_Spacing),
+  GB_PROPERTY("Margin", "b", Container_Margin),
+  GB_PROPERTY("Padding", "i", Container_Padding),
+  GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+  GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
   HPANEL_DESCRIPTION,
@@ -187,11 +187,11 @@ GB_DESC CVPanelDesc[] =
 
   GB_METHOD("_new", 0, CVPANEL_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+  GB_PROPERTY("Spacing", "b", Container_Spacing),
+  GB_PROPERTY("Margin", "b", Container_Margin),
+  GB_PROPERTY("Padding", "i", Container_Padding),
+  GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+  GB_PROPERTY("Indent", "b", Container_Indent),
 
   VPANEL_DESCRIPTION,
 

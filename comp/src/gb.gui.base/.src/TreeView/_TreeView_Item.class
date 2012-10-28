@@ -328,7 +328,7 @@ Public Sub _put(Text As String, Column As Integer)
   If Not $aText Then 
     $aText = New String[Column]
   Else
-    $aText.Resize(Column)
+    If Column >= $aText.Count Then $aText.Resize(Column)
   Endif
   
   $aText[Column - 1] = Text

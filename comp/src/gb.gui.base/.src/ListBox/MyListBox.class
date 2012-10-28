@@ -364,7 +364,11 @@ End
 Private Sub List_Write(Value As String[])
 
   Object.Lock(Me)
-  $aText = Value.Copy()
+  If Value Then
+    $aText = Value.Copy()
+  Else
+    $aText.Clear
+  Endif
   $hView.Rows.Count = $aText.Count
   $hView.Row = -1
   '$hView.Refresh

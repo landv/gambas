@@ -1,0 +1,365 @@
+' Gambas class file
+
+Public Family As String
+Public Bold As Boolean
+Public Italic As Boolean
+Public Underline As Boolean
+Public Strikeout As Boolean
+Public Size As Integer
+Public Grade As Integer
+Public ShowFixed As Boolean
+
+Public StylePanel As Container
+Public Preview As Control
+
+Private $iHeight As Integer
+Private Const NBR_GRADE As Integer = 21
+Private Const FIRST_GRADE As Integer = -4
+Private $hGrade As New TextLabel[NBR_GRADE]
+Private $iWidthSize As Integer
+Private $bNoChange As Boolean
+Private $bNoRefresh As Boolean
+Private $sLast As String
+'PRIVATE lstGrade AS CustomListBox
+
+'EVENT Change()
+'EVENT Confirm()
+
+' PRIVATE SUB SelectGrade(iGrade AS Integer, bSelect AS Boolean)
+' 
+'   WITH $hGrade[iGrade]
+'     IF bSelect THEN
+'       .Background = Color.SelectedBackground
+'       .Foreground = Color.SelectedForeground
+'     ELSE
+'       .Background = Color.TextBackground
+'       .Foreground = Color.TextForeground
+'     ENDIF
+'   END WITH
+' 
+' END
+
+Public Sub _new()
+
+  Dim iInd As Integer
+
+  $bNoChange = True
+  $bNoRefresh = True
+  
+  For iInd = 0 To NBR_GRADE - 1
+    $hGrade[iInd] = New TextLabel(lstGrade) 'AS "lblGrade"
+    $hGrade[iInd].Wrap = False
+    'lstGrade.Add($hGrade[iInd])
+  Next
+  
+  lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
+  
+  StylePanel = panStyle
+  Preview = txtExample
+  
+  $iWidthSize = panSize.W
+
+  SetFont("")
+
+  $bNoChange = False
+
+End
+
+
+Public Sub Form_Open()
+
+  'DEBUG
+  $bNoRefresh = False
+  RefreshGrade
+  RefreshFamily
+  chkSize_Click
+  RefreshExample
+
+End
+
+Private Sub RefreshGrade()
+
+  Dim iInd As Integer
+  Dim H As Integer
+  Dim hFont As Font
+  Dim sGrade As String
+
+  If $bNoRefresh Then Return
+  If chkSize.Value Then Return
+
+  Inc Application.Busy
+
+  For iInd = 0 To NBR_GRADE - 1
+    sGrade = Trim(Format(FIRST_GRADE + iInd, "+#"))
+    hFont = Font[GetFont(sGrade)]
+    H = hFont.Height + 4
+    With $hGrade[iInd]
+      .Font = hFont
+      .Height = H
+      .Text = " " & sGrade & " " & Family
+      .Tag = FIRST_GRADE + iInd
+      If .Tag = Grade Then 
+        lstGrade.Select($hGrade[iInd])
+      Endif
+    End With
+  Next
+
+  Dec Application.Busy
+
+End
+
+Public Sub RefreshFamily()
+
+  Dim hFont As Font
+  Dim sFamily As String
+  Dim sKey As String
+
+  If $bNoRefresh Then Return
+
+  sKey = Family 'lstFamily.Current.Key
+
+  $bNoChange = True
+
+  lstFamily.Clear
+  
+  For Each sFamily In Fonts
+    hFont = Font[sFamily]
+    If ShowFixed And Not hFont.Fixed Then Continue
+    'IF NOT hFont.Scalable THEN CONTINUE
+    lstFamily.Add(sFamily, sFamily) ', Picture[If(hFont.Fixed, "img/fixed.png", "img/scalable.png")])
+  Next
+
+  If lstFamily.Exist(sKey) Then
+    lstFamily[sKey].Selected = True
+  Else
+    lstFamily.MoveFirst
+    lstFamily.Item.Selected = True
+  Endif
+  Family = lstFamily.Current.Key
+  Try lstFamily[Family].EnsureVisible
+
+  $bNoChange = False
+
+  RefreshExample
+
+End
+
+
+Public Sub SetFont(sFont As String)
+
+  Dim iStyle As Integer
+  Dim hFont As Font = Font[sFont]
+  Dim bRelative As Boolean
+  Dim sElt As String
+
+  bRelative = True
+
+  For Each sElt In Split(sFont, ",")
+    sElt = Trim(sElt)
+    If InStr("0+-", Left(sElt)) = 0 And If IsDigit(Left(sElt)) Then
+      bRelative = False
+      Break
+    Endif
+  Next
+
+  Family = hFont.Name
+  Bold = hFont.Bold
+  Italic = hFont.Italic
+  Underline = hFont.Underline
+  StrikeOut = hFont.StrikeOut
+  Size = hFont.Size
+  Grade = hFont.Grade
+
+  chkSize.Value = Not bRelative
+
+  Try lstFamily[Family].Selected = True
+  Try lstFamily[Family].EnsureVisible
+
+  If Bold Then iStyle += 1
+  If Italic Then iStyle += 2
+  'lstStyle[iStyle].Selected = True
+  lstStyle.Index = iStyle
+
+  chkUnderline.Value = UnderLine
+  chkStrikeout.Value = StrikeOut
+
+  txtSize.Value = Size
+  RefreshExample
+
+End
+
+Public Function GetFont(Optional sGrade As String = "*") As String
+
+  Dim sFont As String
+
+  sFont = Family
+  If sGrade <> "*" Then
+    sFont &= "," & sGrade
+  Else
+    If Bold Then sFont &= ",Bold"
+    If Italic Then sFont &= ",Italic"
+    If Underline Then sFont &= ",Underline"
+    If Strikeout Then sFont &= ",Strikeout"
+    If Not chkSize.Value Then
+      If Grade Then sFont &= "," & Trim(Format(Grade, "+#"))
+    Else
+      sFont &= "," & Size
+    Endif
+  Endif
+
+  Return sFont
+
+End
+
+
+Public Sub Form_Resize()
+
+  txtExample.H = Min(Me.ClientH - 128, Max(64, $iHeight))
+
+End
+
+Private Sub GetParent() As Object
+  
+  Return Me.Parent
+  
+End
+
+
+Private Sub RefreshExample()
+
+  Dim sFont As String = GetFont()
+
+  If $bNoRefresh Then Return
+
+  If sFont <> $sLast Then 
+
+    txtExample.Font = Font[sFont]
+    Size = Font[sFont].Size
+    Grade = Font[sFont].Grade
+    'PRINT Size;; Grade
+    $iHeight = txtExample.Font.Height + 16
+    Form_Resize
+
+    RefreshGrade
+    If Not $bNoChange Then GetParent()._Change
+  Endif
+
+  $sLast = sFont
+
+End
+
+
+Public Sub lstFamily_Select()
+
+  Family = lstFamily.Current.Key
+  RefreshExample
+
+End
+
+Public Sub lstStyle_Click()
+
+  Bold = lstStyle.Index And 1
+  Italic = lstStyle.Index And 2
+  RefreshExample
+
+End
+
+Public Sub txtSize_Change()
+
+  Size = txtSize.Value
+  RefreshExample
+  lstSize.Index = lstSize.Find(Size)
+
+End
+
+Public Sub lstSize_Click()
+
+  txtSize.Value = lstSize.Text
+
+End
+
+
+Public Sub lstFamily_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Public Sub lstStyle_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Public Sub lstSize_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Public Sub chkSize_Click()
+
+  txtSize.Enabled = chkSize.Value
+  lstSize.Visible = chkSize.Value
+  lstGrade.Visible = Not chkSize.Value
+  panSize.Expand = Not chkSize.Value
+  If chkSize.Value Then panSize.W = $iWidthSize
+
+  If Not chkSize.Value Then
+    RefreshGrade
+    lstGrade_Click
+  Else
+    txtSize.Value = Size
+    txtSize_Change
+    txtSize.SetFocus
+  Endif
+
+End
+
+
+Public Sub lstGrade_Click()
+
+  'DEBUG ME.Design;; ME.Parent.Design 
+
+  Try Grade = lstGrade.Current.Tag
+  RefreshExample
+
+End
+
+Public Sub lstGrade_Activate()
+
+  GetParent()._Activate
+
+End
+
+
+Public Sub chkUnderline_Click()
+
+  Underline = chkUnderline.Value
+  RefreshExample
+
+End
+
+
+Public Sub chkStrikeout_Click()
+
+  Strikeout = chkStrikeout.Value
+  RefreshExample
+
+End
+
+
+Public Sub SetShowLabel(bVisible As Boolean)
+  
+  lblFamily.Visible = bVisible
+  lblSize.Visible = bVisible
+  lblStyle.Visible = bVisible
+  
+End
+
+Public Sub IsShowLabel() As Boolean
+  
+  Return lblFamily.Visible
+  
+End
+

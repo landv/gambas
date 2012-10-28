@@ -12,53 +12,21 @@ Public ShowFixed As Boolean
 Public StylePanel As Container
 Public Preview As Control
 
-Private $iHeight As Integer
-Private Const NBR_GRADE As Integer = 21
-Private Const FIRST_GRADE As Integer = -4
-Private $hGrade As New TextLabel[NBR_GRADE]
-Private $iWidthSize As Integer
 Private $bNoChange As Boolean
 Private $bNoRefresh As Boolean
 Private $sLast As String
-'PRIVATE lstGrade AS CustomListBox
-
-'EVENT Change()
-'EVENT Confirm()
-
-' PRIVATE SUB SelectGrade(iGrade AS Integer, bSelect AS Boolean)
-' 
-'   WITH $hGrade[iGrade]
-'     IF bSelect THEN
-'       .Background = Color.SelectedBackground
-'       .Foreground = Color.SelectedForeground
-'     ELSE
-'       .Background = Color.TextBackground
-'       .Foreground = Color.TextForeground
-'     ENDIF
-'   END WITH
-' 
-' END
+Private $bShowLabel As Boolean
 
 Public Sub _new()
-
-  Dim iInd As Integer
 
   $bNoChange = True
   $bNoRefresh = True
   
-  For iInd = 0 To NBR_GRADE - 1
-    $hGrade[iInd] = New TextLabel(lstGrade) 'AS "lblGrade"
-    $hGrade[iInd].Wrap = False
-    'lstGrade.Add($hGrade[iInd])
-  Next
-  
-  lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
+  'lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
   
   StylePanel = panStyle
   Preview = txtExample
   
-  $iWidthSize = panSize.W
-
   SetFont("")
 
   $bNoChange = False
@@ -68,45 +36,43 @@ End
 
 Public Sub Form_Open()
 
-  'DEBUG
   $bNoRefresh = False
-  RefreshGrade
   RefreshFamily
-  chkSize_Click
-  RefreshExample
+  btnRelative_Click
+  txtSize_Change
 
 End
 
-Private Sub RefreshGrade()
-
-  Dim iInd As Integer
-  Dim H As Integer
-  Dim hFont As Font
-  Dim sGrade As String
-
-  If $bNoRefresh Then Return
-  If chkSize.Value Then Return
-
-  Inc Application.Busy
-
-  For iInd = 0 To NBR_GRADE - 1
-    sGrade = Trim(Format(FIRST_GRADE + iInd, "+#"))
-    hFont = Font[GetFont(sGrade)]
-    H = hFont.Height + 4
-    With $hGrade[iInd]
-      .Font = hFont
-      .Height = H
-      .Text = " " & sGrade & " " & Family
-      .Tag = FIRST_GRADE + iInd
-      If .Tag = Grade Then 
-        lstGrade.Select($hGrade[iInd])
-      Endif
-    End With
-  Next
-
-  Dec Application.Busy
-
-End
+' Private Sub RefreshGrade()
+' 
+'   Dim iInd As Integer
+'   Dim H As Integer
+'   Dim hFont As Font
+'   Dim sGrade As String
+' 
+'   If $bNoRefresh Then Return
+'   If chkSize.Value Then Return
+' 
+'   Inc Application.Busy
+' 
+'   For iInd = 0 To NBR_GRADE - 1
+'     sGrade = Trim(Format(FIRST_GRADE + iInd, "+#"))
+'     hFont = Font[GetFont(sGrade)]
+'     H = hFont.Height + 4
+'     With $hGrade[iInd]
+'       .Font = hFont
+'       .Height = H
+'       .Text = " " & sGrade & " " & Family
+'       .Tag = FIRST_GRADE + iInd
+'       If .Tag = Grade Then 
+'         lstGrade.Select($hGrade[iInd])
+'       Endif
+'     End With
+'   Next
+' 
+'   Dec Application.Busy
+' 
+' End
 
 Public Sub RefreshFamily()
 
@@ -147,7 +113,6 @@ End
 
 Public Sub SetFont(sFont As String)
 
-  Dim iStyle As Integer
   Dim hFont As Font = Font[sFont]
   Dim bRelative As Boolean
   Dim sElt As String
@@ -170,18 +135,16 @@ Public Sub SetFont(sFont As String)
   Size = hFont.Size
   Grade = hFont.Grade
 
-  chkSize.Value = Not bRelative
+  btnRelative.Value = bRelative
 
   Try lstFamily[Family].Selected = True
   Try lstFamily[Family].EnsureVisible
 
-  If Bold Then iStyle += 1
-  If Italic Then iStyle += 2
-  'lstStyle[iStyle].Selected = True
-  lstStyle.Index = iStyle
+  btnBold.Value = Bold
+  btnItalic.Value = Italic
 
-  chkUnderline.Value = UnderLine
-  chkStrikeout.Value = StrikeOut
+  'chkUnderline.Value = UnderLine
+  'chkStrikeout.Value = StrikeOut
 
   txtSize.Value = Size
   RefreshExample
@@ -200,7 +163,7 @@ Public Function GetFont(Optional sGrade As String = "*") As String
     If Italic Then sFont &= ",Italic"
     If Underline Then sFont &= ",Underline"
     If Strikeout Then sFont &= ",Strikeout"
-    If Not chkSize.Value Then
+    If btnRelative.Value Then
       If Grade Then sFont &= "," & Trim(Format(Grade, "+#"))
     Else
       sFont &= "," & Size
@@ -211,12 +174,6 @@ Public Function GetFont(Optional sGrade As String = "*") As String
 
 End
 
-
-Public Sub Form_Resize()
-
-  txtExample.H = Min(Me.ClientH - 128, Max(64, $iHeight))
-
-End
 
 Private Sub GetParent() As Object
   
@@ -230,19 +187,16 @@ Private Sub RefreshExample()
   Dim sFont As String = GetFont()
 
   If $bNoRefresh Then Return
+  If sFont = $sLast Then Return
 
-  If sFont <> $sLast Then 
+  txtExample.Font = Font[sFont]
+  Size = Font[sFont].Size
+  Grade = Font[sFont].Grade
+  txtExample.H = txtExample.Font.Height + 16
+  
+  sldSize.Value = txtSize.Value
 
-    txtExample.Font = Font[sFont]
-    Size = Font[sFont].Size
-    Grade = Font[sFont].Grade
-    'PRINT Size;; Grade
-    $iHeight = txtExample.Font.Height + 16
-    Form_Resize
-
-    RefreshGrade
-    If Not $bNoChange Then GetParent()._Change
-  Endif
+  If Not $bNoChange Then GetParent()._Change
 
   $sLast = sFont
 
@@ -256,25 +210,30 @@ Public Sub lstFamily_Select()
 
 End
 
-Public Sub lstStyle_Click()
-
-  Bold = lstStyle.Index And 1
-  Italic = lstStyle.Index And 2
+Public Sub btnBold_Click()
+  
+  Bold = btnBold.Value
   RefreshExample
-
+  
 End
+
+Public Sub btnItalic_Click()
+
+  Italic = btnItalic.Value  
+  RefreshExample
+  
+End
+
 
 Public Sub txtSize_Change()
 
-  Size = txtSize.Value
+  If btnRelative.Value Then
+    Grade = txtSize.Value
+  Else
+    Size = txtSize.Value
+  Endif
+  sldSize.Value = txtSize.Value
   RefreshExample
-  lstSize.Index = lstSize.Find(Size)
-
-End
-
-Public Sub lstSize_Click()
-
-  txtSize.Value = lstSize.Text
 
 End
 
@@ -285,81 +244,80 @@ Public Sub lstFamily_DblClick()
 
 End
 
-Public Sub lstStyle_DblClick()
+Public Sub btnRelative_Click()
 
-  GetParent()._Activate
-
-End
-
-Public Sub lstSize_DblClick()
-
-  GetParent()._Activate
-
-End
-
-Public Sub chkSize_Click()
-
-  txtSize.Enabled = chkSize.Value
-  lstSize.Visible = chkSize.Value
-  lstGrade.Visible = Not chkSize.Value
-  panSize.Expand = Not chkSize.Value
-  If chkSize.Value Then panSize.W = $iWidthSize
-
-  If Not chkSize.Value Then
-    RefreshGrade
-    lstGrade_Click
+  Object.Lock(txtSize)
+  Object.Lock(sldSize)
+  If btnRelative.Value Then
+    txtSize.MinValue = -8
+    txtSize.MaxValue = 16
+    txtSize.Value = Grade
+    sldSize.PageStep = 1
   Else
+    txtSize.MinValue = 1
+    txtSize.MaxValue = 256
     txtSize.Value = Size
-    txtSize_Change
-    txtSize.SetFocus
+    sldSize.PageStep = 4
   Endif
+  
+  sldSize.MinValue = txtSize.MinValue
+  sldSize.MaxValue = txtSize.MaxValue
 
+  Object.Unlock(txtSize)
+  Object.Unlock(sldSize)
+  
+  txtSize_Change
+  txtSize.SetFocus
+  
 End
 
 
-Public Sub lstGrade_Click()
-
-  'DEBUG ME.Design;; ME.Parent.Design 
-
-  Try Grade = lstGrade.Current.Tag
-  RefreshExample
-
-End
-
-Public Sub lstGrade_Activate()
-
-  GetParent()._Activate
-
-End
-
-
-Public Sub chkUnderline_Click()
-
-  Underline = chkUnderline.Value
-  RefreshExample
-
-End
-
-
-Public Sub chkStrikeout_Click()
-
-  Strikeout = chkStrikeout.Value
-  RefreshExample
-
-End
+' Public Sub chkUnderline_Click()
+' 
+'   Underline = chkUnderline.Value
+'   RefreshExample
+' 
+' End
+' 
+' 
+' Public Sub chkStrikeout_Click()
+' 
+'   Strikeout = chkStrikeout.Value
+'   RefreshExample
+' 
+' End
 
 
 Public Sub SetShowLabel(bVisible As Boolean)
   
-  lblFamily.Visible = bVisible
-  lblSize.Visible = bVisible
-  lblStyle.Visible = bVisible
+  ' lblFamily.Visible = bVisible
+  ' lblSize.Visible = bVisible
+  ' lblStyle.Visible = bVisible
+  $bShowLabel = bVisible
   
 End
 
 Public Sub IsShowLabel() As Boolean
   
-  Return lblFamily.Visible
+  Return $bShowLabel
   
 End
 
+
+Public Sub sldSize_Change()
+
+  txtSize.Value = sldSize.Value
+
+End
+
+Public Sub panFont_Arrange()
+
+  If (panFont.W - txtSize.W - txtSize.X) < 64 Then
+    sldSize.Hide
+  Else
+    sldSize.Show
+  Endif
+  
+  
+
+End

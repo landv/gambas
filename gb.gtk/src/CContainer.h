@@ -67,12 +67,12 @@ typedef
   CUSERCONTROL;
 
 
-DECLARE_PROPERTY(CCONTAINER_arrangement);
-DECLARE_PROPERTY(CCONTAINER_auto_resize);
-DECLARE_PROPERTY(CCONTAINER_padding);
-DECLARE_PROPERTY(CCONTAINER_spacing);
-DECLARE_PROPERTY(CCONTAINER_margin);
-DECLARE_PROPERTY(CCONTAINER_indent);
+DECLARE_PROPERTY(Container_Arrangement);
+DECLARE_PROPERTY(Container_AutoResize);
+DECLARE_PROPERTY(Container_Padding);
+DECLARE_PROPERTY(Container_Spacing);
+DECLARE_PROPERTY(Container_Margin);
+DECLARE_PROPERTY(Container_Indent);
 DECLARE_PROPERTY(Container_Invert);
 
 void CCONTAINER_cb_arrange(gContainer *sender);

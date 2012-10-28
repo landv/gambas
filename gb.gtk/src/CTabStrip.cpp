@@ -365,12 +365,12 @@ GB_DESC CTabStripDesc[] =
 	GB_PROPERTY("Index", "i", CTABSTRIP_index),
 	GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
 	
-	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+	GB_PROPERTY("Padding", "i", Container_Padding),
+	GB_PROPERTY("Spacing", "b", Container_Spacing),
+	GB_PROPERTY("Margin", "b", Container_Margin),
+	GB_PROPERTY("Indent", "b", Container_Indent),
 	GB_PROPERTY("Invert", "b", Container_Invert),
 
 	GB_METHOD("_get", ".TabStripContainer", CTABSTRIP_get, "(Index)i"),

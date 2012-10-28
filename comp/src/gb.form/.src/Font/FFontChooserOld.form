@@ -1,0 +1,86 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(3,26,71.1429,44.1429)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  { HBox1 HBox
+    MoveScaled(1,1,68,32)
+    Expand = True
+    Spacing = True
+    { VBox1 VBox
+      MoveScaled(2,2,24,27)
+      Expand = True
+      Spacing = True
+      { lblFamily Label
+        MoveScaled(2,1,20,3)
+        Text = ("Family")
+      }
+      { lstFamily ListView
+        MoveScaled(2,4,20,22)
+        Expand = True
+      }
+    }
+    { panStyle VBox
+      MoveScaled(28,2,13,28)
+      Spacing = True
+      { lblStyle Label
+        MoveScaled(2,1,9,3)
+        Text = ("Style")
+      }
+      { lstStyle ListBox
+        MoveScaled(2,4,9,14)
+        Expand = True
+        List = [("Normal"), ("Bold"), ("Italic"), ("Bold Italic")]
+      }
+      { VBox2 VBox
+        MoveScaled(0,19,13,8)
+        AutoResize = True
+        { chkUnderline CheckBox
+          MoveScaled(0,0,13,4)
+          Text = ("Underline")
+        }
+        { chkStrikeOut CheckBox
+          MoveScaled(0,3,13,4)
+          Text = ("Strikeout")
+        }
+      }
+    }
+    { panSize VBox
+      MoveScaled(45,2,17,28)
+      { lblSize Label
+        MoveScaled(2,1,13,4)
+        Text = ("Size")
+      }
+      { HBox2 HBox
+        MoveScaled(1,5,15,4)
+        { chkSize CheckBox
+          MoveScaled(0,0,4,4)
+        }
+        { txtSize SpinBox
+          MoveScaled(4,0,11,4)
+          Expand = True
+          MinValue = 1
+          MaxValue = 360
+        }
+      }
+      { Panel1 Panel
+        MoveScaled(3,11,4,1)
+      }
+      { lstGrade ListContainer
+        MoveScaled(4,12,11,13)
+        Expand = True
+      }
+      { lstSize ListBox
+        MoveScaled(2,13,12,15)
+        Expand = True
+        List = []
+      }
+    }
+  }
+  { txtExample TextBox
+    MoveScaled(1,37,68,6)
+    Text = ("How quickly daft jumping zebras vex")
+    Alignment = Align.Center
+  }
+}

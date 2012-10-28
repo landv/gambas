@@ -424,20 +424,10 @@ CLASS *CLASS_look(const char *name, int len)
 	fprintf(stderr, "CLASS_look: %s in %s\n", name, _global ? "global" : "local");
 	#endif
 
-	/*if (strncasecmp(name, "treeview", 8) == 0)
+	/*if (strncasecmp(name, "listbox", 7) == 0)
 	{
-		name = "MyTreeView";
-		len = 10;
-	}
-	else if (strncasecmp(name, "columnview", 10) == 0)
-	{
-		name = "MyColumnView";
-		len = 12;
-	}
-	else if (strncasecmp(name, "listview", 8) == 0)
-	{
-		name = "MyListView";
-		len = 10;
+		name = "MyListBox";
+		len = 9;
 	}*/
 	
 	//if (CP && CP->component && CP->component->archive)

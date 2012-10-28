@@ -1,86 +1,64 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,26,71.1429,44.1429)
-  Arrangement = Arrange.Vertical
-  Spacing = True
-  { HBox1 HBox
-    MoveScaled(1,1,68,32)
-    Expand = True
-    Spacing = True
-    { VBox1 VBox
-      MoveScaled(2,2,24,27)
-      Expand = True
-      Spacing = True
-      { lblFamily Label
-        MoveScaled(2,1,20,3)
-        Text = ("Family")
-      }
-      { lstFamily ListView
-        MoveScaled(2,4,20,22)
-        Expand = True
-      }
-    }
-    { panStyle VBox
-      MoveScaled(28,2,13,28)
-      Spacing = True
-      { lblStyle Label
-        MoveScaled(2,1,9,3)
-        Text = ("Style")
-      }
-      { lstStyle ListBox
-        MoveScaled(2,4,9,14)
-        Expand = True
-        List = [("Normal"), ("Bold"), ("Italic"), ("Bold Italic")]
-      }
-      { VBox2 VBox
-        MoveScaled(0,19,13,8)
+  MoveScaled(0,0,80,54)
+  Arrangement = Arrange.Fill
+  { panBorder Panel
+    MoveScaled(1,1,77,51)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { panFont HBox
+      MoveScaled(3,4,71,4)
+      { panStyle HBox
+        MoveScaled(0,0,19,4)
         AutoResize = True
-        { chkUnderline CheckBox
-          MoveScaled(0,0,13,4)
-          Text = ("Underline")
+        { btnBold ToolButton
+          MoveScaled(0,0,8,4)
+          AutoResize = True
+          Text = ("Bold")
+          Picture = Picture["icon:/small/text-bold"]
+          Toggle = True
         }
-        { chkStrikeOut CheckBox
-          MoveScaled(0,3,13,4)
-          Text = ("Strikeout")
-        }
-      }
-    }
-    { panSize VBox
-      MoveScaled(45,2,17,28)
-      { lblSize Label
-        MoveScaled(2,1,13,4)
-        Text = ("Size")
-      }
-      { HBox2 HBox
-        MoveScaled(1,5,15,4)
-        { chkSize CheckBox
-          MoveScaled(0,0,4,4)
-        }
-        { txtSize SpinBox
-          MoveScaled(4,0,11,4)
-          Expand = True
-          MinValue = 1
-          MaxValue = 360
+        { btnItalic ToolButton
+          MoveScaled(9,0,8,4)
+          AutoResize = True
+          Text = ("Italic")
+          Picture = Picture["icon:/small/text-italic"]
+          Toggle = True
         }
       }
-      { Panel1 Panel
-        MoveScaled(3,11,4,1)
+      { btnRelative ToolButton
+        MoveScaled(20,0,11,4)
+        AutoResize = True
+        Text = ("Relative")
+        Picture = Picture["icon:/small/zoom-normal"]
+        Toggle = True
+        Value = True
       }
-      { lstGrade ListContainer
-        MoveScaled(4,12,11,13)
+      { txtSize SpinBox
+        MoveScaled(31,0,9,4)
+      }
+      { sldSize Slider
+        MoveScaled(42,0,28,4)
         Expand = True
       }
-      { lstSize ListBox
-        MoveScaled(2,13,12,15)
-        Expand = True
-        List = []
-      }
     }
-  }
-  { txtExample TextBox
-    MoveScaled(1,37,68,6)
-    Text = ("How quickly daft jumping zebras vex")
-    Alignment = Align.Center
+    { Separator1 Separator
+      MoveScaled(17,12,35,0)
+    }
+    { lstFamily ListView
+      MoveScaled(6,16,59,9)
+      Expand = True
+      Border = False
+    }
+    { Separator2 Separator
+      MoveScaled(16,28,35,0)
+    }
+    { txtExample TextBox
+      MoveScaled(3,38,68,6)
+      Text = ("How quickly daft jumping zebras vex")
+      Alignment = Align.Center
+      Border = False
+    }
   }
 }

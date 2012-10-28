@@ -222,7 +222,7 @@ BEGIN_PROPERTY(Container_AutoResize)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCONTAINER_padding)
+BEGIN_PROPERTY(Container_Padding)
 
 	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->padding()); return; }
 	WIDGET->setPadding(VPROP(GB_INTEGER));
@@ -230,7 +230,7 @@ BEGIN_PROPERTY(CCONTAINER_padding)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_spacing)
+BEGIN_PROPERTY(Container_Spacing)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->spacing()); return; }
 	WIDGET->setSpacing(VPROP(GB_BOOLEAN));
@@ -238,7 +238,7 @@ BEGIN_PROPERTY(CCONTAINER_spacing)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_margin)
+BEGIN_PROPERTY(Container_Margin)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->margin()); return; }
 	WIDGET->setMargin(VPROP(GB_BOOLEAN));
@@ -246,7 +246,7 @@ BEGIN_PROPERTY(CCONTAINER_margin)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_indent)
+BEGIN_PROPERTY(Container_Indent)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET->indent());

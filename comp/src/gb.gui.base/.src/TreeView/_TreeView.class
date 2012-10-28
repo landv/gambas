@@ -1114,6 +1114,8 @@ Public Sub Sort_Timer()
   $bSortRoot = False
   $cSort = Null
   
+  RefreshView
+  
   If hItem Then _SetItemSelected(hItem, True)
   
 End
