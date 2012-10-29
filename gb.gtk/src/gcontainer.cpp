@@ -552,7 +552,7 @@ void gContainer::setForeground(gColor color)
 	for (i = 0; i < childCount(); i++)
 	{
 		ch = child(i);
-		if (!ch->_bg_set)
+		if (!ch->_fg_set)
 			ch->setForeground();
 	}	
 }
