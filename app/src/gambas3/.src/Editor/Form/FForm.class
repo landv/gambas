@@ -3619,7 +3619,7 @@ Public Sub svwWorkspace_Arrange()
   ' W = Max(svwWorkspace.ClientW - 1, panRightDown.X + panRightDown.W)
   ' H = Max(svwWorkspace.ClientH - 1, panRightDown.Y + panRightDown.H)
   
-  dwgBackground.Move(0, 0, Me.Window.W, Me.Window.H)
+  dwgBackground.Move(0, 0, svwWorkspace.W, svwWorkspace.H)
 
 End
 

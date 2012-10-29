@@ -189,9 +189,10 @@ Private Sub Expanded_Write(Value As Boolean)
   ComputeRows(_Rows - iOldRows)
 
   hTree._UpdateCurrent(sCurrent)
-  
   hTree._RaiseExpand($sKey, $bExpanded)
 
+  If Value Then hTree._EnsureVisible(Me, True)
+  
 End
 
 Private Function X_Read() As Integer
