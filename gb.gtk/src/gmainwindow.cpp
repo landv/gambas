@@ -1060,13 +1060,28 @@ bool gMainWindow::close()
 	return doClose();
 }
 
+static void hide_hidden_children(gContainer *cont)
+{
+	int i;
+	gControl *child;
+	
+	for (i = 0;; i++)
+	{
+		child = cont->child(i);
+		if (!child)
+			break;
+		if (!child->isVisible())
+			gtk_widget_hide(child->border);
+		else if (child->isContainer())
+			hide_hidden_children((gContainer *)child);
+	}
+}
+
 void gMainWindow::reparent(gContainer *newpr, int x, int y)
 {
 	GtkWidget *new_border;
 	int w, h;
 	gColor fg, bg;
-	int i;
-	gControl *child;
 	
 	if (_xembed)
 		return;
@@ -1104,14 +1119,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		gtk_widget_set_size_request(border, width(), height());
 		
 		// Hidden children are incorrectly shown. Fix that!
-		for (i = 0;; i++)
-		{
-			child = getControl(i);
-			if (!child)
-				break;
-			if (!child->isVisible())
-				child->setVisible(false);
-		}
+		hide_hidden_children(this);
 	}
 	else if ((!isTopLevel() && !newpr)
 	         || (isTopLevel() && isPopup()))
