@@ -5,90 +5,121 @@
   Text = ("Simple PDF document viewer")
   Arrangement = Arrange.Vertical
   { HBox1 HBox
-    MoveScaled(0,1,76,4)
+    MoveScaled(1,2,95,4)
     { BtOpen ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Open file...")
-      Text = ("")
       Picture = Picture["icon:/small/open"]
     }
     { Button1 ToolButton
-      MoveScaled(6,0,4,4)
+      MoveScaled(4,0,4,4)
       ToolTip = ("About...")
-      Text = ("")
       Picture = Picture["icon:/small/question"]
     }
     { btRotate ToolButton
-      MoveScaled(10,0,4,4)
+      MoveScaled(8,0,4,4)
       Enabled = False
       ToolTip = ("Rotate")
-      Text = ("")
       Picture = Picture["icon:/small/rotate-right"]
     }
     { btZoomOut ToolButton
-      MoveScaled(14,0,4,4)
+      MoveScaled(12,0,4,4)
       Enabled = False
       ToolTip = ("Zoom out")
-      Text = ("")
       Picture = Picture["icon:/small/zoom-out"]
     }
     { btZoomIn ToolButton
-      MoveScaled(18,0,4,4)
+      MoveScaled(16,0,4,4)
       Enabled = False
       ToolTip = ("Zoom in")
-      Text = ("")
       Picture = Picture["icon:/small/zoom-in"]
     }
-    { TxtFind TextBox
-      MoveScaled(24,0,12,4)
+    { Separator3 Separator
+      MoveScaled(22,0,0,4)
+    }
+    { txtFind ButtonBox
+      MoveScaled(24,0,15,4)
       Enabled = False
       ToolTip = ("Find text")
       Expand = True
-      Text = ("")
+      Picture = Picture["icon:/small/find"]
+      Border = False
     }
-    { LblInfo Label
-      MoveScaled(44,0,15,4)
-      Expand = True
-      Text = ("")
-      Alignment = Align.Right
+    { Panel1 Panel
+      MoveScaled(40,0,8,4)
+      Visible = False
+      Background = Color.TextBackground
+      { BtSearchPrev Button
+        MoveScaled(0,0,4,4)
+        Enabled = False
+        ToolTip = ("Previous page")
+        Picture = Picture["icon:/small/left"]
+        Border = False
+      }
+      { BtSearchNext Button
+        MoveScaled(4,0,4,4)
+        Enabled = False
+        Background = Color.TextBackground
+        ToolTip = ("Next Found")
+        Picture = Picture["icon:/small/right"]
+        Border = False
+      }
     }
     { Separator1 Separator
-      MoveScaled(60,0,1,4)
+      MoveScaled(51,0,0,4)
     }
     { BtPrev ToolButton
-      MoveScaled(61,0,4,4)
+      MoveScaled(54,0,4,4)
       Enabled = False
       ToolTip = ("Previous page")
-      Text = ("")
       Picture = Picture["icon:/small/left"]
     }
+    { Page Label
+      MoveScaled(59,0,4,4)
+      AutoResize = True
+      Text = ("Page")
+      Alignment = Align.Right
+    }
+    { Panel2 Panel
+      MoveScaled(64,0,1,4)
+    }
+    { txtGotoPage TextBox
+      MoveScaled(66,0,9,4)
+      Enabled = False
+      ToolTip = ("Go to this page")
+      Alignment = Align.Center
+      Border = False
+    }
+    { lblInfo Label
+      MoveScaled(75,0,7,4)
+      AutoResize = True
+    }
     { BtNext ToolButton
-      MoveScaled(68,0,4,4)
+      MoveScaled(84,0,4,4)
       Enabled = False
       ToolTip = ("Next page")
-      Text = ("")
       Picture = Picture["icon:/small/right"]
     }
   }
-  { HBox2 HBox
-    MoveScaled(1,10,75,38)
+  { Separator2 Separator
+    MoveScaled(36,8,27,0)
+  }
+  { splIndex HSplit
+    MoveScaled(9,11,81,60)
     Expand = True
-    { HSplit1 HSplit
-      MoveScaled(4,3,66,35)
+    { tvIndex TreeView
+      MoveScaled(0,0,19,25)
+      Visible = False
+      Border = False
+    }
+    { ViewPort ScrollView
+      MoveScaled(36,5,30,32)
+      Background = Color.TextBackground
       Expand = True
-      { tvIndex TreeView
-        MoveScaled(0,0,19,25)
+      Border = False
+      { PBox PictureBox
+        MoveScaled(3,3,24,21)
         Visible = False
-      }
-      { ViewPort ScrollView
-        MoveScaled(21,1,30,32)
-        Background = Color.TextBackground
-        Expand = True
-        Border = False
-        { PBox PictureBox
-          MoveScaled(3,2,24,21)
-          Visible = False
-        }
       }
     }
   }
