@@ -73,8 +73,6 @@ void SUBR_wait(ushort code)
 		GB_Wait((int)(SUBR_get_float(PARAM) * 1000 + 0.5));
 	
 	SUBR_LEAVE_VOID();
-
-	DEBUG_leave_event_loop();
 }
 
 

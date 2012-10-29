@@ -63,8 +63,8 @@ static void EVAL_enter()
 
 static void error_EVAL_exec(void)
 {
-	STACK_pop_frame(&EXEC_current);
 	PROFILE_LEAVE_FUNCTION();
+	STACK_pop_frame(&EXEC_current);
 }
 
 static void EVAL_exec()
