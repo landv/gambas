@@ -11,16 +11,17 @@ gb_gtk_la_CPPFLAGS = @GTK_INC@ -I$(top_srcdir)/share
 
 gb_gtk_la_SOURCES = \
 	gmemory.h gmemory.cpp gtag.h ggambastag.h gshare.h \
-	gb.gtk.h widgets.h widgets_private.h gtree.h font-parser.h font-parser.cpp \
-	gtree.cpp gtools.cpp gcolor.h \
+	gb.gtk.h widgets.h widgets_private.h font-parser.h font-parser.cpp \
+	gtools.cpp gcolor.h \
 	gstock.cpp gfont.cpp gpicture.cpp \
 	gdraw.cpp gdesktop.cpp gmessage.cpp \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
 	gbutton.cpp gprogressbar.cpp gslider.cpp glabel.cpp gsignals.cpp \
-	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp glistbox.cpp \
-	gspinbox.cpp gtreeview.cpp \
+	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp \
+	gspinbox.cpp \
 	gframe.cpp gsplitter.cpp gtabstrip.cpp gscrollview.cpp \
 	gmenu.cpp gtrayicon.cpp gmainwindow.cpp \
+	gtree.h gtree.cpp \
 	watcher.h watcher.cpp \
 	CStock.cpp CStock.h \
 	CConst.h CConst.cpp CColor.h CColor.cpp \
@@ -46,7 +47,6 @@ gb_gtk_la_SOURCES = \
 	CTextBox.h CTextBox.cpp \
 	CTextArea.h CTextArea.cpp \
 	CSpinBox.h CSpinBox.cpp \
-	CListBox.h CListBox.cpp \
 	CFrame.h CFrame.cpp \
 	CSplitter.h CSplitter.cpp \
 	CTabStrip.h CTabStrip.cpp \
@@ -74,8 +74,6 @@ gb_gtk_la_SOURCES = \
 	gbutton.h \
 	gmoviebox.h \
 	gpicturebox.h \
-	gtreeview.h \
-	glistbox.h \
 	gspinbox.h \
 	gcombobox.h \
 	gtextbox.h \

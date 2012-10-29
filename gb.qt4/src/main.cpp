@@ -63,7 +63,6 @@
 #include "CButton.h"
 #include "CContainer.h"
 #include "CLabel.h"
-#include "CListBox.h"
 #include "CTextBox.h"
 #include "CTextArea.h"
 #include "CPictureBox.h"
@@ -1019,7 +1018,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CCheckBoxDesc, CRadioButtonDesc,
 	CTextBoxSelectionDesc, CTextBoxDesc, CComboBoxItemDesc, CComboBoxDesc,
 	CTextAreaSelectionDesc, CTextAreaDesc,
-	//CListBoxItemDesc, CListBoxDesc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
 	CHSplitDesc, CVSplitDesc,
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,

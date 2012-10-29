@@ -44,7 +44,6 @@
 #include "CProgress.h"
 #include "CDrawingArea.h"
 #include "CTextArea.h"
-#include "CTreeView.h"
 
 #include <QApplication>
 #include <QObject>
@@ -1405,8 +1404,8 @@ END_PROPERTY
 
 static QWidget *get_color_widget(QWidget *w)
 {
-	if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
-		return w;
+	//if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+		//return w;
 	
 	QWidget *view = get_viewport(w);
 	if (view)
@@ -1448,15 +1447,15 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
 		w->setPalette(QPalette());
-		if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
-			get_viewport(WIDGET)->setPalette(QPalette());
+		//if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+		//	get_viewport(WIDGET)->setPalette(QPalette());
 	}
 	else
 	{
 		bg = THIS_EXT->bg;
 		fg = THIS_EXT->fg;
 		
-		if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
+		/*if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
 		{
 			QPalette vpalette;
 			
@@ -1469,7 +1468,8 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			w->setPalette(palette);
 			get_viewport(WIDGET)->setPalette(vpalette);
 		}
-		else if (qobject_cast<QComboBox *>(w) || qobject_cast<QSpinBox *>(w))
+		else*/
+		if (qobject_cast<QComboBox *>(w) || qobject_cast<QSpinBox *>(w))
 		{
 			palette = QPalette();
 		

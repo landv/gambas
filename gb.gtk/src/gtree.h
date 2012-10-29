@@ -27,8 +27,6 @@
 #include <gtk/gtk.h>
 
 class gTree;
-class gTreeView;
-class gIconView;
 
 class gTreeCell
 {
@@ -60,17 +58,17 @@ public:
 	void  add();
 	void  remove();
 	void  update();
-	int  children();
+	//int  children();
 	char *key() { return _key; }
 	
-	void setExpanded();
-	void  setExpanded(bool ex);
-	bool isExpanded();
+	//void setExpanded();
+	//void  setExpanded(bool ex);
+	//bool isExpanded();
 	void ensureVisible();
 	
 	gTreeCell* get(int ind);
 
-	char *next();
+	/*char *next();
 	char *prev();
 	char *child();
 	char *last();
@@ -84,18 +82,18 @@ public:
 	void moveBefore(char *key);
 	
 	void rect(int *x, int *y, int *w, int *h);
-	void updateExpanded(bool ex);
+	void updateExpanded(bool ex);*/
 	
-	bool isEditable() { return _editable; }
-	void setEditable(bool vl) { _editable = vl; }
+	//bool isEditable() { return _editable; }
+	//void setEditable(bool vl) { _editable = vl; }
 	
-	void startRename();
+	//void startRename();
 	
 private:
 	char *_key;
 	char *_parent;
-	bool _expanded;
-	bool _editable;
+	//bool _expanded;
+	//bool _editable;
 };
 
 class gTree
@@ -106,7 +104,6 @@ public:
 	GtkCellRenderer *rtext;
 	GtkCellRenderer *rgraph;
 	GHashTable *datakey;
-	gTreeView *view;
 	void (*onRemove)(gTree *tree, char *key);
 	char *_edited_row;
 	unsigned _editable : 1;
@@ -120,22 +117,22 @@ public:
 	int _no_click;
 	int _sort_column;
 	
-	gTree(gTreeView *v);
+	gTree();
 	~gTree();
 	
 	//General
-	int visibleWidth();
-	int visibleHeight();
+	//int visibleWidth();
+	//int visibleHeight();
 	char* cursor();
 	void  setCursor(char *vl);
 	void selectAll();
 	void unselectAll();
-	bool isEditable() { return _editable; }
-	void setEditable(bool vl) { _editable = vl; }
-	bool isRenaming() const { return _edited_row != NULL; }
+	//bool isEditable() { return _editable; }
+	//void setEditable(bool vl) { _editable = vl; }
+	//bool isRenaming() const { return _edited_row != NULL; }
 	
 	// Rows
-	gTreeRow* addRow(char *key, char *parent = NULL, char *after = NULL, bool before = false);
+	gTreeRow* addRow(char *key, char *after = NULL, bool before = false);
 	gTreeRow* getRow(char *key) const;
 	gTreeRow* operator[](char *key) const { return getRow(key); }
 	
@@ -144,25 +141,25 @@ public:
 	bool rowExists(char *key);
 	bool rowSelected(char *key);
 	void setRowSelected(char *key,bool vl);
-	bool isRowEditable(char *key);
-	void setRowEditable(char *key, bool vl);
+	//bool isRowEditable(char *key);
+	//void setRowEditable(char *key, bool vl);
 	char *firstRow();
-	char *lastRow();
+	//char *lastRow();
 
 	void clear();
-	void clear(char *parent);
+	//void clear(char *parent);
 
 	// Columns
-	bool headers();
-	void setHeaders(bool vl);
-	bool isResizable() { return _resizable; }
-	void setResizable(bool vl);
+	//bool headers();
+	//void setHeaders(bool vl);
+	/*bool isResizable() { return _resizable; }
+	void setResizable(bool vl);*/
 	bool isAutoResize() { return _auto_resize; }
 	void setAutoResize(bool vl);
 	void addColumn();
 	void removeColumn();
 	int columnCount();
-	char *columnName(int ind);
+	/*char *columnName(int ind);
 	void setColumnName(int ind,char *vl);
 	bool columnVisible(int ind);
 	void setColumnVisible(int ind, bool vl);
@@ -171,7 +168,7 @@ public:
 	int columnAlignment(int ind);
 	void setColumnAlignment(int ind, int a);
 	int columnWidth(int col);
-	void setColumnWidth(int col, int w);
+	void setColumnWidth(int col, int w);*/
 	
 	bool isSorted() { return _sorted; }
 	void setSorted(bool v);
@@ -188,9 +185,6 @@ public:
 	void sortLater();
 	void sort();
 	void updateSort();
-	
-	void lock();
-	void unlock();
 };
 
 #endif

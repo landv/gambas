@@ -58,8 +58,6 @@
 #include "CPictureBox.h"
 #include "CTextBox.h"
 #include "CTextArea.h"
-#include "CListBox.h"
-#include "CTreeView.h"
 #include "CSlider.h"
 #include "CTabStrip.h"
 #include "CTrayIcon.h"
@@ -173,22 +171,12 @@ extern "C"
 		CToolButtonDesc,
 		CPictureBoxDesc,
 		CMovieBoxDesc,
-		//CListBoxDesc,
-		//CListBoxItemDesc,
 		CTextBoxSelectionDesc,
 		CTextBoxDesc,
 		CTextAreaDesc,
 		CTextAreaSelectionDesc,
 		CComboBoxDesc,
 		CComboBoxItemDesc,
-		//CListViewItemDesc,
-		//CListViewDesc,
-		//CTreeViewItemDesc,
-		//CTreeViewDesc,
-		//CColumnViewItemDesc,
-		//CColumnViewColumnDesc,
-		//CColumnViewColumnsDesc,
-		//CColumnViewDesc,
 		CTabStripDesc,
 		CTabStripContainerDesc,
 		CTabStripContainerChildrenDesc,

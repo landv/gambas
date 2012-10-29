@@ -22,7 +22,6 @@ gb_qt4_la_SOURCES = \
  CButton.h CButton_moc.cpp CButton.cpp \
  CContainer.h CContainer_moc.cpp CContainer.cpp \
  CLabel.h CLabel_moc.cpp CLabel.cpp \
- CListBox.h CListBox_moc.cpp CListBox.cpp \
  CTextBox.h CTextBox_moc.cpp CTextBox.cpp \
  CPictureBox.h CPictureBox_moc.cpp CPictureBox.cpp \
  CMenu.h CMenu_moc.cpp CMenu.cpp \

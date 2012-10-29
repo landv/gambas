@@ -40,8 +40,6 @@
 #include "CWidget.h"
 #include "CImage.h"
 #include "CClipboard.h"
-//#include "CListView.h"
-#include "CTreeView.h"
 
 CDRAG_INFO CDRAG_info = { 0 };
 bool CDRAG_dragging = false;

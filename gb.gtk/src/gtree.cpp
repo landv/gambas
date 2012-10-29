@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include "gmemory.h"
 #include "gtree.h"
-#include "gtreeview.h"
 	
 #if GTK_CHECK_VERSION(2, 12, 0)
 
@@ -56,6 +55,7 @@ static GtkTreeViewColumn* gt_tree_view_find_column(GtkTreeView *tree, int ind)
 	return col;
 }
 
+/*
 static int gt_tree_view_find_index(GtkTreeView *tree, GtkTreeViewColumn *column)
 {
 	int index;
@@ -86,6 +86,7 @@ static int gt_tree_view_find_index(GtkTreeView *tree, GtkTreeViewColumn *column)
 	
 	return index;
 }
+*/
 
 /************************************************************
 
@@ -132,8 +133,8 @@ gTreeRow::gTreeRow(gTree *tr, char *key, GtkTreeIter *iter)
 	dataiter = iter;
 	tree = tr;
 	_key = key;
-	_expanded = false;
-	_editable = tr->isEditable();
+	//_expanded = false;
+	//_editable = tr->isEditable();
 	
 	count = tree->columnCount();
 	
@@ -189,7 +190,7 @@ void gTreeRow::remove()
 	delete cell;
 }
 
-int gTreeRow::children()
+/*int gTreeRow::children()
 {
 	GtkTreeIter iter;
 	int ct=1;
@@ -198,7 +199,7 @@ int gTreeRow::children()
 	
 	while ( gtk_tree_model_iter_next(GTK_TREE_MODEL(tree->store),&iter) ) ct++;
 	return ct;
-}
+}*/
 
 void gTreeRow::update()
 {
@@ -222,6 +223,7 @@ void gTreeRow::update()
 	return key;
 }*/
 
+/*
 void gTreeRow::setExpanded(bool ex)
 {
 	GtkTreePath *path;
@@ -271,7 +273,9 @@ bool gTreeRow::isExpanded()
 	
 	return _expanded;
 }
+*/
 
+#if 0
 void gTreeRow::updateExpanded(bool ex)
 {
 	//GtkTreePath *path;
@@ -287,6 +291,7 @@ void gTreeRow::updateExpanded(bool ex)
 	
 	//fprintf(stderr, "updateExpanded: %s = %d\n", _key, _expanded);
 }
+#endif
 
 gTreeCell* gTreeRow::get(int ind)
 {
@@ -305,17 +310,6 @@ gTreeCell* gTreeRow::get(int ind)
 void gTreeRow::ensureVisible()
 {
 	GtkTreePath *path;
-	char *parentKey = parent();
-	
-	if (parentKey)
-	{
-		path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree->store), (*tree)[parentKey]->dataiter);
-		if (path)
-		{
-			gtk_tree_view_expand_to_path(GTK_TREE_VIEW(tree->widget), path);
-			gtk_tree_path_free(path);			
-		}
-	}
 	
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree->store),dataiter);
 	if (path)
@@ -325,6 +319,7 @@ void gTreeRow::ensureVisible()
 	}
 }
 
+#if 0
 char *gTreeRow::next()
 {
 	GtkTreePath* path;
@@ -564,7 +559,7 @@ void gTreeRow::startRename()
 	gtk_tree_view_set_cursor(GTK_TREE_VIEW(tree->widget), path, gt_tree_view_find_column(GTK_TREE_VIEW(tree->widget), 0), true);
 	gtk_tree_path_free(path);
 }
-
+#endif
 
 /************************************************************
 
@@ -577,6 +572,7 @@ static gboolean gTree_equal(char *a,char *b)
 	return !strcasecmp(a,b);
 }
 
+#if 0
 static void cb_tree_edited(GtkCellRendererText *renderer, gchar *spath, gchar *new_text, gTree *tree)
 {
 	gTreeView *view = tree->view;
@@ -614,6 +610,7 @@ static void cb_column_clicked(GtkTreeViewColumn *col, gTree *tree)
 	else
 		tree->setSortColumn(index);
 }
+#endif
 
 static gint tree_compare(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gTree *tree)
 {
@@ -625,8 +622,8 @@ static gint tree_compare(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gT
 	
 	//fprintf(stderr, "ka = '%s' kb = '%s'\n", ka, kb);
 	
-	if (tree->view && tree->view->onCompare)
-		def = tree->view->onCompare(tree->view, ka, kb, &comp);
+	//if (tree->view && tree->view->onCompare)
+	//	def = tree->view->onCompare(tree->view, ka, kb, &comp);
 	
 	if (def)
 	{
@@ -657,42 +654,19 @@ void gTree::showExpanders()
 	_expander = true;
 }
 
-void gTree::lock()
-{
-	if (view) view->lock();
-}
-
-void gTree::unlock()
-{
-	if (view) view->unlock();
-}
-
-
-gTree::gTree(gTreeView *v)
+gTree::gTree()
 {
 	onRemove = NULL;
 	
 	datakey = g_hash_table_new((GHashFunc)g_str_hash,(GEqualFunc)gTree_equal);
 	
-	if (v)
-	{
-		store = gtk_tree_store_new(1, G_TYPE_POINTER);
-		widget = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
-		g_object_unref(G_OBJECT(store));
-		
-		view = v;
-	}
-	else // combo-box !
-	{
-		store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-		view = NULL;
-		widget = NULL;
-	}
+	store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	widget = NULL;
 	
-	_editable = false;
+	//_editable = false;
 	_resizable = false;
 	_auto_resize = false;
-	_edited_row = NULL;
+	//_edited_row = NULL;
 	_sorted = false;
 	_ascending = true;
 	_sort_column = 0;
@@ -701,6 +675,7 @@ gTree::gTree(gTreeView *v)
 	_expander = false;
 	_no_click = 0;
 	
+#if 0
 	if (view)
 	{
 		#if GTK_CHECK_VERSION(2, 12, 0)
@@ -727,36 +702,29 @@ gTree::gTree(gTreeView *v)
 		//addColumn();
 		setAutoResize(true);
 	}
+#endif
 }
 
 gTree::~gTree()
 {
 	clear();
 	g_hash_table_destroy(datakey);
-	if (view)
+	/*if (view)
 	{
 		g_object_unref(rgraph);
 		g_object_unref(rtext);
-	}
+	}*/
 }
 
 void gTree::clear()
 {
 	char *key;
 	
-	lock();
-	
 	while ((key = firstRow()))
 		removeRow(key);
-	/*for (int i = 0; i < columnCount(); i++)
-	{
-		setColumnWidth(i, 16);
-		setColumnWidth(i, -1);
-	}*/
-	
-	unlock();
 }
 
+/*
 void gTree::clear(char *parent)
 {
 	gTreeRow *row;
@@ -771,8 +739,9 @@ void gTree::clear(char *parent)
 		removeRow(child);
 	unlock();
 }
+*/
 
-
+/*
 int gTree::visibleWidth()
 {
 	GdkRectangle rect;
@@ -792,11 +761,12 @@ int gTree::visibleHeight()
 	gtk_tree_view_convert_bin_window_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
 		return h;
 }
+*/
 
 char *gTree::iterToKey(GtkTreeIter *iter)
 {
 	char *key;
-	gtk_tree_model_get(GTK_TREE_MODEL(store), iter, view ? 0 : 1, &key, -1);
+	gtk_tree_model_get(GTK_TREE_MODEL(store), iter, 1, &key, -1);
 	return key;
 }
 
@@ -849,6 +819,7 @@ char *gTree::firstRow()
 	return iterToKey(&iter);
 }
 
+#if 0
 char *gTree::lastRow()
 {
 	GtkTreeIter iter;
@@ -868,6 +839,7 @@ char *gTree::lastRow()
 	
 	return iterToKey(&iter);
 }
+#endif
 
 bool gTree::rowExists(char *key)
 {
@@ -903,6 +875,7 @@ void gTree::setRowSelected(char *key,bool vl)
 	_no_click--;
 }
 
+/*
 bool gTree::isRowEditable(char *key)
 {
 	gTreeRow *row = getRow(key);
@@ -920,6 +893,7 @@ void gTree::setRowEditable(char *key, bool vl)
 	
 	row->setEditable(vl);
 }
+*/
 
 int gTree::rowCount()
 {
@@ -930,7 +904,6 @@ int gTree::rowCount()
 bool gTree::removeRow(char *key)
 {
 	gTreeRow *row;
-	char *child;
 	
 	if (!key || !*key)  return false;
 
@@ -939,8 +912,8 @@ bool gTree::removeRow(char *key)
 	
 	//fprintf(stderr, "gTree::removeRow: '%s'\n", key);
 	
-	while((child = row->child()))
-		removeRow(child);
+	//while((child = row->child()))
+	//	removeRow(child);
 	
 	//fprintf(stderr, "gTree::removeRow: '%s' removed\n", key);
 
@@ -959,14 +932,15 @@ gTreeRow* gTree::getRow(char *key) const
 		return (gTreeRow*)g_hash_table_lookup (datakey,(gconstpointer)key);
 }
 
-gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
+gTreeRow* gTree::addRow(char *key, char *after, bool before)
 {
 	GtkTreeIter iter;
 	GtkTreeIter *piter;
-	gTreeRow *row,*par,*aft=NULL;
+	gTreeRow *row,*aft = NULL;
 	char *buf;
 
-	if (!key)  return NULL;
+	if (!key)
+		return NULL;
 	
 	if (g_hash_table_lookup (datakey,(gconstpointer)key)) return NULL;
 	
@@ -976,15 +950,7 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 		if (!aft) return NULL;	
 	}
 	
-	if (parent)
-	{
-		par = (gTreeRow*)g_hash_table_lookup (datakey,(gconstpointer)parent);
-		if (!par) 
-			return NULL;
-		piter = par->dataiter;
-	}
-	else
-		piter = NULL;
+	piter = NULL;
 	
 	//fprintf(stderr, "[0]: %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
 	
@@ -1003,22 +969,17 @@ gTreeRow* gTree::addRow(char *key, char *parent, char *after, bool before)
 	row = new gTreeRow(this, buf, gtk_tree_iter_copy(&iter));
 	
 	g_hash_table_insert(datakey, (gpointer)buf, (gpointer)row);
-	gtk_tree_store_set(store, &iter, view ? 0 : 1, buf, -1);
+	gtk_tree_store_set(store, &iter, 1, buf, -1);
 	
 	//fprintf(stderr, "[0]: -> %d %d\n", columnResizable(0), gtk_tree_view_column_get_sizing(gt_tree_view_find_column(GTK_TREE_VIEW(widget), 0)));
 
-	if (parent)
-	{
-		getRow(parent)->setExpanded();
-		showExpanders();
-	}
-	
 	return row;
 }
 
+#if 0
 static void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
 {
-	gTreeRow *row=NULL;
+	gTreeRow *row = NULL;
 	gTreeCell *data;
 	const char *buf = "";
 	char *key;
@@ -1027,7 +988,7 @@ static void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeM
 
 	key = Tr->iterToKey(iter);
 	if (key)
-		row=(gTreeRow*)g_hash_table_lookup(Tr->datakey,(gpointer)key);
+		row=  (gTreeRow*)g_hash_table_lookup(Tr->datakey, (gpointer)key);
 	
 	if (row)
 	{
@@ -1044,7 +1005,7 @@ static void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeM
 
 	g_object_set(G_OBJECT(cell),
 		"text", buf,
-		"editable", index == 0 && row->isEditable(),
+		"editable", false,
 		"xalign", align,
 		(void *)NULL);
 }
@@ -1072,6 +1033,7 @@ static void tree_cell_graph(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTree
 	g_object_set(G_OBJECT(cell),"pixbuf",buf,(void *)NULL);
 
 }
+#endif
 
 static void gTree_addColumn(char *key,gTreeRow *value,gpointer data)
 {
@@ -1080,26 +1042,7 @@ static void gTree_addColumn(char *key,gTreeRow *value,gpointer data)
 
 void gTree::addColumn()
 {
-	GtkTreeViewColumn *column;
-	
 	g_hash_table_foreach(datakey,(GHFunc)gTree_addColumn,NULL);
-	
-	if (view)
-	{
-		column = gtk_tree_view_column_new();
-		
-		gtk_tree_view_column_pack_start(column,rgraph,false);
-		gtk_tree_view_column_pack_start(column,rtext,true);
-		gtk_tree_view_column_set_cell_data_func(column,rgraph,(GtkTreeCellDataFunc)tree_cell_graph,(gpointer)this,NULL);
-		gtk_tree_view_column_set_cell_data_func(column,rtext,(GtkTreeCellDataFunc)tree_cell_text,(gpointer)this,NULL);
-		
-		gtk_tree_view_column_set_sizing(column, isAutoResize() ? GTK_TREE_VIEW_COLUMN_AUTOSIZE : GTK_TREE_VIEW_COLUMN_FIXED);
-		gtk_tree_view_column_set_resizable(column, isResizable());
-			
-		gtk_tree_view_append_column(GTK_TREE_VIEW(widget),column);
-		g_signal_connect(G_OBJECT(column), "clicked", G_CALLBACK(cb_column_clicked), (gpointer)this);	
-		updateSort();
-	}
 }
 
 static void gTree_removeColumn(char *key,gTreeRow *value,gpointer data)
@@ -1109,37 +1052,19 @@ static void gTree_removeColumn(char *key,gTreeRow *value,gpointer data)
 
 void gTree::removeColumn()
 {
-	GtkTreeViewColumn *column;
 	int vl;
 	
-	if (!(vl=columnCount()) ) return;
+	if (!(vl = columnCount()) )
+		return;
 	g_hash_table_foreach(datakey,(GHFunc)gTree_removeColumn,NULL);
-	
-	if (view)
-	{
-		//column=gtk_tree_view_get_column(GTK_TREE_VIEW(widget),vl-1);
-		column = gt_tree_view_find_column(GTK_TREE_VIEW(widget), vl-1);
-		gtk_tree_view_remove_column(GTK_TREE_VIEW(widget),column);
-		updateSort();
-	}
 }
 
 int gTree::columnCount()
 {
-	GList *cols;
-	int ret;
-	
-	if (!view) return 1;
-	
-	if (!widget) return 0;
-	cols=gtk_tree_view_get_columns(GTK_TREE_VIEW(widget));
-	if (!cols) return 0;
-	ret=g_list_length(cols) - HIDDEN_COL;
-	g_list_free(cols);
-	return ret;
+	return 1;
 }
 
-
+#if 0
 char* gTree::columnName(int ind)
 {
 	GtkTreeViewColumn *col=gt_tree_view_find_column(GTK_TREE_VIEW(widget),ind);
@@ -1240,7 +1165,9 @@ void gTree::setColumnWidth(int ind, int w)
 	
 	setColumnResizable(ind, isResizable());
 }
+#endif
 
+#if 0
 bool gTree::headers()
 {
 	if (!widget) return false;
@@ -1262,6 +1189,7 @@ void gTree::setResizable(bool vl)
 		
 	_resizable = vl;
 }
+#endif
 
 void gTree::setAutoResize(bool vl)
 {
@@ -1342,31 +1270,6 @@ void gTree::sort()
 
 void gTree::updateSort()
 {
-	int i;
-	bool s;
-	
-	if (view)
-	{
-		if (_sort_column >= columnCount())
-			_sort_column = 0;
-		
-		for (i = 0; i < columnCount(); i++)
-		{
-			GtkTreeViewColumn *col = gt_tree_view_find_column(GTK_TREE_VIEW(widget), i);
-			if (!_sorted)
-			{
-				gtk_tree_view_column_set_sort_indicator(col, false);
-				gtk_tree_view_column_set_clickable(col, false);
-				continue;
-			}
-			gtk_tree_view_column_set_clickable(col, true);		
-			s = i == _sort_column;
-			gtk_tree_view_column_set_sort_indicator(col, s);
-			if (s)
-				gtk_tree_view_column_set_sort_order(col, _ascending ? GTK_SORT_ASCENDING : GTK_SORT_DESCENDING);
-		}	
-	}
-	
 	sortLater();
 }
 

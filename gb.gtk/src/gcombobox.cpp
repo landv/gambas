@@ -243,10 +243,10 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	
 	g_typ = Type_gComboBox;
 	
-	tree = new gTree(NULL);
+	tree = new gTree();
 	tree->addColumn();
 	//tree->addColumn();
-	tree->setHeaders(false);
+	//tree->setHeaders(false);
 	
 	create(false);
 }
@@ -467,7 +467,7 @@ void gComboBox::add(const char *text, int pos)
 
 	//g_signal_lookup("rowGTK_TYPE_COMBO_BOX);
 
-	row = tree->addRow(key, NULL, after, true);
+	row = tree->addRow(key, after, true);
 	if (row) 
 	{
 		cell = row->get(0);
