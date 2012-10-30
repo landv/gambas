@@ -737,7 +737,7 @@ Public Sub _EnsureVisible(hItem As _TreeView_Item, Optional bChild As Boolean)
   iRow = _ItemToRow(hItem)
   
   If bChild And If hItem._Rows > 1 Then 
-    iRow = Min(iRow + $hView.RowAt($hView.ClientH) - $hView.RowAt(0), iRow + hItem._Rows - 1)
+    iRow = Min(iRow + $hView.RowAt($hView.ClientH) - $hView.RowAt(0) - 2, iRow + hItem._Rows - 1)
   Endif
   
   If iRow >= 0 Then $hView[iRow, 0].EnsureVisible
@@ -1252,7 +1252,7 @@ Public Sub ScrollArea_Draw()
   If iRow < 0 Then Return
   
   Do
-   If iRow > $hView.RowAt($hView.ClientH) Then Break
+   If iRow > Max($hView.Rows.Max, $hView.RowAt($hView.ClientH)) Then Break
    hItem = RowToItem(iRow)
    $hView.Rows[iRow].H = _GetItemHeight(hItem)
    Inc iRow

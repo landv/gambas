@@ -1,7 +1,7 @@
 ' Gambas class file
 
-Static Private $hHandleH As Picture
-Static Private $hHandleV As Picture
+'Static Private $hHandleH As Picture
+'Static Private $hHandleV As Picture
 
 Private $iOrientation As Integer
 Private $iArrowType As Integer
@@ -29,12 +29,12 @@ Private $hShowPanel As Panel
 Private $hShowButtonLeft As DrawingArea
 Private $hShowButtonRight As DrawingArea
 
-Static Public Sub _init()
-  
-  $hHandleH = Picture["img/handle-h.png"]
-  $hHandleV = Picture["img/handle-v.png"]
-  
-End
+' Static Public Sub _init()
+'   
+'   $hHandleH = Picture["img/handle-h.png"]
+'   $hHandleV = Picture["img/handle-v.png"]
+'   
+' End
 
 
 Public Sub _new()

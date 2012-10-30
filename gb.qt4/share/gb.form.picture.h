@@ -140,6 +140,7 @@ static CPICTURE *get_picture(const char *path, int len)
 		return NULL;
 	
   snprintf(key, sizeof(key), "%s\n%.*s", GB.Component.Current(), len, path);
+	//fprintf(stderr, "get_picture: %s\n", key);
 
 	pict = GET_FROM_CACHE(key);
   if (!pict)

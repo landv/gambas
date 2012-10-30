@@ -2446,7 +2446,7 @@ void GEditor::blinkTimerTimeout()
 void GEditor::focusInEvent(QFocusEvent *e)
 {
 	startBlink();
-	ensureCursorVisible();
+	//ensureCursorVisible();
 	Q3ScrollView::focusInEvent(e);
 }
 

@@ -332,7 +332,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "IIf",               31,  0,  3,    },
 	{ "Choose",            32,  0,  1, 63 },
 
-	{ ".Array",            33,  0,  1, 63 },   /* Needed for Eval("[...]") */
+	{ ".Array",            33,  0,  0, 63 },   /* Needed for Eval("[...]") */
 
 	{ "ATan2",             34,  1,  2     },
 	{ "Atn2",              34,  1,  2     },

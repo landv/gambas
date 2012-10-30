@@ -232,40 +232,43 @@ static void analyze_make_array()
 	bool checked = FALSE;
 	bool collection = FALSE;
 
-	if (PATTERN_is(*current, RS_RSQR))
+	/*if (PATTERN_is(*current, RS_RSQR))
 	{
 		current++;
 		add_pattern(PATTERN_make(RT_RESERVED, RS_NULL));
 		return;
-	}
+	}*/
 
-	for(;;)
+	if (!PATTERN_is(*current, RS_RSQR))
 	{
-		n++;
-		if (n > MAX_PARAM_OP)
-			THROW("Too many arguments");
-		analyze_expr(0, RS_NONE);
-		
-		if (!checked)
+		for(;;)
 		{
-			collection = PATTERN_is(*current, RS_COLON);
-			checked = TRUE;
-		}
-		
-		if (collection)
-		{
-			if (!PATTERN_is(*current, RS_COLON))
-				THROW(E_MISSING, "':'");
-			current++;
 			n++;
 			if (n > MAX_PARAM_OP)
 				THROW("Too many arguments");
 			analyze_expr(0, RS_NONE);
+			
+			if (!checked)
+			{
+				collection = PATTERN_is(*current, RS_COLON);
+				checked = TRUE;
+			}
+			
+			if (collection)
+			{
+				if (!PATTERN_is(*current, RS_COLON))
+					THROW(E_MISSING, "':'");
+				current++;
+				n++;
+				if (n > MAX_PARAM_OP)
+					THROW("Too many arguments");
+				analyze_expr(0, RS_NONE);
+			}
+			
+			if (!PATTERN_is(*current, RS_COMMA))
+				break;
+			current++;
 		}
-		
-		if (!PATTERN_is(*current, RS_COMMA))
-			break;
-		current++;
 	}
 
 	if (!PATTERN_is(*current, RS_RSQR))

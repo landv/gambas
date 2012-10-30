@@ -4,7 +4,7 @@ Private $sType As String
 
 Static Private $iMagicNumber As Integer = 314159265
 
-Static Public Sub Get(sType As String) As Variant
+Static Public Sub __Get(sType As String) As Variant
   
   Dim vVal As Variant
   
@@ -61,10 +61,10 @@ Public Sub _get(...) As Variant
 
   Dim hSymbol As CSymbolInfo  
   
-  If $sType = "o" Or If $sType = "v" Then Return Get("v")
+  If $sType = "o" Or If $sType = "v" Then Return __Get("v")
   
   Try hSymbol = CComponent.GetClassSymbols($sType)["_get"]
-  If hSymbol Then Return Get(hSymbol.Type)
+  If hSymbol Then Return __Get(hSymbol.Type)
   
 End
 
@@ -86,7 +86,7 @@ Public Sub _unknown(...) As Variant
   Dim hSymbol As CSymbolInfo  
 
   Try hSymbol = CComponent.GetClassSymbols($sType)[Param.Name]
-  If hSymbol Then Return Get(hSymbol.Type)
+  If hSymbol Then Return __Get(hSymbol.Type)
   
 End
 

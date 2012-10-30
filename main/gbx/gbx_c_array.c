@@ -1419,22 +1419,25 @@ static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 	
 	_converted_array = array = OBJECT_create(class, NULL, NULL, 0);
 	
-	ARRAY_add_many_void(&array->data, src->count);
-	array->count = src->count;
-	
-	ON_ERROR(error_convert)
+	if (src->count)
 	{
-		for (i = 0; i < src->count; i++)
+		ARRAY_add_many_void(&array->data, src->count);
+		array->count = src->count;
+		
+		ON_ERROR(error_convert)
 		{
-			data = CARRAY_get_data(src, i);
-			VALUE_read(&temp, data, src->type);
-			BORROW(&temp);
-			data = CARRAY_get_data(array, i);
-			VALUE_write(&temp, data, array->type);
-			RELEASE(&temp);
+			for (i = 0; i < src->count; i++)
+			{
+				data = CARRAY_get_data(src, i);
+				VALUE_read(&temp, data, src->type);
+				BORROW(&temp);
+				data = CARRAY_get_data(array, i);
+				VALUE_write(&temp, data, array->type);
+				RELEASE(&temp);
+			}
 		}
+		END_ERROR
 	}
-	END_ERROR
 	
 	dim = get_dim(src);
 	if (dim > 1)

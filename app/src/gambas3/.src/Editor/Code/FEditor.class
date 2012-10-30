@@ -3493,7 +3493,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
       Inc N
       sExpr &= " __" & CStr(N)
-      cExpr["__" & CStr(N)] = CDatatype.Get(sType)
+      cExpr["__" & CStr(N)] = CDatatype.__Get(sType)
       
     Else
       If InStr(".!()[],;", aSym[I]) = 0 Then sExpr &= " "
