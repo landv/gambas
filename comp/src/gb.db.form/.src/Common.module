@@ -71,7 +71,12 @@ Public Function MakeNextWhere(aKey As String[], aVal As Variant[]) As String
       sOp = ">"
     Endif
     
-    sReq &= DB.Subst(sKey & " " & sOp & " &1 ", aVal[iInd])
+    If IsNull(aVal[iInd]) Then 
+      sReq &= DB.Subst(sKey & " IS NOT NULL")
+    Else
+      sReq &= DB.Subst(sKey & " " & sOp & " &1 ", aVal[iInd])
+    Endif
+    
     If sTest Then sReq &= ") "
     If sTest Then sTest &= " AND "
     sTest &= DB.Subst(sKey & " = &1", aVal[iInd])

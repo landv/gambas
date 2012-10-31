@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public LIMIT_INC As Integer = 64
+Public LIMIT_INC As Integer = 128
 
 Event CacheResize()
 
@@ -33,7 +33,7 @@ Public Sub _new(hConn As DataConnection, Table As String, Filter As String)
   
   $hConn = hConn
   $DB = hConn.Connection
-  $sTable = Table
+  $sTable = Trim(Table)
   $sFilter = Filter
   
   If $sTable Like "SELECT *" Then 
