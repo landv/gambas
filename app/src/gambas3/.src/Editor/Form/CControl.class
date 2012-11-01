@@ -206,6 +206,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hCtrl.Rows.Count = 4
       hCtrl.Grid = True
       hCtrl[0, 0].Text = sName
+      hCtrl.Columns[0].W = -1
       hCtrl.Rows.H = -1
 
     Case "menu"
@@ -868,6 +869,7 @@ Public Sub UpdateName()
       
     Case "GridView", "TableView"
       Control[0, 0].Text = Name
+      Control.Columns[0].W = -1
 
     Case "ListBox"
       Control[0].Text = Name

@@ -60,7 +60,13 @@ Public Function MakeNextWhere(aKey As String[], aVal As Variant[]) As String
   For iInd = 0 To aKey.Max
     If iInd Then sReq &= " OR "
     If sTest Then sReq &= "(" & sTest & " AND "
-    sReq &= DB.Subst(aKey[iInd] & " > &1 ", aVal[iInd])
+
+    If IsNull(aVal[iInd]) Then 
+      sReq &= DB.Subst(aKey[iInd] & " IS NOT NULL")
+    Else
+      sReq &= DB.Subst(aKey[iInd] & " > &1 ", aVal[iInd])
+    Endif
+
     If sTest Then sReq &= ") "
     If sTest Then sTest &= " AND "
     sTest &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])

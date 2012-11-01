@@ -592,7 +592,7 @@ BEGIN_METHOD(CCONNECTION_quote, GB_STRING name; GB_BOOLEAN is_table)
   CHECK_DB();
   CHECK_OPEN();
 
-	if (VARGOPT(is_table, FALSE) && THIS->db.flags.schema)
+	if (VARGOPT(is_table, FALSE)) // && THIS->db.flags.schema)
 		GB.ReturnNewZeroString(DB_GetQuotedTable(THIS->driver, &THIS->db, GB.ToZeroString(ARG(name))));
 	else
 	{

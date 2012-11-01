@@ -538,6 +538,7 @@ End
 
 Public Sub TextBox_GotFocus()
   
+  If Not $sMaskOrg Then Return
   TextBox_Change
   GotoCursor($iPosFocus)
   
@@ -545,6 +546,7 @@ End
 
 Public Sub TextBox_LostFocus()
   
+  If Not $sMaskOrg Then Return
   TextBox_Change
   GotoCursor($iPosFocus)
   
@@ -552,12 +554,14 @@ End
 
 Public Sub TextBox_Menu()
   
+  If Not $sMaskOrg Then Return
   Stop Event
   
 End
 
 Public Sub TextBox_Change()
   
+  If Not $sMaskOrg Then Return
   Object.Lock(Me)
   If Me.HasFocus Then
     If Me.Text = "" Then Me.Text = MakeDefault()

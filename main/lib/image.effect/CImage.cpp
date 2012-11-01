@@ -341,13 +341,27 @@ BEGIN_METHOD_VOID(Image_Histogram)
 	p = (unsigned int *)image.bits();
 	pm = &p[image.width() * image.height()];
 	
-	while (p < pm)
+	if (image.inverted())
 	{
-		histogram[qBlue(*p)]++;
-		histogram[qGreen(*p) + 256]++;
-		histogram[qRed(*p) + 256 * 2]++;
-		histogram[qAlpha(*p) + 256 * 3]++;
-		p++;
+		while (p < pm)
+		{
+			histogram[qRed(*p)]++;
+			histogram[qGreen(*p) + 256]++;
+			histogram[qBlue(*p) + 256 * 2]++;
+			histogram[qAlpha(*p) + 256 * 3]++;
+			p++;
+		}
+	}
+	else
+	{
+		while (p < pm)
+		{
+			histogram[qBlue(*p)]++;
+			histogram[qGreen(*p) + 256]++;
+			histogram[qRed(*p) + 256 * 2]++;
+			histogram[qAlpha(*p) + 256 * 3]++;
+			p++;
+		}
 	}
 	
 	hist->histogram = histogram;

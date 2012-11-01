@@ -192,7 +192,7 @@ Public Sub FillStack(aPos As String[]) As Boolean
 End
 
 
-Public Sub lvwStack_Select()
+Public Sub lvwStack_Click()
 
   Dim sLoc As String
   Dim iPos As Integer
@@ -599,7 +599,7 @@ Public Sub ReadConfig()
   Dim hButton As ToolButton
   Dim hCtrl As Control
 
-  Settings.Read(splDebug,, [4, 1])
+  Settings.Read(panStack)
   tabDebug.TextFont = Project.GetSmallFont()
   
   Project.SetSmallFont(tbvLocal)
@@ -809,13 +809,15 @@ Public Sub UpdateView()
   tabDebug[TAB_WATCH].Visible = Project.Running
   tabDebug[TAB_BREAK].Visible = True 'Project.Running
   
-  If tabStack.Visible <> Project.Running Then
+  If panStack.Visible <> Project.Running Then
     If Project.Running Then
-      tabStack.Visible = True
-      Settings.Read(splDebug,, [4, 1])
+      panStack.Visible = True
+      Settings.Read(panStack)
+      'Settings.Read(splDebug,, [4, 1])
     Else 
-      Settings.Write(splDebug)
-      tabStack.Visible = False
+      Settings.Write(panStack)
+      'Settings.Write(splDebug)
+      panStack.Visible = False
     Endif
   Endif 
         

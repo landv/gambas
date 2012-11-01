@@ -57,6 +57,13 @@ static void delete_later(gMenu *menu)
 
 static void delete_menu(gMenu *menu)
 {
+	void *_object = menu->hFree;
+	
+	if (!MENU)
+		return;
+	
+	THIS->widget = NULL;
+	
 	GB.Post((GB_CALLBACK)delete_later, (intptr_t)menu);
 }
 
@@ -116,7 +123,7 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			return;
 		}
 
-		THIS->widget = new gMenu( (gMainWindow*)((CWINDOW*)parent)->ob.widget,hidden);
+		THIS->widget = new gMenu((gMainWindow*)((CWINDOW*)parent)->ob.widget, hidden);
 		goto __OK;
 	}
 	
@@ -128,8 +135,8 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			return;
 		}
 		
-		THIS->widget = new gMenu( (gMenu*)((CMENU*)parent)->widget,hidden);
-		MENU->onClick=cb_click;
+		THIS->widget = new gMenu((gMenu*)((CMENU*)parent)->widget, hidden);
+		MENU->onClick = cb_click;
 		goto __OK;
 	}
 	
@@ -139,9 +146,9 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 __OK:
 
 	MENU->hFree = (void*)THIS;
-	MENU->onFinish=cb_finish;
-	MENU->onShow=cb_show;
-	MENU->onHide=cb_hide;
+	MENU->onFinish = cb_finish;
+	MENU->onShow = cb_show;
+	MENU->onHide = cb_hide;
 
 	name = GB.GetLastEventName();
 	if (!name)
@@ -309,14 +316,13 @@ END_METHOD
 BEGIN_METHOD_VOID(CMENU_clear)
 
 	gMenu *mn;
-
-	int bucle,max;
+	int i, max;
 	
-	max=MENU->childCount();
+	max = MENU->childCount();
 	
-	for (bucle=0;bucle<max;bucle++)
+	for (i = 0; i < max; i++)
 	{
-		mn = MENU->childMenu(bucle);
+		mn = MENU->childMenu(i);
 		delete_menu(mn);
 	}
 

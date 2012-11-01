@@ -448,8 +448,8 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   
 Catch
 
-  $hCtrl.Data.Background = Color.HSV(360, 128, 128)
-  $hCtrl.Data.Text = "#ERROR# " & Error.Where & ": " & Error.Text
+  $hCtrl.Data.Background = Color.HSV(360, 128, 255)
+  $hCtrl.Data.Text = Error.Where & ": " & Error.Text
   
 End
 

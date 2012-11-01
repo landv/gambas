@@ -4,236 +4,241 @@
   MoveScaled(0,2,118,47)
   Text = ("Debug")
   Persistent = True
-  Arrangement = Arrange.Fill
-  { splDebug HSplit
-    MoveScaled(1,1,116,45)
-    { tabDebug TabPanel
-      MoveScaled(2,2,89,41)
+  Arrangement = Arrange.Horizontal
+  { tabDebug TabPanel
+    MoveScaled(3,3,89,41)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Border = False
+    Count = 8
+    Index = 0
+    Text = ("Console")
+    Picture = Picture["icon:/small/terminal"]
+    { panConsole Panel
+      MoveScaled(5,4,24,24)
       Expand = True
-      Arrangement = Arrange.Vertical
-      Border = False
-      Count = 8
-      Index = 0
-      Text = ("Console")
-      Picture = Picture["icon:/small/terminal"]
-      { panConsole Panel
-        MoveScaled(5,4,24,24)
-        Expand = True
-        Arrangement = Arrange.Fill
-      }
-      Index = 1
-      Text = ("Local variables")
-      Picture = Picture["img/16/local.png"]
-      { Separator4 Separator
-        MoveScaled(7,7,24,0)
-        Visible = False
-      }
-      { tbvLocal TableView
-        MoveScaled(3,12,63,18)
-        Expand = True
-        Mode = Select.Single
-        Grid = False
-        Header = GridView.Horizontal
-        Border = False
-        NoKeyboard = True
-      }
-      Index = 2
-      Text = ("Current object")
-      Picture = Picture["img/16/current.png"]
-      { Separator2 Separator
-        MoveScaled(26,7,27,0)
-        Visible = False
-      }
-      { tbvObject TableView
-        MoveScaled(3,12,69,20)
-        Expand = True
-        Mode = Select.Single
-        Grid = False
-        Header = GridView.Horizontal
-        Border = False
-        NoKeyboard = True
-      }
-      Index = 3
-      Text = ("Watch")
-      Picture = Picture["icon:/small/watch"]
-      { panWatch HBox
-        MoveScaled(1,1,84,4)
-        { cmbWatch ComboBox
-          MoveScaled(0,0,27,4)
-          Expand = True
-        }
-        { btnWatch ToolButton
-          MoveScaled(27,0,7,4)
-          ToolTip = ("Add expression")
-          AutoResize = True
-          Text = ("&Add")
-          Picture = Picture["icon:/small/add"]
-        }
-        { btnKillWatch ToolButton
-          MoveScaled(34,0,10,4)
-          ToolTip = ("Remove current expression")
-          AutoResize = True
-          Text = ("&Remove")
-          Picture = Picture["icon:/small/remove"]
-        }
-        { btnKillAllWatch ToolButton
-          MoveScaled(44,0,12,4)
-          ToolTip = ("Remove all expressions")
-          AutoResize = True
-          Text = ("Remove all")
-          Picture = Picture["icon:/small/trash"]
-        }
-        { btnShow ToolButton
-          MoveScaled(57,0,12,4)
-          ToolTip = ("Display ME")
-          AutoResize = True
-          Text = ("Display")
-          Picture = Picture["icon:/small/watch"]
-        }
-        { btnShowMe ToolButton
-          MoveScaled(70,0,12,4)
-          ToolTip = ("Display ME")
-          AutoResize = True
-          Text = ("Display ME")
-          Picture = Picture["img/16/current.png"]
-        }
-      }
-      { Separator3 Separator
-        MoveScaled(40,7,5,0)
-      }
-      { cvwWatch ColumnView
-        MoveScaled(2,9,40,22)
-        Expand = True
-        Border = False
-        ScrollBar = Scroll.Vertical
-      }
-      Index = 4
-      Text = ("Breakpoints")
-      Picture = Picture["icon:/small/flag"]
-      { panBreakpoint HBox
-        MoveScaled(0,0,55,4)
-        { btnRemoveBreak ToolButton
-          MoveScaled(0,0,27,4)
-          ToolTip = ("Remove current breakpoint")
-          AutoResize = True
-          Text = ("Remove current breakpoint")
-          Picture = Picture["icon:/small/cancel"]
-        }
-        { btnClearBreak ToolButton
-          MoveScaled(27,0,13,4)
-          ToolTip = ("Remove all breakpoints")
-          AutoResize = True
-          Text = ("Remove all")
-          Picture = Picture["icon:/small/trash"]
-        }
-      }
-      { Separator1 Separator
-        MoveScaled(34,5,8,0)
-      }
-      { cvwBreak ColumnView
-        MoveScaled(1,6,38,25)
-        Expand = True
-        Sorted = True
-        Border = False
-      }
-      { timBreakpoint #Timer
-        #MoveScaled(74,8)
-        Delay = 250
-      }
-      Index = 5
-      Text = ("")
-      Picture = Picture["icon:/small/make"]
-      { gvwCompilation GridView
-        MoveScaled(28,9,41,23)
-        Expand = True
-        Mode = Select.Single
-        Header = GridView.Horizontal
-        Border = False
-      }
-      Index = 6
-      Text = ("Tasks")
-      Picture = Picture["icon:/small/ok"]
-      { gvwTask GridView
-        MoveScaled(18,8,52,22)
-        Expand = True
-        Mode = Select.Single
-        Header = GridView.Horizontal
-        Border = False
-      }
-      { timTask #Timer
-        #MoveScaled(73,17)
-      }
-      Index = 7
-      Text = ("Search list")
-      Picture = Picture["icon:/small/find"]
-      { panSearch HBox
-        MoveScaled(1,0,83,4)
-        { btnCancelSearch ToolButton
-          MoveScaled(0,0,10,4)
-          Visible = False
-          ToolTip = ("Cancel current search")
-          AutoResize = True
-          Text = ("Cancel")
-          Picture = Picture["icon:/small/halt"]
-        }
-        { btnClearSearch ToolButton
-          MoveScaled(11,0,10,4)
-          AutoResize = True
-          Text = ("Close")
-          Picture = Picture["icon:/small/close"]
-        }
-        { btnRefreshSearch ToolButton
-          MoveScaled(22,0,18,4)
-          AutoResize = True
-          Text = ("Search again")
-          Picture = Picture["icon:/small/refresh"]
-        }
-        { btnShowSearch ToolButton
-          MoveScaled(41,0,19,4)
-          AutoResize = True
-          Text = ("Show search window")
-          Picture = Picture["icon:/small/find"]
-        }
-        { Panel1 Panel
-          MoveScaled(62,0,2,4)
-          Expand = True
-        }
-        { lblBrowse Label
-          MoveScaled(68,0,11,4)
-          Font = Font["Italic"]
-          Padding = 4
-          AutoResize = True
-        }
-      }
-      { Separator5 Separator
-        MoveScaled(35,5,8,0)
-      }
-      { panBrowse Panel
-        MoveScaled(1,9,79,22)
-        Expand = True
-        Arrangement = Arrange.Fill
-        { gvwFind GridView
-          MoveScaled(23,4,47,16)
-          Visible = False
-          Mode = Select.Single
-          Header = GridView.Horizontal
-          ScrollBar = Scroll.Vertical
-          Border = False
-          Resizable = False
-        }
-        { lblNotFound TextLabel
-          MoveScaled(1,1,26,12)
-          Visible = False
-          Font = Font["Bold,+2"]
-          Padding = 8
-          Text = ("Search string cannot be found.")
-        }
-      }
-      Index = 0
-    }
-    { tabStack TabPanel
-      MoveScaled(93,2,21,42)
       Arrangement = Arrange.Fill
+    }
+    Index = 1
+    Text = ("Local variables")
+    Picture = Picture["img/16/local.png"]
+    { Separator4 Separator
+      MoveScaled(7,7,24,0)
+      Visible = False
+    }
+    { tbvLocal TableView
+      MoveScaled(3,12,63,18)
+      Expand = True
+      Mode = Select.Single
+      Grid = False
+      Header = GridView.Horizontal
+      Border = False
+      NoKeyboard = True
+    }
+    Index = 2
+    Text = ("Current object")
+    Picture = Picture["img/16/current.png"]
+    { Separator2 Separator
+      MoveScaled(26,7,27,0)
+      Visible = False
+    }
+    { tbvObject TableView
+      MoveScaled(3,12,69,20)
+      Expand = True
+      Mode = Select.Single
+      Grid = False
+      Header = GridView.Horizontal
+      Border = False
+      NoKeyboard = True
+    }
+    Index = 3
+    Text = ("Watch")
+    Picture = Picture["icon:/small/watch"]
+    { panWatch HBox
+      MoveScaled(1,1,84,4)
+      { cmbWatch ComboBox
+        MoveScaled(0,0,27,4)
+        Expand = True
+      }
+      { btnWatch ToolButton
+        MoveScaled(27,0,7,4)
+        ToolTip = ("Add expression")
+        AutoResize = True
+        Text = ("&Add")
+        Picture = Picture["icon:/small/add"]
+      }
+      { btnKillWatch ToolButton
+        MoveScaled(34,0,10,4)
+        ToolTip = ("Remove current expression")
+        AutoResize = True
+        Text = ("&Remove")
+        Picture = Picture["icon:/small/remove"]
+      }
+      { btnKillAllWatch ToolButton
+        MoveScaled(44,0,12,4)
+        ToolTip = ("Remove all expressions")
+        AutoResize = True
+        Text = ("Remove all")
+        Picture = Picture["icon:/small/trash"]
+      }
+      { btnShow ToolButton
+        MoveScaled(57,0,12,4)
+        ToolTip = ("Display ME")
+        AutoResize = True
+        Text = ("Display")
+        Picture = Picture["icon:/small/watch"]
+      }
+      { btnShowMe ToolButton
+        MoveScaled(70,0,12,4)
+        ToolTip = ("Display ME")
+        AutoResize = True
+        Text = ("Display ME")
+        Picture = Picture["img/16/current.png"]
+      }
+    }
+    { Separator3 Separator
+      MoveScaled(40,7,5,0)
+    }
+    { cvwWatch ColumnView
+      MoveScaled(2,9,40,22)
+      Expand = True
+      Border = False
+      ScrollBar = Scroll.Vertical
+    }
+    Index = 4
+    Text = ("Breakpoints")
+    Picture = Picture["icon:/small/flag"]
+    { panBreakpoint HBox
+      MoveScaled(0,0,55,4)
+      { btnRemoveBreak ToolButton
+        MoveScaled(0,0,27,4)
+        ToolTip = ("Remove current breakpoint")
+        AutoResize = True
+        Text = ("Remove current breakpoint")
+        Picture = Picture["icon:/small/cancel"]
+      }
+      { btnClearBreak ToolButton
+        MoveScaled(27,0,13,4)
+        ToolTip = ("Remove all breakpoints")
+        AutoResize = True
+        Text = ("Remove all")
+        Picture = Picture["icon:/small/trash"]
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(34,5,8,0)
+    }
+    { cvwBreak ColumnView
+      MoveScaled(1,6,38,25)
+      Expand = True
+      Sorted = True
+      Border = False
+    }
+    { timBreakpoint #Timer
+      #MoveScaled(74,8)
+      Delay = 250
+    }
+    Index = 5
+    Text = ("")
+    Picture = Picture["icon:/small/make"]
+    { gvwCompilation GridView
+      MoveScaled(28,9,41,23)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+      Border = False
+    }
+    Index = 6
+    Text = ("Tasks")
+    Picture = Picture["icon:/small/ok"]
+    { gvwTask GridView
+      MoveScaled(18,8,52,22)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+      Border = False
+    }
+    { timTask #Timer
+      #MoveScaled(73,17)
+    }
+    Index = 7
+    Text = ("Search list")
+    Picture = Picture["icon:/small/find"]
+    { panSearch HBox
+      MoveScaled(1,0,83,4)
+      { btnCancelSearch ToolButton
+        MoveScaled(0,0,10,4)
+        Visible = False
+        ToolTip = ("Cancel current search")
+        AutoResize = True
+        Text = ("Cancel")
+        Picture = Picture["icon:/small/halt"]
+      }
+      { btnClearSearch ToolButton
+        MoveScaled(11,0,10,4)
+        AutoResize = True
+        Text = ("Close")
+        Picture = Picture["icon:/small/close"]
+      }
+      { btnRefreshSearch ToolButton
+        MoveScaled(22,0,18,4)
+        AutoResize = True
+        Text = ("Search again")
+        Picture = Picture["icon:/small/refresh"]
+      }
+      { btnShowSearch ToolButton
+        MoveScaled(41,0,19,4)
+        AutoResize = True
+        Text = ("Show search window")
+        Picture = Picture["icon:/small/find"]
+      }
+      { Panel1 Panel
+        MoveScaled(62,0,2,4)
+        Expand = True
+      }
+      { lblBrowse Label
+        MoveScaled(68,0,11,4)
+        Font = Font["Italic"]
+        Padding = 4
+        AutoResize = True
+      }
+    }
+    { Separator5 Separator
+      MoveScaled(35,5,8,0)
+    }
+    { panBrowse Panel
+      MoveScaled(1,9,79,22)
+      Expand = True
+      Arrangement = Arrange.Fill
+      { gvwFind GridView
+        MoveScaled(23,4,47,16)
+        Visible = False
+        Mode = Select.Single
+        Header = GridView.Horizontal
+        ScrollBar = Scroll.Vertical
+        Border = False
+        Resizable = False
+      }
+      { lblNotFound TextLabel
+        MoveScaled(1,1,26,12)
+        Visible = False
+        Font = Font["Bold,+2"]
+        Padding = 8
+        Text = ("Search string cannot be found.")
+      }
+    }
+    Index = 0
+  }
+  { panStack SidePanel
+    MoveScaled(93,3,24,43)
+    Arrangement = Arrange.Fill
+    Orientation = Align.Right
+    Separator = True
+    Transparent = True
+    { tabStack TabPanel
+      MoveScaled(0,0,21,41)
+      Arrangement = Arrange.Fill
+      Border = False
       Index = 0
       Text = ("Stack backtrace")
       Picture = Picture["img/16/stack.png"]

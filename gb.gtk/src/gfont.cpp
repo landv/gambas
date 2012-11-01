@@ -70,7 +70,7 @@ static void set_font_from_string(gFont *font, const char *str)
 		else
 		{
 			size = atof(elt);
-			if (size != 0.0)
+			if (isdigit(*elt) && size != 0.0)
 				font->setSize(size);
 			else
 			{

@@ -2032,7 +2032,7 @@ End
 Private Sub CheckCompletion(sMode As String)
 
   'DIM sMode AS String
-  Dim sLine As String
+  Dim sLine As String 
   Dim sType As String
   Dim aSymbols As String[]
   Dim aTypes As Integer[]
@@ -3450,13 +3450,17 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
     Else If aType[I] = Highlight.Symbol Then
       
-      If I < aSym.Max And If aSym[I + 1] = "." Then
-        sType = GetSymbolType(aSym[I], True)
-      Else
-        sType = GetSymbolType(aSym[I])
-        If $hSymbol And If $hSymbol.IsFunction() And If I < aSym.Max And If aSym[I + 1] = "(" Then
-          I = FindNextBracket(aSym, I, "(", ")")
+      If I = 0 Or If aSym[I - 1] <> "." Then
+      
+        If I < aSym.Max And If aSym[I + 1] = "." Then
+          sType = GetSymbolType(aSym[I], True)
+        Else
+          sType = GetSymbolType(aSym[I])
+          If $hSymbol And If $hSymbol.IsFunction() And If I < aSym.Max And If aSym[I + 1] = "(" Then
+            I = FindNextBracket(aSym, I, "(", ")")
+          Endif
         Endif
+        
       Endif
       'If $bLastStatic Then sType = ""
       
@@ -3487,7 +3491,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
       Inc N
       sExpr &= " __" & CStr(N)
-      cExpr["__" & CStr(N)] = CDatatype.Get(sType)
+      cExpr["__" & CStr(N)] = CDatatype.__Get(sType)
       
     Else
       If InStr(".!()[],;", aSym[I]) = 0 Then sExpr &= " "

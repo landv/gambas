@@ -36,8 +36,6 @@ void QImage::getInfo()
 {
 	bpl = 4 * img->width;
 	inv = GB_IMAGE_FMT_IS_SWAPPED(img->format);
-	if (inv)
-		fprintf(stderr, "ARGB\n");
 	jumpTable();
 }
 

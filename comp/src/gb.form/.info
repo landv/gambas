@@ -120,10 +120,6 @@ Background_GotFocus
 m
 
 
-Observer_GotFocus
-m
-
-
 Clear
 m
 
@@ -1301,6 +1297,10 @@ _GetCellData
 m
 _GridView_Data
 (iRow)i(iColumn)i[(bCreate)b]
+ScrollArea_Arrange
+m
+
+
 _ResizeContents
 m
 
@@ -1412,10 +1412,6 @@ i
 _GetVisibleWidth
 m
 i
-
-ScrollArea_Arrange
-m
-
 
 _RemoveRows
 m
@@ -3253,10 +3249,10 @@ _GetSel
 m
 GridViewSelection
 
-UnSelectAll
+Remove
 m
 
-
+(Start)i[(Length)i]
 _get
 m
 _GridView_Row
@@ -3277,10 +3273,6 @@ _ResetRowHeight
 m
 
 (iRow)i
-Remove
-m
-
-(Start)i[(Length)i]
 _SetRowHeight
 m
 
@@ -3310,6 +3302,10 @@ m
 
 [(Start)i(Length)i]
 SelectAll
+m
+
+
+UnSelectAll
 m
 
 

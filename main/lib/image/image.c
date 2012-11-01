@@ -1306,16 +1306,18 @@ void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left)
 
 	if (GB_IMAGE_FMT_IS_24_BITS(src->format))
 	{
+		uint24 *pd = (uint24 *)dst->data;
+		
 		if (left)
 		{
+			
 			for (y = 0; y < h; y++)
 			{
-				uint24 *pd = (uint24 *)(dst->data + y * w * 3);
 				uint24 *ps = (uint24 *)(src->data + (h - 1 - y) * 3);
 				
 				for (x = 0; x < w; x++)
 				{
-					pd[x] = *ps;
+					*pd++ = *ps;
 					ps += h;
 				}
 			}
@@ -1324,12 +1326,11 @@ void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left)
 		{
 			for (y = 0; y < h; y++)
 			{
-				uint *pd = (uint *)(dst->data + y * w * 3);
-				uint *ps = (uint *)(src->data + (w * (h - 1) + y) * 3);
+				uint24 *ps = (uint24 *)(src->data + ((w - 1) * h + y) * 3);
 				
 				for (x = 0; x < w; x++)
 				{
-					pd[x] = *ps;
+					*pd++ = *ps;
 					ps -= h;
 				}
 			}
@@ -1337,16 +1338,17 @@ void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left)
 	}
 	else 
 	{
+		uint *pd = (uint *)dst->data;
+		
 		if (left)
 		{
 			for (y = 0; y < h; y++)
 			{
-				uint *pd = (uint *)(dst->data + y * w * 4);
 				uint *ps = (uint *)(src->data + (h - 1 - y) * 4);
 				
 				for (x = 0; x < w; x++)
 				{
-					pd[x] = *ps;
+					*pd++ = *ps;
 					ps += h;
 				}
 			}
@@ -1355,12 +1357,11 @@ void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left)
 		{
 			for (y = 0; y < h; y++)
 			{
-				uint *pd = (uint *)(dst->data + y * w * 4);
-				uint *ps = (uint *)(src->data + (w * (h - 1) + y) * 4);
+				uint *ps = (uint *)(src->data + ((w - 1) * h + y) * 4);
 				
 				for (x = 0; x < w; x++)
 				{
-					pd[x] = *ps;
+					*pd++ = *ps;
 					ps -= h;
 				}
 			}

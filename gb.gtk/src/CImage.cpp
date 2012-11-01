@@ -161,6 +161,7 @@ BEGIN_METHOD(Image_Load, GB_STRING path)
 
 	if (!GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
 	{
+		//fprintf(stderr, "Image_Load: %.*s\n", LENGTH(path), STRING(path));
 		gPicture *pic = gPicture::fromMemory(addr, len);
 		GB.ReleaseFile(addr, len);
 		

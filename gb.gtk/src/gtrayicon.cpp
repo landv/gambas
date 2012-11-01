@@ -267,15 +267,14 @@ gPicture *gTrayIcon::_default_icon = NULL;
 gTrayIcon::gTrayIcon()
 {
 	plug = NULL;
-	//icon = NULL;
 	buftext = NULL;
 	_icon = NULL;
 	_style = NULL;
 	_loopLevel = 0;
 
-	//onHide=false;
 	onMousePress=NULL;
 	onMouseRelease=NULL;
+	onMouseWheel = NULL;
 	onMenu=NULL;
 	onFocusEnter=NULL;
 	onFocusLeave=NULL;

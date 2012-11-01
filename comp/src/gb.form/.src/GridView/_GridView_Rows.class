@@ -52,17 +52,22 @@ Private Function Count_Read() As Integer
 End
 
 Private Sub Count_Write(Value As Integer)
+
+  Dim iRow As Integer
   
   If Value = $nRows Then Return
   
   $nRows = Value
-  With GetView()
-    ._ResizeContents()
-    ._CheckCurrent()
-    $hSel.UnSelectAll
-    .Refresh
-  End With
   
+  If $aHeight Then
+    While $aHeight.Count
+      If $aHeight[$aHeight.Max] < $nRows Then Break
+      iRow = $aHeight[$aHeight.Max]
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Max)
+    Wend
+  Endif
+
 End
 
 Public Sub _get(Row As Integer) As _GridView_Row

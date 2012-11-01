@@ -108,15 +108,13 @@ End
 
 Public Sub gvwProc_MouseMove()
   
-  SetCurrent(gvwProc.RowAt(Mouse.ScreenY - gvwProc.ScreenY))
+  SetCurrent(gvwProc.RowAt(Mouse.Y))
   
 End
 
-Public Sub gvwProc_Scroll()
+Public Sub gvwProc_MouseWheel()
   
-  If gvwProc.Hovered Then
-    gvwProc_MouseMove
-  Endif
+  gvwProc_MouseMove
   
 End
 
