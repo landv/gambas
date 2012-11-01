@@ -47,6 +47,7 @@ public:
 	virtual void updateBorder();
 
 //"Private"
+	virtual gColor getFrameColor();
 	void redraw();
 	void adjust();
   gPicture *_picture;

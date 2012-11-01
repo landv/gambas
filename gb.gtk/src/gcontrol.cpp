@@ -1187,6 +1187,11 @@ GList* gControl::controlList()
 	return controls; 
 }
 
+gColor gControl::getFrameColor()
+{
+	return gDesktop::lightfgColor();
+}
+
 void gControl::drawBorder(GdkEventExpose *e)
 {
 	GdkDrawable *win;
@@ -1234,7 +1239,7 @@ void gControl::drawBorder(GdkEventExpose *e)
 			GdkGC *gc;
 			GdkGCValues values;
 
-			fill_gdk_color(&values.foreground, gDesktop::lightfgColor(), gdk_drawable_get_colormap(win));
+			fill_gdk_color(&values.foreground, getFrameColor(), gdk_drawable_get_colormap(win));
 			gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
 			
 			//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 

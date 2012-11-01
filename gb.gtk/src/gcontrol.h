@@ -251,6 +251,7 @@ public:
 	int getFramePadding() const { return frame_padding; }
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();
+	virtual gColor getFrameColor();
 	void drawBorder(GdkEventExpose *e);
 	void drawBackground(GdkEventExpose *e);
 	

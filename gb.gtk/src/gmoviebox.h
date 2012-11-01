@@ -43,6 +43,7 @@ public:
 	bool loadMovie(char *buf, int len);
 
 //"Private"
+	virtual gColor getFrameColor();
 	bool pl;
 	guint timeout;
 	GdkPixbufAnimation *animation;

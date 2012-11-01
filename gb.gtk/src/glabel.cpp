@@ -330,3 +330,8 @@ void gLabel::setWrap(bool v)
 	_wrap = v;
 	updateSize(true);
 }
+
+gColor gLabel::getFrameColor()
+{
+	return realForeground();
+}
