@@ -21,7 +21,7 @@ Public Magic As New String[]                        ''Magic strings for binary t
 Public GenericIcon As String                        ''Generic icons in case no other was found
 Public IsSuffix As Boolean                          ''Return true if the pattern is a suffix
 
-Public Function _Compare(Other As DesktopMime) As Integer
+Public Function _compare(Other As DesktopMime) As Integer
   
   Return Comp(Pattern, Other.Pattern, gb.IgnoreCase)
   
@@ -250,13 +250,13 @@ End
 ' 
 ''Return The Mime info of a file
 
-Static Public Function FromFile(sFile As String) As DesktopMime
+Static Public Function FromFile(Path As String) As DesktopMime
   
   Dim aMInfo As DesktopMime[]
-  Dim sFileName As String = File.Name(sFile)
+  Dim sFileName As String = File.Name(Path)
   'Dim hMInfo As DesktopMime
   
-  If Exist(sFile) Then
+  If Exist(Path) Then
     If $aMimesSuffix.Count = 0 Then LoadMimeDatabase
     
     aMInfo = FindByExt(LCase(sFileName))
@@ -274,7 +274,7 @@ Static Public Function FromFile(sFile As String) As DesktopMime
     Endif
     
     ' For Each hMInfo In aMInfo
-    '   TestMagic(sFile, hMInfo)
+    '   TestMagic(Path, hMInfo)
     ' Next
     
     If aMInfo.Count > 0 Then Return aMInfo[0]
@@ -283,10 +283,10 @@ Static Public Function FromFile(sFile As String) As DesktopMime
 End
 
 ''Return the desktopmime for a given type mime.
-Static Public Function _get(sType As String) As DesktopMime
+Static Public Function _get(Type As String) As DesktopMime
   
   If $aMimesSpecial.Count = 0 Then LoadMimeDatabase
-  Return TypeToMInfo[sType]
+  Return TypeToMInfo[Type]
   
 End
 
@@ -302,7 +302,7 @@ Static Public Sub Refresh()
   
 End
 
-Static Public Function _Next() As DesktopMime
+Static Public Function _next() As DesktopMime
   
   If $aMimesSuffix.Count = 0 Then LoadMimeDatabase
   If Not $aCurMimes Then $aCurMimes = $aMimesSuffix
@@ -332,8 +332,8 @@ Static Public Sub _exit()
 End
 
 ''Return if a TypeMime exist in the database
-Static Public Sub Exist(sType As String) As Boolean
+Static Public Sub Exist(Type As String) As Boolean
   
-  Return TypeToMInfo.Exist(sType)
+  Return TypeToMInfo.Exist(Type)
   
 End
