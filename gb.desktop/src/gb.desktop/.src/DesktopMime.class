@@ -1,0 +1,339 @@
+' Gambas class file
+
+Export
+
+Class Stock
+
+
+Static Private $aMimesSuffix As New DesktopMime[]   ''Normal pattern for extentions
+Static Private $aMimesPrefix As New DesktopMime[]   ''Pattern for prefix
+Static Private $aMimesSpecial As New DesktopMime[]  ''Special Pattern
+Static Private $cHash As New Collection             ''Quick access on First position of a letter
+Static Private TypeToMInfo As New Collection        ''Table that return a mimeobject from its mimetype
+Static Private $aCurMimes As DesktopMime[]          ''Temporary table for _Next walking
+Static Private $aDataDir As String[]                ''Table of Xdg Dirs
+Static Private $cIconCache As New Collection        ''Cache for icons
+
+Public Weight As Integer                            ''Weight of a mime entry for a type
+Public Type As String                               ''Type mime
+Public Pattern As String                            ''Pattern of a mime type
+Public Magic As New String[]                        ''Magic strings for binary tests
+Public GenericIcon As String                        ''Generic icons in case no other was found
+Public IsSuffix As Boolean                          ''Return true if the pattern is a suffix
+
+Public Function _Compare(Other As DesktopMime) As Integer
+  
+  Return Comp(Pattern, Other.Pattern, gb.IgnoreCase)
+  
+End
+
+Public Sub GetIcon(Optional Size As Integer = 16) As Image
+  
+  Dim sPath As String
+  Dim hImage As Image
+  Dim sKey As String
+  Dim sMime As String = Type
+  
+  sKey = sMime & ":" & CStr(Size)
+  sMime = Replace(sMime, "/", "-")
+  hImage = $cIconCache[sKey]
+  
+  If Not hImage Then
+    sPath = Subst("/usr/share/icons/hicolor/&1x&1/mimetypes/&2.png", CStr(Size), sMime)
+    If Exist(sPath) Then Try hImage = Image.Load(sPath)
+  Endif
+  If Not hImage Then
+    sPath = Subst("/usr/share/pixmaps/&1.png", sMime)
+    If Exist(sPath) Then Try hImage = Image.Load(sPath).Stretch(Size, Size)
+  Endif
+  'If File.Ext(sFile) = "jpg" Then Stop
+  If Not hImage Then
+    Try hImage = Stock[CStr(Size) &/ "mimetypes/" & sMime, CStr(Size) &/ "mimetypes/" & GenericIcon].Image
+  Endif
+  
+  ' If Not hImage Then
+  '   
+  '   Try hImage = Stock[CStr(Size) &/ "mimetypes/" & hglob.GenericIcon].Image
+  ' Endif
+  $cIconCache[sKey] = hImage
+  Return hImage
+  
+End
+
+Public Function GetApplications() As DesktopFile[]
+  
+  Return DesktopFile.FindMime(Type)
+  
+End
+
+
+
+'****************** Static Functions ****************
+Static Private Sub LoadMimeDatabase()
+  
+  Dim s, ss As String  ''Temp String Vars
+  Dim sPath As String
+  Dim hFile As File    ''File handle
+  Dim hMInfo As DesktopMime   
+  Dim ars As String[]
+  Dim i As Integer
+  
+  'Empty all entry before filling
+  If $aMimesPrefix.Count > 0 Then Refresh
+  
+  For Each sPath In GetDataDir()
+    
+    If Not Exist(sPath &/ "mime/globs2") Then Continue
+    
+    hfile = Open sPath &/ "mime/globs2" For Read
+    
+    'Load the file into Class tables
+    While Not Eof(hfile)
+      
+      Line Input #hfile, s
+      If Trim(s) Begins "#" Then Continue
+      ars = Scan(s, "*:*:*")
+      If ars[2] Begins "*." Then
+        hMInfo = New DesktopMime
+        hMInfo.Weight = ars[0]
+        hMInfo.Type = ars[1]
+        hMInfo.Pattern = Right(ars[2], -2)
+        hMInfo.IsSuffix = True 
+        $aMimesSuffix.Add(hMInfo)
+      Else If ars[2] Ends "*" Then 
+        hMInfo = New DesktopMime
+        hMInfo.Weight = ars[0]
+        hMInfo.Type = ars[1]
+        hMInfo.Pattern = ars[2]
+        $aMimesPrefix.Add(hMInfo)
+      Else
+        hMInfo = New DesktopMime
+        hMInfo.Weight = ars[0]
+        hMInfo.Type = ars[1]
+        hMInfo.Pattern = ars[2]
+        $aMimesSpecial.Add(hMInfo)
+      Endif
+      If InStr(hMInfo.Type, "/") Then 
+        hMInfo.GenericIcon = Left(hMInfo.Type, InStr(hMInfo.Type, "/") - 1) & "-x-generic"
+      Endif
+      'If ars.Count = 3 Then hMInfo.GenericIcon = ars[0] & "-" & ars[2] & "-generic"
+      TypeToMInfo[hMInfo.Type] = hMInfo
+    Wend
+    
+    'Sort the Globs by pattern
+    $aMimesSuffix.Sort
+    
+    'Make the quick access hash table
+    s = Left($aMimesSuffix[0].Pattern)
+    $cHash.Add(0, s)
+    For i = 0 To $aMimesSuffix.max
+      ss = Left($aMimesSuffix[i].Pattern)
+      If ss = s Then Continue
+      $cHash.Add(i, ss)
+      s = ss
+    Next
+    ' For Each hMInfo In $aMimesSpecial
+    '   Print hMInfo.Pattern
+    ' Next
+    Close #hfile
+    
+    'Chargement du fichier Magic
+    If Exist(sPath &/ "mime/magic") Then
+      hFile = Open sPath &/ "mime/magic" For Read
+      
+      While Not Eof(hFile)
+        Line Input #hFile, s
+        If s Begins "[" Then
+          Try hMInfo = TypeToMInfo[Split(Mid(s, 2, Len(s) - 2), ":")[1]]
+          Continue
+        Endif
+        If IsNull(hMInfo) Then Continue
+        hMInfo.Magic.Add(s)
+      Wend
+      Close #hfile
+    Endif
+    
+    'Chargement des Icones Génériques
+    If Exist(sPath &/ "mime/generic-icons") Then
+      hFile = Open sPath &/ "mime/generic-icons" For Read
+      
+      While Not Eof(hFile)
+        Line Input #hFile, s
+        ars = Split(s, ":")
+        Try TypeToMInfo[ars[0]].GenericIcon = ars[1]
+      Wend
+      Close #hfile
+    Endif
+  Next
+  
+  If $aMimesSuffix.Count = 0 Then
+    Error "Warning: Mime Database not found."
+  Endif
+  
+Catch
+  Refresh
+  Error "Warning: Error on reading mime database"
+
+End
+
+Static Private Function FindByExt(sFile As String) As DesktopMime[]
+  
+  Dim aMInfo As New DesktopMime[]
+  Dim i As Integer 
+  Dim sExt As String
+  Dim s As String 
+  
+  sExt = Right(sFile, - InStr(sFile, "."))
+  Do
+    If sExt = "" Then Return aMInfo
+    s = Left(sExt)
+    If $cHash.Exist(s) Then
+      i = $cHash[s]
+      Repeat
+        If sExt = $aMimesSuffix[i].Pattern Then aMInfo.Add($aMimesSuffix[i])
+        Inc i
+        If Left($aMimesSuffix[i].Pattern) <> s Then Break
+      Until i > $aMimesSuffix.Max
+    Endif
+    If Not InStr(sExt, ".") Then Break
+    sExt = Right(sExt, - InStr(sExt, "."))
+  Loop
+  Return aMInfo
+  
+End
+
+Static Private Function FindByPrefix(sFile As String) As DesktopMime[]
+  
+  Dim aMInfo As New DesktopMime[]
+  Dim i As Integer
+  
+  For i = 0 To $aMimesPrefix.Max
+    If LCase(sFile) Begins Left($aMimesPrefix[i].Pattern, -1) Then aMInfo.Add($aMimesPrefix[i])
+  Next
+  Return aMInfo
+  
+End
+
+Static Private Function FindBySpecial(sFile As String) As DesktopMime[]
+  
+  Dim aMInfo As New DesktopMime[]
+  Dim i As Integer
+  
+  For i = 0 To $aMimesSpecial.Max
+    If LCase(sFile) Like $aMimesSpecial[i].Pattern Then aMInfo.Add($aMimesSpecial[i])
+  Next
+  Return aMInfo
+  
+End
+'TODO: Make the binary magic test
+' Static Private Function TestMagic(sPath As String, hMInfo As DesktopMime) As Boolean
+'   
+'   Dim iStartOffset, iValueLength, iWordSize, iRangeSize As Integer
+'   Dim sValue, sMask As String
+'   Dim ars As String[]
+'   Dim hfile As File
+' 
+'   Return False
+'   If hMInfo.Magic.Count = 0 Then Return False
+'   
+'   ars = Scan(hMInfo.Magic[0], ">*=*")
+'   iStartOffset = ars[0]
+'   iValueLength = Int@(Swap$(Left(ars[1], 2)))
+'   sValue = Right(ars[1], -2)
+'   'sMask = ars[2]
+'   'iRangeSize = ars[4]
+'   
+'   hfile = Open sPath For Read
+'   Seek #hFile, iStartOffset
+'   
+' End
+' 
+''Return The Mime info of a file
+
+Static Public Function FromFile(sFile As String) As DesktopMime
+  
+  Dim aMInfo As DesktopMime[]
+  Dim sFileName As String = File.Name(sFile)
+  'Dim hMInfo As DesktopMime
+  
+  If Exist(sFile) Then
+    If $aMimesSuffix.Count = 0 Then LoadMimeDatabase
+    
+    aMInfo = FindByExt(LCase(sFileName))
+    If aMInfo.Count = 0 Then
+      aMInfo = FindByPrefix(LCase(sFileName))
+      If aMInfo.Count = 0 Then
+        aMInfo = FindBySpecial(LCase(sFileName))
+      Endif
+    Endif
+    If aMInfo.Count = 1 Then Return aMInfo[0]
+    
+    If aMInfo.Count = 0 Then
+      aMInfo.Add(TypeToMInfo["text/plain"])
+      aMInfo.Add(TypeToMInfo["application/octet-stream"])
+    Endif
+    
+    ' For Each hMInfo In aMInfo
+    '   TestMagic(sFile, hMInfo)
+    ' Next
+    
+    If aMInfo.Count > 0 Then Return aMInfo[0]
+  Endif
+  
+End
+
+''Return the desktopmime for a given type mime.
+Static Public Function _get(sType As String) As DesktopMime
+  
+  If $aMimesSpecial.Count = 0 Then LoadMimeDatabase
+  Return TypeToMInfo[sType]
+  
+End
+
+''Unload the datas
+Static Public Sub Refresh()
+  
+  $aMimesPrefix.Clear
+  $aMimesSpecial.Clear
+  $aMimesSuffix.Clear
+  $cHash.Clear
+  TypeToMInfo.Clear
+  $cIconCache.Clear
+  
+End
+
+Static Public Function _Next() As DesktopMime
+  
+  If $aMimesSuffix.Count = 0 Then LoadMimeDatabase
+  If Not $aCurMimes Then $aCurMimes = $aMimesSuffix
+  If Not Enum.Index Then Enum.Index = 0
+  Enum.Index += 1
+  If Enum.Index = $aCurMimes.count + 1 Then Enum.Stop
+  Try Return $aCurMimes[Enum.Index - 1]
+  
+End
+
+Static Private Sub GetDataDir() As String[]
+  
+  If Not $aDataDir Then $aDataDir = Split([Application.Env["XDG_DATA_DIRS"], Application.Env["XDG_DATA_HOME"]].join(":"), ":")
+  Return $aDataDir
+  
+End
+
+Static Public Sub _exit()
+  
+  $aMimesPrefix = Null
+  $aMimesSpecial = Null
+  $aMimesSuffix = Null
+  $cHash = Null
+  TypeToMInfo = Null
+  $cIconCache = Null
+  
+End
+
+''Return if a TypeMime exist in the database
+Static Public Sub Exist(sType As String) As Boolean
+  
+  Return TypeToMInfo.Exist(sType)
+  
+End
