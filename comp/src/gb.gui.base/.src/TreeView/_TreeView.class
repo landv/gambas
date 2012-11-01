@@ -429,10 +429,15 @@ Public Sub GridView_Activate()
   
   Dim hItem As _TreeView_Item = RowToItem($hView.Row)
   Dim bCancel As Boolean
+  Dim sCursor As String
   
   If Not hItem Then Return
   
+  sCursor = $sCursor
+  SetCursor(hItem.Key)
   bCancel = Raise Activate
+  $sCursor = sCursor
+  
   If bCancel Then Return
   hItem.Expanded = Not hItem.Expanded
   

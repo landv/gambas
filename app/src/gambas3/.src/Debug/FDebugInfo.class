@@ -573,6 +573,12 @@ Private Sub WatchExpression(sText As String)
   
 End
 
+Public Sub cvwWatch_Click()
+  
+  cmbWatch.Text = cvwWatch.Current.Text
+  
+End
+
 
 Public Sub cvwWatch_Activate()
 
@@ -582,8 +588,6 @@ Public Sub cvwWatch_Activate()
   If Left(cvwWatch.Item[1]) = "(" Then
     WatchExpression(sText)
   Endif
-
-  cmbWatch.Text = Last.Item.Text
 
 End
 
