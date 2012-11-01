@@ -14,25 +14,44 @@ Static Private $aCurMimes As DesktopMime[]          ''Temporary table for _Next 
 Static Private $aDataDir As String[]                ''Table of Xdg Dirs
 Static Private $cIconCache As New Collection        ''Cache for icons
 
-Public Weight As Integer                            ''Weight of a mime entry for a type
-Public Type As String                               ''Type mime
-Public Pattern As String                            ''Pattern of a mime type
-Public Magic As New String[]                        ''Magic strings for binary tests
-Public GenericIcon As String                        ''Generic icons in case no other was found
-Public IsSuffix As Boolean                          ''Return true if the pattern is a suffix
+Public _$iWeight As Integer
+Public _$sType As String
+Public _$sPattern As String
+Public _$aMagic As New String[]
+Public _$sGenericIcon As String
+Public _$bIsSuffix As Boolean
+Static Private $bPreciseSearch As Boolean
+Static Property PreciseSearch As Boolean
+Property Read Weight As Integer                            ''Weight of a mime entry for a type
+Property Read Type As String                               ''Type mime
+Property Read Pattern As String                            ''Pattern of a mime type
+Property Read Magic As String[]                            ''Magic strings for binary tests
+Property Read GenericIcon As String                        ''Generic icons in case no other was found
+Property Read IsSuffix As Boolean                          ''Return true if the pattern is a suffix
 
 Public Function _compare(Other As DesktopMime) As Integer
   
-  Return Comp(Pattern, Other.Pattern, gb.IgnoreCase)
+  Return Comp(_$sPattern, Other._$sPattern, gb.IgnoreCase)
   
 End
+
+' Public Function _Set(Optional Weight As Integer, Type As String, Pattern As String, GenericIcon As String, IsSuffix As Boolean)
+'   
+'   $iWeight = Weight
+'   $sType = Type
+'   $sPattern = Pattern
+'   $sGenericIcon = GenericIcon
+'   $bIsSuffix = IsSuffix
+'   
+' End
+
 
 Public Sub GetIcon(Optional Size As Integer = 16) As Image
   
   Dim sPath As String
   Dim hImage As Image
   Dim sKey As String
-  Dim sMime As String = Type
+  Dim sMime As String = _$sType
   
   sKey = sMime & ":" & CStr(Size)
   sMime = Replace(sMime, "/", "-")
@@ -48,7 +67,7 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   Endif
   'If File.Ext(sFile) = "jpg" Then Stop
   If Not hImage Then
-    Try hImage = Stock[CStr(Size) &/ "mimetypes/" & sMime, CStr(Size) &/ "mimetypes/" & GenericIcon].Image
+    Try hImage = Stock[CStr(Size) &/ "mimetypes/" & sMime, CStr(Size) &/ "mimetypes/" & _$sGenericIcon].Image
   Endif
   
   ' If Not hImage Then
@@ -62,7 +81,7 @@ End
 
 Public Function GetApplications() As DesktopFile[]
   
-  Return DesktopFile.FindMime(Type)
+  Return DesktopFile.FindMime(_$sType)
   
 End
 
@@ -95,26 +114,26 @@ Static Private Sub LoadMimeDatabase()
       ars = Scan(s, "*:*:*")
       If ars[2] Begins "*." Then
         hMInfo = New DesktopMime
-        hMInfo.Weight = ars[0]
-        hMInfo.Type = ars[1]
-        hMInfo.Pattern = Right(ars[2], -2)
-        hMInfo.IsSuffix = True 
+        hMInfo._$iWeight = ars[0]
+        hMInfo._$sType = ars[1]
+        hMInfo._$sPattern = Right(ars[2], -2)
+        hMInfo._$bIsSuffix = True 
         $aMimesSuffix.Add(hMInfo)
       Else If ars[2] Ends "*" Then 
         hMInfo = New DesktopMime
-        hMInfo.Weight = ars[0]
-        hMInfo.Type = ars[1]
-        hMInfo.Pattern = ars[2]
+        hMInfo._$iWeight = ars[0]
+        hMInfo._$sType = ars[1]
+        hMInfo._$sPattern = ars[2]
         $aMimesPrefix.Add(hMInfo)
       Else
         hMInfo = New DesktopMime
-        hMInfo.Weight = ars[0]
-        hMInfo.Type = ars[1]
-        hMInfo.Pattern = ars[2]
+        hMInfo._$iWeight = ars[0]
+        hMInfo._$sType = ars[1]
+        hMInfo._$sPattern = ars[2]
         $aMimesSpecial.Add(hMInfo)
       Endif
-      If InStr(hMInfo.Type, "/") Then 
-        hMInfo.GenericIcon = Left(hMInfo.Type, InStr(hMInfo.Type, "/") - 1) & "-x-generic"
+      If InStr(hMInfo._$sType, "/") Then 
+        hMInfo._$sGenericIcon = Left(hMInfo._$sType, InStr(hMInfo._$sType, "/") - 1) & "-x-generic"
       Endif
       'If ars.Count = 3 Then hMInfo.GenericIcon = ars[0] & "-" & ars[2] & "-generic"
       TypeToMInfo[hMInfo.Type] = hMInfo
@@ -124,10 +143,10 @@ Static Private Sub LoadMimeDatabase()
     $aMimesSuffix.Sort
     
     'Make the quick access hash table
-    s = Left($aMimesSuffix[0].Pattern)
+    s = Left($aMimesSuffix[0]._$sPattern)
     $cHash.Add(0, s)
     For i = 0 To $aMimesSuffix.max
-      ss = Left($aMimesSuffix[i].Pattern)
+      ss = Left($aMimesSuffix[i]._$sPattern)
       If ss = s Then Continue
       $cHash.Add(i, ss)
       s = ss
@@ -137,6 +156,7 @@ Static Private Sub LoadMimeDatabase()
     ' Next
     Close #hfile
     
+If $bPreciseSearch Then
     'Chargement du fichier Magic
     If Exist(sPath &/ "mime/magic") Then
       hFile = Open sPath &/ "mime/magic" For Read
@@ -148,7 +168,7 @@ Static Private Sub LoadMimeDatabase()
           Continue
         Endif
         If IsNull(hMInfo) Then Continue
-        hMInfo.Magic.Add(s)
+        hMInfo._$aMagic.Add(s)
       Wend
       Close #hfile
     Endif
@@ -164,8 +184,8 @@ Static Private Sub LoadMimeDatabase()
       Wend
       Close #hfile
     Endif
+Endif
   Next
-  
   If $aMimesSuffix.Count = 0 Then
     Error "Warning: Mime Database not found."
   Endif
@@ -336,4 +356,52 @@ Static Public Sub Exist(Type As String) As Boolean
   
   Return TypeToMInfo.Exist(Type)
   
+End
+
+Private Function Weight_Read() As Integer
+
+  Return _$iWeight
+
+End
+
+Private Function Type_Read() As String
+
+  Return _$sType
+
+End
+
+Private Function Pattern_Read() As String
+
+  Return _$sPattern
+
+End
+
+Private Function Magic_Read() As String[]
+
+  Return _$aMagic
+
+End
+
+Private Function GenericIcon_Read() As String
+
+  Return _$sGenericIcon
+
+End
+
+Private Function IsSuffix_Read() As Boolean
+
+  Return _$bIsSuffix
+
+End
+
+Static Private Function PreciseSearch_Read() As Boolean
+
+  Return $bPreciseSearch
+
+End
+
+Static Private Sub PreciseSearch_Write(Value As Boolean)
+
+  $bPreciseSearch = Value
+
 End
