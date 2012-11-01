@@ -2,7 +2,7 @@
 
 Inherits UserControl
 Export
-
+Class DesktopMime
 Public Const _Properties As String = "*,Border=True,Mode{Select.*},Dir,ShowDetailed,ShowHidden,ShowDirectory"
 Public Const _DefaultEvent As String = "Click"
 Public Const _Group As String = "View"
@@ -44,7 +44,7 @@ Private $hPict As Picture
 Private $hRefresh As Timer
 Private $bRefreshTriggered As Boolean
 Private $iIconSize As Integer = 32
-
+Private $bDesktopIsLoaded As Boolean
 Static Public Sub _init()
   
   $cExt["html"] = "html"
@@ -97,6 +97,8 @@ Public Sub _new()
     .Resizable = True
   End With
 
+  $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
+
   Me.Proxy = GetView()
   
   $hRefresh = New Timer As "Refresh"
@@ -116,6 +118,50 @@ Private Function CheckFilter(sFile As String) As Boolean
   Return True
 
 End
+
+Private Sub GetMimeIcon(hMime As DesktopMime, sPath As String, iSize As Integer) As Picture
+  
+  Dim hImage As Image
+  Dim hIcon As Image
+  Dim sIcon As String
+  $hPict = Null
+  Try Raise Icon(sPath)
+  If $hPict Then Return $hPict
+  
+  If IsDir(sPath) Then Return
+  
+  '****** show the image content
+  If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
+    If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
+    
+    hImage = Image.Load(sPath)
+    If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
+      If hImage.Width > hImage.Height Then 
+        hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
+      Else
+        hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
+      Endif
+    Endif
+    
+    hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
+    Paint.Begin(hIcon)
+    Paint.AntiAlias = False
+    Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
+    Paint.Brush = Paint.Color(Color.Gray)
+    Paint.Stroke
+    Paint.End
+    hIcon.DrawImage(hImage, 2, 2)
+    
+    Return hIcon.Picture
+    
+  Endif
+  
+  '*************
+  
+  Return hMime.GetIcon(iSize).Picture
+End
+
+
 
 Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
@@ -220,7 +266,7 @@ Private Sub RefreshView()
   Dim aSel As String[]
   Dim aDir As New String[]
   Dim I As Integer
-
+  Dim hMime As DesktopMime
   Inc Application.Busy
 
   aSel = GetSelection()
@@ -252,7 +298,12 @@ Private Sub RefreshView()
         If $aFilter And If CheckFilter(sFile) Then Continue
         sPrefix = "1"
       Endif
-      hPict = GetIcon(sDir &/ sFile, iSize)
+      If $bDesktopIsLoaded Then
+        hMime = DesktopMime.FromFile(sDir &/ sFile)
+        hPict = GetMimeIcon(hMime, sDir &/ sFile, iSize)
+      Else
+        hPict = GetIcon(sDir &/ sFile, iSize)
+      Endif
       If Not hPict Then 
         If .Type = gb.Directory Then 
           hPict = hPictFolder
