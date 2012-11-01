@@ -7,11 +7,17 @@ Count=0
 [DebugWindow/$cAtom]
 Geometry=[0,0,260,210]
 
+[DebugWindow/TypeToMInfo]
+Geometry=[-2,-3,210,210]
+
 [DebugWindow/_Desktop.GetWindowProperty("_NET_CURRENT_DESKTOP", _Desktop.RootWindow)]
 Geometry=[-6,0,210,210]
 
 [DebugWindow/_Desktop.GetWindowProperty(Atom["_NET_WM_STATE"], $iId)]
 Geometry=[0,0,429,210]
+
+[DebugWindow/hImage]
+Geometry=[-2,-3,210,210]
 
 [FCommit]
 LastCommit="[GB.DESKTOP]\n* NEW: Desktop.Open() interprets \"~\" as the home directory."
@@ -24,16 +30,20 @@ SearchComment=False
 SearchString=True
 
 [OpenFile]
-File[1]=".src/Desktop.class:324.46"
+File[1]=".src/Desktop.class:267.0"
 File[2]=".src/DesktopWindow.class:280.2"
-File[3]=".src/Main.module:0.0"
+File[3]=".src/Main.module:143.0"
 File[4]=".src/DesktopFile.class:276.2"
 Active=5
-File[5]=".src/DesktopMime.class:285.32"
-Count=5
+File[5]=".src/DesktopMime.class:66.20"
+File[6]=".src/Tests/Form11.form"
+File[7]=".src/Tests/Module1.module:5.16"
+File[8]=".src/Tests/Form11.class:6.17"
+Count=8
 
 [Watches]
-Count=0
+Count=1
+Watch[1]="CStr(Size) &/ \"mimetypes/\" & sMime"
 
 [YWindows]
 Count=0

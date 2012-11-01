@@ -4,7 +4,6 @@ Export
 
 Class Stock
 
-
 Static Private $aMimesSuffix As New DesktopMime[]   ''Normal pattern for extentions
 Static Private $aMimesPrefix As New DesktopMime[]   ''Pattern for prefix
 Static Private $aMimesSpecial As New DesktopMime[]  ''Special Pattern
@@ -45,7 +44,6 @@ End
 '   
 ' End
 
-
 Public Sub GetIcon(Optional Size As Integer = 16) As Image
   
   Dim sPath As String
@@ -84,8 +82,6 @@ Public Function GetApplications() As DesktopFile[]
   Return DesktopFile.FindMime(_$sType)
   
 End
-
-
 
 '****************** Static Functions ****************
 Static Private Sub LoadMimeDatabase()
@@ -156,21 +152,22 @@ Static Private Sub LoadMimeDatabase()
     ' Next
     Close #hfile
     
-If $bPreciseSearch Then
-    'Chargement du fichier Magic
-    If Exist(sPath &/ "mime/magic") Then
-      hFile = Open sPath &/ "mime/magic" For Read
-      
-      While Not Eof(hFile)
-        Line Input #hFile, s
-        If s Begins "[" Then
-          Try hMInfo = TypeToMInfo[Split(Mid(s, 2, Len(s) - 2), ":")[1]]
-          Continue
-        Endif
-        If IsNull(hMInfo) Then Continue
-        hMInfo._$aMagic.Add(s)
-      Wend
-      Close #hfile
+    If $bPreciseSearch Then
+      'Chargement du fichier Magic
+      If Exist(sPath &/ "mime/magic") Then
+        hFile = Open sPath &/ "mime/magic" For Read
+        
+        While Not Eof(hFile)
+          Line Input #hFile, s
+          If s Begins "[" Then
+            Try hMInfo = TypeToMInfo[Split(Mid(s, 2, Len(s) - 2), ":")[1]]
+            Continue
+          Endif
+          If IsNull(hMInfo) Then Continue
+          hMInfo._$aMagic.Add(s)
+        Wend
+        Close #hfile
+      Endif
     Endif
     
     'Chargement des Icones Génériques
@@ -180,20 +177,19 @@ If $bPreciseSearch Then
       While Not Eof(hFile)
         Line Input #hFile, s
         ars = Split(s, ":")
-        Try TypeToMInfo[ars[0]].GenericIcon = ars[1]
+        Try TypeToMInfo[ars[0]]._$sGenericIcon = ars[1]
       Wend
       Close #hfile
     Endif
-Endif
   Next
   If $aMimesSuffix.Count = 0 Then
     Error "Warning: Mime Database not found."
   Endif
   
 Catch
-  Refresh
-  Error "Warning: Error on reading mime database"
-
+ Refresh
+ Error "Warning: Error on reading mime database"
+  
 End
 
 Static Private Function FindByExt(sFile As String) As DesktopMime[]
@@ -359,49 +355,49 @@ Static Public Sub Exist(Type As String) As Boolean
 End
 
 Private Function Weight_Read() As Integer
-
+  
   Return _$iWeight
-
+  
 End
 
 Private Function Type_Read() As String
-
+  
   Return _$sType
-
+  
 End
 
 Private Function Pattern_Read() As String
-
+  
   Return _$sPattern
-
+  
 End
 
 Private Function Magic_Read() As String[]
-
+  
   Return _$aMagic
-
+  
 End
 
 Private Function GenericIcon_Read() As String
-
+  
   Return _$sGenericIcon
-
+  
 End
 
 Private Function IsSuffix_Read() As Boolean
-
+  
   Return _$bIsSuffix
-
+  
 End
 
 Static Private Function PreciseSearch_Read() As Boolean
-
+  
   Return $bPreciseSearch
-
+  
 End
 
 Static Private Sub PreciseSearch_Write(Value As Boolean)
-
+  
   $bPreciseSearch = Value
-
+  
 End

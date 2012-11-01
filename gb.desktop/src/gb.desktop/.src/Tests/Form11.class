@@ -6,7 +6,7 @@ Public Sub Form_Open()
 
   Dim s As String
   'Dim hDesktop As New DesktopFile
-  Dim sPath As String = User.home
+  Dim sPath As String = User.home &/ "Documents/SCEA"
   Dim hFilemime As DesktopMime
   Dim sKey As String
   'ColumnView1.Columns.Count = 2
