@@ -381,7 +381,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
     
     If iRealSize Then
       
-      sName = File.SetExt(sName, "svg")
+      sName = sName & ".svg" 'File.SetExt(sName, "svg")  'Warning this change is for files than have a point in the name
       Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
       If Not Error Then Return hPict
       
@@ -395,7 +395,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
       
     Else
       
-      sName = File.SetExt(sName, "png")
+      sName = sName & ".png" 'File.SetExt(sName, "png")  'Warning this change is for files than have a point in the name
       Try hImage = Image.Load(sDir &/ sName)
       If Not Error Then Return hImage.Picture
       

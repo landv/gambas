@@ -45,6 +45,7 @@ Private $hRefresh As Timer
 Private $bRefreshTriggered As Boolean
 Private $iIconSize As Integer = 32
 Private $bDesktopIsLoaded As Boolean
+
 Static Public Sub _init()
   
   $cExt["html"] = "html"
@@ -72,15 +73,15 @@ Static Public Sub _init()
   $cExt["deb"] = "package"
   $cExt["rpm"] = "package"
   $cExt["iso"] = "cdrom"
-
+  
 End
 
 Public Sub _new()
-
+  
   With $hIconView = New IconView(Me) As "View"
     .Sorted = True
   End With
-
+  
   With $hColumnView = New ColumnView(Me) As "View"
     .Columns.Count = 3
     .Columns[0].Text = ("Name")
@@ -96,27 +97,27 @@ Public Sub _new()
     .Sorted = True
     .Resizable = True
   End With
-
+  
   $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
-
+  
   Me.Proxy = GetView()
   
   $hRefresh = New Timer As "Refresh"
-
+  
   RefreshViewLater
-
+  
 End
 
 Private Function CheckFilter(sFile As String) As Boolean
-
+  
   Dim sFilter As String
-
+  
   For Each sFilter In $aFilter
     If sFile Like sFilter Then Return
   Next
-
+  
   Return True
-
+  
 End
 
 Private Sub GetMimeIcon(hMime As DesktopMime, sPath As String, iSize As Integer) As Picture
@@ -124,6 +125,7 @@ Private Sub GetMimeIcon(hMime As DesktopMime, sPath As String, iSize As Integer)
   Dim hImage As Image
   Dim hIcon As Image
   Dim sIcon As String
+
   $hPict = Null
   Try Raise Icon(sPath)
   If $hPict Then Return $hPict
@@ -132,7 +134,7 @@ Private Sub GetMimeIcon(hMime As DesktopMime, sPath As String, iSize As Integer)
   
   '****** show the image content
   If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
-    If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
+    If Stat(sPath).Size > 65536 Then Goto _NOPIC
     
     hImage = Image.Load(sPath)
     If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
@@ -156,12 +158,12 @@ Private Sub GetMimeIcon(hMime As DesktopMime, sPath As String, iSize As Integer)
     
   Endif
   
+_NOPIC:
   '*************
   
   Return hMime.GetIcon(iSize).Picture
+
 End
-
-
 
 Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
@@ -174,10 +176,10 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   If $hPict Then Return $hPict
   
   If IsDir(sPath) Then Return
-
+  
   Try sIcon = $cExt[File.Ext(sPath)]
   If sIcon Then Return Picture["icon:/" & CStr(iSize) &/ sIcon]
-
+  
   If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
     If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
     
@@ -215,7 +217,6 @@ Catch
   
 End
 
-
 Private Sub GetFileSize(iSize As Long) As String
   
   If iSize < 1000 Then
@@ -234,13 +235,13 @@ Private Sub GetSelection() As String[]
   
   Dim hView As Object
   Dim aSel As New String[]
-
+  
   If $hIconView.Visible Then
     hView = $hIconView
   Else
     hView = $hColumnView
   Endif
-
+  
   hView.MoveFirst
   While hView.Available
     If hView.Item.Selected Then
@@ -248,14 +249,13 @@ Private Sub GetSelection() As String[]
     Endif
     hView.MoveNext
   Wend
-
+  
   Return aSel
   
 End
 
-
 Private Sub RefreshView()
-
+  
   Dim sFile As String
   Dim sDir As String
   Dim hPictFile As Picture
@@ -267,10 +267,11 @@ Private Sub RefreshView()
   Dim aDir As New String[]
   Dim I As Integer
   Dim hMime As DesktopMime
+
   Inc Application.Busy
-
+  
   aSel = GetSelection()
-
+  
   If $hColumnView.Visible Then
     $hColumnView.Clear
     hPictFile = Picture["icon:/small/file"]
@@ -283,10 +284,10 @@ Private Sub RefreshView()
     hPictFolder = Picture["icon:/" & $iIconSize & "/directory"]
     iSize = $iIconSize
   Endif
-
+  
   sDir = $sDir
   If Not sDir Then sDir = User.Home
-
+  
   Try aDir = Dir(sDir, "*").Sort()
   For Each sFile In aDir
     If Not $bShowHidden And If Left(sFile) = "." Or Right(sFile) = "~" Then Continue
@@ -330,16 +331,16 @@ Private Sub RefreshView()
   For Each sFile In aSel
     Try GetView()[sFile].Selected = True
   Next
-
+  
 Finally
-
+  
   If Not $hColumnView.Visible Then $hIconView._End
   Dec Application.Busy
   
 Catch 
-
+  
   Error "gb.form: "; Error.Where; ": "; Error.Text 
-
+  
 End
 
 Private Sub RefreshViewLater()
@@ -358,90 +359,85 @@ Public Sub Refresh_Timer()
   
 End
 
-
-
 Public Sub Reload()
   
   RefreshView
   
 End
 
-
 Private Function Dir_Read() As String
-
+  
   Return $sDir
-
+  
 End
 
 Private Sub Dir_Write(sDir As String)
-
+  
   $sDir = sDir
   RefreshViewLater
-
+  
 End
 
 Private Function ShowHidden_Read() As Boolean
-
+  
   Return $bShowHidden
-
+  
 End
 
 Private Sub ShowHidden_Write(bShowHidden As Boolean)
-
+  
   If bShowHidden = $bShowHidden Then Return 
   $bShowHidden = bShowHidden
   RefreshViewLater
-
+  
 End
 
 Private Function ShowDirectory_Read() As Boolean
-
+  
   Return $bShowDir
-
+  
 End
 
 Private Sub ShowDirectory_Write(bShow As Boolean)
-
+  
   If $bShowDir = bShow Then Return
   $bShowDir = bShow
   RefreshViewLater
-
+  
 End
 
 Private Function GetView() As Object
-
+  
   If $hIconView.Visible Then
     Return $hIconView
   Else
     Return $hColumnView
   Endif
-
+  
 End
 
-
 Private Function Current_Read() As String
-
+  
   If GetView().Current.Selected Then Return Mid$(GetView().Current.Key, 2)
   
 Catch
-
+  
 End
 
-
 Private Sub Current_Write(sFile As String)
-
+  
   Dim sKey As String
-
+  
   'Debug sFile
-
+  
   GetView().UnselectAll
   sKey = "0" & sFile
   If Not GetView().Exist(sKey) Then sKey = "1" & sFile
   If Not GetView().Exist(sKey) Then Return
-    
+  
   GetView()[sKey].Selected = True
   GetView()[sKey].EnsureVisible
-
+  
 End
 
 ' Private Function Font_Read() As Font
@@ -458,27 +454,27 @@ End
 ' End
 
 Private Function ShowDetailed_Read() As Boolean
-
+  
   Return $hColumnView.Visible
-
+  
 End
 
 Private Sub ShowDetailed_Write(bDetailed As Boolean)
-
+  
   Dim hOld As Control
-
+  
   If bDetailed = ShowDetailed_Read() Then Return
-
+  
   If bDetailed Then
-
+    
     hOld = $hIconView
     $hColumnView.Show
-
+    
   Else
-
+    
     hOld = $hColumnView
     $hIconView.Show
-
+    
   Endif
   
   hOld.Hide
@@ -487,108 +483,105 @@ Private Sub ShowDetailed_Write(bDetailed As Boolean)
   Me.Foreground = hOld.Foreground
   RefreshView
   TakeSelection
-
+  
 End
 
-
 Public Sub View_Select()
-
+  
   Raise {Select}
-
+  
 End
 
 Public Sub View_Click()
-
+  
   Raise Click
-
+  
 End
 
 Public Sub View_Activate()
-
+  
   Raise Activate
-
+  
 End
-
 
 Public Sub View_Menu()
-
+  
   Raise Menu
-
+  
 End
 
-
 Public Sub View_Compare(Key As String, OtherKey As String)
-
+  
   Dim hStat As Stat
   Dim hStat2 As Stat
   Dim sDir As String
   Dim iComp As Integer
-
+  
   sDir = $sDir
   If Not sDir Then sDir = User.Home
-
+  
   If $hColumnView.Visible Then
     $iSort = $hColumnView.Columns.Sort
     $bAsc = $hColumnView.Columns.Ascending
   Else 
     $hIconView.Ascending = $bAsc
   Endif
-
+  
   iComp = Comp(Asc(Key), Asc(OtherKey))
-
+  
   If iComp = 0 Then
-
+    
     If $iSort Then
       hStat = Stat(sDir &/ Mid$(Key, 2))
       hStat2 = Stat(sDir &/ Mid$(OtherKey, 2))
     Endif
-
+    
     Select $iSort
-
+        
       Case 1
         iComp = Sgn(hStat.Size - hStat2.Size)
-
+        
       Case 2
         iComp = Sgn(hStat.Time - hStat2.Time)
-
+        
     End Select
-
+    
     If iComp = 0 Then iComp = Comp(Key, OtherKey, gb.IgnoreCase + gb.Natural)
-
+    
     'IF NOT $bAsc THEN iComp = (- iComp)
-
+    
   Endif
-
+  
   Last.Compare = iComp
-
+  
 Catch
-
+  
 End
 
 Private Sub Mode_Write(iMode As Integer)
-
+  
   $hIconView.Mode = iMode
   $hColumnView.Mode = iMode
-
+  
 End
 
 Private Function Mode_Read() As Integer
-
+  
   Return $hIconView.Mode
-
+  
 End
 
 Private Function Selection_Read() As String[]
-
+  
   Dim hView As Object
   Dim aSel As New String[]
-
+  
   If $hIconView.Visible Then
     hView = $hIconView
   Else
     hView = $hColumnView
   Endif
-
+  
   hView.MoveFirst
   While hView.Available
     If hView.Item.Selected Then
@@ -596,22 +589,22 @@ Private Function Selection_Read() As String[]
     Endif
     hView.MoveNext
   Wend
-
+  
   Return aSel
-
+  
 End
 
 Private Sub TakeSelection()
-
+  
   Dim hSrc As Object
   Dim hDst As Object
-
+  
   If $hIconView.Mode = Select.None Then Return
-
+  
   hSrc = $hIconView
   hDst = $hColumnView
   If $hIconView.Visible Then Swap hSrc, hDst
-
+  
   If $hIconView.Mode = Select.Single Then
     If hSrc.Current And If hSrc.Current.Selected Then
       Object.Lock(hDst)
@@ -621,7 +614,7 @@ Private Sub TakeSelection()
     Endif
     Return
   Endif
-
+  
   hDst.UnselectAll
   hSrc.MoveFirst
   While hSrc.Available
@@ -632,57 +625,57 @@ Private Sub TakeSelection()
     Endif
     hSrc.MoveNext
   Wend
-
+  
 End
 
 Private Function Filter_Read() As String[]
-
+  
   Return $aFilter
-
+  
 End
 
 Private Sub Filter_Write(aFilter As String[])
-
+  
   $aFilter = aFilter
   RefreshViewLater
-
+  
 End
 
 Private Function Icon_Read() As Picture
-
+  
   Return $hPict  
-
+  
 End
 
 Private Sub Icon_Write(Value As Picture)
-
+  
   $hPict = Value
-
+  
 End
 
 Private Function Border_Read() As Boolean
-
+  
   Return $hColumnView.Border
-
+  
 End
 
 Private Sub Border_Write(Value As Boolean)
-
+  
   $hColumnView.Border = Value
   $hIconView.Border = Value
-
+  
 End
 
 Private Function Settings_Read() As Variant[]
-
+  
   Return [1, CVariant(ShowDetailed_Read()), ShowHidden_Read(), $hColumnView.Settings, $iIconSize]
-
+  
   'Return IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
-
+  
 End
 
 Private Sub Settings_Write(Value As Variant[])
-
+  
   If TypeOf(Value[0]) = gb.Integer Then
     ShowDetailed_Write(Value[1])
     ShowHidden_Write(Value[2])
@@ -695,19 +688,19 @@ Private Sub Settings_Write(Value As Variant[])
   Endif
   
 Catch
-
+  
   Error "gb.form :"; Error.Where; ": "; Error.Text
-
+  
 End
 
 Private Function Count_Read() As Integer
-
+  
   If $hIconView.Visible Then 
     Return $hIconView.Count
   Else 
     Return $hColumnView.Count
   Endif    
-
+  
 End
 
 ' PUBLIC SUB View_MouseMove()
@@ -720,16 +713,16 @@ End
 ' END
 
 Private Function IconSize_Read() As Integer
-
+  
   Return $iIconSize
-
+  
 End
 
 Private Sub IconSize_Write(Value As Integer)
-
+  
   $iIconSize = Value
   RefreshView
-
+  
 End
 
 Public Sub SelectAll()
@@ -747,26 +740,26 @@ Public Sub UnselectAll()
 End
 
 Private Function Background_Read() As Integer
-
+  
   Return $hColumnView.Background
-
+  
 End
 
 Private Sub Background_Write(Value As Integer)
-
+  
   $hIconView.Background = Value
   $hColumnView.Background = Value
-
+  
 End
 
 Private Function Foreground_Read() As Integer
-
+  
   Return $hColumnView.Foreground
-
+  
 End
 
 Private Sub Foreground_Write(Value As Integer)
-
+  
   $hIconView.Foreground = Value
   $hColumnView.Foreground = Value
 
