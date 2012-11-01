@@ -100,6 +100,12 @@ BEGIN_PROPERTY(CENUM_index)
 
   _object = EXEC_enum;
 
+	if (!THIS)
+	{
+		GB_Error("No current enumeration");
+		return;
+	}
+	
   if (READ_PROPERTY)
   {
     if (!THIS->variant)
