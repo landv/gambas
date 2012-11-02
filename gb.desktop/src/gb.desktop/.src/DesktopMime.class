@@ -206,9 +206,9 @@ Static Private Function FindByExt(sFile As String) As DesktopMime[]
     If $cHash.Exist(s) Then
       i = $cHash[s]
       Repeat
+        If Left($aMimesSuffix[i].Pattern) <> s Then Break
         If sExt = $aMimesSuffix[i].Pattern Then aMInfo.Add($aMimesSuffix[i])
         Inc i
-        If Left($aMimesSuffix[i].Pattern) <> s Then Break
       Until i > $aMimesSuffix.Max
     Endif
     If Not InStr(sExt, ".") Then Break
