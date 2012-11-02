@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,118,47)
+  MoveScaled(0,2,125,47)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Horizontal
   { tabDebug TabPanel
-    MoveScaled(3,3,89,41)
+    MoveScaled(3,3,94,41)
     Expand = True
     Arrangement = Arrange.Vertical
     Border = False
@@ -29,10 +29,10 @@
     { tbvLocal TableView
       MoveScaled(3,12,63,18)
       Expand = True
+      Border = False
       Mode = Select.Single
       Grid = False
       Header = GridView.Horizontal
-      Border = False
       NoKeyboard = True
     }
     Index = 2
@@ -45,51 +45,54 @@
     { tbvObject TableView
       MoveScaled(3,12,69,20)
       Expand = True
+      Border = False
       Mode = Select.Single
       Grid = False
       Header = GridView.Horizontal
-      Border = False
       NoKeyboard = True
     }
     Index = 3
     Text = ("Watch")
     Picture = Picture["icon:/small/watch"]
     { panWatch HBox
-      MoveScaled(1,1,84,4)
+      MoveScaled(1,1,91,4)
       { cmbWatch ComboBox
         MoveScaled(0,0,27,4)
         Expand = True
       }
       { btnWatch ToolButton
-        MoveScaled(27,0,7,4)
+        MoveScaled(27,0,4,4)
         ToolTip = ("Add expression")
-        AutoResize = True
-        Text = ("&Add")
         Picture = Picture["icon:/small/add"]
       }
+      { btnCopy ToolButton
+        MoveScaled(32,0,4,4)
+        ToolTip = ("Copy to clipboard")
+        AutoResize = True
+        Picture = Picture["icon:/small/copy"]
+      }
       { btnKillWatch ToolButton
-        MoveScaled(34,0,10,4)
+        MoveScaled(37,0,4,4)
         ToolTip = ("Remove current expression")
         AutoResize = True
-        Text = ("&Remove")
         Picture = Picture["icon:/small/remove"]
       }
       { btnKillAllWatch ToolButton
-        MoveScaled(44,0,12,4)
+        MoveScaled(44,0,14,4)
         ToolTip = ("Remove all expressions")
         AutoResize = True
         Text = ("Remove all")
         Picture = Picture["icon:/small/trash"]
       }
       { btnShow ToolButton
-        MoveScaled(57,0,12,4)
+        MoveScaled(59,0,10,4)
         ToolTip = ("Display ME")
         AutoResize = True
         Text = ("Display")
         Picture = Picture["icon:/small/watch"]
       }
       { btnShowMe ToolButton
-        MoveScaled(70,0,12,4)
+        MoveScaled(71,0,12,4)
         ToolTip = ("Display ME")
         AutoResize = True
         Text = ("Display ME")
@@ -144,9 +147,9 @@
     { gvwCompilation GridView
       MoveScaled(28,9,41,23)
       Expand = True
+      Border = False
       Mode = Select.Single
       Header = GridView.Horizontal
-      Border = False
     }
     Index = 6
     Text = ("Tasks")
@@ -154,9 +157,9 @@
     { gvwTask GridView
       MoveScaled(18,8,52,22)
       Expand = True
+      Border = False
       Mode = Select.Single
       Header = GridView.Horizontal
-      Border = False
     }
     { timTask #Timer
       #MoveScaled(73,17)
@@ -213,10 +216,10 @@
       { gvwFind GridView
         MoveScaled(23,4,47,16)
         Visible = False
+        Border = False
         Mode = Select.Single
         Header = GridView.Horizontal
         ScrollBar = Scroll.Vertical
-        Border = False
         Resizable = False
       }
       { lblNotFound TextLabel
@@ -230,7 +233,7 @@
     Index = 0
   }
   { panStack SidePanel
-    MoveScaled(93,3,24,43)
+    MoveScaled(99,3,24,43)
     Arrangement = Arrange.Fill
     Orientation = Align.Right
     Separator = True

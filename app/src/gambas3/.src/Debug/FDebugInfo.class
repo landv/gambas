@@ -600,7 +600,7 @@ End
 
 Public Sub ReadConfig()
 
-  Dim hButton As ToolButton
+  'Dim hButton As ToolButton
   Dim hCtrl As Control
 
   Settings.Read(panStack)
@@ -619,11 +619,11 @@ Public Sub ReadConfig()
     Project.SetSmallFont(hCtrl)
   Next
 
-  For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowMe, btnWatch]
-    hButton.AutoResize = False
-    hButton.W = 8
-    hButton.AutoResize = True
-  Next
+  ' For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowMe, btnWatch]
+  '   hButton.AutoResize = False
+  '   hButton.W = 8
+  '   hButton.AutoResize = True
+  ' Next
 
 End
 
@@ -1402,4 +1402,10 @@ Public Sub GotoFirstWarning()
   gvwCompilation.Row = 0
   gvwCompilation_Activate
   
+End
+
+Public Sub btnCopy_Click()
+
+  Try Clipboard.Copy(cvwWatch.Current[1])
+
 End

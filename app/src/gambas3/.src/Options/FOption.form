@@ -145,12 +145,12 @@
         Text = ("Sort properties")
       }
       { cmbSortProperty ComboBox
-        MoveScaled(43,0,15,4)
+        MoveScaled(43,0,10,4)
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
       { Panel2 Panel
-        MoveScaled(59,0,7,4)
+        MoveScaled(54,0,12,4)
       }
     }
     { HBox21 HBox
@@ -233,6 +233,7 @@
     { HBox11 HBox
       MoveScaled(1,3,65,4)
       Spacing = True
+      Indent = True
       { Label12 Label
         MoveScaled(0,0,18,4)
         Expand = True
@@ -245,6 +246,7 @@
     }
     { HBox1 HBox
       MoveScaled(1,9,65,4)
+      Indent = True
       { Label54 Label
         MoveScaled(0,0,18,4)
         Expand = True
