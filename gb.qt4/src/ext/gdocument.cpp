@@ -103,6 +103,7 @@ public:
 	GCommandDocument(GDocument *doc);
 	void process(GDocument *doc) const;
 	void print() const;
+	bool equals(GCommandDocument *o) const;
 };
 
 GCommandDocument::GCommandDocument(GDocument *doc)
@@ -134,6 +135,12 @@ void GCommandDocument::print() const
 	qDebug("- %d %d [%d %d %d %d]", cx, cy, sx, sy, sx2, sy2);
 }
 
+bool GCommandDocument::equals(GCommandDocument *o) const
+{
+	return view == o->view && cx == o->cx && cy == o->cy 
+		&& sx == o->sx && sy == o->sy && sx2 == o->sx2 && sy2 == o->sy2;
+}
+
 class GCommand
 {
 public:
@@ -141,6 +148,7 @@ public:
 	{
 		None, Begin, End, Move, Insert, Delete, Indent, Unindent
 	};
+	GCommandDocument info;
 
 	virtual ~GCommand() { }
 	virtual Type type() const { return None; }
@@ -156,7 +164,6 @@ class GBeginCommand: public GCommand
 {
 public:
 	bool _linked;
-	GCommandDocument info;
 	
 	GBeginCommand(GCommandDocument *info, bool linked = false) { _linked = linked; this->info = *info; }
 	Type type() const { return Begin; }
@@ -184,7 +191,6 @@ class GDeleteCommand: public GCommand
 public:
 	int x, y, x2, y2;
 	GString str;
-	GCommandDocument info;
 
 	GDeleteCommand(GCommandDocument *info, int y, int x, int y2, int x2, const GString &str)
 	{
@@ -205,13 +211,13 @@ public:
 		if (info.view != o->info.view)
 			return false;
 
-		if (x2 != o->x || y2 != o->y)
+		if (x2 != o->x || y2 != o->y || o->y != o->y2)
 			return false;
 
 		o->str.prepend(str);
 		o->x = x;
 		o->y = y;
-		o->info = info;
+		//o->info = info;
 		return true;
 	}
 
@@ -924,17 +930,40 @@ void GDocument::addUndo(GCommand *c)
 	{
 		if (c->merge(undoList.last()))
 		{
-			//qDebug("         MERGE");
+			#if DEBUG_UNDO
+			qDebug("         MERGE");
+			#endif
 			delete c;
 			return;
 		}
 		else if (c->remove(undoList.last()))
 		{
-			//qDebug("         REMOVE");
+			#if DEBUG_UNDO
+			qDebug("         REMOVE");
+			#endif
 			delete c;
 			delete undoList.take();
 			return;
 		}
+	}
+	
+	if (c->type() == GCommand::End && undoList.count() >= 2 && undoList.at(undoList.count() - 2)->type() == GCommand::Begin)
+	{
+		GCommand *o = undoList.take();
+		GCommand *begin = undoList.take();
+		#if DEBUG_UNDO
+		qDebug("         NO BEGIN / END");
+		#endif
+		o->info = begin->info;
+		delete begin;
+		delete c;
+		addUndo(o);
+		return;
+		/*else
+		{
+			undoList.append(begin);
+			undoList.append(o);
+		}*/
 	}
 
 	undoList.append(c);
