@@ -11,17 +11,19 @@ Event Cancel
 Event OK
 'EVENT ShowHiddenChange
 
+Private mnuBookmark As Menu
+Private mnuEditBookmark As Menu
+Private mnuShowHiddenFiles As Menu
+Private mnuShowDetailed As Menu
+Private mnuShowPreview As Menu
+Private mnuUncompress As Menu
+
 Private $bView As Boolean
 Private $aFilter As String[]
 Private $bFile As Boolean
 Private $hBookmarkList As CBookmarkList
 Private $hCurrentBookmark As CBookmark
 Private $bShowBookmark As Boolean
-Private mnuBookmark As Menu
-Private mnuEditBookmark As Menu
-Private mnuShowHiddenFiles As Menu
-Private mnuShowDetailed As Menu
-Private mnuUncompress As Menu
 Private $hWatch As Watcher
 Private $bPressed As Boolean
 
@@ -282,6 +284,12 @@ Public Sub mnuShowHiddenFiles_Click()
   fvwChoose.ShowHidden = Not fvwChoose.ShowHidden
   UpdateShowHidden
   Raise ShowHidden
+
+End
+
+Public Sub mnuShowPreview_Click()
+
+  fvwChoose.ShowPreview = Not fvwChoose.ShowPreview
 
 End
 
@@ -853,6 +861,12 @@ Private Sub FillMenu()
   hMenu.Visible = fvwChoose.Visible
   mnuShowHiddenFiles = hMenu
   
+  hMenu = New Menu(mnuPopup) As "mnuShowPreview"
+  hMenu.Text = ("Show &image previews")
+  hMenu.Checked = fvwChoose.ShowPreview
+  hMenu.Visible = fvwChoose.Visible
+  mnuShowPreview = hMenu
+  
   hMenu = New Menu(mnuPopup)
   
   hMenu = New Menu(mnuPopup) As "mnuUncompress"
@@ -1172,3 +1186,9 @@ Public Sub SetMargin(bMargin As Boolean)
   
 End
 
+
+Public Sub btnPreview_Click()
+
+  fvwChoose.ShowPreview = btnPreview.Value
+
+End

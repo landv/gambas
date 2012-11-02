@@ -3,7 +3,7 @@
 Inherits UserControl
 Export
 Class DesktopMime
-Public Const _Properties As String = "*,Border=True,Mode{Select.*},Dir,ShowDetailed,ShowHidden,ShowDirectory"
+Public Const _Properties As String = "*,Border=True,Mode{Select.*},Dir,ShowDetailed,ShowHidden,ShowDirectory,ShowPreview"
 Public Const _DefaultEvent As String = "Click"
 Public Const _Group As String = "View"
 
@@ -19,6 +19,7 @@ Property ShowDirectory As Boolean
 Property Current As String
 Property Mode As Integer
 Property ShowDetailed As Boolean
+Property ShowPreview As Boolean
 Property Read Selection As String[]
 Property Filter As String[]
 Property Icon As Picture
@@ -35,6 +36,7 @@ Static Private $cExt As New Collection(gb.IgnoreCase)
 Private $sDir As String
 Private $bShowHidden As Boolean
 Private $bShowDir As Boolean
+Private $bShowPreview As Boolean
 Private $hIconView As IconView
 Private $hColumnView As ColumnView
 Private $iSort As Integer
@@ -73,6 +75,15 @@ Static Public Sub _init()
   $cExt["deb"] = "package"
   $cExt["rpm"] = "package"
   $cExt["iso"] = "cdrom"
+  $cExt["jpg"] = "image"
+  $cExt["jpeg"] = "image"
+  $cExt["png"] = "image"
+  $cExt["gif"] = "image"
+  $cExt["xpm"] = "image"
+  $cExt["bmp"] = "image"
+  $cExt["ico"] = "image"
+  $cExt["xcf"] = "image"
+  $cExt["svg"] = "image"
   
 End
 
@@ -122,11 +133,7 @@ End
 
 Private Sub GetMimeIcon(sPath As String, iSize As Integer) As Picture
   
-  Dim hMime As DesktopMime
-
-  hMime = DesktopMime.FromFile(sPath)
-  
-  Return hMime.GetIcon(iSize).Picture
+  Try Return DesktopMime.FromFile(sPath).GetIcon(iSize).Picture
 
 End
 
@@ -143,28 +150,34 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
   If IsDir(sPath) Then Return
   
-  If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
-    If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
+  If $bShowPreview And If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
+    If Stat(sPath).Size <= 65536 Then 
     
-    hImage = Image.Load(sPath)
-    If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
-      If hImage.Width > hImage.Height Then 
-        hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
+      Try hImage = Image.Load(sPath)
+      If Not Error Then
+        If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
+          If hImage.Width > hImage.Height Then 
+            hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
+          Else
+            hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
+          Endif
+        Endif
+        
+        hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
+        Paint.Begin(hIcon)
+        Paint.AntiAlias = False
+        Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
+        Paint.Brush = Paint.Color(Color.Gray)
+        Paint.Stroke
+        Paint.End
+        hIcon.DrawImage(hImage, 2, 2)
+        
+        Return hIcon.Picture
       Else
-        hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
+        Return Picture["icon:/" & iSize & "/image"]  
       Endif
+    
     Endif
-    
-    hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
-    Paint.Begin(hIcon)
-    Paint.AntiAlias = False
-    Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
-    Paint.Brush = Paint.Color(Color.Gray)
-    Paint.Stroke
-    Paint.End
-    hIcon.DrawImage(hImage, 2, 2)
-    
-    Return hIcon.Picture
     
   Endif
 
@@ -186,7 +199,7 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
 Catch
   
-  Return Picture["icon:/" & iSize & "/image"]
+  Error "gb.form: unable to get icon for file: "; File.Name(sPath)
   
 End
 
@@ -635,7 +648,7 @@ End
 
 Private Function Settings_Read() As Variant[]
   
-  Return [1, CVariant(ShowDetailed_Read()), ShowHidden_Read(), $hColumnView.Settings, $iIconSize]
+  Return [1, CVariant(ShowDetailed_Read()), ShowHidden_Read(), $hColumnView.Settings, $iIconSize, ShowPreview_Read()]
   
   'Return IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
   
@@ -648,6 +661,7 @@ Private Sub Settings_Write(Value As Variant[])
     ShowHidden_Write(Value[2])
     $hColumnView.Settings = Value[3]
     IconSize_Write(Value[4])
+    If Value.Count >= 6 Then ShowPreview_Write(Value[5])
   Else
     ShowDetailed_Write(Value[0])
     ShowHidden_Write(Value[1])
@@ -730,4 +744,18 @@ Private Sub Foreground_Write(Value As Integer)
   $hIconView.Foreground = Value
   $hColumnView.Foreground = Value
 
+End
+
+Private Function ShowPreview_Read() As Boolean
+
+  Return $bShowPreview
+
+End
+
+Private Sub ShowPreview_Write(Value As Boolean)
+
+  If $bShowPreview = Value Then Return
+  $bShowPreview = Value
+  RefreshView
+  
 End

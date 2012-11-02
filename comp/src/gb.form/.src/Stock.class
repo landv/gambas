@@ -372,6 +372,23 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   Dim sDir As String
   Dim sName As String
   Dim sPath As String
+  Dim sTest As String
+  Dim bFound As Boolean
+  
+  If sFile Begins "$(mime)/" Then
+    
+    For Each sTest In ["mimetypes", "mimes"]
+      sPath = Subst(sTemplate, CStr(iSize), sTest)
+      If Exist(sPath) Then
+        sFile = Replace(sFile, "$(mime)", sTest)
+        bFound = True
+        Break
+      Endif
+    Next
+    
+    If Not bFound Then Return 
+
+  Endif
   
   For Each sFile In Split(sFile, ";")
     
@@ -478,6 +495,7 @@ Static Public Function _get(Key As String, Optional {Default} As String) As Pict
         If Left(sFile) = "." Then sFile = Mid$(sFile, 2)
       Endif
       
+      If sFile = "#" Then Continue
       
       sDirPattern = Replace(File.Name(sPath), "!", "/")
       
@@ -521,7 +539,7 @@ __RETURN:
     
     If $bDebug Then
       Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key    
-      hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
+      'hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
     Endif
     
   Endif

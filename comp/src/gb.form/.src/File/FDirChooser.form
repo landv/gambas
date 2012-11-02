@@ -28,15 +28,31 @@
           MenuOnly = True
         }
         { txtDir Label
-          MoveScaled(10,0,11,4)
+          MoveScaled(5,0,11,4)
           AutoResize = True
         }
         { Panel1 Panel
-          MoveScaled(33,0,1,4)
+          MoveScaled(23,0,1,4)
           Expand = True
         }
+        { btnParent ToolButton
+          MoveScaled(29,0,4,4)
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnView ToolButton
+          MoveScaled(33,0,4,4)
+          ToolTip = ("Show files")
+          Picture = Picture["icon:/small/view-split-h"]
+        }
+        { btnPreview ToolButton
+          MoveScaled(37,0,4,4)
+          ToolTip = ("Image preview")
+          Picture = Picture["icon:/small/image"]
+          Toggle = True
+        }
         { panIconSize HBox
-          MoveScaled(38,0,23,4)
+          MoveScaled(48,0,23,4)
           Visible = False
           { btnZoomOut ToolButton
             MoveScaled(0,0,4,4)
@@ -52,16 +68,6 @@
             MoveScaled(18,0,4,4)
             Picture = Picture["icon:/small/zoom-in"]
           }
-        }
-        { btnView ToolButton
-          MoveScaled(64,0,4,4)
-          ToolTip = ("Show files")
-          Picture = Picture["icon:/small/view-split-h"]
-        }
-        { btnParent ToolButton
-          MoveScaled(69,0,4,4)
-          ToolTip = ("Parent directory")
-          Picture = Picture["icon:/small/up"]
         }
       }
       { Separator2 Separator

@@ -65,8 +65,7 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   Endif
   'If File.Ext(sFile) = "jpg" Then Stop
   If Not hImage Then
-    Try hImage = Stock[CStr(Size) &/ "mimes/" & sMime, CStr(Size) &/ "mimes/" & _$sGenericIcon].Image
-    If Not hImage Then Try hImage = Stock[CStr(Size) &/ "mimetypes/" & sMime, CStr(Size) &/ "mimetypes/" & _$sGenericIcon].Image
+    Try hImage = Stock[CStr(Size) &/ "$(mime)" &/ sMime, CStr(Size) &/ "$(mime)" &/ _$sGenericIcon].Image
   Endif
   
   ' If Not hImage Then
@@ -184,12 +183,13 @@ Static Private Sub LoadMimeDatabase()
     Endif
   Next
   If $aMimesSuffix.Count = 0 Then
-    Error "Warning: Mime Database not found."
+    Error "gb.desktop: unable to found mime database"
   Endif
   
 Catch
+  
  Refresh
- Error "Warning: Error on reading mime database"
+ Error "gb.desktop: unable to read mime database"
   
 End
 
@@ -207,9 +207,9 @@ Static Private Function FindByExt(sFile As String) As DesktopMime[]
     If $cHash.Exist(s) Then
       i = $cHash[s]
       Repeat
-        If Left($aMimesSuffix[i].Pattern) <> s Then Break
         If sExt = $aMimesSuffix[i].Pattern Then aMInfo.Add($aMimesSuffix[i])
         Inc i
+        If Left($aMimesSuffix[i].Pattern) <> s Then Break
       Until i > $aMimesSuffix.Max
     Endif
     If Not InStr(sExt, ".") Then Break

@@ -64,7 +64,7 @@ Private Sub MakeMap()
       
       If Left(sLine) = ";" Then Continue
       
-      aLine = Split(sLine, " ", "", True )
+      aLine = Split(sLine, " ", "", True)
       sKey = Trim(aLine[0])
       AddUnique(aKey, sKey)
       
@@ -92,12 +92,8 @@ End
 
 Public Sub Main()
   
-  Dim hPict As Picture
-  
-  Application.Theme = "Betelgeuse"
-  
-  hPict = Picture["icon:/48/calculator"]
-  
-  Print Stock.Themes.Join("\n")
+  Component.Load("gb.desktop")
+  Application.Theme = "oxygen"
+  Form1.Show
   
 End
