@@ -1819,6 +1819,8 @@ void GEditor::del(bool ctrl)
 		return;
 	}
 	
+	doc->begin();
+	
 	if (x >= lineLength(y))
 	{
 		if (!_insertMode && y < (numLines() - 1))
@@ -1834,6 +1836,8 @@ void GEditor::del(bool ctrl)
 		else
 			doc->remove(y, x, y, x + 1);
 	}
+	
+	doc->end();
 }
 
 void GEditor::backspace(bool ctrl)
@@ -1848,6 +1852,8 @@ void GEditor::backspace(bool ctrl)
 		return;
 	}
 
+	doc->begin();
+	
 	indent = doc->getIndent(y);
 
 	if (x > 0 && x <= indent)
@@ -1877,6 +1883,8 @@ void GEditor::backspace(bool ctrl)
 				del(false);
 		}
 	}
+	
+	doc->end();
 }
 
 void GEditor::tab(bool back)

@@ -951,7 +951,7 @@ void GDocument::begin(bool linked)
 	if (undoLevel == 0)
 		textHasChanged = false;
 	undoLevel++;  
-	if (!blockUndo)
+	if (!blockUndo && (undoLevel == 1))
 	{
 		GCommandDocument info(this);
 		addUndo(new GBeginCommand(&info, linked));
@@ -961,7 +961,7 @@ void GDocument::begin(bool linked)
 void GDocument::end(bool linked)
 {
 	undoLevel--;
-	if (!blockUndo) addUndo(new GEndCommand(linked));
+	if (!blockUndo && undoLevel == 0) addUndo(new GEndCommand(linked));
 	if (undoLevel == 0 && textHasChanged)
 		emitTextChanged();
 }
