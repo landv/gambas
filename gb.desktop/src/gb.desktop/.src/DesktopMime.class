@@ -401,3 +401,19 @@ Static Private Sub PreciseSearch_Write(Value As Boolean)
   $bPreciseSearch = Value
   
 End
+
+
+Public Function GetDescription(Optional Common As Boolean) As String
+
+  Dim sPath As String
+  Dim s As String
+  Dim sTypePath As String = Type & ".xml"
+  For Each s In GetDataDir()
+    
+    If Exist(s &/ "mime" &/
+    
+  Next
+  
+  
+  
+End

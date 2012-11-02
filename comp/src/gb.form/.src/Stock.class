@@ -413,7 +413,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   
 End
 
-Static Public Function _get(Key As String, Optional {Default} As String) As Picture
+Static Public Function _get(Key As String, Optional {Default} As String, Optional AllowNull As Boolean) As Picture
   
   Dim sPath As String
   Dim hPict As Picture
@@ -516,6 +516,7 @@ __RETURN:
 
   If Not hPict Then
     If {Default} Then Return _get({Default})
+    If AllowNull Then Return Null
     Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key
     hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
   Endif

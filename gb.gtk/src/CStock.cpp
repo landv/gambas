@@ -35,7 +35,7 @@
 
 *******************************************************************************/
 
-BEGIN_METHOD(CSTOCK_get, GB_STRING path; GB_STRING def)
+BEGIN_METHOD(CSTOCK_get, GB_STRING path; GB_STRING def; GB_BOOLEAN anull)
 
 	CPICTURE *Pic;
 	gPicture *pic;
@@ -68,7 +68,7 @@ GB_DESC CStockDesc[] =
   GB_DECLARE("Stock", 0), GB_NOT_CREATABLE(),
 
  
-  GB_STATIC_METHOD("_get", "Picture", CSTOCK_get, "(Key)s[(Default)s]"),
+  GB_STATIC_METHOD("_get", "Picture", CSTOCK_get, "(Key)s[(Default)s(AllowNull)b]"),
   
 
   GB_END_DECLARE
