@@ -434,7 +434,7 @@ C
 _Properties
 C
 s
-*,Border=True,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowBookmark=True,ShowSplitter=True
+*,Border=True,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowPreview,ShowBookmark=True,ShowSplitter=True
 _DefaultEvent
 C
 s
@@ -480,6 +480,10 @@ p
 b
 
 ShowSplitter
+p
+b
+
+ShowPreview
 p
 b
 
@@ -715,7 +719,7 @@ C
 _Properties
 C
 s
-*,Border=True,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark=True,ShowFile=True,ShowButton,Margin,ReadOnly
+*,Border=True,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowPreview,ShowBookmark=True,ShowFile=True,ShowButton,Margin,ReadOnly
 _DefaultEvent
 C
 s
@@ -773,6 +777,10 @@ p
 b
 
 ShowFile
+p
+b
+
+ShowPreview
 p
 b
 

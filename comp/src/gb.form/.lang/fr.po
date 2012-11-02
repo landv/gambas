@@ -108,83 +108,92 @@ msgstr "-"
 msgid "A"
 msgstr "-"
 
-#: FDirChooser.class:420
+#: FDirChooser.class:429
 msgid "All files (*)"
 msgstr "Tous les fichiers (*)"
 
-#: FDirChooser.class:828
+#: FDirChooser.class:837
 msgid "&Bookmark current directory"
 msgstr "&Marquer le répertoire courant"
 
-#: FDirChooser.class:836
+#: FDirChooser.class:845
 msgid "&Edit bookmarks..."
 msgstr "&Editer les signets..."
 
-#: FDirChooser.class:845
+#: FDirChooser.class:854
 msgid "Show &details"
 msgstr "Vue &détaillée"
 
-#: FDirChooser.class:851
+#: FDirChooser.class:860
 msgid "Show &hidden files"
 msgstr "Afficher les fichiers &cachés"
 
-#: FDirChooser.class:859
+#: FDirChooser.class:866
+msgid "Show &image preview"
+msgstr "Prévisualisation des &images"
+
+#: FDirChooser.class:874
 msgid "&Uncompress file"
 msgstr "&Décompresser le fichier"
 
-#: FDirChooser.class:864
+#: FDirChooser.class:879
 msgid "&Create directory"
 msgstr "&Créer un répertoire"
 
-#: FDirChooser.class:869
+#: FDirChooser.class:884
 msgid "Open in &file manager..."
 msgstr "Ouvrir dans le gestionnaire de &fichiers..."
 
-#: FDirChooser.class:874
+#: FDirChooser.class:889
 msgid "&Refresh"
 msgstr "&Actualiser"
 
-#: FDirChooser.class:1012
+#: FDirChooser.class:1027
 msgid "Overwrite"
 msgstr "Ecraser"
 
-#: FDirChooser.class:1012
+#: FDirChooser.class:1027
 msgid "Overwrite all"
 msgstr "Tout écraser"
 
-#: FDirChooser.class:1012
+#: FDirChooser.class:1027
 msgid "This file or directory already exists."
 msgstr "Ce fichier ou ce répertoire existe déjà."
 
-#: FDirChooser.class:1025
+#: FDirChooser.class:1040
 msgid "Cannot uncompress file."
 msgstr "Impossible de décompresser le fichier."
 
-#: FDirChooser.class:1025
+#: FDirChooser.class:1040
 msgid "Unknown archive."
 msgstr "Archive inconnue."
 
-#: FDirChooser.form:55
+#: FDirChooser.form:56
 msgid "Bookmarks"
 msgstr "Signets"
 
-#: FDirChooser.form:97
-msgid "Show files"
-msgstr "Afficher les fichiers"
-
-#: FDirChooser.form:103
+#: FDirChooser.form:76
 msgid "Parent directory"
 msgstr "Répertoire parent"
 
-#: FDirChooser.form:164 FInputBox.form:43 FWizard.class:71
+#: FDirChooser.form:82
+msgid "Show files"
+msgstr "Afficher les fichiers"
+
+#: FDirChooser.form:88
+msgid "Image preview"
+msgstr "Prévisualisation des images"
+
+#: FDirChooser.form:172 FInputBox.form:43 FWizard.class:71
 msgid "OK"
 msgstr "OK"
 
+#: FDirChooser.form:178 FEditBookmark.class:109 FInputBox.form:49
 #: FSidePanel.class:967 FWizard.form:54
 msgid "Cancel"
 msgstr "Annuler"
 
-#: FEditBookmark.class:20 FileView.class:86
+#: FEditBookmark.class:20 FileView.class:98
 msgid "Name"
 msgstr "Nom"
 
@@ -220,49 +229,29 @@ msgstr "&Supprimer"
 msgid "Close"
 msgstr "Fermer"
 
-#: FFontChooser.form:36 FFontChooserOld.form:62
+#: FFontChooser.form:49
 msgid "Bold"
 msgstr "Gras"
 
-#: FFontChooser.form:44 FFontChooserOld.form:62
+#: FFontChooser.form:56
 msgid "Italic"
 msgstr "Italique"
 
-#: FFontChooser.form:53
-msgid "Relative"
-msgstr "Relatif"
-
-#: FFontChooser.form:85 FFontChooserOld.form:123
-msgid "How quickly daft jumping zebras vex"
-msgstr "Portez ce vieux whisky au juge blond qui fume"
-
-#: FFontChooserOld.form:41
-msgid "Family"
-msgstr "Famille"
-
-#: FFontChooserOld.form:56
-msgid "Style"
-msgstr "Style"
-
-#: FFontChooserOld.form:62
-msgid "Bold Italic"
-msgstr "-"
-
-#: FFontChooserOld.form:62
-msgid "Normal"
-msgstr "-"
-
-#: FFontChooserOld.form:71
+#: FFontChooser.form:63
 msgid "Underline"
 msgstr "Souligné"
 
-#: FFontChooserOld.form:76
+#: FFontChooser.form:70
 msgid "Strikeout"
 msgstr "Barré"
 
-#: FFontChooserOld.form:86 FileView.class:88
-msgid "Size"
-msgstr "Taille"
+#: FFontChooser.form:79
+msgid "Relative"
+msgstr "Relatif"
+
+#: FFontChooser.form:113
+msgid "How quickly daft jumping zebras vex"
+msgstr "Portez ce vieux whisky au juge blond qui fume"
 
 #: FIconPanel.form:13
 msgid "ButtonBox1"
@@ -292,23 +281,27 @@ msgstr "&Suivant"
 msgid "&Previous"
 msgstr "&Précédent"
 
-#: FileView.class:90
+#: FileView.class:100
+msgid "Size"
+msgstr "Taille"
+
+#: FileView.class:102
 msgid "Last modified"
 msgstr "Modifié le"
 
-#: FileView.class:176
+#: FileView.class:209
 msgid "&1 B"
 msgstr "&1 o"
 
-#: FileView.class:178
+#: FileView.class:211
 msgid "&1 KiB"
 msgstr "&1 Kio"
 
-#: FileView.class:180
+#: FileView.class:213
 msgid "&1 MiB"
 msgstr "&1 Mio"
 
-#: FileView.class:182
+#: FileView.class:215
 msgid "&1 GiB"
 msgstr "&1 Gio"
 
@@ -319,4 +312,3 @@ msgstr "Le caractère '/' est interdit dans les noms de fichiers ou de répertoi
 #: Wizard.class:77
 msgid "Step #&1"
 msgstr "Étape n°&1"
-

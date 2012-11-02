@@ -290,6 +290,7 @@ End
 Public Sub mnuShowPreview_Click()
 
   fvwChoose.ShowPreview = Not fvwChoose.ShowPreview
+  mnuShowPreview.Checked = fvwChoose.ShowPreview
 
 End
 
@@ -862,7 +863,7 @@ Private Sub FillMenu()
   mnuShowHiddenFiles = hMenu
   
   hMenu = New Menu(mnuPopup) As "mnuShowPreview"
-  hMenu.Text = ("Show &image previews")
+  hMenu.Text = ("Show &image preview")
   hMenu.Checked = fvwChoose.ShowPreview
   hMenu.Visible = fvwChoose.Visible
   mnuShowPreview = hMenu
@@ -1192,3 +1193,16 @@ Public Sub btnPreview_Click()
   fvwChoose.ShowPreview = btnPreview.Value
 
 End
+
+Public Sub GetShowPreview() As Boolean
+  
+  Return fvwChoose.ShowPreview
+  
+End
+
+Public Sub SetShowPreview(bPreview As Boolean)
+  
+  btnPreview.Value = bPreview
+  
+End
+

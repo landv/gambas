@@ -72,7 +72,7 @@ Public Sub _new()
 
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
-  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE"].Insert(Stock.Themes)
+  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "KDE4", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
   cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]

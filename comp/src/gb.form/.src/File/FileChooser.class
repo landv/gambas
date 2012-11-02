@@ -3,7 +3,7 @@
 Inherits UserControl
 Export
 
-Public Const _Properties As String = "*,Border=True,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark=True,ShowFile=True,ShowButton,Margin,ReadOnly"
+Public Const _Properties As String = "*,Border=True,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowPreview,ShowBookmark=True,ShowFile=True,ShowButton,Margin,ReadOnly"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "Chooser"
@@ -20,6 +20,7 @@ Property ShowHidden As Boolean
 Property ShowDetailed As Boolean
 Property ShowBookmark As Boolean
 Property ShowFile As Boolean
+Property ShowPreview As Boolean
 Property Bookmarks As Array
 Property Settings As Variant[]
 Property Read DirView As DirView
@@ -384,5 +385,17 @@ End
 Private Sub Margin_Write(Value As Boolean)
 
   frmChooser.SetMargin(Value)
+
+End
+
+Private Function ShowPreview_Read() As Boolean
+
+  Return frmChooser.GetPreview()
+
+End
+
+Private Sub ShowPreview_Write(Value As Boolean)
+
+  frmChooser.SetShowPreview(Value)
 
 End
