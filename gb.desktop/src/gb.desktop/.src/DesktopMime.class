@@ -66,6 +66,7 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   'If File.Ext(sFile) = "jpg" Then Stop
   If Not hImage Then
     Try hImage = Stock[CStr(Size) &/ "mimetypes/" & sMime, CStr(Size) &/ "mimetypes/" & _$sGenericIcon].Image
+    If Not hImage Then Try hImage = Stock[CStr(Size) &/ "mimes/" & sMime, CStr(Size) &/ "mimes/" & _$sGenericIcon, True].Image
   Endif
   
   ' If Not hImage Then

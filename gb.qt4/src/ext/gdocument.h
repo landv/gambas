@@ -104,6 +104,7 @@ private:
 	bool readOnly;
 	bool blockUndo;
 	GEditor *selector;
+	GEditor *_currentView;
 	int xs, ys, xs2, ys2;
 	int tabWidth;
 	int colorizeFrom;
@@ -139,6 +140,10 @@ public:
 
 	void clear();
 	void reset(bool saved);
+	
+	void setCurrentView(GEditor *view) { _currentView = view; }
+	GEditor *currentView() const { return _currentView; }
+	
 	GString getText();
 	void setText(const GString & text);
 	int getLength() const;

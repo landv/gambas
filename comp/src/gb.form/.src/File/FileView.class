@@ -120,46 +120,11 @@ Private Function CheckFilter(sFile As String) As Boolean
   
 End
 
-Private Sub GetMimeIcon(hMime As DesktopMime, sPath As String, iSize As Integer) As Picture
+Private Sub GetMimeIcon(sPath As String, iSize As Integer) As Picture
   
-  Dim hImage As Image
-  Dim hIcon As Image
-  Dim sIcon As String
+  Dim hMime As DesktopMime
 
-  $hPict = Null
-  Try Raise Icon(sPath)
-  If $hPict Then Return $hPict
-  
-  If IsDir(sPath) Then Return
-  
-  '****** show the image content
-  If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
-    If Stat(sPath).Size > 65536 Then Goto _NOPIC
-    
-    hImage = Image.Load(sPath)
-    If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
-      If hImage.Width > hImage.Height Then 
-        hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
-      Else
-        hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
-      Endif
-    Endif
-    
-    hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
-    Paint.Begin(hIcon)
-    Paint.AntiAlias = False
-    Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
-    Paint.Brush = Paint.Color(Color.Gray)
-    Paint.Stroke
-    Paint.End
-    hIcon.DrawImage(hImage, 2, 2)
-    
-    Return hIcon.Picture
-    
-  Endif
-  
-_NOPIC:
-  '*************
+  hMime = DesktopMime.FromFile(sPath)
   
   Return hMime.GetIcon(iSize).Picture
 
@@ -170,15 +135,13 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   Dim hImage As Image
   Dim hIcon As Image
   Dim sIcon As String
+  Dim hPict As Picture
   
   $hPict = Null
   Try Raise Icon(sPath)
   If $hPict Then Return $hPict
   
   If IsDir(sPath) Then Return
-  
-  Try sIcon = $cExt[File.Ext(sPath)]
-  If sIcon Then Return Picture["icon:/" & CStr(iSize) &/ sIcon]
   
   If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
     If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
@@ -204,7 +167,17 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
     Return hIcon.Picture
     
   Endif
-  
+
+  If $bDesktopIsLoaded Then
+    
+    hPict = GetMimeIcon(sPath, iSize)
+    If hPict Then Return hPict
+    
+  Endif
+    
+  Try sIcon = $cExt[File.Ext(sPath)]
+  If sIcon Then Return Picture["icon:/" & CStr(iSize) &/ sIcon]
+    
   With Stat(sPath)
     
     If InStr(.Perm[System.User.Name], "x") Then Return Picture["icon:/" & CStr(iSize) &/ "exec"]
@@ -266,7 +239,6 @@ Private Sub RefreshView()
   Dim aSel As String[]
   Dim aDir As New String[]
   Dim I As Integer
-  Dim hMime As DesktopMime
 
   Inc Application.Busy
   
@@ -299,12 +271,7 @@ Private Sub RefreshView()
         If $aFilter And If CheckFilter(sFile) Then Continue
         sPrefix = "1"
       Endif
-      If $bDesktopIsLoaded Then
-        hMime = DesktopMime.FromFile(sDir &/ sFile)
-        hPict = GetMimeIcon(hMime, sDir &/ sFile, iSize)
-      Else
-        hPict = GetIcon(sDir &/ sFile, iSize)
-      Endif
+      hPict = GetIcon(sDir &/ sFile, iSize)
       If Not hPict Then 
         If .Type = gb.Directory Then 
           hPict = hPictFolder

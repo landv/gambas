@@ -376,6 +376,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   For Each sFile In Split(sFile, ";")
     
     sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
+    
     sName = File.Name(sPath)
     sDir = File.Dir(sPath)
     
@@ -515,9 +516,14 @@ Static Public Function _get(Key As String, Optional {Default} As String) As Pict
 __RETURN:
 
   If Not hPict Then
+    
     If {Default} Then Return _get({Default})
-    Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key
-    If $bDebug Then hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
+    
+    If $bDebug Then
+      Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key    
+      hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
+    Endif
+    
   Endif
 
   If hPict Then

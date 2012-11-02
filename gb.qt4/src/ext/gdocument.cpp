@@ -29,7 +29,7 @@
 #include "gview.h"
 #include "gdocument.h"
 
-//#define DEBUG_UNDO
+//#define DEBUG_UNDO 1
 
 #define GMAX(x, y) ((x) > (y) ? (x) : (y))
 #define GMIN(x, y) ((x) < (y) ? (x) : (y))
@@ -88,6 +88,52 @@ bool GLine::isEmpty() const
 
 /**---- GCommand -----------------------------------------------------------*/
 
+struct GCommandDocument
+{
+public:
+	GEditor *view;
+	int cx;
+	int cy;
+	int sx;
+	int sy;
+	int sx2;
+	int sy2;
+	
+	GCommandDocument() { }
+	GCommandDocument(GDocument *doc);
+	void process(GDocument *doc) const;
+	void print() const;
+};
+
+GCommandDocument::GCommandDocument(GDocument *doc)
+{
+	view = doc->currentView();
+	
+	view->getCursor(&cy, &cx);
+	
+	if (doc->hasSelection())
+		doc->getSelection(&sy, &sx, &sy2, &sx2, false); // TODO: store insertMode
+	else
+		sx = sy = sx2 = sy2 = -1;
+}
+
+void GCommandDocument::process(GDocument *doc) const
+{
+	//qDebug("goto %d %d", cx, cy);
+	view->cursorGoto(cy, cx, false);
+	if (sx >= 0)
+	{
+		//qDebug("select %d %d %d %d", sx, sy, sx2, sy2);
+		doc->startSelection(view, sy, sx);
+		doc->endSelection(sy2, sx2);
+	}
+}
+
+void GCommandDocument::print() const
+{
+	qDebug("- %d %d [%d %d %d %d]", cx, cy, sx, sy, sx2, sy2);
+}
+
 class GCommand
 {
 public:
@@ -110,12 +156,14 @@ class GBeginCommand: public GCommand
 {
 public:
 	bool _linked;
+	GCommandDocument info;
 	
-	GBeginCommand(bool linked = false) { _linked = linked; }
+	GBeginCommand(GCommandDocument *info, bool linked = false) { _linked = linked; this->info = *info; }
 	Type type() const { return Begin; }
-	void print() const { qDebug("Begin"); }
+	void print() const { qDebug("Begin"); info.print(); }
 	int nest() const { return 1; }
 	bool linked() const { return _linked; }
+	void process(GDocument *doc, bool undo) const { info.process(doc); }
 };
 
 class GEndCommand: public GCommand
@@ -136,14 +184,16 @@ class GDeleteCommand: public GCommand
 public:
 	int x, y, x2, y2;
 	GString str;
+	GCommandDocument info;
 
-	GDeleteCommand(int y, int x, int y2, int x2, const GString & str)
+	GDeleteCommand(GCommandDocument *info, int y, int x, int y2, int x2, const GString &str)
 	{
 		this->x = x; this->y = y; this->x2 = x2; this->y2 = y2; this->str = str;
+		this->info = *info;
 	}
-
+	
 	Type type() const { return Delete; }
-	void print() const { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
+	void print() const { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); info.print(); }
 
 	bool merge(GCommand *c) const
 	{
@@ -151,6 +201,9 @@ public:
 			return false;
 
 		GDeleteCommand *o = (GDeleteCommand *)c;
+		
+		if (info.view != o->info.view)
+			return false;
 
 		if (x2 != o->x || y2 != o->y)
 			return false;
@@ -158,6 +211,7 @@ public:
 		o->str.prepend(str);
 		o->x = x;
 		o->y = y;
+		o->info = info;
 		return true;
 	}
 
@@ -167,15 +221,18 @@ public:
 			doc->insert(y, x, str);
 		else
 			doc->remove(y, x, y2, x2);
+		
+		info.process(doc);
 	}
 };
 
 class GInsertCommand: public GDeleteCommand
 {
 public:
-	GInsertCommand(int y, int x, int y2, int x2, const GString & str): GDeleteCommand(y, x, y2, x2, str) {}
+	GInsertCommand(GCommandDocument *info, int y, int x, int y2, int x2, const GString &str): 
+		GDeleteCommand(info, y, x, y2, x2, str) {}
 	Type type() const { return Insert; }
-	void print() const { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
+	void print() const { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); info.print(); }
 
 	bool merge(GCommand *c) const
 	{
@@ -187,6 +244,9 @@ public:
 
 		GInsertCommand *o = (GInsertCommand *)c;
 
+		if (o->info.view != info.view)
+			return false;
+		
 		if (o->str.length() && o->str.isNewLine(str.length() - 1))
 			return false;
 
@@ -227,6 +287,7 @@ GDocument::GDocument()
 	readOnly = false;
 	highlightMode = None;
 	keywordsUseUpperCase = false;
+	_currentView = NULL;
 
 	//lines = new GArray<GLine>;
 	lines.setAutoDelete(true);
@@ -397,6 +458,7 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 	GString rest;
 	int yy;
 	int i, ns;
+	GCommandDocument info(this);
 
 	if (readOnly)
 	{
@@ -504,7 +566,7 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 	}
 	
 	begin();
-	addUndo(new GInsertCommand(ys, xs, y, x, text));
+	addUndo(new GInsertCommand(&info, ys, xs, y, x, text));
 	enableColorize();
 	end();
 
@@ -536,6 +598,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 	GLine *l, *l2;
 	GString text, rest;
 	int y;
+	GCommandDocument info(this);
 
 	yAfter = y1;
 	xAfter = x1;
@@ -616,7 +679,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 	}
 
 	begin();
-	addUndo(new GDeleteCommand(y1, x1, y2, x2, text));
+	addUndo(new GDeleteCommand(&info, y1, x1, y2, x2, text));
 	enableColorize();
 	end();
 
@@ -657,8 +720,14 @@ void GDocument::unsubscribe(GEditor *view)
 {
 	//qDebug("unsubscribe %p -> %p", view, this);
 	views.removeRef(view);
+	
 	if (views.count() == 0)
 		delete this;
+	else
+	{
+		if (_currentView == view)
+			_currentView = views.at(0);
+	}
 }
 
 void GDocument::subscribe(GEditor *view)
@@ -668,6 +737,9 @@ void GDocument::subscribe(GEditor *view)
 	views.append(view);
 	view->setNumRows(lines.count());
 	view->updateContents();
+	
+	if (!_currentView)
+		_currentView = view;
 }
 
 void GDocument::updateViews(int row, int count)
@@ -818,17 +890,17 @@ void GDocument::eraseSelection(bool insertMode)
 	if (!selector)
 		return;
 
+	begin();
 	getSelection(&y1, &x1, &y2, &x2, false);
 	selector = NULL;
 	if (!insertMode)
 		remove(y1, x1, y2, x2);
 	else
 	{
-		begin();
 		for (i = y1; i <= y2; i++)
 			remove(i, x1, i, x2);
-		end();
 	}
+	end();
 }
 
 void GDocument::clearUndo()
@@ -843,8 +915,10 @@ void GDocument::addUndo(GCommand *c)
 	if (blockUndo)
 		return;
 	
-	//fprintf(stderr, "addUndo: ");
-	//c->print();
+	#if DEBUG_UNDO
+		fprintf(stderr, "addUndo: ");
+		c->print();
+	#endif
 
 	if (!undoList.isEmpty())
 	{
@@ -877,7 +951,11 @@ void GDocument::begin(bool linked)
 	if (undoLevel == 0)
 		textHasChanged = false;
 	undoLevel++;  
-	if (!blockUndo) addUndo(new GBeginCommand(linked));
+	if (!blockUndo)
+	{
+		GCommandDocument info(this);
+		addUndo(new GBeginCommand(&info, linked));
+	}
 }
 
 void GDocument::end(bool linked)
@@ -1318,6 +1396,8 @@ void GDocument::colorize(int y, bool force)
 
 		if (l->s.length())
 		{
+			GCommandDocument info(this);
+				
 			old = l->s;
 			GB.FreeArray(&l->highlight);
 			proc = l->proc;
@@ -1333,9 +1413,9 @@ void GDocument::colorize(int y, bool force)
 					undo = true;
 					begin();
 				}
-				addUndo(new GDeleteCommand(yy, 0, yy, old.length(), old));
+				addUndo(new GDeleteCommand(&info, yy, 0, yy, old.length(), old));
 				if (l->s.length())
-					addUndo(new GInsertCommand(yy, 0, yy, l->s.length(), l->s));
+					addUndo(new GInsertCommand(&info, yy, 0, yy, l->s.length(), l->s));
 				
 				//maxLength = GMAX(maxLength, (int)l->s.length());
 				updateLineWidth(yy);

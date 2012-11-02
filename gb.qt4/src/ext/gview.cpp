@@ -1605,9 +1605,11 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 void GEditor::insert(QString text)
 {
+	doc->begin();
 	doc->eraseSelection(_insertMode);
 	unfoldLine(y);
 	doc->insert(y, x, text);
+	doc->end();
 	cursorGoto(doc->yAfter, doc->xAfter, false);
 }
 
@@ -2010,14 +2012,14 @@ void GEditor::paste(bool mouse)
 
 void GEditor::undo()
 {
-	if (!doc->undo())
-		cursorGoto(doc->yAfter, doc->xAfter, false);
+	doc->undo();
+	//cursorGoto(doc->yAfter, doc->xAfter, false);
 }
 
 void GEditor::redo()
 {
-	if (!doc->redo())
-		cursorGoto(doc->yAfter, doc->xAfter, false);
+	doc->redo();
+	//cursorGoto(doc->yAfter, doc->xAfter, false);
 }
 
 void GEditor::selectAll()
@@ -2448,6 +2450,7 @@ void GEditor::focusInEvent(QFocusEvent *e)
 	startBlink();
 	//ensureCursorVisible();
 	Q3ScrollView::focusInEvent(e);
+	doc->setCurrentView(this);
 }
 
 void GEditor::focusOutEvent(QFocusEvent *e)
