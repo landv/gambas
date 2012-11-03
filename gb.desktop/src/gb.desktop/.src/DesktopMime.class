@@ -12,7 +12,7 @@ Static Private TypeToMInfo As New Collection        ''Table that return a mimeob
 Static Private $aCurMimes As DesktopMime[]          ''Temporary table for _Next walking
 Static Private $aDataDir As String[]                ''Table of Xdg Dirs
 Static Private $cIconCache As New Collection        ''Cache for icons
-
+Static Private $cCommentCache As New Collection     ''Cache for comments
 Public _$iWeight As Integer
 Public _$sType As String
 Public _$sPattern As String
@@ -33,16 +33,6 @@ Public Function _compare(Other As DesktopMime) As Integer
   Return Comp(_$sPattern, Other._$sPattern, gb.IgnoreCase)
   
 End
-
-' Public Function _Set(Optional Weight As Integer, Type As String, Pattern As String, GenericIcon As String, IsSuffix As Boolean)
-'   
-'   $iWeight = Weight
-'   $sType = Type
-'   $sPattern = Pattern
-'   $sGenericIcon = GenericIcon
-'   $bIsSuffix = IsSuffix
-'   
-' End
 
 Public Sub GetIcon(Optional Size As Integer = 16) As Image
   
@@ -68,10 +58,6 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
     Try hImage = Stock[CStr(Size) &/ "$(mime)" &/ sMime, CStr(Size) &/ "$(mime)" &/ _$sGenericIcon].Image
   Endif
   
-  ' If Not hImage Then
-  '   
-  '   Try hImage = Stock[CStr(Size) &/ "mimetypes/" & hglob.GenericIcon].Image
-  ' Endif
   $cIconCache[sKey] = hImage
   Return hImage
   
@@ -415,6 +401,8 @@ Public Function GetComment(Optional Common As Boolean) As String
   Dim sLang As String = Left(System.Language, 2)
   Dim sRet As String
   'Dim sTypePath As String = Type & ".xml"
+  If $cCommentCache.Exist(_$sType) Then Return $cCommentCache[_$sType]
+    'If _$sType = "application/vnd.sun.xml.calc.template" Then Stop
   For Each s In GetDataDir()
     sPath = s &/ "mime" &/ _$sType & ".xml"
     If Exist(sPath) Then
@@ -423,18 +411,21 @@ Public Function GetComment(Optional Common As Boolean) As String
         
         If Not common Then 
           If InStr(sline, "<comment xml:lang=\"" & sLang & "\">") Then
-            Return Scan(sLine, "*>*<*")[1]
+            sRet = Scan(sLine, "*>*<*")[1]
             Break
           Endif
         Endif
-        If InStr(sLine, "comment>") Then 
+        If InStr(sLine, "<comment>") Then 
           sRet = Scan(sLine, "*>*<*")[1]
-          If sRet And If common Then Return sRet
+          If sRet And If common Then Break
         Endif
         
-    Next
-    If sRet Then Return sRet  
-  Endif
-Next
-
+      Next
+      If sRet Then 
+        $cCommentCache[_$sType] = sRet
+        Return sRet  
+      Endif
+    Endif
+  Next
+  
 End
