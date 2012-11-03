@@ -117,7 +117,6 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       Else
         'Inc $iCol
       Endif
-      Debug "'"; $sText; "'";; $hEditor.Column;; $iCol
       FillWithFiles(String.Left(sClass, iPos))
   End Select
 
