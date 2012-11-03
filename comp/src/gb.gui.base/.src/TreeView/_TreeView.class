@@ -431,7 +431,6 @@ Public Sub GridView_Activate()
   Dim bCancel As Boolean
   Dim sCursor As String
   
-  Debug $hView.Row
   'If Not hItem Then Return
   
   sCursor = $sCursor
@@ -954,9 +953,9 @@ Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean
     Endif
   Else
     If bBefore Then
-      iNewPos = 0
-    Else
       iNewPos = aChildren.Count
+    Else
+      iNewPos = 0
     Endif
   Endif
   
