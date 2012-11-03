@@ -188,8 +188,8 @@ Static Private Sub LoadMimeDatabase()
   
 Catch
   
- Refresh
- Error "gb.desktop: unable to read mime database"
+  Refresh
+  Error "gb.desktop: unable to read mime database"
   
 End
 
@@ -325,8 +325,12 @@ Static Public Function _next() As DesktopMime
   If Not $aCurMimes Then $aCurMimes = $aMimesSuffix
   If Not Enum.Index Then Enum.Index = 0
   Enum.Index += 1
-  If Enum.Index = $aCurMimes.count + 1 Then Enum.Stop
-  Try Return $aCurMimes[Enum.Index - 1]
+  If Enum.Index = $aCurMimes.count + 1 Then 
+    Enum.Stop
+    $aCurMimes = Null
+    Return
+  Endif
+  Return $aCurMimes[Enum.Index - 1]
   
 End
 
@@ -403,18 +407,34 @@ Static Private Sub PreciseSearch_Write(Value As Boolean)
   
 End
 
+Public Function GetComment(Optional Common As Boolean) As String
+  
+  Dim sPath As String 
+  Dim s As String
+  Dim sLine As String
+  Dim sLang As String = Left(System.Language, 2)
+  Dim sRet As String
+  'Dim sTypePath As String = Type & ".xml"
+  For Each s In GetDataDir()
+    sPath = s &/ "mime" &/ _$sType & ".xml"
+    If Exist(sPath) Then
+      
+      For Each sLine In Split(File.Load(sPath), "\n")
+        
+        If Not common Then 
+          If InStr(sline, "<comment xml:lang=\"" & sLang & "\">") Then
+            Return Scan(sLine, "*>*<*")[1]
+            Break
+          Endif
+        Endif
+        If InStr(sLine, "comment>") Then 
+          sRet = Scan(sLine, "*>*<*")[1]
+          If sRet And If common Then Return sRet
+        Endif
+        
+    Next
+    If sRet Then Return sRet  
+  Endif
+Next
 
-' Public Function GetDescription(Optional Common As Boolean) As String
-' 
-'   Dim sPath As String
-'   Dim s As String
-'   'Dim sTypePath As String = Type & ".xml"
-'   For Each s In GetDataDir()
-'     
-'     'If Exist(s &/ "mime" &/
-'     
-'   Next
-'   
-'   
-'   
-' End
+End
