@@ -39,6 +39,8 @@ Private $bClosable As Boolean
 Private $iCurrent As Integer = -1
 Private $hPanel As DrawingArea
 
+Private $hTimerEnsureVisible As Timer
+
 Private Const ARROW_WIDTH As Integer = 12
 
 Public Sub _new()
@@ -71,47 +73,100 @@ End
 
 Public Sub _EnsureCurrentVisible()
   
+  If $hTimerEnsureVisible Then Return
+  $hTimerEnsureVisible = New Timer As "EnsureCurrentVisible"
+  $hTimerEnsureVisible.Trigger
+  
+End
+
+
+Public Sub EnsureCurrentVisible_Timer()
+  
   Dim X, W, M As Integer
+  
+  $hTimerEnsureVisible = Null
   
   If $iCurrent < 0 Or If $iCurrent > $aButton.Max Then Return
   If Not $aButton[$iCurrent].Visible Then Return
   
-  If $iCurrent = 0 Then
+  If System.RightToLeft Then
+    
     $X = 0
+    
+    If $iCurrent = 0 Then
+      W = Me.W
+    Else
+      With $aButton[$iCurrent]
+        
+        X = .X
+        W = $hTabBarContainer.W
+        
+        If X < ARROW_WIDTH Then
+          W += ARROW_WIDTH - X
+        Else If X >= ($hTabBar.W - .W) Then
+          W -= X - ($hTabBar.W - .W)
+        Endif
+        
+        'M = .X + W - $hTabBar.W + ARROW_WIDTH
+        'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
+        '$X = Max($X, - M)
+        
+      End With
+    Endif
+    
+    W = Max(Me.W, W)
+    
+    '$X = Max($hTabBar.W - $hTabBarContainer.W, $X)
+    '$X = Min(ARROW_WIDTH, $X)
+    
   Else
-    With $aButton[$iCurrent]
-      
-      X = $hTabBarContainer.X + .X
-      W = .W
-      
-      If X < 4 Then
-        $X = $X - X + 4
-      Else If X > ($hTabBar.W - W - ARROW_WIDTH) Then
-        $X = $X - (X - ($hTabBar.W - W))
-        'If $iCurrent < $aButton.Max Then 
-        $X -= ARROW_WIDTH
-      Endif
-      
-      M = .X + W - $hTabBar.W + ARROW_WIDTH
-      'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
-      $X = Max($X, - M)
-      
-    End With
-
-  Endif
+    
+    If $iCurrent = 0 Then
+      $X = 0
+    Else
+      With $aButton[$iCurrent]
+        
+        X = $hTabBarContainer.X + .X
+        W = .W
+        
+        If X < 4 Then
+          $X = $X - X + 4
+        Else If X >= ($hTabBar.W - W - ARROW_WIDTH) Then
+          $X = $X - (X - ($hTabBar.W - W))
+          'If $iCurrent < $aButton.Max Then 
+          $X -= ARROW_WIDTH
+        Endif
+        
+        M = .X + W - $hTabBar.W + ARROW_WIDTH
+        'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
+        $X = Max($X, - M)
+        
+      End With
   
-  $X = Min(0, $X)
+    Endif
+    
+    $X = Min(0, $X)
+    W = Me.W - $X
+  
+  Endif
   
   If $aButton.Count Then
     With $aButton[$aButton.Max]
-      $bArrow = ($X + .X + .W) > $hTabBar.W
+      If System.RightToLeft Then
+        $bArrow = ($X + .X) < 0
+      Else
+        $bArrow = ($X + .X + .W) > $hTabBar.W
+      Endif
     End With
   Else
     $bArrow = False
   Endif
     
-  W = Me.W - $X
-  If $bArrow Then W -= ARROW_WIDTH
+  If $bArrow Then
+    W -= ARROW_WIDTH
+    If System.RightToLeft Then $X += ARROW_WIDTH
+  Endif
+  
   $hTabBarContainer.Move($X, 0, W, $hTabBar.H)
 
 End
@@ -396,9 +451,17 @@ Public Sub TabBarContainer_Draw()
   Draw.Foreground = Color.LightForeground
   Select Case $iOrientation
     Case Align.Top
-      Draw.Line(hLast.X + hLast.W, $hTabBarContainer.H - 1, $hTabBarContainer.W, $hTabBar.H - 1)
+      If System.RightToLeft Then
+        Draw.Line(0, $hTabBarContainer.H - 1, hLast.X - 1, $hTabBar.H - 1)
+      Else
+        Draw.Line(hLast.X + hLast.W, $hTabBarContainer.H - 1, $hTabBarContainer.W, $hTabBar.H - 1)
+      Endif
     Case Align.Bottom
-      Draw.Line(hLast.X + hLast.W, 0, $hTabBarContainer.W, 0)
+      If System.RightToLeft Then
+        Draw.Line(0, 0, hLast.X - 1, 0)
+      Else
+        Draw.Line(hLast.X + hLast.W, 0, $hTabBarContainer.W, 0)
+      Endif
   End Select
   
 End
@@ -409,36 +472,66 @@ Public Sub TabBar_Draw()
   
   If $bArrow Then
 
-    X = $hTabBar.W - ARROW_WIDTH
+    If System.RightToLeft Then
 
-    If $bHighlight Then
-      Draw.FillRect(X, 0, ARROW_WIDTH, $hTabBar.H, _GetBackground())
-    Endif
+      X = ARROW_WIDTH
+
+      If $bHighlight Then
+        Draw.FillRect(0, 0, ARROW_WIDTH, $hTabBar.H, _GetBackground())
+      Endif
+
+      Draw.Foreground = Color.LightForeground
+      Draw.Style.Arrow(0, 0, 8, $hTabBar.H, Align.Left)
+      Select Case $iOrientation
+        Case Align.Top
+          Draw.Line(X, $hTabBarContainer.H - 1, 0, $hTabBar.H - 1)
+        Case Align.Bottom
+          Draw.Line(X, 0, 0, 0)
+      End Select
+      
+    Else
+      
+      X = $hTabBar.W - ARROW_WIDTH
   
-    Draw.Foreground = Color.LightForeground
-    Draw.Style.Arrow($hTabBar.W - 8, 0, 8, $hTabBar.H, Align.Right)
-    Select Case $iOrientation
-      Case Align.Top
-        Draw.Line(X, $hTabBarContainer.H - 1, $hTabBar.W - 1, $hTabBar.H - 1)
-      Case Align.Bottom
-        Draw.Line(X, 0, $hTabBar.W - 1, 0)
-    End Select
+      If $bHighlight Then
+        Draw.FillRect(X, 0, ARROW_WIDTH, $hTabBar.H, _GetBackground())
+      Endif
+    
+      Draw.Foreground = Color.LightForeground
+      Draw.Style.Arrow($hTabBar.W - 8, 0, 8, $hTabBar.H, Align.Right)
+      Select Case $iOrientation
+        Case Align.Top
+          Draw.Line(X, $hTabBarContainer.H - 1, $hTabBar.W - 1, $hTabBar.H - 1)
+        Case Align.Bottom
+          Draw.Line(X, 0, $hTabBar.W - 1, 0)
+      End Select
+      
+    Endif
+    
   Endif
   
 End
 
 Public Sub TabBar_MouseDown()
   
-  If Mouse.Left And If $bArrow And If Mouse.X >= ($hTabBar.W - 6) Then
-    Try Inc Me.Index
+  If Mouse.Left And If $bArrow Then
+    If System.RightToLeft Then
+      If Mouse.X < 6 Then Try Inc Me.Index
+    Else
+      If Mouse.X >= ($hTabBar.W - 6) Then Try Inc Me.Index
+    Endif
   Endif
   
 End
 
 Public Sub TabBar_DblClick()
   
-  If Mouse.Left And If $bArrow And If Mouse.X >= ($hTabBar.W - 6) Then
-    Try Me.Index = Me.Count - 1
+  If Mouse.Left And If $bArrow Then
+    If System.RightToLeft Then
+      If Mouse.X < 6 Then Try Me.Index = Me.Count - 1
+    Else
+      If Mouse.X >= ($hTabBar.W - 6) Then Try Me.Index = Me.Count - 1
+    Endif
   Endif
   
 End
@@ -623,11 +716,19 @@ Public Sub TabBarContainer_KeyPress()
   Select Case Key.Code
     
     Case Key.Left, Key.PageUp
-      Try Dec Me.Index
+      If System.RightToLeft Then
+        Try Inc Me.Index
+      Else
+        Try Dec Me.Index
+      Endif
       Stop Event
       
     Case Key.Right, Key.PageDown
-      Try Inc Me.Index
+      If System.RightToLeft Then
+        Try Dec Me.Index
+      Else
+        Try Inc Me.Index
+      Endif
       Stop Event
       
     Case Key.Home

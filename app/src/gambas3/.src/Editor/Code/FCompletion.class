@@ -73,6 +73,8 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   $sClass = ""
   $sEventClass = ""
   
+  $bShowHelp = Settings["/ShowHelpInPopup", 1] 
+  
   Select $sMode
     Case "."
       $sText = ""
@@ -105,6 +107,18 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       Endif
       $iCol -= Len(sClass) + 2
       FillWithIdent(Left$(sClass, $iLen))
+    Case "/"
+      iPos = String.RInStr(sClass, "/")
+      $sText = String.Mid$(sClass, iPos + 1)
+      $iLen = String.Len($sText)
+      If $iLen Then
+        $iCol -= String.Len($sText) + 2
+        sMode = "<"
+      Else
+        'Inc $iCol
+      Endif
+      Debug "'"; $sText; "'";; $hEditor.Column;; $iCol
+      FillWithFiles(String.Left(sClass, iPos))
   End Select
 
   If gvwComp.Rows.Count = 0 Then
@@ -112,15 +126,13 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     Return
   Endif
   
-  $bShowHelp = Settings["/ShowHelpInPopup", 1] 
-  
   'PRINT "Open: $hEditor = "; $hEditor
 
   'lvwComp.MoveFirst
   'H = lvwComp.Item.H
   H = gvwComp.Rows.H
   
-  If sMode = "<" Or sMode = "A" Then 
+  If sMode = "<" Or If sMode = "A" Then 
     If FindItem(True) Then 
       Dec Application.Busy
       Return
@@ -142,18 +154,18 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     $iMinH = Desktop.Scale * 24
     gvwComp.Expand = False
     gvwComp.W = W
-    Me.Resize(Max($iMinW, Me.W), Max(Me.H, Max($iMinH, H * Min(8, gvwComp.Rows.Count) + 2)))
+    Me.Resize(Max($iMinW, Me.W), Max(Me.H, Max($iMinH, Min(10 * gvwComp.Rows[0].H, gvwComp.ScrollH) + 2)))
   Else
     sepHelp.Hide
     webHelp.Hide
     panRight.Hide
     gvwComp.Expand = True
-    Me.Resize(W + 4, H * Min(8, gvwComp.Rows.Count) + 2)
+    Me.Resize(W + 4, Min(10 * gvwComp.Rows[0].H, gvwComp.ScrollH) + 2)
   Endif
 
   sText = String.Left($hEditor.Lines[$hEditor.Line].Text, $iCol)
   
-  If InStr(" .", sMode) And If Key.Code <> Key.Backspace Then 
+  If InStr(" ./", sMode) And If Key.Code <> Key.Backspace Then 
     sText &= Key.Text
   Endif
 
@@ -223,6 +235,7 @@ Private Sub AddRow(sKey As String, sText As String, hPic As Picture)
     .Text = sText
     .Picture = hPic
   End With
+  gvwComp.Rows[Y].H = -1
   
   $aKey.Add(sKey)
   
@@ -518,13 +531,35 @@ Private Sub FillWithSpecial()
   
 End
 
-' PUBLIC SUB Form_Resize()
-'
-'   'PRINT "Form_Resize: ME.H = "; ME.H; " Me.ClientH =";ME.ClientH
-'   panComp.Move(0, 0, ME.ClientW, ME.ClientH)
-'   lvwComp.Move(1, 1, panComp.W - 2, panComp.H - 2)
-'
-' END
+Private Sub FillWithFiles(sWord As String)
+
+  Dim iPos As Integer
+  Dim sName As String
+  Dim sDir As String
+  Dim hPictFile As Picture = Picture["icon:/16/file"]
+  Dim hPictDir As Picture = Picture["icon:/16/directory"]
+  
+  ClearRows
+  
+  sDir = sWord
+  If sDir And If Left(sDir) <> "/" And If sDir Not Begins "~/" Then
+    sDir = Project.Dir &/ sDir
+  Endif
+  
+  iPos = RInStr(sDir, "/")
+  sDir = Left(sDir, iPos)
+  If Not IsDir(sDir) Then Return
+  
+  For Each sName In Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
+    'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
+    'If Not hPict Then hPict = hPictFile
+    AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPictFile))
+    $iMaxLen = Max($iMaxLen, Len(sName))
+  Next
+  
+  $bShowHelp = False
+  
+End
 
 Public Function ManageKey() As Boolean
 
@@ -587,8 +622,8 @@ Public Function ManageKey() As Boolean
       Return False 
 
     Case Key.Backspace
-      If Len($sText) > $iLen Then
-        $sText = Left$($sText, -1)
+      If String.Len($sText) > $iLen Then
+        $sText = String.Left$($sText, -1)
         FindItem
       Else
         Me.Hide
@@ -604,15 +639,20 @@ Public Function ManageKey() As Boolean
       Endif 
 
     Case Else
+      
       If Key.Text Then
-        If InStr(FEditor.IDENT_CAR, Key.Text) Then
+
+        If $sMode = "/" Then
+          $sText &= Key.Text
+          Return FindItem()
+        Else If InStr(FEditor.IDENT_CAR, Key.Text) Then
           If Key.Text = "_" Then 
             If GetEvents($sText) Then 
               Me.Hide
               Return 
             Endif
           Endif
-          $sText = $sText & Key.Text
+          $sText &= Key.Text
           Return FindItem()
         Else If InStr("([.!", Key.Text) > 0 And InStr(". A<", $sMode) > 0 Then
           InsertItem
@@ -638,10 +678,10 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
   Dim iRow As Integer
 
   'sComp = Replace($sText, "[", "[[]") & "*"
-  sComp = UCase($sText)
+  sComp = String.UCase($sText)
 
   For I = 0 To gvwComp.Rows.Max
-    If UCase(gvwComp[I, 0].Text) Begins sComp Then Break
+    If String.UCase(gvwComp[I, 0].Text) Begins sComp Then Break
   Next
 
   If I >= gvwComp.Rows.Count Then
@@ -655,14 +695,14 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
 
     With gvwComp[I, 0]
       sText = Trim(.Text)
-      If Not (UCase(sText) Begins sComp) Then Break
+      If Not (String.UCase(sText) Begins sComp) Then Break
       If iLevel <= 2 And If .Text = $sText Then
         iRow = I
         iLevel = 3
-      Else If iLevel <= 1 And If UCase(sText) = UCase($sText) Then
+      Else If iLevel <= 1 And If String.UCase(sText) = String.UCase($sText) Then
         iRow = I
         iLevel = 2
-      Else If iLevel <= 0 And If Left(sText, Len($sText)) = $sText Then 
+      Else If iLevel <= 0 And If String.Left(sText, String.Len($sText)) = $sText Then 
         iRow = I
         iLevel = 1
       Endif
@@ -862,3 +902,4 @@ Public Sub webHelp_Error()
   Endif
 
 End
+

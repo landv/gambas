@@ -392,6 +392,14 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   
   For Each sFile In Split(sFile, ";")
     
+    If System.RightToLeft Then
+      If sFile Ends "-ltr" Then
+        sFile = Left(sFile, -4) & "-rtl"
+      Else If sFile Ends "-rtl" Then
+        sFile = Left(sFile, -4) & "-ltr"
+      Endif
+    Endif
+      
     sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
     
     sName = File.Name(sPath)

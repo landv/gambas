@@ -68,7 +68,7 @@ Public Sub _new()
   
   $hRoot = New _TreeView_Item("", "") As "Item"
   
-  $hObserver = New Observer($hView.Children[0]) As "ScrollArea"
+  $hObserver = New Observer($hView.Proxy) As "ScrollArea"
   
 End
 
@@ -431,7 +431,8 @@ Public Sub GridView_Activate()
   Dim bCancel As Boolean
   Dim sCursor As String
   
-  If Not hItem Then Return
+  Debug $hView.Row
+  'If Not hItem Then Return
   
   sCursor = $sCursor
   SetCursor(hItem.Key)
@@ -931,6 +932,8 @@ Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean
   Dim iPos, iPosKey, iNewPos As Integer
   Dim iStart, I As Integer
   
+  If $bSorted Then Return
+
   aChildren = hParent._GetChildren()
   
   'iPos = aChildren.Find(hItem.Key)
@@ -1252,15 +1255,23 @@ Public Sub ScrollArea_Draw()
 
   Dim iRow As Integer
   Dim hItem As _TreeView_Item
+  Dim iMax As Integer
   
   iRow = $hView.RowAt(0)
   If iRow < 0 Then Return
   
+  'Debug $hView.RowAt(0);; $hView.ClientH;; $hView.RowAt($hView.ClientH)
+  
   Do
-   If iRow > Max($hView.Rows.Max, $hView.RowAt($hView.ClientH)) Then Break
-   hItem = RowToItem(iRow)
-   $hView.Rows[iRow].H = _GetItemHeight(hItem)
-   Inc iRow
+    
+    iMax = $hView.RowAt($hView.ClientH)
+    If iMax < 0 Then iMax = $hView.Rows.Max
+    If iRow > iMax Then Break
+    
+    hItem = RowToItem(iRow)
+    $hView.Rows[iRow].H = _GetItemHeight(hItem)
+    Inc iRow
+    
   Loop
   
 End

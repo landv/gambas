@@ -23,6 +23,8 @@ Static Property Read Path As String
 
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
+Static Private $cExt As Collection
+Static Private $aImgExt As String[]
 
 Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional Bcc As String[], Optional Subject As String, Optional Body As String, Optional Attachment As String)
   
@@ -392,5 +394,108 @@ End
 Static Public Sub RunAsRoot(Command As String)
   
   Main.RunXdgUtil("xdg-su", ["-c", Command])
+  
+
+End
+
+Static Public Sub GetFileIcon(Path As String, Size As Integer, Optional Preview As Boolean) As Picture
+  
+  Dim hImage As Image
+  Dim hIcon As Image
+  Dim sIcon As String
+  Dim hPict As Picture
+  
+  If IsDir(Path) Then Return Picture["icon:/" & CStr(Size) & "/directory"]
+  
+  If Preview And If $aImgExt.Exist(File.Ext(Path)) < 0 Then
+    If Stat(Path).Size <= 65536 Then 
+    
+      Try hImage = Image.Load(Path)
+      If Not Error Then
+        If Not (hImage.Width = Size And hImage.Height = Size) Then 
+          If hImage.Width > hImage.Height Then 
+            hImage = hImage.Stretch(Size, (Size * hImage.Height) \ hImage.Width)
+          Else
+            hImage = hImage.Stretch((Size * hImage.Width) \ hImage.Height, Size)
+          Endif
+        Endif
+        
+        hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
+        Paint.Begin(hIcon)
+        Paint.AntiAlias = False
+        Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
+        Paint.Brush = Paint.Color(Color.Gray)
+        Paint.Stroke
+        Paint.End
+        hIcon.DrawImage(hImage, 2, 2)
+        
+        Return hIcon.Picture
+      Else
+        Return Picture["icon:/" & Size & "/image"]  
+      Endif
+    
+    Endif
+    
+  Endif
+
+  Try hPict = DesktopMime.FromFile(Path).GetIcon(Size).Picture
+  If hPict Then Return hPict
+    
+  If Not $cExt Then InitFileExt
+  
+  Try sIcon = $cExt[File.Ext(Path)]
+  If sIcon Then Return Picture["icon:/" & CStr(Size) &/ sIcon]
+    
+  With Stat(Path)
+    
+    If InStr(.Perm[System.User.Name], "x") Then Return Picture["icon:/" & CStr(Size) &/ "exec"]
+    
+  End With
+  
+Catch
+  
+  Error "gb.desktop: unable to get icon for file: "; File.Name(Path)
+  
+End
+
+Static Private Sub InitFileExt()
+  
+  $cExt = New Collection
+  $cExt["html"] = "html"
+  $cExt["htm"] = "html"
+  $cExt["css"] = "html"
+  $cExt["tar"] = "archive"
+  $cExt["gz"] = "archive"
+  $cExt["tgz"] = "archive"
+  $cExt["bz2"] = "archive"
+  $cExt["z"] = "archive"
+  $cExt["zip"] = "archive"
+  $cExt["txt"] = "text"
+  $cExt["mp3"] = "audio"
+  $cExt["ogg"] = "audio"
+  $cExt["wav"] = "audio"
+  $cExt["mpg"] = "video"
+  $cExt["mpeg"] = "video"
+  $cExt["avi"] = "video"
+  $cExt["wmv"] = "video"
+  $cExt["mov"] = "video"
+  $cExt["gambas"] = "gambas"
+  $cExt["c"] = "text"
+  $cExt["cpp"] = "text"
+  $cExt["h"] = "text"
+  $cExt["deb"] = "package"
+  $cExt["rpm"] = "package"
+  $cExt["iso"] = "cdrom"
+  $cExt["jpg"] = "image"
+  $cExt["jpeg"] = "image"
+  $cExt["png"] = "image"
+  $cExt["gif"] = "image"
+  $cExt["xpm"] = "image"
+  $cExt["bmp"] = "image"
+  $cExt["ico"] = "image"
+  $cExt["xcf"] = "image"
+  $cExt["svg"] = "image"
+  
+  $aImgExt = ["png", "jpeg", "jpg", "gif", "xpm", "bmp", "ico"]
   
 End

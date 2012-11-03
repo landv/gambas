@@ -274,6 +274,14 @@ End
 
 Static Public Sub FindMime(MimeType As String) As DesktopFile[]
   
+  Error "gb.desktop: warning: FindMime() is deprecated, use FromMime() instead."
+  Return FromMime(MimeType)
+  
+End
+
+
+Static Public Sub FromMime(MimeType As String) As DesktopFile[]
+  
   Dim hProgList As DesktopFile[]
   Dim hProg As DesktopFile
   Dim sList As String

@@ -6,15 +6,21 @@ Class Image
 Class SvgImage
 
 Static Public Sub LoadImage(sKey As String, iSize As Integer) As Image
+
+  Dim sPath As String
   
-  'Debug sPath
-  Return Image.Load("stock" &/ CStr(iSize) &/ sKey & ".png")
+  sPath = "stock" &/ CStr(iSize) &/ sKey
+  If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
+  Return Image.Load(sPath & ".png")
   
 End
 
 Static Public Sub LoadSvgImage(sKey As String) As SvgImage
+
+  Dim sPath As String
   
-  'Debug sPath
-  Return SvgImage.Load("stock" &/ "scalable" &/ sKey & ".svg")
+  sPath = "stock" &/ "scalable" &/ sKey
+  If System.RightToLeft And If Exist(sPath & "-rtl.svg") Then sPath &= "-rtl"
+  Return SvgImage.Load(sPath & ".svg")
   
 End

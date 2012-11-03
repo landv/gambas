@@ -925,9 +925,7 @@ Private Sub GetProc(sLine As String) As String
 
 End
 
-Private Sub GetCurrentProc() As String
-  
-  Dim iLine As Integer = Editor.Line
+Private Sub GetCurrentProc(Optional iLine As Integer = Editor.Line) As String
   
   While iLine >= 0
     
@@ -940,6 +938,12 @@ Private Sub GetCurrentProc() As String
   
   Return GetProc(Editor.Lines[iLine].Text)
   
+End
+
+Public Sub GetProcAt(iLine As Integer) As String
+
+  Return GetCurrentProc(iLine)
+
 End
 
 Private Sub RefreshCurrentProc()

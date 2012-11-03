@@ -833,10 +833,13 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   Dim iSize As Integer
   Dim hImage As Image
 
-  iSize = ((hSource.Height \ 2) \ 8) * 8
-
-  hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5)
-
+  hEmblem = Picture[sEmblem].Image
+  
+  iSize = hEmblem.W * hSource.W / 64 * 1.25
+  hEmblem = hEmblem.Stretch(iSize, iSize * hEmblem.H / hEmblem.W)
+  
+  iSize -= hSource.W \ 4
+  
   hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
   hImage.PaintImage(hSource, iSize, 0)
   hImage.PaintImage(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
@@ -1086,7 +1089,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If Not hPict Then
 
       If sModule Then
-        hImage = MakeModuleIcon(sModule, iSize, bStartup, bExported)
+        hImage = MakeModuleIcon(sModule, iSize, bStartup)
       Else
         Try hImage = Picture[sIcon].Image
         If Error Then hImage = Picture[sPrefix &/ "file"].Image
@@ -1099,6 +1102,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
       If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
       If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
+      If bExported Then hImage = AddEmblem(hImage, "img/32/exported.png")
 
       If iSize Then
         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)

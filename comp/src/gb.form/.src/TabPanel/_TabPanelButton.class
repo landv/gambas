@@ -71,12 +71,21 @@ Public Sub DrawingArea_Draw()
   W = Me.W
   
   If $hPicture Then
-    X += $hPicture.W
-    W = Me.W - X
-    Draw.Picture($hPicture, 4, (Me.H - $hPicture.H) / 2)
+    If System.RightToLeft Then
+      W -= $hPicture.W
+      Draw.Picture($hPicture, Me.W - $hPicture.W - 4, (Me.H - $hPicture.H) / 2)
+    Else
+      X += $hPicture.W
+      W = Me.W - X
+      Draw.Picture($hPicture, 4, (Me.H - $hPicture.H) / 2)
+    Endif
   Endif
   
-  If bClosable Then W -= BUTTON_SIZE
+  If bClosable Then 
+    W -= BUTTON_SIZE
+    If System.RightToLeft Then X += BUTTON_SIZE
+  Endif
+  
   Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
   Draw.Foreground = Color.LightForeground
   
@@ -107,7 +116,11 @@ Public Sub DrawingArea_Draw()
   
   If $bShowClose Then
     hPict = Picture[If($bInClose, "img/delete-h.png", "img/delete.png")]
-    Draw.Picture(hPict, Me.W - hPict.W - 2, (Me.H - hPict.H) \ 2)
+    If System.RightToLeft Then
+      Draw.Picture(hPict, 2, (Me.H - hPict.H) \ 2)
+    Else
+      Draw.Picture(hPict, Me.W - hPict.W - 2, (Me.H - hPict.H) \ 2)
+    Endif
   Endif
   
   If $bSelected And If Me.Parent.HasFocus Then
@@ -122,7 +135,11 @@ Public Sub DrawingArea_Draw()
       ' Draw.Line(0, Draw.H - 1, 0, 0)
       ' Draw.Line(0, 0, Draw.W - 2, 0)
       ' Draw.Line(Draw.W - 2, 0, Draw.W - 2, Draw.H - 1)
-      Draw.Rect(1, 1, Draw.W - 3, Draw.H - 1)
+      If System.RightToLeft Then
+        Draw.Rect(2, 1, Draw.W - 3, Draw.H - 1)
+      Else
+        Draw.Rect(1, 1, Draw.W - 3, Draw.H - 1)
+      Endif
     Else
       ' Draw.Line(1, Draw.H - 1, 1, 0)
       ' Draw.Line(1, 0, Draw.W - 2, 0)
@@ -215,7 +232,7 @@ End
 
 Public Sub DrawingArea_MouseWheel()
   
-  If Mouse.Delta > 0 Then
+  If Mouse.Delta > 0 Xor System.RightToLeft Then
     Try GetParent()._MovePrevious()
   Else
     Try GetParent()._MoveNext()
@@ -269,7 +286,12 @@ Public Sub DrawingArea_MouseMove()
   
   Dim bInClose As Boolean
   
-  bInClose = (Mouse.ScreenX - Me.ScreenX) > (Me.W - BUTTON_SIZE) 
+  If System.RightToLeft Then
+    bInClose = (Mouse.ScreenX - Me.ScreenX) < BUTTON_SIZE
+  Else
+    bInClose = (Mouse.ScreenX - Me.ScreenX) > (Me.W - BUTTON_SIZE - 1) 
+  Endif
+  
   If bInClose <> $bInClose Then
     $bInClose = bInClose
     SetMouse

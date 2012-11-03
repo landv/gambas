@@ -322,6 +322,7 @@ Public Sub ScrollArea_Draw()
   Dim XS, YS As Integer
   Dim iSort As Integer
   Dim bAscent As Boolean
+  Dim iStepCol As Integer
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
@@ -331,6 +332,8 @@ Public Sub ScrollArea_Draw()
   iRow = $hRows._FindRowFromPos($hView.ScrollY)
   iCol2 = -1
   iRow2 = -1
+  
+  iStepCol = If(System.RightToLeft, -1, 1)
   
   XO = $hRows.Width - $hView.ScrollX + F
   XX = XO + $hColumns[iCol].X
@@ -359,7 +362,9 @@ Public Sub ScrollArea_Draw()
   X = XX
   
   If iCol >= 0 Then
-    For I = iCol To $hColumns.Count - 1
+    I = iCol
+    Do
+      If I < 0 Or If I >= $hColumns.Count Then Break
       If X >= $hView.ClientW Then Break
       iCol2 = I
       With $hColumns[I]
@@ -378,7 +383,8 @@ Public Sub ScrollArea_Draw()
         Endif
         X += .Width
       End With
-    Next
+      I += iStepCol
+    Loop
   Endif
 
   If $iHeader And Horizontal Then 
@@ -454,7 +460,7 @@ Public Sub ScrollArea_Draw()
     H = $aRowY[I - iRow + 1] + F - Y
     X = XX
     
-    For J = iCol To iCol2
+    For J = iCol To iCol2 Step iStepCol
       
       W = $hColumns[J].Width
       

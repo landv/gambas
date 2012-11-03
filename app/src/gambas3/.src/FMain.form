@@ -551,6 +551,21 @@
     { Menu6 Menu
     }
   }
+  { mnuFilter Menu
+    { mnuFilterExport Menu
+      Text = ("Show exported classes")
+      Picture = Picture["img/16/exported.png"]
+    }
+    { mnuFilterAdd Menu
+      Text = ("Show added files")
+      Picture = Picture["icon:/small/add"]
+    }
+    { mnuFilterAll Menu btnSearchClear
+      Name = "mnuFilterAll"
+      Text = ("Show all")
+      Picture = Picture["icon:/small/refresh"]
+    }
+  }
   { sepMenu Separator
     MoveScaled(0,0,13,0)
   }
@@ -763,7 +778,7 @@
         Action = "find-project"
         Picture = Picture["icon:/small/find"]
       }
-      { btnBackward MenuButton
+      { btnGoBack MenuButton
         MoveScaled(129,0,6,4)
         ToolTip = ("Go back")
         Action = "go-back"
@@ -771,8 +786,9 @@
         Border = False
         Menu = "mnuBackward"
       }
-      { btnBackward2 ToolButton
+      { btnGoForward ToolButton
         MoveScaled(133,0,4,4)
+        Enabled = False
         ToolTip = ("Go forward")
         Action = "go-forward"
         Picture = Picture["icon:/small/right"]
@@ -880,6 +896,7 @@
         Background = Color.TextBackground
         { picFilter PictureBox
           MoveScaled(0,0,3,3)
+          Mouse = Mouse.Pointing
           Picture = Picture["img/32/filter.png"]
           Stretch = True
           AutoResize = True
@@ -891,19 +908,9 @@
           Border = False
         }
         { btnSearchClear ToolButton
-          MoveScaled(20,0,3,3)
+          MoveScaled(25,0,3,3)
           ToolTip = ("Reset filter")
           Picture = Picture["icon:/small/clear"]
-        }
-        { btnSearchExported ToolButton
-          MoveScaled(23,0,3,3)
-          ToolTip = ("Show exported classes")
-          Picture = Picture["icon:/small/bookmark"]
-        }
-        { btnSearchAdd ToolButton
-          MoveScaled(26,0,3,3)
-          ToolTip = ("Show added files")
-          Picture = Picture["icon:/small/add"]
         }
       }
       { Separator4 Separator

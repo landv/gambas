@@ -10,6 +10,7 @@ Public Const TYPE_EVENT As Integer = 4
 Public Const TYPE_KEYWORD As Integer = 5
 Public Const TYPE_SPECIAL As Integer = 6
 Public Const TYPE_COMPONENT As Integer = 7
+Public Const TYPE_FILE As Integer = 8
 
 Private Const ROOT_URL As String = "http://gambasdoc.org/help"
 
@@ -621,7 +622,7 @@ Private Function GetProjectClassHelpHTML(sClass As String) As String
     hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
     If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
     
-    sHtml = SubstPart(sHtml, "ShowInherits", True )
+    sHtml = SubstPart(sHtml, "ShowInherits", True)
     sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
     sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
     
@@ -630,7 +631,7 @@ Private Function GetProjectClassHelpHTML(sClass As String) As String
     
   Else
     
-    sHtml = SubstPart(sHtml, "ShowInherits", False )
+    sHtml = SubstPart(sHtml, "ShowInherits", False)
     
   Endif
   

@@ -19,6 +19,12 @@ Static Public Sub Clear()
   
 End
 
+Static Private Sub UpdatePosition()
+  
+  FMain.UpdatePosition($iCurrent <= 1, $iCurrent > $aPositions.Max)
+  
+End
+
 
 Static Public Sub SaveCurrent()
 
@@ -69,6 +75,8 @@ Static Public Sub SaveCurrent()
   $aPositions.Add(hPos)
   Inc $iCurrent
   
+  UpdatePosition
+  
 End
 
 Static Public Sub MovePrevious()
@@ -77,6 +85,7 @@ Static Public Sub MovePrevious()
   
   Dec $iCurrent
   $aPositions[$iCurrent - 1].Move
+  UpdatePosition
   
 End
 
@@ -86,6 +95,7 @@ Static Public Sub MoveNext()
   
   $aPositions[$iCurrent].Move
   Inc $iCurrent
+  UpdatePosition
   
 End
 
@@ -163,6 +173,6 @@ Static Public Sub mnuBackward_Click()
   
   $iCurrent = I + 1
   $aPositions[I].Move
-  
+  UpdatePosition
   
 End

@@ -21,6 +21,7 @@ Public Sub _new()
   Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
   
+  ScrollArea(tvwProject.Proxy.Proxy).Shadow = True
   'tvwProject.Columns.Count = 2
   
   Design.Init
@@ -392,7 +393,7 @@ Public Sub mnuPopup_Show()
     If mnuEditFile.Visible Then
       sMime = MMime.GetMime(sCurrent)
       If sMime Then
-        hProgList = DesktopFile.FindMime(sMime)
+        hProgList = DesktopFile.FromMime(sMime)
         If hProgList And If hProgList.Count Then
           mnuEditWith.Visible = sMime
           mnuEditWith.Tag = hProgList
@@ -1076,7 +1077,7 @@ End
 Public Sub OnProjectChange()
   
   UpdateMenu
-  btnSearchAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
+  mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
   mnuUseTerminal.Value = Project.UseTerminal
   mnuProfile.Value = Project.Profiling
   'UpdateTranslate
@@ -1666,6 +1667,13 @@ Public Sub Form_KeyPress()
     
     txtSearchProject.SetFocus
     
+  Else If Key.Code = Key.F2 Then
+    
+    If Key.Shift Then 
+      CPosition.MovePrevious
+      Stop Event
+    Endif
+
   Endif
   
 End
@@ -1910,6 +1918,17 @@ Public Sub txtSearchProject_Change()
   
 End
 
+Public Sub txtSearchProject_GotFocus()
+  
+  If txtSearchProject.Font.Italic Then
+    txtSearchProject.Clear
+    txtSearchProject.Font.Italic = False
+    timSearchProject_Timer    
+  Endif
+  
+End
+
+
 Public Sub timSearchProject_Timer()
   
   Project.Refresh
@@ -1934,10 +1953,12 @@ Public Sub txtSearch_Activate()
   
 End
 
-Public Sub btnSearchAdd_Click()
+Public Sub mnuFilterAdd_Click()
   
-  txtSearchProject.Clear
+  txtSearchProject.Font.Italic = True
+  txtSearchProject.Text = Last.Text
   Project.ProjectFilter = Project.FILTER_ADDED
+  tvwProject.SetFocus
   timSearchProject_Timer
   
 End
@@ -1958,10 +1979,12 @@ End
 ' 
 ' End
 
-Public Sub btnSearchExported_Click()
+Public Sub mnuFilterExport_Click()
 
-  txtSearchProject.Clear
+  txtSearchProject.Font.Italic = True
+  txtSearchProject.Text = Last.Text
   Project.ProjectFilter = Project.FILTER_EXPORTED
+  tvwProject.SetFocus
   timSearchProject_Timer
 
 End
@@ -2075,4 +2098,17 @@ GOTO_BOTTOM:
   Loop
   Return
    
+End
+
+Public Sub UpdatePosition((bStart) As Boolean, bEnd As Boolean)
+  
+  'btnGoBack.Enabled = Not bStart
+  btnGoForward.Enabled = Not bEnd
+  
+End
+
+Public Sub picFilter_MouseDown()
+
+  mnuFilter.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
+
 End
