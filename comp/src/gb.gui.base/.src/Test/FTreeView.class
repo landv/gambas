@@ -22,7 +22,7 @@ Public Sub Form_Open()
     'Print File.Name(sPath); " -> "; File.Dir(sPath)
     sParent = File.Dir(sPath)
     If sParent = sDir Then sParent = ""
-    tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)
+    tvwTest.Add(sPath, File.Name(sPath),, sParent)
     'ListView1.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict))
   Next
   

@@ -52,7 +52,6 @@ Private $cSort As Collection
 Private $bSortRoot As Boolean
 Private $hSortTimer As Timer
 Private $bNoRoot As Boolean
-Private $hObserver As Observer
 
 Public Sub _new()
   
@@ -67,8 +66,6 @@ Public Sub _new()
   $bNoRoot = Me Is ListView
   
   $hRoot = New _TreeView_Item("", "") As "Item"
-  
-  $hObserver = New Observer($hView.Proxy) As "ScrollArea"
   
 End
 
@@ -144,7 +141,11 @@ Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Opti
   hItem.Picture = Picture
   hItem._Index = hParent.Count - 1
   
-  If After Then _MoveItem(hItem, After, False)
+  If After Then 
+    _MoveItem(hItem, After, False)
+  Else
+    _UpdateItemHeight(hItem, True)
+  Endif
   
   ResizeColumns
   
@@ -200,9 +201,16 @@ End
 Public Sub Remove(Key As String)
   
   Dim sCurrent As String
+  Dim iRow As Integer
+  Dim hItem As _TreeView_Item
   
   If Not Key Then Error.Raise("Null key")
-  If Not $cItem.Exist(Key) Then Error.Raise("Unknown item: " & Key)
+  
+  hItem = $cItem[Key]
+  
+  If Not hItem Then Error.Raise("Unknown item: " & Key)
+  
+  iRow = _ItemToRow(hItem)
   
   sCurrent = Key_Read()
   
@@ -213,6 +221,8 @@ Public Sub Remove(Key As String)
   _UpdateCurrent(sCurrent)
   
   ResizeColumns
+  
+  If iRow >= 0 Then UpdateRowHeight(iRow, -1)
   
   _RefreshView
   
@@ -574,6 +584,7 @@ Private Sub SortItem(hItem As _TreeView_Item)
   For I = 0 To aItem.Max
     aChildren[I] = aItem[I].Key
     aItem[I]._Index = I
+    _UpdateItemHeight(aItem[I])
   Next
   
 End
@@ -966,7 +977,9 @@ Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean
   
   iStart = Min(iPos, iNewPos)
   For I = iStart To aChildren.Max
-    $cItem[aChildren[I]]._Index = I
+    hItem = $cItem[aChildren[I]]
+    hItem._Index = I
+    _UpdateItemHeight(hItem)
   Next
   
   _RefreshView
@@ -1115,7 +1128,7 @@ Public Sub Sort_Timer()
     SortItem($hRoot)
   Endif
   $bSortRoot = False
-  $cSort = Null
+  $cSort.Clear
   
   _RefreshView
   
@@ -1250,27 +1263,29 @@ Public Sub GridView_ColumnSize(Column As Integer)
   
 End
 
-Public Sub ScrollArea_Draw()
+Private Sub UpdateRowHeight(iStart As Integer, Optional iEnd As Integer)
+  
+  If iEnd = 0 Then
+    iEnd = iStart
+  Else If iEnd < 0 Then
+    iEnd = $hView.Rows.Max
+  Endif
+  
+  While iStart <= iEnd
+    $hView.Rows[iStart].H = _GetItemHeight(RowToItem(iStart))
+    Inc iStart
+  Wend
+  
+End
+
+
+Public Sub _UpdateItemHeight(hItem As _TreeView_Item, Optional bNext As Boolean)
 
   Dim iRow As Integer
-  Dim hItem As _TreeView_Item
-  Dim iMax As Integer
   
-  iRow = $hView.RowAt(0)
+  iRow = _ItemToRow(hItem)
   If iRow < 0 Then Return
   
-  'Debug $hView.RowAt(0);; $hView.ClientH;; $hView.RowAt($hView.ClientH)
-  
-  Do
-    
-    iMax = $hView.RowAt($hView.ClientH)
-    If iMax < 0 Then iMax = $hView.Rows.Max
-    If iRow > iMax Then Break
-    
-    hItem = RowToItem(iRow)
-    $hView.Rows[iRow].H = _GetItemHeight(hItem)
-    Inc iRow
-    
-  Loop
+  UpdateRowHeight(iRow, If(bNext, -1, 0))
   
 End

@@ -371,52 +371,6 @@ void gButton::setEnabled(bool vl)
 	gtk_widget_set_sensitive(widget, vl);
 }
 
-#if 0
-void gButton::setBackground(long color)
-{
-	GtkWidget *wid;
-
-	wid=(type == Check) ? border : widget;
-	set_gdk_bg_color(wid,color);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-long gButton::background()
-{
-	if (type == Check) get_gdk_bg_color(border);
-	return get_gdk_bg_color(widget);
-}
-
-void gButton::setForeground(long color)
-{
-	GdkColor col;
-	GtkWidget *lbl;
-
-	set_gdk_fg_color(widget,color);	
-	
-	if (rendtxt)
-	{
-		fill_gdk_color(&col,color);
-		g_object_set(G_OBJECT(rendtxt),"foreground-set",TRUE,NULL);
-		g_object_set(G_OBJECT(rendtxt),"foreground-gdk",&col,NULL);
-	}
-	else
-	{
-		lbl=gtk_bin_get_child(GTK_BIN(widget));
-		set_gdk_fg_color(lbl,color);
-	}
-	
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-long gButton::foreground()
-{
-	return get_gdk_fg_color(widget);
-}
-#endif
-
 const char* gButton::text()
 {
 	//if (type == Tool) return this->toolTip();

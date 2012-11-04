@@ -33,13 +33,13 @@ typedef
 
 gColor get_gdk_color(GdkColor *gcol);
 void fill_gdk_color(GdkColor *gcol,gColor color, GdkColormap *cmap = NULL);
-gColor get_gdk_text_color(GtkWidget *wid);
+gColor get_gdk_text_color(GtkWidget *wid, bool enabled);
 void set_gdk_text_color(GtkWidget *wid,gColor color);
-gColor get_gdk_base_color(GtkWidget *wid);
+gColor get_gdk_base_color(GtkWidget *wid, bool enabled);
 void set_gdk_base_color(GtkWidget *wid,gColor color);
-gColor get_gdk_fg_color(GtkWidget *wid);
+gColor get_gdk_fg_color(GtkWidget *wid, bool enabled);
 void set_gdk_fg_color(GtkWidget *wid,gColor color);
-gColor get_gdk_bg_color(GtkWidget *wid);
+gColor get_gdk_bg_color(GtkWidget *wid, bool enabled);
 void set_gdk_bg_color(GtkWidget *wid,gColor color);
 
 void gt_color_to_rgb(gColor color, int *r, int *g, int *b);

@@ -903,66 +903,70 @@ Public Sub Control_MouseDown()
   '  PRINT "X ="; X; " Y ="; Y
   'ENDIF
 
-  If $sTool = "" Then
-
-    If Mouse.Control Or If $hCurrent = RootControl Then
-
-      $XS = X
-      $YS = Y
-
-      'Debug
-      $iMode = MODE_SELECT
-
-      $W = 0
-      $H = 0
-
-      Goto FIN
-
-    Else If $hCurrent Then
-
-      If Master <> $hCurrent Then
-
-        If Not $hCurrent.Selected Then
-          UnSelectAll
+  If Mouse.Left Then
+    
+    If $sTool = "" Then
+  
+      If Mouse.Control Or If $hCurrent = RootControl Then
+  
+        $XS = X
+        $YS = Y
+  
+        'Debug
+        $iMode = MODE_SELECT
+  
+        $W = 0
+        $H = 0
+  
+        Goto FIN
+  
+      Else If $hCurrent Then
+  
+        If Master <> $hCurrent Then
+  
+          If Not $hCurrent.Selected Then
+            UnSelectAll
+          Endif
+  
+          SelectCurrent(True)
+  
         Endif
-
-        SelectCurrent(True)
-
+  
+        If $bReadOnly Then Return
+  
+        'Debug
+        $iMode = MODE_MOVE
+  
       Endif
-
+  
+    Else
+  
       If $bReadOnly Then Return
-
+  
+      FindContainer($hCurrent, X, Y, COORD_CONTROL_TO_INSIDE)
+      $hCurrent = $hContainer
+      X = $iContX
+      Y = $iContY
+  
+      ' IF NOT $hCurrent.IsContainer() THEN
+      '   X = X + $hCurrent.Control.X + $hCurrent.Control.Parent.ClientX
+      '   Y = Y + $hCurrent.Control.Y + $hCurrent.Control.Parent.ClientY
+      '   $hCurrent = $hCurrent.Parent
+      '   IF $hCurrent.Kind = "ScrollView" THEN
+      '     X = X - $hCurrent.Control.ScrollX
+      '     Y = Y - $hCurrent.Control.ScrollY
+      '   ENDIF
+      ' ENDIF
+  
       'Debug
-      $iMode = MODE_MOVE
-
+      $iMode = MODE_CREATE
+  
+      $X = X
+      $Y = Y
+  
+      '$hCurrent = CreateControl(, $sTool, $hCurrent)
     Endif
-
-  Else
-
-    If $bReadOnly Then Return
-
-    FindContainer($hCurrent, X, Y, COORD_CONTROL_TO_INSIDE)
-    $hCurrent = $hContainer
-    X = $iContX
-    Y = $iContY
-
-    ' IF NOT $hCurrent.IsContainer() THEN
-    '   X = X + $hCurrent.Control.X + $hCurrent.Control.Parent.ClientX
-    '   Y = Y + $hCurrent.Control.Y + $hCurrent.Control.Parent.ClientY
-    '   $hCurrent = $hCurrent.Parent
-    '   IF $hCurrent.Kind = "ScrollView" THEN
-    '     X = X - $hCurrent.Control.ScrollX
-    '     Y = Y - $hCurrent.Control.ScrollY
-    '   ENDIF
-    ' ENDIF
-
-    'Debug
-    $iMode = MODE_CREATE
-
-    $X = X
-    $Y = Y
-
-    '$hCurrent = CreateControl(, $sTool, $hCurrent)
+    
   Endif
 
   RefreshProperty

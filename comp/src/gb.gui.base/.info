@@ -1908,6 +1908,10 @@ _MoveItem
 m
 
 (hItem)_TreeView_Item;(sKey)s(bBefore)b
+_UpdateItemHeight
+m
+
+(hItem)_TreeView_Item;[(bNext)b]
 _RefreshView
 m
 
@@ -1916,6 +1920,10 @@ Remove
 m
 
 (Key)s
+_ItemToRow
+m
+i
+(hItem)_TreeView_Item;
 _AddCount
 m
 
@@ -1924,10 +1932,6 @@ _UpdateCurrent
 m
 
 (sKey)s
-_ItemToRow
-m
-i
-(hItem)_TreeView_Item;
 _GetItemX
 m
 i
@@ -2069,10 +2073,6 @@ m
 
 
 Sort_Timer
-m
-
-
-ScrollArea_Draw
 m
 
 

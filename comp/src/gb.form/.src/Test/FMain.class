@@ -1,179 +1,32 @@
 ' Gambas class file
 
-Private $aArr As String[] = ["a", "b"]
-Private $bBug As Boolean
+Public Sub Form_Enter()
 
-Public Sub _new()
-  
-  Dim I As Integer
-  
-  gvwView.Columns.Count = 4
-  gvwView.Rows.Count = 1000000
-  
-  For I = 0 To gvwView.Columns.Count - 1
-    gvwView.Columns[I].Text = "Column #" & CStr(I)
-    gvwView.Columns[I].Width = 100
-  Next
-  
-  gvwView.Columns[1].Text = "Bonjour\ntout le monde !\nComment allez-vous ?"
-  
-  'gvwView.Columns[2].Background = &HF0F0F0&
-  gvwView.Columns[2].Alignment = Align.Right
-  
-  gvwView.Rows[0].Height = 60
-  For I = 1 To 10
-    gvwView.Rows[Int(Rnd(0, gvwView.Rows.Count))].Height = 60
-  Next
-  
-  With gvwView[2, 1]
-    .Text = "Bonjour tout le monde ! Comment allez-vous ? Eh bien ça va, rien de neuf quoi. On fait aller. On verra bien les amis."
-    .Background = Color.Yellow
-    .Padding = 10
-    .Picture = Picture["icon:/32/warning"]
-    .RowSpan = 4
-    .ColumnSpan = 2
-    .Alignment = Align.Center
-    .Font = Font["0,Bold"]
-    .WordWrap = True
-  End With
-  
-  gvwView.Rows[2].Height = 80
-  
-  gvwView.Rows[gvwView.Rows.Count - 1].Text = "Création"
-  
-  gvwView[10, 0].RichText = "<b>G</b>ambas almost means BASic!<br>La nuit tous les chats sont bleux!"
-  gvwView[10, 0].WordWrap = True
-  gvwView.Rows[10].Height = -1
-  
-End
-
-Private Sub GetCellKey(iRow As Integer, iCol As Integer) As Long
-  
-  If iRow >= iCol Then
-    Return CLong(iRow) * iRow + iCol * 2
-  Else
-    Return CLong(iCol) * iCol + iRow * 2 + 1
-  Endif
-  
-End
-
-Public Sub gvwView_Data(Row As Integer, Column As Integer)
-  
-  gvwView.Data.Text = GetCellKey(Row, Column)
-  gvwView.Data.Padding = 2
-  
-  If Row Mod 10 = 0 Then gvwView.Data.Foreground = Color.Red
-  
-  If $bBug And If Row = 4 And If Column = 2 Then gvwView.Data.Text = $aArr[3]
-  
-  If Column = 1 Then gvwView.Data.Draw = True
-  
-End
-
-Public Sub gvwView_Change()
-  
-  Debug
-  
-End
-
-Public Sub gvwView_Select()
-End
-
-Public Sub gvwView_Scroll()
-  
-  Debug
-  
-End
-
-
-Public Sub gvwView_Click()
-  
-  Debug gvwView.Row;; gvwView.Column
-  'gvwView.Edit
-  
-End
-
-Public Sub gvwView_Activate()
-  
-  Debug
-  
-End
-
-
-Public Sub gvwView_ColumnClick(Column As Integer)
-  
-  Debug Column
-  
-End
-
-Public Sub gvwView_RowClick(Row As Integer)
-  
-  Debug Row
-  
-End
-
-
-Public Sub Button1_Click()
-
-  gvwView.Clear
+  Debug "#########################"
 
 End
 
-Public Sub Button2_Click()
+Public Sub Form_Leave()
 
-  gvwView.Columns.Width = 200
-
-End
-
-Public Sub Button3_Click()
-
-  'Debug "**** "; gvwView.W;; gvwView.H;; ":";; gvwView.ClientX;; gvwView.ClientY;; gvwView.ClientW;; gvwView.ClientH
-  gvwView[gvwView.Rows.Count - 1, 0].EnsureVisible
-  'gvwView[0, 0].EnsureVisible
-  'Debug "**** ScrollX = "; gvwView.ScrollX
+  Debug "#########################"
 
 End
 
-Public Sub gvwView_ColumnResize(Column As Integer)
 
-  Debug Column
+Public Sub Expander1_Enter()
 
-End
-
-Public Sub gvwView_Menu()
-
-  Debug gvwView.Row
+  Debug "================================"
 
 End
 
-' Public Sub gvwView_MouseMove()
-' 
-'   Debug gvwView.RowAt(Mouse.Y);; gvwView.ColumnAt(Mouse.X)
-' 
-' End
+Public Sub Expander1_Leave()
 
-Public Sub Button3_Menu()
-
-  Debug
+  Debug "================================"
 
 End
 
-Public Sub gvwView_MouseDown()
+Public Sub Form_Open()
 
-  Debug Mouse.X;; Mouse.Y
-
-End
-
-Public Sub gvwView_KeyPress()
-
-  Debug Key.Code
+  
 
 End
-
-' Public Sub gvwView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
-'   
-'   If Column = 1 Then
-'     Draw.FillRect(X, Y, 4, 4, Color.Red)
-'   Endif
-'   
-' End

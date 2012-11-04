@@ -1119,7 +1119,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		gtk_widget_set_size_request(border, width(), height());
 		
 		// Hidden children are incorrectly shown. Fix that!
-		hide_hidden_children(this);
+		hideHiddenChildren();
 	}
 	else if ((!isTopLevel() && !newpr)
 	         || (isTopLevel() && isPopup()))
@@ -1155,10 +1155,11 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		bufW = bufH = -1;
 		resize(w, h);
 		
+		hideHiddenChildren();
 		_popup = false; //type == GTK_WINDOW_POPUP;
 	}
 	else
-		gControl::reparent(newpr, x, y);	
+		gContainer::reparent(newpr, x, y);	
 }
 
 

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,70)
+  MoveScaled(0,2,93,71)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -34,7 +34,7 @@
     }
   }
   { tabProject TabPanel
-    MoveScaled(1,1,91,63)
+    MoveScaled(1,1,91,64)
     Arrangement = Arrange.Vertical
     Count = 6
     Index = 0
@@ -375,9 +375,9 @@
     { gvwComponent GridView
       MoveScaled(5,11,78,25)
       Expand = True
+      Border = False
       Mode = Select.Single
       Grid = False
-      Border = False
     }
     { Separator2 Separator
       MoveScaled(1,38,24,0)
@@ -440,8 +440,8 @@
     { gvwLibrary GridView
       MoveScaled(6,20,61,29)
       Expand = True
-      Mode = Select.Single
       Border = False
+      Mode = Select.Single
     }
     { HBox18 HBox
       MoveScaled(1,53,84,6)
@@ -521,12 +521,12 @@
     Index = 0
   }
   { btnOK Button
-    MoveScaled(59,65,16,4)
+    MoveScaled(59,66,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(76,65,16,4)
+    MoveScaled(76,66,16,4)
     Text = ("Cancel")
     Cancel = True
   }

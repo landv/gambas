@@ -1554,7 +1554,7 @@ void gControl::setName(char *name)
 gColor gControl::realBackground()
 {
 	if (_bg_set)
-		return use_base ? get_gdk_base_color(widget) : get_gdk_bg_color(widget);
+		return use_base ? get_gdk_base_color(widget, enabled()) : get_gdk_bg_color(widget, enabled());
 	else if (pr)
 		return pr->realBackground();
 	else
@@ -1602,7 +1602,7 @@ void gControl::setBackground(gColor color)
 gColor gControl::realForeground()
 {
 	if (_fg_set)
-		return use_base ? get_gdk_text_color(widget) : get_gdk_fg_color(widget);
+		return use_base ? get_gdk_text_color(widget, enabled()) : get_gdk_fg_color(widget, enabled());
 	else if (pr)
 		return pr->realForeground();
 	else

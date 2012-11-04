@@ -56,7 +56,7 @@ gboolean slider_Expose(GtkWidget *widget,GdkEventExpose *event,gSlider *data)
 		if (myh<=0) myh=1;
 		gDraw *dr=new gDraw();
 		dr->connect(data);
-		dr->setForeground(get_gdk_fg_color(data->border));
+		dr->setForeground(get_gdk_fg_color(data->border, data->enabled()));
 		
 		for(b = step; b <= (data->width() - step); b += step)
 		{
@@ -79,7 +79,7 @@ gboolean slider_Expose(GtkWidget *widget,GdkEventExpose *event,gSlider *data)
 		if (myh<=0) myh=1;
 		gDraw *dr=new gDraw();
 		dr->connect(data);
-		dr->setForeground(get_gdk_fg_color(data->border));
+		dr->setForeground(get_gdk_fg_color(data->border, data->enabled()));
 		
 		for(b = 0; b < data->height(); b += step)
 		{

@@ -114,6 +114,7 @@ Private Sub Text_Write(Value As String)
 
   $sText = Value
   If hTree.Sorted Then hTree._SortParent($sParent)
+  hTree._UpdateItemHeight(Me)
   hTree._RefreshView
 
 End
@@ -128,6 +129,7 @@ Private Sub Picture_Write(Value As Picture)
 
   Dim hTree As _TreeView = GetTree()
   $hPicture = Value
+  hTree._UpdateItemHeight(Me)
   hTree._RefreshView
   
 End
@@ -187,6 +189,8 @@ Private Sub Expanded_Write(Value As Boolean)
   If _Rows = iOldRows Then Return
   
   ComputeRows(_Rows - iOldRows)
+  
+  hTree._UpdateItemHeight(Me, True)
 
   hTree._UpdateCurrent(sCurrent)
   hTree._RaiseExpand($sKey, $bExpanded)
