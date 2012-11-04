@@ -137,22 +137,37 @@ static gControl *find_child(gControl *control, int rx, int ry, gControl *button_
 	return control;
 }
 
-static void check_hovered_control(gControl *control)
+void gApplication::checkHoveredControl(gControl *control)
 {
 	if (gApplication::_enter != control)
 	{
+		#if DEBUG_ENTER_LEAVE
+		fprintf(stderr, "checkHoveredControl: %s\n", control->name());
+		#endif
+	
 		gControl *leave = gApplication::_enter;
 		
 		while (leave && leave != control && !leave->isAncestorOf(control))
 		{
+			#if DEBUG_ENTER_LEAVE
+			fprintf(stderr, "checkHoveredControl: leave: %s\n", leave->name());
+			#endif
 			leave->emitLeaveEvent();
 			leave = leave->parent();
 		}
 		
+		#if DEBUG_ENTER_LEAVE
+		fprintf(stderr, "checkHoveredControl: _enter <- %s\n", control ? control->name() : "ø");
+		#endif
 		gApplication::_enter = control;
 		
 		if (control)
+		{
+			#if DEBUG_ENTER_LEAVE
+			fprintf(stderr, "checkHoveredControl: enter: %s\n", control->name());
+			#endif
 			control->emitEnterEvent();
+		}
 	}
 }
 
@@ -339,6 +354,8 @@ __FOUND_WIDGET:
 			
 			control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
+			//fprintf(stderr, "GDK_ENTER_NOTIFY: %s (%s)\n", control->name(), gApplication::_enter ? gApplication::_enter->name() : "ø");
+			
 			if (gApplication::_leave == control)
 			{
 				#if DEBUG_ENTER_LEAVE
@@ -353,13 +370,15 @@ __FOUND_WIDGET:
 					#if DEBUG_ENTER_LEAVE
 					fprintf(stderr, "enter: %s\n", control->name());
 					#endif
-					check_hovered_control(control);
+					gApplication::checkHoveredControl(control);
 				}
 			}
 
 			break;
 		
 		case GDK_LEAVE_NOTIFY:
+			
+			//fprintf(stderr, "GDK_LEAVE_NOTIFY: %s\n", control->name());
 			
 			//control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
@@ -523,7 +542,7 @@ __FOUND_WIDGET:
 			
 			//fprintf(stderr, "GDK_MOTION_NOTIFY: %s\n", control->name());
 			
-			check_hovered_control(control);
+			gApplication::checkHoveredControl(control);
 			
 		__MOTION_TRY_PROXY:
 		
@@ -727,6 +746,7 @@ void *gApplication::_loop_owner = 0;
 GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
+gControl *gApplication::_ignore_until_next_enter = NULL;
 gControl *gApplication::_button_grab = NULL;
 gControl *gApplication::_control_grab = NULL;
 gControl *gApplication::_active_control = NULL;
@@ -1159,21 +1179,18 @@ void gApplication::setActiveControl(gControl *control, bool on)
 
 int gApplication::getScrollbarSize()
 {
-	gint focus_line_width;
-	gint focus_padding;
+	//gint focus_line_width;
+	//gint focus_padding;
 	gint trough_border;
 	gint slider_width;
 	
-  gtk_style_get(gt_get_style("GtkRange", GTK_TYPE_RANGE), GTK_TYPE_RANGE,
+  gtk_style_get(gt_get_style("GtkScrollbar", GTK_TYPE_SCROLLBAR), GTK_TYPE_SCROLLBAR,
 		"slider-width", &slider_width,
 		"trough-border", &trough_border,
+		/*"focus-line-width", &focus_line_width,
+		"focus-padding", &focus_padding,*/
 		(char *)NULL);
 	
-	gtk_style_get(gt_get_style("GtkWidget", GTK_TYPE_WIDGET), GTK_TYPE_WIDGET,
-		"focus-line-width", &focus_line_width,
-		"focus-padding", &focus_padding,
-		(char *)NULL);
-
 	return (trough_border) * 2 + slider_width;
 }
 

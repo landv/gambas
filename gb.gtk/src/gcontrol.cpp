@@ -317,6 +317,8 @@ gControl::~gControl()
 		gApplication::_button_grab = NULL;
 	if (gApplication::_control_grab == this)
 		gApplication::_control_grab = NULL;
+	if (gApplication::_ignore_until_next_enter == this)
+		gApplication::_ignore_until_next_enter = NULL;
 }
 
 void gControl::destroy()
@@ -1984,8 +1986,19 @@ void gControl::emitEnterEvent(bool no_leave)
 		return;
 	
 	_inside = true;
-	emit(SIGNAL(onEnterLeave), gEvent_Enter);
+
 	setMouse(mouse());
+
+	if (gApplication::_ignore_until_next_enter)
+	{
+		//fprintf(stderr, "ignore next enter for %s\n", name());
+		if (gApplication::_ignore_until_next_enter == this)
+			gApplication::_ignore_until_next_enter = NULL;
+		return;
+	}
+	
+	//fprintf(stderr, "RAISE ENTER: %s\n", name());
+	emit(SIGNAL(onEnterLeave), gEvent_Enter);
 }
 
 void gControl::emitLeaveEvent()
@@ -2003,8 +2016,17 @@ void gControl::emitLeaveEvent()
 	}
 	
 	_inside = false;
-	emit(SIGNAL(onEnterLeave), gEvent_Leave);
+	
 	if (parent()) parent()->setMouse(parent()->mouse());
+
+	if (gApplication::_ignore_until_next_enter)
+	{
+		//fprintf(stderr, "ignore next leave for %s\n", name());
+		return;
+	}
+
+	//fprintf(stderr, "RAISE LEAVE: %s\n", name());
+	emit(SIGNAL(onEnterLeave), gEvent_Leave);
 }
 
 bool gControl::isAncestorOf(gControl *child)
