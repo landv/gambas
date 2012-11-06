@@ -289,8 +289,7 @@ End
 
 Public Sub mnuShowPreview_Click()
 
-  fvwChoose.ShowPreview = Not fvwChoose.ShowPreview
-  mnuShowPreview.Checked = fvwChoose.ShowPreview
+  btnPreview.Value = Not btnPreview.Value
 
 End
 
@@ -951,6 +950,9 @@ End
 Public Sub dvwChoose_Menu()
 
   mnuUncompress.Hide
+  mnuShowDetailed.Hide
+  mnuShowPreview.Hide
+
   mnuPopup.Popup
 
 End
@@ -964,6 +966,9 @@ Public Sub fvwChoose_Menu()
   Else
     mnuUncompress.Hide
   Endif
+  
+  mnuShowDetailed.Show
+  mnuShowPreview.Show
 
   mnuPopup.Popup
 
@@ -1191,6 +1196,7 @@ End
 Public Sub btnPreview_Click()
 
   fvwChoose.ShowPreview = btnPreview.Value
+  mnuShowPreview.Checked = btnPreview.Value
 
 End
 

@@ -82,7 +82,7 @@ End
 
 Public Sub EnsureCurrentVisible_Timer()
   
-  Dim X, W, M As Integer
+  Dim X, W As Integer
   
   $hTimerEnsureVisible = Null
   
@@ -137,9 +137,9 @@ Public Sub EnsureCurrentVisible_Timer()
           $X -= ARROW_WIDTH
         Endif
         
-        M = .X + W - $hTabBar.W + ARROW_WIDTH
+        'M = .X + W - $hTabBar.W + ARROW_WIDTH
         'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
-        $X = Max($X, - M)
+        '$X = Max($X, - M)
         
       End With
   

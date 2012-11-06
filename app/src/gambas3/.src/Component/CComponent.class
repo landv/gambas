@@ -1243,11 +1243,9 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
         hClass.CopyFrom(CComponent.Classes["*[]"], "*", Left(sClass, -2))
         $hClass = hClass
         Return hClass.Symbols
-      Else
-        Error "gambas3: warning: unknown class: "; sClass
-        'Debug sClass & " ??"
-        'Print Error.Backtrace.Join("\n")
       Endif
+      
+      'Error "gambas3: warning: unknown class: "; sClass
       Return
     Endif
   Endif

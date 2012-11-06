@@ -3616,14 +3616,7 @@ End
 
 Public Sub svwWorkspace_Arrange()
 
-  ' Dim W, H As Integer
-  ' 
-  ' dwgBackground.Lower
-  ' 
-  ' W = Max(svwWorkspace.ClientW - 1, panRightDown.X + panRightDown.W)
-  ' H = Max(svwWorkspace.ClientH - 1, panRightDown.Y + panRightDown.H)
-  
-  dwgBackground.Move(0, 0, svwWorkspace.W, svwWorkspace.H)
+  dwgBackground.Move(0, 0, svwWorkspace.ScrollW, svwWorkspace.ScrollH)
 
 End
 

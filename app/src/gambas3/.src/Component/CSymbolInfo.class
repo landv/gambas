@@ -897,18 +897,15 @@ End
 '   
 ' End
 
-
-Public Function GetHelpHTML() As String
+Public Sub GetHelpMarkup() As String
   
   Dim sPath As String
   Dim hClass As CClassInfo
   Dim hForm As Object
   Dim hEdit As Editor
-  Dim sHTML, sHelp As String
+  Dim sHelp As String
   Dim iLine, i As Integer
-  Dim sSyntax As String
   Dim sLine As String
-  Dim sWhere As String
   
   If Component Then Return
   
@@ -956,11 +953,24 @@ Public Function GetHelpHTML() As String
     
   Endif
   
-  ' Convert into HTML using the markup syntax
+  Return sHelp
+  
+End
+
+
+Public Function GetHelpHTML() As String
+  
+  Dim sHTML, sHelp As String
+  Dim I As Integer
+  Dim sSyntax As String
+  Dim sWhere As String
+  Dim sMarkup As String
+  
+  sMarkup = GetHelpMarkup()
+  If Not sMarkup Then Return
+  
   Try sHelp = Markup.Convert(sHelp)
   If Error Then sHelp = "<b>" & Error.Text & "</b>"
-  
-  'If Not s Then s = ("No help found.")
   
   sHTML = File.Load("help/symbol-help.html")
   sHTML = Replace(sHTML, "$(hide-title)", "")
@@ -975,18 +985,18 @@ Public Function GetHelpHTML() As String
   Highlight.Analyze(sSyntax)
   sSyntax = ""
   
-  For i = 0 To Highlight.Symbols.Max
-    Select Case Highlight.Types[i]
+  For I = 0 To Highlight.Symbols.Max
+    Select Case Highlight.Types[I]
       Case Highlight.Symbol
         sSyntax &= "<b>" & Highlight.Symbols[i] & " </b>"
       Case Highlight.Operator
-        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
+        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[I] & " </font>"
       Case Highlight.DataType
-        sSyntax &= "<font color=\"#0080FF\">" & Highlight.Symbols[i] & " </font>"
+        sSyntax &= "<font color=\"#0080FF\">" & Highlight.Symbols[I] & " </font>"
       Case Highlight.Keyword
-        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
+        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[I] & " </font>"
       Case Else
-        sSyntax &= Highlight.Symbols[i]
+        sSyntax &= Highlight.Symbols[I]
     End Select
   Next
   

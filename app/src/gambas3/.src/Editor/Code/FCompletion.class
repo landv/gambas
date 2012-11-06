@@ -798,6 +798,8 @@ Public Sub timHelp_Timer()
   Dim iType As Integer
   Dim sClass As String
   
+  timHelp.Stop
+  
   If Not $hEditor Then Return
   
   Try sSymbol = gvwComp.Current.Text
@@ -808,8 +810,6 @@ Public Sub timHelp_Timer()
     MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", $hEditor.Window)
   Endif
 
-  timHelp.Stop
-  
 End
 
 Public Sub gvwComp_Select()
