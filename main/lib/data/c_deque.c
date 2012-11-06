@@ -28,7 +28,7 @@
 typedef struct {
 	GB_VARIANT_VALUE var;
 	LIST list;
-	int prio;	/* FIXME: only used in priority queue */
+	int prio;
 } CDEQUE_ELEM;
 #define get_elem(node)		LIST_data(node, CDEQUE_ELEM, list)
 

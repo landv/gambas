@@ -1,5 +1,5 @@
 /*
- * c_list.c - Circular double-linked lists
+ * c_list.c - Circular doubly-linked lists
  *
  * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -21,52 +21,44 @@
 
 #define __C_LIST_C
 
+#include <assert.h>
+
 #include "gambas.h"
+#include "gb_common.h"
 #include "list.h"
 #include "c_list.h"
 
-#if 0
 #define CHUNK_SIZE	16
-#define CHUNK_SKIP	 2
 
 /*
  * List implementation properties:
- * - Speed up long traversals by maintaining links to the CHUNK_SKIP'th
- *   chunk forwards and backwards.
- * - Increase cache locality by saving CHUNK_SIZE values inside a single
+ * + Increase cache locality by saving CHUNK_SIZE values inside a single
  *   chunk.
- * Note that the two values must be chosen reasonably _together_.
+ * + A special algorithm to re-arrange the values in a chunk guarantees some
+ *   properties we can use to speed up the critical paths, such as
+ *   traversals.
+ * - Fragmentation in the middle chunks in a list because of the (O)
+ *   postulate of the rearrangement algorithm.
  */
 
 typedef struct {
 	LIST list;
-	LIST skip;
-	struct {	/* We don't want to bother reordering the array when
-			   elements are removed in the middle so we mark
-			   valid entries. */
-		GB_VARIANT_VALUE val;
-		int is_valid : 1;
-	} var[CHUNK_SIZE];
-	int avail;	/* First available in var */
-	int highest;	/* Highest available in var; will only be reduced
-			   when elements are removed from the end of the
-			   list */
-	int used;	/* Number of actually used elements, will reduce
-			   when elements are removed in the middle of var */
-} CHUNK;
-#endif
-
-typedef struct {
-	LIST list;
-	GB_VARIANT_VALUE val;
+	GB_VARIANT_VALUE var[CHUNK_SIZE];
+	int first;	/* First valid element in var */
+	int last;	/* Last valid element in var */
 } CHUNK;
 #define get_chunk(node)		LIST_data(node, CHUNK, list)
 
 typedef struct {
+	CHUNK *ck;
+	int fidx;	/* Relative to ->ck->first */
+	int lidx;	/* Relative to ->ck->last */
+} VAL;
+
+typedef struct {
 	GB_BASE ob;
 	LIST list;	/* Beginning of linked CHUNKs */
-	CHUNK *current;	/* Current element */
-	CHUNK *found;	/* Last found chunk */
+	VAL current;	/* Current element */
 	int count;	/* Do not iterate over all elements to get this */
 } CLIST;
 
@@ -75,7 +67,10 @@ static void CHUNK_init(CHUNK *ck)
 	int i;
 
 	LIST_init(&ck->list);
-	ck->val.type = GB_T_NULL;
+	for (i = 0; i < CHUNK_SIZE; i++)
+		ck->var[i].type = GB_T_NULL;
+	ck->first = -1;
+	ck->last = -1;
 }
 
 static CHUNK *CHUNK_new(void)
@@ -87,14 +82,47 @@ static CHUNK *CHUNK_new(void)
 	return new;
 }
 
+static inline int CHUNK_count(CHUNK *ck)
+{
+	return ck->last - ck->first + 1;
+}
+
+static inline int CHUNK_is_first(CLIST *list, CHUNK *ck)
+{
+	return list->list.next == &ck->list;
+}
+
+static inline int CHUNK_is_last(CLIST *list, CHUNK *ck)
+{
+	return list->list.prev == &ck->list;
+}
+
+static inline void set_fidx(int fidx, VAL *val)
+{
+	val->fidx = fidx;
+	val->lidx = val->ck->first + fidx - val->ck->last;
+}
+
+static inline void set_lidx(int lidx, VAL *val)
+{
+	val->lidx = lidx;
+	val->fidx = val->ck->last + lidx - val->ck->first;
+}
+
 static void CHUNK_free_all(CHUNK *ck)
 {
-	GB.StoreVariant(NULL, &ck->val);
+	int i;
+
+	if (ck->first < 0 || ck->last  < 0)
+		return;
+	for (i = ck->first; i <= ck->last; i++)
+		if (ck->var[i].type != GB_T_NULL)
+			GB.StoreVariant(NULL, &ck->var[i]);
 }
 
 static void CHUNK_destroy(CHUNK *ck)
 {
-	/* We require that the chunk is unlinked */
+	/* The chunk *must* be unlinked */
 	CHUNK_free_all(ck);
 	GB.Free((void **) &ck);
 }
@@ -104,8 +132,7 @@ static void CHUNK_destroy(CHUNK *ck)
 BEGIN_METHOD_VOID(List_new)
 
 	LIST_init(&THIS->list);
-	THIS->current = NULL;
-	THIS->found = NULL;
+	THIS->current.ck = NULL;
 	THIS->count = 0;
 
 END_METHOD
@@ -123,151 +150,501 @@ BEGIN_METHOD_VOID(List_free)
 
 END_METHOD
 
-/*
- * Modify @ck and @index so that they point to the next valid value. @first
- * is used to detect the end of an enumeration, i.e. where no other elements
- * can be found. In this case, NULL is written to @ck.
- */
-
-/*
- * Currently, @index is not used, see CHUNK definitions above.
- */
-
-static void CHUNK_next_val(CLIST *list, CHUNK *first, CHUNK **ck,int *index)
+static inline GB_VARIANT_VALUE *VAL_value(VAL *val)
 {
-	register CHUNK *c;
-	LIST *node;
+	int i = val->fidx + val->ck->first;
+	int j = val->lidx + val->ck->last;
 
-	if (LIST_is_empty(&list->list)) {
-		*ck = NULL;
+	assert(val->fidx >= 0);
+	assert(val->lidx <= 0);
+	assert(i == j);
+	if (val->fidx == -1 || i > val->ck->last)
+		return NULL;
+	return &val->ck->var[i];
+}
+
+static inline int VAL_is_valid(VAL *val)
+{
+	int i = val->fidx + val->ck->first;
+	int j = val->lidx + val->ck->last;
+
+	if (i != j || !val->ck || val->fidx == -1 || i > val->ck->last)
+		return 0;
+	return 1;
+}
+
+static inline int VAL_is_equal(VAL *v1, VAL *v2)
+{
+	return v1->ck == v2->ck && v1->fidx == v2->fidx;
+}
+
+static void CLIST_first(CLIST *list, VAL *buf)
+{
+	if (!list->count) {
+		buf->ck = NULL;
 		return;
 	}
-	if ((node = (*ck)->list.next) == &list->list)
+	buf->ck = get_chunk(list->list.next);
+	set_fidx(0, buf);
+}
+
+static void CLIST_last(CLIST *list, VAL *buf)
+{
+	if (!list->count) {
+		buf->ck = NULL;
+		return;
+	}
+	buf->ck = get_chunk(list->list.prev);
+	set_lidx(0, buf);
+}
+
+/*
+ * Modify @val so that it points to the next/prev valid value. @first is
+ * used to detect the end of an enumeration, i.e. where no other elements
+ * should be looked for. In this case, NULL is written to @val->ck.
+ */
+
+static void CHUNK_next(CLIST *list, VAL *val)
+{
+	LIST *node;
+
+	/* Try to just update the index. This approach comes from the
+	 * rearrange algorithm. */
+	if (val->lidx) {
+		set_fidx(val->fidx + 1, val);
+		return;
+	}
+
+	/* Go to next chunk */
+	if ((node = val->ck->list.next) == &list->list)
 		node = node->next;
-	c = get_chunk(node);
-	if (c == first)
-		*ck = NULL;
-	else
-		*ck = c;
+	val->ck = get_chunk(node);
+	set_fidx(0, val);
 }
 
-static void CHUNK_prev_val(CLIST *list, CHUNK *first, CHUNK **ck,int *index)
+static void CHUNK_next_enum(CLIST *list, VAL *first, VAL *val)
 {
-	register CHUNK *c = *ck;
+	CHUNK *ck = val->ck;
 	LIST *node;
 
-	if (LIST_is_empty(&list->list)) {
-		*ck = NULL;
+	assert(first != val);
+	if (val->lidx) {
+		set_fidx(val->fidx + 1, val);
+		if (VAL_is_equal(first, val))
+			goto no_next;
 		return;
 	}
-	if ((node = (*ck)->list.prev) == &list->list)
-		node = node->prev;
-	c = get_chunk(node);
-	if (c == first)
-		*ck = NULL;
-	else
-		*ck = c;
+	if ((node = ck->list.next) == &list->list)
+		node = node->next;
+	ck = get_chunk(node);
+	if (ck == first->ck && first->fidx == 0)
+		goto no_next;
+	val->ck = ck;
+	set_fidx(0, val);
+	return;
+
+no_next:
+	val->ck = NULL;
 }
 
-struct enum_state {
-	CHUNK *first, *next;	/* Be able to Take() in For Each and resume
-				   with the right Current when BREAKing
-				   nested enumerations */
-	int index;
-};
+/* Safe version for CLIST_take(), only if there cur->fidx == val->fidx */
+static void CHUNK_next_safe(CLIST *list, VAL *val)
+{
+	LIST *node;
+
+	if (val->fidx <= val->ck->last) {
+		set_fidx(val->fidx, val);
+		return;
+	}
+	/* Also prevent from getting over the end! */
+	if ((node = val->ck->list.next) == &list->list) {
+		CLIST_last(list, val);
+	} else {
+		val->ck = get_chunk(node);
+		set_fidx(0, val);
+	}
+}
+
+static void CHUNK_prev(CLIST *list, VAL *val)
+{
+	LIST *node;
+
+	if (val->fidx) {
+		set_fidx(val->fidx - 1, val);
+		return;
+	}
+	if ((node = val->ck->list.prev) == &list->list)
+		node = node->prev;
+	val->ck = get_chunk(node);
+	set_lidx(0, val);
+}
+
+static void CHUNK_prev_enum(CLIST *list, VAL *first, VAL *val)
+{
+	CHUNK *ck = val->ck;
+	LIST *node;
+
+	assert(first != val);
+	if (val->fidx) {
+		set_fidx(val->fidx - 1, val);
+		if (VAL_is_equal(first, val))
+			goto no_prev;
+		return;
+	}
+	if ((node = ck->list.prev) == &list->list)
+		node = node->prev;
+	ck = get_chunk(node);
+	if (ck == first->ck && first->lidx == 0)
+		goto no_prev;
+	val->ck = ck;
+	set_lidx(0, val);
+	return;
+no_prev:
+	val->ck = NULL;
+}
 
 /*
- * XXX: Breaking nested enumerations may confuse user's view of Current.
- *      After a broken nested enumeration, the outer enumeration inherits
- *      the Current from the nested loop but after this enumeration, it
- *      continues with the one it had originally next... - Bad!
+ * Random access function.
+ * Negative @idx makes go backwards. The @val is filled. Out of bounds is
+ * signalled by val->ck == NULL.
  */
+
+#ifndef sgn
+# define sgn(x)	((x) < 0 ? -1 : ((x) ? 1 : 0))
+#endif
+
+static void CLIST_get(CLIST *list, int idx, VAL *val)
+{
+	LIST *node;
+	CHUNK *ck;
+	int i;
+	int dir = sgn(idx);
+	int off, count;
+
+	/* We do _not_ allow indices to wrap around the end, like we could:
+	 * idx %= list->count. Don't use a loop just to detect that case. */
+	i = dir * idx - (dir < 0 ? 1 : 0);
+	if (i >= list->count)
+		goto out_of_bounds;
+
+	/* Don't traverse forwards/backwards when the absolute value of
+	 * index is above the half of the number of elements */
+	if (i > (list->count - 1) / 2) {
+		dir = -dir;
+		/*idx = -(idx + 1);*/
+		i = list->count - (i + 1);
+	}
+
+	node = &list->list;
+	/* Compute the offset to node->next or node->prev depending on the
+	 * direction we traverse. This saves an if (dir >= 0) branch
+	 * prediction catastrophe in loop */
+	off = (dir >= 0 ? offsetof(LIST, next) : offsetof(LIST, prev));
+	do {
+		node = *((LIST **) ((long) node + off));
+		assert(node != &list->list);
+		ck = get_chunk(node);
+		count = CHUNK_count(ck);
+		if (i < count) {
+			val->ck = ck;
+			if (dir < 0)
+				set_lidx(-i, val);
+			else
+				set_fidx(i, val);
+			return;
+		}
+		i -= count;
+	} while (node != &list->list);
+	__builtin_trap(); /* XXX */
+
+out_of_bounds:
+	/* Not enough elements. */
+	val->ck = NULL;
+}
+
+/* XXX: sizeof(VAL) may never exceed 3*sizeof(intptr_t)! */
+struct enum_state {
+	CHUNK *first;
+	VAL next;
+};
 
 BEGIN_METHOD_VOID(List_next)
 
 	struct enum_state *state = GB.GetEnum();
-	CHUNK *cur, *next;
+	GB_VARIANT_VALUE *val;
+	VAL start;
 
-	if (!*((char *) state)) { /* Beginning */
-		/* No elements? */
-		if (LIST_is_empty(&THIS->list))
-			goto no_enum;
-		cur = next = get_chunk(THIS->current);
-		state->first = cur;
-	} else {
-		cur = next = state->next;
-		if (!cur)
-			goto stop_enum;
+	if (!*((int *) state)) { /* Beginning */
+		CLIST_first(THIS, &state->next);
+		state->first = state->next.ck;
 	}
+	/* No elements left? */
+	if (!state->next.ck)
+		goto stop_enum;
 
-	CHUNK_next_val(THIS, state->first, &next, NULL);
-	state->next = next;
-	THIS->current = cur;
-	GB.ReturnVariant(&cur->val);
+	val = VAL_value(&state->next);
+	start.ck = state->first;
+	set_fidx(0, &start);
+	CHUNK_next_enum(THIS, &start, &state->next);
+	GB.ReturnVariant(val);
 	return;
 
 stop_enum:
-no_enum:
 	GB.StopEnum();
-	return;
 
 END_METHOD
 
-static CHUNK *CLIST_get(CLIST *list, int index)
-{
-	LIST *node;
+/*
+ * The same as List_next but backwards.
+ */
 
-	list_for_each(node, &list->list) {
-		if (!index)
-			break;
-		index--;
+BEGIN_METHOD_VOID(ListBackwards_next)
+
+	struct enum_state *state = GB.GetEnum();
+	GB_VARIANT_VALUE *val;
+	VAL start;
+
+	if (!*((int *) state)) { /* Beginning */
+		CLIST_last(THIS, &state->next);
+		state->first = state->next.ck;
 	}
-	if (index) /* Not enough elements */
-		return NULL;
-	return get_chunk(node);
-}
+	/* No elements left? */
+	if (!state->next.ck)
+		goto stop_enum;
+
+	val = VAL_value(&state->next);
+	start.ck = state->first;
+	set_lidx(0, &start);
+	CHUNK_prev_enum(THIS, &start, &state->next);
+	GB.ReturnVariant(val);
+	return;
+
+stop_enum:
+	GB.StopEnum();
+
+END_METHOD
 
 BEGIN_METHOD(List_get, GB_INTEGER index)
 
-	CHUNK *ck = CLIST_get(THIS, VARG(index));
+	int index = VARG(index);
+	VAL val;
 
-	if (!ck) {
+	CLIST_get(THIS, index, &val);
+	if (!val.ck) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
-	GB.ReturnVariant(&ck->val);
+	GB.ReturnVariant(VAL_value(&val));
 
 END_METHOD
 
 BEGIN_METHOD(List_put, GB_VARIANT var; GB_INTEGER index)
 
-	CHUNK *ck;
+	int index = VARG(index);
+	VAL val;
 
-	ck = CLIST_get(THIS, VARG(index));
-	if (!ck) {
+	CLIST_get(THIS, index, &val);
+	if (!val.ck) {
 		GB.Error(GB_ERR_BOUND);
 		return;
 	}
-	GB.StoreVariant(ARG(var), &ck->val);
+	GB.StoreVariant(ARG(var), VAL_value(&val));
 
 END_METHOD
 
 /*
- * XXX: Append and Prepend may confuse the user's view of the Current
- *      property. The first inserted elements get the Current status,
- *      however, it remains Current unless one of the Move*() methods is
- *      invoked - no matter if any other nodes are Prepend()'d.
+ * The machinery to modify the List structure, i.e. Append/Prepend/Take
+ * shall satisfy the following points:
+ *
+ * Notification prevents persistent VALs (Current and the enumerators)
+ * from getting ("dangerously", as opposed to "intentionally") invalid:
+ * (S) Stay. If an element other than that a VAL refers to is removed, or an
+ *     element is added, the VAL shall be modified according to the
+ *     operation, i.e. it shall stay pointing to the particular value it has
+ *     pointed to before.
+ * (B) Beginning. If the element a VAL refers to is removed, it shall remain
+ *     relative to the beginning of the list (as long as it doesn't get
+ *     empty), i.e. it moves on to the next value.
+ *     If the list gets empty, the VALs are invalidated.
+ *
+ * The rearrange algorithm shall assure the following:
+ * (C) Coherency. All values in a chunk must be contiguous.
+ * (A) Alignment. The first chunk has all elements aligned to its end; the
+ *     last chunk has all elements aligned to its beginning. For the special
+ *     case of only one chunk in the List (the 'sole chunk'), it is not
+ *     specially aligned but its initial element is at CHUNK_SIZE/2-1.
+ * (L) Least Copy. Rearrangement for any non-aligned chunk shall strive for
+ *     the least copy operations.
+ * (O) Order. Values get never reordered within a chunk or rearranged into
+ *     other chunks. They always keep their relative position to each other.
+ * Note that if (O) would not apply, on the one hand, we could make more
+ * intelligent algorithms, but on the other hand, the notification algorithm
+ * must be improved so it remains in the first place.
  */
+
+/* XXX: Give only variables! */
+#define for_all_persistent_vals(list, vp, es, ebuf)			\
+	for (ebuf = GB.BeginEnum(list), vp = &list->current, es = NULL;	\
+		vp ? 1 : (GB.EndEnum(ebuf), 0);				\
+		!GB.NextEnum() ? (es = (struct enum_state*) GB.GetEnum(),\
+			vp = &es->next) : (vp = NULL))
 
 static void CLIST_append(CLIST *list, GB_VARIANT *val)
 {
-	CHUNK *ck = CHUNK_new();
+	CHUNK *ck;
+	VAL *cur;
+	struct enum_state *es;
+	void *save_enum;
 
-	GB.StoreVariant(val, &ck->val);
-	LIST_append(&list->list, &ck->list);
-	if (!list->count)
-		list->current = ck;
+	ck = get_chunk(list->list.next);
+	/* (A) */
+	if (UNLIKELY(!list->count)) {
+		ck = CHUNK_new();
+		ck->first = ck->last = CHUNK_SIZE / 2 - 1;
+		LIST_append(&list->list, &ck->list);
+	} else if (UNLIKELY(ck->first == 0)) {
+		ck = CHUNK_new();
+		ck->first = ck->last = CHUNK_SIZE - 1;
+		LIST_append(&list->list, &ck->list);
+	} else {
+		ck->first--;
+	}
+	/* (C), (O) */
+	GB.StoreVariant(val, &ck->var[ck->first]);
 	list->count++;
+
+	/* (S) */
+	for_all_persistent_vals(list, cur, es, save_enum) {
+		if (cur->ck != ck)
+			continue;
+		/* On Append, the ->lidx + ->ck->last is still correct */
+		set_lidx(cur->lidx, cur);
+	}
+}
+
+static void CLIST_prepend(CLIST *list, GB_VARIANT *val)
+{
+	CHUNK *ck;
+	VAL *cur;
+	struct enum_state *es;
+	void *save_enum;
+
+	ck = get_chunk(list->list.prev);
+	/* (A) */
+	if (UNLIKELY(!list->count)) {
+		ck = CHUNK_new();
+		ck->first = ck->last = CHUNK_SIZE / 2 - 1;
+		LIST_prepend(&list->list, &ck->list);
+	} else if (UNLIKELY(ck->last == CHUNK_SIZE - 1)) {
+		ck = CHUNK_new();
+		ck->first = ck->last = 0;
+		LIST_prepend(&list->list, &ck->list);
+	} else {
+		ck->last++;
+	}
+	/* (C), (O) */
+	GB.StoreVariant(val, &ck->var[ck->last]);
+	list->count++;
+
+	/* (S) */
+	for_all_persistent_vals(list, cur, es, save_enum) {
+		if (cur->ck != ck)
+			continue;
+		/* Conversely to Append, here ->fidx + ->ck->first is still
+		 * correct */
+		set_fidx(cur->fidx, cur);
+	}
+}
+
+static void CLIST_take(CLIST *list, VAL *val, GB_VARIANT_VALUE *buf)
+{
+	GB_VARIANT_VALUE *v;
+	CHUNK *ck = val->ck;
+	VAL *cur;
+	struct enum_state *es;
+	void *save_enum;
+	int gets_empty, islast;
+	int i, src, dst, phantom;
+	int n, m;
+	size_t size;
+
+	i = val->fidx + ck->first;
+	v = &ck->var[i];
+	/* Save that value */
+	memcpy(buf, v, sizeof(*buf));
+	/* No need to not (O) */
+
+	gets_empty = (CHUNK_count(ck) == 1);
+	if (gets_empty) {
+		phantom = i;
+		goto no_move;
+	}
+
+	n = i - ck->first;
+	m = ck->last - i;
+	islast = CHUNK_is_last(list, ck);
+	/* (A) */
+	if (CHUNK_is_first(list, ck)) {
+		if (islast) /* Sole */
+			goto normal;
+		goto first; /* Algorithms match */
+	} else if (islast) {
+		goto last;
+	} else {
+	normal:
+		/* (L) */
+		if (n <= m) {
+		first: /* Move block before i upwards */
+			src = ck->first;
+			dst = src + 1;
+			ck->first++;
+			phantom = src;
+		} else {
+		last: /* Move block after i downwards */
+			src = i + 1;
+			dst = i;
+			n = m;
+			ck->last--;
+			phantom = i + m;
+		}
+	}
+	/* (C) */
+	size = n * sizeof(ck->var[0]);
+	memmove(&ck->var[dst], &ck->var[src], size);
+
+no_move:
+	/* Don't forget to remove the phantom value */
+	ck->var[phantom].type = GB_T_NULL;
+
+	list->count--;
+
+	for_all_persistent_vals(list, cur, es, save_enum) {
+		/* To not erase information before future curs */
+		assert(cur != val);
+/* Benoit, this is about the enumerator case. */
+#if 0
+		if (!cur->ck)
+			warnx("cur->ck == NULL => spurious enumerator?");
+#endif
+		if (cur->ck != val->ck)
+			continue;
+		/* (R) */
+		if (cur->fidx == val->fidx) {
+			if (!list->count)
+				cur->ck = NULL;
+			else
+				CHUNK_next_safe(list, cur);
+		/* (S) */
+		} else if (cur->fidx < val->fidx) {
+			set_fidx(cur->fidx, cur);
+		} else {
+			set_lidx(cur->lidx, cur);
+		}
+	}
+	if (gets_empty) {
+		LIST_unlink(&ck->list);
+		CHUNK_destroy(ck);
+	}
 }
 
 BEGIN_METHOD(List_Append, GB_VARIANT value)
@@ -276,197 +653,156 @@ BEGIN_METHOD(List_Append, GB_VARIANT value)
 
 END_METHOD
 
-static void CLIST_prepend(CLIST *list, GB_VARIANT *val)
-{
-	CHUNK *ck = CHUNK_new();
-
-	GB.StoreVariant(val, &ck->val);
-	LIST_prepend(&list->list, &ck->list);
-	if (!list->count)
-		list->current = ck;
-	list->count++;
-}
-
 BEGIN_METHOD(List_Prepend, GB_VARIANT value)
 
 	CLIST_prepend(THIS, ARG(value));
 
 END_METHOD
 
-static GB_VARIANT_VALUE *CLIST_take(CLIST *list, CHUNK *ck)
-{
-	GB_VARIANT_VALUE *val = &ck->val;
-	LIST *node;
-	CHUNK *new;
-
-	/*
-	 * Do we operate on the cursor itself? Set a new one. The cursor
-	 * remains always relative to the end - arbitrarily.
-	 */
-	if (ck == list->current) {
-		/* At End? */
-		if ((node = list->current->list.next) == &list->list)
-			node = list->current->list.prev;
-		if (node == &list->list) /* Empty */
-			list->current = NULL;
-		else
-			list->current = get_chunk(node);
-	}
-
-	/* TODO: Tell enumerations of gone nodes */
-
-	LIST_unlink(&ck->list);
-	list->count--;
-	return val;
-}
-
-#define CHECK_CURRENT()				\
-	if (!THIS->current) {			\
+#define CHECK_CURRENT()		(THIS->current.ck)
+#define CHECK_RAISE_CURRENT()			\
+	if (!CHECK_CURRENT()) {			\
 		GB.Error("No current element");	\
 		return;				\
 	}
 
 BEGIN_METHOD(List_Take, GB_INTEGER index)
 
-	CHUNK *ck;
+	VAL val;
+	GB_VARIANT_VALUE buf;
 
+	if (!THIS->count) {
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
 	if (MISSING(index)) {
-		CHECK_CURRENT();
-		ck = THIS->current;
+		CHECK_RAISE_CURRENT();
+		memcpy(&val, &THIS->current, sizeof(val));
+		CLIST_take(THIS, &val, &buf);
+		memcpy(&THIS->current, &val, sizeof(val));
 	} else {
-		ck = CLIST_get(THIS, VARG(index));
-		if (!ck) {
+		CLIST_get(THIS, VARG(index), &val);
+		if (!val.ck) {
 			GB.Error(GB_ERR_BOUND);
 			return;
 		}
+		CLIST_take(THIS, &val, &buf);
 	}
-	GB.ReturnVariant(CLIST_take(THIS, ck));
+	GB.ReturnVariant(&buf);
 	GB.ReturnBorrow();
-	GB.StoreVariant(NULL, &ck->val);
+	GB.StoreVariant(NULL, &buf);
 	GB.ReturnRelease();
-	CHUNK_destroy(ck);
 
 END_METHOD
 
-#define IMPLEMENT_Move(which, magic, magic2)		\
+#define IMPLEMENT_Move(which, magic)			\
 BEGIN_METHOD_VOID(List_Move ## which)			\
 							\
-	LIST *node;					\
-							\
-	magic;						\
-	if (node == &THIS->list) {			\
-		magic2;					\
+	if (!THIS->count) {				\
+		GB.Error("No elements");		\
+		return;					\
 	}						\
-	THIS->current = get_chunk(node);		\
+	magic;						\
 							\
 END_METHOD
 
-IMPLEMENT_Move(Next, CHECK_CURRENT(); node = THIS->current->list.next,
-	node = node->next)
-IMPLEMENT_Move(Prev, CHECK_CURRENT(); node = THIS->current->list.prev,
-	node = node->prev)
-IMPLEMENT_Move(First, node = THIS->list.next,
-	node = node->next)
-IMPLEMENT_Move(Last, node = THIS->list.prev,
-	node = node->prev)
+IMPLEMENT_Move(Next, if (!CHECK_CURRENT())CLIST_first(THIS, &THIS->current);
+	CHUNK_next(THIS, &THIS->current))
+IMPLEMENT_Move(Prev, if (!CHECK_CURRENT()) CLIST_last(THIS, &THIS->current);
+	CHUNK_prev(THIS, &THIS->current))
+IMPLEMENT_Move(First, CLIST_first(THIS, &THIS->current))
+IMPLEMENT_Move(Last, CLIST_last(THIS, &THIS->current))
 
-/* XXX: Quite cumbersome... */
-static int CLIST_find_forward(CLIST *list, LIST *start, GB_VARIANT *val)
+/*
+ * Modify @val to point to the next/prev value equal to @comp. If nothing
+ * found - @val is allowed to cycle and point to itself again! - NULL is
+ * written to @val->ck.
+ */
+
+static void CLIST_find_forward(CLIST *list, VAL *val, GB_VARIANT *comp)
 {
-	LIST *node;
-	CHUNK *ck;
-	int i = 0;
+	CHUNK *last = NULL;
+	int cached_diff;
+	VAL start;
 
-	/* We need to get the index */
-	list_for_each(node, &list->list) {
-		if (node == start) {
-			i++; break;
-		}
-		i++;
-	}
-	list_for_each(node, start) {
-		if (node == &list->list) {
-			i = 0; continue;
-		}
-		ck = get_chunk(node);
-		if (!GB.CompVariant(&val->value, &ck->val))
-			goto found;
-		i++;
-	}
-	/* The @start at last */
-	if (start != &list->list) {
-		ck = get_chunk(start);
-		if (!GB.CompVariant(&val->value, &ck->val))
-			goto found;
-	}
-	list->found = NULL;
-	return -1;
+	memcpy(&start, val, sizeof(start));
 
-found:
-	list->found = ck;
-	return i;
+	cached_diff = 1;
+	do {
+		/* We do actually enumerate but do the checking ourselves */
+		CHUNK_next(list, val);
+		/* Note that comparing here allows @val to point to itself
+		 * again. This is intentional for cyclic lists */
+		if (!GB.CompVariant(VAL_value(val), &comp->value))
+			return;
+		if (val->ck != last)
+			last = val->ck;
+		if (last == start.ck && val->fidx == start.fidx)
+			cached_diff = 0;
+	} while (cached_diff);
+	/* Invalidate */
+	val->ck = NULL; /* This is most likely &list->current */
 }
 
-static int CLIST_find_backward(CLIST *list, LIST *start, GB_VARIANT *val)
+static void CLIST_find_backward(CLIST *list, VAL *val, GB_VARIANT *comp)
 {
-	LIST *node;
-	CHUNK *ck;
-	int i = 0;
+	CHUNK *last = NULL;
+	int cached_diff;
+	VAL start;
 
-	list_for_each_prev(node, &list->list) {
-		if (node == start) {
-			i++; break;
-		}
-		i++;
-	}
-	list_for_each_prev(node, start) {
-		if (node == &list->list) {
-			i = 0; continue;
-		}
-		ck = get_chunk(node);
-		if (!GB.CompVariant(&val->value, &ck->val))
-			goto found;
-		i++;
-	}
-	if (start != &list->list) {
-		ck = get_chunk(start);
-		if (!GB.CompVariant(&val->value, &ck->val))
-			goto found;
-	}
-	list->found = NULL;
-	return -1;
+	memcpy(&start, val, sizeof(start));
 
-found:
-	list->found = ck;
-	return list->count - i - 1;
+	cached_diff = 1;
+	do {
+		CHUNK_prev(list, val);
+		if (!GB.CompVariant(VAL_value(val), &comp->value))
+			return;
+		if (val->ck != last)
+			last = val->ck;
+		if (last == start.ck && val->fidx == start.fidx)
+				cached_diff = 0;
+	} while (cached_diff);
+	val->ck = NULL;
 }
+
+#define CHECK_FOUND()	(THIS->current.ck)
+#define CHECK_RET_FOUND()		\
+	if (!CHECK_FOUND()) {		\
+		GB.ReturnNull();	\
+		return;			\
+	}
 
 #define IMPLEMENT_Find(which, which2, magic)				\
 									\
 BEGIN_METHOD(List_Find ## which, GB_VARIANT value)			\
 									\
-	LIST *node;							\
-									\
+	if (!THIS->count) {						\
+		GB.Error("No elements");				\
+		return;							\
+	}								\
 	magic;								\
-	GB.ReturnInteger(CLIST_find_ ## which2 (THIS, node, ARG(value)));\
+	CLIST_find_ ## which2 (THIS, &THIS->current, ARG(value));	\
 									\
 END_METHOD
 
 IMPLEMENT_Find(Next, forward,
-	node = THIS->found ? &THIS->found->list : &THIS->list)
+	if (!CHECK_FOUND()) CLIST_first(THIS, &THIS->current))
 IMPLEMENT_Find(Prev, backward,
-	node = THIS->found ? &THIS->found->list : &THIS->list)
-IMPLEMENT_Find(First, forward, node = THIS->list.next)
-IMPLEMENT_Find(Last, backward, node = THIS->list.prev)
+	if (!CHECK_FOUND()) CLIST_last(THIS, &THIS->current))
+IMPLEMENT_Find(First, forward, CLIST_first(THIS, &THIS->current))
+IMPLEMENT_Find(Last, backward, CLIST_last(THIS, &THIS->current))
 
 BEGIN_PROPERTY(List_Current)
 
-	CHECK_CURRENT();
+	GB_VARIANT_VALUE *val;
+
+	CHECK_RAISE_CURRENT();
+	val = VAL_value(&THIS->current);
 	if (READ_PROPERTY) {
-		GB.ReturnVariant(&THIS->current->val);
+		GB.ReturnVariant(val);
 		return;
 	}
-	GB.StoreVariant(PROP(GB_VARIANT), &THIS->current->val);
+	GB.StoreVariant(PROP(GB_VARIANT), val);
 
 END_PROPERTY
 
@@ -495,14 +831,24 @@ GB_DESC CListDesc[] = {
 	GB_METHOD("MoveFirst", NULL, List_MoveFirst, NULL),
 	GB_METHOD("MoveLast", NULL, List_MoveLast, NULL),
 
-	GB_METHOD("FindNext", "i", List_FindNext, "(Value)v"),
-	GB_METHOD("FindPrev", "i", List_FindPrev, "(Value)v"),
-	GB_METHOD("FindPrevious", "i", List_FindPrev, "(Value)v"),
-	GB_METHOD("FindFirst", "i", List_FindFirst, "(Value)v"),
-	GB_METHOD("FindLast", "i", List_FindLast, "(Value)v"),
+	GB_METHOD("FindNext", NULL, List_FindNext, "(Value)v"),
+	GB_METHOD("FindPrev", NULL, List_FindPrev, "(Value)v"),
+	GB_METHOD("FindPrevious", NULL, List_FindPrev, "(Value)v"),
+	GB_METHOD("FindFirst", NULL, List_FindFirst, "(Value)v"),
+	GB_METHOD("FindLast", NULL, List_FindLast, "(Value)v"),
 
 	GB_PROPERTY("Current", "v", List_Current),
 	GB_PROPERTY_READ("Count", "i", List_Count),
+	GB_PROPERTY_SELF("Backwards", ".List.Backwards"),
+
+	GB_END_DECLARE
+};
+
+GB_DESC CListBackwardsDesc[] = {
+	GB_DECLARE(".List.Backwards", 0),
+	GB_VIRTUAL_CLASS(),
+
+	GB_METHOD("_next", "v", ListBackwards_next, NULL),
 
 	GB_END_DECLARE
 };
