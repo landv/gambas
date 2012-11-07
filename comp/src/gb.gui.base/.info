@@ -311,10 +311,6 @@ i
 :
 
 (Row)i
-:MouseDown
-:
-
-
 :Sort
 :
 
@@ -383,10 +379,10 @@ TimerScroll_Timer
 m
 
 
-ScrollArea_MouseDrag
+_EnsureVisibleScroll
 m
 
-
+(X)i(Y)i
 ScrollArea_MouseDown
 m
 
@@ -396,6 +392,10 @@ m
 
 
 ScrollArea_MouseUp
+m
+
+
+ScrollArea_DragLeave
 m
 
 
@@ -1125,12 +1125,28 @@ m
 
 EnsureVisible
 m
-
+b
 (X)i(Y)i(W)i(H)i
 _SetShadowOffset
 m
 
 (North)i(South)i(West)i(East)i
+DrawingArea_DragMove
+m
+
+
+DrawingArea_DragLeave
+m
+
+
+_EnsureVisibleScroll
+m
+
+(X)i(Y)i
+TimerScroll_Timer
+m
+
+
 #TreeView
 _TreeView
 C

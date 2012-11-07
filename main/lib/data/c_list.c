@@ -622,9 +622,9 @@ no_move:
 		/* To not erase information before future curs */
 		assert(cur != val);
 /* Benoit, this is about the enumerator case. */
-#if 0
+#if 1
 		if (!cur->ck)
-			warnx("cur->ck == NULL => spurious enumerator?");
+			fprintf(stderr, "cur->ck == NULL => spurious enumerator?\n");
 #endif
 		if (cur->ck != val->ck)
 			continue;

@@ -54,6 +54,7 @@ DECLARE_EVENT(EVENT_Menu);
 DECLARE_EVENT(EVENT_Drag);
 DECLARE_EVENT(EVENT_DragMove);
 DECLARE_EVENT(EVENT_Drop);
+DECLARE_EVENT(EVENT_DragLeave);
 
 //Plug
 DECLARE_EVENT(EVENT_Plugged);
@@ -151,6 +152,8 @@ static int to_gambas_event(int type)
 		case gEvent_FocusOut: return EVENT_LostFocus;
 		case gEvent_Enter: return EVENT_Enter;
 		case gEvent_Leave: return EVENT_Leave;
+		case gEvent_DragMove: return EVENT_DragMove;
+		case gEvent_Drop: return EVENT_Drop;
 		default: fprintf(stderr, "warning: to_gambas_event: unhandled event: %d\n", type); return -1;
 	}
 }
@@ -250,6 +253,13 @@ bool gb_raise_Drag(gControl *sender)
 	return GB.Raise(THIS, EVENT_Drag, 0);
 }
 
+void gb_raise_DragLeave(gControl *sender)
+{
+	CWIDGET *_object = GetObject(sender);
+	
+	GB.Raise(THIS, EVENT_DragLeave, 0);
+}
+
 bool gb_raise_DragMove(gControl *sender)
 {
 	CWIDGET *_object = GetObject(sender);
@@ -327,6 +337,7 @@ void InitControl(gControl *control, CWIDGET *widget)
 	control->onKeyEvent = gb_raise_KeyEvent;
 	control->onFocusEvent = gb_raise_FocusEvent;
 	control->onDrag = gb_raise_Drag;
+	control->onDragLeave = gb_raise_DragLeave;
 	control->onDragMove = gb_raise_DragMove;
 	control->onDrop = gb_raise_Drop;
 	control->onEnterLeave = gb_raise_EnterLeave;
@@ -959,22 +970,23 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY_READ("Id", "i", CWIDGET_id),
 	GB_PROPERTY_READ("Handle", "i", CWIDGET_id),
 
-	GB_EVENT("Enter", 0, 0, &EVENT_Enter),
-	GB_EVENT("GotFocus", 0, 0, &EVENT_GotFocus),
-	GB_EVENT("LostFocus", 0, 0, &EVENT_LostFocus),
-	GB_EVENT("KeyPress", 0, 0, &EVENT_KeyPress),
-	GB_EVENT("KeyRelease", 0, 0, &EVENT_KeyRelease),
-	GB_EVENT("Leave", 0, 0, &EVENT_Leave),
-	GB_EVENT("MouseDown", 0, 0, &EVENT_MouseDown),
-	GB_EVENT("MouseMove", 0, 0, &EVENT_MouseMove),
-	GB_EVENT("MouseDrag", 0, 0, &EVENT_MouseDrag),
-	GB_EVENT("MouseUp", 0, 0, &EVENT_MouseUp),
-	GB_EVENT("MouseWheel", 0, 0, &EVENT_MouseWheel),
-	GB_EVENT("DblClick", 0, 0, &EVENT_DblClick),
-	GB_EVENT("Menu", 0, 0, &EVENT_Menu),
-	GB_EVENT("Drag", 0, 0, &EVENT_Drag),
-	GB_EVENT("DragMove", 0, 0, &EVENT_DragMove),
-	GB_EVENT("Drop", 0, 0, &EVENT_Drop),
+	GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
+	GB_EVENT("GotFocus", NULL, NULL, &EVENT_GotFocus),
+	GB_EVENT("LostFocus", NULL, NULL, &EVENT_LostFocus),
+	GB_EVENT("KeyPress", NULL, NULL, &EVENT_KeyPress),
+	GB_EVENT("KeyRelease", NULL, NULL, &EVENT_KeyRelease),
+	GB_EVENT("Leave", NULL, NULL, &EVENT_Leave),
+	GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
+	GB_EVENT("MouseMove", NULL, NULL, &EVENT_MouseMove),
+	GB_EVENT("MouseDrag", NULL, NULL, &EVENT_MouseDrag),
+	GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
+	GB_EVENT("MouseWheel", NULL, NULL, &EVENT_MouseWheel),
+	GB_EVENT("DblClick", NULL, NULL, &EVENT_DblClick),
+	GB_EVENT("Menu", NULL, NULL, &EVENT_Menu),
+	GB_EVENT("Drag", NULL, NULL, &EVENT_Drag),
+	GB_EVENT("DragMove", NULL, NULL, &EVENT_DragMove),
+	GB_EVENT("Drop", NULL, NULL, &EVENT_Drop),
+	GB_EVENT("DragLeave", NULL, NULL, &EVENT_DragLeave),
 
 	CONTROL_DESCRIPTION,
 
@@ -992,9 +1004,9 @@ GB_DESC CPluginDesc[] =
   GB_PROPERTY_READ("Client", "i", CPLUGIN_client),
   //GB_PROPERTY("Border", "i<Border>", CPLUGIN_border),
   
-  GB_EVENT("Embed", 0, 0, &EVENT_Plugged),
-  GB_EVENT("Close", 0, 0, &EVENT_Unplugged),
-  GB_EVENT("Error", 0, 0, &EVENT_PlugError), /* TODO */
+  GB_EVENT("Embed", NULL, NULL, &EVENT_Plugged),
+  GB_EVENT("Close", NULL, NULL, &EVENT_Unplugged),
+  GB_EVENT("Error", NULL, NULL, &EVENT_PlugError), /* TODO */
   
   EMBEDDER_DESCRIPTION,
   

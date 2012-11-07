@@ -4,7 +4,7 @@
   MoveScaled(0,0,64,84)
   Arrangement = Arrange.Vertical
   { HBox1 HBox
-    MoveScaled(7,2,43,4)
+    MoveScaled(3,2,58,4)
     { Button1 Button
       MoveScaled(0,0,16,4)
       Text = ("Delete")
@@ -13,12 +13,17 @@
       MoveScaled(17,0,16,4)
       Text = ("Border")
     }
+    { Button3 Button
+      MoveScaled(34,0,16,4)
+      Text = ("Drag")
+    }
   }
   { Separator1 Separator
     MoveScaled(28,8,12,0)
   }
   { tvwTest ColumnView
     MoveScaled(14,12,32,40)
+    Drop = True
     Expand = True
     Sorted = True
     Editable = True

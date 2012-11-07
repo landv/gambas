@@ -33,6 +33,8 @@
 #include "gdrag.h"
 #include "gdesktop.h"
 
+//#define DEBUG_DND 1
+
 static void  sg_destroy (GtkWidget *object,gControl *data)
 {
 	if (data->_no_delete)
@@ -105,7 +107,9 @@ static void sg_drag_data_get(GtkWidget *widget, GdkDragContext *context, GtkSele
 
 static void sg_drag_end(GtkWidget *widget,GdkDragContext *ct,gControl *data)
 {
-	//fprintf(stderr, "sg_drag_end\n");
+	#if DEBUG_DND
+	fprintf(stderr, "sg_drag_end: %s\n", data->name());
+	#endif
 	
 	gDrag::end();
 }
@@ -126,9 +130,9 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	
 	if (!gApplication::allEvents()) return true;
 	
-	//g_debug("sg_drag_motion\n");
-	//fprintf(stderr, "sg_drag_motion\n");
-	
+	#if DEBUG_DND
+	fprintf(stderr, "sg_drag_motion: %s\n", data->name());
+	#endif	
 	/*if (_drag_time != context->start_time) 
 	{ 
 		g_debug("sg_drag_motion: cancel!\n");
@@ -167,41 +171,87 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 			retval = !data->onDrag(data);
 		data->_drag_enter = true;
 	}
-	else
+	
+	if (retval)
 	{
 		//fprintf(stderr, "sg_drag_motion: onDragMove: %p\n", widget);
+		gControl *control = data;
 		
-		if (data->onDragMove) 
-			retval = !data->onDragMove(data);
+		//while (control->_proxy)
+		//	control = control->_proxy;
+		
+		while (control)
+		{
+			#if DEBUG_DND
+			fprintf(stderr, "drag move %s\n", control->name());
+			#endif
+			if (control->canRaise(control, gEvent_DragMove))
+			{
+				if (control->onDragMove) 
+				{
+					retval = !control->onDragMove(control);
+					if (!retval)
+						break;
+				}
+			}
+			control = control->_proxy;
+		}
 	}
 	
 	context = gDrag::disable(context);
 	
 	if (retval) 
 	{
+		//fprintf(stderr, "sg_drag_motion: accept\n");
 		gdk_drag_status(context, context->suggested_action, time);
 		return true;
 	}
 	
+	//fprintf(stderr, "sg_drag_motion: cancel\n");
 	gDrag::hide(data);
 	return false;
 }
 
+
 void sg_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time, gControl *data)
 {
-	//fprintf(stderr, "sg_drag_leave: %p\n", widget);
+	#if DEBUG_DND
+	fprintf(stderr, "sg_drag_leave: %s\n", data->name());
+	#endif
+	
 	data->_drag_enter = false;
 	gDrag::hide(data);
+
+	gControl *control = data;
+	
+	//while (control->_proxy)
+	//	control = control->_proxy;
+	
+	while (control)
+	{
+		control->emit(SIGNAL(control->onDragLeave));
+		control = control->_proxy;
+	}
 }
 
 
-gboolean sg_drag_drop(GtkWidget *widget,GdkDragContext *context,gint x,gint y,guint time,gControl *data)
+gboolean sg_drag_drop(GtkWidget *widget, GdkDragContext *context, gint x, gint y, guint time, gControl *data)
 {
 	gControl *source;
-	bool cancel;
 
-	//g_debug("sg_drag_drop\n");
+	#if DEBUG_DND
+	fprintf(stderr, "sg_drag_drop: %s\n", data->name());
+	#endif
 	
+	// sg_drag_leave() is automatically called when a drop occurs
+	//sg_drag_leave(widget, context, time, data);
+	
+	if (!data->canRaise(data, gEvent_Drop))
+	{
+		gtk_drag_finish(context, false, false, time);
+		return false;
+	}
+
 	source = gApplication::controlItem(gtk_drag_get_source_widget(context));
 
 	gDrag::setDropData(gDrag::getAction(), x, y, source, data);
@@ -210,21 +260,18 @@ gboolean sg_drag_drop(GtkWidget *widget,GdkDragContext *context,gint x,gint y,gu
 	data->_drag_get_data = true;
 	
 	if (data->onDrop)
-		cancel = data->onDrop(data);
-	else
-		cancel = false;
+		data->onDrop(data);
 	
 	context = gDrag::disable(context);
 
 	//fprintf(stderr, "cancel = %d\n", cancel);
 	
-	if (cancel)
-		gtk_drag_finish(context, true, false, time);
+	gtk_drag_finish(context, true, false, time);
 	
-	data->_drag_enter = false;
+	//data->_drag_enter = false;
 	data->_drag_get_data = false;
-	
-	return cancel;
+
+	return true;
 }
 
 // void sg_size(GtkWidget *widget,GtkRequisition *req, gContainer *data)

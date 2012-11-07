@@ -54,7 +54,7 @@ Event RowClick(Row As Integer)
 Event RowResize(Row As Integer)
 Event RowSize(Row As Integer)
 
-Event MouseDown
+'Event MouseDown
 Event Sort
 Event Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
 
@@ -753,13 +753,13 @@ Public Sub ScrollArea_MouseMove()
   iRow = -1
   iCol = -1
   
+  X = MX
+  Y = MY
+  $SX = X
+  $SY = Y
+  
   If Mouse.Left Then
     
-    X = MX
-    Y = MY
-    $SX = X
-    $SY = Y
-  
     If Y >= $hColumns.Height Then
       For I = 1 To $aRowY.Max
         If Y < $aRowY[I] Then
@@ -814,19 +814,29 @@ Public Sub TimerScroll_Timer()
   
 End
 
-Public Sub ScrollArea_MouseDrag()
+Public Sub _EnsureVisibleScroll(X As Integer, Y As Integer)
   
-  If Not Me.Enabled Then Return
-  $bIgnoreMove = False
-  If $bResize Then Return
-  If Not $hTimerScroll Then
-    $hTimerScroll = New Timer As "TimerScroll"
-    $hTimerScroll.Delay = 50
-    $hTimerScroll.Start
-  Endif
+  $hView.EnsureVisible($hView.ScrollX + X - 16 - $hColumns.W, $hView.ScrollY + Y - 16 - $hRows.H, 32, 32)
   
 End
 
+
+' Public Sub ScrollArea_MouseDrag()
+'   
+'   If Not Me.Enabled Then Return
+'   
+'   $bIgnoreMove = False
+'   If $bResize Then Return
+'   
+'   Debug
+'   
+'   If Not $hTimerScroll Then
+'     $hTimerScroll = New Timer As "TimerScroll"
+'     $hTimerScroll.Delay = 50
+'     $hTimerScroll.Start
+'   Endif
+'   
+' End
 
 Public Sub ScrollArea_MouseDown()
   
@@ -885,21 +895,23 @@ Public Sub ScrollArea_MouseDown()
   Endif
   
   If $bInCell Then
-    bCancel = Raise MouseDown
-    If Not bCancel Then Raise Click
-    Stop Event
+    'bCancel = Raise MouseDown
+    'If Not bCancel Then Raise Click
+    Raise Click
+    'Stop Event
   Else If Mouse.X < $hRows.Width And If Mouse.Y > $hColumns.H Then
     I = $hRows._FindRowFromPos(Mouse.Y - $hColumns.Height + $hView.ScrollY)
     If I >= 0 Then 
-      bCancel = Raise MouseDown
-      If Not bCancel Then Raise RowClick(I)
-      Stop Event
+      'bCancel = Raise MouseDown
+      'If Not bCancel Then Raise RowClick(I)
+      Raise RowClick(I)
+      'Stop Event
     Endif
   Else If Mouse.Y < $hColumns.Height And If Mouse.X > $hRows.W Then
     I = $hColumns._FindColumnFromPos(Mouse.X - $hRows.Width + $hView.ScrollX)
     If I >= 0 Then 
-      bCancel = Raise MouseDown
-      If Not bCancel Then
+      'bCancel = Raise MouseDown
+      'If Not bCancel Then
         bCancel = Raise ColumnClick(I)
         If Not bCancel Then
           If $bSorted Then
@@ -911,8 +923,8 @@ Public Sub ScrollArea_MouseDown()
             Endif
           Endif
         Endif
-      Endif
-      Stop Event
+      'Endif
+      'Stop Event
     Endif
   Endif
   
@@ -940,6 +952,13 @@ Public Sub ScrollArea_MouseUp()
   Endif
   
 End
+
+Public Sub ScrollArea_DragLeave()
+  
+  ScrollArea_MouseUp
+  
+End
+
 
 Public Sub ScrollArea_DblClick()
   

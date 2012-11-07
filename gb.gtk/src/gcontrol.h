@@ -177,6 +177,7 @@ public:
 	bool (*onDrag)(gControl *sender);
 	bool (*onDragMove)(gControl *sender);
 	bool (*onDrop)(gControl *sender);
+	void (*onDragLeave)(gControl *sender);
 	//void (*onMove)(gControl *sender);
 	//void (*onResize)(gControl *sender);
 

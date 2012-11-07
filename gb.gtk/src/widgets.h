@@ -101,6 +101,8 @@ enum
  gEvent_FocusOut,
  gEvent_Enter,
  gEvent_Leave,
+ gEvent_DragMove,
+ gEvent_Drop
 };
 
 typedef

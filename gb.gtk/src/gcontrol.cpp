@@ -249,6 +249,7 @@ void gControl::initAll(gContainer *parent)
 	onDrag = NULL;
 	onDragMove = NULL;
 	onDrop = NULL;
+	onDragLeave = NULL;
 	onEnterLeave = NULL;
 	canRaise = always_can_raise;
 

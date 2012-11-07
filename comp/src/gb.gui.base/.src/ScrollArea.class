@@ -48,6 +48,9 @@ Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
 Private $bBorder As Boolean 
 Private $bPainted As Boolean
+Private $hTimerScroll As Timer
+Private $DX As Integer
+Private $DY As Integer
 
 Private $W As Integer
 Private $H As Integer
@@ -350,7 +353,6 @@ Public Sub DrawingArea_Arrange()
   
 End
 
-
 Public Sub Scrollbar_Change()
   
   Raise Scroll
@@ -459,7 +461,7 @@ Public Sub DrawingArea_MouseWheel()
   
 End
 
-Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
+Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer) As Boolean
   
   Dim PW, PH, CX, CY, CW, CH, F As Integer
   Dim XX, YY, WW, HH As Float
@@ -524,6 +526,7 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
     CY = PH - CH
   Endif
 
+  If $hHBar.Value = - CX And If $hVBar.Value = - CY Then Return True
   Scroll(- CX, - CY)
   
 End
@@ -578,4 +581,38 @@ Private Sub Shadow_Write(Value As Boolean)
 
   $bShadow = Value
 
+End
+
+Public Sub DrawingArea_DragMove()
+  
+  If Not $hTimerScroll Then
+    $hTimerScroll = New Timer As "TimerScroll"
+    $hTimerScroll.Delay = 50
+    $hTimerScroll.Start
+  Endif
+  
+  $DX = Drag.X
+  $DY = Drag.Y
+  
+End
+
+Public Sub DrawingArea_DragLeave()
+  
+  $hTimerScroll.Stop
+  $hTimerScroll = Null
+  
+End
+
+Public Sub _EnsureVisibleScroll(X As Integer, Y As Integer)
+  
+  If EnsureVisible(Me.ScrollX + X - 16, Me.ScrollY + Y - 16, 32, 32) Then Return
+  Drag.Hide
+  
+End
+
+
+Public Sub TimerScroll_Timer()
+  
+  Me._EnsureVisibleScroll($DX, $DY)
+  
 End

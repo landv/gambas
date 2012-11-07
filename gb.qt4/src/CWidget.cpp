@@ -2542,9 +2542,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			return true;
 		}
 
-		if (EXT(control) && EXT(control)->proxy_for)
+		if (EXT(control) && EXT(control)->proxy)
 		{
-			control = (CWIDGET *)(EXT(control)->proxy_for);
+			control = (CWIDGET *)(EXT(control)->proxy);
 			goto __MENU_TRY_PROXY;
 		}
 		
@@ -2987,39 +2987,54 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	__DRAG_ENTER:
 	{
-		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		if (CDRAG_drag_enter((QWidget *)widget, control, (QDropEvent *)event))
 		{
 			if (!((QDropEvent *)event)->isAccepted())
 				CDRAG_hide_frame(control);
 			return true;
 		}
+		
 		goto __NEXT;
 	}
 	
 	__DRAG_MOVE:
 	{
-		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
-		if (CDRAG_drag_move((QWidget *)widget, control, (QDropEvent *)event))
+		for(;;)
 		{
-			if (!((QDropEvent *)event)->isAccepted())
-				CDRAG_hide_frame(control);
-			return true;
+			if (GB.CanRaise(control, EVENT_DragMove))
+			{
+				if (CDRAG_drag_move(QWIDGET(control), control, (QDropEvent *)event))
+				{
+					if (!((QDropEvent *)event)->isAccepted())
+						CDRAG_hide_frame(control);
+					break;
+				}
+			}
+
+			if (EXT(control) && EXT(control)->proxy)
+			{
+				control = (CWIDGET *)(EXT(control)->proxy);
+				continue;
+			}
+			else
+				break;
 		}
+		
+		goto __NEXT;
+	}
+	
+	__DRAG_LEAVE:
+	{
+		CDRAG_drag_leave(control);
 		goto __NEXT;
 	}
 	
 	__DROP:
 	{
 		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
+		CDRAG_drag_leave(control);
 		if (CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event))
 			return true;
-		goto __NEXT;
-	}
-	
-	__DRAG_LEAVE:
-	{
-		CDRAG_hide_frame(control);
 		goto __NEXT;
 	}
 	
@@ -3212,6 +3227,7 @@ GB_DESC CControlDesc[] =
 	GB_EVENT("Drag", NULL, NULL, &EVENT_Drag),
 	GB_EVENT("DragMove", NULL, NULL, &EVENT_DragMove),
 	GB_EVENT("Drop", NULL, NULL, &EVENT_Drop),
+	GB_EVENT("DragLeave", NULL, NULL, &EVENT_DragLeave),
 
 	CONTROL_DESCRIPTION,
 

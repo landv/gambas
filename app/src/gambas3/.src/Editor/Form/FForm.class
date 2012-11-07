@@ -903,7 +903,7 @@ Public Sub Control_MouseDown()
   '  PRINT "X ="; X; " Y ="; Y
   'ENDIF
 
-  If Mouse.Left Then
+  If Mouse.Left Or If Mouse.Right Then
     
     If $sTool = "" Then
   

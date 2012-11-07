@@ -58,3 +58,30 @@ Public Sub Button2_Click()
   tvwTest.Border = Not tvwTest.Border
 
 End
+
+Public Sub tvwTest_DragMove()
+
+  Debug
+  'Stop Event
+
+End
+
+Public Sub tvwTest_MouseDrag()
+
+  Debug "START"
+  Drag(tvwTest, "toto", "text/plain")
+  Debug "END"
+
+End
+
+Public Sub Button3_MouseDrag()
+
+  Drag(Button3, "titi", "text/plain")
+
+End
+
+Public Sub Button3_Click()
+
+  
+
+End
