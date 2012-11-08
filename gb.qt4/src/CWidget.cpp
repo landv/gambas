@@ -2818,11 +2818,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto _DESIGN; //_ACCEL;
 		#endif
 
-		/*qDebug("QKeyEvent: %s: (%s %s) window:%d -> %d %s",
+		if (type == QEvent::KeyRelease && kevent->isAutoRepeat())
+			goto __NEXT;
+			
+		/*qDebug("QKeyEvent: %s: (%s %s) -> %d %s %s",
 			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
 			GB.GetClassName(control), control->name,
-			((QWidget *)widget)->isWindow(),  
-			kevent->key(), (const char *)kevent->text().toLatin1());*/
+			kevent->key(), (const char *)kevent->text().toLatin1(), kevent->isAutoRepeat() ? "AR" : "--");*/
 
 		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 			
