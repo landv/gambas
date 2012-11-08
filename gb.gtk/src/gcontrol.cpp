@@ -731,7 +731,13 @@ void gControl::setCursor(gCursor *vl)
 void gControl::updateCursor(GdkCursor *cursor)
 {
   if (GDK_IS_WINDOW(border->window) && _inside)
-    gdk_window_set_cursor(border->window, cursor);
+	{
+		//fprintf(stderr, "updateCursor: %s %p\n", name(), cursor);
+		if (!cursor && parent() && parent()->border->window == border->window)
+			parent()->setMouse(parent()->mouse());
+		else
+			gdk_window_set_cursor(border->window, cursor);
+	}
 }
 
 void gControl::setMouse(int m)
@@ -754,14 +760,12 @@ void gControl::setMouse(int m)
 	if (m == CURSOR_CUSTOM)
 	{
 		if (!curs || !curs->cur)
-		{
-			mous = CURSOR_DEFAULT;
-			updateCursor(NULL);
-		}
+			m = mous = CURSOR_DEFAULT;
 		else
+		{
 			updateCursor(curs->cur);
-		
-		return;	
+			return;	
+		}
 	}
 	
 	if (m != CURSOR_DEFAULT) 
@@ -799,7 +803,7 @@ void gControl::setMouse(int m)
 		}
 	}
 	
-  updateCursor(cr);
+	updateCursor(cr);
 }
 
 
