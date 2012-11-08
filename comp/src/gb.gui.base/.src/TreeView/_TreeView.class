@@ -136,10 +136,10 @@ Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Opti
   
   hParent._AddChild(Key)
   
+  hItem._Index = hParent.Count - 1
   hItem.Editable = $bEditable
   hItem.Text = Text
   hItem.Picture = Picture
-  hItem._Index = hParent.Count - 1
   
   If After Then 
     _MoveItem(hItem, After, False)
@@ -379,6 +379,7 @@ Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   
   Dim PH As Integer
 
+  If Not hItem Then Return
   PH = Me.Font.Height + 4
   If hItem.Picture Then PH = Max(PH, hItem.Picture.H + 4)
   Return PH
