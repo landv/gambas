@@ -734,38 +734,26 @@ void gControl::updateCursor(GdkCursor *cursor)
 	{
 		//fprintf(stderr, "updateCursor: %s %p\n", name(), cursor);
 		if (!cursor && parent() && parent()->border->window == border->window)
-			parent()->setMouse(parent()->mouse());
+			parent()->updateCursor(parent()->getGdkCursor());
 		else
 			gdk_window_set_cursor(border->window, cursor);
 	}
 }
 
-void gControl::setMouse(int m)
+GdkCursor *gControl::getGdkCursor()
 {
-	GdkCursor *cr = NULL;
 	GdkPixmap *pix;
-	GdkColor col = {0,0,0,0};
-	
-	if (_proxy)
-	{
-		_proxy->setMouse(m);
-		return;
-	}
-	
-	mous = m;
+	GdkColor col = {0};
+	GdkCursor *cr = NULL;
+	int m = mous;
 	
 	if (gApplication::isBusy())
     m = GDK_WATCH;
 	
 	if (m == CURSOR_CUSTOM)
 	{
-		if (!curs || !curs->cur)
-			m = mous = CURSOR_DEFAULT;
-		else
-		{
-			updateCursor(curs->cur);
-			return;	
-		}
+		if (curs && curs->cur)
+			return curs->cur;
 	}
 	
 	if (m != CURSOR_DEFAULT) 
@@ -778,32 +766,51 @@ void gControl::setMouse(int m)
 		{
 			if (m == (GDK_LAST_CURSOR+1)) //FDiag
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_fdiag,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_fdiag, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+2)) //BDiag
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_bdiag,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_bdiag, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+3)) //SplitH
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_splith,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_splith, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+4)) //SplitV
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_splitv,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_splitv, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 		}
 	}
 	
-	updateCursor(cr);
+	return cr;
+}
+
+void gControl::setMouse(int m)
+{
+	if (_proxy)
+	{
+		_proxy->setMouse(m);
+		return;
+	}
+	
+	if (m == CURSOR_CUSTOM)
+	{
+		if (!curs || !curs->cur)
+			m = CURSOR_DEFAULT;
+	}
+	
+	mous = m;
+	
+	updateCursor(getGdkCursor());
 }
 
 

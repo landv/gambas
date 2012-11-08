@@ -244,6 +244,7 @@ public:
 	
 	bool noInputMethod() { return no_input_method; }
 	
+	GdkCursor *getGdkCursor();
 	virtual void updateBorder();
 	int getFrameBorder() const { return frame_border; }
 	void setFrameBorder(int border);
