@@ -243,6 +243,7 @@ public:
 	
 	bool noInputMethod() { return no_input_method; }
 	
+	GdkCursor *getGdkCursor();
 	virtual void updateBorder();
 	int getFrameBorder() const { return frame_border; }
 	void setFrameBorder(int border);
@@ -251,6 +252,7 @@ public:
 	int getFramePadding() const { return frame_padding; }
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();
+	virtual gColor getFrameColor();
 	void drawBorder(GdkEventExpose *e);
 	void drawBackground(GdkEventExpose *e);
 	

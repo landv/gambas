@@ -23,6 +23,7 @@
 
 #include "widgets.h"
 #include "widgets_private.h"
+#include "gapplication.h"
 #include "gframe.h"
 
 static void cb_frame_resize (GtkWidget *wid, GtkAllocation *req, gFrame *data)
@@ -44,12 +45,14 @@ void gPanel::create(void)
 	bool was_visible = isVisible();
 	GdkRectangle rect;
 	int bg, fg;
+	gControl *nextSibling;
 	
 	if (border)
 	{
 		getGeometry(&rect);
 		bg = background();
 		fg = foreground();
+		nextSibling = next();
 		parent()->remove(this);
 		
 		for (i = 0; i < childCount(); i++)
@@ -89,7 +92,8 @@ void gPanel::create(void)
 	{
 		if (box)
 			gtk_widget_realize(box);
-				
+		
+		setNext(nextSibling);
 		setBackground(bg);
 		setForeground(fg);
 		setFont(font());
@@ -108,12 +112,23 @@ void gPanel::create(void)
 			show();
 		else
 			hide();
+		
+		//gApplication::checkHoveredControl(this);
+		
+		if (_inside)
+		{
+			_inside = false;
+			if (gApplication::_enter == this)
+				gApplication::_enter = NULL;
+			gApplication::_ignore_until_next_enter = this;
+		}
 	}
 }
 
 gPanel::gPanel(gContainer *parent) : gContainer(parent)
 {
 	g_typ = Type_gPanel;
+	border = NULL;
 	create();
 }
 

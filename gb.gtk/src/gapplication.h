@@ -81,6 +81,8 @@ public:
 	
 	static void setMainWindow(gMainWindow *win) { _main_window = win; }
 	static gMainWindow *mainWindow() { return _main_window; }
+	
+	static void checkHoveredControl(gControl *control);
 
 	//"Private"
 	static bool _busy;
@@ -94,6 +96,7 @@ public:
 	//static void dispatchEnterLeave(gControl *enter);
 	static gControl *_enter;
 	static gControl *_leave;
+	static gControl *_ignore_until_next_enter;
 	static gControl *_active_control;
 	static gControl *_old_active_control;
 	static gControl *_button_grab;

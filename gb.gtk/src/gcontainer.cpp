@@ -536,7 +536,7 @@ void gContainer::setBackground(gColor color)
 	
 	for (i = 0; i < childCount(); i++)
 	{
-		ch = child(i);
+		ch = gContainer::child(i);
 		if (!ch->_bg_set)
 			ch->setBackground();
 	}	
@@ -551,7 +551,7 @@ void gContainer::setForeground(gColor color)
 	
 	for (i = 0; i < childCount(); i++)
 	{
-		ch = child(i);
+		ch = gContainer::child(i);
 		if (!ch->_fg_set)
 			ch->setForeground();
 	}	
@@ -700,4 +700,28 @@ void gContainer::enableArrangement()
 	_no_arrangement--;
 	if (_no_arrangement == 0 && _did_arrangement)
 		performArrange();
+}
+
+void gContainer::hideHiddenChildren()
+{
+	int i;
+	gControl *child;
+	
+	for (i = 0;; i++)
+	{
+		child = gContainer::child(i);
+		if (!child)
+			break;
+		if (!child->isVisible())
+			gtk_widget_hide(child->border);
+		else if (child->isContainer())
+			((gContainer *)child)->hideHiddenChildren();
+	}
+}
+
+void gContainer::reparent(gContainer *newpr, int x, int y)
+{
+	fprintf(stderr, "gContainer::reparent\n");
+	gControl::reparent(newpr, x, y);
+	hideHiddenChildren();
 }

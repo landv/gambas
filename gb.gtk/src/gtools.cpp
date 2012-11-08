@@ -94,12 +94,12 @@ static void set_color(GtkWidget *wid, gColor color, void (*func)(GtkWidget *, Gt
 	}
 }
 
-gColor get_gdk_fg_color(GtkWidget *wid)
+gColor get_gdk_fg_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
 
-	st=gtk_widget_get_style(wid);	
-	return get_gdk_color(&st->fg[GTK_STATE_NORMAL]);
+	st=gtk_widget_get_style(wid);
+	return get_gdk_color(&st->fg[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
 
 void set_gdk_fg_color(GtkWidget *wid, gColor color)
@@ -107,12 +107,12 @@ void set_gdk_fg_color(GtkWidget *wid, gColor color)
 	set_color(wid, color, gtk_widget_modify_fg, true);
 }
 
-gColor get_gdk_bg_color(GtkWidget *wid)
+gColor get_gdk_bg_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
 
 	st=gtk_widget_get_style(wid);	
-	return get_gdk_color(&st->bg[GTK_STATE_NORMAL]);
+	return get_gdk_color(&st->bg[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
 
 void set_gdk_bg_color(GtkWidget *wid,gColor color)
@@ -120,12 +120,12 @@ void set_gdk_bg_color(GtkWidget *wid,gColor color)
 	set_color(wid, color, gtk_widget_modify_bg, false);
 }
 
-gColor get_gdk_text_color(GtkWidget *wid)
+gColor get_gdk_text_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
 
 	st=gtk_widget_get_style(wid);	
-	return get_gdk_color(&st->text[GTK_STATE_NORMAL]);
+	return get_gdk_color(&st->text[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
 
 void set_gdk_text_color(GtkWidget *wid,gColor color)
@@ -133,12 +133,12 @@ void set_gdk_text_color(GtkWidget *wid,gColor color)
 	set_color(wid, color, gtk_widget_modify_text, true);
 }
 
-gColor get_gdk_base_color(GtkWidget *wid)
+gColor get_gdk_base_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
 
 	st=gtk_widget_get_style(wid);
-	return get_gdk_color(&st->base[GTK_STATE_NORMAL]);
+	return get_gdk_color(&st->base[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
 
 void set_gdk_base_color(GtkWidget *wid,gColor color)

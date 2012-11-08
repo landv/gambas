@@ -360,11 +360,15 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 			}
 		}	
 
-		if (!ca && !cb) 
+		if (!ca)
 		{
-			/* The strings compare the same.  Perhaps the caller will want to call strcmp to break the tie. */
-			return 0;
+			if (!cb)
+				return 0;
+			else
+				return -1;
 		}
+		else if (!cb)
+			return 1;
 
 		lca = STRING_get_utf8_char_length(ca);
 		lcb = STRING_get_utf8_char_length(cb);

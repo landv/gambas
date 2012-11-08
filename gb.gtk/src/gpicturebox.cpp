@@ -156,6 +156,10 @@ void gMovieBox::setAlignment(int al)
 	gtk_misc_set_alignment(GTK_MISC(widget), gt_from_alignment(al, false), gt_from_alignment(al, true));
 }
 
+gColor gMovieBox::getFrameColor()
+{
+	return realForeground();
+}
 
 
 /****************************************************************************************
@@ -271,3 +275,10 @@ void gPictureBox::updateBorder()
 	gControl::updateBorder();
 	adjust();
 }
+
+gColor gPictureBox::getFrameColor()
+{
+	return realForeground();
+}
+
+

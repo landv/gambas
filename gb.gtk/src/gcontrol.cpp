@@ -317,6 +317,8 @@ gControl::~gControl()
 		gApplication::_button_grab = NULL;
 	if (gApplication::_control_grab == this)
 		gApplication::_control_grab = NULL;
+	if (gApplication::_ignore_until_next_enter == this)
+		gApplication::_ignore_until_next_enter = NULL;
 }
 
 void gControl::destroy()
@@ -728,37 +730,29 @@ void gControl::setCursor(gCursor *vl)
 void gControl::updateCursor(GdkCursor *cursor)
 {
   if (GDK_IS_WINDOW(border->window) && _inside)
-    gdk_window_set_cursor(border->window, cursor);
+	{
+		//fprintf(stderr, "updateCursor: %s %p\n", name(), cursor);
+		if (!cursor && parent() && parent()->border->window == border->window)
+			parent()->updateCursor(parent()->getGdkCursor());
+		else
+			gdk_window_set_cursor(border->window, cursor);
+	}
 }
 
-void gControl::setMouse(int m)
+GdkCursor *gControl::getGdkCursor()
 {
-	GdkCursor *cr = NULL;
 	GdkPixmap *pix;
-	GdkColor col = {0,0,0,0};
-	
-	if (_proxy)
-	{
-		_proxy->setMouse(m);
-		return;
-	}
-	
-	mous = m;
+	GdkColor col = {0};
+	GdkCursor *cr = NULL;
+	int m = mous;
 	
 	if (gApplication::isBusy())
     m = GDK_WATCH;
 	
 	if (m == CURSOR_CUSTOM)
 	{
-		if (!curs || !curs->cur)
-		{
-			mous = CURSOR_DEFAULT;
-			updateCursor(NULL);
-		}
-		else
-			updateCursor(curs->cur);
-		
-		return;	
+		if (curs && curs->cur)
+			return curs->cur;
 	}
 	
 	if (m != CURSOR_DEFAULT) 
@@ -771,32 +765,51 @@ void gControl::setMouse(int m)
 		{
 			if (m == (GDK_LAST_CURSOR+1)) //FDiag
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_fdiag,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_fdiag, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+2)) //BDiag
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_bdiag,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_bdiag, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+3)) //SplitH
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_splith,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_splith, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+4)) //SplitV
 			{
-				pix = gdk_bitmap_create_from_data(NULL,_cursor_splitv,16,16);
-				cr = gdk_cursor_new_from_pixmap(pix,pix,&col,&col,0,0);
+				pix = gdk_bitmap_create_from_data(NULL, _cursor_splitv, 16, 16);
+				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
 		}
 	}
 	
-  updateCursor(cr);
+	return cr;
+}
+
+void gControl::setMouse(int m)
+{
+	if (_proxy)
+	{
+		_proxy->setMouse(m);
+		return;
+	}
+	
+	if (m == CURSOR_CUSTOM)
+	{
+		if (!curs || !curs->cur)
+			m = CURSOR_DEFAULT;
+	}
+	
+	mous = m;
+	
+	updateCursor(getGdkCursor());
 }
 
 
@@ -1187,6 +1200,11 @@ GList* gControl::controlList()
 	return controls; 
 }
 
+gColor gControl::getFrameColor()
+{
+	return gDesktop::lightfgColor();
+}
+
 void gControl::drawBorder(GdkEventExpose *e)
 {
 	GdkDrawable *win;
@@ -1234,7 +1252,7 @@ void gControl::drawBorder(GdkEventExpose *e)
 			GdkGC *gc;
 			GdkGCValues values;
 
-			fill_gdk_color(&values.foreground, gDesktop::lightfgColor(), gdk_drawable_get_colormap(win));
+			fill_gdk_color(&values.foreground, getFrameColor(), gdk_drawable_get_colormap(win));
 			gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
 			
 			//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
@@ -1547,7 +1565,7 @@ void gControl::setName(char *name)
 gColor gControl::realBackground()
 {
 	if (_bg_set)
-		return use_base ? get_gdk_base_color(widget) : get_gdk_bg_color(widget);
+		return use_base ? get_gdk_base_color(widget, enabled()) : get_gdk_bg_color(widget, enabled());
 	else if (pr)
 		return pr->realBackground();
 	else
@@ -1595,7 +1613,7 @@ void gControl::setBackground(gColor color)
 gColor gControl::realForeground()
 {
 	if (_fg_set)
-		return use_base ? get_gdk_text_color(widget) : get_gdk_fg_color(widget);
+		return use_base ? get_gdk_text_color(widget, enabled()) : get_gdk_fg_color(widget, enabled());
 	else if (pr)
 		return pr->realForeground();
 	else
@@ -1968,8 +1986,19 @@ void gControl::emitEnterEvent(bool no_leave)
 		return;
 	
 	_inside = true;
-	emit(SIGNAL(onEnterLeave), gEvent_Enter);
+
 	setMouse(mouse());
+
+	if (gApplication::_ignore_until_next_enter)
+	{
+		//fprintf(stderr, "ignore next enter for %s\n", name());
+		if (gApplication::_ignore_until_next_enter == this)
+			gApplication::_ignore_until_next_enter = NULL;
+		return;
+	}
+	
+	//fprintf(stderr, "RAISE ENTER: %s\n", name());
+	emit(SIGNAL(onEnterLeave), gEvent_Enter);
 }
 
 void gControl::emitLeaveEvent()
@@ -1987,8 +2016,17 @@ void gControl::emitLeaveEvent()
 	}
 	
 	_inside = false;
-	emit(SIGNAL(onEnterLeave), gEvent_Leave);
+	
 	if (parent()) parent()->setMouse(parent()->mouse());
+
+	if (gApplication::_ignore_until_next_enter)
+	{
+		//fprintf(stderr, "ignore next leave for %s\n", name());
+		return;
+	}
+
+	//fprintf(stderr, "RAISE LEAVE: %s\n", name());
+	emit(SIGNAL(onEnterLeave), gEvent_Leave);
 }
 
 bool gControl::isAncestorOf(gControl *child)
