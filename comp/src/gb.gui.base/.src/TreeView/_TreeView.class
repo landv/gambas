@@ -442,7 +442,7 @@ Public Sub GridView_Activate()
   Dim bCancel As Boolean
   Dim sCursor As String
   
-  'If Not hItem Then Return
+  If Not hItem Then Return ' The item may have been destroyed during the click event
   
   sCursor = $sCursor
   SetCursor(hItem.Key)

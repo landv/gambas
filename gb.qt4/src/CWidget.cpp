@@ -2268,11 +2268,6 @@ void CWidget::destroy()
 	
 	if (_post_check_hovered_window == THIS)
 		_post_check_hovered_window = NULL;
-	/*if (!_check_enter_leave)
-	{
-		_check_enter_leave = true;
-		QTimer::singleShot(0, &CWidget::manager, SLOT(checkEnterLeave));
-	}*/
 	
 	if (CWIDGET_active_control == THIS)
 		CWIDGET_active_control = NULL;
@@ -2668,6 +2663,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			MOUSE_info.state = mevent->buttons();
 			MOUSE_info.modifier = mevent->modifiers();
 		
+			//qDebug("MouseDrag: %s", control->name);
 			cancel = GB.Raise(control, EVENT_MouseDrag, 0);
 			
 			CMOUSE_clear(false);

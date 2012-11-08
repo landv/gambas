@@ -686,6 +686,7 @@ Public Sub ScrollArea_MouseMove()
 
   If Not Me.Enabled Then Return
   If $bIgnoreMove Then Return
+
   If $hRows.Count = 0 And If $hColumns.Count = 0 Then Return
   
   MX = Mouse.X - F
@@ -796,6 +797,11 @@ Public Sub TimerScroll_Timer()
   Dim iCol As Integer
   Dim iRow As Integer 
   
+  If Drag.Pending Then
+    $hTimerScroll.Stop
+    Return
+  Endif
+  
   If $SX < $hRows.W Then
     iCol = -1
   Else
@@ -821,22 +827,20 @@ Public Sub _EnsureVisibleScroll(X As Integer, Y As Integer)
 End
 
 
-' Public Sub ScrollArea_MouseDrag()
-'   
-'   If Not Me.Enabled Then Return
-'   
-'   $bIgnoreMove = False
-'   If $bResize Then Return
-'   
-'   Debug
-'   
-'   If Not $hTimerScroll Then
-'     $hTimerScroll = New Timer As "TimerScroll"
-'     $hTimerScroll.Delay = 50
-'     $hTimerScroll.Start
-'   Endif
-'   
-' End
+Public Sub ScrollArea_MouseDrag()
+  
+  If Not Me.Enabled Then Return
+  
+  $bIgnoreMove = False
+  If $bResize Then Return
+  
+  If Not $hTimerScroll Then
+    $hTimerScroll = New Timer As "TimerScroll"
+    $hTimerScroll.Delay = 50
+    $hTimerScroll.Start
+  Endif
+  
+End
 
 Public Sub ScrollArea_MouseDown()
   

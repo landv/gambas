@@ -145,8 +145,6 @@ static int _no_destroy = 0;
 static QTranslator *_translator = NULL;
 static bool _application_keypress = false;
 static GB_FUNCTION _application_keypress_func;
-static QWidget *_mouseGrabber = 0;
-static QWidget *_keyboardGrabber = 0;
 static bool _check_quit_posted = false;
 
 #ifndef NO_X_WINDOW
@@ -154,6 +152,10 @@ static void (*_x11_event_filter)(XEvent *) = 0;
 #endif
 
 static QHash<void *, void *> _link_map;
+
+static QPointer<QWidget> MAIN_mouseGrabber = 0;
+static QPointer<QWidget> MAIN_keyboardGrabber = 0;
+
 
 //static MyApplication *myApp;
 
@@ -524,18 +526,18 @@ void MyTimer::timerEvent(QTimerEvent *e)
 
 static void release_grab()
 {
-	_mouseGrabber = QWidget::mouseGrabber();
-	_keyboardGrabber = QWidget::keyboardGrabber();
+	MAIN_mouseGrabber = QWidget::mouseGrabber();
+	MAIN_keyboardGrabber = QWidget::keyboardGrabber();
 	
-	if (_mouseGrabber) 
+	if (MAIN_mouseGrabber) 
 	{
 		//qDebug("releaseMouse");
-		_mouseGrabber->releaseMouse();
+		MAIN_mouseGrabber->releaseMouse();
 	}
-	if (_keyboardGrabber)
+	if (MAIN_keyboardGrabber)
 	{
 		//qDebug("releaseKeyboard");
-		_keyboardGrabber->releaseKeyboard();
+		MAIN_keyboardGrabber->releaseKeyboard();
 	}
 	
 	#ifndef NO_X_WINDOW
@@ -550,18 +552,18 @@ static void release_grab()
 
 static void unrelease_grab()
 {
-	if (_mouseGrabber)
+	if (MAIN_mouseGrabber)
 	{
 		//qDebug("grabMouse");
-		_mouseGrabber->grabMouse();
-		_mouseGrabber = 0;
+		MAIN_mouseGrabber->grabMouse();
+		MAIN_mouseGrabber = 0;
 	}
 	
-	if (_keyboardGrabber)
+	if (MAIN_keyboardGrabber)
 	{
 		//qDebug("grabKeyboard");
-		_keyboardGrabber->grabKeyboard();
-		_keyboardGrabber = 0;
+		MAIN_keyboardGrabber->grabKeyboard();
+		MAIN_keyboardGrabber = 0;
 	}
 }
 

@@ -598,8 +598,10 @@ End
 
 Public Sub DrawingArea_DragLeave()
   
-  $hTimerScroll.Stop
-  $hTimerScroll = Null
+  If $hTimerScroll Then
+    $hTimerScroll.Stop
+    $hTimerScroll = Null
+  Endif
   
 End
 

@@ -1,0 +1,35 @@
+' Gambas class file
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+  lvGroupAvail.Add("Energy", "Energy")
+  lvGroupAvail.Add("Gas", "Gas")
+  lvGroupAvail.Add("Humidity", "Humidity")
+  lvGroupAvail.Add("Outside", "Outside")
+
+End
+
+Public Sub lvGroupAvail_Click()
+
+  lvGroupActive.Add(lvGroupAvail.Key, lvGroupAvail.Key)
+  lvGroupAvail.Remove(lvGroupAvail.Key)
+
+End
+
+Public Sub lvGroupActive_Click()
+
+  lvGroupAvail.Add(lvGroupActive.Key, lvGroupActive.Key)
+  lvGroupActive.Remove(lvGroupActive.Key)
+
+End
+
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End

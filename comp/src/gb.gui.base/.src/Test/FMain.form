@@ -1,0 +1,41 @@
+# Gambas Form File 3.0
+{ Form Form 
+  MoveScaled(0,0,70,45)
+  Background = Color.TextBackground
+  Text = ("Add Device")
+  Resizable = False
+  { tabDevice TabStrip 
+    MoveScaled(1,1,68,42)
+    Index = 0
+    Text = ("Groups")
+    { Frame5 Frame 
+      MoveScaled(1,1,65,28)
+      Text = ("Groups")
+      { lvGroupAvail ListView 
+        MoveScaled(14,5,23,21)
+        Sorted = True
+      }
+      { lvGroupActive ListView 
+        MoveScaled(39,5,23,21)
+        Sorted = True
+      }
+      { TextLabel3 TextLabel 
+        MoveScaled(14,2,17,4)
+        Text = ("Available Groups")
+      }
+      { TextLabel4 TextLabel 
+        MoveScaled(39,2,15,4)
+        Text = ("Selected Groups")
+      }
+    }
+    Index = 0
+  }
+  { btnCancel Button 
+    MoveScaled(52,36,12,4)
+    Text = ("Cancel")
+  }
+  { btnDeleteDevice Button 
+    MoveScaled(7,36,12,4)
+    Text = ("Delete")
+  }
+}
