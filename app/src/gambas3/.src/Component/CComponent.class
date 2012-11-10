@@ -419,7 +419,7 @@ End
 
 Public Sub Load()
   
-  Dim hFic As File
+  Dim aLine As String[]
   Dim sClass As String
   Dim sSymbol As String
   Dim sLig As String
@@ -435,6 +435,8 @@ Public Sub Load()
   Dim aList As String[]
   Dim hLibraryInfo As CLibraryInfo
   Dim sErr As String
+  Dim iLine As Integer
+  Dim sHelp As String
   
   If Loaded Then Return
   
@@ -500,9 +502,14 @@ Public Sub Load()
     
     bAgain = False
     
-    hFic = Open sPath
+    aLine = Split(File.Load(sPath), "\n")
+    If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
+    iLine = 0
     
-    For Each sLig In hFic.Lines
+    While iLine < aLine.Count
+      
+      sLig = aLine[iLine]
+      Inc iLine
       
       If Left$(sLig) = "#" Then
         
@@ -525,7 +532,9 @@ Public Sub Load()
           Continue
         Endif
         
-        Line Input #hFic, sParent
+        sParent = aLine[iLine]
+        Inc iLine
+        
         If Not sParent Then
           hParent = Classes[sClass]
           If hParent And If hParent.Component <> Key And If hParent.Component <> Project.Name Then
@@ -548,9 +557,14 @@ Public Sub Load()
         
         hClass = CreateClass(sClass, sParent, Key)
         
-        Line Input #hFic, sLig
+        sLig = aLine[iLine]
+        Inc iLine
+        
         hClass.Creatable = InStr(sLig, "C")
         hClass.AutoCreatable = InStr(sLig, "A")
+        
+        GoSub READ_HELP
+        hClass.Help = sHelp
         
         Continue
         
@@ -565,13 +579,20 @@ Public Sub Load()
       hSym.Name = sSymbol
       hSym.Class = sClass
       hSym.Component = Key
-      Line Input #hFic, hSym.Kind
-      Line Input #hFic, hSym.Type
+      
+      hSym.Kind = aLine[iLine]
+      Inc iLine
+      
+      hSym.Type = aLine[iLine]
+      Inc iLine
+      
       If hSym.Kind = "C" Then
-        Line Input #hFic, hSym.Value
+        hSym.Value = aLine[iLine]
       Else
-        Line Input #hFic, hSym.Signature
+        hSym.Signature = aLine[iLine]
       Endif
+      Inc iLine
+      
       If Left$(hSym.Kind) = "p" Then
         If Left$(hSym.Type, 2) = "i<" Then
           hSym.Signature = Mid$(hSym.Type, 3, -1)
@@ -579,9 +600,10 @@ Public Sub Load()
         Endif
       Endif
       
-    Next
-    
-    Close #hFic
+      GoSub READ_HELP
+      hSym.Help = sHelp
+      
+    Wend
     
   Until Not bAgain
   
@@ -652,6 +674,23 @@ HAS_BEEN_LOADED:
   'PRINT "OK"
   
   Loaded = True
+  Return
+  
+READ_HELP:
+
+  sHelp = ""
+  While iLine < aLine.Count
+    If Left(aLine[iLine]) <> "'" Then Break
+    sHelp &= Mid$(aLine[iLine], 2) & "\n"
+    Inc iLine
+  Wend
+  
+  If sHelp Then
+    sHelp = RTrim(sHelp)
+    If InStr(sHelp, "\n") = 0 Then sHelp = LTrim(sHelp)
+  Endif
+      
+  Return
   
 Catch
   

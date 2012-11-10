@@ -61,22 +61,22 @@ Static Public Sub _get(Name As String) As Connection
     Select Case LCase(aLine[0])
     
       Case "type"
-        hConn.Type = Unquote(aLine[1])
+        hConn.Type = UnQuote(aLine[1])
       
       Case "path", "host"
-        hConn.Host = Unquote(aLine[1])
+        hConn.Host = UnQuote(aLine[1])
         
       Case "port"
-        hConn.Port = Unquote(aLine[1])
+        hConn.Port = UnQuote(aLine[1])
         
       Case "database"
-        hConn.Name = Unquote(aLine[1])
+        hConn.Name = UnQuote(aLine[1])
         
       Case "ignorecharset"
         hConn.IgnoreCharset = LCase(aLine[1]) = "true"
         
       Case "user"
-        hConn.User = Unquote(aLine[1])
+        hConn.User = UnQuote(aLine[1])
         
       Case "rememberpassword"
         bPassword = LCase(aLine[1]) = "true"

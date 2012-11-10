@@ -12,6 +12,7 @@ Public Class As String
 Public Component As String
 Public NotPublic As Boolean
 Public LineNumber As Integer
+Public Help As String
 
 Private $sArgBefore As String
 Private $sArgAfter As String
@@ -907,6 +908,10 @@ Public Sub GetHelpMarkup() As String
   Dim iLine, i As Integer
   Dim sLine As String
   
+  If Help Then
+    Return Help
+  Endif
+  
   If Component Then Return
   
   sPath = Project.FindPath({Class})
@@ -957,20 +962,30 @@ Public Sub GetHelpMarkup() As String
   
 End
 
+Private Sub KeywordCase(sKeyword As String) As String
+  
+  If Settings["/Editor/KeywordsUseUpperCase"] Then
+    Return UCase(sKeyword)
+  Else
+    Return sKeyword
+  Endif
+  
+End
+
 
 Public Function GetHelpHTML() As String
   
   Dim sHTML, sHelp As String
   Dim I As Integer
   Dim sSyntax As String
-  Dim sWhere As String
   Dim sMarkup As String
+  Dim sTitle As String
   
   sMarkup = GetHelpMarkup()
-  If Not sMarkup Then Return
-  
-  Try sHelp = Markup.Convert(sHelp)
-  If Error Then sHelp = "<b>" & Error.Text & "</b>"
+  If sMarkup Then 
+    Try sHelp = Markup.Convert(sMarkup)
+    If Error Then sHelp = "<b>" & Error.Text & "</b>"
+  Endif
   
   sHTML = File.Load("help/symbol-help.html")
   sHTML = Replace(sHTML, "$(hide-title)", "")
@@ -982,7 +997,7 @@ Public Function GetHelpHTML() As String
   sSyntax &= Me.GetDescription(False)
   sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
   
-  Highlight.Analyze(sSyntax)
+  Highlight.Analyze(sSyntax, True)
   sSyntax = ""
   
   For I = 0 To Highlight.Symbols.Max
@@ -994,18 +1009,21 @@ Public Function GetHelpHTML() As String
       Case Highlight.DataType
         sSyntax &= "<font color=\"#0080FF\">" & Highlight.Symbols[I] & " </font>"
       Case Highlight.Keyword
-        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[I] & " </font>"
+        sSyntax &= "<font color=\"blue\">" & KeywordCase(Highlight.Symbols[I]) & " </font>"
       Case Else
         sSyntax &= Highlight.Symbols[I]
     End Select
   Next
   
-  sWhere = "gambas://project/" & {Class} & "#" & Me.LineNumber & "?showfile"
-  
   sHTML = Replace(sHTML, "$(syntax)", sSyntax)
   sHTML = Replace(sHTML, "$(help)", sHelp)
-  sHTML = Replace(sHTML, "$(where)", sWhere)
-  
+
+  If Component = CComponent.PROJECT_NAME Then sTitle = "<a href=\"" & "gambas://project/" & {Class} & "#" & Me.LineNumber & "?showfile" & "\">"
+  sTitle &= {Class} & "." & Name
+  If Component = CComponent.PROJECT_NAME Then sTitle &= "</a>"
+
+  sHTML = Replace(sHTML, "$(title)", sTitle)
+
   Return sHTML
 
 End

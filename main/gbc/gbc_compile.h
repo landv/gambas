@@ -78,6 +78,9 @@ typedef
 		const FORM_FAMILY *family;         // form file family
 		char *tname;                       // translation file name
 		int default_library;               // default library name for extern declarations
+		const char **help;                 // help comments array
+		int help_first_line;               // line of the first help comment
+		char *hname;                       // help file name
 		}
 	COMPILE;
 

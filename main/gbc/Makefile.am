@@ -18,17 +18,19 @@ gba3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 gbc3_SOURCES = \
  gb_error.h gb_error.c \
  gb_alloc.c gb_array.c \
- gbc_class.h \
+ gbc_class.h gbc_class.c \
  gbc_read.h gbc_read.c \
  gbc_preprocess.h gbc_preprocess.c \
- gbc_type.h gbc_compile.h gbc_header.h \
- gbc_output.h gbc_trans.h \
+ gbc_type.h gbc_type.c \
+ gbc_compile.h gbc_compile.c \
+ gbc_header.h gbc_header.c \
+ gbc_help.h gbc_help.c \
+ gbc_output.h gbc_output.c \
+ gbc_trans.h gbc_trans_expr.c gbc_trans_tree.c gbc_trans_ctrl.c gbc_trans_subr.c \
  gbc_reserved.c \
- gbc_compile.c \
- gbc_type.c gb_buffer.c \
- gbc_dump.c gbc_class.c gbc_code.c gbc_trans.c gbc_header.c gbc_trans_code.c \
- gbc_trans_expr.c gbc_trans_tree.c gbc_trans_ctrl.c gbc_trans_subr.c \
- gbc_output.c gbc_pcode.c \
+ gb_buffer.c \
+ gbc_dump.c gbc_code.c gbc_trans.c gbc_trans_code.c \
+ gbc_pcode.c \
  gb_file.h gb_file.c \
  gbc_form.h gbc_form.c gbc_form_webpage.c \
  gb_str.h gb_str.c \

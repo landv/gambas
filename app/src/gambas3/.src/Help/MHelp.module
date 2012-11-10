@@ -379,11 +379,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     Try hClass = CComponent.Classes[sSymbol]
     If hClass Then 
-      If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME Then
-        sUrl = hClass.GetHelpURL()  
+      If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not CComponent.All[hClass.Component].Library Then
+        sUrl = hClass.GetHelpURL()
+      Else If hClass.Help Then
+        sHtml = GetProjectClassHelpHTML(sSymbol, hClass.Help)
+        sUrl = hClass.Component & "-" & sSymbol
       Endif
-    Endif
-    If Not sUrl And If Project.GetClasses().Exist(sSymbol) Then
+    Else If Project.GetClasses().Exist(sSymbol) Then
       sHtml = GetProjectClassHelpHTML(sSymbol)
       sUrl = "-" & sSymbol
     Endif
@@ -419,8 +421,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Endif
     
   Else
-    hWebView.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
+    
+    hWebView.HTML = "<html><body><h3>" & ("No help found.") & "</h3></body></html>"
+    
   Endif
+  
   hWebView.TextZoom = 0.8
   
 End
@@ -475,7 +480,7 @@ End
 '' - #sClass# is the class to analyze
 '' - #hWebView# is the WebView control to use.
 
-Private Function GetProjectClassHelpHTML(sClass As String) As String
+Private Function GetProjectClassHelpHTML(sClass As String, Optional sMarkup As String) As String
   
   Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo As String
   Dim hForm As FEditor
@@ -490,27 +495,26 @@ Private Function GetProjectClassHelpHTML(sClass As String) As String
   Dim hArray As String[]
   Dim sParent As String
 
-  'Getting help
-  hForm = Project.LoadFile(Project.FindPath(sClass))
+  If Not sMarkup Then
   
-  Try hEdit = hForm.Editor
+    hForm = Project.LoadFile(Project.FindPath(sClass))
+    Try hEdit = hForm.Editor
+    
+    If Not hEdit Then Return  
   
-  If Not hEdit Then Return  
-  
-  For i = 0 To hEdit.Lines.Count - 1
-    sLine = Trim(hEdit.Lines[i].Text)
-    If sLine Begins "''" Then
-      sHelp &= Trim(Mid(sLine, 3)) & "<br>"
-    Else
-      If sLine Begins "'" Then Continue
-      If Not sLine And If Not sHelp Then Continue
-      Break
-    Endif
-  Next
-  
-  While sHelp Ends "<br>"
-    sHelp = Trim(Left(sHelp, -4))
-  Wend
+    For i = 0 To hEdit.Lines.Count - 1
+      sLine = Trim(hEdit.Lines[i].Text)
+      If sLine Begins "''' " Then
+        sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
+      Else
+        If sMarkup Then Break
+        If sLine Not Begins "'" Then Break
+      Endif
+    Next
+    
+  Endif
+    
+  sHelp = Markup.Convert(sMarkup)
   
   hClassInfo = CComponent.GetClassDescription(sClass)
   cClassSymbols = CComponent.GetClassSymbols(sClass)

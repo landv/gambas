@@ -44,6 +44,7 @@
 #include "gbc_compile.h"
 #include "gbc_class.h"
 #include "gbc_preprocess.h"
+#include "gbc_help.h"
 #include "gbc_read.h"
 
 //#define DEBUG
@@ -438,6 +439,10 @@ static void add_newline()
 	
 	if (action == PREP_LINE)
 		comp->line = PREP_next_line;
+	
+	// Void lines must act as void help comments
+	if (comp->line > 0 && PATTERN_is_newline(get_last_pattern()))
+		HELP_add_at_current_line("\n");
 	
 	add_pattern(RT_NEWLINE, comp->line);
 	comp->line++;
@@ -1092,13 +1097,17 @@ void READ_do(void)
 		continue;
 
 	__COMMENT:
-			
-		do
+
+		source_ptr++;
+		
+		if (HELP_is_help_comment(source_ptr))
+			HELP_add_at_current_line(source_ptr);
+		
+		while (car != '\n')
 		{
 			source_ptr++;
 			car = get_char();
 		}
-		while (car != '\n');
 
 		_begin_line = FALSE;
 		continue;

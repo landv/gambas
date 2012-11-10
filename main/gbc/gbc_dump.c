@@ -38,6 +38,7 @@
 #include "gb_code.h"
 #include "gb_file.h"
 #include "gbc_chown.h"
+#include "gbc_help.h"
 #include "gbc_output.h"
 
 
@@ -309,6 +310,7 @@ static void export_signature(int nparam, int npmin, PARAM *param, bool vararg)
   export_newline();
 }
 
+
 static void create_file(FILE **fw, const char *file)
 {
 	if (!*fw)
@@ -457,6 +459,7 @@ static void insert_class_info(CLASS *class, FILE *fw)
   EVENT *event;
   EXTFUNC *extfunc;
   CONSTANT *cst;
+	int line;
 	
 	if (JOB->verbose)
 		printf("Insert '%s' information into .info file\n", class->name);
@@ -477,10 +480,13 @@ static void insert_class_info(CLASS *class, FILE *fw)
 		fprintf(_finfo, "O");
 	export_newline();
 
+	HELP_search_and_print_for_class(_finfo);
+	
 	for (i = 0; i < TABLE_count(class->table); i++)
 	{
 		sym = CLASS_get_symbol(class, i);
 		type = sym->global.type;
+		line = sym->global.line;
 
 		if (TYPE_is_null(type))
 			continue;
@@ -576,6 +582,7 @@ static void insert_class_info(CLASS *class, FILE *fw)
 			case 'm':
 				func = &class->function[sym->global.value];
 				export_signature(func->nparam, func->npmin, func->param, func->vararg);
+				line = func->line - 1;
 				break;
 
 			case ':':
@@ -591,8 +598,76 @@ static void insert_class_info(CLASS *class, FILE *fw)
 			default:
 				export_newline();
 		}
+		
+		HELP_search_and_print(_finfo, line);
 	}
 }
+
+#if 0
+static char *OUTPUT_get_help_file(const char *file)
+{
+	char *output;
+	char *p;
+	//char *dir;
+	char *name;
+
+	//dir = STR_copy(FILE_get_dir(file));
+	name = STR_copy(FILE_get_name(file));
+
+	for (p = name; *p; p++)
+	{
+		if (*p == '.')
+		{
+			*p = 0;
+			break;
+		}
+
+		*p = toupper(*p);
+	}
+
+	output = ".help";
+	if (mkdir(output, 0777) == 0)
+		FILE_set_owner(output, COMP_project);
+
+	output = STR_copy(FILE_cat(output, name, NULL));
+
+	//STR_free(dir);
+	STR_free(name);
+
+	return output;
+}
+
+static void output_help(void)
+{
+	FILE *file;
+	int i;
+
+	JOB->hname = OUTPUT_get_help_file(JOB->name);
+	
+	if (!JOB->help)
+	{
+		FILE_unlink(JOB->hname);
+		return;
+	}
+		
+	file = fopen(JOB->hname, "w");
+	
+	if (!file)
+		THROW("Cannot create file: &1", JOB->hname);
+
+	for (i = 0; i < ARRAY_count(JOB->help); i++)
+	{
+		if (!JOB->help[i])
+			continue;
+		
+		fprintf(stderr, "[%d] = %.*s\n", i + JOB->help_first_line, get_help_comment_length(JOB->help[i]), JOB->help[i]);
+	}
+	
+	fclose(file);
+	FILE_set_owner(JOB->hname, COMP_project);
+}
+#endif
+
 
 void CLASS_export(void)
 {

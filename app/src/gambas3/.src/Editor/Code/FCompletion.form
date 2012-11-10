@@ -20,10 +20,10 @@
     }
     { gvwComp GridView
       MoveScaled(1,1,7,6)
+      Border = False
       Mode = Select.Single
       Grid = False
       ScrollBar = Scroll.Vertical
-      Border = False
     }
     { sepHelp Separator
       MoveScaled(9,1,0,13)
@@ -34,6 +34,7 @@
     }
     { panRight Panel
       MoveScaled(65,1,1,13)
+      Background = &HFFFFFF&
       Arrangement = Arrange.Vertical
       { panResizeTop Panel
         MoveScaled(0,0,1,2)

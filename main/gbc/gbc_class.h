@@ -250,7 +250,7 @@ int CLASS_add_symbol(CLASS *class, const char *name);
 void CLASS_sort_declaration(CLASS *class);
 void CLASS_check_properties(CLASS *class);
 
-/* gbc_dump.c */
+// gbc_dump.c
 
 void CLASS_dump(void);
 void CLASS_export(void);

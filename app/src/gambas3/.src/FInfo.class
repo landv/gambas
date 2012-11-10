@@ -58,7 +58,7 @@ Private Sub GetInfo(sPath As String)
   
   End With
     
-  With Stat(sPath, True )
+  With Stat(sPath, True)
   
     If .Type = gb.Directory Then
       If sPath = Project.Dir Then 

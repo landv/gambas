@@ -248,6 +248,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   Dim iType As Integer
   Dim hPic As New Picture[7]
   Dim aLib As String[]
+  Dim iPos As Integer
 
   CComponent.All["gb"].Load
 
@@ -265,19 +266,33 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   aLib.Add("gb", 0)
 
   For Each sLib In aLib
+    
     If Not CComponent.All.Exist(sLib) Then Continue
+    
     CComponent.All[sLib].Load
+    
     For Each sClass In CComponent.All[sLib].ClassList
+      
       If IsLetter(Left$(sClass)) Then
         If sClass Like sBegin & "*" Then 
+          
+          Do
+            iPos = aClass.Find(Replace(sClass, "[", "[[]") & " *", gb.Like)
+            If iPos < 0 Then Break
+            aClass.Remove(iPos)
+          Loop
+          
           If CComponent.Classes[sClass].Properties Then
             aClass.Add(sClass & " " & MHelp.TYPE_CONTROL)
           Else
             aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
           Endif
+          
         Endif 
       Endif
+      
     Next
+    
   Next
 
   aClass.Sort(gb.IgnoreCase + gb.Natural)

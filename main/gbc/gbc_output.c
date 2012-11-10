@@ -1197,7 +1197,6 @@ char *OUTPUT_get_trans_file(const char *file)
 	return output;
 }
 
-
 static void output_translation(void)
 {
 	FILE *file;
@@ -1208,6 +1207,13 @@ static void output_translation(void)
 
 	/*printf("Generating %s\n", JOB->tname);*/
 
+	if (!JOB->trans)
+	{
+		JOB->tname = OUTPUT_get_trans_file(JOB->name);
+		FILE_unlink(JOB->tname);
+		return;
+	}
+	
 	file = fopen(JOB->tname, "w");
 	if (!file)
 		THROW("Cannot create file: &1", JOB->tname);
@@ -1360,8 +1366,6 @@ void OUTPUT_do(bool swap)
 
 	output_exit();
 
-	/* Internationalisation */
-
-	if (JOB->trans)
-		output_translation();
+	// Translations
+	output_translation();
 }

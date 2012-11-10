@@ -373,11 +373,16 @@ void COMPILE_end(void)
 	BUFFER_delete(&JOB->source);
 	FREE(&JOB->pattern, "COMPILE_end");
 
+	if (JOB->help)
+		ARRAY_delete(&JOB->help);
+	
 	STR_free(JOB->name);
 	STR_free(JOB->form);
 	STR_free(JOB->output);
 	if (JOB->trans)
 		STR_free(JOB->tname);
+	if (JOB->help)
+		STR_free(JOB->hname);
 }
 
 
