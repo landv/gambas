@@ -1103,6 +1103,7 @@ void READ_do(void)
 		if (HELP_is_help_comment(source_ptr))
 			HELP_add_at_current_line(source_ptr);
 		
+		car = get_char();
 		while (car != '\n')
 		{
 			source_ptr++;
