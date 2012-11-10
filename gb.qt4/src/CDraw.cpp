@@ -898,7 +898,10 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 {
 	QString a;
 	float tw, th;
-	QString t = "<font color=\"" + p->pen().color().name() + "\">" + text + "</font>";
+	QColor fg = p->pen().color();
+	QString t = "<font color=\"" + fg.name() + "\">" + text + "</font>";
+	qreal opacity;
+	bool hasAlpha = fg.alpha() < 255;
 
 	switch(get_horizontal_alignment((Qt::Alignment)align))
 	{
@@ -931,9 +934,19 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 		default: break;
 	}
 
+	if (hasAlpha)
+	{
+		opacity = p->opacity();
+		p->setOpacity(p->opacity() * fg.alpha() / 255.0);
+	}
+	
 	p->translate(x, y);
 	rt.drawContents(p);
 	p->translate(-x, -y);
+	
+	if (hasAlpha)
+		p->setOpacity(opacity);
+	
 	if (p2) 
 	{
 		p2->translate(x, y);
