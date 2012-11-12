@@ -10,9 +10,6 @@
     ToolTip = ("Start")
     Text = ("Trigger")
   }
-  { Timer1 #Timer
-    #MoveScaled(41,1)
-  }
   { Label1 Label
     MoveScaled(30,14,3.5714,4)
     Border = Border.Etched
@@ -65,11 +62,8 @@
   { Timer2 #Timer
     #MoveScaled(36,1)
   }
-  { Timer3 #Timer
-    #MoveScaled(45,1)
-  }
   { TextLabel1 TextLabel
-    MoveScaled(2,1,42,6)
+    MoveScaled(2,1,33,6)
     Text = ("Timer example by <b>Juergen Zdero</b> &lt;juergen@zdero.com&gt;")
   }
   { Label6 Label
@@ -93,5 +87,11 @@
   { Label9 Label
     MoveScaled(23,27,4,4)
     Text = ("ms")
+  }
+  { Timer1 #Timer
+    #MoveScaled(41,1)
+  }
+  { Timer3 #Timer
+    #MoveScaled(45,1)
   }
 }

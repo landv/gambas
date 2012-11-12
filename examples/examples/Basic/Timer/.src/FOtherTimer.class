@@ -3,75 +3,83 @@
 '&HC00F47& = red
 '&H4BC021& = green
 
-Public a As Integer
-Public b As Integer
-Public c As Integer
-Public d As Integer
+Private $iCounter As Integer
 
 Public Sub Button1_Click()
 
-  'for checking valid values
-   a = CInt(textbox1.text)
-   b = CInt(textbox2.text) * 60
-   
-  ' on or off 
-  If Button1.Text = "Start" Then
+  Dim iSeconds, iMinutes As Integer
 
-    ' are the values valid?
-    If a >= 0 And b >= 0 And 0 <> a + b Then
-   
-     'switching on timer1
-     timer1.enabled = True
-     
-     'for countdown
-     c = (a + b) / 60
-     d = (a + b) Mod 60
-     textbox1.Text = d
-     textbox2.text = c
-     
-     'for the right look
-     button1.Text = "Stop"
-     button1.Background = &HC00F47&
-     
-   'if the values are not valid
-   Else 
-     message.error(("Please fill in valid values!"))
-   Endif
-   
-  'if it is already on
-  Else
-    'switching off timer1 and timer2 and changes in the look
-    button1.Text = "Start"
-    button1.Background = &H4BC021&
-    timer1.enabled = False
+  iSeconds = vbSeconds.Value
+  iMinutes = vbMinutes.Value
+
+  If iSeconds = 0 And iMinutes = 0 Then
+    Message.Info(("The counter is set to stop at 0 seconds!"))
+    Return
   Endif
-   
-'thank you Benoit, that is just a great thing
-Catch
- message.Error(("Please fill in valid values!")) 
 
+  If Not Timer1.enabled Then
+
+    'Normalize minutes and seconds
+    If iSeconds >= 60 Then
+
+      While iSeconds > 59
+
+        Inc iMinutes
+        iSeconds = iSeconds - 60
+
+      Wend
+
+    Endif
+
+    'Update normalized values
+    vbSeconds.Value = iSeconds
+    vbMinutes.Value = iMinutes
+
+    'Store the total count to simplify code
+    $iCounter = iSeconds + iMinutes * 60
+
+    'Let the timer start!
+    Timer1.enabled = True
+
+    Button1.Text = ("Stop")
+    Button1.Background = &HC00F47&
+
+  Else
+
+    Button1.Text = ("Start")
+    Button1.Background = &H4BC021&
+    Timer1.enabled = False
+  Endif
+
+  'thank you Benoit, that is just a great thing
 End
 
 Public Sub Timer1_Timer()
 
-  'how the countdown works
-  If c = 0 And d = 0 Then
-  'timer1 switchs off himself and writes a message 
-    timer1.Enabled = False
-    button1.Text = "Start"
-    button1.Background = &H4BC021&
-    message.info(("Time is over!"))
-  Else 
-    If d = 0 Then
-      c = c - 1 
-      d = d + 59
-    Else 
-      d = d - 1
+  'The counter has reached 0. Stop it and update the window
+  If $iCounter = 0 Then
+    Timer1.Enabled = False
+    Button1.Text = ("Start")
+    Button1.Background = &H4BC021&
+    Message.Info(("Time is over!"))
+  Else
+
+    'Seconds are over, decrease the minute count by 1 and reset the seconds count
+    If vbSeconds.Value = 0 Then
+
+      Dec vbMinutes.Value
+
+      vbSeconds.Value = 59
+
+    Else
+
+      Dec vbSeconds.Value
+
     Endif
+
   Endif
 
-  'show the countdown
-  textbox1.Text = d
-  textbox2.text = c
+  'Also decrease the global counter
+  Dec $iCounter
 
 End

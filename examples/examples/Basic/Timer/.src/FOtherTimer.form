@@ -12,12 +12,11 @@
     Background = &H4BC021&
     Text = ("Start")
   }
-  { Textbox1 TextBox
+  { vbSeconds ValueBox
     MoveScaled(10,11,6,5)
     Font = Font["18"]
     Background = &H93B8B0&
-    Text = ("3")
-    Alignment = Align.Right
+    Value = "3"
   }
   { TextLabel2 TextLabel
     MoveScaled(7,11,3,4)
@@ -25,12 +24,11 @@
     Text = (":")
     Alignment = Align.Center
   }
-  { TextBox2 TextBox
+  { vbMinutes ValueBox
     MoveScaled(1,11,6,5)
     Font = Font["18"]
     Background = &H93B8B0&
-    Text = ("0")
-    Alignment = Align.Right
+    Value = "0"
   }
   { TextLabel1 TextLabel
     MoveScaled(1,1,29,9)
