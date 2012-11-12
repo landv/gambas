@@ -109,6 +109,8 @@ Private $bSorted As Boolean
 
 Private $bHasDrawEvent As Boolean
 
+Private $hObsClick As Observer
+
 Public Sub _new()
   
   $hRows = New _GridView_Rows As "Rows"
@@ -125,6 +127,8 @@ Public Sub _new()
   $iCol = 0
   
   Me.Proxy = $hView
+  
+  $hObsClick = New Observer(Me, True) As "GridViewClick"
   
 End
 
@@ -899,10 +903,7 @@ Public Sub ScrollArea_MouseDown()
   Endif
   
   If $bInCell Then
-    'bCancel = Raise MouseDown
-    'If Not bCancel Then Raise Click
-    Raise Click
-    'Stop Event
+    
   Else If Mouse.X < $hRows.Width And If Mouse.Y > $hColumns.H Then
     I = $hRows._FindRowFromPos(Mouse.Y - $hColumns.Height + $hView.ScrollY)
     If I >= 0 Then 
@@ -1873,4 +1874,10 @@ Private Sub Background_Write(Value As Integer)
   If Value = Color.Default Then Value = Color.TextBackground
   $hView.Background = Value
 
+End
+
+Public Sub GridViewClick_MouseDown()
+  
+  If $bInCell Then Raise Click
+  
 End

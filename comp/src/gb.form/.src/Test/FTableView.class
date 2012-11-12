@@ -1,0 +1,49 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  With tvwMain
+    .Columns.Count = 3
+    .Rows.Count = 5
+  End With
+  
+  tvwMain.Columns[0].Title = "Name"
+  tvwMain.Columns[1].Title = "Size"
+  tvwMain.Columns[2].Title = "Built"
+  tvwMain[0, 0].Text = "Ahab"
+  tvwMain[0, 1].Text = "2345"
+  tvwMain[0, 2].Text = "True"
+  tvwMain[1, 0].Text = "Bhab"
+  tvwMain[1, 1].Text = "875"
+  tvwMain[1, 2].Text = "True"
+  tvwMain[2, 0].Text = "Chab"
+  tvwMain[2, 1].Text = "25"
+  tvwMain[2, 2].Text = "True"
+  tvwMain[3, 0].Text = "Dhab"
+  tvwMain[3, 1].Text = "16"
+  tvwMain[3, 2].Text = "True"
+  tvwMain[4, 0].Text = "Ehab"
+  tvwMain[4, 1].Text = "0"
+  tvwMain[4, 2].Text = "True"
+
+End
+
+Public Sub tvwMain_Click()
+
+  Debug
+  Select Case tvwMain.Column
+    Case 0
+      tvwMain.Edit
+    Case 1
+      tvwMain.Edit
+    Case 2
+      tvwMain.Edit(["True", "False"])
+  End Select
+
+End
+
+Public Sub tvwMain_Save(r As Integer, c As Integer, v As String)
+
+  Debug r, c, v
+
+End
