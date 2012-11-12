@@ -503,7 +503,7 @@ Public Sub Load()
     bAgain = False
     
     aLine = Split(File.Load(sPath), "\n")
-    If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
+    If aLine.Count And If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
     iLine = 0
     
     While iLine < aLine.Count
