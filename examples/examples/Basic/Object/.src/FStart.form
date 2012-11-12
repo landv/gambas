@@ -1,8 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(35.6667,18.5,67,17)
+  MoveScaled(35.7143,18.5714,67,17)
   Text = ("Object ")
+  Icon = Picture["object.png"]
   Resizable = False
   { btnCreateThing Button
     MoveScaled(1,1,21,4)
@@ -15,7 +16,6 @@
   { txtCheckResult TextBox
     MoveScaled(1,7,65,4)
     Visible = False
-    Text = ("")
   }
   { btnDestroy Button
     MoveScaled(45,1,21,4)
