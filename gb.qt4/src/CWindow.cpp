@@ -315,11 +315,7 @@ void CWINDOW_ensure_active_window()
 }
 
 
-/***************************************************************************
-
-	Window
-
-***************************************************************************/
+//-- Window ---------------------------------------------------------------
 
 static void show_later(CWINDOW *_object)
 {
@@ -454,7 +450,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	}
 	#endif
 
-
+	#if 1
 	if (THIS->embedded && !THIS->xembed)
 	{
 		/* ### This can call post_show_event() directly, whereas the function is not terminated */
@@ -468,6 +464,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	}
 	//else
 	//	THIS->hidden = TRUE;
+	#endif
 	
 	THIS->showMenuBar = true;
 

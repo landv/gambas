@@ -23,10 +23,13 @@ Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 'Private $hWelcome As CWelcome
 Private $iSort As Integer = CRecentFile.SORT_BY_DATE
 
+Static Private $hLogo As Image
+
 Static Public Function Run() As String
 
   'DIM hForm AS Form
 
+  If Not $hLogo Then $hLogo = Image.Load("img/logo/logo.png")
   $sPath = ""
   'hForm = NEW FWelcome
   FWelcome.ShowModal()
@@ -581,14 +584,16 @@ Public Sub dwgTitle_Draw()
   Dim sVersion As String = System.FullVersion 'WithRevision
   Dim sText As String
 
+  Paint.DrawImage($hLogo, Paint.W - $hLogo.W + 16, 0)
+
   If sVersion Ends ".0" Then sVersion = Left(sVersion, -2)
 
   sText = "<font size=\"7\"><b>Gambas " & sVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " · " & System.Architecture & " · " & System.Language & "</b></font>"
 
-  Draw.Foreground = Color.Gradient(Draw.Background, Color.Black, 0.2)
-  Draw.RichText(sText, 12, 8, Draw.W - 16, Draw.H, Align.TopLeft)
-  Draw.Foreground = Color.White
-  Draw.RichText(sText, 8, 4, Draw.W - 16, Draw.H, Align.TopLeft)
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
+  Paint.DrawRichText(sText, 12, 8, Paint.W - 16, Paint.H, Align.TopLeft)
+  Paint.Brush = Paint.Color(Color.White)
+  Paint.DrawRichText(sText, 8, 4, Paint.W - 16, Paint.H, Align.TopLeft)
 
 End
 

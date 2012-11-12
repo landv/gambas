@@ -585,6 +585,11 @@ Private Sub SortItem(hItem As _TreeView_Item)
   For I = 0 To aItem.Max
     aChildren[I] = aItem[I].Key
     aItem[I]._Index = I
+  Next
+  
+  _RefreshView
+  
+  For I = 0 To aItem.Max
     _UpdateItemHeight(aItem[I])
   Next
   
@@ -1130,8 +1135,6 @@ Public Sub Sort_Timer()
   Endif
   $bSortRoot = False
   $cSort.Clear
-  
-  _RefreshView
   
   If hItem Then _SetItemSelected(hItem, True)
   

@@ -1533,6 +1533,7 @@ Private Sub PrintTitle(sTitle As String)
   Dim iPos As Integer
 
   If sTitle Then
+    
     If $hSym Then
       If Not $hSym.IsHidden() Then Print $hClass.Name; ".";
     Endif
@@ -2032,7 +2033,7 @@ Private Sub MakeFooter(Optional dDate As Date)
 
 End
 
-Private Function GetRealPath(sPath As String) As String
+Private Function GetRealPath(sPath As String, Optional bInit As Boolean) As String
 
   Dim rPage As Result
   Dim iInd As Integer
@@ -2043,7 +2044,6 @@ Private Function GetRealPath(sPath As String) As String
     '$sError &= "#1\n"
     aPath = Split(Mid$(sPath, 2), "/")
     If aPath.Count >= 3 Then
-      '$sError &= "#2\n"
       rPage = DB.Find("page", "sPath = &1 AND sLang = &2", "/" & aPath[0] &/ aPath[1] &/ aPath[2], DEFAULT_LANG)
       If rPage.Available And If Left$(rPage!sTitle, 2) = "~/" Then
         '$sError &= "#3\n"
@@ -2054,7 +2054,7 @@ Private Function GetRealPath(sPath As String) As String
           aPath[2] = aPath2[2]
           sPath = "/" & aPath.Join("/")
           '$sError &= sPath & "\n"
-          InitSymbol(sPath)
+          If bInit Then InitSymbol(sPath)
         Endif
       Endif
     Endif
@@ -2216,7 +2216,7 @@ Private Sub DisplayPage()
   Dim sPath As String
   Dim bRefresh As Boolean
 
-  sPath = GetRealPath($sPath)
+  sPath = GetRealPath($sPath, True)
 
   bRefresh = $bRefresh
 

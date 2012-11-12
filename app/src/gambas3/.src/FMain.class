@@ -2112,3 +2112,9 @@ Public Sub picFilter_MouseDown()
   mnuFilter.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
 
 End
+
+Public Sub tlbMain_Configure()
+
+  UpdateMenu
+
+End

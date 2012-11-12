@@ -530,6 +530,7 @@ Public Sub Form_Open()
     $bOpened = True
     InitToolbar
     RegisterToolbar
+    'If ToolBarKey = "main" Then System._Breakpoint()
     LoadConfig(True)
   Endif
 
