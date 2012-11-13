@@ -39,7 +39,7 @@
 
 #define CBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border=True,Default,Cancel"
 #define CCHECKBOX_PROPERTIES "*,Action,AutoResize,Text,Tristate,Value{CheckBox.False;True;None}"
-#define CCOMBOBOX_PROPERTIES "*,Action,ReadOnly,List,Text,Password,MaxLength,Sorted"
+#define CCOMBOBOX_PROPERTIES "*,Action,ReadOnly,List,Text,Password,MaxLength,Sorted,Border=True"
 #define CDIAL_PROPERTIES "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Wrap,Mark=True"
 #define CDRAWINGAREA_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*},Cached,Painted,Focus,NoBackground,Tablet"
 #define CEDITOR_PROPERTIES "*,Font{Font:Fixed},Border=True,ScrollBar{Scroll.*}=Both,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly=False,TabSize{Range:1;16}=2"

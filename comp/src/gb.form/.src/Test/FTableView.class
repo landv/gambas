@@ -5,6 +5,7 @@ Public Sub Form_Open()
   With tvwMain
     .Columns.Count = 3
     .Rows.Count = 5
+    .Rows.H = 24
   End With
   
   tvwMain.Columns[0].Title = "Name"

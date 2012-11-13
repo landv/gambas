@@ -586,3 +586,16 @@ void gComboBox::updateFocusHandler()
 	g_signal_connect(G_OBJECT(button), "focus-in-event", G_CALLBACK(button_focus_in), (gpointer)this);
 	g_signal_connect(G_OBJECT(button), "focus-out-event", G_CALLBACK(button_focus_out), (gpointer)this);
 }
+
+bool gComboBox::hasBorder() const
+{
+	gboolean v;
+	
+	g_object_get(G_OBJECT(widget), "has-frame", &v, 	(void *)NULL);
+	return v;
+}
+
+void gComboBox::setBorder(bool v)
+{
+	g_object_set(G_OBJECT(widget), "has-frame", v, 	(void *)NULL);
+}

@@ -48,6 +48,9 @@ public:
 	virtual void setReadOnly(bool vl);
 	void setSorted(bool vl);
 	virtual void setText(const char *vl);
+	
+	bool hasBorder() const;
+	void setBorder(bool v);
 
 //"Methods"
 	void popup();

@@ -44,6 +44,7 @@ Public Sub _new()
   '$hComboBox.Ignore = True
   '$hComboBox.Background = Color.TextBackground
   $hComboBox.Hide
+  $hComboBox.Border = False
   
   $hTextBox = New TextBox($hPanel) As "Editor"
   '$hTextBox.Ignore = True

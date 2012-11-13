@@ -680,6 +680,19 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(ComboBox_Border)
+
+	GET_TEXT_BOX();
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(COMBOBOX->hasFrame());
+	else
+		COMBOBOX->setFrame(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+
 
 /***************************************************************************
 
@@ -833,6 +846,7 @@ GB_DESC CComboBoxDesc[] =
 	GB_PROPERTY("ReadOnly", "b", CCOMBOBOX_read_only),
 	GB_PROPERTY("Password", "b", CTEXTBOX_password),
 	GB_PROPERTY("MaxLength", "i", CTEXTBOX_max_length),
+	GB_PROPERTY("Border", "b", ComboBox_Border),
 
 	GB_PROPERTY_SELF("Selection", ".TextBox.Selection"),
 	GB_METHOD("Select", NULL, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
