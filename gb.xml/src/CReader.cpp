@@ -81,7 +81,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CReaderNodeAttr_next)
 
-if(!THIS->foundNode) 
+if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
 {
     GB.StopEnum(); return;
 }
@@ -123,7 +123,7 @@ END_METHOD
 
 BEGIN_METHOD(CReaderNodeAttr_get, GB_STRING name)
 
-if(!THIS->foundNode) 
+if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
 {
     return;
 }
@@ -150,7 +150,7 @@ END_METHOD*/
 
 BEGIN_PROPERTY(CReaderNodeAttr_count)
 
-if(!THIS->foundNode) 
+if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
 {
     GB.ReturnInteger(0);
     return;
@@ -218,7 +218,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Value)
 
-if(!THIS->foundNode) 
+if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
 {
     GB.ReturnNull();
     return;
@@ -246,7 +246,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CReaderNode_Name)
 
-if(!THIS->foundNode) 
+if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
 {
     GB.ReturnNull();
     return;
