@@ -162,7 +162,7 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   Dim OH As Integer
   Dim bCancel As Boolean
   
-  H = Max(DH, Min(hView.ClientH, H))
+  H = Min(1024, H)
   
   If Not $cHeight Then 
     $cHeight = New Collection
