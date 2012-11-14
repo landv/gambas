@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gbx_c_subcollection.c
+  c_subcollection.c
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,23 +21,10 @@
 
 ***************************************************************************/
 
-#define __GBX_C_SUBCOLLECTION_C
+#define __C_SUBCOLLECTION_C
 
-#include "gbx_info.h"
-
-#ifndef GBX_INFO
-
-#include "gb_common.h"
-#include "gb_error.h"
-
-#include "gambas.h"
-#include "gb_array.h"
-#include "gbx_api.h"
-#include "gbx_class.h"
-#include "gbx_object.h"
-#include "gbx_string.h"
-
-#include "gbx_c_subcollection.h"
+#include "main.h"
+#include "c_subcollection.h"
 
 
 static void free_string_array(char ***parray)
@@ -48,10 +35,10 @@ static void free_string_array(char ***parray)
   if (!*parray)
     return;
 
-  for (i = 0; i < ARRAY_count(array); i++)
-    GB_FreeString(&array[i]);
+  for (i = 0; i < GB.Count(array); i++)
+    GB.FreeString(&array[i]);
 
-  ARRAY_delete(parray);
+  GB.FreeArray(parray);
 }
 
 static void *get_from_key(CSUBCOLLECTION *_object, const char *key, int len)
@@ -67,44 +54,36 @@ static void *get_from_key(CSUBCOLLECTION *_object, const char *key, int len)
 
 	//fprintf(stderr, "get_from_key: %.*s\n", len, key);
 
-  data = HASH_TABLE_lookup(THIS->hash_table, key, len);
-  if (!data)
-  {
-    tkey = STRING_new_temp(key, len);
-    data = (*THIS->desc->get)(THIS->container, tkey);
-    if (data)
-    {
+  if (GB.HashTable.Get(THIS->hash_table, key, len, &data))
+	{
+		tkey = GB.TempString(key, len);
+		data = (*THIS->desc->get)(THIS->container, tkey);
+		if (data)
+		{
 			//fprintf(stderr, "get_from_key: insert %p '%.*s'\n", data, len, key);
-      *((void **)HASH_TABLE_insert(THIS->hash_table, key, len)) = data;
-      GB_Ref(data);
-    }
-  }
-  else
-  	data = *((void **)data);
-  
+			GB.HashTable.Add(THIS->hash_table, key, len, data);
+			GB.Ref(data);
+		}
+	}
+	
   return data;
+}
+
+static CSUBCOLLECTION *_current = NULL;
+
+static void clear_one(void *data)
+{
+	if (_current->desc->release)
+		(*_current->desc->release)(_current->container, data);
+
+	GB.Unref(&data);
 }
 
 static void clear_subcollection(CSUBCOLLECTION *_object)
 {
-  void *value;
-  HASH_ENUM iter;
-
-  CLEAR(&iter);
-
-  for(;;)
-  {
-    value = HASH_TABLE_next(THIS->hash_table, &iter);
-    if (value == NULL)
-      break;
-      
-     if (THIS->desc->release)
-			(*THIS->desc->release)(THIS->container, *((void **)value));
-
-    GB_Unref(value);
-  }
-
-  HASH_TABLE_delete(&THIS->hash_table);
+	_current = THIS;
+	GB.HashTable.Enum(THIS->hash_table, clear_one);
+	GB.HashTable.Free(&THIS->hash_table);
 }
 
 
@@ -125,28 +104,28 @@ BEGIN_PROPERTY(CSUBCOLLECTION_count)
     (*THIS->desc->list)(THIS->container, &THIS->list);
 
   if (THIS->list)
-    GB_ReturnInt(ARRAY_count(THIS->list));
+    GB.ReturnInteger(GB.Count(THIS->list));
   else
-    GB_ReturnInt(0);
+    GB.ReturnInteger(0);
 
 END_PROPERTY
 
 
 BEGIN_METHOD(CSUBCOLLECTION_exist, GB_STRING key)
 
-	char *key = GB_ToZeroString(ARG(key));
+	char *key = GB.ToZeroString(ARG(key));
 
 	if (!key || !*key)
-		GB_ReturnBoolean(FALSE);
+		GB.ReturnBoolean(FALSE);
 	else
-  	GB_ReturnBoolean((*THIS->desc->exist)(THIS->container, key));
+  	GB.ReturnBoolean((*THIS->desc->exist)(THIS->container, key));
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CSUBCOLLECTION_next)
 
-  int *pos = (int *)GB_GetEnum();
+  int *pos = (int *)GB.GetEnum();
 
   if (THIS->desc->list)
   {
@@ -161,7 +140,7 @@ BEGIN_METHOD_VOID(CSUBCOLLECTION_next)
 
     if (THIS->list)
     {
-      if (*pos < ARRAY_count(THIS->list))
+      if (*pos < GB.Count(THIS->list))
       {
         n = (*pos)++;
         key = THIS->list[n];
@@ -169,9 +148,9 @@ BEGIN_METHOD_VOID(CSUBCOLLECTION_next)
     }
 
     if (!key || !*key)
-      GB_StopEnum();
+      GB.StopEnum();
     else
-      GB_ReturnObject(get_from_key(THIS, key, 0));
+      GB.ReturnObject(get_from_key(THIS, key, 0));
   }
   else
   {
@@ -182,7 +161,7 @@ BEGIN_METHOD_VOID(CSUBCOLLECTION_next)
     if (elt)
       GB_ReturnObject(elt);
     else*/
-      GB_StopEnum();
+      GB.StopEnum();
   }
 
 END_METHOD
@@ -190,20 +169,18 @@ END_METHOD
 
 BEGIN_METHOD(CSUBCOLLECTION_get, GB_STRING key)
 
-  GB_ReturnObject(get_from_key(THIS, STRING(key), LENGTH(key)));
+  GB.ReturnObject(get_from_key(THIS, STRING(key), LENGTH(key)));
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CSUBCOLLECTION_refresh)
 
 	clear_subcollection(THIS);
-  HASH_TABLE_create(&THIS->hash_table, TYPE_sizeof(T_OBJECT), 0);
+	GB.HashTable.New(&THIS->hash_table, GB_COMP_BINARY);
 
 END_METHOD
 
-#endif
-
-GB_DESC NATIVE_SubCollection[] =
+GB_DESC SubCollectionDesc[] =
 {
   GB_DECLARE(".SubCollection", sizeof(CSUBCOLLECTION)),
 
@@ -221,31 +198,23 @@ GB_DESC NATIVE_SubCollection[] =
 };
 
 
-#ifndef GBX_INFO
-
-void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTION_DESC *desc, void *container)
+void GB_SubCollectionNew(CSUBCOLLECTION **subcollection, SUBCOLLECTION_DESC *desc, void *container)
 {
   CSUBCOLLECTION *ob;
-  CLASS *class;
 
   if (*subcollection)
     return;
 
-  if (!desc->klass)
-    class = (void *)CLASS_SubCollection;
-  else
-    class = CLASS_find(desc->klass);
-
-  ob = OBJECT_create_native(class, NULL);
+  ob = GB.New(GB.FindClass(desc->klass), NULL, NULL);
 
   ob->container = container;
   //ob->store = subcollection;
   //GB_Ref(container);
   ob->desc = desc;
-  HASH_TABLE_create(&ob->hash_table, TYPE_sizeof(T_OBJECT), 0);
+	GB.HashTable.New(&ob->hash_table, GB_COMP_BINARY);
 
   *subcollection = ob;
-  GB_Ref(ob);
+  GB.Ref(ob);
 }
 
 
@@ -257,35 +226,28 @@ void *GB_SubCollectionContainer(void *_object)
 
 void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value)
 {
-  void **data;
+	void *old_value = NULL;
 
   if (len < 0)
     len = strlen(key);
 
 	//fprintf(stderr, "GB_SubCollectionAdd: insert %p '%.*s'\n", value, len, key);
-  data = (void **)HASH_TABLE_insert(THIS->hash_table, key, len);
-  GB_Ref(value);
-  GB_Unref(data);
-  *data = value;
+	GB.HashTable.Get(THIS->hash_table, key, len, &old_value);
+	GB.HashTable.Add(THIS->hash_table, key, len, value);
+  GB.Ref(value);
+  GB.Unref(&old_value);
 }
 
 void GB_SubCollectionRemove(void *_object, const char *key, int len)
 {
-  void *data;
+  void *old_value;
 
   if (!THIS)
     return;
 
-  if (len < 0)
-    len = strlen(key);
-
-  data = HASH_TABLE_lookup(THIS->hash_table, key, len);
-  if (data == NULL)
-    return;
-
-  GB_Unref(data);
-	//fprintf(stderr, "GB_SubCollectionRemove: remove %p '%.*s'\n", *((void **)data), len, key);
-  HASH_TABLE_remove(THIS->hash_table, key, len);
+	GB.HashTable.Get(THIS->hash_table, key, len, &old_value);
+	GB.HashTable.Remove(THIS->hash_table, key, len);
+  GB.Unref(&old_value);
 }
 
 
@@ -293,5 +255,3 @@ void *GB_SubCollectionGet(void *_object, const char *key, int len)
 {
   return get_from_key(THIS, key, len);
 }
-
-#endif

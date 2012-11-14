@@ -31,6 +31,7 @@
 
 #include "gb_common.h"
 
+#include "c_subcollection.h"
 #include "CConnection.h"
 #include "CDatabase.h"
 #include "CUser.h"
@@ -602,6 +603,7 @@ char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
 
 GB_DESC *GB_CLASSES [] EXPORT =
 {
+	SubCollectionDesc,
 	CIndexDesc,
 	CFieldDesc,
 	CTableFieldsDesc,

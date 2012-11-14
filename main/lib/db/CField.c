@@ -173,7 +173,7 @@ void CFIELD_release(CTABLE *table, void *_object)
 BEGIN_METHOD_VOID(CFIELD_free)
 
 	if (!valid_field(THIS))
-  	GB.SubCollection.Remove(THIS->table->fields, THIS->name, 0);
+  	GB_SubCollectionRemove(THIS->table->fields, THIS->name, 0);
 
   GB.FreeString(&THIS->name);
 
@@ -252,11 +252,11 @@ GB_DESC CFieldDesc[] =
 ***************************************************************************/
 
 #undef THIS
-#define THIS ((GB_SUBCOLLECTION)_object)
+#define THIS ((CSUBCOLLECTION *)_object)
 
 BEGIN_METHOD(CFIELD_add, GB_STRING name; GB_INTEGER type; GB_INTEGER length; GB_VARIANT def)
 
-  CTABLE *table = GB.SubCollection.Container(THIS);
+  CTABLE *table = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
   DB_FIELD new_field, *info;
 

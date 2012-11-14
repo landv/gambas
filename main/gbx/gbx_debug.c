@@ -466,8 +466,11 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 void DEBUG_print_current_backtrace(void)
 {
 	STACK_BACKTRACE *bt = STACK_get_backtrace();
-	DEBUG_print_backtrace(bt);
-	STACK_free_backtrace(&bt);
+	if (bt)
+	{
+		DEBUG_print_backtrace(bt);
+		STACK_free_backtrace(&bt);
+	}
 }
 
 

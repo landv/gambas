@@ -227,12 +227,6 @@ const void *const GAMBAS_Api[] =
 	(void *)ARRAY_insert_many,
 	(void *)ARRAY_remove_many,
 
-	(void *)GB_SubCollectionNew,
-	(void *)GB_SubCollectionAdd,
-	(void *)GB_SubCollectionRemove,
-	(void *)GB_SubCollectionGet,
-	(void *)GB_SubCollectionContainer,
-
 	(void *)GB_tolower,
 	(void *)GB_toupper,
 	(void *)strcasecmp,

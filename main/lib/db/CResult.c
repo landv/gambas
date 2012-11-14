@@ -36,7 +36,7 @@ static CBLOB *make_blob(CRESULT *result, int field);
 static void set_blob(CBLOB *_object, char *data, int length);
 
 
-static GB_SUBCOLLECTION_DESC _fields_desc =
+static SUBCOLLECTION_DESC _fields_desc =
 {
 	".Result.Fields",
 	(void *)CRESULTFIELD_get,
@@ -761,7 +761,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CRESULT_fields)
 
-	GB.SubCollection.New(&THIS->fields, &_fields_desc, THIS);
+	GB_SubCollectionNew(&THIS->fields, &_fields_desc, THIS);
 	GB.ReturnObject(THIS->fields);
 
 END_PROPERTY

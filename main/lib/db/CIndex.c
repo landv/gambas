@@ -117,7 +117,7 @@ void CINDEX_release(CTABLE *table, void *_object)
 BEGIN_METHOD_VOID(CINDEX_free)
 
 	if (!valid_index(THIS))
-  	GB.SubCollection.Remove(THIS->table->indexes, THIS->name, 0);
+  	GB_SubCollectionRemove(THIS->table->indexes, THIS->name, 0);
 
   GB.FreeString(&THIS->name);
 
@@ -205,11 +205,11 @@ GB_DESC CIndexDesc[] =
 ***************************************************************************/
 
 #undef THIS
-#define THIS ((GB_SUBCOLLECTION)_object)
+#define THIS ((CSUBCOLLECTION *)_object)
 
 BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
 
-  CTABLE *table = GB.SubCollection.Container(THIS);
+  CTABLE *table = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
   DB_INDEX info;
 	int i;
@@ -247,7 +247,7 @@ END_METHOD
 
 BEGIN_METHOD(CINDEX_remove, GB_STRING name)
 
-  CTABLE *table = GB.SubCollection.Container(THIS);
+  CTABLE *table = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
 
   if (check_index(table, name, TRUE))

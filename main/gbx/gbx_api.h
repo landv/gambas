@@ -197,12 +197,6 @@ int GB_StreamWrite(GB_STREAM *stream, void *addr, int len);
 int GB_tolower(int c);
 int GB_toupper(int c);
 
-void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTION_DESC *desc, void *container);
-void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value);
-void GB_SubCollectionRemove(void *_object, const char *key, int len);
-void *GB_SubCollectionContainer(void *_object);
-void *GB_SubCollectionGet(void *_object, const char *key, int len);
-
 void *GB_DebugGetClass(const char *name);
 void *GB_DebugGetExec(void);
 

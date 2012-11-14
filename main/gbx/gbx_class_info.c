@@ -358,7 +358,6 @@ extern GB_DESC NATIVE_TemplateArray[];
 extern GB_DESC NATIVE_TemplateArrayOfStruct[];
 extern GB_DESC NATIVE_LongArray[];
 extern GB_DESC NATIVE_PointerArray[];
-extern GB_DESC NATIVE_SubCollection[];
 extern GB_DESC NATIVE_String[];
 extern GB_DESC TaskDesc[];
 extern GB_DESC NATIVE_Timer[];
@@ -406,7 +405,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_TemplateArrayOfStruct,
 	NATIVE_LongArray,
 	NATIVE_PointerArray,
-	NATIVE_SubCollection,
 	NATIVE_String,
 	TaskDesc,
 	NATIVE_Timer,

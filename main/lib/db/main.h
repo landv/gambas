@@ -27,7 +27,7 @@
 #include "gb_common.h"
 #include "gambas.h"
 #include "gb.db.h"
-
+#include "c_subcollection.h"
 #include "CResult.h"
 
 #ifndef __MAIN_C

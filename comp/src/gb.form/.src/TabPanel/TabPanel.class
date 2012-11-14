@@ -119,49 +119,64 @@ Public Sub EnsureCurrentVisible_Timer()
     '$X = Max($hTabBar.W - $hTabBarContainer.W, $X)
     '$X = Min(ARROW_WIDTH, $X)
     
+    If $aButton.Count Then
+      With $aButton[$aButton.Max]
+        $bArrow = ($X + .X) < 0
+      End With
+    Else
+      $bArrow = False
+    Endif
+      
   Else
     
-    If $iCurrent = 0 Then
-      $X = 0
-    Else
-      With $aButton[$iCurrent]
-        
-        X = $hTabBarContainer.X + .X
-        W = .W
-        
-        If X < 4 Then
-          $X = $X - X + 4
-        Else If X >= ($hTabBar.W - W - ARROW_WIDTH) Then
-          $X = $X - (X - ($hTabBar.W - W))
-          'If $iCurrent < $aButton.Max Then 
-          $X -= ARROW_WIDTH
-        Endif
-        
-        'M = .X + W - $hTabBar.W + ARROW_WIDTH
-        'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
-        '$X = Max($X, - M)
-        
-      End With
+    If Me.W <= ($aButton[$iCurrent].W + ARROW_WIDTH) Then 
   
+      $X = - $aButton[$iCurrent].X
+      $bArrow = False
+      
+    Else
+  
+      If $iCurrent = 0 Then
+        $X = 0
+      Else
+        With $aButton[$iCurrent]
+          
+          X = $hTabBarContainer.X + .X
+          W = .W
+          
+          If X < 4 Then
+            $X = $X - X + 4
+          Else If X >= ($hTabBar.W - W - ARROW_WIDTH) Then
+            $X = $X - (X - ($hTabBar.W - W))
+            'If $iCurrent < $aButton.Max Then 
+            $X -= ARROW_WIDTH
+          Endif
+          
+          'M = .X + W - $hTabBar.W + ARROW_WIDTH
+          'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
+          '$X = Max($X, - M)
+          
+        End With
+    
+      Endif
+      
+      $X = Max($hTabBar.W - ($aButton[$aButton.Max].X + $aButton[$aButton.Max].W), $X)
+      $X = Min(0, $X)
+      
     Endif
     
-    $X = Min(0, $X)
     W = Me.W - $X
   
+    If $aButton.Count Then
+      With $aButton[$aButton.Max]
+        $bArrow = ($X + .X + .W) > $hTabBar.W
+      End With
+    Else
+      $bArrow = False
+    Endif
+      
   Endif
   
-  If $aButton.Count Then
-    With $aButton[$aButton.Max]
-      If System.RightToLeft Then
-        $bArrow = ($X + .X) < 0
-      Else
-        $bArrow = ($X + .X + .W) > $hTabBar.W
-      Endif
-    End With
-  Else
-    $bArrow = False
-  Endif
-    
   If $bArrow Then
     W -= ARROW_WIDTH
     If System.RightToLeft Then $X += ARROW_WIDTH

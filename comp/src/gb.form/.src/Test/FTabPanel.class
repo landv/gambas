@@ -12,3 +12,14 @@ Public Sub TabPanel2_LostFocus()
   Debug
 
 End
+
+Public Sub Form_Open()
+
+  Dim I As Integer
+  
+  TabPanel2.Count = 12
+  For I = 0 To 11
+    TabPanel2[I].Text = "Tab " & (I + 1)
+  Next
+
+End

@@ -28,8 +28,8 @@
 #include "gb.db.h"
 #include "deletemap.h"
 #include "CDatabase.h"
-
 #include "gb_barray.h"
+#include "c_subcollection.h"
 
 #ifndef __CRESULT_C
 extern GB_DESC CResultDesc[];
@@ -63,7 +63,7 @@ typedef
     int pos;
     int count;
     int field;
-    GB_SUBCOLLECTION fields;
+    CSUBCOLLECTION *fields;
     DELETE_MAP *dmap;
     unsigned available : 1;
     unsigned mode : 2;

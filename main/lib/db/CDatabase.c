@@ -97,7 +97,7 @@ void CDATABASE_release(CCONNECTION *conn, void *_object)
 BEGIN_METHOD_VOID(CDATABASE_free)
 
   if (!valid_database(THIS))
-    GB.SubCollection.Remove(THIS->conn->databases, THIS->name, 0);
+    GB_SubCollectionRemove(THIS->conn->databases, THIS->name, 0);
   GB.FreeString(&THIS->name);
 
 END_METHOD
@@ -159,11 +159,11 @@ GB_DESC CDatabaseDesc[] =
 ***************************************************************************/
 
 #undef THIS
-#define THIS ((GB_SUBCOLLECTION)_object)
+#define THIS ((CSUBCOLLECTION *)_object)
 
 BEGIN_METHOD(CDATABASE_add, GB_STRING name)
 
-  CCONNECTION *conn = GB.SubCollection.Container(THIS);
+  CCONNECTION *conn = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
 
   if (DB_CheckNameWith(name, "database", conn->db.db_name_char))
@@ -179,13 +179,13 @@ END_METHOD
 
 BEGIN_METHOD(CDATABASE_remove, GB_STRING name)
 
-  CCONNECTION *conn = GB.SubCollection.Container(THIS);
+  CCONNECTION *conn = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
 
   if (check_database(conn, name, TRUE))
     return;
 
-  GB.SubCollection.Remove(THIS, STRING(name), LENGTH(name));
+  GB_SubCollectionRemove(THIS, STRING(name), LENGTH(name));
   conn->driver->Database.Delete(&conn->db, name);
 
 END_METHOD

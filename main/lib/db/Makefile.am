@@ -9,6 +9,7 @@ gb_db_la_CFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS)
 
 gb_db_la_SOURCES = \
  gb.db.h gb.db.proto.h gb_barray.h \
+ c_subcollection.h c_subcollection.c \
  main.h main.c \
  deletemap.h deletemap.c \
  CConnection.h CConnection.c \

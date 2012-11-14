@@ -40,7 +40,6 @@
 #include "gbx_c_application.h"
 #include "gbx_c_array.h"
 #include "gbx_c_process.h"
-#include "gbx_c_subcollection.h"
 #include "gbx_c_string.h"
 #include "gbx_c_enum.h"
 #include "gbx_c_timer.h"
@@ -76,7 +75,6 @@ CLASS *CLASS_VariantArray = NULL;
 CLASS *CLASS_LongArray = NULL;
 CLASS *CLASS_PointerArray = NULL;
 
-CLASS *CLASS_SubCollection = NULL;
 CLASS *CLASS_String = NULL;
 CLASS *CLASS_Enum = NULL;
 
@@ -133,8 +131,6 @@ static const CLASS_INIT init_list[] =
   { NATIVE_VariantArray, &CLASS_VariantArray, CQA_ARRAY, T_VARIANT },
   { NATIVE_LongArray, &CLASS_LongArray, CQA_ARRAY, T_LONG },
   { NATIVE_PointerArray, &CLASS_PointerArray, CQA_ARRAY, T_POINTER },
-
-  { NATIVE_SubCollection, &CLASS_SubCollection },
 
   { NULL }
 };

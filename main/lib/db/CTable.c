@@ -32,7 +32,7 @@
 #include "CTable.h"
 
 
-static GB_SUBCOLLECTION_DESC _fields_desc =
+static SUBCOLLECTION_DESC _fields_desc =
 {
 	".Table.Fields",
 	(void *)CFIELD_get,
@@ -41,7 +41,7 @@ static GB_SUBCOLLECTION_DESC _fields_desc =
 	(void *)CFIELD_release
 };
 
-static GB_SUBCOLLECTION_DESC _indexes_desc =
+static SUBCOLLECTION_DESC _indexes_desc =
 {
 	".Table.Indexes",
 	(void *)CINDEX_get,
@@ -321,7 +321,7 @@ BEGIN_METHOD_VOID(CTABLE_free)
 	//fprintf(stderr, "CTABLE_free: %p '%s'\n", THIS, THIS->name);
 
 	if (!valid_table(THIS))
-		GB.SubCollection.Remove(THIS->conn->tables, THIS->name, 0);
+		GB_SubCollectionRemove(THIS->conn->tables, THIS->name, 0);
 	//GB.Unref(POINTER(&THIS->conn));
 
 	GB.FreeString(&THIS->name);
@@ -338,7 +338,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CTABLE_fields)
 
-	GB.SubCollection.New(&THIS->fields, &_fields_desc, THIS);
+	GB_SubCollectionNew(&THIS->fields, &_fields_desc, THIS);
 	GB.ReturnObject(THIS->fields);
 
 END_PROPERTY
@@ -346,7 +346,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTABLE_indexes)
 
-	GB.SubCollection.New(&THIS->indexes, &_indexes_desc, THIS);
+	GB_SubCollectionNew(&THIS->indexes, &_indexes_desc, THIS);
 	GB.ReturnObject(THIS->indexes);
 
 END_PROPERTY
@@ -392,11 +392,11 @@ GB_DESC CTableDesc[] =
 ***************************************************************************/
 
 #undef THIS
-#define THIS ((GB_SUBCOLLECTION)_object)
+#define THIS ((CSUBCOLLECTION *)_object)
 
 BEGIN_METHOD(CTABLE_add, GB_STRING name; GB_STRING type)
 
-	CCONNECTION *conn = GB.SubCollection.Container(THIS);
+	CCONNECTION *conn = GB_SubCollectionContainer(THIS);
 	CTABLE *table;
 	char *name = GB.ToZeroString(ARG(name));
 
@@ -407,7 +407,7 @@ BEGIN_METHOD(CTABLE_add, GB_STRING name; GB_STRING type)
 	if (!table)
 		return;
 
-	GB.SubCollection.Add(THIS, STRING(name), LENGTH(name), table);
+	GB_SubCollectionAdd(THIS, STRING(name), LENGTH(name), table);
 
 	if (!MISSING(type))
 		GB.StoreString(ARG(type), &table->type);
@@ -420,13 +420,13 @@ END_METHOD
 
 BEGIN_METHOD(CTABLE_remove, GB_STRING name)
 
-	CCONNECTION *conn = GB.SubCollection.Container(THIS);
+	CCONNECTION *conn = GB_SubCollectionContainer(THIS);
 	char *name = GB.ToZeroString(ARG(name));
 
 	if (check_table(conn, name, TRUE))
 		return;
 
-	GB.SubCollection.Remove(THIS, STRING(name), LENGTH(name));
+	GB_SubCollectionRemove(THIS, STRING(name), LENGTH(name));
 	conn->driver->Table.Delete(&conn->db, name);
 
 END_METHOD

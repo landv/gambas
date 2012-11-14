@@ -138,10 +138,9 @@ void CRESULTFIELD_release(CRESULT *result, void *_object)
 BEGIN_METHOD_VOID(CRESULTFIELD_free)
 
 	if (!valid_result_field(THIS))
-  	GB.SubCollection.Remove(THIS->result->fields, CRESULTFIELD_key(THIS->result, THIS->index), 0);
+  	GB_SubCollectionRemove(THIS->result->fields, CRESULTFIELD_key(THIS->result, THIS->index), 0);
 
 END_METHOD
-
 
 
 BEGIN_PROPERTY(CRESULTFIELD_name)
@@ -215,11 +214,11 @@ GB_DESC CResultFieldDesc[] =
 ***************************************************************************/
 
 #undef THIS
-#define THIS ((GB_SUBCOLLECTION)_object)
+#define THIS ((CSUBCOLLECTION *)_object)
 
 BEGIN_PROPERTY(CRESULTFIELD_count)
 
-  CRESULT *result = GB.SubCollection.Container(THIS);
+  CRESULT *result = GB_SubCollectionContainer(THIS);
   GB.ReturnInteger(result->info.nfield);
 
 END_PROPERTY
@@ -227,7 +226,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CRESULTFIELD_next)
 
-  CRESULT *result = GB.SubCollection.Container(THIS);
+  CRESULT *result = GB_SubCollectionContainer(THIS);
   int *index = (int *)GB.GetEnum();
   CRESULTFIELD *rf;
 
@@ -235,7 +234,7 @@ BEGIN_METHOD_VOID(CRESULTFIELD_next)
     GB.StopEnum();
   else
   {
-    rf = GB.SubCollection.Get(THIS, CRESULTFIELD_key(result, *index), 0);
+    rf = GB_SubCollectionGet(THIS, CRESULTFIELD_key(result, *index), 0);
     (*index)++;
     GB.ReturnObject(rf);
   }

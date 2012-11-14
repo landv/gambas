@@ -2,9 +2,26 @@
 
 { Form Form
   MoveScaled(0,0,64,64)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { TextBox1 TextBox
+    MoveScaled(3,1,24,4)
+  }
+  { TabPanel2 TabPanel
+    MoveScaled(5,7,36,23)
+    #Translate = False
+    Expand = True
+    Highlight = True
+    Index = 0
+    Text = ""
+    Index = 0
+  }
   { TabPanel1 TabPanel
     MoveScaled(4,33,53,23)
     #Translate = False
+    Expand = True
+    Border = False
     Count = 3
     Highlight = True
     Index = 0
@@ -13,29 +30,6 @@
     Text = "Tab 2"
     Index = 2
     Text = "Tab 3"
-    Index = 0
-  }
-  { TextBox1 TextBox
-    MoveScaled(3,1,24,4)
-  }
-  { TabPanel2 TabPanel
-    MoveScaled(5,7,36,23)
-    #Translate = False
-    Border = False
-    Count = 6
-    Highlight = True
-    Index = 0
-    Text = "Tab 1"
-    Index = 1
-    Text = "Tab 2"
-    Index = 2
-    Text = "Tab 3"
-    Index = 3
-    Text = "Tab 4"
-    Index = 4
-    Text = "Tab 5"
-    Index = 5
-    Text = "Tab 6"
     Index = 0
   }
 }

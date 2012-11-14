@@ -781,25 +781,6 @@ typedef
 #define GB_SC_UNICODE ((char *)-1)
 
 
-/* Opaque type for a SubCollection object */
-
-typedef
-	void *GB_SUBCOLLECTION;
-
-
-/* SubCollection description */
-
-typedef
-	struct {
-		char *klass;
-		void *(*get)(void *, const char *);
-		int (*exist)(void *, const char *);
-		void (*list)(void *, char ***);
-		void (*release)(void *, void *);
-	}
-	GB_SUBCOLLECTION_DESC;
-
-
 /* Timer object */
 
 typedef
@@ -1055,15 +1036,6 @@ typedef
 		void *(*Add)(void *);
 		void *(*Insert)(void *, int, int);
 		void (*Remove)(void *, int, int);
-
-		struct {
-			void (*New)(GB_SUBCOLLECTION *, GB_SUBCOLLECTION_DESC *, void *);
-			void (*Add)(void *, const char *, int, void *);
-			void (*Remove)(void *, const char *, int);
-			void *(*Get)(void *, const char *, int);
-			void *(*Container)(void *);
-			}
-		SubCollection;
 
 		int (*ToLower)(int);
 		int (*ToUpper)(int);

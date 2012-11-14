@@ -101,7 +101,7 @@ void CUSER_release(CCONNECTION *conn, void *_object)
 BEGIN_METHOD_VOID(CUSER_free)
 
   if (!valid_user(THIS))
-    GB.SubCollection.Remove(THIS->conn->users, THIS->name, 0);
+    GB_SubCollectionRemove(THIS->conn->users, THIS->name, 0);
   GB.FreeString(&THIS->name);
   GB.FreeString(&THIS->info.password);
 
@@ -176,11 +176,11 @@ GB_DESC CUserDesc[] =
 ***************************************************************************/
 
 #undef THIS
-#define THIS ((GB_SUBCOLLECTION)_object)
+#define THIS ((CSUBCOLLECTION *)_object)
 
 BEGIN_METHOD(CUSER_add, GB_STRING name; GB_STRING password; GB_BOOLEAN admin)
 
-  CCONNECTION *conn = GB.SubCollection.Container(THIS);
+  CCONNECTION *conn = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
   DB_USER info;
 
@@ -203,13 +203,13 @@ END_METHOD
 
 BEGIN_METHOD(CUSER_remove, GB_STRING name)
 
-  CCONNECTION *conn = GB.SubCollection.Container(THIS);
+  CCONNECTION *conn = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
 
   if (check_user(conn, name, TRUE))
     return;
 
-  GB.SubCollection.Remove(THIS, STRING(name), LENGTH(name));
+  GB_SubCollectionRemove(THIS, STRING(name), LENGTH(name));
   conn->driver->User.Delete(&conn->db, name);
 
 END_METHOD

@@ -40,7 +40,7 @@
 
 static CCONNECTION *_current = NULL;
 
-static GB_SUBCOLLECTION_DESC _databases_desc =
+static SUBCOLLECTION_DESC _databases_desc =
 {
   ".Connection.Databases",
   (void *)CDATABASE_get,
@@ -49,7 +49,7 @@ static GB_SUBCOLLECTION_DESC _databases_desc =
   (void *)CDATABASE_release
 };
 
-static GB_SUBCOLLECTION_DESC _users_desc =
+static SUBCOLLECTION_DESC _users_desc =
 {
   ".Connection.Users",
   (void *)CUSER_get,
@@ -58,7 +58,7 @@ static GB_SUBCOLLECTION_DESC _users_desc =
   (void *)CUSER_release
 };
 
-static GB_SUBCOLLECTION_DESC _tables_desc =
+static SUBCOLLECTION_DESC _tables_desc =
 {
   ".Connection.Tables",
   (void *)CTABLE_get,
@@ -669,7 +669,7 @@ BEGIN_PROPERTY(CCONNECTION_databases)
   CHECK_DB();
   CHECK_OPEN();
 
-  GB.SubCollection.New(&THIS->databases, &_databases_desc, THIS);
+  GB_SubCollectionNew(&THIS->databases, &_databases_desc, THIS);
   GB.ReturnObject(THIS->databases);
 
 END_PROPERTY
@@ -680,7 +680,7 @@ BEGIN_PROPERTY(CCONNECTION_users)
   CHECK_DB();
   CHECK_OPEN();
 
-  GB.SubCollection.New(&THIS->users, &_users_desc, THIS);
+  GB_SubCollectionNew(&THIS->users, &_users_desc, THIS);
   GB.ReturnObject(THIS->users);
 
 END_PROPERTY
@@ -691,7 +691,7 @@ BEGIN_PROPERTY(CCONNECTION_tables)
   CHECK_DB();
   CHECK_OPEN();
 
-  GB.SubCollection.New(&THIS->tables, &_tables_desc, THIS);
+  GB_SubCollectionNew(&THIS->tables, &_tables_desc, THIS);
   GB.ReturnObject(THIS->tables);
 
 END_PROPERTY

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	CTable.h
+	c_subcollection.h
 
 	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,43 +21,48 @@
 
 ***************************************************************************/
 
-#ifndef __CTABLE_H
-#define __CTABLE_H
+#ifndef __C_SUBCOLLECTION_H
+#define __C_SUBCOLLECTION_H
 
 #include "gambas.h"
-#include "gb.db.h"
-#include "CDatabase.h"
-#include "c_subcollection.h"
 
-#ifndef __CTABLE_C
-extern GB_DESC CTableDesc[];
-extern GB_DESC CConnectionTablesDesc[];
-//extern GB_DESC CTableFieldDesc[];
-//extern GB_DESC CTableIndexDesc[];
-#else
-
-#define THIS ((CTABLE *)_object)
-
-#endif
+/* SubCollection description */
 
 typedef
 	struct {
-		GB_BASE ob;
-		DB_DRIVER *driver;
-		CCONNECTION *conn;
-		char *name;
-		char *type;
-		CSUBCOLLECTION *fields;
-		CSUBCOLLECTION *indexes;
-		bool create;
-		DB_FIELD *new_fields; /* linked list of DB_FIELD structures located in the objects stored in fields */
-		char **primary;
-		}
-	CTABLE;
+		char *klass;
+		void *(*get)(void *, const char *);
+		int (*exist)(void *, const char *);
+		void (*list)(void *, char ***);
+		void (*release)(void *, void *);
+	}
+	SUBCOLLECTION_DESC;
 
-void *CTABLE_get(CCONNECTION *conn, const char *key);
-int CTABLE_exist(CCONNECTION *conn, const char *key);
-void CTABLE_list(CCONNECTION *conn, char ***list);
-void CTABLE_release(CCONNECTION *conn, void *_object);
-	
+typedef
+	struct {
+		GB_BASE object;
+		GB_HASHTABLE hash_table;
+		int mode;
+		void *container;
+		SUBCOLLECTION_DESC *desc;
+		char **list;
+		}
+	CSUBCOLLECTION;
+
+#ifndef __C_SUBCOLLECTION_C
+
+extern GB_DESC SubCollectionDesc[];
+
+#else
+
+#define THIS ((CSUBCOLLECTION *)_object)
+
+#endif
+
+void GB_SubCollectionNew(CSUBCOLLECTION **subcollection, SUBCOLLECTION_DESC *desc, void *container);
+void *GB_SubCollectionContainer(void *_object);
+void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value);
+void GB_SubCollectionRemove(void *_object, const char *key, int len);
+void *GB_SubCollectionGet(void *_object, const char *key, int len);
+
 #endif

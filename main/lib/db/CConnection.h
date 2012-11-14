@@ -26,6 +26,7 @@
 
 #include "gambas.h"
 #include "gb.db.h"
+#include "c_subcollection.h"
 
 #ifndef __CCONNECTION_C
 extern GB_DESC CConnectionDesc[];
@@ -42,10 +43,10 @@ typedef
     DB_DRIVER *driver;
     DB_DATABASE db;
     DB_DESC desc;
-    GB_SUBCOLLECTION databases;
-    GB_SUBCOLLECTION tables;
-    GB_SUBCOLLECTION views;
-    GB_SUBCOLLECTION users;
+    CSUBCOLLECTION *databases;
+    CSUBCOLLECTION *tables;
+    CSUBCOLLECTION *views;
+    CSUBCOLLECTION *users;
     int limit;
     int trans;
 		bool ignore_charset;

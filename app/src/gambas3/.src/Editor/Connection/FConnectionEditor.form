@@ -100,7 +100,7 @@
       Orientation = Align.Left
       Separator = True
       { lvwTable TreeView
-        MoveScaled(1,13,19,26)
+        MoveScaled(2,5,19,26)
         Expand = True
         Sorted = True
         Border = False
@@ -172,9 +172,9 @@
             { tbvField TableView
               MoveScaled(1,7,55,13)
               Expand = True
+              Border = False
               Mode = Select.Single
               Header = GridView.Horizontal
-              Border = False
             }
             Index = 1
             Text = ("Indexes")
@@ -225,9 +225,9 @@
             { tbvIndex TableView
               MoveScaled(1,7,61,14)
               Expand = True
+              Border = False
               Mode = Select.Single
               Header = GridView.Horizontal
-              Border = False
             }
             Index = 0
           }
