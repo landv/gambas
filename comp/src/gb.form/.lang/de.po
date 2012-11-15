@@ -6,6 +6,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,29 +15,29 @@ msgstr ""
 msgid "More controls for graphical components"
 msgstr "Mehr Steuerelemente für grafische Komponenten"
 
-#: CBookmarkList.class:50
+#: CBookmarkList.class:46
 msgid "Home"
 msgstr "Startseite"
 
-#: CBookmarkList.class:52
+#: CBookmarkList.class:48
 msgid "Desktop"
 msgstr "-"
 
-#: CBookmarkList.class:54
+#: CBookmarkList.class:50
 msgid "System"
 msgstr "-"
 
-#: DirView.class:412
+#: DirView.class:416
 msgid "Cannot rename directory."
-msgstr "Kann Verzeichnis nicht umbenennen."
+msgstr "Verzeichnis kann nicht umbenannt werden."
 
-#: DirView.class:442
+#: DirView.class:446
 msgid "New folder"
 msgstr "Neuer Ordner"
 
-#: DirView.class:460
+#: DirView.class:464
 msgid "Cannot create directory."
-msgstr "Kann Verzeichnis nicht anlegen."
+msgstr "Verzeichnis kann nicht erstellt werden."
 
 #: FCalendar.form:34
 msgid "Today"
@@ -82,72 +83,91 @@ msgstr "-"
 msgid "A"
 msgstr "-"
 
-#: FDirChooser.class:422
+#: FDirChooser.class:428
 msgid "All files (*)"
 msgstr "Alle Dateien (*)"
 
-#: FDirChooser.class:811
+#: FDirChooser.class:836
 msgid "&Bookmark current directory"
-msgstr "&Lesezeichen-Verzeichnis"
+msgstr "Lesezeichen für aktuelles Verzeichnis er&stellen"
 
-#: FDirChooser.class:819
+#: FDirChooser.class:844
 msgid "&Edit bookmarks..."
 msgstr "&Lesezeichen bearbeiten..."
 
-#: FDirChooser.class:828
-#, fuzzy
+#: FDirChooser.class:853
 msgid "Show &details"
-msgstr "Dateien anzeigen"
+msgstr "Details an&zeigen"
 
-#: FDirChooser.class:834
-#, fuzzy
+#: FDirChooser.class:859
 msgid "Show &hidden files"
-msgstr "Versteckte Dateien anzeigen"
+msgstr "&Versteckte Dateien anzeigen"
 
-#: FDirChooser.class:842
+#: FDirChooser.class:865
+msgid "Show &image preview"
+msgstr "&Bildvorschau anzeigen"
+
+#: FDirChooser.class:873
 msgid "&Uncompress file"
-msgstr ""
+msgstr "Datei ent&komprimieren"
 
-#: FDirChooser.class:847
-#, fuzzy
+#: FDirChooser.class:878
 msgid "&Create directory"
-msgstr "Verzeichnis anlegen"
+msgstr "&Verzeichnis erstellen"
 
-#: FDirChooser.class:851
-#, fuzzy
+#: FDirChooser.class:883
+msgid "Open in &file manager..."
+msgstr "Im &Dateimanager öffnen..."
+
+#: FDirChooser.class:888
 msgid "&Refresh"
-msgstr "Neu laden"
+msgstr "&Aktualisieren"
 
-#: FDirChooser.class:981
+#: FDirChooser.class:1032
+msgid "Overwrite"
+msgstr "Überschreiben"
+
+#: FDirChooser.class:1032
+msgid "Overwrite all"
+msgstr "Alle überschreiben"
+
+#: FDirChooser.class:1032
+msgid "This file or directory already exists."
+msgstr "Datei oder Verzeichnis existiert bereits."
+
+#: FDirChooser.class:1045
 msgid "Cannot uncompress file."
-msgstr ""
+msgstr "Datei kann nicht entkomprimiert werden."
 
-#: FDirChooser.class:981
+#: FDirChooser.class:1045
 msgid "Unknown archive."
-msgstr ""
+msgstr "Unbekanntes Archiv."
 
-#: FDirChooser.form:54
+#: FDirChooser.form:56
 msgid "Bookmarks"
 msgstr "Lesezeichen"
 
-#: FDirChooser.form:67
+#: FDirChooser.form:76
 msgid "Parent directory"
 msgstr "Übergeordnetes Verzeichnis"
 
-#: FDirChooser.form:99
+#: FDirChooser.form:82
 msgid "Show files"
 msgstr "Dateien anzeigen"
 
-#: FDirChooser.form:164 FInputBox.form:41 FWizard.class:59
+#: FDirChooser.form:88
+msgid "Image preview"
+msgstr "Bildvorschau"
+
+#: FDirChooser.form:172 FInputBox.form:43 FWizard.class:71
 msgid "OK"
 msgstr "-"
 
-#: FDirChooser.form:170 FEditBookmark.class:109 FInputBox.form:47
-#: FWizard.form:73
+#: FSidePanel.class:967 FWizard.form:54
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: FEditBookmark.class:20 FileView.class:84
+#: FEditBookmark.class:20 FileView.class:98
 msgid "Name"
 msgstr "-"
 
@@ -183,95 +203,91 @@ msgstr "&Entfernen"
 msgid "Close"
 msgstr "Schließen"
 
-#: FFontChooser.form:42
-msgid "Family"
-msgstr "Familie"
-
-#: FFontChooser.form:57
-msgid "Style"
-msgstr "Stil"
-
-#: FFontChooser.form:63
+#: FFontChooser.form:49
 msgid "Bold"
 msgstr "Fett"
 
-#: FFontChooser.form:63
-msgid "Bold Italic"
-msgstr "Fett kursiv"
-
-#: FFontChooser.form:63
+#: FFontChooser.form:56
 msgid "Italic"
 msgstr "Kursiv"
 
 #: FFontChooser.form:63
-msgid "Normal"
-msgstr "-"
-
-#: FFontChooser.form:72
 msgid "Underline"
 msgstr "Unterstrichen"
 
-#: FFontChooser.form:77
+#: FFontChooser.form:70
 msgid "Strikeout"
 msgstr "Durchgestrichen"
 
-#: FFontChooser.form:87 FileView.class:85
-msgid "Size"
-msgstr "Größe"
+#: FFontChooser.form:79
+msgid "Relative"
+msgstr "Relativ"
 
-#: FFontChooser.form:125
+#: FFontChooser.form:113
 msgid "How quickly daft jumping zebras vex"
 msgstr "Franz jagt im verwahrlosten Taxi quer durch Bayern"
 
-#: FMain.form:46
-#, fuzzy
-msgid "Item"
+#: FIconPanel.form:13
+msgid "ButtonBox1"
+msgstr "-"
+
+#: FIconPanel.form:18
+msgid "TextBox1"
+msgstr "-"
+
+#: FMain.form:18
+msgid "Expander1"
 msgstr "-"
 
 #: FMessage.form:39
 msgid "Do not display this message again"
 msgstr "Diese Meldung nicht mehr anzeigen"
 
-#: FWizard.form:61
-msgid "&Previous"
-msgstr "&Zurück"
+#: FSidePanel.class:957
+msgid "Hidden"
+msgstr "Versteckt"
 
-#: FWizard.form:67
+#: FSidePanel.class:961
+msgid "Transparent"
+msgstr "-"
+
+#: FWizard.form:60
 msgid "&Next"
 msgstr "&Weiter"
 
-#: FileView.class:87
+#: FWizard.form:66
+msgid "&Previous"
+msgstr "&Zurück"
+
+#: FileView.class:100
+msgid "Size"
+msgstr "Größe"
+
+#: FileView.class:102
 msgid "Last modified"
 msgstr "Zuletzt verändert"
+
+#: FileView.class:209
+msgid "&1 B"
+msgstr "-"
+
+#: FileView.class:211
+msgid "&1 KiB"
+msgstr "-"
+
+#: FileView.class:213
+msgid "&1 MiB"
+msgstr "-"
+
+#: FileView.class:215
+msgid "&1 GiB"
+msgstr "-"
 
 #: Help.module:71
 msgid "The '/' character is forbidden inside file or directory names."
 msgstr "Das Zeichen '/' ist in Datei- oder Verzeichnisnamen nicht erlaubt."
 
-#: Wizard.class:76
+#: Wizard.class:77
 msgid "Step #&1"
 msgstr "Schritt #&1"
 
-#~ msgid "Toggle view"
-#~ msgstr "Ansicht umschalten"
-
-#~ msgid "Time"
-#~ msgstr "Zeit"
-
-#~ msgid "Number"
-#~ msgstr "Zahl"
-
-#~ msgid "IPAddress"
-#~ msgstr "IP-Adresse"
-
-#~ msgid "DateTime"
-#~ msgstr "Datum/Zeit"
-
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgid "Currency"
-#~ msgstr "Währung"
-
-#~ msgid "Button1"
-#~ msgstr "-"
