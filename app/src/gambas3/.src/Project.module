@@ -227,7 +227,7 @@ Public Sub Main()
   Dim sArg As String
 
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
-  
+
   'DB.Debug = True
   '
   For iInd = 1 To Args.Count - 1
@@ -258,7 +258,7 @@ Public Sub Main()
   Try Application.Font = Font[Settings["/Font"]]
 
   'ScrollArea.Shadow = True
-  
+
   OUTPUT_FILE = Temp$()
   EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
 
@@ -423,7 +423,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   If bInAnotherWindow Then
     Config.Save
     Settings.Save
-    
+
     sExec = Application.Path &/ File.Name(Args[0])
     If Not Exist(sExec) Then sExec &= ".gambas"
     If Not Exist(sExec) Then
@@ -454,40 +454,24 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Endif
   Endif
 
-  If bConvert Then
-  
-    If Exist(sDir &/ ".lock") Then
-      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
-          ("Open after all"), ("Do not open")) = 2 Then
-        Return True
-      Endif
-    Endif
-    
-  Else
-  
-    Try hLock = Lock sDir &/ ".lock"
-  
-    If Not hLock Then
-      If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
-          ("Open after all"), ("Do not open")) = 2 Then
-        Return True
-      Endif
-    Endif
-    
-  Endif
-
   ReadOnly = Not Access(sDir, gb.Write)
+
   If Not ReadOnly Then
     If Exist(sDir &/ ".startup") And If Not Access(sDir &/ ".startup", gb.Write) Then ReadOnly = True
   Endif
 
-  If bConvert Then
-  
-    If ReadOnly Then
-      Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
+  Try hLock = Lock sDir &/ ".lock"
+
+  If Not ReadOnly And ((bConvert And Exist(sDir &/ ".lock")) Or Not hLock) Then
+    If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."),
+        ("Open after all"), ("Do not open")) = 2 Then
       Return True
     Endif
-    
+  Endif
+
+  If bConvert And ReadOnly Then
+    Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
+    Return True
   Endif
 
   If Not $bTesting Then
@@ -501,7 +485,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
 
     ' Create Gambas 2 lock file
     Try File.Save(sDir &/ ".lock", "")
-    
+
     FConvert.Start(("Copying project inside a temporary directory..."))
     Project.Dir = Temp$()
     Shell "cp -R " & Shell$(sDir) & " " & Shell$(Project.Dir) Wait
@@ -509,13 +493,13 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
 
   Endif
 
-_INIT_AGAIN: 
+_INIT_AGAIN:
 
   Path = Project.Dir &/ PROJECT_FILE
   Name = File.Name(Project.Dir)
   SourceDir = Project.Dir &/ ".src"
   Config = New Settings(Project.Dir &/ ".settings")
-  
+
   ProjectFilter = ""
   VersionControl.Refresh
 
@@ -562,7 +546,7 @@ _INIT_AGAIN:
       Try Move sDir & "~" To sDir
       Error.Raise(("Unable to apply conversion"))
     Endif
-    
+
     ' Remove lock file from the backup project
     Try Kill (sDir & "~") &/ ".lock"
 
@@ -600,7 +584,7 @@ _INIT_AGAIN:
   ' Component loading needs to know which classes are declared by the project, in the case of a component project that uses itself
   RefreshSourceCache
   ReadProject
-  
+
   If Not ReadOnly Then
     If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
   Endif
@@ -610,7 +594,7 @@ _INIT_AGAIN:
 
   MConnection.Password.Clear
 
-  If Not $bTesting Then 
+  If Not $bTesting Then
     DoRefresh(False, True)
   Endif
 
@@ -633,7 +617,7 @@ _INIT_AGAIN:
 
   If bConvert Then
     MakeDirectoryIcon
-    If ConvertProject() Then 
+    If ConvertProject() Then
       Dec Application.Busy
       Goto _CANCEL
     Endif
@@ -643,7 +627,7 @@ _INIT_AGAIN:
 
   If Settings["/RestoreFiles", 1] Then LastOpenedFiles
   CPosition.Clear
-  
+
   Dec Application.Busy
 
   If ReadOnly Then FMain.ShowWarning(("This project is read-only."))
@@ -661,7 +645,7 @@ Catch
     Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
   Endif
 
-_CANCEL: 
+_CANCEL:
 
   If hLock Then Try Unlock #hLock
 
@@ -737,23 +721,23 @@ Private Function CloseProject() As Boolean
 
       Config.Clear("/OpenFile")
       For Each hForm In Workspace.Windows
-  
+
         If Not hForm.Closed Then
-  
+
           If Not hForm.Path Then
             Debug "hForm.Path = NULL ?"
             'Stop
           Endif
-  
+
           Inc nOpen
           If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
-  
+
           sState = ""
           Try sState = hForm.GetState()
-  
+
           aFold = Null
           Try aFold = hForm.GetFoldedProc()
-  
+
           If sState Then sState = ":" & sState
           sPath = hForm.Path
           If sPath Begins Project.Dir Then
@@ -761,13 +745,13 @@ Private Function CloseProject() As Boolean
             If Left(sPath) = "/" Then sPath = Mid$(sPath, 2)
           Endif
           Config["/OpenFile/File[" & CStr(nOpen) & "]"] = sPath & sState
-  
+
           If aFold And If aFold.Count Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
-  
+
         Endif
-  
+
       Next
-      
+
     Endif
 
     If Not $bTesting Then
@@ -782,7 +766,7 @@ Private Function CloseProject() As Boolean
 
     'FFind.WriteConfig
     Try Config = Null
-    
+
     $cSourceDir.Clear
 
     CPosition.Clear
@@ -834,12 +818,12 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   Dim hImage As Image
 
   hEmblem = Picture[sEmblem].Image
-  
+
   iSize = hEmblem.W * hSource.W / 64 * 1.25
   hEmblem = hEmblem.Stretch(iSize, iSize * hEmblem.H / hEmblem.W)
-  
+
   iSize -= hSource.W \ 4
-  
+
   hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
   hImage.PaintImage(hSource, iSize, 0)
   hImage.PaintImage(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
@@ -939,7 +923,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim sLink As String
   Dim bExported As Boolean
   Dim fRapport As Float
-  
+
   If iSize Then
     sPrefix = "icon:/" & iSize
     sLocalPrefix = "img/" & iSize
@@ -972,7 +956,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     Else
 
       bConflict = VersionControl.InConflict(sPath)
-      
+
       sIcon = sPrefix &/ "file"
 
       sExt = File.Ext(sPath)
@@ -1014,7 +998,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
         Case "txt", "text"
           sIcon = sPrefix &/ "text"
-          
+
         Case "pdf"
           sIcon = sPrefix &/ "pdf"
 
@@ -1034,7 +1018,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
       fRapport = hImage.Width / hImage.Height
       If fRapport < 1 Then fRapport = 1 / fRapport
-      
+
       If fRapport < 8 Then
 
         If iSize Then
@@ -1048,13 +1032,13 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
             hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width)
           Endif
         Endif
-        
+
       Else
-        
+
         hImage = Null
-        
+
       Endif
-      
+
     Endif
 
     If Not hImage Then hImage = Picture[sPrefix &/ "image"].Image
@@ -1188,7 +1172,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Else If sDir = Project.Dir &/ ".connection" Then
     sParent = KEY_CONNECTION
   Endif
-  
+
   If Not ProjectTree.Exist(sParent) Then Return
 
   With Stat(sPath)
@@ -1447,7 +1431,7 @@ Public Sub FillDir(sDir As String)
   If Not sDir Then Return
   If Left(sDir) = "$" Then Return
   If Not IsDir(sDir) Then Return
-  
+
   ProjectTree.MoveTo(sDir)
   If ProjectTree.MoveChild() Then Return
   If ProjectTree.Item.Key <> sDir & "/" Then Return
@@ -1546,7 +1530,7 @@ Private Sub RefreshSourceCache()
   Next
 
   VersionControl.CheckPaths()
-  
+
 End
 
 Private Sub UpdateTitle()
@@ -1705,15 +1689,15 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
   Next
 
   If $cProjectFilter Then
-    
+
     For Each $cProjectFilter
       sPath = $cProjectFilter.Key
       EnsureKey(sPath)
       Try ProjectTree[sPath].EnsureVisible
     Next
-    
+
     ' Move to the first available item if the root item is selected
-    
+
     If ProjectTree[Project.Dir].Selected Then
       With ProjectTree
         .MoveFirst()
@@ -1726,7 +1710,7 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
         Loop
       End With
     Endif
-    
+
   Endif
 
   UpdateTitle
@@ -1993,7 +1977,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   '  hForm.Editor.SetFocus
   'ENDIF
 
-  If iLine Then 
+  If iLine Then
     Try hForm.GotoCenter(iLine - 1, iColumn)
   Else If hForm.Name = Startup Then
     Try hForm.GotoFunction(hForm.GetFunctionLine("Main"))
@@ -2043,24 +2027,24 @@ Public Sub OpenForm(sName As String, Optional sModule As String = "form", Option
 End
 
 ' Private Function AddMessage(sVoid As String) As String
-' 
+'
 '   Dim iPos As Integer
 '   Dim sMsg As String
-' 
+'
 '   If Stat(OUTPUT_FILE).Size = 0 Then
-' 
+'
 '     SetMessage(sVoid)
 '     Return
-' 
+'
 '   Else
-' 
+'
 '     sMsg = RTrim(File.Load(OUTPUT_FILE))
 '     iPos = RInStr(sMsg, "\n")
 '     If iPos Then sMsg = Mid$(sMsg, iPos + 1)
 '     Return sMsg
-' 
+'
 '   Endif
-' 
+'
 ' End
 
 Public Sub TranslateMessage(sErr As String) As String
@@ -2205,7 +2189,7 @@ Public Sub Process_Read()
   Dim sLig As String
 
   sLig = Read #Last, -4096
-  Print sLig; 
+  Print sLig;
 
 End
 
@@ -2317,7 +2301,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   bGotError = Process.LastValue
 
   sOutput = Trim(File.Load(OUTPUT_FILE))
-  
+
   iPos = RInStr(sOutput, "\n")
   If iPos Then
     sRes = Mid$(sOutput, iPos + 1)
@@ -2328,7 +2312,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
     Endif
     sOutput = ""
   Endif
-  
+
   FDebugInfo.SetCompilation(sOutput)
   FDebugInfo.GotoFirstWarning()
 
@@ -2448,7 +2432,7 @@ Public Sub CopyProject(sSrc As String, sDst As String)
     If sFile = ".svn" Or sFile = "CVS" Or sFile = ".lock" Then Continue
 
     With Stat(sSrc &/ sFile)
-      
+
       If .Type = gb.Directory Then
         CopyProject(sSrc &/ sFile, sDst &/ sFile)
       Else If .Type = gb.Link Then
@@ -2456,11 +2440,11 @@ Public Sub CopyProject(sSrc As String, sDst As String)
       Else
         Copy sSrc &/ sFile To sDst &/ sFile
       Endif
-      
+
     End With
-    
+
   Next
-  
+
 End
 
 Public Sub SaveAs()
@@ -2703,9 +2687,9 @@ Public Sub Activate(hForm As Object)
   If hForm Then FMain.HideDebug(sType = "FConnectionEditor")
 
   FSearch.Update
-  
+
   CPosition.SaveCurrent
-  
+
 End
 
 Public Sub Deactivate(hForm As Object)
@@ -2831,7 +2815,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
   If Error Then Debug Error.Text
 
-_ERROR: 
+_ERROR:
 
   EnableRefresh
   Return Not bOK
@@ -2971,7 +2955,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   CreateEachDirectory = False
 
   For Each sLig In hFic.Lines
-    
+
     sLig = Trim(sLig)
 
     If Len(sLig) = 0 Then Continue
@@ -3049,7 +3033,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "makecomponent"
         Type = If(Val(sVal) <> 0, TYPE_COMPONENT, TYPE_NORMAL)
         'CreateComponent = Val(sVal) <> 0
-      
+
       Case "type"
         Select LCase(sVal)
           Case "library"
@@ -3082,7 +3066,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "icon"
         Icon = sVal
-        
+
       Case "packager"
         bNewPackagerConfig = CInt(sVal) <> 0
 
@@ -3216,7 +3200,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Close hFic
 
   VersionFile = Not GetVersion()
-  
+
   If aMissing.Count Then
     sMsg = Subst(("Some components are missing: &1"), aMissing.Join(", "))
     If Message.Error(sMsg, ("Continue"), ("Cancel")) = 2 Then
@@ -3413,15 +3397,14 @@ Catch
 End
 
 Public Sub GetExecPath() As String
-  
+
   If Left(ExecPath) = "/" Then
     Return ExecPath
   Else
     Return Project.Dir &/ ExecPath
   Endif
-  
-End
 
+End
 
 Public Sub MakeShortcut(Optional bForce As Boolean)
 
@@ -3456,25 +3439,25 @@ Catch
 End
 
 ' Private Sub MakeLink(sSrc As String, sDst As String)
-' 
+'
 '   If Not Exist(sDst) Then Link sSrc To sDst
-' 
+'
 ' End
 
 ' Private Sub RefreshForComponent()
-' 
+'
 '   Dim hForm As Object
-' 
+'
 '   RefreshComponents(True)
-' 
+'
 '   FFormStack.RefreshAll(, True)
-' 
+'
 '   For Each hForm In Files
 '     If IsForm(hForm) And If hForm.Visible Then
 '       hForm.RefreshForComponent
 '     Endif
 '   Next
-' 
+'
 ' End
 
 ' Public Sub InstallComponent()
@@ -3743,19 +3726,19 @@ Public Function CheckFileName(sName As String, Optional sDir As String) As Strin
 
   Return
 
-VOID_NAME: 
+VOID_NAME:
 
   Return ("Please type a name.")
 
-BAD_CHAR: 
+BAD_CHAR:
 
   Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]"
 
-BAD_START: 
+BAD_START:
 
   Return ("The name cannot begins with a dot.")
 
-ALREADY_EXIST: 
+ALREADY_EXIST:
 
   Return ("This name is already used. Choose another one.")
 
@@ -3786,16 +3769,16 @@ Public Function CheckClassName(sName As String, Optional bCheckNotExist As Boole
 
   Return
 
-VOID_NAME: 
+VOID_NAME:
 
   Return ("Please type a name.")
 
-BAD_CHAR: 
+BAD_CHAR:
 
-  Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]" & "\n\n" & 
+  Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]" & "\n\n" &
     ("A class name must begin with a letter or an underscore, followed by any letter or digit.")
 
-ALREADY_EXIST: 
+ALREADY_EXIST:
 
   Return ("This name is already used. Choose another one.")
 
@@ -3962,7 +3945,7 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
 
   If Not sKey Then Return
 
-  If Not ProjectTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then 
+  If Not ProjectTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then
     sKey = FindForm(File.BaseName(sKey))
   Endif
 
@@ -4027,7 +4010,7 @@ Public Sub RenameFile(sPath As String, sNewName As String)
         If Exist(sDir &/ sName & "." & sFamily) Then RenameOneFile(sDir, sName, sNewName, sFamily)
       Next
     Endif
-    
+
   Else
 
     If Project.IsConnectionPath(sPath) Then sNewName = File.SetExt(sNewName, ".connection")
@@ -4207,9 +4190,9 @@ Public Sub MakeSourcePackageTo(sPath As String)
   Dim sIgnore As String
 
   Inc Application.Busy
-  
+
   Save
-  
+
   If Right$(sPath, 3) = ".gz" Then
     sOpt = "z"
   Else If Right$(sPath, 4) = ".bz2" Then
@@ -4239,11 +4222,10 @@ Public Sub MakeSourcePackageTo(sPath As String)
 End
 
 Private Sub GetDefaultSourceArchiveBaseName() As String
-  
-  Return Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "")
-  
-End
 
+  Return Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "")
+
+End
 
 Public Sub MakePackage()
 
@@ -4337,7 +4319,7 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
       'Why refreshing the project?
       'Project.Refresh
     Endif
-    
+
     If Components.Exist("gb.db") And If Not Exist(Project.Dir &/ ".connection") Then InsertDirectory(Project.Dir &/ ".connection")
     If Components.Exist("gb.web") And If Not Exist(Project.Dir &/ ".public") Then InsertDirectory(Project.Dir &/ ".public")
 
@@ -4471,7 +4453,7 @@ Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
   Dim sKey As String
 
   sKey = ProjectTree.Key
-  
+
   sPath = File.BaseName(sPath)
   If Not Project.Exist(sPath) Then sPath = ""
 
@@ -5021,12 +5003,12 @@ Public Sub RefreshBreakpointPicture()
   Dim hImage As Image
 
   iSize = Font[Settings["/Editor/Font"]].Height
-  
+
   hImage = Picture["icon:/small/halt"].Image
   'hImage.Opacity(0.75)
   If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
   Try Editor.BreakpointPicture = hImage.Picture
-  
+
   hImage = Picture["icon:/small/apply"].Image
   'hImage.Opacity(0.75)
   If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
@@ -5089,9 +5071,9 @@ End
 
 Public Sub IsLocked(sPath As String) As Boolean
 
-  If Not LockedPaths Or If LockedPaths.Count = 0 Then Return 
+  If Not LockedPaths Or If LockedPaths.Count = 0 Then Return
   If LockedPaths.Exist(sPath) Then Return True
-  If sPath = "" Or sPath = "/" Then Return 
+  If sPath = "" Or sPath = "/" Then Return
   'If IsAdded(sPath) Then Return True
   Return IsLocked(File.Dir(sPath))
 
@@ -5099,7 +5081,7 @@ End
 
 Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
 
-  If Not AddedPaths Or If AddedPaths.Count = 0 Then Return 
+  If Not AddedPaths Or If AddedPaths.Count = 0 Then Return
   If AddedPaths.Exist(sPath) Then Return True
   'If IsSourcePath(sPath) And If File.Ext(sPath) = "form" And If AddedPaths.Exist(File.SetExt(sPath, "class")) Then Return True
   If bNoRec Then Return False
@@ -5247,44 +5229,45 @@ Catch
 End
 
 Public Sub GetIgnoreFiles() As String[]
-  
+
   Return Settings["/IgnoreFiles", [".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"]]
-  
+
 End
 
 Public Sub GetSmallFont() As Font
-  
+
   Dim hFont As Font = Font[Settings["/Font"]]
+
   Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 20
   Return hFont
-  
+
 End
 
-
 Public Sub SetSmallFont(hCtrl As Control)
-  
+
   hCtrl.Font = GetSmallFont()
-  
+
 End
 
 Public Sub SetNormalFont(hCtrl As Control)
-  
+
   Dim hFont As Font = Font[Settings["/Font"]]
+
   Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 20
   hCtrl.Font = hFont
-  
+
 End
 
 Public Sub GetEditorFont() As Font
-  
-  Return Font[Settings["/Editor/Font", DEFAULT_FONT]]  
+
+  Return Font[Settings["/Editor/Font", DEFAULT_FONT]]
 
 End
 
 Public Sub SetEditorFont(hCtrl As Control)
-  
+
   hCtrl.Font = GetEditorFont()
-  
+
 End
 
 Public Sub UpdateLibraries(aLib As String[]) As Boolean
@@ -5293,11 +5276,11 @@ Public Sub UpdateLibraries(aLib As String[]) As Boolean
   Dim hLib As CLibraryInfo
   Dim aAdd As String[]
   Dim bChange As Boolean
-  
+
   Do
-    
+
     aAdd = New String[]
-    
+
     For Each sPath In aLib
       hLib = CLibraryInfo[sPath]
       If hLib.NotFound Then Continue
@@ -5305,14 +5288,14 @@ Public Sub UpdateLibraries(aLib As String[]) As Boolean
         If Not aLib.Exist(sPath) And If Not aAdd.Exist(sPath) Then aAdd.Add(sPath)
       Next
     Next
-    
+
     If aAdd.Count = 0 Then Break
-    
+
     aLib.Insert(aAdd)
     bChange = True
-    
+
   Loop
-  
+
   Return bChange
 
 End
@@ -5326,9 +5309,10 @@ End
 Public Sub SendMail()
 
   Dim sTemp As String = Temp$()
+
   sTemp = File.SetBaseName(Temp, GetDefaultSourceArchiveBaseName()) & ".tar.gz"
   Try Kill sTemp
   MakeSourcePackageTo(sTemp)
   Desktop.SendMail(Null,,, If(Project.Title, Project.Title, Project.Name),, sTemp)
-  
+
 End
