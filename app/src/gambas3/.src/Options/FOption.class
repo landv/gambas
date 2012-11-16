@@ -233,6 +233,7 @@ Private Sub RefreshConsole()
   
   Settings["/ConsoleFont"] = txtConsoleFont.Text
   FOutput.ReadConfig
+  Project.InitWebView
   
 End
 
@@ -706,6 +707,7 @@ Private Sub UpdateFont(sFont As String)
     Else
       Application.Font = Font[Project.DESKTOP_FONT]
     Endif
+    Project.InitWebView
     RefreshWindow
   Endif
 

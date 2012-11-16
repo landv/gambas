@@ -203,9 +203,10 @@ Public Sub _init()
 
 End
 
-Private Sub InitWebView()
+Public Sub InitWebView()
 
   Dim sPath As String
+  Dim hFont As Font
 
   If Not WebSettings.Cache.Path Then
     sPath = System.User.Home &/ ".cache"
@@ -217,6 +218,14 @@ Private Sub InitWebView()
     WebSettings.Cache.Path = sPath
     WebSettings.Cache.Enabled = True
   Endif
+  
+  'WebSettings.Fonts.StandardFont = Application.Font.Name
+  WebSettings.Fonts.SansSerifFont = Application.Font.Name
+  WebSettings.Fonts.DefaultFontSize = Application.Font.Height
+
+  hFont = Font[Settings["/ConsoleFont", DEFAULT_FONT]]
+  WebSettings.Fonts.FixedFont = hFont.Name
+  WebSettings.Fonts.DefaultFixedFontSize = hFont.Height
 
 End
 
