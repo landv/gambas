@@ -105,6 +105,7 @@ echo "Memory=$RAM"
 echo "DistributionVendor=$vendor"
 echo "DistributionRelease=$release"
 echo "Desktop=$DESKTOP"
+echo "Language=$LANG"
 echo ""
 
 if [ "$GAMBAS" != "" ]; then

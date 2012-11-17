@@ -26,14 +26,14 @@
     }
   }
   { dwgWelcome DrawingArea
-    MoveScaled(1,1,66,21)
-    Visible = False
+    MoveScaled(4,1,42,22)
+    Background = &H3398C3&
   }
   { timLayout #Timer
     #MoveScaled(72,14)
   }
   { Panel1 Panel
-    MoveScaled(19,23,14,0)
+    MoveScaled(19,24,14,0)
     Visible = False
     Background = &H000000&
   }
@@ -41,24 +41,16 @@
     MoveScaled(1,25,78,41)
     Expand = True
     { Panel7 Panel
-      MoveScaled(1,2,44,37)
+      MoveScaled(1,2,37,37)
       Arrangement = Arrange.Fill
       { panButton Panel
-        MoveScaled(1,1,37,35)
+        MoveScaled(1,1,33,35)
         Background = &HDF6B00&
         Foreground = Color.TextForeground
         Arrangement = Arrange.Vertical
-        { dwgTitle DrawingArea
-          MoveScaled(2,2,25,10)
-          Background = &H3398C3&
-          Painted = True
-        }
-        { Panel6 Panel
-          MoveScaled(6,19,21,0)
-          Background = &H000000&
-        }
         { dwgFrame DrawingArea
           MoveScaled(16,23,14,10)
+          Visible = False
           Ignore = True
         }
       }

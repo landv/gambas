@@ -49,7 +49,7 @@ Public Sub Panel_Draw()
   
   If $iBackground <> Color.Default Then
     Draw.FillRect(0, 0, Draw.W, Draw.H, $iBackground)
-    Draw.Rect(0, 0, Draw.W + 1, Draw.H)
+    'Draw.Rect(0, 0, Draw.W + 1, Draw.H)
   Endif
   
   Draw.Picture($hPict, 8, ($hPanel.H - $hPict.H) \ 2)

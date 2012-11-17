@@ -14,6 +14,18 @@ Private $bInRename As Boolean
 Private $bHasJustCollapsed As Boolean
 Private $bExpandOnMouseUp As Boolean
 
+Private frmWelcome As FWelcome
+Private $hCornerNW As Image
+Private $hCornerNE As Image
+Private $hCornerSW As Image
+Private $hCornerSE As Image
+Private $hBorderN As Image
+Private $hBorderS As Image
+Private $hBorderW As Image
+Private $hBorderE As Image
+
+Private $bFirstProject As Boolean
+
 Public Sub _new()
   
   Me.Resize(800, 600)
@@ -44,6 +56,7 @@ End
 Public Sub Form_Open()
   
   'DEBUG
+  frmWelcome = New FWelcome(dwgWelcome)
   
   Settings.Read(Me)
   Settings.Read(panProject, "panProject")
@@ -946,7 +959,7 @@ Public Sub tvwProject_Select()
   GetCurrent()
   RefreshMenu
   
-  If tvwProject.Current.Children Then 
+  If tvwProject.Current And If tvwProject.Current.Children Then 
     ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
     'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
     $bExpandOnMouseUp = True
@@ -1075,6 +1088,23 @@ Public Sub UpdateMenu()
 End
 
 Public Sub OnProjectChange()
+  
+  Dim hCtrl As Control
+  Dim hMenu As Menu
+  
+  If Not $bFirstProject Then
+    
+    $bFirstProject = True
+    
+    dwgWelcome.Hide
+    For Each hMenu In [mnuProject, mnuDebug, mnuView, mnuTool, mnuSave, mnuSaveAs]
+      hMenu.Show
+    Next
+    For Each hCtrl In [panDebug, panProject, tlbMain]
+      hCtrl.Show
+    Next
+    
+  Endif
   
   UpdateMenu
   mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
@@ -2116,5 +2146,50 @@ End
 Public Sub tlbMain_Configure()
 
   UpdateMenu
+
+End
+
+Public Sub Form_Resize()
+
+  Dim W, H As Integer
+  
+  If dwgWelcome.Visible Then
+    W = 640
+    H = 600
+    dwgWelcome.Move((Me.ClientW - W) \ 2, (Me.ClientH - H) \ 2, W, H)
+  Endif
+
+End
+
+Public Sub dwgWelcome_Draw()
+
+  Dim X As Integer
+  Dim Y As Integer
+  
+  If Not $hCornerNW Then
+    $hCornerNW = Image.Load("img/welcome/corner.png")
+    $hCornerNE = $hCornerNW.Copy().RotateRight()
+    $hCornerSE = $hCornerNE.Copy().RotateRight()
+    $hCornerSW = $hCornerSE.Copy().RotateRight()
+    $hBorderN = Image.Load("img/welcome/border.png")
+    $hBorderE = $hBorderN.Copy().RotateRight()
+    $hBorderS = $hBorderE.Copy().RotateRight()
+    $hBorderW = $hBorderS.Copy().RotateRight()
+  Endif
+
+  For X = 64 To dwgWelcome.W - 64 Step 64
+    Draw.Image($hBorderN, X, 0, Min(64, dwgWelcome.W - 64 - X), 64)
+    Draw.Image($hBorderS, X, dwgWelcome.H - 64, Min(64, dwgWelcome.W - 64 - X), 64)
+  Next
+
+  For Y = 64 To dwgWelcome.H - 64 Step 64
+    Draw.Image($hBorderW, 0, Y, 64, Min(64, dwgWelcome.H - 64 - Y))
+    Draw.Image($hBorderE, dwgWelcome.W - 64, Y, 64, Min(64, dwgWelcome.H - 64 - Y))
+  Next
+
+  Draw.Image($hCornerNW, 0, 0)
+  Draw.Image($hCornerNE, dwgWelcome.W - 64, 0)
+  Draw.Image($hCornerSW, 0, dwgWelcome.H - 64)
+  Draw.Image($hCornerSE, dwgWelcome.W - 64, dwgWelcome.H - 64)
 
 End

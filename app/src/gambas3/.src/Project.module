@@ -296,33 +296,35 @@ Public Sub Main()
   FMain.Load
   Application.MainWindow = FMain
 
-  Do
-
-    If Not sPath Then sPath = FWelcome.Run()
-    'sPath = User.Home &/ "gambas/test/gambas"
-
-    If sPath Then
-      Project.Open(sPath)
-    Else
-      Project.Exit
-      FMain.Close
-      Return
-    Endif
-
-    If Project.Name Then Break
-
-    sPath = ""
-
-  Loop
+  ' Do
+  ' 
+  '   If Not sPath Then sPath = FWelcome.Run()
+  '   'sPath = User.Home &/ "gambas/test/gambas"
+  ' 
+  '   If sPath Then
+  '     Project.Open(sPath)
+  '   Else
+  '     Project.Exit
+  '     FMain.Close
+  '     Return
+  '   Endif
+  ' 
+  '   If Project.Name Then Break
+  ' 
+  '   sPath = ""
+  ' 
+  ' Loop
 
   Inc Application.Busy
+  
+  If sPath Then Project.Open(sPath)
 
   'FProperty.Show
   'FToolBox.Show
   'FFormStack.Load
 
   'If Settings["/ShowMascot", False] Then FMain.ShowShow
-
+  FHelpBrowser.Load 
   FMain.Show
   RefreshActivate
 

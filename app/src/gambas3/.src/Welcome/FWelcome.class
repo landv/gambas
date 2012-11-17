@@ -20,7 +20,7 @@ Private Const LIST_EXAMPLE As Integer = 2
 Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
-'Private $hWelcome As CWelcome
+Private $hWelcome As CWelcome
 Private $iSort As Integer = CRecentFile.SORT_BY_DATE
 
 Static Private $hLogo As Image
@@ -29,7 +29,6 @@ Static Public Function Run() As String
 
   'DIM hForm AS Form
 
-  If Not $hLogo Then $hLogo = Image.Load("img/logo/logo.png")
   $sPath = ""
   'hForm = NEW FWelcome
   FWelcome.ShowModal()
@@ -43,8 +42,10 @@ Public Sub Form_Open()
   Dim sFont As String
   Dim hCtrl As CCoolButton
 
-  Settings.Read(Me)
-  Me.Center
+  If Not $hLogo Then $hLogo = Image.Load("img/logo/logo.png")
+
+  'Settings.Read(Me)
+  'Me.Center
   
   sFont = "Bold"
   W = panButton.ClientW
@@ -73,7 +74,7 @@ Public Sub Form_Open()
     Toggle(LIST_EXAMPLE)
   Endif
 
-  '$hWelcome = New CWelcome(dwgWelcome)
+  $hWelcome = New CWelcome(dwgWelcome)
 
 End
 
@@ -107,7 +108,7 @@ Public Sub btnNew_Click()
 
   $sPath = FCreateProject.Run()
   txtFilter.SetFocus
-  If $sPath Then Me.Close
+  If $sPath Then Project.Open($sPath)
 
 End
 
@@ -116,7 +117,7 @@ Public Sub btnOpen_Click()
 
   $sPath = FOpenProject.Run()
   txtFilter.SetFocus
-  If $sPath Then Me.Close
+  If $sPath Then Project.Open($sPath)
 
 End
 
@@ -139,7 +140,7 @@ End
 Public Sub btnQuit_Click()
 
   $sPath = ""
-  Me.Close(True)
+  FMain.Close()
 
 End
 
@@ -205,7 +206,7 @@ End
 
 Public Sub Form_Close()
 
-  Settings.Write(Me)
+  'Settings.Write(Me)
   Settings["/FWelcome/SortRecent"] = $iSort
 
 End
@@ -560,7 +561,7 @@ End
 Public Sub ProjectItem_Click()
 
   $sPath = Last.Path
-  Me.Close
+  Project.Open($sPath)
 
 End
 
@@ -568,7 +569,7 @@ Public Sub txtFilter_Activate()
 
   If Not $hFirst Then Return
   $sPath = $hFirst.Path
-  Me.Close
+  Project.Open($sPath)
 
 End
 
@@ -579,23 +580,23 @@ Public Sub btnAbout_Click()
   
 End
 
-Public Sub dwgTitle_Draw()
-
-  Dim sVersion As String = System.FullVersion 'WithRevision
-  Dim sText As String
-
-  Paint.DrawImage($hLogo, Paint.W - $hLogo.W + 16, 0)
-
-  If sVersion Ends ".0" Then sVersion = Left(sVersion, -2)
-
-  sText = "<font size=\"7\"><b>Gambas " & sVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " · " & System.Architecture & " · " & System.Language & "</b></font>"
-
-  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
-  Paint.DrawRichText(sText, 12, 8, Paint.W - 16, Paint.H, Align.TopLeft)
-  Paint.Brush = Paint.Color(Color.White)
-  Paint.DrawRichText(sText, 8, 4, Paint.W - 16, Paint.H, Align.TopLeft)
-
-End
+' Public Sub dwgTitle_Draw()
+' 
+'   Dim sVersion As String = System.FullVersion 'WithRevision
+'   Dim sText As String
+' 
+'   Paint.DrawImage($hLogo, Paint.W - $hLogo.W + 16, 0)
+' 
+'   If sVersion Ends ".0" Then sVersion = Left(sVersion, -2)
+' 
+'   sText = "<font size=\"7\"><b>Gambas " & sVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " · " & System.Architecture & " · " & System.Language & "</b></font>"
+' 
+'   Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
+'   Paint.DrawRichText(sText, 12, 8, Paint.W - 16, Paint.H, Align.TopLeft)
+'   Paint.Brush = Paint.Color(Color.White)
+'   Paint.DrawRichText(sText, 8, 4, Paint.W - 16, Paint.H, Align.TopLeft)
+' 
+' End
 
 Public Sub timLayout_Timer()
 
@@ -629,10 +630,4 @@ Public Sub panButton_BeforeArrange()
 
   dwgFrame.Move(0, 0, panButton.W, panButton.H)
 
-End
-
-Public Sub dwgFrame_Draw()
-  
-  Draw.Rect(0, 0, panButton.W, panButton.H)
-  
 End

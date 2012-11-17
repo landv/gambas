@@ -119,5 +119,5 @@ enum {
 	POINTER_ERASER = 2,
 	POINTER_CURSOR = 3
 };
-	
+
 #endif

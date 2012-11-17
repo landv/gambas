@@ -12,31 +12,35 @@ Public Sub btnCopy_Click()
 
 End
 
-Private Sub FindLibraryRec(sDir As String, sPattern As String) As String
-  
-  Dim sSubDir As String
-  Dim sLib As String
-  Dim aDir As String[]
-  
-  Try aDir = Dir(sDir, sPattern)
-  If aDir And If aDir.Count = 1 Then Return aDir[0]
-  
-  Try aDir = Dir(sDir, "*", gb.Directory)
-  If Not Error Then
-    For Each sSubDir In aDir
-      sLib = FindLibraryRec(sDir &/ sSubDir, sPattern)
-      If sLib Then Return sLib
-    Next
-  Endif
-  
-End
+' Private Sub FindLibraryRec(sDir As String, sPattern As String) As String
+'   
+'   Dim sSubDir As String
+'   Dim sLib As String
+'   Dim aDir As String[]
+'   
+'   Try aDir = Dir(sDir, sPattern)
+'   If aDir And If aDir.Count = 1 Then Return aDir[0]
+'   
+'   Try aDir = Dir(sDir, "*", gb.Directory)
+'   If Not Error Then
+'     For Each sSubDir In aDir
+'       sLib = FindLibraryRec(sDir &/ sSubDir, sPattern)
+'       If sLib Then Return sLib
+'     Next
+'   Endif
+'   
+' End
 
 Public Sub Form_Open()
 
   Dim sTemp As String
   Dim sText As String
   Dim sLib As String
-  Dim sFind As String
+  Dim sFile As String
+  Dim cSearch As Collection
+  Dim sPattern As String
+  
+  Inc Application.Busy
   
   txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
@@ -48,16 +52,26 @@ Public Sub Form_Open()
   'Shell "chmod a+x " & Shell$(sTemp) Wait
   Exec ["/bin/sh", sTemp] To sText
 
-  sFind = FindLibraryRec("/usr/lib", "libQtCore.so.*.*.*")
-  If sFind Then sLib &= "Qt4=" & sFind & "\n"
-  sFind = FindLibraryRec("/usr/lib/", "libgtk-x11-2*.so.*.*.*")
-  If sFind Then sLib &= "GTK+=" & sFind & "\n"
+  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-0.*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*"]
   
+  For Each sFile In RDir("/usr/lib")
+    sFile = File.Name(sFile)
+    For Each sPattern In cSearch
+      If sFile Like sPattern Then
+        sLib &= cSearch.Key & "=" & sFile & "\n"
+        cSearch.Remove(cSearch.Key)
+        Break
+      Endif
+    Next
+  Next
+
   If sLib Then
     sText &= "[Libraries]\n"
     sText &= sLib & "\n"
   Endif
   
   txtInfo.Text = sText
+  
+  Dec Application.Busy
 
 End

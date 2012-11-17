@@ -34,12 +34,14 @@
       Action = "save-project"
       Text = ("&Save project")
       Picture = Picture["icon:/small/save"]
+      Visible = False
       Shortcut = "Ctrl+Alt+S"
     }
     { mnuSaveAs Menu
       Action = "save-project-as"
       Text = ("Save project &as...")
       Picture = Picture["icon:/small/save-as"]
+      Visible = False
       Shortcut = "Ctrl+Shift+Alt+S"
     }
     { mnuSepSave Menu
@@ -53,6 +55,7 @@
   }
   { mnuProject Menu
     Text = ("&Project")
+    Visible = False
     { mnuCompile Menu
       Action = "compile"
       Text = ("&Compile")
@@ -132,6 +135,7 @@
   }
   { mnuDebug Menu
     Text = ("&Debug")
+    Visible = False
     { mnuRun Menu
       Action = "start"
       Text = ("&Run")
@@ -198,6 +202,7 @@
   }
   { mnuView Menu
     Text = ("&View")
+    Visible = False
     { mnuViewProject Menu
       Action = "project"
       Text = ("Pro&ject")
@@ -256,6 +261,7 @@
   }
   { mnuTool Menu
     Text = ("&Tools")
+    Visible = False
     { mnuFind Menu
       Text = ("&Find...")
       Picture = Picture["icon:/small/find"]
@@ -574,6 +580,7 @@
     AutoResize = True
     { tlbMain ToolBar
       MoveScaled(0,0,163,4)
+      Visible = False
       Key = "main"
       { ToolButton1 ToolButton
         MoveScaled(0,0,4,4)
@@ -885,6 +892,7 @@
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
       MoveScaled(2,3,29,66)
+      Visible = False
       ToolTip = ("Project")
       Arrangement = Arrange.Vertical
       Action = "project"
@@ -956,6 +964,7 @@
       }
       { panDebug SidePanel
         MoveScaled(2,38,19,27)
+        Visible = False
         ToolTip = ("Debug")
         Arrangement = Arrange.Fill
         Orientation = Align.Bottom
@@ -1032,6 +1041,13 @@
     { Separator1 Separator
       MoveScaled(1,7,55,0)
     }
+  }
+  { dwgWelcome DrawingArea
+    MoveScaled(101,32,15,18)
+    Ignore = True
+    Arrangement = Arrange.Fill
+    Margin = True
+    Padding = 32
   }
 }
 
