@@ -202,6 +202,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 {
 	bool noResize = false;
 	QFont *f = THIS->font;
+	double size;
 
 	noResize = true; //((long)THIS->control == CFONT_DRAW && !DRAW_must_resize_font());
 
@@ -236,9 +237,17 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 			case CFONT::Name: f->setFamily(GB.ToZeroString(PROP(GB_STRING))); break;
 			case CFONT::Size:
 				if (noResize)
-					f->setPointSizeF(VPROP(GB_FLOAT));
+					size = VPROP(GB_FLOAT);
 				else
-					f->setPointSizeF(SIZE_VIRTUAL_TO_REAL(VPROP(GB_FLOAT)));
+					size = SIZE_VIRTUAL_TO_REAL(VPROP(GB_FLOAT));
+				
+				if (size <= 0)
+				{
+					GB.Error("Bad font size");
+					return;
+				}
+				
+				f->setPointSizeF(size);
 				break;
 			case CFONT::Grade:
 				{

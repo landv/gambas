@@ -79,6 +79,7 @@ Public Sub ReadConfig()
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
   While $hFont.Height > Application.Font.Height
     Dec $hFont.Size
+    If $hFont.Size < 6 Then Break
   Wend
   gvwFind.Refresh
 

@@ -2154,8 +2154,8 @@ Public Sub Form_Resize()
   Dim W, H As Integer
   
   If dwgWelcome.Visible Then
-    W = 640
-    H = 600
+    W = Desktop.Scale * 90
+    H = Desktop.Scale * 80
     dwgWelcome.Move((Me.ClientW - W) \ 2, (Me.ClientH - H) \ 2, W, H)
   Endif
 

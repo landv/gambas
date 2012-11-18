@@ -75,6 +75,7 @@ END_METHOD
 static void CFONT_manage(int prop, CFONT *_object, void *_param)
 {
 	gFont *f = FONT;
+	double size;
 	
 	if (!f)
 	{
@@ -100,7 +101,15 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 		switch (prop)
 		{
 			case CFONT::Name: f->setName(GB.ToZeroString(PROP(GB_STRING))); break;
-			case CFONT::Size: f->setSize(VPROP(GB_FLOAT)); break;
+			case CFONT::Size: 
+				size = VPROP(GB_FLOAT);
+				if (size <= 0)
+				{
+					GB.Error("Bad font size");
+					return;
+				}
+				f->setSize(VPROP(GB_FLOAT)); 
+				break;
 			case CFONT::Grade: f->setGrade(VPROP(GB_INTEGER)); break;
 			case CFONT::Bold: f->setBold(VPROP(GB_BOOLEAN)); break;
 			case CFONT::Italic: f->setItalic(VPROP(GB_BOOLEAN)); break;
