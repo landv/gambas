@@ -297,7 +297,7 @@ static void analyze_class(GB_DESC *desc)
 	GB_DESC *p;
 	int i;
 
-	if (out_list && name[0] != '.')
+	if (out_list) // && name[0] != '.')
 		fprintf(out_list, "%s\n", name);
 
 	desc++;

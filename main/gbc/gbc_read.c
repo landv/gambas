@@ -143,7 +143,7 @@ static void READ_exit(void)
 		{
 			local = TRUE;
 		}
-		else
+		else if (*name != '.')
 		{
 			if (TABLE_find_symbol(JOB->class->table, name, len, &index))
 			{
