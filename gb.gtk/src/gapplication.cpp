@@ -235,10 +235,12 @@ static void gambas_handle_event(GdkEvent *event)
 	{
 		control = gApplication::_control_grab;
 		widget = control->border;
+		//fprintf(stderr, "_control_grab: %s -> widget = %p\n", control->name(), widget);
 		goto __FOUND_WIDGET;
 	}
 
 	grab = gtk_window_group_get_current_grab(get_window_group(widget));
+	//fprintf(stderr, "search grab for widget %p -> group = %p -> grab = %p\n", widget, get_window_group(widget), grab);
 	if (grab && !GTK_IS_WINDOW(grab))
 		goto __HANDLE_EVENT;
 
@@ -284,10 +286,13 @@ static void gambas_handle_event(GdkEvent *event)
 		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
 	}*/
 	
-	//fprintf(stderr, "grab = %p widget = %p %d\n", grab, widget, !gtk_widget_is_ancestor(widget, grab));
+	//fprintf(stderr, "grab = %p widget = %p %d\n", grab, widget, grab && !gtk_widget_is_ancestor(widget, grab));
 	
 	if (grab && widget != grab && !gtk_widget_is_ancestor(widget, grab))
+	{
+		//fprintf(stderr, "-> widget = grab\n");
 		widget = grab;
+	}
 	
 	while (widget)
 	{
@@ -310,6 +315,8 @@ static void gambas_handle_event(GdkEvent *event)
 		goto __HANDLE_EVENT;
 	
 __FOUND_WIDGET:
+	
+	//fprintf(stderr, "control = %p %s\n", control, control->name());
 	
 	/*switch ((int)event->type)
 	{
@@ -1011,11 +1018,11 @@ void gApplication::enterLoop(void *owner, bool showIt, GtkWindow *modal)
 {
 	void *old_owner = _loop_owner;
 	int l = _loopLevel;
-	GtkWindowGroup *oldGroup;
+	//GtkWindowGroup *oldGroup;
 	
 	if (showIt) ((gControl *)owner)->show();
 
-	oldGroup = enterGroup();
+	//oldGroup = enterGroup();
 	
 	_loopLevel++;
 	_loop_owner = owner;
@@ -1030,14 +1037,14 @@ void gApplication::enterLoop(void *owner, bool showIt, GtkWindow *modal)
 	
 	_loop_owner = old_owner;
 
-	exitGroup(oldGroup);
+	//exitGroup(oldGroup);
 }
 
 void gApplication::enterPopup(gMainWindow *owner)
 {
 	void *old_owner = _loop_owner;
 	int l = _loopLevel;
-	GtkWindowGroup *oldGroup;
+	//GtkWindowGroup *oldGroup;
 	GtkWindow *window = GTK_WINDOW(owner->border);
 	GtkWidget *old_popup_grab;
 	
@@ -1046,7 +1053,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	// Remove possible current button grab
 	_button_grab = NULL;
 	
-	oldGroup = enterGroup();
+	//oldGroup = enterGroup();
 	
 	gtk_window_set_modal(window, true);
 	gdk_window_set_override_redirect(owner->border->window, true);
@@ -1076,7 +1083,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 
 	gdk_window_set_override_redirect(owner->border->window, false);
 	gtk_window_set_modal(window, false);
-	exitGroup(oldGroup);
+	//exitGroup(oldGroup);
 	
 	_in_popup--;
 }

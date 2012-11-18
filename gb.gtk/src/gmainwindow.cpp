@@ -624,7 +624,7 @@ void gMainWindow::showModal()
 
 	gtk_window_set_modal(GTK_WINDOW(border), true);
   center();
-	show();
+	//show();
 	gtk_grab_add(border);
 	
 	if (_active)
@@ -633,7 +633,7 @@ void gMainWindow::showModal()
 	save = _current;
 	_current = this;
 
-	gApplication::enterLoop(this);
+	gApplication::enterLoop(this, true);
 	
 	_current = save;
 	

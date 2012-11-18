@@ -45,8 +45,6 @@
 
 //#define DEBUG_WINDOW 1
 
-//class MyCentral;
-
 typedef
 	struct CWINDOW {
 		CWIDGET widget;

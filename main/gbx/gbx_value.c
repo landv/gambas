@@ -249,7 +249,7 @@ void VALUE_convert(VALUE *value, TYPE type)
 {
 	static const void *jump[16][16] =
 	{
-	/*  ,------->  void       b          c          h          i          l          g          f          d          cs         s          p          v          func       class      n         */
+	/*   ,------>  void       b          c          h          i          l          g          f          d          cs         s          p          v          func       class      n         */
 	//  |
 	/* void   */ { &&__OK,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    },
 	/* b      */ { &&__N,     &&__OK,    &&__b2c,   &&__b2h,   &&__TYPE,  &&__b2l,   &&__b2g,   &&__b2f,   &&__N,     &&__b2s,   &&__b2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
@@ -266,7 +266,7 @@ void VALUE_convert(VALUE *value, TYPE type)
 	/* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__v2,    &&__v2,    },
 	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__F2p,   &&__func,  &&__OK,    &&__N,     &&__func,  },
 	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__2v,    &&__N,     &&__OK,    &&__N,     },
-	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__OK,    },
+	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__n2p,     &&__2v,    &&__N,     &&__N,     &&__OK,    },
 	};
 
 	int len;
@@ -657,6 +657,12 @@ __n2s:
 	STRING_void_value(value);
 	return;
 
+__n2p:
+
+	value->_pointer.value = 0;
+	value->type = T_POINTER;
+	return;
+	
 __v2:
 
 	VALUE_undo_variant(value);

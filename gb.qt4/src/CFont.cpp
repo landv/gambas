@@ -202,6 +202,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 {
   bool noResize = false;
   QFont *f = THIS->font;
+	double size;
 
   noResize = true; //((long)THIS->control == CFONT_DRAW && !DRAW_must_resize_font());
 

@@ -2452,7 +2452,7 @@ void MyMainWindow::configure()
 			arrange = true;
 			THIS->container->setGeometry(geom);
 		}
-		menuBar->setGeometry(0, 0, this->width(), menuBar->height());
+		menuBar->setGeometry(0, 0, this->width(), h);
 	}
 	else
 	{
