@@ -221,7 +221,7 @@ Private Sub FillTree()
   
   tvwClasses.Clear
   
-  tvwClasses.Add("$", "Project", Picture["img/16/gambas.png"])
+  tvwClasses.Add("$", Project.Name, Project.GetIcon(Project.Dir, 16))
   For Each sClass In Project.GetClasses()
     
     tvwClasses.Add("$" &/ sClass, sClass,, "$")
@@ -251,19 +251,19 @@ Private Sub FillTree()
   
 End
 
-Public Sub tvwClasses_MouseUp()
+Public Sub tvwClasses_Select()
   
-  Dim ars As String[]
+  Dim aKey As String[]
   Dim sKey As String
 
   sKey = tvwClasses.Current.Key
-  If sKey = "$" Then Return
+  If Not sKey Or If sKey = "$" Then Return
   
-  ars = Split(sKey, "/")
-  If ars.count = 2 Then
-    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_CLASS, ars[1])
-  Else If ars.Count = 1 Then
-    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_COMPONENT, ars[0])
+  aKey = Split(sKey, "/")
+  If aKey.Count = 2 Then
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_CLASS, aKey[0] &/ aKey[1])
+  Else If aKey.Count = 1 Then
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_COMPONENT, aKey[0])
   Endif
   
 End

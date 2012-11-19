@@ -355,18 +355,29 @@ Public Sub GetHelpURL() As String
   
   Dim sPath As String
   Dim sComp As String
+  Dim hComp As CComponent
   
-  If Component And If Component <> CComponent.PROJECT_NAME Then
+  If Component And If Component <> CComponent.PROJECT_NAME Then hComp = CComponent.All[Component]
+  
+  If hComp Then
 
-    sPath = MHelp.GetURL("comp")
-    sComp = Component
-    'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-    'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
-    sPath &/= LCase(sComp)
-    'sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
-    sPath &/= LCase(Name)
+    If hComp.Library Then
+      
+      Return "gambas://library" &/ hComp.Key &/ Name
+      
+    Else
+
+      sPath = MHelp.GetURL("comp")
+      sComp = Component
+      'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+      'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+      sPath &/= LCase(sComp)
+      'sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
+      sPath &/= LCase(Name)
+      
+      Return sPath & "?help&v3&" & MHelp.GetLanguage()
     
-    Return sPath & "?help&v3&" & MHelp.GetLanguage()
+    Endif
     
   Else
   
@@ -402,4 +413,200 @@ Public Sub GetSimilars() As String[]
   
   Return aSimilar
   
+End
+
+Public Sub GetHelpMarkup() As String
+  
+  Dim hForm As FEditor
+  Dim hEdit As Editor
+  Dim I As Integer
+  Dim sLine As String
+  Dim sMarkup As String
+  
+  If Help Then Return Help
+  
+  hForm = Project.LoadFile(Project.FindPath(Name))
+  Try hEdit = hForm.Editor
+  
+  If Not hEdit Then Return  
+
+  For I = 0 To hEdit.Lines.Count - 1
+    sLine = Trim(hEdit.Lines[I].Text)
+    If sLine Begins "''' " Then
+      sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
+    Else
+      If sMarkup Then Break
+      If sLine Not Begins "'" Then Break
+    Endif
+  Next
+  
+End
+
+Private Sub SubstPart(sHtml As String, sPart As String, bShow As Boolean) As String
+  
+  If bShow Then
+    sHtml = Replace(sHtml, sPart & "[", "")
+    sHtml = Replace(sHtml, sPart & "]", "")
+  Else
+    sHtml = Replace(sHtml, sPart & "[", "<!--")
+    sHtml = Replace(sHtml, sPart & "]", "-->")
+  Endif
+  
+  Return sHtml
+  
+End
+
+Public Sub GetHelpHTML() As String
+  
+  Dim sClass As String = Name
+  Dim sHelp, sHtml, sWhere, sSymbols, sParSymbols, sInfo As String
+  Dim hSymbol As CSymbolInfo
+  Dim cClassSymbols As Collection
+  Dim hClassInfo, hParentClass As CClassInfo
+  Dim aProperty, aEvent, aMethod, aConst, aVar As New String[]
+  Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
+  Dim sComp, sSymbolName As String
+  Dim hArray As String[]
+  Dim sParent As String
+  Dim sTitle As String
+
+  sHelp = Markup.Convert(GetHelpMarkup())
+  
+  hClassInfo = CComponent.GetClassDescription(sClass)
+  cClassSymbols = CComponent.GetClassSymbols(sClass)
+  
+  'If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent ????? Do not modify the class info!
+  
+  If cClassSymbols.Count > 0 Then
+    
+    For Each hSymbol In cClassSymbols
+      
+      sSymbolName = hSymbol.Name
+      If Left(sSymbolName) = ":" Then sSymbolName = Mid$(sSymbolName, 2)
+      
+      sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sSymbolName)
+      
+      If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
+
+      If IsLetter(hSymbol.Kind) And If hSymbol.Kind = UCase(hSymbol.Kind) Then sComp = "<b>" & sComp & "</b>"
+
+      If hSymbol.Class = sClass Then
+        
+        Select Case LCase(hSymbol.Kind)
+          Case ":" 
+            aEvent.Add(sComp)
+          Case "m"
+            aMethod.Add(sComp)
+          Case "p", "r"
+            aProperty.Add(sComp)
+          Case "c"
+            aConst.Add(sComp)
+          Case "v"
+            aVar.Add(sComp)
+        End Select
+        
+      Else
+        
+        Select Case LCase(hSymbol.Kind)
+          Case ":" 
+            aParentEvent.Add(sComp)
+          Case "m"
+            aParentMethod.Add(sComp)
+          Case "p", "r"
+            aParentProperty.Add(sComp)
+          Case "c"
+            aParentConst.Add(sComp)
+          Case "v"
+            aParentVar.Add(sComp)
+        End Select
+        
+      Endif
+      
+    Next
+    
+    For Each hArray In [aConst, aEvent, aMethod, aProperty, aVar, aParentConst, aParentEvent, aParentMethod, aParentProperty, aParentVar]
+      hArray.Sort
+    Next
+    
+    sParSymbols = ""
+    If aParentProperty.Count + aParentMethod.Count + aParentEvent.Count + aParentVar.Count Then
+      sParSymbols &= "<tr>"
+      If aParentProperty.Count Then sParSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aParentVar.Count Then sParSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aParentMethod.Count Then sParSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aParentEvent.Count Then sParSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+      sParSymbols &= "</tr>"
+      sParSymbols &= "<tr valign=\"top\">"
+      If aParentProperty.Count Then sParSymbols &= "<td>" & aParentProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aParentVar.Count Then sParSymbols &= "<td>" & aParentVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aParentMethod.Count Then sParSymbols &= "<td>" & aParentMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aParentEvent.Count Then sParSymbols &= "<td>" & aParentEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      sParSymbols &= "</tr>"
+    Endif
+    
+    sSymbols = ""
+    If aProperty.Count + aMethod.Count + aEvent.Count + aVar.Count Then
+      sSymbols &= "<tr>"
+      If aProperty.Count Then sSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aVar.Count Then sSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aMethod.Count Then sSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aEvent.Count Then sSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+      sSymbols &= "</tr>"
+      sSymbols &= "<tr valign=\"top\">"
+      If aProperty.Count Then sSymbols &= "<td>" & aProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aVar.Count Then sSymbols &= "<td>" & aVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aMethod.Count Then sSymbols &= "<td>" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aEvent.Count Then sSymbols &= "<td>" & aEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      sSymbols &= "</tr>"
+    Endif
+    
+  Endif
+  
+  If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
+  If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
+  
+  If Not Component Or If Component = CComponent.PROJECT_NAME Then sWhere = "gambas://project/" & sClass & "?showfile"
+  sTitle = sClass
+  If sWhere Then sTitle = "<a href=\"" & sWhere & "\">" & sTitle & "</a>"
+  
+  sHtml = File.Load("help/class-help.html")
+  sHtml = Replace(sHtml, "$(help)", sHelp)
+  
+  If sInfo Then 
+    sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
+  Endif
+  
+  If hClassInfo.Parent Then 
+    
+    sParent = hClassInfo.Parent
+    
+    hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
+    If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+    
+    sHtml = SubstPart(sHtml, "ShowInherits", True)
+    sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
+    sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
+    
+    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
+    sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
+    
+  Else
+    
+    sHtml = SubstPart(sHtml, "ShowInherits", False)
+    
+  Endif
+  
+  sHtml = SubstPart(sHtml, "ShowConst", aConst.Count > 0)
+  sHtml = Replace(sHtml, "$(Const)", aConst.Join(" "))
+  
+  sHtml = Replace(sHtml, "$(title)", sTitle)
+  sHtml = Replace(sHtml, "$(Symbols)", sSymbols)
+  
+  sHtml = Replace(sHtml, "''Symbols''", ("Symbols"))
+  sHtml = Replace(sHtml, "''Constants''", ("Constants"))
+  
+  sHtml = Replace(sHtml, "$(hide-title)", "")
+  
+  Return sHtml
+
 End

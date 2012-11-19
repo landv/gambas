@@ -36,6 +36,7 @@ Public Hidden As Boolean
 
 Public {Library} As Boolean
 Public Path As String
+Public Help As String
 
 Static Public Features As New Collection
 
@@ -464,6 +465,8 @@ Public Sub Load()
         All[sLig].Load
       Endif
     Next
+    
+    Help = hLibraryInfo.GetHelp()
   
   Else
     
@@ -1417,13 +1420,17 @@ Public Sub GetHelpURL() As String
   
   If Key And If Key <> CComponent.PROJECT_NAME Then
 
-    sPath = MHelp.GetURL("comp")
-    sComp = Key
-    'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-    'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
-    sPath &/= LCase(sComp)
-    
-    Return sPath & "?help&v3&" & MHelp.GetLanguage()
+    If {Library} Then
+      Return "gambas://library" &/ Key
+    Else
+      sPath = MHelp.GetURL("comp")
+      sComp = Key
+      'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+      'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+      sPath &/= LCase(sComp)
+      
+      Return sPath & "?help&v3&" & MHelp.GetLanguage()
+    Endif
     
   Endif
   
@@ -1437,5 +1444,45 @@ Public Sub ExistClassEvenArray(sClass As String) As Boolean
     sClass = Left(sClass, -2)
     If Not sClass Then Return
   Loop
+  
+End
+
+Public Sub GetHelpHTML() As String
+  
+  Dim sClass As String = Name
+  Dim sHtml As String
+  Dim sDesc As String
+  Dim hClass As CClassInfo
+  Dim sHelp As String
+
+  If Name = PROJECT_NAME Then
+    sHelp = Project.Description
+  Else If {Library} Then 
+    sHelp = Help
+  Else
+    Return
+  Endif
+
+  sHtml = File.Load("help/component-help.html")
+  
+  sHtml = Replace(sHtml, "$(help)", sHelp)
+  
+  sDesc = ""
+  
+  For Each sClass In ClassList
+    
+    hClass = Classes[sClass]
+    sDesc &= "<a href=\"" & hClass.GetHelpURL() & "\">" & sClass & "</a><br>"
+    
+  Next
+
+  sHtml = Replace(sHtml, "$(classes)", sDesc)
+  sHtml = Replace(sHtml, "$(title)", Name)
+  
+  sHtml = Replace(sHtml, "''Classes''", ("Classes"))
+  
+  sHtml = Replace(sHtml, "$(hide-title)", "")
+  
+  Return sHtml
   
 End

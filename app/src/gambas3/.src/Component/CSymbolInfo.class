@@ -739,35 +739,46 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
 End
 
-Public Function GetHelpURL() As String
+Public Function GetHelpURL(Optional bShowFile As Boolean) As String
   
   Dim sPath As String
   Dim sName As String
   Dim sComp As String
+  Dim hComp As CComponent
   
   If Component = "gb" And If Class = "." Then
     Return MHelp.GetLangURL(Name)
   Endif
-  
-  If Component And If Component <> CComponent.PROJECT_NAME Then
 
-    sPath = MHelp.GetURL("comp")
-    sComp = Component
-    'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-    'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
-    sPath &/= LCase(sComp)
-    sPath &/= LCase(Left(Class) & Replace(Mid(Class, 2), "_", "."))
-    
-    sName = LCase(Name)
-    sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
-    sName = Replace(sName, ":", ".")
-    sPath &/= sName
-    
-    Return sPath & "?help&v3&" & MHelp.GetLanguage()
+  If Component And If Component <> CComponent.PROJECT_NAME Then hComp = CComponent.All[Component]
+  
+  If hComp Then
+
+    If hComp.Library Then
+      
+      Return Subst("gambas://library/&1/&2/&3", Component, Class, Name)
+
+    Else
+
+      sPath = MHelp.GetURL("comp")
+      sComp = Component
+      'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+      'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+      sPath &/= LCase(sComp)
+      sPath &/= LCase(Left(Class) & Replace(Mid(Class, 2), "_", "."))
+      
+      sName = LCase(Name)
+      sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
+      sName = Replace(sName, ":", ".")
+      sPath &/= sName
+      
+      Return sPath & "?help&v3&" & MHelp.GetLanguage()
+      
+    Endif
     
   Else
   
-    Return Subst("gambas://project/&1/&2#&3?showfile", Class, Name, LineNumber)
+    Return Subst("gambas://project/&1/&2#&3&4", Class, Name, LineNumber, If(bShowFile, "?showfile", ""))
     
   Endif
   
@@ -948,10 +959,10 @@ Public Sub GetHelpMarkup() As String
   
     For i = iLine - 1 To 0 Step -1
       sLine = Trim(hEdit.Lines[i].Text)
-      If sLine Begins "'' " Then 
+      If sLine Begins "'' " Or If sLine = "''" Then 
         sHelp = RTrim(Mid(sLine, 4)) & "\n" & sHelp
       Else
-        If Trim(sLine) = "" Then Continue
+        If sLine = "" Then Continue
         Break
       Endif
     Next
@@ -1018,9 +1029,9 @@ Public Function GetHelpHTML() As String
   sHTML = Replace(sHTML, "$(syntax)", sSyntax)
   sHTML = Replace(sHTML, "$(help)", sHelp)
 
-  If Component = CComponent.PROJECT_NAME Then sTitle = "<a href=\"" & "gambas://project/" & {Class} & "#" & Me.LineNumber & "?showfile" & "\">"
+  If Not Component Or If Component = CComponent.PROJECT_NAME Then sTitle = "<a href=\"" & "gambas://project/" & {Class} & "#" & Me.LineNumber & "?showfile" & "\">"
   sTitle &= {Class} & "." & Name
-  If Component = CComponent.PROJECT_NAME Then sTitle &= "</a>"
+  If Not Component Or If Component = CComponent.PROJECT_NAME Then sTitle &= "</a>"
 
   sHTML = Replace(sHTML, "$(title)", sTitle)
 

@@ -382,11 +382,12 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not CComponent.All[hClass.Component].Library Then
         sUrl = hClass.GetHelpURL()
       Else If hClass.Help Then
-        sHtml = GetProjectClassHelpHTML(sSymbol, hClass.Help)
+        sHtml = hClass.GetHelpHTML()
         sUrl = hClass.Component & "-" & sSymbol
       Endif
     Else If Project.GetClasses().Exist(sSymbol) Then
-      sHtml = GetProjectClassHelpHTML(sSymbol)
+      CComponent.GetClassSymbols(sSymbol)
+      sHtml = CComponent.GetLastClass().GetHelpHTML()
       sUrl = "-" & sSymbol
     Endif
     
@@ -397,7 +398,12 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_COMPONENT
     
     Try hComp = CComponent.All[sSymbol]
-    If hComp Then sUrl = hComp.GetHelpURL()
+    If hComp.Library Then
+      sUrl = sSymbol
+      sHtml = hComp.GetHelpHTML()
+    Else
+      sUrl = hComp.GetHelpURL()
+    Endif
     
   Endif
   
@@ -407,7 +413,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     sTemp = File.Dir(Temp$()) &/ "help"
     Try Mkdir sTemp
-    sTemp &/= sUrl & ".html"
+    sTemp &/= Replace(sUrl, "/", "|") & ".html"
     File.Save(sTemp, sHtml)
     hWebView.Url = "file://" & sTemp
     
@@ -459,200 +465,187 @@ Public Sub ShowHelpBrowserWith(hWebView As WebView, iType As Integer, sSymbol As
   
 End
 
-Private Sub SubstPart(sHtml As String, sPart As String, bShow As Boolean) As String
-  
-  If bShow Then
-    sHtml = Replace(sHtml, sPart & "[", "")
-    sHtml = Replace(sHtml, sPart & "]", "")
-  Else
-    sHtml = Replace(sHtml, sPart & "[", "<!--")
-    sHtml = Replace(sHtml, sPart & "]", "-->")
-  Endif
-  
-  Return sHtml
-  
-End
 
 
 '' +Description
-'' Return the formated help of the local class if it exist
+'' Return the formated help of the local class if it exists
 '' +Arguments
 '' - #sClass# is the class to analyze
-'' - #hWebView# is the WebView control to use.
+'' - #sMarkup# is the markup to convert to HTML
 
-Private Function GetProjectClassHelpHTML(sClass As String, Optional sMarkup As String) As String
-  
-  Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo As String
-  Dim hForm As FEditor
-  Dim hEdit As Editor
-  Dim i As Integer
-  Dim hSymbol As CSymbolInfo
-  Dim cClassSymbols As Collection
-  Dim hClassInfo, hParentClass As CClassInfo
-  Dim aProperty, aEvent, aMethod, aConst, aVar As New String[]
-  Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
-  Dim sComp, sSymbolName As String
-  Dim hArray As String[]
-  Dim sParent As String
-
-  If Not sMarkup Then
-  
-    hForm = Project.LoadFile(Project.FindPath(sClass))
-    Try hEdit = hForm.Editor
-    
-    If Not hEdit Then Return  
-  
-    For i = 0 To hEdit.Lines.Count - 1
-      sLine = Trim(hEdit.Lines[i].Text)
-      If sLine Begins "''' " Then
-        sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
-      Else
-        If sMarkup Then Break
-        If sLine Not Begins "'" Then Break
-      Endif
-    Next
-    
-  Endif
-    
-  sHelp = Markup.Convert(sMarkup)
-  
-  hClassInfo = CComponent.GetClassDescription(sClass)
-  cClassSymbols = CComponent.GetClassSymbols(sClass)
-  
-  'If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent ????? Do not modify the class info!
-  
-  If cClassSymbols.Count > 0 Then
-    
-    For Each hSymbol In cClassSymbols
-      
-      sSymbolName = hSymbol.Name
-      If Left(sSymbolName) = ":" Then sSymbolName = Mid$(sSymbolName, 2)
-      
-      sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sSymbolName)
-      
-      If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
-
-      If IsLetter(hSymbol.Kind) And If hSymbol.Kind = UCase(hSymbol.Kind) Then sComp = "<b>" & sComp & "</b>"
-
-      If hSymbol.Class = sClass Then
-        
-        Select Case LCase(hSymbol.Kind)
-          Case ":" 
-            aEvent.Add(sComp)
-          Case "m"
-            aMethod.Add(sComp)
-          Case "p", "r"
-            aProperty.Add(sComp)
-          Case "c"
-            aConst.Add(sComp)
-          Case "v"
-            aVar.Add(sComp)
-        End Select
-        
-      Else
-        
-        Select Case LCase(hSymbol.Kind)
-          Case ":" 
-            aParentEvent.Add(sComp)
-          Case "m"
-            aParentMethod.Add(sComp)
-          Case "p", "r"
-            aParentProperty.Add(sComp)
-          Case "c"
-            aParentConst.Add(sComp)
-          Case "v"
-            aParentVar.Add(sComp)
-        End Select
-        
-      Endif
-      
-    Next
-    
-    For Each hArray In [aConst, aEvent, aMethod, aProperty, aVar, aParentConst, aParentEvent, aParentMethod, aParentProperty, aParentVar]
-      hArray.Sort
-    Next
-    
-    sParSymbols = ""
-    If aParentProperty.Count + aParentMethod.Count + aParentEvent.Count + aParentVar.Count Then
-      sParSymbols &= "<tr>"
-      If aParentProperty.Count Then sParSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aParentVar.Count Then sParSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aParentMethod.Count Then sParSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aParentEvent.Count Then sParSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
-      sParSymbols &= "</tr>"
-      sParSymbols &= "<tr valign=\"top\">"
-      If aParentProperty.Count Then sParSymbols &= "<td>" & aParentProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aParentVar.Count Then sParSymbols &= "<td>" & aParentVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aParentMethod.Count Then sParSymbols &= "<td>" & aParentMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aParentEvent.Count Then sParSymbols &= "<td>" & aParentEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      sParSymbols &= "</tr>"
-    Endif
-    
-    sSymbols = ""
-    If aProperty.Count + aMethod.Count + aEvent.Count + aVar.Count Then
-      sSymbols &= "<tr>"
-      If aProperty.Count Then sSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aVar.Count Then sSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aMethod.Count Then sSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aEvent.Count Then sSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
-      sSymbols &= "</tr>"
-      sSymbols &= "<tr valign=\"top\">"
-      If aProperty.Count Then sSymbols &= "<td>" & aProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aVar.Count Then sSymbols &= "<td>" & aVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aMethod.Count Then sSymbols &= "<td>" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aEvent.Count Then sSymbols &= "<td>" & aEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      sSymbols &= "</tr>"
-    Endif
-    
-  Endif
-  
-  If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
-  If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
-  
-  sWhere = "gambas://project/" & sClass & "?showfile"
-  
-  sHtml = File.Load("help/class-help.html")
-  sHtml = Replace(sHtml, "$(class)", sClass)
-  sHtml = Replace(sHtml, "$(help)", sHelp)
-  
-  If sInfo Then 
-    sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
-  Endif
-  
-  If hClassInfo.Parent Then 
-    
-    sParent = hClassInfo.Parent
-    
-    hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
-    If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
-    
-    sHtml = SubstPart(sHtml, "ShowInherits", True)
-    sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
-    sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
-    
-    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
-    sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
-    
-  Else
-    
-    sHtml = SubstPart(sHtml, "ShowInherits", False)
-    
-  Endif
-  
-  sHtml = SubstPart(sHtml, "ShowConst", aConst.Count > 0)
-  sHtml = Replace(sHtml, "$(Const)", aConst.Join(" "))
-  
-  sHtml = Replace(sHtml, "$(where)", sWhere)
-  sHtml = Replace(sHtml, "$(Symbols)", sSymbols)
-  
-  sHtml = Replace(sHtml, "''Symbols''", ("Symbols"))
-  sHtml = Replace(sHtml, "''Constants''", ("Constants"))
-  
-  sHtml = Replace(sHtml, "$(hide-title)", "")
-  
-  Return sHtml
-
-End
+' Private Function GetProjectClassHelpHTML(sClass As String, Optional sMarkup As String) As String
+'   
+'   Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo As String
+'   Dim hForm As FEditor
+'   Dim hEdit As Editor
+'   Dim i As Integer
+'   Dim hSymbol As CSymbolInfo
+'   Dim cClassSymbols As Collection
+'   Dim hClassInfo, hParentClass As CClassInfo
+'   Dim aProperty, aEvent, aMethod, aConst, aVar As New String[]
+'   Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
+'   Dim sComp, sSymbolName As String
+'   Dim hArray As String[]
+'   Dim sParent As String
+' 
+'   If Not sMarkup Then
+'   
+'     hForm = Project.LoadFile(Project.FindPath(sClass))
+'     Try hEdit = hForm.Editor
+'     
+'     If Not hEdit Then Return  
+'   
+'     For i = 0 To hEdit.Lines.Count - 1
+'       sLine = Trim(hEdit.Lines[i].Text)
+'       If sLine Begins "''' " Then
+'         sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
+'       Else
+'         If sMarkup Then Break
+'         If sLine Not Begins "'" Then Break
+'       Endif
+'     Next
+'     
+'   Endif
+'     
+'   sHelp = Markup.Convert(sMarkup)
+'   
+'   hClassInfo = CComponent.GetClassDescription(sClass)
+'   cClassSymbols = CComponent.GetClassSymbols(sClass)
+'   
+'   'If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent ????? Do not modify the class info!
+'   
+'   If cClassSymbols.Count > 0 Then
+'     
+'     For Each hSymbol In cClassSymbols
+'       
+'       sSymbolName = hSymbol.Name
+'       If Left(sSymbolName) = ":" Then sSymbolName = Mid$(sSymbolName, 2)
+'       
+'       sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sSymbolName)
+'       
+'       If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
+' 
+'       If IsLetter(hSymbol.Kind) And If hSymbol.Kind = UCase(hSymbol.Kind) Then sComp = "<b>" & sComp & "</b>"
+' 
+'       If hSymbol.Class = sClass Then
+'         
+'         Select Case LCase(hSymbol.Kind)
+'           Case ":" 
+'             aEvent.Add(sComp)
+'           Case "m"
+'             aMethod.Add(sComp)
+'           Case "p", "r"
+'             aProperty.Add(sComp)
+'           Case "c"
+'             aConst.Add(sComp)
+'           Case "v"
+'             aVar.Add(sComp)
+'         End Select
+'         
+'       Else
+'         
+'         Select Case LCase(hSymbol.Kind)
+'           Case ":" 
+'             aParentEvent.Add(sComp)
+'           Case "m"
+'             aParentMethod.Add(sComp)
+'           Case "p", "r"
+'             aParentProperty.Add(sComp)
+'           Case "c"
+'             aParentConst.Add(sComp)
+'           Case "v"
+'             aParentVar.Add(sComp)
+'         End Select
+'         
+'       Endif
+'       
+'     Next
+'     
+'     For Each hArray In [aConst, aEvent, aMethod, aProperty, aVar, aParentConst, aParentEvent, aParentMethod, aParentProperty, aParentVar]
+'       hArray.Sort
+'     Next
+'     
+'     sParSymbols = ""
+'     If aParentProperty.Count + aParentMethod.Count + aParentEvent.Count + aParentVar.Count Then
+'       sParSymbols &= "<tr>"
+'       If aParentProperty.Count Then sParSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aParentVar.Count Then sParSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aParentMethod.Count Then sParSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aParentEvent.Count Then sParSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       sParSymbols &= "</tr>"
+'       sParSymbols &= "<tr valign=\"top\">"
+'       If aParentProperty.Count Then sParSymbols &= "<td>" & aParentProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aParentVar.Count Then sParSymbols &= "<td>" & aParentVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aParentMethod.Count Then sParSymbols &= "<td>" & aParentMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aParentEvent.Count Then sParSymbols &= "<td>" & aParentEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       sParSymbols &= "</tr>"
+'     Endif
+'     
+'     sSymbols = ""
+'     If aProperty.Count + aMethod.Count + aEvent.Count + aVar.Count Then
+'       sSymbols &= "<tr>"
+'       If aProperty.Count Then sSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aVar.Count Then sSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aMethod.Count Then sSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aEvent.Count Then sSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       sSymbols &= "</tr>"
+'       sSymbols &= "<tr valign=\"top\">"
+'       If aProperty.Count Then sSymbols &= "<td>" & aProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aVar.Count Then sSymbols &= "<td>" & aVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aMethod.Count Then sSymbols &= "<td>" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aEvent.Count Then sSymbols &= "<td>" & aEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       sSymbols &= "</tr>"
+'     Endif
+'     
+'   Endif
+'   
+'   If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
+'   If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
+'   
+'   sWhere = "gambas://project/" & sClass & "?showfile"
+'   
+'   sHtml = File.Load("help/class-help.html")
+'   sHtml = Replace(sHtml, "$(class)", sClass)
+'   sHtml = Replace(sHtml, "$(help)", sHelp)
+'   
+'   If sInfo Then 
+'     sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
+'   Endif
+'   
+'   If hClassInfo.Parent Then 
+'     
+'     sParent = hClassInfo.Parent
+'     
+'     hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
+'     If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+'     
+'     sHtml = SubstPart(sHtml, "ShowInherits", True)
+'     sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
+'     sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
+'     
+'     sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
+'     sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
+'     
+'   Else
+'     
+'     sHtml = SubstPart(sHtml, "ShowInherits", False)
+'     
+'   Endif
+'   
+'   sHtml = SubstPart(sHtml, "ShowConst", aConst.Count > 0)
+'   sHtml = Replace(sHtml, "$(Const)", aConst.Join(" "))
+'   
+'   sHtml = Replace(sHtml, "$(where)", sWhere)
+'   sHtml = Replace(sHtml, "$(Symbols)", sSymbols)
+'   
+'   sHtml = Replace(sHtml, "''Symbols''", ("Symbols"))
+'   sHtml = Replace(sHtml, "''Constants''", ("Constants"))
+'   
+'   sHtml = Replace(sHtml, "$(hide-title)", "")
+'   
+'   Return sHtml
+' 
+' End
 
 '' Manage 'the gambas://' links
 
@@ -674,7 +667,7 @@ Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
   aValues = Split(sUrl, "/")
   sClass = aValues[3]
   
-  If sUrl Begins "gambas://project/" Then 
+  If sUrl Begins "gambas://" Then 
     
     sLast = aValues[aValues.Max]
     iPos = InStr(sLast, "#")
@@ -683,16 +676,31 @@ Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
       aValues[aValues.Max] = Left$(sLast, iPos - 1)
       sClass = aValues[3]
     Endif
-    If bShowFile Then 
-      Project.OpenFile(Project.FindPath(sClass), iLine)
-      FMain.Show
-    Else
-      If aValues.Count = 4 Then
-        InitWebViewWith(hWebView, TYPE_CLASS, aValues[3])
+    
+    If aValues[2] = "project" Then
+    
+      If bShowFile Then 
+        Project.OpenFile(Project.FindPath(sClass), iLine)
+        FMain.Show
       Else
-        InitWebViewWith(hWebView, TYPE_SYMBOL, aValues[4])
+        If aValues.Count = 4 Then
+          InitWebViewWith(hWebView, TYPE_CLASS, aValues[3])
+        Else
+          InitWebViewWith(hWebView, TYPE_SYMBOL, aValues[4], aValues[3])
+        Endif
+      Endif 
+      
+    Else If aValues[2] = "library" Then
+      
+      If aValues.Count = 4 Then
+        InitWebViewWith(hWebView, TYPE_COMPONENT, aValues[3])
+      Else If aValues.Count = 5 Then
+        InitWebViewWith(hWebView, TYPE_CLASS, aValues[3] &/ aValues[4])
+      Else If aValues.Count = 6
+        InitWebViewWith(hWebView, TYPE_SYMBOL, aValues[5], aValues[3] &/ aValues[4])
       Endif
-    Endif 
+      
+    Endif
     
   Else
     

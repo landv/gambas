@@ -9,6 +9,8 @@ Public Libraries As String[]
 Public Info As String
 Public Require As String[]
 
+Private $sDesc As String
+
 Static Private $cAll As New Collection
 Static Private $sInfo As String
 
@@ -80,6 +82,30 @@ End
 Public Sub GetInfo() 
   
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".info"] To Info
+  
+End
+
+Public Sub GetHelp() As String
+  
+  Dim sData As String
+  Dim aData As String[]
+  Dim iPos As Integer
+  
+  If Not $sDesc Then
+  
+    Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sData
+    
+    aData = Split(sData, "\n")
+    iPos = aData.Find("Description=*", gb.Like)
+    If iPos >= 0 Then
+      $sDesc = UnQuote(Scan(aData[iPos], "Description=*")[0])
+    Else
+      $sDesc = " "
+    Endif
+    
+  Endif
+  
+  Return Trim($sDesc)
   
 End
 
