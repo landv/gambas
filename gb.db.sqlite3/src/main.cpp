@@ -1835,9 +1835,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	{
 		if (!do_query(db, "Unable to get table schema: &1", &res_autoinc, "select sql from sqlite_master where type = 'table' and tbl_name = '&1'", 1, table))
 		{
-			//fprintf(stderr, "size = %lu\n", r->records.size());
 			schema = (char *)res_autoinc->fv(0).get_asString().data();
-			fprintf(stderr, "--> %s\n", schema);
 			
 			search = (char *)alloca(2 + strlen(_fieldName));
 			sprintf(search, "'%s'", _fieldName);
