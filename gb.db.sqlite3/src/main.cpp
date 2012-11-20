@@ -1496,6 +1496,7 @@ static int table_is_system(DB_DATABASE * db, const char *table)
 /*****************************************************************************
 
   table_type()
+  
   Not Valid in Sqlite
 
   <handle> is the database handle.
@@ -1765,7 +1766,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 {
 	const char *query = "PRAGMA table_info('&1')";
 
-	Dataset *res;
+	Dataset *res, *res_autoinc;
 	GB_VARIANT def;
 	char *val;
 	char *_fieldName = NULL;
@@ -1774,15 +1775,19 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	bool _fieldNotNull = FALSE;
 	int i, n;
 	//sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
-	int autoinc;
 	fType type;
+	result_set *r;
+	char *schema;
+	char *p, *p2;
+	char *search;
+	bool autoinc;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
 	{
 		return TRUE;
 	}
 
-	result_set *r = (result_set *) res->getExecRes();
+	r = (result_set *) res->getExecRes();
 
 	if ((n = r->records.size()) == 0)
 	{
@@ -1815,11 +1820,49 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	info->name = NULL;
 
-						// This API is not always defined!
-	if (true) //(sqlite3_table_column_metadata(db_handle, NULL, table, field, NULL, NULL, NULL, NULL, &autoinc) != SQLITE_OK)
-	{
+	// This API is not always defined!
+	//(sqlite3_table_column_metadata(db_handle, NULL, table, field, NULL, NULL, NULL, NULL, &autoinc) != SQLITE_OK)
+
+	/*{
 		// [BM] We use INTEGER only when creating the AUTOINCREMENT field.
+		fprintf(stderr, "_fieldType = %s\n", _fieldType);
 		autoinc = strstr(_fieldType, "INTEGER") && strstr(_fieldType, "AUTOINCREMENT");
+	}*/
+	
+	autoinc = false;
+	
+	if (strstr(_fieldType, "INTEGER"))
+	{
+		if (!do_query(db, "Unable to get table schema: &1", &res_autoinc, "select sql from sqlite_master where type = 'table' and tbl_name = '&1'", 1, table))
+		{
+			//fprintf(stderr, "size = %lu\n", r->records.size());
+			schema = (char *)res_autoinc->fv(0).get_asString().data();
+			fprintf(stderr, "--> %s\n", schema);
+			
+			search = (char *)alloca(2 + strlen(_fieldName));
+			sprintf(search, "'%s'", _fieldName);
+			
+			p = strchr(schema, '(');
+			if (p)
+			{
+				p = strstr(p, search);
+				if (p)
+				{
+					p2 = strchr(p, ',');
+					if (!p2)
+						p2 = strchr(p, ')');
+					if (p2)
+					{
+						p = strstr(p, "AUTOINCREMENT");
+						if (p && p < p2)
+							autoinc = true;
+					}
+				}
+			}
+			
+			res_autoinc->close();
+		}
+		
 	}
 	
 	type = GetFieldType(_fieldType, (unsigned int *) &info->length);

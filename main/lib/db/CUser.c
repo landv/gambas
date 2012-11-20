@@ -206,10 +206,11 @@ BEGIN_METHOD(CUSER_remove, GB_STRING name)
   CCONNECTION *conn = GB_SubCollectionContainer(THIS);
   char *name = GB.ToZeroString(ARG(name));
 
+  GB_SubCollectionRemove(THIS, STRING(name), LENGTH(name));
+	
   if (check_user(conn, name, TRUE))
     return;
 
-  GB_SubCollectionRemove(THIS, STRING(name), LENGTH(name));
   conn->driver->User.Delete(&conn->db, name);
 
 END_METHOD

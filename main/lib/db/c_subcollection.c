@@ -76,6 +76,7 @@ static void clear_one(void *data)
 	if (_current->desc->release)
 		(*_current->desc->release)(_current->container, data);
 
+	//fprintf(stderr, "clear: %p\n", data);
 	GB.Unref(&data);
 }
 
@@ -228,7 +229,7 @@ void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value)
 {
 	void *old_value = NULL;
 
-  if (len < 0)
+  if (len <= 0)
     len = strlen(key);
 
 	//fprintf(stderr, "GB_SubCollectionAdd: insert %p '%.*s'\n", value, len, key);
@@ -245,9 +246,15 @@ void GB_SubCollectionRemove(void *_object, const char *key, int len)
   if (!THIS)
     return;
 
-	GB.HashTable.Get(THIS->hash_table, key, len, &old_value);
-	GB.HashTable.Remove(THIS->hash_table, key, len);
-  GB.Unref(&old_value);
+  if (len <= 0)
+    len = strlen(key);
+	
+	if (!GB.HashTable.Get(THIS->hash_table, key, len, &old_value))
+	{
+		//fprintf(stderr, "GB_SubCollectionRemove: remove %p '%.*s'\n", old_value, len, key);
+		GB.HashTable.Remove(THIS->hash_table, key, len);
+		GB.Unref(&old_value);
+	}
 }
 
 

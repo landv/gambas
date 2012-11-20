@@ -50,14 +50,11 @@ Public Sub _new()
   'FHelpBrowser.Load
   
   'tvwProject.Columns.Count = 1
-  
 End
 
 Public Sub Form_Open()
   
   'DEBUG
-  frmWelcome = New FWelcome(dwgWelcome)
-  
   Settings.Read(Me)
   Settings.Read(panProject, "panProject")
   Settings.Read(panProperty, "panProperty")
@@ -79,6 +76,8 @@ Public Sub Form_Open()
   
   Try Project.ActiveForm.SetFocus
   'tvwProject_LostFocus
+  
+  frmWelcome = New FWelcome(dwgWelcome)
   
 End
 

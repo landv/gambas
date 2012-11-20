@@ -1603,6 +1603,8 @@ void MyMainWindow::showEvent(QShowEvent *e)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	
+	//qDebug("showEvent: %s\n", GB.GetClassName(THIS));
+	
 	emit_open_event(THIS);
 	
 	//CWINDOW_fix_menubar(THIS);
@@ -2649,12 +2651,14 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			//qDebug("Show: %s %d (%d)", GB.GetClassName(THIS), !WINDOW->isHidden(), e->spontaneous());
-			
 			if (THIS->toplevel)
 				w->center();
 			
 			//handle_focus(THIS);
+			emit_open_event(THIS);
+			
+			//qDebug("eventFilter: Show: %s %d (%d) focus = %p", GB.GetClassName(THIS), !WINDOW->isHidden(), e->spontaneous(), THIS->focus);
+			
 			post_show_event(THIS);
 			//CWINDOW_define_mask(THIS);
 			
@@ -2738,7 +2742,7 @@ void CWindow::removeTopLevel(CWINDOW *_object)
   count = list.count();
 	
 	#if DEBUG_WINDOW
-  qDebug("removeTopLevel: count = %d (%p %s %s)", count, THIS, THIS->widget.name, THIS->embedded ? "E" : "W");
+	qDebug("removeTopLevel: count = %d (%p %s %s)", count, THIS, THIS->widget.name, THIS->embedded ? "E" : "W");
 	#endif
 
 	MAIN_check_quit();
