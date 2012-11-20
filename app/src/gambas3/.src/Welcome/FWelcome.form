@@ -9,7 +9,7 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  Padding = 24
+  Padding = 16
   { mnuSort Menu
     { mnuSortByDate Menu mnuSort
       Name = "mnuSortByDate"
@@ -42,10 +42,10 @@
   }
   { HBox1 Panel
     MoveScaled(1,25,78,41)
-    Background = &HDF6B00&
     Expand = True
     Arrangement = Arrange.Horizontal
-    Padding = 2
+    Spacing = True
+    Padding = 16
     { Panel7 Panel
       MoveScaled(1,2,37,37)
       Arrangement = Arrange.Fill
@@ -73,6 +73,8 @@
       Mouse = Mouse.Arrow
       Expand = True
       Arrangement = Arrange.Vertical
+      Padding = 2
+      Border = Border.Plain
       { Panel3 HBox
         MoveScaled(0,0,27,4)
         { lblList Label

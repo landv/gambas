@@ -31,6 +31,8 @@ End
 Public Sub btnOK_Click()
 
   DoImport
+  btnOK.Enabled = False
+  tabImport.Index = 2
  
 End
 
@@ -454,5 +456,11 @@ Public Sub Form_Close()
   Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
   Project.Config["/FImportTable/StripSpace"] = CBool(chkStrip.Value)
   Project.Config["/FImportTable/Ignore"] = txtIgnore.Value
+
+End
+
+Public Sub tabImport_Click()
+
+  If tabImport.Index = 0 Then btnOK.Enabled = True
 
 End

@@ -1578,7 +1578,7 @@ static int table_create(DB_DATABASE * db, const char *table, DB_FIELD * fields, 
 
 		if (fp->type == DB_T_SERIAL)
 		{
-			DB.Query.Add(" INTEGER PRIMARY KEY AUTOINCREMENT ");
+			DB.Query.Add(" INTEGER PRIMARY KEY AUTOINCREMENT");
 			no_pkey = TRUE;
 		}
 		else if (fp->type == DB_T_BLOB)

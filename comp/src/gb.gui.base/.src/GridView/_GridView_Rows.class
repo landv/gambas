@@ -284,46 +284,75 @@ End
 
 Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = 1)
   
-  If GetView().Mode <> Select.Multiple Then Return
+  Dim hView As GridView = GetView()
   
-  If Start < 0 Then Return
-  If Start >= $nRows Then Return
-  If Length < 0 Then Length = $nRows - Start
+  If hView.Mode = Select.Single And If Length = 1 Then
+
+    hView.Row = Start
+
+  Else If hView.Mode = Select.Multiple Then 
   
-  $hSel.Select(Start, Length)
-  GetView()._RaiseSelect
+    If Start < 0 Then Return
+    If Start >= $nRows Then Return
+    If Length < 0 Then Length = $nRows - Start
+    
+    $hSel.Select(Start, Length)
+    hView.Refresh
+    hView._RaiseSelect
+    
+  Endif
   
 End
 
 Public Sub UnSelect(Optional Start As Integer = 0, Optional Length As Integer = 1)
   
-  If GetView().Mode <> Select.Multiple Then Return
+  Dim hView As GridView = GetView()
+
+  If hView.Mode = Select.Single And If Length = 1 And If hView.Row = Start Then
+    
+    hView.Row = -1
+    
+  Else If hView.Mode = Select.Multiple Then 
   
-  If Start < 0 Then Return
-  If Start >= $nRows Then Return
-  If Length < 0 Then Length = $nRows - Start
-  
-  $hSel.UnSelect(Start, Length)
-  GetView()._RaiseSelect
+    If Start < 0 Then Return
+    If Start >= $nRows Then Return
+    If Length < 0 Then Length = $nRows - Start
+    
+    $hSel.UnSelect(Start, Length)
+    hView._RaiseSelect
+    
+  Endif
   
 End
 
 Public Sub SelectAll()
   
-  If GetView().Mode <> Select.Multiple Then Return
+  Dim hView As GridView = GetView()
+
+  If hView.Mode <> Select.Multiple Then Return
   
   $hSel.UnSelectAll
   $hSel.Select(0, $nRows)
-  GetView()._RaiseSelect
+  hView.Refresh
+  hView._RaiseSelect
   
 End
 
 Public Sub UnSelectAll()
   
-  If GetView().Mode <> Select.Multiple Then Return
+  Dim hView As GridView = GetView()
+
+  If hView.Mode = Select.Single Then
+    
+    hView.Row = -1
+    
+  Else If hView.Mode = Select.Multiple Then 
   
-  $hSel.UnSelectAll
-  GetView()._RaiseSelect
+    $hSel.UnSelectAll
+    hView.Refresh
+    hView._RaiseSelect
+    
+  Endif
   
 End
 

@@ -664,6 +664,7 @@ Private Sub Mode_Write(Value As Integer)
 
   Select Case Value
     Case Select.None, Select.Multiple, Select.Single
+      $hRows.UnSelectAll
       $iMode = Value
   End Select
 
