@@ -7,6 +7,9 @@
   Text = ("Welcome to Gambas 3")
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  Padding = 24
   { mnuSort Menu
     { mnuSortByDate Menu mnuSort
       Name = "mnuSortByDate"
@@ -37,9 +40,12 @@
     Visible = False
     Background = &H000000&
   }
-  { HBox1 HBox
+  { HBox1 Panel
     MoveScaled(1,25,78,41)
+    Background = &HDF6B00&
     Expand = True
+    Arrangement = Arrange.Horizontal
+    Padding = 2
     { Panel7 Panel
       MoveScaled(1,2,37,37)
       Arrangement = Arrange.Fill
@@ -63,6 +69,7 @@
     { panList Panel
       MoveScaled(48,5,28,30)
       Visible = False
+      Background = &HFFFFFF&
       Mouse = Mouse.Arrow
       Expand = True
       Arrangement = Arrange.Vertical
