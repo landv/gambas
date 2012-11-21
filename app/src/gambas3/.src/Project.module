@@ -288,7 +288,11 @@ Public Sub Main()
     Return
   Endif
 
-  If Fonts.Exist("Terminus") Then DEFAULT_FONT = "Terminus,9"
+  If Fonts.Exist("Gambas") Then
+    DEFAULT_FONT = "Gambas,9"
+  Else If Fonts.Exist("Terminus") Then 
+    DEFAULT_FONT = "Terminus,9"
+  Endif
 
   InitVersion
   InitWebView

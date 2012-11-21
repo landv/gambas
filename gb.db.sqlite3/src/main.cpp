@@ -1678,8 +1678,7 @@ static int field_exist(DB_DATABASE * db, const char *table, const char *field)
 	Dataset *res;
 	int exist = 0;
 
-	if (do_query
-			(db, "Unable to find field: &1.&2", &res, query, 2, table, field))
+	if (do_query(db, "Unable to find field: &1.&2", &res, query, 2, table, field))
 	{
 		return FALSE;
 	}

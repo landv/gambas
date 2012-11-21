@@ -1,0 +1,204 @@
+' Gambas module file
+
+Private Name As New Collection
+
+Public Sub _init()
+
+  Name["ar"] = ("Arabic (Egypt)")
+  Name["ar_TN"] = ("Arabic (Tunisia)")
+
+  Name["az"] = ("Azerbaijani (Azerbaijan)")
+
+  Name["bg"] = ("Bulgarian (Bulgaria)")
+
+  Name["ca"] = ("Catalan (Catalonia, Spain)")
+  'Name["ca_ES"] = ("Catalan (Catalonia, Spain)")
+
+  Name["cy"] = ("Welsh (United Kingdom)")
+
+  Name["cs"] = ("Czech (Czech Republic)")
+
+  Name["da"] = ("Danish (Denmark)")
+
+  Name["de"] = ("German (Germany)")
+  Name["de_BE"] = ("German (Belgium)")
+
+  Name["el"] = ("Greek (Greece)")
+
+  Name["en"] = ("English (common)")
+  Name["en_GB"] = ("English (United Kingdom)")
+  Name["en_US"] = ("English (U.S.A.)")
+  Name["en_AU"] = ("English (Australia)")
+  Name["en_CA"] = ("English (Canada)")
+
+  Name["eo"] = ("Esperanto (Anywhere!)")
+
+  Name["es"] = ("Spanish (Spain)")
+  Name["es_AR"] = ("Spanish (Argentina)")
+
+  Name["et_EE"] = ("Estonian (Estonia)")
+
+  Name["eu"] = ("Basque (Basque country)")
+  
+  Name["fa"] = ("Farsi (Iran)")
+  
+  Name["fi"] = ("Finnish (Finland)")
+
+  Name["fr"] = ("French (France)")
+  Name["fr_BE"] = ("French (Belgium)")
+  Name["fr_CA"] = ("French (Canada)")
+  Name["fr_CH"] = ("French (Switzerland)")
+
+  Name["gl_ES"] = ("Galician (Spain)")
+
+  Name["he"] = ("Hebrew (Israel)")
+
+  Name["hi"] = ("Hindi (India)")
+
+  Name["hu"] = ("Hungarian (Hungary)")
+
+  Name["hr"] = ("Croatian (Croatia)")
+
+  Name["id"] = ("Indonesian (Indonesia)")
+
+  Name["ir"] = ("Irish (Ireland)")
+
+  Name["it"] = ("Italian (Italy)")
+
+  Name["ja"] = ("Japanese (Japan)")
+
+  Name["km"] = ("Khmer (Cambodia)")
+
+  Name["ko"] = ("Korean (Korea)")
+
+  Name["la"] = ("Latin")
+
+  Name["lt"] = ("Lithuanian (Lithuania)")
+  
+  Name["ml"] = ("Malayalam (India)")
+
+  Name["mk"] = ("Macedonian (Republic of Macedonia)")
+
+  Name["nl"] = ("Dutch (Netherlands)")
+  Name["nl_BE"] = ("Dutch (Belgium)")
+
+  Name["no"] = ("Norwegian (Norway)")
+
+  Name["pa"] = ("Punjabi (India)")
+
+  Name["pl"] = ("Polish (Poland)")
+
+  Name["pt"] = ("Portuguese (Portugal)")
+  Name["pt_BR"] = ("Portuguese (Brazil)")
+
+  Name["qcv_ES"] = ("Valencian (Valencian Community, Spain)")
+  
+  Name["ro"] = ("Romanian (Romania)")
+
+  Name["ru"] = ("Russian (Russia)")
+
+  Name["sl"] = ("Slovenian (Slovenia)")
+
+  Name["sq"] = ("Albanian (Albania)")
+
+  Name["sr"] = ("Serbian (Serbia & Montenegro)")
+
+  Name["sv"] = ("Swedish (Sweden)")
+
+  Name["tr"] = ("Turkish (Turkey)")
+
+  Name["uk"] = ("Ukrainian (Ukrain)")
+
+  Name["vi"] = ("Vietnamese (Vietnam)")
+
+  Name["wa"] = ("Wallon (Belgium)")
+
+  Name["zh"] = ("Simplified chinese (China)")
+  Name["zh_TW"] = ("Traditional chinese (Taiwan)")
+
+End
+
+Public Sub Find(Optional sLang As String) As String
+  
+  Dim iPos As Integer
+  Dim sOrg As String
+
+  If Not sLang Then sLang = System.Language
+
+  sOrg = sLang
+
+  Do
+
+    If Name.Exist(sLang) Then Return sLang
+
+    iPos = InStr(sLang, ".")
+    If iPos Then
+      sLang = Left$(sLang, iPos - 1)
+      Continue
+    Endif
+
+    iPos = InStr(sLang, "_")
+    If iPos Then
+      sLang = Left$(sLang, iPos - 1)
+      Continue
+    Endif
+
+    Return sOrg
+
+  Loop
+
+End
+
+
+Public Function ToName(Optional sLang As String) As String
+
+  Dim sName As String
+  
+  sLang = Find(sLang)
+  sName = Name[sLang]
+
+  If sName Then 
+    Return sName
+  Else
+    Return ("Unknown") & " (" & sLang & ")"
+  Endif
+
+End
+
+
+Public Function FromName(sName As String) As String
+
+  Dim sStr As String
+
+  'PRINT "sName = "; sName
+
+  For Each sStr In Name
+    If sStr = sName Then Return Name.Key
+  Next
+
+End
+
+
+Public Function GetAll() As String[]
+
+  Dim aLang As New String[]
+  Dim sStr As String
+
+  For Each sStr In Name
+    aLang.Add(Name.Key)
+  Next
+
+  aLang.Sort(gb.Language)
+
+  Return aLang
+
+End
+
+
+Public Sub GetPath(sLang As String, sExt As String) As String
+  
+  Return "~/gambas/3.0/trunk/app/src/gambas3/.lang" &/ sLang & "." & sExt
+  
+End
+
+

@@ -52,6 +52,7 @@ Private $cSort As Collection
 Private $bSortRoot As Boolean
 Private $hSortTimer As Timer
 Private $bNoRoot As Boolean
+Private $bNoUpdateHeight As Boolean
 
 Public Sub _new()
   
@@ -136,11 +137,15 @@ Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Opti
   
   hParent._AddChild(Key)
   
+  $bNoUpdateHeight = True
+  
   hItem._Index = hParent.Count - 1
   hItem.Editable = $bEditable
   hItem.Text = Text
   hItem.Picture = Picture
   
+  $bNoUpdateHeight = False
+
   If After Then 
     _MoveItem(hItem, After, False)
   Else
@@ -222,7 +227,7 @@ Public Sub Remove(Key As String)
   
   ResizeColumns
   
-  If iRow >= 0 Then UpdateRowHeight(iRow, -1)
+  If iRow >= 0 Then UpdateRowHeight(Null, iRow, -1)
   
   _RefreshView
   
@@ -1267,12 +1272,17 @@ Public Sub GridView_ColumnSize(Column As Integer)
   
 End
 
-Private Sub UpdateRowHeight(iStart As Integer, Optional iEnd As Integer)
+Private Sub UpdateRowHeight(hItem As _TreeView_Item, iStart As Integer, Optional iEnd As Integer)
   
   If iEnd = 0 Then
     iEnd = iStart
   Else If iEnd < 0 Then
     iEnd = $hView.Rows.Max
+  Endif
+  
+  If hItem Then
+    $hView.Rows[iStart].H = _GetItemHeight(hItem)
+    Inc iStart
   Endif
   
   While iStart <= iEnd
@@ -1286,10 +1296,12 @@ End
 Public Sub _UpdateItemHeight(hItem As _TreeView_Item, Optional bNext As Boolean)
 
   Dim iRow As Integer
+
+  If $bNoUpdateHeight Then Return
   
   iRow = _ItemToRow(hItem)
   If iRow < 0 Then Return
   
-  UpdateRowHeight(iRow, If(bNext, -1, 0))
+  UpdateRowHeight(hItem, iRow, If(bNext, -1, 0))
   
 End

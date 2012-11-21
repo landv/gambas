@@ -4,7 +4,7 @@ Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", 
 Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick")]
 Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "epiphany", "seamonkey", "opera"]
 Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "lxterminal", "xterm"]
-Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
+'Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
 
 Private $cLast As Collection
 Private $cCurrent As Collection
@@ -74,7 +74,7 @@ Public Sub _new()
   cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "KDE4", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
-  cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
+  'cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
@@ -118,7 +118,7 @@ Public Sub _new()
   cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
-  cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
+  'cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
   
   UpdateFont(txtGlobalFont.Text)
   
@@ -402,15 +402,15 @@ Public Sub cmbTerminal_Click()
   
 End
 
-Public Sub cmbImageEditor_Click()
-
-  If cmbImageEditor.Index > 0 Then 
-    Settings["/ImageEditor"] = $aImageEditor[cmbImageEditor.Index - 1]
-  Else   
-    Settings["/ImageEditor"] = ""
-  Endif
-  
-End
+' Public Sub cmbImageEditor_Click()
+' 
+'   If cmbImageEditor.Index > 0 Then 
+'     Settings["/ImageEditor"] = $aImageEditor[cmbImageEditor.Index - 1]
+'   Else   
+'     Settings["/ImageEditor"] = ""
+'   Endif
+'   
+' End
 
 ' PUBLIC SUB cmbImageEditor_Click()
 ' 
@@ -882,7 +882,7 @@ End
 
 Public Sub ipnOption_Click()
 
-  If ipnOption.Text = ("Code snippets") Then
+  If ipnOption.Text = ("Code formatting") Then
     If gvwSnippet.Rows.Count = 0 Then
       RefreshSnippet
       UpdateSnippet
@@ -1067,3 +1067,29 @@ Public Sub btnClearGlobalFont_Click()
 
 End
 
+
+Public Sub btnInstallFont_Click()
+
+  Dim sDir As String = "~/.fonts"
+  Dim sConf As String = "~/.fonts.conf"
+  Dim sData As String
+
+  If Message.Question(("Do you really want to install the Gambas font to your personal font directory?"), ("Install"), ("Cancel")) <> 1 Then Return
+  
+  If Not Exist(sDir) Then Mkdir sDir
+  Try Copy "font/GambasMedium-12.bdf" To sDir &/ "GambasMedium-12.bdf"
+  Try Copy "font/GambasBold-12.bdf" To sDir &/ "GambasBold-12.bdf"
+  
+  If Not Exist(sConf) Then
+    Try Copy "font/font.conf" To sConf
+  Endif
+  
+  sData = File.Load(sConf)
+  If InStr(sConf, "<patelt name=\"family\"><string>Gambas</string></patelt>") = 0 Then
+    sData = Replace(sData, "</fontconfig>", RTrim(File.Load("font/font.allow")) & "\n</fontconfig>")
+    File.Save(sConf, sData)
+  Endif
+  
+  NeedRestart(btnInstallFont)
+
+End

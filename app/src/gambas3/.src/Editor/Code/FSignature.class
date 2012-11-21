@@ -14,6 +14,13 @@ Private $hSymbol As CSymbolInfo
 Private $X As Integer
 Private $iArrow As Integer
 
+Public Sub _new()
+  
+  webHelp.Zoom = 0.7
+  
+End
+
+
 Private Sub UpdateSignature(Optional hForm As FEditor)
   
   Dim iX, iY As Integer

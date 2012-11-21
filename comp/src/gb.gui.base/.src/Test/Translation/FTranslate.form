@@ -1,0 +1,193 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(7,15,116,80)
+  Text = ("Project translation")
+  Icon = Picture["icon:/small/language"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { panTranslate VBox
+    MoveScaled(2,2,96,11)
+    Spacing = True
+    Margin = True
+    { HBox2 HBox
+      MoveScaled(1,0,82,4)
+      { cmbLangSource ComboBox
+        MoveScaled(17,0,21,4)
+        Expand = True
+        ReadOnly = True
+        Sorted = True
+      }
+      { PictureBox2 PictureBox
+        MoveScaled(39,0,4,4)
+        Picture = Picture["icon:/small/right"]
+        Alignment = Align.Center
+      }
+      { cmbLang ComboBox
+        MoveScaled(45,0,18,4)
+        Font = Font["Bold"]
+        Expand = True
+        ReadOnly = True
+        Sorted = True
+      }
+    }
+    { HBox5 HBox
+      MoveScaled(1,5,91,4)
+      { btnSave ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Save translation")
+        Picture = Picture["icon:/small/save"]
+      }
+      { btnClear ToolButton
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Clear this translation")
+        Picture = Picture["icon:/small/clear"]
+      }
+      { btnDoNotTranslate ToolButton
+        MoveScaled(10,0,4,4)
+        ToolTip = ("This string must not be translated")
+        Picture = Picture["icon:/small/warning"]
+      }
+      { btnCopy ToolButton
+        MoveScaled(14,0,4,4)
+        ToolTip = ("Copy untranslated string")
+        Picture = Picture["icon:/small/paste"]
+      }
+      { btnVerify ToolButton
+        MoveScaled(18,0,4,4)
+        ToolTip = ("Verify the translation")
+        Picture = Picture["icon:/small/watch"]
+      }
+      { btnNext ToolButton
+        MoveScaled(22,0,4,4)
+        ToolTip = ("Find next untranslated string")
+        Picture = Picture["icon:/small/down"]
+      }
+      { btnPrevious ToolButton
+        MoveScaled(26,0,4,4)
+        ToolTip = ("Find previous untranslated string")
+        Picture = Picture["icon:/small/up"]
+      }
+      { Panel2 Panel
+        MoveScaled(31,0,1,4)
+      }
+      { Panel6 Panel
+        MoveScaled(51,0,1,4)
+      }
+      { cmbFileChoice ComboBox
+        MoveScaled(56,0,34,4)
+        ReadOnly = True
+      }
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(22,14,11,0)
+  }
+  { VSplit1 VSplit
+    MoveScaled(2,18,98,44)
+    Expand = True
+    { cvwTranslate ColumnView
+      MoveScaled(2,2,70,18)
+      Expand = True
+      Sorted = True
+      Header = False
+      AutoResize = False
+      Border = False
+      ScrollBar = Scroll.Vertical
+    }
+    { VBox2 VBox
+      MoveScaled(1,21,85,21)
+      Expand = True
+      { lblComment Label
+        MoveScaled(0,0,35,3)
+        Font = Font["Bold"]
+        Padding = 4
+      }
+      { Separator4 Separator
+        MoveScaled(0,4,15,0)
+      }
+      { txtOrig TextLabel
+        MoveScaled(1,5,24,6)
+        Expand = True
+        Padding = 4
+      }
+      { Separator5 Separator
+        MoveScaled(3,13,15,0)
+      }
+      { txtTranslate TextArea
+        MoveScaled(1,15,39,5)
+        Expand = True
+        Wrap = True
+        Border = False
+      }
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(16,63,15,0)
+  }
+  { HBox6 Panel
+    MoveScaled(2,64,102,5)
+    Background = Color.LightBackground
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    Spacing = True
+    Margin = True
+    Padding = 4
+    { PictureBox3 PictureBox
+      MoveScaled(0,0,4,4)
+      Picture = Picture["icon:/medium/info"]
+      AutoResize = True
+      Alignment = Align.Center
+    }
+    { lblInfo Label
+      MoveScaled(8,0,9,3)
+      AutoResize = True
+      Alignment = Align.Right
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,74,107,4)
+    Spacing = True
+    { btnNew Button
+      MoveScaled(0,0,18,4)
+      ToolTip = ("New translation")
+      AutoResize = True
+      Text = ("&New...")
+      Picture = Picture["icon:/small/new"]
+    }
+    { btnUndo Button
+      MoveScaled(19,0,18,4)
+      ToolTip = ("Reload translation")
+      AutoResize = True
+      Text = ("&Reload")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnDelete Button
+      MoveScaled(38,0,18,4)
+      ToolTip = ("Delete translation")
+      AutoResize = True
+      Text = ("&Delete")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnExport Button
+      MoveScaled(57,0,18,4)
+      ToolTip = ("Export to a translation file")
+      AutoResize = True
+      Text = ("&Export...")
+      Picture = Picture["icon:/small/save"]
+    }
+    { Panel1 Panel
+      MoveScaled(77,0,1,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(81,0,18,4)
+      AutoResize = True
+      Text = ("&Close")
+      Picture = Picture["icon:/small/close"]
+      Cancel = True
+    }
+  }
+}
