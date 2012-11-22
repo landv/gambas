@@ -1,0 +1,74 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,113,80)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Panel1 HBox
+    MoveScaled(1,9,97,55)
+    Expand = True
+    Spacing = True
+    { MapViewer1 MapViewer
+      MoveScaled(1,1,64,43)
+      Expand = True
+      Border = Border.Sunken
+    }
+    { VBox1 VBox
+      MoveScaled(67,6,29,45)
+      Spacing = True
+      { Panel3 VBox
+        MoveScaled(1,1,26,34)
+        Expand = True
+        { Label2 Label
+          MoveScaled(0,0,23,5)
+          Text = ("Select Layers")
+          Alignment = Align.Center
+          Border = Border.Raised
+        }
+        { GridView1 GridView
+          MoveScaled(0,7,25,26)
+          Expand = True
+          Mode = Select.Single
+          Grid = False
+        }
+      }
+      { hbLens Panel
+        MoveScaled(0,36,31,5)
+        Visible = False
+        Background = &H007FFF&
+        Foreground = &HFFFFFF&
+        Arrangement = Arrange.Horizontal
+        AutoResize = True
+        Margin = True
+        Padding = 5
+        Border = Border.Plain
+        { Label1 Label
+          MoveScaled(0,1,12,3)
+          Font = Font["Bold"]
+          Text = ("Lens Level")
+        }
+        { SpinBox1 SpinBox
+          MoveScaled(14,0,12,5)
+          Expand = True
+          MaxValue = 3
+          Value = 1
+        }
+      }
+      { btnAbout Button
+        MoveScaled(1,40,27,5)
+        Text = ("&About...")
+      }
+    }
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,65,111,10)
+    Font = Font["Bold"]
+    Background = &HFF7F00&
+    Foreground = &HFFFFFF&
+    Padding = 5
+    AutoResize = True
+    Text = ("Welcome in this Gambas Map component demo.<br>\n<br>\nUse your mouse to drag the map with left button and  zoom with wheel button.<br>\nA little extra is here too, Use ctrl + mouse left button on the map and see what happen ;-) .")
+    Border = Border.Plain
+  }
+}

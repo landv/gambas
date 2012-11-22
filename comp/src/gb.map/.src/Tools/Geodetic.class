@@ -1,0 +1,74 @@
+' Gambas class file
+
+'' Gambas class file
+''TMS Global Geodetic Profile
+''  ---------------------------'
+''
+''  Functions necessary for generation of global tiles in Plate Carre projection,
+''  EPSG:4326, "unprojected profile".'
+''
+''  Such tiles are compatible with Google Earth (as any other EPSG:4326 rasters)
+''  and you can overlay the tiles on top of OpenLayers base map.
+''  
+''  Pixel and tile coordinates are in TMS notation (origin [0,0] in bottom-left).
+''
+''  What coordinate conversions do we need for TMS Global Geodetic tiles?
+''
+''    Global Geodetic tiles are using geodetic coordinates (latitude,longitude)
+''    directly as planar coordinates XY (it is also called Unprojected or Plate
+''    Carre). We need only scaling to pixel pyramid and cutting to tiles.
+''    Pyramid has on top level two tiles, so it is not square but rectangle.
+''    Area [-180,-90,180,90] is scaled to 512x256 pixels.
+''    TMS has coordinate origin (for pixels and tiles) in bottom-left corner.
+''    Rasters are in EPSG:4326 and therefore are compatible with Google Earth.
+''
+''       LatLon      <->      Pixels      <->     Tiles     
+''
+''   WGS84 coordinates   Pixels in pyramid  Tiles in pyramid
+''       lat/lon         XY pixels Z zoom      XYZ from TMS 
+''      EPSG:4326                                           
+''       .----.                ----                         
+''      /      \     <->    /--------/    <->      TMS      
+''      \      /         /--------------/                   
+''       -----        /--------------------/                
+''     WMS, KML    Web Clients, Google Earth  TileMapService
+
+Public TileSize As Integer
+    
+    Public Sub _New(Optional itileSize As Integer = 256)
+        TileSize = itileSize
+    End
+    
+    ''Converts lat/lon to pixel coordinates in given zoom of the EPSG:4326 pyramid
+    Public Function LatLonToPixels(lat As Float, lon As Float, zoom As Integer) As FPoint
+        Dim fptLatLon As FPoint
+        Dim res As Float
+        res = 180 / 256.0 / (2 ^ zoom)
+        fptLatLon = New FPoint((180 + lat) / res, (90 + lon) / res)
+        Return fptLatLon
+    End
+    ''Returns coordinates of the tile covering region in pixel coordinates
+    Public Function PixelsToTile(px As Integer, py As Integer) As Point
+        
+        Dim iptTile As New Point
+        iptTile.X = Int(CInt(px / tileSize) - 1)
+        iptTile.Y = Int(CInt(py / tileSize) - 1)
+        Return iptTile
+    End
+    
+    ''Resolution (arc/pixel) for given zoom level (measured at Equator)
+    Public Function Resolution(zoom As Integer) As Integer
+        
+        
+        Return 180 / 256.0 / (2 ^ zoom)
+        ' Return 180 / float(1 < < (8 + zoom))
+    End
+    
+    ''Returns bounds of the given tile"
+    Public Function TileBounds(tx As Integer, ty As Integer, zoom As Integer) As FRect
+        Dim res As Integer
+        Dim hBound As FRect
+        res = 180 / 256.0 / (2 ^ zoom)
+        hBound = New FRect(tx * 256 * res - 180, ty * 256 * res - 90, (tx + 1) * 256 * res - 180, (ty + 1) * 256 * res - 90)
+        Return hBound
+    End

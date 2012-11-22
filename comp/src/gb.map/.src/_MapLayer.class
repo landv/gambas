@@ -1,0 +1,33 @@
+' Gambas class file
+
+Public Name As String
+Private $bVisible As Boolean = True
+Property Visible As Boolean
+
+Event Refresh
+
+Public Sub _Draw()
+  
+  
+  
+End
+
+
+Private Function Visible_Read() As Boolean
+
+  Return $bVisible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  $bVisible = Value
+  Raise Refresh
+End
+
+
+Public Sub _ResetCache()
+  
+  
+  
+End

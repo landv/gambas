@@ -1,0 +1,292 @@
+' Gambas class file
+
+Create 
+
+Public Shapes As New ShpObject[]
+
+
+Public Struct Header
+FileCode As Integer
+Unused1 As Integer
+Unused2 As Integer
+Unused3 As Integer
+Unused4 As Integer
+Unused5 As Integer
+FileLength As Integer
+End Struct
+
+Public Struct HeaderInfo
+Version As Integer
+ShapeType As Integer
+
+End Struct
+
+Public Struct Bounds
+XMin As Float
+YMin As Float
+XMax As Float
+YMax As Float
+End Struct
+
+Public Struct RecordHeader
+RecordNumber As Integer
+ContentLength As Integer
+
+End Struct
+
+Public Struct Point
+X As Float
+Y As Float
+End Struct
+Public Struct RecordIndex
+OffSet As Integer
+ContentLength As Integer
+End Struct
+
+
+Private PointCount As Integer
+
+Private Indexes As New RecordIndex[]
+
+Public Sub ReadIndexes(sFile As String)
+  
+  Dim hFile As File
+  Dim hRec As RecordIndex
+  Dim hHeader As Header
+  Dim hHeaderInfo As HeaderInfo
+  Dim hBouds As Bounds
+  Dim iRecordNumBer, iContentLength, iShapetype As Integer
+  hfile = Open File.Dir(sFile) &/ File.BaseName(sFile) & ".shx" For Read
+  ' hHeader = Read #hFile As Header
+  ' hHeaderInfo = Read #hfile As HeaderInfo
+  ' hBouds = Read #hfile As Bounds
+  ' hBouds = Read #hfile As Bounds
+  Seek #hFile, 100
+  hfile.ByteOrder = gb.BigEndian
+  While Not Eof(hFile)
+    
+    hRec = Read #hFile As RecordIndex
+    Indexes.Add(hRec)
+    
+  Wend
+  hFile.Close
+  
+
+  
+End
+
+Public Sub Clear()
+  
+  
+  
+End
+
+
+
+Public Sub Load(sFile As String)
+  
+  Dim hFile As File
+  
+  hfile = Open sFile For Read
+  
+  ReadshpHeader(hFile)
+  
+  While Not Eof(hFile)
+    Shapes.Add(readRecord(hFile))
+  
+  Wend
+  
+  
+  
+End
+
+Public Sub readRecord(hFile As File) As ShpObject
+  
+  Dim hRecordHeader As RecordHeader
+  Dim hShp As New ShpObject
+  
+  
+  hfile.ByteOrder = gb.BigEndian
+  hRecordHeader = Read #hFile As RecordHeader
+  hFile.ByteOrder = gb.LittleEndian
+  hShp.ShapeType = Read #hFile As Integer
+  readRecordAny(hFile, hShp)
+  Return hShp
+  
+End
+
+
+
+
+
+Public Sub ReadshpHeader(hFile As File)
+  
+  
+  Dim hHeader As Header
+  Dim hHeaderInfo As HeaderInfo
+  Dim hBounds As Bounds
+  Dim hRecordHeader As RecordHeader
+  Dim iPos As Integer
+  
+  
+  'Seek #hfile, 33
+  hfile.ByteOrder = gb.BigEndian
+  hHeader = Read #hFile As Header
+  
+  hfile.ByteOrder = gb.LittleEndian
+  hHeaderInfo = Read #hFile As HeaderInfo
+  
+  hfile.ByteOrder = gb.LittleEndian
+  hBounds = Read #hfile As Bounds
+  hBounds = Read #hfile As Bounds
+  
+  hfile.ByteOrder = gb.BigEndian
+  
+  
+ 
+  
+End
+
+ Public Sub readRecordPoint(hFile As File, shp As ShpObject) As Point
+         Dim hPoint As Point
+         Dim hPoints As New Point[]
+         hpoint = Read #hFile As Point
+         Inc PointCount
+         Return hPoint
+         'shp.Points.Add(hPoints)
+         'shp.Points[0].Add(hPoint)
+ End
+' 
+' 
+Public Sub readRecordMultiPoint(hfile As File, shp As ShpObject)
+Dim i As Integer
+          shp.Box = Read #hFile As Box
+          shp.NumPoints = Read #File As Integer
+
+
+         For i = 0 To shp.NumPoints
+           readRecordPoint(hFile, shp)
+         Next
+         Return 
+End 
+
+Public Sub readRecordPolyLine(hfile As File, shp As ShpObject)
+    Dim tmpPart As Integer
+    Dim iCounts As New Integer[]
+    Dim iPrev As Integer
+    Dim iNext As Integer
+    Dim aPoint As Point[]
+    Dim i, j As Integer
+
+
+          shp.Box = Read #hFile As Bounds
+          'Print shp.Box.XMin, shp.Box.XMax, shp.Box.YMin, shp.Box.YMax
+
+          shp.NumPart = Read #hFile As Integer
+          'Print "shp.NumPart: ", shp.NumPart
+
+          shp.NumPoints = Read #hFile As Integer
+          'Print "shp.NumPoints: ", shp.NumPoints
+          iNext = Read #hFile As Integer
+          
+          If iNext Then Print "ERROR: First part offset must be 0"
+          
+          
+         '         counts = []; prev = 0
+'         for i in xrange(nParts-1):
+'                 next = readAndUnpack('i', fp.read(4))
+'                 counts.append( next - prev )
+'                 prev = next
+
+'         counts.append( nPoints - prev ) 
+          i = 0
+          While i < shp.NumPart - 1
+           'For i = 1 To shp.NumPart - 1
+            ' If i = shp.NumPart - 1 Then Break
+            iNext = Read #hFile As Integer
+            iCounts.Add(iNext - iPrev)
+            iPrev = iNext
+          ' Next
+            'iPrev = iNext
+            Inc i
+          Wend
+          
+          iCounts.Add(shp.NumPoints - iPrev)
+         
+
+
+For i = 0 To shp.NumPart - 1
+  aPoint = New Point[]
+  shp.Parts.Add(aPoint)
+  For j = 0 To iCounts[i] - 1
+    
+    shp.Parts[i].Add(readRecordPoint(hFile, shp))
+    'Print shp.Parts[i][j].X, shp.Parts[i][j].Y
+  Next
+  
+Next
+'         parts = shape['parts'] = []
+'         for i in xrange(nParts):
+'                 part = {}
+'                 parts.append( part )
+'                 points = part['points'] = []
+'                 for j in xrange(counts[i]):
+'                         points.append(readRecordPoint(fp))
+'         return shape
+
+
+End
+
+
+' 
+' def createRecord(fp):
+'         # read header
+'         record_number = readAndUnpack('>L', fp.read(4))
+'         if record_number == '': return False
+'         content_length = readAndUnpack('>L', fp.read(4))
+'         rectype = readAndUnpack('<L', fp.read(4))
+' 
+'         shape = readRecordAny(fp,rectype)
+'         shape['type'] = rectype
+'         info = {}
+'         names = db[0]
+'         values = db[record_number+1]
+'         for i in xrange(len(names)):
+'                 value = values[i]
+'                 if isinstance( value, str ):
+'                         value = value.strip()
+'                 info[ names[i] ] = value
+'         
+'         return { 'shape':shape, 'info':info }
+'         
+' # Reading defs
+' 
+
+Public Sub readRecordAny(hFile As File, hShp As ShpObject)
+' def readRecordAny(fp, rectype):
+
+If hShp.ShapeType = 0 Then
+'         if rectype==0:
+  
+'                 return readRecordNull(fp)
+'         elif rectype==1:
+Else If hShp.ShapeType = 1 Then
+  readRecordPoint(hFile, hShp)
+'                 return readRecordPoint(fp)
+Else If hShp.ShapeType = 8
+'         elif rectype==8:
+  readRecordMultiPoint(hFile, hShp)
+'                 return readRecordMultiPoint(fp)
+Else If hShp.ShapeType = 3 Or hShp.ShapeType = 5 Then
+'         elif rectype==3 or rectype==5:
+'                 return readRecordPolyLine(fp)
+readRecordPolyLine(hFile, hShp)
+Else 
+  
+'         else:
+'                 return False
+Endif
+
+
+End
+

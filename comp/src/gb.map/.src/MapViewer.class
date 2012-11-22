@@ -1,0 +1,173 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+Public Const _Properties As String = "*,Border{Border.*}"
+Private $hCenter As LatLon
+Private $hMap As New Map As "Map"
+Private $hView As DrawingArea
+Private $hPan As New Panel(Me)
+Private hWatch As New Watcher(Me) As "Watcher"
+Private $pCurCenterPx As Point
+Private $iX As Integer
+Private $iY As Integer
+Property Lock As Boolean
+Property Border As Integer
+Private $bLock As Boolean
+Property Read {Map} As Map
+Event MouseMove
+Event MouseDown
+Event MouseUp
+Event MouseWheel
+Event Click
+Event DblClick
+Event KeyPress
+Event Draw
+
+Public Sub _new()
+  $hPan.Arrangement = Arrange.Fill
+  $hView = New DrawingArea($hPan) As "View"
+  $hMap.resize($hView.ClientW, $hView.ClientH)
+  $hView.Tracking = True
+  $hView.Padding = True
+  $hView.Background = Color.DarkGray
+  
+End
+
+
+
+Public Sub SetCenter(ll As LatLon)
+  
+  $hCenter = ll
+  
+End
+
+Private Function Map_Read() As Map
+
+  Return $hMap
+
+End
+
+
+Public Sub View_Draw()
+  $hMap.Draw
+  Raise Draw
+
+End
+
+
+' Public Sub Watcher_Resize()
+'   
+'   $hMap.Resize($hView.ClientW, $hView.ClientH)
+'   $hView.Refresh
+'   'Print $hView.ClientH
+' End
+' 
+' Public Sub Watcher_Move()
+'   
+'   $hMap.Resize($hView.ClientW, $hView.ClientH)
+'   $hView.Refresh
+'   'Print $hView.ClientH
+' End
+
+Public Sub View_MouseWheel()
+    Dim hpix As Point
+  
+
+  $hMap.Zoom += Mouse.Delta
+  
+  hPix = New Point($hMap.BoxPixel.X + Mouse.X, $hMap.BoxPixel.Y + Mouse.Y)
+
+  If Mouse.Delta > 0 Then $hMap.Center = Mercator.MetersToLatLonFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
+  
+  $hView.Refresh
+End
+
+Public Sub Map_Refresh()
+  
+  $hView.Refresh
+  
+End
+
+Public Sub View_MouseDown()
+  
+   $hView.Mouse = Mouse.Pointing
+  $iX = Mouse.X
+  $iY = Mouse.Y
+  $pCurCenterPx = Mercator.MetersToPixelsFP(Mercator.LatLonToMetersLL($hMap.Center), $hMap.Zoom)
+
+  Raise MouseDown
+End
+
+Public Sub View_MouseUp()
+
+  Last.Mouse = Mouse.Default
+
+  Raise MouseUp
+  'Raise MouseUP
+End
+
+Public Sub View_MouseMove()
+
+  Dim hPix As Point
+
+
+  If Mouse.Left And Not $bLock Then
+    
+    hPix = New Point($pCurCenterPx.X, $pCurCenterPx.Y)
+
+    hPix.X += $ix - Mouse.X
+    hPix.Y += $iY - Mouse.Y
+    $hmap.Center = Mercator.MetersToLatLonFP(Mercator.PixelsToMetersP(hPix, $hMap.Zoom))
+
+    '$hMapView.CenterLat = hLatLon.Lat
+    '$hMapView.CenterLon = hLatLon.Lon
+
+    $hView.Refresh
+  Endif
+  
+  'Refresh
+  'DispatchEvents("_MouseMove")
+  Raise MouseMove
+
+End
+
+Public Sub View_Arrange()
+  $hMap.Resize($hView.ClientW, $hView.ClientH)
+  $hView.Refresh
+
+  
+End
+
+
+
+
+Private Function Lock_Read() As Boolean
+
+  Return $bLock
+
+End
+
+Private Sub Lock_Write(Value As Boolean)
+
+  $bLock = Value
+
+End
+
+Public Sub Refresh()
+  
+  $hView.Refresh
+  
+End
+
+Private Function Border_Read() As Integer
+
+  Return $hPan.Border
+
+End
+
+Private Sub Border_Write(Value As Integer)
+
+  $hPan.Border = Value
+
+End

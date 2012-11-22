@@ -1,0 +1,25 @@
+' Gambas class file
+Public Struct Point
+  X As Float
+  Y As Float
+End Struct
+
+Public Struct Bounds
+  XMin As Float
+  YMin As Float
+  XMax As Float
+  YMax As Float
+End Struct
+
+
+
+Public ShapeType As Integer
+
+Public Box As Bounds
+
+
+Public NumPart As Integer
+Public NumPoints As Integer
+Public Parts As New Point[][]
+
+Public Points As New Point[][]

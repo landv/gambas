@@ -1,0 +1,10 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim hmap As New _MapTile
+  hmap.SubDomains = ["0", "1", "2"]
+  hmap.SetPattern("http://khm{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "12.0"])
+  
+End
+

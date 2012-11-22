@@ -1,0 +1,236 @@
+' Gambas class file
+
+Export
+Property Height As Integer
+Property Width As Integer
+Property X, {Left} As Integer
+Property Y, Top As Integer
+Property Read BoxPixel As FRect
+Property Read BoxMeter As FRect
+
+Property Zoom As Integer
+Property Center As LatLon
+
+Private $iHeight As Integer = 100 
+Private $iWidth As Integer = 100
+Private $iLeft As Integer
+Private $iTop As Integer
+Private $llCenter As New LatLon
+Private $iZoom As Integer = 1
+Private $aLayers As New _MapLayer[]
+Private $hPixelBox As New FRect
+Private $hMeterBox As New FRect
+Private $sLayers As New String[]
+Event Refresh
+
+
+
+Public Sub _new()
+  
+  RefreshBoxes
+  
+End
+
+Public Sub Draw()
+  
+  Dim i As Integer
+  
+  Draw.ClipRect = New Rect($iLeft, $iTop, $iWidth, $iHeight)
+  Draw.Clip.Enabled = True
+  For i = 0 To $aLayers.Max
+    If $aLayers[i].Visible Then
+      $aLayers[i]._Draw
+    Endif
+  Next
+  'Draw.Circle($iLeft + $hPixelBox.Width / 2, $iTop + $hPixelBox.Height / 2, 5)
+  Draw.Clip.Enabled = False
+End
+
+Private Function Height_Read() As Integer
+  
+  Return $iHeight
+  
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  $iHeight = value
+  RefreshBoxes
+
+End
+
+Private Function Width_Read() As Integer
+  
+  Return $iWidth
+  
+End
+
+Private Sub Width_Write(Value As Integer)
+  
+  $iWidth = Value
+  RefreshBoxes
+
+End
+
+Private Function Y_Read() As Integer
+  
+  Return $iTop
+  
+End
+
+Private Sub Y_Write(Value As Integer)
+  
+  $iTop = Value
+  
+End
+
+Private Function X_Read() As Integer
+  
+  Return $iLeft
+  
+End
+
+Private Sub X_Write(Value As Integer)
+  
+  $iLeft = Value
+  
+End
+
+Private Function Zoom_Read() As Integer
+  
+  Return $iZoom
+  
+End
+
+Private Sub Zoom_Write(Value As Integer)
+  
+  Dim o As _MapLayer
+  
+  $iZoom = Max(1, Min(Value, 19))
+  
+  For Each o In $aLayers
+    Try o._ResetCache
+  Next
+  
+  RefreshBoxes
+
+End
+
+Private Function Center_Read() As LatLon
+  
+  Return $llCenter
+  
+End
+
+Private Sub Center_Write(Value As LatLon)
+  
+  $llCenter = Value
+  RefreshBoxes
+
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+  
+  $iWidth = Width
+  $iHeight = Height
+  RefreshBoxes
+  'Me.Draw
+
+End
+
+Public Sub Add(Layer As _MapLayer)
+  
+  If Not Layer Then Return
+  $aLayers.Add(Layer)
+  Object.Attach(Layer, Me, "Layer")
+  
+End
+
+
+Private Function BoxPixel_Read() As FRect
+  
+  Return $hPixelBox
+  
+End
+
+Private Sub RefreshBoxes()
+  
+  Dim fptPixel As Point
+  Dim tmpPoint As FPoint
+  Dim ll As LatLon
+  
+  fptPixel = Mercator.MetersToPixelsFP(Mercator.LatLonToMetersLL($llCenter), $iZoom)
+  
+  $hPixelBox.X = fptPixel.X - ($iWidth / 2)
+  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2)
+  $hPixelBox.X2 = fptPixel.X + ($iWidth / 2)
+  $hPixelBox.Y2 = fptPixel.Y + ($iHeight / 2)
+  
+  tmpPoint = Mercator.PixelsToMeters($hPixelBox.X, $hPixelBox.Y, $iZoom)
+  $hMeterBox.X = tmpPoint.X
+  $hMeterBox.Y = tmpPoint.y
+  
+  tmpPoint = Mercator.PixelsToMeters($hPixelBox.X2, $hPixelBox.Y2, $iZoom)
+  
+  $hMeterBox.X2 = tmpPoint.X
+  $hMeterBox.Y2 = tmpPoint.Y
+  
+End
+
+Private Function BoxMeter_Read() As FRect
+
+  Return $hMeterBox
+
+End
+
+Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collection, Optional CacheName As String) As _MapTile
+  
+  Dim hLayer As New _MapTile(CacheName)
+  hLayer.Name = Name
+  hLayer.Pattern = Pattern
+  hLayer.SetPattern(Pattern, Args)
+  $aLayers.Add(hLayer)
+  $sLayers.Add(Name)
+  Object.Attach(hLayer, Me, "Layer")
+  Return hLayer
+End
+
+Public Function AddShape(Name As String, Shape As Shapes) As _MapShape
+  
+  Dim hLayer As New _MapShape(Shape)
+  hLayer.Name = Name
+  
+  $aLayers.Add(hLayer)
+  $sLayers.Add(Name)
+  Object.Attach(hLayer, Me, "Layer")
+  
+End
+
+Public Sub Layer_Refresh()
+  
+  Raise Refresh
+  
+End
+
+Public Sub _get(Name As String) As _MapLayer
+  
+  Return $aLayers[$sLayers.Find(Name)]
+  
+End
+
+Public Sub _next() As Object
+  
+ If IsNull(Enum.Index) Then Enum.Index = 0 Else Inc Enum.Index
+ 
+  'Inc Enum.Index
+  
+  If Enum.Index > $sLayers.Max Then
+   Enum.Stop
+   Return
+  Endif
+  
+  Return $aLayers[Enum.Index]
+  
+End
+
+

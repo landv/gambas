@@ -1,0 +1,21 @@
+' Gambas class file
+
+Export
+Public Lat As Float
+Public Lon As Float
+
+Public Sub _new(Optional Latitude As Float, Longitude As Float)
+  
+  Lat = Latitude
+  Lon = Longitude
+  
+End
+
+Static Public Function _get(Latitude As Float, Longitude As Float) As LatLon
+  
+  Dim hLatLon As New LatLon(Latitude, Longitude)
+
+  Return hLatLon
+  
+End
+

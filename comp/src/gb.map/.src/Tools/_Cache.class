@@ -1,0 +1,190 @@
+' Gambas class file
+
+Private $sCacheDir As String
+Private $sDirBase As String = User.home &/ ".cache"
+Private hClient As New HttpClient As "_Client"
+Private $sStack As New String[]
+Private $bLoading As Boolean
+Private downloadBuffer As String
+Private hTimer As New Timer As "Timer"
+
+
+Private $sCurFile As String
+Public LastFile As String
+Private $colImage As New Collection
+Public ForceRefresh As Boolean
+Event FileLoaded()
+
+Public Sub _new(Optional CacheDir As String)
+  'si le dossier de cache n'est pas indiqué alors on utilise un dossier temporaire
+  'il sera détruit a chaque redémarrage 
+  If Not CacheDir Then 
+    $sDirBase = Temp()
+  Else
+    CacheDir = "gambas3/map" &/ CacheDir
+  Endif
+  If Not Exist($sDirBase &/ CacheDir) Then 
+    
+    CreateRecurssiveDir(CacheDir)
+  
+  Endif
+  $sCacheDir = CacheDir
+  
+  hTimer.Delay = 50
+  
+  'hClient.Timeout = 3
+  hClient.Async = True
+  
+End
+Public Function _get(sFile As String, Optional Url As String) As Image
+  Dim himg As Image
+  If Not $colImage.Exist(sFile) Then
+    If Not Exist($sDirBase &/ $sCacheDir &/ sFile) Then
+      GetFromUrl(sFile, Url)
+    Else
+     
+      Try himg = Image.Load($sDirBase &/ $sCacheDir &/ sFile)
+      If Error Then himg = Null
+      $colImage[sFile] = himg
+      Return himg
+    Endif
+  Else
+    Return $colImage[sFile]
+  Endif
+  
+  
+  
+End
+
+Public Function Exist(Name As String) As Boolean
+  
+  Return Exist($sDirBase &/ $sCacheDir &/ Name)
+  
+End
+
+Public Sub Refresh()
+  
+  $colImage.Clear
+  
+End
+
+
+Public Function GetFromUrl(Name As String, Url As String)
+
+  If $sStack.Exist(Name) Then Return
+  $sStack.Push(Name)
+  $sStack.Push(Url) 
+  hTimer.Start
+
+End
+
+Public Sub _Client_Connect()
+
+  'Print "Connection found " & hClient.URL
+  $bLoading = True
+
+End
+
+Public Sub _Client_Error()
+
+  'Print "Error " & hClient.Status & " downloading " & hClient.URL
+  'Stop
+  'Print hClient.ErrorText
+  hClient.Stop
+  $bLoading = False 
+  
+End
+
+Public Sub _Client_Finished()
+  Dim hImage As Image
+  
+  'Print Last.Url & " Téléchargé"
+  LastFile = $sCurFile
+  ' Try himage = Image.Load($sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp")
+  ' If hImage Then
+  '   $colImage[$sCurFile] = hImage
+  '   Try Move $sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp" To $sDirBase &/ $sCacheDir &/ $sCurFile
+  '   $bLoading = False
+  '   Raise FileLoaded
+  ' Else
+  '   Try Kill $sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp"
+  '   $bLoading = False
+  ' Endif
+  
+  
+  'hClient.Stop
+  
+  $bLoading = False
+  'Print Last.Url & "  reçut"
+  Raise FileLoaded
+
+End
+
+Public Sub Timer_Timer()
+  
+  If hClient.Status <> Net.Inactive Then 
+  'Print "Net tatus : " & hClient.Status
+  Return
+  Endif
+  hClient.URL = $sStack.Pop()
+  $sCurFile = $sStack.Pop()
+  'Print "essais d'obtenir : " & hClient.URL
+  'hClient.Get(Null, $sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp")
+  hClient.Get(Null, $sDirBase &/ $sCacheDir &/ $sCurFile)
+  If $sStack.Count = 0 Then hTimer.Stop
+  
+End
+
+Private Function CreateRecurssiveDir(Path As String)
+  
+  Dim ars As String[]
+  Dim sDir, s As String
+  'If Message.Warning("Attention le dossier de cache: \n" & Path & "\nva etre créé sur votre disque dure", "&Daccord", "&Annuler") = 2
+  '    Error.Raise("Le dossier n'a pas pu être créé")
+  'Endif
+
+  If Path = "" Then
+    sDir = "/"
+    Path = Right($sDirBase, -1)
+  Else 
+  sDir = $sDirBase
+    
+  Endif
+  ars = Split(Path, "/")
+  For Each s In ars
+    sDir &/= s
+    If Not Exist(sDir) Then
+      Mkdir sDir
+    Endif
+    
+  Next
+  
+Catch 
+  Error "Warning: Can't create " & Path & " directory, only online work is possible"
+
+End
+
+Public Function GetFullPath(Name As String) As String
+  
+  Return $sDirBase &/ $sCacheDir &/ Name
+  
+End
+
+Public Sub DeleteFile(Name As String)
+  
+  Try Kill $sDirBase &/ $sCacheDir &/ Name
+  If Error Then 
+    'Print "I can't remove the file: " & Name
+  Else
+    'Print "File: " & Name & " removed" 
+    Endif
+End
+
+
+Public Sub ResetQueue()
+  
+  hTimer.Stop
+  $sStack.Clear
+  $colImage.Clear
+  
+End

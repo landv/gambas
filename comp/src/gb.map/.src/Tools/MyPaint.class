@@ -1,0 +1,21 @@
+' Gambas class file
+
+'Export
+Static Public Sub Polygone(Pt As Integer[])
+
+  Dim i As Integer
+  If pt.Count < 2 Then Return
+  Paint.MoveTo(pt[0], pt[1])
+  For i = 2 To pt.Max Step 2
+    Paint.LineTo(pt[i], pt[i + 1])
+  
+  Next
+  Paint.LineTo(pt[0], pt[1])
+End
+
+
+Static Public Sub RectangleFRect(hFbox As FRect)
+  
+  Paint.Rectangle(hFbox.x, hFbox.Y, hFbox.X2 - hFbox.X, hFbox.Y2 - hFbox.Y)
+  
+End

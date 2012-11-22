@@ -1,0 +1,120 @@
+' Gambas class file
+
+Inherits _MapLayer
+
+Property Pattern As String
+Property SubDomains As String[]
+
+Private $aSubDomains As String[] = ["a", "b", "c"]
+Private $sPattern As String
+Private $colParam As New Collection
+Private Cache As _Cache
+
+Event Refresh
+
+Public Sub _new(Optional cachename As String)
+  
+  Cache = New _Cache(cachename) As "Cache"
+  
+End
+
+Private Function Pattern_Read() As String
+
+  Return $sPattern
+
+End
+Public Sub SetPattern(sPattern As String, Vars As Collection)
+  
+  If Vars Then $colParam = Vars 
+  $sPattern = sPattern
+  MakeUrl(1, 2, 3)
+  
+End
+
+Private Sub Pattern_Write(Value As String)
+  $sPattern = Value
+  $colParam.Clear
+
+End
+
+Private Function MakeUrl(ix As Integer, iy As Integer, iz As Integer) As String
+  Dim sUrl As String
+  Dim s As String
+  
+  sUrl = Replace($sPattern, "{x}", Str(ix))
+  sUrl = Replace(sUrl, "{y}", Str(iy))
+  sUrl = Replace(sUrl, "{z}", Str(iz))
+  sUrl = Replace(sUrl, "{s}", $aSubDomains[Round(Rnd(0, $aSubDomains.Max))])
+  For Each s In $colParam
+    surl = Replace(sUrl, "{" & $colParam.Key & "}", s)
+  Next
+  'Print sUrl
+  Return surl
+End
+
+
+Private Function SubDomains_Read() As String[]
+
+ Return $aSubDomains
+
+End
+
+Private Sub SubDomains_Write(Value As String[])
+
+  $aSubDomains = Value
+
+End
+
+Public Sub Cache_FileLoaded()
+
+  
+ Raise Refresh
+
+End
+
+
+  
+  Public Sub _Draw()
+
+  Dim iptMinTile, iptMaxTile As Point
+  Dim tx, ty As Integer
+  Dim iptGoogle As Point
+  Dim hImage As Image
+  Dim FileName As String
+  Dim hMap As Map = Object.Parent(Me)
+  Dim MapBox As FRect
+  'If Not $sVersion Then TryToGetVersion
+  MapBox = hMap.BoxPixel
+  iptMinTile = Mercator.PixelsToTile(MapBox.X, MapBox.Y)
+  iptMaxTile = Mercator.PixelsToTile(MapBox.X2, MapBox.Y2)
+
+  For ty = iptMinTile.Y To iptMaxTile.Y
+    For tx = iptMinTile.X To iptMaxTile.X
+      himage = Null
+      FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, tx, ty)
+
+      iptGoogle = Mercator.GoogleTile(tx, ty, hmap.Zoom)
+
+      If ty < 0 Then Continue
+
+      himage = Cache[FileName, MakeUrl(tx, ty, hmap.Zoom)]
+        If hImage Then
+      
+          Draw.Image(hImage, (tx * 256) - MapBox.x, ty * 256 - MapBox.Y)
+        Else
+          Cache.DeleteFile(FileName)
+        Endif
+      'Endif
+
+    Next
+
+  Next
+
+End
+
+Public Sub _ResetCache()
+  
+  Cache.ResetQueue
+  
+End
+

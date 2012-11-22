@@ -1,0 +1,222 @@
+' Gambas class file
+
+'*********************Structure nécéssaire a la lecture des shapes
+Public Struct Bounds
+  XMin As Float
+  YMin As Float
+  XMax As Float
+  YMax As Float
+End Struct
+
+Public Struct RecordHeader
+  RecordNumber As Integer
+  ContentLength As Integer
+  
+End Struct
+
+Public Struct IPoint
+  X As Float
+  Y As Float
+End Struct
+'********************************************************************
+
+Public Box As New FRect
+Public Name As String
+Public Objects As New _Shape[]
+Static Public $prjLatLon As Proj
+Static Public $prjLamb93 As Proj
+Static Public $prjMerc As Proj
+
+Static Public Sub _init()
+  
+  $prjLatLon = New Proj("+init=epsg:4326")
+  $prjLamb93 = New Proj("+init=epsg:2154")
+  $prjMerc = New Proj("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs")
+
+End
+
+' Public Sub Save(sFile As String)
+'   
+'   Dim hSetting As New Settings(sFile, "GIS File")
+'   Dim i, j As Integer
+' 
+'   hSetting[Name] = Name
+'   hSetting["Box"] = Box.ToArray()
+'   
+'   hSetting["Count"] = Objects.Count
+'   
+'   For i = 0 To Objects.Max
+'     
+'     hSetting["Object_" & i &/ "id"] = Objects[i].Id
+'     hSetting["Object_" & i &/ "Box"] = Box.ToArray()
+'     hSetting["Object_" & i &/ "InnerCount"] = Objects[i].InnerShapes.Count
+'     
+'     hSetting["Object_" & i &/ "OuterShape"] = Objects[i].OuterShape.ToArray()
+'     For j = 0 To Objects[i].InnerShapes.Max
+'       hSetting["Object_" & i &/ "InnerShape_" & j] = Objects[i].InnerShapes[j].ToArray()
+'     Next
+'     
+'   Next
+'   hSetting.Save
+'   
+' End
+
+Public Sub LoadFromShp(sFile As String)
+  
+  Dim hReader As New ShpReader
+  Dim i, j, k As Integer
+  Dim hShO As New _ShapeObject
+  Dim hSh As New _Shape
+  Dim hpoint As New FPoint
+  
+  hReader.Load(sFile)
+  
+  For i = 0 To hReader.Shapes.Max
+    hSh = New CShape
+    hSh.Id = i
+   ' hpoint = $prjLamb93.Transform($prjLatLon, hReader.Shapes[i].Box.XMin, hReader.Shapes[i].Box.YMin)
+    hSh.Box.X = hpoint.X
+    hSh.Box.Y = hpoint.Y
+  '  hpoint = $prjLamb93.Transform($prjLatLon, hReader.Shapes[i].Box.XMax, hReader.Shapes[i].Box.YMax)
+    hSh.Box.X2 = hpoint.X
+    hSh.Box.Y2 = hpoint.Y
+    For j = 0 To hReader.Shapes[i].Parts[0].Max
+  '    hpoint = $prjLamb93.Transform($prjLatLon, hReader.Shapes[i].Parts[0][j].X, hReader.Shapes[i].Parts[0][j].Y)
+      hSh.OuterShape.Points.Add(hPoint)
+    Next
+    
+    Me.Objects.Add(hSh)
+  Next
+  'Me.SaveKmlAs("")
+
+End
+
+Public Sub SaveToKml(sFile As String)
+  
+  Dim hxml As New XmlDocument
+  Dim hPoly As New XmlElement("kml")
+  Dim hOut As XmlElement
+  Dim hLinearRing As XmlElement
+  Dim hCoordinate As XmlElement
+  Dim s As String
+  Dim i, j As Integer
+
+  hxml.Root.TagName = "kml"
+  hxml.Root.SetAttribute("xmlns", "http://www.opengis.net/kml/2.2")
+  For i = 0 To Me.Objects.Max
+    hPoly = New XmlElement("Polygon")
+    hPoly.SetAttribute("id", i) 'Me.Objects[i].Id)
+    hxml.Root.AppendChild(hPoly)
+    hOut = New XmlElement("outerBoundaryIs")
+    hPoly.AppendChild(hOut)
+    'hxmle2 = hxmle
+    hLinearRing = New XmlElement("LinearRing")
+    hOut.AppendChild(hLinearRing)
+    
+    hCoordinate = New XmlElement("Coordinates")
+    s = ""
+    For j = 0 To Me.Objects[i].OuterShape.Points.Max
+      s &= Me.Objects[i].OuterShape.Points[j].x & "," & Me.Objects[i].OuterShape.Points[j].y & ",0\n"
+    Next
+    s &= Me.Objects[i].OuterShape.Points[0].x & "," & Me.Objects[i].OuterShape.Points[0].y & ",0\n"
+    
+    hCoordinate.AppendText(s)
+    hLinearRing.AppendChild(hCoordinate)
+    
+  Next
+  File.Save(sFile, hxml.ToString(True))
+  'Print hxml.ToString(True)
+  
+End
+
+Static Public Sub LoadKml(sFile As String) As Shapes
+  Dim hShapes As New Shapes
+  Dim hxml As New XmlDocument
+  Dim hElement As XmlElement
+  Dim hCoordinate As XmlElement
+  Dim hSho As _Shape
+  Dim FP As FPoint
+  Dim s As String
+  Dim bFirstPoint As Boolean
+
+  hxml.Content = File.Load(sFile)
+  
+  For Each hElement In hxml.GetElementsByTagName("Polygon")
+    hShO = New _Shape
+    hSho.Id = hElement.GetAttribute("id")
+    hCoordinate = hElement.GetChildrenByTagName("Coordinates")[0]
+    bFirstPoint = True
+    For Each s In Split(Replace(hCoordinate.TextContent, " ", "\n"), "\n")
+      If Not s Then Continue
+      fp = New FPoint
+      fp.X = Split(s)[0]
+      fp.Y = Split(s)[1]
+      fp = $prjLatLon.TransformFp($prjMerc, fp)
+      fp.y = FP.Y * -1
+      hSho.OuterShape.Points.Add(FP)
+      
+      If bFirstPoint Then 
+        hShO.OuterShape.Bounds = FRect.FromArray([fp.x, fp.y, fp.x, fp.Y])
+        hShO.Box = FRect.FromArray([fp.x, fp.y, fp.x, fp.Y])
+        'If hShO.Box.Y2 = 0 Then Stop
+        bFirstPoint = False
+      Else
+        'Traitement des limites de l'objet
+        hSho.OuterShape.Bounds.X = Min(hSho.OuterShape.Bounds.X, fp.x)
+        hSho.OuterShape.Bounds.X2 = Max(hSho.OuterShape.Bounds.X2, fp.x)
+        hSho.OuterShape.Bounds.Y = Min(hSho.OuterShape.Bounds.Y, fp.Y)
+        hSho.OuterShape.Bounds.Y2 = Max(hSho.OuterShape.Bounds.Y2, fp.Y)
+        'Traitement des limites de box
+        hShO.Box.X = Min(hShO.Box.X, fp.X)
+        hShO.Box.X2 = Max(hShO.Box.X2, fp.X)
+        hSho.Box.Y = Min(hShO.Box.Y, fp.Y)
+        hSho.Box.Y2 = Max(hShO.Box.Y2, fp.Y)
+        'If hShO.Box.y2 = 0 Then Stop
+          'Print "test box : fp.y= " & fp.Y & "        hso.y2= " & hShO.Box.Y2
+      Endif
+      
+    Next
+    'Print "Y2=" & hSho.Box.Y
+    Try hSho.OuterShape.Points.Remove(hSho.OuterShape.Points.Max)
+    
+   hShapes.Objects.Add(hSho)
+  Next
+  Return hShapes
+End
+
+Public Sub LoadFromPacKml(sFile As String)
+  
+  Dim hxml As New XmlDocument
+  Dim hElement As XmlElement
+  Dim hCoordinate As XmlElement
+  Dim hSho As CShape
+  Dim FP As FPoint
+  Dim s As String
+  
+  hxml.Content = File.Load(sFile)
+  
+  For Each hElement In hxml.GetElementsByTagName("parcelle")
+    hShO = New CShape
+    'hElement.ChildElements[0].Attributes
+    'hSho.Id = hElement.ChildNodes.Attributes["numero-parcelle"]
+    hCoordinate = hElement.GetChildrenByTagName("coordinates")[0]
+    
+    For Each s In Split(Replace(hCoordinate.TextContent, " ", "\n"), "\n")
+      If Not s Then Continue
+      fp = New FPoint
+      fp.X = Split(s)[0]
+      fp.Y = Split(s)[1]
+      'fp = $prjLamb93.TransformFp($prjLatLon, fp)
+      hSho.OuterShape.Points.Add(FP)
+      
+    Next
+    
+    Try hSho.OuterShape.Points.Remove(hSho.OuterShape.Points.Max)
+    
+    Me.Objects.Add(hSho)
+  Next
+  
+End
+
+
+

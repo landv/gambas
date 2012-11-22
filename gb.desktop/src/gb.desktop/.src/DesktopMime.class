@@ -302,14 +302,20 @@ Static Public Sub Refresh()
   $cHash.Clear
   TypeToMInfo.Clear
   $cIconCache.Clear
-  
+  $cCommentCache.Clear
 End
 
 Static Public Function _next() As DesktopMime
   
   If $aMimesSuffix.Count = 0 Then LoadMimeDatabase
   If Not $aCurMimes Then $aCurMimes = $aMimesSuffix
-  If Not Enum.Index Then Enum.Index = 0
+  If Not Enum.Index Then 
+    Enum.Index = 0
+    $aCurMimes = New DesktopMime[]
+    $aCurMimes.Insert($aMimesSuffix)
+    $aCurMimes.Insert($aMimesPrefix)
+    $aCurMimes.Insert($aMimesSpecial)
+  Endif
   Enum.Index += 1
   If Enum.Index = $aCurMimes.count + 1 Then 
     Enum.Stop
@@ -335,7 +341,7 @@ Static Public Sub _exit()
   $cHash = Null
   TypeToMInfo = Null
   $cIconCache = Null
-  
+  $cCommentCache = Null
 End
 
 ''Return if a TypeMime exist in the database

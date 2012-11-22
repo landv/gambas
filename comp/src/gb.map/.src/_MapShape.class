@@ -1,0 +1,80 @@
+' Gambas class file
+
+Inherits _MapLayer
+Private $hShapes As New Shapes 
+Property Shapes As Shapes
+Property {color} As Integer
+Private $iColor As Integer = Color.Green
+
+Public Sub _new(hShape As Shapes)
+  
+  $hShapes = hShape
+  
+End
+
+
+
+Public Sub _Draw()
+  
+  
+  Dim hShape As _ShapeObject
+  Dim i As Integer
+  Dim j As Integer
+  Dim hPoint As Point
+  Dim hMap As Map = Object.Parent(Me)
+  Dim aPoints As New Integer[]
+  For i = 0 To $hShapes.Objects.Max
+    hShape = $hShapes.Objects[i].OuterShape
+    
+    For j = 0 To hShape.Points.max
+      hPoint = Mercator.MetersToPixelsFP(hShape.Points[j], hMap.Zoom)
+      hPoint.X -= hMap.BoxPixel.X
+      'Print hPoint.X
+      hPoint.Y -= hMap.BoxPixel.Y
+      'Draw.FillStyle = Fill.Solid
+      'Draw.FillColor = Color.Green  
+      'Draw.Circle(hPoint.x, hPoint.Y, 5)
+      aPoints.Add(hPoint.X)
+      aPoints.Add(hPoint.Y)
+      
+      
+      
+      
+    Next
+      Paint.Begin(Draw.Device)
+      Paint.Brush = Paint.Color(Color.Green)
+        Paint.Polygone(aPoints)
+        Paint.Stroke
+      Paint.End
+    
+      aPoints.Clear
+    
+  Next
+  
+  
+  
+End
+
+Private Function Shapes_Read() As Shapes
+
+  Return $hShapes
+
+End
+
+Private Sub Shapes_Write(Value As Shapes)
+
+  $hShapes = Value
+
+End
+
+Private Function color_Read() As Integer
+
+  Return $iColor
+
+End
+
+Private Sub color_Write(Value As Integer)
+
+  $iColor = Value
+
+End
