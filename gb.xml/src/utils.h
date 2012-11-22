@@ -23,6 +23,7 @@
 #define UTILS_H
 
 #include "main.h"
+#include <stdlib.h>
 
 typedef unsigned int uint;
 
