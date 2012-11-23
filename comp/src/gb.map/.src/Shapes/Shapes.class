@@ -102,14 +102,14 @@ Public Sub LoadFromPacKml(sFile As String)
   Dim hxml As New XmlDocument
   Dim hElement As XmlElement
   Dim hCoordinate As XmlElement
-  Dim hSho As CShape
+  Dim hSho As _Shape
   Dim FP As FPoint
   Dim s As String
   
   hxml.Content = File.Load(sFile)
   
   For Each hElement In hxml.GetElementsByTagName("parcelle")
-    hShO = New CShape
+    hShO = New _Shape
     'hElement.ChildElements[0].Attributes
     'hSho.Id = hElement.ChildNodes.Attributes["numero-parcelle"]
     hCoordinate = hElement.GetChildrenByTagName("coordinates")[0]
