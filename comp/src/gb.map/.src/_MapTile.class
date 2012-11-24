@@ -23,7 +23,7 @@ Private Function Pattern_Read() As String
   Return $sPattern
 
 End
-Public Sub SetPattern(sPattern As String, Vars As Collection)
+Public Sub SetPattern(sPattern As String, Vars As Collection) As _MapTile
   
   If Vars Then $colParam = Vars 
   $sPattern = sPattern
@@ -96,13 +96,13 @@ End
       iptGoogle = Mercator.GoogleTile(tx, ty, hmap.Zoom)
 
       If ty < 0 Then Continue
-      If tx < 0 Then Continue
+      'If tx < 0 Then Continue
       himage = Cache[FileName, MakeUrl(tx, ty, hmap.Zoom)]
         If hImage Then
       
           Draw.Image(hImage, (tx * 256) - MapBox.x, ty * 256 - MapBox.Y)
         Else
-          Cache.DeleteFile(FileName)
+          'Cache.DeleteFile(FileName)
         Endif
       'Endif
 
