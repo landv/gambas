@@ -8,16 +8,17 @@ Private $bLoading As Boolean
 Private downloadBuffer As String
 Private hTimer As New Timer As "Timer"
 
-
 Private $sCurFile As String
 Public LastFile As String
 Private $colImage As New Collection
 Public ForceRefresh As Boolean
+Static Public Debug As Boolean = True
 Event FileLoaded()
 
 Public Sub _new(Optional CacheDir As String)
   'si le dossier de cache n'est pas indiqué alors on utilise un dossier temporaire
   'il sera détruit a chaque redémarrage 
+
   If Not CacheDir Then 
     $sDirBase = Temp()
   Else
@@ -26,7 +27,7 @@ Public Sub _new(Optional CacheDir As String)
   If Not Exist($sDirBase &/ CacheDir) Then 
     
     CreateRecurssiveDir(CacheDir)
-  
+    
   Endif
   $sCacheDir = CacheDir
   
@@ -36,13 +37,15 @@ Public Sub _new(Optional CacheDir As String)
   hClient.Async = True
   
 End
+
 Public Function _get(sFile As String, Optional Url As String) As Image
+
   Dim himg As Image
   If Not $colImage.Exist(sFile) Then
     If Not Exist($sDirBase &/ $sCacheDir &/ sFile) Then
       GetFromUrl(sFile, Url)
     Else
-     
+      If $sCurFile = sFile Then Return Null
       Try himg = Image.Load($sDirBase &/ $sCacheDir &/ sFile)
       If Error Then himg = Null
       $colImage[sFile] = himg
@@ -51,8 +54,6 @@ Public Function _get(sFile As String, Optional Url As String) As Image
   Else
     Return $colImage[sFile]
   Endif
-  
-  
   
 End
 
@@ -68,63 +69,50 @@ Public Sub Refresh()
   
 End
 
-
 Public Function GetFromUrl(Name As String, Url As String)
-
+  
   If $sStack.Exist(Name) Then Return
   $sStack.Push(Name)
   $sStack.Push(Url) 
   hTimer.Start
-
+  
 End
 
 Public Sub _Client_Connect()
-
+  
   'Print "Connection found " & hClient.URL
   $bLoading = True
-
+  
 End
 
 Public Sub _Client_Error()
-
+  
   'Print "Error " & hClient.Status & " downloading " & hClient.URL
   'Stop
   'Print hClient.ErrorText
   hClient.Stop
   $bLoading = False 
-  
+  $sCurFile = Null
+
 End
 
 Public Sub _Client_Finished()
+
   Dim hImage As Image
-  
-  'Print Last.Url & " Téléchargé"
   LastFile = $sCurFile
-  ' Try himage = Image.Load($sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp")
-  ' If hImage Then
-  '   $colImage[$sCurFile] = hImage
-  '   Try Move $sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp" To $sDirBase &/ $sCacheDir &/ $sCurFile
-  '   $bLoading = False
-  '   Raise FileLoaded
-  ' Else
-  '   Try Kill $sDirBase &/ $sCacheDir &/ $sCacheDir & ".tmp"
-  '   $bLoading = False
-  ' Endif
-  
-  
-  'hClient.Stop
+  $sCurFile = ""
   
   $bLoading = False
-  'Print Last.Url & "  reçut"
+  
   Raise FileLoaded
-
+  
 End
 
 Public Sub Timer_Timer()
   
   If hClient.Status <> Net.Inactive Then 
-  'Print "Net tatus : " & hClient.Status
-  Return
+    'Print "Net tatus : " & hClient.Status
+    Return
   Endif
   hClient.URL = $sStack.Pop()
   $sCurFile = $sStack.Pop()
@@ -139,15 +127,12 @@ Private Function CreateRecurssiveDir(Path As String)
   
   Dim ars As String[]
   Dim sDir, s As String
-  'If Message.Warning("Attention le dossier de cache: \n" & Path & "\nva etre créé sur votre disque dure", "&Daccord", "&Annuler") = 2
-  '    Error.Raise("Le dossier n'a pas pu être créé")
-  'Endif
-
+  
   If Path = "" Then
     sDir = "/"
     Path = Right($sDirBase, -1)
   Else 
-  sDir = $sDirBase
+    sDir = $sDirBase
     
   Endif
   ars = Split(Path, "/")
@@ -158,10 +143,10 @@ Private Function CreateRecurssiveDir(Path As String)
     Endif
     
   Next
-  
+  If _Cache.Debug Then Debug "Création du Dossier: " & sDir
 Catch 
   Error "Warning: Can't create " & Path & " directory, only online work is possible"
-
+  
 End
 
 Public Function GetFullPath(Name As String) As String
@@ -171,15 +156,18 @@ Public Function GetFullPath(Name As String) As String
 End
 
 Public Sub DeleteFile(Name As String)
-  
+  If Not Exist($sDirBase &/ $sCacheDir &/ Name) Then Return
   Try Kill $sDirBase &/ $sCacheDir &/ Name
   If Error Then 
-    'Print "I can't remove the file: " & Name
-  Else
-    'Print "File: " & Name & " removed" 
+    If _Cache.Debug Then
+      
+      Debug "I can't remove the file: " & Name
+    Else
+      Debug "File: " & Name & " removed" 
     Endif
-End
+  Endif
 
+End
 
 Public Sub ResetQueue()
   

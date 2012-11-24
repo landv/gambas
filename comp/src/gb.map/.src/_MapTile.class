@@ -96,7 +96,7 @@ End
       iptGoogle = Mercator.GoogleTile(tx, ty, hmap.Zoom)
 
       If ty < 0 Then Continue
-
+      If tx < 0 Then Continue
       himage = Cache[FileName, MakeUrl(tx, ty, hmap.Zoom)]
         If hImage Then
       
