@@ -29,6 +29,7 @@
 #include "GLUtextureImage.h"
 #include "GLUquadratic.h"
 #include "GLUnurb.h"
+#include "GLUproject.h"
 
 BEGIN_METHOD(GLUERRORSTRING, GB_INTEGER code)
 
@@ -80,6 +81,11 @@ GB_DESC Cglu[] =
 	GB_STATIC_METHOD("NurbsSurface", NULL, GLUNURBSSURFACE, "(Nurb)GluNurb;(SKnotCount)i(SKnots)Single[];(TKnotCount)i(TKnots)Single[];(SStride)i(TStride)i(SOrder)i(TOrder)i(Type)i(Control)Single[]"),
 	GB_STATIC_METHOD("NewNurbsRenderer","GluNurb", GLUNEWNURBSRENDERER, NULL),
 
+	/* Projections - see GLUproject.h */
+	GB_STATIC_METHOD("Project", "Float[]", GLUPROJECT, "(ObjectX)f(ObjectY)f(ObjectZ)f(Modelview)Float[];(Projection)Float[];(Viewport)Integer[];"),
+	GB_STATIC_METHOD("UnProject", "Float[]", GLUUNPROJECT, "(WindowX)f(WindowY)f(WindowZ)f(Modelview)Float[];(Projection)Float[];(Viewport)Integer[];"),
+	GB_STATIC_METHOD("UnProject4", "Float[]", GLUUNPROJECT4, "(WindowX)f(WindowY)f(WindowZ)f(ClipW)f(Modelview)Float[];(Projection)Float[];(Viewport)Integer[];(NearValue)f(FarValue)f"),
+	
 	/********************/
 	/* opengl constants */
 	/********************/

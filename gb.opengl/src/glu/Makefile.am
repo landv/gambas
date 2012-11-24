@@ -15,4 +15,6 @@ gb_opengl_glu_la_SOURCES = \
  GLUquadratic.h GLUquadratic.c \
  cgluquadric.h cgluquadric.c \
  cglunurb.h cglunurb.c\
- GLUnurb.h GLUnurb.c
+ GLUnurb.h GLUnurb.c \
+ GLUproject.h GLUproject.c
+ 
