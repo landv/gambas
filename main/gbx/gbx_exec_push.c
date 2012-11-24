@@ -645,3 +645,38 @@ __PUSH_ARRAY_2:
 	if (UNLIKELY(!defined))
 		VALUE_conv_variant(&SP[-1]);
 }
+
+int EXEC_push_unknown_event(bool unknown)
+{
+	int index;
+	CLASS_DESC *desc;
+	const char *name;
+	
+	if (unknown)
+	{
+		name = CP->load->unknown[PC[1]];
+		// The ':' is already in the name, thanks to the compiler.
+		index = CLASS_find_symbol(CP, name);
+		if (index == NO_SYMBOL)
+			THROW(E_DYNAMIC, CLASS_get_name(CP), name);
+
+		desc = CP->table[index].desc;
+		if (CLASS_DESC_get_type(desc) != CD_EVENT)
+			THROW(E_DYNAMIC, CLASS_get_name(CP), name);
+		
+		PC[1] = index;
+		PC[0] &= ~1;
+	}
+	else
+	{
+		desc = CP->table[PC[1]].desc;
+	}
+	
+	index = desc->event.index;
+	
+	//if (desc->event.class->parent)
+	//	index += desc->event.class->parent->n_event;
+	
+	return index;
+}
+

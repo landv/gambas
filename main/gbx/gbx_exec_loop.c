@@ -600,7 +600,9 @@ _PUSH_EVENT:
 
 	ind = GET_UX();
 
-	if (CP->parent)
+	if (ind >= 0xFE)
+		ind = EXEC_push_unknown_event(ind & 1);
+	else if (CP->parent)
 		ind += CP->parent->n_event;
 	
 	SP->type = T_FUNCTION;

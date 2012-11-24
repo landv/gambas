@@ -140,10 +140,21 @@ BEGIN_PROPERTY(CTIMER_delay)
 
 END_PROPERTY
 
+static void trigger_timer(void *_object)
+{
+	THIS->triggered = FALSE;
+	GB_Raise(THIS, EVENT_Timer, 0);
+	OBJECT_UNREF(_object, "trigger_timer");
+}
 
 BEGIN_METHOD_VOID(Timer_Trigger)
 
-	EVENT_post_event(THIS, EVENT_Timer);
+	if (THIS->triggered)
+		return;
+	
+	THIS->triggered = TRUE;
+	OBJECT_REF(THIS, "Timer_Trigger");
+	EVENT_post(trigger_timer, (intptr_t)THIS);
 
 END_METHOD
 

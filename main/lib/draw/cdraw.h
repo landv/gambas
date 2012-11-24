@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  CDraw.h
+  cdraw.h
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 

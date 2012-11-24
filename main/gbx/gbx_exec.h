@@ -204,6 +204,7 @@ void EXEC_nop(void);
 
 void EXEC_push_unknown(ushort code);
 void EXEC_push_array(ushort code);
+int EXEC_push_unknown_event(bool unknown);
 //void EXEC_push_special(void);
 
 void EXEC_pop_unknown(void);

@@ -21,11 +21,165 @@
 
 ***************************************************************************/
 
-#define IMPLEMENT_POINT_CLASS(__struct, __name, __gtype, __ctype, __sign, __return, __this)                                   \
+#define IMPLEMENT_POINT_CLASS(__struct, __name, __gtype, __ctype, __sign, __return, __this, __rstruct, __rname)               \
                                                                                                                               \
-__struct * __struct##_create(void)                                                                                            \
+__struct * __struct##_create(__ctype x, __ctype y)                                                                            \
 {                                                                                                                             \
-  return GB.New(GB.FindClass(#__name), NULL, NULL);                                                                           \
+  __struct *p = GB.New(GB.FindClass(#__name), NULL, NULL);                                                                    \
+  p->x = x;                                                                                                                   \
+  p->y = y;                                                                                                                   \
+  return p;                                                                                                                   \
+}                                                                                                                             \
+                                                                                                                              \
+static inline __struct *__struct##_make(__struct *a, const __ctype x, const __ctype y)                                        \
+{                                                                                                                             \
+  if (a->ob.ref <= 1)                                                                                                         \
+  {                                                                                                                           \
+    a->x = x;                                                                                                                 \
+    a->y = y;                                                                                                                 \
+    return a;                                                                                                                 \
+  }                                                                                                                           \
+  else                                                                                                                        \
+    return __struct##_create(x, y);                                                                                           \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_add_##__name(__struct *a, __struct *b, bool invert)                                                         \
+{                                                                                                                             \
+  return __struct##_make(a, a->x + b->x, a->y + b->y);                                                                        \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_sub_##__name(__struct *a, __struct *b, bool invert)                                                         \
+{                                                                                                                             \
+  return __struct##_make(a, a->x - b->x, a->y - b->y);                                                                        \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_mulf_##__name(__struct *a, double f, bool invert)                                                           \
+{                                                                                                                             \
+  return __struct##_make(a, a->x * f, a->y * f);                                                                              \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_mulo_##__name(__struct *a, void *b, bool invert)                                                            \
+{                                                                                                                             \
+  return NULL;                                                                                                                \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_divf_##__name(__struct *a, double f, bool invert)                                                           \
+{                                                                                                                             \
+  if (invert)                                                                                                                 \
+    return NULL;                                                                                                              \
+  if (f == 0.0)                                                                                                               \
+    return NULL;                                                                                                              \
+                                                                                                                              \
+  return __struct##_make(a, a->x / f, a->y / f);                                                                              \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_divo_##__name(__struct *a, void *b, bool invert)                                                            \
+{                                                                                                                             \
+  return NULL;                                                                                                                \
+}                                                                                                                             \
+                                                                                                                              \
+static int _equal_##__name(__struct *a, __struct *b, bool invert)                                                             \
+{                                                                                                                             \
+  return a->x == b->x && a->y == b->y;                                                                                        \
+}                                                                                                                             \
+                                                                                                                              \
+static double _abs_##__name(__struct *a)                                                                                      \
+{                                                                                                                             \
+  return hypot(a->x, a->y);                                                                                                   \
+}                                                                                                                             \
+                                                                                                                              \
+static __struct *_neg_##__name(__struct *a)                                                                                   \
+{                                                                                                                             \
+  return __struct##_make(a, -a->x, -a->y);                                                                                    \
+}                                                                                                                             \
+                                                                                                                              \
+static GB_OPERATOR_DESC _operator_##__name =                                                                                  \
+{                                                                                                                             \
+  .equal   = (void *)_equal_##__name,                                                                                         \
+  .add     = (void *)_add_##__name,                                                                                           \
+  .sub     = (void *)_sub_##__name,                                                                                           \
+  .mulf    = (void *)_mulf_##__name,                                                                                          \
+  .mulo    = (void *)_mulo_##__name,                                                                                          \
+  .divf    = (void *)_divf_##__name,                                                                                          \
+  .divo    = (void *)_divo_##__name,                                                                                          \
+  .abs     = (void *)_abs_##__name,                                                                                           \
+  .neg     = (void *)_neg_##__name,                                                                                           \
+};                                                                                                                            \
+                                                                                                                              \
+char *__struct##_to_string(void *a, bool local)                                                                               \
+{                                                                                                                             \
+  char *result = NULL;                                                                                                        \
+  char *str;                                                                                                                  \
+  int len;                                                                                                                    \
+                                                                                                                              \
+  __ctype x = ((__struct *)a)->x;                                                                                             \
+  __ctype y = ((__struct *)a)->y;                                                                                             \
+                                                                                                                              \
+  result = GB.AddChar(result, '[');                                                                                           \
+                                                                                                                              \
+  GB.NumberToString(local, x, NULL, &str, &len);                                                                              \
+  result = GB.AddString(result, str, len);                                                                                    \
+                                                                                                                              \
+  result = GB.AddChar(result, local ? ' ' : ',');                                                                             \
+                                                                                                                              \
+  GB.NumberToString(local, y, NULL, &str, &len);                                                                              \
+  result = GB.AddString(result, str, len);                                                                                    \
+                                                                                                                              \
+  result = GB.AddChar(result, ']');                                                                                           \
+                                                                                                                              \
+  return result;                                                                                                              \
+}                                                                                                                             \
+                                                                                                                              \
+static bool _convert_##__name(void *a, GB_TYPE type, GB_VALUE *conv)                                                          \
+{                                                                                                                             \
+  if (a)                                                                                                                      \
+  {                                                                                                                           \
+    double norm = _abs_##__name(a);                                                                                           \
+                                                                                                                              \
+    switch (type)                                                                                                             \
+    {                                                                                                                         \
+      case GB_T_FLOAT:                                                                                                        \
+        conv->_float.value = norm;                                                                                            \
+        return FALSE;                                                                                                         \
+                                                                                                                              \
+      case GB_T_SINGLE:                                                                                                       \
+        conv->_single.value = norm;                                                                                           \
+        return FALSE;                                                                                                         \
+                                                                                                                              \
+      case GB_T_INTEGER:                                                                                                      \
+      case GB_T_SHORT:                                                                                                        \
+      case GB_T_BYTE:                                                                                                         \
+        conv->_integer.value = norm;                                                                                          \
+        return FALSE;                                                                                                         \
+                                                                                                                              \
+      case GB_T_LONG:                                                                                                         \
+        conv->_long.value = norm;                                                                                             \
+        return FALSE;                                                                                                         \
+                                                                                                                              \
+      case GB_T_STRING:                                                                                                       \
+      case GB_T_CSTRING:                                                                                                      \
+        conv->_string.value.addr = __struct##_to_string(a, type == GB_T_CSTRING);                                             \
+        conv->_string.value.start = 0;                                                                                        \
+        conv->_string.value.len = GB.StringLength(conv->_string.value.addr);                                                  \
+        return FALSE;                                                                                                         \
+                                                                                                                              \
+      default:                                                                                                                \
+        if (type == GB.FindClass("Point"))                                                                                    \
+        {                                                                                                                     \
+          conv->_object.value = CPOINT_create(((__struct *)a)->x, ((__struct *)a)->y);                                        \
+          return FALSE;                                                                                                       \
+        }                                                                                                                     \
+        if (type == GB.FindClass("PointF"))                                                                                   \
+        {                                                                                                                     \
+          conv->_object.value = CPOINTF_create(((__struct *)a)->x, ((__struct *)a)->y);                                       \
+          return FALSE;                                                                                                       \
+        }                                                                                                                     \
+        else                                                                                                                  \
+          return TRUE;                                                                                                        \
+    }                                                                                                                         \
+  }                                                                                                                           \
+  else                                                                                                                        \
+    return TRUE;                                                                                                              \
 }                                                                                                                             \
                                                                                                                               \
                                                                                                                               \
@@ -41,15 +195,7 @@ END_METHOD                                                                      
                                                                                                                               \
 BEGIN_METHOD(__name##_call, __gtype x; __gtype y)                                                                             \
                                                                                                                               \
-  __struct *rect = __struct##_create();                                                                                       \
-                                                                                                                              \
-  if (!MISSING(x) && !MISSING(y))                                                                                             \
-  {                                                                                                                           \
-    rect->x = VARG(x);                                                                                                        \
-    rect->y = VARG(y);                                                                                                        \
-  }                                                                                                                           \
-                                                                                                                              \
-  GB.ReturnObject(rect);                                                                                                      \
+  GB.ReturnObject(__struct##_create(VARGOPT(x, 0), VARGOPT(y, 0)));                                                           \
                                                                                                                               \
 END_METHOD                                                                                                                    \
                                                                                                                               \
@@ -73,12 +219,16 @@ END_PROPERTY                                                                    
                                                                                                                               \
 BEGIN_METHOD_VOID(__name##_Copy)                                                                                              \
                                                                                                                               \
-  __struct *copy = __struct##_create();                                                                                       \
+  GB.ReturnObject(__struct##_create(__this->x, __this->y));                                                                   \
                                                                                                                               \
-  copy->x = __this->x;                                                                                                        \
-  copy->y = __this->y;                                                                                                        \
+END_METHOD                                                                                                                    \
+
+BEGIN_METHOD(__name##_InRect, GB_OBJECT rect)                                                                         \
                                                                                                                               \
-  GB.ReturnObject(copy);                                                                                                      \
+  int x = VARG(x);                                                                                                            \
+  int y = VARG(y);                                                                                                            \
+                                                                                                                              \
+  GB.ReturnBoolean((x >= __this->x) && (x < (__this->x + __this->w)) && (y >= __this->y) && (y < (__this->y + __this->h)));   \
                                                                                                                               \
 END_METHOD                                                                                                                    \
                                                                                                                               \
@@ -93,6 +243,10 @@ GB_DESC __name##Desc[] =                                                        
   GB_PROPERTY("Y", __sign, __name##_Y),                                                                                       \
                                                                                                                               \
   GB_METHOD("Copy", #__name, __name##_Copy, NULL),                                                                            \
+  GB_METHOD("InRect", "b", __name##_InRect, #__rname ";"),                                                                    \
+                                                                                                                              \
+  GB_INTERFACE("_operator", &_operator_##__name),                                                                             \
+  GB_INTERFACE("_convert", &_convert_##__name),                                                                               \
                                                                                                                               \
   GB_END_DECLARE                                                                                                              \
 };                                                                                                                            

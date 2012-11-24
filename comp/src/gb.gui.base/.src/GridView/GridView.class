@@ -915,6 +915,7 @@ Public Sub ScrollArea_MouseDown()
     If I >= 0 Then 
       'bCancel = Raise MouseDown
       'If Not bCancel Then Raise RowClick(I)
+      
       Raise RowClick(I)
       'Stop Event
     Endif

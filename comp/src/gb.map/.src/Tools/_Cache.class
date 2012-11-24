@@ -89,14 +89,14 @@ End
 
 Public Sub _Client_Connect()
   
-  'Print "Connection found " & hClient.URL
+  Debug hClient.URL
   $bLoading = True
   
 End
 
 Public Sub _Client_Error()
   
-  'Print "Error " & hClient.Status & " downloading " & hClient.URL
+  Debug hClient.Status & " downloading " & hClient.URL
   'Stop
   'Print hClient.ErrorText
   

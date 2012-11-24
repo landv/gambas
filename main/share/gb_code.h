@@ -111,6 +111,7 @@ void CODE_push_array(short nparam);
 void CODE_push_global(short global, bool is_static, bool is_function);
 void CODE_push_symbol(short symbol);
 void CODE_push_unknown(short symbol);
+void CODE_push_unknown_event(short symbol);
 void CODE_push_class(short class);
 
 void CODE_op(short op, short subcode, short nparam, bool fixed);

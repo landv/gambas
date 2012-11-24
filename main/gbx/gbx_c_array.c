@@ -2184,4 +2184,6 @@ void GB_ArrayRemove(GB_ARRAY array, int index)
 	copy_remove((CARRAY *)array, index, 1, FALSE, TRUE);
 }
 
+
+
 #endif

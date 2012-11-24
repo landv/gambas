@@ -49,3 +49,6 @@ typedef
 	CPOINTF;
 
 #endif
+
+CPOINT * CPOINT_create(int x, int y);
+CPOINTF * CPOINTF_create(double x, double y);

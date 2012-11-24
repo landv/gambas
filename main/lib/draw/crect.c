@@ -24,9 +24,9 @@
 #define __CRECT_C
 
 #include "gb_common.h"
+#include "cpoint.h"
 #include "crect.h"
 #include "crect_temp.h"
 
-IMPLEMENT_RECT_CLASS(CRECT, Rect, GB_INTEGER, int, "i", GB.ReturnInteger, ((CRECT *)_object))
-
-IMPLEMENT_RECT_CLASS(CRECTF, RectF, GB_FLOAT, double, "f", GB.ReturnFloat, ((CRECTF *)_object))
+IMPLEMENT_RECT_CLASS(CRECT, Rect, GB_INTEGER, int, "i", GB.ReturnInteger, ((CRECT *)_object), CPOINT, Point)
+IMPLEMENT_RECT_CLASS(CRECTF, RectF, GB_FLOAT, double, "f", GB.ReturnFloat, ((CRECTF *)_object), CPOINTF, PointF)

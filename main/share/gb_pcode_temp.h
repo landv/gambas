@@ -78,6 +78,10 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 		case C_ON:
 			ncode = 1 + (op & 0xFF);
 			break;
+			
+		case C_PUSH_EVENT:
+			ncode = 1 + ((op & 0xFF) == 0xFF);
+			break;
 
 		default:
 
@@ -245,7 +249,17 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 					break;
 
 				case C_PUSH_EVENT:
-					fprintf(out, "EVENT %d", (short)value);
+					if ((unsigned char)value == 0xFF)
+					{
+						value = code[1];
+						#ifdef PROJECT_COMP
+						fprintf(out, "UNKNOWN EVENT %s", TABLE_get_symbol_name(JOB->class->table, JOB->class->unknown[value]));
+						#else
+						fprintf(out, "UNKNOWN EVENT %d", (short)value);
+						#endif
+					}
+					else
+						fprintf(out, "EVENT %d", (short)value);
 					break;
 
 				case C_PUSH_ARRAY: case C_POP_ARRAY:

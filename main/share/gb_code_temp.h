@@ -577,6 +577,20 @@ void CODE_push_unknown(short symbol)
 	write_short(symbol);
 }
 
+void CODE_push_unknown_event(short symbol)
+{
+	LAST_CODE;
+
+	use_stack(1);
+
+	#ifdef DEBUG
+	printf("PUSH UNKNOWN EVENT %s\n", TABLE_get_symbol_name(JOB->class->table, symbol));
+	#endif
+
+	write_ZZxx(C_PUSH_EVENT, 0xFF);
+	write_short(symbol);
+}
+
 
 #ifdef PROJECT_COMP
 

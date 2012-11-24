@@ -54,11 +54,11 @@
 /* Maximum number of class uses in the same class - CANNOT CHANGE */
 #define MAX_CLASS_CLASS     2048
 
-/* Maximum number of class uses in the same class - CANNOT CHANGE */
+/* Maximum number of extern declaration in the same class - CANNOT CHANGE */
 #define MAX_CLASS_EXTERN    256
 
 /* Maximum number of events in the same class - CANNOT CHANGE */
-#define MAX_CLASS_EVENT     256
+#define MAX_CLASS_EVENT     254
 
 /* Maximum number of unknown symbols in the same class - CANNOT CHANGE */
 #define MAX_CLASS_UNKNOWN   65536

@@ -21,7 +21,7 @@
 
 ***************************************************************************/
 
-#define IMPLEMENT_RECT_CLASS(__struct, __name, __gtype, __ctype, __sign, __return, __this)                                    \
+#define IMPLEMENT_RECT_CLASS(__struct, __name, __gtype, __ctype, __sign, __return, __this, __pstruct, __pname)                \
                                                                                                                               \
 static void __struct##_normalize(__struct *_object)                                                                           \
 {                                                                                                                             \
@@ -314,6 +314,15 @@ BEGIN_METHOD(__name##_Adjust, GB_INTEGER left; GB_INTEGER top; GB_INTEGER right;
                                                                                                                               \
 END_METHOD                                                                                                                    \
                                                                                                                               \
+BEGIN_METHOD_VOID(__name##_Center)                                                                                            \
+                                                                                                                              \
+  __pstruct *point = GB.New(GB.FindClass(#__pname), NULL, NULL);                                                              \
+	point->x = __this->x + __this->w / 2;                                                                                       \
+	point->y = __this->y + __this->h / 2;                                                                                       \
+	GB.ReturnObject(point);                                                                                                     \
+                                                                                                                              \
+END_METHOD                                                                                                                    \
+                                                                                                                              \
 GB_DESC __name##Desc[] =                                                                                                      \
 {                                                                                                                             \
   GB_DECLARE(#__name, sizeof(__struct)),                                                                                      \
@@ -342,6 +351,7 @@ GB_DESC __name##Desc[] =                                                        
   GB_METHOD("Intersection", #__name, __name##_Intersection, "(Rect)Rect;"),                                                   \
   GB_METHOD("Contains", "b", __name##_Contains, "(X)" __sign "(Y)" __sign ""),                                                \
   GB_METHOD("Adjust", NULL, __name##_Adjust, "(Left)" __sign "[(Top)" __sign "(Right)" __sign "(Bottom)" __sign "]"),         \
+  GB_METHOD("Center", #__pname, __name##_Center, NULL),                                                                       \
                                                                                                                               \
   GB_END_DECLARE                                                                                                              \
 };                                                                                                                            

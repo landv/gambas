@@ -788,7 +788,9 @@ typedef
 		GB_BASE object;
 		intptr_t id;
 		intptr_t tag;
-		int delay;
+		unsigned delay : 24;
+		unsigned triggered : 1;
+		unsigned _reserved : 7;
 		#if __WORDSIZE == 64
 		int _pad;
 		#endif

@@ -1227,22 +1227,28 @@ void TRANS_end_with(void)
 void TRANS_raise(void)
 {
 	CLASS_SYMBOL *sym;
+	int index;
 	int np;
 
 	if (!PATTERN_is_identifier(*JOB->current))
 		THROW("Syntax error in event name");
 
-	sym = CLASS_get_symbol(JOB->class, PATTERN_index(*JOB->current));
+	index = PATTERN_index(*JOB->current);
+	sym = CLASS_get_symbol(JOB->class, index);
 
 	JOB->current++;
 
-	if (TYPE_get_kind(sym->global.type) != TK_EVENT)
-		THROW("Unknown event");
+	if (TYPE_get_kind(sym->global.type) == TK_EVENT)
+	{
+		if (TYPE_is_static(JOB->func->type))
+			THROW("Cannot raise events in static function");
 
-	if (TYPE_is_static(JOB->func->type))
-		THROW("Cannot raise events in static function");
-
-	CODE_push_event(sym->global.value);
+		CODE_push_event(sym->global.value);
+	}
+	else
+	{
+		CODE_push_unknown_event(CLASS_add_unknown(JOB->class, index));
+	}
 
 	np = 0;
 
@@ -1268,9 +1274,4 @@ void TRANS_raise(void)
 
 	if (TRANS_in_affectation == 0)
 		CODE_drop();
-
-	/*if (TRANS_is(RS_AS))
-		TRANS_reference();
-	else
-		CODE_drop();*/
 }
