@@ -26,7 +26,7 @@
 #include "gb.image.h"
 #include "main.h"
 #include "crect.h"
-#include "CDraw.h"
+#include "cdraw.h"
 #include "cpaint.h"
 
 static GB_PAINT *_current = NULL;
