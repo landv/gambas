@@ -222,13 +222,18 @@ BEGIN_METHOD_VOID(__name##_Copy)                                                
   GB.ReturnObject(__struct##_create(__this->x, __this->y));                                                                   \
                                                                                                                               \
 END_METHOD                                                                                                                    \
-
-BEGIN_METHOD(__name##_InRect, GB_OBJECT rect)                                                                         \
                                                                                                                               \
-  int x = VARG(x);                                                                                                            \
-  int y = VARG(y);                                                                                                            \
+BEGIN_METHOD(__name##_InRect, GB_OBJECT rect)                                                                                 \
                                                                                                                               \
-  GB.ReturnBoolean((x >= __this->x) && (x < (__this->x + __this->w)) && (y >= __this->y) && (y < (__this->y + __this->h)));   \
+  __rstruct *rect = VARG(rect);                                                                                               \
+                                                                                                                              \
+  if (GB.CheckObject(rect))                                                                                                   \
+    return;                                                                                                                   \
+                                                                                                                              \
+  GB.ReturnBoolean(                                                                                                           \
+    (__this->x >= rect->x) && (__this->x < (rect->x + rect->w))                                                               \
+    && (__this->y >= rect->y) && (__this->y < (rect->y + rect->h))                                                            \
+  );                                                                                                                          \
                                                                                                                               \
 END_METHOD                                                                                                                    \
                                                                                                                               \
