@@ -1,7 +1,8 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,113,80)
+  MoveScaled(0,0,113,87)
+  Icon = Picture[".hidden/mapviewer.png"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
@@ -46,7 +47,7 @@
         { Label1 Label
           MoveScaled(0,1,12,3)
           Font = Font["Bold"]
-          Text = ("Lens Level")
+          Text = ("Lens zoom")
         }
         { SpinBox1 SpinBox
           MoveScaled(14,0,12,5)

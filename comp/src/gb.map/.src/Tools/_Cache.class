@@ -51,7 +51,11 @@ Public Function _get(sFile As String, Optional Url As String) As Image
     Else
       If IsLoading(sFile) Then Return Null
       Try himg = Image.Load($sDirBase &/ $sCacheDir &/ sFile)
-      If Error Then Return Null
+      If Error Then 
+        'Defected file delete it
+        DeleteFile(sFile)
+        Return Null
+      Endif
       $colImage[sFile] = himg
       Return himg
     Endif
