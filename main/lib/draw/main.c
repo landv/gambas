@@ -32,7 +32,7 @@
 #include "gb_common.h"
 #include "cpoint.h"
 #include "crect.h"
-#include "CDraw.h"
+#include "cdraw.h"
 #include "cpaint.h"
 #include "main.h"
 
