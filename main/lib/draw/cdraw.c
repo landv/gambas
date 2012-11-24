@@ -28,7 +28,7 @@
 #include "main.h"
 #include "crect.h"
 #include "cpaint.h"
-#include "CDraw.h"
+#include "cdraw.h"
 
 static GB_DRAW *_current = NULL;
 #define THIS _current
