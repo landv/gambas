@@ -586,7 +586,6 @@ BEGIN_PROPERTY(Font_Styles)
 END_PROPERTY
 
 
-
 GB_DESC CFontsDesc[] =
 {
 	GB_DECLARE("Fonts", 0),

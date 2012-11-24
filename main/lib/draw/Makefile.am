@@ -12,7 +12,8 @@ gb_draw_la_SOURCES = \
  matrix.h matrix.c \
  CDraw.h CDraw.c \
  cpaint.h cpaint.c \
- crect.h crect.c \
+ crect.h crect.c crect_temp.h \
+ cpoint.h cpoint.c cpoint_temp.h \
  main.h main.c
 
 

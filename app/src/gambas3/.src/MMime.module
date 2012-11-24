@@ -107,8 +107,12 @@ Public Sub GetMime(sPath As String) As String
       Return "text/kml"
     Case "xml"
       Return "text/xml"
+    'Case "sfd"
+    '  Return "application/vnd.font-fontforge-sfd"
+    'Case "bdf"
+    '  Return "application/x-font-bdf"
     Case Else 
-      Return ""
+      Return DesktopMime.FromFile(sPath).Type
   End Select
   
 End

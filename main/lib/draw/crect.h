@@ -29,10 +29,7 @@
 
 #ifndef __CRECT_C
 extern GB_DESC RectDesc[];
-#else
-
-#define THIS OBJECT(CRECT)
-
+extern GB_DESC RectFDesc[];
 #endif
 
 typedef
@@ -45,6 +42,17 @@ typedef
 		}
 	CRECT;
 
+typedef
+	struct {
+		GB_BASE ob;
+		double x;
+		double y;
+		double w;
+		double h;
+		}
+	CRECTF;
+
 CRECT *CRECT_create(void);
+CRECTF *CRECTF_create(void);
 	
 #endif

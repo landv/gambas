@@ -1077,7 +1077,9 @@ Public Sub btnInstallFont_Click()
   If Message.Question(("Do you really want to install the Gambas font to your personal font directory?"), ("Install"), ("Cancel")) <> 1 Then Return
   
   If Not Exist(sDir) Then Mkdir sDir
+  Try Kill sDir &/ "GambasMedium-12.bdf"
   Try Copy "font/GambasMedium-12.bdf" To sDir &/ "GambasMedium-12.bdf"
+  Try Kill sDir &/ "GambasBold-12.bdf"
   Try Copy "font/GambasBold-12.bdf" To sDir &/ "GambasBold-12.bdf"
   
   If Not Exist(sConf) Then

@@ -1088,9 +1088,11 @@ End
 
 Public Sub Form_Close()
 
+  Inc Application.Busy
   ShiftToSort
   SaveTranslate
   Settings.Write(Me)
+  Dec Application.Busy
 
 End
 

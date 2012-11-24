@@ -865,6 +865,8 @@ Public Sub ScrollArea_MouseDown()
   
   iOldRow = $iRow
   
+  $bIgnoreMove = False
+
   ScrollArea_MouseMove
   
   $bIgnoreMove = True

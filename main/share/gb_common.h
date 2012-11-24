@@ -156,9 +156,9 @@ typedef
 	#define offsetof(_type, _arg) ((size_t)&(((_type *)0)->_arg))
 #endif
 
-#define Max(a, b) ({ int _a = (a), _b = (b); _a > _b ? _a : _b; })
-#define Min(a, b) ({ int _a = (a), _b = (b); _a < _b ? _a : _b; })
-#define MinMax(v, a, b) ({ int _v = (v), _a = (a), _b = (b); _v < _a ? _a : (_v > _b ? _b : _v); })
+#define Max(a, b) ({ __typeof__(a) _a = (a), _b = (b); _a > _b ? _a : _b; })
+#define Min(a, b) ({ __typeof__(a) _a = (a), _b = (b); _a < _b ? _a : _b; })
+#define MinMax(v, a, b) ({ __typeof__(v) _v = (v), _a = (a), _b = (b); _v < _a ? _a : (_v > _b ? _b : _v); })
 
 #if (defined (__i386__) || defined (__x86_64__)) && defined (__GNUC__) && __GNUC__ >= 2
 	#define BREAKPOINT()	{ __asm__ __volatile__ ("int $03"); }

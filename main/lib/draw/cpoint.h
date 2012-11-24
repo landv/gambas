@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  crect.c
+  cpoint.h
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,12 +21,31 @@
 
 ***************************************************************************/
 
-#define __CRECT_C
+#ifndef __CPOINT_H
+#define __CPOINT_H
 
-#include "gb_common.h"
-#include "crect.h"
-#include "crect_temp.h"
+#include "gambas.h"
+#include "main.h"
 
-IMPLEMENT_RECT_CLASS(CRECT, Rect, GB_INTEGER, int, "i", GB.ReturnInteger, ((CRECT *)_object))
+#ifndef __CRECT_C
+extern GB_DESC PointDesc[];
+extern GB_DESC PointFDesc[];
+#endif
 
-IMPLEMENT_RECT_CLASS(CRECTF, RectF, GB_FLOAT, double, "f", GB.ReturnFloat, ((CRECTF *)_object))
+typedef
+	struct {
+		GB_BASE ob;
+		int x;
+		int y;
+		}
+	CPOINT;
+
+typedef
+	struct {
+		GB_BASE ob;
+		double x;
+		double y;
+		}
+	CPOINTF;
+
+#endif

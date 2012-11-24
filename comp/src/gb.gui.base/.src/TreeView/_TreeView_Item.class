@@ -30,6 +30,7 @@ Static Public _Tree As _TreeView
 Public _Depth As Integer
 Public _Rows As Integer
 Public _Index As Integer
+Public _GrandChildren As Integer
 
 Event _Refresh
 
@@ -44,6 +45,13 @@ Private Sub GetView() As GridView
   Return GetTree().Children[0]
   
 End
+
+Public Sub _IsRoot() As Boolean
+  
+  Return Not $sKey
+  
+End
+
 
 Public Sub _new(sKey As String, sParent As String)
   
@@ -66,6 +74,10 @@ Public Sub _AddChild(sKey As String)
   If Not $aChildren Then $aChildren = New String[]
   $aChildren.Add(sKey)
   
+  If $aChildren.Count = 1 Then 
+    Try Inc GetTree()._GetParentItem(Me)._GrandChildren
+  Endif
+  
 End
 
 Public Sub _RemoveChild(hItem As _TreeView_Item)
@@ -79,7 +91,10 @@ Public Sub _RemoveChild(hItem As _TreeView_Item)
     hTree[$aChildren[I]]._Index = I
   Next
   
-  If $aChildren.Count = 0 Then $aChildren = Null
+  If $aChildren.Count = 0 Then
+    $aChildren = Null
+    Try Dec hTree._GetParentItem(Me)._GrandChildren
+  Endif
   
 End
 

@@ -3,6 +3,21 @@
 { Form Form
   MoveScaled(0,0,64,84)
   Arrangement = Arrange.Vertical
+  { mnuPopup Menu
+    Text = ("Menu1")
+    { Menu2 Menu
+      Text = ("Menu2")
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+    }
+    { Menu4 Menu
+      Text = ("Menu4")
+    }
+    { Menu5 Menu
+      Text = ("Menu5")
+    }
+  }
   { HBox1 HBox
     MoveScaled(3,2,58,4)
     { Button1 Button
@@ -25,13 +40,13 @@
     MoveScaled(14,12,32,40)
     Drop = True
     Expand = True
-    Mode = Select.Multiple
     Sorted = True
     Editable = True
     Resizable = True
   }
   { GridView1 GridView
     MoveScaled(21,59,30,21)
+    Visible = False
     Mode = Select.Multiple
     ShowCursor = True
     Header = GridView.Both

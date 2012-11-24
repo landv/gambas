@@ -158,6 +158,8 @@ Public Sub Run(sPath As String)
     Endif
   Wend
   
+  If Not aExec.Exist(sPath) Then aExec.Add(sPath)
+  
   Exec aExec
   
 End

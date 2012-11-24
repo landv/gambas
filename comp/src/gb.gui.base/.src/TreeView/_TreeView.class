@@ -164,11 +164,11 @@ Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Opti
   
 End
 
-Private Sub GetParentItem(hItem As _TreeView_Item) As _TreeView_Item
+Public Sub _GetParentItem(hItem As _TreeView_Item) As _TreeView_Item
   
   If hItem.ParentKey Then
     Return $cItem[hItem.ParentKey]
-  Else
+  Else If Not hItem._IsRoot() Then
     Return $hRoot
   Endif
   
@@ -188,12 +188,12 @@ Private Sub RemoveRec(Key As String)
     Next
   Endif
   
-  hParent = GetParentItem(hItem)
+  hParent = _GetParentItem(hItem)
   
   hParent._RemoveChild(hItem)
   While hParent.Expanded 
     Dec hParent._Rows
-    If hParent = $hRoot Then Break
+    If hParent._IsRoot() Then Break
     hParent = $cItem[hParent.ParentKey]
     If Not hParent Then hParent = $hRoot
   Wend
@@ -246,11 +246,11 @@ Private Sub GetNextItem(hItem As _Treeview_Item) As _TreeView_Item
   Endif
   
   Do
-    hParent = GetParentItem(hItem)
+    hParent = _GetParentItem(hItem)
     aChildren = hParent._GetChildren()
     iPos = hItem._Index 'aChildren.Find(hItem.Key)
     If iPos < aChildren.Max Then Return $cItem[aChildren[iPos + 1]]
-    If hParent = $hRoot Then Return
+    If hParent._IsRoot() Then Return
     hItem = hParent
   Loop
   
@@ -263,7 +263,7 @@ Private Sub GetPreviousItem(hItem As _Treeview_Item) As _TreeView_Item
   
   If hItem._Index = 0 Then Return $cItem[hItem.ParentKey]
   
-  hParent = GetParentItem(hItem)
+  hParent = _GetParentItem(hItem)
   aChildren = hParent._GetChildren()
   hItem = $cItem[aChildren[hItem._Index - 1]]
   
@@ -279,6 +279,7 @@ Private Sub RowToItem(iRow As Integer) As _TreeView_Item
   Dim hParent As _TreeView_Item
   Dim hChild As _TreeView_Item
   Dim sKey As String
+  Dim aChildren As String[]
   
   If iRow < 0 Or If iRow >= $hView.Rows.Count Then Return
   
@@ -306,19 +307,32 @@ Private Sub RowToItem(iRow As Integer) As _TreeView_Item
   $iLastRow = iRow
   
   Do
-    For Each sKey In hParent._GetChildren()
-      hChild = $cItem[sKey]
-      If iRow = 0 Then 
-        $sLastKey = sKey
-        Return hChild
-      Endif
-      If iRow < hChild._Rows Then
-        Dec iRow
-        hParent = hChild
-        Break
-      Endif
-      iRow -= hChild._Rows
-    Next
+    
+    If hParent._GrandChildren = 0 Then
+      
+      aChildren = hParent._GetChildren()
+      sKey = aChildren[iRow]
+      $sLastKey = sKey
+      Return $cItem[sKey]
+      
+    Else
+    
+      For Each sKey In hParent._GetChildren()
+        hChild = $cItem[sKey]
+        If iRow = 0 Then 
+          $sLastKey = sKey
+          Return hChild
+        Endif
+        If iRow < hChild._Rows Then
+          Dec iRow
+          hParent = hChild
+          Break
+        Endif
+        iRow -= hChild._Rows
+      Next
+    
+    Endif
+    
   Loop
   
 End
@@ -329,15 +343,16 @@ Public Sub _ItemToRow(hItem As _TreeView_Item) As Integer
   Dim iRow As Integer
   Dim sItemKey As String
   Dim sKey As String
+  Dim iPos As Integer
   
   If Not hItem Then Debug System.Backtrace.Join(" ")
   
-  If hItem = $hRoot Then Return -1
+  If hItem._IsRoot() Then Return -1
   
   sItemKey = hItem.Key
-  hParent = GetParentItem(hItem)
+  hParent = _GetParentItem(hItem)
   
-  If hParent = $hRoot Then
+  If hParent._IsRoot() Then
     iRow = -1
   Else
     If Not hParent.Expanded Then Return -1
@@ -346,14 +361,27 @@ Public Sub _ItemToRow(hItem As _TreeView_Item) As Integer
   Endif
   
   Inc iRow
-  For Each sKey In hParent._GetChildren()
-    If sKey = sItemKey Then 
-      'Debug sKey; " -> "; iRow
+  
+  If hParent._GrandChildren = 0 Then
+  
+    iPos = hParent._GetChildren().Find(sItemKey)
+    If iPos >= 0 Then
+      iRow += iPos
       Return iRow
     Endif
-    hItem = $cItem[sKey]
-    iRow += hItem._Rows
-  Next
+  
+  Else
+    
+    For Each sKey In hParent._GetChildren()
+      If sKey = sItemKey Then 
+        'Debug sKey; " -> "; iRow
+        Return iRow
+      Endif
+      hItem = $cItem[sKey]
+      iRow += hItem._Rows
+    Next
+    
+  Endif
   
   Return -1
   
@@ -390,7 +418,6 @@ Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   Return PH
   
 End
-
 
 Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Integer, Row As Integer, Column As Integer)
   
@@ -877,7 +904,7 @@ Private Sub GetSibling(sKey As String, Optional iAdd As Integer) As String
   If Not sKey Then Return
   
   hItem = $cItem[sKey]
-  hParent = GetParentItem(hItem)
+  hParent = _GetParentItem(hItem)
   
   aChildren = hParent._GetChildren() 
   'Try Return aChildren[aChildren.Find(hItem.Key) + iAdd]
@@ -948,7 +975,7 @@ End
 
 Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean)
   
-  Dim hParent As _TreeView_Item = GetParentItem(hItem)
+  Dim hParent As _TreeView_Item = _GetParentItem(hItem)
   Dim aChildren As String[]
   Dim iPos, iPosKey, iNewPos As Integer
   Dim iStart, I As Integer
@@ -1149,8 +1176,8 @@ Private Sub IsItemVisible(hItem As _TreeView_Item) As Boolean
 
   Dim hParent As _TreeView_Item
   
-  hParent = GetParentItem(hItem)
-  If hParent = $hRoot Then Return True
+  hParent = _GetParentItem(hItem)
+  If hParent._IsRoot() Then Return True
   If Not hParent.Expanded Then Return
   Return IsItemVisible(hParent)
   
@@ -1159,8 +1186,8 @@ End
 Private Sub SetItemVisible(hItem As _TreeView_Item)
   
   Do
-    hItem = GetParentItem(hItem)
-    If hItem = $hRoot Then Break
+    hItem = _GetParentItem(hItem)
+    If hItem._IsRoot() Then Break
     hItem.Expanded = True
   Loop
   
