@@ -181,10 +181,15 @@ End
 
 Public Sub ResetQueue()
 
+  Dim i As Integer
+  
   If _Cache.Debug Then Debug "RAZ Cache"
   hTimer.Stop
   $sStack.Clear
   $colImage.Clear
+  For i = 0 To $aClient.Max
+    $aClient[i].Stop
+  Next
   
 End
 
@@ -204,6 +209,7 @@ Private Sub ClientCount_Write(Value As Integer)
   For i = 0 To Value
     Client = New HttpClient As "_Client"
     Client.Async = True
+    Client.Timeout = 1
     $aClient[i] = Client
   Next
   

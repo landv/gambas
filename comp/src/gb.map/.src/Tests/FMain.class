@@ -60,7 +60,7 @@ Public Sub MapViewer1_MouseMove()
   $iMX = Mouse.X
   $iMY = Mouse.Y
   If $bLens Then
-    hmap.Center = Geo.PixelToMapPoint(Point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y, MapViewer1.Map.Zoom))
+    hmap.Center = Geo.PixelToMapPoint(Point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y), MapViewer1.Map.Zoom)
     
   Endif
   
