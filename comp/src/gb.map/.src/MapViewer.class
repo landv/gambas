@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 Public Const _Properties As String = "*,Border{Border.*}"
-Private $hCenter As LatLon
+Private $hCenter As MapPoint
 Private $hMap As New Map As "Map"
 Private $hView As DrawingArea
 Private $hPan As New Panel(Me)
@@ -36,7 +36,7 @@ End
 
 
 
-Public Sub SetCenter(ll As LatLon)
+Public Sub SetCenter(ll As MapPoint)
   
   $hCenter = ll
   
@@ -78,7 +78,7 @@ Public Sub View_MouseWheel()
   
   hPix = New Point($hMap.BoxPixel.X + Mouse.X, $hMap.BoxPixel.Y + Mouse.Y)
 
-  If Mouse.Delta > 0 Then $hMap.Center = Mercator.MetersToLatLonFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
+  If Mouse.Delta > 0 Then $hMap.Center = MTiles.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
   
   $hView.Refresh
 End
@@ -94,7 +94,7 @@ Public Sub View_MouseDown()
    $hView.Mouse = Mouse.Pointing
   $iX = Mouse.X
   $iY = Mouse.Y
-  $pCurCenterPx = Mercator.MetersToPixelsFP(Mercator.LatLonToMetersLL($hMap.Center), $hMap.Zoom)
+  $pCurCenterPx = MTiles.MapPointToPixel($hmap.Center, $hmap.Zoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($hMap.Center), $hMap.Zoom)
 
   Raise MouseDown
 End
@@ -115,14 +115,14 @@ Public Sub View_MouseMove()
   If Mouse.Left And Not $bLock Then
     
     hPix = New Point($pCurCenterPx.X, $pCurCenterPx.Y)
-
+  
     hPix.X += $ix - Mouse.X
     hPix.Y += $iY - Mouse.Y
-    $hmap.Center = Mercator.MetersToLatLonFP(Mercator.PixelsToMetersP(hPix, $hMap.Zoom))
-
-    '$hMapView.CenterLat = hLatLon.Lat
-    '$hMapView.CenterLon = hLatLon.Lon
-
+    $hmap.Center = MTiles.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hPix, $hMap.Zoom))
+    'Print hpix.X, hpix.y
+    '$hMapView.CenterLat = hMapPoint.Lat
+    '$hMapView.CenterLon = hMapPoint.Lon
+  
     $hView.Refresh
   Endif
   

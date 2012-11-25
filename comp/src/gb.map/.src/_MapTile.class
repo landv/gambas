@@ -74,7 +74,7 @@ End
 
 
   
-  Public Sub _Draw()
+Public Sub _Draw()
 
   Dim iptMinTile, iptMaxTile As Point
   Dim tx, ty As Integer
@@ -82,34 +82,47 @@ End
   Dim hImage As Image
   Dim FileName As String
   Dim hMap As Map = Object.Parent(Me)
-  Dim MapBox As FRect
+  Dim MapBox As Rect = hMap.BoxPixel
+  Dim aTiles As New _Tile[]
+  Dim hTile As _Tile
+  Dim hCenter As Point = MapBox.Center()
+  Dim i As Integer
+  
   'If Not $sVersion Then TryToGetVersion
-  MapBox = hMap.BoxPixel
-  iptMinTile = Mercator.PixelsToTile(MapBox.X, MapBox.Y)
-  iptMaxTile = Mercator.PixelsToTile(MapBox.X2, MapBox.Y2)
+  'MapBox 
+  iptMinTile = MTiles.PixelToTile(Point(MapBox.X, MapBox.Y))
+  iptMaxTile = MTiles.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
+'Print "start"
 
-  For ty = iptMinTile.Y To iptMaxTile.Y
+For ty = iptMinTile.Y To iptMaxTile.Y
     For tx = iptMinTile.X To iptMaxTile.X
-      himage = Null
-      FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, tx, ty)
-
-      iptGoogle = Mercator.GoogleTile(tx, ty, hmap.Zoom)
+      hTile = New _Tile
+      hTile.X = tx
+      hTile.Y = ty
+      hTile.PosX = tx * 256
+      hTile.PosY = ty * 256 
+      hTile.Distance = Sqr((hTile.PosX - hCenter.X) ^ 2 + (hTile.PosY - hCenter.Y) ^ 2)
+      aTiles.Add(hTile)
+   Next
+Next
+aTiles.Sort
+For Each hTile In aTiles
+  himage = Null
+      FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, hTile.X, hTile.Y)
+      
+      'iptGoogle = Mercator.GoogleTile(hTile.x, hTile.y, hmap.Zoom)
 
       If ty < 0 Then Continue
       'If tx < 0 Then Continue
-      himage = Cache[FileName, MakeUrl(tx, ty, hmap.Zoom)]
+      himage = Cache[FileName, MakeUrl(hTile.x, hTile.y, hmap.Zoom)]
         If hImage Then
       
-          Draw.Image(hImage, (tx * 256) - MapBox.x, ty * 256 - MapBox.Y)
+          Draw.Image(hImage, hTile.PosX - MapBox.x, hTile.PosY - MapBox.Y)
         Else
           'Cache.DeleteFile(FileName)
         Endif
       'Endif
-
-    Next
-
-  Next
-
+Next
 End
 
 Public Sub _ResetCache()

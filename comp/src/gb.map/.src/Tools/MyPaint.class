@@ -14,8 +14,8 @@ Static Public Sub Polygone(Pt As Integer[])
 End
 
 
-Static Public Sub RectangleFRect(hFbox As FRect)
+Static Public Sub RectangleRectF(hFbox As RectF)
   
-  Paint.Rectangle(hFbox.x, hFbox.Y, hFbox.X2 - hFbox.X, hFbox.Y2 - hFbox.Y)
+  Paint.Rectangle(hFbox.x, hFbox.Y, hFbox.Right - hFbox.X, hFbox.Bottom - hFbox.Y)
   
 End

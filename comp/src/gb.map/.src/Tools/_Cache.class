@@ -10,11 +10,11 @@ Private hTimer As New Timer As "Timer"
 
 Private $sCurFile As String
 Property ClientCount As Integer
-
+Private NewTry As New Collection
 Public LastFile As String
 Private $colImage As New Collection
 Public ForceRefresh As Boolean
-Static Public Debug As Boolean
+Static Public Debug As Boolean 
 Event FileLoaded()
 
 Public Sub _new(Optional CacheDir As String)
@@ -212,11 +212,11 @@ End
 Private Function IsLoading(sFile As String) As Boolean
   
   Dim i As Integer
-  If _Cache.Debug Then Debug "File inload : " & sFile
+  'If _Cache.Debug Then Debug "File inload : " & sFile
+  If $sStack.Exist(sFile) Then Return True
   For i = 0 To $aClient.Max
     If sFile = $aClient[i].Tag Then Return True
   Next
-  Return $sStack.Exist(sFile)
 End
 
 Private Function GetFreeClient() As Integer

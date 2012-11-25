@@ -1,0 +1,16 @@
+' Gambas class file
+
+Public X As Integer
+Public Y As Integer
+Public PosX As Integer
+Public PosY As Integer
+
+Public Distance As Integer
+
+Public Sub _compare(Other As _Tile) As Integer
+
+  If Distance > Other.Distance Then Return -1
+  If Distance < Other.Distance Then Return 1
+  Return 0
+  
+End

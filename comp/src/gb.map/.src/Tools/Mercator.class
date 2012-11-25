@@ -119,7 +119,7 @@ Public Sub _new(Optional itilesize As Integer = 256)
 End
 
 ''Converts given lat/lon in WGS84 Datum to XY in Spherical Mercator EPSG:900913"
-Public Function LatLonToMeters(lat As Float, lon As Float) As FPoint
+Public Function MapPointToMeters(lat As Float, lon As Float) As FPoint
 
   Dim hPos As New FPoint
 
@@ -135,25 +135,25 @@ End
 
 ''Converts given lat/lon in WGS84 Datum to XY in Spherical Mercator EPSG:900913"
 ''LatLon
-Public Function LatLonToMetersLL(hLatLon As LatLon) As FPoint
+Public Function MapPointToMetersLL(hMapPoint As MapPoint) As FPoint
 
-  Return LatLonToMeters(hLatLon.Lat, hLatLon.Lon)
+  Return MapPointToMeters(hMapPoint.Lat, hMapPoint.Lon)
 
 End
 
 ''Converts XY point from Spherical Mercator EPSG:900913 to lat/lon in WGS84 Datum"
 ''FPoint
-Public Function MetersToLatLonFP(hPoint As FPoint) As LatLon
+Public Function MetersToMapPointFP(hPoint As FPoint) As MapPoint
 
-  Return MetersToLatLon(hPoint.X, hPoint.Y)
+  Return MetersToMapPoint(hPoint.X, hPoint.Y)
 
 End
 
 ''Converts XY point from Spherical Mercator EPSG:900913 to lat/lon in WGS84 Datum"
 
-Public Function MetersToLatLon(mx As Float, my As Float) As LatLon
+Public Function MetersToMapPoint(mx As Float, my As Float) As MapPoint
 
-  Dim LL As New LatLon
+  Dim LL As New MapPoint
 
   LL.Lon = (mx / originShift) * 180.0
   LL.Lat = (my / originShift) * 180.0
@@ -261,33 +261,33 @@ Public Function MetersToTile(mx As Float, my As Float, zoom As Integer) As Point
 End
 
 ''Returns bounds of the given tile in EPSG:900913 coordinates
-Public Function TileBounds(tx As Integer, ty As Integer, zoom As Integer) As FRect
+Public Function TileBounds(tx As Integer, ty As Integer, zoom As Integer) As RectF
 
   Dim MinPos, MaxPos As FPoint
-  Dim hBound As FRect
+  Dim hBound As RectF
 
   MinPos = PixelsToMeters(tx * tileSize, ty * tileSize, zoom)
   MaxPos = PixelsToMeters((tx + 1) * tileSize, (ty + 1) * tileSize, zoom)
-  hBound = New FRect(MinPos.x, MinPos.y, MaxPos.x, MaxPos.Y)
+  hBound = New RectF(MinPos.x, MinPos.y, MaxPos.x, MaxPos.Y)
   Return hBound
 
 End
 
 ''Returns bounds of the given tile in latutude/longitude using WGS84 datum"
-Public Function TileLatLonBounds(tx As Integer, ty As Integer, zoom As Integer) As FRect
+Public Function TileMapPointBounds(tx As Integer, ty As Integer, zoom As Integer) As RectF
 
-  Dim ibsTile As FRect
-  Dim fbsLatLon As FRect
-  Dim fpMinLatLon, fpMaxLatLon As LatLon
+  Dim ibsTile As RectF
+  Dim fbsMapPoint As RectF
+  Dim fpMinMapPoint, fpMaxMapPoint As MapPoint
 
   ibsTile = TileBounds(tx, ty, zoom)
 
-  fpMinLatLon = MetersToLatLon(ibsTile.X, ibsTile.Y)
+  fpMinMapPoint = MetersToMapPoint(ibsTile.X, ibsTile.Y)
 
-  fpMaxLatLon = MetersToLatLon(ibsTile.Y2, ibsTile.Y2)
+  fpMaxMapPoint = MetersToMapPoint(ibsTile.Bottom, ibsTile.Bottom)
 
-  fbsLatLon = New FRect(fpMinLatLon.Lat, fpMinLatLon.Lon, fpMaxLatLon.Lat, fpMaxLatLon.Lon)
-  Return fbsLatLon
+  fbsMapPoint = New RectF(fpMinMapPoint.Lat, fpMinMapPoint.Lon, fpMaxMapPoint.Lat, fpMaxMapPoint.Lon)
+  Return fbsMapPoint
 
 End
 

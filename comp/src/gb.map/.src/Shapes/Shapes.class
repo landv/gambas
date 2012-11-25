@@ -1,7 +1,7 @@
 ' Gambas class file
 
 
-Public Box As New FRect
+Public Box As New RectF
 Public Name As String
 Public Objects As New _Shape[]
 
@@ -64,26 +64,26 @@ Static Public Sub LoadKml(sFile As String) As Shapes
       fp = New FPoint
       fp.X = Split(s)[0]
       fp.Y = Split(s)[1]
-      'fp = $prjLatLon.TransformFp($prjMerc, fp)
+      'fp = $prjMapPoint.TransformFp($prjMerc, fp)
       fp.y = FP.Y * -1
       hSho.OuterShape.Points.Add(FP)
       
       If bFirstPoint Then 
-        hShO.OuterShape.Bounds = FRect.FromArray([fp.x, fp.y, fp.x, fp.Y])
-        hShO.Box = FRect.FromArray([fp.x, fp.y, fp.x, fp.Y])
+        hShO.OuterShape.Bounds = RectF.FromArray([fp.x, fp.y, fp.x, fp.Y])
+        hShO.Box = RectF.FromArray([fp.x, fp.y, fp.x, fp.Y])
         'If hShO.Box.Y2 = 0 Then Stop
         bFirstPoint = False
       Else
         'Traitement des limites de l'objet
         hSho.OuterShape.Bounds.X = Min(hSho.OuterShape.Bounds.X, fp.x)
-        hSho.OuterShape.Bounds.X2 = Max(hSho.OuterShape.Bounds.X2, fp.x)
+        hSho.OuterShape.Bounds.Right = Max(hSho.OuterShape.Bounds.Right, fp.x)
         hSho.OuterShape.Bounds.Y = Min(hSho.OuterShape.Bounds.Y, fp.Y)
-        hSho.OuterShape.Bounds.Y2 = Max(hSho.OuterShape.Bounds.Y2, fp.Y)
+        hSho.OuterShape.Bounds.Bottom = Max(hSho.OuterShape.Bounds.Bottom, fp.Y)
         'Traitement des limites de box
         hShO.Box.X = Min(hShO.Box.X, fp.X)
-        hShO.Box.X2 = Max(hShO.Box.X2, fp.X)
+        hShO.Box.Right = Max(hShO.Box.Right, fp.X)
         hSho.Box.Y = Min(hShO.Box.Y, fp.Y)
-        hSho.Box.Y2 = Max(hShO.Box.Y2, fp.Y)
+        hSho.Box.Bottom = Max(hShO.Box.Bottom, fp.Y)
         'If hShO.Box.y2 = 0 Then Stop
           'Print "test box : fp.y= " & fp.Y & "        hso.y2= " & hShO.Box.Y2
       Endif
@@ -119,7 +119,7 @@ Public Sub LoadFromPacKml(sFile As String)
       fp = New FPoint
       fp.X = Split(s)[0]
       fp.Y = Split(s)[1]
-      'fp = $prjLamb93.TransformFp($prjLatLon, fp)
+      'fp = $prjLamb93.TransformFp($prjMapPoint, fp)
       hSho.OuterShape.Points.Add(FP)
       
     Next

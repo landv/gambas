@@ -5,21 +5,21 @@ Property Height As Integer
 Property Width As Integer
 Property X, {Left} As Integer
 Property Y, Top As Integer
-Property Read BoxPixel As FRect
-Property Read BoxMeter As FRect
+Property Read BoxPixel As Rect
+Property Read BoxMeter As RectF
 
 Property Zoom As Integer
-Property Center As LatLon
+Property Center As MapPoint
 
 Private $iHeight As Integer = 100 
 Private $iWidth As Integer = 100
 Private $iLeft As Integer
 Private $iTop As Integer
-Private $llCenter As New LatLon
+Private $llCenter As New MapPoint
 Private $iZoom As Integer = 1
 Private $aLayers As New _MapLayer[]
-Private $hPixelBox As New FRect
-Private $hMeterBox As New FRect
+Private $hPixelBox As New Rect
+Private $hMeterBox As New RectF
 Private $sLayers As New String[]
 
 Private $sCopyright As String
@@ -38,7 +38,7 @@ End
 Public Sub Draw()
   
   Dim i As Integer
-  
+
   Draw.ClipRect = New Rect($iLeft, $iTop, $iWidth, $iHeight)
   Draw.Clip.Enabled = True
   For i = 0 To $aLayers.Max
@@ -115,18 +115,18 @@ Private Sub Zoom_Write(Value As Integer)
   For Each o In $aLayers
     Try o._ResetCache
   Next
-  
+
   RefreshBoxes
 
 End
 
-Private Function Center_Read() As LatLon
+Private Function Center_Read() As MapPoint
   
   Return $llCenter
   
 End
 
-Private Sub Center_Write(Value As LatLon)
+Private Sub Center_Write(Value As MapPoint)
   
   $llCenter = Value
   RefreshBoxes
@@ -151,37 +151,41 @@ Public Sub Add(Layer As _MapLayer)
 End
 
 
-Private Function BoxPixel_Read() As FRect
-  
+Private Function BoxPixel_Read() As Rect
+
   Return $hPixelBox
   
 End
-
 Private Sub RefreshBoxes()
   
-  Dim fptPixel As Point
+    Dim fptPixel As Point
   Dim tmpPoint As FPoint
-  Dim ll As LatLon
+  Dim ll As MapPoint
   
-  fptPixel = Mercator.MetersToPixelsFP(Mercator.LatLonToMetersLL($llCenter), $iZoom)
-  
+  fptPixel = MTiles.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
   $hPixelBox.X = fptPixel.X - ($iWidth / 2)
   $hPixelBox.Y = fptPixel.Y - ($iHeight / 2)
-  $hPixelBox.X2 = fptPixel.X + ($iWidth / 2)
-  $hPixelBox.Y2 = fptPixel.Y + ($iHeight / 2)
+  $hPixelBox.Right = fptPixel.X + ($iWidth / 2)
+  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2)
+  ' With $hPixelBox
+  '   Print .x, .Y, .Right, .Bottom
+  ' End With
+  ' tmpPoint = Mercator.PixelsToMeters($hPixelBox.X, $hPixelBox.Y, $iZoom)
+  ' $hMeterBox.X = tmpPoint.X
+  ' $hMeterBox.Y = tmpPoint.y
+  ' 
+  ' tmpPoint = Mercator.PixelsToMeters($hPixelBox.Right, $hPixelBox.Bottom, $iZoom)
+  ' 
+  ' $hMeterBox.Right = tmpPoint.X
+  ' $hMeterBox.Bottom = tmpPoint.Y
   
-  tmpPoint = Mercator.PixelsToMeters($hPixelBox.X, $hPixelBox.Y, $iZoom)
-  $hMeterBox.X = tmpPoint.X
-  $hMeterBox.Y = tmpPoint.y
-  
-  tmpPoint = Mercator.PixelsToMeters($hPixelBox.X2, $hPixelBox.Y2, $iZoom)
-  
-  $hMeterBox.X2 = tmpPoint.X
-  $hMeterBox.Y2 = tmpPoint.Y
   
 End
 
-Private Function BoxMeter_Read() As FRect
+
+
+
+Private Function BoxMeter_Read() As RectF
 
   Return $hMeterBox
 

@@ -1,10 +1,13 @@
 ' Gambas module file
 
 Public Sub Main()
-  
-  Dim hmap As New _MapTile
-  hmap.SubDomains = ["0", "1", "2"]
-  hmap.SetPattern("http://khm{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "12.0"])
-  
+  Dim hpoint As Point = Point(0, 600)
+  Dim hpoint2 As Point
+  Dim hpmap As MapPoint
+
+hpmap = MTiles.PixelToMapPoint(hpoint, 1)
+Print hpmap.Lon, hpmap.Lat
+hpoint2 = MTiles.MapPointToPixel(hpmap, 1)
+Print hpoint2.x, hpoint2.Y
 End
 

@@ -62,7 +62,7 @@ m
 [(fX)f(fY)f(fX2)f(fY2)f]
 FromArray
 M
-FRect
+RectF
 (aFloat)Float[];
 ToArray
 m
@@ -70,31 +70,12 @@ Float[]
 
 Intersection
 m
-FRect
-(Other)FRect;
+RectF
+(Other)RectF;
 Contains
 m
 b
 (fX)f(fY)f
-#LatLon
-
-C
-Lat
-v
-f
-
-Lon
-v
-f
-
-_new
-m
-
-[(Latitude)f(Longitude)f]
-_get
-M
-LatLon
-(Latitude)f(Longitude)f
 #Map
 
 C
@@ -124,11 +105,11 @@ i
 
 BoxPixel
 r
-FRect
+Rect
 
 BoxMeter
 r
-FRect
+RectF
 
 Zoom
 p
@@ -136,7 +117,7 @@ i
 
 Center
 p
-LatLon
+MapPoint
 
 :Refresh
 :
@@ -178,6 +159,25 @@ _next
 m
 o
 
+#MapPoint
+
+C
+Lon
+v
+f
+
+Lat
+v
+f
+
+_new
+m
+
+[(Latitude)f(Longitude)f]
+_Call
+M
+MapPoint
+(Latitude)f(Longitude)f
 #MapViewer
 UserControl
 C
@@ -236,7 +236,7 @@ m
 SetCenter
 m
 
-(ll)LatLon;
+(ll)MapPoint;
 View_Draw
 m
 
@@ -276,21 +276,21 @@ _new
 m
 
 [(itilesize)i]
-LatLonToMeters
+MapPointToMeters
 m
 FPoint
 (lat)f(lon)f
-LatLonToMetersLL
+MapPointToMetersLL
 m
 FPoint
-(hLatLon)LatLon;
-MetersToLatLonFP
+(hMapPoint)MapPoint;
+MetersToMapPointFP
 m
-LatLon
+MapPoint
 (hPoint)FPoint;
-MetersToLatLon
+MetersToMapPoint
 m
-LatLon
+MapPoint
 (mx)f(my)f
 PixelsToMetersP
 m
@@ -334,11 +334,11 @@ Point
 (mx)f(my)f(zoom)i
 TileBounds
 m
-FRect
+RectF
 (tx)i(ty)i(zoom)i
-TileLatLonBounds
+TileMapPointBounds
 m
-FRect
+RectF
 (tx)i(ty)i(zoom)i
 ZoomForPixelSize
 m

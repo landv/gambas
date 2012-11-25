@@ -1,0 +1,111 @@
+' Gambas module file
+
+Private halfPixelGlobeSize As Integer
+  
+  Private $TileSize As Integer = 256
+  Private $initialResolution As Float = 2 * Pi * 6378137 / $tileSize
+  Private $OriginShift As Float = 2 * Pi * 6378137 / 2.0
+
+  
+
+
+Public Function MapPointToTile(hMapPoint As MapPoint, Zoom As Integer) As Point
+  
+  Dim n As Float = 2 ^ Zoom
+  Dim hPoint As New Point
+  
+  Point.X = Int((hMapPoint.Lon + 180.0) / 360.0 * n)
+  Point.y = Int((1.0 - Log(Tan(Rad(hMapPoint.Lat)) + (1 / Cos(Rad(hMapPoint.Lat)))) / Pi) / 2.0 * n)
+  
+End
+
+Public Function MapPointToPixel(hMapPoint As MapPoint, Zoom As Integer) As Point
+  
+  Dim Res As Float = $initialResolution / (2 ^ zoom)
+  Dim X, Y As Float
+  
+  'Convert in Meters
+    X = hMapPoint.lon * $OriginShift / 180.0
+  Y = - (Log(Tan((90 + hMapPoint.lat) * Pi / 360.0)) / (Pi / 180.0)) * $OriginShift / 180.0
+  'Convert in Pixels
+  X = (X + $originShift) / res
+  Y = (Y + $originShift) / res
+  Return Point(X, Y)
+  
+End
+
+
+ Public Function PixelToMapPoint(hPoint As Point, Zoom As Integer) As MapPoint
+  Dim X, Y As Float
+  Dim Res As Float = $initialResolution / (2 ^ zoom)
+  Dim mpPoint As New MapPoint
+  
+  'Convert in Meters
+  X = hPoint.x * res - $originShift
+  Y = hPoint.y * res - $originShift
+
+  'Convert in Latlon mappoint
+  mpPoint.Lon = (X / $originShift) * 180.0
+  mpPoint.Lat = (Y / $originShift) * 180.0
+
+  mpPoint.Lat = - (180 / Pi * (2 * ATan(Exp(mpPoint.Lat * Pi / 180.0)) - Pi / 2.0))
+  Return mpPoint
+
+ End
+ 
+ Public Function PixelToTile(hPoint As Point) As Point
+  
+    Return Point(Int(Ceil(hPoint.X / $tileSize) - 1), Int(Ceil(hPoint.Y / $tileSize) - 1))
+  
+End
+
+
+''Convert a value in sexagesimal degree to decimal
+'' ex: 45°53'36" -> 45,893333
+Public Function SexToDec(Value As String) As Float
+
+  Dim fRet As Float
+  Dim ars As String[]
+  'Lat
+  ars = Scan(Value, "*°*'*''*")
+  fRet = Val(ars[0]) + Val(ars[1]) / 60 + Val(ars[2]) / 3600
+  If ars.Count = 4 Then
+    Select Case UCase(ars[3])
+      Case "N", "E"
+        Return fRet
+      Case "S", "W", "O"
+        Return - fRet
+    End Select
+  Endif
+  Return fRet
+
+End
+
+''Convert from Decimal to Sexagesimal degrees
+'' ex:45,893333 -> 45°53'36"
+''Type 0=None 1=Lat 2=Lon
+Public Function DecToSex(Value As Float, Type As Integer) As String
+
+  Dim iDeg As Integer
+  Dim iMin As Integer
+  Dim fSec As Float
+  Dim sRet As String
+
+  Select Case Type
+    Case 0
+
+    Case 1
+      sret = IIf(Value > 0, "N", "S")
+    Case 2
+      sret = IIf(Value > 0, "E", "W")
+  End Select
+  Value = Abs(Value)
+  iDeg = Int(Value)
+  fSec = Frac(Value) * 60
+  iMin = Int(fSec)
+  fSec = Frac(fSec) * 60
+
+  sret = Subst("&1°&2'&3''", iDeg, iMin, Format(fSec, "0.##")) & sRet
+  Return sret
+
+End
