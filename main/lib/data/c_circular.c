@@ -60,7 +60,9 @@ static void CCIRCULAR_move_index(CCIRCULAR *circ, int *idx, int pos)
 {
 	size_t size = CCIRCULAR_size(circ);
 
-	if (pos >= size)
+	if (!size)
+		pos = 0;
+	else if (pos >= size)
 		pos %= size;
 	*idx = pos;
 	/* Set empty/full flags */
