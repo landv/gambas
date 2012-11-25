@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Public Style As Integer = 1 'polyline or other
-Public Points As New FPoint[]
+Public Points As New MapPoint[]
 Public Bounds As New RectF
 
 Public Function ToArray() As Variant[]
@@ -18,7 +18,7 @@ Public Function ToArray() As Variant[]
   
 End
 
- Public Function InShape(FP As FPoint) As Boolean
+ Public Function InShape(FP As MapPoint) As Boolean
   
   Return Me.Bounds.Contains(fp.x, fp.Y)
   

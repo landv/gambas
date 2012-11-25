@@ -48,7 +48,7 @@ Static Public Sub LoadKml(sFile As String) As Shapes
   Dim hElement As XmlElement
   Dim hCoordinate As XmlElement
   Dim hSho As _Shape
-  Dim FP As FPoint
+  Dim FP As MapPoint
   Dim s As String
   Dim bFirstPoint As Boolean
 
@@ -62,10 +62,10 @@ Static Public Sub LoadKml(sFile As String) As Shapes
     For Each s In Split(Replace(hCoordinate.TextContent, " ", "\n"), "\n")
       If Not s Then Continue
       fp = New FPoint
-      fp.X = Split(s)[0]
-      fp.Y = Split(s)[1]
+      fp.Lon = Split(s)[0]
+      fp.lat = Split(s)[1]
       'fp = $prjMapPoint.TransformFp($prjMerc, fp)
-      fp.y = FP.Y * -1
+      'fp.y = FP.Y * -1
       hSho.OuterShape.Points.Add(FP)
       
       If bFirstPoint Then 

@@ -27,7 +27,7 @@ Public Sub _Draw()
     hShape = $hShapes.Objects[i].OuterShape
     
     For j = 0 To hShape.Points.max
-      hPoint = Mercator.MetersToPixelsFP(hShape.Points[j], hMap.Zoom)
+      'hPoint = Mercator.MetersToPixelsFP(hShape.Points[j], hMap.Zoom)
       hPoint.X -= hMap.BoxPixel.X
       'Print hPoint.X
       hPoint.Y -= hMap.BoxPixel.Y
