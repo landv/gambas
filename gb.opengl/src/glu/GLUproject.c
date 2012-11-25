@@ -39,9 +39,9 @@ BEGIN_METHOD(GLUPROJECT, GB_FLOAT ObjX; GB_FLOAT ObjY; GB_FLOAT ObjZ; GB_OBJECT 
 	}
 
 	for (i=0; i<16; i++)
-            view[i] = *((GLdouble *)GB.Array.Get(VARG(Model),i));
+            model[i] = *((GLdouble *)GB.Array.Get(VARG(Model),i));
 	for (i=0; i<16; i++)
-            view[i] = *((GLdouble *)GB.Array.Get(VARG(Proj),i));
+            proj[i] = *((GLdouble *)GB.Array.Get(VARG(Proj),i));
 	for (i=0; i<4; i++)
             view[i] = *((GLint *)GB.Array.Get(VARG(View),i));
 
@@ -77,9 +77,9 @@ BEGIN_METHOD(GLUUNPROJECT, GB_FLOAT WinX; GB_FLOAT WinY; GB_FLOAT WinZ; GB_OBJEC
 	}
 
 	for (i=0; i<16; i++)
-            view[i] = *((GLdouble *)GB.Array.Get(VARG(Model),i));
+            model[i] = *((GLdouble *)GB.Array.Get(VARG(Model),i));
 	for (i=0; i<16; i++)
-            view[i] = *((GLdouble *)GB.Array.Get(VARG(Proj),i));
+            proj[i] = *((GLdouble *)GB.Array.Get(VARG(Proj),i));
 	for (i=0; i<4; i++)
             view[i] = *((GLint *)GB.Array.Get(VARG(View),i));
 
@@ -114,9 +114,9 @@ BEGIN_METHOD(GLUUNPROJECT4, GB_FLOAT WinX; GB_FLOAT WinY; GB_FLOAT WinZ; GB_FLOA
 	}
 
 	for (i=0; i<16; i++)
-            view[i] = *((GLdouble *)GB.Array.Get(VARG(Model),i));
+            model[i] = *((GLdouble *)GB.Array.Get(VARG(Model),i));
 	for (i=0; i<16; i++)
-            view[i] = *((GLdouble *)GB.Array.Get(VARG(Proj),i));
+            proj[i] = *((GLdouble *)GB.Array.Get(VARG(Proj),i));
 	for (i=0; i<4; i++)
             view[i] = *((GLint *)GB.Array.Get(VARG(View),i));
 
