@@ -25,6 +25,7 @@
 
 #include "gb_common.h"
 #include "cpoint.h"
+#include "crect.h"
 #include "cpoint_temp.h"
 
 IMPLEMENT_POINT_CLASS(CPOINT, Point, GB_INTEGER, int, "i", GB.ReturnInteger, ((CPOINT *)_object), CRECT, Rect)

@@ -68,6 +68,19 @@ enum {
 	GB_PAINT_OPERATOR_SATURATE
 };
 
+enum
+{
+	GB_PAINT_LINE_STYLE_NONE = 0,
+	GB_PAINT_LINE_STYLE_SOLID = 1,
+	GB_PAINT_LINE_STYLE_DASH = 2,
+	GB_PAINT_LINE_STYLE_DOT = 3,
+	GB_PAINT_LINE_STYLE_DASH_DOT = 4,
+	GB_PAINT_LINE_STYLE_DASH_DOT_DOT = 5,
+	GB_PAINT_LINE_STYLE_CUSTOM = 6
+};
+
+
+
 struct GB_PAINT_DESC;
 
 typedef
@@ -115,9 +128,9 @@ typedef
 		int resolutionX;                   // device horizontal resolution in DPI
 		int resolutionY;                   // device vertical resolution in DPI
 		PAINT_BRUSH *brush;                // current brush
-		unsigned opened : 1;               // if the painting has been opened
 		void *draw;                        // if the device was drawn when calling Paint.Begin
 		void *extra;                       // driver-specific state
+		unsigned opened : 1;               // if the painting has been opened
 	}
 	GB_PAINT;
 
@@ -136,6 +149,9 @@ typedef
 		
 		void (*Font)(GB_PAINT *d, int set, GB_FONT *font);
 		
+		void (*Background)(GB_PAINT *d, int set, int *color);
+		void (*Invert)(GB_PAINT *d, int set, int *invert);
+
 		void (*Clip)(GB_PAINT *d, int preserve);
 		void (*ResetClip)(GB_PAINT *d);
 		void (*ClipExtents)(GB_PAINT *d, GB_EXTENTS *ext);
@@ -150,6 +166,7 @@ typedef
 		void (*DashOffset)(GB_PAINT *d, int set, float *offset);
 		
 		void (*FillRule)(GB_PAINT *d, int set, int *value);
+		void (*FillStyle)(GB_PAINT *d, int set, int *value);
 		void (*LineCap)(GB_PAINT *d, int set, int *value);
 		void (*LineJoin)(GB_PAINT *d, int set, int *value);
 		void (*LineWidth)(GB_PAINT *d, int set, float *value);
@@ -175,6 +192,7 @@ typedef
 		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);
 		
 		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
+		void (*BrushOrigin)(GB_PAINT *d, int set, float *x, float *y);
 		
 		void (*DrawImage)(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity);
 		

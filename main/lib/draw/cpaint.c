@@ -25,6 +25,7 @@
 
 #include "gb.image.h"
 #include "main.h"
+#include "cpoint.h"
 #include "crect.h"
 #include "cdraw.h"
 #include "cpaint.h"
@@ -56,8 +57,10 @@ static bool check_device()
 
 GB_PAINT *PAINT_get_current()
 {
-	check_device();
-	return _current;
+	if (check_device())
+		return NULL;
+	else
+		return _current;
 }
 
 GB_PAINT *PAINT_from_device(void *device)
@@ -120,7 +123,7 @@ bool PAINT_begin(void *device)
 	paint->device = device;
 	paint->brush = NULL;
 	paint->opened = FALSE;
-
+	
 	paint->previous = _current;
 	_current = paint;
 	
@@ -163,7 +166,7 @@ void PAINT_end()
 }
 
 
-/**** PaintExtents *********************************************************/
+//---- PaintExtents ---------------------------------------------------------
 
 #define IMPLEMENT_EXTENTS_PROPERTY(_method, _field) \
 BEGIN_PROPERTY(_method) \
@@ -217,7 +220,8 @@ GB_DESC PaintExtentsDesc[] =
 	GB_END_DECLARE
 };
 
-/**** PaintMatrix **********************************************************/
+
+//---- PaintMatrix ----------------------------------------------------------
 
 static PAINT_MATRIX *create_matrix(GB_PAINT_DESC *desc, GB_TRANSFORM *transform)
 {
@@ -300,7 +304,7 @@ GB_DESC PaintMatrixDesc[] =
 };
 
 
-/**** PaintBrush ***********************************************************/
+//---- PaintBrush -----------------------------------------------------------
 
 BEGIN_METHOD_VOID(PaintBrush_free)
 
@@ -389,9 +393,10 @@ GB_DESC PaintBrushDesc[] =
 };
 
 
-/**** Paint ****************************************************************/
+//---- Paint ----------------------------------------------------------------
 
-BEGIN_METHOD(Paint_begin, GB_OBJECT device)
+
+BEGIN_METHOD(Paint_Begin, GB_OBJECT device)
 
 	void *device = VARG(device);
 
@@ -403,7 +408,7 @@ BEGIN_METHOD(Paint_begin, GB_OBJECT device)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(Paint_end)
+BEGIN_METHOD_VOID(Paint_End)
 
 	PAINT_end();
 	
@@ -417,6 +422,7 @@ BEGIN_METHOD_VOID(Paint_exit)
 
 END_METHOD
 
+
 BEGIN_PROPERTY(Paint_Device)
 	
 	if (THIS)
@@ -426,12 +432,14 @@ BEGIN_PROPERTY(Paint_Device)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Paint_Width)
 
 	CHECK_DEVICE();
 	GB.ReturnFloat(THIS->width);
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Paint_Height)
 
@@ -440,12 +448,14 @@ BEGIN_PROPERTY(Paint_Height)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Paint_ResolutionX)
 
 	CHECK_DEVICE();
 	GB.ReturnInteger(THIS->resolutionX);
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Paint_ResolutionY)
 
@@ -459,6 +469,7 @@ BEGIN_METHOD_VOID(_method) \
 	CHECK_DEVICE(); \
 	PAINT->_api(THIS); \
 END_METHOD
+
 
 #define IMPLEMENT_METHOD_PRESERVE(_method, _api) \
 BEGIN_METHOD(_method, GB_BOOLEAN preserve) \
@@ -500,6 +511,10 @@ END_METHOD
 #define IMPLEMENT_PROPERTY_FLOAT(_property, _api) \
 	IMPLEMENT_PROPERTY(_property, _api, float, GB_FLOAT, GB.ReturnFloat)
 
+IMPLEMENT_PROPERTY_BOOLEAN(Paint_Invert, Invert)
+IMPLEMENT_PROPERTY_INTEGER(Paint_FillStyle, FillStyle)
+IMPLEMENT_PROPERTY_INTEGER(Paint_Background, Background)
+
 IMPLEMENT_PROPERTY_BOOLEAN(Paint_Antialias, Antialias)
 IMPLEMENT_METHOD(Paint_Save, Save)
 IMPLEMENT_METHOD(Paint_Restore, Restore)
@@ -509,6 +524,7 @@ IMPLEMENT_PROPERTY_EXTENTS(Paint_ClipExtents, ClipExtents)
 IMPLEMENT_METHOD_PRESERVE(Paint_Fill, Fill)
 IMPLEMENT_METHOD_PRESERVE(Paint_Stroke, Stroke)
 IMPLEMENT_PROPERTY_EXTENTS(Paint_PathExtents, PathExtents)
+
 
 BEGIN_PROPERTY(Paint_ClipRect)
 
@@ -553,6 +569,7 @@ BEGIN_PROPERTY(Paint_ClipRect)
 
 END_PROPERTY
 
+
 BEGIN_METHOD(Paint_PathContains, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
@@ -585,6 +602,33 @@ BEGIN_PROPERTY(Paint_Brush)
 	}
 
 END_PROPERTY
+
+
+BEGIN_PROPERTY(Paint_BrushOrigin)
+
+	float x, y;
+	
+	if (READ_PROPERTY)
+	{
+		PAINT->BrushOrigin(THIS, FALSE, &x, &y);
+		GB.ReturnObject(CPOINTF_create(x, y));
+	}
+	else
+	{
+		CPOINT *p = VPROP(GB_OBJECT);
+		if (!p)
+			x = y = 0.0;
+		else
+		{
+			x = p->x;
+			y = p->y;
+		}
+			
+		PAINT->BrushOrigin(THIS, TRUE, &x, &y);
+	}
+
+END_PROPERTY
+
 
 BEGIN_PROPERTY(Paint_Dash)
 
@@ -619,6 +663,7 @@ BEGIN_PROPERTY(Paint_Dash)
 		if (!count)
 		{
 			PAINT->Dash(THIS, TRUE, NULL, &count);
+			//THIS->lineStyle = GB_PAINT_LINE_STYLE_SOLID;
 		}
 		else
 		{
@@ -627,14 +672,17 @@ BEGIN_PROPERTY(Paint_Dash)
 				dashes[i] = (float)*((double *)GB.Array.Get(array, i));
 			PAINT->Dash(THIS, TRUE, &dashes, &count);
 			GB.Free(POINTER(&dashes));
+			//THIS->lineStyle = GB_PAINT_LINE_STYLE_CUSTOM;
 		}
 	}
 
 END_PROPERTY
 
+
 IMPLEMENT_PROPERTY_FLOAT(Paint_DashOffset, DashOffset)
 IMPLEMENT_METHOD(Paint_NewPath, NewPath)
 IMPLEMENT_METHOD(Paint_ClosePath, ClosePath)
+
 
 BEGIN_PROPERTY(Paint_X)
 
@@ -645,6 +693,7 @@ BEGIN_PROPERTY(Paint_X)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Paint_Y)
 
 	float x, y;
@@ -654,6 +703,7 @@ BEGIN_PROPERTY(Paint_Y)
 
 END_PROPERTY
 
+
 BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angle; GB_FLOAT length)
 
 	CHECK_DEVICE();
@@ -661,12 +711,14 @@ BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angl
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_CurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; GB_FLOAT x3; GB_FLOAT y3)
 
 	CHECK_DEVICE();
 	PAINT->CurveTo(THIS, VARG(x1), VARG(y1), VARG(x2), VARG(y2), VARG(x3), VARG(y3));
 
 END_METHOD
+
 
 BEGIN_METHOD(Paint_RelCurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; GB_FLOAT x3; GB_FLOAT y3)
 
@@ -677,12 +729,14 @@ BEGIN_METHOD(Paint_RelCurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_LineTo, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
 	PAINT->LineTo(THIS, VARG(x), VARG(y));
 
 END_METHOD
+
 
 BEGIN_METHOD(Paint_RelLineTo, GB_FLOAT x; GB_FLOAT y)
 
@@ -693,12 +747,14 @@ BEGIN_METHOD(Paint_RelLineTo, GB_FLOAT x; GB_FLOAT y)
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_MoveTo, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
 	PAINT->MoveTo(THIS, VARG(x), VARG(y));
 
 END_METHOD
+
 
 BEGIN_METHOD(Paint_RelMoveTo, GB_FLOAT x; GB_FLOAT y)
 
@@ -709,6 +765,7 @@ BEGIN_METHOD(Paint_RelMoveTo, GB_FLOAT x; GB_FLOAT y)
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_Rectangle, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
 	CHECK_DEVICE();
@@ -716,7 +773,9 @@ BEGIN_METHOD(Paint_Rectangle, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
 END_METHOD
 
+
 IMPLEMENT_PROPERTY(Paint_Font, Font, GB_FONT, GB_OBJECT, GB.ReturnObject)
+
 
 BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
@@ -729,6 +788,7 @@ BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_
 	
 END_METHOD
 
+
 BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
 	CHECK_DEVICE();
@@ -739,6 +799,7 @@ BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), FALSE);
 	
 END_METHOD
+
 
 BEGIN_METHOD(Paint_DrawText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
@@ -751,6 +812,7 @@ BEGIN_METHOD(Paint_DrawText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 	
 END_METHOD
 
+
 BEGIN_METHOD(Paint_DrawRichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
 	CHECK_DEVICE();
@@ -761,6 +823,7 @@ BEGIN_METHOD(Paint_DrawRichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOA
 	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), TRUE);
 	
 END_METHOD
+
 
 BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
@@ -783,6 +846,7 @@ BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text; GB_FLOAT width)
 
 	PAINT_EXTENTS *extents;
@@ -796,6 +860,7 @@ BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text; GB_FLOAT width)
 
 END_METHOD
 
+
 static PAINT_BRUSH *make_brush(GB_PAINT *d, GB_BRUSH brush)
 {
 	PAINT_BRUSH *that;
@@ -805,6 +870,7 @@ static PAINT_BRUSH *make_brush(GB_PAINT *d, GB_BRUSH brush)
 	GB.ReturnObject(that);
 	return that;
 }
+
 
 BEGIN_METHOD(Paint_Color, GB_INTEGER color)
 
@@ -816,6 +882,7 @@ BEGIN_METHOD(Paint_Color, GB_INTEGER color)
 	make_brush(THIS, brush);
 
 END_METHOD
+
 
 BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 
@@ -840,6 +907,7 @@ BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_LinearGradient, GB_FLOAT x0; GB_FLOAT y0; GB_FLOAT x1; GB_FLOAT y1; GB_OBJECT colors; GB_OBJECT positions; GB_INTEGER extend)
 
 	GB_BRUSH brush;
@@ -862,6 +930,7 @@ BEGIN_METHOD(Paint_LinearGradient, GB_FLOAT x0; GB_FLOAT y0; GB_FLOAT x1; GB_FLO
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_RadialGradient, GB_FLOAT cx; GB_FLOAT cy; GB_FLOAT radius; GB_FLOAT fx; GB_FLOAT fy; GB_OBJECT colors; GB_OBJECT positions; GB_INTEGER extend)
 
 	GB_BRUSH brush;
@@ -883,6 +952,7 @@ BEGIN_METHOD(Paint_RadialGradient, GB_FLOAT cx; GB_FLOAT cy; GB_FLOAT radius; GB
 	make_brush(THIS, brush);
 
 END_METHOD
+
 
 BEGIN_PROPERTY(Paint_Matrix)
 
@@ -908,12 +978,14 @@ BEGIN_PROPERTY(Paint_Matrix)
 
 END_PROPERTY
 
+
 BEGIN_METHOD_VOID(Paint_Reset)
 
 	CHECK_DEVICE();
 	PAINT->Matrix(THIS, TRUE, NULL);
 
 END_METHOD
+
 
 BEGIN_METHOD(Paint_Translate, GB_FLOAT tx; GB_FLOAT ty)
 
@@ -928,6 +1000,7 @@ BEGIN_METHOD(Paint_Translate, GB_FLOAT tx; GB_FLOAT ty)
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_Scale, GB_FLOAT sx; GB_FLOAT sy)
 
 	GB_TRANSFORM transform;
@@ -941,6 +1014,7 @@ BEGIN_METHOD(Paint_Scale, GB_FLOAT sx; GB_FLOAT sy)
 
 END_METHOD
 
+
 BEGIN_METHOD(Paint_Rotate, GB_FLOAT angle)
 
 	GB_TRANSFORM transform;
@@ -953,6 +1027,7 @@ BEGIN_METHOD(Paint_Rotate, GB_FLOAT angle)
 	PAINT->Transform.Delete(&transform);
 
 END_METHOD
+
 
 BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height; GB_FLOAT opacity)
 
@@ -984,6 +1059,94 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	PAINT->DrawImage(THIS, VARG(image), x, y, w, h, opacity);
 
 END_METHOD
+
+
+#if 0
+BEGIN_PROPERTY(Paint_LineStyle)
+
+	int v;
+	int count;
+	float dashes[6];
+
+	CHECK_DEVICE();
+
+	if (READ_PROPERTY)
+	{
+		GB.ReturnInteger(THIS->lineStyle);
+		return;
+	}
+	
+	v = VPROP(GB_INTEGER);
+	
+	switch (v)
+	{
+		case GB_PAINT_LINE_STYLE_NONE:
+			break;
+			
+		case GB_PAINT_LINE_STYLE_SOLID:
+			PAINT->Dash(THIS, TRUE, NULL, &count);
+			break;
+			
+		case GB_PAINT_LINE_STYLE_DASH:
+			dashes[0] = 3; dashes[1] = 3; count = 2;
+			PAINT->Dash(THIS, TRUE, dashes, &count);
+			break;
+			
+		case GB_PAINT_LINE_STYLE_DOT:
+			dashes[0] = 1; dashes[1] = 3; count = 2;
+			PAINT->Dash(THIS, TRUE, dashes, &count);
+			break;
+			
+		case GB_PAINT_LINE_STYLE_DASH_DOT:
+			dashes[0] = 3; dashes[1] = 3; dashes[2] = 3; dashes[3] = 1; dacount = 4;
+			PAINT->Dash(THIS, TRUE, dashes, &count);
+			break;
+			
+		case GB_PAINT_LINE_STYLE_DASH_DOT_DOT:
+			dashes[0] = 3; dashes[1] = 3; dashes[2] = 3; dashes[3] = 1; dashes[4] = 3; dashes[5] = 1; dacount = 6;
+			PAINT->Dash(THIS, TRUE, dashes, &count);
+			break;
+			
+		default:
+			return;
+	}
+
+	THIS->lineStyle = v;
+
+END_PROPERTY
+#endif
+
+BEGIN_METHOD(Paint_FillRect, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER color)
+
+	float x, y, w, h;
+	int color;
+
+	CHECK_DEVICE();
+	
+	x = VARG(x);
+	y = VARG(y);
+	w = VARG(w);
+	h = VARG(h);
+	
+	if (w < 0)
+		x += w, w = (-w);
+	if (h < 0)
+		y += h, h = (-h);
+	
+	if (w <= 0.0 || h <= 0.0)
+		return;
+	
+	PAINT->Save(THIS);
+	
+	color = VARG(color);
+	PAINT->Background(THIS, TRUE, &color);
+	PAINT->Rectangle(THIS, x, y, w, h);
+	PAINT->Fill(THIS, FALSE);
+	
+	PAINT->Restore(THIS);
+	
+END_METHOD
+
 
 GB_DESC PaintDesc[] =
 {
@@ -1021,8 +1184,8 @@ GB_DESC PaintDesc[] =
 	GB_CONSTANT("OperatorAdd", "i",      GB_PAINT_OPERATOR_ADD),
 	GB_CONSTANT("OperatorSaturate", "i", GB_PAINT_OPERATOR_SATURATE),
 
-	GB_STATIC_METHOD("Begin", NULL, Paint_begin, "(Device)o"),
-	GB_STATIC_METHOD("End", NULL, Paint_end, NULL),
+	GB_STATIC_METHOD("Begin", NULL, Paint_Begin, "(Device)o"),
+	GB_STATIC_METHOD("End", NULL, Paint_End, NULL),
 	
 	GB_STATIC_PROPERTY_READ("Device", "o", Paint_Device),
 	GB_STATIC_PROPERTY_READ("W", "f", Paint_Width),
@@ -1032,6 +1195,10 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY_READ("ResolutionX", "i", Paint_ResolutionX),
 	GB_STATIC_PROPERTY_READ("ResolutionY", "i", Paint_ResolutionY),
 	GB_STATIC_PROPERTY("AntiAlias", "b", Paint_Antialias),
+	
+	GB_STATIC_PROPERTY("_Invert", "b", Paint_Invert),
+	GB_STATIC_PROPERTY("_FillStyle", "i", Paint_FillStyle),
+	GB_STATIC_PROPERTY("Background", "i", Paint_Background),
 
 	GB_STATIC_METHOD("Save", NULL, Paint_Save, NULL),
 	GB_STATIC_METHOD("Restore", NULL, Paint_Restore, NULL),
@@ -1058,12 +1225,14 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("PathContains", "b", Paint_PathContains, "(X)f(Y)f"),
 	
 	GB_STATIC_PROPERTY("Brush", "PaintBrush", Paint_Brush),
+	GB_STATIC_PROPERTY("BrushOrigin", "PointF", Paint_BrushOrigin),
 	GB_STATIC_PROPERTY("Dash", "Float[]", Paint_Dash),
 	GB_STATIC_PROPERTY("DashOffset", "f", Paint_DashOffset),
 	GB_STATIC_PROPERTY("FillRule", "i", Paint_FillRule),
 	GB_STATIC_PROPERTY("LineCap", "i", Paint_LineCap),
 	GB_STATIC_PROPERTY("LineJoin", "i", Paint_LineJoin),
 	GB_STATIC_PROPERTY("LineWidth", "f", Paint_LineWidth),
+	//GB_STATIC_PROPERTY("LineStyle", "i", Paint_LineStyle),
 	GB_STATIC_PROPERTY("MiterLimit", "f", Paint_MiterLimit),
 	GB_STATIC_PROPERTY("Operator", "i", Paint_Operator),
 	//GB_STATIC_PROPERTY("Tolerance", "f", CAIRO_tolerance),
@@ -1075,6 +1244,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY_READ("Y", "f", Paint_Y),
 
 	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f"),
+	GB_STATIC_METHOD("FillRect", NULL, Paint_FillRect, "(X)f(Y)f(Width)f(Height)f(Color)i"),
 	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
 
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
@@ -1102,6 +1272,8 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Translate", NULL, Paint_Translate, "(TX)f(TY)f"),
 	GB_STATIC_METHOD("Scale", NULL, Paint_Scale, "(SX)f(SY)f"),
 	GB_STATIC_METHOD("Rotate", NULL, Paint_Rotate, "(Angle)f"),
+	
+	//GB_STATIC_METHOD("Clear", NULL, Paint_Clear, NULL),
 
 	GB_END_DECLARE
 };

@@ -500,6 +500,16 @@ static void FillRule(GB_PAINT *d, int set, int *value)
 		*value = EXTRA(d)->fillRule;
 }
 
+static void FillStyle(GB_PAINT *d, int set, int *style)
+{
+	/*if (set)
+	{
+		EXTRA(d)->fillRule = *value;
+	}
+	else
+		*value = EXTRA(d)->fillRule;*/
+}
+
 static void LineCap(GB_PAINT *d, int set, int *value)
 {
 	QPen pen = PAINTER(d)->pen();
@@ -816,6 +826,56 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 	//PAINTER(d)->setBrushOrigin(QPointF((qreal)x, (qreal)y));
 }
 
+static void BrushOrigin(GB_PAINT *d, int set, float *x, float *y)
+{
+	if (set)
+	{
+		EXTRA(d)->bx = *x;
+		EXTRA(d)->by = *y;
+		PAINTER(d)->setBrushOrigin(*x, *y);
+	}
+	else
+	{
+		*x = EXTRA(d)->bx;
+		*y = EXTRA(d)->by;
+	}
+}
+
+static void Background(GB_PAINT *d, int set, int *color)
+{
+	if (set)
+	{
+		QBrush b(CCOLOR_make(*color));
+		SetBrush(d, (GB_BRUSH)&b);
+	}
+	else
+	{
+		*color = COLOR_TO_INT(PAINTER(d)->brush().color());
+	}
+}
+
+
+static void Invert(GB_PAINT *d, int set, int *invert)
+{
+	if (set)
+	{
+		#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
+		PAINTER(d)->setCompositionMode(*invert ? QPainter::RasterOp_SourceXorDestination : QPainter::CompositionMode_SourceOver);
+		#else
+		fprintf(stderr, "gb.qt4: warning: Draw.Invert needs Qt 4.5\n");
+		#endif
+	}
+	else
+	{
+		#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
+		*invert = PAINTER(d)->compositionMode() == QPainter::RasterOp_SourceXorDestination; //QPainter::CompositionMode_Xor;
+		#else
+		*invert = FALSE;
+		#endif
+	}
+}
+
+
 static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity)
 {
 	QImage *img = CIMAGE_get((CIMAGE *)image);
@@ -983,6 +1043,8 @@ GB_PAINT_DESC PAINT_Interface = {
 	Restore,
 	Antialias,
 	Font,
+	Background,
+	Invert,
 	Clip,
 	ResetClip,
 	ClipExtents,
@@ -993,6 +1055,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	Dash,
 	DashOffset,
 	FillRule,
+	FillStyle,
 	LineCap,
 	LineJoin,
 	LineWidth,
@@ -1012,6 +1075,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	RichTextExtents,
 	Matrix,
 	SetBrush,
+	BrushOrigin,
 	DrawImage,
 	{
 		BrushFree,

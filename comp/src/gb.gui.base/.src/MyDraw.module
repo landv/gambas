@@ -1,0 +1,399 @@
+' Gambas module file
+
+Export
+
+' GB_DESC CDrawClipDesc[] =
+' {
+'   GB_DECLARE(".Draw.Clip", 0), GB_VIRTUAL_CLASS(),
+' 
+'   GB_STATIC_PROPERTY_READ("X", "i", CDRAW_clip_x),
+'   GB_STATIC_PROPERTY_READ("Y", "i", CDRAW_clip_y),
+'   GB_STATIC_PROPERTY_READ("W", "i", CDRAW_clip_w),
+'   GB_STATIC_PROPERTY_READ("H", "i", CDRAW_clip_h),
+'   GB_STATIC_PROPERTY_READ("Width", "i", CDRAW_clip_w),
+'   GB_STATIC_PROPERTY_READ("Height", "i", CDRAW_clip_h),
+' 
+'   GB_STATIC_PROPERTY("Enabled", "b", CDRAW_clip_enabled),
+'   GB_STATIC_METHOD("_call", NULL, CDRAW_clip, "(X)i(Y)i(Width)i(Height)i"),
+'   
+'   GB_END_DECLARE
+' };
+' 
+' 
+' GB_DESC CDrawStyleDesc[] =
+' {
+'   GB_DECLARE(".Draw.Style", 0), GB_VIRTUAL_CLASS(),
+' 
+'   GB_STATIC_METHOD("Arrow", NULL, CDRAW_style_arrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(Flag)i]"),
+'   GB_STATIC_METHOD("Check", NULL, CDRAW_style_check, "(X)i(Y)i(Width)i(Height)i(Value)i[(Flag)i]"),
+'   GB_STATIC_METHOD("Option", NULL, CDRAW_style_option, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
+'   GB_STATIC_METHOD("Separator", NULL, CDRAW_style_separator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+'   GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i(Flat)b]"),
+'   GB_STATIC_METHOD("Panel", NULL, CDRAW_style_panel, "(X)i(Y)i(Width)i(Height)i(Border)i[(Flag)i]"),
+'   GB_STATIC_METHOD("Handle", NULL, CDRAW_style_handle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+'   GB_STATIC_METHOD("Box", NULL, DrawStyle_Box, "(X)i(Y)i(Width)i(Height)i[(Flag)i]"),
+'   
+'   GB_END_DECLARE
+' };
+' 
+' 
+' GB_DESC CDrawDesc[] =
+' {
+'   GB_STATIC_PROPERTY_SELF("Clip", ".Draw.Clip"),
+'   GB_STATIC_PROPERTY_SELF("Style", ".Draw.Style"),
+'   
+'   GB_STATIC_METHOD("Circle", NULL, Draw_Circle, "(X)i(Y)i(Radius)i[(Start)f(End)f]"),
+'   GB_STATIC_METHOD("Arc", NULL, Draw_Arc, "(X)i(Y)i(Width)i(Height)i[(Start)f(End)f]"),
+'   GB_STATIC_METHOD("Ellipse", NULL, Draw_Ellipse, "(X)i(Y)i(Width)i(Height)i[(Start)f(End)f]"),
+'   GB_STATIC_METHOD("Text", NULL, CDRAW_text, "(Text)s(X)i(Y)i[(Width)i(Height)i(Alignment)i)]"),
+'   GB_STATIC_METHOD("TextWidth", "i", CDRAW_text_width, "(Text)s"),
+'   GB_STATIC_METHOD("TextHeight", "i", CDRAW_text_height, "(Text)s"),
+'   GB_STATIC_METHOD("RichText", NULL, CDRAW_rich_text, "(Text)s(X)i(Y)i[(Width)i(Height)i(Alignment)i)]"),
+'   GB_STATIC_METHOD("RichTextWidth", "i", CDRAW_rich_text_width, "(Text)s"),
+'   GB_STATIC_METHOD("RichTextHeight", "i", CDRAW_rich_text_height, "(Text)s[(Width)i]"),
+'   GB_STATIC_METHOD("Polyline", NULL, CDRAW_polyline, "(Points)Integer[]"),
+'   GB_STATIC_METHOD("Polygon", NULL, CDRAW_polygon, "(Points)Integer[]"),
+'   
+'   GB_STATIC_METHOD("Picture", NULL, CDRAW_picture, "(Picture)Picture;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+'   //GB_STATIC_METHOD("AlignedPicture", NULL, CDRAW_picture, "(Picture)Picture;(X)i(Y)i(Width)i(Height)i(Alignment)i"),
+'   GB_STATIC_METHOD("Tile", NULL, CDRAW_tile, "(Picture)Picture;(X)i(Y)i(Width)i(Height)i"),
+'   GB_STATIC_METHOD("Image", NULL, CDRAW_image, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+'   //GB_STATIC_METHOD("AlignedImage", NULL, CDRAW_picture, "(Image)Image;(X)i(Y)i(Width)i(Height)i(Alignment)i"),
+'   GB_STATIC_METHOD("Zoom", NULL, CDRAW_zoom, "(Image)Image;(Zoom)i(X)i(Y)i[(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+'   
+'   GB_STATIC_METHOD("Reset", NULL, CDRAW_reset, NULL),
+'   GB_STATIC_METHOD("Push", NULL, CDRAW_push, NULL),
+'   GB_STATIC_METHOD("Pop", NULL, CDRAW_pop, NULL),
+'   GB_STATIC_METHOD("Translate", NULL, CDRAW_translate, "(DX)f(DY)f"),
+'   GB_STATIC_METHOD("Scale", NULL, CDRAW_scale, "(SX)f(SY)f"),
+'   
+'   GB_CONSTANT("Normal", "i", GB_DRAW_STATE_NORMAL),
+'   GB_CONSTANT("Disabled", "i", GB_DRAW_STATE_DISABLED),
+'   GB_CONSTANT("Focus", "i", GB_DRAW_STATE_FOCUS),
+'   GB_CONSTANT("Hover", "i", GB_DRAW_STATE_HOVER),
+'   //GB_CONSTANT("ToolButton", "i", GB_DRAW_STATE_TOOL_BUTTON),
+'   #if 0
+'   GB_STATIC_METHOD("Drawing", NULL, CDRAW_drawing, "(Drawing)Drawing;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+' 
+'   GB_STATIC_METHOD("Rotate", NULL, CDRAW_rotate, "(Angle)f"),
+'   #endif
+'   
+'   GB_END_DECLARE
+' };
+' 
+' 
+' 
+
+Property Read Device As Object
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+Property ClipRect As Rect
+Property Background As Integer
+Property Foreground As Integer
+Property Invert As Boolean
+Property Transparent As Boolean
+Property Font As Font
+Property LineWidth As Integer
+Property LineStyle As Integer
+Property FillColor As Integer
+Property FillStyle As Integer
+Property FillX As Integer
+Property FillY As Integer
+
+Public Struct DrawInfo
+  Foreground As Integer
+  Background As Integer
+  Transparent As Boolean
+  LineStyle As Integer
+  Stack As DrawInfo[]
+  FillColor As Integer
+  FillStyle As Integer
+End Struct
+
+Private $aInfo As New DrawInfo[]
+Private $hInfo As DrawInfo
+
+Public Sub Begin(Device As Object)
+  
+  Paint.Begin(Device)
+  
+  $hInfo = New DrawInfo
+  $hInfo.Foreground = Color.Foreground
+  Try $hInfo.Foreground = Device.Foreground
+  $hInfo.LineStyle = Line.Solid
+  $hInfo.FillStyle = Fill.Solid
+  $aInfo.Add($hInfo)
+  
+End
+
+Public Sub End()
+  
+  Paint.End
+  $hInfo = $aInfo.Pop()
+  
+End
+
+Public Sub Save()
+  
+  Dim hSave As DrawInfo
+  
+  Paint.Save
+  
+  If Not $hInfo.Stack Then $hInfo.Stack = New DrawInfo[]
+  hSave = New DrawInfo
+  hSave.Foreground = $hInfo.Foreground
+  hSave.Background = $hInfo.Background
+  hSave.Transparent = $hInfo.Transparent
+  hSave.LineStyle = $hInfo.LineStyle
+  hSave.FillColor = $hInfo.FillColor
+  
+End
+
+Public Sub Restore()
+  
+  Dim hSave As DrawInfo
+
+  Paint.Restore
+
+  hSave = $hInfo.Stack.Pop()
+  Draw.Foreground = hSave.Foreground
+  Draw.Background = hSave.Background
+  Draw.Transparent = hSave.Transparent
+  Draw.LineStyle = hSave.LineStyle
+  Draw.FillColor = hSave.FillColor
+  
+End
+
+Private Function Device_Read() As Object
+
+  Return Paint.Device
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return Paint.Width
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return Paint.Height
+
+End
+
+
+Private Function ClipRect_Read() As Rect
+
+  Return Paint.ClipRect
+
+End
+
+Private Sub ClipRect_Write(Value As Rect)
+
+  Paint.ClipRect = Value
+
+End
+
+
+Private Function Background_Read() As Integer
+
+  Return $hInfo.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $hInfo.Background = Value
+  Paint.Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $hInfo.Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $hInfo.Foreground = Value
+
+End
+
+
+Private Function Invert_Read() As Boolean
+
+  Return Paint._Invert
+
+End
+
+Private Sub Invert_Write(Value As Boolean)
+
+  Paint._Invert = Value
+
+End
+
+Private Function Transparent_Read() As Boolean
+
+  Return $hInfo.Transparent
+
+End
+
+Private Sub Transparent_Write(Value As Boolean)
+
+  $hInfo.Transparent = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Paint.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Paint.Font = Value
+
+End
+
+Private Function LineWidth_Read() As Integer
+
+  Return Paint.LineWidth
+
+End
+
+Private Sub LineWidth_Write(Value As Integer)
+
+  Paint.LineWidth = Value
+
+End
+
+Private Function LineStyle_Read() As Integer
+
+  Return $hInfo.LineStyle
+
+End
+
+Private Sub LineStyle_Write(Value As Integer)
+
+  Select Case Value
+    Case Line.None
+      
+    Case Line.Solid
+      Paint.Dash = Null
+    Case Line.Dash
+      Paint.Dash = [3, 3]
+    Case Line.Dot
+      Paint.Dash = [1, 3]
+    Case Line.DashDot
+      Paint.Dash = [3, 3, 1, 3]
+    Case Line.DashDotDot
+      Paint.Dash = [3, 3, 1, 3, 1, 3]
+    Default
+      Return
+  End Select
+
+  $hInfo.LineStyle = Value
+
+End
+
+Private Function FillColor_Read() As Integer
+
+  Return $hInfo.FillColor
+
+End
+
+Private Sub FillColor_Write(Value As Integer)
+
+  $hInfo.FillColor = Value
+
+End
+
+Public Sub Clear()
+  
+  Paint.FillRect(0, 0, Paint.W, Paint.H, Color.Default)
+  
+End
+
+Public Sub Point(X As Integer, Y As Integer)
+  
+  Paint.FillRect(X, Y, 1, 1, $hInfo.Foreground)
+  
+End
+
+Public Sub Line(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+  
+  Paint.Save
+  Paint.Background = $hInfo.Foreground
+  Paint.MoveTo(X1 + 0.5, Y1 + 0.5)
+  Paint.LineTo(X2 + 0.5, Y2 + 0.5)
+  Paint.Stroke
+  Paint.Restore
+  
+End
+
+Public Sub Rect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  Paint.Rectangle(X, Y, Width, Height)
+  
+  If $hInfo.LineStyle Then
+    Paint.Background = $hInfo.Foreground
+    Paint.Stroke(True)
+  Endif
+  
+  If $hInfo.FillStyle Then
+    Paint.Background = $hInfo.FillColor
+    Paint.Fill
+  Endif
+  
+End
+
+Public Sub FillRect(X As Integer, Y As Integer, Width As Integer, Height As Integer, Color As Integer)
+  
+  Paint.FillRect(X, Y, Width, Height, Color)
+  
+End
+
+Private Function FillStyle_Read() As Integer
+
+  Return $hInfo.FillStyle
+
+End
+
+Private Sub FillStyle_Write(Value As Integer)
+
+  $hInfo.FillStyle = Value
+
+End
+
+Private Function FillX_Read() As Integer
+
+  Return Paint.BrushOrigin.X
+
+End
+
+Private Sub FillX_Write(Value As Integer)
+
+  Dim hPoint As PointF = Paint.BrushOrigin
+  
+  hPoint.X = Value
+  Paint.BrushOrigin = hPoint
+
+End
+
+Private Function FillY_Read() As Integer
+
+  Return Paint.BrushOrigin.Y
+
+End
+
+Private Sub FillY_Write(Value As Integer)
+
+  Dim hPoint As PointF = Paint.BrushOrigin
+  
+  hPoint.Y = Value
+  Paint.BrushOrigin = hPoint
+
+End

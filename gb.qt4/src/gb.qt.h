@@ -112,6 +112,7 @@ typedef
 		int fillRule;
 		QList<QPainterPath *> *clipStack;
 		QTransform *init;
+		float bx, by;
 	}
 	QT_PAINT_EXTRA;
 	

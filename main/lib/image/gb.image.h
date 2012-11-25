@@ -26,7 +26,7 @@
 
 #include "gambas.h"
 
-/* constants used by image data format */
+// Constants used by image data format
 
 #define GB_IMAGE_BGRX  0       // 00000
 #define GB_IMAGE_XRGB  1       // 00001
@@ -45,7 +45,7 @@
 #define GB_IMAGE_RGBP  26      // 11010
 #define GB_IMAGE_PBGR  27      // 11011
 
-/* format test functions */
+// Format test functions
 
 #define GB_IMAGE_FMT_IS_24_BITS(_format) ((_format) & 4)
 #define GB_IMAGE_FMT_IS_32_BITS(_format) (((_format) & 4) == 0)
@@ -60,7 +60,7 @@
 #define GB_IMAGE_FMT_SET_PREMULTIPLIED(_format) ((_format) | 16)
 #define GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(_format) ((_format) & ~16)
 
-/* Image owner information */
+// Image owner information
 
 struct GB_IMG;
 
@@ -75,7 +75,7 @@ typedef
 		}
 	GB_IMG_OWNER;
 	
-/* Gambas image */
+// Gambas image
 
 typedef
 	struct GB_IMG {
@@ -100,7 +100,7 @@ typedef
 	void *GB_IMAGE;
 #endif
 	
-/* Pixel color: the color is not premultiplied, and the alpha component is inverted (0 = solid / 255 = transparent) */
+// Pixel color: the color is not premultiplied, and the alpha component is inverted (0 = solid / 255 = transparent)
 
 #ifndef __GB_COLOR_DEFINED
 #define __GB_COLOR_DEFINED
@@ -108,7 +108,7 @@ typedef
 	unsigned int GB_COLOR;
 #endif
 
-/* Split a color into its component. Uninvert the alpha component */
+// Split a color into its component. Uninvert the alpha component
 
 #define GB_COLOR_SPLIT(_color, _r, _g, _b, _a) \
 { \
@@ -118,7 +118,11 @@ typedef
 	_a = ((_color) >> 24) ^ 0xFF; \
 }
 
-/* Gambas image component interface */
+// Create a GB_COLOR from rgba components
+
+#define GB_COLOR_MAKE(_r, _g, _b, _a) (((_b) & 0xFF) | (((_g) & 0xFF) << 8) | (((_r) & 0xFF) << 16) | ((((_a) & 0xFF) ^ 0xFF) << 24))
+
+// Gambas image component interface
 
 #define IMAGE_INTERFACE_VERSION 1
 

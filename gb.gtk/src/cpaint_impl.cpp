@@ -85,6 +85,8 @@ typedef
 		cairo_matrix_t init;
 		double dx;
 		double dy;
+		double bx;
+		double by;
 		}
 	GB_PAINT_EXTRA;
 
@@ -414,18 +416,38 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 		*font = (GB_FONT)EXTRA(d)->font;
 }
 
-/*static void init_path(GB_PAINT *d)
+
+static void Background(GB_PAINT *d, int set, int *color)
 {
-	switch (EXTRA(d)->fillRule)
+	if (set)
 	{
-		case GB_PAINT_FILL_RULE_WINDING:
-			PATH(d)->setFillRule(Qt::WindingFill); 
-			break;
-		case GB_PAINT_FILL_RULE_EVEN_ODD: 
-		default:
-			PATH(d)->setFillRule(Qt::OddEvenFill);
+		int r, g, b, a;
+		GB_COLOR_SPLIT(*color, r, g, b, a);
+		cairo_set_source_rgba(CONTEXT(d), r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 	}
-}*/
+	else
+	{
+		double r, g, b, a;
+		if (cairo_pattern_get_rgba(cairo_get_source(CONTEXT(d)), &r, &g, &b, &a) != CAIRO_STATUS_SUCCESS)
+			*color = 0;
+		else
+			*color = GB_COLOR_MAKE((int)(r * 255.0), (int)(g * 255.0), (int)(b * 255.0), (int)(a * 255.0));
+	}
+}
+
+
+static void Invert(GB_PAINT *d, int set, int *invert)
+{
+	if (set)
+	{
+		cairo_set_operator(CONTEXT(d), *invert ? CAIRO_OPERATOR_DIFFERENCE : CAIRO_OPERATOR_OVER);
+	}
+	else
+	{
+		*invert = cairo_get_operator(CONTEXT(d)) == CAIRO_OPERATOR_DIFFERENCE;
+	}
+}
+
 
 static void Clip(GB_PAINT *d, int preserve)
 {
@@ -554,7 +576,7 @@ static void FillRule(GB_PAINT *d, int set, int *value)
 	{
 		cairo_fill_rule_t v;
 	
-		switch(*value)
+		switch (*value)
 		{
 			case GB_PAINT_FILL_RULE_EVEN_ODD: v = CAIRO_FILL_RULE_EVEN_ODD; break;
 			case GB_PAINT_FILL_RULE_WINDING: default: v = CAIRO_FILL_RULE_WINDING;
@@ -564,13 +586,25 @@ static void FillRule(GB_PAINT *d, int set, int *value)
 	}
 	else
 	{
-		switch(cairo_get_fill_rule(CONTEXT(d)))
+		switch (cairo_get_fill_rule(CONTEXT(d)))
 		{
 			case CAIRO_FILL_RULE_EVEN_ODD: *value = GB_PAINT_FILL_RULE_EVEN_ODD; break;
 			case CAIRO_FILL_RULE_WINDING: default: *value = GB_PAINT_FILL_RULE_WINDING;
 		}
 	}
 }
+
+
+static void FillStyle(GB_PAINT *d, int set, int *style)
+{
+	/*if (set)
+	{
+		EXTRA(d)->fillRule = *value;
+	}
+	else
+		*value = EXTRA(d)->fillRule;*/
+}
+
 
 static void LineCap(GB_PAINT *d, int set, int *value)
 {
@@ -900,6 +934,28 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 	cairo_set_source(CONTEXT(d), (cairo_pattern_t *)brush);
 }
 
+static void BrushOrigin(GB_PAINT *d, int set, float *x, float *y)
+{
+	if (set)
+	{
+		cairo_pattern_t *brush;
+		cairo_matrix_t matrix;
+		
+		brush = cairo_get_source(CONTEXT(d));
+		cairo_pattern_get_matrix(brush, &matrix);
+		cairo_matrix_translate(&matrix, EXTRA(d)->bx, EXTRA(d)->by);
+		cairo_matrix_translate(&matrix, (- *x), (- *y));
+		cairo_pattern_set_matrix(brush, &matrix);
+		
+		EXTRA(d)->bx = *x;
+		EXTRA(d)->by = *y;
+	}
+	else
+	{
+		*x = EXTRA(d)->bx;
+		*y = EXTRA(d)->by;
+	}
+}
 
 static void BrushFree(GB_BRUSH brush)
 {
@@ -1191,6 +1247,8 @@ GB_PAINT_DESC PAINT_Interface =
 	Restore,
 	Antialias,
 	_Font,
+	Background,
+	Invert,
 	Clip,
 	ResetClip,
 	ClipExtents,
@@ -1201,6 +1259,7 @@ GB_PAINT_DESC PAINT_Interface =
 	Dash,
 	DashOffset,
 	FillRule,
+	FillStyle,
 	LineCap,
 	LineJoin,
 	LineWidth,
@@ -1220,6 +1279,7 @@ GB_PAINT_DESC PAINT_Interface =
 	RichTextExtents,
 	Matrix,
 	SetBrush,
+	BrushOrigin,
 	DrawImage,
 	{
 		BrushFree,
