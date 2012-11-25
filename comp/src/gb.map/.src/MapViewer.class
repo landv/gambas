@@ -78,7 +78,7 @@ Public Sub View_MouseWheel()
   
   hPix = New Point($hMap.BoxPixel.X + Mouse.X, $hMap.BoxPixel.Y + Mouse.Y)
 
-  If Mouse.Delta > 0 Then $hMap.Center = MTiles.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
+  If Mouse.Delta > 0 Then $hMap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
   
   $hView.Refresh
 End
@@ -94,7 +94,7 @@ Public Sub View_MouseDown()
    $hView.Mouse = Mouse.Pointing
   $iX = Mouse.X
   $iY = Mouse.Y
-  $pCurCenterPx = MTiles.MapPointToPixel($hmap.Center, $hmap.Zoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($hMap.Center), $hMap.Zoom)
+  $pCurCenterPx = Geo.MapPointToPixel($hmap.Center, $hmap.Zoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($hMap.Center), $hMap.Zoom)
 
   Raise MouseDown
 End
@@ -118,7 +118,7 @@ Public Sub View_MouseMove()
   
     hPix.X += $ix - Mouse.X
     hPix.Y += $iY - Mouse.Y
-    $hmap.Center = MTiles.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hPix, $hMap.Zoom))
+    $hmap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hPix, $hMap.Zoom))
     'Print hpix.X, hpix.y
     '$hMapView.CenterLat = hMapPoint.Lat
     '$hMapView.CenterLon = hMapPoint.Lon

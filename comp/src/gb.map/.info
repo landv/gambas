@@ -1,3 +1,32 @@
+#Geo
+
+C
+MapPointToTile
+M
+Point
+(hMapPoint)MapPoint;(Zoom)i
+MapPointToPixel
+M
+Point
+(hMapPoint)MapPoint;(Zoom)i
+PixelToMapPoint
+M
+MapPoint
+(hPoint)Point;(Zoom)i
+PixelToTile
+M
+Point
+(hPoint)Point;
+SexToDec
+M
+f
+(Value)s
+'ex: 45°53'36" -> 45,893333
+DecToSex
+M
+s
+(Value)f(Type)i
+'ex:45,893333 -> 45°53'36"
 #Map
 
 C

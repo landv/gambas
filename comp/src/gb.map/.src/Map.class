@@ -162,7 +162,7 @@ Private Sub RefreshBoxes()
   Dim tmpPoint As PointF
   Dim ll As MapPoint
   
-  fptPixel = MTiles.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
+  fptPixel = Geo.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
   $hPixelBox.X = fptPixel.X - ($iWidth / 2)
   $hPixelBox.Y = fptPixel.Y - ($iHeight / 2)
   $hPixelBox.Right = fptPixel.X + ($iWidth / 2)

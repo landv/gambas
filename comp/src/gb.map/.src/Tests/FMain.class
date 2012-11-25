@@ -48,7 +48,7 @@ Public Sub MapViewer1_MouseDown()
     
     hmap.Zoom = MapViewer1.map.Zoom + SpinBox1.Value
     $bLens = True
-    hmap.Center = MTiles.PixelToMapPoint(point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y), MapViewer1.Map.Zoom)
+    hmap.Center = Geo.PixelToMapPoint(point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y), MapViewer1.Map.Zoom)
     MapViewer1.Lock = True
     MapViewer1.Refresh
   Endif
@@ -60,7 +60,7 @@ Public Sub MapViewer1_MouseMove()
   $iMX = Mouse.X
   $iMY = Mouse.Y
   If $bLens Then
-    hmap.Center = MTiles.PixelToMapPoint(Point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y, MapViewer1.Map.Zoom))
+    hmap.Center = Geo.PixelToMapPoint(Point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y, MapViewer1.Map.Zoom))
     
   Endif
   
@@ -119,7 +119,7 @@ End
 
 Public Sub Button1_Click()
   
-  MapViewer1.Map.Center = MapPoint(MTiles.SexToDec("45°31'33,33''N"), MTiles.SexToDec("0°18'43,50''W"))
+  MapViewer1.Map.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
   MapViewer1.Map.Zoom = 17
   MapViewer1.Refresh
 

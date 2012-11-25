@@ -90,8 +90,8 @@ Public Sub _Draw()
   
   'If Not $sVersion Then TryToGetVersion
   'MapBox 
-  iptMinTile = MTiles.PixelToTile(Point(MapBox.X, MapBox.Y))
-  iptMaxTile = MTiles.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
+  iptMinTile = Geo.PixelToTile(Point(MapBox.X, MapBox.Y))
+  iptMaxTile = Geo.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
 'Print "start"
 
 For ty = iptMinTile.Y To iptMaxTile.Y

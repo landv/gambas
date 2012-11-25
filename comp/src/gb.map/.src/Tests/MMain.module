@@ -5,9 +5,9 @@ Public Sub Main()
   Dim hpoint2 As Point
   Dim hpmap As MapPoint
 
-hpmap = MTiles.PixelToMapPoint(hpoint, 1)
+hpmap = Geo.PixelToMapPoint(hpoint, 1)
 Print hpmap.Lon, hpmap.Lat
-hpoint2 = MTiles.MapPointToPixel(hpmap, 1)
+hpoint2 = Geo.MapPointToPixel(hpmap, 1)
 Print hpoint2.x, hpoint2.Y
 End
 
