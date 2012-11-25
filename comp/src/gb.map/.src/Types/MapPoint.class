@@ -11,9 +11,9 @@ Public Sub _new(Optional Latitude As Float, Longitude As Float)
   
 End
 
-Static Public Function _get(Latitude As Float, Longitude As Float) As LatLon
+Static Public Function _Call(Latitude As Float, Longitude As Float) As MapPoint
   
-  Dim hLatLon As New LatLon(Latitude, Longitude)
+  Dim hLatLon As New MapPoint(Latitude, Longitude)
 
   Return hLatLon
   
