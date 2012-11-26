@@ -85,6 +85,12 @@ struct GB_PAINT_DESC;
 
 typedef
 	struct {
+		int x, y, w, h;
+	}
+	GB_RECT;
+
+typedef
+	struct {
 		float x1, y1, x2, y2;
 	}
 	GB_EXTENTS;
@@ -149,7 +155,7 @@ typedef
 		
 		void (*Font)(GB_PAINT *d, int set, GB_FONT *font);
 		
-		void (*Background)(GB_PAINT *d, int set, int *color);
+		void (*Background)(GB_PAINT *d, int set, GB_COLOR *color);
 		void (*Invert)(GB_PAINT *d, int set, int *invert);
 
 		void (*Clip)(GB_PAINT *d, int preserve);
@@ -194,7 +200,9 @@ typedef
 		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
 		void (*BrushOrigin)(GB_PAINT *d, int set, float *x, float *y);
 		
-		void (*DrawImage)(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity);
+		void (*DrawImage)(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source);
+		void (*DrawPicture)(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source);
+		void (*GetPictureInfo)(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info);
 		
 		struct {
 			void (*Free)(GB_BRUSH brush);

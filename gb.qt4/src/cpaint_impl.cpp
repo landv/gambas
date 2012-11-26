@@ -841,7 +841,7 @@ static void BrushOrigin(GB_PAINT *d, int set, float *x, float *y)
 	}
 }
 
-static void Background(GB_PAINT *d, int set, int *color)
+static void Background(GB_PAINT *d, int set, GB_COLOR *color)
 {
 	if (set)
 	{
@@ -876,16 +876,46 @@ static void Invert(GB_PAINT *d, int set, int *invert)
 }
 
 
-static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity)
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
 	QImage *img = CIMAGE_get((CIMAGE *)image);
 	QRectF rect(x, y, w, h);
 	
 	PAINTER(d)->setOpacity(opacity);
-	PAINTER(d)->drawImage(rect, *img);
+	
+	if (source)
+	{
+		QRectF srect(source->x, source->y, source->w, source->h);
+		PAINTER(d)->drawImage(rect, *img, srect);
+	}
+	else
+		PAINTER(d)->drawImage(rect, *img);
+	
 	PAINTER(d)->setOpacity(1.0);
 }
 		
+static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
+{
+	QPixmap *pix = ((CPICTURE *)picture)->pixmap;
+	QRectF rect(x, y, w, h);
+	QRectF srect;
+	
+	if (source)
+		srect = QRectF(source->x, source->y, source->w, source->h);
+	else
+		srect = QRectF(0, 0, pix->width(), pix->height());
+
+	PAINTER(d)->drawPixmap(rect, *pix, srect);
+}
+
+static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
+{
+	QPixmap *p = ((CPICTURE *)picture)->pixmap;
+	
+	info->width = p->width();
+	info->height = p->height();
+}
+
 static void BrushFree(GB_BRUSH brush)
 {
 	delete (QBrush *)brush;
@@ -1034,7 +1064,8 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 }
 
 
-GB_PAINT_DESC PAINT_Interface = {
+GB_PAINT_DESC PAINT_Interface = 
+{
 	// Size of the GB_PAINT structure extra data
 	sizeof(QT_PAINT_EXTRA),
 	Begin,
@@ -1077,6 +1108,8 @@ GB_PAINT_DESC PAINT_Interface = {
 	SetBrush,
 	BrushOrigin,
 	DrawImage,
+	DrawPicture,
+	GetPictureInfo,
 	{
 		BrushFree,
 		BrushColor,

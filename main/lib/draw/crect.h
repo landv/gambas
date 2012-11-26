@@ -40,6 +40,7 @@ typedef
 		int w;
 		int h;
 		}
+	PACKED
 	CRECT;
 
 typedef
@@ -50,6 +51,7 @@ typedef
 		double w;
 		double h;
 		}
+	PACKED
 	CRECTF;
 
 CRECT *CRECT_create(void);

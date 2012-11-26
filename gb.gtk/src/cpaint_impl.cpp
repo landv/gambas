@@ -74,6 +74,96 @@ static cairo_surface_t *check_image(void *img)
 	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner);
 }
 
+// Function partially taken from the GTK+ source code.
+
+static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
+{
+	gint width = gdk_pixbuf_get_width (pixbuf);
+	gint height = gdk_pixbuf_get_height (pixbuf);
+	guchar *gdk_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	int gdk_rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+	int n_channels = gdk_pixbuf_get_n_channels (pixbuf);
+	int cairo_stride;
+	guchar *cairo_pixels;
+	cairo_format_t format;
+	cairo_surface_t *surface;
+	static const cairo_user_data_key_t key = { 0 };
+	int j;
+
+	if (n_channels == 3)
+		format = CAIRO_FORMAT_RGB24;
+	else
+		format = CAIRO_FORMAT_ARGB32;
+
+	cairo_stride = cairo_format_stride_for_width (format, width);
+	cairo_pixels = (uchar *)g_malloc (height * cairo_stride);
+	surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
+																								format,
+																								width, height, cairo_stride);
+
+	cairo_surface_set_user_data (surface, &key,
+						cairo_pixels, (cairo_destroy_func_t)g_free);
+
+	for (j = height; j; j--)
+	{
+		guchar *p = gdk_pixels;
+		guchar *q = cairo_pixels;
+
+		if (n_channels == 3)
+		{
+			guchar *end = p + 3 * width;
+			
+			while (p < end)
+				{
+					#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+					q[0] = p[2];
+					q[1] = p[1];
+					q[2] = p[0];
+					#else
+					q[1] = p[0];
+					q[2] = p[1];
+					q[3] = p[2];
+					#endif
+					p += 3;
+					q += 4;
+				}
+		}
+		else
+		{
+			guchar *end = p + 4 * width;
+			guint t1,t2,t3;
+				
+			#define MULT(d,c,a,t) G_STMT_START { t = c * a + 0x7f; d = ((t >> 8) + t) >> 8; } G_STMT_END
+
+			while (p < end)
+				{
+					#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+					MULT(q[0], p[2], p[3], t1);
+					MULT(q[1], p[1], p[3], t2);
+					MULT(q[2], p[0], p[3], t3);
+					q[3] = p[3];
+					#else	  
+					q[0] = p[3];
+					MULT(q[1], p[0], p[3], t1);
+					MULT(q[2], p[1], p[3], t2);
+					MULT(q[3], p[2], p[3], t3);
+					#endif
+					
+					p += 4;
+					q += 4;
+				}
+			
+	#undef MULT
+		}
+
+		gdk_pixels += gdk_rowstride;
+		cairo_pixels += cairo_stride;
+	}
+
+	return surface;
+}
+
+
 /**** Paint implementation ***********************************************/
 
 typedef
@@ -417,7 +507,7 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 }
 
 
-static void Background(GB_PAINT *d, int set, int *color)
+static void Background(GB_PAINT *d, int set, GB_COLOR *color)
 {
 	if (set)
 	{
@@ -970,95 +1060,6 @@ static void BrushColor(GB_BRUSH *brush, GB_COLOR color)
 	*brush = (GB_BRUSH)cairo_pattern_create_rgba(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
 
-// Function partially taken from the GTK+ source code.
-
-static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
-{
-  gint width = gdk_pixbuf_get_width (pixbuf);
-  gint height = gdk_pixbuf_get_height (pixbuf);
-  guchar *gdk_pixels = gdk_pixbuf_get_pixels (pixbuf);
-  int gdk_rowstride = gdk_pixbuf_get_rowstride (pixbuf);
-  int n_channels = gdk_pixbuf_get_n_channels (pixbuf);
-  int cairo_stride;
-  guchar *cairo_pixels;
-  cairo_format_t format;
-  cairo_surface_t *surface;
-  static const cairo_user_data_key_t key = { 0 };
-  int j;
-
-  if (n_channels == 3)
-    format = CAIRO_FORMAT_RGB24;
-  else
-    format = CAIRO_FORMAT_ARGB32;
-
-  cairo_stride = cairo_format_stride_for_width (format, width);
-  cairo_pixels = (uchar *)g_malloc (height * cairo_stride);
-  surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
-                                                 format,
-                                                 width, height, cairo_stride);
-
-  cairo_surface_set_user_data (surface, &key,
-			       cairo_pixels, (cairo_destroy_func_t)g_free);
-
-  for (j = height; j; j--)
-    {
-      guchar *p = gdk_pixels;
-      guchar *q = cairo_pixels;
-
-      if (n_channels == 3)
-	{
-	  guchar *end = p + 3 * width;
-	  
-	  while (p < end)
-	    {
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-	      q[0] = p[2];
-	      q[1] = p[1];
-	      q[2] = p[0];
-#else	  
-	      q[1] = p[0];
-	      q[2] = p[1];
-	      q[3] = p[2];
-#endif
-	      p += 3;
-	      q += 4;
-	    }
-	}
-      else
-	{
-	  guchar *end = p + 4 * width;
-	  guint t1,t2,t3;
-	    
-#define MULT(d,c,a,t) G_STMT_START { t = c * a + 0x7f; d = ((t >> 8) + t) >> 8; } G_STMT_END
-
-	  while (p < end)
-	    {
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-	      MULT(q[0], p[2], p[3], t1);
-	      MULT(q[1], p[1], p[3], t2);
-	      MULT(q[2], p[0], p[3], t3);
-	      q[3] = p[3];
-#else	  
-	      q[0] = p[3];
-	      MULT(q[1], p[0], p[3], t1);
-	      MULT(q[2], p[1], p[3], t2);
-	      MULT(q[3], p[2], p[3], t3);
-#endif
-	      
-	      p += 4;
-	      q += 4;
-	    }
-	  
-#undef MULT
-	}
-
-      gdk_pixels += gdk_rowstride;
-      cairo_pixels += cairo_stride;
-    }
-
-	return surface;
-}
-
 static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 {
 	gPicture *picture = CIMAGE_get((CIMAGE *)image);
@@ -1194,11 +1195,13 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 	cairo_matrix_multiply((cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix2);
 }
 
-static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity)
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
+	cairo_surface_t *surface;
 	cairo_pattern_t *pattern, *save;
 	cairo_matrix_t matrix;
 	gPicture *picture = CIMAGE_get((CIMAGE *)image);
+	GdkPixbuf *pixbuf;
 	
 	x += DX(d);
 	y += DY(d);
@@ -1208,7 +1211,14 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	save = cairo_get_source(CONTEXT(d));
 	cairo_pattern_reference(save);
 	
-	BrushImage((GB_BRUSH *)&pattern, image);
+	pixbuf = picture->getPixbuf();
+	if (source)
+		pixbuf = gdk_pixbuf_new_subpixbuf(pixbuf, source->x, source->y, source->w, source->h);
+	
+	surface = gdk_cairo_create_surface_from_pixbuf(picture->getPixbuf());
+	pattern = cairo_pattern_create_for_surface(surface);
+	cairo_surface_destroy(surface);
+	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
 	
 	//gdk_cairo_set_source_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y);
 	
@@ -1235,8 +1245,18 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_pattern_destroy(save);
 	
 	cairo_restore(CONTEXT(d));
+	
+	if (source)
+		g_object_unref(pixbuf);
 }
 
+static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
+{
+}
+
+static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
+{
+}
 
 GB_PAINT_DESC PAINT_Interface = 
 {
@@ -1281,6 +1301,8 @@ GB_PAINT_DESC PAINT_Interface =
 	SetBrush,
 	BrushOrigin,
 	DrawImage,
+	DrawPicture,
+	GetPictureInfo,
 	{
 		BrushFree,
 		BrushColor,
