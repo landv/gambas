@@ -38,7 +38,7 @@ Public Sub _new(hDrawingArea As DrawingArea)
     
     Paint.Font = Font["Italic,Bold"]
     Y += Paint.Font.Height + 16
-    PaintText(("This program is published under\nthe GNU General Public License."), 12, Y, Color.SelectedForeground)
+    PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
     Paint.End
     
   Endif

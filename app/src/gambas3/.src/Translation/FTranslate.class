@@ -17,6 +17,8 @@ Private Const MODE_NONE As Integer = 0
 Private Const MODE_MSGID As Integer = 1
 Private Const MODE_MSGSTR As Integer = 2
 
+Private Enum EXPORT_ALL, EXPORT_UNTRANSLATED, EXPORT_TRANSLATED
+
 Private Const TABLE_HEIGHT_MAX As Integer = 256
 
 Private $sLang As String
@@ -324,12 +326,59 @@ Public Sub txtTranslate_Change()
 
 End
 
+Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT_ALL) As Boolean
+
+  Dim hFic As File
+  Dim sStr As String
+  Dim bTrans As Boolean
+
+  hFic = Open sPath For Create 
+
+  Print #hFic, $sHeader
+
+  With cvwTranslateOrg
+
+    .MoveFirst()
+
+    While .Available
+
+      sStr = .Item[1]
+      If iMode = EXPORT_TRANSLATED Then
+        If Not sStr Then Goto NEXT_TRANS
+      Else If iMode = EXPORT_UNTRANSLATED Then
+        If sStr Then Goto NEXT_TRANS
+      Endif
+
+      If sStr Then
+        If Right$(.Item[3], 2) = "\\n" Then
+          If Right$(sStr, 2) <> "\\n" Then
+            sStr = sStr & "\\n"
+          Endif
+        Endif
+      Endif
+
+      Print #hFic, "#: "; .Item[2]
+      Print #hFic, "msgid "; QuoteTranslation(.Item[3])
+      Print #hFic, "msgstr "; QuoteTranslation(sStr)
+      Print #hFic
+
+      If sStr Then bTrans = True
+
+    NEXT_TRANS:
+      .MoveNext()
+    Wend
+
+  End With
+
+  Close #hFic
+  
+  Return Not bTrans
+
+End
 
 Private Sub SaveTranslate(Optional bForce As Boolean)
 
-  Dim hFic As File
-  Dim bTrans As Boolean
-  Dim sStr As String
+  Dim bNoTrans As Boolean
   Dim bExistMO As Boolean
   Dim sPathMO As String
 
@@ -358,43 +407,10 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
   'PRINT "Saving "; $sPath
 
-  hFic = Open $sPath & ".new" For Create 
-
-  Print #hFic, $sHeader
-
-  With cvwTranslateOrg
-
-    .MoveFirst()
-
-    While .Available
-
-      sStr = .Item[1]
-
-      If sStr Then
-        If Right$(.Item[3], 2) = "\\n" Then
-          If Right$(sStr, 2) <> "\\n" Then
-            sStr = sStr & "\\n"
-          Endif
-        Endif
-      Endif
-
-      Print #hFic, "#: "; .Item[2]
-      Print #hFic, "msgid "; QuoteTranslation(.Item[3])
-      Print #hFic, "msgstr "; QuoteTranslation(sStr)
-      Print #hFic
-
-      If sStr Then bTrans = True
-
-      .MoveNext()
-    Wend
-
-  End With
-
-  Close #hFic
-
+  bNoTrans = WriteTranslation($sPath & ".new")
   Try Kill $sPath
 
-  If bTrans Then
+  If Not bNoTrans Then
 
     Move $sPath & ".new" To $sPath
 
@@ -535,7 +551,7 @@ Public Sub cmbLang_Click()
 End
 
 
-Public Sub btnDelete_Click()
+Public Sub mnuDelete_Click()
 
   If Message.Delete(("Do you really want to delete this translation ?"), ("Delete"), ("Cancel")) = 2 Then Return
 
@@ -561,7 +577,7 @@ Public Sub btnDelete_Click()
 
 End
 
-Public Sub btnNew_Click()
+Public Sub mnuNew_Click()
 
   Dim sLang As String
 
@@ -631,7 +647,7 @@ Public Sub txtTranslate_KeyPress()
   
 End
 
-Public Sub btnUndo_Click()
+Public Sub mnuReload_Click()
 
   If Message.Question(("Do you really want to reload this translation ?"), ("Reload"), ("Cancel")) = 2 Then Return
 
@@ -645,8 +661,7 @@ Public Sub btnClear_Click()
 
 End
 
-
-Public Sub btnExport_Click()
+Private Sub ExportTranslation(iMode As Integer)
 
   Dialog.Title = ("Export a translation")
   Dialog.Path = Settings["/FTranslate/ExportPath", System.User.Home] &/ Project.Name & "-" & $sLang & "-" & Project.MajorVersion & "." & Project.MinorVersion & "." & Project.ReleaseVersion & ".po"
@@ -656,8 +671,27 @@ Public Sub btnExport_Click()
 
   Settings["/FTranslate/ExportPath"] = File.Dir(Dialog.Path)
 
-  SaveTranslate
-  Shell "cp -f " & Shell$(Language.GetPath($sLang, "po")) & " " & Shell$(Dialog.Path) Wait
+  UpdateOrg
+  Try Kill Dialog.Path
+  WriteTranslation(Dialog.Path, iMode)
+
+End
+
+Public Sub mnuExportAll_Click()
+
+  ExportTranslation(EXPORT_ALL)
+
+End
+
+Public Sub mnuExportTranslated_Click()
+
+  ExportTranslation(EXPORT_TRANSLATED)
+
+End
+
+Public Sub mnuExportUntranslated_Click()
+
+  ExportTranslation(EXPORT_UNTRANSLATED)
 
 End
 

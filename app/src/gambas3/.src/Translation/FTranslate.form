@@ -1,13 +1,42 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7,15,116,80)
+  MoveScaled(7,15,116,76)
   Text = ("Project translation")
   Icon = Picture["icon:/small/language"]
   Persistent = True
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
+  { mnuTranslation Menu
+    Visible = False
+    { mnuNew Menu
+      Text = ("&New...")
+      Picture = Picture["icon:/small/new"]
+    }
+    { mnuReload Menu
+      Text = ("&Reload")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { mnuDelete Menu
+      Text = ("&Delete")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { Menu1 Menu
+    }
+    { mnuExport Menu
+      Text = ("Export")
+      { mnuExportUntranslated Menu
+        Text = ("&Untranslated strings...")
+      }
+      { mnuExportTranslated Menu
+        Text = ("&Translated strings...")
+      }
+      { mnuExportAll Menu
+        Text = ("&All strings...")
+      }
+    }
+  }
   { tabTranslate TabPanel
     MoveScaled(1,1,107,72)
     Expand = True
@@ -21,6 +50,14 @@
       Margin = True
       { HBox2 HBox
         MoveScaled(1,0,82,4)
+        { btnMenu MenuButton
+          MoveScaled(0,0,6,4)
+          AutoResize = True
+          Picture = Picture["icon:/small/language"]
+          Border = False
+          Menu = "mnuTranslation"
+          MenuOnly = True
+        }
         { cmbLangSource ComboBox
           MoveScaled(17,0,21,4)
           Expand = True
@@ -146,7 +183,6 @@
       AutoResize = True
       Spacing = True
       Margin = True
-      Padding = 4
       { PictureBox3 PictureBox
         MoveScaled(0,0,4,4)
         Picture = Picture["icon:/medium/info"]
@@ -154,9 +190,16 @@
         Alignment = Align.Center
       }
       { lblInfo Label
-        MoveScaled(8,0,9,3)
+        MoveScaled(11,0,9,3)
+        Expand = True
         AutoResize = True
-        Alignment = Align.Right
+      }
+      { btnOK Button
+        MoveScaled(83,0,18,4)
+        AutoResize = True
+        Text = ("&Close")
+        Picture = Picture["icon:/small/close"]
+        Cancel = True
       }
     }
     Index = 1
@@ -203,48 +246,5 @@
       }
     }
     Index = 0
-  }
-  { HBox1 HBox
-    MoveScaled(1,74,107,4)
-    Spacing = True
-    { btnNew Button
-      MoveScaled(0,0,18,4)
-      ToolTip = ("New translation")
-      AutoResize = True
-      Text = ("&New...")
-      Picture = Picture["icon:/small/new"]
-    }
-    { btnUndo Button
-      MoveScaled(19,0,18,4)
-      ToolTip = ("Reload translation")
-      AutoResize = True
-      Text = ("&Reload")
-      Picture = Picture["icon:/small/undo"]
-    }
-    { btnDelete Button
-      MoveScaled(38,0,18,4)
-      ToolTip = ("Delete translation")
-      AutoResize = True
-      Text = ("&Delete")
-      Picture = Picture["icon:/small/delete"]
-    }
-    { btnExport Button
-      MoveScaled(57,0,18,4)
-      ToolTip = ("Export to a translation file")
-      AutoResize = True
-      Text = ("&Export...")
-      Picture = Picture["icon:/small/save"]
-    }
-    { Panel1 Panel
-      MoveScaled(77,0,1,4)
-      Expand = True
-    }
-    { btnOK Button
-      MoveScaled(81,0,18,4)
-      AutoResize = True
-      Text = ("&Close")
-      Picture = Picture["icon:/small/close"]
-      Cancel = True
-    }
   }
 }

@@ -714,17 +714,17 @@ msgstr "Ce mois-ci"
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
 #: FSaveProjectAs.form:76 FSearch.class:865 FSelectExtraFile.form:43
 #: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
-#: FTextEditor.class:596 FTranslate.class:540 Project.module:464
+#: FTextEditor.class:596 FTranslate.class:556 Project.module:464
 msgid "Cancel"
 msgstr "Annuler"
 
 #: CWelcome.class:41
-msgid ""
-"This program is published under\n"
-"the GNU General Public License."
-msgstr ""
-"Ce programme est publié sous\n"
-"la Licence Publique Générale GNU."
+msgid "The Gambas font is published under the SIL Open Font License."
+msgstr "La police Gambas est publié sous licence « SIL Open Font License »."
+
+#: CWelcome.class:41
+msgid "This program is published under the GNU General Public License."
+msgstr "Ce programme est publié sous la « Licence Publique Générale GNU »."
 
 #: ComponentItem.class:139 FPropertyComponent.form:73
 msgid "Experimental"
@@ -801,7 +801,7 @@ msgstr ""
 #: Design.module:420 FColorChooser.form:54 FCommit.form:223
 #: FConnectionEditor.class:452 FCreateFile.form:443 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
-#: FMain.class:1794 FMakeInstall.class:299 FMenu.form:372
+#: FMain.class:1793 FMakeInstall.class:299 FMenu.form:372
 #: FNewConnection.form:249 FNewTable.form:80 FNewTranslation.form:15
 #: FOpenProject.form:197 FPasteSpecial.form:71 FPropertyComponent.form:215
 #: FPropertyProject.form:740 FProxy.form:63 FReportBorderChooser.form:54
@@ -1171,7 +1171,7 @@ msgstr "Impossible de supprimer la table « &1 »."
 msgid "Select the CSV file to import"
 msgstr "Choisissez le fichier CSV à importer"
 
-#: FConnectionEditor.class:1421 FTranslate.class:1169
+#: FConnectionEditor.class:1421 FTranslate.class:1203
 msgid "All files"
 msgstr "Tous les fichiers"
 
@@ -1195,7 +1195,7 @@ msgstr "Enregistrer"
 
 #: FConnectionEditor.form:109 FEditor.form:318 FForm.form:406
 #: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:62
-#: FTextEditor.form:231 FTranslate.class:636
+#: FTextEditor.form:231 FTranslate.class:652
 msgid "Reload"
 msgstr "Recharger"
 
@@ -1251,7 +1251,7 @@ msgstr "Requête SQL"
 msgid "Fields"
 msgstr "Champs"
 
-#: FConnectionEditor.form:232 FMain.class:1896
+#: FConnectionEditor.form:232 FMain.class:1895
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1292,7 +1292,7 @@ msgid "Export..."
 msgstr "Exporter..."
 
 #: FConnectionEditor.form:465 FForm.form:257 FMain.class:207
-#: FNewConnection.class:325 FOption.class:855 FTranslate.class:540
+#: FNewConnection.class:325 FOption.class:855 FTranslate.class:556
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1558,7 +1558,7 @@ msgstr "Fonction"
 msgid "Line"
 msgstr "Ligne"
 
-#: FDebugInfo.class:69 FInfo.class:120 FTranslate.class:67
+#: FDebugInfo.class:69 FInfo.class:120 FTranslate.class:69
 msgid "File"
 msgstr "Fichier"
 
@@ -1671,7 +1671,7 @@ msgstr "Rechercher de nouveau"
 msgid "Show search window"
 msgstr "Afficher la fenêtre de recherche"
 
-#: FDebugInfo.form:305 FSearch.class:486 FTranslate.class:501
+#: FDebugInfo.form:305 FSearch.class:486 FTranslate.class:517
 msgid "Search string cannot be found."
 msgstr "La chaîne recherchée est introuvable."
 
@@ -2337,7 +2337,7 @@ msgstr "Aperçu"
 msgid "Messages"
 msgstr "Messages"
 
-#: FImportTable.form:211 FTranslate.form:284
+#: FImportTable.form:211 FTranslate.form:337
 msgid "&Import"
 msgstr "&Importer"
 
@@ -2429,7 +2429,7 @@ msgstr "Général"
 msgid "Link to"
 msgstr "Lien vers"
 
-#: FInfo.form:97 FSelectIcon.form:54 FTranslate.class:68
+#: FInfo.form:97 FSelectIcon.form:54 FTranslate.class:70
 msgid "Size"
 msgstr "Taille"
 
@@ -2461,7 +2461,7 @@ msgstr "Éditer la liste des propriétés"
 msgid "&Insert"
 msgstr "&Insérer"
 
-#: FList.form:64 FMenu.form:97 FTranslate.form:315
+#: FList.form:64 FMenu.form:97 FTranslate.form:78
 msgid "&Delete"
 msgstr "&Supprimer"
 
@@ -2539,35 +2539,35 @@ msgstr ""
 "\n"
 "Veuillez les installer pour pouvoir effectuer la traduction."
 
-#: FMain.class:1078 FPropertyComponent.class:219
+#: FMain.class:1077 FPropertyComponent.class:219
 msgid "Library properties"
 msgstr "Propriétés de la bibliothèque"
 
-#: FMain.class:1467
+#: FMain.class:1466
 msgid "Unable to drop file into the project."
 msgstr "Impossible de déposer le fichier à l'intérieur du projet."
 
-#: FMain.class:1585
+#: FMain.class:1584
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont être supprimés."
 
-#: FMain.class:1585
+#: FMain.class:1584
 msgid "Clean"
 msgstr "Nettoyer"
 
-#: FMain.class:1794
+#: FMain.class:1793
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr "Pour afficher de nouveau la barre de menus, appuyez sur les touches suivantes&nbsp;:<p><b>&1</b>"
 
-#: FMain.class:1896
+#: FMain.class:1895
 msgid "Do you really want to add this file to the repository?"
 msgstr "Désirez-vous réellement ajouter ce fichier au référentiel ?"
 
-#: FMain.class:2035
+#: FMain.class:2034
 msgid "Choose a profile"
 msgstr "Choisissez un profilage"
 
-#: FMain.class:2036
+#: FMain.class:2035
 msgid "Profile for &1 project"
 msgstr "Profilage pour le projet &1"
 
@@ -3369,7 +3369,7 @@ msgstr "Veuillez saisir le nom de la nouvelle table."
 msgid "Table '&1' already exists."
 msgstr "La table « &1 » existe déjà."
 
-#: FNewTranslation.form:10 FTranslate.form:297
+#: FNewTranslation.form:10
 msgid "New translation"
 msgstr "Nouvelle traduction"
 
@@ -3433,7 +3433,7 @@ msgstr "Choisissez un thème"
 msgid "Desktop"
 msgstr "Bureau"
 
-#: FOption.class:75 FTranslate.class:133
+#: FOption.class:75 FTranslate.class:135
 msgid "(Default)"
 msgstr "(Défaut)"
 
@@ -3685,7 +3685,7 @@ msgstr "Fragments de code"
 msgid "Activate code snippets"
 msgstr "Activer les fragments de code"
 
-#: FOption.form:956 FTranslate.form:299
+#: FOption.form:956 FTranslate.form:68
 msgid "&New..."
 msgstr "&Nouveau..."
 
@@ -4097,7 +4097,7 @@ msgstr "Les contrôles des formulaires sont publics"
 msgid "Activate warnings"
 msgstr "Activer les avertissements"
 
-#: FPropertyProject.form:367 FTranslate.form:64
+#: FPropertyProject.form:367 FTranslate.form:108
 msgid "Translation"
 msgstr "Traduction"
 
@@ -4473,151 +4473,151 @@ msgstr "Astuces du jour"
 msgid "Show tips on startup"
 msgstr "Afficher les astuces au démarrage"
 
-#: FTranslate.class:37
+#: FTranslate.class:39
 msgid "The project is void. There is nothing to translate."
 msgstr "Le projet est vide. Il n'y a rien à traduire."
 
-#: FTranslate.class:64
+#: FTranslate.class:66
 msgid "Language"
 msgstr "Langage"
 
-#: FTranslate.class:151
+#: FTranslate.class:153
 msgid "Translation files"
 msgstr "Fichiers de traduction"
 
-#: FTranslate.class:281
+#: FTranslate.class:283
 msgid "Cannot read translation file for language '&1'"
 msgstr "Impossible de lire le fichier de traduction pour la langue « &1 »"
 
-#: FTranslate.class:428
+#: FTranslate.class:444
 msgid "Cannot save translation."
 msgstr "Impossible de sauvegarder la traduction."
 
-#: FTranslate.class:540
+#: FTranslate.class:556
 msgid "Do you really want to delete this translation ?"
 msgstr "Voulez-vous vraiment supprimer cette traduction ?"
 
-#: FTranslate.class:636
+#: FTranslate.class:652
 msgid "Do you really want to reload this translation ?"
 msgstr "Voulez-vous vraiment recharger cette traduction ?"
 
-#: FTranslate.class:651
+#: FTranslate.class:666
 msgid "Export a translation"
 msgstr "Exporter une traduction"
 
-#: FTranslate.class:820
+#: FTranslate.class:854
 msgid "Please select the translation file to import."
 msgstr "Veuillez sélectionner le fichier de traduction à importer."
 
-#: FTranslate.class:858
+#: FTranslate.class:892
 msgid "No translation were picked up."
 msgstr "Aucune traduction n'a été récupérée."
 
-#: FTranslate.class:860
+#: FTranslate.class:894
 msgid "One translation was picked up."
 msgstr "Une traduction a été récupérée."
 
-#: FTranslate.class:862
+#: FTranslate.class:896
 msgid "&1 translations were picked up."
 msgstr "&1 traductions ont été récupérées."
 
-#: FTranslate.class:871
+#: FTranslate.class:905
 msgid "Cannot import translation file."
 msgstr "Impossible d'importer le fichier de traduction."
 
-#: FTranslate.class:921
+#: FTranslate.class:955
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Les symboles de la chaîne traduite ne correspondent pas à ceux de la chaîne non traduite."
 
-#: FTranslate.class:934
+#: FTranslate.class:968
 msgid "Everything seems to be correct."
 msgstr "Tout semble correct."
 
-#: FTranslate.class:957
+#: FTranslate.class:991
 msgid "&1 strings. Everything is translated!"
 msgstr "&1 chaînes de caractères. Tout est traduit !"
 
-#: FTranslate.class:959
+#: FTranslate.class:993
 msgid "&1 strings. One is not translated. &3% done."
 msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 
-#: FTranslate.class:961
+#: FTranslate.class:995
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 chaînes de caractères. &2 ne sont pas traduites. &3% effectué."
 
-#: FTranslate.class:1084
+#: FTranslate.class:1118
 msgid "The 'msgmerge' command has failed"
 msgstr "La commande 'msgmerge' a échoué"
 
-#: FTranslate.form:51
+#: FTranslate.form:57
 msgid "Project translation"
 msgstr "Traduction du projet"
 
-#: FTranslate.form:101
-msgid "Save translation"
-msgstr "Enregistrer la traduction"
-
-#: FTranslate.form:107
-msgid "Clear this translation"
-msgstr "Effacer cette traduction"
-
-#: FTranslate.form:113
-msgid "This string must not be translated"
-msgstr "Cette chaîne ne doit pas être traduite"
-
-#: FTranslate.form:119
-msgid "Copy untranslated string"
-msgstr "Copier la chaîne non traduite"
-
-#: FTranslate.form:125
-msgid "Verify the translation"
-msgstr "Vérifier la traduction"
-
-#: FTranslate.form:131
-msgid "Find next untranslated string"
-msgstr "Rechercher la chaîne non traduite suivante"
-
-#: FTranslate.form:137
-msgid "Find previous untranslated string"
-msgstr "Rechercher la chaîne non traduite précédente"
-
-#: FTranslate.form:240
-msgid "Statistics"
-msgstr "Statistiques"
-
-#: FTranslate.form:254
-msgid "Import"
-msgstr "Importer"
-
-#: FTranslate.form:277
-msgid "Import all translations  recursively"
-msgstr "Importer toutes les traductions récursivement"
-
-#: FTranslate.form:282
-msgid "Import a translation file"
-msgstr "Importer un fichier de traduction"
-
-#: FTranslate.form:305
-msgid "Reload translation"
-msgstr "Recharger la traduction"
-
-#: FTranslate.form:307
+#: FTranslate.form:73
 msgid "&Reload"
 msgstr "&Recharger"
 
-#: FTranslate.form:313
-msgid "Delete translation"
-msgstr "Supprimer la traduction"
+#: FTranslate.form:86
+msgid "Export"
+msgstr "Exporter"
 
-#: FTranslate.form:321
-msgid "Export to a translation file"
-msgstr "Exporter vers un fichier de traduction"
+#: FTranslate.form:89
+msgid "&Untranslated strings..."
+msgstr "Chaînes &non traduites..."
 
-#: FTranslate.form:323
-msgid "&Export..."
-msgstr "&Exporter..."
+#: FTranslate.form:93
+msgid "&Translated strings..."
+msgstr "Chaînes &traduites..."
+
+#: FTranslate.form:97
+msgid "&All strings..."
+msgstr "Toutes les ch&aînes..."
+
+#: FTranslate.form:154
+msgid "Save translation"
+msgstr "Enregistrer la traduction"
+
+#: FTranslate.form:160
+msgid "Clear this translation"
+msgstr "Effacer cette traduction"
+
+#: FTranslate.form:166
+msgid "This string must not be translated"
+msgstr "Cette chaîne ne doit pas être traduite"
+
+#: FTranslate.form:172
+msgid "Copy untranslated string"
+msgstr "Copier la chaîne non traduite"
+
+#: FTranslate.form:178
+msgid "Verify the translation"
+msgstr "Vérifier la traduction"
+
+#: FTranslate.form:184
+msgid "Find next untranslated string"
+msgstr "Rechercher la chaîne non traduite suivante"
+
+#: FTranslate.form:190
+msgid "Find previous untranslated string"
+msgstr "Rechercher la chaîne non traduite précédente"
+
+#: FTranslate.form:293
+msgid "Statistics"
+msgstr "Statistiques"
+
+#: FTranslate.form:307
+msgid "Import"
+msgstr "Importer"
+
+#: FTranslate.form:330
+msgid "Import all translations  recursively"
+msgstr "Importer toutes les traductions récursivement"
 
 #: FTranslate.form:335
+msgid "Import a translation file"
+msgstr "Importer un fichier de traduction"
+
+#: FTranslate.form:356
 msgid "&Close"
 msgstr "&Fermer"
 

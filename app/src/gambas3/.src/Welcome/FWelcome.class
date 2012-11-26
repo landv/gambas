@@ -230,6 +230,7 @@ Public Sub dwgExample_Draw()
   
   Draw.Font = hDrawingArea.Font
   Draw.Text(hDrawingArea.Tag, 4, 0, Draw.W - 16, Draw.H - 4, Align.BottomNormal)
+  Draw.Foreground = Color.Merge(Draw.Foreground, Color.White, 0.7)
   Draw.Line(4, Draw.H - 4, Draw.W - 9, Draw.H - 4)
   
 End
