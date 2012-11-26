@@ -177,6 +177,7 @@ typedef
 		double dy;
 		double bx;
 		double by;
+		bool invert;
 		}
 	GB_PAINT_EXTRA;
 
@@ -528,14 +529,17 @@ static void Background(GB_PAINT *d, int set, GB_COLOR *color)
 
 static void Invert(GB_PAINT *d, int set, int *invert)
 {
+	#if CAIRO_MAJOR >= 2 || (CAIRO_MAJOR == 1 && CAIRO_MINOR >= 10)
 	if (set)
-	{
 		cairo_set_operator(CONTEXT(d), *invert ? CAIRO_OPERATOR_DIFFERENCE : CAIRO_OPERATOR_OVER);
-	}
 	else
-	{
 		*invert = cairo_get_operator(CONTEXT(d)) == CAIRO_OPERATOR_DIFFERENCE;
-	}
+	#else
+	if (set)
+		EXTRA(d)->invert = *invert;
+	else
+		*invert = EXTRA(d)->invert;
+	#endif
 }
 
 
