@@ -43,6 +43,8 @@ static GB_PAINT *_current = NULL;
 
 #define CHECK_DEVICE() if (check_device()) return
 
+#define RAD(_deg) ((_deg) * M_PI / 180)
+
 static bool check_device()
 {
 	if (!_current || !_current->extra)
@@ -731,6 +733,31 @@ BEGIN_METHOD(Paint_Ellipse, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT hei
 END_METHOD
 
 
+BEGIN_METHOD(Paint_Polygon, GB_OBJECT points)
+
+	GB_ARRAY points = VARG(points);
+	int i, n;
+	double *p;
+	
+	if (!points)
+		return;
+	
+	n = GB.Array.Count(points);
+	if (n < 4) 
+		return;
+
+	CHECK_DEVICE();
+	
+	p = (double *)GB.Array.Get(points, 0);
+	
+	PAINT->MoveTo(THIS, p[0], p[1]);
+	for (i = 2; i < n; i+= 2)
+		PAINT->LineTo(THIS, p[i], p[i + 1]);
+	PAINT->LineTo(THIS, p[0], p[1]);
+	
+END_METHOD
+
+
 BEGIN_METHOD(Paint_CurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; GB_FLOAT x3; GB_FLOAT y3)
 
 	CHECK_DEVICE();
@@ -785,10 +812,35 @@ BEGIN_METHOD(Paint_RelMoveTo, GB_FLOAT x; GB_FLOAT y)
 END_METHOD
 
 
-BEGIN_METHOD(Paint_Rectangle, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
+BEGIN_METHOD(Paint_Rectangle, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_FLOAT radius)
 
 	CHECK_DEVICE();
-	PAINT->Rectangle(THIS, VARG(x), VARG(y), VARG(w), VARG(h));
+	
+	float x = VARG(x);
+	float y = VARG(y);
+	float w = VARG(w);
+	float h = VARG(h);
+	float r = VARGOPT(radius, 0.0);
+	
+	if (r <= 0.0)
+		PAINT->Rectangle(THIS, x, y, w, h);
+	else
+	{
+		r = Min(r, Min(w, h) / 2);
+		float r2 = r * (1-0.55228475);
+
+		//PAINT->NewPath(THIS);
+		
+		PAINT->MoveTo(THIS, x + r, y);
+		PAINT->LineTo(THIS, x + w - r, y);
+		PAINT->CurveTo(THIS, x + w - r2, y, x + w, y + r2, x + w, y + r);
+		PAINT->LineTo(THIS, x + w, y + h - r);
+		PAINT->CurveTo(THIS, x + w, y + h - r2, x + w - r2, y + h, x + w - r, y + h);
+		PAINT->LineTo(THIS, x + r, y + h);
+		PAINT->CurveTo(THIS, x + r2, y + h, x, y + h - r2, x, y + h - r);
+		PAINT->LineTo(THIS, x, y + r);
+		PAINT->CurveTo(THIS, x, y + r2, x + r2, y, x + r, y);
+	}
 
 END_METHOD
 
@@ -1401,7 +1453,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY_READ("X", "f", Paint_X),
 	GB_STATIC_PROPERTY_READ("Y", "f", Paint_Y),
 
-	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f"),
+	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f[(Radius)f]"),
 	GB_STATIC_METHOD("FillRect", NULL, Paint_FillRect, "(X)f(Y)f(Width)f(Height)f(Color)i"),
 	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
 	GB_STATIC_METHOD("Ellipse", NULL, Paint_Ellipse, "(X)f(Y)f(Width)f(Height)f[(Angle)f(Length)f]"),

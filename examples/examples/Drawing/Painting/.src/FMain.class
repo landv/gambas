@@ -500,6 +500,19 @@ Public Sub Example21()
   
 End
 
+Public Sub Example22()
+  
+  Paint.Background = Color.RGB(128, 128, 255)
+  Paint.Rectangle(32, 32, 192, 192, 32)
+  Paint.Fill(True)
+  Paint.Background = Color.RGB(128, 0, 0, 128)
+  Paint.LineWidth = 10
+  Paint.Stroke
+  'Paint.Background = Color.Black
+  'Paint.Arc(128, 128, 96)
+  'Paint.Stroke
+  
+End
 
 Public Sub optExample_Click()
 
@@ -532,3 +545,4 @@ Public Sub sldScale_Change()
   DrawingArea1.Refresh
 
 End
+
