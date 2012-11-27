@@ -28,11 +28,15 @@ Public Sub DrawingArea2_Draw()
   Dim sText As String = "<b>gb.gui.base</b>&nbsp;3.3.90<br><font size=\"-1\" color=\"#404040\">gb.gui.base</font>"
   Dim W As Integer
 
-  W = Draw.RichTextWidth(sText)
-  Debug W
-
-  Draw.Rect(10, 10, W, 100)
-  Draw.RichText(sText, 10, 10, W, 100, Align.TopNormal)
+  Draw.FillStyle = Fill.Solid
+  Draw.FillColor = Color.Red
+  Draw.Polygon([10, 10, 40, 20, 25, 30, 10, 10])
+  
+  ' W = Draw.RichTextWidth(sText)
+  ' Debug W
+  ' 
+  ' Draw.Rect(10, 10, W, 100)
+  ' Draw.RichText(sText, 10, 10, W, 100, Align.TopNormal)
   
   
 End

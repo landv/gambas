@@ -209,6 +209,8 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 		cairo_surface_destroy(target);
 	}
 	
+	cairo_set_line_width(CONTEXT(d), 1.0);
+	
 	dx->font = NULL;
 	dx->font_stack = NULL;
 	

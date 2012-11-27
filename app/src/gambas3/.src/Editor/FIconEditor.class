@@ -116,7 +116,7 @@ Public Sub _new(sPath As String)
   SetBackground(Color.White)
   SetForeground(Color.Black)
 
-  SetTransparent(True )
+  SetTransparent(True)
   SetMode(0)
   SetTool(btnMove)
   SetReadOnly
@@ -258,13 +258,15 @@ Public Sub dwgIcon_Draw()
 
   If $iScale > 5 Then
     Draw.LineStyle = Line.Solid
-    Draw.Foreground = &H989898
+    Draw.Foreground = &H80808080&
   Else
     Draw.LineStyle = Line.None
   Endif
 
   'If $iScale >= 6 Then
   Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX, SY, SW, SH)
+  'Debug "--> "; $hImage;; $iScale;; SX * $iScale;; SY * $iScale;; Color.SetAlpha(Color.Gray, 128);; SX;; SY;; SW;; SH
+  'Paint.ZoomImage($hImage, $iScale, SX * $iScale, SY * $iScale, If(Draw.LineStyle = Line.None, Color.Default, Draw.Foreground), Rect(SX, SY, SW, SH))
   'Else
   '  Draw.Image($hImage, SX * $iScale, SY * $iScale, SW * $iScale, SH * $iScale, SX, SY, SW, SH)
   'Endif
@@ -281,7 +283,7 @@ Public Sub dwgPaste_Draw()
   Dim DX As Integer
   Dim DY As Integer
   Dim W As Integer
-  Dim hTemp As Image
+  'Dim hTemp As Image
   Dim XD, WD As Integer
 
   If Not $hPaste Then Return
@@ -289,7 +291,7 @@ Public Sub dwgPaste_Draw()
   Draw.FillX = Draw.FillX - $XS * $iScale
   Draw.FillY = Draw.FillY - $YS * $iScale
 
-  Draw.LineStyle = LINE.None
+  Draw.LineStyle = Line.None
   'Draw.FillStyle = Fill.CrossDiagonal
   'Draw.FillColor = 0
   'Draw.Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
@@ -299,7 +301,7 @@ Public Sub dwgPaste_Draw()
 
   If $iScale > 5 Then
     Draw.LineStyle = Line.Solid
-    Draw.Foreground = &H989898
+    Draw.Foreground = &H80808080&
     W = $iScale1
   Else
     Draw.LineStyle = LINE.None
@@ -317,22 +319,25 @@ Public Sub dwgPaste_Draw()
   SY = Max(0, SY)
   DY = Min($hPaste.Height - 1, DY)
 
-  If $bTrans Then
+  ' If $bTrans Then
+  ' 
+  '   hTemp = $hImage.Copy($XS, $YS, $hPaste.Width, $hPaste.Height)
+  '   hTemp.PaintImage($hPaste, 0, 0)
+  '   'Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX + $XS, SY + $YS, DX - SX + 1, DY - SY + 1)
+  '   Draw.Zoom(hTemp, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+  ' 
+  ' Else
+  ' 
+  '   Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+  ' 
+  ' Endif
 
-    hTemp = $hImage.Copy($XS, $YS, $hPaste.Width, $hPaste.Height)
-    hTemp.PaintImage($hPaste, 0, 0)
-    'Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX + $XS, SY + $YS, DX - SX + 1, DY - SY + 1)
-    Draw.Zoom(hTemp, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
-
-  Else
-
-    Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
-
-  Endif
+  'Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+  Paint.ZoomImage($hPaste, $iScale, SX * $iScale, SY * $iScale, If(Draw.LineStyle = Line.None, Color.Default, Draw.Foreground), Rect(SX, SY, DX - SX + 1, DY - SY + 1))
 
   Draw.FillStyle = Fill.None
   Draw.LineStyle = Line.Dot
-  Draw.LineWidth = 1 + $iScale \ 2
+  Draw.LineWidth = 1
   Draw.Foreground = Color.Black
   Draw.Background = Color.White
   Draw.Transparent = False
@@ -341,7 +346,7 @@ Public Sub dwgPaste_Draw()
   XD = Draw.LineWidth \ 2
   WD = Draw.LineWidth - 1
   
-  Draw.Rect(XD, XD, dwgPaste.Width - WD, dwgPaste.Height - WD)
+  Draw.Rect(0, 0, dwgPaste.Width, dwgPaste.Height)
   
 End
 
@@ -992,7 +997,7 @@ Private Sub ShowSelection()
     DeleteSelection
     RefreshPaste
   Endif
-  Wait
+  'Wait
 
 End
 
@@ -1108,7 +1113,7 @@ Private Sub CopySelection()
     hCopy = $hImage
   Endif
   
-  hCopy.Save("~/copy.png")
+  'hCopy.Save("~/copy.png")
   
   Clipboard.Copy(hCopy)
 
@@ -1206,7 +1211,7 @@ End
 Public Sub DoPaste()
 
   If Not dwgPaste.Visible Then
-    ShowPaste(True )
+    ShowPaste(True)
     $bPrivate = False
     Return
   Endif
@@ -1294,10 +1299,10 @@ Public Sub DoFlip(iMode As Integer)
     Select Case iMode
 
       Case 0
-        $hPaste = $hPaste.Mirror(True , False )
+        $hPaste = $hPaste.Mirror(True, False)
 
       Case 1
-        $hPaste = $hPaste.Mirror(False , True )
+        $hPaste = $hPaste.Mirror(False, True)
 
       Case 2
         $hPaste = $hPaste.Rotate(Rad(-90))
@@ -1316,10 +1321,10 @@ Public Sub DoFlip(iMode As Integer)
     Select Case iMode
 
       Case 0
-        $hImage = $hImage.Mirror(True , False )
+        $hImage = $hImage.Mirror(True, False)
 
       Case 1
-        $hImage = $hImage.Mirror(False , True )
+        $hImage = $hImage.Mirror(False, True)
 
       Case 2
         $hImage = $hImage.Rotate(Rad(-90))
@@ -1553,10 +1558,10 @@ Public Sub btnTool_Click()
       SetTool(Last)
   
     Case "opaque"
-      SetTransparent(False )
+      SetTransparent(False)
 
     Case "transparent"
-      SetTransparent(True )
+      SetTransparent(True)
       
     Case "border"
       SetMode(0)
@@ -1913,7 +1918,7 @@ End
 
 Public Sub dwgForeground_MouseUp()
 
-  If FColorChooser.Run("&H" & Hex$($iForeground, 8), True ) Then Return
+  If FColorChooser.Run("&H" & Hex$($iForeground, 8), True) Then Return
   $iForeground = FColorChooser.Value
   RefreshColor
 
@@ -1921,7 +1926,7 @@ End
 
 Public Sub dwgBackground_MouseUp()
 
-  If FColorChooser.Run("&H" & Hex$($iBackground, 8), True ) Then Return
+  If FColorChooser.Run("&H" & Hex$($iBackground, 8), True) Then Return
   $iBackground = FColorChooser.Value
   RefreshColor
 
@@ -1996,7 +2001,7 @@ Public Sub Reload()
   $XD = COORD_HIDE
   $YD = COORD_HIDE
 
-  Modify(True )
+  Modify(True)
   
   dwgIcon.Refresh
 

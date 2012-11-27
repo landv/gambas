@@ -205,6 +205,8 @@ static int get_clipboard_type()
 			return MIME_TEXT;
 		else if (format.startsWith("image/"))
 			return MIME_IMAGE;
+		else if (format == "application/x-qt-image")
+			return MIME_IMAGE;
 	}
 	
 	return MIME_UNKNOWN;

@@ -540,14 +540,18 @@ Public Sub Polygon(Points As Integer[])
 
   hInfo = _GetInfo()
 
-  Paint.MoveTo(Points[0], Points[1])
-  
-  For I = 2 To Points.Max Step 2
-    Paint.LineTo(Points[I], Points[I + 1])
-  Next
-  
-  Paint.LineTo(Points[0], Points[1])
+  Paint.Polygon(Points)
+
+  ' Paint.MoveTo(Points[0], Points[1])
+  ' 
+  ' For I = 2 To Points.Max Step 2
+  '   Paint.LineTo(Points[I], Points[I + 1])
+  ' Next
+  ' 
+  ' Paint.LineTo(Points[0], Points[1])
     
+  fOffset = GetStrokeOffset()
+  
   If hInfo.FillStyle Then
     
     Paint.Background = hInfo.FillColor
@@ -558,10 +562,9 @@ Public Sub Polygon(Points As Integer[])
   If hInfo.LineStyle Then
     
     Paint.Background = GetForeground()
-    fOffset = GetStrokeOffset()
-    Paint.Translate(fOffset, fOffset)
+    'Paint.Translate(fOffset, fOffset)
     Paint.Stroke
-    Paint.Translate(- fOffset, - fOffset)
+    'Paint.Translate(- fOffset, - fOffset)
     
   Endif
   
@@ -589,11 +592,12 @@ Public Sub Zoom((Image) As Image, (Zoom) As Integer, X As Integer, Y As Integer,
 
   Dim hInfo As DrawInfo = _GetInfo()
 
- If SrcWidth <= 0 Or If SrcHeight <= 0 Then
-   Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()))
- Else
-   Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()), Rect(SrcX, SrcY, SrcWidth, SrcHeight))
- Endif
+  If SrcWidth <= 0 Or If SrcHeight <= 0 Then
+    Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()))
+  Else
+    Debug "Paint.ZoomImage: "; Image;; Zoom;; X;; Y;; If(hInfo.LineStyle = Line.None, Color.Default, GetForeground());; SrcX;; SrcY;; SrcWidth;; SrcHeight
+    Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()), Rect(SrcX, SrcY, SrcWidth, SrcHeight))
+  Endif
   
 End
 
