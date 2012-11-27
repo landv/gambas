@@ -65,18 +65,10 @@ Close
 m
 b
 
-Store
-m
-i
-(sCommand)s(sKey)s(vData)v[(iExpire)i(sFlags)i(iCas)i]
 Exec
 m
 v
 (sCommand)s[(vData)v(bRaw)b]
-Get
-m
-Collection
-(aKey)String[];
 Retrieve
 m
 Collection
@@ -136,6 +128,10 @@ _new
 m
 
 (sKey)s(oClient)Memcached;
+Store
+m
+i
+(sCommand)s(sKey)s(vData)v[(iExpire)i(sFlags)i(iCas)i]
 _free
 m
 

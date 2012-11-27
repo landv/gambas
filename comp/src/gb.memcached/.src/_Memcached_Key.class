@@ -80,7 +80,7 @@ End
 
 Private Sub Value_Write(Value As Variant)
 
-  $oMemcached.Store("set", $sKey, Value)
+  Store("set", $sKey, Value)
 
 End
 
@@ -92,7 +92,7 @@ End
 
 Public Function Cas(sData As String) As Boolean
 
-  Return Not $oMemcached.Store("set", $sKey, sData,,, $iCasID) = Memcached.Exists
+  Return Not Store("set", $sKey, sData,,, $iCasID) = Memcached.Exists
 
 End
 
@@ -105,5 +105,26 @@ End
 Private Sub CasID_Write(Value As Integer)
 
   $iCasID = Value
+
+End
+
+Private Function Store(sCommand As String, sKey As String, vData As Variant, Optional iExpire As Integer = 0, Optional sFlags As Integer = 0, Optional iCas As Integer) As Integer
+
+  Dim iLen As Integer
+
+  If $oMemcached.Status <> Net.Connected Then
+    Error.Raise(("Not connected"))
+  Endif
+
+  iLen = Len(Str(vData))
+
+  If iCas Then
+    sCommand = "cas"
+    sCommand = Subst("&1 &2 &3 &4 &5 &6\r\n", sCommand, sKey, sFlags, iExpire, iLen, iCas)
+  Else
+    sCommand = Subst("&1 &2 &3 &4 &5\r\n", sCommand, sKey, sFlags, iExpire, iLen)
+  Endif
+
+  Return $oMemcached.Exec(sCommand, vData)
 
 End

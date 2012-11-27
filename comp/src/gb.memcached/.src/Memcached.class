@@ -94,25 +94,6 @@ Public Function Close() As Boolean
 
 End
 
-Public Function Store(sCommand As String, sKey As String, vData As Variant, Optional iExpire As Integer = 0, Optional sFlags As Integer = 0, Optional iCas As Integer) As Integer
-
-  Dim iLen As Integer
-
-  IsConnected()
-
-  iLen = Len(Str(vData))
-
-  If iCas Then
-    sCommand = "cas"
-    sCommand = Subst("&1 &2 &3 &4 &5 &6\r\n", sCommand, sKey, sFlags, iExpire, iLen, iCas)
-  Else
-    sCommand = Subst("&1 &2 &3 &4 &5\r\n", sCommand, sKey, sFlags, iExpire, iLen)
-  Endif
-
-  Return Exec(sCommand, vData)
-
-End
-
 Public Function Exec(sCommand As String, Optional vData As Variant, Optional bRaw As Boolean = False) As Variant
 
   Dim sLine As String
@@ -168,12 +149,6 @@ Public Function Exec(sCommand As String, Optional vData As Variant, Optional bRa
       Return Touched
 
   End Select
-
-End
-
-Public Function Get(aKey As String[]) As Collection
-
-  Return Retrieve("get", aKey)
 
 End
 

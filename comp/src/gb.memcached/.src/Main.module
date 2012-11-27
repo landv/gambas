@@ -1,61 +1,57 @@
 ' Gambas module file
 
+Private $oClient As New Memcached
+
 Public Sub Main()
 
   Dim a As New Memcached
 
-  Dim b As Collection
+  '  Dim b As New Memcached
 
   Dim c As Float
 
   Dim d As Boolean
 
-  '
-  ' a.Debug = True
-  '
-  a.Open()
+  $oClient.Open()
 
-  'Print a.Version
+  TestCas()
+  TestIncrement()
 
-  ' a.Flush()
+  $oClient.Close()
 
-  a["asd"].Value = 5
+End
 
-  Debug a["asd"].Value = 5
+Public Sub TestCas()
 
-  c = a["asd"].Value
+  ''Store initial value
+  $oClient["key"].Value = "value1"
 
-  a["asd"].Increment(3)
+  ''Read the value to store cas id
+  Debug $oClient["key"].Value = "value1"
 
-  Debug a["asd"].Value = c + 3
+  ''Store new value. cas id is not modified
+  $oClient["key"].Value = "value2"
 
-  a["asd"].Decrement(3)
+  ''Fails, value was modified since last fetched
+  Debug $oClient["key"].Cas("value3")
 
-  Debug a["asd"].Value = c
+  ''Should print True
+  Debug $oClient["key"].Value = "value2"
 
-  a["asd"].Value = "asd"
+End
 
-  Debug a["asd"].Value = "asd"
-  '
-  ' a["asd"].Value = "val1"
+Public Sub TestIncrement()
 
-  ' c = a["asd"].Value
+  Dim tmpVal As Integer
 
-  ' a["asd"].Value = "val2"
+  $oClient["key2"].Value = 5
 
-  'c = a["asd"].Value
+  tmpVal = $oClient["key2"].Value
 
-  'd = a["asd"].Cas("asd")
+  Debug tmpVal = 5
 
-  'a["asd"].Value = "val2"
+  $oClient["key2"].Increment(3)
 
-  ' a["asd1"].Value = "valasd1"
-  '
-  ' a["asd2"].Value = "valasd2"
-  ' a["asd3"].Value = "valasd3"
-  '
-  'b = a.Get(["add", "asd", "asd3", "add", "asd", "asd1", "add", "asd", "asd2"])
-
-  a.Close()
+  Debug $oClient["key2"].Value = tmpVal + 3
 
 End
