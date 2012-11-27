@@ -4,35 +4,39 @@
   MoveScaled(0,0,113,87)
   Icon = Picture[".hidden/mapviewer.png"]
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Margin = True
   { Panel1 HBox
     MoveScaled(1,9,97,55)
     Expand = True
-    Spacing = True
     { MapViewer1 MapViewer
-      MoveScaled(1,1,64,43)
+      MoveScaled(1,1,61,43)
       Expand = True
-      Border = Border.Sunken
+    }
+    { Separator1 Separator
+      MoveScaled(64,9,0,18)
     }
     { VBox1 VBox
       MoveScaled(67,6,29,45)
-      Spacing = True
       { Panel3 VBox
-        MoveScaled(1,1,26,34)
+        MoveScaled(1,1,26,29)
         Expand = True
         { Label2 Label
-          MoveScaled(0,0,23,5)
-          Text = ("Select Layers")
-          Alignment = Align.Center
-          Border = Border.Raised
+          MoveScaled(0,0,23,4)
+          Font = Font["Underline"]
+          Background = Color.TextBackground
+          Foreground = Color.TextForeground
+          Padding = 4
+          Text = ("Layers")
         }
         { GridView1 GridView
-          MoveScaled(0,7,25,26)
+          MoveScaled(0,7,25,21)
           Expand = True
+          Border = False
           Mode = Select.Single
           Grid = False
         }
+      }
+      { Separator2 Separator
+        MoveScaled(3,32,11,0)
       }
       { hbLens Panel
         MoveScaled(0,36,31,5)
@@ -59,17 +63,17 @@
       { btnAbout Button
         MoveScaled(1,40,27,5)
         Text = ("&About...")
+        Border = False
       }
     }
   }
   { TextLabel1 TextLabel
-    MoveScaled(1,65,111,10)
+    MoveScaled(1,65,111,12)
     Font = Font["Bold"]
     Background = &HFF7F00&
     Foreground = &HFFFFFF&
-    Padding = 5
+    Padding = 8
     AutoResize = True
-    Text = ("Welcome in this Gambas Map component demo.<br>\n<br>\nUse your mouse to drag the map with left button and  zoom with wheel button.<br>\nA little extra is here too, Use ctrl + mouse left button on the map and see what happen ;-) .")
-    Border = Border.Plain
+    Text = ("Welcome to this Gambas Map component demo.<br>\n<br>\nUse your mouse to drag the map with the left button and zoom with the wheel button.<br>\nA little extra is here to: use CTRL + mouse left button on the map and see what happens ;-) .")
   }
 }

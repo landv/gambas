@@ -108,6 +108,8 @@ Public Sub GridView1_Data(Row As Integer, Column As Integer)
       Last.Data.Text = $aNames[row]
   End Select
   
+  Last.Data.Padding = 4
+  
 End
 
 Public Sub GridView1_MouseUp()
