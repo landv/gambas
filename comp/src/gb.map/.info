@@ -129,6 +129,32 @@ _Call
 M
 MapPoint
 (Latitude)f(Longitude)f
+Distance
+m
+f
+(PointA)MapPoint;(PointB)MapPoint;
+'Calculate geodesic distance (in m) between two points specified by latitude / longitude (in numeric degrees).
+'from: Vincenty inverse formula - T Vincenty, "Direct and Inverse Solutions of Geodesics on the
+'Ellipsoid with application of nested equations", Survey Review, vol XXII no 176, 1975
+'[http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf]
+'© 2002-2008 Chris Veness [http://www.movable-type.co.uk/scripts/latlong-vincenty.html]
+From
+M
+MapPoint
+(Point)MapPoint;(Bearing)f(Distance)f
+'Calculate destination point given starting point lat / long (numeric degrees), 
+'bearing (numeric degrees) & distance (in m).
+'from: Vincenty direct formula - T Vincenty, "Direct and Inverse Solutions of Geodesics on the 
+'Ellipsoid with application of nested equations", Survey Review, vol XXII no 176, 1975"
+'[http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf]
+'© 2002-2008 Chris Veness [http://www.movable-type.co.uk/scripts/latlong-vincenty-direct.html]
+Bearing
+M
+f
+(From)MapPoint;(To)MapPoint;
+'Calculate the initial bearing (in degrees) that leads from one point to another point
+'specified by latitude / longitude.
+'
 #MapViewer
 UserControl
 C

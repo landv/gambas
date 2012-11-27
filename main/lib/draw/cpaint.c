@@ -1405,6 +1405,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("FillRect", NULL, Paint_FillRect, "(X)f(Y)f(Width)f(Height)f(Color)i"),
 	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
 	GB_STATIC_METHOD("Ellipse", NULL, Paint_Ellipse, "(X)f(Y)f(Width)f(Height)f[(Angle)f(Length)f]"),
+	GB_STATIC_METHOD("Polygon", NULL, Paint_Polygon, "(Points)Float[];"),
 
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
 	GB_STATIC_METHOD("RelCurveTo", NULL, Paint_RelCurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),

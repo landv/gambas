@@ -4,20 +4,18 @@
   MoveScaled(8,16,50,50)
   Resizable = False
   { panSide Panel
-    MoveScaled(6,11,35,33)
+    MoveScaled(5,11,35,33)
   }
   { panMove Panel
     MoveScaled(1,5,46,4)
     { btnSide DrawingArea
       MoveScaled(10,0,6,4)
       Mouse = Mouse.Pointing
-      Painted = True
     }
     { btnSide2 DrawingArea btnSide
       Name = "btnSide2"
       MoveScaled(18,0,6,4)
       Mouse = Mouse.Pointing
-      Painted = True
     }
   }
   { sepSide Separator

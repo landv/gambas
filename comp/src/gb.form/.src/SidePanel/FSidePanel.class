@@ -297,7 +297,7 @@ Private Sub CreateShowButton() As DrawingArea
   
   hCtrl = New DrawingArea($hShowPanel) As "ShowButton"
   hCtrl.Ignore = True
-  hCtrl.Painted = True
+  'hCtrl.Painted = True
   hCtrl.Resize(Desktop.Scale, Desktop.Scale)
   hCtrl.Mouse = Mouse.Pointing
   
