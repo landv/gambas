@@ -243,7 +243,7 @@ static void JIT_push_unknown(){
 		
 		if (index == NO_SYMBOL){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
-				THROW(E_NSYMBOL, name, klass->name);
+				THROW(E_NSYMBOL, klass->name, name);
 			
 			if (klass->special[SPEC_PROPERTY] != NO_SYMBOL){
 				push(new PushPureObjectUnknownExpression(pop(), name, code[pos-1]));
@@ -317,7 +317,7 @@ static void JIT_push_unknown(){
 				push(new PushExternExpression(klass, index, pop()));
 				return;
 			
-			default: THROW(E_NSYMBOL, name, klass->name);
+			default: THROW(E_NSYMBOL, klass->name, name);
 		}
 		
 	} else if (top()->type == T_OBJECT){
@@ -335,7 +335,7 @@ static void JIT_push_unknown(){
 		
 		if (index == NO_SYMBOL){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
-				THROW(E_NSYMBOL, name, klass->name);
+				THROW(E_NSYMBOL, klass->name, name);
 			
 			if (klass->special[SPEC_PROPERTY] != NO_SYMBOL){
 				pop();
@@ -423,7 +423,7 @@ static void JIT_push_unknown(){
 				push(new PushExternExpression(klass, desc->ext.exec, NULL));
 				return;
 			
-			default: THROW(E_NSYMBOL, name, klass->name);
+			default: THROW(E_NSYMBOL, klass->name, name);
 			
 		}
 		
@@ -462,7 +462,7 @@ static void JIT_pop_unknown(){
 		
 		if (index == NO_SYMBOL){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
-				THROW(E_NSYMBOL, name, klass->name);
+				THROW(E_NSYMBOL, klass->name, name);
 			
 			if (klass->special[SPEC_PROPERTY] == NO_SYMBOL)
 				THROW(E_NPROPERTY, klass->name, name);
@@ -519,7 +519,7 @@ static void JIT_pop_unknown(){
 			case CD_STATIC_METHOD:
 				THROW(E_NPROPERTY, klass->name, name);
 			
-			default: THROW(E_NSYMBOL, name, klass->name);
+			default: THROW(E_NSYMBOL, klass->name, name);
 		}
 	} else if (top()->type == T_OBJECT){
 		Expression* obj = pop();
@@ -536,7 +536,7 @@ static void JIT_pop_unknown(){
 		
 		if (index == NO_SYMBOL){
 			if (klass->special[SPEC_UNKNOWN] == NO_SYMBOL)
-				THROW(E_NSYMBOL, name, klass->name);
+				THROW(E_NSYMBOL, klass->name, name);
 			
 			if (klass->special[SPEC_PROPERTY] == NO_SYMBOL)
 				THROW(E_NPROPERTY, klass->name, name);
@@ -594,7 +594,7 @@ static void JIT_pop_unknown(){
 			case CD_STATIC_METHOD:
 				THROW(E_NPROPERTY, klass->name, name);
 			
-			default: THROW(E_NSYMBOL, name, klass->name);
+			default: THROW(E_NSYMBOL, klass->name, name);
 		}
 	} else if (top()->type == T_FUNCTION){
 		assert(false && "syntax error");

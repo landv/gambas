@@ -29,6 +29,8 @@
 
 #include "gambas.h"
 #include "main.h"
+#include "gb.draw.h"
+#include "cpaint_impl.h"
 #include "CPicture.h"
 #include "CWidget.h"
 #include "CWindow.h"
@@ -396,7 +398,223 @@ GB_DESC ApplicationDesc[] =
 	GB_END_DECLARE
 };
 
-/***************************************************************************/
+//-- Style ------------------------------------------------------------------
+
+static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state)
+{
+	opt.rect = QRect(x, y, w ,h);
+	if (state & GB_DRAW_STATE_DISABLED)
+		return;
+	
+	opt.state |= QStyle::State_Enabled;
+	
+	if (state & GB_DRAW_STATE_FOCUS)
+		opt.state |= QStyle::State_HasFocus;
+	if (state & GB_DRAW_STATE_HOVER)
+		opt.state |= QStyle::State_MouseOver;
+	if (state & GB_DRAW_STATE_ACTIVE)
+		opt.state |= QStyle::State_On | QStyle::State_Sunken | QStyle::State_Active;
+}
+
+static void paint_focus(QPainter *p, int x, int y, int w, int h, int state)
+{
+	QStyleOptionFocusRect opt;
+	
+	if ((state & GB_DRAW_STATE_DISABLED) || !(state & GB_DRAW_STATE_FOCUS))
+		return;
+	
+	init_option(opt, x, y, w, h, state);
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, p);
+}
+
+static void style_arrow(QPainter *p, int x, int y, int w, int h, int type, int state)
+{
+	QStyleOption opt;
+	QStyle::PrimitiveElement pe;
+	
+	init_option(opt, x, y, w, h, state);
+	
+	switch (type)
+	{
+		case ALIGN_NORMAL: pe = GB.System.IsRightToLeft() ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight; break;
+		case ALIGN_LEFT: pe = QStyle::PE_IndicatorArrowLeft; break;
+		case ALIGN_RIGHT: pe = QStyle::PE_IndicatorArrowRight; break;
+		case ALIGN_TOP: pe = QStyle::PE_IndicatorArrowUp; break;
+		case ALIGN_BOTTOM: pe = QStyle::PE_IndicatorArrowDown; break;
+		default:
+			return;
+	}
+
+	QApplication::style()->drawPrimitive(pe, &opt, p);
+}
+
+static void style_check(QPainter *p, int x, int y, int w, int h, int value, int state)
+{
+	QStyleOptionButton opt;
+	init_option(opt, x, y, w, h, state);
+	
+	if (value)
+	{
+		if (value == 1)
+			opt.state |= QStyle::State_NoChange;
+		else
+			opt.state |= QStyle::State_On;
+	}
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_IndicatorCheckBox, &opt, p);
+	paint_focus(p, x, y, w, h, state);
+}
+
+static void style_option(QPainter *p, int x, int y, int w, int h, int value, int state)
+{
+	QStyleOptionButton opt;
+	init_option(opt, x, y, w, h, state);
+	
+	if (value)
+		opt.state |= QStyle::State_On;
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_IndicatorRadioButton, &opt, p);
+	paint_focus(p, x, y, w, h, state);
+}
+
+static void style_separator(QPainter *p, int x, int y, int w, int h, int vertical, int state)
+{
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
+	
+	if (vertical)
+		opt.state |= QStyle::State_Horizontal;
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, p);
+}
+
+
+static void style_button(QPainter *p, int x, int y, int w, int h, int value, int state, int flat)
+{
+	if (flat)
+	{
+		QStyleOptionToolButton opt;
+		
+		init_option(opt, x, y, w, h, state);
+		
+		//opt.state |= QStyle::State_Raised;
+		
+		if (value)
+			opt.state |= QStyle::State_On;
+
+		//opt.state &= ~QStyle::State_HasFocus;
+		opt.state |= QStyle::State_AutoRaise;
+		if (opt.state & QStyle::State_MouseOver)
+			opt.state |= QStyle::State_Raised;
+		
+		if (opt.state & (QStyle::State_Sunken | QStyle::State_On | QStyle::State_MouseOver))
+		{
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, p);
+		}
+	}
+	else
+	{
+		QStyleOptionButton opt;
+	
+		init_option(opt, x, y, w, h, state);
+		
+		opt.state |= QStyle::State_Raised;
+		
+		if (value)
+			opt.state |= QStyle::State_On;
+	
+		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, p);
+	}
+	
+	paint_focus(p, x + 3, y + 3, w - 6, h - 6, state);
+}
+			
+static void style_panel(QPainter *p, int x, int y, int w, int h, int border, int state)
+{
+	QStyleOptionFrame opt;
+	init_option(opt, x, y, w, h, state);
+	
+	CCONTAINER_draw_frame(p, border, opt);
+	
+	/*opt.lineWidth = 2;
+	opt.midLineWidth = 0;	
+	
+	if (border == BORDER_NONE)
+		return;
+		
+	if (border == BORDER_PLAIN)
+	{
+		DP(d)->save();
+		DP(d)->setPen(state == GB_DRAW_STATE_DISABLED ? QApplication::palette().color(QPalette::Active, QPalette::WindowText) : QApplication::palette().color(QPalette::Disabled, QPalette::WindowText));
+		DP(d)->drawRect(x, y, w - 1, h - 1);
+		DP(d)->restore();
+		if DPM(d) 
+		{	
+			DPM(d)->save();
+			DPM(d)->setPen(Qt::color1);
+			DPM(d)->drawRect(x, y, w - 1, h - 1);
+			DPM(d)->restore();
+		}
+		return;
+	}
+	
+	if (border == BORDER_ETCHED)
+	{
+		pe = QStyle::PE_FrameGroupBox;
+	}
+	else
+	{
+		if (border == BORDER_RAISED)
+			opt.state |= QStyle::State_Raised;
+		else if (border == BORDER_SUNKEN)
+			opt.state |= QStyle::State_Sunken;
+		
+		pe = QStyle::PE_Frame;
+	}
+	
+	QApplication::style()->drawPrimitive(pe, &opt, DP(d));
+	if (DPM(d)) 
+	{
+		//DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style()->drawPrimitive(pe, &opt, DPM(d));
+		//DPM(d)->setRasterOp(Qt::CopyROP);
+	}*/
+}
+			
+static void style_handle(QPainter *p, int x, int y, int w, int h, int vertical, int state)
+{
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
+	
+	if (!vertical)
+		opt.state |= QStyle::State_Horizontal;
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_IndicatorDockWidgetResizeHandle, &opt, p);
+	paint_focus(p, x, y, w, h, state);
+}
+
+
+static void style_box(QPainter *p, int x, int y, int w, int h, int state)
+{
+	QStyleOptionFrame opt;
+	
+	//if (GB.Is(d->device, CLASS_DrawingArea))
+	//	opt.initFrom(QWIDGET(d->device));
+	
+	init_option(opt, x, y, w, h, state);
+
+	opt.lineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt);
+	opt.midLineWidth = 0;
+	opt.state |= QStyle::State_Sunken;
+	//opt.features = QStyleOptionFrameV2::None;
+	
+  QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, p);
+	
+	//paint_focus(d, x, y, w, h, state);
+	//if (state & GB_DRAW_STATE_FOCUS)
+	//	QApplication::style()->drawControl(QStyle::CE_FocusFrame, &opt, DP(d), GB.Is(d->device, CLASS_DrawingArea) ? QWIDGET(d->device) : NULL);
+}
 
 BEGIN_PROPERTY(Style_ScrollbarSize)
 
@@ -441,6 +659,78 @@ BEGIN_PROPERTY(Style_Name)
 
 END_PROPERTY
 
+#define GET_COORD() \
+	int x, y, w, h; \
+\
+	QPainter *p = PAINT_get_current(); \
+	if (!p) \
+		return; \
+\
+	x = VARG(x); \
+	y = VARG(y); \
+	w = VARG(w); \
+	h = VARG(h); \
+\
+	if (w < 1 || h < 1) \
+		return;
+
+BEGIN_METHOD(Style_PaintArrow, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER type; GB_INTEGER state)
+
+	GET_COORD();
+	style_arrow(p, x, y, w, h, VARG(type), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintCheck, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER value; GB_INTEGER state)
+
+	GET_COORD();
+	style_check(p, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintOption, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state)
+
+	GET_COORD();
+	style_option(p, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintSeparator, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN vertical; GB_INTEGER state)
+
+	GET_COORD();
+	style_separator(p, x, y, w, h, VARGOPT(vertical, FALSE), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintButton, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state; GB_BOOLEAN flat)
+
+	GET_COORD();
+	style_button(p, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL), VARGOPT(flat, FALSE));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintPanel, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER border; GB_INTEGER state)
+
+	GET_COORD();
+	style_panel(p, x, y, w, h, VARG(border), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintHandle, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN vertical; GB_INTEGER state)
+
+	GET_COORD();
+	style_handle(p, x, y, w, h, VARGOPT(vertical, FALSE), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintBox, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER state)
+
+	GET_COORD();
+	style_box(p, x, y, w, h, VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
@@ -452,6 +742,15 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameWidth),
 	GB_STATIC_PROPERTY_READ("Name", "s", Style_Name),
+	
+	GB_STATIC_METHOD("PaintArrow", NULL, Style_PaintArrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(Flag)i]"),
+	GB_STATIC_METHOD("PaintCheck", NULL, Style_PaintCheck, "(X)i(Y)i(Width)i(Height)i(Value)i[(Flag)i]"),
+	GB_STATIC_METHOD("PaintOption", NULL, Style_PaintOption, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
+	GB_STATIC_METHOD("PaintSeparator", NULL, Style_PaintSeparator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+	GB_STATIC_METHOD("PaintButton", NULL, Style_PaintButton, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i(Flat)b]"),
+	GB_STATIC_METHOD("PaintPanel", NULL, Style_PaintPanel, "(X)i(Y)i(Width)i(Height)i(Border)i[(Flag)i]"),
+	GB_STATIC_METHOD("PaintHandle", NULL, Style_PaintHandle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+	GB_STATIC_METHOD("PaintBox", NULL, Style_PaintBox, "(X)i(Y)i(Width)i(Height)i[(Flag)i]"),
 	
 	GB_END_DECLARE
 };

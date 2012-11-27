@@ -331,7 +331,6 @@ static int Begin(GB_PAINT *d)
 			a = &wid->widget->allocation;
 			dx = a->x;
 			dy = a->y;
-			//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
 			dr = wid->widget->window;
 		}
 
@@ -339,13 +338,16 @@ static int Begin(GB_PAINT *d)
 		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
 		
 		EXTRA(d)->context = gdk_cairo_create(dr);
+		EXTRA(d)->dx = dx;
+		EXTRA(d)->dy = dy;
 		
-		cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &EXTRA(d)->dx, &EXTRA(d)->dy);
+		cairo_translate(CONTEXT(d), dx, dy);
+		//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &EXTRA(d)->dx, &EXTRA(d)->dy);
 		//fprintf(stderr, "Begin: device offset = %g %g ", EXTRA(d)->dx, EXTRA(d)->dy);
 		
-		dx += EXTRA(d)->dx;
-		dy += EXTRA(d)->dy;
-		cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), dx, dy);
+		//dx += EXTRA(d)->dx;
+		//dy += EXTRA(d)->dy;
+		//cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), dx, dy);
 		//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
 		//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
 		//EXTRA(d)->font = CFONT_create(wid->font());
@@ -424,8 +426,8 @@ static void End(GB_PAINT *d)
 			//double dx, dy;
 			//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
 			//fprintf(stderr, "End: device offset = %g %g ", dx, dy);
-			//fprintf(stderr, "-> device offset = %g %g\n", EXTRA(d)->dx, EXTRA(d)->dy);
-			cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), EXTRA(d)->dx, EXTRA(d)->dy);
+			//fprintf(stderr, "-> %g %g\n", EXTRA(d)->dx, EXTRA(d)->dy);
+			//cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), EXTRA(d)->dx, EXTRA(d)->dy);
 			//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
 			//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
 		}
@@ -437,7 +439,6 @@ static void End(GB_PAINT *d)
 	}
 	
 	cairo_destroy(dx->context);
-	
 }
 
 static void Save(GB_PAINT *d)
@@ -609,7 +610,7 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 	
 	if (set)
 	{
-		if (!*dashes || *count == 0)
+		if (!*count)
 			cairo_set_dash(CONTEXT(d), NULL, 0, 0.0);
 		else
 		{
@@ -855,6 +856,26 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle + length);
 }
 
+static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length)
+{
+	x += DX(d);
+	y += DY(d);
+	
+	cairo_new_sub_path(CONTEXT(d));
+	
+	cairo_save(CONTEXT(d));
+
+	cairo_translate(CONTEXT(d), x + width / 2, y + height / 2);
+	cairo_scale(CONTEXT(d), width / 2, height / 2);
+
+	if (length < 0.0)
+		cairo_arc_negative(CONTEXT(d), 0, 0, 1, angle, angle + length);
+	else
+		cairo_arc(CONTEXT(d), 0, 0, 1, angle, angle + length);
+	
+	cairo_restore(CONTEXT(d));
+}
+
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
 {
 	x += DX(d);
@@ -1002,6 +1023,24 @@ static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *
 	get_text_extents(d, TRUE, text, len, ext, width);
 }
 
+static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
+{
+	CFONT *font;
+	_Font(d, FALSE, (GB_FONT *)&font);
+	
+	*w = font->font->width(text, len);
+	*h = font->font->height(text, len);
+}
+
+static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)
+{
+	CFONT *font;
+	_Font(d, FALSE, (GB_FONT *)&font);
+
+	font->font->richTextSize(text, len, sw, w, h);
+}
+
+
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 {
 	cairo_matrix_t *t = (cairo_matrix_t *)matrix;
@@ -1015,7 +1054,10 @@ static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 			if (EXTRA(d)->print_context)
 				cairo_set_matrix(CONTEXT(d), &EXTRA(d)->init);
 			else
+			{
 				cairo_identity_matrix(CONTEXT(d));
+				cairo_translate(CONTEXT(d), EXTRA(d)->dx, EXTRA(d)->dy);
+			}
 		}
 	}
 	else
@@ -1199,13 +1241,11 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 	cairo_matrix_multiply((cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix2);
 }
 
-static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
+static void draw_pixbuf(GB_PAINT *d, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern, *save;
 	cairo_matrix_t matrix;
-	gPicture *picture = CIMAGE_get((CIMAGE *)image);
-	GdkPixbuf *pixbuf;
 	
 	x += DX(d);
 	y += DY(d);
@@ -1215,20 +1255,22 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	save = cairo_get_source(CONTEXT(d));
 	cairo_pattern_reference(save);
 	
-	pixbuf = picture->getPixbuf();
 	if (source)
 		pixbuf = gdk_pixbuf_new_subpixbuf(pixbuf, source->x, source->y, source->w, source->h);
 	
-	surface = gdk_cairo_create_surface_from_pixbuf(picture->getPixbuf());
+	surface = gdk_cairo_create_surface_from_pixbuf(pixbuf);
 	pattern = cairo_pattern_create_for_surface(surface);
 	cairo_surface_destroy(surface);
 	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
+	
+	if (source && w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
+		cairo_pattern_set_filter(pattern, CAIRO_FILTER_NEAREST);
 	
 	//gdk_cairo_set_source_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y);
 	
 	cairo_matrix_init_identity(&matrix);
 	cairo_matrix_translate(&matrix, x, y);
-	cairo_matrix_scale(&matrix, w / picture->width(), h / picture->height());
+	cairo_matrix_scale(&matrix, w / gdk_pixbuf_get_width(pixbuf), h / gdk_pixbuf_get_height(pixbuf));
 	cairo_matrix_invert(&matrix);
 	cairo_pattern_set_matrix(pattern, &matrix);
 	cairo_set_source(CONTEXT(d), pattern);
@@ -1254,13 +1296,82 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 		g_object_unref(pixbuf);
 }
 
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
+{
+	gPicture *picture = CIMAGE_get((CIMAGE *)image);
+	draw_pixbuf(d, picture->getPixbuf(), x, y, w, h, opacity, source);
+}
+
 static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
 {
+	cairo_pattern_t *pattern, *save;
+	cairo_matrix_t matrix;
+	gPicture *pic = ((CPICTURE *)picture)->picture;
+	
+	if (pic->type() != gPicture::SERVER || source)
+	{
+		draw_pixbuf(d, pic->getPixbuf(), x, y, w, h, 1.0, source);
+		return;
+	}
+	
+	x += DX(d);
+	y += DY(d);
+	
+	cairo_save(CONTEXT(d));
+	save = cairo_get_source(CONTEXT(d));
+	cairo_pattern_reference(save);
+	
+	gdk_cairo_set_source_pixmap(CONTEXT(d), pic->getPixmap(), 0, 0);
+	
+	pattern = cairo_get_source(CONTEXT(d));
+	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
+	
+	/*if (source && w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
+		cairo_pattern_set_filter(pattern, CAIRO_FILTER_NEAREST);*/
+	
+	//gdk_cairo_set_source_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y);
+	
+	cairo_matrix_init_identity(&matrix);
+	cairo_matrix_translate(&matrix, x, y);
+	cairo_matrix_scale(&matrix, w / pic->width(), h / pic->height());
+	cairo_matrix_invert(&matrix);
+	cairo_pattern_set_matrix(pattern, &matrix);
+	
+	cairo_rectangle(CONTEXT(d), x, y, w, h);
+	cairo_fill(CONTEXT(d));
+	
+	cairo_set_source(CONTEXT(d), save);
+	cairo_pattern_destroy(save);
+	
+	cairo_restore(CONTEXT(d));
 }
 
 static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
 {
+	gPicture *pic = ((CPICTURE *)picture)->picture;
+	
+	info->width = pic->width();
+	info->height = pic->height();
 }
+
+static void FillRect(GB_PAINT *d, float x, float y, float w, float h, GB_COLOR color)
+{
+	cairo_pattern_t *save;
+	
+	x += DX(d);
+	y += DY(d);
+	
+	save = cairo_get_source(CONTEXT(d));
+	cairo_pattern_reference(save);
+	
+	Background(d, TRUE, &color);
+	cairo_rectangle(CONTEXT(d), x, y, w, h);
+	cairo_fill(CONTEXT(d));
+	
+	cairo_set_source(CONTEXT(d), save);
+	cairo_pattern_destroy(save);
+}
+
 
 GB_PAINT_DESC PAINT_Interface = 
 {
@@ -1292,6 +1403,7 @@ GB_PAINT_DESC PAINT_Interface =
 	NewPath,
 	ClosePath,
 	Arc,
+	Ellipse,
 	Rectangle,
 	GetCurrentPoint,
 	MoveTo,
@@ -1299,14 +1411,17 @@ GB_PAINT_DESC PAINT_Interface =
 	CurveTo,
 	Text,
 	TextExtents,
+	TextSize,
 	RichText,
 	RichTextExtents,
+	RichTextSize,
 	Matrix,
 	SetBrush,
 	BrushOrigin,
 	DrawImage,
 	DrawPicture,
 	GetPictureInfo,
+	FillRect,
 	{
 		BrushFree,
 		BrushColor,
@@ -1357,3 +1472,34 @@ cairo_t *PAINT_get_current_context()
 	return NULL;
 }
 
+void *PAINT_get_current_device()
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	if (d)
+		return d->device;
+	
+	GB.Error("No current device");
+	return NULL;
+}
+
+bool PAINT_get_clip(int *x, int *y, int *w, int *h)
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	GB_EXTENTS ext;
+	
+	ClipExtents(d, &ext);
+	
+	*x = ceilf(ext.x1);
+	*y = ceilf(ext.y1);
+	*w = floorf(ext.x2) - *x;
+	*h = floorf(ext.y2) - *y;
+	
+	return *w <= 0 || *h <= 0;
+}
+
+void PAINT_apply_offset(int *x, int *y)
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	*x += EXTRA(d)->dx;
+	*y += EXTRA(d)->dy;
+}

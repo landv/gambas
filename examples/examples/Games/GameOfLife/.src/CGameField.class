@@ -11,7 +11,6 @@ Private $iZoom As Integer
 
 Public Function Init(bSmall As Boolean, iLife As Integer, bSymetryH As Boolean, bSymetryV As Boolean) As Integer
   
-  Dim tmp As New Collection
   Dim i, j, n, size As Integer
   
   Randomize 
@@ -77,13 +76,11 @@ End
 Public Sub DrawGame(bBorder As Boolean)
 
   Dim SquareSize As Integer
-  Dim i, j, x, y As Integer
-  Dim tmp As Collection
   
   'IF GameRow.Count = 0 OR GameRow[1].Count = 0 THEN RETURN -1
   
   SquareSize = 4 'dw.Height / GameRow.Count
-  draw.Begin(dw) 
+  Draw.Begin(dw) 
 
   'Draw.FillStyle = Fill.Solid
   'Draw.LineStyle = Line.None
@@ -109,7 +106,6 @@ End
 Private Function CountNeighboursOnBorder(x As Integer, y As Integer) As Integer
   
   Dim iTot As Integer
-  Dim count As Integer
   Dim i, j, ti, tj As Integer
 
   For i = x - 1 To x + 1
@@ -157,7 +153,6 @@ Public Sub SpawnNextGeneration(Live As Boolean[], Keep As Boolean[])
 
   Dim x As Integer
   Dim y As Integer
-  Dim i, j As Integer
   Dim myCount As Integer
   Dim newGame As Image
   Dim myCountSub As Integer = Color.White * 8

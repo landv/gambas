@@ -56,7 +56,6 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_background = (Qt::HANDLE)0;
 	_frozen = false;
 	_event_mask = 0;
-	_use_paint = false;
 	_set_background = true;
 	_cached = false;
 	_no_background = false;
@@ -134,17 +133,18 @@ void MyDrawingArea::setFrozen(bool f)
 
 static void cleanup_drawing(intptr_t _object)
 {
-	if (WIDGET->isPaint())
+	//if (WIDGET->isPaint())
 		PAINT_end();
-	else
-		DRAW_end();
+	//else
+	//	DRAW_end();
 }
 
 void MyDrawingArea::redraw(QRect &r, bool frame)
 {
 	QPainter *p;
 	void *_object = CWidget::get(this);
-	int fw, bg;
+	int fw;
+	GB_COLOR bg;
 	GB_RAISE_HANDLER handler;
 	
 	if (!_object)
@@ -154,16 +154,8 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 
 	_in_draw_event = true;
 		
-	if (_use_paint)
-	{
-		PAINT_begin(THIS);
-		p = PAINT_get_current();
-	}
-	else
-	{
-		DRAW_begin(THIS);
-		p = DRAW_get_current();
-	}
+	PAINT_begin(THIS);
+	p = PAINT_get_current();
 		
 	/*if (!isTransparent())
 	{
@@ -180,13 +172,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, QColor((QRgb)bg));
 	}
 	
-	if (!_use_paint)
-	{
-		//p->setBrushOrigin(-r.x(), -r.y());
-		DRAW_clip(r.x(), r.y(), r.width(), r.height());
-	}
-	else
-		PAINT_clip(r.x(), r.y(), r.width(), r.height());
+	PAINT_clip(r.x(), r.y(), r.width(), r.height());
 	
 	//p->setClipRegion(event->region().intersect(contentsRect()));
 	//p->setBrushOrigin(-r.x(), -r.y());
@@ -209,10 +195,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		drawFrame(&pf);
 	}
 		
-	if (_use_paint)
-		PAINT_end();
-	else
-		DRAW_end();
+	PAINT_end();
 
 	_in_draw_event = false;
 }
@@ -511,8 +494,8 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 		GB.ReturnBoolean(WIDGET->isCached());
 	else
 	{
-		int bg = CWIDGET_get_background((CWIDGET *)THIS);
-		int fg = CWIDGET_get_foreground((CWIDGET *)THIS);
+		GB_COLOR bg = CWIDGET_get_background((CWIDGET *)THIS);
+		GB_COLOR fg = CWIDGET_get_foreground((CWIDGET *)THIS);
 		
 		if (bg == COLOR_DEFAULT)
 		{
@@ -586,10 +569,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
+	static bool deprecated = false;
+	
+	if (!deprecated)
+	{
+		deprecated = true;
+		GB.Deprecated("gb.qt4", "DrawingArea.Painted", NULL);
+	}
+	
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->isPaint());
-	else
-		WIDGET->setPaint(VPROP(GB_BOOLEAN));
+		GB.ReturnBoolean(true);
 
 END_PROPERTY
 
@@ -678,7 +667,7 @@ GB_DESC CDrawingAreaDesc[] =
 
 	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
 
-	GB_INTERFACE("Draw", &DRAW_Interface),
+	//GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),
 
 	DRAWINGAREA_DESCRIPTION,

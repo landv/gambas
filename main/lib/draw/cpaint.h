@@ -37,6 +37,7 @@ extern GB_DESC PaintDesc[];
 #endif
 
 GB_PAINT *PAINT_get_current();
+void *PAINT_get_current_device();
 GB_PAINT *PAINT_from_device(void *device);
 bool PAINT_begin(void *device);
 void PAINT_end();

@@ -553,9 +553,9 @@ Public Sub ScrollArea_Draw()
 
   ' Sorted column
   
-  If $bSorted And If iSort >= 0 And If iSort < $hColumns.Count Then
+  If $bSorted And If $hColumns.Count > 1 And If iSort >= 0 And If iSort < $hColumns.Count Then
     
-    Paint.Begin(Draw.Device)
+    'Paint.Begin(Draw.Device)
     Paint.ClipRect = hClip
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.LightForeground, 224))
     
@@ -566,7 +566,7 @@ Public Sub ScrollArea_Draw()
     
     End With
 
-    Paint.End
+    'Paint.End
     
   Endif
 
@@ -577,7 +577,7 @@ Public Sub ScrollArea_Draw()
     Y = YY
     X = XX
     
-    Paint.Begin(Draw.Device)
+    'Paint.Begin(Draw.Device)
     Paint.ClipRect = hSaveClip
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
     
@@ -595,7 +595,7 @@ Public Sub ScrollArea_Draw()
       
     Next
     
-    Paint.End
+    'Paint.End
     
   Endif
   

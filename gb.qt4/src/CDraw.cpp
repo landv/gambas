@@ -77,15 +77,39 @@ typedef
 
 DRAW_INTERFACE DRAW EXPORT;
 
-static void set_background(GB_DRAW *d, int col);
+/*static void set_background(GB_DRAW *d, int col);
 static void set_foreground(GB_DRAW *d, int col);
-static void set_fill_color(GB_DRAW *d, int col);
+static void set_fill_color(GB_DRAW *d, int col);*/
 
 void DRAW_init()
 {
 	GB.GetInterface("gb.draw", DRAW_INTERFACE_VERSION, &DRAW);
 }
 
+static Qt::Alignment get_horizontal_alignment(Qt::Alignment align)
+{
+	align &= Qt::AlignHorizontal_Mask;
+	switch (align)
+	{
+		case Qt::AlignLeft:
+			if (QApplication::isRightToLeft())
+				return Qt::AlignRight;
+			break;
+			
+		case Qt::AlignRight:
+			if (QApplication::isRightToLeft())
+				return Qt::AlignLeft;
+			break;
+			
+		default:
+			break;
+	}
+
+	return align & ~Qt::AlignAbsolute;
+}
+
+
+#if 0
 static bool init_drawing(GB_DRAW *d, QPaintDevice *device, int w, int h, int dpi = 0)
 {
 	QPen pen;
@@ -148,28 +172,6 @@ static uint get_color(GB_DRAW *d, int col, bool bg)
 	}
 	
 	return col;
-}
-
-static Qt::Alignment get_horizontal_alignment(Qt::Alignment align)
-{
-	align &= Qt::AlignHorizontal_Mask;
-	switch (align)
-	{
-		case Qt::AlignLeft:
-			if (QApplication::isRightToLeft())
-				return Qt::AlignRight;
-			break;
-			
-		case Qt::AlignRight:
-			if (QApplication::isRightToLeft())
-				return Qt::AlignLeft;
-			break;
-			
-		default:
-			break;
-	}
-
-	return align & ~Qt::AlignAbsolute;
 }
 
 static int begin(GB_DRAW *d)
@@ -534,6 +536,7 @@ static void draw_point(GB_DRAW *d, int x, int y)
 	DP(d)->drawPoint(x, y);
 	if (DPM(d)) DPM(d)->drawPoint(x, y);
 }
+#endif
 
 #if 0
 static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
@@ -628,6 +631,7 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 }
 #endif
 
+#if 0
 static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
@@ -779,6 +783,7 @@ static void draw_tiled_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int
 			DPM(d)->fillRect(x, y, w, h, Qt::color1);
 	}
 }
+#endif
 
 static QStringList text_sl;
 static QVector<int> text_w;
@@ -868,6 +873,7 @@ void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, floa
 }
 
 
+#if 0
 static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
 	QPen pen, penm;
@@ -893,6 +899,7 @@ static void text_size(GB_DRAW *d, char *text, int len, int *w, int *h)
 	if (w) *w = get_text_width(DP(d), s);
 	if (h) *h = get_text_height(DP(d), s);
 }
+#endif
 
 void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2)
 {
@@ -955,6 +962,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	}
 }
 
+#if 0
 static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
 	QString t = QString::fromUtf8((const char *)text, len);
@@ -1305,88 +1313,8 @@ static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 	//if (state & GB_DRAW_STATE_FOCUS)
 	//	QApplication::style()->drawControl(QStyle::CE_FocusFrame, &opt, DP(d), GB.Is(d->device, CLASS_DrawingArea) ? QWIDGET(d->device) : NULL);
 }
+#endif
 
-
-GB_DRAW_DESC DRAW_Interface = {
-	sizeof(GB_DRAW_EXTRA),
-	begin,
-	end,
-	save,
-	restore,
-	get_background,
-	set_background,
-	get_foreground,
-	set_foreground,
-	get_font,
-	set_font,
-	is_inverted,
-	set_inverted,
-	is_transparent,
-	set_transparent,
-	get_picture_info,
-	{
-		get_line_width,
-		set_line_width,
-		get_line_style,
-		set_line_style
-	},
-	{
-		get_fill_color,
-		set_fill_color,
-		get_fill_style,
-		set_fill_style,
-		get_fill_origin,
-		set_fill_origin
-	},
-	{
-		draw_rect,
-		draw_ellipse,
-		draw_arc,
-		draw_line,
-		draw_point,
-		draw_picture,
-		draw_image,
-		draw_tiled_picture,
-		draw_text,
-		text_size,
-		draw_polyline,
-		draw_polygon,
-		draw_rich_text,
-		rich_text_size
-	},
-	{
-		get_clipping,
-		set_clipping,
-		is_clipping_enabled,
-		set_clipping_enabled
-	},
-	{
-		style_arrow,
-		style_check,
-		style_option,
-		style_separator,
-		style_button,
-		style_panel,
-		style_handle,
-		style_box
-	}
-};
-
-void DRAW_begin(void *device)
-{
-	DRAW.Begin(device);
-}
-
-void DRAW_end()
-{
-	DRAW.End();
-}
-
-QPainter *DRAW_get_current()
-{
-	GB_DRAW *d = DRAW.GetCurrent();
-	return d ? DP(d) : NULL;
-}
 
 void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align)
 {
@@ -1414,8 +1342,8 @@ void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, i
 	p->drawPixmap(xp, yp, pix);
 }
 
-void DRAW_clip(int x, int y, int w, int h)
+/*void DRAW_clip(int x, int y, int w, int h)
 {
 	GB_DRAW *d = DRAW.GetCurrent();
 	if (d) set_clipping(d, x, y, w, h);
-}
+}*/

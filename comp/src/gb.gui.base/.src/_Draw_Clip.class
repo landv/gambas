@@ -1,0 +1,76 @@
+' Gambas class file
+
+Export
+Create Static
+
+' GB_DESC CDrawClipDesc[] =
+' {
+'   GB_DECLARE(".MyDraw.Clip", 0), GB_VIRTUAL_CLASS(),
+' 
+'   GB_STATIC_PROPERTY_READ("X", "i", CDRAW_clip_x),
+'   GB_STATIC_PROPERTY_READ("Y", "i", CDRAW_clip_y),
+'   GB_STATIC_PROPERTY_READ("W", "i", CDRAW_clip_w),
+'   GB_STATIC_PROPERTY_READ("H", "i", CDRAW_clip_h),
+'   GB_STATIC_PROPERTY_READ("Width", "i", CDRAW_clip_w),
+'   GB_STATIC_PROPERTY_READ("Height", "i", CDRAW_clip_h),
+' 
+'   GB_STATIC_PROPERTY("Enabled", "b", CDRAW_clip_enabled),
+'   GB_STATIC_METHOD("_call", NULL, CDRAW_clip, "(X)i(Y)i(Width)i(Height)i"),
+'   
+'   GB_END_DECLARE
+' };
+
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+Property Enabled As Boolean
+
+Public Sub _call(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  Draw.ClipRect = Rect(X, Y, Width, Height)
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  Try Return Paint.ClipRect.X
+
+End
+
+Private Function Y_Read() As Integer
+
+  Try Return Paint.ClipRect.Y
+  
+
+End
+
+Private Function Width_Read() As Integer
+
+  Try Return Paint.ClipRect.W
+  
+
+End
+
+Private Function Height_Read() As Integer
+
+  Try Return Paint.ClipRect.H
+  
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return Paint.ClipRect
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  If Not Value Then
+    Paint.ResetClip
+  Else
+    Paint.ClipRect = Draw._GetInfo().ClipRect
+  Endif
+
+End

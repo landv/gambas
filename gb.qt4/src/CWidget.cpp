@@ -1434,7 +1434,7 @@ int get_real_foreground(CWIDGET *_object)
 
 void CWIDGET_reset_color(CWIDGET *_object)
 {
-	int fg, bg;
+	GB_COLOR fg, bg;
 	QPalette palette;
 	QWidget *w;
 	
@@ -1518,7 +1518,7 @@ void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 }
 
 
-int CWIDGET_get_background(CWIDGET *_object)
+GB_COLOR CWIDGET_get_background(CWIDGET *_object)
 {
 	return THIS_EXT ? THIS_EXT->bg : COLOR_DEFAULT;
 	/*
@@ -1533,7 +1533,7 @@ int CWIDGET_get_background(CWIDGET *_object)
 
 int CWIDGET_get_real_background(CWIDGET *_object)
 {
-	int bg = CWIDGET_get_background(THIS);
+	GB_COLOR bg = CWIDGET_get_background(THIS);
 	
 	if (bg != COLOR_DEFAULT)
 		return bg;
@@ -1546,7 +1546,7 @@ int CWIDGET_get_real_background(CWIDGET *_object)
 		return QApplication::palette().color(QPalette::Window).rgb() & 0xFFFFFF;
 }
 
-int CWIDGET_get_foreground(CWIDGET *_object)
+GB_COLOR CWIDGET_get_foreground(CWIDGET *_object)
 {
 	return THIS_EXT ? THIS_EXT->fg : COLOR_DEFAULT;
 	/*
@@ -1575,7 +1575,7 @@ BEGIN_PROPERTY(Control_Background)
 		GB.ReturnInteger(CWIDGET_get_background(THIS));
 	else
 	{
-		int col = VPROP(GB_INTEGER);
+		GB_COLOR col = VPROP(GB_INTEGER);
 		if (col != CWIDGET_get_background(THIS))
 			CWIDGET_set_color(THIS, col, CWIDGET_get_foreground(THIS));
 	}
@@ -1599,7 +1599,7 @@ BEGIN_PROPERTY(Control_Foreground)
 		GB.ReturnInteger(CWIDGET_get_foreground(THIS));
 	else
 	{
-		int col = VPROP(GB_INTEGER);
+		GB_COLOR col = VPROP(GB_INTEGER);
 		if (col != CWIDGET_get_foreground(THIS))
 			CWIDGET_set_color(THIS, CWIDGET_get_background(THIS), col);
 	}

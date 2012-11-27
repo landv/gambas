@@ -68,7 +68,7 @@ enum {
 	GB_PAINT_OPERATOR_SATURATE
 };
 
-enum
+/*enum
 {
 	GB_PAINT_LINE_STYLE_NONE = 0,
 	GB_PAINT_LINE_STYLE_SOLID = 1,
@@ -77,8 +77,7 @@ enum
 	GB_PAINT_LINE_STYLE_DASH_DOT = 4,
 	GB_PAINT_LINE_STYLE_DASH_DOT_DOT = 5,
 	GB_PAINT_LINE_STYLE_CUSTOM = 6
-};
-
+};*/
 
 
 struct GB_PAINT_DESC;
@@ -134,9 +133,10 @@ typedef
 		int resolutionX;                   // device horizontal resolution in DPI
 		int resolutionY;                   // device vertical resolution in DPI
 		PAINT_BRUSH *brush;                // current brush
-		void *draw;                        // if the device was drawn when calling Paint.Begin
 		void *extra;                       // driver-specific state
 		unsigned opened : 1;               // if the painting has been opened
+		unsigned other : 1;                // if paiting are imbricated on that device
+		void *tag;                         // needed to support the old Draw class
 	}
 	GB_PAINT;
 
@@ -184,6 +184,7 @@ typedef
 		void (*ClosePath)(GB_PAINT *d);
 		
 		void (*Arc)(GB_PAINT *d, float xc, float yc, float radius, float angle, float length);
+		void (*Ellipse)(GB_PAINT *d, float x, float y, float width, float height, float angle, float length);
 		void (*Rectangle)(GB_PAINT *d, float x, float y, float width, float height);
 		void (*GetCurrentPoint)(GB_PAINT *d, float *x, float *y);
 		void (*MoveTo)(GB_PAINT *d, float x, float y);
@@ -192,8 +193,10 @@ typedef
 	
 		void (*Text)(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw);
 		void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
+		void (*TextSize)(GB_PAINT *d, const char *text, int len, float *w, float *h);
 		void (*RichText)(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw);
 		void (*RichTextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext, float width);
+		void (*RichTextSize)(GB_PAINT *d, const char *text, int len, float width, float *w, float *h);
 		
 		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);
 		
@@ -203,6 +206,7 @@ typedef
 		void (*DrawImage)(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source);
 		void (*DrawPicture)(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source);
 		void (*GetPictureInfo)(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info);
+		void (*FillRect)(GB_PAINT *d, float x, float y, float width, float height, GB_COLOR color);
 		
 		struct {
 			void (*Free)(GB_BRUSH brush);

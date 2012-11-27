@@ -62,12 +62,12 @@ Public Sub Panel_Draw()
   ' Endif
   
   If $bInside Then
-    Paint.Begin(Draw.Device)
+    'Paint.Begin(Draw.Device)
     Paint.Rectangle(0, 0, Paint.W, Paint.H)
     Paint.Brush = Paint.Color(Color.SetAlpha($iHighlight, 192))
     Paint.Fill
     'If $hPanel.HasFocus And If $bInside Then Paint.Fill
-    Paint.End
+    'Paint.End
   Endif
   
   If $hPanel.HasFocus Then

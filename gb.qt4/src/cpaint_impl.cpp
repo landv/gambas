@@ -34,6 +34,9 @@
 #include <QPainter>
 #include <QPen>
 #include <QBrush>
+#include <QVector>
+#include <QTextDocument>
+
 #ifndef NO_X_WINDOW
 #include <QX11Info>
 #endif
@@ -104,13 +107,43 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	pen.setCapStyle(Qt::FlatCap);
 	pen.setJoinStyle(Qt::MiterJoin);
 	pen.setMiterLimit(10.0);
-	pen.setWidthF(2.0);
+	pen.setWidthF(1.0);
 	PAINTER(d)->setPen(pen);
 	PAINTER(d)->setBrush(Qt::black);
 	
 	return FALSE;
 }
 
+static QWidget *get_widget(GB_PAINT *d)
+{
+	if (!GB.Is(d->device, CLASS_Control))
+		return NULL;
+		
+	return QWIDGET(d->device);
+}
+
+static QColor get_color(GB_PAINT *d, GB_COLOR col, bool bg)
+{
+	QWidget *wid = get_widget(d);
+	
+	if (col == GB_COLOR_DEFAULT)
+	{
+		if (wid)
+		{
+			if (bg)
+				col = wid->palette().color(QPalette::Window).rgb() & 0xFFFFFF;
+			else
+				col = wid->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF;
+		}
+		else
+			col = bg ? 0xFFFFFF : 0x000000;
+	}
+
+	return CCOLOR_make(col);
+	
+}
+
+//---------------------------------------------------------------------------
 
 static int Begin(GB_PAINT *d)
 {
@@ -166,6 +199,9 @@ static int Begin(GB_PAINT *d)
 		
 		if (init_painting(d, target))
 			return TRUE;
+		
+		if (wid->isCached())
+			PAINTER(d)->initFrom(wid);
 		
 		d->width = wid->width();
 		d->height = wid->height();
@@ -667,6 +703,20 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 }
 
+static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length)
+{
+	CREATE_PATH(d);
+
+	QRectF rect;
+	rect.setCoords((qreal)x, (qreal)y, (qreal)x + width, (qreal)y + height);
+	
+	angle = - angle;
+	length = - length;
+	
+	PATH(d)->arcMoveTo(rect, to_deg(angle));
+	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
+}
+
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
 {
 	CREATE_PATH(d);
@@ -705,6 +755,35 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	PATH(d)->cubicTo(QPointF((qreal)x1, (qreal)y1), QPointF((qreal)x2, (qreal)y2), QPointF((qreal)x3, (qreal)y3));
 }
 
+static QStringList text_sl;
+static QVector<int> text_w;
+static int text_line;
+
+static int get_text_width(QPainter *dp, QString &s)
+{
+	int w, width = 0;
+	int i;
+
+	text_sl = s.split('\n', QString::KeepEmptyParts);
+
+	text_w.resize(text_sl.count());
+
+	for (i = 0; i < (int)text_sl.count(); i++)
+	{
+		w = dp->fontMetrics().width(text_sl[i]);
+		if (w > width) width = w;
+		text_w[i] = w;
+	}
+
+	return width;
+}
+
+static int get_text_height(QPainter *dp, QString &s)
+{
+	text_line = dp->fontMetrics().height();
+	return text_line * (1 + s.count('\n'));
+}
+
 static QPainterPath *_draw_path;
 static float _draw_x, _draw_y;
 
@@ -714,13 +793,15 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	
 	GetCurrentPoint(d, &_draw_x, &_draw_y);
 	
+	if (w < 0 && h < 0)
+		_draw_y -= PAINTER(d)->fontMetrics().ascent();
+		
 	if (draw)
 	{
 		if (CLIP(d))
 		{
 			QTransform save = PAINTER(d)->worldTransform();
 			PAINTER(d)->resetTransform();
-			PAINTER(d)->setClipping(true);
 			PAINTER(d)->setClipPath(*CLIP(d));
 			PAINTER(d)->setWorldTransform(save);
 		}
@@ -739,9 +820,6 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	
 		_draw_path = PATH(d);
 
-		if (w <= 0 || h <= 0)
-			_draw_y -= PAINTER(d)->fontMetrics().ascent();
-		
 		MyPaintDevice device;
 		QPainter p(&device);
 		
@@ -799,6 +877,28 @@ static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *
 	get_text_extents(d, true, text, len, ext, width);
 }
 
+static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
+{
+	QString s = QString::fromUtf8((const char *)text, len);  
+	*w = get_text_width(PAINTER(d), s);
+	*h = get_text_height(PAINTER(d), s);
+}
+
+static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)
+{
+	QTextDocument rt;
+	
+	rt.setDocumentMargin(0);
+	rt.setHtml(QString::fromUtf8((const char *)text, len));
+	rt.setDefaultFont(PAINTER(d)->font());
+	
+	if (sw > 0)
+		rt.setTextWidth(sw);
+	
+	*w = rt.idealWidth();
+	*h = rt.size().height();
+}
+
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 {
 	QTransform *t = (QTransform *)matrix;
@@ -845,7 +945,7 @@ static void Background(GB_PAINT *d, int set, GB_COLOR *color)
 {
 	if (set)
 	{
-		QBrush b(CCOLOR_make(*color));
+		QBrush b(get_color(d, *color, true));
 		SetBrush(d, (GB_BRUSH)&b);
 	}
 	else
@@ -885,8 +985,15 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	
 	if (source)
 	{
+		bool smooth = PAINTER(d)->testRenderHint(QPainter::SmoothPixmapTransform);
+		
+		if (w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
+			PAINTER(d)->setRenderHint(QPainter::SmoothPixmapTransform, false);
+
 		QRectF srect(source->x, source->y, source->w, source->h);
 		PAINTER(d)->drawImage(rect, *img, srect);
+
+		PAINTER(d)->setRenderHint(QPainter::SmoothPixmapTransform, smooth);
 	}
 	else
 		PAINTER(d)->drawImage(rect, *img);
@@ -914,6 +1021,17 @@ static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *inf
 	
 	info->width = p->width();
 	info->height = p->height();
+}
+
+static void FillRect(GB_PAINT *d, float x, float y, float w, float h, GB_COLOR color)
+{
+	//CHECK_PATH(d);
+	
+	//if (CLIP(d))
+	//	PAINTER(d)->setClipPath(PAINTER(d)->worldTransform().inverted().map(*CLIP(d)));
+	PAINTER(d)->fillRect(x, y, w, h, get_color(d, color, true));
+	//if (CLIP(d))
+	//	PAINTER(d)->setClipping(false);
 }
 
 static void BrushFree(GB_BRUSH brush)
@@ -1095,6 +1213,7 @@ GB_PAINT_DESC PAINT_Interface =
 	NewPath,
 	ClosePath,
 	Arc,
+	Ellipse,
 	Rectangle,
 	GetCurrentPoint,
 	MoveTo,
@@ -1102,14 +1221,17 @@ GB_PAINT_DESC PAINT_Interface =
 	CurveTo,
 	Text,
 	TextExtents,
+	TextSize,
 	RichText,
 	RichTextExtents,
+	RichTextSize,
 	Matrix,
 	SetBrush,
 	BrushOrigin,
 	DrawImage,
 	DrawPicture,
 	GetPictureInfo,
+	FillRect,
 	{
 		BrushFree,
 		BrushColor,

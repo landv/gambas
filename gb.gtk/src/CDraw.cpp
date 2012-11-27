@@ -48,6 +48,7 @@ void DRAW_init()
 	GB.GetInterface("gb.draw", DRAW_INTERFACE_VERSION, &DRAW);
 }
 
+#if 0
 static int begin(GB_DRAW *d)
 {
 	gDraw *dr;
@@ -750,6 +751,7 @@ gDraw *DRAW_get_current()
 	GB_DRAW *current = DRAW.GetCurrent(); 
 	return current ? DR(current) : NULL;	
 }
+#endif
 
 void *DRAW_get_drawable(void *dr)
 {

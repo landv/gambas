@@ -13,7 +13,7 @@ Public Sub Form_Open()
   hDirPict = Picture["icon:/48/directory"]
   hFilePict = Picture["icon:/small/file"]
   
-  tvwTest.Columns.Count = 3
+  tvwTest.Columns.Count = 1
   
   For Each sFile In RDir(sDir)
     sPath = sDir &/ sFile

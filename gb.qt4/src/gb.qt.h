@@ -139,7 +139,6 @@ typedef
 		const char *(*ToUTF8)(const QString &);
 		bool (*EventFilter)(QEvent *);
 		bool (*Notify)(void *, bool);
-		void *(*GetDrawInterface)();
 		int (*Alignment)(int, int, bool);
 		void (*Link)(QObject *, void *);
 		void *(*GetLink)(QObject *);

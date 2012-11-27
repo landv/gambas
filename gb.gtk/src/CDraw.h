@@ -30,23 +30,17 @@
 
 #ifndef __CDRAW_C
 
-extern GB_DRAW_DESC DRAW_Interface;
 extern DRAW_INTERFACE DRAW;
-
-void DRAW_init();
-void DRAW_begin(void *device);
-void DRAW_end();
-gDraw *DRAW_get_current();
-void* DRAW_get_drawable(void *);
-void* DRAW_get_style(void *);
-int   DRAW_get_state(void *);
-int   DRAW_get_shadow(void *);
-void  DRAW_set_state(void *,int);
-void DRAW_set_shadow(void *,int);
 
 #endif
 
-
+void DRAW_init();
+void *DRAW_get_drawable(void *);
+void *DRAW_get_style(void *);
+int DRAW_get_state(void *);
+int DRAW_get_shadow(void *);
+void DRAW_set_state(void *,int);
+void DRAW_set_shadow(void *,int);
 
 #endif
 

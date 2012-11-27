@@ -415,7 +415,7 @@ GB_DESC CPictureDesc[] =
   GB_METHOD("Copy", "Picture", CPICTURE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_PROPERTY_READ("Image", "Image", CPICTURE_image),
   
-  GB_INTERFACE("Draw", &DRAW_Interface),
+  //GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),
 
   GB_END_DECLARE

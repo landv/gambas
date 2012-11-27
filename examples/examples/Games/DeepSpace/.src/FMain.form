@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(19,0,75.3333,70.6667)
+  MoveScaled(19,0,75.2857,70.7143)
   Text = ("DeepSpace Vector Engine")
   Icon = Picture["images/deepspace.png"]
   Resizable = False
@@ -14,7 +14,6 @@
       Text = ("&About DeepSpace ...")
     }
     { mnuMainSep1 Menu
-      Text = ("")
     }
     { mnuMainExit Menu
       Text = ("&Exit")
@@ -23,14 +22,13 @@
   }
   { daCanvas DrawingArea
     MoveScaled(0,0,54,50)
-    Font = Font["Monospace,8"]
+    Font = Font["Monospace"]
     Background = &H000000&
     Cached = True
     Focus = True
   }
   { tmrMainLoop #Timer
-    #X = 455
-    #Y = 301
+    #MoveScaled(65,43)
     Enabled = True
     Delay = 20
   }

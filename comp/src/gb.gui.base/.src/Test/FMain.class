@@ -1,35 +1,38 @@
 ' Gambas class file
 
-Public Sub _new()
+' Public Sub DrawingArea1_Draw()
+' 
+'   MyDraw.Begin(Last)
+'   'MyDraw.Clip(17, 7, 167, 167)
+'   MyDraw.FillStyle = Fill.Solid
+'   MyDraw.FillColor = Color.Red
+'   MyDraw.Polygon([10, 10, 40, 20, 25, 30, 10, 10])
+'   MyDraw.LineStyle = Line.Solid
+'   MyDraw.Foreground = Color.Blue
+'   MyDraw.Line(90, 10, 90, 50)
+'   MyDraw.Rect(20, 60, 70, 60)
+'   MyDraw.FillColor = Color.Orange
+'   MyDraw.Rect(90, 60, 70, 50)
+'   
+'   MyDraw.Circle(50, 150, 35)
+'   MyDraw.Ellipse(90, 150, 120, 70)
+'   
+'   MyDraw.Style.Arrow(10, 250, 32, 32, Align.Top)
+'   
+'   MyDraw.End
+' 
+' End
 
-End
+Public Sub DrawingArea2_Draw()
 
-Public Sub Form_Open()
+  Dim sText As String = "<b>gb.gui.base</b>&nbsp;3.3.90<br><font size=\"-1\" color=\"#404040\">gb.gui.base</font>"
+  Dim W As Integer
 
-  lvGroupAvail.Add("Energy", "Energy")
-  lvGroupAvail.Add("Gas", "Gas")
-  lvGroupAvail.Add("Humidity", "Humidity")
-  lvGroupAvail.Add("Outside", "Outside")
+  W = Draw.RichTextWidth(sText)
+  Debug W
 
-End
-
-Public Sub lvGroupAvail_Click()
-
-  lvGroupActive.Add(lvGroupAvail.Key, lvGroupAvail.Key)
-  lvGroupAvail.Remove(lvGroupAvail.Key)
-
-End
-
-Public Sub lvGroupActive_Click()
-
-  lvGroupAvail.Add(lvGroupActive.Key, lvGroupActive.Key)
-  lvGroupActive.Remove(lvGroupActive.Key)
-
-End
-
-
-Public Sub btnCancel_Click()
-
-  Me.Close
-
+  Draw.Rect(10, 10, W, 100)
+  Draw.RichText(sText, 10, 10, W, 100, Align.TopNormal)
+  
+  
 End

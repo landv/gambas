@@ -115,7 +115,7 @@ static void set_text_color(void *_object)
 {
 	QTextCharFormat fmt;
 	QBrush col;
-	int fg = CWIDGET_get_foreground((CWIDGET *)THIS);
+	GB_COLOR fg = CWIDGET_get_foreground((CWIDGET *)THIS);
 	
 	fmt = WIDGET->currentCharFormat();
 	

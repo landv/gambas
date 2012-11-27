@@ -36,8 +36,8 @@
 
 typedef
 	struct {
-		int fg;
-		int bg;
+		GB_COLOR fg;
+		GB_COLOR bg;
 		GB_VARIANT_VALUE tag;
 		void *cursor;
 		char *popup;
@@ -185,8 +185,8 @@ void CWIDGET_update_design(CWIDGET *_object);
 void CWIDGET_iconset(QIcon &icon, const QPixmap &p, int size = 0);
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg);
 void CWIDGET_reset_color(CWIDGET *_object);
-int CWIDGET_get_background(CWIDGET *_object);
-int CWIDGET_get_foreground(CWIDGET *_object);
+GB_COLOR CWIDGET_get_background(CWIDGET *_object);
+GB_COLOR CWIDGET_get_foreground(CWIDGET *_object);
 int CWIDGET_get_real_background(CWIDGET *_object);
 void *CWIDGET_get_parent(void *_object);
 int CWIDGET_get_handle(void *_object);

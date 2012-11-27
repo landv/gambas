@@ -1473,7 +1473,7 @@ GB_DESC CWindowDesc[] =
 	GB_EVENT("Title", NULL, NULL, &EVENT_Title),
 	GB_EVENT("Icon", NULL, NULL, &EVENT_Icon),
 	
-	GB_INTERFACE("Draw", &DRAW_Interface),
+	//GB_INTERFACE("Draw", &DRAW_Interface),
 
 	GB_END_DECLARE
 };

@@ -45,10 +45,7 @@ DECLARE_EVENT(EVENT_draw);
 
 static void cleanup_drawing(intptr_t _object)
 {
-	if (THIS->painted)
-		PAINT_end();
-	else
-		DRAW_end();
+	PAINT_end();
 }
 
 static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h) 
@@ -65,24 +62,12 @@ static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h)
 			
 		GB.RaiseBegin(&handler);
 		
-		if (THIS->painted)
-		{
-			PAINT_begin(THIS);
-			PAINT_clip(x, y, w, h);
-			
-			GB.Raise(THIS, EVENT_draw, 0);
-			
-			PAINT_end();
-		}
-		else
-		{
-			DRAW_begin(THIS);
-			DRAW_get_current()->setClip(x, y, w, h);
-			
-			GB.Raise(THIS, EVENT_draw, 0);
-			
-			DRAW_end();
-		}
+		PAINT_begin(THIS);
+		PAINT_clip(x, y, w, h);
+		
+		GB.Raise(THIS, EVENT_draw, 0);
+		
+		PAINT_end();
 		
 		GB.RaiseEnd(&handler);
 	}
@@ -128,10 +113,16 @@ END_METHOD
 
 BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
+	static bool deprecated = false;
+	
+	if (!deprecated)
+	{
+		deprecated = true;
+		GB.Deprecated("gb.gtk", "DrawingArea.Painted", NULL);
+	}
+	
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(THIS->painted);
-	else
-		THIS->painted = VPROP(GB_BOOLEAN);
+		GB.ReturnBoolean(true);
 
 END_PROPERTY
 
@@ -198,7 +189,6 @@ GB_DESC CDrawingAreaDesc[] =
 
 	GB_EVENT("Draw", 0, 0, &EVENT_draw),
 	
-	GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),
 	
 	DRAWINGAREA_DESCRIPTION,

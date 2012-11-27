@@ -5,6 +5,7 @@
   Arrangement = Arrange.Vertical
   { mnuPopup Menu
     Text = ("Menu1")
+    Visible = False
     { Menu2 Menu
       Text = ("Menu2")
     }
@@ -19,7 +20,7 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(3,2,58,4)
+    MoveScaled(1,9,58,4)
     { Button1 Button
       MoveScaled(0,0,16,4)
       Text = ("Delete")
@@ -34,19 +35,20 @@
     }
   }
   { Separator1 Separator
-    MoveScaled(28,8,12,0)
+    MoveScaled(28,27,12,0)
   }
   { tvwTest ColumnView
-    MoveScaled(14,12,32,40)
+    MoveScaled(1,28,32,25)
     Drop = True
     Expand = True
+    Mode = Select.Multiple
     Sorted = True
     Editable = True
+    Header = False
     Resizable = True
   }
   { GridView1 GridView
     MoveScaled(21,59,30,21)
-    Visible = False
     Mode = Select.Multiple
     ShowCursor = True
     Header = GridView.Both

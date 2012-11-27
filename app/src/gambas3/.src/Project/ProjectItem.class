@@ -128,7 +128,7 @@ Public Sub DrawingArea_Draw()
     sText = Html$($hProjectInfo.Description)
     If sText Then
       Draw.Font = $hSmallFont
-      Y += H
+      Y += H + 2
       W = Me.W - X - PADDING
       H = Draw.RichTextHeight(sText, W)
       Draw.RichText(sText, X, Y, W, H, Align.TopLeft)

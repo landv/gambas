@@ -161,7 +161,8 @@ typedef
 #define SYNCHRONIZE_IMAGE(_image) (IMAGE.Synchronize(_image))
 #define MODIFY_IMAGE(_image) ((_image)->modified = 1)
 
-#define COLOR_DEFAULT (-1)
+#define COLOR_DEFAULT ((GB_COLOR)-1)
+#define GB_COLOR_DEFAULT ((GB_COLOR)-1)
 
 #endif
 

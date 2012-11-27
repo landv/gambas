@@ -32,7 +32,6 @@
 
 #ifndef __CDRAW_C
 
-extern GB_DRAW_DESC DRAW_Interface;
 extern DRAW_INTERFACE DRAW;
 
 #endif
@@ -40,16 +39,9 @@ extern DRAW_INTERFACE DRAW;
 typedef
 	void (*DRAW_TEXT_CB)(float, float, QString &);
 
-//bool DRAW_must_resize_font();
-//int DRAW_status(void);
-//void DRAW_restore(int status);
 void DRAW_init();
-void DRAW_begin(void *device);
-void DRAW_end();
-QPainter *DRAW_get_current();
 void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2 = 0);
 void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2 = 0);
 void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align);
-void DRAW_clip(int x, int y, int w, int h);
 
 #endif

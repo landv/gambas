@@ -41,8 +41,7 @@ typedef
 	struct 
 	{
 		CWIDGET ob;
-	  bool merge;
-		bool painted;
+		bool merge;
 	} 
 	CDRAWINGAREA;
 

@@ -82,7 +82,7 @@ Sub LoadObjectList()
         If (Not (Left$(aLine[I], 1) = "'")) And (Not (aLine[I] = "")) Then
             V = Split(aLine[I], ",")
             If V.Count = 4 Then
-                For j = 1 To If(v[1] = "Object1", 1000, 1)
+                For j = 1 To If(v[1] = "Object1", 100, 1)
                 tmpO = New CObject
                 tmpO.Load2DObject(V[0], V[1], CInt(V[2]), CInt(V[3]))
                 Obj.Add(tmpO)
@@ -244,7 +244,7 @@ Public Sub RenderObjects()
     Dim A, D As Float
     Dim Tag As String
 
-    Draw.Foreground = Color.Red
+    Draw.Foreground = Color.Cyan
     For Each Ob In Obj
         With Ob
             Size = .Degree.Count
@@ -322,12 +322,12 @@ Public Sub MainLoop()
     RenderObjects()
     RenderBullets()
 
-    Draw.Foreground = Color.Magenta
+    Draw.Foreground = Color.Red
 
     Draw.Font.Bold = True
-    Draw.Text("Object Count: " & Obj.Count, 1, Draw.TextHeight("A") * 0)
-    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.TextHeight("A") * 1)
-    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.TextHeight("A") * 2)
+    Draw.Text("Object Count: " & Obj.Count, 1, 0)
+    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.Font.Height * 1)
+    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.Font.Height * 2)
 
     Draw.End()
 End

@@ -74,7 +74,7 @@ public:
 	int width(const char *text, int len = -1);
 	int height(const char *text, int len = -1);
 	int height();
-	void richTextSize(char *txt, int len, int sw, int *w, int *h);
+	void richTextSize(const char *txt, int len, float sw, float *w, float *h);
 
 //"Private"
 	gFont(GtkWidget *wg);

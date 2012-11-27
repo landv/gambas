@@ -974,11 +974,6 @@ static void *QT_CreatePicture(const QPixmap &p)
 	return CPICTURE_create(&p);
 }
 
-static void *QT_GetDrawInterface()
-{
-	return (void *)&DRAW_Interface;
-}
-
 void MyApplication::linkDestroyed(QObject *qobject)
 {
 	void *object = _link_map.value(qobject, 0);
@@ -1058,7 +1053,6 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)QT_ToUTF8,
 	(void *)QT_EventFilter,
 	(void *)QT_Notify,
-	(void *)QT_GetDrawInterface,
 	(void *)CCONST_alignment,
 	(void *)QT_Link,
 	(void *)QT_GetLink,

@@ -26,11 +26,14 @@
 #include "CWindow.h"
 #include "CPicture.h"
 #include "CFont.h"
+#include "CDrawingArea.h"
 #include "CScreen.h"
 
 #include "gtrayicon.h"
 #include "gapplication.h"
 #include "gmainwindow.h"
+#include "gdraw.h"
+#include "cpaint_impl.h"
 
 extern int CWINDOW_Embedder;
 extern bool CWINDOW_Embedded;
@@ -404,7 +407,410 @@ GB_DESC ApplicationDesc[] =
 };
 
 
-/***************************************************************************/
+//-- Style ------------------------------------------------------------------
+
+static GdkDrawable *_dr = NULL;
+static GtkWidget *_widget = NULL;
+static GtkStyle *_stl = NULL;
+//static char *_stl_name = NULL;
+
+static GtkStyle *get_style(const char *name = NULL, GType type = G_TYPE_NONE)
+{
+	//if (stl && (!name || (stl_name && !strcmp(name, stl_name))))
+	//	return stl;
+	
+	/*if (stl)
+	{
+		g_object_unref(stl);
+		stl = NULL;
+	}*/
+	
+	if (!name && _widget)
+	{
+		_stl = gtk_style_copy(_widget->style);
+		_stl = gtk_style_attach(_stl, _widget->window);
+	}
+	else
+	{
+		if (name)
+			_stl = gtk_style_copy(gt_get_style(name, type));
+		else
+			_stl = gtk_style_copy(gtk_widget_get_default_style());
+		
+		_stl = gtk_style_attach(_stl, (GdkWindow*)_dr);
+	}
+	
+	//stl_name = name;
+	
+	return _stl;
+}
+
+static bool begin_draw()
+{
+	void *device = PAINT_get_current_device();
+	if (!device)
+		return TRUE;
+	
+	cairo_t *context = PAINT_get_current_context();
+	cairo_surface_flush(cairo_get_target(context));
+	
+	if (GB.Is(device, CLASS_DrawingArea))
+	{
+		gDrawingArea *wid = (gDrawingArea *)((CDRAWINGAREA *)device)->ob.widget;
+		
+		if (wid->cached() || wid->inDrawEvent())
+		{
+			if (wid->cached())
+			{
+				wid->resizeCache();
+				_dr = wid->buffer;
+			}
+			else
+			{
+				_dr = wid->widget->window;
+				//GtkAllocation *a = &wid->widget->allocation;
+				//_x = a->x;
+				//_y = a->y;
+			}
+		}
+		else
+		{
+			GB.Error("Cannot draw outside of Draw event handler");
+			return TRUE;
+		}
+		
+		_widget = wid->widget;
+	}
+	else if (GB.Is(device, CLASS_Picture))
+	{
+		gPicture *pic = ((CPICTURE *)device)->picture;
+		if (pic->isVoid())
+		{
+			GB.Error("Bad picture");
+			return TRUE;
+		}
+		_dr = pic->getPixmap();
+		//pic->invalidate();
+		_widget = NULL;
+	}
+	else
+	{
+		GB.Error("Device not supported");
+	}
+	
+	return FALSE;
+}
+
+static void end_draw()
+{
+	_dr = NULL;
+	_widget = NULL;
+	if (_stl)
+	{
+		g_object_unref(G_OBJECT(_stl));
+		_stl = NULL;
+	}
+
+	cairo_t *context = PAINT_get_current_context();
+	cairo_surface_mark_dirty(cairo_get_target(context));
+}
+
+static GtkStateType get_state(int state)
+{
+	if (state & GB_DRAW_STATE_DISABLED)
+		return GTK_STATE_INSENSITIVE;
+	if (state & GB_DRAW_STATE_ACTIVE)
+		return GTK_STATE_ACTIVE;
+	if (state & GB_DRAW_STATE_HOVER)
+		return GTK_STATE_PRELIGHT;
+	
+	return GTK_STATE_NORMAL;
+}
+
+static GdkRectangle *get_area()
+{
+	static GdkRectangle area;
+	
+	return NULL;
+	/*area.x = -600;
+	area.y = -600;
+	area.width = 1024;
+	area.height = 1024;
+	return &area;*/
+	
+	if (PAINT_get_clip(&area.x, &area.y, &area.width, &area.height))
+		return NULL;
+	else
+	{
+		//_dr->offset(&area.x, &area.y);
+		fprintf(stderr, "clip: %d %d %d %d\n", area.x, area.y, area.width, area.height);
+		return &area;
+	}
+}
+
+/*static GtkWidget *get_widget(GB_DRAW *d)
+{
+	if (!GB.Is(d->device, CLASS_DrawingArea))
+		return NULL;
+	
+	return ((gDrawingArea *)((CDRAWINGAREA *)d->device)->ob.widget)->border;
+}*/
+
+static void paint_focus(GtkStyle *style, int x, int y, int w, int h, GtkStateType state, const char *kind)
+{
+	gtk_paint_focus(style, _dr,
+		state, 
+		get_area(), _widget, kind, 
+		x, y, w, h);
+}
+
+static void style_arrow(int x, int y, int w, int h, int type, int state)
+{
+	GtkArrowType arrow;
+	GtkStyle *style = get_style();
+	
+	PAINT_apply_offset(&x, &y);
+	
+	switch (type)
+	{
+		case ALIGN_NORMAL: arrow = GB.System.IsRightToLeft() ? GTK_ARROW_LEFT : GTK_ARROW_RIGHT; break;
+		case ALIGN_LEFT: arrow = GTK_ARROW_LEFT; break;
+		case ALIGN_RIGHT: arrow = GTK_ARROW_RIGHT; break;
+		case ALIGN_TOP: arrow = GTK_ARROW_UP; break;
+		case ALIGN_BOTTOM: arrow = GTK_ARROW_DOWN; break;
+		default:
+			return;
+	}
+	
+	gtk_paint_arrow(style, _dr, get_state(state), 
+		GTK_SHADOW_NONE, get_area(), _widget, NULL, 
+		arrow, TRUE, x, y, w, h);
+	
+	fprintf(stderr, "style_arrow: %d %d %d %d\n", x, y, w, h);
+}
+
+static void style_check(int x, int y, int w, int h, int value, int state)
+{
+	GtkShadowType shadow;
+	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
+	GtkStyle *style = get_style("GtkCheckButton", GTK_TYPE_CHECK_BUTTON);
+	
+	//_dr->offset(&x, &y);
+	
+	switch (value)
+	{
+		case -1: shadow = GTK_SHADOW_IN; break;
+		case 1: shadow = GTK_SHADOW_ETCHED_IN; break;
+		default: shadow = GTK_SHADOW_OUT; break;
+	}
+
+	gtk_paint_check(style, _dr,
+		st, shadow, get_area(), NULL, "checkbutton", 
+		x, y, w, h);
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		paint_focus(style, x, y, w, h, st, "checkbutton");
+}
+
+static void style_option(int x, int y, int w, int h, int value, int state)
+{
+	GtkShadowType shadow;
+	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
+	GtkStyle *style = get_style("GtkRadioButton", GTK_TYPE_RADIO_BUTTON);
+	
+	//_dr->offset(&x, &y);
+	
+	shadow = value ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
+
+	gtk_paint_option(style, _dr,
+		st, shadow, get_area(), NULL, "radiobutton", 
+		x, y, w, h);
+			
+	if (state & GB_DRAW_STATE_FOCUS)
+		paint_focus(style, x, y, w, h, st, "radiobutton");
+}
+
+static void style_separator(int x, int y, int w, int h, int vertical, int state)
+{
+	GtkStateType st = get_state(state);
+	GtkStyle *style = get_style();
+	
+	//_dr->offset(&x, &y);
+	
+	if (vertical)
+	{
+		gtk_paint_vline(style, _dr,
+			st, get_area(), NULL, NULL, 
+			y, y + h - 1, x + (w / 2));
+	}
+	else
+	{
+		gtk_paint_hline(style, _dr,
+			st, get_area(), NULL, NULL, 
+			x, x + w - 1, y + (h / 2));
+	}
+}
+
+static void style_button(int x, int y, int w, int h, int value, int state, int flat)
+{
+	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
+	GtkStyle *style = get_style("GtkButton", GTK_TYPE_BUTTON);
+	int xf, yf, wf, hf;
+	GtkBorder *default_border, *default_outside_border, *inner_border;
+	int focus_width, focus_pad, df;
+	gboolean interior_focus;
+	
+	//_dr->offset(&x, &y);
+	
+	gtk_style_get(style, GTK_TYPE_BUTTON,
+		"default-border", &default_border,
+		"default-outside-border", &default_outside_border,
+		"inner-border", &inner_border,
+		"focus-line-width", &focus_width,
+		"focus-padding", &focus_pad,
+		"interior-focus", &interior_focus,
+		(char *)NULL); 
+
+	/*if (default_outside_border)
+	{
+		x += default_outside_border->left;
+		y += default_outside_border->top;
+		w -= default_outside_border->left + default_outside_border->right;
+		h -= default_outside_border->top + default_outside_border->bottom;
+	}*/
+	
+	if (default_border)
+	{
+		x += default_border->left;
+		y += default_border->top;
+		w -= default_border->left + default_border->right;
+		h -= default_border->top + default_border->bottom;
+	}
+
+	if (inner_border) gtk_border_free(inner_border);
+	if (default_outside_border) gtk_border_free(default_outside_border);
+	if (default_border) gtk_border_free(default_border);
+	
+	xf = x;
+	yf = y;
+	wf = w;
+	hf = h;
+		
+	if (interior_focus)
+	{
+		df = focus_pad + style->xthickness;
+		xf += df;
+		wf -= df * 2;
+		df = focus_pad + style->ythickness;
+		yf += df;
+		hf -= df * 2;
+	}
+	else if (state & GB_DRAW_STATE_FOCUS)
+	{
+		df = focus_pad + focus_width;
+		
+		x += df;
+		w -= df * 2;
+		y += df;
+		h -= df * 2;
+	}
+	
+	if (flat && (state & GB_DRAW_STATE_HOVER) == 0)
+	{
+		/*gtk_paint_flat_box(style, _dr,
+			st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
+			get_area(d), _widget, "button",
+			x, y, w, h);
+		if (_dr->mask())
+			gtk_paint_flat_box(style, _dr->mask(),
+				st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
+				get_area(d), _widget, "button",
+				x, y, w, h);*/
+	}
+	else
+	{
+		fprintf(stderr, "paint box: %d %d %d %d\n", x, y, w, h);
+		gtk_paint_box(style, _dr,
+			st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
+			get_area(), _widget, "button",
+			x, y, w, h);
+	}
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		paint_focus(style, xf, yf, wf, hf, st, "button");
+}
+			
+static void style_panel(int x, int y, int w, int h, int border, int state)
+{
+	GtkShadowType shadow;
+	GtkStateType st = get_state(state);
+	GtkStyle *style = get_style();
+
+	PAINT_apply_offset(&x, &y);
+	
+	switch (border)
+	{
+		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
+		case BORDER_RAISED: shadow = GTK_SHADOW_OUT; break;
+		case BORDER_ETCHED: shadow = GTK_SHADOW_ETCHED_IN; break;
+		default: shadow = GTK_SHADOW_NONE;
+	}
+	
+	gtk_paint_shadow(style, _dr, 
+		st, shadow, get_area(), NULL, NULL, 
+		x, y, w, h);
+	
+	if (border == BORDER_PLAIN)
+	{
+		GdkGC *gc;
+		GdkGCValues values;
+		uint col;
+		
+		col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
+		col = IMAGE.LighterColor(col);
+
+		fill_gdk_color(&values.foreground, col, gdk_drawable_get_colormap(_dr));
+		gc = gtk_gc_get(gdk_drawable_get_depth(_dr), gdk_drawable_get_colormap(_dr), &values, GDK_GC_FOREGROUND);
+		gdk_draw_rectangle(_dr, gc, FALSE, x, y, w - 1, h - 1); 
+		gtk_gc_release(gc);
+	}
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		paint_focus(style, x, y, w, h, st, "button");
+}
+			
+static void style_handle(int x, int y, int w, int h, int vertical, int state)
+{
+	GtkStateType st = get_state(state);
+	GtkStyle *style = get_style();
+
+	//_dr->offset(&x, &y);
+	
+	gtk_paint_handle(style, _dr, st,
+		GTK_SHADOW_NONE, get_area(), NULL, NULL,
+		x, y, w, h,
+		(!vertical) ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
+}
+
+static void style_box(int x, int y, int w, int h, int state)
+{
+	//static GtkWidget *widget = NULL;
+	
+	GtkStateType st = get_state(state);
+	GtkStyle *style = get_style("GtkEntry", GTK_TYPE_ENTRY);
+
+	//_dr->offset(&x, &y);
+	
+	//if (!widget)
+		//widget = gtk_entry_new();
+	
+	gtk_paint_shadow(style, _dr, st,
+		GTK_SHADOW_IN, get_area(), NULL, "entry", x, y, w, h);
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		paint_focus(style, x, y, w, h, st, "entry");
+}
+
 
 BEGIN_PROPERTY(Style_ScrollbarSize)
 
@@ -446,6 +852,87 @@ BEGIN_PROPERTY(Style_Name)
 
 END_PROPERTY
 
+#define BEGIN_DRAW() \
+	int x, y, w, h; \
+\
+	x = VARG(x); \
+	y = VARG(y); \
+	w = VARG(w); \
+	h = VARG(h); \
+\
+	if (w < 1 || h < 1) \
+		return; \
+		\
+	if (begin_draw()) \
+		return; \
+
+#define END_DRAW() end_draw()
+	
+BEGIN_METHOD(Style_PaintArrow, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER type; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_arrow(x, y, w, h, VARG(type), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintCheck, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER value; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_check(x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintOption, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_option(x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintSeparator, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN vertical; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_separator(x, y, w, h, VARGOPT(vertical, FALSE), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintButton, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state; GB_BOOLEAN flat)
+
+	BEGIN_DRAW();
+	style_button(x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL), VARGOPT(flat, FALSE));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintPanel, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER border; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_panel(x, y, w, h, VARG(border), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintHandle, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN vertical; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_handle(x, y, w, h, VARGOPT(vertical, FALSE), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+BEGIN_METHOD(Style_PaintBox, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER state)
+
+	BEGIN_DRAW();
+	style_box(x, y, w, h, VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	END_DRAW();
+
+END_METHOD
+
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
@@ -457,6 +944,15 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameHeight),
 	GB_STATIC_PROPERTY_READ("Name", "s", Style_Name),
+	
+	GB_STATIC_METHOD("PaintArrow", NULL, Style_PaintArrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(Flag)i]"),
+	GB_STATIC_METHOD("PaintCheck", NULL, Style_PaintCheck, "(X)i(Y)i(Width)i(Height)i(Value)i[(Flag)i]"),
+	GB_STATIC_METHOD("PaintOption", NULL, Style_PaintOption, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
+	GB_STATIC_METHOD("PaintSeparator", NULL, Style_PaintSeparator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+	GB_STATIC_METHOD("PaintButton", NULL, Style_PaintButton, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i(Flat)b]"),
+	GB_STATIC_METHOD("PaintPanel", NULL, Style_PaintPanel, "(X)i(Y)i(Width)i(Height)i(Border)i[(Flag)i]"),
+	GB_STATIC_METHOD("PaintHandle", NULL, Style_PaintHandle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+	GB_STATIC_METHOD("PaintBox", NULL, Style_PaintBox, "(X)i(Y)i(Width)i(Height)i[(Flag)i]"),
 	
 	GB_END_DECLARE
 };

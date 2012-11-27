@@ -247,20 +247,20 @@ END_METHOD
 
 BEGIN_METHOD(Font_RichTextWidth, GB_STRING text)
 
-	int w;
+	float w;
 	
 	FONT->richTextSize(STRING(text), LENGTH(text), -1, &w, NULL);
-	GB.ReturnInteger(w);
+	GB.ReturnInteger(ceil(w));
 
 END_METHOD
 
 
 BEGIN_METHOD(Font_RichTextHeight, GB_STRING text; GB_INTEGER width)
 
-	int h;
+	float h;
 	
 	FONT->richTextSize(STRING(text), LENGTH(text), VARGOPT(width, -1), NULL, &h);
-	GB.ReturnInteger(h);
+	GB.ReturnInteger(ceil(h));
 
 END_METHOD
 

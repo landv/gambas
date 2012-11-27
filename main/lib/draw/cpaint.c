@@ -27,7 +27,6 @@
 #include "main.h"
 #include "cpoint.h"
 #include "crect.h"
-#include "cdraw.h"
 #include "cpaint.h"
 
 static GB_PAINT *_current = NULL;
@@ -46,7 +45,7 @@ static GB_PAINT *_current = NULL;
 
 static bool check_device()
 {
-	if (!_current || !_current->opened)
+	if (!_current || !_current->extra)
 	{
 		GB.Error("No current device");
 		return TRUE;
@@ -85,12 +84,16 @@ bool PAINT_open(GB_PAINT *paint)
 	GB.Alloc(POINTER(&paint->extra), paint->desc->size);
 	memset(paint->extra, 0, paint->desc->size);
 	paint->opened = !paint->desc->Begin(paint);
+
+	if (!paint->opened)
+		GB.Free(POINTER(&paint->extra));
+	
 	return !paint->opened;
 }
 
 void PAINT_close(GB_PAINT *paint)
 {
-	if (paint->opened)
+	if (paint->opened && !paint->other)
 	{
 		//fprintf(stderr, "PAINT_close: %p\n", paint);
 		paint->desc->End(paint);
@@ -123,17 +126,21 @@ bool PAINT_begin(void *device)
 	paint->device = device;
 	paint->brush = NULL;
 	paint->opened = FALSE;
+	paint->other = FALSE;
+	paint->tag = NULL;
 	
 	paint->previous = _current;
 	_current = paint;
 	
-	paint->draw = DRAW_from_device(device);
-	if (paint->draw)
-		DRAW_close(paint->draw);
+	//paint->draw = DRAW_from_device(device);
+	//if (paint->draw)
+	//	DRAW_close(paint->draw);
 	
 	if (other)
 	{
 		paint->extra = other->extra;
+		paint->opened = TRUE;
+		paint->other = TRUE;
 	}
 	else
 	{
@@ -156,12 +163,13 @@ void PAINT_end()
 	
 	PAINT_close(paint);
 
-	if (paint->draw)
-		DRAW_open(paint->draw);
+	//if (paint->draw)
+	//	DRAW_open(paint->draw);
 	
 	if (paint->brush)
 		GB.Unref(POINTER(&paint->brush));
 	GB.Unref(POINTER(&paint->device));
+	GB.StoreObject(NULL, POINTER(&(paint->tag)));
 	GB.Free(POINTER(&paint));
 }
 
@@ -715,6 +723,14 @@ BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angl
 END_METHOD
 
 
+BEGIN_METHOD(Paint_Ellipse, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height; GB_FLOAT angle; GB_FLOAT length)
+
+	CHECK_DEVICE();
+	PAINT->Ellipse(THIS, VARG(x), VARG(y), VARG(width), VARG(height), VARGOPT(angle, 0.0), VARGOPT(length, MISSING(angle) ? M_PI * 2 : 0.0));
+
+END_METHOD
+
+
 BEGIN_METHOD(Paint_CurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; GB_FLOAT x3; GB_FLOAT y3)
 
 	CHECK_DEVICE();
@@ -860,6 +876,38 @@ BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text; GB_FLOAT width)
 	PAINT->RichTextExtents(THIS, STRING(text), LENGTH(text), &extents->ext, VARGOPT(width, -1));
 	
 	GB.ReturnObject(extents);
+
+END_METHOD
+
+
+BEGIN_METHOD(Paint_TextSize, GB_STRING text)
+
+	float w, h;
+	CRECTF *size;
+
+	CHECK_DEVICE();
+	PAINT->TextSize(THIS, STRING(text), LENGTH(text), &w, &h);
+	size = CRECTF_create();
+	size->w = w;
+	size->h = h;
+	GB.ReturnObject(size);
+
+END_METHOD
+
+
+BEGIN_METHOD(Paint_RichTextSize, GB_STRING text; GB_FLOAT width)
+
+	float w, h;
+	CRECTF *size;
+	
+	w = VARGOPT(width, -1);
+	
+	CHECK_DEVICE();
+	PAINT->RichTextSize(THIS, STRING(text), LENGTH(text), w, &w, &h);
+	size = CRECTF_create();
+	size->w = w;
+	size->h = h;
+	GB.ReturnObject(size);
 
 END_METHOD
 
@@ -1037,7 +1085,7 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	GB_IMG *image;
 	float x, y, w, h;
 	float opacity = VARGOPT(opacity, 1.0);
-	CRECT *source = (CRECT *)VARG(source);
+	CRECT *source = (CRECT *)VARGOPT(source, NULL);
 
 	CHECK_DEVICE();
 	
@@ -1048,11 +1096,14 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	
 	x = VARG(x);
 	y = VARG(y);
-	w = VARGOPT(width, image->width);
-	h = VARGOPT(height, image->height);
+	w = VARGOPT(width, -1);
+	h = VARGOPT(height, -1);
 	
 	if (GB.CheckObject(VARG(image)))
 		return;
+	
+	if (w < 0) w = image->width;
+	if (h < 0) h = image->height;
 	
 	if (w <= 0.0 || h <= 0.0)
 		return;
@@ -1065,12 +1116,12 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 END_METHOD
 
 
-BEGIN_METHOD(Paint_DrawPicture, GB_OBJECT picture; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_OBJECT source)
+BEGIN_METHOD(Paint_DrawPicture, GB_OBJECT picture; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_OBJECT source)
 
 	GB_PICTURE picture = VARG(picture);
 	GB_PICTURE_INFO info;
-	CRECT *source = (CRECT *)VARG(source);
-	int x, y, w, h;
+	CRECT *source = (CRECT *)VARGOPT(source, NULL);
+	float x, y, w, h;
 
 	CHECK_DEVICE();
 
@@ -1079,38 +1130,33 @@ BEGIN_METHOD(Paint_DrawPicture, GB_OBJECT picture; GB_INTEGER x; GB_INTEGER y; G
 
 	PAINT->GetPictureInfo(THIS, picture, &info);
 
-	x = VARGOPT(x, 0);
-	y = VARGOPT(y, 0);
-	w = VARGOPT(w, info.width);
-	h = VARGOPT(h, info.height);
+	x = VARG(x);
+	y = VARG(y);
+	w = VARGOPT(w, -1);
+	h = VARGOPT(h, -1);
 
+	if (w < 0) w = info.width;
+	if (h < 0) h = info.height;
+	
+	if (info.width <= 0 || info.height <= 0)
+		return;
+	
 	PAINT->DrawPicture(THIS, picture, x, y, w, h, source ? (GB_RECT *)&source->x : NULL);
 
 END_METHOD
 
 
-static uint blend_color(uint col, uint gray, uint alpha)
-{
-	gray *= (0xFF - alpha);
-	
-	return
-		((col & 0xFF) * alpha + gray) >> 8
-		| ((((col >> 8) & 0xFF) * alpha + gray) >> 8) << 8
-		| ((((col >> 16) & 0xFF) * alpha + gray) >> 8) << 16;
-}
-
-BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTEGER y; GB_BOOLEAN grid; GB_OBJECT source)
+BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTEGER y; GB_INTEGER grid; GB_OBJECT source)
 
 	GB_IMAGE image = VARG(image);
 	GB_IMG *info = (GB_IMG *)image;
-	CRECT *source = (CRECT *)VARG(source);
-	int zoom, size, size2;
+	CRECT *source = (CRECT *)VARGOPT(source, NULL);
+	int zoom;
 	int x, y, sx, sy, sw, sh;
 	int i, j, xr, yr;
-	uint col, col1, col2, last_col;
 	bool border;
-	uint a;
-	bool opaque;
+	GB_COLOR borderColor;
+	int antialias = FALSE;
 
 	CHECK_DEVICE();
 
@@ -1146,88 +1192,21 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	//DRAW->Fill.GetOrigin(THIS, &ox, &oy);
 	
 	PAINT->Save(THIS);
+	PAINT->Antialias(THIS, TRUE, &antialias);
 	
-	border = VARGOPT(grid, FALSE);
+	borderColor = VARGOPT(grid, GB_COLOR_DEFAULT);
+	border = borderColor != GB_COLOR_DEFAULT;
 
-	if (zoom < 6 && !border)
+	GB_RECT rect = { sx, sy, sh, sh };
+	PAINT->DrawImage(THIS, image, x, y, sw * zoom, sh * zoom, 1.0, &rect);
+	
+	if (border && zoom >= 3)
 	{
-		GB_COLOR color = 0x979797;
-		GB_RECT rect = { sx, sy, sh, sh };
-		PAINT->Background(THIS, TRUE, &color);
-		PAINT->Rectangle(THIS, x, y, sw * zoom, sh * zoom);
-		PAINT->Fill(THIS, FALSE);
-		PAINT->DrawImage(THIS, image, x, y, sw * zoom, sh * zoom, 1.0, &rect);
-	}
-	else
-	{
-		size = zoom;
-		size2 = size / 2;
-
-		last_col = 0;
-		col1 = 0;
-		col2 = 0;
-		a = 0xFF;
-		opaque = TRUE;
+		for (i = sx, xr = x; i < (sx + sw); i++, xr += zoom)
+			PAINT->FillRect(THIS, xr, y, 1, sh * zoom, borderColor);
 		
 		for (j = sy, yr = y; j < (sy + sh); j++, yr += zoom)
-		{
-			for (i = sx, xr = x; i < (sx + sw); i++, xr += zoom)
-			{
-				col = IMAGE.GetPixel(info, i, j);
-				
-				if (col != last_col)
-				{
-					last_col = col;
-					
-					a = (col >> 24) ^ 0xFF;
-					col &= 0xFFFFFF;
-					
-					if (a < 0xFF)
-					{
-						if (a == 0)
-						{
-							col1 = 0x808080;
-							col2 = 0xC0C0C0;
-						}
-						else
-						{
-							col1 = blend_color(col, 0x80, a);
-							col2 = blend_color(col, 0xC0, a);
-						}
-						opaque = FALSE;
-					}
-					else
-					{
-						opaque = TRUE;
-						PAINT->Background(THIS, TRUE, &col);
-						//DRAW->Fill.SetColor(THIS, col);
-					}
-				}
-				
-				if (opaque)
-				{
-					PAINT->Rectangle(THIS, xr, yr, size + 1, size + 1);
-					PAINT->Fill(THIS, FALSE);
-				}
-				else
-				{
-					PAINT->Background(THIS, TRUE, &col1);
-					PAINT->Rectangle(THIS, xr, yr, size, size);
-					PAINT->Fill(THIS, FALSE);
-					PAINT->Background(THIS, TRUE, &col2);
-					PAINT->Rectangle(THIS, xr + size2, yr, size - size2, size2);
-					PAINT->Rectangle(THIS, xr, yr + size2, size2, size - size2);
-					PAINT->Fill(THIS, FALSE);
-					/*if (border && a >= 16)  TODO
-					{
-						DRAW->Fill.SetStyle(THIS, 0);
-						DRAW->Draw.Rect(THIS, xr, yr, size + 1, size + 1);
-						DRAW->Fill.SetStyle(THIS, 1);
-					}*/
-				}
-				
-			}
-		}
+			PAINT->FillRect(THIS, x, yr, sw * zoom, 1, borderColor);
 	}
 	
 	PAINT->Restore(THIS);
@@ -1292,34 +1271,39 @@ END_PROPERTY
 
 BEGIN_METHOD(Paint_FillRect, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER color)
 
-	float x, y, w, h;
-	GB_COLOR color;
+	CHECK_DEVICE();
+	PAINT->FillRect(THIS, VARG(x), VARG(y), VARG(w), VARG(h), VARG(color));
+	
+END_METHOD
+
+
+BEGIN_PROPERTY(Paint_Tag)
 
 	CHECK_DEVICE();
 	
-	x = VARG(x);
-	y = VARG(y);
-	w = VARG(w);
-	h = VARG(h);
-	
-	if (w < 0)
-		x += w, w = (-w);
-	if (h < 0)
-		y += h, h = (-h);
-	
-	if (w <= 0.0 || h <= 0.0)
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->tag);
+	else
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&(THIS->tag)));
+
+END_PROPERTY
+
+//-- Style API --------------------------------------------------------------
+
+#define GET_COORD() \
+	int x, y, w, h; \
+\
+	CHECK_DEVICE(); \
+\
+	x = VARG(x); \
+	y = VARG(y); \
+	w = VARG(w); \
+	h = VARG(h); \
+\
+	if (w < 1 || h < 1) \
 		return;
 	
-	PAINT->Save(THIS);
-	
-	color = VARG(color);
-	PAINT->Background(THIS, TRUE, &color);
-	PAINT->Rectangle(THIS, x, y, w, h);
-	PAINT->Fill(THIS, FALSE);
-	
-	PAINT->Restore(THIS);
-	
-END_METHOD
+
 
 
 GB_DESC PaintDesc[] =
@@ -1373,6 +1357,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY("_Invert", "b", Paint_Invert),
 	GB_STATIC_PROPERTY("_FillStyle", "i", Paint_FillStyle),
 	GB_STATIC_PROPERTY("Background", "i", Paint_Background),
+	GB_STATIC_PROPERTY("_Tag", "o", Paint_Tag),
 
 	GB_STATIC_METHOD("Save", NULL, Paint_Save, NULL),
 	GB_STATIC_METHOD("Restore", NULL, Paint_Restore, NULL),
@@ -1419,6 +1404,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f"),
 	GB_STATIC_METHOD("FillRect", NULL, Paint_FillRect, "(X)f(Y)f(Width)f(Height)f(Color)i"),
 	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
+	GB_STATIC_METHOD("Ellipse", NULL, Paint_Ellipse, "(X)f(Y)f(Width)f(Height)f[(Angle)f(Length)f]"),
 
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
 	GB_STATIC_METHOD("RelCurveTo", NULL, Paint_RelCurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
@@ -1428,7 +1414,9 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("RelMoveTo", NULL, Paint_RelMoveTo, "(X)f(Y)f"),
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
+	GB_STATIC_METHOD("TextSize", "RectF", Paint_TextSize, "(Text)s"),
 	GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
+	GB_STATIC_METHOD("RichTextSize", "RectF", Paint_RichTextSize, "(Text)s[(Width)f]"),
 	GB_STATIC_METHOD("DrawText", NULL, Paint_DrawText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("DrawRichText", NULL, Paint_DrawRichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("TextExtents", "PaintExtents", Paint_TextExtents, "(Text)s"),
@@ -1450,7 +1438,7 @@ GB_DESC PaintDesc[] =
 	
 	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f[(Width)f(Height)f(Opacity)f(Source)Rect;]"),
 	GB_STATIC_METHOD("DrawPicture", NULL, Paint_DrawPicture, "(Picture)Picture;(X)f(Y)f[(Width)f(Height)f(Source)Rect;]"),
-	GB_STATIC_METHOD("ZoomImage", NULL, Paint_ZoomImage, "(Image)Image;(Zoom)i(X)i(Y)i[(Grid)b(Source)Rect;]"),
+	GB_STATIC_METHOD("ZoomImage", NULL, Paint_ZoomImage, "(Image)Image;(Zoom)i(X)i(Y)i[(Grid)i(Source)Rect;]"),
 
 	GB_END_DECLARE
 };

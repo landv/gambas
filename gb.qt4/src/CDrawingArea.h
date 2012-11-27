@@ -87,8 +87,6 @@ public:
 	void setAllowFocus(bool f);
 	bool isAllowFocus() const { return focusPolicy() != Qt::NoFocus; }
 	
-	bool isPaint() const { return _use_paint; }
-	void setPaint(bool on) { _use_paint = on; }
 	void redraw(QRect &r, bool frame = false);
 	
 	bool hasNoBackground() const { return _no_background; }
@@ -128,7 +126,6 @@ private:
 	bool _merge;
 	bool _focus;
 	int _event_mask;
-	bool _use_paint;
 	bool _set_background;
 	bool _cached;
 	bool _no_background;

@@ -650,7 +650,7 @@ bool gFont::isAllSet()
 		&& _underline_set;
 }
 
-void gFont::richTextSize(char *txt, int len, int sw, int *w, int *h)
+void gFont::richTextSize(const char *txt, int len, float sw, float *w, float *h)
 {
 	PangoLayout *ly;
 	int tw = 0, th = 0;
@@ -664,10 +664,10 @@ void gFont::richTextSize(char *txt, int len, int sw, int *w, int *h)
 		pango_layout_set_wrap(ly, PANGO_WRAP_WORD_CHAR);
 		if (sw > 0)
 			pango_layout_set_width(ly, sw * PANGO_SCALE);
-		pango_layout_get_pixel_size(ly, &tw, &th);
+		pango_layout_get_size(ly, &tw, &th);
 		g_free(html);
 	}
 	
-	if (w) *w = tw;
-	if (h) *h = th;
+	if (w) *w = (float)tw / PANGO_SCALE;
+	if (h) *h = (float)th / PANGO_SCALE;
 }

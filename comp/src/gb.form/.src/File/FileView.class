@@ -166,8 +166,9 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
         hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
         Paint.Begin(hIcon)
         Paint.AntiAlias = False
+        Paint.LineWidth = 2
         Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
-        Paint.Brush = Paint.Color(Color.Gray)
+        Paint.Background = Color.Merge(GetView().Background, Color.Gray)
         Paint.Stroke
         Paint.End
         hIcon.DrawImage(hImage, 2, 2)

@@ -9,8 +9,6 @@ gb_draw_la_CFLAGS = -I$(top_srcdir)/share @INCLTDL@ $(AM_CFLAGS)
 gb_draw_la_SOURCES = \
  gb.draw.h gb.paint.h \
  gb_list.c \
- matrix.h matrix.c \
- cdraw.h cdraw.c \
  cpaint.h cpaint.c \
  crect.h crect.c crect_temp.h \
  cpoint.h cpoint.c cpoint_temp.h \

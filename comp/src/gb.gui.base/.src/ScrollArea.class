@@ -305,9 +305,9 @@ Public Sub DrawingArea_Draw()
 
     Draw.Clip(hClip.X, hClip.Y, hClip.W, hClip.H)
 
-    If $bPainted Then Paint.Begin($hDrawingArea)
+    'If $bPainted Then Paint.Begin($hDrawingArea)
     Raise Draw
-    If $bPainted Then Paint.End
+    'If $bPainted Then Paint.End
 
     If $bShadow Then
       

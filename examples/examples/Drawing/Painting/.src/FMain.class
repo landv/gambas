@@ -512,6 +512,7 @@ End
 
 Public Sub DrawingArea1_Draw()
 
+  Paint.Reset
   Paint.Scale(sldScale.Value / 100, sldScale.Value / 100)
   Paint.Translate(128, 128)
   Paint.Rotate(Rad(sldRotate.Value))

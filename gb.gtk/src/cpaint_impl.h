@@ -37,5 +37,8 @@ void PAINT_begin(void *device);
 void PAINT_end();
 void PAINT_clip(int x, int y, int w, int h);
 cairo_t *PAINT_get_current_context();
+void *PAINT_get_current_device();
+bool PAINT_get_clip(int *x, int *y, int *w, int *h);
+void PAINT_apply_offset(int *x, int *y);
 
 #endif

@@ -32,7 +32,6 @@
 #include "gb_common.h"
 #include "cpoint.h"
 #include "crect.h"
-#include "cdraw.h"
 #include "cpaint.h"
 #include "main.h"
 
@@ -46,9 +45,9 @@ GB_DESC *GB_CLASSES [] EXPORT =
 	PointFDesc,
 	RectDesc,
 	RectFDesc,
-	CDrawClipDesc,
-	CDrawStyleDesc,
-	CDrawDesc,
+	//CDrawClipDesc,
+	//CDrawStyleDesc,
+	//CDrawDesc,
 	PaintExtentsDesc,
 	PaintMatrixDesc,
 	PaintBrushDesc,
@@ -59,9 +58,6 @@ GB_DESC *GB_CLASSES [] EXPORT =
 void *GB_DRAW_1[] EXPORT =
 {
 	(void *)1,
-	(void *)DRAW_get_current,
-	(void *)DRAW_begin,
-	(void *)DRAW_end,
 	(void *)PAINT_get_current,
 	(void *)PAINT_begin,
 	(void *)PAINT_end,

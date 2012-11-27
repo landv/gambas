@@ -27,7 +27,7 @@
 #include "gb.image.h"
 
 typedef
-	int gColor;
+	uint gColor;
 
 /* Functions implemented in gtools.cpp */
 
