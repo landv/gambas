@@ -376,7 +376,7 @@ Private Function Connect(Host As String, Port As Integer) As Integer
 
 End
 
-Public Sub Disconnect()
+Private Sub Disconnect()
 
   Close sSocket
 
