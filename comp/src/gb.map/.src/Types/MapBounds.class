@@ -1,0 +1,72 @@
+' Gambas class file
+
+Property Left, Lon, Est As Float
+Property Right, Lon2, West As Float
+Property Top, Lat, North As Float
+Property Bottom, Lat2, South As Float
+
+Private $mpTopLeft As New MapPoint
+Private $mpBottomRight As New MapPoint
+Property Read TopLeft As MapPoint
+Property Read BottomRight As MapPoint
+
+Private Function Left_Read() As Float
+
+  Return $mpTopLeft.Lon
+
+End
+
+Private Sub Left_Write(Value As Float)
+
+  $mpTopLeft.Lon = Value
+
+End
+
+Private Function Right_Read() As Float
+
+  Return $mpBottomRight.Lon
+
+End
+
+Private Sub Right_Write(Value As Float)
+
+  $mpBottomRight.Lon = Value
+
+End
+
+Private Function Top_Read() As Float
+
+  Return $mpTopLeft.Lat
+
+End
+
+Private Sub Top_Write(Value As Float)
+
+  $mpTopLeft.Lat = Value
+
+End
+
+Private Function Bottom_Read() As Float
+
+  Return $mpBottomRight.Lat
+
+End
+
+Private Sub Bottom_Write(Value As Float)
+
+  $mpBottomRight.Lat = Value
+
+End
+
+
+Private Function TopLeft_Read() As MapPoint
+
+  Return $mpTopLeft
+  
+End
+
+Private Function BottomRight_Read() As MapPoint
+
+  Return $mpBottomRight
+
+End

@@ -8,14 +8,14 @@ Property SubDomains As String[]
 Private $aSubDomains As String[] = ["a", "b", "c"]
 Private $sPattern As String
 Private $colParam As New Collection
-Private Cache As _Cache
+Private Cache As _MapTileCache
 
 Event Refresh
 
 Public Sub _new(Optional cachename As String)
   
-  Cache = New _Cache(cachename) As "Cache"
-  
+  Cache = New _MapTileCache(cachename) As "Cache"
+  Cache.SubDomains = $aSubDomains
 End
 
 Private Function Pattern_Read() As String
@@ -26,25 +26,24 @@ End
 Public Sub SetPattern(sPattern As String, Vars As Collection) As _MapTile
   
   If Vars Then $colParam = Vars 
+  
   $sPattern = sPattern
-  MakeUrl(1, 2, 3)
+  
+  Cache.Url = MakeUrl(sPattern)
   
 End
 
 Private Sub Pattern_Write(Value As String)
   $sPattern = Value
+  Cache.Url = Value
   $colParam.Clear
 
 End
 
-Private Function MakeUrl(ix As Integer, iy As Integer, iz As Integer) As String
-  Dim sUrl As String
+Private Function MakeUrl(sPattern As String) As String
+  Dim sUrl As String = sPattern
   Dim s As String
   
-  sUrl = Replace($sPattern, "{x}", Str(ix))
-  sUrl = Replace(sUrl, "{y}", Str(iy))
-  sUrl = Replace(sUrl, "{z}", Str(iz))
-  sUrl = Replace(sUrl, "{s}", $aSubDomains[Round(Rnd(0, $aSubDomains.Max))])
   For Each s In $colParam
     surl = Replace(sUrl, "{" & $colParam.Key & "}", s)
   Next
@@ -62,12 +61,12 @@ End
 Private Sub SubDomains_Write(Value As String[])
 
   $aSubDomains = Value
+  Cache.SubDomains = Value
 
 End
 
 Public Sub Cache_FileLoaded()
 
-  
  Raise Refresh
 
 End
@@ -108,18 +107,15 @@ Next
 aTiles.Sort
 For Each hTile In aTiles
   himage = Null
-      FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, hTile.X, hTile.Y)
+      'FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, hTile.X, hTile.Y)
       
       'iptGoogle = Mercator.GoogleTile(hTile.x, hTile.y, hmap.Zoom)
 
       If ty < 0 Then Continue
       'If tx < 0 Then Continue
-      himage = Cache[FileName, MakeUrl(hTile.x, hTile.y, hmap.Zoom)]
+      himage = Cache[hTile.x, hTile.y, hmap.Zoom]
         If hImage Then
-      
-          Draw.Image(hImage, hTile.PosX - MapBox.x, hTile.PosY - MapBox.Y)
-        Else
-          'Cache.DeleteFile(FileName)
+          Paint.DrawImage(hImage, hTile.PosX - MapBox.x, hTile.PosY - MapBox.Y)
         Endif
       'Endif
 Next
@@ -130,4 +126,11 @@ Public Sub _ResetCache()
   Cache.ResetQueue
   
 End
+
+Public Sub _PreLoad()
+  
+  
+  
+End
+
 

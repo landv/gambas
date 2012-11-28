@@ -1,0 +1,216 @@
+' Gambas class file
+
+
+
+Private $sBaseCachePath As String = User.Home &/ ".cache/gambas3"
+Private $sUrl As String
+Private $colCache As New Collection
+Private $aStack As New String[]
+Private $aClients As New HttpClient[]
+Private $iClientCount As Integer = 2
+Private $tmrClient As New Timer As "Timer"
+Public Url As String
+Public SubDomains As String[]
+Static Public Debug As Boolean = True
+
+Event FileLoaded
+
+Public Sub _new(Optional CacheName As String)
+  Dim sTempPath As String
+  Dim hClient As HttpClient
+  Dim i As Integer
+  
+  $tmrClient.Delay = 50
+  
+  If CacheName Then
+    sTempPath = $sBaseCachePath &/ CacheName 
+  Else
+    sTempPath = Temp() 
+  Endif
+  
+  If Not Exist(sTempPath) Then
+    If MakeDir(sTempPath) Then Error.Raise("Cannot create Cache Path: \n" & sTempPath)
+  Endif
+    $sBaseCachePath = sTempPath
+   
+   $aClients.Resize($iClientCount)
+   For i = 0 To $aClients.Max
+     hClient = New HttpClient As "Client"
+     hClient.Async = True
+     $aClients[i] = hClient
+   Next
+
+  
+End
+
+
+Public Function _get(X As Integer, Y As Integer, Z As Integer) As Image
+   Dim sFileName As String = Subst("&1-&2-&3.png", Z, Y, X)
+   Dim hImage As Image
+   
+   'If _MapTileCache.Debug Then Debug "Query : X=" & X & "  Y=" & Y & "  Z=" & Z
+   
+  'Si l'image est dans le cache
+  If $colCache.Exist(sFileName) Then
+    Return $colCache[sFileName]
+  Else
+    'Sinon
+    'Si le fichier est en cour de téléchargement on quitte
+    If IsLoading(sFileName) Then Return Null
+    'Si le fichier existe dans le dossier de cache on essais de le charger
+    If Exist($sBaseCachePath &/ sFileName) Then 
+      Try hImage = Image.Load($sBaseCachePath &/ sFileName)
+      If Error Then 
+        'L'image et défectueuse, on la supprime
+        If _Cache.Debug Then Debug "Suppression de l'image : " & sFileName
+        Try Kill $sBaseCachePath &/ sFileName
+        Return Null
+      Endif
+      $colCache[sFileName] = hImage
+      Return hImage
+    Else
+      GetFromWeb(sFileName, MakeUrl(X, Y, Z))
+      Return Null
+    Endif
+  Endif
+  
+End
+
+Private Function MakeDir(Path As String) As Boolean
+  
+  Dim ars As String[]
+  Dim sDir, s As String
+  
+    sDir = "/"
+
+  ars = Split(Path, "/")
+  For Each s In ars
+    sDir &/= s
+    If Not Exist(sDir) Then
+      Mkdir sDir
+    Endif
+    
+  Next
+  
+  If _Cache.Debug Then Debug "Création du Dossier: " & sDir
+
+Catch
+  Return True
+End
+
+Private Function MakeUrl(X As Integer, Y As Integer, z As Integer) As String
+  
+  Dim sTemp As String
+  
+  sTemp = Replace(Url, "{x}", CStr(X))
+  sTemp = Replace(sTemp, "{y}", CStr(Y))
+  sTemp = Replace(sTemp, "{z}", CStr(Z))
+  sTemp = Replace(sTemp, "{s}", SubDomains[Round(Rnd(0, SubDomains.Max))])
+  Return sTemp
+  
+End
+
+Private Sub GetFromWeb(sFileName As String, sUrl As String)
+  
+  $aStack.Push(sFileName)
+  $aStack.Push(sUrl)
+  $tmrClient.Start
+  
+End
+
+
+Public Sub Timer_Timer()
+
+  Dim hClient As HttpClient
+
+  If $aStack.Count = 0 Then 
+    $tmrClient.Stop
+    Return
+  Endif
+  
+  hClient = GetFreeClient()
+  If hClient = Null Then Return
+  
+  hClient.URL = $aStack.Pop()
+  hClient.Tag = $aStack.Pop()
+  hClient.Get(Null, $sBaseCachePath &/ hClient.Tag)
+  
+End
+
+Public Sub GetFreeClient() As HttpClient
+
+  Dim i As Integer
+  
+  For i = 0 To $aClients.Max
+    If $aClients[i].Status = Net.Inactive Then Return $aClients[i]
+  Next
+
+  Return Null
+
+End
+
+Public Sub ResetQueue()
+  
+  Dim hClient As HttpClient
+
+  $tmrClient.Stop
+  For Each hClient In $aClients
+    hClient.Stop
+  Next
+  $colCache.Clear
+  $aStack.Clear
+
+End
+
+Public Function IsLoading(sFile As String) As Boolean
+  
+  Dim i As Integer
+  
+  If $aStack.Exist(sFile) Then Return True
+  For i = 0 To $aClients.Max
+    If $aClients[i].Tag = sFile Then Return True
+  Next
+  
+End
+
+
+
+Public Sub Client_Finished()
+  
+  If _MapTileCache.Debug Then Debug "File succfully downloaded : " & Last.tag
+  Last.Tag = Null
+  Raise FileLoaded
+  
+End
+
+
+Public Sub Client_Error()
+  
+  Last.Stop
+  Last.Tag = ""
+  
+End
+
+Private Function Url_Read() As String
+
+  Return $sUrl
+
+End
+
+Private Sub Url_Write(Value As String)
+
+  $sUrl = Value
+
+End
+
+Private Function Domains_Read() As String[]
+
+  Return 
+
+End
+
+Private Sub Domains_Write(Value As String[])
+
+  $sUrl = Value
+
+End
