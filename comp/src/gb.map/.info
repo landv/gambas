@@ -62,6 +62,14 @@ BoxMeter
 r
 RectF
 
+_BoxPixelBefore
+r
+Rect
+
+_BoxPixelAfter
+r
+Rect
+
 Zoom
 p
 i
@@ -69,6 +77,10 @@ i
 Center
 p
 MapPoint
+
+ResfreshPadding
+p
+i
 
 :Refresh
 :
@@ -79,6 +91,10 @@ m
 
 
 Draw
+m
+
+
+Trigger_Timer
 m
 
 
@@ -97,7 +113,7 @@ _MapTile
 AddShape
 m
 _MapShape
-(Name)s(Shape)Shapes;
+(Name)s[(Shape)Shapes;]
 Layer_Refresh
 m
 

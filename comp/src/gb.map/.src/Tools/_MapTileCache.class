@@ -1,21 +1,21 @@
 ' Gambas class file
 
-
-
 Private $sBaseCachePath As String = User.Home &/ ".cache/gambas3"
 Private $sUrl As String
 Private $colCache As New Collection
 Private $aStack As New String[]
 Private $aClients As New HttpClient[]
-Private $iClientCount As Integer = 2
+Private $iClientCount As Integer = 1
 Private $tmrClient As New Timer As "Timer"
+Private $aPreloadStack As New String[]
 Public Url As String
 Public SubDomains As String[]
-Static Public Debug As Boolean = True
+Static Public Debug As Boolean
 
 Event FileLoaded
 
 Public Sub _new(Optional CacheName As String)
+
   Dim sTempPath As String
   Dim hClient As HttpClient
   Dim i As Integer
@@ -31,25 +31,24 @@ Public Sub _new(Optional CacheName As String)
   If Not Exist(sTempPath) Then
     If MakeDir(sTempPath) Then Error.Raise("Cannot create Cache Path: \n" & sTempPath)
   Endif
-    $sBaseCachePath = sTempPath
-   
-   $aClients.Resize($iClientCount)
-   For i = 0 To $aClients.Max
-     hClient = New HttpClient As "Client"
-     hClient.Async = True
-     $aClients[i] = hClient
-   Next
-
+  $sBaseCachePath = sTempPath
+  
+  $aClients.Resize($iClientCount)
+  For i = 0 To $aClients.Max
+    hClient = New HttpClient As "Client"
+    hClient.Async = True
+    $aClients[i] = hClient
+  Next
   
 End
 
-
 Public Function _get(X As Integer, Y As Integer, Z As Integer) As Image
-   Dim sFileName As String = Subst("&1-&2-&3.png", Z, Y, X)
-   Dim hImage As Image
-   
-   'If _MapTileCache.Debug Then Debug "Query : X=" & X & "  Y=" & Y & "  Z=" & Z
-   
+
+  Dim sFileName As String = Subst("&1-&2-&3.png", Z, Y, X)
+  Dim hImage As Image
+  
+  'If _MapTileCache.Debug Then Debug "Query : X=" & X & "  Y=" & Y & "  Z=" & Z
+  
   'Si l'image est dans le cache
   If $colCache.Exist(sFileName) Then
     Return $colCache[sFileName]
@@ -81,8 +80,8 @@ Private Function MakeDir(Path As String) As Boolean
   Dim ars As String[]
   Dim sDir, s As String
   
-    sDir = "/"
-
+  sDir = "/"
+  
   ars = Split(Path, "/")
   For Each s In ars
     sDir &/= s
@@ -93,9 +92,10 @@ Private Function MakeDir(Path As String) As Boolean
   Next
   
   If _MapTileCache.Debug Then Debug "Création du Dossier: " & sDir
-
+  
 Catch
   Return True
+
 End
 
 Private Function MakeUrl(X As Integer, Y As Integer, z As Integer) As String
@@ -114,52 +114,58 @@ Private Sub GetFromWeb(sFileName As String, sUrl As String)
   
   $aStack.Push(sFileName)
   $aStack.Push(sUrl)
-  $tmrClient.Start
+  $tmrClient.Trigger
   
 End
 
-
 Public Sub Timer_Timer()
-
+  
   Dim hClient As HttpClient
-
-  If $aStack.Count = 0 Then 
-    $tmrClient.Stop
+  
+  If $aStack.Count = 0 And If $aPreloadStack.count = 0 Then 
+    '$tmrClient.Stop
     Return
   Endif
   
   hClient = GetFreeClient()
   If hClient = Null Then Return
-  
-  hClient.URL = $aStack.Pop()
-  hClient.Tag = $aStack.Pop()
+  If $aStack.Count > 0 Then
+    hClient.URL = $aStack.Pop()
+    hClient.Tag = $aStack.Pop()
+  Else
+    hClient.URL = $aPreloadStack.Pop()
+    hClient.Tag = $aPreloadStack.Pop()
+  Endif
+  'Print "dowwnload : " & hClient.Tag
   hClient.Get(Null, $sBaseCachePath &/ hClient.Tag)
   
 End
 
 Public Sub GetFreeClient() As HttpClient
-
+  
   Dim i As Integer
   
   For i = 0 To $aClients.Max
-    If $aClients[i].Status = Net.Inactive Then Return $aClients[i]
+    If $aClients[i].Status = Net.Inactive Then 
+    Return $aClients[i]
+    Endif
   Next
-
+  
   Return Null
-
+  
 End
 
 Public Sub ResetQueue()
   
   Dim hClient As HttpClient
-
+  
   $tmrClient.Stop
   For Each hClient In $aClients
     hClient.Stop
   Next
   $colCache.Clear
   $aStack.Clear
-
+  $aPreloadStack.Clear
 End
 
 Public Function IsLoading(sFile As String) As Boolean
@@ -173,44 +179,62 @@ Public Function IsLoading(sFile As String) As Boolean
   
 End
 
-
-
 Public Sub Client_Finished()
   
   If _MapTileCache.Debug Then Debug "File succfully downloaded : " & Last.tag
   Last.Tag = Null
   Raise FileLoaded
-  
+  DoFullTrigger
 End
-
 
 Public Sub Client_Error()
   
   Last.Stop
   Last.Tag = ""
-  
+  DoFullTrigger
 End
 
 Private Function Url_Read() As String
-
+  
   Return $sUrl
-
+  
 End
 
 Private Sub Url_Write(Value As String)
-
+  
   $sUrl = Value
-
+  
 End
 
 Private Function Domains_Read() As String[]
-
+  
   Return 
-
+  
 End
 
 Private Sub Domains_Write(Value As String[])
-
+  
   $sUrl = Value
-
+  
 End
+
+Public Sub AddToPreload(X As Integer, Y As Integer, Z As Integer)
+
+  Dim sFileName As String = Subst("&1-&2-&3.png", Z, Y, X)
+  If Exist($sBaseCachePath &/ sFileName) Then Return
+  $aPreloadStack.Push(sFileName)
+  $aPreloadStack.Push(MakeUrl(X, Y, Z))
+  '$tmrClient.Start
+End
+
+Private Sub DoFullTrigger()
+
+  Dim i As Integer
+  
+  For i = 0 To Min($iClientCount, $aStack.Count / 2)
+    $tmrClient.Trigger
+  Next
+  
+End
+
+

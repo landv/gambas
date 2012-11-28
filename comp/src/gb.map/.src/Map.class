@@ -7,6 +7,8 @@ Property X, {Left} As Integer
 Property Y, Top As Integer
 Property Read BoxPixel As Rect
 Property Read BoxMeter As RectF
+Property Read _BoxPixelBefore As Rect
+Property Read _BoxPixelAfter As Rect
 
 Property Zoom As Integer
 Property Center As MapPoint
@@ -19,18 +21,24 @@ Private $llCenter As New MapPoint
 Private $iZoom As Integer = 1
 Private $aLayers As New _MapLayer[]
 Private $hPixelBox As New Rect
+Private $hPixelBoxBefore As New Rect
+Private $hPixelBoxAfter As New Rect
+
 Private $hMeterBox As New RectF
 Private $sLayers As New String[]
 
 Private $sCopyright As String
+Private $bZoomChange As Boolean
+Private tmrTrigger As New Timer As "Trigger"
+Private $iRefreshPadding As Integer
+Property ResfreshPadding As Integer
 
 
 Event Refresh
 
-
-
 Public Sub _new()
-  
+
+  tmrTrigger.Delay = 1000
   RefreshBoxes
   
 End
@@ -38,16 +46,37 @@ End
 Public Sub Draw()
   
   Dim i As Integer
-
+  
+  tmrTrigger.Stop
   Draw.ClipRect = New Rect($iLeft, $iTop, $iWidth, $iHeight)
   Draw.Clip.Enabled = True
+  
   For i = 0 To $aLayers.Max
     If $aLayers[i].Visible Then
-      $aLayers[i]._Draw
+      $aLayers[i]._Draw(False)
     Endif
   Next
-  'Draw.Circle($iLeft + $hPixelBox.Width / 2, $iTop + $hPixelBox.Height / 2, 5)
+  
   Draw.Clip.Enabled = False
+  'If $bZoomChange Then
+  'tmrTrigger.Start
+  '$bZoomChange = False
+  'Endif
+  
+End
+
+Public Sub Trigger_Timer()
+
+  Dim i As Integer
+  Print "trigger"
+  For i = 0 To $aLayers.Max
+    If $aLayers[i].Visible Then
+      $aLayers[i]._Preload
+    Endif
+  Next
+  tmrTrigger.Stop
+  'Draw.Circle($iLeft + $hPixelBox.Width / 2, $iTop + $hPixelBox.Height / 2, 5)
+  
 End
 
 Private Function Height_Read() As Integer
@@ -60,7 +89,7 @@ Private Sub Height_Write(Value As Integer)
   
   $iHeight = value
   RefreshBoxes
-
+  
 End
 
 Private Function Width_Read() As Integer
@@ -73,7 +102,7 @@ Private Sub Width_Write(Value As Integer)
   
   $iWidth = Value
   RefreshBoxes
-
+  
 End
 
 Private Function Y_Read() As Integer
@@ -115,9 +144,9 @@ Private Sub Zoom_Write(Value As Integer)
   For Each o In $aLayers
     Try o._ResetCache
   Next
-
+  $bZoomChange = True
   RefreshBoxes
-
+  
 End
 
 Private Function Center_Read() As MapPoint
@@ -130,7 +159,7 @@ Private Sub Center_Write(Value As MapPoint)
   
   $llCenter = Value
   RefreshBoxes
-
+  
 End
 
 Public Sub Resize(Width As Integer, Height As Integer)
@@ -139,7 +168,7 @@ Public Sub Resize(Width As Integer, Height As Integer)
   $iHeight = Height
   RefreshBoxes
   'Me.Draw
-
+  
 End
 
 Public Sub Add(Layer As _MapLayer)
@@ -150,9 +179,8 @@ Public Sub Add(Layer As _MapLayer)
   
 End
 
-
 Private Function BoxPixel_Read() As Rect
-
+  
   Return $hPixelBox
   
 End
@@ -164,10 +192,26 @@ Private Sub RefreshBoxes()
   Dim ll As MapPoint
   
   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
-  $hPixelBox.X = fptPixel.X - ($iWidth / 2)
-  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2)
-  $hPixelBox.Right = fptPixel.X + ($iWidth / 2)
-  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2)
+  $hPixelBox.X = fptPixel.X - ($iWidth / 2) - $iRefreshPadding
+  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2) - $iRefreshPadding
+  $hPixelBox.Right = fptPixel.X + ($iWidth / 2) + $iRefreshPadding
+  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2) + $iRefreshPadding
+  
+  ' 'BoxBefore
+  ' If $iZoom - 1 >= 0 Then
+  '   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom - 1)
+  '   $hPixelBoxBefore = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
+  ' Else
+  '   $hPixelBoxBefore = Null
+  ' Endif
+  ' 'BoxAfter
+  ' If $iZoom + 1 <= 19 Then 
+  '   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom + 1)
+  '   $hPixelBoxAfter = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
+  ' Else
+  '   $hPixelBoxAfter = Null
+  ' Endif
+  
   ' With $hPixelBox
   '   Print .x, .Y, .Right, .Bottom
   ' End With
@@ -180,21 +224,26 @@ Private Sub RefreshBoxes()
   ' $hMeterBox.Right = tmpPoint.X
   ' $hMeterBox.Bottom = tmpPoint.Y
   
+End
+
+Private Function BoxMeter_Read() As RectF
+  
+  Return $hMeterBox
   
 End
 
+Private Function _BoxPixelBefore_Read() As Rect
+  Return $hPixelBoxBefore
+End
 
-
-
-Private Function BoxMeter_Read() As RectF
-
-  Return $hMeterBox
-
+Private Function _BoxPixelAfter_Read() As Rect
+  Return $hPixelBoxAfter
 End
 
 Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collection, Optional CacheName As String) As _MapTile
   
   Dim hLayer As New _MapTile(CacheName)
+  
   hLayer.Name = Name
   hLayer.Pattern = Pattern
   hLayer.SetPattern(Pattern, Args)
@@ -202,11 +251,13 @@ Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collectio
   $sLayers.Add(Name)
   Object.Attach(hLayer, Me, "Layer")
   Return hLayer
+  
 End
 
-Public Function AddShape(Name As String, Shape As Shapes) As _MapShape
+Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
   
   Dim hLayer As New _MapShape(Shape)
+  
   hLayer.Name = Name
   
   $aLayers.Add(hLayer)
@@ -229,13 +280,13 @@ End
 
 Public Sub _next() As Object
   
- If IsNull(Enum.Index) Then Enum.Index = 0 Else Inc Enum.Index
- 
+  If IsNull(Enum.Index) Then Enum.Index = 0 Else Inc Enum.Index
+  
   'Inc Enum.Index
   
   If Enum.Index > $sLayers.Max Then
-   Enum.Stop
-   Return
+    Enum.Stop
+    Return
   Endif
   
   Return $aLayers[Enum.Index]
@@ -244,4 +295,14 @@ End
 
 
 
+Private Function ResfreshPadding_Read() As Integer
 
+  
+
+End
+
+Private Sub ResfreshPadding_Write(Value As Integer)
+
+  
+
+End

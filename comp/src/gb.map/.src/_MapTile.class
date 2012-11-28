@@ -16,13 +16,15 @@ Public Sub _new(Optional cachename As String)
   
   Cache = New _MapTileCache(cachename) As "Cache"
   Cache.SubDomains = $aSubDomains
+
 End
 
 Private Function Pattern_Read() As String
-
+  
   Return $sPattern
-
+  
 End
+
 Public Sub SetPattern(sPattern As String, Vars As Collection) As _MapTile
   
   If Vars Then $colParam = Vars 
@@ -34,13 +36,15 @@ Public Sub SetPattern(sPattern As String, Vars As Collection) As _MapTile
 End
 
 Private Sub Pattern_Write(Value As String)
+
   $sPattern = Value
   Cache.Url = Value
   $colParam.Clear
-
+  
 End
 
 Private Function MakeUrl(sPattern As String) As String
+
   Dim sUrl As String = sPattern
   Dim s As String
   
@@ -49,32 +53,30 @@ Private Function MakeUrl(sPattern As String) As String
   Next
   'Print sUrl
   Return surl
+
 End
 
-
 Private Function SubDomains_Read() As String[]
-
- Return $aSubDomains
-
+  
+  Return $aSubDomains
+  
 End
 
 Private Sub SubDomains_Write(Value As String[])
-
+  
   $aSubDomains = Value
   Cache.SubDomains = Value
-
+  
 End
 
 Public Sub Cache_FileLoaded()
-
- Raise Refresh
-
+  
+  Raise Refresh
+  
 End
 
-
+Public Sub _Draw(bRefresh As Boolean)
   
-Public Sub _Draw()
-
   Dim iptMinTile, iptMaxTile As Point
   Dim tx, ty As Integer
   Dim iptGoogle As Point
@@ -91,9 +93,9 @@ Public Sub _Draw()
   'MapBox 
   iptMinTile = Geo.PixelToTile(Point(MapBox.X, MapBox.Y))
   iptMaxTile = Geo.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
-'Print "start"
-
-For ty = iptMinTile.Y To iptMaxTile.Y
+  'Print "start"
+  
+  For ty = iptMinTile.Y To iptMaxTile.Y
     For tx = iptMinTile.X To iptMaxTile.X
       hTile = New _Tile
       hTile.X = tx
@@ -102,23 +104,24 @@ For ty = iptMinTile.Y To iptMaxTile.Y
       hTile.PosY = ty * 256 
       hTile.Distance = Sqr((hTile.PosX - hCenter.X) ^ 2 + (hTile.PosY - hCenter.Y) ^ 2)
       aTiles.Add(hTile)
-   Next
-Next
-aTiles.Sort
-For Each hTile In aTiles
-  himage = Null
-      'FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, hTile.X, hTile.Y)
-      
-      'iptGoogle = Mercator.GoogleTile(hTile.x, hTile.y, hmap.Zoom)
+    Next
+  Next
+  aTiles.Sort
+  For Each hTile In aTiles
+    himage = Null
+    'FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, hTile.X, hTile.Y)
+    
+    'iptGoogle = Mercator.GoogleTile(hTile.x, hTile.y, hmap.Zoom)
+    
+    If ty < 0 Then Continue
+    'If tx < 0 Then Continue
+    himage = Cache[hTile.x, hTile.y, hmap.Zoom]
+    If hImage Then
+      Paint.DrawImage(hImage, hTile.PosX - MapBox.x, hTile.PosY - MapBox.Y)
+    Endif
+    'Endif
+  Next
 
-      If ty < 0 Then Continue
-      'If tx < 0 Then Continue
-      himage = Cache[hTile.x, hTile.y, hmap.Zoom]
-        If hImage Then
-          Paint.DrawImage(hImage, hTile.PosX - MapBox.x, hTile.PosY - MapBox.Y)
-        Endif
-      'Endif
-Next
 End
 
 Public Sub _ResetCache()
@@ -128,9 +131,35 @@ Public Sub _ResetCache()
 End
 
 Public Sub _PreLoad()
+
+  Dim hMap As Map = Object.Parent(Me)
+  Dim MapBox As Rect
+  Dim iptMinTile, iptMaxTile As Point
+  Dim tx As Integer
+  Dim ty As Integer
   
-  
-  
+  MapBox = hmap._BoxPixelAfter
+  If MapBox Then
+    iptMinTile = Geo.PixelToTile(Point(MapBox.X, MapBox.Y))
+    iptMaxTile = Geo.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
+    
+    For ty = iptMinTile.Y To iptMaxTile.Y
+      For tx = iptMinTile.X To iptMaxTile.X
+        Cache.AddToPreload(ty, tx, hmap.Zoom + 1)
+    Next
+  Next
+  Endif
+  MapBox = hmap._BoxPixelBefore
+  If MapBox Then
+    iptMinTile = Geo.PixelToTile(Point(MapBox.X, MapBox.Y))
+    iptMaxTile = Geo.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
+    
+    For ty = iptMinTile.Y To iptMaxTile.Y
+      For tx = iptMinTile.X To iptMaxTile.X
+        Cache.AddToPreload(ty, tx, hmap.Zoom - 1)
+      Next
+    Next
+  Endif
 End
 
 
