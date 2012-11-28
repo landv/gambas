@@ -17,39 +17,7 @@ End
 Public Sub _Draw()
   
   
-  Dim hShape As _ShapeObject
-  Dim i As Integer
-  Dim j As Integer
-  Dim hPoint As Point
-  Dim hMap As Map = Object.Parent(Me)
-  Dim aPoints As New Integer[]
-  For i = 0 To $hShapes.Objects.Max
-    hShape = $hShapes.Objects[i].OuterShape
-    
-    For j = 0 To hShape.Points.max
-      'hPoint = Mercator.MetersToPixelsFP(hShape.Points[j], hMap.Zoom)
-      hPoint.X -= hMap.BoxPixel.X
-      'Print hPoint.X
-      hPoint.Y -= hMap.BoxPixel.Y
-      'Draw.FillStyle = Fill.Solid
-      'Draw.FillColor = Color.Green  
-      'Draw.Circle(hPoint.x, hPoint.Y, 5)
-      aPoints.Add(hPoint.X)
-      aPoints.Add(hPoint.Y)
-      
-      
-      
-      
-    Next
-      Paint.Begin(Draw.Device)
-      Paint.Brush = Paint.Color(Color.Green)
-        Paint.Polygone(aPoints)
-        Paint.Stroke
-      Paint.End
-    
-      aPoints.Clear
-    
-  Next
+  
   
   
   

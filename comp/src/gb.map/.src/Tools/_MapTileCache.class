@@ -62,7 +62,7 @@ Public Function _get(X As Integer, Y As Integer, Z As Integer) As Image
       Try hImage = Image.Load($sBaseCachePath &/ sFileName)
       If Error Then 
         'L'image et défectueuse, on la supprime
-        If _Cache.Debug Then Debug "Suppression de l'image : " & sFileName
+        If _MapTileCache.Debug Then Debug "Suppression de l'image : " & sFileName
         Try Kill $sBaseCachePath &/ sFileName
         Return Null
       Endif
@@ -92,7 +92,7 @@ Private Function MakeDir(Path As String) As Boolean
     
   Next
   
-  If _Cache.Debug Then Debug "Création du Dossier: " & sDir
+  If _MapTileCache.Debug Then Debug "Création du Dossier: " & sDir
 
 Catch
   Return True
