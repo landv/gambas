@@ -38,11 +38,40 @@
 #include "CCurl.h"
 #include "CProxy.h"
 
+DECLARE_EVENT(EVENT_FINISHED);
+DECLARE_EVENT(EVENT_ERROR);
+DECLARE_EVENT(EVENT_CONNECT);
+DECLARE_EVENT(EVENT_READ);
 
-DECLARE_EVENT (EVENT_FINISHED);
-DECLARE_EVENT (EVENT_ERROR);
-DECLARE_EVENT (EVENT_CONNECT);
-DECLARE_EVENT (EVENT_READ);
+static CCURL *_async_list = NULL;
+
+static void add_to_async_list(CCURL *_object)
+{
+	if (THIS->in_list)
+		return;
+	
+	#ifdef DEBUG
+	fprintf(stderr, "add_to_async_list: %p\n", THIS);
+	#endif
+
+	GB.List.Add(&_async_list, THIS, &THIS->list);
+	THIS->in_list = TRUE;
+	GB.Ref(THIS);
+}
+
+static void remove_from_async_list(CCURL *_object)
+{
+	if (!THIS->in_list)
+		return;
+
+	#ifdef DEBUG
+	fprintf(stderr, "remove_from_async_list: %p\n", THIS);
+	#endif
+
+	GB.List.Remove(&_async_list, THIS, &THIS->list);
+	THIS->in_list = FALSE;
+	GB.Unref(POINTER(&_object));
+}
 
 /*****************************************************
 CURLM : a pointer to use curl_multi interface,
@@ -198,9 +227,6 @@ void CURL_manage_error(void *_object, int error)
 			THIS_STATUS = (- (1000 + error));
 			break;
 	}
-	
-	if (THIS->async)
-		GB.Unref(POINTER(&_object));
 }
 
 void CURL_init_stream(void *_object)
@@ -262,29 +288,34 @@ static void CCURL_post_curl(intptr_t data)
 
 void CURL_stop(void *_object)
 {
+	if (THIS_STATUS == NET_INACTIVE)
+		return;
+	
+	if (THIS_CURL)
+	{
+		#if DEBUG
+		fprintf(stderr, "-- CURL_stop: [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
+		#endif
+		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+		#if DEBUG
+		fprintf(stderr, "-- CURL_stop: [%p] curl_easy_cleanup(%p)\n", THIS, THIS_CURL);
+		#endif
+		curl_easy_cleanup(THIS_CURL);
+		THIS_CURL = NULL;
+	}
+
 	if (THIS_FILE)
 	{
 		fclose(THIS_FILE);
 		THIS_FILE = NULL;
 	}
 	
-	if (THIS_CURL)
-	{
-		#if DEBUG
-		fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
-		#endif
-		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
-		#if DEBUG
-		fprintf(stderr, "-- [%p] curl_easycleanup(%p)\n", THIS, THIS_CURL);
-		#endif
-		curl_easy_cleanup(THIS_CURL);
-		THIS_CURL = NULL;
-	}
-
 	THIS_STATUS = NET_INACTIVE;
+	
+	remove_from_async_list(THIS);
 }
 
-static void Curl_init_post(void)
+static void init_post(void)
 {
 	if (CCURL_pipe[0]!=-1) return;
 	
@@ -301,9 +332,9 @@ static void Curl_init_post(void)
 
 void CURL_start_post(void *_object)
 {
-	Curl_init_post();
+	init_post();
 	curl_multi_add_handle(CCURL_multicurl, THIS_CURL);
-	GB.Ref(THIS);
+	add_to_async_list(THIS);
 }
 
 bool CURL_check_active(void *_object)
@@ -471,18 +502,9 @@ BEGIN_METHOD_VOID(Curl_free)
 	fprintf(stderr, "Curl_free: %p\n", THIS);
 	#endif
 	
+	CURL_stop(THIS);
+	
 	GB.FreeString(&THIS_URL);
-	
-	if (THIS_FILE)
-		fclose(THIS_FILE);
-	
-	if (THIS_CURL) 
-	{
-		#if DEBUG
-		fprintf(stderr, "-- [%p] curl_easy_cleanup(%p)\n", THIS, THIS_CURL);
-		#endif
-		curl_easy_cleanup(THIS_CURL);
-	}
 	
 	CURL_user_clear(&THIS->user);
 	CURL_proxy_clear(&THIS->proxy.proxy);
@@ -500,9 +522,24 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Curl_exit)
 
+	CCURL *curl, *next;
+
+	#if DEBUG
+	fprintf(stderr, "-- CURL_exit: clear async list\n");
+	#endif
+	
+	curl = _async_list;
+	while (curl)
+	{
+		next = curl->list.next;
+		remove_from_async_list(curl);
+		curl = next;
+	}
+	
 	#if DEBUG
 	fprintf(stderr, "-- curl_multi_cleanup()\n");
 	#endif
+	
 	curl_multi_cleanup(CCURL_multicurl);
 
 END_METHOD

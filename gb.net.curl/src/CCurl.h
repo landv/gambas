@@ -58,17 +58,19 @@ typedef
 	struct {
 		GB_BASE ob;
 		GB_STREAM stream;
+		GB_LIST list; // List of async curl objects
 		int status;
 		CURL *curl;
 		char *url;
 		FILE *file;
 		CPROXY proxy;
 		CURL_USER user;
-		bool async;
 		int timeout;
 		int method; // 0->Get, 1->Put
-		bool debug;
 		char *data;
+		unsigned async : 1;
+		unsigned in_list : 1;
+		unsigned debug : 1;
 	}
 	CCURL;
 

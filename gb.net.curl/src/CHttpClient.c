@@ -188,7 +188,7 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
 	}
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, THIS->debug);
+	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT, THIS_HTTP->sUserAgent);
 	curl_easy_setopt(THIS_CURL, CURLOPT_ENCODING, THIS_HTTP->encoding);
@@ -502,7 +502,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(HttpClient_free)
 
-	CURL_stop(_object);
+	//CURL_stop(_object);
 	http_reset(THIS);
 	
 	GB.FreeString(&THIS_HTTP->sUserAgent);

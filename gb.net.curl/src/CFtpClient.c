@@ -116,7 +116,7 @@ static void ftp_initialize_curl_handle(void *_object)
 		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
 	}
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, THIS->debug);
+	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 
 	CURL_proxy_set(&THIS->proxy.proxy,THIS_CURL);
@@ -280,7 +280,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(FtpClient_free)
 
-	CURL_stop(_object);
+	//CURL_stop(_object);
 	ftp_reset(THIS_FTP);
 
 END_METHOD
