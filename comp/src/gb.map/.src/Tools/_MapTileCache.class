@@ -5,7 +5,7 @@ Private $sUrl As String
 Private $colCache As New Collection
 Private $aStack As New String[]
 Private $aClients As New HttpClient[]
-Private $iClientCount As Integer = 1
+Private $iClientCount As Integer = 4
 Private $tmrClient As New Timer As "Timer"
 Private $aPreloadStack As New String[]
 Public Url As String
@@ -19,8 +19,6 @@ Public Sub _new(Optional CacheName As String)
   Dim sTempPath As String
   Dim hClient As HttpClient
   Dim i As Integer
-  
-  $tmrClient.Delay = 50
   
   If CacheName Then
     sTempPath = $sBaseCachePath &/ CacheName 
@@ -122,22 +120,28 @@ Public Sub Timer_Timer()
   
   Dim hClient As HttpClient
   
-  If $aStack.Count = 0 And If $aPreloadStack.count = 0 Then 
-    '$tmrClient.Stop
-    Return
-  Endif
-  
-  hClient = GetFreeClient()
-  If hClient = Null Then Return
-  If $aStack.Count > 0 Then
-    hClient.URL = $aStack.Pop()
-    hClient.Tag = $aStack.Pop()
-  Else
-    hClient.URL = $aPreloadStack.Pop()
-    hClient.Tag = $aPreloadStack.Pop()
-  Endif
-  'Print "dowwnload : " & hClient.Tag
-  hClient.Get(Null, $sBaseCachePath &/ hClient.Tag)
+  Do
+    
+    If $aStack.Count = 0 And If $aPreloadStack.count = 0 Then 
+      '$tmrClient.Stop
+      Return
+    Endif
+    
+    hClient = GetFreeClient()
+    
+    If hClient = Null Then Return
+    
+    If $aStack.Count > 0 Then
+      hClient.URL = $aStack.Pop()
+      hClient.Tag = $aStack.Pop()
+    Else
+      hClient.URL = $aPreloadStack.Pop()
+      hClient.Tag = $aPreloadStack.Pop()
+    Endif
+    If {Debug} Then Debug "download :";; hClient;; hClient.Tag
+    hClient.Get(Null, $sBaseCachePath &/ hClient.Tag)
+    
+  Loop
   
 End
 
@@ -166,6 +170,7 @@ Public Sub ResetQueue()
   $colCache.Clear
   $aStack.Clear
   $aPreloadStack.Clear
+  
 End
 
 Public Function IsLoading(sFile As String) As Boolean
@@ -181,17 +186,17 @@ End
 
 Public Sub Client_Finished()
   
-  If _MapTileCache.Debug Then Debug "File succfully downloaded : " & Last.tag
+  If _MapTileCache.Debug Then Debug "File successfully downloaded : " & Last.tag
   Last.Tag = Null
   Raise FileLoaded
-  DoFullTrigger
+  $tmrClient.Trigger
 End
 
 Public Sub Client_Error()
   
   Last.Stop
   Last.Tag = ""
-  DoFullTrigger
+  $tmrClient.Trigger
 End
 
 Private Function Url_Read() As String
@@ -226,15 +231,3 @@ Public Sub AddToPreload(X As Integer, Y As Integer, Z As Integer)
   $aPreloadStack.Push(MakeUrl(X, Y, Z))
   '$tmrClient.Start
 End
-
-Private Sub DoFullTrigger()
-
-  Dim i As Integer
-  
-  For i = 0 To Min($iClientCount, $aStack.Count / 2)
-    $tmrClient.Trigger
-  Next
-  
-End
-
-

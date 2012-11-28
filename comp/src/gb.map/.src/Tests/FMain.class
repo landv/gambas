@@ -17,13 +17,13 @@ Public Sub _new()
 
   hPicture = New Picture(200, 200)
   
-  MapViewer1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
-  MapViewer1.Map["GoogleMap"].Visible = False
+  'MapViewer1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
+  'MapViewer1.Map["GoogleMap"].Visible = False
   MapViewer1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
-  MapViewer1.Map.AddShape("test")
+  'MapViewer1.Map.AddShape("test")
   
   'Map for lens
-  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
+  'hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
   
   hmap.Resize(200, 200)
   

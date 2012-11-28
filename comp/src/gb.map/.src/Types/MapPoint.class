@@ -170,7 +170,7 @@ Static Public Sub Bearing(({From}) As MapPoint, {To} As MapPoint) As Float
   eLat1 = Rad(eLat1)
   eLat2 = Rad(eLat2)
   DLon = Rad(eLon2 - eLon1)
-  ' 
+  
   Y = Sin(DLon) * Cos(eLat2)
   X = Cos(eLat1) * Sin(eLat2) - Sin(eLat1) * Cos(eLat2) * Cos(DLon)
   B = Deg(ATan2(Y, X))
