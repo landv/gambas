@@ -533,7 +533,6 @@ End
 Public Sub Polygon(Points As Integer[])
 
   Dim hInfo As DrawInfo
-  Dim I As Integer
   Dim fOffset As Float
   
   If Not Points Or If Points.Count < 4 Then Return
@@ -542,14 +541,6 @@ Public Sub Polygon(Points As Integer[])
 
   Paint.Polygon(Points)
 
-  ' Paint.MoveTo(Points[0], Points[1])
-  ' 
-  ' For I = 2 To Points.Max Step 2
-  '   Paint.LineTo(Points[I], Points[I + 1])
-  ' Next
-  ' 
-  ' Paint.LineTo(Points[0], Points[1])
-    
   fOffset = GetStrokeOffset()
   
   If hInfo.FillStyle Then
@@ -591,13 +582,10 @@ End
 Public Sub Zoom((Image) As Image, (Zoom) As Integer, X As Integer, Y As Integer, Optional SrcX As Integer, SrcY As Integer, SrcWidth As Integer, SrcHeight As Integer)
 
   Dim hInfo As DrawInfo = _GetInfo()
+  Dim hRect As Rect
 
-  If SrcWidth <= 0 Or If SrcHeight <= 0 Then
-    Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()))
-  Else
-    Debug "Paint.ZoomImage: "; Image;; Zoom;; X;; Y;; If(hInfo.LineStyle = Line.None, Color.Default, GetForeground());; SrcX;; SrcY;; SrcWidth;; SrcHeight
-    Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()), Rect(SrcX, SrcY, SrcWidth, SrcHeight))
-  Endif
+  If SrcWidth > 0 And If SrcHeight > 0 Then hRect = New Rect(SrcX, SrcY, SrcWidth, SrcHeight)
+  Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()), hRect)
   
 End
 

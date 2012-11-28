@@ -263,13 +263,7 @@ Public Sub dwgIcon_Draw()
     Draw.LineStyle = Line.None
   Endif
 
-  'If $iScale >= 6 Then
   Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX, SY, SW, SH)
-  'Debug "--> "; $hImage;; $iScale;; SX * $iScale;; SY * $iScale;; Color.SetAlpha(Color.Gray, 128);; SX;; SY;; SW;; SH
-  'Paint.ZoomImage($hImage, $iScale, SX * $iScale, SY * $iScale, If(Draw.LineStyle = Line.None, Color.Default, Draw.Foreground), Rect(SX, SY, SW, SH))
-  'Else
-  '  Draw.Image($hImage, SX * $iScale, SY * $iScale, SW * $iScale, SH * $iScale, SX, SY, SW, SH)
-  'Endif
 
   If $bShowSelection Then DrawSelection()
 
@@ -332,8 +326,8 @@ Public Sub dwgPaste_Draw()
   ' 
   ' Endif
 
-  'Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
-  Paint.ZoomImage($hPaste, $iScale, SX * $iScale, SY * $iScale, If(Draw.LineStyle = Line.None, Color.Default, Draw.Foreground), Rect(SX, SY, DX - SX + 1, DY - SY + 1))
+  Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+  'Paint.ZoomImage($hPaste, $iScale, SX * $iScale, SY * $iScale, If(Draw.LineStyle = Line.None, Color.Default, Draw.Foreground), Rect(SX, SY, DX - SX + 1, DY - SY + 1))
 
   Draw.FillStyle = Fill.None
   Draw.LineStyle = Line.Dot

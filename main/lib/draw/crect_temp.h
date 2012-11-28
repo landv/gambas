@@ -61,14 +61,11 @@ BEGIN_METHOD(__name##_call, __gtype x; __gtype y; __gtype w; __gtype h)         
                                                                                                                               \
   __struct *rect = __struct##_create();                                                                                       \
                                                                                                                               \
-  if (!MISSING(x) && !MISSING(y) && !MISSING(w) && !MISSING(h))                                                               \
-  {                                                                                                                           \
-    rect->x = VARG(x);                                                                                                        \
-    rect->y = VARG(y);                                                                                                        \
-    rect->w = VARG(w);                                                                                                        \
-    rect->h = VARG(h);                                                                                                        \
-    __struct##_normalize(rect);                                                                                               \
-  }                                                                                                                           \
+  rect->x = VARG(x);                                                                                                          \
+  rect->y = VARG(y);                                                                                                          \
+  rect->w = VARG(w);                                                                                                          \
+  rect->h = VARG(h);                                                                                                          \
+  __struct##_normalize(rect);                                                                                                 \
                                                                                                                               \
   GB.ReturnObject(rect);                                                                                                      \
                                                                                                                               \
@@ -328,7 +325,7 @@ GB_DESC __name##Desc[] =                                                        
   GB_DECLARE(#__name, sizeof(__struct)),                                                                                      \
                                                                                                                               \
   GB_METHOD("_new", NULL, __name##_new, "[(X)" __sign "(Y)" __sign "(Width)" __sign "(Height)" __sign "]"),                   \
-  GB_METHOD("_call", #__name, __name##_call, "[(X)" __sign "(Y)" __sign "(Width)" __sign "(Height)" __sign "]"),              \
+  GB_STATIC_METHOD("_call", #__name, __name##_call, "(X)" __sign "(Y)" __sign "(Width)" __sign "(Height)" __sign),            \
                                                                                                                               \
   GB_PROPERTY("X", __sign, __name##_X),                                                                                       \
   GB_PROPERTY("Y", __sign, __name##_Y),                                                                                       \

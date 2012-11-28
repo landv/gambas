@@ -1209,6 +1209,7 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	bool border;
 	GB_COLOR borderColor;
 	int antialias = FALSE;
+	GB_RECT rect;
 
 	CHECK_DEVICE();
 
@@ -1249,7 +1250,11 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	borderColor = VARGOPT(grid, GB_COLOR_DEFAULT);
 	border = borderColor != GB_COLOR_DEFAULT;
 
-	GB_RECT rect = { sx, sy, sw, sh };
+	rect.x = sx;
+	rect.y = sy;
+	rect.w = sw;
+	rect.h = sh;
+	
 	PAINT->DrawImage(THIS, image, x, y, sw * zoom, sh * zoom, 1.0, &rect);
 	
 	if (border && zoom >= 3)

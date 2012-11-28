@@ -452,7 +452,7 @@ Public Sub ScrollArea_Draw()
   
   If $bSelRect Then
     
-    Paint.Begin(Draw.Device)
+    'Paint.Begin(Draw.Device)
     
     'Paint.Rectangle(X, Y, W, H)
     Paint.ClipRect = hSaveClip
@@ -475,7 +475,7 @@ Public Sub ScrollArea_Draw()
     Paint.LineWidth = 1
     Paint.Stroke
     
-    Paint.End
+    'Paint.End
     
   Endif
   

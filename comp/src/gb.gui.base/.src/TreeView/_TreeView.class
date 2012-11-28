@@ -433,9 +433,9 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
     
       If hItem.Count Then
         If hItem.Expanded Then
-          Draw.Style.Arrow(X, Y + H \ 2 - 8, 16, 16, Align.Bottom)
+          Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Bottom)
         Else
-          Draw.Style.Arrow(X, Y + H \ 2 - 8, 16, 16, Align.Right)
+          Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Right)
         Endif
       Endif
       
@@ -444,7 +444,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
     Endif
     
     If hItem.Picture Then
-      Draw.Picture(hItem.Picture, X, Y + (H - hItem.Picture.H) \ 2)
+      Paint.DrawPicture(hItem.Picture, X, Y + (H - hItem.Picture.H) / 2)
       X += hItem.Picture.W + 2
     Endif
     

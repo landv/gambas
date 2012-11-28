@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Painted,Focus,NoBackground,Tablet"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Focus,NoBackground,Tablet"
 Public Const _DefaultEvent As String = "Draw"
 Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
@@ -47,7 +47,6 @@ Private $hObserver As Observer
 Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
 Private $bBorder As Boolean 
-Private $bPainted As Boolean
 Private $hTimerScroll As Timer
 Private $DX As Integer
 Private $DY As Integer
@@ -388,13 +387,14 @@ End
 
 Private Function Painted_Read() As Boolean
 
-  Return $bPainted
+  Error "gb.gui: ScrollArea.Painted is deprecated. Do not use it anymore"
+  Return True
 
 End
 
-Private Sub Painted_Write(Value As Boolean)
+Private Sub Painted_Write((Value) As Boolean)
 
-  $bPainted = Value
+  Painted_Read()
 
 End
 
