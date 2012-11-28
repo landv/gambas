@@ -23,15 +23,21 @@ Private $aCont As New _IconPanelContainer[]
 
 Private $iCurrent As Integer = -1
 Private $hPanel As Panel
+Private $hBorder As Panel
 
 Private Const MIN_WIDTH_PANEL As Integer = 20
 
 Public Sub _new()
 
-  Me.Arrangement = Arrange.Horizontal
+  Dim hSep As Separator
+  'Dim hSpace As Panel
+
   Me.Spacing = True
 
-  $hView = New GridView(Me) As "View"
+  $hBorder = New Panel(Me)
+  $hBorder.Arrangement = Arrange.Horizontal
+
+  $hView = New GridView($hBorder) As "View"
   '$hView.Orientation = Arrange.Horizontal
   '$hView.IconLines = 2
   $hView.Width = Desktop.Scale * MIN_WIDTH_PANEL
@@ -39,12 +45,20 @@ Public Sub _new()
   $hView.Columns.Count = 1
   $hView.Mode = Select.Single
   $hView.Grid = False
+  $hView.Border = False
   '$hView.ScrollBar = Scroll.None
   
-  $hPanel = New Panel(Me) As "Panel"
+  hSep = New Separator($hBorder)
+  hSep.W = 1
+  
+  'hSpace = New Panel($hBorder)
+  'hSpace.W = Desktop.Scale
+  
+  $hPanel = New Panel($hBorder) As "Panel"
   $hPanel.Expand = True
   $hPanel.Arrangement = Arrange.Fill
 
+  Border_Write(False)
   'Me._Container = $hPanel
   Me.Count = 1
   'Me.Index = 0
@@ -233,13 +247,13 @@ End
 
 Private Function Border_Read() As Boolean
 
-  Return $hPanel.Border <> Border.None
+  Return $hBorder.Border <> Border.None
 
 End
 
 Private Sub Border_Write(bBorder As Boolean)
 
-  $hPanel.Border = If(bBorder, Border.Sunken, Border.None)
+  $hBorder.Border = If(bBorder, Border.Plain, Border.None)
 
 End
 

@@ -4,6 +4,7 @@ Static Private $hForm As FForm 'FForm
 Static Private $cPict As New Collection
 
 Private $bNoSelect As Integer
+Private $hRefreshTimer As New Timer As "RefreshTimer"
 
 Private Sub GetForm() As Boolean
   
@@ -124,7 +125,20 @@ Public Sub RefreshReadOnly()
   
 End
 
-Public Sub RefreshAll(Optional (sKey) As String, Optional bForce As Boolean)
+Public Sub RefreshAll()
+  
+  $hRefreshTimer.Trigger
+  
+End
+
+Public Sub RefreshTimer_Timer()
+  
+  DoRefreshAll
+  
+End
+
+
+Public Sub DoRefreshAll(Optional (sKey) As String, Optional bForce As Boolean)
 
   If Not Me.Visible Then Return
 
@@ -187,7 +201,7 @@ Public Sub btnDown_Click()
   sKey = tvwControl.Key
   Try $hForm.Control[tvwControl.Current.Text].MoveDown
   If Error Then Return
-  RefreshAll(sKey)
+  DoRefreshAll(sKey)
 
 End
 
@@ -198,7 +212,7 @@ Public Sub btnBottom_Click()
   sKey = tvwControl.Key
   Try $hForm.Control[tvwControl.Current.Text].Raise
   If Error Then Return
-  RefreshAll(sKey)
+  DoRefreshAll(sKey)
 
 End
 
@@ -209,7 +223,7 @@ Public Sub btnTop_Click()
   sKey = tvwControl.Key
   Try $hForm.Control[tvwControl.Current.Text].Lower
   If Error Then Return
-  RefreshAll(sKey)
+  DoRefreshAll(sKey)
 
 End
 
@@ -220,7 +234,7 @@ Public Sub btnUp_Click()
   sKey = tvwControl.Key
   Try $hForm.Control[tvwControl.Current.Text].MoveUp
   If Error Then Return
-  RefreshAll(sKey)
+  DoRefreshAll(sKey)
 
 End
 
@@ -266,7 +280,7 @@ Public Sub ReadConfig()
 
   Project.SetNormalFont(tvwControl)
   MTheme.InitControl(tvwControl)
-  RefreshAll
+  DoRefreshAll
 
 End
 

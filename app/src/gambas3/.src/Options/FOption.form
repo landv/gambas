@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,96,75)
+  MoveScaled(0,0,94,74)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -9,7 +9,6 @@
   Utility = True
   Arrangement = Arrange.Fill
   Spacing = True
-  Margin = True
   { mnuPopup Menu
     Visible = False
     { mnuForeground Menu
@@ -31,20 +30,21 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(1,1,93,73)
+    MoveScaled(0,0,93,73)
     Arrangement = Arrange.Vertical
     Spacing = True
+    Margin = True
     Count = 6
     Index = 0
     Text = ("Interface")
     Picture = Picture["icon:/large/menu"]
     { Label42 Label
-      MoveScaled(0,0,63,3)
+      MoveScaled(1,1,63,3)
       Font = Font["Bold"]
       Text = ("Fonts")
     }
     { HBox6 HBox
-      MoveScaled(0,3,66,4)
+      MoveScaled(1,4,66,4)
       Spacing = True
       Indent = True
       { Label11 Label
@@ -63,7 +63,7 @@
       }
     }
     { HBox45 HBox
-      MoveScaled(0,8,66,4)
+      MoveScaled(1,9,66,4)
       Spacing = True
       Indent = True
       { Label24 Label
@@ -82,7 +82,7 @@
       }
     }
     { HBox19 HBox
-      MoveScaled(0,13,66,4)
+      MoveScaled(1,14,66,4)
       Spacing = True
       Indent = True
       { Label19 Label
@@ -101,7 +101,7 @@
       }
     }
     { HBox23 HBox
-      MoveScaled(0,18,66,4)
+      MoveScaled(1,19,66,4)
       Spacing = True
       Indent = True
       { Label26 Label
@@ -116,7 +116,7 @@
       }
     }
     { HBox24 HBox
-      MoveScaled(0,23,66,4)
+      MoveScaled(1,24,66,4)
       Spacing = True
       Indent = True
       { Label18 Label
@@ -131,22 +131,22 @@
       }
     }
     { HBox46 HBox
-      MoveScaled(0,28,66,4)
+      MoveScaled(1,29,66,4)
       Spacing = True
       Indent = True
       { btnInstallFont Button
-        MoveScaled(3,0,35,4)
+        MoveScaled(4,0,35,4)
         AutoResize = True
         Text = ("Install Gambas font for code edition...")
       }
     }
     { Label43 Label
-      MoveScaled(0,35,63,3)
+      MoveScaled(1,36,63,3)
       Font = Font["Bold"]
       Text = ("Miscellaneous")
     }
     { HBox8 HBox
-      MoveScaled(0,39,66,4)
+      MoveScaled(1,40,66,4)
       Spacing = True
       Indent = True
       { Label2 Label
@@ -164,7 +164,7 @@
       }
     }
     { HBox21 HBox
-      MoveScaled(0,44,66,4)
+      MoveScaled(1,45,66,4)
       Spacing = True
       Indent = True
       { Label21 Label
@@ -182,7 +182,7 @@
       }
     }
     { HBox26 HBox
-      MoveScaled(0,49,66,4)
+      MoveScaled(1,50,66,4)
       Spacing = True
       Indent = True
       { Label15 Label
@@ -200,7 +200,7 @@
       }
     }
     { HBox7 HBox
-      MoveScaled(0,54,66,4)
+      MoveScaled(1,55,66,4)
       Spacing = True
       Indent = True
       { Label1 Label
@@ -215,7 +215,7 @@
       }
     }
     { HBox44 HBox
-      MoveScaled(0,59,66,4)
+      MoveScaled(1,60,66,4)
       Spacing = True
       Indent = True
       { Label53 Label
@@ -233,7 +233,7 @@
       }
     }
     { HBox3 HBox
-      MoveScaled(0,64,66,4)
+      MoveScaled(1,65,66,4)
       Spacing = True
       Indent = True
       { Label10 Label
@@ -724,7 +724,6 @@
       { txtLicense ComboBox
         MoveScaled(29,0,35,4)
         #Translate = False
-        Expand = True
         List = ["General Public License", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-free License"]
         Sorted = True
       }
