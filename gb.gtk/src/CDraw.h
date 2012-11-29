@@ -35,12 +35,6 @@ extern DRAW_INTERFACE DRAW;
 #endif
 
 void DRAW_init();
-void *DRAW_get_drawable(void *);
-void *DRAW_get_style(void *);
-int DRAW_get_state(void *);
-int DRAW_get_shadow(void *);
-void DRAW_set_state(void *,int);
-void DRAW_set_shadow(void *,int);
 
 #endif
 

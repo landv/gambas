@@ -87,42 +87,6 @@ __ERROR:
 	return false;
 }
 
-/*static void render_pixbuf(gPicture *pic, GdkPixbuf *img)
-{
-	GdkColor col={0,0xFF00,0xFF00,0xFF00};
-	GdkColormap *map=gdk_colormap_get_system();
-	GdkGC *gc;
-	gint b_w,b_h;
-	gint depth;
-
-	pic->_transparent=false;
-
-	if (pic->pic) 
-	{
-	g_object_unref(pic->pic);
-	//delete pic->cache;
-	//pic->cache = 0;
-	pic->pic = 0;
-	}
-	
-	if (gdk_pixbuf_get_has_alpha(img)) {
-		pic->_transparent=true;
-		//pic->cache=new alphaCache(img);
-		//if (!pic->cache->active()) { delete pic->cache; pic->cache=NULL; }
-	}
-
-	b_w=gdk_pixbuf_get_width(img);
-	b_h=gdk_pixbuf_get_height(img);
-
-	depth=gdk_screen_get_system_visual(gdk_screen_get_default())->depth;
-	pic->pic=gdk_pixmap_new(NULL,b_w,b_h,depth);
-	gc=gdk_gc_new(pic->pic);
-	gdk_colormap_alloc_color(map,&col,FALSE,TRUE);
-	gdk_gc_set_foreground(gc,&col);
-	gdk_draw_rectangle(pic->pic,gc,TRUE,0,0,b_w,b_h);
-	g_object_unref(G_OBJECT(gc));
-	gdk_draw_pixbuf(pic->pic,NULL,img,0,0,0,0,b_w,b_h,GDK_RGB_DITHER_MAX,0,0);
-}*/
 
 void gPicture::initialize()
 {

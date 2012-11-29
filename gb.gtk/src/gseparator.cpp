@@ -37,14 +37,13 @@ gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 	
 	if (w == 1 || h == 1)
 	{
-		GdkGC *gc;
-		GdkGCValues values;
-
-		fill_gdk_color(&values.foreground, gDesktop::lightfgColor(), gdk_drawable_get_colormap(wid->window));
-		gc = gtk_gc_get(gdk_drawable_get_depth(wid->window), gdk_drawable_get_colormap(wid->window), &values, GDK_GC_FOREGROUND);
+		cairo_t *cr;
 		
-		gdk_draw_rectangle(wid->window, gc, TRUE, e->area.x, e->area.y, e->area.width, e->area.height);
-		gtk_gc_release(gc);
+		cr = gdk_cairo_create(wid->window);
+		gt_cairo_set_source_color(cr, gDesktop::lightfgColor());
+		cairo_rectangle(cr, e->area.x, e->area.y, e->area.width, e->area.height);
+		cairo_fill(cr);
+		cairo_destroy(cr);
 	}
 	else if (w>=h)
 		gtk_paint_hline(wid->style, wid->window, GTK_STATE_NORMAL, &e->area, wid, NULL, x, x + w, y + h / 2);

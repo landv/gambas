@@ -29,15 +29,16 @@
 static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 {
 	GtkStyle *style = gtk_widget_get_style(draw);
-	GdkGC *gc;
+	cairo_t *cr;
 	int vw, vh, lw, lh;
 	int fw = Max(d->getFramePadding(), d->getFrameWidth());
 	
-	gc = gdk_gc_new(draw->window);
-	gdk_gc_set_clip_rectangle(gc, &e->area);	
+	cr = gdk_cairo_create(draw->window);
+	gdk_cairo_region(cr, e->region);
+	cairo_clip(cr);
 	
 	if (style) 
-		gdk_gc_set_foreground(gc, &style->fg[GTK_STATE_NORMAL]);
+		gdk_cairo_set_source_color(cr, &style->fg[GTK_STATE_NORMAL]);
 	
 	switch (d->lay_x)
 	{
@@ -82,34 +83,10 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	vw += draw->allocation.x;
 	vh += draw->allocation.y;
 	
-	/*if (d->_transparent && d->_mask_dirty)
-	{
-		GdkBitmap *mask = gt_make_text_mask(draw->window, d->width(), d->height(), d->layout, vw, vh);
-		
-		if (fw)
-		{
-			int i;
-			GdkGC *gcm = gdk_gc_new(mask);
-			GdkColor white;
-			
-			white.pixel = 1;
-			
-			gdk_gc_set_foreground(gcm, &white);
-			
-			for (i = 0; i < fw; i++)
-				gdk_draw_rectangle(mask, gcm, false, i, i, d->width() - i * 2 - 1, d->height() - i * 2 - 1);
-				
-			g_object_unref(gcm);
-		}
-		
-		gtk_widget_shape_combine_mask(d->border, mask, 0, 0);
-		g_object_unref(mask);
-		d->_mask_dirty = false;
-	}*/
-	
-	//fprintf(stderr, "draw label: %s: %d %d\n", d->name(), vw, vh);
-	gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
-	g_object_unref(G_OBJECT(gc));
+	cairo_move_to(cr, vw, vh);
+	pango_cairo_show_layout(cr, d->layout);
+	//gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
+	cairo_destroy(cr);
 	
 	d->drawBorder(e);
 	

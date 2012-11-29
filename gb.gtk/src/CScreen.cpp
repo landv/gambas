@@ -729,7 +729,6 @@ static void style_button(int x, int y, int w, int h, int value, int state, int f
 	}
 	else
 	{
-		fprintf(stderr, "paint box: %d %d %d %d\n", x, y, w, h);
 		gtk_paint_box(style, _dr,
 			st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
 			get_area(), _widget, "button",
