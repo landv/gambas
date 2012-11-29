@@ -538,10 +538,12 @@ Public Sub Load()
         sParent = aLine[iLine]
         Inc iLine
         
-        If Not sParent Then
+        If Not sParent Or If sParent = sClass Then
           hParent = Classes[sClass]
           If hParent And If hParent.Component <> Key And If hParent.Component <> Project.Name Then
             sParent = sClass
+          Else
+            sParent = ""
           Endif
         Endif
         
