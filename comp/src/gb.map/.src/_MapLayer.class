@@ -3,10 +3,10 @@
 Public Name As String
 Private $bVisible As Boolean = True
 Property Visible As Boolean
-
+Public Copyright As String = "totototototo"
 Event Refresh
 
-Public Sub _Draw(bRefresh As Boolean)
+Public Sub _Draw(Optional bRefresh As Boolean = True)
   
   
   

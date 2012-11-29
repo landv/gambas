@@ -9,7 +9,7 @@ Private $aSubDomains As String[] = ["a", "b", "c"]
 Private $sPattern As String
 Private $colParam As New Collection
 Private Cache As _MapTileCache
-
+Private $aTiles As New _Tile[]
 Event Refresh
 
 Public Sub _new(Optional cachename As String)
@@ -75,7 +75,7 @@ Public Sub Cache_FileLoaded()
   
 End
 
-Public Sub _Draw(bRefresh As Boolean)
+Public Sub _Draw(Optional bRefresh As Boolean = True)
   
   Dim iptMinTile, iptMaxTile As Point
   Dim tx, ty As Integer
@@ -84,13 +84,16 @@ Public Sub _Draw(bRefresh As Boolean)
   Dim FileName As String
   Dim hMap As Map = Object.Parent(Me)
   Dim MapBox As Rect = hMap.BoxPixel
-  Dim aTiles As New _Tile[]
+  'Dim aTiles As New _Tile[]
   Dim hTile As _Tile
   Dim hCenter As Point = MapBox.Center()
   Dim i As Integer
-  
+  Dim iPadding As Integer = hmap.Padding
+  'Print bRefresh
   'If Not $sVersion Then TryToGetVersion
   'MapBox 
+  If bRefresh Then 
+  $aTiles.Clear
   iptMinTile = Geo.PixelToTile(Point(MapBox.X, MapBox.Y))
   iptMaxTile = Geo.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
   'Print "start"
@@ -100,14 +103,15 @@ Public Sub _Draw(bRefresh As Boolean)
       hTile = New _Tile
       hTile.X = tx
       hTile.Y = ty
-      hTile.PosX = tx * 256
-      hTile.PosY = ty * 256 
+      hTile.PosX = tx * 256 - iPadding
+      hTile.PosY = ty * 256 - iPadding
       hTile.Distance = Sqr((hTile.PosX - hCenter.X) ^ 2 + (hTile.PosY - hCenter.Y) ^ 2)
-      aTiles.Add(hTile)
+      $aTiles.Add(hTile)
     Next
   Next
-  aTiles.Sort
-  For Each hTile In aTiles
+  $aTiles.Sort
+  Endif
+  For Each hTile In $aTiles
     himage = Null
     'FileName = Subst("&1-&2-&3.jpg", hMap.Zoom, hTile.X, hTile.Y)
     

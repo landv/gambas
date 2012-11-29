@@ -30,9 +30,11 @@ Private $sLayers As New String[]
 Private $sCopyright As String
 Private $bZoomChange As Boolean
 Private tmrTrigger As New Timer As "Trigger"
-Private $iRefreshPadding As Integer
-Property ResfreshPadding As Integer
-
+'Private $iRefreshPadding As Integer
+Property Padding As Integer
+Private $iPadding As Integer
+Private $bOutPadding As Boolean
+Private $OldPixelBox As Rect
 
 Event Refresh
 
@@ -46,22 +48,37 @@ End
 Public Sub Draw()
   
   Dim i As Integer
-  
+  Dim sCopyright As String
+  Dim iTextWidth, iTextHeight As Integer
   tmrTrigger.Stop
   Draw.ClipRect = New Rect($iLeft, $iTop, $iWidth, $iHeight)
   Draw.Clip.Enabled = True
   
   For i = 0 To $aLayers.Max
     If $aLayers[i].Visible Then
-      $aLayers[i]._Draw(False)
+      $aLayers[i]._Draw($bOutPadding Or $bZoomChange)
+      sCopyright &/= $aLayers[i].Copyright
     Endif
   Next
-  
+  If sCopyright Then
+  Draw.FillStyle = Fill.Cross
+  Draw.FillColor = Color.SetAlpha(Color.Pink, 150)
+  iTextHeight = Draw.TextHeight(sCopyright)
+  iTextWidth = Draw.TextWidth(sCopyright)
+  Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
+  Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
+  Endif 
   Draw.Clip.Enabled = False
-  'If $bZoomChange Then
+  $bOutPadding = False
+  
+  
+  
+  
+  If $bZoomChange Then
   'tmrTrigger.Start
-  '$bZoomChange = False
-  'Endif
+  $bZoomChange = False
+  
+  Endif
   
 End
 
@@ -192,25 +209,33 @@ Private Sub RefreshBoxes()
   Dim ll As MapPoint
   
   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
-  $hPixelBox.X = fptPixel.X - ($iWidth / 2) - $iRefreshPadding
-  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2) - $iRefreshPadding
-  $hPixelBox.Right = fptPixel.X + ($iWidth / 2) + $iRefreshPadding
-  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2) + $iRefreshPadding
+  $hPixelBox.X = fptPixel.X - ($iWidth / 2) - $iPadding
+  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2) - $iPadding
+  $hPixelBox.Right = fptPixel.X + ($iWidth / 2) + $iPadding
+  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2) + $iPadding
   
-  ' 'BoxBefore
-  ' If $iZoom - 1 >= 0 Then
-  '   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom - 1)
-  '   $hPixelBoxBefore = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
-  ' Else
-  '   $hPixelBoxBefore = Null
-  ' Endif
-  ' 'BoxAfter
-  ' If $iZoom + 1 <= 19 Then 
-  '   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom + 1)
-  '   $hPixelBoxAfter = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
-  ' Else
-  '   $hPixelBoxAfter = Null
-  ' Endif
+  If Not $OldPixelBox Then $OldPixelBox = $hPixelBox.Copy()
+  
+  If Abs($hPixelBox.X - $OldPixelBox.X) > $iPadding / 2 Then $bOutPadding = True
+  If Abs($hPixelBox.Y - $OldPixelBox.Y) > $iPadding / 2 Then $bOutPadding = True
+  If Abs($hPixelBox.Width - $OldPixelBox.Width) > $iPadding / 2 Then $bOutPadding = True
+  If Abs($hPixelBox.Height - $OldPixelBox.Height) > $iPadding / 2 Then $bOutPadding = True
+  If $bOutPadding Then $OldPixelBox = $hPixelBox.Copy()
+  'If $bOutPadding Then Print "move"
+  'BoxBefore
+  If $iZoom - 1 >= 0 Then
+    fptPixel = Geo.MapPointToPixel($llCenter, $iZoom - 1)
+    $hPixelBoxBefore = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
+  Else
+    $hPixelBoxBefore = Null
+  Endif
+  'BoxAfter
+  If $iZoom + 1 <= 19 Then 
+    fptPixel = Geo.MapPointToPixel($llCenter, $iZoom + 1)
+    $hPixelBoxAfter = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
+  Else
+    $hPixelBoxAfter = Null
+  Endif
   
   ' With $hPixelBox
   '   Print .x, .Y, .Right, .Bottom
@@ -295,14 +320,15 @@ End
 
 
 
-Private Function ResfreshPadding_Read() As Integer
 
-  
+Private Function Padding_Read() As Integer
+
+  Return $iPadding
 
 End
 
-Private Sub ResfreshPadding_Write(Value As Integer)
+Private Sub Padding_Write(Value As Integer)
 
-  
+  $iPadding = Value
 
 End

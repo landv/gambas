@@ -62,9 +62,9 @@ Public Sub MapView1_MouseMove()
   If $bLens Then
     hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
     
+  MapView1.Refresh
   Endif
   
-  MapView1.Refresh
 
 End
 

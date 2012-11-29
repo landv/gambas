@@ -31,15 +31,15 @@ Public Sub _new()
   $hView.Tracking = True
   $hView.Padding = True
   $hView.Background = Color.DarkGray
-  $hmap.ResfreshPadding = 256
+  $hmap.Padding = 256
   
 End
 
 
 
-Public Sub SetCenter(ll As MapPoint)
+Public Sub SetCenter(hMapPoint As MapPoint)
   
-  $hCenter = ll
+  $hCenter = hMapPoint
   
 End
 
@@ -77,7 +77,7 @@ Public Sub View_MouseWheel()
 
   $hMap.Zoom += Mouse.Delta
   
-  hPix = New Point($hMap.BoxPixel.X + Mouse.X, $hMap.BoxPixel.Y + Mouse.Y)
+  hPix = New Point($hMap.BoxPixel.X + $hMap.Padding + Mouse.X, $hMap.BoxPixel.Y + $hMap.Padding + Mouse.Y)
 
   If Mouse.Delta > 0 Then $hMap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
   
