@@ -61,8 +61,6 @@ void CLASS_create(CLASS **result)
 	TABLE_create(&class->table, sizeof(CLASS_SYMBOL), TF_IGNORE_CASE);
 	TABLE_create(&class->string, sizeof(SYMBOL), TF_NORMAL);
 
-	/* Cr�tion des fonctions d'initialisation */
-
 	CLEAR(&func);
 	TYPE_clear(&func.type);
 
@@ -71,11 +69,6 @@ void CLASS_create(CLASS **result)
 
 	func.index = CLASS_add_symbol(class, "@new");
 	CLASS_add_function(class, &func);
-
-	/* Le premier symbole de la table des symboles est vide.
-		Ainsi, l'index 0 de la table n'est jamais utilis�! */
-
-	/*CLASS_add_symbol_string(class, "");*/
 
 	class->name = STR_copy(FILE_set_ext(FILE_get_name(JOB->name), NULL));
 	class->parent = NO_SYMBOL;

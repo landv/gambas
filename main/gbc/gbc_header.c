@@ -816,8 +816,11 @@ static bool header_inherits(void)
 
 	if (JOB->class->parent != NO_SYMBOL)
 		THROW("Cannot inherit twice");
-
+	
 	index = PATTERN_index(*JOB->current);
+	
+	if (strcasecmp(TABLE_get_symbol_name(JOB->class->table, index), JOB->class->name) == 0)
+		THROW("Cannot inherit itself");
 
 	JOB->class->parent = CLASS_add_class(JOB->class, index);
 	/*printf("JOB->class->parent = %d\n", JOB->class->parent);*/
