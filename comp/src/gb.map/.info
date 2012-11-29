@@ -171,13 +171,17 @@ f
 'Calculate the initial bearing (in degrees) that leads from one point to another point
 'specified by latitude / longitude.
 '
-#MapViewer
+#MapView
 UserControl
 C
 _Properties
 C
 s
 *,Border{Border.*}
+_Group
+C
+s
+View
 Map
 r
 Map
@@ -190,31 +194,7 @@ Border
 p
 i
 
-:MouseMove
-:
-
-
-:MouseDown
-:
-
-
-:MouseUp
-:
-
-
-:MouseWheel
-:
-
-
 :Click
-:
-
-
-:DblClick
-:
-
-
-:KeyPress
 :
 
 

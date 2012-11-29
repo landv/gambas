@@ -2,7 +2,11 @@
 
 Export
 Inherits UserControl
+
 Public Const _Properties As String = "*,Border{Border.*}"
+Public Const _Group As String = "View"
+
+
 Private $hCenter As MapPoint
 Private $hMap As New Map As "Map"
 Private $hView As DrawingArea
@@ -15,23 +19,20 @@ Property Lock As Boolean
 Property Border As Integer
 Private $bLock As Boolean
 Property Read {Map} As Map
-Event MouseMove
-Event MouseDown
-Event MouseUp
-Event MouseWheel
+
 Event Click
-Event DblClick
-Event KeyPress
 Event Draw
 
 Public Sub _new()
   $hPan.Arrangement = Arrange.Fill
   $hView = New DrawingArea($hPan) As "View"
+  Me.Proxy = $hView
   $hMap.resize($hView.ClientW, $hView.ClientH)
   $hView.Tracking = True
   $hView.Padding = True
   $hView.Background = Color.DarkGray
   $hmap.ResfreshPadding = 256
+  
 End
 
 

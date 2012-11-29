@@ -1135,6 +1135,7 @@ void GB_Deprecated(const char *msg, const char *func, const char *repl)
 	}
 	else
 	{
+		DEBUG_where();
 		if (repl)
 			fprintf(stderr, "%s: %s is deprecated. Use %s instead\n", msg, func, repl);
 		else

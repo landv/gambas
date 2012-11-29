@@ -155,15 +155,6 @@ Public Sub _new()
 
 End
 
-Public Sub IsPainted(hCtrl As CControl) As Boolean
-
-  If hCtrl.Kind = "ReportLabel" Then Return True
-  If hCtrl.Kind = "ReportTextLabel" Then Return True
-  If hCtrl.Kind = "ReportLine" Then Return True
-  If hCtrl.Kind = "ReportSvgImage" Then Return True
-
-End
-
 Public Sub IsTransparent(hCtrl As CControl) As Boolean
 
   If hCtrl.Kind = "Report" Then Return False

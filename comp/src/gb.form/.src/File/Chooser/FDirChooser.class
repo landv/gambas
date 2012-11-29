@@ -26,6 +26,7 @@ Private $hCurrentBookmark As CBookmark
 Private $bShowBookmark As Boolean
 Private $hWatch As Watcher
 Private $bPressed As Boolean
+Private $sDirText As String
 
 Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
@@ -85,8 +86,9 @@ Private Sub UpdateLabelDir()
 
   If dvwChoose.Current = "/" Then
     
+    $sDirText = ""
     txtDir.Text = ""
-    txtDir.Hide
+    'txtDir.Hide
     btnParent.Enabled = False
     
   Else
@@ -96,10 +98,10 @@ Private Sub UpdateLabelDir()
     If Left(sDir) <> "/" Then sDir = "/" & sDir
     If Right(sDir) = "/" Then sDir = Left(sDir, -1)
     
-    sDir = Trim(Replace(sDir, "/", "  ·  "))
-  
-    txtDir.Text = sDir
-    txtDir.Visible = sDir
+    $sDirText = Trim(Replace(sDir, "/", "  ·  "))
+    
+    UpdateDirText
+    'txtDir.Visible = sDir
     btnParent.Enabled = True
     
   Endif
@@ -1215,3 +1217,31 @@ Public Sub SetShowPreview(bPreview As Boolean)
   
 End
 
+Private Sub Ellipsize(sText As String, hFont As Font, W As Integer) As String
+  
+  Dim sCar As String = "…"
+  Dim iPos As Integer
+  
+  If Not sText Then Return
+  If hFont.TextWidth(sText) <= W Then Return sText
+  
+  For iPos = 1 To String.Len(sText)
+    If hFont.TextWidth(String.Left(sText, iPos) & sCar) > W Then Break
+  Next
+  
+  Return String.Left(sText, iPos - 1) & sCar
+  
+End
+
+Private Sub UpdateDirText()
+
+  txtDir.Text = Ellipsize($sDirText, txtDir.Font, txtDir.W)
+
+End
+
+
+Public Sub panToolbar_Arrange()
+
+  UpdateDirText
+
+End

@@ -153,7 +153,7 @@ static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pi
 					q += 4;
 				}
 			
-	#undef MULT
+			#undef MULT
 		}
 
 		gdk_pixels += gdk_rowstride;
@@ -1243,65 +1243,11 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 	cairo_matrix_multiply((cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix2);
 }
 
-static void draw_pixbuf(GB_PAINT *d, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source)
-{
-	cairo_surface_t *surface;
-	cairo_pattern_t *pattern, *save;
-	cairo_matrix_t matrix;
-	
-	x += DX(d);
-	y += DY(d);
-	
-	cairo_save(CONTEXT(d));
-	
-	save = cairo_get_source(CONTEXT(d));
-	cairo_pattern_reference(save);
-	
-	if (source)
-		pixbuf = gdk_pixbuf_new_subpixbuf(pixbuf, source->x, source->y, source->w, source->h);
-	
-	surface = gdk_cairo_create_surface_from_pixbuf(pixbuf);
-	pattern = cairo_pattern_create_for_surface(surface);
-	cairo_surface_destroy(surface);
-	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
-	
-	if (source && w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
-		cairo_pattern_set_filter(pattern, CAIRO_FILTER_NEAREST);
-	
-	//gdk_cairo_set_source_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y);
-	
-	cairo_matrix_init_identity(&matrix);
-	cairo_matrix_translate(&matrix, x, y);
-	cairo_matrix_scale(&matrix, w / gdk_pixbuf_get_width(pixbuf), h / gdk_pixbuf_get_height(pixbuf));
-	cairo_matrix_invert(&matrix);
-	cairo_pattern_set_matrix(pattern, &matrix);
-	cairo_set_source(CONTEXT(d), pattern);
-	
-	cairo_rectangle(CONTEXT(d), x, y, w, h);
-	
-	if (opacity == 1.0)
-	{
-		cairo_fill(CONTEXT(d));
-	}
-	else
-	{
-		cairo_clip(CONTEXT(d));
-		cairo_paint_with_alpha(CONTEXT(d), opacity);
-	}
-	
-	cairo_set_source(CONTEXT(d), save);
-	cairo_pattern_destroy(save);
-	
-	cairo_restore(CONTEXT(d));
-	
-	if (source)
-		g_object_unref(pixbuf);
-}
 
 static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
 	gPicture *picture = CIMAGE_get((CIMAGE *)image);
-	draw_pixbuf(d, picture->getPixbuf(), x, y, w, h, opacity, source);
+	gt_cairo_draw_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y, w, h, opacity, source);
 }
 
 static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
@@ -1312,7 +1258,7 @@ static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float
 	
 	if (pic->type() != gPicture::SERVER || source)
 	{
-		draw_pixbuf(d, pic->getPixbuf(), x, y, w, h, 1.0, source);
+		gt_cairo_draw_pixbuf(CONTEXT(d), pic->getPixbuf(), x, y, w, h, 1.0, source);
 		return;
 	}
 	

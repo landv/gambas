@@ -255,7 +255,7 @@ public:
 	virtual int getFrameWidth();
 	virtual gColor getFrameColor();
 	void drawBorder(GdkEventExpose *e);
-	void drawBackground(GdkEventExpose *e);
+	void drawBackground(GtkWidget *wid, GdkEventExpose *e);
 	
 	virtual int minimumHeight();
 	void resolveFont(gFont *new_font);

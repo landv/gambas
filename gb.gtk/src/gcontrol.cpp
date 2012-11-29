@@ -1211,7 +1211,6 @@ void gControl::drawBorder(GdkEventExpose *e)
 	GdkDrawable *win;
 	GtkShadowType shadow;
 	gint x, y, w, h;
-	//GdkGC *gc;
 	GtkStyle* st;
 	GdkRectangle clip;
 	
@@ -1250,16 +1249,10 @@ void gControl::drawBorder(GdkEventExpose *e)
 	{
     case BORDER_PLAIN:
     {
-			GdkGC *gc;
-			GdkGCValues values;
-
-			fill_gdk_color(&values.foreground, getFrameColor(), gdk_drawable_get_colormap(win));
-			gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
+			cairo_t *cr;
 			
-			//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
-			gdk_gc_set_clip_region(gc, e->region);
-			gdk_draw_rectangle(win, gc, FALSE, x, y, w - 1, h - 1); 
-			gtk_gc_release(gc);
+			cr = gdk_cairo_create(win);
+			gt_cairo_draw_rect(cr, x, y, w, h, getFrameColor());
       return;
     }
     
@@ -1283,7 +1276,7 @@ static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *con
 
 static gboolean cb_draw_background(GtkWidget *wid, GdkEventExpose *e, gControl *control)
 {
-	control->drawBackground(e);
+	control->drawBackground(wid, e);
 	return false;
 }
 
@@ -2056,21 +2049,21 @@ bool gControl::isAncestorOf(gControl *child)
 	}
 }
 
-void gControl::drawBackground(GdkEventExpose *e)
+void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
 {
 	if (background() == COLOR_DEFAULT)
 		return;
 	
-	//fprintf(stderr, "drawBackground: %s %08X\n", name(), background());
-					
-	gDraw *d = new gDraw();
-	d->connect(this);
-	d->setFillStyle(FILL_SOLID);
-	d->setFillColor(background());
-	d->setLineStyle(LINE_NONE);
-	gdk_gc_set_clip_region(d->getGC(), e->region);
-	d->rect(0, 0, width(), height());
-	delete d;
+	cairo_t *cr = gdk_cairo_create(widget->window);
+
+	gdk_cairo_region(cr, e->region);
+	cairo_clip(cr);
+	gt_cairo_set_source_color(cr, background());
+
+	cairo_rectangle(cr, 0, 0, width(), height());
+	cairo_fill(cr);
+	
+  cairo_destroy(cr);
 }
 
 bool gControl::canFocus() const

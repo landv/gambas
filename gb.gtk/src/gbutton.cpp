@@ -83,7 +83,7 @@ static void cb_click_check(GtkButton *object, gButton *data)
 
 static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 {
-	GdkGC        *gc;
+	cairo_t *cr;
 	GdkPixbuf    *img;
 	GdkRectangle rpix={0,0,0,0};
 	GdkRectangle rect;
@@ -130,53 +130,54 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		
 		py = (rect.height - rpix.height)/2;
 		
-		gc = gdk_gc_new(win);
-		//gdk_gc_set_clip_origin(gc,0,0);
-		gdk_gc_set_clip_region(gc, e->region);
+		cr = gdk_cairo_create(win);
+		gdk_cairo_region(cr, e->region);
+		cairo_clip(cr);
 
 		bcenter = !(data->text()) || !(*data->text());
 		
 		if (bcenter) 
 		{	
 			//fprintf(stderr, "draw pixbuf: %d %d\n", rect.x + (px-rpix.width)/2, rect.y + py);
-			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
-                                        -1,-1,GDK_RGB_DITHER_MAX,0,0);
-			g_object_unref(gc);
+			//gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
+      //                                  -1,-1,GDK_RGB_DITHER_MAX,0,0);
+			
+			gt_cairo_draw_pixbuf(cr, img, rect.x + (px-rpix.width)/2, rect.y + py, -1, -1, 1.0, NULL);
+			
+			cairo_destroy(cr);
 			return false;
 		}
 
 		if (rtl)
-			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + rect.width - 6, rect.y + py,
-                                        -1,-1,GDK_RGB_DITHER_MAX,0,0);
+			gt_cairo_draw_pixbuf(cr, img, rect.x + rect.width - 6, rect.y + py, -1, -1, 1.0, NULL);
 		else
-			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + 6, rect.y + py,
-                                        -1,-1,GDK_RGB_DITHER_MAX,0,0);
+			gt_cairo_draw_pixbuf(cr, img, rect.x + 6, rect.y + py, -1, -1, 1.0, NULL);
 
-		g_object_unref(G_OBJECT(gc));
+		cairo_destroy(cr);
 		
 		rect.width -= rpix.width;
 		rect.x += rpix.width;
 	}
 	
 	gt_set_cell_renderer_text_from_font((GtkCellRendererText *)data->rendtxt, data->font());
-	g_object_set(G_OBJECT(data->rendtxt),"sensitive",true, (void *)NULL);
+	g_object_set(G_OBJECT(data->rendtxt), "sensitive", true, (void *)NULL);
 	
-	switch(GTK_WIDGET_STATE(data->widget))
+	switch (GTK_WIDGET_STATE(data->widget))
 	{
 		//case GTK_STATE_NORMAL:
 		//case GTK_STATE_ACTIVE: state=GTK_CELL_RENDERER_PRELIT; break;
 		//case GTK_STATE_PRELIGHT: state=GTK_CELL_RENDERER_PRELIT; break;
 		case GTK_STATE_SELECTED: 
-			state=GTK_CELL_RENDERER_SELECTED; 
+			state = GTK_CELL_RENDERER_SELECTED; 
 			break;
 		
 		case GTK_STATE_INSENSITIVE: 
-			state=GTK_CELL_RENDERER_INSENSITIVE; 
-			g_object_set(G_OBJECT(data->rendtxt),"sensitive",false, (void *)NULL); 
+			state = GTK_CELL_RENDERER_INSENSITIVE; 
+			g_object_set(G_OBJECT(data->rendtxt), "sensitive", false, (void *)NULL); 
 			break;
 			
 		default:
-			state=(GtkCellRendererState)0; 
+			state = (GtkCellRendererState)0; 
 			break;
 	}
 	
@@ -191,8 +192,8 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	
 	if (rect.width >= 1 && rect.height >= 1)
 	{
-		gtk_cell_renderer_set_fixed_size(data->rendtxt,rect.width,rect.height);
-		gtk_cell_renderer_render(data->rendtxt,win,wid,&rect,&rect,&e->area,state);
+		gtk_cell_renderer_set_fixed_size(data->rendtxt, rect.width, rect.height);
+		gtk_cell_renderer_render(data->rendtxt, win, wid, &rect, &rect, &e->area, state);
 	}
 	
 	return FALSE;

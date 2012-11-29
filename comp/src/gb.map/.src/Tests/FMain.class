@@ -17,10 +17,10 @@ Public Sub _new()
 
   hPicture = New Picture(200, 200)
   
-  'MapViewer1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
-  'MapViewer1.Map["GoogleMap"].Visible = False
-  MapViewer1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
-  'MapViewer1.Map.AddShape("test")
+  'MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
+  'MapView1.Map["GoogleMap"].Visible = False
+  MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
+  'MapView1.Map.AddShape("test")
   
   'Map for lens
   'hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
@@ -28,7 +28,7 @@ Public Sub _new()
   hmap.Resize(200, 200)
   
   'Manage the list of layers
-  For Each o In MapViewer1.Map
+  For Each o In MapView1.Map
     $aNames.Add(o.Name)
   Next
   GridView1.Rows.count = $aNames.Count
@@ -42,43 +42,43 @@ Public Sub Form_Open()
   
 End
 
-Public Sub MapViewer1_MouseDown()
+Public Sub MapView1_MouseDown()
   
   If Mouse.Control Then 
     
-    hmap.Zoom = MapViewer1.map.Zoom + SpinBox1.Value
+    hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
     $bLens = True
-    hmap.Center = Geo.PixelToMapPoint(point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y), MapViewer1.Map.Zoom)
-    MapViewer1.Lock = True
-    MapViewer1.Refresh
+    hmap.Center = Geo.PixelToMapPoint(point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
+    MapView1.Lock = True
+    MapView1.Refresh
   Endif
 
 End
 
-Public Sub MapViewer1_MouseMove()
+Public Sub MapView1_MouseMove()
   
   $iMX = Mouse.X
   $iMY = Mouse.Y
   If $bLens Then
-    hmap.Center = Geo.PixelToMapPoint(Point(MapViewer1.Map.BoxPixel.X + Mouse.X, MapViewer1.Map.BoxPixel.Y + Mouse.y), MapViewer1.Map.Zoom)
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
     
   Endif
   
-  MapViewer1.Refresh
+  MapView1.Refresh
 
 End
 
-Public Sub MapViewer1_MouseUp()
+Public Sub MapView1_MouseUp()
   
   If $bLens Then
     $bLens = False
-    MapViewer1.Lock = False
-    MapViewer1.Refresh
+    MapView1.Lock = False
+    MapView1.Refresh
   Endif
   
 End
 
-Public Sub MapViewer1_Draw()
+Public Sub MapView1_Draw()
 
   If $bLens Then
     Paint.Begin(Draw.Device)
@@ -102,7 +102,7 @@ Public Sub GridView1_Data(Row As Integer, Column As Integer)
   
   Select Case Column
     Case 0
-      Last.Data.Picture = IIf(MapViewer1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
+      Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
       
     Case 1
       Last.Data.Text = $aNames[row]
@@ -112,29 +112,29 @@ End
 
 Public Sub GridView1_MouseUp()
   
-  If Last.column = 0 Then MapViewer1.Map[GridView1[Last.row, 1].Text].Visible = Not MapViewer1.Map[GridView1[Last.row, 1].Text].Visible
+  If Last.column = 0 Then MapView1.Map[GridView1[Last.row, 1].Text].Visible = Not MapView1.Map[GridView1[Last.row, 1].Text].Visible
   GridView1.Refresh
 
 End
 
 Public Sub Button1_Click()
   
-  MapViewer1.Map.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
-  MapViewer1.Map.Zoom = 17
-  MapViewer1.Refresh
+  MapView1.Map.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
+  MapView1.Map.Zoom = 17
+  MapView1.Refresh
 
 End
 
 Public Sub LensMap_Refresh()
   'Resfresh the view when the Lensmap say it need to be refreshed
-  'This call the MapViewer_Draw Event then so the lens is refreshed too
-  MapViewer1.Refresh
+  'This call the MapView_Draw Event then so the lens is refreshed too
+  MapView1.Refresh
   
 End
 
 
 Public Sub SpinBox1_Change()
   'Change the lens zoom
-  hmap.Zoom = MapViewer1.map.Zoom + SpinBox1.Value
+  hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
 
 End

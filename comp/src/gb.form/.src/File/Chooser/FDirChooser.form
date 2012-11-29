@@ -15,7 +15,7 @@
     { VBox1 VBox
       MoveScaled(2,3,76,46)
       Expand = True
-      { HBox1 HBox
+      { panToolbar HBox
         MoveScaled(1,1,74,4)
         AutoResize = True
         { btnBookmark MenuButton
@@ -28,12 +28,11 @@
           MenuOnly = True
         }
         { txtDir Label
-          MoveScaled(5,0,11,4)
-          AutoResize = True
+          MoveScaled(9,0,11,4)
+          Expand = True
         }
         { Panel1 Panel
           MoveScaled(23,0,1,4)
-          Expand = True
         }
         { btnParent ToolButton
           MoveScaled(29,0,4,4)

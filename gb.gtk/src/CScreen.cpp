@@ -412,6 +412,8 @@ GB_DESC ApplicationDesc[] =
 static GdkDrawable *_dr = NULL;
 static GtkWidget *_widget = NULL;
 static GtkStyle *_stl = NULL;
+static int _dr_x = 0;
+static int _dr_y = 0;
 //static char *_stl_name = NULL;
 
 static GtkStyle *get_style(const char *name = NULL, GType type = G_TYPE_NONE)
@@ -445,7 +447,7 @@ static GtkStyle *get_style(const char *name = NULL, GType type = G_TYPE_NONE)
 	return _stl;
 }
 
-static bool begin_draw()
+static bool begin_draw(int *x, int *y)
 {
 	void *device = PAINT_get_current_device();
 	if (!device)
@@ -468,9 +470,11 @@ static bool begin_draw()
 			else
 			{
 				_dr = wid->widget->window;
-				//GtkAllocation *a = &wid->widget->allocation;
-				//_x = a->x;
-				//_y = a->y;
+				GtkAllocation *a = &wid->widget->allocation;
+				_dr_x = a->x;
+				_dr_y = a->y;
+				*x += _dr_x;
+				*y += _dr_y;
 			}
 		}
 		else
@@ -569,8 +573,6 @@ static void style_arrow(int x, int y, int w, int h, int type, int state)
 	GtkArrowType arrow;
 	GtkStyle *style = get_style();
 	
-	PAINT_apply_offset(&x, &y);
-	
 	switch (type)
 	{
 		case ALIGN_NORMAL: arrow = GB.System.IsRightToLeft() ? GTK_ARROW_LEFT : GTK_ARROW_RIGHT; break;
@@ -585,8 +587,6 @@ static void style_arrow(int x, int y, int w, int h, int type, int state)
 	gtk_paint_arrow(style, _dr, get_state(state), 
 		GTK_SHADOW_NONE, get_area(), _widget, NULL, 
 		arrow, TRUE, x, y, w, h);
-	
-	fprintf(stderr, "style_arrow: %d %d %d %d\n", x, y, w, h);
 }
 
 static void style_check(int x, int y, int w, int h, int value, int state)
@@ -746,8 +746,6 @@ static void style_panel(int x, int y, int w, int h, int border, int state)
 	GtkStateType st = get_state(state);
 	GtkStyle *style = get_style();
 
-	PAINT_apply_offset(&x, &y);
-	
 	switch (border)
 	{
 		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
@@ -863,8 +861,8 @@ END_PROPERTY
 	if (w < 1 || h < 1) \
 		return; \
 		\
-	if (begin_draw()) \
-		return; \
+	if (begin_draw(&x, &y)) \
+		return;
 
 #define END_DRAW() end_draw()
 	
