@@ -28,6 +28,7 @@
 
 #include <QUrl>
 #include <QWebHitTestResult>
+#include <QWebElement>
 
 #ifndef __CWEBHITTEST_CPP
 

@@ -67,6 +67,15 @@ BEGIN_PROPERTY(WebHitTest_Url)
 
 END_PROPERTY
 
+BEGIN_PROPERTY (WebHitTest_ElementXML)
+
+	QWebElement element;
+	element = RESULT->element();
+
+	GB.ReturnNewZeroString(TO_UTF8(element.toOuterXml()));
+	
+END_PROPERTY
+
 BEGIN_METHOD_VOID(WebHitTest_free)
 
 	delete RESULT;
@@ -87,6 +96,7 @@ GB_DESC CWebHitTestDesc[] =
 	GB_PROPERTY_READ("Selected", "b", WebHitTest_Selected),
 	GB_PROPERTY_READ("Editable", "b", WebHitTest_Editable),
 	GB_PROPERTY_READ("Url", "s", WebHitTest_Url),
+	GB_PROPERTY_READ("ElementXML","s",WebHitTest_ElementXML),
 
 	GB_END_DECLARE
 };
