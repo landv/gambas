@@ -79,17 +79,20 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 	}
 }
 
+static gboolean cb_button_fix(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
+{
+	gtk_button_set_relief(GTK_BUTTON(wid), GTK_RELIEF_NONE);
+	return false;
+}
+
 static gboolean cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
 {
-	GdkGC        *gc;
-	GdkPixbuf    *img;
-	GdkRectangle rpix={0,0,0,0};
-	GdkRectangle rect={0,0,0,0};
-	gint         py,px;
-	bool         rtl,bcenter=false;
+	cairo_t *cr;
+	GdkPixbuf *img;
+	GdkRectangle rpix = {0,0,0,0};
+	GdkRectangle rect = {0,0,0,0};
+	gint py, px;
 	gint dx, dy;
-
-	rtl = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
 
 	rect = wid->allocation;
 	px = rect.width;
@@ -121,33 +124,16 @@ static gboolean cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *d
 	
 	py = (rect.height - rpix.height)/2;
 	
-	gc = gdk_gc_new(wid->window);
-	gdk_gc_set_clip_origin(gc,0,0);
-	gdk_gc_set_clip_rectangle(gc,&e->area);
-
-	bcenter = true; //!(data->text()) || !(*data->text());
+	cr = gdk_cairo_create(wid->window);
 	
-	if (bcenter) 
-	{	
-		gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
-																			-1,-1,GDK_RGB_DITHER_MAX,0,0);
-		g_object_unref(gc);
-		return false;
-	}
-
-	if (rtl)
-		gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + rect.width - 6, rect.y + py,
-																			-1,-1,GDK_RGB_DITHER_MAX,0,0);
-	else
-		gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + 6, rect.y + py,
-																			-1,-1,GDK_RGB_DITHER_MAX,0,0);
-
-	g_object_unref(G_OBJECT(gc));
+	gdk_cairo_region(cr, e->region);
+	cairo_clip(cr);
 	
-	//rect.width -= rpix.width;
-	//rect.x += rpix.width;
+	gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
 	
-	return FALSE;
+	cairo_destroy(cr);
+	
+	return false;
 }
 
 static void cb_button_clicked(GtkWidget *wid, gTabStrip *data)
@@ -413,7 +399,8 @@ void gTabStripPage::updateButton()
 	if (v && !_button)
 	{
 		_button = gtk_button_new();
-		gtk_button_set_relief(GTK_BUTTON(_button), GTK_RELIEF_NONE);
+		gtk_button_set_focus_on_click(GTK_BUTTON(_button), false);
+		g_signal_connect(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_fix), (gpointer)parent);
 		g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
 		g_signal_connect(G_OBJECT(_button), "clicked", G_CALLBACK(cb_button_clicked), (gpointer)parent);
 		g_object_set_data(G_OBJECT(_button), "gambas-tab-page", (void *)widget);

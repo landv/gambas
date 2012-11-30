@@ -142,7 +142,7 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 			//gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
       //                                  -1,-1,GDK_RGB_DITHER_MAX,0,0);
 			
-			gt_cairo_draw_pixbuf(cr, img, rect.x + (px-rpix.width)/2, rect.y + py, -1, -1, 1.0, NULL);
+			gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
 			
 			cairo_destroy(cr);
 			return false;
@@ -474,10 +474,7 @@ bool gButton::getBorder()
 
 void gButton::setBorder(bool vl)
 {
-	if (vl)
-		gtk_button_set_relief (GTK_BUTTON(widget),GTK_RELIEF_NORMAL);
-	else
-		gtk_button_set_relief (GTK_BUTTON(widget),GTK_RELIEF_NONE);
+	gtk_button_set_relief (GTK_BUTTON(widget), vl ? GTK_RELIEF_NORMAL : GTK_RELIEF_NONE);
 }
 
 bool gButton::isDefault()
