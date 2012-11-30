@@ -1810,7 +1810,7 @@ static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pi
 void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
 	cairo_surface_t *surface;
-	cairo_pattern_t *pattern, *save;
+	cairo_pattern_t *pattern = NULL, *save;
 	cairo_matrix_t matrix;
 	
 	cairo_save(cr);
@@ -1862,6 +1862,9 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 	cairo_pattern_destroy(save);
 	
 	cairo_restore(cr);
+	
+	if (pattern)
+		cairo_pattern_destroy(pattern);
 	
 	if (source)
 		g_object_unref(pixbuf);

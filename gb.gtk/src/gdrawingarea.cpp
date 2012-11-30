@@ -245,10 +245,8 @@ void gDrawingArea::resizeCache()
 	int bw, bh;
 	int w, h;
 	GdkPixmap *buf;
-	GdkGC *gc2;
 	GdkWindow *win;
-	GdkColormap *cmap;
-	GdkColor gcol;
+	cairo_t *cr;
 	
 	if (!_cached)
 		return;
@@ -268,25 +266,29 @@ void gDrawingArea::resizeCache()
 	if (bw != w || bh != h)
 	{		
 		buf = gdk_pixmap_new(win, w, h, -1);
-		gc2 = gdk_gc_new(buf);
 		
-		cmap = gdk_drawable_get_colormap(buf);
-		fill_gdk_color(&gcol, realBackground(), cmap);
-		gdk_gc_set_foreground(gc2, &gcol);
+		cr = gdk_cairo_create(buf);
 		
 		if (w > bw || h > bh || !buffer)
-			gdk_draw_rectangle(buf, gc2, true, 0, 0, w, h);
+		{
+			gt_cairo_set_source_color(cr, realBackground());
+			cairo_rectangle(cr, 0, 0, w, h);
+			cairo_fill(cr);
+		}
 	
 		if (buffer)
 		{
 			if (bw > w) bw = w;
 			if (bh > h) bh = h;
-			gdk_draw_drawable(buf, gc2, buffer, 0, 0, 0, 0, bw, bh);
+			//gdk_draw_drawable(buf, gc2, buffer, 0, 0, 0, 0, bw, bh);
+			gdk_cairo_set_source_pixmap(cr, buffer, 0, 0);
+			cairo_rectangle(cr, 0, 0, bw, bh);
+			cairo_fill(cr);
 			g_object_unref(buffer);
 		}
 		
 		buffer = buf;
-		g_object_unref(gc2);
+		cairo_destroy(cr);
 	}	
 	
 	//drawBorder(buffer);

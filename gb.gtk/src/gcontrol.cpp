@@ -1243,8 +1243,6 @@ void gControl::drawBorder(GdkEventExpose *e)
   if (w < 1 || h < 1)
   	return;
   
-	st = gtk_widget_get_style(widget);
-  
 	switch (getFrameBorder())
 	{
     case BORDER_PLAIN:
@@ -1253,6 +1251,7 @@ void gControl::drawBorder(GdkEventExpose *e)
 			
 			cr = gdk_cairo_create(win);
 			gt_cairo_draw_rect(cr, x, y, w, h, getFrameColor());
+			cairo_destroy(cr);
       return;
     }
     
@@ -1264,6 +1263,7 @@ void gControl::drawBorder(GdkEventExpose *e)
       return;
 	}
 	
+	st = gtk_widget_get_style(widget);  
 	gdk_region_get_clipbox(e->region, &clip);
   gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
 }

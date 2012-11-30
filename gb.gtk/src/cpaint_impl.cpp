@@ -423,16 +423,6 @@ static void End(GB_PAINT *d)
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
 		if (wid->cached())
 			wid->setCache();
-		else
-		{
-			//double dx, dy;
-			//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
-			//fprintf(stderr, "End: device offset = %g %g ", dx, dy);
-			//fprintf(stderr, "-> %g %g\n", EXTRA(d)->dx, EXTRA(d)->dy);
-			//cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), EXTRA(d)->dx, EXTRA(d)->dy);
-			//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
-			//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
-		}
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
