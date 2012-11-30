@@ -118,6 +118,7 @@ static void CHUNK_free_all(CHUNK *ck)
 	for (i = ck->first; i <= ck->last; i++)
 		if (ck->var[i].type != GB_T_NULL)
 			GB.StoreVariant(NULL, &ck->var[i]);
+	ck->first = ck->last = -1;
 }
 
 static void CHUNK_destroy(CHUNK *ck)
@@ -147,6 +148,8 @@ BEGIN_METHOD_VOID(List_free)
 		ck = get_chunk(node);
 		CHUNK_destroy(ck);
 	}
+	THIS->current.ck = NULL;
+	THIS->count = 0;
 
 END_METHOD
 
@@ -247,13 +250,12 @@ no_next:
 	val->ck = NULL;
 }
 
-/* Safe version for CLIST_take(), only if there cur->fidx == val->fidx */
 static void CHUNK_next_safe(CLIST *list, VAL *val)
 {
 	LIST *node;
 
-	if (val->fidx <= val->ck->last) {
-		set_fidx(val->fidx, val);
+	if (val->lidx) {
+		set_lidx(val->lidx + 1, val);
 		return;
 	}
 	/* Also prevent from getting over the end! */
@@ -262,6 +264,22 @@ static void CHUNK_next_safe(CLIST *list, VAL *val)
 	} else {
 		val->ck = get_chunk(node);
 		set_fidx(0, val);
+	}
+}
+
+static void CHUNK_prev_safe(CLIST *list, VAL *val)
+{
+	LIST *node;
+
+	if (val->fidx) {
+		set_fidx(val->fidx - 1, val);
+		return;
+	}
+	if ((node = val->ck->list.prev) == &list->list) {
+		CLIST_first(list, val);
+	} else {
+		val->ck = get_chunk(node);
+		set_lidx(0, val);
 	}
 }
 
@@ -338,7 +356,7 @@ static void CLIST_get(CLIST *list, int idx, VAL *val)
 	node = &list->list;
 	/* Compute the offset to node->next or node->prev depending on the
 	 * direction we traverse. This saves an if (dir >= 0) branch
-	 * prediction catastrophe in loop */
+	 * prediction catastrophe in loop. Still, very awful for caches. */
 	off = (dir >= 0 ? offsetof(LIST, next) : offsetof(LIST, prev));
 	do {
 		node = *((LIST **) ((long) node + off));
@@ -372,7 +390,7 @@ BEGIN_METHOD_VOID(List_next)
 
 	struct enum_state *state = GB.GetEnum();
 	GB_VARIANT_VALUE *val;
-	VAL start;
+	VAL start; /* XXX: Would like to cache that in the enum_state... */
 
 	if (!*((int *) state)) { /* Beginning */
 		CLIST_first(THIS, &state->next);
@@ -458,13 +476,14 @@ END_METHOD
  *
  * Notification prevents persistent VALs (Current and the enumerators)
  * from getting ("dangerously", as opposed to "intentionally") invalid:
- * (S) Stay. If an element other than that a VAL refers to is removed, or an
- *     element is added, the VAL shall be modified according to the
+ * (V) Value. If an element other than that a VAL refers to is removed, or
+ *     an element is added, the VAL shall be modified according to the
  *     operation, i.e. it shall stay pointing to the particular value it has
- *     pointed to before.
+ *     pointed to before. VALs are value-bound.
  * (B) Beginning. If the element a VAL refers to is removed, it shall remain
  *     relative to the beginning of the list (as long as it doesn't get
- *     empty), i.e. it moves on to the next value.
+ *     empty), i.e. it moves on to the next value. This will guarantee that
+ *     we get all the intended values in an enumeration when removing.
  *     If the list gets empty, the VALs are invalidated.
  *
  * The rearrange algorithm shall assure the following:
@@ -513,7 +532,7 @@ static void CLIST_append(CLIST *list, GB_VARIANT *val)
 	GB.StoreVariant(val, &ck->var[ck->first]);
 	list->count++;
 
-	/* (S) */
+	/* (V) */
 	for_all_persistent_vals(list, cur, es, save_enum) {
 		if (cur->ck != ck)
 			continue;
@@ -546,7 +565,7 @@ static void CLIST_prepend(CLIST *list, GB_VARIANT *val)
 	GB.StoreVariant(val, &ck->var[ck->last]);
 	list->count++;
 
-	/* (S) */
+	/* (V) */
 	for_all_persistent_vals(list, cur, es, save_enum) {
 		if (cur->ck != ck)
 			continue;
@@ -560,10 +579,10 @@ static void CLIST_take(CLIST *list, VAL *val, GB_VARIANT_VALUE *buf)
 {
 	GB_VARIANT_VALUE *v;
 	CHUNK *ck = val->ck;
-	VAL *cur;
+	VAL *cur, back;
 	struct enum_state *es;
 	void *save_enum;
-	int gets_empty, islast;
+	int gets_empty, is_last;
 	int i, src, dst, phantom;
 	int n, m;
 	size_t size;
@@ -577,36 +596,36 @@ static void CLIST_take(CLIST *list, VAL *val, GB_VARIANT_VALUE *buf)
 	gets_empty = (CHUNK_count(ck) == 1);
 	if (gets_empty) {
 		phantom = i;
+		src = dst = 0;
 		goto no_move;
 	}
 
 	n = i - ck->first;
 	m = ck->last - i;
-	islast = CHUNK_is_last(list, ck);
+	is_last = CHUNK_is_last(list, ck);
 	/* (A) */
 	if (CHUNK_is_first(list, ck)) {
-		if (islast) /* Sole */
+		if (is_last) /* Sole */
 			goto normal;
 		goto first; /* Algorithms match */
-	} else if (islast) {
+	} else if (is_last) {
 		goto last;
+	}
+normal:
+	/* (L) */
+	if (n <= m) {
+	first: /* Move block before i upwards */
+		src = ck->first;
+		dst = src + 1;
+		ck->first++;
+		phantom = src;
 	} else {
-	normal:
-		/* (L) */
-		if (n <= m) {
-		first: /* Move block before i upwards */
-			src = ck->first;
-			dst = src + 1;
-			ck->first++;
-			phantom = src;
-		} else {
-		last: /* Move block after i downwards */
-			src = i + 1;
-			dst = i;
-			n = m;
-			ck->last--;
-			phantom = i + m;
-		}
+	last: /* Move block after i downwards */
+		src = i + 1;
+		dst = i;
+		n = m;
+		ck->last--;
+		phantom = i + m;
 	}
 	/* (C) */
 	size = n * sizeof(ck->var[0]);
@@ -618,27 +637,30 @@ no_move:
 
 	list->count--;
 
+	/* Don't accidentally erase information */
+	memcpy(&back, val, sizeof(back));
 	for_all_persistent_vals(list, cur, es, save_enum) {
-		/* To not erase information before future curs */
-		assert(cur != val);
-/* Benoit, this is about the enumerator case. */
-#if 1
+/* Benoit, this is about the enumerator case. If you print the address of
+ * the cur->ck, you will find that this cur->ck == NULL only appears for
+ * already de-allocated enumerators (is the memory area just reused or is
+ * the enumerator stray?) */
+#if 0
 		if (!cur->ck)
 			fprintf(stderr, "cur->ck == NULL => spurious enumerator?\n");
 #endif
-		if (cur->ck != val->ck)
+		if (cur->ck != back.ck)
 			continue;
-		/* (R) */
-		if (cur->fidx == val->fidx) {
+		/* (B) */
+		if (cur->fidx == back.fidx) {
 			if (!list->count)
 				cur->ck = NULL;
 			else
 				CHUNK_next_safe(list, cur);
-		/* (S) */
-		} else if (cur->fidx < val->fidx) {
-			set_fidx(cur->fidx, cur);
+		/* (V) */
+		} else if (src < dst) {
+			CHUNK_prev_safe(list, cur);
 		} else {
-			set_lidx(cur->lidx, cur);
+			CHUNK_next_safe(list, cur);
 		}
 	}
 	if (gets_empty) {
@@ -765,9 +787,8 @@ static void CLIST_find_backward(CLIST *list, VAL *val, GB_VARIANT *comp)
 	val->ck = NULL;
 }
 
-#define CHECK_FOUND()	(THIS->current.ck)
-#define CHECK_RET_FOUND()		\
-	if (!CHECK_FOUND()) {		\
+#define CHECK_RET_CURRENT()		\
+	if (!CHECK_CURRENT()) {		\
 		GB.ReturnNull();	\
 		return;			\
 	}
@@ -786,9 +807,9 @@ BEGIN_METHOD(List_Find ## which, GB_VARIANT value)			\
 END_METHOD
 
 IMPLEMENT_Find(Next, forward,
-	if (!CHECK_FOUND()) CLIST_first(THIS, &THIS->current))
+	if (!CHECK_CURRENT()) CLIST_first(THIS, &THIS->current))
 IMPLEMENT_Find(Prev, backward,
-	if (!CHECK_FOUND()) CLIST_last(THIS, &THIS->current))
+	if (!CHECK_CURRENT()) CLIST_last(THIS, &THIS->current))
 IMPLEMENT_Find(First, forward, CLIST_first(THIS, &THIS->current))
 IMPLEMENT_Find(Last, backward, CLIST_last(THIS, &THIS->current))
 
@@ -796,7 +817,7 @@ BEGIN_PROPERTY(List_Current)
 
 	GB_VARIANT_VALUE *val;
 
-	CHECK_RAISE_CURRENT();
+	CHECK_RET_CURRENT();
 	val = VAL_value(&THIS->current);
 	if (READ_PROPERTY) {
 		GB.ReturnVariant(val);
@@ -821,6 +842,8 @@ GB_DESC CListDesc[] = {
 	GB_METHOD("_get", "v", List_get, "(Index)i"),
 	GB_METHOD("_put", NULL, List_put, "(Value)v(Index)i"),
 
+	GB_METHOD("Clear", NULL, List_free, NULL),
+
 	GB_METHOD("Append", NULL, List_Append, "(Value)v"),
 	GB_METHOD("Prepend", NULL, List_Prepend, "(Value)v"),
 	GB_METHOD("Take", "v", List_Take, "[(Index)i]"),
@@ -837,6 +860,11 @@ GB_DESC CListDesc[] = {
 	GB_METHOD("FindFirst", NULL, List_FindFirst, "(Value)v"),
 	GB_METHOD("FindLast", NULL, List_FindLast, "(Value)v"),
 
+	/*
+	 * XXX: Shouldn't this be rather more exposed as the virtual
+	 *      container it actually is? But with an absolute index, of
+	 *      course. But can this be done efficiently?
+	 */
 	GB_PROPERTY("Current", "v", List_Current),
 	GB_PROPERTY_READ("Count", "i", List_Count),
 	GB_PROPERTY_SELF("Backwards", ".List.Backwards"),
