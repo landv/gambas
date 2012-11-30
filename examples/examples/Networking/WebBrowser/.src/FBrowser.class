@@ -2,9 +2,9 @@
 
 'Static Private $aZoom As Float[]
 
-Private $sStatus As String
-Private $iZoom As Integer
-Private $iHidden As Integer
+'Private $sStatus As String
+'Private $iZoom As Integer
+'Private $iHidden As Integer
 Private $sLastLink As String
 
 ' Static Public Sub _init()
@@ -103,7 +103,7 @@ End
 
 Public Sub WebView_Load()
 
-  Dim iInd As Integer
+  'Dim iInd As Integer
   Dim hView As WebView = GetView()
   Dim hIcon As Picture
 
@@ -212,7 +212,7 @@ Public Sub btnClear_Click()
 
 End
 
-Public Sub WebView_NewWindow(Modal As Boolean)
+Public Sub WebView_NewWindow((Modal) As Boolean)
 
   CreateView()
 

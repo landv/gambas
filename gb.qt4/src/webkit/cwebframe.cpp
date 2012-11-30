@@ -24,10 +24,12 @@
 #define __CWEBFRAME_CPP
 
 #include <QUrl>
+#include <QWebElement>
 #include <QWebPage>
 #include <QWebFrame>
 #include <QDateTime>
 
+#include "cwebelement.h"
 #include "cwebframe.h"
 #include "../cprinter.h"
 
@@ -52,60 +54,8 @@ CWEBFRAME *CWEBFRAME_get(QWebFrame *frame)
 
 void CWEBFRAME_eval(QWebFrame *frame, const QString &javascript)
 {
-	GB_DATE date;
-	GB_DATE_SERIAL ds;
-	QDateTime qdate;
-	
 	QVariant result = frame->evaluateJavaScript(javascript);
-	
-	switch (result.type())
-	{
-		case QVariant::Bool:
-			GB.ReturnBoolean(result.toBool());
-			break;
-			
-		case QVariant::Date:
-		case QVariant::DateTime:
-			qdate = result.toDateTime();
-			ds.year = qdate.date().year();
-			ds.month = qdate.date().month();
-			ds.day = qdate.date().day();
-			ds.hour = qdate.time().hour();
-			ds.min = qdate.time().minute();
-			ds.sec = qdate.time().second();
-			ds.msec = qdate.time().msec();
-			GB.MakeDate(&ds, &date);
-			GB.ReturnDate(&date);
-			break;
-			
-		case QVariant::Double:
-			GB.ReturnFloat(result.toDouble());
-			break;
-			
-		case QVariant::Int:
-		case QVariant::UInt:
-			GB.ReturnInteger(result.toInt());
-			break;
-			
-		case QVariant::LongLong:
-		case QVariant::ULongLong:
-			GB.ReturnLong(result.toLongLong());
-			break;
-			
-		case QVariant::String:
-			GB.ReturnNewZeroString(TO_UTF8(result.toString()));
-			break;
-		
-		// TODO: Handle these three datatypes
-		case QVariant::Hash:
-		case QVariant::List:
-		case QVariant::RegExp:
-		default:
-			GB.ReturnNull();
-			break;
-	}
-	
-	GB.ReturnConvVariant();
+	MAIN_return_qvariant(result);
 }
 
 BEGIN_METHOD_VOID(WebFrame_free)
@@ -186,6 +136,14 @@ BEGIN_METHOD(WebFrame_EvalJavaScript, GB_STRING javascript)
 
 END_METHOD
 
+BEGIN_PROPERTY(WebFrame_Document)
+
+	GB.ReturnObject(CWEBELEMENT_create(FRAME->documentElement()));
+
+END_PROPERTY
+
+//---------------------------------------------------------------------------
+
 GB_DESC CWebFrameChildrenDesc[] =
 {
   GB_DECLARE(".WebFrame.Children", sizeof(CWEBFRAME)), GB_VIRTUAL_CLASS(),
@@ -210,10 +168,10 @@ GB_DESC CWebFrameDesc[] =
 	GB_PROPERTY_READ("HTML", "s", WebFrame_HTML),
 	GB_PROPERTY_READ("Text", "s", WebFrame_Text),
 	GB_METHOD("Eval", "v", WebFrame_EvalJavaScript, "(JavaScript)s"),
+	GB_PROPERTY_READ("Document", "WebElement", WebFrame_Document),
 	
 	GB_END_DECLARE
 };
 
-/***************************************************************************/
 
 

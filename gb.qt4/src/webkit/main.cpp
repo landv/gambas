@@ -28,9 +28,12 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include <QDateTime>
+
 #include "ccookiejar.h"
 #include "cwebhittest.h"
 #include "cwebsettings.h"
+#include "cwebelement.h"
 #include "cwebframe.h"
 #include "cwebdownload.h"
 #include "cwebview.h"
@@ -52,6 +55,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CWebSettingsFontsDesc,
 	CWebSettingsProxyDesc,
 	CWebSettingsDesc,
+	WebElementStyleDesc,
+	WebElementDesc,
 	CWebFrameChildrenDesc,
 	CWebFrameDesc,
 	CWebViewSettingsDesc,
@@ -70,5 +75,61 @@ void EXPORT GB_EXIT()
 {
 }
 
+}
+
+void MAIN_return_qvariant(const QVariant &result)
+{
+	GB_DATE date;
+	GB_DATE_SERIAL ds;
+	QDateTime qdate;
+
+	switch (result.type())
+	{
+		case QVariant::Bool:
+			GB.ReturnBoolean(result.toBool());
+			break;
+			
+		case QVariant::Date:
+		case QVariant::DateTime:
+			qdate = result.toDateTime();
+			ds.year = qdate.date().year();
+			ds.month = qdate.date().month();
+			ds.day = qdate.date().day();
+			ds.hour = qdate.time().hour();
+			ds.min = qdate.time().minute();
+			ds.sec = qdate.time().second();
+			ds.msec = qdate.time().msec();
+			GB.MakeDate(&ds, &date);
+			GB.ReturnDate(&date);
+			break;
+			
+		case QVariant::Double:
+			GB.ReturnFloat(result.toDouble());
+			break;
+			
+		case QVariant::Int:
+		case QVariant::UInt:
+			GB.ReturnInteger(result.toInt());
+			break;
+			
+		case QVariant::LongLong:
+		case QVariant::ULongLong:
+			GB.ReturnLong(result.toLongLong());
+			break;
+			
+		case QVariant::String:
+			GB.ReturnNewZeroString(TO_UTF8(result.toString()));
+			break;
+		
+		// TODO: Handle these three datatypes
+		case QVariant::Hash:
+		case QVariant::List:
+		case QVariant::RegExp:
+		default:
+			GB.ReturnNull();
+			break;
+	}
+	
+	GB.ReturnConvVariant();
 }
 

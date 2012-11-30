@@ -34,4 +34,6 @@ extern "C" GB_INTERFACE GB;
 extern "C" QT_INTERFACE QT;
 #endif
 
+void MAIN_return_qvariant(const QVariant &result);
+
 #endif

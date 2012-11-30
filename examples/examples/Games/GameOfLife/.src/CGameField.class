@@ -80,6 +80,7 @@ Public Sub DrawGame(bBorder As Boolean)
   'IF GameRow.Count = 0 OR GameRow[1].Count = 0 THEN RETURN -1
   
   SquareSize = 4 'dw.Height / GameRow.Count
+  
   Draw.Begin(dw) 
 
   'Draw.FillStyle = Fill.Solid

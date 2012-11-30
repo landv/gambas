@@ -31,6 +31,7 @@
 
 #include "ccookiejar.h"
 #include "cwebsettings.h"
+#include "cwebelement.h"
 #include "cwebframe.h"
 #include "cwebhittest.h"
 #include "cwebview.h"
@@ -532,6 +533,12 @@ BEGIN_PROPERTY(WebView_UserAgent)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebView_Document)
+
+	GB.ReturnObject(CWEBELEMENT_create(WIDGET->page()->mainFrame()->documentElement()));
+
+END_PROPERTY
+
 
 /***************************************************************************/
 
@@ -573,6 +580,7 @@ GB_DESC CWebViewDesc[] =
 	
 	GB_PROPERTY_READ("Frame", "WebFrame", WebView_Frame),
 	GB_PROPERTY_READ("Current", "WebFrame", WebView_Current),
+	GB_PROPERTY_READ("Document", "WebElement", WebView_Document),
 	
 	GB_PROPERTY_SELF("Settings", ".WebView.Settings"),
 	GB_PROPERTY_SELF("Auth", ".WebView.Auth"),
