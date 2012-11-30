@@ -62,6 +62,7 @@ Public Sub Draw()
   Next
   If sCopyright Then
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 150))
+  Draw.Font.Grade = -2
   iTextHeight = Draw.TextHeight(sCopyright)
   iTextWidth = Draw.TextWidth(sCopyright)
   paint.Rectangle(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
