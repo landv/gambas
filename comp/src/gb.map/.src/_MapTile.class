@@ -16,7 +16,7 @@ Public Sub _new(Optional cachename As String)
   
   Cache = New _MapTileCache(cachename) As "Cache"
   Cache.SubDomains = $aSubDomains
-
+  
 End
 
 Private Function Pattern_Read() As String
@@ -36,7 +36,7 @@ Public Sub SetPattern(sPattern As String, Vars As Collection) As _MapTile
 End
 
 Private Sub Pattern_Write(Value As String)
-
+  
   $sPattern = Value
   Cache.Url = Value
   $colParam.Clear
@@ -44,7 +44,7 @@ Private Sub Pattern_Write(Value As String)
 End
 
 Private Function MakeUrl(sPattern As String) As String
-
+  
   Dim sUrl As String = sPattern
   Dim s As String
   
@@ -53,7 +53,7 @@ Private Function MakeUrl(sPattern As String) As String
   Next
   'Print sUrl
   Return surl
-
+  
 End
 
 Private Function SubDomains_Read() As String[]
@@ -93,23 +93,23 @@ Public Sub _Draw(Optional bRefresh As Boolean = True)
   'If Not $sVersion Then TryToGetVersion
   'MapBox 
   If bRefresh Then 
-  $aTiles.Clear
-  iptMinTile = Geo.PixelToTile(Point(MapBox.X, MapBox.Y))
-  iptMaxTile = Geo.PixelToTile(Point(MapBox.Right, MapBox.Bottom))
-  'Print "start"
-  
-  For ty = iptMinTile.Y To iptMaxTile.Y
-    For tx = iptMinTile.X To iptMaxTile.X
-      hTile = New _Tile
-      hTile.X = tx
-      hTile.Y = ty
-      hTile.PosX = tx * 256 - iPadding
-      hTile.PosY = ty * 256 - iPadding
-      hTile.Distance = Sqr((hTile.PosX - hCenter.X) ^ 2 + (hTile.PosY - hCenter.Y) ^ 2)
-      $aTiles.Add(hTile)
+    $aTiles.Clear
+    iptMinTile = Geo.PixelToTile(Point(MapBox.X - iPadding, MapBox.Y - iPadding))
+    iptMaxTile = Geo.PixelToTile(Point(MapBox.Right + iPadding, MapBox.Bottom + iPadding))
+    'Print "start"
+    
+    For ty = iptMinTile.Y To iptMaxTile.Y
+      For tx = iptMinTile.X To iptMaxTile.X
+        hTile = New _Tile
+        hTile.X = tx
+        hTile.Y = ty
+        hTile.PosX = tx * 256 
+        hTile.PosY = ty * 256
+        hTile.Distance = Sqr((hTile.PosX - hCenter.X) ^ 2 + (hTile.PosY - hCenter.Y) ^ 2)
+        $aTiles.Add(hTile)
+      Next
     Next
-  Next
-  $aTiles.Sort
+    $aTiles.Sort
   Endif
   For Each hTile In $aTiles
     himage = Null
@@ -125,7 +125,7 @@ Public Sub _Draw(Optional bRefresh As Boolean = True)
     Endif
     'Endif
   Next
-
+  
 End
 
 Public Sub _ResetCache()
@@ -135,7 +135,7 @@ Public Sub _ResetCache()
 End
 
 Public Sub _PreLoad()
-
+  
   Dim hMap As Map = Object.Parent(Me)
   Dim MapBox As Rect
   Dim iptMinTile, iptMaxTile As Point
@@ -150,8 +150,8 @@ Public Sub _PreLoad()
     For ty = iptMinTile.Y To iptMaxTile.Y
       For tx = iptMinTile.X To iptMaxTile.X
         Cache.AddToPreload(ty, tx, hmap.Zoom + 1)
+      Next
     Next
-  Next
   Endif
   MapBox = hmap._BoxPixelBefore
   If MapBox Then
@@ -164,6 +164,6 @@ Public Sub _PreLoad()
       Next
     Next
   Endif
-End
 
+End
 

@@ -3,19 +3,21 @@
 Private $sBaseCachePath As String = User.Home &/ ".cache/gambas3"
 Private $sUrl As String
 Private $colCache As New Collection
-Private $aStack As New String[]
+Private $aStack As New String[] 
 Private $aClients As New HttpClient[]
 Private $iClientCount As Integer = 4
 Private $tmrClient As New Timer As "Timer"
 Private $aPreloadStack As New String[]
+' Private $aNoRetry As New String[]
 Public Url As String
 Public SubDomains As String[]
-Static Public Debug As Boolean
+Private $colTry As New Collection
+Static Public Debug As Boolean 
 
 Event FileLoaded
 
 Public Sub _new(Optional CacheName As String)
-
+  
   Dim sTempPath As String
   Dim hClient As HttpClient
   Dim i As Integer
@@ -41,7 +43,7 @@ Public Sub _new(Optional CacheName As String)
 End
 
 Public Function _get(X As Integer, Y As Integer, Z As Integer) As Image
-
+  
   Dim sFileName As String = Subst("&1-&2-&3.png", Z, Y, X)
   Dim hImage As Image
   
@@ -52,20 +54,30 @@ Public Function _get(X As Integer, Y As Integer, Z As Integer) As Image
     Return $colCache[sFileName]
   Else
     'Sinon
+    
     'Si le fichier est en cour de téléchargement on quitte
     If IsLoading(sFileName) Then Return Null
     'Si le fichier existe dans le dossier de cache on essais de le charger
     If Exist($sBaseCachePath &/ sFileName) Then 
       Try hImage = Image.Load($sBaseCachePath &/ sFileName)
       If Error Then 
-        'L'image et défectueuse, on la supprime
-        'If _MapTileCache.Debug Then Debug "Suppression de l'image : " & sFileName
-        'Try Kill $sBaseCachePath &/ sFileName
+        '   'L'image est défectueuse, on la supprime
+        If _MapTileCache.Debug Then Debug "Suppression de l'image : " & sFileName
+        Kill $sBaseCachePath &/ sFileName
+        If Not $colTry.Exist(sFileName) Then
+          
+          $colTry[sFileName] = 0
+        Else
+          Inc $colTry[sFileName]
+        Endif
         Return Null
       Endif
       $colCache[sFileName] = hImage
       Return hImage
     Else
+      'Si le fichier ne peu être téléchargé
+      If $colTry.Exist(sFileName) And If $colTry[sFileName] > 3 Then Return Null
+      'Sinon
       GetFromWeb(sFileName, MakeUrl(X, Y, Z))
       Return Null
     Endif
@@ -93,7 +105,7 @@ Private Function MakeDir(Path As String) As Boolean
   
 Catch
   Return True
-
+  
 End
 
 Private Function MakeUrl(X As Integer, Y As Integer, z As Integer) As String
@@ -151,7 +163,7 @@ Public Sub GetFreeClient() As HttpClient
   
   For i = 0 To $aClients.Max
     If $aClients[i].Status = Net.Inactive Then 
-    Return $aClients[i]
+      Return $aClients[i]
     Endif
   Next
   
@@ -170,6 +182,7 @@ Public Sub ResetQueue()
   $colCache.Clear
   $aStack.Clear
   $aPreloadStack.Clear
+  $colTry.Clear
   
 End
 
@@ -190,13 +203,20 @@ Public Sub Client_Finished()
   Last.Tag = Null
   Raise FileLoaded
   $tmrClient.Trigger
+
 End
 
 Public Sub Client_Error()
   
   Last.Stop
+  If Not $colTry.Exist(Last.Tag) Then
+    $colTry[Last.Tag] = 0
+  Else
+    Inc $colTry[Last.Tag]
+  Endif
   Last.Tag = ""
   $tmrClient.Trigger
+
 End
 
 Private Function Url_Read() As String
@@ -224,10 +244,14 @@ Private Sub Domains_Write(Value As String[])
 End
 
 Public Sub AddToPreload(X As Integer, Y As Integer, Z As Integer)
-
+  
   Dim sFileName As String = Subst("&1-&2-&3.png", Z, Y, X)
+
   If Exist($sBaseCachePath &/ sFileName) Then Return
   $aPreloadStack.Push(sFileName)
   $aPreloadStack.Push(MakeUrl(X, Y, Z))
   '$tmrClient.Start
+
 End
+
+

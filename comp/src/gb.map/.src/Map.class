@@ -61,11 +61,11 @@ Public Sub Draw()
     Endif
   Next
   If sCopyright Then
-  Draw.FillStyle = Fill.Cross
-  Draw.FillColor = Color.SetAlpha(Color.Pink, 150)
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 150))
   iTextHeight = Draw.TextHeight(sCopyright)
   iTextWidth = Draw.TextWidth(sCopyright)
-  Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
+  paint.Rectangle(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
+  Paint.Fill
   Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
   Endif 
   Draw.Clip.Enabled = False
@@ -203,16 +203,17 @@ Private Function BoxPixel_Read() As Rect
 End
 
 Private Sub RefreshBoxes()
+
   
   Dim fptPixel As Point
   Dim tmpPoint As PointF
   Dim ll As MapPoint
   
   fptPixel = Geo.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
-  $hPixelBox.X = fptPixel.X - ($iWidth / 2) - $iPadding
-  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2) - $iPadding
-  $hPixelBox.Right = fptPixel.X + ($iWidth / 2) + $iPadding
-  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2) + $iPadding
+  $hPixelBox.X = fptPixel.X - ($iWidth / 2) '- $iPadding
+  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2) '- $iPadding
+  $hPixelBox.Right = fptPixel.X + ($iWidth / 2) '+ $iPadding
+  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2) '+ $iPadding
   
   If Not $OldPixelBox Then $OldPixelBox = $hPixelBox.Copy()
   
