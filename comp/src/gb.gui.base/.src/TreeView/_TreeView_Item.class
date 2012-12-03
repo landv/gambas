@@ -371,7 +371,7 @@ Public Sub _get(Column As Integer) As String
   
   hView = GetTree().Children[0]
 
-  If Column < 0 Or If Column >= hView.Columns.Count Then Error.Raise("Out of bounds")
+  If Column < 0 Then Error.Raise("Out of bounds")
   
   Try Return $aText[Column - 1]
   
