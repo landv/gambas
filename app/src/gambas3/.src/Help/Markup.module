@@ -7,7 +7,7 @@ End Struct
 
 Private $aMarkup As String[]
 Private $cLink As Collection
-Private $aList As MarkupList[]
+Private $aIndex As String[]
 
 Private Sub GetIndent(sLine As String) As Integer
   
@@ -15,11 +15,19 @@ Private Sub GetIndent(sLine As String) As Integer
   
 End
 
-
 Public Sub Convert(sMarkup As String) As String
   
+  $aMarkup = New String[]
+  $cLink = New Collection
+  $aIndex = New String[]
+  
+  Return ConvertMarkup(Split(sMarkup, "\n"))
+  
+End
+
+Private Sub ConvertMarkup(aLine As String[]) As String
+  
   Dim iLine As Integer
-  Dim aLine As String[]
   Dim aResult As String[]
   Dim sLine As String
   Dim sText As String
@@ -32,12 +40,10 @@ Public Sub Convert(sMarkup As String) As String
   Dim iIndent, iCurrentIndent As Integer
   Dim hMarkupList As MarkupList
   Dim bJustList As Boolean
+  Dim sLink As String
+  Dim iPos As Integer
+  Dim aList As New MarkupList[]
   
-  $aMarkup = New String[]
-  $cLink = New Collection
-  $aList = New MarkupList[]
-  
-  aLine = Split(sMarkup, "\n")
   aResult = New String[]
   
   For iLine = 0 To aLine.Max
@@ -48,7 +54,14 @@ Public Sub Convert(sMarkup As String) As String
     I = InStr(sLine, "]:")
     If I = 0 Then Continue
     If I >= 3 Then
-      $cLink[Mid$(sLine, 2, I - 2)] = Trim(Mid$(sLine, I + 2))
+      sLink = Trim(Mid$(sLine, I + 2))
+      $cLink[Mid$(sLine, 2, I - 2)] = sLink
+      If Left(sLink) = "#" Then
+        iPos = InStr(sLink, " ")
+        If iPos Then sLink = Left(sLink, iPos - 1)
+        aLine[iLine] = "<a name=\"" & Html$(sLink) & "\"></a>"
+        Continue
+      Endif
     Endif
     aLine[iLine] = ""
     
@@ -64,6 +77,13 @@ Public Sub Convert(sMarkup As String) As String
     Endif
     
     sLine = RTrim(sLine)
+  
+    ' Special command
+    
+    If Left(sLine, 2) = "@{" And If Right(sLine) = "}" Then
+      aResult.Add(sLine)
+      Continue
+    Endif
     
     ' Blockquote
     
@@ -121,7 +141,7 @@ Public Sub Convert(sMarkup As String) As String
         hMarkupList = New MarkupList
         hMarkupList.sType = "ul"
         hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
-        $aList.Add(hMarkupList)
+        aList.Add(hMarkupList)
         bJustList = True
         If aResult.Count And If Trim(aResult[aResult.Max]) = "</ul>" Then
           If Not Trim(aLine[iLine - 1]) And If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
@@ -223,7 +243,13 @@ Public Sub Convert(sMarkup As String) As String
             sLine = Left(sLine, -1)
           Wend
           sLine = RTrim(sLine)
-          sLine = "<h" & CStr(I) & ">" & ConvertLine(sLine) & "</h" & CStr(I) & ">"
+          If Left(sLine) = "[" And If Right(sLine) = "]" Then
+            sLine = ConvertLine(Mid$(sLine, 2, -1))
+            $aIndex.Add(String$(I - 1, "  ") & "- [" & sLine & "] (#t" & CStr($aIndex.Count + 1) & ")")
+            sLine = "<a name=\"t" & CStr($aIndex.Count) & "\"></a>" & "<h" & CStr(I) & ">" & sLine & "</h" & CStr(I) & ">"
+          Else
+            sLine = "<h" & CStr(I) & ">" & ConvertLine(sLine) & "</h" & CStr(I) & ">"
+          Endif
           GoSub CLOSE_PARA
           aResult.Add(sLine)
           Continue
@@ -263,6 +289,22 @@ Public Sub Convert(sMarkup As String) As String
   GoSub CLOSE_LIST
   'If $aMarkup.Count Then Error.Raise("Missing markup: " & $aMarkup[$aMarkup.Max])
   
+  If $aIndex.Count Then
+    iPos = aResult.Find("@{index}")
+    If iPos >= 0 Then 
+      iIndent = GetIndent($aIndex[0])
+      For I = 1 To $aIndex.Max
+        iIndent = Min(iIndent, GetIndent($aIndex[I]))
+      Next
+      If iIndent Then
+        For I = 0 To $aIndex.Max
+          $aIndex[I] = Mid$($aIndex[I], iIndent + 1)
+        Next
+      Endif
+      aResult[iPos] = ConvertMarkup($aIndex)
+    Endif
+  Endif
+  
   Return aResult.Join("\n")
   
 CLOSE_CODE:
@@ -288,10 +330,10 @@ CLOSE_LIST:
     GoSub CLOSE_CODE
     aResult.Add(Space$(iCurrentIndent) & "</li>")
     bJustList = False
-    aResult.Add(Space$($aList[$aList.Max].iIndent) & "</" & $aList[$aList.Max].sType & ">")
-    $aList.Remove($aList.Max)
-    If $aList.Count Then
-      iCurrentIndent = $aList[$aList.Max].iIndent
+    aResult.Add(Space$(aList[aList.Max].iIndent) & "</" & aList[aList.Max].sType & ">")
+    aList.Remove(aList.Max)
+    If aList.Count Then
+      iCurrentIndent = aList[aList.Max].iIndent
     Else
       iCurrentIndent = 0
     Endif

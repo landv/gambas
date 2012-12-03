@@ -38,7 +38,6 @@ Property Read ClientY As Integer
 Property Read ClientW, ClientWidth As Integer
 Property Read ClientH, ClientHeight As Integer
 
-Event KeyPress
 Event Data(Row As Integer, Column As Integer)
 Event Change
 Event Select
@@ -56,7 +55,7 @@ Event RowSize(Row As Integer)
 
 'Event MouseDown
 Event Sort
-Event Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
+Event Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
 
 Private $hView As ScrollArea
 Private $bGrid As Boolean = True

@@ -1,6 +1,7 @@
 ' Gambas module file
 
 Public InfoFilePath As String
+Public ComponentFilePath As String
 
 Private Const DEFAULT_LANG As String = "en"
 
@@ -162,9 +163,20 @@ Public Sub Main()
 
   Dim bPost As Boolean
   Dim sErr As String
+  Dim hComponent As CComponent
+
+  ' InfoFilePath = "~/gambas/3.0/link/share/gambas3/info/"
+  ' ComponentFilePath = "~/gambas/3.0/link/lib/gambas3/"
+  ' 
+  ' InitSymbol("/comp/gb.qt4/draw")
+  ' Return
 
   'File.In.EndOfLine = gb.Windows
   'File.Out.EndOfLine = gb.Windows
+
+  ' CComponent.Init
+  ' hComponent = New CComponent("gb")
+  ' hComponent.Load
 
   $eTime = Timer
 
@@ -273,6 +285,7 @@ Private Sub InitVersion(sVer As String)
   'If $sVersion = "3.0" Then $sLangSuff = AddParam($sLangSuff, "v3")
 
   InfoFilePath = GetInfoFilePath(sVer)
+  ComponentFilePath = InfoFilePath
 
 End
 
@@ -304,7 +317,9 @@ Private Sub InitSymbol(sPath As String)
       $hComp = CComponent.All[aPath[2]]
       If $hComp Then
         $hComp.Load
-        If aPath.Count > 3 Then $hClass = CComponent.All[aPath[2]][aPath[3]]
+        If aPath.Count > 3 Then
+          $hClass = CComponent.Classes[aPath[3]]
+        Endif
         If $hClass Then
           If aPath.Count > 4 Then
             $hSym = $hClass.Symbols[Replace(aPath[4], ".", ":")]
@@ -626,7 +641,7 @@ Private Function GetImage(sImg As String, Optional sAdd As String, Optional sAli
 
 End
 
-Private Function EncodeHTML(sStr As String) As String
+Public Function EncodeHTML(sStr As String) As String
 
   Dim iPos As Integer
   Dim sRes As String
@@ -730,7 +745,7 @@ Private Sub EnterSection(sSection As String)
         $bExample = True
         $sRes &= "<h3>" & ("Example") & "</h3>\n"
       Endif
-      $sRes &= "<div class=\"example\">"
+      $sRes &= "<div class=\"container\"><div class=\"example\">"
       $bVerbatim = True
       ' IF NOT sParam THEN sParam = ("Example")
       ' $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
@@ -738,7 +753,7 @@ Private Sub EnterSection(sSection As String)
       $iNoWiki = 1
 
     Case "code"
-      $sRes &= "<div class=\"example\">"
+      $sRes &= "<div class=\"container\"><div class=\"example\">"
       $bVerbatim = True
       $iNoWiki = 1
       $bCode = True
@@ -807,12 +822,12 @@ Private Sub LeaveSection()
         $sRes = RTrim($sRes) & "</pre><p/>\n"
 
       Case "example"
-        $sRes = RTrim($sRes) & "</div>\n"
+        $sRes = RTrim($sRes) & "</div></div>\n"
         $bVerbatim = False
         $iNoWiki = 0
 
       Case "code"
-        $sRes = RTrim($sRes) & "</div>\n"
+        $sRes = RTrim($sRes) & "</div></div>\n"
         $bVerbatim = False
         $iNoWiki = 0
         $bCode = False
@@ -922,7 +937,7 @@ Private Function Encode(sText As String) As String
 
       If sStr = "==" Then
         $bVerbatim = False
-        $sRes = $sRes & "</pre>\n"
+        $sRes = $sRes & "</pre></div>\n"
       Else If sStr = "--" Then
         $sRes = $sRes & "<hr>"
       Else
@@ -1192,7 +1207,7 @@ Private Function Encode(sText As String) As String
           Continue
         Else If sStr = "==" Then
           $bVerbatim = True
-          $sRes = $sRes & "<pre class=\"code\">"
+          $sRes = $sRes & "<div class=\"container\"><pre class=\"code\">"
           Continue
           '       ELSE IF sStr = "[" THEN
           '         IF bHeader THEN
@@ -2595,6 +2610,8 @@ Private Sub EditPage()
               sPath = sDir &/ GetOldComponentName($hComp.Key) & GetOldClassName($hClass.Name) & ".html"
               If Exist(sPath) Then
                 rPage!sDesc = GetOld(sPath)
+              Else If $hClass.Help Then
+                rPage!sDesc = $hClass.Help
               Endif
             Endif
 
@@ -2615,7 +2632,7 @@ Private Sub EditPage()
               If Exist(sPath) Then
                 rPage!sDesc = GetOld(sPath, True)
               Else
-                rPage!sDesc = "<!--" & ("DELETE ME") & "\n" & RemoveMarkup(GetSymbolSyntax($hSym)) & "\n-->\n"
+                rPage!sDesc = "<!--" & ("DELETE ME") & "\n" & RemoveMarkup(GetSymbolSyntax($hSym)) & "\n-->\n" & $hSym.Help & "\n"
               Endif
             Endif
 
@@ -2654,7 +2671,7 @@ Private Sub EditPage()
             Endif
 
         End Select
-
+        
       Endif
 
       If $hComp Then
@@ -2885,7 +2902,7 @@ Private Function AutoLink(sStr As String) As String
 
                 'rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb.qt" &/ LCase(aWord[0]) &/ "%")
                 'If Not rPage.Available Then
-                  rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb%." &/ aWord[0] &/ "/%")
+                  rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb.%" &/ aWord[0] &/ "/%")
                 'Endif
                 sTitle = sWord
 

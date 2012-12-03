@@ -248,7 +248,7 @@ GB_DESC __name##Desc[] =                                                        
   GB_PROPERTY("Y", __sign, __name##_Y),                                                                                       \
                                                                                                                               \
   GB_METHOD("Copy", #__name, __name##_Copy, NULL),                                                                            \
-  GB_METHOD("InRect", "b", __name##_InRect, #__rname ";"),                                                                    \
+  GB_METHOD("InRect", "b", __name##_InRect, "(Rectangle)" #__rname ";"),                                                      \
                                                                                                                               \
   GB_INTERFACE("_operator", &_operator_##__name),                                                                             \
   GB_INTERFACE("_convert", &_convert_##__name),                                                                               \

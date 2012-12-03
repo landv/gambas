@@ -755,7 +755,10 @@ End
 
 Public Sub GridView_Click()
   
+  Dim sSave As String = $sCursor
+  MoveCurrent()
   Raise Click
+  $sCursor = sSave
   
 End
 

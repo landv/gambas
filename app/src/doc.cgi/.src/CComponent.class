@@ -28,7 +28,7 @@ Public AlwaysRead As New Collection
 Public Translate As New Collection
 
 Private $sShortLang As String
-Private $cClass As New Collection(gb.Text)
+'Private $cClass As New Collection(gb.Text)
 Private $aInit As String[]
 Private $bLoaded As Boolean
 
@@ -61,7 +61,7 @@ Static Public Sub Init()
   ' sPath = Main.InfoFilePath
   ' IF NOT sPath THEN sPath = System.Path &/ "share/gambas" & System.Version & "/info"
 
-  aComp = Dir(Main.InfoFilePath, "*.component")
+  aComp = Dir(Main.ComponentFilePath, "*.component")
   For iPos = 0 To aComp.Max
     aComp[iPos] = File.BaseName(aComp[iPos])
   Next
@@ -172,7 +172,8 @@ Public Sub _new(sName As String)
   Dim sGroup As String
   Dim aCtrl As String[]
 
-  sPath = Main.InfoFilePath &/ sName & ".component"
+  'sPath = System.Path &/ "lib/" & "gambas" & System.Version &/ sName & ".component"
+  sPath = Main.ComponentFilePath &/ sName & ".component"
   hFile = Open sPath For Input
 
   Line Input #hFile, sLine
@@ -263,28 +264,242 @@ Public Sub _new(sName As String)
 
 End
 
-Public Sub Load()
+' Public Sub OldLoad()
+' 
+'   Dim hFile As File
+'   Dim sPath As String
+'   Dim sLine As String
+'   Dim sClass As String
+'   Dim sParent As String
+'   Dim hClass As CClassInfo
+'   Dim sSymbol As String
+'   Dim hSym As CSymbolInfo
+'   Dim bAgain As Boolean
+'   Dim bJumpNextClass As Boolean
+'   Dim sElt As String
+' 
+'   If $bLoaded Then Return
+' 
+'   $bLoaded = True
+' 
+'   'DEBUG "Loading "; Name
+' 
+'   ClassList = New String[]
+' 
+'   If Name <> "gb" Then All["gb"].Load()
+'   
+'   For Each sElt In Require
+'     All[sElt].Load()
+'   Next
+' 
+'   For Each sElt In Need
+'     If $cImplement.Exist(sElt) Then Continue
+'     sElt = Main.GetVersion() & ":" & sElt
+'     If $cRescue.Exist(sElt) Then 
+'       All[$cRescue[sElt]].Load()
+'     Else 
+'       Error.Raise("No rescue for " & sElt)
+'     Endif 
+'   Next
+' 
+'   For Each sElt In Implement
+'     $cImplement[sElt] = Name
+'   Next
+' 
+' 
+'   sPath = Main.InfoFilePath &/ Name & ".info"
+'   ' Patch, as gb.qte and gb.qte.ext are unloadable at the moment
+'   If Not Exist(sPath) And If Name Like "gb.qte*" Then 
+'     sPath = Main.InfoFilePath &/ Replace(Name, ".qte", ".qt") & ".info"
+'   Endif
+'   If Not Exist(sPath) Then
+'     Print "<pre>Cannot load info file: " & sPath & "\n</pre>"
+'     Return
+'   Endif
+'   hFile = Open sPath For Read
+' 
+'   Repeat
+' 
+'     bAgain = False
+'     Seek #hFile, 0
+' 
+'     While Not Eof(hFile)
+'       Line Input #hFile, sLine
+' 
+'       If Left$(sLine) = "#" Then
+' 
+'         sClass = Mid$(sLine, 2)
+' 
+'         bJumpNextClass = $cClass.Exist(sClass)
+'         If bJumpNextClass Then Continue
+' 
+'         'IF sClass = "Dialog" THEN STOP
+' 
+'         Line Input #hFile, sParent
+'         If Not sParent Then
+'           If CComponent.Classes.Exist(sClass) Then
+'             sParent = sClass
+'           Endif
+'         Endif
+' 
+'         If sParent And If Not CComponent.Classes.Exist(sParent) Then
+'           bAgain = True
+'           bJumpNextClass = True
+'           Continue
+'         Endif
+' 
+'         hClass = New CClassInfo(sClass, sParent)
+' 
+'         CComponent.Classes[sClass] = hClass
+'         $cClass[sClass] = hClass
+' 
+'         If sClass <> "." Then ClassList.Add(sClass)
+' 
+'         Line Input #hFile, sLine
+'         hClass.Creatable = InStr(sLine, "C")
+'         hClass.AutoCreatable = InStr(sLine, "A")
+'         hClass.Component = Name
+' 
+'         Continue
+' 
+'       Endif
+' 
+'       If bJumpNextClass Then Continue
+' 
+'       sSymbol = sLine
+'       hSym = New CSymbolInfo
+'       hClass.Symbols[sSymbol] = hSym
+' 
+'       hSym.Name = sSymbol
+'       hSym.Class = sClass
+'       hSym.Component = Name
+'       Line Input #hFile, hSym.Kind
+'       Line Input #hFile, hSym.Type
+'       If hSym.Kind = "C" Then
+'         Line Input #hFile, hSym.Value
+'       Else
+'         Line Input #hFile, hSym.Signature
+'       Endif
+'       If Left$(hSym.Kind) = "p" Then
+'         ' Compatibility
+'         If Left$(hSym.Type, 2) = "i<" Then
+'           'hSym.Signature = Mid$(hSym.Type, 3, -1)
+'           hSym.Type = "i"
+'         Endif
+'         ' Properties are now described in "_Properties"
+'       Endif
+'       'hSym.Hidden = InStr(sSymbol, "_")
+'       'hSym.Static = UCase(hSym.Kind) = hSym.Kind AND hSym.Kind <> ":"
+' 
+'     Wend
+' 
+'   Until Not bAgain
+' 
+'   'PRINT "Initializing controls..."
+' 
+'   ' IF Type <> "*" THEN hForm = NEW (Type)
+'   ' 
+'   ' IF $aInit THEN
+'   '   FOR EACH sClass IN $aInit
+'   '     IF $cClass.Exist(sClass) THEN
+'   '       $cClass[sClass].BecomeControl(hForm)
+'   '     ELSE
+'   '       DEBUG "Control "; sClass; " not found"
+'   '     ENDIF
+'   '   NEXT
+'   ' ENDIF
+'   ' 
+'   ' FOR EACH sClass IN Controls
+'   '   IF $cClass.Exist(sClass) THEN
+'   '     $cClass[sClass].BecomeControl(hForm)
+'   '   ELSE
+'   '     DEBUG "Control "; sClass; " not found"
+'   '   ENDIF
+'   ' NEXT
+'   ' 
+'   ' TRY hForm.Delete
+' 
+'   Close #hFile
+' 
+'   ClassList.Sort
+' 
+' 
+' 'CATCH
+' 
+'   'Error.Propagate
+' 
+' End
 
-  Dim hFile As File
-  Dim sPath As String
-  Dim sLine As String
-  Dim sClass As String
-  Dim sParent As String
+Public Function _get(sClass As String) As CClassInfo
+
+  Return Classes[Key &/ sClass]
+
+End
+
+Public Sub ExistClassEvenArray(sClass As String) As Boolean
+  
+  Do
+    If Classes.Exist(sClass) Then Return True
+    If Right(sClass, 2) <> "[]" Then Return
+    sClass = Left(sClass, -2)
+    If Not sClass Then Return
+  Loop
+  
+End
+
+Static Private Sub CreateClass(sClass As String, sParent As String, sComp As String) As CClassInfo
+  
   Dim hClass As CClassInfo
-  Dim sSymbol As String
-  Dim hSym As CSymbolInfo
-  Dim bAgain As Boolean
-  Dim bJumpNextClass As Boolean
-  Dim sElt As String
+  Dim hComp As CComponent
+  
+  hClass = New CClassInfo(sClass, sComp, sParent)
+  
+  Classes[sComp &/ sClass] = hClass
+  Classes[sClass] = hClass
+  
+  hComp = All[sComp]
+  If hComp Then  
+    'If hComp.Type Then Classes[hComp.Type &/ sClass] = hClass
+    If sClass <> "." Then hComp.ClassList.Add(sClass)
+  End If
+  
+  Return hClass
+  
+End
 
+Public Sub Load()
+  
+  Dim aLine As String[]
+  Dim sClass As String
+  Dim sSymbol As String
+  Dim sLig As String
+  Dim iPos As Integer
+  Dim hClass As CClassInfo
+  Dim hParent As CClassInfo
+  Dim hSym As CSymbolInfo
+  Dim sParent As String
+  Dim sPath As String
+  Dim bAgain As Boolean
+  Dim bNextClass As Boolean
+  Dim cClass As New Collection
+  Dim aList As String[]
+  Dim sErr As String
+  Dim iLine As Integer
+  Dim sHelp As String
+  Dim sElt As String
+  Dim iReturn As Integer
+  
   If $bLoaded Then Return
 
   $bLoaded = True
 
-  'DEBUG "Loading "; Name
-
+  'Debug "Loading: "; Key
+  
+  'If Key = Project.Name Then Goto HAS_BEEN_LOADED
+  
   ClassList = New String[]
-
+  Controls = New String[]
+  
   If Name <> "gb" Then All["gb"].Load()
   
   For Each sElt In Require
@@ -307,131 +522,223 @@ Public Sub Load()
 
 
   sPath = Main.InfoFilePath &/ Name & ".info"
-  ' Patch, as gb.qte and gb.qte.ext are unloadable at the moment
-  If Not Exist(sPath) And If Name Like "gb.qte*" Then 
-    sPath = Main.InfoFilePath &/ Replace(Name, ".qte", ".qt") & ".info"
-  Endif
+  'sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
   If Not Exist(sPath) Then
     Print "<pre>Cannot load info file: " & sPath & "\n</pre>"
     Return
   Endif
-  hFile = Open sPath For Read
-
+  
+  ' List of exported classes
+  
+  Try aList = Split(File.Load(File.SetExt(sPath, "list")), "\n", "", True)
+  If Error Then
+    Print "<pre>Cannot load list file: " & File.SetExt(sPath, "list") & "\n</pre>"
+    Return
+  Endif
+    
+  For Each sClass In aList
+    If sClass Then cClass[sClass] = True
+  Next
+  
   Repeat
-
+    
     bAgain = False
-    Seek #hFile, 0
-
-    While Not Eof(hFile)
-      Line Input #hFile, sLine
-
-      If Left$(sLine) = "#" Then
-
-        sClass = Mid$(sLine, 2)
-
-        bJumpNextClass = $cClass.Exist(sClass)
-        If bJumpNextClass Then Continue
-
-        'IF sClass = "Dialog" THEN STOP
-
-        Line Input #hFile, sParent
-        If Not sParent Then
-          If CComponent.Classes.Exist(sClass) Then
-            sParent = sClass
-          Endif
-        Endif
-
-        If sParent And If Not CComponent.Classes.Exist(sParent) Then
-          bAgain = True
-          bJumpNextClass = True
+    
+    aLine = Split(File.Load(sPath), "\n")
+    If aLine.Count And If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
+    iLine = 0
+    
+    While iLine < aLine.Count
+      
+      sLig = aLine[iLine]
+      Inc iLine
+      
+      If Left$(sLig) = "#" Then
+        
+        bNextClass = False
+        
+        sClass = Mid$(sLig, 2)
+        
+        'DEBUG sClass
+        
+        If Classes.Exist(Key &/ sClass) Then
+          'DEBUG "Class exists"
+          bNextClass = True
           Continue
         Endif
-
-        hClass = New CClassInfo(sClass, sParent)
-
-        CComponent.Classes[sClass] = hClass
-        $cClass[sClass] = hClass
-
-        If sClass <> "." Then ClassList.Add(sClass)
-
-        Line Input #hFile, sLine
-        hClass.Creatable = InStr(sLine, "C")
-        hClass.AutoCreatable = InStr(sLine, "A")
-        hClass.Component = Name
-
+        
+        'If sClass = "Application" Then Stop
+        
+        ' If Key = Project.Name And If Project.ExistClass(sClass) Then
+        '   bNextClass = True
+        '   Continue
+        ' Endif
+        
+        sParent = aLine[iLine]
+        Inc iLine
+        
+        If sParent = sClass Then
+          'hParent = Classes[sClass]
+          ' If hParent And If hParent.Component <> Key And If hParent.Component <> Project.Name Then
+          '   sParent = sClass
+          ' Else
+          sParent = ""
+          'Endif
+        Endif
+        
+        ' Ce test peut foirer si une classe veut hériter d'une autre classe
+        ' du même composant, qui existe déjà dans un composant déjà déclaré.
+        
+        If sParent And If Not ExistClassEvenArray(sParent) Then
+          If Not cClass.Exist(sParent) Then 
+            Error.Raise("'" & sParent & "' class is missing in " & Key & " component exported classes")
+          Endif
+          bAgain = True
+          bNextClass = True
+          'DEBUG "Parent does not exist:";; sParent
+          Continue
+        Endif
+        
+        hClass = CreateClass(sClass, sParent, Key)
+        
+        sLig = aLine[iLine]
+        Inc iLine
+        
+        hClass.Creatable = InStr(sLig, "C")
+        hClass.AutoCreatable = InStr(sLig, "A")
+        
+          sHelp = ""
+          While iLine < aLine.Count
+            If Left(aLine[iLine]) <> "'" Then Break
+            sHelp &= Mid$(aLine[iLine], 2) & "\n"
+            Inc iLine
+          Wend
+          
+          If sHelp Then
+            sHelp = RTrim(sHelp)
+            If InStr(sHelp, "\n") = 0 Then sHelp = LTrim(sHelp)
+          Endif
+        
+        
+        hClass.Help = sHelp
+        
         Continue
-
+        
       Endif
-
-      If bJumpNextClass Then Continue
-
-      sSymbol = sLine
+      
+      If bNextClass Then Continue
+      
+      sSymbol = sLig
       hSym = New CSymbolInfo
-      hClass.Symbols[sSymbol] = hSym
-
+      Classes[Key &/ sClass].Symbols[sSymbol] = hSym
+      
       hSym.Name = sSymbol
       hSym.Class = sClass
-      hSym.Component = Name
-      Line Input #hFile, hSym.Kind
-      Line Input #hFile, hSym.Type
+      hSym.Component = Key
+      
+      hSym.Kind = aLine[iLine]
+      Inc iLine
+      
+      hSym.Type = aLine[iLine]
+      Inc iLine
+      
       If hSym.Kind = "C" Then
-        Line Input #hFile, hSym.Value
+        hSym.Value = aLine[iLine]
       Else
-        Line Input #hFile, hSym.Signature
+        hSym.Signature = aLine[iLine]
       Endif
+      Inc iLine
+      
       If Left$(hSym.Kind) = "p" Then
-        ' Compatibility
         If Left$(hSym.Type, 2) = "i<" Then
-          'hSym.Signature = Mid$(hSym.Type, 3, -1)
+          hSym.Signature = Mid$(hSym.Type, 3, -1)
           hSym.Type = "i"
         Endif
-        ' Properties are now described in "_Properties"
       Endif
-      'hSym.Hidden = InStr(sSymbol, "_")
-      'hSym.Static = UCase(hSym.Kind) = hSym.Kind AND hSym.Kind <> ":"
-
+      
+        sHelp = ""
+        While iLine < aLine.Count
+          If Left(aLine[iLine]) <> "'" Then Break
+          sHelp &= Mid$(aLine[iLine], 2) & "\n"
+          Inc iLine
+        Wend
+        
+        If sHelp Then
+          sHelp = RTrim(sHelp)
+          If InStr(sHelp, "\n") = 0 Then sHelp = LTrim(sHelp)
+        Endif
+      
+      hSym.Help = sHelp
+      
     Wend
-
+    
   Until Not bAgain
-
+  
   'PRINT "Initializing controls..."
-
-  ' IF Type <> "*" THEN hForm = NEW (Type)
-  ' 
-  ' IF $aInit THEN
-  '   FOR EACH sClass IN $aInit
-  '     IF $cClass.Exist(sClass) THEN
-  '       $cClass[sClass].BecomeControl(hForm)
-  '     ELSE
-  '       DEBUG "Control "; sClass; " not found"
-  '     ENDIF
-  '   NEXT
-  ' ENDIF
-  ' 
-  ' FOR EACH sClass IN Controls
-  '   IF $cClass.Exist(sClass) THEN
-  '     $cClass[sClass].BecomeControl(hForm)
-  '   ELSE
-  '     DEBUG "Control "; sClass; " not found"
-  '   ENDIF
-  ' NEXT
-  ' 
-  ' TRY hForm.Delete
-
-  Close #hFile
-
+  
+  ' If Type = "Form" Then
+  '   For Each sClass In ["Control", "Form", "Menu"]
+  '     If Classes.Exist(sClass) Then
+  '       Classes[sClass].InitControl()
+  '     Endif
+  '   Next
+  ' Endif
+  
+  For Each sClass In ClassList
+    
+    If Not IsLetter(Left(sClass)) Then Continue
+    
+    hClass = Classes[Key &/ sClass]
+    
+    hSym = hClass.Symbols["_IsControl"]
+    If hSym And If hSym.Value Then
+      Controls.Add(hClass.Name)
+    Endif
+    
+    hSym = hClass.Symbols["_IsForm"]
+    If hSym And If hSym.Value Then
+      If hClass.Parent Then
+        hParent = Classes[hClass.ParentComponent &/ hClass.Parent]
+        hSym = hParent.Symbols["_IsForm"]
+        If hSym And If hSym.Value Then
+          'Hiddens.Add(sClass)
+          Continue
+        Endif
+      Endif
+      
+      ' hSym = hClass.Symbols["_HiddenControls"]
+      ' If hSym Then Hiddens.Insert(Split(hSym.Value, ","))
+      
+    Endif
+    
+  Next
+  
+  ' _HiddenControls can be inherited, so its contents may be not significative
+  
+  ' For Each sClass In Hiddens
+  '   If Classes.Exist(Key &/ sClass) Then
+  '     Classes[Key &/ sClass].InitControl()
+  '     iPos = Controls.Find(sClass)
+  '     If iPos >= 0 Then Controls.Remove(iPos)
+  '   Endif
+  ' Next
+  
+  ' For Each sClass In Controls
+  '   Classes[Key &/ sClass].InitControl()
+  ' Next
+  
   ClassList.Sort
-
-
-'CATCH
-
-  'Error.Propagate
-
-End
-
-Public Function _get(Class As String) As CClassInfo
-
-  Return $cClass[Class]
-
+  
+HAS_BEEN_LOADED:
+  
+  ' If Key = "gb.web" Then
+  '   Family = "webpage"
+  '   CModule.Activate(Family)
+  ' Endif
+  
+  'PRINT "OK"
+  
+  Loaded = True
+  
 End
 

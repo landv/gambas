@@ -17,17 +17,19 @@ Public Virtual As Boolean
 Public DrawWith As String
 Public Container As Boolean
 Public MultiContainer As Boolean
+Public Help As String
 
-Public Sub _new(sName As String, sParent As String)
+Public Sub _new(sName As String, sComponent As String, sParent As String)
 
   Dim hSym As CSymbolInfo
 
   Name = sName
   {Parent} = sParent
+  Component = sComponent
   Symbols = New Collection(gb.Text)
 
   If {Parent} Then
-  ParentComponent = CComponent.Classes[sParent].Component
+    ParentComponent = CComponent.Classes[sParent].Component
     If ParentComponent Then
       For Each hSym In CComponent.Classes[sParent].Symbols
         Symbols[hSym.Name] = hSym

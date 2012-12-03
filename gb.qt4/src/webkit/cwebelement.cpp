@@ -26,6 +26,13 @@
 #include "cwebframe.h"
 #include "cwebelement.h"
 
+typedef
+	struct {
+		GB_BASE ob;
+		int x, y, w, h;
+	}
+	CRECT;
+
 CWEBELEMENT *CWEBELEMENT_create(const QWebElement &elt)
 {
 	void *_object;
@@ -275,14 +282,21 @@ BEGIN_METHOD_VOID(WebElement_Clear)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(WebElement_Paint)
+BEGIN_METHOD(WebElement_Paint, GB_OBJECT clip)
 
 	QPainter *painter = QT.GetCurrentPainter();
 	
 	if (!painter)
 		return;
 	
-	ELT->render(painter);
+	if (MISSING(clip))
+		ELT->render(painter);
+	else
+	{
+		CRECT *rect = (CRECT *)VARG(clip);
+		QRect clip(rect->x, rect->y, rect->w, rect->h);
+		ELT->render(painter, clip);
+	}
 
 END_METHOD
 
@@ -317,7 +331,7 @@ GB_DESC WebElementStyleDesc[] =
 GB_DESC WebElementDesc[] =
 {
   GB_DECLARE("WebElement", sizeof(CWEBELEMENT)),
-	GB_HOOK_CHECK(check_element),
+	GB_HOOK_CHECK(check_element), GB_NOT_CREATABLE(),
 	
 	GB_METHOD("_new", NULL, WebElement_new, NULL),
 	GB_METHOD("_free", NULL, WebElement_free, NULL),
@@ -365,7 +379,7 @@ GB_DESC WebElementDesc[] =
 	GB_METHOD("Enclose", NULL, WebElement_Enclose, "(Markup)s"),
 	GB_METHOD("Replace", NULL, WebElement_Replace, "(Markup)s"),
 	
-	GB_METHOD("Paint", NULL, WebElement_Paint, NULL),
+	GB_METHOD("Paint", NULL, WebElement_Paint, "[(Clip)Rect]"),
 	
 	GB_PROPERTY_SELF("Style", ".WebElement.Style"),
 	
