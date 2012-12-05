@@ -669,7 +669,7 @@ static void prepare_cif_from_gambas(EXTERN_CALLBACK *cb, FUNCTION *func)
 
 void *EXTERN_make_callback(VALUE_FUNCTION *value)
 {
-	EXEC_GLOBAL exec;
+	EXEC_GLOBAL exec = { 0 };
 	FUNCTION *func;
 	EXTERN_CALLBACK *cb;	
 	union {

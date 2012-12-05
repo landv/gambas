@@ -1,0 +1,19 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,147,64)
+  { LCDLabel1 LCDLabel
+    MoveScaled(1,8,143,10)
+    Background = &H000000&
+    Foreground = &HFFFF00&
+    Text = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~\"'[-|`_\\@]°+=$*/")
+    Alignment = Align.Center
+    Sheared = True
+    Padding = 8
+    Border = True
+  }
+  { LCDLabel2 LCDLabel
+    MoveScaled(24,36,33,18)
+    Text = ("LCDLabel2")
+  }
+}

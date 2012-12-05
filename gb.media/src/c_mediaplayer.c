@@ -472,7 +472,7 @@ GB_DESC MediaPlayerDesc[] =
 	GB_PROPERTY_SELF("Audio", ".MediaPlayer.Audio"),
 	GB_PROPERTY_SELF("Video", ".MediaPlayer.Video"),
 	GB_PROPERTY_SELF("Subtitles", ".MediaPlayer.Subtitles"),
-	GB_PROPERTY_SELF("Visualisation", ".MediaPlayer.Visualisation"),
+	//GB_PROPERTY_SELF("Visualisation", ".MediaPlayer.Visualisation"),
 	
 	GB_PROPERTY("ConnectionSpeed", "i", MediaPlayer_ConnectionSpeed),
 	GB_PROPERTY("ProgressiveDownload", "b", MediaPlayer_ProgressiveDownload),

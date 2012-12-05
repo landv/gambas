@@ -648,7 +648,6 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	int after, after_zero;
 	char exposant;
 	//char exp_sign;
-	int exp_digit;
 	int exp_zero;
 
 	int number_sign;
@@ -910,7 +909,6 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
 			if (c == '#' || c == '0')
 			{
-				exp_digit++;
 				if (c == '0' || exp_zero > 0)
 					exp_zero++;
 				continue;

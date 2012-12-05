@@ -856,33 +856,33 @@ Private Sub AddLinkEmblem(hSource As Image) As Image
 
 End
 
-Private Sub MakeExportedIcon(hImage As Image)
+' Private Sub MakeExportedIcon(hImage As Image)
+' 
+'   Dim X, Y As Integer
+'   Dim iCol As Integer
+'   Dim hColorInfo As ColorInfo
+' 
+'   For X = 0 To hImage.W - 1
+'     For Y = 0 To hImage.H - 1
+' 
+'       iCol = hImage[X, Y]
+'       ' With Color[Color.Desaturate(iCol)]
+'       '   iGray = (255 - .Blue) * (255 - .Alpha) / 255
+'       ' End With
+'       ' Print Mid$(" .,-~+=oOINS8&%@", iGray \ 16 + 1, 1);
+' 
+'       If Color.GetAlpha(iCol) > 192 Then Continue
+'       If X = 0 Or If X = (hImage.W - 1) Or If Y = 0 Or If Y = (hImage.H - 1) Or If Color[hImage[X - 1, Y]].Alpha = 255 Or If Color[hImage[X + 1, Y]].Alpha = 255 Or If Color[hImage[X, Y - 1]].Alpha = 255 Or If Color[hImage[X, Y + 1]].Alpha = 255 Then
+'         hColorInfo = Color[Color.Darker(iCol)]
+'         hColorInfo.Alpha = hColorInfo.Alpha \ 2
+'         hImage[X, Y] = hColorInfo.Color
+'       Endif
+'     Next
+'   Next
+' 
+' End
 
-  Dim X, Y As Integer
-  Dim iCol As Integer
-  Dim hColorInfo As ColorInfo
-
-  For X = 0 To hImage.W - 1
-    For Y = 0 To hImage.H - 1
-
-      iCol = hImage[X, Y]
-      ' With Color[Color.Desaturate(iCol)]
-      '   iGray = (255 - .Blue) * (255 - .Alpha) / 255
-      ' End With
-      ' Print Mid$(" .,-~+=oOINS8&%@", iGray \ 16 + 1, 1);
-
-      If Color.GetAlpha(iCol) > 192 Then Continue
-      If X = 0 Or If X = (hImage.W - 1) Or If Y = 0 Or If Y = (hImage.H - 1) Or If Color[hImage[X - 1, Y]].Alpha = 255 Or If Color[hImage[X + 1, Y]].Alpha = 255 Or If Color[hImage[X, Y - 1]].Alpha = 255 Or If Color[hImage[X, Y + 1]].Alpha = 255 Then
-        hColorInfo = Color[Color.Darker(iCol)]
-        hColorInfo.Alpha = hColorInfo.Alpha \ 2
-        hImage[X, Y] = hColorInfo.Color
-      Endif
-    Next
-  Next
-
-End
-
-Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean, Optional bExported As Boolean) As Image
+Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean) As Image
 
   Dim hImage As Image
   Dim hImageModule As Image
@@ -893,7 +893,7 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
 
   If iSize = 0 Then iSize = 16
 
-  sKey = sModule & "-" & iSize & If(bStartup, "s", "") & If(bExported, "x", "") & ".png"
+  sKey = sModule & "-" & iSize & If(bStartup, "s", "") & ".png"
   hImage = $cImageCache[sKey]
   If Not hImage Then
     hImage = $cImageCache["base"]
@@ -901,7 +901,7 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
     hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
     hImage.PaintImage(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
 
-    If bExported Then MakeExportedIcon(hImage)
+    'If bExported Then MakeExportedIcon(hImage)
 
     If bStartup Then
       hImageStartup = Image.Load("img/16/startup.png").Stretch(iSize \ 2, iSize \ 2)

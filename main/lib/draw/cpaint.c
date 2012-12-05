@@ -233,14 +233,45 @@ GB_DESC PaintExtentsDesc[] =
 
 //---- PaintMatrix ----------------------------------------------------------
 
-static PAINT_MATRIX *create_matrix(GB_PAINT_DESC *desc, GB_TRANSFORM *transform)
+static bool _do_not_init = FALSE;
+
+static PAINT_MATRIX *create_matrix(GB_PAINT_DESC *desc, GB_TRANSFORM transform)
 {
 	PAINT_MATRIX *matrix;
+	_do_not_init = TRUE;
 	matrix = GB.New(GB.FindClass("PaintMatrix"), NULL, NULL);
+	_do_not_init = FALSE;
 	matrix->desc = desc;
 	matrix->transform = transform;
 	return matrix;
 }
+
+BEGIN_METHOD(PaintMatrix_new, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT yy; GB_FLOAT x0; GB_FLOAT y0)
+
+	if (_do_not_init)
+		return;
+	
+	if (check_device())
+		return;
+
+	MTHIS->desc = PAINT;
+	MPAINT->Transform.Create(&MTHIS->transform);
+	MPAINT->Transform.Init(MTHIS->transform, VARGOPT(xx, 1.0), VARGOPT(xy, 0.0), VARGOPT(yx, 0.0), VARGOPT(yy, 1.0), VARGOPT(x0, 0.0), VARGOPT(y0, 0.0));
+
+END_METHOD
+
+BEGIN_METHOD(PaintMatrix_call, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT yy; GB_FLOAT x0; GB_FLOAT y0)
+
+	GB_TRANSFORM transform;
+	
+	if (check_device())
+		return;
+
+	PAINT->Transform.Create(&transform);
+	PAINT->Transform.Init(transform, VARGOPT(xx, 1.0), VARGOPT(xy, 0.0), VARGOPT(yx, 0.0), VARGOPT(yy, 1.0), VARGOPT(x0, 0.0), VARGOPT(y0, 0.0));
+	GB.ReturnObject(create_matrix(PAINT, transform));
+
+END_METHOD
 
 BEGIN_METHOD_VOID(PaintMatrix_free)
 
@@ -299,8 +330,10 @@ END_METHOD
 
 GB_DESC PaintMatrixDesc[] = 
 {
-	GB_DECLARE("PaintMatrix", sizeof(PAINT_MATRIX)), GB_NOT_CREATABLE(),
-
+	GB_DECLARE("PaintMatrix", sizeof(PAINT_MATRIX)),
+	
+	GB_METHOD("_new", NULL, PaintMatrix_new, "[(XX)f(XY)f(YX)f(YY)f(X0)f(Y0)f]"),
+	GB_STATIC_METHOD("_call", "PaintMatrix", PaintMatrix_call, "[(XX)f(XY)f(YX)f(YY)f(X0)f(Y0)f]"),
 	GB_METHOD("_free", NULL, PaintMatrix_free, NULL),
 
 	GB_METHOD("Reset", "PaintMatrix", PaintMatrix_Reset, NULL),

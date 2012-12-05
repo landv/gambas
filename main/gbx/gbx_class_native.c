@@ -253,47 +253,62 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 	{
 		ALLOC(&class->signature, sizeof(TYPE) * nsign, "CLASS_register");
 		sign = class->signature;
-	}
-
-	for (i = first; i < class->n_desc; i++)
-	{
-		desc = class->table[i].desc;
-
-		//fprintf(stderr, "[%.*s]\n", class->table[i].len, class->table[i].name);
 		
-		switch (CLASS_DESC_get_type(desc))
+		for (i = first; i < class->n_desc; i++)
 		{
-			case CD_METHOD:
-			case CD_STATIC_METHOD:
+			desc = class->table[i].desc;
 
-				if (desc->method.npmax)
-				{
-					desc->method.signature =
-						TYPE_transform_signature(&sign, (char *)desc->method.signature, desc->method.npmax);
-				}
-				break;
+			//fprintf(stderr, "[%.*s]\n", class->table[i].len, class->table[i].name);
+			
+			switch (CLASS_DESC_get_type(desc))
+			{
+				case CD_METHOD:
+				case CD_STATIC_METHOD:
 
-			case CD_EVENT:
+					if (desc->method.npmax)
+					{
+						desc->method.signature =
+							TYPE_transform_signature(&sign, (char *)desc->method.signature, desc->method.npmax);
+					}
+					break;
 
-				if (desc->event.npmax)
-				{
-					desc->event.signature =
-						TYPE_transform_signature(&sign, (char *)desc->event.signature, desc->event.npmax);
-				}
+				case CD_EVENT:
 
-				event = &class->event[first_event];
-				event->name = class->table[i].name;
-				if (desc->event.index)
-					*((int *)desc->event.index) = first_event;
-				desc->event.index = first_event;
+					if (desc->event.npmax)
+					{
+						desc->event.signature =
+							TYPE_transform_signature(&sign, (char *)desc->event.signature, desc->event.npmax);
+					}
 
-				event->type = desc->event.type;
-				event->param = (CLASS_PARAM *)desc->event.signature;
-				event->n_param = desc->event.npmax;
+					break;
+			}
+		}
+	}
+	
+	if (class->n_event && (!class->parent || class->n_event > class->parent->n_event))
+	{
+		for (i = first; i < class->n_desc; i++)
+		{
+			desc = class->table[i].desc;
 
-				first_event++;
+			switch (CLASS_DESC_get_type(desc))
+			{
+				case CD_EVENT:
 
-				break;
+					event = &class->event[first_event];
+					event->name = class->table[i].name;
+					if (desc->event.index)
+						*((int *)desc->event.index) = first_event;
+					desc->event.index = first_event;
+
+					event->type = desc->event.type;
+					event->param = (CLASS_PARAM *)desc->event.signature;
+					event->n_param = desc->event.npmax;
+
+					first_event++;
+
+					break;
+			}
 		}
 	}
 

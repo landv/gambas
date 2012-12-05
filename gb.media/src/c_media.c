@@ -804,6 +804,12 @@ static bool add_input_output(void *_object, CMEDIACONTROL *child, char *name, in
 	return FALSE;
 }
 
+// Just there for the documentation wiki!
+
+BEGIN_METHOD_VOID(MediaContainer_new)
+
+END_METHOD
+
 BEGIN_METHOD(MediaContainer_AddInput, GB_OBJECT child; GB_STRING name)
 
 	add_input_output(THIS, (CMEDIACONTROL *)VARG(child), MISSING(name) ? NULL : GB.ToZeroString(ARG(name)), GST_PAD_SINK, "Not an input", "Unknown input");
@@ -1101,6 +1107,8 @@ GB_DESC MediaContainerDesc[] =
 	GB_DECLARE("MediaContainer", sizeof(CMEDIACONTAINER)),
 	GB_INHERITS("MediaControl"),
 	
+	GB_METHOD("_new", NULL, MediaContainer_new, NULL),
+
 	GB_METHOD("AddInput", NULL, MediaContainer_AddInput, "(Child)MediaControl;[(Name)s]"),
 	GB_METHOD("AddOutput", NULL, MediaContainer_AddOutput, "(Child)MediaControl;[(Name)s]"),
 	
@@ -1148,15 +1156,11 @@ GB_DESC MediaDesc[] =
 	GB_DECLARE("Media", sizeof(CMEDIAPIPELINE)),
 	GB_INHERITS("MediaPipeline"),
 	
-	GB_CONSTANT("Null", "i", GST_STATE_NULL),
 	GB_CONSTANT("Unknown", "i", -1),
-	GB_CONSTANT("Ready", "i", GST_STATE_READY),
-	GB_CONSTANT("Paused", "i", GST_STATE_PAUSED),
-	GB_CONSTANT("Playing", "i", GST_STATE_PLAYING),
 
-	GB_CONSTANT("Info", "i", 0),
-	GB_CONSTANT("Warning", "i", 1),
-	GB_CONSTANT("Error", "i", 2),
+	//GB_CONSTANT("Info", "i", 0),
+	//GB_CONSTANT("Warning", "i", 1),
+	//GB_CONSTANT("Error", "i", 2),
 	
 	GB_STATIC_METHOD("Link", NULL, Media_Link, "(FirstControl)MediaControl;(SecondControl)MediaControl;."),
 	GB_STATIC_METHOD("Time", "l", Media_Time, "(Seconds)f"),
