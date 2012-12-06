@@ -422,12 +422,11 @@ Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, 
   Angle = Start
   Length = {End}
   If Angle = 0 And If Length = 0 Then
-    Length = Pi(2)
+    Paint.Ellipse(X, Y, W, H, Angle, Pi(2), False)
   Else
-    Length -= Start
+    Paint.Ellipse(X, Y, W, H, Angle, Length, True)
   Endif
   
-  Paint.Ellipse(X, Y, W, H, Angle, Length)
   
   If hInfo.FillStyle And If iAction <> DRAW_ARC Then
     Paint.Background = hInfo.FillColor
@@ -437,9 +436,9 @@ Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, 
   If hInfo.LineStyle Then
     Paint.Background = GetForeground()
     fOffset = GetStrokeOffset()
-    Paint.Translate(fOffset, fOffset)
+    'Paint.Translate(fOffset, fOffset)
     Paint.Stroke
-    Paint.Translate(- fOffset, - fOffset)
+    'Paint.Translate(- fOffset, - fOffset)
   Endif
   
 End

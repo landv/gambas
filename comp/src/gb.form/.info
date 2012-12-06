@@ -1186,11 +1186,7 @@ C
 _Properties
 C
 s
-*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Sheared,Padding{Range:0;63},Border
-_DefaultEvent
-C
-s
-Click
+*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Sheared,Padding{Range:0;63},Border,HighlightColor{Color}
 _DefaultSize
 C
 s
@@ -1198,7 +1194,7 @@ s
 _Similar
 C
 s
-TextBox
+Label
 Text
 p
 s
@@ -1218,6 +1214,10 @@ i
 Border
 p
 b
+
+HighlightColor
+p
+i
 
 _new
 m

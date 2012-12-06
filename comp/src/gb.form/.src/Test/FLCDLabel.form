@@ -1,19 +1,17 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,147,64)
+  MoveScaled(0,0,159,80)
+  Arrangement = Arrange.Fill
   { LCDLabel1 LCDLabel
-    MoveScaled(1,8,143,10)
+    MoveScaled(17,21,54,40)
     Background = &H000000&
     Foreground = &HFFFF00&
-    Text = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~\"'[-|`_\\@]°+=$*/")
+    Text = ("ABCDEF")
     Alignment = Align.Center
     Sheared = True
     Padding = 8
     Border = True
-  }
-  { LCDLabel2 LCDLabel
-    MoveScaled(24,36,33,18)
-    Text = ("LCDLabel2")
+    HighlightColor = &HFF0000&
   }
 }

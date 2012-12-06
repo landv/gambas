@@ -689,7 +689,7 @@ static void ClosePath(GB_PAINT *d)
 }
 
 		
-static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length)
+static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length, bool pie)
 {
 	CREATE_PATH(d);
 
@@ -699,11 +699,18 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 	angle = - angle;
 	length = - length;
 	
-	PATH(d)->arcMoveTo(rect, to_deg(angle));
+	if (pie)
+		PATH(d)->moveTo(xc, yc);
+	else
+		PATH(d)->arcMoveTo(rect, to_deg(angle));
+	
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
+
+	if (pie)
+		PATH(d)->lineTo(xc, yc);
 }
 
-static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length)
+static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length, bool pie)
 {
 	CREATE_PATH(d);
 
@@ -713,8 +720,14 @@ static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, fl
 	angle = - angle;
 	length = - length;
 	
-	PATH(d)->arcMoveTo(rect, to_deg(angle));
+	if (pie)
+		PATH(d)->moveTo(x + width / 2, y + height / 2);
+	else
+		PATH(d)->arcMoveTo(rect, to_deg(angle));
+	
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
+	if (pie)
+		PATH(d)->lineTo(x + width / 2, y + height / 2);
 }
 
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)

@@ -750,18 +750,34 @@ BEGIN_PROPERTY(Paint_Y)
 END_PROPERTY
 
 
-BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angle; GB_FLOAT length)
+BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angle; GB_FLOAT length; GB_BOOLEAN pie)
 
 	CHECK_DEVICE();
-	PAINT->Arc(THIS, VARG(xc), VARG(yc), VARG(radius), VARGOPT(angle, 0.0), VARGOPT(length, MISSING(angle) ? M_PI * 2 : 0.0));
+	
+	bool pie = VARGOPT(pie, FALSE);
+	float angle = VARGOPT(angle, 0.0);
+	float length = VARGOPT(length, MISSING(angle) ? M_PI * 2 : 0.0);
+	
+	if (MISSING(length) || length == 0.0)
+		pie = FALSE;
+	
+	PAINT->Arc(THIS, VARG(xc), VARG(yc), VARG(radius), angle, length, pie);
 
 END_METHOD
 
 
-BEGIN_METHOD(Paint_Ellipse, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height; GB_FLOAT angle; GB_FLOAT length)
+BEGIN_METHOD(Paint_Ellipse, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height; GB_FLOAT angle; GB_FLOAT length; GB_BOOLEAN pie)
 
 	CHECK_DEVICE();
-	PAINT->Ellipse(THIS, VARG(x), VARG(y), VARG(width), VARG(height), VARGOPT(angle, 0.0), VARGOPT(length, MISSING(angle) ? M_PI * 2 : 0.0));
+
+	bool pie = VARGOPT(pie, FALSE);
+	float angle = VARGOPT(angle, 0.0);
+	float length = VARGOPT(length, MISSING(angle) ? M_PI * 2 : 0.0);
+	
+	if (MISSING(length) || length == 0.0)
+		pie = FALSE;
+	
+	PAINT->Ellipse(THIS, VARG(x), VARG(y), VARG(width), VARG(height), angle, length, pie);
 
 END_METHOD
 
@@ -1493,8 +1509,8 @@ GB_DESC PaintDesc[] =
 
 	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f[(Radius)f]"),
 	GB_STATIC_METHOD("FillRect", NULL, Paint_FillRect, "(X)f(Y)f(Width)f(Height)f(Color)i"),
-	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
-	GB_STATIC_METHOD("Ellipse", NULL, Paint_Ellipse, "(X)f(Y)f(Width)f(Height)f[(Angle)f(Length)f]"),
+	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f(Pie)b]"),
+	GB_STATIC_METHOD("Ellipse", NULL, Paint_Ellipse, "(X)f(Y)f(Width)f(Height)f[(Angle)f(Length)f(Pie)b]"),
 	GB_STATIC_METHOD("Polygon", NULL, Paint_Polygon, "(Points)Float[];"),
 
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),

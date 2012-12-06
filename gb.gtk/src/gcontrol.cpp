@@ -2060,7 +2060,7 @@ void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
 	cairo_clip(cr);
 	gt_cairo_set_source_color(cr, background());
 
-	cairo_rectangle(cr, 0, 0, width(), height());
+	cairo_rectangle(cr, border->allocation.x, border->allocation.y, width(), height());
 	cairo_fill(cr);
 	
   cairo_destroy(cr);

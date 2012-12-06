@@ -907,7 +907,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	float tw, th;
 	QColor fg = p->pen().color();
 	QString t = "<font color=\"" + fg.name() + "\">" + text + "</font>";
-	qreal opacity;
+	qreal opacity = 1.0;
 	bool hasAlpha = fg.alpha() < 255;
 
 	switch(get_horizontal_alignment((Qt::Alignment)align))

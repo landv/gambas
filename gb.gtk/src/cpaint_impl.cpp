@@ -835,20 +835,27 @@ static void ClosePath(GB_PAINT *d)
 }
 
 		
-static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length)
+static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length, bool pie)
 {
 	xc += DX(d);
 	yc += DY(d);
 	
 	cairo_new_sub_path(CONTEXT(d));
-	//angle = - angle;
+
+	if (pie)
+		cairo_move_to(CONTEXT(d), 0, 0);
+	
 	if (length < 0.0)
 		cairo_arc_negative(CONTEXT(d), xc, yc, radius, angle, angle + length);
 	else
 		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle + length);
+
+	if (pie)
+		cairo_line_to(CONTEXT(d), 0, 0);
+
 }
 
-static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length)
+static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length, bool pie)
 {
 	x += DX(d);
 	y += DY(d);
@@ -860,11 +867,17 @@ static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, fl
 	cairo_translate(CONTEXT(d), x + width / 2, y + height / 2);
 	cairo_scale(CONTEXT(d), width / 2, height / 2);
 
+	if (pie)
+		cairo_move_to(CONTEXT(d), 0, 0);
+	
 	if (length < 0.0)
 		cairo_arc_negative(CONTEXT(d), 0, 0, 1, angle, angle + length);
 	else
 		cairo_arc(CONTEXT(d), 0, 0, 1, angle, angle + length);
 	
+	if (pie)
+		cairo_line_to(CONTEXT(d), 0, 0);
+
 	cairo_restore(CONTEXT(d));
 }
 

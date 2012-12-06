@@ -3,16 +3,16 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Sheared,Padding{Range:0;63},Border"
-Public Const _DefaultEvent As String = "Click"
+Public Const _Properties As String = "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Sheared,Padding{Range:0;63},Border,HighlightColor{Color}"
 Public Const _DefaultSize As String = "24,4"
-Public Const _Similar As String = "TextBox"
+Public Const _Similar As String = "Label"
 
 Property Text As String
 Property Alignment As Integer
 Property Sheared As Boolean
 Property Padding As Integer
 Property Border As Boolean
+Property HighlightColor As Integer
 
 Private $hView As DrawingArea
 Private $sText As String
@@ -23,6 +23,7 @@ Private $iBg As Integer
 Private $bSheared As Boolean
 Private $iPadding As Integer
 Private $bBorder As Boolean
+Private $iHighlightColor As Integer = Color.Default
 
 Static Private $aSegment As Float[][]
 Static Private $cCar As Collection
@@ -262,6 +263,8 @@ Private Sub DrawCharacter(sCar As String, bPoint As Boolean, bColon As Boolean, 
   Dim iSegment As Integer
   Dim aOn As Boolean[]
   Dim hShear As PaintMatrix
+  Dim bOutline As Boolean
+  Dim I As Integer
   
   aCar = $cCar[UCase(sCar)]
   If Not aCar And If Not bPoint And If Not bColon Then Return
@@ -279,7 +282,10 @@ Private Sub DrawCharacter(sCar As String, bPoint As Boolean, bColon As Boolean, 
     Paint.Translate(0, 3.5)
   Endif
   
-  Paint.LineWidth = 0.1
+  If U >= 1 Then 
+    bOutLine = True
+    Paint.LineWidth = 0.1
+  Endif
   
   aOn = New Boolean[$aSegment.Count]
   
@@ -296,17 +302,37 @@ Private Sub DrawCharacter(sCar As String, bPoint As Boolean, bColon As Boolean, 
   Endif
   
   For iSegment = 0 To $aSegment.Max
-    Paint.Polygon($aSegment[iSegment])
-    If aOn[iSegment] Then
-      Paint.Background = $iFg
-      Paint.Fill(True)
-      Paint.Background = $iBg
-      Paint.Stroke
-    Else
-      Paint.Background = $iLightBg
-      Paint.Fill
-    Endif
+    If Not aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
   Next
+  Paint.Background = $iLightBg
+  Paint.Fill
+      
+  For iSegment = 0 To $aSegment.Max
+    If aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
+  Next
+  
+  If $iHighlightColor <> Color.Default Then
+    If U >= 1.5 Then
+      Paint.LineCap = Paint.LineCapRound
+      Paint.LineJoin = Paint.LineJoinRound
+      Paint.Background = Color.SetAlpha($iHighlightColor, 220)
+      Paint.LineWidth = 0.8
+      For I = 1 To 5
+        Paint.Stroke(True)
+        Paint.LineWidth *= 1.5
+      Next
+    Endif
+  Endif
+  
+  Paint.LineWidth = 0.1
+  Paint.Background = $iFg
+  If bOutline Then
+    Paint.Fill(True)
+    Paint.Background = $iBg
+    Paint.Stroke
+  Else
+    Paint.Fill
+  Endif
   
   Paint.Restore
 
@@ -347,6 +373,19 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
+  $hView.Refresh
+
+End
+
+Private Function HighlightColor_Read() As Integer
+
+  Return $iHighlightColor
+
+End
+
+Private Sub HighlightColor_Write(Value As Integer)
+
+  $iHighlightColor = Value
   $hView.Refresh
 
 End

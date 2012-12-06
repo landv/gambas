@@ -183,8 +183,8 @@ typedef
 		void (*NewPath)(GB_PAINT *d);
 		void (*ClosePath)(GB_PAINT *d);
 		
-		void (*Arc)(GB_PAINT *d, float xc, float yc, float radius, float angle, float length);
-		void (*Ellipse)(GB_PAINT *d, float x, float y, float width, float height, float angle, float length);
+		void (*Arc)(GB_PAINT *d, float xc, float yc, float radius, float angle, float length, bool pie);
+		void (*Ellipse)(GB_PAINT *d, float x, float y, float width, float height, float angle, float length, bool pie);
 		void (*Rectangle)(GB_PAINT *d, float x, float y, float width, float height);
 		void (*GetCurrentPoint)(GB_PAINT *d, float *x, float *y);
 		void (*MoveTo)(GB_PAINT *d, float x, float y);
