@@ -289,6 +289,8 @@ BEGIN_METHOD(WebElement_Paint, GB_OBJECT clip)
 	if (!painter)
 		return;
 	
+	#if QT_VERSION >= 0x040800
+	
 	if (MISSING(clip))
 		ELT->render(painter);
 	else
@@ -297,6 +299,12 @@ BEGIN_METHOD(WebElement_Paint, GB_OBJECT clip)
 		QRect clip(rect->x, rect->y, rect->w, rect->h);
 		ELT->render(painter, clip);
 	}
+	
+	#else
+	
+		ELT->render(painter);
+		
+	#endif
 
 END_METHOD
 
