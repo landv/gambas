@@ -76,12 +76,15 @@ static void CServerSocket_CallBack(int fd, int type, intptr_t lParam)
 	if ((!THIS->iPause) && (okval))
 	{
 		remote_ip = GB.NewZeroString(inet_ntoa(THIS->so_client.in.sin_addr));
-		GB.Raise(THIS,EVENT_Connection, 1, GB_T_STRING, remote_ip, GB.StringLength(remote_ip));
+		GB.Raise(THIS, EVENT_Connection, 1, GB_T_STRING, remote_ip, GB.StringLength(remote_ip));
 		GB.FreeString(&remote_ip);
 	}
 	
 	if (SOCKET->status == NET_PENDING)
+	{
 		close(THIS->Client);
+		THIS->Client = -1;
+	}
 	
 	SOCKET->status = NET_ACTIVE;
 }
@@ -122,28 +125,29 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 	int retval;
 	int auth = 1;
 
-	if ( (!THIS->iPort) && (THIS->type) ) return 8;
+	if (THIS->iPort == 0 && THIS->type == NET_TYPE_INTERNET)
+		return 8;
 
 	if (SOCKET->status > NET_INACTIVE) return 1;
 
 	if (mymax<0) return 13;
 
-	if ( (!THIS->type) && (!THIS->sPath) ) return 7;
+	if (THIS->type == NET_TYPE_LOCAL && !THIS->sPath)
+		return 7;
 
-
-	if (THIS->type)
+	if (THIS->type == NET_TYPE_INTERNET)
 	{
-		THIS->so_server.in.sin_family=AF_INET;
-		THIS->so_server.in.sin_addr.s_addr=INADDR_ANY;
-		THIS->so_server.in.sin_port=htons(THIS->iPort);
-		SOCKET->socket=socket(PF_INET,SOCK_STREAM,0);
+		THIS->so_server.in.sin_family = AF_INET;
+		THIS->so_server.in.sin_addr.s_addr = INADDR_ANY;
+		THIS->so_server.in.sin_port = htons(THIS->iPort);
+		SOCKET->socket = socket(PF_INET, SOCK_STREAM, 0);
 	}
 	else
 	{
 		unlink(THIS->sPath);
-		THIS->so_server.un.sun_family=AF_UNIX;
-		strcpy(THIS->so_server.un.sun_path,THIS->sPath);
-		SOCKET->socket=socket(AF_UNIX,SOCK_STREAM,0);
+		THIS->so_server.un.sun_family = AF_UNIX;
+		strcpy(THIS->so_server.un.sun_path, THIS->sPath);
+		SOCKET->socket=socket(AF_UNIX, SOCK_STREAM,0);
 	}
 
 	if ( SOCKET->socket==-1 )
@@ -174,13 +178,12 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 	
 	SOCKET_update_timeout(SOCKET);
 	//
-	if (THIS->type)
-		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.in, \
-			sizeof(struct sockaddr_in));
+	if (THIS->type == NET_TYPE_INTERNET)
+		retval = bind(SOCKET->socket, (struct sockaddr *)&THIS->so_server.in, sizeof(struct sockaddr_in));
 	else
-		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.un, \
-			sizeof(struct sockaddr_un));
-	if (retval==-1)
+		retval = bind(SOCKET->socket, (struct sockaddr *)&THIS->so_server.un, sizeof(struct sockaddr_un));
+	
+	if (retval == -1)
 	{
 		close(SOCKET->socket);
 		SOCKET->status = NET_CANNOT_BIND_SOCKET;
@@ -204,10 +207,11 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 	SOCKET->status = NET_ACTIVE;
 
 	//CServerSocket_AssignCallBack((intptr_t)THIS,SOCKET->socket);
-	if (THIS->type)
+	if (THIS->type == NET_TYPE_INTERNET)
 		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(intptr_t)THIS);
 	else
 		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(intptr_t)THIS);
+	
 	return 0;
 }
 
@@ -361,32 +365,34 @@ BEGIN_PROPERTY ( ServerSocket_Type )
 		GB.ReturnInteger(THIS->type);
 		return;
 	}
+	
 	if (SOCKET->status > NET_INACTIVE)
 	{
-		GB.Error("Socket Type can not be changed when socket is active");
+		GB.Error("Type cannot be changed when the socket is active");
 		return;
 	}
-	if ( (VPROP(GB_INTEGER)<0) || (VPROP(GB_INTEGER)>1) )
+	
+	switch(VPROP(GB_INTEGER))
 	{
-		GB.Error("Invalid Socket Type Value");
-		return;
+		case NET_TYPE_LOCAL: THIS->type = NET_TYPE_LOCAL; break;
+		case NET_TYPE_INTERNET: THIS->type = NET_TYPE_INTERNET; break;
+		default: GB.Error("Invalid socket type");
 	}
-	THIS->type=VPROP(GB_INTEGER);
 
 END_PROPERTY
 
 
 BEGIN_METHOD(ServerSocket_new, GB_STRING sPath; GB_INTEGER iMaxConn)
 
-	char *buf=NULL;
-	int nport=0;
+	char *buf = NULL;
+	int nport = 0;
 	int iMax;
 
-	THIS->type=1;
+	THIS->type = NET_TYPE_INTERNET;
 	GB.NewArray(&THIS->children, sizeof(void *), 0);
 
 	if (MISSING(sPath)) return;
-	if (!STRING(sPath)) return;
+	if (LENGTH(sPath) == 0) return;
 
 	iMax = VARGOPT(iMaxConn, 0);
 	
@@ -409,13 +415,13 @@ BEGIN_METHOD(ServerSocket_new, GB_STRING sPath; GB_INTEGER iMaxConn)
 				return;
 			}
 
-			THIS->type=1;
+			THIS->type = NET_TYPE_INTERNET;
 			THIS->iPort=nport;
 			srvsock_listen(THIS, iMax);
 			break;
 			
 		case 2:
-			THIS->type = 0;
+			THIS->type = NET_TYPE_LOCAL;
 			if (LENGTH(sPath) >NET_UNIX_PATH_MAX)
 			{
 				GB.Error ("Path is too long");
@@ -494,53 +500,61 @@ END_METHOD
 
 BEGIN_METHOD_VOID(ServerSocket_Accept)
 
-	CSOCKET *cli_obj;
+	CSOCKET *socket;
 	struct sockaddr_in myhost;
 	unsigned int mylen;
 
-	if ( SOCKET->status != NET_PENDING){ GB.Error("No connection to accept");return; }
-
-	cli_obj = GB.New(GB.FindClass("Socket"), "Socket", NULL);
-	cli_obj->common.socket = THIS->Client;
-	cli_obj->common.status = NET_CONNECTED;
-	cli_obj->OnClose=CServerSocket_OnClose;
-	THIS->iCurConn++;
-	GB.FreeString ( &cli_obj->sRemoteHostIP);
-	GB.FreeString ( &cli_obj->sLocalHostIP);
-	GB.FreeString ( &cli_obj->sPath);
-	cli_obj->iLocalPort=0;
-	cli_obj->iPort=0;
-	cli_obj->conn_type=0;
-	if (THIS->type)
+	if ( SOCKET->status != NET_PENDING)
 	{
-		cli_obj->sRemoteHostIP = GB.NewZeroString (inet_ntoa(THIS->so_client.in.sin_addr));
-		cli_obj->Host = GB.NewZeroString (inet_ntoa(THIS->so_client.in.sin_addr));
-		mylen=sizeof(struct sockaddr);
-		getsockname (cli_obj->common.socket,(struct sockaddr*)&myhost,&mylen);
-		cli_obj->sLocalHostIP = GB.NewZeroString(inet_ntoa(myhost.sin_addr));
-		cli_obj->iLocalPort=ntohs(myhost.sin_port);
-		cli_obj->iPort=ntohs(THIS->so_client.in.sin_port);
-		cli_obj->iUsePort=ntohs(THIS->so_client.in.sin_port);
+		GB.Error("No connection to accept");
+		return; 
+	}
+
+	socket = GB.New(GB.FindClass("Socket"), "Socket", NULL);
+	socket->common.socket = THIS->Client;
+	socket->common.status = NET_CONNECTED;
+	socket->OnClose = CServerSocket_OnClose;
+	
+	THIS->iCurConn++;
+	
+	GB.FreeString(&socket->sRemoteHostIP);
+	GB.FreeString(&socket->sLocalHostIP);
+	GB.FreeString(&socket->sPath);
+	
+	socket->iLocalPort = 0;
+	socket->iPort = 0;
+	socket->conn_type = THIS->type;
+	
+	if (THIS->type == NET_TYPE_INTERNET)
+	{
+		socket->sRemoteHostIP = GB.NewZeroString(inet_ntoa(THIS->so_client.in.sin_addr));
+		socket->Host = GB.NewZeroString (inet_ntoa(THIS->so_client.in.sin_addr));
+		mylen = sizeof(struct sockaddr);
+		getsockname(socket->common.socket, (struct sockaddr*)&myhost, &mylen);
+		socket->sLocalHostIP = GB.NewZeroString(inet_ntoa(myhost.sin_addr));
+		socket->iLocalPort = ntohs(myhost.sin_port);
+		socket->iPort = ntohs(THIS->so_client.in.sin_port);
+		socket->iUsePort = ntohs(THIS->so_client.in.sin_port);
 	}
 	else
 	{
-		cli_obj->conn_type=1;
-		cli_obj->sPath = GB.NewZeroString(THIS->sPath);
-		cli_obj->Path = GB.NewZeroString(THIS->sPath);
+		socket->conn_type=1;
+		socket->sPath = GB.NewZeroString(THIS->sPath);
+		socket->Path = GB.NewZeroString(THIS->sPath);
 	}
 
-	add_child(THIS, cli_obj);
+	add_child(THIS, socket);
 
-	CSOCKET_init_connected(cli_obj);
+	CSOCKET_init_connected(socket);
 	// Socket returned by accept is non-blocking by default
-	GB.Stream.Block(&cli_obj->common.stream, FALSE);
-	//cli_obj->stream._free[0]=(intptr_t)cli_obj;
+	GB.Stream.Block(&socket->common.stream, FALSE);
+	//socket->stream._free[0]=(intptr_t)socket;
 
-	GB.Ref(cli_obj);
-	GB.Post(CSocket_post_connected,(intptr_t)cli_obj);
+	GB.Ref(socket);
+	GB.Post(CSocket_post_connected,(intptr_t)socket);
 	SOCKET->status = NET_ACCEPTING;
 	
-	GB.ReturnObject((void*)cli_obj);
+	GB.ReturnObject((void*)socket);
 
 END_METHOD
 
