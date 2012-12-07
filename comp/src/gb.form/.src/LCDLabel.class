@@ -171,7 +171,7 @@ Public Sub View_Draw()
   W = $hView.W - iPad * 2
   H = $hView.H - iPad * 2
   
-  If W < 16 Or If H < 8 Or If Not $sText Then Return
+  If W < 16 Or If H < 8 Or If Not $sText Then Goto DRAW_BORDER
   
   For I = 1 To String.Len($sText)
     sCar = String.Mid$($sText, I, 1)
@@ -204,6 +204,8 @@ Public Sub View_Draw()
   $iBg = GetRealBackground()
   $iLightBg = Color.Merge($iFg, $iBg, 0.9)
   
+  Paint.ResetClip
+  
   iLen = String.Len($sText)
   For I = 1 To iLen
     sCar = String.Mid$($sText, I, 1)
@@ -221,6 +223,8 @@ Public Sub View_Draw()
     DrawCharacter(sCar, bPoint, bColon, X, Y, CW)
     X += CW
   Next
+  
+DRAW_BORDER:
   
   If $bBorder Then
     Draw.Rect(0, 0, $hView.W, $hView.H)

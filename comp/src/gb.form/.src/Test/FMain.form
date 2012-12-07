@@ -1,15 +1,39 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,539,350)
+  Move(0,0,476,308)
   #Scaled = False
+  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
-  { Panel1 Panel
-    Move(56,35,371,245)
-    { Expander1 Expander
-      Move(7,7,322,210)
-      Text = ("Expander1")
+  { Wizard1 Wizard
+    Move(7,14,462,287)
+    Count = 3
+    TextFont = Font["Bold,+4"]
+    ShowIndex = True
+    Index = 0
+    Text = ("First wizard step")
+    { Label1 Label
+      Move(245,14,252,28)
+      Font = Font["Bold"]
+      Text = ("What do you want to do?")
     }
+    { RadioButton1 RadioButton
+      Move(245,42,168,28)
+      Text = ("Uninstall Windows")
+    }
+    { RadioButton2 RadioButton
+      Move(245,70,168,28)
+      Text = ("Uninstall Mac OSX")
+    }
+    { RadioButton3 RadioButton
+      Move(245,98,168,28)
+      Text = ("Install Linux")
+    }
+    Index = 1
+    Text = ("Étape n°2")
+    Index = 2
+    Text = ("Étape n°3")
+    Index = 0
   }
 }
