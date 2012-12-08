@@ -23,7 +23,7 @@ Public Sub _new()
   
   'Map for lens
   hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
-  hmap.Padding = 256
+  'hmap.Padding = 256
   hmap.Resize(200, 200)
   
   'Manage the list of layers
@@ -48,7 +48,7 @@ Public Sub MapView1_MouseDown()
     hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
     $bLens = True
     hbLens.Visible = True
-    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
     MapView1.Lock = True
     MapView1.Refresh
   Endif
@@ -60,7 +60,7 @@ Public Sub MapView1_MouseMove()
   $iMX = Mouse.X
   $iMY = Mouse.Y
   If $bLens Then
-    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
     
   Endif
   
