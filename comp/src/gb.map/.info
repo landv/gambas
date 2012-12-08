@@ -30,19 +30,7 @@ s
 #Map
 
 C
-Height
-p
-i
-
-Width
-p
-i
-
-X
-p
-i
-
-Left
+Top
 p
 i
 
@@ -50,25 +38,21 @@ Y
 p
 i
 
-Top
+Left
 p
 i
 
-BoxPixel
-r
-Rect
+X
+p
+i
 
-BoxMeter
-r
-RectF
+Width
+p
+i
 
-_BoxPixelBefore
-r
-Rect
-
-_BoxPixelAfter
-r
-Rect
+Height
+p
+i
 
 Zoom
 p
@@ -78,46 +62,30 @@ Center
 p
 MapPoint
 
-Padding
-p
-i
+PixelBox
+r
+Rect
 
 :Refresh
 :
 
 
-_new
+Refresh
 m
 
 
-Draw
-m
-
-
-Trigger_Timer
+tmrLoad_Timer
 m
 
 
 Resize
 m
 
-(Width)i(Height)i
-Add
-m
-
-(Layer)_MapLayer;
+(iWidth)i(iHeight)i
 AddTile
 m
 _MapTile
 (Name)s(Pattern)s[(Args)Collection;(CacheName)s]
-AddShape
-m
-_MapShape
-(Name)s[(Shape)Shapes;]
-Layer_Refresh
-m
-
-
 _get
 m
 _MapLayer
@@ -125,6 +93,18 @@ _MapLayer
 _next
 m
 o
+
+Draw
+m
+
+
+Layer_Refresh
+m
+
+
+tmrDraw_Timer
+m
+
 
 #MapPoint
 

@@ -18,7 +18,7 @@ Public Sub _new()
   hPicture = New Picture(200, 200)
   
   MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
-  'MapView1.Map["GoogleMap"].Visible = False
+  MapView1.Map["GoogleMap"].Visible = False
   With MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
   .Copyright = "OpenStreetMap contributors"
   End With
@@ -50,7 +50,7 @@ Public Sub MapView1_MouseDown()
     
     hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
     $bLens = True
-    hmap.Center = Geo.PixelToMapPoint(point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
+    hmap.Center = Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
     MapView1.Lock = True
     MapView1.Refresh
   Endif
@@ -62,7 +62,7 @@ Public Sub MapView1_MouseMove()
   $iMX = Mouse.X
   $iMY = Mouse.Y
   If $bLens Then
-    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.BoxPixel.X + Mouse.X, MapView1.Map.BoxPixel.Y + Mouse.y), MapView1.Map.Zoom)
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
     
   MapView1.Refresh
   Endif
@@ -97,7 +97,9 @@ Public Sub MapView1_Draw()
     Paint.Stroke
     Paint.End
   Endif
-
+' ListBox1.Clear
+' ListBox1.List = MapView1.Map["GoogleMap"].$aStack
+Me.Text = MapView1.Map["GoogleMap"].CountActiveClients()
 End
 
 Public Sub GridView1_Data(Row As Integer, Column As Integer)
@@ -138,5 +140,17 @@ End
 Public Sub SpinBox1_Change()
   'Change the lens zoom
   hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
+
+End
+
+Public Sub GridView1_Click()
+
+  
+
+End
+
+Public Sub Panel3_MouseDown()
+
+  
 
 End

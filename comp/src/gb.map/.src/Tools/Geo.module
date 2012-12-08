@@ -15,9 +15,9 @@ Public Function MapPointToTile(hMapPoint As MapPoint, Zoom As Integer) As Point
   Dim n As Float = 2 ^ Zoom
   Dim hPoint As New Point
   
-  Point.X = Int((hMapPoint.Lon + 180.0) / 360.0 * n)
-  Point.y = Int((1.0 - Log(Tan(Rad(hMapPoint.Lat)) + (1 / Cos(Rad(hMapPoint.Lat)))) / Pi) / 2.0 * n)
-  
+  hPoint.X = Int((hMapPoint.Lon + 180.0) / 360.0 * n)
+  hPoint.y = Int((1.0 - Log(Tan(Rad(hMapPoint.Lat)) + (1 / Cos(Rad(hMapPoint.Lat)))) / Pi) / 2.0 * n)
+  Return hPoint
 End
 
 Public Function MapPointToPixel(hMapPoint As MapPoint, Zoom As Integer) As Point

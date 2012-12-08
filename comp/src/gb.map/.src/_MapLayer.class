@@ -4,9 +4,10 @@ Public Name As String
 Private $bVisible As Boolean = True
 Property Visible As Boolean
 Public Copyright As String 
+Public $aStack As New String[]
 Event Refresh
 
-Public Sub _Draw(Optional bRefresh As Boolean = True)
+Public Sub Draw() '(Optional bRefresh As Boolean = True)
   
   
   
@@ -22,18 +23,29 @@ End
 Private Sub Visible_Write(Value As Boolean)
 
   $bVisible = Value
+  Me.Load
   Raise Refresh
 End
 
 
-Public Sub _ResetCache()
+
+Public Sub Load()
   
   
   
 End
 
-Public Sub _Preload()
+
+Public Sub Refresh()
   
   
   
 End
+
+Public Function CountActiveClients() As Integer
+  
+  
+  
+End
+
+

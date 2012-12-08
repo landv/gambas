@@ -1,112 +1,52 @@
 ' Gambas class file
 
 Export
-Property Height As Integer
+Property Top, Y As Integer
+Property Left, X As Integer
 Property Width As Integer
-Property X, {Left} As Integer
-Property Y, Top As Integer
-Property Read BoxPixel As Rect
-Property Read BoxMeter As RectF
-Property Read _BoxPixelBefore As Rect
-Property Read _BoxPixelAfter As Rect
-
-Property Zoom As Integer
+Property Height As Integer
+Property Zoom As Integer 
 Property Center As MapPoint
+Property Read PixelBox As Rect
 
-Private $iHeight As Integer = 100 
-Private $iWidth As Integer = 100
-Private $iLeft As Integer
-Private $iTop As Integer
-Private $llCenter As New MapPoint
 Private $iZoom As Integer = 1
+Private $mpCenter As New MapPoint
+Private $iTop As Integer
+Private $iLeft As Integer
+Private $iWidth As Integer
+Private $iHeight As Integer
+Private tmrLoad As New Timer As "tmrLoad"
+Private tmrDraw As New Timer As "tmrDraw"
+Private $bNeedReload As Boolean
+Private $PixelBox As New Rect
+Private $PrevBox As Rect
+Private $iPrevent As Integer = 256
 Private $aLayers As New _MapLayer[]
-Private $hPixelBox As New Rect
-Private $hPixelBoxBefore As New Rect
-Private $hPixelBoxAfter As New Rect
-
-Private $hMeterBox As New RectF
-Private $sLayers As New String[]
-
-Private $sCopyright As String
-Private $bZoomChange As Boolean
-Private tmrTrigger As New Timer As "Trigger"
-'Private $iRefreshPadding As Integer
-Property Padding As Integer
-Private $iPadding As Integer
-Private $bOutPadding As Boolean
-Private $OldPixelBox As Rect
+Private $aLayerNames As New String[]
 
 Event Refresh
 
-Public Sub _new()
-
-  tmrTrigger.Delay = 1000
-  RefreshBoxes
+Private Function Top_Read() As Integer
+  
+  Return $iTop
   
 End
 
-Public Sub Draw()
+Private Sub Top_Write(Value As Integer)
   
-  Dim i As Integer
-  Dim sCopyright As String
-  Dim iTextWidth, iTextHeight As Integer
-  tmrTrigger.Stop
-  Draw.ClipRect = New Rect($iLeft, $iTop, $iWidth, $iHeight)
-  Draw.Clip.Enabled = True
-  
-  For i = 0 To $aLayers.Max
-    If $aLayers[i].Visible Then
-      $aLayers[i]._Draw($bOutPadding Or $bZoomChange)
-      sCopyright &/= $aLayers[i].Copyright
-    Endif
-  Next
-  If sCopyright Then
-  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 150))
-  Draw.Font.Grade = -2
-  iTextHeight = Draw.TextHeight(sCopyright)
-  iTextWidth = Draw.TextWidth(sCopyright)
-  paint.Rectangle(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
-  Paint.Fill
-  Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
-  Endif 
-  Draw.Clip.Enabled = False
-  $bOutPadding = False
-  
-  
-  
-  
-  If $bZoomChange Then
-  'tmrTrigger.Start
-  $bZoomChange = False
-  
-  Endif
+  $iTop = Value
   
 End
 
-Public Sub Trigger_Timer()
-
-  Dim i As Integer
-  Print "trigger"
-  For i = 0 To $aLayers.Max
-    If $aLayers[i].Visible Then
-      $aLayers[i]._Preload
-    Endif
-  Next
-  tmrTrigger.Stop
-  'Draw.Circle($iLeft + $hPixelBox.Width / 2, $iTop + $hPixelBox.Height / 2, 5)
+Private Function Left_Read() As Integer
+  
+  Return $iLeft
   
 End
 
-Private Function Height_Read() As Integer
+Private Sub Left_Write(Value As Integer)
   
-  Return $iHeight
-  
-End
-
-Private Sub Height_Write(Value As Integer)
-  
-  $iHeight = value
-  RefreshBoxes
+  $iLeft = Value
   
 End
 
@@ -119,31 +59,61 @@ End
 Private Sub Width_Write(Value As Integer)
   
   $iWidth = Value
-  RefreshBoxes
+  SetBoxes
   
 End
 
-Private Function Y_Read() As Integer
+Private Function Height_Read() As Integer
   
-  Return $iTop
-  
-End
-
-Private Sub Y_Write(Value As Integer)
-  
-  $iTop = Value
+  Return $iHeight
   
 End
 
-Private Function X_Read() As Integer
+Private Sub Height_Write(Value As Integer)
   
-  Return $iLeft
+  $iHeight = Value
+  SetBoxes
   
 End
 
-Private Sub X_Write(Value As Integer)
+Private Sub SetBoxes()
   
-  $iLeft = Value
+  Dim ptCenter As Point
+
+  If Not $PrevBox Then 
+    $PrevBox = $PixelBox.Copy()
+    tmrLoad.Trigger
+  Endif
+  
+  'Create the pixBox
+  ptCenter = Geo.MapPointToPixel($mpCenter, $iZoom)
+  
+  $PixelBox.X = ptCenter.X - ($iWidth / 2)
+  $PixelBox.Y = ptCenter.Y - ($iHeight / 2)
+   $PixelBox.Right = ptCenter.x + ($iWidth / 2)
+   $PixelBox.Bottom = ptCenter.Y + ($iHeight / 2)
+  '$PixelBox.Width = $iWidth
+  '$PixelBox.Height = $iHeight
+  ' Print "Largeur/hauteur", $iWidth, $iHeight
+  ' Print $PixelBox.Right, $PixelBox.Left, $PixelBox.Right - $PixelBox.Left
+  ' Print ptCenter.x + ($iWidth / 2), ptCenter.X - ($iWidth / 2)
+  'Print $PixelBox.Top, $PixelBox.Left, $PixelBox.Height, $PixelBox.Width
+  'a Movement ?
+  If Abs($PixelBox.Left - $PrevBox.Left) > $iPrevent / 2 Or If Abs($PixelBox.Top - $PrevBox.Top) > $iPrevent / 2 Then
+    $PrevBox = $PixelBox.Copy()
+    tmrLoad.Trigger
+  Endif
+  'a Resize ?
+  If Abs($PixelBox.Width - $PrevBox.Height) > $iPrevent / 2 Or If Abs($PixelBox.Height - $PrevBox.Height) > $iPrevent / 2 Then
+    $PrevBox = $PixelBox.Copy()
+    tmrLoad.Trigger
+  Endif
+  'tmrLoad.Trigger
+End
+
+Private Function PixelBox_Read() As Rect
+  
+  Return $PixelBox
   
 End
 
@@ -155,116 +125,46 @@ End
 
 Private Sub Zoom_Write(Value As Integer)
   
-  Dim o As _MapLayer
+  Dim i As Integer
   
-  $iZoom = Max(1, Min(Value, 19))
-  
-  For Each o In $aLayers
-    Try o._ResetCache
+  $iZoom = Min(Max(Value, 1), 18)
+  For i = 0 To $aLayers.Max
+    $aLayers[i].Refresh
   Next
-  $bZoomChange = True
-  RefreshBoxes
-  
+  SetBoxes
+  tmrLoad.Trigger
+
 End
 
 Private Function Center_Read() As MapPoint
   
-  Return $llCenter
+  Return $mpCenter
   
 End
 
 Private Sub Center_Write(Value As MapPoint)
   
-  $llCenter = Value
-  RefreshBoxes
+  'Print Value.Lat, Value.Lon
+  $mpCenter = Value
+  SetBoxes
+End
+
+Public Sub tmrLoad_Timer()
+  
+  Dim hLayer As _MapLayer
+  
+  For Each hLayer In $aLayers
+    If hLayer.Visible Then hLayer.Load
+  Next
   
 End
 
-Public Sub Resize(Width As Integer, Height As Integer)
+Public Sub Resize(iWidth As Integer, iHeight As Integer)
   
-  $iWidth = Width
-  $iHeight = Height
-  RefreshBoxes
-  'Me.Draw
+  $iWidth = iWidth
+  $iHeight = iHeight
+  SetBoxes
   
-End
-
-Public Sub Add(Layer As _MapLayer)
-  
-  If Not Layer Then Return
-  $aLayers.Add(Layer)
-  Object.Attach(Layer, Me, "Layer")
-  
-End
-
-Private Function BoxPixel_Read() As Rect
-  
-  Return $hPixelBox
-  
-End
-
-Private Sub RefreshBoxes()
-
-  
-  Dim fptPixel As Point
-  Dim tmpPoint As PointF
-  Dim ll As MapPoint
-  
-  fptPixel = Geo.MapPointToPixel($llCenter, $iZoom) 'Mercator.MetersToPixelsFP(Mercator.MapPointToMetersLL($llCenter), $iZoom)
-  $hPixelBox.X = fptPixel.X - ($iWidth / 2) '- $iPadding
-  $hPixelBox.Y = fptPixel.Y - ($iHeight / 2) '- $iPadding
-  $hPixelBox.Right = fptPixel.X + ($iWidth / 2) '+ $iPadding
-  $hPixelBox.Bottom = fptPixel.Y + ($iHeight / 2) '+ $iPadding
-  
-  If Not $OldPixelBox Then $OldPixelBox = $hPixelBox.Copy()
-  
-  If Abs($hPixelBox.X - $OldPixelBox.X) > $iPadding / 2 Then $bOutPadding = True
-  If Abs($hPixelBox.Y - $OldPixelBox.Y) > $iPadding / 2 Then $bOutPadding = True
-  If Abs($hPixelBox.Width - $OldPixelBox.Width) > $iPadding / 2 Then $bOutPadding = True
-  If Abs($hPixelBox.Height - $OldPixelBox.Height) > $iPadding / 2 Then $bOutPadding = True
-  If $bOutPadding Then $OldPixelBox = $hPixelBox.Copy()
-  'If $bOutPadding Then Print "move"
-  'BoxBefore
-  If $iZoom - 1 >= 0 Then
-    fptPixel = Geo.MapPointToPixel($llCenter, $iZoom - 1)
-    $hPixelBoxBefore = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
-  Else
-    $hPixelBoxBefore = Null
-  Endif
-  'BoxAfter
-  If $iZoom + 1 <= 19 Then 
-    fptPixel = Geo.MapPointToPixel($llCenter, $iZoom + 1)
-    $hPixelBoxAfter = New Rect(fptPixel.X - ($iWidth / 2), fptPixel.Y - ($iHeight / 2), fptPixel.X + ($iWidth / 2), fptPixel.Y + ($iHeight / 2))
-  Else
-    $hPixelBoxAfter = Null
-  Endif
-  
-  ' With $hPixelBox
-  '   Print .x, .Y, .Right, .Bottom
-  ' End With
-  ' tmpPoint = Mercator.PixelsToMeters($hPixelBox.X, $hPixelBox.Y, $iZoom)
-  ' $hMeterBox.X = tmpPoint.X
-  ' $hMeterBox.Y = tmpPoint.y
-  ' 
-  ' tmpPoint = Mercator.PixelsToMeters($hPixelBox.Right, $hPixelBox.Bottom, $iZoom)
-  ' 
-  ' $hMeterBox.Right = tmpPoint.X
-  ' $hMeterBox.Bottom = tmpPoint.Y
-  
-End
-
-Private Function BoxMeter_Read() As RectF
-  
-  Return $hMeterBox
-  
-End
-
-Private Function _BoxPixelBefore_Read() As Rect
-  Return $hPixelBoxBefore
-End
-
-Private Function _BoxPixelAfter_Read() As Rect
-  Return $hPixelBoxAfter
 End
 
 Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collection, Optional CacheName As String) As _MapTile
@@ -272,36 +172,30 @@ Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collectio
   Dim hLayer As New _MapTile(CacheName)
   
   hLayer.Name = Name
-  hLayer.Pattern = Pattern
+  'hLayer.Pattern = Pattern
   hLayer.SetPattern(Pattern, Args)
   $aLayers.Add(hLayer)
-  $sLayers.Add(Name)
+  $aLayerNames.Add(Name)
   Object.Attach(hLayer, Me, "Layer")
   Return hLayer
   
 End
 
-Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
-  
-  Dim hLayer As New _MapShape(Shape)
-  
-  hLayer.Name = Name
-  
-  $aLayers.Add(hLayer)
-  $sLayers.Add(Name)
-  Object.Attach(hLayer, Me, "Layer")
-  
-End
-
-Public Sub Layer_Refresh()
-  
-  Raise Refresh
-  
-End
+' Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
+'   
+'   Dim hLayer As New _MapShape(Shape)
+'   
+'   hLayer.Name = Name
+'   
+'   $aLayers.Add(hLayer)
+'   $sLayers.Add(Name)
+'   Object.Attach(hLayer, Me, "Layer")
+'   
+'End7
 
 Public Sub _get(Name As String) As _MapLayer
   
-  Return $aLayers[$sLayers.Find(Name)]
+  Return $aLayers[$aLayerNames.Find(Name)]
   
 End
 
@@ -309,9 +203,7 @@ Public Sub _next() As Object
   
   If IsNull(Enum.Index) Then Enum.Index = 0 Else Inc Enum.Index
   
-  'Inc Enum.Index
-  
-  If Enum.Index > $sLayers.Max Then
+  If Enum.Index > $aLayers.Max Then
     Enum.Stop
     Return
   Endif
@@ -320,17 +212,32 @@ Public Sub _next() As Object
   
 End
 
-
-
-
-Private Function Padding_Read() As Integer
-
-  Return $iPadding
-
+Public Sub Draw()
+  
+  Dim hLayer As _MapLayer
+  'Draw.Rect(0, 0, Me.Width, Me.Height)
+  For Each hLayer In $aLayers
+    If hLayer.Visible Then hLayer.Draw
+  Next
+  
 End
 
-Private Sub Padding_Write(Value As Integer)
+Public Sub Layer_Refresh()
+  
+  tmrDraw.Trigger
+  
+End
 
-  $iPadding = Value
 
+Public Sub tmrDraw_Timer()
+  
+  Raise Refresh
+  
+End
+
+
+Public Sub Refresh()
+  
+  SetBoxes
+  tmrLoad.Trigger
 End
