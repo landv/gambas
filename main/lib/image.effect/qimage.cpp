@@ -35,7 +35,11 @@ void QImage::init()
 void QImage::getInfo()
 {
 	bpl = 4 * img->width;
-	inv = GB_IMAGE_FMT_IS_SWAPPED(img->format);
+	inv = GB_IMAGE_FMT_IS_RGBA(img->format);
+	
+	if (GB_IMAGE_FMT_IS_SWAPPED(img->format))
+		fprintf(stderr, "gb.image.effect: warning: unsupported image format: %s\n", IMAGE.FormatToString(img->format));
+
 	jumpTable();
 }
 
