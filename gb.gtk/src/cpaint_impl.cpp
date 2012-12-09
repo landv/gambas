@@ -163,6 +163,19 @@ static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pi
 	return surface;
 }
 
+static GB_COLOR get_color(GB_PAINT *d, GB_COLOR col)
+{
+	if (col == GB_COLOR_DEFAULT)
+	{
+		if (GB.Is(d->device, CLASS_DrawingArea))
+			col = (((CWIDGET *)d->device)->widget)->realBackground();
+		else
+			col = 0xFFFFFF;
+	}
+
+	return col;
+}
+
 
 /**** Paint implementation ***********************************************/
 
@@ -506,7 +519,8 @@ static void Background(GB_PAINT *d, int set, GB_COLOR *color)
 	if (set)
 	{
 		int r, g, b, a;
-		GB_COLOR_SPLIT(*color, r, g, b, a);
+		int col = get_color(d, *color);
+		GB_COLOR_SPLIT(col, r, g, b, a);
 		cairo_set_source_rgba(CONTEXT(d), r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 	}
 	else

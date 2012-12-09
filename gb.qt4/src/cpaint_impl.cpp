@@ -114,33 +114,17 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	return FALSE;
 }
 
-static QWidget *get_widget(GB_PAINT *d)
+static QColor get_color(GB_PAINT *d, GB_COLOR col)
 {
-	if (!GB.Is(d->device, CLASS_Control))
-		return NULL;
-		
-	return QWIDGET(d->device);
-}
-
-static QColor get_color(GB_PAINT *d, GB_COLOR col, bool bg)
-{
-	QWidget *wid = get_widget(d);
-	
 	if (col == GB_COLOR_DEFAULT)
 	{
-		if (wid)
-		{
-			if (bg)
-				col = wid->palette().color(QPalette::Window).rgb() & 0xFFFFFF;
-			else
-				col = wid->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF;
-		}
+		if (GB.Is(d->device, CLASS_Control))
+			col = CWIDGET_get_real_background((CWIDGET *)d->device);
 		else
-			col = bg ? 0xFFFFFF : 0x000000;
+			col = 0xFFFFFF;
 	}
 
 	return CCOLOR_make(col);
-	
 }
 
 //---------------------------------------------------------------------------
@@ -958,7 +942,7 @@ static void Background(GB_PAINT *d, int set, GB_COLOR *color)
 {
 	if (set)
 	{
-		QBrush b(get_color(d, *color, true));
+		QBrush b(get_color(d, *color));
 		SetBrush(d, (GB_BRUSH)&b);
 	}
 	else
@@ -1042,7 +1026,7 @@ static void FillRect(GB_PAINT *d, float x, float y, float w, float h, GB_COLOR c
 	
 	//if (CLIP(d))
 	//	PAINTER(d)->setClipPath(PAINTER(d)->worldTransform().inverted().map(*CLIP(d)));
-	PAINTER(d)->fillRect(x, y, w, h, get_color(d, color, true));
+	PAINTER(d)->fillRect(x, y, w, h, get_color(d, color));
 	//if (CLIP(d))
 	//	PAINTER(d)->setClipping(false);
 }

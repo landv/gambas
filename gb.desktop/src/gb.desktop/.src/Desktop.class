@@ -233,13 +233,13 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
     Case "GNOME"
       sExec = "gnome-terminal"
       If {Dir} Then
-        sExec &= "--working-directory=" & Shell$({Dir})
+        sExec &= " --working-directory=" & Shell$({Dir})
         bNoDir = True
       Endif
     Case "MATE"
       sExec = "mate-terminal"
       If {Dir} Then
-        sExec &= "--working-directory=" & Shell$({Dir})
+        sExec &= " --working-directory=" & Shell$({Dir})
         bNoDir = True
       Endif
     Case "XFCE"

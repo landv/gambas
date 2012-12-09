@@ -274,7 +274,11 @@ End
 
 Public Sub Clear()
   
-  Paint.FillRect(0, 0, Paint.W, Paint.H, Color.Default)
+  Dim iColor As Integer
+  
+  Try iColor = Paint.Device.Background
+  If Error Then iColor = Color.White
+  Paint.FillRect(0, 0, Paint.W, Paint.H, iColor)
   
 End
 
@@ -412,7 +416,7 @@ End
 Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, H As Float, Start As Float, ({End}) As Float)
   
   Dim hInfo As DrawInfo
-  Dim Angle, Length As Float
+  Dim Angle As Float
   Dim fOffset As Float
   
   If W <= 0 Or If H <= 0 Then Return
