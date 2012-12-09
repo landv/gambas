@@ -10,14 +10,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .project:1
-msgid "Gambas 3"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
-msgstr ""
-
 #: CBookmark.class:33
 msgid "Define bookmark"
 msgstr ""
@@ -437,6 +429,46 @@ msgstr ""
 msgid "Gambas reports"
 msgstr ""
 
+#: ComponentItem.class:139 FPropertyComponent.form:73
+msgid "Experimental"
+msgstr ""
+
+#: ComponentItem.class:141 FPropertyComponent.form:73
+msgid "Not finished but stable"
+msgstr ""
+
+#: ComponentItem.class:144 ProjectItem.class:82
+msgid "Authors"
+msgstr ""
+
+#: ComponentItem.class:153
+msgid "Excludes"
+msgstr ""
+
+#: ComponentItem.class:159
+msgid "Implements"
+msgstr ""
+
+#: ComponentItem.class:240
+msgid "This component is required by the following library:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:242
+msgid "This component is required by the following libraries:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:251
+msgid "This component is required by:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:252
+msgid "Keep"
+msgstr ""
+
+#: ComponentItem.class:252 FDebugInfo.form:137
+msgid "Remove all"
+msgstr ""
+
 #: CProfile.class:105
 msgid "Evaluator"
 msgstr ""
@@ -498,8 +530,8 @@ msgstr ""
 #: FProxy.form:57 FReportBorderChooser.form:48 FReportBrushChooser.form:34
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
 #: FSaveProjectAs.form:76 FSearch.class:865 FSelectExtraFile.form:43
-#: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
-#: FTextEditor.class:596 FTranslate.class:556 Project.module:464
+#: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68
+#: FTextEditor.class:596 FText.form:41 FTranslate.class:556 Project.module:464
 msgid "Cancel"
 msgstr ""
 
@@ -509,46 +541,6 @@ msgstr ""
 
 #: CWelcome.class:41
 msgid "The Gambas font is published under the SIL Open Font License."
-msgstr ""
-
-#: ComponentItem.class:139 FPropertyComponent.form:73
-msgid "Experimental"
-msgstr ""
-
-#: ComponentItem.class:141 FPropertyComponent.form:73
-msgid "Not finished but stable"
-msgstr ""
-
-#: ComponentItem.class:144 ProjectItem.class:82
-msgid "Authors"
-msgstr ""
-
-#: ComponentItem.class:153
-msgid "Excludes"
-msgstr ""
-
-#: ComponentItem.class:159
-msgid "Implements"
-msgstr ""
-
-#: ComponentItem.class:240
-msgid "This component is required by the following library:<p>&1"
-msgstr ""
-
-#: ComponentItem.class:242
-msgid "This component is required by the following libraries:<p>&1"
-msgstr ""
-
-#: ComponentItem.class:251
-msgid "This component is required by:<p>&1"
-msgstr ""
-
-#: ComponentItem.class:252
-msgid "Keep"
-msgstr ""
-
-#: ComponentItem.class:252 FDebugInfo.form:137
-msgid "Remove all"
 msgstr ""
 
 #: Design.module:159 Project.module:2074
@@ -3658,6 +3650,38 @@ msgstr ""
 msgid "Unable to save profile."
 msgstr ""
 
+#: FPropertyComponent.form:66
+msgid "Component advancement"
+msgstr ""
+
+#: FPropertyComponent.form:73
+msgid "Finished and stable"
+msgstr ""
+
+#: FPropertyComponent.form:84
+msgid "This component is hidden"
+msgstr ""
+
+#: FPropertyComponent.form:97
+msgid "Exported classes"
+msgstr ""
+
+#: FPropertyComponent.form:111
+msgid "Features"
+msgstr ""
+
+#: FPropertyComponent.form:152 FPropertyProject.form:544
+msgid "Components"
+msgstr ""
+
+#: FPropertyComponent.form:196
+msgid "Remove All"
+msgstr ""
+
+#: FPropertyComponent.class:141
+msgid "Cannot write component description file."
+msgstr ""
+
 #: FProperty.form:47
 msgid "Lock property"
 msgstr ""
@@ -3707,38 +3731,6 @@ msgstr ""
 
 #: FProperty.class:945
 msgid "Select a file"
-msgstr ""
-
-#: FPropertyComponent.form:66
-msgid "Component advancement"
-msgstr ""
-
-#: FPropertyComponent.form:73
-msgid "Finished and stable"
-msgstr ""
-
-#: FPropertyComponent.form:84
-msgid "This component is hidden"
-msgstr ""
-
-#: FPropertyComponent.form:97
-msgid "Exported classes"
-msgstr ""
-
-#: FPropertyComponent.form:111
-msgid "Features"
-msgstr ""
-
-#: FPropertyComponent.form:152 FPropertyProject.form:544
-msgid "Components"
-msgstr ""
-
-#: FPropertyComponent.form:196
-msgid "Remove All"
-msgstr ""
-
-#: FPropertyComponent.class:141
-msgid "Cannot write component description file."
 msgstr ""
 
 #: FPropertyProject.form:123
@@ -4200,14 +4192,6 @@ msgstr ""
 msgid "Choose a table"
 msgstr ""
 
-#: FText.form:12
-msgid "Edit text property"
-msgstr ""
-
-#: FText.form:30
-msgid "Use a fixed font"
-msgstr ""
-
 #: FTextEditor.form:188
 msgid "Compress file"
 msgstr ""
@@ -4226,6 +4210,14 @@ msgstr ""
 
 #: FTextEditor.class:799
 msgid "Unable to compress file."
+msgstr ""
+
+#: FText.form:12
+msgid "Edit text property"
+msgstr ""
+
+#: FText.form:30
+msgid "Use a fixed font"
 msgstr ""
 
 #: FTips.form:18
@@ -5812,6 +5804,18 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
+#: ProjectItem.class:82
+msgid "Author"
+msgstr ""
+
+#: .project:1
+msgid "Gambas 3"
+msgstr ""
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr ""
+
 #: Project.module:189
 msgid "Automation"
 msgstr ""
@@ -6118,10 +6122,6 @@ msgstr ""
 
 #: Project.module:5241
 msgid "Unable to convert &1"
-msgstr ""
-
-#: ProjectItem.class:82
-msgid "Author"
 msgstr ""
 
 #: Save.module:39
