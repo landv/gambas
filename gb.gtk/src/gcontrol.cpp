@@ -275,17 +275,6 @@ gControl::~gControl()
 {
 	gMainWindow *win = window();
 	
-	/* Useless, as the control won't raise events anymore apparently.
-	if (gApplication::_old_active_control == this)
-	{
-		if (onFocusEvent) 
-		{
-			fprintf(stderr, "focus out ??\n");
-			onFocusEvent(this, gEvent_FocusOut);
-		}
-		gApplication::_old_active_control = NULL;
-	}*/
-	
 	emit(SIGNAL(onFinish));
 	
 	if (win && win->focus == this)
@@ -306,20 +295,15 @@ gControl::~gControl()
 	controls = g_list_remove(controls, this);
 	controls_destroyed = g_list_remove(controls_destroyed, this);
 	
-	if (gApplication::_enter == this)
-		gApplication::_enter = NULL;
-	if (gApplication::_leave == this)
-		gApplication::_leave = NULL;
-	if (gApplication::_active_control == this)
-		gApplication::_active_control = NULL;
-	if (gApplication::_old_active_control == this)
-		gApplication::_old_active_control = NULL;
-	if (gApplication::_button_grab == this)
-		gApplication::_button_grab = NULL;
-	if (gApplication::_control_grab == this)
-		gApplication::_control_grab = NULL;
-	if (gApplication::_ignore_until_next_enter == this)
-		gApplication::_ignore_until_next_enter = NULL;
+	#define CLEAN_POINTER(_p) if (_p == this) _p = NULL
+
+	CLEAN_POINTER(gApplication::_enter);
+	CLEAN_POINTER(gApplication::_leave);
+	CLEAN_POINTER(gApplication::_active_control);
+	CLEAN_POINTER(gApplication::_old_active_control);
+	CLEAN_POINTER(gApplication::_button_grab);
+	CLEAN_POINTER(gApplication::_control_grab);
+	CLEAN_POINTER(gApplication::_ignore_until_next_enter);
 }
 
 void gControl::destroy()

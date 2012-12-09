@@ -34,7 +34,8 @@ typedef
 		}
 	MenuPosition;
 
-static GList *menus=NULL;
+static gMenu *_current_popup = NULL;
+static GList *menus = NULL;
 
 static void mnu_destroy (GtkWidget *object, gMenu *data)
 {
@@ -472,6 +473,9 @@ gMenu::~gMenu()
 	if (menu)
 		gtk_widget_destroy(GTK_WIDGET(menu));
 	
+	if (_current_popup == this)
+		_current_popup = NULL;
+	
 	if (onFinish) onFinish(this);
 }
 
@@ -606,6 +610,7 @@ static void position_menu(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, Me
 
 void gMenu::doPopup(bool move, int x, int y)
 {
+	gMenu *save_current_popup;
 	MenuPosition *pos = NULL;
 	
 	if (!child)
@@ -618,10 +623,14 @@ void gMenu::doPopup(bool move, int x, int y)
 		pos->y = y;
 	}
 	
+	save_current_popup = _current_popup;
+	_current_popup = this;
 	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
 	
-	while (child && GTK_WIDGET_MAPPED(child))
+	while (_current_popup && child && GTK_WIDGET_MAPPED(child))
 		MAIN_do_iteration(false);
+	
+	_current_popup = save_current_popup;
 }
 
 void gMenu::popup(int x, int y)
