@@ -10,6 +10,7 @@ Public Sub Button1_Click()
 
   Dim num As Integer
   Dim Buf As String
+  Dim sSize As String
 
   If hWebCam Then
     Button1.Caption = ("Capture")
@@ -18,12 +19,7 @@ Public Sub Button1_Click()
     Hue.Enabled = False
     Whiteness.Enabled = False
     Colour.Enabled = False
-    V1.Enabled = False
-    V2.Enabled = False
-    V3.Enabled = False
-    V4.Enabled = False
-    V5.Enabled = False
-    V6.Enabled = False
+    cmbSize.Enabled = False
     FreqUp.Enabled = False
     FreqDown.Enabled = False
     TxtDevice.Enabled = True
@@ -50,12 +46,10 @@ Public Sub Button1_Click()
   Hue.Enabled = True
   Whiteness.Enabled = True
   Colour.Enabled = True
-  V1.Enabled = True
-  V2.Enabled = True
-  V3.Enabled = True
-  V4.Enabled = True
-  V5.Enabled = True
-  V6.Enabled = True
+  cmbSize.Enabled = True
+  sSize = CStr(hWebCam.Width) & "x" & CStr(hWebCam.Height)
+  If cmbSize.Find(sSize) < 0 Then cmbSize.Add(sSize)
+  Try cmbSize.Text = sSize
   FreqUp.Enabled = True
   FreqDown.Enabled = True
   TxtDevice.Enabled = False
@@ -117,41 +111,15 @@ Public Sub Hue_Change()
 
 End
 
-Public Sub V1_Click()
-
-  If V1.Value Then hWebCam.Resize(128, 96)
-
+Public Sub cmbSize_Click()
+  
+  Dim aSize As String[]
+  
+  aSize = Split(cmbSize.Text, "*x*")
+  hWebcam.Resize(CInt(aSize[0]), CInt(aSize[1]))
+  
 End
 
-Public Sub V2_Click()
-
-  If V2.Value Then hWebCam.Resize(160, 120)
-
-End
-
-Public Sub V3_Click()
-
-    If V3.Value Then hWebCam.Resize(176, 144)
-
-End
-
-Public Sub V4_Click()
-
-    If V4.Value Then hWebCam.Resize(320, 240)
-
-End
-
-Public Sub V5_Click()
-
-    If V5.Value Then hWebCam.Resize(356, 288)
-
-End
-
-Public Sub V6_Click()
-
-    If V6.Value Then hWebCam.Resize(640, 480)
-
-End
 
 Public Sub Tmr_Timer()
 

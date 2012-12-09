@@ -1,8 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(38,2.4286,76,102)
-  Text = ("")
+  MoveScaled(38,2.4286,76,90)
   Resizable = False
   { dwgVideo DrawingArea
     MoveScaled(0,0,75,51)
@@ -10,94 +9,72 @@
     Cached = True
   }
   { Tmr #Timer
-    #X = 8
-    #Y = 144
+    #MoveScaled(1.1429,20.5714)
     Delay = 10
   }
   { Panel2 Panel
-    MoveScaled(0,52,75,49)
+    MoveScaled(0,52,75,37)
     { Panel7 Panel
-      MoveScaled(1,0,74,27)
+      MoveScaled(1,0,74,15)
       Border = Border.Raised
       { Label1 Label
-        MoveScaled(2,1,14.4286,4)
+        MoveScaled(2,1,10,3)
         Text = ("Bright")
       }
       { Bright Slider
-        MoveScaled(2,5,25,3)
+        MoveScaled(13,1,25,3)
         Enabled = False
         MaxValue = 65535
       }
       { Label2 Label
-        MoveScaled(2,8,13.1429,4)
+        MoveScaled(2,5,9,3)
         Text = ("Contrast")
       }
       { Contrast Slider
-        MoveScaled(2,12,25,3)
+        MoveScaled(13,5,25,3)
         Enabled = False
         MaxValue = 65535
       }
       { Whiteness Slider
-        MoveScaled(2,19,25,3)
+        MoveScaled(13,9,25,3)
         Enabled = False
         MaxValue = 65535
       }
       { Label3 Label
-        MoveScaled(2,15,14.4286,4)
+        MoveScaled(2,9,11,3)
         Text = ("Whiteness")
       }
       { Label5 Label
-        MoveScaled(42,1,13.1429,4)
+        MoveScaled(40,1,7,4)
         Text = ("Hue")
       }
       { Hue Slider
-        MoveScaled(42,5,25,3)
+        MoveScaled(47,1,25,3)
         Enabled = False
         MaxValue = 65535
       }
       { Label4 Label
-        MoveScaled(42,8,13.1429,4)
+        MoveScaled(40,5,6,4)
         Text = ("Color")
       }
       { Colour Slider
-        MoveScaled(42,12,25,3)
+        MoveScaled(47,5,25,3)
         Enabled = False
         MaxValue = 65535
       }
-      { V2 RadioButton
-        MoveScaled(42,19,14.4286,4)
-        Enabled = False
-        Text = ("160x120")
+      { cmbSize ComboBox
+        MoveScaled(47,9,25,4)
+        ReadOnly = True
+        List = [("128x96"), ("160x120"), ("176x144"), ("320x240"), ("352x288"), ("640x480"), ("1024x768")]
+        Text = ("ComboBox1")
       }
-      { V4 RadioButton
-        MoveScaled(57,16,14.4286,4)
-        Enabled = False
-        Text = ("320x240")
-        Value = True
-      }
-      { V3 RadioButton
-        MoveScaled(42,22,14.4286,4)
-        Enabled = False
-        Text = ("176x144")
-      }
-      { V5 RadioButton
-        MoveScaled(57,19,14.4286,4)
-        Enabled = False
-        Text = ("352x288")
-      }
-      { V1 RadioButton
-        MoveScaled(42,16,14.4286,4)
-        Enabled = False
-        Text = ("128x96")
-      }
-      { V6 RadioButton
-        MoveScaled(57,22,14.4286,4)
-        Enabled = False
-        Text = ("640x480")
+      { Label7 Label
+        MoveScaled(40,9,6,4)
+        Text = ("Size")
       }
     }
     { Panel3 Panel
-      MoveScaled(1,28,74,13)
+      MoveScaled(1,16,74,13)
       Border = Border.Raised
       { LblFreq Label
         MoveScaled(1.1429,1.1429,36,4)
@@ -125,7 +102,7 @@
       }
     }
     { Panel1 Panel
-      MoveScaled(1,42,74,7)
+      MoveScaled(1,30,74,7)
       Border = Border.Raised
       { Label6 Label
         MoveScaled(1.1429,1.1429,10.4286,4)
