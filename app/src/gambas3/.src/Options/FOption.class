@@ -888,10 +888,10 @@ Private Sub InitBackground()
   hBg = New CBackground(svwBackground) As "Background"
   hBg.Tag = "void"
   
-  For Each sBackground In Dir("img/background", "*.{png,jpg,jpeg}")
+  For Each sBackground In Split(File.Load("img/background/list"), "\n", "", True)
     hBg = New CBackground(svwBackground) As "Background"
-    hBg.Image = Image.Load("img/background" &/ sBackground)
-    hBg.Tag = File.BaseName(sBackground)
+    hBg.Image = Image.Load("img/background" &/ sBackground & ".png")
+    hBg.Tag = sBackground
   Next
   
   sBackground = Settings["/Background", "tawhid"]
@@ -1136,6 +1136,8 @@ Public Sub Background_MouseDown()
     hBg.Selected = hBg = Last
   Next
   
-  Project.SetBackground(Last.Tag)
+  hBg = Last
+  svwBackground.EnsureVisible(hBg.X, hBg.Y, hBg.W, hBg.H)
+  Project.SetBackground(hBg.Tag)
   
 End
