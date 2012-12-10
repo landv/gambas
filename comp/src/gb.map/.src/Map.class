@@ -23,7 +23,8 @@ Private $PrevBox As Rect
 Private $iPrevent As Integer = 256
 Private $aLayers As New _MapLayer[]
 Private $aLayerNames As New String[]
-
+Property Preload As Boolean
+Private $bPreload As Boolean
 Event Refresh
 
 Private Function Top_Read() As Integer
@@ -79,7 +80,7 @@ End
 Private Sub SetBoxes()
   
   Dim ptCenter As Point
-
+  
   If Not $PrevBox Then 
     $PrevBox = $PixelBox.Copy()
     tmrLoad.Trigger
@@ -90,8 +91,8 @@ Private Sub SetBoxes()
   
   $PixelBox.X = ptCenter.X - ($iWidth / 2)
   $PixelBox.Y = ptCenter.Y - ($iHeight / 2)
-   $PixelBox.Right = ptCenter.x + ($iWidth / 2)
-   $PixelBox.Bottom = ptCenter.Y + ($iHeight / 2)
+  $PixelBox.Right = ptCenter.x + ($iWidth / 2)
+  $PixelBox.Bottom = ptCenter.Y + ($iHeight / 2)
   '$PixelBox.Width = $iWidth
   '$PixelBox.Height = $iHeight
   ' Print "Largeur/hauteur", $iWidth, $iHeight
@@ -109,6 +110,7 @@ Private Sub SetBoxes()
     tmrLoad.Trigger
   Endif
   'tmrLoad.Trigger
+
 End
 
 Private Function PixelBox_Read() As Rect
@@ -133,7 +135,7 @@ Private Sub Zoom_Write(Value As Integer)
   Next
   SetBoxes
   tmrLoad.Trigger
-
+  
 End
 
 Private Function Center_Read() As MapPoint
@@ -147,6 +149,7 @@ Private Sub Center_Write(Value As MapPoint)
   'Print Value.Lat, Value.Lon
   $mpCenter = Value
   SetBoxes
+
 End
 
 Public Sub tmrLoad_Timer()
@@ -215,11 +218,25 @@ End
 Public Sub Draw()
   
   Dim hLayer As _MapLayer
+  Dim sCopyright As String
+  Dim iTextHeight, iTextWidth As Integer
   'Draw.Rect(0, 0, Me.Width, Me.Height)
   For Each hLayer In $aLayers
-    If hLayer.Visible Then hLayer.Draw
+    If hLayer.Visible Then 
+      hLayer.Draw
+      sCopyright &/= hLayer.Copyright
+    Endif
   Next
   
+  If sCopyright Then
+    Draw.FillStyle = Fill.Cross
+    Draw.FillColor = Color.SetAlpha(Color.Pink, 150)
+    iTextHeight = Draw.TextHeight(sCopyright)
+    iTextWidth = Draw.TextWidth(sCopyright)
+    Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
+    Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
+  Endif 
+
 End
 
 Public Sub Layer_Refresh()
@@ -228,16 +245,25 @@ Public Sub Layer_Refresh()
   
 End
 
-
 Public Sub tmrDraw_Timer()
   
   Raise Refresh
   
 End
 
-
 Public Sub Refresh()
   
   SetBoxes
   tmrLoad.Trigger
+
+End
+
+Private Function Preload_Read() As Boolean
+  
+End
+
+Private Sub Preload_Write(Value As Boolean)
+  
+  
+
 End
