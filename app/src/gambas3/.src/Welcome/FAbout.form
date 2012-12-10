@@ -2,7 +2,7 @@
 
 { Form Form
   MoveScaled(3,6,67,65)
-  Background = &HFFFFFF&
+  Background = Color.TextBackground
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
@@ -43,7 +43,7 @@
     }
     { txtAuthor TextEdit
       MoveScaled(4,125,68,11)
-      Background = &HFFFFFF&
+      Background = Color.TextBackground
       ReadOnly = True
       Wrap = True
       Border = False

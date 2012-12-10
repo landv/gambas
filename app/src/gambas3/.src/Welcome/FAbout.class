@@ -45,13 +45,13 @@ Public Sub Form_Open()
   hImage = New Image(picGradientTop.W, picGradientTop.H)
   For Y = 0 To hImage.H - 1
     E = (Y / hImage.H)
-    hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, E * 255))
+    hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(Color.TextBackground, E * 255))
   Next
   picGradientTop.Picture = hImage.Picture
 
   For Y = 0 To hImage.H - 1
     E = 1 - (Y / hImage.H)
-    hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, E * 255))
+    hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(Color.TextBackground, E * 255))
   Next
   picGradientBottom.Picture = hImage.Stretch(hImage.W, picGradientBottom.H).Picture
 

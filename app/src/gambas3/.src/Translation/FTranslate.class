@@ -237,7 +237,6 @@ Private Sub SetLang(Optional sLang As String) As Boolean
     cvwTranslate[iIndex][1] = hTrans.Translations[sMsgId]
     cvwTranslate[iIndex][2] = hTrans.Comments[sMsgId]
     cvwTranslate[iIndex][3] = sMsgId
-    
   Next
   
   $nTrans = hTrans.Translations.Count
@@ -254,7 +253,9 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   $bIgnore = False
 
-  If cvwTranslate.MoveTo(sCurrent) Then cvwTranslate.MoveFirst
+  If cvwTranslate.MoveTo(sCurrent) Then
+    cvwTranslate.MoveFirst
+  Endif
   Try cvwTranslate.Item.Selected = True
   Try cvwTranslate.Item.EnsureVisible
 
@@ -1048,6 +1049,7 @@ Public Sub btnNext_Click()
   With cvwTranslate
 
     sKey = .Key
+    .MoveCurrent()
 
     Do
 
@@ -1077,6 +1079,7 @@ Public Sub btnPrevious_Click()
   With cvwTranslate
 
     sKey = .Key
+    .MoveCurrent()
 
     Do
 

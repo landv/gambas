@@ -319,6 +319,7 @@ Public Function GetPath() As String
 
   If GetMulti() Then Return
 
+  'CheckFile()
   If txtFile.Text Then 
     Return dvwChoose.Current &/ txtFile.Text
   Endif
@@ -734,8 +735,26 @@ End
 '   
 ' End
 
+ Private Sub CheckFile() As Boolean ' FIXME: If 'As Boolean' is forgotten, and 'Return True' is removed, we can get an interpreter crash
+  
+  Dim sPath As String
+  
+  If Not txtFile.Visible Then Return
+  If txtFile.ReadOnly Then Return
+  
+  sPath = txtFile.Text
+  If InStr(sPath, "/") = 0 Then Return
+  
+  txtFile.Text = File.Name(sPath)
+  SetDir(File.Dir(sPath))
+  Return True
+  
+End
+
+
 Public Sub btnOK_Click()
 
+  If CheckFile() Then Return
   Raise Select
 
 End

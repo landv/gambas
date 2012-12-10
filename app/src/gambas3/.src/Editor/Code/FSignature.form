@@ -18,7 +18,7 @@
       { lblSignature TextLabel
         MoveScaled(0,0,24,4)
         Background = Color.TextBackground
-        Foreground = &H000000&
+        Foreground = Color.TextForeground
         Expand = True
         Padding = 2
       }
@@ -59,7 +59,7 @@
     { lblNewSignature TextLabel
       MoveScaled(2,21,33,4)
       Visible = False
-      Foreground = &H000000&
+      Foreground = Color.TextForeground
       Ignore = True
       Padding = 2
     }

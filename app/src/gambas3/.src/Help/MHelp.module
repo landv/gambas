@@ -428,7 +428,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
   Else
     
-    hWebView.HTML = "<html><body><h3>" & ("No help found.") & "</h3></body></html>"
+    hWebView.HTML = "<html><body><h2><i>" & ("No help found.") & "</i></h2></body></html>"
     
   Endif
   
