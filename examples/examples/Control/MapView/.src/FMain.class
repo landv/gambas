@@ -18,7 +18,7 @@ Public Sub _new()
   
   MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"], "gm").SubDomains = ["0", "1", "2"]
   MapView1.Map["GoogleMap"].Visible = False
-  MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
+  MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
   
   
   'Map for lens
