@@ -13,8 +13,6 @@ Public Container As Container
 
 Property Read ReadOnly As Boolean
 
-Static Private $hBackground As Picture
-
 Private $bDoNotModify As Boolean
 Private $bModify As Boolean
 Private $bSelChange As Boolean
@@ -97,8 +95,6 @@ Public Sub _new(sPath As String)
 
   '$hUndo = New CUndo
 
-  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
-  
   btnCloseWindow.Design = True
   btnMaxWindow.Design = True
 
@@ -3622,7 +3618,7 @@ End
 
 Public Sub dwgBackground_Draw()
   
-  Draw.Tile($hBackground, 0, 0, dwgBackground.W, dwgBackground.H)
+  Project.DrawBackground()
   
 End
 
@@ -3760,4 +3756,10 @@ Public Sub svwWorkspace_Scroll()
 
   If $iMode = MODE_SELECT Then DrawRectSelect
 
+End
+
+Public Sub OnBackgroundChange()
+  
+  dwgBackground.Refresh
+  
 End

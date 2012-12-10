@@ -1,0 +1,71 @@
+' Gambas class file
+
+Inherits UserControl
+
+Property Image As Image
+Property Selected As Boolean
+
+Private $hView As DrawingArea
+Private $hImage As Image
+Private $bSelected As Boolean
+
+Public Sub _new()
+  
+  $hView = New DrawingArea(Me) As "View"
+  $hView.Background = Color.TextBackground
+  $hView.Mouse = Mouse.Pointing
+  Me.Proxy = $hView
+  Me.ResizeScaled(20, 20)
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim D As Integer = Desktop.Scale
+
+  Paint.Rectangle(D * 2, D * 2, Paint.W - D * 4, Paint.H - D * 4)
+  Paint.Brush = Paint.Color(Color.LightForeground)
+  
+  If $hImage Then
+    Paint.Fill(True)
+    Paint.Brush = Paint.Image($hImage)
+  Endif 
+  
+  Paint.Fill
+  
+  If $bSelected Then
+    Paint.Background = Color.LightBackground
+    Paint.Rectangle(0, 0, Paint.W, D)
+    Paint.Rectangle(0, Paint.H - D, Paint.W, D)
+    Paint.Rectangle(0, 0, D, Paint.H)
+    Paint.Rectangle(Paint.W - D, 0, D, Paint.H)
+    Paint.Fill
+  Endif
+  
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  $hView.Refresh
+
+End
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value
+  $hView.Refresh
+
+End

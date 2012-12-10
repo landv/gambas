@@ -1310,7 +1310,6 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   cSymbol = New Collection
   
   If Not $hDumbClass Then $hDumbClass = New CClassInfo("", "")
-  $hClass = $hDumbClass
   $hDumbClass.Name = sClass
   
   If hPModule Then
@@ -1340,6 +1339,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Endif
   
   $hDumbClass.Symbols = cSymbol
+  $hClass = $hDumbClass
   
   Return cSymbol
   

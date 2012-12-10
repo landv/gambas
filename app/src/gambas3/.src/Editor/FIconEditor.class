@@ -67,8 +67,6 @@ Private $iBeginUndo As Integer
 
 Private $bNoPreview As Boolean
 
-Static Private $hBackground As Picture
-
 Static Public Sub _init()
 
   Dim sColor As String
@@ -2046,7 +2044,13 @@ End
 
 Public Sub dwgIconBackground_Draw()
   
-  If Not $hBackground Then $hBackground = Picture["img/tawhid.png"]
-  Draw.Tile($hBackground, 0, 0, dwgIconBackground.W, dwgIconBackground.H)
+  Project.DrawBackground()
   
 End
+
+Public Sub OnBackgroundChange()
+  
+  dwgIconBackground.Refresh
+  
+End
+

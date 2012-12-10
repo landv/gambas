@@ -880,13 +880,45 @@ End
 ' 
 ' End
 
+Private Sub InitBackground()
+
+  Dim hBg As CBackground
+  Dim sBackground As String
+  
+  hBg = New CBackground(svwBackground) As "Background"
+  hBg.Tag = "void"
+  
+  For Each sBackground In Dir("img/background", "*.{png,jpg,jpeg}")
+    hBg = New CBackground(svwBackground) As "Background"
+    hBg.Image = Image.Load("img/background" &/ sBackground)
+    hBg.Tag = File.BaseName(sBackground)
+  Next
+  
+  sBackground = Settings["/Background", "tawhid"]
+  For Each hBg In svwBackground.Children
+    If hBg.Tag = sBackground Then 
+      hBg.Selected = True
+      svwBackground.EnsureVisible(hBg.X, hBg.Y, hBg.W, hBg.H)
+    Endif
+  Next
+
+End
+
 Public Sub ipnOption_Click()
 
   If ipnOption.Text = ("Code formatting") Then
+    
     If gvwSnippet.Rows.Count = 0 Then
       RefreshSnippet
       UpdateSnippet
     Endif
+    
+  Else If ipnOption.Text = ("Background") Then
+    
+    If svwBackground.Children.Count = 0 Then
+      InitBackground
+    Endif
+    
   Endif
   
 End
@@ -1094,4 +1126,16 @@ Public Sub btnInstallFont_Click()
   
   NeedRestart(btnInstallFont)
 
+End
+
+Public Sub Background_MouseDown()
+  
+  Dim hBg As CBackground
+  
+  For Each hBg In svwBackground.Children
+    hBg.Selected = hBg = Last
+  Next
+  
+  Project.SetBackground(Last.Tag)
+  
 End

@@ -184,6 +184,10 @@ Private $bTesting As Boolean
 ' All possible packager target systems
 Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "mageia", "mandriva", "slackware", "suse", "ubuntu"]
 
+' Pretty background
+Private $hBackground As Picture
+Private $bBackgroundValid As Boolean
+
 Public Sub _init()
 
   ExampleTitle["Automation"] = ("Automation")
@@ -1904,7 +1908,7 @@ Public Function LoadFile(sPath As String) As Object
 Catch
 
   Dec Application.Busy
-  Files[sPath] = Null
+  Try Files[sPath] = Null
   FMain.ShowError(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where, sPath)
 
 End
@@ -5330,4 +5334,39 @@ Public Sub SendMail()
   MakeSourcePackageTo(sTemp)
   Desktop.SendMail(Null,,, If(Project.Title, Project.Title, Project.Name),, sTemp)
 
+End
+
+Public Sub GetBackground() As Picture
+  
+  Dim sBackground As String
+  
+  If Not $bBackgroundValid Then
+    $hBackground = Null
+    sBackground = Settings["/Background", "tawhid"]
+    If sBackground <> "void" Then
+      Try $hBackground = Picture.Load("img/background" &/ sBackground & ".png")
+    Endif
+    $bBackgroundValid = True
+  Endif
+  
+  Return $hBackground
+  
+End
+
+Public Sub DrawBackground()
+  
+  GetBackground()
+  If $hBackground Then Draw.Tile($hBackground, 0, 0, Draw.W, Draw.H)
+  
+End
+
+Public Sub SetBackground(sBackground As String)
+  
+  If sBackground = "tawhid" Then sBackground = ""
+  Settings["/Background"] = sBackground
+  $bBackgroundValid = False
+  GetBackground()
+  Try ActiveForm.OnBackgroundChange
+  FMain.OnBackgroundChange
+  
 End

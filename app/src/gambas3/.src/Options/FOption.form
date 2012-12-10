@@ -34,7 +34,7 @@
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
-    Count = 6
+    Count = 7
     Index = 0
     Text = ("Interface")
     Picture = Picture["icon:/large/menu"]
@@ -314,6 +314,22 @@
       Padding = 4
     }
     Index = 2
+    Text = ("Background")
+    Picture = Picture["icon:/large/image"]
+    { Label14 Label
+      MoveScaled(1,1,15,3)
+      Font = Font["Bold"]
+      Text = ("Background")
+    }
+    { svwBackground ScrollView
+      MoveScaled(1,5,63,64)
+      Expand = True
+      Arrangement = Arrange.Row
+      Spacing = True
+      Border = False
+      ScrollBar = Scroll.Vertical
+    }
+    Index = 3
     Text = ("Editor")
     Picture = Picture["img/control/editor.png"]
     { Label44 Label
@@ -482,7 +498,7 @@
         MoveScaled(59,0,7,4)
       }
     }
-    Index = 3
+    Index = 4
     Text = ("Code formatting")
     Picture = Picture["icon:/32/wizard"]
     { Label52 Label
@@ -665,7 +681,7 @@
         }
       }
     }
-    Index = 4
+    Index = 5
     Text = ("Packaging")
     Picture = Picture["icon:/32/package"]
     { Label33 Label
@@ -798,7 +814,7 @@
         }
       }
     }
-    Index = 5
+    Index = 6
     Text = ("Help & applications")
     Picture = Picture["icon:/large/help"]
     { Label46 Label

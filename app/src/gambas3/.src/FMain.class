@@ -47,6 +47,8 @@ Public Sub _new()
   
   'FSearch.Load
   FOption.Load
+  
+  OnBackgroundChange
   'FHelpBrowser.Load
   
   'tvwProject.Columns.Count = 1
@@ -2190,4 +2192,10 @@ Public Sub dwgWelcome_Draw()
   Draw.Image($hCornerSW, 0, dwgWelcome.H - 64)
   Draw.Image($hCornerSE, dwgWelcome.W - 64, dwgWelcome.H - 64)
 
+End
+
+Public Sub OnBackgroundChange()
+  
+  wrkProject.Picture = Project.GetBackground()
+  
 End
