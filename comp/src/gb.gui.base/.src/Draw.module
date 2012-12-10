@@ -318,13 +318,16 @@ Public Sub Line(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
   Dim fOffset As Float
   Dim hBrush As PaintBrush 
+  Dim LW As Float
   
   If X1 = X2 Then
+    LW = Paint.LineWidth
     If Y2 < Y1 Then Swap Y1, Y2
-    Paint.FillRect(X1, Y1, 1, Y2 - Y1 + 1, GetForeground())
+    Paint.FillRect(X1 - Int(LW / 2), Y1, LW, Y2 - Y1 + 1, GetForeground())
   Else If Y1 = Y2 Then
+    LW = Paint.LineWidth
     If X2 < X1 Then Swap X1, X2
-    Paint.FillRect(X1, Y1, X2 - X1 + 1, 1, GetForeground())
+    Paint.FillRect(X1, Y1 - Int(LW / 2), X2 - X1 + 1, LW, GetForeground())
   Else
     hBrush = Paint.Brush  
     Paint.Background = GetForeground()

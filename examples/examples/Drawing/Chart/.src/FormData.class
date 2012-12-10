@@ -1,29 +1,43 @@
 ' Gambas class file
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB btnDraw_Click()
-  DIM total AS Integer
+Public Sub btnDraw_Click()
+  Dim total As Integer
   total = 10
-  WITH FormChart
-    .value = NEW Float[]
+  With FormChart
+    .value = New Float[]
     .total = total
     .value.Resize(total + 1)
-    TRY .value[1] = Val(textbox1.Text)
-    TRY .value[2] = Val(textbox2.Text)
-    TRY .value[3] = Val(textbox3.Text)
-    TRY .value[4] = Val(textbox4.Text)
-    TRY .value[5] = Val(textbox5.Text)
-    TRY .value[6] = Val(textbox6.Text)
-    TRY .value[7] = Val(textbox7.Text)
-    TRY .value[8] = Val(textbox8.Text)
-    TRY .value[9] = Val(textbox9.Text)
-    TRY .value[10] = Val(textbox10.Text)
+    Try .value[1] = Val(textbox1.Text)
+    Try .value[2] = Val(textbox2.Text)
+    Try .value[3] = Val(textbox3.Text)
+    Try .value[4] = Val(textbox4.Text)
+    Try .value[5] = Val(textbox5.Text)
+    Try .value[6] = Val(textbox6.Text)
+    Try .value[7] = Val(textbox7.Text)
+    Try .value[8] = Val(textbox8.Text)
+    Try .value[9] = Val(textbox9.Text)
+    Try .value[10] = Val(textbox10.Text)
     .Show
-  END WITH
+  End With
 
-END
+End
+
+Public Sub btnRandom_Click()
+
+  Dim hCtrl As Control
+
+  For Each hCtrl In Me.Children
+    
+    If hCtrl Is TextBox Then
+      TextBox(hCtrl).Text = CStr(Int(Exp(Rnd(Log(2), 6))))
+    Endif
+    
+  Next
+
+End

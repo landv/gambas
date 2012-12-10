@@ -33,67 +33,6 @@ void slider_Change(GtkRange *range,gSlider *data)
 	if (data->onChange) data->onChange(data);
 }
 
-gboolean slider_Expose(GtkWidget *widget,GdkEventExpose *event,gSlider *data)
-{
-	GtkAdjustment* adj=gtk_range_get_adjustment(GTK_RANGE(data->widget));
-	int max=(int)(adj->upper-adj->lower);
-	int b;
-	int myh;
-	int step;
-	
-	if (!data->_mark || !max) return false;
-	
-	if ( GTK_WIDGET_TYPE(data->widget)==GTK_TYPE_HSCALE )
-	{
-		step = data->_page_step * data->width() / max;
-		if (!step)
-			return false;
-		
-		while (step < 4)
-			step *= 2;
-		
-		myh=(data->height()-20)/2;
-		if (myh<=0) myh=1;
-		gDraw *dr=new gDraw();
-		dr->connect(data);
-		dr->setForeground(get_gdk_fg_color(data->border, data->enabled()));
-		
-		for(b = step; b <= (data->width() - step); b += step)
-		{
-			dr->line(b, 0, b,myh);
-			dr->line(b, data->height(), b,data->height()-myh);
-		}
-		dr->disconnect();
-		delete dr;
-	}
-	else
-	{
-		step = data->_page_step * data->height() / max;
-		if (!step)
-			return false;
-		
-		while (step < 4)
-			step *= 2;
-		
-		myh=(data->width()-20)/2;
-		if (myh<=0) myh=1;
-		gDraw *dr=new gDraw();
-		dr->connect(data);
-		dr->setForeground(get_gdk_fg_color(data->border, data->enabled()));
-		
-		for(b = 0; b < data->height(); b += step)
-		{
-			dr->line(0, b, myh, b);
-			dr->line(data->width(), b, data->width() - myh, b);
-		}
-		dr->disconnect();
-		delete dr;
-	}
-	
-	
-	return false;
-}
-
 void gSlider::init()
 {
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
@@ -148,7 +87,7 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	onChange = NULL;
 	
 	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
-	g_signal_connect_after(G_OBJECT(border),"expose-event",G_CALLBACK(slider_Expose),(gpointer)this);
+	//g_signal_connect_after(G_OBJECT(border),"expose-event",G_CALLBACK(slider_Expose),(gpointer)this);
 }
 
 gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
@@ -169,12 +108,32 @@ bool gSlider::mark()
 	return _mark;
 }
 
+void gSlider::updateMark()
+{
+	int i;
+	int step;
+	
+	if (!_mark)
+		return;
+
+	gtk_scale_clear_marks(GTK_SCALE(widget));
+	
+	step = _page_step;
+	while (step < ((_max - _min) / 20))
+		step *= 2;
+	
+	for (i = _min; i <= _max; i += step)
+		gtk_scale_add_mark(GTK_SCALE(widget), i, isVertical() ? GTK_POS_TOP : GTK_POS_RIGHT, NULL);
+}
+
 void gSlider::setMark(bool vl)
 {
+	
 	if (vl == _mark) return;
 	
 	_mark = vl;
-	gtk_widget_queue_draw(widget);
+	gtk_scale_clear_marks(GTK_SCALE(widget));
+	updateMark();
 }
 
 int gSlider::step()
@@ -204,7 +163,7 @@ void gSlider::setPageStep(int vl)
 	
 	_page_step = vl;
 	init();
-	if (_mark) gtk_widget_queue_draw(widget);
+	updateMark();
 }
 
 int gSlider::max()
@@ -228,6 +187,7 @@ void gSlider::setMax(int vl)
 	if (_min > _max)
 		_min = _max;
 	init();
+	updateMark();
 }
 
 void gSlider::setMin(int vl)
@@ -236,6 +196,7 @@ void gSlider::setMin(int vl)
 	if (_min > _max)
 		_max = _min;
 	init();
+	updateMark();
 }
 
 bool gSlider::tracking()
@@ -341,4 +302,9 @@ int gSlider::getDefaultSize()
 		return req.width;
 	else
 		return req.height;
+}
+
+bool gSlider::isVertical() const
+{
+	return (GTK_WIDGET_TYPE(widget) == GTK_TYPE_VSCALE);
 }

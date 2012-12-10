@@ -31,16 +31,6 @@
 #include "CDraw.h"
 #include "gdesktop.h"
 
-typedef
-	struct {
-		gDraw *dr;
-		CFONT *font;
-		}
-	GB_DRAW_EXTRA;
-
-#define EXTRA(d) ((GB_DRAW_EXTRA *)(d->extra))
-#define DR(d) (EXTRA(d)->dr)
- 
 DRAW_INTERFACE DRAW EXPORT;
 
 void DRAW_init()

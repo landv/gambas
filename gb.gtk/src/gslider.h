@@ -51,6 +51,7 @@ public:
 	void setPageStep(int vl);
 	
 	int getDefaultSize();
+	bool isVertical() const;
 	
 	virtual void resize(int w, int h);
 
@@ -59,6 +60,7 @@ public:
 
 //"Private"
 	virtual void orientation(int w,int h);
+	void updateMark();
 	void init();
 	bool _mark;
 	int _step;

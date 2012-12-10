@@ -84,7 +84,7 @@ Public Sub Draw_Chart()
   For i = 1 To Total
        draw.LineWidth = 1
        draw.Foreground = color.Black
-       draw.Text(i, distance_x - (width_draw / 2) - 4, drwchart.ClientH - 20)
+       draw.Text(i, distance_x - (width_draw / 2) - 16, drwchart.ClientH - drwChart.Font.Height, 32, drwChart.Font.Height, Align.Center)
        draw.Line(distance_x - (width_draw / 2), 0, distance_x - (width_draw / 2), drwchart.ClientH - skala_1 + 8)
        draw.LineWidth = width_draw
        draw.Foreground = color.RGB(i * 100, i * 10, i * 50)
@@ -94,7 +94,7 @@ Public Sub Draw_Chart()
        distance_x = distance_x + skala_2
   Next
 
-  DRAW.End
+  Draw.End
 
 End
 

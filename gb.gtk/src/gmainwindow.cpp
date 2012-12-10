@@ -945,60 +945,6 @@ void gMainWindow::drawMask()
 			setSkipTaskBar(false);
 		}
 	}
-	
-	//gtk_widget_queue_draw(border);
-	
-	#if 0
-	GdkBitmap *map=NULL;
-	GdkPixmap *pix=NULL;
-	GdkColor black;
-	gint pw,ph;
-	GdkPixbuf *buf_mask = _picture ? _picture->getPixbuf() : NULL;	
-	
-	if (win_style) { 
-		g_object_unref(win_style); 
-		win_style=NULL; 
-	}
-	
-	if (buf_mask)
-	{
-		pw=gdk_pixbuf_get_width(buf_mask);
-		ph=gdk_pixbuf_get_height(buf_mask);
-		
-		map=gdk_pixmap_new(NULL,pw,ph,1);
-		gdk_pixbuf_render_threshold_alpha(buf_mask,map,0,0,0,0,pw,ph,128);
-		
-		pix=gdk_pixmap_new(border->window,pw,ph,-1);
-		GdkGC* gc=gdk_gc_new(border->window);
-		fill_gdk_color(&black,0);
-		gdk_gc_set_foreground (gc,&black);
-		gdk_gc_set_background (gc,&black);
-		gdk_draw_rectangle(pix,gc,true,0,0,pw,ph);
-		gdk_draw_pixbuf(pix,gc,buf_mask,0,0,0,0,pw,ph,GDK_RGB_DITHER_MAX,0,0);
-		g_object_unref(G_OBJECT(gc));
-	}
-	
-	if (buf_mask && _mask) gtk_widget_shape_combine_mask(border,map,0,0);
-	else        gtk_widget_shape_combine_mask(border,NULL,0,0);
-	
-	if (map)
-	{
-		win_style=gtk_style_copy(widget->style);
-		win_style->bg_pixmap[GTK_STATE_NORMAL]=pix;
-		gtk_widget_set_style(widget,win_style);
-		gdk_window_invalidate_rect( border->window,NULL,true);
-		g_object_unref(G_OBJECT(map));
-	}
-	else
-	{
-		gtk_widget_set_style(widget,NULL);
-		if (border->window) //GTK_WIDGET_REALIZED(widget))
-		{
-		  gtk_widget_reset_shapes(border);
-		  gdk_window_invalidate_rect(border->window,NULL,true);
-    }
-	}
-	#endif
 }
 
 int gMainWindow::menuCount()

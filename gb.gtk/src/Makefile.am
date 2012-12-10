@@ -14,7 +14,7 @@ gb_gtk_la_SOURCES = \
 	gb.gtk.h widgets.h widgets_private.h font-parser.h font-parser.cpp \
 	gtools.cpp gcolor.h \
 	gstock.cpp gfont.cpp gpicture.cpp \
-	gdraw.cpp gdesktop.cpp gmessage.cpp \
+	gdesktop.cpp gmessage.cpp \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
 	gbutton.cpp gprogressbar.cpp gslider.cpp glabel.cpp gsignals.cpp \
 	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp \
@@ -59,7 +59,6 @@ gb_gtk_la_SOURCES = \
 	gcursor.h gcursor.cpp \
 	gmouse.h gmouse.cpp \
 	gdesktop.h \
-	gdraw.h \
 	gstock.h \
 	gpicture.h \
 	gfont.h \
