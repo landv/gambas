@@ -421,6 +421,7 @@ Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, 
   Dim hInfo As DrawInfo
   Dim Angle As Float
   Dim fOffset As Float
+  Dim iJoin As Integer
   
   If W <= 0 Or If H <= 0 Then Return
   
@@ -442,7 +443,10 @@ Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, 
     Paint.Background = GetForeground()
     fOffset = GetStrokeOffset()
     'Paint.Translate(fOffset, fOffset)
+    iJoin = Paint.LineJoin
+    Paint.LineJoin = Paint.LineJoinRound
     Paint.Stroke
+    Paint.LineJoin = iJoin
     'Paint.Translate(- fOffset, - fOffset)
   Endif
   

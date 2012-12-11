@@ -865,8 +865,7 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle + length);
 
 	if (pie)
-		cairo_line_to(CONTEXT(d), 0, 0);
-
+		cairo_close_path(CONTEXT(d));
 }
 
 static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length, bool pie)
@@ -890,7 +889,7 @@ static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, fl
 		cairo_arc(CONTEXT(d), 0, 0, 1, angle, angle + length);
 	
 	if (pie)
-		cairo_line_to(CONTEXT(d), 0, 0);
+		cairo_close_path(CONTEXT(d));
 
 	cairo_restore(CONTEXT(d));
 }

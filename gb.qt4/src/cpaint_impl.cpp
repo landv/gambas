@@ -691,7 +691,7 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 
 	if (pie)
-		PATH(d)->lineTo(xc, yc);
+		PATH(d)->closeSubpath();
 }
 
 static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, float angle, float length, bool pie)
@@ -711,7 +711,7 @@ static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, fl
 	
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 	if (pie)
-		PATH(d)->lineTo(x + width / 2, y + height / 2);
+		PATH(d)->closeSubpath();
 }
 
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
