@@ -1402,11 +1402,9 @@ BEGIN_PROPERTY(CWIDGET_foreground)
 END_PROPERTY
 #endif
 
+
 static QWidget *get_color_widget(QWidget *w)
 {
-	//if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
-		//return w;
-	
 	QWidget *view = get_viewport(w);
 	if (view)
 		return view;
@@ -1414,23 +1412,6 @@ static QWidget *get_color_widget(QWidget *w)
 		return w;
 }
 
-/*int get_real_background(CWIDGET *_object)
-{
-	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
-	if (THIS->bg == COLOR_DEFAULT && parent)
-		return get_real_background(parent);
-	else
-		return THIS->bg;
-}
-
-int get_real_foreground(CWIDGET *_object)
-{
-	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
-	if (THIS->fg == COLOR_DEFAULT && parent)
-		return get_real_foreground(parent);
-	else
-		return THIS->fg;
-}*/
 
 void CWIDGET_reset_color(CWIDGET *_object)
 {
@@ -1447,28 +1428,12 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
 		w->setPalette(QPalette());
-		//if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
-		//	get_viewport(WIDGET)->setPalette(QPalette());
 	}
 	else
 	{
 		bg = THIS_EXT->bg;
 		fg = THIS_EXT->fg;
 		
-		/*if (qobject_cast<Q3ListView *>(w) || qobject_cast<QListWidget *>(w))
-		{
-			QPalette vpalette;
-			
-			if (bg != COLOR_DEFAULT)
-				vpalette.setColor(QPalette::Base, QColor((QRgb)bg));
-			
-			if (fg != COLOR_DEFAULT)
-				palette.setColor(QPalette::Text, QColor((QRgb)fg));
-			
-			w->setPalette(palette);
-			get_viewport(WIDGET)->setPalette(vpalette);
-		}
-		else*/
 		if (qobject_cast<QComboBox *>(w) || qobject_cast<QSpinBox *>(w))
 		{
 			palette = QPalette();
@@ -1508,6 +1473,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		CWINDOW_define_mask((CWINDOW *)THIS);
 }
 
+
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 {
 	ENSURE_EXT(THIS);
@@ -1521,15 +1487,8 @@ void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 GB_COLOR CWIDGET_get_background(CWIDGET *_object)
 {
 	return THIS_EXT ? THIS_EXT->bg : COLOR_DEFAULT;
-	/*
-	QWidget *w = get_color_widget(WIDGET);
-	
-	if (THIS->flag.default_bg)
-		return COLOR_DEFAULT;
-	else
-		return w->palette().color(w->backgroundRole()).rgb() & 0xFFFFFF;
-	*/
 }
+
 
 int CWIDGET_get_real_background(CWIDGET *_object)
 {
@@ -1546,19 +1505,31 @@ int CWIDGET_get_real_background(CWIDGET *_object)
 		return QApplication::palette().color(QPalette::Window).rgb() & 0xFFFFFF;
 }
 
+
 GB_COLOR CWIDGET_get_foreground(CWIDGET *_object)
 {
 	return THIS_EXT ? THIS_EXT->fg : COLOR_DEFAULT;
-	/*
-	QWidget *w = get_color_widget(WIDGET);
-	
-	if (THIS->flag.default_fg)
-		return COLOR_DEFAULT;
-	else
-		return w->palette().color(w->foregroundRole()).rgb() & 0xFFFFFF;
-	*/
 }
+
+
+/*int CWIDGET_get_real_foreground(CWIDGET *_object, bool return_default)
+{
+	GB_COLOR fg = CWIDGET_get_foreground(THIS);
 	
+	if (fg != COLOR_DEFAULT)
+		return fg;
+
+	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
+	
+	if (parent)
+		return CWIDGET_get_real_foreground(parent, return_default);
+	else if (return_default)
+		return QApplication::palette().color(QPalette::WindowText).rgb() & 0xFFFFFF;
+	else
+		return COLOR_DEFAULT;
+}*/
+
+
 BEGIN_PROPERTY(Control_Background)
 
 	if (THIS_EXT && THIS_EXT->proxy)
@@ -1605,6 +1576,7 @@ BEGIN_PROPERTY(Control_Foreground)
 	}
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Control_Parent)
 

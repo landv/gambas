@@ -188,6 +188,7 @@ void CWIDGET_reset_color(CWIDGET *_object);
 GB_COLOR CWIDGET_get_background(CWIDGET *_object);
 GB_COLOR CWIDGET_get_foreground(CWIDGET *_object);
 int CWIDGET_get_real_background(CWIDGET *_object);
+//int CWIDGET_get_real_foreground(CWIDGET *_object, bool return_default);
 void *CWIDGET_get_parent(void *_object);
 int CWIDGET_get_handle(void *_object);
 bool CWIDGET_is_visible(void *_object);

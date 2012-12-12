@@ -29,6 +29,7 @@
 gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 {
 	gint x, y, w, h;
+	gColor color;
 
 	x = wid->allocation.x;
 	y = wid->allocation.y;
@@ -40,7 +41,13 @@ gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 		cairo_t *cr;
 		
 		cr = gdk_cairo_create(wid->window);
-		gt_cairo_set_source_color(cr, gDesktop::lightfgColor());
+		
+		color = data->foreground();
+		if (color == COLOR_DEFAULT)
+			color = gDesktop::lightfgColor();
+		
+		gt_cairo_set_source_color(cr, color);
+		
 		cairo_rectangle(cr, e->area.x, e->area.y, e->area.width, e->area.height);
 		cairo_fill(cr);
 		cairo_destroy(cr);
