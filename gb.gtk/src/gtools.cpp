@@ -337,11 +337,6 @@ gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 	GdkPixbuf *buf = NULL;
 	gPicture *pic;
 	
-	ow = w;
-	oh = h;
-	
-	dx = dy = 0;
-	
 	gdk_window_get_geometry(win, 0, 0, &ww, &hh, 0);
 	
 	if (w <= 0 || h <= 0)
@@ -349,6 +344,10 @@ gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 		w = ww;
 		h = hh;
 	}
+	
+	dx = dy = 0;
+	ow = w;
+	oh = h;
 	
 	if (x < 0)
 	{
