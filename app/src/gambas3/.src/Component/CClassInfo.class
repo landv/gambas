@@ -456,6 +456,13 @@ Private Sub SubstPart(sHtml As String, sPart As String, bShow As Boolean) As Str
   
 End
 
+Private Sub GetSymbolLink(hSymbol As CSymbolInfo, sName As String) As String
+  
+  Return Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sName)
+  
+End
+
+
 Public Sub GetHelpHTML() As String
   
   Dim sClass As String = Name
@@ -469,11 +476,12 @@ Public Sub GetHelpHTML() As String
   Dim hArray As String[]
   Dim sParent As String
   Dim sTitle As String
+  Dim bHasDynamic As Boolean
 
   sHelp = Markup.Convert(GetHelpMarkup())
   
   hClassInfo = CComponent.GetClassDescription(sClass)
-  cClassSymbols = CComponent.GetClassSymbols(sClass)
+  cClassSymbols = hClassInfo.Symbols 'CComponent.GetClassSymbols(sClass)
   
   'If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent ????? Do not modify the class info!
   
@@ -484,11 +492,17 @@ Public Sub GetHelpHTML() As String
       sSymbolName = hSymbol.Name
       If Left(sSymbolName) = ":" Then sSymbolName = Mid$(sSymbolName, 2)
       
-      sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sSymbolName)
+      sComp = GetSymbolLink(hSymbol, sSymbolName)
       
       If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
 
-      If IsLetter(hSymbol.Kind) And If hSymbol.Kind = UCase(hSymbol.Kind) Then sComp = "<b>" & sComp & "</b>"
+      If IsLetter(hSymbol.Kind) Then
+        If hSymbol.Kind = UCase(hSymbol.Kind) Then 
+          sComp = "<b>" & sComp & "</b>"
+        Else
+          bHasDynamic = True
+        Endif
+      Endif
 
       If hSymbol.Class = sClass Then
         
@@ -561,9 +575,39 @@ Public Sub GetHelpHTML() As String
     Endif
     
   Endif
+
+  If Not bHasDynamic Then sInfo &= ("This class is static.")
   
-  If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
-  If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
+  If hClassInfo.AutoCreatable Then sInfo &= ("This class can be used like an object by creating an hidden instance on demand.") & "<br>"
+  If hClassInfo.Creatable Then 
+    hSymbol = cClassSymbols["_new"]
+    If hSymbol Then
+      sInfo &= Subst(("This class is &1."), GetSymbolLink(hSymbol, ("creatable")))
+    Else
+      sInfo &= Subst(("This class is &1."), ("creatable"))
+    Endif
+    sInfo &= "<br>"
+  Endif
+  
+  hSymbol = cClassSymbols["_call"]
+  If hSymbol Then
+    sInfo &= Subst(("This class can be used as a &1."), GetSymbolLink(hSymbol, ("function"))) & "<br>"
+  Endif
+  
+  If cClassSymbols.Exist("_put") Then
+    If cClassSymbols.Exist("_get") Then
+      sInfo &= Subst(("This class acts like a &1 / &2 array."), GetSymbolLink(cClassSymbols["_get"], ("read")), GetSymbolLink(cClassSymbols["_put"], ("write"))) & "<br>"
+    Else
+      sInfo &= Subst(("This class acts like a &1 array."), GetSymbolLink(cClassSymbols["_put"], ("write-only"))) & "<br>"
+    Endif
+  Else If cClassSymbols.Exist("_get") Then
+    sInfo &= Subst(("This class acts like a &1 array."), GetSymbolLink(cClassSymbols["_get"], ("read-only"))) & "<br>"
+  Endif
+  
+  hSymbol = cClassSymbols["_next"]
+  If hSymbol Then
+    sInfo &= Subst(("This class is &1 with the FOR EACH keyword."), GetSymbolLink(hSymbol, ("enumerable"))) & "<br>"
+  Endif
   
   If Not Component Or If Component = CComponent.PROJECT_NAME Then sWhere = "gambas://project/" & sClass & "?showfile"
   sTitle = sClass

@@ -739,6 +739,7 @@ typedef
 		int64_t _reserved;
 		intptr_t _reserved2;
 		intptr_t _reserved3;
+		void *tag;
 		}
 	GB_STREAM_BASE;
 

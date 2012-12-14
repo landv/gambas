@@ -381,7 +381,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     If hClass Then 
       If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not CComponent.All[hClass.Component].Library Then
         sUrl = hClass.GetHelpURL()
-      Else If hClass.Help Then
+      Else 'If hClass.Help Then
         sHtml = hClass.GetHelpHTML()
         sUrl = hClass.Component & "-" & sSymbol
       Endif

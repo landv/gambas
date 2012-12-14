@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  main.c
+	main.c
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+	(c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -43,31 +43,32 @@
 #define P_POS  ((BZ2_STREAM*)stream)->info->pos
 
 
-typedef struct
-{
-	uint8_t mode;
-	uint8_t eof;
-	BZFILE  *bz;
-	FILE    *file;
-	int64_t pos;
-	
-	
-} handleInfo; 
+typedef 
+	struct
+	{
+		uint8_t mode;
+		uint8_t eof;
+		BZFILE  *bz;
+		FILE    *file;
+		int64_t pos;
+	} 
+	handleInfo; 
 
-typedef struct
-{
-    GB_STREAM_DESC *desc;
-    int _reserved;
-    handleInfo *info;
-
-} BZ2_STREAM;
+typedef 
+	struct
+	{
+		GB_STREAM_BASE base;
+		handleInfo *info;
+	} 
+	BZ2_STREAM;
 
 GB_INTERFACE GB EXPORT;
 COMPRESS_INTERFACE COMPRESSION EXPORT;
 
 static COMPRESS_DRIVER _driver;
 
-GB_STREAM_DESC BZStream = {
+GB_STREAM_DESC BZStream = 
+{
 	open: BZ_stream_open,
 	close: BZ_stream_close,
 	read: BZ_stream_read,
@@ -82,20 +83,20 @@ GB_STREAM_DESC BZStream = {
 
 /*****************************************************************************
 
-  The driver interface
+	The driver interface
 
 *****************************************************************************/
 
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
- int max_compression(void)
+int max_compression(void)
 
- It must return the maximum compression level that user can
- assign, for instance gzip (in this moment) provides ten values, from zero to
- 9 , beeing 9 the best compression level (more compression),
- so the driver here returns '9'
- *********************************************************************************/
+It must return the maximum compression level that user can
+assign, for instance gzip (in this moment) provides ten values, from zero to
+9 , beeing 9 the best compression level (more compression),
+so the driver here returns '9'
+*********************************************************************************/
 
 static int BZ2_max_compression(void)
 {
@@ -103,52 +104,52 @@ static int BZ2_max_compression(void)
 }
 
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
- int min_compression(void)
+int min_compression(void)
 
- It must return the minimum compression level that user can
- assign, for instance gzip (in this moment) provides ten values, from zero to
- 9 , beeing 0 the worst compression level (no compression at all),
- so the driver here returns '0'
- *********************************************************************************/
+It must return the minimum compression level that user can
+assign, for instance gzip (in this moment) provides ten values, from zero to
+9 , beeing 0 the worst compression level (no compression at all),
+so the driver here returns '0'
+*********************************************************************************/
 static int BZ2_min_compression(void)
 {
 	return 1;
 }
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
- int default_compression(void)
+int default_compression(void)
 
- It must return the default compression level, that is, the value to send when
- Compression object methods are called without the optional parameter 'Level'.
- In this gzip wrapper, for example, this value is -1
- *********************************************************************************/
+It must return the default compression level, that is, the value to send when
+Compression object methods are called without the optional parameter 'Level'.
+In this gzip wrapper, for example, this value is -1
+*********************************************************************************/
 static int BZ2_default_compression(void)
 {
 	return 6;
 }
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
- void c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+void c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
 
- It is called to compress a String and return it compressed. The object will
- pass the following values:
+It is called to compress a String and return it compressed. The object will
+pass the following values:
 
- target = NULL
- lent   = 0
- source = a pointer to the original string
- len    = length of the original string
- level  = compression level
+target = NULL
+lent   = 0
+source = a pointer to the original string
+len    = length of the original string
+level  = compression level
 
- You will never receive a zero lenght string, nor a erroneus 'level' value
+You will never receive a zero lenght string, nor a erroneus 'level' value
 
- The function must store the compressed string in 'target', and its length in 'lent',
- or NULL and zero if it fails by any reason
+The function must store the compressed string in 'target', and its length in 'lent',
+or NULL and zero if it fails by any reason
 
- *********************************************************************************/
+*********************************************************************************/
 static void BZ2_c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
 {
 	*target=NULL;
@@ -166,24 +167,24 @@ static void BZ2_c_String(char **target,unsigned long *lent,char *source,unsigned
 
 }
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
- void u_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+void u_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
 
- It is called to decompress a String and return it decompressed. The object will
- pass the following values:
+It is called to decompress a String and return it decompressed. The object will
+pass the following values:
 
- target = NULL
- lent   = 0
- source = a pointer to the original string
- len    = length of the original string
- level  = compression level
+target = NULL
+lent   = 0
+source = a pointer to the original string
+len    = length of the original string
+level  = compression level
 
-  You will never receive a zero lenght string, nor a erroneus 'level' value
+	You will never receive a zero lenght string, nor a erroneus 'level' value
 
- The function must store the decompressed string in 'target', and its length in 'lent',
- or NULL and zero if it fails by any reason
- *********************************************************************************/
+The function must store the decompressed string in 'target', and its length in 'lent',
+or NULL and zero if it fails by any reason
+*********************************************************************************/
 static void BZ2_u_String(char **target,unsigned long *lent,char *source,unsigned long len)
 {
 	int myok=BZ_OUTBUFF_FULL;
@@ -233,19 +234,19 @@ static void BZ2_u_String(char **target,unsigned long *lent,char *source,unsigned
 
 }
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
 static void c_File(char *source,char *target,int level)
 
- It is called to compress a file. The object will pass the following values:
+It is called to compress a file. The object will pass the following values:
 
 
- source = path of the file to be compressed
- target = path of the new compressed file to create
- level  = compression level
+source = path of the file to be compressed
+target = path of the new compressed file to create
+level  = compression level
 
-  You will never receive a erroneus 'level' value
- *********************************************************************************/
+	You will never receive a erroneus 'level' value
+*********************************************************************************/
 static void BZ2_c_File(char *source,char *target,int level)
 {
 	FILE *src;
@@ -306,19 +307,19 @@ static void BZ2_c_File(char *source,char *target,int level)
 }
 
 /*********************************************************************************
- The Driver must provide this function:
+The Driver must provide this function:
 
 static void u_File(char *source,char *target,int level)
 
- It is called to decompress a file. The object will pass the following values:
+It is called to decompress a file. The object will pass the following values:
 
 
- source = path of the file to be decompressed
- target = path of the new decompressed file to create
- level  = compression level
+source = path of the file to be decompressed
+target = path of the new decompressed file to create
+level  = compression level
 
-  You will never receive a erroneus 'level' value
- *********************************************************************************/
+	You will never receive a erroneus 'level' value
+*********************************************************************************/
 static void BZ2_u_File(char *source,char *target)
 {
 	BZFILE *src;
@@ -378,16 +379,16 @@ static void BZ2_u_File(char *source,char *target)
 	fclose(dst);
 }
 
-static void BZ2_c_Open(char *path,int level,GB_STREAM *stream)
+static void BZ2_c_Open(char *path,int level,BZ2_STREAM *stream)
 {
 	int bzerror;
 
-	GB.Alloc( POINTER(&((BZ2_STREAM*)stream)->info),sizeof(handleInfo) );
+	GB.Alloc(POINTER(&stream->info), sizeof(handleInfo) );
 
 	P_FILE=fopen(path,"wb");
 	if (!P_FILE)
 	{
-		GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
+		GB.Free(POINTER(&stream->info));
 		GB.Error("Unable to open file");
 		return;
 	}
@@ -406,8 +407,7 @@ static void BZ2_c_Open(char *path,int level,GB_STREAM *stream)
 
 	P_EOF=0;
 	P_POS=0;
-	stream->desc=&BZStream;
-	
+	stream->base.desc = &BZStream;
 }
 
 static void BZ2_u_Open(char *path,GB_STREAM *stream)
@@ -441,7 +441,7 @@ static void BZ2_u_Open(char *path,GB_STREAM *stream)
 }
 
 /*************************************************************************
- Stream related stuff
+Stream related stuff
 **************************************************************************/
 /* not allowed stream methods */
 static int BZ_stream_lof(GB_STREAM *stream, int64_t *len){return -1;}
@@ -534,48 +534,48 @@ static int BZ_stream_getchar(GB_STREAM *stream, char *buffer)
 
 
 /****************************************************************************
- This array of functions defines what functions the compression component
- must call to perform its actions
- ****************************************************************************/
+This array of functions defines what functions the compression component
+must call to perform its actions
+****************************************************************************/
 static COMPRESS_DRIVER _driver =
 {
-    "bzlib2",
+		"bzlib2",
 
-    (void*)BZ2_max_compression,
-    (void*)BZ2_min_compression,
-    (void*)BZ2_default_compression,
+		(void*)BZ2_max_compression,
+		(void*)BZ2_min_compression,
+		(void*)BZ2_default_compression,
 
-    {
-    	(void*)BZ2_c_String,
+		{
+			(void*)BZ2_c_String,
 	(void*)BZ2_c_File,
 	(void*)BZ2_c_Open,
 	(void*)BZ_stream_close,
-    },
+		},
 
-    {
-    	(void*)BZ2_u_String,
+		{
+			(void*)BZ2_u_String,
 	(void*)BZ2_u_File,
 	(void*)BZ2_u_Open,
 	(void*)BZ_stream_close
-    }
+		}
 
 };
 /*****************************************************************************
 
-  The component entry and exit functions.
+	The component entry and exit functions.
 
 *****************************************************************************/
 
 int EXPORT GB_INIT(void)
 {
-  /*************************************************************************
-   When this component is loaded by Gambas runtime, it 'informs' to the
-   compression component what functions must it call to perform its actions
-   *************************************************************************/
-  GB.GetInterface("gb.compress", COMPRESS_INTERFACE_VERSION, &COMPRESSION);
-  COMPRESSION.Register(&_driver);
+	/*************************************************************************
+	When this component is loaded by Gambas runtime, it 'informs' to the
+	compression component what functions must it call to perform its actions
+	*************************************************************************/
+	GB.GetInterface("gb.compress", COMPRESS_INTERFACE_VERSION, &COMPRESSION);
+	COMPRESSION.Register(&_driver);
 
-  return 0;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

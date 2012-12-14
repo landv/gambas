@@ -34,41 +34,89 @@ msgstr ""
 msgid "Next bookmark"
 msgstr ""
 
-#: CClassInfo.class:534 FMain.form:1374 FProperty.form:23
+#: CClassInfo.class:548 FMain.form:1374 FProperty.form:23
 msgid "Properties"
 msgstr ""
 
-#: CClassInfo.class:535
+#: CClassInfo.class:549
 msgid "Variables"
 msgstr ""
 
-#: CClassInfo.class:536
+#: CClassInfo.class:550
 msgid "Methods"
 msgstr ""
 
-#: CClassInfo.class:537
+#: CClassInfo.class:551
 msgid "Events"
 msgstr ""
 
-#: CClassInfo.class:565
+#: CClassInfo.class:579
+msgid "This class is static."
+msgstr ""
+
+#: CClassInfo.class:581
 msgid ""
 "This class can be used like an object by creating an hidden instance on "
-"demand.<br>"
+"demand."
 msgstr ""
 
-#: CClassInfo.class:566
-msgid "This class is creatable.<br>"
+#: CClassInfo.class:585
+msgid "This class is &1."
 msgstr ""
 
-#: CClassInfo.class:590
+#: CClassInfo.class:585
+msgid "creatable"
+msgstr ""
+
+#: CClassInfo.class:594
+msgid "This class can be used as a &1."
+msgstr ""
+
+#: CClassInfo.class:594
+msgid "function"
+msgstr ""
+
+#: CClassInfo.class:599
+msgid "This class acts like a &1 / &2 array."
+msgstr ""
+
+#: CClassInfo.class:599
+msgid "read"
+msgstr ""
+
+#: CClassInfo.class:599
+msgid "write"
+msgstr ""
+
+#: CClassInfo.class:601
+msgid "This class acts like a &1 array."
+msgstr ""
+
+#: CClassInfo.class:601
+msgid "write-only"
+msgstr ""
+
+#: CClassInfo.class:604 Project.module:1560
+msgid "read-only"
+msgstr ""
+
+#: CClassInfo.class:609
+msgid "This class is &1 with the FOR EACH keyword."
+msgstr ""
+
+#: CClassInfo.class:609
+msgid "enumerable"
+msgstr ""
+
+#: CClassInfo.class:634
 msgid "This class inherits &1."
 msgstr ""
 
-#: CClassInfo.class:605 MTheme.module:6
+#: CClassInfo.class:649 MTheme.module:6
 msgid "Symbols"
 msgstr ""
 
-#: CClassInfo.class:606
+#: CClassInfo.class:650
 msgid "Constants"
 msgstr ""
 
@@ -372,7 +420,7 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponent.class:1485 FInfo.class:67
+#: CComponent.class:1489 FInfo.class:67
 msgid "Classes"
 msgstr ""
 
@@ -499,7 +547,7 @@ msgstr ""
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
 #: FSaveProjectAs.form:76 FSearch.class:865 FSelectExtraFile.form:43
 #: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
-#: FTextEditor.class:596 FTranslate.class:557 Project.module:468
+#: FTextEditor.class:596 FTranslate.class:558 Project.module:468
 msgid "Cancel"
 msgstr ""
 
@@ -835,7 +883,7 @@ msgstr ""
 
 #: FConnectionEditor.form:109 FEditor.form:318 FForm.form:406
 #: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:62
-#: FTextEditor.form:231 FTranslate.class:653
+#: FTextEditor.form:231 FTranslate.class:654
 msgid "Reload"
 msgstr ""
 
@@ -932,7 +980,7 @@ msgid "Export..."
 msgstr ""
 
 #: FConnectionEditor.form:465 FForm.form:257 FMain.class:209
-#: FNewConnection.class:325 FOption.class:855 FTranslate.class:557
+#: FNewConnection.class:325 FOption.class:855 FTranslate.class:558
 msgid "Delete"
 msgstr ""
 
@@ -1072,7 +1120,7 @@ msgstr ""
 msgid "CSV files"
 msgstr ""
 
-#: FConnectionEditor.class:1421 FTranslate.class:1206
+#: FConnectionEditor.class:1421 FTranslate.class:1207
 msgid "All files"
 msgstr ""
 
@@ -1403,7 +1451,7 @@ msgstr ""
 msgid "Show search window"
 msgstr ""
 
-#: FDebugInfo.form:305 FSearch.class:486 FTranslate.class:518
+#: FDebugInfo.form:305 FSearch.class:486 FTranslate.class:519
 msgid "Search string cannot be found."
 msgstr ""
 
@@ -4328,67 +4376,67 @@ msgstr ""
 msgid "Translation files"
 msgstr ""
 
-#: FTranslate.class:284
+#: FTranslate.class:285
 msgid "Cannot read translation file for language '&1'"
 msgstr ""
 
-#: FTranslate.class:445
+#: FTranslate.class:446
 msgid "Cannot save translation."
 msgstr ""
 
-#: FTranslate.class:557
+#: FTranslate.class:558
 msgid "Do you really want to delete this translation ?"
 msgstr ""
 
-#: FTranslate.class:653
+#: FTranslate.class:654
 msgid "Do you really want to reload this translation ?"
 msgstr ""
 
-#: FTranslate.class:667
+#: FTranslate.class:668
 msgid "Export a translation"
 msgstr ""
 
-#: FTranslate.class:855
+#: FTranslate.class:856
 msgid "Please select the translation file to import."
 msgstr ""
 
-#: FTranslate.class:893
+#: FTranslate.class:894
 msgid "No translation were picked up."
 msgstr ""
 
-#: FTranslate.class:895
+#: FTranslate.class:896
 msgid "One translation was picked up."
 msgstr ""
 
-#: FTranslate.class:897
+#: FTranslate.class:898
 msgid "&1 translations were picked up."
 msgstr ""
 
-#: FTranslate.class:906
+#: FTranslate.class:907
 msgid "Cannot import translation file."
 msgstr ""
 
-#: FTranslate.class:956
+#: FTranslate.class:957
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr ""
 
-#: FTranslate.class:969
+#: FTranslate.class:970
 msgid "Everything seems to be correct."
 msgstr ""
 
-#: FTranslate.class:992
+#: FTranslate.class:993
 msgid "&1 strings. Everything is translated!"
 msgstr ""
 
-#: FTranslate.class:994
+#: FTranslate.class:995
 msgid "&1 strings. One is not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:996
+#: FTranslate.class:997
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:1121
+#: FTranslate.class:1122
 msgid "The 'msgmerge' command has failed"
 msgstr ""
 
@@ -5935,10 +5983,6 @@ msgstr ""
 
 #: Project.module:1393
 msgid "The following classes have circular inheritance:"
-msgstr ""
-
-#: Project.module:1560
-msgid "read-only"
 msgstr ""
 
 #: Project.module:1562

@@ -254,6 +254,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   $bIgnore = False
 
   If cvwTranslate.MoveTo(sCurrent) Then
+    Wait ' let the columnview be sorted
     cvwTranslate.MoveFirst
   Endif
   Try cvwTranslate.Item.Selected = True

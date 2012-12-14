@@ -26,8 +26,8 @@ Public Editor As Editor '' The current Editor control.
 Public Scan As Collection '' The result of the class symbol analyze.
 Public ParentClass As String '' The parent class.
 Public ParentComponent As String '' The component of the parent class.
-Public AutoCreatable As Boolean '' If the class has "[CREATESTATIC|CREATE STATIC]".
-Public NotCreatable As Boolean '' If the class has "[CREATEPRIVATE|CREATE PRIVATE]".
+Public AutoCreatable As Boolean '' If the class has `CREATE STATIC`.
+Public NotCreatable As Boolean '' If the class has `CREATE PRIVATE`.
 Public Age As Integer '' The text age. It is incremented each time the text is modified
 
 Property Read ReadOnly As Boolean '' If the editor is read-only.

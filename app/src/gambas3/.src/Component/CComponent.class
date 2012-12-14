@@ -1320,6 +1320,8 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
       ScanClass(hPModule, cSymbol, True)
     Endif
     $hDumbClass.Parent = hPModule.ParentClass
+    $hDumbClass.Creatable = False
+    $hDumbClass.AutoCreatable = False
     '$hDumbClass.ParentComponent = hPModule.ParentComponent
   Else If hPClass Then
     cSymbol = hPClass.Scan
@@ -1336,6 +1338,8 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
       ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
     Endif
     $hDumbClass.Parent = hPClass.ParentClass
+    $hDumbClass.Creatable = Not hPClass.NotCreatable
+    $hDumbClass.AutoCreatable = hPClass.AutoCreatable
   Endif
   
   $hDumbClass.Symbols = cSymbol

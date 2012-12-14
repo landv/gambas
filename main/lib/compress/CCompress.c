@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CCompress.c
+	CCompress.c
 
-  (c) 2003-2004 Daniel Campos Fern�dez <danielcampos@netcourrier.com>
+	(c) 2003-2004 Daniel Campos Fern�dez <danielcampos@netcourrier.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -42,31 +42,13 @@
 				return; \
 			} 
 
-
-
-
 //*************************************************************************
 //############################### COMPRESS ################################
 //*************************************************************************
+
 /*************************************************
- Class "Constructor"
- *************************************************/
-BEGIN_METHOD_VOID(CCOMPRESS_init)
-
-	
-
-END_METHOD
-/*************************************************
- Class "Destructor"
- *************************************************/
-BEGIN_METHOD_VOID(CCOMPRESS_exit)
-
-
-
-END_METHOD
-/*************************************************
- Gambas object "Constructor"
- *************************************************/
+Gambas object "Constructor"
+*************************************************/
 BEGIN_METHOD_VOID(CCOMPRESS_new)
 
 	THIS->driver=NULL;
@@ -74,8 +56,8 @@ BEGIN_METHOD_VOID(CCOMPRESS_new)
 
 END_METHOD
 /*************************************************
- Gambas object "Destructor"
- *************************************************/
+Gambas object "Destructor"
+*************************************************/
 BEGIN_METHOD_VOID(CCOMPRESS_free)
 
 	
@@ -180,30 +162,27 @@ BEGIN_PROPERTY ( COMPRESS_Type )
 END_PROPERTY
 
 /*******************************************************************
- Interface declaration
- *******************************************************************/
+Interface declaration
+*******************************************************************/
 GB_DESC CCompressDesc[] =
 {
 
-  GB_DECLARE("Compress", sizeof(CCOMPRESS)),
-  
-  GB_INHERITS("Stream"),
-  
-  GB_PROPERTY_READ("Min","i",COMPRESS_Min),
-  GB_PROPERTY_READ("Max","i",COMPRESS_Max),
-  GB_PROPERTY_READ("Default","i",COMPRESS_Default),
-  GB_PROPERTY("Type","s",COMPRESS_Type),
+	GB_DECLARE("Compress", sizeof(CCOMPRESS)),
+	
+	GB_INHERITS("Stream"),
+	
+	GB_PROPERTY_READ("Min","i",COMPRESS_Min),
+	GB_PROPERTY_READ("Max","i",COMPRESS_Max),
+	GB_PROPERTY_READ("Default","i",COMPRESS_Default),
+	GB_PROPERTY("Type","s",COMPRESS_Type),
 
-  GB_STATIC_METHOD("_init", NULL, CCOMPRESS_init, NULL),
-  GB_STATIC_METHOD("_exit", NULL, CCOMPRESS_exit, NULL),
-  GB_METHOD("_new", NULL, CCOMPRESS_new,NULL),
-  GB_METHOD("_free", NULL, CCOMPRESS_free, NULL),
-  
-  GB_METHOD("String","s",CCOMPRESS_String,"(Source)s[(Level)i(AllowGrow)b]"),
-  GB_METHOD("File",NULL,CCOMPRESS_File,"(Source)s(Target)s[(Level)i]"),
-  GB_METHOD("Open",NULL,CCOMPRESS_Open,"(Path)s[(Level)i]"),
-  
-    
-  GB_END_DECLARE
+	GB_METHOD("_new", NULL, CCOMPRESS_new,NULL),
+	GB_METHOD("_free", NULL, CCOMPRESS_free, NULL),
+	
+	GB_METHOD("String","s",CCOMPRESS_String,"(Source)s[(Level)i(AllowGrow)b]"),
+	GB_METHOD("File",NULL,CCOMPRESS_File,"(Source)s(Target)s[(Level)i]"),
+	GB_METHOD("Open",NULL,CCOMPRESS_Open,"(Path)s[(Level)i]"),
+		
+	GB_END_DECLARE
 };
 
