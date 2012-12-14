@@ -783,14 +783,21 @@ int gv4l2_resize( CWEBCAM * _object , int width , int height )
 		return 0;
 	}
 	gv4l2_uninit_device( THIS );
-	//
-	//	See no reason to close it too ...
-	//
+
+	if( close(THIS->io  ) == -1 ) {
+		gv4l2_debug("error closing device");
+	}
+
+	if ( !gv4l2_open_device( THIS->device )){
+	  GB.Error("Unable to reopen the device");
+		return 0;
+	}
+	
 	if( !gv4l2_init_device(THIS , width , height ) ) {
 		GB.Error("Unable to initialise the device");
 		return 0;
 	}
-	//
+	
 	gv4l2_start_capture( THIS );        
 	return 1;
 }
