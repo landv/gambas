@@ -8,7 +8,6 @@ Private $aVisualisation As MediaControl[]
 
 Private $fPos As Float
 Private $fLength As Float
-Private $sInfo As String
 Private $iVisualisation As Integer
 Private $fVolume As Float
 Private $bSuspend As Boolean
@@ -114,10 +113,6 @@ End
 
 Public Sub Form_Open()
 
-  Dim sButton As String
-  Dim hButton As CButton
-  Dim hPanel As Panel
-  
   MakeMediaPlayer
   
   FControl.Show
@@ -384,17 +379,24 @@ End
 Public Sub MediaPlayer_Tag(TagList As MediaTagList)
   
   Dim sTag As String
+  Dim vTag As Variant
+  Dim I As Integer
   
   For Each sTag In TagList.Tags
-    FTags.AddTag(sTag, Str(TagList[sTag]))
+    vTag = TagList[sTag]
+    If TypeOf(vTag) = gb.Object And If vTag Is Array Then
+      For I = 0 To vTag.Max
+        FTags.AddTag(sTag & "[" & CStr(I) & "]", Str(vTag[I]))
+      Next
+    Else
+      FTags.AddTag(sTag, Str(vTag))
+    Endif
   Next
   
 End
 
 
 Private Sub FadeOut()
-  
-  Dim I As Integer
   
   $fVolume = $hPlayer.Audio.Volume
   
@@ -408,8 +410,6 @@ Private Sub FadeOut()
 End
 
 Private Sub FadeIn()
-  
-  Dim I As Integer
   
   Do
     Debug $hPlayer.Audio.Volume 
