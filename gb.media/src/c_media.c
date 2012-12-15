@@ -83,6 +83,7 @@ static GB_TYPE to_gambas_type(const GValue *value)
 				return GB_T_DATE;
 			else
 			{
+				fprintf(stderr, "gb.media: warning: unsupported data type: %s\n", G_VALUE_TYPE_NAME(value));
 				//GB.Error("Unsupported property datatype"); 
 				return GB_T_NULL;
 			}
@@ -189,7 +190,7 @@ static void return_value(const GValue *value)
 			}
 			else
 			{
-				fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", g_type_name(G_VALUE_TYPE(value)));
+				fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", G_VALUE_TYPE_NAME(value));
 				GB.ReturnNull();
 			}
 	}
@@ -324,7 +325,8 @@ BEGIN_METHOD(MediaTagList_get, GB_STRING name)
 		type = to_gambas_type(value);
 		if (type == GB_T_NULL)
 		{
-			GB.Error("Unsupported property datatype");
+			GB.ReturnNull();
+			GB.ReturnConvVariant();
 			return;
 		}
 		
