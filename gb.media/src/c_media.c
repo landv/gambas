@@ -323,14 +323,18 @@ BEGIN_METHOD(MediaTagList_get, GB_STRING name)
 		value = gst_tag_list_get_value_index(tags, name, 0);
 		type = to_gambas_type(value);
 		if (type == GB_T_NULL)
+		{
+			GB.Error("Unsupported property datatype");
 			return;
+		}
 		
 		GB.Array.New(&array, type, nvalue);
 		for (i = 0; i < nvalue; i++)
 		{
 			value = gst_tag_list_get_value_index(tags, name, i);
 			to_gambas_value(value, &gvalue);
-			GB.Store(type, GB.Array.Get(array, i), &gvalue);
+			GB.Store(type, &gvalue, GB.Array.Get(array, i));
+			GB.ReleaseValue(&gvalue);
 		}
 		
 		GB.ReturnObject(array);
