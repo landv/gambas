@@ -632,6 +632,8 @@ IMPLEMENT_PROPERTY_FLOAT(Paint_MiterLimit, MiterLimit)
 
 BEGIN_PROPERTY(Paint_Brush)
 
+	CHECK_DEVICE();
+	
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->brush);
 	else
@@ -654,6 +656,8 @@ BEGIN_PROPERTY(Paint_BrushOrigin)
 
 	float x, y;
 	
+	CHECK_DEVICE();
+
 	if (READ_PROPERTY)
 	{
 		PAINT->BrushOrigin(THIS, FALSE, &x, &y);
@@ -787,6 +791,8 @@ BEGIN_METHOD(Paint_Polygon, GB_OBJECT points)
 	GB_ARRAY points = VARG(points);
 	int i, n;
 	double *p;
+	
+	CHECK_DEVICE();
 	
 	if (!points)
 		return;
@@ -1066,6 +1072,8 @@ BEGIN_METHOD(Paint_LinearGradient, GB_FLOAT x0; GB_FLOAT y0; GB_FLOAT x1; GB_FLO
 	GB_ARRAY positions, colors;
 	int nstop;
 	
+	CHECK_DEVICE();
+
 	positions = (GB_ARRAY)VARG(positions);
 	if (GB.CheckObject(positions))
 		return;
@@ -1089,6 +1097,8 @@ BEGIN_METHOD(Paint_RadialGradient, GB_FLOAT cx; GB_FLOAT cy; GB_FLOAT radius; GB
 	GB_ARRAY positions, colors;
 	int nstop;
 	
+	CHECK_DEVICE();
+
 	positions = (GB_ARRAY)VARG(positions);
 	if (GB.CheckObject(positions))
 		return;
