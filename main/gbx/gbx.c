@@ -77,19 +77,6 @@ static void NORETURN my_exit(int ret)
 	exit(ret);
 }
 
-static void NORETURN fatal(const char *msg, ...)
-{
-	va_list args;
-
-	va_start(args, msg);
-	fputs(EXEC_arch ? "gbr" GAMBAS_VERSION_STRING : "gbx" GAMBAS_VERSION_STRING, stderr);
-	fputs(": ", stderr);
-	vfprintf(stderr, msg, args);
-	va_end(args);
-	putc('\n', stderr);
-	my_exit(1);
-} 
-
 static void init(const char *file, int argc, char **argv)
 {
 	COMPONENT_init();
@@ -110,9 +97,9 @@ static void init(const char *file, int argc, char **argv)
 		if (PROJECT_load()) // Call STACK_init()
 		{
 			if (!strcmp(file, "."))
-				fatal("no project file in current directory.");
+				ERROR_fatal("no project file in current directory.");
 			else
-				fatal("no project file in '%s'.", file);
+				ERROR_fatal("no project file in '%s'.", file);
 		}
 
 		if (_run_httpd)
@@ -277,7 +264,7 @@ int main(int argc, char *argv[])
 	if (!EXEC_arch && argc >= 2 && is_option(argv[1], 'e'))
 	{
 		if (argc < 3)
-			fatal("-e option needs an expression.");
+			ERROR_fatal("-e option needs an expression.");
 		
 		TRY
 		{
@@ -332,10 +319,8 @@ int main(int argc, char *argv[])
 		else
 		{
 			if (file)
-			{
-				fatal("too many %s.", EXEC_arch ? "executable files" : "project directories");
-				my_exit(1);
-			}
+				ERROR_fatal("too many %s.", EXEC_arch ? "executable files" : "project directories");
+			
 			file = argv[i];
 			
 			if (EXEC_arch)

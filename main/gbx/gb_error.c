@@ -518,6 +518,19 @@ void THROW_SYSTEM(int err, const char *path)
 	}
 }
 
+void ERROR_fatal(const char *error, ...)
+{
+	va_list args;
+
+	va_start(args, error);
+	fputs(EXEC_arch ? "gbr" GAMBAS_VERSION_STRING : "gbx" GAMBAS_VERSION_STRING, stderr);
+	fputs(": ", stderr);
+	vfprintf(stderr, error, args);
+	va_end(args);
+	putc('\n', stderr);
+	_exit(1);
+}
+
 void ERROR_panic(const char *error, ...)
 {
 	va_list args;
@@ -526,15 +539,14 @@ void ERROR_panic(const char *error, ...)
 
 	fflush(NULL);
 
-	fprintf(stderr, "\n** INTERNAL ERROR **\n** ");
+	fprintf(stderr, "\n** Oops! Internal error! **\n** ");
 	vfprintf(stderr, error, args);
 	putc('\n', stderr);
 	if (ERROR_current->info.code)
 	{
 		ERROR_print();
 	}
-	fprintf(stderr, "** Program aborting. Sorry! :-(\n");
-	/*abort();*/
+	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at gambas@users.sourceforge.net\n");
 	_exit(1);
 }
 
