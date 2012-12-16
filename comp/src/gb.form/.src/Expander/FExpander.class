@@ -146,6 +146,7 @@ End
 
 Public Sub btnExpand_MouseDown()
 
+  If Not Me.Enabled Then Return
   SetHidden(Not $bHidden)
 
 End

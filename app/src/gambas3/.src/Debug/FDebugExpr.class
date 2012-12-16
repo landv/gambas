@@ -74,13 +74,13 @@ Public Sub _new(sExpr As String, sInfo As String)
   $sInfo = sInfo
   
   'Project.Config.Read(ME, $sKey)
-  btnShowAll.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False ]
+  btnShowAll.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False]
   
   If sInfo = YW_DUMMY_INFO Then
     Me.Enabled = False
     Me.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
   Else 
-    If Init(sInfo, True ) Then
+    If Init(sInfo, True) Then
       Me.Close
       Return
     Endif
@@ -508,7 +508,7 @@ Public Sub RefreshInfo(sInfo As String)
     Next 
 
     $cVal.Clear
-    Init(sInfo, False ) 
+    Init(sInfo, False) 
 
 End
 
@@ -715,7 +715,7 @@ End
 Public Sub btnShowAll_Click()
 
   $cVal.Clear
-  Init($sInfo, False )
+  Init($sInfo, False)
 
 End
 

@@ -6,34 +6,10 @@
   Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
-  { Wizard1 Wizard
-    Move(7,14,462,287)
-    Count = 3
-    TextFont = Font["Bold,+4"]
-    ShowIndex = True
-    Index = 0
-    Text = ("First wizard step")
-    { Label1 Label
-      Move(245,14,252,28)
-      Font = Font["Bold"]
-      Text = ("What do you want to do?")
-    }
-    { RadioButton1 RadioButton
-      Move(245,42,168,28)
-      Text = ("Uninstall Windows")
-    }
-    { RadioButton2 RadioButton
-      Move(245,70,168,28)
-      Text = ("Uninstall Mac OSX")
-    }
-    { RadioButton3 RadioButton
-      Move(245,98,168,28)
-      Text = ("Install Linux")
-    }
-    Index = 1
-    Text = ("Étape n°2")
-    Index = 2
-    Text = ("Étape n°3")
-    Index = 0
+  { Expander1 Expander
+    Move(42,35,301,168)
+    Enabled = False
+    Text = ("Expander1")
+    Hidden = True
   }
 }
