@@ -1,95 +1,25 @@
 ' Gambas class file
 
-' ' Gambas class file
-' 
-' Inherits _MapLayer
-' Private $hShapes As New Shapes 
-' Property Shapes As Shapes
-' Property {color} As Integer
-' Private $iColor As Integer = Color.Green
-' Private $hOldBox As Rect
-' Private $iOldZoom As Integer = -1
-' Private $iPadding As Integer
-' Property Padding As Integer
-' 
-' Public Sub _new(Optional hShape As Shapes) 
-'   Dim hMap As Map = Object.Parent(Me)
-'   
-'    '$hOldBox = hMap.BoxPixel
-'   
-'   $hShapes = hShape
-'   
-' End
-' 
-' 
-' 
-' Public Sub _Draw(bRefresh As Boolean)
-'   
-'   Dim hMap As Map = Object.Parent(Me)
-'   
-'   Dim hMapBox As Rect = hMap.BoxPixel
-'   ' 
-'   ' If IsNull($hOldBox) Then $hOldBox = hMap.BoxPixel.Copy()
-'   ' If $iOldZoom = -1 Then $iOldZoom = hMap.Zoom
-'   ' 
-'   ' If $iOldZoom <> hMap.Zoom Then 
-'   ' Print "Zoom Change"
-'   ' Print hMap.Zoom
-'   ' $hOldBox = hMapBox.Copy()
-'   ' $iOldZoom = hMap.Zoom
-'   ' Endif
-'   ' ' Print $hOldBox.x, hMapBox.x
-'   ' ' Print Abs($hOldBox.x - hMapBox.x)
-'   ' If Abs($hOldBox.x - hMapBox.x) > 100 Or If Abs($hOldBox.y - hMapBox.y) > 100 Then 
-'   '   Print "Move"
-'   '   $hOldBox = hMapBox.Copy()
-'   ' Endif
-'   ' If Abs($hOldBox.Width - hMapBox.Width) > 100 Or If Abs($hOldBox.Height - hMapBox.Height) > 100 Then
-'   '    Print "Resize"
-'   '    $hOldBox = hMapBox.Copy()
-'   ' Endif
-'   
-' End
-' 
-' Private Function Shapes_Read() As Shapes
-' 
-'   Return $hShapes
-' 
-' End
-' 
-' Private Sub Shapes_Write(Value As Shapes)
-' 
-'   $hShapes = Value
-' 
-' End
-' 
-' Private Function color_Read() As Integer
-' 
-'   Return $iColor
-' 
-' End
-' 
-' Private Sub color_Write(Value As Integer)
-' 
-'   $iColor = Value
-' 
-' End
-' 
-' Private Function Padding_Read() As Integer
-' 
-'   
-' 
-' End
-' 
-' Private Sub Padding_Write(Value As Integer)
-' 
-'   
-' 
-' End
-' 
-' Public Sub SetPadding(Padding As Integer) As _MapShape
-'   
-'   $iPadding = Padding
-'   Return Me
-'   
-' End
+Inherits _MapLayer
+Private $hShapes As Shapes
+
+
+Public Sub _new()
+  
+  
+  
+End
+
+Public Sub Load()
+  
+  
+  
+  
+End
+
+
+Public Sub Draw()
+  
+  
+  
+End

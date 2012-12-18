@@ -14,6 +14,7 @@ Property SubDomains As String[]
 Private $aPreload As New String[]
 Private $bPreloadMode As Boolean
 Private tmrShowGrade As New Timer As "ShowGrade"
+Private $bIsQuadKey As Boolean
 Event Refresh
 
 Public Sub _new(Optional CacheName As String)
@@ -222,7 +223,6 @@ Private Function MakeDir(Path As String) As Boolean
   If _MapTileCache.Debug Then Debug "Création du Dossier: " & sDir
   
 Catch
-
   
   Return True
   
@@ -281,16 +281,16 @@ Public Sub Client_Finished()
   Dim hTile As _Tile 
   
   'If Not $bPreloadMode Then
-    hTile = $colTiles[Last.Tag]
-    If Not hTile Then Goto Skip
-    Try hTile.Image = Image.Load($sCachePath &/ hTile.Name)
-    If Error Then 
-      'Error "Image illisible  -> " & hTile.Name
-      ReLoadTile(hTile)
-      Return
-    Endif
-    hTile.Status = _Tile.Normal
-    Raise Refresh
+  hTile = $colTiles[Last.Tag]
+  If Not hTile Then Goto Skip
+  Try hTile.Image = Image.Load($sCachePath &/ hTile.Name)
+  If Error Then 
+    'Error "Image illisible  -> " & hTile.Name
+    ReLoadTile(hTile)
+    Return
+  Endif
+  hTile.Status = _Tile.Normal
+  Raise Refresh
   'Endif
 Skip:
   $tmrGet.Trigger
@@ -303,10 +303,10 @@ Public Sub Client_Error()
   Dim hTile As _Tile
   
   'If Not $bPreloadMode Then
-    hTile = $coltiles[Last.Tag]
-    If Not hTile Then Goto Skip
-    Debug "erreur : " & hTile.Name
-    ReLoadTile(hTile)
+  hTile = $coltiles[Last.Tag]
+  If Not hTile Then Goto Skip
+  Debug "erreur : " & hTile.Name
+  ReLoadTile(hTile)
   'Endif
 Skip:
   $tmrGet.Trigger
@@ -337,10 +337,13 @@ End
 Private Function GetTileUrlpt(X As Integer, Y As Integer, Z As Integer) As String
   
   Dim sTemp As String
-  
-  sTemp = Replace($sPattern, "{x}", CStr(X))
-  sTemp = Replace(sTemp, "{y}", CStr(Y))
-  sTemp = Replace(sTemp, "{z}", CStr(Z))
+  If $bIsQuadKey Then
+    sTemp = Replace($sPattern, "{q}", TileToQuadKey(X, Y, Z))
+  Else
+    sTemp = Replace($sPattern, "{x}", CStr(X))
+    sTemp = Replace(sTemp, "{y}", CStr(Y))
+    sTemp = Replace(sTemp, "{z}", CStr(Z))
+  Endif
   sTemp = Replace(sTemp, "{s}", $aSubDomains[Round(Rnd(0, $aSubDomains.Max))])
   Return sTemp
   
@@ -351,6 +354,13 @@ Public Sub SetPattern(sPattern As String, Optional cArgs As Collection)
   Dim s As Variant
   
   $sPattern = sPattern
+  
+  If InStr($sPattern, "{q}") Then 
+    $bIsQuadKey = True
+  Else
+    $bIsQuadKey = False
+  Endif
+  
   If cArgs Then
     For Each s In cArgs
       $sPattern = Replace($sPattern, "{" & cArgs.Key & "}", s)
@@ -381,3 +391,22 @@ Public Function CountActiveClients() As Integer
   Return j
   
 End
+
+Private Function TileToQuadKey(X As Integer, Y As Integer, Z As Integer) As String
+  
+  
+  Dim quadKey As String
+  Dim i, digit, mask As Integer
+
+
+    For i = z To 1 Step -1
+    digit = 0
+    mask = Lsl(1, (i - 1))
+    If (x And mask) <> 0 Then digit += 1
+    If (y And mask) <> 0 Then digit += 2
+    quadKey &= digit
+    
+     Next
+    Return quadKey
+End
+

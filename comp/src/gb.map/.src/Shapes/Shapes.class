@@ -1,134 +1,52 @@
 ' Gambas class file
 
+Const {Point} As Integer = 1
+Const MultiPoint As Integer = 8
+Const Polyline As Integer = 3
+Const Polygon As Integer = 5
 
-Public Box As New RectF
-Public Name As String
-Public Objects As New _Shape[]
-
-Public Sub SaveToKml(sFile As String)
-  
-  Dim hxml As New XmlDocument
-  Dim hPoly As New XmlElement("kml")
-  Dim hOut As XmlElement
-  Dim hLinearRing As XmlElement
-  Dim hCoordinate As XmlElement
-  Dim s As String
-  Dim i, j As Integer
-
-  hxml.Root.TagName = "kml"
-  hxml.Root.SetAttribute("xmlns", "http://www.opengis.net/kml/2.2")
-  For i = 0 To Me.Objects.Max
-    hPoly = New XmlElement("Polygon")
-    hPoly.SetAttribute("id", i) 'Me.Objects[i].Id)
-    hxml.Root.AppendChild(hPoly)
-    hOut = New XmlElement("outerBoundaryIs")
-    hPoly.AppendChild(hOut)
-    'hxmle2 = hxmle
-    hLinearRing = New XmlElement("LinearRing")
-    hOut.AppendChild(hLinearRing)
-    
-    hCoordinate = New XmlElement("Coordinates")
-    s = ""
-    For j = 0 To Me.Objects[i].OuterShape.Points.Max
-      s &= Me.Objects[i].OuterShape.Points[j].x & "," & Me.Objects[i].OuterShape.Points[j].y & ",0\n"
-    Next
-    s &= Me.Objects[i].OuterShape.Points[0].x & "," & Me.Objects[i].OuterShape.Points[0].y & ",0\n"
-    
-    hCoordinate.AppendText(s)
-    hLinearRing.AppendChild(hCoordinate)
-    
-  Next
-  File.Save(sFile, hxml.ToString(True))
-  
+Private iType As New Integer[]
+Private oData As New Object[]
+Private $aBox As New RectF[]
+Public Sub AddMultiPoint(Data As MapPoint[])
+  iType.Add(MultiPoint)
+  oData.Add(Data)
+  $aBox.Add(GetDataBox(data))
 End
 
-Static Public Sub LoadKml(sFile As String) As Shapes
-  Dim hShapes As New Shapes
-  Dim hxml As New XmlDocument
-  Dim hElement As XmlElement
-  Dim hCoordinate As XmlElement
-  Dim hSho As _Shape
-  Dim FP As MapPoint
-  Dim s As String
-  Dim bFirstPoint As Boolean
-
-  hxml.Content = File.Load(sFile)
-  
-  For Each hElement In hxml.GetElementsByTagName("Polygon")
-    hShO = New _Shape
-    hSho.Id = hElement.GetAttribute("id")
-    hCoordinate = hElement.GetChildrenByTagName("Coordinates")[0]
-    bFirstPoint = True
-    For Each s In Split(Replace(hCoordinate.TextContent, " ", "\n"), "\n")
-      If Not s Then Continue
-      fp = New FPoint
-      fp.Lon = Split(s)[0]
-      fp.lat = Split(s)[1]
-      'fp = $prjMapPoint.TransformFp($prjMerc, fp)
-      'fp.y = FP.Y * -1
-      hSho.OuterShape.Points.Add(FP)
-      
-      If bFirstPoint Then 
-        hShO.OuterShape.Bounds = RectF.FromArray([fp.x, fp.y, fp.x, fp.Y])
-        hShO.Box = RectF.FromArray([fp.x, fp.y, fp.x, fp.Y])
-        'If hShO.Box.Y2 = 0 Then Stop
-        bFirstPoint = False
-      Else
-        'Traitement des limites de l'objet
-        hSho.OuterShape.Bounds.X = Min(hSho.OuterShape.Bounds.X, fp.x)
-        hSho.OuterShape.Bounds.Right = Max(hSho.OuterShape.Bounds.Right, fp.x)
-        hSho.OuterShape.Bounds.Y = Min(hSho.OuterShape.Bounds.Y, fp.Y)
-        hSho.OuterShape.Bounds.Bottom = Max(hSho.OuterShape.Bounds.Bottom, fp.Y)
-        'Traitement des limites de box
-        hShO.Box.X = Min(hShO.Box.X, fp.X)
-        hShO.Box.Right = Max(hShO.Box.Right, fp.X)
-        hSho.Box.Y = Min(hShO.Box.Y, fp.Y)
-        hSho.Box.Bottom = Max(hShO.Box.Bottom, fp.Y)
-        'If hShO.Box.y2 = 0 Then Stop
-          'Print "test box : fp.y= " & fp.Y & "        hso.y2= " & hShO.Box.Y2
-      Endif
-      
-    Next
-    'Print "Y2=" & hSho.Box.Y
-    Try hSho.OuterShape.Points.Remove(hSho.OuterShape.Points.Max)
-    
-   hShapes.Objects.Add(hSho)
-  Next
-  Return hShapes
+Public Sub AddPoint(Data As MapPoint)
+    iType.Add(MultiPoint)
+  oData.Add(Data)
+  $aBox.Add(RectF(0, 0, 0, 0))
+  'RectF = GetDataBox(data)
 End
 
-Public Sub LoadFromPacKml(sFile As String)
-  
-  Dim hxml As New XmlDocument
-  Dim hElement As XmlElement
-  Dim hCoordinate As XmlElement
-  Dim hSho As _Shape
-  Dim FP As FPoint
-  Dim s As String
-  
-  hxml.Content = File.Load(sFile)
-  
-  For Each hElement In hxml.GetElementsByTagName("parcelle")
-    hShO = New _Shape
-    'hElement.ChildElements[0].Attributes
-    'hSho.Id = hElement.ChildNodes.Attributes["numero-parcelle"]
-    hCoordinate = hElement.GetChildrenByTagName("coordinates")[0]
-    
-    For Each s In Split(Replace(hCoordinate.TextContent, " ", "\n"), "\n")
-      If Not s Then Continue
-      fp = New FPoint
-      fp.X = Split(s)[0]
-      fp.Y = Split(s)[1]
-      'fp = $prjLamb93.TransformFp($prjMapPoint, fp)
-      hSho.OuterShape.Points.Add(FP)
-      
-    Next
-    
-    Try hSho.OuterShape.Points.Remove(hSho.OuterShape.Points.Max)
-    
-    Me.Objects.Add(hSho)
+Public Sub AddPolyline(Data As MapPoint[])
+    iType.Add(MultiPoint)
+  oData.Add(Data)
+  RectF.Add(GetDataBox(data))
+End
+
+Public Sub AddPolygon(Data As MapPoint[][])
+    iType.Add(MultiPoint)
+  oData.Add(Data)
+  RectF.Add(GetDataBox(data[0]))
+End
+
+
+Private Function GetDataBox(hMapPoints As MapPoint[]) As RectF
+
+  Dim hPoint As MapPoint
+  Dim hRectF As New RectF
+  hRectF.x = hMapPoints[0].Lon
+  hRectF.y = hMapPoints[0].Lat
+  For Each hPoint In hMapPoints
+    hRectF.x = Min(hMapPoints.lon, hRectF.x)
+    hRectF.y = Min(hMapPoints.lat, hRectF.y)
+    hRectF.Right = Max(hMapPoints.lon, hRectF.Right)
+    hRectF.Bottom = Max(hMapPoints.lat, hRectF.Bottom)
   Next
-  
+  Return hRectF
 End
 
 
