@@ -25,6 +25,7 @@ Private $aLayers As New _MapLayer[]
 Private $aLayerNames As New String[]
 Property Preload As Boolean
 Private $bPreload As Boolean
+Public _ShowWithEffect As Boolean
 Event Refresh
 
 Private Function Top_Read() As Integer

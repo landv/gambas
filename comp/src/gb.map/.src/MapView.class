@@ -28,6 +28,7 @@ Public Sub _new()
   $hView = New DrawingArea($hPan) As "View"
   Me.Proxy = $hView
   $hMap.resize($hView.ClientW, $hView.ClientH)
+  $hmap._ShowWithEffect = True
   $hView.Tracking = True
   $hView.Padding = True
   $hView.Background = Color.DarkGray

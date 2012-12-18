@@ -11,19 +11,21 @@ Public $aStack As New String[]
 Private $sPattern As String
 Private $aSubDomains As String[] = ["a", "b", "c"]
 Property SubDomains As String[]
+Property Opacity As Float
+Private $fOpacity As Float = 1
 Private $aPreload As New String[]
 Private $bPreloadMode As Boolean
-Private tmrShowGrade As New Timer As "ShowGrade"
+Private $fGradStep As Float = 0.1
 Private $bIsQuadKey As Boolean
 Event Refresh
-
+Private tmrShow As New Timer As "tmrShow"
 Public Sub _new(Optional CacheName As String)
   
   Dim sTempPath As String
   Dim hClient As HttpClient
   Dim i As Integer
   
-  tmrShowGrade.Delay = 30
+  tmrShow.Delay = 30
   
   If CacheName Then
     sTempPath = $sCachePath &/ CacheName 
@@ -44,6 +46,7 @@ Public Sub _new(Optional CacheName As String)
     'hClient.Timeout = 1
   Next
   
+  
 End
 ' svn checkout --username=gambix svn+ssh://gambas@svn.code.sf.net/p/gambas/code/gambas/trunk
 ' 
@@ -58,7 +61,17 @@ Public Sub Draw()
     hTile = $coltiles[s]
     Select Case hTile.Status
       Case _Tile.Normal
-        Try Draw.Image(hTile.Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
+        If hmap._ShowWithEffect Then
+        Try Paint.DrawImage(hTile.Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y,,, Min(hTile.Opacity, $fOpacity))
+        
+        If hTile.Opacity < $fOpacity Then 
+          hTile.Opacity += $fGradStep
+          Raise Refresh
+        Endif
+        Else
+          Try Paint.DrawImage(hTile.Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y,,, $fOpacity)
+        Endif
+        
         'Draw.Foreground = Color.Green
         'Draw.Text("TileOK", hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
       Case _Tile.Error
@@ -127,6 +140,8 @@ Public Sub Load()
         If Error Then 
           'Error "Image illisible  -> " & hTile.Name
           ReLoadTile(hTile)
+        Else
+          hTile.Opacity = $fOpacity
         Endif
       Else
         hTile.Status = _Tile.Loading
@@ -410,3 +425,16 @@ Private Function TileToQuadKey(X As Integer, Y As Integer, Z As Integer) As Stri
     Return quadKey
 End
 
+
+Private Function Opacity_Read() As Float
+
+  Return $fOpacity
+
+End
+
+Private Sub Opacity_Write(Value As Float)
+
+  $fOpacity = Min(1, Max(0, Value))
+  $fGradStep = $fOpacity / 10
+
+End
