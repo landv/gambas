@@ -213,11 +213,12 @@ Static Private Sub GetDesktop() As String
 End
 
 
-Static Public Sub OpenTerminal(Optional {Dir} As String)
+Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As String)
   
   Dim sExec As String
   Dim sCmd As String
   Dim bNoDir As Boolean
+  Dim Command As String
   
   Select Case GetDesktop()
   
@@ -230,24 +231,30 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
       Else
         sExec = "konsole"
       Endif
+      If Command Then sExec &= " -e " & Shell$(Command)
     Case "GNOME"
       sExec = "gnome-terminal"
       If {Dir} Then
         sExec &= " --working-directory=" & Shell$({Dir})
         bNoDir = True
       Endif
+      If Command Then sExec &= " -x " & Shell$(Command)
     Case "MATE"
       sExec = "mate-terminal"
       If {Dir} Then
         sExec &= " --working-directory=" & Shell$({Dir})
         bNoDir = True
       Endif
+      If Command Then sExec &= " -x " & Shell$(Command)
     Case "XFCE"
       sExec = "Terminal"
+      If Command Then sExec &= " -x " & Shell$(Command)
     Case "LXDE"
       sExec = "lxterminal"
+      If Command Then sExec &= " -e " & Shell$(Command)
     Case Else
       sExec = "xterm"
+      If Command Then sExec &= " -e " & Shell$(Command)
   
   End Select
   

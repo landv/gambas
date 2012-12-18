@@ -1,0 +1,225 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,90,73)
+  Text = ("Project Version Control")
+  Icon = Picture["icon:/small/calendar"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tabVersion TabPanel
+    MoveScaled(1,1,87,66)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Count = 3
+    Index = 0
+    Text = ("Update")
+    { Panel3 VBox
+      MoveScaled(1,1,78,9)
+      Margin = True
+      { Label5 Label
+        MoveScaled(0,0,24,3)
+        Font = Font["Bold"]
+        Text = ("Repository")
+      }
+      { txtRepository Label
+        MoveScaled(0,3,29,4)
+      }
+    }
+    { Separator2 Separator
+      MoveScaled(30,12,14,0)
+    }
+    { gvwInfo GridView
+      MoveScaled(2,14,75,16)
+      Expand = True
+      Border = False
+      Header = GridView.Horizontal
+    }
+    { Separator3 Separator
+      MoveScaled(31,31,19,0)
+    }
+    { Panel4 HBox
+      MoveScaled(3,35,81,26)
+      { Panel2 VBox
+        MoveScaled(1,1,21,24)
+        Spacing = True
+        Margin = True
+        { btnInfo Button
+          MoveScaled(0,0,18,4)
+          Text = ("&Refresh")
+          Picture = Picture["icon:/small/refresh"]
+        }
+        { btnUpdate Button
+          MoveScaled(0,5,18,4)
+          Text = ("&Update")
+          Picture = Picture["icon:/small/down"]
+        }
+        { btnRevert Button
+          MoveScaled(0,10,18,4)
+          Text = ("&Revert...")
+          Picture = Picture["icon:/small/undo"]
+        }
+        { btnCommit Button
+          MoveScaled(0,15,18,4)
+          Text = ("&Commit...")
+          Picture = Picture["icon:/small/ok"]
+        }
+        { btnCleanUp Button
+          MoveScaled(0,20,18,4)
+          Text = ("Clea&n up")
+          Picture = Picture["icon:/small/wizard"]
+        }
+      }
+      { Separator4 Separator
+        MoveScaled(23,5,0,16)
+      }
+      { Panel5 Panel
+        MoveScaled(26,1,53,23)
+        Expand = True
+        Arrangement = Arrange.Vertical
+        Spacing = True
+        Margin = True
+        { Label3 Label
+          MoveScaled(1,1,24,3)
+          Font = Font["Bold"]
+          Text = ("Authentication")
+        }
+        { HBox2 HBox
+          MoveScaled(1,5,51,4)
+          Spacing = True
+          { Label1 Label
+            MoveScaled(0,0,16,4)
+            Text = ("User")
+          }
+          { txtName TextBox
+            MoveScaled(17,0,32,4)
+            Expand = True
+          }
+        }
+        { HBox3 HBox
+          MoveScaled(1,10,51,4)
+          Spacing = True
+          { Label2 Label
+            MoveScaled(0,0,16,4)
+            Text = ("Password")
+          }
+          { txtPassword TextBox
+            MoveScaled(17,0,32,4)
+            Expand = True
+            Password = True
+          }
+        }
+        { chkRemember CheckBox
+          MoveScaled(1,15,23,4)
+          AutoResize = True
+          Text = ("Remember password")
+        }
+      }
+    }
+    Index = 1
+    Text = ("Journal")
+    { panAdded Panel
+      MoveScaled(1,4,78,7)
+      Visible = False
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      Margin = True
+      { PictureBox1 PictureBox
+        MoveScaled(0,0,5,5)
+        Picture = Picture["icon:/large/warning"]
+        AutoResize = True
+      }
+      { TextLabel1 TextLabel
+        MoveScaled(6,0,69,6)
+        Font = Font["Bold"]
+        Expand = True
+        Text = ("Some files are not versioned and should be added manually to the repository.")
+      }
+    }
+    { sepCommit Separator
+      MoveScaled(2,13,35,0)
+    }
+    { HBox4 HBox
+      MoveScaled(4,15,69,4)
+      { btnCut ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Cut")
+        Picture = Picture["icon:/small/cut"]
+      }
+      { btnCopy ToolButton
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Copy")
+        Picture = Picture["icon:/small/copy"]
+      }
+      { btnPaste ToolButton
+        MoveScaled(8,0,4,4)
+        ToolTip = ("Paste")
+        Picture = Picture["icon:/small/paste"]
+      }
+      { btnUndo ToolButton
+        MoveScaled(12,0,4,4)
+        ToolTip = ("Undo")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { btnRedo ToolButton
+        MoveScaled(16,0,4,4)
+        ToolTip = ("Redo")
+        Picture = Picture["icon:/small/redo"]
+      }
+      { btnIndent ToolButton
+        MoveScaled(20,0,4,4)
+        ToolTip = ("Indent")
+        Picture = Picture["icon:/small/indent"]
+      }
+      { btnUnindent ToolButton
+        MoveScaled(24,0,4,4)
+        ToolTip = ("Unindent")
+        Picture = Picture["icon:/small/unindent"]
+      }
+      { tbtClear ToolButton
+        MoveScaled(28,0,4,4)
+        ToolTip = ("Clean up")
+        Picture = Picture["icon:/16/clear"]
+      }
+      { btnLastDesc ToolButton
+        MoveScaled(33,0,22,4)
+        AutoResize = True
+        Text = ("Previous description")
+        Picture = Picture["icon:/small/redo"]
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(21,20,35,0)
+    }
+    { edtChange Editor
+      MoveScaled(3,21,65,21)
+      Font = Font["Monospace"]
+      Expand = True
+      Border = False
+    }
+    Index = 2
+    Text = ("Changes")
+    { edtDiff Editor
+      MoveScaled(1,2,78,48)
+      Font = Font["Monospace"]
+      Expand = True
+      Border = False
+      Highlight = Highlight.Diff
+      ReadOnly = True
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(3,68,54,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(3,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(37,0,15,4)
+      Text = ("Close")
+      Default = True
+    }
+  }
+}

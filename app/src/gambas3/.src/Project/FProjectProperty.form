@@ -36,7 +36,7 @@
   { tabProject TabPanel
     MoveScaled(1,1,91,64)
     Arrangement = Arrange.Vertical
-    Count = 6
+    Count = 5
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -473,49 +473,6 @@
         MoveScaled(66,1,17,4)
         Text = ("&Reset")
         Picture = Picture["icon:/small/undo"]
-      }
-    }
-    Index = 5
-    Text = ("Versioning")
-    { lblDiff Label
-      MoveScaled(1,2,75,4)
-      Font = Font["Bold"]
-      Foreground = Color.TextForeground
-      AutoResize = True
-      Text = ("Changes since last commit")
-      Alignment = Align.TopNormal
-    }
-    { sepCommit Separator
-      MoveScaled(42,7,15,0)
-    }
-    { edtDiff Editor
-      MoveScaled(2,9,43,11)
-      Expand = True
-      Border = False
-      Highlight = Highlight.Diff
-      ReadOnly = True
-    }
-    { Separator7 Separator
-      MoveScaled(32,51,37,0)
-    }
-    { HBox15 HBox
-      MoveScaled(2,53,84,6)
-      Spacing = True
-      Margin = True
-      { btnUpdate Button
-        MoveScaled(0,0,20,4)
-        Text = ("&Update")
-        Picture = Picture["icon:/small/refresh"]
-      }
-      { btnRevert Button
-        MoveScaled(21,0,20,4)
-        Text = ("&Revert...")
-        Picture = Picture["icon:/small/undo"]
-      }
-      { btnCommit Button
-        MoveScaled(42,0,20,4)
-        Text = ("&Commit...")
-        Picture = Picture["icon:/small/ok"]
       }
     }
     Index = 0

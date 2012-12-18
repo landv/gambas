@@ -1,0 +1,293 @@
+' Gambas class file
+
+Private $sChange As String
+Private $sDiff As String
+Private $cInfo As Collection
+
+Private Const DELIM_CHANGE As String = ("This line and the following will be ignored")
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Private Sub RefreshStatus()
+  
+  Inc Application.Busy
+  
+  GetAuthentication
+  
+  $sChange = VersionControl.Status()
+  $sDiff = VersionControl.Diff(Project.Dir)
+  
+  btnCommit.Enabled = $sChange
+  btnRevert.Enabled = btnCommit.Enabled
+  tabVersion[1].Visible = $sChange
+  tabVersion[2].Visible = $sChange
+  
+  $cInfo = VersionControl.Info()
+  
+  txtRepository.Text = $cInfo["url"]
+  
+  gvwInfo.Columns.Count = 3
+  gvwInfo.Rows.Count = 3
+  gvwInfo.Columns[0].Text = ""
+  gvwInfo.Columns[1].Text = ("Local")
+  gvwInfo.Columns[2].Text = ("Remote")
+  gvwInfo.Columns.Width = -1
+  gvwInfo.Rows.Height = gvwInfo.Font.Height + 8
+  
+  Dec Application.Busy
+  
+End
+
+Private Sub GetAuthentication()
+
+  VersionControl.User = txtName.Text
+  VersionControl.Password = txtPassword.Text
+  
+End
+
+Public Sub Form_Open()
+  
+  Settings.Read(Me)
+  
+  txtName.Text = Project.Config["/VersionControl/User"]
+  chkRemember.Value = Project.Config["/VersionControl/RememberPassword", 0]
+  If chkRemember.Value Then txtPassword.Text = Desktop.Passwords[Project.Name &/ "VersionControl"]
+  If Not txtName.Text Then 
+    txtName.SetFocus
+  Else 
+    txtPassword.SetFocus
+  Endif
+  
+  'chkTerminal.Value = Project.Config["/VersionControl/UseTerminal", 0]
+  
+  RefreshStatus
+  
+  edtChange.ReadConfig
+  'edtChange.Flags[Editor.ShowCursorPosition] = True
+  edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
+  
+  edtDiff.ReadConfig
+  edtDiff.Text = $sDiff
+  
+  panAdded.Visible = Project.AddedPaths.Count > 0
+  sepCommit.Visible = panAdded.Visible
+  
+End
+
+
+Public Sub btnCommit_Click()
+
+  Dim sChange As String
+  Dim iPos As Integer
+  Dim bRes As Boolean
+
+  If Not Trim(txtName.Text) Then 
+    Balloon.Warning(("Please enter a user name."), txtName)
+    txtName.SetFocus
+    Return 
+  Endif
+  
+  sChange = Trim(edtChange.Text)
+  Project.Config["/FCommit/LastCommit"] = sChange
+  iPos = InStr(sChange, "---- " & DELIM_CHANGE)
+  If iPos Then sChange = Left(sChange, iPos - 1)
+  
+  If Not Trim(sChange) Then
+    Balloon.Warning(("Please enter the journal."), btnCommit)
+    Return
+  Endif
+
+  Inc Application.Busy
+  bRes = VersionControl.Commit(sChange)
+  If Not bRes Then Project.Refresh
+  Dec Application.Busy
+  
+  If bRes Then
+    Message.Error(("The project could not be committed."))
+  Endif
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnCut_Click()
+
+  edtChange.Cut
+
+End
+
+Public Sub btnCopy_Click()
+
+  edtChange.Copy
+
+End
+
+Public Sub btnPaste_Click()
+
+  edtChange.Paste
+
+End
+
+Public Sub btnUndo_Click()
+
+  edtChange.Undo
+
+End
+
+Public Sub btnRedo_Click()
+
+  edtChange.Redo
+
+End
+
+Public Sub btnIndent_Click()
+
+  edtChange.Indent
+
+End
+
+Public Sub btnUnindent_Click()
+
+  edtChange.Unindent
+
+End
+
+Public Sub tbtClear_Click()
+
+  edtChange.Clear
+  edtChange.SetFocus
+
+End
+
+Public Sub btnLastDesc_Click()
+
+  Dim sLast As String = Project.Config["/FCommit/LastCommit"]
+  
+  If sLast Then edtChange.Text = sLast
+
+End
+
+Public Sub btnUpdate_Click()
+
+  Dim bErr As Boolean
+
+  Inc Application.Busy
+  bErr = VersionControl.Update()
+  Project.Refresh
+  Dec Application.Busy
+
+  If bErr Then  
+    Message.Error(("Unable to update project from repository."))
+  Else
+    Message.Info(("Project has been updated from repository successfully."))
+  Endif
+  
+  RefreshStatus
+    
+End
+
+Public Sub btnRevert_Click()
+
+  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
+
+  Inc Application.Busy
+  
+  VersionControl.Revert
+  Project.Refresh
+  Project.ReloadAll
+  
+  Dec Application.Busy
+
+End
+
+
+Public Sub btnInfo_Click()
+
+  RefreshStatus
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+
+  Project.Config["/VersionControl/User"] = Trim(txtName.Text)
+  Project.Config["/VersionControl/RememberPassword"] = If(chkRemember.Value, 1, 0)
+  
+  If chkRemember.Value Then 
+    Desktop.Passwords[Project.Name &/ "VersionControl"] = txtPassword.Text
+  Else
+    Desktop.Passwords[Project.Name &/ "VersionControl"] = ""
+  Endif
+
+  'Project.Config["/VersionControl/UseTerminal"] = If(chkTerminal.Value, 1, 0)
+
+End
+
+Public Sub btnCleanUp_Click()
+
+  VersionControl.CleanUp
+
+End
+
+Public Sub tabVersion_Click()
+
+  If tabVersion.Text = ("Journal") Then
+    edtChange.SetFocus
+  Endif
+
+End
+
+Public Sub gvwInfo_Data(Row As Integer, Column As Integer)
+
+  Dim sField As String
+  
+  With gvwInfo.Data
+
+    Select Case Column
+      
+      Case 0
+        
+        Select Case Row
+          
+          Case 0
+            .Text = ("Revision")
+            
+          Case 1
+            .Text = ("Author")
+            
+          Case 2
+            .Text = ("Date")
+          
+        End Select
+        
+      Case Else
+        
+        sField = ["revision", "author", "date"][Row]
+        If Column = 2 Then sField = "remote." & sField
+        
+        .Text = $cInfo[sField]
+      
+    End Select
+    
+    .Padding = 8
+    
+  End With
+
+End

@@ -250,7 +250,7 @@ Public Sub Uncheck(Optional sComponent As String)
       
       sMsg = Subst(("This component is required by:<p>&1"), "<b>" & aDep.Join("</b>, <b>") & "</b>")
       If Message.Warning(sMsg, ("Keep"), ("Remove all")) = 2 Then
-        FPropertyProject.UncheckComponents($aComp)
+        FProjectProperty.UncheckComponents($aComp)
         $aComp.Clear
         $bCheck = False
         Return

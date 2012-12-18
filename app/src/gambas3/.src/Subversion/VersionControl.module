@@ -4,6 +4,14 @@ Private $bSVN As Boolean
 Private $bCVS As Boolean
 Private $bEnd As Boolean
 Private $hEditor As Editor
+Private $bOutput As Boolean
+Private $sOutput As String
+Private $dOutput As Date
+Private $bIdent As Boolean
+
+Public User As String
+Public Password As String
+Public UseTerminal As Boolean
 
 Public Sub Enabled() As Boolean
 
@@ -28,31 +36,94 @@ Private Sub Insert(sText As String)
 
 End
 
-Private Sub Run(sCmd As String, Optional sRemove As String) As Integer
+Private Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As Boolean, Optional aEnv As String[]) As Integer
 
+  Dim sPassword As String
+  Dim hProcess As Process
+  Dim sCmd As String
+  
   $bEnd = False
-  Shell sCmd & " 2>&1" For Read As "Process" 'TO sOutput
-
-  If sRemove Then sCmd = Replace(sCmd, sRemove, "")
+  $bIdent = bIdent
+  $sOutput = ""
+  $bOutput = bOutput
+  $dOutput = Now
+  
+  If bIdent Then
+    'aCmd.Add("--non-interactive")
+    If User Then
+      aCmd.Add("--username")
+      aCmd.Add(User)
+      If Password Then
+        sPassword = " --password " & Password
+        aCmd.Add("--password")
+        aCmd.Add(Password)
+      Endif
+    Endif
+  Endif
+  
+  hProcess = Exec aCmd With aEnv For Input Output As "Process" 
+  
+  sCmd = aCmd.Join(" ")
+  If sPassword Then sCmd = Replace(sCmd, sPassword, "")
 
   Insert(sCmd & "\n")
 
   Do
     Wait
+    
     If $bEnd Then Break
+    
+    If DateDiff($dOutput, Now, gb.Second) >= 10 Then
+      hProcess.Kill
+      Insert("** " & ("command timeout") & " **\n")
+    Endif
+    
     Sleep 0.1
   Loop
-
+    
   Return Process.LastValue
 
 End
 
+Public Sub Process_Error({Error} As String)
+  
+  Insert({Error})
+  
+End
+
+
 Public Sub Process_Read()
 
   Dim sData As String
+  Dim iPos As Integer
+  Dim sLine As String
 
   sData = Read #Last, -256
-  Insert(sData)
+  $sOutput &= sData
+  If Not $bOutput Then Insert(sData)
+  'Insert(sData)
+  $dOutput = Now
+  
+  iPos = RInStr($sOutput, "\n")
+  If iPos = 0 Then
+    sLine = $sOutput
+  Else
+    sLine = Mid$($sOutput, iPos + 1)
+  Endif
+  
+  If $bIdent Then
+    If Right(RTrim(sLine)) = ":" And If InStr(sLine, "username", 1, gb.IgnoreCase) Then 
+      If $bOutput Then Insert(sLine)
+      Print #Last, User
+      Insert(User & "\n")
+      $sOutput = ""
+    Else If Right(RTrim(sLine)) = ":" And If InStr(sLine, "password", 1, gb.IgnoreCase) Then 
+      If $bOutput Then Insert(sLine)
+      Print #Last, Password
+      Insert(String$(String.Len(Password), "*") & "\n")
+      $sOutput = ""
+    Endif
+  Endif
 
 End
 
@@ -62,21 +133,25 @@ Public Sub Process_Kill()
 
 End
 
-Private Sub SvnShell$(sPath As String) As String
+Private Sub SvnPath$(sPath As String) As String
 
   If InStr(sPath, "@") Then sPath &= "@"
-  Return Shell$(sPath)
+  Return sPath
 
 End
 
 Public Sub AddFile(sPath As String, Optional bForce As Boolean)
 
+  Dim aCmd As String[]
+
   If $bSVN Then
-    Run("svn add " & If(bForce, "--force ", "") & SvnShell$(sPath))
+    aCmd = ["svn", "add", SvnPath$(sPath)]
+    If bForce Then aCmd.Add("--force", 2)
+    Run(aCmd)
   Endif
   If $bCVS Then
     'NB: For CVS file must already exist
-    Run("cvs add " & Shell$(sPath))
+    Run(["cvs", "add", sPath])
   Endif
 
 End
@@ -84,11 +159,11 @@ End
 Public Sub AddDir(sPath As String)
 
   If $bSVN Then
-    Run("svn add " & SvnShell$(sPath))
+    Run(["svn", "add", SvnPath$(sPath)])
   Endif
   If $bCVS Then
     'NB: For CVS, directory must already exist
-    Run("cvs add " & Shell$(sPath))
+    Run(["cvs", "add", sPath])
   Endif
 
 End
@@ -97,12 +172,16 @@ End
 
 Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
 
+  Dim aCmd As String[]
+
   If $bSVN Then
-    Run("svn remove " & IIf(bForce, "--force ", "") & SvnShell$(sPath))
+    aCmd = ["svn", "remove", SvnPath$(sPath)]
+    If bForce Then aCmd.Add("--force", 2)
+    Run(aCmd)
   Endif
   If $bCVS Then
     'NB: For CVS do 'cvs remove file' first then delete file
-    Run("cvs remove " & Shell$(sPath))
+    Run(["cvs", "remove", sPath])
   Endif
   UpdatePath([sPath])
 
@@ -118,7 +197,7 @@ Public Sub RemoveDir(sPath As String)
   Endif
   If $bCVS Then
     'NB: For CVS do 'cvs remove dirname' first then delete dirname
-    Run("cvs remove " & Shell$(sPath))
+    Run(["cvs", "remove", sPath])
   Endif
   UpdatePath([sPath])
 
@@ -220,7 +299,7 @@ End
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
   If $bSVN Then
-    Run("svn move --force " & SvnShell$(sOld) & " " & SvnShell$(sNew))
+    Run(["svn", "move", "--force", SvnPath$(sOld), SvnPath$(sNew)])
     'AddFile(sNew)
     ' For Each sDir In RDir(sNew, "*", gb.Directory)
     '   If File.Name(sDir) <> ".svn" Then Continue
@@ -256,23 +335,16 @@ Public Sub Status() As String
 
 End
 
-Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Boolean
+Public Sub Commit(sChange As String) As Boolean
 
   Dim hFile As File
-  Dim sCmd As String
 
   If $bSVN Then
     hFile = Open Temp$("commit") For Create
     Print #hFile, sChange;
     Close #hFile
-    sCmd = "svn commit --username " & Shell$(sUser)
-    If sPassword Then
-      sPassword = " --password " & Shell$(sPassword)
-      sCmd &= sPassword
-    Endif
-    sCmd &= " --file " & Shell$(Temp$("commit")) & " " & Shell$(Project.Dir)
-    sCmd &= " --non-interactive"
-    Run(sCmd, sPassword)
+    
+    Run(["svn", "commit", "--file", Temp$("commit"), Project.Dir], True)
     Return Process.LastValue
   Endif
 
@@ -281,8 +353,7 @@ End
 Public Sub Update() As Boolean
 
   If $bSVN Then
-    Run("svn update --non-interactive " & SvnShell$(Project.Dir))
-    Return Process.LastValue
+    Return Run(["svn", "update", SvnPath$(Project.Dir)], True)
   Endif
 
 End
@@ -290,7 +361,7 @@ End
 Public Sub Revert() As Boolean
 
   If $bSVN Then
-    Run("svn -R revert " & SvnShell$(Project.Dir))
+    Run(["svn", "-R", "revert", SvnPath$(Project.Dir)])
     Return Process.LastValue
   Endif
 
@@ -299,7 +370,7 @@ End
 Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Boolean
 
   $hEditor = hEditor
-  Run("cd " & Shell$(sDir) & "; svn checkout " & SvnShell$(sPath))
+  Run(["svn", "checkout", SvnPath$(sPath), SvnPath$(sDir)], True)
   $hEditor = Null
 
 End
@@ -320,7 +391,7 @@ End
 Public Sub Resolve(sPath As String) As Boolean
 
   If $bSVN Then
-    Run("svn resolved " & SvnShell$(sPath))
+    Run(["svn", "resolved", SvnPath$(sPath)])
     Return Process.LastValue
   Endif
 
@@ -367,7 +438,7 @@ Public Sub Diff(sPath As String) As String
   Dim sDiff As String
 
   If $bSVN Then
-    Shell "svn diff " & SvnShell$(sPath) To sDiff
+    Shell "svn diff " & Shell$(SvnPath$(sPath)) To sDiff
     Return sDiff
   Endif
 
@@ -386,10 +457,77 @@ Public Sub ControlProject()
   If Exist(Project.Dir &/ "../.svn") Then
     Project.CleanUp
     Try Kill Project.Dir &/ ".settings"
-    Run("svn add " & SvnShell$(Project.Dir))
+    Run(["svn", "add", SvnPath$(Project.Dir)])
     Project.Config.Save
     Refresh
     Project.Refresh
   Endif
 
+End
+
+Private Sub FormatSvnDate(sDate As String) As String
+
+  Dim aDate As String[]
+  
+  aDate = Split(sDate, "*-*-* *:*:* *")
+  Return Format(Date(CInt(aDate[0]), CInt(aDate[1]), CInt(aDate[2]), CInt(aDate[3]), CInt(aDate[4]), CInt(aDate[5])), gb.GeneralDate)
+
+End
+
+Public Sub Info() As Collection
+  
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim sUrl As String
+  Dim cInfo As New Collection
+  Dim cData As New Collection
+  
+  If $bSvn Then
+    
+    If Run(["svn", "info", SvnPath$(Project.Dir)], False, True, ["LC_ALL=C"]) = 0 Then
+    
+      cData.Clear
+      For Each sLine In Split($sOutput, "\n", "", True)
+        aLine = Scan(sLine, "*: *")
+        If aLine[0] = "Repository Root" Then sUrl = Trim(aLine[1])
+        cData[Trim(aLine[0])] = Trim(aLine[1])
+      Next
+      
+      cInfo["revision"] = cData["Revision"]
+      cInfo["author"] = cData["Last Changed Author"]
+      cInfo["date"] = FormatSvnDate(cData["Last Changed Date"])
+      cInfo["url"] = sUrl
+      
+    Endif
+    
+    If sUrl Then
+    
+      If Run(["svn", "info", SvnPath$(sUrl)], True, True, ["LC_ALL=C"]) = 0 Then
+      
+        cData.Clear
+        For Each sLine In Split($sOutput, "\n", "", True)
+          aLine = Scan(sLine, "*: *")
+          cData[Trim(aLine[0])] = Trim(aLine[1])
+        Next
+        
+        cInfo["remote.revision"] = cData["Revision"]
+        cInfo["remote.author"] = cData["Last Changed Author"]
+        cInfo["remote.date"] = FormatSvnDate(cData["Last Changed Date"])
+        
+      Endif
+      
+    Endif
+    
+  Endif
+  
+  Return cInfo
+  
+End
+
+Public Sub CleanUp()
+  
+  If $bSVN Then
+    Run(["svn", "cleanup"])
+  Endif
+  
 End

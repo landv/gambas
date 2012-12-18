@@ -1,7 +1,5 @@
 ' Gambas class file
 
-Static Private $hTile As Picture
-
 Private $aWindow As New CWindow[]
 Private $hCurrent As CWindow
 Private $bMove As Boolean
@@ -16,18 +14,18 @@ Private $iLock As Integer
 Private $bBorder As Boolean = True
 Private $hPicture As Picture
 
-Public Sub _new()
-  
-  If Not $hTile Then $hTile = Picture["img/hash.png"]
-  '$hWatcher = NEW Watcher(panChild) AS "panChild"
-  'TitleBar = tabWorkspace
-  '$bLogo = Application.Name = "gambas" & System.Version
-  ' If $bLogo Then 
-  '   picLogo.Picture = Picture.Load("img/logo.png")
-  '   picLogo.Resize(picLogo.Picture.W, picLogo.Picture.H)
-  ' Endif
-
-End
+' Public Sub _new()
+'   
+'   If Not $hTile Then $hTile = Picture["img/hash.png"]
+'   '$hWatcher = NEW Watcher(panChild) AS "panChild"
+'   'TitleBar = tabWorkspace
+'   '$bLogo = Application.Name = "gambas" & System.Version
+'   ' If $bLogo Then 
+'   '   picLogo.Picture = Picture.Load("img/logo.png")
+'   '   picLogo.Resize(picLogo.Picture.W, picLogo.Picture.H)
+'   ' Endif
+' 
+' End
 
 Public Sub Form_Open()
   

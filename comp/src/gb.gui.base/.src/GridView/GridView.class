@@ -1341,7 +1341,10 @@ Public Sub ScrollArea_KeyPress()
     
     Case Key.Up, Key.Down, Key.Left, Key.Right, Key.Home, Key.End, Key.PageUp, Key.PageDown
       bStop = Raise KeyPress
-      If bStop Then Goto _RETURN
+      If bStop Then 
+        Stop Event
+        Goto _RETURN
+      Endif
     
   End Select
   

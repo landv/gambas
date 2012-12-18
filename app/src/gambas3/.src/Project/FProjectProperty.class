@@ -14,19 +14,17 @@ Private $aEnv As String[]
 
 Private $aComp As String[]
 Private $cComp As New Collection
-Private $sVerCtrlStatus As String
-Private $sVerCtrlDiff As String
 
 Private $aLibraries As String[]
 
 Private $iDoNotRefreshComponent As Integer
 
 'Private Const LIBRARY_TAB As Integer = 2
-Private Const VERSION_TAB As Integer = 5
+'Private Const VERSION_TAB As Integer = 5
 
 Static Public Function Run() As Boolean
 
-  Return Not FPropertyProject.ShowModal()
+  Return Not FProjectProperty.ShowModal()
 
 End
 
@@ -88,10 +86,6 @@ Public Sub Form_Open()
   'chkShowBeta.Value = $bShowBeta
   $bCanInitComponents = True
 
-  tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
-  If tabProject[VERSION_TAB].Visible Then
-    edtDiff.ReadConfig
-  Endif
   tabProject.Index = 0
 
   RefreshComponents
@@ -99,7 +93,6 @@ Public Sub Form_Open()
   InitEnvironment
 
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
-  tabProject[VERSION_TAB].Enabled = btnOK.Enabled
 
   cmbDefaultLanguage.Clear
   cmbDefaultLanguage.Add(("Not translatable"))
@@ -824,81 +817,14 @@ End
 ' 
 ' END
 ' 
-Public Sub tabProject_Click()
 
-  If tabProject.Index = VERSION_TAB Then 
-    If VersionControl.Enabled() Then 
-      Inc Application.Busy
-      $sVerCtrlStatus = VersionControl.Status()
-      $sVerCtrlDiff = VersionControl.Diff(Project.Dir)
-      If $sVerCtrlStatus Then
-        edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
-        edtDiff.Show
-        sepCommit.Show
-        lblDiff.Text = ("Changes since last commit")
-        lblDiff.Font.Italic = False
-        lblDiff.Font.Bold = True
-        lblDiff.Expand = False
-        'lblNoDiff.Hide
-      Else
-        edtDiff.Hide
-        sepCommit.Hide
-        lblDiff.Text = ("There is no change to commit.")
-        lblDiff.Font.Italic = True
-        lblDiff.Font.Bold = False
-        lblDiff.Expand = True
-        'lblNoDiff.Show
-      Endif
-      lblDiff.Padding = Desktop.Scale
-      btnCommit.Enabled = Len($sVerCtrlStatus)
-      btnRevert.Enabled = btnCommit.Enabled
-      Dec Application.Busy
-    Endif
-  'ELSE IF tabProject.Index = LIBRARY_TAB THEN 
-  '  IF NOT lstComponent THEN InitLibrary
-  Endif   
+' Public Sub btnCommit_Click()
+' 
+'   If FCommit.Run($sVerCtrlStatus, $sVerCtrlDiff) Then Return
+'   tabProject_Click
+'   
+' End
 
-End
-
-Public Sub btnCommit_Click()
-
-  If FCommit.Run($sVerCtrlStatus, $sVerCtrlDiff) Then Return
-  tabProject_Click
-  
-End
-
-Public Sub btnUpdate_Click()
-
-  Dim bErr As Boolean
-
-  Inc Application.Busy
-  bErr = VersionControl.Update()
-  Project.Refresh
-  Dec Application.Busy
-  tabProject_Click
-
-  If bErr Then  
-    Message.Error(("Unable to update project from repository."))
-  Else
-    Message.Info(("Project has been updated from repository successfully."))
-  Endif
-    
-End
-
-Public Sub btnRevert_Click()
-
-  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
-
-  Inc Application.Busy
-  
-  VersionControl.Revert
-  Project.Refresh
-  Project.ReloadAll
-  
-  Dec Application.Busy
-  tabProject_Click  
-
-End
 
 ' PUBLIC SUB btnSwap_Click()
 ' 
@@ -1144,13 +1070,13 @@ Public Sub btnInsertLib_Click()
 
   Dialog.Title = ("Select a Gambas application")
   Dialog.Filter = ["*.gambas", ("Gambas applications")]
-  Dialog.Path = Settings["/FPropertyProject/Library"]
+  Dialog.Path = Settings["/FProjectProperty/Library"]
 
   If Dialog.OpenFile() Then Return
   
   sPath = Dialog.Path
 
-  Settings["/FPropertyProject/Library"] = File.Dir(sPath)
+  Settings["/FProjectProperty/Library"] = File.Dir(sPath)
 
   If $aLibraries.Exist(sPath) Then
     Message.Warning(Subst(("<b>&1</b> is already used as a library."), File.Name(sPath)))
