@@ -305,7 +305,7 @@ msgstr "Vorheriges Lesezeichen"
 msgid "Next bookmark"
 msgstr "Nächstes Lesezeichen"
 
-#: CClassInfo.class:548 FMain.form:1374 FProperty.form:23
+#: CClassInfo.class:548 FMain.form:1389 FProperty.form:23
 msgid "Properties"
 msgstr "Eigenschaften"
 
@@ -322,58 +322,48 @@ msgid "Events"
 msgstr "Ereignisse"
 
 #: CClassInfo.class:579
-#, fuzzy
 msgid "This class is static."
-msgstr "Diese Klasse kann erzeugt werden.<br>"
+msgstr "Diese Klasse ist statisch."
 
 #: CClassInfo.class:581
-#, fuzzy
 msgid "This class can be used like an object by creating an hidden instance on demand."
-msgstr "Diese Klasse kann wie ein Objekt benutzt werden, indem bei Bedarf eine versteckte Instanz erzeugt wird.<br>"
+msgstr "Diese Klasse kann wie ein Objekt genutzt werden, indem auf Anforderung eine versteckte Instanz erstellt wird."
 
 #: CClassInfo.class:585
-#, fuzzy
 msgid "This class is &1."
-msgstr "Diese Klasse beerbt &1."
+msgstr "Diese Klasse ist &1."
 
 #: CClassInfo.class:585
-#, fuzzy
 msgid "creatable"
-msgstr "Tabelle erstellen"
+msgstr "erstellbar"
 
 #: CClassInfo.class:594
-#, fuzzy
 msgid "This class can be used as a &1."
-msgstr "Diese Klasse beerbt &1."
+msgstr "Diese Klasse kann als &1 genutzt werden."
 
 #: CClassInfo.class:594
-#, fuzzy
 msgid "function"
 msgstr "Funktion"
 
 #: CClassInfo.class:599
 msgid "This class acts like a &1 / &2 array."
-msgstr ""
+msgstr "Diese Klasse verhält sich wie ein &1 / &2 Array."
 
 #: CClassInfo.class:599
-#, fuzzy
 msgid "read"
-msgstr "schreibgeschützt"
+msgstr "lesen"
 
 #: CClassInfo.class:599
-#, fuzzy
 msgid "write"
-msgstr "&Überschreiben"
+msgstr "schreiben"
 
 #: CClassInfo.class:601
-#, fuzzy
 msgid "This class acts like a &1 array."
-msgstr "Diese Klasse beerbt &1."
+msgstr "Diese Klasse verhält sich wie ein &1 Array."
 
 #: CClassInfo.class:601
-#, fuzzy
 msgid "write-only"
-msgstr "schreibgeschützt"
+msgstr "nur-schreiben"
 
 #: CClassInfo.class:604 Project.module:1560
 msgid "read-only"
@@ -381,12 +371,11 @@ msgstr "schreibgeschützt"
 
 #: CClassInfo.class:609
 msgid "This class is &1 with the FOR EACH keyword."
-msgstr ""
+msgstr "Diese Klasse ist &1 mit dem FOR EACH Befehl."
 
 #: CClassInfo.class:609
-#, fuzzy
 msgid "enumerable"
-msgstr "Tabelle umbenennen"
+msgstr "enumerierbar"
 
 #: CClassInfo.class:634
 msgid "This class inherits &1."
@@ -540,7 +529,7 @@ msgstr "Komponente zur Filterung von Bildern"
 msgid "Image routines from the Imlib2 library"
 msgstr "Bildroutinen aus der Imlib2 library"
 
-#: CComponent.class:114 FPropertyComponent.form:138
+#: CComponent.class:114 FPropertyComponent.form:172
 msgid "Image loading and saving"
 msgstr "Laden und Speichern von Bildern"
 
@@ -676,15 +665,15 @@ msgstr "XSLT-Tools basierend auf libxslt und libxml"
 msgid "Web applications tools"
 msgstr "Werkzeuge für Webanwendungen"
 
-#: CComponent.class:153 FPropertyComponent.form:126
+#: CComponent.class:153 FPropertyComponent.form:160
 msgid "Graphical form management"
 msgstr "Grafisches Formularmanagement"
 
-#: CComponent.class:154 FPropertyComponent.form:132
+#: CComponent.class:154 FPropertyComponent.form:166
 msgid "Event loop management"
 msgstr "Verwaltung der Ereignisabläufe"
 
-#: CComponent.class:156 FPropertyComponent.form:144
+#: CComponent.class:156 FPropertyComponent.form:178
 msgid "OpenGL display"
 msgstr "OpenGL-Anzeige"
 
@@ -708,23 +697,22 @@ msgstr "Klassen"
 msgid "Insert color"
 msgstr "Farbe einfügen"
 
-#: CLibraryInfo.class:134
+#: CLibraryInfo.class:140
 msgid "<b>&1:</b> &2"
 msgstr "-"
 
-#: CLibraryInfo.class:142 LibraryItem.class:54
+#: CLibraryInfo.class:148 LibraryItem.class:54
 msgid "Location"
 msgstr "Ort"
 
-#: CLibraryInfo.class:144 LibraryItem.class:56
+#: CLibraryInfo.class:150 LibraryItem.class:56
 msgid "WARNING! Library not found."
 msgstr "WARNUNG! Bibliothek nicht gefunden."
 
-#: CLibraryInfo.class:146 ComponentItem.class:172 LibraryItem.class:58
+#: CLibraryInfo.class:152 ComponentItem.class:172 LibraryItem.class:58
 msgid "Provides"
 msgstr "Enthält"
 
-#: CLibraryInfo.class:147 ComponentItem.class:151 FPropertyComponent.form:106
 #: LibraryItem.class:60
 msgid "Requires"
 msgstr "Abhängig von"
@@ -773,7 +761,6 @@ msgstr "Auswerter"
 msgid "Event loop"
 msgstr "Ereignisfolge"
 
-#: CProjectTree.class:285 FMain.form:1030 FSearch.class:97 FSelectIcon.form:31
 #: Project.module:1660
 msgid "Project"
 msgstr "Projekt"
@@ -814,19 +801,6 @@ msgstr "Diese Woche"
 msgid "This month"
 msgstr "Diesen Monat"
 
-#: CWaitingAnimation.class:56 FColorChooser.form:60 FCommit.form:229
-#: FConflict.class:185 FConnectionEditor.class:294 FCreateFile.form:437
-#: FDebugInfo.form:243 FEditor.class:2394 FExportData.class:126
-#: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:3085
-#: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1373
-#: FList.form:121 FMain.class:209 FMakeInstall.class:350 FMenu.form:377
-#: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
-#: FOpenProject.form:203 FOption.class:672 FPasteSpecial.form:77
-#: FPasteTable.form:107 FPropertyComponent.form:221 FPropertyProject.form:746
-#: FProxy.form:57 FReportBorderChooser.form:48 FReportBrushChooser.form:34
-#: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
-#: FSaveProjectAs.form:76 FSearch.class:865 FSelectExtraFile.form:43
-#: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
 #: FTextEditor.class:596 FTranslate.class:558 Project.module:468
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -839,11 +813,11 @@ msgstr "Die Gambas Schriftart ist unter der SIL Open Font License veröffentlich
 msgid "This program is published under the GNU General Public License."
 msgstr "Dieses Programm ist unter der GNU General Public License veröffentlicht."
 
-#: ComponentItem.class:139 FPropertyComponent.form:73
+#: ComponentItem.class:139 FPropertyComponent.form:78
 msgid "Experimental"
 msgstr "Experimentell"
 
-#: ComponentItem.class:141 FPropertyComponent.form:73
+#: ComponentItem.class:141 FPropertyComponent.form:78
 msgid "Not finished but stable"
 msgstr "Noch nicht fertiggestellt, aber stabil"
 
@@ -904,23 +878,10 @@ msgid "The program has stopped unexpectedly:"
 msgstr "Das Programm wurde unerwartet unterbrochen:"
 
 #: Design.module:359
-msgid ""
-"The program has returned\n"
-"the value: &1"
-msgstr ""
-"Das Programm hat den Wert\n"
-"&1 zurückgegeben"
+msgid "The program has returned\nthe value: &1"
+msgstr "Das Programm hat den Wert\n&1 zurückgegeben"
 
-#: Design.module:420 FColorChooser.form:54 FCommit.form:223
-#: FConnectionEditor.class:452 FCreateFile.form:443 FFieldChooser.form:132
-#: FFontChooser.form:34 FGotoLine.form:17 FInfo.form:172 FList.form:115
-#: FMain.class:1795 FMakeInstall.class:299 FMenu.form:372
-#: FNewConnection.form:249 FNewTable.form:80 FNewTranslation.form:15
-#: FOpenProject.form:197 FPasteSpecial.form:71 FPropertyComponent.form:215
-#: FPropertyProject.form:740 FProxy.form:63 FReportBorderChooser.form:54
-#: FReportBrushChooser.form:40 FReportCoordChooser.form:32
-#: FReportPaddingChooser.form:69 FSelectExtraFile.form:37 FSelectIcon.form:82
-#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
+#: FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "-"
 
@@ -949,18 +910,8 @@ msgid "Gambas Almost Means Basic!"
 msgstr "-"
 
 #: FAbout.form:57
-msgid ""
-"<h2 align=center>Licence</h2>\n"
-"\n"
-"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
-"\n"
-"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
-msgstr ""
-"<h2 align=center>Lizenz</h2>\n"
-"\n"
-"<p align=center>Dieses Programm ist FREIE SOFTWARE; Sie können es weitergeben und/oder modifizieren gemäß den Bedingungen der GNU General Public License, wie sie von der Free Software Foundation veröffentlicht wurde; entweder nach Version 2, oder (wahlweise) einer höheren Version.</p>\n"
-"\n"
-"<p align=center>Dieses Programm wird in der Hoffnung vertrieben, dass es nützlich ist, jedoch OHNE JEDE GARANTIE; nicht einmal mit der impliziten Garantie der ALLGEMEINEN GEBRAUCHSTAUGLICHKEIT ODER DER TAUGLICHKEIT FÜR BESTIMMTE ZWECKE. Zu näheren Details siehe GNU General Public License.</p>\n"
+msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr "<h2 align=center>Lizenz</h2>\n\n<p align=center>Dieses Programm ist FREIE SOFTWARE; Sie können es weitergeben und/oder modifizieren gemäß den Bedingungen der GNU General Public License, wie sie von der Free Software Foundation veröffentlicht wurde; entweder nach Version 2, oder (wahlweise) einer höheren Version.</p>\n\n<p align=center>Dieses Programm wird in der Hoffnung vertrieben, dass es nützlich ist, jedoch OHNE JEDE GARANTIE; nicht einmal mit der impliziten Garantie der ALLGEMEINEN GEBRAUCHSTAUGLICHKEIT ODER DER TAUGLICHKEIT FÜR BESTIMMTE ZWECKE. Zu näheren Details siehe GNU General Public License.</p>\n"
 
 #: FAbout.form:63
 msgid "<h2 align=center>Authors</h2>\n"
@@ -978,7 +929,7 @@ msgstr "System"
 msgid "Free"
 msgstr "Frei"
 
-#: FCommit.class:6
+#: FCommit.class:6 FProjectVersion.class:7
 msgid "This line and the following will be ignored"
 msgstr "Diese Zeile und alles Folgende wird ignoriert."
 
@@ -986,7 +937,7 @@ msgstr "Diese Zeile und alles Folgende wird ignoriert."
 msgid "Please enter the versioning user name"
 msgstr "Bitte geben Sie Ihren Benutzernamen für die Versionsverwaltung ein."
 
-#: FCommit.class:62
+#: FCommit.class:62 FProjectVersion.class:110
 msgid "The project could not be committed."
 msgstr "Das Projekt konnte nicht übermittelt werden."
 
@@ -994,7 +945,7 @@ msgstr "Das Projekt konnte nicht übermittelt werden."
 msgid "Project commit"
 msgstr "Projekt-Übermittlung"
 
-#: FCommit.form:52 FMakeInstall.form:229 FPropertyProject.form:245
+#: FPropertyProject.form:245
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -1002,55 +953,43 @@ msgstr "Beschreibung"
 msgid "Commit description"
 msgstr "Beschreibung der Übermittlung"
 
-#: FCommit.form:76
+#: FCommit.form:76 FProjectVersion.form:214
 msgid "Some files are not versioned and should be added manually to the repository."
 msgstr "Einige Dateien haben noch keine Versions-Nr. und sollten dem Repository manuell hinzugefügt werden."
 
-#: FCommit.form:91 FConflict.form:53 FConnectionEditor.form:359
-#: FEditor.form:145 FForm.form:230 FIconEditor.form:103 FImageEditor.form:71
-#: FMenu.form:107 FOutput.form:58 FTextEditor.form:108
+#: FTextEditor.form:108
 msgid "Cut"
 msgstr "Ausschneiden"
 
-#: FCommit.form:97 FConflict.form:59 FConnectionEditor.form:148
-#: FEditor.form:151 FForm.form:237 FIconEditor.form:111 FImageEditor.form:80
-#: FMenu.form:113 FOutput.form:65 FTextEditor.form:115
+#: FTextEditor.form:115
 msgid "Copy"
 msgstr "Kopieren"
 
-#: FCommit.form:103 FConflict.form:65 FConnectionEditor.form:380
-#: FEditor.form:158 FForm.form:250 FIconEditor.form:119 FImageEditor.form:89
-#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:122
+#: FProjectVersion.form:239 FTextEditor.form:122
 msgid "Paste"
 msgstr "Einfügen"
 
-#: FCommit.form:109 FConflict.form:71 FConnectionEditor.form:387
-#: FEditor.form:129 FForm.form:213 FIconEditor.form:87 FImageEditor.form:99
-#: FOption.form:561 FOutput.form:41 FTextEditor.form:91
+#: FTextEditor.form:91
 msgid "Undo"
 msgstr "Rückgängig"
 
-#: FCommit.form:115 FConflict.form:77 FConnectionEditor.form:394
-#: FEditor.form:136 FForm.form:220 FImageEditor.form:107 FOutput.form:48
-#: FTextEditor.form:98
+#: FProjectVersion.form:251 FTextEditor.form:98
 msgid "Redo"
 msgstr "Wiederholen"
 
-#: FCommit.form:121 FConflict.form:83 FEditor.form:453 FMenu.form:129
-#: FTextEditor.form:326
+#: FProjectVersion.form:257 FTextEditor.form:326
 msgid "Indent"
 msgstr "Einrücken"
 
-#: FCommit.form:127 FConflict.form:89 FEditor.form:461 FMenu.form:135
-#: FTextEditor.form:334
+#: FProjectVersion.form:263 FTextEditor.form:334
 msgid "Unindent"
 msgstr "Ausrücken"
 
-#: FCommit.form:133
+#: FCommit.form:133 FProjectVersion.form:269
 msgid "Clean up"
 msgstr "Aufräumen"
 
-#: FCommit.form:140
+#: FCommit.form:140 FProjectVersion.form:276
 msgid "Previous description"
 msgstr "Vorherige Beschreibung"
 
@@ -1058,45 +997,37 @@ msgstr "Vorherige Beschreibung"
 msgid "Authentification"
 msgstr "Authentifizierung"
 
-#: FCommit.form:169 FNewConnection.form:133 FProxy.form:42
+#: FProxy.form:42
 msgid "User"
 msgstr "Benutzer"
 
-#: FCommit.form:184 FNewConnection.form:147 FProxy.form:47
+#: FProxy.form:47
 msgid "Password"
 msgstr "Passwort"
 
-#: FCommit.form:197 FNewConnection.form:167
+#: FCommit.form:197 FNewConnection.form:167 FProjectVersion.form:160
 msgid "Remember password"
 msgstr "Passwort merken"
 
-#: FCommit.form:200
+#: FCommit.form:200 FProjectVersion.form:292
 msgid "Changes"
 msgstr "Änderungen"
 
-#: FConflict.class:24 FMain.form:679
+#: FConflict.class:24 FMain.form:687
 msgid "&Edit"
 msgstr "&Bearbeiten"
 
 #: FConflict.class:24
-msgid ""
-"This file is in conflict with the revision #&1.\n"
-"You must resolve the conflict in order to use the file."
-msgstr ""
-"Diese Datei steht in Konflikt mit Änderung #&1.\n"
-"Sie müssen den Konflikt beseitigen, um die Datei zu verwenden."
+msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
+msgstr "Diese Datei steht in Konflikt mit Änderung #&1.\nSie müssen den Konflikt beseitigen, um die Datei zu verwenden."
 
 #: FConflict.class:130
 msgid "Version conflict"
 msgstr "Versionskonflikt"
 
 #: FConflict.class:185
-msgid ""
-"The file has been modified.\n"
-"Do you really want to close the dialog?"
-msgstr ""
-"Die Datei wurde verändert.\n"
-"Wollen Sie den Dialog wirklich schließen?"
+msgid "The file has been modified.\nDo you really want to close the dialog?"
+msgstr "Die Datei wurde verändert.\nWollen Sie den Dialog wirklich schließen?"
 
 #: FConflict.class:213
 msgid "Some conflicts are not yet resolved."
@@ -1107,12 +1038,8 @@ msgid "Unable to resolve the conflict."
 msgstr "Der Konflikt kann nicht aufgelöst werden."
 
 #: FConflict.class:248
-msgid ""
-"The file has been modified.\n"
-"Do you really want to open another file?"
-msgstr ""
-"Die Datei wurde verändert!\n"
-"Wollen Sie wirklich eine andere Datei öffnen?"
+msgid "The file has been modified.\nDo you really want to open another file?"
+msgstr "Die Datei wurde verändert!\nWollen Sie wirklich eine andere Datei öffnen?"
 
 #: FConflict.class:256
 msgid "Conflict files"
@@ -1126,7 +1053,6 @@ msgstr "Öffnen"
 msgid "Text"
 msgstr "-"
 
-#: FConflict.form:120 FCreateFile.form:213 FReportBrushChooser.form:47
 #: Project.module:198
 msgid "Image"
 msgstr "Bild"
@@ -1151,20 +1077,14 @@ msgstr "S&peichern"
 msgid "Sol&ve"
 msgstr "&Auflösen"
 
-#: FConflict.form:184 FDebugInfo.form:250 FEditor.form:311 FForm.form:399
-#: FIconEditor.class:1386 FImportTable.form:218 FSystemInfo.form:81
-#: FTextEditor.form:244 FTips.form:83
+#: FSystemInfo.form:81 FTextEditor.form:244 FTips.form:83
 msgid "Close"
 msgstr "Schließen"
 
-#: FConnectionEditor.class:34 FCreateFile.form:289 FDebugInfo.class:38
-#: FMakeInstall.form:162 FNewConnection.form:60 FNewTable.form:33
 #: FOption.form:1037
 msgid "Name"
 msgstr "-"
 
-#: FConnectionEditor.class:39 FCreateFile.form:340 FCreateProject.form:97
-#: FDebugInfo.class:81 FInfo.form:84 FNewConnection.form:74 FNewTable.form:48
 #: FProxy.form:27
 msgid "Type"
 msgstr "Typ"
@@ -1221,7 +1141,7 @@ msgstr "-"
 msgid "Boolean"
 msgstr "-"
 
-#: FConnectionEditor.class:571 MConnection.module:91
+#: FConnectionEditor.class:571 FProjectVersion.class:276 MConnection.module:91
 msgid "Date"
 msgstr "Datum"
 
@@ -1305,14 +1225,10 @@ msgstr "Wollen Sie wirklich alle ausgewählten Zeilen löschen?"
 msgid "Connection editor"
 msgstr "Verbindungseditor"
 
-#: FConnectionEditor.form:101 FEditor.form:324 FForm.form:412
-#: FIconEditor.form:72 FImageEditor.form:54 FMenu.class:64
 #: FTextEditor.form:237
 msgid "Save"
 msgstr "Speichern"
 
-#: FConnectionEditor.form:109 FEditor.form:318 FForm.form:406
-#: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:62
 #: FTextEditor.form:231 FTranslate.class:654
 msgid "Reload"
 msgstr "Neu laden"
@@ -1369,7 +1285,7 @@ msgstr "SQL-Anfrage"
 msgid "Fields"
 msgstr "Felder"
 
-#: FConnectionEditor.form:232 FMain.class:1897
+#: FConnectionEditor.form:232 FMain.class:1900
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -1409,7 +1325,6 @@ msgstr "In eine CSV-Datei exportieren"
 msgid "Export..."
 msgstr "Exportieren ..."
 
-#: FConnectionEditor.form:465 FForm.form:257 FMain.class:209
 #: FNewConnection.class:325 FOption.class:855 FTranslate.class:558
 msgid "Delete"
 msgstr "Löschen"
@@ -1450,7 +1365,7 @@ msgstr "Kann Datei nicht hinzufügen."
 msgid "New file"
 msgstr "Neue Datei"
 
-#: FCreateFile.form:79 FMain.form:583
+#: FCreateFile.form:79 FMain.form:591
 msgid "New"
 msgstr "Neu"
 
@@ -1470,8 +1385,7 @@ msgstr "HTML-Datei"
 msgid "Style sheet"
 msgstr "Stilvorlage"
 
-#: FCreateFile.form:299 FCreateProject.form:273 FImportTable.form:51
-#: FPropertyComponent.form:56 FPropertyProject.form:267 FSearch.form:100
+#: FPropertyProject.form:267 FSearch.form:100
 msgid "Options"
 msgstr "Optionen"
 
@@ -1523,11 +1437,11 @@ msgstr "Bitte geben Sie den Ort des Repositories an."
 msgid "The project has been successfully created."
 msgstr "Das Projekt wurde erfolgreich angelegt."
 
-#: FCreateProject.form:66 FMain.form:924
+#: FCreateProject.form:66 FMain.form:932
 msgid "New project"
 msgstr "Neues Projekt"
 
-#: FCreateProject.form:81 FPropertyProject.form:188
+#: FCreateProject.form:81 FProjectProperty.form:180 FPropertyProject.form:188
 msgid "Project type"
 msgstr "Projekttyp"
 
@@ -1556,12 +1470,8 @@ msgid "CGI Web application"
 msgstr "CGI Web-Anwendung"
 
 #: FCreateProject.form:258
-msgid ""
-"Application stored in a\n"
-"Subversion repository"
-msgstr ""
-"Anwendung in einem\n"
-" Subversion-Repository gespeichert"
+msgid "Application stored in a\nSubversion repository"
+msgstr "Anwendung in einem\n Subversion-Repository gespeichert"
 
 #: FCreateProject.form:287
 msgid "Internationalization"
@@ -1631,7 +1541,7 @@ msgstr "Der Projekttitel ist der Name der Anwendung."
 msgid "Open in another window"
 msgstr "In neuem Fenster öffnen"
 
-#: FCreateProject.form:438
+#: FCreateProject.form:438 FProjectVersion.form:176
 msgid "Repository"
 msgstr "Archiv"
 
@@ -1643,7 +1553,7 @@ msgstr "Der Projektspeicher wird direkt an den 'svn checkout'-Befehl gesendet."
 msgid "not available"
 msgstr "nicht verfügbar"
 
-#: FDebugExpr.class:472 FDebugInfo.class:39 FPropertyProject.class:131
+#: FPropertyProject.class:131
 msgid "Value"
 msgstr "Wert"
 
@@ -1671,7 +1581,6 @@ msgstr "Ausdruck"
 msgid "Function"
 msgstr "Funktion"
 
-#: FDebugInfo.class:62 FIconEditor.form:200 FImportTable.class:66
 #: FOption.form:642
 msgid "Line"
 msgstr "Zeile"
@@ -1692,7 +1601,6 @@ msgstr "Nachricht"
 msgid "native code"
 msgstr "Nativer Code"
 
-#: FDebugInfo.class:558 FIconEditor.class:1373 FList.class:153
 #: FOption.class:672 FOutput.form:79
 msgid "Clear"
 msgstr "Löschen"
@@ -1713,11 +1621,11 @@ msgstr "Statische Variablen"
 msgid "Warnings"
 msgstr "Warnungen"
 
-#: FDebugInfo.form:46 FMain.form:1363
+#: FDebugInfo.form:46 FMain.form:1378
 msgid "Debug"
 msgstr "Debuggen"
 
-#: FDebugInfo.form:57 FMain.form:1058 FOption.form:346 FSearch.class:93
+#: FDebugInfo.form:57 FMain.form:1073 FOption.form:346 FSearch.class:93
 msgid "Console"
 msgstr "Konsole"
 
@@ -1798,14 +1706,8 @@ msgid "Stack backtrace"
 msgstr "Stapelverfolgung"
 
 #: FEditor.class:2394 FIconEditor.class:2006 FTextEditor.class:596
-msgid ""
-"The file has been modified.\n"
-"\n"
-"All your changes will be lost."
-msgstr ""
-"Die Datei wurde modifiziert.\n"
-"\n"
-"Alle Änderungen gehen verloren."
+msgid "The file has been modified.\n\nAll your changes will be lost."
+msgstr "Die Datei wurde modifiziert.\n\nAlle Änderungen gehen verloren."
 
 #: FEditor.class:2816 FTextEditor.class:937
 msgid "(Declarations)"
@@ -1827,7 +1729,7 @@ msgstr "Definition suchen"
 msgid "Open form"
 msgstr "Formular öffnen"
 
-#: FEditor.form:119 FForm.form:144 FMain.form:746
+#: FEditor.form:119 FForm.form:144 FMain.form:754
 msgid "&Startup class"
 msgstr "&Startklasse"
 
@@ -1956,14 +1858,8 @@ msgid "&Overwrite"
 msgstr "&Überschreiben"
 
 #: FExportData.class:126
-msgid ""
-"This file already exists.\n"
-"\n"
-"Do you want to overwrite it?"
-msgstr ""
-"Diese Datei existiert bereits.\n"
-"\n"
-"Wollen Sie sie überschreiben?"
+msgid "This file already exists.\n\nDo you want to overwrite it?"
+msgstr "Diese Datei existiert bereits.\n\nWollen Sie sie überschreiben?"
 
 #: FExportData.form:31 FImportTable.form:97
 msgid "Delimiter character"
@@ -2022,14 +1918,8 @@ msgid "Component missing for control &1"
 msgstr "Für das Steuerelement &1 fehlt eine Komponente"
 
 #: FForm.class:3085
-msgid ""
-"The form has been modified.\n"
-"\n"
-"All your changes will be lost."
-msgstr ""
-"Das Formular wurde verändert.\n"
-"\n"
-"Alle Änderungen gehen verloren."
+msgid "The form has been modified.\n\nAll your changes will be lost."
+msgstr "Das Formular wurde verändert.\n\nAlle Änderungen gehen verloren."
 
 #: FForm.form:120 FIconEditor.form:182
 msgid "Select"
@@ -2215,7 +2105,7 @@ msgstr "Tab nach rechts verschieben"
 msgid "Move tab last"
 msgstr "Tab ans Ende verschieben"
 
-#: FFormStack.form:15 FMain.form:1395
+#: FFormStack.form:15 FMain.form:1410
 msgid "Hierarchy"
 msgstr "Hierarchie"
 
@@ -2243,19 +2133,19 @@ msgstr "Ans Ende verschieben"
 msgid "Go to line"
 msgstr "Gehe zu Zeile"
 
-#: FHelpBrowser.class:24 FPropertyProject.form:395
+#: FHelpBrowser.class:24 FProjectProperty.form:387 FPropertyProject.form:395
 msgid "Default language"
 msgstr "Standardsprache"
 
-#: FHelpBrowser.form:30 FMain.form:1076
+#: FHelpBrowser.form:30 FMain.form:1091
 msgid "Help browser"
 msgstr "Hilfe Browser"
 
-#: FHelpBrowser.form:41 FMain.form:503 FProfile.form:48
+#: FHelpBrowser.form:41 FMain.form:511 FProfile.form:48
 msgid "Go back"
 msgstr "Zurück"
 
-#: FHelpBrowser.form:47 FMain.form:510 FProfile.form:54
+#: FHelpBrowser.form:47 FMain.form:518 FProfile.form:54
 msgid "Go forward"
 msgstr "Vorwärts"
 
@@ -2288,12 +2178,8 @@ msgid "Do you want to clear the image ?"
 msgstr "Wollen Sie dieses Bild wirklich löschen ?"
 
 #: FIconEditor.class:1386
-msgid ""
-"This image has been modified.\n"
-"Do you want to save it ?"
-msgstr ""
-"Das Bild wurde verändert.\n"
-"Möchten Sie es speichern ?"
+msgid "This image has been modified.\nDo you want to save it ?"
+msgstr "Das Bild wurde verändert.\nMöchten Sie es speichern ?"
 
 #: FIconEditor.form:95
 msgid "Clear all"
@@ -2539,7 +2425,7 @@ msgstr "Diese Datei hat keine Versions-Nr. und muss zum Repository hinzugefügt 
 msgid "This file has not been modified since the last commit."
 msgstr "Diese Datei wurde seit der letzten Übermittlung nicht verändert."
 
-#: FInfo.form:61 FPropertyComponent.form:51 FPropertyProject.form:157
+#: FPropertyProject.form:157
 msgid "General"
 msgstr "Allgemein"
 
@@ -2575,7 +2461,7 @@ msgstr "Wollen Sie die Liste wirklich löschen?"
 msgid "Edit list property"
 msgstr "Listeneigenschaften bearbeiten"
 
-#: FList.form:58 FMenu.form:82 FPropertyProject.form:478
+#: FPropertyProject.form:478
 msgid "&Insert"
 msgstr "&Einfügen"
 
@@ -2595,11 +2481,11 @@ msgstr "Nach &unten"
 msgid "Cl&ear"
 msgstr "&Löschen"
 
-#: FList.form:92 FMain.form:706 FSystemInfo.form:75
+#: FList.form:92 FMain.form:714 FSystemInfo.form:75
 msgid "&Copy"
 msgstr "&Kopieren"
 
-#: FList.form:98 FMain.form:713
+#: FList.form:98 FMain.form:721
 msgid "&Paste"
 msgstr "&Einfügen"
 
@@ -2648,469 +2534,470 @@ msgid "New folder"
 msgstr "Neuer Ordner"
 
 #: FMain.class:842
-msgid ""
-"The GNU translation tools are not installed on your system.\n"
-"\n"
-"Please install them to be able to do the translation."
-msgstr ""
-"Die GNU-Übersetzungstools sind nicht auf Ihrem System installiert.\n"
-"\n"
-"Bitte installieren Sie diese, um Übersetzungen durchzuführen."
+msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
+msgstr "Die GNU-Übersetzungstools sind nicht auf Ihrem System installiert.\n\nBitte installieren Sie diese, um Übersetzungen durchzuführen."
 
-#: FMain.class:1079 FPropertyComponent.class:219
+#: FMain.class:1080 FPropertyComponent.class:231
 msgid "Library properties"
 msgstr "Bibliothekseigenschaften"
 
-#: FMain.class:1468
+#: FMain.class:1471
 msgid "Unable to drop file into the project."
 msgstr "Datei konnte nicht ins Projekt eingefügt werden."
 
-#: FMain.class:1586
+#: FMain.class:1589
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Alle Backup- oder generierte Dateien werden aus dem Projektverzeichnis gelöscht."
 
-#: FMain.class:1586
+#: FMain.class:1589
 msgid "Clean"
 msgstr "Aufräumen"
 
-#: FMain.class:1795
+#: FMain.class:1798
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr "Um die Menüleiste wieder anzuzeigen, geben Sie <p><b>&1</b>ein"
 
-#: FMain.class:1897
+#: FMain.class:1900
 msgid "Do you really want to add this file to the repository?"
 msgstr "Wollen Sie diese Datei wirklich zum Repository hinzufügen?"
 
-#: FMain.class:2036
+#: FMain.class:2039
 msgid "Choose a profile"
 msgstr "Profil wählen"
 
-#: FMain.class:2037
+#: FMain.class:2040
 msgid "Profile for &1 project"
 msgstr "Profil für Projekt &1"
 
-#: FMain.form:214
+#: FMain.form:216
 msgid "&File"
 msgstr "&Datei"
 
-#: FMain.form:218
+#: FMain.form:220
 msgid "&New project..."
 msgstr "&Neues Projekt..."
 
-#: FMain.form:225
+#: FMain.form:227
 msgid "&Open project..."
 msgstr "Projekt &Öffnen..."
 
-#: FMain.form:231
+#: FMain.form:233
 msgid "Open &recent"
 msgstr "&Zuletzt geöffnet"
 
-#: FMain.form:238
+#: FMain.form:240
 msgid "Open &example"
 msgstr "Bei&spiel öffnen"
 
-#: FMain.form:249
+#: FMain.form:251
 msgid "&Save project"
 msgstr "Projekt &speichern"
 
-#: FMain.form:257
+#: FMain.form:259
 msgid "Save project &as..."
 msgstr "Projekt speichern &als..."
 
-#: FMain.form:268
+#: FMain.form:270
 msgid "&Quit"
 msgstr "&Beenden"
 
-#: FMain.form:275
+#: FMain.form:277
 msgid "&Project"
 msgstr "&Projekt"
 
-#: FMain.form:280
+#: FMain.form:282
 msgid "&Compile"
 msgstr "&Kompilieren"
 
-#: FMain.form:287
+#: FMain.form:289
 msgid "Compile &All"
 msgstr "A&lles Kompilieren"
 
-#: FMain.form:297
+#: FMain.form:299
 msgid "&Translate..."
 msgstr "&Übersetzen..."
 
-#: FMain.form:306
+#: FMain.form:308
 msgid "Make"
 msgstr "Erstellen"
 
-#: FMain.form:310
+#: FMain.form:312
 msgid "E&xecutable..."
 msgstr "&Ausführbare Datei..."
 
-#: FMain.form:317
+#: FMain.form:319
 msgid "&Source archive..."
 msgstr "&Quellarchiv..."
 
-#: FMain.form:324
+#: FMain.form:326
 msgid "&Installation package..."
 msgstr "&Installationspaket"
 
-#: FMain.form:335
+#: FMain.form:337
 msgid "&Clean up"
 msgstr "&Aufräumen"
 
-#: FMain.form:341
+#: FMain.form:343 FProjectVersion.form:76
 msgid "&Refresh"
 msgstr "&Aktualisieren"
 
-#: FMain.form:347
+#: FMain.form:349
 msgid "Put on &version control"
 msgstr "Zur &Versionskontrolle hinzufügen"
 
-#: FMain.form:357
+#: FMain.form:359
 msgid "&Properties..."
 msgstr "Ei&genschaften..."
 
-#: FMain.form:364 FPropertyComponent.form:37
+#: FMain.form:366
+msgid "&Version control..."
+msgstr "&Versionskontrolle..."
+
+#: FMain.form:372 FPropertyComponent.form:42
 msgid "Component properties"
 msgstr "Eigenschaften der Komponente"
 
-#: FMain.form:372
+#: FMain.form:380
 msgid "&Debug"
 msgstr "&Debuggen"
 
-#: FMain.form:377
+#: FMain.form:385
 msgid "&Run"
 msgstr "&Ausführen"
 
-#: FMain.form:384
+#: FMain.form:392
 msgid "Use &terminal emulator"
 msgstr "&Terminalemulator benutzen"
 
-#: FMain.form:390
+#: FMain.form:398
 msgid "Activate profilin&g"
 msgstr "Pro&filierung aktivieren"
 
-#: FMain.form:399
+#: FMain.form:407
 msgid "&Pause"
 msgstr "-"
 
-#: FMain.form:406
+#: FMain.form:414
 msgid "&Stop"
 msgstr "-"
 
-#: FMain.form:413
+#: FMain.form:421
 msgid "St&ep"
 msgstr "&Einzelschritt"
 
-#: FMain.form:420
+#: FMain.form:428
 msgid "&Forward"
 msgstr "&Prozedurschritt"
 
-#: FMain.form:427
+#: FMain.form:435
 msgid "Finis&h"
 msgstr "Absc&hließen"
 
-#: FMain.form:437
+#: FMain.form:445
 msgid "&Open profile..."
 msgstr "&Profil öffnen..."
 
-#: FMain.form:443
+#: FMain.form:451
 msgid "Clear &all breakpoints"
 msgstr "Alle &Haltepunkte löschen"
 
-#: FMain.form:448
+#: FMain.form:456
 msgid "Close all &debug windows"
 msgstr "Alle &Debug-Fenster schließen"
 
-#: FMain.form:453
+#: FMain.form:461
 msgid "&View"
 msgstr "&Ansicht"
 
-#: FMain.form:458
+#: FMain.form:466
 msgid "Pro&ject"
 msgstr "Pro&jekt"
 
-#: FMain.form:467
+#: FMain.form:475
 msgid "&Properties"
 msgstr "&Eigenschaften"
 
-#: FMain.form:476
+#: FMain.form:484
 msgid "&Console"
 msgstr "&Konsole"
 
-#: FMain.form:486
+#: FMain.form:494
 msgid "Status bar"
 msgstr "Statusleiste"
 
-#: FMain.form:494
+#: FMain.form:502
 msgid "Hide menubar"
 msgstr "Menüleiste verbergen"
 
-#: FMain.form:517
+#: FMain.form:525
 msgid "Close &all windows"
 msgstr "&Alle Fenster schließen"
 
-#: FMain.form:523
+#: FMain.form:531
 msgid "&Tools"
 msgstr "&Werkzeuge"
 
-#: FMain.form:527
+#: FMain.form:535
 msgid "&Find..."
 msgstr "&Suchen"
 
-#: FMain.form:533
+#: FMain.form:541
 msgid "&Replace..."
 msgstr "E&rsetzen..."
 
-#: FMain.form:543
+#: FMain.form:551
 msgid "&Browse project..."
 msgstr "&Projekt durchsuchen..."
 
-#: FMain.form:550
+#: FMain.form:558
 msgid "&Open a terminal..."
 msgstr "&Terminal öffnen..."
 
-#: FMain.form:557
+#: FMain.form:565
 msgid "Send project by &mail..."
 msgstr "Projekt per &Mail senden..."
 
-#: FMain.form:566
+#: FMain.form:574
 msgid "&Shortcuts..."
 msgstr "&Kurzbefehle"
 
-#: FMain.form:572
+#: FMain.form:580
 msgid "&Preferences..."
 msgstr "&Einstellungen..."
 
-#: FMain.form:587
+#: FMain.form:595
 msgid "&Directory"
 msgstr "&Verzeichnis"
 
-#: FMain.form:593
+#: FMain.form:601
 msgid "&Project link..."
 msgstr "Verknüpfung zum &Projekt..."
 
-#: FMain.form:604
+#: FMain.form:612
 msgid "&Module..."
 msgstr "&Modul..."
 
-#: FMain.form:612
+#: FMain.form:620
 msgid "&Class..."
 msgstr "&Klasse..."
 
-#: FMain.form:620
+#: FMain.form:628
 msgid "&Form..."
 msgstr "&Formular..."
 
-#: FMain.form:628
+#: FMain.form:636
 msgid "&WebPage..."
 msgstr "&Webseite..."
 
-#: FMain.form:636
+#: FMain.form:644
 msgid "&Report..."
 msgstr "Be&richt..."
 
-#: FMain.form:647
+#: FMain.form:655
 msgid "&Image..."
 msgstr "B&ild ..."
 
-#: FMain.form:654
+#: FMain.form:662
 msgid "&HTML file..."
 msgstr "&HTML-Datei..."
 
-#: FMain.form:661
+#: FMain.form:669
 msgid "&Style sheet..."
 msgstr "&Stilvorlage..."
 
-#: FMain.form:669
+#: FMain.form:677
 msgid "&Other..."
 msgstr "&Sonstige ..."
 
-#: FMain.form:684
+#: FMain.form:692
 msgid "Edit &code"
 msgstr "&Code bearbeiten"
 
-#: FMain.form:688
+#: FMain.form:696
 msgid "Open with"
 msgstr "Öffnen mit"
 
-#: FMain.form:699
+#: FMain.form:707
 msgid "&Cut"
 msgstr "&Ausschneiden"
 
-#: FMain.form:720
+#: FMain.form:728
 msgid "&Rename..."
 msgstr "&Umbenennen..."
 
-#: FMain.form:727
+#: FMain.form:735
 msgid "&Delete..."
 msgstr "&Löschen..."
 
-#: FMain.form:737
+#: FMain.form:745
 msgid "Copy file pat&h"
 msgstr "Datei&pfad kopieren"
 
-#: FMain.form:755
+#: FMain.form:763
 msgid "&Add to repository"
 msgstr "&Zum Repository hinzufügen"
 
-#: FMain.form:780
+#: FMain.form:788
 msgid "&New connection..."
 msgstr "&Neue Verbindung..."
 
-#: FMain.form:788
+#: FMain.form:796
 msgid "&Open"
 msgstr "Ö&ffnen"
 
-#: FMain.form:794 FMakeInstall.form:595 FOption.form:990
-#: FPropertyComponent.form:190 FPropertyProject.form:484
+#: FPropertyProject.form:484
 msgid "&Remove"
 msgstr "&Entfernen"
 
-#: FMain.form:848
+#: FMain.form:856
 msgid "&?"
 msgstr "-"
 
-#: FMain.form:857
+#: FMain.form:865
 msgid "&Help browser"
 msgstr "&Hilfe Browser"
 
-#: FMain.form:865
+#: FMain.form:873
 msgid "&Tips of the day"
 msgstr "&Tipp des Tages"
 
-#: FMain.form:873
+#: FMain.form:881
 msgid "&System informations..."
 msgstr "&Systeminformationen..."
 
-#: FMain.form:879
+#: FMain.form:887
 msgid "&About Gambas..."
 msgstr "&Über Gambas..."
 
-#: FMain.form:893
+#: FMain.form:901
 msgid "Show exported classes"
 msgstr "Exportierte Klassen anzeigen"
 
-#: FMain.form:898
+#: FMain.form:906
 msgid "Show added files"
 msgstr "Zeige hinzugefügte Dateien an"
 
-#: FMain.form:904
+#: FMain.form:912
 msgid "Show all"
 msgstr "Alles anzeigen"
 
-#: FMain.form:931
+#: FMain.form:939
 msgid "Open project"
 msgstr "Projekt öffnen"
 
-#: FMain.form:940
+#: FMain.form:948
 msgid "Save project"
 msgstr "Projekt speichern"
 
-#: FMain.form:947 FSaveProjectAs.form:18
+#: FMain.form:955 FSaveProjectAs.form:18
 msgid "Save project as"
 msgstr "Projekt speichern als"
 
-#: FMain.form:954 FPropertyProject.form:114
+#: FMain.form:962 FProjectProperty.form:106 FPropertyProject.form:114
 msgid "Project properties"
 msgstr "Projekteigenschaften"
 
-#: FMain.form:968
+#: FMain.form:969
+msgid "Project version control"
+msgstr "Projekt-Versionskontrolle"
+
+#: FMain.form:983
 msgid "Refresh project"
 msgstr "Projekt aktualisieren"
 
-#: FMain.form:975 FOption.form:203
+#: FMain.form:990 FOption.form:203
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: FMain.form:984
+#: FMain.form:999
 msgid "Shortcuts"
 msgstr "Kurzbefehle"
 
-#: FMain.form:995 FMakeExecutable.form:15
+#: FMain.form:1010 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "Ausführbare Datei erstellen"
 
-#: FMain.form:1002
+#: FMain.form:1017
 msgid "Translate"
 msgstr "Übersetzen"
 
-#: FMain.form:1010
+#: FMain.form:1025
 msgid "Make source archive"
 msgstr "Quellarchiv erstellen"
 
-#: FMain.form:1018 FMakeInstall.form:106
+#: FMain.form:1033 FMakeInstall.form:106
 msgid "Make installation package"
 msgstr "Installationspaket erstellen"
 
-#: FMain.form:1040
+#: FMain.form:1055
 msgid "Properties sheet"
 msgstr "Eigenschaftenfenster"
 
-#: FMain.form:1049
+#: FMain.form:1064
 msgid "Toolbox"
 msgstr "Werkzeugsammlung"
 
-#: FMain.form:1067 FSearch.form:62
+#: FMain.form:1082 FSearch.form:62
 msgid "Search"
 msgstr "Suchen"
 
-#: FMain.form:1084
+#: FMain.form:1099
 msgid "Compile"
 msgstr "Kompilieren"
 
-#: FMain.form:1091
+#: FMain.form:1106
 msgid "Compile all"
 msgstr "Alles Kompilieren"
 
-#: FMain.form:1098
+#: FMain.form:1113
 msgid "Run"
 msgstr "Ausführen"
 
-#: FMain.form:1105
+#: FMain.form:1120
 msgid "Pause"
 msgstr "-"
 
-#: FMain.form:1112
+#: FMain.form:1127
 msgid "Stop"
 msgstr "-"
 
-#: FMain.form:1119
+#: FMain.form:1134
 msgid "Step"
 msgstr "Einzelschritt"
 
-#: FMain.form:1126
+#: FMain.form:1141
 msgid "Forward"
 msgstr "Prozedurschritt"
 
-#: FMain.form:1133
+#: FMain.form:1148
 msgid "Finish current function"
 msgstr "Aktuelle Funktion abschließen"
 
-#: FMain.form:1141
+#: FMain.form:1156
 msgid "Run until current line"
 msgstr "Bis zur aktuellen Zeile ausführen"
 
-#: FMain.form:1152
+#: FMain.form:1167
 msgid "Browse project..."
 msgstr "Projekt durchsuchen..."
 
-#: FMain.form:1177
+#: FMain.form:1192
 msgid "Browse project"
 msgstr "Projekt durchsuchen"
 
-#: FMain.form:1185
+#: FMain.form:1200
 msgid "Open a terminal"
 msgstr "Ein Terminal öffnen"
 
-#: FMain.form:1193
+#: FMain.form:1208
 msgid "Send project by mail"
 msgstr "Projekt per Mail senden"
 
-#: FMain.form:1306
+#: FMain.form:1321
 msgid "Reset filter"
 msgstr "Filter zurücksetzen"
 
-#: FMakeExecutable.class:18 FPropertyProject.class:1146
+#: FPropertyProject.class:1146
 msgid "Gambas applications"
 msgstr "Gambas-Anwendungen"
 
@@ -3162,8 +3049,7 @@ msgstr "Bitte geben Sie Ihren Namen ein."
 msgid "Please enter your e-mail address."
 msgstr "Bitte geben Sie Ihre E-Mail-Adresse ein."
 
-#: FMakeInstall.class:350 FPropertyProject.class:890 FSave.form:21
-#: Project.module:3225
+#: FSave.form:21 Project.module:3225
 msgid "Continue"
 msgstr "Fortsetzen"
 
@@ -3300,12 +3186,8 @@ msgid "Mimetypes"
 msgstr "MIME-Typen"
 
 #: FMakeInstall.form:531
-msgid ""
-"Enter the mimetypes handled by your application there.\n"
-"Please enter one mimetype by line.\n"
-msgstr ""
-"Geben Sie die Mimetypes ein, die von Ihrem Programm verwaltet werden.\n"
-"Bitte einen Mimetype pro Zeile.\n"
+msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
+msgstr "Geben Sie die Mimetypes ein, die von Ihrem Programm verwaltet werden.\nBitte einen Mimetype pro Zeile.\n"
 
 #: FMakeInstall.form:543
 msgid "Additional configuration"
@@ -3323,7 +3205,7 @@ msgstr "Extra Abhängigkeiten"
 msgid "Same dependencies for all targets"
 msgstr "Gleiche Abhängigkeiten für alle Ziele"
 
-#: FMakeInstall.form:589 FOption.form:1159 FPropertyComponent.form:184
+#: FMakeInstall.form:589 FOption.form:1159 FPropertyComponent.form:218
 msgid "&Add"
 msgstr "&Hinzufügen"
 
@@ -3348,12 +3230,8 @@ msgid "Extra autoconf tests"
 msgstr "Extra autoconf Tests"
 
 #: FMakeInstall.form:700
-msgid ""
-"Add extra tests for the configuration process.\n"
-"<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr ""
-"Extra Tests für die Konfiguration hinzufügen.\n"
-"<p><b>Leer lassen, wenn Sie das nicht benötigen, oder wenn Sie sich nicht mit <i>autoconf</i> scripts auskennen.</b>"
+msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr "Extra Tests für die Konfiguration hinzufügen.\n<p><b>Leer lassen, wenn Sie das nicht benötigen, oder wenn Sie sich nicht mit <i>autoconf</i> scripts auskennen.</b>"
 
 #: FMakeInstall.form:708
 msgid "Destination directory"
@@ -3368,18 +3246,8 @@ msgid "Create package"
 msgstr "Paket erstellen"
 
 #: FMakeInstall.form:726
-msgid ""
-"All needed information have been collected. You can now create the installation packages for your application...\n"
-"<p>Click on the <b>OK</b> button to create the packages.\n"
-"<p>Click on the <b>Previous</b> button if you had made a mistake.\n"
-"<p>Click on the <b>Cancel</b> button to cancel the operation.\n"
-"\n"
-msgstr ""
-"Alle nötigen Informationen sind vorhanden. Sie können nun die Installationspakete für Ihre Anwendung erstellen...\n"
-"<p>Klicken Sie auf  <b>OK</b> um die Pakete zu erstellen.\n"
-"<p>Klicken Sie auf <b>Zurück</b>, wenn Sie die Einstellungen ändern möchten.\n"
-"<p>Klicken Sie auf <b>Abbrechen</b> um die Operation abzubrechen.\n"
-"\n"
+msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
+msgstr "Alle nötigen Informationen sind vorhanden. Sie können nun die Installationspakete für Ihre Anwendung erstellen...\n<p>Klicken Sie auf  <b>OK</b> um die Pakete zu erstellen.\n<p>Klicken Sie auf <b>Zurück</b>, wenn Sie die Einstellungen ändern möchten.\n<p>Klicken Sie auf <b>Abbrechen</b> um die Operation abzubrechen.\n\n"
 
 #: FMenu.class:64
 msgid "Ignore"
@@ -3653,11 +3521,11 @@ msgstr "Verschiedenes"
 msgid "Sort properties"
 msgstr "Eigenschaften sortieren"
 
-#: FOption.form:388 FPropertyComponent.form:90 FPropertyProject.form:325
+#: FPropertyProject.form:325
 msgid "No"
 msgstr "Nein"
 
-#: FOption.form:388 FPropertyComponent.form:90 FPropertyProject.form:325
+#: FPropertyProject.form:325
 msgid "Yes"
 msgstr "Ja"
 
@@ -3673,7 +3541,7 @@ msgstr "Hilfsfenster verwenden"
 msgid "Toolbox size"
 msgstr "Größe der Werkzeugsammlung"
 
-#: FOption.form:454 FPropertyProject.form:195
+#: FOption.form:454 FProjectProperty.form:187 FPropertyProject.form:195
 msgid "Normal"
 msgstr "Normal"
 
@@ -3717,7 +3585,7 @@ msgstr "Hintergrund"
 msgid "Default tab size"
 msgstr "Tabulator-Abstand"
 
-#: FOption.form:624 FPropertyProject.form:300
+#: FOption.form:624 FProjectProperty.form:292 FPropertyProject.form:300
 msgid "space(s)"
 msgstr "Leerstelle(n)"
 
@@ -3886,16 +3754,8 @@ msgid "Quiet external commands"
 msgstr "Externe Befehle ohne Ausgabe"
 
 #: FOutput.class:31
-msgid ""
-"Welcome to the Gambas console.\n"
-"To evaluate any expression, type '?' followed by\n"
-"the expression, then hit return.\n"
-"\n"
-msgstr ""
-"Willkommen zur Gambas Konsole.\n"
-"Um einen Ausdruck auszuwerten, geben\n"
-"Sie '?' gefolgt vom Ausdruck ein, und drücken Enter.\n"
-"\n"
+msgid "Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"
+msgstr "Willkommen zur Gambas Konsole.\nUm einen Ausdruck auszuwerten, geben\nSie '?' gefolgt vom Ausdruck ein, und drücken Enter.\n\n"
 
 #: FOutput.form:30
 msgid "Console - Gambas"
@@ -4013,6 +3873,242 @@ msgstr "Angerufene"
 msgid "Callers"
 msgstr "Anrufer"
 
+#: FProjectProperty.class:98 FPropertyProject.class:105
+msgid "Not translatable"
+msgstr "Nicht übersetzbar"
+
+#: FProjectProperty.class:121 FPropertyProject.class:128
+msgid "Variable"
+msgstr "-"
+
+#: FProjectProperty.class:254 FPropertyProject.class:261
+msgid "Snapping value is incorrect."
+msgstr "Raster-Wert ist unkorrekt."
+
+#: FProjectProperty.class:395 FPropertyProject.class:402 Project.module:3224
+msgid "Some components are missing: &1"
+msgstr "Einige Komponenten fehlen: &1"
+
+#: FProjectProperty.class:508 FPropertyProject.class:515
+msgid "These components are incompatible:<br>&1."
+msgstr "Diese Komponenten sind inkompatibel:<br>&1."
+
+#: FProjectProperty.class:521 FPropertyProject.class:528
+msgid "The &1 component needs one of the following components:<br>&2."
+msgstr "Die &1 Komponente benötigt eine der folgenden Komponenten: <br>&2."
+
+#: FProjectProperty.class:528 FPropertyProject.class:535
+msgid "The &1 component needs the &2 component."
+msgstr "Die &1 Komponente benötigt die &2 Komponente."
+
+#: FProjectProperty.class:1071 FPropertyProject.class:1145
+msgid "Select a Gambas application"
+msgstr "Gambas-Anwendung auswählen"
+
+#: FProjectProperty.class:1082 FPropertyProject.class:1156
+msgid "<b>&1</b> is already used as a library."
+msgstr "<b>&1</b> wird bereits als Bibliothek benutzt."
+
+#: FProjectProperty.class:1088 FPropertyProject.class:1162
+msgid "<b>&1</b> does not export any class."
+msgstr "<b>&1</b> exportiert keine Klasse."
+
+#: FProjectProperty.form:115 FPropertyProject.form:123
+msgid "GB_GUI=gb.qt4"
+msgstr "-"
+
+#: FProjectProperty.form:121 FPropertyProject.form:129
+msgid "GB_GUI=gb.gtk"
+msgstr "-"
+
+#: FProjectProperty.form:127 FPropertyProject.form:135
+msgid "GB_STOCK=debug"
+msgstr "-"
+
+#: FProjectProperty.form:133 FPropertyProject.form:141
+msgid "GB_JIT=debug"
+msgstr "-"
+
+#: FProjectProperty.form:139 FPropertyProject.form:147
+msgid "LANG=C ; LC_ALL=C"
+msgstr "-"
+
+#: FProjectProperty.form:187 FPropertyProject.form:195
+msgid "Component"
+msgstr "Komponente"
+
+#: FProjectProperty.form:187 FPropertyProject.form:195
+msgid "Library"
+msgstr "Bibliothek"
+
+#: FProjectProperty.form:193 FPropertyProject.form:201
+msgid "Version"
+msgstr "-"
+
+#: FProjectProperty.form:219 FPropertyProject.form:227
+msgid "Get from 'VERSION' file"
+msgstr "Aus der 'VERSION'-Datei übernehmen"
+
+#: FProjectProperty.form:226 FPropertyProject.form:234
+msgid "Title"
+msgstr "Titel"
+
+#: FProjectProperty.form:249 FPropertyProject.form:257
+msgid "Author(s)"
+msgstr "Autor(en)"
+
+#: FProjectProperty.form:269 FPropertyProject.form:277
+msgid "Edition"
+msgstr "Editor"
+
+#: FProjectProperty.form:280 FPropertyProject.form:288
+msgid "Tab size"
+msgstr "Tabulatorabstand"
+
+#: FProjectProperty.form:300 FPropertyProject.form:308
+msgid "Compilation"
+msgstr "Kompilation"
+
+#: FProjectProperty.form:311 FPropertyProject.form:319
+msgid "Module symbols are public by default"
+msgstr "Modulvariablen sind standardmäßig public"
+
+#: FProjectProperty.form:328 FPropertyProject.form:336
+msgid "Form controls are public"
+msgstr "Formular-Steuerelemente sind öffentlich"
+
+#: FProjectProperty.form:345 FPropertyProject.form:353
+msgid "Activate warnings"
+msgstr "Warnungen aktivieren"
+
+#: FProjectProperty.form:359 FPropertyProject.form:367 FTranslate.form:106
+msgid "Translation"
+msgstr "Übersetzung"
+
+#: FProjectProperty.form:370 FPropertyProject.form:378
+msgid "Project is translatable"
+msgstr "Projekt kann übersetzt werden"
+
+#: FProjectProperty.form:402 FPropertyProject.form:410
+msgid "Debugging"
+msgstr "Fehlersuche"
+
+#: FProjectProperty.form:413 FPropertyProject.form:421
+msgid "Activate profiling"
+msgstr "Profilierung aktivieren"
+
+#: FProjectProperty.form:430 FPropertyProject.form:438
+msgid "Use a terminal emulator"
+msgstr "Terminalemulation verwenden"
+
+#: FProjectProperty.form:441 FPropertyProject.form:449
+msgid "Environment"
+msgstr "Umgebung"
+
+#: FProjectProperty.form:451 FPropertyProject.form:459
+msgid "Arguments"
+msgstr "Argumente"
+
+#: FProjectProperty.form:504 FPropertyProject.form:512
+msgid "Environment variables"
+msgstr "Umgebungsvariablen"
+
+#: FPropertyProject.form:544
+msgid "Components"
+msgstr "Komponenten"
+
+#: FProjectProperty.form:545 FPropertyProject.form:553
+msgid "Show only components used in project"
+msgstr "Nur verwendete Komponenten anzeigen"
+
+#: FProjectProperty.form:571 FPropertyProject.form:579
+msgid "About &component..."
+msgstr "Über &Komponente..."
+
+#: FProjectProperty.form:582 FPropertyProject.form:590
+msgid "&Reset"
+msgstr "&Zurücksetzen"
+
+#: FProjectProperty.form:603 FPropertyProject.form:611
+msgid "Libraries"
+msgstr "Bibliotheken"
+
+#: FProjectProperty.form:622 FPropertyProject.form:630
+msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
+msgstr "<b>WARNUNG!</b> Die ausführbare Projektdatei und die zugrundeliegenden Bibliotheken müssen im selben Verzeichnis gespeichert werden. Ansonsten werden die Bibliotheken nicht gefunden."
+
+#: FProjectProperty.form:645 FPropertyProject.form:653
+msgid "&Add..."
+msgstr "&Hinzufügen..."
+
+#: FProjectVersion.class:36
+msgid "Local"
+msgstr "Lokal"
+
+#: FProjectVersion.class:37
+msgid "Remote"
+msgstr "-"
+
+#: FProjectVersion.class:89
+msgid "Please enter a user name."
+msgstr "Bitte geben Sie einen Benutzernamen ein."
+
+#: FProjectVersion.class:100
+msgid "Please enter the journal."
+msgstr "Bitte geben Sie das Journal an."
+
+#: FProjectVersion.class:190 FPropertyProject.class:881
+msgid "Unable to update project from repository."
+msgstr "Das Projekt konnte nicht aus dem Repository aktualisiert werden."
+
+#: FProjectVersion.class:192 FPropertyProject.class:883
+msgid "Project has been updated from repository successfully."
+msgstr "Projekt wurde erfolgreich aus Repository aktualisiert."
+
+#: FProjectVersion.class:201 FPropertyProject.class:890
+msgid "You are going to cancel your changes!"
+msgstr "Sie verwerfen jetzt Ihre Änderungen!"
+
+#: FProjectVersion.class:270
+msgid "Revision"
+msgstr "-"
+
+#: FProjectVersion.class:273 ProjectItem.class:82
+msgid "Author"
+msgstr "Autor"
+
+#: FProjectVersion.form:52
+msgid "Project Version Control"
+msgstr "Projekt-Versionskontrolle"
+
+#: FProjectVersion.form:64
+msgid "Update"
+msgstr "-"
+
+#: FProjectVersion.form:82 FPropertyProject.form:719
+msgid "&Update"
+msgstr "A&ktualisieren"
+
+#: FProjectVersion.form:88 FPropertyProject.form:725
+msgid "&Revert..."
+msgstr "&Zurücksetzen..."
+
+#: FProjectVersion.form:94 FPropertyProject.form:731
+msgid "&Commit..."
+msgstr "&Übermitteln..."
+
+#: FProjectVersion.form:100
+msgid "Clea&n up"
+msgstr "Aufräume&n"
+
+#: FProjectVersion.form:123
+msgid "Authentication"
+msgstr "Authentifizierung"
+
+#: FProjectVersion.form:195
+msgid "Journal"
+msgstr "-"
+
 #: FProperty.class:353
 msgid "Forbidden characters in control name."
 msgstr "Der Name des Steuerelements enthält unzulässige Zeichen."
@@ -4061,233 +4157,45 @@ msgstr "Wählen Sie eine Datei"
 msgid "Lock property"
 msgstr "Eigenschaft sperren"
 
-#: FPropertyComponent.class:141
+#: FPropertyComponent.class:153
 msgid "Cannot write component description file."
 msgstr "Beschreibungsdatei für Komponente kann nicht geschrieben werden."
 
-#: FPropertyComponent.form:66
+#: FPropertyComponent.form:71
 msgid "Component advancement"
 msgstr "Fortschritt der Komponente"
 
-#: FPropertyComponent.form:73
+#: FPropertyComponent.form:78
 msgid "Finished and stable"
 msgstr "Abgeschlossen und stabil"
 
-#: FPropertyComponent.form:84
+#: FPropertyComponent.form:89
 msgid "This component is hidden"
 msgstr "Diese Komponente ist versteckt"
 
-#: FPropertyComponent.form:97
+#: FPropertyComponent.form:106
+msgid "Compatible until version"
+msgstr "Kompatibel bis Version"
+
+#: FPropertyComponent.form:131
 msgid "Exported classes"
 msgstr "Exportierte Klassen"
 
-#: FPropertyComponent.form:111
+#: FPropertyComponent.form:145
 msgid "Features"
 msgstr "Funktionen"
 
-#: FPropertyComponent.form:152 FPropertyProject.form:544
-msgid "Components"
-msgstr "Komponenten"
-
-#: FPropertyComponent.form:196
+#: FPropertyComponent.form:230
 msgid "Remove All"
 msgstr "Alle entfernen"
-
-#: FPropertyProject.class:105
-msgid "Not translatable"
-msgstr "Nicht übersetzbar"
-
-#: FPropertyProject.class:128
-msgid "Variable"
-msgstr "-"
-
-#: FPropertyProject.class:261
-msgid "Snapping value is incorrect."
-msgstr "Raster-Wert ist unkorrekt."
-
-#: FPropertyProject.class:402 Project.module:3224
-msgid "Some components are missing: &1"
-msgstr "Einige Komponenten fehlen: &1"
-
-#: FPropertyProject.class:515
-msgid "These components are incompatible:<br>&1."
-msgstr "Diese Komponenten sind inkompatibel:<br>&1."
-
-#: FPropertyProject.class:528
-msgid "The &1 component needs one of the following components:<br>&2."
-msgstr "Die &1 Komponente benötigt eine der folgenden Komponenten: <br>&2."
-
-#: FPropertyProject.class:535
-msgid "The &1 component needs the &2 component."
-msgstr "Die &1 Komponente benötigt die &2 Komponente."
 
 #: FPropertyProject.class:846
 msgid "There is no change to commit."
 msgstr "Es gibt keine Änderungen zu übertragen."
 
-#: FPropertyProject.class:881
-msgid "Unable to update project from repository."
-msgstr "Das Projekt konnte nicht aus dem Repository aktualisiert werden."
-
-#: FPropertyProject.class:883
-msgid "Project has been updated from repository successfully."
-msgstr "Projekt wurde erfolgreich aus Repository aktualisiert."
-
-#: FPropertyProject.class:890
-msgid "You are going to cancel your changes!"
-msgstr "Sie verwerfen jetzt Ihre Änderungen!"
-
-#: FPropertyProject.class:1145
-msgid "Select a Gambas application"
-msgstr "Gambas-Anwendung auswählen"
-
-#: FPropertyProject.class:1156
-msgid "<b>&1</b> is already used as a library."
-msgstr "<b>&1</b> wird bereits als Bibliothek benutzt."
-
-#: FPropertyProject.class:1162
-msgid "<b>&1</b> does not export any class."
-msgstr "<b>&1</b> exportiert keine Klasse."
-
-#: FPropertyProject.form:123
-msgid "GB_GUI=gb.qt4"
-msgstr "-"
-
-#: FPropertyProject.form:129
-msgid "GB_GUI=gb.gtk"
-msgstr "-"
-
-#: FPropertyProject.form:135
-msgid "GB_STOCK=debug"
-msgstr "-"
-
-#: FPropertyProject.form:141
-msgid "GB_JIT=debug"
-msgstr "-"
-
-#: FPropertyProject.form:147
-msgid "LANG=C ; LC_ALL=C"
-msgstr "-"
-
-#: FPropertyProject.form:195
-msgid "Component"
-msgstr "Komponente"
-
-#: FPropertyProject.form:195
-msgid "Library"
-msgstr "Bibliothek"
-
-#: FPropertyProject.form:201
-msgid "Version"
-msgstr "-"
-
-#: FPropertyProject.form:227
-msgid "Get from 'VERSION' file"
-msgstr "Aus der 'VERSION'-Datei übernehmen"
-
-#: FPropertyProject.form:234
-msgid "Title"
-msgstr "Titel"
-
-#: FPropertyProject.form:257
-msgid "Author(s)"
-msgstr "Autor(en)"
-
-#: FPropertyProject.form:277
-msgid "Edition"
-msgstr "Editor"
-
-#: FPropertyProject.form:288
-msgid "Tab size"
-msgstr "Tabulatorabstand"
-
-#: FPropertyProject.form:308
-msgid "Compilation"
-msgstr "Kompilation"
-
-#: FPropertyProject.form:319
-msgid "Module symbols are public by default"
-msgstr "Modulvariablen sind standardmäßig public"
-
-#: FPropertyProject.form:336
-msgid "Form controls are public"
-msgstr "Formular-Steuerelemente sind öffentlich"
-
-#: FPropertyProject.form:353
-msgid "Activate warnings"
-msgstr "Warnungen aktivieren"
-
-#: FPropertyProject.form:367 FTranslate.form:106
-msgid "Translation"
-msgstr "Übersetzung"
-
-#: FPropertyProject.form:378
-msgid "Project is translatable"
-msgstr "Projekt kann übersetzt werden"
-
-#: FPropertyProject.form:410
-msgid "Debugging"
-msgstr "Fehlersuche"
-
-#: FPropertyProject.form:421
-msgid "Activate profiling"
-msgstr "Profilierung aktivieren"
-
-#: FPropertyProject.form:438
-msgid "Use a terminal emulator"
-msgstr "Terminalemulation verwenden"
-
-#: FPropertyProject.form:449
-msgid "Environment"
-msgstr "Umgebung"
-
-#: FPropertyProject.form:459
-msgid "Arguments"
-msgstr "Argumente"
-
-#: FPropertyProject.form:512
-msgid "Environment variables"
-msgstr "Umgebungsvariablen"
-
-#: FPropertyProject.form:553
-msgid "Show only components used in project"
-msgstr "Nur verwendete Komponenten anzeigen"
-
-#: FPropertyProject.form:579
-msgid "About &component..."
-msgstr "Über &Komponente..."
-
-#: FPropertyProject.form:590
-msgid "&Reset"
-msgstr "&Zurücksetzen"
-
-#: FPropertyProject.form:611
-msgid "Libraries"
-msgstr "Bibliotheken"
-
-#: FPropertyProject.form:630
-msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
-msgstr "<b>WARNUNG!</b> Die ausführbare Projektdatei und die zugrundeliegenden Bibliotheken müssen im selben Verzeichnis gespeichert werden. Ansonsten werden die Bibliotheken nicht gefunden."
-
-#: FPropertyProject.form:653
-msgid "&Add..."
-msgstr "&Hinzufügen..."
-
 #: FPropertyProject.form:692
 msgid "Changes since last commit"
 msgstr "Änderungen seit der letzten Übermittlung"
-
-#: FPropertyProject.form:719
-msgid "&Update"
-msgstr "A&ktualisieren"
-
-#: FPropertyProject.form:725
-msgid "&Revert..."
-msgstr "&Zurücksetzen..."
-
-#: FPropertyProject.form:731
-msgid "&Commit..."
-msgstr "&Übermitteln..."
 
 #: FProxy.form:20
 msgid "Proxy configuration"
@@ -6113,51 +6021,51 @@ msgstr "'&1' und '&2' nicht vorhanden."
 msgid "Saving CHANGELOG file."
 msgstr "Speichere CHANGELOG Datei."
 
-#: Package.module:504
+#: Package.module:508
 msgid "Creating package for &1."
 msgstr "Erstelle Paket für &1."
 
-#: Package.module:533
+#: Package.module:537
 msgid "The package build has failed."
 msgstr "Die Paketerstellung ist fehlgeschlagen."
 
-#: Package.module:563
+#: Package.module:567
 msgid "Making build directory."
 msgstr "Erstelle Build-Verzeichnis."
 
-#: Package.module:584
+#: Package.module:588
 msgid "Creating desktop file..."
 msgstr "Erstelle Desktop-Datei..."
 
-#: Package.module:592
+#: Package.module:596
 msgid "Sources are being debianizated."
 msgstr "Quelldateien werden ins Debian-Format überführt."
 
-#: Package.module:754
+#: Package.module:758
 msgid "Creating package..."
 msgstr "Erstelle Paket..."
 
-#: Package.module:762
+#: Package.module:766
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' ist fehlgeschlagen."
 
-#: Package.module:859
+#: Package.module:863
 msgid "Initializing ~/RPM directory."
 msgstr "Initialisierung des ~/RPM Verzeichnisses."
 
-#: Package.module:879
+#: Package.module:883
 msgid "Creating source package."
 msgstr "Erstelle Quell-Paket."
 
-#: Package.module:903
+#: Package.module:907
 msgid "Creating .spec file."
 msgstr "Erstelle .spec-Datei."
 
-#: Package.module:1137
+#: Package.module:1141
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' hat folgende Fehlermeldung zurückgegeben:"
 
-#: Package.module:1361
+#: Package.module:1365
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' hat folgende Fehlermeldung zurückgegeben:"
 
@@ -6210,16 +6118,8 @@ msgid "This project does not exist."
 msgstr "Dieses Projekt existiert nicht."
 
 #: Project.module:449
-msgid ""
-"Unable to find Gambas IDE executable in directory:\n"
-"\n"
-"&1"
-msgstr ""
-"Im Vereichnis\n"
-"\n"
-"&1\n"
-"\n"
-"konnte keine Gambas IDE Programmdatei gefunden werden."
+msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
+msgstr "Im Vereichnis\n\n&1\n\nkonnte keine Gambas IDE Programmdatei gefunden werden."
 
 #: Project.module:462
 msgid "This is not a Gambas project."
@@ -6234,14 +6134,8 @@ msgid "Convert"
 msgstr "Konvertieren"
 
 #: Project.module:468
-msgid ""
-"This is a Gambas 2.0 project.\n"
-"\n"
-"Do you want to convert it?"
-msgstr ""
-"Dies ist ein Gambas 2.0 Projekt.\n"
-"\n"
-"Möchten Sie es konvertieren?"
+msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
+msgstr "Dies ist ein Gambas 2.0 Projekt.\n\nMöchten Sie es konvertieren?"
 
 #: Project.module:486
 msgid "Do not open"
@@ -6252,14 +6146,8 @@ msgid "Open after all"
 msgstr "Trotzdem öffnen"
 
 #: Project.module:486
-msgid ""
-"This project seems to be already opened.\n"
-"\n"
-"Opening the same project twice can lead to data loss."
-msgstr ""
-"Dieses Projekt scheint bereits geöffnet zu sein.\n"
-"\n"
-"Ein Projekt nochmal zu öffnen, kann zu Datenverlust führen."
+msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
+msgstr "Dieses Projekt scheint bereits geöffnet zu sein.\n\nEin Projekt nochmal zu öffnen, kann zu Datenverlust führen."
 
 #: Project.module:492
 msgid "It cannot be converted."
@@ -6330,12 +6218,8 @@ msgid "in &1."
 msgstr "-"
 
 #: Project.module:2302
-msgid ""
-"Some project source files are in conflict.\n"
-"Please solve them if you want to compile the project."
-msgstr ""
-"Einige Quelldateien des Projekts stehen in Konflikt.\n"
-" Bitte lösen Sie diese bevor Sie das Projekt kompilieren."
+msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
+msgstr "Einige Quelldateien des Projekts stehen in Konflikt.\n Bitte lösen Sie diese bevor Sie das Projekt kompilieren."
 
 #: Project.module:2306
 msgid "Compiling project"
@@ -6473,10 +6357,11 @@ msgstr "Konvertierung der Projektdateien..."
 msgid "Unable to convert &1"
 msgstr "&1 konnte nicht konvertiert werden"
 
-#: ProjectItem.class:82
-msgid "Author"
-msgstr "Autor"
-
 #: Save.module:39
 msgid "Cannot save file !"
 msgstr "Datei kann nicht gespeichert werden !"
+
+#: VersionControl.module:78
+msgid "command timeout"
+msgstr "-"
+
