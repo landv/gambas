@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,88,61)
+  MoveScaled(0,0,75,61)
   Text = ("Component properties")
   Icon = Picture["icon:/small/component"]
   Resizable = False
@@ -9,7 +9,7 @@
   Spacing = True
   Margin = True
   { tabComponent TabPanel
-    MoveScaled(1,1,86,54)
+    MoveScaled(1,1,73,54)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
@@ -22,41 +22,65 @@
       Text = ("Options")
     }
     { HBox5 HBox
-      MoveScaled(1,5,83,4)
+      MoveScaled(1,5,71,4)
       Spacing = True
       Indent = True
       { Label26 Label
-        MoveScaled(0,0,46,4)
+        MoveScaled(0,0,33,4)
         Text = ("Component advancement")
       }
       { cmbComponentState ComboBox
-        MoveScaled(47,0,36,4)
+        MoveScaled(34,0,36,4)
         Expand = True
         ReadOnly = True
         List = [("Finished and stable"), ("Not finished but stable"), ("Experimental")]
       }
     }
     { HBox6 HBox
-      MoveScaled(1,10,83,4)
+      MoveScaled(1,10,71,4)
       Spacing = True
       Indent = True
       { Label25 Label
-        MoveScaled(0,0,46,4)
+        MoveScaled(0,0,33,4)
         Text = ("This component is hidden")
       }
       { cmbHidden ComboBox
-        MoveScaled(47,0,10,4)
+        MoveScaled(34,0,10,4)
         ReadOnly = True
         List = [("Yes"), ("No")]
       }
     }
+    { panCompatible HBox
+      MoveScaled(1,15,71,4)
+      Spacing = True
+      Indent = True
+      { chkCompat CheckBox
+        MoveScaled(0,0,33,4)
+        Text = ("Compatible until version")
+      }
+      { txtMajor SpinBox
+        MoveScaled(34,0,9,4)
+        Enabled = False
+        MaxValue = 9999
+      }
+      { txtMinor SpinBox
+        MoveScaled(44,0,9,4)
+        Enabled = False
+        MaxValue = 9999
+      }
+      { txtRelease SpinBox
+        MoveScaled(54,0,12,4)
+        Enabled = False
+        MaxValue = 999999
+      }
+    }
     { Label1 Label
-      MoveScaled(1,18,17,3)
+      MoveScaled(1,21,17,3)
       Font = Font["Bold"]
       Text = ("Exported classes")
     }
     { lstExport ListBox
-      MoveScaled(1,22,83,27)
+      MoveScaled(1,24,71,25)
       Expand = True
       Mode = Select.None
     }
@@ -143,19 +167,19 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,56,85,4)
+    MoveScaled(1,56,71,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(51,0,16,4)
+      MoveScaled(30,0,16,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(68,0,16,4)
+      MoveScaled(47,0,16,4)
       Text = ("Cancel")
       Cancel = True
     }

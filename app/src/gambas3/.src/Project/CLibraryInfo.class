@@ -8,6 +8,7 @@ Public Classes As String[]
 Public Libraries As String[]
 Public Info As String
 Public Require As String[]
+Public CompatibleUntil As String
 
 Private $sDesc As String
 
@@ -74,7 +75,12 @@ Public Sub _new(sPath As String)
   
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".component"] To sData
   For Each sLine In Split(sData, "\n", "", True)
-    If Trim(sLine) Begins "Requires=" Then Require.Insert(Split(Trim(Mid$(sLine, InStr(sLine, "=") + 1))))
+    sLine = Trim(sLine)
+    If sLine Begins "Requires=" Then 
+      Require.Insert(Split(Trim(Mid$(sLine, InStr(sLine, "=") + 1))))
+    Else If sLine Begins "CompatibleUntil=" Then
+      CompatibleUntil = Trim(Mid$(sLine, InStr(sLine, "=") + 1))
+    Endif
   Next
     
 End

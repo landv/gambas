@@ -412,9 +412,13 @@ Private Function GetDependency(sLib As String) As String
     aMinVersion.Resize(3)
     aMinVersion[2] = "0"
     
-    aMaxVersion = Split(sVersion, ".")
-    aMaxVersion.Resize(3)
-    aMaxVersion[2] = "90"
+    If hLibrary.CompatibleUntil Then
+      aMaxVersion = Split(hLibrary.CompatibleUntil, ".")
+    Else
+      aMaxVersion = Split(sVersion, ".")
+      aMaxVersion.Resize(3)
+      aMaxVersion[2] = "90"
+    Endif
     
   Else
     

@@ -14,32 +14,8 @@
     Count = 3
     Index = 0
     Text = ("Update")
-    { Panel3 VBox
-      MoveScaled(1,1,78,9)
-      Margin = True
-      { Label5 Label
-        MoveScaled(0,0,24,3)
-        Font = Font["Bold"]
-        Text = ("Repository")
-      }
-      { txtRepository Label
-        MoveScaled(0,3,29,4)
-      }
-    }
-    { Separator2 Separator
-      MoveScaled(30,12,14,0)
-    }
-    { gvwInfo GridView
-      MoveScaled(2,14,75,16)
-      Expand = True
-      Border = False
-      Header = GridView.Horizontal
-    }
-    { Separator3 Separator
-      MoveScaled(31,31,19,0)
-    }
     { Panel4 HBox
-      MoveScaled(3,35,81,26)
+      MoveScaled(1,1,81,26)
       { Panel2 VBox
         MoveScaled(1,1,21,24)
         Spacing = True
@@ -73,8 +49,11 @@
       { Separator4 Separator
         MoveScaled(23,5,0,16)
       }
+      { Panel6 Panel
+        MoveScaled(24,11,1,5)
+      }
       { Panel5 Panel
-        MoveScaled(26,1,53,23)
+        MoveScaled(27,1,53,23)
         Expand = True
         Arrangement = Arrange.Vertical
         Spacing = True
@@ -115,6 +94,30 @@
           Text = ("Remember password")
         }
       }
+    }
+    { Separator3 Separator
+      MoveScaled(31,28,19,0)
+    }
+    { Panel3 VBox
+      MoveScaled(1,29,78,9)
+      Margin = True
+      { Label5 Label
+        MoveScaled(0,0,24,3)
+        Font = Font["Bold"]
+        Text = ("Repository")
+      }
+      { txtRepository Label
+        MoveScaled(0,3,29,4)
+      }
+    }
+    { Separator2 Separator
+      MoveScaled(30,40,14,0)
+    }
+    { gvwInfo GridView
+      MoveScaled(2,42,75,16)
+      Expand = True
+      Border = False
+      Header = GridView.Horizontal
     }
     Index = 1
     Text = ("Journal")
