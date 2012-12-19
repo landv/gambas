@@ -25,7 +25,11 @@
 
 #include "llvm/Pass.h"
 #include "llvm/Function.h"
+#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
+#include "llvm/IRBuilder.h"
+#else
 #include "llvm/Support/IRBuilder.h"
+#endif
 #include "llvm/Support/raw_ostream.h"
 
 #include "main.h"
