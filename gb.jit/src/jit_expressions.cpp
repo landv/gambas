@@ -209,11 +209,22 @@ PopOptionalExpression::PopOptionalExpression(Expression* val, int index) : val(v
 		JIT_conv(this->val, type);
 	}
 }
-PushEventExpression::PushEventExpression(int ind) : index(ind) {
+PushEventExpression::PushEventExpression(int ind, const char* unknown_name) : index(ind) {
 	//type = CP->load->event[index].type;
 	type = T_FUNCTION;
-	if (CP->parent)
+	if (unknown_name){
+		index = CLASS_find_symbol(CP, unknown_name);
+		if (index == NO_SYMBOL)
+			THROW(E_DYNAMIC, CP->name, unknown_name);
+		
+		CLASS_DESC* desc = CP->table[index].desc;
+		if (CLASS_DESC_get_type(desc) != CD_EVENT)
+			THROW(E_DYNAMIC, CP->name, unknown_name);
+		
+		index = desc->event.index;
+	} else if (CP->parent){
 		index += CP->parent->n_event;
+	}
 	
 	function_kind = FUNCTION_EVENT;
 	function_expr_type = EventFn;
@@ -857,6 +868,10 @@ ReturnExpression::ReturnExpression(Expression* expr, int kind) : retval(expr), k
 			type = (TYPE)(((CLASS*)type)->override);*/
 		JIT_conv(retval, type);
 	}
+}
+QuitExpression::QuitExpression(Expression* quitval) : quitval(quitval) {
+	if (quitval)
+		JIT_conv(this->quitval, T_BYTE);
 }
 SubrExpression::SubrExpression(int digit, Expression** it, int nargs, int extra) : digit(digit), extra(extra) {
 	args.resize(nargs);

@@ -763,7 +763,12 @@ static void JIT_read_statement(){
 						push(new PushExternExpression(CP, value, NULL));
 						NEXT
 					case C_PUSH_EVENT:
-						push(new PushEventExpression(value));
+						if ((unsigned char)op == 0xFF){
+							push(new PushEventExpression(0, CP->load->unknown[code[pos+1]]));
+							pos++;
+						} else {
+							push(new PushEventExpression(value, NULL));
+						}
 						NEXT
 					case C_PUSH_ARRAY:
 						push(new PushArrayExpression(extract(value), value));
@@ -964,9 +969,10 @@ static void JIT_read_statement(){
 						NEXT
 					case C_QUIT:
 						switch(value){
-							case 0: push_statement(new QuitExpression()); NEXT
+							case 0: default: push_statement(new QuitExpression(NULL)); NEXT
 							case 1: push_statement(new NopExpression(false)); NEXT //FIXME breakpoint
-							case 2: default: push_statement(new StopEventExpression()); NEXT
+							case 2: push_statement(new StopEventExpression()); NEXT
+							case 3: push_statement(new QuitExpression(pop())); NEXT
 						}
 					case C_PUSH_CHAR:
 						push(new PushCStringExpression((char*)&STRING_char_string[value * 2], 0, 1));

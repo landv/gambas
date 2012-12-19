@@ -6486,6 +6486,14 @@ void ReturnExpression::codegen(){
 }
 
 void QuitExpression::codegen(){
+	if (quitval){
+		llvm::Value* val = quitval->codegen_get_value();
+		if (quitval->on_stack)
+			c_SP(-1);
+		
+		builder->CreateStore(val, get_global((void*)&EXEC_quit_value, llvmType(getInt8Ty)));
+	}
+	
 	builder->CreateCall(get_global_function_jif(EXEC_quit, 'v', ""));
 	builder->CreateUnreachable();
 	builder->SetInsertPoint(create_bb("dummy"));

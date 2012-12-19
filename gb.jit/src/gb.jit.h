@@ -206,8 +206,8 @@ typedef
 		intptr_t version;
 		void (*Init)(GB_JIT_INTERFACE *jif, char **STACK_limit, STACK_CONTEXT *EXEC_current, VALUE **SP, VALUE *TEMP,
 			VALUE *RET, char *GAMBAS_StopEvent, char **EXEC_enum, EXEC_GLOBAL *EXEC,
-			const char **EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, void **EVENT_Last,
-			ERROR_CONTEXT **ERROR_current, ERROR_HANDLER **ERROR_handler, const char *STRING_char_string);
+			const char **EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, unsigned char *__EXEC_quit_value,
+			void **EVENT_Last, ERROR_CONTEXT **ERROR_current, ERROR_HANDLER **ERROR_handler, const char *STRING_char_string);
 		void (*CompileAndExecute)(void);
 		void (*LoadClass)(CLASS *klass);
 		}

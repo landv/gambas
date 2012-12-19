@@ -116,6 +116,7 @@ extern EXEC_GLOBAL *_EXEC;
 extern const char **_EXEC_unknown_name;
 extern char *_EXEC_profile;
 extern char *_EXEC_profile_instr;
+extern unsigned char *_EXEC_quit_value;
 
 extern void **_EVENT_Last;
 
@@ -141,6 +142,7 @@ extern const char *_STRING_char_string;
 #define EXEC_unknown_name (*_EXEC_unknown_name)
 #define EXEC_profile (*_EXEC_profile)
 #define EXEC_profile_instr (*_EXEC_profile_instr)
+#define EXEC_quit_value (*_EXEC_quit_value)
 
 #define EVENT_Last (*_EVENT_Last)
 
@@ -242,8 +244,8 @@ extern "C" {
 
 void JIT_init(GB_JIT_INTERFACE *jif, char **__STACK_limit, STACK_CONTEXT *__EXEC_current, VALUE **__SP, VALUE *__TEMP,
 	VALUE *__RET, char *__GAMBAS_StopEvent, char ** __EXEC_enum, EXEC_GLOBAL *__EXEC,
-	const char **__EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, void **__EVENT_Last,
-	ERROR_CONTEXT **__ERROR_current, ERROR_HANDLER **__ERROR_handler, const char *__STRING_char_string);
+	const char **__EXEC_unknown_name, char *__EXEC_profile, char *__EXEC_profile_instr, unsigned char *__EXEC_quit_value,
+	void **__EVENT_Last, ERROR_CONTEXT **__ERROR_current, ERROR_HANDLER **__ERROR_handler, const char *__STRING_char_string);
 void JIT_compile_and_execute(void);
 void JIT_end(void);
 void JIT_load_class(CLASS *klass);

@@ -431,7 +431,7 @@ struct PushExternExpression : Expression {
 
 struct PushEventExpression : Expression, FunctionExpression {
 	int index;
-	PushEventExpression(int ind);
+	PushEventExpression(int ind, const char* unknown_name);
 };
 
 struct PushArrayExpression : Expression {
@@ -990,6 +990,8 @@ struct ReturnExpression : Expression {
 };
 
 struct QuitExpression : Expression {
+	Expression* quitval;
+	QuitExpression(Expression* quitval);
 	void codegen();
 };
 

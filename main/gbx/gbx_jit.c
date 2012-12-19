@@ -56,7 +56,7 @@ bool JIT_load()
 		
 		JIT.Init((GB_JIT_INTERFACE *)(void *)GAMBAS_JitApi, &STACK_limit, &EXEC_current, &SP, &TEMP, &RET,
 			&GAMBAS_StopEvent, (char **)&EXEC_enum, &EXEC, &EXEC_unknown_name, &EXEC_profile,
-			&EXEC_profile_instr, &EVENT_Last, &ERROR_current, &ERROR_handler, &STRING_char_string[0]);
+			&EXEC_profile_instr, &EXEC_quit_value, &EVENT_Last, &ERROR_current, &ERROR_handler, &STRING_char_string[0]);
 		
 		loaded = TRUE;
 	}
