@@ -242,7 +242,8 @@ int CLASS_add_array(CLASS *class, TRANS_ARRAY *array);
 
 int CLASS_get_array_class(CLASS *class, int type, int value);
 
-void FUNCTION_add_pos_line(void);
+void FUNCTION_add_last_pos_line(void);
+void FUNCTION_add_all_pos_line(void);
 char *FUNCTION_get_fake_name(int func);
 
 int CLASS_add_symbol(CLASS *class, const char *name);

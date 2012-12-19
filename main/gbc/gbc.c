@@ -256,7 +256,7 @@ static void compile_file(const char *file)
 	time_t time_src, time_form, time_pot, time_output;
 	char *source;
 
-	COMPILE_begin(file, main_trans);
+	COMPILE_begin(file, main_trans, main_debug);
 
 	if (!main_compile_all)
 	{
@@ -281,7 +281,6 @@ static void compile_file(const char *file)
 	}
 
 	JOB->all = main_compile_all;
-	JOB->debug = main_debug;
 	JOB->exec = main_exec;
 	JOB->verbose = main_verbose;
 	JOB->warnings = main_warnings;

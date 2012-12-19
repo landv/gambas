@@ -316,7 +316,7 @@ void COMPILE_init(void)
 }
 
 
-void COMPILE_begin(const char *file, bool trans)
+void COMPILE_begin(const char *file, bool trans, bool debug)
 {
 	struct stat info;
 	off_t size;
@@ -324,6 +324,7 @@ void COMPILE_begin(const char *file, bool trans)
 	CLEAR(JOB);
 
 	JOB->name = STR_copy(file);
+	JOB->debug = debug;
 	JOB->form = FORM_get_file_family(JOB->name, &JOB->family);
 	JOB->output = OUTPUT_get_file(JOB->name);
 

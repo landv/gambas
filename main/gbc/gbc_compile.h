@@ -101,7 +101,7 @@ EXTERN FORM_FAMILY COMP_form_families[];
 void COMPILE_init(void);
 void COMPILE_load(void);
 void COMPILE_exit(void);
-void COMPILE_begin(const char *file, bool trans);
+void COMPILE_begin(const char *file, bool trans, bool debug);
 void COMPILE_end(void);
 void COMPILE_export_class(char *name);
 void COMPILE_add_class(const char *name, int len);

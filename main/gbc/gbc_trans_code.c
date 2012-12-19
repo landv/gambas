@@ -274,7 +274,7 @@ static void translate_body()
 	PATTERN *look;
 	bool is_proc = (TYPE_get_id(func->type) == T_VOID);
 	bool test_newline;
-	int line = JOB->line - 1;
+	//int line = JOB->line - 1;
 	bool just_got_select = FALSE;
 
 	for(;;)
@@ -282,11 +282,7 @@ static void translate_body()
 		test_newline = TRUE;
 		CODE_allow_break();
 
-		while (line < JOB->line)
-		{
-			FUNCTION_add_pos_line();
-			line++;
-		}
+		FUNCTION_add_all_pos_line();
 
 		look = JOB->current;
 
@@ -312,11 +308,7 @@ static void translate_body()
 		test_newline = TRUE;
 		CODE_allow_break();
 
-		while (line < JOB->line)
-		{
-			FUNCTION_add_pos_line();
-			line++;
-		}
+		FUNCTION_add_all_pos_line();
 
 		look = JOB->current;
 
@@ -525,11 +517,15 @@ void TRANS_code(void)
 		if (JOB->verbose)
 			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, func->name));
 
-		/* Do not debug implicite or generated functions */
+		/* Do not debug implicit or generated functions */
 		if (!func->start || func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, func->name)[0] == '$')
 			JOB->nobreak = TRUE;
 		else
 			JOB->nobreak = FALSE;
+
+		JOB->line = func->line;
+		JOB->current = func->start;
+		JOB->func = func;
 
 		/* fonction implicite ? */
 		if (!func->start)
@@ -541,15 +537,12 @@ void TRANS_code(void)
 				//CODE_event(TRUE);
 			}
 
+			FUNCTION_add_last_pos_line();
 			CODE_op(C_RETURN, 0, 0, TRUE);
 			if (JOB->verbose)
 				CODE_dump(func->code, func->ncode);
 			continue;
 		}
-
-		JOB->line = func->line;
-		JOB->current = func->start;
-		JOB->func = func;
 
 		create_local_from_param();
 
@@ -558,7 +551,7 @@ void TRANS_code(void)
 		CODE_return(2); // Return from function, ignore Gosub stack
 
 		CODE_end_function(func);
-		FUNCTION_add_pos_line();
+		FUNCTION_add_last_pos_line();
 
 		func->stack = func->nlocal + func->nctrl + CODE_stack_usage;
 

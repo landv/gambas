@@ -649,6 +649,7 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 	CLASS_SYMBOL *sym = CLASS_declare(class, decl->index, TRUE);
 	VARIABLE *var;
 	int count;
+	FUNCTION *func;
 
 	sym->global.type = decl->type;
 
@@ -672,7 +673,12 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 
 		//class->size_stat += var->size;
 
-		CODE_begin_function(&class->function[FUNC_INIT_STATIC]);
+		func = &class->function[FUNC_INIT_STATIC];
+		CODE_begin_function(func);
+		JOB->func = func;
+		
+		FUNCTION_add_all_pos_line();
+		
 		if (TRANS_init_var(decl))
 			CODE_pop_global(sym->global.value, TRUE);
 	}
@@ -691,8 +697,12 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 		//var->size = TYPE_sizeof(var->type);
 
 		//class->size_dyn += var->size;
-
-		CODE_begin_function(&class->function[FUNC_INIT_DYNAMIC]);
+		
+		func = &class->function[FUNC_INIT_DYNAMIC];
+		CODE_begin_function(func);
+		JOB->func = func;
+		
+		FUNCTION_add_all_pos_line();
 		if (TRANS_init_var(decl))
 			CODE_pop_global(sym->global.value, FALSE);
 	}
@@ -762,17 +772,36 @@ int CLASS_add_symbol(CLASS *class, const char *name)
 }
 
 
-void FUNCTION_add_pos_line(void)
+void FUNCTION_add_last_pos_line(void)
 {
-	short *pos;
+	int current_pos;
 
-	if (JOB->debug)
-	{
-		pos = ARRAY_add(&JOB->func->pos_line);
-		*pos = CODE_get_current_pos();
-	}
+	if (!JOB->debug)
+		return;
+	
+	current_pos = CODE_get_current_pos();
+	fprintf(stderr, "[%d] = %d\n", JOB->func->line + ARRAY_count(JOB->func->pos_line), (int)current_pos);
+	*ARRAY_add(&JOB->func->pos_line) = current_pos;
 }
 
+void FUNCTION_add_all_pos_line(void)
+{
+	int line;
+	int current_pos;
+	
+	if (!JOB->debug)
+		return;
+	
+	line = JOB->func->line + ARRAY_count(JOB->func->pos_line) - 1;
+	current_pos = CODE_get_current_pos();
+	
+	while (line < JOB->line)
+	{
+		fprintf(stderr, "[%d] = %d\n", JOB->func->line + ARRAY_count(JOB->func->pos_line), (int)current_pos);
+		*ARRAY_add(&JOB->func->pos_line) = current_pos;
+		line++;
+	}
+}
 
 char *FUNCTION_get_fake_name(int func)
 {
