@@ -233,7 +233,7 @@ Public Sub Form_Close()
   If chkRemember.Value Then 
     Desktop.Passwords[Project.Name &/ "VersionControl"] = txtPassword.Text
   Else
-    Desktop.Passwords[Project.Name &/ "VersionControl"] = ""
+    Try Desktop.Passwords[Project.Name &/ "VersionControl"] = ""
   Endif
 
   'Project.Config["/VersionControl/UseTerminal"] = If(chkTerminal.Value, 1, 0)
