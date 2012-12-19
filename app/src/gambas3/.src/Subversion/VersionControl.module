@@ -470,7 +470,8 @@ Private Sub FormatSvnDate(sDate As String) As String
   Dim aDate As String[]
   
   aDate = Split(sDate, "*-*-* *:*:* *")
-  Return Format(Date(CInt(aDate[0]), CInt(aDate[1]), CInt(aDate[2]), CInt(aDate[3]), CInt(aDate[4]), CInt(aDate[5])), gb.GeneralDate)
+  Try Return Format(Date(CInt(aDate[0]), CInt(aDate[1]), CInt(aDate[2]), CInt(aDate[3]), CInt(aDate[4]), CInt(aDate[5])), gb.GeneralDate)
+  If Error Then Return sDate & " ?"
 
 End
 
