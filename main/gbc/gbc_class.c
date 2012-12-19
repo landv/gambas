@@ -780,7 +780,6 @@ void FUNCTION_add_last_pos_line(void)
 		return;
 	
 	current_pos = CODE_get_current_pos();
-	fprintf(stderr, "[%d] = %d\n", JOB->func->line + ARRAY_count(JOB->func->pos_line), (int)current_pos);
 	*ARRAY_add(&JOB->func->pos_line) = current_pos;
 }
 
@@ -797,7 +796,6 @@ void FUNCTION_add_all_pos_line(void)
 	
 	while (line < JOB->line)
 	{
-		fprintf(stderr, "[%d] = %d\n", JOB->func->line + ARRAY_count(JOB->func->pos_line), (int)current_pos);
 		*ARRAY_add(&JOB->func->pos_line) = current_pos;
 		line++;
 	}
