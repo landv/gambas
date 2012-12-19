@@ -12,7 +12,7 @@ Public Sub Run() As Boolean
 
 End
 
-Private Sub RefreshStatus()
+Private Sub RefreshStatus(bRemote As Boolean)
   
   Inc Application.Busy
   
@@ -26,7 +26,7 @@ Private Sub RefreshStatus()
   tabVersion[1].Visible = $sChange
   tabVersion[2].Visible = $sChange
   
-  $cInfo = VersionControl.Info()
+  $cInfo = VersionControl.Info(bRemote)
   
   txtRepository.Text = $cInfo["url"]
   
@@ -64,7 +64,7 @@ Public Sub Form_Open()
   
   'chkTerminal.Value = Project.Config["/VersionControl/UseTerminal", 0]
   
-  RefreshStatus
+  RefreshStatus(False)
   
   edtChange.ReadConfig
   'edtChange.Flags[Editor.ShowCursorPosition] = True
@@ -192,7 +192,7 @@ Public Sub btnUpdate_Click()
     Message.Info(("Project has been updated from repository successfully."))
   Endif
   
-  RefreshStatus
+  RefreshStatus(True)
     
 End
 
@@ -213,7 +213,7 @@ End
 
 Public Sub btnInfo_Click()
 
-  RefreshStatus
+  RefreshStatus(True)
 
 End
 

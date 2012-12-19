@@ -1,59 +1,54 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,90,73)
+  MoveScaled(0,0,90,69)
   Text = ("Project Version Control")
   Icon = Picture["icon:/small/calendar"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
   { tabVersion TabPanel
-    MoveScaled(1,1,87,66)
+    MoveScaled(1,1,87,62)
     Expand = True
     Arrangement = Arrange.Vertical
     Count = 3
     Index = 0
     Text = ("Update")
     { Panel4 HBox
-      MoveScaled(1,1,81,26)
+      MoveScaled(1,1,81,22)
       { Panel2 VBox
-        MoveScaled(1,1,21,24)
+        MoveScaled(1,1,23,21)
         Spacing = True
         Margin = True
-        { btnInfo Button
-          MoveScaled(0,0,18,4)
-          Text = ("&Refresh")
-          Picture = Picture["icon:/small/refresh"]
-        }
         { btnUpdate Button
-          MoveScaled(0,5,18,4)
+          MoveScaled(1,1,18,4)
           Text = ("&Update")
           Picture = Picture["icon:/small/down"]
         }
         { btnRevert Button
-          MoveScaled(0,10,18,4)
-          Text = ("&Revert...")
+          MoveScaled(1,6,18,4)
+          Text = ("&Revert")
           Picture = Picture["icon:/small/undo"]
         }
         { btnCommit Button
-          MoveScaled(0,15,18,4)
-          Text = ("&Commit...")
+          MoveScaled(1,11,18,4)
+          Text = ("&Commit")
           Picture = Picture["icon:/small/ok"]
         }
         { btnCleanUp Button
-          MoveScaled(0,20,18,4)
+          MoveScaled(1,16,18,4)
           Text = ("Clea&n up")
           Picture = Picture["icon:/small/wizard"]
         }
       }
       { Separator4 Separator
-        MoveScaled(23,5,0,16)
+        MoveScaled(26,3,0,16)
       }
       { Panel6 Panel
-        MoveScaled(24,11,1,5)
+        MoveScaled(27,9,1,5)
       }
       { Panel5 Panel
-        MoveScaled(27,1,53,23)
+        MoveScaled(29,1,51,19)
         Expand = True
         Arrangement = Arrange.Vertical
         Spacing = True
@@ -64,7 +59,7 @@
           Text = ("Authentication")
         }
         { HBox2 HBox
-          MoveScaled(1,5,51,4)
+          MoveScaled(1,5,49,4)
           Spacing = True
           { Label1 Label
             MoveScaled(0,0,16,4)
@@ -76,7 +71,7 @@
           }
         }
         { HBox3 HBox
-          MoveScaled(1,10,51,4)
+          MoveScaled(1,10,49,4)
           Spacing = True
           { Label2 Label
             MoveScaled(0,0,16,4)
@@ -96,10 +91,10 @@
       }
     }
     { Separator3 Separator
-      MoveScaled(31,28,19,0)
+      MoveScaled(31,24,19,0)
     }
     { Panel3 VBox
-      MoveScaled(1,29,78,9)
+      MoveScaled(1,25,78,9)
       Margin = True
       { Label5 Label
         MoveScaled(0,0,24,3)
@@ -111,13 +106,23 @@
       }
     }
     { Separator2 Separator
-      MoveScaled(30,40,14,0)
+      MoveScaled(30,36,14,0)
     }
     { gvwInfo GridView
-      MoveScaled(2,42,75,16)
+      MoveScaled(2,38,75,12)
       Expand = True
       Border = False
       Header = GridView.Horizontal
+    }
+    { Panel7 HBox
+      MoveScaled(2,51,67,6)
+      Background = Color.TextBackground
+      Margin = True
+      { btnInfo Button
+        MoveScaled(1,1,28,4)
+        Text = ("Refresh &information")
+        Picture = Picture["icon:/small/refresh"]
+      }
     }
     Index = 1
     Text = ("Journal")
@@ -213,7 +218,7 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(3,68,54,4)
+    MoveScaled(1,64,54,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(3,0,4,4)

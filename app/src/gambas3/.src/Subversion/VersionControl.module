@@ -475,7 +475,7 @@ Private Sub FormatSvnDate(sDate As String) As String
 
 End
 
-Public Sub Info() As Collection
+Public Sub Info(bRemote As Boolean) As Collection
   
   Dim sLine As String
   Dim aLine As String[]
@@ -501,7 +501,7 @@ Public Sub Info() As Collection
       
     Endif
     
-    If sUrl Then
+    If bRemote And If sUrl Then
     
       If Run(["svn", "info", SvnPath$(sUrl)], True, True, ["LC_ALL=C"]) = 0 Then
       
