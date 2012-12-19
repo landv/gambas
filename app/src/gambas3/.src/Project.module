@@ -2333,7 +2333,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   Endif
 
   FDebugInfo.SetCompilation(sOutput)
-  FDebugInfo.GotoFirstWarning()
+  'FDebugInfo.GotoFirstWarning()
 
   If bGotError And If sRes Then
 
