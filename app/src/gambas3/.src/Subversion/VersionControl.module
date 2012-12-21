@@ -344,7 +344,7 @@ Public Sub Commit(sChange As String) As Boolean
     Print #hFile, sChange;
     Close #hFile
     
-    Run(["svn", "commit", "--file", Temp$("commit"), Project.Dir], True)
+    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$(Project.Dir)], True, False, ["LC_ALL=C"])
     Return Process.LastValue
   Endif
 
