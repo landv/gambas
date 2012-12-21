@@ -344,7 +344,7 @@ Public Sub Commit(sChange As String) As Boolean
     Print #hFile, sChange;
     Close #hFile
     
-    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$(Project.Dir)], True, False, ["LC_ALL=C"])
+    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$(Project.Dir)], True, False, ["LC_ALL=C.UTF-8"])
     Return Process.LastValue
   Endif
 
@@ -412,7 +412,7 @@ Public Sub GetVersion(sDir As String) As String
   Dim sRes As String
 
   If Exist(sDir &/ ".svn") Then
-    Shell "cd " & Shell$(sDir) & "; LC_ALL=C svn info" To sRes
+    Shell "cd " & Shell$(sDir) & "; LC_ALL=C.UTF-8 svn info" To sRes
     Try sRes = Scan(sRes, "*\nRevision: *\n*")[1]
     Return sRes
   Endif
@@ -485,7 +485,7 @@ Public Sub Info(bRemote As Boolean) As Collection
   
   If $bSvn Then
     
-    If Run(["svn", "info", SvnPath$(Project.Dir)], False, True, ["LC_ALL=C"]) = 0 Then
+    If Run(["svn", "info", SvnPath$(Project.Dir)], False, True, ["LC_ALL=C.UTF-8"]) = 0 Then
     
       cData.Clear
       For Each sLine In Split($sOutput, "\n", "", True)
@@ -503,7 +503,7 @@ Public Sub Info(bRemote As Boolean) As Collection
     
     If bRemote And If sUrl Then
     
-      If Run(["svn", "info", SvnPath$(sUrl)], True, True, ["LC_ALL=C"]) = 0 Then
+      If Run(["svn", "info", SvnPath$(sUrl)], True, True, ["LC_ALL=C.UTF-8"]) = 0 Then
       
         cData.Clear
         For Each sLine In Split($sOutput, "\n", "", True)
