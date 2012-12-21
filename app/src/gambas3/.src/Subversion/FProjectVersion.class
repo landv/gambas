@@ -102,6 +102,7 @@ Public Sub btnCommit_Click()
   Endif
 
   Inc Application.Busy
+  GetAuthentication
   bRes = VersionControl.Commit(sChange)
   If Not bRes Then Project.Refresh
   Dec Application.Busy
@@ -182,6 +183,7 @@ Public Sub btnUpdate_Click()
   Dim bErr As Boolean
 
   Inc Application.Busy
+  GetAuthentication
   bErr = VersionControl.Update()
   Project.Refresh
   Dec Application.Busy

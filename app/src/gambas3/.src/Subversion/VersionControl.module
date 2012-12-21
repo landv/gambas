@@ -74,6 +74,7 @@ Private Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput A
     If $bEnd Then Break
     
     If DateDiff($dOutput, Now, gb.Second) >= 10 Then
+      Close #hProcess
       hProcess.Kill
       Insert("** " & ("command timeout") & " **\n")
     Endif
