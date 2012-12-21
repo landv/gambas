@@ -1409,3 +1409,22 @@ Public Sub btnCopy_Click()
   Try Clipboard.Copy(cvwWatch.Current[1])
 
 End
+
+Public Sub tbvLocal_Menu()
+    ' if more then 0 rows
+    If tbvLocal.Rows.Count > 0 Then mnuDump.Popup()
+End
+
+Public Sub mnuDumpLocalVariablesList_Click()
+Dim i As Integer
+Dim s As String
+  Print "start dump local variables list"
+  For i = 0 To tbvLocal.Rows.Count - 1
+    s &= tbvLocal[i, 0].Text & " = " & tbvLocal[i, 1].Text & gb.CrLf
+  Next  
+  Try Clipboard.Copy(s)
+  Print "finished dump,  list copied to Clipboard"
+  With tbvLocal[0, 1]
+      Balloon.Info("finished dump,  list copied to Clipboard", tbvLocal, .X + .W / 2, .Y + .H / 2)
+  End With 
+End

@@ -5,6 +5,14 @@
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Horizontal
+  { mnuDump Menu
+    Text = ("dump")
+    Visible = False
+    { mnuDumpLocalVariablesList Menu
+      Text = ("dump local variables list")
+      Picture = Picture["icon:/16/copy"]
+    }
+  }
   { tabDebug TabPanel
     MoveScaled(3,3,94,41)
     Expand = True
