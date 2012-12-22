@@ -2248,6 +2248,8 @@ bool GB_StatFile(const char *path, GB_FILE_STAT *info, bool follow)
 	END_CATCH_ERROR
 }
 
+// TODO: don't accept directories!
+
 char *GB_RealFileName(const char *name, int len)
 {
 	char *path = STRING_conv_file_name(name, len);

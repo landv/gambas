@@ -162,12 +162,15 @@ static bool calc_position_from_line(CLASS *class, ushort line, FUNCTION **functi
 	{
 		func = &class->load->func[i];
 		debug = func->debug;
+		//fprintf(stderr, "calc_position_from_line: %s (%d -> %d) / %d\n", debug->name, debug->line, debug->line + debug->nline - 1, line);
 		if (debug && line >= debug->line && line < (debug->line + debug->nline))
 			break;
 	}
 
 	if (i >= class->load->n_func)
 		return TRUE;
+
+	//fprintf(stderr, "calc_position_from_line: %s OK\n", debug->name);
 
 	line -= debug->line;
 

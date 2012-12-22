@@ -677,10 +677,12 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 		CODE_begin_function(func);
 		JOB->func = func;
 		
-		FUNCTION_add_all_pos_line();
-		
-		if (TRANS_init_var(decl))
+		if (TRANS_has_init_var(decl))
+		{
+			FUNCTION_add_all_pos_line();
+			TRANS_init_var(decl);
 			CODE_pop_global(sym->global.value, TRUE);
+		}
 	}
 	else
 	{
@@ -702,9 +704,12 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 		CODE_begin_function(func);
 		JOB->func = func;
 		
-		FUNCTION_add_all_pos_line();
-		if (TRANS_init_var(decl))
+		if (TRANS_has_init_var(decl))
+		{
+			FUNCTION_add_all_pos_line();
+			TRANS_init_var(decl);
 			CODE_pop_global(sym->global.value, FALSE);
+		}
 	}
 }
 
@@ -776,7 +781,7 @@ void FUNCTION_add_last_pos_line(void)
 {
 	int current_pos;
 
-	if (!JOB->debug)
+	if (!JOB->debug || JOB->nobreak)
 		return;
 	
 	current_pos = CODE_get_current_pos();
@@ -788,11 +793,13 @@ void FUNCTION_add_all_pos_line(void)
 	int line;
 	int current_pos;
 	
-	if (!JOB->debug)
+	if (!JOB->debug || JOB->nobreak)
 		return;
 	
 	line = JOB->func->line + ARRAY_count(JOB->func->pos_line) - 1;
 	current_pos = CODE_get_current_pos();
+	
+	//fprintf(stderr, "FUNCTION_add_all_pos_line: line = %d JOB->line = %d\n", line, JOB->line);
 	
 	while (line < JOB->line)
 	{

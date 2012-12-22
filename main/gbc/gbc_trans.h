@@ -140,6 +140,7 @@ char *TRANS_get_num_desc(int num);
 /* trans_code.c */
 
 void TRANS_code(void);
+#define TRANS_has_init_var(_decl) ((_decl)->is_new || (_decl)->init)
 bool TRANS_init_var(TRANS_DECL *decl);
 void TRANS_statement(void);
 void TRANS_init_optional(TRANS_PARAM *param);

@@ -184,11 +184,15 @@ void FILE_init(void)
 	
 	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, (int)getuid());
 	mkdir(file_buffer, S_IRWXU);
-	if (chown(file_buffer, getuid(), getgid()) || chmod(file_buffer, S_IRWXU))
-		ERROR_fatal("cannot initialize interpreter temporary directory. Do you try to hijack Gambas?");
-		
-	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
-	mkdir(file_buffer, S_IRWXU);
+	if (chown(file_buffer, getuid(), getgid()) || chmod(file_buffer, S_IRWXU) == 0)
+	{
+		snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
+		mkdir(file_buffer, S_IRWXU);
+		if (chown(file_buffer, getuid(), getgid()) || chmod(file_buffer, S_IRWXU) == 0)
+			return;
+	}
+
+	ERROR_fatal("cannot initialize interpreter temporary directory. Do you try to hijack Gambas?");
 }
 
 void FILE_exit(void)

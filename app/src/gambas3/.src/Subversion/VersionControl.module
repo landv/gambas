@@ -529,7 +529,7 @@ End
 Public Sub CleanUp()
   
   If $bSVN Then
-    Run(["svn", "cleanup"])
+    Run(["svn", "cleanup", SvnPath$(File.Dir(Project.Dir))])
   Endif
   
 End

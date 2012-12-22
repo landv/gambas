@@ -595,14 +595,13 @@ bool TRANS_init_var(TRANS_DECL *decl)
 				CODE_push_number(array->dim[i]);
 
 			CODE_new(array->ndim + 1, TRUE, FALSE);
-			return TRUE;
 		}
 		else
 		{
 			JOB->current = decl->init;
 			TRANS_new();
-			return TRUE;
 		}
+		return TRUE;
 	}
 	else if (decl->init)
 	{
@@ -610,8 +609,8 @@ bool TRANS_init_var(TRANS_DECL *decl)
 		TRANS_expression(FALSE);
 		return TRUE;
 	}
-
-	return FALSE;
+	else
+		return FALSE;
 }
 
 
