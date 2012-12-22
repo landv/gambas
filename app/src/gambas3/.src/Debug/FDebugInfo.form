@@ -5,14 +5,6 @@
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Horizontal
-  { mnuDump Menu
-    Text = ("dump")
-    Visible = False
-    { mnuDumpLocalVariablesList Menu
-      Text = ("dump local variables list")
-      Picture = Picture["icon:/16/copy"]
-    }
-  }
   { tabDebug TabPanel
     MoveScaled(3,3,94,41)
     Expand = True
@@ -30,9 +22,25 @@
     Index = 1
     Text = ("Local variables")
     Picture = Picture["img/16/local.png"]
+    { panLocal HBox
+      MoveScaled(0,0,55,4)
+      { btnLocalLayout ToolButton
+        MoveScaled(0,0,15,4)
+        AutoResize = True
+        Text = ("Column view")
+        Picture = Picture["icon:/small/view-split-h"]
+        Toggle = True
+      }
+      { btnLocalCopy ToolButton
+        MoveScaled(16,0,20,4)
+        ToolTip = ("Copy to clipboard")
+        AutoResize = True
+        Text = ("Copy local variables")
+        Picture = Picture["icon:/small/copy"]
+      }
+    }
     { Separator4 Separator
       MoveScaled(7,7,24,0)
-      Visible = False
     }
     { tbvLocal TableView
       MoveScaled(3,12,63,18)
@@ -40,7 +48,6 @@
       Border = False
       Mode = Select.Single
       Grid = False
-      Header = GridView.Horizontal
       NoKeyboard = True
     }
     Index = 2
@@ -56,7 +63,6 @@
       Border = False
       Mode = Select.Single
       Grid = False
-      Header = GridView.Horizontal
       NoKeyboard = True
     }
     Index = 3

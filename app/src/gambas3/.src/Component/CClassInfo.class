@@ -424,6 +424,7 @@ Public Sub GetHelpMarkup() As String
   Dim sMarkup As String
   
   If Help Then Return Help
+  If Component And If Component <> CComponent.PROJECT_NAME Then Return
   
   hForm = Project.LoadFile(Project.FindPath(Name))
   Try hEdit = hForm.Editor

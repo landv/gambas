@@ -18,6 +18,7 @@ Private $cComp As New Collection
 Private $aLibraries As String[]
 
 Private $iDoNotRefreshComponent As Integer
+Private $iTooltipLastRow As Integer
 
 'Private Const LIBRARY_TAB As Integer = 2
 'Private Const VERSION_TAB As Integer = 5
@@ -1207,5 +1208,48 @@ Public Sub tabProject_Arrange()
   For I = 0 To $aLibraries.Max
     gvwLibrary.Rows[I].H = -1
   Next
+
+End
+
+Public Sub gvwComponent_MouseMove()
+
+  Dim iRow As Integer
+  Dim hComp As CComponent
+  Dim sText As String
+  
+  If gvwComponent.ColumnAt(Mouse.X) = 3 Then
+    
+    iRow = gvwComponent.RowAt(Mouse.Y)
+    
+    Try hComp = CComponent.All[$aComp[iRow]]
+    If hComp Then
+      Select Case hComp.State
+        Case CComponent.STABLE_NOT_FINISHED
+          sText = ("Not finished but stable")
+        Case CComponent.UNSTABLE
+          sText = ("Experimental")
+        Case CComponent.STABLE
+          sText = ("Stable")
+      End Select
+    Endif
+    
+    If $iTooltipLastRow <> iRow Then
+      gvwComponent.Tooltip = sText
+      $iTooltipLastRow = iRow
+    Endif
+    
+  Endif
+
+End
+
+Public Sub gvwComponent_Leave()
+
+  gvwComponent.Tooltip = ""
+
+End
+
+Public Sub gvwComponent_Enter()
+
+  $iTooltipLastRow = -1
 
 End

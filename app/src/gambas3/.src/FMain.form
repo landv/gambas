@@ -125,17 +125,17 @@
       Picture = Picture["icon:/small/edit"]
       Shortcut = "Ctrl+P"
     }
-    { mnuVersion Menu
-      Action = "project-version"
-      Text = ("&Version control...")
-      Picture = Picture["icon:/small/calendar"]
-    }
     { mnuPropertyComp Menu
       Action = "component-property"
       Text = ("Component properties")
       Picture = Picture["icon:/small/component"]
       Visible = False
       Shortcut = "Ctrl+Shift+P"
+    }
+    { mnuVersion Menu
+      Action = "project-version"
+      Text = ("&Version control...")
+      Picture = Picture["icon:/small/calendar"]
     }
   }
   { mnuDebug Menu

@@ -466,7 +466,14 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
     If sCar = "[" Then
 
       sRes &= $sArgAfter
-      If bBalise Then sRes &= "<font color=#808080>"
+      If bBalise Then 
+        sRes &= "<font color=#808080>"
+      Else
+        GoSub ADD_COMMA
+        sRes &= "["
+        bFirst = True
+      Endif
+      
       $sArgAfter = ""
       Continue
 
@@ -475,7 +482,11 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
     If sCar = "]" Then
 
       sRes &= $sArgAfter 
-      If bBalise Then sRes &= "</font>"
+      If bBalise Then
+        sRes &= "</font>"
+      Else
+        sRes &= "]"
+      Endif
       $sArgAfter = ""
       Continue
 
@@ -596,7 +607,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
   Endif
   
   If InStr(":mx", LCase(Kind)) Then 
-    sSign = GetSignature(False)
+    sSign = GetSignature(bBalise)
     If sSign Then
       sDesc &= sSign
     Else
@@ -991,6 +1002,8 @@ Public Function GetHelpHTML() As String
   Dim sSyntax As String
   Dim sMarkup As String
   Dim sTitle As String
+  Dim sSym As String
+  Dim bArg As Boolean
   
   sMarkup = GetHelpMarkup()
   If sMarkup Then 
@@ -1006,23 +1019,36 @@ Public Function GetHelpHTML() As String
   'If Me.IsStatic() Then sHTML &= "<font color=\"blue\">STATIC </font>"
 
   sSyntax &= Me.GetDescription(False)
-  sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
-  
+  ' sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
+  ' 
   Highlight.Analyze(sSyntax, True)
   sSyntax = ""
   
   For I = 0 To Highlight.Symbols.Max
+    sSym = Highlight.Symbols[I]
+    If sSym = "[" Or If sSym = "]" Then
+      sSyntax = RTrim(sSyntax) & "<b> " & sSym & " </b>"
+      Continue
+    Else If sSym = "," Then
+      sSyntax = RTrim(sSyntax) & sSym & " "
+      Continue
+    Endif
     Select Case Highlight.Types[I]
       Case Highlight.Symbol
-        sSyntax &= "<b>" & Highlight.Symbols[i] & " </b>"
+        If bArg Then
+          sSyntax &= "<u>" & sSym & "</u> "
+        Else
+          sSyntax &= "<b>" & sSym & "</b> "
+          bArg = True
+        Endif
       Case Highlight.Operator
-        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[I] & " </font>"
+        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[I] & "</font> "
       Case Highlight.DataType
-        sSyntax &= "<font color=\"#0080FF\">" & Highlight.Symbols[I] & " </font>"
+        sSyntax &= "<font color=\"#0080FF\">" & sSym & "</font> "
       Case Highlight.Keyword
-        sSyntax &= "<font color=\"blue\">" & KeywordCase(Highlight.Symbols[I]) & " </font>"
+        sSyntax &= "<font color=\"blue\">" & KeywordCase(sSym) & "</font> "
       Case Else
-        sSyntax &= Highlight.Symbols[I]
+        sSyntax &= sSym
     End Select
   Next
   

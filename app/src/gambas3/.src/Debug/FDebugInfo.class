@@ -32,13 +32,6 @@ Private $iY As Integer
 
 Public Sub _new()
   
-  With tbvLocal
-    .Columns.Count = 2
-    .Columns[0].Width = 192
-    .Columns[0].Text = ("Name")
-    .Columns[1].Text = ("Value")
-  End With
-
   With tbvObject
     .Columns.Count = 2
     .Columns[0].Width = 192
@@ -100,6 +93,7 @@ Public Sub _new()
   tabDebug[TAB_COMPILATION].Visible = False
   
   ReadConfig
+  UpdateLocal
   
 End
 
@@ -301,7 +295,11 @@ Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iInde
     
     If bSort Then SortVariable(aVar)
     
-    hView.Rows.Count = aVar.Count
+    If hView = tbvLocal Then
+      UpdateLocal
+    Else
+      hView.Rows.Count = aVar.Count
+    Endif
 
     For iPos = 0 To aVar.Max
       cCol[aVar[iPos]] = iPos
@@ -352,12 +350,24 @@ End
 Public Sub AddLocal(sVar As String, sValue As String, Optional bAssign As Boolean)
 
   Dim iRow As Integer
+  Dim iCol As Integer
+  Dim nRow As Variant
     
   If bAssign Then
     If Left(sValue) = "!" Then
       Try iRow = $cLocal[sVar]
+      
+      If btnLocalLayout.Value Then
+        nRow = Max(1, tbvLocal.ClientH \ tbvLocal.Rows.Height)
+        iCol = 0
+        While iRow >= nRow
+          iRow -= nRow
+          iCol += 2
+        Wend
+      Endif
+      
       If Not Error Then
-        With tbvLocal[iRow, 1]
+        With tbvLocal[iRow, iCol + 1]
           Balloon.Error(Mid$(sValue, 2), tbvLocal, .X + .W / 2, .Y + .H / 2)
         End With
       Endif
@@ -615,7 +625,7 @@ Public Sub ReadConfig()
   gvwCompilation.Font = tbvLocal.Font
   tabStack.TextFont = tabDebug.TextFont
   
-  For Each hCtrl In [panBreakpoint, panSearch, panWatch]
+  For Each hCtrl In [panBreakpoint, panSearch, panWatch, panLocal]
     Project.SetSmallFont(hCtrl)
   Next
 
@@ -624,7 +634,8 @@ Public Sub ReadConfig()
   '   hButton.W = 8
   '   hButton.AutoResize = True
   ' Next
-
+  btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
+  
 End
 
 Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn As Boolean)
@@ -722,14 +733,21 @@ End
 Public Sub tbvLocal_Activate()
 
   Dim hTable As TableView = Last
-  Dim sExpr As String = hTable[hTable.Row, 0].Text
-  Dim sVal As String = hTable[hTable.Row, 1].Text
+  Dim sExpr As String 
+  Dim sVal As String 
+  Dim iCol As Integer
 
   If hTable[hTable.Row, 0].ColumnSpan >= 2 Then Return
+  
+  iCol = hTable.Column And Not 1
+  sExpr = hTable[hTable.Row, iCol].Text
+  sVal = hTable[hTable.Row, iCol + 1].Text
+  
+  
   If Left(sVal) = "(" Then 
     Design.Command("#X" & sExpr & "\t" & sExpr)
   Else
-    hTable.Column = 1 
+    hTable.Column = iCol + 1 
     hTable.Edit
   Endif
 
@@ -953,6 +971,13 @@ Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
     aValue = $aValObject
   Endif
 
+  If hView = tbvLocal And If btnLocalLayout.Value Then
+    While Column >= 2 
+      Column -= 2
+      Row += hView.Rows.Count
+    Wend
+  Endif
+
   Try sVar = aVar[Row]
   If Not sVar Then Return
   
@@ -983,8 +1008,12 @@ End
 
 Public Sub tbvLocal_Save(Row As Integer, (Column) As Integer, Value As String)
 
-  Dim sVar As String = tbvLocal[Row, 0].Text
-  With tbvLocal[Row, 1]
+  Dim sVar As String 
+  Dim iCol As Integer
+  
+  iCol = Column And Not 1
+  sVar = tbvLocal[Row, iCol].Text
+  With tbvLocal[Row, iCol + 1]
     Design.SetBalloon(tbvLocal, .X + .W / 2, .Y + .H / 2)
   End With
   Design.Command("=L" & sVar & "\t" & sVar & " = " & Value)
@@ -1410,21 +1439,58 @@ Public Sub btnCopy_Click()
 
 End
 
-Public Sub tbvLocal_Menu()
-    ' if more then 0 rows
-    If tbvLocal.Rows.Count > 0 Then mnuDump.Popup()
+Public Sub btnLocalCopy_Click()
+
+  Dim sText As String
+  Dim I As Integer
+  
+  For I = 0 To $aLocal.Max
+    sText &= $aLocal[I] & " = " & $aValLocal[I] & "\n"
+  Next
+  
+  Clipboard.Copy(sText)
+
 End
 
-Public Sub mnuDumpLocalVariablesList_Click()
-Dim i As Integer
-Dim s As String
-  Print "start dump local variables list"
-  For i = 0 To tbvLocal.Rows.Count - 1
-    s &= tbvLocal[i, 0].Text & " = " & tbvLocal[i, 1].Text & gb.CrLf
-  Next  
-  Try Clipboard.Copy(s)
-  Print "finished dump,  list copied to Clipboard"
-  With tbvLocal[0, 1]
-      Balloon.Info("finished dump,  list copied to Clipboard", tbvLocal, .X + .W / 2, .Y + .H / 2)
-  End With 
+Private Sub UpdateLocal()
+
+  Dim nCol As Integer
+  Dim I As Integer
+  Dim nRow As Integer
+
+  With tbvLocal
+    
+    If btnLocalLayout.Value Then
+      nRow = Max(1, .ClientH \ .Rows.Height)
+      nCol = Max(1, ($aLocal.Count + nRow - 1) \ nRow)
+    Else
+      nRow = $aLocal.Count
+      nCol = 1
+    Endif
+    
+    .Columns.Count = nCol * 2
+    For I = 0 To nCol - 1
+      .Columns[1 + I * 2].Expand = True
+    Next
+    
+    .Rows.Count = nRow
+    For I = 0 To nCol - 1
+      .Columns[I * 2].W = -1
+    Next
+    
+  End With
+
+End
+
+Public Sub btnLocalLayout_Click()
+
+  UpdateLocal
+  Settings["/FDebugInfo/LocalColumnView"] = btnLocalLayout.Value 
+
+End
+
+Public Sub tabDebug_Arrange()
+
+  If tabDebug.Index = TAB_LOCAL Then UpdateLocal
+
 End
