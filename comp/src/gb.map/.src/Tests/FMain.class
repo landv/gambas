@@ -21,7 +21,7 @@ Public Sub _new()
   MapView1.Map["GoogleMap"].Visible = False
   
   With MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
-  .Opacity = 0.5
+  '.Opacity = 0.5
   .Copyright = "OpenStreetMap contributors"
   End With
   'MapView1.Map.AddShape("test")

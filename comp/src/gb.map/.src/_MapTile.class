@@ -18,14 +18,12 @@ Private $bPreloadMode As Boolean
 Private $fGradStep As Float = 0.1
 Private $bIsQuadKey As Boolean
 Event Refresh
-Private tmrShow As New Timer As "tmrShow"
+
 Public Sub _new(Optional CacheName As String)
   
   Dim sTempPath As String
   Dim hClient As HttpClient
   Dim i As Integer
-  
-  tmrShow.Delay = 30
   
   If CacheName Then
     sTempPath = $sCachePath &/ CacheName 
