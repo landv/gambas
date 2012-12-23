@@ -704,8 +704,8 @@ static void init_lang(char *lang, bool rtl)
 	delete _translator;
 	_translator = NULL;
 	
-	if (strcmp(lang, "C"))
-		qDebug("gb.qt4: warning: unable to load Qt translation: %s", lang);
+	//if (strcmp(lang, "C"))
+	//	qDebug("gb.qt4: warning: unable to load Qt translation: %s", lang);
 	
 	goto __SET_DIRECTION;
 

@@ -1629,7 +1629,20 @@ BEGIN_PROPERTY(Control_Tooltip)
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->toolTip()));
 	else
-		WIDGET->setToolTip(QSTRING_PROP());
+	{
+		QString tip = QSTRING_PROP();
+		if (THIS->flag.inside)
+		{
+			if (tip.isEmpty())
+				QToolTip::hideText();
+			else if (QToolTip::isVisible())
+			{
+				QToolTip::hideText();
+				QToolTip::showText(QCursor::pos(), tip, WIDGET);
+			}
+		}
+		WIDGET->setToolTip(tip);
+	}
 
 END_PROPERTY
 
