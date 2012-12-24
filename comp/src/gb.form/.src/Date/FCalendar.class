@@ -52,7 +52,7 @@ Public Sub _new()
   
   dwgTime.W = Desktop.Scale * 16
   
-  FillMonth(False )
+  FillMonth(False)
   
   $dDate = Now  
   SetDate()
@@ -216,6 +216,8 @@ Public Sub dwgMonth_Draw()
       If iForeground = Color.Default Then iForeground = dwgMonth.Foreground
       iBackground = hDate.Background
       If iBackground = Color.Default Then iBackground = dwgMonth.Background
+      
+      Draw.Font = hDate.Font
 
       If CInt(dDate) = CInt($dDate) Then
         Draw.FillColor = If(dwgMonth.HasFocus, Color.SelectedBackground, Color.LightForeground)

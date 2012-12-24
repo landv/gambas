@@ -74,3 +74,10 @@ Public Sub Button1_Click()
   
 
 End
+
+Public Sub DateChooser1_Data({Date} As Date)
+
+  If WeekDay({Date}) = gb.Sunday Then DateChooser1.Data.Foreground = Color.Red
+  If Day({Date}) = 24 Then DateChooser1.Data.Font = Font["serif"]
+
+End
