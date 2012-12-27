@@ -914,6 +914,8 @@ BEGIN_METHOD_VOID(Process_exit)
 		stop_process(RunningProcessList);
 
 	exit_child();
+	
+	STRING_free(&CPROCESS_shell);
 
 END_METHOD
 
