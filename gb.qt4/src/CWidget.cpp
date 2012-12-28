@@ -393,14 +393,14 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	//THIS->flag.fillBackground = GB.Is(THIS, CLASS_Container);
 	//w->setAutoFillBackground(THIS->flag.fillBackground);
 	
-	CCONTAINER_insert_child(THIS);
-
 	if (!no_show)
 	{
 		w->setGeometry(-16, -16, 8, 8);
 		CWIDGET_set_visible(THIS, true);
 		w->raise();
 	}
+	
+	CCONTAINER_insert_child(THIS);
 }
 
 

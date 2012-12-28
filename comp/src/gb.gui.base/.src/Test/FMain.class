@@ -1,42 +1,18 @@
 ' Gambas class file
 
-' Public Sub DrawingArea1_Draw()
-' 
-'   MyDraw.Begin(Last)
-'   'MyDraw.Clip(17, 7, 167, 167)
-'   MyDraw.FillStyle = Fill.Solid
-'   MyDraw.FillColor = Color.Red
-'   MyDraw.Polygon([10, 10, 40, 20, 25, 30, 10, 10])
-'   MyDraw.LineStyle = Line.Solid
-'   MyDraw.Foreground = Color.Blue
-'   MyDraw.Line(90, 10, 90, 50)
-'   MyDraw.Rect(20, 60, 70, 60)
-'   MyDraw.FillColor = Color.Orange
-'   MyDraw.Rect(90, 60, 70, 50)
-'   
-'   MyDraw.Circle(50, 150, 35)
-'   MyDraw.Ellipse(90, 150, 120, 70)
-'   
-'   MyDraw.Style.Arrow(10, 250, 32, 32, Align.Top)
-'   
-'   MyDraw.End
-' 
-' End
+Private $hSplit As MyHSplit
 
-Public Sub DrawingArea2_Draw()
+Public Sub Form_Open()
 
-  'Dim sText As String = "<b>gb.gui.base</b>&nbsp;3.3.90<br><font size=\"-1\" color=\"#404040\">gb.gui.base</font>"
-  'Dim W As Integer
+  Dim hTextArea As TextArea
 
-  Draw.FillStyle = Fill.Solid
-  Draw.FillColor = Color.Red
-  Draw.Polygon([10, 10, 40, 20, 25, 30, 10, 10])
+  $hSplit = New MyHSplit(Me)
   
-  ' W = Draw.RichTextWidth(sText)
-  ' Debug W
-  ' 
-  ' Draw.Rect(10, 10, W, 100)
-  ' Draw.RichText(sText, 10, 10, W, 100, Align.TopNormal)
-  
-  
+  hTextArea = New TextArea($hSplit)
+  hTextArea.Text = "1"
+  hTextArea = New TextArea($hSplit)
+  hTextArea.Text = "2"
+  hTextArea = New TextArea($hSplit)
+  hTextArea.Text = "3"
+
 End

@@ -3055,7 +3055,10 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case ".embed-container"
       EmbedIntoContainer
-      
+    
+    Case Like ".text-*"
+      DoActionText(Key)
+    
     ' Case ".remove-from-container"
     '   RemoveFromContainer
 
@@ -3763,3 +3766,120 @@ Public Sub OnBackgroundChange()
   dwgBackground.Refresh
   
 End
+
+Private Sub ToggleFont(sFont As String, sProp As String) As String
+  
+  Dim aFont As String[] = Split(sFont, ",")
+  Dim iPos As Integer
+  
+  iPos = aFont.Find(sProp)
+  If iPos < 0 Then
+    aFont.Add(sProp)
+  Else
+    aFont.Remove(iPos)
+  Endif
+  
+  Return aFont.Join(",")
+  
+End
+
+Private Sub ZoomFont(sFont As String, sAction As String) As String
+  
+  Dim aFont As String[] = Split(sFont, ",")
+  Dim sSize As String
+  Dim I As Integer
+  Dim iPos As Integer
+  
+  iPos = -1
+  For I = 0 To aFont.Max
+    sSize = aFont[I]
+    If IsDigit(sSize) Or If Left(sSize) = "+" Or If Left(sSize) = "-" Then 
+      iPos = I
+      Break
+    Endif
+    sSize = ""
+  Next
+  
+  Select Case sAction
+    
+    Case "+"
+      
+      If Not sSize Then
+        sSize = "+1"
+      Else If IsDigit(sSize) Then
+        sSize = CStr(Min(256, CInt(sSize) + 2))
+      Else
+        sSize = Format(Min(24, CInt(sSize) + 1), "+0")
+      Endif
+      
+    Case "-"
+    
+      If Not sSize Then
+        sSize = "-1"
+      Else If IsDigit(sSize) Then
+        sSize = CStr(Max(1, CInt(sSize) - 2))
+      Else
+        sSize = Format(Max(-8, CInt(sSize) - 1), "+0")
+      Endif
+      
+    Case "0"
+
+      sSize = ""
+    
+  End Select
+  
+  If sSize = " 0" Then sSize = ""
+  
+  If iPos >= 0 Then
+    aFont[iPos] = sSize
+  Else
+    aFont.Add(sSize)
+  Endif
+  
+  Return aFont.Join(",")
+  
+End
+
+
+Private Sub DoActionText(sAction As String)
+
+  Dim hCtrl As CControl
+  Dim sFont As String
+
+  $hUndo.Begin
+  For Each hCtrl In Selection
+    
+    Try sFont = hCtrl.GetProperty("Font")
+    If Error Then Continue
+    
+    Select Case sAction
+      
+      Case ".text-bold"
+        sFont = ToggleFont(sFont, "Bold")
+      
+      Case ".text-italic"
+        sFont = ToggleFont(sFont, "Italic")
+      
+      Case ".text-underline"
+        sFont = ToggleFont(sFont, "Underline")
+      
+      Case ".text-zoom-in"
+        sFont = ZoomFont(sFont, "+")
+      
+      Case ".text-zoom-out"
+        sFont = ZoomFont(sFont, "-")
+      
+      Case ".text-zoom-normal"
+        sFont = ZoomFont(sFont, "0")
+      
+    End Select
+    
+    hCtrl.SetProperty("Font", sFont)
+    
+  Next
+  $hUndo.End
+
+  FFormStack.RefreshAll
+
+End
+

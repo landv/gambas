@@ -465,6 +465,19 @@ Catch
   
 End
 
+Public Sub Rename()
+  
+  Dim sPath As String
+  
+  Try sPath = $hTreeView.Current.Key
+  If sPath Then
+    $bInRename = True
+    $hTreeView[sPath].Rename
+  Endif
+  
+End
+
+
 Private Sub FindAfter(hView As TreeView, sText As String, Optional sParent As String) As String
   
   Dim sAfter As String
