@@ -27,7 +27,7 @@
 #include "gscrollbar.h"
 #include "gslider.h"
 
-void slider_Change(GtkRange *range,gSlider *data)
+static void cb_change(GtkRange *range,gSlider *data)
 {
 	data->_value = gtk_range_get_value(GTK_RANGE(data->widget));
 	if (data->onChange) data->onChange(data);
@@ -72,7 +72,7 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	_max = 100;
 	_tracking = true;
 	
-	border = gtk_alignment_new(0,0,1,1);
+	border = gtk_alignment_new(0, 0, 1, 1);
 	
 	if (scrollbar)
 		return;
@@ -86,7 +86,7 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	
 	onChange = NULL;
 	
-	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 	//g_signal_connect_after(G_OBJECT(border),"expose-event",G_CALLBACK(slider_Expose),(gpointer)this);
 }
 
@@ -100,7 +100,7 @@ gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
 	onChange = NULL;
 	
 	gtk_range_set_update_policy(GTK_RANGE(widget),GTK_UPDATE_CONTINUOUS);
-	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 }
 
 bool gSlider::mark()
@@ -246,7 +246,7 @@ void gSlider::orientation(int w,int h)
 		gtk_scale_set_draw_value(GTK_SCALE(widget), false);
 		gtk_widget_show(widget);
 		widgetSignals();
-		g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
+		g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 		
 		g_object_unref(adj);
 		
@@ -284,7 +284,7 @@ void gScrollBar::resize(int w, int h)
 		gtk_container_add(GTK_CONTAINER(border), widget);
 		gtk_widget_show(widget);
 		widgetSignals();
-		g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
+		g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 		
 		g_object_unref(adj);	
 		

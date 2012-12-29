@@ -29,6 +29,11 @@
 #include <cairo.h>
 #include <librsvg/rsvg.h>
 
+#if LIBRSVG_CHECK_VERSION(2,36,0)
+#else
+#include <librsvg/rsvg-cairo.h>
+#endif
+
 typedef 
 	struct 
 	{
