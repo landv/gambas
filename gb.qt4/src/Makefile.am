@@ -52,7 +52,6 @@ gb_qt4_la_SOURCES = \
  CSpinBox.h CSpinBox_moc.cpp CSpinBox.cpp \
  systemtrayicon.h systemtrayicon_moc.cpp systemtrayicon.cpp \
  CTrayIcon.h CTrayIcon_moc.cpp CTrayIcon.cpp \
- CSplitter.h CSplitter_moc.cpp CSplitter.cpp \
  CWatcher.h CWatcher_moc.cpp CWatcher.cpp \
  cprinter.h cprinter_moc.cpp cprinter.cpp \
  csvgimage.h csvgimage_moc.cpp csvgimage.cpp \

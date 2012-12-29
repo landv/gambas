@@ -63,7 +63,6 @@
 #include "CTrayIcon.h"
 #include "CScrollView.h"
 #include "CSpinBox.h"
-#include "CSplitter.h"
 #include "CStock.h"
 #include "CSeparator.h"
 #include "cprinter.h"
@@ -141,8 +140,6 @@ extern "C"
 		CContainerDesc,
 		CDrawingAreaDesc,
 		CFrameDesc,
-		CHSplitDesc,
-		CVSplitDesc,
 		CUserControlDesc,
 		CUserContainerDesc,
 		CPanelDesc,

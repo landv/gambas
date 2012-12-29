@@ -1,18 +1,2 @@
 ' Gambas class file
 
-Private $hSplit As MyHSplit
-
-Public Sub Form_Open()
-
-  Dim hTextArea As TextArea
-
-  $hSplit = New MyHSplit(Me)
-  
-  hTextArea = New TextArea($hSplit)
-  hTextArea.Text = "1"
-  hTextArea = New TextArea($hSplit)
-  hTextArea.Text = "2"
-  hTextArea = New TextArea($hSplit)
-  hTextArea.Text = "3"
-
-End

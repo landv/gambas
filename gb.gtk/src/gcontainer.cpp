@@ -30,7 +30,6 @@
 #include "gapplication.h"
 #include "gdesktop.h"
 #include "gmainwindow.h"
-#include "gsplitter.h"
 #include "gcontainer.h"
 
 static gControl* get_next_child_widget (gContainer *gtk_control, int *gtk_list, int gtk_count)

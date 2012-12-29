@@ -45,7 +45,6 @@
 #define CEDITOR_PROPERTIES "*,Font{Font:Fixed},Border=True,ScrollBar{Scroll.*}=Both,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly=False,TabSize{Range:1;16}=2"
 #define CFRAME_PROPERTIES "*,Text"
 #define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES ",Invert"
-#define CHSPLIT_PROPERTIES "*"
 #define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
 #define CLCDNUMBER_PROPERTIES "*,Value,Digits{Range:1;64}=1,SmallDecimalPoint,Style{LCDNumber.Outline;Filled;Flat}=Outline,Mode{LCDNumber.Decimal;Hexadecimal;Binary}=Decimal,Border{Border.*}"
 #define CLISTBOX_PROPERTIES "*,List,Border=True,Mode{Select.*}=Single,Sorted"
@@ -70,7 +69,6 @@
 #define CTOOLBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
 #define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture"
 #define CVBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
-#define CVSPLIT_PROPERTIES "*"
 #define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Utility,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100," CWINDOW_ARRANGEMENT_PROPERTIES
 
 #define DESCRIBE_CONTROL(_prop, _event, _size) \
@@ -129,7 +127,6 @@
 #define FRAME_DESCRIPTION DESCRIBE_CONTAINER(CFRAME_PROPERTIES, "MouseDown")
 #define HBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "H"), SIMILAR("Panel")
 #define HPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "R"), SIMILAR("Panel")
-#define HSPLIT_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHSPLIT_PROPERTIES, "Resize", "H")
 #define LABEL_DESCRIPTION DESCRIBE_CONTROL(CLABEL_PROPERTIES, "MouseDown", "24,4")
 #define LCDNUMBER_DESCRIPTION DESCRIBE_CONTROL(CLCDNUMBER_PROPERTIES, "MouseDown", "24,6"), SIMILAR("Label")
 #define LISTBOX_DESCRIPTION DESCRIBE_CONTROL(CLISTBOX_PROPERTIES, "Click", "16,16")
@@ -154,7 +151,6 @@
 #define USERCONTAINER_DESCRIPTION DESCRIBE_CONTAINER_ARR(CUSERCONTAINER_PROPERTIES, "MouseDown", "F")
 #define VBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "V"), SIMILAR("Panel")
 #define VPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "C"), SIMILAR("Panel")
-#define VSPLIT_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVSPLIT_PROPERTIES, "Resize", "V"), SIMILAR("HSplit")
 #define WINDOW_DESCRIPTION DESCRIBE_CONTAINER_ARR(CWINDOW_PROPERTIES, "Open", "F")
 
 #define MENU_DESCRIPTION \

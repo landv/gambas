@@ -722,6 +722,25 @@ GridViewClick_MouseDown
 m
 
 
+#HSplit
+_Split
+C
+_Properties
+C
+s
+*,-Padding,-Spacing,-Arrangement,-AutoResize,-Indent
+_DefaultArrangement
+C
+s
+H
+_DefaultEvent
+C
+s
+Resize
+_Similar
+C
+s
+Panel
 #IconView
 UserControl
 C
@@ -1314,6 +1333,10 @@ ScrollArea_Arrange
 m
 
 
+TimerArrange_Timer
+m
+
+
 ResizeContents
 m
 
@@ -1385,6 +1408,25 @@ Add
 m
 _TreeView_Item
 (Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]
+#VSplit
+_Split
+C
+_Properties
+C
+s
+*,-Padding,-Spacing,-Arrangement,-AutoResize,-Indent
+_DefaultArrangement
+C
+s
+V
+_DefaultEvent
+C
+s
+Resize
+_Similar
+C
+s
+Panel
 #_ColumnView_Columns
 
 C
@@ -2046,6 +2088,45 @@ _new
 m
 
 (iIndex)i
+#_Split
+UserContainer
+C
+Layout
+p
+Integer[]
+
+Settings
+p
+Integer[]
+
+:Resize
+:
+
+
+_new
+m
+
+
+Container_Arrange
+m
+
+
+Resize_MouseDown
+m
+
+
+Resize_MouseMove
+m
+
+
+Resize_MouseUp
+m
+
+
+Resize_Draw
+m
+
+
 #_TreeView
 UserControl
 C

@@ -138,7 +138,7 @@
       MoveScaled(1,17,98,44)
       Expand = True
       { cvwTranslate ColumnView
-        MoveScaled(2,2,70,18)
+        MoveScaled(4,2,70,18)
         Expand = True
         Sorted = True
         Header = False
@@ -147,7 +147,7 @@
         ScrollBar = Scroll.Vertical
       }
       { VBox2 VBox
-        MoveScaled(1,21,85,21)
+        MoveScaled(3,21,85,21)
         Expand = True
         { lblComment Label
           MoveScaled(0,0,35,3)
@@ -183,6 +183,7 @@
       AutoResize = True
       Spacing = True
       Margin = True
+      Padding = 4
       { PictureBox3 PictureBox
         MoveScaled(0,0,4,4)
         Picture = Picture["icon:/medium/info"]

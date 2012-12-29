@@ -40,6 +40,7 @@ Static Private $hFadeW As Picture
 Static Private $hFadeE As Picture
 Static Private $iFadeColor As Integer = -1
 
+Private $bNoArrange As Boolean
 Private $hDrawingArea As DrawingArea
 Private $hHBar As ScrollBar
 Private $hVBar As ScrollBar
@@ -48,6 +49,7 @@ Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
 Private $bBorder As Boolean 
 Private $hTimerScroll As Timer
+Private $hTimerArrange As Timer
 Private $DX As Integer
 Private $DY As Integer
 
@@ -59,8 +61,6 @@ Private $iShadowN As Integer
 Private $iShadowS As Integer
 Private $iShadowW As Integer
 Private $iShadowE As Integer
-
-'Static Private $iArrangeCount As Integer
 
 Private Sub LoadFades()
   
@@ -120,25 +120,10 @@ Public Sub ScrollArea_Arrange()
   Dim SB, SP, FW, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
   Dim OW, OH As Integer
-  ' Dim hChild As Control
-  ' Dim iMargin As Integer
   
-  ' Inc $iArrangeCount
-  ' Print Format($iArrangeCount, "###0");; System.Backtrace.Join(" ")
+  If $bNoArrange Then Return
   
-  'Debug "ScrollArea:";; Me.W;; Me.H
-  'Debug "DrawingArea:";; $hDrawingArea.W;; $hDrawingArea.H
-  
-  'Error "\t" & System.Backtrace.Join("\n\t")
-  
-  ' If $hDrawingArea.Children.Count Then
-  '   iMargin = If($hDrawingArea.Margin, If($hDrawingArea.Padding, $hDrawingArea.Padding, Desktop.Scale), 0)
-  '   For Each hChild In $hDrawingArea.Children
-  '     If Not hChild.Visible Then Continue
-  '     $W = Max($W, hChild.X + hChild.W + iMargin)
-  '     $H = Max($H, hChild.Y + hChild.H + iMargin)
-  '   Next
-  ' Endif
+  $bNoArrange = True
   
   SB = Style.ScrollbarSize
   SP = Style.ScrollbarSpacing
@@ -231,9 +216,17 @@ RETRY:
   If $hHBar.Visible Then $hHBar.Move(0, H + SP, W, SB)
   If $hVBar.Visible Then $hVBar.Move(W + SP, 0, SB, H)
   
-  'Debug "DrawingArea: -> ";; $hDrawingArea.W;; $hDrawingArea.H
+  $bNoArrange = False
   
 End
+
+Public Sub TimerArrange_Timer()
+  
+  ScrollArea_Arrange
+  $hTimerArrange = Null
+  
+End
+
 
 Public Sub ResizeContents(Width As Integer, Height As Integer)
   
@@ -241,7 +234,12 @@ Public Sub ResizeContents(Width As Integer, Height As Integer)
   
   $W = Width
   $H = Height
-  ScrollArea_Arrange
+  
+  If Not $hTimerArrange Then
+    $hTimerArrange = New Timer As "TimerArrange"
+    $hTimerArrange.Trigger
+  Endif
+  
   $hDrawingArea.Refresh
   
 End

@@ -45,7 +45,6 @@
 #include "gplugin.h"
 #include "gscrollbar.h"
 #include "gslider.h"
-#include "gsplitter.h"
 #include "gdesktop.h"
 #include "gdrag.h"
 #include "gmouse.h"
@@ -65,17 +64,6 @@ static const guchar _cursor_bdiag[] = {
    0x00, 0x02, 0x00, 0x01, 0x80, 0x00, 0x40, 0x00, 0x21, 0x00, 0x13, 0x00,
    0x0f, 0x00, 0x0f, 0x00, 0x1f, 0x00, 0x3f, 0x00 };
    
-static const guchar _cursor_splith[] = {
-   0x60, 0x06, 0x60, 0x06, 0x60, 0x06, 0x60, 0x06, 0x64, 0x26, 0x66, 0x66,
-   0x67, 0xe6, 0x7f, 0xfe, 0x7f, 0xfe, 0x67, 0xe6, 0x66, 0x66, 0x64, 0x26,
-   0x60, 0x06, 0x60, 0x06, 0x60, 0x06, 0x60, 0x06 };
-   
-static const guchar _cursor_splitv[] = {
-   0xc0, 0x03, 0xe0, 0x07, 0xf0, 0x0f, 0x80, 0x01, 0x80, 0x01, 0xff, 0xff,
-   0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x80, 0x01,
-   0x80, 0x01, 0xf0, 0x0f, 0xe0, 0x07, 0xc0, 0x03 };
-
-
 // Geometry optimization hack - Sometimes fails, so it is disabled...
 #define GEOMETRY_OPTIMIZATION 0
 
@@ -452,9 +440,6 @@ void gControl::move(int x, int y)
 {
 	//GtkLayout *fx;
 	
-	if (pr && pr->getClass() == Type_gSplitter) 
-		return;
-
 	if (x == bufX && y == bufY) 
 		return;
 	
@@ -481,9 +466,6 @@ void gControl::move(int x, int y)
 
 void gControl::resize(int w, int h)
 {
-	if (pr && pr->getClass() == Type_gSplitter) 
-		return;
-	
 	if (w < 1)
 		w = 0;
 		
@@ -760,18 +742,6 @@ GdkCursor *gControl::getGdkCursor()
 				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
 				g_object_unref(pix);
 			}
-			else if (m == (GDK_LAST_CURSOR+3)) //SplitH
-			{
-				pix = gdk_bitmap_create_from_data(NULL, (const gchar *)_cursor_splith, 16, 16);
-				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
-				g_object_unref(pix);
-			}
-			else if (m == (GDK_LAST_CURSOR+4)) //SplitV
-			{
-				pix = gdk_bitmap_create_from_data(NULL, (const gchar *)_cursor_splitv, 16, 16);
-				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
-				g_object_unref(pix);
-			}
 		}
 	}
 	
@@ -975,7 +945,6 @@ void gControl::lower()
 	GtkContainer *parent;
 
 	if (!pr) return;
-	if (pr->getClass()==Type_gSplitter) return;
 	
 	if (gtk_widget_get_has_window(border))
 	{
@@ -1037,7 +1006,6 @@ void gControl::raise()
 	GtkContainer *parent;
 
 	if (!pr) return;
-	if (pr->getClass()==Type_gSplitter) return;
 	
 	if (gtk_widget_get_has_window(border))
 	{

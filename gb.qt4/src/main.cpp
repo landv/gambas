@@ -90,7 +90,6 @@
 #include "CScrollBar.h"
 #include "CMovieBox.h"
 #include "CSpinBox.h"
-#include "CSplitter.h"
 #include "CWatcher.h"
 #include "cprinter.h"
 #include "csvgimage.h"
@@ -1016,7 +1015,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTextBoxSelectionDesc, CTextBoxDesc, CComboBoxItemDesc, CComboBoxDesc,
 	CTextAreaSelectionDesc, CTextAreaDesc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
-	CHSplitDesc, CVSplitDesc,
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,
 	CScrollViewDesc,
 	CDrawingAreaDesc,
