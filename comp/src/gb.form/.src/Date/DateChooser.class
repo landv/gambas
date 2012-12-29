@@ -11,6 +11,7 @@ Property Font As Font
 Property Read Colors As _DateChooser_Colors
 Property Mode As Integer
 Property Read Data As _DateChooser_Data
+Property Border As Boolean
 
 Public Const DateOnly As Integer = 0
 Public Const DateTime As Integer = 1
@@ -21,7 +22,7 @@ Event Activate
 Event Cancel
 Event Data({Date} As Date)
 
-Public Const _Properties As String = "*,Mode{DateChooser.*}=DateOnly"
+Public Const _Properties As String = "*,Border=True,Mode{DateChooser.*}=DateOnly"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "40,28"
 Public Const _Group As String = "Chooser"
@@ -211,5 +212,17 @@ End
 Private Function Data_Read() As _DateChooser_Data
 
   Return $hData
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hCal.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hCal.SetBorder(Value)
 
 End

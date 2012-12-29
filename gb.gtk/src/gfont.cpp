@@ -660,8 +660,8 @@ void gFont::richTextSize(const char *txt, int len, float sw, float *w, float *h)
 	{
 		ly = pango_layout_new(ct);
 		html = gt_html_to_pango_string(txt, len, false);
-		pango_layout_set_markup(ly, html, -1);	
 		pango_layout_set_wrap(ly, PANGO_WRAP_WORD_CHAR);
+		pango_layout_set_markup(ly, html, -1);	
 		if (sw > 0)
 			pango_layout_set_width(ly, sw * PANGO_SCALE);
 		pango_layout_get_size(ly, &tw, &th);

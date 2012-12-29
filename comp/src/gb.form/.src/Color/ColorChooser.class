@@ -6,7 +6,7 @@ Inherits UserControl
 Event Change
 Event Activate
 
-Public Const _Properties As String = "*,ShowAlpha,ShowColorMap=True"
+Public Const _Properties As String = "*,Border=True,ShowAlpha,ShowColorMap=True"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "Chooser"
@@ -16,6 +16,7 @@ Property SelectedColor As Integer
 Property Value As Integer
 Property ShowAlpha As Boolean
 Property ShowColorMap As Boolean
+Property Border As Boolean
 
 Private frmChooser As FColorChooser
 
@@ -83,5 +84,17 @@ End
 Private Sub ShowColorMap_Write(Value As Boolean)
 
   frmChooser.SetColorMap(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return frmChooser.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  frmChooser.SetBorder(Value)
 
 End

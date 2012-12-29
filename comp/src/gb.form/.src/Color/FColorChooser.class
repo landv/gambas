@@ -616,3 +616,16 @@ Public Sub dwgStdColor_DblClick()
   GetParent()._RaiseActivate()
 
 End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+

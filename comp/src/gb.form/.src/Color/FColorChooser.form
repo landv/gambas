@@ -2,149 +2,154 @@
 
 { Form Form
   MoveScaled(9.1429,8,72,70)
-  Arrangement = Arrange.Vertical
+  Arrangement = Arrange.Fill
   Spacing = True
-  { HBox1 HBox
-    MoveScaled(1,6,57,32)
-    Expand = True
-    Spacing = True
-    { VBox3 VBox
-      MoveScaled(1,1,39,27)
+  { panBorder Panel
+    MoveScaled(1,2,67,60)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { HBox1 HBox
+      MoveScaled(0,0,57,32)
       Expand = True
       Spacing = True
-      { dwgStdColor DrawingArea
-        MoveScaled(0,0,33,4)
-        Mouse = Mouse.Pointing
-        Border = Border.Plain
-      }
-      { dwgColorMap DrawingArea
-        MoveScaled(0,6,25,20)
-        Mouse = Mouse.Cross
+      { VBox3 VBox
+        MoveScaled(1,1,39,27)
         Expand = True
-        Border = Border.Plain
+        Spacing = True
+        { dwgStdColor DrawingArea
+          MoveScaled(0,0,33,4)
+          Mouse = Mouse.Pointing
+          Border = Border.Plain
+        }
+        { dwgColorMap DrawingArea
+          MoveScaled(0,6,25,20)
+          Mouse = Mouse.Cross
+          Expand = True
+          Border = Border.Plain
+        }
+      }
+      { panColorMapSide VBox
+        MoveScaled(49,2,4,26)
+        Spacing = True
+        { btnSnap ToolButton
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Follow color grid")
+          Picture = Picture["icon:/small/grid"]
+          Toggle = True
+          Value = True
+        }
+        { dwgValue DrawingArea
+          MoveScaled(0,6,4,20)
+          Mouse = Mouse.Pointing
+          Expand = True
+        }
       }
     }
-    { panColorMapSide VBox
-      MoveScaled(49,2,4,26)
+    { panInfo HBox
+      MoveScaled(0,34,62,20)
       Spacing = True
-      { btnSnap ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("Follow color grid")
-        Picture = Picture["icon:/small/grid"]
-        Toggle = True
-        Value = True
-      }
-      { dwgValue DrawingArea
-        MoveScaled(0,6,4,20)
-        Mouse = Mouse.Pointing
-        Expand = True
-      }
-    }
-  }
-  { panInfo HBox
-    MoveScaled(1,40,62,20)
-    Spacing = True
-    { VBox2 VBox
-      MoveScaled(1,1,31,19)
-      AutoResize = True
-      Spacing = True
-      { panValue Panel
-        MoveScaled(0,0,28,14)
-        { txtR SpinBox txtRGB
-          Name = "txtR"
-          MoveScaled(4,0,9,4)
-          MaxValue = 255
+      { VBox2 VBox
+        MoveScaled(1,1,31,19)
+        AutoResize = True
+        Spacing = True
+        { panValue Panel
+          MoveScaled(0,0,28,14)
+          { txtR SpinBox txtRGB
+            Name = "txtR"
+            MoveScaled(4,0,9,4)
+            MaxValue = 255
+          }
+          { txtG SpinBox txtRGB
+            Name = "txtG"
+            MoveScaled(4,5,9,4)
+            MaxValue = 255
+          }
+          { txtB SpinBox txtRGB
+            Name = "txtB"
+            MoveScaled(4,10,9,4)
+            MaxValue = 255
+          }
+          { Label1 Label
+            MoveScaled(0,0,3,4)
+            Text = ("R")
+          }
+          { Label2 Label
+            MoveScaled(0,5,3,4)
+            Text = ("G")
+          }
+          { Label3 Label
+            MoveScaled(0,10,3,4)
+            Text = ("B")
+          }
+          { txtH SpinBox txtHSV
+            Name = "txtH"
+            MoveScaled(19,0,9,4)
+            MaxValue = 359
+          }
+          { Label4 Label
+            MoveScaled(15,0,3,4)
+            Text = ("H")
+          }
+          { Label5 Label
+            MoveScaled(15,5,3,4)
+            Text = ("S")
+          }
+          { txtS SpinBox txtHSV
+            Name = "txtS"
+            MoveScaled(19,5,9,4)
+            MaxValue = 255
+          }
+          { Label6 Label
+            MoveScaled(15,10,3,4)
+            Text = ("V")
+          }
+          { txtV SpinBox txtHSV
+            Name = "txtV"
+            MoveScaled(19,10,9,4)
+            MaxValue = 255
+          }
         }
-        { txtG SpinBox txtRGB
-          Name = "txtG"
-          MoveScaled(4,5,9,4)
-          MaxValue = 255
-        }
-        { txtB SpinBox txtRGB
-          Name = "txtB"
-          MoveScaled(4,10,9,4)
-          MaxValue = 255
-        }
-        { Label1 Label
-          MoveScaled(0,0,3,4)
-          Text = ("R")
-        }
-        { Label2 Label
-          MoveScaled(0,5,3,4)
-          Text = ("G")
-        }
-        { Label3 Label
-          MoveScaled(0,10,3,4)
-          Text = ("B")
-        }
-        { txtH SpinBox txtHSV
-          Name = "txtH"
-          MoveScaled(19,0,9,4)
-          MaxValue = 359
-        }
-        { Label4 Label
-          MoveScaled(15,0,3,4)
-          Text = ("H")
-        }
-        { Label5 Label
-          MoveScaled(15,5,3,4)
-          Text = ("S")
-        }
-        { txtS SpinBox txtHSV
-          Name = "txtS"
-          MoveScaled(19,5,9,4)
-          MaxValue = 255
-        }
-        { Label6 Label
-          MoveScaled(15,10,3,4)
-          Text = ("V")
-        }
-        { txtV SpinBox txtHSV
-          Name = "txtV"
-          MoveScaled(19,10,9,4)
-          MaxValue = 255
-        }
-      }
-      { panAlpha Panel
-        MoveScaled(0,15,28,4)
-        Visible = False
-        { Label7 Label
-          MoveScaled(0,0,3,4)
-          Text = ("A")
-        }
-        { txtA SpinBox txtRGB
-          Name = "txtA"
-          MoveScaled(4,0,9,4)
-          MaxValue = 255
-        }
-        { sldAlpha Slider
-          MoveScaled(14,0,14,4)
-          MaxValue = 255
-          PageStep = 32
+        { panAlpha Panel
+          MoveScaled(0,15,28,4)
+          Visible = False
+          { Label7 Label
+            MoveScaled(0,0,3,4)
+            Text = ("A")
+          }
+          { txtA SpinBox txtRGB
+            Name = "txtA"
+            MoveScaled(4,0,9,4)
+            MaxValue = 255
+          }
+          { sldAlpha Slider
+            MoveScaled(14,0,14,4)
+            MaxValue = 255
+            PageStep = 32
+          }
         }
       }
-    }
-    { Panel2 Panel
-      MoveScaled(32,11,1,3)
-    }
-    { VBox1 VBox
-      MoveScaled(34,1,16,19)
-      Spacing = True
-      { panColor DrawingArea
-        MoveScaled(0,0,11,6)
-        Expand = True
-        Border = Border.Plain
+      { Panel2 Panel
+        MoveScaled(32,11,1,3)
       }
-      { txtHexa ButtonBox
-        MoveScaled(0,9,13,5)
-        Picture = Picture["icon:/small/color-picker"]
-      }
-      { panGrab Panel
-        MoveScaled(4,15,3,3)
-        Visible = False
-        Tracking = True
-        Mouse = Mouse.Cross
-        Ignore = True
+      { VBox1 VBox
+        MoveScaled(34,1,16,19)
+        Spacing = True
+        { panColor DrawingArea
+          MoveScaled(0,0,11,6)
+          Expand = True
+          Border = Border.Plain
+        }
+        { txtHexa ButtonBox
+          MoveScaled(0,9,13,5)
+          Picture = Picture["icon:/small/color-picker"]
+        }
+        { panGrab Panel
+          MoveScaled(4,15,3,3)
+          Visible = False
+          Tracking = True
+          Mouse = Mouse.Cross
+          Ignore = True
+        }
       }
     }
   }

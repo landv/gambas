@@ -488,29 +488,36 @@ static void Antialias(GB_PAINT *d, int set, int *antialias)
 // Font is used by X11!
 static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
-	if (!EXTRA(d)->font)
-	{
-		if (GB.Is(d->device, CLASS_DrawingArea))
-		{
-			gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)d->device)->widget;
-			EXTRA(d)->font = CFONT_create(wid->font()->copy());
-		}
-		else
-		{
-			EXTRA(d)->font = CFONT_create(new gFont());
-		}
-		
-		GB.Ref(EXTRA(d)->font);
-	}
-		
 	if (set)
 	{
-		GB.Ref(*font);
 		GB.Unref(POINTER(&EXTRA(d)->font));
-		EXTRA(d)->font = (CFONT *)(*font);
+		if (*font)
+		{
+			EXTRA(d)->font = CFONT_create(((CFONT *)(*font))->font->copy());
+			GB.Ref(EXTRA(d)->font);
+		}
+		else
+			EXTRA(d)->font = NULL;
 	}
 	else
+	{
+		if (!EXTRA(d)->font)
+		{
+			if (GB.Is(d->device, CLASS_DrawingArea))
+			{
+				gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)d->device)->widget;
+				EXTRA(d)->font = CFONT_create(wid->font()->copy());
+			}
+			else
+			{
+				EXTRA(d)->font = CFONT_create(new gFont());
+			}
+			
+			GB.Ref(EXTRA(d)->font);
+		}
+			
 		*font = (GB_FONT)EXTRA(d)->font;
+	}
 }
 
 
@@ -938,7 +945,7 @@ static PangoLayout *create_pango_layout(GB_PAINT *d)
 static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align, bool draw)
 {
 	char *html = NULL;
-  PangoLayout *layout;
+	PangoLayout *layout;
 	CFONT *font;
 	float tw, th, offx, offy;
 
@@ -947,6 +954,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	if (rich)
 	{
 		html = gt_html_to_pango_string(text, len, false);
+		pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
 		pango_layout_set_markup(layout, html, -1);
 		if (w > 0)
 			pango_layout_set_width(layout, (int)(w * PANGO_SCALE));
@@ -1007,6 +1015,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	if (rich)
 	{
 		html = gt_html_to_pango_string(text, len, false);
+		pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
 		pango_layout_set_markup(layout, html, -1);
 	}
 	else

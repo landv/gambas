@@ -1,74 +1,83 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,76,37)
+  MoveScaled(0,0,83,43)
   Resizable = False
-  Arrangement = Arrange.Horizontal
-  { panDate VBox
-    MoveScaled(1,1,57,35)
-    Expand = True
-    { panToolbar HBox
-      MoveScaled(0,0,55,4)
-      { btnReload ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("Today")
-        Picture = Picture["icon:/small/calendar"]
+  Arrangement = Arrange.Fill
+  { panBorder Panel
+    MoveScaled(1,1,76,37)
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { panDate VBox
+      MoveScaled(0,0,57,35)
+      Expand = True
+      { panToolbar HBox
+        MoveScaled(0,0,55,4)
+        { btnReload ToolButton
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Today")
+          Picture = Picture["icon:/small/calendar"]
+        }
+        { btnPrevMonth ToolButton
+          MoveScaled(4,0,4,4)
+          ToolTip = ("Previous month")
+          Picture = Picture["icon:/small/left"]
+        }
+        { panSepMonth Panel
+          MoveScaled(8,0,1,4)
+          Visible = False
+        }
+        { cmbMonth ComboBox
+          MoveScaled(10,0,19,4)
+          Expand = True
+          ReadOnly = True
+        }
+        { Panel2 Panel
+          MoveScaled(30,0,1,4)
+          Visible = False
+        }
+        { txtYear SpinBox
+          MoveScaled(31,0,10,4)
+          MinValue = 1600
+          MaxValue = 9999
+        }
+        { panSepMonth2 Panel
+          MoveScaled(42,0,1,4)
+          Visible = False
+        }
+        { btnNextMonth ToolButton
+          MoveScaled(51,0,4,4)
+          ToolTip = ("Next month")
+          Picture = Picture["icon:/small/right"]
+        }
       }
-      { btnPrevMonth ToolButton
-        MoveScaled(4,0,4,4)
-        ToolTip = ("Previous month")
-        Picture = Picture["icon:/small/left"]
+      { Panel1 Panel
+        MoveScaled(29,5,3,1)
+        Visible = False
       }
-      { panSepMonth Panel
-        MoveScaled(8,0,1,4)
+      { Separator1 Separator
+        MoveScaled(9,7,30,0)
       }
-      { cmbMonth ComboBox
-        MoveScaled(10,0,19,4)
+      { dwgMonth DrawingArea
+        MoveScaled(0,8,56,27)
+        Background = Color.TextBackground
+        Foreground = Color.TextForeground
+        Tracking = True
         Expand = True
-        ReadOnly = True
-      }
-      { Panel2 Panel
-        MoveScaled(30,0,1,4)
-      }
-      { txtYear SpinBox
-        MoveScaled(31,0,10,4)
-        MinValue = 1600
-        MaxValue = 9999
-      }
-      { panSepMonth2 Panel
-        MoveScaled(42,0,1,4)
-      }
-      { btnNextMonth ToolButton
-        MoveScaled(51,0,4,4)
-        ToolTip = ("Next month")
-        Picture = Picture["icon:/small/right"]
+        Focus = True
       }
     }
-    { Panel1 Panel
-      MoveScaled(29,5,3,1)
+    { sepTime Separator
+      MoveScaled(58,0,0,35)
+      Visible = False
     }
-    { Separator1 Separator
-      MoveScaled(9,7,30,0)
-    }
-    { dwgMonth DrawingArea
-      MoveScaled(0,8,56,27)
+    { dwgTime DrawingArea
+      MoveScaled(59,0,15,35)
+      Visible = False
       Background = Color.TextBackground
       Foreground = Color.TextForeground
       Tracking = True
-      Expand = True
       Focus = True
     }
-  }
-  { sepTime Separator
-    MoveScaled(59,1,0,35)
-    Visible = False
-  }
-  { dwgTime DrawingArea
-    MoveScaled(60,1,15,35)
-    Visible = False
-    Background = Color.TextBackground
-    Foreground = Color.TextForeground
-    Tracking = True
-    Focus = True
   }
 }

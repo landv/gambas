@@ -205,7 +205,7 @@ C
 _Properties
 C
 s
-*,ShowAlpha,ShowColorMap=True
+*,Border=True,ShowAlpha,ShowColorMap=True
 _DefaultEvent
 C
 s
@@ -231,6 +231,10 @@ p
 b
 
 ShowColorMap
+p
+b
+
+Border
 p
 b
 
@@ -356,6 +360,10 @@ Data
 r
 _DateChooser_Data
 
+Border
+p
+b
+
 DateOnly
 C
 i
@@ -387,7 +395,7 @@ i
 _Properties
 C
 s
-*,Mode{DateChooser.*}=DateOnly
+*,Border=True,Mode{DateChooser.*}=DateOnly
 _DefaultEvent
 C
 s

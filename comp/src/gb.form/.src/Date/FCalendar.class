@@ -165,6 +165,8 @@ Public Sub dwgMonth_Draw()
   Dim bToday As Boolean
   Dim hDate As _DateChooser_Date
   
+  Debug
+  
   iForeground = dwgMonth.Foreground 'Draw.Foreground
   iBackground = dwgMonth.Background 'Draw.Background
   
@@ -693,3 +695,16 @@ Public Sub dwgTime_Leave()
   dwgTime.Refresh
 
 End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+

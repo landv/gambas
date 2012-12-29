@@ -34,15 +34,13 @@ gDrawingArea Widget
 
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 {
-	
 	if (data->cached())
 	{
-		//gdk_window_clear(data->box->window);
-		//fprintf(stderr, "drawBorder: %s\n", data->name());
 		data->drawBorder(e);
 	}
 	else
 	{
+		fprintf(stderr, "cb_expose\n");
 		//data->drawBackground();
 		
 		if (data->onExpose)

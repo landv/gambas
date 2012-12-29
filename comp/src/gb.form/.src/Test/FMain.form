@@ -1,15 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,476,308)
+  Move(0,0,707,483)
   #Scaled = False
-  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
-  { Expander1 Expander
-    Move(42,35,301,168)
-    Enabled = False
-    Text = ("Expander1")
-    Hidden = True
+  { DateBox1 DateBox
+    Move(91,56,168,28)
+  }
+  { Button1 Button
+    Move(175,21,112,28)
+    Text = ("Button1")
+  }
+  { DateChooser1 DateChooser
+    Move(91,105,294,182)
   }
 }

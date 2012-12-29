@@ -574,7 +574,7 @@ __p2s:
 		value->_long.value = (int64_t)(intptr_t)value->_pointer.value;
 		goto __l2s;
 	#else
-		value->_int.value = (int)(intptr_t)value->_pointer.value;
+		value->_integer.value = (int)(intptr_t)value->_pointer.value;
 		goto __i2s;
 	#endif
 	

@@ -53,8 +53,6 @@ static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h)
 	CWIDGET *_object = GetObject(sender);
 	GB_RAISE_HANDLER handler;
 	
-	//fprintf(stderr, "expose: %d %d %d %d\n", x, y, w, h);
-	
 	if (GB.CanRaise(THIS, EVENT_draw))
 	{
 		handler.callback = cleanup_drawing;

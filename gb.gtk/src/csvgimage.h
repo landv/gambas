@@ -28,9 +28,7 @@
 #include "widgets.h"
 #include <cairo.h>
 #include <librsvg/rsvg.h>
-
-#if LIBRSVG_CHECK_VERSION(2,36,0)
-#else
+#ifndef RSVG_CAIRO_H
 #include <librsvg/rsvg-cairo.h>
 #endif
 

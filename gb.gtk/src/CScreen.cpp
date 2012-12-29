@@ -535,19 +535,13 @@ static GdkRectangle *get_area()
 {
 	static GdkRectangle area;
 	
-	return NULL;
-	/*area.x = -600;
-	area.y = -600;
-	area.width = 1024;
-	area.height = 1024;
-	return &area;*/
-	
 	if (PAINT_get_clip(&area.x, &area.y, &area.width, &area.height))
 		return NULL;
 	else
 	{
-		//_dr->offset(&area.x, &area.y);
-		fprintf(stderr, "clip: %d %d %d %d\n", area.x, area.y, area.width, area.height);
+		area.x += _dr_x;
+		area.y += _dr_y;
+		//fprintf(stderr, "clip: %d %d %d %d\n", area.x, area.y, area.width, area.height);
 		return &area;
 	}
 }

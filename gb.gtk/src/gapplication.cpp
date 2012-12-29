@@ -240,8 +240,8 @@ static void gambas_handle_event(GdkEvent *event)
 	}
 
 	grab = gtk_window_group_get_current_grab(get_window_group(widget));
-	//fprintf(stderr, "search grab for widget %p -> group = %p -> grab = %p\n", widget, get_window_group(widget), grab);
-	if (grab && !GTK_IS_WINDOW(grab))
+	//fprintf(stderr, "search grab for widget %p -> group = %p -> grab = %p WINDOW = %d\n", widget, get_window_group(widget), grab, GTK_IS_WINDOW(grab));
+	if (grab && grab != widget && !GTK_IS_WINDOW(grab))
 		goto __HANDLE_EVENT;
 
 	if (!grab && gApplication::_popup_grab)
@@ -251,6 +251,9 @@ static void gambas_handle_event(GdkEvent *event)
 	//if (grab && !gApplication::_popup_grab && !gApplication::_button_grab)
 	//	goto __HANDLE_EVENT;
 		
+	//if (event->type == GDK_BUTTON_RELEASE)
+	//	fprintf(stderr, "GDK_BUTTON_RELEASE #2\n");
+	
 	if (event->type == GDK_FOCUS_CHANGE)
 	{
 		control = NULL;
@@ -313,6 +316,9 @@ static void gambas_handle_event(GdkEvent *event)
 	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
+	
+	//if (event->type == GDK_BUTTON_RELEASE)
+	//	fprintf(stderr, "GDK_BUTTON_RELEASE #3\n");
 	
 __FOUND_WIDGET:
 	
