@@ -475,38 +475,56 @@
       }
     }
     { ToolBar1 ToolBar
-      MoveScaled(0,4,27,4)
-      Key = "text"
-      Text = ("Text")
+      MoveScaled(0,4,46,4)
+      Key = "format"
+      Text = ("Format")
       { ToolButton13 ToolButton
         MoveScaled(0,0,4,4)
+        ToolTip = ("Bold")
         Action = ".text-bold"
         Picture = Picture["icon:/small/text-bold"]
       }
       { ToolButton32 ToolButton
         MoveScaled(4,0,4,4)
+        ToolTip = ("Italic")
         Action = ".text-italic"
         Picture = Picture["icon:/small/text-italic"]
       }
       { ToolButton33 ToolButton
         MoveScaled(8,0,4,4)
+        ToolTip = ("Underline")
         Action = ".text-underline"
         Picture = Picture["icon:/small/text-underline"]
       }
       { ToolButton34 ToolButton
         MoveScaled(12,0,4,4)
+        ToolTip = ("Bigger font")
         Action = ".text-zoom-in"
         Picture = Picture["icon:/small/zoom-in"]
       }
       { ToolButton35 ToolButton
         MoveScaled(16,0,4,4)
+        ToolTip = ("Smaller font")
         Action = ".text-zoom-out"
         Picture = Picture["icon:/small/zoom-out"]
       }
       { ToolButton36 ToolButton
         MoveScaled(20,0,4,4)
+        ToolTip = ("Default font")
         Action = ".text-zoom-normal"
         Picture = Picture["icon:/small/zoom-normal"]
+      }
+      { ToolButton37 ToolButton
+        MoveScaled(24,0,4,4)
+        ToolTip = ("Background")
+        Action = ".format-background"
+        Picture = Picture["icon:/small/fill"]
+      }
+      { ToolButton38 ToolButton
+        MoveScaled(28,0,4,4)
+        ToolTip = ("Foreground")
+        Action = ".format-foreground"
+        Picture = Picture["icon:/small/pen"]
       }
     }
   }
@@ -717,6 +735,14 @@
     Shortcut = ""
     Picture = "img/16/embed-container.png"
   }
+  { Action format-background
+    Text = "Background"
+    Picture = "icon:/small/fill"
+  }
+  { Action format-foreground
+    Text = "Foreground"
+    Picture = "icon:/small/pen"
+  }
   { Action grid
     Text = "Toggle grid"
     Picture = "icon:/small/grid"
@@ -808,27 +834,27 @@
     Picture = "icon:/small/play"
   }
   { Action text-bold
-    Text = ""
+    Text = "Bold"
     Picture = "icon:/small/text-bold"
   }
   { Action text-italic
-    Text = ""
+    Text = "Italic"
     Picture = "icon:/small/text-italic"
   }
   { Action text-underline
-    Text = ""
+    Text = "Underline"
     Picture = "icon:/small/text-underline"
   }
   { Action text-zoom-in
-    Text = ""
+    Text = "Bigger font"
     Picture = "icon:/small/zoom-in"
   }
   { Action text-zoom-normal
-    Text = ""
+    Text = "Default font"
     Picture = "icon:/small/zoom-normal"
   }
   { Action text-zoom-out
-    Text = ""
+    Text = "Smaller font"
     Picture = "icon:/small/zoom-out"
   }
   { Action undo
@@ -848,9 +874,9 @@
     List = "save,reload,show-class,lock,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab"
     Default = "save,reload,show-class,lock,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab"
   }
-  { Toolbar text
-    Text = "Text"
-    List = "text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal"
-    Default = "text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal"
+  { Toolbar format
+    Text = "Format"
+    List = "text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    Default = "text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
   }
 }

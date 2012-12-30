@@ -3059,6 +3059,9 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case Like ".text-*"
       DoActionText(Key)
     
+    Case Like ".format-*"
+      DoActionFormat(Key)
+    
     ' Case ".remove-from-container"
     '   RemoveFromContainer
 
@@ -3874,7 +3877,37 @@ Private Sub DoActionText(sAction As String)
       
     End Select
     
-    hCtrl.SetProperty("Font", sFont)
+    Try hCtrl.SetProperty("Font", sFont)
+    
+  Next
+  $hUndo.End
+
+  FFormStack.RefreshAll
+
+End
+
+Private Sub DoActionFormat(sAction As String)
+
+  Dim hCtrl As CControl
+  Dim vColor As Variant
+
+  If FColorChooser.Run() Then Return
+
+  vColor = FColorChooser.Color
+  If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
+
+  $hUndo.Begin
+  For Each hCtrl In Selection
+    
+    Select Case sAction
+      
+      Case ".format-background"
+        If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", vColor)
+      
+      Case ".format-foreground"
+        If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", vColor)
+      
+    End Select
     
   Next
   $hUndo.End
