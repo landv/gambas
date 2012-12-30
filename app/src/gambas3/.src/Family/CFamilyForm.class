@@ -38,7 +38,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
       End Select
       
       If iBorder Then
-        Draw.Style.Panel(0, 0, hCtrl.W, hCtrl.H, iBorder)
+        Style.PaintPanel(0, 0, hCtrl.W, hCtrl.H, iBorder)
         Return
       Endif
       'If hCCtrl.GetProperty("Background") Then Return

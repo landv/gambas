@@ -503,6 +503,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 {
 	QStyle *style;
 	QStyleOptionFrameV3 optv3;
+	bool a;
 	//QRect rect = opt.rect;
 	
 	if (frame == 0)
@@ -516,8 +517,16 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 	switch (frame)
 	{
 		case BORDER_PLAIN:
-			qDrawPlainRect(p, opt.rect, CCOLOR_light_foreground());
-			//p->setPen(opt.palette.windowText().color());
+			//qDrawPlainRect(p, opt.rect, CCOLOR_light_foreground());
+			a = p->testRenderHint(QPainter::Antialiasing);
+			if (a)
+				p->setRenderHint(QPainter::Antialiasing, false);
+			p->setPen(CCOLOR_light_foreground());
+			p->setBrush(Qt::NoBrush);
+			opt.rect = QRect(opt.rect.x(), opt.rect.y(), opt.rect.width() - 1, opt.rect.height() - 1);
+			p->drawRect(opt.rect);
+			if (a)
+				p->setRenderHint(QPainter::Antialiasing, true);
 			break;
 			
 		case BORDER_SUNKEN:
@@ -540,9 +549,11 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			break;
 			
 		case BORDER_ETCHED:
-			qDrawShadeRect(p, opt.rect, opt.palette, true, 1, 0);
-			/*p->setPen(opt.palette.shadow().color());
-			p->drawRect(rect);*/
+			optv3.rect = opt.rect;
+			//optv3.state = opt.state | QStyle::State_Raised;
+			optv3.frameShape = QFrame::StyledPanel;
+			style->drawPrimitive(QStyle::PE_FrameGroupBox, &optv3, p, w);
+			//qDrawShadeRect(p, opt.rect, opt.palette, true, 1, 0);
 			break;
 			
 		default:

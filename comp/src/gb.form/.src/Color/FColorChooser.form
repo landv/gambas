@@ -3,10 +3,11 @@
 { Form Form
   MoveScaled(9.1429,8,72,70)
   Arrangement = Arrange.Fill
-  Spacing = True
   { panBorder Panel
-    MoveScaled(1,2,67,60)
+    MoveScaled(3,3,67,60)
     Arrangement = Arrange.Vertical
+    Spacing = True
+    Margin = True
     Border = Border.Plain
     { HBox1 HBox
       MoveScaled(0,0,57,32)
@@ -17,12 +18,12 @@
         Expand = True
         Spacing = True
         { dwgStdColor DrawingArea
-          MoveScaled(0,0,33,4)
+          MoveScaled(1,1,33,4)
           Mouse = Mouse.Pointing
           Border = Border.Plain
         }
         { dwgColorMap DrawingArea
-          MoveScaled(0,6,25,20)
+          MoveScaled(3,6,25,20)
           Mouse = Mouse.Cross
           Expand = True
           Border = Border.Plain

@@ -626,6 +626,7 @@ End
 Public Sub SetBorder(bBorder As Boolean)
   
   panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  panBorder.Margin = bBorder
   
 End
 

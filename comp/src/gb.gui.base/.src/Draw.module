@@ -343,6 +343,7 @@ End
 Public Sub Rect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
   
   Dim hInfo As DrawInfo = _GetInfo()
+  Dim iBg As Integer
   
   If hInfo.FillStyle Then
     Paint.Background = hInfo.FillColor
@@ -351,14 +352,13 @@ Public Sub Rect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
   Endif
   
   If hInfo.LineStyle Then
-    Paint.Background = GetForeground()
-    Paint.Rectangle(X, Y, Width, 1)
-    Paint.Rectangle(X, Y + Height - 1, Width, 1)
+    iBg = GetForeground()
+    Paint.FillRect(X, Y, Width, 1, iBg)
+    Paint.FillRect(X, Y + Height - 1, Width, 1, iBg)
     If Height > 2 Then
-      Paint.Rectangle(X, Y + 1, 1, Height - 2)
-      Paint.Rectangle(X + Width - 1, Y + 1, 1, Height - 2)
+      Paint.FillRect(X, Y + 1, 1, Height - 2, iBg)
+      Paint.FillRect(X + Width - 1, Y + 1, 1, Height - 2, iBg)
     Endif
-    Paint.Fill
   Endif
   
 End

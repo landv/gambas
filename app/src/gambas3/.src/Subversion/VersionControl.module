@@ -9,6 +9,9 @@ Private $sOutput As String
 Private $dOutput As Date
 Private $bIdent As Boolean
 
+Private $sSvnVersion As String
+Private $bSvn17 As Boolean
+
 Public User As String
 Public Password As String
 Public UseTerminal As Boolean
@@ -21,8 +24,23 @@ End
 
 Public Sub Refresh()
 
-  $bSVN = Exist(Project.Dir &/ ".svn")
+  Dim sResult As String
+
+  If Not $sSvnVersion Then 
+    Exec ["svn", "--version", "--quiet"] To $sSvnVersion
+    $sSvnVersion = Trim($sSvnVersion)
+    $bSvn17 = $sSvnVersion Begins "1.7."
+  Endif
+
   $bCVS = Exist(Project.Dir &/ "CVS") Or Exist(Project.Dir &/ "CVSROOT")
+  
+  If $bSvn17 Then
+    $bSVN = False
+    Shell "svn status " & Shell$(SvnPath$(Project.Dir) &/ ".project") & " 2>&1" To sResult
+    If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" Then $bSvn = True
+  Else
+    $bSVN = Exist(Project.Dir &/ ".svn")
+  Endif
 
 End
 
@@ -447,15 +465,28 @@ End
 
 Public Sub CanControlProject() As Boolean
 
+  Dim sDir As String
+
   If $bSVN Or $bCVS Then Return
-  If Exist(Project.Dir &/ "../.svn") Then Return True
+  
+  If $bSvn17 Then
+    sDir = Project.Dir
+    Do
+      sDir = File.Dir(sDir)
+      If Exist(sDir &/ ".svn") Then Return True
+      If sDir = "/" Then Return False
+    Loop
+  Else
+    If Exist(Project.Dir &/ "../.svn") Then Return True
+  Endif
+  
   If Exist(Project.Dir &/ "../CVS") Or Exist(Project.Dir &/ "../CVSROOT") Then Return True
 
 End
 
 Public Sub ControlProject()
 
-  If Exist(Project.Dir &/ "../.svn") Then
+  If CanControlProject() Then
     Project.CleanUp
     Try Kill Project.Dir &/ ".settings"
     Run(["svn", "add", SvnPath$(Project.Dir)])
