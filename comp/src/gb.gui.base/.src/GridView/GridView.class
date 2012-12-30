@@ -179,9 +179,9 @@ End
 Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W As Integer, H As Integer, A As Integer)
   
   If Align.IsBottom(A) Then
-      Y = H - hPict.H
+    Y = H - hPict.H
   Else If Align.IsMiddle(A) Then
-      Y = Y + (H - hPict.H) / 2
+    Y = Y + (H - hPict.H) / 2
   Endif
   
   If Align.IsRight(A) Then
@@ -190,7 +190,7 @@ Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W A
     X = X + (W - hPict.W) / 2
   Endif
   
-  Draw.Picture(hPict, X, Y)
+  Paint.DrawPicture(hPict, X, Y)
   
 End
 

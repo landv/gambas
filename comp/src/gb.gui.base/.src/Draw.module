@@ -99,6 +99,8 @@ Public Sub Save()
   hSave.Transparent = hInfo.Transparent
   hSave.LineStyle = hInfo.LineStyle
   hSave.FillColor = hInfo.FillColor
+  hSave.FillStyle = hInfo.FillStyle
+  If hInfo.ClipRect Then hSave.ClipRect = hInfo.ClipRect.Copy()
   hInfo.Stack.Push(hSave)
   
 End
@@ -116,6 +118,8 @@ Public Sub Restore()
   Draw.Transparent = hSave.Transparent
   Draw.LineStyle = hSave.LineStyle
   Draw.FillColor = hSave.FillColor
+  Draw.FillStyle = hSave.FillStyle
+  Draw.ClipRect = hSave.ClipRect
   
 End
 
@@ -140,7 +144,7 @@ End
 
 Private Function ClipRect_Read() As Rect
 
-  Return _GetInfo().ClipRect
+  Try Return _GetInfo().ClipRect.Copy()
 
 End
 

@@ -300,7 +300,7 @@ Public Sub DrawingArea_Draw()
   
   If hClip Then
 
-    Draw.Clip(hClip.X, hClip.Y, hClip.W, hClip.H)
+    Draw.ClipRect = hClip '(hClip.X, hClip.Y, hClip.W, hClip.H)
 
     'If $bPainted Then Paint.Begin($hDrawingArea)
     Raise Draw

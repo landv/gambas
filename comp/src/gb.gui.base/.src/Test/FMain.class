@@ -1,2 +1,11 @@
 ' Gambas class file
 
+
+Public Sub Form_Open()
+
+  Dim aTest As New String[]
+  
+  Print Object.Address(aTest)
+  Print CStr(Object.Address(aTest))
+
+End

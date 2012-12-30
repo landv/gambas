@@ -127,6 +127,23 @@ static QColor get_color(GB_PAINT *d, GB_COLOR col)
 	return CCOLOR_make(col);
 }
 
+static void begin_clipping(GB_PAINT *d)
+{
+	if (CLIP(d))
+	{
+		QTransform save = PAINTER(d)->worldTransform();
+		PAINTER(d)->resetTransform();
+		PAINTER(d)->setClipPath(*CLIP(d));
+		PAINTER(d)->setWorldTransform(save);
+	}
+}
+
+static void end_clipping(GB_PAINT *d)
+{
+	if (CLIP(d))
+		PAINTER(d)->setClipping(false);
+}
+
 //---------------------------------------------------------------------------
 
 static int Begin(GB_PAINT *d)
@@ -795,21 +812,14 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 		
 	if (draw)
 	{
-		if (CLIP(d))
-		{
-			QTransform save = PAINTER(d)->worldTransform();
-			PAINTER(d)->resetTransform();
-			PAINTER(d)->setClipPath(*CLIP(d));
-			PAINTER(d)->setWorldTransform(save);
-		}
+		begin_clipping(d);
 		
 		if (rich)
 			DRAW_rich_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
 		else
 			DRAW_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
 		
-		if (CLIP(d))
-			PAINTER(d)->setClipping(false);
+		end_clipping(d);
 	}
 	else
 	{
@@ -972,11 +982,12 @@ static void Invert(GB_PAINT *d, int set, int *invert)
 	}
 }
 
-
 static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
 	QImage *img = CIMAGE_get((CIMAGE *)image);
 	QRectF rect(x, y, w, h);
+	
+	begin_clipping(d);
 	
 	PAINTER(d)->setOpacity(opacity);
 	
@@ -996,6 +1007,8 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 		PAINTER(d)->drawImage(rect, *img);
 	
 	PAINTER(d)->setOpacity(1.0);
+	
+	end_clipping(d);
 }
 		
 static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
@@ -1009,7 +1022,11 @@ static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float
 	else
 		srect = QRectF(0, 0, pix->width(), pix->height());
 
+	begin_clipping(d);
+	
 	PAINTER(d)->drawPixmap(rect, *pix, srect);
+
+	end_clipping(d);
 }
 
 static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info)

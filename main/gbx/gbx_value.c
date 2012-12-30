@@ -571,12 +571,12 @@ __f2s:
 
 __p2s:
 	#if OS_64BITS
-		value->_long.value = (int64_t)(intptr_t)value->_pointer.value;
-		goto __l2s;
+		NUMBER_int_to_string((int64_t)(intptr_t)value->_pointer.value, 0, 16, value);
 	#else
-		value->_integer.value = (int)(intptr_t)value->_pointer.value;
-		goto __i2s;
+		NUMBER_int_to_string((int)(intptr_t)value->_pointer.value, 0, 16, value);
 	#endif
+	BORROW(value);
+	return;
 	
 __d2s:
 
