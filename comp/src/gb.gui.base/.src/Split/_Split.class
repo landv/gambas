@@ -1,0 +1,279 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Property Layout, Settings As Integer[]
+Event Resize
+
+Private $hObs As Observer
+Private $cWeight As New Collection
+Private $bLayouting As Boolean
+Private $hPanel As Panel
+Private $aResize As New DrawingArea[]
+
+Private $XMin As Integer
+Private $XMax As Integer
+Private $bNoArrange As Boolean
+Private $bVertical As Boolean
+
+Public Sub _new()
+  
+  $bVertical = Me Is VSplit
+  $hPanel = New Panel(Me)
+  Me._Container = $hPanel
+  
+  $hObs = New Observer(Me) As "Container"
+  
+End
+
+Private Sub GetChildren() As Control[]
+  
+  Dim aControl As New Control[]
+  Dim hChild As Control
+  
+  For Each hChild In $hPanel.Children
+    If Not hChild.Visible Then Continue
+    aControl.Add(hChild)
+  Next
+  
+  Return aControl
+  
+End
+
+
+Private Sub GetTotalWeight() As Integer
+
+  Dim hChild As Control
+  Dim iWeight As Integer
+  
+  For Each hChild In GetChildren()
+    Try iWeight += $cWeight[Object.Address(hChild)]
+  Next
+  
+  Return iWeight
+  
+End
+
+Public Sub Container_Arrange()
+  
+  Dim cNewWeight As Collection
+  Dim hChild As Control
+  Dim fWeight As Float
+  Dim fNewWeight As Float
+  Dim I As Integer
+  Dim aChildren As Control[]
+
+  If $bNoArrange Then Return
+  
+  $hPanel.Move(0, 0, Me.W, Me.H)
+  
+  aChildren = GetChildren()
+  
+  If $cWeight.Count <> aChildren.Count Then
+    
+    If $cWeight.Count Then
+      fNewWeight = GetTotalWeight() / $cWeight.Count
+    Else
+      fNewWeight = 1
+    Endif
+    
+    cNewWeight = New Collection
+    
+    For Each hChild In aChildren
+      Try fWeight = $cWeight[Object.Address(hChild)]
+      If Error Then fWeight = fNewWeight
+      cNewWeight[Object.Address(hChild)] = fWeight
+    Next
+    
+    $cWeight = cNewWeight
+    
+    If $cWeight.Count < aChildren.Count Then
+      For I = $cWeight.Count - 1 To $aResize.Max
+        $aResize[I].Delete
+      Next
+      $aResize.Resize($cWeight.Count - 1)
+    Else
+      $aResize.Resize($cWeight.Count - 1)
+      Me._Container = Null
+      For I = $cWeight.Count - 2 DownTo 0
+        If $aResize[I] Then Break
+        $aResize[I] = New DrawingArea(Me) As "Resize"
+        With $aResize[I]
+          .NoBackground = True
+          .Raise
+          '.Background = Color.Yellow
+          .Mouse = If($bVertical, Mouse.SplitV, Mouse.SplitH)
+        End With
+      Next
+      Me._Container = $hPanel
+    Endif
+    
+    For I = 0 To $aResize.Max
+      $aResize[I].Tag = I
+    Next
+    
+  Endif
+  
+  Layout_Write(Layout_Read())
+  
+End
+
+
+Private Function Layout_Read() As Integer[]
+
+  Dim aLayout As New Integer[]
+  Dim hChild As Control
+  Dim W As Integer = If($bVertical, $hPanel.H, $hPanel.W)
+  
+  For Each hChild In GetChildren()
+    aLayout.Add(CInt(W * $cWeight[Object.Address(hChild)]))
+  Next
+  
+  Return aLayout
+
+End
+
+Private Sub Layout_Write(Value As Integer[])
+
+  Dim I, W, WMax, WTotal As Integer
+  Dim iTotal As Integer
+  Dim hChild As Control
+  Dim X As Integer
+  Dim aChildren As Control[]
+  
+  If $bLayouting Or If Not Value Or If Value.Count = 0 Then Return
+  
+  $bLayouting = True
+  
+  aChildren = GetChildren()
+  
+  Value.Resize(aChildren.Count)
+  
+  For I = 0 To Value.Max
+    Value[I] = Max(1, Value[I])
+    iTotal += Value[I]
+  Next
+
+  WMax = If($bVertical, $hPanel.H, $hPanel.W)
+  For I = 0 To Value.Max - 1
+    W = Value[I] * WMax / iTotal
+    WTotal += W
+    If $bVertical Then
+      aChildren[I].Height = W - 1
+    Else
+      aChildren[I].Width = W - 1
+    Endif
+  Next
+  
+  If $bVertical Then
+    
+    aChildren[Value.Max].Height = WMax - WTotal
+    
+    For Each hChild In aChildren
+      hChild.Move(0, X, $hPanel.W, hChild.H)
+      X += hChild.H
+    Next
+    
+    For I = 0 To $aResize.Max
+      hChild = aChildren[I + 1]
+      $aResize[I].Move(0, hChild.Y - Desktop.Scale \ 2, $hPanel.W, Desktop.Scale)
+    Next
+    
+  Else
+    
+    aChildren[Value.Max].Width = WMax - WTotal
+
+    For Each hChild In aChildren
+      hChild.Move(X, 0, hChild.W, $hPanel.H)
+      X += hChild.W
+    Next
+    
+    For I = 0 To $aResize.Max
+      hChild = aChildren[I + 1]
+      $aResize[I].Move(hChild.X - Desktop.Scale \ 2, 0, Desktop.Scale, $hPanel.H)
+    Next
+  
+  Endif
+  
+  $bLayouting = False
+
+End
+
+Public Sub Resize_MouseDown()
+
+  Dim aChildren As Control[] = GetChildren()
+  Dim I As Integer = Last.Tag
+  
+  If $bVertical Then
+    $XMin = aChildren[I].ScreenY
+    $XMax = aChildren[I + 1].ScreenY + aChildren[I + 1].H
+  Else
+    $XMin = aChildren[I].ScreenX
+    $XMax = aChildren[I + 1].ScreenX + aChildren[I + 1].W
+  Endif
+  $bNoArrange = True
+  
+End
+
+Public Sub Resize_MouseMove()
+  
+  Dim aChildren As Control[] = GetChildren()
+  Dim hResize As DrawingArea = Last
+  Dim I As Integer = hResize.Tag
+  Dim X As Integer
+  Dim hChild As Control
+  
+  If $bVertical Then
+    
+    X = Min(Max(Mouse.ScreenY, $XMin + 4), $XMax - 4)
+    
+    aChildren[I].H = X - $XMin
+    aChildren[I + 1].Move(0, X - $hPanel.ScreenY, $hPanel.W, $XMax - X)
+    
+    hResize.Move(0, aChildren[I + 1].Y - Desktop.Scale \ 2, $hPanel.W, Desktop.Scale)
+    
+    For Each hChild In aChildren
+      $cWeight[Object.Address(hChild)] = hChild.H
+    Next
+    
+  Else
+    
+    X = Min(Max(Mouse.ScreenX, $XMin + 4), $XMax - 4)
+    
+    aChildren[I].W = X - $XMin
+    aChildren[I + 1].Move(X - $hPanel.ScreenX, 0, $XMax - X, $hPanel.H)
+    
+    hResize.Move(aChildren[I + 1].X - Desktop.Scale \ 2, 0, Desktop.Scale, $hPanel.H)
+    
+    For Each hChild In aChildren
+      $cWeight[Object.Address(hChild)] = hChild.W
+    Next
+    
+  Endif
+  
+  Raise Resize
+  
+End
+
+Public Sub Resize_MouseUp()
+  
+  $bNoArrange = False
+  Container_Arrange
+  
+End
+
+Public Sub Resize_Draw()
+
+  Dim X As Integer
+  
+  X = Desktop.Scale \ 2 - 1
+  
+  Draw.Foreground = Color.LightForeground
+  If $bVertical Then
+    Draw.Line(0, X, $hPanel.W - 1, X)
+  Else
+    Draw.Line(X, 0, X, $hPanel.H - 1)
+  Endif
+  
+End
