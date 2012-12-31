@@ -56,6 +56,29 @@
 #include "csvgimage.h"
 #include "cpaint_impl.h"
 
+class ClipInfo
+{
+public:
+	QPainterPath *path;
+	GB_RECT *rect;
+	
+	ClipInfo() { path = NULL; rect = NULL; }
+	~ClipInfo() { delete path; delete rect; }
+};
+
+typedef
+	struct {
+		QPainter *painter;
+		QPainterPath *path;
+		int fillRule;
+		QTransform *init;
+		float bx, by;
+		QPainterPath *clip;
+		GB_RECT *clipRect;
+		QList<ClipInfo *> *clipStack;
+	}
+	QT_PAINT_EXTRA;
+	
 #define EXTRA(d) ((QT_PAINT_EXTRA *)d->extra)
 
 #define COLOR_TO_INT(color) ((color).rgba() ^ 0xFF000000)
@@ -93,8 +116,9 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	MyPaintEngine *engine = (MyPaintEngine *)device->paintEngine();
 	engine->patchFeatures();
 	
-	EXTRA(d)->path = 0;
-	EXTRA(d)->clip = 0;
+	//EXTRA(d)->path = NULL;
+	//EXTRA(d)->clip = NULL;
+	//EXTRA(d)->clipRect = NULL;
 	
 	EXTRA(d)->init = new QTransform();
 	*(EXTRA(d)->init) = PAINTER(d)->worldTransform();
@@ -131,9 +155,14 @@ static void begin_clipping(GB_PAINT *d)
 {
 	if (CLIP(d))
 	{
+		GB_RECT *r;
 		QTransform save = PAINTER(d)->worldTransform();
 		PAINTER(d)->resetTransform();
-		PAINTER(d)->setClipPath(*CLIP(d));
+		r = EXTRA(d)->clipRect;
+		if (r)
+			PAINTER(d)->setClipRect(r->x, r->y, r->w, r->h);
+		else
+			PAINTER(d)->setClipPath(*CLIP(d));
 		PAINTER(d)->setWorldTransform(save);
 	}
 }
@@ -274,13 +303,23 @@ static void End(GB_PAINT *d)
 static void Save(GB_PAINT *d)
 {
 	QT_PAINT_EXTRA *dx = EXTRA(d);
+	ClipInfo *ci;
 	
 	PAINTER(d)->save();
 	
 	if (!dx->clipStack)
-		dx->clipStack = new QList<QPainterPath *>;
+		dx->clipStack = new QList<ClipInfo *>;
 	
-	dx->clipStack->append(dx->clip ? new QPainterPath(*dx->clip) : NULL);
+	ci = new ClipInfo;
+	if (dx->clip)
+		ci->path = new QPainterPath(*dx->clip);
+	if (dx->clipRect)
+	{
+		ci->rect = new GB_RECT;
+		*ci->rect = *dx->clipRect;
+	}
+	
+	dx->clipStack->append(ci);
 }
 
 static void Restore(GB_PAINT *d)
@@ -291,10 +330,21 @@ static void Restore(GB_PAINT *d)
 	
 	if (dx->clipStack && !dx->clipStack->isEmpty())
 	{
-		QPainterPath *path = dx->clipStack->takeLast();
+		ClipInfo *ci = dx->clipStack->takeLast();
+		
 		delete dx->clip;
-		dx->clip = path ? new QPainterPath(*path) : NULL;
-		delete path;
+		dx->clip = ci->path ? new QPainterPath(*(ci->path)) : NULL;
+		
+		delete dx->clipRect;
+		if (ci->rect)
+		{
+			dx->clipRect = new GB_RECT;
+			*dx->clipRect = *ci->rect;
+		}
+		else
+			dx->clipRect = NULL;
+		
+		delete ci;
 	}
 }
 		
@@ -351,6 +401,15 @@ static void init_path(GB_PAINT *d)
 	if (!PATH(_d)) \
 		EXTRA(_d)->path = new QPainterPath();
 
+static void delete_clip_rect(GB_PAINT *d)
+{
+	if (EXTRA(d)->clipRect)
+	{
+		delete EXTRA(d)->clipRect;
+		EXTRA(d)->clipRect = NULL;
+	}
+}
+	
 static void Clip(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
@@ -362,6 +421,7 @@ static void Clip(GB_PAINT *d, int preserve)
 	
 	delete EXTRA(d)->clip;
 	EXTRA(d)->clip = new QPainterPath(path);
+	delete_clip_rect(d);
 	
 	PRESERVE_PATH(d, preserve);
 }
@@ -370,6 +430,7 @@ static void ResetClip(GB_PAINT *d)
 {
 	delete CLIP(d);
 	EXTRA(d)->clip = 0;
+	delete_clip_rect(d);
 }
 
 static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext, const QTransform &transform)
@@ -391,30 +452,8 @@ static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext, const QTransfo
 static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
 	get_path_extents(CLIP(d), ext, PAINTER(d)->transform());
-	/*if (EXTRA(d)->w > 0 && EXTRA(d)->h > 0)
-	{
-		int x1 = EXTRA(d)->x;
-		int x2 = x1 + EXTRA(d)->w;
-		int y1 = EXTRA(d)->y;
-		int y2 = y1 + EXTRA(d)->h;
-			
-		if (ext->x2 > ext->x1 && ext->y2 > ext->y1)
-		{
-			if (x1 < ext->x1) ext->x1 = x1;
-			if (x2 > ext->x2) ext->x2 = x2;
-			if (y1 < ext->y1) ext->y1 = y1;
-			if (y2 > ext->y2) ext->y2 = y2;
-		}
-		else
-		{
-			ext->x1 = x1;
-			ext->x2 = x2;
-			ext->y1 = y1;
-			ext->y2 = y2;
-		}
-	}*/
 }
-	
+
 static void Fill(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
@@ -737,6 +776,21 @@ static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
 	PATH(d)->addRect((qreal)x, (qreal)y, (qreal)width, (qreal)height);
 }
 
+static void ClipRect(GB_PAINT *d, int x, int y, int w, int h)
+{
+	GB_RECT *rect;
+	ResetClip(d);
+	Rectangle(d, x, y, w, h);
+	Clip(d, FALSE);
+	
+	rect = new GB_RECT;
+	rect->x = x;
+	rect->y = y;
+	rect->w = w;
+	rect->h = h;
+	EXTRA(d)->clipRect = rect;
+}
+	
 static void GetCurrentPoint(GB_PAINT *d, float *x, float *y)
 {
 	if (!PATH(d))
@@ -1039,13 +1093,9 @@ static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *inf
 
 static void FillRect(GB_PAINT *d, float x, float y, float w, float h, GB_COLOR color)
 {
-	//CHECK_PATH(d);
-	
-	//if (CLIP(d))
-	//	PAINTER(d)->setClipPath(PAINTER(d)->worldTransform().inverted().map(*CLIP(d)));
+	begin_clipping(d);
 	PAINTER(d)->fillRect(x, y, w, h, get_color(d, color));
-	//if (CLIP(d))
-	//	PAINTER(d)->setClipping(false);
+	end_clipping(d);
 }
 
 static void BrushFree(GB_BRUSH brush)
@@ -1211,6 +1261,7 @@ GB_PAINT_DESC PAINT_Interface =
 	Clip,
 	ResetClip,
 	ClipExtents,
+	ClipRect,
 	Fill,
 	Stroke,
 	PathExtents,
@@ -1294,15 +1345,7 @@ void PAINT_clip(int x, int y, int w, int h)
 {
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
 	if (d)
-	{
-		/*PAINTER(d)->setClipRect(x, y, w, h);
-		EXTRA(d)->x = x;
-		EXTRA(d)->y = y;
-		EXTRA(d)->w = w;
-		EXTRA(d)->h = h;*/
-		Rectangle(d, x, y, w, h);
-		Clip(d, FALSE);
-	}
+		ClipRect(d, x, y, w, h);
 }
 
 /*************************************************************************/

@@ -14,10 +14,8 @@ Property ScrollY As Integer
 Property Read ScrollWidth, ScrollW As Integer
 Property Read ScrollHeight, ScrollH As Integer
 
-' Property Read ClientWidth As Integer
-' Property Read ClientHeight As Integer
-' Property Read ClientW As Integer
-' Property Read ClientH As Integer
+Property Read ClientWidth, ClientW As Integer
+Property Read ClientHeight, ClientH As Integer
 
 Property Border As Boolean
 Property Focus As Boolean
@@ -44,6 +42,8 @@ Private $bNoArrange As Boolean
 Private $hDrawingArea As DrawingArea
 Private $hHBar As ScrollBar
 Private $hVBar As ScrollBar
+Private $bHBarVisible As Boolean
+Private $bVBarVisible As Boolean
 Private $hObserver As Observer
 Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
@@ -115,15 +115,35 @@ Public Sub _new()
   
 End
 
-Public Sub ScrollArea_Arrange()
+Private Sub UpdateScrollbarVisibility()
+  
+  'If Me.Hovered Then
+  
+    $hHBar.Visible = $bHBarVisible
+    $hVBar.Visible = $bVBarVisible
+    
+  'Else
+  
+  '  $hHBar.Visible = False
+  '  $hVBar.Visible = False
+    
+  'Endif
+  
+End
+
+
+Private Sub LayoutScrollbars()
   
   Dim SB, SP, FW, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
-  Dim OW, OH As Integer
+  Dim bHBarVisible, bVBarVisible As Boolean
+  Dim OW, OH, OWC, OHC As Integer
   
   If $bNoArrange Then Return
   
   $bNoArrange = True
+  
+  'Debug Me.ClientW;; System.Backtrace.Join(" ")
   
   SB = Style.ScrollbarSize
   SP = Style.ScrollbarSpacing
@@ -131,8 +151,13 @@ Public Sub ScrollArea_Arrange()
   
   bHBarAllowed = $iScroll = Scroll.Horizontal Or $iScroll = Scroll.Both
   bVBarAllowed = $iScroll = Scroll.Vertical Or $iScroll = Scroll.Both
+  bHBarVisible = $bHBarVisible
+  bVBarVisible = $bVBarVisible
 
 RETRY:
+  
+  OWC = $W
+  OHC = $H
   
   W = Me.Width - FW * 2
   H = Me.Height - FW * 2
@@ -144,8 +169,10 @@ RETRY:
     $hHBar.MaxValue = 0
     $hVBar.MinValue = 0
     $hVBar.MaxValue = 0
-    $hHBar.Hide
-    $hVBar.Hide
+    '$hHBar.Hide
+    '$hVBar.Hide
+    bHBarVisible = False
+    bVBarVisible = False
     
   Else If bHBarAllowed And If $W > W And If $H <= (H - SB - SP) Then
     
@@ -154,8 +181,10 @@ RETRY:
     $hHBar.PageStep = W
     $hVBar.MinValue = 0
     $hVBar.MaxValue = 0
-    $hHBar.Show
-    $hVBar.Hide
+    '$hHBar.Show
+    '$hVBar.Hide
+    bHBarVisible = True
+    bVBarVisible = False
     
   Else If bVBarAllowed And If $H > H And If $W <= (W - SB - SP) Then
     
@@ -164,8 +193,10 @@ RETRY:
     $hVBar.PageStep = H
     $hHBar.MinValue = 0
     $hHBar.MaxValue = 0
-    $hVBar.Show
-    $hHBar.Hide
+    '$hHBar.Hide
+    '$hVBar.Show
+    bHBarVisible = False
+    bVBarVisible = True
     
   Else 
     
@@ -178,11 +209,12 @@ RETRY:
     If $W > P Then
       $hHBar.MaxValue = $W - P
       $hHBar.PageStep = P
-      $hHBar.Visible = bHBarAllowed
+      '$hHBar.Visible = bHBarAllowed
+      bHBarVisible = bHBarAllowed
     Else
-      $hHBar.Hide
+      '$hHBar.Hide
+      bHBarVisible = False
     Endif
-    
     
     $hVBar.MinValue = 0
     If bHBarAllowed Then
@@ -193,15 +225,19 @@ RETRY:
     If $H > P Then
       $hVBar.MaxValue = $H - P
       $hVBar.PageStep = P
-      $hVBar.Visible = bVBarAllowed
+      '$hVBar.Visible = bVBarAllowed
+      bVBarVisible = bVBarAllowed
     Else
-      $hVBar.Hide
+      '$hVBar.Hide
+      bVBarVisible = False
     Endif
     
   Endif
   
-  If $hHBar.Visible Then H -= SB + SP
-  If $hVBar.Visible Then W -= SB + SP
+  'If $hHBar.Visible Then H -= SB + SP
+  'If $hVBar.Visible Then W -= SB + SP
+  If bHBarVisible Then H -= SB + SP
+  If bVBarVisible Then W -= SB + SP
   
   W += FW * 2
   H += FW * 2
@@ -212,9 +248,18 @@ RETRY:
     Goto RETRY
   Endif
   
-  $hDrawingArea.Move(0, 0, W, H)
-  If $hHBar.Visible Then $hHBar.Move(0, H + SP, W, SB)
-  If $hVBar.Visible Then $hVBar.Move(W + SP, 0, SB, H)
+  $hDrawingArea.Move(0, 0, Me.W, Me.H)
+  
+  If bHBarVisible <> $bHBarVisible Or If bVBarVisible <> $bVBarVisible Then Raise Resize
+  
+  If $W <> OWC Or If $H <> OHC Then Goto RETRY
+  
+  $bHBarVisible = bHBarVisible
+  $bVBarVisible = bVBarVisible
+  UpdateScrollbarVisibility
+  
+  If $bHBarVisible Then $hHBar.Move(0, H + SP, W, SB)
+  If $bVBarVisible Then $hVBar.Move(W + SP, 0, SB, H)
   
   $bNoArrange = False
   
@@ -222,23 +267,47 @@ End
 
 Public Sub TimerArrange_Timer()
   
-  ScrollArea_Arrange
+  LayoutScrollbars
   $hTimerArrange = Null
   
 End
 
+Public Sub ScrollArea_Arrange()
+  
+  LayoutScrollbars
+  ' If Not $hTimerArrange Then
+  '   $hTimerArrange = New Timer As "TimerArrange"
+  '   $hTimerArrange.Trigger
+  ' Endif
+  
+End
+
+' Public Sub ScrollArea_Enter()
+'   
+'   UpdateScrollbarVisibility
+'   
+' End
+' 
+' Public Sub ScrollArea_Leave()
+'   
+'   UpdateScrollbarVisibility
+'   
+' End
 
 Public Sub ResizeContents(Width As Integer, Height As Integer)
   
   If $W = Width And If $H = Height Then Return 
   
+  'Debug $W;; $H;; System.Backtrace.Join(" ")
+  
   $W = Width
   $H = Height
   
-  If Not $hTimerArrange Then
-    $hTimerArrange = New Timer As "TimerArrange"
-    $hTimerArrange.Trigger
-  Endif
+  LayoutScrollbars
+  ' If Not $hTimerArrange Then
+  '   $hTimerArrange = New Timer As "TimerArrange"
+  '   $hTimerArrange.Trigger
+  ' Endif
   
   $hDrawingArea.Refresh
   
@@ -316,14 +385,14 @@ Public Sub DrawingArea_Draw()
       ' If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
       ' If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
   
-      If $hVBar.Visible Then
+      If $bVBarVisible Then
         LoadFades()
         Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
         If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), Draw.W, $hFadeN.H)
         If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, $hFadeS.H)
       Endif
       
-      If $hHBar.Visible Then
+      If $bHBarVisible Then
         LoadFades()
         Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
         If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, Draw.H)
@@ -538,6 +607,9 @@ End
 Private Sub Background_Write(Value As Integer)
 
   $iBackground = Value
+  Super.Background = Value
+  $hHBar.Background = Value
+  $hVBar.Background = Value
   $hDrawingArea.Refresh
 
 End
@@ -615,4 +687,24 @@ Public Sub TimerScroll_Timer()
   
   Me._EnsureVisibleScroll($DX, $DY)
   
+End
+
+Private Function ClientWidth_Read() As Integer
+
+  Dim W As Integer
+
+  W = Me.W
+  If $bVBarVisible Then W -= $hVBar.W
+  Return Max(0, W)
+
+End
+
+Private Function ClientHeight_Read() As Integer
+
+  Dim H As Integer
+
+  H = Me.H
+  If $bHBarVisible Then H -= $hHBar.H
+  Return Max(0, H)
+
 End

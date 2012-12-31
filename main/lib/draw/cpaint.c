@@ -604,13 +604,10 @@ BEGIN_PROPERTY(Paint_ClipRect)
 	else
 	{
 		rect = (CRECT *)VPROP(GB_OBJECT);
-		PAINT->ResetClip(THIS);
 		if (rect)
-		{
-			PAINT->NewPath(THIS);
-			PAINT->Rectangle(THIS, rect->x, rect->y, rect->w, rect->h);
-			PAINT->Clip(THIS, FALSE);
-		}
+			PAINT->ClipRect(THIS, rect->x, rect->y, rect->w, rect->h);
+		else
+			PAINT->ResetClip(THIS);
 	}
 
 END_PROPERTY

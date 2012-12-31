@@ -38,6 +38,7 @@ Public Sub Form_Open()
   tvwShortcut.Columns.Count = 2
   'Debug tvwShortcut.Row;; tvwShortcut.Column
   tvwShortcut.Columns[0].Text = ("Action")
+  tvwShortcut.Columns[0].Expand = True
   tvwShortcut.Columns[1].Text = ("Shortcut")
   
   hImage = New Image(16, 16, Color.Transparent)
@@ -57,8 +58,9 @@ Public Sub Form_Open()
 
   Next
   
-  tvwShortcut.Columns[0].Width = -1 'tvwShortcut.Width - Desktop.Scale * 24
-  tvwShortcut.Rows.Height = -1
+  tvwShortcut.Columns[1].Width = -1 'tvwShortcut.Width - Desktop.Scale * 24
+  tvwShortcut.Columns[1].Width += 6 * Desktop.Scale
+  tvwShortcut.Rows.Height = tvwShortcut.Font.Height + 8
 
   '$hSettings = New Settings("gb.form.mdi")
   Settings.Read(Me, "gb.form.mdi/FShortcut")

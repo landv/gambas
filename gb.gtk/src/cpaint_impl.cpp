@@ -908,6 +908,13 @@ static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
 	cairo_rectangle(CONTEXT(d), x, y, width, height);
 }
 
+static void ClipRect(GB_PAINT *d, int x, int y, int w, int h)
+{
+	ResetClip(d);
+	Rectangle(d, x, y, w, h);
+	Clip(d, FALSE);
+}
+
 static void GetCurrentPoint(GB_PAINT *d, float *x, float *y)
 {
 	double cx, cy;
@@ -1360,6 +1367,7 @@ GB_PAINT_DESC PAINT_Interface =
 	Clip,
 	ResetClip,
 	ClipExtents,
+	ClipRect,
 	Fill,
 	Stroke,
 	PathExtents,

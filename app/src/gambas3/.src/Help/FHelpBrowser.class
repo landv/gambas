@@ -54,6 +54,7 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
   Settings.Read(splHelp)
+  webHelp.Show
   btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False]
   ReadConfig
   
@@ -207,7 +208,7 @@ Public Sub btnShowPanel_Click()
   
   tvwClasses.Visible = btnShowPanel.Value
   If btnShowPanel.Value Then FillTree
-  If splHelp.Layout[0] = 0 Then splHelp.Layout = [1, 2]
+  'If splHelp.Layout[0] = 0 Then splHelp.Layout = [1, 2]
 
 End
 

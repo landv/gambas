@@ -105,18 +105,6 @@ typedef
 	QT_DRAW_EXTRA;
 
 typedef
-	struct {
-		QPainter *painter;
-		QPainterPath *path;
-		QPainterPath *clip;
-		int fillRule;
-		QList<QPainterPath *> *clipStack;
-		QTransform *init;
-		float bx, by;
-	}
-	QT_PAINT_EXTRA;
-	
-typedef
 	void (*QT_FONT_FUNC)(QFont &, void *);
 
 typedef

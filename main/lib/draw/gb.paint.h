@@ -161,6 +161,7 @@ typedef
 		void (*Clip)(GB_PAINT *d, int preserve);
 		void (*ResetClip)(GB_PAINT *d);
 		void (*ClipExtents)(GB_PAINT *d, GB_EXTENTS *ext);
+		void (*ClipRect)(GB_PAINT *d, int x, int y, int w, int h);
 	
 		void (*Fill)(GB_PAINT *d, int preserve);
 		void (*Stroke)(GB_PAINT *d, int preserve);

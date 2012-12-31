@@ -40,7 +40,6 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 	}
 	else
 	{
-		fprintf(stderr, "cb_expose\n");
 		//data->drawBackground();
 		
 		if (data->onExpose)
