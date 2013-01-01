@@ -54,6 +54,7 @@ Public Sub _GetInfo() As DrawInfo
     Try hInfo.Foreground = Paint.Device.Foreground
     hInfo.LineStyle = Line.Solid
     hInfo.FillStyle = Fill.None
+    hInfo.ClipRect = Paint.ClipRect
     Paint._Tag = hInfo
   Endif
   

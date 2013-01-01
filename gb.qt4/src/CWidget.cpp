@@ -61,13 +61,13 @@
 #include <QWheelEvent>
 #include <QHash>
 #include <QAbstractScrollArea>
-#include <Q3ScrollView>
 #include <QProgressBar>
 #include <QAbstractEventDispatcher>
 #include <QListWidget>
 #include <QComboBox>
 #include <QSpinBox>
 #include <QSet>
+#include <QScrollBar>
  
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
@@ -277,8 +277,8 @@ static QWidget *get_viewport(QWidget *w)
 {
 	if (qobject_cast<QAbstractScrollArea *>(w))
 		return ((QAbstractScrollArea *)w)->viewport();
-	else if (qobject_cast<Q3ScrollView *>(w))
-		return ((Q3ScrollView *)w)->viewport();
+	//else if (qobject_cast<Q3ScrollView *>(w))
+	//	return ((Q3ScrollView *)w)->viewport();
 	//else if (qobject_cast<Q3ListView *>(w))
 	//	return ((Q3ListView *)w)->viewport();
 	else
@@ -383,7 +383,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	if (!no_init)
 		CWIDGET_init_name(THIS);	
 
-	if (qobject_cast<QAbstractScrollArea *>(w) || qobject_cast<Q3ScrollView *>(w))
+	if (qobject_cast<QAbstractScrollArea *>(w)) // || qobject_cast<Q3ScrollView *>(w))
 		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
 
 	//w->setAttribute(Qt::WA_PaintOnScreen, true);
@@ -1403,13 +1403,16 @@ END_PROPERTY
 #endif
 
 
-static QWidget *get_color_widget(QWidget *w)
+static QWidget *get_color_widget(CWIDGET *_object)
 {
-	QWidget *view = get_viewport(w);
+	if (qobject_cast<MyScrollView *>(WIDGET))
+		return ((CSCROLLVIEW *)THIS)->container;
+	
+	QWidget *view = get_viewport(WIDGET);
 	if (view)
 		return view;
-	else
-		return w;
+
+	return WIDGET;
 }
 
 
@@ -1423,7 +1426,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	//qDebug("reset_color: %s", THIS->name);
 	//qDebug("set_color: (%s %p) bg = %08X (%d) fg = %08X (%d)", GB.GetClassName(THIS), THIS, THIS->bg, w->backgroundRole(), THIS->fg, w->foregroundRole());
 	
-	w = get_color_widget(WIDGET);
+	w = get_color_widget(THIS);
 	
 	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
@@ -1858,7 +1861,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CWIDGET_scrollbar)
 
 	QAbstractScrollArea *wid = qobject_cast<QAbstractScrollArea *>(WIDGET);
-	Q3ScrollView *sw = qobject_cast<Q3ScrollView *>(WIDGET);
+	//Q3ScrollView *sw = qobject_cast<Q3ScrollView *>(WIDGET);
 	int scroll;
 
 	if (wid)
@@ -1880,7 +1883,7 @@ BEGIN_PROPERTY(CWIDGET_scrollbar)
 			wid->setVerticalScrollBarPolicy( (scroll & 2) ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
 		}
 	}
-	else if (sw)
+	/*else if (sw)
 	{
 		if (READ_PROPERTY)
 		{
@@ -1898,7 +1901,7 @@ BEGIN_PROPERTY(CWIDGET_scrollbar)
 			sw->setHScrollBarMode( (scroll & 1) ? Q3ScrollView::Auto : Q3ScrollView::AlwaysOff);
 			sw->setVScrollBarMode( (scroll & 2) ? Q3ScrollView::Auto : Q3ScrollView::AlwaysOff);
 		}
-	}
+	}*/
 
 END_PROPERTY
 

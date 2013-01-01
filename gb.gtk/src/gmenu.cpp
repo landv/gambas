@@ -379,7 +379,13 @@ void gMenu::initialize()
 }
 
 
-gMenu::gMenu(gMainWindow *par,bool hidden)
+static gboolean cb_menubar_changed(GtkWidget *widget, gMainWindow *data)
+{
+	data->configure();
+	return false;
+}
+
+gMenu::gMenu(gMainWindow *par, bool hidden)
 {
 	pr = (gpointer)par;
   initialize();
@@ -390,7 +396,9 @@ gMenu::gMenu(gMainWindow *par,bool hidden)
 	
 	if (!par->menuBar)
 	{
-		par->menuBar=(GtkMenuBar*)gtk_menu_bar_new();
+		par->menuBar = (GtkMenuBar*)gtk_menu_bar_new();
+		g_signal_connect_after(G_OBJECT(par->menuBar), "map", G_CALLBACK(cb_menubar_changed), (gpointer)par);
+		g_signal_connect(G_OBJECT(par->menuBar),"unmap", G_CALLBACK(cb_menubar_changed), (gpointer)par);
 		par->embedMenuBar(par->border);
 	}
 	
@@ -519,7 +527,10 @@ void gMenu::updateVisible()
 	if (top_level && _style != MENU)
 		vl = false;
 	
-	g_object_set(G_OBJECT(menu),"visible",vl,(void *)NULL);
+	//fprintf(stderr, "gMenu::updateVisible: %s '%s' %d\n", name(), text(), vl);
+	
+	gtk_widget_set_visible(GTK_WIDGET(menu), vl);
+	//g_object_set(G_OBJECT(menu),"visible",vl,(void *)NULL);
 	
 	if (top_level && pr)
 		((gMainWindow *)pr)->checkMenuBar();

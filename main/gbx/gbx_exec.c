@@ -306,7 +306,7 @@ void EXEC_release_return_value(void)
 
 
 #define print_register() \
-	printf("| SP = %d  BP = %d  FP = %p  PC = %p  EC = %p\n", SP - (VALUE *)STACK_base, BP - (VALUE *)STACK_base, FP, PC, EC)
+	fprintf(stderr, "| SP = %d  BP = %d  FP = %p  PC = %p  EC = %p\n", (int)(SP - (VALUE *)STACK_base), (int)(BP - (VALUE *)STACK_base), FP, PC, EC)
 
 static ushort exec_enter_can_quick(void)
 {
@@ -424,14 +424,14 @@ void EXEC_enter(void)
 	CLASS *class = EXEC.class;
 
 	#if DEBUG_STACK
-	printf("\n| >> EXEC_enter(%s, %ld, %d)\n", EXEC.class->name, EXEC.index, nparam);
+	fprintf(stderr, "\n| >> EXEC_enter(%s, %d, %d)\n", EXEC.class->name, EXEC.index, nparam);
 	print_register();
 	#endif
 
 	func = &class->load->func[EXEC.index];
 	#if DEBUG_STACK
 	if (func->debug)
-		printf(" | >> %s\n", func->debug->name);
+		fprintf(stderr, " | >> %s\n", func->debug->name);
 	#endif
 
 	#if SHOW_FUNCTION
@@ -532,7 +532,7 @@ void EXEC_enter(void)
 	RP->type = T_VOID;
 
 	#if DEBUG_STACK
-	printf("| << EXEC_enter()\n");
+	fprintf(stderr, "| << EXEC_enter()\n");
 	print_register();
 	#endif
 }
@@ -561,14 +561,14 @@ void EXEC_enter_quick(void)
 	CLASS *class = EXEC.class;
 
 	#if DEBUG_STACK
-	printf("\n| >> EXEC_enter_quick(%s, %ld, %d)\n", EXEC.class->name, EXEC.index, EXEC.nparam);
+	fprintf(stderr, "\n| >> EXEC_enter_quick(%s, %d, %d)\n", EXEC.class->name, EXEC.index, EXEC.nparam);
 	print_register();
 	#endif
 
 	func = &class->load->func[EXEC.index];
 	#if DEBUG_STACK
 	if (func->debug)
-		printf(" | >> %s\n", func->debug->name);
+		fprintf(stderr, " | >> %s\n", func->debug->name);
 	#endif
 
 	#if SHOW_FUNCTION
@@ -620,7 +620,7 @@ void EXEC_enter_quick(void)
 	RP->type = T_VOID;
 
 	#if DEBUG_STACK
-	printf("| << EXEC_enter()\n");
+	fprintf(stderr, "| << EXEC_enter()\n");
 	print_register();
 	#endif
 }
@@ -747,7 +747,7 @@ void EXEC_leave_drop()
 	int n, nb;
 
 #if DEBUG_STACK
-	printf("| >> EXEC_leave\n");
+	fprintf(stderr, "| >> EXEC_leave\n");
 	print_register();
 #endif
 
@@ -777,9 +777,9 @@ void EXEC_leave_drop()
 	SP += nb;
 	
 #if DEBUG_STACK
-	printf("| << EXEC_leave()\n");
+	fprintf(stderr, "| << EXEC_leave()\n");
 	print_register();
-	printf("\n");
+	fprintf(stderr, "\n");
 #endif
 	return;
 }
@@ -792,7 +792,7 @@ void EXEC_leave_keep()
 	int n, nb;
 
 #if DEBUG_STACK
-	printf("| >> EXEC_leave\n");
+	fprintf(stderr, "| >> EXEC_leave\n");
 	print_register();
 #endif
 
@@ -835,9 +835,9 @@ void EXEC_leave_keep()
 	SP += nb;
 	
 #if DEBUG_STACK
-	printf("| << EXEC_leave()\n");
+	fprintf(stderr, "| << EXEC_leave()\n");
 	print_register();
-	printf("\n");
+	fprintf(stderr, "\n");
 #endif
 	return;
 }
@@ -1206,7 +1206,7 @@ void EXEC_native_quick(void)
 
 
 	#if DEBUG_STACK
-	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
+	fprintf(stderr, "| << EXEC_native: %s (%p)\n", desc->name, &desc);
 	#endif
 }
 
@@ -1230,7 +1230,7 @@ void EXEC_native(void)
 	VALUE ret;
 
 	#if DEBUG_STACK
-	printf("| >> EXEC_native: %s.%s (%p)\n", EXEC.class->name, desc->name, &desc);
+	fprintf(stderr, "| >> EXEC_native: %s.%s (%p)\n", EXEC.class->name, desc->name, &desc);
 	#endif
 
 	ON_ERROR(error_EXEC_native)
@@ -1380,7 +1380,7 @@ void EXEC_native(void)
 
 
 	#if DEBUG_STACK
-	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
+	fprintf(stderr, "| << EXEC_native: %s (%p)\n", desc->name, &desc);
 	#endif
 }
 

@@ -471,19 +471,11 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 	MyScrollView *wid = new MyScrollView(QCONTAINER(VARG(parent)));
 	MyContents *cont = new MyContents(wid);
 
+	THIS->container = cont; // needed by CWIDGET_reset_color
 	CWIDGET_new(wid, (void *)_object, true);
-	//wid->setBackgroundOrigin(QWidget::WindowOrigin);
-	//cont->setBackgroundOrigin(QWidget::AncestorOrigin);
-
-	THIS->container = cont;
-	//wid->setWidget(THIS->container);
 
 	QObject::connect(wid->horizontalScrollBar(), SIGNAL(valueChanged(int)), &CScrollView::manager, SLOT(scrolled()));
 	QObject::connect(wid->verticalScrollBar(), SIGNAL(valueChanged(int)), &CScrollView::manager, SLOT(scrolled()));
-
-	//CWidget::installFilter(THIS->container);
-	//CWidget::removeFilter(wid->horizontalScrollBar());
-	//CWidget::removeFilter(wid->verticalScrollBar());
 
 	wid->setFrameStyle(QFrame::NoFrame);
 	CWIDGET_set_visible((CWIDGET *)THIS, true);

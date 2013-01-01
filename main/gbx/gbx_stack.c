@@ -57,14 +57,16 @@ void STACK_init(void)
 	else
 		max = (uintptr_t)limit.rlim_cur;
 	
-	STACK_size = max;
+	STACK_size = max - sizeof(VALUE) * 256; // some security
+	#if DEBUG_STACK
+		fprintf(stderr, "STACK_size = %ld\n", STACK_size);
+	#endif
+	
 	STACK_base = mmap(NULL, STACK_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
 
 	//fprintf(stderr, "Stack = %p %ld\n", STACK_base, STACK_size);
 
-	max -= sizeof(VALUE) * 256; // some security
-	
-	STACK_process_stack_limit = (uintptr_t)&stack - max;
+	STACK_process_stack_limit = (uintptr_t)&stack - max + 65536;
 	
   STACK_limit = (STACK_base + STACK_size);
   STACK_frame = (STACK_CONTEXT *)STACK_limit;
@@ -88,13 +90,15 @@ bool STACK_check(int need)
 {
   static VALUE *old = NULL;
 
+	fprintf(stderr, "STACK_check: SP = %d need = %d limit = %d\n", (int)(((char *)SP - STACK_base) / sizeof(VALUE)), need, (int)((STACK_limit - STACK_base) / sizeof(VALUE)));
+	
   if (SP > old)
   {
-    printf("STACK = %d bytes\n", ((char *)SP - STACK_base));
+    fprintf(stderr, "**** STACK_check: -> %ld bytes\n", ((char *)SP - STACK_base));
     old = SP;
   }
 	
-  if ((char *)(SP + need + 8) >= STACK_limit)
+  if (((char *)(SP + need) + sizeof(STACK_CONTEXT)) >= STACK_limit)
 	{
     THROW_STACK();
 		return TRUE;

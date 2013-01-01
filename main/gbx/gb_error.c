@@ -479,6 +479,9 @@ void THROW_ILLEGAL()
 
 void THROW_STACK()
 {
+	#if DEBUG_STACK
+	fprintf(stderr, "THROW STACK!\n");
+	#endif
 	THROW(E_STACK);
 }
 

@@ -49,7 +49,7 @@ static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWind
 	return false;
 }
 
-static void cb_show (GtkWidget *widget, gMainWindow *data)
+static gboolean cb_show (GtkWidget *widget, gMainWindow *data)
 {
 	data->emitOpen();
 	if (data->opened)
@@ -59,12 +59,14 @@ static void cb_show (GtkWidget *widget, gMainWindow *data)
 		data->emit(SIGNAL(data->onShow));
 		data->_not_spontaneous = false;
 	}
+	return false;
 }
 
-static void cb_hide (GtkWidget *widget, gMainWindow *data)
+static gboolean cb_hide(GtkWidget *widget, gMainWindow *data)
 {
 	data->emit(SIGNAL(data->onHide));
 	data->_not_spontaneous = false;
+	return false;
 	//if (data == gDesktop::activeWindow())
 	//	gMainWindow::setActiveWindow(NULL);
 }
@@ -1176,15 +1178,10 @@ int gMainWindow::containerX()
 
 int gMainWindow::clientY()
 {
-	GtkRequisition req;
-
-	if (isMenuBarVisible()) //menuBar && GTK_WIDGET_VISIBLE(GTK_WIDGET(menuBar)))
-	{
-		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
-		return req.height;
-	}
-	
-	return 0;
+	if (isMenuBarVisible())
+		return menuBarHeight();
+	else
+		return 0;
 }
 
 int gMainWindow::containerY()
@@ -1206,9 +1203,11 @@ int gMainWindow::menuBarHeight()
 
 	if (menuBar)
 	{
-		gtk_widget_show(GTK_WIDGET(menuBar));
+		//gtk_widget_show(GTK_WIDGET(menuBar));
+		//fprintf(stderr, "menuBarHeight: gtk_widget_get_visible: %d\n", gtk_widget_get_visible(GTK_WIDGET(menuBar)));
 		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
 		h = req.height;
+		//fprintf(stderr, "menuBarHeight: %d\n", h);
 	}
 	
 	return h;
@@ -1276,9 +1275,6 @@ void gMainWindow::configure()
 	
 	//fprintf(stderr, "configure: %s: %d %d - %d %d\n", name(), isMenuBarVisible(), h, width(), height());
 	
-	//if (strcmp(name(), "FIDE") == 0 && (width() <= 32 || height() <= 32))
-	//	BREAKPOINT();
-	
 	if (isMenuBarVisible())
 	{
 		gtk_fixed_move(layout, GTK_WIDGET(menuBar), 0, 0);
@@ -1312,6 +1308,7 @@ void gMainWindow::setMenuBarVisible(bool v)
 
 bool gMainWindow::isMenuBarVisible()
 {
+	//fprintf(stderr, "isMenuBarVisible: %d\n", !!(menuBar && !_hideMenuBar && _showMenuBar));
 	return menuBar && !_hideMenuBar && _showMenuBar; //|| (menuBar && GTK_WIDGET_MAPPED(GTK_WIDGET(menuBar)));
 }
 
@@ -1326,6 +1323,8 @@ void gMainWindow::checkMenuBar()
 	int i;
 	gMenu *menu;
 
+	//fprintf(stderr, "gMainWindow::checkMenuBar\n");
+	
 	if (menuBar)
 	{
 		_hideMenuBar = true;

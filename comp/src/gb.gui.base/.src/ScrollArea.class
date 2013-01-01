@@ -351,21 +351,31 @@ End
 
 Public Sub DrawingArea_Draw()
   
+  Dim DW As Integer
+  Dim DH As Integer
   Dim FW As Integer
   Dim hClip As Rect
   Dim hFrame As Rect
   
   If $bBorder Then FW = Style.FrameWidth
   
+  DW = Draw.W
+  If $bVBarVisible Then DW -= $hVBar.W
+  DH = Draw.H
+  If $bHBarVisible Then DH -= $hHBar.H
+  
+  
   If $iBackground <> Color.Default Then 
-    Draw.FillRect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2, $iBackground)
+    Draw.FillRect(FW, FW, DW - FW * 2, DH - FW * 2, $iBackground)
   Endif
   
   'Debug Draw.Clip.X;; Draw.Clip.Y;; Draw.Clip.W;; Draw.Clip.H
   
-  hClip = New Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
-  hFrame = New Rect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2)
-  hClip = hClip.Intersection(hFrame)
+  'hClip = New Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+  hClip = Draw.ClipRect
+  hFrame = New Rect(FW, FW, DW - FW * 2, DH - FW * 2)
+  
+  If hClip Then hClip = hClip.Intersection(hFrame)
   
   If hClip Then
 
@@ -388,15 +398,15 @@ Public Sub DrawingArea_Draw()
       If $bVBarVisible Then
         LoadFades()
         Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-        If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), Draw.W, $hFadeN.H)
-        If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, $hFadeS.H)
+        If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), DW, $hFadeN.H)
+        If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, DH - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), DW, $hFadeS.H)
       Endif
       
       If $bHBarVisible Then
         LoadFades()
         Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-        If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, Draw.H)
-        If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, Draw.H)
+        If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, DH)
+        If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, DW - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, DH)
       Endif
       
     Endif
@@ -408,7 +418,7 @@ Public Sub DrawingArea_Draw()
   If $bBorder Then 
     Draw.Reset
     'Draw.Style.Box(0, 0, Draw.W, Draw.H)
-    Draw.Style.Panel(0, 0, Draw.W, Draw.H, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
+    Draw.Style.Panel(0, 0, DW, DH, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
 End
@@ -607,9 +617,9 @@ End
 Private Sub Background_Write(Value As Integer)
 
   $iBackground = Value
-  Super.Background = Value
-  $hHBar.Background = Value
-  $hVBar.Background = Value
+  'Super.Background = Value
+  '$hHBar.Background = Value
+  '$hVBar.Background = Value
   $hDrawingArea.Refresh
 
 End

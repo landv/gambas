@@ -27,6 +27,8 @@
 #include "gbx_value.h"
 #include "gb_pcode.h"
 
+//#define DEBUG_STACK    1
+
 typedef
 	struct {
 		void *cp;
@@ -77,7 +79,7 @@ bool STACK_check(int need);
 
 #define STACK_check(_need) \
 do { \
-	if ((char *)(SP + (_need) + 8) >= STACK_limit) \
+	if (((char *)(SP + (_need)) + sizeof(STACK_CONTEXT)) >= STACK_limit) \
 		THROW_STACK(); \
 	} \
 while (0);
@@ -113,8 +115,7 @@ STACK_CONTEXT *STACK_get_frame(int frame);
 	if ((uintptr_t)&stack < STACK_process_stack_limit) \
 		THROW_STACK(); \
 	\
-	if ((char *)(SP + (_need) + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) \
-		THROW_STACK(); \
+	STACK_check(_need); \
 	\
 	STACK_frame--; \
 	\

@@ -135,7 +135,7 @@ Public Sub _new()
     hButton = New Button(hHBox) As "btnStyle"
     hButton.Text = ("Define...")
     hButton.Width = Desktop.Scale * 16
-  
+    
   Next
   
   RefreshStyle
@@ -191,7 +191,7 @@ Private Sub RefreshStyle()
   
   Dim hHBox As HBox
   
-  svwTheme.Background = CStyle[$cCurrent["Background"]].Foreground
+  'panTheme.Background = CStyle[$cCurrent["Background"]].Foreground
   
   For Each hHBox In svwTheme.Children
     hHBox.Children[0].Refresh
@@ -511,12 +511,14 @@ Public Sub dwgStyle_Draw()
     iForeground = hStyle.Foreground
   Endif
   
-  If iBackground <> Color.Default Then 
+  If iBackground = Color.Default Then iBackground = CStyle[$cCurrent["Background"]].Foreground
+  
+  'If iBackground <> Color.Default Then 
     Draw.FillColor = iBackground
     Draw.FillStyle = Fill.Solid
     Draw.LineStyle = Line.None
     Draw.Rect(0, 0, hDraw.Width, hDraw.Height)
-  Endif
+  'Endif
   Draw.Foreground = iForeground
   Draw.Text(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
   If hStyle.Bold Then Draw.Text(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
