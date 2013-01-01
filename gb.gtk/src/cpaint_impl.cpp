@@ -434,7 +434,7 @@ static void End(GB_PAINT *d)
 	if (GB.Is(device, CLASS_DrawingArea))
 	{
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
-		if (wid->cached())
+		if (wid && wid->cached())
 			wid->setCache();
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
