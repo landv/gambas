@@ -27,7 +27,8 @@
 
 #include "gambas.h"
 #include "main.h"
-#include <llvm/Config/config.h>
+// Don't use <config.h> if we just need the version
+#include <llvm/Config/llvm-config.h>
 
 extern "C" {
 	GB_INTERFACE GB EXPORT;

@@ -332,8 +332,8 @@ static void u_File(char *source,char *target)
 		{
 			if (len != fwrite((void*)buf,sizeof(char),len,dst) )
 			{
-				fclose(src);
-				gzclose(dst);
+				fclose(dst);
+				gzclose(src);
 				GB.Error("Error while writing data");
 				return;
 			}
