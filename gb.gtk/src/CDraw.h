@@ -25,7 +25,6 @@
 #define __CDRAW_H
 
 #include "main.h"
-#include "gdraw.h"
 #include "gb.draw.h"
 
 #ifndef __CDRAW_C

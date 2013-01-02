@@ -23,7 +23,6 @@
 
 #include "widgets.h"
 #include "widgets_private.h"
-#include "gdraw.h"
 #include "gscrollbar.h"
 #include "gslider.h"
 

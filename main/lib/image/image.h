@@ -65,6 +65,7 @@ void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left);
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
 const char *IMAGE_format_to_string(int fmt);
 void IMAGE_set_opacity(GB_IMG *dst, uchar opacity);
+void IMAGE_blur(GB_IMG *img, int radius);
 
 #define IMAGE_is_void(_image) ((_image)->is_void)
 

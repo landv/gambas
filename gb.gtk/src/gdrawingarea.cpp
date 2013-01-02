@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "gdraw.h"
 #include "gmouse.h"
 #include "gdrawingarea.h"
 

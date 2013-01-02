@@ -1387,57 +1387,6 @@ void gt_pixbuf_make_gray(GdkPixbuf *pixbuf)
 		p[0] = p[1] = p[2] = (p[0] * 11 + p[1] * 16 + p[2] * 5) / 32;
 }
 
-static void gt_pixbuf_make_alpha_from_white(GdkPixbuf *pixbuf)
-{
-	guchar *p;
-	int i, n;
-	
-	p = gdk_pixbuf_get_pixels(pixbuf);
-	n = gdk_pixbuf_get_width(pixbuf) * gdk_pixbuf_get_height(pixbuf);
-
-	for (i = 0; i < n; i++, p += 4)
-	{
-		p[3] = (p[0] * 11 + p[1] * 16 + p[2] * 5) / 32;
-	}
-}
-
-
-
-GdkBitmap *gt_make_text_mask(GdkDrawable *dr, int w, int h, PangoLayout *ly, int x, int y)
-{
-	GdkBitmap *mask;
-	GdkColor color;
-	GdkPixmap *tmp_pixmap;
-	GdkPixbuf *tmp_pixbuf;
-	GdkGC *tmp_gc;
-	
-	tmp_pixmap = gdk_pixmap_new(dr, w, h, -1);
-	
-	tmp_gc = gdk_gc_new(tmp_pixmap);
-	
-	gt_pixmap_fill(tmp_pixmap, 0, tmp_gc);
-	
-	fill_gdk_color(&color, 0, gdk_drawable_get_colormap(dr));
-	gdk_gc_set_background(tmp_gc, &color);
-	
-	fill_gdk_color(&color, 0xFFFFFF, gdk_drawable_get_colormap(dr));
-	gdk_gc_set_foreground(tmp_gc, &color);
-	
-	gdk_draw_layout(tmp_pixmap, tmp_gc, x, y, ly);
-	
-	g_object_unref(tmp_gc);
-	
-	tmp_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, w, h);
-	gdk_pixbuf_get_from_drawable(tmp_pixbuf, tmp_pixmap, NULL, 0, 0, 0, 0, w, h);
-	g_object_unref(tmp_pixmap);
-	
-	gt_pixbuf_make_alpha_from_white(tmp_pixbuf);
-	gt_pixbuf_render_pixmap_and_mask(tmp_pixbuf, NULL, &mask, 64);
-	g_object_unref(tmp_pixbuf);
-	
-	return mask;
-}
-
 static void disabled_handler(const gchar *log_domain, GLogLevelFlags log_level, const gchar *message, gpointer data)
 {
 	// Print only debugging messages

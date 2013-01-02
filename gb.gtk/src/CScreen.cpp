@@ -32,7 +32,6 @@
 #include "gtrayicon.h"
 #include "gapplication.h"
 #include "gmainwindow.h"
-#include "gdraw.h"
 #include "cpaint_impl.h"
 
 extern int CWINDOW_Embedder;

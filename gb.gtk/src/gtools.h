@@ -112,10 +112,6 @@ void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_retu
 void gt_pixbuf_make_alpha(GdkPixbuf *pixbuf, gColor color);
 void gt_pixbuf_make_gray(GdkPixbuf *pixbuf);
 
-// Makes a bitmap mask from a Pango layout
-
-GdkBitmap *gt_make_text_mask(GdkDrawable *dr, int w, int h, PangoLayout *ly, int x, int y);
-
 // Enable/disable warning messages
 
 void gt_disable_warnings(bool disable);

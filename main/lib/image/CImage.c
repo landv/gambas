@@ -358,6 +358,13 @@ BEGIN_METHOD(Image_Opacity, GB_FLOAT opacity)
 
 END_METHOD
 
+BEGIN_METHOD(Image_Blur, GB_INTEGER radius)
+
+	IMAGE_blur(THIS_IMAGE, VARGOPT(radius, 8));
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
 GB_DESC CImageDesc[] =
 {
 	GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -405,6 +412,8 @@ GB_DESC CImageDesc[] =
 
 	GB_METHOD("DrawImage", "Image", Image_DrawImage, "(Image)Image;[(X)i(Y)i(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 	GB_METHOD("PaintImage", "Image", Image_PaintImage, "(Image)Image;[(X)i(Y)i(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+	
+	GB_METHOD("Fuzzy", "Image", Image_Blur, "[(Radius)i]"),
 	
 	GB_END_DECLARE
 };

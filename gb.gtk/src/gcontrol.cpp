@@ -48,7 +48,6 @@
 #include "gdesktop.h"
 #include "gdrag.h"
 #include "gmouse.h"
-#include "gdraw.h"
 #include "gcontrol.h"
 
 static GList *controls=NULL;
