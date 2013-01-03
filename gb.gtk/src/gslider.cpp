@@ -28,8 +28,14 @@
 
 static void cb_change(GtkRange *range,gSlider *data)
 {
-	data->_value = gtk_range_get_value(GTK_RANGE(data->widget));
-	if (data->onChange) data->onChange(data);
+	int new_value = gtk_range_get_value(GTK_RANGE(data->widget));
+	if (data->_value == new_value)
+		return;
+	
+	data->_value = new_value;
+	//fprintf(stderr, "value = %d\n", data->_value);
+	if (data->onChange) 
+		data->onChange(data);
 }
 
 void gSlider::init()

@@ -149,6 +149,9 @@ int gdk_device_get_source(GdkDevice *device);
 GtkWidget *gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
 #endif
 
+// Cairo support
+
+cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf);
 void gt_cairo_set_source_color(cairo_t *cr, GB_COLOR color);
 void gt_cairo_draw_rect(cairo_t *cr, int x, int y, int w, int h, GB_COLOR color);
 void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source);

@@ -126,12 +126,15 @@ static void output_init(void)
 			return;
 		
 		n = read_version_digits(&ver);
-		if (n < 0 || n > 0x9999)
-			return;
-				
-		v |= n;
+		if (n > 0)
+		{
+			if (n > 0x9999)
+				return;
+					
+			v |= n;
+		}
 		
-		_version= v;
+		_version = v;
 	}		
 }
 

@@ -125,6 +125,7 @@ print_ay (DBusMessageIter *iter, int depth)
    * manually growing a string chunk by chunk.
    */
   unsigned char *bytes = malloc (DEFAULT_SIZE + 1);
+	unsigned char *new_bytes;
   unsigned int len = 0;
   unsigned int max = DEFAULT_SIZE;
   dbus_bool_t all_ascii = TRUE;
@@ -145,7 +146,10 @@ print_ay (DBusMessageIter *iter, int depth)
       if (len == max)
         {
           max *= 2;
-          bytes = realloc (bytes, max + 1);
+          new_bytes = realloc (bytes, max + 1);
+					if (!new_bytes)
+						break;
+					bytes = new_bytes;
         }
 
       dbus_message_iter_next (iter);

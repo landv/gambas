@@ -27,10 +27,6 @@
 
 #include "main.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -47,8 +43,3 @@ int EXPORT GB_INIT(void)
 void EXPORT GB_EXIT(void)
 {
 }
-
-#ifdef _cpluscplus
-}
-#endif
-

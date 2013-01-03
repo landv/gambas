@@ -50,17 +50,27 @@ End
 Static Public Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Integer) As Integer
   
   Dim XR As Integer
+  Dim hShadow As Image
+  Dim hSize As RectF
+  Dim hFont As Font
+  Dim iRadius As Integer
   
-  Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 192))
-  Paint.Text(sText, X + 6, Y + 6)
+  hSize = Paint.TextSize(sText)
+  iRadius = Ceil(hSize.H / 4)
+  
+  hShadow = New Image(hSize.W + iRadius * 2, hSize.H + iRadius * 2, Color.Rgb(0, 0, 0, 255))
+  
+  hFont = Paint.Font
+  Paint.Begin(hShadow)
+  Paint.Font = hFont
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Text(sText, iRadius, iRadius, hSize.W, hSize.H)
   Paint.Fill
+  Paint.End
+  
+  hShadow.Fuzzy(iRadius)
 
-  ' Paint.Brush = Paint.Color(Color.RGB(128, 128, 128))
-  ' Paint.Text(sText, X - 1, Y - 1)
-  ' Paint.Text(sText, X + 1, Y - 1)
-  ' Paint.Text(sText, X + 1, Y + 1)
-  ' Paint.Text(sText, X - 1, Y + 1)
-  ' Paint.Fill
+  Paint.DrawImage(hShadow, X - iRadius, Y - iRadius - Paint.Font.Ascent)
 
   Paint.Brush = Paint.Color(iColor)
   Paint.Text(sText, X, Y)
@@ -74,8 +84,8 @@ End
 
 Public Sub dwgWelcome_Draw()
 
-  Draw.Image($hLogo, Last.W - $hLogo.Width, -10)
-  Draw.Image($hText, 0, 16)
+  Paint.DrawImage($hLogo, Last.W - $hLogo.Width, -10)
+  Paint.DrawImage($hText, 0, 16)
 
 End
 

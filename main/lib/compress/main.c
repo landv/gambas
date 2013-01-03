@@ -35,11 +35,6 @@
 #include "main.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 
 GB_INTERFACE GB EXPORT;
 
@@ -96,8 +91,6 @@ void *GB_COMPRESS_1[] EXPORT = {
   NULL
 };
 
-
-
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   CCompressDesc,
@@ -105,22 +98,13 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
-
-
 int EXPORT GB_INIT(void)
 {
   return 0;
 }
 
-
-
 void EXPORT GB_EXIT()
 {
 
 }
-
-
-#ifdef _cpluscplus
-}
-#endif
 

@@ -34,16 +34,7 @@
 
 #include "main.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-
 GB_INTERFACE GB EXPORT;
-
-
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -55,23 +46,14 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
-
-
 int EXPORT GB_INIT(void)
 {
   curl_global_init(CURL_GLOBAL_ALL);
   return 0;
 }
 
-
-
 void EXPORT GB_EXIT()
 {
   curl_global_cleanup();
 }
-
-
-#ifdef _cpluscplus
-}
-#endif
 

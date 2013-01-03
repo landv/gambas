@@ -160,7 +160,7 @@ BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
   int h = VARGOPT(h, 0);
   bool trans = VARGOPT(trans, false);
 
-	PICTURE = new gPicture(gPicture::SERVER, w, h, trans);
+	PICTURE = new gPicture(gPicture::PIXMAP, w, h, trans);
 	PICTURE->setTag(new gGambasTag(THIS));
 	
 END_METHOD

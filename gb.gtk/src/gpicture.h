@@ -38,8 +38,9 @@ public:
   enum gPictureType
   {
     VOID,
-    MEMORY,
-    SERVER
+    PIXBUF,
+    PIXMAP,
+		SURFACE
   };
   
   gPicture();
@@ -82,9 +83,10 @@ public:
 	static gPicture *fromData(const char *data, int width, int height);
 
 //"Private"
-	GdkPixmap *pic;
+	GdkPixmap *pixmap;
 	GdkBitmap *mask;
-	GdkPixbuf *img;
+	GdkPixbuf *pixbuf;
+	cairo_surface_t *surface;
   
   gPictureType _type;
   bool _transparent;
@@ -98,6 +100,7 @@ public:
 	GdkPixmap *getPixmap();
 	GdkBitmap *getMask();
 	GdkPixbuf *getIconPixbuf();
+	cairo_surface_t *getSurface();
 	
 	static gPicture* fromPixbuf(GdkPixbuf *buf) { return new gPicture(buf); }
 

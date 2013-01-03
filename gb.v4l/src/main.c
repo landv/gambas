@@ -28,10 +28,6 @@
 #include "CWebcam.h"
 #include "main.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
 
@@ -51,8 +47,4 @@ int EXPORT GB_INIT(void)
 void EXPORT GB_EXIT()
 {
 }
-
-#ifdef _cpluscplus
-}
-#endif
 

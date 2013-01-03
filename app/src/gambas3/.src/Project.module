@@ -2316,7 +2316,14 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   sBefore = GetInfoFile()
 
   sExec = GetCompileCommand(bAll, bNoDebug, bMakeExecutable, True)
-  Shell sExec Wait
+  
+  iPos = Environment.Find("GB_PCODE_VERSION=*", gb.Like)
+  If iPos >= 0 Then
+    Shell sExec With [Environment[iPos]] Wait
+  Else
+    Shell sExec Wait
+  Endif
+  
   bGotError = Process.LastValue
 
   sOutput = Trim(File.Load(OUTPUT_FILE))

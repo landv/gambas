@@ -35,10 +35,6 @@
 #include "main.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 NETWORK_INTERFACE NET EXPORT;
 
 GB_INTERFACE GB EXPORT;
@@ -68,9 +64,4 @@ void EXPORT GB_EXIT()
 {
 
 }
-
-
-#ifdef _cpluscplus
-}
-#endif
 

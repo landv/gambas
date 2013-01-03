@@ -619,7 +619,7 @@ static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
 	{
 		m = a;
 	}
-	else if (n > 0)
+	else if (n > 1)
 	{
 		m = _powi(MATRIX_copy(a), n);
 	}

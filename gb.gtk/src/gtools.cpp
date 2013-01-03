@@ -375,7 +375,7 @@ gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 	if (w == ow && h == oh)
 		return new gPicture(buf);
 		
-	pic = new gPicture(gPicture::MEMORY, ow, oh, false);
+	pic = new gPicture(gPicture::PIXBUF, ow, oh, false);
 	pic->fill(0);
 	
 	if (w <= 0 || h <= 0)
@@ -1667,7 +1667,7 @@ void gt_cairo_draw_rect(cairo_t *cr, int x, int y, int w, int h, GB_COLOR color)
 
 // Function partially taken from the GTK+ source code.
 
-static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
+cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 {
 	gint width = gdk_pixbuf_get_width (pixbuf);
 	gint height = gdk_pixbuf_get_height (pixbuf);
@@ -1681,6 +1681,8 @@ static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pi
 	static const cairo_user_data_key_t key = { 0 };
 	int j;
 
+	//fprintf(stderr, "gt_cairo_create_surface_from_pixbuf: %d %d\n", width, height);
+	
 	if (n_channels == 3)
 		format = CAIRO_FORMAT_RGB24;
 	else
@@ -1771,12 +1773,13 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 	
 	if (w < 0 || h < 0)
 	{
+		//fprintf(stderr, "gdk_cairo_set_source_pixbuf: %d %d\n", gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf));
 		gdk_cairo_set_source_pixbuf(cr, pixbuf, x, y);
 		cairo_rectangle(cr, x, y, gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf));
 	}
 	else
 	{
-		surface = gdk_cairo_create_surface_from_pixbuf(pixbuf);
+		surface = gt_cairo_create_surface_from_pixbuf(pixbuf);
 		pattern = cairo_pattern_create_for_surface(surface);
 		cairo_surface_destroy(surface);
 		cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);

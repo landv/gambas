@@ -33,10 +33,6 @@
 #include "c_matrix.h"
 #include "c_polynomial.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -90,8 +86,3 @@ int EXPORT GB_INFO(const char *key, void **value)
 	else
 		return FALSE;
 }
-
-#ifdef _cpluscplus
-}
-#endif
-
