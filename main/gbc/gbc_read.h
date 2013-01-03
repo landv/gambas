@@ -29,7 +29,7 @@
 #include <ctype.h>
 
 #undef isdigit
-#define isdigit(_c) (READ_digit_car[_c])
+#define isdigit(_c) (READ_digit_car[(uchar)(_c)])
 #undef isspace
 #define isspace(_c) (((uchar)_c) <= ' ')
 

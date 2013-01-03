@@ -67,16 +67,72 @@ static char *_pbuffer;
 
 static OUTPUT_CHANGE *_change = NULL;
 
+static uint _version = GAMBAS_PCODE_VERSION;
+
+static int read_version_digits(const char **pstr)
+{
+	const char *p = *pstr;
+	int n;
+	int i;
+	
+	if (!isdigit(*p))
+		return -1;
+	
+	n = 0;
+	
+	for (i = 0; i < 4; i++)
+	{
+		n = (n << 4) + *p++ - '0';
+		if (!isdigit(*p))
+			break;
+	}
+	
+	*pstr = p;
+	return n;
+}
 
 static void output_init(void)
 {
+	const char *ver;
+	int n, v;
+	
 	TABLE_create(&StringTable, sizeof(OUTPUT_SYMBOL), TF_NORMAL);
 	StringAddr = 0;
 	NSection = 0;
 	_pos = 0;
 	_pbuffer = _buffer;
-	
 	ARRAY_create(&_change);
+	
+	ver = getenv("GB_PCODE_VERSION");
+	if (ver && *ver)
+	{
+		v = 0;
+		n = read_version_digits(&ver);
+		if (n <= 0 || n > GAMBAS_VERSION)
+			return;
+
+		v = n << 24;
+		
+		if (*ver++ != '.')
+			return;
+
+		n = read_version_digits(&ver);
+		if (n < 0 || n > 0x99)
+			return;
+				
+		v |= n << 16;
+		
+		if (*ver++ != '.')
+			return;
+		
+		n = read_version_digits(&ver);
+		if (n < 0 || n > 0x9999)
+			return;
+				
+		v |= n;
+		
+		_version= v;
+	}		
 }
 
 
@@ -331,7 +387,7 @@ static void output_header(void)
 	/* magic */
 	write_int(OUTPUT_MAGIC);
 	/* version */
-	write_int(GAMBAS_PCODE_VERSION);
+	write_int(_version);
 	/* endianness */
 	write_int(OUTPUT_ENDIAN);
 	/* flag */
