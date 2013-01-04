@@ -156,6 +156,11 @@ static void get_arguments(int argc, char **argv)
 			//:  break;
 
 			case 'r':
+				if (COMP_root)
+				{
+					fprintf(stderr, "gbc: option '-r' already specified.\n");
+					exit(1);
+				}
 				COMP_root = STR_copy(optarg);
 				break;
 				

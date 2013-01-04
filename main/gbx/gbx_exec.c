@@ -830,7 +830,9 @@ void EXEC_leave_keep()
 		SP++;
 	}
 	else
+	{
 		VALUE_copy(RP, &ret);
+	}
 
 	SP += nb;
 	

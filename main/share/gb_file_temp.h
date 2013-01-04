@@ -264,7 +264,7 @@ const char *FILE_cat(const char *path, ...)
 		if (len > 0)
 		{
 			if ((p + len) > &file_buffer[PATH_MAX])
-				return NULL;
+				THROW(E_TOOLONG);
 
 			if (p != path)
 			{
@@ -305,6 +305,24 @@ int FILE_buffer_length(void)
 	return file_buffer_length;
 }
 
+static void init_file_buffer(const char *path)
+{
+	int len;
+	
+	if (path == file_buffer)
+		return;
+	
+	len = strlen(path);
+	
+	if (len > PATH_MAX)
+		THROW(E_TOOLONG);
+	
+	strcpy(file_buffer, path);
+	file_buffer_length = len;
+}
+
+//#define INIT_FILE_BUFFER(_path) (init_file_buffer(), _path = file_buffer)
+
 const char *FILE_get_dir(const char *path)
 {
 	char *p;
@@ -315,8 +333,7 @@ const char *FILE_get_dir(const char *path)
 	if (path[0] == '/' && path[1] == 0)
 		return "/";
 
-	if (file_buffer != path)
-		strcpy(file_buffer, path);
+	init_file_buffer(path);
 
 	p = rindex(file_buffer, '/');
 
@@ -367,13 +384,9 @@ const char *FILE_set_ext(const char *path, const char *ext)
 {
 	char *p;
 
-	if (path != file_buffer)
-	{
-		strcpy(file_buffer, path);
-		path = file_buffer;
-	}
+	init_file_buffer(path);
 
-	p = (char *)FILE_get_ext(path);
+	p = (char *)FILE_get_ext(file_buffer);
 
 	if (!ext)
 	{
@@ -381,13 +394,13 @@ const char *FILE_set_ext(const char *path, const char *ext)
 			p[-1] = 0;
 		else
 			*p = 0;
-		return path;
+		return file_buffer;
 	}
 
 	if (&p[strlen(ext)] >= &file_buffer[PATH_MAX])
-		return path;
+		THROW(E_TOOLONG);
 
-	if (p == path || p[-1] != '.')
+	if (p == file_buffer || p[-1] != '.')
 		*p++ = '.';
 
 	if (*ext == '.')
@@ -396,7 +409,7 @@ const char *FILE_set_ext(const char *path, const char *ext)
 	strcpy(p, ext);
 
 	file_buffer_length = -1;
-	return path;
+	return file_buffer;
 }
 
 
@@ -406,15 +419,13 @@ const char *FILE_get_basename(const char *path)
 
 	path = FILE_get_name(path);
 
-	if (file_buffer != path)
-		strcpy(file_buffer, path);
-
+	init_file_buffer(path);
+	
 	p = rindex(file_buffer, '.');
 	if (p)
 		*p = 0;
 
 	file_buffer_length = -1;
-
 	return file_buffer;
 }
 
@@ -883,8 +894,7 @@ void FILE_make_path_dir(const char *path)
 	if (FILE_is_relative(path))
 		return;
 
-	if (path != file_buffer)
-		strcpy(file_buffer, path);
+	init_file_buffer(path);
 
 	for (i = 1;; i++)
 	{

@@ -65,10 +65,14 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	fd = fileno(file);
 	
   if (fstat(fd, &info) < 0)
+	{
+		fclose(file);
     return TRUE;
+	}
 
   if (S_ISDIR(info.st_mode))
   {
+		fclose(file);
     errno = EISDIR;
     return TRUE;
   }

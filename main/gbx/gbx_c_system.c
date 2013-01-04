@@ -38,6 +38,7 @@
 #include "gb_error.h"
 #include "gbx_api.h"
 #include "gbx_class.h"
+#include "gbx_date.h"
 #include "gbx_project.h"
 #include "gbx_local.h"
 #include "gbx_event.h"
@@ -215,6 +216,12 @@ BEGIN_METHOD_VOID(System_Breakpoint)
 
 END_METHOD
 
+BEGIN_PROPERTY(System_TimeZone)
+
+	GB_ReturnInteger(DATE_timezone);
+
+END_PROPERTY
+
 #endif
 
 GB_DESC NATIVE_User[] =
@@ -250,6 +257,8 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_PROPERTY_READ("ByteOrder", "i", System_ByteOrder),
 	GB_STATIC_PROPERTY_READ("Error", "i", System_Error),
 	
+	GB_STATIC_PROPERTY_READ("TimeZone", "i", System_TimeZone),
+
 	GB_CONSTANT("Family", "s", SYSTEM),
 	GB_CONSTANT("Architecture", "s", ARCHITECTURE),
 	

@@ -897,7 +897,7 @@ int IMAGE_get_default_format()
 		return; \
 	} \
 	if ( sx < 0 ) { dx -= sx; dw += sx; sw += sx; sx = 0; } \
-	if ( sy < 0 ) { dy -= sy; dh += sx; sh += sy; sy = 0; } \
+	if ( sy < 0 ) { dy -= sy; dh += sy; sh += sy; sy = 0; } \
 	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; } \
 	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; } \
 	if ( (sx + sw) > src->width ) sw = src->width - sx; \

@@ -47,6 +47,8 @@
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
 
+int DATE_timezone;
+
 static const char days_in_months[2][13] =
 {  /* error, jan feb mar apr may jun jul aug sep oct nov dec */
 	{  0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
@@ -59,14 +61,9 @@ static const short days_in_year[2][14] =
 	{  0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }  /* leap year */
 };
 
-static int date_timezone;
-static int date_daylight;
-
 static double _start_time;
 
-
-
-/* Returns 1 for a leap year, 0 else */
+// Returns 1 for a leap year, 0 else
 
 static int date_is_leap_year(short year)
 {
@@ -79,7 +76,6 @@ static int date_is_leap_year(short year)
 		return 0;
 }
 
-
 static bool date_is_valid(DATE_SERIAL *date)
 {
 	return ((date->month >= 1) && (date->month <= 12) &&
@@ -88,7 +84,6 @@ static bool date_is_valid(DATE_SERIAL *date)
 					(date->hour >= 0) && (date->hour <= 23) && (date->min >= 0) && (date->min <= 59) &&
 					(date->sec >= 0) && (date->sec <= 59));
 }
-
 
 static short date_to_julian_year(short year)
 {
@@ -119,19 +114,19 @@ void DATE_init(void)
 	{
 		time_t t = (time_t)0L;
 		struct tm *tm = localtime(&t);
-		date_timezone = tm->tm_gmtoff;
-		date_daylight = tm->tm_isdst;
+		DATE_timezone = tm->tm_gmtoff;
+		//DATE_daylight = tm->tm_isdst;
 	}
 	#else
-	date_timezone = timezone;
-	date_daylight = daylight;
+	tzset();
+	DATE_timezone = timezone;
+	//DATE_daylight = daylight;
 	#endif
 
 	#ifdef DEBUG_DATE
-	printf("TimeZone = %d DayLight = %d Hour = %d\n", date_timezone, date_daylight, tm->tm_hour);
-
-	tm = gmtime(&t);
-	printf("Hour = %d\n", tm->tm_hour);
+	time_t t = (time_t)0L;
+	struct tm *tm = gmtime(&t);
+	fprintf(stderr, "TimeZone = %d DayLight = %d Hour = %d\n", DATE_timezone, daylight, tm->tm_hour);
 	#endif
 }
 
@@ -147,7 +142,7 @@ DATE_SERIAL *DATE_split(VALUE *value)
 	nmsec = value->_date.time;
 
 	if (nday > 0)
-		nmsec += date_timezone * 1000;
+		nmsec += DATE_timezone * 1000;
 
 	if (nmsec < 0)
 	{
@@ -242,7 +237,7 @@ bool DATE_make(DATE_SERIAL *date, VALUE *val)
 	val->_date.date = nday;
 	val->_date.time = ((date->hour * 60) + date->min) * 60 + date->sec;
 	if (timezone)
-		val->_date.time -= date_timezone;
+		val->_date.time -= DATE_timezone;
 
 	if (val->_date.time < 0)
 	{

@@ -21,8 +21,8 @@
 
 ***************************************************************************/
 
-#ifndef __DATE_H
-#define __DATE_H
+#ifndef __GBX_DATE_H
+#define __GBX_DATE_H
 
 #ifndef GBX_INFO
 
@@ -70,7 +70,11 @@ enum {
   };
   
 #ifndef GBX_INFO
-  
+
+#ifndef __GBX_DATE_C
+extern int DATE_timezone;
+#endif
+	
 #define DATE_YEAR_MIN  -4801
 #define DATE_YEAR_MAX   9999
 

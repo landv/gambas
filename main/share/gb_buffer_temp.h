@@ -125,7 +125,10 @@ bool BUFFER_load_file(void *p_data, const char *name)
 		return TRUE;
 	
 	if (fstat(fd, &info))
+	{
+		close(fd);
 		return TRUE;
+	}
 	
 	len = info.st_size;
 	

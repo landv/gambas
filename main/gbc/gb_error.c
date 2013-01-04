@@ -44,6 +44,7 @@ static const char *_message[] =
 	/*  6 E_EXPECTED */ "&1 expected",
 	/*  7 E_MISSING */ "Missing &1",
 	/*  8 E_SYNTAX_MISSING */ "Syntax error. Missing &1",
+	/*  9 E_TOOLONG */ "File name is too long",
   NULL
 };
 

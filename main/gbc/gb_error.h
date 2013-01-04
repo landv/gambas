@@ -38,6 +38,7 @@
 #define E_EXPECTED           ((const char *)6)
 #define E_MISSING            ((const char *)7)
 #define E_SYNTAX_MISSING     ((const char *)8)
+#define E_TOOLONG            ((const char *)9)
 
 typedef
   struct {

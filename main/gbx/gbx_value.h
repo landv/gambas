@@ -218,10 +218,10 @@ typedef
 	void (*VALUE_CONVERT_FUNC)(VALUE *);
 	
 #define VALUE_copy(_dst, _src) \
-	(_dst)->_void.type = (_src)->_void.type; \
-	(_dst)->_void.ptype = (_src)->_void.ptype; \
-	(_dst)->_void.value[0] = (_src)->_void.value[0]; \
-	(_dst)->_void.value[1] = (_src)->_void.value[1];
+	((_dst)->_void.type = (_src)->_void.type, \
+	(_dst)->_void.ptype = (_src)->_void.ptype, \
+	(_dst)->_void.value[0] = (_src)->_void.value[0], \
+	(_dst)->_void.value[1] = (_src)->_void.value[1])
 
 #define VALUE_is_equal(_v1, _v2) (*_v1 == *v2)
 	
