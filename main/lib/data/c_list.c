@@ -166,16 +166,6 @@ static inline GB_VARIANT_VALUE *VAL_value(VAL *val)
 	return &val->ck->var[i];
 }
 
-static inline int VAL_is_valid(VAL *val)
-{
-	int i = val->fidx + val->ck->first;
-	int j = val->lidx + val->ck->last;
-
-	if (i != j || !val->ck || val->fidx == -1 || i > val->ck->last)
-		return 0;
-	return 1;
-}
-
 static inline int VAL_is_equal(VAL *v1, VAL *v2)
 {
 	return v1->ck == v2->ck && v1->fidx == v2->fidx;
