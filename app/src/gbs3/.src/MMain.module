@@ -28,7 +28,7 @@ Public Sub Main() As Integer
   If Not Exist(sCacheDir) Then Mkdir sCacheDir
   
   $sPath = ParseArgs()
-  sName = File.Name(Application.Args[1])
+  sName = File.Name($sPath)
   
   If IsNull($sPath) Then 
     
@@ -273,6 +273,12 @@ Private Sub GenerateFiles(Path As String)
     If sLine Like "#!*" Then Continue 
     
     aSym = Highlight.Analyze(sLine)
+
+    If aSym.Count Then
+      If Highlight.Types[aSym.Max] = Highlight.Comment Or If Highlight.Types[aSym.Max] = Highlight.Help Then
+        aSym.Remove(aSym.Max)
+      Endif
+    Endif
     
     If aSym.Count = 2 And If aSym[0] = "INCLUDE" And If Highlight.Types[1] = Highlight.String Then 
       sPath = Mid$(aSym[1], 2, -1) 'Trim(Scan(sLine, "INCLUDE *")[0])
