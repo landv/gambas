@@ -90,7 +90,7 @@ const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 	return buffer;
 #else
 	snprintf(COMMON_buffer, COMMON_BUF_MAX, "%.64s.%.64s.%d",
-		cp ? cp->name : "?",
+		cp->name,
 		(fp && fp->debug) ? fp->debug->name : "?",
 		line);
 

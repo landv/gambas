@@ -97,6 +97,8 @@ int STREAM_get_readable(STREAM *stream, int *len)
 	off_t end;
 
 	fd = STREAM_handle(stream);
+	if (fd < 0)
+		return TRUE;
 	
 //_IOCTL:
 
@@ -1039,7 +1041,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 
 			if (stream->type == &STREAM_memory)
 			{
-				size_t slen;
+				ssize_t slen;
 				if (CHECK_strlen(stream->memory.addr + stream->memory.pos, &slen))
 					THROW(E_READ);
 				len = (int)slen;

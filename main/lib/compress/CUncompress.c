@@ -115,9 +115,8 @@ BEGIN_PROPERTY (CUNCOMPRESS_Type)
 	}
 	
 	if (THIS->stream.desc) { GB.Error("Type can not be changed while the stream is opened"); return; }
-	if (!PROP(GB_STRING)) { GB.Error("Invalid driver name"); return; }
 	
-	if (!(THIS->driver=COMPRESS_GetDriver(GB.ToZeroString(PROP(GB_STRING)))) )
+	if (!(THIS->driver = COMPRESS_GetDriver(GB.ToZeroString(PROP(GB_STRING)))))
 	{
 		GB.Error("Cannot find driver &1", GB.ToZeroString(PROP(GB_STRING)));
 	}

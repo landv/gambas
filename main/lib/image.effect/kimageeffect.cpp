@@ -3733,7 +3733,7 @@ QImage KImageEffect::oilPaintConvolve(QImage &src, double radius)
     QImage dest(src.width(), src.height(), src.transparent());
 
     width = getOptimalKernelWidth(radius, 0.5);
-    if(src.width() < width){
+    if(src.width() < width || width <= 0) {
         //qWarning("KImageEffect::oilPaintConvolve(): Image is smaller than radius!");
         return(dest);
     }

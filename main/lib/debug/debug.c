@@ -110,22 +110,18 @@ static void signal_user(int sig)
 
 bool DEBUG_calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
-	int lo = 0, hi = func->debug->nline - 1;
+	int lo, hi;
 	int mid;
 	ushort pos = addr - func->code;
 	ushort *post;
 
 	if (func->debug)
 	{
-		post =  func->debug->pos;
-		/*for (i = 0; i < (func->debug->nline - 1); i++)
-		{
-			if (pos >= post[i] && pos < post[i + 1])
-			{
-				*line = i + func->debug->line;
-				return FALSE;
-			}
-		}*/
+		post = func->debug->pos;
+		
+		lo = 0;
+		hi = func->debug->nline - 1;
+		
 		while (lo < hi)
 		{
 			mid = (lo + hi) >> 1;
@@ -143,8 +139,6 @@ bool DEBUG_calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, us
 				return FALSE;
 			}
 		}
-
-		/*printf("pos = %d addr=%p func->code=%p\n", pos, addr, func->code);*/
 	}
 
 	return TRUE;
@@ -227,19 +221,16 @@ DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char *fifo_na
 		if (_fdr < 0)
 			return NULL;*/
 		
-		_fdr = open(path, O_RDONLY);
+		_fdr = open(path, O_RDONLY | O_CLOEXEC);
 		if (_fdr < 0)
 			return NULL;
-		fcntl(_fdr, F_SETFD, FD_CLOEXEC);
 		
 		snprintf(path, sizeof(path), "/tmp/gambas.%d/%s.in", getuid(), fifo_name);
 		
-		_fdw = open(path, O_WRONLY);
+		_fdw = open(path, O_WRONLY | O_CLOEXEC);
 		if (_fdw < 0)
 			return NULL;
 		
-		fcntl(_fdw, F_SETFD, FD_CLOEXEC);
-
 		_in = fdopen(_fdr, "r");
 		_out = fdopen(_fdw, "w");
 

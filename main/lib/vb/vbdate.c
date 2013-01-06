@@ -67,7 +67,15 @@ int date_is_valid(GB_DATE_SERIAL *date)
 }
 
 /** Modulo function that works correctly for negative divisors */
-#define modulo(x,y)  ((x)%(y)<0?(x)%(y)+(y):(x)%(y))
+//#define modulo(x,y)  ((x)%(y)<0?(x)%(y)+(y):(x)%(y))
+
+static int modulo(int x, int y)
+{
+	int mod = x % y;
+	if (mod < 0)
+		mod += y;
+	return mod;
+}
 
 void DATE_adjust( GB_DATE *vdate, int period, int interval) /* Adjust the date by the interval period */
 {

@@ -478,7 +478,7 @@ static int php_skip_variable(IMAGE_STREAM * stream)
 		return 0;
 	}
 	length = length - 2;
-	stream_seek(stream, length, SEEK_CUR);
+	(void)stream_seek(stream, length, SEEK_CUR);
 	return 1;
 }
 

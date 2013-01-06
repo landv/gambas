@@ -144,7 +144,7 @@ static void load_arch(ARCH *arch, const char *path)
 		for (i = 0; i < arch->header.n_symbol; i++)
 		{
 			SWAP_short((short *)&arch->sort[i]);
-			SWAP_short((short *)&arch->symbol[i].sym.len);
+			SWAP_int(&arch->symbol[i].sym.len);
 			SWAP_int(&arch->symbol[i].pos);
 			SWAP_int(&arch->symbol[i].len);
 			arch->symbol[i].sym.name = &arch->string[pos];

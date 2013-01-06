@@ -436,7 +436,6 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 
 	TYPE type;
 	CLASS *klass;
-	uint64_t size;
 	int max_size;
 	int inc;
 	GB_INTEGER *sizes = ARG(size);
@@ -468,7 +467,7 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 
 	if (nsize <= 1)
 	{
-		size = VARGOPT(size, 0);
+		int size = VARGOPT(size, 0);
 		if (size > max_size)
 			THROW(E_MEMORY);
 		if (size < 0)
@@ -481,6 +480,8 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 		ARRAY_create_with_size(&THIS->data, THIS->size, inc);
 		if (size > 0)
 			ARRAY_add_many_void(&THIS->data, size);
+		
+		THIS->count = size;
 	}
 	else
 	{
@@ -490,7 +491,7 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 			return;
 		}
 
-		size = 1;
+		uint64_t size = 1;
 		for (i = 0; i < nsize; i++)
 		{
 			VALUE_conv_integer((VALUE *)&sizes[i]);
@@ -512,9 +513,10 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 
 		ARRAY_create_with_size(&THIS->data, THIS->size, 8);
 		ARRAY_add_many_void(&THIS->data, (int)size);
+		
+		THIS->count = size;
 	}
 
-	THIS->count = size;
 	
 END_METHOD
 

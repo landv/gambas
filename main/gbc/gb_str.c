@@ -91,6 +91,8 @@ char *STR_cat(const char *str, ...)
     str = va_arg(args, char *);
   }
 
+  va_end(args);
+  
   return cpy;
 }
 

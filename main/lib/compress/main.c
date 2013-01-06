@@ -55,16 +55,17 @@ static void COMPRESS_Register(COMPRESS_DRIVER *driver)
 COMPRESS_DRIVER *COMPRESS_GetDriver(char *type)
 {
   int i;
-  int comp_size = strlen(type) + 14;
-  char comp[comp_size];
+	char *comp;
 
-  if (!type)
+  if (!type || !*type)
   {
     GB.Error("Driver name missing");
     return NULL;
   }
 
-  strcpy(comp, "gb.compress.");
+  comp = alloca(strlen(type) + 14);
+
+	strcpy(comp, "gb.compress.");
   strcat(comp, type);
 
   if (GB.Component.Load(comp))

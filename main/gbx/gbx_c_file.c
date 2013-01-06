@@ -487,7 +487,7 @@ static void return_path(void)
 			tmp = STRING_add_char(tmp, '/');
 	}
 	
-	if (*_basename)
+	if (_basename && *_basename)
 		tmp = STRING_add(tmp, _basename, 0);
 	
 	if (*_ext)

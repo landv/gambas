@@ -122,8 +122,6 @@ typedef
     STREAM_COMMON common;
     int fdr;
     int fdw;
-    unsigned read_something : 1;
-    unsigned _reserved : 31;
     }
   PACKED
   STREAM_PROCESS;

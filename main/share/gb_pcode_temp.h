@@ -322,7 +322,7 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 					fprintf(out, "JUMP%s %04d",
 						(digit == C_JUMP ? "" :
 						digit == C_JUMP_IF_TRUE ? " IF TRUE" :
-						digit == C_JUMP_IF_FALSE ? " IF FALSE" : "??"),
+						" IF FALSE"),
 						(short)(addr + value + 2));
 					break;
 

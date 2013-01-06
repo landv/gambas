@@ -563,7 +563,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 	if (value < 0)
 	{
 		if (type <= T_VOID || type > T_OBJECT)
-			return NO_SYMBOL;
+			ERROR_panic("Bad native array class");
 	
 		index = _array_class[type];
 	

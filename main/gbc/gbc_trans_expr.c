@@ -449,7 +449,7 @@ void TRANS_new(void)
 	int i, nparam;
 	bool array = FALSE;
 	bool event = FALSE;
-	bool collection = FALSE;
+	//bool collection = FALSE;
 	bool check_param = FALSE;
 
 	nparam = 0;
@@ -486,8 +486,8 @@ void TRANS_new(void)
 
 	if (TRANS_is(RS_LSQR))
 	{
-		if (collection)
-			THROW("Array declaration is forbidden with typed collection");
+		//if (collection)
+		//	THROW("Array declaration is forbidden with typed collection");
 
 		if (!PATTERN_is(*JOB->current, RS_RSQR))
 		{
@@ -555,10 +555,10 @@ void TRANS_new(void)
 		*/
 	}
 
-	if (collection)
-		CODE_new(nparam, TRUE, event);
-	else
-		CODE_new(nparam, array, event);
+	//if (collection)
+	//	CODE_new(nparam, TRUE, event);
+	//else
+	CODE_new(nparam, array, event);
 }
 
 

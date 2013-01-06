@@ -54,7 +54,7 @@ void COBSERVER_detach(COBSERVER *this)
 BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 
 	OBJECT *object;
-	void *proxy = NULL;
+	//void *proxy = NULL;
 	OBJECT_EVENT *ev;
 	char *name;
 	CLASS *class;
@@ -69,13 +69,13 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 		proxy = OP;
 	#endif
 	
-	if (proxy)
+	/*if (proxy)
 	{
 		//fprintf(stderr, "proxy = (%s %p) %s %s\n", GB_GetClassName(proxy), proxy, EVENT_Name, EVENT_PreviousName);
 		parent = OBJECT_parent(proxy);
 		name = EVENT_PreviousName;
 	}
-	else
+	else*/
 	{
 		parent = OBJECT_parent(THIS);
 		name = EVENT_Name;

@@ -423,7 +423,7 @@ __PREMULTIPLIED:
 	}
 }
 
-#define SYNCHRONIZE(_img) ({ if ((_img)->sync) (*(_img)->temp_owner->sync)(_img); })
+#define SYNCHRONIZE(_img) ({ if ((_img)->sync && (_img)->temp_owner) (*(_img)->temp_owner->sync)(_img); })
 #define MODIFY(_img) ((_img)->modified = TRUE)
 
 int IMAGE_size(GB_IMG *img)

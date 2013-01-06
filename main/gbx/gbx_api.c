@@ -1205,6 +1205,8 @@ void GB_Error(const char *error, ...)
 
 	for (i = 0; i < 4; i++)
 		arg[i] = va_arg(args, char *);
+	
+	va_end(args);
 
 	ERROR_define(error, arg);
 	EXEC_set_native_error(TRUE);
@@ -1476,6 +1478,8 @@ __VOID:
 __VARIANT:
 __FUNCTION:
 __NULL:
+
+	va_end(args);
 	return;
 }
 

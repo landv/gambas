@@ -145,6 +145,8 @@ void ERROR_debug(const char *msg, ...)
 		err = err->prev;
 	}
 	fprintf(stderr, "NULL\n");
+	
+	va_end(args);
 }
 #endif
 
@@ -464,6 +466,8 @@ void THROW(int code, ...)
 
 	ERROR_define((char *)(intptr_t)code, arg);
 
+	va_end(args);
+	
 	PROPAGATE();
 }
 
@@ -544,6 +548,9 @@ void ERROR_panic(const char *error, ...)
 
 	fprintf(stderr, "\n** Oops! Internal error! **\n** ");
 	vfprintf(stderr, error, args);
+	
+	va_end(args);
+	
 	putc('\n', stderr);
 	if (ERROR_current->info.code)
 	{
@@ -668,6 +675,9 @@ void ERROR_warning(const char *warning, ...)
 
 	fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": warning: ");
 	vfprintf(stderr, warning, args);
+	
+	va_end(args);
+	
 	putc('\n', stderr);
 }
 

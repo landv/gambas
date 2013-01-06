@@ -24,6 +24,8 @@
 #ifndef __GB_ALLOC_H
 #define __GB_ALLOC_H
 
+#include "gb_common.h"
+
 #define DEBUG_MEMORY 0
 #define OPTIMIZE_MEMORY 1
 //#define DO_NOT_PRINT_MEMORY
@@ -105,7 +107,7 @@ void MEMORY_check(void);
 void MEMORY_init(void);
 void MEMORY_exit(void);
 void MEMORY_clear_cache(void);
-int THROW_MEMORY();
+int THROW_MEMORY() NORETURN;
 
 #endif
 

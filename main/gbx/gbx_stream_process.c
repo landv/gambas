@@ -71,18 +71,12 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 {
 	bool ret = STREAM_read_direct(FDR, buffer, len);
 
-	if (STREAM_eff_read > 0)
-		stream->process.read_something = TRUE;
-
   return ret;
 }
 
 static int stream_getchar(STREAM *stream, char *buffer)
 {
 	bool ret = read(FDR, buffer, 1) <= 0;
-
-	if (!ret)
-	  stream->process.read_something = TRUE;
 
   return ret;
 }

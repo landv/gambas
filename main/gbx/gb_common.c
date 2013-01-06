@@ -73,7 +73,7 @@ bool CHECK_got_error(void)
 	return _got_error;
 }
 
-bool CHECK_address(void *ptr, size_t len)
+bool CHECK_address(void *ptr, ssize_t len)
 {
 	offset_t i;
 
@@ -92,7 +92,7 @@ bool CHECK_address(void *ptr, size_t len)
 	return _got_error;
 }
 
-bool CHECK_strlen(char *ptr, size_t *len)
+bool CHECK_strlen(char *ptr, ssize_t *len)
 {
 	size_t l = 0;
 

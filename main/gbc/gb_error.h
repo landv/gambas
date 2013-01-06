@@ -76,10 +76,10 @@ EXTERN ERROR_CONTEXT *ERROR_current;
 #define FINALLY
 
 #define CATCH \
-			if (__err->code != 0 && !(__err->code = 0))
+			if (__err->code != 0 && ((__err->code = 0), TRUE))
 
 #define CATCH_GET(get_it) \
-     	if (__err->code != 0 && (get_it = __err->code) && !(__err->code = 0))
+     	if (__err->code != 0 && ((get_it = __err->code), TRUE) && ((__err->code = 0), TRUE))
 
 #define END_TRY \
 			if (__err->code == 0) \

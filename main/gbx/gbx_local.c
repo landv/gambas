@@ -1645,7 +1645,7 @@ const char *LOCAL_gettext(const char *msgid)
 	if (!tr || tr[0] == 0 || (tr[0] == '-' && (tr[1] == 0 || (tr[1] == '\n' && tr[2] == 0))))
 		tr = msgid;
 
-	return tr ? tr : "";
+	return tr;
 }
 
 int LOCAL_get_first_day_of_week()

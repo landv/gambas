@@ -126,7 +126,7 @@ void SUBR_realloc(ushort code)
 void SUBR_strptr(ushort code)
 {
   char *ptr;
-  size_t len = 0;
+  ssize_t len = 0;
 	bool err;
   
   SUBR_ENTER();

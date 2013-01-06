@@ -341,7 +341,16 @@ const char *TABLE_get_symbol_name(TABLE *table, int index)
 
 const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix)
 {
-	TABLE_get_symbol_name(table, index);
+	SYMBOL *sym;
+	
+	if (UNLIKELY((index < 0) || (index >= ARRAY_count(table->symbol))))
+		return "?";
+	
+	sym = SYM(table, index);
+	if ((sym->len + strlen(suffix)) > MAX_SYMBOL_LEN)
+		return "?";
+	
+	SYMBOL_get_name(sym);
 	strcat(_buffer, suffix);
 	return _buffer;
 }

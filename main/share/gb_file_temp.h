@@ -185,12 +185,12 @@ void FILE_init(void)
 	FILE_remove_temp_file();
 	
 	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, (int)getuid());
-	mkdir(file_buffer, S_IRWXU);
+	(void)mkdir(file_buffer, S_IRWXU);
 	
 	if (lstat(file_buffer, &info) == 0 && S_ISDIR(info.st_mode) && chown(file_buffer, getuid(), getgid()) == 0 && chmod(file_buffer, S_IRWXU) == 0)
 	{
 		snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
-		mkdir(file_buffer, S_IRWXU);
+		(void)mkdir(file_buffer, S_IRWXU);
 		if (lstat(file_buffer, &info) == 0 && S_ISDIR(info.st_mode) && chown(file_buffer, getuid(), getgid()) == 0 && chmod(file_buffer, S_IRWXU) == 0)
 			return;
 	}
@@ -286,6 +286,8 @@ const char *FILE_cat(const char *path, ...)
 		add_slash = ((!end_slash) && (*path != 0) && (*path != '/'));
 	}
 
+	va_end(args);
+	
 	file_buffer_length = p - file_buffer;
 	return file_buffer;
 }
@@ -715,8 +717,9 @@ bool FILE_dir_next(char **path, int *len)
 	#else
 	if (file_attr)
 	{
-		strcpy(p, file_path);
-		p += strlen(file_path);
+		init_file_buffer(file_path);
+		p += file_buffer_length;
+		
 		if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
 			*p++ = '/';
 	}
@@ -736,6 +739,10 @@ bool FILE_dir_next(char **path, int *len)
 		if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0)))
 			continue;
 
+		len_entry = strlen(name);
+		if ((len_entry + file_buffer_length) > PATH_MAX)
+			continue;
+			
 		if (file_attr)
 		{
 			#ifdef _DIRENT_HAVE_D_TYPE
@@ -752,8 +759,6 @@ bool FILE_dir_next(char **path, int *len)
 				continue;
 			#endif
 		}
-
-		len_entry = strlen(name);
 
 		if (file_pattern == NULL)
 			break;
@@ -788,11 +793,10 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 	char *temp;
 	bool is_dir;
 
-	if (!FILE_is_dir(dir))
-		return;
-
 	if (!dir || *dir == 0)
 		dir = ".";
+	else if (!FILE_is_dir(dir))
+		return;
 
 	STRING_free(&file_rdir_path);
 	file_rdir_path = STRING_new_zero(dir);
@@ -904,7 +908,7 @@ void FILE_make_path_dir(const char *path)
 		if (c == '/')
 		{
 			file_buffer[i] = 0;
-			mkdir(file_buffer, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+			(void)mkdir(file_buffer, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 			file_buffer[i] = c;
 		}
 		c++;

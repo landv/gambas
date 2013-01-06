@@ -645,6 +645,8 @@ static void run_myself(const char *path, const char *name)
 	{
 		case 0:
 			execvp(path, (char **)argv);
+			error(FALSE, "Cannot run sub-process: %s", strerror(errno));
+			exit(1);
 		case -1:
 			error(FALSE, "Cannot run sub-process: %s", strerror(errno));
 			exit(1);

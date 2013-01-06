@@ -57,6 +57,8 @@ bool ARCH_swap = FALSE;
 static int arch_dir_pos;
 static TABLE *arch_table;
 static FILE *arch_file = NULL;
+
+#define ARCH_BUFFER_SIZE 4096
 static char *arch_buffer;
 
 static int pos_start;
@@ -79,9 +81,12 @@ static void write_short(ushort val)
 }
 
 
-static int get_pos(void)
+static long get_pos(void)
 {
-	return ftell(arch_file);
+	long pos = ftell(arch_file);
+	if (pos < 0)
+		THROW("Unable to get file position");
+	return (int)pos; // No archive file greater then 2 Go!
 }
 
 
@@ -143,6 +148,8 @@ void ARCH_define_output(const char *path)
 	
 	if (path && *path != '/')
 		path = FILE_cat(FILE_get_current_dir(), path, NULL);
+	else if (!path)
+		path = "";
 	
 	ARCH_output = STR_copy(path);
 }
@@ -184,7 +191,7 @@ void ARCH_init(void)
 {
 	TABLE_create(&arch_table, sizeof(ARCH_SYMBOL), TF_NORMAL);
 
-	ALLOC(&arch_buffer, 4096, "ARCH_init");
+	ALLOC(&arch_buffer, ARCH_BUFFER_SIZE, "ARCH_init");
 
 	arch_file = fopen(".temp.gambas", "w");
 	if (arch_file == NULL)
@@ -355,11 +362,11 @@ int ARCH_add_file(const char *path)
 		len = sym->len;
 		while (len > 0)
 		{
-			len_read = fread(arch_buffer, 1, sizeof(arch_buffer), file);
+			len_read = fread(arch_buffer, 1, ARCH_BUFFER_SIZE, file);
 			if (len_read > 0)
 				fwrite(arch_buffer, 1, len_read, arch_file);
 
-			if (len_read < sizeof(arch_buffer))
+			if (len_read < ARCH_BUFFER_SIZE)
 			{
 				if (ferror(file))
 					THROW("Cannot read file: &1: &2", path, strerror(errno));

@@ -126,10 +126,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 	{
 		int n = read(fd, COMMON_buffer, 256);
 		if (n > 0)
-		{
 			process->result = STRING_add(process->result, COMMON_buffer, n);
-			CSTREAM_stream(process)->process.read_something = TRUE;
-		}
 	}
 	else if (!STREAM_is_closed(CSTREAM_stream(process)) && !STREAM_eof(CSTREAM_stream(process))) //process->running &&
 		GB_Raise(process, EVENT_Read, 0);
@@ -259,7 +256,7 @@ static void throw_last_child_error()
 static void stop_process_after(CPROCESS *_object)
 {
 	STREAM *stream;
-	//long long len;
+	int64_t len, len2;
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "stop_process_after: %p\n", _object);
@@ -282,10 +279,12 @@ static void stop_process_after(CPROCESS *_object)
 		stream = CSTREAM_stream(THIS);
 		while (!STREAM_eof(stream))
 		{
-			stream->process.read_something = FALSE;
+			STREAM_lof(stream, &len);
 			callback_write(THIS->out, 0, THIS);
-			//GB_Raise(THIS, EVENT_Read, 0);
-			if (!stream->process.read_something)
+			if (STREAM_is_closed(stream))
+				break;
+			STREAM_lof(stream, &len2);
+			if (len == len2)
 				break;
 		}
 	}

@@ -99,7 +99,7 @@ static bool compare_value(const char *value)
 	}
 	else
 	{
-		if (sym->len < 1 || sym->len > 8)
+		if (sym->len < 1 || sym->len >= sizeof(version))
 			THROW("Bad version string");
 		
 		memcpy(version, sym->name, sym->len);

@@ -270,8 +270,7 @@ static void analyze(EVAL_ANALYZE *result)
 	bool empty = FALSE;
 	int type, old_type, next_type;
 	const char *symbol;
-	bool space_before, space_after, in_quote;
-	//bool me = FALSE;
+	bool space_before, space_after;
 	int len, i;
 	bool preprocessor;
 
@@ -303,7 +302,6 @@ static void analyze(EVAL_ANALYZE *result)
 	type = EVAL->comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END;
 	next_type = EVAL_TYPE_END;
 	space_after = FALSE;
-	in_quote = FALSE;
 
 	for(;;)
 	{
@@ -318,8 +316,8 @@ static void analyze(EVAL_ANALYZE *result)
 		if (type == EVAL_TYPE_END)
 			break;
 
-		if (in_quote && (type == EVAL_TYPE_RESERVED || type == EVAL_TYPE_DATATYPE || type == EVAL_TYPE_SUBR))
-			type = EVAL_TYPE_IDENTIFIER;
+		//if (in_quote && (type == EVAL_TYPE_RESERVED || type == EVAL_TYPE_DATATYPE || type == EVAL_TYPE_SUBR))
+		//	type = EVAL_TYPE_IDENTIFIER;
 
 		switch(type)
 		{

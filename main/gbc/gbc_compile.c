@@ -482,5 +482,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 		fputs(ERROR_info.msg, stderr);
 		putc('\n', stderr);
 	}
+	
+	va_end(args);
 }
 
