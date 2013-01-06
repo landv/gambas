@@ -4,12 +4,18 @@
 
 Public Sub Form_Open()
 
-  
+  HSplit1.Layout = [1, 1, 10000]
 
 End
 
 Public Sub Button1_Click()
 
   TextArea1.Visible = Not TextArea1.Visible
+
+End
+
+Public Sub Form_Close()
+
+  Debug String[](HSplit1.Layout).Join(",")
 
 End
