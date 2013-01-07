@@ -32,8 +32,24 @@ Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
 Public Sub _new(Optional bFile As Boolean)
 
+  Dim hChild As Control
+  
   DirView = dvwChoose
   FileView = fvwChoose
+  
+  ScrollArea(DirView.Proxy.Proxy.Proxy).Shadow = True
+  
+  For Each hChild In FileView.Children
+    Do
+      If hChild Is ScrollArea Then
+        ScrollArea(hChild).Shadow = True
+        Break
+      Endif
+      hChild = hChild.Proxy
+      If Not hChild Then Break
+    Loop
+    
+  Next
   
   $bShowBookmark = True
   $hBookmarkList = New CBookmarkList

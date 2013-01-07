@@ -65,7 +65,9 @@ Public Sub Container_Arrange()
   Dim hChild As Control
   Dim fWeight As Float
   Dim fNewWeight As Float
+  Dim fTotalWeight As Float
   Dim I As Integer
+  Dim aAllChildren As Control[]
   Dim aChildren As Control[]
 
   If $iNoArrange Or If $bLayouting Then Return
@@ -76,6 +78,7 @@ Public Sub Container_Arrange()
   $hPanel.Move(0, 0, Me.W, Me.H)
   
   aChildren = GetChildren()
+  aAllChildren = GetChildren(True)
   
   If aChildren.Count = 0 Then
     
@@ -87,25 +90,29 @@ Public Sub Container_Arrange()
     
   Else
   
-    If $cWeight.Count <> aChildren.Count Then
+    'If $cWeight.Count <> aChildren.Count Then
       
-      If $cWeight.Count Then
-        fNewWeight = GetTotalWeight() / $cWeight.Count
-      Else
-        fNewWeight = 1
-      Endif
+      fNewWeight = 1 / aChildren.Count 
       
       cNewWeight = New Collection
       
-      For Each hChild In aChildren
+      For Each hChild In aAllChildren
         Try fWeight = $cWeight[Object.Address(hChild)]
         If Error Then fWeight = fNewWeight
         cNewWeight[Object.Address(hChild)] = fWeight
+        If hChild.Visible Then fTotalWeight += fWeight
       Next
+      
+      ' If fTotalWeight <> 1 Then
+      '   For Each hChild In aChildren
+      '     cNewWeight[Object.Address(hChild)] /= fTotalWeight
+      '   Next
+      ' Endif
+      ' 
       
       $cWeight = cNewWeight
     
-    Endif
+    'Endif
     
     If $aResize.Count > (aChildren.Count - 1) Then
       For I = aChildren.Count - 1 To $aResize.Max
@@ -181,10 +188,15 @@ Private Sub DoLayout()
   Dim hChild As Control
   Dim X As Integer
   Dim aChildren As Control[]
+  Dim fTotalWeight As Float
   
   If $bLayouting Then Return
   
   $bLayouting = True
+  
+  For Each hChild In GetChildren()
+    Try fTotalWeight += $cWeight[Object.Address(hChild)]
+  Next
   
   aChildren = GetChildren(True)
   
@@ -195,7 +207,7 @@ Private Sub DoLayout()
     hChild = aChildren[I]
     If Not hChild.Visible Then Continue
     
-    W = Max(MIN_SIZE, CInt($cWeight[Object.Address(hChild)] * WMax + 0.5))
+    W = Max(MIN_SIZE, CInt($cWeight[Object.Address(hChild)] * WMax / fTotalWeight + 0.5))
     WTotal += W
     
     If $bVertical Then
