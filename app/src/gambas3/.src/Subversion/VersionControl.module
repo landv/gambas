@@ -1,5 +1,8 @@
 ' Gambas module file
 
+Private $bCheckSVN As Boolean
+Private $bHasSVN As Boolean
+
 Private $bSVN As Boolean
 Private $bCVS As Boolean
 Private $bEnd As Boolean
@@ -26,22 +29,32 @@ Public Sub Refresh()
 
   Dim sResult As String
 
-  If Not $sSvnVersion Then 
-    Exec ["svn", "--version", "--quiet"] To $sSvnVersion
-    $sSvnVersion = Trim($sSvnVersion)
-    $bSvn17 = $sSvnVersion Begins "1.7."
+  If Not $bCheckSVN Then
+    Exec ["which", "svn"] To sResult
+    $bHasSVN = Trim(sResult)
+    $bCheckSVN = True
+  Endif
+  
+  If $bHasSVN Then
+
+    If Not $sSvnVersion Then 
+      Exec ["svn", "--version", "--quiet"] To $sSvnVersion
+      $sSvnVersion = Trim($sSvnVersion)
+      $bSvn17 = $sSvnVersion Begins "1.7."
+    Endif
+  
+    If $bSvn17 Then
+      $bSVN = False
+      Shell "svn status " & Shell$(SvnPath$(Project.Dir) &/ ".project") & " 2>&1" To sResult
+      If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" Then $bSvn = True
+    Else
+      $bSVN = Exist(Project.Dir &/ ".svn")
+    Endif
+    
   Endif
 
   $bCVS = Exist(Project.Dir &/ "CVS") Or Exist(Project.Dir &/ "CVSROOT")
-  
-  If $bSvn17 Then
-    $bSVN = False
-    Shell "svn status " & Shell$(SvnPath$(Project.Dir) &/ ".project") & " 2>&1" To sResult
-    If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" Then $bSvn = True
-  Else
-    $bSVN = Exist(Project.Dir &/ ".svn")
-  Endif
-
+    
 End
 
 Private Sub Insert(sText As String)
