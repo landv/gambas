@@ -1114,6 +1114,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         For Each sName In aName
           hSymbol2 = hSymbol.Copy("", "")
           hSymbol2.Name = sName
+          hSymbol2.LineNumber = hSymbol.LineNumber
           cSymbol[sName] = hSymbol2
         Next
       Endif

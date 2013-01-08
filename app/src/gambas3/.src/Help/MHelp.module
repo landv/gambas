@@ -385,10 +385,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
         sHtml = hClass.GetHelpHTML()
         sUrl = hClass.Component & "-" & sSymbol
       Endif
-    Else If Project.GetClasses().Exist(sSymbol) Then
-      CComponent.GetClassSymbols(sSymbol)
-      sHtml = CComponent.GetLastClass().GetHelpHTML()
-      sUrl = "-" & sSymbol
+    Else 
+      sSymbol = File.Name(sSymbol)
+      If Project.GetClasses().Exist(sSymbol) Then
+        CComponent.GetClassSymbols(sSymbol)
+        sHtml = CComponent.GetLastClass().GetHelpHTML()
+        sUrl = "-" & sSymbol
+      Endif
     Endif
     
   Else If iType = TYPE_SPECIAL Then

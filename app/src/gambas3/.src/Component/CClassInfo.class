@@ -437,9 +437,12 @@ Public Sub GetHelpMarkup() As String
       sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
     Else
       If sMarkup Then Break
+      If Not sLine Then Continue
       If sLine Not Begins "'" Then Break
     Endif
   Next
+  
+  Return sMarkup
   
 End
 
