@@ -292,6 +292,7 @@ Public Function Call(Data As Variant[]) As Variant
   Dim Xml As New XmlWriter
   Dim Bucle As Integer
   Dim sCad As String
+  Dim sData As String
 
   If hHttp Then
     If hHttp.Http.Status > 0 Then
@@ -349,7 +350,13 @@ Public Function Call(Data As Variant[]) As Variant
     hHttp.Mode = True
   End If
 
-  sCad = hHttp.PostData(Xml.EndDocument())
+  sData = Xml.EndDocument()
+  
+  If Right(sData) <> "\n" Then sData = "\n"
+  
+  sData = Replace(sData, "\n", "\r\n")
+
+  sCad = hHttp.PostData(sData)
 
   If hMode = RpcClient.httpSync Then
     If sCad = "" Then

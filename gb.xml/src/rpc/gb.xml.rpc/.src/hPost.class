@@ -1,90 +1,90 @@
 ' Gambas class file
 
-PUBLIC Http AS HttpClient
-PRIVATE Buffer AS String
-PUBLIC Mode AS Boolean
+Public Http As HttpClient
+Private Buffer As String
+Public Mode As Boolean
 
-EVENT GotData(Data AS String)
+Event GotData(Data As String)
 
-EVENT GotError()
+Event GotError()
 
-PUBLIC SUB Http_Read()
+Public Sub Http_Read()
 
-  DIM sCad AS String
+  Dim sCad As String
 
-  IF Mode = FALSE THEN RETURN
+  If Mode = False Then Return
 
-  IF Lof(Http) THEN
-    TRY READ #Http, sCad, Lof(Http)
-    IF Not ERROR THEN Buffer = Buffer & sCad
-  END IF
+  If Lof(Http) Then
+    Try Read #Http, sCad, Lof(Http)
+    If Not Error Then Buffer = Buffer & sCad
+  End If
 
-END
+End
 
-PUBLIC SUB Http_Finished()
+Public Sub Http_Finished()
 
-  DIM sCad AS String
+  Dim sCad As String
 
-  IF Mode = FALSE THEN RETURN
+  If Mode = False Then Return
 
-  IF Lof(Http) THEN
-    TRY READ #Http, sCad, Lof(Http)
-    IF Not ERROR THEN Buffer = Buffer & sCad
-  END IF
+  If Lof(Http) Then
+    Try Read #Http, sCad, Lof(Http)
+    If Not Error Then Buffer = Buffer & sCad
+  End If
 
-  RAISE GotData(Buffer)
-
-
-END
-
-PUBLIC SUB Http_Error()
-
-  IF Mode = FALSE THEN RETURN
-
-  TRY CLOSE #Http
-
-  RAISE GotError()
-
-END
+  Raise GotData(Buffer)
 
 
+End
 
-PUBLIC FUNCTION PostData(Data AS String) AS String
+Public Sub Http_Error()
 
-  DIM sCad AS String
+  If Mode = False Then Return
+
+  Try Close #Http
+
+  Raise GotError()
+
+End
+
+
+
+Public Function PostData(Data As String) As String
+
+  Dim sCad As String
 
   Buffer = ""
   sCad = ""
   Http.Post("text/xml", Data)
 
-  IF Mode = FALSE THEN
-    DO WHILE Http.Status > 0
+  If Mode = False Then
+    Do While Http.Status > 0
 
-      WAIT 0.001
+      Wait 0.001
 
-    LOOP
+    Loop
 
-    IF Http.Status < 0 THEN RETURN ""
-    IF Http.Code <> 200 THEN RETURN ""
+    If Http.Status < 0 Then Return ""
+    If Http.Code <> 200 Then Return ""
 
-    IF Lof(Http) THEN
+    If Lof(Http) Then
 
-      READ #Http, sCad, Lof(Http)
+      Read #Http, sCad, Lof(Http)
 
-    END IF
+    End If
 
     sCad = Trim(sCad)
-    RETURN sCad
+    Return sCad
 
-  END IF
+  End If
 
-END
+End
 
 
-PUBLIC SUB _new(sUrl AS String)
+Public Sub _new(sUrl As String)
 
-  Http = NEW HttpClient AS "Http"
+  Http = New HttpClient As "Http"
 
   Http.URL = sUrl
 
-END
+End
