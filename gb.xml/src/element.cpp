@@ -263,6 +263,8 @@ void Element::setAttribute(const char *nattrName, const size_t nlenAttrName,
     }
 }
 
+
+
 bool Element::attributeContains(const char *attrName, size_t lenAttrName, const char *value, size_t lenValue)
 {
         Attribute *attr = getAttribute(attrName, lenAttrName);
@@ -287,7 +289,19 @@ bool Element::attributeContains(const char *attrName, size_t lenAttrName, const 
         
         return false;
         
-    
+
+}
+
+void Element::removeAttribute(const char *attrName, size_t lenAttrName)
+{
+    Attribute *attr = getAttribute(attrName,lenAttrName);
+    if(!attr) return;
+    if(attr == firstAttribute) firstAttribute = (Attribute*)(attr->nextNode);
+    if(attr == lastAttribute) lastAttribute = (Attribute*)(attr->previousNode);
+    if(attr->nextNode) attr->nextNode->previousNode = (Attribute*)(attr->previousNode);
+    if(attr->previousNode) attr->previousNode->nextNode = (Attribute*)(attr->nextNode);
+    attributeCount--;
+    delete attr;
 }
 
 /***** String output *****/

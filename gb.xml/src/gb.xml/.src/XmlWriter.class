@@ -81,7 +81,7 @@ End
 
 Public Sub StartElement(TagName As String, Optional Attributes As String[], Optional Prefix As String, Optional URI As String)
   
-  Dim Xmlns, s, sData As String
+  Dim Xmlns, sData As String
   Dim i As Integer = 0
   If URI Then
     Xmlns = " xmlns"
@@ -148,27 +148,27 @@ Public Sub Attribute(Name As String, Value As String, Optional Prefix As String,
   
 End
 
-Public Sub Comment(Comment As String)
+Public Sub Comment(sComment As String)
   
   
   If Not $TagEnded Then 
     Write(">" & If($indent, "\n", ""), True)
     $TagEnded = True
   Endif
-  Write("<!--" & Comment & "-->",, True)
+  Write("<!--" & sComment & "-->",, True)
   
   $lastWasElement = False
   
 End
 
-Public Sub Text(Text As String)
+Public Sub Text(sText As String)
   
   
   If Not $TagEnded Then 
     Write(">", True)
     $TagEnded = True
   Endif
-  Write(XmlNode.Serialize(Text), True)
+  Write(XmlNode.Serialize(sText), True)
   $lastWasElement = False
   
 End

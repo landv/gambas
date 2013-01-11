@@ -81,6 +81,7 @@ public:
     void setAttribute(const char *nattrName, const size_t nlenAttrName,
                        const char *nattrVal, const size_t nlenAttrVal);//Looks for attribute, sets its value or add it if attribute is not found
     bool attributeContains(const char *attrName, size_t lenAttrName, const char *value, size_t lenValue);
+    void removeAttribute(const char *attrName, size_t lenAttrName);
     Attribute *firstAttribute;
     Attribute *lastAttribute;
     size_t attributeCount;

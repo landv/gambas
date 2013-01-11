@@ -336,12 +336,12 @@ void Node::addGBChildrenByAttributeValue(const char *attrName, const size_t lenA
             }
         }
     }
-    
+    if(depth == 1) return;
     for(Node *node = firstChild; node != 0; node = node->nextNode)
     {
         if(node->isElement())
         {
-            node->toElement()->addGBAllChildren(array);
+            node->toElement()->addGBChildrenByAttributeValue(attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth - 1);
         }
     }
             

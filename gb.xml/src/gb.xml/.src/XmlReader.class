@@ -27,6 +27,7 @@ End
 
 Public Sub FromString(data As String)
   
+  If Not data Then Error.Raise(("Data buffer is empty."))
   $DataBuffer = data
   $posBuffer = 0
   $lenBuffer = Len(data)

@@ -80,6 +80,11 @@ END_PROPERTY
 
 BEGIN_METHOD(CElement_appendChild, GB_OBJECT newChild)
 
+    if(!VARGOBJ(CNode, newChild))
+    {
+        GB.Error("Null object");
+        return;
+    }
     THIS->appendChild(VARGOBJ(CNode, newChild)->node);
 
 END_METHOD
@@ -95,6 +100,12 @@ Attribute *attr = THIS->getAttribute(STRING(attrName), LENGTH(attrName), VARG(mo
     {
         GB.ReturnNull();
     }
+
+END_METHOD
+
+BEGIN_METHOD(CElement_removeAttribute, GB_STRING attrName)
+
+    THIS->removeAttribute(STRING(attrName), LENGTH(attrName));
 
 END_METHOD
 
@@ -285,6 +296,7 @@ GB_DESC CElementDesc[] =
     GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s"),
     
     GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s[(Mode)i]"),
+    GB_METHOD("RemoveAttribute", "s", CElement_removeAttribute, "(Name)s"),
     GB_METHOD("SetAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
     
     GB_METHOD("IsAttributeSet", "b", CElement_isAttributeSet, "(Name)s"),
