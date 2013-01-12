@@ -352,7 +352,7 @@ Public Function Call(Data As Variant[]) As Variant
 
   sData = Xml.EndDocument()
   
-  If Right(sData) <> "\n" Then sData = "\n"
+  If Right(sData) <> "\n" Then sData &= "\n"
   
   sData = Replace(sData, "\n", "\r\n")
 
