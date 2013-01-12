@@ -1,4 +1,5 @@
 ' Gambas class file
+
 '***************************************************************************
 ' 
 ' miniServer.class
@@ -42,22 +43,26 @@ Event ProcessData(Data As String)
 
 Private Sub hError(hS As Socket, hErr As String)
 
-  Try Print #hS, "HTTP/1.1 " & hErr
-  Try Print #hS, "Server: Gambas XML-RPC Server"
-  Try Print #hS, "Connection: close"
-  Try Print #hS, "Content-Type: text/html; charset=iso-8859-1"
-  Try Print #hS, ""
-  Try Print #hS, "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">"
-  Try Print #hS, "<HTML><HEAD>"
-  Try Print #hS, "<TITLE>" & hErr & "</TITLE>"
-  Try Print #hS, "</HEAD><BODY>"
-  Try Print #hS, "<H1>Bad Request</H1>"
-  Try Print #hS, hErr & ".<P>"
-  Try Print #hS, "<HR>"
-  Try Print #hS, "<ADDRESS>Gambas XML-RPC Server</ADDRESS>"
-  Try Print #hS, "</BODY></HTML>"
-  Try Print #hS, ""
-  Try Print #hS, ""
+  hS.Begin
+
+  Print #hS, "HTTP/1.1 " & hErr
+  Print #hS, "Server: Gambas XML-RPC Server"
+  Print #hS, "Connection: close"
+  Print #hS, "Content-Type: text/html; charset=iso-8859-1"
+  Print #hS, ""
+  Print #hS, "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">"
+  Print #hS, "<HTML><HEAD>"
+  Print #hS, "<TITLE>" & hErr & "</TITLE>"
+  Print #hS, "</HEAD><BODY>"
+  Print #hS, "<H1>Bad Request</H1>"
+  Print #hS, hErr & ".<P>"
+  Print #hS, "<HR>"
+  Print #hS, "<ADDRESS>Gambas XML-RPC Server</ADDRESS>"
+  Print #hS, "</BODY></HTML>"
+  Print #hS, ""
+  Print #hS, ""
+  
+  Try hS.Send
 
 End
 
@@ -194,15 +199,16 @@ Private Sub ProcessQuery(hS As Socket, Buf As String)
   End If
 
 
-  Try Print #hS, "HTTP/1.1 200 OK"
-  Try Print #hS, "Connection: close"
-  Try Print #hS, "Content-Length: " & Len(sReply)
-  Try Print #hS, "Content-Type: text/xml"
-  Try Print #hS, "Server: Gambas RPC Server\n"
-  Try Write #hS, sReply, Len(sReply)
+  hS.Begin
+  Print #hS, "HTTP/1.1 200 OK"
+  Print #hS, "Connection: close"
+  Print #hS, "Content-Length: " & Len(sReply)
+  Print #hS, "Content-Type: text/xml"
+  Print #hS, "Server: Gambas RPC Server\n"
+  Write #hS, sReply, Len(sReply)
+  Try hS.Send
+  
   RemoveSocket(hS)
-
-
 
 End
 
