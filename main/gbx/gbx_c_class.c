@@ -482,7 +482,10 @@ BEGIN_PROPERTY(Symbol_Signature)
 	char *sign = CLASS_DESC_get_signature(cds->desc);
 
 	if (sign)
+	{
+		STRING_free_later(sign);
 		GB_ReturnString(sign);
+	}
 	else
 		GB_ReturnVoidString();
 
