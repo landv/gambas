@@ -1,58 +1,59 @@
 ' Gambas module file
-PRIVATE Srv AS RpcServer
+
+Private Srv As RpcServer
 
 
 
 
-PRIVATE SUB GetStateName(Number AS Integer)
+Private Sub GetStateName(Number As Integer)
 
   Srv.SetReply("Alabama")
 
-END
+End
 
-PRIVATE SUB Ping()
+Private Sub Ping()
 
   Srv.SetReply(Now())
 
-END
+End
 
 
-PUBLIC SUB Srv_RemoteCall(Name AS String, Data AS Variant[])
+Public Sub Srv_RemoteCall(Name As String, Data As Variant[])
 
 
 
-  SELECT CASE Name
-    CASE "pepe"
-      PRINT Data.Count
-    CASE "examples.ping"
+  Select Case Name
+    Case "pepe"
+      Print Data.Count
+    Case "examples.ping"
       Ping()
-    CASE "examples.getStateName"
+    Case "examples.getStateName"
       GetStateName(Data[0])
-    DEFAULT
-      RETURN
-  END SELECT
+    Default
+      Return
+  End Select
 
-END
-
-
-PUBLIC SUB Main()
-
-  DIM Bucle AS Integer
-  DIM B2 AS Integer
-  DIM Rpc AS RpcFunction
-  DIM myFunc AS RpcClient
-  DIM mySig AS RpcClient
-  DIM Arr AS NEW RpcArray
-  DIM Arr2 AS RpcArray
-  DIM hVar AS NEW Variant[]
+End
 
 
+Public Sub Main()
 
-  Rpc = NEW RpcFunction("queryTitle", [XmlRpc.xString], XmlRpc.xArray)
-  mySig = NEW RpcClient(Rpc)
+  Dim Bucle As Integer
+  Dim B2 As Integer
+  Dim Rpc As RpcFunction
+  Dim myFunc As RpcClient
+  Dim mySig As RpcClient
+  Dim Arr As New RpcArray
+  Dim Arr2 As RpcArray
+  Dim hVar As New Variant[]
+
+
+
+  Rpc = New RpcFunction("queryTitle", [XmlRpc.xString], XmlRpc.xArray)
+  mySig = New RpcClient(Rpc)
   mySig.URL = "http://127.0.0.1:9000"
   mySig.Mode = RpcClient.httpAsync
 
   
 
-END
+End

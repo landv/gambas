@@ -159,7 +159,8 @@ Public Function GetParam(Xml As XmlReader) As RpcAtom
 
             If Xml.Node.Type = XmlReaderNodeType.EndElement Then
 
-              If Xml.Node.Name = "data" Then
+              'If Xml.Node.Name = "data" Then
+              If Xml.Eof Then
                 ExitNode(Xml)
                 Xml.Read()
                 Return hAtom

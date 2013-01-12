@@ -1,3 +1,5 @@
+' Gambas class file
+
 '***************************************************************************
 ' 
 ' RpcArray.class
@@ -25,220 +27,220 @@
 ' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ' 
 '***************************************************************************
-EXPORT
+Export
 
-PRIVATE Values AS Variant[]
-PRIVATE dTypes AS Integer[]
+Private Values As Variant[]
+Private dTypes As Integer[]
 
-PROPERTY READ Count AS Integer
-PROPERTY READ Length AS Integer
+Property Read Count As Integer
+Property Read Length As Integer
 
-FUNCTION Count_Read() AS Integer
+Function Count_Read() As Integer
 
-  RETURN Values.Count
+  Return Values.Count
 
-END
+End
 
-FUNCTION Length_Read() AS Integer
+Function Length_Read() As Integer
 
-  RETURN Values.Count
+  Return Values.Count
 
-END
+End
 
 
-PUBLIC SUB Add(Value AS Variant, dataType AS Integer)
+Public Sub Add(Value As Variant, dataType As Integer)
 
-  DIM sErr AS String
+  Dim sErr As String
 
-  IF datatype < 0 Or datatype > 7 THEN
+  If datatype < 0 Or datatype > 7 Then
     Error.Raise("Invalid data type")
-    RETURN
-  END IF
+    Return
+  End If
 
-  Values.Add(NULL)
+  Values.Add(Null)
   dTypes.Add(dataType)
-  TRY ME[Values.Count - 1] = Value
-  IF ERROR THEN
+  Try Me[Values.Count - 1] = Value
+  If Error Then
     sErr = Error.Text
     Values.Pop()
     dTypes.Pop()
     Error.Raise(sErr)
-  END IF
+  End If
 
-END
+End
 
-PUBLIC FUNCTION Pop() AS Variant
+Public Function Pop() As Variant
 
-  IF Values.Count = 0 THEN
+  If Values.Count = 0 Then
     Error.Raise("Bad argument")
-    RETURN NULL
-  END IF
+    Return Null
+  End If
 
   dTypes.Pop()
-  RETURN Values.Pop()
+  Return Values.Pop()
 
-END
+End
 
-PUBLIC sub Push(Value AS Variant, dataType AS Integer)
+Public Sub Push(Value As Variant, dataType As Integer)
 
   Add(Value, dataType)
 
-END
+End
 
 
 
-PUBLIC SUB Clear()
+Public Sub Clear()
 
   Values.Clear()
   dTypes.Clear()
 
-END
+End
 
-PUBLIC FUNCTION Copy() AS RpcArray
+Public Function Copy() As RpcArray
 
-  DIM hRes AS NEW RpcArray
-  DIM Bucle AS Integer
+  Dim hRes As New RpcArray
+  Dim Bucle As Integer
 
-  FOR Bucle = 0 TO Values.Count - 1
+  For Bucle = 0 To Values.Count - 1
     hRes.Add(Values[Bucle], dTypes[Bucle])
-  NEXT
+  Next
 
-  RETURN hRes
+  Return hRes
 
-END
+End
 
 
 
-PUBLIC SUB Reverse()
+Public Sub Reverse()
 
   Values.Reverse()
   dTypes.Reverse()
 
-END
+End
 
 
-PUBLIC SUB Remove(Index AS Integer)
+Public Sub Remove(Index As Integer)
 
-  IF Index < 0 Or Index >= Values.Count THEN
+  If Index < 0 Or Index >= Values.Count Then
     Error.Raise("Bad index")
-    RETURN
-  END IF
+    Return
+  End If
 
   Values.Remove(Index)
   dTypes.Remove(Index)
 
-END
+End
 
-PUBLIC FUNCTION Datatype(Index AS Integer) AS Integer
+Public Function Datatype(Index As Integer) As Integer
 
-  IF Index < 0 Or Index >= Values.Count THEN
+  If Index < 0 Or Index >= Values.Count Then
     Error.Raise("Bad index")
-    RETURN ""
-  END IF
+    Return ""
+  End If
 
-  RETURN dTypes[Index]
+  Return dTypes[Index]
 
-END
+End
 
-PUBLIC SUB _New()
+Public Sub _New()
 
-  Values = NEW Variant[]
-  dTypes = NEW Integer[]
+  Values = New Variant[]
+  dTypes = New Integer[]
 
-END
+End
 
-PUBLIC FUNCTION _Get(Index AS Integer) AS Variant
+Public Function _Get(Index As Integer) As Variant
 
-  IF Index < 0 Or Index >= Values.Count THEN
+  If Index < 0 Or Index >= Values.Count Then
     Error.Raise("Bad index")
-    RETURN NULL
-  END IF
+    Return Null
+  End If
 
-  RETURN Values[Index]
+  Return Values[Index]
 
-END
+End
 
-PUBLIC SUB _Put(Data AS Variant, Index AS Integer)
+Public Sub _Put(Data As Variant, Index As Integer)
 
-  DIM pSt AS RpcStruct
-  DIM pAr AS RpcArray
+  Dim pSt As RpcStruct
+  Dim pAr As RpcArray
 
-  IF Index < 0 Or Index >= Values.Count THEN
+  If Index < 0 Or Index >= Values.Count Then
     Error.Raise("Bad index")
-    RETURN
-  END IF
+    Return
+  End If
 
-  SELECT CASE dTypes[Index]
+  Select Case dTypes[Index]
 
-    CASE XmlRpc.xInteger
-      TRY Values[Index] = CInt(Data)
-      IF ERROR THEN
+    Case XmlRpc.xInteger
+      Try Values[Index] = CInt(Data)
+      If Error Then
         Error.Raise("Bad integer value")
-        RETURN
-      END IF
+        Return
+      End If
 
-    CASE XmlRpc.xBoolean
-      TRY Values[Index] = CBool(Data)
-      IF ERROR THEN
+    Case XmlRpc.xBoolean
+      Try Values[Index] = CBool(Data)
+      If Error Then
         Error.Raise("Bad boolean value")
-        RETURN
-      END IF
+        Return
+      End If
 
-    CASE XmlRpc.xDouble
-      TRY Values[Index] = CFloat(Data)
-      IF ERROR THEN
+    Case XmlRpc.xDouble
+      Try Values[Index] = CFloat(Data)
+      If Error Then
         Error.Raise("Bad float value")
-        RETURN
-      END IF
+        Return
+      End If
 
-    CASE XmlRpc.xString
-      TRY Values[Index] = CStr(Data)
-      IF ERROR THEN
+    Case XmlRpc.xString
+      Try Values[Index] = CStr(Data)
+      If Error Then
         Error.Raise("Bad string value")
-        RETURN
-      END IF
+        Return
+      End If
 
-    CASE XmlRpc.xBase64
-      TRY Values[Index] = CStr(Data)
-      IF ERROR THEN
+    Case XmlRpc.xBase64
+      Try Values[Index] = CStr(Data)
+      If Error Then
         Error.Raise("Bad string value")
-        RETURN
-      END IF
+        Return
+      End If
 
-    CASE XmlRpc.xDate
-      TRY Values[Index] = CDate(Data)
-      IF ERROR THEN
+    Case XmlRpc.xDate
+      Try Values[Index] = CDate(Data)
+      If Error Then
         Error.Raise("Bad date value")
-        RETURN
-      END IF
+        Return
+      End If
 
-    CASE XmlRpc.xStruct
-      IF Data = NULL THEN
+    Case XmlRpc.xStruct
+      If Data = Null Then
         Error.Raise("Bad RpcStruct value")
-        RETURN
-      END IF
-      TRY pSt = Data
-      IF ERROR THEN
+        Return
+      End If
+      Try pSt = Data
+      If Error Then
         Error.Raise("Bad RpcStruct value")
-        RETURN
-      END IF
+        Return
+      End If
       Values[Index] = PSt
 
-    CASE XmlRpc.xArray
-      IF Data = NULL THEN
+    Case XmlRpc.xArray
+      If Data = Null Then
         Error.Raise("Bad RpcArray value")
-        RETURN
-      END IF
-      TRY pAr = Data
-      IF ERROR THEN
+        Return
+      End If
+      Try pAr = Data
+      If Error Then
         Error.Raise("Bad RpcArray value")
-        RETURN
-      END IF
+        Return
+      End If
       Values[Index] = pAr
 
-  END SELECT
+  End Select
 
-END
+End
 
 
 

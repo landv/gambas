@@ -1,3 +1,5 @@
+' Gambas class file
+
 '***************************************************************************
 ' 
 ' RpcStruct.class
@@ -25,124 +27,124 @@
 ' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ' 
 '***************************************************************************
-EXPORT
+Export
 
-PRIVATE Names AS String[]
-PRIVATE Values AS Variant[]
-PRIVATE dTypes AS Integer[]
+Private Names As String[]
+Private Values As Variant[]
+Private dTypes As Integer[]
 
-PROPERTY READ Count AS Integer
+Property Read Count As Integer
 
-FUNCTION Count_Read() AS Integer
+Function Count_Read() As Integer
 
-  RETURN Names.Count
+  Return Names.Count
 
-END
+End
 
 
-PUBLIC SUB _New()
+Public Sub _New()
 
-  Names = NEW String[]
-  Values = NEW Variant[]
-  dTypes = NEW Integer[]
+  Names = New String[]
+  Values = New Variant[]
+  dTypes = New Integer[]
 
-END
+End
 
-PUBLIC SUB Add(Name AS String, Value AS Variant, dataType AS Integer)
+Public Sub Add(Name As String, Value As Variant, dataType As Integer)
 
-  IF datatype < 0 Or datatype > 7 THEN
+  If datatype < 0 Or datatype > 7 Then
     Error.Raise("Invalid data type")
-    RETURN
-  END IF
+    Return
+  End If
 
   Names.Add(Name)
   Values.Add(Value)
   dTypes.Add(dataType)
 
-END
+End
 
-PUBLIC SUB Clear()
+Public Sub Clear()
 
   Names.Clear()
   Values.Clear()
   dTypes.Clear()
 
-END
+End
 
-PUBLIC FUNCTION Copy() AS RpcStruct
+Public Function Copy() As RpcStruct
 
-  DIM hRes AS NEW RpcStruct
-  DIM Bucle AS Integer
+  Dim hRes As New RpcStruct
+  Dim Bucle As Integer
 
-  FOR Bucle = 0 TO Names.Count - 1
+  For Bucle = 0 To Names.Count - 1
 
     hRes.Add(Names[Bucle], Values[Bucle], dTypes[Bucle])
 
-  NEXT
+  Next
 
-  RETURN hRes
+  Return hRes
 
-END
+End
 
-PUBLIC FUNCTION Key(Index AS Integer) AS String
+Public Function Key(Index As Integer) As String
 
-  IF Index < 0 Or Index >= Names.Count THEN
+  If Index < 0 Or Index >= Names.Count Then
     Error.Raise("Bad index")
-    RETURN ""
-  END IF
+    Return ""
+  End If
 
-  RETURN Names[Index]
+  Return Names[Index]
 
-END
+End
 
 
-PUBLIC SUB Reverse()
+Public Sub Reverse()
 
   Names.Reverse()
   Values.Reverse()
   dTypes.Reverse()
 
-END
+End
 
 
-PUBLIC SUB Remove(Index AS String)
+Public Sub Remove(Index As String)
 
-  DIM Ind AS Integer
+  Dim Ind As Integer
 
   Ind = Names.Find(Index)
-  IF Ind = - 1 THEN
+  If Ind = - 1 Then
     Error.Raise("Invalid Index")
-    RETURN
-  END IF
+    Return
+  End If
 
   Names.Remove(Ind)
   Values.Remove(Ind)
   dTypes.Remove(Ind)
 
-END
+End
 
-PUBLIC FUNCTION Datatype(Index AS Integer) AS Integer
+Public Function Datatype(Index As Integer) As Integer
 
-  IF Index < 0 Or Index >= Names.Count THEN
+  If Index < 0 Or Index >= Names.Count Then
     Error.Raise("Bad index")
-    RETURN ""
-  END IF
+    Return ""
+  End If
 
-  RETURN dTypes[Index]
+  Return dTypes[Index]
 
-END
+End
 
 
-PUBLIC FUNCTION Value(Index AS Integer) AS Variant
+Public Function Value(Index As Integer) As Variant
 
-  IF Index < 0 Or Index >= Names.Count THEN
+  If Index < 0 Or Index >= Names.Count Then
     Error.Raise("Bad index")
-    RETURN ""
-  END IF
+    Return ""
+  End If
 
-  RETURN Values[Index]
+  Return Values[Index]
 
-END
+End
 
 
 
