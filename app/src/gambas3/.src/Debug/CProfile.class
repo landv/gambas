@@ -9,6 +9,8 @@ Public Time As Long
 Property Read Self As Long
 Public FirstTime As Long
 Public MaxTime As Long
+Public Level As Integer
+Public RecTime As Long
 
 Public Called As New Collection
 Public CalledList As New CProfile[]
@@ -44,7 +46,7 @@ Public Sub _compare(hOther As CProfile) As Integer
       
   End Select
   
-  If Ascending Then iRet = - iRet
+  If Not Ascending Then iRet = - iRet
   Return iRet
   
 End
@@ -62,7 +64,11 @@ Public Sub AddCalled(sFunc As String, iTime As Long)
   Endif
   
   Inc hProf.Count
-  hProf.Time += iTime
+  If Level > 1 Then
+    hProf.RecTime += iTime
+  Else
+    hProf.Time += iTime
+  Endif
   
 End
 
@@ -72,9 +78,9 @@ Private Function Self_Read() As Long
   
   If $iSelf < 0 Then
   
-    $iSelf = {Time}
+    $iSelf = {Time} + RecTime
     For Each hProf In CalledList
-      $iSelf -= hProf.Time
+      $iSelf -= hProf.Time + hProf.RecTime
     Next
   
   Endif

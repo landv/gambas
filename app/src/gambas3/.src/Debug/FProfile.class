@@ -4,6 +4,7 @@ Static Private $aAll As New String[]
 
 Private $sPath As String
 Private $iTime As Long
+Private $iFuncTime As Long
 Private $aFunc As New CProfile[]
 Private $cFunc As New Collection
 
@@ -87,6 +88,20 @@ Fast Private Sub EnterFunction(sWhere As String, iTime As Long) As CProfile
     $aFunc.Add(hProf)
   Endif
   
+  Inc hProf.Level
+  
+  ' If hProf.Level > 1 Then
+  '   sWhere &= "[" & CStr(hProf.Level) & "]"
+  '   hProf = $cFunc[sWhere]
+  '   If Not hProf Then
+  '     hProf = New CProfile
+  '     $cFunc[sWhere] = hProf
+  '     hProf.Name = sWhere
+  '     hProf.Level = -1
+  '     $aFunc.Add(hProf)
+  '   Endif
+  ' Endif
+  
   $aLevel.Add(sWhere)
   $aLevelTime.Add(iTime)
   
@@ -104,16 +119,22 @@ Fast Private Sub ExitFunction(iTime As Long) As CProfile
   
   sFunc = $aLevel[$aLevel.Max]
   hProf = $cFunc[sFunc]
+  Dec hProf.Level
   
   $aLevel.Remove($aLevel.Max)
   iTime -= $aLevelTime[$aLevelTime.Max]
   $aLevelTime.Remove($aLevelTime.Max)
   
-  hProf.Time += iTime
+  If hProf.Level Then 
+    hProf.RecTime += iTime
+    $iFuncTime = iTime
+  Else
+    hProf.Time += iTime
+    $iFuncTime = iTime
+  Endif
   
   If $aLevel.Count Then
     hCaller = $cFunc[$aLevel[$aLevel.Max]]
-    'hCaller.Time -= iTime
     hCaller.AddCalled(sFunc, iTime)
     hProf.AddCaller(hCaller.Name)
     Return hCaller
@@ -123,7 +144,7 @@ Fast Private Sub ExitFunction(iTime As Long) As CProfile
   
 End
 
-Fast Public Sub Init(sPath As String)
+Public Sub Init(sPath As String)
   
   Dim hFile As File
   Dim sLine, sFunc As String
@@ -176,7 +197,7 @@ Fast Public Sub Init(sPath As String)
       
         hCurrent = ExitFunction(iTime)
         iLastLine = aLastLine.Pop()
-        iOldTime = aLastTime.Pop()
+        iOldTime = aLastTime.Pop() + $iFuncTime
         iLine = 0
         
       Endif
@@ -395,10 +416,10 @@ Fast Public Sub Init(sPath As String)
   
   Dec Application.Busy
   
-Catch
+'Catch
   
-  Dec Application.Busy
-  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Where & ": " & Error.Text)
+'  Dec Application.Busy
+'  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Where & ": " & Error.Text)
   
 End
 
@@ -455,6 +476,10 @@ Private Sub GotoFunction(sFunc As String)
   Dim hEditor As FEditor
   Dim aWhere As String[]
   Dim sPath As String
+  Dim iPos As Integer
+  
+  iPos = RInStr(sFunc, "[")
+  If iPos Then sFunc = Left(sFunc, iPos - 1)
   
   aWhere = Split(sFunc, "*.*")
   
@@ -494,6 +519,10 @@ Private Sub LoadCurrentSourceCode() As String
   Dim I As Integer
   
   aWhere = Split($hCurrent.Name, "*.*")
+  If aWhere.Count = 2 Then
+    I = RInStr(aWhere[1], "[")
+    If I Then aWhere[1] = Left$(aWhere[1], I - 1)
+  Endif
   
   sPath = Project.FindPath(aWhere[0])
   If Not Exist(sPath) Then Goto HIDE_SOURCE
@@ -732,6 +761,7 @@ End
 Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
 
   Dim hProf As CProfile
+  Dim iTime As Long
   
   If Not $hCurrent Then Return
 
@@ -745,13 +775,15 @@ Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
       Case 1
         .Text = hProf.Count
       Case 2
+        iTime = hProf.Time '- hProf.RecTime
         If $bPercent Then
-          .Text = Format(hProf.Time / $iTime * 100, "0.00")
+          .Text = Format(iTime / $iTime * 100, "0.00")
         Else
-          .Text = hProf.Time
+          .Text = iTime
         Endif
       Case 3
-        .Text = Format(hProf.Time / hProf.Count, "0.##")
+        iTime = hProf.Time '- hProf.RecTime
+        .Text = Format(iTime / hProf.Count, "0.##")
     End Select
     
   End With
