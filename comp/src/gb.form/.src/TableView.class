@@ -291,6 +291,16 @@ Public Sub Editor_Click()
   
 End
 
+Private Sub RaiseClickOrActivate()
+
+  If Object.CanRaise(Me, "Click") Then
+    Raise Click
+  Else
+    Raise Activate
+  Endif
+
+End
+
 Public Sub Editor_KeyPress()
   
   Dim hEditor As Control = Last
@@ -317,7 +327,7 @@ Public Sub Editor_KeyPress()
       
       While Me.Row > 0
         Dec Me.Row
-        Raise Click
+        RaiseClickOrActivate
         If $hEditor Then
           Stop Event
           Break
@@ -337,7 +347,7 @@ Public Sub Editor_KeyPress()
       
       While Me.Row < (Me.Rows.Count - 1)
         Inc Me.Row
-        Raise Click
+        RaiseClickOrActivate
         If $hEditor Then
           Stop Event
           Break
@@ -358,10 +368,10 @@ Public Sub Editor_KeyPress()
       Do
         If Me.Column > 0 Then 
           Dec Me.Column
-          Raise Click
+          RaiseClickOrActivate
         Else If Me.Row > 0 Then
           Me.MoveTo(Me.Row - 1, Me.Columns.Count - 1) 
-          Raise Click
+          RaiseClickOrActivate
         Else
           Break
         Endif
@@ -385,10 +395,10 @@ Public Sub Editor_KeyPress()
       Do
         If Me.Column < (Me.Columns.Count - 1) Then 
           Inc Me.Column
-          Raise Click
+          RaiseClickOrActivate
         Else If Me.Row < (Me.Rows.Count - 1) Then
           Me.MoveTo(Me.Row + 1, 0)
-          Raise Click
+          RaiseClickOrActivate
         Else
           Break
         Endif
@@ -419,10 +429,10 @@ Public Sub Editor_KeyPress()
       Do
         If Me.Column < (Me.Columns.Count - 1) Then 
           Inc Me.Column
-          Raise Click
+          RaiseClickOrActivate
         Else If Me.Row < (Me.Rows.Count - 1) Then
           Me.MoveTo(Me.Row + 1, 0)
-          Raise Click
+          RaiseClickOrActivate
         Else 
           Raise Insert
           Stop Event
