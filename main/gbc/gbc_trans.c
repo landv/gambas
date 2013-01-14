@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbc_trans.c
+	gbc_trans.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -48,9 +48,9 @@ bool TRANS_in_try = FALSE;
 
 void TRANS_reset(void)
 {
-  JOB->line = JOB->first_line;
-  JOB->current = JOB->pattern;
-  JOB->end = &(JOB->pattern[JOB->pattern_count]);
+	JOB->line = JOB->first_line;
+	JOB->current = JOB->pattern;
+	JOB->end = &(JOB->pattern[JOB->pattern_count]);
 }
 
 
@@ -160,43 +160,43 @@ static bool read_integer(char *number, int base, bool minus, int64_t *result)
 static bool read_float(char *number, double *result)
 {
 	unsigned char c;
-  double nint;
-  double nfrac, n;
-  int nexp;
-  bool nexp_minus;
+	double nint;
+	double nfrac, n;
+	int nexp;
+	bool nexp_minus;
 
-  nint = 0.0;
-  nfrac = 0.0;
-  nexp = 0;
-  nexp_minus = FALSE;
+	nint = 0.0;
+	nfrac = 0.0;
+	nexp = 0;
+	nexp_minus = FALSE;
 
 	c = *number++;
 	
-  /* Integer part */
+	/* Integer part */
 
-  for(;;)
-  {
-    if (c == '.')
-    {
-      c = *number++;
-      break;
-    }
+	for(;;)
+	{
+		if (c == '.')
+		{
+			c = *number++;
+			break;
+		}
 
-    if (!c || !isdigit(c))
-      return TRUE;
+		if (!c || !isdigit(c))
+			return TRUE;
 
-    nint = nint * 10 + (c - '0');
+		nint = nint * 10 + (c - '0');
 
-    c = *number++;
+		c = *number++;
 
-    if (c == 'e' || c == 'E')
-      break;
+		if (c == 'e' || c == 'E')
+			break;
 
-    if (!c || isspace(c))
-      goto __END;
-  }
+		if (!c || isspace(c))
+			goto __END;
+	}
 
-  /* Decimal part */
+	/* Decimal part */
 
 	n = 0.1;
 	for(;;)
@@ -210,56 +210,56 @@ static bool read_float(char *number, double *result)
 		c = *number++;
 	}
 
-  /* Exponent */
+	/* Exponent */
 
-  if (c == 'e' || c == 'E')
-  {
-    c = *number++;
+	if (c == 'e' || c == 'E')
+	{
+		c = *number++;
 
-    if (c == '+' || c == '-')
-    {
-      if (c == '-')
-        nexp_minus = TRUE;
+		if (c == '+' || c == '-')
+		{
+			if (c == '-')
+				nexp_minus = TRUE;
 
-      c = *number++;
-    }
+			c = *number++;
+		}
 
-    if (!c || !isdigit(c))
-      return TRUE;
+		if (!c || !isdigit(c))
+			return TRUE;
 
-    for(;;)
-    {
-      nexp = nexp * 10 + (c - '0');
-      if (nexp > DBL_MAX_10_EXP)
-        return TRUE;
+		for(;;)
+		{
+			nexp = nexp * 10 + (c - '0');
+			if (nexp > DBL_MAX_10_EXP)
+				return TRUE;
 
-      c = *number++;
-      if (!c || !isdigit(c))
-        break;
-    }
-  }
+			c = *number++;
+			if (!c || !isdigit(c))
+				break;
+		}
+	}
 
-  if (c)
-    return TRUE;
+	if (c)
+		return TRUE;
 
 __END:
 	
-  *result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
+	*result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
 
-  return FALSE;
+	return FALSE;
 }
 
 bool TRANS_get_number(int index, TRANS_NUMBER *result)
 {
 	char buffer[68];
 	SYMBOL *sym;
-  char *number;
-  unsigned char c;
-  int64_t val = 0;
-  double dval = 0.0;
-  int type;
-  int base = 10;
-  bool minus = FALSE;
+	char *number;
+	unsigned char c;
+	int64_t val = 0;
+	double dval = 0.0;
+	int type;
+	int base = 10;
+	bool minus = FALSE;
 	bool complex = FALSE;
 
 	sym = TABLE_get_symbol(JOB->class->table, index);
@@ -269,13 +269,13 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 	buffer[sym->len] = 0;
 	number = buffer;
 	
-  c = *number++;
+	c = *number++;
 
-  if (c == '+' || c == '-')
-  {
-    minus = (c == '-');
-    c = *number++;
-  }
+	if (c == '+' || c == '-')
+	{
+		minus = (c == '-');
+		c = *number++;
+	}
 
 	if (c == '&')
 	{
@@ -300,13 +300,13 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 		c = *number++;
 	}
 
-  if (!c)
-    return TRUE;
+	if (!c)
+		return TRUE;
 
-  if (c == '-' || c == '+')
-    return TRUE;
+	if (c == '-' || c == '+')
+		return TRUE;
 
-  errno = 0;
+	errno = 0;
 	number--;
 
 	if (base == 10 && tolower(buffer[sym->len - 1]) == 'i')
@@ -326,100 +326,102 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 		}
 		else
 		{
-      type = T_LONG;
-      goto __END;
+			type = T_LONG;
+			goto __END;
 		}
 	}
 
-  if (base == 10)
-  {
-    if (!read_float(number, &dval))
-    {
+	if (base == 10)
+	{
+		if (!read_float(number, &dval))
+		{
 			if (minus) dval = (-dval);
-      type = T_FLOAT;
-      goto __END;
-    }
-  }
+			type = T_FLOAT;
+			goto __END;
+		}
+	}
 
-  return TRUE;
+	return TRUE;
 
 __END:
 
-  result->type = type;
+	result->type = type;
 	result->complex = complex;
 
-  if (type == T_INTEGER)
-    result->lval = result->ival = val;
-  else if (type == T_LONG)
-    result->lval = val;
-  else
-    result->dval = dval;
+	if (type == T_INTEGER)
+		result->lval = result->ival = val;
+	else if (type == T_LONG)
+		result->lval = val;
+	else
+		result->dval = dval;
 
-  return FALSE;
+	return FALSE;
 }
 
 
 static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result)
 {
-  TRANS_NUMBER tnum;
-  int i;
+	TRANS_NUMBER tnum;
+	int i;
 
-  if (!(mode & TT_CAN_EMBED))
-  {
-    if (PATTERN_is(*look, RS_LSQR))
-      THROW("Embedded arrays are forbidden here");
-    return look;
-  }
+	if (!(mode & TT_CAN_EMBED))
+	{
+		if (PATTERN_is(*look, RS_LSQR))
+			THROW("Embedded arrays are forbidden here");
+		return look;
+	}
 
-  if (!PATTERN_is(*look, RS_LSQR))
-    return look;
+	if (!PATTERN_is(*look, RS_LSQR))
+		return look;
 
-  look++;
+	look++;
 
-  if (mode && TT_CAN_ARRAY)
-  {
-    for (i = 0;; i++)
-    {
-      if (i >= MAX_ARRAY_DIM)
-        THROW("Too many dimensions");
+	if (mode && TT_CAN_ARRAY)
+	{
+		for (i = 0;; i++)
+		{
+			if (i >= MAX_ARRAY_DIM)
+				THROW("Too many dimensions");
 
 			if (!PATTERN_is_number(*look))
-        THROW(E_SYNTAX);
-      if (TRANS_get_number(PATTERN_index(*look), &tnum))
-        THROW(E_SYNTAX);
-      if (tnum.type != T_INTEGER)
-        THROW(E_SYNTAX);
-      if (tnum.ival < 1 || tnum.ival > (2 << 22)) /* 4 Mo, ca devrait suffire... ;-) */
-        THROW("Bad subscript range");
+				THROW(E_SYNTAX);
+			if (TRANS_get_number(PATTERN_index(*look), &tnum))
+				THROW(E_SYNTAX);
+			if (tnum.type != T_INTEGER)
+				THROW(E_SYNTAX);
+			if (tnum.ival < 1 || tnum.ival > (2 << 22)) /* 4 Mo, ca devrait suffire... ;-) */
+				THROW("Bad subscript range");
 
-      result->array.dim[i] = tnum.ival;
-      result->array.ndim++;
-      look++;
+			result->array.dim[i] = tnum.ival;
+			result->array.ndim++;
+			look++;
 
-      if (PATTERN_is(*look, RS_RSQR))
-        break;
+			if (PATTERN_is(*look, RS_RSQR))
+				break;
 
-      if (!PATTERN_is(*look, RS_COMMA))
-        THROW(E_MISSING, "','");
-      look++;
-    }
-  }
+			if (!PATTERN_is(*look, RS_COMMA))
+				THROW(E_MISSING, "','");
+			look++;
+		}
+	}
 
-  if (!PATTERN_is(*look, RS_RSQR))
-    THROW(E_MISSING, "']'");
+	if (!PATTERN_is(*look, RS_RSQR))
+		THROW(E_MISSING, "']'");
 
-  look++;
-  return look;
+	result->is_embedded = TRUE;
+	
+	look++;
+	return look;
 }
 
 
 static int TRANS_get_class(PATTERN pattern, bool array)
 {
-  int index = PATTERN_index(pattern);
-  int index_array;
+	int index = PATTERN_index(pattern);
+	int index_array;
 
-  if (!CLASS_exist_class(JOB->class, index))
-  {
+	if (!CLASS_exist_class(JOB->class, index))
+	{
 		if (array)
 		{
 			// Maybe a compound class?
@@ -448,10 +450,10 @@ static int TRANS_get_class(PATTERN pattern, bool array)
 			}
 		}
 		
-    THROW("Unknown identifier: &1", TABLE_get_symbol_name(JOB->class->table, index));
+		THROW("Unknown identifier: &1", TABLE_get_symbol_name(JOB->class->table, index));
 	}
 
-  return CLASS_add_class(JOB->class, index);
+	return CLASS_add_class(JOB->class, index);
 }
 
 static bool check_structure(int *cindex)
@@ -495,43 +497,44 @@ __ERROR:
 
 bool TRANS_type(int mode, TRANS_DECL *result)
 {
-  PATTERN *look = JOB->current;
-  short id;
-  int value;
-  int flag = 0;
+	PATTERN *look = JOB->current;
+	short id;
+	int value;
+	int flag = 0;
 	bool is_array;
 
-  /* Do not fill the structure with zeros */
+	/* Do not fill the structure with zeros */
 
-  TYPE_clear(&result->type);
-  result->is_new = FALSE;
-  result->init = NULL;
-  result->array.ndim = 0;
+	TYPE_clear(&result->type);
+	result->is_new = FALSE;
+	result->is_embedded = FALSE;
+	result->init = NULL;
+	result->array.ndim = 0;
 
-  look = trans_embedded_array(look, mode, result);
+	look = trans_embedded_array(look, mode, result);
 
-  if (!PATTERN_is(*look, RS_AS))
-  {
-    if (mode & TT_DO_NOT_CHECK_AS)
-      return FALSE;
-    else
-      THROW(E_MISSING, "AS");
-  }
+	if (!PATTERN_is(*look, RS_AS))
+	{
+		if (mode & TT_DO_NOT_CHECK_AS)
+			return FALSE;
+		else
+			THROW(E_MISSING, "AS");
+	}
 
-  look++;
+	look++;
 	
-  if (mode & TT_CAN_NEW)
-  {
-    if (PATTERN_is(*look, RS_NEW))
-    {
-      if (TYPE_get_id(result->type) == T_ARRAY)
-        THROW("Cannot mix NEW and embedded array");
+	if (mode & TT_CAN_NEW)
+	{
+		if (PATTERN_is(*look, RS_NEW))
+		{
+			if (result->is_embedded) //TYPE_get_id(result->type) == T_ARRAY)
+				THROW("Cannot mix NEW and embedded array");
 
-      result->is_new = TRUE;
-      look++;
-      result->init = look;
-    }
-  }
+			result->is_new = TRUE;
+			look++;
+			result->init = look;
+		}
+	}
 
 	if ((mode & TT_CAN_EMBED) && PATTERN_is(*look, RS_STRUCT))
 	{
@@ -601,81 +604,81 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 			look++;
 		}
 	}
-  
-  if (id == T_VOID)
-    return FALSE;
+	
+	if (id == T_VOID)
+		return FALSE;
 
-  /*
-  if (result->is_array && result->array.ndim == 0)
-    result->is_array = FALSE;
-  */
+	/*
+	if (result->is_array && result->array.ndim == 0)
+		result->is_array = FALSE;
+	*/
 
-  if (result->array.ndim > 0)
-  {
-    result->array.type = TYPE_make(id, value, flag);
-    result->type = TYPE_make(T_ARRAY, CLASS_add_array(JOB->class, &result->array), 0);
-  }
-  else if (id == T_STRUCT)
+	if (result->array.ndim > 0)
 	{
-    result->type = TYPE_make(id, value, flag);
+		result->array.type = TYPE_make(id, value, flag);
+		result->type = TYPE_make(T_ARRAY, CLASS_add_array(JOB->class, &result->array), 0);
+	}
+	else if (id == T_STRUCT)
+	{
+		result->type = TYPE_make(id, value, flag);
 	}
 	else
-  {
-    result->type = TYPE_make(id, value, flag);
+	{
+		result->type = TYPE_make(id, value, flag);
 
-    if ((mode & TT_CAN_NEW) && !result->is_new && PATTERN_is(*look, RS_EQUAL))
-    {
-      look++;
-      result->init = look;
-      while (!PATTERN_is_newline(*look))
-        look++;
-    }
-  }
+		if ((mode & TT_CAN_NEW) && !result->is_new && PATTERN_is(*look, RS_EQUAL))
+		{
+			look++;
+			result->init = look;
+			while (!PATTERN_is_newline(*look))
+				look++;
+		}
+	}
 
-  JOB->current = look;
-  return TRUE;
+	JOB->current = look;
+	return TRUE;
 }
 
 bool TRANS_check_declaration(void)
 {
-  PATTERN *look = JOB->current;
+	PATTERN *look = JOB->current;
 
-  if (!PATTERN_is_identifier(*look))
-    return FALSE;
-  look++;
+	if (!PATTERN_is_identifier(*look))
+		return FALSE;
+	look++;
 
-  if (PATTERN_is(*look, RS_LSQR))
-  {
-    for(;;)
-    {
-      look++;
-      if (PATTERN_is(*look, RS_RSQR))
-        break;
-      if (PATTERN_is_newline(*look))
-        return FALSE;
-    }
-    look++;
-  }
+	if (PATTERN_is(*look, RS_LSQR))
+	{
+		for(;;)
+		{
+			look++;
+			if (PATTERN_is(*look, RS_RSQR))
+				break;
+			if (PATTERN_is_newline(*look))
+				return FALSE;
+		}
+		look++;
+	}
 
-  if (!PATTERN_is(*look, RS_AS))
-    return FALSE;
+	if (!PATTERN_is(*look, RS_AS))
+		return FALSE;
 
-  return TRUE;
+	return TRUE;
 }
 
 
 
 PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 {
-  int index;
-  TRANS_NUMBER number;
-  int type;
-  PATTERN value;
+	int index;
+	TRANS_NUMBER number;
+	int type;
+	PATTERN value;
 
-  type = TYPE_get_id(decl->type);
+	type = TYPE_get_id(decl->type);
 
 	value = *current++;
-  index = PATTERN_index(value);
+	index = PATTERN_index(value);
 	
 	if (type == T_STRING)
 	{
@@ -772,51 +775,51 @@ PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 				THROW("Bad constant type");
 		}
 	}
-  
-  return current;
+	
+	return current;
 }
 
 
 
 void TRANS_want(int reserved, char *msg)
 {
-  if (!PATTERN_is(*JOB->current, reserved))
-    THROW("Syntax error. &1 expected", msg ? msg : COMP_res_info[reserved].name);
-  JOB->current++;
+	if (!PATTERN_is(*JOB->current, reserved))
+		THROW("Syntax error. &1 expected", msg ? msg : COMP_res_info[reserved].name);
+	JOB->current++;
 }
 
 void TRANS_want_newline()
 {
-  if (!TRANS_newline())
-    THROW_UNEXPECTED(JOB->current);
+	if (!TRANS_newline())
+		THROW_UNEXPECTED(JOB->current);
 }
 
 
 void TRANS_ignore(int reserved)
 {
-  if (PATTERN_is(*JOB->current, reserved))
-    JOB->current++;
+	if (PATTERN_is(*JOB->current, reserved))
+		JOB->current++;
 }
 
 
 bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 {
-  if (PATTERN_is_newline(*look))
-    return TRUE;
+	if (PATTERN_is_newline(*look))
+		return TRUE;
 
-  if (is_proc)
-    return PATTERN_is(*look, RS_PROCEDURE) || PATTERN_is(*look, RS_SUB);
-  else
-    return PATTERN_is(*look, RS_FUNCTION);
+	if (is_proc)
+		return PATTERN_is(*look, RS_PROCEDURE) || PATTERN_is(*look, RS_SUB);
+	else
+		return PATTERN_is(*look, RS_FUNCTION);
 }
 
 char *TRANS_get_num_desc(int num)
 {
-  static const char *num_desc[3] = { "first", "second", "third" };
-  static char desc[6];
+	static const char *num_desc[3] = { "first", "second", "third" };
+	static char desc[6];
 
-  if (num < 1)
-    return NULL;
+	if (num < 1)
+		return NULL;
 
 	if (ERROR_translate)
 	{
@@ -830,7 +833,7 @@ char *TRANS_get_num_desc(int num)
 		snprintf(desc, sizeof(desc), "%dth", num);
 	}
 	
-  return desc;
+	return desc;
 }
 
 

@@ -65,6 +65,7 @@ typedef
 		int64_t lvalue;           /* The value of a LONG constant */
 		unsigned is_new : 1;      /* if something must be instanciated */
 		unsigned is_integer : 1;  /* if the constant is an integer */
+		unsigned is_embedded : 1; /* if it is an embedded array */
 		}
 	PACKED
 	TRANS_DECL;
