@@ -111,7 +111,7 @@ Private Sub SetBoxes()
     tmrLoad.Trigger
   Endif
   'tmrLoad.Trigger
-
+  
 End
 
 Private Function PixelBox_Read() As Rect
@@ -150,7 +150,7 @@ Private Sub Center_Write(Value As MapPoint)
   'Print Value.Lat, Value.Lon
   $mpCenter = Value
   SetBoxes
-
+  
 End
 
 Public Sub tmrLoad_Timer()
@@ -185,17 +185,18 @@ Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collectio
   
 End
 
-' Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
-'   
-'   Dim hLayer As New _MapShape(Shape)
-'   
-'   hLayer.Name = Name
-'   
-'   $aLayers.Add(hLayer)
-'   $sLayers.Add(Name)
-'   Object.Attach(hLayer, Me, "Layer")
-'   
-'End7
+Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
+  
+  Dim hLayer As New _MapShape(Shape)
+  
+  hLayer.Name = Name
+  
+  $aLayers.Add(hLayer)
+  $aLayerNames.Add(Name)
+  Object.Attach(hLayer, Me, "Layer")
+  Return hLayer
+
+End
 
 Public Sub _get(Name As String) As _MapLayer
   
@@ -237,7 +238,7 @@ Public Sub Draw()
     Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
     Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
   Endif 
-
+  
 End
 
 Public Sub Layer_Refresh()
@@ -256,7 +257,7 @@ Public Sub Refresh()
   
   SetBoxes
   tmrLoad.Trigger
-
+  
 End
 
 Private Function Preload_Read() As Boolean
@@ -265,6 +266,4 @@ End
 
 Private Sub Preload_Write(Value As Boolean)
   
-  
-
 End

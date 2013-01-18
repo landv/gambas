@@ -94,6 +94,10 @@ AddTile
 m
 _MapTile
 (Name)s(Pattern)s[(Args)Collection;(CacheName)s]
+AddShape
+m
+_MapShape
+(Name)s[(Shape)Shapes;]
 _get
 m
 _MapLayer
@@ -165,7 +169,7 @@ C
 _Properties
 C
 s
-*,Border{Border.*}
+*,Border{Border.*},AllowEffect=true
 _Group
 C
 s
@@ -181,6 +185,10 @@ b
 Border
 p
 i
+
+AllowEffect
+p
+b
 
 :Click
 :
@@ -202,11 +210,11 @@ View_Draw
 m
 
 
-View_MouseWheel
+Refresh
 m
 
 
-Refresh
+View_MouseWheel
 m
 
 

@@ -31,6 +31,10 @@ Public Sub _new()
   'hmap.Padding = 256
   hmap.Resize(200, 200)
   
+  MapView1.Map.AddShape("NewShape")
+  
+  
+  
   'Manage the list of layers
   For Each o In MapView1.Map
     $aNames.Add(o.Name)
@@ -48,12 +52,19 @@ End
 
 Public Sub MapView1_MouseDown()
   
+ 
   If Mouse.Control Then 
     
     hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
     $bLens = True
     hmap.Center = Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
     MapView1.Lock = True
+    MapView1.Refresh
+  Endif
+
+  If Mouse.Shift Then
+    
+    MapView1.Map["NewShape"].Data.AddPoint(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
     MapView1.Refresh
   Endif
 
@@ -80,6 +91,7 @@ Public Sub MapView1_MouseUp()
     MapView1.Refresh
   Endif
   
+  
 End
 
 Public Sub MapView1_Draw()
@@ -101,7 +113,7 @@ Public Sub MapView1_Draw()
   Endif
 ' ListBox1.Clear
 ' ListBox1.List = MapView1.Map["GoogleMap"].$aStack
-Me.Text = MapView1.Map["GoogleMap"].CountActiveClients()
+'Me.Text = MapView1.Map["GoogleMap"].CountActiveClients()
 End
 
 Public Sub GridView1_Data(Row As Integer, Column As Integer)

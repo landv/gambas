@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border{Border.*}"
+Public Const _Properties As String = "*,Border{Border.*},AllowEffect=true"
 Public Const _Group As String = "View"
 
 Private $hCenter As MapPoint
@@ -31,6 +31,8 @@ Private $iSpeedX As Integer
 Private $iSpeedY As Integer
 Private $fInertia As Float = 0.9
 Private $bShowInertia As Boolean
+Property AllowEffect As Boolean
+Private $bAllowEffect As Boolean = True
 Private $tX As Integer
 Private $tY As Integer
 Event Click
@@ -67,30 +69,30 @@ End
 
 Public Sub View_Draw()
   
-
-  
   If Not $bZoomEffect Then 
-
+    
     If $iZoomWay <> 0 Then 
-    Paint.DrawImage($hZoomBuffer, 0, 0)
+      Paint.DrawImage($hZoomBuffer, 0, 0)
     Endif
     $hMap.Draw
     Raise Draw
   Else
     If $iZoomWay = 1 Then
-
+      
       Paint.DrawImage($hZoomBuffer, ($ZX - $ZX * $fZoomEffect), ($ZY - $ZY * $fZoomEffect), $hZoomBuffer.Width * $fZoomEffect, $hZoomBuffer.Height * $fZoomEffect)
       $fZoomEffect += 0.1
       If $fZoomEffect < 2 Then 
-
+        
       Else
         $bZoomEffect = False
+        $fZoomEffect -= 0.1
         Draw.Begin($hZoomBuffer)
         Paint.DrawImage($hZoomBuffer, ($ZX - $ZX * $fZoomEffect), ($ZY - $ZY * $fZoomEffect), $hZoomBuffer.Width * $fZoomEffect, $hZoomBuffer.Height * $fZoomEffect)
         Draw.End
         $fZoomEffect = 1
-        $tmrZoom.Stop
-        $tmrZoom.Trigger
+        $tmrZoom.stop
+        Refresh
+        '$tmrZoom.Trigger
       Endif
     Else
       Paint.DrawImage($hZoomBuffer, (Paint.Width - $hZoomBuffer.Width * $fZoomEffect) / 2, (Paint.Height - $hZoomBuffer.Height * $fZoomEffect) / 2, $hZoomBuffer.Width * $fZoomEffect, $hZoomBuffer.Height * $fZoomEffect)
@@ -99,39 +101,43 @@ Public Sub View_Draw()
         '$tmrZoom.Trigger
       Else
         $bZoomEffect = False
+        $fZoomEffect += 0.04
         Draw.Begin($hZoomBuffer)
+        Draw.FillRect(0, 0, Paint.Width, Paint.Height, $hView.Background)
         Paint.DrawImage($hZoomBuffer, (Paint.Width - $hZoomBuffer.Width * $fZoomEffect) / 2, (Paint.Height - $hZoomBuffer.Height * $fZoomEffect) / 2, $hZoomBuffer.Width * $fZoomEffect, $hZoomBuffer.Height * $fZoomEffect)
         Draw.End
         $fZoomEffect = 1
         $tmrZoom.Stop
-        $tmrZoom.Trigger
+        Refresh
+        '$tmrZoom.Trigger
       Endif
     Endif
   Endif
   
 End
 
-
 Public Sub View_MouseWheel()
   
   Dim hpix As Point
+
   $ZX = Mouse.X 
   $ZY = Mouse.Y 
   Draw.Begin($hZoomBuffer)
-    Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
-    $hmap.Draw
+  Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
+  $hmap.Draw
   Draw.End
   
-  $iZoomWay = Mouse.Delta
   
   $hMap.Zoom += Mouse.Delta
   
   hPix = New Point($hMap.PixelBox.X + Mouse.X, $hMap.PixelBox.Y + Mouse.Y)
   
   If Mouse.Delta > 0 Then $hMap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom) 'Mercator.MetersToMapPointFP(Mercator.PixelsToMetersP(hpix, $hMap.Zoom))
-  
-  If $hmap.Zoom > 1 And If $hmap.Zoom <= 18 Then $bZoomEffect = True
-  $tmrZoom.Start
+  If $bAllowEffect Then 
+    $iZoomWay = Mouse.Delta
+    If $hmap.Zoom >= 1 And If $hmap.Zoom <= 18 Then $bZoomEffect = True
+    $tmrZoom.Start
+  Endif
   $hView.Refresh
   
 End
@@ -157,8 +163,9 @@ End
 Public Sub View_MouseUp()
   
   Last.Mouse = Mouse.Default
-   If Abs($iSpeedx) > 4 Or If Abs($iSpeedY) > 4 Then $tmrOnMove.Start
-
+  If $bAllowEffect Then
+    If Abs($iSpeedx) > 4 Or If Abs($iSpeedY) > 4 Then $tmrOnMove.Start
+  Endif
   Raise MouseUp
   
 End
@@ -173,7 +180,7 @@ Public Sub View_MouseMove()
     
     $iSpeedX = $tx - Mouse.X
     $iSpeedY = $ty - Mouse.y
-
+    
     hPix.X += $ix - Mouse.X
     hPix.Y += $iY - Mouse.Y
     $hmap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom)
@@ -182,7 +189,7 @@ Public Sub View_MouseMove()
   Endif
   $tx = Mouse.X
   $ty = Mouse.y
-
+  
   Raise MouseMove
   
 End
@@ -235,9 +242,10 @@ Public Sub tmrZoom_Timer()
 End
 
 Public Sub tmrOnMove_Timer()
+
   Dim hpix As Point
   'Print "triger"
-hPix = Geo.MapPointToPixel($hmap.Center, $hmap.Zoom)
+  hPix = Geo.MapPointToPixel($hmap.Center, $hmap.Zoom)
   $iSpeedX *= $fInertia
   $iSpeedY *= $fInertia
   
@@ -245,10 +253,22 @@ hPix = Geo.MapPointToPixel($hmap.Center, $hmap.Zoom)
     $tmrOnMove.stop
     $bShowInertia = False
   Endif
-
+  
   hPix.X += $iSpeedX
-    hPix.Y += $iSpeedY
-    $hmap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom)
+  hPix.Y += $iSpeedY
+  $hmap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom)
   $hView.Refresh
+  
+End
 
+Private Function AllowEffect_Read() As Boolean
+  
+  Return $bAllowEffect 
+  
+End
+
+Private Sub AllowEffect_Write(Value As Boolean)
+  
+  $bAllowEffect = Value
+  If Not $bAllowEffect Then $iZoomWay = 0
 End

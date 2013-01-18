@@ -5,6 +5,8 @@ Private $bVisible As Boolean = True
 Property Visible As Boolean
 Public Copyright As String 
 Public $aStack As New String[]
+Property Data As Shapes
+
 Event Refresh
 
 Public Sub Draw() '(Optional bRefresh As Boolean = True)
@@ -49,3 +51,13 @@ Public Function CountActiveClients() As Integer
 End
 
 
+
+Private Function Data_Read() As Shapes
+
+
+End
+
+Private Sub Data_Write(Value As Shapes)
+
+
+End
