@@ -46,18 +46,18 @@ Private Sub GetChildren(Optional bHidden As Boolean) As Control[]
 End
 
 
-Private Sub GetTotalWeight() As Integer
-
-  Dim hChild As Control
-  Dim iWeight As Integer
-  
-  For Each hChild In GetChildren()
-    Try iWeight += $cWeight[Object.Address(hChild)]
-  Next
-  
-  Return iWeight
-  
-End
+' Private Sub GetTotalWeight() As Integer
+' 
+'   Dim hChild As Control
+'   Dim iWeight As Integer
+'   
+'   For Each hChild In GetChildren()
+'     Try iWeight += $cWeight[Object.Address(hChild)]
+'   Next
+'   
+'   Return iWeight
+'   
+' End
 
 Public Sub Container_Arrange()
   

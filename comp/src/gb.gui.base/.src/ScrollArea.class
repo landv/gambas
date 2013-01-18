@@ -558,8 +558,8 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   XX = X + WW
   YY = Y + HH
 
-  PW = $hDrawingArea.W '- F * 2
-  PH = $hDrawingArea.H '- F * 2
+  PW = Me.ClientW '$hDrawingArea.W '- F * 2
+  PH = Me.ClientH '$hDrawingArea.H '- F * 2
 
   CX = - Me.ScrollX 
   CY = - Me.ScrollY
@@ -704,7 +704,7 @@ Private Function ClientWidth_Read() As Integer
   Dim W As Integer
 
   W = Me.W
-  If $bVBarVisible Then W -= $hVBar.W
+  If $bVBarVisible Then W -= $hVBar.W + Style.ScrollbarSpacing
   Return Max(0, W)
 
 End
@@ -714,7 +714,7 @@ Private Function ClientHeight_Read() As Integer
   Dim H As Integer
 
   H = Me.H
-  If $bHBarVisible Then H -= $hHBar.H
+  If $bHBarVisible Then H -= $hHBar.H + Style.ScrollbarSpacing
   Return Max(0, H)
 
 End

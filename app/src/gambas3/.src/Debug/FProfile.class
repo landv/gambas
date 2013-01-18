@@ -406,7 +406,7 @@ Public Sub Init(sPath As String)
   
   Object.Lock(gvwProfile)
   gvwProfile.Columns.Sort = 2
-  gvwProfile.Columns.Ascending = False
+  gvwProfile.Columns.Ascending = True
   Object.Unlock(gvwProfile)
   gvwProfile_Sort
   

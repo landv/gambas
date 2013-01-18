@@ -507,6 +507,7 @@ Public Sub TableView_Click()
   
   If $bNoActivate Then Return
   If $hCtrl.Rows.Count = 0 Then Return
+  If $hCtrl.Row < 0 Then Return
   'If Not $bCreate Then Return  
 
   TableView_Change
@@ -913,7 +914,7 @@ Public Sub Create()
   CreateNewRecord()
   SetCreate(False)
   $hCtrl.MoveTo($hCtrl.Rows.Count - 1, 0)
-  $hCtrl.Current.EnsureVisible
+  Try $hCtrl.Current.EnsureVisible
 
 _EDIT:
 
