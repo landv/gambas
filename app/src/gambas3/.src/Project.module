@@ -4214,6 +4214,7 @@ Public Sub MakeSourcePackageTo(sPath As String)
   Dim sCmd As String
   Dim sOpt As String
   Dim sIgnore As String
+  Dim sTemp As String
 
   Inc Application.Busy
 
@@ -4227,8 +4228,10 @@ Public Sub MakeSourcePackageTo(sPath As String)
     sOpt = "J"
   Endif
 
+  sTemp = File.SetExt(Temp$(), File.Ext(sPath))
+
   sCmd = "cd " & Shell$(File.Dir(Project.Dir)) & ";"
-  sCmd &= " tar cfvh" & sOpt & " " & Shell$(sPath)
+  sCmd &= " tar cfvh" & sOpt & " " & Shell$(sTemp)
   sCmd &= " --exclude=" & Shell$(".gambas/*")
   sCmd &= " --exclude=" & Shell$("*~")
   sCmd &= " --exclude=" & Shell$("core.*")
@@ -4243,7 +4246,16 @@ Public Sub MakeSourcePackageTo(sPath As String)
 
   Shell sCmd Wait
 
+  Kill sPath
+  Copy sTemp To sPath
+  Try Kill sTemp
+
   Dec Application.Busy
+  
+Catch
+  
+  Dec Application.Busy
+  Message.Error(("Unable to create source archive.") & "\n\n" & Error.Text)
 
 End
 
