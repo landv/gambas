@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_stream.h
+	gbx_stream.h
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -30,140 +30,139 @@
 union STREAM;
 
 typedef
-  struct STREAM_CLASS {
-    int (*open)(union STREAM *stream, const char *path, int mode, void *data);
-    int (*close)(union STREAM *stream);
-    int (*read)(union STREAM *stream, char *buffer, int len);
-    int (*getchar)(union STREAM *stream, char *buffer);
-    int (*write)(union STREAM *stream, char *buffer, int len);
-    int (*seek)(union STREAM *stream, int64_t pos, int whence);
-    int (*tell)(union STREAM *stream, int64_t *pos);
-    int (*flush)(union STREAM *stream);
-    int (*eof)(union STREAM *stream);
-    int (*lof)(union STREAM *stream, int64_t *len);
-    int (*handle)(union STREAM *stream);
-    }
-  STREAM_CLASS;
+	struct STREAM_CLASS {
+		int (*open)(union STREAM *stream, const char *path, int mode, void *data);
+		int (*close)(union STREAM *stream);
+		int (*read)(union STREAM *stream, char *buffer, int len);
+		int (*getchar)(union STREAM *stream, char *buffer);
+		int (*write)(union STREAM *stream, char *buffer, int len);
+		int (*seek)(union STREAM *stream, int64_t pos, int whence);
+		int (*tell)(union STREAM *stream, int64_t *pos);
+		int (*flush)(union STREAM *stream);
+		int (*eof)(union STREAM *stream);
+		int (*lof)(union STREAM *stream, int64_t *len);
+		int (*handle)(union STREAM *stream);
+		}
+	STREAM_CLASS;
 
 typedef
-  struct {
-    STREAM_CLASS *type;
-    short mode;
-    unsigned swap : 1;
-    unsigned eol : 2;
-    unsigned eof : 1;
-    unsigned no_fionread : 1;
-    unsigned no_lseek : 1;
-    unsigned available_now : 1;
+	struct {
+		STREAM_CLASS *type;
+		short mode;
+		unsigned swap : 1;
+		unsigned eol : 2;
+		unsigned eof : 1;
+		unsigned no_fionread : 1;
+		unsigned no_lseek : 1;
+		unsigned available_now : 1;
 		unsigned standard : 1;
 		unsigned blocking : 1;
 		unsigned redirected : 1;
-    #if DEBUG_STREAM
-    unsigned tag : 6;
-    #else
-    unsigned _reserved : 6;
-    #endif
-    short buffer_pos;
-    short buffer_len;
-    char *buffer;
+		#if DEBUG_STREAM
+		unsigned tag : 6;
+		#else
+		unsigned _reserved : 6;
+		#endif
+		short buffer_pos;
+		short buffer_len;
+		char *buffer;
 		union STREAM *redirect;
-    }
-  PACKED
-  STREAM_COMMON;
+		}
+	PACKED
+	STREAM_COMMON;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    int _reserved[6];
-    }
-  PACKED
-  STREAM_RESERVED;
+	struct {
+		STREAM_COMMON common;
+		int _reserved[6];
+		}
+	PACKED
+	STREAM_RESERVED;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    int64_t size;
-    int fd;
+	struct {
+		STREAM_COMMON common;
+		int64_t size;
+		int fd;
 		unsigned watch : 1;
-    }
-  PACKED
-  STREAM_DIRECT;
+		}
+	PACKED
+	STREAM_DIRECT;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    FILE *file;
-    }
-  PACKED
-  STREAM_BUFFER;
+	struct {
+		STREAM_COMMON common;
+		FILE *file;
+		}
+	PACKED
+	STREAM_BUFFER;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    void *addr;
-    intptr_t pos;
-    }
-  PACKED
-  STREAM_MEMORY;
+	struct {
+		STREAM_COMMON common;
+		void *addr;
+		intptr_t pos;
+		}
+	PACKED
+	STREAM_MEMORY;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    ARCHIVE *arch;
-    int size;
-    int start;
-    int pos;
-    }
-  PACKED
-  STREAM_ARCH;
+	struct {
+		STREAM_COMMON common;
+		ARCHIVE *arch;
+		int size;
+		int start;
+		int pos;
+		}
+	PACKED
+	STREAM_ARCH;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    int fdr;
-    int fdw;
-    }
-  PACKED
-  STREAM_PROCESS;
+	struct {
+		STREAM_COMMON common;
+		void *process;
+		}
+	PACKED
+	STREAM_PROCESS;
 
 typedef
-  struct {
-    STREAM_COMMON common;
-    char *buffer;
-    }
-  PACKED
-  STREAM_STRING;
+	struct {
+		STREAM_COMMON common;
+		char *buffer;
+		}
+	PACKED
+	STREAM_STRING;
 
 typedef
-  union STREAM {
-    STREAM_CLASS *type;
-    STREAM_COMMON common;
-    STREAM_RESERVED _reserved;
-    STREAM_DIRECT direct;
-    STREAM_BUFFER buffer;
-    STREAM_DIRECT pipe;
-    STREAM_MEMORY memory;
-    STREAM_ARCH arch;
-    STREAM_PROCESS process;
+	union STREAM {
+		STREAM_CLASS *type;
+		STREAM_COMMON common;
+		STREAM_RESERVED _reserved;
+		STREAM_DIRECT direct;
+		STREAM_BUFFER buffer;
+		STREAM_DIRECT pipe;
+		STREAM_MEMORY memory;
+		STREAM_ARCH arch;
+		STREAM_PROCESS process;
 		STREAM_STRING string;
-    }
-  STREAM;
+		}
+	STREAM;
 
 enum {
-  ST_READ        = (1 << 0),
-  ST_WRITE       = (1 << 1),
-  ST_READ_WRITE  = ST_READ + ST_WRITE,
-  ST_MODE        = 0x3,
-  ST_APPEND      = (1 << 2),
-  ST_CREATE      = (1 << 3),
-  ST_ACCESS      = 0xF,
-  ST_DIRECT      = (1 << 4),
-  ST_LINE        = (1 << 5),
-  ST_WATCH       = (1 << 6),
-  ST_PIPE        = (1 << 7),
+	ST_READ        = (1 << 0),
+	ST_WRITE       = (1 << 1),
+	ST_READ_WRITE  = ST_READ + ST_WRITE,
+	ST_MODE        = 0x3,
+	ST_APPEND      = (1 << 2),
+	ST_CREATE      = (1 << 3),
+	ST_ACCESS      = 0xF,
+	ST_DIRECT      = (1 << 4),
+	ST_LINE        = (1 << 5),
+	ST_WATCH       = (1 << 6),
+	ST_PIPE        = (1 << 7),
 	ST_MEMORY      = (1 << 8),
 	ST_STRING      = (1 << 9)
-  };
+	};
 
 enum {
 	ST_EOL_UNIX = 0,
@@ -189,17 +188,17 @@ EXTERN STREAM_CLASS STREAM_string;
 #define DECLARE_STREAM(stream) \
 STREAM_CLASS stream = \
 { \
-  (void *)stream_open, \
-  (void *)stream_close, \
-  (void *)stream_read, \
-  (void *)stream_getchar, \
-  (void *)stream_write, \
-  (void *)stream_seek, \
-  (void *)stream_tell, \
-  (void *)stream_flush, \
-  (void *)stream_eof, \
-  (void *)stream_lof, \
-  (void *)stream_handle \
+	(void *)stream_open, \
+	(void *)stream_close, \
+	(void *)stream_read, \
+	(void *)stream_getchar, \
+	(void *)stream_write, \
+	(void *)stream_seek, \
+	(void *)stream_tell, \
+	(void *)stream_flush, \
+	(void *)stream_eof, \
+	(void *)stream_lof, \
+	(void *)stream_handle \
 }
 
 #endif

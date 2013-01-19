@@ -40,15 +40,13 @@
 #include "gbx_stream.h"
 
 
-#define FDR (stream->process.fdr)
-#define FDW (stream->process.fdw)
+#define FDR ((CPROCESS *)stream->process.process)->out
+#define FDW ((CPROCESS *)stream->process.process)->in
 
 
 static int stream_open(STREAM *stream, const char *path, int mode, CPROCESS *process)
 {
-  FDR = process->out;
-  FDW = process->in;
-
+	stream->process.process = process;
 	STREAM_blocking(stream, FALSE);
   return FALSE;
 }

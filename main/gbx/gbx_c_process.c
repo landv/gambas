@@ -110,6 +110,9 @@ static void close_fd(int *pfd)
 	
 	if (fd >= 0)
 	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "unwatch: %d\n", fd);
+		#endif
 		GB_Watch(fd, GB_WATCH_NONE, NULL, 0);
 		close(fd);
 		*pfd = -1;
@@ -575,6 +578,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 				process->err = fderr[0];
 			}
 
+			#ifdef DEBUG_ME
+			fprintf(stderr, "watch: out = %d err = %d\n", process->out, process->err);
+			#endif
 			GB_Watch(process->out, GB_WATCH_READ, (void *)callback_write, (intptr_t)process);
 			if (process->err >= 0)
 			{
