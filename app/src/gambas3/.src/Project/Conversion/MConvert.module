@@ -543,6 +543,24 @@ Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String
   
 End
 
+Private Sub CheckPublicProperty(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim iPos As Integer
+  
+  aSym = Highlight.Analyze(sLine, True)
+  
+  If aSym.Count < 5 Then Return
+  
+  If aSym[0] = "PUBLIC" And If aSym[1] = "PROPERTY" Then
+    $sId = "PPRO"
+    iPos = InStr(sLine, "PROPERTY", 1, gb.IgnoreCase)
+    Return Mid$(sLine, iPos)
+  Endif
+  
+Catch
+  
+End
 
 Private Sub ConvertClass(sPath As String)
   
@@ -574,30 +592,72 @@ Private Sub ConvertClass(sPath As String)
         $sId = ""
         
         sNewLine = CheckArrayInstanciation(sLine) 
-        If Not sNewLine Then sNewLine = CheckOpen(sLine)
-        If Not sNewLine Then sNewLine = CheckQuestionMark(sLine)
-        If Not sNewLine Then sNewLine = CheckIsType(sLine)
-        If Not sNewLine Then sNewLine = CheckQuoteShell(sLine)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FNTH", sLine, "Font", "Height", "TextHeight")
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FNTW", sLine, "Font", "Width", "TextWidth")
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Control", "BackColor", "Background", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Control", "ForeColor", "Foreground", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, ".GridViewData", "BackColor", "Background", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, ".GridViewData", "ForeColor", "Foreground", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Draw", "BackColor", "Background", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Draw", "ForeColor", "Foreground", True)
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("DBGV", sLine, "DataBrowser", "GridView", "View")
-        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
-        If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
-        If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLng", "CLong")
-        If Not sNewLine Then sNewLine = CheckReplaceFunction("CFLT", sLine, "CFlt", "CFloat")
-        If Not sNewLine Then sNewLine = CheckUdpSocketBind("BIND", sLine)
-        If Not sNewLine Then sNewLine = CheckSplitterLayout("SLAY", sLine)
+        If sNewLine Then Goto NEW_LINE
         
-        If Not sNewLine Then 
-          $aLine.Add(sIndent & sLine)
-          Break
-        Endif
+        sNewLine = CheckOpen(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckQuestionMark(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckIsType(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckQuoteShell(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("FNTH", sLine, "Font", "Height", "TextHeight")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("FNTW", sLine, "Font", "Width", "TextWidth")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Control", "BackColor", "Background", True)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Control", "ForeColor", "Foreground", True)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("BCOL", sLine, ".GridViewData", "BackColor", "Background", True)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("FCOL", sLine, ".GridViewData", "ForeColor", "Foreground", True)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Draw", "BackColor", "Background", True)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Draw", "ForeColor", "Foreground", True)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("DBGV", sLine, "DataBrowser", "GridView", "View")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceFunction("CLNG", sLine, "CLng", "CLong")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckReplaceFunction("CFLT", sLine, "CFlt", "CFloat")
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckUdpSocketBind("BIND", sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckSplitterLayout("SLAY", sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckPublicProperty(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        $aLine.Add(sIndent & sLine)
+        Break
+
+      NEW_LINE:
 
         $aLine.Add(sIndent & "' [GB2:" & $sId & "] " & sLine)
         '$aLine.Add(sIndent & sNewLine)
