@@ -547,20 +547,81 @@ Private Sub CheckPublicProperty(sLine As String) As String
   
   Dim aSym As String[]
   Dim iPos As Integer
+  Dim bStatic As Boolean
+  Dim bPublic As Boolean
   
   aSym = Highlight.Analyze(sLine, True)
   
   If aSym.Count < 5 Then Return
   
-  If aSym[0] = "PUBLIC" And If aSym[1] = "PROPERTY" Then
-    $sId = "PPRO"
-    iPos = InStr(sLine, "PROPERTY", 1, gb.IgnoreCase)
-    Return Mid$(sLine, iPos)
-  Endif
+  For iPos = 0 To 3
+    If UCase(aSym[iPos]) = "PUBLIC" Then 
+      bPublic = True
+      Continue
+    Endif
+    If UCase(aSym[iPos]) = "STATIC" Then 
+      bStatic = True
+      Continue
+    Endif
+    Break
+  Next
+  
+  If Not bPublic Then Return
+  If UCase(aSym[iPos]) <> "PROPERTY" Then Return
+  
+  $sId = "PPRO"
+  iPos = InStr(sLine, "PROPERTY ", 1, gb.IgnoreCase)
+  sLine = "Property " & Mid$(sLine, iPos + 9)
+  If bStatic Then sLine = "Static " & sLine
+  Return sLine
   
 Catch
   
 End
+
+Private Sub CheckNewKeyword(sLine As String) As String
+
+  Dim aSym As String[]
+  Dim iPos As Integer
+  Dim bRepl As Boolean
+
+  Do
+    
+    aSym = Highlight.Analyze(sLine, True)
+    
+    iPos = aSym.Find("ON", gb.IgnoreCase)
+    If iPos < 0 Then Break
+    
+    iPos = Highlight.Positions[iPos]
+    sLine = Left$(sLine, iPos) & "{On}" & Mid$(sLine, iPos + 3)
+    bRepl = True
+    
+  Loop
+  
+  If bRepl Then 
+    $sId = "KEYW"
+    Return sLine
+  Endif
+
+End
+
+Private Sub CheckEventAs(sLine As String) As String
+  
+  Dim aSym As String[]
+
+  aSym = Highlight.Analyze(sLine)
+  
+  If aSym.Count <= 3 Then Return
+  
+  If aSym[0] == "EVENT" And If aSym[aSym.Max - 1] = "AS" Then
+    $sId = "EVAS"
+    sLine = Left$(sLine, Highlight.Positions[aSym.Max - 1] - 1)
+    Return sLine
+  Endif
+  
+  
+End
+
 
 Private Sub ConvertClass(sPath As String)
   
@@ -652,6 +713,12 @@ Private Sub ConvertClass(sPath As String)
         If sNewLine Then Goto NEW_LINE
         
         sNewLine = CheckPublicProperty(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckNewKeyword(sLine)
+        If sNewLine Then Goto NEW_LINE
+        
+        sNewLine = CheckEventAs(sLine)
         If sNewLine Then Goto NEW_LINE
         
         $aLine.Add(sIndent & sLine)

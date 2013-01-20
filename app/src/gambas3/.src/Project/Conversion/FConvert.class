@@ -41,6 +41,14 @@ Public Sub Stop()
   
 End
 
+Public Sub StopAll()
+  
+  $iLevel = 1
+  Stop()
+  
+End
+
+
 Public Sub Form_Open()
 
   Me.Center

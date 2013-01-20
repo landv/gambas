@@ -674,6 +674,7 @@ _CANCEL:
   $iNoRefresh = 0
 
   If Path Then ReadProject
+  UpdateTitle
 
   Return True
 
@@ -1556,9 +1557,12 @@ Private Sub UpdateTitle()
 
   Dim sTitle As String
 
-  sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
-  If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
-  sTitle &= " - " & Application.Title
+  If Path Then
+    sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
+    If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
+    sTitle &= " - "
+  Endif
+  sTitle &= Application.Title
   If Application.Version Like "*.99.*" Then sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK! :-)")
   FMain.Title = sTitle
 
@@ -5260,7 +5264,7 @@ Private Sub ConvertProject() As Boolean
 
 Catch
 
-  FConvert.Stop
+  FConvert.StopAll
   Application.Busy = 0
   Message.Error("<b>" & Subst(("Unable to convert &1"), File.Name(sPath)) & "</b><p>" & Error.Text & "<br>" & Error.Where)
   Return True
