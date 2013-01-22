@@ -4251,7 +4251,7 @@ Public Sub MakeSourcePackageTo(sPath As String)
   Shell sCmd Wait
   If Not Exist(sTemp) Then Error.Raise(("The 'tar' command has failed."))
 
-  Kill sPath
+  Try Kill sPath
   Copy sTemp To sPath
   Try Kill sTemp
 
