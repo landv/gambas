@@ -9,7 +9,7 @@ Public Sub Run()
   
   Highlight.ShowLimit = False
   
-  If Left$(sText, 6) = "Index:" Then
+  If Left$(sText, 6) = "Index:" Or Left$(sText, 4) = "diff" Then
     iState = Highlight.Keyword
     Highlight.ShowLimit = True
   Else If Left(sText, 3) = "===" Then
