@@ -158,7 +158,7 @@ void CLASS_init_native(void)
 		{
 			class->quick_array = init->array;
 			class->array_type = init->array_type;
-			class->is_array = TRUE;
+			class->is_array = init->array == CQA_ARRAY;
 		}
   }
 	
