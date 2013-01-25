@@ -1,0 +1,200 @@
+' Gambas class file
+
+'' Represent a patch hunk
+Public Struct Hunk
+  Command As String
+  FromFile As String
+  ToFile As String
+  LineInfo As String
+  Active As Boolean
+  Text As String
+End Struct
+
+'' Get the number of hunks
+Property Read Count As Integer
+
+Private $hHunks As Hunk[]
+
+'' Generate a patch for the old source archive to ascend to the current project's state
+Static Public Function GenerateForOld(sOldArchive As String) As String
+
+  Dim sOld As String = Temp$("old-source")
+  Dim sNew As String = File.Name(Temp$("new-source"))
+  ' Dim aIgnore As String[] = Project.GetIgnoreFiles()
+  Dim sIgnore As String
+  Dim sCmd As String
+  Dim sPatch As String
+  Dim aLines As String[]
+  Dim iInd As Integer
+  Dim bInHeader As Boolean
+
+  ' If aIgnore.Count Then
+  '   sIgnore = "-x \"*" & aIgnore.Join("\" -x \"*") & "\""
+  ' Endif
+
+  Shell Subst$("tar -zxPf &1 --xform='s_^[^/]\\+_&2_'", Shell$(sOldArchive), sOld) Wait
+  sCmd = Subst$("cd &1/..; ", Shell$(sOld))
+  sCmd &= Subst$("diff -urNa &1 &2 &3", sIgnore, Shell$(File.Name(sOld)), Shell$(Project.Dir))
+  Shell sCmd To sPatch
+  Shell "rm -r " & Shell$(sOld)
+  ' "sed -i 's/^\(+++.*\|diff.*\) $PROJECT_DIR/\1 $SHOW_DIR/'" would also do it...
+  bInHeader = True
+  ' TODO: May not be the most memory-friendly way
+  aLines = Split(sPatch, "\n")
+  For iInd = 0 To aLines.Count - 1
+    If Left$(aLines[iInd], 4) = "diff" Or If Left$(aLines[iInd], 3) = "---" Then
+      bInHeader = True
+    Else If Left$(aLines[iInd], 3) = "+++" And If bInHeader Then
+      bInHeader = False
+    Else
+      Continue
+    Endif
+    aLines[iInd] = Replace$(aLines[iInd], Project.Dir, File.Name(sNew))
+  Next
+  Return aLines.Join("\n")
+
+End
+
+Public Sub _new(Optional sPath As String)
+
+  $hHunks = New Hunk[]
+  If Not sPath Then Return
+  If Not Access(sPath, gb.Read) Then
+    Message.Error(("Can't read patch file."))
+    Return
+  Endif
+  Parse(File.Load(sPath))
+
+End
+
+Private Sub DestroyHunk(hHunk As Hunk)
+
+  With hHunk
+    .Command = Null
+    .FromFile = Null
+    .LineInfo = Null
+    .Text = Null
+    .ToFile = Null
+  End With
+
+End
+
+Public Sub _free()
+
+  While $hHunks.Count
+    DestroyHunk($hHunks.Pop())
+  Wend
+
+End
+
+'' Parse the patch and add its hunks to the current object
+Public Sub Parse(sText As String)
+
+  Dim aLines As String[]
+  Dim iInd As Integer
+  Dim hHunk As Hunk
+  Dim bFirst As Boolean = True
+  Dim bInHeader As Boolean = False
+
+  hHunk = New Hunk
+  hHunk.Active = True
+  aLines = Split(sText, "\n")
+  For iInd = 0 To aLines.Count - 1
+    If Left$(aLines[iInd], 4) = "diff" Then
+      GoSub ADD_HUNK
+      bInHeader = True
+      hHunk.Command = aLines[iInd]
+    Else If Left$(aLines[iInd], 3) = "---" Then
+      GoSub ADD_HUNK
+      bInHeader = True
+      hHunk.FromFile = aLines[iInd]
+    Else If Left$(aLines[iInd], 3) = "+++" And If bInHeader Then
+      hHunk.ToFile = aLines[iInd]
+    Else If Left$(aLines[iInd]) = "@" Then
+      GoSub ADD_HUNK
+      bInHeader = True
+      hHunk.LineInfo = aLines[iInd]
+    Else If aLines[iInd] = "" Then
+      Continue
+    Else
+      bInHeader = False
+    Endif
+    hHunk.Text &= aLines[iInd] & "\n"
+  Next
+
+ADD_HUNK:
+  If Not bInHeader Then
+    If Not bFirst Then
+      $hHunks.Add(hHunk)
+      hHunk = New Hunk
+      hHunk.Active = True
+    Endif
+    bFirst = False
+  Endif
+  Return
+
+End
+
+'' Make a text from all activated hunks
+Private Function MakeText() As String
+
+  Dim iInd As Integer
+  Dim sText As String
+
+  For iInd = 0 To $hHunks.Count - 1
+    If Not $hHunks[iInd].Active Then Continue
+    sText &= $hHunks[iInd].Text
+  Next
+  Return sText
+
+End
+
+'' Patch invocation function
+Private Sub DoPatch(Optional sOpt As String = "")
+
+  Dim sCmd As String
+  Dim sTemp As String = Temp$("current-patch")
+  Dim sBackup As String = Temp$("backup") & "/"
+  Dim sRes As String
+
+  File.Save(sTemp, MakeText())
+  Try Mkdir sBackup
+  sCmd = Subst$("cd &1; patch &2 -B &3 -r - ", Shell$(Project.Dir), sOpt, sBackup)
+  sCmd &= Subst$("-bsNp1 <&1", Shell$(sTemp))
+  Shell sCmd To sRes
+  If Process.LastValue Then
+    Shell Subst$("cp -r &1 &2", Dir(sBackup).Join(" "), Shell$(Project.Dir)) Wait
+    Message.Error(("Patch didn't apply:\n") & sRes)
+  Else
+    Project.ReloadAll()
+  Endif
+  Shell "rm -r " & sBackup
+
+End
+
+'' Apply this patch
+Public Sub Apply()
+
+  DoPatch()
+
+End
+
+'' Revert this patch
+Public Sub Revert()
+
+  DoPatch("-R")
+
+End
+
+'' Get a hunk from this patch
+Public Sub _get(iIndex As Integer) As Hunk
+
+  Return $hHunks[iIndex]
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hHunks.Count
+
+End

@@ -1,0 +1,54 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,70,64)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { VBox2 VBox
+    MoveScaled(1,1,67,35)
+    Expand = True
+    Spacing = True
+    Margin = True
+    { HBox1 HBox
+      MoveScaled(4,1,27,3)
+      { btnEnqPatch Button
+        MoveScaled(0,0,20,3)
+        Expand = True
+        Text = ("Enqueue patch...")
+      }
+    }
+    { gvwHunks GridView
+      MoveScaled(1,5,58,23)
+      Font = Font["Monospace"]
+      Expand = True
+      Mode = Select.Single
+      Grid = False
+    }
+    { HBox2 HBox
+      MoveScaled(4,30,49,3)
+      Spacing = True
+      { btnApply Button
+        MoveScaled(0,0,11,3)
+        Expand = True
+        Text = ("Apply")
+      }
+      { btnRevert Button
+        MoveScaled(12,0,12,3)
+        Expand = True
+        Text = ("Revert")
+      }
+    }
+  }
+  { SidePanel1 SidePanel
+    MoveScaled(1,37,58,26)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Orientation = Align.Bottom
+    { edtPatch Editor
+      MoveScaled(1,0,18,15)
+      Expand = True
+      ReadOnly = True
+    }
+  }
+}

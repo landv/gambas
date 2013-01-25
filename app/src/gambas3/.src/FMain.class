@@ -2202,3 +2202,32 @@ Public Sub OnBackgroundChange()
   wrkProject.Picture = Project.GetBackground()
   
 End
+
+Public Sub mnuPatch_Click()
+
+  Dim sOldArchive As String
+
+  Dialog.Title = ("Select an old source archive...")
+  Dialog.Filter = ["*.tar.gz", ("Gambas source archive")]
+  If Dialog.OpenFile(False) Then Return
+  sOldArchive = Dialog.Path
+  Dialog.Title = ("Save the patch...")
+  Dialog.AutoExt = True
+  Dialog.Filter = ["*.patch;*.diff", ("Diff/Patch files")]
+  If Dialog.SaveFile() Then Return
+  Project.Save()
+  ' XXX: We shouldn't patch ourselves
+  ' With Project.Cleanup(), we remove compiled files we may need later
+  ' during execution. We only preload the Patch class here because this is
+  ' certainly needed.
+  Class.Load("Patch")
+  Project.CleanUp()
+  File.Save(Dialog.Path, Patch.GenerateForOld(sOldArchive))
+
+End
+
+Public Sub mnuPatchProject_Click()
+
+  FPatch.Show()
+
+End

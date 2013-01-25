@@ -1,0 +1,88 @@
+' Gambas class file
+
+Private $hPatch As New Patch
+
+Public Sub Form_Open()
+
+  gvwHunks.Columns.Count = 3
+  gvwHunks.Columns[0].Width = 24
+  gvwHunks.Columns[1].Expand = True
+  gvwHunks.Columns[2].Expand = True
+  edtPatch.Styles[Highlight.Preprocessor].Foreground = Color.Gray
+  edtPatch.Styles[Highlight.Preprocessor].Italic = True
+  edtPatch.Flags[Editor.ShowLineNumbers] = True
+
+End
+
+Public Sub gvwHunks_Click()
+
+  With gvwHunks
+    If .Column = 0 Then $hPatch[.Row].Active = Not $hPatch[.Row].Active
+    If $hPatch[.Row].Active Then
+      gvwHunks[.Row, 0].Picture = Picture["img/16/checked.png"]
+      edtPatch.Highlight = Highlight.Diff
+    Else
+      gvwHunks[.Row, 0].Picture = Picture["img/16/unchecked.png"]
+      edtPatch.Highlight = Highlight.Custom
+    Endif
+    edtPatch.Text = $hPatch[.Row].Text
+  End With
+
+End
+
+Public Sub edtPatch_Highlight()
+
+  Highlight.Add(Highlight.Preprocessor, Len(Highlight.Text))
+
+End
+
+Private Sub RefreshHunks()
+
+  Dim iInd As Integer
+  Dim iJ As Integer
+  Dim sToFile As String
+  Dim sLineInfo As String
+  Dim iColor As Integer
+  Dim aScan As String[]
+
+  For iInd = gvwHunks.Rows.Count To $hPatch.Count - 1
+    With $hPatch[iInd]
+      Inc gvwHunks.Rows.Count
+      gvwHunks[iInd, 0].Picture = Picture["img/16/" & IIf(.Active, "checked.png", "unchecked.png")]
+      sToFile = Scan(.ToFile, "+++ */*\t*")[1]
+      gvwHunks[iInd, 1].Text = sToFile
+      aScan = Scan(.LineInfo, "@@ -* +* @@")
+      sLineInfo = aScan[0] & "\t--> " & aScan[1]
+      gvwHunks[iInd, 2].Text = sLineInfo
+      iColor = IIf(iInd Mod 2, Color.White, Color.LightBackground)
+      For iJ = 0 To gvwHunks.Columns.Count - 1
+        gvwHunks[iInd, iJ].Background = iColor
+      Next
+    End With
+  Next
+
+End
+
+Public Sub btnEnqPatch_Click()
+
+  Dialog.Title = ("Select patch...")
+  Dialog.Filter = ["*.patch;*.diff", ("Diff/Patch files")]
+  If Dialog.OpenFile(False) Then Return
+  $hPatch.Parse(File.Load(Dialog.Path))
+  RefreshHunks()
+
+End
+
+Public Sub btnApply_Click()
+
+  $hPatch.Apply()
+  Project.Refresh(True)
+
+End
+
+Public Sub btnRevert_Click()
+
+  $hPatch.Revert()
+  Project.Refresh(True)
+
+End
