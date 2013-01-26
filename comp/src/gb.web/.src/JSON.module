@@ -212,7 +212,7 @@ Private Sub WriteValue(vVal As Variant)
         $sStr &= "["
         For iPos = 0 To vVal.Max
           If iPos Then $sStr &= ", "
-          WriteValue(aArray[iPos])
+          WriteValue(vVal[iPos])
         Next
         $sStr &= "]"
       Else If vVal Is Collection Then

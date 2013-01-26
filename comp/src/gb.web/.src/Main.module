@@ -75,13 +75,12 @@ End
 
 Public Sub Main()
 
-  Dim sURL As String = "http://labs.apache.org/webarch/uri/rfc/rfc3986.html#authority"
+  decodestuff("[\"sometext\", 1]")
 
-  sURL = URL.SetQuery(sURL, "rename", "now")
-  sURL = URL.SetQuery(sURL, "step", "&")
-  sURL = URL.SetQuery(sURL, "rename", "")
-  sURL = URL.ClearQuery(sUrl, "step")
-  sURL = URL.ClearQuery(sUrl, "rename")
-  Print sUrl
-  
+End
+
+Private Sub decodestuff(sMsg As String)
+
+  Print JSON.Encode(["a", "b", "c"])
+ 
 End

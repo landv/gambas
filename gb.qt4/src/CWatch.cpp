@@ -23,6 +23,7 @@
 
 #define __CWATCH_CPP
 
+//#include "gb_common.h"
 #include "main.h"
 #include "CWatch.h"
 
@@ -82,6 +83,17 @@ CWatch::CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, i
 {
   count++;
    
+  if (type == QSocketNotifier::Read)
+  {
+    if (readDict[fd])
+      delete readDict[fd];
+  }
+  else if (type == QSocketNotifier::Write)
+  {
+    if (writeDict[fd])
+      delete writeDict[fd];
+  }
+  
   notifier = new QSocketNotifier(fd, type);
   this->callback = callback;
   this->param = param;
@@ -90,9 +102,6 @@ CWatch::CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, i
   {
     //qDebug("CWatch: %d (read)", fd);
     
-    if (readDict[fd])
-      delete readDict[fd];
-
     readDict.insert(fd, this);
     QObject::connect(notifier, SIGNAL(activated(int)), this, SLOT(read(int)));
   }
@@ -100,9 +109,6 @@ CWatch::CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, i
   {
     //qDebug("CWatch: %d (write)", fd);
     
-    if (writeDict[fd])
-      delete writeDict[fd];
-
     writeDict.insert(fd, this);
     QObject::connect(notifier, SIGNAL(activated(int)), this, SLOT(write(int)));
   }
@@ -122,6 +128,8 @@ CWatch::~CWatch()
     writeDict.remove(notifier->socket());
   }
     
+	//BREAKPOINT();
+	
   delete notifier;
 
   count--;
@@ -137,6 +145,7 @@ void CWatch::read(int fd)
 
 void CWatch::write(int fd)
 {
+  //qDebug("CWatch::write: fd = %d writeDict[fd] = %p", fd, writeDict[fd]);
   if (writeDict[fd])
     (*callback)(fd, GB_WATCH_WRITE, param);
 }
