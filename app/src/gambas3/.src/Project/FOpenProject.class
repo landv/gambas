@@ -369,11 +369,6 @@ Public Sub dwgExample_Draw()
   
 End
 
-Public Sub dchProject_Activate()
-
-  btnOK.Value = True  
-
-End
 
 Public Sub OnUpdateRecent()
   
@@ -477,3 +472,9 @@ Public Sub txtFilterExample_KeyPress()
 
 End
 
+
+Public Sub pchProject_Activate()
+
+  btnOK.Value = True  
+
+End
