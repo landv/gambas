@@ -13,30 +13,30 @@
     Spacing = True
     Margin = True
     { HBox1 HBox
-      MoveScaled(4,1,27,3)
+      MoveScaled(4,1,27,4)
       { btnEnqPatch Button
-        MoveScaled(0,0,20,3)
+        MoveScaled(0,0,20,4)
         Expand = True
         Text = ("Enqueue patch...")
       }
     }
     { gvwHunks GridView
-      MoveScaled(1,5,58,23)
+      MoveScaled(1,6,58,23)
       Font = Font["Monospace"]
       Expand = True
       Mode = Select.Single
       Grid = False
     }
     { HBox2 HBox
-      MoveScaled(4,30,49,3)
+      MoveScaled(4,30,49,4)
       Spacing = True
       { btnApply Button
-        MoveScaled(0,0,11,3)
+        MoveScaled(0,0,11,4)
         Expand = True
         Text = ("Apply")
       }
       { btnRevert Button
-        MoveScaled(12,0,12,3)
+        MoveScaled(12,0,12,4)
         Expand = True
         Text = ("Revert")
       }
@@ -44,8 +44,7 @@
   }
   { SidePanel1 SidePanel
     MoveScaled(1,37,58,26)
-    Expand = True
-    Arrangement = Arrange.Vertical
+    Arrangement = Arrange.Fill
     Orientation = Align.Bottom
     { edtPatch Editor
       MoveScaled(1,0,18,15)

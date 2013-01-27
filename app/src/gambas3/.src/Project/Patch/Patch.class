@@ -16,6 +16,14 @@ End Struct
 Property Read Count As Integer
 
 Private $hHunks As Hunk[]
+Static Private $sIgnoreFile As String
+
+Static Public Sub _init()
+
+  $sIgnoreFile = "/tmp/gambas-patch-ignore" ' Prevent UID/PID leakage
+  File.Save($sIgnoreFile, [".settings", ".action", ".info", ".list", ".startup"].Join("\n"))
+
+End
 
 Static Private Function PrepareOldSource(sOldSource As String) As String
 
@@ -42,7 +50,8 @@ Static Private Function PrepareOldSource(sOldSource As String) As String
     Error.Raise(("Unsupported source file type"))
     Return Null
   Endif
-  Shell Subst$("tar -&1xPf &2 --xform='s_^[^/]\\+_&3_'", sType, Shell$(sOldSource), sOld) Wait
+  Mkdir sOld
+  Shell Subst$("tar -&1xf &2 -C &3 --strip-components=1", sType, Shell$(sOldSource), sOld) Wait
   Try Kill sOldArchive
   Return sOld
 
@@ -54,7 +63,8 @@ Static Private Function PrepareNewSource() As String
   Dim sNewArchive As String = Temp$("source-archive") & ".tar.gz"
 
   Project.MakeSourcePackageTo(sNewArchive)
-  Shell Subst$("tar -zxPf &1 --xform='s_^[^/]\\+_&2_'", sNewArchive, sNew) Wait
+  Mkdir sNew
+  Shell Subst$("tar -zxf &1 -C &2 --strip-components=1", sNewArchive, sNew) Wait
   Try Kill sNewArchive
   Return sNew
 
@@ -65,7 +75,6 @@ Static Public Function GenerateForOld(sOldSource As String) As String
 
   Dim sOld As String
   Dim sNew As String
-  Dim sIgnore As String = "-x .settings"
   Dim sCmd As String
   Dim sPatch As String
 
@@ -73,7 +82,7 @@ Static Public Function GenerateForOld(sOldSource As String) As String
   sNew = PrepareNewSource()
 
   sCmd = Subst$("cd &1; ", File.Dir(sOld))
-  sCmd &= Subst$("diff -urNa &1 &2 &3", sIgnore, File.Name(sOld), File.Name(sNew))
+  sCmd &= Subst$("diff -urNaX &1 &2 &3", $sIgnoreFile, File.Name(sOld), File.Name(sNew))
   Shell sCmd To sPatch
   Shell Subst$("rm -r &1 &2", sOld, sNew)
   Return sPatch

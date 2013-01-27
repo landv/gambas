@@ -23,11 +23,10 @@ Public Sub wizMakePatch_BeforeChange()
   If wizMakePatch.Index = 0 Then
     sOld = dchOld.FileView.Dir &/ dchOld.FileView.Current
     If Not Exist(sOld) Then
-      Message.Error(("You must select an old version."))
+      Message.Warning(("You must select an old version."))
       Stop Event
-    Endif
-    If IsDir(sOld) And If Not Exist(sOld &/ ".project") Then
-      Message.Error(("Not a valid Gambas project"))
+    Else If IsDir(sOld) And If Not Exist(sOld &/ ".project") Then
+      Message.Warning(("Not a valid Gambas project"))
       Stop Event
     Endif
   Endif
@@ -43,7 +42,7 @@ Public Sub wizMakePatch_Close()
   sPatchFile = fchPatch.Value
   Project.Save()
   File.Save(sPatchFile, Patch.GenerateForOld(sOldSource))
-  Message.Info("Patch written.")
+  Message.Info(("Patch written."))
   Me.Close()
 
   Catch
@@ -54,5 +53,17 @@ End
 Public Sub wizMakePatch_Cancel()
 
   Me.Close()
+
+End
+
+Public Sub dchOld_Activate()
+
+  Inc wizMakePatch.Index
+
+End
+
+Public Sub fchPatch_Activate()
+
+  wizMakePatch_Close()
 
 End
