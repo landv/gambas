@@ -410,6 +410,9 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		ctype = *((CTYPE *)structure);
 		structure++;
 		
+		size = CLASS_sizeof_ctype(class, ctype);
+		pos = align_pos(pos, size);
+
 		desc[i].variable.name = "f";
 		desc[i].variable.type = CLASS_ctype_to_type(class, ctype);
 		desc[i].variable.ctype = ctype;
@@ -417,9 +420,6 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		desc[i].variable.class = sclass;
 		
 		var[i].type = ctype;
-
-		size = CLASS_sizeof_ctype(class, ctype);
-		pos = align_pos(pos, size);
 		var[i].pos = pos;
 		
 		if (sclass->debug)
@@ -431,7 +431,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		}
 		
 		#if DEBUG_STRUCT
-		fprintf(stderr, "  %d: %s As %s (%d)\n", i, field, TYPE_get_name(desc[i].variable.type), CLASS_sizeof_ctype(class, ctype));
+		fprintf(stderr, "  %d: %s As %s (%d) pos = %d\n", i, field, TYPE_get_name(desc[i].variable.type), CLASS_sizeof_ctype(class, ctype), pos);
 		#endif
 
 		sclass->table[i].desc = &desc[i];
