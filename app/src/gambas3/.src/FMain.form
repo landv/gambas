@@ -100,12 +100,8 @@
       }
       { mnuPatch Menu
         Text = ("Patch...")
-        Picture = Picture["icon:/small/add"]
+        Picture = Picture["icon:/small/text"]
       }
-    }
-    { mnuPatchProject Menu
-      Text = ("Patch project...")
-      Picture = Picture["icon:/small/redo"]
     }
     { Menu15 Menu
     }
@@ -124,6 +120,10 @@
       Text = ("Put on &version control")
       Picture = Picture["icon:/small/add"]
       Visible = False
+    }
+    { mnuPatchProject Menu
+      Text = ("Patch project...")
+      Picture = Picture["icon:/small/pen"]
     }
     { Menu1 Menu
     }

@@ -319,20 +319,28 @@ Private Sub MoveShowButton()
     Select Case $iOrientation
       Case Align.Top
         $hShowPanel.Move(.X, .Y, .W, BUTTON_H)
-        $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
-        $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
+        If $hShowButtonLeft Then
+          $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
+          $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
+        Endif
       Case Align.Bottom
         $hShowPanel.Move(.X, .Y - D, .W, BUTTON_H)
-        $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
-        $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
+        If $hShowButtonLeft Then
+          $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
+          $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
+        Endif
       Case Align.Left
         $hShowPanel.Move(.X, .Y, BUTTON_H, .H)
-        $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
-        $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        If $hShowButtonLeft Then
+          $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
+          $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        Endif
       Case Align.Right
         $hShowPanel.Move(.X - D, .Y, BUTTON_H, .H)
-        $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
-        $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        If $hShowButtonLeft Then
+          $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
+          $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
+        Endif
     End Select
     
   End With  

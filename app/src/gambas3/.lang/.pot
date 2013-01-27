@@ -2363,20 +2363,20 @@ msgstr ""
 msgid "Patch..."
 msgstr ""
 
-#: FMain.form:339
-msgid "Patch project..."
-msgstr ""
-
-#: FMain.form:349
+#: FMain.form:344
 msgid "&Clean up"
 msgstr ""
 
-#: FMain.form:355
+#: FMain.form:350
 msgid "&Refresh"
 msgstr ""
 
-#: FMain.form:361
+#: FMain.form:356
 msgid "Put on &version control"
+msgstr ""
+
+#: FMain.form:362
+msgid "Patch project..."
 msgstr ""
 
 #: FMain.form:371
@@ -2816,22 +2816,6 @@ msgstr ""
 msgid "Profile for &1 project"
 msgstr ""
 
-#: FMain.class:2210
-msgid "Select an old source archive..."
-msgstr ""
-
-#: FMain.class:2211
-msgid "Gambas source archive"
-msgstr ""
-
-#: FMain.class:2214
-msgid "Save the patch..."
-msgstr ""
-
-#: FMain.class:2216 FPatch.class:69
-msgid "Diff/Patch files"
-msgstr ""
-
 #: FMakeExecutable.form:39
 msgid "Run this command after"
 msgstr ""
@@ -3103,6 +3087,38 @@ msgstr ""
 msgid "Select the destination directory"
 msgstr ""
 
+#: FMakePatch.form:10
+msgid "Generate patch"
+msgstr ""
+
+#: FMakePatch.form:25
+msgid "Select old version"
+msgstr ""
+
+#: FMakePatch.form:33
+msgid "Save patch"
+msgstr ""
+
+#: FMakePatch.form:38
+msgid "*.patch;*.diff"
+msgstr ""
+
+#: FMakePatch.form:38
+msgid "Patch/Diff files"
+msgstr ""
+
+#: FMakePatch.class:7 FOption.form:1133
+msgid "Source archives"
+msgstr ""
+
+#: FMakePatch.class:26
+msgid "You must select an old version."
+msgstr ""
+
+#: FMakePatch.class:30 Patch.class:28
+msgid "Not a valid Gambas project"
+msgstr ""
+
 #: FMenu.form:80
 msgid "Insert menu"
 msgstr ""
@@ -3139,7 +3155,7 @@ msgstr ""
 msgid "This menu is too deep !"
 msgstr ""
 
-#: FMenu.class:937 Project.module:5080
+#: FMenu.class:937 Project.module:5086
 msgid "modified"
 msgstr ""
 
@@ -3491,10 +3507,6 @@ msgstr ""
 msgid "Default maintainer information"
 msgstr ""
 
-#: FOption.form:1133
-msgid "Source archives"
-msgstr ""
-
 #: FOption.form:1140
 msgid "These files will be ignored when making source archives."
 msgstr ""
@@ -3661,20 +3673,28 @@ msgstr ""
 msgid "Table already exists"
 msgstr ""
 
-#: FPatch.form:32
+#: FPatch.form:16
+msgid "Patch the current project"
+msgstr ""
+
+#: FPatch.form:34
 msgid "Enqueue patch..."
 msgstr ""
 
-#: FPatch.form:51
+#: FPatch.form:53
 msgid "Apply"
 msgstr ""
 
-#: FPatch.form:57
+#: FPatch.form:59
 msgid "Revert"
 msgstr ""
 
-#: FPatch.class:68
+#: FPatch.class:74
 msgid "Select patch..."
+msgstr ""
+
+#: FPatch.class:75
+msgid "Diff/Patch files"
 msgstr ""
 
 #: FProfile.form:60
@@ -5964,11 +5984,11 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
-#: Patch.class:63
-msgid "Can't read patch file."
+#: Patch.class:42
+msgid "Unsupported source file type"
 msgstr ""
 
-#: Patch.class:167
+#: Patch.class:187
 msgid "Patch didn't apply:\n"
 msgstr ""
 
@@ -6248,39 +6268,39 @@ msgstr ""
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4280
+#: Project.module:4286
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:4281
+#: Project.module:4287
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:4572
+#: Project.module:4578
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4620
+#: Project.module:4626
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4635
+#: Project.module:4641
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4703
+#: Project.module:4709
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:5233
+#: Project.module:5239
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5239
+#: Project.module:5245
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5269
+#: Project.module:5275
 msgid "Unable to convert &1"
 msgstr ""
 

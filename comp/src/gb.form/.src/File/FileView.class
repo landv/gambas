@@ -617,7 +617,7 @@ End
 
 Private Sub Filter_Write(aFilter As String[])
   
-  $aFilter = aFilter
+  $aFilter = aFilter.Copy()
   RefreshViewLater
   
 End

@@ -3,7 +3,7 @@
 { Form Form
   MoveScaled(0,0,85,72)
   Text = ("Generate patch")
-  Icon = Picture["icon:/16/add"]
+  Icon = Picture["icon:/16/text"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
@@ -14,17 +14,18 @@
     Count = 2
     TextFont = Font["Bold,+3"]
     ShowIndex = True
+    Border = False
     Index = 0
     Text = ("Select old version")
     { dchOld DirChooser
-      MoveScaled(0,0,82,59)
+      MoveScaled(2,3,75,52)
       Expand = True
       ShowFile = True
     }
     Index = 1
     Text = ("Save patch")
     { fchPatch FileChooser
-      MoveScaled(1,1,80,58)
+      MoveScaled(0,1,80,58)
       Expand = True
       Filter = [("*.patch;*.diff"), ("Patch/Diff files")]
     }
