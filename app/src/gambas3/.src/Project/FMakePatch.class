@@ -1,0 +1,58 @@
+' Gambas class file
+
+' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+
+Public Sub Form_Open()
+
+  dchOld.FileView.Filter = ["*.tar.{gz,bz2,xz}", ("Source archives")]
+
+End
+
+Public Sub dchOld_Icon(Path As String)
+
+  If Exist(Path &/ ".project") Then 
+    dchOld.Icon = Project.GetIcon(Path)
+  Endif
+
+End
+
+Public Sub wizMakePatch_BeforeChange()
+
+  Dim sOld As String
+
+  If wizMakePatch.Index = 0 Then
+    sOld = dchOld.FileView.Dir &/ dchOld.FileView.Current
+    If Not Exist(sOld) Then
+      Message.Error(("You must select an old version."))
+      Stop Event
+    Endif
+    If IsDir(sOld) And If Not Exist(sOld &/ ".project") Then
+      Message.Error(("Not a valid Gambas project"))
+      Stop Event
+    Endif
+  Endif
+
+End
+
+Public Sub wizMakePatch_Close()
+
+  Dim sOldSource As String
+  Dim sPatchFile As String
+
+  sOldSource = dchOld.FileView.Dir &/ dchOld.FileView.Current
+  sPatchFile = fchPatch.Value
+  Project.Save()
+  File.Save(sPatchFile, Patch.GenerateForOld(sOldSource))
+  Message.Info("Patch written.")
+  Me.Close()
+
+  Catch
+    Message.Error(Error.Text)
+
+End
+
+Public Sub wizMakePatch_Cancel()
+
+  Me.Close()
+
+End

@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,85,72)
+  Text = ("Generate patch")
+  Icon = Picture["icon:/16/add"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { wizMakePatch Wizard
+    MoveScaled(1,1,83,70)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Count = 2
+    TextFont = Font["Bold,+3"]
+    ShowIndex = True
+    Index = 0
+    Text = ("Select old version")
+    { dchOld DirChooser
+      MoveScaled(0,0,82,59)
+      Expand = True
+      ShowFile = True
+    }
+    Index = 1
+    Text = ("Save patch")
+    { fchPatch FileChooser
+      MoveScaled(1,1,80,58)
+      Expand = True
+      Filter = [("*.patch;*.diff"), ("Patch/Diff files")]
+    }
+    Index = 0
+  }
+}

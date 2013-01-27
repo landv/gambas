@@ -4213,7 +4213,7 @@ Public Function CheckProjectName(sName As String, Optional sDir As String) As St
 
 End
 
-Public Sub MakeSourcePackageTo(sPath As String)
+Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String)
 
   Dim sCmd As String
   Dim sOpt As String
@@ -4234,7 +4234,7 @@ Public Sub MakeSourcePackageTo(sPath As String)
 
   sTemp = File.SetExt(Temp$(), File.Ext(sPath))
 
-  sCmd = "cd " & Shell$(File.Dir(Project.Dir)) & ";"
+  sCmd = "cd " & Shell$(File.Dir(sFrom)) & ";"
   sCmd &= " tar cfvh" & sOpt & " " & Shell$(sTemp)
   sCmd &= " --exclude=" & Shell$(".gambas/*")
   sCmd &= " --exclude=" & Shell$("*~")
@@ -4246,7 +4246,7 @@ Public Sub MakeSourcePackageTo(sPath As String)
   For Each sIgnore In GetIgnoreFiles()
     sCmd &= " --exclude=" & Shell$(sIgnore)
   Next
-  sCmd &= " " & Shell$(File.Name(Project.Dir)) & " > /dev/null"
+  sCmd &= " " & Shell$(File.Name(sFrom)) & " > /dev/null"
 
   Shell sCmd Wait
   If Not Exist(sTemp) Then Error.Raise(("The 'tar' command has failed."))
@@ -4261,6 +4261,12 @@ Catch
   
   Dec Application.Busy
   Message.Error(("Unable to create source archive.") & "\n\n" & Error.Text)
+
+End
+
+Public Sub MakeSourcePackageTo(sPath As String)
+
+  MakeSourcePackageFromTo(Project.Dir, sPath)
 
 End
 

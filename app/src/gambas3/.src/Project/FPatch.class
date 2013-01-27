@@ -1,5 +1,7 @@
 ' Gambas class file
 
+' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+
 Private $hPatch As New Patch
 
 Public Sub Form_Open()
@@ -49,7 +51,11 @@ Private Sub RefreshHunks()
     With $hPatch[iInd]
       Inc gvwHunks.Rows.Count
       gvwHunks[iInd, 0].Picture = Picture["img/16/" & IIf(.Active, "checked.png", "unchecked.png")]
-      sToFile = Scan(.ToFile, "+++ */*\t*")[1]
+      If .ToFile Then
+        sToFile = Scan(.ToFile, "+++ */*\t*")[1]
+      Else
+        If iInd Then sToFile = gvwHunks[iInd - 1, 1].Text
+      Endif
       gvwHunks[iInd, 1].Text = sToFile
       aScan = Scan(.LineInfo, "@@ -* +* @@")
       sLineInfo = aScan[0] & "\t--> " & aScan[1]

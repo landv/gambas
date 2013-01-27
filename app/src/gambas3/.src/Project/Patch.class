@@ -1,5 +1,7 @@
 ' Gambas class file
 
+' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+
 '' Represent a patch hunk
 Public Struct Hunk
   Command As String
@@ -15,43 +17,66 @@ Property Read Count As Integer
 
 Private $hHunks As Hunk[]
 
-'' Generate a patch for the old source archive to ascend to the current project's state
-Static Public Function GenerateForOld(sOldArchive As String) As String
+Static Private Function PrepareOldSource(sOldSource As String) As String
 
   Dim sOld As String = Temp$("old-source")
-  Dim sNew As String = File.Name(Temp$("new-source"))
-  ' Dim aIgnore As String[] = Project.GetIgnoreFiles()
-  Dim sIgnore As String
+  Dim sOldArchive As String = Temp$("source-archive") & ".tar.gz"
+  Dim sType As String
+
+  If IsDir(sOldSource) Then
+    If Not Exist(sOldSource &/ ".project") Then
+      Error.Raise(("Not a valid Gambas project"))
+      Return Null
+    Endif
+    Project.MakeSourcePackageFromTo(sOldSource, sOldArchive)
+    sOldSource = sOldArchive
+  Endif
+
+  If Right$(sOldSource, 3) = ".gz" Then
+    sType = "z"
+  Else If Right$(sOldSource, 4) = ".bz2" Then
+    sType = "j"
+  Else If Right$(sOldSource, 3) = ".xz" Then
+    sType = "J"
+  Else
+    Error.Raise(("Unsupported source file type"))
+    Return Null
+  Endif
+  Shell Subst$("tar -&1xPf &2 --xform='s_^[^/]\\+_&3_'", sType, Shell$(sOldSource), sOld) Wait
+  Try Kill sOldArchive
+  Return sOld
+
+End
+
+Static Private Function PrepareNewSource() As String
+
+  Dim sNew As String = Temp$("new-source")
+  Dim sNewArchive As String = Temp$("source-archive") & ".tar.gz"
+
+  Project.MakeSourcePackageTo(sNewArchive)
+  Shell Subst$("tar -zxPf &1 --xform='s_^[^/]\\+_&2_'", sNewArchive, sNew) Wait
+  Try Kill sNewArchive
+  Return sNew
+
+End
+
+'' Generate a patch for the old source archive or directory to ascend to the current project's state
+Static Public Function GenerateForOld(sOldSource As String) As String
+
+  Dim sOld As String
+  Dim sNew As String
+  Dim sIgnore As String = "-x .settings"
   Dim sCmd As String
   Dim sPatch As String
-  Dim aLines As String[]
-  Dim iInd As Integer
-  Dim bInHeader As Boolean
 
-  ' If aIgnore.Count Then
-  '   sIgnore = "-x \"*" & aIgnore.Join("\" -x \"*") & "\""
-  ' Endif
+  sOld = PrepareOldSource(sOldSource)
+  sNew = PrepareNewSource()
 
-  Shell Subst$("tar -zxPf &1 --xform='s_^[^/]\\+_&2_'", Shell$(sOldArchive), sOld) Wait
-  sCmd = Subst$("cd &1/..; ", Shell$(sOld))
-  sCmd &= Subst$("diff -urNa &1 &2 &3", sIgnore, Shell$(File.Name(sOld)), Shell$(Project.Dir))
+  sCmd = Subst$("cd &1; ", File.Dir(sOld))
+  sCmd &= Subst$("diff -urNa &1 &2 &3", sIgnore, File.Name(sOld), File.Name(sNew))
   Shell sCmd To sPatch
-  Shell "rm -r " & Shell$(sOld)
-  ' "sed -i 's/^\(+++.*\|diff.*\) $PROJECT_DIR/\1 $SHOW_DIR/'" would also do it...
-  bInHeader = True
-  ' TODO: May not be the most memory-friendly way
-  aLines = Split(sPatch, "\n")
-  For iInd = 0 To aLines.Count - 1
-    If Left$(aLines[iInd], 4) = "diff" Or If Left$(aLines[iInd], 3) = "---" Then
-      bInHeader = True
-    Else If Left$(aLines[iInd], 3) = "+++" And If bInHeader Then
-      bInHeader = False
-    Else
-      Continue
-    Endif
-    aLines[iInd] = Replace$(aLines[iInd], Project.Dir, File.Name(sNew))
-  Next
-  Return aLines.Join("\n")
+  Shell Subst$("rm -r &1 &2", sOld, sNew)
+  Return sPatch
 
 End
 
@@ -59,10 +84,6 @@ Public Sub _new(Optional sPath As String)
 
   $hHunks = New Hunk[]
   If Not sPath Then Return
-  If Not Access(sPath, gb.Read) Then
-    Message.Error(("Can't read patch file."))
-    Return
-  Endif
   Parse(File.Load(sPath))
 
 End
@@ -135,8 +156,8 @@ ADD_HUNK:
 
 End
 
-'' Make a text from all activated hunks
-Private Function MakeText() As String
+'' Generate a patch file from all activated hunks
+Public Function MakeText() As String
 
   Dim iInd As Integer
   Dim sText As String
@@ -149,7 +170,6 @@ Private Function MakeText() As String
 
 End
 
-'' Patch invocation function
 Private Sub DoPatch(Optional sOpt As String = "")
 
   Dim sCmd As String
@@ -163,7 +183,7 @@ Private Sub DoPatch(Optional sOpt As String = "")
   sCmd &= Subst$("-bsNp1 <&1", Shell$(sTemp))
   Shell sCmd To sRes
   If Process.LastValue Then
-    Shell Subst$("cp -r &1 &2", Dir(sBackup).Join(" "), Shell$(Project.Dir)) Wait
+    If Dir(sBackup).Count Then Shell Subst$("cp -r &1 &2", Dir(sBackup).Join(" "), Shell$(Project.Dir)) Wait
     Message.Error(("Patch didn't apply:\n") & sRes)
   Else
     Project.ReloadAll()
