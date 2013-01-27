@@ -1,0 +1,126 @@
+' Gambas class file
+
+Private $hProjectItem As ProjectItem
+Private $sLast As String
+
+Public Sub _new()
+  
+  $hProjectItem = New ProjectItem(panProjectTitle)
+  $hProjectItem.Highlight = False
+  panProject.Reparent(dchProject.FileView.Parent)
+  
+End
+
+Public Sub Form_Open()
+  
+  $sLast = ""
+  dchProject.ShowFile = True
+  dchProject_Change
+  'tabProject_Click
+
+End
+
+
+Public Sub GetSettings() As Variant[]
+  
+  Return [dchProject.Settings, splProject.Settings]
+  
+End
+
+Public Sub SetSettings(Value As Variant[])
+  
+  Try dchProject.Settings = Value[0]
+  Try splProject.Settings = Value[1]
+  
+End
+
+Public Sub dchProject_Icon(Path As String)
+
+  If Exist(Path &/ ".project") Then 
+    dchProject.Icon = Project.GetIcon(Path)    
+  Endif  
+
+End
+
+Private Sub GetProjectPath(sPath As String) As String
+  
+  Do
+    If Exist(sPath &/ ".project") Then Return sPath
+    sPath = File.Dir(sPath)
+    If sPath = "/" Then Break
+  Loop
+  
+Catch
+  
+End
+
+
+Public Sub dchProject_Change()
+
+  Dim sPath As String
+  Dim hProjectTree As CProjectTree
+  
+  sPath = GetProjectPath(dchProject.Value)
+  
+  If Not sPath Then
+    $sLast = ""
+    panProject.Hide
+    dchProject.FileView.Show
+    Return 
+  Endif
+  
+  If sPath = $sLast Then Return
+  
+  $sLast = sPath
+  
+  $hProjectItem.Path = sPath
+  hProjectTree = New CProjectTree(tvwProject, sPath)
+  
+  panProject.Show
+  dchProject.FileView.Hide
+  
+  splProject_Resize
+
+End
+
+Private Sub GetParent() As ProjectChooser
+
+  Return Me.Parent
+
+End
+
+Public Sub dchProject_Activate()
+
+  GetParent()._RaiseActivate
+
+End
+
+Public Sub splProject_Resize()
+
+  panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
+
+End
+
+Public Sub GetPath() As String
+  
+  Return GetProjectPath(dchProject.Value)
+  
+End
+
+Public Sub SetPath(sPath As String)
+  
+  dchProject.Value = sPath
+  
+End
+
+Public Sub GetBorder() As Boolean
+  
+  Return dchProject.Border
+  
+End
+
+Public Sub SetBorder(Value As Boolean)
+
+  dchProject.Border = Value
+
+End

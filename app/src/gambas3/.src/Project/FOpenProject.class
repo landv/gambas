@@ -1,31 +1,10 @@
 ' Gambas class file
 
-'
-' Copyright (C) Benoît Minisini
-'
-' This program is free software; you can redistribute it and/or modify
-' it under the terms of the GNU General Public License as published by
-' the Free Software Foundation; either version 2 of the License, or
-' (at your option) any later version.
-'
-' This program is distributed in the hope that it will be useful,
-' but WITHOUT ANY WARRANTY; without even the implied warranty of
-' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-' GNU General Public License for more details.
-'
-' You should have received a copy of the GNU General Public License
-' along with this program; if not, write to the Free Software
-' Foundation, Inc., 51 Franklin St, Fifth Floor, 
-' Boston, MA  02110-1301  USA
-'
-
 Static Private $sPath As String
-Static Private $sLast As String
 Static Private $bAnother As Boolean
 
 Static Public InAnotherWindow As Boolean
 
-Private $hProjectItem As ProjectItem
 Private $iSort As Integer
 
 Public Sub Run(Optional bAnother As Boolean) As String
@@ -43,9 +22,9 @@ End
 
 Public Sub _new()
   
-  $hProjectItem = New ProjectItem(panProjectTitle)
-  $hProjectItem.Highlight = False
-  panProject.Reparent(dchProject.FileView.Parent)
+  ' $hProjectItem = New ProjectItem(panProjectTitle)
+  ' $hProjectItem.Highlight = False
+  ' panProject.Reparent(dchProject.FileView.Parent)
   
 End
 
@@ -56,7 +35,7 @@ Public Sub btnOK_Click()
   Dim hProjectItem As ProjectItem
   
   If tabProject.Index = 0 Then
-    sPath = GetProjectPath(dchProject.Value)
+    sPath = pchProject.Path
   Else If tabProject.Index = 1 Then
     hProjectItem = lstRecent.Current
     Try sPath = hProjectItem.Path
@@ -87,13 +66,14 @@ Public Sub Form_Open()
 
   Dim hCtrl As RadioButton
 
-  $sLast = ""
+  '$sLast = ""
   Settings.Read(Me)
-  Settings.Read(dchProject)
-  Settings.Read(splProject)
-  dchProject.ShowFile = True
-  'dchProject.Value = Settings["/FOpenProject/Path"]
-  dchProject_Change
+  Settings.Read(pchProject)
+  ' Settings.Read(dchProject)
+  ' Settings.Read(splProject)
+  ' dchProject.ShowFile = True
+  ' 'dchProject.Value = Settings["/FOpenProject/Path"]
+  ' dchProject_Change
   tabProject_Click
 
   InAnotherWindow = False
@@ -113,59 +93,60 @@ Public Sub Form_Close()
 
   Settings["/FOpenProject/SortRecent"] = $iSort
   Settings.Write(Me)  
-  Settings.Write(splProject)
-  Settings.Write(dchProject)
+  ' Settings.Write(splProject)
+  ' Settings.Write(dchProject)
+  Settings.Write(pchProject)
   
 End
 
-Public Sub dchProject_Icon(Path As String)
-
-  If Exist(Path &/ ".project") Then 
-    dchProject.Icon = Project.GetIcon(Path)    
-  Endif  
-
-End
-
-Private Sub GetProjectPath(sPath As String) As String
-  
-  Do
-    If Exist(sPath &/ ".project") Then Return sPath
-    sPath = File.Dir(sPath)
-    If sPath = "/" Then Break
-  Loop
-  
-Catch
-  
-End
-
-
-Public Sub dchProject_Change()
-
-  Dim sPath As String
-  Dim hProjectTree As CProjectTree
-  
-  sPath = GetProjectPath(dchProject.Value)
-  
-  If Not sPath Then
-    $sLast = ""
-    panProject.Hide
-    dchProject.FileView.Show
-    Return 
-  Endif
-  
-  If sPath = $sLast Then Return
-  
-  $sLast = sPath
-  
-  $hProjectItem.Path = sPath
-  hProjectTree = New CProjectTree(tvwProject, sPath)
-  
-  panProject.Show
-  dchProject.FileView.Hide
-  
-  splProject_Resize
-
-End
+' Public Sub dchProject_Icon(Path As String)
+' 
+'   If Exist(Path &/ ".project") Then 
+'     dchProject.Icon = Project.GetIcon(Path)    
+'   Endif  
+' 
+' End
+' 
+' Private Sub GetProjectPath(sPath As String) As String
+'   
+'   Do
+'     If Exist(sPath &/ ".project") Then Return sPath
+'     sPath = File.Dir(sPath)
+'     If sPath = "/" Then Break
+'   Loop
+'   
+' Catch
+'   
+' End
+' 
+' 
+' Public Sub dchProject_Change()
+' 
+'   Dim sPath As String
+'   Dim hProjectTree As CProjectTree
+'   
+'   sPath = GetProjectPath(dchProject.Value)
+'   
+'   If Not sPath Then
+'     $sLast = ""
+'     panProject.Hide
+'     dchProject.FileView.Show
+'     Return 
+'   Endif
+'   
+'   If sPath = $sLast Then Return
+'   
+'   $sLast = sPath
+'   
+'   $hProjectItem.Path = sPath
+'   hProjectTree = New CProjectTree(tvwProject, sPath)
+'   
+'   panProject.Show
+'   dchProject.FileView.Hide
+'   
+'   splProject_Resize
+' 
+' End
 
 ' Public Sub fvwProject_Activate()
 ' 
@@ -408,11 +389,11 @@ Public Sub lstExample_Activate()
 
 End
 
-Public Sub splProject_Resize()
-
-  panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
-
-End
+' Public Sub splProject_Resize()
+' 
+'   panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
+' 
+' End
 
 Public Sub btnOther_Click()
 

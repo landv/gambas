@@ -540,7 +540,7 @@ msgstr ""
 #: FFontChooser.form:40 FForm.class:3091 FGotoLine.form:23
 #: FHelpBrowser.form:61 FIconEditor.class:1373 FList.form:121 FMain.class:209
 #: FMakeInstall.class:350 FMenu.form:377 FNewConnection.form:255
-#: FNewTable.form:86 FNewTranslation.form:21 FOpenProject.form:203
+#: FNewTable.form:86 FNewTranslation.form:21 FOpenProject.form:158
 #: FOption.class:674 FPasteSpecial.form:77 FPasteTable.form:107
 #: FProjectProperty.form:687 FProjectVersion.class:201
 #: FPropertyComponent.form:255 FProxy.form:57 FReportBorderChooser.form:48
@@ -636,7 +636,7 @@ msgstr ""
 #: FCreateFile.form:443 FFieldChooser.form:132 FFontChooser.form:34
 #: FGotoLine.form:17 FInfo.form:172 FList.form:115 FMain.class:1798
 #: FMakeInstall.class:299 FMenu.form:372 FNewConnection.form:249
-#: FNewTable.form:80 FNewTranslation.form:15 FOpenProject.form:197
+#: FNewTable.form:80 FNewTranslation.form:15 FOpenProject.form:152
 #: FPasteSpecial.form:71 FProjectProperty.form:681 FPropertyComponent.form:249
 #: FProxy.form:63 FReportBorderChooser.form:54 FReportBrushChooser.form:40
 #: FReportCoordChooser.form:32 FReportPaddingChooser.form:69
@@ -700,7 +700,7 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
-#: FConflict.form:47 FOpenProject.form:46
+#: FConflict.form:47 FOpenProject.form:40
 msgid "Open"
 msgstr ""
 
@@ -1270,7 +1270,7 @@ msgstr ""
 msgid "The project title is the true name of the application."
 msgstr ""
 
-#: FCreateProject.form:426 FOpenProject.form:192
+#: FCreateProject.form:426 FOpenProject.form:147
 msgid "Open in another window"
 msgstr ""
 
@@ -2756,15 +2756,15 @@ msgstr ""
 msgid "Sort history"
 msgstr ""
 
-#: FMain.class:594 FOpenProject.form:116 FWelcome.form:42
+#: FMain.class:594 FOpenProject.form:71 FWelcome.form:42
 msgid "Sort by date"
 msgstr ""
 
-#: FMain.class:594 FOpenProject.form:125 FWelcome.form:49
+#: FMain.class:594 FOpenProject.form:80 FWelcome.form:49
 msgid "Sort by name"
 msgstr ""
 
-#: FMain.class:594 FOpenProject.form:133 FWelcome.form:55
+#: FMain.class:594 FOpenProject.form:88 FWelcome.form:55
 msgid "Sort by path"
 msgstr ""
 
@@ -3115,8 +3115,12 @@ msgstr ""
 msgid "You must select an old version."
 msgstr ""
 
-#: FMakePatch.class:30 Patch.class:28
+#: FMakePatch.class:29 Patch.class:36
 msgid "Not a valid Gambas project"
+msgstr ""
+
+#: FMakePatch.class:45
+msgid "Patch written."
 msgstr ""
 
 #: FMenu.form:80
@@ -3243,15 +3247,15 @@ msgstr ""
 msgid "New translation"
 msgstr ""
 
-#: FOpenProject.form:33
+#: FOpenProject.form:27
 msgid "Select a project"
 msgstr ""
 
-#: FOpenProject.form:92
+#: FOpenProject.form:47
 msgid "Recent"
 msgstr ""
 
-#: FOpenProject.form:148 FWelcome.class:56
+#: FOpenProject.form:103 FWelcome.class:56
 msgid "Examples"
 msgstr ""
 
@@ -5984,11 +5988,11 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
-#: Patch.class:42
+#: Patch.class:50
 msgid "Unsupported source file type"
 msgstr ""
 
-#: Patch.class:187
+#: Patch.class:196
 msgid "Patch didn't apply:\n"
 msgstr ""
 
