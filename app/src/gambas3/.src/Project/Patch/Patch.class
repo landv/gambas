@@ -21,13 +21,13 @@ Static Private $sIgnoreFile As String
 Static Public Sub _init()
 
   $sIgnoreFile = "/tmp/gambas-patch-ignore" ' Prevent UID/PID leakage
-  File.Save($sIgnoreFile, [".settings", ".action", ".info", ".list", ".startup"].Join("\n"))
+  File.Save($sIgnoreFile, ".settings\n.action\n.info\n.list\n.startup\n.pot\n")
 
 End
 
 Static Private Function PrepareOldSource(sOldSource As String) As String
 
-  Dim sOld As String = Temp$("old-source")
+  Dim sOld As String = File.SetExt(Temp$("a"), "")
   Dim sOldArchive As String = Temp$("source-archive") & ".tar.gz"
   Dim sType As String
 
@@ -52,20 +52,20 @@ Static Private Function PrepareOldSource(sOldSource As String) As String
   Endif
   Mkdir sOld
   Shell Subst$("tar -&1xf &2 -C &3 --strip-components=1", sType, Shell$(sOldSource), sOld) Wait
-  Try Kill sOldArchive
+  If Exist(sOldArchive) Then Kill sOldArchive
   Return sOld
 
 End
 
 Static Private Function PrepareNewSource() As String
 
-  Dim sNew As String = Temp$("new-source")
+  Dim sNew As String = File.SetExt(Temp$("b"), "")
   Dim sNewArchive As String = Temp$("source-archive") & ".tar.gz"
 
   Project.MakeSourcePackageTo(sNewArchive)
   Mkdir sNew
   Shell Subst$("tar -zxf &1 -C &2 --strip-components=1", sNewArchive, sNew) Wait
-  Try Kill sNewArchive
+  Kill sNewArchive
   Return sNew
 
 End
@@ -94,26 +94,6 @@ Public Sub _new(Optional sPath As String)
   $hHunks = New Hunk[]
   If Not sPath Then Return
   Parse(File.Load(sPath))
-
-End
-
-Private Sub DestroyHunk(hHunk As Hunk)
-
-  With hHunk
-    .Command = Null
-    .FromFile = Null
-    .LineInfo = Null
-    .Text = Null
-    .ToFile = Null
-  End With
-
-End
-
-Public Sub _free()
-
-  While $hHunks.Count
-    DestroyHunk($hHunks.Pop())
-  Wend
 
 End
 

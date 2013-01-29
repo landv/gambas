@@ -2,46 +2,45 @@
 
 ' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
 
-Public Sub Form_Open()
-
-  dchOld.FileView.Filter = ["*.tar.{gz,bz2,xz}", ("Source archives")]
-
-End
-
-Public Sub dchOld_Icon(Path As String)
-
-  If Exist(Path &/ ".project") Then 
-    dchOld.Icon = Project.GetIcon(Path)
-  Endif
-
-End
-
 Public Sub wizMakePatch_BeforeChange()
 
   Dim sOld As String
 
-  If wizMakePatch.Index = 0 Then
-    sOld = dchOld.FileView.Dir &/ dchOld.FileView.Current
-    If Not Exist(sOld) Then
-      Message.Warning(("You must select an old version."))
-      Stop Event
-    Else If IsDir(sOld) And If Not Exist(sOld &/ ".project") Then
-      Message.Warning(("Not a valid Gambas project"))
-      Stop Event
-    Endif
-  Endif
+  Select Case wizMakePatch.Index
+    Case 0
+      If radArchive.Value Then
+        wizMakePatch[1].Enabled = True
+        wizMakePatch[2].Enabled = False
+      Else
+        wizMakePatch[1].Enabled = False
+        wizMakePatch[2].Enabled = True
+      Endif
+    Case 1
+      If Not Exist(fchOld.SelectedPath) Or If IsDir(fchOld.SelectedPath) Then
+        Message.Warning(("You must choose an old archive"))
+        Stop Event
+      Endif
+    Case 2
+      If Not IsDir(pchOld.Path) Or If Not Exist(pchOld.Path &/ ".project") Then
+        Message.Warning(("You must select a valid Gambas project"))
+        Stop Event
+      Endif
+  End Select
 
 End
 
 Public Sub wizMakePatch_Close()
 
-  Dim sOldSource As String
-  Dim sPatchFile As String
+  Dim sOld As String
 
-  sOldSource = dchOld.FileView.Dir &/ dchOld.FileView.Current
-  sPatchFile = fchPatch.Value
+  If radArchive.Value Then
+    sOld = fchOld.SelectedPath
+  Else
+    sOld = pchOld.Path
+  Endif
+
   Project.Save()
-  File.Save(sPatchFile, Patch.GenerateForOld(sOldSource))
+  File.Save(fchPatch.Value, Patch.GenerateForOld(sOld))
   Message.Info(("Patch written."))
   Me.Close()
 
@@ -56,9 +55,9 @@ Public Sub wizMakePatch_Cancel()
 
 End
 
-Public Sub dchOld_Activate()
+Public Sub chOld_Activate()
 
-  Inc wizMakePatch.Index
+  wizMakePatch.Index = 3
 
 End
 
