@@ -1645,7 +1645,9 @@ static int table_create(DB_DATABASE * db, const char *table, DB_FIELD * fields, 
 			if (i > 0)
 				DB.Query.Add(",");
 
+			DB.Query.Add(QUOTE_STRING);
 			DB.Query.Add(primary[i]);
+			DB.Query.Add(QUOTE_STRING);
 		}
 
 		DB.Query.Add(")");
@@ -2102,17 +2104,21 @@ static int index_delete(DB_DATABASE * db, const char *table, const char *index)
 
 *****************************************************************************/
 
-static int index_create(DB_DATABASE * db, const char *table, const char *index, DB_INDEX * info)
+static int index_create(DB_DATABASE * db, const char *table, const char *index, DB_INDEX *info)
 {
 	DB.Query.Init();
 
 	DB.Query.Add("CREATE ");
 	if (info->unique)
 		DB.Query.Add("UNIQUE ");
-	DB.Query.Add("INDEX '");
+	DB.Query.Add("INDEX ");
+	DB.Query.Add(QUOTE_STRING);
 	DB.Query.Add(index);
-	DB.Query.Add("' ON ");
+	DB.Query.Add(QUOTE_STRING);
+	DB.Query.Add(" ON ");
+	DB.Query.Add(QUOTE_STRING);
 	DB.Query.Add(table);
+	DB.Query.Add(QUOTE_STRING);
 	DB.Query.Add(" ( ");
 	DB.Query.Add(info->fields);
 	DB.Query.Add(" )");
