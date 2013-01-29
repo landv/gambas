@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_project.c
+	gbx_project.c
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -67,68 +67,73 @@ static int project_line;
 static char *_home = NULL;
 static uid_t _uid = 0;
 
+static const char *_last_component = NULL;
 
 static void raise_error(const char *msg)
 {
-  char line[16];
+	char line[16];
 
-  snprintf(line, sizeof(line), "%d", project_line);
-  THROW(E_PROJECT, line, msg);
+	snprintf(line, sizeof(line), "%d", project_line);
+	THROW(E_PROJECT, line, msg);
 }
 
 
 static void project_title(char *name, int len)
 {
-  name[len] = 0;
-  PROJECT_title = name;
+	name[len] = 0;
+	PROJECT_title = name;
 }
 
 
 static void project_version(char *name, int len)
 {
-  name[len] = 0;
-  PROJECT_version = name;
+	name[len] = 0;
+	PROJECT_version = name;
 }
 
 
 static void project_component(char *name, int len)
 {
-  //const char *delim = ",";
-  //char *comp;
+	//const char *delim = ",";
+	//char *comp;
 
-  name[len] = 0;
+	_last_component = name;
+	
+	name[len] = 0;
 
-  /*comp = strtok(name, delim);
-  while (comp != NULL)
-  {
+	/*comp = strtok(name, delim);
+	while (comp != NULL)
+	{
 		COMPONENT_create(comp);
 			
-    comp = strtok(NULL, delim);
-  }*/
+		comp = strtok(NULL, delim);
+	}*/
 	
 	COMPONENT_create(name);
+
+	_last_component = NULL;
 }
 
 
 static void project_startup(char *name, int len)
 {
-  if (len == 0)
-    raise_error("Project startup class name is void");
+	if (len == 0)
+		raise_error("Project startup class name is void");
 
-  name[len] = 0;
-  PROJECT_startup = name;
+	name[len] = 0;
+	PROJECT_startup = name;
 }
 
 
 static void project_stack(char *name, int len)
 {
-  int size;
+	int size;
 
-  name[len] = 0;
-  size = atoi(name);
+	name[len] = 0;
+	size = atoi(name);
 
-  if (size >= 1 && size <= 64)
-    STACK_size = size * 1024L * sizeof(VALUE);
+	if (size >= 1 && size <= 64)
+		STACK_size = size * 1024L * sizeof(VALUE);
 }
 
 static void project_stacktrace(char *name, int len)
@@ -140,107 +145,107 @@ static void project_stacktrace(char *name, int len)
 #if 0
 static void project_command(char *line, int len)
 {
-  static PROJECT_COMMAND command[] = {
-    { "PROJECT", NULL },
-    { "TITLE", project_title },
-    { "LIBRARY", project_component },
-    { "COMPONENT", project_component },
-    { "STARTUP", project_startup },
-    { "STACK", project_stack },
-    { "VERSION", project_version },
-    { "STACKTRACE", project_stacktrace },
-    { NULL }
-    };
+	static PROJECT_COMMAND command[] = {
+		{ "PROJECT", NULL },
+		{ "TITLE", project_title },
+		{ "LIBRARY", project_component },
+		{ "COMPONENT", project_component },
+		{ "STARTUP", project_startup },
+		{ "STACK", project_stack },
+		{ "VERSION", project_version },
+		{ "STACKTRACE", project_stacktrace },
+		{ NULL }
+		};
 
-  PROJECT_COMMAND *pc;
-  char cmd[32];
-  int len_cmd;
+	PROJECT_COMMAND *pc;
+	char cmd[32];
+	int len_cmd;
 
-  for (len_cmd = 0; len_cmd < len; len_cmd++)
-  {
-    if (line[len_cmd] == '=')
-      break;
-  }
+	for (len_cmd = 0; len_cmd < len; len_cmd++)
+	{
+		if (line[len_cmd] == '=')
+			break;
+	}
 
-  if (len_cmd >= len || len_cmd >= sizeof(cmd) || len_cmd == 0)
-    raise_error("Syntax error");
+	if (len_cmd >= len || len_cmd >= sizeof(cmd) || len_cmd == 0)
+		raise_error("Syntax error");
 
-  strncpy(cmd, line, len_cmd);
+	strncpy(cmd, line, len_cmd);
 
-  for (pc = command; ; pc++)
-  {
-    if (pc->command == NULL)
-      break;
-      /*raise_error("Unknown command");*/
+	for (pc = command; ; pc++)
+	{
+		if (pc->command == NULL)
+			break;
+			/*raise_error("Unknown command");*/
 
-    if (strncasecmp(pc->command, cmd, len_cmd) == 0)
-    {
-      if (pc->func)
-        (*pc->func)(&line[len_cmd + 1], len - len_cmd - 1);
-      break;
-    }
-  }
+		if (strncasecmp(pc->command, cmd, len_cmd) == 0)
+		{
+			if (pc->func)
+				(*pc->func)(&line[len_cmd + 1], len - len_cmd - 1);
+			break;
+		}
+	}
 }
 #endif
 
 static void check_after_analyze()
 {
-  if (!PROJECT_name || PROJECT_name[0] == 0)
-    raise_error("No project name");
+	if (!PROJECT_name || PROJECT_name[0] == 0)
+		raise_error("No project name");
 
-  if (!PROJECT_startup || PROJECT_startup[0] == 0)
-    raise_error("No startup class");
+	if (!PROJECT_startup || PROJECT_startup[0] == 0)
+		raise_error("No startup class");
 
-  if (!PROJECT_title || PROJECT_title[0] == 0)
-    PROJECT_title = PROJECT_name;
+	if (!PROJECT_title || PROJECT_title[0] == 0)
+		PROJECT_title = PROJECT_name;
 }
 
 #if 0
 static void project_analyze(char *addr, int len)
 {
-  char *end = &addr[len];
-  char c;
-  char *start;
+	char *end = &addr[len];
+	char c;
+	char *start;
 
 
-  project_ptr = addr;
-  project_line = 1;
-  start = project_ptr;
+	project_ptr = addr;
+	project_line = 1;
+	start = project_ptr;
 
-  for(;;)
-  {
-    if (project_ptr >= end)
-      break;
+	for(;;)
+	{
+		if (project_ptr >= end)
+			break;
 
-    c = *project_ptr++;
+		c = *project_ptr++;
 
-    if (c == '\n')
-    {
-      project_line++;
-      start = project_ptr;
-      continue;
-    }
+		if (c == '\n')
+		{
+			project_line++;
+			start = project_ptr;
+			continue;
+		}
 
-    if (c == '#')
-    {
-      while ((project_ptr < end) && c != '\n')
-        c = *project_ptr++;
-      project_ptr--;
-      continue;
-    }
+		if (c == '#')
+		{
+			while ((project_ptr < end) && c != '\n')
+				c = *project_ptr++;
+			project_ptr--;
+			continue;
+		}
 
-    if (c <= ' ')
-      continue;
+		if (c <= ' ')
+			continue;
 
-    project_ptr--;
-    start = project_ptr;
+		project_ptr--;
+		start = project_ptr;
 
-    while ((project_ptr < end) && (c != '\n'))
-      c = *project_ptr++;
+		while ((project_ptr < end) && (c != '\n'))
+			c = *project_ptr++;
 
-    project_command(start, project_ptr - start - 1);
-    project_ptr--;
-  }
+		project_command(start, project_ptr - start - 1);
+		project_ptr--;
+	}
 
 	check_after_analyze();
 }
@@ -265,7 +270,7 @@ static bool get_line(char **addr, const char *end, char **start, int *len)
 
 void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb)
 {
-  char *end = &addr[len];
+	char *end = &addr[len];
 	char *p;
 	int l, i;
 
@@ -309,7 +314,7 @@ void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb)
 
 char *PROJECT_get_home(void)
 {
-  struct passwd *info;
+	struct passwd *info;
 	uid_t uid = getuid();
 	
 	if (!_home || _uid != uid)
@@ -326,35 +331,35 @@ char *PROJECT_get_home(void)
 
 void PROJECT_init(const char *file)
 {
-  int len;
-  const char *path;
+	int len;
+	const char *path;
 
-  /* Save the working directory */
+	/* Save the working directory */
 
-  PROJECT_oldcwd = STRING_new_zero(FILE_getcwd(NULL));
+	PROJECT_oldcwd = STRING_new_zero(FILE_getcwd(NULL));
 
-  /* Gambas installation path */
+	/* Gambas installation path */
 
-  path = FILE_find_gambas();
+	path = FILE_find_gambas();
 
-  PROJECT_exec_path = STRING_new_zero(FILE_get_dir(FILE_get_dir(path)));
+	PROJECT_exec_path = STRING_new_zero(FILE_get_dir(FILE_get_dir(path)));
 
 	/* Component paths */
 
 	#ifdef OS_64BITS
-  COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL));
-  if (access(COMPONENT_path, F_OK))
-  {	
-  	STRING_free(&COMPONENT_path);
-	  COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
-  }
-  #else
-  COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
+	COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL));
+	if (access(COMPONENT_path, F_OK))
+	{	
+		STRING_free(&COMPONENT_path);
+		COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
+	}
+	#else
+	COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
 	#endif
-  
-  //STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
+	
+	//STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
 
-  /* Project path & name*/
+	/* Project path & name*/
 
 	if (!file)
 	{
@@ -364,63 +369,63 @@ void PROJECT_init(const char *file)
 		return;
 	}
 
-  if (EXEC_arch)
-  {
+	if (EXEC_arch)
+	{
 		if (FILE_is_absolute(file))
 		{
 			path = FILE_get_dir(file);
 			FILE_chdir(path);
 		}
 
-    path = FILE_getcwd(NULL);
-    if (path == NULL)
-      goto _PANIC;
-  }
-  else
-  {
-    if (*file == '/')
-    {
-      path = file;
-    }
-    else
-    {
-      if (*file == '.' && file[1] == '/')
-        file += 2;
+		path = FILE_getcwd(NULL);
+		if (path == NULL)
+			goto _PANIC;
+	}
+	else
+	{
+		if (*file == '/')
+		{
+			path = file;
+		}
+		else
+		{
+			if (*file == '.' && file[1] == '/')
+				file += 2;
 
-      path = FILE_getcwd(file);
-      if (path == NULL)
-        goto _PANIC;
+			path = FILE_getcwd(file);
+			if (path == NULL)
+				goto _PANIC;
 
-      if (!chdir(path))
+			if (!chdir(path))
 			{
 				path = FILE_getcwd(NULL);
 				if (path == NULL)
 					goto _PANIC;
 			}
-    }
-  }
+		}
+	}
 
-  len = strlen(path);
+	len = strlen(path);
 
-  while (len > 1)
-  {
-    if (path[len - 1] != '/')
-      break;
+	while (len > 1)
+	{
+		if (path[len - 1] != '/')
+			break;
 
-    len--;
-    /*path[len] = 0;*/
-  }
+		len--;
+		/*path[len] = 0;*/
+	}
 
-  PROJECT_path = STRING_new(path, len);
+	PROJECT_path = STRING_new(path, len);
 
-  FILE_chdir(PROJECT_path);
+	FILE_chdir(PROJECT_path);
 
-  /* Project name */
+	/* Project name */
 
-  if (EXEC_arch)
-  	PROJECT_name = STRING_new_zero(FILE_get_basename(file));
+	if (EXEC_arch)
+		PROJECT_name = STRING_new_zero(FILE_get_basename(file));
 	else
-  	PROJECT_name = STRING_new_zero(FILE_get_name(PROJECT_path));
+		PROJECT_name = STRING_new_zero(FILE_get_name(PROJECT_path));
 
 	/* Main archive creation */
 
@@ -429,42 +434,49 @@ void PROJECT_init(const char *file)
 	return;
 
 _PANIC:
-  ERROR_panic("Cannot initialize project: %s", strerror(errno));
+	ERROR_panic("Cannot initialize project: %s", strerror(errno));
 }
 
 
-bool PROJECT_load()
+void PROJECT_load()
 {
 	const char *file;
 	int len;
 
 	/* Project file analyze */
 
-  if (EXEC_arch)
-    file = ".startup";
-  else
-    file = FILE_cat(PROJECT_path, ".startup", NULL);
+	STACK_init();
+	
+	if (EXEC_arch)
+		file = ".startup";
+	else
+		file = FILE_cat(PROJECT_path, ".startup", NULL);
 
 	TRY
 	{
 		STREAM_load(file, &project_buffer, &len);
+	}
+	CATCH
+	{
+		ERROR_fatal("unable to find startup file");
+	}
+	END_TRY
+	
+	TRY
+	{
 		PROJECT_analyze_startup(project_buffer, len, NULL);
 	}
 	CATCH
 	{
-		len = -1;
+		if (_last_component)
+			ERROR_fatal("unable to load component: %s", _last_component);
+		else
+			ERROR_fatal("unable to analyze startup file");
 	}
 	END_TRY
 	
-  STACK_init();
-	
-	if (len < 0)
-		return TRUE;
-
 	// Loads all component
 	COMPONENT_load_all();
-
-	return FALSE;
 }
 
 void PROJECT_load_finish(void)
@@ -475,19 +487,19 @@ void PROJECT_load_finish(void)
 	// Loads main archive
 	ARCHIVE_load_main();
 
-  // Startup class
-  PROJECT_class = CLASS_find(PROJECT_startup);
+	// Startup class
+	PROJECT_class = CLASS_find(PROJECT_startup);
 }
 
 void PROJECT_exit(void)
 {
-  if (project_buffer)
-    FREE(&project_buffer, "PROJECT_exit");
+	if (project_buffer)
+		FREE(&project_buffer, "PROJECT_exit");
 
 	STRING_free(&PROJECT_name);
 	STRING_free(&PROJECT_path);
 	
-  STRING_free(&PROJECT_oldcwd);
-  STRING_free(&PROJECT_exec_path);
-  STRING_free(&_home);
+	STRING_free(&PROJECT_oldcwd);
+	STRING_free(&PROJECT_exec_path);
+	STRING_free(&_home);
 }

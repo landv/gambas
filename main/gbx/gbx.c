@@ -94,13 +94,7 @@ static void init(const char *file, int argc, char **argv)
 
 	if (file)
 	{
-		if (PROJECT_load()) // Call STACK_init()
-		{
-			if (!strcmp(file, "."))
-				ERROR_fatal("no project file in current directory.");
-			else
-				ERROR_fatal("no project file in '%s'.", file);
-		}
+		PROJECT_load();
 
 		if (_run_httpd)
 			COMPONENT_exec("gb.httpd", argc, argv);
