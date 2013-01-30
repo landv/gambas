@@ -40,6 +40,11 @@ static void compile(void *_object)
 	int errptr;
 	const char *errstr;
 
+	if (!THIS->pattern) {
+		GB.Error("No pattern provided");
+		return;
+	}
+
 	THIS->code = pcre_compile(THIS->pattern, THIS->copts, &errstr, &errptr, NULL);
 
 	if (!THIS->code)
