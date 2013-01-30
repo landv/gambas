@@ -295,7 +295,8 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	int i;
 	const char *query;
 	Dataset *res = conn->CreateDataset();
-	int ret;
+	int err = 0;
+	int retry = 0;
 
 	if (nsubst)
 	{
@@ -322,7 +323,6 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	{
 		if (res->query(query))
 		{
-			ret = FALSE;
 			if (pres)
 			{
 				*pres = res;
@@ -330,36 +330,39 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		}
 		else
 		{
-			ret = TRUE;
+			err = conn->lastError();
 			GB.Error(error, conn->getErrorMsg());
 		}
 	}
 	else
 	{
-		if (res->exec(query))
+		for(;;)
 		{
-			ret = FALSE;
-			if (pres)
+			if (res->exec(query))
 			{
-				*pres = res;
+				if (pres)
+					*pres = res;
+				break;
 			}
-		}
-		else
-		{
-			ret = TRUE;
-			GB.Error(error, conn->getErrorMsg());
+			
+			err = conn->lastError();
+			
+			if (err != SQLITE_BUSY || retry >= 300) // 30 sec. max
+			{
+				GB.Error(error, conn->getErrorMsg());
+				break;
+			}
+			
+			retry++;
+			usleep(100000);
 		}
 	}
 	
 	if (!pres)
 		res->close();
 
-  if (ret)
-  	db->error = conn->lastError();
-  else
-  	db->error = 0;
-  
-	return ret;
+ 	db->error = err;
+	return err != 0;
 }
 
 /* Internal function to check whether a file is a sqlite database file */
