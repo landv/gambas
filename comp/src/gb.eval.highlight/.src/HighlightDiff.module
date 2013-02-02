@@ -24,6 +24,7 @@ Public Sub Run()
     iState = Highlight.String
   Else If Left(sText) = "@" Then
     iState = Highlight.Comment
+    Highlight.ShowLimit = True
   Else
     iState = Highlight.Normal
   Endif
