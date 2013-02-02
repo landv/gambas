@@ -2,10 +2,12 @@
 
 ' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
 
+Private $sOldName As String
+
 Public Sub wizMakePatch_BeforeChange()
 
-  Dim sOld As String
-
+  Dim hProject As CProjectInfo
+  
   Select Case wizMakePatch.Index
     Case 0
       If radArchive.Value Then
@@ -15,16 +17,24 @@ Public Sub wizMakePatch_BeforeChange()
         wizMakePatch[1].Enabled = False
         wizMakePatch[2].Enabled = True
       Endif
+    
     Case 1
       If Not Exist(fchOld.SelectedPath) Or If IsDir(fchOld.SelectedPath) Then
-        Message.Warning(("You must choose an old archive"))
+        Message.Warning(("Please select the origin archive."))
         Stop Event
       Endif
+      $sOldName = File.BaseName(fchOld.SelectedPath)
+      If File.Ext($sOldName) = "tar" Then $sOldName = File.BaseName($sOldName)
+    
     Case 2
       If Not IsDir(pchOld.Path) Or If Not Exist(pchOld.Path &/ ".project") Then
-        Message.Warning(("You must select a valid Gambas project"))
+        Message.Warning(("Please select the origin project."))
         Stop Event
       Endif
+      $sOldName = File.Name(pchOld.Path)
+      hProject = New CProjectInfo(pchOld.Path)
+      $sOldName &= "-" & hProject.Version
+    
   End Select
 
 End
@@ -33,19 +43,27 @@ Public Sub wizMakePatch_Close()
 
   Dim sOld As String
 
+  If Not fchPatch.Value Then
+    Message.Warning(("Please enter the patch file name."))
+    Return
+  Endif
+
   If radArchive.Value Then
     sOld = fchOld.SelectedPath
   Else
     sOld = pchOld.Path
   Endif
 
+  Project.Config["/FMakePatch/MakeName"] = CBool(chkMakeName.Value)
+
   Project.Save()
   File.Save(fchPatch.Value, Patch.GenerateForOld(sOld))
-  Message.Info(("Patch written."))
+  Message.Info(("Patch has been successfully generated."))
   Me.Close()
 
-  Catch
-    Message.Error(Error.Text)
+Catch
+  
+  Message.Error(("Unable to generate the patch.") & "\n\n" & Error.Text)
 
 End
 
@@ -64,5 +82,44 @@ End
 Public Sub fchPatch_Activate()
 
   wizMakePatch_Close()
+
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  Settings.Read(fchPatch)
+  
+  chkMakeName.Value = Project.Config["FMakePatch/MakeName", True]
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+  Settings.Write(fchPatch)
+  
+End
+
+Public Sub wizMakePatch_Change()
+
+  Dim sName As String
+
+  If wizMakePatch.Index = 3 Then
+    
+    If chkMakeName.Value Then
+    
+      sName = $sOldName
+      sName &= "~"
+      If $sOldName Not Begins sName & "-" Then
+        sName &= Project.Name & "-"
+      Endif
+      sName &= Subst("&1.&2.&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+      
+      fchPatch.SelectedPath = fchPatch.Dir &/ sName & ".patch"
+      
+    Endif
+    
+  Endif
 
 End

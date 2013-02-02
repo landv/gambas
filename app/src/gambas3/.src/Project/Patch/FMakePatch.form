@@ -1,14 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,85,72)
+  MoveScaled(0,0,82,65)
   Text = ("Generate patch")
   Icon = Picture["icon:/16/text"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
   { wizMakePatch Wizard
-    MoveScaled(1,1,83,70)
+    MoveScaled(1,1,79,63)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -17,60 +17,66 @@
     ShowIndex = True
     Border = False
     Index = 0
-    Text = ("Select old source type")
-    { VBox2 VBox
-      MoveScaled(21,13,12,9)
+    Text = ("Select patch origin")
+    { Panel1 VBox
+      MoveScaled(0,0,70,45)
       Expand = True
-    }
-    { HBox1 HBox
-      MoveScaled(16,25,57,9)
-      { HBox2 HBox
-        MoveScaled(3,2,6,3)
-        Expand = True
+      { Label1 Label
+        MoveScaled(0,0,18,4)
+        Font = Font["Bold"]
+        Text = ("Patch origin")
       }
-      { Panel1 Panel
-        MoveScaled(13,0,23,7)
-        { radProject RadioButton radType
-          Name = "radProject"
-          MoveScaled(1,3,21,4)
-          Text = ("Use project")
-        }
-        { radArchive RadioButton radType
-          Name = "radArchive"
-          MoveScaled(1,0,21,4)
-          Text = ("Use source archive")
-          Value = True
-        }
+      { radArchive RadioButton radType
+        Name = "radArchive"
+        MoveScaled(1,4,40,4)
+        Text = ("Source archive")
+        Value = True
       }
-      { HBox3 HBox
-        MoveScaled(46,2,6,3)
-        Expand = True
+      { radProject RadioButton radType
+        Name = "radProject"
+        MoveScaled(1,8,45,4)
+        Text = ("Project directory")
       }
-    }
-    { VBox3 VBox
-      MoveScaled(22,35,12,9)
-      Expand = True
+      { Label2 Label
+        MoveScaled(0,13,23,4)
+        Font = Font["Bold,"]
+        Text = ("Options")
+      }
+      { chkMakeName CheckBox
+        MoveScaled(1,17,64,4)
+        Text = ("Automatic patch name")
+        Value = CheckBox.True
+      }
+      { Panel2 Panel
+        MoveScaled(14,22,19,2)
+      }
+      { TextLabel1 TextLabel
+        MoveScaled(0,25,69,3)
+        Font = Font["Italic,-1"]
+        Text = ("This wizard will generate a patch between an origin project and the current project.")
+      }
     }
     Index = 1
-    Text = ("Choose source archive")
+    Text = ("Select source archive")
     { fchOld FileChooser chOld
       Name = "fchOld"
-      MoveScaled(3,2,75,57)
+      MoveScaled(2,2,75,48)
       Expand = True
       Filter = [("*.gz;*.bz2;*.xz"), ("Source packages")]
       ShowFile = False
     }
     Index = 2
-    Text = ("Choose project directory")
+    Text = ("Select project directory")
     { pchOld ProjectChooser chOld
       Name = "pchOld"
-      MoveScaled(7,3,68,49)
+      MoveScaled(2,1,68,49)
       Expand = True
+      Border = True
     }
     Index = 3
-    Text = ("Save patch")
+    Text = ("Choose patch file name")
     { fchPatch FileChooser
-      MoveScaled(1,1,81,59)
+      MoveScaled(0,1,77,51)
       Expand = True
       Filter = [("*.patch;*.diff"), ("Patch/Diff files")]
     }

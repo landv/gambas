@@ -3,28 +3,68 @@
 ' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
 
 Private $hPatch As New Patch
+Private $hObs As Observer
 
 Public Sub Form_Open()
 
-  gvwHunks.Columns.Count = 3
-  gvwHunks.Columns[0].Width = 24
-  gvwHunks.Columns[1].Expand = True
-  gvwHunks.Columns[2].Expand = True
-  edtPatch.Styles[Highlight.Preprocessor].Foreground = Color.Gray
-  edtPatch.Styles[Highlight.Preprocessor].Italic = True
-  edtPatch.Flags[Editor.ShowLineNumbers] = True
+  Settings.Read(Me)
 
+  gvwHunks.Font = Project.GetEditorFont()
+  gvwHunks.Columns.Count = 4
+  gvwHunks.Columns[0].Width = Desktop.Scale * 4
+  gvwHunks.Columns[1].Expand = True
+  gvwHunks.Columns[2].Expand = False
+  gvwHunks.Columns[3].Expand = False
+  
+  $hObs = New Observer(gvwHunks.Proxy) As "Observer"
+
+  edtPatch.ReadConfig
+  edtPatch.Flags[Editor.ShowLineNumbers] = True
+  
 End
 
-Public Sub gvwHunks_Click()
+Private Sub Check(iRow As Integer, bActive As Boolean)
+  
+  $hPatch[iRow].Active = bActive
+  gvwHunks[iRow, 0].Picture = If(bActive, Picture["img/16/checked.png"], Picture["img/16/unchecked.png"])
+  
+End
+
+
+Public Sub Observer_MouseDown()
+
+  Dim bSelect As Boolean
+  Dim iRow As Integer
 
   With gvwHunks
-    If .Column = 0 Then $hPatch[.Row].Active = Not $hPatch[.Row].Active
+    
+    If .ColumnAt(Mouse.X) = 0 Then
+      iRow = .RowAt(Mouse.Y)
+      If iRow >= 0 Then
+        bSelect = Not $hPatch[.Row].Active
+        For Each iRow In .Rows.Selection
+          Check(iRow, bSelect)
+        Next
+      Endif
+      Stop Event
+    Endif
+  End With
+    
+End
+  
+Public Sub gvwHunks_Select()
+
+  With gvwHunks
+    If .Row < 0 Then
+      edtPatch.Text = ""
+      Return
+    Endif
+    
     If $hPatch[.Row].Active Then
-      gvwHunks[.Row, 0].Picture = Picture["img/16/checked.png"]
+      'gvwHunks[.Row, 0].Picture = Picture["img/16/checked.png"]
       edtPatch.Highlight = Highlight.Diff
     Else
-      gvwHunks[.Row, 0].Picture = Picture["img/16/unchecked.png"]
+      'gvwHunks[.Row, 0].Picture = Picture["img/16/unchecked.png"]
       edtPatch.Highlight = Highlight.Custom
     Endif
     edtPatch.Text = $hPatch[.Row].Text
@@ -32,25 +72,38 @@ Public Sub gvwHunks_Click()
 
 End
 
+Public Sub gvwHunks_Activate()
+  
+  Dim iRow As Integer = gvwHunks.Row
+  
+  If iRow >= 0 Then Check(iRow, Not $hPatch[iRow].Active)
+  
+End
+
+
 Public Sub edtPatch_Highlight()
 
-  Highlight.Add(Highlight.Preprocessor, Len(Highlight.Text))
+  Highlight.Add(Highlight.Preprocessor, String.Len(Highlight.Text))
 
 End
 
 Private Sub RefreshHunks()
 
   Dim iInd As Integer
-  Dim iJ As Integer
   Dim sToFile As String
-  Dim sLineInfo As String
-  Dim iColor As Integer
+  'Dim sLineInfo As String
+  'Dim iAltColor As Integer
   Dim aScan As String[]
 
+  'iAltColor = Color.Merge(Color.TextBackground, Color.LightBackground)
+
+  gvwHunks.Rows.Height = Max(gvwHunks.Font.Height, 20)
+  
   For iInd = gvwHunks.Rows.Count To $hPatch.Count - 1
     With $hPatch[iInd]
       Inc gvwHunks.Rows.Count
       gvwHunks[iInd, 0].Picture = Picture["img/16/" & IIf(.Active, "checked.png", "unchecked.png")]
+      gvwHunks[iInd, 0].Padding = 2
       If .ToFile Then
         sToFile = Scan(.ToFile, "+++ */*\t*")[1]
       Else
@@ -58,24 +111,23 @@ Private Sub RefreshHunks()
       Endif
       gvwHunks[iInd, 1].Text = sToFile
       aScan = Scan(.LineInfo, "@@ -* +* @@")
-      sLineInfo = aScan[0] & "\t--> " & aScan[1]
-      gvwHunks[iInd, 2].Text = sLineInfo
-      iColor = IIf(iInd Mod 2, Color.White, Color.LightBackground)
-      For iJ = 0 To gvwHunks.Columns.Count - 1
-        gvwHunks[iInd, iJ].Background = iColor
-      Next
+      'sLineInfo = aScan[0] & "\t--> " & aScan[1]
+      gvwHunks[iInd, 2].Text = aScan[0]
+      gvwHunks[iInd, 3].Text = "--> " & aScan[1]
+      
+      ' If Even(iInd) Then
+      '   For iJ = 0 To gvwHunks.Columns.Count - 1
+      '     gvwHunks[iInd, iJ].Background = iAltColor
+      '   Next
+      ' Endif
     End With
   Next
-
-End
-
-Public Sub btnEnqPatch_Click()
-
-  Dialog.Title = ("Select patch...")
-  Dialog.Filter = ["*.patch;*.diff", ("Diff/Patch files")]
-  If Dialog.OpenFile(False) Then Return
-  $hPatch.Parse(File.Load(Dialog.Path))
-  RefreshHunks()
+  
+  gvwHunks.Columns[2].Width = -1
+  gvwHunks.Columns[3].Width = -1
+  
+  btnApply.Enabled = True
+  btnRevert.Enabled = True
 
 End
 
@@ -90,5 +142,33 @@ Public Sub btnRevert_Click()
 
   $hPatch.Revert()
   Project.Refresh(True)
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+
+End
+
+Public Sub txtPath_Click()
+
+  Dialog.Title = ("Select patch")
+  Dialog.Filter = ["*.patch;*.diff", ("Patch/Diff files")]
+  
+  If Dialog.OpenFile() Then Return
+  
+  txtPath.Text = Dialog.Path
+  
+  Inc Application.Busy
+  $hPatch.Parse(File.Load(Dialog.Path))
+  RefreshHunks()
+  Dec Application.Busy
 
 End

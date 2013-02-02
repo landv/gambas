@@ -98,9 +98,16 @@
         Picture = Picture["icon:/small/package"]
         Shortcut = "Ctrl+Alt+I"
       }
+    }
+    { Menu12 Menu
+      Text = ("Patch")
       { mnuPatch Menu
-        Text = ("Patch...")
+        Text = ("&Create...")
         Picture = Picture["icon:/small/text"]
+      }
+      { mnuPatchProject Menu
+        Text = ("&Apply...")
+        Picture = Picture["icon:/small/pen"]
       }
     }
     { Menu15 Menu
@@ -120,10 +127,6 @@
       Text = ("Put on &version control")
       Picture = Picture["icon:/small/add"]
       Visible = False
-    }
-    { mnuPatchProject Menu
-      Text = ("Patch project...")
-      Picture = Picture["icon:/small/pen"]
     }
     { Menu1 Menu
     }
