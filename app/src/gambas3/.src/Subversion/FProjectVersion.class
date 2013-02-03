@@ -242,7 +242,11 @@ End
 
 Public Sub btnCleanUp_Click()
 
-  VersionControl.CleanUp
+  Dim sDir As String
+  
+  sDir = $cInfo["path"]
+  If Not sDir Then sDir = File.Dir(Project.Dir)
+  VersionControl.CleanUp(sDir)
 
 End
 

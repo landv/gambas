@@ -88,6 +88,7 @@ Private $hFamily As CFamily
 Private $hUndo As New CUndo
 
 Private $hCtrlFrame As Control
+Private $hDropTarget As CControl
 
 Public Sub _new(sPath As String)
 
@@ -173,7 +174,7 @@ End
 
 Public Sub UpdateSnap()
 
-  Dim hPict As Picture
+  Dim hGrid As Image
   Dim hCtrl As CControl = RootControl
   Dim iColor As Integer
   Dim X, Y As Integer
@@ -185,11 +186,11 @@ Public Sub UpdateSnap()
       Inc nPts
     Wend
 
-    hPict = New Picture(Project.Snap * nPts, Project.Snap * nPts)
+    hGrid = New Image(Project.Snap * nPts, Project.Snap * nPts)
     iColor = $hFamily.Background
     If iColor = Color.Default Then iColor = Color.Background
-    hPict.Fill(iColor)
-    Draw.Begin(hPict)
+    hGrid.Fill(iColor)
+    
     If (Color[iColor].Value > 128) Then
       iColor = Color[iColor].Value - &H40
       iColor = Color.RGB(iColor, iColor, iColor)
@@ -197,17 +198,15 @@ Public Sub UpdateSnap()
       iColor = Color[iColor].Value + &H60
       iColor = Color.RGB(iColor, iColor, iColor)
     Endif
-    Draw.Foreground = iColor
     For X = 0 To Project.Snap * nPts - 1 Step Project.Snap
       For Y = 0 To Project.Snap * nPts - 1 Step Project.Snap
-        Draw.Point(X, Y)
+        hGrid[X, Y] = iColor
       Next
     Next
-    Draw.End
 
   Endif
 
-  hCtrl["#Grid"] = hPict
+  hCtrl["#Grid"] = hGrid
   panBorder.Refresh
   ' If hCtrl.Control Is Form Then
   '   hCtrl.Control.Picture = hPict
@@ -1133,7 +1132,7 @@ Public Sub Control_MouseUp()
     $WS = $W
     $HS = $H
 
-    HideControlFrame
+    HideFrame
 
     If Abs($WS) > 1 And Abs($HS) > 1 Then
 
@@ -1329,17 +1328,13 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
   $hUndo.Begin
   hCtrl = CreateControl(sClass, hParent,, True)
 
-  hCtrl.Move(X, Y)
-
   With CComponent.Classes[sClass]
     W = .DefaultWidth
     H = .DefaultHeight
-    If W = 0 Or H = 0 Then
-      W = 8 * Desktop.Scale
-      H = 8 * Desktop.Scale
-    Endif
-    hCtrl.Resize(W, H)
   End With
+  
+  hCtrl.MoveAndResize(X, Y, W, H)
+  
   $hUndo.End
 
   $hCurrent = hCtrl
@@ -1487,7 +1482,7 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
 End
 
-Private Sub HideControlFrame()
+Private Sub HideFrame()
 
   Dim hCtrl As Control
 
@@ -1498,32 +1493,74 @@ Private Sub HideControlFrame()
   Next
   
   $hCtrlFrame = Null
+  $hDropTarget = Null
 
+End
+
+Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  Dim hRoot As Container = RootControl.Control
+
+  If W = 0 Or If H = 0 Then
+    X = 0
+    Y = 0
+    W = hCtrl.W
+    H = hCtrl.H
+  Endif
+  
+  panSelectN.Move(hCtrl.ScreenX - hRoot.ScreenX + 2 + X, hCtrl.ScreenY - hRoot.ScreenY + Y, W, 2)
+  panSelectS.Move(panSelectN.X, panSelectN.Y + H - 2, panSelectN.W, 2)
+  panSelectW.Move(panSelectN.X, panSelectN.Y + 2, 2, H - 4)
+  panSelectE.Move(panSelectW.X + W - 2, panSelectW.Y, 2, panSelectW.H)
+  
+  For Each hCtrl In [panSelectN, panSelectS, panSelectW, panSelectE]
+    hCtrl.Show
+    hCtrl.Raise
+  Next
+    
+End
+
+Private Sub DrawDropFrame()
+  
+  Dim X, Y, W, H As Integer
+  Dim hParent As Control
+  Dim sClass As String
+
+  hParent = $hDropTarget.Control
+  X = Drag.X + Last.ScreenX - hParent.ScreenX
+  Y = Drag.Y + Last.ScreenY - hParent.ScreenY
+  
+  sClass = Drag.Data
+  
+  FindContainer($hDropTarget, X, Y, COORD_INSIDE_TO_CONTROL)
+  hParent = $hContainer.Control
+  X = CControl.Grid($iContX, Project.Snap)
+  Y = CControl.Grid($iContY, Project.Snap)
+  'Debug X;; Y;; "->";; $iContX;; $iContY
+
+  With CComponent.Classes[sClass]
+    W = .DefaultWidth
+    H = .DefaultHeight
+  End With
+  
+  DrawFrame(hParent, X, Y, W, H)
+  
 End
 
 Private Sub DrawControlFrame(hCCtrl As CControl)
   
-  Dim hRoot As Container = RootControl.Control
   Dim hCtrl As Control = hCCtrl.Control
   
-  If hCtrl = hRoot Or If hCtrl.W < 3 Or If hCtrl.H < 3 Then
+  If hCCtrl = RootControl Or If hCtrl.W < 3 Or If hCtrl.H < 3 Then
     
-    HideControlFrame
+    HideFrame
     
   Else 
     
     $hCtrlFrame = hCtrl
     Try hCtrl.ToolTip = Subst("&1 ( &2 x &3 )", hCCtrl.Name, hCtrl.Width, hCtrl.Height)
     
-    panSelectN.Move(hCtrl.ScreenX - hRoot.ScreenX + 2, hCtrl.ScreenY - hRoot.ScreenY, hCtrl.W, 2)
-    panSelectS.Move(panSelectN.X, panSelectN.Y + hCtrl.H - 2, panSelectN.W, 2)
-    panSelectW.Move(panSelectN.X, panSelectN.Y + 2, 2, hCtrl.H - 4)
-    panSelectE.Move(panSelectW.X + hCtrl.W - 2, panSelectW.Y, 2, panSelectW.H)
-    
-    For Each hCtrl In [panSelectN, panSelectS, panSelectW, panSelectE]
-      hCtrl.Show
-      hCtrl.Raise
-    Next
+    DrawFrame(hCtrl)
     
   Endif
   
@@ -1598,7 +1635,7 @@ Private Sub DrawRectSelect()
 
   Else
 
-    HideControlFrame
+    HideFrame
     'panSelectInside.Hide
 
   Endif
@@ -3113,6 +3150,7 @@ Public Sub Control_Drag()
       hCtrl = hCtrl.Parent
     Endif
     Drag.Show(hCtrl.Control)
+    $hDropTarget = hCtrl
     Return
   Else
     Stop Event
@@ -3120,8 +3158,30 @@ Public Sub Control_Drag()
 
 Catch
 
+  Print Error.Where; ": "; Error.Text
+  Print Error.Backtrace.Join("\n")
   Stop Event
 
+End
+
+Public Sub Control_DragMove()
+  
+  If Drag.Format = MMime.CONTROL Then
+    DrawDropFrame()
+  Endif
+  
+End
+
+Public Sub Control_DragLeave()
+  
+  Dim X As Integer
+  Dim Y As Integer
+  Dim hRoot As Control
+  
+  If Last = RootControl.Control And Not Mouse.Inside(RootControl.Control) Then
+    HideFrame
+  Endif
+  
 End
 
 Public Sub Control_Drop()
@@ -3191,6 +3251,7 @@ Public Sub Control_Drop()
 
     $hCurrent = AddControl(Drag.Data, hParent, X, Y)
     FToolBox.SetTool()
+    HideFrame
 
   Endif
 
@@ -3200,7 +3261,17 @@ End
 
 Public Sub panTitle_Drag()
 
-  Control_Drag
+  If $bReadOnly Then
+    Stop Event
+    Return
+  Endif
+
+  If Drag.Format = MMime.DATA Then
+    Drag.Show(Last)
+    Return
+  Else
+    Stop Event
+  Endif
 
 End
 
@@ -3382,10 +3453,17 @@ Public Sub panBorder_Draw()
 
   If RootControl["#Grid"] Then
     hCont = RootControl.Control
-    Draw.FillX = hCont.ClientX + hCont.X
-    Draw.FillY = hCont.ClientY + hCont.Y
-    Draw.Tile(RootControl["#Grid"], 0, 0, Draw.W, Draw.H)
+    
+    ' Draw.FillX = hCont.ClientX + hCont.X
+    ' Draw.FillY = hCont.ClientY + hCont.Y
+    ' Draw.Tile(RootControl["#Grid"], 0, 0, Draw.W, Draw.H)
+    
+    Paint.Brush = Paint.Image(RootControl["#Grid"], hCont.ClientX + hCont.X, hCont.ClientY + hCont.Y)
+    Paint.Rectangle(0, 0, Draw.W, Draw.H)
+    Paint.Fill
+    
   Endif
+  
   Draw.Style.Panel(0, -1, panBorder.W, panBorder.H + 1, Border.Plain)
 
 End
@@ -3663,7 +3741,7 @@ End
 
 Public Sub Form_Close()
 
-  HideControlFrame
+  HideFrame
   '$hUndo = Null
 
 End
@@ -3916,3 +3994,24 @@ Private Sub DoActionFormat(sAction As String)
 
 End
 
+Public Sub panSelect_Drag()
+  
+  If Drag.Format = MMime.CONTROL And If $hDropTarget Then
+    Drag.Show($hDropTarget.Control)
+  Else
+    Stop Event
+  Endif
+
+End
+
+
+Public Sub panSelect_DragMove()
+
+  If Drag.Format = MMime.CONTROL And If $hDropTarget Then
+    'Drag.Show($hDropTarget.Control)
+    DrawDropFrame()
+  Else
+    Stop Event
+  Endif
+
+End

@@ -159,7 +159,7 @@ Public Procedure btnControl_MouseUp()
       If sComp = CComponent.PROJECT_NAME Then
         Project.OpenFile(Last.Tag[0])
       Else
-        MHelp.ShowHelpBrowserWith(Null , MHelp.TYPE_CLASS, Last.Tag[0])
+        MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, Last.Tag[0])
       Endif
     Endif
 

@@ -543,6 +543,7 @@ Public Sub Info(bRemote As Boolean) As Collection
       cInfo["author"] = cData["Last Changed Author"]
       cInfo["date"] = FormatSvnDate(cData["Last Changed Date"])
       cInfo["url"] = sUrl
+      cInfo["path"] = cData["Working Copy Root Path"]
       
     Endif
     
@@ -570,10 +571,10 @@ Public Sub Info(bRemote As Boolean) As Collection
   
 End
 
-Public Sub CleanUp()
+Public Sub CleanUp(sPath As String)
   
   If $bSVN Then
-    Run(["svn", "cleanup", SvnPath$(File.Dir(Project.Dir))])
+    Run(["svn", "cleanup", SvnPath$(sPath)])
   Endif
   
 End

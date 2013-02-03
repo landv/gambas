@@ -320,6 +320,11 @@ Public Sub InitControl()
   ' IF hCtrl <> hWin THEN
   '   TRY hCtrl.Delete
   ' ENDIF
+  
+  If DefaultWidth = 0 Or If DefaultHeight = 0 Then
+    DefaultWidth = 8 * Desktop.Scale
+    DefaultHeight = 8 * Desktop.Scale
+  Endif
 End
 
 
