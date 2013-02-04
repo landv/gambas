@@ -45,7 +45,7 @@ Static Public Sub Run()
 End
 
 Public Sub _new()
-  
+
   With cvwTranslate
     .AutoResize = False
     .Columns.Count = 4
@@ -69,52 +69,51 @@ Public Sub _new()
     .Columns[2].Text = ("File")
     .Columns[3].Text = ("Size")
     .Columns[3].Alignment = Align.Right
-  End With  
-  
+  End With
+
 End
 
 Private Sub GetTransCount(sLang As String) As Integer
-  
+
   Dim hFile As File
   Dim iVal As Integer
-  
-  If Not Exist(Language.GetPath(sLang, "mo")) Then Return 
-  
+
+  If Not Exist(Language.GetPath(sLang, "mo")) Then Return
+
   hFile = Open Language.GetPath(sLang, "mo")
-  
+
   iVal = Read #hFile As Integer
   If (iVal = &H950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
     hFile.ByteOrder = gb.LittleEndian
-  Else 
+  Else
     hFile.ByteOrder = gb.BigEndian
   Endif
   iVal = Read #hFile As Integer
   iVal = Read #hFile As Integer
-  
+
   Close #hFile
-  
+
   Return iVal - 1
-  
+
 End
 
 Private Sub DisplayCompiledTrans(sLang As String, Optional nTrans As Integer)
-  
+
   Dim nStr As Integer
 
   If nTrans = 0 Then nTrans = cvwTranslateOrg.Count
-  
+
   Try nStr = GetTransCount(sLang)
   If Not Error Then
     'DEBUG sLang;; nStr;; nTrans
     cvwLang[sLang][1] = Min(100, (nStr * 100) \ nTrans) & "% "
-  Else 
+  Else
     cvwLang[sLang][1] = "?"
   Endif
   cvwLang[sLang][2] = sLang & ".po"
   Try cvwLang[sLang][3] = Project.GetFileSize(Stat(Language.GetPath(sLang, "po")).Size)
-  
-End
 
+End
 
 Public Sub Form_Open()
 
@@ -124,9 +123,9 @@ Public Sub Form_Open()
   Inc Application.Busy
 
   $sLang = ""
-  
+
   Settings.Read(Me)
-  
+
   $bStatValid = False
 
   cvwLang.Clear
@@ -134,7 +133,7 @@ Public Sub Form_Open()
   cmbLangSource.Clear
   cmbLangSource.Add(("(Default)"))
   For Each sLang In Language.GetAll()
-    If Project.HasTranslation(sLang) Then 
+    If Project.HasTranslation(sLang) Then
       cvwLang.Add(sLang, Language.ToName(sLang))
       cmbLang.Add(Language.ToName(sLang))
       cmbLangSource.Add(Language.ToName(sLang))
@@ -154,15 +153,13 @@ Public Sub Form_Open()
 
   Dec Application.Busy
 
-  If SetLang() Then 
+  If SetLang() Then
     Me.Close
   Endif
-  
+
   tabTranslate_Click
-  
+
 End
-
-
 
 Private Sub SetLang(Optional sLang As String) As Boolean
 
@@ -199,21 +196,21 @@ Private Sub SetLang(Optional sLang As String) As Boolean
     'SHELL "cp " & Project.Quote(sDir &/ ".pot") & " " & Project.Quote(sPath) WAIT
   Else
     Try MergeMessage(sPath, Shell$(sPath) & " " & Shell$(sDir &/ ".pot"))
-    If Error Then 
+    If Error Then
       Debug $sErrMerge
-      Copy sDir &/ ".pot" To sPath 
+      Copy sDir &/ ".pot" To sPath
       Return True
     Endif
-'     SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(sPath) & " " & Project.Quote(sDir &/ ".pot") & " > " & Project.Quote(sTemp) & " 2>&1" WAIT
-'     IF Exist(sPath & ".new") THEN
-'       KILL sPath
-'       RENAME sPath & ".new" AS sPath
-'     ELSE
-'       PRINT "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(sPath) & " " & Project.Quote(sDir &/ ".pot") & " > " & Project.Quote(sTemp) & " 2>&1"
-'       PRINT File.Load(sTemp)
-'       Error.Raise(("The 'msgmerge' command has failed"))
-'     ENDIF
-'     TRY KILL sTemp
+    '     SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(sPath) & " " & Project.Quote(sDir &/ ".pot") & " > " & Project.Quote(sTemp) & " 2>&1" WAIT
+    '     IF Exist(sPath & ".new") THEN
+    '       KILL sPath
+    '       RENAME sPath & ".new" AS sPath
+    '     ELSE
+    '       PRINT "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(sPath) & " " & Project.Quote(sDir &/ ".pot") & " > " & Project.Quote(sTemp) & " 2>&1"
+    '       PRINT File.Load(sTemp)
+    '       Error.Raise(("The 'msgmerge' command has failed"))
+    '     ENDIF
+    '     TRY KILL sTemp
   Endif
 
   cvwTranslate.Clear
@@ -238,12 +235,12 @@ Private Sub SetLang(Optional sLang As String) As Boolean
     cvwTranslate[iIndex][2] = hTrans.Comments[sMsgId]
     cvwTranslate[iIndex][3] = sMsgId
   Next
-  
+
   $nTrans = hTrans.Translations.Count
 
   MakeFileChoice
   UpdateOrg(True)
-  
+
   'cvwTranslate.Columns[1].Text = Language.ToName(sLang)
 
   txtOrig.Text = ""
@@ -263,12 +260,12 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   $sLang = sLang
   $sPath = sPath
   $bModify = False
-  
+
   sName = Language.ToName($sLang)
   Try cvwLang.Add($sLang, sName)
   If Not Error Then cmbLang.Add(sName)
   'If Not Error And If chkStat.Value Then cvwLang[$sLang][1] = "0%"
-  
+
   'Try cvwLang[$sLang].Selected = True
   Try cmbLang.Index = cmbLang.Find(sName)
 
@@ -287,7 +284,6 @@ Catch
   Return True
 
 End
-
 
 Public Sub btnOK_Click()
 
@@ -334,7 +330,7 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
   Dim sStr As String
   Dim bTrans As Boolean
 
-  hFic = Open sPath For Create 
+  hFic = Open sPath For Create
 
   Print #hFic, $sHeader
 
@@ -373,7 +369,7 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
   End With
 
   Close #hFic
-  
+
   Return Not bTrans
 
 End
@@ -386,25 +382,25 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
   If Not $sLang Then Return
 
-  If Not $bDeleteIfVoid Then  
+  If Not $bDeleteIfVoid Then
     If Not ($bModify Or bForce) Then Return
   Endif
 
   UpdateOrg()
-  
+
   sPathMO = Left$($sPath, -3) & ".mo"
   bExistMO = Exist(sPathMO)
-  
-  If $nTrans = 0 Then 
+
+  If $nTrans = 0 Then
     VersionControl.RemoveFile($sPath, True)
     Try Kill $sPath
-    If bExistMO Then 
+    If bExistMO Then
       VersionControl.RemoveFile(sPathMO, True)
       Try Kill sPathMO
     Endif
-    Return    
+    Return
   Endif
-  
+
   Inc Application.Busy
 
   'PRINT "Saving "; $sPath
@@ -417,7 +413,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
     Move $sPath & ".new" To $sPath
 
     Shell "msgfmt -o " & Shell$(sPathMO) & " " & Shell$($sPath) Wait
-    
+
     If Not bExistMO Then VersionControl.AddFile(sPathMO)
 
   Else
@@ -431,7 +427,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
     Endif
 
   Endif
-  
+
   DisplayCompiledTrans($sLang)
 
   $bModify = False
@@ -447,7 +443,6 @@ Catch
 
 End
 
-
 Private Function QuoteTranslation(sStr As String) As String
 
   sStr = Replace(sStr, "\n", "")
@@ -460,19 +455,19 @@ Private Function QuoteTranslation(sStr As String) As String
 End
 
 ' Private Function QuoteTranslation(sStr As String) As String
-' 
+'
 '   sStr = Replace(sStr, "\n", "")
 '   sStr = Replace(sStr, "\\n", "\n")
 '   Return Quote(sStr)
-' 
+'
 ' End
 
 ' Private Function UnQuoteTranslation(sStr As String) As String
-' 
+'
 '   sStr = Unquote(sStr)
 '   sStr = Replace(sStr, "\n", "\\n")
 '   Return sStr
-' 
+'
 ' End
 
 Public Sub btnSave_Click()
@@ -533,25 +528,24 @@ Public Sub txtFind_Activate()
 End
 
 ' Public Sub cvwLang_Select()
-' 
+'
 '   Dim sLang As String = cvwLang.Item.Key
-' 
+'
 '   If sLang = $sLang Then Return
-' 
+'
 '   SetLang(sLang)
-' 
+'
 ' End
 
 Public Sub cmbLang_Click()
-  
+
   Dim sLang As String = Language.FromName(cmbLang.Text)
 
   If sLang = $sLang Then Return
 
   SetLang(sLang)
-  
-End
 
+End
 
 Public Sub mnuDelete_Click()
 
@@ -568,7 +562,7 @@ Public Sub mnuDelete_Click()
     .MoveFirst()
     .Item.Selected = True
     .Item.EnsureVisible()
-    
+
     $nTrans = 0
 
   End With
@@ -588,51 +582,51 @@ Public Sub mnuNew_Click()
 
   SetLang(sLang)
 
-'   IF sLang = $sLang THEN
-'     Message(("This is the same translation !"))
-'     RETURN
-'   ENDIF
-' 
-'   IF Message.Question(("Do you really want to replace this translation ?"), ("Replace"), ("Cancel")) = 2 THEN RETURN
-' 
-'   'TRY KILL Project.Dir &/ $sLang & ".po"
-'   SHELL "cp -f " & Project.Quote(Project.Dir &/ ".lang" &/ sLang & ".po") & " " & Project.Quote(Project.Dir &/ ".lang" &/ $sLang & ".po") WAIT
-' 
-'   SetLang($sLang)
+  '   IF sLang = $sLang THEN
+  '     Message(("This is the same translation !"))
+  '     RETURN
+  '   ENDIF
+  '
+  '   IF Message.Question(("Do you really want to replace this translation ?"), ("Replace"), ("Cancel")) = 2 THEN RETURN
+  '
+  '   'TRY KILL Project.Dir &/ $sLang & ".po"
+  '   SHELL "cp -f " & Project.Quote(Project.Dir &/ ".lang" &/ sLang & ".po") & " " & Project.Quote(Project.Dir &/ ".lang" &/ $sLang & ".po") WAIT
+  '
+  '   SetLang($sLang)
 
 End
 
 Public Sub txtTranslate_KeyPress()
-  
+
   If Key.Alt Then
     With cvwTranslate
-        If Key.Code = Key["Up"] Then
-          .MoveTo(.Key)
-          .MoveAbove()
-          If .Available Then
-            .Item.Selected = True
-            .Item.EnsureVisible()
-          Endif
-        Else If Key.Code = Key["Down"] Then
-          .MoveTo(.Key)
-          .MoveBelow()
-          If .Available Then
-            .Item.Selected = True
-            .Item.EnsureVisible()
-          Endif
+      If Key.Code = Key["Up"] Then
+        .MoveTo(.Key)
+        .MoveAbove()
+        If .Available Then
+          .Item.Selected = True
+          .Item.EnsureVisible()
         Endif
+      Else If Key.Code = Key["Down"] Then
+        .MoveTo(.Key)
+        .MoveBelow()
+        If .Available Then
+          .Item.Selected = True
+          .Item.EnsureVisible()
+        Endif
+      Endif
     End With
   Else If Key.Shift Then
-      If Key.Code = Key.F4 Then
-        btnPrevious_Click()
-      Endif 
+    If Key.Code = Key.F4 Then
+      btnPrevious_Click()
+    Endif
   Else If Key.Control Then
-      If Key.Code = Key["F"] Then
-        txtFind.SetFocus
-      Endif 
+    If Key.Code = Key["F"] Then
+      txtFind.SetFocus
+    Endif
   Else If Key.Normal Then
     Select Case Key.Code
-      Case Key.F3 
+      Case Key.F3
         txtFind_Click
       Case Key.F4
         btnNext_Click
@@ -644,9 +638,9 @@ Public Sub txtTranslate_KeyPress()
         btnVerify_Click
       Case Key.F8
         btnClear_Click
-    End Select 
+    End Select
   Endif
-  
+
 End
 
 Public Sub mnuReload_Click()
@@ -698,29 +692,27 @@ Public Sub mnuExportUntranslated_Click()
 End
 
 Private Sub InitIndex()
-  
+
   $cCacheImport = New Collection
-  
+
   cvwTranslate.MoveFirst
   While cvwTranslate.Available
     'Debug cvwTranslate.Item[0]; "|"; cvwTranslate.Item[1]; "|"; cvwTranslate.Item[2]; "|"; cvwTranslate.Item[3]
     $cCacheImport[cvwTranslate.Item[3]] = CInt(cvwTranslate.Item.Key)
     cvwTranslate.MoveNext
   Wend
-  
-End
 
+End
 
 Private Sub FindIndex(sMsgId As String) As Integer
 
   'sMsgId = Trim(sMsgId)
   If Not sMsgId Then Return
-  If $cCacheImport.Exist(sMsgId) Then 
+  If $cCacheImport.Exist(sMsgId) Then
     Return $cCacheImport[sMsgId]
   Endif
-  
-End
 
+End
 
 Private Sub ImportMessage(sPath As String) As Integer
 
@@ -734,17 +726,17 @@ Private Sub ImportMessage(sPath As String) As Integer
   Dim iIndex As Integer
   Dim nTrans As Integer
   Dim sCharset As String
-  
+
   ' sTemp = Temp$()
   ' sOutput = Temp$()
   ' Shell "msgconv -t UTF-8 -o " & Quote.Shell(sTemp) & " " & Quote.Shell(sPath) & " > " & Quote.Shell(sOutput) & " 2>&1" Wait
-  ' If Process.LastValue Then 
+  ' If Process.LastValue Then
   '   $sErrMerge = "\n\n" & DConv(File.Load(sOutput))
   '   Error.Raise(("Unable to convert translation file to UTF-8."))
   ' Endif
-  
+
   InitIndex
-  
+
   hFic = Open sPath
 
   Do
@@ -805,26 +797,26 @@ Private Sub ImportMessage(sPath As String) As Integer
     If Trim(sMsgId) Then
 
       iIndex = FindIndex(sMsgId)
-        
+
       If iIndex > 0 And If cvwTranslate[iIndex][1] = "" Then
-      
+
         If sCharset Then sMsgStr = Conv(sMsgStr, sCharset, "UTF-8")
-      
+
         If sMsgStr = "-\\n" Then sMsgStr = "-"
-  
+
         If bFuzzy Then
           bFuzzy = False
         Else
           'Debug sMsgId
           cvwTranslate[iIndex][1] = sMsgStr
-          If sMsgStr Then 
+          If sMsgStr Then
             Inc $nTrans
             Inc nTrans
           Endif
         Endif
-          
+
       Endif
-      
+
     Endif
 
     sMsgId = ""
@@ -835,13 +827,12 @@ Private Sub ImportMessage(sPath As String) As Integer
     If Eof(hFic) Then Break
 
   Loop
-  
+
   Close hFic
 
   Return nTrans
-  
-End
 
+End
 
 Public Sub btnImport_Click()
 
@@ -857,13 +848,13 @@ Public Sub btnImport_Click()
       Return
     Endif
   Endif
-  
+
   Settings["/FTranslate/ImportPath"] = sTransDir
 
   'If IsDir(Dialog.Path) Then
   '  If Message.Warning("You have selected a directory. Do you want to browse it recursively and import all found translation files?", ("Cancel"), ("Browse")) = 1 Then Return
   'Endif
-  
+
   ' If Not (File.BaseName(Dialog.Path) Like (Project.Name & "-" & $sLang & "-*")) Then
   '   If Message.Warning(("Warning ! The translation file does not match the current language."), ("Continue"), ("Cancel")) <> 1 Then
   '     Return
@@ -883,7 +874,7 @@ Public Sub btnImport_Click()
   Else
     nTrans = ImportMessage(sTransDir &/ sTrans)
   Endif
-  
+
   DisplayTrans
   $bModify = True
   SaveTranslate
@@ -897,7 +888,6 @@ Public Sub btnImport_Click()
   Else If nTrans > 0
     Message.Info(Subst(("&1 translations were picked up."), nTrans))
   Endif
-
 
   'SaveTranslate(TRUE)
 
@@ -933,7 +923,6 @@ Private Function GetSymbols(sStr As String) As String
   Return sSym
 
 End
-
 
 Public Sub btnVerify_Click()
 
@@ -986,7 +975,7 @@ End
 Private Sub DisplayTrans()
 
   Dim nNotTrans As Integer
-  
+
   nNotTrans = cvwTranslate.Count - $nTrans
 
   If nNotTrans = 0 Then
@@ -1002,12 +991,12 @@ Private Sub DisplayTrans()
 End
 
 ' PUBLIC SUB Form_Resize()
-' 
+'
 '   DIM H AS Integer
 '   DIM D AS Integer
-' 
+'
 '   D = ME.ClientH - cvwTranslate.Y - 120
-' 
+'
 '   H = (D - TABLE_HEIGHT_MAX) \ 2
 '   IF H < 48 THEN
 '     cvwTranslate.H = D - 48 * 2
@@ -1015,22 +1004,22 @@ End
 '   ELSE
 '     cvwTranslate.H = TABLE_HEIGHT_MAX
 '   ENDIF
-' 
+'
 '   cvwTranslate.W = ME.ClientW - 16
 '   ResizeTable
-' 
+'
 '   lblOrig.Move(8, cvwTranslate.Y + cvwTranslate.H + 8)
 '   lblComment.Move(lblOrig.X + lblOrig.W, lblOrig.Y)
 '   lblComment.W = ME.ClientW - lblComment.X - 8
 '   txtOrig.Move(8, lblOrig.Y + lblOrig.H, cvwTranslate.W, H)
-' 
+'
 '   panTranslate.Move(ME.ClientW - panTranslate.W, txtOrig.Y + txtOrig.H + 8)
 '   lblTranslation.Y = panTranslate.Y + 8
 '   txtTranslate.Move(8, lblTranslation.Y + lblTranslation.H, cvwTranslate.W, H)
 '   lblInfo.Y = ME.ClientH - lblInfo.H - 8
 '   btnOK.Move(ME.CLientW - btnOK.W - 8, ME.CLientH - btnOK.H - 8)
-' 
-' 
+'
+'
 ' END
 
 Private Sub ResizeTable()
@@ -1040,7 +1029,7 @@ Private Sub ResizeTable()
     .Columns[1].Width = .ClientW - .Columns[0].Width '- 16
     .Columns[2].Width = 0 ' = TRUE
   End With
-  
+
 End
 
 Public Sub btnNext_Click()
@@ -1119,7 +1108,7 @@ Private Sub MergeMessage(sPath As String, sOption As String)
     'PRINT "msgmerge -o " & sOption
     $sErrMerge = "\n\n" & DConv(File.Load(sTemp))
     Try Kill sTemp
-    Error.Raise(("The 'msgmerge' command has failed"))
+    Error.Raise(Subst$(("The '&1' command has failed."), "msgmerge"))
   Endif
 
 End
@@ -1145,43 +1134,43 @@ Public Sub cmbFileChoice_Click()
 End
 
 ' PRIVATE SUB MakeFileChoice()
-' 
+'
 '   DIM sTempIn AS String
 '   DIM sTemp AS String
 '   DIM sControl AS String
 '   DIM myPattern AS String = " "
 '   DIM iPos AS Integer
 '   DIM aChoice AS NEW String[]
-' 
+'
 '   cbxFileChoice.Clear
 '   cbxFileChoice.Add("(" & ("All files") & ")")
-' 
+'
 '   WITH cvwTranslate
 '     .MoveFirst
 '     DO WHILE .Available
 '       sTempIn = .Item[2] & myPattern
-'       DO 
+'       DO
 '         iPos = InStr(sTempIn, myPattern, iPos)
-'         IF iPos = 0 THEN 
-'           BREAK 
-'         ELSE 
+'         IF iPos = 0 THEN
+'           BREAK
+'         ELSE
 '           sTemp = Left(sTempIn, iPos)
 '           sTempIn = Mid(sTempIn, iPos)
 '           sTemp = "." & Trim(Left(sTemp, InStr(sTemp, ".")))
-'           IF InStr(sControl, sTemp) = 0 THEN 
+'           IF InStr(sControl, sTemp) = 0 THEN
 '             sControl = sControl & sTemp
 '             aChoice.Add(Replace(sTemp, ".", ""))
-'           ENDIF 
-'         ENDIF 
-'       LOOP 
+'           ENDIF
+'         ENDIF
+'       LOOP
 '       .MoveNext
 '     LOOP
 '   END WITH
-' 
-'   cbxFileChoice.Sorted = TRUE 
-' 
+'
+'   cbxFileChoice.Sorted = TRUE
+'
 ' END
-' 
+'
 Private Sub MakeFileChoice()
 
   Dim sFile As String
@@ -1223,7 +1212,7 @@ Private Sub ShiftToSort(Optional sSortText As String)
   Dim nI As Integer
 
   UpdateOrg()
-  
+
   'sSearchText = " " & sSortText
   $nTrans = 0
   sLastKey = cvwTranslate.Key
@@ -1234,54 +1223,54 @@ Private Sub ShiftToSort(Optional sSortText As String)
       sTempIn = .Item[2]
       If sSortText Then
         iPos = InStr(" " & sTempIn, " " & sSortText)
-      Else 
+      Else
         iPos = -1
       Endif
-        
-      If iPos <> 0 Then 
+
+      If iPos <> 0 Then
         sKey = .Item.Key
         cvwTranslate.Add(sKey, .Item[0])
         If .Item[1] Then Inc $nTrans
         For ni = 1 To .Columns.Count - 1
           cvwTranslate.Item[nI] = .Item[nI]
-        Next  
-      Endif 
-      
+        Next
+      Endif
+
       .MoveNext
     Loop
-    
+
   End With
-  
+
   Try cvwTranslate.MoveTo(sLastKey)
-  If Not cvwTranslate.Available Then 
+  If Not cvwTranslate.Available Then
     cvwTranslate.MoveFirst
-  Endif 
+  Endif
   cvwTranslate.item.Selected = True
   cvwTranslate.Item.EnsureVisible()
   DisplayTrans
-  ResizeTable  
-  
+  ResizeTable
+
 End
 
 Private Sub UpdateOrg(Optional bNew As Boolean)
 
   Dim nI As Integer
   Dim sKey As String
-  
+
   If bNew Then cvwTranslateOrg.Clear
   With cvwTranslate
     .MoveFirst
     Do While .Available
       sKey = .Item.Key
-      If bNew Then 
+      If bNew Then
         cvwTranslateOrg.Add(sKey, .Item[0])
         For ni = 1 To .Columns.Count - 1
           cvwTranslateOrg.Item[nI] = .Item[nI]
-        Next  
+        Next
       Else
         cvwTranslateOrg.MoveTo(sKey)
-        cvwTranslateOrg.Item[1] = .Item[1] 
-      Endif 
+        cvwTranslateOrg.Item[1] = .Item[1]
+      Endif
       .MoveNext
     Loop
   End With
@@ -1289,7 +1278,7 @@ Private Sub UpdateOrg(Optional bNew As Boolean)
 End
 
 Private Sub UpdateStat()
-  
+
   Dim sLang As String
   Dim nTrans As Integer
   Dim sRes As String
@@ -1299,32 +1288,32 @@ Private Sub UpdateStat()
   If $bStatValid Then Return
 
   Inc Application.Busy
-  
+
   cvwLang.Header = True
-  
+
   Shell "grep -c \"^msgid\" " & Shell$(Project.Dir &/ ".lang/.pot") To sRes
   nTrans = Val(sRes) - 1 ' Remove the < msgid "" > line
 
   For Each sLang In Language.GetAll()
-    If Project.HasTranslation(sLang) Then  
+    If Project.HasTranslation(sLang) Then
       DisplayCompiledTrans(sLang, nTrans)
     Endif
   Next
-  
+
   'cvwLang.Resizable = True
   For iCol = 0 To 3
     cvwLang.Columns[iCol].Width = -1
   Next
   'cvwLang.Resizable = False
-  
+
   For iCol = 0 To 3
     iWidth += cvwLang.Columns[iCol].Width
   Next
-  
+
   $bStatValid = True
-  
+
   Dec Application.Busy
-    
+
 End
 
 Public Sub panLang_Resize()
@@ -1345,21 +1334,21 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
   Dim iComp As Integer
 
   iComp = String.Comp(cvwLang[Key][0], cvwLang[OtherKey][0])
-  
+
   Select Case cvwLang.Columns.Sort
-  
+
     Case 1
       iVal = CInt(Trim$(Replace(cvwLang[Key][1], "%", "")))
       iOtherVal = CInt(Trim(Replace(cvwLang[OtherKey][1], "%", "")))
-      If iVal < iOtherVal Then 
+      If iVal < iOtherVal Then
         iComp = 1
-      Else If iVal > iOtherVal Then 
+      Else If iVal > iOtherVal Then
         iComp = -1
       Endif
-  
+
     Case 2
       iComp = String.Comp(cvwLang[Key][2], cvwLang[OtherKey][2])
-      
+
     Case 3
       iVal = Stat(Language.GetPath(Key, "po")).Size
       iOtherVal = Stat(Language.GetPath(OtherKey, "po")).Size
@@ -1368,13 +1357,13 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
       Else If iVal > iOtherVal Then
         iComp = 1
       Endif
-  
+
   End Select
 
 Finally
 
   cvwLang.Compare = iComp
-  
+
 End
 
 Public Sub panTranslate_Arrange()
@@ -1394,7 +1383,6 @@ Public Sub chkBrowse_Click()
   dchImport.FileView.Enabled = chkBrowse.Value = 0
 
 End
-
 
 Public Sub cmbLangSource_Click()
 

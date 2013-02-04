@@ -222,7 +222,7 @@ Public Sub InitWebView()
     WebSettings.Cache.Path = sPath
     WebSettings.Cache.Enabled = True
   Endif
-  
+
   'WebSettings.Fonts.StandardFont = Application.Font.Name
   WebSettings.Fonts.SansSerifFont = Application.Font.Name
   WebSettings.Fonts.DefaultFontSize = Application.Font.Height * 1.2
@@ -242,7 +242,7 @@ Public Sub Main()
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
 
   'DB.Debug = True
-  
+
   For iInd = 1 To Args.Count - 1
     sArg = Args[iInd]
     If sArg = "-t" Then
@@ -294,7 +294,7 @@ Public Sub Main()
 
   If Fonts.Exist("Gambas") Then
     DEFAULT_FONT = "Gambas,9"
-  Else If Fonts.Exist("Terminus") Then 
+  Else If Fonts.Exist("Terminus") Then
     DEFAULT_FONT = "Terminus,9"
   Endif
 
@@ -305,10 +305,10 @@ Public Sub Main()
   Application.MainWindow = FMain
 
   ' Do
-  ' 
+  '
   '   If Not sPath Then sPath = FWelcome.Run()
   '   'sPath = User.Home &/ "gambas/test/gambas"
-  ' 
+  '
   '   If sPath Then
   '     Project.Open(sPath)
   '   Else
@@ -316,15 +316,15 @@ Public Sub Main()
   '     FMain.Close
   '     Return
   '   Endif
-  ' 
+  '
   '   If Project.Name Then Break
-  ' 
+  '
   '   sPath = ""
-  ' 
+  '
   ' Loop
 
   Inc Application.Busy
-  
+
   If sPath Then Project.Open(sPath)
 
   'FProperty.Show
@@ -332,7 +332,7 @@ Public Sub Main()
   'FFormStack.Load
 
   'If Settings["/ShowMascot", False] Then FMain.ShowShow
-  FHelpBrowser.Load 
+  FHelpBrowser.Load
   FMain.Show
   RefreshActivate
 
@@ -862,20 +862,20 @@ Private Sub AddLinkEmblem(hSource As Image) As Image
 End
 
 ' Private Sub MakeExportedIcon(hImage As Image)
-' 
+'
 '   Dim X, Y As Integer
 '   Dim iCol As Integer
 '   Dim hColorInfo As ColorInfo
-' 
+'
 '   For X = 0 To hImage.W - 1
 '     For Y = 0 To hImage.H - 1
-' 
+'
 '       iCol = hImage[X, Y]
 '       ' With Color[Color.Desaturate(iCol)]
 '       '   iGray = (255 - .Blue) * (255 - .Alpha) / 255
 '       ' End With
 '       ' Print Mid$(" .,-~+=oOINS8&%@", iGray \ 16 + 1, 1);
-' 
+'
 '       If Color.GetAlpha(iCol) > 192 Then Continue
 '       If X = 0 Or If X = (hImage.W - 1) Or If Y = 0 Or If Y = (hImage.H - 1) Or If Color[hImage[X - 1, Y]].Alpha = 255 Or If Color[hImage[X + 1, Y]].Alpha = 255 Or If Color[hImage[X, Y - 1]].Alpha = 255 Or If Color[hImage[X, Y + 1]].Alpha = 255 Then
 '         hColorInfo = Color[Color.Darker(iCol)]
@@ -884,7 +884,7 @@ End
 '       Endif
 '     Next
 '   Next
-' 
+'
 ' End
 
 Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean) As Image
@@ -2320,14 +2320,14 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   sBefore = GetInfoFile()
 
   sExec = GetCompileCommand(bAll, bNoDebug, bMakeExecutable, True)
-  
+
   iPos = Environment.Find("GB_PCODE_VERSION=*", gb.Like)
   If iPos >= 0 Then
     Shell sExec With [Environment[iPos]] Wait
   Else
     Shell sExec Wait
   Endif
-  
+
   bGotError = Process.LastValue
 
   sOutput = Trim(File.Load(OUTPUT_FILE))
@@ -4249,16 +4249,16 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String)
   sCmd &= " " & Shell$(File.Name(sFrom)) & " > /dev/null"
 
   Shell sCmd Wait
-  If Not Exist(sTemp) Then Error.Raise(("The 'tar' command has failed."))
+  If Not Exist(sTemp) Then Error.Raise(Subst$(("The '&1' command has failed."), "tar"))
 
   Try Kill sPath
   Copy sTemp To sPath
   Try Kill sTemp
 
   Dec Application.Busy
-  
+
 Catch
-  
+
   Dec Application.Busy
   Message.Error(("Unable to create source archive.") & "\n\n" & Error.Text)
 
@@ -5367,9 +5367,9 @@ Public Sub SendMail()
 End
 
 Public Sub GetBackground() As Picture
-  
+
   Dim sBackground As String
-  
+
   If Not $bBackgroundValid Then
     $hBackground = Null
     sBackground = Settings["/Background", "tawhid"]
@@ -5378,25 +5378,25 @@ Public Sub GetBackground() As Picture
     Endif
     $bBackgroundValid = True
   Endif
-  
+
   Return $hBackground
-  
+
 End
 
 Public Sub DrawBackground()
-  
+
   GetBackground()
   If $hBackground Then Draw.Tile($hBackground, 0, 0, Draw.W, Draw.H)
-  
+
 End
 
 Public Sub SetBackground(sBackground As String)
-  
+
   If sBackground = "tawhid" Then sBackground = ""
   Settings["/Background"] = sBackground
   $bBackgroundValid = False
   GetBackground()
   Try ActiveForm.OnBackgroundChange
   FMain.OnBackgroundChange
-  
+
 End

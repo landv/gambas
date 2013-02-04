@@ -10,14 +10,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .project:1
-msgid "Gambas 3"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
-msgstr ""
-
 #: CBookmark.class:33
 msgid "Define bookmark"
 msgstr ""
@@ -485,6 +477,48 @@ msgstr ""
 msgid "Gambas reports"
 msgstr ""
 
+#: ComponentItem.class:139 FProjectProperty.class:1230
+#: FPropertyComponent.form:78
+msgid "Experimental"
+msgstr ""
+
+#: ComponentItem.class:141 FProjectProperty.class:1228
+#: FPropertyComponent.form:78
+msgid "Not finished but stable"
+msgstr ""
+
+#: ComponentItem.class:144 ProjectItem.class:82
+msgid "Authors"
+msgstr ""
+
+#: ComponentItem.class:153
+msgid "Excludes"
+msgstr ""
+
+#: ComponentItem.class:159
+msgid "Implements"
+msgstr ""
+
+#: ComponentItem.class:240
+msgid "This component is required by the following library:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:242
+msgid "This component is required by the following libraries:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:251
+msgid "This component is required by:<p>&1"
+msgstr ""
+
+#: ComponentItem.class:252
+msgid "Keep"
+msgstr ""
+
+#: ComponentItem.class:252 FDebugInfo.form:157
+msgid "Remove all"
+msgstr ""
+
 #: CProfile.class:111
 msgid "Evaluator"
 msgstr ""
@@ -547,8 +581,8 @@ msgstr ""
 #: FReportBrushChooser.form:34 FReportCoordChooser.form:26
 #: FReportPaddingChooser.form:75 FSave.form:28 FSaveProjectAs.form:76
 #: FSearch.class:865 FSelectExtraFile.form:43 FSelectIcon.form:87
-#: FSnippet.form:57 FTableChooser.form:68 FText.form:41 FTextEditor.class:596
-#: FTranslate.class:558 Project.module:468
+#: FSnippet.form:57 FTableChooser.form:68 FTextEditor.class:596 FText.form:41
+#: FTranslate.class:552 Project.module:468
 msgid "Cancel"
 msgstr ""
 
@@ -558,48 +592,6 @@ msgstr ""
 
 #: CWelcome.class:41
 msgid "The Gambas font is published under the SIL Open Font License."
-msgstr ""
-
-#: ComponentItem.class:139 FProjectProperty.class:1230
-#: FPropertyComponent.form:78
-msgid "Experimental"
-msgstr ""
-
-#: ComponentItem.class:141 FProjectProperty.class:1228
-#: FPropertyComponent.form:78
-msgid "Not finished but stable"
-msgstr ""
-
-#: ComponentItem.class:144 ProjectItem.class:82
-msgid "Authors"
-msgstr ""
-
-#: ComponentItem.class:153
-msgid "Excludes"
-msgstr ""
-
-#: ComponentItem.class:159
-msgid "Implements"
-msgstr ""
-
-#: ComponentItem.class:240
-msgid "This component is required by the following library:<p>&1"
-msgstr ""
-
-#: ComponentItem.class:242
-msgid "This component is required by the following libraries:<p>&1"
-msgstr ""
-
-#: ComponentItem.class:251
-msgid "This component is required by:<p>&1"
-msgstr ""
-
-#: ComponentItem.class:252
-msgid "Keep"
-msgstr ""
-
-#: ComponentItem.class:252 FDebugInfo.form:157
-msgid "Remove all"
 msgstr ""
 
 #: Design.module:159 Project.module:2082
@@ -830,7 +822,7 @@ msgstr ""
 
 #: FConnectionEditor.form:108 FEditor.form:318 FForm.form:417
 #: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:62
-#: FTextEditor.form:231 FTranslate.class:654
+#: FTextEditor.form:231 FTranslate.class:648
 msgid "Reload"
 msgstr ""
 
@@ -927,7 +919,7 @@ msgid "Export..."
 msgstr ""
 
 #: FConnectionEditor.form:460 FForm.form:268 FMain.class:209
-#: FNewConnection.class:325 FOption.class:857 FTranslate.class:558
+#: FNewConnection.class:325 FOption.class:857 FTranslate.class:552
 msgid "Delete"
 msgstr ""
 
@@ -1067,7 +1059,7 @@ msgstr ""
 msgid "CSV files"
 msgstr ""
 
-#: FConnectionEditor.class:1421 FTranslate.class:1207
+#: FConnectionEditor.class:1421 FTranslate.class:1196
 msgid "All files"
 msgstr ""
 
@@ -1407,7 +1399,7 @@ msgstr ""
 msgid "Show search window"
 msgstr ""
 
-#: FDebugInfo.form:325 FSearch.class:486 FTranslate.class:519
+#: FDebugInfo.form:325 FSearch.class:486 FTranslate.class:514
 msgid "Search string cannot be found."
 msgstr ""
 
@@ -3618,7 +3610,7 @@ msgstr ""
 msgid "Desktop"
 msgstr ""
 
-#: FOption.class:75 FTranslate.class:135
+#: FOption.class:75 FTranslate.class:134
 msgid "(Default)"
 msgstr ""
 
@@ -4076,6 +4068,38 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
+#: FPropertyComponent.form:71
+msgid "Component advancement"
+msgstr ""
+
+#: FPropertyComponent.form:78
+msgid "Finished and stable"
+msgstr ""
+
+#: FPropertyComponent.form:89
+msgid "This component is hidden"
+msgstr ""
+
+#: FPropertyComponent.form:106
+msgid "Compatible until version"
+msgstr ""
+
+#: FPropertyComponent.form:131
+msgid "Exported classes"
+msgstr ""
+
+#: FPropertyComponent.form:145
+msgid "Features"
+msgstr ""
+
+#: FPropertyComponent.form:230
+msgid "Remove All"
+msgstr ""
+
+#: FPropertyComponent.class:153
+msgid "Cannot write component description file."
+msgstr ""
+
 #: FProperty.form:47
 msgid "Lock property"
 msgstr ""
@@ -4125,38 +4149,6 @@ msgstr ""
 
 #: FProperty.class:945
 msgid "Select a file"
-msgstr ""
-
-#: FPropertyComponent.form:71
-msgid "Component advancement"
-msgstr ""
-
-#: FPropertyComponent.form:78
-msgid "Finished and stable"
-msgstr ""
-
-#: FPropertyComponent.form:89
-msgid "This component is hidden"
-msgstr ""
-
-#: FPropertyComponent.form:106
-msgid "Compatible until version"
-msgstr ""
-
-#: FPropertyComponent.form:131
-msgid "Exported classes"
-msgstr ""
-
-#: FPropertyComponent.form:145
-msgid "Features"
-msgstr ""
-
-#: FPropertyComponent.form:230
-msgid "Remove All"
-msgstr ""
-
-#: FPropertyComponent.class:153
-msgid "Cannot write component description file."
 msgstr ""
 
 #: FProxy.form:20
@@ -4419,14 +4411,6 @@ msgstr ""
 msgid "Choose a table"
 msgstr ""
 
-#: FText.form:12
-msgid "Edit text property"
-msgstr ""
-
-#: FText.form:30
-msgid "Use a fixed font"
-msgstr ""
-
 #: FTextEditor.form:188
 msgid "Compress file"
 msgstr ""
@@ -4445,6 +4429,14 @@ msgstr ""
 
 #: FTextEditor.class:799
 msgid "Unable to compress file."
+msgstr ""
+
+#: FText.form:12
+msgid "Edit text property"
+msgstr ""
+
+#: FText.form:30
+msgid "Use a fixed font"
 msgstr ""
 
 #: FTips.form:18
@@ -4539,72 +4531,72 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: FTranslate.class:153
+#: FTranslate.class:152
 msgid "Translation files"
 msgstr ""
 
-#: FTranslate.class:285
+#: FTranslate.class:282
 msgid "Cannot read translation file for language '&1'"
 msgstr ""
 
-#: FTranslate.class:446
+#: FTranslate.class:442
 msgid "Cannot save translation."
 msgstr ""
 
-#: FTranslate.class:558
+#: FTranslate.class:552
 msgid "Do you really want to delete this translation ?"
 msgstr ""
 
-#: FTranslate.class:654
+#: FTranslate.class:648
 msgid "Do you really want to reload this translation ?"
 msgstr ""
 
-#: FTranslate.class:668
+#: FTranslate.class:662
 msgid "Export a translation"
 msgstr ""
 
-#: FTranslate.class:856
+#: FTranslate.class:847
 msgid "Please select the translation file to import."
 msgstr ""
 
-#: FTranslate.class:894
+#: FTranslate.class:885
 msgid "No translation were picked up."
 msgstr ""
 
-#: FTranslate.class:896
+#: FTranslate.class:887
 msgid "One translation was picked up."
 msgstr ""
 
-#: FTranslate.class:898
+#: FTranslate.class:889
 msgid "&1 translations were picked up."
 msgstr ""
 
-#: FTranslate.class:907
+#: FTranslate.class:897
 msgid "Cannot import translation file."
 msgstr ""
 
-#: FTranslate.class:957
+#: FTranslate.class:946
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr ""
 
-#: FTranslate.class:970
+#: FTranslate.class:959
 msgid "Everything seems to be correct."
 msgstr ""
 
-#: FTranslate.class:993
+#: FTranslate.class:982
 msgid "&1 strings. Everything is translated!"
 msgstr ""
 
-#: FTranslate.class:995
+#: FTranslate.class:984
 msgid "&1 strings. One is not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:997
+#: FTranslate.class:986
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:1122
-msgid "The 'msgmerge' command has failed"
+#: FTranslate.class:1111 Project.module:4252
+msgid "The '&1' command has failed."
 msgstr ""
 
 #: FWelcome.form:31
@@ -6039,6 +6031,14 @@ msgstr ""
 msgid "Patch didn't apply:\n"
 msgstr ""
 
+#: .project:1
+msgid "Gambas 3"
+msgstr ""
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr ""
+
 #: Project.module:193
 msgid "Automation"
 msgstr ""
@@ -6305,10 +6305,6 @@ msgstr ""
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
-msgstr ""
-
-#: Project.module:4252
-msgid "The 'tar' command has failed."
 msgstr ""
 
 #: Project.module:4263
