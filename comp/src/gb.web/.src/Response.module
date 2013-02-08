@@ -130,7 +130,7 @@ Public Sub End()
     $sHeader = ""
   
     While Not Eof($hFile)
-      sBuffer = Read #$hFile, -4096
+      sBuffer = Read #$hFile, -65536
       Print sBuffer;
       'Print #hLog, sBuffer;
     Wend
