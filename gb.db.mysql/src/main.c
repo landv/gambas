@@ -452,6 +452,7 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
 	const char *query;
 	MYSQL_RES *res;
 	int ret;
+	unsigned long thread_id;
 
 	if (nsubst)
 	{
@@ -469,12 +470,22 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
 	if (DB.IsDebug())
 		fprintf(stderr, "mysql: %p: %s\n", conn, query);
 
-	if(mysql_query(conn, query)){
+	thread_id = mysql_thread_id(conn);
+	mysql_ping(conn);
+	if (mysql_thread_id(conn) != thread_id)
+	{
+		// Connection has been reestablished, set utf8 again
+		mysql_query(conn, "set names 'utf8'");
+	}
+	
+	if (mysql_query(conn, query))
+	{
 		ret = TRUE;
 		if (error)
 			GB.Error(error, mysql_error(conn));
 	}
-	else {
+	else 
+	{
 		res = mysql_store_result(conn);
 		ret = FALSE;
 		if (pres)
