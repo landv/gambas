@@ -1,7 +1,7 @@
 /*
  * c_screen.c - gb.ncurses Screen class
  *
- * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <assert.h>
 
 #include <ncurses.h>
 #include <panel.h>
@@ -33,76 +34,37 @@
 #include "c_screen.h"
 #include "c_input.h"
 
-#define THIS			((CSCREEN *) _object)
-#define IS_BUFFERED		(THIS->buffered)
+#define THIS			_active
 
 #define E_UNSUPP	"Unsupported value"
 
-static CSCREEN *active = NULL;
+static CSCREEN *_active;
 
 GB_SIGNAL_CALLBACK *_sigwinch_cb;
 
-DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Resize);
 
-/*
- * Signal handler for the SIGWINCH signal.
- * @signum: signal number given
- * @arg: unused
- * This routine dispatches the Resize Event
- */
-static void SCREEN_sigwinch_handler(int signum, intptr_t arg)
+static void SCREEN_sigwinch(int signum, intptr_t data)
 {
+	/* TODO: ncurses may be configured to provide its own SIGWINCH
+	 *       handler. See resizeterm(3X). */
 	if (signum == SIGWINCH)
-		GB.Raise(active, EVENT_Resize, 0);
+		GB.Raise(_active, EVENT_Resize, 0);
 }
 
-/**
- * Screen initialisation
- */
 int SCREEN_init()
 {
-	/* Global variable default setup */
-	CURSOR_mode(CURSOR_VISIBLE);
-	ECHO_mode(ECHO_NOECHO);
-	INPUT_init();
-
-//	_sigwinch_cb = GB.Signal.Register(SIGWINCH,
-//		SCREEN_sigwinch_handler, (intptr_t) NULL);
-
+	_sigwinch_cb = GB.Signal.Register(SIGWINCH, SCREEN_sigwinch,
+					  (intptr_t) NULL);
 	return 0;
 }
 
-/**
- * Screen cleanup
- */
 void SCREEN_exit()
 {
-	INPUT_exit();
-
-//	GB.Signal.Unregister(SIGWINCH, _sigwinch_cb);
+	GB.Signal.Unregister(SIGWINCH, _sigwinch_cb);
 }
 
-/**
- * Get the active Screen
- * If @active is NULL, the default Screen will be made active and then returned
- */
-CSCREEN *SCREEN_get_active()
-{
-	GB_CLASS screen_class;
-
-	if (active)
-		return active;
-	screen_class = GB.FindClass("Screen");
-	active = GB.AutoCreate(screen_class, 0);
-	return active;
-}
-
-/**
- * Redraw the screen no matter what the buffer settings are.
- * Note that this function may not be used to return into ncurses mode once left.
- */
-void SCREEN_real_refresh()
+void SCREEN_refresh()
 {
 	if (!NCURSES_RUNNING)
 		return;
@@ -110,210 +72,179 @@ void SCREEN_real_refresh()
 	doupdate();
 }
 
-/**
- * Refresh the screen. This respects the currently active buffering wishes
- */
-void SCREEN_refresh(void *_object)
-{
-	if (!NCURSES_RUNNING)
-		return;
+BEGIN_METHOD_VOID(Screen_init)
 
-	if (!_object)
-		_object = SCREEN_get_active();
+	_active = GB.AutoCreate(GB.FindClass("Screen"), 0);
 
-	if (!IS_BUFFERED)
-		SCREEN_real_refresh();
-}
+END_METHOD
 
-/**
- * Let the specified screen raise its Read event. If the _object is NULL,
- * the currently active screen will raise. The latter case is the last
- * resort for the difficulty of raising Read event in Window-Screen
- * relation, while there need not be a focused window to raise this event,
- * there is always an active screen.
- */
-void SCREEN_raise_read(void *_object)
-{
-	bool risen;
+#if 0
+BEGIN_METHOD(Screen_new, GB_STRING termpath)
 
-	if (!_object)
-		risen = GB.Raise(active, EVENT_Read, 0);
-	else
-		risen = GB.Raise(_object, EVENT_Read, 0);
+	char path[LENGTH(termpath) + 1];
+	FILE *finout;
 
-	/* Reduce watch callback calling overhead */
-	if (!risen)
-		INPUT_drain();
-}
+	strncpy(path, STRING(termpath), LENGTH(termpath));
+	path[LENGTH(termpath)] = 0;
 
-BEGIN_PROPERTY(Screen_Buffered)
-
-	if (READ_PROPERTY) {
-		GB.ReturnBoolean(IS_BUFFERED);
+	finout = fopen(path, "r+");
+	if (!finout) {
+		GB.Error(NULL);
 		return;
 	}
-	THIS->buffered = VPROP(GB_BOOLEAN);
+	assert(_maxscreen < MAX_SCREENS);
+	_screens[_maxscreen] = THIS;
+	THIS->index = _curscreen = _maxscreen++;
+	THIS->screen = newterm(NULL, finout, finout);
+	set_term(THIS->screen);
+	THIS->finout = finout;
+	THIS->buffered = 1;
+	CSCREEN_cursor(THIS, 0);
+	CSCREEN_echo(THIS, 0);
+	INPUT_mode(THIS, INPUT_CBREAK);
+	refresh();
 
-END_PROPERTY
+END_METHOD
+
+BEGIN_METHOD_VOID(Screen_free)
+
+	void *dst, *src;
+
+	if (THIS->index != _maxscreen - 1) {
+		dst = &_screens[THIS->index];
+		src = dst + sizeof(_screens[0]);
+		memmove(dst, src, _maxscreen - THIS->index);
+	}
+	_screens[THIS->index] = NULL;
+	if (_curscreen)
+		_curscreen--;
+	_maxscreen--;
+	endwin();
+	fclose(THIS->finout);
+	delscreen(THIS->screen);
+	if (!_maxscreen) {
+		SCREEN_exit();
+		return;
+	}
+	set_term(_active->screen);
+
+END_METHOD
+#endif
+
+BEGIN_METHOD_VOID(Screen_Refresh)
+
+	SCREEN_refresh();
+
+END_METHOD
+
+BEGIN_METHOD(Screen_Resize, GB_INTEGER lines; GB_INTEGER cols)
+
+	resizeterm(VARG(lines), VARG(cols));
+
+END_METHOD
+
+GB_DESC CCursorDesc[] = {
+	GB_DECLARE("Cursor", 0),
+	GB_NOT_CREATABLE(),
+
+	/* According to curs_set */
+	GB_CONSTANT("Hidden", "i", 0),
+	GB_CONSTANT("Visible", "i", 1),
+	GB_CONSTANT("VeryVisible", "i", 2),
+
+	GB_END_DECLARE
+};
+
+static int CSCREEN_cursor(CSCREEN *scr, int mode)
+{
+	if (mode >= 0 && mode <= 2)
+		curs_set(mode);
+	else
+		return -1;
+	scr->cursor = mode;
+	return 0;
+}
 
 BEGIN_PROPERTY(Screen_Cursor)
 
 	if (READ_PROPERTY) {
-		GB.ReturnInteger(CURSOR_mode(CURSOR_RETURN));
+		GB.ReturnInteger(THIS->cursor);
 		return;
 	}
 
-	if (CURSOR_mode(VPROP(GB_INTEGER)) == -1)
+	if (CSCREEN_cursor(THIS, VPROP(GB_INTEGER)) == -1)
 		GB.Error(E_UNSUPP);
 
 END_PROPERTY
 
+static void CSCREEN_echo(CSCREEN *scr, int mode)
+{
+	if (mode)
+		echo();
+	else
+		noecho();
+	scr->echo = mode;
+}
+
 BEGIN_PROPERTY(Screen_Echo)
 
 	if (READ_PROPERTY) {
-		GB.ReturnBoolean(ECHO_mode(ECHO_RETURN));
+		GB.ReturnBoolean(THIS->echo);
 		return;
 	}
-
-	if (ECHO_mode(!!VPROP(GB_BOOLEAN)) == -1)
-		GB.Error(E_UNSUPP);
+	CSCREEN_echo(THIS, !!VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Input)
 
 	if (READ_PROPERTY) {
-		GB.ReturnInteger(INPUT_mode(INPUT_RETURN));
+		GB.ReturnInteger(THIS->input);
 		return;
 	}
-
-	if (INPUT_mode(VPROP(GB_INTEGER)) == -1)
-		GB.Error(E_UNSUPP);
+	INPUT_mode(THIS, VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Lines)
 
-	GB.ReturnInteger(LINES);
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(LINES);
+		return;
+	}
+	resizeterm(VPROP(GB_INTEGER), COLS);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Cols)
 
-	GB.ReturnInteger(COLS);
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(COLS);
+		return;
+	}
+	resizeterm(LINES, VPROP(GB_INTEGER));
 
 END_PROPERTY
-
-BEGIN_METHOD_VOID(Screen_new)
-
-	active = THIS;
-
-END_METHOD
-
-BEGIN_METHOD_VOID(Screen_free)
-
-	/* TODO: for now, while Screen instantiation wouldn't do anything
-	 * useful */
-	SCREEN_exit();
-
-END_METHOD
-
-BEGIN_METHOD_VOID(Screen_Refresh)
-
-	SCREEN_real_refresh();
-
-END_METHOD
 
 GB_DESC CScreenDesc[] = {
 	GB_DECLARE("Screen", sizeof(CSCREEN)),
 	GB_AUTO_CREATABLE(),
+	GB_NOT_CREATABLE(),
 
-	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 
-	GB_PROPERTY("Buffered", "b", Screen_Buffered),
+	GB_STATIC_METHOD("_init", NULL, Screen_init, NULL),
+	GB_STATIC_METHOD("Refresh", NULL, Screen_Refresh, NULL),
+	GB_STATIC_METHOD("Resize", NULL, Screen_Resize, NULL),
 
 	GB_STATIC_PROPERTY("Cursor", "i", Screen_Cursor),
 	GB_STATIC_PROPERTY("Echo", "b", Screen_Echo),
 	GB_STATIC_PROPERTY("Input", "i", Screen_Input),
 
-	GB_STATIC_PROPERTY_READ("Lines", "i", Screen_Lines), //GB_PROPERTY
-	GB_STATIC_PROPERTY_READ("Cols", "i", Screen_Cols),
-
-	GB_METHOD("_new", NULL, Screen_new, NULL),
-	GB_METHOD("_free", NULL, Screen_free, NULL),
-
-	GB_METHOD("Refresh", NULL, Screen_Refresh, NULL),
+	GB_STATIC_PROPERTY("Height", "i", Screen_Lines),
+	GB_STATIC_PROPERTY("H", "i", Screen_Lines),
+	GB_STATIC_PROPERTY("Width", "i", Screen_Cols),
+	GB_STATIC_PROPERTY("W", "i", Screen_Cols),
 
 	GB_END_DECLARE
 };
-
-/*
- * CURSOR routines
- */
-
-static int _cursor;
-
-/**
- * Return or set cursor mode
- * @mode: choose operation
- */
-int CURSOR_mode(int mode)
-{
-	switch (mode) {
-		case CURSOR_RETURN:
-			return _cursor;
-		case CURSOR_HIDDEN:
-			curs_set(0);
-			break;
-		case CURSOR_VISIBLE:
-			curs_set(1);
-			break;
-		case CURSOR_VERY:
-			curs_set(2);
-			break;
-		default:
-			return -1;
-	}
-	_cursor = mode;
-	return 0;
-}
-
-GB_DESC CCursorDesc[] = {
-	GB_DECLARE("Cursor", 0),
-	GB_NOT_CREATABLE(),
-
-	GB_CONSTANT("Hidden", "i", CURSOR_HIDDEN),
-	GB_CONSTANT("Visible", "i", CURSOR_VISIBLE),
-	GB_CONSTANT("Very", "i", CURSOR_VERY),
-
-	GB_END_DECLARE
-};
-
-/*
- * ECHO routines
- */
-
-static int _echo;
-
-/**
- * Return or set echo mode
- * @mode: choose operation
- */
-int ECHO_mode(int mode)
-{
-	switch (mode) {
-		case ECHO_RETURN:
-			return _echo;
-		case ECHO_NOECHO:
-			noecho();
-			break;
-		case ECHO_ECHO:
-			echo();
-			break;
-		default:
-			return -1;
-	}
-	_echo = mode;
-	return 0;
-}

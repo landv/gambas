@@ -1,7 +1,7 @@
 /*
  * main.c - gb.ncurses main object
  *
- * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,26 +45,17 @@ GB_DESC *GB_CLASSES[] EXPORT = {
 	CColorDesc,
 	CColorInfoDesc,
 	CPairDesc,
-	CPairInfoDesc,
 
 	NULL
 };
 
 static bool _init = FALSE;
 
-/**
- * Return if we are in ncurses mode
- */
 bool MAIN_running()
 {
 	return _init && (!isendwin() || stdscr);
 }
 
-/**
- * Component-global initialisation
- * Start ncurses and prepare stdscr. Call other relevant initialisation
- * routines.
- */
 static void MAIN_init()
 {
 	if (_init)
@@ -81,9 +72,6 @@ static void MAIN_init()
 	_init = TRUE;
 }
 
-/**
- * Cleanup and exit ncurses
- */
 static void MAIN_exit()
 {
 	if (_init) {
@@ -93,17 +81,11 @@ static void MAIN_exit()
 	}
 }
 
-/**
- * Error hook
- */
 static void MAIN_hook_error(int code, char *error, char *where)
 {
 	MAIN_exit();
 }
 
-/**
- * Main hook
- */
 static void MAIN_hook_main(int *argc, char **argv)
 {
 	MAIN_init();

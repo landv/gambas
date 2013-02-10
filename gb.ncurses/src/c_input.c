@@ -1,7 +1,7 @@
 /*
  * c_input.c - gb.ncurses opaque input routines
  *
- * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+/*
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <linux/kd.h>
+*/
 #include <time.h>
 #include <sys/time.h>
 #include <errno.h>
@@ -39,93 +41,44 @@
 #include "c_input.h"
 #include "c_window.h"
 
-#define E_UNSUPP	"Unsupported value"
-#define E_NO_NODELAY	"Could not initialise NoDelay mode"
+#define E_UNSUPP	"Unsupported input mode"
 
-/* True input mode is inherited from terminal, we need a surely invalid
- * value to be reset upon initialisation */
-static int _input = -1;
-#define IN_NODELAY	(_input == INPUT_NODELAY)
 static char _watch_fd = -1;
 
-/**
- * Input initialisation
- */
 int INPUT_init()
 {
-	INPUT_mode(INPUT_CBREAK);
 	INPUT_watch(0);
-	NODELAY_repeater_delay(1);
 	return 0;
 }
 
-/**
- * Input cleanup
- */
 void INPUT_exit()
 {
-	/* If we are still in NoDelay mode, exit it */
-	if (IN_NODELAY) {
-		INPUT_mode(INPUT_CBREAK);
-	}
+	INPUT_watch(-1);
 }
 
-
-
-#define MY_DEBUG()		fprintf(stderr, "in %s\n", __func__)
-
-
-
-/**
- * Begin watching the given fd (for read)
- * @fd: fd to watch. -1 means to stop watching at all.
- * This automatically stops watching the previously watched fd, if any
- */
-static int INPUT_watch(int fd)
+static void INPUT_watch(int fd)
 {
-	MY_DEBUG();
-
 	if (fd == _watch_fd)
-		return 0;
+		return;
 
 	if (_watch_fd != -1)
 		GB.Watch(_watch_fd, GB_WATCH_NONE, NULL, 0);
 	if (fd == -1)
-		return 0;
+		return;
 
 	GB.Watch(fd, GB_WATCH_READ, INPUT_callback, 0);
 	_watch_fd = fd;
-	return 0;
 }
 
-/**
- * Function to be called by Gambas when data arrives
- * Params currently not used
- */
 static void INPUT_callback(int fd, int flag, intptr_t arg)
 {
-	MY_DEBUG();
-
-/*	if (IN_NODELAY)
-		NODELAY_change_pressed(NODELAY_get(-1));
-	else
-*/		WINDOW_raise_read(NULL);
+	CWINDOW_raise_read(NULL);
 }
 
-/**
- * Return or set the current input mode
- * @mode: one of INPUT_* enums
- */
-int INPUT_mode(int mode)
+void INPUT_mode(CSCREEN *scr, int mode)
 {
-	if (mode == INPUT_RETURN)
-		return _input;
-
-	if (mode == _input)
-		return 0;
-
-	if (IN_NODELAY)
-		NODELAY_exit();
+	if (mode == scr->input)
+		return;
 
 	switch (mode) {
 		case INPUT_COOKED:
@@ -137,38 +90,18 @@ int INPUT_mode(int mode)
 		case INPUT_RAW:
 			raw();
 			break;
-		case INPUT_NODELAY:
-			if (NODELAY_init() == -1) {
-				GB.Error(E_NO_NODELAY);
-				/* We return 0 to not override the previous
-				 * error message with the one emitted by the
-				 * caller if we return error */
-				return 0;
-			}
-			break;
 		default:
 			GB.Error(E_UNSUPP);
-			return -1;
+			return;
 	}
-	_input = mode;
-
-	return 0;
+	scr->input = mode;
 }
 
-/**
- * Drain the input queue
- */
 void INPUT_drain()
 {
-	if (IN_NODELAY)
-		NODELAY_drain();
-	else
-		flushinp();
+	flushinp();
 }
 
-/**
- * Retrieve input from ncurses
- */
 static int INPUT_get_ncurses(int timeout)
 {
 	int ret;
@@ -189,19 +122,12 @@ static int INPUT_get_ncurses(int timeout)
 	return ret;
 }
 
-/**
- * Get a keypress within the given timeout
- * @timeout: number of milliseconds to wait. If no key is pressed during it,
- *           0 will be returned.
- */
 int INPUT_get(int timeout)
 {
-	if (IN_NODELAY)
-		return NODELAY_get(timeout);
-	else
-		return INPUT_get_ncurses(timeout);
+	return INPUT_get_ncurses(timeout);
 }
 
+#if 0
 BEGIN_PROPERTY(Input_IsConsole)
 
 	int fd = NODELAY_consolefd();
@@ -218,7 +144,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Input_RepeatDelay)
 
 	if (READ_PROPERTY) {
-		GB.ReturnInteger(NODELAY_repeater_delay(REPEATER_RETURN));
+		GB.ReturnInteger(NODELAY_repeater_delay(INPUT_RETURN));
 		return;
 	}
 	if (NODELAY_repeater_delay(VPROP(GB_INTEGER)) == -1) {
@@ -227,6 +153,7 @@ BEGIN_PROPERTY(Input_RepeatDelay)
 	}
 
 END_PROPERTY
+#endif
 
 GB_DESC CInputDesc[] = {
 	GB_DECLARE("Input", 0),
@@ -237,12 +164,15 @@ GB_DESC CInputDesc[] = {
 	GB_CONSTANT("Cooked", "i", INPUT_COOKED),
 	GB_CONSTANT("CBreak", "i", INPUT_CBREAK),
 	GB_CONSTANT("Raw", "i", INPUT_RAW),
+#if 0
 	GB_CONSTANT("NoDelay", "i", INPUT_NODELAY),
 
 	GB_STATIC_PROPERTY_READ("IsConsole", "b", Input_IsConsole),
 	GB_STATIC_PROPERTY("RepeatDelay", "i", Input_RepeatDelay),
+#endif
 };
 
+#if 0
 /*
  * NODELAY routines
  */
@@ -406,7 +336,7 @@ static inline void NODELAY_drain()
  */
 static int NODELAY_repeater_delay(int val)
 {
-	if (val == REPEATER_RETURN)
+	if (val == INPUT_RETURN)
 		return no_delay.delay;
 	if (val < 1)
 		return -1;
@@ -698,3 +628,4 @@ cleanup:
 		tcsetattr(no_delay.fd, TCSANOW, &old);
 	return ret;
 }
+#endif

@@ -23,6 +23,8 @@
 #ifndef __C_INPUT_H
 #define __C_INPUT_H
 
+#include "c_screen.h"
+
 enum {
 	/* Return the current mode */
 	INPUT_RETURN = -1,
@@ -32,18 +34,16 @@ enum {
 	INPUT_CBREAK,
 	/* No line discipline, no signal generation */
 	INPUT_RAW,
+#if 0
 	/* Use terminal driver, enabled to use raw scancodes
 	   (which are internally converted to ncurses keys but enable to
 	   distinguish key press and release) */
 	INPUT_NODELAY
+#endif
 };
 
 enum {
 	TIMEOUT_NOTIMEOUT = -1
-};
-
-enum {
-	REPEATER_RETURN = -1
 };
 
 #ifndef __C_INPUT_C
@@ -52,21 +52,12 @@ extern GB_DESC CInputDesc[];
 
 int INPUT_init();
 void INPUT_exit();
-int INPUT_mode(int);
+void INPUT_mode(CSCREEN *scr, int mode);
 int INPUT_get(int);
 void INPUT_drain();
 #ifdef __C_INPUT_C
-static int INPUT_watch(int);
+static void INPUT_watch(int);
 static void INPUT_callback(int, int, intptr_t);
-static int NODELAY_init();
-static int NODELAY_exit();
-static void NODELAY_error_hook();
-static int NODELAY_consolefd();
-static inline void NODELAY_drain();
-static int NODELAY_repeater();
-static int NODELAY_repeater_delay(int);
-static void NODELAY_change_pressed(int);
-static int NODELAY_get(int);
 #endif
 
 #endif /* __C_INPUT_H */

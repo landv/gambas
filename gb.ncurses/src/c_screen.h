@@ -19,39 +19,14 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef __C_SCREEN_H
-#define __C_SCREEN_H
-
 #include "gambas.h"
 #include "c_input.h"
 
+#ifndef __C_SCREEN_H
+#define __C_SCREEN_H
+
 /* This will produce final output on terminal screen */
-#define REAL_REFRESH()			SCREEN_real_refresh()
-/* This macro is mostly called by Gambas implementation functions to request output on screen
-   (read: to check if the output is buffered and if not produce output by means of
-   REAL_REFRESH()) */
-#define REFRESH()			SCREEN_refresh(NULL)
-/* The Screen - like in ncurses - is the sole source of input */
-#define SCREEN_get(t)			INPUT_get(t)
-
-/*
- * Cursor modes
- */
-enum {
-	CURSOR_RETURN = -1,
-	CURSOR_HIDDEN,
-	CURSOR_VISIBLE,
-	CURSOR_VERY
-};
-
-/*
- * Echo modes
- */
-enum {
-	ECHO_RETURN = -1,
-	ECHO_NOECHO,
-	ECHO_ECHO
-};
+#define REAL_REFRESH()		SCREEN_refresh()
 
 #ifndef __C_SCREEN_C
 extern GB_DESC CScreenDesc[];
@@ -60,18 +35,15 @@ extern GB_DESC CCursorDesc[];
 
 typedef struct {
 	GB_BASE ob;
-	bool buffered;		/* Whether output will be buffered, i.e.
-				   only done via Screen.Refresh() */
+	int index;
+	int echo;
+	int cursor;
+	int input;
+	int buffered;
 } CSCREEN;
 
 int SCREEN_init();
 void SCREEN_exit();
-CSCREEN *SCREEN_get_active();
 void SCREEN_refresh();
-void SCREEN_real_refresh();
-void SCREEN_raise_read(void *);
-
-int CURSOR_mode(int);
-int ECHO_mode(int);
 
 #endif /* __C_SCREEN_H */

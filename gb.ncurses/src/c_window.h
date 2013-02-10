@@ -28,8 +28,6 @@
 #include "gambas.h"
 #include "gb_common.h"
 
-#include "c_screen.h"
-
 /* Border constants */
 enum {
 	BORDER_NONE = 0,
@@ -37,32 +35,17 @@ enum {
 	BORDER_ACS
 };
 
-/* @reqs for *_attrs_driver() */
-enum
-{
-	/* Return current attributes */
-	ATTR_DRV_RET,
-	/* Enable given attributes */
-	ATTR_DRV_ON,
-	/* Disable given attributes */
-	ATTR_DRV_OFF,
-	/* Set a color */
-	ATTR_DRV_COL
-};
-
 typedef struct {
 	GB_BASE ob;
-	CSCREEN *parent;	/* The parent Screen */
-	WINDOW *main;		/* The main window */
-	WINDOW *content;	/* This window is used for all content-related operations. Its purpose is turning
-				   the ncurses window borders which are inner-window to outer-window ones thus
-				   separating border from content. If there is no border, this is the same as @main
-				   otherwise a subwindow of it */
-	PANEL *pan;		/* Panel of the main window to provide overlapping windows */
-	int border;		/* What kind of border */
-	bool wrap;		/* Whether text shall be truncated or wrapped on line ends */
-	char *caption;		/* Text to be displayed in the main window if there is a border */
-	struct {		/* This structure is used to pass a line and a column number to virtual objects */
+	WINDOW *main;
+	WINDOW *content;
+	PANEL *pan;
+	bool has_border;
+	int border;
+	bool buffered;
+	bool wrap;
+	char *caption;
+	struct {
 		int line;
 		int col;
 	} pos;
@@ -75,6 +58,6 @@ extern GB_DESC CCharAttrsDesc[];
 extern GB_DESC CBorderDesc[];
 #endif
 
-void WINDOW_raise_read(void *);
+void CWINDOW_raise_read(CWINDOW *win);
 
 #endif /* __C_WINDOW_C */

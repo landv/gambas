@@ -1,7 +1,7 @@
 /*
  * c_key.c - gb.ncurses Key static class
  *
- * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@ GB_DESC CKeyDesc[] = {
 	GB_CONSTANT("F10", "i", KEY_F(10)),
 	GB_CONSTANT("F11", "i", KEY_F(11)),
 	GB_CONSTANT("F12", "i", KEY_F(12)),
+
+	/* ncurses.h is full of other ones. Just tell me what you need. */
 
 	GB_STATIC_METHOD("_get", "i", Key_get, "(Key)s"),
 

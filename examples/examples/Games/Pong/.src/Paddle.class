@@ -1,0 +1,96 @@
+' Gambas class file
+
+Property X As Integer
+Property Y As Integer
+Property Height As Integer
+Property Read Dir As Integer
+
+' Direction in which to play
+Private $iDir As Integer
+Private $hWindow As Window
+Private $iOrigX As Integer
+Private $iOrigY As Integer
+Private $iX As Integer
+Private $iY As Integer
+Private $iHeight As Integer
+
+Public Sub _new(hWnd As Window, iDir As Integer)
+
+  $hWindow = hWnd
+  $iHeight = hWnd.Height / 6 + 1
+  $iDir = iDir
+  If iDir > 0 Then
+    $iOrigX = 1
+  Else
+    $iOrigX = hWnd.Width - 2
+  Endif
+  $iOrigY = (hWnd.Height - $iHeight) / 2
+  If Odd($iOrigY) Then Inc $iOrigY
+
+End
+
+Public Sub Reset()
+
+  Undraw()
+  $iX = $iOrigX
+  $iY = $iOrigY
+
+End
+
+Public Sub Draw()
+
+  $hWindow.DrawVLine($iX, $iY, $iHeight, "|")
+
+End
+
+Public Sub Undraw()
+
+  $hWindow.DrawVLine($iX, $iY, $iHeight, " ")
+
+End
+
+Private Sub X_Read() As Integer
+
+  Return $iX
+
+End
+
+Private Sub X_Write(Value As Integer)
+
+  If Value < 0 Or If Value + 1 > $hWindow.Width Then Return
+  Undraw()
+  $iX = Value
+
+End
+
+Private Sub Y_Read() As Integer
+
+  Return $iY
+
+End
+
+Private Sub Y_Write(Value As Integer)
+
+  If Value < 0 Or If Value + $iHeight > $hWindow.Height Then Return
+  Undraw()
+  $iY = Value
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $iHeight
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  $iHeight = Value
+
+End
+
+Private Function Dir_Read() As Integer
+
+  Return $iDir
+
+End
