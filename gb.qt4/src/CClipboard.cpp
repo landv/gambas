@@ -333,7 +333,7 @@ MyDragFrame::MyDragFrame(QWidget *parent) :
 {
 	setAutoFillBackground(true);
 	QPalette pal(palette());
-	pal.setColor(QPalette::Window, Qt::black);
+	pal.setColor(QPalette::Window, QColor(0, 0, 0, 128));
 	setPalette(pal);
 	//setWindowOpacity(0.5);
 }
@@ -361,6 +361,8 @@ static void hide_frame(CWIDGET *control)
 		delete _frame[i];
 		
 	_frame_visible = false;
+	GB.Unref(POINTER(&_frame_control));
+	_frame_control = NULL;
 }
 
 void CDRAG_hide_frame(CWIDGET *control)
@@ -389,6 +391,13 @@ static void show_frame(CWIDGET *control, int x, int y, int w, int h)
 	//x += p.x();
 	//y += p.y();
 	
+	if (control != _frame_control)
+	{
+		hide_frame(NULL);
+		_frame_control = control;
+		GB.Ref(control);
+	}
+	
 	if (!_frame_visible)
 	{
 		for (i = 0; i < 4; i++)
@@ -399,18 +408,16 @@ static void show_frame(CWIDGET *control, int x, int y, int w, int h)
 	//y -= 2;
 	//w += 4;
 	//h += 4;
-	if (w < 2 || h < 2)
+	if (w < 4 || h < 4)
 		return;
 	
 	_frame[0]->setGeometry(x, y, w, 2);
-	_frame[1]->setGeometry(x, y, 2, h);
-	_frame[2]->setGeometry(x + w - 2, y, 2, h);
 	_frame[3]->setGeometry(x, y + h - 2, w, 2);
+	_frame[1]->setGeometry(x, y + 2, 2, h - 4);
+	_frame[2]->setGeometry(x + w - 2, y + 2, 2, h - 4);
 	
 	for (i = 0; i < 4; i++)
 		_frame[i]->show();
-	
-	_frame_control = control;
 	
 	_frame_visible = true;
 }
@@ -667,6 +674,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CDRAG_exit)
 
+	hide_frame(NULL);
 	GB.Unref(POINTER(&_picture));
 
 END_METHOD

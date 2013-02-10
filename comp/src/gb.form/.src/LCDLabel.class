@@ -268,7 +268,8 @@ Private Sub DrawCharacter(sCar As String, bPoint As Boolean, bColon As Boolean, 
   Dim aOn As Boolean[]
   Dim hShear As PaintMatrix
   Dim bOutline As Boolean
-  Dim I As Integer
+  Dim hImage As Image
+  Dim hMatrix As PaintMatrix
   
   aCar = $cCar[UCase(sCar)]
   If Not aCar And If Not bPoint And If Not bColon Then Return
@@ -310,23 +311,63 @@ Private Sub DrawCharacter(sCar As String, bPoint As Boolean, bColon As Boolean, 
   Next
   Paint.Background = $iLightBg
   Paint.Fill
-      
+
+  If $iHighlightColor <> Color.Default Then
+
+    hImage = New Image(W * 1.2, W * 2, Color.Transparent)
+
+    Paint.Begin(hImage)
+    
+    Paint.Translate(W * 0.1, 0)
+    Paint.Scale(U, U)
+
+    If $bSheared Then
+      Paint.Translate(3, 3.5)
+      hShear = PaintMatrix(1.0, 0.0, -0.2, 1.0, 0.0, 0.0)
+      Paint.Matrix = hShear.Multiply(Paint.Matrix)
+    Else
+      Paint.Translate(0, 3.5)
+    Endif
+    
+    For iSegment = 0 To $aSegment.Max
+      If aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
+    Next
+  
+    Paint.LineWidth = 0.1
+    
+    Paint.Background = $iHighlightColor
+    Paint.Fill
+    
+    Paint.End
+    
+    hImage.Fuzzy(W * 0.15)
+    
+    hMatrix = Paint.Matrix
+    Paint.Restore
+    Paint.Save
+    Paint.DrawImage(hImage, X - W * 0.1, Y)
+    Paint.DrawImage(hImage, X - W * 0.1, Y)
+    Paint.Matrix = hMatrix
+    
+  Endif
+  
+  
   For iSegment = 0 To $aSegment.Max
     If aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
   Next
   
-  If $iHighlightColor <> Color.Default Then
-    If U >= 1.5 Then
-      Paint.LineCap = Paint.LineCapRound
-      Paint.LineJoin = Paint.LineJoinRound
-      Paint.Background = Color.SetAlpha($iHighlightColor, 220)
-      Paint.LineWidth = 0.8
-      For I = 1 To 5
-        Paint.Stroke(True)
-        Paint.LineWidth *= 1.5
-      Next
-    Endif
-  Endif
+  ' If $iHighlightColor <> Color.Default Then
+  '   If U >= 1.5 Then
+  '     Paint.LineCap = Paint.LineCapRound
+  '     Paint.LineJoin = Paint.LineJoinRound
+  '     Paint.Background = Color.SetAlpha($iHighlightColor, 220)
+  '     Paint.LineWidth = 0.8
+  '     For I = 1 To 5
+  '       Paint.Stroke(True)
+  '       Paint.LineWidth *= 1.5
+  '     Next
+  '   Endif
+  ' Endif
   
   Paint.LineWidth = 0.1
   Paint.Background = $iFg
