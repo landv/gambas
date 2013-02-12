@@ -297,6 +297,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	Dataset *res = conn->CreateDataset();
 	int err;
 	int retry = 0;
+	int max_retry;
 	bool select;
 	bool success;
 
@@ -321,6 +322,13 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	if (DB.IsDebug())
 		fprintf(stderr, "sqlite3: %p: %s\n", conn, query);
 
+	if (db->timeout > 0)
+		max_retry = db->timeout * 5;
+	else (db->timeout == 0)
+		max_retry = 600; // 120 s max
+	else
+		max_retry = 0;
+	
 	select = (strncasecmp("select ", query, 7) == 0);
 	
 	for(;;)
@@ -341,7 +349,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		
 		err = conn->lastError();
 		
-		if (err != SQLITE_BUSY || retry >= 600) // 120 s max
+		if (err != SQLITE_BUSY || retry >= max_retry)
 		{
 			GB.Error(error, conn->getErrorMsg());
 			break;
@@ -604,7 +612,7 @@ static const char *get_quote(void)
 
 *****************************************************************************/
 
-static int open_database(DB_DESC * desc, DB_DATABASE * db)
+static int open_database(DB_DESC *desc, DB_DATABASE * db)
 {
 	SqliteDatabase *conn = new SqliteDatabase();
 	char *name = NULL;
