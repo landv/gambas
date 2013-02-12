@@ -324,7 +324,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 
 	if (db->timeout > 0)
 		max_retry = db->timeout * 5;
-	else (db->timeout == 0)
+	else if (db->timeout == 0)
 		max_retry = 600; // 120 s max
 	else
 		max_retry = 0;
