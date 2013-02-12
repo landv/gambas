@@ -341,14 +341,14 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		
 		err = conn->lastError();
 		
-		if (err != SQLITE_BUSY || retry >= 300) // 30 sec. max
+		if (err != SQLITE_BUSY || retry >= 600) // 120 s max
 		{
 			GB.Error(error, conn->getErrorMsg());
 			break;
 		}
 		
 		retry++;
-		usleep(100000);
+		usleep(200000);
 	}
 	
 	if (!pres)
