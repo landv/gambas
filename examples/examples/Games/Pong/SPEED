@@ -29,6 +29,8 @@ Let's arbitrarily set the time from one paddle to the other to 4s:
 
 	Timer.Delay = 4000 / Sqr(2 * w ^ 2).
 
+This is the starting delay. With each hit on a paddle, it decrements.
+
 This was tested with ANSI's 80*24 terminal dimensions in xterm and my home
 180*74 on the Linux console. Feel free to set the LINES and COLUMNS
 environment variables to try different proportions.

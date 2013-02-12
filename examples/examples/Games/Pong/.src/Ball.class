@@ -4,6 +4,7 @@ Property HDir As Integer
 Property VDir As Integer
 Property X As Integer
 Property Y As Integer
+Property Read HitPaddle As Boolean
 
 Private $hWindow As Window
 ' Used in a simulation (of NPC)?
@@ -13,6 +14,8 @@ Private $iY As Integer
 ' Horizontal and vertical movement deltas on screen
 Private $iHD As Integer
 Private $iVD As Integer
+' Whether the last move hit a paddle
+Private $bHitPaddle As Boolean
 
 Public Sub _new(hWnd As Window, Optional bSim As Boolean = False)
 
@@ -35,6 +38,7 @@ End
 Public Sub Move(hP1 As Paddle, hP2 As Paddle) As Integer
 
   Undraw()
+  $bHitPaddle = False
   $iX += $iHD
   $iY += $iVD
   Return EvaluateCollisions(hP1, hP2)
@@ -68,6 +72,7 @@ _OnPaddle:
   GoSub _UndoMovement
   $iHD = - $iHD
   Move(hP1, hP2)
+  $bHitPaddle = True
 
 End
 
@@ -130,5 +135,11 @@ End
 Private Sub Y_Write(Value As Integer)
 
   $iY = Value
+
+End
+
+Private Sub HitPaddle_Read() As Boolean
+
+  Return $bHitPaddle
 
 End

@@ -33,8 +33,6 @@ Public Sub Main()
   $hConfig.Center()
 
   $hTimer = New Timer As "Timer"
-  ' See SPEED. The width means actually the intra-paddle width:
-  $hTimer.Delay = 4000 / Sqr(2 * (Window.Width - 4) ^ 2)
 
   $iS1 = 0
   $iS2 = 0
@@ -96,6 +94,8 @@ Private Sub GameStart()
   $hNPC.Init()
   Window.Buffered = True
   Redraw()
+  ' See SPEED. The width means actually the intra-paddle width:
+  $hTimer.Delay = 4000 / Sqr(2 * (Window.Width - 4) ^ 2)
   $hTimer.Start()
 
 End
@@ -111,6 +111,8 @@ Public Sub Timer_Timer()
       Inc $iS1
       Goto _NewGame
   End Select
+  ' I suppose that this does not go down to zero
+  If $hBall.HitPaddle Then Dec $hTimer.Delay
   Redraw()
   Return
 
