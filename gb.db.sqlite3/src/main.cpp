@@ -334,7 +334,8 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		
 		if (success)
 		{
-			*pres = res;
+			if (pres)
+				*pres = res;
 			break;
 		}
 		
