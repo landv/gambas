@@ -1,0 +1,78 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,116,104)
+  Background = &HECECEC&
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  Padding = 8
+  { VSplit1 VSplit
+    MoveScaled(3,4,110,92)
+    Expand = True
+    { Panel1 Panel
+      MoveScaled(2,3,105,24)
+      Arrangement = Arrange.Fill
+      Margin = True
+      Padding = 4
+      Border = Border.Plain
+      { Panel6 Panel
+        MoveScaled(2,3,100,19)
+        Background = &HBBCCCC&
+        Border = Border.Raised
+      }
+    }
+    { VSplit2 VSplit
+      MoveScaled(2,29,105,59)
+      Expand = True
+      { Panel2 Panel
+        MoveScaled(5,3,97,27)
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        Spacing = True
+        Margin = True
+        Padding = 4
+        Border = Border.Plain
+        { TextArea1 TextArea
+          MoveScaled(1,2,39,22)
+          Expand = True
+          Text = ("TextArea1")
+        }
+        { TextArea2 TextArea
+          MoveScaled(55,1,41,25)
+          Expand = True
+          Text = ("TextArea2")
+        }
+      }
+      { Panel3 Panel
+        MoveScaled(4,33,98,21)
+        Arrangement = Arrange.Vertical
+        Spacing = True
+        Margin = True
+        Padding = 4
+        Border = Border.Plain
+        { TextArea3 TextArea
+          MoveScaled(2,2,94,9)
+          Text = ("TextArea3")
+        }
+        { TextArea4 TextArea
+          MoveScaled(2,12,92,7)
+          Expand = True
+          Text = ("TextArea4")
+        }
+      }
+    }
+  }
+  { Panel4 Panel
+    MoveScaled(3,98,111,5)
+    Arrangement = Arrange.Horizontal
+    { Panel5 Panel
+      MoveScaled(11,0,7,5)
+      Expand = True
+    }
+    { Button1 Button
+      MoveScaled(94,0,12,5)
+      Text = ("Quitter")
+    }
+  }
+}
