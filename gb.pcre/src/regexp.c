@@ -29,6 +29,8 @@
 #include "regexp.h"
 #include "main.h"
 
+#define OVECSIZE_INC 99
+
 /***************************************************************************
 
 	Regexp
@@ -53,6 +55,9 @@ static void compile(void *_object)
 
 static void exec(void *_object)
 {
+	int ret;
+	char code[8];
+	
 	if (!THIS->code) 
 	{
 		GB.Error("No pattern compiled yet");
@@ -65,16 +70,60 @@ static void exec(void *_object)
 		return;
 	}
 
-	THIS->count = pcre_exec(THIS->code,
-			NULL,
-			THIS->subject,
-			GB.StringLength(THIS->subject),
-			0,
-			THIS->eopts,
-			THIS->ovector,
-			99);
-	
-	// TODO: if count == 0, it means that ovector is too small, and count is 99/3 then.
+	for(;;)
+	{
+		ret = pcre_exec(THIS->code,
+				NULL,
+				THIS->subject,
+				GB.StringLength(THIS->subject),
+				0,
+				THIS->eopts,
+				THIS->ovector,
+				THIS->ovecsize);
+		
+		if (ret > 0)
+		{
+			THIS->count = ret;
+			break;
+		}
+		else if (ret < 0)
+		{
+			switch (ret)
+			{
+				case PCRE_ERROR_NOMATCH:
+					THIS->count = 0; return;
+				case PCRE_ERROR_NULL:
+					GB.Error("Pattern or subject is null"); return;
+				case PCRE_ERROR_BADOPTION:
+					GB.Error("Unknown option"); return;
+				case PCRE_ERROR_BADMAGIC:
+				case PCRE_ERROR_UNKNOWN_OPCODE:
+					GB.Error("Incorrect PCRE bytecode"); return;
+				case PCRE_ERROR_NOMEMORY:
+					GB.Error("Out of memory"); return;
+				case PCRE_ERROR_BADUTF8:
+				case PCRE_ERROR_SHORTUTF8:
+					GB.Error("Bad UTF-8 string"); return;
+				case PCRE_ERROR_BADUTF8_OFFSET:
+					GB.Error("Bad UTF-8 offset"); return;
+				case PCRE_ERROR_INTERNAL:
+					GB.Error("Unexpected internal error"); return;
+				case PCRE_ERROR_BADNEWLINE:
+					GB.Error("Invalid combination of newline options"); return;
+				case PCRE_ERROR_RECURSELOOP:
+					GB.Error("Recursion loop detected"); return;
+				//case PCRE_ERROR_JIT_STACKLIMIT:
+				//	GB.Error("JIT stack limit reached"); return;
+				default:
+					sprintf(code, "%d", -ret);
+					GB.Error("Unable to exec regular expression: error #&1", code);
+					return;
+			}
+		}
+		
+		THIS->ovecsize += OVECSIZE_INC;
+		GB.Realloc(POINTER(&THIS->ovector), THIS->ovecsize * sizeof(int));
+	}
 }
 
 static void return_match(void *_object, int index)
@@ -113,7 +162,8 @@ END_METHOD
 
 BEGIN_METHOD(RegExp_new, GB_STRING subject; GB_STRING pattern; GB_INTEGER coptions; GB_INTEGER eoptions)
 
-	GB.Alloc(POINTER(&THIS->ovector), sizeof(int) * 99);
+	THIS->ovecsize = OVECSIZE_INC;
+	GB.Alloc(POINTER(&THIS->ovector), sizeof(int) * THIS->ovecsize);
 
 	if (MISSING(pattern)) // the user didn't provide a pattern.
 		return;

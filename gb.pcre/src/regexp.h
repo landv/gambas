@@ -44,6 +44,7 @@ typedef
 		char *subject;
 		char *pattern;
 		int *ovector;
+		int ovecsize;
 		int count;
 		int eopts;
 		int copts;
