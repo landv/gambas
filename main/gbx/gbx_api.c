@@ -273,6 +273,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_StreamRead,
 	(void *)GB_StreamWrite,
 	(void *)STREAM_get_readable,
+	(void *)STREAM_eof,
 
 	(void *)STRING_start_len,
 	(void *)STRING_end,
