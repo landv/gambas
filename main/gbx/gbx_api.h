@@ -190,6 +190,7 @@ void *GB_Add(void *pdata);
 GB_STREAM *GB_StreamGet(void *);
 void GB_StreamSetBytesRead(GB_STREAM *, int);
 void GB_StreamSetSwapping(GB_STREAM *, int);
+void GB_StreamSetAvailableNow(GB_STREAM *, int);
 bool GB_StreamBlock(GB_STREAM *, int);
 int GB_StreamRead(GB_STREAM *stream, void *addr, int len);
 int GB_StreamWrite(GB_STREAM *stream, void *addr, int len);

@@ -268,6 +268,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_StreamGet,
 	(void *)GB_StreamSetBytesRead,
 	(void *)GB_StreamSetSwapping,
+	(void *)GB_StreamSetAvailableNow,
 	(void *)GB_StreamBlock,
 	(void *)GB_StreamRead,
 	(void *)GB_StreamWrite,
@@ -2129,12 +2130,17 @@ GB_STREAM *GB_StreamGet(void *object)
 
 void GB_StreamSetBytesRead(GB_STREAM *stream, int length)
 {
-	STREAM_eff_read = length;
+	STREAM_eff_read += length;
 }
 
-void GB_StreamSetSwapping(GB_STREAM *stream, int swap)
+void GB_StreamSetSwapping(GB_STREAM *stream, int v)
 {
-	((STREAM *)stream)->common.swap = swap;
+	((STREAM *)stream)->common.swap = v;
+}
+
+void GB_StreamSetAvailableNow(GB_STREAM *stream, int v)
+{
+	((STREAM *)stream)->common.available_now = v;
 }
 
 bool GB_StreamBlock(GB_STREAM *stream, int block)

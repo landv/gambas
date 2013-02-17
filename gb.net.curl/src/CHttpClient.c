@@ -96,7 +96,7 @@ static int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_obje
 	{
 		THIS_STATUS = NET_RECEIVING_DATA;
 		GB.Ref(THIS);
-		GB.Post(CURL_raise_connect,(long)THIS);
+		GB.Post(CURL_raise_connect, (intptr_t)THIS);
 	}
 
 	return size * nmemb;
@@ -139,7 +139,7 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 	if (THIS->async)
 	{
 		GB.Ref(THIS);
-		GB.Post(CURL_raise_read,(long)THIS);
+		GB.Post(CURL_raise_read, (intptr_t)THIS);
 	}
 	
 	return nmemb;

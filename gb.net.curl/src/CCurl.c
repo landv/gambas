@@ -104,7 +104,7 @@ GB_STREAM_DESC CurlStream =
 
 /* not allowed stream methods */
 
-int CCURL_stream_handle(GB_STREAM *stream) { return 0;}
+int CCURL_stream_handle(GB_STREAM *stream) { return -1;}
 int CCURL_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
 int CCURL_stream_seek(GB_STREAM *stream, int64_t pos, int whence){	return -1;}
 int CCURL_stream_tell(GB_STREAM *stream, int64_t *pos){return -1; }
@@ -144,7 +144,8 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	
 	len_data = GB.StringLength(THIS->data);
 	
-	if (len_data < len) return -1;
+	if (len_data < len)
+		len = len_data;
 
 	memcpy(buffer, THIS->data, len);
 
@@ -158,6 +159,8 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	GB.FreeString(&THIS->data);
 	THIS->data = new_data;
 
+	GB.Stream.SetBytesRead(stream, len);
+	
 	return 0;
 }
 
@@ -184,7 +187,14 @@ void CURL_raise_connect(void *_object)
 
 void CURL_raise_read(void *_object)
 {
-	raise_event(THIS, EVENT_READ);
+	int len = GB.StringLength(THIS->data);
+	GB.Raise(THIS, EVENT_READ, 0);
+	if (THIS->data && GB.StringLength(THIS->data) != len)
+	{
+		GB.Ref(THIS);
+		GB.Post(CURL_raise_read, (intptr_t)THIS);
+	}
+	GB.Unref(POINTER(&_object));
 }
 
 void CURL_manage_error(void *_object, int error)
@@ -233,6 +243,7 @@ void CURL_init_stream(void *_object)
 {
 	THIS->stream.desc = &CurlStream;
 	THIS->stream.tag = THIS;
+	GB.Stream.SetAvailableNow(&THIS->stream, TRUE);
 }
 
 /***************************************************************

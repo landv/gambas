@@ -74,7 +74,7 @@ static int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object
 	if (THIS->async)
 	{
 		GB.Ref(THIS);
-		GB.Post(CURL_raise_read,(long)THIS);
+		GB.Post(CURL_raise_read, (intptr_t)THIS);
 	}
 	
 	return nmemb;
