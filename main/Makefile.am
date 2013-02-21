@@ -28,7 +28,7 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gbr$(GAMBAS_VERSION)
 	@rm -rf $(DESTDIR)$(gblibdir)/info
 	@if test x"$(XDG_UTILS)" != x; then \
-		@xdg-mime uninstall $(srcdir)/mime/application-x-gambas3.xml;
-		@xdg-icon-resource uninstall --context mimetypes --size 64 application-x-gambas3;
+		xdg-mime uninstall $(srcdir)/mime/application-x-gambas3.xml; \
+		xdg-icon-resource uninstall --context mimetypes --size 64 application-x-gambas3; \
 	fi
 
