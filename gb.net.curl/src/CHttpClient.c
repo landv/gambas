@@ -45,7 +45,7 @@
 
 #define SEND_POST 1
 #define SEND_PUT 2
-
+#define SEND_FILE 4
 
 static void http_parse_header(CHTTPCLIENT *_object)
 {
@@ -149,6 +149,7 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 static void http_reset(void *_object)
 {
 	GB.FreeString(&THIS->data);
+	
 	GB.Unref(&THIS_HTTP->headers);
 	GB.Unref(&THIS_HTTP->sent_headers);
 	
@@ -160,9 +161,14 @@ static void http_reset(void *_object)
 	
 	if (THIS_HTTP->data)
 	{
-		GB.Free((void**)POINTER(&THIS_HTTP->data));
+		if (THIS_HTTP->send_file)
+			GB.ReleaseFile(THIS_HTTP->data, THIS_HTTP->len_data);
+		else
+			GB.Free(POINTER(&THIS_HTTP->data));
 		THIS_HTTP->data = NULL;
 	}
+	
+	THIS_HTTP->send_file = FALSE;
 }
 
 
@@ -326,18 +332,34 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 		}
 	}
 
+	if (type & SEND_FILE)
+	{
+		if (GB.LoadFile(sData, lendata, &THIS_HTTP->data, &mylen))
+			return;
+		
+		THIS_HTTP->len_data = mylen;
+		THIS_HTTP->send_file = TRUE;
+	}
+	else
+	{
+		THIS_HTTP->send_file = FALSE;
+		THIS_HTTP->len_data = lendata;
+		
+		if (lendata)
+		{
+			GB.Alloc((void*)&THIS_HTTP->data, lendata + 1);
+			strncpy(THIS_HTTP->data, sData, lendata);
+		}
+		else
+			THIS_HTTP->data = NULL;
+	}
+	
+	THIS_HTTP->len_sent = 0;
+
 	http_initialize_curl_handle(_object, custom_headers);
 
 	mylen = strlen(sContent) + strlen("Content-Type: ") + 1;
 	GB.Alloc((void*)&THIS_HTTP->sContentType, mylen);
-	
-	if (lendata)
-	{
-		GB.Alloc((void*)&THIS_HTTP->data, lendata + 1);
-		strncpy(THIS_HTTP->data, sData, lendata);
-	}
-	else
-		THIS_HTTP->data = NULL;
 	
 	THIS_HTTP->sContentType[0] = 0;
 	strcpy(THIS_HTTP->sContentType, "Content-Type: " );
@@ -348,7 +370,7 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	
 	if (THIS_HTTP->sent_headers)
 	{
-		for(i = 0; i < GB.Array.Count(THIS_HTTP->sent_headers); i++)
+		for (i = 0; i < GB.Array.Count(THIS_HTTP->sent_headers); i++)
 			headers = curl_slist_append(headers, *(char **)GB.Array.Get(THIS_HTTP->sent_headers, i));
 	}
 	
@@ -357,9 +379,6 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION, http_read_curl);
 	curl_easy_setopt(THIS_CURL, CURLOPT_READDATA, _object);
 	
-	THIS_HTTP->len_data = lendata;
-	THIS_HTTP->len_sent = 0;
-
 	if (type == SEND_PUT)
 	{
 		curl_easy_setopt(THIS_CURL, CURLOPT_INFILESIZE_LARGE, (curl_off_t)lendata);
@@ -534,9 +553,16 @@ BEGIN_METHOD(HttpClient_Post, GB_STRING contentType; GB_STRING data; GB_OBJECT h
 END_METHOD
 
 
+BEGIN_METHOD(HttpClient_PostFile, GB_STRING contentType; GB_STRING file; GB_OBJECT headers; GB_STRING target)
+
+	http_send(THIS, SEND_POST | SEND_FILE, GB.ToZeroString(ARG(contentType)), STRING(file), LENGTH(file), VARGOPT(headers, NULL), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
+
+END_METHOD
+
+
 BEGIN_METHOD(HttpClient_Put, GB_STRING contentType; GB_STRING data; GB_OBJECT headers; GB_STRING target)
 
-	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARG(headers), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
+	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), GB.ToZeroString(ARG(data)), 0, VARG(headers), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
 
 END_METHOD
 
@@ -561,6 +587,7 @@ GB_DESC CHttpClientDesc[] =
   GB_METHOD("Get", NULL, HttpClient_Get, "[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("Put", NULL, HttpClient_Put, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
+  GB_METHOD("PostFile", NULL, HttpClient_PostFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
 
   GB_PROPERTY("Auth", "i", HttpClient_Auth),
   GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),
@@ -577,7 +604,7 @@ GB_DESC CHttpClientDesc[] =
   GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", HTTP_PROPERTIES),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
-
+  
   GB_END_DECLARE
 };
 

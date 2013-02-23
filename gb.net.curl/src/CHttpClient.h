@@ -59,6 +59,7 @@ typedef
 		char *data;
 		size_t len_data;
 		size_t len_sent;
+		bool send_file;
 		}
 	CHTTPCLIENT;
 

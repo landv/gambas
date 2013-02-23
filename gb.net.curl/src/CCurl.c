@@ -3,6 +3,7 @@
   CCurl.c
 
   (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2012-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,10 +39,10 @@
 #include "CCurl.h"
 #include "CProxy.h"
 
-DECLARE_EVENT(EVENT_FINISHED);
-DECLARE_EVENT(EVENT_ERROR);
-DECLARE_EVENT(EVENT_CONNECT);
-DECLARE_EVENT(EVENT_READ);
+DECLARE_EVENT(EVENT_Finished);
+DECLARE_EVENT(EVENT_Error);
+DECLARE_EVENT(EVENT_Connect);
+DECLARE_EVENT(EVENT_Read);
 
 static CCURL *_async_list = NULL;
 
@@ -172,22 +173,22 @@ static void raise_event(void *_object, int event)
 
 void CURL_raise_finished(void *_object)
 {
-	raise_event(THIS, EVENT_FINISHED);
+	raise_event(THIS, EVENT_Finished);
 }
 
 void CURL_raise_error(void *_object)
 {
-	raise_event(THIS, EVENT_ERROR);
+	raise_event(THIS, EVENT_Error);
 }
 
 void CURL_raise_connect(void *_object)
 {
-	raise_event(THIS, EVENT_CONNECT);
+	raise_event(THIS, EVENT_Connect);
 }
 
 void CURL_raise_read(void *_object)
 {
-	GB.Raise(THIS, EVENT_READ, 0);
+	GB.Raise(THIS, EVENT_Read, 0);
 	
 	if (!GB.Stream.Eof(&THIS->stream))
 	{
@@ -597,10 +598,10 @@ GB_DESC CCurlDesc[] =
 	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
 
-	GB_EVENT("Finished", NULL, NULL, &EVENT_FINISHED),
-	GB_EVENT("Connect", NULL, NULL, &EVENT_CONNECT),
-	GB_EVENT("Read", NULL, NULL, &EVENT_READ),
-	GB_EVENT("Error", NULL,NULL, &EVENT_ERROR),
+	GB_EVENT("Finished", NULL, NULL, &EVENT_Finished),
+	GB_EVENT("Connect", NULL, NULL, &EVENT_Connect),
+	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+	GB_EVENT("Error", NULL, NULL, &EVENT_Error),
 
 	GB_END_DECLARE
 };
