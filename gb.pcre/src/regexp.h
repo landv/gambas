@@ -50,6 +50,7 @@ typedef
 		int copts;
 		pcre *code;
 		int _submatch;
+		int error;
 	}
 	CREGEXP;
 

@@ -50,7 +50,10 @@ static void compile(void *_object)
 	THIS->code = pcre_compile(THIS->pattern, THIS->copts, &errstr, &errptr, NULL);
 
 	if (!THIS->code)
+	{
+		THIS->error = errptr;
 		GB.Error(errstr);
+	}
 }
 
 static void exec(void *_object)
@@ -83,11 +86,14 @@ static void exec(void *_object)
 		
 		if (ret > 0)
 		{
+			THIS->error = 0;
 			THIS->count = ret;
 			break;
 		}
 		else if (ret < 0)
 		{
+			THIS->error = ret;
+			
 			switch (ret)
 			{
 				case PCRE_ERROR_NOMATCH:
@@ -110,8 +116,8 @@ static void exec(void *_object)
 					GB.Error("Unexpected internal error"); return;
 				case PCRE_ERROR_BADNEWLINE:
 					GB.Error("Invalid combination of newline options"); return;
-				case PCRE_ERROR_RECURSELOOP:
-					GB.Error("Recursion loop detected"); return;
+				//case PCRE_ERROR_RECURSELOOP:
+				//	GB.Error("Recursion loop detected"); return;
 				//case PCRE_ERROR_JIT_STACKLIMIT:
 				//	GB.Error("JIT stack limit reached"); return;
 				default:
@@ -226,6 +232,13 @@ BEGIN_PROPERTY(RegExp_Text)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(RegExp_Error)
+
+	GB.ReturnInteger(THIS->error);
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(RegExp_Submatches_Count)
 
 	GB.ReturnInteger(THIS->count - 1);
@@ -309,6 +322,7 @@ GB_DESC CRegexpDesc[] =
 	GB_PROPERTY_READ("Offset", "i", RegExp_Offset), /* this is the string matched by the entire pattern */
 	GB_PROPERTY_READ("Pattern", "s", RegExp_Pattern),
 	GB_PROPERTY_READ("Subject", "s", RegExp_Subject),
+	GB_PROPERTY_READ("Error", "i", RegExp_Error),
 
 	GB_END_DECLARE
 };
