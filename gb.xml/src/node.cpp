@@ -754,6 +754,19 @@ Node** Node::fromText(char const *data, const size_t lendata, size_t *nodeCount)
                     data, lendata, pos - 1));
                 }
             }
+            else if(ws == CHAR_PI)//Processing Instruction //TODO : add the PI API
+            {
+                tag = (char*)memchrs(pos, endData - pos, "?>", 2);//Looking for the end of the PI
+                if(!tag)//Endless PI
+                {
+                    throw(XMLParseException("Never-ending Processing instruction",
+                    data, lendata, pos - 1));
+                }
+
+                pos = tag + 2;
+                continue;
+
+            }
             else// ... ?
             {
                 //ERREUR : INVALID TAG

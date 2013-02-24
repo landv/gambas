@@ -166,7 +166,7 @@ void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInse
 /************************************ Error Management ************************************/
 
 XMLParseException::XMLParseException(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw() 
-    : exception(), near(0), error(0), lenError(0), lenNear(0), line(0), column(0)
+    : exception(), near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
 {
     lenError = strlen(nerror) + 1;
     error = (char*) malloc(lenError);
@@ -207,13 +207,13 @@ void XMLParseException::AnalyzeText(const char *text, const size_t lenText, cons
         ++column;
         if(*pos == SCHAR_N)
         {
-            column = 0;
+            column = 1;
             ++line;
         }
         else if(*pos == SCHAR_R)
         {
             if(*(pos + 1) == SCHAR_N) ++pos;
-            column = 0;
+            column = 1;
             ++line;
         }
     }
