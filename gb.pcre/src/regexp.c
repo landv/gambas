@@ -108,10 +108,14 @@ static void exec(void *_object)
 				case PCRE_ERROR_NOMEMORY:
 					GB.Error("Out of memory"); return;
 				case PCRE_ERROR_BADUTF8:
+				#ifdef PCRE_ERROR_SHORTUTF8
 				case PCRE_ERROR_SHORTUTF8:
+				#endif
 					GB.Error("Bad UTF-8 string"); return;
+				#ifdef PCRE_ERROR_BADUTF8_OFFSET
 				case PCRE_ERROR_BADUTF8_OFFSET:
 					GB.Error("Bad UTF-8 offset"); return;
+				#endif
 				case PCRE_ERROR_INTERNAL:
 					GB.Error("Unexpected internal error"); return;
 				case PCRE_ERROR_BADNEWLINE:
