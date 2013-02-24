@@ -10,7 +10,6 @@ Private aPicture As New Object[]
 Private aOri As New String[]
 Private alblFile As New Object[]
 Private alblTime As New Object[]
-Private bNothumb As Boolean
 Private bStop As Boolean = False
 Private hCurClose As Cursor
 Private hCurHand As Cursor
@@ -419,7 +418,7 @@ End
 
 Public Sub mnuDelete_Click()  ' Delete a picture
 
-  Dim i, j, x, y, posx As Integer
+  Dim i, x, y As Integer
   Dim sPicState As String
   
   If iMark = -1 Then Return   ' Only if a picture is selected
@@ -487,7 +486,6 @@ End
 
 Public Sub mnuInfo_Click()  ' Show picture infos
 
-  Dim sExif As String
   Dim posx, posy As Integer
   
   If iMark = -1 Then Return
@@ -633,7 +631,7 @@ Public Function FindNextFrame(x As Integer, y As Integer) As Boolean
   
   Do
     x = x + 70
-    If x > (Me.Width - 150) Then   ' if we are at the end of a line, go to next line
+    If x > (ScrollView1.ScrollWidth - 150) Then   ' if we are at the end of a line, go to next line
       x = 0
       y = y + 210
     Endif 

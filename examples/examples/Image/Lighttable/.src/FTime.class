@@ -13,9 +13,6 @@ Public Sub btnCancel_Click()
 End
 
 Public Sub btnOK_Click()
-
-  Dim aOrigs As String[]
-  Dim i As Integer
   
   If SpinDay.Value + SpinHrs.Value + SpinMins.Value = 0 Then
     Message.Info(("There is no time correction selected."))
