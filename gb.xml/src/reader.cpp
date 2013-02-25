@@ -135,6 +135,10 @@ int Reader::ReadChar(char car)
     
     if(car == CHAR_STARTTAG && !inComment)//Début de tag
     {
+        if(inTag)//Si on est déjà dans un tag
+        {
+            throw XMLParseException("Invalid tag Name", pos);
+        }
         inNewTag = true;
         inTagName = true;
         if(curNode && curNode->isText()) //Si il y avait du texte avant

@@ -32,7 +32,11 @@
 BEGIN_METHOD(CExplorerReadFlags_get, GB_INTEGER flag)
 
 int flag = VARG(flag);
-if(flag > FLAGS_COUNT || flag < 0) return;
+if(flag > FLAGS_COUNT || flag < 0)
+{
+    GB.ReturnBoolean(false);
+    return;
+}
 GB.ReturnBoolean(THIS->flags[flag]);
 
 END_METHOD
@@ -60,6 +64,7 @@ END_METHOD
 BEGIN_METHOD(CExplorer_new, GB_OBJECT doc)
 
 THIS = new Explorer;
+
 if(!MISSING(doc))
 {
     THIS->Load(VARGOBJ(CDocument, doc)->doc);
@@ -69,32 +74,22 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CExplorer_free)
 
-THIS->Clear();
+delete THIS;
 
 END_METHOD
 
 BEGIN_METHOD(CExplorer_open, GB_STRING path)
 
-Document *doc = new Document;
-char *content; int len;
-
-if(GB.LoadFile(STRING(path), LENGTH(path), &content, &len))
+try
 {
-    GB.Error("Error loading file.");
-    return;
+    Document *doc = new Document(STRING(path), LENGTH(path));
+    THIS->Load(doc);
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
 }
 
-    try
-    {
-        doc->setContent(content, len);
-    }
-    catch(XMLParseException &e)
-    {
-        GB.Error(e.what());
-    }
-    GB.ReleaseFile(content, len);
-
-THIS->Load(doc);
 
 END_METHOD
 

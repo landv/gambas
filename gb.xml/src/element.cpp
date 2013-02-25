@@ -464,7 +464,7 @@ Attribute::Attribute(const char *nattrName, const size_t nlenAttrName) : Node()
     attrValue = 0;
     lenAttrValue = 0;
     
-    lenAttrName = lenAttrName;
+    lenAttrName = nlenAttrName;
     attrName = (char*)malloc(sizeof(char)*lenAttrName);
     memcpy(attrName, nattrName, lenAttrName);
 }

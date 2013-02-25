@@ -165,7 +165,7 @@ void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInse
 
 /************************************ Error Management ************************************/
 
-XMLParseException::XMLParseException(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw() 
+XMLParseException::XMLParseException(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw()
     : exception(), near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
 {
     lenError = strlen(nerror) + 1;
@@ -181,6 +181,13 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
         errorWhat[16 + lenError] = 0;
         return;
     }
+    else if(!data || !lenData)
+    {
+        errorWhat = (char*)malloc(37 + lenError);
+        sprintf(errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
+        errorWhat[36 + lenError] = 0;
+        return;
+    }
     if(posFailed > data + lenData || posFailed < data) return;
     AnalyzeText(data, lenData, posFailed);
 
@@ -189,9 +196,20 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
     memset(errorWhat, 0, 61 + lenError + lenNear);
     sprintf(errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", error, line, column, near);
     errorWhat[60 + lenError + lenNear] = 0;
-    
-    
-    
+}
+
+XMLParseException::XMLParseException(const char *nerror, size_t posFailed) throw()
+    : exception(), near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
+{
+    lenError = strlen(nerror) + 1;
+    error = (char*) malloc(lenError);
+    memcpy(error, nerror, lenError);
+
+    //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
+
+    errorWhat = (char*)malloc(37 + lenError);
+    sprintf(errorWhat, "Parse error : %s !\n Position %zu", error, posFailed);
+    errorWhat[36 + lenError] = 0;
 }
 
 XMLParseException::~XMLParseException() throw()

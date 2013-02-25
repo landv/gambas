@@ -42,7 +42,14 @@ END_METHOD
 BEGIN_METHOD(CReader_ReadChar, GB_STRING car)
 
 if(!LENGTH(car)) return;
-GB.ReturnInteger(THIS->ReadChar(STRING(car)[0]));
+try
+{
+    GB.ReturnInteger(THIS->ReadChar(STRING(car)[0]));
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
+}
 
 END_METHOD
 

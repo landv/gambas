@@ -78,6 +78,7 @@ class XMLParseException : public exception
 {
 public:
     XMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed) throw();
+    XMLParseException(const char* nerror, size_t posFailed) throw();
     virtual ~XMLParseException() throw();
     
     virtual const char* what() const throw();

@@ -43,6 +43,7 @@ class Explorer
 {
 public:
     Explorer();
+    ~Explorer();
     
     void Load(Document *doc);
 

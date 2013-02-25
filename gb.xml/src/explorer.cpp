@@ -25,14 +25,21 @@
 
 
 
-Explorer::Explorer()
+Explorer::Explorer() : loadedDocument(0)
 {
     Init();
+}
+
+Explorer::~Explorer()
+{
+    Clear();
+    delete[] flags;
 }
 
 void Explorer::Init()
 {
     this->flags = new bool[FLAGS_COUNT];
+    memset(this->flags, false, FLAGS_COUNT);
     this->flags[NODE_ELEMENT] = true;
     this->flags[NODE_TEXT] = true;
     this->flags[NODE_COMMENT] = true;
@@ -49,11 +56,14 @@ void Explorer::Load(Document *doc)
     loadedDocument = doc;
     //GB.Ref(doc);
 
+    Read();
+
 }
 
 void Explorer::Clear()
 {
     //UNREF(loadedDocument);
+    if(loadedDocument) loadedDocument->DestroyParent();
     loadedDocument = 0;
     curNode = 0;
     this->eof = false;
@@ -91,7 +101,7 @@ int Explorer::MoveNext()
             return nextNode->getType();
         }
         //si plus d'enfants ni de frère, on remonte
-        if(curNode->parent)
+        else if(curNode->parent && curNode != loadedDocument->root)
         {
             curNode = curNode->parent;
             endElement = true;
