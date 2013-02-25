@@ -29,5 +29,5 @@
 #include "cpoint_temp.h"
 
 IMPLEMENT_POINT_CLASS(CPOINT, Point, GB_INTEGER, int, "i", GB.ReturnInteger, ((CPOINT *)_object), CRECT, Rect)
-IMPLEMENT_POINT_CLASS(CPOINTF, PointF, GB_INTEGER, double, "f", GB.ReturnFloat, ((CPOINTF *)_object), CRECTF, RectF)
+IMPLEMENT_POINT_CLASS(CPOINTF, PointF, GB_FLOAT, double, "f", GB.ReturnFloat, ((CPOINTF *)_object), CRECTF, RectF)
 
