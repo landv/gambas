@@ -32,20 +32,22 @@
 #include "gbx_event.h"
 #include "gbx_c_observer.h"
 
+//#define DEBUG_ME 1
+
 void COBSERVER_attach(COBSERVER *this, void *parent, const char *name)
 {
-	//fprintf(stderr, "COBSERVER_attach: %p: %s %p\n", this, parent ? OBJECT_class(parent)->name : "", parent);
-	//COBSERVER_set_parent(this, parent);
+	#if DEBUG_ME
+	fprintf(stderr, "COBSERVER_attach: %p: %s %p\n", this, parent ? OBJECT_class(parent)->name : "", parent);
+	#endif
 	if (this->event)
 		EVENT_search(OBJECT_class(this->object), this->event, name, parent);	
 }
 
 void COBSERVER_detach(COBSERVER *this)
 {
-	//fprintf(stderr, "COBSERVER_detach: %p\n", this);
-	//COBSERVER_set_parent(this, NULL);
-	
-	//this->proxy = NULL;
+	#if DEBUG_ME
+	fprintf(stderr, "COBSERVER_detach: %p\n", this);
+	#endif
 	
 	if (this->event)
 		FREE(&this->event, "COBSERVER_detach");
@@ -91,7 +93,9 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 	if (!name || !*name)
 		return;
 	
-	//fprintf(stderr, "Observer_new: %p %d %s (%s %p)\n", THIS, OBJECT_class(object)->n_event, name, GB_GetClassName(parent), parent);
+	#if DEBUG_ME
+	fprintf(stderr, "Observer_new: %p %d %s (%s %p)\n", THIS, OBJECT_class(object)->n_event, name, GB_GetClassName(parent), parent);
+	#endif
 	
 	ev = OBJECT_event(object);
   
@@ -120,7 +124,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Observer_free)
 
-	//fprintf(stderr, "Observer_free: %p\n", this);
+	#if DEBUG_ME
+	fprintf(stderr, "Observer_free: %p\n", THIS);
+	#endif
 	
 	GB_StoreVariant(NULL, &THIS->tag);
 	COBSERVER_detach(THIS);

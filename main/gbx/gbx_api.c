@@ -912,7 +912,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 			
 			if (!OBJECT_is_valid(parent))
 			{
-				OBJECT_detach(object);
+				OBJECT_detach((OBJECT *)obs);
 				continue;
 			}
 			
@@ -970,7 +970,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 			
 			if (!OBJECT_is_valid(parent))
 			{
-				OBJECT_detach(object);
+				OBJECT_detach((OBJECT *)obs);
 				continue;
 			}
 			
