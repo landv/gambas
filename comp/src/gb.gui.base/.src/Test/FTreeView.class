@@ -13,14 +13,14 @@ Public Sub Form_Open()
   hDirPict = Picture["icon:/48/directory"]
   hFilePict = Picture["icon:/small/file"]
   
-  tvwTest.Columns.Count = 1
+  tvwTest.Columns.Count = 3
   
   For Each sFile In RDir(sDir)
     sPath = sDir &/ sFile
     'Print File.Name(sPath); " -> "; File.Dir(sPath)
     sParent = File.Dir(sPath)
     If sParent = sDir Then sParent = ""
-    tvwTest.Add(sPath, File.Name(sPath),, sParent)
+    tvwTest.Add(sPath, File.Name(sPath),, sParent)[1] = Stat(sPath).Size
     'ListView1.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict))
   Next
   
