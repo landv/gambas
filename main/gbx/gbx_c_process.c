@@ -405,6 +405,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	CARRAY *array;
 	int i, n;
 	sigset_t sig, old;
+	bool pwd;
 
 	/* for terminal */
 	int fd_master = -1;
@@ -669,8 +670,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			}
 		}
 
-		// Return to the parent working directory
-		FILE_chdir(PROJECT_oldcwd);
+		pwd = FALSE;
 		
 		if (env)
 		{
@@ -681,8 +681,14 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 				str = ((char **)env->data)[i];
 				if (putenv(str))
 					ERROR_warning("cannot set environment string: %s", str);
+				if (strncmp(str, "PWD=", 4) == 0 && chdir(&str[4]) == 0)
+					pwd = TRUE;
 			}
 		}
+		
+		// Return to the parent working directory if the PWD environment variable has not been set
+		if (!pwd)
+			FILE_chdir(PROJECT_oldcwd);
 		
 		execvp(argv[0], (char **)argv);
 		//execve(argv[0], (char **)argv, environ);
