@@ -166,6 +166,7 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
 
 	wid->setLineWrapMode(QTextEdit::NoWrap);
 	wid->setAcceptRichText(false);
+	wid->document()->setDocumentMargin(2);
 	
 	THIS->widget.flag.fillBackground = true;
 	CWIDGET_new(wid, (void *)_object);
@@ -564,6 +565,15 @@ BEGIN_PROPERTY(TextArea_Alignment)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(TextArea_Border)
+
+	CWIDGET_border_simple(_object, _param);
+
+	if (!READ_PROPERTY)
+		WIDGET->document()->setDocumentMargin(VPROP(GB_BOOLEAN) ? 2 : 0);
+	
+END_PROPERTY
+
 /*
 GB_DESC CTextAreaLinesDesc[] =
 {
@@ -605,7 +615,7 @@ GB_DESC CTextAreaDesc[] =
 
 	GB_PROPERTY("ScrollBar", "i", CWIDGET_scrollbar),
 	GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
-	GB_PROPERTY("Border", "b", CWIDGET_border_simple),
+	GB_PROPERTY("Border", "b", TextArea_Border),
 	GB_PROPERTY("Alignment", "i", TextArea_Alignment),
 
 	GB_PROPERTY("Line", "i", CTEXTAREA_line),

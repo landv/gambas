@@ -17,6 +17,8 @@ Private mnuShowHiddenFiles As Menu
 Private mnuShowDetailed As Menu
 Private mnuShowPreview As Menu
 Private mnuUncompress As Menu
+Private mnuRename As Menu
+Private mnuDelete As Menu
 
 Private $bView As Boolean
 Private $aFilter As String[]
@@ -895,7 +897,7 @@ Private Sub FillMenu()
   hMenu = New Menu(mnuPopup) As "mnuShowHiddenFiles"
   hMenu.Text = ("Show &hidden files")
   hMenu.Checked = fvwChoose.ShowHidden
-  hMenu.Visible = fvwChoose.Visible
+  'hMenu.Visible = fvwChoose.Visible
   mnuShowHiddenFiles = hMenu
   
   hMenu = New Menu(mnuPopup) As "mnuShowPreview"
@@ -903,6 +905,18 @@ Private Sub FillMenu()
   hMenu.Checked = fvwChoose.ShowPreview
   hMenu.Visible = fvwChoose.Visible
   mnuShowPreview = hMenu
+  
+  hMenu = New Menu(mnuPopup)
+  
+  hMenu = New Menu(mnuPopup) As "mnuRename"
+  hMenu.Text = ("&Rename")
+  'hMenu.Picture = Picture["icon:/small/archive"]
+  mnuRename = hMenu
+  
+  hMenu = New Menu(mnuPopup) As "mnuDelete"
+  hMenu.Text = ("&Delete")
+  hMenu.Picture = Picture["icon:/small/delete"]
+  mnuDelete = hMenu
   
   hMenu = New Menu(mnuPopup)
   
@@ -989,6 +1003,8 @@ Public Sub dvwChoose_Menu()
   mnuUncompress.Hide
   mnuShowDetailed.Hide
   mnuShowPreview.Hide
+  mnuDelete.Hide
+  mnuRename.Show
 
   mnuPopup.Popup
 
@@ -1006,6 +1022,8 @@ Public Sub fvwChoose_Menu()
   
   mnuShowDetailed.Show
   mnuShowPreview.Show
+  mnuRename.Visible = sFile
+  mnuDelete.Visible = sFile
 
   mnuPopup.Popup
 
@@ -1043,12 +1061,25 @@ Public Sub FileView_Hide()
   
 End
 
+Public Sub mnuRename_Click()
+  
+  If dvwChoose.HasFocus Then
+    dvwChoose.Rename
+  Else
+    fvwChoose.Rename
+  Endif
+  
+End
+
+
 Public Sub mnuUncompress_Click()
   
   Dim sResult As String
   Dim sOutput As String
   Dim iMsg As Integer
   Dim sPath As String
+  Dim sShow As String
+  Dim hTreeView As TreeView
   
   Inc Application.Busy
   
@@ -1059,7 +1090,10 @@ Public Sub mnuUncompress_Click()
   
       For Each sOutput In Split(Trim(sOutput), "\n")
         
-        If Right(sOutput) = "/" Then sOutput = Left$(sOutput, -1)
+        If Right(sOutput) = "/" Then 
+          sOutput = Left$(sOutput, -1)
+          If Not sShow Then sShow = sOutput
+        Endif
         sPath = fvwChoose.Dir &/ sOutput
         
         If Exist(sPath) Then
@@ -1079,7 +1113,7 @@ Public Sub mnuUncompress_Click()
       
     Case Else
       Application.Busy = 0
-      Message(("Cannot uncompress file.") & "\n\n" & ("Unknown archive."))
+      Message.Error(("Cannot uncompress file.") & "\n\n" & ("Unknown archive."))
       Return
       
   End Select
@@ -1106,20 +1140,44 @@ Public Sub mnuUncompress_Click()
   Dec Application.Busy
   
   Reload
+  
+  hTreeView = dvwChoose.Proxy
+  If sShow Then Try hTreeView[fvwChoose.Dir &/ sShow].EnsureVisible
+  
   Return
   
 _CANNOT_UNCOMPRESS:
 
   Application.Busy = 0
-  Message(("Cannot uncompress file.") & "\n\n" & sResult)
+  Message.Error(("Cannot uncompress file.") & "\n\n" & sResult)
   Return
 
 Catch
   
   Application.Busy = 0
-  Message(("Cannot uncompress file.") & "\n\n" & Error.Text)
+  Message.Error(("Cannot uncompress file.") & "\n\n" & Error.Text)
   
 End
+
+Public Sub mnuDelete_Click()
+  
+  Dim sPath As String = fvwChoose.Current
+  
+  If Not sPath Then Return
+  sPath = fvwChoose.Dir &/ sPath
+  
+  Message.Title = ("Delete file")
+  If Message.Warning("<b>" & File.Name(sPath) & "</b><p>" & ("Do you really want to delete that file?"), ("&Delete"), ("Cancel")) = 2 Then Return
+  
+  Kill sPath
+  mnuRefresh_Click
+  
+Catch
+  
+  Message.Error(("Unable to delete file.") & "\n\n" & Error.Text)
+  
+End
+
 
 Public Sub SetFocus()
   

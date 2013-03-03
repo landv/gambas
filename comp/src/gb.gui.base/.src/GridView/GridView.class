@@ -316,7 +316,7 @@ Public Sub ScrollArea_Draw()
   Dim hClip, hSaveClip As Rect
   Dim hRect As Rect
   Dim hData As _GridView_Data
-  Dim F As Integer = GetFrameWidth()
+  Dim F As Integer = _GetFrameWidth()
   Dim iGrid As Integer
   Dim aSpan As Short[]
   Dim bHasSpan As Boolean
@@ -620,7 +620,7 @@ Private Sub Border_Write(Value As Boolean)
 
 End
 
-Private Sub GetFrameWidth() As Integer
+Public Sub _GetFrameWidth() As Integer
   
   If $hView.Border Then Return Style.FrameWidth
   
@@ -629,7 +629,7 @@ End
 
 Public Sub _ResizeContents()
   
-  Dim F As Integer = GetFrameWidth()
+  Dim F As Integer = _GetFrameWidth()
   
   ' Debug $hRows._GetHeight(); " / "; $hRows.Count;;
   ' If $hRows.Count Then Error $hRows[0].H * $hRows.Count;
@@ -686,7 +686,7 @@ Public Sub ScrollArea_MouseMove()
   
   Dim I, MX, MY, X, Y, iRow, iCol As Integer
   Dim iMouse As Integer
-  Dim F As Integer = GetFrameWidth()
+  Dim F As Integer = _GetFrameWidth()
 
   If Not Me.Enabled Then Return
   If $bIgnoreMove Then Return
@@ -853,7 +853,7 @@ Public Sub ScrollArea_MouseDown()
   
   Dim I, iOldRow As Integer
   Dim bCancel As Boolean
-  Dim F As Integer = GetFrameWidth()
+  Dim F As Integer = _GetFrameWidth()
   
   $MX = Mouse.X - F
   $MY = Mouse.Y - F
@@ -1134,7 +1134,7 @@ End
 Public Sub TimerEnsureVisible_Timer()
   
   Dim iRowEV As Integer = $iRowEV
-  Dim F As Integer = GetFrameWidth()
+  Dim F As Integer = _GetFrameWidth()
   
   $iRowEV = -1
 
@@ -1228,25 +1228,25 @@ End
 
 Private Function ClientX_Read() As Integer
 
-  Return $hView.ClientX + GetFrameWidth()
+  Return $hView.ClientX + _GetFrameWidth()
 
 End
 
 Private Function ClientY_Read() As Integer
 
-  Return $hView.ClientY + GetFrameWidth()
+  Return $hView.ClientY + _GetFrameWidth()
 
 End
 
 Private Function ClientW_Read() As Integer
 
-  Return $hView.ClientW - GetFrameWidth() * 2
+  Return $hView.ClientW - _GetFrameWidth() * 2
 
 End
 
 Private Function ClientH_Read() As Integer
 
-  Return $hView.ClientH - GetFrameWidth() * 2
+  Return $hView.ClientH - _GetFrameWidth() * 2
 
 End
 
@@ -1395,7 +1395,7 @@ Public Sub ScrollArea_KeyPress()
       Stop Event
       
     Case Key.PageUp
-      iRow = $hRows._FindRowFromPos($hRows._GetRowY($iRow) + $hRows._GetRowHeight($iRow) - ($hView.ClientH - $hColumns.H - GetFrameWidth() * 2))
+      iRow = $hRows._FindRowFromPos($hRows._GetRowY($iRow) + $hRows._GetRowHeight($iRow) - ($hView.ClientH - $hColumns.H - _GetFrameWidth() * 2))
       If iRow >= 0 Then 
         MoveTo(iRow, $iCol)
       Else
@@ -1404,7 +1404,7 @@ Public Sub ScrollArea_KeyPress()
       Stop Event
       
     Case Key.PageDown
-      iRow = $hRows._FindRowFromPos($hRows._GetRowY($iRow) + $hView.ClientH - $hColumns.H - GetFrameWidth() * 2)
+      iRow = $hRows._FindRowFromPos($hRows._GetRowY($iRow) + $hView.ClientH - $hColumns.H - _GetFrameWidth() * 2)
       If iRow >= 0 Then 
         MoveTo(iRow, $iCol)
       Else
@@ -1580,7 +1580,7 @@ End
 
 Public Sub _GetVisibleWidth() As Integer
   
-  Return $hView.ClientW - GetFrameWidth() * 2 - $hRows.Width
+  Return $hView.ClientW - _GetFrameWidth() * 2 - $hRows.Width
   
 End
 

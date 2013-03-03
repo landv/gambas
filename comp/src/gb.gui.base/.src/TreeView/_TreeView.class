@@ -45,7 +45,7 @@ Private $sSaveCursor As String
 Private $iLastRow As Integer = -2
 Private $iCompare As Integer
 Private $bEditable As Boolean
-Private $hTextBox As TextBox
+Private $hRenameBox As RenameBox
 Private $sKeyRenaming As String
 Private $bSorted As Boolean
 Private $cSort As Collection
@@ -1047,7 +1047,7 @@ End
 
 Private Function Renaming_Read() As Boolean
 
-  Return $hTextBox
+  Return $hRenameBox
 
 End
 
@@ -1083,21 +1083,22 @@ Public Sub _Rename(hItem As _TreeView_Item)
   
   Key_Write(hItem.Key)
   
-  $hTextBox = New TextBox(Me) As "Editor"
-  $hTextBox.Ignore = True
-  $hTextBox.Border = False
-  X = (hItem._Depth + 1) * 16
-  SX = Max(0, X - $hView.ClientW - 32)
+  Do
+    X = hItem.X '(hItem._Depth + 1) * 16
+    SX = Max(0, X - $hView.ClientW - 32)
+    If SX = $hView.ScrollX Then Break
+    $hView.ScrollX = SX
+  Loop
+  
   X -= SX
   If hItem.Picture Then X += hItem.Picture.W + 2
   W = $hView.ClientW - X
   If W < 32 Then Return
   
-  $hView.ScrollX = SX
-  $hTextBox.Move(X, hItem.Y, W, hItem.H)
-  $hTextBox.Text = hItem.Text
-  $hTextBox.SelectAll
-  $hTextBox.SetFocus
+  $hRenameBox = New RenameBox(Me) As "Editor"
+  $hRenameBox.Move(X, hItem.Y, W, hItem.H)
+  $hRenameBox.Text = hItem.Text
+  $hRenameBox.SetFocus
   
   $sKeyRenaming = hItem.Key
   
@@ -1107,9 +1108,9 @@ Private Sub Cancel(Optional bOK As Boolean)
   
   Dim sCursor As String 
   
-  If Not $hTextBox Then Return
-  $hTextBox.Delete
-  $hTextBox = Null
+  If Not $hRenameBox Then Return
+  $hRenameBox.Delete
+  $hRenameBox = Null
   $hView.SetFocus
 
   sCursor = $sCursor
@@ -1138,7 +1139,7 @@ Public Sub Editor_KeyPress()
     Cancel
     Stop Event
   Else If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
-    Try $cItem[$sKeyRenaming].Text = $hTextBox.Text
+    Try $cItem[$sKeyRenaming].Text = $hRenameBox.Text
     If Not Error Then Cancel(True)
     Stop Event
   Endif
@@ -1209,6 +1210,13 @@ Public Sub GridView_Sort()
   Selection_Write(aSel)
   
 End
+
+Public Sub GridView_Scroll()
+  
+  Cancel
+  
+End
+
 
 Private Function Selection_Read() As String[]
 

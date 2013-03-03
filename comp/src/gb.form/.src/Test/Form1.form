@@ -7,6 +7,7 @@
   Margin = True
   { HBox1 HBox
     MoveScaled(8,2,39,5)
+    #Translate = False
     { Button1 Button
       MoveScaled(0,0,16,4)
       #Translate = False
@@ -14,11 +15,13 @@
     }
     { Button2 Button
       MoveScaled(18,0,16,4)
-      Text = ("Button2")
+      #Translate = False
+      Text = "Button2"
     }
   }
   { Panel1 HBox
     MoveScaled(1,9,102,64)
+    #Translate = False
     Background = &HDFEFFF&
     Expand = True
     { FileChooser1 FileChooser

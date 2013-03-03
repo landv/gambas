@@ -294,11 +294,11 @@ Private Sub RefreshView()
         Endif
       Endif
       If $hColumnView.Visible Then
-        $hColumnView.Add(sPrefix & sFile, sFile, hPict)
+        $hColumnView.Add(sPrefix & sFile, sFile, hPict).Editable = Access(sDir, gb.Write)
         $hColumnView[sPrefix & sFile][1] = "  " & GetFileSize(.Size)
         $hColumnView[sPrefix & sFile][2] = "  " & Str(.Time)
       Else
-        $hIconView.Add(sPrefix & sFile, sFile, hPict)
+        $hIconView.Add(sPrefix & sFile, sFile, hPict).Editable = Access(sDir, gb.Write)
       Endif
     End With
   Next
@@ -758,5 +758,55 @@ Private Sub ShowPreview_Write(Value As Boolean)
   If $bShowPreview = Value Then Return
   $bShowPreview = Value
   RefreshView
+  
+End
+
+Public Sub Rename()
+  
+  Dim hView As Object = GetView()
+  Dim sPath As String
+  
+  Try sPath = hView.Current.Key
+  If sPath Then
+    hView[sPath].Rename
+  Endif
+  
+End
+
+Public Sub View_Rename()
+  
+  Dim hView As Object = GetView()
+  Dim sKey As String = hView.Item.Key
+  Dim sOldPath As String = $sDir &/ Mid$(sKey, 2)
+  Dim sNewName As String = hView.Item.Text
+  Dim sMsg As String
+  
+  If sNewName = File.Name(sOldPath) Then Return 
+  
+  sMsg = Help.CheckFileName(sNewName)
+  If sMsg Then
+    Balloon.Warning(sMsg, hView, hView.Item.X + Min(32 + Desktop.Scale * 8, hView.Item.W) / 2, hView.Item.Y + hView.Item.H / 2)
+    Return
+  Endif
+  
+  Move sOldPath To File.SetName(sOldPath, sNewName)
+  
+  'sParent = File.Dir(sKey)
+  
+  ' TODO: Optimization
+  
+  Object.Lock(hView)
+  hView.Remove(sKey)
+  Mid$(sKey, 2) = sNewName
+  'AddDir(File.Dir(sKey), File.Name(sKey))
+  RefreshView
+  Object.Unlock(hView)
+  
+  Try hView.Key = sKey
+  
+Catch 
+  
+  hView[sKey].Text = File.Name(sOldPath)
+  Message.Error(("Cannot rename file.") & "\n\n" & Error.Text)
   
 End

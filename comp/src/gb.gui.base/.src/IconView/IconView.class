@@ -30,6 +30,7 @@ Property Picture As Picture
 Property Read IconSize As Integer
 Property IconLines As Integer
 Property GridSize As Integer
+Property Read Renaming As Boolean
 
 Event Select
 Event Activate 
@@ -86,8 +87,7 @@ Private $bSortDirty As Boolean
 Private $hUpdateSortTimer As Timer
 
 Private $bEditable As Boolean
-Private $hPanelRename As Panel
-Private $hRenameBox As TextArea
+Private $hRenameBox As RenameBox
 Private $iRename As Integer = -1
 Private $iCurrentBefore As Integer
 
@@ -204,6 +204,7 @@ End
 Public Sub _FindItem(hItem As _IconView_Item) As Integer
   
   If hItem Then 
+    UpdateSort
     Return $aItems.FindByRef(hItem)
   Else
     Return -1
@@ -480,7 +481,7 @@ Public Sub ScrollArea_Draw()
   Endif
   
   ' GTK+ bug
-  If $hPanelRename And If $hPanelRename.Visible Then $hPanelRename.Refresh
+  If $hRenameBox And If $hRenameBox.Visible Then $hRenameBox.Refresh
   
   'Debug ">>>"
   
@@ -1174,7 +1175,9 @@ End
 Private Sub UpdateSort()
   
   If Not $bSorted Then Return
+  If Not $bSortDirty Then Return
   $aItems.Sort(If($bAscending, gb.Ascent, gb.Descent))
+  $bSortDirty = False
   $hView.View.Refresh
   
 End
@@ -1191,6 +1194,7 @@ Private Sub Sorted_Write(Value As Boolean)
   If $bSorted = Value Then Return
   $bSorted = Value
   If $bSorted Then $hUpdateSortTimer = New Timer As "UpdateSort"
+  $bSortDirty = True
   UpdateSort
 
 End
@@ -1217,6 +1221,7 @@ Private Sub Ascending_Write(Value As Boolean)
 
   If $bAscending = Value Then Return
   $bAscending = Value
+  $bSortDirty = True
   UpdateSort
 
 End
@@ -1224,7 +1229,6 @@ End
 Public Sub UpdateSort_Timer()
   
   UpdateSort
-  $bSortDirty = False
   
 End
 
@@ -1298,35 +1302,26 @@ Public Sub _RenameItem(hItem As _IconView_Item)
   
   If Not $hRenameBox Then 
     Object.Lock(Me)
-    $hPanelRename = New Panel(Me)
-    $hPanelRename.Ignore = True
-    $hPanelRename.Arrangement = Arrange.Fill
-    '$hPanelRename.Border = Border.Plain
-    $hPanelRename.Background = Color.TextBackground
-    $hRenameBox = New TextArea($hPanelRename) As "RenameBox"
-    $hRenameBox.ScrollBar = Scroll.None
-    $hRenameBox.Wrap = True
-    $hRenameBox.Border = False
+    $hRenameBox = New RenameBox(Me) As "RenameBox"
     Object.Unlock(Me)
   Endif
   
   hRect.X = hRect.X - $hView.ScrollX + $hView.ScreenX - Me.ScreenX
   hRect.Y = hRect.Y - $hView.ScrollY + $hView.ScreenY - Me.ScreenY
   
-  $hPanelRename.Move(hRect.X, hRect.Y, hRect.W, hRect.H)
+  $hRenameBox.Move(hRect.X, hRect.Y, hRect.W, hRect.H)
   $hRenameBox.Alignment = If($bHorizontal, Align.Left, Align.Center)
   $hRenameBox.Text = hItem.Text
-  $hRenameBox.SelectAll
-  $hPanelRename.Raise
-  $hPanelRename.Show
+  $hRenameBox.Raise
+  $hRenameBox.Show
   $hRenameBox.SetFocus
   
 End
 
 Private Sub ExitRename()
   
-  If $hPanelRename Then 
-    $hPanelRename.Hide
+  If $hRenameBox Then 
+    $hRenameBox.Hide
     $iRename = -1
     $hView.SetFocus
   Endif
@@ -1448,3 +1443,9 @@ Public Sub _End()
   
 End
 
+
+Private Function Renaming_Read() As Boolean
+
+  Return $iRename >= 0
+
+End

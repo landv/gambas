@@ -177,6 +177,7 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
   Dim hText As Rect
   Dim X, Y, W, H As Integer
+  Dim HT As Integer
   
   hRect.Adjust(8)
   
@@ -196,11 +197,15 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
     Y = hRect.Y
     If $hPicture Then Y += $hPicture.H + 4
     
-    H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W - 4) + 4
+    H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W - 4) '+ 4
+    HT = Min(H, hRect.H - (Y - hRect.Y) - 8)
     
-    hText = New Rect(hRect.X, Y, hRect.W, H)
+    hText = New Rect(hRect.X, Y, hRect.W, HT)
+    'hText = hText.Intersection(hRect)
     
   Endif
+  
+  hText.Adjust(-1)
   
   Return hText
   
