@@ -2,6 +2,8 @@
 
 Export
 
+Class Compress
+
 Property Buffered As Boolean
 Property ContentType As String
 Property Status As String
@@ -15,6 +17,9 @@ Private $sContentType As String = "text/html"
 Private $sStatus As String
 Private $iBegin As Integer
 'Private $dLastModified As Date
+Private $bCompressionComponentChecked As Boolean
+Private $bCanUseCompression As Boolean
+Private $hComp As Compress
 
 Public Sub AddHeader(Name As String, Value As String)
 
@@ -94,6 +99,19 @@ Private Sub ShouldCompress() As Boolean
   
 End
 
+Private Sub CanUseCompression() As Boolean
+
+  If Not $bCompressionComponentChecked Then
+    Try Component.Load("gb.compress")
+    $bCanUseCompression = Not Error
+    $bCompressionComponentChecked = True
+    $hComp = New Compress
+    $hComp.Type = "zlib"
+  Endif
+  
+  Return $bCanUseCompression
+
+End
 
 Public Sub End()
   
@@ -114,10 +132,13 @@ Public Sub End()
     If ShouldCompress() Then
       If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
         If Stat(sFile).Size >= 1024 Then
-          AddHeader("Content-Encoding", "gzip")
-          AddHeader("Vary", "Accept-Encoding")
-          Exec ["gzip", "-9", sFile] Wait
-          If Exist(sFile & ".gz") Then sFile &= ".gz"
+          If CanUseCompression() Then
+            AddHeader("Content-Encoding", "gzip")
+            AddHeader("Vary", "Accept-Encoding")
+            $hComp.File(sFile, sFile & ".gz", $hComp.Max)
+            'Exec ["gzip", "-9", sFile] Wait
+            If Exist(sFile & ".gz") Then sFile &= ".gz"
+          Endif
         Endif
       Endif
     Endif
