@@ -63,6 +63,7 @@ public:
     bool isSingle();
     char *tagName;
     size_t lenTagName;
+    undefbool single;
 
     void setPrefix(const char *nprefix, size_t nlenPrefix);
     char *prefix;

@@ -27,6 +27,10 @@
 
 typedef unsigned int uint;
 
+typedef char undefbool;//A boolean with an "undefined" state
+
+#define undefined 2//The "undefined" state of an undefbool
+
 #define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
 #define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
 

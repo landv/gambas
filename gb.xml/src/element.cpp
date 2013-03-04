@@ -28,10 +28,10 @@
 
 /*************************************** Element ***************************************/
 
-const char* Element::singleElements = "br\0hr\0area\0base\0br\0co\0command\0embed\0hr\0img\0input\0keygen\0link\0meta\0param\0source\0track\0wbr\0\0";
-#define LEN_SINGLEELEMENTS 89
+const char* Element::singleElements = "br\0img\0meta\0input\0area\0base\0co\0command\0embed\0hr\0keygen\0link\0param\0source\0track\0wbr\0\0";
+#define LEN_SINGLEELEMENTS 84
 
-Element::Element() : Node()
+Element::Element() : Node(), single(undefined)
 {
     tagName = 0;
     lenTagName = 0;
@@ -44,7 +44,7 @@ Element::Element() : Node()
     lenLocalName = 0;
 }
 
-Element::Element(const char *ntagName, size_t nlenTagName) : Node()
+Element::Element(const char *ntagName, size_t nlenTagName) : Node(), single(undefined)
 {
     tagName = 0;
     lenTagName = 0;
@@ -101,8 +101,8 @@ void Element::setTagName(const char *ntagName, size_t nlenTagName)
     lenTagName = nlenTagName;
     tagName = (char*)realloc(tagName, sizeof(char) * lenTagName);
     memcpy(tagName, ntagName, lenTagName);
-
-refreshPrefix();
+    single = undefined;
+    refreshPrefix();
 
 }
 
@@ -162,6 +162,7 @@ void Element::refreshPrefix()
 
 bool Element::isSingle()
 {
+    if(single != undefined) return single;
     const char *start = Element::singleElements;
     char *end = (char*)memchr(start, 0, LEN_SINGLEELEMENTS);
     unsigned char lenTag = end - start;
@@ -172,6 +173,7 @@ bool Element::isSingle()
         {
             if(!memcmp(tagName, start, lenTagName))
             {
+                single = true;
                 return true;
             }
         }
@@ -180,7 +182,8 @@ bool Element::isSingle()
         end = (char*)memchr(start, 0, LEN_SINGLEELEMENTS - (singleElements - start));
         lenTag = end - start;
     }
-    
+
+    single = false;
     return false;
 }
 
