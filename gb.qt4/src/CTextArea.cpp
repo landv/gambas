@@ -166,7 +166,6 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
 
 	wid->setLineWrapMode(QTextEdit::NoWrap);
 	wid->setAcceptRichText(false);
-	wid->document()->setDocumentMargin(2);
 	
 	THIS->widget.flag.fillBackground = true;
 	CWIDGET_new(wid, (void *)_object);
@@ -174,6 +173,8 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
 	THIS->length = -1;
 	THIS->align = ALIGN_NORMAL;
 
+	wid->document()->setDocumentMargin(2);
+	
 END_METHOD
 
 
