@@ -36,6 +36,8 @@ public:
 
     //virtual void toString(char **output, size_t *len);
     //virtual void toGBString(char **output, size_t *len);
+    virtual void addStringLen(size_t &len, int indent = -1);
+    virtual void addString(char *&data, int indent = -1);
 
 
     Element* getBody();

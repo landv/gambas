@@ -29,30 +29,25 @@ HtmlDocument::HtmlDocument() : Document(), html5(false)
 {
     root->setTagName("html", 4);
     
-    /*Element *head = new Element;
-    head->setTagName("head", 4);
+    Element *head = new Element("head", 4);
     root->appendChild(head);
     
-    Element *body = new Element;
-    body->setTagName("body", 4);
+    Element *body = new Element("body", 4);
     root->appendChild(body);
     
     //Meta utf-8
-    Element *meta = new Element;
-    meta->setTagName("meta", 4);
+    Element *meta = new Element("meta", 4);
     meta->setAttribute("charset", 7, "utf-8", 5);
     head->appendChild(meta);
     
-    meta = new Element;
-    meta->setTagName("meta", 4);
+    meta = new Element("meta", 4);
     meta->setAttribute("http-equiv", 10, "Content-Type", 12);
-    meta->setAttribute("content", 7,"text/html; charset=utf-8", 25);
+    meta->setAttribute("content", 7,"text/html; charset=utf-8", 24);
     head->appendChild(meta);
     
     //Title
-    Element *title = new Element;
-    title->setTagName("title", 5);
-    head->appendChild(title);*/
+    Element *title = new Element("title", 5);
+    head->appendChild(title);
 }
 
 HtmlDocument::HtmlDocument(const char *fileName, const size_t lenFileName) : Document(fileName, lenFileName)
@@ -388,10 +383,6 @@ void HtmlDocument::setContent(char *content, size_t len) throw(XMLParseException
 
     }
 
-    DEBUG << newRoot << endl;
-
-
-
     free(elements);
     if(newRoot) root = newRoot->toElement();
 
@@ -421,3 +412,40 @@ Element* HtmlDocument::getBody()
     }
         return elmt;
 }
+
+void HtmlDocument::addStringLen(size_t &len, int indent)
+{
+    if(html5)
+    {
+        len += 16;
+    }
+    else
+    {
+        len += 110;
+    }
+    //Content
+    for(register Node *child = firstChild; child != 0; child = child->nextNode)
+    {
+        child->addStringLen(len, indent >= 0 ? indent : -1);
+    }
+}
+
+void HtmlDocument::addString(char *&data, int indent)
+{
+    if(html5)
+    {
+        memcpy(data, "<!DOCTYPE html>\n", 16);
+        data += 16;
+    }
+    else
+    {
+        memcpy(data, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n", 110);
+        data += 110;
+    }
+    //Content
+    for(register Node *child = firstChild; child != 0; child = child->nextNode)
+    {
+        child->addString(data, indent >= 0 ? indent : -1);
+    }
+}
+
