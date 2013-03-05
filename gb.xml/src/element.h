@@ -100,7 +100,7 @@ public:
     //Gambas object    
     virtual void NewGBObject();
     
-    static const char* singleElements;
+    static const char* singleElements[];
     
 #ifndef HELEMENT_H
 };

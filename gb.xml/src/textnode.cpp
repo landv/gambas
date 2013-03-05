@@ -33,14 +33,20 @@ TextNode::TextNode() : Node(), content(0), lenContent(0), escapedContent(0), len
 TextNode::TextNode(const char *ncontent, const size_t nlen) : Node(), escapedContent(0), lenEscapedContent(0)
 {
     lenContent = nlen;
-    content = (char*)malloc(sizeof(char) * nlen);
+    if(!lenContent)
+    {
+        content = 0;
+        return;
+    }
+    content = (char*)malloc(sizeof(char) * nlen + 1);
     memcpy(content, ncontent, nlen);
+    content[lenContent] = 0;
 }
 
 TextNode::~TextNode()
 {
+    if(escapedContent && escapedContent != content) free(escapedContent);
     if(content) free(content);
-    if(escapedContent) free(escapedContent);
 }
 
 Node::Type TextNode::getType()
@@ -50,13 +56,19 @@ Node::Type TextNode::getType()
 
 void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
 {
-    dst = (char*)malloc(lenSrc + 1);
-    lenDst = lenSrc + 1;
-    dst[lenSrc] = 0;
-    memcpy(dst, src, lenSrc);
+    dst = (char*)src;
+    lenDst = lenSrc;
     char *posFound = strpbrk (dst, "<>&");
     while (posFound != 0)
     {
+        if(dst == src)//dst not allocated yet
+        {
+            dst = (char*)malloc(lenSrc + 1);
+            lenDst = lenSrc + 1;
+            dst[lenSrc] = 0;
+            memcpy(dst, src, lenSrc);
+            posFound = ((posFound - src) + dst);
+        }
         switch(*posFound)
         {
         case CHAR_STARTTAG://&lt;
@@ -75,9 +87,18 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
             
             
         case CHAR_AND: //&amp;
+
             *posFound = CHAR_AND;
             ++posFound;
             insertString(dst, lenDst, "amp;", 4, posFound);
+            posFound = strpbrk (posFound + 1,"<>&");
+            break;
+
+        case '"': //&quot;
+
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "quot;", 5, posFound);
             posFound = strpbrk (posFound + 1,"<>&");
             break;
             
@@ -89,7 +110,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
       
     }
     
-    --lenDst;
+    if(dst != src) --lenDst;
 }
 
 void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
@@ -98,10 +119,8 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
     lenDst = lenSrc;
     memcpy(dst, src, lenSrc);
     char *posFound = (char*)memchr(dst, CHAR_AND, lenDst);
-    
-    //register bool cond = ((posFound != 0) && ((posFound + 3) < lenDst + dst));
+
     while(((posFound != 0) && ((posFound + 3) < lenDst + dst)))//(posFound - dst) < lenDst - 3
-    //while(cond)//Don't ask ...
     {
         if(memcmp(posFound + 1, "lt;", 3) == 0)// <   &lt;
         {
@@ -122,6 +141,13 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
             memmove(posFound + 1, posFound + 5, lenDst - (posFound - dst));
             lenDst -= 4; 
             posFound -= 4;
+        }
+        else if(memcmp(posFound + 1, "quot;", 5) == 0)// &   &amp;
+        {
+            *posFound = '"';
+            memmove(posFound + 1, posFound + 6, lenDst - (posFound - dst));
+            lenDst -= 5;
+            posFound -= 5;
         }
         if(posFound + 1 >= dst + lenDst) break;
         posFound = (char*)memchr(posFound + 1, CHAR_AND, lenDst - (posFound + 1 - dst));
@@ -173,6 +199,7 @@ void TextNode::addString(char *&data, int indent)
         memset(data, CHAR_SPACE, indent); 
         data += indent;
     }
+
     memcpy(data, escapedContent, lenEscapedContent);
     data += lenEscapedContent;
     if(indent >= 0)
@@ -193,9 +220,10 @@ void TextNode::TrimContent()
 
 void TextNode::setTextContent(const char *ncontent, const size_t nlen)
 {
-    content = (char*)realloc(content, sizeof(char)*nlen);
+    content = (char*)realloc(content, sizeof(char)*nlen + 1);
     lenContent = nlen;
     memcpy(content, ncontent, nlen);
+    content[lenContent] = 0;
 }
 
 void TextNode::addTextContentLen(size_t &len)

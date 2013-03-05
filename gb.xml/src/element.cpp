@@ -28,8 +28,10 @@
 
 /*************************************** Element ***************************************/
 
-const char* Element::singleElements = "br\0img\0meta\0input\0area\0base\0co\0command\0embed\0hr\0keygen\0link\0param\0source\0track\0wbr\0\0";
-#define LEN_SINGLEELEMENTS 84
+//const char* Element::singleElements = "br\0img\0meta\0input\0area\0base\0co\0command\0embed\0hr\0keygen\0link\0param\0source\0track\0wbr";
+const size_t lenSingleElements[] =      {2 , 3  ,4    ,5     ,4    ,4    ,2  ,7       ,5     ,2  ,5      ,4    ,2     ,6      ,5     ,3};
+const char* Element::singleElements[] = {"br", "img", "meta", "input", "area", "base", "co", "command", "embed", "hr", "keygen", "link", "param", "source", "track", "wbr"};
+#define COUNT_SINGLEELEMENTS 16
 
 Element::Element() : Node(), single(undefined)
 {
@@ -163,24 +165,18 @@ void Element::refreshPrefix()
 bool Element::isSingle()
 {
     if(single != undefined) return single;
-    const char *start = Element::singleElements;
-    char *end = (char*)memchr(start, 0, LEN_SINGLEELEMENTS);
-    unsigned char lenTag = end - start;
+    int i;
     
-    while(end < singleElements + LEN_SINGLEELEMENTS)
+    for(i = 0; i < COUNT_SINGLEELEMENTS; i++)
     {
-        if(lenTag == lenTagName)
+        if(lenTagName == lenSingleElements[i])
         {
-            if(!memcmp(tagName, start, lenTagName))
+            if(!memcmp(tagName, singleElements[i], lenTagName))
             {
                 single = true;
                 return true;
             }
         }
-        
-        start = end + 1;
-        end = (char*)memchr(start, 0, LEN_SINGLEELEMENTS - (singleElements - start));
-        lenTag = end - start;
     }
 
     single = false;
