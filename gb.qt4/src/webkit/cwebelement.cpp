@@ -42,7 +42,7 @@ CWEBELEMENT *CWEBELEMENT_create(const QWebElement &elt)
 	
 	_object = GB.New(GB.FindClass("WebElement"), 0, 0);
 	//qDebug("create WebFrame %p", _object);
-	*THIS->elt = elt;
+	ELT = new QWebElement(elt);
 	return THIS;
 }
 
@@ -53,11 +53,11 @@ static int check_element(void *_object)
 
 //---------------------------------------------------------------------------
 
-BEGIN_METHOD_VOID(WebElement_new)
+/*BEGIN_METHOD_VOID(WebElement_new)
 
 	ELT = new QWebElement;
 
-END_METHOD
+END_METHOD*/
 
 BEGIN_METHOD_VOID(WebElement_free)
 
@@ -341,7 +341,7 @@ GB_DESC WebElementDesc[] =
   GB_DECLARE("WebElement", sizeof(CWEBELEMENT)),
 	GB_HOOK_CHECK(check_element), GB_NOT_CREATABLE(),
 	
-	GB_METHOD("_new", NULL, WebElement_new, NULL),
+	//GB_METHOD("_new", NULL, WebElement_new, NULL),
 	GB_METHOD("_free", NULL, WebElement_free, NULL),
 	
 	GB_PROPERTY("HTML", "s", WebElement_HTML),
