@@ -704,6 +704,7 @@ Private Sub IconSize_Write(Value As Integer)
   
   $iIconSize = Value
   RefreshView
+  $hIconView.GridSize = Min(32, Value \ 3)
   
 End
 

@@ -433,9 +433,7 @@ Public Sub SetFilter(Optional aFilter As String[])
 
   If aFilter Then
 
-    If aFilter.Count And 1 Then
-      aFilter.Remove(aFilter.Max)
-    Endif
+    If Odd(aFilter.Count) Then aFilter.Remove(aFilter.Max)
 
     For iInd = 0 To aFilter.Max Step 2
       If aFilter[iInd] = "*" Then Continue 
@@ -484,7 +482,7 @@ End
 
 Public Sub cmbFilter_Click()
 
-  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True)
+  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";", Chr$(34), True)
 
 End
 
@@ -1003,9 +1001,10 @@ Public Sub dvwChoose_Menu()
   mnuUncompress.Hide
   mnuShowDetailed.Hide
   mnuShowPreview.Hide
-  mnuDelete.Hide
   mnuRename.Show
+  mnuDelete.Hide
 
+  dvwChoose.SetFocus
   mnuPopup.Popup
 
 End
