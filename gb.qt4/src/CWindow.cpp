@@ -1169,15 +1169,17 @@ BEGIN_PROPERTY(CWINDOW_visible)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_control_count)
+BEGIN_PROPERTY(Window_Controls_Count)
 
 	QList<QWidget *> list = WINDOW->findChildren<QWidget *>();
 	int i;
 	int n = 0;
+	CWIDGET *control;
 
 	for (i = 0; i < list.count(); i++)
 	{
-		if (CWidget::getReal(list.at(i)))
+		control = CWidget::getReal(list.at(i));
+		if (control && !CWIDGET_check(control))
 			n++;
 	}
 
@@ -1186,7 +1188,7 @@ BEGIN_PROPERTY(CWINDOW_control_count)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CWINDOW_control_next)
+BEGIN_METHOD_VOID(Window_Controls_next)
 
 	QList<QWidget *> children = WINDOW->findChildren<QWidget *>();
 	CWIDGET *control;
@@ -1207,7 +1209,7 @@ BEGIN_METHOD_VOID(CWINDOW_control_next)
 		control = CWidget::getReal(children.at(index));
 		index++;
 	}
-	while (!control);
+	while (!control || CWIDGET_check(control));
 
 	ENUM(int) = index;
 	GB.ReturnObject(control);
@@ -1223,9 +1225,14 @@ BEGIN_METHOD(CWINDOW_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
-BEGIN_METHOD(CWINDOW_get, GB_STRING name)
+BEGIN_METHOD(Window_Controls_get, GB_STRING name)
 
-	GB.ReturnObject(WINDOW->names[GB.ToZeroString(ARG(name))]);
+	CWIDGET *control = WINDOW->names[GB.ToZeroString(ARG(name))];
+	
+	if (CWIDGET_check(control))
+		GB.ReturnNull();
+	else
+		GB.ReturnObject(control);
 
 END_METHOD
 
@@ -1366,9 +1373,9 @@ GB_DESC CWindowControlsDesc[] =
 {
 	GB_DECLARE(".Window.Controls", 0), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_next", "Control", CWINDOW_control_next, NULL),
-	GB_METHOD("_get", "Control", CWINDOW_get, "(Name)s"),
-	GB_PROPERTY_READ("Count", "i", CWINDOW_control_count),
+	GB_METHOD("_next", "Control", Window_Controls_next, NULL),
+	GB_METHOD("_get", "Control", Window_Controls_get, "(Name)s"),
+	GB_PROPERTY_READ("Count", "i", Window_Controls_Count),
 
 	GB_END_DECLARE
 };
@@ -1407,7 +1414,7 @@ GB_DESC CWindowDesc[] =
 
 	GB_METHOD("_new", NULL, CWINDOW_new, "[(Parent)Control;]"),
 	GB_METHOD("_free", NULL, CWINDOW_free, NULL),
-	GB_METHOD("_get", "Control", CWINDOW_get, "(Name)s"),
+	GB_METHOD("_get", "Control", Window_Controls_get, "(Name)s"),
 
 	GB_METHOD("Close", "b", CWINDOW_close, "[(Return)i]"),
 	GB_METHOD("Raise", NULL, CWINDOW_raise, NULL),

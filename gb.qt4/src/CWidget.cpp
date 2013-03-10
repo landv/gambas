@@ -296,11 +296,17 @@ void CWIDGET_update_design(CWIDGET *_object)
 
 void CWIDGET_init_name(CWIDGET *_object)
 {
+	static int n = 0;
 	char *name = GB.GetLastEventName();
+	
 	if (!name)
-		name = GB.GetClassName(THIS);
-	//qDebug("name: %p: %s", THIS, name);
-	set_name(THIS, name);
+	{
+		char buffer[16];
+		sprintf(buffer, "#%d", n);
+		set_name(THIS, buffer);
+	}
+	else
+		set_name(THIS, name);
 }
 
 bool CWIDGET_container_for(void *_object, void *container_for)
