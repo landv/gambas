@@ -331,6 +331,8 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 			return;
 		}
 	}
+	
+	http_initialize_curl_handle(_object, custom_headers);
 
 	if (type & SEND_FILE)
 	{
@@ -352,11 +354,11 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 		}
 		else
 			THIS_HTTP->data = NULL;
+		
 	}
 	
 	THIS_HTTP->len_sent = 0;
 
-	http_initialize_curl_handle(_object, custom_headers);
 
 	mylen = strlen(sContent) + strlen("Content-Type: ") + 1;
 	GB.Alloc((void*)&THIS_HTTP->sContentType, mylen);

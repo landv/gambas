@@ -85,7 +85,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_getChildById, GB_STRING id; GB_INTEGER depth)
 
-    GBI::Return(THIS->getChildById(STRING(id), VARGOPT(depth, -1)));
+GBI::Return(THIS->getChildById(STRING(id), LENGTH(id), VARGOPT(depth, -1)));
 
 END_METHOD
 
