@@ -119,8 +119,6 @@ extern "C"
 		CArrangeDesc,
 		CBorderDesc,
 		CScrollDesc,
-		CLineDesc,
-		CFillDesc,
 		CColorDesc,
 		CFontsDesc,
 		CFontDesc,

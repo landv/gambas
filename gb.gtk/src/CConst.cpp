@@ -119,45 +119,6 @@ GB_DESC CScrollDesc[] =
 };
 
 
-GB_DESC CLineDesc[] =
-{
-  GB_DECLARE("Line", 0), GB_VIRTUAL_CLASS(),
-
-  GB_CONSTANT("None", "i", LINE_NONE),
-  GB_CONSTANT("Solid", "i", LINE_SOLID),
-  GB_CONSTANT("Dash", "i", LINE_DASH),
-  GB_CONSTANT("Dot", "i", LINE_DOT),
-  GB_CONSTANT("DashDot", "i", LINE_DASH_DOT),
-  GB_CONSTANT("DashDotDot", "i", LINE_DASH_DOT_DOT),
-
-  GB_END_DECLARE
-};
-
-
-GB_DESC CFillDesc[] =
-{
-  GB_DECLARE("Fill", 0), GB_VIRTUAL_CLASS(),
-
-  GB_CONSTANT("None", "i", FILL_NONE),
-  GB_CONSTANT("Solid", "i", FILL_SOLID),
-  GB_CONSTANT("Dense94", "i", FILL_DENSE_94),
-  GB_CONSTANT("Dense88", "i", FILL_DENSE_88),
-  GB_CONSTANT("Dense63", "i", FILL_DENSE_63),
-  GB_CONSTANT("Dense50", "i", FILL_DENSE_50),
-  GB_CONSTANT("Dense37", "i", FILL_DENSE_37),
-  GB_CONSTANT("Dense12", "i", FILL_DENSE_12),
-  GB_CONSTANT("Dense6", "i", FILL_DENSE_06),
-  GB_CONSTANT("Horizontal", "i", FILL_HORIZONTAL),
-  GB_CONSTANT("Vertical", "i", FILL_VERTICAL),
-  GB_CONSTANT("Cross", "i", FILL_CROSS),
-  GB_CONSTANT("Diagonal", "i", FILL_DIAGONAL),
-  GB_CONSTANT("BackDiagonal", "i", FILL_BACK_DIAGONAL),
-  GB_CONSTANT("CrossDiagonal", "i", FILL_CROSS_DIAGONAL),
-
-  GB_END_DECLARE
-};
-
-
 GB_DESC CSelectDesc[] =
 {
   GB_DECLARE("Select", 0), GB_VIRTUAL_CLASS(),
