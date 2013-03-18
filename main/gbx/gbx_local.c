@@ -405,7 +405,7 @@ static void fill_local_info(void)
 	LOCAL_local.intl_currency_symbol = STRING_conv_to_UTF8(info->int_curr_symbol, 0);
 	STRING_ref(LOCAL_local.intl_currency_symbol);*/
 
-	/* date information */
+	// Date/time format
 
 	tm.tm_year = 4; /* 02/03/1904 05:06:07 */
 	tm.tm_mday = 2;
@@ -414,10 +414,13 @@ static void fill_local_info(void)
 	tm.tm_min = 6;
 	tm.tm_sec = 7;
 
-	strftime(buf, sizeof(buf), "%x %X", &tm);
-
+	// Date format
+	
+	strftime(buf, sizeof(buf), "%x", &tm);
+	if (!isdigit(buf[0])) // The default date is not a numeric one, so we use the american format
+		strcpy(buf,"03/02/1904");
+	
 	dp = LOCAL_local.date_order;
-	tp = LOCAL_local.time_order;
 
 	for (p = buf;;)
 	{
@@ -451,6 +454,30 @@ static void fill_local_info(void)
 				stradd_sep(LOCAL_local.general_date, "dd", "/");
 				break;
 
+			default:
+				if (!isdigit(c))
+				{
+					if (LOCAL_local.date_sep == 0)
+						LOCAL_local.date_sep = c;
+				}
+
+		}
+	}
+
+	// Time format
+
+	strftime(buf, sizeof(buf), "%X", &tm);
+
+	tp = LOCAL_local.time_order;
+
+	for (p = buf;;)
+	{
+		c = *p++;
+		if (!c)
+			break;
+
+		switch(c)
+		{
 			case '5':
 				*tp++ = LO_HOUR;
 				stradd_sep(LOCAL_local.long_time, "hh", ":");
@@ -473,22 +500,13 @@ static void fill_local_info(void)
 			default:
 				if (!isdigit(c))
 				{
-					if (tp != LOCAL_local.time_order)
-					{
-						if (LOCAL_local.time_sep == 0)
-							LOCAL_local.time_sep = c;
-					}
-					else
-					{
-						if (LOCAL_local.date_sep == 0)
-							LOCAL_local.date_sep = c;
-					}
+					if (LOCAL_local.time_sep == 0)
+						LOCAL_local.time_sep = c;
 				}
-
 		}
 	}
 
-	/* FIX french date separator */
+	// Fix the french date separator
 	
 	lang = LOCAL_get_lang();
 	if (strcmp(lang, "fr") == 0 || strncmp(lang, "fr_", 3) == 0)
@@ -508,7 +526,7 @@ static void fill_local_info(void)
 		}
 	}
 
-	/* currency information */
+	// Currency format
 
 	LOCAL_local.currency_thousand_sep = *(info->mon_thousands_sep);
 	if (LOCAL_local.currency_thousand_sep == 0)
