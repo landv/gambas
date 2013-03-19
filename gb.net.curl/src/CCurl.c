@@ -188,12 +188,15 @@ void CURL_raise_connect(void *_object)
 
 void CURL_raise_read(void *_object)
 {
-	GB.Raise(THIS, EVENT_Read, 0);
-	
-	if (!GB.Stream.Eof(&THIS->stream))
+	if (GB.CanRaise(THIS, EVENT_Read))
 	{
-		GB.Ref(THIS);
-		GB.Post(CURL_raise_read, (intptr_t)THIS);
+		GB.Raise(THIS, EVENT_Read, 0);
+		
+		if (!GB.Stream.Eof(&THIS->stream))
+		{
+			GB.Ref(THIS);
+			GB.Post(CURL_raise_read, (intptr_t)THIS);
+		}
 	}
 	
 	GB.Unref(POINTER(&_object));
