@@ -250,6 +250,9 @@ static void throw_last_child_error()
 	fprintf(stderr, "throw_last_child_error: %d %d\n", child_error, child_errno);
 	#endif
 	
+	if (strcmp(getenv("GB_ISSUE_415"), "1") == 0)
+		BREAKPOINT();
+	
 	if (child_error < 0)
 		THROW(E_CHILD, "unknown error", "");
 	else
