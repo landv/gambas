@@ -3174,10 +3174,6 @@ End
 
 Public Sub Control_DragLeave()
   
-  Dim X As Integer
-  Dim Y As Integer
-  Dim hRoot As Control
-  
   If Last = RootControl.Control And Not Mouse.Inside(RootControl.Control) Then
     HideFrame
   Endif

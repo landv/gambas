@@ -717,6 +717,9 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
     'Debug sName
   Next
   
+  gvwFind.Columns[0].Width = -1
+  gvwFind.Columns[1].Width = -1
+  
   If bReplace Then 
     SearchString = ReplaceString
     CaseSensitive = True
@@ -791,6 +794,7 @@ Public Sub FindProject(sText As String)
   
   'WakeUp(False)
   cmbSearch.Text = sText
+  radEverywhere.Value = True
   Browse()
   
 End
@@ -921,19 +925,22 @@ Public Sub gvwFind_Data(Row As Integer, Column As Integer)
 
    With gvwFind.Data
     
-    If Column = 3 Then .Font = $hFont 
+    If Column = 4 Then .Font = $hFont 
     
     Select Case Column
       Case 0
         .Text = $aBrowse[Row].File
         .Alignment = Align.Normal
       Case 1
+        .Text = $aBrowse[Row].GetProcedure()
+        .Alignment = Align.Normal
+      Case 2
         .Text = CStr($aBrowse[Row].Line + 1) & " "
         .Alignment = Align.Right
-      Case 2
+      Case 3
         .Text = CStr($aBrowse[Row].Column + 1) & " "
         .Alignment = Align.Right
-      Case 3
+      Case 4
         .RichText = $aBrowse[Row].Text
         .Alignment = Align.Normal
     End Select

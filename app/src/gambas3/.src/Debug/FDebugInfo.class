@@ -57,15 +57,17 @@ Public Sub _new()
   End With
   
   With gvwFind
-    .Columns.Count = 4  
+    .Columns.Count = 5
     .Columns[0].Width = Desktop.Scale * 16
     .Columns[0].Text = ("File")
-    .Columns[1].Width = Desktop.Scale * 6
-    .Columns[1].Text = ("Line")
+    .Columns[1].Width = Desktop.Scale * 16
+    .Columns[1].Text = ("Procedure")
     .Columns[2].Width = Desktop.Scale * 6
-    .Columns[2].Text = ("Col.")
-    .Columns[3].Width = 32
-    .Columns[3].Text = ("Text")
+    .Columns[2].Text = ("Line")
+    .Columns[3].Width = Desktop.Scale * 6
+    .Columns[3].Text = ("Col.")
+    .Columns[4].Width = 32
+    .Columns[4].Text = ("Text")
   End With
   
   With gvwTask

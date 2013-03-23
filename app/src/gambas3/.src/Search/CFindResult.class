@@ -11,3 +11,19 @@ Public Length As Integer
 Public Dark As Boolean
 Public Control As String
 Public {Property} As String
+
+Private $sProc As String
+
+Public Sub GetProcedure() As String
+  
+  Dim hFile As FEditor
+  
+  If Not Project.IsSourcePath(Path) Then Return
+  If $sProc Then Return $sProc
+  
+  $sProc = "-"
+  Try hFile = Project.LoadFile(Path)
+  If hFile Then $sProc = hFile.GetProcAt({Line})
+  Return $sProc
+  
+End
