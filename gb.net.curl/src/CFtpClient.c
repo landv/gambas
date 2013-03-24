@@ -166,14 +166,21 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 			
 			if (commands)
 			{
+				char *cmd;
+
 				GB.Unref(&THIS_FTP->commands);
 				THIS_FTP->commands = commands;
 				GB.Ref(commands);
 				
 				list = NULL;
-				for (i = 0; i < GB.Array.Count(commands); i++)
-					list = curl_slist_append(list, *(char **)GB.Array.Get(commands, i));
-				curl_easy_setopt(THIS_CURL, CURLOPT_QUOTE, list);
+				for (i = 0; i < GB.Array.Count(commands); i++) {
+					cmd = *((char **) GB.Array.Get(commands, i));
+					if (!cmd)
+						continue;
+					list = curl_slist_append(list, cmd);
+				}
+				if (list)
+					curl_easy_setopt(THIS_CURL, CURLOPT_QUOTE, list);
 			}
 			
 			break;

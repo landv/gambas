@@ -1120,7 +1120,7 @@ int gMainWindow::controlCount()
 	while (list)
 	{
 		ctrl = (gControl *)list->data;
-		if (ctrl->window() == this)
+		if (ctrl->window() == this && !ctrl->isDestroyed())
 			n++;
 		list = g_list_next(list);
 	}
@@ -1136,7 +1136,7 @@ gControl *gMainWindow::getControl(char *name)
 	while (list)
 	{
 		ctrl = (gControl *)list->data;
-		if (ctrl->window() == this && !strcasecmp(ctrl->name(), name))
+		if (ctrl->window() == this && !strcasecmp(ctrl->name(), name) && !ctrl->isDestroyed())
 			return ctrl;
 		list = g_list_next(list);
 	}
@@ -1153,7 +1153,7 @@ gControl *gMainWindow::getControl(int index)
 	while (list)
 	{
 		ctrl = (gControl *)list->data;
-		if (ctrl->window() == this)
+		if (ctrl->window() == this && !ctrl->isDestroyed())
 		{
 			if (i == index)
 				return ctrl;

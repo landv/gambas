@@ -250,11 +250,11 @@ static bool check_request(void *_object, char *contentType, char *data, int len)
 		return TRUE;
 	}
 
-	if (!data || !len)
+	/*if (!data || !len)
 	{ 
 		GB.Error(ERR_INVALID_DATA); 
 		return TRUE; 
-	};
+	};*/
 	
 	return FALSE;
 }
@@ -325,19 +325,26 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 			return;
 		}
 	}
-
+	
 	http_initialize_curl_handle(_object, custom_headers);
 
-	mylen=strlen(sContent) + strlen("Content-Type: ") + 1;
-	GB.Alloc((void*)&THIS_HTTP->sContentType,mylen);
-	GB.Alloc((void*)&THIS_HTTP->data,lendata+1);
-	strncpy(THIS_HTTP->data,sData,lendata);
-	THIS_HTTP->sContentType[0]=0;
-	strcpy(THIS_HTTP->sContentType,"Content-Type: ");
-	strcat(THIS_HTTP->sContentType,sContent);
+	mylen = strlen(sContent) + strlen("Content-Type: ") + 1;
+	GB.Alloc((void*)&THIS_HTTP->sContentType, mylen);
 	
-	THIS->method=1;
-	headers = curl_slist_append(headers,THIS_HTTP->sContentType );
+	if (lendata)
+	{
+		GB.Alloc((void*)&THIS_HTTP->data, lendata + 1);
+		strncpy(THIS_HTTP->data, sData, lendata);
+	}
+	else
+		THIS_HTTP->data = NULL;
+	
+	THIS_HTTP->sContentType[0] = 0;
+	strcpy(THIS_HTTP->sContentType, "Content-Type: " );
+	strcat(THIS_HTTP->sContentType, sContent);
+	
+	THIS->method = 1;
+	headers = curl_slist_append(headers, THIS_HTTP->sContentType);
 	
 	if (THIS_HTTP->sent_headers)
 	{

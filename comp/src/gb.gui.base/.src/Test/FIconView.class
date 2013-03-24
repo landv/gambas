@@ -4,7 +4,7 @@
 Public Sub Form_Open()
 
   Dim sPath As String
-  Dim sDir As String = "~/Documents" '/gambas/3.0/trunk"
+  Dim sDir As String = "~/Téléchargements" '/gambas/3.0/trunk"
   
   For Each sPath In Dir(sDir).Sort(gb.Language + gb.IgnoreCase)
     If IsDir(sDir &/ sPath) Then

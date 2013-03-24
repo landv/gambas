@@ -295,8 +295,10 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	int i;
 	const char *query;
 	Dataset *res = conn->CreateDataset();
-	int err = 0;
+	int err;
 	int retry = 0;
+	bool select;
+	bool success;
 
 	if (nsubst)
 	{
@@ -319,43 +321,34 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	if (DB.IsDebug())
 		fprintf(stderr, "sqlite3: %p: %s\n", conn, query);
 
-	if (strncasecmp("select", query, 6) == 0)
+	select = (strncasecmp("select ", query, 7) == 0);
+	
+	for(;;)
 	{
-		if (res->query(query))
+		err = 0;
+		
+		if (select)
+			success = res->query(query);
+		else
+			success = res->exec(query);
+		
+		if (success)
 		{
 			if (pres)
-			{
 				*pres = res;
-			}
+			break;
 		}
-		else
+		
+		err = conn->lastError();
+		
+		if (err != SQLITE_BUSY || retry >= 600) // 120 s max
 		{
-			err = conn->lastError();
 			GB.Error(error, conn->getErrorMsg());
+			break;
 		}
-	}
-	else
-	{
-		for(;;)
-		{
-			if (res->exec(query))
-			{
-				if (pres)
-					*pres = res;
-				break;
-			}
-			
-			err = conn->lastError();
-			
-			if (err != SQLITE_BUSY || retry >= 300) // 30 sec. max
-			{
-				GB.Error(error, conn->getErrorMsg());
-				break;
-			}
-			
-			retry++;
-			usleep(100000);
-		}
+		
+		retry++;
+		usleep(200000);
 	}
 	
 	if (!pres)

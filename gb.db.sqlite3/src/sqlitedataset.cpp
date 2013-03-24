@@ -359,8 +359,7 @@ int SqliteDatabase::setErr(int err_code)
 			error = "SQL error or missing database";
 			break;
 		case SQLITE_INTERNAL:
-			error =
-				"Internal logic error - Report this error on the mailing-list at sqlite.org";
+			error = "Internal logic error - Report this error on the mailing-list at sqlite.org";
 			break;
 		case SQLITE_PERM:
 			error = "Access permission denied";

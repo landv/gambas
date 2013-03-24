@@ -1052,6 +1052,7 @@ End
 
 Public Sub _RefreshItem(hItem As _IconView_Item)
   
+  If $iLock Then Return
   RefreshIcon(_FindItem(hItem))
   
 End

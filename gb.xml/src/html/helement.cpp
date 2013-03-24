@@ -282,3 +282,30 @@ void Element::getGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *ar
     GB.Array.New(array, GB.FindClass("XmlElement"), 0);
     addGBChildrenByFilter(filter, lenFilter, array, depth);
 }
+
+Element* Element::getChildById(char *id, size_t lenId, int depth)
+{
+    Attribute *attr;
+    if(depth == 0) return 0;
+
+    attr = getId();
+    if(attr)
+    {
+        if(attr->lenAttrValue == lenId)
+        {
+            if(!memcmp(attr->attrValue, id, lenId)) return this;
+        }
+    }
+
+    if(depth == 1) return 0;
+    Element *elmt = 0;
+    for(Node *it = firstChild; it != 0; it = it->nextNode)
+    {
+        if((it)->isElement())
+        {
+            elmt = (it)->toElement()->getChildById(id, lenId, depth - 1);
+            if(elmt) return elmt;
+        }
+    }
+    return 0;
+}

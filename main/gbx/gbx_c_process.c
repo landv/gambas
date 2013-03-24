@@ -280,15 +280,18 @@ static void stop_process_after(CPROCESS *_object)
 	if (THIS->out >= 0)
 	{
 		stream = CSTREAM_stream(THIS);
-		while (!STREAM_eof(stream))
+		if (!STREAM_is_closed(stream))
 		{
-			STREAM_lof(stream, &len);
-			callback_write(THIS->out, 0, THIS);
-			if (STREAM_is_closed(stream))
-				break;
-			STREAM_lof(stream, &len2);
-			if (len == len2)
-				break;
+			while (!STREAM_eof(stream))
+			{
+				STREAM_lof(stream, &len);
+				callback_write(THIS->out, 0, THIS);
+				if (STREAM_is_closed(stream))
+					break;
+				STREAM_lof(stream, &len2);
+				if (len == len2)
+					break;
+			}
 		}
 	}
 

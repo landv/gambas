@@ -171,7 +171,7 @@ static void remove_observers(OBJECT *ob)
 	{
 		next = obs->list.next;
 		#if DEBUG_EVENT
-		fprintf(stderr, "Remove observer %p %d: %p: %p %p\n", obs, (int)obs->ob.ref, ob, obs->object, obs->proxy);
+		fprintf(stderr, "Remove observer %p %d: %p: %p\n", obs, (int)obs->ob.ref, ob, obs->object);
 		#endif
 		OBJECT_UNREF(obs, "remove_observers");
 		obs = next;  	

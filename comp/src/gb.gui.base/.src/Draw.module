@@ -44,6 +44,8 @@ End Struct
 
 Private Enum DRAW_CIRCLE, DRAW_ELLIPSE, DRAW_ARC
 
+Private $hPattern As New Image[15]
+
 Public Sub _GetInfo() As DrawInfo
   
   Dim hInfo As DrawInfo = Paint._Tag
@@ -345,13 +347,40 @@ Public Sub Line(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
 End
 
+Private Sub HasFillStyle(hInfo As DrawInfo) As Boolean
+
+  Dim hImage As Image
+  
+  Select Case hInfo.FillStyle
+    
+    Case Fill.None
+      Return False
+      
+    Case Fill.Solid
+      Paint.Background = hInfo.FillColor
+    
+    Case Fill.Dense94 To Fill.CrossDiagonal
+      If IsNull($hPattern[hInfo.FillStyle]) Then $hPattern[hInfo.FillStyle] = Image.Load("pattern/" & hInfo.FillStyle & ".png")
+      hImage = $hPattern[hInfo.FillStyle].Copy()
+      If hInfo.Transparent Then hImage.Replace(Color.White, Color.Transparent)
+      hImage.Replace(Color.Black, hInfo.FillColor)
+      Paint.Brush = Paint.Image(hImage)
+    
+    Default
+      Return
+    
+  End Select
+
+  Return True
+
+End
+
 Public Sub Rect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
   
   Dim hInfo As DrawInfo = _GetInfo()
   Dim iBg As Integer
   
-  If hInfo.FillStyle Then
-    Paint.Background = hInfo.FillColor
+  If HasFillStyle(hInfo) Then
     Paint.Rectangle(X, Y, Width, Height)  
     Paint.Fill
   Endif
@@ -438,9 +467,7 @@ Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, 
     Paint.Ellipse(X, Y, W, H, Start, {End} - Start, True)
   Endif
   
-  
-  If hInfo.FillStyle And If iAction <> DRAW_ARC Then
-    Paint.Background = hInfo.FillColor
+  If iAction <> DRAW_ARC And If HasFillStyle(hInfo) Then
     Paint.Fill(hInfo.LineStyle)
   Endif
   
@@ -556,9 +583,8 @@ Public Sub Polygon(Points As Integer[])
 
   fOffset = GetStrokeOffset()
   
-  If hInfo.FillStyle Then
+  If HasFillStyle(hInfo) Then
     
-    Paint.Background = hInfo.FillColor
     Paint.Fill(hInfo.LineStyle <> Line.None)
     
   Endif

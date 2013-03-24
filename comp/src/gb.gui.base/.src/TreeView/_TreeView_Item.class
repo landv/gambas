@@ -327,9 +327,22 @@ End
 
 Public Sub _compare(hOther As _TreeView_Item) As Integer
   
+  Dim hColumnView As ColumnView
+  Dim iSort As Integer
+  
   If _Tree And If Not _Tree._RaiseCompare($sKey, hOther.Key) Then 
     Return _Tree.Compare
   Else
+    Try hColumnView = GetTree()
+    
+    If hColumnView Then
+      iSort = hColumnView.Columns.Sort
+      If iSort > 0 Then
+        Try Return String.Comp($aText[iSort - 1], hOther[iSort], gb.Natural + gb.IgnoreCase)
+        If Error Then Return 0
+      Endif
+    Endif
+
     Return String.Comp($sText, hOther.Text, gb.Natural + gb.IgnoreCase)
   Endif
   

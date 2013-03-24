@@ -1120,9 +1120,10 @@ static void BrushColor(GB_BRUSH *brush, GB_COLOR color)
 
 static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 {
-	QImage *img = CIMAGE_get((CIMAGE *)image);
+	QImage img(*CIMAGE_get((CIMAGE *)image));
 	
-	QBrush *br = new QBrush(*img);
+	img.detach();
+	QBrush *br = new QBrush(img);
 	*brush = (GB_BRUSH)br;
 }
 

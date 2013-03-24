@@ -54,13 +54,11 @@ Private Sub SaveSession()
   
   If Not $sId Then Return 
   
-  sTemp = Temp$()
-
   'Startup time is always modified
   If Not $bModify Then 
   
     eNow = Now
-    If (eNow - $eStartup) < 1 Then Return
+    If (eNow - $eStartup) < (1 / 86400) Then Return
   
     Main.Log("SaveSession: " & $sId & ": update timestamp")
 
@@ -75,6 +73,8 @@ Private Sub SaveSession()
 
   Else
   
+    sTemp = Temp$()
+
     Main.Log("SaveSession: " & $sId)
     
     'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
