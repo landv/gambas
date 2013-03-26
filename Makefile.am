@@ -32,7 +32,7 @@ SUBDIRS = \
  @media_dir@ \
  @jit_dir@ \
  @httpd_dir@ \
- @sge_dir@ \
+ @opengl_sge_dir@ \
  comp \
  app \
  examples \

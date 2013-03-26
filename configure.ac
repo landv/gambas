@@ -41,7 +41,7 @@ GB_CONFIG_SUBDIRS(ncurses, gb.ncurses)
 GB_CONFIG_SUBDIRS(media, gb.media)
 GB_CONFIG_SUBDIRS(jit, gb.jit)
 GB_CONFIG_SUBDIRS(httpd, gb.httpd)
-GB_CONFIG_SUBDIRS(sge, gb.sge)
+GB_CONFIG_SUBDIRS(opengl_sge, gb.opengl.sge)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)
