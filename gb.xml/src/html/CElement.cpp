@@ -44,7 +44,14 @@ BEGIN_PROPERTY(CElement_id)
 if(READ_PROPERTY)
 {
     Attribute *id = THIS->getId();
-    GB.ReturnNewString(id->attrValue, id->lenAttrValue);
+    if(id)
+    {
+        GB.ReturnNewString(id->attrValue, id->lenAttrValue);
+    }
+    else
+    {
+        GB.ReturnNull();
+    }
 }
 else
 {
@@ -58,7 +65,14 @@ BEGIN_PROPERTY(CElement_className)
 if(READ_PROPERTY) 
 {
     Attribute *className = THIS->getClassName();
-    GB.ReturnNewString(className->attrValue, className->lenAttrValue);
+    if(className)
+    {
+        GB.ReturnNewString(className->attrValue, className->lenAttrValue);
+    }
+    else
+    {
+        GB.ReturnNull();
+    }
 }
 else 
 {
