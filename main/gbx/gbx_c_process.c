@@ -99,7 +99,7 @@ static const char *const _child_error[] = {
 	"cannot initialize pseudo-terminal: ",
 	"cannot plug standard input: ",
 	"cannot plug standard output and standard error: ",
-	"cannot exec program: "
+	"cannot run executable: "
 };
 
 //-------------------------------------------------------------------------
@@ -249,9 +249,6 @@ static void throw_last_child_error()
 	#ifdef DEBUG_ME
 	fprintf(stderr, "throw_last_child_error: %d %d\n", child_error, child_errno);
 	#endif
-	
-	if (strcmp(getenv("GB_ISSUE_415"), "1") == 0)
-		BREAKPOINT();
 	
 	if (child_error < 0)
 		THROW(E_CHILD, "unknown error", "");
@@ -459,6 +456,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 				argv[i] = "";
 		}
 
+		if (*argv[0] == '/' && !FILE_exist(argv[0]))
+			THROW(E_NEXIST);
+		
 		#ifdef DEBUG_ME
 		{
 			int i;
