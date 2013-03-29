@@ -265,7 +265,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 		
 		if (size_one_64 != size_one)
 		{
-			ALLOC(&alloc, size_one_64 * size, "get_section");
+			ALLOC(&alloc, size_one_64 * size);
 				
 			for (i = 0; i < size; i++)
 			{
@@ -380,9 +380,9 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	sclass->component = class->component;
 	sclass->debug = class->debug;
 
-	ALLOC_ZERO(&sclass->load, sizeof(CLASS_LOAD), "load_structure");
+	ALLOC_ZERO(&sclass->load, sizeof(CLASS_LOAD));
 	
-	ALLOC(&var, sizeof(CLASS_VAR) * nfield, "load_structure");
+	ALLOC(&var, sizeof(CLASS_VAR) * nfield);
 	sclass->load->dyn = var;
 	sclass->load->n_dyn = nfield;
 	sclass->load->class_ref = class->load->class_ref;
@@ -390,14 +390,14 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	
 	if (sclass->debug)
 	{
-		ALLOC(&global, sizeof(GLOBAL_SYMBOL) * nfield, "load_structure");
+		ALLOC(&global, sizeof(GLOBAL_SYMBOL) * nfield);
 		sclass->load->global = global;
 		sclass->load->n_global = nfield;
 	}
 	
 	sclass->n_desc = nfield;
-	ALLOC(&sclass->table, sizeof(CLASS_DESC_SYMBOL) * nfield, "load_structure");
-	ALLOC(&desc, sizeof(CLASS_DESC) *nfield, "load_structure");
+	ALLOC(&sclass->table, sizeof(CLASS_DESC_SYMBOL) * nfield);
+	ALLOC(&desc, sizeof(CLASS_DESC) * nfield);
 	sclass->data = (char *)desc;
 
 	pos = 0; //sizeof(CSTRUCT);
@@ -497,7 +497,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	int len;
 	bool have_jit_functions = FALSE;
 	
-	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");
+	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD));
 
 	/* header */
 
@@ -562,7 +562,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	
 	if (info->nstruct)
 	{
-		ALLOC(&structure, sizeof(CLASS_STRUCT) * info->nstruct, "load_and_relocate");
+		ALLOC(&structure, sizeof(CLASS_STRUCT) * info->nstruct);
 		for (i = 0; i < info->nstruct; i++)
 		{
 			structure[i].desc = (int *)get_section("structure", &section, &n_struct, _i);
@@ -624,7 +624,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	// Profile information
 	
 	if (EXEC_profile)
-		ALLOC_ZERO(&class->load->prof, sizeof(uint) * (class->debug ? (1 + class->load->n_func) : 1), "load_and_relocate");
+		ALLOC_ZERO(&class->load->prof, sizeof(uint) * (class->debug ? (1 + class->load->n_func) : 1));
 	
 	/* Source file path, ignored now! */
 
@@ -772,7 +772,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		#ifdef OS_64BITS
 		CLASS_ARRAY **array = class->load->array;
 		n_array = *((int *)array) / sizeof(int);
-		ALLOC(&class->load->array, sizeof(void *) * n_array, "CLASS_load");
+		ALLOC(&class->load->array, sizeof(void *) * n_array);
 		#else
 		n_array = *((int *)class->load->array) / sizeof(int);
 		#endif
@@ -794,7 +794,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	{
 		for (i = 0; i < info->nstruct; i++)
 			load_structure(class, structure[i].desc, structure[i].nfield);
-		FREE(&structure, "load_and_relocate");
+		FREE(&structure);
 	}
 
 	// Computes and align the position of each static and dynamic variables.
@@ -900,7 +900,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	
 	if (have_jit_functions)
 	{
-		ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func, "CLASS_load");
+		ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func);
 		for(i = 0; i < class->load->n_func; i++)
 		{
 			class->jit_functions[i] = JIT_default_jit_function;

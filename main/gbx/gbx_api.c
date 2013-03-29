@@ -1040,14 +1040,14 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 
 		if (nparam)
 		{
-			ALLOC(&tsign, nparam * sizeof(TYPE), "GB_GetFunction");
+			ALLOC(&tsign, nparam * sizeof(TYPE));
 			tsign = TYPE_transform_signature(&tsign, sign, nparam);
 		}
 
 		error = TYPE_compare_signature(desc->method.signature, desc->method.npmax, tsign, nparam);
 
 		if (nparam)
-			FREE(&tsign, "GB_GetFunction");
+			FREE(&tsign);
 
 		if (error)
 		{
@@ -1932,17 +1932,17 @@ void *GB_Eval(void *expr, void *func)
 
 void GB_Alloc(void **addr, int len)
 {
-	ALLOC(addr, len, "GB_Alloc");
+	ALLOC(addr, len);
 }
 
 void GB_Free(void **addr)
 {
-	FREE(addr, "GB_Free");
+	FREE(addr);
 }
 
 void GB_Realloc(void **addr, int len)
 {
-	REALLOC(addr, len, "GB_Realloc");
+	REALLOC(addr, len);
 }
 
 

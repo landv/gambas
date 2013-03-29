@@ -183,7 +183,7 @@ STACK_BACKTRACE *STACK_get_backtrace(void)
 	if (STACK_frame_count == 0)
 		return NULL;
 	
-	ALLOC(&bt, sizeof(STACK_BACKTRACE) * (1 + STACK_frame_count), "STACK_get_backtrace");
+	ALLOC(&bt, sizeof(STACK_BACKTRACE) * (1 + STACK_frame_count));
 	
 	bt->cp = CP;
 	bt->fp = FP;

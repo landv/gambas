@@ -41,7 +41,7 @@ void BUFFER_create(void *p_data)
 {
 	BUFFER *buf;
 
-	ALLOC(&buf, sizeof(BUFFER), "BUFFER_create");
+	ALLOC(&buf, sizeof(BUFFER));
 	buf->max = 0;
 	buf->length = 0;
 	
@@ -54,7 +54,7 @@ void BUFFER_delete(void *p_data)
 	void **data = (void **)p_data;
 	BUFFER *buf = DATA_TO_BUFFER(*data);
 
-	FREE(&buf, "BUFFER_delete");
+	FREE(&buf);
 	*data = NULL;
 }
 
@@ -72,7 +72,7 @@ bool BUFFER_need(void *p_data, size_t size)
 		while (buffer->length >= buffer->max)
 			buffer->max += BUFFER_INC;
 			
-		REALLOC(&buffer, sizeof(char) * buffer->max + sizeof(BUFFER), "BUFFER_need");
+		REALLOC(&buffer, sizeof(char) * buffer->max + sizeof(BUFFER));
 		*data = BUFFER_TO_DATA(buffer);
 	}
 

@@ -50,7 +50,7 @@ void COBSERVER_detach(COBSERVER *this)
 	#endif
 	
 	if (this->event)
-		FREE(&this->event, "COBSERVER_detach");
+		FREE(&this->event);
 }
 
 BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
@@ -101,7 +101,7 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
   
   THIS->after = VARGOPT(after, FALSE);
   
-	ALLOC_ZERO(&THIS->event, sizeof(ushort) * class->n_event, "Observer_new");
+	ALLOC_ZERO(&THIS->event, sizeof(ushort) * class->n_event);
 
 	THIS->object = object;
 	OBJECT_attach((OBJECT *)THIS, parent, name);

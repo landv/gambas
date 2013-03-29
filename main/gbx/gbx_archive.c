@@ -59,7 +59,7 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
 {
   ARCHIVE *arch;
 
-  ALLOC_ZERO(&arch, sizeof(ARCHIVE), "ARCHIVE_create");
+  ALLOC_ZERO(&arch, sizeof(ARCHIVE));
 
   arch->name = name;
 	arch->path = path;
@@ -149,7 +149,7 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch)
 	}
 	
 	ARRAY_delete(&exported);
-  FREE(&buffer, "load_exported_class");
+  FREE(&buffer);
 	
 	arch->exported_classes_loaded = TRUE;
 	
@@ -246,7 +246,7 @@ void ARCHIVE_delete(ARCHIVE *arch)
   TABLE_delete(&arch->classes);
   STRING_free(&arch->domain);
 
-  FREE(&arch, "ARCHIVE_delete");
+  FREE(&arch);
 }
 
 

@@ -375,7 +375,7 @@ int main(int argc, char **argv)
 
 	_NEXT_PATH:
 				if (dir != NULL) closedir(dir);
-				FREE((char **)&path, "main");
+				FREE((char **)&path);
 			}
 
 			path_exit();

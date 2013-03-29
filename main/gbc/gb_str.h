@@ -31,6 +31,6 @@ char *STR_copy_len(const char *str, int len);
 char *STR_cat(const char *str, ...);
 char *STR_add(char *d, const char *s);
 
-#define STR_free(_str) IFREE(_str, "STR_free")
+#define STR_free(_str) IFREE(_str)
 
 #endif

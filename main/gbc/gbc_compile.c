@@ -354,7 +354,7 @@ void COMPILE_begin(const char *file, bool trans, bool debug)
 			size += info.st_size * 2;
 	}
 
-	ALLOC(&JOB->pattern, sizeof(PATTERN) * (16 + size), "COMPILE_begin");
+	ALLOC(&JOB->pattern, sizeof(PATTERN) * (16 + size));
 	JOB->pattern_count = 0;
 }
 
@@ -372,7 +372,7 @@ void COMPILE_end(void)
 {
 	CLASS_delete(&JOB->class);
 	BUFFER_delete(&JOB->source);
-	FREE(&JOB->pattern, "COMPILE_end");
+	FREE(&JOB->pattern);
 
 	if (JOB->help)
 		ARRAY_delete(&JOB->help);

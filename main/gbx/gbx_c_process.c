@@ -446,7 +446,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (n == 0)
 			return;
 
-		ALLOC(&argv, sizeof(*argv) * (n + 1), "run_process");
+		ALLOC(&argv, sizeof(*argv) * (n + 1));
 		memcpy(argv, array->data, sizeof(*argv) * n);
 		argv[n] = NULL;
 
@@ -457,7 +457,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		}
 
 		if (*argv[0] == '/' && !FILE_exist(argv[0]))
+		{
+			FREE(&argv);
 			THROW(E_NEXIST);
+		}
 		
 		#ifdef DEBUG_ME
 		{
@@ -598,7 +601,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		if ((mode & PM_SHELL) == 0)
 		{
-			FREE(&argv, "run_process");
+			FREE(&argv);
 		}
 
 		sigprocmask(SIG_SETMASK, &old, &sig);

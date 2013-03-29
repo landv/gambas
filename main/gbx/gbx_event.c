@@ -171,7 +171,7 @@ void EVENT_exit()
 	{
 		ep = _post_list;
 		_post_list = _post_list->list.next;
-		FREE(&ep, "EVENT_exit");
+		FREE(&ep);
 	}
 	
 	STRING_free(&EVENT_Name);
@@ -185,7 +185,7 @@ static void post(void (*func)(), int nparam, intptr_t param, intptr_t param2)
 	/*printf("EVENT_post\n");
 	fflush(NULL);*/
 
-	ALLOC(&ep, sizeof(EVENT_POST), "EVENT_post");
+	ALLOC(&ep, sizeof(EVENT_POST));
 
 	ep->func = func;
 	ep->nparam = nparam;
@@ -238,7 +238,7 @@ bool EVENT_check_post(void)
 		save = *ep;
 		LIST_remove(&_post_list, _post_list, &_post_list->list);
 
-		FREE(&ep, "EVENT_check_post");
+		FREE(&ep);
 
 		if (save.nparam == 1)
 			(*save.func)(save.param);

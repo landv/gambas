@@ -97,7 +97,7 @@ static void push_path(void **list, const char *path)
 {
 	FILE_PATH *slot;
 
-	ALLOC(&slot, sizeof(FILE_PATH), "push_path");
+	ALLOC(&slot, sizeof(FILE_PATH));
 	slot->path = STRING_new_zero(path);
 
 	slot->next = *list;
@@ -118,7 +118,7 @@ static char *pop_path(void **list)
 	path = ((FILE_PATH *)*list)->path;
 	slot = *list;
 	*list = ((FILE_PATH *)*list)->next;
-	FREE(&slot, "pop_path");
+	FREE(&slot);
 
 	//printf("pop_path: %s\n", path);
 	return path;
@@ -930,7 +930,7 @@ void FILE_copy(const char *src, const char *dst)
 	if (FILE_exist(dst))
 		THROW(E_EXIST, dst);
 
-	ALLOC(&buf, MAX_IO, "FILE_copy");
+	ALLOC(&buf, MAX_IO);
 
 	TRY
 	{
@@ -950,7 +950,7 @@ void FILE_copy(const char *src, const char *dst)
 		STREAM_close(&stream_src);
 		STREAM_close(&stream_dst);
 
-		FREE(&buf, "FILE_copy");
+		FREE(&buf);
 	}
 	CATCH
 	{
@@ -958,7 +958,7 @@ void FILE_copy(const char *src, const char *dst)
 			STREAM_close(&stream_src);
 		if (stream_dst.type)
 			STREAM_close(&stream_dst);
-		FREE(&buf, "FILE_copy");
+		FREE(&buf);
 
 		PROPAGATE();
 	}

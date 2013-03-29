@@ -26,9 +26,9 @@
 
 #include "main.h"
 
-#define ALLOC(_ptr, _len, _where) GB.Alloc((void **)(void *)_ptr, _len)
-#define FREE(_ptr, _where) GB.Free((void **)(void *)_ptr)
-#define REALLOC(_ptr, _len, _where) GB.Realloc((void **)(void *)_ptr, _len)
+#define ALLOC(_ptr, _len) GB.Alloc((void **)(void *)_ptr, _len)
+#define FREE(_ptr) GB.Free((void **)(void *)_ptr)
+#define REALLOC(_ptr, _len) GB.Realloc((void **)(void *)_ptr, _len)
 
 #endif
 

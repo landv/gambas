@@ -43,7 +43,7 @@ void CLASS_create(CLASS **result)
 	CLASS *class;
 	TRANS_FUNC func;
 
-	ALLOC_ZERO(&class, sizeof(CLASS), "CLASS_create");
+	ALLOC_ZERO(&class, sizeof(CLASS));
 
 	ARRAY_create_inc(&class->function, 256);
 	ARRAY_create(&class->event);
@@ -83,27 +83,27 @@ static void delete_function(FUNCTION *func)
 {
 	ARRAY_delete(&func->local);
 	if (func->code)
-		FREE(&func->code, "delete_function");
+		FREE(&func->code);
 
 	if (JOB->debug)
 		ARRAY_delete(&func->pos_line);
 
 	if (func->param)
-		FREE(&func->param, "delete_function");
+		FREE(&func->param);
 }
 
 
 static void delete_event(EVENT *event)
 {
 	if (event->param)
-		FREE(&event->param, "delete_event");
+		FREE(&event->param);
 }
 
 
 static void delete_extfunc(EXTFUNC *extfunc)
 {
 	if (extfunc->param)
-		FREE(&extfunc->param, "delete_extfunc");
+		FREE(&extfunc->param);
 }
 
 
@@ -136,7 +136,7 @@ void CLASS_delete(CLASS **class)
 			delete_structure(&((*class)->structure[i]));
 
 		for (i = 0; i < ARRAY_count((*class)->names); i++)
-			FREE(&((*class)->names[i]), "CLASS_delete");
+			FREE(&((*class)->names[i]));
 
 		ARRAY_delete(&((*class)->function));
 		ARRAY_delete(&((*class)->event));
@@ -154,7 +154,7 @@ void CLASS_delete(CLASS **class)
 		if ((*class)->name != NULL)
 			STR_free((*class)->name);
 
-		FREE(class, "CLASS_delete");
+		FREE(class);
 	}
 }
 
@@ -268,7 +268,7 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 
 	if (decl->nparam)
 	{
-		ALLOC(&func->param, decl->nparam * sizeof(PARAM), "CLASS_add_function");
+		ALLOC(&func->param, decl->nparam * sizeof(PARAM));
 
 		for (i = 0; i < decl->nparam; i++)
 			func->param[i] = decl->param[i];
@@ -345,7 +345,7 @@ void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
 
 	if (event->nparam)
 	{
-		ALLOC(&event->param, decl->nparam * sizeof(PARAM), "CLASS_add_event");
+		ALLOC(&event->param, decl->nparam * sizeof(PARAM));
 
 		for (i = 0; i < decl->nparam; i++)
 		{
@@ -439,7 +439,7 @@ void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
 
 	if (extfunc->nparam)
 	{
-		ALLOC(&extfunc->param, decl->nparam * sizeof(PARAM), "CLASS_add_extern");
+		ALLOC(&extfunc->param, decl->nparam * sizeof(PARAM));
 
 		for (i = 0; i < decl->nparam; i++)
 		{
@@ -543,7 +543,7 @@ static char *CLASS_add_name(CLASS *class, const char *name, int len)
 {
 	char *ret;
 	 
-	ALLOC(&ret, len + 1, "CLASS_add_name");
+	ALLOC(&ret, len + 1);
 	memcpy(ret, name, len);
 	ret[len] = 0;
 	

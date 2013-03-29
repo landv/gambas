@@ -180,7 +180,7 @@ LIBRARY *LIBRARY_create(const char *name)
 {
   LIBRARY *lib;
 
-  ALLOC_ZERO(&lib, sizeof(LIBRARY), "LIBRARY_create");
+  ALLOC_ZERO(&lib, sizeof(LIBRARY));
 
   lib->handle = NULL;
   lib->name = name;
@@ -203,7 +203,7 @@ LIBRARY *LIBRARY_create(const char *name)
 void LIBRARY_delete(LIBRARY *lib)
 {
   LIBRARY_unload(lib);
-  FREE(&lib, "LIBRARY_delete");
+  FREE(&lib);
 }
 
 

@@ -190,7 +190,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (comp)
 		return comp;
 
-	ALLOC_ZERO(&comp, sizeof(COMPONENT), "COMPONENT_create");
+	ALLOC_ZERO(&comp, sizeof(COMPONENT));
 
 	comp->class = CLASS_Component;
 	comp->ref = 1;
@@ -257,7 +257,7 @@ void COMPONENT_delete(COMPONENT *comp)
 
 	STRING_free(&comp->name);
 
-	FREE(&comp, "COMPONENT_delete");
+	FREE(&comp);
 }
 
 

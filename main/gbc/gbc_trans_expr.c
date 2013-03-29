@@ -582,7 +582,7 @@ void TRANS_expression(bool check_statement)
 
 	trans_expr_from_tree(tree, tree_length);
 
-	FREE(&tree, "TRANS_expression");
+	FREE(&tree);
 
 	if (check_statement)
 	{
@@ -627,7 +627,7 @@ TYPE TRANS_variable_get_type()
 		}
 	}
 	
-	FREE(&tree, "TRANS_variable_get_type");
+	FREE(&tree);
 	
 	return type;
 }

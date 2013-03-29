@@ -34,6 +34,8 @@
 EXTERN int MEMORY_count;
 #endif
 
+#define WHERE_AM_I MEMORY_where_am_i(__FILE__, __LINE__, __func__)
+
 #if DEBUG_MEMORY
 
 #undef OPTIMIZE_MEMORY
@@ -53,13 +55,15 @@ typedef
 EXTERN size_t MEMORY_size;
 EXTERN FILE *MEMORY_log;
 
-#define ALLOC(_ptr, _size, _src)        MEMORY_alloc((void *)_ptr, _size, _src)
-#define ALLOC_ZERO(_ptr, _size, _src)   MEMORY_alloc_zero((void *)_ptr, _size, _src)
-#define REALLOC(_ptr, _size, _src)      MEMORY_realloc((void *)_ptr, _size, _src)
-#define FREE(_ptr, _src)                MEMORY_free((void *)_ptr, _src)
-#define IFREE(_ptr, _src)               FREE(&(_ptr), _src)
+#define ALLOC(_ptr, _size)        MEMORY_alloc((void *)_ptr, _size, WHERE_AM_I)
+#define ALLOC_ZERO(_ptr, _size)   MEMORY_alloc_zero((void *)_ptr, _size, WHERE_AM_I)
+#define REALLOC(_ptr, _size)      MEMORY_realloc((void *)_ptr, _size, WHERE_AM_I)
+#define FREE(_ptr)                MEMORY_free((void *)_ptr, WHERE_AM_I)
+#define IFREE(_ptr)               FREE(&(_ptr))
 
 #define GET_ALLOC_ID(_ptr) (((ALLOC *)((char *)(_ptr) - sizeof(ALLOC)))->id)
+
+char *MEMORY_where_am_i(const char *file, int line, const char *func);
 
 void MEMORY_alloc(void *p_ptr, size_t size, const char *src);
 void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src);
@@ -78,11 +82,11 @@ void MEMORY_check_ptr(void *ptr);
 #define FREE(_ptr, _src)                (LIKELY(*(_ptr) != 0) ? free(*(_ptr)), *(_ptr) = NULL, MEMORY_count-- : 0)
 #define IFREE(_ptr, _src)               (LIKELY(_ptr != 0) ? free(_ptr), MEMORY_count-- : 0)*/
 
-#define ALLOC(_ptr, _size, _src)        (*(_ptr) = my_malloc(_size))
-#define ALLOC_ZERO(_ptr, _size, _src)   (*(_ptr) = my_malloc(_size), memset(*(_ptr), 0, (_size)))
-#define REALLOC(_ptr, _size, _src)      (*(_ptr) = my_realloc(*(_ptr), (_size)))
-#define FREE(_ptr, _src)                (my_free(*(_ptr)), *(_ptr) = NULL)
-#define IFREE(_ptr, _src)               (my_free(_ptr))
+#define ALLOC(_ptr, _size)        (*(_ptr) = my_malloc(_size))
+#define ALLOC_ZERO(_ptr, _size)   (*(_ptr) = my_malloc(_size), memset(*(_ptr), 0, (_size)))
+#define REALLOC(_ptr, _size)      (*(_ptr) = my_realloc(*(_ptr), (_size)))
+#define FREE(_ptr)                (my_free(*(_ptr)), *(_ptr) = NULL)
+#define IFREE(_ptr)               (my_free(_ptr))
 
 void *my_malloc(size_t len);
 void my_free(void *alloc);
@@ -90,11 +94,11 @@ void *my_realloc(void *alloc, size_t len);
 
 #else
 
-#define ALLOC(_ptr, _size, _src)        MEMORY_alloc((void *)_ptr, _size)
-#define ALLOC_ZERO(_ptr, _size, _src)   MEMORY_alloc_zero((void *)_ptr, _size)
-#define REALLOC(_ptr, _size, _src)      MEMORY_realloc((void *)_ptr, _size)
-#define FREE(_ptr, _src)                MEMORY_free((void *)_ptr)
-#define IFREE(_ptr, _src)               FREE(&(_ptr), _src)
+#define ALLOC(_ptr, _size)        MEMORY_alloc((void *)_ptr, _size)
+#define ALLOC_ZERO(_ptr, _size)   MEMORY_alloc_zero((void *)_ptr, _size)
+#define REALLOC(_ptr, _size)      MEMORY_realloc((void *)_ptr, _size)
+#define FREE(_ptr)                MEMORY_free((void *)_ptr)
+#define IFREE(_ptr)               FREE(&(_ptr))
 
 void MEMORY_alloc(void *p_ptr, size_t size);
 void MEMORY_alloc_zero(void *p_ptr, size_t size);

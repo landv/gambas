@@ -97,9 +97,9 @@ void EVAL_clear(EXPRESSION *expr, bool keep_error)
   TABLE_delete(&expr->table);
 
   if (expr->pattern)
-    FREE(&expr->pattern, "EVAL_clear");
+    FREE(&expr->pattern);
   if (expr->code)
-    FREE(&expr->code,"EVAL_clear");
+    FREE(&expr->code);
 	
 	if (!keep_error)
 		GB.FreeString(&expr->error);
@@ -108,7 +108,7 @@ void EVAL_clear(EXPRESSION *expr, bool keep_error)
 
 void EVAL_start(EXPRESSION *expr)
 {
-  ALLOC(&expr->pattern, sizeof(PATTERN) * (16 + expr->len), "EVAL_start");
+  ALLOC(&expr->pattern, sizeof(PATTERN) * (16 + expr->len));
   expr->pattern_count = 0;
 
   TABLE_create(&expr->table, sizeof(EVAL_SYMBOL), EVAL->analyze ? TF_NORMAL : TF_IGNORE_CASE);

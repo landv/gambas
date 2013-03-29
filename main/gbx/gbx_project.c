@@ -494,7 +494,7 @@ void PROJECT_load_finish(void)
 void PROJECT_exit(void)
 {
 	if (project_buffer)
-		FREE(&project_buffer, "PROJECT_exit");
+		FREE(&project_buffer);
 
 	STRING_free(&PROJECT_name);
 	STRING_free(&PROJECT_path);

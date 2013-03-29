@@ -191,7 +191,7 @@ void ARCH_init(void)
 {
 	TABLE_create(&arch_table, sizeof(ARCH_SYMBOL), TF_NORMAL);
 
-	ALLOC(&arch_buffer, ARCH_BUFFER_SIZE, "ARCH_init");
+	ALLOC(&arch_buffer, ARCH_BUFFER_SIZE);
 
 	arch_file = fopen(".temp.gambas", "w");
 	if (arch_file == NULL)
@@ -315,7 +315,7 @@ void ARCH_exit(void)
 	STR_free(ARCH_project);
 	STR_free(ARCH_project_name);
 	
-	FREE(&arch_buffer, "ARCH_exit");
+	FREE(&arch_buffer);
 }
 
 

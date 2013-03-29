@@ -368,7 +368,7 @@ void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
 {
 	TABLE *table;
 
-	ALLOC(&table, sizeof(TABLE), "TABLE_create");
+	ALLOC(&table, sizeof(TABLE));
 	TABLE_create_static(table, size, flag);
 
 	*result = table;
@@ -404,7 +404,7 @@ void TABLE_delete(TABLE **p_table)
 	if (*p_table)
 	{
 		TABLE_delete_static(*p_table);
-		FREE(p_table, "TABLE_delete");
+		FREE(p_table);
 	}
 }
 

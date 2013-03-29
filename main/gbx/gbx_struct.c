@@ -29,7 +29,7 @@ void *CSTRUCT_create_static(void *ref, CLASS *class, char *addr)
 {
 	CSTATICSTRUCT *object;
 	
-  ALLOC(&object, sizeof(CSTATICSTRUCT), "OBJECT_alloc");
+  ALLOC(&object, sizeof(CSTATICSTRUCT));
 
   object->ob.class = class;
   object->ob.ref = 0;

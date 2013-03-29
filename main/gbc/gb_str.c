@@ -54,7 +54,7 @@ char *STR_copy_len(const char *str, int len)
 {
   char *cpy;
 
-  ALLOC(&cpy, len  + 1, "STR_copy_len");
+  ALLOC(&cpy, len  + 1);
   memcpy(cpy, str, len + 1);
   return cpy;
 }
@@ -80,7 +80,7 @@ char *STR_cat(const char *str, ...)
     p = va_arg(args, char *);
   }
 
-  ALLOC(&cpy, len + 1, "STR_cat");
+  ALLOC(&cpy, len + 1);
   p = cpy;
 
   va_start(args, str);

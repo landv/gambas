@@ -103,7 +103,7 @@ static void prepare_cif(EXTERN_CIF *info, int nsign, TYPE *sign, TYPE ret, int n
 	
 	if (nparam > 0)
 	{
-		ALLOC(&info->types, sizeof(ffi_type *) * nparam, "prepare_cif");
+		ALLOC(&info->types, sizeof(ffi_type *) * nparam);
 		
 		for (i = 0; i < nparam; i++)
 		{
@@ -206,7 +206,7 @@ static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 		THROW(E_EXTSYM, ext->library, ext->alias);
 	}
 
-	ALLOC_ZERO(&func, sizeof(EXTERN_FUNC), "get_function");
+	ALLOC_ZERO(&func, sizeof(EXTERN_FUNC));
 	func->next = _functions;
 	func->alias = ext->alias;
 	_functions = func;
@@ -384,7 +384,7 @@ void EXTERN_call(void)
 	if (vararg)
 	{
 		ffi_call(&cif.cif, func->call, &rvalue, args);
-		FREE(&cif.types, "EXTERN_call");
+		FREE(&cif.types);
 	}
 	else
 		ffi_call(&func->info.cif, func->call, &rvalue, args);
@@ -506,7 +506,7 @@ void EXTERN_exit(void)
 				break;
 			if (cb->exec.object)
 				OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
-			FREE(&cb->info.types, "EXTERN_exit");
+			FREE(&cb->info.types);
 			ffi_closure_free(cb->closure);
 		}
 	
@@ -518,8 +518,8 @@ void EXTERN_exit(void)
 		func = _functions;
 		_functions = func->next;
 		
-		FREE(&func->info.types, "EXTERN_exit");
-		FREE(&func, "EXTERN_exit");
+		FREE(&func->info.types);
+		FREE(&func);
 	}
 }
 

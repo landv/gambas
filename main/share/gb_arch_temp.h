@@ -105,7 +105,7 @@ static void load_arch(ARCH *arch, const char *path)
   if (len <= 0)
     arch_error("corrupted header");
 
-  ALLOC(&arch->string, len, "ARCH_init");
+  ALLOC(&arch->string, len);
   read_at(arch, arch->header.pos_string, arch->string, len);
 
   /* File names table */
@@ -115,8 +115,8 @@ static void load_arch(ARCH *arch, const char *path)
 	if (len <= 0 || lens <= 0)
 		arch_error("corrupted header");
 
-	ALLOC(&arch->symbol, len, "ARCHIVE_load");
-	ALLOC(&arch->sort, lens, "ARCHIVE_load");
+	ALLOC(&arch->symbol, len);
+	ALLOC(&arch->sort, lens);
 	
 	#ifdef OS_64BITS
 		sym = (ARCH_SYMBOL_32 *)&arch->addr[arch->header.pos_table];
@@ -175,7 +175,7 @@ ARCH *ARCH_open(const char *path)
 {
   ARCH *arch;
 
-  ALLOC_ZERO(&arch, sizeof(ARCH), "ARCH_open");
+  ALLOC_ZERO(&arch, sizeof(ARCH));
 
   load_arch(arch, path);
 
@@ -186,14 +186,14 @@ void ARCH_close(ARCH *arch)
 {
   if (arch->fd)
   {
-    FREE(&arch->string, "ARCH_close");
-    FREE(&arch->symbol, "ARCH_close");
-    FREE(&arch->sort, "ARCH_close");
+    FREE(&arch->string);
+    FREE(&arch->symbol);
+    FREE(&arch->sort);
     munmap(arch->addr, arch->length);
     close(arch->fd);
   }
 
-  FREE(&arch, "ARCH_close");
+  FREE(&arch);
 }
 
 

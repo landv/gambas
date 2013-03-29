@@ -59,9 +59,9 @@ static void alloc_code(void)
 {
 	cur_func->ncode_max += CODE_INSTR_INC;
 	if (!cur_func->code)
-		ALLOC(&cur_func->code, sizeof(short) * CODE_INSTR_INC, "alloc_code");
+		ALLOC(&cur_func->code, sizeof(short) * CODE_INSTR_INC);
 	else
-		REALLOC(&cur_func->code, sizeof(short) * cur_func->ncode_max, "alloc_code");
+		REALLOC(&cur_func->code, sizeof(short) * cur_func->ncode_max);
 }
 
 //static void INLINE write_short(short value)

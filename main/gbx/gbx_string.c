@@ -64,18 +64,18 @@ static void print_where()
 static void *_my_malloc(int size)
 {
 	void *ptr;
-	ALLOC(&ptr, size, "_my_malloc");
+	ALLOC(&ptr, size);
 	return ptr;
 }
 
 static void _my_free(void *ptr)
 {
-	IFREE(ptr, "_my_free");
+	IFREE(ptr);
 }
 
 static void *_my_realloc(void *ptr, int size)
 {
-	REALLOC(&ptr, size, "_my_realloc");
+	REALLOC(&ptr, size);
 	return ptr;
 }
 #else

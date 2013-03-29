@@ -64,7 +64,7 @@ void SUBR_alloc(ushort code)
   if (count <= 0 || size <= 0)
     THROW(E_ARG);
   
-  ALLOC(&ptr, size * count, "SUBR_alloc");
+  ALLOC(&ptr, size * count);
   
   if (copy)
   {
@@ -88,7 +88,7 @@ void SUBR_free(void)
 
   ptr = SUBR_get_pointer(PARAM);
   
-  IFREE(ptr, "SUBR_free");
+  IFREE(ptr);
   
   SUBR_LEAVE_VOID();
 }
@@ -114,7 +114,7 @@ void SUBR_realloc(ushort code)
   
   ptr = SUBR_get_pointer(&PARAM[0]);
   
-  REALLOC(&ptr, size * count, "SUBR_realloc");
+  REALLOC(&ptr, size * count);
   
   RETURN->type = T_POINTER;
   RETURN->_pointer.value = ptr;

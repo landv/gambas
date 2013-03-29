@@ -47,7 +47,9 @@ size_t MEMORY_size = 0;
 
 static int _id = 0;
 ALLOC *_alloc = NULL;
+#ifdef PROJECT_EXEC
 extern char *DEBUG_get_current_position(void);
+#endif
 FILE *MEMORY_log;
 
 #elif OPTIMIZE_MEMORY
@@ -138,6 +140,17 @@ void MEMORY_exit(void)
 #else
 
 #if DEBUG_MEMORY
+char *MEMORY_where_am_i(const char *file, int line, const char *func)
+{
+	static char buffer[256];
+	
+	snprintf(buffer, sizeof(buffer), "[%s] %s:%d", file, func, line);
+	return buffer;
+}
+
+#endif
+
+#if DEBUG_MEMORY
 void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
 {
   ALLOC *alloc;
@@ -162,7 +175,9 @@ void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
   MEMORY_size += size;
 
   #ifndef DO_NOT_PRINT_MEMORY
+	#ifdef PROJECT_EXEC
   fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+	#endif
   fprintf(MEMORY_log, "<%d> %s: MEMORY_alloc(%d) -> %p\n", _id, src, (int)size, (char *)alloc + sizeof(ALLOC));
   fflush(MEMORY_log);
 	//if (_id == 1700)
@@ -235,7 +250,9 @@ void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
     alloc->next->prev = alloc;
   
   #ifndef DO_NOT_PRINT_MEMORY
+	#ifdef PROJECT_EXEC
   fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+	#endif
 	fprintf(MEMORY_log, "<%d> %s: MEMORY_realloc(%p, %d) -> %p\n", alloc->id, src, *((void **)p_ptr), (int)size, (char *)alloc + sizeof(ALLOC));
   fflush(MEMORY_log);
   #endif
@@ -280,7 +297,9 @@ void MEMORY_free(void *p_ptr, const char *src)
     _alloc = alloc->next;
   
   #ifndef DO_NOT_PRINT_MEMORY
+	#ifdef PROJECT_EXEC
   fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+	#endif
   fprintf(MEMORY_log, "<%d> %s: MEMORY_free(%p)\n", alloc->id, src, (char *)alloc + sizeof(ALLOC));
   fflush(MEMORY_log);
   #endif

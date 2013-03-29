@@ -47,7 +47,7 @@ void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
 {
 	OBJECT *object;
 	
-	ALLOC_ZERO(&object, class->size, "OBJECT_new");
+	ALLOC_ZERO(&object, class->size);
 
 	object->class = class;
 	#if DEBUG_REF
@@ -236,7 +236,7 @@ void OBJECT_free(CLASS *class, OBJECT *ob)
 	ob->class = FREE_MARK;
 	#endif
 
-	FREE(&ob, "OBJECT_free");
+	FREE(&ob);
 }
 
 

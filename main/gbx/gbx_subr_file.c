@@ -58,7 +58,7 @@ static void push_stream(void **list, CSTREAM *stream)
 {
 	CSTREAM_NODE *slot;
 
-	ALLOC(&slot, sizeof(CSTREAM_NODE), "push_stream");
+	ALLOC(&slot, sizeof(CSTREAM_NODE));
 	slot->stream = stream;
 	//OBJECT_REF(stream, "push_stream");
 
@@ -78,7 +78,7 @@ static CSTREAM *pop_stream(void **list)
 	stream = ((CSTREAM_NODE *)*list)->stream;
 	slot = *list;
 	*list = slot->next;
-	FREE(&slot, "pop_stream");
+	FREE(&slot);
 
 	return stream;
 }

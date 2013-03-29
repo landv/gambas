@@ -346,7 +346,7 @@ static void analyze_class(GB_DESC *desc)
 		newline();
 	}
 
-	ALLOC(&sort, sizeof(int) * nsymbol, "analyze_class");
+	ALLOC(&sort, sizeof(int) * nsymbol);
 	for (i = 0; i < nsymbol; i++)
 		sort[i] = i;
 	
@@ -356,7 +356,7 @@ static void analyze_class(GB_DESC *desc)
 	for (i = 0; i < nsymbol; i++)
 		dump_symbol(&desc[sort[i]]);
 
-	FREE(&sort, "analyze_class");
+	FREE(&sort);
 	
 	if (_format)
 		newline();
@@ -435,7 +435,7 @@ static bool analyze_native_component(const char *path)
 			p++;
 		}
 	
-		ALLOC(&sort, sizeof(int) * nclass, "analyze_native_component");
+		ALLOC(&sort, sizeof(int) * nclass);
 		for (i = 0; i < nclass; i++)
 			sort[i] = i;
 		
@@ -445,7 +445,7 @@ static bool analyze_native_component(const char *path)
 		for (i = 0; i < nclass; i++)
 			analyze_class(desc[sort[i]]);
 			
-		FREE(&sort, "analyze_native_component");
+		FREE(&sort);
 	}
 	else
 	{

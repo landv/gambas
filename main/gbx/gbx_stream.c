@@ -244,7 +244,7 @@ void STREAM_release(STREAM *stream)
 		#if DEBUG_STREAM
 		fprintf(stderr, "Stream %p [%d]: Free buffer\n", stream, stream->common.tag);
 		#endif
-		FREE(&stream->common.buffer, "STREAM_close");
+		FREE(&stream->common.buffer);
 		stream->common.buffer_pos = 0;
 		stream->common.buffer_len = 0;
 	}
@@ -606,7 +606,7 @@ static char *input(STREAM *stream, bool line, char *escape)
 		#if DEBUG_STREAM
 		fprintf(stderr, "Stream %p [%d]: Alloc buffer\n", stream, stream->common.tag);
 		#endif
-		ALLOC(&buffer, STREAM_BUFFER_SIZE, "input");
+		ALLOC(&buffer, STREAM_BUFFER_SIZE);
 		buffer_pos = 0;
 		buffer_len = 0;
 	}
@@ -1360,7 +1360,7 @@ void STREAM_load(const char *path, char **buffer, int *rlen)
 
 	*rlen = len;
 
-	ALLOC(buffer, *rlen, "STREAM_load");
+	ALLOC(buffer, *rlen);
 
 	STREAM_read(&stream, *buffer, *rlen);
 	STREAM_close(&stream);
@@ -1593,7 +1593,7 @@ void STREAM_cancel(STREAM *stream)
 		return;
 
 	STREAM_close(stream->common.redirect);
-	FREE(&stream->common.redirect, "STREAM_cancel");
+	FREE(&stream->common.redirect);
 	stream->common.redirected = FALSE;
 }
 
@@ -1603,7 +1603,7 @@ void STREAM_begin(STREAM *stream)
 	
 	if (!stream->common.redirect)
 	{
-		ALLOC_ZERO(&stream->common.redirect, sizeof(STREAM), "STREAM_begin");
+		ALLOC_ZERO(&stream->common.redirect, sizeof(STREAM));
 		STREAM_open(stream->common.redirect, NULL, ST_STRING | ST_WRITE);
 	}
 

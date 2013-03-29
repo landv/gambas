@@ -251,7 +251,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
 	if (nsign)
 	{
-		ALLOC(&class->signature, sizeof(TYPE) * nsign, "CLASS_register");
+		ALLOC(&class->signature, sizeof(TYPE) * nsign);
 		sign = class->signature;
 		
 		for (i = first; i < class->n_desc; i++)

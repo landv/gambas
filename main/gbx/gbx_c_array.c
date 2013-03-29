@@ -505,7 +505,7 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 				THROW(E_MEMORY);
 		}
 
-		ALLOC_ZERO(&THIS->dim, nsize * sizeof(int), "Array_new");
+		ALLOC_ZERO(&THIS->dim, nsize * sizeof(int));
 
 		for (i = 0; i < nsize; i++)
 			THIS->dim[i] = sizes[i].value;
@@ -539,7 +539,7 @@ BEGIN_METHOD_VOID(Array_free)
 	
 	ARRAY_delete(&THIS->data);
 
-	FREE(&THIS->dim, "CARRAY_free");
+	FREE(&THIS->dim);
 
 END_METHOD
 
@@ -600,7 +600,7 @@ static bool copy_remove(CARRAY *_object, int start, int length, bool copy, bool 
 		if (THIS->dim)
 		{
 			nsize = get_dim(THIS);
-			ALLOC_ZERO(&array->dim, nsize * sizeof(int), "copy_remove");
+			ALLOC_ZERO(&array->dim, nsize * sizeof(int));
 
 			for (i = 0; i < nsize; i++)
 				array->dim[i] = THIS->dim[i];
@@ -1444,7 +1444,7 @@ static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 	dim = get_dim(src);
 	if (dim > 1)
 	{
-		ALLOC(&array->dim, dim * sizeof(int), "_convert");
+		ALLOC(&array->dim, dim * sizeof(int));
 		for (i = 0; i < dim; i++)
 			array->dim[i] = src->dim[i];
 	}

@@ -764,7 +764,7 @@ void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
 
 	if (result)
 	{
-		ALLOC(result, sizeof(PATTERN) * tree_length, "TRANS_tree");
+		ALLOC(result, sizeof(PATTERN) * tree_length);
 		memcpy(*result, tree, sizeof(PATTERN) * tree_length);
 		*count = tree_length;
 	}

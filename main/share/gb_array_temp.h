@@ -32,7 +32,7 @@ void ARRAY_create_with_size(void *p_data, size_t size, int inc)
 {
   ARRAY *array;
 
-  ALLOC(&array, sizeof(ARRAY), "ARRAY_create");
+  ALLOC(&array, sizeof(ARRAY));
 
   array->count = 0;
   array->max = 0;
@@ -53,7 +53,7 @@ void ARRAY_delete(void *p_data)
   if (!*data)
     return;
 
-  FREE(&alloc, "ARRAY_delete");
+  FREE(&alloc);
 
   *data = NULL;
 }
@@ -71,7 +71,7 @@ void *ARRAY_add_data(void *p_data, int num, bool zero)
   {
     array->max = array->inc + ((array->count + array->inc) / array->inc) * array->inc;
     new_array = array;
-    REALLOC(&new_array, sizeof(ARRAY) + array->max * array->size, "ARRAY_add_data");
+    REALLOC(&new_array, sizeof(ARRAY) + array->max * array->size);
     array = new_array;
     *data = ARRAY_TO_DATA(array);
   }
@@ -93,7 +93,7 @@ void ARRAY_realloc(void *p_data) //, bool zero)
 	
 	array->max = array->inc + ((array->count + array->inc) / array->inc) * array->inc;
 	new_array = array;
-	REALLOC(&new_array, sizeof(ARRAY) + array->max * size, "ARRAY_realloc");
+	REALLOC(&new_array, sizeof(ARRAY) + array->max * size);
   *data = ARRAY_TO_DATA(new_array);
 	//fprintf(stderr, "ARRAY_realloc: %p (%d) -> %p (%d) [%d]\n", array, old_max, new_array, new_array->max, size);
 	/*if (zero)
@@ -118,7 +118,7 @@ void *ARRAY_add_data_one(void *p_data, bool zero)
   {
     array->max = array->inc + ((array->count + array->inc) / array->inc) * array->inc;
     new_array = array;
-    REALLOC(&new_array, sizeof(ARRAY) + array->max * size, "ARRAY_add_data_one");
+    REALLOC(&new_array, sizeof(ARRAY) + array->max * size);
     array = new_array;
     *data = ARRAY_TO_DATA(array);
   }
@@ -208,7 +208,7 @@ void ARRAY_remove_many(void *p_data, int pos, int count)
     return;
 
   array->max = ((array->count + array->inc) / array->inc) * array->inc;
-  REALLOC(&array, sizeof(ARRAY) + array->max * array->size, "ARRAY_remove_many");
+  REALLOC(&array, sizeof(ARRAY) + array->max * array->size);
   *data = ARRAY_TO_DATA(array);
 }
 

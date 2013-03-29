@@ -218,7 +218,7 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 		SIGNAL_install(handler, signum, handle_signal);
 	}
 	
-	ALLOC(&cb, sizeof(SIGNAL_CALLBACK), "SIGNAL_register_callback");
+	ALLOC(&cb, sizeof(SIGNAL_CALLBACK));
 	
 	cb->prev = NULL;
 	cb->next = handler->callbacks;
@@ -264,7 +264,7 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	if (cb == handler->callbacks)
 		handler->callbacks = cb->next;
 	
-	FREE(&cb, "SIGNAL_unregister_callback");
+	FREE(&cb);
 	
 	_count--;
 	

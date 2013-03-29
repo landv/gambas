@@ -153,12 +153,12 @@ void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode)
 	HASH_TABLE *hash_table;
 	/*int i;*/
 
-	ALLOC_ZERO(&hash_table, sizeof(HASH_TABLE), "HASH_TABLE_create");
+	ALLOC_ZERO(&hash_table, sizeof(HASH_TABLE));
 
 	hash_table->size = HASH_TABLE_MIN_SIZE;
 	hash_table->s_value = s_value;
 
-	ALLOC_ZERO(&hash_table->nodes, sizeof(HASH_NODE *) * hash_table->size, "HASH_TABLE_create");
+	ALLOC_ZERO(&hash_table->nodes, sizeof(HASH_NODE *) * hash_table->size);
 
 	if (mode == HF_IGNORE_CASE)
 		hash_table->mode = mode;
@@ -186,7 +186,7 @@ void HASH_TABLE_delete(HASH_TABLE **hash)
 	while (node)
 	{
 		next = node->snext;
-		FREE(&node, "HASH_TABLE_delete");
+		FREE(&node);
 		node = next;
 	}
 	#else
@@ -196,8 +196,8 @@ void HASH_TABLE_delete(HASH_TABLE **hash)
 		hash_nodes_destroy(hash_table->nodes[i]);
 	#endif
 
-	FREE(&hash_table->nodes, "HASH_TABLE_delete");
-	FREE(hash, "HASH_TABLE_delete");
+	FREE(&hash_table->nodes);
+	FREE(hash);
 }
 
 
@@ -415,7 +415,7 @@ static void hash_table_resize(HASH_TABLE *hash_table)
 	//dump_hash_table(hash_table);
 	
 	old_nodes = hash_table->nodes;
-	ALLOC_ZERO(&new_nodes, new_size * sizeof(HASH_NODE *), "hash_table_resize");
+	ALLOC_ZERO(&new_nodes, new_size * sizeof(HASH_NODE *));
 
 	for (i = 0; i < hash_table->size; i++)
 		for (node = hash_table->nodes[i]; node; node = next)
@@ -429,7 +429,7 @@ static void hash_table_resize(HASH_TABLE *hash_table)
 				new_nodes[hash_val] = node;
 			}
 
-	FREE(&old_nodes, "hash_table_resize");
+	FREE(&old_nodes);
 	hash_table->nodes = new_nodes;
 	hash_table->size = new_size;
 
@@ -448,7 +448,7 @@ static HASH_NODE *hash_node_new(HASH_TABLE *hash_table, const char *key, int len
 		len = 65535;
 	
 	size = sizeof(HASH_NODE) + hash_table->s_value + sizeof(HASH_KEY) + len;
-	ALLOC_ZERO(&hash_node, size, "hash_node_new");
+	ALLOC_ZERO(&hash_node, size);
 
 	node_key = NODE_key(hash_table, hash_node);
 	memcpy(node_key->key, key, len);
@@ -477,7 +477,7 @@ static HASH_NODE *hash_node_new(HASH_TABLE *hash_table, const char *key, int len
 
 static void hash_node_destroy(HASH_NODE *hash_node)
 {
-	FREE(&hash_node, "hash_node_destroy");
+	FREE(&hash_node);
 }
 
 #ifdef KEEP_ORDER
@@ -493,7 +493,7 @@ static void hash_nodes_destroy(HASH_NODE *hash_node)
 			return;
 
 		next = node->next;
-		FREE(&node, "hash_nodes_destroy");
+		FREE(&node);
 		node = next;
 	}
 }

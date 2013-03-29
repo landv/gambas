@@ -116,15 +116,15 @@ static void unload_class(CLASS *class)
 	#endif
 
 	if (class->free_name)
-		FREE(&class->name, "unload_class");
+		FREE(&class->name);
 
 	if (class->is_struct)
 	{
-		FREE(&class->load->dyn, "unload_class");
+		FREE(&class->load->dyn);
 		if (class->debug)
-			FREE(&class->load->global, "unload_class");
-		FREE(&class->load, "unload_class");
-		FREE(&class->data, "unload_class");
+			FREE(&class->load->global);
+		FREE(&class->load);
+		FREE(&class->data);
 	}
 	else if (!CLASS_is_native(class))
 	{
@@ -132,14 +132,14 @@ static void unload_class(CLASS *class)
 			
 			if (class->load)
 			{
-				FREE(&class->load->desc, "unload_class");
-				FREE(&class->load->cst, "unload_class");
-				FREE(&class->load->class_ref, "unload_class");
-				FREE(&class->load->unknown, "unload_class");
-				FREE(&class->load->event, "unload_class");
-				FREE(&class->load->ext, "unload_class");
-				FREE(&class->load->local, "unload_class");
-				FREE(&class->load->array, "unload_class");
+				FREE(&class->load->desc);
+				FREE(&class->load->cst);
+				FREE(&class->load->class_ref);
+				FREE(&class->load->unknown);
+				FREE(&class->load->event);
+				FREE(&class->load->ext);
+				FREE(&class->load->local);
+				FREE(&class->load->array);
 				
 				if (class->debug)
 				{
@@ -149,40 +149,40 @@ static void unload_class(CLASS *class)
 					for (i = 0; i < class->load->n_func; i++)
 					{
 						func = &class->load->func[i];
-						FREE(&func->debug->local, "unload_class");
+						FREE(&func->debug->local);
 					}
 					
-					FREE(&class->load->global, "unload_class");
-					FREE(&class->load->debug, "unload_class");
+					FREE(&class->load->global);
+					FREE(&class->load->debug);
 				}
 				
-				FREE(&class->load->func, "unload_class");
+				FREE(&class->load->func);
 			}
 
 		#endif
 		
 		if (class->load)
-			FREE(&class->load->prof, "unload_class");
+			FREE(&class->load->prof);
 		
-		FREE(&class->jit_functions, "unload_class");
+		FREE(&class->jit_functions);
 		
-		FREE(&class->load, "unload_class");
+		FREE(&class->load);
 		//if (!class->mmapped)
-		FREE(&class->data, "unload_class");
+		FREE(&class->data);
 	}
 	else
 	{
-		FREE(&class->signature, "unload_class");
-		FREE(&class->data, "unload_class");
+		FREE(&class->signature);
+		FREE(&class->data);
 	}
 
 	if (class->free_event)
-		FREE(&class->event, "unload_class");
+		FREE(&class->event);
 
-	FREE(&class->stat, "unload_class");
+	FREE(&class->stat);
 
-	FREE(&class->table, "unload_class");
-	FREE(&class->sort, "unload_class");
+	FREE(&class->table);
+	FREE(&class->sort);
 
 	class->state = CS_NULL;
 }
@@ -219,7 +219,7 @@ static void class_replace_global(const char *name)
 		}
 		while (parent);
 		
-		ALLOC(&old_name, len + nprefix + 1, "class_replace_global");
+		ALLOC(&old_name, len + nprefix + 1);
 		for (i = 0; i < nprefix; i++)
 			old_name[i] = '>';
 		strcpy(&old_name[i], name);
@@ -227,7 +227,7 @@ static void class_replace_global(const char *name)
 		old_class = CLASS_find_global(old_name);
 		//fprintf(stderr, "-> %p %s\n", old_class, old_name);
 		
-		FREE(&old_name, "class_replace_global");
+		FREE(&old_name);
 		/*FREE(&old_class->name, "class_replace_global");
 		old_class->free_name = FALSE;
 		old_class->name = class->name;*/
@@ -406,7 +406,7 @@ void CLASS_exit()
 	while (class)
 	{
 		next = class->next;
-		FREE(&class, "CLASS_exit");
+		FREE(&class);
 		class = next;
 	}
 
@@ -502,7 +502,7 @@ CLASS *CLASS_find(const char *name)
 		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
 	}
 
-	ALLOC_ZERO(&class, sizeof(CLASS), "CLASS_find");
+	ALLOC_ZERO(&class, sizeof(CLASS));
 	csym->class = class;
 	//class->state = CS_NULL;
 	//class->count = 0;
@@ -511,7 +511,7 @@ CLASS *CLASS_find(const char *name)
 	class->next = _classes;
 	_classes = class;
 
-	ALLOC(&class->name, len + 1, "CLASS_find");
+	ALLOC(&class->name, len + 1);
 	strcpy((char *)class->name, name);
 
 	csym->sym.name = class->name;
@@ -889,7 +889,7 @@ void CLASS_sort(CLASS *class)
 	
 	_sorted_class = class;
 	
-	ALLOC(&sym, sizeof(ushort) * class->n_desc, "CLASS_sort");
+	ALLOC(&sym, sizeof(ushort) * class->n_desc);
 
 	for (i = 0; i < class->n_desc; i++)
 		sym[i] = i;
@@ -1051,7 +1051,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 	// Make the description symbol table
 
 	if (class->n_desc)
-		ALLOC(&class->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc, "CLASS_make_description");
+		ALLOC(&class->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc);
 
 	i = 0;
 
@@ -1222,7 +1222,7 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int 
 
 	class->size_stat = size_static;
 	if (size_static)
-		ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
+		ALLOC_ZERO(&class->stat, class->size_stat);
 	else
 		class->stat = NULL;
 		
@@ -1249,7 +1249,7 @@ void CLASS_make_event(CLASS *class, int *first)
 		}
 	}
 
-	ALLOC_ZERO(&class->event, sizeof(CLASS_EVENT) * class->n_event, "CLASS_make_event");
+	ALLOC_ZERO(&class->event, sizeof(CLASS_EVENT) * class->n_event);
 
 	if (class->parent != NULL)
 	{
@@ -1452,7 +1452,7 @@ void CLASS_create_array_class(CLASS *class)
 	TYPE_joker = array_type;
 	array_type->array_class = class;
 
-	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
+	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);
 	memcpy(desc, NATIVE_TemplateArray, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);
 	((CLASS_DESC_GAMBAS *)desc)->name = class->name;
 
@@ -1502,7 +1502,7 @@ void CLASS_create_array_of_struct_class(CLASS *class)
 	TYPE_joker = array_type;
 	array_type->astruct_class = class;
 
-	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_OF_STRUCT_TEMPLATE_NDESC, "CLASS_create_array_of_struct_class");
+	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_OF_STRUCT_TEMPLATE_NDESC);
 	memcpy(desc, NATIVE_TemplateArrayOfStruct, sizeof(GB_DESC) * ARRAY_OF_STRUCT_TEMPLATE_NDESC);
 	((CLASS_DESC_GAMBAS *)desc)->name = class->name;
 
