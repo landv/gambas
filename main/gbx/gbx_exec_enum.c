@@ -51,7 +51,7 @@ void EXEC_enum_first(PCODE code)
 	RELEASE(local);
 	local->_object.class = OBJECT_class(cenum);
 	local->_object.object = cenum;
-	OBJECT_REF(cenum, "EXEC_enum_first");
+	OBJECT_REF(cenum);
 
 	EXEC_enum = cenum;
 	EXEC_special(SPEC_FIRST, class, object, 0, TRUE);

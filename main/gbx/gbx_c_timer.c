@@ -50,7 +50,7 @@ CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback, intptr_t param)
 	CTIMER *timer;
 	
 	timer = OBJECT_create_native(CLASS_Timer, NULL);
-	OBJECT_REF(timer, "CTIMER_every");
+	OBJECT_REF(timer);
 	timer->callback = callback;
 	timer->delay = delay;
 	timer->tag = param;
@@ -144,7 +144,7 @@ static void trigger_timer(void *_object)
 {
 	THIS->triggered = FALSE;
 	GB_Raise(THIS, EVENT_Timer, 0);
-	OBJECT_UNREF(_object, "trigger_timer");
+	OBJECT_UNREF(_object);
 }
 
 BEGIN_METHOD_VOID(Timer_Trigger)
@@ -153,7 +153,7 @@ BEGIN_METHOD_VOID(Timer_Trigger)
 		return;
 	
 	THIS->triggered = TRUE;
-	OBJECT_REF(THIS, "Timer_Trigger");
+	OBJECT_REF(THIS);
 	EVENT_post(trigger_timer, (intptr_t)THIS);
 
 END_METHOD

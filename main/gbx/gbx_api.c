@@ -587,7 +587,7 @@ static void push(int nval, va_list args)
 
 			case T_OBJECT:
 				SP->_object.object = va_arg(args, void *);
-				OBJECT_REF(SP->_object.object, "push");
+				OBJECT_REF(SP->_object.object);
 				break;
 
 			default:
@@ -838,7 +838,7 @@ static void error_GB_Raise()
 	void *object = (void *)ERROR_handler->arg1;
 	
 	RELEASE_MANY(SP, (int)(ERROR_handler->arg2));
-	OBJECT_UNREF(object, "error_GB_Raise");
+	OBJECT_UNREF(object);
 	
 	_raise_event_level--;
 	
@@ -876,7 +876,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 	if (!OBJECT_is_valid(object) || !OBJECT_has_events(object))
 		return FALSE;
 
-	OBJECT_REF(object, "GB_Raise");
+	OBJECT_REF(object);
 
 	arg = nparam < 0;
 	nparam = abs(nparam);
@@ -983,7 +983,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 __RETURN:
 	
 		RELEASE_MANY(SP, nparam);
-		OBJECT_UNREF(object, "GB_Raise");	
+		OBJECT_UNREF(object);	
 	}
 	END_ERROR
 
@@ -1265,7 +1265,7 @@ void GB_Ref(void *object)
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-		OBJECT_REF(object, "GB_Ref");
+		OBJECT_REF(object);
 	}
 
 	#if TRACE_MEMORY
@@ -1286,7 +1286,7 @@ void GB_Unref(void **object)
 		#if DEBUG_REF
 		//print_stack_backtrace();
 		#endif
-		OBJECT_UNREF(*object, "GB_Unref");
+		OBJECT_UNREF(*object);
 	}
 	
 	#if TRACE_MEMORY
@@ -1309,11 +1309,11 @@ void GB_UnrefKeep(void **object, int delete)
 		#endif
 		if (delete)
 		{
-			OBJECT_UNREF(*object, "GB_UnrefKeep");
+			OBJECT_UNREF(*object);
 		}
 		else
 		{
-			OBJECT_UNREF_KEEP(*object, "GB_UnrefKeep");
+			OBJECT_UNREF_KEEP(*object);
 		}
 	}
 
@@ -1795,9 +1795,9 @@ void GB_StoreObject(GB_OBJECT *src, void **dst)
 		object = NULL;
 
 	if (object)
-		OBJECT_REF(object, "GB_StoreObject");
+		OBJECT_REF(object);
 
-	OBJECT_UNREF(*dst, "GB_StoreObject");
+	OBJECT_UNREF(*dst);
 	*dst = object;
 }
 
@@ -1840,7 +1840,7 @@ void *GB_Create(void *class, const char *name, void *parent)
 	void *object;
 	
 	object = OBJECT_new(class, name, parent);
-	OBJECT_UNREF_KEEP(object, "GB_Create");
+	OBJECT_UNREF_KEEP(object);
 	
 	return object;
 }

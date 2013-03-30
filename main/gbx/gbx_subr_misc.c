@@ -97,7 +97,7 @@ static CPROCESS *_error_subr_exec_process;
 
 static void error_subr_exec()
 {
-	OBJECT_UNREF(_error_subr_exec_process, "error_subr_exec");
+	OBJECT_UNREF(_error_subr_exec_process);
 }
 
 void SUBR_exec(ushort code)
@@ -151,7 +151,7 @@ void SUBR_exec(ushort code)
 
 	if (wait)
 	{
-		OBJECT_REF(process, "subr_exec");
+		OBJECT_REF(process);
 
 		_error_subr_exec_process = process;
 		ON_ERROR(error_subr_exec)
@@ -162,11 +162,11 @@ void SUBR_exec(ushort code)
 
 		if (!ret)
 		{
-			OBJECT_UNREF(process, "subr_exec");
+			OBJECT_UNREF(process);
 		}
 		else if (!process->to_string)
 		{
-			OBJECT_UNREF_KEEP(process, "subr_exec");
+			OBJECT_UNREF_KEEP(process);
 		}
 	}
 
@@ -185,7 +185,7 @@ void SUBR_exec(ushort code)
 			SP->_string.len = STRING_length(result);
 			SP++;
 
-			OBJECT_UNREF(process, "subr_exec");
+			OBJECT_UNREF(process);
 		}
 		else
 		{
@@ -305,7 +305,7 @@ void SUBR_array(ushort code)
 		VALUE_conv(&PARAM[i], type);
 	
 	GB_ArrayNew(&array, type, NPARAM);
-	OBJECT_REF(array, "SUBR_array");
+	OBJECT_REF(array);
 
 	for (i = 0; i < NPARAM; i++)
 	{
@@ -338,14 +338,14 @@ void SUBR_collection(ushort code)
 		VALUE_conv_variant(vval);
 		if (GB_CollectionSet(col, key, len, (GB_VARIANT *)vval))
 		{
-			OBJECT_UNREF(col, "SUBR_collection");
+			OBJECT_UNREF(col);
 			THROW(E_VKEY);
 		}
 		RELEASE_STRING(&PARAM[i]);
 		RELEASE(&PARAM[i + 1]);
 	}
 
-	OBJECT_REF(col, "SUBR_collection");
+	OBJECT_REF(col);
 	PARAM->_object.class = OBJECT_class(col); //CLASS_Array;
 	PARAM->_object.object = col;
 	SP = PARAM + 1;

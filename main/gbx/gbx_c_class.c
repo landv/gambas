@@ -376,7 +376,7 @@ BEGIN_METHOD(Class_New, GB_OBJECT params)
 	}
 
 	object = EXEC_create_object(class, np, NULL);
-	OBJECT_UNREF_KEEP(object, "Class_New");
+	OBJECT_UNREF_KEEP(object);
 	GB_ReturnObject(object);
 
 END_METHOD
@@ -862,7 +862,7 @@ BEGIN_METHOD(Object_New, GB_STRING class; GB_OBJECT params)
 	}
 
 	object = EXEC_create_object(class, np, NULL);
-	OBJECT_UNREF_KEEP(object, "Object_New");
+	OBJECT_UNREF_KEEP(object);
 	GB_ReturnObject(object);
 
 END_METHOD

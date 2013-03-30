@@ -54,7 +54,7 @@ static bool unknown_function(VALUE *value)
 		EXEC_special(SPEC_UNKNOWN, value->_function.class, value->_function.object, 0, FALSE);
 
 		//object = value->_function.object;
-		OBJECT_UNREF(value->_function.object, "VALUE_conv");
+		OBJECT_UNREF(value->_function.object);
 
 		SP--;
 		//*val = *SP;
@@ -734,7 +734,7 @@ __OBJECT:
 		if (type == T_BOOLEAN)
 		{
 			test = (value->_object.object != NULL);
-			OBJECT_UNREF(value->_object.object, "VALUE_convert");
+			OBJECT_UNREF(value->_object.object);
 			value->_boolean.value = -test;
 			value->type = T_BOOLEAN;
 			return;
@@ -756,7 +756,7 @@ __OBJECT:
 			void *unref = value->_object.object;
 			if (!((*class->convert)(value->_object.object, type, value)))
 			{
-				OBJECT_UNREF(unref, "VALUE_convert");
+				OBJECT_UNREF(unref);
 				//OBJECT_REF(value->_object.object, "VALUE_convert");
 				goto __TYPE;
 			}
@@ -780,7 +780,7 @@ __OBJECT:
 			if (CLASS_is_struct(class))
 			{
 				value->_object.object = CSTRUCT_create_static(STRUCT_CONST, class, value->_pointer.value);
-				OBJECT_REF(value->_object.object, "VALUE_convert");
+				OBJECT_REF(value->_object.object);
 				goto __TYPE;
 			}
 		}
@@ -805,7 +805,7 @@ __OBJECT:
 			else
 				value->_object.object = class;
 
-			OBJECT_REF(value->_object.object, "VALUE_convert");
+			OBJECT_REF(value->_object.object);
 			value->type = T_OBJECT;
 			/* on continue... */
 		}
@@ -819,7 +819,7 @@ __OBJECT:
 				{
 					if (!((*class->convert)(NULL, value->type, value)))
 					{
-						OBJECT_REF(value->_object.object, "VALUE_convert");
+						OBJECT_REF(value->_object.object);
 						goto __TYPE;
 					}
 				}
@@ -860,8 +860,8 @@ __RETRY:
 		void *unref = value->_object.object;
 		if (!((*class->convert)(value->_object.object, type, value)))
 		{
-			OBJECT_UNREF(unref, "VALUE_convert");
-			OBJECT_REF(value->_object.object, "VALUE_convert");
+			OBJECT_UNREF(unref);
+			OBJECT_REF(value->_object.object);
 			goto __TYPE;
 		}
 	}
@@ -872,8 +872,8 @@ __RETRY:
 		void *unref = value->_object.object;
 		if (!((*class2->convert)(NULL, OBJECT_class(unref), value)))
 		{
-			OBJECT_UNREF(unref, "VALUE_convert");
-			OBJECT_REF(value->_object.object, "VALUE_convert");
+			OBJECT_UNREF(unref);
+			OBJECT_REF(value->_object.object);
 			goto __TYPE;
 		}
 	}
@@ -981,8 +981,8 @@ __OBJECT:
 
 	VALUE_conv(value, type);
 
-	OBJECT_REF(value->_object.object, "VALUE_write");
-	OBJECT_UNREF(*((void **)addr), "VALUE_write");
+	OBJECT_REF(value->_object.object);
+	OBJECT_UNREF(*((void **)addr));
 	*((void **)addr) = value->_object.object;
 	return;
 
@@ -990,8 +990,8 @@ __CLASS:
 
 	VALUE_conv(value, type);
 
-	OBJECT_REF(value->_class.class, "VALUE_write");
-	OBJECT_UNREF(*((void **)addr), "VALUE_write");
+	OBJECT_REF(value->_class.class);
+	OBJECT_UNREF(*((void **)addr));
 	*((void **)addr) = value->_class.class;
 	return;
 
@@ -1155,7 +1155,7 @@ void VALUE_free(void *addr, TYPE type)
 	}
 	else if (TYPE_is_object(type))
 	{
-		OBJECT_UNREF(*((void **)addr), "VALUE_free");
+		OBJECT_UNREF(*((void **)addr));
 		*((void **)addr) = NULL;
 	}
 	else if (type == T_VARIANT)
@@ -1349,8 +1349,8 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 		
 		VALUE_conv(value, type);
 
-		OBJECT_REF(value->_object.object, "VALUE_class_write");
-		OBJECT_UNREF(*((void **)addr), "VALUE_class_write");
+		OBJECT_REF(value->_object.object);
+		OBJECT_UNREF(*((void **)addr));
 		*((void **)addr) = value->_object.object;
 		//VALUE_write(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
 	}
@@ -1853,7 +1853,7 @@ __CONV:
 		if (type == T_BOOLEAN)
 		{
 			test = (value->_object.object != NULL);
-			OBJECT_UNREF(value->_object.object, "VALUE_convert");
+			OBJECT_UNREF(value->_object.object);
 			value->_boolean.value = test ? -1 : 0;
 			goto __TYPE;
 		}
@@ -1893,7 +1893,7 @@ __CONV:
 			else
 				value->_object.object = class;
 
-			OBJECT_REF(value->_object.object, "VALUE_convert");
+			OBJECT_REF(value->_object.object);
 			value->type = T_OBJECT;
 			/* on continue... */
 		}
@@ -1939,8 +1939,8 @@ __RETRY:
 		void *conv = ((void *(*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, type);
 		if (conv)
 		{
-			OBJECT_REF(conv, "VALUE_conv");
-			OBJECT_UNREF(value->_object.object, "VALUE_conv");
+			OBJECT_REF(conv);
+			OBJECT_UNREF(value->_object.object);
 			value->_object.object = conv;
 			goto __TYPE;
 		}

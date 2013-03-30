@@ -805,7 +805,7 @@ static void read_value_ctype(STREAM *stream, CLASS *class, CTYPE ctype, void *ad
 		if (CLASS_is_struct(class))
 		{
 			CSTRUCT *structure = (CSTRUCT *)OBJECT_create(class, NULL, NULL, 0);
-			OBJECT_REF(structure, "read_value_ctype");
+			OBJECT_REF(structure);
 			read_structure(stream, class, (char *)structure + sizeof(CSTRUCT));
 			*((void **)addr) = structure;
 			return;
@@ -1257,9 +1257,9 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value)
 						structure = CSTRUCT_create_static(array, (CLASS *)array->type, data);
 						temp._object.class = OBJECT_class(structure);
 						temp._object.object = structure;
-						OBJECT_REF(structure, "STREAM_write_type");
+						OBJECT_REF(structure);
 						STREAM_write_type(stream, T_OBJECT, &temp);
-						OBJECT_UNREF(structure, "STREAM_write_type");
+						OBJECT_UNREF(structure);
 					}
 				}
 				else

@@ -306,7 +306,7 @@ void CLASS_clean_up(bool silent)
 	for (class = _classes; class; class = class->next)
 	{
 		if (class->instance)
-			OBJECT_UNREF(class->instance, "CLASS_exit");
+			OBJECT_UNREF(class->instance);
 		if (!CLASS_is_native(class) && class->state)
 		{
 			/*printf("Must free: %s\n", class->name);*/
@@ -1298,7 +1298,7 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 			return ob;
 		}
 
-		OBJECT_UNREF(class->instance, "CLASS_auto_create");
+		OBJECT_UNREF(class->instance);
 		class->instance = NULL;
 	}
 

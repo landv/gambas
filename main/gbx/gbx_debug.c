@@ -597,13 +597,13 @@ void DEBUG_enum_keys(void *object, char **key)
 	
 		if (err)
 		{
-			OBJECT_UNREF(cenum, "DEBUG_enum_keys");
+			OBJECT_UNREF(cenum);
 			STRING_free(key);
 		}
 	}
 	CATCH
 	{
-		OBJECT_UNREF(cenum, "DEBUG_enum_keys");
+		OBJECT_UNREF(cenum);
 		STRING_free(key);
 	}
 	END_TRY

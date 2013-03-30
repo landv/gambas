@@ -39,7 +39,7 @@ void *CSTRUCT_create_static(void *ref, CLASS *class, char *addr)
   class->count++;
 
 	if (ref != STRUCT_CONST)
-		OBJECT_REF(ref, "CSTRUCT_create_static");
+		OBJECT_REF(ref);
   
 	//fprintf(stderr, "CSTRUCT_create_static: %s %p ref = %p addr = %p\n", class->name, object, ref, addr);
 	
@@ -54,7 +54,7 @@ int CSTRUCT_get_size(CLASS *class)
 void CSTRUCT_release(CSTRUCT *ob)
 {
 	if (ob->ref != STRUCT_CONST)
-		OBJECT_UNREF(ob->ref, "CSTRUCT_release");
+		OBJECT_UNREF(ob->ref);
 }
 
 

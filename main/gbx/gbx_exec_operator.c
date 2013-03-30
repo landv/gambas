@@ -129,8 +129,8 @@ __OBJECT_FLOAT:
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
 	result = (*(FUNC_O_OF)func)(o1, P2->_float.value, FALSE);
-	OBJECT_REF(result, "EXEC_operator");
-	OBJECT_UNREF(o1, "EXEC_operator");
+	OBJECT_REF(result);
+	OBJECT_UNREF(o1);
 
 	if (!result)
 	{
@@ -149,9 +149,9 @@ __FLOAT_OBJECT:
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P1);
 	result = (*(FUNC_O_OF)func)(o1, P1->_float.value, TRUE);
-	OBJECT_REF(result, "EXEC_operator");
+	OBJECT_REF(result);
 	P1->_object.class = P2->_object.class;
-	OBJECT_UNREF(o1, "EXEC_operator");
+	OBJECT_UNREF(o1);
 	
 	if (!result && !EXEC_has_native_error())
 		raise_error(o1, NULL);
@@ -182,9 +182,9 @@ __OTHER:
 	
 	func = OBJECT_class(o1)->operators[op];
 	result = (*(FUNC_O_OO)func)(o1, o2, invert);
-	OBJECT_REF(result, "EXEC_operator");
-	OBJECT_UNREF(o1, "EXEC_operator");
-	OBJECT_UNREF(o2, "EXEC_operator");
+	OBJECT_REF(result);
+	OBJECT_UNREF(o1);
+	OBJECT_UNREF(o2);
 
 	if (!result && !EXEC_has_native_error())
 		raise_error(o1, o2);
@@ -206,8 +206,8 @@ void EXEC_operator_object_add_quick(VALUE *P1, double val)
 	{
 		void *func = OBJECT_class(P1->_object.object)->operators[CO_ADDF];
 		void *result = (*(FUNC_O_OF)func)(P1->_object.object, val, FALSE);
-		OBJECT_REF(result, "EXEC_operator_object_float_direct");
-		OBJECT_UNREF(P1->_object.object, "EXEC_operator_object_float_direct");
+		OBJECT_REF(result);
+		OBJECT_UNREF(P1->_object.object);
 		P1->_object.object = result;
 	}
 	else
@@ -241,7 +241,7 @@ __OBJECT_FLOAT:
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
 	result = (*(FUNC_I_OF)func)(o1, P2->_float.value, FALSE);
-	OBJECT_UNREF(o1, "EXEC_comparator");
+	OBJECT_UNREF(o1);
 
 	if (result < 0)
 		raise_error(o1, NULL);
@@ -257,7 +257,7 @@ __FLOAT_OBJECT:
 	func = OBJECT_class(o2)->operators[op];
 	VALUE_conv_float(P1);
 	result = (*(FUNC_I_OF)func)(o2, P1->_float.value, TRUE);
-	OBJECT_UNREF(o2, "EXEC_comparator");
+	OBJECT_UNREF(o2);
 
 	if (result < 0)
 		raise_error(o2, NULL);
@@ -286,8 +286,8 @@ __OTHER:
 	
 	func = OBJECT_class(o1)->operators[op];
 	result = (*(FUNC_I_OO)func)(o1, o2, invert);
-	OBJECT_UNREF(o1, "EXEC_comparator");
-	OBJECT_UNREF(o2, "EXEC_comparator");
+	OBJECT_UNREF(o1);
+	OBJECT_UNREF(o2);
 	//result = !!result; // result != 0;
 	
 	if (result < 0)
@@ -310,7 +310,7 @@ void EXEC_operator_object_abs(VALUE *P1)
 	{
 		void *func = OBJECT_class(P1->_object.object)->operators[CO_ABS];
 		double result = (*(FUNC_F_O)func)(P1->_object.object);
-		OBJECT_UNREF(P1->_object.object, "EXEC_operator_object_abs");
+		OBJECT_UNREF(P1->_object.object);
 		P1->type = T_FLOAT;
 		P1->_float.value = result;
 	}
@@ -330,8 +330,8 @@ void EXEC_operator_object_single(uchar op, VALUE *P1)
 	{
 		void *func = OBJECT_class(P1->_object.object)->operators[op];
 		void *result = (*(FUNC_O_O)func)(P1->_object.object);
-		OBJECT_REF(result, "EXEC_operator_object_single");
-		OBJECT_UNREF(P1->_object.object, "EXEC_operator_object_single");
+		OBJECT_REF(result);
+		OBJECT_UNREF(P1->_object.object);
 		P1->_object.object = result;
 	}
 	else

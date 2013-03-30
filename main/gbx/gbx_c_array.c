@@ -279,7 +279,7 @@ static void release_one(CARRAY *_object, int i)
 	else if (THIS->type == T_VARIANT)
 		VARIANT_free(&(((VARIANT *)(THIS->data))[i]));
 	else if (TYPE_is_object(THIS->type))
-		OBJECT_UNREF(((void **)(THIS->data))[i], "release_one");
+		OBJECT_UNREF(((void **)(THIS->data))[i]);
 }
 
 static void release_static(TYPE type, void *data, int start, int end)
@@ -299,7 +299,7 @@ static void release_static(TYPE type, void *data, int start, int end)
 	else if (TYPE_is_object(type))
 	{
 		for (i = start; i < end; i++)
-			OBJECT_UNREF(((void **)data)[i], "release");
+			OBJECT_UNREF(((void **)data)[i]);
 	}
 }
 
@@ -393,7 +393,7 @@ CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *d
 	array->data = data;
 	array->ref = ref;
 	array->count = get_count(desc->dim);
-	OBJECT_REF(ref, "CARRAY_create_static");
+	OBJECT_REF(ref);
 	array->dim = desc->dim;
 	array->size = CLASS_sizeof_ctype(class, desc->ctype);
 	
@@ -1400,7 +1400,7 @@ static CARRAY *_converted_array;
 
 static void error_convert()
 {
-	OBJECT_UNREF(_converted_array, "error_array_convert");
+	OBJECT_UNREF(_converted_array);
 }
 
 static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)

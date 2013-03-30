@@ -390,7 +390,7 @@ static void cleanup_task(CTASK *_object)
 {
 	//printf("cleanup task %p\n", THIS); fflush(stdout);
 
-	OBJECT_UNREF(_object, "stop_task");
+	OBJECT_UNREF(_object);
 }
 
 static void stop_task(CTASK *_object)
@@ -467,7 +467,7 @@ BEGIN_METHOD_VOID(Task_new)
 	
 	prepare_task(THIS);
 	
-	OBJECT_REF(THIS, "Task_new");
+	OBJECT_REF(THIS);
 	EVENT_post((GB_CALLBACK)start_task, (intptr_t)THIS);
 	
 END_METHOD
@@ -488,12 +488,12 @@ END_METHOD
 
 static void error_Task_Wait(CTASK *task)
 {
-	OBJECT_UNREF(task, "Task_Wait");
+	OBJECT_UNREF(task);
 }
 
 BEGIN_METHOD_VOID(Task_Wait)
 
-	OBJECT_REF(THIS, "Task_Wait");
+	OBJECT_REF(THIS);
 	
 	//printf("Task_Wait: %p\n", THIS); fflush(stdout);
 	
@@ -512,7 +512,7 @@ BEGIN_METHOD_VOID(Task_Wait)
 	}
 	END_ERROR
 	
-	OBJECT_UNREF(_object, "Task_Wait");
+	OBJECT_UNREF(_object);
 
 END_METHOD
 

@@ -211,12 +211,12 @@ void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2)
 static void post_event(void *object, int event)
 {
 	GB_Raise(object, event, 0);
-	OBJECT_UNREF(object, "post_event");
+	OBJECT_UNREF(object);
 }
 
 void EVENT_post_event(void *object, int event)
 {
-	OBJECT_REF(object, "EVENT_post_event");
+	OBJECT_REF(object);
 	post((void (*)())post_event, 2, (intptr_t)object, (intptr_t)event);
 }
 

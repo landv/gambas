@@ -125,11 +125,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_ref(value->_variant.value._string);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_REF(value->_variant.value._object, "BORROW");
+		OBJECT_REF(value->_variant.value._object);
 	return;
 
 __FUNCTION:
-	OBJECT_REF(value->_function.object, "BORROW");
+	OBJECT_REF(value->_function.object);
 	return;
 
 __STRING:
@@ -151,7 +151,7 @@ void UNBORROW(VALUE *value)
 
 	if (UNLIKELY(TYPE_is_object(type)))
 	{
-		OBJECT_UNREF_KEEP(value->_object.object, "UNBORROW");
+		OBJECT_UNREF_KEEP(value->_object.object);
 		return;
 	}
 	
@@ -161,11 +161,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_unref_keep(&value->_variant.value._string);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF_KEEP(value->_variant.value._object, "UNBORROW");
+		OBJECT_UNREF_KEEP(value->_variant.value._object);
 	return;
 
 __FUNCTION:
-	OBJECT_UNREF_KEEP(value->_function.object, "UNBORROW");
+	OBJECT_UNREF_KEEP(value->_function.object);
 	return;
 
 __STRING:
@@ -189,11 +189,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_unref(&value->_variant.value._string);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF(value->_variant.value._object, "RELEASE");
+		OBJECT_UNREF(value->_variant.value._object);
 	return;
 
 __FUNCTION:
-	OBJECT_UNREF(value->_function.object, "RELEASE");
+	OBJECT_UNREF(value->_function.object);
 	return;
 
 __STRING:
@@ -221,7 +221,7 @@ void RELEASE_many(VALUE *value, int n)
 	
 		if (UNLIKELY(TYPE_is_object(type)))
 		{
-			OBJECT_UNREF(value->_object.object, "RELEASE");
+			OBJECT_UNREF(value->_object.object);
 			continue;
 		}
 		
@@ -231,11 +231,11 @@ void RELEASE_many(VALUE *value, int n)
 		if (value->_variant.vtype == T_STRING)
 			STRING_unref(&value->_variant.value._string);
 		else if (TYPE_is_object(value->_variant.vtype))
-			OBJECT_UNREF(value->_variant.value._object, "RELEASE");
+			OBJECT_UNREF(value->_variant.value._object);
 		continue;
 	
 	__FUNCTION:
-		OBJECT_UNREF(value->_function.object, "RELEASE");
+		OBJECT_UNREF(value->_function.object);
 		continue;
 	
 	__STRING:
@@ -511,7 +511,7 @@ void EXEC_enter(void)
 		EC = NULL;
 
 	// Reference the object so that it is not destroyed during the function call
-	OBJECT_REF(OP, "EXEC_enter");
+	OBJECT_REF(OP);
 
 	// Local variables initialization
 
@@ -599,7 +599,7 @@ void EXEC_enter_quick(void)
 	PROFILE_ENTER_FUNCTION();
 
 	/* reference the object so that it is not destroyed during the function call */
-	OBJECT_REF(OP, "EXEC_enter_quick");
+	OBJECT_REF(OP);
 
 	/* local variables initialization */
 
@@ -677,7 +677,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	RELEASE_MANY(SP, n);
 	SP -= nparam;
 	SP += nb;
-	OBJECT_UNREF(OP, "EXEC_leave");
+	OBJECT_UNREF(OP);
 	SP -= nb;
 	
 	PROFILE_LEAVE_FUNCTION();
@@ -731,7 +731,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	RELEASE_MANY(SP, n); \
 	SP -= nparam; \
 	SP += nb; \
-	OBJECT_UNREF(OP, "EXEC_leave"); \
+	OBJECT_UNREF(OP); \
 	SP -= nb; \
 	PROFILE_LEAVE_FUNCTION(); \
 	STACK_pop_frame(&EXEC_current); \
@@ -769,7 +769,7 @@ void EXEC_leave_drop()
 		n = nparam + (SP - PP);
 		RELEASE_MANY(SP, n);
 
-		OBJECT_UNREF(OP, "EXEC_leave");
+		OBJECT_UNREF(OP);
 		PROFILE_LEAVE_FUNCTION();
 		STACK_pop_frame(&EXEC_current);
 	}
@@ -810,7 +810,7 @@ void EXEC_leave_keep()
 		n = nparam + (SP - PP);
 		RELEASE_MANY(SP, n);
 
-		OBJECT_UNREF(OP, "EXEC_leave");
+		OBJECT_UNREF(OP);
 		PROFILE_LEAVE_FUNCTION();
 		STACK_pop_frame(&EXEC_current);
 	}
@@ -820,7 +820,7 @@ void EXEC_leave_keep()
 		if (SP[-1].type == T_FUNCTION)
 		{
 			SP--;
-			OBJECT_UNREF(SP->_function.object, "EXEC_leave");
+			OBJECT_UNREF(SP->_function.object);
 		}
 		
 		COPY_VALUE(SP, &ret);
@@ -1189,7 +1189,7 @@ void EXEC_native_quick(void)
 		RELEASE_MANY(SP, nparam);
 
 		SP--;
-		OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+		OBJECT_UNREF(SP->_function.object);
 
 		SP->type = T_VOID;
 		SP->_void.ptype = T_NULL;
@@ -1201,7 +1201,7 @@ void EXEC_native_quick(void)
 		RELEASE_MANY(SP, nparam);
 
 		SP--;
-		OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+		OBJECT_UNREF(SP->_function.object);
 		COPY_VALUE(SP, &ret);
 		SP++;
 	}
@@ -1339,7 +1339,7 @@ void EXEC_native(void)
 		if (use_stack)
 		{
 			SP--;
-			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+			OBJECT_UNREF(SP->_function.object);
 		}
 		
 		PROPAGATE();
@@ -1354,7 +1354,7 @@ void EXEC_native(void)
 		if (use_stack)
 		{
 			SP--;
-			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+			OBJECT_UNREF(SP->_function.object);
 		}
 		
 		SP->type = T_VOID;
@@ -1370,7 +1370,7 @@ void EXEC_native(void)
 		if (use_stack)
 		{
 			SP--;
-			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+			OBJECT_UNREF(SP->_function.object);
 		
 			if (PCODE_is_variant(*PC) && ret.type != T_VOID)
 				VALUE_conv_variant(&ret);
@@ -1496,7 +1496,7 @@ __FUNCTION:
 		EXEC_special(SPEC_UNKNOWN, val->_function.class, val->_function.object, 0, FALSE);
 
 		object = val->_function.object;
-		OBJECT_UNREF(object, "EXEC_object (FUNCTION)");
+		OBJECT_UNREF(object);
 
 		SP--;
 		//*val = *SP;
@@ -1824,7 +1824,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 	CATCH
 	{
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(object, "EXEC_create_object");
+		OBJECT_UNREF(object);
 		PROPAGATE();
 //     SP--; /* class */
 //     SP->type = T_NULL;
@@ -1924,7 +1924,7 @@ void EXEC_new(void)
 	{
 		EVENT_leave_name(save);
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(object, "EXEC_new");
+		OBJECT_UNREF(object);
 		//(*class->free)(class, object);
 		SP--; /* class */
 		SP->type = T_NULL;
@@ -1954,7 +1954,7 @@ void *EXEC_auto_create(CLASS *class, bool ref)
 		THROW(E_IOBJECT);*/
 
 	if (ref)
-		OBJECT_REF(object, "EXEC_auto_create");
+		OBJECT_REF(object);
 	
 	return object;
 }
@@ -1999,6 +1999,6 @@ void EXEC_push_complex(void)
 	ob = (*func)(SP->_float.value);
 	SP->_object.object = ob;
 	SP->_object.class = OBJECT_class(ob);
-	OBJECT_REF(ob, "EXEC_push_complex");
+	OBJECT_REF(ob);
 	SP++;
 }

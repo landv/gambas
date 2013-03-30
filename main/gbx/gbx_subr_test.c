@@ -877,7 +877,7 @@ void SUBR_is(ushort code)
 	else
 		res = (OBJECT_class(object) == klass || CLASS_inherits(OBJECT_class(object), klass));
 
-	OBJECT_UNREF(object, "SUBR_is");
+	OBJECT_UNREF(object);
 
 	P1->type = T_BOOLEAN;
 	P1->_boolean.value = -(res ^ (code & 1));

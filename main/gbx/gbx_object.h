@@ -107,6 +107,8 @@ static INLINE CLASS *OBJECT_class(void *object)
 
 EXTERN const char *OBJECT_ref_where;
 
+char *OBJECT_where_am_i(const char *file, int line, const char *func);
+
 #define OBJECT_ref(_object) \
 { \
 	if (_object) \
@@ -162,9 +164,9 @@ EXTERN const char *OBJECT_ref_where;
 	} \
 }
 
-#define OBJECT_REF(_ob, _where) { OBJECT_ref_where = "REF @" _where; OBJECT_ref(_ob); }
-#define OBJECT_UNREF(_ob, _where) { OBJECT_ref_where = "UNREF @" _where; OBJECT_unref(_ob); }
-#define OBJECT_UNREF_KEEP(_ob, _where) { OBJECT_ref_where = "UNREF_KEEP @" _where; OBJECT_unref_keep(_ob); }
+#define OBJECT_REF(_ob) { OBJECT_ref_where = OBJECT_where_am_i(__FILE__, __LINE__, __func__); OBJECT_ref(_ob); }
+#define OBJECT_UNREF(_ob) { OBJECT_ref_where = OBJECT_where_am_i(__FILE__, __LINE__, __func__); OBJECT_unref(_ob); }
+#define OBJECT_UNREF_KEEP(_ob) { OBJECT_ref_where = OBJECT_where_am_i(__FILE__, __LINE__, __func__); OBJECT_unref_keep(_ob); }
 
 #else /* DEBUG_REF */
 
@@ -204,9 +206,9 @@ EXTERN const char *OBJECT_ref_where;
 }
 
 
-#define OBJECT_REF(_ob, _where) OBJECT_ref(_ob)
-#define OBJECT_UNREF(_ob, _where) OBJECT_unref(_ob)
-#define OBJECT_UNREF_KEEP(_ob, _where) OBJECT_unref_keep(_ob)
+#define OBJECT_REF(_ob) OBJECT_ref(_ob)
+#define OBJECT_UNREF(_ob) OBJECT_unref(_ob)
+#define OBJECT_UNREF_KEEP(_ob) OBJECT_unref_keep(_ob)
 
 #endif /* DEBUG_REF */
 
@@ -225,7 +227,5 @@ static INLINE void OBJECT_put(VALUE *value, void *object)
 	value->_object.class = OBJECT_class(object);
 	value->_object.object = object;
 }
-
-
 
 #endif

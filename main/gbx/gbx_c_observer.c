@@ -108,7 +108,7 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 	COBSERVER_attach(THIS, parent, name);
 
 	LIST_insert((void **)&ev->observer, THIS, &THIS->list);
-  OBJECT_REF(THIS, "Observer_new");
+  OBJECT_REF(THIS);
 	
 	#if 0
 	if (proxy)

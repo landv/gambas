@@ -347,7 +347,7 @@ static void stop_process(CPROCESS *process)
 	remove_process_from_running_list(process);
 	stop_process_after(process);
 
-	OBJECT_UNREF(process, "stop_process"); /* Le processus ne tourne plus */
+	OBJECT_UNREF(process);
 
 	if (!RunningProcessList)
 		exit_child();
@@ -527,7 +527,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	// Adding to the running process list
 
 	add_process_to_running_list(process);
-	OBJECT_REF(process, "run_process");
+	OBJECT_REF(process);
 	
 	// Start the SIGCHLD callback
 	
@@ -875,7 +875,7 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	init_process(process);
 	run_process(process, mode, cmd, env);
 
-	OBJECT_UNREF_KEEP(process, "CPROCESS_create");
+	OBJECT_UNREF_KEEP(process);
 
 	if (!name || !*name)
 		STREAM_blocking(CSTREAM_stream(process), TRUE);
@@ -887,7 +887,7 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 
 static void error_CPROCESS_wait_for(CPROCESS *process)
 {
-	OBJECT_UNREF(process, "CPROCESS_wait_for");
+	OBJECT_UNREF(process);
 }
 
 void CPROCESS_wait_for(CPROCESS *process, int timeout)
@@ -899,7 +899,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	printf("Waiting for %d\n", process->pid);
 	#endif
 
-	OBJECT_REF(process, "CPROCESS_wait_for");
+	OBJECT_REF(process);
 	
 	sigfd = SIGNAL_get_fd();
 	
@@ -920,7 +920,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	}
 	END_ERROR
 	
-	OBJECT_UNREF(process, "CPROCESS_wait_for");
+	OBJECT_UNREF(process);
 
 	#if 0
 	{

@@ -60,7 +60,7 @@ static void push_stream(void **list, CSTREAM *stream)
 
 	ALLOC(&slot, sizeof(CSTREAM_NODE));
 	slot->stream = stream;
-	//OBJECT_REF(stream, "push_stream");
+	//OBJECT_REF(stream);
 
 	slot->next = *list;
 	*list = slot;
@@ -517,7 +517,7 @@ void SUBR_stat(ushort code)
 	FILE_stat(path, &info, follow);
 
 	cstat = OBJECT_new(CLASS_Stat, NULL, NULL);
-	OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
+	OBJECT_UNREF_KEEP(cstat);
 	cstat->info = info;
 	cstat->path = STRING_new_zero(path);
 
@@ -914,14 +914,14 @@ void SUBR_inp_out(ushort code)
 	{
 		stream = pop_stream(where);
 		if (stream)
-			OBJECT_UNREF(stream, "SUBR_inp_out");
+			OBJECT_UNREF(stream);
 		return;
 	}
 
 	VALUE_conv_object(PARAM, (TYPE)CLASS_Stream);
 
 	stream = PARAM->_object.object;
-	OBJECT_REF(stream, "SUBR_inp_out");
+	OBJECT_REF(stream);
 
 	push_stream(where, stream);
 
@@ -937,7 +937,7 @@ static void free_list(void **list)
 		stream = pop_stream(list);
 		if (!stream)
 			return;
-		OBJECT_UNREF(stream, "free_list");
+		OBJECT_UNREF(stream);
 	}
 }
 

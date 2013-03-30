@@ -112,7 +112,7 @@ _PUSH_GENERIC:
 					VALUE_conv_variant(&SP[-1]);
 					SP--;
 					SP[-1] = *SP;
-					OBJECT_UNREF(object, "EXEC_push_unknown");
+					OBJECT_UNREF(object);
 					goto _FIN;
 				}
 			}
@@ -274,7 +274,7 @@ _PUSH_GENERIC:
 
 			if (object)
 			{
-				OBJECT_UNREF(object, "EXEC_push_unknown");
+				OBJECT_UNREF(object);
 				object = NULL;
 			}
 
@@ -289,7 +289,7 @@ _PUSH_GENERIC:
 
 			if (object)
 			{
-				OBJECT_UNREF(object, "EXEC_push_unknown");
+				OBJECT_UNREF(object);
 				object = NULL;
 			}
 
@@ -423,7 +423,7 @@ _PUSH_STATIC_METHOD:
 
 	if (object)
 	{
-		OBJECT_UNREF(object, "EXEC_push_unknown");
+		OBJECT_UNREF(object);
 		object = NULL;
 	}
 
@@ -471,7 +471,7 @@ _PUSH_EXTERN:
 
 	if (object)
 	{
-		OBJECT_UNREF(object, "EXEC_push_unknown");
+		OBJECT_UNREF(object);
 		object = NULL;
 	}
 
@@ -504,7 +504,7 @@ _PUSH_UNKNOWN_METHOD:
 	SP->_function.defined = FALSE;
 	SP++;
 
-	//OBJECT_REF(&object, "EXEC_push_unknown: UNKNOWN");
+	//OBJECT_REF(&object);
 
 	goto _FIN;
 
@@ -519,7 +519,7 @@ _FIN_DEFINED_NO_BORROW:
 
 	// SP[-1] was the object and it has been erased. So we must unref it manually,
 	// unless we are calling a static method (see above)
-	OBJECT_UNREF(object, "EXEC_push_unknown");
+	OBJECT_UNREF(object);
 
 _FIN:
 
@@ -625,7 +625,7 @@ __PUSH_QUICK_END:
 	
 	SP = val;
 	PUSH();
-	OBJECT_UNREF(object, "EXEC_push_array");
+	OBJECT_UNREF(object);
 	return;
 	
 __PUSH_ARRAY:
@@ -637,7 +637,7 @@ __PUSH_ARRAY_2:
 	if (UNLIKELY(EXEC_special(SPEC_GET, class, object, np, FALSE)))
 		THROW(E_NARRAY, CLASS_get_name(class));
 
-	OBJECT_UNREF(object, "EXEC_push_array");
+	OBJECT_UNREF(object);
 	SP--;
 	//SP[-1] = SP[0];
 	VALUE_copy(&SP[-1], &SP[0]);

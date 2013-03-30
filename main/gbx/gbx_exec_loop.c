@@ -822,7 +822,7 @@ _PUSH_MISC:
 
 		SP->type = T_OBJECT;
 		SP->_object.object = EVENT_Last;
-		OBJECT_REF(EVENT_Last, "EXEC_loop");
+		OBJECT_REF(EVENT_Last);
 		SP++;
 		goto _NEXT;
 
@@ -856,7 +856,7 @@ _PUSH_MISC:
 	/*__POP_LAST:
 	
 		VALUE_conv(&SP[-1], T_OBJECT);
-		OBJECT_UNREF(EVENT_Last, "EXEC_loop");
+		OBJECT_UNREF(EVENT_Last);
 		SP--;
 		EVENT_Last = SP->_object.object;
 		goto _NEXT;*/
@@ -1576,7 +1576,7 @@ _PUSH_FUNCTION:
 	SP->_function.index = GET_7XX();
 	SP->_function.defined = TRUE;
 
-	OBJECT_REF(OP, "exec_loop._PUSH_FUNCTION (FUNCTION)");
+	OBJECT_REF(OP);
 	SP++;
 
 	goto _NEXT;

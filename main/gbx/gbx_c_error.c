@@ -73,7 +73,7 @@ BEGIN_PROPERTY(CERROR_text)
 			
 			result = STRING_subst(_arg[0], STRING_length(_arg[0]), get_subst);
 			
-			OBJECT_UNREF(array, "CERROR_text");
+			OBJECT_UNREF(array);
 			
 			GB_ReturnNewZeroString(result);
 		}

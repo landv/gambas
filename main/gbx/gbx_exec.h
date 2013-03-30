@@ -234,7 +234,7 @@ do { \
 	TYPE type = _v->type; \
 	if (TYPE_is_object(type)) \
 	{ \
-		OBJECT_REF(_v->_object.object, "BORROW"); \
+		OBJECT_REF(_v->_object.object); \
 	} \
 	else if (EXEC_should_borrow[type]) \
 	{ \
@@ -251,7 +251,7 @@ do { \
 	TYPE type = _v->type; \
 	if (TYPE_is_object(type)) \
 	{ \
-		OBJECT_UNREF(_v->_object.object, "RELEASE"); \
+		OBJECT_UNREF(_v->_object.object); \
 	} \
 	else if (EXEC_should_borrow[type]) \
 	{ \
@@ -270,7 +270,7 @@ do { \
 #define RELEASE_OBJECT(_value) \
 do { \
 	VALUE *_v = (_value); \
-	OBJECT_UNREF(_v->_object.object, "RELEASE_OBJECT"); \
+	OBJECT_UNREF(_v->_object.object); \
 } while (0)
 
 #define RELEASE_MANY(_val, _n) \

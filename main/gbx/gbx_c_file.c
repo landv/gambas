@@ -76,7 +76,7 @@ CFILE *CFILE_create(STREAM *stream, int mode)
 	CFILE *file;
 
 	file = OBJECT_new(CLASS_File, NULL, NULL);
-	OBJECT_UNREF_KEEP(file, "CFILE_new");
+	OBJECT_UNREF_KEEP(file);
 
 	if (stream)
 	{
@@ -114,7 +114,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
 	stream.buffer.file = file;
 	STREAM_check_blocking(&stream);
 	ob = CFILE_create(&stream, mode);
-	OBJECT_REF(ob, "create_default_stream");
+	OBJECT_REF(ob);
 	return ob;
 }
 
@@ -127,9 +127,9 @@ void CFILE_init(void)
 
 void CFILE_exit(void)
 {
-	OBJECT_UNREF(CFILE_in, "CFILE_exit");
-	OBJECT_UNREF(CFILE_out, "CFILE_exit");
-	OBJECT_UNREF(CFILE_err, "CFILE_exit");
+	OBJECT_UNREF(CFILE_in);
+	OBJECT_UNREF(CFILE_out);
+	OBJECT_UNREF(CFILE_err);
 }
 
 void CFILE_init_watch(void)

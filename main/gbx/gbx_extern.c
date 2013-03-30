@@ -469,7 +469,7 @@ void EXTERN_release(void)
 			break;
 		if (cb->exec.object)
 		{
-			OBJECT_UNREF(cb->exec.object, "EXTERN_release");
+			OBJECT_UNREF(cb->exec.object);
 			cb->exec.object = NULL;
 		}
 	}
@@ -505,7 +505,7 @@ void EXTERN_exit(void)
 			if (!cb)
 				break;
 			if (cb->exec.object)
-				OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
+				OBJECT_UNREF(cb->exec.object);
 			FREE(&cb->info.types);
 			ffi_closure_free(cb->closure);
 		}
@@ -726,7 +726,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	cb = (EXTERN_CALLBACK *)HASH_TABLE_insert(_callbacks, cb_key.key, sizeof(void *));
 	if (cb->code)
 	{
-		OBJECT_UNREF(value->object, "EXTERN_make_callback");
+		OBJECT_UNREF(value->object);
 		return cb->code;
 	}
 	
@@ -736,7 +736,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	/*if (value->object)
 	{
 		fprintf(stderr, "EXTERN_make_callback: ref: %p\n", value->object);
-		OBJECT_REF(value->object, "EXTERN_make_callback");
+		OBJECT_REF(value->object);
 	}*/
 	
 	cb->exec = exec;

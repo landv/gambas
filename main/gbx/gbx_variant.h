@@ -67,7 +67,7 @@ typedef
   } \
   else if (TYPE_is_object((_var)->type)) \
   { \
-    OBJECT_UNREF((_var)->value._object, "VARIANT_free"); \
+    OBJECT_UNREF((_var)->value._object); \
   } \
 })
 
@@ -79,7 +79,7 @@ typedef
   } \
   else if (TYPE_is_object((_var)->type)) \
   { \
-    OBJECT_REF((_var)->value._object, "VARIANT_keep"); \
+    OBJECT_REF((_var)->value._object); \
   } \
 })
 

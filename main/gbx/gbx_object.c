@@ -43,6 +43,16 @@ void **OBJECT_set_pointer = NULL;
 
 static OBJECT *EventObject = NULL;
 
+#if DEBUG_REF
+char *OBJECT_where_am_i(const char *file, int line, const char *func)
+{
+	static char buffer[256];
+	
+	snprintf(buffer, sizeof(buffer), "[%s] %s:%d", file, func, line);
+	return buffer;
+}
+#endif
+
 void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
 {
 	OBJECT *object;
@@ -52,7 +62,7 @@ void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
 	object->class = class;
 	#if DEBUG_REF
 	object->ref = 0;
-	OBJECT_REF(object, "OBJECT_new");
+	OBJECT_REF(object);
 	#else
 	object->ref = 1;
 	#endif
@@ -148,7 +158,7 @@ void OBJECT_detach(OBJECT *ob)
 			fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
 				ob->class->name, ob, parent->class->name, parent);
 		#endif
-		OBJECT_UNREF(parent, "OBJECT_detach");
+		OBJECT_UNREF(parent);
 	}  
 }
 
@@ -173,7 +183,7 @@ static void remove_observers(OBJECT *ob)
 		#if DEBUG_EVENT
 		fprintf(stderr, "Remove observer %p %d: %p: %p\n", obs, (int)obs->ob.ref, ob, obs->object);
 		#endif
-		OBJECT_UNREF(obs, "remove_observers");
+		OBJECT_UNREF(obs);
 		obs = next;  	
 	}
 	
@@ -206,7 +216,7 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 		fprintf(stderr, "OBJECT_attach : Attach (%s %p) to (%s %p) as %s\n",
 			ob->class->name, ob, parent->class->name, parent, name);
 	#endif
-	OBJECT_REF(parent, "OBJECT_attach");
+	OBJECT_REF(parent);
 
 	EVENT_search(class, ev->event, name, parent);
 
@@ -276,7 +286,7 @@ void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 		goto __NEXT;
 			
 	__OBJECT:
-		OBJECT_UNREF(*((void **)&data[var->pos]), "release");
+		OBJECT_UNREF(*((void **)&data[var->pos]));
 		goto __NEXT;
 		
 	__VARIANT:
@@ -372,7 +382,7 @@ static char *_object_name;
 
 static void error_OBJECT_create(void)
 {
-	OBJECT_UNREF_KEEP(_object, "OBJECT_create");
+	OBJECT_UNREF_KEEP(_object);
 	EVENT_leave_name(_object_name);
 }
 
@@ -438,7 +448,7 @@ void *OBJECT_create_native(CLASS *class, VALUE *param)
 			break;
 	}
 
-	OBJECT_UNREF_KEEP(object, "OBJECT_create");
+	OBJECT_UNREF_KEEP(object);
 	return object;
 }
 
