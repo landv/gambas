@@ -119,6 +119,33 @@ static void close_fd(int *pfd)
 	}
 }
 
+static void add_process_to_running_list(CPROCESS *process)
+{
+	if (RunningProcessList)
+		RunningProcessList->prev = process;
+
+	process->next = RunningProcessList;
+	process->prev = NULL;
+
+	RunningProcessList = process;
+
+	process->running = TRUE;
+}
+
+static void remove_process_from_running_list(CPROCESS *process)
+{
+	if (process->prev)
+		process->prev->next = process->next;
+
+	if (process->next)
+		process->next->prev = process->prev;
+
+	if (process == RunningProcessList)
+		RunningProcessList = process->next;
+
+	process->running = FALSE;
+}
+
 static void callback_write(int fd, int type, CPROCESS *process)
 {
 	#ifdef DEBUG_ME
@@ -317,19 +344,7 @@ static void stop_process(CPROCESS *process)
 
 	/* Remove from running process list */
 
-	if (process->prev)
-		process->prev->next = process->next;
-
-	if (process->next)
-		process->next->prev = process->prev;
-
-	if (process == RunningProcessList)
-		RunningProcessList = process->next;
-
-	process->running = FALSE;
-
-	/*printf("** stop_process\n");*/
-
+	remove_process_from_running_list(process);
 	stop_process_after(process);
 
 	OBJECT_UNREF(process, "stop_process"); /* Le processus ne tourne plus */
@@ -409,16 +424,15 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	int i, n;
 	sigset_t sig, old;
 	bool pwd;
+	int save_errno;
 
-	/* for terminal */
+	// for virtual terminal
 	int fd_master = -1;
 	int fd_slave;
 	char *slave = NULL;
 	//struct termios termios_stdin;
 	//struct termios termios_check;
 	struct termios termios_master;
-
-	init_child();
 
 	if (mode & PM_SHELL)
 	{
@@ -474,20 +488,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#endif
 	}
 
-	// Adding to the running process list
-
-	OBJECT_REF(process, "run_process");
-
-	if (RunningProcessList)
-		RunningProcessList->prev = process;
-
-	process->next = RunningProcessList;
-	process->prev = NULL;
-
-	RunningProcessList = process;
-
-	process->running = TRUE;
-
 	if (mode & PM_STRING)
 	{
 		process->to_string = TRUE;
@@ -498,12 +498,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	if (mode & PM_TERM)
 	{
 		#ifdef OS_OPENBSD
-		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL)<0)
-			THROW_SYSTEM(errno, NULL);
+		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL) < 0)
+			goto __ABORT_ERRNO;
 		#else
 		fd_master = posix_openpt(O_RDWR | O_NOCTTY);
 		if (fd_master < 0)
-			THROW_SYSTEM(errno, NULL);
+			goto __ABORT_ERRNO;
 
 		grantpt(fd_master);
 		unlockpt(fd_master);
@@ -518,13 +518,22 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		/* Create pipes */
 
 		if ((mode & PM_WRITE) && pipe(fdin) != 0)
-			THROW_SYSTEM(errno, NULL);
+			goto __ABORT_ERRNO;
 
 		if ((mode & PM_READ) && (pipe(fdout) != 0 || pipe(fderr) != 0))
-			THROW_SYSTEM(errno, NULL);
+			goto __ABORT_ERRNO;
 	}
 
-	/* Block SIGCHLD */
+	// Adding to the running process list
+
+	add_process_to_running_list(process);
+	OBJECT_REF(process, "run_process");
+	
+	// Start the SIGCHLD callback
+	
+	init_child();
+
+	// Block SIGCHLD and fork
 
 	sigemptyset(&sig);
 
@@ -536,9 +545,11 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	{
 		stop_process(process);
 		sigprocmask(SIG_SETMASK, &old, &sig);
-		THROW_SYSTEM(errno, NULL);
+		goto __ABORT_ERRNO;
 	}
 
+	// parent process
+	
 	if (pid)
 	{
 		process->pid = pid;
@@ -550,13 +561,13 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (mode & PM_TERM)
 		{
 			if (tcgetattr(fd_master, &termios_master))
-				THROW_SYSTEM(errno, NULL);
+				goto __ABORT_ERRNO;
 				
 			cfmakeraw(&termios_master);
 			//termios_master.c_lflag &= ~ECHO;
 
 			if (tcsetattr(fd_master, TCSANOW, &termios_master))
-				THROW_SYSTEM(errno, NULL);
+				goto __ABORT_ERRNO;
 		}
 
 		if (mode & PM_WRITE)
@@ -606,7 +617,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		sigprocmask(SIG_SETMASK, &old, &sig);
 	}
-	else /* child */
+	
+	// child process
+	
+	else
 	{
 		//bool stdin_isatty = isatty(STDIN_FILENO);
 		
@@ -705,6 +719,13 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	}
 
 	update_stream(process);
+	return;
+	
+__ABORT_ERRNO:
+
+	save_errno = errno;
+	stop_process(process);
+	THROW_SYSTEM(save_errno, NULL);
 }
 
 
