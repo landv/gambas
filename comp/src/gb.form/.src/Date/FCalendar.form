@@ -71,13 +71,41 @@
       MoveScaled(58,0,0,35)
       Visible = False
     }
-    { dwgTime DrawingArea
-      MoveScaled(59,0,15,35)
+    { panTime VBox
+      MoveScaled(58,0,17,35)
       Visible = False
-      Background = Color.TextBackground
-      Foreground = Color.TextForeground
-      Tracking = True
-      Focus = True
+      { HBox1 HBox
+        MoveScaled(0,0,17,4)
+        { PictureBox1 PictureBox
+          MoveScaled(0,0,4,4)
+          Visible = False
+          Picture = Picture["icon:/small/clock"]
+          Alignment = Align.Center
+        }
+        { txtHour TextBox
+          MoveScaled(4,0,4,4)
+          Expand = True
+          Alignment = Align.Right
+        }
+        { txtMinute TextBox
+          MoveScaled(8,0,4,4)
+          Expand = True
+          Alignment = Align.Right
+        }
+        { btnOK ToolButton
+          MoveScaled(13,0,4,4)
+          ToolTip = ("Apply")
+          Picture = Picture["icon:/small/ok"]
+        }
+      }
+      { dwgTime DrawingArea
+        MoveScaled(1,14,14,20)
+        Background = Color.TextBackground
+        Foreground = Color.TextForeground
+        Tracking = True
+        Expand = True
+        Focus = True
+      }
     }
   }
 }

@@ -1,145 +1,145 @@
 ' Gambas class file
 
 'EXPORT
-INHERITS UserControl
+Inherits UserControl
 
-PUBLIC CONST _Properties AS String = "*,Mode=None,Field,TextField,ParentField,IconField"
-PUBLIC CONST _DrawWith AS String = "TreeView"
+Public Const _Properties As String = "*,Mode=None,Field,TextField,ParentField,IconField"
+Public Const _DrawWith As String = "TreeView"
 
-EVENT Activate
+Event Activate
 
-PROPERTY Field AS String
-PROPERTY TextField AS String
-PROPERTY ParentField AS String
-PROPERTY IconField AS String
+Property Field As String
+Property TextField As String
+Property ParentField As String
+Property IconField As String
 
-PROPERTY Mode AS Integer "<TreeView,None,Single,Multi,Extended>"
+Property Mode As Integer "<TreeView,None,Single,Multi,Extended>"
 
 'PROPERTY Connection AS Connection
 'PROPERTY Table AS String
 'PROPERTY Filter AS String
-PROPERTY READ Current AS Variant[]
-PROPERTY READ Count AS Integer
-PROPERTY READ Index AS Integer
-PROPERTY READ TreeView AS TreeView
+Property Read Current As Variant[]
+Property Read Count As Integer
+Property Read Index As Integer
+Property Read TreeView As TreeView
 
-PRIVATE $hCtrl AS TreeView
-PRIVATE $hTable AS DataTable
-PRIVATE $sField AS String
-PRIVATE $sText AS String
-PRIVATE $sParent AS String
-PRIVATE $sIcon AS String
+Private $hCtrl As TreeView
+Private $hTable As DataTable
+Private $sField As String
+Private $sText As String
+Private $sParent As String
+Private $sIcon As String
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  $hCtrl = NEW TreeView(ME)
+  $hCtrl = New TreeView(Me)
   
-END
+End
 
 
-PUBLIC SUB Refresh()
+Public Sub Refresh()
   
-  DIM hSrc AS DataSource
+  Dim hSrc As DataSource
   
-  IF Common.CheckDB() THEN RETURN
+  If Common.CheckDB() Then Return
   
-  hSrc = Common.GetSource(ME)
-  IF hSrc THEN
+  hSrc = Common.GetSource(Me)
+  If hSrc Then
     $hTable = hSrc._GetTable()
-  ENDIF
+  Endif
 
   $hCtrl.Clear
 
-  IF NOT $hTable THEN RETURN
+  If Not $hTable Then Return
 
   ' Remplir avec les éléments de niveau le plus haut
     
-END
+End
 
 
 
-PRIVATE FUNCTION IconField_Read() AS String
+Private Function IconField_Read() As String
 
-  RETURN $sIcon
+  Return $sIcon
 
-END
+End
 
-PRIVATE SUB IconField_Write(Value AS String)
+Private Sub IconField_Write(Value As String)
 
   $sIcon = Value
 
-END
+End
 
 
-PRIVATE FUNCTION Field_Read() AS String
+Private Function Field_Read() As String
 
-  RETURN $sField  
+  Return $sField  
 
-END
+End
 
-PRIVATE SUB Field_Write(Value AS String)
+Private Sub Field_Write(Value As String)
 
   $sField = Value
 
-END
+End
 
-PRIVATE FUNCTION ParentField_Read() AS String
+Private Function ParentField_Read() As String
 
-  RETURN $sParent  
+  Return $sParent  
 
-END
+End
 
-PRIVATE SUB ParentField_Write(Value AS String)
+Private Sub ParentField_Write(Value As String)
 
   $sParent = Value
 
-END
+End
 
-PRIVATE FUNCTION Mode_Read() AS Integer
+Private Function Mode_Read() As Integer
 
-  RETURN $hCtrl.Mode  
+  Return $hCtrl.Mode  
 
-END
+End
 
-PRIVATE SUB Mode_Write(Value AS Integer)
+Private Sub Mode_Write(Value As Integer)
 
   $hCtrl.Mode = Value
 
-END
+End
 
-PRIVATE FUNCTION Current_Read() AS Variant[]
+Private Function Current_Read() As Variant[]
 
   'TRY RETURN $hTable.GetKeys(??)
 
-END
+End
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
 
-  RETURN $hCtrl.Count
+  Return $hCtrl.Count
 
-END
+End
 
-PRIVATE FUNCTION Index_Read() AS Integer
+Private Function Index_Read() As Integer
 
   
 
-END
+End
 
-PRIVATE FUNCTION TreeView_Read() AS TreeView
+Private Function TreeView_Read() As TreeView
 
-  RETURN $hCtrl  
+  Return $hCtrl  
 
-END
+End
 
-PRIVATE FUNCTION TextField_Read() AS String
+Private Function TextField_Read() As String
 
-  RETURN $sText  
+  Return $sText  
 
-END
+End
 
-PRIVATE SUB TextField_Write(Value AS String)
+Private Sub TextField_Write(Value As String)
 
   $sText = Value  
 
-END
+End
 

@@ -37,6 +37,7 @@
     }
     { DateBox2 DateBox
       MoveScaled(23,26,24,4)
+      Mode = DateChooser.TimeOnly
     }
   }
   { Button2 Button
@@ -78,6 +79,7 @@
     Mode = DateChooser.DateTime
   }
   { DateChooser1 DateChooser
-    MoveScaled(6,38,48,32)
+    MoveScaled(6,38,64,32)
+    Mode = DateChooser.DateTime
   }
 }

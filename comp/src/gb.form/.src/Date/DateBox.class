@@ -105,6 +105,7 @@ Public Sub _new()
   
   $hChooser = New DateChooser(hPanel) As "DateChooser"
   $hChooser.Expand = True
+  $hChooser.Border = False
   
   Me.Proxy = $hButtonBox
   

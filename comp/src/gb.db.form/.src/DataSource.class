@@ -286,13 +286,9 @@ Public Sub _Check() As Boolean
   If Not $sTable Then Return True
   
   hDB = _GetDB()
+  If Common.CheckDB(hDB) Then Return True
   
-  If Not $hConn Then
-    $hConn = New DataConnection(hDB)
-  Endif
-  
-  If Not $hConn Then Return True
-  Return Common.CheckDB(hDB)
+  If Not $hConn Then $hConn = New DataConnection(hDB)
   
 End
 

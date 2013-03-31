@@ -50,12 +50,13 @@ End
 
 Public Sub _new()
   
-  dwgTime.W = Desktop.Scale * 16
+  panTime.W = Desktop.Scale * 16
   
   FillMonth(False)
   
   $dDate = Now  
   SetDate()
+  SetTime(Time($dDate))
   
   $iDisabledColor = GetDisabledColor()
   
@@ -144,7 +145,7 @@ End
 
 Public Sub GetValue() As Date
   
-  If dwgTime.Visible Then
+  If panTime.Visible Then
     Return Date($dDate) + $dTime
   Else
     Return Date($dDate)
@@ -586,9 +587,11 @@ End
 
 Private Sub SetTime(dTime As Date)
   
-  $dTime = Time(dTime)
+  $dTime = dTime
   dwgTime.Refresh
-  dwgTime.SetFocus
+  
+  txtHour.Text = Format(Hour($dTime), "00")
+  txtMinute.Text = Format(Minute($dTime), "00")
   
 End
 
@@ -639,7 +642,7 @@ End
 Public Sub SetShowTime(bShowTime As Boolean)
   
   If Not GetShowDate() And Not bShowTime Then Error.Raise("Bad argument")
-  dwgTime.Visible = bShowTime
+  panTime.Visible = bShowTime
   sepTime.Visible = GetShowTime() And GetShowDate()
   
 End
@@ -706,3 +709,86 @@ Public Sub SetBorder(bBorder As Boolean)
   
 End
 
+
+Public Sub txtHour_GotFocus()
+
+  txtHour.SelectAll
+
+End
+
+Public Sub txtMinute_GotFocus()
+
+  txtMinute.SelectAll
+
+End
+
+Public Sub txtHour_MouseWheel()
+
+  Dim iHour As Integer = Hour($dTime)
+
+  If Mouse.Forward Then
+    iHour = Min(iHour + 1, 23)
+  Else
+    iHour = Max(iHour - 1, 0)
+  Endif
+  
+  SetTime(Time(iHour, Minute($dTime), 0))
+
+End
+
+Public Sub txtMinute_MouseWheel()
+
+  Dim iMinute As Integer = Minute($dTime)
+
+  If Mouse.Forward Then
+    Inc iMinute
+    If iMinute > 59 Then iMinute = 0
+  Else
+    Dec iMinute
+    If iMinute < 0 Then iMinute = 59
+  Endif
+  
+  SetTime(Time(Hour($dTime), iMinute, 0))
+
+End
+
+Public Sub txtHour_LostFocus()
+
+  Dim iHour As Integer
+  Dim iPos As Integer
+  
+  Try iHour = CInt(Trim(txtHour.Text))
+  If Not Error And If iHour >= 0 And If iHour <= 23 Then 
+    SetTime(Time(iHour, Minute($dTime), 0))
+  Endif
+
+End
+
+Public Sub txtMinute_LostFocus()
+
+  Dim iMinute As Integer
+  
+  Try iMinute = CInt(Trim(txtMinute.Text))
+  If Not Error And If iMinute >= 0 And If iMinute <= 59 Then 
+    SetTime(Time(Hour($dTime), iMinute, 0))
+  Endif
+
+End
+
+Public Sub txtHour_Activate()
+
+  txtMinute.SetFocus
+
+End
+
+Public Sub txtMinute_Activate()
+
+  dwgTime_DblClick
+  
+End
+
+Public Sub btnOK_Click()
+
+  dwgTime_DblClick
+
+End
