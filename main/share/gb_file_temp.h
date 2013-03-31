@@ -1039,6 +1039,55 @@ time_t FILE_get_time(const char *path)
 		return (time_t)-1L;
 }
 
+bool FILE_copy(const char *src, const char *dst)
+{
+	int src_fd;
+	int dst_fd;
+	ssize_t len;
+	char *buf = NULL;
+	int save_errno;
+
+	src_fd = open(src, O_RDONLY);
+	if (src_fd < 0)
+		return TRUE;
+	
+	dst_fd = open(dst, O_WRONLY);
+	if (dst_fd < 0)
+	{
+		save_errno = errno;
+		close(src_fd);
+		errno = save_errno;
+		return TRUE;
+	}
+	
+	ALLOC(&buf, MAX_IO);
+
+	for(;;)
+	{
+		len = read(src_fd, buf, MAX_IO);
+		if (len == 0)
+			break;
+		if (len < 0 && errno == EINTR)
+			continue;
+		if (write(dst_fd, buf, len) < 0)
+		{
+			save_errno = errno;
+			close(src_fd);
+			close(dst_fd);
+			unlink(dst);
+			errno = save_errno;
+			IFREE(buf);
+			return TRUE;
+		}
+	}
+	
+	close(src_fd);
+	close(dst_fd);
+	IFREE(buf);
+	
+	return FALSE;
+}
+
 #endif
 
 const char *FILE_getcwd(const char *subdir)

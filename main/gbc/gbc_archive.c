@@ -130,8 +130,11 @@ static void make_executable(void)
 	
 	if (rename(TEMP_EXEC, ARCH_output))
 	{
-		err = "Cannot create executable";
-		goto __ERROR;
+		if (FILE_copy(TEMP_EXEC, ARCH_output))
+		{
+			err = "Cannot create executable";
+			goto __ERROR;
+		}
 	}
 	
 	return;
