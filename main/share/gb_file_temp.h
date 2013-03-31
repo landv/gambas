@@ -1046,14 +1046,24 @@ bool FILE_copy(const char *src, const char *dst)
 	ssize_t len;
 	char *buf = NULL;
 	int save_errno;
+	struct stat info;
 
-	src_fd = open(src, O_RDONLY);
-	if (src_fd < 0)
+	fprintf(stderr, "FILE_copy: %s -> %s\n", src, dst);
+	
+	if (stat(src, &info))
 		return TRUE;
 	
-	dst_fd = open(dst, O_WRONLY);
+	src_fd = open(src, O_RDONLY);
+	if (src_fd < 0)
+	{
+		fprintf(stderr, "open src failed\n");
+		return TRUE;
+	}
+	
+	dst_fd = creat(dst, info.st_mode);
 	if (dst_fd < 0)
 	{
+		fprintf(stderr, "open dst failed\n");
 		save_errno = errno;
 		close(src_fd);
 		errno = save_errno;
