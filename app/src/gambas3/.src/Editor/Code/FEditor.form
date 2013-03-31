@@ -363,9 +363,6 @@
       Action = ".find-definition"
       Picture = Picture["icon:/16/info"]
     }
-    { Separator2 Separator
-      MoveScaled(77,0,1,4)
-    }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
       MoveScaled(78,0,4,4)
@@ -390,7 +387,7 @@
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
-    { Separator1 Separator
+    { Separator2 Separator
       MoveScaled(88,0,1,4)
     }
     { btnProc ToolButton
@@ -607,6 +604,6 @@
   { Toolbar editor
     Text = "Editor"
     List = "save,reload,show-form,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
-    Default = "save,reload,show-form,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,|,proc,$lblInfo"
+    Default = "save,reload,show-form,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
   }
 }

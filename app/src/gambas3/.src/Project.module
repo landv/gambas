@@ -1764,6 +1764,16 @@ Public Sub Refresh(Optional bReset As Boolean)
 
 End
 
+Public Sub RefreshAll()
+  
+  Inc Application.Busy
+  RefreshComponents(True)
+  Refresh(True)
+  Dec Application.Busy
+  
+End
+
+
 Private Sub EnableRefresh()
 
   Dec $iNoRefresh

@@ -1246,7 +1246,7 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "save-project-as"
       Project.SaveAs
     Case "refresh-project"
-      Project.Refresh
+      Project.RefreshAll
     Case "project-property"
       If Not FProjectProperty.Run() Then Project.Refresh
     Case "component-property"
