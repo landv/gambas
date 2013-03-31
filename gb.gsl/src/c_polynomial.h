@@ -30,7 +30,7 @@
 #include <gsl/gsl_poly.h>
 #include <gsl/gsl_sf_result.h>
  
-GB_INTERFACE GB EXPORT;
+extern GB_INTERFACE GB EXPORT;
 
 extern GB_DESC PolynomialDesc[];
 
