@@ -433,6 +433,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim iStep As Integer
   Dim bStopConvert As Boolean
   Dim sExec As String
+  Dim sPath As String
 
   If Not Exist(sDir &/ ".project") Then
     FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
@@ -649,7 +650,21 @@ _INIT_AGAIN:
 
   Dec Application.Busy
 
-  If ReadOnly Then FMain.ShowWarning(("This project is read-only."))
+  If ReadOnly Then 
+    FMain.ShowWarning(("This project is read-only."))
+  Else
+    
+    ' Let's check libraries
+    
+    For Each sPath In Libraries
+      If Not Exist(sPath) Then
+        Message.Warning(("Some libraries used by the project are missing."))
+        FProjectProperty.ShowLibraries()
+        Break
+      Endif
+    Next
+    
+  Endif
 
   'SetMessage(("OK"))
   Return

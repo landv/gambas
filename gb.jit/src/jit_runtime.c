@@ -174,7 +174,7 @@ void JR_borrow_variant(long vtype, char* val){
 	if (vtype == T_STRING)
 		STRING_ref(val);
 	else if (TYPE_is_object(vtype))
-		OBJECT_REF(val, "borrow_variant");
+		OBJECT_REF(val);
 }
 
 static double JR_date_to_float(DATE dateval){
@@ -994,7 +994,7 @@ OBJECT* JR_object_cast(OBJECT* object, CLASS* target_class){
 	if (class->has_convert){
 		OBJECT* conv = ((OBJECT *(*)())(class->convert))(object, target_class);
 		if (conv){
-			OBJECT_REF(conv, "JR_object_cast");
+			OBJECT_REF(conv);
 			JR_OBJECT_unref(object);
 			return conv;
 		}

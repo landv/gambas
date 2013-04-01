@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Private $bShowUsed As Boolean
+Static Private $bShowLibraries As Boolean
 
 Private $hCheck As Picture
 Private $hUncheck As Picture
@@ -20,11 +21,17 @@ Private $aLibraries As String[]
 Private $iDoNotRefreshComponent As Integer
 Private $iTooltipLastRow As Integer
 
-'Private Const LIBRARY_TAB As Integer = 2
-'Private Const VERSION_TAB As Integer = 5
+Private Const LIBRARY_TAB As Integer = 4
 
 Static Public Function Run() As Boolean
 
+  Return Not FProjectProperty.ShowModal()
+
+End
+
+Static Public Function ShowLibraries() As Boolean
+
+  $bShowLibraries = True
   Return Not FProjectProperty.ShowModal()
 
 End
@@ -102,6 +109,11 @@ Public Sub Form_Open()
   Next
   
   cmbTranslate_Click
+  
+  If $bShowLibraries Then 
+    $bShowLibraries = False
+    tabProject.Index = LIBRARY_TAB
+  Endif
   
 End
 
@@ -1068,6 +1080,7 @@ Public Sub btnInsertLib_Click()
 
   Dim hLib As CLibraryInfo
   Dim sPath As String
+  Dim I As Integer
 
   Dialog.Title = ("Select a Gambas application")
   Dialog.Filter = ["*.gambas", ("Gambas applications")]
@@ -1079,18 +1092,28 @@ Public Sub btnInsertLib_Click()
 
   Settings["/FProjectProperty/Library"] = File.Dir(sPath)
 
-  If $aLibraries.Exist(sPath) Then
-    Message.Warning(Subst(("<b>&1</b> is already used as a library."), File.Name(sPath)))
-    Return
-  Endif
-  
   hLib = CLibraryInfo[sPath]
   If hLib.Classes.Count = 0 Then
     Message.Warning(Subst(("<b>&1</b> does not export any class."), File.Name(sPath)))
     Return
   Endif
-  
-  $aLibraries.Add(sPath)
+
+  For I = 0 To $aLibraries.Max
+    If File.Name($aLibraries[I]) = File.Name(sPath) Then
+      hLib = CLibraryInfo[$aLibraries[I]]
+      If Not hLib.NotFound Then
+        Message.Warning(Subst(("<b>&1</b> is already used as a library."), File.Name(sPath)))
+        Return
+      Endif
+      Break
+    Endif
+  Next
+
+  If I <= $aLibraries.Max Then
+    $aLibraries[I] = sPath
+  Else
+    $aLibraries.Add(sPath)
+  Endif
   
   Project.UpdateLibraries($aLibraries)
   RefreshLibraries
