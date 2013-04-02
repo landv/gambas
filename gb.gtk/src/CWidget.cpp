@@ -318,6 +318,7 @@ void DeleteControl(gControl *control)
 
 void InitControl(gControl *control, CWIDGET *widget)
 {
+	static int n = 0;
 	char *name;
 	
 	GB.Ref((void*)widget);
@@ -328,9 +329,14 @@ void InitControl(gControl *control, CWIDGET *widget)
 	
 	name = GB.GetLastEventName();
 	if (!name)
-		name = GB.GetClassName((void *)widget);
-		
-	control->setName(name);
+	{
+		char buffer[16];
+		n++;
+		sprintf(buffer, "#%d", n);
+		control->setName(buffer);
+	}
+	else
+		control->setName(name);
 	
 	control->onFinish = DeleteControl;
 	control->onMouseEvent = gb_raise_MouseEvent;

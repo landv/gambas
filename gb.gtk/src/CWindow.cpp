@@ -714,6 +714,8 @@ BEGIN_METHOD_VOID(CFORM_new)
 
 	if (!GB.Parent(_object))
 		GB.Attach(_object, _object, "Form");
+	
+	WINDOW->setName(GB.GetClassName((void *)THIS));
 
 END_METHOD
 

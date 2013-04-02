@@ -191,7 +191,7 @@ static void set_design(CWIDGET *_object)
 	}
 }
 
-static void set_name(CWIDGET *_object, const char *name)
+void CWIDGET_set_name(CWIDGET *_object, const char *name)
 {
 	CWINDOW *window;
 	MyMainWindow *win = 0;
@@ -302,11 +302,12 @@ void CWIDGET_init_name(CWIDGET *_object)
 	if (!name)
 	{
 		char buffer[16];
+		n++;
 		sprintf(buffer, "#%d", n);
-		set_name(THIS, buffer);
+		CWIDGET_set_name(THIS, buffer);
 	}
 	else
-		set_name(THIS, name);
+		CWIDGET_set_name(THIS, name);
 }
 
 bool CWIDGET_container_for(void *_object, void *container_for)
@@ -1661,7 +1662,7 @@ BEGIN_PROPERTY(Control_Name)
 	if (READ_PROPERTY)
 		GB.ReturnString(THIS->name);
 	else
-		set_name(THIS, GB.ToZeroString(PROP(GB_STRING)));
+		CWIDGET_set_name(THIS, GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
@@ -2291,7 +2292,7 @@ void CWidget::destroy()
 		GB.Free(POINTER(&THIS->ext));
 	}
 	
-	set_name(THIS, 0);
+	CWIDGET_set_name(THIS, 0);
 
 	dict.remove(w);
 
