@@ -475,6 +475,8 @@ BEGIN_METHOD_VOID(CFORM_new)
 
 	if (!GB.Parent(_object))
 		GB.Attach(_object, _object, "Form");
+	
+	CWIDGET_set_name((CWIDGET *)THIS, GB.GetClassName((void *)THIS));
 
 END_METHOD
 
@@ -482,7 +484,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CFORM_main)
 
 	CWINDOW *form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
-	//if (!((MyMainWindow *)form->widget.widget)->isHidden())
+	
 	if (!form->hidden)
 		CWINDOW_show(form, NULL);
 		
@@ -1229,7 +1231,7 @@ BEGIN_METHOD(Window_Controls_get, GB_STRING name)
 
 	CWIDGET *control = WINDOW->names[GB.ToZeroString(ARG(name))];
 	
-	if (CWIDGET_check(control))
+	if (!control || CWIDGET_check(control))
 		GB.ReturnNull();
 	else
 		GB.ReturnObject(control);

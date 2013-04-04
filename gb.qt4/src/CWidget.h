@@ -178,6 +178,7 @@ DECLARE_PROPERTY(Control_Action);
 
 void CWIDGET_new(QWidget *w, void *_object, bool no_show = false, bool no_filter = false, bool no_tag = false);
 void CWIDGET_init_name(CWIDGET *_object);
+void CWIDGET_set_name(CWIDGET *_object, const char *name);
 int CWIDGET_check(void *object);
 QString CWIDGET_Utf8ToQString(GB_STRING *str);
 void CWIDGET_destroy(CWIDGET *);
