@@ -427,6 +427,7 @@ run_thunderbird()
 
     NEWMAILTO=$(echo "$NEWMAILTO" | sed 's/^,//')
     DEBUG 1 "Running $THUNDERBIRD -compose \"$NEWMAILTO\""
+    echo "Running $THUNDERBIRD -compose \"$NEWMAILTO\""
     "$THUNDERBIRD" -compose "$NEWMAILTO"
     if [ $? -eq 0 ]; then
         exit_success
