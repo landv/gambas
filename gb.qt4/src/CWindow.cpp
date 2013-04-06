@@ -1662,6 +1662,56 @@ void MyMainWindow::activateLater()
 	activateWindow();
 }
 
+void MyMainWindow::present()
+{
+	if (!isVisible())
+	{
+		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
+
+		if (isUtility() && _resizable)
+			setMinimumSize(THIS->minw, THIS->minh);
+		
+		if (getState() & Qt::WindowMinimized)
+			showMinimized();
+		else if (getState() & Qt::WindowFullScreen)
+			showFullScreen();
+		else if (getState() & Qt::WindowMaximized)
+			showMaximized();
+		else
+			show();
+		
+		if (isUtility() && _resizable)
+    	setSizeGrip(true);
+		else
+			setSizeGrip(false);
+		
+		if (hasBorder())
+		{
+			//MAIN_process_events();
+			//usleep(50000);
+			//_activate = TRUE;
+			//if (isToolbar())
+			//QTimer::singleShot(50, this, SLOT(activateLater()));
+			//else
+			activateWindow();
+		}
+	}
+	else
+	{
+		//_activate = true;
+		
+		if (getState() & Qt::WindowMinimized)
+		{
+			setState(windowState() & ~Qt::WindowMinimized);
+			//qDebug("_activate set #2");
+		}
+		
+		raise();
+		if (hasBorder())
+			activateWindow();
+	}
+}
+
 void MyMainWindow::showActivate(QWidget *transient)
 {
 	CWIDGET *_object = CWidget::get(this);
@@ -1694,63 +1744,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	initProperties();
 	//::sleep(1);
 
-	if (!isVisible())
-	{
-		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
-
-		if (isUtility() && _resizable)
-			setMinimumSize(THIS->minw, THIS->minh);
-		
-		if (getState() & Qt::WindowMinimized)
-			showMinimized();
-		else if (getState() & Qt::WindowFullScreen)
-			showFullScreen();
-		else if (getState() & Qt::WindowMaximized)
-			showMaximized();
-		else
-			show();
-		
-		if (isUtility() && _resizable)
-    	setSizeGrip(true);
-		else
-			setSizeGrip(false);
-		
-		/*if (_type == _NET_WM_WINDOW_TYPE_NORMAL
-			  || _type == _NET_WM_WINDOW_TYPE_DOCK
-			  || _type == _NET_WM_WINDOW_TYPE_TOOLBAR
-			  || _type == _NET_WM_WINDOW_TYPE_MENU
-			  || _type == _NET_WM_WINDOW_TYPE_UTILITY
-			  || _type == _NET_WM_WINDOW_TYPE_DIALOG
-			  || _type == _NET_WM_WINDOW_TYPE_DROPDOWN_MENU
-			  || _type == _NET_WM_WINDOW_TYPE_POPUP_MENU
-			  || _type == _NET_WM_WINDOW_TYPE_COMBO)
-		{*/
-		if (hasBorder())
-		{
-			//MAIN_process_events();
-			//usleep(50000);
-			//_activate = TRUE;
-			//if (isToolbar())
-			//QTimer::singleShot(50, this, SLOT(activateLater()));
-			//else
-			activateWindow();
-		}
-	}
-	else
-	{
-		//_activate = true;
-		
-		if (getState() & Qt::WindowMinimized)
-		{
-			setState(windowState() & ~Qt::WindowMinimized);
-			//qDebug("_activate set #2");
-		}
-		
-		raise();
-		if (hasBorder())
-			activateWindow();
-	}
-
+	present();
 	afterShow();
 
 	#ifndef NO_X_WINDOW
@@ -1791,7 +1785,7 @@ void MyMainWindow::showModal(void)
 
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-	show();
+	present();
 	afterShow();
 	
 	#ifndef NO_X_WINDOW
