@@ -778,38 +778,6 @@ static void callback_child(int signum, intptr_t data)
 	#endif
 }
 
-#if 0
-static void signal_child(int sig, siginfo_t *info, void *context)
-{
-	#ifdef DEBUG_ME
-	fprintf(stderr, "SIGCHLD: _pipe_child[0] = %d\n", _pipe_child[0]);
-	#endif
-	char buffer;
-	int save_errno;
-
-	save_errno = errno;
-			
-	if (_init)
-	{
-		//fprintf(stderr, "SIGCHLD\n");
-		
-		buffer = 42;
-		for(;;)
-		{
-			if (write(_pipe_child[1], &buffer, 1) == 1)
-				break;
-			
-			if (errno != EINTR)
-				ERROR_panic("Cannot write into SIGCHLD pipe: %s", strerror(errno));
-		}
-	}
-	
-	SIGNAL_previous(&_SIGCHLD_handler, sig, info, context);
-	
-	errno = save_errno;
-}
-#endif
-
 static void init_child(void)
 {
 	if (_init)
@@ -821,21 +789,6 @@ static void init_child(void)
 
 	_SIGCHLD_callback = SIGNAL_register(SIGCHLD, callback_child, 0);
 	
-#if 0
-	if (pipe(_pipe_child) != 0)
-		ERROR_panic("Cannot create SIGCHLD pipes: %s", strerror(errno));
-
-	fcntl(_pipe_child[0], F_SETFD, FD_CLOEXEC);
-	fcntl(_pipe_child[1], F_SETFD, FD_CLOEXEC);
-
-	#ifdef DEBUG_ME
-	fprintf(stderr, "_pipe_child[0] = %d\n", _pipe_child[0]);
-	#endif
-
-	SIGNAL_install(&_SIGCHLD_handler, SIGCHLD, signal_child);
-	
-	GB_Watch(_pipe_child[0], GB_WATCH_READ, (void *)callback_child, 0);
-#endif
 	_init = TRUE;
 }
 
@@ -850,16 +803,16 @@ static void exit_child(void)
 
 	SIGNAL_unregister(SIGCHLD, _SIGCHLD_callback);
 
-#if 0
-	GB_Watch(_pipe_child[0], GB_WATCH_NONE, NULL, 0);
-	close(_pipe_child[0]);
-	close(_pipe_child[1]);
-	
-	SIGNAL_uninstall(&_SIGCHLD_handler, SIGCHLD);
-#endif
 	_init = FALSE;
 }
 
+
+static CPROCESS *_CPROCESS_create_process;
+
+static void error_CPROCESS_create()
+{
+	OBJECT_UNREF(_CPROCESS_create_process);
+}
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 {
@@ -870,10 +823,14 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	//if (!name || !*name)
 	//	name = "Process";
 
-	process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
+	_CPROCESS_create_process = process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 
-	init_process(process);
-	run_process(process, mode, cmd, env);
+	ON_ERROR(error_CPROCESS_create)
+	{
+		init_process(process);
+		run_process(process, mode, cmd, env);
+	}
+	END_ERROR
 
 	OBJECT_UNREF_KEEP(process);
 
