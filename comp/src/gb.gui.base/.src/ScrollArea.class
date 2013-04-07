@@ -418,7 +418,7 @@ Public Sub DrawingArea_Draw()
   If $bBorder Then 
     Draw.Reset
     'Draw.Style.Box(0, 0, Draw.W, Draw.H)
-    Draw.Style.Panel(0, 0, DW, DH, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
+    Style.PaintPanel(0, 0, DW, DH, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
 End

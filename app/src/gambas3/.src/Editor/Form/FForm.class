@@ -111,7 +111,7 @@ Public Sub _new(sPath As String)
   
 End
 
-Public Sub Reload()
+Public Sub Reload() As Boolean
 
   Dim sData As String
 
@@ -123,7 +123,7 @@ Public Sub Reload()
   '  $bConvert = True
   If Left$(sData, Len(Project.FORM_MAGIC)) <> Project.FORM_MAGIC Then
     FMain.ShowWarning(("Bad form file"))
-    Return
+    Return True
   Endif
 
   $bNoRefreshMenu = True
@@ -2653,7 +2653,7 @@ End
 
 Public Sub LoadFile() As Boolean
 
-  Reload
+  If Reload() Then Return True
   SetReadOnly
 
 End
