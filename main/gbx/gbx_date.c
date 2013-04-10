@@ -101,15 +101,8 @@ static short date_from_julian_year(short year)
 		return year + DATE_YEAR_MIN + 1;
 }
 
-void DATE_init(void)
+void DATE_init_local(void)
 {
-	struct timeval tv;
-
-	if (gettimeofday(&tv, NULL) == 0)
-		_start_time = (double)tv.tv_sec + (double)tv.tv_usec / 1E6;
-	else
-		_start_time = 0.0;
-
 	#if defined(OS_FREEBSD) || defined(OS_MACOSX) || defined(OS_OPENBSD)
 	{
 		time_t t = (time_t)0L;
@@ -128,6 +121,18 @@ void DATE_init(void)
 	struct tm *tm = gmtime(&t);
 	fprintf(stderr, "TimeZone = %d DayLight = %d Hour = %d\n", DATE_timezone, daylight, tm->tm_hour);
 	#endif
+}
+
+void DATE_init(void)
+{
+	struct timeval tv;
+
+	if (gettimeofday(&tv, NULL) == 0)
+		_start_time = (double)tv.tv_sec + (double)tv.tv_usec / 1E6;
+	else
+		_start_time = 0.0;
+
+	//DATE_init_local();
 }
 
 DATE_SERIAL *DATE_split(VALUE *value)

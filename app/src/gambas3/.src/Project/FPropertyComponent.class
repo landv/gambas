@@ -96,7 +96,6 @@ Private Sub WriteFeatures(hCont As Container, aFeature As String[])
   
   Dim hCtrl As CheckBox
   
-  aFeature.Clear
   For Each hCtrl In hCont.Children
     If hCtrl.Value Then aFeature.Add(hCtrl.Tag)
   Next
@@ -122,7 +121,9 @@ Private Sub WriteComponent() As Boolean
   'HideEditor
   Project.ComponentState = cmbComponentState.Index
   
+  $aNeed.Clear
   WriteFeatures(panNeed, $aNeed)
+  WriteFeatures(panNeed2, $aNeed)
 
   hFile = Open Temp$("component") For Create 
   
@@ -175,7 +176,7 @@ Private Sub ReadComponent()
   lstRequire.List = $aRequire
   
   ReadFeatures(panNeed, $aNeed)
-  'ReadFeatures(panImplement, $aImplement)
+  ReadFeatures(panNeed2, $aNeed)
   
   'txtImplement.Text = GetForm()
 

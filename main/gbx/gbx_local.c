@@ -623,6 +623,7 @@ void LOCAL_set_lang(const char *lang)
 	STRING_free(&_lang);
 	_lang = STRING_new_zero(lang);
 
+	DATE_init_local();
 	fill_local_info();
 
 	/* If language is right to left written */

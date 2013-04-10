@@ -92,31 +92,39 @@
       Text = ("Features")
     }
     { HBox7 HBox
-      MoveScaled(1,4,55,17)
+      MoveScaled(1,4,70,12)
       Indent = True
       { panNeed Panel
-        MoveScaled(1,0,49,16)
+        MoveScaled(1,0,37,12)
         Expand = True
         Arrangement = Arrange.Vertical
         { CheckBox5 CheckBox
-          MoveScaled(0,0,44,4)
+          MoveScaled(0,0,36,4)
           Tag = "Form"
           Text = ("Graphical form management")
         }
         { CheckBox6 CheckBox
-          MoveScaled(0,4,44,4)
+          MoveScaled(0,4,36,4)
           Tag = "EventLoop"
           Text = ("Event loop management")
         }
         { CheckBox7 CheckBox
-          MoveScaled(0,8,44,4)
+          MoveScaled(0,8,36,4)
           Tag = "ImageIO"
           Text = ("Image loading and saving")
         }
+      }
+      { panNeed2 VBox
+        MoveScaled(39,0,30,12)
         { CheckBox8 CheckBox
-          MoveScaled(0,12,44,4)
+          MoveScaled(0,0,29,4)
           Tag = "OpenGLViewer"
           Text = ("OpenGL display")
+        }
+        { CheckBox1 CheckBox
+          MoveScaled(0,4,29,4)
+          Tag = "XML"
+          Text = ("XML management")
         }
       }
     }

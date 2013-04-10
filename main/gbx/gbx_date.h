@@ -84,6 +84,7 @@ extern int DATE_timezone;
 #define DATE_SERIAL_has_no_time(_date) ((_date)->hour == 0 && (_date)->min == 0 && (_date)->sec == 0 && (_date)->msec == 0)
 	
 void DATE_init(void);
+void DATE_init_local(void);
 DATE_SERIAL *DATE_split(VALUE *value);
 bool DATE_make(DATE_SERIAL *date, VALUE *val);
 void DATE_from_time(time_t time, int usec, VALUE *val);
