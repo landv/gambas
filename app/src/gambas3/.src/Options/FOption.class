@@ -73,7 +73,7 @@ Public Sub _new()
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "KDE4", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
-  cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
+  cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm", "lxterminal"]
   'cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
