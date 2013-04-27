@@ -297,7 +297,7 @@ TextNode::escapeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData)
 
 GB.ReturnNewString(escapedData, lenEscapedData);
 
-free(escapedData);
+if(escapedData != STRING(data)) free(escapedData);
 
 END_METHOD
 

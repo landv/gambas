@@ -58,7 +58,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
 {
     dst = (char*)src;
     lenDst = lenSrc;
-    char *posFound = strpbrk (dst, "<>&");
+    char *posFound = strpbrk (dst, "<>&\"");
     while (posFound != 0)
     {
         if(dst == src)//dst not allocated yet
@@ -75,14 +75,14 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
             *posFound = CHAR_AND;
             ++posFound;
             insertString(dst, lenDst , "lt;", 3, posFound);
-            posFound = strpbrk (posFound + 1,"<>&");
+            posFound = strpbrk (posFound + 1,"<>&\"");
             break;
             
         case CHAR_ENDTAG: //&gt;
             *posFound = CHAR_AND;
             ++posFound;
             insertString(dst, lenDst, "gt;", 3, posFound);
-            posFound = strpbrk (posFound + 1,"<>&");
+            posFound = strpbrk (posFound + 1,"<>&\"");
             break;
             
             
@@ -91,7 +91,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
             *posFound = CHAR_AND;
             ++posFound;
             insertString(dst, lenDst, "amp;", 4, posFound);
-            posFound = strpbrk (posFound + 1,"<>&");
+            posFound = strpbrk (posFound + 1,"<>&\"");
             break;
 
         case '"': //&quot;
@@ -99,7 +99,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
             *posFound = CHAR_AND;
             ++posFound;
             insertString(dst, lenDst, "quot;", 5, posFound);
-            posFound = strpbrk (posFound + 1,"<>&");
+            posFound = strpbrk (posFound + 1,"<>&\"");
             break;
             
         default:
