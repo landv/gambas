@@ -291,6 +291,12 @@ END_METHOD
 
 BEGIN_METHOD(CNode_escapeContent, GB_STRING data)
 
+if(!LENGTH(data))
+{
+    GB.ReturnNull();
+    return;
+}
+
 char *escapedData; size_t lenEscapedData;
 
 TextNode::escapeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);

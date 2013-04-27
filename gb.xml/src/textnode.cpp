@@ -58,6 +58,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
 {
     dst = (char*)src;
     lenDst = lenSrc;
+    if(!lenSrc || !src) return;
     char *posFound = strpbrk (dst, "<>&\"");
     while (posFound != 0)
     {
