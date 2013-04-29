@@ -78,12 +78,12 @@ static int control_get_value(void)
 }
 
 
-static void control_add_pos(short **tab_pos, short pos)
+static void control_add_pos(ushort **tab_pos, ushort pos)
 {
 	if (!(*tab_pos))
 		ARRAY_create(tab_pos);
 
-	*((short *)ARRAY_add(tab_pos)) = pos;
+	*((ushort *)ARRAY_add(tab_pos)) = pos;
 }
 
 
@@ -98,7 +98,7 @@ static void control_add_this_pos(ushort pos)
 }
 
 
-static void control_jump_each_pos_with(short *tab_pos)
+static void control_jump_each_pos_with(ushort *tab_pos)
 {
 	int i;
 

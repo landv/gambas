@@ -161,7 +161,7 @@ typedef
 #define PCODE_BREAKPOINT(num) ((PCODE)(C_BREAK | (num)))
 
 #ifndef NO_CODE_DUMP
-short PCODE_dump(FILE *out, short addr, PCODE *code);
+short PCODE_dump(FILE *out, ushort addr, PCODE *code);
 #endif
 
 #endif /* */

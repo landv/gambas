@@ -33,6 +33,7 @@ EXTERN short CODE_stack_usage;
 
 /* Number of instruction added to a function code buffer at once. Must be a power of 2 */
 #define CODE_INSTR_INC 1024
+#define CODE_NO_POS (ushort)0xFFFF
 
 
 #ifdef PROJECT_EXEC
@@ -76,7 +77,7 @@ void CODE_jump_first(short local);
 void CODE_jump_next(void);
 void CODE_jump_if_true(void);
 void CODE_jump_if_false(void);
-void CODE_jump_length(short src, short dst);
+void CODE_jump_length(ushort src, ushort dst);
 void CODE_first(short local);
 void CODE_next(bool drop);
 
@@ -96,8 +97,8 @@ void CODE_pop_ctrl(short num);
 
 #endif /* PROJECT_COMP */
 
-int CODE_get_current_pos(void);
-int CODE_set_current_pos(int pos);
+ushort CODE_get_current_pos(void);
+ushort CODE_set_current_pos(ushort pos);
 void CODE_ignore_next_stack_usage(void);
 
 void CODE_dump(PCODE *code, int count);

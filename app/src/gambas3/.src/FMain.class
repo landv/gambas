@@ -26,6 +26,8 @@ Private $hBorderE As Image
 
 Private $bFirstProject As Boolean
 
+Static Private $sCompressMessage As String
+
 Public Sub _new()
   
   Me.Resize(800, 600)
@@ -382,6 +384,16 @@ Public Sub mnuPopup_Show()
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent
     mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
+    
+    mnuCompressAll.Hide
+    mnuUncompressAll.Hide
+    
+    If $sKey = Project.KEY_MISC Or If IsDir(sCurrent) Then
+      If MCompressFile.CanCompress(If($sKey = Project.KEY_MISC, Project.Dir, sCurrent)) Then
+        mnuCompressAll.Show
+        mnuUncompressAll.Show
+      Endif
+    Endif
     
     mnuEditFile.Visible = mnuEditFile.Visible And CanEdit(sCurrent)
     mnuEditClass.Visible = False
@@ -1325,7 +1337,21 @@ Public Sub Action_Activate(Key As String) As Boolean
       mnuDebug.Popup(btnMnuDebug.ScreenX, btnMnuDebug.ScreenY + btnMnuDebug.H)
     Case "menu-tool"
       mnuTool.Popup(btnMnuTool.ScreenX, btnMnuTool.ScreenY + btnMnuTool.H)
+    
+    Case "compress-all"
       
+      Inc Application.Busy
+      $sCompressMessage = ""
+      CompressAll(tvwProject.Key, False)
+      Dec Application.Busy
+      If $sCompressMessage Then 
+        Message.Error($sCompressMessage)
+        $sCompressMessage = ""
+      Endif
+      
+    Case "uncompress-all"
+      CompressAll(tvwProject.Key, True)
+    
   End Select 
   
 End
@@ -2213,4 +2239,33 @@ Public Sub mnuPatchProject_Click()
 
   FPatch.ShowModal()
 
+End
+
+Private Sub CompressAll(sPath As String, bUncompress As Boolean)
+  
+  Dim sFile As String
+  Dim hTextEditor As FTextEditor
+  
+  If sPath = Project.KEY_MISC Then sPath = Project.Dir
+  
+  If Not IsDir(sPath) Then
+    Try hTextEditor = Project.LoadFile(sPath)
+    If hTextEditor Then 
+      If bUncompress Then
+        hTextEditor.Uncompress()
+      Else
+        If hTextEditor.Compress() Then
+          If $sCompressMessage Then $sCompressMessage &= "<p>"
+          $sCompressMessage &= "<tt>" & Mid$(sPath, Len(Project.Dir) + 2) & "</tt><p>" & FTextEditor.CompressMessage
+        Endif
+      Endif
+    Endif
+    Return
+  Endif
+  
+  For Each sFile In Dir(sPath)
+    If Left(sFile) = "." Then Continue
+    If MCompressFile.CanCompress(sPath &/ sFile) Then CompressAll(sPath &/ sFile, bUncompress)
+  Next
+  
 End

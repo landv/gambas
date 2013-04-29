@@ -1,13 +1,32 @@
 ' Gambas module file
 
-Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$"
 Private Const IDENT_CAR_CSS As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.#"
 Private Const SUBST_CAR As String = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+Private $aExt As String[] = ["js", "css"]
 
 Private $cKeyword As Collection
 Private $cSubst As Collection
 Private $cIdent As Collection
 Private $iSubst As Integer
+
+Public Sub CanCompress(sPath As String) As Boolean
+  
+  Dim sFile As String
+  
+  If IsDir(sPath) Then
+    For Each sFile In Dir(sPath)
+      If Left(sFile) = "." Then Continue
+      If CanCompress(sPath &/ sFile) Then Return True
+    Next
+    Return False
+  Endif
+  
+  Return $aExt.Exist(File.Ext(sPath))
+  
+End
+
 
 Private Sub InitJavascriptKeywords()
   

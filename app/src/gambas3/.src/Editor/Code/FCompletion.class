@@ -375,7 +375,7 @@ Private Sub GetEvents(sCtrl As String) As String[]
   
   sPath = Project.FindForm(GetClass())
   If Not sPath Then Return  
-  hForm = Project.LoadFile(sPath)
+  Try hForm = Project.LoadFile(sPath)
   If Not hForm Then Return
 
   sCtrl = LCase(sCtrl)

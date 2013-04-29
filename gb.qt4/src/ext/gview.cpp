@@ -2501,7 +2501,7 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 		_oddBackground = style->color;
 
 		sat = _oddBackground.saturation();
-		gray = 128 + (_oddBackground.value() - 128) * 3 / 4;
+		gray = 128 + (_oddBackground.value() - 128) * 0.8;
 
 		_altBackground = QColor(gray, gray, gray);
 		

@@ -3,48 +3,28 @@
 
 Public Sub Form_Open()
 
-  Dim sPath As String
-  Dim sDir As String = "~/Documents" '/gambas/3.0/trunk"
+  ' Dim sPath As String
+  ' Dim sDir As String = "/home/guygle/guygle/bin" '/gambas/3.0/trunk"
+  ' 
+  ' For Each sPath In Dir(sDir).Sort(gb.Language + gb.IgnoreCase)
+  '   If IsDir(sDir &/ sPath) Then
+  '     IconView1.Add(sPath, sPath, Picture["icon:/64/directory"])
+  '   Else
+  '     IconView1.Add(sPath, sPath, Picture["icon:/64/file"])
+  '   Endif
+  ' Next
+  ' 
+  ' 'IconView1.Picture = Picture["img/colormap.png"]
+  ' 
+  ' IconView1.SetFocus
   
-  For Each sPath In Dir(sDir).Sort(gb.Language + gb.IgnoreCase)
-    If IsDir(sDir &/ sPath) Then
-      IconView1.Add(sPath, sPath, Picture["icon:/64/directory"])
-    Else
-      IconView1.Add(sPath, sPath, Picture["icon:/64/file"])
-    Endif
-  Next
-  
-  'IconView1.Picture = Picture["img/colormap.png"]
-  
-  IconView1.SetFocus
+  FileView1.Dir = "~"
   
 End
+
 
 Public Sub Button1_Click()
 
-  ' If IconView1.Font.Size = 6 Then
-  '   IconView1.Font.Size = 16
-  ' Else
-  '   Dec IconView1.Font.Size
-  ' Endif
-  IconView1.Enabled = Not IconView1.Enabled
-
-End
-
-Public Sub IconView1_Activate()
-
-  Debug IconView1.Item.Key
-
-End
-
-Public Sub IconView1_Select()
-
-  Debug
-
-End
-
-Public Sub IconView1_Click()
-
-  Debug IconView1.Item.Key
+  FileView1.Enabled = Not FileView1.Enabled
 
 End

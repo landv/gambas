@@ -5,6 +5,7 @@ Export
 Property Read Key As String
 Property {Picture} As Picture
 Property Text As String
+Property RichText As String
 Property Selected As Boolean
 Property Editable As Boolean
 
@@ -17,6 +18,7 @@ Property Read Height As Integer
 
 Public _Key As String
 Private $sText As String
+Private $sRichText As String
 Private $hPicture As Picture
 Private $bSelected As Boolean
 Private $bEditable As Boolean
@@ -74,6 +76,22 @@ Private Sub Text_Write(Value As String)
 
   If $sText = Value Then Return
   $sText = Value
+  GetIconView()._SortIsDirty
+  RefreshView
+  
+End
+
+
+Private Function RichText_Read() As String
+
+  Return $sRichText
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  If $sRichText = Value Then Return
+  $sRichText = Value
   GetIconView()._SortIsDirty
   RefreshView
   
@@ -187,7 +205,11 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
     If $hPicture Then X += $hPicture.W + 4
     
     W = hRect.W - (X - hRect.X)
-    H = GetIconView().Font.RichTextHeight(Html($sText), W - 4) + 4
+    If $sRichText Then
+      H = GetIconView().Font.RichTextHeight($sRichText, W - 4) + 4
+    Else
+      H = GetIconView().Font.RichTextHeight(Html($sText), W - 4) + 4
+    Endif
     
     hText = New Rect(X, hRect.Y, W, H)
     hText.Y -= (H - hRect.H) \ 2
@@ -197,7 +219,11 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
     Y = hRect.Y
     If $hPicture Then Y += $hPicture.H + 4
     
-    H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W - 4) '+ 4
+    If $sRichText Then
+      H = GetIconView().Font.RichTextHeight($sRichText, hRect.W - 4) '+ 4
+    Else
+      H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W - 4) '+ 4
+    Endif
     HT = Min(H, hRect.H - (Y - hRect.Y) - 8)
     
     hText = New Rect(hRect.X, Y, hRect.W, HT)
@@ -242,6 +268,17 @@ Private Sub GetForeground(hIconView As IconView, Optional bSelected As Boolean) 
   Return iColor
 
 End
+
+Private Sub DrawText(sText As String, sRichText As String, X As Float, Y As Float, W As Float, H As Float, iAlign As Integer)
+  
+  If sRichText Then
+    Paint.DrawRichText(sRichText, X, Y, W, H, iAlign)
+  Else
+    Paint.DrawRichText(Html(sText), X, Y, W, H, iAlign)
+  Endif
+  
+End
+
 
 Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, (bFocus) As Boolean, bHover As Boolean)
   
@@ -345,11 +382,11 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     If $sText Then
       Draw.Font = hIconView.Font
       If Not bFrame Then
-        Draw.Foreground = GetBackground(hIconView, $bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
-        Draw.RichText($sText, X + 1, hRect.Y + 1, W, hRect.H, Align.Left)
+        Paint.Background = GetBackground(hIconView, $bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        DrawText($sText, $sRichText, X + 1, hRect.Y + 1, W, hRect.H, Align.Left)
       Endif
-      Draw.Foreground = GetForeground(hIconView, $bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
-      Draw.RichText($sText, X, hRect.Y, W, hRect.H, Align.Left)
+      Paint.Background = GetForeground(hIconView, $bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      DrawText($sText, $sRichText, X, hRect.Y, W, hRect.H, Align.Left)
     Endif
   
   Else
@@ -357,9 +394,11 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     Y = hRect.Y
     If $hPicture Then Y += $hPicture.H + 4
     
-    If $sText Then
+    If $sText Or If $sRichText Then
 
-      sText = $sText
+      sText = $sRichText
+      If Not sText Then sText = Html($sText)
+      
       H = hIconView.Font.RichTextHeight(sText, hRect.W)
       HT = hRect.H - (Y - hRect.Y)
 
@@ -380,7 +419,7 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
         PaintRoundedRect(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8, 7)
         Paint.Fill
       Endif
-      If $sText Then
+      If $sText Or If $sRichText Then
         PaintRoundedRect(hRect.X - 4, Y - 6, hRect.W + 8, hIconView.Font.RichTextHeight(sText, hRect.W) + 10, 7)
         Paint.Fill
       Endif
@@ -393,16 +432,18 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
       Draw.Picture($hPicture, hRect.X + (hRect.W - PW) / 2, hRect.Y)
     Endif
     
-    If $sText Then
+    If $sText Or If $sRichText Then
       'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
       Draw.Font = hIconView.Font
       
+      If Not $sRichText And If Not $bEllipsized Then sText = ""
+      
       If Not bFrame Then
-        Draw.Foreground = GetBackground(hIconView, $bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
-        Draw.RichText(sText, hRect.X + 1, Y + 1, hRect.W, HT, Align.Top)
+        Paint.Background = GetBackground(hIconView, $bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        DrawText($sText, sText, hRect.X + 1, Y + 1, hRect.W, HT, Align.Top)
       Endif
-      Draw.Foreground = GetForeground(hIconView, $bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
-      Draw.RichText(sText, hRect.X, Y, hRect.W, HT, Align.Top)
+      Paint.Background = GetForeground(hIconView, $bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      DrawText($sText, sText, hRect.X, Y, hRect.W, HT, Align.Top)
       'Draw.Clip.Enabled = False
     Endif
     

@@ -35,6 +35,7 @@ DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Show);
 DECLARE_EVENT(EVENT_Hide);
 
+static CMENU *_popup_menu_clicked = NULL;
 
 static void send_click_event(void *_object)
 {
@@ -84,7 +85,8 @@ static void cb_click(gMenu *sender)
 {
 	void *_object = sender->hFree;
 	GB.Ref(THIS);
-	GB.Post((GB_CALLBACK)send_click_event, (intptr_t)THIS);
+	GB.Unref(POINTER(&_popup_menu_clicked));
+	_popup_menu_clicked = THIS;
 }
 
 static void cb_show(gMenu *sender)
@@ -335,6 +337,12 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 		MENU->popup(VARG(x), VARG(y));
 	else
 		MENU->popup();
+	
+	if (_popup_menu_clicked)
+	{
+		send_click_event(_popup_menu_clicked);
+		_popup_menu_clicked = NULL;
+	}
 
 END_METHOD
 

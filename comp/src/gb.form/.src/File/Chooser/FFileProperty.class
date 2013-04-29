@@ -1,2 +1,78 @@
 ' Gambas class file
 
+Class DesktopMime
+
+Static Private $sPath As String
+
+Public Sub Run(sPath As String) As Boolean
+  
+  $sPath = sPath
+  Return Not FFileProperty.ShowModal()
+  
+End
+
+Public Sub Form_Open()
+
+  Dim hMime As DesktopMime
+  Dim hLabel As LAbel
+  Dim W As Integer
+  Dim sSize As String
+  Dim sAuth As String
+
+  Me.Title = Subst(("&1 properties"), File.Name($sPath))
+  lblDir.Text = File.Dir($sPath)
+  
+  With Stat($sPath)
+    
+    If .Link Then
+      lblLabelType.Text = ("Symbolic link")
+      lblType.Text = .Link
+      lblType.Font.Italic = True
+      hMime = DesktopMime.FromFile($sPath)
+      Try picIcon.Picture = hMime.GetIcon(64).Picture
+    Else If IsDir($sPath) Then
+      picIcon.Picture = Picture["icon:/64/directory"]
+      lblType.Text = ("Directory")
+    Else
+      hMime = DesktopMime.FromFile($sPath)
+      lblType.Text = String.UCaseFirst(hMime.GetComment())
+      Try picIcon.Picture = hMime.GetIcon(64).Picture
+      If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
+    Endif
+    
+    sSize = Main.GetFileSize(.Size)
+    If .Size >= 1000 Then sSize &= " (" & Subst(("&1 B"), Format(.Size, "#,###")) & ")"
+    lblSize.Text = sSize
+    
+    lblLastModified.Text = Format(.LastModified, gb.GeneralDate)
+    
+    sAuth = .Auth
+    'sAuth = Left$(sAuth, 3) & " " & Mid$(sAuth, 4, 3) & " " & Right$(sAuth, 3)
+    lblAuth.Text = sAuth
+    lblUser.Text = .User
+    lblGroup.Text = .Group
+    
+  End With
+  
+  For Each hLabel In panProperty.Children
+    If hLabel.Expand Then Continue
+    hLabel.Foreground = Color.Merge(Color.Foreground, Color.LightForeground)
+    W = Max(W, hLabel.Font.TextWidth(hLabel.Text))
+  Next
+
+  For Each hLabel In panProperty.Children
+    If hLabel.Expand Then Continue
+    hLabel.W = W + Desktop.Scale * 3
+  Next
+  
+  panIcon.H = 64 + Desktop.Scale * 2
+  picIcon.Resize(64, 64)
+  lblName.Text = File.Name($sPath)
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close
+
+End

@@ -7,7 +7,7 @@ Public Const STYLE_CSS As Integer = 3
 Private Const TAG_HTML As Integer = 0
 Private Const TAG_CODE As Integer = 1
 
-Public Sub Main()
+Public Sub Main2()
 
   Dim sLine As String
   Dim fTime As Float
@@ -44,15 +44,20 @@ Public Sub Main()
   
 End
 
-' Public Sub Main()
-' 
-'   Dim sTest As String
-'   Dim I As Integer
-'   
-'   For I = 1 To 26
-'     sTest &= Chr$(64 + I)
-'   Next
-'   
-'   Print sTest
-' 
-' End
+Public Sub Main()
+
+  Dim sLine As String
+
+  Highlight.State = Highlight.Normal
+  Highlight.Tag = 0
+  
+  For Each sLine In Split(File.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Login.webpage"), "\n")
+    
+    Highlight.Text = sLine
+    If InStr(sLine, "<!--") Then Stop
+  
+    HighlightHTML.Run(STYLE_HTML)
+    
+  Next
+
+End

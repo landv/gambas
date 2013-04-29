@@ -100,6 +100,9 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
   Dim bNoEdit As Boolean
   Dim sAfter As String
   Dim sName As String
+  Dim hStat As Stat
+  Dim bRichText As Boolean
+  Dim sText As String
   
   If Not $bShowHidden And If Left(sFile) = "." And If Not bIgnoreHidden Then Return
   
@@ -120,6 +123,23 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
   With $hTreeView.Add(sDir &/ sFile, sName, hPict, sParent)
     .Editable = Not bNoEdit
     .MoveAfter(sAfter)
+    
+    hStat = Stat(sDir &/ sFile)
+
+    bRichText = False
+    
+    sText = sFile
+    If hStat.Link Then
+      sText = "<i>" & sText & "</i>"
+      bRichText = True
+    Endif
+    If hStat.Hidden Then
+      sText = "<font color=\"#" & Hex$(Color.LightForeground, 6) & "\">" & sText & "</font>"
+      bRichText = True
+    Endif
+
+    If bRichText Then .RichText = sText
+    
   End With
   
   $hTreeView.Add((sDir &/ sFile) & "/", "",, sDir &/ sFile).Expanded = False
@@ -491,7 +511,7 @@ Private Sub FindAfter(hView As TreeView, sText As String, Optional sParent As St
       .MoveFirst
     Endif
     While .Available
-      If Comp(.Item.Text, sText, gb.Natural + gb.IgnoreCase) > 0 Then Break
+      If Comp(File.Name(.Item.Key), sText, gb.Natural + gb.IgnoreCase) > 0 Then Break
       If iConv > 0 Then Break
       sAfter = .Item.Key
       .MoveNext

@@ -19,6 +19,7 @@ Private mnuShowPreview As Menu
 Private mnuUncompress As Menu
 Private mnuRename As Menu
 Private mnuDelete As Menu
+Private mnuProperty As Menu
 
 Private $bView As Boolean
 Private $aFilter As String[]
@@ -937,6 +938,17 @@ Private Sub FillMenu()
   hMenu.Text = ("&Refresh")
   hMenu.Picture = Picture["icon:/small/refresh"]
   
+  If Component.IsLoaded("gb.desktop") Then
+    
+    hMenu = New Menu(mnuPopup)
+    
+    hMenu = New Menu(mnuPopup) As "mnuProperty"
+    hMenu.Text = ("&Properties")
+    hMenu.Picture = Picture["icon:/small/properties"]
+    mnuProperty = hMenu
+    
+  Endif
+  
 End
 
 Public Sub IsBookmarkVisible() As Boolean
@@ -1187,6 +1199,18 @@ End
 Public Sub mnuOpenFolder_Click()
   
   Desktop.Open(dvwChoose.Current)
+  
+End
+
+
+Public Sub mnuProperty_Click()
+  
+  If dvwChoose.HasFocus Or If Not fvwChoose.Current Then
+    If Not dvwChoose.Current Then Return
+    FFileProperty.Run(dvwChoose.Current)
+  Else
+    FFileProperty.Run(fvwChoose.Dir &/ fvwChoose.Current)
+  Endif
   
 End
 

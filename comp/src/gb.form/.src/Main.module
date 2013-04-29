@@ -38,6 +38,22 @@ Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
   
 End
 
+Public Sub GetFileSize(iSize As Long) As String
+  
+  If iSize < 1000 Then
+    Return Subst(("&1 B"), CStr(iSize))
+  Else If iSize < 1000000 Then
+    Return Subst(("&1 KiB"), Format(iSize / 1024, "#.#"))
+  Else If iSize < 1000000000 Then
+    Return Subst(("&1 MiB"), Format(iSize / 1048576, "#.#"))
+  Else
+    Return Subst(("&1 GiB"), Format(iSize / 1073741824, "#.#"))
+  Endif
+  
+End
+
+
+
 #If False
 Private Sub AddUnique(aStr As String[], sVal As String)
   
@@ -93,7 +109,7 @@ End
 Public Sub Main()
   
   Component.Load("gb.desktop")
-  Application.Theme = "elementary"
-  Form1.Show
+  Application.Theme = "gambas"
+  Print DesktopMime.FromFile("~/ticket ménagerie de verre.pdf").GetIcon("64")
   
 End

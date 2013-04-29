@@ -49,10 +49,16 @@ Public Sub Run()
   If iState = Highlight.Operator Then bLastExpr = False
   
   For iPos = 1 To iLenText
+
+    sCar = String.Mid$(sText, iPos, 1)
+    
+    If HighlightHTML.AllowCode And If sCar = "<" And String.Mid$(sText, iPos, 2) = "<%" Then
+      HighlightHTML.MeetCodeAt = iPos
+      Break
+    Endif
   
     If iState = Highlight.Normal Then
     
-      sCar = String.Mid$(sText, iPos, 1)
       If sCar = "/" Then
         sCar = String.Mid$(sText, iPos + 1, 1)
         If sCar = "/" Then
@@ -214,7 +220,6 @@ Public Sub Run()
       
     Else If iState = Highlight.String Then
     
-      sCar = String.Mid$(sText, iPos, 1)
       If sCar = "\\" Then
         sCar = String.Mid$(sText, iPos + 1, 1)
         If sCar = "x" Then

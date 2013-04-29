@@ -417,6 +417,16 @@
       { Menu23 Menu
       }
     }
+    { mnuCompressAll Menu
+      Action = "compress-all"
+      Text = ("Compress all")
+      Picture = Picture["icon:/small/archive"]
+    }
+    { mnuUncompressAll Menu
+      Action = "uncompress-all"
+      Text = ("Uncompress all")
+      Picture = Picture["icon:/small/undo"]
+    }
     { Menu7 Menu
     }
     { mnuCut Menu
@@ -1122,6 +1132,11 @@
     Shortcut = "Ctrl+Shift+P"
     Picture = "icon:/small/component"
   }
+  { Action compress-all
+    Text = "Compress all"
+    Shortcut = ""
+    Picture = "icon:/small/archive"
+  }
   { Action console
     Text = "&Console"
     Shortcut = "F11"
@@ -1398,6 +1413,11 @@
     Text = "&Translate..."
     Shortcut = "Ctrl+T"
     Picture = "icon:/small/language"
+  }
+  { Action uncompress-all
+    Text = "Uncompress all"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
   }
   { Action until
     Text = "Run until current line"

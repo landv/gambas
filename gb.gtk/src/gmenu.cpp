@@ -636,12 +636,22 @@ void gMenu::doPopup(bool move, int x, int y)
 	
 	save_current_popup = _current_popup;
 	_current_popup = this;
+	
+	//fprintf(stderr, "---- begin popup\n");
+	
 	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
 	
 	while (_current_popup && child && GTK_WIDGET_MAPPED(child))
 		MAIN_do_iteration(false);
-	
+
 	_current_popup = save_current_popup;
+	
+	// flush the event loop so that the main window is reactivated before the click menu event is raised
+
+	while (gtk_events_pending())
+		MAIN_do_iteration(false);
+
+	//fprintf(stderr, "---- end popup\n");
 }
 
 void gMenu::popup(int x, int y)

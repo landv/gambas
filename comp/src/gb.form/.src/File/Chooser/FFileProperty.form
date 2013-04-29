@@ -1,6 +1,105 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,54,48)
+  MoveScaled(0,0,54,52)
   Arrangement = Arrange.Vertical
+  { panIcon HBox
+    MoveScaled(1,1,48,10)
+    Spacing = True
+    Margin = True
+    { picIcon PictureBox
+      MoveScaled(3,1,10,8)
+      Picture = Picture["icon:/64/file"]
+    }
+    { lblName TextLabel
+      MoveScaled(19,1,26,4)
+      Font = Font["Bold"]
+      Expand = True
+      Alignment = Align.Normal
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(7,13,42,0)
+  }
+  { panProperty Panel
+    MoveScaled(1,14,51,30)
+    Expand = True
+    Arrangement = Arrange.Row
+    Margin = True
+    { lblLabelType Label
+      MoveScaled(1,1,18,4)
+      Text = ("Type")
+    }
+    { lblType Label
+      MoveScaled(22,1,26,4)
+      Expand = True
+    }
+    { Label3 Label
+      MoveScaled(1,5,18,4)
+      Text = ("Directory")
+    }
+    { lblDir Label
+      MoveScaled(22,5,26,4)
+      Expand = True
+    }
+    { Label4 Label
+      MoveScaled(1,9,18,4)
+      Text = ("Size")
+    }
+    { lblSize Label
+      MoveScaled(22,9,26,4)
+      Expand = True
+    }
+    { Label5 Label
+      MoveScaled(1,13,18,4)
+      Text = ("Last modified")
+    }
+    { lblLastModified Label
+      MoveScaled(22,13,26,4)
+      Expand = True
+    }
+    { Label6 Label
+      MoveScaled(1,17,18,4)
+      Text = ("Permissions")
+    }
+    { lblAuth Label
+      MoveScaled(22,17,26,4)
+      Font = Font["Monospace"]
+      Expand = True
+    }
+    { Label7 Label
+      MoveScaled(1,21,18,4)
+      Text = ("Owner")
+    }
+    { lblUser Label
+      MoveScaled(22,21,26,4)
+      Expand = True
+    }
+    { Label8 Label
+      MoveScaled(1,25,18,4)
+      Text = ("Group")
+    }
+    { lblGroup Label
+      MoveScaled(22,25,26,4)
+      Expand = True
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,45,51,6)
+    Margin = True
+    { Panel1 Panel
+      MoveScaled(8,1,3,2)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(18,0,18,4)
+      Text = ("Close")
+      Default = True
+      Cancel = True
+    }
+    { Panel2 Panel
+      MoveScaled(45,1,3,2)
+      Expand = True
+    }
+  }
 }

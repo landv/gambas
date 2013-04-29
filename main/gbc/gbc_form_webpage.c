@@ -127,6 +127,44 @@ static bool check_contents(const char *str, int len)
 		return FALSE;
 }
 
+static int print_code(const char *str, int len)
+{
+	char c;
+	const char *start = str;
+	
+	//fprintf(stderr, "'%.*s'\n", len, str);
+	
+	while (len > 0)
+	{
+		c = *str++;
+		len--;
+		
+		if (c == '"')
+		{
+			while (len > 0)
+			{
+				c = *str++;
+				len--;
+				if (c == '"')
+					break;
+				if (c == '\\' && *str)
+				{
+					str++;
+					len--;
+				}
+			}
+		}
+		else if (c == '%' && *str == '>')
+		{
+			len = str - start - 1;
+			FORM_print_len(start, len);
+			return len + 2;
+		}
+	}
+	
+	THROW("&1: syntax error in form file", JOB->form);
+}
+
 static void print_markup(const char *str, int len)
 {
 	int l;
@@ -166,11 +204,11 @@ static void print_markup(const char *str, int len)
 	
 	if (end)
 	{
-		FORM_print("._RenderEnd()\n");
+		FORM_print(".__RenderEnd()\n");
 		return;
 	}
 	
-	FORM_print("._Render(");
+	FORM_print(".__Render(");
 	
 	if (len > 0)
 	{
@@ -185,6 +223,9 @@ static void print_markup(const char *str, int len)
 				str++;
 				len--;
 			}
+			
+			if (len == 0)
+				break;
 			
 			p = str;
 			while (len > 0)
@@ -213,7 +254,20 @@ static void print_markup(const char *str, int len)
 		
 			p = str;
 			
-			if (*str == '"')
+			// attr=<% ... %>
+			if (len >= 3 && *str == '<' && str[1] == '%' && str[2] == '=')
+			{
+				str += 3;
+				len -= 3;
+				FORM_print_char('(');
+				l = print_code(str, len);
+				FORM_print_char(')');
+				str += l;
+				len -= l;
+				//fprintf(stderr, "-> '%.*s'\n", len, str);
+				continue;
+			}
+			else if (*str == '"')
 			{
 				str++;
 				len--;
@@ -228,8 +282,21 @@ static void print_markup(const char *str, int len)
 			{
 				c = *str++;
 				len--;
-				if ((quote && c == '"') || (!quote && c == ' '))
-					break;
+				if (quote)
+				{
+					if (len > 0 && c == '\\')
+					{
+						str++;
+						len--;
+					}
+					else if (c == '"')
+						break;
+				}
+				else
+				{
+					if (c == ' ')
+						break;
+				}
 			}
 			
 			if (!quote && str == p)

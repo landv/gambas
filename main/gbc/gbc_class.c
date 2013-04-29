@@ -278,8 +278,8 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	func->start = decl->start;
 	func->line = decl->line;
 	func->name = decl->index;
-	func->last_code = (-1);
-	func->last_code2 = (-1);
+	func->last_code = CODE_NO_POS;
+	func->last_code2 = CODE_NO_POS;
 	func->stack = 8; // Some stack may be needed for initialization functions
 	func->finally = 0;
 	func->catch = 0;

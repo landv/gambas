@@ -3,9 +3,11 @@
 Export
 Create Static
 
+Static Private $aParent As New WebPage[]
 Static Private $iLevel As Integer
 
 Property Buffered As Boolean
+Property Read Parent As Object
 
 Private $bBuffered As Boolean
 
@@ -15,12 +17,31 @@ Static Public Sub Main()
 
   Try hObject = Application.Startup.AutoCreate()
   If Not hObject Then Return
-  hObject._Render()
+  hObject.Render()
   
 End
 
-
 Public Sub _Render(Optional (_Arg) As Collection)
+  
+End
+
+Public Sub __Render(Optional (_Arg) As Collection = New Collection)
+  
+  $aParent.Push(Me)
+  Me._Render(_Arg)
+  $aParent.Pop()
+  
+End
+
+Public Sub _RenderEnd()
+  
+End
+
+Public Sub __RenderEnd()
+  
+  $aParent.Push(Me)
+  Me._RenderEnd()
+  $aParent.Pop()
   
 End
 
@@ -32,9 +53,9 @@ Public Sub Render()
   Endif
   
   Inc $iLevel
-  Me._Render()
+  Me.__Render()
   
-Finally
+'Finally
   
   Dec $iLevel
   
@@ -53,5 +74,11 @@ End
 Private Sub Buffered_Write(Value As Boolean)
 
   $bBuffered = Value
+
+End
+
+Private Function Parent_Read() As Object
+
+  If $aParent.Count >= 2 Then Return $aParent[$aParent.Max - 1]
 
 End

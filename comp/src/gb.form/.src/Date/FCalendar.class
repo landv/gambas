@@ -755,7 +755,7 @@ End
 Public Sub txtHour_LostFocus()
 
   Dim iHour As Integer
-  Dim iPos As Integer
+  'Dim iPos As Integer
   
   Try iHour = CInt(Trim(txtHour.Text))
   If Not Error And If iHour >= 0 And If iHour <= 23 Then 

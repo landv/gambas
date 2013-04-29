@@ -204,20 +204,6 @@ Catch
   
 End
 
-Private Sub GetFileSize(iSize As Long) As String
-  
-  If iSize < 1000 Then
-    Return Subst(("&1 B"), CStr(iSize))
-  Else If iSize < 1000000 Then
-    Return Subst(("&1 KiB"), Format(iSize / 1024, "#.#"))
-  Else If iSize < 1000000000 Then
-    Return Subst(("&1 MiB"), Format(iSize / 1048576, "#.#"))
-  Else
-    Return Subst(("&1 GiB"), Format(iSize / 1073741824, "#.#"))
-  Endif
-  
-End
-
 Private Sub GetSelection() As String[]
   
   Dim hView As Object
@@ -253,6 +239,8 @@ Private Sub RefreshView()
   Dim aSel As String[]
   Dim aDir As New String[]
   Dim I As Integer
+  Dim sText As String
+  Dim bRichText As Boolean
 
   Inc Application.Busy
   
@@ -293,12 +281,27 @@ Private Sub RefreshView()
           hPict = hPictFile
         Endif
       Endif
+      
+      bRichText = False
+      
+      sText = sFile
+      If .Link Then
+        sText = "<i>" & sText & "</i>"
+        bRichText = True
+      Endif
+      If .Hidden Then
+        sText = "<font color=\"#" & Hex$(Color.LightForeground, 6) & "\">" & sText & "</font>"
+        bRichText = True
+      Endif
+
       If $hColumnView.Visible Then
         $hColumnView.Add(sPrefix & sFile, sFile, hPict).Editable = Access(sDir, gb.Write)
-        $hColumnView[sPrefix & sFile][1] = "  " & GetFileSize(.Size)
+        $hColumnView[sPrefix & sFile][1] = "  " & Main.GetFileSize(.Size)
         $hColumnView[sPrefix & sFile][2] = "  " & Str(.Time)
+        If bRichText Then $hColumnView[sPrefix & sFile].RichText = sText
       Else
         $hIconView.Add(sPrefix & sFile, sFile, hPict).Editable = Access(sDir, gb.Write)
+        If bRichText Then $hIconView[sPrefix & sFile].RichText = sText
       Endif
     End With
   Next

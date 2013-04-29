@@ -268,7 +268,10 @@ static void gambas_handle_event(GdkEvent *event)
 			if (control)
 				gApplication::setActiveControl(control, event->focus_change.in);
 			else if (event->focus_change.in);
+			{
+				//fprintf(stderr, "GDK_FOCUS_CHANGE: setActiveWindow(NULL)\n");
 				gMainWindow::setActiveWindow(NULL);
+			}
 		}
 
 		if (event->focus_change.in && grab && widget != grab && !gtk_widget_is_ancestor(widget, grab))
@@ -1160,6 +1163,7 @@ static void post_focus_change(void *)
 			break;
 		
 		gApplication::_old_active_control = current;
+		//fprintf(stderr, "post_focus_change: setActiveWindow\n");
 		gMainWindow::setActiveWindow(current);
 		
 		control = gApplication::activeControl();

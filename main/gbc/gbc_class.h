@@ -113,10 +113,10 @@ typedef
 		ushort ncode;                  // Number of instructions
 		ushort ncode_max;              // Size of the bytecode allocation
 
-		short last_code;               // Last compiled bytecode position
-		short last_code2;              // Last last compiled bytecode position
-		short finally;                 // FINALLY position
-		short catch;                   // CATCH position
+		ushort last_code;              // Last compiled bytecode position
+		ushort last_code2;             // Last last compiled bytecode position
+		ushort finally;                // FINALLY position
+		ushort catch;                  // CATCH position
 		}
 	PACKED
 	FUNCTION;
@@ -220,6 +220,7 @@ typedef
 #define FUNCTION_is_procedure(func)  (TYPE_get_id((func)->type) == T_VOID)
 #define FUNCTION_is_static(func)     (TYPE_is_static((func)->type))
 
+	
 void CLASS_create(CLASS **result);
 void CLASS_delete(CLASS **class);
 

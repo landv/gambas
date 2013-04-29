@@ -5,6 +5,7 @@ Export
 Property Read Key As String
 Property Read ParentKey As String
 Property Text As String
+Property RichText As String
 Property Picture As Picture
 Property Read Count, Children As Integer
 Property Expanded As Boolean
@@ -18,6 +19,7 @@ Property Selected As Boolean
 Private $sKey As String
 Private $sParent As String
 Private $sText As String
+Private $sRichText As String
 Private $hPicture As Picture
 Private $bExpanded As Boolean
 Private $bEditable As Boolean
@@ -128,6 +130,23 @@ Private Sub Text_Write(Value As String)
   Dim hTree As _TreeView = GetTree()
 
   $sText = Value
+  If hTree.Sorted Then hTree._SortParent($sParent)
+  hTree._UpdateItemHeight(Me)
+  hTree._RefreshView
+
+End
+
+Private Function RichText_Read() As String
+
+  Return $sRichText 
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  Dim hTree As _TreeView = GetTree()
+
+  $sRichText = Value
   If hTree.Sorted Then hTree._SortParent($sParent)
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView

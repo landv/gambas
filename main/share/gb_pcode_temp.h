@@ -37,7 +37,7 @@
 
 /*#define DEBUG*/
 
-short PCODE_dump(FILE *out, short addr, PCODE *code)
+short PCODE_dump(FILE *out, ushort addr, PCODE *code)
 {
 	static const char *op_comp[] = { "=", "<>", ">", "<=", "<", ">=", "==", "CASE" };
 	static const char *op_arith[] = { "+", "-" , "*", "/", "NEG", "\\", "MOD", "POW", "AND", "OR", "XOR", "NOT", "&", "LIKE", "&/" };

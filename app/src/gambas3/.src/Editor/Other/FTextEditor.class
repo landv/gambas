@@ -19,6 +19,8 @@
 ' Boston, MA  02110-1301  USA
 '
 
+Static Public CompressMessage As String
+
 Public Path As String
 Public Editor As Editor
 Public Age As Integer
@@ -83,20 +85,21 @@ Public Sub LoadFile() As Boolean
     Select Case sExt
       Case "css"
         edtEditor.Highlight = Highlight.CSS
-        $bShowCompress = Not Project.IsHiddenPath(Path)
       Case "webpage"
         edtEditor.Highlight = Highlight.WebPage
         $bWebPage = True
       Case "js"
         edtEditor.Highlight = Highlight.JavaScript
-        $bShowCompress = Not Project.IsHiddenPath(Path)
       Case "c"
         edtEditor.Highlight = Highlight.C
       Case "cpp", "h"
         edtEditor.Highlight = Highlight.CPlusPlus
       Case Else 
         edtEditor.Highlight = Highlight.HTML
-    End Select 
+    End Select
+    
+    $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
+    
     $bNoHighlight = False
   Else
     $bNoHighlight = True
@@ -744,6 +747,7 @@ Private Sub SetText(sText As String)
   
   Editor.Text = sText
   Me.Save
+  RefreshCurrentProc
   'Editor.Begin
   'Editor.SelectAll
   'Editor.Insert(sText)
@@ -757,13 +761,14 @@ Private Sub GetUncompressPath() As String
   
 End
 
-
-Public Sub mnuCompress_Click()
+Public Sub Compress() As Boolean
   
   Dim sText As String
   Dim iLen As Integer
   Dim fGain As Float
   Dim sPath As String
+  
+  CompressMessage = ""
   
   If Project.IsHiddenPath(Path) Then Return
   
@@ -771,17 +776,27 @@ Public Sub mnuCompress_Click()
   Me.Save
   sText = Editor.Text
   iLen = Len(sText)
-  Select Case Editor.Highlight 
-    Case Highlight.JavaScript
-      sText = MCompressFile.Javascript(sText)
-    Case Highlight.CSS
-      sText = MCompressFile.Css(sText)
-  End Select
   
-  fGain = Len(sText) / iLen
+  If iLen > 0 Then
+  
+    Select Case Editor.Highlight 
+      Case Highlight.JavaScript
+        sText = MCompressFile.Javascript(sText)
+      Case Highlight.CSS
+        sText = MCompressFile.Css(sText)
+    End Select
+    
+    fGain = Len(sText) / iLen
+    
+  Else
+    
+    fGain = 1
+    
+  Endif
+    
   Dec Application.Busy
   
-  If fGain < 0.95 Then
+  If fGain < 0.95 Or If (iLen - Len(sText)) >= 256 Then
     sPath = GetUncompressPath()
     If Not Exist(File.Dir(sPath)) Then Project.InsertDirectory(File.Dir(sPath))
     If Not Exist(sPath) Then 
@@ -790,17 +805,29 @@ Public Sub mnuCompress_Click()
       File.Save(sPath, Editor.Text)
     Endif
     SetText(sText)
-    Message.Info("<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b><p>" & ("Original file has been saved in the <b>Project</b> folder."))
+    CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b><p>" & ("Original file has been saved in the <b>Project</b> folder.")
   Endif
   
 Catch
   
   Dec Application.Busy
-  Message.Error("<b>" & ("Unable to compress file.") & "</b><p>" & Error.Text)
+  CompressMessage = "<b>" & ("Unable to compress file.") & "</b><p>" & Error.Text
+  Return True
   
 End
 
-Public Sub mnuUncompress_Click()
+
+Public Sub mnuCompress_Click()
+
+  If Compress() Then
+    Message.Error(CompressMessage)
+  Else
+    If CompressMessage Then Message.Info(CompressMessage)
+  Endif
+  
+End
+
+Public Sub Uncompress()
   
   Dim sPath As String
   
@@ -809,6 +836,13 @@ Public Sub mnuUncompress_Click()
   sPath = GetUncompressPath()
   If Not Exist(sPath) Then Return
   SetText(File.Load(sPath))
+  
+End
+
+
+Public Sub mnuUncompress_Click()
+  
+  Uncompress
   
 End
 
@@ -1098,4 +1132,3 @@ Public Sub btnUnindent_Click()
   Editor.Unindent
 
 End
-

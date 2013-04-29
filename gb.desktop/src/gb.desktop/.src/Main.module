@@ -139,19 +139,22 @@ End
 
 Public Sub Main()
 
-  Dim hWin As DesktopWindow
+  ' Dim hWin As DesktopWindow
+  ' 
+  ' For Each hWin In Desktop.Windows
+  '   'Print hWin.VisibleName
+  '   If hWin.VisibleName Like "gambas3 3.3.0 - *" Then
+  '     Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
+  '     hWin.Resize(400, 400)
+  '     hWin.Refresh
+  '     Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
+  '   Endif
+  ' Next
   
-  For Each hWin In Desktop.Windows
-    'Print hWin.VisibleName
-    If hWin.VisibleName Like "gambas3 3.3.0 - *" Then
-      Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
-      hWin.Resize(400, 400)
-      hWin.Refresh
-      Print hWin.X;; hWin.Y;; hWin.Width;; hWin.Height
-    Endif
-  Next
-  
-  'hWin.Maximized = True
+  With DesktopMime.FromFile("~/APC_2012_12_APC_4520627_20121217_01.pdf")
+    Print .Type
+    Print .GenericIcon
+  End With
   
 End
 

@@ -85,13 +85,14 @@ Public Sub Run()
         
       Case Else
         
-        If sCar = "/" Then 
-          If Mid$(sText, iInd, 2) = "/*" Then 
-            iTag = iState
-            iState = Highlight.Comment
-            iNextState = iState
-            Goto NEXT_STATE
-          Endif
+        If sCar = "/" And If Mid$(sText, iInd, 2) = "/*" Then 
+          iTag = iState
+          iState = Highlight.Comment
+          iNextState = iState
+          Goto NEXT_STATE
+        Else If HighlightHTML.AllowCode And If sCar = "<" And If Mid$(sText, iInd, 2) = "<%" Then
+          HighlightHTML.MeetCodeAt = iInd
+          Break
         Endif
         
     End Select
@@ -193,6 +194,20 @@ Public Sub Run()
           iNextState = Highlight.Keyword
           iTag = Highlight.Keyword
           
+        Else If sCar = "#" Then
+          
+          iState = Highlight.Preprocessor
+          iNextState = iState
+          
+        Endif
+        
+      Case Highlight.Preprocessor
+        
+        If Not IsHexa(sCar) Then
+          iState = Highlight.Number
+          iNextState = iState
+          Dec iInd
+          Continue
         Endif
                     
     End Select

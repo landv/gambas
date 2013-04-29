@@ -49,11 +49,24 @@ static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWind
 	return false;
 }
 
-static gboolean cb_show (GtkWidget *widget, gMainWindow *data)
+static gboolean cb_show(GtkWidget *widget, gMainWindow *data)
 {
 	data->emitOpen();
+	
 	if (data->opened)
 	{
+		if (data->isTopLevel())
+		{
+			if (data->isModal())
+			{
+				GdkGeometry geometry;
+				
+				geometry.min_width = data->bufW;
+				geometry.min_height = data->bufH;
+				gdk_window_set_geometry_hints(gtk_widget_get_window(data->border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
+			}
+		}
+		
 		//data->performArrange();
 		data->emitResize();
 		data->emit(SIGNAL(data->onShow));
@@ -83,8 +96,6 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 {
 	gint x, y;
 	
-	//fprintf(stderr, "cb_configure: %s: (%d %d) -> (%d %d) window = %p resized = %d\n", data->name(), data->bufW, data->bufH, event->width, event->height, event->window, data->_resized);
-	
 	if (data->opened)
 	{
 		if (data->isTopLevel())
@@ -97,6 +108,8 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 			y = event->y;
 		}
 		
+		//fprintf(stderr, "cb_configure: %s: (%d %d %d %d) -> (%d %d %d %d) window = %p resized = %d\n", data->name(), data->bufX, data->bufY, data->bufW, data->bufH, x, y, event->width, event->height, event->window, data->_resized);
+	
 		if (x != data->bufX || y != data->bufY)
 		{
 			data->bufX = x;
@@ -425,22 +438,29 @@ void gMainWindow::emitOpen()
 		opened = true;
 		//_no_resize_event = true; // If the event loop is run during emitOpen(), some spurious configure events are received.
 		
-		if (isTopLevel()) 
+		// FIXME: the following does not work, it makes the window growing endlessly!
+			
+		/*if (isTopLevel()) 
 		{
-			gtk_widget_realize(border);
-			/*if (modal())
+			GdkGeometry geometry = { 0 };
+	
+			if (isModal())
 			{
-				GdkGeometry geometry;
-				
-				geometry.min_width = bufW;
-				geometry.min_height = bufH;
-				
-				fprintf(stderr, "gtk_window_set_geometry_hints: %d %d\n", bufW, bufH);
-				
-				gtk_window_set_geometry_hints(GTK_WINDOW(border), border, &geometry, GDK_HINT_MIN_SIZE);
-			}*/
-		}
+				geometry.min_width = 2; //bufW;
+				geometry.min_height = 2; //bufH;
+			}
+			else
+			{
+				geometry.min_width = 0;
+				geometry.min_height = 0;
+			}
+			
+			fprintf(stderr, "gtk_window_set_geometry_hints: %d %d\n", geometry.min_width, geometry.min_height);
+			gtk_window_set_geometry_hints(GTK_WINDOW(border), border, &geometry, GDK_HINT_MIN_SIZE);
+		}*/
 		
+		gtk_widget_realize(border);
+			
 		performArrange();
 		emit(SIGNAL(onOpen));
 		if (opened)
@@ -622,15 +642,13 @@ void gMainWindow::showModal()
 	
 	//show();
 
-	//fprintf(stderr, "showModal: begin %p\n", this);
-
 	gtk_window_set_modal(GTK_WINDOW(border), true);
   center();
 	//show();
 	gtk_grab_add(border);
 	
 	if (_active)
-		gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(_active->border));
+		gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(_active->topLevel()->border));
 	
 	save = _current;
 	_current = this;
@@ -641,8 +659,6 @@ void gMainWindow::showModal()
 	
 	gtk_grab_remove(border);
 	gtk_window_set_modal(GTK_WINDOW(border), false);
-
-	//fprintf(stderr, "showModal: end %p\n", this);
 
 	if (!persistent)
 		destroyNow();

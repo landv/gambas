@@ -377,16 +377,22 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   
   If sFile Begins "$(mime)/" Then
     
+    'Debug sTemplate;; sFile;; iSize;; iRealSize
+    
     For Each sTest In ["mimetypes", "mimes"]
       sPath = Subst(sTemplate, CStr(iSize), sTest)
       If Exist(sPath) Then
         sFile = Replace(sFile, "$(mime)", sTest)
+        'Debug "FOUND "; sFile
         bFound = True
         Break
       Endif
     Next
     
-    If Not bFound Then Return 
+    If Not bFound Then 
+      'Debug "NOT FOUND"
+      Return 
+    Endif
 
   Endif
   
@@ -404,6 +410,8 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
     
     sName = File.Name(sPath)
     sDir = File.Dir(sPath)
+    
+    'Error "-> "; sDir &/ sName
     
     If iRealSize Then
       
@@ -471,7 +479,11 @@ Static Public Function _get(Key As String, Optional {Default} As String) As Pict
     
     If sPath = "#" Then
       
-      If Not Stock.Icons.Exist(Key) Then Break
+      If Key Begins "$(mime)/" Then
+        Key = Mid$(Key, 9)
+      Else If Not Stock.Icons.Exist(Key) Then 
+        Break
+      Endif
       
       Try Component.Load("gb.form.stock")
       If Error Then

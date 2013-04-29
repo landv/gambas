@@ -149,14 +149,14 @@ static void CODE_undo()
 	cur_func->last_code2 = (-1);
 }
 
-int CODE_get_current_pos(void)
+ushort CODE_get_current_pos(void)
 {
 	return cur_func->ncode;
 }
 
-int CODE_set_current_pos(int pos)
+ushort CODE_set_current_pos(ushort pos)
 {
-	int old = cur_func->ncode;
+	ushort old = cur_func->ncode;
 	cur_func->ncode = pos;
 	return old;
 }
@@ -178,7 +178,7 @@ void CODE_begin_function()
 void CODE_end_function()
 {
 	if (CODE_stack)
-		THROW("Internal compiler error: Bad stack usage computed!");
+		THROW("Internal compiler error: bad stack usage computed!");
 }
 
 #else
@@ -197,7 +197,7 @@ void CODE_begin_function(FUNCTION *func)
 void CODE_end_function(FUNCTION *func)
 {
 	if (CODE_stack)
-		THROW("Internal compiler error: Bad stack usage computed!");
+		THROW("Internal compiler error: bad stack usage computed!");
 }
 
 #endif
@@ -205,7 +205,7 @@ void CODE_end_function(FUNCTION *func)
 
 static ushort *get_last_code()
 {
-	if (cur_func->last_code < 0)
+	if (cur_func->last_code == CODE_NO_POS)
 		return NULL;
 
 	return &cur_func->code[cur_func->last_code];
@@ -213,7 +213,7 @@ static ushort *get_last_code()
 
 static ushort *get_last_code2()
 {
-	if (cur_func->last_code2 < 0)
+	if (cur_func->last_code2 == CODE_NO_POS)
 		return NULL;
 
 	return &cur_func->code[cur_func->last_code2];
@@ -752,22 +752,22 @@ void CODE_jump_next(void)
 }
 
 
-void CODE_jump_length(short src, short dst)
+void CODE_jump_length(ushort src, ushort dst)
 {
-	if (src < 0 || src >= (cur_func->ncode - 1))
+	if (src >= (cur_func->ncode - 1))
 		return;
 
-	/*
-	if (dst < 0 || dst > (ARRAY_length(cur_func->code)))
-		return;
-	*/
-
+	int diff = (int)dst - (int)src;
+	
+	if (diff < -32768 || diff > 32767)
+		THROW("Jump is too far");
+	
 	if (cur_func->code[src] == C_BREAK)
-		cur_func->code[src + 2] = dst - (src + 2) - 1;
+		cur_func->code[src + 2] = (short)(diff - 3); //dst - (src + 2) - 1;
 	else if (cur_func->code[src] == C_NOP)
-		cur_func->code[src] = dst - src;
+		cur_func->code[src] = (short)diff; //dst - src;
 	else
-		cur_func->code[src + 1] = dst - (src + 1) - 1;
+		cur_func->code[src + 1] = (short)(diff - 2); //dst - (src + 1) - 1;
 }
 
 

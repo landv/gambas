@@ -522,9 +522,9 @@ BEGIN_PROPERTY(CWIDGET_enabled)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWIDGET_has_focus)
+BEGIN_PROPERTY(Control_HasFocus)
 
-	GB.ReturnBoolean(CONTROL == gApplication::activeControl());
+	GB.ReturnBoolean(CONTROL->hasFocus());
 
 END_PROPERTY
 
@@ -948,7 +948,7 @@ GB_DESC CWidgetDesc[] =
 
 	GB_PROPERTY("Visible", "b", CWIDGET_visible),
 	GB_PROPERTY("Enabled", "b", CWIDGET_enabled),
-	GB_PROPERTY_READ("HasFocus", "b", CWIDGET_has_focus),
+	GB_PROPERTY_READ("HasFocus", "b", Control_HasFocus),
 	GB_PROPERTY_READ("Hovered", "b", Control_Hovered),
 
 	GB_PROPERTY("Expand", "b", CWIDGET_expand),

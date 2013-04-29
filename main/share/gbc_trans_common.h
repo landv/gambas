@@ -132,9 +132,9 @@ typedef
 		int state;
 		short local;
 		short id;
-		short *pos;
-		short *pos_break;
-		short *pos_continue;
+		ushort *pos;
+		ushort *pos_break;
+		ushort *pos_continue;
 		short loop_var;
 		}
 	PACKED

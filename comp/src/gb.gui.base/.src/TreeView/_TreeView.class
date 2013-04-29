@@ -422,6 +422,7 @@ End
 Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Integer, Row As Integer, Column As Integer)
   
   Dim hItem As _TreeView_Item = RowToItem(Row)
+  Dim sText As String
   
   If Not hItem Then Return
   
@@ -449,7 +450,12 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
     Endif
     
     'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "]", X, Y, W, H, $hView.Columns[Column].Alignment)
-    Draw.Text(hItem.Text, X, Y, W, H, Align.Normal) '$hView.Columns[Column].Alignment)
+    sText = hItem.RichText
+    If sText Then
+      Draw.RichText(sText, X, Y, W, H, Align.Normal)
+    Else
+      Draw.Text(hItem.Text, X, Y, W, H, Align.Normal) '$hView.Columns[Column].Alignment)
+    Endif
     
   Else
     

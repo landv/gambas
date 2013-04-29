@@ -1065,7 +1065,8 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 				break;
 				
 			case T_STRING: case T_CSTRING:
-				cc->_string.addr += (intptr_t)class->string;
+				if (cc->_string.len)
+					cc->_string.addr += (intptr_t)class->string;
 				break;
 				
 			case T_FLOAT: case T_SINGLE:
