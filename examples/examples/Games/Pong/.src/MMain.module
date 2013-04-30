@@ -167,10 +167,8 @@ Private Sub Redraw()
   Dim iX As Integer = Window.Width / 4
 
   ' Scores and net
-  Window.Attributes.Reverse = True
-  Window.Print(" " & Str$($iS1) & " ", iX, 1)
-  Window.Print(" " & Str$($iS2) & " ", iX * 3, 1)
-  Window.Attributes.Reverse = False
+  Window.Print(" " & Str$($iS1) & " ", iX, 1, Attr.Reverse)
+  Window.Print(" " & Str$($iS2) & " ", iX * 3, 1, Attr.Reverse)
   Window.DrawVLine(Window.Width / 2 + 1, 0, Window.Height, ".")
   ' Players and ball may overwrite the unimportant stuff above
   $hP1.Draw()

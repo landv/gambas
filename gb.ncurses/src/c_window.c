@@ -305,10 +305,15 @@ BEGIN_METHOD_VOID(Window_Center)
 
 END_METHOD
 
-static void CWINDOW_print(CWINDOW *win, char *str, int x, int y)
+static void CWINDOW_print(CWINDOW *win, char *str, int x, int y,
+			  attr_t attr, int pair)
 {
 	int width;
 	char *p, *q;
+	attr_t asave; short psave;
+
+	wattr_get(win->content, &asave, &psave, NULL);
+	wattr_set(win->content, attr, pair, NULL);
 
 	p = str;
 	do {
@@ -338,15 +343,18 @@ static void CWINDOW_print(CWINDOW *win, char *str, int x, int y)
 			x = 0;
 	} while (*p);
 	CWINDOW_locate(win, x, y);
+	wattr_set(win->content, asave, psave, NULL);
 }
 
-BEGIN_METHOD(Window_Print, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
+BEGIN_METHOD(Window_Print, GB_STRING text; GB_INTEGER x; GB_INTEGER y;
+			   GB_INTEGER attr; GB_INTEGER pair)
 
 	char text[LENGTH(text) + 1];
 
 	strncpy(text, STRING(text), LENGTH(text));
 	text[LENGTH(text)] = 0;
-	CWINDOW_print(THIS, text, VARGOPT(x, -1), VARGOPT(y, -1));
+	CWINDOW_print(THIS, text, VARGOPT(x, -1), VARGOPT(y, -1),
+		      VARGOPT(attr, A_NORMAL), VARGOPT(pair, 0));
 	REFRESH();
 
 END_METHOD
@@ -358,12 +366,15 @@ BEGIN_METHOD_VOID(Window_Raise)
 
 END_METHOD
 
-BEGIN_METHOD(Window_PrintCenter, GB_STRING text)
+BEGIN_METHOD(Window_PrintCenter, GB_STRING text; GB_INTEGER attr;
+				 GB_INTEGER pair)
 
 	int lines = 1;
 	int x, y;
 	char text[LENGTH(text) + 1];
 	char *p, *q;
+	attr_t attr = VARGOPT(attr, A_NORMAL);
+	short pair = VARGOPT(pair, 0);
 
 	memcpy(text, STRING(text), LENGTH(text));
 	text[LENGTH(text)] = 0;
@@ -378,7 +389,7 @@ BEGIN_METHOD(Window_PrintCenter, GB_STRING text)
 	while (lines--) {
 		if (!lines) {
 			x = (getmaxx(THIS->content) - strlen(p)) / 2;
-			CWINDOW_print(THIS, p, x, y);
+			CWINDOW_print(THIS, p, x, y, attr, pair);
 		} else {
 			q = strchr(p, '\n');
 			if (q == p + 1) {
@@ -387,7 +398,7 @@ BEGIN_METHOD(Window_PrintCenter, GB_STRING text)
 			}
 			*q = 0;
 			x = (getmaxx(THIS->content) - (q - p)) / 2;
-			CWINDOW_print(THIS, p, x, y);
+			CWINDOW_print(THIS, p, x, y, attr, pair);
 			y++;
 			p = q + 1;
 			*q = '\n';
@@ -506,6 +517,43 @@ BEGIN_METHOD_VOID(Window_SetFocus)
 
 END_METHOD
 
+BEGIN_PROPERTY(Window_Attributes)
+
+	if (READ_PROPERTY) {
+		attr_t attr;
+		short pair;
+
+		/* XXX: My ncurses header produces a GCC warning here
+		 *      because apparently wattr_get() is macro which does a
+		 *      NULL pointer check on its arguments of which two lay
+		 *      on the stack. So GCC correctly detects the non-
+		 *      necessity of that check. */
+		wattr_get(THIS->content, &attr, &pair, NULL);
+		GB.ReturnInteger(attr);
+		return;
+	}
+	wattrset(THIS->content, VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+/* This is *not* a shortcut to setting Window.{Fore,Back}ground. The latter
+ * two set the colour of everything in the window. This function only sets
+ * the colour pair for all subsequent writes! */
+BEGIN_PROPERTY(Window_Pair)
+
+	chtype bkgd;
+
+	bkgd = getbkgd(THIS->content);
+
+	if (READ_PROPERTY) {
+		GB.ReturnInteger(PAIR_NUMBER(bkgd & A_COLOR));
+		return;
+	}
+	bkgd = COLOR_PAIR(VPROP(GB_INTEGER));
+	wbkgdset(THIS->content, bkgd);
+
+END_PROPERTY
+
 #define COLOR_METHOD(r, f, b)				\
 short pair = PAIR_NUMBER(getbkgd(THIS->content));	\
 short fg, bg;						\
@@ -522,6 +570,16 @@ if (pair == -1) {					\
 }							\
 wbkgd(THIS->content, COLOR_PAIR(pair) | ' ');		\
 REFRESH();
+
+/*
+ * One should be careful when using these two properties. wbkgd() changes
+ * fore- *and* background of *all* characters in the window. So setting
+ * the background may result in resetting even the foreground of differently
+ * coloured characters.
+ *
+ * Best is to only set Background/Foreground once at the beginning of the
+ * program when using colours extensively during the program.
+ */
 
 BEGIN_PROPERTY(Window_Background)
 
@@ -677,8 +735,8 @@ GB_DESC CWindowDesc[] = {
 
 	GB_METHOD("DrawHLine", NULL, Window_DrawHLine,"(X)i(Y)i(Len)i(C)s"),
 	GB_METHOD("DrawVLine", NULL, Window_DrawVLine,"(X)i(Y)i(Len)i(C)s"),
-	GB_METHOD("Print", NULL, Window_Print, "(Text)s[(X)i(Y)i]"),
-	GB_METHOD("PrintCenter", NULL, Window_PrintCenter, "(Text)s"),
+	GB_METHOD("Print", NULL, Window_Print, "(Text)s[(X)i(Y)i(Attr)i(Pair)i]"),
+	GB_METHOD("PrintCenter", NULL, Window_PrintCenter, "(Text)s[(Attr)i(Pair)i]"),
 
 	GB_METHOD("Locate", NULL, Window_Locate, "(X)i(Y)i"),
 
@@ -689,12 +747,13 @@ GB_DESC CWindowDesc[] = {
 
 	GB_METHOD("SetFocus", NULL, Window_SetFocus, NULL),
 
-	GB_PROPERTY_SELF("Attributes", ".Window.Attrs"),
+	GB_PROPERTY("Attributes", "i", Window_Attributes),
 
 	GB_PROPERTY("Background", "i", Window_Background),
 	GB_PROPERTY("Paper", "i", Window_Background),
 	GB_PROPERTY("Foreground", "i", Window_Foreground),
 	GB_PROPERTY("Pen", "i", Window_Foreground),
+	GB_PROPERTY("Pair", "i", Window_Pair),
 
 	GB_PROPERTY("Border", "i", Window_Border),
 	GB_PROPERTY("Buffered", "b", Window_Buffered),
@@ -718,77 +777,18 @@ GB_DESC CWindowDesc[] = {
 };
 
 /*
- * .Window.Attrs
+ * Attrs
  */
 
-#define WIN_ATTR_METHOD(a)				\
-if (READ_PROPERTY) {					\
-	GB.ReturnBoolean(getattrs(THIS->content) & a);	\
-	return;						\
-}							\
-if (VPROP(GB_BOOLEAN))					\
-	wattron(THIS->content, a);			\
-else							\
-	wattroff(THIS->content, a);			\
-REFRESH();
-
-BEGIN_PROPERTY(WindowAttrs_Normal)
-
-	/* Normal is special because it turns off all other attributes and can't itself been turned off */
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(getattrs(THIS->content) == A_NORMAL);
-	if (VPROP(GB_BOOLEAN))
-		wattrset(THIS->content, A_NORMAL);
-	REFRESH();
-
-END_PROPERTY
-
-BEGIN_PROPERTY(WindowAttrs_Underline)
-
-	WIN_ATTR_METHOD(A_UNDERLINE);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(WindowAttrs_Reverse)
-
-	WIN_ATTR_METHOD(A_REVERSE);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(WindowAttrs_Blink)
-
-	WIN_ATTR_METHOD(A_BLINK);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(WindowAttrs_Bold)
-
-	WIN_ATTR_METHOD(A_BOLD);
-
-END_PROPERTY
-
-/* Set background and foreground at once, more efficiently */
-BEGIN_PROPERTY(WindowAttrs_ColorPair)
-
-	if (READ_PROPERTY) {
-		GB.ReturnInteger(PAIR_NUMBER(getbkgd(THIS->content)));
-		return;
-	}
-	wbkgd(THIS->content, COLOR_PAIR(VPROP(GB_INTEGER)) | ' ');
-
-END_PROPERTY
-
 GB_DESC CWindowAttrsDesc[] = {
-	GB_DECLARE(".Window.Attrs", 0),
-	GB_VIRTUAL_CLASS(),
+	GB_DECLARE("Attr", 0),
+	GB_NOT_CREATABLE(),
 
-	GB_PROPERTY("Normal", "b", WindowAttrs_Normal),
-	GB_PROPERTY("Underline", "b", WindowAttrs_Underline),
-	GB_PROPERTY("Reverse", "b", WindowAttrs_Reverse),
-	GB_PROPERTY("Blink", "b", WindowAttrs_Blink),
-	GB_PROPERTY("Bold", "b", WindowAttrs_Bold),
-
-	GB_PROPERTY("ColorPair", "i", WindowAttrs_ColorPair),
+	GB_CONSTANT("Normal", "i", A_NORMAL),
+	GB_CONSTANT("Underline", "i", A_UNDERLINE),
+	GB_CONSTANT("Reverse", "i", A_REVERSE),
+	GB_CONSTANT("Blink", "i", A_BLINK),
+	GB_CONSTANT("Bold", "i", A_BOLD),
 
 	GB_END_DECLARE
 };
