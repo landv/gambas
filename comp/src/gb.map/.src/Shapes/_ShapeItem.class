@@ -1,6 +1,21 @@
 ' Gambas class file
 
+Export
 Public Box As New RectF
 Public Id As String
 Public Type As Integer
 Public Data As Object
+Public Center As MapPoint
+Public Selected As Boolean
+
+Public Function Contains(hMapPoint As MapPoint) As Boolean
+  
+  If Box.X < hMapPoint.Lon And Box.Right > hMapPoint.Lon Then
+    If Box.Y < hMapPoint.Lat And Box.Bottom > hMapPoint.Lat Then
+      Return True
+    Endif
+  Endif
+  Return False
+  
+End
+

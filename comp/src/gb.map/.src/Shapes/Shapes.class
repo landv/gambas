@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Export
 Public Const {Point} As Integer = 1
 Public Const MultiPoint As Integer = 8
 Public Const Polyline As Integer = 3
@@ -7,22 +8,23 @@ Public Const Polygon As Integer = 5
 Property Read Count As Integer
 Property Read Max As Integer
 
-
 Private Items As New _ShapeItem[]
 
 Private iType As New Integer[]
 Private oData As New Object[]
 Private $aBox As New RectF[]
-Public Sub AddMultiPoint(Data As MapPoint[])
+Public Sub AddMultiPoint(Data As MapPoint[], Optional Id As String)
   Dim hSItem As New _ShapeItem
+  hSItem.Id = Id
   hSItem.Type = MultiPoint
   hSItem.Data = Data
   hSItem.Box = GetDataBox(data)
   Items.Add(hSItem)
 End
 
-Public Sub AddPoint(Data As MapPoint)
+Public Sub AddPoint(Data As MapPoint, Optional Id As String)
 Dim hSItem As New _ShapeItem
+  hSItem.Id = Id
   hSItem.Type = Shapes.Point
   hSItem.Data = Data
   hSItem.Box = RectF(Data.Lat, Data.lon, 1, 1)
@@ -30,20 +32,29 @@ Dim hSItem As New _ShapeItem
   'RectF = GetDataBox(data)
 End
 
-Public Sub AddPolyline(Data As MapPoint[])
+Public Sub AddPolyline(Data As MapPoint[], Optional Id As String)
   Dim hSItem As New _ShapeItem
+  hSItem.Id = Id
   hSItem.Type = Polyline
   hSItem.Data = Data
   hSItem.Box = GetDataBox(data)
   Items.Add(hSItem)
+  hSItem.Center = GetCenter(Data)
 End
 
-Public Sub AddPolygon(Data As MapPoint[][])
+Public Sub AddPolygon(Data As MapPoint[][], Optional Id As String)
   Dim hSItem As New _ShapeItem
+  hSItem.Id = Id
   hSItem.Type = Polygon
   hSItem.Data = Data
-  hSItem.Box = GetDataBox(data)
+  
+  hSItem.Box = GetDataBox(Data[0])
+  
+  
+  'hSItem.Box = GetDataBox(data)
   Items.Add(hSItem)
+  hSItem.Center = GetCenter(Data[0])
+
 End
 
 
@@ -51,15 +62,18 @@ Private Function GetDataBox(hMapPoints As MapPoint[]) As RectF
 
   Dim hPoint As MapPoint
   Dim hRectF As New RectF
-  hRectF.x = hMapPoints[0].Lon
-  hRectF.y = hMapPoints[0].Lat
+  Dim X, Y, X2, Y2 As Float
+  X = hMapPoints[0].Lon
+  Y = hMapPoints[0].Lat
+  X2 = X
+  Y2 = Y
   For Each hPoint In hMapPoints
-    hRectF.x = Min(hMapPoints.lon, hRectF.x)
-    hRectF.y = Min(hMapPoints.lat, hRectF.y)
-    hRectF.Right = Max(hMapPoints.lon, hRectF.Right)
-    hRectF.Bottom = Max(hMapPoints.lat, hRectF.Bottom)
+   X = Min(hPoint.lon, X)
+   Y = Min(hPoint.lat, Y)
+    X2 = Max(hPoint.lon, X2)
+    Y2 = Max(hPoint.lat, Y2)
   Next
-  Return hRectF
+  Return hRectF(X, Y, X2 - X, Y2 - Y)
 End
 
 Public Sub _get(Index As Integer) As _ShapeItem
@@ -77,3 +91,31 @@ Private Function Max_Read() As Integer
   Return Items.Max
 
 End
+
+Static Public Function GetCenter(hPoints As MapPoint[]) As MapPoint
+  'Dim PCenter As New FPoint[]
+  Dim tmpA, A, Gx, Gy As Float
+  Dim j, k As Integer
+   'calcul du centre
+          'fp = New FPoint
+          A = 0
+          gx = 0
+          Gy = 0
+          For k = 0 To hPoints.Max
+            j = IIf(k + 1 <= hPoints.Max, k + 1, 0)
+            tmpA = (hPoints[k].Lon * hPoints[j].Lat) - (hPoints[j].Lon * hPoints[k].Lat)
+            A += tmpA
+            Gx += tmpA * (hPoints[k].Lon + hPoints[j].Lon)
+            Gy += tmpA * (hPoints[k].Lat + hPoints[j].Lat)
+          Next
+          A = A / 2
+          gx = gx / (6 * A) 
+          gy = gy / (6 * A) 
+          
+          Return MapPoint(GY, GX)
+  Catch
+
+End
+
+
+
