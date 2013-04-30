@@ -313,6 +313,10 @@ static void CWINDOW_print(CWINDOW *win, char *str, int x, int y,
 	attr_t asave; short psave;
 
 	wattr_get(win->content, &asave, &psave, NULL);
+	if (attr == -1)
+		attr = asave;
+	if (pair == -1)
+		pair = psave;
 	wattr_set(win->content, attr, pair, NULL);
 
 	p = str;
@@ -354,7 +358,7 @@ BEGIN_METHOD(Window_Print, GB_STRING text; GB_INTEGER x; GB_INTEGER y;
 	strncpy(text, STRING(text), LENGTH(text));
 	text[LENGTH(text)] = 0;
 	CWINDOW_print(THIS, text, VARGOPT(x, -1), VARGOPT(y, -1),
-		      VARGOPT(attr, A_NORMAL), VARGOPT(pair, 0));
+		      VARGOPT(attr, -1), VARGOPT(pair, -1));
 	REFRESH();
 
 END_METHOD
@@ -373,8 +377,8 @@ BEGIN_METHOD(Window_PrintCenter, GB_STRING text; GB_INTEGER attr;
 	int x, y;
 	char text[LENGTH(text) + 1];
 	char *p, *q;
-	attr_t attr = VARGOPT(attr, A_NORMAL);
-	short pair = VARGOPT(pair, 0);
+	attr_t attr = VARGOPT(attr, -1);
+	short pair = VARGOPT(pair, -1);
 
 	memcpy(text, STRING(text), LENGTH(text));
 	text[LENGTH(text)] = 0;
