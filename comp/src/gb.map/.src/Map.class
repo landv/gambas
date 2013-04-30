@@ -23,8 +23,8 @@ Private $PrevBox As Rect
 Private $iPrevent As Integer = 256
 Private $aLayers As New _MapLayer[]
 Private $aLayerNames As New String[]
-Property Preload As Boolean
-Private $bPreload As Boolean
+'Property Preload As Boolean
+'Private $bPreload As Boolean
 Public _ShowWithEffect As Boolean
 Event Refresh
 
@@ -194,6 +194,7 @@ Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
   $aLayers.Add(hLayer)
   $aLayerNames.Add(Name)
   Object.Attach(hLayer, Me, "Layer")
+  If Shape Then hLayer.Data = Shape
   Return hLayer
 
 End
@@ -225,7 +226,7 @@ Public Sub Draw()
   'Draw.Rect(0, 0, Me.Width, Me.Height)
   For Each hLayer In $aLayers
     If hLayer.Visible Then 
-      hLayer.Draw
+      hLayer._Draw
       sCopyright &/= hLayer.Copyright
     Endif
   Next
@@ -260,10 +261,10 @@ Public Sub Refresh()
   
 End
 
-Private Function Preload_Read() As Boolean
-  
-End
-
-Private Sub Preload_Write(Value As Boolean)
-  
-End
+' Private Function Preload_Read() As Boolean
+'   
+' End
+' 
+' Private Sub Preload_Write(Value As Boolean)
+'   
+' End

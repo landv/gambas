@@ -156,7 +156,7 @@ Public Sub View_MouseDown()
   $pCurCenterPx = Geo.MapPointToPixel($hmap.Center, $hmap.Zoom) 
   $bShowInertia = False
   $tmrOnMove.Stop 
-  Raise MouseDown
+  'Raise MouseDown
   
 End
 

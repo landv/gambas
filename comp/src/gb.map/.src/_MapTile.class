@@ -4,7 +4,7 @@ Inherits _MapLayer
 Private $aClients As New HttpClient[]
 Private $iClientCount As Integer = 4
 Private $sCachePath As String = User.Home &/ ".cache/gb.map"
-Private $tmrGet As New Timer As "Get"
+Private $tmrGet As New Timer As "tmrGet"
 Private $aTiles As New String[]
 Private $colTiles As New Collection
 Public $aStack As New String[]
@@ -48,8 +48,14 @@ Public Sub _new(Optional CacheName As String)
 End
 ' svn checkout --username=gambix svn+ssh://gambas@svn.code.sf.net/p/gambas/code/gambas/trunk
 ' 
+' 
+Public Sub ClearCache()
+  
+  Try Exec ["rm", $sCachePath &/ "*.png"]
+  
+End
 
-Public Sub Draw()
+Public Sub _Draw()
   
   Dim s As String
   Dim hTile As _Tile
@@ -241,13 +247,13 @@ Catch
   
 End
 
-Public Function GetMap() As Map
+Private Function GetMap() As Map
   
   Return Object.Parent(Me)
   
 End
 
-Public Sub Get_Timer()
+Public Sub tmrGet_Timer()
   
   Dim sUrl, sFile As String
   Dim hClient As HttpClient
@@ -279,7 +285,7 @@ Public Sub Get_Timer()
   
 End
 
-Public Sub GetClient() As HttpClient
+Private Sub GetClient() As HttpClient
   
   Dim i As Integer
   

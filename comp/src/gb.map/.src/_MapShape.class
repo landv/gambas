@@ -4,7 +4,9 @@ Inherits _MapLayer
 Private $hShapes As New Shapes
 Private $himgPoint As Image
 Property Data As Shapes
-
+Property {Color} As Integer
+Private $icolor As Integer
+Private $sCurrent As String
 Public Sub _new(Optional hShape As Shapes)
   
   $himgPoint = Image.Load("point.png")
@@ -12,9 +14,6 @@ Public Sub _new(Optional hShape As Shapes)
 End
 
 Public Sub Load()
-  
-  
-  
   
 End
 
@@ -24,39 +23,96 @@ Public Sub AddPoint(Data As MapPoint)
   
 End
 
-
-Public Sub Draw()
+Public Sub _Draw()
   
   Dim hItem As _ShapeItem
-  Dim i As Integer
+  Dim i, j As Integer
   Dim pt As Point
   Dim hMap As Map = GetMap()
-
+  Dim hPoly As Integer[]
+  Dim iColor As Integer
+  
   If $hShapes.Count = 0 Then Return
   For i = 0 To $hShapes.Max
-    pt = Geo.MapPointToPixel($hShapes[i].Data, hMap.zoom)
-    Paint.Brush = Paint.Color(Color.Green)
-    'Paint.Arc(pt.X - hMap.PixelBox.X, pt.Y - hMap.PixelBox.Y, 5)
-    Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
-    Paint.Fill
+  iColor = Me.Color
+  If $hShapes[i].Selected Then icolor = Color.White
+    Select Case $hShapes[i].Type
+      Case Shapes.Point
+        pt = Geo.MapPointToPixel($hShapes[i].Data, hMap.zoom)
+        Paint.Brush = Paint.Color(Color.Green)
+        'Paint.Arc(pt.X - hMap.PixelBox.X, pt.Y - hMap.PixelBox.Y, 5)
+        Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
+        
+      Case Shapes.MultiPoint
+        For j = 0 To $hShapes[i].Data.Max
+          pt = Geo.MapPointToPixel($hShapes[i].Data[j], hMap.zoom)
+          Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
+        Next
+        
+      Case Shapes.Polygon
+        hPoly = New Integer[]
+        For j = 0 To $hShapes[i].Data[0].Max
+          pt = Geo.MapPointToPixel($hShapes[i].Data[0][j], hMap.zoom)
+          hPoly.Add(pt.x - hMap.PixelBox.X)
+          hPoly.Add(pt.y - hMap.PixelBox.Y)
+        Next
+        Paint.LineWidth = 2
+        Paint.Brush = Paint.Color(Color.SetAlpha(icolor, 125))
+        Paint.Polygon(hPoly)
+        Paint.fill(True)
+        Paint.Brush = Paint.Color(icolor)
+        Paint.Stroke
+        ' If $hShapes[i].Center Then 
+        '   pt = Geo.MapPointToPixel($hShapes[i].Center, hMap.Zoom)
+        '   'Print $hShapes[i].Center.Lat
+        '   Paint.Brush = Paint.Color(Color.White)
+        '   Paint.Fill
+        ' Endif
+        
+      Case Shapes.Polyline
+        For j = 0 To $hShapes[i].Data.Max
+          pt = Geo.MapPointToPixel($hShapes[i].Data[0][j], hMap.zoom)
+          hPoly.Add(pt.x - hMap.PixelBox.X)
+          hPoly.Add(pt.y - hMap.PixelBox.Y)
+        Next
+        Paint.LineWidth = 2
+        'Paint.Brush = Paint.Color(Color.SetAlpha(Color.red, 125))
+        Paint.Polygon(hPoly)
+        'Paint.fill(True)
+        Paint.Brush = Paint.Color(icolor)
+        Paint.Stroke
+        
+    End Select
   Next
   
 End
 
 Private Function Data_Read() As Shapes
-
+  
   Return $hShapes
-
+  
 End
 
 Private Sub Data_Write(Value As Shapes)
-
+  
   $hShapes = Value
-
+  
 End
 
-Public Function GetMap() As Map
+Private Function GetMap() As Map
   
   Return Object.Parent(Me)
+  
+End
+
+Private Function Color_Read() As Integer
+  
+  Return $icolor
+  
+End
+
+Private Sub Color_Write(Value As Integer)
+  
+  $icolor = Value
   
 End

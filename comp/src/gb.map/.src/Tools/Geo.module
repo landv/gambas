@@ -32,7 +32,7 @@ Public Function MapPointToPixel(hMapPoint As MapPoint, Zoom As Integer) As Point
   X = (X + $originShift) / res
   Y = (Y + $originShift) / res
   Return Point(X, Y)
-  
+
 End
 
 
