@@ -1,0 +1,66 @@
+' Gambas class file
+
+Create Static
+
+'' Maximum number of missiles concurrently displayed
+Public Const MaxMissiles As Integer = 3
+
+Property Read Count As Integer
+
+Private $aMissiles As Missile[]
+Private $hWnd As Window
+Private $iCount As Integer
+
+Public Sub _new()
+  $aMissiles = New Missile[]
+  $iCount = 0
+End
+
+Public Sub Init(hWnd As Window)
+  $hWnd = hWnd
+End
+
+Public Function Move() As Boolean
+  Dim hMissile As Missile
+  Dim bRes As Boolean = False
+
+  For Each hMissile In $aMissiles
+    bRes = bRes Or hMissile.Move()
+  Next
+  Return bRes
+End
+
+Public Sub Shoot(iX As Integer, iY As Integer)
+  Dim hMissile As Missile
+
+  If $iCount >= MaxMissiles Then Return
+  hMissile = New Missile(Missile.Normal, iX, iY) As "Missile"
+  hMissile.Init($hWnd)
+  $aMissiles.Add(hMissile)
+  Inc $iCount
+End
+
+Public Sub SuperShoot(iX As Integer, iY As Integer)
+  Dim hMissile As Missile
+
+  ' Super missile consumes MaxMissiles
+  If $iCount Then Return
+  hMissile = New Missile(Missile.Super, iX, iY) As "Missile"
+  hMissile.Init($hWnd)
+  $aMissiles.Add(hMissile)
+  $iCount = MaxMissiles
+End
+
+Public Sub Missile_Destroyed()
+  Last.Undraw()
+  $aMissiles.Remove($aMissiles.FindByRef(Last))
+  If Last.Type = Missile.Normal Then
+    Dec $iCount
+  Else If Last.Type = Missile.Super Then
+    $iCount = 0
+  Endif
+End
+
+Private Function Count_Read() As Integer
+  Return $iCount
+End

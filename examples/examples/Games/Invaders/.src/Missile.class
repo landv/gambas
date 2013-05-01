@@ -1,0 +1,69 @@
+' Gambas class file
+
+Public Enum Normal, {Super}
+
+Property Read Type As Integer
+
+Event Destroyed
+
+Private $iType As Integer
+Private $sLook As String
+Private $iColor As Integer
+
+Private $hWnd As Window
+Private $iX As Integer
+Private $iY As Integer
+
+Public Sub _new(iType As Integer, iX As Integer, iY As Integer)
+  Select Case iType
+    Case Normal
+      $sLook = "|"
+      $iColor = Color.Yellow
+    Case {Super}
+      $sLook = "*"
+      $iColor = Color.Red
+  End Select
+  $iType = iType
+  $iX = iX
+  $iY = iY
+End
+
+Public Sub Init(hWnd As Window)
+  $hWnd = hWnd
+End
+
+Public Function Move() As Boolean
+  Dim hEnemy As Enemy
+
+  Undraw()
+  Dec $iY
+  hEnemy = Enemies.Hit($iX, $iY)
+  If hEnemy Then
+    If $iType = Normal Then
+      hEnemy.Destroy()
+    Else
+      hEnemy.SuperDestroy()
+      Draw()
+    Endif
+    Raise Destroyed
+    Return True
+  Endif
+  If $iY = -1 Then
+    Raise Destroyed
+    Return True
+  Endif
+  Draw()
+  Return False
+End
+
+Public Sub Draw()
+  Window.Print($sLook, $iX, $iY,, Pair[$iColor, $hWnd.Background])
+End
+
+Public Sub Undraw()
+  Window.Print(" ", $iX, $iY)
+End
+
+Private Function Type_Read() As Integer
+  Return $iType
+End
