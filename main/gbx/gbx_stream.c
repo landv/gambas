@@ -74,7 +74,11 @@ void STREAM_exit(void)
 	STREAM_close(&_temp_stream);
 }
 
-#define wait_for_fd_ready_to_read(_fd) WATCH_process(_fd, -1, 0)
+static void wait_for_fd_ready_to_read(fd)
+{
+	if (fd >= 0)
+		WATCH_process(fd, -1, 0);
+}
 
 bool STREAM_in_archive(const char *path)
 {
