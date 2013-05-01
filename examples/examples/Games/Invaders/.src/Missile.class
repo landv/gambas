@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public Enum Normal, {Super}
+Public Enum Normal, {Super}, Borg
 
 Property Read Type As Integer
 
@@ -9,6 +9,7 @@ Event Destroyed
 Private $iType As Integer
 Private $sLook As String
 Private $iColor As Integer
+Private $iDir As Integer
 
 Private $hWnd As Window
 Private $iX As Integer
@@ -19,9 +20,15 @@ Public Sub _new(iType As Integer, iX As Integer, iY As Integer)
     Case Normal
       $sLook = "|"
       $iColor = Color.Yellow
+      $iDir = -1
     Case {Super}
       $sLook = "*"
       $iColor = Color.Red
+      $iDir = -1
+    Case Borg
+      $sLook = "*"
+      $iColor = Color.Green
+      $iDir = 1
   End Select
   $iType = iType
   $iX = iX
@@ -36,19 +43,27 @@ Public Function Move() As Boolean
   Dim hEnemy As Enemy
 
   Undraw()
-  Dec $iY
-  hEnemy = Enemies.Hit($iX, $iY)
-  If hEnemy Then
-    If $iType = Normal Then
-      hEnemy.Destroy()
-    Else
-      hEnemy.SuperDestroy()
+  $iY += $iDir
+  If $iType <> Borg Then
+    hEnemy = Enemies.Hit($iX, $iY)
+    If hEnemy Then
+      If $iType = Normal Then
+        hEnemy.Destroy()
+      Else
+        hEnemy.SuperDestroy()
+        Draw()
+      Endif
+      Raise Destroyed
+      Return True
+    Endif
+  Else
+    If $iY >= MMain.Y And If $iY < MMain.Y + MMain.Height And If
+       $iX >= MMain.X And If $iX < MMain.X + MMain.Width Then
+      Enemies.PlayerDestroyed()
       Draw()
     Endif
-    Raise Destroyed
-    Return True
   Endif
-  If $iY = -1 Then
+  If $iY = -1 Or $iY = $hWnd.Height Then
     Raise Destroyed
     Return True
   Endif

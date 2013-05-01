@@ -5,13 +5,12 @@
 
 Public X As Integer
 Public Y As Integer
+' Hardcoded corresponding to the strings in Draw() below!
+Public Width As Integer = 3
+Public Height As Integer = 2
 
 Private $hEnemies As Timer
 Private $hMissiles As Timer
-
-' Hardcoded corresponding to the strings in Draw() below!
-Private $iWidth As Integer = 3
-Private $iHeight As Integer = 2
 
 Public Sub Main()
   ' Debug aid. Watch /tmp/pipe with "tail -f"
@@ -26,8 +25,8 @@ Public Sub Main()
   Object.Attach(Window, Me, "Window")
   Window.SetFocus()
 
-  X = (Window.Width - $iWidth) \ 2
-  Y = Window.Height - $iHeight
+  X = (Window.Width - Width) \ 2
+  Y = Window.Height - Height
 
   Object.Attach(Enemies, Me, "Enemies")
 
@@ -46,6 +45,7 @@ Public Sub Main()
   $hMissiles.Delay = 50
 
   $hEnemies.Start()
+  $hMissiles.Start()
 End
 
 Public Sub Window_Read()
@@ -57,7 +57,7 @@ Public Sub Window_Read()
       Dec X
       Draw()
     Case Key.Right
-      If X + $iWidth >= Window.Width Then Return
+      If X + Width >= Window.Width Then Return
       Undraw()
       Inc X
       Draw()
@@ -68,18 +68,18 @@ Public Sub Window_Read()
       Dec Y
       Draw()
     Case Key.Down
-      If Y >= Window.Height - $iHeight Then Return
+      If Y >= Window.Height - Height Then Return
       Undraw()
       Inc Y
       Draw()
     ' Shoot normal missile
     Case Key[" "]
-      Missiles.Shoot(X, Y - 1)
-      If Not $hMissiles.Enabled Then $hMissiles.Start()
+      Missiles.Shoot(Missile.Normal, X, Y - 1)
+      'If Not $hMissiles.Enabled Then $hMissiles.Start()
     ' Shoot super missile
     Case Key["v"]
-      Missiles.SuperShoot(X, Y - 1)
-      If Not $hMissiles.Enabled Then $hMissiles.Start
+      Missiles.Shoot(Missile.Super, X, Y - 1)
+      'If Not $hMissiles.Enabled Then $hMissiles.Start
     ' Of course, manipulate the timers
     Case Key["+"]
       $hEnemies.Delay -= 10
@@ -101,6 +101,7 @@ End
 Private Sub End(sMessage As String, iColor As Integer)
   $hEnemies.Stop()
   $hMissiles.Stop()
+  '' TODO: The message display is glitchy
   Window.Buffered = False
   Window.PrintCenter(sMessage,, Pair[iColor, Window.Background])
   '' TODO: What now? Note that the user can still interact at this point...
@@ -112,8 +113,8 @@ Private Sub Draw()
 End
 
 Private Sub Undraw()
-  Window.Print(Space$($iWidth), X, Y)
-  Window.Print(Space$($iWidth), X, Y + 1)
+  Window.Print(Space$(Width), X, Y)
+  Window.Print(Space$(Width), X, Y + 1)
 End
 
 Public Sub Enemies_Timer()
@@ -126,7 +127,7 @@ End
 
 Public Sub Missiles_Timer()
   If Missiles.Move() And Missiles.Count = 0 Then
-    $hMissiles.Stop()
+    '$hMissiles.Stop()
     Return
   Endif
   ' Missiles draw at a higher rate so we can safely redraw everything

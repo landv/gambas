@@ -30,25 +30,24 @@ Public Function Move() As Boolean
   Return bRes
 End
 
-Public Sub Shoot(iX As Integer, iY As Integer)
+Public Sub Shoot(iType As Integer, iX As Integer, iY As Integer)
   Dim hMissile As Missile
 
-  If $iCount >= MaxMissiles Then Return
-  hMissile = New Missile(Missile.Normal, iX, iY) As "Missile"
+  Select Case iType
+    Case Missile.Normal
+      ' Consumes one missile
+      If $iCount >= MaxMissiles Then Return
+      Inc $iCount
+    Case Missile.Super
+      ' Consumes all missiles
+      If $iCount Then Return
+      $iCount = MaxMissiles
+    Case Missile.Borg
+      ' Consumes none of the (player's) missiles
+  End Select
+  hMissile = New Missile(iType, iX, iY) As "Missile"
   hMissile.Init($hWnd)
   $aMissiles.Add(hMissile)
-  Inc $iCount
-End
-
-Public Sub SuperShoot(iX As Integer, iY As Integer)
-  Dim hMissile As Missile
-
-  ' Super missile consumes MaxMissiles
-  If $iCount Then Return
-  hMissile = New Missile(Missile.Super, iX, iY) As "Missile"
-  hMissile.Init($hWnd)
-  $aMissiles.Add(hMissile)
-  $iCount = MaxMissiles
 End
 
 Public Sub Missile_Destroyed()

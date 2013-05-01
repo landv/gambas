@@ -89,6 +89,10 @@ Public Sub Enemy_SuperDestroyed()
   If $aEnemies.Count = 0 Then Raise Triumph
 End
 
+Public Sub PlayerDestroyed()
+  Raise GameOver
+End
+
 Public Sub Draw()
   Dim hEnemy As Enemy
 

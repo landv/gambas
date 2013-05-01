@@ -1,7 +1,6 @@
 ' Gambas class file
 
 ' Types in ascending difficulty
-'' TODO: Make all Type >= Borg able to attack, because Resistance is futile
 Public Enum Normal = 1, Tough, Borg, BorgQueen
 ' See looking strings below
 Public Const AverageWidth As Integer = 5
@@ -77,6 +76,11 @@ End
 Public Sub Move(Optional iShift As Integer = 1)
   Undraw()
   Shift(iShift)
+  '' FIXME: Value is arbitrary but works kind of
+  If CInt(Rnd(0, 2000)) = 0 Then
+    ' Resistance is futile
+    Missiles.Shoot(Missile.Borg, $iX, $iY + 1)
+  Endif
 End
 
 '' Shift this ship some places in its row (probably into some other row).
