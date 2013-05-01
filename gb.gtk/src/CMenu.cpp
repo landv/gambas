@@ -84,9 +84,16 @@ static void cb_finish(gMenu *sender)
 static void cb_click(gMenu *sender)
 {
 	void *_object = sender->hFree;
+
 	GB.Ref(THIS);
-	GB.Unref(POINTER(&_popup_menu_clicked));
-	_popup_menu_clicked = THIS;
+	
+	if (gMenu::insidePopup())
+	{
+		GB.Unref(POINTER(&_popup_menu_clicked));
+		_popup_menu_clicked = THIS;
+	}
+	else
+		send_click_event(THIS);
 }
 
 static void cb_show(gMenu *sender)

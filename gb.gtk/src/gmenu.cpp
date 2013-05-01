@@ -899,3 +899,8 @@ bool gMenu::isTearOff() const
 	else
 		return false;
 }*/
+
+bool gMenu::insidePopup()
+{
+	return _current_popup != NULL;
+}

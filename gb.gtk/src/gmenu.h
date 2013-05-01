@@ -77,6 +77,7 @@ public:
 //"Methods"
 	void popup();
 	void popup(int x, int y);
+	static bool insidePopup();
 	void destroy();
 
 // "Signals"
@@ -102,7 +103,7 @@ public:
 	void initialize();
 	gMenuStyle style() const { return _style; }
   void hideSeparators();
-
+	
 private:
 
 	gMenuStyle _style, _oldstyle;
