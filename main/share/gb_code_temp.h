@@ -138,7 +138,7 @@ static void use_stack(int use)
 	CODE_stack += use;
 	CODE_stack_usage = Max(CODE_stack_usage, CODE_stack);
 	#ifdef DEBUG
-	printf("%04ld: %d\n", cur_func->ncode, CODE_stack);
+	printf("%04d: %d\n", cur_func->ncode, CODE_stack);
 	#endif
 }
 
@@ -370,14 +370,14 @@ void CODE_push_number(int value)
 	if (value >= -2048L && value < 2048L)
 	{
 		#ifdef DEBUG
-		printf("PUSH QUICK %ld\n", value);
+		printf("PUSH QUICK %d\n", value);
 		#endif
 		write_Zxxx(C_PUSH_QUICK, value);
 	}
 	else if (value >= -32768L && value < 32768L)
 	{
 		#ifdef DEBUG
-		printf("PUSH INTEGER %ld\n", value);
+		printf("PUSH INTEGER %d\n", value);
 		#endif
 		write_short(C_PUSH_INTEGER);
 		write_short((short)value);
@@ -385,7 +385,7 @@ void CODE_push_number(int value)
 	else
 	{
 		#ifdef DEBUG
-		printf("PUSH LONG %ld\n", value);
+		printf("PUSH LONG %d\n", value);
 		#endif
 		write_short(C_PUSH_LONG);
 		write_int(value);
@@ -1106,13 +1106,10 @@ void CODE_call(short nparam)
 {
 	LAST_CODE;
 
-	/* Une case de pile de moins, car la valeur de retour
-		est stock� �la place de la fonction �appeler */
-
 	use_stack(-nparam);
 
 	#ifdef DEBUG
-	printf("CALL %s ( %d )\n", output ? "OUTPUT" : "", nparam);
+	printf("CALL ( %d )\n", nparam);
 	#endif
 
 	write_ZZxx(C_CALL, nparam);
@@ -1161,7 +1158,7 @@ void CODE_call_byref(short nparam, uint64_t byref)
 	use_stack(n);
 
 	#ifdef DEBUG
-	printf("CALL ( %d )\n"nparam);
+	printf("CALL ( %d )\n", nparam);
 	#endif
 
 	write_ZZxx(C_CALL, nparam);

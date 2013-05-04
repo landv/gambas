@@ -226,6 +226,7 @@ static bool emit_open_event(void *_object)
 	qDebug("emit_open_event: %s %p", GB.GetClassName(THIS), THIS);
 	#endif
 	//THIS->opening = true;
+	//WINDOW->configure();
 	GB.Raise(THIS, EVENT_Open, 0);
 	//THIS->opening = false;
 	if (CWIDGET_test_flag(THIS, WF_CLOSED))

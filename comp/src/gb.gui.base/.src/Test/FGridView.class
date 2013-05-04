@@ -1,0 +1,39 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Print Me.W;; gvwInfo.W
+  
+  gvwinfo.Clear
+  gvwinfo.Columns.Count = 2
+  gvwinfo.Rows.Count = 10
+  gvwinfo.Rows.Resizable = True
+  gvwinfo[0, 0].Text = "Name"
+  gvwinfo[0, 1].Text = "compsrch"
+  gvwinfo[1, 0].Text = "Version"
+  gvwinfo[1, 1].Text = "0.0.7"
+  gvwinfo[2, 0].Text = "Type"
+  gvwinfo[2, 1].Text = "Normal"
+  gvwinfo[3, 0].Text = "Compiler"
+  gvwinfo[3, 1].Text = "Gambas 3.3.90"
+  gvwinfo[4, 0].Text = "(IsOld)"
+  gvwinfo[4, 1].Text = False
+  gvwinfo[5, 0].Text = "Full Name"
+  gvwinfo[5, 1].Text = "compsrch.gambas"
+  gvwinfo[6, 0].Text = "Description"
+  gvwinfo[6, 0].Alignment = Align.TopLeft
+  gvwinfo[6, 1].WordWrap = True
+  gvwinfo[6, 1].RichText = "This program is a utility to find gambas source projects that use a named component or library.  It is intended for internal use only to help resolve which client programs need to be re-issued if the component/library is changed."
+  gvwinfo[6, 1].Alignment = Align.TopLeft
+  gvwinfo.Rows[6].Height = -1
+  gvwinfo[7, 0].Text = "State"
+  gvwinfo[7, 1].Text = "Stable"
+  gvwinfo[8, 0].Text = "Requires"
+  gvwinfo[8, 1].Text = ""
+  gvwinfo[9, 0].Text = "Needs"
+  gvwinfo[9, 1].Text = ""
+  
+  gvwinfo.Columns.Width = -1
+
+End

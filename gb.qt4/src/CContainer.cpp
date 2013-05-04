@@ -251,8 +251,8 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 #define IS_DESIGN(_object) (CWIDGET_test_flag(_object, WF_DESIGN) && CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
 #define IS_WIDGET_VISIBLE(_widget) (_widget)->isVisible()
 
+//#define CAN_ARRANGE(_object) ((_object) && !CWIDGET_test_flag(_object, WF_DELETED) && (!GB.Is(_object, CLASS_Window) || (((CWINDOW *)_object)->opened)))
 #define CAN_ARRANGE(_object) ((_object) && ((CWIDGET *)(_object))->flag.shown && !CWIDGET_test_flag(_object, WF_DELETED))
-//(IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
 
 #if USE_CACHE
 

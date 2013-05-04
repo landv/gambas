@@ -1,5 +1,7 @@
 ' Gambas module file
 
+Class DesktopMime
+
 Private $cArrow As New Collection
 
 Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
@@ -107,9 +109,12 @@ End
 #Endif
 
 Public Sub Main()
+
+  Dim hMime As DesktopMime
   
-  'Component.Load("gb.desktop")
-  'Application.Theme = "gambas"
-  'Print DesktopMime.FromFile("~/ticket ménagerie de verre.pdf").GetIcon("64")
+  Component.Load("gb.desktop")
+  Application.Theme = "gambas"
+  hMime = DesktopMime.FromFile("~/plugin-1.11.193.tar.gz")
+  Print hMime.GetIcon("64")
   
 End
