@@ -25,8 +25,6 @@
 
 #include "gb.image.h"
 #include "main.h"
-#include "cpoint.h"
-#include "crect.h"
 #include "cpaint.h"
 
 static GB_PAINT *_current = NULL;
@@ -575,7 +573,7 @@ IMPLEMENT_PROPERTY_EXTENTS(Paint_PathExtents, PathExtents)
 BEGIN_PROPERTY(Paint_ClipRect)
 
 	GB_EXTENTS ext;
-	CRECT *rect;
+	GEOM_RECT *rect;
 	int w, h;
 	
 	CHECK_DEVICE();
@@ -593,7 +591,7 @@ BEGIN_PROPERTY(Paint_ClipRect)
 			return;
 		}
 		
-		rect = CRECT_create();
+		rect = GEOM.CreateRect();
 		rect->x = ceilf(ext.x1);
 		rect->y = ceilf(ext.y1);
 		rect->w = w;
@@ -603,7 +601,7 @@ BEGIN_PROPERTY(Paint_ClipRect)
 	}
 	else
 	{
-		rect = (CRECT *)VPROP(GB_OBJECT);
+		rect = (GEOM_RECT *)VPROP(GB_OBJECT);
 		if (rect)
 			PAINT->ClipRect(THIS, rect->x, rect->y, rect->w, rect->h);
 		else
@@ -658,11 +656,11 @@ BEGIN_PROPERTY(Paint_BrushOrigin)
 	if (READ_PROPERTY)
 	{
 		PAINT->BrushOrigin(THIS, FALSE, &x, &y);
-		GB.ReturnObject(CPOINTF_create(x, y));
+		GB.ReturnObject(GEOM.CreatePointF(x, y));
 	}
 	else
 	{
-		CPOINT *p = VPROP(GB_OBJECT);
+		GEOM_POINT *p = VPROP(GB_OBJECT);
 		if (!p)
 			x = y = 0.0;
 		else
@@ -987,11 +985,11 @@ END_METHOD
 BEGIN_METHOD(Paint_TextSize, GB_STRING text)
 
 	float w, h;
-	CRECTF *size;
+	GEOM_RECTF *size;
 
 	CHECK_DEVICE();
 	PAINT->TextSize(THIS, STRING(text), LENGTH(text), &w, &h);
-	size = CRECTF_create();
+	size = GEOM.CreateRectF();
 	size->w = w;
 	size->h = h;
 	GB.ReturnObject(size);
@@ -1002,13 +1000,13 @@ END_METHOD
 BEGIN_METHOD(Paint_RichTextSize, GB_STRING text; GB_FLOAT width)
 
 	float w, h;
-	CRECTF *size;
+	GEOM_RECTF *size;
 	
 	w = VARGOPT(width, -1);
 	
 	CHECK_DEVICE();
 	PAINT->RichTextSize(THIS, STRING(text), LENGTH(text), w, &w, &h);
-	size = CRECTF_create();
+	size = GEOM.CreateRectF();
 	size->w = w;
 	size->h = h;
 	GB.ReturnObject(size);
@@ -1193,7 +1191,7 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	GB_IMG *image;
 	float x, y, w, h;
 	float opacity = VARGOPT(opacity, 1.0);
-	CRECT *source = (CRECT *)VARGOPT(source, NULL);
+	GEOM_RECT *source = (GEOM_RECT *)VARGOPT(source, NULL);
 
 	CHECK_DEVICE();
 	
@@ -1228,7 +1226,7 @@ BEGIN_METHOD(Paint_DrawPicture, GB_OBJECT picture; GB_FLOAT x; GB_FLOAT y; GB_FL
 
 	GB_PICTURE picture = VARG(picture);
 	GB_PICTURE_INFO info;
-	CRECT *source = (CRECT *)VARGOPT(source, NULL);
+	GEOM_RECT *source = (GEOM_RECT *)VARGOPT(source, NULL);
 	float x, y, w, h;
 
 	CHECK_DEVICE();
@@ -1258,7 +1256,7 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 
 	GB_IMAGE image = VARG(image);
 	GB_IMG *info = (GB_IMG *)image;
-	CRECT *source = (CRECT *)VARGOPT(source, NULL);
+	GEOM_RECT *source = (GEOM_RECT *)VARGOPT(source, NULL);
 	int zoom;
 	int x, y, sx, sy, sw, sh;
 	int i, j, xr, yr;

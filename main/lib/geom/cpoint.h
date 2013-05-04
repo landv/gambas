@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  cpoint.h
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,57 +21,34 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __CPOINT_H
+#define __CPOINT_H
 
+#include "gambas.h"
 #include "main.h"
 
-GB_INTERFACE GB EXPORT;
+#ifndef __CRECT_C
+extern GB_DESC PointDesc[];
+extern GB_DESC PointFDesc[];
+#endif
 
-// Prevents gbi3 from complaining
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  NULL
-};
-
-char *GB_INCLUDE EXPORT = "gb.qt4";
-
-int EXPORT GB_INIT(void)
-{
-	const char *comp = NULL;
-	char *env;
-	
-	env = getenv("GB_GUI");
-	if (env)
-	{
-		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
-		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
-	}
-	
-	if (!comp)
-	{
-		comp = "gb.gtk";
-		
-		env = getenv("KDE_FULL_SESSION");
-		
-		if (env && !strcmp(env, "true"))
-		{
-			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
+typedef
+	struct {
+		GB_BASE ob;
+		int x;
+		int y;
 		}
-	}
-		
-	if (GB.Component.Load(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
-  
-  return 0;
-}
+	CPOINT;
 
-void EXPORT GB_EXIT()
-{
-}
+typedef
+	struct {
+		GB_BASE ob;
+		double x;
+		double y;
+		}
+	CPOINTF;
 
+#endif
 
+CPOINT * CPOINT_create(int x, int y);
+CPOINTF * CPOINTF_create(double x, double y);

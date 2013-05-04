@@ -104,6 +104,7 @@ lib/db/Makefile \
 lib/vb/Makefile \
 lib/compress/Makefile \
 lib/option/Makefile \
+lib/geom/Makefile \
 lib/draw/Makefile \
 lib/gui/Makefile \
 lib/gui.opengl/Makefile \

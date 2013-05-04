@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  main.c
+  gb.geom.h
 
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,57 +21,61 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __GB_GEOM_H
+#define __GB_GEOM_H
 
-#include "main.h"
+#include "gambas.h"
 
-GB_INTERFACE GB EXPORT;
-
-// Prevents gbi3 from complaining
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  NULL
-};
-
-char *GB_INCLUDE EXPORT = "gb.qt4";
-
-int EXPORT GB_INIT(void)
-{
-	const char *comp = NULL;
-	char *env;
-	
-	env = getenv("GB_GUI");
-	if (env)
-	{
-		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
-		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
-	}
-	
-	if (!comp)
-	{
-		comp = "gb.gtk";
-		
-		env = getenv("KDE_FULL_SESSION");
-		
-		if (env && !strcmp(env, "true"))
-		{
-			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
+typedef
+	struct {
+		GB_BASE ob;
+		int x;
+		int y;
 		}
-	}
-		
-	if (GB.Component.Load(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
-  
-  return 0;
-}
+	GEOM_POINT;
 
-void EXPORT GB_EXIT()
-{
-}
+typedef
+	struct {
+		GB_BASE ob;
+		double x;
+		double y;
+		}
+	GEOM_POINTF;
 
+typedef
+	struct {
+		GB_BASE ob;
+		int x;
+		int y;
+		int w;
+		int h;
+		}
+	PACKED
+	GEOM_RECT;
 
+typedef
+	struct {
+		GB_BASE ob;
+		double x;
+		double y;
+		double w;
+		double h;
+		}
+	PACKED
+	GEOM_RECTF;
+
+#define GEOM_INTERFACE_VERSION 1
+
+typedef
+	struct {
+		int version;
+		GEOM_POINT *(*CreatePoint)(int x, int y);
+		GEOM_POINTF *(*CreatePointF)(int x, int y);
+		GEOM_RECT *(*CreateRect)(void);
+		GEOM_RECTF *(*CreateRectF)(void);
+		}
+	GEOM_INTERFACE;
+
+#endif
+
+ 

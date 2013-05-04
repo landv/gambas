@@ -23,55 +23,45 @@
 
 #define __MAIN_C
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <ctype.h>
+
+#include "gb_common.h"
+#include "cpoint.h"
+#include "crect.h"
 #include "main.h"
 
-GB_INTERFACE GB EXPORT;
+const GB_INTERFACE *GB_PTR EXPORT;
 
-// Prevents gbi3 from complaining
+void *GB_GEOM_1[] EXPORT = {
+
+  (void *)1,
+  (void *)CPOINT_create,
+  (void *)CPOINTF_create,
+  (void *)CRECT_create,
+  (void *)CRECTF_create,
+  NULL
+  };
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	PointDesc,
+	PointFDesc,
+	RectDesc,
+	RectFDesc,
   NULL
 };
 
-char *GB_INCLUDE EXPORT = "gb.qt4";
-
 int EXPORT GB_INIT(void)
 {
-	const char *comp = NULL;
-	char *env;
-	
-	env = getenv("GB_GUI");
-	if (env)
-	{
-		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
-		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
-	}
-	
-	if (!comp)
-	{
-		comp = "gb.gtk";
-		
-		env = getenv("KDE_FULL_SESSION");
-		
-		if (env && !strcmp(env, "true"))
-		{
-			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
-		}
-	}
-		
-	if (GB.Component.Load(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
-  
   return 0;
 }
+
 
 void EXPORT GB_EXIT()
 {
 }
-
 

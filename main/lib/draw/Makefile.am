@@ -1,4 +1,4 @@
-EXTRA_DIST = gb.image.h
+EXTRA_DIST = gb.image.h gb.geom.h
 
 gblib_LTLIBRARIES = gb.draw.la
 
@@ -10,8 +10,6 @@ gb_draw_la_SOURCES = \
  gb.draw.h gb.paint.h \
  gb_list.c \
  cpaint.h cpaint.c \
- crect.h crect.c crect_temp.h \
- cpoint.h cpoint.c cpoint_temp.h \
  main.h main.c
 
 

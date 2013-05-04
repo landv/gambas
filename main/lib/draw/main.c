@@ -30,24 +30,16 @@
 #include <ctype.h>
 
 #include "gb_common.h"
-#include "cpoint.h"
-#include "crect.h"
 #include "cpaint.h"
 #include "main.h"
 
 
 GB_INTERFACE GB EXPORT;
+GEOM_INTERFACE GEOM EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES [] EXPORT =
 {
-	PointDesc,
-	PointFDesc,
-	RectDesc,
-	RectFDesc,
-	//CDrawClipDesc,
-	//CDrawStyleDesc,
-	//CDrawDesc,
 	PaintExtentsDesc,
 	PaintMatrixDesc,
 	PaintBrushDesc,
@@ -64,8 +56,12 @@ void *GB_DRAW_1[] EXPORT =
 	NULL
 };
 
+const char *GB_INCLUDE EXPORT = "gb.geom";
+
 int EXPORT GB_INIT(void)
 {
+	GB.Component.Load("gb.geom");
+  GB.GetInterface("gb.geom", GEOM_INTERFACE_VERSION, &GEOM);
 	GB.Component.Load("gb.image");
   GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   return 0;

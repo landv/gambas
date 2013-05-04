@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  main.h
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,57 +21,17 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __MAIN_H
+#define __MAIN_H
 
-#include "main.h"
+#include "gambas.h"
+#include "gb_common.h"
+#include "gb.geom.h"
 
-GB_INTERFACE GB EXPORT;
+#ifndef __MAIN_C
+extern const GB_INTERFACE *GB_PTR;
+#endif
 
-// Prevents gbi3 from complaining
+#define GB (*GB_PTR)
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  NULL
-};
-
-char *GB_INCLUDE EXPORT = "gb.qt4";
-
-int EXPORT GB_INIT(void)
-{
-	const char *comp = NULL;
-	char *env;
-	
-	env = getenv("GB_GUI");
-	if (env)
-	{
-		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
-		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
-	}
-	
-	if (!comp)
-	{
-		comp = "gb.gtk";
-		
-		env = getenv("KDE_FULL_SESSION");
-		
-		if (env && !strcmp(env, "true"))
-		{
-			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
-		}
-	}
-		
-	if (GB.Component.Load(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
-  
-  return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-}
-
-
+#endif /* __MAIN_H */

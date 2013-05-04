@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  cpoint.c
 
   (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,57 +21,13 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#define __CPOINT_C
 
-#include "main.h"
+#include "gb_common.h"
+#include "cpoint.h"
+#include "crect.h"
+#include "cpoint_temp.h"
 
-GB_INTERFACE GB EXPORT;
-
-// Prevents gbi3 from complaining
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  NULL
-};
-
-char *GB_INCLUDE EXPORT = "gb.qt4";
-
-int EXPORT GB_INIT(void)
-{
-	const char *comp = NULL;
-	char *env;
-	
-	env = getenv("GB_GUI");
-	if (env)
-	{
-		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
-		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
-	}
-	
-	if (!comp)
-	{
-		comp = "gb.gtk";
-		
-		env = getenv("KDE_FULL_SESSION");
-		
-		if (env && !strcmp(env, "true"))
-		{
-			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
-		}
-	}
-		
-	if (GB.Component.Load(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
-  
-  return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-}
-
+IMPLEMENT_POINT_CLASS(CPOINT, Point, GB_INTEGER, int, "i", GB.ReturnInteger, ((CPOINT *)_object), CRECT, Rect)
+IMPLEMENT_POINT_CLASS(CPOINTF, PointF, GB_FLOAT, double, "f", GB.ReturnFloat, ((CPOINTF *)_object), CRECTF, RectF)
 
