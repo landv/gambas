@@ -226,9 +226,12 @@ static bool begin_session(CSMTPCLIENT *_object)
 		if (decode_mime(p->mime))
 			return TRUE;
 	
-		name = p->name;
-		if (!name || !*name)
+		if (!p->name_set)
 			name = "MIME part";
+		else if (!p->name)
+			name = "";
+		else
+			name = p->name;
 			
 		parent_part = NULL;
 	
@@ -275,13 +278,16 @@ static bool begin_session(CSMTPCLIENT *_object)
 		
 			decode_mime(p->mime);
 		
-			name = p->name;
-			if (!name || !*name)
+			if (!p->name_set)
 			{
 				sprintf(buffer, "MIME part #%d", i + 1);
 				name = buffer;
 			}
-		
+			else if (!p->name)
+				name = "";
+			else
+				name = p->name;
+			
 			part = libsmtp_part_new(parent_part, _mime_type, _mime_subtype, _mime_encoding, _mime_charset, name, -1, THIS->session);
 			if (!part)
 			{
@@ -530,7 +536,10 @@ BEGIN_METHOD(SmtpClient_Add, GB_STRING data; GB_STRING mime; GB_STRING name)
 	CSMTPPART *part = (CSMTPPART *)GB.Add(&THIS->parts);
 	
 	if (!MISSING(name))
+	{
 		GB.StoreString(ARG(name), &part->name);
+		part->name_set = TRUE;
+	}
 	if (!MISSING(mime))
 		GB.StoreString(ARG(mime), &part->mime);
 	GB.StoreString(ARG(data), &part->data);

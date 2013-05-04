@@ -35,6 +35,7 @@ typedef
 		char *mime;
 		char *data;
 		struct libsmtp_part_struct *part;
+		bool name_set;
 		}
 	CSMTPPART;
 	
