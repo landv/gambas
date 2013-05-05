@@ -117,6 +117,7 @@ Public Sub Run(iStyle As Integer)
   Dim sMarkup As String
   Dim bClose As Boolean
   Dim iStart As Integer
+  Dim bMarkup As Boolean
 
   'Print "    "; Bin$(Highlight.Tag, 16);; Highlight.Text
 
@@ -204,6 +205,7 @@ STATE_MARKUP:
   Add("<", Highlight.Keyword)
   
   iState = Highlight.Keyword
+  bMarkup = True  
   Do
     
     GoSub NEXT_CHAR
@@ -219,6 +221,7 @@ STATE_MARKUP:
     Else If sCar = " " Then
       Add(" ", iState)
       iState = Highlight.Keyword
+      bMarkup = False
       Continue
     Else If sCar = "=" Then
       Add("=", Highlight.Keyword)
@@ -229,7 +232,7 @@ STATE_MARKUP:
       Continue
     Endif
     
-    If iState = Highlight.Keyword Then sMarkup &= sCar
+    If bMarkup Then sMarkup &= sCar
     Add(sCar, iState)
     
   Loop
