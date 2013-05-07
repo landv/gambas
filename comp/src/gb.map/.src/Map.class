@@ -8,7 +8,7 @@ Property Height As Integer
 Property Zoom As Integer 
 Property Center As MapPoint
 Property Read PixelBox As Rect
-
+Property Read Bounds As MapBounds
 Private $iZoom As Integer = 1
 Private $mpCenter As New MapPoint
 Private $iTop As Integer
@@ -19,6 +19,7 @@ Private tmrLoad As New Timer As "tmrLoad"
 Private tmrDraw As New Timer As "tmrDraw"
 Private $bNeedReload As Boolean
 Private $PixelBox As New Rect
+Private $Bounds As New MapBounds
 Private $PrevBox As Rect
 Private $iPrevent As Integer = 256
 Private $aLayers As New _MapLayer[]
@@ -94,6 +95,10 @@ Private Sub SetBoxes()
   $PixelBox.Y = ptCenter.Y - ($iHeight / 2)
   $PixelBox.Right = ptCenter.x + ($iWidth / 2)
   $PixelBox.Bottom = ptCenter.Y + ($iHeight / 2)
+  
+  $Bounds.TopLeft = Geo.PixelToMapPoint(Point($PixelBox.x, $PixelBox.y), $iZoom)
+  $Bounds.BottomRight = Geo.PixelToMapPoint(Point($PixelBox.Right, $PixelBox.Bottom), $iZoom)
+  
   '$PixelBox.Width = $iWidth
   '$PixelBox.Height = $iHeight
   ' Print "Largeur/hauteur", $iWidth, $iHeight
@@ -199,7 +204,7 @@ Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
 
 End
 
-Public Sub _get(Name As String) As _MapLayer
+Public Sub _get(Name As String) As Object
   
   Return $aLayers[$aLayerNames.Find(Name)]
   
@@ -268,3 +273,9 @@ End
 ' Private Sub Preload_Write(Value As Boolean)
 '   
 ' End
+
+Private Function Bounds_Read() As MapBounds
+
+  Return $Bounds
+
+End

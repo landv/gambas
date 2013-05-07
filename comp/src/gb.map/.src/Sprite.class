@@ -1,0 +1,119 @@
+' Gambas class file
+
+Private $hRect As Rect
+Property {Image} As Image
+Property X As Integer
+Property Y As Integer
+Property Height As Integer
+Property Width As Integer
+Property Read {Rect} As Rect
+
+Private $hImage As Image
+
+Public Sub _new(hImage As Image, Optional hRect As Rect)
+  
+  $hImage = hImage
+  
+  If hRect Then 
+    $hRect = hRect  
+  Else
+    $hRect = Rect(0, 0, $hImage.Width, $hImage.Height)
+  Endif
+  
+End
+
+Public Sub Draw()
+  
+  Draw.Image($hImage, $hRect.x, $hRect.Y, $hRect.Width, $hRect.Height)
+  
+End
+
+
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value
+
+End
+
+Public Sub Move(X As Integer, Y As Integer, Optional Width As Integer, Optional Height As Integer)
+  
+  $hRect.X = X
+  $hRect.Y = Y
+  If Width Then $hRect.Width = Width
+  If Height Then $hRect.Y = Height
+  
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+
+  
+  $hRect.Width = Width
+  $hRect.Height = Height
+  
+End
+
+
+
+Private Function X_Read() As Integer
+
+  Return $hRect.X
+
+End
+
+Private Sub X_Write(Value As Integer)
+
+  $hRect.X = Value
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return $hRect.Y
+
+End
+
+Private Sub Y_Write(Value As Integer)
+
+  $hRect.Y = Value
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $hRect.Height
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  $hRect.Height = Value
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return $hRect.Width
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  $hRect.Width = Value
+
+End
+
+
+
+Private Function Rect_Read() As Rect
+
+  Return $hRect
+
+End
+

@@ -1,12 +1,21 @@
 ' Gambas class file
 
 Inherits _MapLayer
-Private $hShapes As New Shapes
+
+Public Const {Point} As Integer = 1
+Public Const MultiPoint As Integer = 8
+Public Const Polyline As Integer = 3
+Public Const Polygon As Integer = 5
+
+Private $hShapes As New _ShapeItem[]
 Private $himgPoint As Image
-Property Data As Shapes
+'Property Data As Shapes
 Property {Color} As Integer
 Private $icolor As Integer
 Private $sCurrent As String
+Private $colIDShape As New Collection
+Property Read Count As Integer
+
 Public Sub _new(Optional hShape As Shapes)
   
   $himgPoint = Image.Load("point.png")
@@ -17,10 +26,50 @@ Public Sub Load()
   
 End
 
-Public Sub AddPoint(Data As MapPoint)
+Public Sub AddPoint(Id As String, Data As MapPoint)
   
-  $hShapes.AddPoint(Data)
+  Dim hItem As New _ShapeItem
+  hItem.Type = Me.Point
+  hItem.Id = Id
+  hItem.Center = Data
+  hItem.Data = Data
+  $hShapes.Add(hItem)
+  $colIDShape[Id] = $hShapes.Max
+End
+
+Public Sub AddMultipoint(Id As String, Data As MapPoint[])
   
+  Dim hItem As New _ShapeItem
+  hItem.MultiPoint = MultiPoint
+  hItem.Id = Id
+  hItem.Center = GetCenter(Data)
+  hItem.Data = Data
+  $hShapes.Add(hItem)
+  $colIDShape[Id] = $hShapes.Max
+End
+
+Public Sub AddPolyLine(Id As String, Data As MapPoint[])
+  
+  Dim hItem As New _ShapeItem
+  hItem.Type = Polyline
+  hItem.Id = Id
+  hItem.Center = GetCenter(Data)
+  hItem.Box = GetDataBox(Data)
+  hItem.Data = Data
+  $hShapes.Add(hItem)
+  $colIDShape[Id] = $hShapes.Max
+End
+
+Public Sub AddPolygon(Id As String, Data As MapPoint[][])
+  
+  Dim hItem As New _ShapeItem
+  hItem.Type = Polygon
+  hItem.Id = Id
+  hItem.Center = GetCenter(Data[0])
+  hItem.Box = GetDataBox(Data[0])
+  hItem.Data = Data
+  $hShapes.Add(hItem)
+  $colIDShape[Id] = $hShapes.Max
 End
 
 Public Sub _Draw()
@@ -34,22 +83,22 @@ Public Sub _Draw()
   
   If $hShapes.Count = 0 Then Return
   For i = 0 To $hShapes.Max
-  iColor = Me.Color
+  iColor = Color.SetAlpha(Me.Color, 255 * Me.Opacity)
   If $hShapes[i].Selected Then icolor = Color.White
     Select Case $hShapes[i].Type
-      Case Shapes.Point
+      Case Me.Point
         pt = Geo.MapPointToPixel($hShapes[i].Data, hMap.zoom)
         Paint.Brush = Paint.Color(Color.Green)
         'Paint.Arc(pt.X - hMap.PixelBox.X, pt.Y - hMap.PixelBox.Y, 5)
         Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
         
-      Case Shapes.MultiPoint
+      Case MultiPoint
         For j = 0 To $hShapes[i].Data.Max
           pt = Geo.MapPointToPixel($hShapes[i].Data[j], hMap.zoom)
           Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
         Next
         
-      Case Shapes.Polygon
+      Case Polygon
         hPoly = New Integer[]
         For j = 0 To $hShapes[i].Data[0].Max
           pt = Geo.MapPointToPixel($hShapes[i].Data[0][j], hMap.zoom)
@@ -87,17 +136,12 @@ Public Sub _Draw()
   
 End
 
-Private Function Data_Read() As Shapes
+Public Function _get(Id As String) As _ShapeItem
   
-  Return $hShapes
+  Return $hShapes[$colIDShape[id]]
   
 End
 
-Private Sub Data_Write(Value As Shapes)
-  
-  $hShapes = Value
-  
-End
 
 Private Function GetMap() As Map
   
@@ -114,5 +158,67 @@ End
 Private Sub Color_Write(Value As Integer)
   
   $icolor = Value
+  
+End
+
+Static Public Function GetCenter(hPoints As MapPoint[]) As MapPoint
+  'Dim PCenter As New FPoint[]
+  Dim tmpA, A, Gx, Gy As Float
+  Dim j, k As Integer
+   'calcul du centre
+          'fp = New FPoint
+          A = 0
+          gx = 0
+          Gy = 0
+          For k = 0 To hPoints.Max
+            j = IIf(k + 1 <= hPoints.Max, k + 1, 0)
+            tmpA = (hPoints[k].Lon * hPoints[j].Lat) - (hPoints[j].Lon * hPoints[k].Lat)
+            A += tmpA
+            Gx += tmpA * (hPoints[k].Lon + hPoints[j].Lon)
+            Gy += tmpA * (hPoints[k].Lat + hPoints[j].Lat)
+          Next
+          A = A / 2
+          gx = gx / (6 * A) 
+          gy = gy / (6 * A) 
+          
+          Return MapPoint(GY, GX)
+  Catch
+
+End
+
+Private Function GetDataBox(hMapPoints As MapPoint[]) As RectF
+
+  Dim hPoint As MapPoint
+  Dim hRectF As New RectF
+  Dim X, Y, X2, Y2 As Float
+  X = hMapPoints[0].Lon
+  Y = hMapPoints[0].Lat
+  X2 = X
+  Y2 = Y
+  For Each hPoint In hMapPoints
+   X = Min(hPoint.lon, X)
+   Y = Min(hPoint.lat, Y)
+    X2 = Max(hPoint.lon, X2)
+    Y2 = Max(hPoint.lat, Y2)
+  Next
+  Return hRectF(X, Y, X2 - X, Y2 - Y)
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hShapes.Count
+
+End
+
+Public Sub Remove(Id As String)
+  
+  $hShapes.Remove($colIDShape[Id])
+  $colIDShape.Remove(Id)
+  
+End
+
+Public Sub Exist(Id As String) As Boolean
+  
+  Return $colIDShape.Exist(id)
   
 End

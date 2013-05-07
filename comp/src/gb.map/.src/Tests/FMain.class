@@ -34,7 +34,7 @@ Public Sub _new()
   MapView1.Map.AddShape("NewShape")
   
   'MapView1.Map["NewShape"].Data = LoadShapes()
-  
+'MapView1.ShowControls = False
   
   'Manage the list of layers
   For Each o In MapView1.Map
@@ -64,13 +64,13 @@ Public Sub MapView1_MouseDown()
   Endif
 
   If Mouse.Shift Then
-    If MapView1.Map["NewShape"].Data.Count = 0 Then 
+    If MapView1.Map["NewShape"].Count = 0 Then 
       hMapPoint.Add([Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)])
-      MapView1.Map["NewShape"].Data.AddPolygon(hMapPoint, "toto")
-      MapView1.Map["NewShape"].Data[0].Selected = True
+      MapView1.Map["NewShape"].AddPolygon("mypoly", hMapPoint)
+      MapView1.Map["NewShape"]["mypoly"].Selected = True
     Else
-      MapView1.Map["NewShape"].Data[0].Data[0].Add(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
-       MapView1.Map["NewShape"].Data[0].Center = Shapes.GetCenter(MapView1.Map["NewShape"].Data[0].Data[0])
+      MapView1.Map["NewShape"]["mypoly"].Data[0].Add(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
+       MapView1.Map["NewShape"]["mypoly"].Center = Shapes.GetCenter(MapView1.Map["NewShape"]["mypoly"].Data[0])
        
     Endif
     'MapView1.Map["NewShape"].Data.AddPoint(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))

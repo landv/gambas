@@ -5,7 +5,9 @@ Private $bVisible As Boolean = True
 Property Visible As Boolean
 Public Copyright As String 
 Public $aStack As New String[]
-Property Data As Shapes
+Property Opacity As Float
+Private $fOpaciy As Float = 1
+
 
 Event Refresh
 
@@ -51,13 +53,14 @@ Public Function CountActiveClients() As Integer
 End
 
 
+Private Function Opacity_Read() As Float
 
-Private Function Data_Read() As Shapes
-
+  Return $fOpaciy 
 
 End
 
-Private Sub Data_Write(Value As Shapes)
+Private Sub Opacity_Write(Value As Float)
 
+  $fOpaciy = Min(1, Max(0, Value))
 
 End

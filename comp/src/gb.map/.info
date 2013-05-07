@@ -66,6 +66,10 @@ PixelBox
 r
 Rect
 
+Bounds
+r
+MapBounds
+
 _ShowWithEffect
 v
 b
@@ -96,7 +100,7 @@ _MapShape
 (Name)s[(Shape)Shapes;]
 _get
 m
-_MapLayer
+o
 (Name)s
 _next
 m
@@ -165,15 +169,11 @@ C
 _Properties
 C
 s
-*,Border{Border.*},AllowEffect=true
+*,Border{Border.*},AllowEffect=true, ShowControls=true
 _Group
 C
 s
 View
-Map
-r
-Map
-
 Lock
 p
 b
@@ -182,7 +182,15 @@ Border
 p
 i
 
+Map
+r
+Map
+
 AllowEffect
+p
+b
+
+ShowControls
 p
 b
 
@@ -214,6 +222,14 @@ View_MouseWheel
 m
 
 
+_ZoomUp
+m
+
+(X)i(Y)i
+_ZoomDown
+m
+
+(X)i(Y)i
 Map_Refresh
 m
 

@@ -79,7 +79,7 @@ Public Sub _Draw()
         'Draw.Foreground = Color.Green
         'Draw.Text("TileOK", hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
       Case _Tile.Error
-        Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 125))
+        Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, Min(125, (255 * $fOpacity))))
         Paint.Rectangle(hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y, 256, 256)
         Paint.Fill
         'Draw.Image(Picture["icon:/256/cancel"].Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
@@ -442,3 +442,13 @@ Private Sub Opacity_Write(Value As Float)
   $fGradStep = $fOpacity / 10
 
 End
+
+Public Sub _free()
+  Dim hClient As HttpClient
+  For Each hClient In $aClients
+    hClient.Stop
+    
+  Next
+  $aClients.Clear
+End
+

@@ -110,7 +110,7 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
   Y1 = (y + hControl.RealTop)
   X2 = (x + hControl.RealLeft + hControl.RealWidth)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
-
+If Me.Tag = "**" Then Stop
   If $hBorder.RoundCorner._Active Then
     fLeftWidth = MTools.UnitsToPixels($hBorder._Left) / 2
     paint.LineWidth = fLeftWidth * 2
