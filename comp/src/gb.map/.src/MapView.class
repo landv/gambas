@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border{Border.*},AllowEffect=true, ShowControls=true"
+Public Const _Properties As String = "*,Border{Border.*},AllowEffect=true,ShowControls=true"
 Public Const _Group As String = "View"
 
 Property Lock As Boolean
@@ -125,8 +125,6 @@ End
 
 Public Sub View_MouseWheel()
   
-  
-  
   Draw.Begin($hZoomBuffer)
   Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
   $hmap.Draw
@@ -144,36 +142,38 @@ Public Sub View_MouseWheel()
 End
 
 Public Sub _ZoomUp(X As Integer, Y As Integer)
-
+  
   $ZX = X
   $ZY = Y
-  
-  Draw.Begin($hZoomBuffer)
+  If $bAllowEffect Then
+    Draw.Begin($hZoomBuffer)
     Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
     $hmap.Draw
-  Draw.End
-  If $hmap.Zoom <= 18 Then 
-    $iZoomWay = 1
-    $bZoomEffect = True
-    $tmrZoom.Start
+    Draw.End
+    If $hmap.Zoom <= 18 Then 
+      $iZoomWay = 1
+      $bZoomEffect = True
+      $tmrZoom.Start
+    Endif
   Endif
   Inc $hMap.Zoom
   
 End
 
 Public Sub _ZoomDown(X As Integer, Y As Integer)
-
+  
   $ZX = X
   $ZY = Y
-  
-  Draw.Begin($hZoomBuffer)
+  If $bAllowEffect Then 
+    Draw.Begin($hZoomBuffer)
     Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
     $hmap.Draw
-  Draw.End
-  If $hmap.Zoom > 1 Then 
-    $iZoomWay = -1
-    $bZoomEffect = True
-    $tmrZoom.Start
+    Draw.End
+    If $hmap.Zoom > 1 Then 
+      $iZoomWay = -1
+      $bZoomEffect = True
+      $tmrZoom.Start
+    Endif
   Endif
   Dec $hMap.Zoom
   
