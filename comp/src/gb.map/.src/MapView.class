@@ -32,9 +32,9 @@ Private $ZX As Integer
 Private $ZY As Integer
 Private $iZoomWay As Integer
 Private $fZoomStep As Float
-Private $iSpeedX As Integer
-Private $iSpeedY As Integer
-Private $fInertia As Float = 0.9
+Private $fSpeedX As Float
+Private $fSpeedY As Float
+Private $fInertia As Float = 0.90
 Private $bShowInertia As Boolean
 Private $bAllowEffect As Boolean = True
 Private $hViewLayer As New _ViewLayer As "ViewLayer"
@@ -203,7 +203,7 @@ Public Sub View_MouseUp()
   
   Last.Mouse = Mouse.Default
   If $bAllowEffect Then
-    If Abs($iSpeedx) > 4 Or If Abs($iSpeedY) > 4 Then $tmrOnMove.Start
+    If Abs($fSpeedx) > 4 Or If Abs($fSpeedY) > 4 Then $tmrOnMove.Start
   Endif
   If $bShowControls Then $hViewLayer._MouseUp()
   'Raise MouseUp
@@ -218,8 +218,8 @@ Public Sub View_MouseMove()
     
     hPix = New Point($pCurCenterPx.X, $pCurCenterPx.Y)
     
-    $iSpeedX = $tx - Mouse.X
-    $iSpeedY = $ty - Mouse.y
+    $fSpeedX = $tx - Mouse.X
+    $fSpeedY = $ty - Mouse.y
     
     hPix.X += $ix - Mouse.X
     hPix.Y += $iY - Mouse.Y
@@ -286,16 +286,16 @@ Public Sub tmrOnMove_Timer()
   Dim hpix As Point
   'Print "triger"
   hPix = Geo.MapPointToPixel($hmap.Center, $hmap.Zoom)
-  $iSpeedX *= $fInertia
-  $iSpeedY *= $fInertia
+  $fSpeedX *= $fInertia
+  $fSpeedY *= $fInertia
   
-  If Abs($iSpeedX) < 1 Or If Abs($iSpeedY) < 1 Then 
+  If Abs($fSpeedX) < (1 - $fInertia) Or If Abs($fSpeedY) < (1 - $fInertia) Then 
     $tmrOnMove.stop
     $bShowInertia = False
   Endif
   
-  hPix.X += $iSpeedX
-  hPix.Y += $iSpeedY
+  hPix.X += $fSpeedX
+  hPix.Y += $fSpeedY
   $hmap.Center = Geo.PixelToMapPoint(hpix, $hmap.Zoom)
   $hView.Refresh
   

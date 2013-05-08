@@ -63,10 +63,7 @@ Public Sub _MouseMove()
   Endif
   If $colSprite!cursor.Rect.Contains(Mouse.X, Mouse.Y) Then
     hMv.Mouse = Mouse.SizeV
-    If $bMouseDown Then
-      $bInCursor = True
-      
-    Endif
+    
     Return
   Endif
   If $colSprite!minus.Rect.Contains(Mouse.X, Mouse.Y) Then
@@ -105,7 +102,7 @@ Public Sub _MouseDown()
       hMv.Lock = True
     Endif
     If $colSprite!cursor.Rect.Contains(Mouse.X, Mouse.Y) Then 
-      
+      $bInCursor = True
       hMv.Refresh
       hMv.Lock = True
     Endif
