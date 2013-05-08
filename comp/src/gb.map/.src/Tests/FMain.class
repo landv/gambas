@@ -23,6 +23,7 @@ Public Sub _new()
   With MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
   '.Opacity = 0.5
   .Copyright = "OpenStreetMap contributors"
+  .Opacity = 0.5
   End With
   'MapView1.Map.AddShape("test")
     MapView1.Map.AddTile("Virtual Earth", "http://ecn.dynamic.t{s}.tiles.virtualearth.net/comp/ch/{q}?mkt=fr-fr&it=G,VE,BX,L,LA&shading=hill&n=z&cb=1").SubDomains = ["0", "1", "2"]
@@ -33,7 +34,7 @@ Public Sub _new()
   
   MapView1.Map.AddShape("NewShape")
   
-  'MapView1.Map["NewShape"].Data = LoadShapes()
+  'MapView1.Map["NewShape"].Points = LoadShapes()
 'MapView1.ShowControls = False
   
   'Manage the list of layers
@@ -69,11 +70,11 @@ Public Sub MapView1_MouseDown()
       MapView1.Map["NewShape"].AddPolygon("mypoly", hMapPoint)
       MapView1.Map["NewShape"]["mypoly"].Selected = True
     Else
-      MapView1.Map["NewShape"]["mypoly"].Data[0].Add(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
-       MapView1.Map["NewShape"]["mypoly"].Center = Shapes.GetCenter(MapView1.Map["NewShape"]["mypoly"].Data[0])
+      MapView1.Map["NewShape"]["mypoly"].Points[0].Add(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
+       MapView1.Map["NewShape"]["mypoly"].Center = Shapes.GetCenter(MapView1.Map["NewShape"]["mypoly"].Points[0])
        
     Endif
-    'MapView1.Map["NewShape"].Data.AddPoint(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
+    'MapView1.Map["NewShape"].Points.AddPoint(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
     MapView1.Refresh
   Endif
 
