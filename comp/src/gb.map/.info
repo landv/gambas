@@ -78,6 +78,10 @@ b
 :
 
 
+:Draw
+:
+
+
 Refresh
 m
 
@@ -97,7 +101,7 @@ _MapTile
 AddShape
 m
 _MapShape
-(Name)s[(Shape)Shapes;]
+(Name)s
 _get
 m
 o
@@ -118,6 +122,93 @@ tmrDraw_Timer
 m
 
 
+Grab
+m
+Image
+(Bounds)MapBounds;(iWidth)i(iHeight)i[(Padding)i(Zoom)i]
+#MapBounds
+
+C
+Left
+p
+f
+
+Lon
+p
+f
+
+Est
+p
+f
+
+Right
+p
+f
+
+Lon2
+p
+f
+
+West
+p
+f
+
+Top
+p
+f
+
+Lat
+p
+f
+
+North
+p
+f
+
+Bottom
+p
+f
+
+Lat2
+p
+f
+
+South
+p
+f
+
+TopLeft
+p
+MapPoint
+
+NorthEast
+p
+MapPoint
+
+BottomRight
+p
+MapPoint
+
+SouthWest
+p
+MapPoint
+
+InBounds
+m
+b
+(P)MapPoint;
+Contain
+m
+b
+(Bound)MapBounds;
+Merge
+m
+MapBounds
+(Bound)MapBounds;
+_Call
+M
+MapBounds
+(NorthEast)MapPoint;(SouthWest)MapPoint;
 #MapPoint
 
 C
@@ -312,9 +403,9 @@ _ShapeItem
 #_ShapeItem
 
 C
-Box
+Bounds
 v
-RectF
+MapBounds
 
 Id
 v

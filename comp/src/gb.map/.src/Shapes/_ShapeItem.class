@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Export
-Public Box As New RectF
+Public Bounds As New MapBounds
 Public Id As String
 Public Type As Integer
 Public Points As Object
@@ -11,8 +11,8 @@ Public Image As Image
 
 Public Function Contains(hMapPoint As MapPoint) As Boolean
   
-  If Box.X < hMapPoint.Lon And Box.Right > hMapPoint.Lon Then
-    If Box.Y < hMapPoint.Lat And Box.Bottom > hMapPoint.Lat Then
+  If Bounds.X < hMapPoint.Lon And Bounds.Right > hMapPoint.Lon Then
+    If Bounds.Y < hMapPoint.Lat And Bounds.Bottom > hMapPoint.Lat Then
       Return True
     Endif
   Endif

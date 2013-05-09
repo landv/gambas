@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Export
 Property Left, Lon, Est As Float
 Property Right, Lon2, West As Float
 Property Top, Lat, North As Float
@@ -7,8 +8,8 @@ Property Bottom, Lat2, South As Float
 
 Private $mpTopLeft As New MapPoint
 Private $mpBottomRight As New MapPoint
-Property TopLeft As MapPoint
-Property BottomRight As MapPoint
+Property TopLeft, NorthEast As MapPoint
+Property BottomRight, SouthWest As MapPoint
 
 Private Function Left_Read() As Float
 
@@ -111,4 +112,13 @@ Private Sub BottomRight_Write(Value As MapPoint)
 
   $mpBottomRight = Value
 
+End
+
+Static Public Function _Call(NorthEast As MapPoint, SouthWest As MapPoint) As MapBounds
+  
+  Dim hBounds As New MapBounds
+
+    hBounds.TopLeft = NorthEast
+    hBounds.BottomRight = SouthWest
+  Return hBounds
 End

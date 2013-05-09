@@ -28,7 +28,7 @@ Private $aLayerNames As New String[]
 'Private $bPreload As Boolean
 Public _ShowWithEffect As Boolean
 Event Refresh
-
+Event Draw
 Private Function Top_Read() As Integer
   
   Return $iTop
@@ -190,18 +190,18 @@ Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collectio
   
 End
 
-Public Function AddShape(Name As String, Optional Shape As Shapes) As _MapShape
+Public Function AddShape(Name As String) As _MapShape
   
-  Dim hLayer As New _MapShape(Shape)
+  Dim hLayer As New _MapShape
   
   hLayer.Name = Name
   
   $aLayers.Add(hLayer)
   $aLayerNames.Add(Name)
   Object.Attach(hLayer, Me, "Layer")
-  If Shape Then hLayer.Data = Shape
+  'If Shape Then hLayer.Data = Shape
   Return hLayer
-
+  
 End
 
 Public Sub _get(Name As String) As Object
@@ -244,7 +244,7 @@ Public Sub Draw()
     Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
     Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
   Endif 
-  
+  Raise Draw
 End
 
 Public Sub Layer_Refresh()
@@ -275,7 +275,56 @@ End
 ' End
 
 Private Function Bounds_Read() As MapBounds
-
+  
   Return $Bounds
+  
+End
+
+Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer, Optional Padding As Integer, Optional Zoom As Integer) As Image
+
+  Dim i As Integer
+  Dim hBndCenter As MapPoint = MapPoint((Bounds.Lat + Bounds.Lat2) / 2, (Bounds.Lon + Bounds.Lon2) / 2)
+  Dim hPix, hPix2 As Point
+  Dim hMpBounds As MapBounds
+  Dim hImg As New Image(iWidth, iHeight, Color.Yellow)
+  Dim bLoad As Boolean
+  Dim hLayer As _MapLayer
+  'Définir la zone a afficher
+  'On centre la carte sur le bound
+  Me.Center = hBndCenter
+  Me.Resize(iwidth, iHeight)
+
+  If Zoom Then 
+    
+    Me.Zoom = Zoom
+    
+  Else
+    
+    For i = 18 To 1 Step -1
+      hpix = Geo.MapPointToPixel(hBndCenter, i)
+      hPix2 = Geo.MapPointToPixel(Bounds.BottomRight, i)
+      If (hPix2.X - hpix.X) <= (iWidth / 2 - Padding) And If (hpix.Y - hPix2.Y) <= (iHeight / 2 - Padding) Then
+        Break
+      Endif
+    Next
+
+    Me.Zoom = i 
+  Endif
+  
+  tmrLoad_Timer
+  
+  Repeat
+    bLoad = False
+    For Each hLayer In $aLayers
+      If hLayer.loading = True Then bLoad = True
+      Wait
+    Next
+  Until bLoad = False
+  
+  Draw.Begin(hImg)
+  Draw()
+  Draw.End
+  
+  Return hImg
 
 End

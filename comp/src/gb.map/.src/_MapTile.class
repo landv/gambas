@@ -17,6 +17,9 @@ Private $aPreload As New String[]
 Private $bPreloadMode As Boolean
 Private $fGradStep As Float = 0.1
 Private $bIsQuadKey As Boolean
+Property Read Loading As Boolean
+Private $bLoading As Boolean 
+Private $iCli As Integer
 Event Refresh
 
 Public Sub _new(Optional CacheName As String)
@@ -197,7 +200,7 @@ Public Sub Load()
   
   $bPreloadMode = False
   $tmrGet.Trigger
-  
+  'tmrGet_Timer
 End
 
 Private Sub ReLoadTile(hTile As _Tile)
@@ -261,18 +264,21 @@ Public Sub tmrGet_Timer()
   Do
     
     If $bPreloadMode Then
+      $bLoading = False
       If $aPreload.Count = 0 Then Return
       hClient = GetClient()
       If Not hClient Then Return
       sUrl = $aPreload.Pop()
       sFile = $aPreload.Pop()
     Else
+      $bLoading = $aStack.Count > 0
       If $aStack.count = 0 Then 
         $bPreloadMode = True
         Return
       Endif
       hClient = GetClient()
       If Not hClient Then Return
+      Inc $iCli
       sUrl = $aStack.Pop()
       sFile = $aStack.Pop()
     Endif
@@ -298,7 +304,7 @@ End
 Public Sub Client_Finished()
   
   Dim hTile As _Tile 
-  
+  Dec $iCli
   'If Not $bPreloadMode Then
   hTile = $colTiles[Last.Tag]
   If Not hTile Then Goto Skip
@@ -308,6 +314,7 @@ Public Sub Client_Finished()
     ReLoadTile(hTile)
     Return
   Endif
+  'Print hTile.Name
   hTile.Status = _Tile.Normal
   Raise Refresh
   'Endif
@@ -320,7 +327,7 @@ End
 Public Sub Client_Error()
   
   Dim hTile As _Tile
-  
+  Dec $iCli
   'If Not $bPreloadMode Then
   hTile = $coltiles[Last.Tag]
   If Not hTile Then Goto Skip
@@ -452,3 +459,18 @@ Public Sub _free()
   $aClients.Clear
 End
 
+
+Private Function Loading_Read() As Boolean
+' Dim bLoad As Boolean
+' Dim i As Integer
+' 
+' For i = 0 To $aClients.Max
+'   If $aClients[i].Status <> Net.Inactive Then bLoad = True
+'  Print $aClients[i].Status 
+' 'Print bLoad
+' Next
+' 'Print bLoad
+'   Return $tmrGet.Enabled Or bLoad
+'Print $bLoading
+Return $bLoading '$iCli > 0 And $aStack.Count > 0
+End

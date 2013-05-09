@@ -7,6 +7,7 @@ Public Copyright As String
 Public $aStack As New String[]
 Property Opacity As Float
 Private $fOpaciy As Float = 1
+Property Read Loading As Boolean
 
 
 Event Refresh
@@ -62,5 +63,11 @@ End
 Private Sub Opacity_Write(Value As Float)
 
   $fOpaciy = Min(1, Max(0, Value))
+
+End
+
+Private Function Loading_Read() As Boolean
+
+  
 
 End

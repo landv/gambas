@@ -19,7 +19,7 @@ Property Image As Image
 Private $imgPointImage As Image
 
 
-Public Sub _new(Optional hShape As Shapes)
+Public Sub _new()
   
   $himgPoint = Image.Load("point.png")
   
@@ -36,6 +36,7 @@ Public Sub AddPoint(Id As String, Points As MapPoint)
   hItem.Id = Id
   hItem.Center = Points
   hItem.Points = Points
+  hItem.Bounds = MapBounds(Points, Points)
   $hShapes.Add(hItem)
   $colIDShape[Id] = $hShapes.Max
 End
@@ -47,6 +48,7 @@ Public Sub AddMultipoint(Id As String, Points As MapPoint[])
   hItem.Id = Id
   hItem.Center = GetCenter(Points)
   hItem.Points = Points
+  hItem.Bounds = GetPointBounds(Points)
   $hShapes.Add(hItem)
   $colIDShape[Id] = $hShapes.Max
 End
@@ -57,7 +59,7 @@ Public Sub AddPolyLine(Id As String, Points As MapPoint[])
   hItem.Type = Polyline
   hItem.Id = Id
   hItem.Center = GetCenter(Points)
-  hItem.Box = GetPointsBox(Points)
+  hItem.Bounds = GetPointBounds(Points)
   hItem.Points = Points
   $hShapes.Add(hItem)
   $colIDShape[Id] = $hShapes.Max
@@ -69,7 +71,7 @@ Public Sub AddPolygon(Id As String, Points As MapPoint[][])
   hItem.Type = Polygon
   hItem.Id = Id
   hItem.Center = GetCenter(Points[0])
-  hItem.Box = GetPointsBox(Points[0])
+  hItem.Bounds = GetPointBounds(Points[0])
   hItem.Points = Points
   $hShapes.Add(hItem)
   $colIDShape[Id] = $hShapes.Max
@@ -192,10 +194,10 @@ Static Public Function GetCenter(hPoints As MapPoint[]) As MapPoint
 
 End
 
-Private Function GetPointsBox(hMapPoints As MapPoint[]) As RectF
+Private Function GetPointBounds(hMapPoints As MapPoint[]) As MapBounds
 
   Dim hPoint As MapPoint
-  Dim hRectF As New RectF
+  Dim hBounds As New RectF
   Dim X, Y, X2, Y2 As Float
   X = hMapPoints[0].Lon
   Y = hMapPoints[0].Lat
@@ -207,7 +209,7 @@ Private Function GetPointsBox(hMapPoints As MapPoint[]) As RectF
     X2 = Max(hPoint.lon, X2)
     Y2 = Max(hPoint.lat, Y2)
   Next
-  Return hRectF(X, Y, X2 - X, Y2 - Y)
+  Return MapBounds(MapPoint(Y, X), MapPoint(Y2, X2))
 End
 
 Private Function Count_Read() As Integer
@@ -248,13 +250,13 @@ Public Sub Refresh()
     
   Case Me.Point
     hItem.Center = hItem.Points
-    hItem.Box = RectF(hItem.Points.Lon, hItem.Points.Lat, 0, 0)
+    hItem.Bounds = MapBounds(hItem.Points, hItem.Points)
   Case Polyline, MultiPoint
     hItem.Center = GetCenter(hItem.Points)
-    hItem.Box = GetPointsBox(hItem.Points)
+    hItem.Bounds = GetPointBounds(hItem.Points)
   Case Polygon
     hItem.Center = GetCenter(hItem.Points[0])
-    hItem.Box = GetPointsBox(hItem.Points[0])
+    hItem.Bounds = GetPointBounds(hItem.Points[0])
   End Select
   Next
   
