@@ -87,8 +87,9 @@ Public Sub _Draw()
   Dim iColor As Integer
   
   If $hShapes.Count = 0 Then Return
+  Paint.LineWidth = 2
   For i = 0 To $hShapes.Max
-  iColor = Color.SetAlpha(Me.Color, 255 * Me.Opacity)
+  iColor = Color.SetAlpha(IIf($hShapes[i].Color, $hShapes[i].Color, Me.Color), 255 - 255 * Me.Opacity)
   If $hShapes[i].Selected Then icolor = Color.White
     Select Case $hShapes[i].Type
       Case Me.Point
@@ -113,7 +114,7 @@ Public Sub _Draw()
           hPoly.Add(pt.x - hMap.PixelBox.X)
           hPoly.Add(pt.y - hMap.PixelBox.Y)
         Next
-        Paint.LineWidth = 2
+        'Paint.LineWidth = 2
         Paint.Brush = Paint.Color(Color.SetAlpha(icolor, 125))
         Paint.Polygon(hPoly)
         Paint.fill(True)
