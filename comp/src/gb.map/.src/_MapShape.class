@@ -12,11 +12,9 @@ Private $himgPoint As Image
 'Property Points As Shapes
 Property {Color} As Integer
 Private $icolor As Integer
-Private $sCurrent As String
 Private $colIDShape As New Collection
 Property Read Count As Integer
 Property Image As Image
-Private $imgPointImage As Image
 
 
 Public Sub _new()
@@ -79,7 +77,6 @@ End
 
 Public Sub _Draw()
   
-  Dim hItem As _ShapeItem
   Dim i, j As Integer
   Dim pt As Point
   Dim hMap As Map = GetMap()
@@ -127,7 +124,7 @@ Public Sub _Draw()
         '   Paint.Fill
         ' Endif
         
-      Case Shapes.Polyline
+      Case Me.Polyline
         For j = 0 To $hShapes[i].Points.Max
           pt = Geo.MapPointToPixel($hShapes[i].Points[0][j], hMap.zoom)
           hPoly.Add(pt.x - hMap.PixelBox.X)
@@ -198,7 +195,6 @@ End
 Private Function GetPointBounds(hMapPoints As MapPoint[]) As MapBounds
 
   Dim hPoint As MapPoint
-  Dim hBounds As New RectF
   Dim X, Y, X2, Y2 As Float
   X = hMapPoints[0].Lon
   Y = hMapPoints[0].Lat

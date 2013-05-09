@@ -242,7 +242,7 @@ Private Function MakeDir(Path As String) As Boolean
     
   Next
   
-  If _MapTileCache.Debug Then Debug "Création du Dossier: " & sDir
+  If Map._Debug Then Debug "Création du Dossier: " & sDir
   
 Catch
   

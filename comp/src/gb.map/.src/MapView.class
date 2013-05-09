@@ -18,7 +18,6 @@ Private $hCenter As MapPoint
 Private $hMap As New Map As "Map"
 Private $hView As DrawingArea
 Private $hPan As New Panel(Me)
-Private hWatch As New Watcher(Me) As "Watcher"
 Private $pCurCenterPx As Point
 Private $iX As Integer
 Private $iY As Integer
@@ -31,7 +30,6 @@ Private $fZoomEffect As Float = 1
 Private $ZX As Integer
 Private $ZY As Integer
 Private $iZoomWay As Integer
-Private $fZoomStep As Float
 Private $fSpeedX As Float
 Private $fSpeedY As Float
 Private $fInertia As Float = 0.90

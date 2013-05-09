@@ -74,6 +74,10 @@ _ShowWithEffect
 v
 b
 
+_Debug
+V
+b
+
 :Refresh
 :
 
@@ -349,57 +353,6 @@ tmrOnMove_Timer
 m
 
 
-#Shapes
-
-C
-Point
-C
-i
-1
-MultiPoint
-C
-i
-8
-Polyline
-C
-i
-3
-Polygon
-C
-i
-5
-Count
-r
-i
-
-Max
-r
-i
-
-AddMultiPoint
-m
-
-(Data)MapPoint[];[(Id)s]
-AddPoint
-m
-
-(Data)MapPoint;[(Id)s]
-AddPolyline
-m
-
-(Data)MapPoint[];[(Id)s]
-GetCenter
-M
-MapPoint
-(hPoints)MapPoint[];
-AddPolygon
-m
-
-(Data)MapPoint[][];[(Id)s]
-_get
-m
-_ShapeItem
-(Index)i
 #_ShapeItem
 
 C

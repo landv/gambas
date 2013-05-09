@@ -17,16 +17,14 @@ Private $iWidth As Integer
 Private $iHeight As Integer
 Private tmrLoad As New Timer As "tmrLoad"
 Private tmrDraw As New Timer As "tmrDraw"
-Private $bNeedReload As Boolean
 Private $PixelBox As New Rect
 Private $Bounds As New MapBounds
 Private $PrevBox As Rect
 Private $iPrevent As Integer = 256
 Private $aLayers As New _MapLayer[]
 Private $aLayerNames As New String[]
-'Property Preload As Boolean
-'Private $bPreload As Boolean
 Public _ShowWithEffect As Boolean
+Static Public _Debug As Boolean
 Event Refresh
 Event Draw
 Private Function Top_Read() As Integer
@@ -285,7 +283,6 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
   Dim i As Integer
   Dim hBndCenter As MapPoint = MapPoint((Bounds.Lat + Bounds.Lat2) / 2, (Bounds.Lon + Bounds.Lon2) / 2)
   Dim hPix, hPix2 As Point
-  Dim hMpBounds As MapBounds
   Dim hImg As New Image(iWidth, iHeight, Color.Yellow)
   Dim bLoad As Boolean
   Dim hLayer As _MapLayer

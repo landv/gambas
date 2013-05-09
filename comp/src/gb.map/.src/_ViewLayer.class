@@ -54,7 +54,6 @@ End
 Public Sub _MouseMove()
   
   Dim hMv As MapView = GetMapView()
-  Dim iMouse As Integer = hMv.Mouse
   Dim iZoom As Integer
   'hMv.Mouse = Mouse.Default
   If $colSprite!plus.Rect.Contains(Mouse.X, Mouse.Y) Then

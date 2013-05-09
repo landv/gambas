@@ -71,8 +71,8 @@ Public Sub MapView1_MouseDown()
       MapView1.Map["NewShape"]["mypoly"].Selected = True
     Else
       MapView1.Map["NewShape"]["mypoly"].Points[0].Add(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
-       MapView1.Map["NewShape"]["mypoly"].Center = Shapes.GetCenter(MapView1.Map["NewShape"]["mypoly"].Points[0])
-       
+       'MapView1.Map["NewShape"]["mypoly"].Center = Shapes.GetCenter(MapView1.Map["NewShape"]["mypoly"].Points[0])
+       MapView1.Map["NewShape"].Refresh
     Endif
     'MapView1.Map["NewShape"].Points.AddPoint(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
     MapView1.Refresh
@@ -180,38 +180,3 @@ Public Sub Panel3_MouseDown()
 
 End
 
-
-Public Function LoadShapes() As Shapes
-
-  Dim hdoc As New XmlDocument
-  Dim el As XmlElement
-  Dim el2 As XmlElement
-  Dim hShapes As New Shapes
-  Dim hMP As New MapPoint[][]
-  Dim hmps As MapPoint[]
-  Dim mp As MapPoint
-  Dim s As String
-  
-  hdoc.Open("parcellaire.kml")
-  For Each el In hdoc.GetElementsByTagName("Polygon")
-    el.GetAttribute("index")
-     hmp = New MapPoint[][]
-     el2 = el.GetChildrenByTagName("Coordinates")[0]
-     hmps = New MapPoint[]
-     hMP.Add(hmps)
-     For Each s In Split(Replace(el2.TextContent, "\n", " "), " ")
-       mp = New MapPoint
-       mp.Lon = Split(s)[0]
-       mp.Lat = Split(s)[1]
-       hMP[0].Add(mp)
-     Next
-    
-     hShapes.AddPolygon(hmp)
-     
-     
-     
-     
-  Next
- Return hShapes
-
-End
