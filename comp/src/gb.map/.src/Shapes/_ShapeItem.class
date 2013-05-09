@@ -12,8 +12,8 @@ Public Image As Image
 
 Public Function Contains(hMapPoint As MapPoint) As Boolean
   
-  If Bounds.X < hMapPoint.Lon And Bounds.Right > hMapPoint.Lon Then
-    If Bounds.Y < hMapPoint.Lat And Bounds.Bottom > hMapPoint.Lat Then
+  If Bounds.Lon < hMapPoint.Lon And Bounds.lon2 > hMapPoint.Lon Then
+    If Bounds.Lat < hMapPoint.Lat And Bounds.Lat2 > hMapPoint.Lat Then
       Return True
     Endif
   Endif

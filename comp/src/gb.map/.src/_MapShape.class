@@ -15,6 +15,7 @@ Private $icolor As Integer
 Private $colIDShape As New Collection
 Property Read Count As Integer
 Property Image As Image
+Property Read Max As Integer
 
 
 Public Sub _new()
@@ -257,4 +258,10 @@ Public Sub Refresh()
   End Select
   Next
   
+End
+
+Private Function Max_Read() As Integer
+
+  Return $hShapes.Max
+
 End
