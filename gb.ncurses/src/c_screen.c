@@ -235,7 +235,7 @@ GB_DESC CScreenDesc[] = {
 
 	GB_STATIC_METHOD("_init", NULL, Screen_init, NULL),
 	GB_STATIC_METHOD("Refresh", NULL, Screen_Refresh, NULL),
-	GB_STATIC_METHOD("Resize", NULL, Screen_Resize, NULL),
+	GB_STATIC_METHOD("Resize", NULL, Screen_Resize, "(Lines)i(Cols)i"),
 
 	GB_STATIC_PROPERTY("Cursor", "i", Screen_Cursor),
 	GB_STATIC_PROPERTY("Echo", "b", Screen_Echo),
