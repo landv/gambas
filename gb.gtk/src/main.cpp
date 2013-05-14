@@ -236,7 +236,9 @@ extern "C"
 		CLASS_Image = GB.FindClass("Image");
 		CLASS_SvgImage = GB.FindClass("SvgImage");
 		
+#if !defined(GLIB_VERSION_2_36)
 		g_type_init();
+#endif /* !defined(GLIB_VERSION_2_36) */
 		
 		return -1;
 	}

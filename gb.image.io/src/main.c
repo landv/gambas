@@ -39,9 +39,10 @@ int EXPORT GB_INIT(void)
 {
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 	
+#if !defined(GLIB_VERSION_2_36)
 	// Bug in the gdk-pixbuf documentation: the following is mandatory.
 	g_type_init();
-	
+#endif /* !defined(GLIB_VERSION_2_36) */
 	return 0;
 }
 
