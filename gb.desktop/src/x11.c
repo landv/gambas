@@ -642,7 +642,7 @@ static void init_keycode()
   	for (j = 0; j < _modifier_map->max_keypermod; j++)
   	{
   		//for (k = 0; k < 3; k++)
-				switch (XKeycodeToKeysym(_display, *p, 0))
+				switch (XkbKeycodeToKeysym(_display, *p, 0, 0))
 				{
 					case XK_Shift_L: _shift_keycode = pm; break;
 					case XK_Mode_switch: _alt_gr_keycode = pm; break;
