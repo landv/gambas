@@ -42,6 +42,5 @@ Public Sub Form_Close()
   If txtServer.Text Then Settings["/Conecction/Host"] = txtServer.Text
   If txtUser.Text Then Settings["/Conecction/User"] = txtUser.Text
   If txtPort.Text Then Settings["/Conecction/Port"] = txtPort.Text
-  If Error Then Message.Error(Error.Text)
 
 End

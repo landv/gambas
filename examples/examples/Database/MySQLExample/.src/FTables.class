@@ -92,10 +92,6 @@ End
 
 Public Procedure SearchInfo() 'Search for the info in the database
 
-  Dim iCounter As Integer
-  Dim iCounter2 As Integer
-  Dim iPos As Integer = -1
-
   Inc Application.Busy
   tvwTables.Clear()
   tvwTables.Rows.Count = 0
@@ -700,7 +696,7 @@ Public Sub tvwTables_Save(Row As Integer, Column As Integer, Value As String)
       modMain.$Connection.MySQL.Table.ModifyColumn(tvwTables[Row, 0].Text, "CHARACTER SET",, tvwTables[Row, 3].Text & " COLLATE " & Value)
     Default
   End Select
-  Refresh(tvwTables.Row, tabData.Index)
+  RefreshData(tvwTables.Row, tabData.Index)
   Catch
     modMain.Error()
 
@@ -813,7 +809,7 @@ Public Sub tvwFields_Save(Row As Integer, Column As Integer, Value As String)
       modMain.$Connection.MySQL.Table.ModifyColumn(tvwTables[tvwTables.Row, 0].Text, "MODIFY", tvwFields[Row, 1].Text, sDefinition)
     Default
   End Select
-  Refresh(tvwTables.Row, tabData.Index)
+  RefreshData(tvwTables.Row, tabData.Index)
   Catch
     modMain.Error()
 
@@ -911,21 +907,21 @@ Public Sub Action_Activate(Name As String) As Boolean
     Case "NewItem" 'tbtNew, F2
       If tbtLock.Value Then Return
       NewItem()
-      Refresh(tvwTables.Row, tabData.Index)
+      RefreshData(tvwTables.Row, tabData.Index)
     Case "EditItem" 'tbtNew, Ctrl + E
       If tbtLock.Value Then Return
       EditItem()
-      Refresh(tvwTables.Row, tabData.Index)
+      RefreshData(tvwTables.Row, tabData.Index)
     Case "DeleteItem" 'tbtDelete, Del
       If tbtLock.Value Then Return
       DeleteItem()
-      Refresh(tvwTables.Row, tabData.Index)
+      RefreshData(tvwTables.Row, tabData.Index)
     Case "Refresh" 'F5, tbtRefresh
-      Refresh(tvwTables.Row, tabData.Index)
+      RefreshData(tvwTables.Row, tabData.Index)
     Case "NewDatabase" 'tbtNewDatabase
       modMain.$hFNewDatabase = New FNewDatabase
       modMain.$hFNewDatabase.ShowModal()
-      Refresh(tvwTables.Row, tabData.Index)
+      RefreshData(tvwTables.Row, tabData.Index)
       Form_Open()
     Case "DeleteDatabase" 'tbtDeleteDatabase
       If Message.Question(Subst(("Do you realy want to delete the database: <b>&1</b>?"), modMain.$Connection.Name), ("&Yes"), ("&No")) = 1 Then
@@ -933,7 +929,7 @@ Public Sub Action_Activate(Name As String) As Boolean
         modMain.$Connection.MySQL.Use("mysql")
         Form_Open()
       Endif
-      Refresh(tvwTables.Row, tabData.Index)
+      RefreshData(tvwTables.Row, tabData.Index)
     Case "Lock"
       tbtDeleteDatabase.Enabled = Not tbtDeleteDatabase.Enabled
       tbtNewDatabase.Enabled = Not tbtNewDatabase.Enabled
@@ -986,7 +982,7 @@ Public Procedure NewItem()
       modMain.$hFNewEvent.ShowModal()
     Default
   End Select
-  Refresh(tvwTables.Row, tabData.Index)
+  RefreshData(tvwTables.Row, tabData.Index)
 
 End
 
@@ -1039,7 +1035,7 @@ Public Procedure DeleteItem()
 
 End
 
-Public Procedure Refresh(Table As Integer, Tab As Integer)
+Public Procedure RefreshData(Table As Integer, Tab As Integer)
 
   textResult.Clear()
   SearchInfo()
@@ -1048,20 +1044,6 @@ Public Procedure Refresh(Table As Integer, Tab As Integer)
   FieldInfo()
   IndexInfo()
   tabData.Index = Tab
-
-End
-
-Private Function StripWhite(Text As String) As String
-
-  Dim asText As New String[]
-  Dim sWord As String
-  Dim sNewText As String
-
-  asText = Split(Text, " ")
-  For Each sWord In asText
-    If sWord <> "" Then sNewText &= sWord & " "
-  Next
-  Return Left(sNewText, -1)
 
 End
 
@@ -1107,7 +1089,7 @@ Public Sub tvwIndexes_DblClick()
     modMain.Error()
 
 End
-'***************************** End of Procedures for indexes ******************
+'***************************** End of Procedures for indexes *************************
 
 '**************************** Procedures for sorting info ********************
 Public Sub tvwFields_ColumnClick(Column As Integer)
