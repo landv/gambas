@@ -84,7 +84,6 @@ static void ftp_reset(void *_object)
 {
 	GB.FreeString(&THIS->data);
 	GB.Unref(&THIS_FTP->commands);
-	CURL_set_progress(THIS_CURL, FALSE);
 }
 
 

@@ -301,6 +301,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPHEADER, headers);
+	CURL_set_progress(THIS_CURL, TRUE);
 
 	if (THIS->async)
 	{
@@ -359,7 +360,6 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	
 	THIS_HTTP->len_sent = 0;
 
-
 	mylen = strlen(sContent) + strlen("Content-Type: ") + 1;
 	GB.Alloc((void*)&THIS_HTTP->sContentType, mylen);
 	
@@ -392,6 +392,8 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 		curl_easy_setopt(THIS_CURL, CURLOPT_POSTFIELDSIZE, lendata);
 	}
 
+	CURL_set_progress(THIS_CURL, TRUE);
+	
 	if (THIS->async)
 	{
 		CURL_start_post(THIS);
@@ -448,7 +450,7 @@ BEGIN_PROPERTY(HttpClient_CookiesFile)
 END_PROPERTY
 
 
-BEGIN_PROPERTY (HttpClient_Auth)
+BEGIN_PROPERTY(HttpClient_Auth)
 
 	if (READ_PROPERTY)
 	{
