@@ -68,6 +68,10 @@ typedef
 		int timeout;
 		int method; // 0->Get, 1->Put
 		char *data;
+		int64_t dltotal;
+		int64_t dlnow;
+		int64_t ultotal;
+		int64_t ulnow;
 		unsigned async : 1;
 		unsigned in_list : 1;
 		unsigned debug : 1;
@@ -101,5 +105,7 @@ void CURL_manage_error(void *_object, int error);
 void CURL_init_stream(void *_object);
 
 bool CURL_check_active(void *_object);
+
+void CURL_set_progress(void *_object, bool progress);
 
 #endif

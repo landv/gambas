@@ -43,7 +43,7 @@
 #define EXEC_CMD 2
 
 
-static int ftp_read_curl (void *buffer, size_t size, size_t nmemb, void *_object)
+static int ftp_read_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
 	FILE *file = THIS_FILE;
 	THIS_STATUS = NET_RECEIVING_DATA;
@@ -80,11 +80,11 @@ static int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object
 	return nmemb;
 }
 
-
 static void ftp_reset(void *_object)
 {
 	GB.FreeString(&THIS->data);
 	GB.Unref(&THIS_FTP->commands);
+	CURL_set_progress(THIS_CURL, FALSE);
 }
 
 
@@ -112,13 +112,13 @@ static void ftp_initialize_curl_handle(void *_object)
 
 	if (!THIS->async)
 	{
-		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
-		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
+		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL, 1);
+		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT, THIS->timeout);
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
-
+	
 	CURL_proxy_set(&THIS->proxy.proxy,THIS_CURL);
 	CURL_user_set(&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
@@ -150,6 +150,8 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 			curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA     , _object);
 			curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD        , 0);
 			
+			CURL_set_progress(THIS_CURL, TRUE);
+			
 			break;
 			
 		case EXEC_PUT:
@@ -157,6 +159,8 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 			curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION , (curl_read_callback)ftp_read_curl);
 			curl_easy_setopt(THIS_CURL, CURLOPT_READDATA     , _object);
 			curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD       , 1);
+			
+			CURL_set_progress(THIS_CURL, TRUE);
 			
 			break;
 			

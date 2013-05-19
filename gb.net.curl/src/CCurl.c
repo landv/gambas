@@ -43,6 +43,7 @@ DECLARE_EVENT(EVENT_Finished);
 DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Connect);
 DECLARE_EVENT(EVENT_Read);
+DECLARE_EVENT(EVENT_Progress);
 
 static CCURL *_async_list = NULL;
 
@@ -251,6 +252,18 @@ void CURL_init_stream(void *_object)
 	GB.Stream.SetAvailableNow(&THIS->stream, TRUE);
 }
 
+
+static int curl_progress(void *_object, double dltotal, double dlnow, double ultotal, double ulnow)
+{
+	THIS->dltotal = (int64_t)dltotal;
+	THIS->dlnow = (int64_t)dlnow;
+	THIS->ultotal = (int64_t)ultotal;
+	THIS->ulnow = (int64_t)ulnow;
+	GB.Raise(THIS, EVENT_Progress, 0);
+	return 0;
+}
+
+
 /***************************************************************
 This CallBack is called each event loop by Gambas to test
 the status of curl descriptors
@@ -363,6 +376,20 @@ bool CURL_check_active(void *_object)
 	else
 		return FALSE;
 }
+
+void CURL_set_progress(void *_object, bool progress)
+{
+	curl_easy_setopt(THIS_CURL, CURLOPT_NOPROGRESS, progress ? 0 : 1);
+	if (progress)
+	{
+		curl_easy_setopt(THIS_CURL, CURLOPT_PROGRESSFUNCTION , curl_progress);
+		curl_easy_setopt(THIS_CURL, CURLOPT_PROGRESSDATA , _object);
+	}
+}
+
+
+//---------------------------------------------------------------------------
+
 
 BEGIN_PROPERTY(Curl_User)
 
@@ -575,6 +602,30 @@ BEGIN_PROPERTY(Curl_Debug)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Curl_Downloaded)
+
+	GB.ReturnLong(THIS->dlnow);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Curl_Uploaded)
+
+	GB.ReturnLong(THIS->ulnow);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Curl_TotalDownloaded)
+
+	GB.ReturnLong(THIS->dltotal);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Curl_TotalUploaded)
+
+	GB.ReturnLong(THIS->ultotal);
+
+END_PROPERTY
+
 //*************************************************************************
 //#################### GAMBAS INTERFACE ###################################
 //*************************************************************************
@@ -601,10 +652,16 @@ GB_DESC CCurlDesc[] =
 	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
 
+	GB_PROPERTY_READ("Downloaded", "l", Curl_Downloaded),
+	GB_PROPERTY_READ("Uploaded", "l", Curl_Uploaded),
+	GB_PROPERTY_READ("TotalDownloaded", "l", Curl_TotalDownloaded),
+	GB_PROPERTY_READ("TotalUploaded", "l", Curl_TotalUploaded),
+	
 	GB_EVENT("Finished", NULL, NULL, &EVENT_Finished),
 	GB_EVENT("Connect", NULL, NULL, &EVENT_Connect),
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, NULL, &EVENT_Error),
+	GB_EVENT("Progress", NULL, NULL, &EVENT_Progress),
 
 	GB_END_DECLARE
 };
