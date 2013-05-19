@@ -124,7 +124,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
 
   if (!libsmtp_session->Parts)
   {
-    g_string_assign (libsmtp_temp_gstring, "Content-Type: text/plain; charset=\"us-ascii\r\n\"");
+    g_string_assign (libsmtp_temp_gstring, "Content-Type: text/plain; charset=\"us-ascii\"\r\n");
 
     #ifdef LIBSMTP_DEBUG
       printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
@@ -150,8 +150,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
     g_string_sprintf(libsmtp_temp_gstring, "Content-Type: %s/%s", libsmtp_temp_part->Type->str, libsmtp_temp_part->Subtype->str);
 
     #ifdef LIBSMTP_DEBUG
-      printf ("libsmtp_mime_headers: %s. Type: %d/%d\n", libsmtp_temp_gstring->str, \
-         libsmtp_temp_part->Type, libsmtp_temp_part->Subtype);
+      printf ("libsmtp_mime_headers: %s. Type: %s/%s\n", libsmtp_temp_gstring->str, libsmtp_temp_part->Type->str, libsmtp_temp_part->Subtype->str);
     #endif
 
     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
@@ -230,14 +229,16 @@ int libsmtp_part_send (char *libsmtp_body_data, unsigned int libsmtp_body_length
 
   if (libsmtp_session->Stage != LIBSMTP_BODY_STAGE)
   {
-    /* If we just came from the headers stage, we have to send a blank line
-     first */
-    GString *libsmtp_temp_gstring = g_string_new (NULL);
-    g_string_assign (libsmtp_temp_gstring, "\r\n");
+		#if 0
+		/* If we just came from the headers stage, we have to send a blank line
+		first */
+		GString *libsmtp_temp_gstring = g_string_new (NULL);
+		g_string_assign (libsmtp_temp_gstring, "\r\n");
 
-    if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-      return LIBSMTP_ERRORSENDFATAL;
-
+		if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
+			return LIBSMTP_ERRORSENDFATAL;
+		#endif
+	
     /* We now enter the body stage */
     libsmtp_session->Stage = LIBSMTP_BODY_STAGE;
   }

@@ -61,6 +61,8 @@ Thu Aug 16 2001 */
 #include "libsmtp.h"
 #include "libsmtp_mime.h"
 
+//#define LIBSMTP_DEBUG
+
 /* We need some definitions here first. These arrays hold the name tags
    of all MIME settings */
 
@@ -399,8 +401,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
           }
 
           #ifdef LIBSMTP_DEBUG
-            printf ("libsmtp_mime_headers: %s. Type: %d/%d\n", libsmtp_temp_gstring->str, \
-            libsmtp_temp_part->Type, libsmtp_temp_part->Subtype);
+            printf ("libsmtp_mime_headers: %s. Type: %s/%s\n", libsmtp_temp_gstring->str, libsmtp_temp_part->Type->str, libsmtp_temp_part->Subtype->str);
           #endif
 
           if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
@@ -435,7 +436,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
 						g_string_sprintf (libsmtp_temp_gstring, "\r\nContent-Length: %d", libsmtp_temp_part->length);
 
 						#ifdef LIBSMTP_DEBUG
-							printf ("libsmtp_int_nextpart: %s\n", libsmtp_temp_gstring);
+							printf ("libsmtp_int_nextpart: %s\n", libsmtp_temp_gstring->str);
 						#endif
 
 						if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
@@ -446,11 +447,11 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
 
       		if (!libsmtp_part_is_type(libsmtp_temp_part, "multipart"))
       		{
-						g_string_sprintf (libsmtp_temp_gstring, "\r\nContent-Transfer-Encoding: %s\r\n", \
+						g_string_sprintf (libsmtp_temp_gstring, "\r\nContent-Transfer-Encoding: %s", \
 							 libsmtp_int_lookup_mime_encoding (libsmtp_temp_part));
 
 						#ifdef LIBSMTP_DEBUG
-							printf ("libsmtp_mime_headers: %s\n", libsmtp_temp_gstring);
+							printf ("libsmtp_mime_headers: %s\n", libsmtp_temp_gstring->str);
 						#endif
 
 						if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
@@ -458,7 +459,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
 					}
 					
 					/* Adds a blank line */
-					g_string_assign (libsmtp_temp_gstring, "\r\n");
+					g_string_assign (libsmtp_temp_gstring, "\r\n\r\n");
 					
 					if (libsmtp_int_send(libsmtp_temp_gstring, libsmtp_session, 1))
 						return LIBSMTP_ERRORSENDFATAL;

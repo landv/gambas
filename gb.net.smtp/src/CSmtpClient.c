@@ -368,6 +368,7 @@ BEGIN_METHOD_VOID(SmtpClient_free)
 	GB.FreeString(&THIS->subject);
 	GB.FreeString(&THIS->user);
 	GB.FreeString(&THIS->password);
+	GB.FreeString(&THIS->body);
 
 	GB.Unref((void **)&THIS->to);
 	GB.Unref((void **)&THIS->cc);
@@ -382,7 +383,7 @@ BEGIN_METHOD_VOID(SmtpClient_free)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(SmtpClient_send)
+BEGIN_METHOD_VOID(SmtpClient_Send)
 
   struct libsmtp_session_struct	*session;
   int i;
@@ -408,9 +409,9 @@ BEGIN_METHOD_VOID(SmtpClient_send)
 
   libsmtp_set_environment(addr, THIS->subject, 0, session);
 
-	if (send_recipient(session, THIS->to, LIBSMTP_REC_TO)) { where = "setting TO recipient"; goto __ERROR; }
-	if (send_recipient(session, THIS->cc, LIBSMTP_REC_CC)) { where = "setting CC recipient"; goto __ERROR; }
-	if (send_recipient(session, THIS->bcc, LIBSMTP_REC_BCC)) { where = "setting BCC recipient"; goto __ERROR; }
+	if (send_recipient(session, THIS->to, LIBSMTP_REC_TO)) { where = "setting 'To' recipient"; goto __ERROR; }
+	if (send_recipient(session, THIS->cc, LIBSMTP_REC_CC)) { where = "setting 'Cc' recipient"; goto __ERROR; }
+	if (send_recipient(session, THIS->bcc, LIBSMTP_REC_BCC)) { where = "setting 'Bcc' recipient"; goto __ERROR; }
 
   if (libsmtp_connect(THIS->host ? THIS->host : "localhost", THIS->port, 0, session)) { where = "connecting to SMTP server"; goto __ERROR; }
   
@@ -494,8 +495,8 @@ __ERROR:
 END_METHOD
 
 
-#define IMPLEMENT_STRING_PROPERTY(_property) \
-BEGIN_PROPERTY(SmtpClient_##_property) \
+#define IMPLEMENT_STRING_PROPERTY(_name, _property) \
+BEGIN_PROPERTY(SmtpClient_##_name) \
 \
 	if (READ_PROPERTY) \
 		GB.ReturnString(THIS->_property); \
@@ -504,13 +505,43 @@ BEGIN_PROPERTY(SmtpClient_##_property) \
 \
 END_PROPERTY
 
-IMPLEMENT_STRING_PROPERTY(host);
-IMPLEMENT_STRING_PROPERTY(from);
-IMPLEMENT_STRING_PROPERTY(subject);
-IMPLEMENT_STRING_PROPERTY(user);
-IMPLEMENT_STRING_PROPERTY(password);
+IMPLEMENT_STRING_PROPERTY(Host,host);
+IMPLEMENT_STRING_PROPERTY(From,from);
+IMPLEMENT_STRING_PROPERTY(Subject,subject);
+IMPLEMENT_STRING_PROPERTY(User,user);
+IMPLEMENT_STRING_PROPERTY(Password,password);
 
-BEGIN_PROPERTY(SmtpClient_port)
+BEGIN_PROPERTY(SmtpClient_Body)
+
+	CSMTPPART *part;
+
+	if (READ_PROPERTY)
+	{
+		GB.ReturnString(THIS->body);
+		return;
+	}
+	
+	if (THIS->body)
+	{
+		part = &THIS->parts[0];
+		GB.StoreString(NULL, &part->name);
+		GB.StoreString(NULL, &part->mime);
+		GB.StoreString(NULL, &part->data);
+		GB.Remove(&THIS->parts, 0, 1);
+	}
+	
+	GB.StoreString(PROP(GB_STRING), &THIS->body);
+	
+	if (THIS->body)
+	{
+		part = (CSMTPPART *)GB.Insert(&THIS->parts, 0, 1);
+		part->name_set = TRUE;
+		GB.StoreString(PROP(GB_STRING), &part->data);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(SmtpClient_Port)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->port);
@@ -519,16 +550,16 @@ BEGIN_PROPERTY(SmtpClient_port)
 
 END_PROPERTY
 
-#define IMPLEMENT_RECIPIENT(_recipient) \
-BEGIN_PROPERTY(SmtpClient_##_recipient) \
+#define IMPLEMENT_RECIPIENT(_name,_recipient) \
+BEGIN_PROPERTY(SmtpClient_##_name) \
 \
 		GB.ReturnObject(THIS->_recipient); \
 \
 END_PROPERTY
 
-IMPLEMENT_RECIPIENT(to);
-IMPLEMENT_RECIPIENT(cc);
-IMPLEMENT_RECIPIENT(bcc);
+IMPLEMENT_RECIPIENT(To,to);
+IMPLEMENT_RECIPIENT(Cc,cc);
+IMPLEMENT_RECIPIENT(Bcc,bcc);
 
 
 BEGIN_METHOD(SmtpClient_Add, GB_STRING data; GB_STRING mime; GB_STRING name)
@@ -616,23 +647,24 @@ GB_DESC CSmtpClientDesc[] =
 	GB_PROPERTY("_Stream", "Stream", SmtpClient_Stream),
 	GB_PROPERTY("_NoGreeting", "b", SmtpClient_NoGreeting),
 
-	GB_PROPERTY("Host", "s", SmtpClient_host),
-	GB_PROPERTY("Port", "i", SmtpClient_port),
+	GB_PROPERTY("Host", "s", SmtpClient_Host),
+	GB_PROPERTY("Port", "i", SmtpClient_Port),
 	
-  GB_PROPERTY("User", "s", SmtpClient_user),
-  GB_PROPERTY("Password", "s", SmtpClient_password),
+  GB_PROPERTY("User", "s", SmtpClient_User),
+  GB_PROPERTY("Password", "s", SmtpClient_Password),
 	
-  GB_PROPERTY("From", "s", SmtpClient_from),
-  GB_PROPERTY("Subject", "s", SmtpClient_subject),
-  GB_PROPERTY_READ("To", "String[]", SmtpClient_to),
-  GB_PROPERTY_READ("Cc", "String[]", SmtpClient_cc),
-  GB_PROPERTY_READ("Bcc", "String[]", SmtpClient_bcc),
+  GB_PROPERTY("From", "s", SmtpClient_From),
+  GB_PROPERTY("Subject", "s", SmtpClient_Subject),
+  GB_PROPERTY("Body", "s", SmtpClient_Body),
+  GB_PROPERTY_READ("To", "String[]", SmtpClient_To),
+  GB_PROPERTY_READ("Cc", "String[]", SmtpClient_Cc),
+  GB_PROPERTY_READ("Bcc", "String[]", SmtpClient_Bcc),
 
   GB_PROPERTY("Alternative", "b", SmtpClient_Alternative),
   GB_METHOD("Add", NULL, SmtpClient_Add, "(Data)s[(MimeType)s(Name)s]"),
   GB_PROPERTY_READ("Count", "i", SmtpClient_Count),
  
-  GB_METHOD("Send", NULL, SmtpClient_send, NULL),
+  GB_METHOD("Send", NULL, SmtpClient_Send, NULL),
 
   GB_END_DECLARE
 };

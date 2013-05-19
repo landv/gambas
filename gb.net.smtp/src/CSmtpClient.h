@@ -53,6 +53,7 @@ typedef
 	  CSMTPPART *parts;
 		char *user;
 		char *password;
+		char *body;
 		void *stream;
 		bool alternative;
 		bool debug;

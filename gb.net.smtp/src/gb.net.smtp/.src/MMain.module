@@ -2,4 +2,15 @@
 
 Public Sub Main()
 
+  Dim hMail As New SmtpClient
+  
+  hMail.Debug = True
+  hMail.Host = "smtp.free.fr"
+  hMail.To.Add("benoit.minisini@gmail.com")
+  hMail.From = "benoit@minisini.fr"
+  hMail.Body = "Ceci est le corps du message."
+  'hMail.Add("Ceci est le corps du message.",, "")
+  hMail.Add(File.Load("~/téléphone.png"), "image/png", "paques.png")
+  hMail.Send
+
 End

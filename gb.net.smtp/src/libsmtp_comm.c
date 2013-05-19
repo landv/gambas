@@ -168,11 +168,11 @@ int libsmtp_int_send (GString *libsmtp_send_gstring, struct libsmtp_session_stru
 	int libsmtp_int_bytes;
 
 	#ifdef LIBSMTP_DEBUG
-		printf ("DEBUG in send: %s", libsmtp_send_gstring->str);
-	#endif
-
+		fprintf(stderr, "-> %.*s\n", (int)libsmtp_send_gstring->len, libsmtp_send_gstring->str);
+	#else
 	if (libsmtp_session->debug && type > 0)
 		fprintf(stderr, "-> %.*s\n", (int)libsmtp_send_gstring->len, libsmtp_send_gstring->str);
+	#endif
 
 	if (libsmtp_session->stream)
 	{
@@ -213,11 +213,11 @@ int libsmtp_int_send_body(char *libsmtp_send_string, unsigned int libsmtp_int_le
 	int libsmtp_int_bytes;
 
 	#ifdef LIBSMTP_DEBUG
-		printf ("DEBUG in body send : %s\n", libsmtp_send_string);
-	#endif
-
-	if (libsmtp_session->debug && libsmtp_session->Stage < LIBSMTP_DATA_STAGE)
 		fprintf(stderr, "-> %.*s\n", libsmtp_int_length, libsmtp_send_string);
+	#else
+		if (libsmtp_session->debug && libsmtp_session->Stage < LIBSMTP_DATA_STAGE)
+			fprintf(stderr, "-> %.*s\n", libsmtp_int_length, libsmtp_send_string);
+	#endif
 
 	if (libsmtp_session->stream)
 	{
@@ -230,11 +230,11 @@ int libsmtp_int_send_body(char *libsmtp_send_string, unsigned int libsmtp_int_le
 	if (libsmtp_int_bytes<0)
 	{
 		libsmtp_close(libsmtp_session);
-		libsmtp_session->ErrorCode=LIBSMTP_ERRORSENDFATAL;
+		libsmtp_session->ErrorCode = LIBSMTP_ERRORSENDFATAL;
 		return LIBSMTP_ERRORSEND;
 	}
 	/* Update statistics */
-	libsmtp_session->BodyBytes+=libsmtp_int_bytes;
+	libsmtp_session->BodyBytes += libsmtp_int_bytes;
 
 	return LIBSMTP_NOERR;
 }
