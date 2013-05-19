@@ -242,7 +242,13 @@ int main(int argc, char *argv[])
 		}
 		else if (is_long_option(argv[1], 'V', "version"))
 		{
+#define xstr(m)		#m
+#define stringify(m)	xstr(m)
+#ifdef TRUNK_VERSION
+			printf(VERSION " #" stringify(TRUNK_VERSION) "\n");
+#else
 			printf(VERSION "\n");
+#endif
 			my_exit(0);
 		}
 		else if (is_long_option(argv[1], 'L', "license"))

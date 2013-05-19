@@ -86,6 +86,14 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x03050000, [Gambas bytecode version])
   AC_DEFINE(GAMBAS_PCODE_VERSION_MIN, 0x03000000, [Minimum Gambas bytecode version])
 
+  IN_REPO=$(svn info >/dev/null 2>&1 && echo yes)
+  if test -n "$IN_REPO"; then
+    ## These will go into the Makefiles. Quoting is a mess.
+    TRUNK_VERSION='$(shell svn info 2>/dev/null | grep Revision | egrep -wo "[[0-9]]+$$")'
+    AC_SUBST(TRUNK_VERSION)
+    export CPPFLAGS=$CPPFLAGS\ '-DTRUNK_VERSION=$(TRUNK_VERSION)'
+  fi
+
   GB_CLEAR_MESSAGES
 ])
 
