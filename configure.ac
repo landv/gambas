@@ -42,7 +42,7 @@ GB_CONFIG_SUBDIRS(media, gb.media)
 GB_CONFIG_SUBDIRS(jit, gb.jit)
 GB_CONFIG_SUBDIRS(httpd, gb.httpd)
 GB_CONFIG_SUBDIRS(opengl_sge, gb.opengl.sge)
-GB_CONFIG_SUBDIRS(crypt_openssl, gb.crypt.openssl)
+GB_CONFIG_SUBDIRS(openssl, gb.openssl)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)

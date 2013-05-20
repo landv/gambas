@@ -1,5 +1,5 @@
 /*
- * main.c - gb.crypt.openssl main object
+ * main.c - gb.openssl main object
  *
  * Copyright (C) 2013 Tobias Boege <tobias@gambas-buch.de>
  *
