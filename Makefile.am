@@ -33,6 +33,7 @@ SUBDIRS = \
  @jit_dir@ \
  @httpd_dir@ \
  @opengl_sge_dir@ \
+ @crypt_openssl_dir@ \
  comp \
  app \
  examples \
