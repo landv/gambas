@@ -1,0 +1,57 @@
+#Formatter
+
+C
+'This class formats a line to automatically replace required Logger data
+_call
+M
+s
+(sMessage)s(sFormat)s(iLevel)i
+'cal
+#Logger
+
+CA
+Level
+p
+i
+
+Format
+p
+s
+
+Critical
+C
+i
+0
+'As defined by http://tools.ietf.org/html/rfc5424
+Error
+C
+i
+1
+'As defined by http://tools.ietf.org/html/rfc5424
+Warning
+C
+i
+2
+'As defined by http://tools.ietf.org/html/rfc5424
+Info
+C
+i
+3
+'As defined by http://tools.ietf.org/html/rfc5424
+Debug
+C
+i
+4
+'As defined by http://tools.ietf.org/html/rfc5424
+_new
+m
+
+[(iMinLevel)i(sOutput)s]
+isEnabledFor
+m
+b
+(iLevel)i
+_call
+m
+
+(sMessage)s[(iLevel)i]
