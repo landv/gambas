@@ -89,7 +89,9 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
   IN_REPO=$(svn info >/dev/null 2>&1 && echo yes)
   if test -n "$IN_REPO"; then
     ## These will go into the Makefiles. Quoting is a mess.
-    TRUNK_VERSION='$(shell svn info 2>/dev/null | grep Revision | egrep -wo "[[0-9]]+$$")'
+    ## Additionally, make TRUNK_VERSION define itself statically on first
+    ## expansion. This executes "svn info" only once for performance.
+    TRUNK_VERSION='$(eval TRUNK_VERSION := $(shell svn info 2>/dev/null | grep Revision | egrep -wo "[[0-9]]+$$"))$(TRUNK_VERSION)'
     AC_SUBST(TRUNK_VERSION)
     export CPPFLAGS=$CPPFLAGS\ '-DTRUNK_VERSION=$(TRUNK_VERSION)'
   fi
