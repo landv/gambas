@@ -126,12 +126,10 @@ static GB_VARIANT_VALUE *CCIRCULAR_read(CCIRCULAR *circ)
 
 static void CCIRCULAR_read_and_free_all(CCIRCULAR *circ)
 {
-	GB_VARIANT_VALUE *var;
+	int i;
 
-	while (!CCIRCULAR_is_empty(circ)) {
-		var = CCIRCULAR_read(circ);
-		GB.StoreVariant(NULL, var);
-	}
+	for (i = 0; i < circ->size; i++)
+		GB.StoreVariant(NULL, &circ->elements[i]);
 	CCIRCULAR_reset(circ);
 }
 
