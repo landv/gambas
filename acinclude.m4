@@ -91,7 +91,7 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
     ## These will go into the Makefiles. Quoting is a mess.
     ## Additionally, make TRUNK_VERSION define itself statically on first
     ## expansion. This executes "svn info" only once for performance.
-    TRUNK_VERSION='$(eval TRUNK_VERSION := $(shell svn info 2>/dev/null | grep Revision | egrep -wo "[[0-9]]+$$"))$(TRUNK_VERSION)'
+    TRUNK_VERSION='$(strip $(eval TRUNK_VERSION :=$(shell svn info 2>/dev/null | grep Revision | egrep -wo "[[0-9]]+$$"))$(TRUNK_VERSION))'
     AC_SUBST(TRUNK_VERSION)
     export CPPFLAGS=$CPPFLAGS\ '-DTRUNK_VERSION=$(TRUNK_VERSION)'
   fi
