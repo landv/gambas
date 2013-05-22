@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 		{
 #define xstr(m)		#m
 #define stringify(m)	xstr(m)
-#ifdef TRUNK_VERSION
+#if TRUNK_VERSION != 0
 			printf(VERSION " #" stringify(TRUNK_VERSION) "\n");
 #else
 			printf(VERSION "\n");
