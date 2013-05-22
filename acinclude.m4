@@ -90,6 +90,19 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
 ])
 
 ## ---------------------------------------------------------------------------
+## GB_TRUNK_VERSION
+## compute the trunk version if available
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_TRUNK_VERSION],
+[
+  AC_MSG_CHECKING(for TRUNK version)
+  TRUNK_VERSION=`LC_ALL=C svn info 2>/dev/null | grep Revision | egrep -wo [[0-9]+]`
+  AC_MSG_RESULT($TRUNK_VERSION)
+	AC_DEFINE_UNQUOTED(TRUNK_VERSION, ["$TRUNK_VERSION"], [TRUNK version if available])
+])
+
+## ---------------------------------------------------------------------------
 ## GB_CONFIG_SUBDIRS
 ## configuration of a component sub-directory, with a flag for disabling it
 ## ---------------------------------------------------------------------------

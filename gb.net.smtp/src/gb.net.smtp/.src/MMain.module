@@ -4,7 +4,7 @@ Public Sub Main()
 
   Dim hMail As New SmtpClient
   
-  hMail.Debug = True
+  'hMail.Debug = True
   hMail.Host = "smtp.free.fr"
   hMail.To.Add("benoit.minisini@gmail.com")
   hMail.From = "benoit@minisini.fr"

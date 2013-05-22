@@ -784,6 +784,8 @@ Public Sub Compress() As Boolean
         sText = MCompressFile.Javascript(sText)
       Case Highlight.CSS
         sText = MCompressFile.Css(sText)
+      Case Highlight.HTML
+        sText = MCompressFile.Html(sText)
     End Select
     
     fGain = Len(sText) / iLen
@@ -796,7 +798,7 @@ Public Sub Compress() As Boolean
     
   Dec Application.Busy
   
-  If fGain < 0.95 Or If (iLen - Len(sText)) >= 256 Then
+  If fGain < 0.95 Then 'Or If (iLen - Len(sText)) >= 256 Then
     sPath = GetUncompressPath()
     If Not Exist(File.Dir(sPath)) Then Project.InsertDirectory(File.Dir(sPath))
     If Not Exist(sPath) Then 

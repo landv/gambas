@@ -112,7 +112,11 @@ static void get_arguments(int argc, char **argv)
 		switch (opt)
 		{
 			case 'V':
+				#ifdef TRUNK_VERSION
+				printf(VERSION " r" TRUNK_VERSION "\n");
+				#else
 				printf(VERSION "\n");
+				#endif
 				exit(0);
 
 			case 'g':

@@ -73,6 +73,8 @@ Private Function Fields_Read() As String[]
 
   Dim sField As String
 
+  Decode
+
   If Not $aField Then
     If Not $bPost Then
       $aField = _Request_Get.Fields

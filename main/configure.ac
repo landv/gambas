@@ -6,6 +6,7 @@ AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(main)
 GB_MATH_FUNC
 LT_INIT 
+GB_TRUNK_VERSION
 AM_PROG_CC_C_O
 
 dnl ---- Check for internationalization library

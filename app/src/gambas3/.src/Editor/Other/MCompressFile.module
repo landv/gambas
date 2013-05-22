@@ -4,7 +4,7 @@ Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQ
 Private Const IDENT_CAR_CSS As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.#"
 Private Const SUBST_CAR As String = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-Private $aExt As String[] = ["js", "css"]
+Private $aExt As String[] = ["js", "css", "html"]
 
 Private $cKeyword As Collection
 Private $cSubst As Collection
@@ -336,7 +336,6 @@ Public Sub Css(sText As String) As String
   iLen = Len(sText)
   sText = sText & "  "
   
-  iPos = 1
   For iPos = 1 To iLen
     
     sCar = Mid$(sText, iPos, 1)
@@ -390,6 +389,72 @@ Public Sub Css(sText As String) As String
       
       If InStr(IDENT_CAR_CSS, Right(sRes)) = 0 Then Continue
       If InStr(IDENT_CAR_CSS, Right$(sCar2)) = 0 Then Continue
+    Endif
+    
+    sRes &= sCar
+    
+  Next
+  
+  Return sRes
+  
+End
+
+Public Sub Html(sText As String) As String
+  
+  Dim sRes As String
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim bComment As Boolean
+  Dim sString As String
+  Dim iLen As Integer
+  Dim bMarkup As Boolean
+  
+  iLen = Len(sText)
+  sText = sText & "  "
+  
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    
+    If bComment Then
+      If Mid$(sText, iPos, 3) = "-->" Then
+        bComment = False
+        iPos += 2
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sRes &= Mid$(sText, iPos, 2)
+        Inc iPos
+        Continue
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      sRes &= sCar
+      Continue
+    Endif
+    
+    If Mid$(sText, iPos, 4) = "<!--" Then
+      bComment = True
+      iPos += 3
+      Continue
+    Endif
+    
+    If sCar = "<" Then
+      bMarkup = True
+    Else If sCar = ">" Then
+      bMarkup = False
+    Else If sCar = "\"" Or If sCar = "'" Then
+      If bMarkup Then sString = sCar
+    Else If sCar = " " Or If sCar = "\n" Then
+      
+      If Len(sRes) = 0 Then Continue
+      If Right(sRes) = " " Or If Right$(sRes) = "\n" Then Continue
+      
+      sCar = " "
+      
+      'If InStr(IDENT_CAR_CSS, Right(sRes)) = 0 Then Continue
+      'If InStr(IDENT_CAR_CSS, Right$(sCar2)) = 0 Then Continue
     Endif
     
     sRes &= sCar
