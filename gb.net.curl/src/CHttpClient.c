@@ -209,10 +209,10 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 	else
 		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, NULL);
 
-	CURL_proxy_set(&THIS->proxy.proxy,THIS_CURL);
+	CURL_proxy_set(&THIS->proxy.proxy, THIS_CURL);
 	CURL_user_set(&THIS->user, THIS_CURL);
-	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
-
+	curl_easy_setopt(THIS_CURL, CURLOPT_URL, THIS_URL);
+	
 	THIS_HTTP->return_code = 0;
 	GB.FreeString(&THIS_HTTP->return_string);
 
@@ -301,7 +301,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPHEADER, headers);
-	CURL_set_progress(THIS_CURL, TRUE);
+	CURL_set_progress(THIS, TRUE);
 
 	if (THIS->async)
 	{
@@ -309,7 +309,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 		return;
 	}
 	
-	CURL_manage_error(_object,curl_easy_perform(THIS_CURL));
+	CURL_manage_error(_object, curl_easy_perform(THIS_CURL));
 }
 
 

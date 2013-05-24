@@ -149,7 +149,7 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 			curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA     , _object);
 			curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD        , 0);
 			
-			CURL_set_progress(THIS_CURL, TRUE);
+			CURL_set_progress(THIS, TRUE);
 			
 			break;
 			
@@ -159,7 +159,7 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 			curl_easy_setopt(THIS_CURL, CURLOPT_READDATA     , _object);
 			curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD       , 1);
 			
-			CURL_set_progress(THIS_CURL, TRUE);
+			CURL_set_progress(THIS, TRUE);
 			
 			break;
 			

@@ -253,13 +253,20 @@ void CURL_init_stream(void *_object)
 }
 
 
+#define CHECK_PROGRESS_VAL(_var) if (THIS->_var != (int64_t)_var) { THIS->_var = (int64_t)_var; raise = TRUE; }
+
 static int curl_progress(void *_object, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-	THIS->dltotal = (int64_t)dltotal;
-	THIS->dlnow = (int64_t)dlnow;
-	THIS->ultotal = (int64_t)ultotal;
-	THIS->ulnow = (int64_t)ulnow;
-	GB.Raise(THIS, EVENT_Progress, 0);
+	bool raise = FALSE;
+	
+	CHECK_PROGRESS_VAL(dltotal);
+	CHECK_PROGRESS_VAL(dlnow);
+	CHECK_PROGRESS_VAL(ultotal);
+	CHECK_PROGRESS_VAL(ulnow);
+	
+	if (raise)
+		GB.Raise(THIS, EVENT_Progress, 0);
+	
 	return 0;
 }
 
@@ -379,6 +386,10 @@ bool CURL_check_active(void *_object)
 
 void CURL_set_progress(void *_object, bool progress)
 {
+	#ifdef DEBUG
+	fprintf(stderr, "CURL_set_progress: %p %d\n", _object, progress);
+	#endif
+	
 	curl_easy_setopt(THIS_CURL, CURLOPT_NOPROGRESS, progress ? 0 : 1);
 	if (progress)
 	{
