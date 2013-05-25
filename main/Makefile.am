@@ -4,6 +4,7 @@ EXTRA_DIST = TODO reconf spec README mime
 BUILT_SOURCES = trunk_version.h
 CLEANFILES = trunk_version.h
 
+.PHONY: trunk_version.h
 trunk_version.h:
 	@if test -d ../.svn ; then \
 		if test ../.svn -nt trunk_version.h ; then \
