@@ -981,6 +981,7 @@ void EXEC_function_loop()
 
 					if (EXEC_debug && !STACK_has_error_handler())
 					{
+						ERROR_hook();
 						DEBUG.Main(TRUE);
 						
 						if (TP && TC)

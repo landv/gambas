@@ -32,6 +32,7 @@
 #include "gbx_exec.h"
 #include "gbx_api.h"
 #include "gbx_stack.h"
+#include "gbx_project.h"
 #include "gb_error.h"
 
 //#define DEBUG_ERROR 1
@@ -690,5 +691,30 @@ void ERROR_exit(void)
 {
 	ERROR_reset(&ERROR_last);
 	STACK_free_backtrace(&ERROR_backtrace);
+}
+
+void ERROR_hook(void)
+{
+	ERROR_INFO save = { 0 };
+	ERROR_INFO last = { 0 };
+	CLASS_DESC_METHOD *handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
+	
+	if (handle_error)
+	{
+		ERROR_save(&save, &last);
+		
+		TRY
+		{
+			ERROR_restore(&save, &last);
+			EXEC_public_desc(PROJECT_class, NULL, handle_error, 0);
+		}
+		CATCH
+		{
+			ERROR_save(&save, &last);
+		}
+		END_TRY
+
+		ERROR_restore(&save, &last);
+	}
 }
 

@@ -171,6 +171,7 @@ static bool is_option_arg(char **argv, int argc, int *i, char option, const char
 		return FALSE;
 }
 
+
 static bool is_long_option(const char *arg, char option, char *long_option)
 {
 	if (is_option(arg, option))
@@ -179,9 +180,9 @@ static bool is_long_option(const char *arg, char option, char *long_option)
 		return (arg[0] == '-' && arg[1] == '-' && !strcmp(&arg[2], long_option));
 }
 
+
 int main(int argc, char *argv[])
 {
-	//CLASS *class = NULL;
 	CLASS_DESC_METHOD *startup = NULL;
 	int i, n;
 	char *file = NULL;
@@ -366,6 +367,8 @@ int main(int argc, char *argv[])
 	}
 	CATCH
 	{
+		ERROR_hook();
+		
 		if (EXEC_debug)
 		{
 			if (!_welcome)
@@ -413,6 +416,8 @@ int main(int argc, char *argv[])
 	{
 		if (ERROR->info.code && ERROR->info.code != E_ABORT)
 		{
+			ERROR_hook();
+			
 			if (EXEC_debug)
 			{
 				DEBUG.Main(TRUE);

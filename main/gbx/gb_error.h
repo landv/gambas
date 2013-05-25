@@ -166,6 +166,7 @@ void ERROR_warning(const char *warning, ...);
 
 void ERROR_print(void);
 void ERROR_print_at(FILE *where, bool msgonly, bool newline);
+void ERROR_hook(void);
 
 void ERROR_save(ERROR_INFO *save, ERROR_INFO *last);
 void ERROR_restore(ERROR_INFO *save, ERROR_INFO *last);
