@@ -23,9 +23,8 @@
 
 #define __GBA_C
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
+#include "trunk_version.h"
 
 #include <stdlib.h>
 #include <string.h>

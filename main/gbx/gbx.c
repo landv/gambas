@@ -21,9 +21,10 @@
 
 ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
+#define __GBX_C
+
 #include "config.h"
-#endif
+#include "../trunk_version.h"
 
 //#define USE_PROFILE 1
 

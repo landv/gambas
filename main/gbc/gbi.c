@@ -21,7 +21,10 @@
 
 ***************************************************************************/
 
-#include <config.h>
+#define __GBI_C
+
+#include "config.h"
+#include "trunk_version.h"
 
 #include "gb_limit.h"
 #include "gb_common.h"

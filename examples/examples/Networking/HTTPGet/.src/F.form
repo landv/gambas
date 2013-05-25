@@ -22,14 +22,6 @@
     MoveScaled(8,1,56,4)
     Text = ("http://gambasdoc.org/help")
   }
-  { TxtInfo TextLabel
-    MoveScaled(32,6,32,4)
-    Font = Font["Bold"]
-    Background = &H0055FF&
-    Foreground = &HFFFF00&
-    Padding = 2
-    Alignment = Align.Normal
-  }
   { BtnStop Button
     MoveScaled(16,6,14,4)
     Text = ("Stop")
@@ -62,5 +54,12 @@
   { mnuOptions Button
     MoveScaled(66,1,29,4)
     Text = ("&Configuration...")
+  }
+  { txtInfo Label
+    MoveScaled(32,6,32,4)
+    Font = Font["Bold"]
+    Background = Color.SelectedBackground
+    Foreground = &HFFFF00&
+    Padding = 8
   }
 }

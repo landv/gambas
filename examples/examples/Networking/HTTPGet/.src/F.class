@@ -98,7 +98,7 @@ Public Sub Button1_Click()
   ' A bit of feedback for user...
   '//////////////////////////////////
   TextArea1.Text = ""
-  TxtInfo.Text = ("Connecting...")
+  txtInfo.Text = ("Connecting...")
   Navigator.Text = ""
   
   '////////////////////////////////////
@@ -139,7 +139,7 @@ Public Sub MyHTTP_Connect()
   ' we connect successfully with remote server
   ' and allows us to give more feed-back to user
   '/////////////////////////////////////////////// 
-  TxtInfo.Text = ("Connected, waiting for reply...")
+  txtInfo.Text = ("Connected, waiting for reply...")
   
 End
 
@@ -150,11 +150,18 @@ Public Sub MyHTTP_Read()
   ' part of the document
   '///////////////////////////////////////////
   Dim sBuf As String
-  Dim MyLoop As Integer
+  Dim sText As String
+  
   '/////////////////////////////////
   ' more feedback...
   '/////////////////////////////////
-  TxtInfo.Text = ("Receiving data...")
+  sText = ("Receiving data...") & " "
+  If MyHttp.TotalDownloaded Then
+    sText &= Format(MyHttp.Downloaded / MyHttp.TotalDownloaded, "0 %")
+  Else
+    sText &= Subst(("&1 bytes"), MyHttp.Downloaded)
+  Endif
+  txtInfo.Text = sText
   
   '/////////////////////////////////
   ' Header of HTTP document received
@@ -185,7 +192,7 @@ Public Sub MyHTTP_Error()
   ' is stopped
   '//////////////////////////// 
   CurHost = "" 
-  TxtInfo.Text = ("Error ") & MyHTTP.Status
+  txtInfo.Text = ("Error ") & MyHTTP.Status
   
 End
 
@@ -200,7 +207,7 @@ Public Sub MyHTTP_Finished()
   '//////////////////////////////
   ' feeback...
   '//////////////////////////////
-  TxtInfo.Text = ("OK")
+  txtInfo.Text = ("OK")
   If TextArea1.Text = "" Then
     TextArea1.Text = MyHTTP.Headers.Join("\n") 
   End If
@@ -240,7 +247,7 @@ Public Sub BtnStop_Click()
   ' If user wants to close the
   ' connection...
   '///////////////////////////////////////
-  If MyHttp.Status > 0 Then TxtInfo.Text = ("Cancelled by user")
+  If MyHttp.Status > 0 Then txtInfo.Text = ("Cancelled by user")
   MyHTTP.Stop()
   
   
