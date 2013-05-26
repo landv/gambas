@@ -695,12 +695,20 @@ void ERROR_exit(void)
 
 void ERROR_hook(void)
 {
+	static bool no_rec = FALSE;
+	
 	ERROR_INFO save = { 0 };
 	ERROR_INFO last = { 0 };
-	CLASS_DESC_METHOD *handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
+	CLASS_DESC_METHOD *handle_error;
+	
+	if (no_rec)
+		return;
+	
+	handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
 	
 	if (handle_error)
 	{
+		no_rec = TRUE;
 		ERROR_save(&save, &last);
 		
 		TRY
@@ -715,6 +723,7 @@ void ERROR_hook(void)
 		END_TRY
 
 		ERROR_restore(&save, &last);
+		no_rec = FALSE;
 	}
 }
 
