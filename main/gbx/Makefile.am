@@ -77,8 +77,6 @@ gbx3_SOURCES = \
  gbx_struct.h gbx_struct.c \
  gbx_signal.h gbx_signal.c
 
-gbx.c: ../trunk_version.h
-
 gb_la_SOURCES = \
  gbx_info.h \
  gbx_local.h gbx_compare.h gbx_date.h \
