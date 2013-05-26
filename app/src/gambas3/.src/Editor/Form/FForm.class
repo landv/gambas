@@ -1279,6 +1279,8 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
     hCtrl = New CControl(sName, sClass, hParent, Me, $hFamily)
   Endif
 
+  $hUndo.Add("RemoveControl", [sName])
+
   Control[sName] = hCtrl
   If bSetText Then Try hCtrl.SetProperty("Text", sName)
 
@@ -1289,8 +1291,6 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   Endif
 
   ResetClassScan
-
-  $hUndo.Add("RemoveControl", [sName])
 
   Return hCtrl
 
