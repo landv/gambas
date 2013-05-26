@@ -62,6 +62,10 @@ gbi3_SOURCES= \
  gbc_arch.c \
  gbi.c
 
+gbc.c: ../trunk_version.h
+gba.c: ../trunk_version.h
+gbi.c: ../trunk_version.h
+
 ##libgbcopt_la_SOURCES = \
 ## gb_table.c
 
