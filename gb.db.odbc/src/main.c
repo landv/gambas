@@ -91,6 +91,7 @@ typedef struct
 		SQLUSMALLINT Function_exist;	//Does the Driver supports the SQLFetchScroll ?
 		SQLUSMALLINT Cursor_Scrollable;  //Is it possible to set a Scrollable cursor ?
 		ODBC_FIELDS *fields;
+		SQLLEN count;
 	}
 ODBC_RESULT;
 
@@ -806,6 +807,13 @@ fflush(stderr);
 
 	if (res)
 	{
+		retcode = SQLRowCount(odbcres->odbcStatHandle, &odbcres->count);
+		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO)
+		{
+			SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
+			GB.Error("Unable to retrieve row count");
+			return retcode;
+		}
 		*res = odbcres;
 	}
 	else
@@ -1011,7 +1019,6 @@ static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 {
 
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
-	SQLLEN rowsNum = -1;
 	SQLSMALLINT colsNum = 0;
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1023,9 +1030,9 @@ fflush(stderr);
 	if (!colsNum)
 		return;
 
-	SQLRowCount(res->odbcStatHandle, &rowsNum);
+	//SQLRowCount(res->odbcStatHandle, &rowsNum);
 	
-	*count = rowsNum;
+	*count = res->count;
 	info->nfield = colsNum;
 	query_make_result(res);
 }
