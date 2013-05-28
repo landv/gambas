@@ -54,7 +54,9 @@ Public Sub Run()
     
     If HighlightHTML.AllowCode And If sCar = "<" And String.Mid$(sText, iPos, 2) = "<%" Then
       HighlightHTML.MeetCodeAt = iPos
-      Break
+      Highlight.State = iState
+      Highlight.Tag = iTag
+      Return
     Endif
   
     If iState = Highlight.Normal Then

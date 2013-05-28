@@ -1681,7 +1681,11 @@ void GEditor::cursorUp(bool shift, bool ctrl, bool alt)
 		}
 	}
 	else if (ctrl)
-		cursorGoto(doc->getPreviousLimit(y), xx, shift);
+	{
+		int yl = doc->getPreviousLimit(y);
+		if (yl >= 0)
+			cursorGoto(yl, xx, shift);
+	}
 	else
 		cursorGoto(viewToReal(realToView(y) - 1), xx, shift);
 }
@@ -1733,7 +1737,14 @@ void GEditor::cursorDown(bool shift, bool ctrl, bool alt)
 	else if (!ctrl)
 		cursorGoto(QMIN(numLines() - 1, viewToReal(realToView(y) + 1)), xx, shift);
 	else
-		cursorGoto(doc->getNextLimit(y), xx, shift);
+	{
+		int yl = doc->getNextLimit(y);
+		
+		if (yl >= 0)
+			cursorGoto(yl, xx, shift);
+		else
+			cursorGoto(numLines(), 0, shift);
+	}
 }
 
 void GEditor::movePreviousSameIndent(bool shift)
@@ -2714,15 +2725,17 @@ QVariant GEditor::inputMethodQuery(Qt::InputMethodQuery property) const
 			return QRect(px, py, 1, _cellh);
 		}
 		case Qt::ImFont:
-				return font();
+			return font();
 		case Qt::ImCursorPosition:
-				return QVariant(x);
+			return QVariant(x);
 		case Qt::ImSurroundingText:
-				return QVariant(doc->getLine(y).getString());
+			return QVariant(doc->getLine(y).getString());
 		case Qt::ImCurrentSelection:
-				return QVariant(doc->getSelectedText(_insertMode).getString());
+			return QVariant(QString());
+		case Qt::ImAnchorPosition:
+			return QVariant(x);
 		default:
-				return QVariant();
+			return QVariant();
 	}
 }
 

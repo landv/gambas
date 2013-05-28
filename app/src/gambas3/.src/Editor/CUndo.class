@@ -5,7 +5,7 @@ Public Struct UndoCommand
   Arg As Variant[]
 End Struct
 
-Private Const DEBUG_ME As Boolean = True
+Private Const DEBUG_ME As Boolean = False
 
 Private Enum CONTEXT_NONE, CONTEXT_UNDO, CONTEXT_REDO
 

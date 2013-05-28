@@ -776,16 +776,16 @@ fflush(stderr);
 
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
-		GB.Error("ODBC - Error - cannor allocate the handle");
+		GB.Error("Cannot allocate statement handle");
 		return retcode;
 	}
 
 
-	retcode =SQLSetStmtAttr(odbcres->odbcStatHandle, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER) SQL_SCROLLABLE, 0);
+	retcode = SQLSetStmtAttr(odbcres->odbcStatHandle, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER) SQL_SCROLLABLE, 0);
 
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
-		odbcres->Cursor_Scrollable=SQL_FALSE;
+		odbcres->Cursor_Scrollable = SQL_FALSE;
 	} 
 	else odbcres->Cursor_Scrollable=SQL_TRUE;
 
@@ -799,7 +799,7 @@ fflush(stderr);
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
 		SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
-		GB.Error("Error executing the statement");
+		GB.Error("Error while executing the statement");
 		return retcode;
 	}
 

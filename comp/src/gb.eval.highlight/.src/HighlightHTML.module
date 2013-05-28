@@ -463,14 +463,15 @@ READ_CODE:
     Highlight.AlternateState = False
     iTagCode = 0
     Inc I
+    PopHighlightState
+    iNextState = Highlight.State
   Else
     $sBufferAfter &= AnalyzeCode(String.Mid$(sText, iStart))
     iTagCode = TAG_CODE
     iTagMode = Highlight.Tag
     iNextState = Highlight.State
+    PopHighlightState
   Endif
-
-  PopHighlightState
 
   Return
 

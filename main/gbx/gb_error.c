@@ -617,18 +617,25 @@ void ERROR_print(void)
 		DEBUG_print_backtrace(ERROR_backtrace);
 }
 
-void ERROR_save(ERROR_INFO *save, ERROR_INFO *last)
+static void ERROR_copy(ERROR_INFO *save, ERROR_INFO *last)
 {
 	ERROR_reset(save);
 	*save = ERROR_current->info;
-	CLEAR(&ERROR_current->info);
 
 	if (last)
 	{
 		ERROR_reset(last);
 		*last = ERROR_last;
-		CLEAR(&ERROR_last);
 	}
+}
+
+void ERROR_save(ERROR_INFO *save, ERROR_INFO *last)
+{
+	ERROR_copy(save, last);
+
+	CLEAR(&ERROR_current->info);
+	if (last)
+		CLEAR(&ERROR_last);
 }
 
 void ERROR_restore(ERROR_INFO *save, ERROR_INFO *last)
@@ -709,11 +716,10 @@ void ERROR_hook(void)
 	if (handle_error)
 	{
 		no_rec = TRUE;
-		ERROR_save(&save, &last);
+		ERROR_copy(&save, &last);
 		
 		TRY
 		{
-			ERROR_restore(&save, &last);
 			EXEC_public_desc(PROJECT_class, NULL, handle_error, 0);
 		}
 		CATCH

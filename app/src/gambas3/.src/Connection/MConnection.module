@@ -2,6 +2,8 @@
 
 Public Password As New Collection
 
+Private $bError As Boolean
+
 Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean)
   
   hConn.Type = LCase(hConfig["Connection/Type"])
@@ -20,6 +22,19 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
   
 End
 
+Private Sub ErrorMessage(sMsg As String, sError As String)
+
+  If sError Then
+    If Not $bError Then
+      $bError = True
+      Message.Error(sMsg & "\n\n" & sError)
+    Endif
+  Else
+    $bError = False
+  Endif
+
+End
+
 Public Sub LoadPassword(sName As String, bDesktop As Boolean) As String
   
   Dim sPassword As String
@@ -27,7 +42,9 @@ Public Sub LoadPassword(sName As String, bDesktop As Boolean) As String
   sPassword = Password[sName]
   If Not sPassword Then 
     If bDesktop Then
-      sPassword = Desktop.Passwords[Project.Name &/ "Connection" &/ sName]
+      Error.Clear
+      Try sPassword = Desktop.Passwords[Project.Name &/ "Connection" &/ sName]
+      ErrorMessage(("Unable to retrieve password."), Error.Text)
       Password[sName] = sPassword
     Endif
   Endif
@@ -39,7 +56,11 @@ End
 Public Sub SavePassword(sName As String, sPassword As String, (bDesktop) As Boolean)
   
   Password[sName] = sPassword
-  If sPassword Then Desktop.Passwords[Project.Name &/ "Connection" &/ sName] = sPassword
+  If sPassword Then 
+    Error.Clear
+    Try Desktop.Passwords[Project.Name &/ "Connection" &/ sName] = sPassword
+    ErrorMessage(("Unable to save password."), Error.Text)
+  Endif
   
 End
 
