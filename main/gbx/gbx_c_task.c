@@ -44,6 +44,8 @@
 
 #include "gbx_c_task.h"
 
+//#define DEBUG_ME 1
+
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Kill);
@@ -332,11 +334,15 @@ static bool start_task(CTASK *_object)
 			if (ret->type != GB_T_VOID)
 			{
 				sprintf(buf, RETURN_FILE_PATTERN, getuid(), getppid(), getpid());
-				//fprintf(stderr, "serialize to: %s\n", buf);
+				#if DEBUG_ME
+				fprintf(stderr, "serialize to: %s\n", buf);
+				#endif
 				GB_ReturnConvVariant();
 				if (GB_Serialize(buf, ret))
 				{
-					//fprintf(stderr, "gb.task: serialization has failed\n");
+					#if DEBUG_ME
+					fprintf(stderr, "gb.task: serialization has failed\n");
+					#endif
 					exit(CHILD_RETURN);
 				}
 			}
@@ -527,6 +533,9 @@ BEGIN_PROPERTY(Task_Value)
 	if (!THIS->child && THIS->stopped)
 	{
 		sprintf(path, RETURN_FILE_PATTERN, getuid(), getpid(), THIS->pid);
+		#if DEBUG_ME
+		fprintf(stderr,"unserialize from: %s\n", path);
+		#endif
 		
 		if (WIFEXITED(THIS->status))
 		{

@@ -13,288 +13,47 @@ Private $YY As Float
 Private $bFast As Boolean 
 Private $bRect As Boolean
 
-Fast Private Sub FastDrawFractalRect(hImage As Image, XO As Float, YO As Float, SF As Float, X As Integer, Y As Integer, W As Integer, H As Integer)
+Private NTASK As Integer = 8
+Private $aTask As New FractalTask[NTASK]
+Private $aResult As New Image[NTASK]
+
+Public Sub FractalTask_Kill()
   
-  Dim I, J, K, C, CC As Integer
-  Dim XF, YF, XF0, YF0, XF1, YF1 As Float
-  Dim ZX, ZY, T As Float
-  Dim bSame As Boolean
-  Dim bRect As Boolean = $bRect
+  Dim hTask As FractalTask = Last
+  Dim aResult As Integer[]
+  Dim hImage As Image
   
-  
-  XF0 = XO + X * SF
-  YF0 = YO + Y * SF
-  
-  If W <= 4 And If H <= 4 Then Goto CALC_ALL
-  
-  XF1 = XF0 + (W - 1) * SF
-  YF1 = YF0 + (H - 1) * SF
-  
-  If Sgn(XF0) + Sgn(XF1) Or If Sgn(YF0) + Sgn(YF1) Then
-  
-    C = 0
-    
-    XF = XF0
-    YF = YF0
-    I = X
-    J = Y
-    GoSub CALC_POINT
-    CC = C
-    bSame = True
-    
-    'XF += SF
-    For I = X To X + W - 1
-      YF = YF0
-      J = Y
-      GoSub CALC_POINT
-      YF = YF1
-      J = Y + H - 1
-      GoSub CALC_POINT
-      XF += SF
-    Next
-  
-    YF = YF0 + SF
-    For J = Y + 1 To Y + H - 2
-      XF = XF0
-      I = X
-      GoSub CALC_POINT
-      XF = XF1
-      I = X + W - 1
-      GoSub CALC_POINT
-      YF += SF
-    Next
-    
-    If bSame Then
-      If CC Then hImage.FillRect(X + 1, Y + 1, W - 2, H - 2, CC) 
-      If bRect Then
-        hImage.PaintRect(X + 1, Y + 1, W - 2, H - 2, &HC0FFFFFF&)
-      Endif
-      Return
-    Endif
-    
-    Inc X
-    Inc Y
-    W -= 2
-    H -= 2
-  
+  'Print hTask.Index; ": *KILL*"
+  Try aResult = hTask.Value
+  If aResult Then
+    hImage = New Image(hTask.Width, hTask.Height)
+    hImage.Pixels = aResult
+    $aResult[hTask.Index] = hImage
+    dwgFractal.Refresh
   Endif
   
-  If W >= H Then
-    FastDrawFractalRect(hImage, XO, YO, SF, X, Y, W \ 2, H)
-    FastDrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y, W - (W \ 2), H)
-  Else
-    FastDrawFractalRect(hImage, XO, YO, SF, X, Y, W, H \ 2)
-    FastDrawFractalRect(hImage, XO, YO, SF, X, Y + (H \ 2), W, H - (H \ 2))
-  Endif
-  
-  ' FastDrawFractalRect(hImage, XO, YO, SF, X, Y, W \ 2, H \ 2)
-  ' FastDrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y, W - (W \ 2), H \ 2)
-  ' FastDrawFractalRect(hImage, XO, YO, SF, X, Y + (H \ 2), W \ 2, H - (H \ 2))
-  ' FastDrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y + (H \ 2), W - (W \ 2), H - (H \ 2))
-  Return
-
-CALC_ALL:
-
-  XF = XF0
-  For I = X To X + W - 1
-    YF = YF0
-    For J = Y To Y + H - 1
-      
-      ZX = 0
-      ZY = 0
-      
-      For K = 0 To ITER_MAX - 1
-        
-        T = ZX * ZX - ZY * ZY + XF
-        ZY = 2 * ZX * ZY + YF
-        
-        If ((T * T) + (ZY * ZY)) > 4 Then Break
-        
-        ZX = T
-        
-      Next
-      
-      If K < ITER_MAX Then hImage[I, J] = $aColor[K And 63]
-      
-      YF += SF
-    Next
-    XF += SF
-  Next
-  Return
-
-CALC_POINT:
-  
-  ZX = 0
-  ZY = 0
-  
-  For K = 0 To ITER_MAX - 1
-    
-    T = ZX * ZX - ZY * ZY + XF
-    ZY = 2 * ZX * ZY + YF
-    
-    If ((T * T) + (ZY * ZY)) > 4 Then Break
-    
-    ZX = T
-    
-  Next
-  
-  If K < ITER_MAX Then
-    K = K And 63
-    C = $aColor[K]
-    If C <> CC Then bSame = False
-    hImage[I, J] = C
-  Else
-    C = 0
-    If C <> CC Then bSame = False
-  Endif
-  
-  Return
-
 End
 
-Private Sub DrawFractalRect(hImage As Image, XO As Float, YO As Float, SF As Float, X As Integer, Y As Integer, W As Integer, H As Integer)
-  
-  Dim I, J, K, C, CC As Integer
-  Dim XF, YF, XF0, YF0, XF1, YF1 As Float
-  Dim ZX, ZY, T As Float
-  Dim bSame As Boolean
-  Dim bRect As Boolean = $bRect
-  
-  
-  XF0 = XO + X * SF
-  YF0 = YO + Y * SF
-  
-  If W <= 4 And If H <= 4 Then Goto CALC_ALL
-  
-  XF1 = XF0 + (W - 1) * SF
-  YF1 = YF0 + (H - 1) * SF
-  
-  If Sgn(XF0) + Sgn(XF1) Or If Sgn(YF0) + Sgn(YF1) Then
-  
-    C = 0
-    
-    XF = XF0
-    YF = YF0
-    I = X
-    J = Y
-    GoSub CALC_POINT
-    CC = C
-    bSame = True
-    
-    XF += SF
-    For I = X To X + W - 1
-      YF = YF0
-      J = Y
-      GoSub CALC_POINT
-      YF = YF1
-      J = Y + H - 1
-      GoSub CALC_POINT
-      XF += SF
-    Next
-  
-    YF = YF0 + SF
-    For J = Y + 1 To Y + H - 2
-      XF = XF0
-      I = X
-      GoSub CALC_POINT
-      XF = XF1
-      I = X + W - 1
-      GoSub CALC_POINT
-      YF += SF
-    Next
-    
-    If bSame Then
-      If CC Then hImage.FillRect(X + 1, Y + 1, W - 2, H - 2, CC) 
-      If bRect Then
-        hImage.PaintRect(X + 1, Y + 1, W - 2, H - 2, &HC0FFFFFF&)
-      Endif
-      Return
-    Endif
-    
-    Inc X
-    Inc Y
-    W -= 2
-    H -= 2
-  
-  Endif
-  
-  If W >= H Then
-    DrawFractalRect(hImage, XO, YO, SF, X, Y, W \ 2, H)
-    DrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y, W - (W \ 2), H)
-  Else
-    DrawFractalRect(hImage, XO, YO, SF, X, Y, W, H \ 2)
-    DrawFractalRect(hImage, XO, YO, SF, X, Y + (H \ 2), W, H - (H \ 2))
-  Endif
-  
-  Return
-
-CALC_ALL:
-
-  XF = XF0
-  For I = X To X + W - 1
-    YF = YF0
-    For J = Y To Y + H - 1
-      
-      ZX = 0
-      ZY = 0
-      
-      For K = 0 To ITER_MAX - 1
-        
-        T = ZX * ZX - ZY * ZY + XF
-        ZY = 2 * ZX * ZY + YF
-        
-        If ((T * T) + (ZY * ZY)) > 4 Then Break
-        
-        ZX = T
-        
-      Next
-      
-      If K < ITER_MAX Then hImage[I, J] = $aColor[K And 63]
-      
-      YF += SF
-    Next
-    XF += SF
-  Next
-  Return
-
-CALC_POINT:
-  
-  ZX = 0
-  ZY = 0
-  
-  For K = 0 To ITER_MAX - 1
-    
-    T = ZX * ZX - ZY * ZY + XF
-    ZY = 2 * ZX * ZY + YF
-    
-    If ((T * T) + (ZY * ZY)) > 4 Then Break
-    
-    ZX = T
-    
-  Next
-  
-  If K < ITER_MAX Then
-    K = K And 63
-    C = $aColor[K]
-    If C <> CC Then bSame = False
-    hImage[I, J] = C
-  Else
-    C = 0
-    If C <> CC Then bSame = False
-  Endif
-  
-  Return
-
-End
+' Public Sub FractalTask_Read(Data As String)
+'   
+'   Dim hTask As FractalTask = Last
+'   Print hTask.Index; ": "; Data
+'   
+' End
+' 
+' Public Sub FractalTask_Error(Data As String)
+'   
+'   Dim hTask As FractalTask = Last
+'   Print hTask.Index; "= "; Data
+'   
+' End
 
 Public Sub dwgFractal_Draw()
 
   Dim hImage As Image
   Dim X, Y, I, J As Float
   Dim YT As Integer
-  
-  X = $XC + (Draw.Clip.X - dwgFractal.W / 2) * $fScale
-  Y = $YC + (Draw.Clip.Y - dwgFractal.H / 2) * $fScale
+  Dim HT As Integer
   
   hImage = New Image(Draw.Clip.W, Draw.Clip.H)
   For I = 0 To hImage.W Step $hRose.W
@@ -303,32 +62,50 @@ Public Sub dwgFractal_Draw()
     Next
   Next
   
+  X = $XC + (Draw.Clip.X - dwgFractal.W / 2) * $fScale
+  Y = $YC + (Draw.Clip.Y - dwgFractal.H / 2) * $fScale
+  
+  'If $bFast Then
+    
+  '  FastDrawFractalRect(hImage, X, Y, $fScale, 0, 0, hImage.W, hImage.H)
+  '  Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
+    
+  'Else
+
+    Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
+    HT = hImage.H \ NTASK
+    For I = 0 To NTASK - 1
+      If $aResult[I] Then Draw.Image($aResult[I], Draw.Clip.X, Draw.Clip.Y + YT)
+      'RunTask(0, X, Y, 0, YT, hImage.W, HT)
+      'Y += HT * $fScale
+      YT += HT
+    Next
+    'RunTask(I, X, Y, 0, YT, hImage.W, hImage.H - HT)
+    'DrawFractalRect(hImage, X, Y, $fScale, 0, 0, hImage.W, hImage.H)
+  'Endif
+  
+  
+  Paint.Background = Color.SetAlpha(Color.White, 128)
+  Paint.Rectangle(4, 4, Draw.Font.Height * 26, Draw.Font.Height * 3 + 32)
+  Paint.Fill
+  
+  YT = 12
+  
   If $bFast Then
-    FastDrawFractalRect(hImage, X, Y, $fScale, 0, 0, hImage.W, hImage.H)
+    Draw.Text(("Press F to deactivate Just-In-Time compilation"), 12, YT)
   Else
-    DrawFractalRect(hImage, X, Y, $fScale, 0, 0, hImage.W, hImage.H)
-  Endif
-  
-  'Draw.Tile($hRose, 0, 0, dwgFractal.W, dwgFractal.H)
-  Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
-  
-  YT = 8
-  
-  If $bFast Then
-    Draw.Text(("Press F to deactivate Just-In-Time compilation"), 8, YT)
-  Else
-    Draw.Text(("Press F to activate Just-In-Time compilation"), 8, YT)
+    Draw.Text(("Press F to activate Just-In-Time compilation"), 12, YT)
   Endif
   
   YT += Draw.Font.Height + 8
   If $bRect Then
-    Draw.Text(("Press R to hide rectangle optimization"), 8, YT)
+    Draw.Text(("Press R to hide rectangle optimization"), 12, YT)
   Else
-    Draw.Text(("Press R to show rectangle optimization"), 8, YT)
+    Draw.Text(("Press R to show rectangle optimization"), 12, YT)
   Endif
   
   YT += Draw.Font.Height + 8
-  Draw.Text(("Zoom") & ": " & CStr((Log2($fScale) + 6) * 8) & "  " & ("Speed") & ": " & If($bFast, ("Fast"), ("Slow")) & "  " & ("Max") & ": " & ITER_MAX, 8, YT)
+  Draw.Text(("Zoom") & ": " & CStr((Log2($fScale) + 6) * 8) & "    " & ("Speed") & ": " & If($bFast, ("Fast"), ("Slow")) & "   " & ("Max") & ": " & ITER_MAX & "   " & ("Tasks") & ": " & NTASK, 12, YT)
 
 End
 
@@ -354,7 +131,8 @@ Public Sub dwgFractal_MouseWheel()
   $XC -= $fScale * (Mouse.X - dwgFractal.W / 2)
   $YC -= $fScale * (Mouse.Y - dwgFractal.H / 2)
   
-  Me.Refresh
+  If timRedraw.Enabled Then Return
+  timRedraw.Start
 
 End
 
@@ -384,22 +162,75 @@ Public Sub dwgFractal_MouseMove()
   
   $XC = $XX + ($MX - Mouse.X) * $fScale
   $YC = $YY + ($MY - Mouse.Y) * $fScale
-  Me.Refresh
+
+  If timRedraw.Enabled Then Return
+  timRedraw.Start
   
 End
-
 
 
 Public Sub dwgFractal_KeyPress()
 
   If UCase(Key.Text) = "F" Then
     $bFast = Not $bFast
-    Me.Refresh
+    If $bFast Then
+      FractalTask.FastDrawFractalRect(Null, 0, 0, 0, 0, 0, 0, 0)
+    Endif
+    Redraw(False)
   Else If UCase(Key.Text) = "R" Then
     $bRect = Not $bRect
-    Me.Refresh
+    Redraw(False)
   Else If Key.Code = Key.Esc Then
     Me.Close
   Endif
+
+End
+
+Private Sub Redraw(bClear As Boolean)
+
+  Dim I As Integer
+  Dim XO As Float
+  Dim YO As Float
+  Dim HT As Integer
+
+  XO = $XC - (Me.ClientW / 2) * $fScale
+  YO = $YC - (Me.ClientH / 2) * $fScale
+  
+  HT = Me.ClientH \ NTASK
+  
+  For I = 0 To $aTask.Max
+
+    If $aTask[I] Then Try $aTask[I].Stop
+    If bClear Then $aResult[I] = Null
+    
+    If I = $aTask.Max Then HT = Me.ClientH - HT * $aTask.Max
+    
+    $aTask[I] = New FractalTask(XO, YO, $fScale, Me.ClientW, HT, ITER_MAX, $aColor, $bFast, $bRect) As "FractalTask"
+    $aTask[I].Index = I
+    
+    YO += HT * $fScale
+    
+  Next
+  
+  dwgFractal.Refresh
+
+End
+
+Public Sub Form_Resize()
+
+  Redraw(True)
+
+End
+
+Public Sub timRedraw_Timer()
+
+  Dim I As Integer
+
+  For I = 0 To $aTask.Max
+    If $aTask[I].Running Then Return
+  Next
+  
+  Redraw(False)
+  timRedraw.Stop
 
 End

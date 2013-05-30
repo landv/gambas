@@ -365,6 +365,43 @@ BEGIN_METHOD(Image_Blur, GB_INTEGER radius)
 
 END_METHOD
 
+BEGIN_PROPERTY(Image_Pixels)
+
+	GB_ARRAY array;
+	int size;
+	
+	if (!GB_IMAGE_FMT_IS_32_BITS(THIS_IMAGE->format))
+	{
+		GB.Error("Image format must be 32 bits");
+		return;
+	}
+
+	size = THIS_IMAGE->width * THIS_IMAGE->height;
+
+	if (READ_PROPERTY)
+	{
+		GB.Array.New(&array, GB_T_INTEGER, size);
+		IMAGE_get_pixels(THIS_IMAGE, GB.Array.Get(array, 0));
+		GB.ReturnObject(array);
+	}
+	else
+	{
+		array = VPROP(GB_OBJECT);
+		
+		if (GB.CheckObject(array))
+			return;
+		
+		if (GB.Array.Count(array) < size)
+		{
+			GB.Error("Not enough pixels");
+			return;
+		}
+		
+		IMAGE_set_pixels(THIS_IMAGE, GB.Array.Get(array, 0));
+	}
+
+END_PROPERTY
+
 GB_DESC CImageDesc[] =
 {
 	GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -387,6 +424,7 @@ GB_DESC CImageDesc[] =
 	GB_PROPERTY_READ("Depth", "i", Image_Depth),
 	GB_PROPERTY_READ("Data", "p", Image_Data),
 	GB_PROPERTY("Format", "s", Image_Format),
+	GB_PROPERTY("Pixels", "Integer[]", Image_Pixels),
 	
 	GB_METHOD("Clear", NULL, Image_Clear, NULL),
 	GB_METHOD("Fill", "Image", Image_Fill, "(Color)i"),

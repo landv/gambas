@@ -673,6 +673,13 @@ GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y)
 	return GB_COLOR_from_format(col, img->format);
 }
 
+void IMAGE_get_pixels(GB_IMG *img, int *data)
+{
+	SYNCHRONIZE(img);
+	
+	memcpy(data, img->data, img->width * img->height * sizeof(int));
+}
+
 void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
 {
 	if (!is_valid(img, x, y))
@@ -680,6 +687,13 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
 	
 	SYNCHRONIZE(img);
 	((uint *)img->data)[y * img->width + x] = GB_COLOR_to_format(col, img->format);
+	MODIFY(img);
+}
+
+void IMAGE_set_pixels(GB_IMG *img, int *data)
+{
+	SYNCHRONIZE(img);
+	memcpy(img->data, data, img->width * img->height * sizeof(int));
 	MODIFY(img);
 }
 
