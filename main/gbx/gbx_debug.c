@@ -179,7 +179,10 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 			lp = &DEBUG_info->fp->debug->local[i];
 			if (len == lp->sym.len && strncasecmp(sym, lp->sym.name, len) == 0)
 			{
-				value = DEBUG_info->bp[lp->value];
+				if (lp->value >= 0)
+					value = DEBUG_info->bp[lp->value];
+				else
+					value = DEBUG_info->pp[lp->value];
 				goto __FOUND;
 			}
 		}
@@ -275,7 +278,10 @@ int DEBUG_set_value(const char *sym, int len, VALUE *value)
 				lp = &DEBUG_info->fp->debug->local[i];
 				if (len == lp->sym.len && strncasecmp(sym, lp->sym.name, len) == 0)
 				{
-					where = &DEBUG_info->bp[lp->value];
+					if (lp->value >= 0)
+						where = &DEBUG_info->bp[lp->value];
+					else
+						where = &DEBUG_info->pp[lp->value];
 					VALUE_conv(value, where->type);
 					RELEASE(where);
 					*where = *value;
