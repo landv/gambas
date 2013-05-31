@@ -19,6 +19,8 @@ Public User As String
 Public Password As String
 Public UseTerminal As Boolean
 
+Private $sRealDir As String
+
 Public Sub Enabled() As Boolean
 
   Return $bSVN Or $bCVS
@@ -28,6 +30,9 @@ End
 Public Sub Refresh()
 
   Dim sResult As String
+
+  Shell "readlink -f " & Shell$(Project.Dir) To $sRealDir
+  $sRealDir = Trim($sRealDir)
 
   If Not $bCheckSVN Then
     Exec ["which", "svn"] To sResult
@@ -45,15 +50,15 @@ Public Sub Refresh()
   
     If $bSvn17 Then
       $bSVN = False
-      Shell "svn status " & Shell$(SvnPath$(Project.Dir) &/ ".project") & " 2>&1" To sResult
+      Shell "svn status " & Shell$(SvnPath$($sRealDir) &/ ".project") & " 2>&1" To sResult
       If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" Then $bSvn = True
     Else
-      $bSVN = Exist(Project.Dir &/ ".svn")
+      $bSVN = Exist($sRealDir &/ ".svn")
     Endif
     
   Endif
 
-  $bCVS = Exist(Project.Dir &/ "CVS") Or Exist(Project.Dir &/ "CVSROOT")
+  $bCVS = Exist($sRealDir &/ "CVS") Or Exist($sRealDir &/ "CVSROOT")
     
 End
 
@@ -168,6 +173,7 @@ End
 Private Sub SvnPath$(sPath As String) As String
 
   If InStr(sPath, "@") Then sPath &= "@"
+  If sPath Begins Project.Dir Then sPath = $sRealDir &/ Mid$(sPath, Len(Project.Dir) + 1)
   Return sPath
 
 End
@@ -297,7 +303,7 @@ Private Sub UpdatePath(aPath As String[])
   If $bSVN Then
 
     ' svn status is automatically recursive!
-    sCmd = "cd " & Shell$(Project.Dir) & "; svn status --no-ignore"
+    sCmd = "cd " & Shell$($sRealDir) & "; svn status --no-ignore"
     For Each sPath In aPath
       sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
       Project.LockedPaths.Remove(sPath)
@@ -321,7 +327,7 @@ Public Sub CheckPaths()
 
   If $bSVN Then
 
-    Shell "cd " & Shell$(Project.Dir) & "; svn status --no-ignore" To sStatus
+    Shell "cd " & Shell$($sRealDir) & "; svn status --no-ignore" To sStatus
     UpdatePathFromStatus(sStatus)
 
   Endif
@@ -356,12 +362,12 @@ Public Sub Status() As String
   Dim sStatus As String
 
   If $bSVN Then
-    Shell "cd " & Shell$(Project.Dir) & "; svn status -q" To sStatus
+    Shell "cd " & Shell$($sRealDir) & "; svn status -q" To sStatus
     Return sStatus
   Endif
 
   If $bCVS Then
-    Shell "cd " & Shell$(Project.Dir) & "; cvs status" To sStatus
+    Shell "cd " & Shell$($sRealDir) & "; cvs status" To sStatus
     Return sStatus
   Endif
 
@@ -376,7 +382,7 @@ Public Sub Commit(sChange As String) As Boolean
     Print #hFile, sChange;
     Close #hFile
     
-    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$(Project.Dir)], True, False, ["LC_ALL=C.UTF-8"])
+    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$($sRealDir)], True, False, ["LC_ALL=C.UTF-8"])
     Return Process.LastValue
   Endif
 
@@ -385,7 +391,7 @@ End
 Public Sub Update() As Boolean
 
   If $bSVN Then
-    Return Run(["svn", "update", SvnPath$(Project.Dir)], True)
+    Return Run(["svn", "update", SvnPath$($sRealDir)], True)
   Endif
 
 End
@@ -393,7 +399,7 @@ End
 Public Sub Revert() As Boolean
 
   If $bSVN Then
-    Run(["svn", "-R", "revert", SvnPath$(Project.Dir)])
+    Run(["svn", "-R", "revert", SvnPath$($sRealDir)])
     Return Process.LastValue
   Endif
 
@@ -483,17 +489,17 @@ Public Sub CanControlProject() As Boolean
   If $bSVN Or $bCVS Then Return
   
   If $bSvn17 Then
-    sDir = Project.Dir
+    sDir = $sRealDir
     Do
       sDir = File.Dir(sDir)
       If Exist(sDir &/ ".svn") Then Return True
       If sDir = "/" Then Return False
     Loop
   Else
-    If Exist(Project.Dir &/ "../.svn") Then Return True
+    If Exist($sRealDir &/ "../.svn") Then Return True
   Endif
   
-  If Exist(Project.Dir &/ "../CVS") Or Exist(Project.Dir &/ "../CVSROOT") Then Return True
+  If Exist($sRealDir &/ "../CVS") Or Exist($sRealDir &/ "../CVSROOT") Then Return True
 
 End
 
@@ -502,7 +508,7 @@ Public Sub ControlProject()
   If CanControlProject() Then
     Project.CleanUp
     Try Kill Project.Dir &/ ".settings"
-    Run(["svn", "add", SvnPath$(Project.Dir)])
+    Run(["svn", "add", SvnPath$($sRealDir)])
     Project.Config.Save
     Refresh
     Project.Refresh
@@ -530,7 +536,7 @@ Public Sub Info(bRemote As Boolean) As Collection
   
   If $bSvn Then
     
-    If Run(["svn", "info", SvnPath$(Project.Dir)], False, True, ["LC_ALL=C.UTF-8"]) = 0 Then
+    If Run(["svn", "info", SvnPath$($sRealDir)], False, True, ["LC_ALL=C.UTF-8"]) = 0 Then
     
       cData.Clear
       For Each sLine In Split($sOutput, "\n", "", True)

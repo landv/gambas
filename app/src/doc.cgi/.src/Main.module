@@ -937,7 +937,7 @@ Private Function Encode(sText As String) As String
 
       If sStr = "==" Then
         $bVerbatim = False
-        $sRes = $sRes & "</pre></div>\n"
+        $sRes = RTrim($sRes) & "</pre></div>\n"
       Else If sStr = "--" Then
         $sRes = $sRes & "<hr>"
       Else
@@ -4455,7 +4455,8 @@ Private Function GetSymbols() As String
   If $hClass.IsVirtual() Then
     sRes = sRes & BULLET & Subst(("This class is &1."), GetLink("/def/virtual")) & sBreak
   Else If $hClass.AutoCreatable Then
-    sRes = sRes & BULLET & ("This class can be used like an object by creating an hidden instance on demand.") & sBreak
+    'Print ("This class can be used like an object by creating an hidden instance on demand.") 
+    sRes = sRes & BULLET & ("This class can be used like an object by creating a hidden instance on demand.") & sBreak
   Endif
 
   If $hClass.Symbols.Exist("_new") And If $hClass.Creatable And If Not $hClass.IsVirtual() Then
