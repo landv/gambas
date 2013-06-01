@@ -404,10 +404,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MediaPlayer_Input)
 
-	if (READ_PROPERTY)
-		GB.ReturnObject(get_control(THIS, "source"));
-	else
-		set_control(THIS, "source", VPROP(GB_OBJECT));
+	GB.ReturnObject(get_control(THIS, "source"));
 
 END_PROPERTY
 
@@ -478,7 +475,7 @@ GB_DESC MediaPlayerDesc[] =
 	GB_PROPERTY("ProgressiveDownload", "b", MediaPlayer_ProgressiveDownload),
 	GB_PROPERTY("Buffering", "b", MediaPlayer_Buffering),
 	GB_PROPERTY("URL", "s", MediaPlayer_URL),
-	GB_PROPERTY("Input", "MediaControl", MediaPlayer_Input),
+	GB_PROPERTY_READ("Input", "MediaControl", MediaPlayer_Input),
 	
 	GB_EVENT("AboutToFinish", NULL, NULL, &EVENT_AboutToFinish),
 	GB_EVENT("AudioChanged", NULL, NULL, &EVENT_AudioChanged),

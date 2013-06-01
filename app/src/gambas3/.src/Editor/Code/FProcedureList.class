@@ -59,11 +59,11 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
       If hSymbol.NotPublic Then 
         'hColor = Color(Color.Foreground)
         'hColor.Value = 255 - (255 - hColor.Value) * 0.6
-        gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+        gvwProc.Data.Foreground = Color.Merge(Color.Foreground, Color.Background, 0.4)
       Endif
       'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
     Else
-      gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+      gvwProc.Data.Foreground = Color.Merge(Color.Foreground, Color.Background, 0.4)
     Endif
   
   Endif
@@ -71,9 +71,14 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
   If Left(sName) = "_" Then 
     'gvwProc.Data.Picture = Picture["img/16/point.png"]
     'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+    If FCompletion.GetSpecialMethods().Exist(sName, gb.IgnoreCase) Then 
+      gvwProc.Data.Background = Color.Background
+    Endif
   Else If InStr(sName, "_") Then
     'gvwProc.Data.Picture = Picture["img/16/event.png"]
     gvwProc.Data.Font.Italic = True
+  Else If sName == "main" Then
+    gvwProc.Data.Background = Color.Background
   Endif
   
   If Row = $iCurrent Then 

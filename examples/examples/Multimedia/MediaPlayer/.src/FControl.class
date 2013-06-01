@@ -20,7 +20,7 @@ Public Sub _new()
 
   panToolbar.H = 48 + Desktop.Scale * 2
 
-  FMain.CreateButtons(["eject", "info", "play", "pause", "stop", "fullscreen", "subtitle", "visualisation", "-"], panToolbar)
+  FMain.CreateButtons(["eject", "video", "info", "play", "pause", "stop", "fullscreen", "subtitle", "visualisation", "-"], panToolbar)
   
   sldTime = New DrawingArea(panToolbar) As "sldTime"
   sldTime.Resize(8, 8)

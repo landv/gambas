@@ -150,6 +150,15 @@ Private Sub Action(sAction As String)
         Action("play")
       Endif
       
+    Case "video"
+      
+      Action("stop")
+      $hPlayer.Subtitles.Enabled = False
+      $hPlayer.URL = "v4l2:///dev/video0"
+      FControl.SetTitle("v4l2:///dev/video0")
+      FTags.ClearTags
+      Action("play")
+      
     Case "info"
       If $bShowTags Then
         CAnimation.Start(FTags, "Opacity", 0, 250, Me)
@@ -353,6 +362,7 @@ Private Sub UpdateVisualisation()
   If hVis Then
     GetButton("visualisation").Text = hVis.Tag
     $hOutput.SetWindow(dwgVideo)
+    $hPlayer.Position = $hPlayer.Position
   Else
     GetButton("visualisation").Text = ""
     $hOutput.SetWindow(Null)

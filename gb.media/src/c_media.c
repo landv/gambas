@@ -160,7 +160,7 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 				ds.min = gst_date_time_get_minute(date);
 				ds.sec = gst_date_time_get_second(date);
 				ds.msec = gst_date_time_get_microsecond(date);
-				fprintf(stderr, "gb.media: warning: timezone = %g\n", gst_date_time_get_time_zone_offset(date));
+				//fprintf(stderr, "gb.media: warning: timezone = %g\n", gst_date_time_get_time_zone_offset(date));
 				
 				GB.MakeDate(&ds, (GB_DATE *)gvalue);
 				break;
