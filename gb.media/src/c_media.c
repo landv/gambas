@@ -26,7 +26,8 @@
 #define __C_MEDIA_C
 
 #include "c_media.h"
-#include <gst/interfaces/xoverlay.h>
+//#include <gst/interfaces/xoverlay.h>
+#include <gst/video/videooverlay.h>
 
 void MEDIA_raise_event(void *_object, int event)
 {
@@ -77,7 +78,7 @@ static GB_TYPE to_gambas_type(const GValue *value)
 		case G_TYPE_FLOAT: return GB_T_FLOAT;
 		case G_TYPE_DOUBLE: return GB_T_FLOAT;
 		default:
-			if (GST_VALUE_HOLDS_DATE(value))
+			if (G_VALUE_HOLDS(value, G_TYPE_DATE))
 				return GB_T_DATE;
 			else if (GST_VALUE_HOLDS_DATE_TIME(value))
 				return GB_T_DATE;
@@ -133,7 +134,7 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 			
 		default:
 			
-			if (GST_VALUE_HOLDS_DATE(value))
+			if (G_VALUE_HOLDS(value, G_TYPE_DATE))
 			{
 				GB_DATE_SERIAL ds;
 				GDate *date = (GDate *)g_value_get_boxed(value);
@@ -182,7 +183,7 @@ static void return_value(const GValue *value)
 		case G_TYPE_DOUBLE: GB.ReturnFloat(g_value_get_double(value)); break;
 		
 		default: 
-			if (GST_VALUE_HOLDS_DATE(value) || GST_VALUE_HOLDS_DATE_TIME(value))
+			if (G_VALUE_HOLDS(value, G_TYPE_DATE) || GST_VALUE_HOLDS_DATE_TIME(value))
 			{
 				GB_VALUE date;
 				to_gambas_value(value, &date);
@@ -351,12 +352,12 @@ BEGIN_PROPERTY(MediaTagList_Tags)
 	GstTagList *tags = THIS_TAGLIST->tags;
 	int ntags, i;
 	
-	ntags = gst_structure_n_fields(GST_STRUCTURE(tags));
+	ntags = gst_tag_list_n_tags(tags);
 	
 	GB.Array.New(&array, GB_T_STRING, ntags);
 	
 	for (i = 0; i < ntags; i++)
-		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(gst_structure_nth_field_name(GST_STRUCTURE(tags), i));
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(gst_tag_list_nth_tag_name(tags, i));
 	
 	GB.ReturnObject(array);
 
@@ -379,8 +380,8 @@ static MEDIA_TYPE _types[] =
 	{ "MediaContainer", "bin" },
 	{ "MediaPipeline", "pipeline" },
 	{ "Media", "pipeline" },
-	{ "MediaPlayer", "playbin2" },
-	//{ "MediaDecoder", "decodebin2" },
+	{ "MediaPlayer", "playbin" },
+	//{ "MediaDecoder", "decodebin" },
 	{ NULL, NULL }
 };
 
@@ -602,6 +603,18 @@ BEGIN_METHOD(MediaControl_LinkLaterTo, GB_OBJECT dest)
 
 END_METHOD
 
+static GstIteratorResult iterator_next_pad(GstIterator *iter, GstPad **pad)
+{
+	GstIteratorResult ret;
+	GValue value = G_VALUE_INIT;
+	
+	ret = gst_iterator_next(iter, &value);
+	if (ret == GST_ITERATOR_OK)
+		*pad = g_value_get_boxed(&value);
+	
+	return ret;
+}
+
 static void fill_pad_list(GB_ARRAY array, GstIterator *iter)
 {
 	bool done = FALSE;
@@ -610,7 +623,7 @@ static void fill_pad_list(GB_ARRAY array, GstIterator *iter)
 	
 	while (!done) 
 	{
-		switch (gst_iterator_next(iter, (gpointer *)&pad)) 
+		switch (iterator_next_pad(iter, &pad)) 
 		{
 			case GST_ITERATOR_OK:
 				name = gst_pad_get_name(pad);
@@ -718,7 +731,7 @@ BEGIN_METHOD(MediaControl_SetWindow, GB_OBJECT control; GB_INTEGER x; GB_INTEGER
 	long wid;
 	int x, y, w, h;
 	
-	if (!gst_element_implements_interface(ELEMENT, GST_TYPE_X_OVERLAY))
+	if (!GST_IS_VIDEO_OVERLAY(ELEMENT))
 	{
 		GB.Error("Not supported on this control");
 		return;
@@ -736,7 +749,7 @@ BEGIN_METHOD(MediaControl_SetWindow, GB_OBJECT control; GB_INTEGER x; GB_INTEGER
 	else
 		wid = 0;
 	
-	gst_x_overlay_set_window_handle(GST_X_OVERLAY(ELEMENT), (guintptr)wid);
+	gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(ELEMENT), (guintptr)wid);
 	
 	if (wid && !MISSING(x) && !MISSING(y) && !MISSING(w) && !MISSING(h))
 	{
@@ -746,9 +759,9 @@ BEGIN_METHOD(MediaControl_SetWindow, GB_OBJECT control; GB_INTEGER x; GB_INTEGER
 		h = VARG(h);
 		
 		if (w > 0 && h > 0)
-			gst_x_overlay_set_render_rectangle(GST_X_OVERLAY(ELEMENT), x, y, w, h);
+			gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(ELEMENT), x, y, w, h);
 	}
-	gst_x_overlay_expose(GST_X_OVERLAY(ELEMENT));
+	gst_video_overlay_expose(GST_VIDEO_OVERLAY(ELEMENT));
 
 END_PROPERTY
 
@@ -772,7 +785,7 @@ static bool add_input_output(void *_object, CMEDIACONTROL *child, char *name, in
 		
 		for(;;)
 		{
-			res = gst_iterator_next(iter, (gpointer *)&pad);
+			res = iterator_next_pad(iter, &pad);
 			if (res == GST_ITERATOR_RESYNC)
 				gst_iterator_resync(iter);
 			else
@@ -916,13 +929,13 @@ static int cb_message(CMEDIAPIPELINE *_object)
 				{
 					GstTagList *tags = NULL;
 					CMEDIATAGLIST *ob;
-					char *list;
+					//char *list;
     
 					gst_message_parse_tag(msg, &tags);
 					
-					list = gst_tag_list_to_string(tags);
+					//list = gst_tag_list_to_string(tags);
 					//fprintf(stderr, "--> %s\n", list);
-					g_free(list);
+					//g_free(list);
 					
 					ob = create_tag_list(tags);
 					GB.Ref(ob);
@@ -991,10 +1004,9 @@ BEGIN_PROPERTY(MediaPipeline_Position)
 
 	if (READ_PROPERTY)
 	{
-		GstFormat format = GST_FORMAT_TIME;
 		gint64 pos;
 		
-		if (THIS->state == GST_STATE_NULL || THIS->state == GST_STATE_READY || THIS->error || !gst_element_query_position(ELEMENT, &format, &pos) || format != GST_FORMAT_TIME)
+		if (THIS->state == GST_STATE_NULL || THIS->state == GST_STATE_READY || THIS->error || !gst_element_query_position(ELEMENT, GST_FORMAT_TIME, &pos))
 			GB.ReturnFloat(0);
 		else
 			GB.ReturnFloat((double)(pos / 1000) / 1E6);
@@ -1013,10 +1025,9 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MediaPipeline_Duration)
 
-	GstFormat format = GST_FORMAT_TIME;
 	gint64 dur;
 	
-	if (THIS->state == GST_STATE_NULL || THIS->error || !gst_element_query_duration(ELEMENT, &format, &dur) || format != GST_FORMAT_TIME)
+	if (THIS->state == GST_STATE_NULL || THIS->error || !gst_element_query_duration(ELEMENT, GST_FORMAT_TIME, &dur))
 		GB.ReturnFloat(0);
 	else
 		GB.ReturnFloat((double)(dur / 1000) / 1E6);
