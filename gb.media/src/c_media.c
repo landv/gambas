@@ -153,13 +153,19 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 				GstDateTime *date = (GstDateTime *)g_value_get_boxed(value);
 				
 				CLEAR(&ds);
-				ds.year = gst_date_time_get_year(date);
-				ds.month = gst_date_time_get_month(date);
-				ds.day = gst_date_time_get_day(date);
-				ds.hour = gst_date_time_get_hour(date);
-				ds.min = gst_date_time_get_minute(date);
-				ds.sec = gst_date_time_get_second(date);
-				ds.msec = gst_date_time_get_microsecond(date);
+				if (gst_date_time_has_year(date))
+					ds.year = gst_date_time_get_year(date);
+				if (gst_date_time_has_month(date))
+					ds.month = gst_date_time_get_month(date);
+				if (gst_date_time_has_day(date))
+					ds.day = gst_date_time_get_day(date);
+				if (gst_date_time_has_time(date))
+				{
+					ds.hour = gst_date_time_get_hour(date);
+					ds.min = gst_date_time_get_minute(date);
+					ds.sec = gst_date_time_get_second(date);
+					ds.msec = gst_date_time_get_microsecond(date);
+				}
 				//fprintf(stderr, "gb.media: warning: timezone = %g\n", gst_date_time_get_time_zone_offset(date));
 				
 				GB.MakeDate(&ds, (GB_DATE *)gvalue);
@@ -864,15 +870,15 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	{
 		type = GST_MESSAGE_TYPE(msg);
 		control = MEDIA_get_control_from_element(GST_MESSAGE_SRC(msg));
+		//fprintf(stderr, "cb_message: control = %p\n", control);
 		
-		if (type == GST_MESSAGE_APPLICATION)
+		if (type == GST_MESSAGE_APPLICATION && control)
 		{
 			//CMEDIACONTROL *target = (CMEDIACONTROL *)g_value_get_pointer(gst_structure_get_value(gst_message_get_structure(msg), "control"));
 			int event = g_value_get_int(gst_structure_get_value(gst_message_get_structure(msg), "event"));
 			GB.Raise(control, event, 0);
 		}
-		else
-		if (type == GST_MESSAGE_STATE_CHANGED && control)
+		else if (type == GST_MESSAGE_STATE_CHANGED && control)
 		{
 			GstState old_state, new_state;
 
@@ -892,7 +898,7 @@ static int cb_message(CMEDIAPIPELINE *_object)
 				
 				case GST_MESSAGE_ERROR: 
 				case GST_MESSAGE_WARNING: 
-				case GST_MESSAGE_INFO: 
+				case GST_MESSAGE_INFO:
 				{
 					gchar *debug;
 					GError *error;
@@ -901,7 +907,8 @@ static int cb_message(CMEDIAPIPELINE *_object)
 					{
 						gst_message_parse_error(msg, &error, &debug);
 						msg_type = 2;
-						control->error = TRUE;
+						if (control)
+							control->error = TRUE;
 						THIS->error = TRUE;
 					}
 					else if (type == GST_MESSAGE_WARNING)
@@ -917,11 +924,13 @@ static int cb_message(CMEDIAPIPELINE *_object)
 					
 					g_free(debug);
 					
+					if (!control)
+						control = THIS;
+					
 					GB.Ref(control);
 					GB.Raise(THIS, EVENT_Message, 3, GB_T_OBJECT, control, GB_T_INTEGER, msg_type, GB_T_STRING, error->message, -1);
 					g_error_free(error);
 					GB.Unref(POINTER(&control));
-					
 					break;
 				}
 				
@@ -930,7 +939,7 @@ static int cb_message(CMEDIAPIPELINE *_object)
 					GstTagList *tags = NULL;
 					CMEDIATAGLIST *ob;
 					//char *list;
-    
+		
 					gst_message_parse_tag(msg, &tags);
 					
 					//list = gst_tag_list_to_string(tags);
@@ -954,9 +963,9 @@ static int cb_message(CMEDIAPIPELINE *_object)
 				case GST_MESSAGE_PROGRESS: GB.Raise(THIS, EVENT_Progress, 0); break;
 				default: break;
 			}
+			
+			gst_message_unref(msg);
 		}
-		
-		gst_message_unref(msg);
 	}
 	
 	gst_object_unref(bus);
@@ -1140,14 +1149,14 @@ GB_DESC MediaPipelineDesc[] =
 	GB_METHOD("_new", NULL, MediaPipeline_new, NULL),
 	GB_METHOD("_free", NULL, MediaPipeline_free, NULL),
 	
-	GB_CONSTANT("Null", "i", GST_STATE_NULL),
+	/*GB_CONSTANT("Null", "i", GST_STATE_NULL),
 	GB_CONSTANT("Ready", "i", GST_STATE_READY),
 	GB_CONSTANT("Paused", "i", GST_STATE_PAUSED),
 	GB_CONSTANT("Playing", "i", GST_STATE_PLAYING),
 
 	GB_CONSTANT("Info", "i", 0),
 	GB_CONSTANT("Warning", "i", 1),
-	GB_CONSTANT("Error", "i", 2),
+	GB_CONSTANT("Error", "i", 2),*/
 	
 	GB_PROPERTY("Position", "f", MediaPipeline_Position),
 	GB_PROPERTY_READ("Duration", "f", MediaPipeline_Duration),
@@ -1170,15 +1179,19 @@ GB_DESC MediaPipelineDesc[] =
 
 GB_DESC MediaDesc[] = 
 {
-	GB_DECLARE("Media", sizeof(CMEDIAPIPELINE)),
-	GB_INHERITS("MediaPipeline"),
+	GB_DECLARE_VIRTUAL("Media"),
 	
 	GB_CONSTANT("Unknown", "i", -1),
 
-	//GB_CONSTANT("Info", "i", 0),
-	//GB_CONSTANT("Warning", "i", 1),
-	//GB_CONSTANT("Error", "i", 2),
+	GB_CONSTANT("Null", "i", GST_STATE_NULL),
+	GB_CONSTANT("Ready", "i", GST_STATE_READY),
+	GB_CONSTANT("Paused", "i", GST_STATE_PAUSED),
+	GB_CONSTANT("Playing", "i", GST_STATE_PLAYING),
 	
+	GB_CONSTANT("Info", "i", 0),
+	GB_CONSTANT("Warning", "i", 1),
+	GB_CONSTANT("Error", "i", 2),
+
 	GB_STATIC_METHOD("Link", NULL, Media_Link, "(FirstControl)MediaControl;(SecondControl)MediaControl;."),
 	GB_STATIC_METHOD("Time", "l", Media_Time, "(Seconds)f"),
 	GB_STATIC_METHOD("URL", "s", Media_URL, "(Path)s"),
