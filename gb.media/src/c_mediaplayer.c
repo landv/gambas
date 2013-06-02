@@ -380,9 +380,9 @@ END_METHOD
 BEGIN_PROPERTY(MediaPlayer_ConnectionSpeed)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_int(THIS, "connection-speed"));
+		GB.ReturnLong(get_int64(THIS, "connection-speed"));
 	else
-		set_int(THIS, "connection-speed", VPROP(GB_INTEGER));
+		set_int64(THIS, "connection-speed", VPROP(GB_LONG));
 
 END_PROPERTY
 
@@ -471,7 +471,7 @@ GB_DESC MediaPlayerDesc[] =
 	GB_PROPERTY_SELF("Subtitles", ".MediaPlayer.Subtitles"),
 	//GB_PROPERTY_SELF("Visualisation", ".MediaPlayer.Visualisation"),
 	
-	GB_PROPERTY("ConnectionSpeed", "i", MediaPlayer_ConnectionSpeed),
+	GB_PROPERTY("ConnectionSpeed", "l", MediaPlayer_ConnectionSpeed),
 	GB_PROPERTY("ProgressiveDownload", "b", MediaPlayer_ProgressiveDownload),
 	GB_PROPERTY("Buffering", "b", MediaPlayer_Buffering),
 	GB_PROPERTY("URL", "s", MediaPlayer_URL),

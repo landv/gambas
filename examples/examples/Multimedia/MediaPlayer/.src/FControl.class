@@ -5,6 +5,7 @@ Private lblTime As DrawingArea
 
 Private $sInfo As String
 Private $iMinOpacity As Integer = 70
+Private $sTitle As String
 
 Public Sub SetMinOpacity(iOpacity As Integer)
   
@@ -93,9 +94,27 @@ End
 
 Public Sub SetTitle(sTitle As String)
   
+  $sTitle = sTitle
   lblTitle.Text = sTitle
+  lblTitle.Foreground = &HBFBFBF&
   
 End
+
+Public Sub SetError(sError As String)
+  
+  lblTitle.Text = sError
+  lblTitle.Foreground = Color.Red
+  timError.Start
+  
+End
+
+Public Sub timError_Timer()
+  
+  SetTitle($sTitle)
+  timError.Stop
+  
+End
+
 
 ' Public Sub Form_Move()
 ' 

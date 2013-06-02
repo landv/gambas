@@ -137,6 +137,7 @@ Private Sub Action(sAction As String)
     Case "eject"
       Dialog.Title = ("Select a media file")
       If Not Dialog.OpenFile() Then 
+        FControl.SetTitle(File.Name(Dialog.Path))
         Action("stop")
         $hPlayer.Subtitles.Enabled = False
         $hPlayer.URL = Media.URL(Dialog.Path)
@@ -145,17 +146,16 @@ Private Sub Action(sAction As String)
           $hPlayer.Subtitles.Enabled = True
         Endif
         UpdateSubtitle
-        FControl.SetTitle(File.Name(Dialog.Path))
         FTags.ClearTags
         Action("play")
       Endif
       
     Case "video"
       
+      FControl.SetTitle("v4l2:///dev/video0")
       Action("stop")
       $hPlayer.Subtitles.Enabled = False
       $hPlayer.URL = "v4l2:///dev/video0"
-      FControl.SetTitle("v4l2:///dev/video0")
       FTags.ClearTags
       Action("play")
       
@@ -385,6 +385,25 @@ Public Sub MediaPlayer_End()
   Action("stop")
   
 End
+
+Public Sub MediaPlayer_Message((Source) As MediaControl, Type As Integer, Message As String)
+  
+  Select Case Type
+    Case Media.Info
+      Print "(i)";
+    Case Media.Warning
+      Print "/!\";"
+    Case Media.Error
+      Print "[*]";
+  End Select
+  Print " "; Message
+  
+  If Type = Media.Error Then
+    FControl.SetError(Message)
+  Endif
+  
+End
+
 
 Public Sub MediaPlayer_Tag(TagList As MediaTagList)
   

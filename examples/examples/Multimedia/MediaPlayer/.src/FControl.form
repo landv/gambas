@@ -24,12 +24,15 @@
       Font = Font["Bold,+5"]
       Foreground = &HBFBFBF&
       Expand = True
-      AutoResize = True
       Text = ("MediaPlayer, a media player example based on GStreamer made by Benoît Minisini")
     }
   }
   { panToolbar Panel
     MoveScaled(1,10,57,9)
     Margin = True
+  }
+  { timError #Timer
+    #MoveScaled(54,13)
+    Delay = 5000
   }
 }
