@@ -105,6 +105,7 @@ int CSocket_stream_close(GB_STREAM *stream);
 int CSocket_stream_handle(GB_STREAM *stream);
 
 bool SOCKET_update_timeout(CSOCKET_COMMON *socket);
+void SOCKET_set_blocking(CSOCKET_COMMON *socket, bool block);
 
 DECLARE_METHOD(Socket_Timeout);
 

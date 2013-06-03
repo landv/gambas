@@ -121,7 +121,6 @@ static void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
  **********************************************************/
 static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 {
-	int NoBlock=1;
 	int retval;
 	int auth = 1;
 
@@ -192,7 +191,8 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 		return 10;
 	}
 
-	ioctl(SOCKET->socket,FIONBIO,&NoBlock);
+	// Set socket to non-blocking mode
+	SOCKET_set_blocking(SOCKET, FALSE);
 
 	if ( listen(SOCKET->socket,mymax) == -1 )
 	{
