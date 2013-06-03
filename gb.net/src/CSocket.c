@@ -117,6 +117,13 @@ bool SOCKET_update_timeout(CSOCKET_COMMON *socket)
 	return FALSE;
 }
 
+void SOCKET_set_blocking(CSOCKET_COMMON *socket, bool block)
+{
+	int do_not_block = block ? 0 : 1;
+	
+	ioctl(socket->socket, FIONBIO, &do_not_block);
+	SOCKET_update_timeout(socket);
+}
 
 /**********************************
 Routines to call events
@@ -168,66 +175,70 @@ static void CSocket_close(CSOCKET *_object)
 		THIS->OnClose(_object);
 }
 
-/**************************************************
-This function is called by DnsClient to inform
+
+/*
+	This function is called by DnsClient to inform
 	that it has finished its work
-	*************************************************/
+*/
+
 void CSocket_CallBackFromDns(void *_object)
 {
-	int doNotBlock;
 	int myval=0;
 
-	if ( SOCKET->status != NET_SEARCHING) return;
-	if ( !THIS->DnsTool->sHostIP)
+	if (SOCKET->status != NET_SEARCHING) 
+		return;
+	
+	if (!THIS->DnsTool->sHostIP)
 	{
-		/* error host not found */
+		// Host not found
 		CSocket_stream_internal_error(THIS, NET_HOST_NOT_FOUND, TRUE);
 		return;
 	}
 
 	GB.FreeString (&THIS->sRemoteHostIP);
 	THIS->sRemoteHostIP = GB.NewZeroString (THIS->DnsTool->sHostIP);
-	/* Let's turn socket to async mode */
-	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
-	/* Third, we connect the socket */
+
+	// We connect to the socket
 	
-	THIS->Server.sin_family=AF_INET;
-	THIS->Server.sin_port=htons(THIS->iPort);
-	THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
-	bzero(&(THIS->Server.sin_zero),8);
+	THIS->Server.sin_family = AF_INET;
+	THIS->Server.sin_port = htons(THIS->iPort);
+	THIS->Server.sin_addr.s_addr = inet_addr(THIS->DnsTool->sHostIP);
+	bzero(&(THIS->Server.sin_zero), 8);
 	
-	doNotBlock = 1;
-	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
+	// Don't block, so that connect() returns immediately
+	
+	SOCKET_set_blocking(SOCKET, FALSE);
 	myval = connect(SOCKET->socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
-	doNotBlock = 0;
-	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
+	SOCKET_set_blocking(SOCKET, TRUE);
 	
-	if (!myval || errno==EINPROGRESS) /* this is the good answer : connect in progress */
+	if (!myval || errno == EINPROGRESS) // Rhis is the good answer : connect in progress
 	{
 		set_status(THIS, NET_CONNECTING);
-		GB.Watch (SOCKET->socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
+		GB.Watch(SOCKET->socket, GB_WATCH_WRITE, (void *)CSocket_CallBackConnecting, (intptr_t)THIS);
 	}
 	else
 	{
-		GB.Watch (SOCKET->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-		SOCKET->stream.desc=NULL;
+		GB.Watch(SOCKET->socket , GB_WATCH_NONE, NULL, 0);
+		SOCKET->stream.desc = NULL;
 		close(SOCKET->socket);
 		set_status(THIS, NET_INACTIVE);
 	}
+	
 	if (THIS->DnsTool)
-		{
+	{
 		dns_close_all(THIS->DnsTool);
 		GB.Unref(POINTER(&THIS->DnsTool));
-		THIS->DnsTool=NULL;
-		}
-	if ( SOCKET->status <= NET_INACTIVE )
+		THIS->DnsTool = NULL;
+	}
+	
+	if (SOCKET->status <= NET_INACTIVE)
 	{
 		CSocket_stream_internal_error(THIS, NET_CONNECTION_REFUSED, TRUE);
 		return;
 	}
 
 	GB.Ref(THIS);
-	GB.Post(CSocket_post_hostfound,(intptr_t)THIS);
+	GB.Post(CSocket_post_hostfound, (intptr_t)THIS);
 }
 
 
@@ -417,7 +428,6 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
 	int npos=-1;
-	//int NoBlock=0;
 	int bytes;
 
 	if (!THIS) return -1;
@@ -431,10 +441,7 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 	if (bytes < len)
 		len = bytes;
 
-	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	USE_MSG_NOSIGNAL(npos=recv(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
-	//NoBlock++;
-	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	
 	GB.Stream.SetBytesRead(stream, npos);
 	
@@ -450,11 +457,9 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
 	int npos=-1;
-	//int NoBlock=0;
 
 	if (!THIS) return -1;
 
-	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	while (len > 0)
 	{
 		USE_MSG_NOSIGNAL(npos=send(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
@@ -463,8 +468,6 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 		len -= npos;
 		buffer += npos;
 	}
-	//NoBlock++;
-	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 
 	if (npos >= 0 || errno == EAGAIN) 
 	{
@@ -492,8 +495,8 @@ To start a UNIX connection
 **************************************************************************/
 int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 {
-	int doNotBlock = 0;
-
+	int ret;
+	
 	if ( SOCKET->status > NET_INACTIVE ) return 1;
 	if (!sPath) return 7;
 	if ( (lenpath<1) || (lenpath>UNIXPATHMAX) ) return 7;
@@ -516,14 +519,16 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 	
 	THIS->conn_type = NET_TYPE_INTERNET;
 	
-	if (connect(SOCKET->socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
+	ret = connect(SOCKET->socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un));
+	
+	// Set socket to blocking mode, after the connect() call!
+	SOCKET_set_blocking(SOCKET, TRUE);
+
+	if (ret == 0)
 	{
 		set_status(THIS, NET_CONNECTED);
-		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 		CSOCKET_init_connected(THIS);
-		/*GB.Watch (SOCKET->socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
-		if (GB.CanRaise(THIS, EVENT_Write))
-			GB.Watch(SOCKET->socket, GB_WATCH_WRITE, (void *)CSocket_CallBackWrite, (intptr_t)THIS);*/
+
 		// $BM
 		if (THIS->Host) GB.FreeString(&THIS->Host);
 		if (THIS->Path) GB.FreeString(&THIS->Path);
@@ -534,12 +539,9 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 
 		return 0;
 	}
-	
-	// Set socket to blocking mode, after the connect() call!
-	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
 		
-	/* Error */
-	SOCKET->stream.desc=NULL;
+	// Error
+	SOCKET->stream.desc = NULL;
 	close(SOCKET->socket);
 	GB.FreeString(&THIS->sPath);
 	set_status(THIS, NET_CONNECTION_REFUSED);
@@ -555,8 +557,6 @@ To start a TCP connection
 **************************************************************************/
 int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 {
-	int doNotBlock = 0;
-	
 	if ( SOCKET->status > NET_INACTIVE ) return 1;
 	if (!lenhost) return 9;
 	if (!sHost)   return 9;
@@ -574,7 +574,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	}
 
 	// Set socket to blocking mode
-	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
+	SOCKET_set_blocking(SOCKET, TRUE);
 
 	THIS->iPort=myport;
 	THIS->conn_type = NET_TYPE_INTERNET;
@@ -628,7 +628,6 @@ MaxLen -> 0 no limit, >0 max. data t read
 int CSocket_peek_data(void *_object,char **buf,int MaxLen)
 {
 	int retval=0;
-	//int NoBlock=0;
 	int nread=0;
 	int bytes=0;
 
@@ -644,10 +643,7 @@ int CSocket_peek_data(void *_object,char **buf,int MaxLen)
 		if (MaxLen >0 ) bytes=MaxLen;
 		GB.Alloc((void**)buf,bytes);
 		(*buf)[0]='\0';
-		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 		USE_MSG_NOSIGNAL(retval=recv(SOCKET->socket,(void*)(*buf),bytes*sizeof(char),MSG_PEEK|MSG_NOSIGNAL));
-		//NoBlock++;
-		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	}
 
 	if (retval==-1)
