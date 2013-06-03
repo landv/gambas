@@ -27,8 +27,8 @@
 
 #include "c_mediaplayer.h"
 
-// GStreamer playbin2 documents a enum that is not defined anywhere...
-// I have never see such a thing, and I have no idea why they did that!
+// GStreamer playbin documents a enum that is not defined anywhere!?
+// If someone knows where I can find it...
 
 typedef enum {
   GST_PLAY_FLAG_VIDEO         = (1 << 0),
@@ -166,6 +166,96 @@ BEGIN_PROPERTY(_func) \
 \
 END_PROPERTY
 
+static GB_IMG *get_frame(CMEDIAPLAYER *_object)
+{
+	GstElement *play = GST_ELEMENT(ELEMENT);
+  GstStructure *s;
+  GstSample *sample = NULL;
+  GstCaps *to_caps, *sample_caps;
+  gint outwidth = 0;
+  gint outheight = 0;
+  GstMemory *memory;
+  GstMapInfo info;
+	const char *format;
+	int gb_format;
+	GB_IMG *img;
+	
+  //g_return_val_if_fail (play != NULL, NULL);
+  //g_return_val_if_fail (GST_IS_ELEMENT (play), NULL);
+
+	switch (IMAGE.GetDefaultFormat())
+	{
+		case GB_IMAGE_BGRA: 
+			format = "BGR"; 
+			gb_format = GB_IMAGE_BGR; 
+			break;
+			
+		case GB_IMAGE_RGBA: 
+			format = "RGB";
+			gb_format = GB_IMAGE_RGB;
+			break;
+			
+		default: 
+			GB.Error("Unsupported default image format"); 
+			return NULL;
+	}
+	
+  /* our desired output format (RGB or BGR) */
+  to_caps = gst_caps_new_simple ("video/x-raw",
+      "format", G_TYPE_STRING, format,
+      /* Note: we don't ask for a specific width/height here, so that
+       * videoscale can adjust dimensions from a non-1/1 pixel aspect
+       * ratio to a 1/1 pixel-aspect-ratio. We also don't ask for a
+       * specific framerate, because the input framerate won't
+       * necessarily match the output framerate if there's a deinterlacer
+       * in the pipeline. */
+      "pixel-aspect-ratio", GST_TYPE_FRACTION, 1, 1,
+      NULL);
+
+  /* get frame */
+  g_signal_emit_by_name (play, "convert-sample", to_caps, &sample);
+  gst_caps_unref (to_caps);
+
+  if (!sample) 
+	{
+		GB.Error("Unable to retrieve or convert video frame");
+    return NULL;
+  }
+
+  sample_caps = gst_sample_get_caps(sample);
+  if (!sample_caps) 
+	{
+    GB.Error("No caps on output buffer");
+    return NULL;
+  }
+
+	//fprintf(stderr, "frame caps: %" GST_PTR_FORMAT, sample_caps);
+
+  s = gst_caps_get_structure (sample_caps, 0);
+  gst_structure_get_int (s, "width", &outwidth);
+  gst_structure_get_int (s, "height", &outheight);
+  if (outwidth <= 0 || outheight <= 0)
+	{
+		GB.Error("Bad image dimensions");
+    return NULL;
+	}
+
+  memory = gst_buffer_get_memory (gst_sample_get_buffer (sample), 0);
+  gst_memory_map (memory, &info, GST_MAP_READ);
+
+  /* create pixbuf from that - use our own destroy function */
+  /*pixbuf = gdk_pixbuf_new_from_data (info.data,
+      GDK_COLORSPACE_RGB, FALSE, 8, outwidth, outheight,
+      GST_ROUND_UP_4 (outwidth * 3), destroy_pixbuf, sample);*/
+	
+	img = IMAGE.Create(outwidth, outheight, gb_format, info.data);
+
+  gst_memory_unmap (memory, &info);
+  gst_sample_unref (sample);
+
+  return img;
+}
+
 //---- MediaPlayerAudio --------------------------------------------------
 
 BEGIN_PROPERTY(MediaPlayerAudio_Count)
@@ -277,6 +367,12 @@ BEGIN_PROPERTY(MediaPlayerVideo_Visualisation)
 		if (playing)
 			MEDIA_set_state(THIS, GST_STATE_PLAYING, FALSE);
 	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayerVideo_Image)
+
+	GB.ReturnObject(get_frame(THIS));
 
 END_PROPERTY
 
@@ -440,6 +536,7 @@ GB_DESC MediaPlayerVideoDesc[] =
 	GB_PROPERTY("Deinterlace", "b", MediaPlayerVideo_Deinterlace),
 	GB_PROPERTY("Output", "MediaControl", MediaPlayerVideo_Output),
 	GB_PROPERTY("Visualisation", "MediaControl", MediaPlayerVideo_Visualisation),
+	GB_PROPERTY_READ("Image", "Image", MediaPlayerVideo_Image),
 	
 	GB_END_DECLARE
 };

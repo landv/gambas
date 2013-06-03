@@ -30,6 +30,7 @@
 #include "c_mediaplayer.h"
 
 GB_INTERFACE GB EXPORT;
+IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -74,6 +75,7 @@ static void hook_main(int *argc, char ***argv)
 int EXPORT GB_INIT()
 {
 	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
+	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 	return 0;
 }
 

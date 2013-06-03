@@ -131,6 +131,8 @@ Private Sub Action(sAction As String)
 
   Dim fPos As Float
   Dim iState As Integer
+  Dim sName As String
+  Dim iName As Integer
 
   Select sAction
     
@@ -239,12 +241,23 @@ Private Sub Action(sAction As String)
     Case "quit"
       Me.Close
       
+    Case "screenshot"
+      
+      Do
+        Inc iName
+        sName = "~/MediaPlayerScreenshot"
+        If iName > 1 Then sName &= "-" & CStr(iName)
+        sName &= ".jpg"
+        If Not Exist(sName) Then Break
+      Loop
+      $hPlayer.Video.Image.Save(sName)
+    
     Case "seek-forward"
       FControl.Y = Screen.H - FControl.H
     
     Case "seek-backward"
       FControl.Y = 600
-    
+      
   End Select
 
 End

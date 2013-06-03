@@ -32,9 +32,11 @@
 #include <gst/gst.h>
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
 #endif
 
 int MAIN_get_x11_handle(void *control);
