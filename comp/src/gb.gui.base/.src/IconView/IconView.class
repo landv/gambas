@@ -803,7 +803,7 @@ Public Sub ScrollArea_KeyPress()
         
     End Select
     
-    If Len(Key.Text) >= 2 Or If Asc(Key.Text) >= 32 Or If Key.Code = Key.Backspace Then
+    If Len(Key.Text) >= 2 Or If Asc(Key.Text) >= 32 And IsAscii(Key.Text) Or If Key.Code = Key.Backspace Then
       
       fNow = Timer
       iStart = $iCurrent
@@ -821,6 +821,7 @@ Public Sub ScrollArea_KeyPress()
       
       iPos = iStart
       For iInd = 0 To $aItems.Max
+        If iPos > $aItems.Max Then iPos = 0
         With $aItems[iPos]
           'Debug iInd;; .Text
           If String.LCase(.Text) Begins $sFindItem Then
@@ -829,7 +830,6 @@ Public Sub ScrollArea_KeyPress()
           Endif
         End With
         Inc iPos
-        If iPos > $aItems.Max Then iPos = 0
       Next
       
     Endif

@@ -711,25 +711,28 @@ void ERROR_hook(void)
 	if (no_rec)
 		return;
 	
-	handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
-	
-	if (handle_error)
+	if (PROJECT_class)
 	{
-		no_rec = TRUE;
-		ERROR_copy(&save, &last);
+		handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
 		
-		TRY
+		if (handle_error)
 		{
-			EXEC_public_desc(PROJECT_class, NULL, handle_error, 0);
-		}
-		CATCH
-		{
-			ERROR_save(&save, &last);
-		}
-		END_TRY
+			no_rec = TRUE;
+			ERROR_copy(&save, &last);
+			
+			TRY
+			{
+				EXEC_public_desc(PROJECT_class, NULL, handle_error, 0);
+			}
+			CATCH
+			{
+				ERROR_save(&save, &last);
+			}
+			END_TRY
 
-		ERROR_restore(&save, &last);
-		no_rec = FALSE;
+			ERROR_restore(&save, &last);
+			no_rec = FALSE;
+		}
 	}
 }
 

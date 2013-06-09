@@ -1,0 +1,11 @@
+' Gambas class file
+
+Public Sub Form_Open()
+        'add two items
+
+        Dim img As New Image(32, 32, Color.Yellow)
+
+        IconView1.Add("key1", "First Item", img.Picture)
+        IconView1.Add("key2", "last Item", img.Picture)
+
+End
