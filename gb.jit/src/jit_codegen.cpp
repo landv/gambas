@@ -3614,7 +3614,7 @@ void TryExpression::codegen(){
 		create_gep(temp_errcontext1, TARGET_BITS, 0, TARGET_BITS, 0));
 	
 	llvm::Function* f = llvm::cast<llvm::Function>(get_global_function(_setjmp, 'i', "p"));
-#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
+#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR == 2)
 	f->addFnAttr(llvm::Attributes::ReturnsTwice);
 #else
 	f->addFnAttr(llvm::Attribute::ReturnsTwice);
@@ -3669,7 +3669,7 @@ void LargeTryExpression::codegen(){
 		create_gep(temp_errcontext2, TARGET_BITS, 0, TARGET_BITS, 0));
 	
 	llvm::Function* f = llvm::cast<llvm::Function>(get_global_function(_setjmp, 'i', "p"));
-#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
+#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR == 2)
 	f->addFnAttr(llvm::Attributes::ReturnsTwice);
 #else
 	f->addFnAttr(llvm::Attribute::ReturnsTwice);

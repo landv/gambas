@@ -24,9 +24,12 @@
 ***************************************************************************/
 
 #include "llvm/Pass.h"
-#include "llvm/Function.h"
-#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
+#if (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 3)
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Function.h"
+#elif (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
 #include "llvm/IRBuilder.h"
+#include "llvm/Function.h"
 #else
 #include "llvm/Support/IRBuilder.h"
 #endif

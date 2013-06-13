@@ -26,20 +26,32 @@
 #ifndef __JIT_H
 #define __JIT_H
 
+#include <llvm/Config/llvm-config.h>
+#if (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 3)
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Intrinsics.h"
+#include "llvm/IR/Instructions.h"
+#else
 #include "llvm/LLVMContext.h"
 #include "llvm/Module.h"
-#include "llvm/Analysis/Verifier.h"
 #include "llvm/Constants.h"
 #include "llvm/DerivedTypes.h"
 #include "llvm/Intrinsics.h"
 #include "llvm/Instructions.h"
+#endif
+#include "llvm/Analysis/Verifier.h"
 #include "llvm/ExecutionEngine/JIT.h"
 #include "llvm/ExecutionEngine/Interpreter.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/raw_ostream.h"
-#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
+#if (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 3)
+#include "llvm/IR/IRBuilder.h"
+#elif (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR ==2)
 #include "llvm/IRBuilder.h"
 #else
 #include "llvm/Support/IRBuilder.h"
