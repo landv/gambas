@@ -27,11 +27,12 @@
 #if (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 3)
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Function.h"
-#elif (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 2)
+#elif (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR == 2)
 #include "llvm/IRBuilder.h"
 #include "llvm/Function.h"
 #else
 #include "llvm/Support/IRBuilder.h"
+#include "llvm/Function.h"
 #endif
 #include "llvm/Support/raw_ostream.h"
 
