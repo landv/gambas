@@ -57,6 +57,23 @@ static const char *get_string(int index)
   return TABLE_get_symbol_name(JOB->class->string, index);
 }
 
+static void print_quoted(FILE *file, const char *str)
+{
+	unsigned char c;
+	
+	for(;;)
+	{
+		c = *str++;
+		if (!c)
+			return;
+		if (c == '\n')
+			fputs("\\n", file);
+		else if (c == '\t')
+			fputs("\\t", file);
+		else
+			fputc(c, file);
+	}
+}
 
 static void dump_name(int index)
 {
@@ -593,7 +610,8 @@ static void insert_class_info(CLASS *class, FILE *fw)
 						break;
 					
 					case T_STRING:
-						fprintf(_finfo, "%s\n", get_string(cst->value));
+						print_quoted(_finfo, get_string(cst->value));
+						export_newline();
 						break;
 
 					default:
