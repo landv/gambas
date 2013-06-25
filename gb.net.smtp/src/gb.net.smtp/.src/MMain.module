@@ -3,14 +3,32 @@
 Public Sub Main()
 
   Dim hMail As New SmtpClient
+  Dim corps As String
+  Dim utilisateur As String
+  Dim sType As String
+  Dim cEtablissement As New Collection
   
   'hMail.Debug = True
   hMail.Host = "smtp.free.fr"
   hMail.To.Add("benoit.minisini@gmail.com")
   hMail.From = "benoit@minisini.fr"
-  hMail.Body = "Ceci est le corps du message."
+  
+  sType = "la convention de rejets"
+  cEtablissement["marque"] = "TOYOTA"
+  cEtablissement["adresse"] = "rue de Champagne"
+  cEtablissement["code postal"] = "60880"
+  cEtablissement["commune"] = "JAUX"
+  
+  corps = utilisateur & " a modifié " & sType & " sur la concession" & cEtablissement["marque"] & " située au " & cEtablissement["adresse"] & " " & cEtablissement["code postal"] & " " & cEtablissement["commune"]
+
+  hMail.Subject = " mySARP: On a modifié la convention de rejets d'une concession"
+  'hMail.Body = corps
   'hMail.Add("Ceci est le corps du message.",, "")
-  hMail.Add(File.Load("~/téléphone.png"), "image/png", "paques.png")
+  'hMail.Add(File.Load("~/téléphone.png"), "image/png", "paques.png")
+  
+  Print corps
+  hMail.Add(corps, "text/plain;charset=utf-8")
+  
   hMail.Send
 
 End

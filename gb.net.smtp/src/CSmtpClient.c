@@ -111,6 +111,7 @@ static int decode_mime(char *mime)
 			return TRUE;
 		}
 		p += 8;
+		GB.FreeString(&_mime_charset);
 		_mime_charset = GB.NewString(p, &mime[strlen(mime)] - p);
 	}
 	else
