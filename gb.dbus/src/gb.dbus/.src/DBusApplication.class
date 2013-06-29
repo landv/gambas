@@ -73,14 +73,15 @@ End
 Public Sub _unknown(...) As Variant
   
   Dim aArg As Variant[]
-  Dim iInd As Integer
+  'Dim iInd As Integer
   Dim hObject As DBusProxy = $hObject
   
   If Param.Count Then
-    aArg = New Variant[Param.Count]
-    For iInd = 0 To Param.Max
-      aArg[iInd] = Param[iInd]
-    Next
+    ' aArg = New Variant[Param.Count]
+    ' For iInd = 0 To Param.Max
+    '   aArg[iInd] = Param[iInd]
+    ' Next
+    aArg = Param.All
   Endif
   
   $hObject = Null

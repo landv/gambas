@@ -61,12 +61,15 @@ Public Sub Timer_Timer()
   
   Dim fValue As Float
   Dim iSign As Integer
+  Dim fDiff As Float
   
   fValue = Object.GetProperty($hObject, $sProperty)
   
   iSign = Sgn($fTarget - fValue)
-  fValue += ($fTarget - fValue) / (1000 * ($fTime - Timer) / $hTimer.Delay)
-  If Sgn($fTarget - fValue) <> iSign Then
+  fDiff = $fTime - Timer
+  fValue += ($fTarget - fValue) / (1000 * fDiff / $hTimer.Delay)
+  
+  If fDiff <= 0 Or If iSign = 0 Or If iSign > 0 And fValue >= $fTarget Or If iSign < 0 And fValue <= $fTarget Then
     Object.SetProperty($hObject, $sProperty, $fTarget)
     {Stop}
   Else

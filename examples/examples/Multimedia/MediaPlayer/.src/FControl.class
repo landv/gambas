@@ -102,6 +102,10 @@ End
 
 Public Sub SetError(sError As String)
   
+  If lblTitle.Foreground = Color.Red Then
+    sError = Trim(lblTitle.Text & " " & sError)
+  Endif
+  
   lblTitle.Text = sError
   lblTitle.Foreground = Color.Red
   timError.Start

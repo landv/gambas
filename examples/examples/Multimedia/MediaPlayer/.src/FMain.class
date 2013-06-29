@@ -141,14 +141,14 @@ Private Sub Action(sAction As String)
       If Not Dialog.OpenFile() Then 
         FControl.SetTitle(File.Name(Dialog.Path))
         Action("stop")
-        $hPlayer.Subtitles.Enabled = False
         $hPlayer.URL = Media.URL(Dialog.Path)
+        $hPlayer.Subtitles.Enabled = False
         If Exist(File.SetExt(Dialog.Path, "srt")) Then 
           $hPlayer.Subtitles.URL = Media.URL(File.SetExt(Dialog.Path, "srt"))
           $hPlayer.Subtitles.Enabled = True
         Endif
         UpdateSubtitle
-        FTags.ClearTags
+        FTags.Clear($hPlayer)
         Action("play")
       Endif
       
@@ -158,7 +158,7 @@ Private Sub Action(sAction As String)
       Action("stop")
       $hPlayer.Subtitles.Enabled = False
       $hPlayer.URL = "v4l2:///dev/video0"
-      FTags.ClearTags
+      FTags.Clear($hPlayer)
       Action("play")
       
     Case "info"
@@ -215,6 +215,9 @@ Private Sub Action(sAction As String)
       $hPlayer.Audio.Mute = Not $hPlayer.Audio.Mute
       RefreshVolume
       
+    'Case "balance"
+      'FBalance.Visible = Not FBalance.Visible
+      
     Case "visualisation"
       
       iState = $hPlayer.State
@@ -250,7 +253,8 @@ Private Sub Action(sAction As String)
         sName &= ".jpg"
         If Not Exist(sName) Then Break
       Loop
-      $hPlayer.Video.Image.Save(sName)
+      Try $hPlayer.Video.Image.Save(sName)
+      If Error Then FControl.SetError(Error.Text)
     
     Case "seek-forward"
       FControl.Y = Screen.H - FControl.H
@@ -405,7 +409,7 @@ Public Sub MediaPlayer_Message((Source) As MediaControl, Type As Integer, Messag
     Case Media.Info
       Print "(i)";
     Case Media.Warning
-      Print "/!\";"
+      Print "/!\\";
     Case Media.Error
       Print "[*]";
   End Select
@@ -413,6 +417,7 @@ Public Sub MediaPlayer_Message((Source) As MediaControl, Type As Integer, Messag
   
   If Type = Media.Error Then
     FControl.SetError(Message)
+    Action("stop")
   Endif
   
 End
@@ -512,3 +517,9 @@ End
 '   FTags.X = Me.X + $iTagsX
 ' 
 ' End
+
+Public Sub SetBalance(iIndex As Integer, iValue As Integer)
+  
+  $hPlayer.Balance[iIndex].Value = iValue
+  
+End

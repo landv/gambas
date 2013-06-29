@@ -430,6 +430,82 @@ BEGIN_PROPERTY(MediaPlayerSubtitles_Output)
 
 END_PROPERTY
 
+//---- MediaPlayerBalanceChannel -----------------------------------------
+
+static GstColorBalanceChannel *get_channel(void *_object)
+{
+	GList *channels = (GList *)gst_color_balance_list_channels(BALANCE);
+	GstColorBalanceChannel *channel = (GstColorBalanceChannel *)g_list_nth_data(channels, THIS->channel);
+	if (!channel) GB.Error(GB_ERR_ARG);
+	return channel;
+}
+
+BEGIN_PROPERTY(MediaPlayerBalanceChannel_Name)
+
+	GstColorBalanceChannel *channel = get_channel(THIS);
+	if (channel)
+		GB.ReturnNewZeroString(channel->label);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayerBalanceChannel_Min)
+
+	GstColorBalanceChannel *channel = get_channel(THIS);
+	if (channel)
+		GB.ReturnInteger(channel->min_value);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayerBalanceChannel_Max)
+
+	GstColorBalanceChannel *channel = get_channel(THIS);
+	if (channel)
+		GB.ReturnInteger(channel->max_value);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayerBalanceChannel_Value)
+
+	GstColorBalanceChannel *channel = get_channel(THIS);
+	if (!channel)
+		return;
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gst_color_balance_get_value(BALANCE, channel));
+	else
+		gst_color_balance_set_value(BALANCE, channel, VPROP(GB_INTEGER));
+	
+END_PROPERTY
+
+//---- MediaPlayerBalance ------------------------------------------------
+
+BEGIN_PROPERTY(MediaPlayerBalance_Count)
+
+	GB.ReturnInteger(g_list_length((GList *)gst_color_balance_list_channels(BALANCE)));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayerBalance_Hardware)
+
+	GB.ReturnBoolean(gst_color_balance_get_balance_type(BALANCE) == GST_COLOR_BALANCE_HARDWARE);
+	
+END_PROPERTY
+
+BEGIN_METHOD(MediaPlayerBalance_get, GB_INTEGER index)
+
+	GList *channels = (GList *)gst_color_balance_list_channels(BALANCE);
+	int index = VARG(index);
+	
+	if (index < 0 || index >= g_list_length(channels))
+		GB.Error(GB_ERR_ARG);
+	else
+	{
+		THIS->channel = index;
+		RETURN_SELF();
+	}
+
+END_PROPERTY
+
 //---- MediaPlayer -------------------------------------------------------
 
 DECLARE_EVENT(EVENT_AboutToFinish);
@@ -556,6 +632,31 @@ GB_DESC MediaPlayerSubtitlesDesc[] =
 	GB_END_DECLARE
 };
 
+GB_DESC MediaPlayerBalanceChannelDesc[] = 
+{
+	GB_DECLARE(".MediaPlayer.Balance.Channel", sizeof(CMEDIAPLAYER)),
+	GB_VIRTUAL_CLASS(),
+	
+	GB_PROPERTY_READ("Name", "s", MediaPlayerBalanceChannel_Name),
+	GB_PROPERTY_READ("Min", "i", MediaPlayerBalanceChannel_Min),
+	GB_PROPERTY_READ("Max", "i", MediaPlayerBalanceChannel_Max),
+	GB_PROPERTY("Value", "i", MediaPlayerBalanceChannel_Value),
+	
+	GB_END_DECLARE
+};
+
+GB_DESC MediaPlayerBalanceDesc[] = 
+{
+	GB_DECLARE(".MediaPlayer.Balance", sizeof(CMEDIAPLAYER)),
+	GB_VIRTUAL_CLASS(),
+	
+	GB_PROPERTY_READ("Count", "i", MediaPlayerBalance_Count),
+	GB_PROPERTY_READ("Hardware", "b", MediaPlayerBalance_Hardware),
+	GB_METHOD("_get", ".MediaPlayer.Balance.Channel", MediaPlayerBalance_get, "(Channel)i"),
+	
+	GB_END_DECLARE
+};
+
 GB_DESC MediaPlayerDesc[] = 
 {
 	GB_DECLARE("MediaPlayer", sizeof(CMEDIAPLAYER)),
@@ -566,6 +667,7 @@ GB_DESC MediaPlayerDesc[] =
 	GB_PROPERTY_SELF("Audio", ".MediaPlayer.Audio"),
 	GB_PROPERTY_SELF("Video", ".MediaPlayer.Video"),
 	GB_PROPERTY_SELF("Subtitles", ".MediaPlayer.Subtitles"),
+	GB_PROPERTY_SELF("Balance", ".MediaPlayer.Balance"),
 	//GB_PROPERTY_SELF("Visualisation", ".MediaPlayer.Visualisation"),
 	
 	GB_PROPERTY("ConnectionSpeed", "l", MediaPlayer_ConnectionSpeed),

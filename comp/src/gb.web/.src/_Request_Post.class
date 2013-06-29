@@ -42,7 +42,7 @@ Private Sub ReadLine() As String
     sData = Read Min(4096, $iMaxLength)
     $iMaxLength -= Len(sData)
     $sBuffer &= sData
-    If Request.Debug Then $sContents &= sData
+    If Request.Debug And If Not $sContents Then $sContents = sData
     
   Loop
 
@@ -223,7 +223,8 @@ Public Sub Exist(Field As String) As Boolean
 End
 
 Private Function Contents_Read() As String
-
+  
+  Decode
   Return $sContents
 
 End

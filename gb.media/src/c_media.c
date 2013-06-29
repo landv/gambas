@@ -387,6 +387,7 @@ static MEDIA_TYPE _types[] =
 	{ "MediaPipeline", "pipeline" },
 	{ "Media", "pipeline" },
 	{ "MediaPlayer", "playbin" },
+	{ "MediaFilter", "capsfilter" },
 	//{ "MediaDecoder", "decodebin" },
 	{ NULL, NULL }
 };

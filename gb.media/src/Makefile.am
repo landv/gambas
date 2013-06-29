@@ -10,4 +10,5 @@ gb_media_la_CPPFLAGS = @MEDIA_INC@
 gb_media_la_SOURCES = \
  main.c main.h \
  c_media.c c_media.h \
+ c_mediafilter.c c_mediafilter.h \
  c_mediaplayer.c c_mediaplayer.h

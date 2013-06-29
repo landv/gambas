@@ -23,7 +23,7 @@ Private $hDraw As Image
 'Private $hTimer As Timer
 Private $fOpacity As Float = MIN_OPACITY
 Private $bHighlight As Boolean
-Private $hTimer As Timer
+'Private $hTimer As Timer
 Private $sShortcut As String
 Private $sText As String
 Private $hFont As Font
@@ -34,7 +34,7 @@ Public Sub _new()
   '$hTimer = New Timer As "Timer"
   '$hTimer.Delay = 50
   Me.Mouse = Mouse.Pointing
-  $hTimer = New Timer As "Timer"
+  '$hTimer = New Timer As "Timer"
   
 End
 
@@ -60,36 +60,14 @@ Public Sub DrawingArea_MouseUp()
   
 End
 
-'Public Sub DrawingArea_DblClick()
-'  
-'  Raise Click
-'  Stop Event
-'  
-'End
-
-
-' Public Sub Timer_Timer()
-'   
-'   If $bInside Then
-'     $fOpacity = Min(MAX_OPACITY, $fOpacity + 0.1)
-'     If $fOpacity >= MAX_OPACITY Then
-'       $hTimer.Stop
-'     Endif
-'   Else
-'     $fOpacity = Max(MIN_OPACITY, $fOpacity - 0.1)
-'     If $fOpacity <= MIN_OPACITY Then
-'       $hTimer.Stop
-'     Endif
-'   Endif
-'   
-'   SetOpacity
-'   
-' End
-
-
 Public Sub DrawingArea_Draw()
   
-  If $hDraw Then Draw.Image($hDraw, 2, 2)
+  If $hDraw Then 
+    If $hDraw.W <> (Me.W - 4) Or If $hDraw.H <> (Me.H - 4) Then
+      $hDraw = $hDraw.Stretch(Me.W - 4, Me.H - 4)
+    Endif
+    Draw.Image($hDraw, 2, 2)
+  Endif
   
   If $bHighlight Then 
     Paint.Begin(Me)
@@ -109,7 +87,7 @@ End
 
 Private Sub Image_Write(Value As Image)
 
-  $hImage = Value.Stretch(Me.W - 4, Me.H - 4)
+  $hImage = Value '.Stretch(Me.W - 4, Me.H - 4)
   SetOpacity
 
 End
