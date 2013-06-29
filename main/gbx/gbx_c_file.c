@@ -628,9 +628,10 @@ BEGIN_METHOD(File_Load, GB_STRING path)
 		{
 			rlen = len;
 
-			str = STRING_new_temp(NULL, rlen);
-
-			STREAM_read(&stream, str, rlen);
+			str = STRING_new(NULL, rlen);
+			rlen = STREAM_read_max(&stream, str, rlen);
+			str = STRING_extend(str, rlen);
+			STRING_free_later(str);
 		}
 		
 		STREAM_close(&stream);

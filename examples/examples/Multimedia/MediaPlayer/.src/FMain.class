@@ -127,6 +127,12 @@ Public Sub Form_KeyPress()
   
 End
 
+Private Sub GetDevice(sName As String) As String
+
+  Try Return Scan(sName, "* (*)")[1]
+
+End
+
 Private Sub Action(sAction As String)
 
   Dim fPos As Float
@@ -160,7 +166,7 @@ Private Sub Action(sAction As String)
         FControl.SetTitle(("Video device") & " " & sVideo)
         Action("stop")
         $hPlayer.Subtitles.Enabled = False
-        $hPlayer.URL = "v4l2://" & sVideo
+        $hPlayer.URL = "v4l2://" & GetDevice(sVideo)
         FTags.Clear($hPlayer)
         Action("play")
       Endif

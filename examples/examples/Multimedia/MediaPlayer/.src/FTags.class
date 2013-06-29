@@ -103,7 +103,7 @@ Public Sub _new()
   cmbVideoDevice.Clear
   If Exist("/sys/class/video4linux") Then
     For Each sFile In Dir("/sys/class/video4linux")
-      cmbVideoDevice.Add("/dev" &/ sFile)
+      cmbVideoDevice.Add(Trim(File.Load("/sys/class/video4linux" &/ sFile &/ "name")) & " (/dev/" & sFile & ")")
     Next
   Else
     cmbVideoDevice.Add(("No video device"))
