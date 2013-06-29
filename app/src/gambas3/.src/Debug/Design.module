@@ -348,6 +348,8 @@ Public Sub Process_Kill()
   'PRINT "KILL"
 
   If Not Project.AboutToQuit Then AfterStop
+  
+  If Not $hProcess Then Return ' $hProcess may be NULL if the event loop is called somewhere during AfterStop()
 
   If $hProcess.State = Process.Crashed Then
     ' SIGKILL and SIGTERM are not considered as bugs in the program

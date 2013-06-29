@@ -39,8 +39,6 @@ Public Sub Clear(hPlayer As MediaPlayer)
     
     With hPlayer.Balance[I]
     
-      Print .Name; ": "; .Min;; .Max;; .Value
-    
       hLabel = New Label(panBalance)
       hLabel.Text = GetBalanceName(.Name)
       hLabel.Foreground = lblBalance.Foreground
@@ -94,11 +92,23 @@ End
 
 Public Sub _new()
 
+  Dim sFile As String
+  
   gvwTags.Columns.Count = 2
   
   btnResetBalance = New CButton(panLabel) As "btnResetBalance"
   btnResetBalance.Resize(panLabel.H, panLabel.H)
   btnResetBalance.Image = Image.Load("undo.png")
+
+  cmbVideoDevice.Clear
+  If Exist("/sys/class/video4linux") Then
+    For Each sFile In Dir("/sys/class/video4linux")
+      cmbVideoDevice.Add("/dev" &/ sFile)
+    Next
+  Else
+    cmbVideoDevice.Add(("No video device"))
+    cmbVideoDevice.Enabled = False
+  Endif
 
 End
 
@@ -128,3 +138,10 @@ Public Sub btnResetBalance_Click()
   Next
   
 End
+
+Public Sub GetVideoDevice() As String
+  
+  If cmbVideoDevice.Enabled Then Return cmbVideoDevice.Text
+  
+End
+

@@ -133,6 +133,7 @@ Private Sub Action(sAction As String)
   Dim iState As Integer
   Dim sName As String
   Dim iName As Integer
+  Dim sVideo As String
 
   Select sAction
     
@@ -154,14 +155,17 @@ Private Sub Action(sAction As String)
       
     Case "video"
       
-      FControl.SetTitle("v4l2:///dev/video0")
-      Action("stop")
-      $hPlayer.Subtitles.Enabled = False
-      $hPlayer.URL = "v4l2:///dev/video0"
-      FTags.Clear($hPlayer)
-      Action("play")
+      sVideo = FTags.GetVideoDevice()
+      If sVideo Then
+        FControl.SetTitle(("Video device") & " " & sVideo)
+        Action("stop")
+        $hPlayer.Subtitles.Enabled = False
+        $hPlayer.URL = "v4l2://" & sVideo
+        FTags.Clear($hPlayer)
+        Action("play")
+      Endif
       
-    Case "info"
+    Case "info", "config"
       If $bShowTags Then
         CAnimation.Start(FTags, "Opacity", 0, 250, Me)
         'CAnimation.Start(Me, "TagsX", - FTags.W, 250)

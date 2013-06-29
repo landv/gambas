@@ -2287,14 +2287,12 @@ Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bMakeExe
 
 End
 
-Private Sub CreateLangDirectory()
+Public Sub CreateLangDirectory()
 
   Dim sDir As String = Project.Dir &/ ".lang"
 
-  If Not Exist(sDir) Then
-    Mkdir sDir
-    VersionControl.AddDir(sDir)
-  Endif
+  Try Mkdir sDir
+  If IsDir(sDir) And If Dir(sDir).Count = 0 Then VersionControl.AddDir(sDir)
 
 End
 

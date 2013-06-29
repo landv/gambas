@@ -388,6 +388,8 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
   UpdateOrg()
 
+  Project.CreateLangDirectory()
+
   sPathMO = Left$($sPath, -3) & ".mo"
   bExistMO = Exist(sPathMO)
 
