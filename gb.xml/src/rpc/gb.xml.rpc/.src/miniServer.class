@@ -67,6 +67,13 @@ Private Sub hError(hS As Socket, hErr As String)
 End
 
 
+Private Sub FindSocket(hS As Socket) As Integer
+  
+  Return hSocket.FindByRef(hS)
+  
+End
+
+
 
 Private Sub RemoveSocket(hS As Socket)
 
@@ -75,13 +82,13 @@ Private Sub RemoveSocket(hS As Socket)
   For Bucle = 0 To hSocket.Count - 1
 
     If hS = hSocket[Bucle] Then
-      Try Close #hS
       hSocket.Remove(Bucle)
       hBuffer.Remove(Bucle)
       hLen.Remove(Bucle)
       hProt.Remove(Bucle)
       hConn.Remove(Bucle)
       hType.Remove(Bucle)
+      Try Close #hS
       Break
     End If
 
@@ -220,14 +227,18 @@ Public Sub Socket_Read()
   Dim Bucle As Integer
   Dim hS As Socket
 
-  For Bucle = 0 To hSocket.Count - 1
-    If hSocket[Bucle] = Last Then
-      hS = Last
-      Break
-    End If
-  Next
+  Bucle = FindSocket(Last)
+  If Bucle < 0 Then Return
+  hS = hSocket[Bucle]
 
-  If hS = Null Then Return
+  ' For Bucle = 0 To hSocket.Count - 1
+  '   If hSocket[Bucle] = Last Then
+  '     hS = Last
+  '     Break
+  '   End If
+  ' Next
+  ' 
+  ' If hS = Null Then Return
 
   If hBuffer[Bucle] = "" Then
     If Lof(hS) >= 5 Then
@@ -242,8 +253,13 @@ Public Sub Socket_Read()
 
     End If
   Else
+    
     Try Read #hS, Buf, Lof(hS)
+    
+    Buf = Read #hS, Lof(hS)
+    
     hBuffer[Bucle] = hBuffer[Bucle] & Buf
+    
   End If
 
   If hProt[Bucle] = - 1 Then
@@ -315,7 +331,7 @@ Public Sub Socket_Read()
       Return
     End If
 
-    ProcessQuery(hS, hBuffer[Bucle])
+    'ProcessQuery(hS, hBuffer[Bucle])
 
   Else
     If Len(hBuffer[Bucle]) > 4096 Then
@@ -327,8 +343,18 @@ Public Sub Socket_Read()
 
 End
 
+Public Sub Socket_Close()
+  
+  Dim I As Integer = FindSocket(Last)
+  
+  If I < 0 Then Return
+  ProcessQuery(Last, hBuffer[I])
+  
+End
 
-Public Sub Http_Connection(RemoteHost As String)
+
+
+Public Sub Http_Connection((RemoteHost) As String)
 
   hSocket.Add(Http.Accept())
   hBuffer.Add("")
