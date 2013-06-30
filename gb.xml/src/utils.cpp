@@ -116,7 +116,8 @@ const void* memchrs(const char *source, size_t lensource, const char *comp, size
     const char *pos = source - 1;
     do
     {
-        pos = (char*)(memchr((void*)(pos + 1), ((comp))[0], lensource));
+        if(pos + 5 >= source + lensource) DEBUG << ((void*)pos) << endl;
+        pos = (char*)(memchr((void*)(pos + 1), ((comp))[0], lensource - (pos - source)));
         if(!pos) return 0;
         if(pos + lencomp > source + lensource) return 0;
         if(memcmp(pos, comp, lencomp) != 0) continue;
@@ -125,12 +126,12 @@ const void* memchrs(const char *source, size_t lensource, const char *comp, size
     }while(1);
 }
 
-const void* memrchrs(const void *source, size_t lensource, const void *comp, size_t lencomp)
+const void* memrchrs(const char *source, size_t lensource, const char *comp, size_t lencomp)
 {
     char *pos = (char*)source;
     do
     {
-        pos = (char*)(memrchr((void*)pos, ((char*)(comp))[lencomp - 1], lensource));
+        pos = (char*)(memrchr((void*)pos, ((char*)(comp))[lencomp - 1], lensource - (pos - source)));
         if(!pos) return 0;
         if(pos - lencomp < source) return 0;
         if(memcmp(pos - lencomp, comp, lencomp) != 0) continue;
