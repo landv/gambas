@@ -22,6 +22,7 @@
 #include "CElement.h"
 #include "element.h"
 #include "gbi.h"
+#include "textnode.h"
 
 #define THIS (static_cast<CNode*>(_object)->node->toElement())
 #define THISNODE (static_cast<CNode*>(_object)->node)
@@ -275,6 +276,24 @@ GBI::Return(THIS->lastChild);
 
 END_PROPERTY
 
+BEGIN_METHOD(CElement_normalizeAttributeContent, GB_STRING data)
+
+if(!LENGTH(data))
+{
+    GB.ReturnNull();
+    return;
+}
+
+char *escapedData; size_t lenEscapedData;
+
+TextNode::escapeAttributeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);
+
+GB.ReturnNewString(escapedData, lenEscapedData);
+
+if(escapedData != STRING(data)) free(escapedData);
+
+END_METHOD
+
 
 
 GB_DESC CElementDesc[] =
@@ -318,6 +337,7 @@ GB_DESC CElementDesc[] =
     GB_METHOD("GetChildrenByAttributeValue", "XmlElement[]", CElement_getChildrenByAttributeValue, "(Attribute)s(Value)s[(Mode)i(Depth)i]"),
     
     GB_STATIC_METHOD("FromText", "XmlNode[]", CElement_fromText, "(Data)s"),
+    GB_STATIC_METHOD("NormalizeAttributeContent", "s", CElement_normalizeAttributeContent, "(Data)s"),
     
 
     GB_END_DECLARE

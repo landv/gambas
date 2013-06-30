@@ -114,6 +114,73 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
     if(dst != src) --lenDst;
 }
 
+void TextNode::escapeAttributeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
+{
+    dst = (char*)src;
+    lenDst = lenSrc;
+    if(!lenSrc || !src) return;
+    char *posFound = strpbrk (dst, "<>&\"\n");
+    while (posFound != 0)
+    {
+        if(dst == src)//dst not allocated yet
+        {
+            dst = (char*)malloc(lenSrc + 1);
+            lenDst = lenSrc + 1;
+            dst[lenSrc] = 0;
+            memcpy(dst, src, lenSrc);
+            posFound = ((posFound - src) + dst);
+        }
+        switch(*posFound)
+        {
+        case CHAR_STARTTAG://&lt;
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst , "lt;", 3, posFound);
+            posFound = strpbrk (posFound + 1,"<>&\"\n");
+            break;
+
+        case CHAR_ENDTAG: //&gt;
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "gt;", 3, posFound);
+            posFound = strpbrk (posFound + 1,"<>&\"\n");
+            break;
+
+
+        case CHAR_AND: //&amp;
+
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "amp;", 4, posFound);
+            posFound = strpbrk (posFound + 1,"<>&\"\n");
+            break;
+
+        case '"': //&quot;
+
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "quot;", 5, posFound);
+            posFound = strpbrk (posFound + 1,"<>&\"\n");
+            break;
+
+        case '\n':
+            *posFound = CHAR_AND;
+            ++posFound;
+            insertString(dst, lenDst, "#10;", 4, posFound);
+            posFound = strpbrk (posFound + 1,"<>&\"\n");
+            break;
+
+        default:
+            //posFound = strpbrk (posFound + 1,"<>&");
+            break;
+        }
+
+
+    }
+
+    if(dst != src) --lenDst;
+}
+
 void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
 {
     dst = (char*)malloc(lenSrc);
@@ -126,27 +193,29 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
         if(memcmp(posFound + 1, "lt;", 3) == 0)// <   &lt;
         {
             *posFound = CHAR_STARTTAG;
-            memmove(posFound + 1, posFound + 4, lenDst - (posFound - dst));
+            //.......dst=========posFound!===posFound+x|======dst+lenDst............
+            //lenCut = (pos2 - pos1) = (dst + lenDst) - (posFound + x)
+            memmove(posFound + 1, posFound + 4, (dst + lenDst) - (posFound + 4));
             lenDst -= 3;
             posFound -= 3;
         }
         else if(memcmp(posFound + 1, "gt;", 3) == 0)// >   &gt;
         {
             *posFound = CHAR_ENDTAG;
-            memmove(posFound + 1, posFound + 4, lenDst - (posFound - dst));
+            memmove(posFound + 1, posFound + 4, (dst + lenDst) - (posFound + 4));
             lenDst -= 3; 
             posFound -= 3;
         }
-        else if(memcmp(posFound + 1, "amp;", 4) == 0)// &   &amp;
+        else if(((posFound + 4) < lenDst + dst) && memcmp(posFound + 1, "amp;", 4) == 0)// &   &amp;
         {
-            memmove(posFound + 1, posFound + 5, lenDst - (posFound - dst));
+            memmove(posFound + 1, posFound + 5, (dst + lenDst) - (posFound + 5));
             lenDst -= 4; 
             posFound -= 4;
         }
-        else if(memcmp(posFound + 1, "quot;", 5) == 0)// &   &amp;
+        else if(((posFound + 5) < lenDst + dst) && memcmp(posFound + 1, "quot;", 5) == 0)// "&"   &quot;
         {
             *posFound = '"';
-            memmove(posFound + 1, posFound + 6, lenDst - (posFound - dst));
+            memmove(posFound + 1, posFound + 6, (dst + lenDst) - (posFound + 6));
             lenDst -= 5;
             posFound -= 5;
         }

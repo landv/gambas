@@ -38,6 +38,7 @@ public:
     
     static void unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
     static void escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
+    static void escapeAttributeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
     void checkEscapedContent();
     void checkContent();
     void setEscapedTextContent(const char *ncontent, const size_t nlen);

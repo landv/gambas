@@ -140,7 +140,7 @@ Public Sub Attribute(Name As String, Value As String, Optional Prefix As String,
     Name = Prefix & ":" & Name
   Endif
   
-  sData = " " & Name & "=\"" & XmlNode.Serialize(Value) & "\""
+  sData = " " & Name & "=\"" & XmlElement.NormalizeAttributeContent(Value) & "\""
   
   If URI Then sData &= " xmlns" & If(Prefix, ":" & Prefix, "") & "=\"" & URI & "\""
   

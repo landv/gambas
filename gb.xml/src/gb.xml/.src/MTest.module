@@ -10,7 +10,7 @@ writer.Open("", True)
 
 writer.StartElement("toto")
 writer.StartElement("titi")
-writer.Attribute("titi", "tutu&")
+writer.Attribute("titi", "tutu\ntoto")
 writer.Text("h<&ello")
 writer.EndElement()
 writer.StartElement("titi")
