@@ -108,7 +108,7 @@ static CMEDIACONTROL *get_control(CMEDIAPLAYER *_object, char *name)
 {
 	GstElement *value;
 	g_object_get(G_OBJECT(ELEMENT), name, &value, NULL);
-	return MEDIA_get_control_from_element(value);
+	return MEDIA_get_control_from_element(value, TRUE);
 }
 
 static void set_control(CMEDIAPLAYER *_object, char *name, CMEDIACONTROL *control)
@@ -136,33 +136,15 @@ static void set_control(CMEDIAPLAYER *_object, char *name, CMEDIACONTROL *contro
 		gst_object_unref(elt);
 }
 
-static bool get_flag(CMEDIAPLAYER *_object, int flag)
-{
-	GstPlayFlags flags;
-	
-	g_object_get(G_OBJECT(ELEMENT), "flags", &flags, NULL);
-	return (flags & flag) != 0;
-}
-
-static void set_flag(CMEDIAPLAYER *_object, int flag, bool value)
-{
-	GstPlayFlags flags;
-	
-	g_object_get(G_OBJECT(ELEMENT), "flags", &flags, NULL);
-	if (value)
-		flags |= flag;
-	else
-		flags &= ~flag;
-	g_object_set(G_OBJECT(ELEMENT), "flags", flags, NULL);
-}
+#define set_flag(_object, _flag, _value) MEDIA_set_flag(ELEMENT, "flags", _flag, _value)
 
 #define IMPLEMENT_FLAG(_func, _flag) \
 BEGIN_PROPERTY(_func) \
 \
 	if (READ_PROPERTY) \
-		GB.ReturnBoolean(get_flag(THIS, _flag)); \
+		GB.ReturnBoolean(MEDIA_get_flag(ELEMENT, "flags", _flag)); \
 	else \
-		set_flag(THIS, _flag, VPROP(GB_BOOLEAN)); \
+		MEDIA_set_flag(ELEMENT, "flags", _flag, VPROP(GB_BOOLEAN)); \
 \
 END_PROPERTY
 
@@ -362,7 +344,8 @@ BEGIN_PROPERTY(MediaPlayerVideo_Visualisation)
 		//set_control(THIS, "vis-plugin", NULL);
 		//if (vis)
 		set_control(THIS, "vis-plugin", vis);
-		if (vis) set_flag(THIS, GST_PLAY_FLAG_VIS, TRUE);
+		if (vis) 
+			set_flag(THIS, GST_PLAY_FLAG_VIS, TRUE);
 		
 		if (playing)
 			MEDIA_set_state(THIS, GST_STATE_PLAYING, FALSE);
@@ -497,7 +480,7 @@ BEGIN_METHOD(MediaPlayerBalance_get, GB_INTEGER index)
 	int index = VARG(index);
 	
 	if (index < 0 || index >= g_list_length(channels))
-		GB.Error(GB_ERR_ARG);
+		GB.Error(GB_ERR_BOUND);
 	else
 	{
 		THIS->channel = index;

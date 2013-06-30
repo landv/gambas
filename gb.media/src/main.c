@@ -27,7 +27,6 @@
 
 #include "main.h"
 #include "c_media.h"
-#include "c_mediafilter.h"
 #include "c_mediaplayer.h"
 
 GB_INTERFACE GB EXPORT;
@@ -39,6 +38,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	MediaTagListDesc,
 	MediaControlDesc,
 	MediaFilterDesc,
+	MediaContainerChildrenDesc,
 	MediaContainerDesc,
 	MediaPipelineDesc,
 	MediaDesc,

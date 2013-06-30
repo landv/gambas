@@ -48,14 +48,15 @@ Private Sub MakeMediaPlayer()
   $aVisualisation = New MediaControl[]
   AddVisualisation("", "")
   AddVisualisation("goom", "Goom")
+  AddVisualisation("goom2k1", "Goom2")
   AddVisualisation("libvisual_bumpscope", "Bump")
   AddVisualisation("libvisual_corona", "Corona")
-  ' Buggy infinite
-  'AddVisualisation("libvisual_infinite", "Infinite")
+  AddVisualisation("libvisual_infinite", "Infinite")
   AddVisualisation("libvisual_jakdaw", "Jakdaw")
   AddVisualisation("libvisual_jess", "Jess")
   AddVisualisation("monoscope", "Mono")
   AddVisualisation("libvisual_oinksie", "Oinksie")
+  AddVisualisation("libvisual_lv_analyzer", "Analyzer")
   AddVisualisation("libvisual_lv_scope", "Scope")
   AddVisualisation("spacescope", "Space")
   AddVisualisation("spectrascope", "Spectra")
@@ -133,6 +134,32 @@ Private Sub GetDevice(sName As String) As String
 
 End
 
+' Private Sub FindChildFromType(hCont As MediaContainer, sType As String) As MediaControl
+'   
+'   Dim hCtrl As MediaControl
+'   
+'   For I = 0 To hCont.Children.Count - 1
+'     hCtrl = hCont.Children[I]
+'     If hCtrl.Type = sType Then Return hCtrl
+'   Next
+'   
+' End
+
+Private Sub Dump(hCont As MediaContainer, Optional iIndent As Integer)
+
+  Dim I As Integer
+  Dim hCtrl As MediaControl
+
+  For I = 0 To hCont.Children.Count - 1
+    hCtrl = hCont.Children[I]
+    Print Space$(iIndent * 2); hCtrl;; hCtrl.Type;; hCtrl.Name
+    If hCtrl Is MediaContainer Then
+      Dump(hCtrl, iIndent + 1)
+    Endif
+  Next
+
+End
+
 Private Sub Action(sAction As String)
 
   Dim fPos As Float
@@ -140,6 +167,8 @@ Private Sub Action(sAction As String)
   Dim sName As String
   Dim iName As Integer
   Dim sVideo As String
+  Dim I As Integer
+  Dim hCtrl As MediaControl
 
   Select sAction
     
@@ -156,7 +185,9 @@ Private Sub Action(sAction As String)
         Endif
         UpdateSubtitle
         FTags.Clear($hPlayer)
+        
         Action("play")
+        
       Endif
       
     Case "video"
@@ -169,6 +200,7 @@ Private Sub Action(sAction As String)
         $hPlayer.URL = "v4l2://" & GetDevice(sVideo)
         FTags.Clear($hPlayer)
         Action("play")
+        
       Endif
       
     Case "info", "config"
@@ -202,6 +234,7 @@ Private Sub Action(sAction As String)
       Try $hPlayer.Play
       dwgVideo.Mouse = Mouse.Blank
       timTime.Start
+      Dump($hPlayer)
       
     Case "stop"
       ResumeScreenSaver

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_mediafilter.c
+  c_mediavideo.h
 
   gb.media component
 
@@ -23,25 +23,28 @@
 
 ***************************************************************************/
 
-#define __C_MEDIAFILTER_C
+#ifndef __C_MEDIAVIDEO_H
+#define __C_MEDIAVIDEO_H
 
-#include "c_mediafilter.h"
+#include "main.h"
+#include "c_media.h"
 
-// Just there for the documentation wiki!
+#include <gst/video/colorbalance.h>
+#include <gst/video/colorbalancechannel.h>
 
-BEGIN_METHOD_VOID(MediaFilter_new)
+#ifndef __C_MEDIAVIDEO_C
 
-END_METHOD
+extern GB_DESC MediaVideoDesc[];
 
-//-------------------------------------------------------------------------
+#else
 
+#define THIS ((CMEDIAVIDEO *)_object)
+#define ELEMENT ((GstElement *)THIS->elt)
 
-GB_DESC MediaFilterDesc[] = 
-{
-	GB_DECLARE("MediaFilter", sizeof(CMEDIAFILTER)),
-	GB_INHERITS("MediaControl"),
-	
-	GB_METHOD("_new", NULL, MediaFilter_new, NULL),
+#endif
 
-	GB_END_DECLARE
-};
+typedef
+	CMEDIACONTROL
+		CMEDIAVIDEO;
+
+#endif /* __C_MEDIAVIDEO_H */

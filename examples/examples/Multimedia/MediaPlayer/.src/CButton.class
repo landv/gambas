@@ -63,9 +63,6 @@ End
 Public Sub DrawingArea_Draw()
   
   If $hDraw Then 
-    If $hDraw.W <> (Me.W - 4) Or If $hDraw.H <> (Me.H - 4) Then
-      $hDraw = $hDraw.Stretch(Me.W - 4, Me.H - 4)
-    Endif
     Draw.Image($hDraw, 2, 2)
   Endif
   
@@ -97,12 +94,12 @@ Private Sub SetOpacity()
   Dim W, H As Integer
   Dim hFont As Font
 
-  $hDraw = $hImage.Copy()
+  $hDraw = $hImage.Stretch(Me.W - 4, Me.H - 4)
   Paint.Begin($hDraw)
    
   If $sShortcut Then
     
-    Paint.Font = Font["Bold,+3"]
+    Paint.Font = Font["Bold,+2"]
     
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 64))
     'For X = -2 To 2
@@ -123,7 +120,7 @@ Private Sub SetOpacity()
     If $hFont Then
       hFont = $hFont
     Else
-      hFont = Font["Bold,+2"]
+      hFont = Font["Bold,+1"]
     Endif
     Paint.Font = hFont
     W = hFont.TextWidth($sText) + 4

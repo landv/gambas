@@ -29,6 +29,8 @@
 //#include <gst/interfaces/xoverlay.h>
 #include <gst/video/videooverlay.h>
 
+static void *_from_element = NULL;
+
 void MEDIA_raise_event(void *_object, int event)
 {
 	gst_element_post_message(ELEMENT, gst_message_new_application(GST_OBJECT(ELEMENT), gst_structure_new("SendEvent", "event", G_TYPE_INT, event, NULL)));
@@ -39,12 +41,53 @@ void MEDIA_raise_event(void *_object, int event)
 	gst_element_post_message(ELEMENT, gst_message_new_application(GST_OBJECT(ELEMENT), gst_structure_new("SendEvent", "event", G_TYPE_INT, event, "arg", G_TYPE_STRING, arg, NULL)));
 }*/
 
-CMEDIACONTROL *MEDIA_get_control_from_element(void *element)
+static const char *get_element_type(GstElement *element)
 {
-	if (!element)
+	GstElementFactory *factory = gst_element_get_factory(element);
+	if (!factory)
 		return NULL;
 	else
-		return (CMEDIACONTROL *)g_object_get_data(G_OBJECT(element), "gambas-control");
+		return gst_plugin_feature_get_name(GST_PLUGIN_FEATURE(factory));
+}
+
+CMEDIACONTROL *MEDIA_get_control_from_element(void *element, bool create)
+{
+	CMEDIACONTROL *ctrl;
+	GB_CLASS klass;
+	//const char *type;
+	
+	if (!element)
+		return NULL;
+	
+	ctrl = (CMEDIACONTROL *)g_object_get_data(G_OBJECT(element), "gambas-control");
+	if (create)
+	{
+		if (!ctrl)
+		{
+			_from_element = element;
+			
+			/*type = get_element_type(element);
+			
+			if (type && strcmp(type, "v4l2src") == 0)
+				klass = GB.FindClass("MediaVideo");
+			else*/
+			if (GST_IS_PIPELINE(element))
+				klass = GB.FindClass("MediaPipeline");
+			else if (GST_IS_BIN(element))
+				klass = GB.FindClass("MediaContainer");
+			else
+				klass = GB.FindClass("MediaControl");
+			
+			ctrl = (CMEDIACONTROL *)GB.New(klass, NULL, NULL);
+		}
+	}
+	else
+	{
+		if (ctrl && ctrl->borrow)
+			ctrl = NULL;
+	}
+	
+	return ctrl;
 }
 
 bool MEDIA_set_state(void *_object, int state, bool error)
@@ -54,7 +97,7 @@ bool MEDIA_set_state(void *_object, int state, bool error)
 	status = gst_element_set_state(ELEMENT, state);
 	
 	if (status == GST_STATE_CHANGE_ASYNC)
-		status = gst_element_get_state(ELEMENT, NULL, NULL, GST_SECOND * 3);
+		status = gst_element_get_state(ELEMENT, NULL, NULL, GST_SECOND);
 	
 	if (status == GST_STATE_CHANGE_FAILURE)
 	{
@@ -64,6 +107,27 @@ bool MEDIA_set_state(void *_object, int state, bool error)
 	
 	return FALSE;
 }
+
+bool MEDIA_get_flag(void *element, char *property, int flag)
+{
+	int flags;
+	
+	g_object_get(G_OBJECT(element), property, &flags, NULL);
+	return (flags & flag) != 0;
+}
+
+void MEDIA_set_flag(void *element, char *property, int flag, bool value)
+{
+	int flags;
+	
+	g_object_get(G_OBJECT(element), property, &flags, NULL);
+	if (value)
+		flags |= flag;
+	else
+		flags &= ~flag;
+	g_object_set(G_OBJECT(element), property, flags, NULL);
+}
+
 
 
 static GB_TYPE to_gambas_type(const GValue *value)
@@ -176,9 +240,22 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 	}
 }
 
+static GParamSpec *get_property(GstElement *element, const char *property)
+{
+	GParamSpec *desc;
+	
+	desc = g_object_class_find_property(G_OBJECT_GET_CLASS(G_OBJECT(element)), property);
+	if (!desc)
+		GB.Error("Unknown property: '&1'", property);
+	
+	return desc;
+}
+
 static void return_value(const GValue *value)
 {
-	switch (G_VALUE_TYPE(value))
+	GType type = G_VALUE_TYPE(value);
+	
+	switch (type)
 	{
 		case G_TYPE_BOOLEAN: GB.ReturnBoolean(g_value_get_boolean(value)); break;
 		case G_TYPE_INT: GB.ReturnInteger(g_value_get_int(value)); break;
@@ -195,23 +272,52 @@ static void return_value(const GValue *value)
 				to_gambas_value(value, &date);
 				GB.ReturnDate((GB_DATE *)&date);
 			}
+			else if (G_TYPE_IS_ENUM(type))
+			{
+				GEnumValue *enum_value;
+				
+				enum_value = g_enum_get_value(G_ENUM_CLASS(g_type_class_ref(type)), g_value_get_enum(value));
+				if (!enum_value)
+				{
+					char buf[16];
+					sprintf(buf, "%d", g_value_get_enum(value));
+					GB.ReturnNewZeroString(buf);
+				}
+				else
+					GB.ReturnNewZeroString(enum_value->value_nick);
+			}
 			else
 			{
 				fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", G_VALUE_TYPE_NAME(value));
 				GB.ReturnNull();
 			}
 	}
+}
+
+void MEDIA_return_property(void *_object, const char *property)
+{
+	GParamSpec *desc;
+	GValue value = G_VALUE_INIT;
 	
-	GB.ReturnConvVariant();
+	desc = get_property(ELEMENT, property);
+	if (!desc)
+		return;
+	
+	//fprintf(stderr, "type = %s\n", g_type_name(desc->value_type));
+	g_value_init(&value, desc->value_type);
+	g_object_get_property(G_OBJECT(ELEMENT), property, &value);
+	return_value(&value);
+	g_value_unset(&value);
 }
 
 
-
-static bool set_value(GValue *value, GB_VALUE *v)
+static bool set_value(GValue *value, GB_VALUE *v, GParamSpec *desc)
 {
-	//g_value_init(&value, desc->value_type);
+	GType type = desc->value_type;
 
-	switch (G_VALUE_TYPE(value))
+	g_value_init(value, type);
+	
+	switch (type)
 	{
 		case G_TYPE_BOOLEAN:
 			if (GB.Conv(v, GB_T_BOOLEAN))
@@ -254,14 +360,49 @@ static bool set_value(GValue *value, GB_VALUE *v)
 				return TRUE;
 			g_value_set_double(value, v->_float.value);
 			break;
-			
+		
 		default:
-			GB.Error("Unsupported property datatype");
-			return TRUE;
+			
+			if (G_TYPE_IS_ENUM(type))
+			{
+				GEnumValue *enum_value;
+				
+				if (GB.Conv(v, GB_T_STRING))
+					return TRUE;
+				
+				enum_value = g_enum_get_value_by_nick(G_ENUM_CLASS(g_type_class_ref(type)), GB.ToZeroString((GB_STRING *)v));
+				if (!enum_value)
+				{
+					GB.Error("Unknown enumeration value");
+					return TRUE;
+				}
+				
+				g_value_set_enum(value, enum_value->value);
+				break;
+			}
+
+			fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", g_type_name(type));
 	}
 	
 	return FALSE;
 }
+
+void MEDIA_set_property(void *_object, const char *property, GB_VALUE *v)
+{
+	GParamSpec *desc;
+	GValue value = G_VALUE_INIT;
+
+	desc = get_property(ELEMENT, property);
+	if (!desc)
+		return;
+	
+	if (set_value(&value, v, desc))
+		return;
+	
+	g_object_set_property(G_OBJECT(ELEMENT), property, &value);
+	g_value_unset(&value);
+}
+
 
 #if 0
 //---- MediaSignalArguments -----------------------------------------------
@@ -314,7 +455,6 @@ BEGIN_METHOD(MediaTagList_get, GB_STRING name)
 	if (nvalue <= 0)
 	{
 		GB.ReturnNull();
-		GB.ReturnConvVariant();
 	}
 	else if (nvalue == 1)
 	{
@@ -331,25 +471,24 @@ BEGIN_METHOD(MediaTagList_get, GB_STRING name)
 		value = gst_tag_list_get_value_index(tags, name, 0);
 		type = to_gambas_type(value);
 		if (type == GB_T_NULL)
-		{
 			GB.ReturnNull();
-			GB.ReturnConvVariant();
-			return;
-		}
-		
-		GB.Array.New(&array, type, nvalue);
-		for (i = 0; i < nvalue; i++)
+		else
 		{
-			value = gst_tag_list_get_value_index(tags, name, i);
-			to_gambas_value(value, &gvalue);
-			GB.Store(type, &gvalue, GB.Array.Get(array, i));
-			GB.ReleaseValue(&gvalue);
+			GB.Array.New(&array, type, nvalue);
+			for (i = 0; i < nvalue; i++)
+			{
+				value = gst_tag_list_get_value_index(tags, name, i);
+				to_gambas_value(value, &gvalue);
+				GB.Store(type, &gvalue, GB.Array.Get(array, i));
+				GB.ReleaseValue(&gvalue);
+			}
+			
+			GB.ReturnObject(array);
 		}
-		
-		GB.ReturnObject(array);
-		GB.ReturnConvVariant();
 	}
 
+	GB.ReturnConvVariant();
+	
 END_METHOD
 
 BEGIN_PROPERTY(MediaTagList_Tags)
@@ -388,6 +527,7 @@ static MEDIA_TYPE _types[] =
 	{ "Media", "pipeline" },
 	{ "MediaPlayer", "playbin" },
 	{ "MediaFilter", "capsfilter" },
+	{ "MediaVideo", "v4l2src" },
 	//{ "MediaDecoder", "decodebin" },
 	{ NULL, NULL }
 };
@@ -421,64 +561,91 @@ BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
 	MEDIA_TYPE *mtp;
 	GB_CLASS klass;
 	
+	//fprintf(stderr, "MediaControl_new: %p\n", THIS);
+
 	THIS->tag.type = GB_T_NULL;
 	
-	if (MISSING(type))
+	if (_from_element)
 	{
-		klass = GB.GetClass(THIS);
-		type = NULL;
+		//GstState state = GST_STATE_NULL;
 		
-		for (mtp = _types; mtp->klass; mtp++)
-		{
-			if (GB.FindClass(mtp->klass) == klass)
-			{
-				type = mtp->type;
-				break;
-			}
-		}
+		THIS->borrow = TRUE;
+		THIS->elt = _from_element;
+		_from_element = NULL;
+
+		gst_object_ref(GST_OBJECT(ELEMENT));
 		
-		if (!type)
-		{
-			GB.Error("The type must be specified");
-			return;
-		}
+		g_object_set_data(G_OBJECT(ELEMENT), "gambas-control", THIS);
+
+		//gst_element_get_state(ELEMENT, &state, NULL, GST_SECOND);
+		THIS->state = GST_STATE_NULL;
+		
+		//THIS->type = GB.NewZeroString(gst_plugin_feature_get_name(GST_PLUGIN_FEATURE(gst_element_get_factory(ELEMENT))));
 	}
 	else
-		type = GB.ToZeroString(ARG(type));
-	
-	THIS->state = GST_STATE_NULL;
-	THIS->type = GB.NewZeroString(type);
-	
-	ELEMENT = gst_element_factory_make(type, NULL);
-	if (!ELEMENT)
 	{
-		GB.Error("Unable to create media control");
-		return;
+		if (MISSING(type))
+		{
+			klass = GB.GetClass(THIS);
+			type = NULL;
+			
+			for (mtp = _types; mtp->klass; mtp++)
+			{
+				if (GB.FindClass(mtp->klass) == klass)
+				{
+					type = mtp->type;
+					break;
+				}
+			}
+			
+			if (!type)
+			{
+				GB.Error("The type must be specified");
+				return;
+			}
+		}
+		else
+			type = GB.ToZeroString(ARG(type));
+		
+		THIS->state = GST_STATE_NULL;
+		//THIS->type = GB.NewZeroString(type);
+		
+		ELEMENT = gst_element_factory_make(type, NULL);
+		if (!ELEMENT)
+		{
+			GB.Error("Unable to create media control");
+			return;
+		}
+		
+		gst_object_ref(GST_OBJECT(ELEMENT));
+		g_object_set_data(G_OBJECT(ELEMENT), "gambas-control", THIS);
+		
+		parent = VARGOPT(parent, NULL);
+		if (parent)
+		{
+			gst_bin_add(GST_BIN(parent->elt), ELEMENT);
+			gst_element_sync_state_with_parent(ELEMENT);
+		}
+		else if (!GST_IS_PIPELINE(ELEMENT))
+			GB.CheckObject(parent);
 	}
-	
-	gst_object_ref(GST_OBJECT(ELEMENT));
-	g_object_set_data(G_OBJECT(ELEMENT), "gambas-control", THIS);
-	
-	parent = VARGOPT(parent, NULL);
-	if (parent)
-	{
-		gst_bin_add(GST_BIN(parent->elt), ELEMENT);
-		gst_element_sync_state_with_parent(ELEMENT);
-	}
-	else if (!GST_IS_PIPELINE(ELEMENT))
-		GB.CheckObject(parent);
 		
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaControl_free)
 
+	//fprintf(stderr, "MediaControl_free: %p\n", THIS);
+
 	GB.Unref(POINTER(&THIS->dest));
-	GB.FreeString(&THIS->type);
+	//GB.FreeString(&THIS->type);
 	GB.StoreVariant(NULL, &THIS->tag);
 	
 	if (ELEMENT)
 	{
-		gst_element_set_state(ELEMENT, GST_STATE_NULL);
+		if (!THIS->borrow)
+			gst_element_set_state(ELEMENT, GST_STATE_NULL);
+		
+		g_object_set_data(G_OBJECT(ELEMENT), "gambas-control", NULL);
 		gst_object_unref(GST_OBJECT(ELEMENT));
 	}
 	
@@ -495,7 +662,12 @@ END_METHOD
 
 BEGIN_PROPERTY(MediaControl_Type)
 
-	GB.ReturnString(THIS->type); //NewZeroString(gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
+	const char *type = get_element_type(ELEMENT);
+	
+	if (!type)
+		GB.ReturnConstZeroString("?");
+	else
+		GB.ReturnNewZeroString(type);
 	
 END_PROPERTY
 
@@ -515,7 +687,7 @@ BEGIN_PROPERTY(MediaControl_State)
 		GB.ReturnInteger(THIS->state);
 		/*GstState state;
 		
-		status = gst_element_get_state(ELEMENT, &state, NULL, GST_SECOND * 3);
+		status = gst_element_get_state(ELEMENT, &state, NULL, GST_SECOND);
 		
 		if (status != GST_STATE_CHANGE_SUCCESS)
 			GB.ReturnInteger(-1);
@@ -528,17 +700,6 @@ BEGIN_PROPERTY(MediaControl_State)
 	}
 
 END_PROPERTY
-
-static GParamSpec *get_property(GstElement *element, char *property)
-{
-	GParamSpec *desc;
-	
-	desc = g_object_class_find_property(G_OBJECT_GET_CLASS(G_OBJECT(element)), property);
-	if (!desc)
-		GB.Error("Unknown property: '&1'", property);
-	
-	return desc;
-}
 
 BEGIN_METHOD(MediaControl_get, GB_STRING property)
 
@@ -555,26 +716,16 @@ BEGIN_METHOD(MediaControl_get, GB_STRING property)
 	g_object_get_property(G_OBJECT(ELEMENT), property, &value);
 	return_value(&value);
 	g_value_unset(&value);
+	GB.ReturnConvVariant();
 	
 END_METHOD
 
 BEGIN_METHOD(MediaControl_put, GB_VARIANT value; GB_STRING property)
 
 	char *property = GB.ToZeroString(ARG(property));
-	GParamSpec *desc;
-	GValue value = G_VALUE_INIT;
 	GB_VALUE *v = (GB_VALUE *)ARG(value);
 	
-	desc = get_property(ELEMENT, property);
-	if (!desc)
-		return;
-	
-	g_value_init(&value, desc->value_type);
-	if (set_value(&value, v))
-		return;
-	
-	g_object_set_property(G_OBJECT(ELEMENT), property, &value);
-	g_value_unset(&value);
+	MEDIA_set_property(THIS, property, v);
 	
 END_METHOD
 
@@ -772,6 +923,127 @@ BEGIN_METHOD(MediaControl_SetWindow, GB_OBJECT control; GB_INTEGER x; GB_INTEGER
 
 END_PROPERTY
 
+#if 0
+BEGIN_PROPERTY(MediaControl_Protocols)
+
+	char **protocols;
+	GB_ARRAY array;
+	
+	if (!GST_IS_URI_HANDLER(ELEMENT))
+	{
+		GB.ReturnNull();
+		return;
+	}
+	
+	protocols = (char **)gst_uri_handler_get_protocols(GST_URI_HANDLER(ELEMENT));
+	GB.Array.New(&array, GB_T_STRING, 0);
+	while (*protocols)
+	{
+		*((char **)GB.Array.Add(array)) = GB.NewZeroString(*protocols);
+		protocols++;
+	}
+	GB.ReturnObject(array);
+
+END_PROPERTY
+#endif
+
+//---- MediaFilter --------------------------------------------------------
+
+static void set_filter(void *_object, const char *filter)
+{
+	GValue value = G_VALUE_INIT;
+	GstCaps *caps;
+	GParamSpec *desc;
+
+	desc = get_property(ELEMENT, "caps");
+	if (!desc)
+		return;
+
+	g_value_init(&value, desc->value_type);
+	
+	caps = gst_caps_from_string(filter);
+	if (!caps)
+	{
+		GB.Error("Incorrect filter");
+		return;
+	}
+	g_value_take_boxed(&value, caps);
+	g_object_set_property(G_OBJECT(ELEMENT), "caps", &value);
+	g_value_unset(&value);
+}
+
+BEGIN_METHOD(MediaFilter_new, GB_STRING filter)
+
+	if (!MISSING(filter))
+		set_filter(THIS, GB.ToZeroString(ARG(filter)));
+
+END_METHOD
+
+BEGIN_PROPERTY(MediaFilter_Filter)
+
+	if (READ_PROPERTY)
+	{
+		GParamSpec *desc;
+		GValue value = G_VALUE_INIT;
+		char *caps;
+	
+		desc = get_property(ELEMENT, "caps");
+		if (!desc)
+			return;
+		
+		g_value_init(&value, desc->value_type);
+		
+		g_object_get_property(G_OBJECT(ELEMENT), "caps", &value);
+		caps = gst_caps_to_string((GstCaps *)g_value_get_boxed(&value));
+		GB.ReturnNewZeroString(caps);
+		g_free(caps);
+		g_value_unset(&value);
+	}
+	else
+	{
+		set_filter(THIS, GB.ToZeroString(PROP(GB_STRING)));
+	}
+
+END_PROPERTY
+
+//---- MediaContainerChildren ---------------------------------------------
+
+BEGIN_PROPERTY(MediaContainerChildren_Count)
+
+	GB.ReturnInteger(gst_child_proxy_get_children_count(GST_CHILD_PROXY(ELEMENT)));
+
+END_PROPERTY
+
+BEGIN_METHOD(MediaContainerChildren_get, GB_INTEGER index)
+
+	int count = gst_child_proxy_get_children_count(GST_CHILD_PROXY(ELEMENT));
+	int index = VARG(index);
+	
+	if (index < 0 || index >= count)
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+
+	GB.ReturnObject(MEDIA_get_control_from_element(gst_child_proxy_get_child_by_index(GST_CHILD_PROXY(ELEMENT), index), TRUE));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(MediaContainerChildren_next)
+
+	int count = gst_child_proxy_get_children_count(GST_CHILD_PROXY(ELEMENT));
+	int *index = (int *)GB.GetEnum();
+
+	if (*index < 0 || *index >= count)
+		GB.StopEnum();
+	else
+	{
+		GB.ReturnObject(MEDIA_get_control_from_element(gst_child_proxy_get_child_by_index(GST_CHILD_PROXY(ELEMENT), *index), TRUE));
+		(*index)++;
+	}
+
+END_PROPERTY
+
 //---- MediaContainer -----------------------------------------------------
 
 static bool add_input_output(void *_object, CMEDIACONTROL *child, char *name, int direction, const char *dir_error, const char *unknown_error)
@@ -870,7 +1142,7 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	while((msg = gst_bus_pop(bus)) != NULL) 
 	{
 		type = GST_MESSAGE_TYPE(msg);
-		control = MEDIA_get_control_from_element(GST_MESSAGE_SRC(msg));
+		control = MEDIA_get_control_from_element(GST_MESSAGE_SRC(msg), FALSE);
 		//fprintf(stderr, "cb_message: control = %p\n", control);
 		
 		if (type == GST_MESSAGE_APPLICATION && control)
@@ -976,7 +1248,8 @@ static int cb_message(CMEDIAPIPELINE *_object)
 
 BEGIN_METHOD_VOID(MediaPipeline_new)
 	
-	THIS->watch = GB.Every(250, (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
+	if (!_from_element)
+		THIS->watch = GB.Every(250, (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
 
 END_METHOD
 
@@ -1126,6 +1399,31 @@ GB_DESC MediaControlDesc[] =
 	GB_EVENT("State", NULL, NULL, &EVENT_State),
 	//GB_EVENT("Signal", NULL, "(Arg)MediaSignalArguments", &EVENT_Signal),
 	
+	//GB_PROPERTY_READ("Protocols", "String[]", MediaControl_Protocols),
+	
+	GB_END_DECLARE
+};
+
+GB_DESC MediaFilterDesc[] = 
+{
+	GB_DECLARE("MediaFilter", sizeof(CMEDIACONTROL)),
+	GB_INHERITS("MediaControl"),
+	
+	GB_METHOD("_new", NULL, MediaFilter_new, "[(Filter)s]"),
+	
+	GB_PROPERTY("Filter", "s", MediaFilter_Filter),
+
+	GB_END_DECLARE
+};
+
+GB_DESC MediaContainerChildrenDesc[] = 
+{
+	GB_DECLARE_VIRTUAL(".MediaContainer.Children"),
+	
+	GB_PROPERTY_READ("Count", "i", MediaContainerChildren_Count),
+	GB_METHOD("_get", "MediaControl", MediaContainerChildren_get, "(Index)i"),
+	GB_METHOD("_next", "MediaControl", MediaContainerChildren_next, NULL),
+	
 	GB_END_DECLARE
 };
 
@@ -1138,6 +1436,8 @@ GB_DESC MediaContainerDesc[] =
 
 	GB_METHOD("AddInput", NULL, MediaContainer_AddInput, "(Child)MediaControl;[(Name)s]"),
 	GB_METHOD("AddOutput", NULL, MediaContainer_AddOutput, "(Child)MediaControl;[(Name)s]"),
+	
+	GB_PROPERTY_SELF("Children", ".MediaContainer.Children"),
 	
 	GB_END_DECLARE
 };

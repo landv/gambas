@@ -33,6 +33,8 @@
 //extern GB_DESC MediaSignalArgumentsDesc[];
 extern GB_DESC MediaTagListDesc[];
 extern GB_DESC MediaControlDesc[];
+extern GB_DESC MediaFilterDesc[];
+extern GB_DESC MediaContainerChildrenDesc[];
 extern GB_DESC MediaContainerDesc[];
 extern GB_DESC MediaPipelineDesc[];
 extern GB_DESC MediaDesc[];
@@ -51,12 +53,13 @@ typedef
 	struct {
 		GB_BASE ob;
 		GstElement *elt;
-		char *type;
+		//char *type;
 		void *dest;
 		GB_TIMER *watch;
 		GB_VARIANT_VALUE tag;
 		unsigned state : 3;
 		unsigned error : 1;
+		unsigned borrow : 1;
 	}
 	CMEDIACONTROL;
 
@@ -87,7 +90,12 @@ typedef
 #define TO_TIME(_second) ((gint64)((_second) * 1E9))
 	
 void MEDIA_raise_event(void *_object, int event);
-CMEDIACONTROL *MEDIA_get_control_from_element(void *element);
+CMEDIACONTROL *MEDIA_get_control_from_element(void *element, bool create);
 bool MEDIA_set_state(void *_object, int state, bool error);
+
+bool MEDIA_get_flag(void *element, char *property, int flag);
+void MEDIA_set_flag(void *element, char *property, int flag, bool value);
+
+void MEDIA_set_property(void *_object, const char *property, GB_VALUE *v);
 
 #endif /* __C_MEDIA_H */

@@ -31,6 +31,7 @@
 #include <glib-object.h>
 #include <gst/gst.h>
 
+#include "gb_common.h"
 #include "gambas.h"
 #include "gb.image.h"
 
