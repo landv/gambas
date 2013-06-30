@@ -208,6 +208,12 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 				ds.month = date->month;
 				ds.day = date->day;
 				
+				if (ds.year && (ds.month == 0 || ds.day == 0))
+				{
+					ds.month = 1;
+					ds.day = 1;
+				}
+				
 				GB.MakeDate(&ds, (GB_DATE *)gvalue);
 				break;
 			}
@@ -223,6 +229,13 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 					ds.month = gst_date_time_get_month(date);
 				if (gst_date_time_has_day(date))
 					ds.day = gst_date_time_get_day(date);
+				
+				if (ds.year && (ds.month == 0 || ds.day == 0))
+				{
+					ds.month = 1;
+					ds.day = 1;
+				}
+				
 				if (gst_date_time_has_time(date))
 				{
 					ds.hour = gst_date_time_get_hour(date);
@@ -230,7 +243,6 @@ static void to_gambas_value(const GValue *value, GB_VALUE *gvalue)
 					ds.sec = gst_date_time_get_second(date);
 					ds.msec = gst_date_time_get_microsecond(date);
 				}
-				//fprintf(stderr, "gb.media: warning: timezone = %g\n", gst_date_time_get_time_zone_offset(date));
 				
 				GB.MakeDate(&ds, (GB_DATE *)gvalue);
 				break;
