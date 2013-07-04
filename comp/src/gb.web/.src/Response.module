@@ -147,7 +147,7 @@ Public Sub End()
     'hLog = Open "/tmp/response." & CStr(Application.Id) For Create
     AddHeader("Content-Length", Lof($hFile))
     Print $sHeader
-    Main.Log("Header = " & $sHeader)
+    'Main.Log("Header = " & $sHeader)
     $sHeader = ""
   
     While Not Eof($hFile)

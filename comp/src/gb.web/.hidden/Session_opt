@@ -5,7 +5,11 @@ Export
 
 Private $sId As String
 Private $sPath As String
+Private $hFile As File
+
+Private $cKey As Collection
 Private $cVal As Collection
+
 Private $bModify As Boolean
 Private $eTimeout As Float = 1
 Private $eStartup As Float
@@ -42,15 +46,33 @@ Private Sub UnlockSession()
   
 End
 
+' Session file format
+' 
+'   0   Float           Session timestamp
+'   8   Float           Session timeout
+'  16   Integer         Index offset (IDX)
+'  20   Variant[]       Session values
+'         :
+'         :
+'         :
+' IDX   Collection      Session index
+'       String          Cookie path
 
 Private Sub SaveSession()
   
   Dim hFile As File
   Dim sTemp As String
   Dim eNow As Float
+  Dim iPos As Integer
+  Dim iPosOffset As Integer
+  Dim vVal As Variant
+  Dim sKey As String
+  Dim aRemove As New String[]
 
   'PRINT "<h2>Save session</h2>"
   'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
+  
+  Main.Log("SaveSession: " & Application.Request)
   
   If Not $sId Then Return 
   
@@ -83,11 +105,45 @@ Private Sub SaveSession()
     Write #hFile, Now As Float
     Write #hFile, $eTimeout As Float
 
-    Output To #hFile
-    'WriteValue($cVal)
-    Write #hFile, $cVal As Variant
+    iPosOffset = Seek(hFile)
+    Write #hFile, 0 As Integer
+
+    For Each iPos In $cKey
+      
+      sKey = $cKey.Key
+      
+      Main.Log(sKey & " " & CStr(iPos))
+
+      If Not $cVal.Exist(sKey) Then
+        If iPos Then
+          Seek #$hFile, iPos
+          vVal = Read #$hFile As Variant
+          $cVal[sKey] = vVal
+        Else
+          aRemove.Add(sKey)
+          Main.Log("DEL : " & sKey)
+          Continue
+        Endif
+      Else
+        vVal = $cVal[sKey]
+      Endif
+  
+      $cKey[sKey] = Seek(hFile)
+      Main.Log(Seek(hFile) & ": " & sKey & " = " & Left(Str(vVal), 128))
+      Write #hFile, vVal As Variant
+    Next
+    
+    For Each sKey In aRemove
+      $cKey.Remove(sKey)
+    Next
+
+    iPos = Seek(hFile)
+    Write #hFile, $cKey As Collection
+    
     Write #hFile, $sCookiePath As String
-    Output To Default
+    
+    Seek #hFile, iPosOffset
+    Write #hFile, iPos As Integer
     
     Close #hFile
     
@@ -96,11 +152,10 @@ Private Sub SaveSession()
     Move sTemp To $sPath
     UnlockSession
     
-    $bModify = False
-    
   Endif
     
   Main.Log("SaveSession: OK")
+  $bModify = False
 
   ' If Exist($sPath) Then
   '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
@@ -126,6 +181,7 @@ End
 Private Sub LoadSession()
   
   Dim hFile As File
+  Dim iPos As Integer
 
   Main.Log("LoadSession: " & $sPath)
   ' Main.Log("System.Language = " & System.Language)
@@ -136,26 +192,35 @@ Private Sub LoadSession()
   
   'Main.Log("LoadSession: #2")
   
-  LockSession
+  LockSession ' Pour être sur d'ouvrir un fichier complet
+  
   hFile = Open $sPath
-  Input From #hFile
 
   'IF ReadValue() = 1 THEN GOTO _ABANDON
-  $eStartup = Read As Float
-  $eTimeout = Read As Float
+  $eStartup = Read #hFile As Float
+  $eTimeout = Read #hFile As Float
   If CheckSession() Then 
     Main.Log("LoadSession: timeout: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
     Goto _ABANDON
   Endif
   
-  $cVal = Read #hFile As Variant 
+  iPos = Read #hFile As Integer
+  Seek #hFile, iPos
+  $cKey = Read #hFile As Collection
+  $cVal = New Collection
   Try $sCookiePath = Read #hFile As String
-  '$cVal = ReadValue()
   $bModify = False
-  Close #hFile
-  Input From Default
+  
+  $hFile = hFile
+  
   UnlockSession
+  
   Main.Log("LoadSession: OK")
+  
+  For Each $cKey
+    Main.Log($cKey.Key)
+  Next
+  
   Return  
 
 Catch
@@ -173,7 +238,6 @@ _ABANDON:
 
   If hFile Then
     Close #hFile
-    Input From Default 
     UnlockSession
   Endif
   
@@ -252,6 +316,7 @@ Private Sub CreateSession()
   Response.SetCookie("SESSION", $sId, "", GetCookiePath(),, True)
   
   $cVal = New Collection
+  $cKey = New Collection
   $eStartup = Now
   
 End
@@ -278,8 +343,6 @@ Private Sub Init()
   'Main.Log("HTTP_COOKIE = " & CGI["HTTP_COOKIE"] & " / " & Env["HTTP_COOKIE"])
   $sId = Request.Cookies["SESSION"]
   Main.Log("--------------- Init: Cookie = " & $sId)
-  
-  'Main.Log("Cookie = " & $sId)
   '$sId = "9E2496B3AB6DDED93ABE6F0CF6E071B3@"
   If Not $sId Then Return
   
@@ -323,6 +386,7 @@ Public Sub Abandon()
   Response.RemoveCookie("SESSION", $sId, "", GetCookiePath())
   $sId = ""
   $sPath = ""
+  $cKey = Null
   $cVal = Null
   
 End
@@ -330,16 +394,37 @@ End
 Public Sub _get(Key As String) As Variant
   
   Init
-  If $cVal Then Return $cVal[Key]
+  
+  If Not $cVal Then Return
+  
+  If Not $cVal.Exist(Key) Then
+    If $cKey.Exist(Key) Then
+      Seek #$hFile, $cKey[Key]
+      $cVal[Key] = Read #$hFile As Variant
+    Endif
+  Endif
+  
+  Return $cVal[Key]
   
 End
 
 Public Sub _put(Value As Variant, Key As String)
 
   Init
+  
   If Not $cVal Then CreateSession
+  
   $cVal[Key] = Value
+  
+  If Not IsNull(Value) Then
+    $cKey[Key] = 0
+  Else 'If $cKey.Exist(Key) And If $cKey[Key] = 0 Then
+    $cKey.Remove(Key)
+  Endif
+  
   $bModify = True
+  
+  Main.Log(Key & " = " & Str(Value))
     
 End
 
