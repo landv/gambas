@@ -44,7 +44,7 @@ Event ProcessData(Data As String)
 Private Sub hError(hS As Socket, hErr As String)
 
   hS.Begin
-
+  hS.EndOfLine = gb.Windows
   Print #hS, "HTTP/1.1 " & hErr
   Print #hS, "Server: Gambas XML-RPC Server"
   Print #hS, "Connection: close"
@@ -67,13 +67,6 @@ Private Sub hError(hS As Socket, hErr As String)
 End
 
 
-Private Sub FindSocket(hS As Socket) As Integer
-  
-  Return hSocket.FindByRef(hS)
-  
-End
-
-
 
 Private Sub RemoveSocket(hS As Socket)
 
@@ -82,13 +75,13 @@ Private Sub RemoveSocket(hS As Socket)
   For Bucle = 0 To hSocket.Count - 1
 
     If hS = hSocket[Bucle] Then
+      Try Close #hS
       hSocket.Remove(Bucle)
       hBuffer.Remove(Bucle)
       hLen.Remove(Bucle)
       hProt.Remove(Bucle)
       hConn.Remove(Bucle)
       hType.Remove(Bucle)
-      Try Close #hS
       Break
     End If
 
@@ -206,12 +199,15 @@ Private Sub ProcessQuery(hS As Socket, Buf As String)
   End If
 
 
+  sReply = Replace$(sReply, "\n", "\r\n")
   hS.Begin
+  hS.EndOfLine = gb.Windows
   Print #hS, "HTTP/1.1 200 OK"
   Print #hS, "Connection: close"
   Print #hS, "Content-Length: " & Len(sReply)
   Print #hS, "Content-Type: text/xml"
-  Print #hS, "Server: Gambas RPC Server\n"
+  Print #hS, "Server: Gambas RPC Server"
+  Print #hS, ""
   Write #hS, sReply, Len(sReply)
   Try hS.Send
   
@@ -226,19 +222,17 @@ Public Sub Socket_Read()
   Dim sCad As String
   Dim Bucle As Integer
   Dim hS As Socket
+  Dim cCount As Integer
+  Dim cLen As Integer
 
-  Bucle = FindSocket(Last)
-  If Bucle < 0 Then Return
-  hS = hSocket[Bucle]
+  For Bucle = 0 To hSocket.Count - 1
+    If hSocket[Bucle] = Last Then
+      hS = Last
+      Break
+    End If
+  Next
 
-  ' For Bucle = 0 To hSocket.Count - 1
-  '   If hSocket[Bucle] = Last Then
-  '     hS = Last
-  '     Break
-  '   End If
-  ' Next
-  ' 
-  ' If hS = Null Then Return
+  If hS = Null Then Return
 
   If hBuffer[Bucle] = "" Then
     If Lof(hS) >= 5 Then
@@ -253,13 +247,12 @@ Public Sub Socket_Read()
 
     End If
   Else
-    
     Try Read #hS, Buf, Lof(hS)
-    
-    Buf = Read #hS, Lof(hS)
-    
     hBuffer[Bucle] = hBuffer[Bucle] & Buf
-    
+
+    ' Don't continue, because this is the second (or more) iteration to read the data
+    ' The first iteration will handle the complete request
+    Return
   End If
 
   If hProt[Bucle] = - 1 Then
@@ -327,11 +320,17 @@ Public Sub Socket_Read()
 
     If hLen[Bucle] = - 1 Or hType[Bucle] <> 1 Then
       hError(hS, "406 Not Acceptable")
-      RemoveSocket(hS)
+      ' RemoveSocket(hS)
       Return
     End If
 
-    'ProcessQuery(hS, hBuffer[Bucle])
+    For cCount = 1 To 100 Step 1
+      cLen = Len(hBuffer[Bucle]) - InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) - 3
+      If cLen = hLen[Bucle] Then Break
+      Wait 0.01
+    Next
+
+    ProcessQuery(hS, hBuffer[Bucle])
 
   Else
     If Len(hBuffer[Bucle]) > 4096 Then
@@ -342,16 +341,6 @@ Public Sub Socket_Read()
 
 
 End
-
-Public Sub Socket_Close()
-  
-  Dim I As Integer = FindSocket(Last)
-  
-  If I < 0 Then Return
-  ProcessQuery(Last, hBuffer[I])
-  
-End
-
 
 
 Public Sub Http_Connection((RemoteHost) As String)
