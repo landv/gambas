@@ -72,29 +72,7 @@ BEGIN_METHOD(GSL_ISFINITE, GB_FLOAT x;)
 END_METHOD
 
 
-BEGIN_METHOD(GSL_FCMPB, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
-		// Function: int gsl_fcmp (double x, double y, double epsilon)
-		// This function determines whether x and y are approximately
-		// equal to a relative accuracy epsilon.
-		// The relative accuracy is measured using an interval of size 2 \delta,
-		// where \delta = 2^k \epsilon and k is the maximum base-2 exponent of x
-		// and y as computed by the function frexp.
-		// If x and y lie within this interval, they are considered approximately
-		// equal and the function returns 0. Otherwise if x < y, the function returns
-		// -1, or if x > y, the function returns +1.
-		// Note that x and y are compared to relative accuracy, so this function is
-		// not suitable for testing whether a value is approximately zero.
-
-		int c;
-
-		c = gsl_fcmp (VARG(x), VARG(y), VARG(e));
-
-		GB.ReturnBoolean((c == 0 ? -1: 0));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_FCMPI, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
+BEGIN_METHOD(GSL_FCMP, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
 		// Function: int gsl_fcmp (double x, double y, double epsilon)
 		// This function determines whether x and y are approximately
 		// equal to a relative accuracy epsilon.
@@ -288,8 +266,7 @@ GB_DESC CGslDesc[] =
 		GB_STATIC_METHOD("IsNan", "b", GSL_ISNAN, "(X)f"),
 		GB_STATIC_METHOD("IsInf", "i", GSL_ISINF, "(X)f"),
 		GB_STATIC_METHOD("IsFinite", "b", GSL_ISFINITE, "(X)f"),
-		GB_STATIC_METHOD("Fcmpb", "b", GSL_FCMPB, "(X)f(Y)f(E)f"),
-		GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "(X)f(Y)f(E)f"),
+		GB_STATIC_METHOD("Fcmp", "i", GSL_FCMP, "(X)f(Y)f(E)f"),
 
 		// Elementary Functions
 		GB_STATIC_METHOD("Log1p", "f", GSL_LOG1P, "(X)f"),
