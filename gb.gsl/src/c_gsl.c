@@ -41,7 +41,7 @@ BEGIN_METHOD(GSL_ISNAN, GB_FLOAT x;)
 
 		c = gsl_isnan(VARG(x));
 
-		GB.ReturnBoolean((c==1?-1:0));
+		GB.ReturnBoolean(c);
 
 END_METHOD
 
@@ -54,7 +54,7 @@ BEGIN_METHOD(GSL_ISINF, GB_FLOAT x;)
 
 		c= gsl_isinf(VARG(x));
 
-		GB.ReturnBoolean((c==1?-1:0));
+		GB.ReturnInteger(c);
 
 END_METHOD
 
@@ -67,73 +67,10 @@ BEGIN_METHOD(GSL_ISFINITE, GB_FLOAT x;)
 
 		c = gsl_finite(VARG(x));
 
-	GB.ReturnBoolean((c == 1?-1:0));
+		GB.ReturnBoolean(c);
 
 END_METHOD
 
-
-BEGIN_METHOD(GSL_ISPOSITIVE, GB_FLOAT x;)
-	// This method returns the sign of x.
-	// It is defined as ((x) >= 0 ? 1 : -1).
-	// Note that with this definition the sign of
-	// zero is positive (regardless of its ieee sign bit).
-	GB.ReturnBoolean((VARG(x) >= 0 ? -1 : 0));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_SIGNF, GB_FLOAT x;)
-	// This method returns the sign of x.
-	// It is defined as ((x) >= 0 ? 1 : -1).
-	// Note that with this definition the sign of
-	// zero is positive (regardless of its ieee sign bit).
-	GB.ReturnInteger((VARG(x) >= 0 ? 1 : 0));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_ISODD, GB_INTEGER x;)
-	// This method evaluates to -1 if n is odd and 0
-	// if n is even. The argument n must be of integer type.
-	GB.ReturnBoolean((VARG(x)%2 ? -1:0));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_ISEVEN, GB_INTEGER x;)
-	// This method evaluates to -1 if n is even and 0
-	// if n is odd. The argument n must be of integer type.
-	GB.ReturnBoolean((VARG(x)%2 ? 0:-1));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_MAXFLOAT, GB_FLOAT x; GB_FLOAT y;)
-
-	GB.ReturnFloat((VARG(x) > VARG(y) ? VARG(x): VARG(y)));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_MINFLOAT, GB_FLOAT x; GB_FLOAT y;)
-
-	GB.ReturnFloat((VARG(x) < VARG(y) ? VARG(x): VARG(y)));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_MAXINT, GB_INTEGER x; GB_INTEGER y;)
-
-		GB.ReturnInteger((VARG(x) > VARG(y) ? VARG(x) : VARG(y)));
-
-END_METHOD
-
-
-BEGIN_METHOD(GSL_MININT, GB_INTEGER x; GB_INTEGER y;)
-
-		GB.ReturnInteger((VARG(x) < VARG(y) ? VARG(x) : VARG(y)));
-
-END_METHOD
 
 BEGIN_METHOD(GSL_FCMPB, GB_FLOAT x; GB_FLOAT y; GB_FLOAT e;)
 		// Function: int gsl_fcmp (double x, double y, double epsilon)
@@ -255,47 +192,22 @@ BEGIN_METHOD(GSL_FREXP, GB_FLOAT x;)
 	// standard math function frexp(x, e).
 	int b;
 	double r;
-	GB_VARIANT v;
-	GB_VARIANT q;
 	GB_ARRAY arr;
 
 	b = 0.0;
-
 	r = gsl_frexp(VARG(x), &b);
-	printf("r: %f \te: %i\n", r, b);
+	//printf("r: %f \te: %i\n", r, b);
 
-	GB_ARRAY result;
-	GB.Array.New(POINTER(&result), GB_T_VARIANT, 0);
-
-	GB.Array.New(&arr , GB_T_VARIANT , 2);
-	if(arr != NULL)
-	{
-		//GB_FLOAT f;
-		//GB_INTEGER i;
-
-		//f.value = r;
-		//i.value = b;
-
-		v.value.value._float = r;
-		v.type = GB_T_FLOAT;
-		//*((GB_VARIANT *)GB.Array.Get(arr, 0)) = v;
-		GB.StoreVariant(&v, GB.Array.Add(result));
-
-		q.value.value._integer = b;
-		q.type = GB_T_INTEGER;
-		//*((GB_VARIANT *)GB.Array.Get(arr, 1)) = q;
-		GB.StoreVariant(&q, GB.Array.Add(result));
-	}
-	
+	GB.Array.New(&arr, GB_T_FLOAT, 2);
+	*((double *)GB.Array.Get(arr, 0)) = r;
+	*((double *)GB.Array.Get(arr, 1)) = b;
 	GB.ReturnObject(arr);
 
 END_METHOD
-/*
-GB.Array.New(&iArray , GB_T_INTEGER , 1);
-	*((int *)GB.Array.Get(iArray, 0)) = value;
-	GB.ReturnObject(iArray);
-*/
 
+// BM they are useless, as they are already implemented that way in the interpreter.
+
+#if 0
 /*-----------------------------------------------
 Small Integer Power Functions
 -----------------------------------------------*/
@@ -363,7 +275,7 @@ BEGIN_METHOD(GSL_INTPOW9, GB_FLOAT x;)
 	// call gsl native function double gsl_pow_3(double x)
 	GB.ReturnFloat(gsl_pow_9(VARG(x)));
 END_METHOD
-
+#endif
 
 /**************************************************
 	Describe Class properties and methods to Gambas
@@ -374,32 +286,24 @@ GB_DESC CGslDesc[] =
 
 		// Number testing functions
 		GB_STATIC_METHOD("IsNan", "b", GSL_ISNAN, "(X)f"),
-		GB_STATIC_METHOD("IsInf", "b", GSL_ISINF, "(X)f"),
+		GB_STATIC_METHOD("IsInf", "i", GSL_ISINF, "(X)f"),
 		GB_STATIC_METHOD("IsFinite", "b", GSL_ISFINITE, "(X)f"),
-		GB_STATIC_METHOD("IsPos", "b", GSL_ISPOSITIVE, "(X)f"),
-		GB_STATIC_METHOD("Sign", "i", GSL_SIGNF, "(X)i"),
-		GB_STATIC_METHOD("IsOdd", "b", GSL_ISODD, "(X)i"),
-		GB_STATIC_METHOD("IsEven", "b", GSL_ISEVEN, "(X)i"),
-		GB_STATIC_METHOD("MaxFloat", "f", GSL_MAXFLOAT, "[(X)f(Y)f]"),
-		GB_STATIC_METHOD("MinFLoat", "f", GSL_MINFLOAT, "[(X)f(Y)f]"),
-		GB_STATIC_METHOD("MaxInt", "i", GSL_MAXINT, "[(X)i(Y)i]"),
-		GB_STATIC_METHOD("MinInt", "i", GSL_MININT, "[(X)i(Y)i]"),
-		GB_STATIC_METHOD("Fcmpb", "b", GSL_FCMPB, "[(X)f(Y)f(E)f]"),
-		GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "[(X)f(Y)f(E)f]"),
+		GB_STATIC_METHOD("Fcmpb", "b", GSL_FCMPB, "(X)f(Y)f(E)f"),
+		GB_STATIC_METHOD("Fcmpi", "i", GSL_FCMPI, "(X)f(Y)f(E)f"),
 
 		// Elementary Functions
 		GB_STATIC_METHOD("Log1p", "f", GSL_LOG1P, "(X)f"),
 		GB_STATIC_METHOD("Expm1", "f", GSL_EXPM1, "(X)f"),
-		GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "[(X)f(Y)f]"),
-		GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "[(X)f(Y)f(Z)f]"),
+		GB_STATIC_METHOD("Hypot", "f", GSL_HYPOT, "(X)f(Y)f"),
+		GB_STATIC_METHOD("Hypot3", "f", GSL_HYPOT3, "(X)f(Y)f(Z)f"),
 		GB_STATIC_METHOD("Acosh", "f", GSL_ACOSH, "(X)f"),
 		GB_STATIC_METHOD("Asinh", "f", GSL_ASINH, "(X)f"),
 		GB_STATIC_METHOD("Atanh", "f", GSL_ATANH, "(X)f"),
-		GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "[(X)f(E)i]"),
-		GB_STATIC_METHOD("Frexp", "v[];", GSL_FREXP, "(X)f"),
+		GB_STATIC_METHOD("Ldexp", "f", GSL_LDEXP, "(X)f(E)i"),
+		GB_STATIC_METHOD("Frexp", "Float[]", GSL_FREXP, "(X)f"),
 
 		// Return x^y using a small int safe method
-		GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "[(X)f(I)i]"),
+		/*GB_STATIC_METHOD("IntPow", "f", GSL_INTPOW, "(X)f(I)i"),
 		GB_STATIC_METHOD("IntPow2", "f", GSL_INTPOW2, "(X)f"),
 		GB_STATIC_METHOD("IntPow3", "f", GSL_INTPOW3, "(X)f"),
 		GB_STATIC_METHOD("IntPow4", "f", GSL_INTPOW4, "(X)f"),
@@ -407,7 +311,7 @@ GB_DESC CGslDesc[] =
 		GB_STATIC_METHOD("IntPow6", "f", GSL_INTPOW6, "(X)f"),
 		GB_STATIC_METHOD("IntPow7", "f", GSL_INTPOW7, "(X)f"),
 		GB_STATIC_METHOD("IntPow8", "f", GSL_INTPOW8, "(X)f"),
-		GB_STATIC_METHOD("IntPow9", "f", GSL_INTPOW9, "(X)f"),
+		GB_STATIC_METHOD("IntPow9", "f", GSL_INTPOW9, "(X)f"),*/
 
 		// Class Constants
 		GB_FLOAT_CONSTANT("E", M_E),
@@ -420,9 +324,9 @@ GB_DESC CGslDesc[] =
 		GB_FLOAT_CONSTANT("PI_2", M_PI_2),
 		GB_FLOAT_CONSTANT("PI_4", M_PI_4),
 		GB_FLOAT_CONSTANT("SQRTPI", M_SQRTPI),
-		//GB_FLOAT_CONSTANT("INV_SQRTPI_2", M_2_SQRTPI),
-		GB_FLOAT_CONSTANT("INVPI", M_1_PI),
-		//GB_FLOAT_CONSTANT("2INVPI", M_2_PI),
+		GB_FLOAT_CONSTANT("INV2_SQRTPI", M_2_SQRTPI),
+		GB_FLOAT_CONSTANT("INV_PI", M_1_PI),
+		GB_FLOAT_CONSTANT("INV2_PI", M_2_PI),
 		GB_FLOAT_CONSTANT("LN10", M_LN10),
 		GB_FLOAT_CONSTANT("LN2", M_LN2),
 		GB_FLOAT_CONSTANT("LNPI", M_LNPI),
