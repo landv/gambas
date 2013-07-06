@@ -241,6 +241,7 @@ int STREAM_write_direct(int fd, char *buffer, int len);
 void STREAM_lock(STREAM *stream);
 
 #define STREAM_is_closed(_stream) ((_stream)->type == NULL)
+#define STREAM_is_closed_for_writing(_stream) (STREAM_is_closed(_stream) && !(_stream)->common.redirected)
 
 void STREAM_blocking(STREAM *stream, bool block);
 #define STREAM_is_blocking(_stream) ((_stream)->common.blocking)

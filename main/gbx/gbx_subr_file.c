@@ -114,8 +114,7 @@ static STREAM *get_default(intptr_t val)
 	return stream;
 }
 
-#define get_stream(_value, _can_default) \
-({ \
+#define _get_stream(_value, _can_default) \
 	STREAM *stream; \
 	\
 	VARIANT_undo(_value); \
@@ -134,7 +133,11 @@ static STREAM *get_default(intptr_t val)
 			VALUE_conv_object((_value), (TYPE)CLASS_Stream); \
 			stream = NULL; \
 		} \
-	} \
+	}
+
+#define get_stream(_value, _can_default) \
+({ \
+	_get_stream(_value, _can_default); \
 	\
 	if (STREAM_is_closed(stream)) \
 		THROW(E_CLOSED); \
@@ -142,6 +145,15 @@ static STREAM *get_default(intptr_t val)
 	stream; \
 })
 
+#define get_stream_for_writing(_value, _can_default) \
+({ \
+	_get_stream(_value, _can_default); \
+	\
+	if (STREAM_is_closed_for_writing(stream)) \
+		THROW(E_CLOSED); \
+	\
+	stream; \
+})
 
 static char *get_path(VALUE *param)
 {
@@ -223,7 +235,7 @@ void SUBR_print(ushort code)
 	if (NPARAM < 1)
 		THROW(E_NEPARAM);
 
-	_stream = get_stream(PARAM, TRUE);
+	_stream = get_stream_for_writing(PARAM, TRUE);
 
 	//PRINT_init(print_it, FALSE);
 
@@ -455,7 +467,7 @@ void SUBR_write(ushort code)
 
 	SUBR_ENTER_PARAM(3);
 
-	stream = get_stream(PARAM, TRUE);
+	stream = get_stream_for_writing(PARAM, TRUE);
 
 	if (code & 0x3F)
 	{

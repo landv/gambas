@@ -281,9 +281,11 @@ void STREAM_close(STREAM *stream)
 
 void STREAM_flush(STREAM *stream)
 {
+	STREAM_end(stream);
+	
 	if (!stream->type)
 		THROW(E_CLOSED);
-		
+	
 	(*(stream->type->flush))(stream);
 }
 
@@ -306,7 +308,7 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 {
 	STREAM_eff_read = 0;
 
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 	
 	if (len <= 0)
@@ -437,7 +439,7 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 
 void STREAM_write(STREAM *stream, void *addr, int len)
 {
-	if (!stream->type)
+	if (STREAM_is_closed_for_writing(stream))
 		THROW(E_CLOSED);
 	
 	if (len <= 0)
@@ -475,7 +477,7 @@ void STREAM_write_zeros(STREAM *stream, int len)
 
 void STREAM_write_eol(STREAM *stream)
 {
-	if (!stream->type)
+	if (STREAM_is_closed_for_writing(stream))
 		THROW(E_CLOSED);
 		
 	switch(stream->common.eol)
@@ -491,7 +493,7 @@ int64_t STREAM_tell(STREAM *stream)
 {
 	int64_t pos;
 
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 		
 	if (stream->type->tell(stream, &pos))
@@ -504,7 +506,7 @@ int64_t STREAM_tell(STREAM *stream)
 
 void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 {
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 		
 	if (stream->type->seek(stream, pos, whence))
@@ -1423,7 +1425,7 @@ void STREAM_unmap(char *addr, int len)
 
 int STREAM_handle(STREAM *stream)
 {
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 		
 	if (stream->type->handle)
@@ -1438,7 +1440,7 @@ void STREAM_lock(STREAM *stream)
 	int64_t pos;
 	int fd;
 
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 		
 	fd = STREAM_handle(stream);
@@ -1484,7 +1486,7 @@ void STREAM_lof(STREAM *stream, int64_t *len)
 	int fd;
 	int ilen;
 
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 		
 	if (stream->type->lof)
@@ -1503,7 +1505,7 @@ void STREAM_lof(STREAM *stream, int64_t *len)
 
 bool STREAM_eof(STREAM *stream)
 {
-	if (!stream->type)
+	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 		
 	if (stream->common.buffer && stream->common.buffer_pos < stream->common.buffer_len)
