@@ -396,10 +396,14 @@ Public Sub Update() As Boolean
 
 End
 
-Public Sub Revert() As Boolean
+Public Sub Revert(Optional sPath As String) As Boolean
 
   If $bSVN Then
-    Run(["svn", "-R", "revert", SvnPath$($sRealDir)])
+    If sPath Then
+      Run(["svn", "revert", SvnPath$(sPath)])
+    Else
+      Run(["svn", "-R", "revert", SvnPath$($sRealDir)])
+    Endif
     Return Process.LastValue
   Endif
 

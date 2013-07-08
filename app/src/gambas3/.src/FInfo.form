@@ -103,31 +103,37 @@
     }
     Index = 1
     Text = ("Versioning")
-    { edtChange Editor
-      MoveScaled(1,1,39,28)
-      Highlight = Highlight.Diff
-      ReadOnly = True
-    }
     { lblVersioning TextLabel
       MoveScaled(1,1,36,8)
       Visible = False
+    }
+    { edtChange Editor
+      MoveScaled(2,5,44,26)
+      Highlight = Highlight.Diff
+      ReadOnly = True
     }
     Index = 0
   }
   { Panel1 HBox
     MoveScaled(1,54,58,4)
+    Spacing = True
     { Panel2 Panel
-      MoveScaled(10,0,2,4)
+      MoveScaled(5,0,1,4)
       Expand = True
     }
     { btnClose Button
-      MoveScaled(21,0,16,4)
+      MoveScaled(8,0,18,4)
       Text = ("OK")
       Default = True
       Cancel = True
     }
+    { btnRevert Button
+      MoveScaled(27,0,18,4)
+      Text = ("&Revert")
+      Picture = Picture["icon:/small/undo"]
+    }
     { Panel3 Panel
-      MoveScaled(45,0,2,4)
+      MoveScaled(52,0,1,4)
       Expand = True
     }
   }

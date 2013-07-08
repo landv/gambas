@@ -209,7 +209,8 @@ End
 
 Public Sub Form_Open()
 
-  tabInfo[1].Visible = VersionControl.Enabled() And Not IsDir($sPath)
+  btnRevert.Visible = VersionControl.Enabled() And Not IsDir($sPath)
+  tabInfo[1].Visible = btnRevert.Visible
   tabInfo.Index = 0
   edtChange.Clear
   edtChange.ReadConfig
@@ -251,5 +252,19 @@ End
 Public Sub btnClose_Click()
 
   Me.Close
+
+End
+
+Public Sub btnRevert_Click()
+
+  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
+
+  Inc Application.Busy
+  
+  VersionControl.Revert($sPath)
+  Try Project.Files[$sPath].Reload
+  Project.Refresh
+  
+  Dec Application.Busy
 
 End

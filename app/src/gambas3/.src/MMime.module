@@ -112,7 +112,7 @@ Public Sub GetMime(sPath As String) As String
     'Case "bdf"
     '  Return "application/x-font-bdf"
     Case Else 
-      Return DesktopMime.FromFile(sPath).Type
+      Try Return DesktopMime.FromFile(sPath).Type
   End Select
   
 End
