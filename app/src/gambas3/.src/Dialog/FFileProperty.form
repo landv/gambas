@@ -1,0 +1,46 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,55,62)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { panVersion Panel
+    MoveScaled(1,1,46,31)
+    Visible = False
+    Arrangement = Arrange.Fill
+    { edtChange Editor
+      MoveScaled(1,4,44,26)
+      Border = False
+      Highlight = Highlight.Diff
+      ReadOnly = True
+    }
+    { lblVersioning TextLabel
+      MoveScaled(0,0,42,12)
+      Visible = False
+      Padding = 8
+    }
+  }
+  { fprInfo FileProperties
+    MoveScaled(10,15,36,37)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,57,51,4)
+    { btnRevert Button
+      MoveScaled(0,0,16,4)
+      Text = ("&Revert")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Panel3 Panel
+      MoveScaled(22,0,3,4)
+      Expand = True
+    }
+    { btnClose Button
+      MoveScaled(31,0,18,4)
+      Text = ("Close")
+      Default = True
+      Cancel = True
+    }
+  }
+}

@@ -1760,20 +1760,42 @@ void MyMainWindow::showActivate(QWidget *transient)
 	#endif
 }
 
+void on_error_show_modal(MODAL_INFO *info)
+{
+	qDebug("on_error_show_modal");
+	
+	info->that->_enterLoop = false;
+	MyApplication::eventLoop->exit();
+
+	GB.Debug.LeaveEventLoop();
+
+	MyApplication::eventLoop = info->old;
+	CWINDOW_Current = info->save;
+	
+	if (info->that->isPersistent())
+	{
+		info->that->setSizeGrip(false);
+		info->that->setWindowModality(Qt::NonModal);
+	}
+}
+
 void MyMainWindow::showModal(void)
 {
 	//Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
-	CWINDOW *save = CWINDOW_Current;
 	//QPoint p = pos();
-	QEventLoop *old;
 	QEventLoop eventLoop;
+	GB_ERROR_HANDLER handler;
+	MODAL_INFO info;
 
 	if (isModal())
 		return;
 
-	old = MyApplication::eventLoop;
+	info.that = this;
+	info.old = MyApplication::eventLoop;
+	info.save = CWINDOW_Current;
+	
 	MyApplication::eventLoop = &eventLoop;
 
 	setWindowModality(Qt::ApplicationModal);
@@ -1803,12 +1825,21 @@ void MyMainWindow::showModal(void)
 	_enterLoop = true;
 	
 	GB.Debug.EnterEventLoop();
+
+	handler.handler = (GB_CALLBACK)on_error_show_modal;
+	handler.arg1 = (intptr_t)&info;
+	
+	GB.OnErrorBegin(&handler);
+	
 	eventLoop.exec();
+	
+	GB.OnErrorEnd(&handler);
+	
 	GB.Debug.LeaveEventLoop();
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 	
-	MyApplication::eventLoop = old;
-	CWINDOW_Current = save;
+	MyApplication::eventLoop = info.old;
+	CWINDOW_Current = info.save;
 		
 	if (persistent)
 	{
@@ -2279,7 +2310,10 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	e->accept();
 
 	if (isModal() && _enterLoop)
+	{
+		_enterLoop = false;
 		MyApplication::eventLoop->exit();
+	}
 
 	#if DEBUG_WINDOW
 	qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));

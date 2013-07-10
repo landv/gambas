@@ -1,0 +1,134 @@
+' Gambas class file
+
+Class DesktopMime
+
+Static Private $sPath As String
+
+Private $bVersion As Boolean
+
+Public Sub Run(sPath As String) As Boolean
+  
+  $sPath = sPath
+  Return Not FFileProperty.ShowModal()
+  
+End
+
+Public Sub fprInfo_Data()
+ 
+  Dim sPath As String = fprInfo.Path
+  Dim hModule As CModule
+  Dim sType As String
+  
+  If Project.IsSourcePath(sPath) Then
+
+    Try fprInfo.Data.Icon = Project.GetFileIcon(sPath, 64)
+
+    hModule = CModule.FromExt(File.Ext(sPath))
+      
+    If hModule Then
+        
+      sType = Subst(("Gambas &1"), hModule.Name)
+        
+    Else
+    
+      Select Case File.Ext(sPath)
+        
+        Case "module"
+          sType = ("Gambas module")
+        Case "class"
+          sType = ("Gambas class")
+          
+      End Select
+          
+    Endif
+    
+    If sType Then
+      fprInfo.Data.Type = sType
+      Return
+    Endif
+    
+  Endif
+  
+  Stop Event
+  
+End
+
+Public Sub Form_Open()
+
+  Dim sPath As String
+
+  sPath = $sPath
+
+  If Left(sPath) = "$" Then sPath = Project.Dir
+  If Not sPath Then sPath = Project.Dir
+ 
+  fprInfo.Path = sPath
+ 
+  Me.Title = Subst(("&1 properties"), File.Name(sPath))
+  
+  If VersionControl.Enabled() And Not IsDir($sPath) Then
+    btnRevert.Show
+    fprInfo.Add(panVersion, ("Versioning"))
+    '$hObs = New Observer(fprInfo.Parent) As "tabInfo"
+    edtChange.Clear
+    edtChange.ReadConfig
+  Endif
+  
+  btnClose.SetFocus
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub panVersion_Arrange()
+
+  Dim sDiff As String
+  
+  If $bVersion Then Return
+
+  edtChange.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+  sDiff = VersionControl.Diff($sPath)
+  If Project.IsFormPath($sPath) Then
+    sDiff &= "\n" & VersionControl.Diff(File.SetExt($sPath, "class"))
+  Endif
+  sDiff = Trim(sDiff)
+  If sDiff Then
+    edtChange.Text = sDiff
+    edtChange.Show
+    lblVersioning.Hide
+  Else
+    edtChange.Hide
+    If Project.IsLocked($sPath) Then
+      lblVersioning.Text = ("This file is locked, and will be deleted on the next commit.")
+    Else If Project.IsAdded($sPath) Then
+      lblVersioning.Text = ("This file is not versioned, and must be added to the repository.")
+      btnRevert.Hide
+    Else
+      lblVersioning.Text = ("This file has not been modified since the last commit.")
+      btnRevert.Hide
+    Endif
+    lblVersioning.Show
+  Endif
+  
+  $bVersion = True
+
+End
+
+Public Sub btnRevert_Click()
+
+  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
+
+  Inc Application.Busy
+  
+  VersionControl.Revert($sPath)
+  Try Project.Files[$sPath].Reload
+  Project.Refresh
+  
+  Dec Application.Busy
+
+End
+

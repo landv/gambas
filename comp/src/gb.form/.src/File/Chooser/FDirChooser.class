@@ -1207,9 +1207,9 @@ Public Sub mnuProperty_Click()
   
   If dvwChoose.HasFocus Or If Not fvwChoose.Current Then
     If Not dvwChoose.Current Then Return
-    FFileProperty.Run(dvwChoose.Current)
+    FFileProperties.Run(dvwChoose.Current)
   Else
-    FFileProperty.Run(fvwChoose.Dir &/ fvwChoose.Current)
+    FFileProperties.Run(fvwChoose.Dir &/ fvwChoose.Current)
   Endif
   
 End

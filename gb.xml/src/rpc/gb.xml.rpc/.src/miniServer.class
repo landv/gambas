@@ -212,7 +212,7 @@ Private Sub ProcessQuery(hS As Socket, Buf As String)
   Try hS.Send
   
   RemoveSocket(hS)
-
+  
 End
 
 
@@ -233,7 +233,7 @@ Public Sub Socket_Read()
   Next
 
   If hS = Null Then Return
-
+  
   If hBuffer[Bucle] = "" Then
     If Lof(hS) >= 5 Then
 
@@ -330,6 +330,7 @@ Public Sub Socket_Read()
       Wait 0.01
     Next
 
+  
     ProcessQuery(hS, hBuffer[Bucle])
 
   Else
@@ -392,21 +393,20 @@ Public Sub Listen(Port As Integer, MaxConn As Integer)
 
 End
 
-Public Sub _New()
+Public Sub _new()
 
-    hSocket = New Object[]
-    hBuffer = New String[]
-    hProt = New Byte[]
-    hLen = New Integer[]
-    hConn = New Integer[]
-    hType = New Byte[]
+  hSocket = New Object[]
+  hBuffer = New String[]
+  hProt = New Byte[]
+  hLen = New Integer[]
+  hConn = New Integer[]
+  hType = New Byte[]
 
 End
 
-Public Sub _Free()
+Public Sub _free()
 
   Me.Close()
-
 
 End
 

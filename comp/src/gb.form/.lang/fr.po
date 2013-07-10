@@ -216,6 +216,7 @@ msgstr "Prévisualisation des images"
 msgid "OK"
 msgstr "OK"
 
+#: FDirChooser.form:177 FEditBookmark.class:109 FInputBox.form:49
 #: FSidePanel.class:975 FWizard.form:54
 msgid "Cancel"
 msgstr "Annuler"
@@ -252,47 +253,71 @@ msgstr "&Descendre"
 msgid "&Remove"
 msgstr "&Supprimer"
 
-#: FEditBookmark.form:56 FFileProperty.form:143
+#: FEditBookmark.form:56 FFileProperty.form:157
 msgid "Close"
 msgstr "Fermer"
 
-#: FFileProperty.class:22
+#: FFileProperty.class:24
 msgid "&1 properties"
 msgstr "Propriétés de &1"
 
-#: FFileProperty.class:28
+#: FFileProperty.class:31
 msgid "Symbolic link"
 msgstr "Lien symbolique"
 
-#: FFileProperty.class:44 Main.module:44
+#: FFileProperty.class:97 Main.module:46
 msgid "&1 B"
 msgstr "&1 o"
+
+#: FFileProperty.class:102
+msgid "no file"
+msgstr "aucun fichier"
+
+#: FFileProperty.class:104
+msgid "one file"
+msgstr "un fichier"
+
+#: FFileProperty.class:106
+msgid "files"
+msgstr "fichiers"
+
+#: FFileProperty.class:110
+msgid "no directory"
+msgstr "aucun répertoire"
+
+#: FFileProperty.class:112
+msgid "one directory"
+msgstr "un répertoire"
+
+#: FFileProperty.class:114
+msgid "directories"
+msgstr "répertoires"
 
 #: FFileProperty.form:62
 msgid "Type"
 msgstr "Type"
 
-#: FFileProperty.form:72
+#: FFileProperty.form:74
 msgid "Directory"
 msgstr "Répertoire"
 
-#: FFileProperty.form:82 FileView.class:100
+#: FFileProperty.form:86 FileView.class:100
 msgid "Size"
 msgstr "Taille"
 
-#: FFileProperty.form:92 FileView.class:102
+#: FFileProperty.form:98 FileView.class:102
 msgid "Last modified"
 msgstr "Modifié le"
 
-#: FFileProperty.form:102
+#: FFileProperty.form:110
 msgid "Permissions"
 msgstr "Permissions"
 
-#: FFileProperty.form:113
+#: FFileProperty.form:123
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: FFileProperty.form:123
+#: FFileProperty.form:135
 msgid "Group"
 msgstr "Groupe"
 
@@ -348,19 +373,18 @@ msgstr "Impossible de renommer le fichier."
 msgid "The '/' character is forbidden inside file or directory names."
 msgstr "Le caractère '/' est interdit dans les noms de fichiers ou de répertoires."
 
-#: Main.module:46
+#: Main.module:48
 msgid "&1 KiB"
 msgstr "&1 Kio"
 
-#: Main.module:48
+#: Main.module:50
 msgid "&1 MiB"
 msgstr "&1 Mio"
 
-#: Main.module:50
+#: Main.module:52
 msgid "&1 GiB"
 msgstr "&1 Gio"
 
 #: Wizard.class:77
 msgid "Step #&1"
 msgstr "Étape n°&1"
-

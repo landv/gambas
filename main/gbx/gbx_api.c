@@ -119,6 +119,8 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_Error,
 	(void *)ERROR_propagate,
 	(void *)GB_Deprecated,
+	(void *)GB_OnErrorBegin,
+	(void *)GB_OnErrorEnd,
 
 	(void *)GB_GetClass,
 	(void *)GB_GetClassName,
@@ -1190,6 +1192,18 @@ const char *GB_GetUnknown(void)
 	return EXEC_unknown_name;
 }
 
+
+void GB_OnErrorBegin(GB_ERROR_HANDLER *handler)
+{
+	handler->prev = ERROR_handler;
+	handler->context = ERROR_current;
+	ERROR_handler = (ERROR_HANDLER *)handler;
+}
+
+void GB_OnErrorEnd(GB_ERROR_HANDLER *handler)
+{
+	ERROR_handler = (ERROR_HANDLER *)handler->prev;
+}
 
 void GB_Error(const char *error, ...)
 {

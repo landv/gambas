@@ -796,7 +796,7 @@ GB_DESC VectorDesc[] =
 	GB_METHOD("_free", NULL, Vector_free, NULL),
 	//GB_STATIC_METHOD("_call", "Vector", Vector_call, "(Value)f."),
 	GB_METHOD("Copy", "Vector", Vector_Copy, NULL),
-	GB_METHOD("ToString", "s", Vector_ToString, "[(Local)b(ForEval)b]"),
+	GB_METHOD("ToString", "s", Vector_ToString, "[(Local)b]"),
 	
 	GB_PROPERTY_READ("Count", "i", Vector_Count),
 	GB_PROPERTY_READ("Handle", "p", Vector_Handle),

@@ -43,7 +43,7 @@
 #include "gbx_c_error.h"
 
 
-BEGIN_PROPERTY(CERROR_code)
+BEGIN_PROPERTY(Error_Code)
 
   GB_ReturnInt(ERROR_last.code);
 
@@ -58,7 +58,7 @@ static void get_subst(int np, char **str, int *len)
 }
 
 
-BEGIN_PROPERTY(CERROR_text)
+BEGIN_PROPERTY(Error_Text)
 
 	if (ERROR_last.code && ERROR_last.msg)
 	{
@@ -91,7 +91,7 @@ BEGIN_PROPERTY(CERROR_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CERROR_class)
+BEGIN_PROPERTY(Error_Class)
 
 	if (ERROR_last.code)
   	GB_ReturnObject(ERROR_last.cp);
@@ -101,7 +101,7 @@ BEGIN_PROPERTY(CERROR_class)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CERROR_where)
+BEGIN_PROPERTY(Error_Where)
 
 	if (ERROR_last.code)
   	GB_ReturnNewZeroString(DEBUG_get_position(ERROR_last.cp, ERROR_last.fp, ERROR_last.pc));
@@ -111,14 +111,14 @@ BEGIN_PROPERTY(CERROR_where)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CERROR_clear)
+BEGIN_METHOD_VOID(Error_Clear)
 
   ERROR_reset(&ERROR_last);
 
 END_METHOD
 
 
-BEGIN_METHOD(CERROR_raise, GB_STRING msg)
+BEGIN_METHOD(Error_Raise, GB_STRING msg)
 
   ERROR_define(GB_ToZeroString(ARG(msg)), NULL);
   EXEC_set_native_error(TRUE);
@@ -126,7 +126,7 @@ BEGIN_METHOD(CERROR_raise, GB_STRING msg)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CERROR_propagate)
+BEGIN_METHOD_VOID(Error_Propagate)
 
 	if (ERROR_last.code)
 	{
@@ -137,7 +137,7 @@ BEGIN_METHOD_VOID(CERROR_propagate)
 END_METHOD
 
 
-BEGIN_PROPERTY(CERROR_backtrace)
+BEGIN_PROPERTY(Error_Backtrace)
 
 	if (ERROR_backtrace)
 		GB_ReturnObject(DEBUG_get_string_array_from_backtrace(ERROR_backtrace));
@@ -152,15 +152,15 @@ GB_DESC NATIVE_Error[] =
 {
   GB_DECLARE("Error", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY_READ("Code", "i", CERROR_code),
-  GB_STATIC_PROPERTY_READ("Text", "s", CERROR_text),
-  GB_STATIC_PROPERTY_READ("Class", "Class", CERROR_class),
-  GB_STATIC_PROPERTY_READ("Where", "s", CERROR_where),
-  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", CERROR_backtrace),
+  GB_STATIC_PROPERTY_READ("Code", "i", Error_Code),
+  GB_STATIC_PROPERTY_READ("Text", "s", Error_Text),
+  GB_STATIC_PROPERTY_READ("Class", "Class", Error_Class),
+  GB_STATIC_PROPERTY_READ("Where", "s", Error_Where),
+  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", Error_Backtrace),
 
-  GB_STATIC_METHOD("Clear", NULL, CERROR_clear, NULL),
-  GB_STATIC_METHOD("Raise", NULL, CERROR_raise, "(Message)s"),
-  GB_STATIC_METHOD("Propagate", NULL, CERROR_propagate, NULL),
+  GB_STATIC_METHOD("Clear", NULL, Error_Clear, NULL),
+  GB_STATIC_METHOD("Raise", NULL, Error_Raise, "(Message)s"),
+  GB_STATIC_METHOD("Propagate", NULL, Error_Propagate, NULL),
 
   GB_END_DECLARE
 };

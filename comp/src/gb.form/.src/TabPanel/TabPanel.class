@@ -397,7 +397,9 @@ Private Sub Border_Write(bBorder As Boolean)
   Dim hButton As _TabPanelButton
 
   $bBorder = bBorder
-  '$hPanel.Padding = If(bBorder, 1, 0)
+  
+  Panel_Arrange
+  
   $hPanel.Refresh
   
   For Each hButton In $aButton

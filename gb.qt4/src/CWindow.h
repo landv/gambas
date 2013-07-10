@@ -147,6 +147,15 @@ public slots:
 	void destroy(void);
 };
 
+class MyMainWindow;
+
+typedef
+	struct {
+		MyMainWindow *that;
+		QEventLoop *old;
+		CWINDOW *save;
+	}
+	MODAL_INFO;
 
 class MyMainWindow : public QWidget
 {
@@ -232,6 +241,8 @@ public:
 	
 	virtual void resize(int w, int h);
 	virtual void setGeometry(int x, int y, int w, int h);
+	
+	friend void on_error_show_modal(MODAL_INFO *info);
 };
 
 

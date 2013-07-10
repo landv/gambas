@@ -484,6 +484,13 @@ BEGIN_METHOD_VOID(Complex_Conj)
 
 END_METHOD
 
+
+BEGIN_METHOD(Complex_ToString, GB_BOOLEAN local)
+
+	GB.ReturnString(GB.FreeStringLater(COMPLEX_to_string(RE(THIS), IM(THIS), VARGOPT(local, FALSE))));
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 GB_DESC ComplexDesc[] =
@@ -496,6 +503,7 @@ GB_DESC ComplexDesc[] =
 	GB_STATIC_METHOD("Polar", "Complex", Complex_Polar, "[(Abs)f(Arg)f]"),
 
 	GB_METHOD("Copy", "Complex", Complex_Copy, NULL),
+	GB_METHOD("ToString", "s", Complex_ToString, "[(Local)b]"),
 
 	GB_PROPERTY("Real", "f", Complex_Real),
 	GB_PROPERTY("Imag", "f", Complex_Imag),

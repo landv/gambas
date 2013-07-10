@@ -541,7 +541,7 @@ Private Sub LoadCurrentSourceCode() As String
   Endif
   
   $iFirstLine = $hCurrent.StartLine
-  edtSource.LineOffset = $iFirstLine
+  edtSource.LineNumberOffset = $iFirstLine
   edtSource.Text = $hCurrent.Code
   
   If $hCurrent.MaxTime = 0 Then

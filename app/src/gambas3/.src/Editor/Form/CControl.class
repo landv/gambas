@@ -70,6 +70,7 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim sText As String
   Dim X, Y As Float
   Dim iInd As Integer
+  Dim I As Integer
   
   If sComp Then 
     If sComp = CComponent.PROJECT_NAME Then
@@ -84,33 +85,41 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Endif
   If Not hPict Then Try hPict = Picture["img/control" &/ LCase(sClass) & ".png"]
   If Not hPict Then
+    
     hImage = Image.Load("img/control/unknown.png")
+    
     Paint.Begin(hImage)
+    
     Paint.Rectangle(3, 3, hImage.W - 6, hImage.H - 6)
     Paint.Clip
-    Paint.Font.Size = 7
-    'Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 128))
+    
+    Paint.Font = Font["Monospace"] 'Project.GetEditorFont()
+    Paint.Font.Size = 8
+    Paint.Font.Size = 8 * (hImage.H - 6) / (Paint.Font.Height - 1) / 3
+    Paint.AntiAlias = False
+    Paint.Brush = Paint.Color(Color.Black)
     sText = sClass
-    While Len(sText) < 32
+    While Len(sText) < 48
       sText &= sClass
     Wend
     X = 3
-    Y = 10
+    Y = Paint.Font.Ascent + 3
     
-    While Y < hImage.H
+    For I = 1 To 3
       
-      Paint.Text(sText, X, Y)
-      Paint.Fill
-      Y += Paint.Font.Height - 1.5
+      Paint.DrawText(sText, X, Y)
+      'Paint.Fill
+      Y += Paint.Font.Height - 1
       
       For iInd = 1 To Len(sText)
-        If Paint.TextExtents(Left$(sText, iInd)).Width >= (hImage.Width - 7) Then Break
+        If Paint.TextExtents(Left$(sText, iInd)).Width >= (hImage.W - 6) Then Break
       Next
       sText = Mid$(sText, iInd)
     
-    Wend
+    Next
     
     Paint.End
+    
     hPict = hImage.Picture
   Endif
 

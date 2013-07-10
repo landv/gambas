@@ -221,48 +221,10 @@ static bool print_type(const char *type)
 }
 #endif
 
-static void dump_value(const char *type, intptr_t value)
-{
-	char *p;
-
-	switch(*type)
-	{
-		case 'i':
-			print("%d", value);
-			break;
-
-		case 'f':
-			print("%s", (char *)value);
-			break;
-
-		case 's':
-			p = (char *)value;
-			while (*p)
-			{
-				if (*p == '\n')
-					print("\\n");
-				else if (*p == '\t')
-					print("\\t");
-				else
-					print("%c", *p);
-				p++;
-			}
-			break;
-			
-		case 'b':
-			print("%s", value ? "T" : "");
-			break;
-			
-
-		default:
-			print("?");
-			break;
-	}
-}
-
 static void dump_symbol(GB_DESC *desc)
 {
 	const char *name;
+	const char *p;
 
 	name = &desc->name[1];
 
@@ -273,7 +235,40 @@ static void dump_symbol(GB_DESC *desc)
 	newline();
 
 	if (*desc->name == 'C')
-		dump_value((char *)desc->val1, desc->val2);
+	{
+		switch(*(char *)desc->val1)
+		{
+			case 'i':
+				print("%d", desc->val2);
+				break;
+
+			case 's':
+				p = (const char *)desc->val2;
+				while (*p)
+				{
+					if (*p == '\n')
+						print("\\n");
+					else if (*p == '\t')
+						print("\\t");
+					else
+						print("%c", *p);
+					p++;
+				}
+				break;
+				
+			case 'b':
+				print("%s", desc->val2 ? "True" : "False");
+				break;
+				
+			case 'f':
+				print("%.15g", desc->val4);
+				break;
+
+			default:
+				print("?");
+				break;
+		}
+	}
 	else if (desc->val3)
 		print("%s", (char *)desc->val3);
 

@@ -1,0 +1,117 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,54,49)
+  Arrangement = Arrange.Vertical
+  { tabInfo TabPanel
+    MoveScaled(1,1,52,47)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Index = 0
+    Text = ("General")
+    { panIcon HBox
+      MoveScaled(0,0,48,10)
+      Spacing = True
+      Margin = True
+      { picIcon PictureBox
+        MoveScaled(3,1,10,8)
+        Picture = Picture["icon:/64/file"]
+      }
+      { lblName TextLabel
+        MoveScaled(19,1,26,4)
+        Font = Font["Bold"]
+        Expand = True
+        Alignment = Align.Normal
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(6,11,42,0)
+    }
+    { panProperty Panel
+      MoveScaled(0,12,50,30)
+      Expand = True
+      Arrangement = Arrange.Row
+      Margin = True
+      { lblLabelType Label
+        MoveScaled(1,1,18,4)
+        Text = ("Type")
+        Alignment = Align.TopNormal
+      }
+      { lblType Label
+        MoveScaled(22,1,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label3 Label
+        MoveScaled(1,5,18,4)
+        Text = ("Directory")
+        Alignment = Align.TopNormal
+      }
+      { lblDir Label
+        MoveScaled(22,5,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label4 Label
+        MoveScaled(1,9,18,4)
+        Text = ("Size")
+        Alignment = Align.TopNormal
+      }
+      { lblSize Label
+        MoveScaled(22,9,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label5 Label
+        MoveScaled(1,13,18,4)
+        Text = ("Last modified")
+        Alignment = Align.TopNormal
+      }
+      { lblLastModified Label
+        MoveScaled(22,13,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label6 Label
+        MoveScaled(1,17,18,4)
+        Text = ("Permissions")
+        Alignment = Align.TopNormal
+      }
+      { lblAuth Label
+        MoveScaled(22,17,26,4)
+        Font = Font["Monospace"]
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label7 Label
+        MoveScaled(1,21,18,4)
+        Text = ("Owner")
+        Alignment = Align.TopNormal
+      }
+      { lblUser Label
+        MoveScaled(22,21,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label8 Label
+        MoveScaled(1,25,18,4)
+        Text = ("Group")
+        Alignment = Align.TopNormal
+      }
+      { lblGroup Label
+        MoveScaled(22,25,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+    }
+    Index = 0
+  }
+  { btnClose Button
+    MoveScaled(27,1,17,4)
+    Visible = False
+    Ignore = True
+    Text = ("Close")
+    Default = True
+    Cancel = True
+  }
+}

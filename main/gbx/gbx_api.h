@@ -57,6 +57,8 @@ bool GB_UnSerialize(const char *path, GB_VALUE *value);
 
 void GB_Error(const char *msg, ...);
 void GB_Deprecated(const char *msg, const char *func, const char *repl);
+void GB_OnErrorBegin(GB_ERROR_HANDLER *handler);
+void GB_OnErrorEnd(GB_ERROR_HANDLER *handler);
 
 void GB_Ref(void *object);
 void GB_Unref(void **object);

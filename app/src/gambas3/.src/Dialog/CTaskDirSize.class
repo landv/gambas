@@ -1,0 +1,45 @@
+' Gambas class file
+
+Inherits Task
+
+Private $sDir As String
+
+Public Sub _new(sDir As String)
+  
+  $sDir = sDir
+  
+End
+
+Public Sub Main() As String
+
+  Dim sFile As String
+  Dim nDir As Integer
+  Dim nFile As Integer
+  Dim sPath As String
+  Dim iSize As Long
+  Dim fTime As Float
+  Dim nTime As Integer
+  
+  fTime = Timer
+  nTime = 1
+  
+  For Each sFile In RDir($sDir)
+    
+    sPath = $sDir &/ sFile
+    If IsDir(sPath) Then
+      Inc nDir
+    Else
+      Inc nFile
+      iSize += Stat(sPath).Size
+    Endif
+    
+    If (Now - fTime) >= (nTime / 4) Then
+      Inc nTime
+      Print iSize;; nFile;; nDir
+    Endif
+    
+  Next
+  
+  Return CStr(iSize) & " " & CStr(nFile) & " " & CStr(nDir)
+  
+End

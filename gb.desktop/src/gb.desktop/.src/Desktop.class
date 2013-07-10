@@ -21,6 +21,11 @@ Static Property Showing As Boolean
 Static Property Read Passwords As _Desktop_Passwords
 Static Property Read Path As String
 
+Static Property Read DataDir As String
+Static Property Read ConfigDir As String
+Static Property Read CacheDir As String
+Static Property Read RuntimeDir As String
+
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
 Static Private $cExt As Collection
@@ -471,6 +476,7 @@ Static Private Sub InitFileExt()
   $cExt["bz2"] = "archive"
   $cExt["z"] = "archive"
   $cExt["zip"] = "archive"
+  $cExt["xz"] = "archive"
   $cExt["txt"] = "text"
   $cExt["mp3"] = "audio"
   $cExt["ogg"] = "audio"
@@ -484,6 +490,9 @@ Static Private Sub InitFileExt()
   $cExt["c"] = "text"
   $cExt["cpp"] = "text"
   $cExt["h"] = "text"
+  $cExt["java"] = "text"
+  $cExt["perl"] = "text"
+  $cExt["py"] = "text"
   $cExt["deb"] = "package"
   $cExt["rpm"] = "package"
   $cExt["iso"] = "cdrom"
@@ -498,5 +507,47 @@ Static Private Sub InitFileExt()
   $cExt["svg"] = "image"
 
   $aImgExt = ["png", "jpeg", "jpg", "gif", "xpm", "bmp", "ico"]
+
+End
+
+Static Private Sub GetDir(sVar As String, sDefault As String) As String
+  
+  Dim sPath As String = Env[sVar]
+  If sPath Then 
+    Return sPath 
+  Else 
+    Return sDefault
+  Endif
+  
+End
+
+Static Private Function DataDir_Read() As String
+
+  Return GetDir("XDG_DATA_HOME", User.Home &/ ".local/share")
+
+End
+
+Static Private Function ConfigDir_Read() As String
+
+  Return GetDir("XDG_CONFIG_HOME", User.Home &/ ".config")
+
+End
+
+Static Private Function CacheDir_Read() As String
+
+  Return GetDir("XDG_CACHE_HOME", User.Home &/ ".cache")
+
+End
+
+Static Private Function RuntimeDir_Read() As String
+
+  Dim sPath As String = Env["XDG_RUNTIME_DIR"]
+  
+  If Not sPath Then
+    sPath = File.Dir(Temp$())
+    Error "gb.desktop: XDG_RUNTIME_DIR is not set. Default to "; sPath
+  Endif
+  
+  Return sPath
 
 End

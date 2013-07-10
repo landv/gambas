@@ -1514,7 +1514,7 @@ GB_DESC CEditorDesc[] =
 	//GB_METHOD("ShowWord", NULL, CEDITOR_show_word, "[(Line)i(Column)i(Length)i]"),
 
 	GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
-	GB_PROPERTY("LineOffset", "i", Editor_LineOffset),
+	GB_PROPERTY("LineNumberOffset", "i", Editor_LineOffset),
 	GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),
 
 	GB_PROPERTY("ReadOnly", "b", CEDITOR_read_only),

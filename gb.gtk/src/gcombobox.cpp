@@ -160,7 +160,7 @@ void gComboBox::create(bool readOnly)
 		g_object_ref_sink(cell);
 		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), cell, true);
 		//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
-		g_object_set(cell, "ypad", 0, (void *)NULL);
+		//g_object_set(cell, "ypad", 0, (void *)NULL);
 		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
 	}
 	else
@@ -178,7 +178,7 @@ void gComboBox::create(bool readOnly)
 		g_list_free(cells);
 		g_object_ref(cell);
 		//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
-		g_object_set(cell, "ypad", 0, (void *)NULL);
+		//g_object_set(cell, "ypad", 0, (void *)NULL);
 		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
 	}
 	

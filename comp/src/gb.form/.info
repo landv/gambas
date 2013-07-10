@@ -892,6 +892,53 @@ SetFocus
 m
 
 
+#FileProperties
+UserControl
+C
+_Properties
+C
+s
+*,Border=True
+_DefaultSize
+C
+s
+36,36
+_Group
+C
+s
+View
+:Data
+:
+
+
+Path
+p
+s
+
+Border
+p
+b
+
+Data
+r
+_FilePropertiesData
+
+_new
+m
+
+
+frmChooser_Open
+m
+
+
+Add
+m
+
+(Panel)Control;(Title)s
+_RaiseData
+m
+_FilePropertiesData
+
 #FileView
 UserControl
 C
@@ -1732,6 +1779,10 @@ _get
 m
 _TabPanelContainer
 (Index)i
+Panel_Arrange
+m
+
+
 _GetIndex
 m
 i
@@ -1761,10 +1812,6 @@ m
 
 
 Panel_Draw
-m
-
-
-Panel_Arrange
 m
 
 
@@ -2196,6 +2243,17 @@ d
 _View
 v
 DateChooser
+
+#_FilePropertiesData
+
+C
+Type
+v
+s
+
+Icon
+v
+Picture
 
 #_IconPanelContainer
 UserControl

@@ -55,15 +55,18 @@ Public Function PostData(Data As String) As String
 
   Buffer = ""
   sCad = ""
+  
   Http.Post("text/xml", Data)
 
   If Mode = False Then
+    
     Do While Http.Status > 0
 
-      Wait 0.001
+      'Wait 0.001
+      Wait 0.01
 
     Loop
-
+    
     If Http.Status < 0 Then Return ""
     If Http.Code <> 200 Then Return ""
 

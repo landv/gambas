@@ -1523,7 +1523,7 @@ End
 Private Sub DrawDropFrame()
   
   Dim X, Y, W, H As Integer
-  Dim hParent As Control
+  Dim hParent As Container
   Dim sClass As String
 
   hParent = $hDropTarget.Control
@@ -1534,8 +1534,8 @@ Private Sub DrawDropFrame()
   
   FindContainer($hDropTarget, X, Y, COORD_INSIDE_TO_CONTROL)
   hParent = $hContainer.Control
-  X = CControl.Grid($iContX, Project.Snap)
-  Y = CControl.Grid($iContY, Project.Snap)
+  X = CControl.Grid($iContX, Project.Snap) + hParent.ClientX
+  Y = CControl.Grid($iContY, Project.Snap) + hParent.ClientY
   'Debug X;; Y;; "->";; $iContX;; $iContY
 
   With CComponent.Classes[sClass]
@@ -1918,6 +1918,10 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bIn
     For Each hCCtrl In Selection
       aCtrl.Add(hCCtrl.Control)
     Next
+  Else If Selection.Count = 1 Then
+    Try hCont = Master.Control
+    If hCont Then ArrangeContainer(hCont, iArr, bInvert, bRec)
+    Return
   Else
     ArrangeContainer(RootControl.Control, iArr, bInvert, bRec)
     Return

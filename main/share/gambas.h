@@ -800,7 +800,19 @@ typedef
 	PACKED
 	GB_TIMER;
 
-/* Structure for GB.RaiseCatch handler */
+/* Structure for GB.OnErrorBegin() handler */
+
+typedef
+	struct {
+		void *prev;
+		void *context;
+		GB_CALLBACK handler;
+		intptr_t arg1;
+		intptr_t arg2;
+		}
+	GB_ERROR_HANDLER;
+	
+/* Structure for GB.RaiseBegin handler */
 
 typedef
 	struct {
@@ -932,6 +944,8 @@ typedef
 		void (*Error)(const char *, ...);
 		void (*Propagate)(void);
 		void (*Deprecated)(const char *, const char *, const char *);
+		void (*OnErrorBegin)(GB_ERROR_HANDLER *);
+		void (*OnErrorEnd)(GB_ERROR_HANDLER *);
 
 		GB_CLASS (*GetClass)(void *);
 		char *(*GetClassName)(void *);

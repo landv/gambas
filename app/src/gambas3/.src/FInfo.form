@@ -22,11 +22,10 @@
       Expand = True
     }
   }
-  { tabInfo TabStrip
+  { tabInfo TabPanel
     MoveScaled(1,8,58,45)
     Expand = True
     Arrangement = Arrange.Fill
-    Margin = True
     Count = 2
     Index = 0
     Text = ("General")
@@ -34,6 +33,7 @@
       MoveScaled(0,0,56,39)
       Expand = True
       Spacing = True
+      Margin = True
       { lblLinkLabel Label
         MoveScaled(1,1,16,3)
         Font = Font["Bold"]
@@ -104,11 +104,13 @@
     Index = 1
     Text = ("Versioning")
     { lblVersioning TextLabel
-      MoveScaled(1,1,36,8)
+      MoveScaled(1,1,42,12)
       Visible = False
+      Padding = 8
     }
     { edtChange Editor
       MoveScaled(2,5,44,26)
+      Border = False
       Highlight = Highlight.Diff
       ReadOnly = True
     }
@@ -117,24 +119,20 @@
   { Panel1 HBox
     MoveScaled(1,54,58,4)
     Spacing = True
-    { Panel2 Panel
-      MoveScaled(5,0,1,4)
-      Expand = True
-    }
-    { btnClose Button
-      MoveScaled(8,0,18,4)
-      Text = ("OK")
-      Default = True
-      Cancel = True
-    }
     { btnRevert Button
-      MoveScaled(27,0,18,4)
+      MoveScaled(0,0,16,4)
       Text = ("&Revert")
       Picture = Picture["icon:/small/undo"]
     }
     { Panel3 Panel
-      MoveScaled(52,0,1,4)
+      MoveScaled(22,0,3,4)
       Expand = True
+    }
+    { btnClose Button
+      MoveScaled(36,0,16,4)
+      Text = ("OK")
+      Default = True
+      Cancel = True
     }
   }
 }

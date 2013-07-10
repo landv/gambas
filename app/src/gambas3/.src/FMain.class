@@ -1311,7 +1311,11 @@ Public Sub Action_Activate(Key As String) As Boolean
       Try hEditor = Project.ActiveForm
       If Not Error Then hEditor.RunUntil
     Case "info"
-      FInfo.Run(tvwProject.Key)
+      If Left(tvwProject.Key) = "$" Or If tvwProject.Key = Project.Dir Then
+        If Not FProjectProperty.Run() Then Project.Refresh
+      Else
+        FFileProperty.Run(tvwProject.Key)
+      Endif
       
     Case "go-back"
       CPosition.MovePrevious

@@ -214,6 +214,7 @@ Public Sub Form_Open()
   tabInfo.Index = 0
   edtChange.Clear
   edtChange.ReadConfig
+  btnClose.SetFocus
 
 End
 
@@ -239,8 +240,10 @@ Public Sub tabInfo_Click()
           lblVersioning.Text = ("This file is locked, and will be deleted on the next commit.")
         Else If Project.IsAdded($sPath) Then
           lblVersioning.Text = ("This file is not versioned, and must be added to the repository.")
+          btnRevert.Hide
         Else
           lblVersioning.Text = ("This file has not been modified since the last commit.")
+          btnRevert.Hide
         Endif
         lblVersioning.Show
       Endif

@@ -374,6 +374,8 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   Dim sPath As String
   Dim sTest As String
   Dim bFound As Boolean
+  Dim iPos As Integer
+  Dim sTheme As String
   
   If sFile Begins "$(mime)/" Then
     
@@ -397,6 +399,15 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   Endif
   
   For Each sFile In Split(sFile, ";")
+    
+    If Left(sFile) = "[" Then
+      iPos = InStr(sFile, "]")
+      If iPos Then
+        sTheme = Mid$(sFile, 2, iPos - 2)
+        If LCase(sTheme) <> LCase(Application.Theme) Then Continue
+        sFile = Mid$(sFile, iPos + 1)
+      Endif
+    Endif
     
     If System.RightToLeft Then
       If sFile Ends "-ltr" Then
