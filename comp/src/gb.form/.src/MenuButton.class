@@ -347,7 +347,7 @@ Public Sub DrawingArea_Draw()
   Dim bFlat As Boolean
   Dim bDrawArrow As Boolean
   
-  If $bInside And If Me.Enabled Then iFlag += Draw.Hover
+  If $bInside And If Me.Enabled And If Not Me.Design Then iFlag += Draw.Hover
   If Not Me.Enabled Then iFlag += Draw.Disabled
   If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
   

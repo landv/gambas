@@ -5,6 +5,7 @@ Class DesktopMime
 Static Private $sPath As String
 
 Private $bVersion As Boolean
+Private $bStat As Boolean
 
 Public Sub Run(sPath As String) As Boolean
   
@@ -53,13 +54,25 @@ Public Sub fprInfo_Data()
   
 End
 
+Private Sub AddStat(sName As String, sValue As String)
+  
+  Dim N As Integer = gvwStat.Rows.Count
+  
+  Inc gvwStat.Rows.Count
+  gvwStat[N, 0].Text = sName
+  gvwStat[N, 0].Foreground = Color.Merge(Color.Foreground, Color.LightForeground)
+  gvwStat[N, 1].Text = sValue
+  
+End
+
+
 Public Sub Form_Open()
 
   Dim sPath As String
 
   sPath = $sPath
 
-  If Left(sPath) = "$" Then sPath = Project.Dir
+  If Left(sPath) = "$" Then sPath = Project.GetSpecialDir(sPath)
   If Not sPath Then sPath = Project.Dir
  
   fprInfo.Path = sPath
@@ -72,6 +85,10 @@ Public Sub Form_Open()
     '$hObs = New Observer(fprInfo.Parent) As "tabInfo"
     edtChange.Clear
     edtChange.ReadConfig
+  Endif
+  
+  If (sPath &/ "/") = (Project.SourceDir &/ "/") Then    
+    fprInfo.Add(panStat, ("Statistics"))
   Endif
   
   btnClose.SetFocus
@@ -132,3 +149,29 @@ Public Sub btnRevert_Click()
 
 End
 
+
+Public Sub panStat_Arrange()
+
+  Dim hModule As CModule
+
+  If $bStat Then Return
+
+  Inc Application.Busy
+
+  gvwStat.Columns.Count = 2
+  
+  AddStat(("Modules"), Project.GetCount("module"))
+  AddStat(("Classes"), Project.GetCount("class"))
+  For Each hModule In CModule.All
+    If hModule.Used Then AddStat(hModule.NamePlural, Project.GetCount(hModule.Key))
+  Next
+  AddStat(("Lines of code"), Format(Project.GetLinesOfCode(), ",#"))
+  
+  gvwStat.Rows.H = Desktop.Scale * 4
+  gvwStat.Columns[0].Width = Desktop.Scale * 16
+
+  Dec Application.Busy
+
+  $bStat = True
+
+End

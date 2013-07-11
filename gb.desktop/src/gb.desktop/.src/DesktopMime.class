@@ -10,7 +10,6 @@ Static Private $aMimesSpecial As New DesktopMime[]  ''Special Pattern
 Static Private $cHash As New Collection             ''Quick access on First position of a letter
 Static Private TypeToMInfo As New Collection        ''Table that return a mimeobject from its mimetype
 Static Private $aCurMimes As DesktopMime[]          ''Temporary table for _Next walking
-Static Private $aDataDir As String[]                ''Table of Xdg Dirs
 Static Private $cIconCache As New Collection        ''Cache for icons
 Static Private $cCommentCache As New Collection     ''Cache for comments
 Public _$iWeight As Integer
@@ -40,20 +39,25 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   Dim hImage As Image
   Dim sKey As String
   Dim sMime As String = _$sType
+  Dim sDir As String
   
   sKey = sMime & ":" & CStr(Size)
   sMime = Replace(sMime, "/", "-")
   hImage = $cIconCache[sKey]
   
-  If Not hImage Then
-    sPath = Subst("/usr/share/icons/hicolor/&1x&1/mimetypes/&2.png", CStr(Size), sMime)
-    If Exist(sPath) Then Try hImage = Image.Load(sPath)
-  Endif
+  For Each sDir In [Desktop.DataDir &/ "icons", "/usr/share/icons"]
+    sPath = Subst(sDir &/ "hicolor/&1x&1/mimetypes/&2.png", CStr(Size), sMime)
+    If Exist(sPath) Then 
+      Try hImage = Image.Load(sPath)
+      If hImage Then Break
+    Endif
+  Next
+  
   If Not hImage Then
     sPath = Subst("/usr/share/pixmaps/&1.png", sMime)
     If Exist(sPath) Then Try hImage = Image.Load(sPath).Stretch(Size, Size)
   Endif
-  'If File.Ext(sFile) = "jpg" Then Stop
+
   If Not hImage Then
     Try hImage = Stock[CStr(Size) &/ "$(mime)" &/ sMime, CStr(Size) &/ "$(mime)" &/ _$sGenericIcon].Image
   Endif
@@ -82,7 +86,7 @@ Static Private Sub LoadMimeDatabase()
   'Empty all entry before filling
   If $aMimesPrefix.Count > 0 Then Refresh
   
-  For Each sPath In GetDataDir()
+  For Each sPath In Main.GetDataDir()
     
     If Not Exist(sPath &/ "mime/globs2") Then Continue
     
@@ -327,13 +331,6 @@ Static Public Function _next() As DesktopMime
   
 End
 
-Static Private Sub GetDataDir() As String[]
-  
-  If Not $aDataDir Then $aDataDir = Split([Application.Env["XDG_DATA_DIRS"], Application.Env["XDG_DATA_HOME"]].join(":"), ":")
-  Return $aDataDir
-  
-End
-
 Static Public Sub _exit()
   
   $aMimesPrefix = Null
@@ -410,7 +407,7 @@ Public Function GetComment(Optional Common As Boolean) As String
   'Dim sTypePath As String = Type & ".xml"
   If $cCommentCache.Exist(_$sType) Then Return $cCommentCache[_$sType]
     'If _$sType = "application/vnd.sun.xml.calc.template" Then Stop
-  For Each s In GetDataDir()
+  For Each s In Main.GetDataDir()
     sPath = s &/ "mime" &/ _$sType & ".xml"
     If Exist(sPath) Then
       

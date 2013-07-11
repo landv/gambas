@@ -1174,6 +1174,23 @@ Public Sub GetParentClass(sPath As String) As String
 
 End
 
+Public Sub GetSpecialDir(sKey As String) As String
+  
+  Select Case sKey
+    Case KEY_MISC
+      Return Project.Dir
+    Case KEY_PROJECT
+      Return Project.Dir &/ ".hidden"
+    Case KEY_PUBLIC
+      Return Project.Dir &/ ".public"
+    Case KEY_SOURCE
+      Return SourceDir
+    Case KEY_CONNECTION
+      Return Project.Dir &/ ".connection"
+  End Select
+  
+End
+
 Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean, Optional bIgnoreInheritance As Boolean) As Boolean
 
   Dim bIgnore As Boolean
@@ -5169,7 +5186,9 @@ Public Sub GetCount(sType As String) As Integer
 
   For Each sPath In $cSourceDir
     If File.Ext(sPath) = sType Then Inc iCount
+    If sType = "class" And If Dir(File.Dir(sPath), File.BaseName(sPath) &/ ".*").Count >= 2 Then Dec iCount
   Next
+  
   Return iCount
 
 End

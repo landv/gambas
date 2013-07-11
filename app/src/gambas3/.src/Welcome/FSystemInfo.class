@@ -128,7 +128,7 @@ Public Sub Form_Open()
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
   
-  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-0.*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*"]
+  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*"]
   
   aText.Add("\n[Libraries]")
   For Each sFile In RDir("/usr/lib").Sort(gb.IgnoreCase)
@@ -136,7 +136,7 @@ Public Sub Form_Open()
     For Each sPattern In cSearch
       If sFile Like sPattern Then
         aText.Add(cSearch.Key & "=" & sFile)
-        cSearch.Remove(cSearch.Key)
+        'cSearch.Remove(cSearch.Key)
         Break
       Endif
     Next

@@ -569,7 +569,7 @@ __RETURN:
     If {Default} Then Return _get({Default})
     
     If $bDebug Then
-      Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key    
+      Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key
       'hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
     Endif
     

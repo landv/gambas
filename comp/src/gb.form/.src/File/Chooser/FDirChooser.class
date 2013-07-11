@@ -188,6 +188,9 @@ Public Sub mnuShowDetailed_Click()
 
   fvwChoose.ShowDetailed = Not fvwChoose.ShowDetailed
   mnuShowDetailed.Checked = fvwChoose.ShowDetailed
+  Object.Lock(btnDetail)
+  btnDetail.Value = fvwChoose.ShowDetailed
+  Object.Unlock(btnDetail)
   UpdateZoom
   ' If fvwChoose.ShowDetailed Then
   '   btnDetailed.Picture = Picture["icon:/small/view-icon"]

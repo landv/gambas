@@ -11,6 +11,7 @@ Public Sub Run(sPath As String) As Boolean
   
   SetPath(sPath)
   btnClose.Show
+  tabInfo.Border = False
   Return Not FFileProperties.ShowModal()
   
 End
@@ -106,9 +107,6 @@ Private Sub RefreshPath()
     hLabel.W = W + Desktop.Scale * 3
   Next
   
-  panIcon.H = 64 + Desktop.Scale * 2
-  picIcon.Resize(64, 64)
-
   lblName.Text = File.Name($sPath)
   If Me Is Window Then Me.Title = Subst(("&1 properties"), lblName.Text)
 
@@ -225,3 +223,10 @@ Public Sub SetBorder(bBorder As Boolean)
   
 End
 
+
+Public Sub _new()
+
+  panIcon.H = 64 + Desktop.Scale * 2
+  picIcon.Resize(64, 64)
+
+End

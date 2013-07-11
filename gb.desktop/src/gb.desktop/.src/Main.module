@@ -6,6 +6,8 @@ Private $cTool As New Collection
 
 Private _NET_CLIENT_LIST As Integer
 
+Private $aDataDir As String[]
+
 Public Sub RunXdgUtil(sProg As String, aArg As String[], Optional bWait As Boolean) 
   
   Dim sCmd As String
@@ -136,6 +138,17 @@ Public Sub GetDesktopPath() As String
   
 End
 
+Public Sub GetDataDir() As String[]
+  
+  If Not $aDataDir Then
+    $aDataDir = Split(Desktop.DataDir, ":", "", True)
+    $aDataDir.Insert(Split(Env["XDG_DATA_DIRS"], ":", "", True))
+  Endif
+  
+  Return $aDataDir
+  
+End
+
 
 Public Sub Main()
 
@@ -151,7 +164,7 @@ Public Sub Main()
   '   Endif
   ' Next
   
-  With DesktopMime.FromFile("~/APC_2012_12_APC_4520627_20121217_01.pdf")
+  With DesktopMime.FromFile("~/gambas/3.0/trunk/app/src/gambas3/gambas3.gambas")
     Print .Type
     Print .GenericIcon
   End With

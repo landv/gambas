@@ -96,7 +96,7 @@ msgstr ""
 msgid "write-only"
 msgstr ""
 
-#: CClassInfo.class:613 Project.module:1577
+#: CClassInfo.class:613 Project.module:1594
 msgid "read-only"
 msgstr ""
 
@@ -420,7 +420,7 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponent.class:1490 FInfo.class:67
+#: CComponent.class:1490 FFileProperty.class:164 FInfo.class:67
 msgid "Classes"
 msgstr ""
 
@@ -494,23 +494,23 @@ msgid "Event loop"
 msgstr ""
 
 #: CProjectTree.class:285 FMain.form:1076 FSearch.class:97 FSelectIcon.form:31
-#: Project.module:1679
+#: Project.module:1696
 msgid "Project"
 msgstr ""
 
-#: CProjectTree.class:288 Project.module:1680
+#: CProjectTree.class:288 Project.module:1697
 msgid "Sources"
 msgstr ""
 
-#: CProjectTree.class:290 Project.module:1681
+#: CProjectTree.class:290 Project.module:1698
 msgid "Connections"
 msgstr ""
 
-#: CProjectTree.class:298 Project.module:1682
+#: CProjectTree.class:298 Project.module:1699
 msgid "Public"
 msgstr ""
 
-#: CProjectTree.class:299 Project.module:1683
+#: CProjectTree.class:299 Project.module:1700
 msgid "Data"
 msgstr ""
 
@@ -537,7 +537,7 @@ msgstr ""
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FConflict.class:185
 #: FConnectionEditor.class:294 FCreateFile.form:437 FDebugInfo.form:263
 #: FEditor.class:2373 FExportData.class:126 FFieldChooser.form:138
-#: FFileProperty.class:123 FFontChooser.form:40 FForm.class:3132
+#: FFileProperty.class:140 FFontChooser.form:40 FForm.class:3132
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1373
 #: FInfo.class:263 FList.form:121 FMain.class:211 FMakeInstall.class:350
 #: FMenu.form:377 FNewConnection.form:255 FNewTable.form:86
@@ -602,19 +602,19 @@ msgstr ""
 msgid "Remove all"
 msgstr ""
 
-#: Design.module:159 Project.module:2107
+#: Design.module:159 Project.module:2124
 msgid "first"
 msgstr ""
 
-#: Design.module:161 Project.module:2109
+#: Design.module:161 Project.module:2126
 msgid "second"
 msgstr ""
 
-#: Design.module:163 Project.module:2111
+#: Design.module:163 Project.module:2128
 msgid "third"
 msgstr ""
 
-#: Design.module:251 Project.module:2170
+#: Design.module:251 Project.module:2187
 msgid "in &1:&2."
 msgstr ""
 
@@ -775,7 +775,7 @@ msgid "Sol&ve"
 msgstr ""
 
 #: FConflict.form:184 FDebugInfo.form:270 FEditor.form:310
-#: FFileProperty.form:59 FForm.form:410 FIconEditor.class:1386
+#: FFileProperty.form:75 FForm.form:410 FIconEditor.class:1386
 #: FImportTable.form:218 FProjectVersion.form:323 FSystemInfo.form:81
 #: FTextEditor.form:244 FTips.form:83
 msgid "Close"
@@ -1677,49 +1677,61 @@ msgstr ""
 msgid "Select a field"
 msgstr ""
 
-#: FFileProperty.form:48 FInfo.form:170 FPatch.form:93 FProjectVersion.form:83
+#: FFileProperty.form:64 FInfo.form:170 FPatch.form:93 FProjectVersion.form:83
 msgid "&Revert"
 msgstr ""
 
-#: FFileProperty.class:30 FInfo.class:83
+#: FFileProperty.class:31 FInfo.class:83
 msgid "Gambas &1"
 msgstr ""
 
-#: FFileProperty.class:37 FInfo.class:91
+#: FFileProperty.class:38 FInfo.class:91
 msgid "Gambas module"
 msgstr ""
 
-#: FFileProperty.class:39 FInfo.class:95
+#: FFileProperty.class:40 FInfo.class:95
 msgid "Gambas class"
 msgstr ""
 
-#: FFileProperty.class:67
+#: FFileProperty.class:80
 msgid "&1 properties"
 msgstr ""
 
-#: FFileProperty.class:71 FInfo.form:147
+#: FFileProperty.class:84 FInfo.form:147
 msgid "Versioning"
 msgstr ""
 
-#: FFileProperty.class:106 FInfo.class:240
+#: FFileProperty.class:91 FTranslate.form:299
+msgid "Statistics"
+msgstr ""
+
+#: FFileProperty.class:123 FInfo.class:240
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr ""
 
-#: FFileProperty.class:108 FInfo.class:242
+#: FFileProperty.class:125 FInfo.class:242
 msgid "This file is not versioned, and must be added to the repository."
 msgstr ""
 
-#: FFileProperty.class:111 FInfo.class:245
+#: FFileProperty.class:128 FInfo.class:245
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
-#: FFileProperty.class:123 FInfo.class:263 FProjectVersion.class:201
+#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:201
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: FFileProperty.class:123 FInfo.class:263 FMakeInstall.class:350
-#: FProjectVersion.class:201 FSave.form:21 Project.module:3259
+#: FFileProperty.class:140 FInfo.class:263 FMakeInstall.class:350
+#: FProjectVersion.class:201 FSave.form:21 Project.module:3276
 msgid "Continue"
+msgstr ""
+
+#: FFileProperty.class:163 FInfo.class:66
+msgid "Modules"
+msgstr ""
+
+#: FFileProperty.class:168
+msgid "Lines of code"
 msgstr ""
 
 #: FFontChooser.form:12
@@ -2229,10 +2241,6 @@ msgstr ""
 
 #: FInfo.class:65
 msgid "Gambas project"
-msgstr ""
-
-#: FInfo.class:66
-msgid "Modules"
 msgstr ""
 
 #: FInfo.class:69
@@ -3156,7 +3164,7 @@ msgstr ""
 msgid "*.gz;*.bz2;*.xz"
 msgstr ""
 
-#: FMakePatch.form:89 Project.module:4310
+#: FMakePatch.form:89 Project.module:4327
 msgid "Source packages"
 msgstr ""
 
@@ -3232,7 +3240,7 @@ msgstr ""
 msgid "This menu is too deep !"
 msgstr ""
 
-#: FMenu.class:937 Project.module:5109
+#: FMenu.class:937 Project.module:5126
 msgid "modified"
 msgstr ""
 
@@ -3973,7 +3981,7 @@ msgstr ""
 msgid "Snapping value is incorrect."
 msgstr ""
 
-#: FProjectProperty.class:403 Project.module:3258
+#: FProjectProperty.class:403 Project.module:3275
 msgid "Some components are missing: &1"
 msgstr ""
 
@@ -4533,10 +4541,6 @@ msgstr ""
 msgid "Find previous untranslated string"
 msgstr ""
 
-#: FTranslate.form:299
-msgid "Statistics"
-msgstr ""
-
 #: FTranslate.form:313
 msgid "Import"
 msgstr ""
@@ -4621,7 +4625,7 @@ msgstr ""
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:1113 Project.module:4275
+#: FTranslate.class:1113 Project.module:4292
 msgid "The '&1' command has failed."
 msgstr ""
 
@@ -6210,186 +6214,186 @@ msgstr ""
 msgid "Cannot open project file :\n"
 msgstr ""
 
-#: Project.module:1409
+#: Project.module:1426
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:1581
+#: Project.module:1598
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr ""
 
-#: Project.module:1859
+#: Project.module:1876
 msgid "Loading &1..."
 msgstr ""
 
-#: Project.module:1908
+#: Project.module:1925
 msgid "Cannot open a binary file."
 msgstr ""
 
-#: Project.module:1941
+#: Project.module:1958
 msgid "Cannot open file."
 msgstr ""
 
-#: Project.module:1997
+#: Project.module:2014
 msgid "File not found!"
 msgstr ""
 
-#: Project.module:2113
+#: Project.module:2130
 msgid "&1th"
 msgstr ""
 
-#: Project.module:2166
+#: Project.module:2183
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:2173
+#: Project.module:2190
 msgid "in &1."
 msgstr ""
 
-#: Project.module:2329
+#: Project.module:2346
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
 msgstr ""
 
-#: Project.module:2333
+#: Project.module:2350
 msgid "Compiling project"
 msgstr ""
 
-#: Project.module:2574
+#: Project.module:2591
 msgid "File already exists."
 msgstr ""
 
-#: Project.module:2606
+#: Project.module:2623
 msgid "Directory already exists."
 msgstr ""
 
-#: Project.module:2618
+#: Project.module:2635
 msgid "Cannot link template file."
 msgstr ""
 
-#: Project.module:2624
+#: Project.module:2641
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:2834
+#: Project.module:2851
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:2878
+#: Project.module:2895
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:3448
+#: Project.module:3465
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:3490
+#: Project.module:3507
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:3736
+#: Project.module:3753
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3753
+#: Project.module:3770
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3784
+#: Project.module:3801
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3788
+#: Project.module:3805
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3792
+#: Project.module:3809
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3796
+#: Project.module:3813
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3832
+#: Project.module:3849
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3880
+#: Project.module:3897
 msgid "Destination already exists."
 msgstr ""
 
-#: Project.module:4092
+#: Project.module:4109
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:4208
+#: Project.module:4225
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:4216
+#: Project.module:4233
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:4219
+#: Project.module:4236
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:4220
+#: Project.module:4237
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:4227
+#: Project.module:4244
 msgid "This project already exists."
 msgstr ""
 
-#: Project.module:4230
+#: Project.module:4247
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:4232
+#: Project.module:4249
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:4286
+#: Project.module:4303
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4309
+#: Project.module:4326
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:4601
+#: Project.module:4618
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4649
+#: Project.module:4666
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4664
+#: Project.module:4681
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4732
+#: Project.module:4749
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:5262
+#: Project.module:5281
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5268
+#: Project.module:5287
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5298
+#: Project.module:5317
 msgid "Unable to convert &1"
 msgstr ""
 
