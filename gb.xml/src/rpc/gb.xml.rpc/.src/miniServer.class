@@ -64,6 +64,9 @@ Private Sub hError(hS As Socket, hErr As String)
   
   Try hS.Send
 
+Catch
+  ' Catch any errors with a closed stream
+
 End
 
 
@@ -198,8 +201,6 @@ Private Sub ProcessQuery(hS As Socket, Buf As String)
     End If
   End If
 
-
-  sReply = Replace$(sReply, "\n", "\r\n")
   hS.Begin
   hS.EndOfLine = gb.Windows
   Print #hS, "HTTP/1.1 200 OK"
@@ -211,8 +212,13 @@ Private Sub ProcessQuery(hS As Socket, Buf As String)
   Write #hS, sReply, Len(sReply)
   Try hS.Send
   
+Finally
+
   RemoveSocket(hS)
-  
+
+Catch
+  ' Catch any errors with a closed stream
+
 End
 
 
@@ -224,6 +230,7 @@ Public Sub Socket_Read()
   Dim hS As Socket
   Dim cCount As Integer
   Dim cLen As Integer
+  Dim cWait As Integer = 1
 
   For Bucle = 0 To hSocket.Count - 1
     If hSocket[Bucle] = Last Then
@@ -233,7 +240,7 @@ Public Sub Socket_Read()
   Next
 
   If hS = Null Then Return
-  
+
   If hBuffer[Bucle] = "" Then
     If Lof(hS) >= 5 Then
 
@@ -270,7 +277,7 @@ Public Sub Socket_Read()
       End If
 
     Else
-      If Len(hBuffer[Bucle]) >= 2048 Then
+      If Len(hBuffer[Bucle]) > 4096 Then
         hError(hS, "413 Request Entity Too Large")
         RemoveSocket(hS)
         Return
@@ -278,9 +285,16 @@ Public Sub Socket_Read()
     End If
   End If
 
+  ' It is possible the HTTP headers are send in separate TCP packets, we will wait a maximum of 1000msec
+  For cCount = cWait To 199 Step 1
+    If hS = Null Then Return
+    If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) Then Break
+    Wait 0.005
+  Next
+
   If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) Then
     If hType[Bucle] = 0 Then
-      Buf = Left(hBuffer[Bucle], InStr(hBuffer[Bucle], Chr(13) & Chr(13)) - 1)
+      Buf = Left(hBuffer[Bucle], InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)))
 
       If InStr(UCase(Buf), "CONTENT-TYPE:") > 0 Then
         sCad = Mid(Buf, InStr(UCase(Buf), "CONTENT-TYPE:") + 13)
@@ -316,35 +330,62 @@ Public Sub Socket_Read()
     End If
   End If
 
-  If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) > 0 Then
+  If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) Then
 
     If hLen[Bucle] = - 1 Or hType[Bucle] <> 1 Then
       hError(hS, "406 Not Acceptable")
-      ' RemoveSocket(hS)
+      RemoveSocket(hS)
       Return
     End If
 
-    For cCount = 1 To 100 Step 1
+    For cCount = cWait To 200 Step 1
+      If hS = Null Then Return
       cLen = Len(hBuffer[Bucle]) - InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) - 3
-      If cLen = hLen[Bucle] Then Break
-      Wait 0.01
+      If cLen >= hLen[Bucle] Then Break
+      Wait 0.005
     Next
 
-  
-    ProcessQuery(hS, hBuffer[Bucle])
+    ' Content-Length and data size doesn't match
+    If cLen <> hLen[Bucle] Then
+      hError(hS, "413 Request Entity Too Large")
+      RemoveSocket(hS)
+    End If
+
+    If cLen = hLen[Bucle] Then 
+      ProcessQuery(hS, hBuffer[Bucle])
+      Return
+    Else
+
+      If Len(hBuffer[Bucle]) > 4096 Then
+        hError(hS, "413 Request Entity Too Large")
+        RemoveSocket(hS)
+        Return
+      Else
+        ' If size doesn't match - we give an internal error
+        hError(hS, "500 Internal Server Error")
+        RemoveSocket(hS)
+        Return
+      End If
+      
+    End If
 
   Else
     If Len(hBuffer[Bucle]) > 4096 Then
-      hError("413 Request Entity Too Large")
+      hError(hS,"413 Request Entity Too Large")
       RemoveSocket(hS)
+      Return
     End If
   End If
 
+  ' Always give a response
+  ' We wait long enough for the information = 1000msec
+  hError(hS, "408 Request Timeout")
+  RemoveSocket(hS)
 
 End
 
 
-Public Sub Http_Connection((RemoteHost) As String)
+Public Sub Http_Connection(RemoteHost As String)
 
   hSocket.Add(Http.Accept())
   hBuffer.Add("")
@@ -393,7 +434,7 @@ Public Sub Listen(Port As Integer, MaxConn As Integer)
 
 End
 
-Public Sub _new()
+Public Sub _New()
 
   hSocket = New Object[]
   hBuffer = New String[]
@@ -404,7 +445,7 @@ Public Sub _new()
 
 End
 
-Public Sub _free()
+Public Sub _Free()
 
   Me.Close()
 
