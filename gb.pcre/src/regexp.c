@@ -47,6 +47,9 @@ static void compile(void *_object)
 		return;
 	}
 
+	if (THIS->code)
+		free(THIS->code);
+
 	THIS->code = pcre_compile(THIS->pattern, THIS->copts, &errstr, &errptr, NULL);
 
 	if (!THIS->code)
@@ -180,6 +183,7 @@ BEGIN_METHOD(RegExp_new, GB_STRING subject; GB_STRING pattern; GB_INTEGER coptio
 
 	THIS->copts = VARGOPT(coptions, 0);
 	THIS->pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
+	THIS->code = NULL;
 
 	compile(THIS);
 	if (!THIS->code) // we didn't get a compiled pattern back.
@@ -198,9 +202,46 @@ END_METHOD
 
 BEGIN_METHOD_VOID(RegExp_free)
 
+	if (THIS->code)
+		free(THIS->code);
 	GB.FreeString(&THIS->subject);
 	GB.FreeString(&THIS->pattern);
 	GB.Free(POINTER(&THIS->ovector));
+
+END_METHOD
+
+
+BEGIN_METHOD(RegExp_Check, GB_STRING subject; GB_STRING pattern; GB_INTEGER coptions; GB_INTEGER eoptions)
+
+	/*
+	 * The gb.pcre internal routines don't require the GB_BASE to be
+	 * initialised by Gambas!
+	 */
+	CREGEXP tmp;
+
+	bzero(&tmp, sizeof(tmp));
+	tmp.ovecsize = OVECSIZE_INC;
+	GB.Alloc(POINTER(&tmp.ovector), sizeof(int) * tmp.ovecsize);
+	tmp.copts = VARGOPT(coptions, 0);
+	tmp.pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
+
+	compile(&tmp);
+	if (!tmp.code) {
+		GB.Free(POINTER(&tmp.ovector));
+		GB.FreeString(&tmp.pattern);
+		return;
+	}
+
+	tmp.eopts = VARGOPT(eoptions, 0);
+	tmp.subject = GB.NewString(STRING(subject), LENGTH(subject));
+
+	exec(&tmp);
+	GB.ReturnBoolean(tmp.ovector[0] != -1);
+
+	free(tmp.code);
+	GB.FreeString(&tmp.subject);
+	GB.FreeString(&tmp.pattern);
+	GB.Free(POINTER(&tmp.ovector));
 
 END_METHOD
 
@@ -289,6 +330,8 @@ GB_DESC CRegexpDesc[] =
 	
 	GB_METHOD("Compile", NULL, RegExp_Compile, "(Pattern)s[(CompileOptions)i]"),
 	GB_METHOD("Exec", NULL, RegExp_Exec, "(Subject)s[(ExecOptions)i]"),
+
+	GB_STATIC_METHOD("Check", "b", RegExp_Check, "(Subject)s(Pattern)s[(CompileOptions)i(ExecOptions)i]"),
 	
 	GB_CONSTANT("Caseless", "i", PCRE_CASELESS),
 	GB_CONSTANT("MultiLine", "i", PCRE_MULTILINE),
