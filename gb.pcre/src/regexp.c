@@ -31,6 +31,8 @@
 
 #define OVECSIZE_INC 99
 
+DECLARE_METHOD(RegExp_free);
+
 /***************************************************************************
 
 	Regexp
@@ -151,6 +153,38 @@ static void return_match(void *_object, int index)
 	GB.ReturnNewString(&THIS->subject[THIS->ovector[index]], THIS->ovector[index + 1] - THIS->ovector[index]);
 }
 
+bool REGEXP_match(const char *subject, int lsubject, const char *pattern, int lpattern, int coptions, int eoptions)
+{
+	/*
+	 * The gb.pcre internal routines don't require the GB_BASE to be
+	 * initialised by Gambas!
+	 */
+	
+	CREGEXP tmp;
+	bool ret = FALSE;
+
+	CLEAR(&tmp);
+	tmp.ovecsize = OVECSIZE_INC;
+	GB.Alloc(POINTER(&tmp.ovector), sizeof(int) * tmp.ovecsize);
+	tmp.copts = coptions;
+	tmp.pattern = GB.NewString(pattern, lpattern);
+
+	compile(&tmp);
+	
+	if (tmp.code) 
+	{
+		tmp.eopts = eoptions;
+		tmp.subject = GB.NewString(subject, lsubject);
+
+		exec(&tmp);
+		ret = (tmp.ovector[0] != -1);
+	}
+
+	RegExp_free(&tmp, NULL);
+	
+	return ret;
+}
+
 BEGIN_METHOD(RegExp_Compile, GB_STRING pattern; GB_INTEGER coptions)
 
 	THIS->copts = VARGOPT(coptions, 0);
@@ -213,34 +247,7 @@ END_METHOD
 
 BEGIN_METHOD(RegExp_Match, GB_STRING subject; GB_STRING pattern; GB_INTEGER coptions; GB_INTEGER eoptions)
 
-	/*
-	 * The gb.pcre internal routines don't require the GB_BASE to be
-	 * initialised by Gambas!
-	 */
-	
-	CREGEXP tmp;
-	bool ret = FALSE;
-
-	CLEAR(&tmp);
-	tmp.ovecsize = OVECSIZE_INC;
-	GB.Alloc(POINTER(&tmp.ovector), sizeof(int) * tmp.ovecsize);
-	tmp.copts = VARGOPT(coptions, 0);
-	tmp.pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
-
-	compile(&tmp);
-	
-	if (tmp.code) 
-	{
-		tmp.eopts = VARGOPT(eoptions, 0);
-		tmp.subject = GB.NewString(STRING(subject), LENGTH(subject));
-
-		exec(&tmp);
-		ret = (tmp.ovector[0] != -1);
-	}
-
-	RegExp_free(&tmp, NULL);
-	
-	GB.ReturnBoolean(ret);
+	GB.ReturnBoolean(REGEXP_match(STRING(subject), LENGTH(subject), STRING(pattern), LENGTH(pattern), VARGOPT(coptions, 0), VARGOPT(eoptions, 0)));
 
 END_METHOD
 

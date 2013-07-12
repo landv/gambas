@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4 --install
 SUBDIRS = gbc gbx lib share
-EXTRA_DIST = TODO reconf spec README mime
+EXTRA_DIST = TODO reconf spec README mime gb.*.h
 BUILT_SOURCES = trunk_version.h
 CLEANFILES = trunk_version.h
 

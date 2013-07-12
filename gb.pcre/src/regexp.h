@@ -58,4 +58,6 @@ typedef
 
 #endif
 
+bool REGEXP_match(const char *subject, int lsubject, const char *pattern, int lpattern, int coptions, int eoptions);
+
 #endif

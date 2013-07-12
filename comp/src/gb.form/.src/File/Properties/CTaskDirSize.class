@@ -19,11 +19,25 @@ Private Sub ScanDir(sDir As String)
 
   Dim sFile As String
   Dim sPath As String
+  Dim hStat As Stat
+  Dim aDir As String[]
   
-  For Each sFile In Dir(sDir)
+  Try aDir = Dir(sDir)
+  If Error Then 
+    Error Error.Text & ": " & sDir
+    Return
+  Endif
+  
+  For Each sFile In aDir
     
     sPath = sDir &/ sFile
-    With Stat(sPath)
+    Try hStat = Stat(sPath)
+    If Error Then 
+      Error Error.Text & ": " & sPath
+      Continue
+    Endif
+    
+    With hStat
       If .Type = gb.Directory Then
         Inc $nDir
         ScanDir(sPath)
@@ -35,8 +49,8 @@ Private Sub ScanDir(sDir As String)
       Try $iSize += .Size
     End With
     
-    If (Timer - $fTime) >= ($nTime / 4) Then
-      Inc $nTime
+    If (Timer - $fTime) >= ($nTime / 5) Then
+      $nTime = CInt((Timer - $fTime) * 5) + 1
       Print $iSize;; $nFile;; $nDir
     Endif
     

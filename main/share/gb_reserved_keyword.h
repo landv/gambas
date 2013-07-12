@@ -199,6 +199,8 @@ COMP_INFO COMP_res_info[] =
 	{ "",             RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 5     }, // NOT BEGINS
 	{ "Ends",         RSF_OP2S|RSF_NOT,         OP_LIKE,      0,   4,    C_LIKE, 2     },
 	{ "",             RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 6     }, // NOT ENDS
+	{ "Match",        RSF_OP2S|RSF_NOT,         OP_LIKE,      0,   4,    C_LIKE, 3     },
+	{ "",             RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 7     }, // NOT MATCH
 
 	{ "+=",           RSF_ASGN,                 RS_PLUS                                },
 	{ "-=",           RSF_ASGN,                 RS_MINUS                               },

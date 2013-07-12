@@ -37,8 +37,25 @@
 #include "gbx_c_array.h"
 #include "gbx_local.h"
 #include "gbx_compare.h"
+#include "gb.pcre.h"
 
 //static int _count = 0;
+
+static PCRE_INTERFACE PCRE;
+
+static void init_pcre()
+{
+	static bool init = FALSE;
+	
+	if (init)
+		return;
+		
+	COMPONENT_load(COMPONENT_create("gb.pcre"));
+	LIBRARY_get_interface_by_name("gb.pcre", PCRE_INTERFACE_VERSION, &PCRE);
+	init = TRUE;
+}
+
+//---------------------------------------------------------------------------
 
 void SUBR_cat(ushort code)
 {
@@ -483,7 +500,7 @@ __FOUND:
 
 void SUBR_like(ushort code)
 {
-	static const void *jump[] = { &&__LIKE, &&__BEGINS, &&__ENDS, &&__RETURN };
+	static const void *jump[] = { &&__LIKE, &&__BEGINS, &&__ENDS, &&__MATCH };
 	char *pattern;
 	char *string;
 	int len_pattern, len_string;
@@ -515,6 +532,12 @@ __ENDS:
 		ret = TRUE;
 	else if (len_pattern <= len_string)
 		ret = STRING_equal_same(string + len_string - len_pattern, pattern, len_pattern);
+	goto __RETURN;
+	
+__MATCH:
+
+	init_pcre();
+	ret = PCRE.Match(string, len_string, pattern, len_pattern, 0, 0);
 	goto __RETURN;
 
 __RETURN:

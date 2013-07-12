@@ -6,6 +6,7 @@ Private $sPath As String
 
 Private $iSize As Long
 Private $hTask As Task
+Private $sError As String
 
 Public Sub Run(sPath As String) As Boolean
   
@@ -177,10 +178,28 @@ Public Sub Task_Read(sData As String)
   
 End
 
+Private Sub ShowError()
+
+  tabInfo[1].Visible = True
+  txtError.Text = $sError
+
+End
+
+Public Sub Task_Error(Data As String)
+  
+  $sError &= Data
+  ShowError
+  
+End
+
+
 Public Sub Task_Kill()
   
   Try UpdateSize(Last.Value)
+  If Error Then $sError &= Error.Text
   lblSize.Foreground = Color.Default
+  
+  If $sError Then ShowError
   
 End
 
@@ -228,5 +247,7 @@ Public Sub _new()
 
   panIcon.H = 64 + Desktop.Scale * 2
   picIcon.Resize(64, 64)
-
+  tabInfo[1].Visible = False
+  
 End
+

@@ -26,6 +26,7 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb.pcre.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;

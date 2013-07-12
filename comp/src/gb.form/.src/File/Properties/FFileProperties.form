@@ -1,12 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,54,49)
+  MoveScaled(0,0,54,50)
   Arrangement = Arrange.Vertical
   { tabInfo TabPanel
     MoveScaled(1,1,52,47)
     Expand = True
     Arrangement = Arrange.Vertical
+    Count = 2
     Index = 0
     Text = ("General")
     { panIcon HBox
@@ -103,6 +104,22 @@
         Expand = True
         Alignment = Align.TopNormal
       }
+    }
+    Index = 1
+    Text = ("Errors")
+    Picture = Picture["icon:/small/warning"]
+    { txtError TextArea
+      MoveScaled(3,6,16,16)
+      Font = Font["Monospace,-1"]
+      Expand = True
+      ReadOnly = True
+      Border = False
+    }
+    { Separator2 Separator
+      MoveScaled(15,30,15,0)
+    }
+    { Panel1 Panel
+      MoveScaled(10,33,4,6)
     }
     Index = 0
   }

@@ -1,9 +1,8 @@
 /***************************************************************************
 
-  main.c
+  gb.pcre.h
 
-  (c) 2004 Rob Kudla <pcre-component@kudla.org>
-  (c) 2000-2012 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,41 +21,20 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __GB_PCRE_H
+#define __GB_PCRE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
+#include "gambas.h"
 
-#include "regexp.h"
+#define PCRE_INTERFACE_VERSION 1
 
-#include "main.h"
+typedef
+	struct {
+		int version;
+		bool (*Match)(const char *subject, int lsubject, const char *pattern, int lpattern, int coptions, int eoptions);
+		}
+	PCRE_INTERFACE;
 
-GB_INTERFACE GB EXPORT;
+#endif
 
-void *GB_PCRE_1[] EXPORT = {
-
-  (void *)PCRE_INTERFACE_VERSION,
-  (void *)REGEXP_match,
-  NULL
-  };
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CRegexpDesc,
-  CRegexpSubmatchesDesc,
-  CRegexpSubmatchDesc,
-  NULL
-};
-
-int EXPORT GB_INIT(void)
-{
-  return 0;
-}
-
-
-void EXPORT GB_EXIT()
-{
-}
-
+ 
