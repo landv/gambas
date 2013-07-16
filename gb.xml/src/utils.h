@@ -23,38 +23,6 @@
 #define UTILS_H
 
 #include "main.h"
-#include <stdlib.h>
-
-typedef unsigned int uint;
-
-typedef char undefbool;//A boolean with an "undefined" state
-
-#define undefined 2//The "undefined" state of an undefbool
-
-#define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
-#define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
-
-#define SCHAR_N 0xA // \n
-#define SCHAR_R 0xD // \r
-
-#define CHAR_STARTTAG 0x3C // <
-#define CHAR_ENDTAG 0x3E // >
-
-#define CHAR_SINGLEQUOTE 0x27 // '
-#define CHAR_DOUBLEQUOTE 0x22 // "
-
-#define CHAR_SLASH 0x2F
-#define CHAR_BACKSLASH 0x5C
-#define CHAR_EQUAL 0x3D // =
-#define CHAR_AND 0x26 // &
-#define CHAR_PI 0x3F // ?
-#define CHAR_EXCL 0x21 // !
-#define CHAR_DASH 0x2D // -
-
-#define CHAR_SPACE 0x20 
-
-#define CHAR_a 0x61 // a
-#define CHAR_z 0x7A // z
 
 #define CHAR_ERROR 0xFFFD // �
 
@@ -76,29 +44,38 @@ bool isWhiteSpace(const char s);
 void Trim(const char* &str, size_t &len);
 void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInsert, char *&posInsert);
 
-#include <exception>
+bool GB_MatchString(const char *str, size_t lenStr, const char *pattern, size_t lenPattern, int mode = GB_STRCOMP_BINARY);
 
-class XMLParseException : public exception
+void ThrowXMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed);
+
+class XMLParseException
 {
 public:
     XMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed) throw();
     XMLParseException(const char* nerror, size_t posFailed) throw();
     virtual ~XMLParseException() throw();
-    
+
     virtual const char* what() const throw();
-    
+
 private:
     void AnalyzeText(const char *text, const size_t lenText, const char *posFailed) throw();
-    
+
     char *near;
     char *error;
     size_t lenError;
     size_t lenNear;
     size_t line;
     size_t column;
-    
+
     char *errorWhat;
 };
 
 
 #endif // UTILS_H
+
+#if !defined(UTILS_GBINTERFACE) && defined(GBINTERFACE_H)
+#define UTILS_GBINTERFACE
+
+void XML_Format(GB_VALUE *value, char* &dst, size_t &lenDst);
+
+#endif

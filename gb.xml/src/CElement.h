@@ -22,7 +22,7 @@
 #ifndef CELEMENT_H
 #define CELEMENT_H
 
-#include "CNode.h"
+#include "gbinterface.h"
 
 extern GB_DESC CElementDesc[];
 

@@ -8,11 +8,22 @@ DEPENDPATH += .
 INCLUDEPATH += . /usr/include/c++/4.6.1
 
 # Input
-HEADERS += CDocument.h CElement.h \
+HEADERS += \
     hdocument.h \
     helement.h \
-    main.h
-SOURCES += CDocument.cpp CElement.cpp \
-    hdocument.cpp \
-    helement.cpp \
-    main.cpp
+    gb.xml.html.h \
+    cssfilter.h \
+    htmlserializer.h \
+    CHTMLDocument.h \
+    CHTMLElement.h \
+    htmlmain.h \
+    htmlparser.h
+SOURCES += \
+    cssfilter.cpp \
+    CHTMLDocument.cpp \
+    CHTMLElement.cpp \
+    htmldocument.cpp \
+    htmlelement.cpp \
+    htmlserializer.cpp \
+    htmlmain.cpp \
+    htmlparser.cpp

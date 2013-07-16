@@ -22,7 +22,7 @@
 #ifndef CEXPLORER_H
 #define CEXPLORER_H
 
-#include "main.h"
+#include "gbinterface.h"
 
 class Explorer;
 

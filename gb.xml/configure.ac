@@ -4,7 +4,6 @@ AC_INIT(configure.ac)
 AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.xml)
 AC_PROG_LIBTOOL
-GB_CXXFLAGS_GCC_OPTION(-std=c++0x)
 
 GB_COMPONENT(
   xml, XML, gb.xml, [src],

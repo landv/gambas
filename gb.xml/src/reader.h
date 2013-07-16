@@ -22,7 +22,7 @@
 #ifndef READER_H
 #define READER_H
 
-#include "main.h"
+#include "gb.xml.h"
 
 #define NODE_ELEMENT 1
 #define NODE_TEXT 2

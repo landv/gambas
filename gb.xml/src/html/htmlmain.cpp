@@ -20,13 +20,16 @@
 ***************************************************************************/
 
 #define __HMAIN_CPP
-#include "main.h"
-#include "CElement.h"
-#include "CDocument.h"
-
-#include "../gbi.h"
+#include "htmlmain.h"
+#include "CHTMLElement.h"
+#include "CHTMLDocument.h"
+#include "gb.xml.html.h"
+#include "htmlserializer.h"
+#include "htmlparser.h"
+#include "hdocument.h"
 
 GB_INTERFACE GB EXPORT;
+XML_INTERFACE XML EXPORT;
 
 extern "C"{
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -36,7 +39,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-
+    GB.GetInterface("gb.xml", XML_INTERFACE_VERSION, &XML);
   return -1;
 }
 
@@ -44,4 +47,17 @@ void EXPORT GB_EXIT()
 {
 
 }
+
+void *GB_XML_HTML_1[] EXPORT =
+{
+    (void*)XML_HTML_INTERFACE_VERSION,
+    (void *)serializeHTMLNode,
+    (void *)GBserializeHTMLNode,
+    (void *)parseHTML,
+    (void *)GBparseHTML,
+    (void *)HtmlDocument_New,
+    (void *)HtmlDocument_NewFromFile,
+    NULL
+};
+
 }

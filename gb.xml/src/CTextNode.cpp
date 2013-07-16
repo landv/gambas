@@ -22,43 +22,45 @@
 #include "CTextNode.h"
 #include "textnode.h"
 
+#include "node.h"
+
 #define THISNODE (static_cast<CNode*>(_object)->node)
 
 BEGIN_METHOD(CTextNode_new, GB_STRING content)
 
 
-if(Node::NoInstanciate) return;
+if(XMLNode_NoInstanciate()) return;
 if(GB.Is(_object, GB.FindClass("XmlCommentNode")))//Called as inherited Comment constructor
 {
     if(!MISSING(content))
     {
-        THISNODE = new CommentNode(STRING(content), LENGTH(content));
+        THISNODE = XMLComment_New(STRING(content), LENGTH(content));
     }
     else
     {
-        THISNODE = new CommentNode;
+        THISNODE = XMLComment_New();
     }
 }
 else if(GB.Is(_object, GB.FindClass("XmlCDATANode")))//Called as inherited CDATA constructor
 {
     if(!MISSING(content))
     {
-        THISNODE = new CDATANode(STRING(content), LENGTH(content));
+        THISNODE = XMLCDATA_New(STRING(content), LENGTH(content));
     }
     else
     {
-        THISNODE = new CDATANode;
+        THISNODE = XMLCDATA_New();
     }
 }
 else 
 {
     if(!MISSING(content))
     {
-        THISNODE = new TextNode(STRING(content), LENGTH(content));
+        THISNODE = XMLTextNode_New(STRING(content), LENGTH(content));
     }
     else
     {
-        THISNODE = new TextNode;
+        THISNODE = XMLTextNode_New();
     }
 }
         

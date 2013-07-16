@@ -22,61 +22,40 @@
 #ifndef HDOCUMENT_H
 #define HDOCUMENT_H
 
-#include "../document.h"
+#include "htmlmain.h"
 
-class Element;
+Document* HtmlDocument_New();
+Document* HtmlDocument_NewFromFile(const char *fileName, const size_t lenFileName);
+Element* HtmlDocument_GetBody(Document *doc);
+Element* HtmlDocument_GetHead(Document *doc);
 
-class HtmlDocument : public Document
-{
-public:
-    
-    HtmlDocument();
-    HtmlDocument(const char *fileName, const size_t lenFileName);
-    
+Element* HtmlDocument_GetElementById(Document *doc, const char *id, const size_t lenId, int depth = -1);
+void HtmlDocument_GetElementsByClassName(Document *doc, const char *className, const size_t lenClassName, GB_ARRAY *array, int depth = -1);
 
-    //virtual void toString(char **output, size_t *len);
-    //virtual void toGBString(char **output, size_t *len);
-    virtual void addStringLen(size_t &len, int indent = -1);
-    virtual void addString(char *&data, int indent = -1);
+Element* HtmlDocument_GetTitle(Document *doc);
+Attribute* HtmlDocument_GetFavicon(Document *doc);
+Attribute* HtmlDocument_GetBase(Document *doc);
+Attribute* HtmlDocument_GetLang(Document *doc);
+
+void HtmlDocument_SetHTML(Document *doc, const bool isHtml);
+
+void HtmlDocument_AddStyleSheet(Document *doc, const char *src, size_t lenSrc,
+                                 const char *media, size_t lenMedia);
+
+void HtmlDocument_AddStyleSheetIfIE(Document *doc, const char *src, size_t lenSrc,
+                                     const char *cond, size_t lenCond,
+                                     const char *media, size_t lenMedia);
+
+void HtmlDocument_AddStyleSheetIfNotIE(Document *doc, const char *src, size_t lenSrc,
+                                        const char *media, size_t lenMedia);
+
+void HtmlDocument_AddScript(Document *doc, const char *src, size_t lenSrc);
 
 
-    Element* getBody();
-    Element* getHead();
+void HtmlDocument_AddScriptIfIE(Document *doc, const char *src, size_t lenSrc,
+                                 const char *cond, size_t lenCond);
 
-    Element* getElementById(char *id, size_t lenId, int depth);
-    void getElementsByClassName(char* className, size_t lenClassName, GB_ARRAY *array, int depth = -1);
+void HtmlDocument_AddScriptIfNotIE(Document *doc, const char *src, size_t lenSrc);
 
-    virtual void setContent(char *content, size_t len) throw(XMLParseException);
-
-    void getGBTitle(char *&title, size_t &len);
-    void setTitle(char *title, size_t len);
-
-    void getGBFavicon(char *&favicon, size_t &len);
-    void setFavicon(char *title, size_t len);
-
-    void getGBBase(char *&base, size_t &len);
-    void setBase(char *content, size_t len);
-
-    void getGBLang(char *&lang, size_t &len);
-    void setLang(char *content, size_t len);
-
-    void AddStyleSheet(const char *src, size_t lenSrc,
-                       const char *media, size_t lenMedia);
-    void AddStyleSheetIfIE(const char *src, size_t lenSrc,
-                           const char *cond, size_t lenCond,
-                           const char *media, size_t lenMedia);
-    void AddStyleSheetIfNotIE(const char *src, size_t lenSrc,
-                              const char *media, size_t lenMedia);
-    void AddScript(const char *src, size_t lenSrc);
-    void AddScriptIfIE(const char *src, size_t lenSrc,
-                       const char *cond, size_t lenCond);
-    void AddScriptIfNotIE(const char *src, size_t lenSrc);
-
-    Element* getTitleElement();
-    Element* getFaviconElement();
-    Element* getBaseElement();
-    bool html5;
-
-};
 
 #endif

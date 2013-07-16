@@ -22,7 +22,8 @@
 #include "CReader.h"
 #include "reader.h"
 #include "element.h"
-#include "gbi.h"
+#include "serializer.h"
+#include "utils.h"
 
 #undef THIS
 #define THIS (static_cast<CReader*>(_object)->reader)
@@ -93,7 +94,7 @@ if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
     GB.StopEnum(); return;
 }
 
-if(!THIS->foundNode->isElement())
+if(THIS->foundNode->type != Node::ElementNode)
 {
     GB.StopEnum(); return;
 }
@@ -101,7 +102,7 @@ if(!THIS->foundNode->isElement())
 Attribute *attr = *reinterpret_cast<Attribute**>((GB.GetEnum()));
 if(attr == 0)
 {
-    attr = THIS->foundNode->toElement()->firstAttribute;
+    attr = ((Element*)(THIS->foundNode))->firstAttribute;
     *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
     (THIS->depth)++;
 }
@@ -135,9 +136,9 @@ if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
     return;
 }
 
-if(!THIS->foundNode->isElement()) return;
+if(!THIS->foundNode->type == Node::ElementNode) return;
 
-Attribute *attr = THIS->foundNode->toElement()->getAttribute(STRING(name), LENGTH(name));
+Attribute *attr = XMLElement_GetAttribute((Element*)(THIS->foundNode), STRING(name), LENGTH(name));
 
 GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
 
@@ -163,9 +164,9 @@ if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
     return;
 }
 
-if(THIS->foundNode->isElement())
+if(THIS->foundNode->type == Node::ElementNode)
 {
-    GB.ReturnInteger(THIS->foundNode->toElement()->attributeCount);
+    GB.ReturnInteger(((Element*)(THIS->foundNode))->attributeCount);
 }
 else
 {
@@ -246,7 +247,7 @@ if(THIS->curAttrEnum)
 }
 
 char *data; size_t len;
-THIS->foundNode->GBTextContent(data, len);
+GBGetXMLTextContent(THIS->foundNode, data, len);
 GB.ReturnString(data);
 
 END_PROPERTY
@@ -265,11 +266,11 @@ if(THIS->curAttrEnum)
     return;
 }
 
-switch (THIS->foundNode->getType())
+switch (THIS->foundNode->type)
 {
     case Node::ElementNode:
-        GB.ReturnNewString(THIS->foundNode->toElement()->tagName, 
-                           THIS->foundNode->toElement()->lenTagName); break;
+        GB.ReturnNewString(((Element*)(THIS->foundNode))->tagName,
+                           ((Element*)(THIS->foundNode))->lenTagName); break;
     case Node::NodeText:
         GB.ReturnNewZeroString("#text");break;
     case Node::Comment:
@@ -314,7 +315,7 @@ if(!THIS->foundNode)
     return;
 }
 
-if(!THIS->foundNode->isElement())
+if(!THIS->foundNode->type != Node::ElementNode)
 {
     GB.ReturnBoolean(false);
     return;

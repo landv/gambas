@@ -22,26 +22,27 @@
 
 ***************************************************************************/
 
-#include "../main.h"
-
 #include "CXSLT.h"
-
+#include "../gb.xml.h"
 
 GB_INTERFACE GB EXPORT;
+XML_INTERFACE XML EXPORT;
 
-extern "C"{
-GB_DESC *GB_CLASSES[] EXPORT =
+extern "C"
 {
-  CXsltDesc ,0
-};
+    GB_DESC *GB_CLASSES[] EXPORT =
+    {
+        CXsltDesc ,0
+    };
 
-int EXPORT GB_INIT(void)
-{
-  return -1;
-}
+    int EXPORT GB_INIT(void)
+    {
+        GB.GetInterface("gb.xml", XML_INTERFACE_VERSION, &XML);
+        return -1;
+    }
 
-void EXPORT GB_EXIT()
-{
+    void EXPORT GB_EXIT()
+    {
 
-}
+    }
 }

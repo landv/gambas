@@ -22,7 +22,8 @@
 #ifndef HCDOCUMENT_H
 #define HCDOCUMENT_H
 
-#include "../CDocument.h"
+#include "htmlmain.h"
+#include "../gbinterface.h"
 
 #ifndef CLASSES_CPP
 extern GB_DESC CDocumentDesc[];

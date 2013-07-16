@@ -13,7 +13,6 @@ HEADERS += document.h \
            main.h \
            node.h \
            textnode.h \
-    gbi.h \
     CDocument.h \
     CNode.h \
     CElement.h \
@@ -22,13 +21,16 @@ HEADERS += document.h \
     reader.h \
     explorer.h \
     CExplorer.h \
-    utils.h
+    utils.h \
+    parser.h \
+    serializer.h \
+    gb.xml.h \
+    gbinterface.h
 SOURCES += document.cpp \
            element.cpp \
            main.cpp \
            node.cpp \
            textnode.cpp \
-    gbi.cpp \
     CDocument.cpp \
     CNode.cpp \
     CElement.cpp \
@@ -37,4 +39,6 @@ SOURCES += document.cpp \
     reader.cpp \
     explorer.cpp \
     CExplorer.cpp \
-    utils.cpp
+    utils.cpp \
+    parser.cpp \
+    serializer.cpp

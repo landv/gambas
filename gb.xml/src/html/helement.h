@@ -22,31 +22,21 @@
 #ifndef HELEMENT_H
 #define HELEMENT_H
 
-#include "main.h"
-#include "../element.h"
+#include "htmlmain.h"
 
+Attribute* HTMLElement_GetClassName(const Element *elmt);
+bool HTMLElement_HasClassName(const Element *elmt, const char *className, const size_t lenClassName);
+void HTMLElement_SetClassName(Element *elmt, const char *className, const size_t lenClassName);
 
-//class Element:
-//{
+Attribute* HTMLElement_GetId(const Element *elmt);
+void HTMLElement_SetId(Element *elmt, const char* value, size_t len);
 
-    Attribute* getClassName();
-    //void getClassNames(char ** &names, size_t* &lenNames, size_t &namesCount);
-    bool hasClassName(const char *className, const size_t lenClassName);
-    void setClassName(const char *value, const size_t len);
+void HTMLElement_GetGBChildrenByFilter(Element *elmt, char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
 
-    Attribute* getId();
-    void setId(const char *value, size_t len);
+Element* HTMLElement_GetChildById(Element *elmt, char *id, size_t lenId, int depth = -1);
+void HTMLElement_GetGBChildrenByClassName(Element *elmt, char* className, size_t lenClassName, GB_ARRAY *array, int depth = -1);
 
-    bool matchSubFilter(const char *filter, size_t lenFilter);
-    bool matchFilter(const char *filter, size_t lenFilter);
-    void addGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
-    void getGBChildrenByFilter(char *filter, size_t lenFilter, GB_ARRAY *array, int depth = -1);
-
-    Element* getChildById(char *id, size_t lenId, int depth = -1);
-    void getGBChildrenByClassName(char* className, size_t lenClassName, GB_ARRAY *array, int depth = -1);
-
-
-};
+bool HTMLElement_IsSingle(Element *elmt);
 
 
 #endif

@@ -22,7 +22,7 @@
 #ifndef CXMLREADER_H
 #define CXMLREADER_H
 
-#include "main.h"
+#include "gbinterface.h"
 
 class Reader;
 

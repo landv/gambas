@@ -22,15 +22,7 @@
 #ifndef CNODE_H
 #define CNODE_H
 
-#include "../gambas.h"
-
-class Node;
-
-struct CNode
-{
-    GB_BASE ob;
-    Node *node;
-};
+#include "gbinterface.h"
 
 extern GB_DESC CNodeDesc[];
 extern GB_DESC CElementAttributesDesc[];

@@ -23,78 +23,26 @@
 #define TEXTNODE_H
 
 #include "main.h"
-#include "node.h"
 
-class TextNode : public Node
-{
-public:
-    TextNode();
-    TextNode(const char *ncontent, const size_t nlen);
-    virtual ~TextNode();
-    virtual Node::Type getType();
-    
-    //static void *operator new (size_t taille, TextNode *other);
-    //static void *operator new (size_t taille);
-    
-    static void unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
-    static void escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
-    static void escapeAttributeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
-    void checkEscapedContent();
-    void checkContent();
-    void setEscapedTextContent(const char *ncontent, const size_t nlen);
-    
-    //String output
-    virtual void addStringLen(size_t &len, int indent = -1);
-    virtual void addString(char *&data, int indent = -1);
-    
-    //Text content
-    void TrimContent();
-    virtual void setTextContent(const char *ncontent, const size_t nlen);
-    virtual void addTextContentLen(size_t &len);
-    virtual void addTextContent(char *&data);
-    char *content;
-    size_t lenContent;
-    
-    char *escapedContent;
-    size_t lenEscapedContent;
-    
-    //Gambas object
-    virtual void NewGBObject();
-};
+void XMLText_unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
+void XMLText_escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
+void XMLText_escapeAttributeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst);
+
+TextNode* XMLTextNode_New();
+TextNode* XMLTextNode_New(const char *ncontent, const size_t nlen);
+void XMLTextNode_Free(TextNode *node);
+
+void XMLTextNode_checkEscapedContent(TextNode *node);
+void XMLTextNode_checkContent(TextNode *node);
+void XMLTextNode_setEscapedTextContent(TextNode *node, const char *ncontent, const size_t nlen);
+
+void XMLTextNode_TrimContent(TextNode *node);
 
 
-class CommentNode : public TextNode
-{
-public:
-    CommentNode();
-    CommentNode(const char *ncontent, const size_t nlen);
-    virtual ~CommentNode();
-    virtual Node::Type getType();
-    
-    //String output
-    virtual void addStringLen(size_t &len, int indent = -1);
-    virtual void addString(char *&data, int indent = -1);
-    
-    //Gambas object
-    virtual void NewGBObject();
-};
+CommentNode* XMLComment_New();
+CommentNode* XMLComment_New(const char *ncontent, const size_t nlen);
 
-
-class CDATANode : public TextNode
-{
-public:
-    CDATANode();
-    CDATANode(const char *ncontent, const size_t nlen);
-    virtual ~CDATANode();
-    virtual Node::Type getType();
-    
-    //String output
-    virtual void addStringLen(size_t &len, int indent = -1);
-    virtual void addString(char *&data, int indent = -1);
-    
-    //Gambas object
-    virtual void NewGBObject();
-};
-
+CDATANode* XMLCDATA_New();
+CDATANode* XMLCDATA_New(const char *ncontent, const size_t nlen);
 
 #endif // TEXTNODE_H

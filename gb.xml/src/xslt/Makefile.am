@@ -8,5 +8,4 @@ gb_xml_xslt_la_LDFLAGS = -module @LD_FLAGS@ @XML_LDFLAGS@ @XMLXSLT_LDFLAGS@
 gb_xml_xslt_la_CPPFLAGS = @XMLXSLT_INC@ 
 gb_xml_xslt_la_CXXFLAGS = $(AM_CXXFLAGS) -fexceptions
 
-gb_xml_xslt_la_SOURCES = main.h main.cpp CXSLT.h CXSLT.cpp
-
+gb_xml_xslt_la_SOURCES = main.cpp CXSLT.h CXSLT.cpp

@@ -22,10 +22,10 @@
 #ifndef HMAIN_H
 #define HMAIN_H
 
-#include "../main.h"
+#include "../gb.xml.h"
 
 #ifndef __HMAIN_CPP
-extern "C" GB_INTERFACE GB;
+extern "C" XML_INTERFACE XML;
 #endif
 
 #endif

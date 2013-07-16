@@ -20,7 +20,13 @@
 ***************************************************************************/
 
 #include "utils.h"
-#include <cstdio>
+#include "gbinterface.h"
+#include "../gb_common.h"
+#include "textnode.h"
+
+#include <stdlib.h>
+#include <memory.h>
+
 
 wchar_t nextUTF8Char(const char *&data, size_t len)
 {
@@ -116,7 +122,6 @@ const void* memchrs(const char *source, size_t lensource, const char *comp, size
     const char *pos = source - 1;
     do
     {
-        if(pos + 5 >= source + lensource) DEBUG << ((void*)pos) << endl;
         pos = (char*)(memchr((void*)(pos + 1), ((comp))[0], lensource - (pos - source)));
         if(!pos) return 0;
         if(pos + lencomp > source + lensource) return 0;
@@ -163,11 +168,109 @@ void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInse
     memcpy(posInsert, insert, lenInsert);
 }
 
+bool GB_MatchString(const char *str, size_t lenStr, const char *pattern, size_t lenPattern, int mode)
+{
+    if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
+    {
+        if(lenStr == lenPattern)
+        {
+            if(!strncasecmp(str, pattern, lenPattern))
+            {
+                return true;
+            }
+        }
+    }
+    else if(mode == GB_STRCOMP_LIKE)
+    {
+        if(GB.MatchString(str, lenStr, pattern, lenPattern))
+        {
+            return true;
+        }
+    }
+    else
+    {
+        if(lenStr == lenPattern)
+        {
+            if(!memcmp(str, pattern, lenPattern))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+void XML_Format(GB_VALUE *value, char* &dst, size_t &lenDst)
+{
+#define RETURN(__str) dst = (char*)malloc(sizeof(char) * lenDst); memcpy(dst, __str, lenDst); return;
+#define RETURNLEN(__str, __len) lenDst = __len; RETURN(__str);
+    static char buffer[32];
+    if(value->type == GB_T_VARIANT)
+        GB.Conv(value, ((GB_VARIANT *)value)->value.type);
+
+    if(value->type == GB_T_DATE)
+        GB.Conv(value, GB_T_STRING);
+
+    switch(value->type)
+    {
+    case GB_T_BOOLEAN:
+
+        if (VALUE((GB_BOOLEAN *)value))
+        {
+            RETURNLEN("True", 4);
+        }
+        else
+        {
+            RETURNLEN("False", 5);
+        }
+
+    case GB_T_BYTE:
+    case GB_T_SHORT:
+    case GB_T_INTEGER:
+        lenDst = sprintf(buffer, "%d", VALUE((GB_INTEGER *)value));
+        RETURN(buffer);
+        break;
+
+    case GB_T_LONG:
+        lenDst = sprintf(buffer, "%ld", VALUE((GB_LONG *)value));
+        break;
+
+    case GB_T_STRING:
+    case GB_T_CSTRING:
+
+        XMLText_escapeContent(VALUE((GB_STRING *)value).addr + VALUE((GB_STRING *)value).start, VALUE((GB_STRING *)value).len, dst, lenDst);
+        return;
+
+    case GB_T_FLOAT:
+        int lendst;
+        GB.NumberToString(0, VALUE((GB_FLOAT *)value), NULL, &dst, &lendst);
+        lenDst = (size_t) lendst;
+        return;
+    case GB_T_NULL:
+        RETURNLEN("Null", 4)
+        break;
+
+    default:
+        fprintf(stderr, "gb.xml: XML_Format: unsupported datatype: %d\n", (int)value->type);
+        dst = 0;
+        lenDst = 0;
+        return;
+    }
+#undef RETURN
+#undef RETURNLEN
+}
 
 /************************************ Error Management ************************************/
 
+void ThrowXMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed)
+{
+    throw XMLParseException(nerror, text, lenText, posFailed);
+}
+
 XMLParseException::XMLParseException(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw()
-    : exception(), near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
+    : near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
 {
     lenError = strlen(nerror) + 1;
     error = (char*) malloc(lenError);
@@ -200,7 +303,7 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
 }
 
 XMLParseException::XMLParseException(const char *nerror, size_t posFailed) throw()
-    : exception(), near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
+    : near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
 {
     lenError = strlen(nerror) + 1;
     error = (char*) malloc(lenError);
@@ -224,14 +327,14 @@ void XMLParseException::AnalyzeText(const char *text, const size_t lenText, cons
     for(const char *pos = text; pos < posFailed; ++pos)
     {
         ++column;
-        if(*pos == SCHAR_N)
+        if(*pos == '\n')
         {
             column = 1;
             ++line;
         }
-        else if(*pos == SCHAR_R)
+        else if(*pos == '\r')
         {
-            if(*(pos + 1) == SCHAR_N) ++pos;
+            if(*(pos + 1) == '\n') ++pos;
             column = 1;
             ++line;
         }

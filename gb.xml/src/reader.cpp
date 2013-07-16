@@ -20,15 +20,20 @@
 ***************************************************************************/
 
 #include "reader.h"
+
+#include "node.h"
 #include "utils.h"
 #include "element.h"
 #include "document.h"
 #include "textnode.h"
 
+#include <memory.h>
+#include <stdlib.h>
+
 #define DELETE(_ob) if(_ob) {delete _ob; _ob = 0;}
 #define FREE(_ob) if(_ob) {free(_ob); _ob = 0;}
 #define UNREF(_ob) if(_ob) GB.Unref(POINTER(&(_ob)))
-#define DESTROYPARENT(_ob) if(_ob) {_ob->DestroyParent(); _ob = 0;}
+#define DESTROYPARENT(_ob) if(_ob) {XMLNode_DestroyParent(_ob); _ob = 0;}
 
 void Reader::ClearReader()
 {
@@ -119,21 +124,21 @@ void Reader::DestroyReader()
 int Reader::ReadChar(char car)
 {
     #define APPEND(elmt) if(curElmt == 0){}\
-    else {curElmt->appendChild(elmt);}
+    else {XMLNode_appendChild(curElmt, elmt);}
 
     
     ++(this->pos);
     
     if(waitClosingElmt)
     {
-        if(car != CHAR_ENDTAG) return 0;
+        if(car != '>') return 0;
         waitClosingElmt = false;
         depth--;
 //        this->state = READ_END_CUR_ELEMENT;
         return 0;
     }
     
-    if(car == CHAR_STARTTAG && !inComment)//Début de tag
+    if(car == '<' && !inComment)//Début de tag
     {
         if(inTag)//Si on est déjà dans un tag
         {
@@ -141,7 +146,7 @@ int Reader::ReadChar(char car)
         }
         inNewTag = true;
         inTagName = true;
-        if(curNode && curNode->isText()) //Si il y avait du texte avant
+        if(curNode && curNode->type == Node::NodeText) //Si il y avait du texte avant
         {
             DESTROYPARENT(foundNode);
             foundNode = curNode;
@@ -154,14 +159,14 @@ int Reader::ReadChar(char car)
 
             //Trim(trimmedText, lenTrimmedText);
 
-            curNode->toTextNode()->TrimContent();
+            XMLTextNode_TrimContent((TextNode*)curNode);
 
             curNode = 0;
             this->state = NODE_TEXT;
             return NODE_TEXT;
         }
     }
-    else if(car == CHAR_ENDTAG && inTag && !inEndTag && !inComment)//Fin de tag (de nouvel élément)
+    else if(car == '>' && inTag && !inEndTag && !inComment)//Fin de tag (de nouvel élément)
     {
         DESTROYPARENT(foundNode);
         //UNREF(foundNode);
@@ -173,18 +178,18 @@ int Reader::ReadChar(char car)
         if(keepMemory)
         {
             APPEND(foundNode);
-            curElmt = foundNode->toElement();
+            curElmt = ((Element*)foundNode);
         }
         if(attrName && attrVal)
         {
-            curNode->toElement()->addAttribute(attrName, lenAttrName,
+            XMLElement_AddAttribute(((Element*)curNode), attrName, lenAttrName,
                                                attrVal, lenAttrVal);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
             FREE(attrVal); lenAttrVal = 0; inAttrVal = false;
         }
         else if(attrName) 
         {
-            curNode->toElement()->addAttribute(attrName, lenAttrName,  "", 0);
+            XMLElement_AddAttribute(((Element*)curNode), attrName, lenAttrName,  "", 0);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
         }
         this->state = NODE_ELEMENT;
@@ -193,20 +198,20 @@ int Reader::ReadChar(char car)
     else if(isWhiteSpace(car) && inTag && inTagName && !inComment)// Fin de tagName
     {
         inTagName = false;
-        curNode->toElement()->refreshPrefix();
+        XMLElement_RefreshPrefix((Element*)curNode);
     }
     else if(isNameStartChar(car) && inTag && !inTagName && !inEndTag && !inAttrVal && !inAttrName && !inComment)//Début de nom d'attribut
     {
         if(attrName && attrVal)
         {
-            curNode->toElement()->addAttribute(attrName, lenAttrName,
+            XMLElement_AddAttribute(((Element*)curNode), attrName, lenAttrName,
                                                attrVal, lenAttrVal);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
             FREE(attrVal); lenAttrVal = 0; inAttrVal = false;
         }
         else if(attrName) 
         {
-            curNode->toElement()->addAttribute(attrName, lenAttrName,  "", 0);
+            XMLElement_AddAttribute(((Element*)curNode), attrName, lenAttrName,  "", 0);
             FREE(attrName); lenAttrName = 0; inAttrName = false; inAttr = false;
         }
         inAttr = true;
@@ -215,18 +220,18 @@ int Reader::ReadChar(char car)
         *attrName = car;
         lenAttrName = 1;
     }
-    else if(car == CHAR_EQUAL && inAttrName && !inComment)//Fin du nom d'attribut
+    else if(car == '=' && inAttrName && !inComment)//Fin du nom d'attribut
     {
         inAttrName = false;
     }
-    else if((car == CHAR_SINGLEQUOTE || car == CHAR_DOUBLEQUOTE) && inAttr && !inAttrVal && !inComment)//Début de valeur d'attribut
+    else if((car == '\'' || car == '"') && inAttr && !inAttrVal && !inComment)//Début de valeur d'attribut
     {
         inAttrVal = true;
         attrVal = 0;
     }
-    else if((car == CHAR_SINGLEQUOTE || car == CHAR_DOUBLEQUOTE) && inAttr && inAttrVal && !inComment)//Fin de valeur d'attribut
+    else if((car == '\'' || car == '"') && inAttr && inAttrVal && !inComment)//Fin de valeur d'attribut
     {
-        curNode->toElement()->addAttribute(attrName, lenAttrName,
+        XMLElement_AddAttribute(((Element*)curNode), attrName, lenAttrName,
                                            attrVal, lenAttrVal);
         FREE(attrName); lenAttrName = 0;
         FREE(attrVal); lenAttrVal = 0;
@@ -235,36 +240,36 @@ int Reader::ReadChar(char car)
         this->state = READ_ATTRIBUTE;
         return READ_ATTRIBUTE;
     }
-    else if(car == CHAR_SLASH && inTag && !inAttrVal && !inComment)//Self-closed element
+    else if(car == '/' && inTag && !inAttrVal && !inComment)//Self-closed element
     {
         inTag = false;
         inTagName = false;
         inEndTag = false;
-        if(curElmt) curElmt = curElmt->parent->toElement();
+        if(curElmt) curElmt = (Element*)(curElmt->parent);
         FREE(content); lenContent = 0;
         //depth--;
         waitClosingElmt = true;
         DESTROYPARENT(foundNode);
         foundNode = curNode;
-        curNode->toElement()->refreshPrefix();
+        XMLElement_RefreshPrefix((Element*)curNode);
         this->state = NODE_ELEMENT;
         depth++;
         return NODE_ELEMENT;
     }
-    else if(car == CHAR_SLASH && inNewTag && !inComment)//C'est un tag de fin
+    else if(car == '/' && inNewTag && !inComment)//C'est un tag de fin
     {
         inEndTag = true;
         inNewTag = false;
         inTag = true;
     }
-    else if(car == CHAR_ENDTAG && inEndTag && !inComment)//La fin d'un tag de fin
+    else if(car == '>' && inEndTag && !inComment)//La fin d'un tag de fin
     {
         inTag = false;
         inEndTag = false;
         if(curElmt && lenContent == curElmt->lenTagName)
         {
             if(memcmp(curElmt->tagName, content, lenContent))
-                curElmt = curElmt->parent->toElement();
+                curElmt = (Element*)(curElmt->parent);
         }
         FREE(content); lenContent = 0;
         depth--;
@@ -287,7 +292,7 @@ int Reader::ReadChar(char car)
         }
         
     }
-    else if(inNewTag && car == CHAR_EXCL )//Premier caractère de commentaire
+    else if(inNewTag && car == '!' )//Premier caractère de commentaire
     {
         specialTagLevel = COMMENT_TAG_STARTCHAR_1;
         inCommentTag = true;
@@ -310,25 +315,25 @@ int Reader::ReadChar(char car)
         {
             inCDATATag = false;
             inCDATA = true;
-            curNode = new CDATANode;
+            curNode = XMLCDATA_New();
         }
     }
     //Caractère "]" de fin de CDATA
-    else if(curNode && curNode->isCDATA() && car == ']')
+    else if(curNode && curNode->type == Node::CDATA && car == ']')
     {
         ++specialTagLevel;
         if(specialTagLevel > CDATA_TAG_ENDCHAR_2)//On est allés un peu trop loin, il y a des ] en trop
         {
             --specialTagLevel;
-            char *&textContent = curNode->toTextNode()->content;
-            size_t &lenTextContent = curNode->toTextNode()->lenContent;
+            char *&textContent = ((TextNode*)curNode)->content;
+            size_t &lenTextContent = ((TextNode*)curNode)->lenContent;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
             textContent[lenTextContent] = car;
             ++lenTextContent;
         }
     }
     //Fin du CDATA
-    else if(curNode && curNode->isCDATA() && car == CHAR_ENDTAG && specialTagLevel == CDATA_TAG_ENDCHAR_2)
+    else if(curNode && curNode->type == Node::CDATA && car == '>' && specialTagLevel == CDATA_TAG_ENDCHAR_2)
     {
         specialTagLevel = 0;
         inTag = false;
@@ -345,7 +350,7 @@ int Reader::ReadChar(char car)
         return NODE_CDATA;
     }
     //Caractère "-" de début de commentaire
-    else if(inCommentTag && car == CHAR_DASH && specialTagLevel >= COMMENT_TAG_STARTCHAR_1 && specialTagLevel < COMMENT_TAG_STARTCHAR_3  && !inComment)
+    else if(inCommentTag && car == '-' && specialTagLevel >= COMMENT_TAG_STARTCHAR_1 && specialTagLevel < COMMENT_TAG_STARTCHAR_3  && !inComment)
     {
         ++specialTagLevel;
         if (specialTagLevel == COMMENT_TAG_STARTCHAR_3)//Le tag <!-- est complet, on crée un nouveau node
@@ -354,26 +359,26 @@ int Reader::ReadChar(char car)
             inComment = true;
             //DESTROYPARENT(curNode);
             //UNREF(curNode);
-            curNode = new CommentNode;
+            curNode = XMLCDATA_New();
             //GB.Ref(curNode);
         }
     }
     //Caractère "-" de fin de commentaire
-    else if(curNode && curNode->isComment() && car == CHAR_DASH)
+    else if(curNode && curNode->type == Node::Comment && car == '-')
     {
         ++specialTagLevel;
         if(specialTagLevel > COMMENT_TAG_ENDCHAR_2)//On est allés un peu trop loin, il y a des - en trop
         {
             --specialTagLevel;
-            char *&textContent = curNode->toTextNode()->content;
-            size_t &lenTextContent = curNode->toTextNode()->lenContent;
+            char *&textContent = ((TextNode*)curNode)->content;
+            size_t &lenTextContent = ((TextNode*)curNode)->lenContent;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
             textContent[lenTextContent] = car;
             ++lenTextContent;
         }
     }
     //Fin du commentaire
-    else if(curNode && curNode->isComment() && car == CHAR_ENDTAG && specialTagLevel == COMMENT_TAG_ENDCHAR_2)
+    else if(curNode && curNode->type == Node::Comment && car == '>' && specialTagLevel == COMMENT_TAG_ENDCHAR_2)
     {
         specialTagLevel = 0;
         inTag = false;
@@ -391,17 +396,17 @@ int Reader::ReadChar(char car)
         return NODE_COMMENT;
     }
     //Début de prologue XML
-    else if(car == CHAR_PI && inNewTag && !inComment)
+    else if(car == '?' && inNewTag && !inComment)
     {
         inXMLProlog = true;
         inNewTag = false;
         inTag = false;
     }
-    else if(car == CHAR_PI && inXMLProlog && !inComment)
+    else if(car == '?' && inXMLProlog && !inComment)
     {
         specialTagLevel = PROLOG_TAG_ENDCHAR;
     }
-    else if(car == CHAR_ENDTAG && inXMLProlog && specialTagLevel == PROLOG_TAG_ENDCHAR && !inComment)
+    else if(car == '>' && inXMLProlog && specialTagLevel == PROLOG_TAG_ENDCHAR && !inComment)
     {
         specialTagLevel = 0;
         inXMLProlog = 0;
@@ -411,7 +416,7 @@ int Reader::ReadChar(char car)
         if(inXMLProlog) return 0;
         if(inNewTag && !inEndTag)//On est dans un tag avec contenu -> on crée l'élément
         {
-            Element* newNode = new Element(&car, 1);
+            Element* newNode = XMLElement_New(&car, 1);
             inTag = true;
             inNewTag = false;
             //DESTROYPARENT(curNode);
@@ -419,19 +424,19 @@ int Reader::ReadChar(char car)
             curNode = newNode;
             //GB.Ref(curNode);
         }
-        else if(!curNode || (!curNode->isText() && !inTag))//Pas de nœud courant -> nœud texte
+        else if(!curNode || (curNode->type != Node::NodeText && !inTag))//Pas de nœud courant -> nœud texte
         {
             if(isWhiteSpace(car)) return 0;
-            TextNode* newNode = new TextNode(&car, 1);
+            TextNode* newNode = XMLTextNode_New(&car, 1);
             //DESTROYPARENT(curNode);
             curNode = newNode;
             //GB.Ref(curNode);
         }
-        else if(curNode->isElement() && inTag && !inAttr)//Si on est dans le tag d'un élément
+        else if(curNode->type == Node::ElementNode && inTag && !inAttr)//Si on est dans le tag d'un élément
         {
             if(!isNameChar(car)) return 0;
-            char *&textContent = curNode->toElement()->tagName;
-            size_t &lenTextContent = curNode->toElement()->lenTagName;
+            char *&textContent = ((Element*)curNode)->tagName;
+            size_t &lenTextContent = ((Element*)curNode)->lenTagName;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
             textContent[lenTextContent] = car;
             ++lenTextContent;
@@ -466,14 +471,14 @@ int Reader::ReadChar(char car)
                 ++lenAttrVal;
             }
         }
-        else if(curNode->isText())
+        else if(curNode->type == Node::NodeText)
         {
-            char *&textContent = curNode->toTextNode()->content;
-            size_t &lenTextContent = curNode->toTextNode()->lenContent;
+            char *&textContent = ((TextNode*)curNode)->content;
+            size_t &lenTextContent = ((TextNode*)curNode)->lenContent;
             textContent = (char*)realloc(textContent, lenTextContent + 1);
             textContent[lenTextContent] = car;
             ++lenTextContent;
-            if(curNode->isComment()) specialTagLevel = COMMENT_TAG_STARTCHAR_3; //En cas de "-" non significatifs
+            if(curNode->type == Node::Comment) specialTagLevel = COMMENT_TAG_STARTCHAR_3; //En cas de "-" non significatifs
             else if(inXMLProlog) specialTagLevel = 0;//En cas de "?" non significatifs
         }
     }

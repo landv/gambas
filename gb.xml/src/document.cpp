@@ -20,66 +20,70 @@
 ***************************************************************************/
 
 #include "document.h"
+
+#include "node.h"
 #include "element.h"
 #include "utils.h"
-#include "gbi.h"
 #include "CDocument.h"
+#include "parser.h"
+#include "serializer.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-Document::Document() : Node(), GBObject(0)
+Document* XMLDocument_New()
 {
-    root = new Element("xml", 3);
-    root->parentDocument = this;
-    appendChild(root);
+    Document *newDoc = (Document*)malloc(sizeof(Document));
+
+    XMLNode_Init((Node*)newDoc, Node::DocumentNode);
+
+    newDoc->root = XMLElement_New("xml", 3);
+    newDoc->root->parentDocument = newDoc;
+    newDoc->parentDocument = newDoc;
+    newDoc->docType = XMLDocumentType;
+    XMLNode_appendChild((Node*)newDoc, newDoc->root);
+
+    return newDoc;
     
 }
 
-Document::Document(const char *fileName, const size_t lenFileName) : Node()
+Document* XMLDocument_NewFromFile(const char *fileName, const size_t lenFileName, const DocumentType docType)
 {
-    clearChildren();
-    root = 0;
-    Open(fileName, lenFileName);
+    Document *newDoc = (Document*)malloc(sizeof(Document));
+
+    XMLNode_Init((Node*)newDoc, Node::DocumentNode);
+
+    newDoc->root = 0;
+    newDoc->parentDocument = newDoc;
+    newDoc->docType = docType;
+
+    XMLDocument_Open(newDoc, fileName, lenFileName);
+
+    return newDoc;
 }
 
-Document::~Document()
+void XMLDocument_Release(Document *doc)
 {
-    clearChildren();
-    //root->DestroyParent();
+    XMLNode_clearChildren((Node*)doc);
+    free(doc);
 }
 
 /***** Node tree *****/
-void Document::setRoot(Element *newRoot)
+void XMLDocument_SetRoot(Document *doc, Element *newRoot)
 {
-    if(!root)
+    if(!doc->root)
     {
-        appendChild(newRoot);
+        XMLNode_appendChild(doc, newRoot);
     }
     else
     {
-        replaceChild(root, newRoot);
+        XMLNode_replaceChild(doc, doc->root, newRoot);
     }
-    root = newRoot;
-}
-
-void Document::getGBElementsByTagName(const char *ctagName, const size_t clenTagName, GB_ARRAY *array, const int mode, const int depth)
-{
-    root->getGBChildrenByTagName(ctagName, clenTagName, array, mode, depth);
-}
-
-void Document::getGBElementsByNameSpace(const char *cName, const size_t clenName, GB_ARRAY *array, const int mode, const int depth)
-{
-    root->getGBChildrenByNamespace(cName, clenName, array, mode, depth);
-}
-
-void Document::getAllElements(GB_ARRAY *array)
-{
-    root->getGBAllChildren(array);
+    doc->root = newRoot;
 }
 
 /***** Document loading *****/
-void Document::Open(const char *fileName, const size_t lenFileName) throw(XMLParseException)
+void XMLDocument_Open(Document *doc, const char *fileName, const size_t lenFileName) throw(XMLParseException)
 {
     char *content; int len;
     
@@ -89,42 +93,67 @@ void Document::Open(const char *fileName, const size_t lenFileName) throw(XMLPar
         GB.Propagate();
         return;
     }
+
     
-    this->setContent(content, len);
+    XMLDocument_SetContent(doc, content, len);
     
 }
 
-void Document::setContent(const char *content, size_t len) throw(XMLParseException)
+void XMLDocument_SetContent(Document *doc, const char *content, size_t len) throw(XMLParseException)
 {
     char *posStart = 0, *posEnd = 0;
     
-    //On cherche le début du prologue XML
-    posStart = (char*)memchrs(content, len, "<?xml ", 6);
-    
-    if(posStart)//On cherche la fin du prologue XML
-        posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
-
-    Node** elements = 0;
-    size_t elementCount = 0;
-    if(posEnd)
+    if(doc->docType == XMLDocumentType)
     {
-        elements = Element::fromText(posEnd + 2, len - (posEnd + 2 - content), &elementCount);
+        //On cherche le début du prologue XML
+        posStart = (char*)memchrs(content, len, "<?xml ", 6);
+
+        if(posStart)//On cherche la fin du prologue XML
+        {
+            posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
+            posEnd += 2;
+        }
     }
     else
     {
-        elements = Element::fromText(content, len, &elementCount);
+        //On cherche le début du prologue XML
+        posStart = (char*)memchrs(content, len, "<!DOCTYPE ", 10);
+
+        //On cherche la fin du prologue XML
+        if(posStart)
+        {
+            posEnd = (char*)memchr(posStart, '>', len - (posStart - content));
+            posEnd += 1;
+        }
+        //if(!posEnd) throw XMLParseException("No valid Doctype found", 0, 0, 0);
+
+        //HTML5 ? (<!DOCTYPE html>)
+        doc->docType = (posEnd - posStart == 98) ? XHTMLDocumentType : HTMLDocumentType;
+        if(doc->docType == HTMLDocumentType) doc->docType = (!memcmp(posStart, "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 98)) ? XHTMLDocumentType : HTMLDocumentType;
+    }
+
+    Node** elements = 0;
+    size_t elementCount = 0;
+
+    if(posEnd)
+    {
+        elements = parse(posEnd, len - (posEnd - content), &elementCount, doc->docType);
+    }
+    else
+    {
+        elements = parse(content, len, &elementCount, doc->docType);
     }
 
     Node *newRoot = 0;
     Node *node = 0;
     
-    clearChildren();
-    root = 0;
+    XMLNode_clearChildren((Node*)doc);
+    doc->root = 0;
     
     for(size_t i = 0; i < elementCount; i++)
     {
         node = elements[i];
-        if(node->isElement())
+        if(node->type == Node::ElementNode)
         {
             if(!newRoot)
             {
@@ -136,13 +165,14 @@ void Document::setContent(const char *content, size_t len) throw(XMLParseExcepti
             }
                 
         }
-            appendChild(node);
+            XMLNode_appendChild((Node*)doc, node);
 
     }
     
     
     free(elements);
-    if(newRoot) root = newRoot->toElement();
+    if(newRoot) doc->root = (Element*)newRoot;
+
     
     /*if(!newRoot)
     {
@@ -152,48 +182,6 @@ void Document::setContent(const char *content, size_t len) throw(XMLParseExcepti
     //this->setRoot(newRoot);
 
     //if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
-}
-
-/***** String output *****/
-void Document::addStringLen(size_t &len, int indent)
-{
-    len = 38 + (indent >= 0 ? 1 : 0);// root->addStringLen(len, indent);
-    //Content
-    for(register Node *child = firstChild; child != 0; child = child->nextNode)
-    {
-        child->addStringLen(len, indent >= 0 ? indent : -1);
-    }
-}
-
-void Document::addString(char *&data, int indent)
-{
-    memcpy(data, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
-    data += 38;
-    if(indent >= 0) 
-    {
-        *data = SCHAR_N;
-        ++data;
-    }
-    //Content
-    for(register Node *child = firstChild; child != 0; child = child->nextNode)
-    {
-        child->addString(data, indent >= 0 ? indent : -1);
-    }
-}
-
-void Document::setTextContent(const char *ncontent, const size_t nlen)
-{
-    //NULL
-}
-
-void Document::addTextContent(char *&data)
-{
-    //NULL
-}
-
-void Document::addTextContentLen(size_t &len)
-{
-    //NULL
 }
 
 /*
@@ -229,7 +217,7 @@ void Document::toGBString(char **output, size_t *len, int indent)
     (*output) -= (*len);
 }*/
 
-void Document::save(const char *fileName, bool indent)
+void XMLDocument_Save(Document *doc, const char *fileName, bool indent)
 {
     FILE *newFile = fopen(fileName, "w");
     
@@ -242,7 +230,7 @@ void Document::save(const char *fileName, bool indent)
     
     char *data = 0;
     size_t lenData = 0;
-    toString(data, lenData, indent ? 0 : -1);
+    serializeNode(doc, data, lenData, indent ? 0 : -1);
     data = (char*)realloc(data, lenData + 1);
     data[lenData] = 0;
     
@@ -250,12 +238,4 @@ void Document::save(const char *fileName, bool indent)
     fclose(newFile);
     free(data);
     
-}
-
-void Document::NewGBObject()
-{
-    Node::NoInstanciate = true;
-    GBObject = GBI::New<CDocument>("XmlDocument");
-    GBObject->doc = this;
-    Node::NoInstanciate = false;
 }

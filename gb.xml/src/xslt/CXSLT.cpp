@@ -22,39 +22,25 @@
 
 ***************************************************************************/
 
-#define __CXSLT_C
+#include "../gb.xml.h"
+#include "../gbinterface.h"
 
-
-#include "main.h"
-#include "CXSLT.h"
-
+extern GB_INTERFACE GB;
+extern XML_INTERFACE XML;
 
 #include <libxslt/xslt.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 
-#include "../CDocument.h"
-#include "../document.h"
-#include "../document.cpp"
-#include "../element.h"
-#include "../element.cpp"
-#include "../node.h"
-#include "../node.cpp"
-#include "../textnode.h"
-#include "../textnode.cpp"
-#include "../gbi.cpp"
-#include "../utils.cpp"
-
 BEGIN_METHOD(CXSLT_Transform,GB_OBJECT inputDoc;GB_OBJECT inputStyleSheet)
 
 if (GB.CheckObject(VARGOBJ(CDocument,inputDoc))) return;
 if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
-    Document *doc = VARGOBJ(CDocument,inputDoc)->doc,
-             *stylesheet = VARGOBJ(CDocument,inputStyleSheet)->doc;
-	
 
-	
+    Document *doc = (Document*)(VARGOBJ(CDocument,inputDoc)->node),
+             *stylesheet = (Document*)(VARGOBJ(CDocument,inputStyleSheet)->node);
+
     if (!doc->childCount)
 	{
 		GB.Error("Void document");
@@ -69,9 +55,10 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
 
     xsltStylesheetPtr sheet = 0;
     
-    char *StyleSheetOutput;
-    size_t StyleSheetLen;
-    stylesheet->toString(StyleSheetOutput, StyleSheetLen);
+    char *StyleSheetOutput = NULL;
+    size_t StyleSheetLen = 0;
+
+    XML.SerializeXMLNode((Node*)stylesheet, StyleSheetOutput, StyleSheetLen, -1);
     
     StyleSheetOutput =(char*)realloc(StyleSheetOutput, StyleSheetLen + 1);
     StyleSheetOutput[StyleSheetLen] = 0;
@@ -83,12 +70,14 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     if(!(sheet=xsltParseStylesheetDoc(xmlStyleSheet)))
 	{
 		GB.Error("Invalid style sheet");
-		return;
+        return;
 	}
     
     char *DocumentOutput;
     size_t DocumentLen;
-    doc->toString(DocumentOutput, DocumentLen);
+
+
+    XML.SerializeXMLNode((Node*)doc, DocumentOutput, DocumentLen, -1);
     
     DocumentOutput =(char*)realloc(DocumentOutput, DocumentLen + 1);
     DocumentOutput[DocumentLen] = 0;
@@ -108,20 +97,19 @@ if (GB.CheckObject(VARGOBJ(CDocument,inputStyleSheet))) return;
     
     xmlDocDumpFormatMemoryEnc(xmlOutDoc ,&buffer, &size, "UTF-8", 1);
 
-    Document *outDoc = new Document;
+    Document *outDoc = XML.XMLDocument_New();
     
-    try
+    /*try
+    {*/
+        XML.XMLDocument_SetContent(outDoc, (char*)(buffer),size);
+    //}
+    /*catch(XMLParseException &e)
     {
-        outDoc->setContent((char*)(buffer),size);
-    }
-    catch(XMLParseException &e)
-    {
-        outDoc->setContent("<?xml version=\"1.0\"?><xml></xml>", 32);
-        std::cerr << "XSLT Warning : error when parsing output document : " << endl << e.what() << endl;
-        //return;
-    }
+        XML.XMLDocument_SetContent(outDoc, "<?xml version=\"1.0\"?><xml></xml>", 32);
+        std::cerr << "XSLT Warning : error when parsing output document : " << std::endl << e.what() << std::endl;
+    }*/
         
-    GBI::Return(outDoc);
+    XML.ReturnNode(outDoc);
 		
 END_METHOD
 

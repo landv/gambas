@@ -21,10 +21,11 @@
 
 #include "CNode.h"
 #include "node.h"
-#include "gbi.h"
 #include "document.h"
 #include "element.h"
 #include "textnode.h"
+#include "serializer.h"
+#include <stdlib.h>
 
 #define THIS (static_cast<CNode*>(_object)->node)
 
@@ -36,14 +37,14 @@
 #define NODE_ATTRIBUTE 5
 
 BEGIN_METHOD_VOID(CNode_new)
-if(Node::NoInstanciate) return;
+if(XMLNode_NoInstanciate()) return;
 
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CNode_free)
 
-THIS->DestroyGBObject();
+XMLNode_DestroyGBObject(THIS);
 
 END_METHOD
 
@@ -52,7 +53,7 @@ BEGIN_METHOD(CNode_tostring, GB_BOOLEAN indent)
     char *str = 0;
     size_t len = 0;
     
-    THIS->toGBString(str, len, VARG(indent) ? 0 : -1);
+    GBserializeNode(THIS, str, len, VARG(indent) ? 0 : -1);
     
     GB.ReturnString(str);
 
@@ -60,7 +61,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CNode_type)
 
-switch(THIS->getType())
+switch(THIS->type)
 {
     case Node::ElementNode:
         GB.ReturnInteger(NODE_ELEMENT);break;
@@ -78,55 +79,55 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CNode_isElement)
 
-GB.ReturnBoolean(THIS->isElement());
+GB.ReturnBoolean(THIS->type == Node::ElementNode);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_isText)
 
-GB.ReturnBoolean(THIS->isTextNode());
+GB.ReturnBoolean(THIS->type == Node::NodeText);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_isComment)
 
-GB.ReturnBoolean(THIS->getType() == Node::Comment);
+GB.ReturnBoolean(THIS->type == Node::Comment);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_isCDATA)
 
-GB.ReturnBoolean(THIS->getType() == Node::CDATA);
+GB.ReturnBoolean(THIS->type == Node::CDATA);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_element)
 
-GBI::Return((Node*)(THIS->toElement()));
+XML_ReturnNode(THIS);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_ownerDocument)
 
-GBI::Return(THIS->GetOwnerDocument());
+XML_ReturnNode((Node*)XMLNode_GetOwnerDocument((Node*)THIS));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_parent)
 
-GBI::Return((Node*)(THIS->parent));
+XML_ReturnNode((Node*)(THIS->parent));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_previous)
 
-GBI::Return((Node*)(THIS->previousNode));
+XML_ReturnNode((Node*)(THIS->previousNode));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CNode_next)
 
-GBI::Return((Node*)(THIS->nextNode));
+XML_ReturnNode((Node*)(THIS->nextNode));
 
 END_PROPERTY
 
@@ -136,12 +137,12 @@ BEGIN_PROPERTY(CNode_textContent)
 if(READ_PROPERTY)
 {
     char *data; size_t len;
-    THIS->GBTextContent(data, len);
+    GBGetXMLTextContent(THIS, data, len);
     GB.ReturnString(data);
 }
 else
 {
-    THIS->setTextContent(PSTRING(), PLENGTH());
+    XMLNode_setTextContent(THIS, PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -150,17 +151,17 @@ BEGIN_PROPERTY(CNode_name)
 
 if(!READ_PROPERTY)
 {
-    if(THIS->isElement())
+    if(THIS->type == Node::ElementNode)
     {
-        THIS->toElement()->setTagName(PSTRING(), PLENGTH());
+        XMLElement_SetTagName((Element*)THIS, PSTRING(), PLENGTH());
     }
     return;
 }
 
-switch (THIS->getType())
+switch (THIS->type)
 {
     case Node::ElementNode:
-        GB.ReturnNewString(THIS->toElement()->tagName, THIS->toElement()->lenTagName);break;
+        GB.ReturnNewString(((Element*)THIS)->tagName, ((Element*)THIS)->lenTagName);break;
     case Node::NodeText:
         GB.ReturnNewZeroString("#text");break;
     case Node::Comment:
@@ -178,17 +179,18 @@ END_PROPERTY
 
 BEGIN_METHOD(CNode_newElement, GB_STRING name; GB_STRING value)
 
-if(!THIS->isElement()) return;
-Element *elmt = new Element(STRING(name), LENGTH(name));
-if(!MISSING(value)) elmt->setTextContent(STRING(value), LENGTH(value));
-THIS->toElement()->appendChild(elmt);
+if(!SUPPORT_CHILDREN(THIS)) return;
+Element *elmt = XMLElement_New(STRING(name), LENGTH(name));
+if(!MISSING(value)) XMLElement_SetTextContent(elmt, STRING(value), LENGTH(value));
+XMLNode_appendChild(THIS, elmt);
 
 END_METHOD
 
 BEGIN_METHOD(CNode_setAttribute, GB_STRING attr; GB_STRING val)
 
-if(!THIS->isElement()) return;
-THIS->toElement()->setAttribute(STRING(attr), LENGTH(attr),
+if(THIS->type != Node::ElementNode) return;
+
+XMLElement_SetAttribute(((Element*)THIS), STRING(attr), LENGTH(attr),
                                 STRING(val), LENGTH(val));
 
 END_METHOD
@@ -196,9 +198,9 @@ END_METHOD
 
 BEGIN_METHOD(CElementAttributes_get, GB_STRING name)
 
-if(!THIS->isElement()) return;
+if(THIS->type != Node::ElementNode) return;
 
-Attribute *attr = THIS->toElement()->getAttribute(STRING(name), LENGTH(name));
+Attribute *attr = XMLElement_GetAttribute((Element*)THIS, STRING(name), LENGTH(name));
 
 if(attr)
 {
@@ -213,16 +215,16 @@ END_METHOD
 
 BEGIN_METHOD(CElementAttributes_put, GB_STRING value; GB_STRING name)
 
-if(!THIS->isElement()) return;
+if(THIS->type != Node::ElementNode) return;
 
-THIS->toElement()->setAttribute(STRING(name), LENGTH(name),
+XMLElement_SetAttribute((Element*)THIS, STRING(name), LENGTH(name),
                                 STRING(value), LENGTH(value));
 
 END_METHOD
 
 BEGIN_PROPERTY(CElementAttributes_count)
 
-if(!THIS->isElement()) 
+if(THIS->type != Node::ElementNode)
 {
     GB.ReturnInteger(0);
     return;
@@ -230,19 +232,19 @@ if(!THIS->isElement())
 
 if(READ_PROPERTY)
 {
-    GB.ReturnInteger(THIS->toElement()->attributeCount);
+    GB.ReturnInteger(((Element*)THIS)->attributeCount);
 }
 
 END_PROPERTY
 
 BEGIN_METHOD_VOID(CElementAttributes_next)
 
-if(!THIS->isElement()) {GB.StopEnum(); return;}
+if(THIS->type != Node::ElementNode) {GB.StopEnum(); return;}
 
 Attribute *attr = *reinterpret_cast<Attribute**>((GB.GetEnum()));
 if(attr == 0)
 {
-    attr = THIS->toElement()->firstAttribute;
+    attr = ((Element*)THIS)->firstAttribute;
     *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
 }
 else
@@ -253,7 +255,7 @@ else
 
 if(attr == 0) {GB.StopEnum(); return;}
 
-GBI::Return(attr);
+XML_ReturnNode(attr);
 
 
 END_METHOD
@@ -261,7 +263,7 @@ END_METHOD
 BEGIN_PROPERTY(CNode_childNodes)
 
 GB_ARRAY array;
-THIS->getGBChildren(&array);
+XMLNode_getGBChildren(THIS, &array);
 
 GB.ReturnObject(array);
 
@@ -269,7 +271,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CNode_getUserData, GB_STRING key)
 
-GB_VARIANT *value = THIS->getUserData(STRING(key), LENGTH(key));
+GB_VARIANT *value = XMLNode_getUserData(THIS, STRING(key), LENGTH(key));
 
 if(value) 
 {
@@ -285,7 +287,7 @@ END_METHOD
 
 BEGIN_METHOD(CNode_setUserData, GB_STRING key; GB_VARIANT value)
 
-THIS->addUserData(STRING(key), LENGTH(key), ARG(value));
+XMLNode_addUserData(THIS, STRING(key), LENGTH(key), ARG(value));
 
 END_METHOD
 
@@ -299,7 +301,7 @@ if(!LENGTH(data))
 
 char *escapedData; size_t lenEscapedData;
 
-TextNode::escapeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);
+XMLText_escapeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);
 
 GB.ReturnNewString(escapedData, lenEscapedData);
 
@@ -361,8 +363,7 @@ GB_DESC CNodeDesc[] =
     GB_PROPERTY("Name", "s", CNode_name),
 
     GB_STATIC_METHOD("Serialize", "s", CNode_escapeContent, "(Data)s"),
-    
-    //Obsolete methods
+
     GB_METHOD("NewElement", "", CNode_newElement, "(Name)s[(Value)s]"),
     GB_METHOD("NewAttribute", "", CNode_setAttribute, "(Name)s(Value)s"),
     GB_PROPERTY_SELF("Attributes", ".XmlElementAttributes"),

@@ -22,24 +22,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "../gambas.h"
+#include "gb.xml.h"
+#include "html/gb.xml.html.h"
 
-#define GB_STRCOMP_BINARY   0
-#define GB_STRCOMP_NOCASE   1
-#define GB_STRCOMP_LANG     2
-#define GB_STRCOMP_LIKE     4
-#define GB_STRCOMP_NATURAL  8
+extern "C" XML_HTML_INTERFACE HTML;
 
-#define VARGOBJ(_type, _ob) ((_type*)VARG(_ob))
-#define VPROPOBJ(_type) ((_type*)VPROP(GB_OBJECT)) 
-
-#include <iostream>
-
-using namespace std;
-
-#define DEBUG std::cerr << "XMLDBG : (" << __FILE__ << ":" <<__LINE__ << ") "
-#define DEBUGH DEBUG << endl
-
-extern "C" GB_INTERFACE GB;
+bool CheckHtmlInterface();
 
 #endif // MAIN_H

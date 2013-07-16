@@ -20,24 +20,28 @@
 ***************************************************************************/
 
 #include "CElement.h"
-#include "element.h"
-#include "gbi.h"
-#include "textnode.h"
 
-#define THIS (static_cast<CNode*>(_object)->node->toElement())
+#include "node.h"
+#include "element.h"
+#include "textnode.h"
+#include "parser.h"
+
+
+#include <stdlib.h>
+
+#define THIS ((Element*)(static_cast<CNode*>(_object)->node))
 #define THISNODE (static_cast<CNode*>(_object)->node)
 
 BEGIN_METHOD(CElement_new, GB_STRING tagName)
 
-if(Node::NoInstanciate) return;
-
+if(XMLNode_NoInstanciate()) return;
 if(!MISSING(tagName))
 {
-    THISNODE = new Element(STRING(tagName), LENGTH(tagName));
+    THISNODE = XMLElement_New(STRING(tagName), LENGTH(tagName));
 }
 else
 {
-    THISNODE = new Element;
+THISNODE = XMLElement_New();
 }
     THIS->GBObject = static_cast<CNode*>(_object);
 
@@ -47,16 +51,19 @@ BEGIN_PROPERTY(CElement_tagName)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnNewString(THIS->tagName, THIS->lenTagName);
     if(!THIS->tagName || !THIS->lenTagName)
     {
         GB.ReturnNull();
         return;
     }
+    else
+    {
+        GB.ReturnNewString(THIS->tagName, THIS->lenTagName);
+    }
 }
 else
 {
-    THIS->setTagName(PSTRING(), PLENGTH());
+    XMLElement_SetTagName(THIS, PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -74,7 +81,7 @@ if(READ_PROPERTY)
 }
 else
 {
-    THIS->setPrefix(PSTRING(), PLENGTH());
+    XMLElement_SetPrefix(THIS, PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -86,13 +93,13 @@ BEGIN_METHOD(CElement_appendChild, GB_OBJECT newChild)
         GB.Error("Null object");
         return;
     }
-    THIS->appendChild(VARGOBJ(CNode, newChild)->node);
+    XMLNode_appendChild(THIS, VARGOBJ(CNode, newChild)->node);
 
 END_METHOD
 
 BEGIN_METHOD(CElement_getAttribute, GB_STRING attrName; GB_INTEGER mode)
 
-Attribute *attr = THIS->getAttribute(STRING(attrName), LENGTH(attrName), VARG(mode));
+Attribute *attr = XMLElement_GetAttribute(THIS, STRING(attrName), LENGTH(attrName), VARG(mode));
     if(attr)
     {
         GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
@@ -106,22 +113,29 @@ END_METHOD
 
 BEGIN_METHOD(CElement_removeAttribute, GB_STRING attrName)
 
-    THIS->removeAttribute(STRING(attrName), LENGTH(attrName));
+    XMLElement_RemoveAttribute(THIS, STRING(attrName), LENGTH(attrName));
 
 END_METHOD
 
 BEGIN_METHOD(CElement_setAttribute, GB_STRING attrName; GB_STRING attrValue)
 
-    THIS->setAttribute(STRING(attrName), LENGTH(attrName), 
+    XMLElement_SetAttribute(THIS, STRING(attrName), LENGTH(attrName),
                        STRING(attrValue), LENGTH(attrValue));
 
 END_METHOD
 
-BEGIN_METHOD(CElement_appendFromText, GB_STRING data)
+BEGIN_METHOD(CElement_appendFromText, GB_STRING data; GB_VALUE param[0])
 
 try
 {
-    THIS->appendFromText(STRING(data), LENGTH(data));
+    if(GB.NParam > 0)
+    {
+        XMLNode_substAppendFromText(THIS, STRING(data), LENGTH(data), ARG(param[0]), GB.NParam());
+    }
+    else
+    {
+        XMLNode_appendFromText(THIS, STRING(data), LENGTH(data));
+    }
 }
 catch(XMLParseException &e)
 {
@@ -135,76 +149,76 @@ GB_ARRAY array = reinterpret_cast<GB_ARRAY>(VARG(children));
 
 for(int i = 0; i < GB.Array.Count(array); i++)
 {
-    THIS->appendChild((*(reinterpret_cast<CNode**>(GB.Array.Get(array, i))))->node);
+    XMLNode_appendChild(THIS, (*(reinterpret_cast<CNode**>(GB.Array.Get(array, i))))->node);
 }
 
 END_METHOD
 
 BEGIN_METHOD(CElement_prependChild, GB_OBJECT newChild)
 
-THIS->prependChild(VARGOBJ(CNode, newChild)->node);
+XMLNode_prependChild(THIS, VARGOBJ(CNode, newChild)->node);
 
 END_METHOD
 
 BEGIN_METHOD(CElement_removeChild, GB_OBJECT oldChild)
 
-THIS->removeChild(VARGOBJ(CNode, oldChild)->node);
+XMLNode_removeChild(THIS, VARGOBJ(CNode, oldChild)->node);
 
 END_METHOD
 
 BEGIN_METHOD(CElement_replaceChild, GB_OBJECT oldChild; GB_OBJECT newChild)
 
-THIS->replaceChild(VARGOBJ(CNode, oldChild)->node,
+XMLNode_replaceChild(THIS, VARGOBJ(CNode, oldChild)->node,
                         VARGOBJ(CNode, newChild)->node);
 
 END_METHOD
 
 BEGIN_METHOD(CElement_insertAfter, GB_OBJECT child; GB_OBJECT newChild)
 
-THIS->insertAfter(VARGOBJ(CNode, child)->node, VARGOBJ(CNode, newChild)->node);
+XMLNode_insertAfter(THIS, VARGOBJ(CNode, child)->node, VARGOBJ(CNode, newChild)->node);
 
 END_METHOD
 
 BEGIN_METHOD(CElement_insertBefore, GB_OBJECT child; GB_OBJECT newChild)
 
-THIS->insertBefore(VARGOBJ(CNode, child)->node, VARGOBJ(CNode, newChild)->node);
+XMLNode_insertBefore(THIS, VARGOBJ(CNode, child)->node, VARGOBJ(CNode, newChild)->node);
 
 END_METHOD
 
 BEGIN_METHOD(CElement_appendText, GB_STRING data)
 
-THIS->appendText(STRING(data), LENGTH(data));
+XMLNode_appendText(THIS, STRING(data), LENGTH(data));
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CElement_clearChildren)
 
-THIS->clearChildren();
+XMLNode_clearChildren(THIS);
 
 END_METHOD
 
 BEGIN_PROPERTY(CElement_previousElement)
 
-GBI::Return(THIS->previousElement());
+XML_ReturnNode(XMLNode_previousElement(THIS));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CElement_nextElement)
 
-GBI::Return(THIS->nextElement());
+XML_ReturnNode(XMLNode_nextElement(THIS));
 
 END_PROPERTY
 
 BEGIN_METHOD(CElement_isAttributeSet, GB_STRING name)
 
-GB.ReturnBoolean((bool)(THIS->getAttribute(STRING(name), LENGTH(name))));
+GB.ReturnBoolean((bool)(XMLElement_GetAttribute(THIS, STRING(name), LENGTH(name))));
 
 END_METHOD
 
 BEGIN_PROPERTY(CElement_allChildNodes)
 
 GB_ARRAY array;
-THIS->getGBAllChildren(&array);
+XMLNode_getGBAllChildren(THIS, &array);
 
 GB.ReturnObject(array);
 
@@ -212,20 +226,20 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CElement_firstChildElement)
 
-GBI::Return(THIS->firstChildElement());
+XML_ReturnNode(XMLNode_firstChildElement(THIS));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CElement_lastChildElement)
 
-GBI::Return(THIS->lastChildElement());
+XML_ReturnNode(XMLNode_lastChildElement(THIS));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CElement_childElements)
 
 GB_ARRAY array;
-THIS->getGBChildElements(&array);
+XMLNode_getGBChildElements(THIS, &array);
 GB.ReturnObject(array);
 
 END_PROPERTY
@@ -233,7 +247,7 @@ END_PROPERTY
 BEGIN_METHOD(CElement_fromText, GB_STRING data)
 
 GB_ARRAY array;
-Element::GBfromText(STRING(data), LENGTH(data), &array);
+GBparseXML(STRING(data), LENGTH(data), &array);
 GB.ReturnObject(array);
 
 END_METHOD
@@ -241,7 +255,7 @@ END_METHOD
 BEGIN_METHOD(CElement_getChildrenByTagName, GB_STRING tagName; GB_INTEGER mode ; GB_INTEGER depth;)
 
 GB_ARRAY array;
-THIS->getGBChildrenByTagName(STRING(tagName), LENGTH(tagName), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
+XMLNode_getGBChildrenByTagName(THIS, STRING(tagName), LENGTH(tagName), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 GB.ReturnObject(array);
 
 END_METHOD
@@ -249,7 +263,7 @@ END_METHOD
 BEGIN_METHOD(CElement_getChildrenByNamespace, GB_STRING name; GB_INTEGER mode ; GB_INTEGER depth;)
 
 GB_ARRAY array;
-THIS->getGBChildrenByNamespace(STRING(name), LENGTH(name), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
+XMLNode_getGBChildrenByNamespace(THIS, STRING(name), LENGTH(name), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 GB.ReturnObject(array);
 
 END_METHOD
@@ -257,7 +271,7 @@ END_METHOD
 BEGIN_METHOD(CElement_getChildrenByAttributeValue, GB_STRING name; GB_STRING value; GB_INTEGER mode ; GB_INTEGER depth;)
 
 GB_ARRAY array;
-THIS->getGBChildrenByAttributeValue(STRING(name), LENGTH(name), 
+XMLNode_getGBChildrenByAttributeValue(THIS, STRING(name), LENGTH(name),
                                     STRING(value), LENGTH(value),
                                     &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 GB.ReturnObject(array);
@@ -266,13 +280,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CElement_firstChild)
 
-GBI::Return(THIS->firstChild);
+XML_ReturnNode(THIS->firstChild);
 
 END_METHOD
 
 BEGIN_PROPERTY(CElement_lastChild)
 
-GBI::Return(THIS->lastChild);
+XML_ReturnNode(THIS->lastChild);
 
 END_PROPERTY
 
@@ -286,7 +300,7 @@ if(!LENGTH(data))
 
 char *escapedData; size_t lenEscapedData;
 
-TextNode::escapeAttributeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);
+XMLText_escapeAttributeContent(STRING(data), LENGTH(data), escapedData, lenEscapedData);
 
 GB.ReturnNewString(escapedData, lenEscapedData);
 
@@ -312,7 +326,7 @@ GB_DESC CElementDesc[] =
     GB_METHOD("ClearChildren", "", CElement_clearChildren, ""),
     
     GB_METHOD("AppendText", "", CElement_appendText, "(Data)s"),
-    GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s"),
+    GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s(Arguments)."),
     
     GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s[(Mode)i]"),
     GB_METHOD("RemoveAttribute", "s", CElement_removeAttribute, "(Name)s"),

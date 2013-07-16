@@ -22,27 +22,51 @@
 #include "CDocument.h"
 #include "CNode.h"
 
-#include "gbi.h"
+#include "node.h"
 #include "document.h"
 #include "element.h"
 #include "utils.h"
+#include "serializer.h"
 
-#define THIS (static_cast<CDocument*>(_object)->doc)
+#define GBTHIS (static_cast<CDocument*>(_object))
+#define THIS ((Document*)(static_cast<CDocument*>(_object)->node))
 
 BEGIN_METHOD(CDocument_new, GB_STRING fileName)
 
-if(Node::NoInstanciate) return;
-if(GB.Is(_object, GB.FindClass("HtmlDocument"))) return;//Called as inherited HtmlDocument constructor
+if(XMLNode_NoInstanciate()) return;
+
+bool isHtml = false;
+if(GB.Is(_object, GB.FindClass("HtmlDocument")))//Called as inherited HtmlDocument constructor
+{
+    if(CheckHtmlInterface())
+    {
+        isHtml = true;
+    }
+};
 
 try
 {
     if(!MISSING(fileName))
     {
-        THIS = new Document(STRING(fileName), LENGTH(fileName));
+        if(isHtml)
+        {
+            GBTHIS->node = (Node*)XMLDocument_NewFromFile(STRING(fileName), LENGTH(fileName), HTMLDocumentType);
+        }
+        else
+        {
+            GBTHIS->node = (Node*)XMLDocument_NewFromFile(STRING(fileName), LENGTH(fileName));
+        }
     }
     else
     {
-        THIS = new Document();
+        if(isHtml)
+        {
+            GBTHIS->node = (Node*)HTML.HtmlDocument_New();
+        }
+        else
+        {
+            GBTHIS->node = (Node*)XMLDocument_New();
+        }
     }
 
     THIS->GBObject = (CDocument*)(_object);
@@ -51,13 +75,14 @@ try
 catch(XMLParseException &e)
 {
     GB.Error(e.what());
+    GB.ReturnNull();
 }
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CDocument_free)
 
-delete THIS;
+XMLNode_Free(GBTHIS->node);
 
 END_METHOD
 
@@ -65,7 +90,7 @@ BEGIN_METHOD(CDocument_fromString, GB_STRING content)
 
 try
 {
-    THIS->setContent(STRING(content), LENGTH(content));
+    XMLDocument_SetContent(THIS, STRING(content), LENGTH(content));
 }
 catch(XMLParseException &e)
 {
@@ -78,8 +103,8 @@ BEGIN_METHOD(CDocument_tostring, GB_BOOLEAN indent)
 
     char *str = 0;
     size_t len = 0;
-    
-    THIS->toGBString(str, len, VARG(indent) ? 0 : -1);
+
+    GBserializeNode((Node*)THIS, str, len, VARG(indent) ? 0 : -1);
     
     GB.ReturnString(str);
 
@@ -92,7 +117,7 @@ if(READ_PROPERTY)
     char *str = 0;
     size_t len = 0;
     
-    THIS->toGBString(str, len);
+    GBserializeNode((Node*)THIS, str, len);
     
     GB.ReturnString(str);
 }
@@ -100,7 +125,7 @@ else
 {
     try
     {
-        THIS->setContent(PSTRING(), PLENGTH());
+        XMLDocument_SetContent(THIS, PSTRING(), PLENGTH());
     }
     catch(XMLParseException &e)
     {
@@ -114,11 +139,11 @@ BEGIN_PROPERTY(CDocument_root)
 
 if(READ_PROPERTY)
 {
-    GBI::Return((Node*)(THIS->root));
+    XML_ReturnNode((Node*)(THIS->root));
 }
 else
 {
-    THIS->setRoot(VPROPOBJ(CNode)->node->toElement());
+    XMLDocument_SetRoot(THIS, ((Element*)(VPROPOBJ(CNode)->node)));
 }
 
 END_PROPERTY
@@ -127,7 +152,7 @@ BEGIN_METHOD(CDocument_open, GB_STRING fileName)
 
 try
 {
-    THIS->Open(STRING(fileName), LENGTH(fileName));
+    XMLDocument_Open(THIS, STRING(fileName), LENGTH(fileName));
 }
 catch(XMLParseException &e)
 {
@@ -138,7 +163,7 @@ END_METHOD
 
 BEGIN_METHOD(CDocument_save, GB_STRING fileName; GB_BOOLEAN indent)
 
-THIS->save(GB.ToZeroString(ARG(fileName)), VARG(indent));
+XMLDocument_Save(THIS, GB.ToZeroString(ARG(fileName)), VARG(indent));
 
 END_METHOD
 
@@ -146,7 +171,7 @@ BEGIN_METHOD(CDocument_getElementsByTagName, GB_STRING tagName; GB_INTEGER mode;
 
 GB_ARRAY array;
 
-THIS->getGBElementsByTagName(STRING(tagName), LENGTH(tagName), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
+XMLNode_getGBChildrenByTagName(THIS, STRING(tagName), LENGTH(tagName), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 
 GB.ReturnObject(array);
 
@@ -156,7 +181,7 @@ BEGIN_METHOD(CDocument_getElementsByNamespace, GB_STRING name; GB_INTEGER mode; 
 
 GB_ARRAY array;
 
-THIS->getGBElementsByNameSpace(STRING(name), LENGTH(name), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
+XMLNode_getGBChildrenByTagName(THIS, STRING(name), LENGTH(name), &array, VARGOPT(mode, GB_STRCOMP_BINARY), VARGOPT(depth, -1));
 
 GB.ReturnObject(array);
 
@@ -166,7 +191,7 @@ BEGIN_PROPERTY(CDocument_getAll)
 
 GB_ARRAY array;
 
-THIS->getAllElements(&array);
+XMLNode_getGBAllChildren(THIS, &array);
 
 GB.ReturnObject(array);
 
@@ -174,10 +199,9 @@ END_METHOD
 
 BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
 
-Element *elmt = new Element(STRING(tagName), LENGTH(tagName));
-Node::NoInstanciate = true;
-GBI::Return(elmt);
-Node::NoInstanciate = false;
+Element *elmt = XMLElement_New(STRING(tagName), LENGTH(tagName));
+
+XML_ReturnNode(elmt);
 
 END_METHOD
 

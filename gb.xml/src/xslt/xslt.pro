@@ -8,7 +8,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += CXSLT.h main.h
+HEADERS += CXSLT.h
 SOURCES += \
     main.cpp \
     CXSLT.cpp

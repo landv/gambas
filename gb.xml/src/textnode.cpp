@@ -21,40 +21,54 @@
 
 #include "textnode.h"
 #include "utils.h"
-#include "gbi.h"
-#include "CNode.h"
+#include "node.h"
+
+#include <stdlib.h>
+#include <memory.h>
 
 /*************************************** TextNode ***************************************/
 
-TextNode::TextNode() : Node(), content(0), lenContent(0), escapedContent(0), lenEscapedContent(0)
+TextNode* XMLTextNode_New()
 {
+    TextNode *newTextNode = (TextNode*)malloc(sizeof(TextNode));
+    XMLNode_Init(newTextNode, Node::NodeText);
+    newTextNode->content = 0;
+    newTextNode->lenContent = 0;
+    newTextNode->escapedContent = 0;
+    newTextNode->lenEscapedContent = 0;
+
+    return newTextNode;
 }
 
-TextNode::TextNode(const char *ncontent, const size_t nlen) : Node(), escapedContent(0), lenEscapedContent(0)
+TextNode* XMLTextNode_New(const char *ncontent, const size_t nlen)
 {
-    lenContent = nlen;
-    if(!lenContent)
+    TextNode *newTextNode = (TextNode*)malloc(sizeof(TextNode));
+    XMLNode_Init(newTextNode, Node::NodeText);
+    newTextNode->content = 0;
+    newTextNode->lenContent = 0;
+    newTextNode->escapedContent = 0;
+    newTextNode->lenEscapedContent = 0;
+    newTextNode->lenContent = nlen;
+    if(!newTextNode->lenContent)
     {
-        content = 0;
-        return;
+        newTextNode->content = 0;
+        return newTextNode;
     }
-    content = (char*)malloc(sizeof(char) * nlen + 1);
-    memcpy(content, ncontent, nlen);
-    content[lenContent] = 0;
+    newTextNode->content = (char*)malloc(sizeof(char) * nlen + 1);
+    memcpy(newTextNode->content, ncontent, nlen);
+    newTextNode->content[nlen] = 0;
+
+    return newTextNode;
 }
 
-TextNode::~TextNode()
+void XMLTextNode_Free(TextNode *node)
 {
-    if(escapedContent && escapedContent != content) free(escapedContent);
-    if(content) free(content);
+    if(node->escapedContent && node->escapedContent != node->content) free(node->escapedContent);
+    if(node->content) free(node->content);
+    free(node);
 }
 
-Node::Type TextNode::getType()
-{
-    return NodeText;
-}
-
-void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
+void XMLText_escapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
 {
     dst = (char*)src;
     lenDst = lenSrc;
@@ -72,24 +86,24 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
         }
         switch(*posFound)
         {
-        case CHAR_STARTTAG://&lt;
-            *posFound = CHAR_AND;
+        case '<'://&lt;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst , "lt;", 3, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"");
             break;
             
-        case CHAR_ENDTAG: //&gt;
-            *posFound = CHAR_AND;
+        case '>': //&gt;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "gt;", 3, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"");
             break;
             
             
-        case CHAR_AND: //&amp;
+        case '&': //&amp;
 
-            *posFound = CHAR_AND;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "amp;", 4, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"");
@@ -97,7 +111,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
 
         case '"': //&quot;
 
-            *posFound = CHAR_AND;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "quot;", 5, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"");
@@ -114,7 +128,7 @@ void TextNode::escapeContent(const char *src, const size_t lenSrc, char *&dst, s
     if(dst != src) --lenDst;
 }
 
-void TextNode::escapeAttributeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
+void XMLText_escapeAttributeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
 {
     dst = (char*)src;
     lenDst = lenSrc;
@@ -132,24 +146,24 @@ void TextNode::escapeAttributeContent(const char *src, const size_t lenSrc, char
         }
         switch(*posFound)
         {
-        case CHAR_STARTTAG://&lt;
-            *posFound = CHAR_AND;
+        case '<'://&lt;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst , "lt;", 3, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"\n");
             break;
 
-        case CHAR_ENDTAG: //&gt;
-            *posFound = CHAR_AND;
+        case '>': //&gt;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "gt;", 3, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"\n");
             break;
 
 
-        case CHAR_AND: //&amp;
+        case '&': //&amp;
 
-            *posFound = CHAR_AND;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "amp;", 4, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"\n");
@@ -157,14 +171,14 @@ void TextNode::escapeAttributeContent(const char *src, const size_t lenSrc, char
 
         case '"': //&quot;
 
-            *posFound = CHAR_AND;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "quot;", 5, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"\n");
             break;
 
         case '\n':
-            *posFound = CHAR_AND;
+            *posFound = '&';
             ++posFound;
             insertString(dst, lenDst, "#10;", 4, posFound);
             posFound = strpbrk (posFound + 1,"<>&\"\n");
@@ -181,18 +195,18 @@ void TextNode::escapeAttributeContent(const char *src, const size_t lenSrc, char
     if(dst != src) --lenDst;
 }
 
-void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
+void XMLText_unEscapeContent(const char *src, const size_t lenSrc, char *&dst, size_t &lenDst)
 {
     dst = (char*)malloc(lenSrc);
     lenDst = lenSrc;
     memcpy(dst, src, lenSrc);
-    char *posFound = (char*)memchr(dst, CHAR_AND, lenDst);
+    char *posFound = (char*)memchr(dst, '&', lenDst);
 
     while(((posFound != 0) && ((posFound + 3) < lenDst + dst)))//(posFound - dst) < lenDst - 3
     {
         if(memcmp(posFound + 1, "lt;", 3) == 0)// <   &lt;
         {
-            *posFound = CHAR_STARTTAG;
+            *posFound = '<';
             //.......dst=========posFound!===posFound+x|======dst+lenDst............
             //lenCut = (pos2 - pos1) = (dst + lenDst) - (posFound + x)
             memmove(posFound + 1, posFound + 4, (dst + lenDst) - (posFound + 4));
@@ -201,7 +215,7 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
         }
         else if(memcmp(posFound + 1, "gt;", 3) == 0)// >   &gt;
         {
-            *posFound = CHAR_ENDTAG;
+            *posFound = '>';
             memmove(posFound + 1, posFound + 4, (dst + lenDst) - (posFound + 4));
             lenDst -= 3; 
             posFound -= 3;
@@ -220,220 +234,82 @@ void TextNode::unEscapeContent(const char *src, const size_t lenSrc, char *&dst,
             posFound -= 5;
         }
         if(posFound + 1 >= dst + lenDst) break;
-        posFound = (char*)memchr(posFound + 1, CHAR_AND, lenDst - (posFound + 1 - dst));
+        posFound = (char*)memchr(posFound + 1, '&', lenDst - (posFound + 1 - dst));
         //cond = ((posFound != 0) && ((posFound + 3) < lenDst + dst));
     }
 }
 
-void TextNode::checkEscapedContent()
+void XMLTextNode_checkEscapedContent(TextNode *node)
 {
-    if(!escapedContent && content)
+    if(!(node->escapedContent) && node->content)
     {
-        escapeContent(content, lenContent, escapedContent, lenEscapedContent);
+        XMLText_escapeContent(node->content, node->lenContent, node->escapedContent, node->lenEscapedContent);
     }
 }
 
-void TextNode::checkContent()
+void XMLTextNode_checkContent(TextNode *node)
 {
-    if(escapedContent && !content)
+    if(node->escapedContent && !(node->content))
     {
-        unEscapeContent(escapedContent, lenEscapedContent, content, lenContent);
+        XMLText_unEscapeContent(node->escapedContent, node->lenEscapedContent, node->content, node->lenContent);
     }
 }
 
-void TextNode::setEscapedTextContent(const char *ncontent, const size_t nlen)
+void XMLTextNode_setEscapedTextContent(TextNode *node, const char *ncontent, const size_t nlen)
 {
-    escapedContent = (char*)realloc(escapedContent, sizeof(char)*nlen);
-    lenEscapedContent = nlen;
-    memcpy(escapedContent, ncontent, nlen);
-}
-
-
-/***** String output *****/
-
-void TextNode::addStringLen(size_t &len, int indent)
-{
-    checkEscapedContent();
-    len += lenEscapedContent;
-    if(indent >= 0) len += indent + 1;
-}
-
-#undef ADD
-#define ADD(_car) *data = _car; ++(data);
-
-void TextNode::addString(char *&data, int indent)
-{
-    checkEscapedContent();
-    if(indent >= 0) 
-    {
-        memset(data, CHAR_SPACE, indent); 
-        data += indent;
-    }
-
-    memcpy(data, escapedContent, lenEscapedContent);
-    data += lenEscapedContent;
-    if(indent >= 0)
-    {
-        ADD(SCHAR_N);
-    }
+    node->escapedContent = (char*)realloc(node->escapedContent, sizeof(char)*nlen);
+    node->lenEscapedContent = nlen;
+    memcpy(node->escapedContent, ncontent, nlen);
 }
 
 /***** Text Content *****/
 
-void TextNode::TrimContent()
+void XMLTextNode_TrimContent(TextNode *node)
 {
-    const char *oldcontent = content;
-    Trim(oldcontent, lenContent);
-    memmove(content, oldcontent, lenContent);
-    content = (char*)realloc(content, sizeof(char)*lenContent);
+    const char *oldcontent = node->content;
+    Trim(oldcontent, node->lenContent);
+    memmove(node->content, oldcontent, node->lenContent);
+    node->content = (char*)realloc(node->content, sizeof(char)*node->lenContent);
 }
 
-void TextNode::setTextContent(const char *ncontent, const size_t nlen)
+void XMLTextNode_setTextContent(TextNode *node, const char *ncontent, const size_t nlen)
 {
-    content = (char*)realloc(content, sizeof(char)*nlen + 1);
-    lenContent = nlen;
-    memcpy(content, ncontent, nlen);
-    content[lenContent] = 0;
+    node->content = (char*)realloc(node->content, sizeof(char)*nlen + 1);
+    node->lenContent = nlen;
+    memcpy(node->content, ncontent, nlen);
+    node->content[node->lenContent] = 0;
 }
-
-void TextNode::addTextContentLen(size_t &len)
-{
-    checkContent();
-    len += lenContent;
-}
-
-void TextNode::addTextContent(char *&data)
-{
-    checkContent();
-    memcpy(data, content, lenContent);
-    data += lenContent;
-}
-
-/***** Gambas Object *****/
-
-void TextNode::NewGBObject()
-{
-    NoInstanciate = true;
-    GBObject = GBI::New<CNode>("XmlTextNode");
-    GBObject->node = this;
-    NoInstanciate = false;
-}
-
 
 /*************************************** Comment ***************************************/
 
-CommentNode::CommentNode() : TextNode()
+CommentNode* XMLComment_New()
 {
-    
+    CommentNode *newComment = XMLTextNode_New();
+    newComment->type = Node::Comment;
+    return newComment;
 }
 
 
-CommentNode::CommentNode(const char *ncontent, const size_t nlen) : TextNode(ncontent, nlen)
+CommentNode* XMLComment_New(const char *ncontent, const size_t nlen)
 {
-    
-}
-
-CommentNode::~CommentNode()
-{
-    
-}
-
-Node::Type CommentNode::getType()
-{
-    return Node::Comment;
-}
-
-void CommentNode::NewGBObject()
-{
-    NoInstanciate = true;
-    GBObject = GBI::New<CNode>("XmlCommentNode");
-    GBObject->node = this;
-    NoInstanciate = false;
-}
-
-void CommentNode::addStringLen(size_t &len, int indent)
-{
-    checkEscapedContent();
-    // <!-- + content + -->
-    len += lenEscapedContent + 7;
-    if(indent > 0) len += indent + 1;
-}
-
-void CommentNode::addString(char *&data, int indent)
-{
-    checkEscapedContent();
-    if(indent >= 0) 
-    {
-        memset(data, CHAR_SPACE, indent); 
-        data += indent;
-    }
-    memcpy(data, "<!--", 4);
-    data += 4;
-    memcpy(data, escapedContent, lenEscapedContent);
-    data += lenEscapedContent;
-    memcpy(data, "-->", 3);
-    data += 3;
-    if(indent >= 0)
-    {
-        ADD(SCHAR_N);
-    }
+    CommentNode *newComment = XMLTextNode_New(ncontent, nlen);
+    newComment->type = Node::Comment;
+    return newComment;
 }
 
 /*************************************** CDATA ***************************************/
 
-CDATANode::CDATANode() : TextNode()
+CDATANode* XMLCDATA_New()
 {
-    
+    CommentNode *newComment = XMLTextNode_New();
+    newComment->type = Node::Comment;
+    return newComment;
 }
 
-
-CDATANode::CDATANode(const char *ncontent, const size_t nlen) : TextNode(ncontent, nlen)
+CDATANode* XMLCDATA_New(const char *ncontent, const size_t nlen)
 {
-    
+    CommentNode *newComment = XMLTextNode_New(ncontent, nlen);
+    newComment->type = Node::Comment;
+    return newComment;
 }
 
-CDATANode::~CDATANode()
-{
-    
-}
-
-Node::Type CDATANode::getType()
-{
-    return Node::CDATA;
-}
-
-void CDATANode::NewGBObject()
-{
-    NoInstanciate = true;
-    GBObject = GBI::New<CNode>("XmlCDATANode");
-    GBObject->node = this;
-    NoInstanciate = false;
-}
-
-void CDATANode::addStringLen(size_t &len, int indent)
-{
-    checkEscapedContent();
-    // <![CDATA[ + content + ]]>
-    len += lenContent + 12;
-    if(indent) len += indent + 1;
-}
-
-void CDATANode::addString(char *&data, int indent)
-{
-    checkEscapedContent();
-    if(indent >= 0) 
-    {
-        memset(data, CHAR_SPACE, indent); 
-        data += indent;
-    }
-    memcpy(data, "<![CDATA[", 9);
-    data += 9;
-    memcpy(data, content, lenContent);
-    data += lenContent;
-    memcpy(data, "]]>", 3);
-    data += 3;
-    if(indent >= 0)
-    {
-        ADD(SCHAR_N);
-    }
-}

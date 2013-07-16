@@ -19,47 +19,21 @@
 
 ***************************************************************************/
 
-#include "CDocument.h"
+#include "CHTMLDocument.h"
 #include "hdocument.h"
 #include "helement.h"
-#include "../gbi.h"
-
-#define STRINGOPT(_str, _repl, _lenrepl) MISSING(_str) ? _repl : STRING(_str),\
-    MISSING(_str) ? _lenrepl : LENGTH(_str)
 
 /*========== Document */
 
-#undef THIS
-#define THIS ((HtmlDocument*)(static_cast<CDocument*>(_object)->doc))
+#define THIS ((Document*)(static_cast<CDocument*>(_object)->node))
 
-BEGIN_METHOD(CDocument_new, GB_STRING path)
-
-//(static_cast<CDocument*>(_object)->doc) = new HtmlDocument;
-
-if(!MISSING(path))
-{
-    (static_cast<CDocument*>(_object)->doc) = new HtmlDocument(STRING(path), LENGTH(path));
-}
-else
-{
-    (static_cast<CDocument*>(_object)->doc) = new HtmlDocument;
-}
-
+BEGIN_METHOD_VOID(CDocument_new)
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CDocument_free)
 
-//GB.Unref(POINTER(&(THIS->root)));
 
-END_METHOD
-
-BEGIN_METHOD(CDocument_createElement, GB_STRING tagName)
-
-Element *elmt = new Element(STRING(tagName), LENGTH(tagName));
-Node::NoInstanciate = true;
-GBI::Return(elmt);
-Node::NoInstanciate = false;
 
 END_METHOD
 
@@ -67,11 +41,11 @@ BEGIN_PROPERTY(CDocument_Html5)
 
 if(READ_PROPERTY)
 {
-    GB.ReturnBoolean(THIS->html5);
+    GB.ReturnBoolean(THIS->docType == HTMLDocumentType);
 }
 else
 {
-    THIS->html5 = VPROP(GB_BOOLEAN);
+    HtmlDocument_SetHTML(THIS, VPROP(GB_BOOLEAN));
 }
 
 END_PROPERTY
@@ -81,13 +55,13 @@ BEGIN_PROPERTY(CDocument_Title)
 if(READ_PROPERTY)
 {
     char *title; size_t lenTitle;
-    THIS->getGBTitle(title, lenTitle);
+    XML.GBGetXMLTextContent(HtmlDocument_GetTitle(THIS), title, lenTitle);
     GB.ReturnString(title);
 }
 else
 {
-if(PLENGTH() <= 0) return;
-THIS->setTitle(PSTRING(), PLENGTH());
+    if(PLENGTH() <= 0) return;
+    XML.XMLNode_setTextContent(HtmlDocument_GetTitle(THIS), PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -97,13 +71,13 @@ BEGIN_PROPERTY(CDocument_favicon)
 if(READ_PROPERTY)
 {
     char *favicon; size_t lenFavicon;
-    THIS->getGBFavicon(favicon, lenFavicon);
+    XML.GBGetXMLTextContent(HtmlDocument_GetFavicon(THIS), favicon, lenFavicon);
     GB.ReturnString(favicon);
 }
 else
 {
-if(PLENGTH() <= 0) return;
-THIS->setFavicon(PSTRING(), PLENGTH());
+    if(PLENGTH() <= 0) return;
+    XML.XMLNode_setTextContent(HtmlDocument_GetFavicon(THIS), PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -113,94 +87,100 @@ BEGIN_PROPERTY(CDocument_lang)
 if(READ_PROPERTY)
 {
     char *lang; size_t lenLang;
-    THIS->getGBLang(lang, lenLang);
+    XML.GBGetXMLTextContent(HtmlDocument_GetLang(THIS), lang, lenLang);
     GB.ReturnString(lang);
 }
 else
 {
     if(PLENGTH() <= 0) return;
-    THIS->setLang(PSTRING(), PLENGTH());
+    XML.XMLNode_setTextContent(HtmlDocument_GetLang(THIS), PSTRING(), PLENGTH());
+}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CDocument_base)
+
+if(READ_PROPERTY)
+{
+    char *base; size_t lenBase;
+    XML.GBGetXMLTextContent(HtmlDocument_GetBase(THIS), base, lenBase);
+    GB.ReturnString(base);
+}
+else
+{
+    if(PLENGTH() <= 0) return;
+    XML.XMLNode_setTextContent(HtmlDocument_GetBase(THIS), PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_root)
 
-Node::NoInstanciate = true;
-GBI::Return(THIS->root);
-Node::NoInstanciate = false;
+XML.ReturnNode(THIS->root);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_head)
 
-Node::NoInstanciate = true;
-GBI::Return(THIS->getHead());
-Node::NoInstanciate = false;
+XML.ReturnNode(HtmlDocument_GetHead(THIS));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDocument_body)
 
-Node::NoInstanciate = true;
-GBI::Return(THIS->getBody());
-Node::NoInstanciate = false;
+XML.ReturnNode(HtmlDocument_GetBody(THIS));
 
 END_PROPERTY
 
 BEGIN_METHOD(CDocument_getElementById, GB_STRING id; GB_INTEGER depth)
 
-Node::NoInstanciate = true;
-GBI::Return(THIS->getElementById(STRING(id), LENGTH(id), VARGOPT(depth, -1)));
-Node::NoInstanciate = false;
+XML.ReturnNode(HtmlDocument_GetElementById(THIS, STRING(id), LENGTH(id), VARGOPT(depth, -1)));
 
 END_METHOD
 
 BEGIN_METHOD(CDocument_getElementsByClassName, GB_STRING className; GB_INTEGER depth)
 
-Node::NoInstanciate = true;
 if(LENGTH(className) <= 0) return;
 GB_ARRAY array;
-THIS->getElementsByClassName(STRING(className), LENGTH(className), &array, VARGOPT(depth, -1));
+HtmlDocument_GetElementsByClassName(THIS, STRING(className), LENGTH(className), &array, VARGOPT(depth, -1));
 GB.ReturnObject(array);
-Node::NoInstanciate = false;
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_add, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheet(STRING(path), LENGTH(path), STRINGOPT(media, "screen", 6));
+HtmlDocument_AddStyleSheet(THIS, STRING(path), LENGTH(path), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfNotIE, GB_STRING path; GB_STRING media)
 
-THIS->AddStyleSheetIfNotIE(STRING(path), LENGTH(path), STRINGOPT(media, "screen", 6));
+HtmlDocument_AddStyleSheetIfNotIE(THIS, STRING(path), LENGTH(path), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentStyleSheets_addIfIE, GB_STRING path; GB_STRING cond; GB_STRING media)
 
-THIS->AddStyleSheetIfIE(STRING(path), LENGTH(path), 
+HtmlDocument_AddStyleSheetIfIE(THIS, STRING(path), LENGTH(path),
                         STRINGOPT(cond, "IE", 2), STRINGOPT(media, "screen", 6));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_add, GB_STRING path)
 
-THIS->AddScript(STRING(path), LENGTH(path));
+HtmlDocument_AddScript(THIS, STRING(path), LENGTH(path));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_addIfNotIE, GB_STRING path)
 
-THIS->AddScriptIfNotIE(STRING(path), LENGTH(path));
+HtmlDocument_AddScriptIfNotIE(THIS, STRING(path), LENGTH(path));
 
 END_METHOD
 
 BEGIN_METHOD(CDocumentScripts_addIfIE, GB_STRING path; GB_STRING cond)
 
-THIS->AddScriptIfIE(STRING(path), LENGTH(path), STRINGOPT(cond, "IE", 2));
+HtmlDocument_AddScriptIfIE(THIS, STRING(path), LENGTH(path), STRINGOPT(cond, "IE", 2));
 
 END_METHOD
 
@@ -216,34 +196,19 @@ catch(HTMLParseException &e)
 }
 
 END_METHOD*/
-
-BEGIN_PROPERTY(CDocument_base)
-
-if(READ_PROPERTY)
-{
-    char *base; size_t lenBase;
-    THIS->getGBBase(base, lenBase);
-    GB.ReturnString(base);
-}
-else
-{
-THIS->setBase(PSTRING(), PLENGTH());
-}
-
-END_PROPERTY
-
+/*
 BEGIN_METHOD(CDocument_fromString, GB_STRING content)
 
 try
 {
-    THIS->setContent(STRING(content), LENGTH(content));
+    (STRING(content), LENGTH(content));
 }
 catch(XMLParseException &e)
 {
     GB.Error(e.what());
 }
 
-END_METHOD
+END_METHOD*/
 
 
 GB_DESC CDocumentStyleSheetsDesc[] =
@@ -272,13 +237,11 @@ GB_DESC CDocumentDesc[] =
 {
     GB_DECLARE("HtmlDocument", sizeof(CDocument)), GB_INHERITS("XmlDocument"),
 
-    GB_METHOD("_new", "", CDocument_new, "[(Path)s]"),
+    GB_METHOD("_new", "", CDocument_new, ""),
     GB_METHOD("_free", "", CDocument_free, ""),
     
-    
-    GB_METHOD("CreateElement", "XmlElement", CDocument_createElement, "(TagName)s"),
     GB_PROPERTY("Html5", "b", CDocument_Html5),
-    //GB_METHOD("ForceSetContent", "", CDocument_forceSetContent, "(Data)s"),
+
     GB_PROPERTY("Title", "s", CDocument_Title),
     GB_PROPERTY("Favicon", "s", CDocument_favicon),
     GB_PROPERTY("Lang", "s", CDocument_lang),
@@ -286,8 +249,8 @@ GB_DESC CDocumentDesc[] =
     GB_PROPERTY_READ("Head", "XmlElement", CDocument_head),
     GB_PROPERTY_READ("Body", "XmlElement", CDocument_body),
 
-    GB_METHOD("FromString", "", CDocument_fromString, "(Data)s"),
-    GB_METHOD("HtmlFromString", "", CDocument_fromString, "(Data)s"),
+    //GB_METHOD("FromString", "", CDocument_fromString, "(Data)s"),
+    //GB_METHOD("HtmlFromString", "", CDocument_fromString, "(Data)s"),
 
     GB_PROPERTY_SELF("StyleSheets", ".HtmlDocumentStyleSheets"),
     GB_PROPERTY_SELF("Scripts", ".HtmlDocumentScripts"),

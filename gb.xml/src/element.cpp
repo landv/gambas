@@ -20,255 +20,197 @@
 ***************************************************************************/
 
 #include "element.h"
-#include "gbi.h"
-#include <stdlib.h>
-#include "CNode.h"
+
+#include "node.h"
 #include "utils.h"
 #include "textnode.h"
 
+#include <stdlib.h>
+#include <memory.h>
+
 /*************************************** Element ***************************************/
 
-//const char* Element::singleElements = "br\0img\0meta\0input\0area\0base\0co\0command\0embed\0hr\0keygen\0link\0param\0source\0track\0wbr";
-const size_t lenSingleElements[] =      {2 , 3  ,4    ,5     ,4    ,4    ,2  ,7       ,5     ,2  ,5      ,4    ,2     ,6      ,5     ,3};
-const char* Element::singleElements[] = {"br", "img", "meta", "input", "area", "base", "co", "command", "embed", "hr", "keygen", "link", "param", "source", "track", "wbr"};
-#define COUNT_SINGLEELEMENTS 16
-
-Element::Element() : Node(), single(undefined)
+Element* XMLElement_New()
 {
-    tagName = 0;
-    lenTagName = 0;
-    firstAttribute = 0;
-    lastAttribute = 0;
-    attributeCount = 0;
-    prefix = 0;
-    lenPrefix = 0;
-    localName = 0;
-    lenLocalName = 0;
+    Element *newElement = (Element*)malloc(sizeof(Element));
+    memset(newElement, 0, sizeof(Element));
+    XMLNode_Init(newElement, Node::ElementNode);
+    return newElement;
 }
 
-Element::Element(const char *ntagName, size_t nlenTagName) : Node(), single(undefined)
+Element* XMLElement_New(const char *ntagName, size_t nlenTagName)
 {
-    tagName = 0;
-    lenTagName = 0;
-    firstAttribute = 0;
-    lastAttribute = 0;
-    attributeCount = 0;
-    prefix = 0;
-    lenPrefix = 0;
-    localName = 0;
-    lenLocalName = 0;
-    setTagName(ntagName, nlenTagName);
-
+    Element *newElement = XMLElement_New();
+    XMLElement_SetTagName(newElement, ntagName, nlenTagName);
+    return newElement;
 }
 
-Element::~Element()
+void XMLElement_Free(Element *elmt)
 {
     //Releasing tag name
-    if(tagName) free(tagName);
-    free(prefix);
-    free(localName);
-    
-    //Releasing children
-    if(firstChild)
-    {
-        for(Node *node = firstChild->nextNode; node != 0; node = node->nextNode)
-        {
-            removeChild(node->previousNode);
-        }
-        removeChild(lastChild);
-    }
-    
-    //Releasing attributes
-    if(firstAttribute)
-    {
-        for(Attribute *attr = (Attribute*)(firstAttribute->nextNode); attr != 0; attr = (Attribute*)(attr->nextNode))
-        {
-            delete attr->previousNode;
-        }
-        delete lastAttribute;
-    }
-}
+    if(elmt->tagName) free(elmt->tagName);
+    free(elmt->prefix);
+    free(elmt->localName);
 
-Node::Type Element::getType()
-{
-    return Node::ElementNode;
+    //Releasing children
+    XMLNode_clearChildren(elmt);
+
+    //Releasing attributes
+    if(elmt->firstAttribute)
+    {
+        for(Attribute *attr = (Attribute*)(elmt->firstAttribute->nextNode); attr != 0; attr = (Attribute*)(attr->nextNode))
+        {
+            XMLAttribute_Free((Attribute*)(attr->previousNode));
+        }
+        XMLAttribute_Free(elmt->lastAttribute);
+    }
+    free(elmt);
 }
 
 
 
 /***** TagName *****/
 
-void Element::setTagName(const char *ntagName, size_t nlenTagName)
+void XMLElement_SetTagName(Element *elmt, const char *ntagName, size_t nlenTagName)
 {
-    lenTagName = nlenTagName;
-    tagName = (char*)realloc(tagName, sizeof(char) * lenTagName);
-    memcpy(tagName, ntagName, lenTagName);
-    single = undefined;
-    refreshPrefix();
+    elmt->lenTagName = nlenTagName;
+    elmt->tagName = (char*)realloc(elmt->tagName, sizeof(char) * elmt->lenTagName);
+    memcpy(elmt->tagName, ntagName, nlenTagName);
+    XMLElement_RefreshPrefix(elmt);
 
 }
 
-void Element::setPrefix(const char *nprefix, size_t nlenPrefix)
+void XMLElement_SetPrefix(Element *elmt, const char *nprefix, size_t nlenPrefix)
 {
     if(nlenPrefix)
     {
-        tagName = (char*)realloc(tagName, nlenPrefix + lenLocalName + 1);
-        memcpy(tagName, nprefix, nlenPrefix);
-        *(tagName + nlenPrefix) = ':';
-        memcpy(tagName + nlenPrefix + 1, localName, lenLocalName);
+        elmt->tagName = (char*)realloc(elmt->tagName, nlenPrefix + elmt->lenLocalName + 1);
+        memcpy(elmt->tagName, nprefix, nlenPrefix);
+        *(elmt->tagName + nlenPrefix) = ':';
+        memcpy(elmt->tagName + nlenPrefix + 1, elmt->localName, elmt->lenLocalName);
     }
-    else if(lenPrefix)
+    else if(elmt->lenPrefix)
     {
-        tagName = (char*)realloc(tagName, lenLocalName);
-        memcpy(tagName, localName, lenLocalName);
+        elmt->tagName = (char*)realloc(elmt->tagName, elmt->lenLocalName);
+        memcpy(elmt->tagName, elmt->localName, elmt->lenLocalName);
     }
 
 
-    lenPrefix = nlenPrefix;
-    prefix = (char*)realloc(prefix, lenPrefix);
-    if(nlenPrefix) memcpy(prefix, nprefix, nlenPrefix);
+    elmt->lenPrefix = nlenPrefix;
+    elmt->prefix = (char*)realloc(elmt->prefix, nlenPrefix);
+    if(nlenPrefix) memcpy(elmt->prefix, nprefix, nlenPrefix);
 }
 
-void Element::refreshPrefix()
+void XMLElement_RefreshPrefix(Element *elmt)
 {
-    if(!lenTagName)
+    if(!elmt->lenTagName)
     {
-        free(localName);
-        localName = 0;
-        lenLocalName = 0;
-        free(prefix);
-        prefix = 0;
-        lenPrefix = 0;
+        free(elmt->localName);
+        elmt->localName = 0;
+        elmt->lenLocalName = 0;
+        free(elmt->prefix);
+        elmt->prefix = 0;
+        elmt->lenPrefix = 0;
         return;
     }
-    register char* pos = (char*)memrchr(tagName, ':', lenTagName);//Prefix
+    register char* pos = (char*)memrchr(elmt->tagName, ':', elmt->lenTagName);//Prefix
     if(pos)
     {
-        lenLocalName = (tagName + lenTagName) - (pos + 1);
-        lenPrefix = pos - tagName;
-        localName = (char*)realloc(localName, lenLocalName);
-        prefix = (char*)realloc(prefix, lenPrefix);
-        memcpy(prefix, tagName, lenPrefix);
-        memcpy(localName, pos + 1, lenLocalName);
+        elmt->lenLocalName = (elmt->tagName + elmt->lenTagName) - (pos + 1);
+        elmt->lenPrefix = pos - elmt->tagName;
+        elmt->localName = (char*)realloc(elmt->localName, elmt->lenLocalName);
+        elmt->prefix = (char*)realloc(elmt->prefix, elmt->lenPrefix);
+        memcpy(elmt->prefix, elmt->tagName, elmt->lenPrefix);
+        memcpy(elmt->localName, pos + 1, elmt->lenLocalName);
     }
     else
     {
-        lenLocalName = lenTagName;
-        localName = (char*)realloc(localName, sizeof(char) * lenTagName);
-        memcpy(localName, tagName, lenTagName);
-        free(prefix);
-        prefix = 0;
-        lenPrefix = 0;
+        elmt->lenLocalName = elmt->lenTagName;
+        elmt->localName = (char*)realloc(elmt->localName, sizeof(char) * elmt->lenTagName);
+        memcpy(elmt->localName, elmt->tagName, elmt->lenTagName);
+        free(elmt->prefix);
+        elmt->prefix = 0;
+        elmt->lenPrefix = 0;
     }
-}
-
-bool Element::isSingle()
-{
-    if(single != undefined) return single;
-    int i;
-    
-    for(i = 0; i < COUNT_SINGLEELEMENTS; i++)
-    {
-        if(lenTagName == lenSingleElements[i])
-        {
-            if(!memcmp(tagName, singleElements[i], lenTagName))
-            {
-                single = true;
-                return true;
-            }
-        }
-    }
-
-    single = false;
-    return false;
 }
 
 /***** Attributes *****/
 
-void Element::addAttribute(const char *nattrName, const size_t nlenAttrName)
+Attribute* XMLElement_AddAttribute(Element *elmt, const char *nattrName, const size_t nlenAttrName)
 {
-    attributeCount++;
-    Attribute *newAttribute = new Attribute(nattrName, nlenAttrName);
-    if(!lastAttribute)//No attribute
+    elmt->attributeCount++;
+    Attribute *newAttribute = XMLAttribute_New(nattrName, nlenAttrName);
+    newAttribute->parent = elmt;
+    if(!elmt->lastAttribute)//No attribute
     {
-        firstAttribute = newAttribute;
-        lastAttribute = firstAttribute;
-        lastAttribute->previousNode = 0;
-        lastAttribute->nextNode = 0;
-        return;
+        elmt->firstAttribute = newAttribute;
+        elmt->lastAttribute = elmt->firstAttribute;
+        elmt->lastAttribute->previousNode = 0;
+        elmt->lastAttribute->nextNode = 0;
+        return newAttribute;
     }
     
-    newAttribute->previousNode = lastAttribute;
-    lastAttribute->nextNode = newAttribute;
-    lastAttribute = newAttribute;
-    lastAttribute->nextNode = 0;
+    newAttribute->previousNode = elmt->lastAttribute;
+    elmt->lastAttribute->nextNode = newAttribute;
+    elmt->lastAttribute = newAttribute;
+    elmt->lastAttribute->nextNode = 0;
+    return newAttribute;
 }
 
-void Element::addAttribute(const char *nattrName, const size_t nlenAttrName, 
+Attribute* XMLElement_AddAttribute(Element *elmt, const char *nattrName, const size_t nlenAttrName,
                            const char *nattrVal, const size_t nlenAttrVal)
 {
-    attributeCount++;
-    Attribute *newAttribute = new Attribute(nattrName, nlenAttrName,
+    elmt->attributeCount++;
+    Attribute *newAttribute = XMLAttribute_New(nattrName, nlenAttrName,
                                             nattrVal, nlenAttrVal);
-    newAttribute->parent = this;
-    if(!lastAttribute)//No attribute
+    newAttribute->parent = elmt;
+    if(!elmt->lastAttribute)//No attribute
     {
-        firstAttribute = newAttribute;
-        lastAttribute = firstAttribute;
-        lastAttribute->previousNode = 0;
-        lastAttribute->nextNode = 0;
-        return;
+        elmt->firstAttribute = newAttribute;
+        elmt->lastAttribute = elmt->firstAttribute;
+        elmt->lastAttribute->previousNode = 0;
+        elmt->lastAttribute->nextNode = 0;
+        return newAttribute;
     }
     
-    newAttribute->previousNode = lastAttribute;
-    lastAttribute->nextNode = newAttribute;
-    lastAttribute = newAttribute;
-    lastAttribute->nextNode = 0;
+    newAttribute->previousNode = elmt->lastAttribute;
+    elmt->lastAttribute->nextNode = newAttribute;
+    elmt->lastAttribute = newAttribute;
+    elmt->lastAttribute->nextNode = 0;
+    return newAttribute;
 }
 
-Attribute* Element::getAttribute(const char *nattrName, const size_t nlenAttrName, const int mode)
+Attribute* XMLElement_GetAttribute(const Element *elmt, const char *nattrName, const size_t nlenAttrName, const int mode)
 {
-    for(Attribute *node = (Attribute*)(firstAttribute); node != 0; node = (Attribute*)(node->nextNode))
+    for(Attribute *attr = elmt->firstAttribute; attr != 0; attr = (Attribute*)(attr->nextNode))
     {
-        if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
-        {
-            if(!(nlenAttrName == node->lenAttrName)) continue;
-            if(strncasecmp(nattrName, node->attrName, nlenAttrName) == 0) return node;
-        }
-        else if(mode == GB_STRCOMP_LIKE)
-        {
-            if(GB.MatchString(node->attrName, node->lenAttrName, nattrName, nlenAttrName)) return node;
-        }
-        else
-        {
-            if(!(nlenAttrName == node->lenAttrName)) continue;
-            if(memcmp(nattrName, node->attrName, nlenAttrName) == 0) return node;
-        }
+        if(GB_MatchString(attr->attrName, attr->lenAttrName, nattrName, nlenAttrName, mode))
+            return attr;
     }
     return 0;
 }
 
-void Element::setAttribute(const char *nattrName, const size_t nlenAttrName, 
+void XMLElement_SetAttribute(Element *elmt, const char *nattrName, const size_t nlenAttrName,
                            const char *nattrVal, const size_t nlenAttrVal)
 {
-    Attribute *attr = getAttribute(nattrName, nlenAttrName);
+    Attribute *attr = XMLElement_GetAttribute(elmt, nattrName, nlenAttrName);
     if(!attr)
     {
-        addAttribute(nattrName, nlenAttrName, nattrVal, nlenAttrVal);
+        XMLElement_AddAttribute(elmt, nattrName, nlenAttrName, nattrVal, nlenAttrVal);
     }
     else
     {
-        attr->setValue(nattrVal, nlenAttrVal);
+        XMLAttribute_SetValue(attr, nattrVal, nlenAttrVal);
     }
 }
 
 
 
-bool Element::attributeContains(const char *attrName, size_t lenAttrName, const char *value, size_t lenValue)
+bool XMLElement_AttributeContains(const Element *elmt, const char *attrName, size_t lenAttrName, const char *value, size_t lenValue)
 {
-        Attribute *attr = getAttribute(attrName, lenAttrName);
+        Attribute *attr = XMLElement_GetAttribute(elmt, attrName, lenAttrName);
         if(!attr) return false;
-        char *pos = (char*)memchr(attr->attrValue, CHAR_SPACE ,attr->lenAttrValue);
+        char *pos = (char*)memchr(attr->attrValue, ' ' ,attr->lenAttrValue);
         char *oldPos = attr->attrValue;
         
         while(pos)
@@ -278,12 +220,12 @@ bool Element::attributeContains(const char *attrName, size_t lenAttrName, const 
                 if(!memcmp(value, pos + 1, lenValue)) return true;
             }
             oldPos = pos + 1;
-            pos = (char*)memchr(pos, CHAR_SPACE ,attr->lenAttrValue - (attr->attrValue - pos));
+            pos = (char*)memchr(pos, ' ' ,attr->lenAttrValue - (attr->attrValue - pos));
         }
         
         if(((attr->attrValue + attr->lenAttrValue))  == lenValue + oldPos)
         {
-            if(!memcmp(value, oldPos + 1, lenValue)) return true;
+            if(!memcmp(value, oldPos, lenValue)) return true;
         }
         
         return false;
@@ -291,273 +233,104 @@ bool Element::attributeContains(const char *attrName, size_t lenAttrName, const 
 
 }
 
-void Element::removeAttribute(const char *attrName, size_t lenAttrName)
+void XMLElement_RemoveAttribute(Element *elmt, const char *attrName, size_t lenAttrName)
 {
-    Attribute *attr = getAttribute(attrName,lenAttrName);
+    XMLElement_RemoveAttribute(elmt, XMLElement_GetAttribute(elmt, attrName,lenAttrName));
+}
+
+void XMLElement_RemoveAttribute(Element *elmt, Attribute *attr)
+{
     if(!attr) return;
-    if(attr == firstAttribute) firstAttribute = (Attribute*)(attr->nextNode);
-    if(attr == lastAttribute) lastAttribute = (Attribute*)(attr->previousNode);
-    if(attr->nextNode) attr->nextNode->previousNode = (Attribute*)(attr->previousNode);
-    if(attr->previousNode) attr->previousNode->nextNode = (Attribute*)(attr->nextNode);
-    attributeCount--;
-    delete attr;
+    if(attr->parent != elmt) return;
+    if(attr == elmt->firstAttribute) elmt->firstAttribute = (Attribute*)(attr->nextNode);
+    if(attr == elmt->lastAttribute) elmt->lastAttribute = (Attribute*)(attr->previousNode);
+    if(attr->nextNode) attr->nextNode->previousNode = attr->previousNode;
+    if(attr->previousNode) attr->previousNode->nextNode = attr->nextNode;
+    elmt->attributeCount--;
+    XMLAttribute_Free(attr);
 }
 
-/***** String output *****/
-void Element::addStringLen(size_t &len, int indent)
+void XMLElement_SetTextContent(Element *elmt, const char *content, size_t lenContent)
 {
-    // (indent) '<' + prefix:tag + (' ' + attrName + '=' + '"' + attrValue + '"') + '>' \n
-    // + children + (indent) '</' + tag + '>" \n
-    // Or, singlElement :
-    // (indent) '<' + prefix:tag + (' ' + attrName + '=' + '"' + attrValue + '"') + ' />' \n
-    if(isSingle())
-    {
-        len += (4 + lenTagName);
-        if(indent >= 0) len += indent + 1;
-    }
-    else
-    {
-        len += (5 + ((lenTagName) * 2));
-        if(indent >= 0) len += indent * 2 + 2;
-        for(Node *child = firstChild; child != 0; child = child->nextNode)
-        {
-            child->addStringLen(len, indent >= 0 ? indent + 1 : -1);
-        }
-    }
-    
-    for(Attribute *attr = (Attribute*)(firstAttribute); attr != 0; attr = (Attribute*)(attr->nextNode))
-    {
-        len += 4 + attr->lenAttrName + attr->lenAttrValue;
-    }
-    
-    
-    
-}
+    if(!lenContent) return;
 
-void Element::addString(char *&content, int indent)
-{
-    //register char *content = data;
-    bool single = isSingle();
-#define ADD(_car) *content = _car; content++;
-    
-    //Opening tag
-    if(indent > 0)
-    {
-        memset(content, CHAR_SPACE, indent);
-        content += indent;
-    }
-    ADD(CHAR_STARTTAG);
-    memcpy(content, tagName, lenTagName); content += lenTagName;
-    
-    //Attributes
-    for(register Attribute *attr = (Attribute*)firstAttribute; attr != 0; attr = (Attribute*)(attr->nextNode))
-    {
-        ADD(CHAR_SPACE);
-        memcpy(content, attr->attrName, attr->lenAttrName); content += attr->lenAttrName;
-        
-        ADD(CHAR_EQUAL);
-        ADD(CHAR_DOUBLEQUOTE);
-        memcpy(content, attr->attrValue, attr->lenAttrValue); content += attr->lenAttrValue;
-        ADD(CHAR_DOUBLEQUOTE);
-    }
-    
-    if(single)
-    {
-        ADD(CHAR_SPACE);
-        ADD(CHAR_SLASH);
-    }
-    ADD(CHAR_ENDTAG);
-    if(indent >= 0) { ADD(SCHAR_N); }
-    
-    if(!single)
-    {
-    
-        //Content
-        for(register Node *child = firstChild; child != 0; child = child->nextNode)
-        {
-            child->addString(content, indent >= 0 ? indent + 1 : -1);
-        }
-        
-        if(indent > 0)
-        {
-            memset(content, CHAR_SPACE, indent);
-            content += indent;
-        }
-        
-        //Ending Tag    
-        ADD(CHAR_STARTTAG);
-        ADD(CHAR_SLASH);
-        memcpy(content, tagName, lenTagName); content += lenTagName;
-        ADD(CHAR_ENDTAG); 
-        if(indent >= 0) { ADD(SCHAR_N); }
-    
-    }
-    
-    //data = content;
-    
-}
+    XMLNode_clearChildren(elmt);
 
-/***** Text Content *****/
+    TextNode *newChild = XMLTextNode_New(content, lenContent);
 
-void Element::setTextContent(const char *ncontent, const size_t nlen)
-{
-    Node *newText = 0;
-    if(nlen == 0) return;
-    
-    clearChildren();
-    
-    if(!newText)
-    {
-        newText = new TextNode(ncontent, nlen);
-        appendChild(newText);
-    }
-    else
-    {
-        newText->setTextContent(ncontent, nlen);
-    }
-}
+    XMLNode_appendChild(elmt, newChild);
 
-void Element::addTextContentLen(size_t &len)
-{
-    for(Node *node = firstChild; node != 0; node = node->nextNode)
-    {
-        if(node->isComment()) continue;
-        node->addTextContentLen(len);
-    }
-}
-
-void Element::addTextContent(char *&data)
-{
-    for(Node *node = firstChild; node != 0; node = node->nextNode)
-    {
-        if(node->isComment()) continue;
-        node->addTextContent(data);
-    }
-}
-
-
-
-
-/***** Gambas object *****/
-
-void Element::NewGBObject()
-{
-    NoInstanciate = true;
-    GBObject = GBI::New<CNode>("XmlElement");
-    GBObject->node = this;
-    NoInstanciate = false;
 }
 
 /*************************************** Attribute ***************************************/
 
-Attribute::Attribute() : Node()
+Attribute* XMLAttribute_New()
 {
-    attrName = 0;
-    attrValue = 0;
-    lenAttrName = 0;
-    lenAttrValue = 0;
+    Attribute *newAttr = (Attribute*)malloc(sizeof(Attribute));
+    XMLNode_Init(newAttr, Node::AttributeNode);
+    newAttr->attrName = 0;
+    newAttr->attrValue = 0;
+    newAttr->lenAttrName = 0;
+    newAttr->lenAttrValue = 0;
+    return newAttr;
 }
 
-Attribute::Attribute(const char *nattrName, const size_t nlenAttrName) : Node()
+Attribute* XMLAttribute_New(const char *nattrName, const size_t nlenAttrName)
 {
-    attrValue = 0;
-    lenAttrValue = 0;
+    Attribute *newAttr = (Attribute*)malloc(sizeof(Attribute));
+    XMLNode_Init(newAttr, Node::AttributeNode);
+    newAttr->attrValue = 0;
+    newAttr->lenAttrValue = 0;
     
-    lenAttrName = nlenAttrName;
-    attrName = (char*)malloc(sizeof(char)*lenAttrName);
-    memcpy(attrName, nattrName, lenAttrName);
+    newAttr->lenAttrName = nlenAttrName;
+    newAttr->attrName = (char*)malloc(sizeof(char)*nlenAttrName);
+    memcpy(newAttr->attrName, nattrName, nlenAttrName);
+    return newAttr;
 }
 
-Attribute::Attribute(const char *nattrName, const size_t nlenAttrName, 
-                     const char *nattrVal, const size_t nlenAttrVal) : Node()
+Attribute* XMLAttribute_New(const char *nattrName, const size_t nlenAttrName,
+                     const char *nattrVal, const size_t nlenAttrVal)
 {
+    Attribute *newAttr = (Attribute*)malloc(sizeof(Attribute));
+    XMLNode_Init(newAttr, Node::AttributeNode);
+
+    newAttr->lenAttrName = nlenAttrName;
+    newAttr->lenAttrValue = nlenAttrVal;
     
-    lenAttrName = nlenAttrName;
-    lenAttrValue = nlenAttrVal;
+    newAttr->attrName = (char*)malloc(sizeof(char)*(nlenAttrName));
+    memcpy(newAttr->attrName, nattrName, nlenAttrName);
     
-    attrName = (char*)malloc(sizeof(char)*(lenAttrName));
-    memcpy(attrName, nattrName, lenAttrName);
-    
-    attrValue = (char*)malloc(lenAttrValue);
-    memcpy(attrValue, nattrVal, lenAttrValue);
+    newAttr->attrValue = (char*)malloc(nlenAttrVal);
+    memcpy(newAttr->attrValue, nattrVal, nlenAttrVal);
+
+    return newAttr;
 }
 
-Attribute::~Attribute()
+void XMLAttribute_Free(Attribute *attr)
 {
-    if(attrName) free(attrName);
-    if(attrValue) free(attrValue);
+    if(attr->attrName) free(attr->attrName);
+    if(attr->attrValue) free(attr->attrValue);
+
+    free(attr);
+    attr = 0;
 }
 
-void Attribute::setName(const char *nattrName, const size_t nlenAttrName)
+void XMLAttribute_SetName(Attribute *attr, const char *nattrName, const size_t nlenAttrName)
 {
-    lenAttrName = nlenAttrName;
-    if(attrName)
+    attr->lenAttrName = nlenAttrName;
+    attr->attrName = (char*)realloc(attr->attrName, sizeof(char) * attr->lenAttrName);
+    memcpy(attr->attrName, nattrName, attr->lenAttrName);
+}
+
+void XMLAttribute_SetValue(Attribute *attr, const char *nattrVal, const size_t nlenAttrVal)
+{
+    attr->lenAttrValue = nlenAttrVal;
+    if((!nlenAttrVal) && attr->attrValue)
     {
-        attrName = (char*)realloc(attrName, sizeof(char) * lenAttrName);
-    }
-    else
-    {
-        attrName = (char*)malloc(sizeof(char) * lenAttrName);
-    }
-    memcpy(attrName, nattrName, lenAttrName);
-}
-
-void Attribute::setValue(const char *nattrVal, const size_t nlenAttrVal)
-{
-    lenAttrValue = nlenAttrVal;
-    if(!nattrVal)
-    {
-        free(attrValue);
-        attrValue = 0;
+        free(attr->attrValue);
+        attr->attrValue = 0;
         return;
     }
-    if(attrValue)
-    {
-        attrValue = (char*)realloc(attrValue, sizeof(char) * lenAttrValue);
-    }
-    else
-    {
-        attrValue = (char*)malloc(sizeof(char) * lenAttrValue);
-    }
-    memcpy(attrValue, nattrVal, lenAttrValue);
+    attr->attrValue = (char*)realloc(attr->attrValue, sizeof(char) * attr->lenAttrValue);
+    memcpy(attr->attrValue, nattrVal, attr->lenAttrValue);
 }
-
-Node::Type Attribute::getType()
-{
-    return Node::AttributeNode;
-}
-
-void Attribute::addStringLen(size_t &len, int indent)
-{
-    
-}
-
-void Attribute::addString(char *&data, int indent)
-{
-    
-}
-
-void Attribute::setTextContent(const char *ncontent, const size_t nlen)
-{
-    setValue(ncontent, nlen);
-}
-
-void Attribute::addTextContentLen(size_t &len)
-{
-    len += lenAttrValue;
-}
-
-void Attribute::addTextContent(char *&data)
-{
-    memcpy(data, attrValue, lenAttrValue);
-    data += lenAttrValue;
-}
-
-void Attribute::NewGBObject()
-{
-    NoInstanciate = true;
-    GBObject = GBI::New<CNode>("_XmlAttrNode");
-    GBObject->node = this;
-    NoInstanciate = false;
-}
-

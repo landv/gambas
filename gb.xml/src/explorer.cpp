@@ -20,8 +20,12 @@
 ***************************************************************************/
 
 #include "explorer.h"
+
+#include "node.h"
 #include "document.h"
 #include "element.h"
+#include "gbinterface.h"
+#include <memory.h>
 
 
 
@@ -62,8 +66,7 @@ void Explorer::Load(Document *doc)
 
 void Explorer::Clear()
 {
-    //UNREF(loadedDocument);
-    if(loadedDocument) loadedDocument->DestroyParent();
+    if(loadedDocument) XMLNode_DestroyParent((Node*)loadedDocument);
     loadedDocument = 0;
     curNode = 0;
     this->eof = false;
@@ -85,10 +88,10 @@ int Explorer::MoveNext()
         return NODE_ELEMENT;
     }
     //Premier enfant
-    else if(curNode->isElement() && curNode->toElement()->childCount > 0 && !endElement)
+    else if(curNode->type == Node::ElementNode && ((Element*)curNode)->childCount > 0 && !endElement)
     {
-        curNode = (curNode->toElement()->firstChild);
-        return curNode->getType();
+        curNode = (((Element*)curNode)->firstChild);
+        return curNode->type;
     }
     //Si plus d'enfants, frère suivant
     else
@@ -98,7 +101,7 @@ int Explorer::MoveNext()
         if(nextNode)
         {
             curNode = nextNode;
-            return nextNode->getType();
+            return nextNode->type;
         }
         //si plus d'enfants ni de frère, on remonte
         else if(curNode->parent && curNode != loadedDocument->root)

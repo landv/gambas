@@ -22,15 +22,7 @@
 #ifndef CDOCUMENT_H
 #define CDOCUMENT_H
 
-#include "../gambas.h"
-
-class Document;
-
-struct CDocument
-{
-    GB_BASE ob;
-    Document *doc;
-};
+#include "gbinterface.h"
 
 extern GB_DESC CDocumentDesc[];
 

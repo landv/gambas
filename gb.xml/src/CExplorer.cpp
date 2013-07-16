@@ -20,11 +20,11 @@
 ***************************************************************************/
 
 #include "CExplorer.h"
-#include "CDocument.h"
 #include "explorer.h"
-#include "gbi.h"
+
+#include "node.h"
 #include "document.h"
-#include "element.h"
+#include "utils.h"
 
 #undef THIS
 #define THIS (static_cast<CExplorer*>(_object)->explorer)
@@ -51,7 +51,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CExplorer_Node)
 
-GBI::Return(THIS->curNode);
+XML_ReturnNode(THIS->curNode);
 
 END_PROPERTY
 
@@ -67,7 +67,7 @@ THIS = new Explorer;
 
 if(!MISSING(doc))
 {
-    THIS->Load(VARGOBJ(CDocument, doc)->doc);
+    THIS->Load((Document*)(VARGOBJ(CDocument, doc)->node));
 }
 
 END_METHOD
@@ -82,7 +82,7 @@ BEGIN_METHOD(CExplorer_open, GB_STRING path)
 
 try
 {
-    Document *doc = new Document(STRING(path), LENGTH(path));
+    Document *doc = XMLDocument_NewFromFile(STRING(path), LENGTH(path));
     THIS->Load(doc);
 }
 catch(XMLParseException &e)
@@ -107,7 +107,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CExplorer_document, GB_OBJECT doc)
 
-THIS->Load(VARGOBJ(CDocument, doc)->doc);
+THIS->Load((Document*)(VARGOBJ(CDocument, doc)->node));
 
 END_METHOD
 

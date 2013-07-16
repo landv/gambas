@@ -25,13 +25,10 @@
 #ifndef __CXSLT_H
 #define __CXSLT_H
 
-#include "main.h"
-
+#include "../gbinterface.h"
 
 #ifndef __CXSLT_C
-
 extern GB_DESC CXsltDesc[];
-
 #endif
 
 #endif

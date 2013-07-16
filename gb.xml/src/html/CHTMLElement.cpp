@@ -19,31 +19,20 @@
 
 ***************************************************************************/
 
-#include "../CElement.h"
 #include "helement.h"
-#include "../gbi.h"
+#include "cssfilter.h"
+#include "../gbinterface.h"
 
 /*========== Element */
 
-#undef THIS
-#undef THISNODE
-#define THIS (static_cast<CNode*>(_object)->node->toElement())
+#define THIS ((Element*)(static_cast<CNode*>(_object)->node))
 #define THISNODE (static_cast<CNode*>(_object)->node)
-
-BEGIN_METHOD_VOID(CElement_new)
-
-if(Node::NoInstanciate) 
-{
-    delete THISNODE;
-}
-
-END_METHOD
 
 BEGIN_PROPERTY(CElement_id)
 
 if(READ_PROPERTY)
 {
-    Attribute *id = THIS->getId();
+    Attribute *id = HTMLElement_GetId(THIS);
     if(id)
     {
         GB.ReturnNewString(id->attrValue, id->lenAttrValue);
@@ -55,7 +44,7 @@ if(READ_PROPERTY)
 }
 else
 {
-THIS->setId(PSTRING(), PLENGTH());
+    HTMLElement_SetId(THIS, PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
@@ -64,7 +53,7 @@ BEGIN_PROPERTY(CElement_className)
 
 if(READ_PROPERTY) 
 {
-    Attribute *className = THIS->getClassName();
+    Attribute *className = HTMLElement_GetClassName(THIS);
     if(className)
     {
         GB.ReturnNewString(className->attrValue, className->lenAttrValue);
@@ -76,14 +65,14 @@ if(READ_PROPERTY)
 }
 else 
 {
-THIS->setClassName(PSTRING(), PLENGTH());
+    HTMLElement_SetClassName(THIS, PSTRING(), PLENGTH());
 }
 
 END_PROPERTY
 
 BEGIN_METHOD(CElement_matchFilter, GB_STRING filter)
 
-GB.ReturnBoolean(THIS->matchFilter(STRING(filter), LENGTH(filter)));
+GB.ReturnBoolean(HTMLElement_MatchFilter(THIS, STRING(filter), LENGTH(filter)));
 
 END_METHOD
 
@@ -91,7 +80,7 @@ BEGIN_METHOD(CElement_getChildrenByFilter, GB_STRING filter; GB_INTEGER depth)
 
 GB_ARRAY array;
 
-THIS->getGBChildrenByFilter(STRING(filter), LENGTH(filter), &array, VARGOPT(depth, -1));
+HTMLElement_GetGBChildrenByFilter(THIS, STRING(filter), LENGTH(filter), &array, VARGOPT(depth, -1));
 
 GB.ReturnObject(array);
 
@@ -99,7 +88,7 @@ END_METHOD
 
 BEGIN_METHOD(CElement_getChildById, GB_STRING id; GB_INTEGER depth)
 
-GBI::Return(THIS->getChildById(STRING(id), LENGTH(id), VARGOPT(depth, -1)));
+XML.ReturnNode(HTMLElement_GetChildById(THIS, STRING(id), LENGTH(id), VARGOPT(depth, -1)));
 
 END_METHOD
 
@@ -107,7 +96,7 @@ BEGIN_METHOD(CElement_getChildrenByClassName, GB_STRING className; GB_INTEGER de
 
     GB_ARRAY array;
 
-    THIS->getGBChildrenByClassName(STRING(className), LENGTH(className), &array, VARGOPT(depth, -1));
+    HTMLElement_GetGBChildrenByClassName(THIS, STRING(className), LENGTH(className), &array, VARGOPT(depth, -1));
 
     GB.ReturnObject(array);
 
@@ -116,8 +105,6 @@ END_METHOD
 GB_DESC CElementDesc[] =
 {
     GB_DECLARE("XmlElement", sizeof(CNode)),
-    
-    GB_METHOD("_new", "", CElement_new, ""),
 
     GB_PROPERTY("Id", "s", CElement_id),
     GB_PROPERTY("ClassName", "s", CElement_className),
