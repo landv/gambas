@@ -177,14 +177,9 @@ Private Function DoApply() As Boolean
     .Description = Trim(txtDesc.Text)
     .Authors = Trim(txtAuthor.Text)
     .Icon = $sIcon
-    'If cmbStackSize.Index = 0 Then 
-    '  .Stack = 0
-    'Else
-    '  .Stack = Val(Left(cmbStackSize.Text, -1))
-    'Endif
-    '.StackTrace = cmbStackTrace.Index = 0
+    .Profiling = cmbProfile.Index = 0
     .UseTerminal = cmbTerminal.Index = 0
-
+    
     If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
       Project.ResetScan
       Project.DeleteCompiledFiles

@@ -601,7 +601,7 @@ GB_DESC CDnsClientDesc[] =
   GB_CONSTANT("_IsVirtual", "b", TRUE),
   GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "HostName,HostIP,Async=TRUE"),
-  GB_CONSTANT("_DefaultEvent", "s", "EVENT_Finished"),
+  GB_CONSTANT("_DefaultEvent", "s", "Finished"),
 
   GB_END_DECLARE
 };

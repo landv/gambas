@@ -29,7 +29,7 @@ Public Sub Form_Open()
   If $bSvgImage Then
     fchIcon.Filter = ["*.svg", ("SVG image files")]
   Else
-    fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif,*.mng", ("Image files")]
+    fchIcon.Filter = ["*.png;*.jpg;*.jpeg;*.xpm;*.gif;*.mng", ("Image files")]
   Endif
   
   fchIcon.Root = Project.Dir

@@ -133,6 +133,7 @@ void FILE_chgrp(const char *path, const char *group);
 
 bool FILE_exist(const char *path);
 time_t FILE_get_time(const char *path);
+bool FILE_copy(const char *src, const char *dst);
 
 #endif
 

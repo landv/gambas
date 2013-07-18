@@ -5,7 +5,7 @@ Public Struct UndoCommand
   Arg As Variant[]
 End Struct
 
-Private Const DEBUG_ME As Boolean = False
+Private Const DEBUG_ME As Boolean = True
 
 Private Enum CONTEXT_NONE, CONTEXT_UNDO, CONTEXT_REDO
 
@@ -47,10 +47,10 @@ Public Sub Add(sCommand As String, Optional aArg As Variant[])
   
   If $iContext = CONTEXT_UNDO Then
     $aRedo.Add(hCommand)
-    If DEBUG_ME Then Print "Redo: ";
+    If DEBUG_ME Then Print "Add REDO: ";
   Else
     $aUndo.Add(hCommand)
-    If DEBUG_ME Then Print "Undo: ";
+    If DEBUG_ME Then Print "Add UNDO: ";
     If $iContext = CONTEXT_NONE Then $aRedo.Clear
   Endif
   

@@ -88,6 +88,7 @@ Private Sub Decode()
   
   If sType = "application/x-www-form-urlencoded" Then 
     sStr = Read $iMaxLength
+    If Request.Debug Then $sContents = sStr
     If sCharset Then Try sStr = Conv(sStr, sCharset, "UTF-8")
     'LINE INPUT sStr
     Main.DecodeURL(sStr, $aField, $cVal)

@@ -325,13 +325,22 @@ _PUSH_CONST_STRING_2:
 	SP--;
 	SP->type = T_CSTRING;
 	
-	if (desc->constant.translate)
-		SP->_string.addr = (char *)LOCAL_gettext(desc->constant.value._string);
+	if (!desc->constant.value._string)
+	{
+		SP->_string.addr = NULL;
+		SP->_string.len = 0;
+	}
 	else
-		SP->_string.addr = (char *)desc->constant.value._string;
+	{
+		if (desc->constant.translate)
+			SP->_string.addr = (char *)LOCAL_gettext(desc->constant.value._string);
+		else
+			SP->_string.addr = (char *)desc->constant.value._string;
+	
+		SP->_string.len = strlen(SP->_string.addr);
+	}
 	
 	SP->_string.start = 0;
-	SP->_string.len = strlen(SP->_string.addr);
 	SP++;
 	goto _FIN_DEFINED_NO_BORROW;
 

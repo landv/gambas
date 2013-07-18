@@ -190,6 +190,7 @@ public:
 	~MyMainWindow();
 
 	void initProperties();
+	void present();
 	void showActivate(QWidget *parent = 0);
 	//void activateLater() { _activate = true; }
 	void showModal();

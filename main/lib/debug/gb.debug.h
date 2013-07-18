@@ -38,6 +38,7 @@ typedef
     unsigned leave : 1;
     FUNCTION *fp;
     VALUE *bp;
+    VALUE *pp;
     void *op;
     CLASS *cp;
     PCODE *ec;

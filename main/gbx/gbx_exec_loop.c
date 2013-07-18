@@ -1173,11 +1173,14 @@ _CALL:
 				goto _NEXT;
 			}
 			
+			if (EXEC.desc && !CLASS_DESC_is_static_method(EXEC.desc) && !EXEC.object)
+				THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), "_call");
+			
 			goto __CALL_SPEC;
 
 		__CALL_SPEC:
 
-			if (UNLIKELY(!EXEC.desc))
+			if (!EXEC.desc)
 				THROW(E_NFUNC);
 
 			EXEC.native = FUNCTION_is_native(EXEC.desc);

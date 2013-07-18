@@ -504,6 +504,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 	QStyle *style;
 	QStyleOptionFrameV3 optv3;
 	bool a;
+	QBrush save_brush;
 	//QRect rect = opt.rect;
 	
 	if (frame == 0)
@@ -533,7 +534,11 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			optv3.rect = opt.rect;
 			optv3.state = opt.state | QStyle::State_Sunken;
 			optv3.frameShape = QFrame::StyledPanel;
+			
+			save_brush = p->brush();
+			p->setBrush(QBrush());
 			style->drawPrimitive(QStyle::PE_Frame, &optv3, p, w);
+			p->setBrush(save_brush);
 			//style->drawControl(QStyle::CE_ShapedFrame, &optv3, p, w);
 			break;
 			

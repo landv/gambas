@@ -427,8 +427,8 @@ static int CZ_stream_write(GB_STREAM *stream, char *buffer, int len)
 	if ( gzwrite (s->handle, (voidp)buffer, (unsigned)len) == len)
 		return FALSE;
 	
-	gzclose (s->handle);
-	stream->desc=NULL;
+	//gzclose (s->handle);
+	//stream->desc=NULL;
 	return TRUE;
 }
 
@@ -440,11 +440,19 @@ static int CZ_stream_eof(GB_STREAM *stream)
 static int CZ_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	STREAM_COMPRESS *s = (STREAM_COMPRESS *)stream;
-	if (s->mode==MODE_WRITE) return -1;
-	if ( gzread (s->handle, (voidp)buffer, (unsigned)len) == len) return 0;
-	gzclose (s->handle);
-	stream->desc=NULL;
-	return -1;
+	int n;
+	
+	if (s->mode == MODE_WRITE) 
+		return -1;
+	
+	n = gzread(s->handle, (voidp)buffer, (unsigned)len);
+	if (n > 0)
+	{
+		GB.Stream.SetBytesRead(stream, n);
+		return 0;
+	}
+	else
+		return -1;
 }
 
 

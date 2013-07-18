@@ -991,6 +991,7 @@ End
 Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
 
   Dim iInd As Integer
+  Dim hCtrl As CControl
 
   If IsNull(Parent) Then Return
 
@@ -1007,7 +1008,13 @@ Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
 
   If Not bDoNotRemove Then
     hForm.Selection.Remove(Name)
-    If hForm.Master = Me Then hForm.Master = Null
+    If hForm.Master = Me Then 
+      hForm.Master = Null
+      For Each hCtrl In hForm.Selection
+        hForm.Master = hCtrl
+        Break
+      Next
+    Endif
   Endif
 
 End

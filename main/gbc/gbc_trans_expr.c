@@ -698,7 +698,7 @@ bool TRANS_affectation(bool dup)
 		look++;
 	}
 
-	if (!equal)
+	if (!equal || look == JOB->current)
 		return FALSE;
 
 	left = JOB->current;

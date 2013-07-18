@@ -43,7 +43,8 @@
 
 
 static FILE *_finfo;
-
+static char *_buffer = NULL;
+static int _buffer_ptr = 0;
 
 static const char *get_name(int index)
 {
@@ -56,6 +57,23 @@ static const char *get_string(int index)
   return TABLE_get_symbol_name(JOB->class->string, index);
 }
 
+static void print_quoted(FILE *file, const char *str)
+{
+	unsigned char c;
+	
+	for(;;)
+	{
+		c = *str++;
+		if (!c)
+			return;
+		if (c == '\n')
+			fputs("\\n", file);
+		else if (c == '\t')
+			fputs("\\t", file);
+		else
+			fputc(c, file);
+	}
+}
 
 static void dump_name(int index)
 {
@@ -321,32 +339,6 @@ static void create_file(FILE **fw, const char *file)
 	}
 }
 
-static char *read_line(FILE *f, int *plen)
-{
-	int len;
-	char *line;
-	
-	if (!f)
-		return NULL;
-		
-	line = fgets(COMMON_buffer, COMMON_BUF_MAX, f);
-	
-	if (!line)
-		return NULL;
-	
-	len = strlen(line);
-	if (line[len - 1] == '\n')
-	{
-		line[len - 1] = 0;
-		len--;
-	}
-	
-	if (plen)
-		*plen = len;
-		
-	return line;
-}
-
 static void close_file_and_rename(FILE *f, const char *file, const char *dest)
 {
 	if (f)
@@ -371,24 +363,72 @@ static bool exist_bytecode_file(char *name)
 	return exist;
 }
 
+static void read_line(char **line, int *len)
+{
+	int l;
+	char c;
+	int lmax;
+	
+	*line = NULL;
+	*len = 0;
+	
+	if (!_buffer)
+		return;
+	
+	lmax = BUFFER_length(_buffer);
+	if (_buffer_ptr >= lmax)
+		return;
+	
+	*line = &_buffer[_buffer_ptr];
+	
+	l = 0;
+	for(;;)
+	{
+		if (_buffer_ptr >= lmax)
+			break;
+		c = _buffer[_buffer_ptr++];
+		if (c == '\n')
+		{
+			_buffer[_buffer_ptr - 1] = 0;
+			break;
+		}
+		l++;
+	}
+	
+	*len = l;
+}
+
+static bool load_file(const char *name)
+{
+	_buffer_ptr = 0;
+	BUFFER_create(&_buffer);
+	if (BUFFER_load_file(&_buffer, name))
+	{
+		BUFFER_delete(&_buffer);
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
 static void class_update_exported(CLASS *class)
 {
 	FILE *fw = NULL;
-	FILE *fr;
 	char *name;
 	int len;
 	bool inserted = FALSE;
 	bool optional;
 	int cmp;
 	
-	fr = fopen(".list", "r");
-	
-	if (!fr && !class->exported)
+	if (load_file(".list") && !class->exported)
 		return;
+	
+	//if (!fr && !class->exported)
+	//	return;
 	
 	for(;;)
 	{
-		name = read_line(fr, &len);
+		read_line(&name, &len);
 		optional = FALSE;
 
 		if (!name)
@@ -442,8 +482,8 @@ static void class_update_exported(CLASS *class)
 		}
 	}
 	
-	if (fr)
-		fclose(fr);
+	if (_buffer)
+		BUFFER_delete(&_buffer);
 	
 	close_file_and_rename(fw, ".list#", ".list");
 }
@@ -570,7 +610,8 @@ static void insert_class_info(CLASS *class, FILE *fw)
 						break;
 					
 					case T_STRING:
-						fprintf(_finfo, "%s\n", get_string(cst->value));
+						print_quoted(_finfo, get_string(cst->value));
+						export_newline();
 						break;
 
 					default:
@@ -672,7 +713,6 @@ static void output_help(void)
 void CLASS_export(void)
 {
 	FILE *fw = NULL;
-	FILE *fr;
 	char *line;
 	int len;
 	bool inserted = FALSE;
@@ -687,10 +727,10 @@ void CLASS_export(void)
   }
 	
 	class_update_exported(class);
-	
-	fr = fopen(".info", "r");
 
-	line = read_line(fr, &len);
+	load_file(".info");
+	
+	read_line(&line, &len);
 
 	for(;;)
 	{
@@ -706,7 +746,7 @@ void CLASS_export(void)
 		
 			for(;;)
 			{
-				line = read_line(fr, &len);
+				read_line(&line, &len);
 				if (!line || *line == '#')
 					break;
 			}
@@ -735,7 +775,7 @@ void CLASS_export(void)
 				create_file(&fw, ".info#");
 				fputs(line, fw);
 				fputc('\n', fw);
-				line = read_line(fr, NULL);
+				read_line(&line, &len);
 				if (!line || *line == '#')
 					break;
 			}
@@ -746,15 +786,15 @@ void CLASS_export(void)
 				printf("Remove '%s' information from .info file\n", &line[1]);
 			for(;;)
 			{
-				line = read_line(fr, NULL);
+				read_line(&line, &len);
 				if (!line || *line == '#')
 					break;
 			}
 		}
 	}
 	
-	if (fr)
-		fclose(fr);
+	if (_buffer)
+		BUFFER_delete(&_buffer);
 	
 	close_file_and_rename(fw, ".info#", ".info");
 	return;

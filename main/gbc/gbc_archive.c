@@ -112,9 +112,9 @@ static void make_executable(void)
 	const char *err;
 	struct stat info;
 
-	FILE_chdir(FILE_get_dir(ARCH_project));
+	FILE_chdir(FILE_get_dir(ARCH_output));
 	
-	// If we cannot make the archive executable, just print a warning. gbs create an executable cache 
+	// If we cannot make the archive executable, just print a warning. gbs creates an executable cache 
 	// inside /tmp, and /tmp may be mounted with the "noexec" flag.
 	
 	if (stat(TEMP_EXEC, &info) || chmod(TEMP_EXEC, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH))
@@ -193,7 +193,7 @@ void ARCH_init(void)
 
 	ALLOC(&arch_buffer, ARCH_BUFFER_SIZE, "ARCH_init");
 
-	arch_file = fopen(".temp.gambas", "w");
+	arch_file = fopen(FILE_cat(FILE_get_dir(ARCH_output), TEMP_EXEC, NULL), "w");
 	if (arch_file == NULL)
 		THROW("Cannot create temporary archive file: &1", ARCH_output);
 

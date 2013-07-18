@@ -438,7 +438,7 @@ void EXEC_enter(void)
 	if (func->debug)
 		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
 	#endif
-		
+	
 	// Check number of arguments
 
 	if (UNLIKELY(nparam < func->npmin))
@@ -476,7 +476,8 @@ void EXEC_enter(void)
 				SP++;
 			}
 			
-			EXEC.nparam = func->n_param;
+			//EXEC.nparam = func->n_param;
+			nparam = func->n_param;
 		}
 	}
 
@@ -488,7 +489,7 @@ void EXEC_enter(void)
 
 	BP = SP;
 	if (func->vararg)
-		PP = SP - (EXEC.nparam - func->n_param);
+		PP = SP - (nparam - func->n_param);
 	else
 		PP = SP;
 	FP = func;

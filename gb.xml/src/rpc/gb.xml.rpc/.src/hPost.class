@@ -55,6 +55,7 @@ Public Function PostData(Data As String) As String
 
   Buffer = ""
   sCad = ""
+  Http.Async = Mode
   Http.Post("text/xml", Data)
 
   If Mode = False Then

@@ -45,6 +45,9 @@
 #include "CSocket.h"
 #include "CServerSocket.h"
 #include "CDnsClient.h"
+
+//#define DEBUG_ME 1
+
 #define MAX_CLIENT_BUFFER_SIZE 65536
 #define UNIXPATHMAX 108
 
@@ -69,6 +72,25 @@ GB_STREAM_DESC SocketStream =
 	handle: CSocket_stream_handle
 };
 
+#if DEBUG_ME
+static void set_status(CSOCKET *_object, int status)
+{
+	static const char *status_name[] = { "Inactive", "Active", "Pending", "Accepting", "Receiving data", "Searching", "Connecting", "Connected" };
+	static const char *error_name[] = { NULL, NULL, "Cannot create socket", "Connection refused", "Cannot read", "Cannot write", "Host not found", NULL, NULL, NULL,
+		"Cannot bind socket", NULL, NULL, NULL, "Cannot listen", "Cannot bind interface", "Cannot authenticate" };
+	SOCKET->status = status;
+	
+	fprintf(stderr, "gb.net: socket %p: ", THIS);
+	if (status >= 0 && status < 7)
+		fprintf(stderr, "%s", status_name[status]);
+	else if (status >= -16 && status < 0)
+		fprintf(stderr, "%s", error_name[-status]);
+	
+	fprintf(stderr, " (%d)\n", status);
+}
+#else
+#define set_status(_object, _status) SOCKET->status = (_status)
+#endif
 
 bool SOCKET_update_timeout(CSOCKET_COMMON *socket)
 {
@@ -139,7 +161,7 @@ static void CSocket_close(CSOCKET *_object)
 		SOCKET->stream.desc = NULL;
 		close(SOCKET->socket);
 		SOCKET->socket = -1;
-		SOCKET->status = NET_INACTIVE;
+		set_status(THIS, NET_INACTIVE);
 	}
 	
 	if (THIS->OnClose)
@@ -152,7 +174,7 @@ This function is called by DnsClient to inform
 	*************************************************/
 void CSocket_CallBackFromDns(void *_object)
 {
-	//int NoBlock=1;
+	int doNotBlock;
 	int myval=0;
 
 	if ( SOCKET->status != NET_SEARCHING) return;
@@ -168,14 +190,21 @@ void CSocket_CallBackFromDns(void *_object)
 	/* Let's turn socket to async mode */
 	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	/* Third, we connect the socket */
+	
 	THIS->Server.sin_family=AF_INET;
-		THIS->Server.sin_port=htons(THIS->iPort);
-		THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
-		bzero(&(THIS->Server.sin_zero),8);
-	myval=connect(SOCKET->socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
+	THIS->Server.sin_port=htons(THIS->iPort);
+	THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
+	bzero(&(THIS->Server.sin_zero),8);
+	
+	doNotBlock = 1;
+	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
+	myval = connect(SOCKET->socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
+	doNotBlock = 0;
+	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
+	
 	if (!myval || errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
-		SOCKET->status = NET_CONNECTING;
+		set_status(THIS, NET_CONNECTING);
 		GB.Watch (SOCKET->socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
 	}
 	else
@@ -183,7 +212,7 @@ void CSocket_CallBackFromDns(void *_object)
 		GB.Watch (SOCKET->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		SOCKET->stream.desc=NULL;
 		close(SOCKET->socket);
-		SOCKET->status = NET_INACTIVE;
+		set_status(THIS, NET_INACTIVE);
 	}
 	if (THIS->DnsTool)
 		{
@@ -218,7 +247,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	int mylen;
 	void *_object = (void *)param;
 
-	GB.Watch(SOCKET->socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
+	GB.Watch(SOCKET->socket, GB_WATCH_NONE, NULL, 0);
 	
 	if (SOCKET->status != NET_CONNECTING) return;
 	
@@ -227,7 +256,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	an error trying to connect
 	****************************************************/
 	
-	SOCKET->status = CheckConnection(SOCKET->socket);
+	set_status(THIS, CheckConnection(SOCKET->socket));
 	if (SOCKET->status == NET_INACTIVE)
 	{
 		CSocket_stream_internal_error(THIS, NET_CONNECTION_REFUSED, TRUE);
@@ -308,7 +337,7 @@ void CSocket_stream_internal_error(void *_object, int ncode, bool post)
 	CSocket_close(THIS);
 
 	/* fatal socket error handling */
-	SOCKET->status = ncode;
+	set_status(THIS, ncode);
 	
 	if (post)
 	{
@@ -476,7 +505,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 	strcpy(THIS->UServer.sun_path,sPath);
 	if ( (SOCKET->socket=socket(AF_UNIX,SOCK_STREAM,0))==-1 )
 	{
-		SOCKET->status = NET_CANNOT_CREATE_SOCKET;
+		set_status(THIS, NET_CANNOT_CREATE_SOCKET);
 		GB.Ref (THIS);
 		CSocket_post_error(_object); /* Unable to create socket */
 		return 2;
@@ -489,7 +518,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 	
 	if (connect(SOCKET->socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
 	{
-		SOCKET->status = NET_CONNECTED;
+		set_status(THIS, NET_CONNECTED);
 		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 		CSOCKET_init_connected(THIS);
 		/*GB.Watch (SOCKET->socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
@@ -513,7 +542,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 	SOCKET->stream.desc=NULL;
 	close(SOCKET->socket);
 	GB.FreeString(&THIS->sPath);
-	SOCKET->status = NET_CONNECTION_REFUSED;
+	set_status(THIS, NET_CONNECTION_REFUSED);
 
 	GB.Ref (THIS);
 	CSocket_post_error(_object); /* Unable to connect to remote host */
@@ -538,13 +567,13 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 
 	if ( (SOCKET->socket=socket(AF_INET,SOCK_STREAM,0))==-1 )
 	{
-		SOCKET->status = NET_CANNOT_CREATE_SOCKET;
+		set_status(THIS, NET_CANNOT_CREATE_SOCKET);
 		GB.Ref (THIS);
 		CSocket_post_error(_object);
 		return 2;
 	}
 
-	// Set socket to non-blocking mode
+	// Set socket to blocking mode
 	ioctl(SOCKET->socket, FIONBIO, &doNotBlock);
 
 	THIS->iPort=myport;
@@ -571,7 +600,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	it will call to CSocket_CallBack_fromDns,
 	and we'll continue there connection proccess
 	********************************************/
-	SOCKET->status = NET_SEARCHING; /* looking for IP */
+	set_status(THIS, NET_SEARCHING); /* looking for IP */
 	dns_thread_getip(THIS->DnsTool);
 	SOCKET->stream.desc=&SocketStream;
 	THIS->iUsePort=THIS->iPort;
@@ -632,7 +661,7 @@ int CSocket_peek_data(void *_object,char **buf,int MaxLen)
 		GB.Watch (SOCKET->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		SOCKET->stream.desc=NULL;
 		close(SOCKET->socket);
-		SOCKET->status = NET_CANNOT_READ;
+		set_status(THIS, NET_CANNOT_READ);
 		GB.Ref (THIS);
 		CSocket_post_error(_object);
 		return -1;

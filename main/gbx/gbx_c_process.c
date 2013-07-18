@@ -99,7 +99,7 @@ static const char *const _child_error[] = {
 	"cannot initialize pseudo-terminal: ",
 	"cannot plug standard input: ",
 	"cannot plug standard output and standard error: ",
-	"cannot exec program: "
+	"cannot run executable: "
 };
 
 //-------------------------------------------------------------------------
@@ -117,6 +117,33 @@ static void close_fd(int *pfd)
 		close(fd);
 		*pfd = -1;
 	}
+}
+
+static void add_process_to_running_list(CPROCESS *process)
+{
+	if (RunningProcessList)
+		RunningProcessList->prev = process;
+
+	process->next = RunningProcessList;
+	process->prev = NULL;
+
+	RunningProcessList = process;
+
+	process->running = TRUE;
+}
+
+static void remove_process_from_running_list(CPROCESS *process)
+{
+	if (process->prev)
+		process->prev->next = process->next;
+
+	if (process->next)
+		process->next->prev = process->prev;
+
+	if (process == RunningProcessList)
+		RunningProcessList = process->next;
+
+	process->running = FALSE;
 }
 
 static void callback_write(int fd, int type, CPROCESS *process)
@@ -317,19 +344,7 @@ static void stop_process(CPROCESS *process)
 
 	/* Remove from running process list */
 
-	if (process->prev)
-		process->prev->next = process->next;
-
-	if (process->next)
-		process->next->prev = process->prev;
-
-	if (process == RunningProcessList)
-		RunningProcessList = process->next;
-
-	process->running = FALSE;
-
-	/*printf("** stop_process\n");*/
-
+	remove_process_from_running_list(process);
 	stop_process_after(process);
 
 	OBJECT_UNREF(process, "stop_process"); /* Le processus ne tourne plus */
@@ -408,16 +423,15 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	CARRAY *array;
 	int i, n;
 	sigset_t sig, old;
+	int save_errno;
 
-	/* for terminal */
+	// for virtual terminal
 	int fd_master = -1;
 	int fd_slave;
 	char *slave = NULL;
 	//struct termios termios_stdin;
 	//struct termios termios_check;
 	struct termios termios_master;
-
-	init_child();
 
 	if (mode & PM_SHELL)
 	{
@@ -455,6 +469,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 				argv[i] = "";
 		}
 
+		if (*argv[0] == '/' && !FILE_exist(argv[0]))
+			THROW(E_NEXIST);
+		
 		#ifdef DEBUG_ME
 		{
 			int i;
@@ -467,20 +484,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#endif
 	}
 
-	// Adding to the running process list
-
-	OBJECT_REF(process, "run_process");
-
-	if (RunningProcessList)
-		RunningProcessList->prev = process;
-
-	process->next = RunningProcessList;
-	process->prev = NULL;
-
-	RunningProcessList = process;
-
-	process->running = TRUE;
-
 	if (mode & PM_STRING)
 	{
 		process->to_string = TRUE;
@@ -491,12 +494,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	if (mode & PM_TERM)
 	{
 		#ifdef OS_OPENBSD
-		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL)<0)
-			THROW_SYSTEM(errno, NULL);
+		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL) < 0)
+			goto __ABORT_ERRNO;
 		#else
 		fd_master = posix_openpt(O_RDWR | O_NOCTTY);
 		if (fd_master < 0)
-			THROW_SYSTEM(errno, NULL);
+			goto __ABORT_ERRNO;
 
 		grantpt(fd_master);
 		unlockpt(fd_master);
@@ -511,13 +514,22 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		/* Create pipes */
 
 		if ((mode & PM_WRITE) && pipe(fdin) != 0)
-			THROW_SYSTEM(errno, NULL);
+			goto __ABORT_ERRNO;
 
 		if ((mode & PM_READ) && (pipe(fdout) != 0 || pipe(fderr) != 0))
-			THROW_SYSTEM(errno, NULL);
+			goto __ABORT_ERRNO;
 	}
 
-	/* Block SIGCHLD */
+	// Adding to the running process list
+
+	add_process_to_running_list(process);
+	OBJECT_REF(process, "run_process");
+	
+	// Start the SIGCHLD callback
+	
+	init_child();
+
+	// Block SIGCHLD and fork
 
 	sigemptyset(&sig);
 
@@ -529,9 +541,11 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	{
 		stop_process(process);
 		sigprocmask(SIG_SETMASK, &old, &sig);
-		THROW_SYSTEM(errno, NULL);
+		goto __ABORT_ERRNO;
 	}
 
+	// parent process
+	
 	if (pid)
 	{
 		process->pid = pid;
@@ -543,13 +557,13 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (mode & PM_TERM)
 		{
 			if (tcgetattr(fd_master, &termios_master))
-				THROW_SYSTEM(errno, NULL);
+				goto __ABORT_ERRNO;
 				
 			cfmakeraw(&termios_master);
 			//termios_master.c_lflag &= ~ECHO;
 
 			if (tcsetattr(fd_master, TCSANOW, &termios_master))
-				THROW_SYSTEM(errno, NULL);
+				goto __ABORT_ERRNO;
 		}
 
 		if (mode & PM_WRITE)
@@ -599,7 +613,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		sigprocmask(SIG_SETMASK, &old, &sig);
 	}
-	else /* child */
+	
+	// child process
+	
+	else
 	{
 		//bool stdin_isatty = isatty(STDIN_FILENO);
 		
@@ -693,6 +710,13 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	}
 
 	update_stream(process);
+	return;
+	
+__ABORT_ERRNO:
+
+	save_errno = errno;
+	stop_process(process);
+	THROW_SYSTEM(save_errno, NULL);
 }
 
 
@@ -745,38 +769,6 @@ static void callback_child(int signum, intptr_t data)
 	#endif
 }
 
-#if 0
-static void signal_child(int sig, siginfo_t *info, void *context)
-{
-	#ifdef DEBUG_ME
-	fprintf(stderr, "SIGCHLD: _pipe_child[0] = %d\n", _pipe_child[0]);
-	#endif
-	char buffer;
-	int save_errno;
-
-	save_errno = errno;
-			
-	if (_init)
-	{
-		//fprintf(stderr, "SIGCHLD\n");
-		
-		buffer = 42;
-		for(;;)
-		{
-			if (write(_pipe_child[1], &buffer, 1) == 1)
-				break;
-			
-			if (errno != EINTR)
-				ERROR_panic("Cannot write into SIGCHLD pipe: %s", strerror(errno));
-		}
-	}
-	
-	SIGNAL_previous(&_SIGCHLD_handler, sig, info, context);
-	
-	errno = save_errno;
-}
-#endif
-
 static void init_child(void)
 {
 	if (_init)
@@ -788,21 +780,6 @@ static void init_child(void)
 
 	_SIGCHLD_callback = SIGNAL_register(SIGCHLD, callback_child, 0);
 	
-#if 0
-	if (pipe(_pipe_child) != 0)
-		ERROR_panic("Cannot create SIGCHLD pipes: %s", strerror(errno));
-
-	fcntl(_pipe_child[0], F_SETFD, FD_CLOEXEC);
-	fcntl(_pipe_child[1], F_SETFD, FD_CLOEXEC);
-
-	#ifdef DEBUG_ME
-	fprintf(stderr, "_pipe_child[0] = %d\n", _pipe_child[0]);
-	#endif
-
-	SIGNAL_install(&_SIGCHLD_handler, SIGCHLD, signal_child);
-	
-	GB_Watch(_pipe_child[0], GB_WATCH_READ, (void *)callback_child, 0);
-#endif
 	_init = TRUE;
 }
 
@@ -817,16 +794,16 @@ static void exit_child(void)
 
 	SIGNAL_unregister(SIGCHLD, _SIGCHLD_callback);
 
-#if 0
-	GB_Watch(_pipe_child[0], GB_WATCH_NONE, NULL, 0);
-	close(_pipe_child[0]);
-	close(_pipe_child[1]);
-	
-	SIGNAL_uninstall(&_SIGCHLD_handler, SIGCHLD);
-#endif
 	_init = FALSE;
 }
 
+
+static CPROCESS *_CPROCESS_create_process;
+
+static void error_CPROCESS_create()
+{
+	OBJECT_UNREF(_CPROCESS_create_process, "error_CPROCESS_create");
+}
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 {
@@ -837,10 +814,14 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	//if (!name || !*name)
 	//	name = "Process";
 
-	process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
+	_CPROCESS_create_process = process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 
-	init_process(process);
-	run_process(process, mode, cmd, env);
+	ON_ERROR(error_CPROCESS_create)
+	{
+		init_process(process);
+		run_process(process, mode, cmd, env);
+	}
+	END_ERROR
 
 	OBJECT_UNREF_KEEP(process, "CPROCESS_create");
 

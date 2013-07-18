@@ -92,6 +92,7 @@ void DEBUG_break_on_next_line(void)
 	DEBUG_info.leave = FALSE;
 	DEBUG_info.fp = NULL;
 	DEBUG_info.bp = NULL;
+	DEBUG_info.pp = NULL;
 }
 
 
@@ -547,6 +548,7 @@ static void command_go(const char *cmd)
 	DEBUG_info.leave = FALSE;
 	DEBUG_info.fp = NULL;
 	DEBUG_info.bp = NULL;
+	DEBUG_info.pp = NULL;
 }
 
 static void command_step(const char *cmd)
@@ -562,6 +564,7 @@ static void command_next(const char *cmd)
 	DEBUG_info.leave = FALSE;
 	DEBUG_info.fp = FP;
 	DEBUG_info.bp = BP;
+	DEBUG_info.pp = PP;
 }
 
 static void command_from(const char *cmd)
@@ -575,6 +578,7 @@ static void command_from(const char *cmd)
 		DEBUG_info.leave = FALSE;
 		DEBUG_info.fp = sc->fp;
 		DEBUG_info.bp = sc->bp;
+		DEBUG_info.pp = sc->pp;
 	}
 	else
 	{
@@ -583,6 +587,7 @@ static void command_from(const char *cmd)
 		DEBUG_info.leave = TRUE;
 		DEBUG_info.fp = FP;
 		DEBUG_info.bp = BP;
+		DEBUG_info.pp = PP;
 	}
 }
 
@@ -703,6 +708,7 @@ static void command_frame(const char *cmd)
 				if (!frame)
 				{
 					DEBUG_info.bp = context->bp;
+					DEBUG_info.pp = context->pp;
 					DEBUG_info.fp = context->fp;
 					DEBUG_info.op = context->op;
 					DEBUG_info.cp = context->cp;
@@ -715,6 +721,7 @@ static void command_frame(const char *cmd)
 	if (!context)
 	{
 		DEBUG_info.bp = BP;
+		DEBUG_info.pp = PP;
 		DEBUG_info.fp = FP;
 		DEBUG_info.op = OP;
 		DEBUG_info.cp = CP;

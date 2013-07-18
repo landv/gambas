@@ -28,7 +28,7 @@
 
 #include "gambas.h"
 
-GB_INTERFACE GB EXPORT;
+extern GB_INTERFACE GB EXPORT;
 
 #ifndef __C_GSL_C
 extern GB_DESC CGslDesc[];

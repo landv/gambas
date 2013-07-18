@@ -975,7 +975,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	if (align == GB_DRAW_ALIGN_DEFAULT)
 		align = ALIGN_TOP_NORMAL;
 	
-	if (w > 0 && h > 0)
+	if (w > 0 || h > 0)
 	{
 		gt_layout_alignment(layout, w, h, &tw, &th, align, &offx, &offy);
 		if (rich)

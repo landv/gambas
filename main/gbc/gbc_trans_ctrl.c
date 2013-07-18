@@ -960,7 +960,8 @@ void TRANS_for(void)
 
 	control_enter(RS_FOR);
 
-	TRANS_affectation(FALSE);
+	if (!TRANS_affectation(FALSE))
+		THROW(E_SYNTAX);
 
 	if (!CODE_check_pop_local_last(&local))
 		THROW("Loop variable must be local");

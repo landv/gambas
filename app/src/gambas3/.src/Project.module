@@ -5398,5 +5398,7 @@ Public Sub SetBackground(sBackground As String)
   GetBackground()
   Try ActiveForm.OnBackgroundChange
   FMain.OnBackgroundChange
-  
+
+  Try Save
+
 End
