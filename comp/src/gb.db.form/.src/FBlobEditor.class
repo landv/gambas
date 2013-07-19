@@ -1,0 +1,141 @@
+' Gambas class file
+
+Private Const BY_LINE As Integer = 16
+
+Private $sData As String
+Private $sField As String
+Private $bCanEdit As Boolean
+  
+Public Sub Run(sData As String, sField As String, bCanEdit As Boolean) As String
+
+  $sData = sData
+  $sField = sField
+  $bCanEdit = bCanEdit
+  Me.ShowDialog
+  Return $sData
+  
+End
+
+
+Private Sub RefreshView()
+
+  lblSize.Text = Subst("&1 byte(s)", Format(Len($sData), ",0")) & " "
+  gvwPreview.Rows.Count = (Len($sData) + BY_LINE - 1) \ BY_LINE
+
+End
+
+Public Sub Form_Open()
+
+  gvwPreview.Columns.Count = 4
+  gvwPreview.Columns[0].W = gvwPreview.Font.TextWidth("0") * 10
+  gvwPreview.Columns[0].Alignment = Align.Right
+  gvwPreview.Columns[1].W = Desktop.Scale * 2
+  gvwPreview.Columns[2].W = gvwPreview.Font.TextWidth("0") * BY_LINE * 3 + Desktop.Scale * 2
+
+  Me.W = gvwPreview.Font.TextWidth("0") * (BY_LINE * 4 + 10) + Desktop.Scale * 9
+
+  If Not $bCanEdit Then
+    btnLoad.Hide
+    btnClear.Hide
+  Endif
+
+  RefreshView
+
+End
+
+Public Sub gvwPreview_Data(Row As Integer, Column As Integer)
+
+  Dim iPos As Integer
+  Dim sText As String
+  Dim I As Integer
+  Dim sCar As String
+
+  iPos = Row * BY_LINE
+  
+  Select Case Column
+    
+    Case 0
+      sText = CStr(iPos)
+      
+    Case 1
+    
+    Case Else
+
+      For I = iPos + 1 To Min(Len($sData), iPos + BY_LINE)
+        
+        sCar = Mid$($sData, I, 1)
+        If Column = 2 Then
+          sText &= Hex$(Asc(sCar), 2) & " "
+        Else
+          If Asc(sCar) >= 32 And If Asc(sCar) <= 127 Then
+            sText &= sCar
+          Else
+            sText &= "."
+          Endif
+        Endif
+        
+      Next
+    
+  End Select
+  
+  gvwPreview.Data.Text = sText
+
+End
+
+Private Sub Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean)
+  
+  If Right(sTitle) <> "." Then sTitle &= "."
+  If sMsg Then sMsg = "<p>" & sMsg
+  sMsg = "<b>" & sTitle & "</b>" & sMsg
+  
+  If bError Then
+    Message.Error(sMsg) 
+  Else
+    Message.Warning(sMsg)
+  Endif
+
+End
+
+Public Sub btnSave_Click()
+  
+  Dialog.Title = ("Save blob to file")
+  Dialog.Path = File.SetBaseName(Dialog.Path, $sField)
+  If Not File.Ext(Dialog.Path) Then Dialog.Path = File.SetExt(Dialog.Path, "bin")
+  If Dialog.SaveFile() Then Return
+  
+  File.Save(Dialog.Path, $sData)
+  
+Catch
+  
+  Warning(("Unable to save file"), Error.Text)
+  
+End
+
+Public Sub btnLoad_Click()
+  
+  Dialog.Title = ("Load blob from file")
+  If Dialog.OpenFile() Then Return
+  
+  $sData = File.Load(Dialog.Path)
+  RefreshView
+  'GetDataView().TableView_Save($iRow, $iCol, File.Load(Dialog.Path))
+  
+Catch
+  
+  Warning(("Unable to load file"), Error.Text)
+  
+End
+
+Public Sub btnClear_Click()
+  
+  If Message.Warning(("Do you really want to clear blob?"), ("Clear"), ("Cancel")) <> 1 Then Return
+  
+  $sData = ""
+  RefreshView
+  'GetDataView().TableView_Save($iRow, $iCol, "")
+  
+Catch
+  
+  Warning(("Unable to clear blob"), Error.Text)
+  
+End

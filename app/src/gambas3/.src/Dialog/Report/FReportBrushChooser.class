@@ -259,7 +259,7 @@ Private Sub SelectColor(iColor As Integer)
 
   Dim hLabel As Label = FindLabel(iColor)
 
-  If Not FColorChooser.Run($aGradientColors[iColor], True ) Then
+  If Not FColorChooser.Run($aGradientColors[iColor], True) Then
     hLabel.Background = FColorChooser.Value
     $aGradientColors[iColor] = FColorChooser.Value
     dwgGradientColor.Refresh
@@ -352,7 +352,7 @@ Public Sub btnOK_Click()
   End Select
   
   Value = sValue
-  Me.Close(True )
+  Me.Close(True)
   
 End
 

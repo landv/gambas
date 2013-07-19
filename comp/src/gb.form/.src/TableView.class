@@ -256,8 +256,9 @@ Public Sub EditWith(Editor As Control)
   
   If $iCol < 0 Or $iRow < 0 Then Return
   
+  Editor.Reparent($hPanel)
+
   $hEditor = Editor
-  $hEditor.Reparent($hPanel)
   $hEditor.Ignore = False
   
   $bTextBox = False

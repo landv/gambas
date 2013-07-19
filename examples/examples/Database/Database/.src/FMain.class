@@ -50,12 +50,13 @@ Public Sub btnCreate_Click()
 
   hTable.Fields.Add("id", db.Long)
   hTable.Fields.Add("color", db.Integer,, 1)
-  hTable.Fields.Add("firstname", gb.String, 16)
-  hTable.Fields.Add("name", gb.String, 32)
-  hTable.Fields.Add("birth", gb.Date)
-  hTable.Fields.Add("active", gb.Boolean)
-  hTable.Fields.Add("salary", gb.Float)
-  hTable.Fields.Add("comment", gb.String)
+  hTable.Fields.Add("firstname", db.String, 16)
+  hTable.Fields.Add("name", db.String, 32)
+  hTable.Fields.Add("birth", db.Date)
+  hTable.Fields.Add("active", db.Boolean)
+  hTable.Fields.Add("salary", db.Float)
+  hTable.Fields.Add("comment", db.String)
+  hTable.Fields.Add("image", db.Blob)
 
   hTable.PrimaryKey = ["id"]
 

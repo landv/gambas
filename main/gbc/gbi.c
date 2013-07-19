@@ -257,7 +257,8 @@ static void dump_symbol(GB_DESC *desc)
 				break;
 				
 			case 'b':
-				print("%s", desc->val2 ? "True" : "False");
+				if (desc->val2)
+					print("T");
 				break;
 				
 			case 'f':

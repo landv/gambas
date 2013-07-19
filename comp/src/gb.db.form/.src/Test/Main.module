@@ -2,6 +2,18 @@
 
 Public Sub Main()
 
-  Application.Theme = "gambas"
+  Dim hConn As Connection
+  Dim rResult As Result
+  
+  hConn = New Connection("mysql://root@localhost/test")
+  hConn.Password = "mysql"
+  hConn.Open
+  
+  rResult = hConn.Find("test")
+  For Each rResult
+    Print rResult["image"].Length;; Len(rResult["image"].Data)
+  Next
+  
+  hConn.Close
 
 End

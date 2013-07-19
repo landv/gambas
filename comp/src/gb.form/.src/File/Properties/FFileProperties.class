@@ -7,6 +7,13 @@ Private $sPath As String
 Private $iSize As Long
 Private $hTask As Task
 Private $sError As String
+Private $bPreview As Boolean
+Private $hPreview As Picture
+Private $SX As Integer
+Private $SY As Integer
+
+Private TAB_PREVIEW As Integer = 1
+Private TAB_ERROR As Integer = 2
 
 Public Sub Run(sPath As String) As Boolean
   
@@ -78,6 +85,11 @@ Private Sub RefreshPath()
         lblType.Text = String.UCaseFirst(hMime.GetComment())
         Try picIcon.Picture = hMime.GetIcon(64).Picture
         If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
+        
+        If hMime.Type Like "image/*" Then
+          tabInfo[TAB_PREVIEW].Visible = True
+        Endif
+        
       Endif
       
     Endif
@@ -178,17 +190,17 @@ Public Sub Task_Read(sData As String)
   
 End
 
-Private Sub ShowError()
+Private Sub ShowError(Optional sErr As String)
 
-  tabInfo[1].Visible = True
+  If sErr Then $sError &= sErr
+  tabInfo[TAB_ERROR].Visible = True
   txtError.Text = $sError
 
 End
 
 Public Sub Task_Error(Data As String)
   
-  $sError &= Data
-  ShowError
+  ShowError(Data)
   
 End
 
@@ -196,10 +208,8 @@ End
 Public Sub Task_Kill()
   
   Try UpdateSize(Last.Value)
-  If Error Then $sError &= Error.Text
+  If Error Then ShowError(Error.Text & "\n")
   lblSize.Foreground = Color.Default
-  
-  If $sError Then ShowError
   
 End
 
@@ -247,7 +257,43 @@ Public Sub _new()
 
   panIcon.H = 64 + Desktop.Scale * 2
   picIcon.Resize(64, 64)
-  tabInfo[1].Visible = False
+  tabInfo[TAB_PREVIEW].Visible = False
+  tabInfo[TAB_ERROR].Visible = False
   
 End
 
+Public Sub tabInfo_Click()
+
+  If tabInfo.Index = TAB_PREVIEW Then
+    If Not $bPreview Then
+      $bPreview = True
+      Try $hPreview = Picture.Load($sPath)
+      If Error Then
+        ShowError(Error.Text & "\n")
+      Else
+        sarPreview.ResizeContents($hPreview.W, $hPreview.H)
+        lblSizePreview.Text = CStr($hPreview.W) & " × " & CStr($hPreview.H)
+      Endif
+    Endif
+  Endif
+
+End
+
+Public Sub sarPreview_Draw()
+
+  If $hPreview Then Paint.DrawPicture($hPreview, - sarPreview.ScrollX, - sarPreview.ScrollY)
+
+End
+
+Public Sub sarPreview_MouseDown()
+
+  $SX = sarPreview.ScrollX
+  $SY = sarPreview.ScrollY
+
+End
+
+Public Sub sarPreview_MouseMove()
+
+  sarPreview.Scroll($SX - (Mouse.X - Mouse.StartX), $SY - (Mouse.Y - Mouse.StartY))
+
+End

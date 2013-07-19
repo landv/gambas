@@ -111,8 +111,6 @@ Public Sub _new()
     .Resizable = True
   End With
   
-  $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
-  
   Me.Proxy = GetView()
   
   $hRefresh = New Timer As "Refresh"
@@ -245,6 +243,8 @@ Private Sub RefreshView()
   Dim bRichText As Boolean
 
   Inc Application.Busy
+  
+  $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
   
   aSel = GetSelection()
   

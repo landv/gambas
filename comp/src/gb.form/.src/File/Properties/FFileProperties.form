@@ -7,7 +7,7 @@
     MoveScaled(1,1,52,47)
     Expand = True
     Arrangement = Arrange.Vertical
-    Count = 2
+    Count = 3
     Index = 0
     Text = ("General")
     { panIcon HBox
@@ -106,6 +106,24 @@
       }
     }
     Index = 1
+    Text = ("Preview")
+    { sarPreview ScrollArea
+      MoveScaled(5,5,32,24)
+      Mouse = Mouse.SizeAll
+      Expand = True
+      Border = False
+    }
+    { Separator3 Separator
+      MoveScaled(22,34,14,0)
+    }
+    { HBox1 HBox
+      MoveScaled(19,36,28,6)
+      Margin = True
+      { lblSizePreview Label
+        MoveScaled(2,2,11,3)
+      }
+    }
+    Index = 2
     Text = ("Errors")
     Picture = Picture["icon:/small/warning"]
     { txtError TextArea

@@ -1087,6 +1087,7 @@ Public Sub _Rename(hItem As _TreeView_Item)
   Dim W As Integer
   Dim SX As Integer
   
+  _EnsureVisible(hItem)
   Key_Write(hItem.Key)
   
   Do

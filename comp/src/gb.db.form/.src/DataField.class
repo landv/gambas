@@ -36,6 +36,9 @@ Public Function GetWidth(hCtrl As Control, Optional bEdit As Boolean) As Integer
       If iLen = 0 Then iLen = 255
       iLen = Min(32, iLen)
       iWidth = hCtrl.Font.TextWidth("M") * iLen
+      
+    Case db.Blob
+      iWidth = hCtrl.Font.TextWidth("Blob") + 24 * 3
 
   End Select
 

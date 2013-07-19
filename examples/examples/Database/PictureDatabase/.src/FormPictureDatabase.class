@@ -72,7 +72,7 @@ Public Sub Form_Open()
   ' Open database
   ' 
   ' Use somthing like this for a SQLite3 database
-  ModuleDatabase.OpenDatabase("sqlite3", User.Home, Application.Name, "", "")
+  ModuleDatabase.OpenDatabase("sqlite3", User.Home, Application.Name & ".db", "", "")
   '
   ' Use somthing like this for a MySQL database
   'ModuleDatabase.OpenDatabase("mysql", "", Application.Name, "root", "")

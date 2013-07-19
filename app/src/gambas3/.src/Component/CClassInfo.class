@@ -102,6 +102,8 @@ Public Sub InitControl()
 
   'DEBUG Component;; Name
 
+  If Name = "DataControl" Then Stop
+
   hSym = Symbols["_Family"]
   If hSym Then Family = hSym.Value
 

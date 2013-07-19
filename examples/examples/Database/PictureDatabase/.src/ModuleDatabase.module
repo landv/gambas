@@ -104,7 +104,7 @@ Public Sub OpenDatabase(DBType As String, DBHost As String, DBName As String, Us
   ' If you wnat to see the commands sent to the
   ' database then uncommant this line
   ' DB.Debug = TRUE
-  DBName = Lower(DBName)
+  ' DBName = Lower(DBName)
   ' Open a connection (to the database server only)
   databaseConnection.Type = Lower(DBType)
   databaseConnection.Host = DBHost
@@ -160,7 +160,7 @@ End
 Public Sub Add(ImagePath As String)
   Dim img As Image
   Dim newPicture As Result
-  Dim pictureData As String
+  'Dim pictureData As String
   Dim scale As Float
   Dim eTime As Float
   newPicture = databaseConnection.Create("pictures")

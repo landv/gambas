@@ -47,8 +47,8 @@ Public Sub Form_Open()
   Dim hFile As File
   Dim sData As String
 
-  txtPath.Text = $sPath
-  'txtPath.Pos = txtPath.Length
+  fprImport.Path = $sPath
+  'txtPath.Text = $sPath
   
   cmbTable.List = $aTable
   cmbTable.Text = File.BaseName($sPath)
