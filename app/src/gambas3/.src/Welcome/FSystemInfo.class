@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Private $sInfo As String
+
 Public Sub btnClose_Click()
 
   Me.Close
@@ -8,7 +10,7 @@ End
 
 Public Sub btnCopy_Click()
 
-  Clipboard.Copy(txtInfo.Text) 
+  Clipboard.Copy($sInfo)
 
 End
 
@@ -86,14 +88,19 @@ End
 Public Sub Form_Open()
 
   Dim aText As New String[]
+  Dim aLib As New String[]
   Dim sTemp As String
   Dim sFile As String
   Dim cSearch As Collection
+  Dim cFile As Collection
   Dim sPattern As String
+  Dim sText As String
+  Dim I As Integer
+  Dim aLine As String[]
   
   Inc Application.Busy
   
-  txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+  'txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
   aText.Add("[System]")
   aText.Add("OperatingSystem=" & System.Family)
@@ -128,21 +135,49 @@ Public Sub Form_Open()
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
   
-  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*"]
+  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*"]
+  cFile = New Collection
   
-  aText.Add("\n[Libraries]")
-  For Each sFile In RDir("/usr/lib").Sort(gb.IgnoreCase)
+  aText.Add("[Libraries]")
+  For Each sFile In RDir("/usr/lib", "", gb.File, False).Sort(gb.IgnoreCase)
     sFile = File.Name(sFile)
     For Each sPattern In cSearch
-      If sFile Like sPattern Then
-        aText.Add(cSearch.Key & "=" & sFile)
-        'cSearch.Remove(cSearch.Key)
+      If sFile Like sPattern And If Not cFile.Exist(sFile) Then
+        aLib.Add(cSearch.Key & "=" & sFile)
+        cFile[sFile] = True
         Break
       Endif
     Next
   Next
 
-  txtInfo.Text = aText.Join("\n")
+  aText.Insert(aLib.Sort())
+  
+  gvwInfo.Rows.Count = aText.Count
+  gvwInfo.Columns.Count = 3
+  I = 0
+  For Each sText In aText
+    If Left(sText) = "[" Then
+      With gvwInfo[I, 0]
+        .Text = Mid$(sText, 2, -1)
+        .Font.Bold = True
+        .Font.Underline = True
+        .ColumnSpan = 3
+        .Padding = 4
+      End With
+    Else
+      aLine = Split(sText, "=")
+      gvwInfo[I, 0].Text = Space$(4) & Trim(aLine[0])
+      gvwInfo[I, 0].Padding = 4
+      gvwInfo[I, 2].Text = Trim(aLine[1])
+      gvwInfo[I, 2].Padding = 4
+    Endif
+    Inc I
+  Next
+  
+  gvwInfo.Columns[0].Width = -1
+  gvwInfo.Columns[1].Width = Desktop.Scale * 2
+  
+  $sInfo = aText.Join("\n")
   
   Dec Application.Busy
 
