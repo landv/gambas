@@ -23,6 +23,9 @@ Private $hInfo As DataField
 Private $vVal As Variant
 Private $hSource As DataSource
 
+Private $hObs As Observer
+Private $sBlob As String
+
 Public Sub _new()
   
   Me._AutoResize = True
@@ -36,6 +39,7 @@ Private Sub CreateControl()
   Dim hTextArea As TextArea
   Dim hComboBox As ComboBox
   Dim hDateBox As DateBox
+  Dim hButtonBox As ButtonBox
   Dim sType As String
   Dim bFocus As Boolean
   Dim bReadOnly As Boolean
@@ -57,6 +61,9 @@ Private Sub CreateControl()
       Else
         sType = "TextArea"
       Endif
+      
+    Case db.Blob
+      sType = "ButtonBox"
   
   End Select
   
@@ -101,17 +108,29 @@ Private Sub CreateControl()
         hTextArea.ScrollBar = Scroll.Vertical
         'hTextArea.ReadOnly = $hInfo.ReadOnly
       Endif
+      
+    Case db.Blob
+      hButtonBox = $hCtrl
+      hButtonBox.ReadOnly = True
+      'hButtonBox.Border = False
+      hButtonBox.Text = "Blob"
+      hButtonBox.Foreground = Color.LightForeground
+      
+      $hObs = New Observer(hButtonBox) As "ButtonBox"
   
   End Select
   
   bReadOnly = $hInfo.ReadOnly
   'IF $hSource.Index < 0 AND $hInfo.Key THEN bReadOnly = FALSE
   
-  If $hCtrl Is ComboBox Then
-    $hCtrl.Enabled = Not bReadOnly
-  Else
-    Try $hCtrl.ReadOnly = bReadOnly
+  If $hInfo.Type <> db.Blob Then
+    If $hCtrl Is ComboBox Then
+      $hCtrl.Enabled = Not bReadOnly
+    Else
+      Try $hCtrl.ReadOnly = bReadOnly
+    Endif
   Endif
+  
   $hCtrl.Font.Bold = $hInfo.Key
   $hCtrl.Background = If(bReadOnly, Color.ButtonBackground, Color.Default)
   If bFocus Then $hCtrl.SetFocus
@@ -161,7 +180,12 @@ Private Function Modified_Read() As Boolean
   
   Try vVal = GetValue()
   If Error Then Return
-  Return vVal <> $vVal  
+  If TypeOf($vVal) = gb.Object And If $vVal Is Blob Then
+    If Len(vVal) <> $vVal.Length Then Return True
+    Return vVal <> $vVal.Data
+  Else
+    Return vVal <> $vVal  
+  Endif
   
 End
 
@@ -210,7 +234,9 @@ Private Sub Value_Write(vVal As Variant)
       Case db.Float
         vVal = CFloat(vVal)
     
-      Case db.String
+      Case db.Blob
+    
+      Case Else
         vVal = CStr(vVal)
   
     End Select
@@ -261,6 +287,13 @@ Private Sub SetValue(vVal As Variant)
     
     Case db.String
       $hCtrl.Text = vVal
+      
+    Case db.Blob
+      If vVal Is Blob Then
+        $sBlob = vVal.Data
+      Else
+        $sBlob = vVal
+      Endif
   
   End Select
   
@@ -302,10 +335,13 @@ Private Function GetValue() As Variant
       ' Endif
     
     Case db.Boolean
-      Return Choose($hCtrl.Index + 1, True , False , Null )
+      Return Choose($hCtrl.Index + 1, True, False, Null)
         
     Case db.String
       Return $hCtrl.Text
+      
+    Case db.Blob
+      Return $sBlob
   
   End Select
   
@@ -317,14 +353,21 @@ Public Sub SetFocus()
   
 End
 
-' PUBLIC SUB Control_GotFocus()
-'   
-'   RAISE GotFocus
-'   
-' END
-' 
-' PUBLIC SUB Control_LostFocus()
-'   
-'   RAISE LostFocus
-'   
-' END
+Public Sub ButtonBox_Click()
+  
+  If Not FBlobEditor.Run($sBlob, $sKey, Not $hInfo.ReadOnly) Then 
+    Inc Application.Busy
+    $sBlob = FBlobEditor.Data
+    FBlobEditor.Data = ""
+    Dec Application.Busy
+  Endif
+  
+  Stop Event
+  
+End
+
+Public Sub ButtonBox_DblClick()
+  
+  ButtonBox_Click
+  
+End

@@ -359,7 +359,7 @@ Public Sub Editor_KeyPress()
     Case Key.Left
       If $bNoKeyboard Then Return
       If Not Key.Normal Then Return
-      If $bTextBox And If $hEditor.Pos > 0 Then Return
+      If $bTextBox And If Not $hEditor.ReadOnly And If $hEditor.Pos > 0 Then Return
       
       If SaveEditor() Then
         Stop Event
@@ -386,7 +386,7 @@ Public Sub Editor_KeyPress()
     Case Key.Right
       If $bNoKeyboard Then Return
       If Not Key.Normal Then Return
-      If $bTextBox And If $hEditor.Pos < $hEditor.Length Then Return
+      If $bTextBox And If Not $hEditor.ReadOnly And If $hEditor.Pos < $hEditor.Length Then Return
       
       If SaveEditor() Then
         Stop Event

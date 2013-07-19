@@ -15,6 +15,7 @@ Event Activate
 
 Property Picture As Picture
 Property Text As String
+Property Pos As Integer
 Property Read Length As Integer
 Property ReadOnly As Boolean
 Property Border As Boolean
@@ -254,4 +255,16 @@ Public Sub _AddButton(hButton As ToolButton)
   
   hButton.Reparent($hBackground)
   
+End
+
+Private Function Pos_Read() As Integer
+
+  Return $hTextBox.Pos
+
+End
+
+Private Sub Pos_Write(Value As Integer)
+
+  $hTextBox.Pos = Value
+
 End

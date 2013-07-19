@@ -183,35 +183,39 @@ Public Sub SetOrientation(iOrientation As Integer)
   Select Case iOrientation
     Case Align.Top
       sepBrowser.H = 1
-      panBrowser.Raise
-      sepBrowser.Raise
-      dvwBrowser.Raise
+      'panBrowser.Raise
+      'sepBrowser.Raise
+      'dvwBrowser.Raise
       panBrowser.H = $W
       panBrowser.Arrangement = Arrange.Horizontal
+      panBorder.Invert = True
       panBorder.Arrangement = Arrange.Vertical
     Case Align.Bottom
       sepBrowser.H = 1
-      dvwBrowser.Raise
-      sepBrowser.Raise
-      panBrowser.Raise
+      'dvwBrowser.Raise
+      'sepBrowser.Raise
+      'panBrowser.Raise
       panBrowser.H = $W
       panBrowser.Arrangement = Arrange.Horizontal
+      panBorder.Invert = False
       panBorder.Arrangement = Arrange.Vertical
     Case Align.Left
       sepBrowser.W = 1
-      panBrowser.Raise
-      sepBrowser.Raise
-      dvwBrowser.Raise
+      'panBrowser.Raise
+      'sepBrowser.Raise
+      'dvwBrowser.Raise
       panBrowser.W = $W
       panBrowser.Arrangement = Arrange.Vertical
+      panBorder.Invert = True
       panBorder.Arrangement = Arrange.Horizontal
     Case Align.Right
       sepBrowser.W = 1
-      dvwBrowser.Raise
-      sepBrowser.Raise
-      panBrowser.Raise
+      'dvwBrowser.Raise
+      'sepBrowser.Raise
+      'panBrowser.Raise
       panBrowser.W = $W
       panBrowser.Arrangement = Arrange.Vertical
+      panBorder.Invert = False
       panBorder.Arrangement = Arrange.Horizontal
     Default 
       Return

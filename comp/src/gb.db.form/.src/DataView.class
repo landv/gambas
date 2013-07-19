@@ -392,7 +392,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   Dim iIndex As Integer
   Dim iType As Integer
   Dim vVal As Variant
-  Dim hFont As Font
+  'Dim hFont As Font
   
   If $iNoRefresh Then Return
   
@@ -405,9 +405,6 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
     iType = $aType[Column].Type
     If iType = db.Blob Then
       .Text = "Blob"
-      hFont = .Font
-      hFont.Bold = True
-      .Font = hFont
       .Foreground = Color.LightForeground
       Return
     Else If iType = db.Integer Or If iType = db.Float Then
@@ -1234,14 +1231,11 @@ End
 
 Public Sub ButtonBox_Click()
   
-  Dim sData As String
-  
-  sData = FBlobEditor.Run($hTable[$hCtrl.Row][$aColumnsIndex[$hCtrl.Column]].Data, $aColumns[$hCtrl.Column], CanEdit())
-  If CanEdit() Then
-    Inc Application.Busy
-    TableView_Save($hCtrl.Row, $hCtrl.Column, sData)
-    Dec Application.Busy
-  Endif
+  If FBlobEditor.Run($hTable[$hCtrl.Row][$aColumnsIndex[$hCtrl.Column]].Data, $aColumns[$hCtrl.Column], CanEdit()) Then Return
+  Inc Application.Busy
+  TableView_Save($hCtrl.Row, $hCtrl.Column, FBlobEditor.Data)
+  FBlobEditor.Data = ""
+  Dec Application.Busy
   
 End
 

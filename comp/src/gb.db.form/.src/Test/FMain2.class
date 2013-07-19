@@ -4,7 +4,7 @@
 
 Public Sub Form_Open()
 
-  'DB.Debug = True
+  DB.Debug = True
   'DataSource2.Connection = DB.Current
   
 End
@@ -55,6 +55,6 @@ End
 
 Public Sub DataSource1_BeforeSave(Data As Result)
 
-  Data["color"] = DataSource2["color"]
+  If DataSource2["color"] Then Data["color"] = DataSource2["color"]
 
 End

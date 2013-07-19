@@ -2,17 +2,24 @@
 
 Private Const BY_LINE As Integer = 16
 
+Static Public Data As String
+
+Private $W As Integer
 Private $sData As String
 Private $sField As String
 Private $bCanEdit As Boolean
+
+Private $iRow As Integer
+Private $iPos As Integer
   
-Public Sub Run(sData As String, sField As String, bCanEdit As Boolean) As String
+Public Sub Run(sData As String, sField As String, bCanEdit As Boolean) As Boolean
 
   $sData = sData
   $sField = sField
   $bCanEdit = bCanEdit
   Me.ShowDialog
-  Return $sData
+  If sData = $sData Then Return True
+  Data = $sData
   
 End
 
@@ -21,18 +28,21 @@ Private Sub RefreshView()
 
   lblSize.Text = Subst("&1 byte(s)", Format(Len($sData), ",0")) & " "
   gvwPreview.Rows.Count = (Len($sData) + BY_LINE - 1) \ BY_LINE
+  $iRow = -1
 
 End
 
 Public Sub Form_Open()
 
+  $W = gvwPreview.Font.TextWidth("0")
+
   gvwPreview.Columns.Count = 4
-  gvwPreview.Columns[0].W = gvwPreview.Font.TextWidth("0") * 10
+  gvwPreview.Columns[0].W = $W * 10
   gvwPreview.Columns[0].Alignment = Align.Right
   gvwPreview.Columns[1].W = Desktop.Scale * 2
-  gvwPreview.Columns[2].W = gvwPreview.Font.TextWidth("0") * BY_LINE * 3 + Desktop.Scale * 2
+  gvwPreview.Columns[2].W = $W * BY_LINE * 3 + Desktop.Scale * 2
 
-  Me.W = gvwPreview.Font.TextWidth("0") * (BY_LINE * 4 + 10) + Desktop.Scale * 9
+  Me.W = $W * (BY_LINE * 4 + 10) + Desktop.Scale * 9
 
   If Not $bCanEdit Then
     btnLoad.Hide
@@ -43,44 +53,55 @@ Public Sub Form_Open()
 
 End
 
-Public Sub gvwPreview_Data(Row As Integer, Column As Integer)
+Public Sub gvwPreview_MouseMove()
 
+  Dim iRow As Integer
+  Dim iCol As Integer
   Dim iPos As Integer
-  Dim sText As String
-  Dim I As Integer
-  Dim sCar As String
-
-  iPos = Row * BY_LINE
+  Dim X, Y As Integer
   
-  Select Case Column
-    
-    Case 0
-      sText = CStr(iPos)
-      
-    Case 1
-    
+  Try X = Mouse.X
+  If Error Then
+    X = Mouse.ScreenX - gvwPreview.ScreenX
+    Y = Mouse.ScreenY - gvwPreview.ScreenY
+  Else
+    Y = Mouse.Y
+  Endif
+  
+  iRow = gvwPreview.RowAt(Mouse.Y)
+  iCol = gvwPreview.ColumnAt(Mouse.X)
+  
+  Select Case iCol
+    Case 2
+      iRow = iRow
+      iPos = (Mouse.X - gvwPreview.Columns[iCol].X) \ ($W * 3)
+    Case 3
+      iRow = iRow
+      iPos = (Mouse.X - gvwPreview.Columns[iCol].X) \ $W
     Case Else
-
-      For I = iPos + 1 To Min(Len($sData), iPos + BY_LINE)
-        
-        sCar = Mid$($sData, I, 1)
-        If Column = 2 Then
-          sText &= Hex$(Asc(sCar), 2) & " "
-        Else
-          If Asc(sCar) >= 32 And If Asc(sCar) <= 127 Then
-            sText &= sCar
-          Else
-            sText &= "."
-          Endif
-        Endif
-        
-      Next
-    
+      iRow = -1
   End Select
   
-  gvwPreview.Data.Text = sText
-
+  iPos = Max(0, Min(BY_LINE - 1, iPos))
+  If iRow >= 0 And If (iRow * BY_LINE + iPos) > Len($sData) Then iRow = -1
+  
+  If iRow <> $iRow Or If iPos <> $iPos Then
+    $iRow = iRow
+    $iPos = iPos
+    gvwPreview.Rows[$iRow].Refresh
+  Endif
+  
 End
+
+Public Sub gvwPreview_Leave()
+  
+  If $iRow >= 0 Then
+    $iRow = -1
+    gvwPreview.Rows[$iRow].Refresh
+  Endif
+  
+End
+
 
 Private Sub Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean)
   
@@ -138,4 +159,70 @@ Catch
   
   Warning(("Unable to clear blob"), Error.Text)
   
+End
+
+Public Sub gvwPreview_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim iPos As Integer
+  Dim sText As String
+  Dim I As Integer
+  Dim sCar As String
+  Dim SX As Integer
+
+  Paint.Background = Color.TextForeground
+
+  iPos = Row * BY_LINE
+  
+  Select Case Column
+    
+    Case 0
+      sText = CStr(iPos)
+      Paint.DrawText(sText, X, Y, Width, Height, Align.Right)
+      
+    Case 1
+      Return
+    
+    Case 2
+
+      SX = X
+      For I = iPos + 1 To Min(Len($sData), iPos + BY_LINE)
+        
+        sCar = Hex$(Asc($sData, I), 2)
+        Paint.DrawText(sCar, SX, Y, Width, Height, Align.Left)
+        SX += $W * 3
+        
+      Next
+    
+    Case 3
+
+      SX = X
+      For I = iPos + 1 To Min(Len($sData), iPos + BY_LINE)
+        
+        sCar = Mid$($sData, I, 1)
+        If Asc(sCar) < 32 Or If Asc(sCar) >= 127 Then sCar = "."
+        Paint.DrawText(sCar, SX, Y, Width, Height, Align.Left)
+        SX += $W
+        
+      Next
+    
+  End Select
+  
+  If $iRow = Row Then
+    If Column = 2 Then
+      Paint.Background = Color.SetAlpha(Color.SelectedBackground, 128)
+      Paint.Rectangle(X + $iPos * $W * 3, Y, $W * 2, Height)
+      Paint.Fill
+    Else If Column = 3 Then
+      Paint.Background = Color.SetAlpha(Color.SelectedBackground, 128)
+      Paint.Rectangle(X + $iPos * $W, Y, $W, Height)
+      Paint.Fill
+    Endif
+  Endif
+
+End
+
+Public Sub gvwPreview_Scroll()
+
+  gvwPreview_MouseMove
+
 End
