@@ -193,6 +193,7 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 
 	THIS->desc.host = GB.NewZeroString(url);
 	THIS->desc.name = GB.NewZeroString(name);
+	return;
 
 __BAD_URL:
 
