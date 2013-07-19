@@ -142,7 +142,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	#endif
 	int dmax = 0, d;
 	int sexp, nexp;
-	bool swap, autoresize;
+	bool swap, autoresize, invert;
 	#ifndef GET_MAX_SIZE
 	bool has_expand_children = false;
 	#endif
@@ -203,7 +203,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
 
-		rtl = IS_RIGHT_TO_LEFT() ^ arr->invert;
+		invert = arr->invert;
+		rtl = IS_RIGHT_TO_LEFT() ^ invert;
 		rtlm = rtl ? -1 : 1;
 		swap = (arr->mode & 1) == 0; // means "vertical"
 
@@ -250,7 +251,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			{
 				if (swap)
 				{
-					yc += indent;
+					if (!invert)
+						yc += indent;
 					hc -= indent;
 				}
 				else
@@ -280,8 +282,16 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			y = yc;
 			w = h = 0;
 
-			if (rtl && !swap)
-				x += wc;
+			if (swap)
+			{
+				if (invert)
+					y += hc;
+			}
+			else
+			{
+				if (rtl)
+					x += wc;
+			}
 			
 			wid = 0;
 			RESET_CHILDREN_LIST();
@@ -362,7 +372,12 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						if (!first)
 						{
 							if (swap)
-								y += spacing;
+							{
+								if (invert)
+									y -= spacing;
+								else
+									y += spacing;
+							}
 							else
 								x += spacing * rtlm;
 						}
@@ -388,8 +403,16 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								if (w != GET_WIDGET_W(wid) || h != GET_WIDGET_H(wid))
 									redo = true;
 
-								MOVE_RESIZE_WIDGET(ob, wid, x, y, w, h);
-								y += h;
+								if (invert)
+								{
+									y -= h;
+									MOVE_RESIZE_WIDGET(ob, wid, x, y, w, h);
+								}
+								else
+								{
+									MOVE_RESIZE_WIDGET(ob, wid, x, y, w, h);
+									y += h;
+								}
 							}
 						}
 						else
@@ -441,7 +464,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 						if (swap)
 						{
-							if (rtl)
+							if (rtl || invert)
 							{
 								if ((y > yc) && ((y + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) > hc))
 								{
