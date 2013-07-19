@@ -809,27 +809,6 @@ GB_DESC CResultDesc[] =
 
 /** Blob *******************************************************************/
 
-static bool _convert_blob(CBLOB *_object, GB_TYPE type, GB_VALUE *conv)
-{
-	if (BLOB)
-	{
-		switch (type)
-		{
-			case GB_T_STRING:
-			case GB_T_CSTRING:
-				conv->_string.value.addr = BLOB->data;
-				conv->_string.value.start = 0;
-				conv->_string.value.len = BLOB->length;
-				return FALSE;
-				
-			default:
-				return TRUE;
-		}
-	}
-	else
-		return TRUE;
-}
-
 /*static int check_blob(CBLOB *_object)
 {
 	return check_result(BLOB->result) || (BLOB->result->pos != BLOB->pos);
@@ -932,7 +911,6 @@ GB_DESC CBlobDesc[] =
 	//GB_PROPERTY_READ("Result", "Result", CBLOB_result),
 	GB_PROPERTY("Data", "s", CBLOB_data),
 	GB_PROPERTY_READ("Length", "i", CBLOB_length),
-	GB_INTERFACE("_convert", &_convert_blob),
 	//GB_METHOD("_unknown", "v", CBLOB_unknown, "v"),
 
 	GB_END_DECLARE
