@@ -74,8 +74,8 @@ bool EXEC_enum_next(PCODE code)
 
 	defined = EXEC_object(local, &class, &object);
 	cenum = (CENUM *)local[1]._object.object;
-	//if (!cenum)
-	//	return TRUE;
+	if (!cenum)
+		return TRUE;
 
 	if (cenum->stop)
 		goto __STOP;
@@ -98,7 +98,7 @@ bool EXEC_enum_next(PCODE code)
 	
 __STOP:
 
-	//OBJECT_UNREF(cenum);
-	//local[1]._object.object = NULL;
+	OBJECT_UNREF(cenum);
+	local[1]._object.object = NULL;
 	return TRUE;
 }
