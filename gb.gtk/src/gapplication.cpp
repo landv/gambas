@@ -1207,6 +1207,13 @@ int gApplication::getScrollbarSize()
 	gint trough_border;
 	gint slider_width;
 	
+	if (g_type_from_name("OsBar"))
+	{
+		char *env = getenv("LIBOVERLAY_SCROLLBAR");
+		if (!env || *env != '0')
+			return 1;
+	}
+	
   gtk_style_get(gt_get_style("GtkScrollbar", GTK_TYPE_SCROLLBAR), GTK_TYPE_SCROLLBAR,
 		"slider-width", &slider_width,
 		"trough-border", &trough_border,

@@ -284,7 +284,10 @@ void gScrollBar::resize(int w, int h)
 		adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 		g_object_ref(adj);
 
+		g_object_ref(widget);
+		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(widget)), widget);
 		gtk_widget_destroy(widget);
+		g_object_unref(widget);
 		
 		if (type == GTK_TYPE_VSCROLLBAR)
 			widget = gtk_vscrollbar_new(adj);
