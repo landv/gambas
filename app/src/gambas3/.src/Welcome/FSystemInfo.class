@@ -97,6 +97,7 @@ Public Sub Form_Open()
   Dim sText As String
   Dim I As Integer
   Dim aLine As String[]
+  Dim sDir As String
   
   Inc Application.Busy
   
@@ -135,18 +136,21 @@ Public Sub Form_Open()
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
   
-  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*"]
+  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", "OpenGL": "libGL.so.*.*.*", 
+    "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
   cFile = New Collection
   
   aText.Add("[Libraries]")
-  For Each sFile In RDir("/usr/lib", "", gb.File, False).Sort(gb.IgnoreCase)
-    sFile = File.Name(sFile)
-    For Each sPattern In cSearch
-      If sFile Like sPattern And If Not cFile.Exist(sFile) Then
-        aLib.Add(cSearch.Key & "=" & sFile)
-        cFile[sFile] = True
-        Break
-      Endif
+  For Each sDir In ["/lib", "/usr/lib"]
+    For Each sFile In RDir(sDir, "", gb.File, False).Sort(gb.IgnoreCase)
+      sFile = File.Name(sFile)
+      For Each sPattern In cSearch
+        If sFile Like sPattern And If Not cFile.Exist(sFile) Then
+          aLib.Add(cSearch.Key & "=" & sFile)
+          cFile[sFile] = True
+          Break
+        Endif
+      Next
     Next
   Next
 

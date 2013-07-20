@@ -108,6 +108,7 @@ public:
     };
 
     void addToTray();
+    XVisualInfo* getSysTrayVisualInfo();
 
     // QObject::event is public but QWidget's ::event() re-implementation
     // is protected ;(
@@ -119,9 +120,12 @@ public:
     static QCoreApplication::EventFilter oldEventFilter;
     static bool sysTrayTracker(void *message, long *result);
     static Window locateSystemTray();
-    static Atom sysTraySelection;
+    static Atom NET_SYSTEM_TRAY_SELECTION;
+    static Atom NET_SYSTEM_TRAY_VISUAL;
+    static XVisualInfo sysTrayVisual;
 
 protected:
+		virtual void drawContents(QPainter *p);
     void paintEvent(QPaintEvent *pe);
     //void resizeEvent(QResizeEvent *re);
     bool x11Event(XEvent *event);
@@ -129,9 +133,9 @@ protected:
     //void mouseDoubleClickEvent(QMouseEvent *event);
     //void wheelEvent(QWheelEvent *event);
     //bool event(QEvent *e);
-
 private:
-    QPixmap background;
+  QPixmap background;
+  Colormap colormap;
 };
 
 #endif

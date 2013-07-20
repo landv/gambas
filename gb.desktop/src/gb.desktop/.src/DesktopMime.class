@@ -40,27 +40,33 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   Dim sKey As String
   Dim sMime As String = _$sType
   Dim sDir As String
+  Dim sSize As String
   
   sKey = sMime & ":" & CStr(Size)
   sMime = Replace(sMime, "/", "-")
   hImage = $cIconCache[sKey]
   
   For Each sDir In [Desktop.DataDir &/ "icons", "/usr/share/icons"]
-    sPath = Subst(sDir &/ "hicolor/&1x&1/mimetypes/&2.png", CStr(Size), sMime)
-    If Exist(sPath) Then 
-      Try hImage = Image.Load(sPath)
-      If hImage Then Break
-    Endif
+    For Each sSize In [CStr(Size), "128", "64", "32"]      
+      sPath = Subst(sDir &/ "hicolor/&1x&1/mimetypes/&2.png", sSize, sMime)
+      If Exist(sPath) Then 
+        Try hImage = Image.Load(sPath)
+        If hImage Then Break
+      Endif
+    Next
+    If hImage Then Break
   Next
   
   If Not hImage Then
     sPath = Subst("/usr/share/pixmaps/&1.png", sMime)
-    If Exist(sPath) Then Try hImage = Image.Load(sPath).Stretch(Size, Size)
+    If Exist(sPath) Then Try hImage = Image.Load(sPath)
   Endif
 
   If Not hImage Then
     Try hImage = Stock[CStr(Size) &/ "$(mime)" &/ sMime, CStr(Size) &/ "$(mime)" &/ _$sGenericIcon].Image
   Endif
+  
+  If hImage.W <> Size Or If hImage.H <> 16 Then hImage = hImage.Stretch(Size, Size)
   
   $cIconCache[sKey] = hImage
   Return hImage

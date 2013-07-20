@@ -649,16 +649,25 @@ End
 
 Private Sub Ellipsize(sText As String, hFont As Font, W As Integer, H As Integer) As String
   
-  Dim sCar As String = "…"
+  Dim sPoints As String = "…"
   Dim iPos As Integer
+  Dim sCar As String
+  Dim bMarkup As Boolean
   
   If Not sText Then Return
   
   For iPos = 1 To String.Len(sText)
-    If hFont.RichTextHeight(String.Left(sText, iPos) & sCar, W) > H Then Break
+    sCar = String.Mid(sText, iPos, 1)
+    If sCar = "<" Then
+      bMarkup = True
+    Else If sCar = ">" Then
+      bMarkup = False
+    Endif
+    If bMarkup Then Continue
+    If hFont.RichTextHeight(String.Left(sText, iPos) & sPoints, W) > H Then Break
   Next
   
-  Return String.Left(sText, iPos - 1) & sCar
+  Return String.Left(sText, iPos - 1) & sPoints
   
 End
 

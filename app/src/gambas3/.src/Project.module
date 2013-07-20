@@ -239,6 +239,22 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
 
+  ' Dim hImage As Image = Image.Load("img/logo/logo-32-head.png").Stretch(24, 24)
+  ' Dim iVal As Integer
+  ' Dim I As Integer
+  ' 
+  ' hImage.Format = "RGBA"
+  ' Print hImage.Format;; hImage.W;; hImage.H
+  ' 
+  ' Print "{"
+  ' For I = 0 To hImage.W * hImage.H * 4 - 1
+  '   Print Byte@(hImage.Data + I); ", ";
+  '   If I Mod 8 = 7 Then Print
+  ' Next
+  ' If I Mod 8 Then Print
+  ' Print "}"
+  ' Return
+
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
 
   'DB.Debug = True

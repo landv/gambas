@@ -65,6 +65,7 @@ DECLARE_EVENT(EVENT_Menu);
 
 static int _state;
 static QList<CTRAYICON *> _list;
+static QImage _default_trayicon;
 
 #include "gb.form.trayicon.h"
 
@@ -72,6 +73,9 @@ static QList<CTRAYICON *> _list;
 
 MyTrayIcon::MyTrayIcon() : SystemTrayIcon()
 {
+	if (_default_trayicon.isNull())
+		_default_trayicon = QImage(_default_trayicon_data, DEFAULT_TRAYICON_WIDTH, DEFAULT_TRAYICON_HEIGHT, QImage::Format_ARGB32);
+
 	_icon = QPixmap(_default_trayicon);
 }
 
@@ -84,11 +88,9 @@ void MyTrayIcon::setIcon(QPixmap &icon)
 	update();
 }
 
-void MyTrayIcon::paintEvent(QPaintEvent *e)
+void MyTrayIcon::drawContents(QPainter *p)
 {
-	SystemTrayIcon::paintEvent(e);
-	QPainter p(this);
-	p.drawPixmap((width() - _icon.width()) / 2, (height() - _icon.height()) / 2, _icon);
+	p->drawPixmap((width() - _icon.width()) / 2, (height() - _icon.height()) / 2, _icon);
 }
 
 

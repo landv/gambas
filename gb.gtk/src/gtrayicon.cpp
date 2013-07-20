@@ -242,7 +242,7 @@ static gboolean cb_expose(GtkWidget *widget, GdkEventExpose *e, gTrayIcon *data)
 {
 	gPicture *pic = data->getIcon();
 	
-	gdk_window_clear(widget->window);
+	//gdk_window_clear(widget->window);
 	gdk_draw_pixbuf(widget->window,
 			widget->style->black_gc,
 			pic->getPixbuf(),
@@ -317,7 +317,9 @@ gPicture *gTrayIcon::defaultIcon()
 {
 	if (!_default_icon)
 	{
-		GdkPixbuf *img = gdk_pixbuf_new_from_xpm_data((const char**)_default_trayicon);
+		GdkPixbuf *img = gdk_pixbuf_new_from_data(_default_trayicon_data, GDK_COLORSPACE_RGB, TRUE, 8,
+																							DEFAULT_TRAYICON_WIDTH, DEFAULT_TRAYICON_HEIGHT,
+																							DEFAULT_TRAYICON_WIDTH * sizeof(int), NULL, NULL);
 		_default_icon = new gPicture(img);
 	}
 	

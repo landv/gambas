@@ -4729,6 +4729,12 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
         Select Case hSym.Type
           Case "s"
             sSyntax = sSyntax & Keyword(Chr$(34)) & hSym.Value & Keyword(Chr$(34))
+          Case "b"
+            If Left(hSym.Value) = "T" Then
+              sSyntax &= Keyword("True")
+            Else
+              sSyntax &= Keyword("False")
+            Endif
           Case Else
             sSyntax = sSyntax & hSym.Value
         End Select

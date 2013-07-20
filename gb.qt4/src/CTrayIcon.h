@@ -54,7 +54,7 @@ public:
 	QPixmap icon() const { return _icon; }
 	void setIcon(QPixmap &icon);
 protected:
-	virtual void paintEvent(QPaintEvent *);
+	virtual void drawContents(QPainter *p);
 private:
 	QPixmap _icon;
 };
