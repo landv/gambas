@@ -500,7 +500,7 @@ _SUBR_CODE:
 	//fprintf(stderr, "gbx3: %02X: %s\n", (code >> 8), DEBUG_get_current_position());
 	(*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
 
-	//if (UNLIKELY(PCODE_is_void(code)))
+	//if (PCODE_is_void(code))
 	//  POP();
 
 /*-----------------------------------------------*/
@@ -725,7 +725,7 @@ _PUSH_CHAR:
 
 _PUSH_ME:
 
-	if (UNLIKELY(GET_UX() & 1))
+	if (GET_UX() & 1)
 	{
 		if (DEBUG_info)
 		{
@@ -757,7 +757,7 @@ _PUSH_ME:
 		}
 	}
 
-	if (UNLIKELY(GET_UX() & 2))
+	if (GET_UX() & 2)
 	{
 		// The used class must be in the stack, because it is tested by exec_push && exec_pop
 		if (LIKELY(OP != NULL))
@@ -954,7 +954,7 @@ _JUMP_IF_TRUE:
 
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;
-	if (UNLIKELY(SP->_boolean.value & 1))
+	if (SP->_boolean.value & 1)
 		PC += (signed short)PC[1];
 
 	PC += 2;
@@ -966,7 +966,7 @@ _JUMP_IF_FALSE:
 
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;
-	if (!UNLIKELY(SP->_boolean.value & 1))
+	if (!SP->_boolean.value & 1)
 		PC += (signed short)PC[1];
 
 	PC += 2;
@@ -1071,7 +1071,7 @@ _CALL:
 			EXEC.nparam = ind;
 			EXEC.use_stack = TRUE;
 
-			if (UNLIKELY(!val->_function.defined))
+			if (!val->_function.defined)
 				*PC |= CODE_CALL_VARIANT;
 
 			goto *call_jump[(int)val->_function.kind];
@@ -1237,7 +1237,7 @@ _CALL_QUICK:
 			EXEC.object = val->_function.object;
 			EXEC.nparam = ind;
 
-			if (UNLIKELY(!val->_function.defined))
+			if (!val->_function.defined)
 				*PC |= CODE_CALL_VARIANT;
 
 			//if (call_jump[(int)val->_function.kind] == 0)
@@ -1297,7 +1297,7 @@ _CALL_EASY:
 		EXEC.object = val->_function.object;
 		EXEC.nparam = ind;
 
-		if (UNLIKELY(!val->_function.defined))
+		if (!val->_function.defined)
 			*PC |= CODE_CALL_VARIANT;
 
 		//if (call_jump[(int)val->_function.kind] == 0)
@@ -1355,7 +1355,7 @@ _CALL_SLOW:
 			EXEC.nparam = ind;
 			EXEC.use_stack = TRUE;
 
-			if (UNLIKELY(!val->_function.defined))
+			if (!val->_function.defined)
 				*PC |= CODE_CALL_VARIANT;
 
 			goto *call_jump[(int)val->_function.kind];
@@ -1539,7 +1539,7 @@ _ENUM_FIRST:
 
 _ENUM_NEXT:
 
-	if (UNLIKELY(EXEC_enum_next(code)))
+	if (EXEC_enum_next(code))
 		goto _JUMP;
 	else
 	{
@@ -1613,7 +1613,7 @@ _PUSH_DYNAMIC:
 
 		var = &CP->load->dyn[GET_7XX()];
 
-		//if (UNLIKELY(OP == NULL))
+		//if (OP == NULL)
 		//  THROW_ILLEGAL();
 
 		ref = OP;
@@ -1639,7 +1639,7 @@ _POP_DYNAMIC:
 
 		var = &CP->load->dyn[GET_7XX()];
 
-		//if (UNLIKELY(OP == NULL))
+		//if (OP == NULL)
 		//  THROW_ILLEGAL();
 
 		addr = &OP[var->pos];
@@ -1822,7 +1822,7 @@ _END_TRY:
 
 _CATCH:
 
-	if (UNLIKELY(EC == NULL))
+	if (EC == NULL)
 		goto _NEXT;
 	else
 		goto __RETURN_VOID;
@@ -1954,7 +1954,7 @@ _SUBR_LEFT:
 				val = PARAM[1]._integer.value;
 			}
 		
-			if (UNLIKELY(val < 0))
+			if (val < 0)
 				val += PARAM->_string.len;
 		
 			PARAM->_string.len = MinMax(val, 0, PARAM->_string.len);
@@ -1985,7 +1985,7 @@ _SUBR_RIGHT:
 				val = PARAM[1]._integer.value;
 			}
 		
-			if (UNLIKELY(val < 0))
+			if (val < 0)
 				val += PARAM->_string.len;
 		
 			new_len = MinMax(val, 0, PARAM->_string.len);
@@ -2014,13 +2014,13 @@ _SUBR_MID:
 		VALUE_conv_integer(&PARAM[1]);
 		start = PARAM[1]._integer.value - 1;
 	
-		if (UNLIKELY(start < 0))
+		if (start < 0)
 			THROW(E_ARG);
 	
-		if (UNLIKELY(null))
+		if (null)
 			goto _SUBR_MID_FIN;
 			
-		if (UNLIKELY(start >= PARAM->_string.len))
+		if (start >= PARAM->_string.len)
 		{
 			VOID_STRING(PARAM);
 			goto _SUBR_MID_FIN;
@@ -2034,12 +2034,12 @@ _SUBR_MID:
 			len = PARAM[2]._integer.value;
 		}
 	
-		if (UNLIKELY(len < 0))
+		if (len < 0)
 			len = Max(0, PARAM->_string.len - start + len);
 	
 		len = MinMax(len, 0, PARAM->_string.len - start);
 	
-		if (UNLIKELY(len == 0))
+		if (len == 0)
 		{
 			RELEASE_STRING(PARAM);
 			PARAM->_string.addr = NULL;
@@ -2065,7 +2065,7 @@ _SUBR_LEN:
 	
 		SUBR_GET_PARAM(1);
 	
-		if (UNLIKELY(SUBR_check_string(PARAM)))
+		if (SUBR_check_string(PARAM))
 			len = 0;
 		else
 			len = PARAM->_string.len;

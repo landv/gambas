@@ -1401,7 +1401,7 @@ bool GB_NextEnum(void)
 		EXEC_enum = CENUM_get_next(EXEC_enum);
 		if (!EXEC_enum)
 			return TRUE;
-		if (EXEC_enum->enum_object == _enum_object)
+		if (EXEC_enum->enum_object == _enum_object && !EXEC_enum->stop)
 			return FALSE;
 	}
 }

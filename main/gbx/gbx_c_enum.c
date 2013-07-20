@@ -37,7 +37,7 @@
 #include "gbx_object.h"
 #include "gbx_c_enum.h"
 
-//#define DEBUG_ME
+#define DEBUG_ME
 
 static CENUM *_enum_list = NULL;
 
@@ -118,7 +118,7 @@ BEGIN_PROPERTY(CENUM_index)
     else
     {
       #ifdef DEBUG_ME
-      fprintf(stderr, "CENUM_index: %p <%p>: -> value (%d)\n", THIS, THIS->enum_object, ((VARIANT *)THIS->data)->type);
+      fprintf(stderr, "CENUM_index: %p <%p>: -> value (%ld)\n", THIS, THIS->enum_object, ((VARIANT *)THIS->data)->type);
       #endif  
       GB_ReturnVariant((GB_VARIANT_VALUE *)THIS->data);
      }
