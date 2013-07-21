@@ -74,21 +74,31 @@ bool EXEC_enum_next(PCODE code)
 
 	defined = EXEC_object(local, &class, &object);
 	cenum = (CENUM *)local[1]._object.object;
+	//if (!cenum)
+	//	return TRUE;
+
+	if (cenum->stop)
+		goto __STOP;
+	
+	EXEC_enum = cenum;
+	err = EXEC_special(SPEC_NEXT, class, object, 0, FALSE);
+	EXEC_enum = old;
+	
+	if (err)
+		THROW(E_ENUM);
+		
+	if (!defined && !drop && !cenum->stop)
+		VALUE_conv_variant(&SP[-1]);
+
+	if (drop || cenum->stop)
+		POP();
 
 	if (!cenum->stop)
-	{
-		EXEC_enum = cenum;
-		err = EXEC_special(SPEC_NEXT, class, object, 0, FALSE);
-		EXEC_enum = old;
-		if (err)
-			THROW(E_ENUM);
-		
-		if (!defined && !drop && !cenum->stop)
-			VALUE_conv_variant(&SP[-1]);
+		return FALSE;
+	
+__STOP:
 
-		if (drop || cenum->stop)
-			POP();
-	}
-
-	return cenum->stop;
+	//OBJECT_UNREF(cenum);
+	//local[1]._object.object = NULL;
+	return TRUE;
 }
