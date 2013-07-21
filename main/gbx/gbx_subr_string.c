@@ -1145,7 +1145,7 @@ __UNBASE64:
 			else if (c == '/')
 				c = 63;
 			else if (c == '=')
-				c = 0;
+				break;
 			else
 				continue;
 			
@@ -1158,9 +1158,9 @@ __UNBASE64:
 			}
 			n++;
 		}
-		
-		if (n & 3)
-			STRING_make(buf, n & 3);
+
+		if ((n & 3) > 1)
+			STRING_make(buf, (n & 3) - 1);
 	}
 	
 	goto __END;

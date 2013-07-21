@@ -894,6 +894,8 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 		QPainter p(&device);
 		
 		p.setFont(PAINTER(d)->font());
+		p.setPen(PAINTER(d)->pen());
+		p.setBrush(PAINTER(d)->brush());
 		
 		if (rich)
 			DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
@@ -1453,7 +1455,7 @@ void MyPaintEngine::drawTextItem(const QPointF &p, const QTextItem &textItem)
 {
 	//qDebug("MyPaintEngine::drawTextItem: %g %g [%s] '%s'", p.x() + _draw_x, p.y() + _draw_y, (const char *)textItem.font().toString().toUtf8(), (const char *)textItem.text().toUtf8());
 	//_draw_path->moveTo(p.x() + _draw_x, p.y() + _draw_y);
-	_draw_path->addText(p.x() + _draw_x, p.y() + _draw_y, textItem.font(), textItem.text());
+	_draw_path->addText(p.x() + _draw_x + painter()->worldTransform().dx(), p.y() + _draw_y + painter()->worldTransform().dy(), textItem.font(), textItem.text());
 }
 
 /*************************************************************************/
