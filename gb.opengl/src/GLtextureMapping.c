@@ -69,14 +69,19 @@ END_METHOD
 
 BEGIN_METHOD(GLGENTEXTURES, GB_INTEGER count)
 
-	GLuint textures[VARG(count)];
+	GLuint *textures;
 	int i, count = VARG(count);
 	GB_ARRAY iArray;
 
-	if (count<=0)
+	if (count <= 0)
+	{
+		GB.ReturnNull();
 		return;
-
+	}
+	
 	GB.Array.New(&iArray , GB_T_INTEGER , count);
+
+	textures = alloca(count * sizeof(GLuint));
 	glGenTextures(VARG(count), textures);
 
 	for (i=0;i<count; i++)

@@ -746,6 +746,7 @@ Private Sub AboutComponent()
   Try sKey = hCompItem.Key
   If Not sKey Then Return 
   'MHelp.GotoComponent(sKey)
+  webAboutComponent.Zoom = 0.75
   MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey)
   
 End

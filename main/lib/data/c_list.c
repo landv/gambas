@@ -30,6 +30,8 @@
 
 #define CHUNK_SIZE	16
 
+//#define DEBUG_ENUMERATOR
+
 /*
  * List implementation properties:
  * + Increase cache locality by saving CHUNK_SIZE values inside a single

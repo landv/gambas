@@ -155,6 +155,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_ReturnDate,
 	(void *)GB_ReturnObject,
 	(void *)GB_ReturnNull,
+	(void *)GB_ReturnSingle,
 	(void *)GB_ReturnFloat,
 	(void *)GB_ReturnVariant,
 	(void *)GB_ReturnConvVariant,

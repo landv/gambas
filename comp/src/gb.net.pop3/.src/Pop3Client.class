@@ -507,3 +507,9 @@ Private Sub Debug_Write(Value As Boolean)
   $bDebug = Value
 
 End
+
+Public Sub Remove(Index As Integer)
+  
+  Me[Index].Delete
+  
+End

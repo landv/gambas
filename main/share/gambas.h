@@ -980,6 +980,7 @@ typedef
 		void (*ReturnDate)(GB_DATE *);
 		void (*ReturnObject)(void *);
 		void (*ReturnNull)(void);
+		void (*ReturnSingle)(float);
 		void (*ReturnFloat)(double);
 		void (*ReturnVariant)(GB_VARIANT_VALUE *);
 		void (*ReturnConvVariant)();
@@ -1153,6 +1154,7 @@ typedef
 /*
 
   Special methods that can be declared in a class
+  -----------------------------------------------
 
   _get        array reading operator
   _put        array writing operator
@@ -1162,23 +1164,24 @@ typedef
   _call       called when the object or the class is used as a function
   _unknown    called when the name of the property or method is unknown
 
-*/
-
-/*
 
   Syntax of a method or event signature
+  -------------------------------------
 
   Gambas datatype      String representation
 
-  BOOLEAN              b
-  INTEGER              i
-  LONG                 l
-  FLOAT                f
-  DATE                 d
-  STRING               s
-  VARIANT              v
-  OBJECT               o
-  POINTER              p
+  Boolean              b
+  Byte                 c
+  Short                h
+  Integer              i
+  Long                 l
+  Single               g
+  Float                f
+  Date                 d
+  String               s
+  Variant              v
+  Object               o
+  Pointer              p
   Any class            ClassName;
 
 */

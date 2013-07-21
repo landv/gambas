@@ -34,6 +34,7 @@ SUBDIRS = \
  @httpd_dir@ \
  @opengl_sge_dir@ \
  @openssl_dir@ \
+ @openal_dir@ \
  comp \
  app \
  examples \
