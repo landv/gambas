@@ -37,7 +37,7 @@
 #include "gbx_object.h"
 #include "gbx_c_enum.h"
 
-#define DEBUG_ME
+//#define DEBUG_ME
 
 static CENUM *_enum_list = NULL;
 
