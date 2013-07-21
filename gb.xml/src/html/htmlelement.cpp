@@ -94,7 +94,7 @@ bool HTMLElement_IsSingle(Element *elmt)
     {
         if(elmt->lenTagName == lenSingleElements[i])
         {
-            if(!memcmp(singleElements[i], elmt->tagName, elmt->lenTagName))
+            if(!strncasecmp(singleElements[i], elmt->tagName, elmt->lenTagName))
             {
                 return true;
             }

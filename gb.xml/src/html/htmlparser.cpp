@@ -109,7 +109,7 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                 {
                     if((endData) >= pos + curElement->lenTagName)
                     {
-                        if(memcmp(pos, curElement->tagName, curElement->lenTagName) == 0)
+                        if(!(strncasecmp(pos, curElement->tagName, curElement->lenTagName)))
                         {
                             break;
                         }
