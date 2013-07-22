@@ -125,17 +125,15 @@ static int check_device(void *_object)
 	return THIS->device == NULL;
 }
 
-static CALCDEVICE *create_device(const char *name)
+static CALCDEVICE *create_device(ALCdevice *device)
 {
-	ALCdevice *device;
 	CALCDEVICE *_object;
 
-	device = alcOpenDevice(name);
 	if (!device)
 		return NULL;
 
 	_object = GB.New(GB.FindClass("AlcDevice"), NULL, NULL);
-	THIS->device = alcOpenDevice(name);
+	THIS->device = device;
 	return THIS;
 }
 
@@ -145,7 +143,11 @@ static bool close_device(CALCDEVICE *_object)
 
 	if (THIS->device)
 	{
-		err = alcCloseDevice(THIS->device);
+		if (THIS->capture)
+			err = alcCaptureCloseDevice(THIS->device);
+		else
+			err = alcCloseDevice(THIS->device);
+
 		THIS->device = NULL;
 	}
 
@@ -179,7 +181,7 @@ END_METHOD
 #define GET_CONTEXT() \
 	CALCCONTEXT *context = VARG(context); \
 	if (GB.CheckObject(context)) \
-		return; \
+		return;
 
 BEGIN_METHOD(ALC_MakeContextCurrent, GB_OBJECT context)
 
@@ -227,14 +229,14 @@ END_METHOD
 
 BEGIN_METHOD(ALC_OpenDevice, GB_STRING name)
 
-	GB.ReturnObject(create_device(GB.ToZeroString(ARG(name))));
+	GB.ReturnObject(create_device(alcOpenDevice(GB.ToZeroString(ARG(name)))));
 
 END_METHOD
 
 #define GET_DEVICE() \
 	CALCDEVICE *device = VARG(device); \
 	if (GB.CheckObject(device)) \
-		return; \
+		return;
 
 BEGIN_METHOD(ALC_CloseDevice, GB_OBJECT device)
 
@@ -315,6 +317,93 @@ BEGIN_METHOD(ALC_GetStringv, GB_OBJECT device; GB_INTEGER param)
 
 END_METHOD
 
+BEGIN_METHOD(ALC_GetIntegerv, GB_OBJECT device; GB_INTEGER param; GB_INTEGER size)
+
+	GB_ARRAY array;
+	int size = VARG(size);
+
+	GET_DEVICE();
+
+	if (size <= 0 || size >= 65536)
+	{
+		GB.ReturnNull();
+		return;
+	}
+
+	GB.Array.New(&array, GB_T_INTEGER, size);
+	alcGetIntegerv(device->device, VARG(param), size, GB.Array.Get(array, 0));
+	GB.ReturnObject(array);
+
+END_METHOD
+
+BEGIN_METHOD(ALC_CaptureOpenDevice, GB_STRING name; GB_INTEGER freq; GB_INTEGER format; GB_INTEGER buffer_size)
+
+	CALCDEVICE *device = create_device(alcCaptureOpenDevice(GB.ToZeroString(ARG(name)), VARG(freq), VARG(format), VARG(buffer_size)));
+
+	if (device)
+	{
+		device->capture = TRUE;
+
+		switch(VARG(format))
+		{
+			case AL_FORMAT_MONO8: device->sampleSize = 1; break;
+			case AL_FORMAT_MONO16: case AL_FORMAT_STEREO8: device->sampleSize = 2; break;
+			case AL_FORMAT_STEREO16: device->sampleSize = 4; break;
+			default: device->sampleSize = 0;
+		}
+	}
+
+	GB.ReturnObject(device);
+
+END_METHOD
+
+BEGIN_METHOD(ALC_CaptureStart, GB_OBJECT device)
+
+	GET_DEVICE();
+	alcCaptureStart(device->device);
+
+END_METHOD
+
+BEGIN_METHOD(ALC_CaptureStop, GB_OBJECT device)
+
+	GET_DEVICE();
+	alcCaptureStop(device->device);
+
+END_METHOD
+
+BEGIN_METHOD(ALC_CaptureSamples, GB_OBJECT device; GB_INTEGER samples; GB_POINTER buffer)
+
+	GB_ARRAY array = NULL;
+	int samples = VARG(samples);
+	void *buffer;
+
+	GET_DEVICE();
+
+	if (samples <= 0)
+	{
+		GB.ReturnNull();
+		return;
+	}
+
+	if (MISSING(buffer))
+	{
+		if (device->sampleSize == 0)
+		{
+			GB.Error("Unknown sample format");
+			return;
+		}
+		GB.Array.New(&array, device->sampleSize == 1 ? GB_T_BYTE : device->sampleSize == 2 ? GB_T_SHORT : GB_T_INTEGER, samples);
+		buffer = GB.Array.Get(array, 0);
+	}
+	else
+		buffer = (void *)VARG(buffer);
+
+	alcCaptureSamples(device->device, buffer, samples);
+
+	GB.ReturnObject(array);
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 GB_DESC AlcDeviceDesc[] =
@@ -341,7 +430,7 @@ GB_DESC AlcContextDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC ALCDesc[] =
+GB_DESC AlcDesc[] =
 {
 	GB_DECLARE_VIRTUAL("Alc"),
 	
@@ -386,12 +475,12 @@ GB_DESC ALCDesc[] =
 	GB_STATIC_METHOD("IsExtensionPresent", "b", ALC_IsExtensionPresent, "(Device)AlcDevice;(ExtensionName)s"),
 	GB_STATIC_METHOD("GetString", "s", ALC_GetString, "(Device)AlcDevice;(Param)i"),
 	GB_STATIC_METHOD("GetStringv", "String[]", ALC_GetStringv, "(Device)AlcDevice;(Param)i"),
-	//GB_STATIC_METHOD("GetIntegerv", "Integer[]", ALC_GetIntegerv, "(Device)AlcDevice;(Param)i;(Size)i"),
-	//GB_STATIC_METHOD("CaptureOpenDevice", "AlcDevice", ALC_CaptureOpenDevice, "(Name)s(Frequency)i(Format)i(BufferSize)i"),
-	//GB_STATIC_METHOD("CaptureCloseDevice", "b", ALC_CaptureCloseDevice, "(Device)AlcDevice;"),
-	//GB_STATIC_METHOD("CaptureStart", NULL, ALC_CaptureStart, "(Device)AlcDevice;"),
-	//GB_STATIC_METHOD("CaptureStop", NULL, ALC_CaptureStop, "(Device)AlcDevice;"),
-	//GB_STATIC_METHOD("CaptureSamples", "v", ALC_CaptureSamples, "(Device)AlcDevice;(Samples)i"),
+	GB_STATIC_METHOD("GetIntegerv", "Integer[]", ALC_GetIntegerv, "(Device)AlcDevice;(Param)i;(Size)i"),
+	GB_STATIC_METHOD("CaptureOpenDevice", "AlcDevice", ALC_CaptureOpenDevice, "(Name)s(Frequency)i(Format)i(BufferSize)i"),
+	GB_STATIC_METHOD("CaptureCloseDevice", "b", ALC_CloseDevice, "(Device)AlcDevice;"),
+	GB_STATIC_METHOD("CaptureStart", NULL, ALC_CaptureStart, "(Device)AlcDevice;"),
+	GB_STATIC_METHOD("CaptureStop", NULL, ALC_CaptureStop, "(Device)AlcDevice;"),
+	GB_STATIC_METHOD("CaptureSamples", "v", ALC_CaptureSamples, "(Device)AlcDevice;(Samples)i[(Buffer)p]"),
 
 	GB_END_DECLARE
 };
@@ -411,10 +500,10 @@ GB_DESC ALCDesc[] =
 // ALC_API void  *         ALC_APIENTRY alcGetProcAddress( ALCdevice *device, const ALCchar *funcname );
 // ALC_API ALCenum         ALC_APIENTRY alcGetEnumValue( ALCdevice *device, const ALCchar *enumname );
 // ALC_API const ALCchar * ALC_APIENTRY alcGetString( ALCdevice *device, ALCenum param );
-ALC_API void            ALC_APIENTRY alcGetIntegerv( ALCdevice *device, ALCenum param, ALCsizei size, ALCint *data );
-ALC_API ALCdevice*      ALC_APIENTRY alcCaptureOpenDevice( const ALCchar *devicename, ALCuint frequency, ALCenum format, ALCsizei buffersize );
-ALC_API ALCboolean      ALC_APIENTRY alcCaptureCloseDevice( ALCdevice *device );
-ALC_API void            ALC_APIENTRY alcCaptureStart( ALCdevice *device );
-ALC_API void            ALC_APIENTRY alcCaptureStop( ALCdevice *device );
-ALC_API void            ALC_APIENTRY alcCaptureSamples( ALCdevice *device, ALCvoid *buffer, ALCsizei samples );
+// ALC_API void            ALC_APIENTRY alcGetIntegerv( ALCdevice *device, ALCenum param, ALCsizei size, ALCint *data );
+// ALC_API ALCdevice*      ALC_APIENTRY alcCaptureOpenDevice( const ALCchar *devicename, ALCuint frequency, ALCenum format, ALCsizei buffersize );
+// ALC_API ALCboolean      ALC_APIENTRY alcCaptureCloseDevice( ALCdevice *device );
+// ALC_API void            ALC_APIENTRY alcCaptureStart( ALCdevice *device );
+// ALC_API void            ALC_APIENTRY alcCaptureStop( ALCdevice *device );
+// ALC_API void            ALC_APIENTRY alcCaptureSamples( ALCdevice *device, ALCvoid *buffer, ALCsizei samples );
 #endif

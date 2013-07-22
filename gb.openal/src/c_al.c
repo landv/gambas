@@ -507,7 +507,7 @@ IMPLEMENT_GET_XV(GetBufferiv, GB_T_INTEGER, get_buffer_integer_param_size)
 
 //---------------------------------------------------------------------------
 
-GB_DESC ALDesc[] =
+GB_DESC AlDesc[] =
 {
 	GB_DECLARE_VIRTUAL("Al"),
 	

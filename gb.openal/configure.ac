@@ -8,6 +8,6 @@ GB_COMPONENT_PKG_CONFIG(
   OPENAL,
   gb.openal,
   [src],
-  openal)
+  [openal alure])
 AC_OUTPUT( Makefile src/Makefile )
 GB_PRINT_MESSAGES

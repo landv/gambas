@@ -32,6 +32,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
+#include <AL/alure.h>
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;

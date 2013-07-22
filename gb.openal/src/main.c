@@ -27,6 +27,7 @@
 
 #include "c_al.h"
 #include "c_alc.h"
+#include "c_alure.h"
 
 #include "main.h"
 
@@ -35,8 +36,11 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-	ALDesc,
-	ALCDesc,
+	AlDesc,
+	AlcDesc,
+	AlcContextDesc,
+	AlcDeviceDesc,
+	AlureDesc,
 	NULL
 };
 

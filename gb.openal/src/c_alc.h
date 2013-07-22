@@ -27,7 +27,7 @@
 #include "main.h"
 
 #ifndef __C_AL_C
-extern GB_DESC ALCDesc[];
+extern GB_DESC AlcDesc[];
 extern GB_DESC AlcContextDesc[];
 extern GB_DESC AlcDeviceDesc[];
 #endif
@@ -36,6 +36,8 @@ typedef
 	struct {
 		GB_BASE ob;
 		ALCdevice *device;
+		unsigned capture : 1;
+		unsigned sampleSize : 3;
 	}
 	CALCDEVICE;
 

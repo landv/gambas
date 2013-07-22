@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_al.h
+  c_alure.h
 
   (c) 2013 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,13 +21,24 @@
 
 ***************************************************************************/
 
-#ifndef __C_AL_H
-#define __C_AL_H
+#ifndef __C_ALURE_H
+#define __C_ALURE_H
 
 #include "main.h"
 
-#ifndef __C_AL_C
-extern GB_DESC AlDesc[];
+#ifndef __C_ALURE_C
+extern GB_DESC AlureDesc[];
 #endif
+
+typedef
+	struct {
+		GB_BASE ob;
+		alureStream *stream;
+		GB_ARRAY buffers;
+		char *addr;
+		int len;
+		volatile int stop;
+	}
+	CALURESTREAM;
 
 #endif
