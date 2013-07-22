@@ -362,7 +362,7 @@ END_METHOD
 
 //---------------------------------------------------------------------------
 
-GB_DESC AlureStream[] =
+GB_DESC AlureStreamDesc[] =
 {
 	GB_DECLARE("AlureStream", sizeof(CALURESTREAM)),
 	GB_NOT_CREATABLE(),

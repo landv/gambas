@@ -28,6 +28,7 @@
 
 #ifndef __C_ALURE_C
 extern GB_DESC AlureDesc[];
+extern GB_DESC AlureStreamDesc[];
 #endif
 
 typedef

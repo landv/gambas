@@ -40,6 +40,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	AlcDesc,
 	AlcContextDesc,
 	AlcDeviceDesc,
+	AlureStreamDesc,
 	AlureDesc,
 	NULL
 };
