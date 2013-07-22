@@ -26,6 +26,7 @@
 #define __MAIN_C
 
 #include "c_al.h"
+#include "c_alc.h"
 
 #include "main.h"
 
@@ -35,6 +36,7 @@ GB_INTERFACE GB EXPORT;
 GB_DESC *GB_CLASSES[] EXPORT =
 {
 	ALDesc,
+	ALCDesc,
 	NULL
 };
 

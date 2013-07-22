@@ -1,19 +1,17 @@
 /***************************************************************************
 
-  main.h
-
-  gb.openal component
+  c_alc.h
 
   (c) 2013 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
+  the Free Software Foundation; either version 2, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
@@ -23,18 +21,30 @@
 
 ***************************************************************************/
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __C_ALC_H
+#define __C_ALC_H
 
-#include "gb_common.h"
-#include "gambas.h"
+#include "main.h"
 
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <AL/alext.h>
-
-#ifndef __MAIN_C
-extern GB_INTERFACE GB;
+#ifndef __C_AL_C
+extern GB_DESC ALCDesc[];
+extern GB_DESC AlcContextDesc[];
+extern GB_DESC AlcDeviceDesc[];
 #endif
 
-#endif /* __MAIN_H */
+typedef
+	struct {
+		GB_BASE ob;
+		ALCdevice *device;
+	}
+	CALCDEVICE;
+
+typedef
+	struct {
+		GB_BASE ob;
+		ALCcontext *context;
+		CALCDEVICE *device;
+	}
+	CALCCONTEXT;
+
+#endif

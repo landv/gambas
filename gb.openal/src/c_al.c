@@ -511,97 +511,97 @@ GB_DESC ALDesc[] =
 {
 	GB_DECLARE_VIRTUAL("Al"),
 	
-	GB_METHOD("GetError", "i", AL_GetError, NULL),
+	GB_STATIC_METHOD("GetError", "i", AL_GetError, NULL),
 	
-	GB_METHOD("Enable", NULL, AL_Enable, "(Capability)i"),
-	GB_METHOD("Disable", NULL, AL_Disable, "(Capability)i"),
-	GB_METHOD("IsEnabled", "b", AL_IsEnabled, "(Capability)i"),
+	GB_STATIC_METHOD("Enable", NULL, AL_Enable, "(Capability)i"),
+	GB_STATIC_METHOD("Disable", NULL, AL_Disable, "(Capability)i"),
+	GB_STATIC_METHOD("IsEnabled", "b", AL_IsEnabled, "(Capability)i"),
 	
-	GB_METHOD("GetBoolean", "b", AL_GetBoolean, "(Param)i"),
-	GB_METHOD("GetInteger", "i", AL_GetInteger, "(Param)i"),
-	GB_METHOD("GetFloat", "g", AL_GetFloat, "(Param)i"),
-	GB_METHOD("GetDouble", "f", AL_GetDouble, "(Param)i"),
+	GB_STATIC_METHOD("GetBoolean", "b", AL_GetBoolean, "(Param)i"),
+	GB_STATIC_METHOD("GetInteger", "i", AL_GetInteger, "(Param)i"),
+	GB_STATIC_METHOD("GetFloat", "g", AL_GetFloat, "(Param)i"),
+	GB_STATIC_METHOD("GetDouble", "f", AL_GetDouble, "(Param)i"),
 
-	//GB_METHOD("GetBooleanv", "Boolean[]", AL_GetBooleanv, "(Param)i"),
-	//GB_METHOD("GetIntegerv", "Integer[]", AL_GetIntegerv, "(Param)i"),
-	//GB_METHOD("GetFloatv", "Single[]", AL_GetFloatv, "(Param)i"),
-	//GB_METHOD("GetDoublev", "Float[]", AL_GetDoublev, "(Param)i"),
+	//GB_STATIC_METHOD("GetBooleanv", "Boolean[]", AL_GetBooleanv, "(Param)i"),
+	//GB_STATIC_METHOD("GetIntegerv", "Integer[]", AL_GetIntegerv, "(Param)i"),
+	//GB_STATIC_METHOD("GetFloatv", "Single[]", AL_GetFloatv, "(Param)i"),
+	//GB_STATIC_METHOD("GetDoublev", "Float[]", AL_GetDoublev, "(Param)i"),
 
-	GB_METHOD("GetString", "s", AL_GetString, "(Param)i"),
+	GB_STATIC_METHOD("GetString", "s", AL_GetString, "(Param)i"),
 
-	GB_METHOD("IsExtensionPresent", "b", AL_IsExtensionPresent, "(Name)s"),
+	GB_STATIC_METHOD("IsExtensionPresent", "b", AL_IsExtensionPresent, "(Name)s"),
 
-	GB_METHOD("GetEnumValue", "i", AL_GetEnumValue, "(Name)s"),
+	GB_STATIC_METHOD("GetEnumValue", "i", AL_GetEnumValue, "(Name)s"),
 
-	GB_METHOD("Listenerf", NULL, AL_Listenerf, "(Param)i(Value)g"),
-	GB_METHOD("Listener3f", NULL, AL_Listener3f, "(Param)i(Value1)g(Value2)g(Value3)g"),
-	GB_METHOD("Listenerfv", NULL, AL_Listenerfv, "(Param)i(Values)Single[];"),
-	GB_METHOD("Listeneri", NULL, AL_Listeneri, "(Param)i(Value)i"),
-	GB_METHOD("Listener3i", NULL, AL_Listener3i, "(Param)i(Value1)i(Value2)i(Value3)i"),
-	GB_METHOD("Listeneriv", NULL, AL_Listeneriv, "(Param)i(Values)Integer[];"),
+	GB_STATIC_METHOD("Listenerf", NULL, AL_Listenerf, "(Param)i(Value)g"),
+	GB_STATIC_METHOD("Listener3f", NULL, AL_Listener3f, "(Param)i(Value1)g(Value2)g(Value3)g"),
+	GB_STATIC_METHOD("Listenerfv", NULL, AL_Listenerfv, "(Param)i(Values)Single[];"),
+	GB_STATIC_METHOD("Listeneri", NULL, AL_Listeneri, "(Param)i(Value)i"),
+	GB_STATIC_METHOD("Listener3i", NULL, AL_Listener3i, "(Param)i(Value1)i(Value2)i(Value3)i"),
+	GB_STATIC_METHOD("Listeneriv", NULL, AL_Listeneriv, "(Param)i(Values)Integer[];"),
 
-	GB_METHOD("GetListenerf", "g", AL_GetListenerf, "(Param)i"),
-	GB_METHOD("GetListener3f", "Single[]", AL_GetListenerfv, "(Param)i"),
-	GB_METHOD("GetListenerfv", "Single[]", AL_GetListenerfv, "(Param)i"),
-	GB_METHOD("GetListeneri", "i", AL_GetListenerf, "(Param)i"),
-	GB_METHOD("GetListener3i", "Integer[]", AL_GetListenerfv, "(Param)i"),
-	GB_METHOD("GetListeneriv", "Integer[]", AL_GetListenerfv, "(Param)i"),
+	GB_STATIC_METHOD("GetListenerf", "g", AL_GetListenerf, "(Param)i"),
+	GB_STATIC_METHOD("GetListener3f", "Single[]", AL_GetListenerfv, "(Param)i"),
+	GB_STATIC_METHOD("GetListenerfv", "Single[]", AL_GetListenerfv, "(Param)i"),
+	GB_STATIC_METHOD("GetListeneri", "i", AL_GetListenerf, "(Param)i"),
+	GB_STATIC_METHOD("GetListener3i", "Integer[]", AL_GetListenerfv, "(Param)i"),
+	GB_STATIC_METHOD("GetListeneriv", "Integer[]", AL_GetListenerfv, "(Param)i"),
 
-	GB_METHOD("GenSources", "Integer[]", AL_GenSources, "(Count)i"),
-	GB_METHOD("DeleteSources", NULL, AL_DeleteSources, "(Sources)Integer[];"),
-	GB_METHOD("IsSource", "b", AL_IsSource, "(Source)i"),
+	GB_STATIC_METHOD("GenSources", "Integer[]", AL_GenSources, "(Count)i"),
+	GB_STATIC_METHOD("DeleteSources", NULL, AL_DeleteSources, "(Sources)Integer[];"),
+	GB_STATIC_METHOD("IsSource", "b", AL_IsSource, "(Source)i"),
 
-	GB_METHOD("Sourcef", NULL, AL_Sourcef, "(Source)i(Param)i(Value)g"),
-	GB_METHOD("Source3f", NULL, AL_Source3f, "(Source)i(Param)i(Value1)g(Value2)g(Value3)g"),
-	GB_METHOD("Sourcefv", NULL, AL_Sourcefv, "(Source)i(Param)i(Values)Single[];"),
-	GB_METHOD("Sourcei", NULL, AL_Sourcei, "(Source)i(Param)i(Value)i"),
-	GB_METHOD("Source3i", NULL, AL_Source3i, "(Source)i(Param)i(Value1)i(Value2)i(Value3)i"),
-	GB_METHOD("Sourceiv", NULL, AL_Sourceiv, "(Source)i(Param)i(Values)Integer[];"),
+	GB_STATIC_METHOD("Sourcef", NULL, AL_Sourcef, "(Source)i(Param)i(Value)g"),
+	GB_STATIC_METHOD("Source3f", NULL, AL_Source3f, "(Source)i(Param)i(Value1)g(Value2)g(Value3)g"),
+	GB_STATIC_METHOD("Sourcefv", NULL, AL_Sourcefv, "(Source)i(Param)i(Values)Single[];"),
+	GB_STATIC_METHOD("Sourcei", NULL, AL_Sourcei, "(Source)i(Param)i(Value)i"),
+	GB_STATIC_METHOD("Source3i", NULL, AL_Source3i, "(Source)i(Param)i(Value1)i(Value2)i(Value3)i"),
+	GB_STATIC_METHOD("Sourceiv", NULL, AL_Sourceiv, "(Source)i(Param)i(Values)Integer[];"),
 
-	GB_METHOD("GetSourcef", "g", AL_GetSourcef, "(Source)i(Param)i"),
-	GB_METHOD("GetSource3f", "Single[]", AL_GetSourcefv, "(Source)i(Param)i"),
-	GB_METHOD("GetSourcefv", "Single[]", AL_GetSourcefv, "(Source)i(Param)i"),
-	GB_METHOD("GetSourcei", "i", AL_GetSourcef, "(Source)i(Param)i"),
-	GB_METHOD("GetSource3i", "Integer[]", AL_GetSourcefv, "(Source)i(Param)i"),
-	GB_METHOD("GetSourceiv", "Integer[]", AL_GetSourcefv, "(Source)i(Param)i"),
+	GB_STATIC_METHOD("GetSourcef", "g", AL_GetSourcef, "(Source)i(Param)i"),
+	GB_STATIC_METHOD("GetSource3f", "Single[]", AL_GetSourcefv, "(Source)i(Param)i"),
+	GB_STATIC_METHOD("GetSourcefv", "Single[]", AL_GetSourcefv, "(Source)i(Param)i"),
+	GB_STATIC_METHOD("GetSourcei", "i", AL_GetSourcef, "(Source)i(Param)i"),
+	GB_STATIC_METHOD("GetSource3i", "Integer[]", AL_GetSourcefv, "(Source)i(Param)i"),
+	GB_STATIC_METHOD("GetSourceiv", "Integer[]", AL_GetSourcefv, "(Source)i(Param)i"),
 
-	GB_METHOD("SourcePlay", NULL, AL_SourcePlay, "(Source)i"),
-	GB_METHOD("SourceStop", NULL, AL_SourceStop, "(Source)i"),
-	GB_METHOD("SourceRewind", NULL, AL_SourceRewind, "(Source)i"),
-	GB_METHOD("SourcePause", NULL, AL_SourcePause, "(Source)i"),
+	GB_STATIC_METHOD("SourcePlay", NULL, AL_SourcePlay, "(Source)i"),
+	GB_STATIC_METHOD("SourceStop", NULL, AL_SourceStop, "(Source)i"),
+	GB_STATIC_METHOD("SourceRewind", NULL, AL_SourceRewind, "(Source)i"),
+	GB_STATIC_METHOD("SourcePause", NULL, AL_SourcePause, "(Source)i"),
 
-	GB_METHOD("SourcePlayv", NULL, AL_SourcePlayv, "(Sources)Integer[];"),
-	GB_METHOD("SourceStopv", NULL, AL_SourceStopv, "(Sources)Integer[];"),
-	GB_METHOD("SourceRewindv", NULL, AL_SourceRewindv, "(Sources)Integer[];"),
-	GB_METHOD("SourcePausev", NULL, AL_SourcePausev, "(Sources)Integer[];"),
+	GB_STATIC_METHOD("SourcePlayv", NULL, AL_SourcePlayv, "(Sources)Integer[];"),
+	GB_STATIC_METHOD("SourceStopv", NULL, AL_SourceStopv, "(Sources)Integer[];"),
+	GB_STATIC_METHOD("SourceRewindv", NULL, AL_SourceRewindv, "(Sources)Integer[];"),
+	GB_STATIC_METHOD("SourcePausev", NULL, AL_SourcePausev, "(Sources)Integer[];"),
 
-	GB_METHOD("SourceQueueBuffers", NULL, AL_SourceQueueBuffers, "(Source)i(Buffers)Integer[];"),
-	GB_METHOD("SourceUnqueueBuffers", NULL, AL_SourceUnqueueBuffers, "(Source)i(Buffers)Integer[];"),
+	GB_STATIC_METHOD("SourceQueueBuffers", NULL, AL_SourceQueueBuffers, "(Source)i(Buffers)Integer[];"),
+	GB_STATIC_METHOD("SourceUnqueueBuffers", NULL, AL_SourceUnqueueBuffers, "(Source)i(Buffers)Integer[];"),
 
-	GB_METHOD("GenBuffers", "Integer[]", AL_GenBuffers, "(Count)i"),
-	GB_METHOD("DeleteBuffers", NULL, AL_DeleteBuffers, "(Buffers)Integer[];"),
-	GB_METHOD("IsBuffer", "b", AL_IsBuffer, "(Buffer)i"),
+	GB_STATIC_METHOD("GenBuffers", "Integer[]", AL_GenBuffers, "(Count)i"),
+	GB_STATIC_METHOD("DeleteBuffers", NULL, AL_DeleteBuffers, "(Buffers)Integer[];"),
+	GB_STATIC_METHOD("IsBuffer", "b", AL_IsBuffer, "(Buffer)i"),
 
-	GB_METHOD("BufferData", NULL, AL_BufferData, "(Buffer)i(Format)i(Data)v[(Size)i(Frequency)i]"),
+	GB_STATIC_METHOD("BufferData", NULL, AL_BufferData, "(Buffer)i(Format)i(Data)v[(Size)i(Frequency)i]"),
 
-	GB_METHOD("Bufferf", NULL, AL_Bufferf, "(Buffer)i(Param)i(Value)g"),
-	GB_METHOD("Buffer3f", NULL, AL_Buffer3f, "(Buffer)i(Param)i(Value1)g(Value2)g(Value3)g"),
-	GB_METHOD("Bufferfv", NULL, AL_Bufferfv, "(Buffer)i(Param)i(Values)Single[];"),
-	GB_METHOD("Bufferi", NULL, AL_Bufferi, "(Buffer)i(Param)i(Value)i"),
-	GB_METHOD("Buffer3i", NULL, AL_Buffer3i, "(Buffer)i(Param)i(Value1)i(Value2)i(Value3)i"),
-	GB_METHOD("Bufferiv", NULL, AL_Bufferiv, "(Buffer)i(Param)i(Values)Integer[];"),
+	GB_STATIC_METHOD("Bufferf", NULL, AL_Bufferf, "(Buffer)i(Param)i(Value)g"),
+	GB_STATIC_METHOD("Buffer3f", NULL, AL_Buffer3f, "(Buffer)i(Param)i(Value1)g(Value2)g(Value3)g"),
+	GB_STATIC_METHOD("Bufferfv", NULL, AL_Bufferfv, "(Buffer)i(Param)i(Values)Single[];"),
+	GB_STATIC_METHOD("Bufferi", NULL, AL_Bufferi, "(Buffer)i(Param)i(Value)i"),
+	GB_STATIC_METHOD("Buffer3i", NULL, AL_Buffer3i, "(Buffer)i(Param)i(Value1)i(Value2)i(Value3)i"),
+	GB_STATIC_METHOD("Bufferiv", NULL, AL_Bufferiv, "(Buffer)i(Param)i(Values)Integer[];"),
 
-	GB_METHOD("GetBufferf", "g", AL_GetBufferf, "(Buffer)i(Param)i"),
-	GB_METHOD("GetBuffer3f", "Single[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
-	GB_METHOD("GetBufferfv", "Single[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
-	GB_METHOD("GetBufferi", "i", AL_GetBufferf, "(Buffer)i(Param)i"),
-	GB_METHOD("GetBuffer3i", "Integer[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
-	GB_METHOD("GetBufferiv", "Integer[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
+	GB_STATIC_METHOD("GetBufferf", "g", AL_GetBufferf, "(Buffer)i(Param)i"),
+	GB_STATIC_METHOD("GetBuffer3f", "Single[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
+	GB_STATIC_METHOD("GetBufferfv", "Single[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
+	GB_STATIC_METHOD("GetBufferi", "i", AL_GetBufferf, "(Buffer)i(Param)i"),
+	GB_STATIC_METHOD("GetBuffer3i", "Integer[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
+	GB_STATIC_METHOD("GetBufferiv", "Integer[]", AL_GetBufferfv, "(Buffer)i(Param)i"),
 
-	GB_METHOD("DopplerFactor", NULL, AL_DopplerFactor, "(DopplerFactor)f"),
-	GB_METHOD("DopplerVelocity", NULL, AL_DopplerVelocity, "(DopplerVelocity)f"),
-	GB_METHOD("SpeedOfSound", NULL, AL_SpeedOfSound, "(SpeedOfSound)f"),
-	GB_METHOD("DistanceModel", NULL, AL_DistanceModel, "(DistanceModel)i"),
+	GB_STATIC_METHOD("DopplerFactor", NULL, AL_DopplerFactor, "(DopplerFactor)f"),
+	GB_STATIC_METHOD("DopplerVelocity", NULL, AL_DopplerVelocity, "(DopplerVelocity)f"),
+	GB_STATIC_METHOD("SpeedOfSound", NULL, AL_SpeedOfSound, "(SpeedOfSound)f"),
+	GB_STATIC_METHOD("DistanceModel", NULL, AL_DistanceModel, "(DistanceModel)i"),
 
 	GB_CONSTANT("NONE", "i",                       AL_NONE),
 	GB_CONSTANT("FALSE", "i",                      AL_FALSE),
@@ -671,70 +671,3 @@ GB_DESC ALDesc[] =
 
 	GB_END_DECLARE
 };
-
-#ifdef TOTO
-// AL_API void AL_APIENTRY alGetBooleanv( ALenum param, ALboolean* data );
-// AL_API void AL_APIENTRY alGetIntegerv( ALenum param, ALint* data );
-// AL_API void AL_APIENTRY alGetFloatv( ALenum param, ALfloat* data );
-// AL_API void AL_APIENTRY alGetDoublev( ALenum param, ALdouble* data );
-
-// AL_API void* AL_APIENTRY alGetProcAddress( const ALchar* fname );
-// AL_API ALenum AL_APIENTRY alGetEnumValue( const ALchar* ename );
-// AL_API void AL_APIENTRY alListenerf( ALenum param, ALfloat value );
-// AL_API void AL_APIENTRY alListener3f( ALenum param, ALfloat value1, ALfloat value2, ALfloat value3 );
-// AL_API void AL_APIENTRY alListenerfv( ALenum param, const ALfloat* values );
-// AL_API void AL_APIENTRY alListeneri( ALenum param, ALint value );
-// AL_API void AL_APIENTRY alListener3i( ALenum param, ALint value1, ALint value2, ALint value3 );
-// AL_API void AL_APIENTRY alListeneriv( ALenum param, const ALint* values );
-// AL_API void AL_APIENTRY alGetListenerf( ALenum param, ALfloat* value );
-// AL_API void AL_APIENTRY alGetListener3f( ALenum param, ALfloat *value1, ALfloat *value2, ALfloat *value3 );
-// AL_API void AL_APIENTRY alGetListenerfv( ALenum param, ALfloat* values );
-// AL_API void AL_APIENTRY alGetListeneri( ALenum param, ALint* value );
-// AL_API void AL_APIENTRY alGetListener3i( ALenum param, ALint *value1, ALint *value2, ALint *value3 );
-// AL_API void AL_APIENTRY alGetListeneriv( ALenum param, ALint* values );
-// AL_API void AL_APIENTRY alGenSources( ALsizei n, ALuint* sources );
-// AL_API void AL_APIENTRY alDeleteSources( ALsizei n, const ALuint* sources );
-// AL_API ALboolean AL_APIENTRY alIsSource( ALuint sid );
-// AL_API void AL_APIENTRY alSourcef( ALuint sid, ALenum param, ALfloat value );
-// AL_API void AL_APIENTRY alSource3f( ALuint sid, ALenum param, ALfloat value1, ALfloat value2, ALfloat value3 );
-// AL_API void AL_APIENTRY alSourcefv( ALuint sid, ALenum param, const ALfloat* values );
-// AL_API void AL_APIENTRY alSourcei( ALuint sid, ALenum param, ALint value );
-// AL_API void AL_APIENTRY alSource3i( ALuint sid, ALenum param, ALint value1, ALint value2, ALint value3 );
-// AL_API void AL_APIENTRY alSourceiv( ALuint sid, ALenum param, const ALint* values );
-// AL_API void AL_APIENTRY alGetSourcef( ALuint sid, ALenum param, ALfloat* value );
-// AL_API void AL_APIENTRY alGetSource3f( ALuint sid, ALenum param, ALfloat* value1, ALfloat* value2, ALfloat* value3);
-// AL_API void AL_APIENTRY alGetSourcefv( ALuint sid, ALenum param, ALfloat* values );
-// AL_API void AL_APIENTRY alGetSourcei( ALuint sid,  ALenum param, ALint* value );
-// AL_API void AL_APIENTRY alGetSource3i( ALuint sid, ALenum param, ALint* value1, ALint* value2, ALint* value3);
-// AL_API void AL_APIENTRY alGetSourceiv( ALuint sid,  ALenum param, ALint* values );
-// AL_API void AL_APIENTRY alSourcePlayv( ALsizei ns, const ALuint *sids );
-// AL_API void AL_APIENTRY alSourceStopv( ALsizei ns, const ALuint *sids );
-// AL_API void AL_APIENTRY alSourceRewindv( ALsizei ns, const ALuint *sids );
-// AL_API void AL_APIENTRY alSourcePausev( ALsizei ns, const ALuint *sids );
-// AL_API void AL_APIENTRY alSourcePlay( ALuint sid );
-// AL_API void AL_APIENTRY alSourceStop( ALuint sid );
-// AL_API void AL_APIENTRY alSourceRewind( ALuint sid );
-// AL_API void AL_APIENTRY alSourcePause( ALuint sid );
-// AL_API void AL_APIENTRY alSourceQueueBuffers( ALuint sid, ALsizei numEntries, const ALuint *bids );
-// AL_API void AL_APIENTRY alSourceUnqueueBuffers( ALuint sid, ALsizei numEntries, ALuint *bids );
-// AL_API void AL_APIENTRY alGenBuffers( ALsizei n, ALuint* buffers );
-// AL_API void AL_APIENTRY alDeleteBuffers( ALsizei n, const ALuint* buffers );
-// AL_API ALboolean AL_APIENTRY alIsBuffer( ALuint bid );
-// AL_API void AL_APIENTRY alBufferData( ALuint bid, ALenum format, const ALvoid* data, ALsizei size, ALsizei freq );
-// AL_API void AL_APIENTRY alBufferf( ALuint bid, ALenum param, ALfloat value );
-// AL_API void AL_APIENTRY alBuffer3f( ALuint bid, ALenum param, ALfloat value1, ALfloat value2, ALfloat value3 );
-// AL_API void AL_APIENTRY alBufferfv( ALuint bid, ALenum param, const ALfloat* values );
-// AL_API void AL_APIENTRY alBufferi( ALuint bid, ALenum param, ALint value );
-// AL_API void AL_APIENTRY alBuffer3i( ALuint bid, ALenum param, ALint value1, ALint value2, ALint value3 );
-// AL_API void AL_APIENTRY alBufferiv( ALuint bid, ALenum param, const ALint* values );
-// AL_API void AL_APIENTRY alGetBufferf( ALuint bid, ALenum param, ALfloat* value );
-// AL_API void AL_APIENTRY alGetBuffer3f( ALuint bid, ALenum param, ALfloat* value1, ALfloat* value2, ALfloat* value3);
-// AL_API void AL_APIENTRY alGetBufferfv( ALuint bid, ALenum param, ALfloat* values );
-// AL_API void AL_APIENTRY alGetBufferi( ALuint bid, ALenum param, ALint* value );
-// AL_API void AL_APIENTRY alGetBuffer3i( ALuint bid, ALenum param, ALint* value1, ALint* value2, ALint* value3);
-// AL_API void AL_APIENTRY alGetBufferiv( ALuint bid, ALenum param, ALint* values );
-AL_API void AL_APIENTRY alDopplerFactor( ALfloat value );
-AL_API void AL_APIENTRY alDopplerVelocity( ALfloat value );
-AL_API void AL_APIENTRY alSpeedOfSound( ALfloat value );
-AL_API void AL_APIENTRY alDistanceModel( ALenum distanceModel );
-#endif
