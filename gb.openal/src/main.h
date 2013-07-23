@@ -34,6 +34,10 @@
 #include <AL/alext.h>
 #include <AL/alure.h>
 
+#ifndef ALC_EXT_CAPTURE
+#define ALC_EXT_CAPTURE 1
+#endif
+
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 #endif
