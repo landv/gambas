@@ -10,6 +10,7 @@ Public Const PROJECT_NAME As String = "$"
 Public Const STABLE As Integer = 0
 Public Const STABLE_NOT_FINISHED As Integer = 1
 Public Const UNSTABLE As Integer = 2
+Public Const DEPRECATED As Integer = 3
 
 Public Key As String
 Public Name As String
@@ -122,6 +123,7 @@ Static Private Sub InitComponentNames()
   $cName["gb.net.curl"] = ("Network high-level protocols management")
   $cName["gb.net.pop3"] = ("POP3 client")
   $cName["gb.net.smtp"] = ("SMTP client")
+  $cName["gb.openal"] = ("OpenAL 3D audio library")
   $cName["gb.opengl"] = ("3D programming with OpenGL")
   $cName["gb.opengl.glu"] = ("OpenGL utility component")
   $cName["gb.opengl.glsl"] = ("OpenGL shaders management")
@@ -273,6 +275,8 @@ Static Private Sub InitComponent(sFile As String)
               .State = STABLE_NOT_FINISHED
             Case "experimental", "unstable"
               .State = UNSTABLE
+            Case "deprecated"
+              .State = DEPRECATED
             Default
               .State = CInt(sLig)
           End Select
@@ -1492,5 +1496,20 @@ Public Sub GetHelpHTML() As String
   sHtml = Replace(sHtml, "$(hide-title)", "")
   
   Return sHtml
+  
+End
+
+Public Sub Match(sFilter As String) As Boolean
+  
+  For Each sFilter In Split(sFilter, " ", Chr$(34), True)
+  
+    sFilter = Util.RemoveAccents(sFilter)
+    
+    If InStr(Util.RemoveAccents(Key), sFilter, 1, gb.IgnoreCase) Then Return True
+    If InStr(Util.RemoveAccents(Name), sFilter, 1, gb.IgnoreCase) Then Return True
+    If InStr(Util.RemoveAccents(Authors.Join("\n")), sFilter, 1, gb.IgnoreCase) Then Return True
+    If InStr(Util.RemoveAccents(Implement.Join("\n")), sFilter, 1, gb.IgnoreCase) Then Return True
+    
+  Next
   
 End

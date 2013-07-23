@@ -139,6 +139,8 @@ Public Sub GetDescription() As String
           $sInfo = "<i>" & ("Experimental") & "</i>"
         Case CComponent.STABLE_NOT_FINISHED
           $sInfo = "<i>" & ("Not finished but stable") & "</i>"
+        Case CComponent.DEPRECATED
+          $sInfo = "<i>" & ("Deprecated") & "</i>"
       End Select 
 
       AddInfo(hComp.Authors, ("Authors"))

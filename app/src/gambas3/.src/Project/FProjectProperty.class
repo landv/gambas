@@ -21,6 +21,8 @@ Private $aLibraries As String[]
 Private $iDoNotRefreshComponent As Integer
 Private $iTooltipLastRow As Integer
 
+Private $sFilter As String
+
 Private Const LIBRARY_TAB As Integer = 4
 
 Static Public Function Run() As Boolean
@@ -395,6 +397,7 @@ Private Sub RefreshComponents()
     hComp = CComponent.All[sLib]
     If hComp.Hidden Then Continue
     If Not $bShowUsed Or If $cComp[hComp.Key].Value Then
+      If $sFilter And If Not hComp.Match($sFilter) Then Continue
       $aComp.Add(hComp.Key)
     Endif
   Next
@@ -426,7 +429,12 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
       Case 1
         .Text = hCompItem.Key
         .Font.Bold = True
-        If hComp.State = CComponent.UNSTABLE Then .Foreground = Color.LightForeground
+        If hComp.State = CComponent.UNSTABLE Then 
+          .Font.Italic = True
+        Else If hComp.State = CComponent.DEPRECATED Then
+          .Foreground = Color.LightForeground
+          .Font.Strikeout = True
+        Endif
         
       Case 2
         .WordWrap = True
@@ -440,6 +448,8 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
             .Picture = Picture["img/16/experimental.png"]
           Case CComponent.STABLE
             .Picture = Picture["img/16/finished.png"]
+          Case CComponent.DEPRECATED
+            .Picture = Picture["img/16/deprecated.png"]
         End Select
       
     End Select
@@ -1249,6 +1259,8 @@ Public Sub gvwComponent_MouseMove()
           sText = ("Experimental")
         Case CComponent.STABLE
           sText = ("Stable")
+        Case CComponent.DEPRECATED
+          sText = ("Deprecated")
       End Select
     Endif
     
@@ -1270,5 +1282,48 @@ End
 Public Sub gvwComponent_Enter()
 
   $iTooltipLastRow = -1
+
+End
+
+Public Sub panSearchProject_Arrange()
+
+  picFilter.W = picFilter.H
+
+End
+
+Public Sub txtFilterComponent_Change()
+  
+  $sFilter = Trim(txtFilterComponent.Text)
+  timFilterComponent.Start
+  
+End
+
+Public Sub txtFilterComponent_KeyPress()
+
+  If Key.Code = Key.Esc Then btnClearFilter_Click
+
+End
+
+Public Sub btnClearFilter_Click()
+  
+  txtFilterComponent.Clear
+  $sFilter = ""
+  timFilterComponent_Timer
+  txtFilterComponent.SetFocus
+  
+End
+
+Public Sub timFilterComponent_Timer()
+
+  RefreshComponents
+  timFilterComponent.Stop
+
+End
+
+Public Sub tabProject_Click()
+
+  If tabProject.Text = ("Components") Then
+    txtFilterComponent.SetFocus
+  Endif
 
 End

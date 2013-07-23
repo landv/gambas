@@ -1,0 +1,35 @@
+' Gambas module file
+
+Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅ[A]àáâãäå[a]Æ[AE]æ[ae]œ[oe]Ç[C]ç[c]ÈÉÊË[E]èéêë[e]ÌÍÎÏ[I]ìíîï[i]Ñ[N]ñ[n]ÒÓÔÕÖ[O]òóôõö[o]ÙÚÛÜ[U]ùúûü[u]Ý[Y]ýÿ[y]ß[ss]°[]"
+
+Public Sub RemoveAccents(sStr As String) As String
+
+  Dim iInd As Integer
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim iPosL As Integer
+  Dim iPosR As Integer
+  Dim sNewStr As String
+
+  If Not sStr Then Return
+  If IsAscii(sStr) Then Return sStr
+
+  For iInd = 1 To String.Len(sStr)
+    sCar = String.Mid$(sStr, iInd, 1)
+    If Len(sCar) > 1 Then
+      iPos = InStr(REMOVE_ACC, sCar)
+      If iPos Then
+        iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+        iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+        If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then
+          sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
+        Endif
+      Endif
+    Endif
+    sNewStr &= sCar
+  Next
+
+  Return sNewStr
+
+End
+

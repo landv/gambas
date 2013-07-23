@@ -360,14 +360,44 @@
     }
     Index = 3
     Text = ("Components")
-    { Panel7 Panel
-      MoveScaled(1,1,61,5)
-      Arrangement = Arrange.Fill
+    { Panel7 HBox
+      MoveScaled(1,1,88,5)
+      Spacing = True
       Margin = True
+      { panSearchProject Panel
+        MoveScaled(1,0,29,3)
+        Background = Color.TextBackground
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        Border = Border.Plain
+        { picFilter PictureBox
+          MoveScaled(0,0,3,3)
+          Mouse = Mouse.Pointing
+          Picture = Picture["img/32/filter.png"]
+          Stretch = True
+          AutoResize = True
+        }
+        { txtFilterComponent TextBox
+          MoveScaled(5,0,18,3)
+          Foreground = Color.LightForeground
+          Expand = True
+          Border = False
+        }
+        { btnClearFilter ToolButton
+          MoveScaled(25,0,3,3)
+          ToolTip = ("Reset filter")
+          Picture = Picture["icon:/small/clear"]
+        }
+      }
       { chkShowUsed CheckBox
-        MoveScaled(0,0,57,3)
+        MoveScaled(51,0,35,3)
+        AutoResize = True
         Text = ("Show only components used in project")
       }
+    }
+    { timFilterComponent #Timer
+      #MoveScaled(34,1)
+      Delay = 500
     }
     { Separator4 Separator
       MoveScaled(47,7,22,0)
