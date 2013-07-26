@@ -213,13 +213,76 @@ __END:
 
 END_METHOD
 
+
+static GdkPixbuf *stretch_pixbuf(GdkPixbuf *img, int w, int h)
+{
+	GdkPixbuf *image = NULL;
+	int wimg, himg;
+	int ws, hs;
+
+	if (w <= 0 && h <= 0)
+		goto __RETURN;
+
+	wimg = gdk_pixbuf_get_width(img);
+	himg = gdk_pixbuf_get_height(img);
+
+	if (w < 0)
+		w = wimg * h / himg;
+	else if (h < 0)
+		h = himg * w / wimg;
+
+	if (w <= 0 || h <= 0)
+		goto __RETURN;
+
+	ws = w;
+	hs = h;
+	if (ws < (wimg / 4))
+		ws = w * 4;
+	if (hs < (himg / 4))
+		hs = h * 4;
+	if (ws != w || hs != h)
+	{
+		image = gdk_pixbuf_scale_simple(img, ws, hs, GDK_INTERP_NEAREST);
+		g_object_unref(G_OBJECT(img));
+		img = image;
+	}
+
+	image = gdk_pixbuf_scale_simple(img, w, h, GDK_INTERP_BILINEAR);
+
+__RETURN:
+
+	g_object_unref(G_OBJECT(img));
+	return image;
+}
+
+BEGIN_METHOD(Image_Stretch, GB_INTEGER width; GB_INTEGER height)
+
+	GdkPixbuf *img;
+	GB_IMG *image;
+
+	SYNCHRONIZE_IMAGE(THIS);
+	IMAGE.Convert(THIS, GB_IMAGE_RGBA);
+	img = gdk_pixbuf_new_from_data((const guchar *)THIS->data, GDK_COLORSPACE_RGB, TRUE, 8, THIS->width, THIS->height, THIS->width * sizeof(uint), NULL, NULL);
+
+	img = stretch_pixbuf(img, VARG(width), VARG(height));
+
+	image = IMAGE.Create(gdk_pixbuf_get_width(img), gdk_pixbuf_get_height(img), GB_IMAGE_RGBA, gdk_pixbuf_get_pixels(img));
+	IMAGE.Convert(image, IMAGE.GetDefaultFormat());
+	GB.ReturnObject(image);
+
+	g_object_unref(G_OBJECT(img));
+
+END_METHOD
+
+
 GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
   GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
-  
+  GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
+
   GB_END_DECLARE
 };
 
