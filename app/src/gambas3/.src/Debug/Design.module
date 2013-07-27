@@ -185,9 +185,15 @@ Public Sub Debug_Read(Data As String)
 
   If Not Data Then Return 
   
+  'Debug Data
+  
   If Data = "!" Then 
     Signal
     Return 
+  Else If Data = "!!" Then
+    $bStart = True
+    Signal
+    Return
   Endif
   
   aData = Split(Data, "\t")
@@ -723,6 +729,9 @@ Private Sub Start(sCmd As String)
   Dim sBreakpoint As String
   Dim sFile As String
   Dim aEnv As String[]
+  Dim sOpenWebBrowser As String
+  Dim sPort As String
+  Dim iPos As Integer
 
   If Project.Running Then Return
   
@@ -802,13 +811,18 @@ Private Sub Start(sCmd As String)
 
   aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo]
   
-  ' If Project.Components.Exist("gb.web") Then 
-  '   aExec.Add("-H")
-  '   If Not aEnv.Exist("GB_HTTPD_PORT=*", gb.Like) Then
-  '     aEnv = aEnv.Copy()
-  '     aEnv.Add("GB_HTTPD_PORT=8000")
-  '   Endif
-  ' Endif
+  If Project.Components.Exist("gb.web") And If Project.UseHttpServer Then 
+    aExec.Add("-H")
+    iPos = aEnv.Find("GB_HTTPD_PORT=*", gb.Like)
+    sPort = "8080"
+    If iPos < 0 Then
+      aEnv = aEnv.Copy()
+      aEnv.Add("GB_HTTPD_PORT=8080")
+    Else
+      Try sPort = Scan(aEnv[iPos], "*=*")[1]
+    Endif
+    sOpenWebBrowser = "http://localhost:" & sPort
+  Endif
   
   If Project.Profiling Then 
     
@@ -910,6 +924,8 @@ Private Sub Start(sCmd As String)
   Endif
 
   UpdateMinimize
+
+  If sOpenWebBrowser Then Project.OpenWebPage(sOpenWebBrowser)
 
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"

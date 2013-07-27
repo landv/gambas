@@ -28,12 +28,13 @@
 #include "gb_common.h"
 
 #include <setjmp.h>
+#include <locale.h>
 
 #include "main.h"
 
-int thttpd_main(int argc, char **argv);
-
 const GB_INTERFACE *GB_PTR EXPORT;
+
+int thttpd_main(int argc, char **argv, bool debug);
 
 static jmp_buf _setjmp_env;
 
@@ -56,7 +57,10 @@ void run_cgi(void)
 void EXPORT GB_MAIN(int argc, char **argv)
 {
 	if (setjmp(_setjmp_env) == 0)
-		thttpd_main(argc, argv);
+	{
+		setlocale(LC_ALL, "C");
+		thttpd_main(argc, argv, GB.System.Debug());
+	}
 	else
 		GB.System.HasForked();
 }

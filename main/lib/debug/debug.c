@@ -666,7 +666,7 @@ void DEBUG_backtrace(FILE *out)
 
 static void debug_info()
 {
-	fprintf(_out, "*\t");
+	fprintf(_out, "*[%d]\t", getpid());
 	
 	if (Error)
 		GB_DEBUG.PrintError(_out, TRUE, FALSE);
@@ -887,7 +887,7 @@ void DEBUG_main(bool error)
 		{ NULL }
 	};
 
-
+	static bool first = TRUE;
 	char *cmd = NULL;
 	char cmdbuf[64];
 	int len;
@@ -896,14 +896,17 @@ void DEBUG_main(bool error)
 
 	Error = error;
 
-	fflush(NULL);
+	fflush(_out);
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "DEBUG_main {\n");
 	#endif
 
 	if (_fifo)
-		fprintf(_out, "!\n");
+	{
+		fprintf(_out, first ? "!!\n" : "!\n");
+		first = FALSE;
+	}
 
 	command_frame(NULL);
 
@@ -919,7 +922,7 @@ void DEBUG_main(bool error)
 		if (!_fifo)
 		{
 			fprintf(_out, "> ");
-			fflush(NULL);
+			fflush(_out);
 		}
 
 		GB.FreeString(&cmd);

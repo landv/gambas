@@ -232,12 +232,12 @@ End
 
 Public Sub DrawingArea_MouseWheel()
   
+  Me.Parent.SetFocus()
   If Mouse.Delta > 0 Xor System.RightToLeft Then
     Try GetParent()._MovePrevious()
   Else
     Try GetParent()._MoveNext()
   Endif
-  Me.Parent.SetFocus()
   
 End
 

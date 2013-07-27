@@ -1076,6 +1076,7 @@ typedef
 			bool (*IsRightToLeft)(void);
 			char *(*Path)(void);
 			void (*HasForked)(void);
+			bool (*Debug)(void);
 			}
 		System;
 

@@ -3032,7 +3032,7 @@ static char **make_envp(httpd_conn * hc)
 	   }
 	   } */
 
-	//envp[envn++] = build_env("SCRIPT_NAME=/%s", strcmp( hc->origfilename, "." ) == 0 ? "" : hc->origfilename );
+	envp[envn++] = "SCRIPT_NAME=/";
 
 	envp[envn++] = build_env("PATH_INFO=/%s", hc->expnfilename);
 	//envp[envn++] = build_env( "SCRIPT_NAME=%s", "");
@@ -3719,7 +3719,7 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 			//hc->file_address = mmc_map(hc->expnfilename, &(hc->sb), nowP);
 			//if (hc->file_address == (char *) 0)
 		
-			syslog(LOG_DEBUG, "%.*s", public_file_len, public_file);
+			//syslog(LOG_DEBUG, "%.*s", public_file_len, public_file);
 		
 			if (GB.LoadFile(public_file, public_file_len, &hc->file_address, &hc->file_len))
 			{

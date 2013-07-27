@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,71)
+  MoveScaled(0,2,93,73)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -32,9 +32,14 @@
       Text = ("LANG=C ; LC_ALL=C")
       Tag = "LANG=C,LC_ALL=C"
     }
+    { mnuInsertEnvPORT Menu mnuInsertEnv
+      Name = "mnuInsertEnvPORT"
+      Text = ("GB_HTTPD_PORT=8080")
+      Tag = "GB_HTTPD_PORT=8080"
+    }
   }
   { tabProject TabPanel
-    MoveScaled(1,1,91,64)
+    MoveScaled(1,1,91,66)
     Arrangement = Arrange.Vertical
     Count = 5
     Index = 0
@@ -55,7 +60,7 @@
       MoveScaled(53,11,29,0)
     }
     { HPanel1 HPanel
-      MoveScaled(1,11,84,47)
+      MoveScaled(1,11,84,50)
       Expand = True
       AutoResize = True
       Spacing = True
@@ -113,17 +118,17 @@
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,15,60,15)
+        MoveScaled(18,15,60,18)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,30,16,4)
+        MoveScaled(0,33,16,4)
         Font = Font["Bold"]
         Text = ("Author(s)")
       }
       { txtAuthor TextArea
-        MoveScaled(18,31,57,16)
+        MoveScaled(18,34,57,16)
         Expand = True
         Wrap = True
       }
@@ -131,7 +136,7 @@
     Index = 1
     Text = ("Options")
     { Panel6 VBox
-      MoveScaled(1,1,87,56)
+      MoveScaled(0,0,89,61)
       Spacing = True
       Margin = True
       { Label7 Label
@@ -274,6 +279,21 @@
           Text = ("Use a terminal emulator")
         }
         { cmbTerminal ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
+      }
+      { panHttpServer HBox
+        MoveScaled(1,56,83,4)
+        Enabled = False
+        Spacing = True
+        Indent = True
+        { Label6 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Use an embedded HTTP server")
+        }
+        { cmbHttpServer ComboBox
           MoveScaled(47,0,10,4)
           ReadOnly = True
           List = [("Yes"), ("No")]
@@ -508,12 +528,12 @@
     Index = 0
   }
   { btnOK Button
-    MoveScaled(59,66,16,4)
+    MoveScaled(59,68,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(76,66,16,4)
+    MoveScaled(76,68,16,4)
     Text = ("Cancel")
     Cancel = True
   }

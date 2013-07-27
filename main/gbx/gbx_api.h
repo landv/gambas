@@ -150,6 +150,7 @@ char *GB_SystemCharset(void);
 char *GB_SystemDomainName(void);
 bool GB_IsRightToLeft(void);
 char *GB_SystemPath(void);
+bool GB_SystemDebug(void);
 
 void *GB_Eval(void *, void *);
 

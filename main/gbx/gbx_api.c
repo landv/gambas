@@ -247,6 +247,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_IsRightToLeft,
 	(void *)GB_SystemPath,
 	(void *)FILE_init,
+	(void *)GB_SystemDebug,
 
 	(void *)GB_ArrayNew,
 	(void *)GB_ArrayCount,
@@ -2341,6 +2342,11 @@ const char *GB_CurrentComponent()
 void *GB_DebugGetExec(void)
 {
 	return &EXEC_current;
+}
+
+bool GB_SystemDebug(void)
+{
+	return EXEC_debug;
 }
 
 

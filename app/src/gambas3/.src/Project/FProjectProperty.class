@@ -77,6 +77,7 @@ Public Sub Form_Open()
     'chkVersion.Value = NOT IsNull(.VersionProgram)
     cmbTerminal.Index = If(.UseTerminal, 0, 1)
     cmbProfile.Index = If(.Profiling, 0, 1)
+    cmbHttpServer.Index = If(.UseHttpServer, 0, 1)
     $aLibraries = .Libraries.Copy()
 
   End With
@@ -193,6 +194,7 @@ Private Function DoApply() As Boolean
     .Icon = $sIcon
     .Profiling = cmbProfile.Index = 0
     .UseTerminal = cmbTerminal.Index = 0
+    .UseHttpServer = cmbHttpServer.Index = 0
     
     If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
       Project.ResetScan
@@ -593,7 +595,7 @@ Public Sub gvwComponent_Click()
   Next
   
   gvwComponent.Refresh
-
+  
 End
 
 
@@ -1324,6 +1326,8 @@ Public Sub tabProject_Click()
 
   If tabProject.Text = ("Components") Then
     txtFilterComponent.SetFocus
+  Else If tabProject.Text = ("Options") Then
+    panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
   Endif
 
 End

@@ -70,7 +70,8 @@ typedef long long int64_t;
 
 
 static char *argv0;
-static int debug;
+static bool _debug;
+//static int debug;
 static unsigned short port;
 static char *dir;
 static char *data_dir;
@@ -264,7 +265,7 @@ static void handle_usr1(int sig)
 {
 	/* Don't need to set up the handler again, since it's a one-shot. */
 
-	if (num_connects == 0)
+	if (!_debug && num_connects == 0)
 	{
 		/* If there are no active connections we want to exit immediately
 		 ** here.  Not only is it faster, but without any connections the
@@ -350,7 +351,7 @@ static void re_open_logfile(void)
 }
 
 
-int thttpd_main(int argc, char **argv)
+int thttpd_main(int argc, char **argv, bool debug)
 {
 	char *cp;
 	struct passwd *pwd;
@@ -368,6 +369,7 @@ int thttpd_main(int argc, char **argv)
 	struct timeval tv;
 
 	argv0 = argv[0];
+	_debug = debug;
 
 	cp = strrchr(argv0, '/');
 	if (cp != (char *) 0)
@@ -379,8 +381,13 @@ int thttpd_main(int argc, char **argv)
 
 	/* Handle command-line arguments. */
 	parse_args(argc, argv);
-	debug = 1;
+	//debug = 1;
 	do_chroot = 0;
+	if (_debug)
+	{
+		cgi_limit = 1;
+		cgi_timelimit = 0;
+	}
 
 	/* Read zone info now, in case we chroot(). */
 	tzset();
@@ -841,7 +848,7 @@ int thttpd_main(int argc, char **argv)
 		}
 		tmr_run(&tv);
 
-		if (got_usr1 && !terminate)
+		if (!_debug && got_usr1 && !terminate)
 		{
 			terminate = 1;
 			if (hs != (httpd_server *) 0)
@@ -868,7 +875,7 @@ static void parse_args(int argc, char **argv)
 	char *env;
 	int val;
 
-	debug = 0;
+	//debug = 0;
 	port = DEFAULT_PORT;
 	dir = (char *) 0;
 	data_dir = (char *) 0;
