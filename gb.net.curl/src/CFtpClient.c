@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -131,6 +132,7 @@ static void ftp_initialize_curl_handle(void *_object)
 
 static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 {
+	struct stat info;
 	struct curl_slist *list;
 	int i;
 
@@ -154,6 +156,9 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 			break;
 			
 		case EXEC_PUT:
+			
+			if (THIS_FILE && fstat(fileno(THIS_FILE), &info) == 0)
+				curl_easy_setopt(THIS_CURL, CURLOPT_INFILESIZE_LARGE, (curl_off_t)info.st_size);
 			
 			curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION , (curl_read_callback)ftp_read_curl);
 			curl_easy_setopt(THIS_CURL, CURLOPT_READDATA     , _object);
