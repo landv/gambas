@@ -32,42 +32,58 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 	GdkPixbuf *img = NULL;
 	char *addr, *laddr;
 	int len, llen;
-	GdkPixbufLoader* loader;
+	GdkPixbufLoader* loader = NULL;
 	GError *error = NULL;
 	gsize size;
 	int format;
 	GB_IMG *image;
 
-	if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
+	/*if (LENGTH(path) && *STRING(path) == '/')
 	{
-		GB.Error("Unable to load image");
-		return;
-	}
-		
-	loader = gdk_pixbuf_loader_new();
-	
-	laddr = addr;
-	llen = len;
-	while (llen > 0)
-	{
-		size = llen > LOAD_INC ? LOAD_INC : llen;
-		if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, size, &error))
+		img = gdk_pixbuf_new_from_file(GB.ToZeroString(ARG(path)), &error);
+		if (error)
 		{
 			GB.Error(error->message);
+			return;
+		}
+	}
+	else
+	{*/
+		if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
+		{
+			GB.Error("Unable to load image");
+			return;
+		}
+
+		loader = gdk_pixbuf_loader_new();
+
+		laddr = addr;
+		llen = len;
+		while (llen > 0)
+		{
+			size = llen > LOAD_INC ? LOAD_INC : llen;
+			if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, size, &error))
+			{
+				fprintf(stderr, "error write: %ld\n", size);
+				GB.Error(error->message);
+				goto __END;
+			}
+			laddr += size;
+			llen -= size;
+		}
+
+		gdk_pixbuf_loader_close(loader, NULL);
+
+		img = gdk_pixbuf_loader_get_pixbuf(loader);
+		if (!img)
+		{
+			GB.Error("Unable to load image");
 			goto __END;
 		}
-		laddr += size;
-		llen -= size;
-	}
-	
-	if (!gdk_pixbuf_loader_close(loader, &error))
-	{
-		GB.Error(error->message);
-		goto __END;
-	}
-	
-	img = gdk_pixbuf_loader_get_pixbuf(loader);
-	g_object_ref(G_OBJECT(img));
+
+		g_object_ref(G_OBJECT(img));
+
+	//}
 	
 	// Rowstride breaks gb.image (it is rounded up so that a line is always a four bytes multiple).
 	if (gdk_pixbuf_get_n_channels(img) == 3)
@@ -98,8 +114,11 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
 __END:
 	
-	g_object_unref(G_OBJECT(loader));
-	GB.ReleaseFile(addr, len);
+	if (loader)
+	{
+		g_object_unref(G_OBJECT(loader));
+		GB.ReleaseFile(addr, len);
+	}
 
 END_METHOD
 
