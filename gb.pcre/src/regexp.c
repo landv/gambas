@@ -29,15 +29,13 @@
 #include "regexp.h"
 #include "main.h"
 
+//#define DEBUG_REPLACE 1
+
 #define OVECSIZE_INC 99
 
 DECLARE_METHOD(RegExp_free);
 
-/***************************************************************************
-
-	Regexp
-
-***************************************************************************/
+//---------------------------------------------------------------------------
 
 static void compile(void *_object)
 {
@@ -61,7 +59,7 @@ static void compile(void *_object)
 	}
 }
 
-static void exec(void *_object)
+static void exec(void *_object, int lsubject)
 {
 	int ret;
 	char code[8];
@@ -72,7 +70,10 @@ static void exec(void *_object)
 		return;
 	}
 	
-	if (!THIS->subject) 
+	if (lsubject < 0)
+		lsubject = GB.StringLength(THIS->subject);
+
+	if (!THIS->subject)
 	{
 		GB.Error("No subject provided");
 		return;
@@ -83,7 +84,7 @@ static void exec(void *_object)
 		ret = pcre_exec(THIS->code,
 				NULL,
 				THIS->subject,
-				GB.StringLength(THIS->subject),
+				lsubject,
 				0,
 				THIS->eopts,
 				THIS->ovector,
@@ -131,7 +132,7 @@ static void exec(void *_object)
 				//	GB.Error("JIT stack limit reached"); return;
 				default:
 					sprintf(code, "%d", -ret);
-					GB.Error("Unable to exec regular expression: error #&1", code);
+					GB.Error("Unable to run regular expression: error #&1", code);
 					return;
 			}
 		}
@@ -176,7 +177,7 @@ bool REGEXP_match(const char *subject, int lsubject, const char *pattern, int lp
 		tmp.eopts = eoptions;
 		tmp.subject = GB.NewString(subject, lsubject);
 
-		exec(&tmp);
+		exec(&tmp, -1);
 		ret = (tmp.ovector[0] != -1);
 	}
 
@@ -184,6 +185,8 @@ bool REGEXP_match(const char *subject, int lsubject, const char *pattern, int lp
 	
 	return ret;
 }
+
+//---------------------------------------------------------------------------
 
 BEGIN_METHOD(RegExp_Compile, GB_STRING pattern; GB_INTEGER coptions)
 
@@ -202,7 +205,7 @@ BEGIN_METHOD(RegExp_Exec, GB_STRING subject; GB_INTEGER eoptions)
 	
 	GB.FreeString(&THIS->subject);
 	THIS->subject = GB.NewString(STRING(subject), LENGTH(subject));
-	exec(THIS);
+	exec(THIS, -1);
 
 END_METHOD
 
@@ -229,7 +232,7 @@ BEGIN_METHOD(RegExp_new, GB_STRING subject; GB_STRING pattern; GB_INTEGER coptio
 	THIS->eopts = VARGOPT(eoptions, 0);
 	THIS->subject = GB.NewString(STRING(subject), LENGTH(subject));
 
-	exec(THIS);
+	exec(THIS, -1);
 
 END_METHOD
 
@@ -290,6 +293,14 @@ BEGIN_PROPERTY(RegExp_Error)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(RegExp_Submatches)
+
+	GB.Deprecated("gb.pcre", "Regexp.Submatches", NULL);
+	GB.ReturnSelf(THIS);
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(RegExp_Submatches_Count)
 
 	GB.ReturnInteger(THIS->count - 1);
@@ -327,9 +338,106 @@ BEGIN_PROPERTY(RegExp_Submatch_Offset)
 END_PROPERTY
 
 
+static CREGEXP *_subst_regexp = NULL;
+
+static void subst_get_submatch(int index, const char **p, int *lp)
+{
+	if (index <= 0 || index >= _subst_regexp->count)
+	{
+		*p = NULL;
+		*lp = 0;
+	}
+	else
+	{
+		index *= 2;
+		*p = &_subst_regexp->subject[_subst_regexp->ovector[index]];
+		*lp = _subst_regexp->ovector[index + 1] - _subst_regexp->ovector[index];
+	}
+}
+
+BEGIN_METHOD(RegExp_Replace, GB_STRING subject; GB_STRING pattern; GB_STRING replace; GB_INTEGER coptions; GB_INTEGER eoptions)
+
+	CREGEXP r;
+	char *replace;
+	char *result = NULL;
+	char *subject;
+	int offset;
+
+	CLEAR(&r);
+	r.ovecsize = OVECSIZE_INC;
+	GB.Alloc(POINTER(&r.ovector), sizeof(int) * r.ovecsize);
+	r.copts = VARG(coptions) | PCRE_UNGREEDY;
+	r.pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
+
+	compile(&r);
+
+	if (r.code)
+	{
+		r.eopts = VARG(eoptions);
+		subject = GB.NewString(STRING(subject), LENGTH(subject));
+
+		offset = 0;
+
+		while (offset < LENGTH(subject))
+		{
+			r.subject = &subject[offset];
+			#if DEBUG_REPLACE
+			fprintf(stderr, "\nsubject: (%d) %s\n", offset, r.subject);
+			#endif
+			exec(&r, GB.StringLength(subject) - offset);
+
+			if (r.ovector[0] < 0)
+			{
+				result = GB.AddString(result, &subject[offset], GB.StringLength(subject) - offset);
+				//fprintf(stderr, "result = %s\n", result);
+				break;
+			}
+
+			_subst_regexp = &r;
+
+			if (r.ovector[0] > 0)
+			{
+			#if DEBUG_REPLACE
+				fprintf(stderr, "add: (%d) %.*s\n", lp, r.ovector[i * 2] - lp, &r.subject[lp]);
+			#endif
+				result = GB.AddString(result, r.subject, r.ovector[0]);
+			#if DEBUG_REPLACE
+				fprintf(stderr, "result = %s\n", result);
+			#endif
+			}
+
+			replace = GB.SubstString(STRING(replace), LENGTH(replace), (GB_SUBST_CALLBACK)subst_get_submatch);
+			#if DEBUG_REPLACE
+			fprintf(stderr, "replace = %s\n", replace);
+			#endif
+			result = GB.AddString(result, replace, GB.StringLength(replace));
+			#if DEBUG_REPLACE
+			fprintf(stderr, "result = %s\n", result);
+			#endif
+
+			offset += r.ovector[1];
+		}
+
+		_subst_regexp = NULL;
+
+		GB.FreeStringLater(result);
+		#if DEBUG_REPLACE
+		fprintf(stderr, "result = %s\n", result);
+		#endif
+		r.subject = subject;
+	}
+
+	RegExp_free(&r, NULL);
+
+	GB.ReturnString(result);
+
+END_METHOD
+
+//---------------------------------------------------------------------------
+
 GB_DESC CRegexpDesc[] =
 {
-	GB_DECLARE("Regexp", sizeof(CREGEXP)),
+	GB_DECLARE("RegExp", sizeof(CREGEXP)),
 
 	GB_METHOD("_new", NULL, RegExp_new, "[(Subject)s(Pattern)s(CompileOptions)i(ExecOptions)i]"),
 	GB_METHOD("_free", NULL, RegExp_free, NULL),
@@ -338,7 +446,8 @@ GB_DESC CRegexpDesc[] =
 	GB_METHOD("Exec", NULL, RegExp_Exec, "(Subject)s[(ExecOptions)i]"),
 
 	GB_STATIC_METHOD("Match", "b", RegExp_Match, "(Subject)s(Pattern)s[(CompileOptions)i(ExecOptions)i]"),
-	
+	GB_STATIC_METHOD("Replace", "s", RegExp_Replace, "(Subject)s(Pattern)s(Replace)s[(CompileOptions)i(ExecOptions)i]"),
+
 	GB_CONSTANT("Caseless", "i", PCRE_CASELESS),
 	GB_CONSTANT("MultiLine", "i", PCRE_MULTILINE),
 	GB_CONSTANT("DotAll", "i", PCRE_DOTALL),
@@ -369,13 +478,16 @@ GB_DESC CRegexpDesc[] =
 	GB_CONSTANT("BadUTF8Offset", "i", PCRE_ERROR_BADUTF8_OFFSET),
 #endif
 
-	GB_PROPERTY_SELF("SubMatches", ".Regexp.Submatches"),
+	GB_PROPERTY_READ("SubMatches", ".Regexp.Submatches", RegExp_Submatches),
 	
 	GB_PROPERTY_READ("Text", "s", RegExp_Text), /* this is the string matched by the entire pattern */
 	GB_PROPERTY_READ("Offset", "i", RegExp_Offset), /* this is the string matched by the entire pattern */
 	GB_PROPERTY_READ("Pattern", "s", RegExp_Pattern),
 	GB_PROPERTY_READ("Subject", "s", RegExp_Subject),
 	GB_PROPERTY_READ("Error", "i", RegExp_Error),
+
+	GB_METHOD("_get", ".Regexp.Submatch", RegExp_Submatches_get, "(Index)i"),
+	GB_PROPERTY_READ("Count", "i", RegExp_Submatches_Count),
 
 	GB_END_DECLARE
 };

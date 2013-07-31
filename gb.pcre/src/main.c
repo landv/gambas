@@ -33,7 +33,7 @@
 
 #include "main.h"
 
-GB_INTERFACE GB EXPORT;
+GB_INTERFACE *GB_PTR EXPORT;
 
 void *GB_PCRE_1[] EXPORT = {
 

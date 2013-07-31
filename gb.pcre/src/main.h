@@ -29,7 +29,9 @@
 #include "gb.pcre.h"
 
 #ifndef __MAIN_C
-extern GB_INTERFACE GB;
+extern GB_INTERFACE *GB_PTR;
 #endif
+
+#define GB (*GB_PTR)
 
 #endif /* __MAIN_H */
