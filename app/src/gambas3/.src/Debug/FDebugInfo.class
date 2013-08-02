@@ -1465,6 +1465,7 @@ Private Sub UpdateLocal()
     If btnLocalLayout.Value Then
       nRow = Max(1, .ClientH \ .Rows.Height)
       nCol = Max(1, ($aLocal.Count + nRow - 1) \ nRow)
+      If nCol = 1 Then nRow = $aLocal.Count
     Else
       nRow = $aLocal.Count
       nCol = 1

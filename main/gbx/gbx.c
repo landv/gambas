@@ -67,7 +67,6 @@ FILE *log_file;
 
 static bool _welcome = FALSE;
 static bool _quit_after_main = FALSE;
-static bool _run_httpd = FALSE;
 
 static void NORETURN my_exit(int ret)
 {
@@ -97,7 +96,7 @@ static void init(const char *file, int argc, char **argv)
 	{
 		PROJECT_load();
 
-		if (_run_httpd)
+		if (PROJECT_run_httpd)
 			COMPONENT_exec("gb.httpd", argc, argv);
 		
 		PROJECT_load_finish();
@@ -309,7 +308,7 @@ int main(int argc, char *argv[])
 		}
 		else if (is_long_option(argv[i], 'H', "httpd"))
 		{
-			_run_httpd = TRUE;
+			PROJECT_run_httpd = TRUE;
 		}
 		else if (is_option(argv[i], '-'))
 		{

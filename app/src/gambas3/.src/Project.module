@@ -5474,3 +5474,9 @@ Public Sub Application_Error()
   Try Save
 
 End
+
+Public Sub CanUseHttpServer() As Boolean
+  
+  If Components Then Return Components.Exist("gb.web") 
+  
+End

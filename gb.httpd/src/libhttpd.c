@@ -727,10 +727,10 @@ send_response(httpd_conn * hc, int status, char *title, char *extraheads,
 	send_mime(hc, status, title, "", extraheads, "text/html; charset=%s",
 						(off_t) - 1, (time_t) 0);
 	(void) my_snprintf(buf, sizeof(buf), "\
-<HTML>\n\
-<HEAD><TITLE>%d %s</TITLE></HEAD>\n\
-<BODY BGCOLOR=\"#cc9999\" TEXT=\"#000000\" LINK=\"#2020ff\" VLINK=\"#4040cc\">\n\
-<H2>%d %s</H2>\n", status, title, status, title);
+<html>\n\
+<head><title>%d %s</title></head>\n\
+<body>\n\
+<h2>%d %s</h2>\n", status, title, status, title);
 	add_response(hc, buf);
 	defang(arg, defanged_arg, sizeof(defanged_arg));
 	(void) my_snprintf(buf, sizeof(buf), form, defanged_arg);
@@ -750,6 +750,7 @@ send_response(httpd_conn * hc, int status, char *title, char *extraheads,
 
 static void send_response_tail(httpd_conn * hc)
 {
+#if 0
 	char buf[1000];
 
 	(void) my_snprintf(buf, sizeof(buf), "\
@@ -758,6 +759,7 @@ static void send_response_tail(httpd_conn * hc)
 </BODY>\n\
 </HTML>\n", SERVER_ADDRESS, EXPOSED_SERVER_SOFTWARE);
 	add_response(hc, buf);
+#endif
 }
 
 
@@ -3559,61 +3561,87 @@ static void cgi_child(httpd_conn * hc)
 
 }
 
-
-static int cgi(httpd_conn * hc)
+static int cgi_start(httpd_conn *hc)
 {
 	int r;
 	ClientData client_data;
 
+	++hc->hs->cgi_count;
+	httpd_clear_ndelay(hc->conn_fd);
+	r = fork();
+	if (r < 0)
+	{
+		syslog(LOG_ERR, "fork - %m");
+		httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
+		return -1;
+	}
+
+	if (r == 0)
+	{
+		/* Child process. */
+		sub_process = 1;
+		httpd_unlisten(hc->hs);
+		cgi_child(hc);
+	}
+	else
+	{
+		/* Parent process. */
+		syslog(LOG_INFO, "spawned CGI process %d for path '%.200s'", r, hc->expnfilename);
+#ifdef CGI_TIMELIMIT
+		/* Schedule a kill for the child process, in case it runs too long */
+		if (hc->hs->cgi_timelimit)
+		{
+			client_data.i = r;
+			if (tmr_create
+					((struct timeval *) 0, cgi_kill, client_data,
+						hc->hs->cgi_timelimit * 1000L, 0) == (Timer *) 0)
+			{
+				syslog(LOG_CRIT, "tmr_create(cgi_kill child) failed");
+				exit(1);
+			}
+		}
+#endif /* CGI_TIMELIMIT */
+		hc->status = 200;
+		hc->bytes_sent = CGI_BYTECOUNT;
+		hc->should_linger = 0;
+	}
+
+	return 0;
+}
+
+int httpd_check_paused(httpd_conn *hc)
+{
+	//syslog(LOG_INFO, "[%p] try again cgi script '%.200s'", hc, hc->expnfilename);
+
+	if (hc->hs->cgi_count >= 1)
+	{
+		//syslog(LOG_INFO, "[%p] postponed cgi script '%.200s'", hc, hc->expnfilename);
+		return 1;
+	}
+
+	return cgi_start(hc);
+}
+
+static int cgi(httpd_conn * hc)
+{
 	if (hc->method == METHOD_GET || hc->method == METHOD_POST)
 	{
 		if (hc->hs->cgi_limit != 0 && hc->hs->cgi_count >= hc->hs->cgi_limit)
 		{
-			httpd_send_err(hc, 503, httpd_err503title, "", httpd_err503form,
-										 hc->encodedurl);
-			return -1;
-		}
-
-		++hc->hs->cgi_count;
-		httpd_clear_ndelay(hc->conn_fd);
-		r = fork();
-		if (r < 0)
-		{
-			syslog(LOG_ERR, "fork - %m");
-			httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
-			return -1;
-		}
-
-		if (r == 0)
-		{
-			/* Child process. */
-			sub_process = 1;
-			httpd_unlisten(hc->hs);
-			cgi_child(hc);
-		}
-		else
-		{
-			/* Parent process. */
-			syslog(LOG_INFO, "spawned CGI process %d for path '%.200s'", r,
-						 hc->expnfilename);
-#ifdef CGI_TIMELIMIT
-			/* Schedule a kill for the child process, in case it runs too long */
-			if (hc->hs->cgi_timelimit)
+			if (hc->hs->debug)
 			{
-				client_data.i = r;
-				if (tmr_create
-						((struct timeval *) 0, cgi_kill, client_data,
-						 hc->hs->cgi_timelimit * 1000L, 0) == (Timer *) 0)
-				{
-					syslog(LOG_CRIT, "tmr_create(cgi_kill child) failed");
-					exit(1);
-				}
+				//syslog(LOG_INFO, "postponed cgi script '%.200s'", hc->expnfilename);
+				return 1;
 			}
-#endif /* CGI_TIMELIMIT */
-			hc->status = 200;
-			hc->bytes_sent = CGI_BYTECOUNT;
-			hc->should_linger = 0;
+			else
+			{
+				httpd_send_err(hc, 503, httpd_err503title, "", httpd_err503form,
+											hc->encodedurl);
+				return -1;
+			}
 		}
+
+		cgi_start(hc);
 	}
 	else
 	{

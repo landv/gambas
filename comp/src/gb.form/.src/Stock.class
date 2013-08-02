@@ -321,7 +321,7 @@ End
 Static Private Sub InitTheme()
   
   If Not $bDebug Then
-    If Env["GB_STOCK"] Then $bDebug = True
+    If Env["GB_STOCK_DEBUG"] = "1" Or If Env["GB_STOCK"] Then $bDebug = True
   Endif
   
   $aIconPath = New String[]

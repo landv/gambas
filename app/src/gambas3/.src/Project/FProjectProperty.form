@@ -7,35 +7,40 @@
   Persistent = True
   Resizable = False
   { mnuInsertEnv Menu
-    { mnuInsertEnvQT4 Menu mnuInsertEnv
-      Name = "mnuInsertEnvQT4"
+    { Menu1 Menu mnuInsertEnv
+      Name = "Menu1"
       Text = ("GB_GUI=gb.qt4")
       Tag = "GB_GUI=gb.qt4"
     }
-    { mnuInsertEnvGTK Menu mnuInsertEnv
-      Name = "mnuInsertEnvGTK"
+    { Menu2 Menu mnuInsertEnv
+      Name = "Menu2"
       Text = ("GB_GUI=gb.gtk")
       Tag = "GB_GUI=gb.gtk"
     }
-    { munInsertEnvStock Menu mnuInsertEnv
-      Name = "munInsertEnvStock"
-      Text = ("GB_STOCK=debug")
-      Tag = "GB_STOCK=debug"
+    { Menu3 Menu mnuInsertEnv
+      Name = "Menu3"
+      Text = ("GB_STOCK_DEBUG=1")
+      Tag = "GB_STOCK_DEBUG=1"
     }
-    { mnuInsertEnvJIT Menu mnuInsertEnv
-      Name = "mnuInsertEnvJIT"
-      Text = ("GB_JIT=debug")
-      Tag = "GB_JIT=debug"
+    { Menu4 Menu mnuInsertEnv
+      Name = "Menu4"
+      Text = ("GB_JIT_DEBUG=1")
+      Tag = "GB_JIT_DEBUG=1"
     }
-    { mnuInsertEnvLANG Menu mnuInsertEnv
-      Name = "mnuInsertEnvLANG"
-      Text = ("LANG=C ; LC_ALL=C")
-      Tag = "LANG=C,LC_ALL=C"
+    { Menu7 Menu mnuInsertEnv
+      Name = "Menu7"
+      Text = ("GB_HTTPD_DEBUG=1")
+      Tag = "GB_HTTPD_DEBUG=1"
     }
-    { mnuInsertEnvPORT Menu mnuInsertEnv
-      Name = "mnuInsertEnvPORT"
+    { Menu6 Menu mnuInsertEnv
+      Name = "Menu6"
       Text = ("GB_HTTPD_PORT=8080")
       Tag = "GB_HTTPD_PORT=8080"
+    }
+    { Menu5 Menu mnuInsertEnv
+      Name = "Menu5"
+      Text = ("LANG=C ; LC_ALL=C")
+      Tag = "LANG=C,LC_ALL=C"
     }
   }
   { tabProject TabPanel
@@ -291,7 +296,7 @@
         Indent = True
         { Label6 Label
           MoveScaled(0,0,46,4)
-          Text = ("Use an embedded HTTP server")
+          Text = ("Use embedded HTTP server")
         }
         { cmbHttpServer ComboBox
           MoveScaled(47,0,10,4)

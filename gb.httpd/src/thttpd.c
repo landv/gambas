@@ -669,6 +669,8 @@ int thttpd_main(int argc, char **argv, bool debug)
 	if (hs == (httpd_server *) 0)
 		exit(1);
 
+	hs->debug = _debug;
+
 	/* Set up the occasional timer. */
 	if (tmr_create
 			((struct timeval *) 0, occasional, JunkClientData,
@@ -1637,12 +1639,35 @@ static int handle_newconnect(struct timeval *tvP, int listen_fd)
 	}
 }
 
+static void check_paused(ClientData client_data, struct timeval *tvP)
+{
+	connecttab *c = client_data.p;
+	int result;
+
+	result = httpd_check_paused(c->hc);
+
+	if (result == 1)
+	{
+		if (tmr_create((struct timeval *)0, check_paused, client_data, 100, 0) == NULL)
+		{
+			syslog(LOG_CRIT, "tmr_create(check_paused) failed");
+			exit(1);
+		}
+	}
+	else if (result == 0)
+	{
+		c->conn_state = CNST_READING;
+	}
+	else
+		finish_connection(c, tvP);
+}
 
 static void handle_read(connecttab * c, struct timeval *tvP)
 {
 	int sz;
-	//ClientData client_data;
+	int action;
 	httpd_conn *hc = c->hc;
+	ClientData client_data;
 
 	/* Is there room in our buffer to read more bytes? */
 	if (hc->read_idx >= hc->read_size)
@@ -1709,10 +1734,26 @@ static void handle_read(connecttab * c, struct timeval *tvP)
 	}
 
 	/* Start the connection going. */
-	if (httpd_start_request(hc, tvP) < 0)
+	action = httpd_start_request(hc, tvP);
+	//syslog(LOG_INFO, "[%p] action = %d", hc, action);
+
+	if (action < 0)
 	{
 		/* Something went wrong.  Close down the connection. */
 		finish_connection(c, tvP);
+		return;
+	}
+
+	if (action == 1)
+	{
+		//syslog(LOG_INFO, "[%p] pausing connection", hc);
+		c->conn_state = CNST_PAUSING;
+		client_data.p = c;
+		if (tmr_create((struct timeval *)0, check_paused, client_data, 100, 0) == NULL)
+		{
+			syslog(LOG_CRIT, "tmr_create(check_paused) failed");
+			exit(1);
+		}
 		return;
 	}
 
@@ -1749,7 +1790,6 @@ static void handle_read(connecttab * c, struct timeval *tvP)
 	c->conn_state = CNST_SENDING;
 	c->started_at = tvP->tv_sec;
 	c->wouldblock_delay = 0;
-	//client_data.p = c;
 
 	fdwatch_del_fd(hc->conn_fd);
 	fdwatch_add_fd(hc->conn_fd, c, FDW_WRITE);
@@ -2227,7 +2267,7 @@ static void thttpd_logstats(long secs)
 {
 	if (secs > 0)
 		syslog(LOG_INFO,
-					 "  thttpd - %ld connections (%g/sec), %d max simultaneous, %lld bytes (%g/sec), %d httpd_conns allocated",
+					 "  gb.httpd - %ld connections (%g/sec), %d max simultaneous, %lld bytes (%g/sec), %d httpd_conns allocated",
 					 stats_connections, (float) stats_connections / secs,
 					 stats_simultaneous, (int64_t) stats_bytes,
 					 (float) stats_bytes / secs, httpd_conn_count);

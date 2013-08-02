@@ -59,6 +59,8 @@ char **PROJECT_argv = NULL;
 
 char *PROJECT_oldcwd = NULL;
 
+bool PROJECT_run_httpd = FALSE;
+
 static char *project_buffer;
 
 //static char *project_ptr;
@@ -94,22 +96,16 @@ static void project_version(char *name, int len)
 
 static void project_component(char *name, int len)
 {
-	//const char *delim = ",";
-	//char *comp;
-
 	_last_component = name;
 	
 	name[len] = 0;
 
-	/*comp = strtok(name, delim);
-	while (comp != NULL)
-	{
-		COMPONENT_create(comp);
-			
-		comp = strtok(NULL, delim);
-	}*/
-	
 	COMPONENT_create(name);
+
+	// If 'gb.httpd' is set explicitely, then always run through it.
+
+	if (strcmp(name, "gb.httpd") == 0)
+		PROJECT_run_httpd = TRUE;
 
 	_last_component = NULL;
 }

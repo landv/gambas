@@ -163,6 +163,11 @@
       Text = ("Use &terminal emulator")
       Toggle = True
     }
+    { mnuUseHttpServer Menu
+      Action = "httpserver"
+      Text = ("Use embedded HTTP server")
+      Toggle = True
+    }
     { mnuProfile Menu
       Action = "profile"
       Text = ("Activate profilin&g")
@@ -1201,6 +1206,10 @@
   { Action hide-menubar
     Text = "Hide menubar"
     Shortcut = "Ctrl+Alt+M"
+  }
+  { Action httpserver
+    Text = "Use embedded HTTP server"
+    Shortcut = ""
   }
   { Action info
     Text = "&Properties..."

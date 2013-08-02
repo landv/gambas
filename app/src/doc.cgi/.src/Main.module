@@ -3952,6 +3952,40 @@ Private Sub UCaseTitle(sTitle As String) As String
 
 End
 
+' Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
+' 
+'   Dim sRes As String
+'   Dim aSplit As String[]
+'   Dim sPath As String
+'   Dim sTitle As String
+'   Dim sDisplay As String
+'   Dim sOldTitle As String
+' 
+'   aSplit = Split(aPath[iInd], "\n")
+'   sTitle = aSplit[0]
+'   sDisplay = aSplit[1]
+'   sPath = aSplit[2]
+'   If iInd Then
+'     aSplit = Split(aPath[iInd - 1], "\n")
+'     sOldTitle = aSplit[0]
+'   Endif
+' 
+'   If String.UCase(String.Left(sTitle)) <> String.UCase(String.Left(sOldTitle)) Then
+'     If System.RightToLeft Then
+'       sRes = "<td align=\"left\""
+'     Else
+'       sRes = "<td align=\"right\""
+'     Endif
+'     sRes &= " valign=\"top\"><b>" & String.UCase(String.Left(sTitle)) & "</b></td>\n"
+'   Else
+'     sRes = "<td></td>\n"
+'   Endif
+' 
+'   sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath, UCaseTitle(sDisplay), True, "arrow") & "</td>\n"
+'   Return sRes
+' 
+' End
+
 Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
 
   Dim sRes As String
@@ -3971,17 +4005,22 @@ Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
   Endif
 
   If String.UCase(String.Left(sTitle)) <> String.UCase(String.Left(sOldTitle)) Then
-    If System.RightToLeft Then
-      sRes = "<td align=\"left\""
-    Else
-      sRes = "<td align=\"right\""
+    If iInd Then
+      sRes &= "</td></tr>\n"
     Endif
-    sRes &= " valign=\"top\"><b>" & String.UCase(String.Left(sTitle)) & "</b></td>\n"
+    sRes &= "<tr>"
+    If System.RightToLeft Then
+      sRes &= "<td align=\"right\""
+    Else
+      sRes &= "<td align=\"left\""
+    Endif
+    sRes &= " valign=\"top\"><b>" & String.UCase(String.Left(sTitle)) & "</b></td><td>&nbsp;</td>\n"
+    sRes &= "<td>\n"
   Else
-    sRes = "<td></td>\n"
+    sRes &= "&nbsp;·&nbsp;"
   Endif
 
-  sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath, UCaseTitle(sDisplay), True, "arrow") & "</td>\n"
+  sRes &= GetLink(sPath, UCaseTitle(sDisplay), True, "arrow") & "\n"
   Return sRes
 
 End
@@ -4036,25 +4075,36 @@ Private Function GetIndex2(sRoot As String) As String
     aPath.Add(sTitle & "\n" & sDisplay & "\n" & rPage!sPath)
   Next
 
+  If aPath.Count = 0 Then Return
+  
   aPath.Sort(gb.Text)
 
-  sRes = "<table width=\"100%\">\n"
+  ' sRes = "<table width=\"100%\">\n"
+  ' 
+  ' For iInd = 0 To aPath.Count \ 4
+  ' 
+  '   sRes &= "<tr>\n"
+  ' 
+  '   iInd2 = iInd
+  '   While iInd2 < aPath.Count
+  '     sRes &= AddIndexEntry(aPath, iInd2)
+  '     iInd2 += 1 + aPath.Count \ 4
+  '   Wend
+  ' 
+  '   sRes &= "</tr>\n"
+  ' 
+  ' Next
+  ' 
+  ' sRes &= "</table>\n"
+  ' 
 
-  For iInd = 0 To aPath.Count \ 4
-
-    sRes &= "<tr>\n"
-
-    iInd2 = iInd
-    While iInd2 < aPath.Count
-      sRes &= AddIndexEntry(aPath, iInd2)
-      iInd2 += 1 + aPath.Count \ 4
-    Wend
-
-    sRes &= "</tr>\n"
-
+  sRes = "<table>\n"
+  
+  For iInd = 0 To aPath.Max
+    sRes &= AddIndexEntry(aPath, iInd)
   Next
 
-  sRes &= "</table>\n"
+  sRes &= "</td></tr></table>\n"
 
   Return sRes
 

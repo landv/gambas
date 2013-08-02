@@ -52,9 +52,13 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 extern "C" int EXPORT GB_INIT(void)
 {
-	char *env = getenv("GB_JIT");
+	char *env;
+
+	env = getenv("GB_JIT_DEBUG");
+	if (!env || !*env)
+		env = getenv("GB_JIT");
 	
-	if (env && *env)
+	if (env && env[0] && strcmp(env, "0") != 0)
 		MAIN_debug = true;
 	
 	if (LLVM_VERSION_MAJOR < 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 1))

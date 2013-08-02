@@ -811,17 +811,19 @@ Private Sub Start(sCmd As String)
 
   aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo]
   
-  If Project.Components.Exist("gb.web") And If Project.UseHttpServer Then 
-    aExec.Add("-H")
-    iPos = aEnv.Find("GB_HTTPD_PORT=*", gb.Like)
-    sPort = "8080"
-    If iPos < 0 Then
-      aEnv = aEnv.Copy()
-      aEnv.Add("GB_HTTPD_PORT=8080")
-    Else
-      Try sPort = Scan(aEnv[iPos], "*=*")[1]
+  If Project.CanUseHttpServer() Then 
+    If Project.UseHttpServer Or If Project.Components.Exist("gb.httpd") Then
+      aExec.Add("-H")
+      iPos = aEnv.Find("GB_HTTPD_PORT=*", gb.Like)
+      sPort = "8080"
+      If iPos < 0 Then
+        aEnv = aEnv.Copy()
+        aEnv.Add("GB_HTTPD_PORT=8080")
+      Else
+        Try sPort = Scan(aEnv[iPos], "*=*")[1]
+      Endif
+      sOpenWebBrowser = "http://localhost:" & sPort
     Endif
-    sOpenWebBrowser = "http://localhost:" & sPort
   Endif
   
   If Project.Profiling Then 

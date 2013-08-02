@@ -29,11 +29,11 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
 
   hRound = $hRound.Copy()
   Draw.Image(hRound, X, Y)
-  hRound.Mirror(True , False )
+  hRound.Mirror(True, False)
   Draw.Image(hRound, X + W - ROUND_SIZE, Y)
-  hRound.Mirror(False , True )
+  hRound.Mirror(False, True)
   Draw.Image(hRound, X + W - ROUND_SIZE, Y + H - ROUND_SIZE)
-  hRound.Mirror(True , False )
+  hRound.Mirror(True, False)
   Draw.Image(hRound, X, Y + H - ROUND_SIZE)
 
   Draw.FillStyle = Fill.Solid
@@ -214,7 +214,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     X2 = X1 - ARROW_HEIGHT
   Endif
   X2 = Max(X2, 16)
-  X3 = X2 + ARROW_HEIGHT
+  X3 = X2 + Abs(Y2 - Y1) 'ARROW_HEIGHT
 
   Me.Move(X, Y, W, H)
   
@@ -241,6 +241,8 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     ' hPict = hImage.Picture
     ' 
     
+    iColor = &H808080&
+    
     hPict = New Picture(Me.W, Me.H)
   
     Draw.Begin(hPict)
@@ -259,13 +261,17 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     'DrawInternalRect(1, ARROW_HEIGHT + 1, ME.W - 2, ME.H - (ARROW_HEIGHT + 1) * 2)
     Draw.Polygon([X1, Y1, X2, Y2, X3, Y3])
 
-    Draw.LineStyle = Line.Solid
-    Draw.Foreground = Me.Background
-    Draw.Line(X1, Y1, X2 + 1, Y4)
-    Draw.Line(X1, Y1, X3 - 1, Y4)
-    Draw.Foreground = iColor
-    Draw.Line(X1, Y1, X2, Y4)
-    Draw.Line(X1, Y1, X3, Y4)
+     Draw.LineStyle = Line.Solid
+     Paint.Background = iColor
+     Paint.LineWidth = 1
+     Paint.MoveTo(X2, Y2)
+     Paint.LineTo(X1, Y1)
+     Paint.LineTo(X3, Y3)
+     Paint.Stroke
+     Paint.Background = Me.Background
+     Paint.MoveTo(X2, Y2)
+     Paint.LineTo(X3, Y3)
+     Paint.Stroke
   
     Draw.End
     

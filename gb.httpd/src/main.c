@@ -37,16 +37,22 @@ const GB_INTERFACE *GB_PTR EXPORT;
 int thttpd_main(int argc, char **argv, bool debug);
 
 static jmp_buf _setjmp_env;
+static bool _debug = FALSE;
 
 void syslog(int priority, const char *format, ...)
 {
 	va_list args;
+
+	if (!_debug && priority != LOG_CRIT)
+		return;
 
 	va_start(args, format);
 
 	fprintf(stderr, "gb.httpd: ");
 	vfprintf(stderr, format, args);
 	putc('\n', stderr);
+
+	va_end(args);
 }
 
 void run_cgi(void)
@@ -56,9 +62,16 @@ void run_cgi(void)
 
 void EXPORT GB_MAIN(int argc, char **argv)
 {
+	char *env;
+
 	if (setjmp(_setjmp_env) == 0)
 	{
 		setlocale(LC_ALL, "C");
+
+		env = getenv("GB_HTTPD_DEBUG");
+		if (env && env[0] && strcmp(env, "0") != 0)
+			_debug = TRUE;
+
 		thttpd_main(argc, argv, GB.System.Debug());
 	}
 	else

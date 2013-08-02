@@ -87,6 +87,7 @@ typedef struct
 	char *url_pattern;
 	char *local_pattern;
 	int no_empty_referers;
+	unsigned debug : 1;
 } httpd_server;
 
 /* A connection. */
@@ -291,5 +292,7 @@ extern int httpd_write_fully(int fd, const void *buf, size_t nbytes);
 
 /* Generate debugging statistics syslog message. */
 extern void httpd_logstats(long secs);
+
+extern int httpd_check_paused(httpd_conn *hc);
 
 #endif /* _LIBHTTPD_H_ */

@@ -1098,6 +1098,8 @@ Public Sub UpdateMenu()
     End Select
   End With
   
+  mnuUseHttpServer.Visible = Project.CanUseHttpServer()
+  
 End
 
 Public Sub OnProjectChange()
@@ -1122,6 +1124,7 @@ Public Sub OnProjectChange()
   UpdateMenu
   mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
   mnuUseTerminal.Value = Project.UseTerminal
+  mnuUseHttpServer.Value = Project.UseHttpServer
   mnuProfile.Value = Project.Profiling
   'UpdateTranslate
   'RefreshInfo
@@ -1324,6 +1327,10 @@ Public Sub Action_Activate(Key As String) As Boolean
     
     Case "terminal"
       Project.UseTerminal = Action["terminal"].Value
+      Project.WriteProject(True)
+      
+    Case "httpserver"
+      Project.UseHttpServer = Action["httpserver"].Value
       Project.WriteProject(True)
       
     Case "profile"
