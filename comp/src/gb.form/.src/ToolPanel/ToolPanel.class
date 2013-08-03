@@ -157,7 +157,7 @@ Private Sub MoveToolbar(Optional bAnim As Boolean)
     hToolBar._Container.Visible = bCurrent
 
   Next
-
+  
 End
 
 Private Function Text_Read() As String
@@ -232,7 +232,7 @@ Private Sub Font_Write(hFont As Font)
     hToolBar.Text = hToolBar.Text
   Next
 
-  MoveToolBar(False )
+  MoveToolBar(False)
 
 End
 
@@ -245,7 +245,7 @@ End
 Private Sub Border_Write(bBorder As Boolean)
 
   $hPanel.Border = If(bBorder, Border.Sunken, Border.None)
-  MoveToolbar(False )
+  MoveToolbar(False)
 
 End
 
@@ -265,6 +265,6 @@ Private Sub TextFont_Write(Value As Font)
     hToolBar.TextFont = Value
   Next
 
-  MoveToolBar(False )
+  MoveToolBar(False)
   
 End

@@ -1,0 +1,218 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border=True"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "View"
+
+Property Border As Boolean
+Property Image As Image
+Property Zoom As Float
+Property Design As Boolean
+
+Private $hImage As Image
+Private $hZoom As Image
+Private $hBorder As Panel
+Private $hView As ScrollArea
+Private $SX As Integer
+Private $SY As Integer
+
+Private $fZoom As Float = 1
+Private $bZoom As Boolean
+Private $bFastZoom As Boolean
+
+Public Sub _new()
+  
+  $hBorder = New Panel(Me)
+  $hBorder.Border = Border.Plain
+  $hBorder.Arrangement = Arrange.Fill
+  
+  $hView = New ScrollArea($hBorder) As "View"
+  $hView.Border = False
+  $hView.Shadow = True
+  
+  Me.Proxy = $hView
+  
+End
+
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value
+  $fZoom = 1
+  UpdateZoom
+  View_Arrange
+
+End
+
+Public Sub View_Arrange()
+  
+  Dim iScrollBar As Integer
+  Dim W, H As Integer
+  
+  If Not $hZoom Then Return
+  
+  W = $hZoom.W
+  H = $hZoom.H
+  If $bZoom Then
+    W *= $fZoom
+    H *= $fZoom
+  Endif
+  
+  If W > $hView.W Then iScrollBar += Scroll.Horizontal
+  If H > $hView.H Then iScrollBar += Scroll.Vertical
+  $hView.Mouse = If(iScrollBar, Mouse.SizeAll, Mouse.Default)
+  $hView.ResizeContents(Max($hView.W, W), Max($hView.H, H))
+  $hView.ScrollBar = iScrollBar
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim X, Y As Integer
+  Dim W As Integer
+  Dim H As Integer
+  
+  If Not $hZoom Then Return
+  
+  W = $hZoom.W
+  H = $hZoom.H
+  If $bZoom Then
+    W *= $fZoom
+    H *= $fZoom
+  Endif
+  
+  If W <= $hView.W Then
+    X = ($hView.W - W) \ 2
+  Else
+    X = - $hView.ScrollX
+  Endif
+  
+  If H <= $hView.H Then
+    Y = ($hView.H - H) \ 2
+  Else
+    Y = - $hView.ScrollY
+  Endif
+  
+  If $bZoom Then
+    If $bFastZoom Then
+      Paint.ZoomImage($hZoom, $fZoom, X, Y)
+    Else
+    Paint.DrawImage($hZoom, X, Y, W, H)
+    Endif
+  Else
+    Paint.DrawImage($hZoom, X, Y)
+  Endif
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hBorder.Border = If(Value, Border.Plain, Border.None)
+
+End
+
+Public Sub View_MouseDown()
+
+  $SX = $hView.ScrollX
+  $SY = $hView.ScrollY
+
+End
+
+Public Sub View_MouseMove()
+
+  $hView.Scroll($SX - (Mouse.X - Mouse.StartX), $SY - (Mouse.Y - Mouse.StartY))
+
+End
+
+Private Function Zoom_Read() As Float
+
+  Return $fZoom
+
+End
+
+Private Sub Zoom_Write(Value As Float)
+
+  Dim X, Y As Float
+
+  Value = Max(0.05, Min(32, Value))
+  
+  If $fZoom = Value Then Return
+  
+  X = ($hView.ScrollX + $hView.ClientW / 2) / $fZoom
+  Y = ($hView.ScrollY + $hView.ClientH / 2) / $fZoom
+  
+  $fZoom = Value
+  UpdateZoom
+
+  $hView.Scroll(X * $fZoom - $hView.ClientW / 2, Y * $fZoom - $hView.ClientH / 2)
+
+End
+
+Private Sub UpdateZoom()
+
+  If Not $hImage Then Return
+  
+  $bZoom = False
+  $bFastZoom = False
+  
+  If $fZoom = 1 Then
+    $hZoom = $hImage
+  Else If $fZoom < 1 Then
+    $hZoom = $hImage.Stretch($hImage.W * $fZoom, $hImage.H * $fZoom)
+  Else 
+    $hZoom = $hImage
+    $bZoom = True
+    If Int($fZoom) = $fZoom Then $bFastZoom = True
+  Endif
+  
+  View_Arrange
+  $hView.Refresh
+
+End
+
+Public Sub Update()
+  
+  UpdateZoom
+  
+End
+
+
+Private Function Design_Read() As Boolean
+
+  Return Super.Design
+
+End
+
+Private Sub Design_Write(Value As Boolean)
+
+  If Value Then
+    $hImage = Image.Load("stock/32/gambas.png")
+    $fZoom = 4
+    UpdateZoom
+  Endif
+  Super.Design = Value
+
+End
+
+Public Sub ZoomFit()
+  
+  If Not $hImage Then Return
+  Zoom_Write(Min(($hView.W - Desktop.Scale * 2) / $hImage.W, ($hView.H - Desktop.Scale * 2) / $hImage.H))
+  
+End
+

@@ -107,20 +107,46 @@
     }
     Index = 1
     Text = ("Preview")
-    { sarPreview ScrollArea
-      MoveScaled(5,5,32,24)
-      Mouse = Mouse.SizeAll
+    { HBox2 HBox
+      MoveScaled(1,1,49,4)
+      { sldZoom Slider
+        MoveScaled(0,0,8,4)
+        Expand = True
+        MinValue = -16
+        MaxValue = 16
+        Step = 10
+      }
+      { btnZoomNormal ToolButton
+        MoveScaled(28,0,4,4)
+        Picture = Picture["icon:/small/zoom-normal"]
+      }
+      { btnZoomIn ToolButton
+        MoveScaled(32,0,4,4)
+        Picture = Picture["icon:/small/zoom-in"]
+      }
+      { btnZoomOut ToolButton
+        MoveScaled(36,0,4,4)
+        Picture = Picture["icon:/small/zoom-out"]
+      }
+      { btnZoomFit ToolButton
+        MoveScaled(40,0,4,4)
+        Picture = Picture["icon:/small/zoom-fit"]
+        Toggle = True
+      }
+    }
+    { Separator4 Separator
+      MoveScaled(21,6,17,0)
+    }
+    { imvPreview ImageView
+      MoveScaled(7,7,38,26)
       Expand = True
       Border = False
     }
-    { Separator3 Separator
-      MoveScaled(22,34,14,0)
-    }
     { HBox1 HBox
-      MoveScaled(19,36,28,6)
+      MoveScaled(1,36,50,6)
       Margin = True
       { lblSizePreview Label
-        MoveScaled(2,2,11,3)
+        MoveScaled(1,1,21,3)
       }
     }
     Index = 2

@@ -1,3 +1,17 @@
 ' Gambas class file
 
+Public Sub Form_Open()
 
+  ImageView1.Image = Image.Load("~/gimp.png")
+
+End
+
+Public Sub txtZoom_Activate()
+
+  Dim fZoom As Float
+  
+  Try fZoom = Val(txtZoom.Text)
+  If Error Then Return
+  ImageView1.Zoom = fZoom
+
+End

@@ -3,7 +3,7 @@
   CCurl.c
 
   (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
-  (c) 2012-2013 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

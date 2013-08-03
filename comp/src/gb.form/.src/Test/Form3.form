@@ -1,8 +1,19 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,51,48)
-  { ColorChooser1 ColorChooser
-    MoveScaled(1,1,49,46)
+  MoveScaled(0,0,64,59)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox1 HBox
+    MoveScaled(1,1,51,4)
+    { txtZoom TextBox
+      MoveScaled(0,0,24,4)
+      Text = ("1")
+    }
+  }
+  { ImageView1 ImageView
+    MoveScaled(7,13,44,37)
+    Expand = True
   }
 }

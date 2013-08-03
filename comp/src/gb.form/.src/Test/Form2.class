@@ -54,7 +54,7 @@ Public Sub Form_Open()
 
   Print Style.Name
   ButtonBox1._AddButton(ToolButton1)
-  FileProperties1.Path = User.Home
+  FileProperties1.Path = User.Home &/ "gimp.png"
 
 End
 

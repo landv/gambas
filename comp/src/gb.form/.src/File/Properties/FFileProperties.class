@@ -2,15 +2,15 @@
 
 Class DesktopMime
 
+Static Private $aImgExt As String[] = ["png", "jpg", "jpeg", "gif", "bmp", "xpm"]
+
 Private $sPath As String
 
 Private $iSize As Long
 Private $hTask As Task
 Private $sError As String
 Private $bPreview As Boolean
-Private $hPreview As Picture
-Private $SX As Integer
-Private $SY As Integer
+Private $hPreview As Image
 
 Private TAB_PREVIEW As Integer = 1
 Private TAB_ERROR As Integer = 2
@@ -80,7 +80,7 @@ Private Sub RefreshPath()
       Else If IsDir($sPath) Then
         picIcon.Picture = Picture["icon:/64/directory"]
         lblType.Text = ("Directory")
-      Else
+      Else If Component.IsLoaded("gb.desktop") Then
         hMime = DesktopMime.FromFile($sPath)
         lblType.Text = String.UCaseFirst(hMime.GetComment())
         Try picIcon.Picture = hMime.GetIcon(64).Picture
@@ -89,7 +89,10 @@ Private Sub RefreshPath()
         If hMime.Type Like "image/*" Then
           tabInfo[TAB_PREVIEW].Visible = True
         Endif
-        
+      Else If $aImgExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
+        picIcon.Picture = Picture["icon:/64/image"]
+        lblType.Text = ("Image")
+        tabInfo[TAB_PREVIEW].Visible = True
       Endif
       
     Endif
@@ -267,33 +270,76 @@ Public Sub tabInfo_Click()
   If tabInfo.Index = TAB_PREVIEW Then
     If Not $bPreview Then
       $bPreview = True
-      Try $hPreview = Picture.Load($sPath)
+      Try $hPreview = Image.Load($sPath)
       If Error Then
         ShowError(Error.Text & "\n")
       Else
-        sarPreview.ResizeContents($hPreview.W, $hPreview.H)
-        lblSizePreview.Text = CStr($hPreview.W) & " × " & CStr($hPreview.H)
+        imvPreview.Image = $hPreview
+        btnZoomFit.Value = True
       Endif
     Endif
   Endif
 
 End
 
-Public Sub sarPreview_Draw()
+Private Sub UpdateLabel()
 
-  If $hPreview Then Paint.DrawPicture($hPreview, - sarPreview.ScrollX, - sarPreview.ScrollY)
-
-End
-
-Public Sub sarPreview_MouseDown()
-
-  $SX = sarPreview.ScrollX
-  $SY = sarPreview.ScrollY
+  lblSizePreview.Text = CStr($hPreview.W) & " × " & CStr($hPreview.H) & " (" & Format(imvPreview.Zoom, "0%") & ")"
 
 End
 
-Public Sub sarPreview_MouseMove()
+Public Sub sldZoom_Change()
 
-  sarPreview.Scroll($SX - (Mouse.X - Mouse.StartX), $SY - (Mouse.Y - Mouse.StartY))
+  imvPreview.Zoom = 2 ^ (sldZoom.Value / 4)
+  UpdateLabel
+
+End
+
+Public Sub btnZoomNormal_Click()
+
+  btnZoomFit.Value = False
+  sldZoom.Value = 0
+  imvPreview.Zoom = 1
+  UpdateLabel
+
+End
+
+Public Sub btnZoomIn_Click()
+
+  If Not sldZoom.Enabled Then
+    btnZoomNormal_Click
+  Else
+    sldZoom.Value += 4
+  Endif
+
+End
+
+Public Sub btnZoomOut_Click()
+
+  If Not sldZoom.Enabled Then
+    btnZoomNormal_Click
+  Else
+    sldZoom.Value -= 4
+  Endif
+
+End
+
+Public Sub btnZoomFit_Click()
+
+  If btnZoomFit.Value Then
+    imvPreview.ZoomFit
+    UpdateLabel
+    sldZoom.Enabled = False
+  Else
+    sldZoom.Enabled = True
+    sldZoom_Change
+  Endif
+
+End
+
+Public Sub imvPreview_Arrange()
+
+  If tabInfo.Index <> TAB_PREVIEW Then Return
+  If btnZoomFit.Value Then btnZoomFit_Click
 
 End
