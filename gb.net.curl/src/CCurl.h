@@ -36,7 +36,8 @@
 
 #ifndef __CCURL_C
 
-extern GB_DESC CCurlDesc[];
+extern GB_DESC CurlDesc[];
+extern GB_DESC CurlSSLDesc[];
 extern GB_STREAM_DESC CurlStream;
 
 #endif
@@ -75,6 +76,8 @@ typedef
 		unsigned async : 1;
 		unsigned in_list : 1;
 		unsigned debug : 1;
+		unsigned ssl_verify_peer : 1;
+		unsigned ssl_verify_host : 1;
 	}
 	CCURL;
 

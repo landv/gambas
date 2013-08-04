@@ -40,7 +40,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
   CNetDesc,
   CProxyDesc,
-  CCurlDesc,
+  CurlSSLDesc,
+  CurlDesc,
   CHttpClientDesc,
   CFtpClientDesc,
   NULL

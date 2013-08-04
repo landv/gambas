@@ -545,7 +545,10 @@ BEGIN_METHOD_VOID(Curl_new)
 
 	CURL_user_init(&THIS->user);
 	CURL_proxy_init(&THIS->proxy.proxy);
-	
+
+	THIS->ssl_verify_peer = TRUE;
+	THIS->ssl_verify_host = TRUE;
+
 	THIS->proxy.parent_status = (int*)&THIS_STATUS;
 
 END_METHOD
@@ -637,10 +640,45 @@ BEGIN_PROPERTY(Curl_TotalUploaded)
 
 END_PROPERTY
 
-//*************************************************************************
-//#################### GAMBAS INTERFACE ###################################
-//*************************************************************************
-GB_DESC CCurlDesc[] =
+//---------------------------------------------------------------------------
+
+BEGIN_PROPERTY(Curl_SSL_VerifyPeer)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->ssl_verify_peer);
+	else
+	{
+		THIS->ssl_verify_peer = VPROP(GB_BOOLEAN);
+		curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYPEER, THIS->ssl_verify_peer ? 1 : 0);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Curl_SSL_VerifyHost)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->ssl_verify_host);
+	else
+	{
+		THIS->ssl_verify_host = VPROP(GB_BOOLEAN);
+		curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYHOST , THIS->ssl_verify_host ? 2 : 0);
+	}
+
+END_PROPERTY
+
+//---------------------------------------------------------------------------
+
+GB_DESC CurlSSLDesc[] =
+{
+	GB_DECLARE_VIRTUAL(".Curl.SSL"),
+
+	GB_PROPERTY("VerifyPeer", "b", Curl_SSL_VerifyPeer),
+	GB_PROPERTY("VerifyHost", "b", Curl_SSL_VerifyHost),
+
+	GB_END_DECLARE
+};
+
+GB_DESC CurlDesc[] =
 {
 	GB_DECLARE("Curl", sizeof(CCURL)), GB_NOT_CREATABLE(),
 
@@ -659,6 +697,7 @@ GB_DESC CCurlDesc[] =
 	GB_PROPERTY("Async", "b", Curl_Async),
 	GB_PROPERTY("Timeout", "i", Curl_Timeout),
 	GB_PROPERTY_SELF("Proxy", ".Curl.Proxy"),
+	GB_PROPERTY_SELF("SSL", ".Curl.SSL"),
 	GB_PROPERTY_READ("Status", "i", Curl_Status),
 	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
