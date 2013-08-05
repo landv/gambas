@@ -30,6 +30,63 @@ Private $flY2 As Float = 0.5
 
 'Static Public Value As String  '"radialgradient(0.5,0.5,1,0.5,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])" '"lineargradient(0,0.5,1,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])"
 
+Public Sub _new()
+  
+  'fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
+  'fchIcon.Root = Project.Dir
+  
+  $aGradientColors = [0, &hFFFFFF&]
+  $aGradientPos = [0, 1]
+  
+  $lblA2 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA2.Mouse = Mouse.Cross
+  $lblA1 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA1.Mouse = Mouse.Cross
+   
+  gvwClipboard.Columns.Count = 3
+  gvwClipboard.Columns[0].Width = Desktop.Scale * 12
+  gvwClipboard.Columns[1].Expand = True
+  gvwClipboard.Columns[2].Width = Desktop.Scale * 4
+  gvwClipboard.Rows.H = Desktop.Scale * 8
+  
+End
+
+Public Sub Form_Open()
+  
+  Dim I As Integer
+  Dim hLabel As Label
+  
+  $aLabel = New Label[$aGradientColors.Count]
+  For I = 0 To $aGradientColors.Max
+    hLabel = New Label(dwgGradientColor) As "Label"
+    hLabel.Background = $aGradientColors[I]
+    hLabel.Border = Border.Plain
+    hLabel.Resize(10, 10)
+    hLabel.Tag = I
+    $aLabel[I] = hLabel
+  Next
+ 
+  $lblA1.Border = Border.Plain
+  $lblA1.Resize(10, 10)
+  $lblA1.Background = Color.White
+  $lblA1.Tag = 1
+ 
+  $lblA2.Border = Border.Plain
+  $lblA2.Resize(10, 10)
+  $lblA2.Background = Color.White
+  $lblA2.Tag = 2
+  
+  'MoveLabels
+  UpdateGradient
+  
+  ReadConfig
+  
+  AddClipboard(Null, "")
+  UpdateClipboard
+  
+End
+
+
 
 Private Sub GetColor() As Integer
   
@@ -116,6 +173,13 @@ Public Sub PaintForFill()
   
 End
 
+Public Sub HasGradient() As Boolean
+  
+  Return tabBrush.Index = 1
+  
+End
+
+
 
 Public Sub dwgColor_Draw()
 
@@ -173,60 +237,6 @@ Public Sub txtSize_Change()
   sldSize.Value = txtSize.Value
 
 End
-
-Public Sub _new()
-  
-  'fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
-  'fchIcon.Root = Project.Dir
-  
-  $aGradientColors = [0, &hFFFFFF&]
-  $aGradientPos = [0, 1]
-  
-  $lblA2 = New DrawingArea(dwgGradient) As "lblAngle"
-  $lblA2.Mouse = Mouse.Cross
-  $lblA1 = New DrawingArea(dwgGradient) As "lblAngle"
-  $lblA1.Mouse = Mouse.Cross
-   
-  gvwClipboard.Columns.Count = 2
-  gvwClipboard.Columns[0].Width = Desktop.Scale * 16
-  gvwClipboard.Rows.H = Desktop.Scale * 8
-  
-  AddClipboard(Null, "")
-  
-End
-
-Public Sub Form_Open()
-  
-  Dim I As Integer
-  Dim hLabel As Label
-  
-  $aLabel = New Label[$aGradientColors.Count]
-  For I = 0 To $aGradientColors.Max
-    hLabel = New Label(dwgGradientColor) As "Label"
-    hLabel.Background = $aGradientColors[I]
-    hLabel.Border = Border.Plain
-    hLabel.Resize(10, 10)
-    hLabel.Tag = I
-    $aLabel[I] = hLabel
-  Next
- 
-  $lblA1.Border = Border.Plain
-  $lblA1.Resize(10, 10)
-  $lblA1.Background = Color.White
-  $lblA1.Tag = 1
- 
-  $lblA2.Border = Border.Plain
-  $lblA2.Resize(10, 10)
-  $lblA2.Background = Color.White
-  $lblA2.Tag = 2
-  
-  'MoveLabels
-  UpdateGradient
-  
-  ReadConfig
-  
-End
-
 
 Public Sub dwgGradientColor_Draw()
   
@@ -759,6 +769,8 @@ End
 
 Public Sub gvwClipboard_Data(Row As Integer, Column As Integer)
 
+  Dim sText As String
+  
   Select Case Column
     
     Case 0
@@ -772,11 +784,19 @@ Public Sub gvwClipboard_Data(Row As Integer, Column As Integer)
       With gvwClipboard.Data
         .Alignment = Align.Left
         .Padding = Desktop.Scale
-        If Row = 0 Then
-          .Text = $aClipboard[Row].Text
-        Else
-          .Text = $aClipboard[Row].Text & " ( " & CStr($aClipboard[Row].Image.Width) & " × " & CStr($aClipboard[Row].Image.Height) & " )"
-        Endif
+        
+        sText = $aClipboard[Row].Text
+        If $aClipboard[Row].Image Then sText &= " ( " & CStr($aClipboard[Row].Image.Width) & " × " & CStr($aClipboard[Row].Image.Height) & " )"
+        .Text = sText
+        
+      End With
+
+    Case 2
+      If Row = 0 Then Return
+      With gvwClipboard.Data
+        .Picture = Picture["icon:/small/delete"]
+        .Alignment = Align.Center
+        .Padding = Desktop.Scale
       End With
 
   End Select
@@ -819,15 +839,32 @@ End
 ' 
 ' End
 
+Private Sub UpdateClipboard()
+
+  Inc Application.Busy
+  Try $aClipboard[0].Image = Clipboard.Paste()
+  Dec Application.Busy
+  
+  If Not Error Then 
+    $aClipboard[0].MakeThumb
+  Else
+    $aClipboard[0].MakeThumb(Picture["icon:/128/paste"].Image)
+  Endif
+
+End
+
 Public Sub gvwClipboard_Select()
 
-  If gvwClipboard.Row = 0 Then
-    Try $aClipboard[0].Image = Clipboard.Paste()
-    If Not Error Then 
-      $aClipboard[0].MakeThumb
-    Else
-      $aClipboard[0].MakeThumb(Picture["icon:/128/paste"].Image)
-    Endif
+  If gvwClipboard.Row = 0 Then UpdateClipboard
+
+End
+
+Public Sub gvwClipboard_Click()
+
+  If gvwClipboard.Row > 0 And If gvwClipboard.Column = 2 Then
+    $aClipboard.Remove(gvwClipboard.Row)
+    gvwClipboard.Rows.Count = $aClipboard.Count
+    gvwClipboard.Refresh
   Endif
 
 End

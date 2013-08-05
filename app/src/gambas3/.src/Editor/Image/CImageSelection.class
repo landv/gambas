@@ -231,13 +231,18 @@ Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H
   
   If Not bNoMagnet Then
     _Magnets.Add(Point(X, Y))
+    
     _Magnets.Add(Point(X + W \ 2, Y))
     _Magnets.Add(Point(X + W, Y))
+    
     _Magnets.Add(Point(X + W, Y + H \ 2))
-    _Magnets.Add(Point(X, Y + H))
-    _Magnets.Add(Point(X + W \ 2, Y + H))
     _Magnets.Add(Point(X + W, Y + H))
-    _Magnets.Add(Point(X + W, Y + H \ 2))
+    
+    _Magnets.Add(Point(X + W \ 2, Y + H))
+    _Magnets.Add(Point(X, Y + H))
+    
+    _Magnets.Add(Point(X, Y + H \ 2))
+    
     _Magnets.Add(Point(X + W \ 2, Y + H \ 2))
   Endif
 
@@ -266,7 +271,7 @@ Public Sub FindMagnet(X As Integer, Y As Integer) As Point
   For Each hPoint In _Magnets
     
     fDist = Hyp(hPoint.X - X, hPoint.Y - Y)
-    If fDist > 4 Then Continue
+    If fDist > 8 Then Continue
     If fDist < fDistMin Then
       hPointMin = hPoint
       fDistMin = fDist

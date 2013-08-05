@@ -111,7 +111,7 @@ End
 
 Public Sub cmbZoom_Click()
 
-  imvImage.Zoom = CInt(Trim(String.Left(cmbZoom.Text, -1)))
+  imvImage.Zoom = CFloat(Trim(String.Left(cmbZoom.Text, -1)))
   imvImage.Grid = imvImage.Zoom > 8
 
 End
@@ -844,7 +844,7 @@ Public Sub btnFill_Click()
     hImage = $hImage.Copy()
     Paint.Begin(hImage)
     FImageProperty.PaintForFill
-    $hSelect.Paint($hImage, CImageSelection.ACTION_FILL)
+    $hSelect.Paint($hImage, CImageSelection.ACTION_FILL + If(FImageProperty.HasGradient(), CImageSelection.ACTION_GRADIENT, 0))
     Paint.End
     ActionImage(hImage)
     
@@ -903,8 +903,13 @@ Public Sub btnClear_Click()
     hImage = $hImage.Copy()
     Paint.Begin(hImage)
     FImageProperty.PaintForFill
-    $hSelect.Paint($hImage, CImageSelection.ACTION_CLEAR)
+    $hSelect.Paint($hImage, CImageSelection.ACTION_CLEAR + If(FImageProperty.HasGradient(), CImageSelection.ACTION_GRADIENT, 0))
     Paint.End
+    ActionImage(hImage)
+    
+  Else
+    
+    hImage = New Image($hImage.W, $hImage.H, Color.Transparent)
     ActionImage(hImage)
     
   Endif
@@ -1129,18 +1134,19 @@ End
 
 Public Sub btnZoomFit_Click()
 
-  Dim iZoom As Integer
+  Dim iZoom As Float
   Dim iPos As Integer
+  Dim iIndex As Integer
+  Dim fZoom As Float
   
-  iZoom = Max(1, CInt(Min(imvImage.W / $hImage.W, imvImage.H / $hImage.H)))
-  Do
-    iPos = cmbZoom.Find(CStr(iZoom) & "×") 
-    If iPos >= 0 Then 
-      cmbZoom.Index = iPos
-      Break
-    Endif
-    Dec iZoom
-  Loop
+  For iIndex = 0 To cmbZoom.Count - 1
+    
+    fZoom = CFloat(String.Left(cmbZoom[iIndex].Text, -1))
+    If ($hImage.W * fZoom) > imvImage.W Or If ($hImage.H * fZoom) > imvImage.H Then Break
+    
+  Next
+  
+  cmbZoom.Index = Max(0, iIndex - 1)
 
 End
 
@@ -1175,5 +1181,14 @@ Public Sub btnCopy_Click()
     FImageProperty.AddClipboard($hImage.Copy(), Me.Name)
     
   Endif
+
+End
+
+Public Sub btnCut_Click()
+
+  BeginUndo
+  btnCopy_Click
+  btnClear_Click
+  EndUndo
 
 End
