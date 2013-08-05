@@ -1250,7 +1250,7 @@ C
 _Properties
 C
 s
-*,Border=True
+*,Border=True,Grid,UseMouse=True
 _DefaultSize
 C
 s
@@ -1259,6 +1259,14 @@ _Group
 C
 s
 View
+:Draw
+:
+
+
+:Scroll
+:
+
+
 Border
 p
 b
@@ -1275,6 +1283,38 @@ Design
 p
 b
 
+Grid
+p
+b
+
+UseMouse
+p
+b
+
+ScrollX
+p
+i
+
+ScrollY
+p
+i
+
+ScrollWidth
+r
+i
+
+ScrollW
+r
+i
+
+ScrollHeight
+r
+i
+
+ScrollH
+r
+i
+
 _new
 m
 
@@ -1283,6 +1323,18 @@ View_Arrange
 m
 
 
+Scroll
+m
+
+(X)i(Y)i
+ViewToImage
+m
+Point
+(ViewPoint)Point;
+ImageToView
+m
+Point
+(ImagePoint)Point;
 View_Draw
 m
 
@@ -1298,11 +1350,19 @@ m
 Update
 m
 
-
+[(Image)Image;]
 ZoomFit
 m
 
 
+View_Scroll
+m
+
+
+EnsureVisible
+m
+
+(X)i(Y)i(W)i(H)i
 #InputBox
 
 C

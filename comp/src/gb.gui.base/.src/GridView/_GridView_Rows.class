@@ -344,6 +344,7 @@ Public Sub UnSelectAll()
 
   If hView.Mode = Select.Single Then
     
+    $hSel.UnSelectAll
     hView.Row = -1
     
   Else If hView.Mode = Select.Multiple Then 

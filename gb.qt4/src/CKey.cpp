@@ -173,41 +173,31 @@ BEGIN_PROPERTY(CKEY_state)
 
 END_PROPERTY
 
-/*static bool get_state(int button, int key)
-{
-	if (CKEY_info.release)
-		return ((CKEY_info.state & button) && CKEY_info.code != key);
-	else
-		return ((CKEY_info.state & button) || CKEY_info.code == key);
-}*/
-
 BEGIN_PROPERTY(CKEY_shift)
 
   CHECK_VALID();
-  //GB.ReturnBoolean(get_state(Qt::ShiftModifier, Qt::Key_Shift));
-  // (CKEY_info.state & Qt::ShiftButton) || (CKEY_info.code == Qt::Key_Shift));
-  GB.ReturnBoolean((CKEY_info.state & Qt::ShiftModifier) || (CKEY_info.code == Qt::Key_Shift));
+  GB.ReturnBoolean(CKEY_info.state & Qt::ShiftModifier); // || (CKEY_info.code == Qt::Key_Shift));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CKEY_control)
 
   CHECK_VALID();
-  GB.ReturnBoolean((CKEY_info.state & Qt::ControlModifier) || (CKEY_info.code == Qt::Key_Control));
+  GB.ReturnBoolean(CKEY_info.state & Qt::ControlModifier); // || (CKEY_info.code == Qt::Key_Control));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CKEY_alt)
 
   CHECK_VALID();
-  GB.ReturnBoolean((CKEY_info.state & Qt::AltModifier) || (CKEY_info.code == Qt::Key_Alt));
+  GB.ReturnBoolean(CKEY_info.state & Qt::AltModifier); // || (CKEY_info.code == Qt::Key_Alt));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CKEY_meta)
 
   CHECK_VALID();
-  GB.ReturnBoolean((CKEY_info.state & Qt::MetaModifier) || (CKEY_info.code == Qt::Key_Meta));
+  GB.ReturnBoolean(CKEY_info.state & Qt::MetaModifier); // || (CKEY_info.code == Qt::Key_Meta));
 
 END_PROPERTY
 
@@ -247,11 +237,11 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Down", "i", Qt::Key_Down),
   GB_CONSTANT("PageUp", "i", Qt::Key_PageUp),
   GB_CONSTANT("PageDown", "i", Qt::Key_PageDown),
-  /*GB_CONSTANT("ShiftKey", "i", Qt::Key_Shift),
+  GB_CONSTANT("ShiftKey", "i", Qt::Key_Shift),
   GB_CONSTANT("ControlKey", "i", Qt::Key_Control),
   GB_CONSTANT("MetaKey", "i", Qt::Key_Meta),
   GB_CONSTANT("AltKey", "i", Qt::Key_Alt),
-  GB_CONSTANT("AltGr", "i", Qt::Key_AltGr),*/
+  GB_CONSTANT("AltGrKey", "i", Qt::Key_AltGr),
   GB_CONSTANT("CapsLock", "i", Qt::Key_CapsLock),
   GB_CONSTANT("NumLock", "i", Qt::Key_NumLock),
   GB_CONSTANT("ScrollLock", "i", Qt::Key_ScrollLock),

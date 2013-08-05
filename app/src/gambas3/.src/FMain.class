@@ -43,6 +43,7 @@ Public Sub _new()
   FDebugInfo.Load(panDebug)
   FToolbox.Load(panTool)
   FProperty.Load(tabProperty)
+  FImageProperty.Load(panImageProperty)
   tabProperty.Index = 1
   FFormStack.Load(tabProperty)
   tabProperty.Index = 0
@@ -1151,9 +1152,12 @@ End
 ' 
 ' END
 
-Public Sub ShowTool(bShow As Boolean)
+Public Sub ShowTool(sType As String)
   
-  $bNeedProperty = bShow
+  $bNeedProperty = sType = "FForm" Or sType = "FImageEditor"
+  panTool.Visible = sType = "FForm"
+  panTabProperty.Visible = panTool.Visible
+  panImageProperty.Visible = sType = "FImageEditor"
   UpdateProperty
   
   ' If bShow <> panProperty.Hidden Then Return

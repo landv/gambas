@@ -1,0 +1,104 @@
+' Gambas class file
+
+Static Public ImageWidth As Integer
+Static Public ImageHeight As Integer
+Static Public Stretch As Boolean
+Static Public CenterH As Boolean
+Static Public CenterV As Boolean
+
+Private $fProp As Float
+Private $bBorder As Boolean
+Private $iSaveW As Integer = 1
+Private $iSaveH As Integer = 1
+
+Static Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  If $bBorder Then
+
+    ImageWidth += txtWidth.Value * 2
+    ImageHeight += txtHeight.Value * 2
+    Stretch = False
+    CenterH = True
+    CenterV = True
+
+  Else
+
+    ImageWidth = txtWidth.Value
+    ImageHeight = txtHeight.Value
+    Stretch = optStretch.Value
+    CenterH = optResizeCenterH.Value Or optResizeCenter.Value
+    CenterV = optResizeCenterV.Value Or optResizeCenter.Value
+
+  Endif
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  txtWidth.Value = ImageWidth
+  txtHeight.Value = ImageHeight
+  $fProp = ImageWidth / ImageHeight
+
+End
+
+Public Sub txtWidth_Change()
+
+  If btnSync.Value And If $fProp Then
+    Object.Lock(txtHeight)
+    If $bBorder Then
+      txtHeight.Value = txtWidth.Value 
+    Else
+      txtHeight.Value = txtWidth.Value / $fProp
+    Endif
+    Object.Unlock(txtHeight)
+  Endif
+
+End
+
+Public Sub txtHeight_Change()
+
+  If btnSync.Value And If $fProp Then
+    Object.Lock(txtWidth)
+    If $bBorder Then
+      txtWidth.Value = txtHeight.Value
+    Else
+      txtWidth.Value = txtHeight.Value * $fProp
+    Endif
+    Object.Unlock(txtWidth)
+  Endif
+
+End
+
+Public Sub radResize_Click()
+
+  Debug optBorder.Value
+
+  If optBorder.Value <> $bBorder Then
+    
+    Object.Lock(txtWidth)
+    Object.Lock(txtHeight)
+    Swap txtWidth.Value, $iSaveW
+    Swap txtHeight.Value, $iSaveH
+    Object.Unlock(txtWidth)
+    Object.Unlock(txtHeight)
+    
+    $bBorder = optBorder.Value
+    
+  Endif
+    
+End

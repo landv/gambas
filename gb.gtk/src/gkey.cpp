@@ -66,10 +66,15 @@ int gKey::code()
 	
 	if (code >= GDK_a && code <= GDK_z)
 		code += GDK_A - GDK_a;
-	else if (code == GDK_Alt_L || code == GDK_Alt_R || code == GDK_Control_L || code == GDK_Control_R 
-		       || code == GDK_Meta_L || code == GDK_Meta_R || code == GDK_Shift_L || code == GDK_Shift_R)
-		code = 0;
-	
+	else if (code == GDK_KEY_Alt_R)
+		code = GDK_KEY_Alt_L;
+	else if (code == GDK_KEY_Control_R)
+		code = GDK_KEY_Control_L;
+	else if (code == GDK_KEY_Meta_R)
+		code = GDK_KEY_Meta_L;
+	else if (code == GDK_KEY_Shift_R)
+		code = GDK_KEY_Shift_L;
+
 	return code;
 }
 
@@ -83,17 +88,17 @@ int gKey::state()
 
 bool gKey::alt()
 {
-	return state() & GDK_MOD1_MASK || _event.keyval == GDK_Alt_L || _event.keyval == GDK_Alt_R;
+	return state() & GDK_MOD1_MASK; // || _event.keyval == GDK_Alt_L || _event.keyval == GDK_Alt_R;
 }
 
 bool gKey::control()
 {
-	return state() & GDK_CONTROL_MASK || _event.keyval == GDK_Control_L || _event.keyval == GDK_Control_R;
+	return state() & GDK_CONTROL_MASK; // || _event.keyval == GDK_Control_L || _event.keyval == GDK_Control_R;
 }
 
 bool gKey::meta()
 {
-	return state() & GDK_MOD2_MASK || _event.keyval == GDK_Meta_L || _event.keyval == GDK_Meta_R;
+	return state() & GDK_MOD2_MASK; // || _event.keyval == GDK_Meta_L || _event.keyval == GDK_Meta_R;
 }
 
 bool gKey::normal()
@@ -103,7 +108,7 @@ bool gKey::normal()
 
 bool gKey::shift()
 {
-	return state() & GDK_SHIFT_MASK || _event.keyval == GDK_Shift_L || _event.keyval == GDK_Shift_R;
+	return state() & GDK_SHIFT_MASK; // || _event.keyval == GDK_Shift_L || _event.keyval == GDK_Shift_R;
 }
 
 int gKey::fromString(char *str)

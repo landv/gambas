@@ -3,14 +3,24 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True"
+Public Const _Properties As String = "*,Border=True,Grid,UseMouse=True"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "View"
+
+Event Draw
+Event Scroll
 
 Property Border As Boolean
 Property Image As Image
 Property Zoom As Float
 Property Design As Boolean
+Property Grid As Boolean
+Property UseMouse As Boolean
+
+Property ScrollX As Integer
+Property ScrollY As Integer
+Property Read ScrollWidth, ScrollW As Integer
+Property Read ScrollHeight, ScrollH As Integer
 
 Private $hImage As Image
 Private $hZoom As Image
@@ -19,9 +29,11 @@ Private $hView As ScrollArea
 Private $SX As Integer
 Private $SY As Integer
 
+Private $bUseMouse As Boolean = True
 Private $fZoom As Float = 1
 Private $bZoom As Boolean
 Private $bFastZoom As Boolean
+Private $bGrid As Boolean
 
 Public Sub _new()
   
@@ -69,14 +81,14 @@ Public Sub View_Arrange()
   
   If W > $hView.W Then iScrollBar += Scroll.Horizontal
   If H > $hView.H Then iScrollBar += Scroll.Vertical
-  $hView.Mouse = If(iScrollBar, Mouse.SizeAll, Mouse.Default)
+  If $bUseMouse Then $hView.Mouse = If(iScrollBar, Mouse.SizeAll, Mouse.Default)
   $hView.ResizeContents(Max($hView.W, W), Max($hView.H, H))
   $hView.ScrollBar = iScrollBar
   
 End
 
-Public Sub View_Draw()
-  
+Private Sub GetViewRect() As Rect
+
   Dim X, Y As Integer
   Dim W As Integer
   Dim H As Integer
@@ -102,15 +114,63 @@ Public Sub View_Draw()
     Y = - $hView.ScrollY
   Endif
   
-  If $bZoom Then
-    If $bFastZoom Then
-      Paint.ZoomImage($hZoom, $fZoom, X, Y)
-    Else
-    Paint.DrawImage($hZoom, X, Y, W, H)
-    Endif
-  Else
-    Paint.DrawImage($hZoom, X, Y)
+  Return Rect(X, Y, W, H)
+
+End
+
+Public Sub ViewToImage(ViewPoint As Point) As Point
+  
+  Dim hRect As Rect = GetViewRect()
+  Dim hResult As Point
+  
+  If hRect Then
+  
+    hResult = New Point
+    hResult.X = (ViewPoint.X - hRect.X) / $fZoom
+    hResult.Y = (ViewPoint.Y - hRect.Y) / $fZoom
+    Return hResult
+    
   Endif
+  
+End
+
+Public Sub ImageToView(ImagePoint As Point) As Point
+  
+  Dim hRect As Rect = GetViewRect()
+  Dim hResult As Point
+  
+  If hRect Then
+
+    hResult = New Point  
+    hResult.X = hRect.X + ImagePoint.X * $fZoom
+    hResult.Y = hRect.Y + ImagePoint.Y * $fZoom
+    Return hResult
+  
+  Endif  
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim hRect As Rect = GetViewRect()
+  
+  If Not hRect Then Return
+  
+  With hRect
+  
+    If $bZoom Then
+      If $bFastZoom Then
+        Paint.ZoomImage($hZoom, $fZoom, .X, .Y, If($bGrid, Color.LightForeground, Color.Default))
+      Else
+      Paint.DrawImage($hZoom, .X, .Y, .W, .H)
+      Endif
+    Else
+      Paint.DrawImage($hZoom, .X, .Y)
+    Endif
+  
+  End With
+  
+  Raise Draw
   
 End
 
@@ -128,6 +188,8 @@ End
 
 Public Sub View_MouseDown()
 
+  If Not $bUseMouse Then Return
+  
   $SX = $hView.ScrollX
   $SY = $hView.ScrollY
 
@@ -135,7 +197,9 @@ End
 
 Public Sub View_MouseMove()
 
-  $hView.Scroll($SX - (Mouse.X - Mouse.StartX), $SY - (Mouse.Y - Mouse.StartY))
+  If Not $bUseMouse Then Return
+  
+  If Mouse.Left Then $hView.Scroll($SX - (Mouse.X - Mouse.StartX), $SY - (Mouse.Y - Mouse.StartY))
 
 End
 
@@ -185,8 +249,9 @@ Private Sub UpdateZoom()
 
 End
 
-Public Sub Update()
+Public Sub Update(Optional Image As Image)
   
+  If {Image} Then $hImage = Image
   UpdateZoom
   
 End
@@ -216,3 +281,85 @@ Public Sub ZoomFit()
   
 End
 
+
+Private Function Grid_Read() As Boolean
+
+  Return $bGrid
+
+End
+
+Private Sub Grid_Write(Value As Boolean)
+
+  If Value = $bGrid Then Return
+  $bGrid = Value
+  $hView.Refresh
+
+End
+
+
+Private Function ScrollX_Read() As Integer
+
+  Return $hView.ScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $hView.ScrollX = Value
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $hView.ScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $hView.ScrollY = Value
+
+End
+
+Private Function ScrollWidth_Read() As Integer
+
+  Return $hView.ScrollWidth
+
+End
+
+Private Function ScrollHeight_Read() As Integer
+
+  Return $hView.ScrollHeight
+
+End
+
+Public Sub Scroll(X As Integer, Y As Integer)
+  
+  $hView.Scroll(X, Y)
+  
+End
+
+Public Sub View_Scroll()
+  
+  Raise Scroll
+  
+End
+
+Private Function UseMouse_Read() As Boolean
+
+  Return $bUseMouse
+
+End
+
+Private Sub UseMouse_Write(Value As Boolean)
+
+  $bUseMouse = Value
+  If Not Value Then $hView.Mouse = Mouse.Default
+
+End
+
+Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  $hView.EnsureVisible(X, Y, W, H)
+  
+End

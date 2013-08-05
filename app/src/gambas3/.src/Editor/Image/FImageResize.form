@@ -1,0 +1,82 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,62,36)
+  Text = ("Resize image")
+  Resizable = False
+  Spacing = True
+  Margin = True
+  { Label1 Label
+    MoveScaled(32,1,15,4)
+    Text = ("Width")
+    Alignment = Align.Right
+  }
+  { btnSync ToggleButton
+    MoveScaled(59,1,2,8)
+    Picture = Picture["img/32/linked.png"]
+    Border = False
+    Value = True
+  }
+  { Label2 Label
+    MoveScaled(32,5,15,4)
+    Text = ("Height")
+    Alignment = Align.Right
+  }
+  { btnCancel Button
+    MoveScaled(45,31,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { optResize RadioButton radResize
+    Name = "optResize"
+    MoveScaled(1,1,28,4)
+    AutoResize = True
+    Text = ("Resize image")
+    Value = True
+  }
+  { optResizeCenter RadioButton radResize
+    Name = "optResizeCenter"
+    MoveScaled(1,9,28,4)
+    AutoResize = True
+    Text = ("Resize and center")
+  }
+  { optResizeCenterH RadioButton radResize
+    Name = "optResizeCenterH"
+    MoveScaled(1,13,28,4)
+    AutoResize = True
+    Text = ("Resize and center horizontally")
+  }
+  { optResizeCenterV RadioButton radResize
+    Name = "optResizeCenterV"
+    MoveScaled(1,17,28,4)
+    AutoResize = True
+    Text = ("Resize and center vertically")
+  }
+  { optStretch RadioButton radResize
+    Name = "optStretch"
+    MoveScaled(1,21,28,4)
+    AutoResize = True
+    Text = ("Stretch image")
+  }
+  { txtWidth SpinBox
+    MoveScaled(48,1,10,4)
+    MinValue = 1
+    MaxValue = 65536
+  }
+  { txtHeight SpinBox
+    MoveScaled(48,5,10,4)
+    MinValue = 1
+    MaxValue = 65536
+  }
+  { btnOK Button
+    MoveScaled(28,31,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { optBorder RadioButton radResize
+    Name = "optBorder"
+    MoveScaled(1,5,28,4)
+    AutoResize = True
+    Text = ("Add a border")
+  }
+}

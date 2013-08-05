@@ -1932,7 +1932,7 @@ Public Function LoadFile(sPath As String) As Object
       Select Case Lower(File.Ext(sPath))
 
         Case "png", "gif", "jpg", "jpeg", "bmp", "xpm"
-          hForm = New FIconEditor(sPath)
+          hForm = New FImageEditor(sPath)
 
         Case Else
           ' Check that it is not a binary file
@@ -2745,7 +2745,7 @@ Public Sub Activate(hForm As Object)
 
     FProperty.HideAll
     FFormStack.HideAll
-    FMain.ShowTool(False)
+    FMain.ShowTool("")
     sType = ""
 
   Else
@@ -2755,7 +2755,7 @@ Public Sub Activate(hForm As Object)
 
     sType = Object.Type(ActiveForm)
 
-    FMain.ShowTool(sType = "FForm") 'Or ShowAlwaysProperty)
+    FMain.ShowTool(sType) 'Or ShowAlwaysProperty)
 
   Endif
 

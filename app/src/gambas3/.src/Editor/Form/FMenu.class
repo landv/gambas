@@ -45,6 +45,10 @@ Public Sub Form_Open()
   'PRINT "_new"
   Me.Title = $hForm.Name & " - " & ("Menu editor")
   
+  $bFreeze = True
+  gvwMenu.UnSelectAll
+  $bFreeze = False
+
   gvwMenu.Rows.Count = 0
   gvwMenu.Columns.Count = 3
   gvwMenu.Columns[0].Width = 20
@@ -55,7 +59,7 @@ Public Sub Form_Open()
   LoadShortcut
   LoadAllMenu
   UpdatePaste
-
+  
 End
 
 Public Sub Form_Close()
@@ -398,7 +402,7 @@ Private Sub DeleteMenu(iInd As Integer)
 
   $cName.Remove($aMenu[iInd].Name)
   $aMenu.Remove(iInd)
-  SetModified
+  gvwMenu.Rows.Remove(iInd)
 
 End
 
@@ -426,6 +430,7 @@ Public Sub btnDelete_Click()
   
   $bFreeze = False
   
+  gvwMenu.UnSelectAll
   SetCurrent($iCurrent)
 
 End

@@ -1,0 +1,304 @@
+' Gambas class file
+
+Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR
+Public Const ACTION_GRADIENT As Integer = 32
+Public Const ACTION_EXTENT As Integer = 64
+
+Private Enum CMD_MOVE_TO, CMD_LINE_TO, CMD_RECTANGLE, CMD_ELLIPSE
+
+Public _Cmd As New Byte[]
+Public _X As New Integer[]
+Public _Y As New Integer[]
+Public _Invert As Boolean
+Public _Magnets As New Point[]
+Public _Extent As New Rect
+
+Private $hExtents As PaintExtents
+
+Public Sub MoveTo(X As Integer, Y As Integer)
+  
+  _Cmd.Add(CMD_MOVE_TO)
+  _X.Add(X)
+  _Y.Add(Y)
+  
+End
+
+Public Sub LineTo(X As Integer, Y As Integer)
+  
+  _Cmd.Add(CMD_LINE_TO)
+  _X.Add(X)
+  _Y.Add(Y)
+  
+End
+
+Public Sub Paint(hImage As Image, iAction As Integer)
+
+  Dim hTemp As Image
+  Dim I As Integer
+  Dim hBrush As PaintBrush
+  Dim bExtent As Boolean
+  Dim bGradient As Boolean
+  
+  bExtent = iAction And ACTION_EXTENT
+  bGradient = iAction And ACTION_GRADIENT
+  iAction = iAction And 7
+  
+  Paint.Save
+  
+  If iAction = ACTION_FILL Then
+
+    hBrush = Paint.Brush
+    
+    If bGradient Then
+      Me.Paint(hImage, ACTION_EXTENT)
+      If bExtent Then bExtent = False
+      With $hExtents
+        hBrush.Translate(.X, .Y)
+        hBrush.Scale(.Width, .Height)
+      End With
+    
+      Paint.Brush = hBrush
+    Endif
+    
+    hTemp = New Image(hImage.W, hImage.H, Color.Transparent)
+    
+    Paint.Begin(hTemp)
+    
+    Paint.Brush = hBrush
+   
+    If _Invert Then
+      
+      Paint.Rectangle(0, 0, hTemp.W, hTemp.H)
+      Paint.Fill
+    
+      Paint.Operator = Paint.OperatorClear
+      
+    Endif
+    
+  Else If iAction = ACTION_CLEAR Then
+
+    hBrush = Paint.Brush
+    hBrush.Scale(hImage.W, hImage.H)
+    Paint.Brush = hBrush
+    'Paint.Brush = Paint.Color(Color.Black)
+          
+    If _Invert Then
+      
+      Paint.Operator = Paint.OperatorDestOut
+      hBrush = Paint.Brush
+      
+      hTemp = New Image(hImage.W, hImage.H, Color.Transparent)
+      
+      Paint.Begin(hTemp)
+      
+      Paint.Brush = hBrush
+      Paint.Rectangle(0, 0, hTemp.W, hTemp.H)
+      Paint.Fill
+      
+      Paint.Brush = Paint.Color(Color.Black)
+      Paint.Operator = Paint.OperatorDestOut
+      
+    Else
+      
+      Paint.Operator = Paint.OperatorDestOut
+      
+    Endif
+    
+  Endif
+  
+  For I = 0 To _Cmd.Max
+    
+    On _Cmd[I] Goto _MOVE_TO, _LINE_TO, _RECTANGLE, _ELLIPSE
+    Goto NEXT_CMD
+    
+  _MOVE_TO:
+    'Paint.ClosePath
+    Paint.MoveTo(_X[I], _Y[I])
+    Goto NEXT_CMD
+    
+  _LINE_TO:
+    Paint.LineTo(_X[I], _Y[I])
+    Goto NEXT_CMD
+    
+  _RECTANGLE:
+    'Paint.ClosePath
+    Paint.Rectangle(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
+    Inc I
+    Goto NEXT_CMD
+    
+  _ELLIPSE:
+    'Paint.ClosePath
+    Paint.Ellipse(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
+    Inc I
+    Goto NEXT_CMD
+    
+  NEXT_CMD:
+    
+  Next
+  
+  If bExtent Then $hExtents = Paint.PathExtents
+  
+  If iAction = ACTION_FILL Then 
+    
+    Paint.FillRule = Paint.FillRuleWinding
+    Paint.Fill
+    Paint.End
+    
+    Paint.DrawImage(hTemp, 0, 0)
+    
+  Else If iAction = ACTION_CLEAR Then
+    
+    Paint.FillRule = Paint.FillRuleWinding
+    Paint.Fill
+    
+    If _Invert Then
+      
+      Paint.End
+      
+      Paint.DrawImage(hTemp, 0, 0)
+      
+    Endif
+    
+  Else If iAction = ACTION_STROKE
+
+    If _Invert Then
+      Paint.MoveTo(0, 0)
+      Paint.LineTo(hImage.W, 0)
+      Paint.LineTo(hImage.W, hImage.H)
+      Paint.LineTo(0, hImage.H)
+      Paint.LineTo(0, 0)
+    Endif
+  
+    Paint.Stroke
+    
+  Endif
+  
+  Paint.Restore
+  
+End
+
+Public Sub Copy() As CImageSelection
+  
+  Dim hSelect As New CImageSelection
+  Dim I As Integer
+  
+  hSelect._Cmd = _Cmd.Copy()
+  hSelect._X = _X.Copy()
+  hSelect._Y = _Y.Copy()
+  hSelect._Invert = _Invert
+  hSelect._Extent = _Extent.Copy()
+  hSelect._Magnets = New Point[_Magnets.Count]
+  For I = 0 To _Magnets.Max
+    hSelect._Magnets[I] = _Magnets[I].Copy()
+  Next
+  
+  Return hSelect
+  
+End
+
+Public Sub Invert()
+  
+  _Invert = Not _Invert
+  
+End
+
+Public Sub IsVoid() As Boolean
+  
+  If _Invert Then Return
+  Return _Cmd.Count = 0
+  
+End
+
+Public Sub Clear()
+  
+  _Cmd.Clear
+  _X.Clear
+  _Y.Clear
+  _Extent.Clear
+  
+End
+
+Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, bNoMagnet As Boolean)
+
+  If W < 1 Or If H < 1 Then Return
+  
+  _Cmd.Add(iCmd)
+  _Cmd.Add(iCmd)
+  _X.Add(X)
+  _Y.Add(Y)
+  _X.Add(W)
+  _Y.Add(H)
+  
+  If Not bNoMagnet Then
+    _Magnets.Add(Point(X, Y))
+    _Magnets.Add(Point(X + W \ 2, Y))
+    _Magnets.Add(Point(X + W, Y))
+    _Magnets.Add(Point(X + W, Y + H \ 2))
+    _Magnets.Add(Point(X, Y + H))
+    _Magnets.Add(Point(X + W \ 2, Y + H))
+    _Magnets.Add(Point(X + W, Y + H))
+    _Magnets.Add(Point(X + W, Y + H \ 2))
+    _Magnets.Add(Point(X + W \ 2, Y + H \ 2))
+  Endif
+
+End
+
+Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bNoMagnet As Boolean)
+  
+  AddRect(CMD_RECTANGLE, X, Y, W, H, bNoMagnet)
+  
+End
+
+Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bNoMagnet As Boolean)
+  
+  AddRect(CMD_ELLIPSE, X, Y, W, H, bNoMagnet)
+  
+End
+
+Public Sub FindMagnet(X As Integer, Y As Integer) As Point
+
+  Dim hPoint As Point
+  Dim fDist, fDistMin As Float
+  Dim hPointMin As Point
+  
+  fDistMin = 10
+  
+  For Each hPoint In _Magnets
+    
+    fDist = Hyp(hPoint.X - X, hPoint.Y - Y)
+    If fDist > 4 Then Continue
+    If fDist < fDistMin Then
+      hPointMin = hPoint
+      fDistMin = fDist
+    Endif
+    
+  Next
+  
+  Return hPointMin
+  
+End
+
+Public Sub IsInverted() As Boolean
+  
+  Return _Invert
+  
+End
+
+Public Sub GetExtents() As PaintExtents
+  
+  Dim hExt As PaintExtents = $hExtents
+  $hExtents = Null
+  Return hExt
+  
+End
+
+Public Sub AddMagnet(hPoint As Point)
+
+  If _Magnets.Count And If _Magnets[_Magnets.Max].X = hPoint.X And If _Magnets[_Magnets.Max].Y = hPoint.Y Then
+    _Magnets.Remove(_Magnets.Max)
+  Else  
+    _Magnets.Add(hPoint.Copy())
+  Endif
+  
+End
+
