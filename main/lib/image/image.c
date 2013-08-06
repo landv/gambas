@@ -2028,3 +2028,73 @@ void IMAGE_blur(GB_IMG *img, int radius) //top_x, top_y, width, height, radius )
 	
 	MODIFY(img);
 }
+
+
+//---------------------------------------------------------------------------
+
+static inline int between0And255 (int val)
+{
+	if (val < 0)
+		return 0;
+	else if (val > 255)
+		return 255;
+	else
+		return val;
+}
+
+static inline int get_brightness(int base, int strength)
+{
+	return between0And255(base + strength);
+}
+
+static inline int get_contrast(int base, int strength)
+{
+	return between0And255 ((base - 127) * (strength + 255) / 255 + 127);
+}
+
+/*static inline int gamma (int base, int strength)
+{
+	return between0And255 (myRound(255.0 * pow (base / 255.0, 1.0 / pow (10, strength / 50.0))));
+}*/
+
+
+void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int hue, int saturation)
+{
+	GET_POINTER(img, p, pm);
+	uint col;
+	//int h, s, v;
+	//int r, g, b;
+	//int hcol, scol, vcol;
+	int format = img->format;
+	int i;
+	uchar trgb[256];
+	uchar *pp;
+
+	SYNCHRONIZE(img);
+
+	for (i = 0; i < 256; i++)
+		trgb[i] = get_contrast(get_brightness(i, brightness), contrast);
+
+	if (img->format == GB_IMAGE_BGRA || img->format == GB_IMAGE_RGBA)
+	{
+		while (p != pm)
+		{
+			pp = (uchar *)p;
+			pp[0] = trgb[pp[0]];
+			pp[1] = trgb[pp[1]];
+			pp[2] = trgb[pp[2]];
+			p++;
+		}
+	}
+	else
+	{
+		while (p != pm)
+		{
+			col = BGRA_from_format(*p, format);
+			*p++ = BGRA_to_format(RGBA(trgb[RED(col)], trgb[GREEN(col)], trgb[BLUE(col)], ALPHA(col)), format);
+		}
+	}
+
+	MODIFY(img);
+}
+

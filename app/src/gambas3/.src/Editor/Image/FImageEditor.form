@@ -208,50 +208,53 @@
       Picture = Picture["icon:/small/wizard"]
       Toggle = True
     }
-    { Separator5 Separator
-      MoveScaled(48,0,1,4)
+    { btnPaste ToolButton btnTool
+      Name = "btnPaste"
+      MoveScaled(47,0,4,4)
+      Tag = "paste"
+      ToolTip = ("Paste")
+      Action = ".tool-paste"
+      Picture = Picture["icon:/small/paste"]
+      Toggle = True
     }
     { btnInvert ToolButton
-      MoveScaled(50,0,4,4)
-      ToolTip = ("Invert")
+      MoveScaled(51,0,4,4)
+      ToolTip = ("Invert selection")
       Action = ".invert"
       Picture = Picture["icon:/small/select"]
     }
+    { Separator5 Separator
+      MoveScaled(56,0,1,4)
+    }
     { btnStroke ToolButton
-      MoveScaled(54,0,4,4)
+      MoveScaled(58,0,4,4)
       ToolTip = ("Stroke")
       Action = ".stroke"
       Picture = Picture["img/draw/draw-brush.png"]
     }
     { btnFill ToolButton
-      MoveScaled(58,0,4,4)
+      MoveScaled(62,0,4,4)
       ToolTip = ("Fill")
       Action = ".fill"
       Picture = Picture["icon:/small/fill"]
     }
     { btnClear ToolButton
-      MoveScaled(62,0,4,4)
+      MoveScaled(66,0,4,4)
       ToolTip = ("Clear")
       Action = ".clear"
       Picture = Picture["img/draw/draw-eraser.png"]
     }
     { btnCut ToolButton
-      MoveScaled(67,0,4,4)
+      MoveScaled(71,0,4,4)
       ToolTip = ("Cut")
       Action = ".cut"
       Picture = Picture["icon:/small/cut"]
     }
     { btnCopy ToolButton
-      MoveScaled(71,0,4,4)
+      MoveScaled(75,0,4,4)
       ToolTip = ("Copy")
       Action = ".copy"
       Picture = Picture["icon:/small/copy"]
-    }
-    { btnPaste ToolButton
-      MoveScaled(75,0,4,4)
-      ToolTip = ("Copy")
-      Action = ".paste"
-      Picture = Picture["icon:/small/paste"]
     }
     { Separator7 Separator
       MoveScaled(80,0,1.1429,4)
@@ -295,16 +298,16 @@
       Picture = Picture["icon:/small/zoom-fit"]
     }
     { Separator1 Separator
-      MoveScaled(112,0,1.1429,4)
+      MoveScaled(111,0,1.1429,4)
     }
     { btnZoomIn ToolButton
-      MoveScaled(114,0,4,4)
+      MoveScaled(112,0,4,4)
       ToolTip = ("Zoom in")
       Action = ".zoom-in"
       Picture = Picture["icon:/small/zoom-in"]
     }
     { cmbZoom ComboBox
-      MoveScaled(118,0,7,4)
+      MoveScaled(116,0,9,4)
       #Translate = False
       ToolTip = "Zoom level"
       Action = ".zoom"
@@ -357,10 +360,7 @@
     }
     { timSelect #Timer
       #MoveScaled(106,20)
-      Delay = 500
-    }
-    { timCheckZoom #Timer
-      #MoveScaled(114,46)
+      Delay = 250
     }
   }
 }
@@ -486,6 +486,10 @@
     Text = "Move"
     Picture = "img/16/scroll.png"
   }
+  { Action tool-paste
+    Text = "Paste"
+    Picture = "icon:/small/paste"
+  }
   { Action tool-rectangle
     Text = "Rectangle"
     Picture = "img/draw/draw-rectangle.png"
@@ -520,7 +524,7 @@
 { Toolbars
   { Toolbar image
     Text = "Text editor"
-    List = "save,reload,undo,redo,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,invert,stroke,fill,clear,cut,copy,paste,crop,flip-h,flip-v,rotate-r,rotate-l,resize,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit"
-    Default = "save,reload,undo,redo,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,|,invert,stroke,fill,clear,cut,copy,paste,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,$lblInfo"
+    List = "save,reload,undo,redo,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-paste,invert,stroke,fill,clear,cut,copy,crop,flip-h,flip-v,rotate-r,rotate-l,resize,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit"
+    Default = "save,reload,undo,redo,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-paste,invert,|,stroke,fill,clear,cut,copy,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,$lblInfo"
   }
 }

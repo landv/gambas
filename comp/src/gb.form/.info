@@ -1262,6 +1262,10 @@ View
 :Draw
 :
 
+(View)Image;
+Image
+p
+Image
 
 :Scroll
 :
@@ -1270,10 +1274,6 @@ View
 Border
 p
 b
-
-Image
-p
-Image
 
 Zoom
 p
@@ -1290,6 +1290,14 @@ b
 UseMouse
 p
 b
+
+Brightness
+p
+f
+
+Contrast
+p
+f
 
 ScrollX
 p
@@ -1335,6 +1343,10 @@ ImageToView
 m
 Point
 (ImagePoint)Point;
+_Paint
+m
+
+(hImage)Image;(X)i(Y)i
 View_Draw
 m
 

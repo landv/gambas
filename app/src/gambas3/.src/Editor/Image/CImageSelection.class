@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR
+Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP
 Public Const ACTION_GRADIENT As Integer = 32
 Public Const ACTION_EXTENT As Integer = 64
 
@@ -43,7 +43,7 @@ Public Sub Paint(hImage As Image, iAction As Integer)
   bGradient = iAction And ACTION_GRADIENT
   iAction = iAction And 7
   
-  Paint.Save
+  If iAction <> ACTION_CLIP Then Paint.Save
   
   If iAction = ACTION_FILL Then
 
@@ -78,8 +78,10 @@ Public Sub Paint(hImage As Image, iAction As Integer)
   Else If iAction = ACTION_CLEAR Then
 
     hBrush = Paint.Brush
-    hBrush.Scale(hImage.W, hImage.H)
-    Paint.Brush = hBrush
+    If hBrush Then
+      hBrush.Scale(hImage.W, hImage.H)
+      Paint.Brush = hBrush
+    Endif
     'Paint.Brush = Paint.Color(Color.Black)
           
     If _Invert Then
@@ -171,9 +173,22 @@ Public Sub Paint(hImage As Image, iAction As Integer)
   
     Paint.Stroke
     
+  Else If iAction = ACTION_CLIP
+    
+    If _Invert Then
+      Paint.MoveTo(0, 0)
+      Paint.LineTo(hImage.W, 0)
+      Paint.LineTo(hImage.W, hImage.H)
+      Paint.LineTo(0, hImage.H)
+      Paint.LineTo(0, 0)
+    Endif
+  
+    Paint.FillRule = Paint.FillRuleWinding
+    Paint.Clip
+    
   Endif
   
-  Paint.Restore
+  If iAction <> ACTION_CLIP Then Paint.Restore
   
 End
 
@@ -260,7 +275,7 @@ Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer, Optio
   
 End
 
-Public Sub FindMagnet(X As Integer, Y As Integer) As Point
+Public Sub FindMagnet(X As Integer, Y As Integer, D As Float) As Point
 
   Dim hPoint As Point
   Dim fDist, fDistMin As Float
@@ -271,7 +286,7 @@ Public Sub FindMagnet(X As Integer, Y As Integer) As Point
   For Each hPoint In _Magnets
     
     fDist = Hyp(hPoint.X - X, hPoint.Y - Y)
-    If fDist > 8 Then Continue
+    If fDist > D Then Continue
     If fDist < fDistMin Then
       hPointMin = hPoint
       fDistMin = fDist

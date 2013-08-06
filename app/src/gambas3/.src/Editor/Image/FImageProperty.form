@@ -1,113 +1,126 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,112)
+  MoveScaled(0,0,65,112)
   Arrangement = Arrange.Vertical
   { tabBrush TabPanel
     MoveScaled(0,2,61,58)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Margin = True
     Border = False
     Count = 3
     Index = 0
     Text = ("Color")
-    { cchColor ColorChooser
-      MoveScaled(1,1,47,43)
+    { Panel3 Panel
+      MoveScaled(2,2,54,50)
       Expand = True
-      Border = False
-    }
-    { dwgColor DrawingArea
-      MoveScaled(1,46,45,4)
-      Mouse = Mouse.Pointing
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
+      { cchColor ColorChooser
+        MoveScaled(0,0,47,43)
+        Expand = True
+        Border = False
+      }
+      { dwgColor DrawingArea
+        MoveScaled(0,45,45,4)
+        Mouse = Mouse.Pointing
+      }
     }
     Index = 1
     Text = ("Gradient")
-    { HBox2 HBox
-      MoveScaled(4,1,53,4)
-      Spacing = True
-      { radLinear RadioButton
-        MoveScaled(0,0,19,4)
-        AutoResize = True
-        Text = ("Linear gradient")
-        Value = True
-      }
-      { radRadial RadioButton
-        MoveScaled(21,0,19,4)
-        AutoResize = True
-        Text = ("Radial gradient")
-      }
-    }
-    { Panel2 Panel
-      MoveScaled(3,6,47,12)
-      Arrangement = Arrange.Vertical
-      Border = Border.Plain
-      { dwgGradientColor DrawingArea
-        MoveScaled(0,0,47,6)
-        Expand = True
-        Focus = True
-      }
-      { Separator2 Separator
-        MoveScaled(23,7,12,0)
-      }
-      { HBox1 HBox
-        MoveScaled(0,8,47,4)
-        { btnAddGradient ToolButton
-          MoveScaled(0,0,4,4)
-          ToolTip = ("Add gradient stop")
-          Picture = Picture["icon:/small/add"]
-        }
-        { btnRemoveGradient ToolButton
-          MoveScaled(4,0,4,4)
-          ToolTip = ("Remove gradient stop")
-          Picture = Picture["icon:/small/remove"]
-        }
-        { btnColorGradient ToolButton
-          MoveScaled(8,0,4,4)
-          ToolTip = ("Select gradient stop color...")
-          Picture = Picture["icon:/small/color"]
-        }
-        { btnExchangeGradient ToolButton
-          MoveScaled(12,0,4,4)
-          ToolTip = ("Invert gradient")
-          Picture = Picture["icon:/small/flip-h"]
-        }
-        { panRadius HBox
-          MoveScaled(18,0,28,4)
-          Expand = True
-          Spacing = True
-          { Separator1 Separator
-            MoveScaled(0,0,1,4)
-          }
-          { btnResetRadius ToolButton
-            MoveScaled(2,0,4,4)
-            ToolTip = ("Invert gradient")
-            Picture = Picture["icon:/small/zoom-normal"]
-          }
-          { Label3 Label
-            MoveScaled(9,0,6,4)
-            AutoResize = True
-            Text = ("Radius")
-          }
-          { sldRadius Slider
-            MoveScaled(15,0,13,4)
-            Expand = True
-            Value = 50
-          }
-        }
-      }
-    }
-    { panGradient Panel
-      MoveScaled(3,19,47,24)
+    { Panel4 Panel
+      MoveScaled(1,1,55,52)
       Expand = True
-      { dwgGradient DrawingArea
-        MoveScaled(0,0,35,20)
-        Border = Border.Plain
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
+      { HBox2 HBox
+        MoveScaled(1,0,53,4)
+        Spacing = True
+        { radLinear RadioButton
+          MoveScaled(0,0,19,4)
+          AutoResize = True
+          Text = ("Linear gradient")
+          Value = True
+        }
+        { radRadial RadioButton
+          MoveScaled(21,0,19,4)
+          AutoResize = True
+          Text = ("Radial gradient")
+        }
       }
-    }
-    { dwgGradientStack DrawingArea
-      MoveScaled(3,48,45,4)
-      Mouse = Mouse.Pointing
+      { Panel2 Panel
+        MoveScaled(0,5,47,12)
+        Arrangement = Arrange.Vertical
+        Border = Border.Plain
+        { dwgGradientColor DrawingArea
+          MoveScaled(0,0,47,6)
+          Expand = True
+          Focus = True
+        }
+        { Separator2 Separator
+          MoveScaled(23,7,12,0)
+        }
+        { HBox1 HBox
+          MoveScaled(0,8,47,4)
+          { btnAddGradient ToolButton
+            MoveScaled(0,0,4,4)
+            ToolTip = ("Add gradient stop")
+            Picture = Picture["icon:/small/add"]
+          }
+          { btnRemoveGradient ToolButton
+            MoveScaled(4,0,4,4)
+            ToolTip = ("Remove gradient stop")
+            Picture = Picture["icon:/small/remove"]
+          }
+          { btnColorGradient ToolButton
+            MoveScaled(8,0,4,4)
+            ToolTip = ("Select gradient stop color...")
+            Picture = Picture["icon:/small/color"]
+          }
+          { btnExchangeGradient ToolButton
+            MoveScaled(12,0,4,4)
+            ToolTip = ("Invert gradient")
+            Picture = Picture["icon:/small/flip-h"]
+          }
+          { panRadius HBox
+            MoveScaled(18,0,28,4)
+            Expand = True
+            Spacing = True
+            { Separator1 Separator
+              MoveScaled(0,0,1,4)
+            }
+            { btnResetRadius ToolButton
+              MoveScaled(2,0,4,4)
+              ToolTip = ("Invert gradient")
+              Picture = Picture["icon:/small/zoom-normal"]
+            }
+            { Label3 Label
+              MoveScaled(9,0,6,4)
+              AutoResize = True
+              Text = ("Radius")
+            }
+            { sldRadius Slider
+              MoveScaled(15,0,13,4)
+              Expand = True
+              Value = 50
+            }
+          }
+        }
+      }
+      { panGradient Panel
+        MoveScaled(0,18,47,24)
+        Expand = True
+        { dwgGradient DrawingArea
+          MoveScaled(0,0,35,20)
+          Border = Border.Plain
+        }
+      }
+      { dwgGradientStack DrawingArea
+        MoveScaled(0,47,45,4)
+        Mouse = Mouse.Pointing
+      }
     }
     Index = 2
     Text = ("Clipboard")
@@ -186,5 +199,132 @@
   }
   { Separator3 Separator
     MoveScaled(19,73,15,0)
+  }
+  { Panel5 VBox
+    MoveScaled(1,74,63,26)
+    Margin = True
+    { HPanel4 HBox
+      MoveScaled(0,0,62,4)
+      { Label5 Label
+        MoveScaled(0,0,11,4)
+        Text = ("Brightness")
+      }
+      { sldBrightness Slider sldValue
+        Name = "sldBrightness"
+        MoveScaled(12,0,24,4)
+        Expand = True
+        MinValue = -255
+        MaxValue = 255
+        PageStep = 1
+      }
+      { txtBrightness SpinBox txtValue
+        Name = "txtBrightness"
+        MoveScaled(47,0,8,4)
+        MinValue = -255
+        MaxValue = 255
+        Step = 32
+      }
+    }
+    { HPanel5 HBox
+      MoveScaled(0,5,62,4)
+      { Label6 Label
+        MoveScaled(0,0,11,4)
+        Text = ("Contrast")
+      }
+      { sldContrast Slider sldValue
+        Name = "sldContrast"
+        MoveScaled(12,0,24,4)
+        Expand = True
+        MinValue = -255
+        MaxValue = 255
+        PageStep = 1
+      }
+      { txtContrast SpinBox txtValue
+        Name = "txtContrast"
+        MoveScaled(47,0,8,4)
+        MinValue = -255
+        MaxValue = 255
+        Step = 32
+      }
+    }
+    { HPanel6 HBox
+      MoveScaled(0,10,62,4)
+      { Label7 Label
+        MoveScaled(0,0,11,4)
+        Enabled = False
+        Text = ("Hue")
+      }
+      { sldHue Slider sldValue
+        Name = "sldHue"
+        MoveScaled(12,0,24,4)
+        Enabled = False
+        Expand = True
+        MinValue = -255
+        MaxValue = 255
+        PageStep = 1
+      }
+      { txtHue SpinBox txtValue
+        Name = "txtHue"
+        MoveScaled(47,0,8,4)
+        Enabled = False
+        MinValue = -255
+        MaxValue = 255
+        Step = 32
+      }
+    }
+    { HPanel7 HBox
+      MoveScaled(0,15,62,4)
+      { Label8 Label
+        MoveScaled(0,0,11,4)
+        Enabled = False
+        Text = ("Saturation")
+      }
+      { sldSaturation Slider sldValue
+        Name = "sldSaturation"
+        MoveScaled(13,0,24,4)
+        Enabled = False
+        Expand = True
+        MinValue = -255
+        MaxValue = 255
+        PageStep = 1
+      }
+      { txtSaturation SpinBox txtValue
+        Name = "txtSaturation"
+        MoveScaled(47,0,8,4)
+        Enabled = False
+        MinValue = -255
+        MaxValue = 255
+        Step = 32
+      }
+    }
+    { Panel7 Panel
+      MoveScaled(21,19,5,1)
+    }
+    { HBox3 HBox
+      MoveScaled(0,21,62,4)
+      Spacing = True
+      { chkBalancePreview CheckBox
+        MoveScaled(0,0,14,4)
+        Visible = False
+        Text = ("Preview")
+        Value = CheckBox.True
+      }
+      { Panel6 Panel
+        MoveScaled(26,0,2,4)
+        Expand = True
+      }
+      { btnBalanceReset Button
+        MoveScaled(32,0,14,4)
+        AutoResize = True
+        Text = ("Reset")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { btnBalanceApply Button
+        MoveScaled(47,0,14,4)
+        AutoResize = True
+        Text = ("&Apply")
+        Picture = Picture["icon:/small/apply"]
+      }
+    }
   }
 }

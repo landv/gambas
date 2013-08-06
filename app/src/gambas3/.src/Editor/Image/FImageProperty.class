@@ -179,8 +179,6 @@ Public Sub HasGradient() As Boolean
   
 End
 
-
-
 Public Sub dwgColor_Draw()
 
   Dim I As Integer
@@ -765,6 +763,11 @@ Public Sub AddClipboard(hImage As Image, sText As String)
   $aClipboard.Add(hClip)
   gvwClipboard.Rows.Count = $aClipboard.Count
   
+  If $aClipboard.Count > 1 Then
+    gvwClipboard.Row = $aClipboard.Max
+    tabBrush.Index = 2
+  Endif
+  
 End
 
 Public Sub gvwClipboard_Data(Row As Integer, Column As Integer)
@@ -866,5 +869,100 @@ Public Sub gvwClipboard_Click()
     gvwClipboard.Rows.Count = $aClipboard.Count
     gvwClipboard.Refresh
   Endif
+
+End
+
+Public Sub GetClipboard() As Image
+
+  Dim hImage As Image
+  
+  Try hImage = $aClipboard[gvwClipboard.Row].Image
+  If Not hImage Then Return
+  
+  Return hImage.Copy().Opacity(txtOpacity.Value / 255)
+ 
+End
+
+Public Sub sldValue_Change()
+
+  Dim hCtrl As SpinBox = Me["txt" & Mid$(Last.Name, 4)]
+  hCtrl.Value = Last.Value
+
+End
+
+Public Sub txtValue_Change()
+
+  Dim hCtrl As Slider = Me["sld" & Mid$(Last.Name, 4)]
+  hCtrl.Value = Last.Value
+  UpdateBalance
+
+End
+
+Public Sub btnBalanceReset_Click()
+
+  sldBrightness.Value = 0
+  sldContrast.Value = 0
+  sldHue.Value = 0
+  sldSaturation.Value = 0
+
+End
+
+Public Sub HasBalance() As Boolean
+  
+  Dim hCtrl As Slider
+  
+  'If Not chkBalancePreview.Value Then Return
+  
+  For Each hCtrl In [sldBrightness, sldContrast, sldHue, sldSaturation]
+    If hCtrl.Value Then Return True
+  Next
+  
+End
+
+Public Sub ApplyBalance(hImage As Image)
+  
+  hImage.BrightnessContrast(sldBrightness.Value / sldBrightness.MaxValue, sldContrast.Value / sldContrast.MaxValue)
+  
+End
+
+Public Sub chkBalancePreview_Click()
+
+  UpdateBalance
+
+End
+
+Private Sub UpdateBalance()
+
+  Dim hFile As Object
+  Dim hImageEditor As FImageEditor
+  Dim fBrightness, fContrast As Float
+  
+  'If chkBalancePreview.Value Then
+    fBrightness = txtBrightness.Value / txtBrightness.MaxValue
+    fContrast = txtContrast.Value / txtContrast.MaxValue
+  'Endif
+  
+  For Each hFile In Project.Files
+    Try hImageEditor = hFile
+    If Error Then Continue
+    If hImageEditor = Project.ActiveForm Then
+      hImageEditor.UpdateBalance(fBrightness, fContrast)
+    Else
+      hImageEditor.UpdateBalance(0, 0)
+    Endif
+  Next
+
+End
+
+Public Sub OnProjectActivate()
+  
+  UpdateBalance
+  
+End
+
+Public Sub btnBalanceApply_Click()
+
+  Try Project.ActiveForm.ApplyBalance
+  btnBalanceReset_Click
 
 End

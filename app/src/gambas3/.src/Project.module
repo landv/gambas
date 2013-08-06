@@ -123,7 +123,7 @@ Public Files As New Collection
 
 Public AboutToQuit As Boolean
 
-Public Const MAX_ICON_SIZE As Integer = 32768
+Public Const MAX_ICON_SIZE As Integer = 262144
 
 Public EXAMPLES_DIR As String
 
@@ -2768,6 +2768,7 @@ Public Sub Activate(hForm As Object)
 
   'FFind.OnProjectActivate
   FToolBox.OnProjectActivate
+  FImageProperty.OnProjectActivate
 
   Try ActiveForm.SetFocus
 

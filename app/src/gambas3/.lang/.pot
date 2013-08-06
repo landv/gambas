@@ -547,7 +547,7 @@ msgstr ""
 #: FEditor.class:2373 FExportData.class:126 FFieldChooser.form:138
 #: FFileProperty.class:140 FFontChooser.form:40 FForm.class:3132
 #: FGotoLine.form:23 FHelpBrowser.form:61 FIconEditor.class:1373
-#: FImageEditor.class:281 FImageResize.form:46 FInfo.class:263 FList.form:121
+#: FImageEditor.class:295 FImageResize.form:49 FInfo.class:263 FList.form:121
 #: FMain.class:212 FMakeInstall.class:350 FMenu.form:377
 #: FNewConnection.form:255 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:158 FOption.class:675 FPasteSpecial.form:77
@@ -647,7 +647,7 @@ msgstr ""
 
 #: Design.module:428 FColorChooser.form:54 FConnectionEditor.class:452
 #: FCreateFile.form:443 FFieldChooser.form:132 FFontChooser.form:34
-#: FGotoLine.form:17 FImageResize.form:100 FInfo.form:181 FList.form:115
+#: FGotoLine.form:17 FImageResize.form:103 FInfo.form:181 FList.form:115
 #: FMain.class:1839 FMakeInstall.class:299 FMenu.form:372
 #: FNewConnection.form:249 FNewTable.form:80 FNewTranslation.form:15
 #: FOpenProject.form:152 FPasteSpecial.form:71 FProjectProperty.form:755
@@ -718,32 +718,32 @@ msgid "Open"
 msgstr ""
 
 #: FConflict.form:53 FConnectionEditor.form:358 FEditor.form:144
-#: FForm.form:241 FIconEditor.form:103 FImageEditor.form:95 FMenu.form:107
+#: FForm.form:241 FIconEditor.form:103 FImageEditor.form:94 FMenu.form:107
 #: FOutput.form:58 FProjectVersion.form:234 FTextEditor.form:108
 msgid "Cut"
 msgstr ""
 
 #: FConflict.form:59 FConnectionEditor.form:147 FEditor.form:150
-#: FForm.form:248 FIconEditor.form:111 FImageEditor.form:103 FMenu.form:113
+#: FForm.form:248 FIconEditor.form:111 FImageEditor.form:102 FMenu.form:113
 #: FOutput.form:65 FProjectVersion.form:240 FTextEditor.form:115
 msgid "Copy"
 msgstr ""
 
 #: FConflict.form:65 FConnectionEditor.form:379 FEditor.form:157
-#: FForm.form:261 FIconEditor.form:119 FImageEditor.form:111 FMenu.form:119
+#: FForm.form:261 FIconEditor.form:119 FImageEditor.form:110 FMenu.form:119
 #: FOutput.form:72 FPasteTable.form:101 FProjectVersion.form:246
 #: FTextEditor.form:122
 msgid "Paste"
 msgstr ""
 
 #: FConflict.form:71 FConnectionEditor.form:386 FEditor.form:128
-#: FForm.form:224 FIconEditor.form:87 FImageEditor.form:76 FOption.form:561
+#: FForm.form:224 FIconEditor.form:87 FImageEditor.form:75 FOption.form:561
 #: FOutput.form:41 FProjectVersion.form:252 FTextEditor.form:91
 msgid "Undo"
 msgstr ""
 
 #: FConflict.form:77 FConnectionEditor.form:393 FEditor.form:135
-#: FForm.form:231 FImageEditor.form:84 FOutput.form:48
+#: FForm.form:231 FImageEditor.form:83 FOutput.form:48
 #: FProjectVersion.form:258 FTextEditor.form:98
 msgid "Redo"
 msgstr ""
@@ -789,7 +789,7 @@ msgstr ""
 
 #: FConflict.form:184 FDebugInfo.form:270 FEditor.form:310
 #: FFileProperty.form:75 FForm.form:410 FIconEditor.class:1386
-#: FImageEditor.form:192 FImportTable.form:217 FProjectVersion.form:323
+#: FImageEditor.form:191 FImportTable.form:217 FProjectVersion.form:323
 #: FSystemInfo.form:83 FTextEditor.form:244 FTips.form:83
 msgid "Close"
 msgstr ""
@@ -837,13 +837,13 @@ msgid "Connection editor"
 msgstr ""
 
 #: FConnectionEditor.form:100 FEditor.form:323 FForm.form:423
-#: FIconEditor.form:72 FImageEditor.form:185 FMenu.class:68
+#: FIconEditor.form:72 FImageEditor.form:184 FMenu.class:68
 #: FTextEditor.form:237
 msgid "Save"
 msgstr ""
 
 #: FConnectionEditor.form:108 FEditor.form:317 FForm.form:417
-#: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:179
+#: FHelpBrowser.form:67 FIconEditor.form:79 FImageEditor.form:178
 #: FTextEditor.form:231 FTranslate.class:650
 msgid "Reload"
 msgstr ""
@@ -1124,11 +1124,11 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: FCreateFile.form:308 FImageResize.form:27
+#: FCreateFile.form:308 FImageResize.form:32
 msgid "Width"
 msgstr ""
 
-#: FCreateFile.form:321 FImageResize.form:40
+#: FCreateFile.form:321 FImageResize.form:44
 msgid "Height"
 msgstr ""
 
@@ -1438,7 +1438,7 @@ msgstr ""
 msgid "Function"
 msgstr ""
 
-#: FDebugInfo.class:55 FIconEditor.form:200 FImageEditor.form:271
+#: FDebugInfo.class:55 FIconEditor.form:200 FImageEditor.form:270
 #: FImportTable.class:66 FOption.form:642
 msgid "Line"
 msgstr ""
@@ -1467,7 +1467,7 @@ msgstr ""
 msgid "Do you want to clear the expression list ?"
 msgstr ""
 
-#: FDebugInfo.class:570 FIconEditor.class:1373 FImageEditor.form:335
+#: FDebugInfo.class:570 FIconEditor.class:1373 FImageEditor.form:344
 #: FList.class:153 FOption.class:675 FOutput.form:79
 msgid "Clear"
 msgstr ""
@@ -1504,7 +1504,7 @@ msgstr ""
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.form:167 FImageEditor.form:118 FTextEditor.form:132
+#: FEditor.form:167 FImageEditor.form:117 FTextEditor.form:132
 msgid "Select &All"
 msgstr ""
 
@@ -1620,7 +1620,7 @@ msgstr ""
 msgid "Procedure list"
 msgstr ""
 
-#: FEditor.class:2373 FIconEditor.class:2006 FImageEditor.class:281
+#: FEditor.class:2373 FIconEditor.class:2006 FImageEditor.class:295
 #: FTextEditor.class:599
 msgid ""
 "The file has been modified.\n"
@@ -1736,7 +1736,7 @@ msgid "You are going to cancel your changes!"
 msgstr ""
 
 #: FFileProperty.class:140 FInfo.class:263 FMakeInstall.class:350
-#: FProjectVersion.class:201 FSave.form:21 Project.module:3297
+#: FProjectVersion.class:201 FSave.form:21 Project.module:3298
 msgid "Continue"
 msgstr ""
 
@@ -2031,11 +2031,11 @@ msgstr ""
 msgid "Show help tree"
 msgstr ""
 
-#: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:415
+#: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:417
 msgid "Zoom in"
 msgstr ""
 
-#: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:430
+#: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:432
 msgid "Zoom out"
 msgstr ""
 
@@ -2063,15 +2063,15 @@ msgstr ""
 msgid "Scroll"
 msgstr ""
 
-#: FIconEditor.form:191 FImageEditor.form:251
+#: FIconEditor.form:191 FImageEditor.form:250
 msgid "Draw"
 msgstr ""
 
-#: FIconEditor.form:209 FImageEditor.form:281
+#: FIconEditor.form:209 FImageEditor.form:280
 msgid "Rectangle"
 msgstr ""
 
-#: FIconEditor.form:218 FImageEditor.form:291
+#: FIconEditor.form:218 FImageEditor.form:290
 msgid "Ellipse"
 msgstr ""
 
@@ -2107,19 +2107,19 @@ msgstr ""
 msgid "Replace color"
 msgstr ""
 
-#: FIconEditor.form:306 FImageEditor.form:142
+#: FIconEditor.form:306 FImageEditor.form:141
 msgid "Horizontal flip"
 msgstr ""
 
-#: FIconEditor.form:314 FImageEditor.form:149
+#: FIconEditor.form:314 FImageEditor.form:148
 msgid "Vertical flip"
 msgstr ""
 
-#: FIconEditor.form:322 FImageEditor.form:163
+#: FIconEditor.form:322 FImageEditor.form:162
 msgid "Rotate clockwise"
 msgstr ""
 
-#: FIconEditor.form:330 FImageEditor.form:156
+#: FIconEditor.form:330 FImageEditor.form:155
 msgid "Rotate counter-clockwise"
 msgstr ""
 
@@ -2141,137 +2141,209 @@ msgid ""
 "Do you want to save it ?"
 msgstr ""
 
-#: FImageEditor.form:125
+#: FImageEditor.form:124
 msgid "Invert selection"
 msgstr ""
 
-#: FImageEditor.form:135
+#: FImageEditor.form:134
 msgid "Crop"
 msgstr ""
 
-#: FImageEditor.form:170
+#: FImageEditor.form:169
 msgid "Resize..."
 msgstr ""
 
-#: FImageEditor.form:201 FTextEditor.form:253
+#: FImageEditor.form:200 FTextEditor.form:253
 msgid "Text editor"
 msgstr ""
 
-#: FImageEditor.form:240
+#: FImageEditor.form:239
 msgid "Move"
 msgstr ""
 
-#: FImageEditor.form:261
+#: FImageEditor.form:260
 msgid "Erase"
 msgstr ""
 
-#: FImageEditor.form:302
+#: FImageEditor.form:301
 msgid "Magic wand"
 msgstr ""
 
-#: FImageEditor.form:314
-msgid "Invert"
-msgstr ""
-
-#: FImageEditor.form:321
+#: FImageEditor.form:330
 msgid "Stroke"
 msgstr ""
 
-#: FImageEditor.form:328
+#: FImageEditor.form:337
 msgid "Fill"
 msgstr ""
 
-#: FImageEditor.form:402
+#: FImageEditor.form:404
 msgid "Resize or stretch image"
 msgstr ""
 
-#: FImageEditor.form:437
+#: FImageEditor.form:439
 msgid "Zoom normal"
 msgstr ""
 
-#: FImageEditor.form:444
+#: FImageEditor.form:446
 msgid "Zoom fit"
 msgstr ""
 
-#: FImageProperty.form:55 FReportBrushChooser.form:49
+#: FImageProperty.form:79 FReportBrushChooser.form:49
 msgid "Color"
 msgstr ""
 
-#: FImageProperty.form:68
+#: FImageProperty.form:100
 msgid "Gradient"
 msgstr ""
 
-#: FImageProperty.form:77 FReportBrushChooser.form:49
+#: FImageProperty.form:116 FReportBrushChooser.form:49
 msgid "Linear gradient"
 msgstr ""
 
-#: FImageProperty.form:84 FReportBrushChooser.form:49
+#: FImageProperty.form:123 FReportBrushChooser.form:49
 msgid "Radial gradient"
 msgstr ""
 
-#: FImageProperty.form:108 FReportBrushChooser.form:111
+#: FImageProperty.form:147 FReportBrushChooser.form:111
 msgid "Add gradient stop"
 msgstr ""
 
-#: FImageProperty.form:114 FReportBrushChooser.form:117
+#: FImageProperty.form:153 FReportBrushChooser.form:117
 msgid "Remove gradient stop"
 msgstr ""
 
-#: FImageProperty.form:120 FReportBrushChooser.form:123
+#: FImageProperty.form:159 FReportBrushChooser.form:123
 msgid "Select gradient stop color..."
 msgstr ""
 
-#: FImageProperty.form:126 FReportBrushChooser.form:129
+#: FImageProperty.form:165 FReportBrushChooser.form:129
 msgid "Invert gradient"
 msgstr ""
 
-#: FImageProperty.form:148 FReportBrushChooser.form:145
+#: FImageProperty.form:187 FReportBrushChooser.form:145
 msgid "Radius"
 msgstr ""
 
-#: FImageProperty.form:175
+#: FImageProperty.form:215
 msgid "Clipboard"
 msgstr ""
 
-#: FImageProperty.form:202
+#: FImageProperty.form:242
 msgid "Opacity"
 msgstr ""
 
-#: FImageProperty.form:225 FInfo.form:97 FSelectIcon.form:54
+#: FImageProperty.form:265 FInfo.form:97 FSelectIcon.form:54
 #: FTranslate.class:70
 msgid "Size"
 msgstr ""
 
-#: FImageProperty.form:246
+#: FImageProperty.form:286
 msgid "Tolerance"
 msgstr ""
 
-#: FImageProperty.class:758
+#: FImageProperty.form:318
+msgid "Brightness"
+msgstr ""
+
+#: FImageProperty.form:344
+msgid "Contrast"
+msgstr ""
+
+#: FImageProperty.form:371
+msgid "Hue"
+msgstr ""
+
+#: FImageProperty.form:400
+msgid "Saturation"
+msgstr ""
+
+#: FImageProperty.form:434 FImportTable.form:182
+msgid "Preview"
+msgstr ""
+
+#: FImageProperty.form:446 FOption.class:1026
+msgid "Reset"
+msgstr ""
+
+#: FImageProperty.form:453 FPatch.form:86
+msgid "&Apply"
+msgstr ""
+
+#: FImageProperty.class:756
 msgid "System clipboard"
 msgstr ""
 
-#: FImageResize.form:20
+#: FImageResize.form:25
 msgid "Resize image"
 msgstr ""
 
-#: FImageResize.form:62
+#: FImageResize.form:65
 msgid "Resize and center"
 msgstr ""
 
-#: FImageResize.form:69
+#: FImageResize.form:72
 msgid "Resize and center horizontally"
 msgstr ""
 
-#: FImageResize.form:76
+#: FImageResize.form:79
 msgid "Resize and center vertically"
 msgstr ""
 
-#: FImageResize.form:83
+#: FImageResize.form:86
 msgid "Stretch image"
 msgstr ""
 
-#: FImageResize.form:108
+#: FImageResize.form:111
 msgid "Add a border"
+msgstr ""
+
+#: FImageResize.form:116
+msgid "Ratio"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "25"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "33"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "50"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "66"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "100"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "150"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "200"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "300"
+msgstr ""
+
+#: FImageResize.form:121
+msgid "400"
+msgstr ""
+
+#: FImageResize.form:127
+msgid "px"
+msgstr ""
+
+#: FImageResize.form:137
+msgid "%"
 msgstr ""
 
 #: FImportTable.form:37
@@ -2316,10 +2388,6 @@ msgstr ""
 
 #: FImportTable.form:171
 msgid "Key field"
-msgstr ""
-
-#: FImportTable.form:182
-msgid "Preview"
 msgstr ""
 
 #: FImportTable.form:190
@@ -3311,7 +3379,7 @@ msgstr ""
 msgid "*.gz;*.bz2;*.xz"
 msgstr ""
 
-#: FMakePatch.form:89 Project.module:4351
+#: FMakePatch.form:89 Project.module:4352
 msgid "Source packages"
 msgstr ""
 
@@ -3387,7 +3455,7 @@ msgstr ""
 msgid "This menu is too deep !"
 msgstr ""
 
-#: FMenu.class:942 Project.module:5150
+#: FMenu.class:942 Project.module:5151
 msgid "modified"
 msgstr ""
 
@@ -3835,10 +3903,6 @@ msgstr ""
 msgid "Do you really want to reset the list to its default value?"
 msgstr ""
 
-#: FOption.class:1026
-msgid "Reset"
-msgstr ""
-
 #: FOption.class:1112
 msgid ""
 "Do you really want to install the Gambas font to your personal font "
@@ -3915,10 +3979,6 @@ msgstr ""
 
 #: FPatch.form:40
 msgid "Select patch"
-msgstr ""
-
-#: FPatch.form:86
-msgid "&Apply"
 msgstr ""
 
 #: FPatch.form:105 FTranslate.form:293
@@ -4136,7 +4196,7 @@ msgstr ""
 msgid "Snapping value is incorrect."
 msgstr ""
 
-#: FProjectProperty.class:408 Project.module:3296
+#: FProjectProperty.class:408 Project.module:3297
 msgid "Some components are missing: &1"
 msgstr ""
 
@@ -4748,7 +4808,7 @@ msgstr ""
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:1113 Project.module:4316
+#: FTranslate.class:1113 Project.module:4317
 msgid "The '&1' command has failed."
 msgstr ""
 
@@ -6399,124 +6459,124 @@ msgstr ""
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:2868
+#: Project.module:2869
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:2912
+#: Project.module:2913
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:3487
+#: Project.module:3488
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:3529
+#: Project.module:3530
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:3775
+#: Project.module:3776
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3792
+#: Project.module:3793
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3823
+#: Project.module:3824
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3827
+#: Project.module:3828
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3831
+#: Project.module:3832
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3835
+#: Project.module:3836
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3871
+#: Project.module:3872
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3919
+#: Project.module:3920
 msgid "Destination already exists."
 msgstr ""
 
-#: Project.module:4131
+#: Project.module:4132
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:4247
+#: Project.module:4248
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:4255
+#: Project.module:4256
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:4258
+#: Project.module:4259
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:4259
+#: Project.module:4260
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:4266
+#: Project.module:4267
 msgid "This project already exists."
 msgstr ""
 
-#: Project.module:4269
+#: Project.module:4270
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:4271
+#: Project.module:4272
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:4327
+#: Project.module:4328
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4350
+#: Project.module:4351
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:4642
+#: Project.module:4643
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4690
+#: Project.module:4691
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4705
+#: Project.module:4706
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4773
+#: Project.module:4774
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:5305
+#: Project.module:5306
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5311
+#: Project.module:5312
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5341
+#: Project.module:5342
 msgid "Unable to convert &1"
 msgstr ""
 

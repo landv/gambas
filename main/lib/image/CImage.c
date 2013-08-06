@@ -160,6 +160,28 @@ BEGIN_METHOD(Image_Mask, GB_INTEGER color)
 
 END_METHOD
 
+// Parameter correction
+#define CHECK_PARAMETERS(dst, dx, dy, dw, dh, src, sx, sy, sw, sh) \
+	if ( sw < 0 ) sw = src->width; \
+	if ( sh < 0 ) sh = src->height; \
+	if (dw < 0) dw = sw; \
+	if (dh < 0) dh = sh; \
+	if (dw != sw || dh != sh) \
+	{ \
+		GB.Error("Stretching images is not implemented in gb.image"); \
+		return; \
+	} \
+	if ( sx < 0 ) { dx -= sx; dw += sx; sw += sx; sx = 0; } \
+	if ( sy < 0 ) { dy -= sy; dh += sy; sh += sy; sy = 0; } \
+	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; } \
+	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; } \
+	if ( (sx + sw) > src->width ) sw = src->width - sx; \
+	if ( (sy + sh) > src->height ) sh = src->height - sy; \
+	if ( (dx + sw) > dst->width ) sw = dst->width - dx; \
+	if ( (dy + sh) > dst->height ) sh = dst->height - dy; \
+	if (sw <= 0 || sh <= 0) \
+		return;
+
 BEGIN_METHOD(Image_Copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	CIMAGE *image;
@@ -168,10 +190,16 @@ BEGIN_METHOD(Image_Copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 	int w = VARGOPT(w, THIS_IMAGE->width);
 	int h = VARGOPT(h, THIS_IMAGE->height);
 
+	if (x < 0) { w += x; x = 0; }
+	if (y < 0) { h += y; y = 0; }
+	if ((x + w) > THIS_IMAGE->width) { w = THIS_IMAGE->width - x; }
+	if ((y + h) > THIS_IMAGE->height) { h = THIS_IMAGE->height - y; }
+
 	image = GB.New(GB.FindClass("Image"), NULL, NULL);
 
 	IMAGE_create(&image->image, w, h, THIS_IMAGE->format);
-	IMAGE_bitblt(&image->image, 0, 0, -1, -1, THIS_IMAGE, x, y, w, h);
+	if (w > 0 && h > 0)
+		IMAGE_bitblt(&image->image, 0, 0, -1, -1, THIS_IMAGE, x, y, w, h);
 
 	GB.ReturnObject(image);
 
@@ -402,6 +430,15 @@ BEGIN_PROPERTY(Image_Pixels)
 
 END_PROPERTY
 
+BEGIN_METHOD(Image_BrightnessContrat, GB_FLOAT brightness; GB_FLOAT contrast)
+
+	IMAGE_balance(THIS_IMAGE, VARG(brightness) * 255, VARG(contrast) * 255, 0, 0);
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+//---------------------------------------------------------------------------
+
 GB_DESC CImageDesc[] =
 {
 	GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -452,6 +489,7 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("PaintImage", "Image", Image_PaintImage, "(Image)Image;[(X)i(Y)i(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 	
 	GB_METHOD("Fuzzy", "Image", Image_Blur, "[(Radius)i]"),
+	GB_METHOD("BrightnessContrast", "Image", Image_BrightnessContrat, "(Brightness)f(Contrats)f"),
 	
 	GB_END_DECLARE
 };

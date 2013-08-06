@@ -66,6 +66,7 @@ Public Sub txtWidth_Change()
       txtHeight.Value = txtWidth.Value / $fProp
     Endif
     Object.Unlock(txtHeight)
+    UpdateRatio
   Endif
 
 End
@@ -80,6 +81,7 @@ Public Sub txtHeight_Change()
       txtWidth.Value = txtHeight.Value * $fProp
     Endif
     Object.Unlock(txtWidth)
+    UpdateRatio
   Endif
 
 End
@@ -98,5 +100,47 @@ Public Sub radResize_Click()
     $bBorder = optBorder.Value
     
   Endif
+  
+  UpdateRatio
     
+End
+
+Public Sub btnSync_Click()
+
+  UpdateRatio
+
+End
+
+Private Sub UpdateRatio()
+
+  txtRatio.Enabled = btnSync.Value And Not $bBorder
+  
+  Object.Lock(txtRatio)
+  
+  If txtRatio.Enabled Then
+    txtRatio.Text = CInt(txtWidth.Value / ImageWidth * 100 + 0.5)
+  Else
+    txtRatio.Text = ""
+  Endif
+
+  Object.Unlock(txtRatio)
+  
+End
+
+Public Sub txtRatio_Change()
+
+  Dim fRatio As Float
+  
+  Try fRatio = CInt(txtRatio.Text) / 100
+  If Error Then Return
+
+  Object.Lock(txtWidth)
+  Object.Lock(txtHeight)
+
+  txtWidth.Value = CInt(ImageWidth * fRatio)
+  txtHeight.Value = CInt(ImageHeight * fRatio)
+
+  Object.Unlock(txtWidth)
+  Object.Unlock(txtHeight)
+
 End

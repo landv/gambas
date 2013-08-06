@@ -26,18 +26,6 @@
 #include <math.h>
 #include "c_color.h"
 
-/*static void gt_color_to_rgb(uint color, int *r, int *g, int *b)
-{
-	*b = color & 0xFF;
-	*g = (color >> 8) & 0xFF;
-	*r = (color >> 16) & 0xFF;
-}
-
-static uint gt_rgb_to_color(int r, int g, int b)
-{
-	return (uint)(b | (g << 8) | (r << 16));
-}*/
-
 void gt_color_to_rgba(uint color, int *r, int *g, int *b, int *a)
 {
 	*b = color & 0xFF;
@@ -53,35 +41,31 @@ static uint gt_rgba_to_color(int r, int g, int b, int a)
 
 void COLOR_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V)
 {
-	float R, G, B;
-	float v, x, f;
+	int v, x, f;
 	int i;
 
-	R = (float)r / 255;
-	G = (float)g / 255;
-	B = (float)b / 255;
+	x = r;
+	if (g < x) x = g;
+	if (b < x) x = b;
 
-	x = R;
-	if (G < x) x = G;
-	if (B < x) x = B;
-
-	v = R;
-	if (G > v) v = G;
-	if (B > v) v = B;
+	v = r;
+	if (g > v) v = g;
+	if (b > v) v = b;
 
 	if (v == x) 
 	{
 		*H = -1;
 		*S = 0;
-		*V = (int)(v * 255);
+		*V = v;
 	}
 	else
 	{
-		f = (R == x) ? G - B : ((G == x) ? B - R : R - G);
-		i = (R == x) ? 3 : ((G == x) ? 5 : 1);
-		*H = (int)((i - f / (v - x)) * 60);
-		*S = (int)(((v - x) / v) * 255);
-		*V = (int)(v * 255);
+		f = (r == x) ? g - b : ((g == x) ? b - r : r - g);
+		i = (r == x) ? 3 : ((g == x) ? 5 : 1);
+		*H = (int)((i - (float)f / (v - x)) * 60);
+		*S = ((v - x) * 255) / v;
+		*V = v;
+		if (*H == 360) *H = 0;
 	}	
 }
 
@@ -109,74 +93,82 @@ static void gt_rgb_to_hsv_cached(int r, int g, int b, int *h, int *s, int *v)
 
 void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 {
-	 double H,S,V;
-	 double var_h, var_i, var_1, var_2, var_3, tmp_r, tmp_g, tmp_b;
+	double var_h;
+	int var_i;
+	int var_1, var_2, var_3;
+	int tmp_r, tmp_g, tmp_b;
 
 	if (h < 0)
 		h = 360 - ((-h) % 360);
 	else
 		h = h % 360;
 
-	 H = ((double)h) / 360;
+	 /*H = ((double)h) / 360;
 	 S = ((double)s) / 255;
-	 V = ((double)v) / 255;
+	 V = ((double)v) / 255;*/
 
 	if (s == 0)
 	{
-		*R = (int)(V * 255);
-		*G = (int)(V * 255);
-		*B = (int)(V * 255);
+		*R = v;
+		*G = v;
+		*B = v;
 	}
 	else
 	{
-		var_h = H * 6;
-		var_i = (int)var_h;
-		var_1 = V * ( 1 - S );
-		var_2 = V * ( 1 - S * ( var_h - var_i ) );
-		var_3 = V * ( 1 - S * ( 1 - ( var_h - var_i ) ) );
+		var_i = h / 60;
+		var_h = h % 60; //((double)h / 60) - var_i;
 
-		switch ((int)var_i)
+		//var_1 = V * ( 1 - S );
+		var_1 = v * (255 - s) / 255;
+
+		//var_2 = V * ( 1 - S * ( var_h - var_i ) );
+		var_2 = v * (255 - s * var_h / 60) / 255;
+
+		//var_3 = V * ( 1 - S * ( 1 - ( var_h - var_i ) ) );
+		var_3 = v * (255 - s * (60 - var_h) / 60) / 255;
+
+		switch (var_i)
 		{
 			case 0:
-				tmp_r = V;
+				tmp_r = v;
 				tmp_g = var_3;
 				tmp_b = var_1;
 				break;
 
 			case 1:
 				tmp_r = var_2;
-				tmp_g = V;
+				tmp_g = v;
 				tmp_b = var_1;
 				break;
 
 			case 2:
 				tmp_r = var_1;
-				tmp_g = V;
+				tmp_g = v;
 				tmp_b = var_3;
 				break;
 
 			case 3:
 				tmp_r = var_1;
 				tmp_g = var_2;
-				tmp_b = V;
+				tmp_b = v;
 				break;
 
 			case 4:
 				tmp_r = var_3;
 				tmp_g = var_1;
-				tmp_b = V;
+				tmp_b = v;
 				break;
 
 			default:
-				tmp_r = V;
+				tmp_r = v;
 				tmp_g = var_1;
 				tmp_b = var_2;
 				break;
 		}
 
-		*R = (int)(tmp_r * 255);
-		*G = (int)(tmp_g * 255);
-		*B = (int)(tmp_b * 255);
+		*R = tmp_r;
+		*G = tmp_g;
+		*B = tmp_b;
 
 	}
 }

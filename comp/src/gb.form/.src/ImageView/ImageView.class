@@ -7,7 +7,7 @@ Public Const _Properties As String = "*,Border=True,Grid,UseMouse=True"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "View"
 
-Event Draw
+Event Draw(View As Image)
 Event Scroll
 
 Property Border As Boolean
@@ -16,6 +16,8 @@ Property Zoom As Float
 Property Design As Boolean
 Property Grid As Boolean
 Property UseMouse As Boolean
+Property Brightness As Float
+Property Contrast As Float
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -34,6 +36,9 @@ Private $fZoom As Float = 1
 Private $bZoom As Boolean
 Private $bFastZoom As Boolean
 Private $bGrid As Boolean
+
+Private $fBrightness As Float
+Private $fContrast As Float
 
 Public Sub _new()
   
@@ -150,27 +155,31 @@ Public Sub ImageToView(ImagePoint As Point) As Point
   
 End
 
+Public Sub _Paint(hImage As Image, X As Integer, Y As Integer)
+  
+  Dim hRect As Rect
+  
+  If Not hImage Then Return
+  
+  If $bZoom Then
+    If $bFastZoom Then
+      Paint.ZoomImage(hImage, $fZoom, X, Y, If($bGrid, Color.LightForeground, Color.Default))
+    Else
+      hRect = GetViewRect()
+      Paint.DrawImage(hImage, X, Y, hRect.W, hRect.H)
+    Endif
+  Else
+    Paint.DrawImage(hImage, X, Y)
+  Endif
+  
+End
+
+
 Public Sub View_Draw()
   
   Dim hRect As Rect = GetViewRect()
-  
-  If Not hRect Then Return
-  
-  With hRect
-  
-    If $bZoom Then
-      If $bFastZoom Then
-        Paint.ZoomImage($hZoom, $fZoom, .X, .Y, If($bGrid, Color.LightForeground, Color.Default))
-      Else
-      Paint.DrawImage($hZoom, .X, .Y, .W, .H)
-      Endif
-    Else
-      Paint.DrawImage($hZoom, .X, .Y)
-    Endif
-  
-  End With
-  
-  Raise Draw
+  If hRect Then _Paint($hZoom, hRect.X, hRect.Y)
+  Raise Draw($hZoom)
   
 End
 
@@ -234,14 +243,19 @@ Private Sub UpdateZoom()
   $bZoom = False
   $bFastZoom = False
   
+  $hZoom = $hImage
   If $fZoom = 1 Then
-    $hZoom = $hImage
-  Else If $fZoom < 1 Then
-    $hZoom = $hImage.Stretch($hImage.W * $fZoom, $hImage.H * $fZoom)
+  'Else If $fZoom < 1 Then
+  '  $hZoom = $hImage.Stretch($hImage.W * $fZoom, $hImage.H * $fZoom)
   Else 
     $hZoom = $hImage
     $bZoom = True
     If Int($fZoom) = $fZoom Then $bFastZoom = True
+  Endif
+  
+  If $fContrast Or If $fBrightness Then
+    $hZoom = $hZoom.Copy()
+    $hZoom.BrightnessContrast($fBrightness, $fContrast)
   Endif
   
   View_Arrange
@@ -362,4 +376,32 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   $hView.EnsureVisible(X, Y, W, H)
   
+End
+
+Private Function Brightness_Read() As Float
+
+  Return $fBrightness
+
+End
+
+Private Sub Brightness_Write(Value As Float)
+
+  If $fBrightness = Value Then Return
+  $fBrightness = Value
+  UpdateZoom
+
+End
+
+Private Function Contrast_Read() As Float
+
+  Return $fContrast
+
+End
+
+Private Sub Contrast_Write(Value As Float)
+
+  If $fContrast = Value Then Return
+  $fContrast = Value
+  UpdateZoom
+
 End

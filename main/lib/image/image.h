@@ -79,6 +79,7 @@ void IMAGE_rotate(GB_IMG *src, GB_IMG *dst, bool left);
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
 void IMAGE_set_opacity(GB_IMG *dst, uchar opacity);
 void IMAGE_blur(GB_IMG *img, int radius);
+void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int hue, int saturation);
 
 #define IMAGE_is_void(_image) ((_image)->is_void)
 
