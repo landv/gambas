@@ -13,33 +13,40 @@
     MoveScaled(11,5,23,0)
   }
   { tabBrush TabPanel
-    MoveScaled(0,6,61,58)
+    MoveScaled(1,6,61,57)
     Arrangement = Arrange.Vertical
-    Spacing = True
     Border = False
     Count = 3
     Index = 0
     Text = ("Color")
     { Panel3 Panel
-      MoveScaled(2,2,54,50)
+      MoveScaled(2,2,54,43)
       Expand = True
       Arrangement = Arrange.Vertical
       Spacing = True
       Margin = True
       { cchColor ColorChooser
-        MoveScaled(0,0,47,43)
+        MoveScaled(0,0,47,41)
         Expand = True
         Border = False
       }
-      { dwgColor DrawingArea
-        MoveScaled(0,45,45,4)
+    }
+    { Separator8 Separator
+      MoveScaled(25,46,28,0)
+    }
+    { Panel8 Panel
+      MoveScaled(3,47,46,6)
+      Arrangement = Arrange.Fill
+      Margin = True
+      { dwgColorStack DrawingArea
+        MoveScaled(0,0,45,4)
         Mouse = Mouse.Pointing
       }
     }
     Index = 1
     Text = ("Gradient")
     { Panel4 Panel
-      MoveScaled(1,1,55,52)
+      MoveScaled(1,1,55,42)
       Expand = True
       Arrangement = Arrange.Vertical
       Spacing = True
@@ -121,13 +128,45 @@
       { panGradient Panel
         MoveScaled(0,18,47,24)
         Expand = True
+        Spacing = True
         { dwgGradient DrawingArea
           MoveScaled(0,0,35,20)
           Border = Border.Plain
         }
+        { panGradientToolbar VBox
+          MoveScaled(39,0,4,18)
+          { btnRotateR ToolButton
+            MoveScaled(0,0,4,4)
+            ToolTip = ("Rotate clockwise")
+            Picture = Picture["icon:/small/rotate-right"]
+          }
+          { btnRotateL ToolButton
+            MoveScaled(0,4,4,4)
+            ToolTip = ("Rotate counter-clockwise")
+            Picture = Picture["icon:/small/rotate-left"]
+          }
+          { btnFlipV ToolButton
+            MoveScaled(0,8,4,4)
+            ToolTip = ("Vertical flip")
+            Picture = Picture["icon:/small/flip-v"]
+          }
+          { btnFlipH ToolButton
+            MoveScaled(0,12,4,4)
+            ToolTip = ("Horizontal flip")
+            Picture = Picture["icon:/small/flip-h"]
+          }
+        }
       }
+    }
+    { Separator7 Separator
+      MoveScaled(13,46,17,0)
+    }
+    { Panel9 Panel
+      MoveScaled(5,47,46,6)
+      Arrangement = Arrange.Fill
+      Margin = True
       { dwgGradientStack DrawingArea
-        MoveScaled(0,47,45,4)
+        MoveScaled(0,0,45,4)
         Mouse = Mouse.Pointing
       }
     }

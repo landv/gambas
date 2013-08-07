@@ -1,8 +1,7 @@
 ' Gambas class file
 
-Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP
+Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP, ACTION_EXTENT
 Public Const ACTION_GRADIENT As Integer = 32
-Public Const ACTION_EXTENT As Integer = 64
 
 Private Enum CMD_MOVE_TO, CMD_LINE_TO, CMD_RECTANGLE, CMD_ELLIPSE
 
@@ -11,7 +10,7 @@ Public _X As New Integer[]
 Public _Y As New Integer[]
 Public _Invert As Boolean
 Public _Magnets As New Point[]
-Public _Extent As New Rect
+'Public _Extent As New Rect
 
 Private $hExtents As PaintExtents
 
@@ -39,7 +38,7 @@ Public Sub Paint(hImage As Image, iAction As Integer)
   Dim bExtent As Boolean
   Dim bGradient As Boolean
   
-  bExtent = iAction And ACTION_EXTENT
+  bExtent = iAction = ACTION_EXTENT
   bGradient = iAction And ACTION_GRADIENT
   iAction = iAction And 7
   
@@ -201,7 +200,7 @@ Public Sub Copy() As CImageSelection
   hSelect._X = _X.Copy()
   hSelect._Y = _Y.Copy()
   hSelect._Invert = _Invert
-  hSelect._Extent = _Extent.Copy()
+  'hSelect._Extent = _Extent.Copy()
   hSelect._Magnets = New Point[_Magnets.Count]
   For I = 0 To _Magnets.Max
     hSelect._Magnets[I] = _Magnets[I].Copy()
@@ -229,7 +228,7 @@ Public Sub Clear()
   _Cmd.Clear
   _X.Clear
   _Y.Clear
-  _Extent.Clear
+  '_Extent.Clear
   
 End
 
@@ -252,10 +251,44 @@ Private Sub AddMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Int
   
 End
 
+Private Sub RemoveMagnet(X As Integer, Y As Integer)
+
+  Dim I As Integer
+  
+  While I < _Magnets.Count
+    If _Magnets[I].X = X And If _Magnets[I].Y = Y Then
+      _Magnets.Remove(I)
+    Else
+      Inc I
+    Endif
+  Wend
+    
+End
+
+
+Private Sub RemoveMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  RemoveMagnet(X, Y)
+  
+  RemoveMagnet(X + W \ 2, Y)
+  RemoveMagnet(X + W, Y)
+  
+  RemoveMagnet(X + W, Y + H \ 2)
+  RemoveMagnet(X + W, Y + H)
+  
+  RemoveMagnet(X + W \ 2, Y + H)
+  RemoveMagnet(X, Y + H)
+  
+  RemoveMagnet(X, Y + H \ 2)
+  
+  RemoveMagnet(X + W \ 2, Y + H \ 2)
+  
+End
+
 
 Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, bNoMagnet As Boolean)
 
-  If W < 1 Or If H < 1 Then Return
+  If W = 0 Or If H = 0 Then Return
   
   _Cmd.Add(iCmd)
   _Cmd.Add(iCmd)
@@ -286,7 +319,7 @@ Public Sub FindMagnet(X As Integer, Y As Integer, D As Float) As Point
   Dim fDist, fDistMin As Float
   Dim hPointMin As Point
   
-  fDistMin = 10
+  fDistMin = 1000
   
   For Each hPoint In _Magnets
     
@@ -309,9 +342,17 @@ Public Sub IsInverted() As Boolean
   
 End
 
-Public Sub GetExtents() As PaintExtents
+Public Sub GetExtents(hImage As Image) As PaintExtents
   
-  Dim hExt As PaintExtents = $hExtents
+  Dim hExt As PaintExtents
+
+  Paint.Save
+  Paint.Reset
+  Paint(hImage, ACTION_EXTENT)
+  Paint.Restore
+
+  hExt As PaintExtents = $hExtents
+
   $hExtents = Null
   Return hExt
   
@@ -333,5 +374,72 @@ Public Sub AddMagnetFromLast()
     Case CMD_ELLIPSE, CMD_RECTANGLE
       AddMagnetFromRect(_X[_X.Max - 1], _Y[_Y.Max - 1], _X[_X.Max], _Y[_Y.Max])
   End Select
+  
+End
+
+Private Sub Remove(I As Integer)
+
+  If _Cmd[I] = CMD_ELLIPSE Or If _Cmd[I] = CMD_RECTANGLE Then
+    RemoveMagnetFromRect(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
+    _Cmd.Remove(I)
+    _X.Remove(I)
+    _Y.Remove(I)
+  Else
+    RemoveMagnet(_X[I], _Y[I])
+  Endif
+
+  _Cmd.Remove(I)
+  _X.Remove(I)
+  _Y.Remove(I)
+
+End
+
+Public Sub Enlarge(iSize As Integer, bDup As Boolean)
+  
+  Dim I As Integer
+  
+  If iSize = 0 Then Return
+  If _Invert Then iSize = - iSize
+  
+  If bDup Then
+    
+    For I = 0 To _Cmd.Max
+
+      Select Case _Cmd[I]
+        
+        Case CMD_ELLIPSE, CMD_RECTANGLE
+          AddRect(_Cmd[I], _X[I] - iSize, _Y[I] - iSize, _X[I + 1] + iSize * 2, _Y[I + 1] + iSize * 2, False)
+          Inc I
+          
+      End Select
+      
+    Next
+    
+  Else
+    
+    I = 0
+    While I < _Cmd.Count
+      
+      Select Case _Cmd[I]
+        
+        Case CMD_ELLIPSE, CMD_RECTANGLE
+          _X[I] -= iSize
+          _Y[I] -= iSize
+          _X[I + 1] += iSize * 2
+          _Y[I + 1] += iSize * 2
+          
+          If _X[I + 1] <= 0 Or If _Y[I + 1] <= 0 Then 
+            Remove(I)
+            Continue
+          Endif
+          Inc I
+        
+      End Select
+      
+      Inc I
+      
+    Wend
+    
+  Endif
   
 End

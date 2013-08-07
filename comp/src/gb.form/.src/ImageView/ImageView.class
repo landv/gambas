@@ -153,7 +153,7 @@ Public Sub ImageToView(ImagePoint As Point) As Point
   
 End
 
-Public Sub _Paint(hImage As Image, X As Integer, Y As Integer)
+Public Sub _Paint(hImage As Image, X As Float, Y As Float)
   
   Dim hRect As Rect
   
@@ -164,7 +164,7 @@ Public Sub _Paint(hImage As Image, X As Integer, Y As Integer)
       Paint.ZoomImage(hImage, $fZoom, X, Y, If($bGrid, Color.LightForeground, Color.Default))
     Else
       hRect = GetViewRect()
-      Paint.DrawImage(hImage, X, Y, hRect.W, hRect.H)
+      Paint.DrawImage(hImage, X, Y, hImage.W * $fZoom, hImage.H * $fZoom) 'hRect.W, hRect.H)
     Endif
   Else
     Paint.DrawImage(hImage, X, Y)
@@ -242,11 +242,8 @@ Private Sub UpdateZoom()
   $bFastZoom = False
   
   $hZoom = $hImage
-  If $fZoom = 1 Then
-  'Else If $fZoom < 1 Then
-  '  $hZoom = $hImage.Stretch($hImage.W * $fZoom, $hImage.H * $fZoom)
-  Else 
-    $hZoom = $hImage
+  
+  If $fZoom <> 1 Then
     $bZoom = True
     If Int($fZoom) = $fZoom Then $bFastZoom = True
   Endif

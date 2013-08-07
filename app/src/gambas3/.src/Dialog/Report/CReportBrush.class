@@ -16,17 +16,55 @@ Public Colors As Integer[] = [0, &HFFFFFF&]
 Public Positions As Float[] = [0, 1]
 Public Path As String
 
-Public Function _PaintBrush(iX1 As Integer, iY1 As Integer, iX2 As Integer, iY2 As Integer) As PaintBrush
+' Private Sub RemoveOpacity(aColor As Integer[]) As Integer[]
+' 
+'   Dim I As Integer
+'   
+'   aColor = aColor.Copy()
+'   For I = 0 To aColor.Max
+'     aColor[I] = aColor[I] And &HFFFFFF&
+'   Next
+'   
+'   Return aColor
+' 
+' End
+
+Public Sub Copy() As CReportBrush
+  
+  Dim hBrush As New CReportBrush
+  
+  With hBrush
+    .Type = Type
+    .X1 = X1
+    .X2 = X2
+    .Y1 = Y1
+    .Y2 = Y2
+    .Radius = Radius
+    .Color = Color
+    .Colors = Colors.Copy()
+    .Positions = Positions.Copy()
+    .Path = Path
+  End With
+  
+  Return hBrush
+  
+End
+
+
+Public Function GetBrush(iX1 As Integer, iY1 As Integer, iX2 As Integer, iY2 As Integer) As PaintBrush
   
   Dim hBrush As PaintBrush
   Dim hImage As Image
   Dim fRadius As Float
   Dim Width As Integer = iX2 - iX1
   Dim Height As Integer = iY2 - iY1
+  Dim aColor As Integer[]
   
   Select Case Me.Type
+    
     Case TYPE_COLOR
       hBrush = Paint.Color(Color)
+    
     Case TYPE_IMAGE
       Try hImage = Image.Load(Project.Dir &/ Path)
       If hImage Then
@@ -34,16 +72,34 @@ Public Function _PaintBrush(iX1 As Integer, iY1 As Integer, iX2 As Integer, iY2 
       Else
         hBrush = Paint.Color(Color.Gray)
       Endif
+    
     Case TYPE_LINEAR_GRADIENT
-      hBrush = Paint.LinearGradient(Width * X1, Height * Y1, Width * X2, Height * Y2, Colors, Positions)
+      aColor = Colors
+      'If bIgnoreOpacity Then aColor = RemoveOpacity(aColor)
+      hBrush = Paint.LinearGradient(Width * X1, Height * Y1, Width * X2, Height * Y2, aColor, Positions)
+    
     Case TYPE_RADIAL_GRADIENT
       fRadius = Width * Radius
-      hBrush = Paint.RadialGradient(Width * X1, Height * Y1, fRadius, Width * X2, Height * Y2, Colors, Positions)
+      aColor = Colors
+      'If bIgnoreOpacity Then aColor = RemoveOpacity(aColor)
+      hBrush = Paint.RadialGradient(Width * X1, Height * Y1, fRadius, Width * X2, Height * Y2, aColor, Positions)
+  
   End Select
   
   Return hBrush
   
 End
+
+Public Sub _compare(hBrush As CReportBrush) As Integer
+  
+  If hBrush.ToString() = ToString() Then 
+    Return 0
+  Else
+    Return Comp(Object.Address(Me), Object.Address(hBrush))
+  Endif
+  
+End
+
 
 Static Public Sub _get(sValue As String) As CReportBrush
   

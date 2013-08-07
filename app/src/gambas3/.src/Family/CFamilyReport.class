@@ -91,7 +91,7 @@ Static Public Sub PaintBorder(sBorder As String) As Float
       If ars[0] = "top" Or If ars[0] = "border" Then
         ars2 = Split(ars[1], " ")
         Try Paint.LineWidth = CFamilyReport.ToPixel(ars2[0])
-        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Try Paint.Brush = CReportBrush[ars2[1]].GetBrush(0, 0, Paint.Width, Paint.Height)
       Endif
       
       For B = 0 To 3
@@ -120,7 +120,7 @@ Static Public Sub PaintBorder(sBorder As String) As Float
       ars2 = Split(ars[1], " ")
       ars[0] = Trim(ars[0])
 
-      Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+      Try Paint.Brush = CReportBrush[ars2[1]].GetBrush(0, 0, Paint.Width, Paint.Height)
       Try fWidth = CFamilyReport.ToPixel(ars2[0])
       
       If ars[0] = "left" Or If ars[0] = "border" Then
@@ -172,7 +172,7 @@ Private Sub GetBrush(hCtrl As CControl)
   While hCtrl
 
     If hCtrl["Brush"] Then
-      Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+      Paint.Brush = CReportBrush[hCtrl["Brush"]].GetBrush(0, 0, Paint.Width, Paint.Height)
       Return
     Endif
 
@@ -254,7 +254,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   If Draw.Device Then Paint.Begin(Draw.Device)
 
   If hCtrl["Background"] Then
-    Paint.Brush = CReportBrush[hCtrl["Background"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+    Paint.Brush = CReportBrush[hCtrl["Background"]].GetBrush(0, 0, Paint.Width, Paint.Height)
     Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
     Paint.Fill
   Endif
