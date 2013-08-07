@@ -27,6 +27,15 @@
 #include "image.h"
 #include "CImage.h"
 
+static int _balance = 0;
+
+static double _brightness = 0;
+static double _contrast = 0;
+static double _gamma = 0;
+static double _hue = 0;
+static double _saturation = 0;
+static double _lightness = 0;
+
 BEGIN_METHOD(Image_new, GB_INTEGER w; GB_INTEGER h; GB_INTEGER col; GB_INTEGER format)
 
 	int format = IMAGE_get_default_format();
@@ -430,12 +439,98 @@ BEGIN_PROPERTY(Image_Pixels)
 
 END_PROPERTY
 
-BEGIN_METHOD(Image_BrightnessContrat, GB_FLOAT brightness; GB_FLOAT contrast)
+BEGIN_METHOD_VOID(Image_BeginBalance)
 
-	IMAGE_balance(THIS_IMAGE, VARG(brightness) * 255, VARG(contrast) * 255, 0, 0);
+	_balance++;
+	GB.ReturnObject(THIS);
+
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Image_EndBalance)
+
+	if (_balance <= 0)
+	{
+		GB.Error("Missing call to BeginBalance");
+		return;
+	}
+
+	_balance--;
+
+	if (_balance == 0)
+		IMAGE_balance(THIS_IMAGE, _brightness * 255, _contrast * 255, _gamma * 255, _hue * 180, _saturation * 255, _lightness * 255);
+
 	GB.ReturnObject(THIS);
 
 END_METHOD
+
+BEGIN_METHOD(Image_Brightness, GB_FLOAT value)
+
+	if (_balance)
+		_brightness = VARG(value);
+	else
+		IMAGE_balance(THIS_IMAGE, VARG(value) * 255, 0, 0, 0, 0, 0);
+
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD(Image_Contrast, GB_FLOAT value)
+
+	if (_balance)
+		_contrast = VARG(value);
+	else
+		IMAGE_balance(THIS_IMAGE, 0, VARG(value) * 255, 0, 0, 0, 0);
+
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD(Image_Gamma, GB_FLOAT value)
+
+	if (_balance)
+		_gamma = VARG(value);
+	else
+		IMAGE_balance(THIS_IMAGE, 0, 0, VARG(value) * 255, 0, 0, 0);
+
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD(Image_Hue, GB_FLOAT value)
+
+	if (_balance)
+		_hue = VARG(value);
+	else
+		IMAGE_balance(THIS_IMAGE, 0, 0, 0, VARG(value) * 180, 0, 0);
+
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD(Image_Saturation, GB_FLOAT value)
+
+	if (_balance)
+		_saturation = VARG(value);
+	else
+		IMAGE_balance(THIS_IMAGE, 0, 0, 0, 0, VARG(value) * 255, 0);
+
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD(Image_Lightness, GB_FLOAT value)
+
+	if (_balance)
+		_lightness = VARG(value);
+	else
+		IMAGE_balance(THIS_IMAGE, 0, 0, 0, 0, 0, VARG(value) * 255);
+
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
+
 
 //---------------------------------------------------------------------------
 
@@ -489,8 +584,16 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("PaintImage", "Image", Image_PaintImage, "(Image)Image;[(X)i(Y)i(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 	
 	GB_METHOD("Fuzzy", "Image", Image_Blur, "[(Radius)i]"),
-	GB_METHOD("BrightnessContrast", "Image", Image_BrightnessContrat, "(Brightness)f(Contrats)f"),
-	
+
+	GB_METHOD("BeginBalance", "Image", Image_BeginBalance, NULL),
+	GB_METHOD("Brightness", "Image", Image_Brightness, "(Brightness)f"),
+	GB_METHOD("Contrast", "Image", Image_Contrast, "(Contrast)f"),
+	GB_METHOD("Gamma", "Image", Image_Gamma, "(Gamma)f"),
+	GB_METHOD("Hue", "Image", Image_Hue, "(Hue)f"),
+	GB_METHOD("Saturation", "Image", Image_Saturation, "(Saturation)f"),
+	GB_METHOD("Lightness", "Image", Image_Lightness, "(Lightness)f"),
+	GB_METHOD("EndBalance", "Image", Image_EndBalance, NULL),
+
 	GB_END_DECLARE
 };
 	

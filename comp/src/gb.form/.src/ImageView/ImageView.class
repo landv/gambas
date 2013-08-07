@@ -16,8 +16,6 @@ Property Zoom As Float
 Property Design As Boolean
 Property Grid As Boolean
 Property UseMouse As Boolean
-Property Brightness As Float
-Property Contrast As Float
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -37,8 +35,8 @@ Private $bZoom As Boolean
 Private $bFastZoom As Boolean
 Private $bGrid As Boolean
 
-Private $fBrightness As Float
-Private $fContrast As Float
+' Private $fBrightness As Float
+' Private $fContrast As Float
 
 Public Sub _new()
   
@@ -253,10 +251,10 @@ Private Sub UpdateZoom()
     If Int($fZoom) = $fZoom Then $bFastZoom = True
   Endif
   
-  If $fContrast Or If $fBrightness Then
-    $hZoom = $hZoom.Copy()
-    $hZoom.BrightnessContrast($fBrightness, $fContrast)
-  Endif
+  ' If $fContrast Or If $fBrightness Then
+  '   $hZoom = $hZoom.Copy()
+  '   $hZoom.BrightnessContrast($fBrightness, $fContrast)
+  ' Endif
   
   View_Arrange
   $hView.Refresh
@@ -378,30 +376,30 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
 End
 
-Private Function Brightness_Read() As Float
-
-  Return $fBrightness
-
-End
-
-Private Sub Brightness_Write(Value As Float)
-
-  If $fBrightness = Value Then Return
-  $fBrightness = Value
-  UpdateZoom
-
-End
-
-Private Function Contrast_Read() As Float
-
-  Return $fContrast
-
-End
-
-Private Sub Contrast_Write(Value As Float)
-
-  If $fContrast = Value Then Return
-  $fContrast = Value
-  UpdateZoom
-
-End
+' Private Function Brightness_Read() As Float
+' 
+'   Return $fBrightness
+' 
+' End
+' 
+' Private Sub Brightness_Write(Value As Float)
+' 
+'   If $fBrightness = Value Then Return
+'   $fBrightness = Value
+'   UpdateZoom
+' 
+' End
+' 
+' Private Function Contrast_Read() As Float
+' 
+'   Return $fContrast
+' 
+' End
+' 
+' Private Sub Contrast_Write(Value As Float)
+' 
+'   If $fContrast = Value Then Return
+'   $fContrast = Value
+'   UpdateZoom
+' 
+' End

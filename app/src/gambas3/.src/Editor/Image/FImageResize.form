@@ -83,8 +83,9 @@
   }
   { txtRatio ComboBox
     MoveScaled(16,11,11,4)
-    List = [("25"), ("33"), ("50"), ("66"), ("100"), ("150"), ("200"), ("300"), ("400")]
-    Text = ("100")
+    #Translate = False
+    List = ["25", "33", "50", "66", "100", "150", "200", "300", "400"]
+    Text = "100"
   }
   { Label4 Label
     MoveScaled(28,1,3,4)
@@ -96,6 +97,7 @@
   }
   { Label6 Label
     MoveScaled(28,11,3,4)
-    Text = ("%")
+    #Translate = False
+    Text = "%"
   }
 }

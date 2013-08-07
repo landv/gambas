@@ -2052,13 +2052,18 @@ static inline int get_contrast(int base, int strength)
 	return between0And255 ((base - 127) * (strength + 255) / 255 + 127);
 }
 
-/*static inline int gamma (int base, int strength)
+static inline int myRound(double d)
 {
-	return between0And255 (myRound(255.0 * pow (base / 255.0, 1.0 / pow (10, strength / 50.0))));
-}*/
+	return d >= 0.0 ? (int)(d + 0.5) : (int)( d - ((int)d-1) + 0.5 ) + ((int)d-1);
+}
+
+static inline int get_gamma (int base, int strength)
+{
+	return between0And255(myRound(255.0 * pow(base / 255.0, 1.0 / pow(10, strength / 255.0))));
+}
 
 
-void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int hue, int saturation)
+void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int gamma, int hue, int saturation, int lightness)
 {
 	GET_POINTER(img, p, pm);
 	uint col;
@@ -2067,34 +2072,175 @@ void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int hue, int satur
 	//int hcol, scol, vcol;
 	int format = img->format;
 	int i;
-	uchar trgb[256];
 	uchar *pp;
 
 	SYNCHRONIZE(img);
 
-	for (i = 0; i < 256; i++)
-		trgb[i] = get_contrast(get_brightness(i, brightness), contrast);
-
-	if (img->format == GB_IMAGE_BGRA || img->format == GB_IMAGE_RGBA)
+	if (brightness || contrast || gamma)
 	{
-		while (p != pm)
+		uchar trgb[256];
+
+		for (i = 0; i < 256; i++)
+			trgb[i] = get_gamma(get_contrast(get_brightness(i, brightness), contrast), gamma);
+
+		if (img->format == GB_IMAGE_BGRA || img->format == GB_IMAGE_RGBA)
 		{
-			pp = (uchar *)p;
-			pp[0] = trgb[pp[0]];
-			pp[1] = trgb[pp[1]];
-			pp[2] = trgb[pp[2]];
-			p++;
+			while (p != pm)
+			{
+				pp = (uchar *)p;
+				pp[0] = trgb[pp[0]];
+				pp[1] = trgb[pp[1]];
+				pp[2] = trgb[pp[2]];
+				p++;
+			}
+		}
+		else
+		{
+			while (p != pm)
+			{
+				col = BGRA_from_format(*p, format);
+				*p++ = BGRA_to_format(RGBA(trgb[RED(col)], trgb[GREEN(col)], trgb[BLUE(col)], ALPHA(col)), format);
+			}
 		}
 	}
-	else
+
+	if (hue || saturation)
 	{
+		double sm;
+		uchar r, g, b;
+
+		if (saturation < 0)
+			sm = 1 + saturation / 255.0;
+		else
+			sm = 1 + saturation / 255.0 * 2;
+
+		double hue6 = (double)hue / 360 * 6;
+
+		double l, h, s, v, m, f;
+
+		p = (uint *)img->data;
 		while (p != pm)
 		{
 			col = BGRA_from_format(*p, format);
-			*p++ = BGRA_to_format(RGBA(trgb[RED(col)], trgb[GREEN(col)], trgb[BLUE(col)], ALPHA(col)), format);
+			r = RED(col); g = GREEN(col); b = BLUE(col);
+
+			uchar vs = r;
+			if (g > vs) vs = g;
+			if (b > vs) vs = b;
+
+			uchar ms = r;
+			if (g < ms) ms = g;
+			if (b < ms) ms = b;
+
+			uchar vm = (vs - ms);
+
+			l = (double)(ms + vs) / 510;
+
+			if (vs && vm)
+			{
+				if ((ms + vs) <= 255)
+				{
+					s = (double)vm / (vs + ms) * sm;
+					if (s > 1) s = 1;
+					v = l * (1 + s);
+				}
+				else
+				{
+					s = (double)vm / (510 - (vs + ms)) * sm;
+					if (s > 1) s = 1;
+					v = (l + s - l * s);
+				}
+
+				if (r == vs)
+				{
+					if (g == ms)
+						h = 5 + (((double)vs-b)/vm) + hue6;
+					else
+						h = 1 - ((double)(vs-g)/vm) + hue6;
+				}
+				else if (g == vs)
+				{
+					if (b == ms)
+						h = 1 + ((double)(vs-r)/vm) + hue6;
+					else
+						h = 3 - ((double)(vs-b)/vm) + hue6;
+				}
+				else
+				{
+					if (r == ms)
+						h = 3 + ((double)(vs-g)/vm) + hue6;
+					else
+						h = 5 - ((double)(vs-r)/vm) + hue6;
+				}
+
+				if (h < 0) h += 6;
+				if (h >= 6) h -= 6;
+
+				m = l + l - v;
+				f = h - (int)h;
+
+				switch((int)h)
+				{
+					case 0:
+						r = v*255; g = (m+((v-m)*f))*255; b = m*255; break;
+					case 1:
+						r = (v-((v-m)*f))*255; g = v*255; b = m*255; break;
+					case 2:
+						r = m*255; g = v*255; b = (m+((v-m)*f))*255; break;
+					case 3:
+						r = m*255; g = (v-((v-m)*f))*255; b = v*255; break;
+					case 4:
+						r = (m+((v-m)*f))*255; g = m*255; b = v*255; break;
+					case 5:
+						r = v*255; g = m*255; b = (v-((v-m)*f))*255; break;
+				}
+			}
+
+			*p++ = BGRA_to_format(RGBA(between0And255(r), between0And255(g), between0And255(b), ALPHA(col)), format);
+		}
+	}
+
+	if (lightness)
+	{
+		uchar trgb[256];
+		double lp = 1 + lightness / 255.0;
+		double lm = 1 - lightness / 255.0;
+
+		for (i = 0; i < 256; i++)
+		{
+			if (lightness < 0)
+				trgb[i] = between0And255(i * lp);
+			else
+				trgb[i] = between0And255(i * lm + lightness);
+		}
+
+		p = (uint *)img->data;
+
+		if (img->format == GB_IMAGE_BGRA || img->format == GB_IMAGE_RGBA)
+		{
+			while (p != pm)
+			{
+				pp = (uchar *)p;
+				pp[0] = trgb[pp[0]];
+				pp[1] = trgb[pp[1]];
+				pp[2] = trgb[pp[2]];
+				p++;
+			}
+		}
+		else
+		{
+			while (p != pm)
+			{
+				col = BGRA_from_format(*p, format);
+				*p++ = BGRA_to_format(RGBA(trgb[RED(col)], trgb[GREEN(col)], trgb[BLUE(col)], ALPHA(col)), format);
+			}
 		}
 	}
 
 	MODIFY(img);
 }
+
+
+//---------------------------------------------------------------------------
+
 

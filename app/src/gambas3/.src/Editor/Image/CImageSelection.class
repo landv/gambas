@@ -175,13 +175,13 @@ Public Sub Paint(hImage As Image, iAction As Integer)
     
   Else If iAction = ACTION_CLIP
     
-    If _Invert Then
-      Paint.MoveTo(0, 0)
-      Paint.LineTo(hImage.W, 0)
-      Paint.LineTo(hImage.W, hImage.H)
-      Paint.LineTo(0, hImage.H)
-      Paint.LineTo(0, 0)
-    Endif
+    ' If _Invert Then
+    '   Paint.MoveTo(0, 0)
+    '   Paint.LineTo(hImage.W, 0)
+    '   Paint.LineTo(hImage.W, hImage.H)
+    '   Paint.LineTo(0, hImage.H)
+    '   Paint.LineTo(0, 0)
+    ' Endif
   
     Paint.FillRule = Paint.FillRuleWinding
     Paint.Clip
@@ -233,6 +233,26 @@ Public Sub Clear()
   
 End
 
+Private Sub AddMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  _Magnets.Add(Point(X, Y))
+  
+  _Magnets.Add(Point(X + W \ 2, Y))
+  _Magnets.Add(Point(X + W, Y))
+  
+  _Magnets.Add(Point(X + W, Y + H \ 2))
+  _Magnets.Add(Point(X + W, Y + H))
+  
+  _Magnets.Add(Point(X + W \ 2, Y + H))
+  _Magnets.Add(Point(X, Y + H))
+  
+  _Magnets.Add(Point(X, Y + H \ 2))
+  
+  _Magnets.Add(Point(X + W \ 2, Y + H \ 2))
+  
+End
+
+
 Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, bNoMagnet As Boolean)
 
   If W < 1 Or If H < 1 Then Return
@@ -244,22 +264,7 @@ Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H
   _X.Add(W)
   _Y.Add(H)
   
-  If Not bNoMagnet Then
-    _Magnets.Add(Point(X, Y))
-    
-    _Magnets.Add(Point(X + W \ 2, Y))
-    _Magnets.Add(Point(X + W, Y))
-    
-    _Magnets.Add(Point(X + W, Y + H \ 2))
-    _Magnets.Add(Point(X + W, Y + H))
-    
-    _Magnets.Add(Point(X + W \ 2, Y + H))
-    _Magnets.Add(Point(X, Y + H))
-    
-    _Magnets.Add(Point(X, Y + H \ 2))
-    
-    _Magnets.Add(Point(X + W \ 2, Y + H \ 2))
-  Endif
+  If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H)
 
 End
 
@@ -314,11 +319,19 @@ End
 
 Public Sub AddMagnet(hPoint As Point)
 
-  If _Magnets.Count And If _Magnets[_Magnets.Max].X = hPoint.X And If _Magnets[_Magnets.Max].Y = hPoint.Y Then
-    _Magnets.Remove(_Magnets.Max)
-  Else  
-    _Magnets.Add(hPoint.Copy())
-  Endif
+  If _Magnets.Count And If _Magnets[_Magnets.Max].X = hPoint.X And If _Magnets[_Magnets.Max].Y = hPoint.Y Then Return
+  
+  _Magnets.Add(hPoint.Copy())
   
 End
 
+Public Sub AddMagnetFromLast()
+  
+  If _Cmd.Count = 0 Then Return
+  
+  Select Case _Cmd[_Cmd.Max]
+    Case CMD_ELLIPSE, CMD_RECTANGLE
+      AddMagnetFromRect(_X[_X.Max - 1], _Y[_Y.Max - 1], _X[_X.Max], _Y[_Y.Max])
+  End Select
+  
+End

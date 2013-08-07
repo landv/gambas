@@ -852,7 +852,7 @@ Public Sub Editors_Cursor()
 
   RefreshCurrentProc
   CPosition.SaveCurrent
-  lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
+  lblInfo.Text = CStr(Editor.Column + 1) & " : " & CStr(Editor.Line + 1)
 
 End
 

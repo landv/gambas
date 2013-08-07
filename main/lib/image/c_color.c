@@ -62,7 +62,7 @@ void COLOR_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V)
 	{
 		f = (r == x) ? g - b : ((g == x) ? b - r : r - g);
 		i = (r == x) ? 3 : ((g == x) ? 5 : 1);
-		*H = (int)((i - (float)f / (v - x)) * 60);
+		*H = (int)((i - (double)f / (v - x)) * 60);
 		*S = ((v - x) * 255) / v;
 		*V = v;
 		if (*H == 360) *H = 0;

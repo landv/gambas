@@ -900,20 +900,19 @@ End
 
 Public Sub btnBalanceReset_Click()
 
-  sldBrightness.Value = 0
-  sldContrast.Value = 0
-  sldHue.Value = 0
-  sldSaturation.Value = 0
-
+  Dim hCtrl As Slider
+  
+  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness]
+    hCtrl.Value = 0
+  Next
+  
 End
 
 Public Sub HasBalance() As Boolean
   
   Dim hCtrl As Slider
   
-  'If Not chkBalancePreview.Value Then Return
-  
-  For Each hCtrl In [sldBrightness, sldContrast, sldHue, sldSaturation]
+  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness]
     If hCtrl.Value Then Return True
   Next
   
@@ -921,7 +920,14 @@ End
 
 Public Sub ApplyBalance(hImage As Image)
   
-  hImage.BrightnessContrast(sldBrightness.Value / sldBrightness.MaxValue, sldContrast.Value / sldContrast.MaxValue)
+  hImage.BeginBalance
+  hImage.Brightness(sldBrightness.Value / sldBrightness.MaxValue)
+  hImage.Contrast(sldContrast.Value / sldContrast.MaxValue)
+  hImage.Gamma(sldGamma.Value / sldGamma.MaxValue)
+  hImage.Hue(sldHue.Value / sldHue.MaxValue)
+  hImage.Saturation(sldSaturation.Value / sldSaturation.MaxValue)
+  hImage.Lightness(sldLightness.Value / sldLightness.MaxValue)
+  hImage.EndBalance
   
 End
 
@@ -935,21 +941,11 @@ Private Sub UpdateBalance()
 
   Dim hFile As Object
   Dim hImageEditor As FImageEditor
-  Dim fBrightness, fContrast As Float
-  
-  'If chkBalancePreview.Value Then
-    fBrightness = txtBrightness.Value / txtBrightness.MaxValue
-    fContrast = txtContrast.Value / txtContrast.MaxValue
-  'Endif
   
   For Each hFile In Project.Files
     Try hImageEditor = hFile
     If Error Then Continue
-    If hImageEditor = Project.ActiveForm Then
-      hImageEditor.UpdateBalance(fBrightness, fContrast)
-    Else
-      hImageEditor.UpdateBalance(0, 0)
-    Endif
+    Try hImageEditor.UpdateBalance
   Next
 
 End
@@ -965,4 +961,10 @@ Public Sub btnBalanceApply_Click()
   Try Project.ActiveForm.ApplyBalance
   btnBalanceReset_Click
 
+End
+
+Public Sub UpdateInfo(sInfo As String)
+  
+  lblInfo.Text = sInfo
+  
 End

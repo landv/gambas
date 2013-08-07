@@ -2014,9 +2014,9 @@ Public Sub ShowFile(hForm As Form)
   Workspace.ActiveWindow = hForm
   hForm.SetFocus
 
-Catch
+'Catch
 
-  FMain.ShowError(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  'FMain.ShowError(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
 
 End
 
