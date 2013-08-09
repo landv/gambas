@@ -142,10 +142,6 @@ Public Sub GetBrush(hRect As Rect, Optional bIgnoreOpacity As Boolean, Optional 
   
   Select Case tabBrush.Index
     
-    Case 0 ' Color
-      
-      hPaintBrush = Paint.Color(GetColor())
-      
     Case 1
       
       hBrush = ToBrush()
@@ -181,6 +177,10 @@ Public Sub GetBrush(hRect As Rect, Optional bIgnoreOpacity As Boolean, Optional 
         hPaintBrush.Translate(hRect.X, hRect.Y)
         hPaintBrush.Scale(hRect.W / hImage.W, hRect.H / hImage.H)
       Endif
+      
+    Case Else
+      
+      hPaintBrush = Paint.Color(GetColor())
       
   End Select
 
