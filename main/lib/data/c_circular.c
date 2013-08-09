@@ -282,7 +282,7 @@ BEGIN_PROPERTY(Circular_Overwrite)
 
 END_PROPERTY
 
-GB_DESC CCircularDesc[] = {
+GB_DESC CCircular[] = {
 	GB_DECLARE("Circular", sizeof(CCIRCULAR)),
 
 	GB_METHOD("_new", NULL, Circular_new, "(Size)i[(Overwrite)b]"),

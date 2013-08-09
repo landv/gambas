@@ -27,11 +27,10 @@
 extern GB_INTERFACE GB;
 
 #ifndef __C_DEQUE_C
-extern GB_DESC CDequeDesc[];
-extern GB_DESC CStackDesc[];
-extern GB_DESC CQueueDesc[];
-extern GB_DESC CPrioQueueDesc[];
+extern GB_DESC CDeque[];
+extern GB_DESC CStack[];
+extern GB_DESC CQueue[];
+extern GB_DESC CPrioQueue[];
 #endif
 
 #endif /* !__C_DEQUE_H */
-

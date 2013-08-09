@@ -28,10 +28,9 @@
 extern GB_INTERFACE GB;
 
 #ifndef __C_LIST_C
-extern GB_DESC CListDesc[];
-extern GB_DESC CListBackwardsDesc[];
-
-extern void CLIST_exit(void);
+extern GB_DESC CList[];
+extern GB_DESC CListBackwards[];
+extern GB_DESC CListItem[];
 #endif
 
 #endif /* !__C_LIST_H */

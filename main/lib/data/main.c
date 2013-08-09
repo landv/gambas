@@ -24,20 +24,24 @@
 #include "c_list.h"
 #include "c_deque.h"
 #include "c_circular.h"
+#include "c_avltree.h"
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT = {
-	CListDesc,
-	CListBackwardsDesc,
+	CList,
+	CListBackwards,
+	CListItem,
 
-	CDequeDesc,
-	CStackDesc,
-	CQueueDesc,
-	CPrioQueueDesc,
+	CDeque,
+	CStack,
+	CQueue,
+	CPrioQueue,
 
-	CCircularDesc,
+	CCircular,
+
+//	CAvlTree,
 
 	NULL
 };

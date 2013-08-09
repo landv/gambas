@@ -27,7 +27,7 @@
 extern GB_INTERFACE GB;
 
 #ifndef __C_CIRCULAR_C
-extern GB_DESC CCircularDesc[];
+extern GB_DESC CCircular[];
 #endif
 
 #endif /* !__C_CIRCULAR_H */

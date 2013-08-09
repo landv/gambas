@@ -227,7 +227,7 @@ END_PROPERTY
  * Double-ended queue
  */
 
-GB_DESC CDequeDesc[] = {
+GB_DESC CDeque[] = {
 	GB_DECLARE("Deque", sizeof(CDEQUE)),
 
 	GB_METHOD("_new", NULL, Deque_new, NULL),
@@ -249,10 +249,10 @@ GB_DESC CDequeDesc[] = {
 };
 
 /*
- * FILO
+ * LIFO
  */
 
-GB_DESC CStackDesc[] = {
+GB_DESC CStack[] = {
 	GB_DECLARE("Stack", sizeof(CDEQUE)),
 
 	GB_METHOD("_new", NULL, Deque_new, NULL),
@@ -274,7 +274,7 @@ GB_DESC CStackDesc[] = {
  * FIFO
  */
 
-GB_DESC CQueueDesc[] = {
+GB_DESC CQueue[] = {
 	GB_DECLARE("Queue", sizeof(CDEQUE)),
 
 	GB_METHOD("_new", NULL, Deque_new, NULL),
@@ -329,7 +329,7 @@ END_METHOD
  * Priority FIFO
  */
 
-GB_DESC CPrioQueueDesc[] = {
+GB_DESC CPrioQueue[] = {
 	GB_DECLARE("PrioQueue", sizeof(CDEQUE)),
 
 	GB_METHOD("_new", NULL, Deque_new, NULL),
