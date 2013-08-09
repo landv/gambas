@@ -16,7 +16,7 @@
     MoveScaled(1,6,61,57)
     Arrangement = Arrange.Vertical
     Border = False
-    Count = 3
+    Count = 4
     Index = 0
     Text = ("Color")
     { Panel3 Panel
@@ -174,6 +174,17 @@
     Text = ("Clipboard")
     { gvwClipboard GridView
       MoveScaled(1,4,59,19)
+      Mouse = Mouse.Pointing
+      Expand = True
+      Border = False
+      Mode = Select.Single
+      Grid = False
+      ScrollBar = Scroll.Vertical
+    }
+    Index = 3
+    Text = ("Shapes")
+    { gvwShape GridView
+      MoveScaled(1,4,46,19)
       Mouse = Mouse.Pointing
       Expand = True
       Border = False

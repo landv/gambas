@@ -4,6 +4,7 @@ Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP, 
 
 Private Enum CMD_MOVE_TO, CMD_LINE_TO ', CMD_RECTANGLE, CMD_ELLIPSE
 
+Public Name As String
 Public _Cmd As New Byte[]
 Public _X As New Float[]
 Public _Y As New Float[]
@@ -211,6 +212,7 @@ Public Sub Copy() As CImageSelection
   Dim hSelect As New CImageSelection
   Dim I As Integer
   
+  hSelect.Name = Name
   hSelect._Cmd = _Cmd.Copy()
   hSelect._X = _X.Copy()
   hSelect._Y = _Y.Copy()
@@ -569,5 +571,54 @@ Public Sub Translate(DX As Float, DY As Float)
   
   hMatrix.Translate(DX, DY)
   Apply(hMatrix)
+  
+End
+
+Static Public Sub FromString(sName As String, sShape As String, Optional aMagnet As Float[]) As CImageSelection
+  
+  Dim hSel As New CImageSelection
+  Dim sLine As String
+  Dim aPoints As String[]
+  Dim aPoint As Float[]
+  Dim I As Integer
+  
+  For Each sLine In Split(sShape, " ", "", True)
+    aPoints = Split(sLine, ";", "", True)
+    If aPoints.Count < 2 Then Continue
+    
+    For I = 0 To aPoints.Max
+      Try aPoint = Split(aPoints[I], ",")
+      If Error Then Break
+      If I = 0 Then
+        hSel.MoveTo(aPoint[0], aPoint[1])
+      Else
+        hSel.LineTo(aPoint[0], aPoint[1])
+      Endif
+    Next
+    
+  Next
+  
+  If aMagnet Then
+    For I = 0 To aMagnet.Max Step 2
+      hSel.AddMagnet(PointF(aMagnet[I], aMagnet[I + 1]))
+    Next
+  Endif
+  
+  hSel.Name = sName
+  
+  Return hSel
+  
+End
+
+Public Sub AddSelection(hSel As CImageSelection)
+  
+  Dim I As Integer
+  
+  _Cmd.Insert(hSel._Cmd)
+  _X.Insert(hSel._X)
+  _Y.Insert(hSel._Y)
+  For I = 0 To hSel._Magnets.Max
+    _Magnets.Add(hSel._Magnets[I].Copy())
+  Next
   
 End

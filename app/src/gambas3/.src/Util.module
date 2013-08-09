@@ -33,3 +33,22 @@ Public Sub RemoveAccents(sStr As String) As String
 
 End
 
+Public Sub Main()
+
+  Dim A As Float
+  
+  Print Chr$(34);
+  For A = 0 To 6
+    If A > 0 Then Print ";";
+    Print CStr(Round(Cos(Pi(2) * A / 6), -10)); ","; CStr(Round(Sin(Pi(2) * A / 6), -10)); 
+  Next
+  Print Chr$(34)
+  
+  Print "[";
+  For A = 0 To 6
+    If A > 0 Then Print ",";
+    Print CStr(Round(Cos(Pi(2) * A / 6), -10)); ","; CStr(Round(Sin(Pi(2) * A / 6), -10));
+  Next
+  Print "]"
+  
+End

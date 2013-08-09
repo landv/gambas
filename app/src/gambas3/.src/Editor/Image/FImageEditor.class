@@ -579,12 +579,14 @@ Public Sub imvImage_MouseDown()
       
       $hCurrentPoint = GetImagePos()
       If $hMagnet Then $hCurrentPoint = $hMagnet
+      
       If Not Mouse.Shift Or If Not $hLastPoint Then 
         $hSelect.MoveTo($hCurrentPoint.X, $hCurrentPoint.Y)
       Else
         $hSelect.LineTo($hCurrentPoint.X, $hCurrentPoint.Y)
         $hSelect.AddMagnet(PointF(($hCurrentPoint.X + $hLastPoint.X) / 2, ($hCurrentPoint.Y + $hLastPoint.Y) / 2))
       Endif
+      
       $hFirstPoint = $hCurrentPoint
       $hLastPoint = $hCurrentPoint
       imvImage.Refresh
@@ -607,6 +609,7 @@ Public Sub imvImage_MouseDown()
     Case "paste"
       If $hPaste Then
         $hLastPoint = GetImagePos()
+        If $hMagnet Then $hLastPoint = $hMagnet
         If $iChangeAction = CHANGE_NOTHING Then
           DoPaste
         Else
@@ -617,7 +620,8 @@ Public Sub imvImage_MouseDown()
     Case "change"
       AddUndo($hSelect.Copy())
       $hLastPoint = GetImagePos()
-      
+      If $hMagnet Then $hLastPoint = $hMagnet
+    
   End Select
   
   imvImage_MouseMove()
@@ -1839,5 +1843,34 @@ End
 Public Sub mnuClose_Click()
   
   Me.Close
+  
+End
+
+Public Sub PasteShape(hShape As CImageSelection)
+  
+  Dim S As Float
+  
+  BeginUndo
+  
+  If btnEditSelection.Value Then
+    SetTool("change")
+  Else
+    btnEditSelection.Value = True
+  Endif
+  
+  CreateSelection
+  
+  hShape = hShape.Copy()
+  With hShape.GetExtents()
+    S = Min(imvImage.ScrollW / imvImage.Zoom * 0.25 / .W, imvImage.ScrollH / imvImage.Zoom * 0.25 / .H)
+    hShape.Translate($hImage.W / 2, $hImage.H / 2)
+    hShape.Scale(S, S)
+  End With
+  
+  $hSelect.AddSelection(hShape)
+  
+  RefreshSelection
+  
+  EndUndo
   
 End
