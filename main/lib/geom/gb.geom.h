@@ -70,7 +70,7 @@ typedef
 	struct {
 		int version;
 		GEOM_POINT *(*CreatePoint)(int x, int y);
-		GEOM_POINTF *(*CreatePointF)(int x, int y);
+		GEOM_POINTF *(*CreatePointF)(double x, double y);
 		GEOM_RECT *(*CreateRect)(void);
 		GEOM_RECTF *(*CreateRectF)(void);
 		}

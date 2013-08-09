@@ -333,7 +333,8 @@ GB_DESC CImageDesc[] =
 	GB_PROPERTY_READ("Picture", "Picture", IMAGE_Picture),
 	
 	GB_INTERFACE("Paint", &PAINT_Interface),
-	
+	GB_INTERFACE("PaintMatrix", &PAINT_MATRIX_Interface),
+
 	GB_END_DECLARE
 };
 

@@ -1239,6 +1239,12 @@ static void TransformCreate(GB_TRANSFORM *matrix)
 	cairo_matrix_init_identity((cairo_matrix_t *)*matrix);
 }
 
+static void TransformCopy(GB_TRANSFORM *matrix, GB_TRANSFORM copy)
+{
+	GB.Alloc(POINTER(matrix), sizeof(cairo_matrix_t));
+	*(cairo_matrix_t *)*matrix = *(cairo_matrix_t *)copy;
+}
+
 static void TransformDelete(GB_TRANSFORM *matrix)
 {
 	GB.Free(POINTER(matrix));
@@ -1273,6 +1279,11 @@ static int TransformInvert(GB_TRANSFORM matrix)
 static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 {
 	cairo_matrix_multiply((cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix2);
+}
+
+static void TransformMap(GB_TRANSFORM matrix, double *x, double *y)
+{
+	cairo_matrix_transform_point((cairo_matrix_t *)matrix, x, y);
 }
 
 
@@ -1469,17 +1480,21 @@ GB_PAINT_DESC PAINT_Interface =
 		BrushLinearGradient,
 		BrushRadialGradient,
 		BrushMatrix,
-	},
-	{
-		TransformCreate,
-		TransformDelete,
-		TransformInit,
-		TransformTranslate,
-		TransformScale,
-		TransformRotate,
-		TransformInvert,
-		TransformMultiply
 	}
+};
+
+GB_PAINT_MATRIX_DESC PAINT_MATRIX_Interface =
+{
+	TransformCreate,
+	TransformCopy,
+	TransformDelete,
+	TransformInit,
+	TransformTranslate,
+	TransformScale,
+	TransformRotate,
+	TransformInvert,
+	TransformMultiply,
+	TransformMap
 };
 
 void PAINT_begin(void *device)

@@ -47,6 +47,7 @@ Public Sub _new()
   $hView = New ScrollArea($hBorder) As "View"
   $hView.Border = False
   $hView.Shadow = True
+  $hView.Focus = True
   
   Me.Proxy = $hView
   
@@ -372,31 +373,3 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   $hView.EnsureVisible(X, Y, W, H)
   
 End
-
-' Private Function Brightness_Read() As Float
-' 
-'   Return $fBrightness
-' 
-' End
-' 
-' Private Sub Brightness_Write(Value As Float)
-' 
-'   If $fBrightness = Value Then Return
-'   $fBrightness = Value
-'   UpdateZoom
-' 
-' End
-' 
-' Private Function Contrast_Read() As Float
-' 
-'   Return $fContrast
-' 
-' End
-' 
-' Private Sub Contrast_Write(Value As Float)
-' 
-'   If $fContrast = Value Then Return
-'   $fContrast = Value
-'   UpdateZoom
-' 
-' End

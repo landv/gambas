@@ -34,7 +34,7 @@ static GB_PAINT *_current = NULL;
 #define XTHIS ((PAINT_EXTENTS *)_object)
 
 #define MTHIS ((PAINT_MATRIX *)_object)
-#define MPAINT (MTHIS->desc)
+#define MPAINT (_matrix_desc)
 
 #define BTHIS ((PAINT_BRUSH *)_object)
 #define BPAINT (BTHIS->desc)
@@ -42,6 +42,21 @@ static GB_PAINT *_current = NULL;
 #define CHECK_DEVICE() if (check_device()) return
 
 #define RAD(_deg) ((_deg) * M_PI / 180)
+
+static GB_PAINT_MATRIX_DESC *_matrix_desc = NULL;
+
+static void load_matrix_interface()
+{
+	if (!_matrix_desc)
+	{
+		_matrix_desc = (GB_PAINT_MATRIX_DESC *)GB.GetClassInterface(GB.FindClass("Image"), "PaintMatrix");
+		if (!_matrix_desc)
+		{
+			fprintf(stderr, "gb.draw: error: unable to find PaintMatrix interface\n");
+			abort();
+		}
+	}
+}
 
 static bool check_device()
 {
@@ -110,6 +125,7 @@ bool PAINT_begin(void *device)
 	
 	klass = GB.GetClass(device);
 	desc = (GB_PAINT_DESC *)GB.GetClassInterface(klass, "Paint");
+	load_matrix_interface();
 
 	if (!desc)
 	{
@@ -233,28 +249,25 @@ GB_DESC PaintExtentsDesc[] =
 
 static bool _do_not_init = FALSE;
 
-static PAINT_MATRIX *create_matrix(GB_PAINT_DESC *desc, GB_TRANSFORM transform)
+static PAINT_MATRIX *create_matrix(GB_TRANSFORM transform)
 {
 	PAINT_MATRIX *matrix;
 	_do_not_init = TRUE;
 	matrix = GB.New(GB.FindClass("PaintMatrix"), NULL, NULL);
 	_do_not_init = FALSE;
-	matrix->desc = desc;
 	matrix->transform = transform;
 	return matrix;
 }
 
 BEGIN_METHOD(PaintMatrix_new, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT yy; GB_FLOAT x0; GB_FLOAT y0)
 
+	load_matrix_interface();
+
 	if (_do_not_init)
 		return;
 	
-	if (check_device())
-		return;
-
-	MTHIS->desc = PAINT;
-	MPAINT->Transform.Create(&MTHIS->transform);
-	MPAINT->Transform.Init(MTHIS->transform, VARGOPT(xx, 1.0), VARGOPT(xy, 0.0), VARGOPT(yx, 0.0), VARGOPT(yy, 1.0), VARGOPT(x0, 0.0), VARGOPT(y0, 0.0));
+	MPAINT->Create(&MTHIS->transform);
+	MPAINT->Init(MTHIS->transform, VARGOPT(xx, 1.0), VARGOPT(xy, 0.0), VARGOPT(yx, 0.0), VARGOPT(yy, 1.0), VARGOPT(x0, 0.0), VARGOPT(y0, 0.0));
 
 END_METHOD
 
@@ -262,52 +275,59 @@ BEGIN_METHOD(PaintMatrix_call, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT y
 
 	GB_TRANSFORM transform;
 	
-	if (check_device())
-		return;
-
-	PAINT->Transform.Create(&transform);
-	PAINT->Transform.Init(transform, VARGOPT(xx, 1.0), VARGOPT(xy, 0.0), VARGOPT(yx, 0.0), VARGOPT(yy, 1.0), VARGOPT(x0, 0.0), VARGOPT(y0, 0.0));
-	GB.ReturnObject(create_matrix(PAINT, transform));
+	MPAINT->Create(&transform);
+	MPAINT->Init(transform, VARGOPT(xx, 1.0), VARGOPT(xy, 0.0), VARGOPT(yx, 0.0), VARGOPT(yy, 1.0), VARGOPT(x0, 0.0), VARGOPT(y0, 0.0));
+	GB.ReturnObject(create_matrix(transform));
 
 END_METHOD
 
 BEGIN_METHOD_VOID(PaintMatrix_free)
 
-	MPAINT->Transform.Delete(&MTHIS->transform);
+	if (MTHIS->transform)
+		MPAINT->Delete(&MTHIS->transform);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(PaintMatrix_Copy)
+
+	GB_TRANSFORM transform;
+
+	MPAINT->Copy(&transform, MTHIS->transform);
+	GB.ReturnObject(create_matrix(transform));
 
 END_METHOD
 
 BEGIN_METHOD_VOID(PaintMatrix_Reset)
 
-	MPAINT->Transform.Init(MTHIS->transform, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	MPAINT->Init(MTHIS->transform, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 	RETURN_SELF();
 
 END_METHOD
 
 BEGIN_METHOD(PaintMatrix_Translate, GB_FLOAT tx; GB_FLOAT ty)
 
-	MPAINT->Transform.Translate(MTHIS->transform, (float)VARG(tx), (float)VARG(ty));
+	MPAINT->Translate(MTHIS->transform, (float)VARG(tx), (float)VARG(ty));
 	RETURN_SELF();
 
 END_METHOD
 
 BEGIN_METHOD(PaintMatrix_Scale, GB_FLOAT sx; GB_FLOAT sy)
 
-	MPAINT->Transform.Scale(MTHIS->transform, (float)VARG(sx), (float)VARG(sy));
+	MPAINT->Scale(MTHIS->transform, (float)VARG(sx), (float)VARG(sy));
 	RETURN_SELF();
 
 END_METHOD
 
 BEGIN_METHOD(PaintMatrix_Rotate, GB_FLOAT angle)
 
-	MPAINT->Transform.Rotate(MTHIS->transform, (float)VARG(angle));
+	MPAINT->Rotate(MTHIS->transform, (float)VARG(angle));
 	RETURN_SELF();
 
 END_METHOD
 
 BEGIN_METHOD_VOID(PaintMatrix_Invert)
 
-	if (MPAINT->Transform.Invert(MTHIS->transform))
+	if (MPAINT->Invert(MTHIS->transform))
 		GB.ReturnNull();
 	else
 		RETURN_SELF();
@@ -321,8 +341,25 @@ BEGIN_METHOD(PaintMatrix_Multiply, GB_OBJECT matrix)
 	if (GB.CheckObject(matrix))
 		return;
 
-	MPAINT->Transform.Multiply(MTHIS->transform, matrix->transform);
+	MPAINT->Multiply(MTHIS->transform, matrix->transform);
 	RETURN_SELF();
+
+END_METHOD
+
+BEGIN_METHOD(PaintMatrix_Map, GB_OBJECT point)
+
+	GEOM_POINTF *point = VARG(point);
+	double x, y;
+
+	if (GB.CheckObject(point))
+		return;
+
+	x = point->x;
+	y = point->y;
+
+	MPAINT->Map(MTHIS->transform, &x, &y);
+
+	GB.ReturnObject(GEOM.CreatePointF(x, y));
 
 END_METHOD
 
@@ -334,12 +371,14 @@ GB_DESC PaintMatrixDesc[] =
 	GB_STATIC_METHOD("_call", "PaintMatrix", PaintMatrix_call, "[(XX)f(XY)f(YX)f(YY)f(X0)f(Y0)f]"),
 	GB_METHOD("_free", NULL, PaintMatrix_free, NULL),
 
+	GB_METHOD("Copy", "PaintMatrix", PaintMatrix_Copy, NULL),
 	GB_METHOD("Reset", "PaintMatrix", PaintMatrix_Reset, NULL),
 	GB_METHOD("Translate", "PaintMatrix", PaintMatrix_Translate, "(TX)f(TY)f"),
 	GB_METHOD("Scale", "PaintMatrix", PaintMatrix_Scale, "(SX)f(SY)f"),
 	GB_METHOD("Rotate", "PaintMatrix", PaintMatrix_Rotate, "(Angle)f"),
 	GB_METHOD("Invert", "PaintMatrix", PaintMatrix_Invert, NULL),
 	GB_METHOD("Multiply", "PaintMatrix", PaintMatrix_Multiply, "(Matrix)PaintMatrix;"),	
+	GB_METHOD("Map", "PointF", PaintMatrix_Map, "(Point)PointF;"),
 
 	GB_END_DECLARE	
 };
@@ -360,9 +399,9 @@ BEGIN_PROPERTY(PaintBrush_Matrix)
 	
 	if (READ_PROPERTY)
 	{
-		BPAINT->Transform.Create(&transform);
+		MPAINT->Create(&transform);
 		BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
-		GB.ReturnObject(create_matrix(BPAINT, transform));
+		GB.ReturnObject(create_matrix(transform));
 	}
 	else
 	{
@@ -385,11 +424,11 @@ BEGIN_METHOD(PaintBrush_Translate, GB_FLOAT tx; GB_FLOAT ty)
 
 	GB_TRANSFORM transform;
 
-	BPAINT->Transform.Create(&transform);
+	MPAINT->Create(&transform);
 	BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
-	BPAINT->Transform.Translate(transform, (float)VARG(tx), (float)VARG(ty));
+	MPAINT->Translate(transform, (float)VARG(tx), (float)VARG(ty));
 	BPAINT->Brush.Matrix(BTHIS->brush, TRUE, transform);
-	BPAINT->Transform.Delete(&transform);
+	MPAINT->Delete(&transform);
 
 END_METHOD
 
@@ -397,11 +436,11 @@ BEGIN_METHOD(PaintBrush_Scale, GB_FLOAT sx; GB_FLOAT sy)
 
 	GB_TRANSFORM transform;
 
-	BPAINT->Transform.Create(&transform);
+	MPAINT->Create(&transform);
 	BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
-	BPAINT->Transform.Scale(transform, (float)VARG(sx), (float)VARG(sy));
+	MPAINT->Scale(transform, (float)VARG(sx), (float)VARG(sy));
 	BPAINT->Brush.Matrix(BTHIS->brush, TRUE, transform);
-	BPAINT->Transform.Delete(&transform);
+	MPAINT->Delete(&transform);
 
 END_METHOD
 
@@ -409,11 +448,11 @@ BEGIN_METHOD(PaintBrush_Rotate, GB_FLOAT angle)
 
 	GB_TRANSFORM transform;
 
-	BPAINT->Transform.Create(&transform);
+	MPAINT->Create(&transform);
 	BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
-	BPAINT->Transform.Rotate(transform, (float)VARG(angle));
+	MPAINT->Rotate(transform, (float)VARG(angle));
 	BPAINT->Brush.Matrix(BTHIS->brush, TRUE, transform);
-	BPAINT->Transform.Delete(&transform);
+	MPAINT->Delete(&transform);
 
 END_METHOD
 
@@ -1052,10 +1091,10 @@ BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 	if (!MISSING(x) || !MISSING(y))
 	{
 		GB_TRANSFORM transform;
-		PAINT->Transform.Create(&transform);
-		PAINT->Transform.Translate(transform, VARGOPT(x, 0.0), VARGOPT(y, 0.0));
+		MPAINT->Create(&transform);
+		MPAINT->Translate(transform, VARGOPT(x, 0.0), VARGOPT(y, 0.0));
 		PAINT->Brush.Matrix(brush, TRUE, transform);
-		PAINT->Transform.Delete(&transform);
+		MPAINT->Delete(&transform);
 	}
 
 END_METHOD
@@ -1120,9 +1159,9 @@ BEGIN_PROPERTY(Paint_Matrix)
 	
 	if (READ_PROPERTY)
 	{
-		PAINT->Transform.Create(&transform);
+		MPAINT->Create(&transform);
 		PAINT->Matrix(THIS, FALSE, transform);
-		GB.ReturnObject(create_matrix(PAINT, transform));
+		GB.ReturnObject(create_matrix(transform));
 	}
 	else
 	{
@@ -1149,11 +1188,11 @@ BEGIN_METHOD(Paint_Translate, GB_FLOAT tx; GB_FLOAT ty)
 	GB_TRANSFORM transform;
 
 	CHECK_DEVICE();
-	PAINT->Transform.Create(&transform);
+	MPAINT->Create(&transform);
 	PAINT->Matrix(THIS, FALSE, transform);
-	PAINT->Transform.Translate(transform, (float)VARG(tx), (float)VARG(ty));
+	MPAINT->Translate(transform, (float)VARG(tx), (float)VARG(ty));
 	PAINT->Matrix(THIS, TRUE, transform);
-	PAINT->Transform.Delete(&transform);
+	MPAINT->Delete(&transform);
 
 END_METHOD
 
@@ -1163,11 +1202,11 @@ BEGIN_METHOD(Paint_Scale, GB_FLOAT sx; GB_FLOAT sy)
 	GB_TRANSFORM transform;
 
 	CHECK_DEVICE();
-	PAINT->Transform.Create(&transform);
+	MPAINT->Create(&transform);
 	PAINT->Matrix(THIS, FALSE, transform);
-	PAINT->Transform.Scale(transform, (float)VARG(sx), (float)VARG(sy));
+	MPAINT->Scale(transform, (float)VARG(sx), (float)VARG(sy));
 	PAINT->Matrix(THIS, TRUE, transform);
-	PAINT->Transform.Delete(&transform);
+	MPAINT->Delete(&transform);
 
 END_METHOD
 
@@ -1177,11 +1216,11 @@ BEGIN_METHOD(Paint_Rotate, GB_FLOAT angle)
 	GB_TRANSFORM transform;
 
 	CHECK_DEVICE();
-	PAINT->Transform.Create(&transform);
+	MPAINT->Create(&transform);
 	PAINT->Matrix(THIS, FALSE, transform);
-	PAINT->Transform.Rotate(transform, (float)VARG(angle));
+	MPAINT->Rotate(transform, (float)VARG(angle));
 	PAINT->Matrix(THIS, TRUE, transform);
-	PAINT->Transform.Delete(&transform);
+	MPAINT->Delete(&transform);
 
 END_METHOD
 

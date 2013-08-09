@@ -45,3 +45,9 @@ Public Sub IsEditable() As Boolean
   Return Left({Link}) = "/"
   
 End
+
+Public Sub Exist() As Boolean
+  
+  Return IsDir(Me.Path)
+  
+End

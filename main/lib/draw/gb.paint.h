@@ -110,7 +110,6 @@ typedef
 typedef
 	struct {
 		GB_BASE ob;
-		struct GB_PAINT_DESC *desc;        // drawing driver
 		GB_TRANSFORM transform;
 	}
 	PAINT_MATRIX;
@@ -135,7 +134,7 @@ typedef
 		PAINT_BRUSH *brush;                // current brush
 		void *extra;                       // driver-specific state
 		unsigned opened : 1;               // if the painting has been opened
-		unsigned other : 1;                // if paiting are imbricated on that device
+		unsigned other : 1;                // if painting are imbricated on that device
 		void *tag;                         // needed to support the old Draw class
 	}
 	GB_PAINT;
@@ -218,20 +217,23 @@ typedef
 			void (*Matrix)(GB_BRUSH brush, int set, GB_TRANSFORM matrix);
 			}
 			Brush;
-		
-		struct {
-			void (*Create)(GB_TRANSFORM *matrix);
-			void (*Delete)(GB_TRANSFORM *matrix);
-			void (*Init)(GB_TRANSFORM matrix, float xx, float yx, float xy, float yy, float x0, float y0);
-			void (*Translate)(GB_TRANSFORM matrix, float tx, float ty);
-			void (*Scale)(GB_TRANSFORM matrix, float sx, float sy);
-			void (*Rotate)(GB_TRANSFORM matrix, float angle);
-			int (*Invert)(GB_TRANSFORM matrix);
-			void (*Multiply)(GB_TRANSFORM matrix, GB_TRANSFORM matrix2);
-			}
-			Transform;
 	}
 	GB_PAINT_DESC;
+
+typedef
+	struct GB_PAINT_MATRIX_DESC {
+		void (*Create)(GB_TRANSFORM *matrix);
+		void (*Copy)(GB_TRANSFORM *matrix, GB_TRANSFORM copy);
+		void (*Delete)(GB_TRANSFORM *matrix);
+		void (*Init)(GB_TRANSFORM matrix, float xx, float yx, float xy, float yy, float x0, float y0);
+		void (*Translate)(GB_TRANSFORM matrix, float tx, float ty);
+		void (*Scale)(GB_TRANSFORM matrix, float sx, float sy);
+		void (*Rotate)(GB_TRANSFORM matrix, float angle);
+		int (*Invert)(GB_TRANSFORM matrix);
+		void (*Multiply)(GB_TRANSFORM matrix, GB_TRANSFORM matrix2);
+		void (*Map)(GB_TRANSFORM matrix, double *x, double *y);
+		}
+	GB_PAINT_MATRIX_DESC;
 
 #endif
 

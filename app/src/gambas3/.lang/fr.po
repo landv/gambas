@@ -759,7 +759,7 @@ msgstr "Cette semaine"
 msgid "This month"
 msgstr "Ce mois-ci"
 
-#: FTranslate.class:554 Project.module:486
+#: FTextEditor.class:599 FTranslate.class:554 Project.module:486
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -843,7 +843,7 @@ msgstr "Le programme s'est arrêté inopinément :"
 msgid "The program has returned\nthe value: &1"
 msgstr "Le programme a retourné\nla valeur : &1"
 
-#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
+#: FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "OK"
 
@@ -927,19 +927,19 @@ msgstr "Fichiers en conflits"
 msgid "Open"
 msgstr "Ouvrir"
 
-#: FOutput.form:58 FProjectVersion.form:234 FTextEditor.form:108
+#: FProjectVersion.form:234 FTextEditor.form:108
 msgid "Cut"
 msgstr "Couper"
 
-#: FOutput.form:65 FProjectVersion.form:240 FTextEditor.form:115
+#: FProjectVersion.form:240 FTextEditor.form:115
 msgid "Copy"
 msgstr "Copier"
 
-#: FTextEditor.form:122
+#: FPasteTable.form:101 FProjectVersion.form:246 FTextEditor.form:122
 msgid "Paste"
 msgstr "Coller"
 
-#: FOutput.form:41 FProjectVersion.form:252 FTextEditor.form:91
+#: FProjectVersion.form:252 FTextEditor.form:91
 msgid "Undo"
 msgstr "Annuler"
 
@@ -983,7 +983,7 @@ msgstr "Enregi&strer"
 msgid "Sol&ve"
 msgstr "&Résoudre"
 
-#: FSystemInfo.form:83 FTextEditor.form:244 FTips.form:83
+#: FTextEditor.form:244 FTips.form:83
 msgid "Close"
 msgstr "Fermer"
 
@@ -1131,11 +1131,11 @@ msgstr "Désirez-vous vraiment supprimer les lignes sélectionnées ?"
 msgid "Connection editor"
 msgstr "Editeur de connexion"
 
-#: FTextEditor.form:237
+#: FImageEditor.form:255 FMenu.class:68 FTextEditor.form:237
 msgid "Save"
 msgstr "Enregistrer"
 
-#: FTextEditor.form:231 FTranslate.class:650
+#: FTranslate.class:650
 msgid "Reload"
 msgstr "Recharger"
 
@@ -1487,7 +1487,7 @@ msgstr "Expression"
 msgid "Function"
 msgstr "Fonction"
 
-#: FImportTable.class:66 FOption.form:642
+#: FOption.form:642
 msgid "Line"
 msgstr "Ligne"
 
@@ -1511,7 +1511,7 @@ msgstr "Message"
 msgid "native code"
 msgstr "code natif"
 
-#: FList.class:153 FOption.class:675 FOutput.form:79
+#: FOption.class:675 FOutput.form:79
 msgid "Clear"
 msgstr "Effacer"
 
@@ -1623,7 +1623,7 @@ msgstr "La chaîne recherchée est introuvable."
 msgid "Stack backtrace"
 msgstr "Pile des appels"
 
-#: FTextEditor.class:599
+#: FEditor.class:2373 FImageEditor.class:343 FTextEditor.class:599
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
@@ -1651,7 +1651,7 @@ msgstr "Ouvrir le formulaire"
 msgid "&Startup class"
 msgstr "Cla&sse de démarrage"
 
-#: FEditor.form:167 FImageEditor.form:124 FTextEditor.form:132
+#: FEditor.form:167 FImageEditor.form:134 FTextEditor.form:132
 msgid "Select &All"
 msgstr "&Tout sélectionner"
 
@@ -1895,7 +1895,7 @@ msgstr "Composant introuvable pour le contrôle &1"
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 
-#: FForm.form:131 FIconEditor.form:182
+#: FForm.form:131
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -2163,11 +2163,11 @@ msgstr "Aller en avant"
 msgid "Show help tree"
 msgstr "Afficher l'arborescence de l'aide"
 
-#: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:196
+#: FHelpBrowser.form:85 FImageEditor.form:214
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:203
+#: FHelpBrowser.form:91 FImageEditor.form:222
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
@@ -2183,203 +2183,163 @@ msgstr "Imprimer"
 msgid "Modify documentation..."
 msgstr "Modifier la documentation..."
 
-#: FIconEditor.class:1373
-msgid "Do you want to clear the image ?"
-msgstr "Voulez-vous effacer cette image ?"
-
-#: FIconEditor.class:1386
-msgid "This image has been modified.\nDo you want to save it ?"
-msgstr "Cette image a été modifiée.\nDésirez-vous l'enregistrer ?"
-
-#: FIconEditor.form:95
-msgid "Clear all"
-msgstr "Tout effacer"
-
-#: FIconEditor.form:169
-msgid "Scroll"
-msgstr "Déplacer"
-
-#: FIconEditor.form:191 FImageEditor.form:347
-msgid "Draw"
-msgstr "Dessiner"
-
-#: FIconEditor.form:209 FImageEditor.form:377
-msgid "Rectangle"
-msgstr "Rectangle"
-
-#: FIconEditor.form:218 FImageEditor.form:387
-msgid "Ellipse"
-msgstr "Ellipse"
-
-#: FIconEditor.form:227
-msgid "Flood fill"
-msgstr "Remplissage"
-
-#: FIconEditor.form:236
-msgid "Hatched flood fill"
-msgstr "Remplissage alterné"
-
-#: FIconEditor.form:249
-msgid "Border only"
-msgstr "Contour seulement"
-
-#: FIconEditor.form:258
-msgid "Filled"
-msgstr "Rempli"
-
-#: FIconEditor.form:267
-msgid "Filled with border"
-msgstr "Rempli avec bord"
-
-#: FIconEditor.form:276
-msgid "Transparent"
-msgstr "Transparent"
-
-#: FIconEditor.form:285
-msgid "Opaque"
-msgstr "Opaque"
-
-#: FIconEditor.form:298
-msgid "Replace color"
-msgstr "Remplacement de couleur"
-
-#: FIconEditor.form:306 FImageEditor.form:157
-msgid "Horizontal flip"
-msgstr "Miroir horizontal"
-
-#: FIconEditor.form:314 FImageEditor.form:164
-msgid "Vertical flip"
-msgstr "Miroir vertical"
-
-#: FIconEditor.form:322 FImageEditor.form:178
-msgid "Rotate clockwise"
-msgstr "Rotation de 90° vers la droite"
-
-#: FIconEditor.form:330 FImageEditor.form:171
-msgid "Rotate counter-clockwise"
-msgstr "Rotation de 90° vers la gauche"
-
-#: FIconEditor.form:350
-msgid "Swap colors"
-msgstr "Echanger les couleurs"
-
-#: FIconEditor.form:358
-msgid "Pick a color"
-msgstr "Pipette"
-
-#: FImageEditor.form:131
-msgid "Invert selection"
-msgstr "Inverser la sélection"
-
-#: FImageEditor.form:137
+#: FImageEditor.form:140
 msgid "Hide selection"
 msgstr "Cacher le sélection"
 
-#: FImageEditor.form:145
+#: FImageEditor.form:147
+msgid "Invert selection"
+msgstr "Inverser la sélection"
+
+#: FImageEditor.form:156
 msgid "Action"
 msgstr "Action"
 
-#: FImageEditor.form:150
+#: FImageEditor.form:161
 msgid "Crop"
 msgstr "Découper"
 
-#: FImageEditor.form:185
+#: FImageEditor.form:168 FImageProperty.form:276
+msgid "Horizontal flip"
+msgstr "Miroir horizontal"
+
+#: FImageEditor.form:175 FImageProperty.form:270
+msgid "Vertical flip"
+msgstr "Miroir vertical"
+
+#: FImageEditor.form:182 FImageProperty.form:264
+msgid "Rotate counter-clockwise"
+msgstr "Rotation de 90° vers la gauche"
+
+#: FImageEditor.form:189 FImageProperty.form:258
+msgid "Rotate clockwise"
+msgstr "Rotation de 90° vers la droite"
+
+#: FImageEditor.form:196
 msgid "Resize..."
 msgstr "Redimensionner..."
 
-#: FImageEditor.form:191
+#: FImageEditor.form:203
+msgid "Rotate..."
+msgstr "Rotation..."
+
+#: FImageEditor.form:209
 msgid "Zoom"
 msgstr "Zoom"
 
-#: FImageEditor.form:210
+#: FImageEditor.form:230
 msgid "Zoom normal"
 msgstr "Zoom normal"
 
-#: FImageEditor.form:217
+#: FImageEditor.form:237
 msgid "Zoom fit"
 msgstr "Zoom ajusté"
 
-#: FImageEditor.form:249
+#: FImageEditor.form:271
 msgid "Image editor"
 msgstr "Editeur d'image"
 
-#: FImageEditor.form:322
+#: FImageEditor.form:372
 msgid "Drawing grid"
 msgstr "Grille de dessin"
 
-#: FImageEditor.form:336
+#: FImageEditor.form:386
 msgid "Move"
 msgstr "Déplacer"
 
-#: FImageEditor.form:357
+#: FImageEditor.form:397
+msgid "Draw"
+msgstr "Dessiner"
+
+#: FImageEditor.form:407
 msgid "Erase"
 msgstr "Gommer"
 
-#: FImageEditor.form:398
+#: FImageEditor.form:431
+msgid "Rectangle"
+msgstr "Rectangle"
+
+#: FImageEditor.form:441
+msgid "Ellipse"
+msgstr "Ellipse"
+
+#: FImageEditor.form:453
 msgid "Magic wand"
 msgstr ""
 
-#: FImageEditor.form:427
+#: FImageEditor.form:463
+msgid "Edit selection"
+msgstr "Modifier la sélection"
+
+#: FImageEditor.form:480
+msgid "Resize selection"
+msgstr ""
+
+#: FImageEditor.form:491
 msgid "Stroke"
 msgstr "Tracer"
 
-#: FImageEditor.form:434
+#: FImageEditor.form:498
 msgid "Fill"
 msgstr "Remplir"
 
-#: FImageEditor.form:501
+#: FImageEditor.form:551
 msgid "Resize or stretch image"
 msgstr "Redimensionner ou étirer l'image"
+
+#: FImageEditor.form:560 FImageRotate.form:11
+msgid "Rotate image"
+msgstr "Rotation de l'image"
 
 #: FImageGrid.form:7
 msgid "Image grid"
 msgstr "Grille d'image"
 
-#: FImageProperty.class:756
+#: FImageProperty.class:812
 msgid "System clipboard"
 msgstr "Presse-papier système"
 
-#: FImageProperty.form:101 FReportBrushChooser.form:49
+#: FImageProperty.form:113 FReportBrushChooser.form:49
 msgid "Color"
 msgstr "Couleur"
 
-#: FImageProperty.form:122
+#: FImageProperty.form:144
 msgid "Gradient"
 msgstr "Dégradé"
 
-#: FImageProperty.form:138 FReportBrushChooser.form:49
+#: FImageProperty.form:160 FReportBrushChooser.form:49
 msgid "Linear gradient"
 msgstr "Dégradé linéaire"
 
-#: FImageProperty.form:145 FReportBrushChooser.form:49
+#: FImageProperty.form:167 FReportBrushChooser.form:49
 msgid "Radial gradient"
 msgstr "Dégradé circulaire"
 
-#: FImageProperty.form:169 FReportBrushChooser.form:111
+#: FImageProperty.form:191 FReportBrushChooser.form:111
 msgid "Add gradient stop"
 msgstr "Ajouter une couleur de dégradé"
 
-#: FImageProperty.form:175 FReportBrushChooser.form:117
+#: FImageProperty.form:197 FReportBrushChooser.form:117
 msgid "Remove gradient stop"
 msgstr "Supprimer une couleur de dégradé"
 
-#: FImageProperty.form:181 FReportBrushChooser.form:123
+#: FImageProperty.form:203 FReportBrushChooser.form:123
 msgid "Select gradient stop color..."
 msgstr "Sélectionnez la couleur de dégradé..."
 
-#: FImageProperty.form:187 FReportBrushChooser.form:129
+#: FImageProperty.form:209 FReportBrushChooser.form:129
 msgid "Invert gradient"
 msgstr "Inverser le dégradé"
 
-#: FImageProperty.form:209 FReportBrushChooser.form:145
+#: FImageProperty.form:231 FReportBrushChooser.form:145
 msgid "Radius"
 msgstr "Rayon"
 
-#: FImageProperty.form:237
+#: FImageProperty.form:298
 msgid "Clipboard"
 msgstr "Presse-papier"
 
-#: FImageProperty.form:264
+#: FImageProperty.form:325
 msgid "Opacity"
 msgstr "Opacité"
 
@@ -2387,43 +2347,47 @@ msgstr "Opacité"
 msgid "Size"
 msgstr "Taille"
 
-#: FImageProperty.form:308
+#: FImageProperty.form:368
 msgid "Tolerance"
 msgstr "Tolérance"
 
-#: FImageProperty.form:340
+#: FImageProperty.form:400
 msgid "Brightness"
 msgstr "Luminosité"
 
-#: FImageProperty.form:366
+#: FImageProperty.form:425
 msgid "Contrast"
 msgstr "Contraste"
 
-#: FImageProperty.form:392
+#: FImageProperty.form:450
 msgid "Gamma"
 msgstr "Gamma"
 
-#: FImageProperty.form:418
+#: FImageProperty.form:475
 msgid "Lightness"
 msgstr "Clarté"
 
-#: FImageProperty.form:444
+#: FImageProperty.form:500
 msgid "Hue"
 msgstr "Teinte"
 
-#: FImageProperty.form:470
+#: FImageProperty.form:525
 msgid "Saturation"
 msgstr "Saturation"
 
-#: FImageProperty.form:502 FImportTable.form:182
+#: FImageProperty.form:550
+msgid "Blur"
+msgstr "Flou"
+
+#: FImageProperty.form:579 FImportTable.form:182
 msgid "Preview"
 msgstr "Aperçu"
 
-#: FImageProperty.form:514 FOption.class:1026
+#: FImageProperty.form:591 FOption.class:1026
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: FImageProperty.form:521 FPatch.form:86
+#: FImageProperty.form:598 FPatch.form:86
 msgid "&Apply"
 msgstr "&Appliquer"
 
@@ -2455,9 +2419,21 @@ msgstr "Ajouter une bordure"
 msgid "Ratio"
 msgstr "Rapport"
 
-#: FImageResize.form:127
+#: FImageResize.form:127 FImageResizeSelection.form:22
 msgid "px"
 msgstr "px"
+
+#: FImageResizeSelection.form:12
+msgid "Enlarge selection"
+msgstr ""
+
+#: FImageResizeSelection.form:40
+msgid "Duplicate"
+msgstr ""
+
+#: FImageRotate.form:21
+msgid "°"
+msgstr "-"
 
 #: FImportTable.class:134
 msgid "(Automatic key)"

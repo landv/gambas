@@ -569,7 +569,7 @@ Public Sub SetRoot(Optional sRoot As String)
 
   If sRoot = dvwChoose.Root Then Return
 
-  dvwChoose.Root = sRoot
+  Try dvwChoose.Root = sRoot
 
   hBookmark = $hBookmarkList.FindBookmark(sRoot)
   SetBookmark(hBookmark)
@@ -849,6 +849,7 @@ Private Sub AddBookmarkMenu(hBookmark As CBookmark)
   hMenu.Tag = hBookmark.Link
   hMenu.Text = hBookmark.Name
   hMenu.Picture = Picture[hBookmark.Icon]
+  hMenu.Enabled = hBookmark.Exist()
   
 End
 

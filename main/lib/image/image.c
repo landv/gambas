@@ -1543,8 +1543,8 @@ void IMAGE_blur(GB_IMG *img, int radius) //top_x, top_y, width, height, radius )
 	if (radius < 1)
 		return;
 	
-	if (radius > 255)
-		radius = 255;
+	if (radius >= 255)
+		radius = 254;
 	
 	if (img->is_void)
 		return;

@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,53,13)
+  Text = ("Rotate image")
+  { slbAngle SliderBox
+    MoveScaled(1,1,49,4)
+    MinValue = -180
+    MaxValue = 180
+  }
+  { Label1 Label
+    MoveScaled(51,1,3,4)
+    Text = ("°")
+  }
+  { btnOK Button
+    MoveScaled(19,8,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(36,8,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+}

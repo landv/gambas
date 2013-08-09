@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,65,118)
+  MoveScaled(0,0,65,120)
   Persistent = True
   Arrangement = Arrange.Vertical
   { lblInfo Label
@@ -204,7 +204,6 @@
       { txtOpacity SpinBox
         MoveScaled(47,0,8,4)
         MaxValue = 255
-        Step = 16
         Value = 255
       }
     }
@@ -249,7 +248,7 @@
     MoveScaled(19,77,15,0)
   }
   { Panel5 VBox
-    MoveScaled(1,78,63,31)
+    MoveScaled(1,78,63,35)
     Margin = True
     { HPanel4 HBox
       MoveScaled(0,0,62,4)
@@ -270,7 +269,6 @@
         MoveScaled(47,0,8,4)
         MinValue = -255
         MaxValue = 255
-        Step = 32
       }
     }
     { HPanel5 HBox
@@ -292,7 +290,6 @@
         MoveScaled(47,0,8,4)
         MinValue = -255
         MaxValue = 255
-        Step = 32
       }
     }
     { HPanel8 HBox
@@ -314,7 +311,6 @@
         MoveScaled(47,0,8,4)
         MinValue = -255
         MaxValue = 255
-        Step = 32
       }
     }
     { HPanel9 HBox
@@ -336,7 +332,6 @@
         MoveScaled(47,0,8,4)
         MinValue = -255
         MaxValue = 255
-        Step = 32
       }
     }
     { HPanel6 HBox
@@ -358,7 +353,6 @@
         MoveScaled(47,0,8,4)
         MinValue = -180
         MaxValue = 180
-        Step = 15
       }
     }
     { HPanel7 HBox
@@ -380,14 +374,32 @@
         MoveScaled(47,0,8,4)
         MinValue = -255
         MaxValue = 255
-        Step = 32
+      }
+    }
+    { HPanel10 HBox
+      MoveScaled(0,24,62,4)
+      { Label11 Label
+        MoveScaled(0,0,15,4)
+        Text = ("Blur")
+      }
+      { sldBlur Slider sldValue
+        Name = "sldBlur"
+        MoveScaled(16,0,24,4)
+        Expand = True
+        MaxValue = 127
+        PageStep = 1
+      }
+      { txtBlur SpinBox txtValue
+        Name = "txtBlur"
+        MoveScaled(47,0,8,4)
+        MaxValue = 127
       }
     }
     { Panel7 Panel
-      MoveScaled(21,24,5,1)
+      MoveScaled(21,29,5,1)
     }
     { HBox3 HBox
-      MoveScaled(0,26,62,4)
+      MoveScaled(0,31,62,4)
       Spacing = True
       { chkBalancePreview CheckBox
         MoveScaled(0,0,14,4)
@@ -414,6 +426,6 @@
     }
   }
   { Separator4 Separator
-    MoveScaled(19,111,15,0)
+    MoveScaled(19,116,15,0)
   }
 }

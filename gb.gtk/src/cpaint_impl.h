@@ -30,6 +30,7 @@
 #ifndef __CPAINT_IMPL_C
 
 extern GB_PAINT_DESC PAINT_Interface;
+extern GB_PAINT_MATRIX_DESC PAINT_MATRIX_Interface;
 
 #endif
 

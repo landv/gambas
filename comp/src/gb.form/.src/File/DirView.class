@@ -66,9 +66,11 @@ Private Sub ClearView()
 
   'IF NOT $hRootPict THEN Picture_Write(Picture["icon:/small/directory"]) 'open
 
-  $hTreeView.MoveFirst
-  $hTreeView.Item.Expanded = True
-  TreeView_Expand
+  If $hTreeView.Count Then
+    $hTreeView.MoveFirst
+    $hTreeView.Item.Expanded = True
+    TreeView_Expand
+  Endif
   $bNoEvent = False
 
 End
@@ -87,6 +89,9 @@ Private Sub Root_Write(sRoot As String)
     sRoot = Left(sRoot, -1)
   Wend
   If sRoot = $sRoot Then Return
+  
+  If Not IsDir(sRoot) Then Error.Raise("Unknown directory")
+  
   $sRoot = sRoot
   RefreshView
   Raise Click
@@ -105,6 +110,7 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
   Dim sText As String
   
   If Not $bShowHidden And If Left(sFile) = "." And If Not bIgnoreHidden Then Return
+  If Not Exist(sDir) Then Return
   
   sParent = sDir
   If GetRoot() = (sDir &/ sFile) Then 

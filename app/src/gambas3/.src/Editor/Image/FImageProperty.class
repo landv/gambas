@@ -36,8 +36,6 @@ Public Sub _new()
   'fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
   'fchIcon.Root = Project.Dir
   
-  Dim hBrush As CReportBrush
-  
   $aGradientColors = [Color.Black, Color.White]
   $aGradientPos = [0, 1]
   
@@ -118,21 +116,23 @@ End
 
 
 
-Private Sub GetColor() As Integer
+Public Sub GetColor(Optional bIgnoreOpacity As Boolean) As Integer
   
   Dim iColor As Integer = cchColor.Value
   
   RememberColor(iColor)
   
-  Return Color.SetAlpha(iColor, 255 - txtOpacity.Value)
+  If Not bIgnoreOpacity Then iColor = Color.SetAlpha(iColor, 255 - txtOpacity.Value)
+  Return iColor
   
 End
 
 
-Public Sub GetBrush(Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember As Boolean) As PaintBrush
+Public Sub GetBrush(hRect As Rect, Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember As Boolean) As PaintBrush
   
   Dim hImage As Image
   Dim hBrush As CReportBrush
+  Dim hPaintBrush As PaintBrush
   Dim I As Integer
   Dim iCol As Integer
   
@@ -140,7 +140,7 @@ Public Sub GetBrush(Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember 
     
     Case 0 ' Color
       
-      Return Paint.Color(GetColor())
+      hPaintBrush = Paint.Color(GetColor())
       
     Case 1
       
@@ -154,7 +154,12 @@ Public Sub GetBrush(Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember 
         Next
       Endif
       
-      Return hBrush.GetBrush(0, 0, 1, 1)
+      hPaintBrush = hBrush.GetBrush(0, 0, 1, 1)
+      
+      If hRect Then  
+        hPaintBrush.Translate(hRect.X, hRect.Y)
+        hPaintBrush.Scale(hRect.W, hRect.H)
+      Endif
       
     Case 2
       
@@ -164,22 +169,29 @@ Public Sub GetBrush(Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember 
         hImage = $aClipboard[gvwClipboard.Row].Image
       Endif
       
-      If Not hImage Then Return Paint.Color(Color.White)
+      If Not hImage Then Return Paint.Color(Color.GetColor())
       If Not bIgnoreOpacity Then hImage = hImage.Copy().Opacity(txtOpacity.Value / 255)
-      Return Paint.Image(hImage)
+      hPaintBrush = Paint.Image(hImage)
+      
+      If hRect Then  
+        hPaintBrush.Translate(hRect.X, hRect.Y)
+        hPaintBrush.Scale(hRect.W / hImage.W, hRect.H / hImage.H)
+      Endif
       
   End Select
+
+  Return hPaintBrush
   
 End
 
-Public Sub PaintForStroke()
+Public Sub PaintForStroke(Optional hRect As Rect)
   
   Dim iSize As Integer = txtSize.Value
   
   If iSize = 0 Then
     Paint.LineWidth = 1
     Paint.AntiAlias = False
-    Paint.LineCap = Paint.LineCapButt
+    Paint.LineCap = Paint.LineCapSquare
   Else
     Paint.LineWidth = iSize
     Paint.AntiAlias = True
@@ -187,13 +199,15 @@ Public Sub PaintForStroke()
     Paint.LineJoin = Paint.LineJoinRound
   Endif
   
-  Paint.Brush = GetBrush()
+  If Not hRect Then hRect = Rect(0, 0, Paint.W, Paint.H)
+  Paint.Brush = GetBrush(hRect)
   
 End
 
-Public Sub PaintForFill()
+Public Sub PaintForFill(Optional hRect As Rect)
   
-  Paint.Brush = GetBrush()
+  If Not hRect Then hRect = Rect(0, 0, Paint.W, Paint.H)
+  Paint.Brush = GetBrush(hRect)
   
 End
 
@@ -230,7 +244,7 @@ End
 
 Public Sub dwgColorStack_MouseDown()
 
-  Dim I As Integer = Mouse.X / dwgColorStack.H
+  Dim I As Integer = Mouse.X / (dwgColorStack.H + 3)
 
   If I < 0 Or If I > $aColor.Max Then Return
   cchColor.Value = $aColor[I]
@@ -323,7 +337,7 @@ Public Sub dwgGradient_Draw()
   Paint.FillRect(0, 0, Paint.W, Paint.H, Color.LightForeground)
   Project.DrawBackground()
   
-  hBrush = GetBrush(True, True)
+  hBrush = GetBrush(Null, True, True)
   hBrush.Scale(dwgGradient.Width, dwgGradient.Height)
   Paint.Brush = hBrush
   'Paint.Brush.Translate(5, 5)
@@ -944,7 +958,7 @@ Public Sub btnBalanceReset_Click()
 
   Dim hCtrl As Slider
   
-  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness]
+  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness, sldBlur]
     hCtrl.Value = 0
   Next
   
@@ -954,7 +968,7 @@ Public Sub HasBalance() As Boolean
   
   Dim hCtrl As Slider
   
-  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness]
+  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness, sldBlur]
     If hCtrl.Value Then Return True
   Next
   
@@ -970,6 +984,7 @@ Public Sub ApplyBalance(hImage As Image)
   hImage.Saturation(sldSaturation.Value / sldSaturation.MaxValue)
   hImage.Lightness(sldLightness.Value / sldLightness.MaxValue)
   hImage.EndBalance
+  If sldBlur.Value Then hImage.Fuzzy(sldBlur.Value)
   
 End
 
@@ -1098,7 +1113,7 @@ End
 
 Public Sub dwgGradientStack_MouseDown()
 
-  Dim I As Integer = Mouse.X / dwgColorStack.H
+  Dim I As Integer = Mouse.X / (dwgColorStack.H + 3)
 
   If I < 0 Or If I > $aGradient.Max Then Return
   FromBrush($aGradient[I])
@@ -1108,7 +1123,6 @@ End
 Private Sub RotateLabel(hLabel As Control, iAng As Integer)
   
   Dim W As Integer = hLabel.Parent.Width - 10
-  Dim H As Integer = hLabel.Parent.Height - 10
   
   hLabel.Move(W / 2 + Cos(Rad(iAng)) * (hLabel.X - W / 2) + Sin(Rad(iAng)) * (hLabel.Y - W / 2), W / 2 - Sin(Rad(iAng)) * (hLabel.X - W / 2) + Cos(Rad(iAng)) * (hLabel.Y - W / 2))
   
@@ -1146,3 +1160,55 @@ Public Sub btnFlipH_Click()
 
 End
 
+
+Public Sub txtOpacity_MouseWheel()
+
+  txtValue_MouseWheel
+
+End
+
+Public Sub txtSize_MouseWheel()
+
+  txtValue_MouseWheel
+  
+
+End
+
+Public Sub txtValue_MouseWheel()
+
+  Dim hSpinBox As SpinBox = Last
+  Dim iVal As Integer
+  
+  If hSpinBox = txtOpacity Then
+    iVal = 16
+  Else If hSpinBox = txtSize Or If hSpinBox = txtBlur Then
+    iVal = 8
+  Else
+    iVal = 16
+  Endif
+  
+  hSpinBox.Value += If(Mouse.Forward, iVal, - iVal)
+  Stop Event
+  
+
+End
+
+Public Sub sldValue_DblClick()
+
+  Last.Value = 0
+  Stop Event
+
+End
+
+Public Sub sldSize_DblClick()
+
+  sldValue_DblClick
+
+End
+
+Public Sub sldOpacity_DblClick()
+
+  txtOpacity.Value = 255
+  Stop Event
+
+End

@@ -1,20 +1,19 @@
 ' Gambas class file
 
-Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP, ACTION_EXTENT
-Public Const ACTION_GRADIENT As Integer = 32
+Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP, ACTION_EXTENT, ACTION_HANDLE
 
-Private Enum CMD_MOVE_TO, CMD_LINE_TO, CMD_RECTANGLE, CMD_ELLIPSE
+Private Enum CMD_MOVE_TO, CMD_LINE_TO ', CMD_RECTANGLE, CMD_ELLIPSE
 
 Public _Cmd As New Byte[]
-Public _X As New Integer[]
-Public _Y As New Integer[]
+Public _X As New Float[]
+Public _Y As New Float[]
 Public _Invert As Boolean
-Public _Magnets As New Point[]
-'Public _Extent As New Rect
+Public _Magnets As New PointF[]
+Public _Matrix As New PaintMatrix
 
 Private $hExtents As PaintExtents
 
-Public Sub MoveTo(X As Integer, Y As Integer)
+Public Sub MoveTo(X As Float, Y As Float)
   
   _Cmd.Add(CMD_MOVE_TO)
   _X.Add(X)
@@ -22,7 +21,7 @@ Public Sub MoveTo(X As Integer, Y As Integer)
   
 End
 
-Public Sub LineTo(X As Integer, Y As Integer)
+Public Sub LineTo(X As Float, Y As Float)
   
   _Cmd.Add(CMD_LINE_TO)
   _X.Add(X)
@@ -36,11 +35,12 @@ Public Sub Paint(hImage As Image, iAction As Integer)
   Dim I As Integer
   Dim hBrush As PaintBrush
   Dim bExtent As Boolean
-  Dim bGradient As Boolean
+  Dim bHandle As Boolean
+  
+  'Dim bGradient As Boolean
   
   bExtent = iAction = ACTION_EXTENT
-  bGradient = iAction And ACTION_GRADIENT
-  iAction = iAction And 7
+  bHandle = iAction = ACTION_HANDLE
   
   If iAction <> ACTION_CLIP Then Paint.Save
   
@@ -48,16 +48,16 @@ Public Sub Paint(hImage As Image, iAction As Integer)
 
     hBrush = Paint.Brush
     
-    If bGradient Then
-      Me.Paint(hImage, ACTION_EXTENT)
-      If bExtent Then bExtent = False
-      With $hExtents
-        hBrush.Translate(.X, .Y)
-        hBrush.Scale(.Width, .Height)
-      End With
-    
-      Paint.Brush = hBrush
-    Endif
+    ' If bGradient Then
+    '   Me.Paint(hImage, ACTION_EXTENT)
+    '   If bExtent Then bExtent = False
+    '   With $hExtents
+    '     hBrush.Translate(.X, .Y)
+    '     hBrush.Scale(.Width, .Height)
+    '   End With
+    ' 
+    '   Paint.Brush = hBrush
+    ' Endif
     
     hTemp = New Image(hImage.W, hImage.H, Color.Transparent)
     
@@ -107,37 +107,48 @@ Public Sub Paint(hImage As Image, iAction As Integer)
     
   Endif
   
-  For I = 0 To _Cmd.Max
+  If bHandle Then
     
-    On _Cmd[I] Goto _MOVE_TO, _LINE_TO, _RECTANGLE, _ELLIPSE
-    Goto NEXT_CMD
-    
-  _MOVE_TO:
-    'Paint.ClosePath
-    Paint.MoveTo(_X[I], _Y[I])
-    Goto NEXT_CMD
-    
-  _LINE_TO:
-    Paint.LineTo(_X[I], _Y[I])
-    Goto NEXT_CMD
-    
-  _RECTANGLE:
-    'Paint.ClosePath
-    Paint.Rectangle(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
-    Inc I
-    Goto NEXT_CMD
-    
-  _ELLIPSE:
-    'Paint.ClosePath
-    Paint.Ellipse(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
-    Inc I
-    Goto NEXT_CMD
-    
-  NEXT_CMD:
-    
-  Next
+    For I = 0 To _Cmd.Max
+      Paint.Rectangle(_X[I] - Paint.LineWidth, _Y[I] - Paint.LineWidth, Paint.LineWidth * 2, Paint.LineWidth * 2)
+    Next
   
-  If bExtent Then $hExtents = Paint.PathExtents
+  Else
+  
+    For I = 0 To _Cmd.Max
+      
+      On _Cmd[I] Goto _MOVE_TO, _LINE_TO, _RECTANGLE, _ELLIPSE
+      Goto NEXT_CMD
+      
+    _MOVE_TO:
+      'Paint.ClosePath
+      Paint.MoveTo(_X[I], _Y[I])
+      Goto NEXT_CMD
+      
+    _LINE_TO:
+      'Paint.CurveTo((_X[I - 1] + _X[I]) / 2, (_Y[I - 1] + _Y[I]) / 2, (_X[I - 1] + _X[I]) / 2, (_Y[I - 1] + _Y[I]) / 2, _X[I], _Y[I])
+      Paint.LineTo(_X[I], _Y[I])
+      Goto NEXT_CMD
+      
+    _RECTANGLE:
+      'Paint.ClosePath
+      Paint.Rectangle(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
+      Inc I
+      Goto NEXT_CMD
+      
+    _ELLIPSE:
+      'Paint.ClosePath
+      Paint.Ellipse(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
+      Inc I
+      Goto NEXT_CMD
+      
+    NEXT_CMD:
+      
+    Next
+      
+    If bExtent Then $hExtents = Paint.PathExtents
+    
+  Endif
   
   If iAction = ACTION_FILL Then 
     
@@ -185,6 +196,10 @@ Public Sub Paint(hImage As Image, iAction As Integer)
     Paint.FillRule = Paint.FillRuleWinding
     Paint.Clip
     
+  Else If iAction = ACTION_HANDLE
+    
+    Paint.Fill
+    
   Endif
   
   If iAction <> ACTION_CLIP Then Paint.Restore
@@ -201,10 +216,11 @@ Public Sub Copy() As CImageSelection
   hSelect._Y = _Y.Copy()
   hSelect._Invert = _Invert
   'hSelect._Extent = _Extent.Copy()
-  hSelect._Magnets = New Point[_Magnets.Count]
+  hSelect._Magnets = New PointF[_Magnets.Count]
   For I = 0 To _Magnets.Max
     hSelect._Magnets[I] = _Magnets[I].Copy()
   Next
+  hSelect._Matrix = _Matrix.Copy()
   
   Return hSelect
   
@@ -232,96 +248,160 @@ Public Sub Clear()
   
 End
 
-Private Sub AddMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer)
+Public Sub AddMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer)
   
-  _Magnets.Add(Point(X, Y))
+  _Magnets.Add(PointF(X, Y))
   
-  _Magnets.Add(Point(X + W \ 2, Y))
-  _Magnets.Add(Point(X + W, Y))
+  _Magnets.Add(PointF(X + W \ 2, Y))
+  _Magnets.Add(PointF(X + W, Y))
   
-  _Magnets.Add(Point(X + W, Y + H \ 2))
-  _Magnets.Add(Point(X + W, Y + H))
+  _Magnets.Add(PointF(X + W, Y + H \ 2))
+  _Magnets.Add(PointF(X + W, Y + H))
   
-  _Magnets.Add(Point(X + W \ 2, Y + H))
-  _Magnets.Add(Point(X, Y + H))
+  _Magnets.Add(PointF(X + W \ 2, Y + H))
+  _Magnets.Add(PointF(X, Y + H))
   
-  _Magnets.Add(Point(X, Y + H \ 2))
+  _Magnets.Add(PointF(X, Y + H \ 2))
   
-  _Magnets.Add(Point(X + W \ 2, Y + H \ 2))
-  
-End
-
-Private Sub RemoveMagnet(X As Integer, Y As Integer)
-
-  Dim I As Integer
-  
-  While I < _Magnets.Count
-    If _Magnets[I].X = X And If _Magnets[I].Y = Y Then
-      _Magnets.Remove(I)
-    Else
-      Inc I
-    Endif
-  Wend
-    
-End
-
-
-Private Sub RemoveMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer)
-  
-  RemoveMagnet(X, Y)
-  
-  RemoveMagnet(X + W \ 2, Y)
-  RemoveMagnet(X + W, Y)
-  
-  RemoveMagnet(X + W, Y + H \ 2)
-  RemoveMagnet(X + W, Y + H)
-  
-  RemoveMagnet(X + W \ 2, Y + H)
-  RemoveMagnet(X, Y + H)
-  
-  RemoveMagnet(X, Y + H \ 2)
-  
-  RemoveMagnet(X + W \ 2, Y + H \ 2)
+  _Magnets.Add(PointF(X + W \ 2, Y + H \ 2))
   
 End
 
+' Private Sub RemoveMagnet(X As Integer, Y As Integer)
+' 
+'   Dim I As Integer
+'   
+'   While I < _Magnets.Count
+'     If _Magnets[I].X = X And If _Magnets[I].Y = Y Then
+'       _Magnets.Remove(I)
+'     Else
+'       Inc I
+'     Endif
+'   Wend
+'     
+' End
 
-Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, bNoMagnet As Boolean)
 
-  If W = 0 Or If H = 0 Then Return
-  
-  _Cmd.Add(iCmd)
-  _Cmd.Add(iCmd)
-  _X.Add(X)
-  _Y.Add(Y)
-  _X.Add(W)
-  _Y.Add(H)
-  
-  If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H)
+' Private Sub RemoveMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer)
+'   
+'   RemoveMagnet(X, Y)
+'   
+'   RemoveMagnet(X + W \ 2, Y)
+'   RemoveMagnet(X + W, Y)
+'   
+'   RemoveMagnet(X + W, Y + H \ 2)
+'   RemoveMagnet(X + W, Y + H)
+'   
+'   RemoveMagnet(X + W \ 2, Y + H)
+'   RemoveMagnet(X, Y + H)
+'   
+'   RemoveMagnet(X, Y + H \ 2)
+'   
+'   RemoveMagnet(X + W \ 2, Y + H \ 2)
+'   
+' End
 
-End
+
+' Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, bNoMagnet As Boolean)
+' 
+'   If W = 0 Or If H = 0 Then Return
+'   
+'   _Cmd.Add(iCmd)
+'   _Cmd.Add(iCmd)
+'   _X.Add(X)
+'   _Y.Add(Y)
+'   _X.Add(W)
+'   _Y.Add(H)
+'   
+'   If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H)
+' 
+' End
 
 Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bNoMagnet As Boolean)
   
-  AddRect(CMD_RECTANGLE, X, Y, W, H, bNoMagnet)
+  'AddRect(CMD_RECTANGLE, X, Y, W, H, bNoMagnet)
+  
+  MoveTo(X, Y)
+  LineTo(X + W, Y)
+  LineTo(X + W, Y + H)
+  LineTo(X, Y + H)
+  LineTo(X, Y)
+  
+  If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H)
   
 End
 
 Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bNoMagnet As Boolean)
   
-  AddRect(CMD_ELLIPSE, X, Y, W, H, bNoMagnet)
+  ' Dim A As Float
+  ' Dim NW, NH As Integer
+  ' Dim AW, AH As Float
+  ' Dim XC, YC, WC, HC As Float
+  ' Dim I As Integer
+  ' 
+  ' NW = Max(4, CInt(W / 10))
+  ' NH = Max(4, CInt(H / 10))
+  ' AW = Pi(0.5) / NW
+  ' AH = Pi(0.5) / NH
+  ' 
+  ' WC = W / 2
+  ' HC = H / 2
+  ' 
+  ' XC = X + WC
+  ' YC = Y + HC
+  ' 
+  ' A = Pi / 4
+  ' MoveTo(XC + Cos(A) * WC, YC + Sin(A) * HC)
+  ' 
+  ' For I = 1 To NW
+  '   A += AW
+  '   LineTo(XC + Cos(A) * WC, YC + Sin(A) * HC)
+  ' Next
+  ' 
+  ' For I = 0 To NH
+  '   A += AH
+  '   LineTo(XC + Cos(A) * WC, YC + Sin(A) * HC)
+  ' Next
+  '   
+  ' For I = 0 To NW
+  '   A += AW
+  '   LineTo(XC + Cos(A) * WC, YC + Sin(A) * HC)
+  ' Next
+  ' 
+  ' For I = 1 To NH
+  '   A += AH
+  '   LineTo(XC + Cos(A) * Wc, YC + Sin(A) * HC)
+  ' Next
+  ' 
+  ' LineTo(XC + Cos(A) * Wc, YC + Sin(A) * HC)
+  
+  Dim A As Integer
+  Dim XC, YC, WC, HC As Float
+  
+  WC = W / 2
+  HC = H / 2
+  XC = X + WC
+  YC = Y + HC
+  
+  MoveTo(XC + WC, YC)
+  For A = 2 To 358 Step 2
+    LineTo(XC + Cos(Rad(A)) * WC, YC + Sin(Rad(A)) * HC)
+  Next
+  LineTo(XC + WC, YC)
+  
+  If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H)
   
 End
 
-Public Sub FindMagnet(X As Integer, Y As Integer, D As Float) As Point
-
-  Dim hPoint As Point
+Static Public Sub FindMagnetFrom(aPoint As PointF[], X As Float, Y As Float, D As Float) As PointF
+  
+  Dim hPoint As PointF
   Dim fDist, fDistMin As Float
-  Dim hPointMin As Point
+  Dim hPointMin As PointF
   
   fDistMin = 1000
   
-  For Each hPoint In _Magnets
+  For Each hPoint In aPoint
     
     fDist = Hyp(hPoint.X - X, hPoint.Y - Y)
     If fDist > D Then Continue
@@ -336,29 +416,51 @@ Public Sub FindMagnet(X As Integer, Y As Integer, D As Float) As Point
   
 End
 
+
+
+Public Sub FindMagnet(X As Float, Y As Float, D As Float) As PointF
+
+  Return FindMagnetFrom(_Magnets, X, Y, D)
+
+End
+
 Public Sub IsInverted() As Boolean
   
   Return _Invert
   
 End
 
-Public Sub GetExtents(hImage As Image) As PaintExtents
+Public Sub GetExtents() As Rect
   
-  Dim hExt As PaintExtents
+  Dim X1, Y1, X2, Y2 As Float
+  Dim I As Integer
 
-  Paint.Save
-  Paint.Reset
-  Paint(hImage, ACTION_EXTENT)
-  Paint.Restore
+  If _Cmd.Count = 0 Then Return
+  
+  X1 = _X[0]
+  Y1 = _Y[0]
+  X2 = X1
+  Y2 = Y1
 
-  hExt As PaintExtents = $hExtents
+  For I = 1 To _Cmd.Max
+    
+    X1 = Min(X1, _X[I])
+    Y1 = Min(Y1, _Y[I])
+    X2 = Max(X2, _X[I])
+    Y2 = Max(Y2, _Y[I])
+    
+  Next
 
-  $hExtents = Null
-  Return hExt
+  X1 = Floor(X1)
+  Y1 = Floor(Y1)
+  X2 = Ceil(X2)
+  Y2 = Ceil(Y2)
+
+  Return Rect(X1, Y1, Max(1, X2 - X1), Max(1, Y2 - Y1))
   
 End
 
-Public Sub AddMagnet(hPoint As Point)
+Public Sub AddMagnet(hPoint As PointF)
 
   If _Magnets.Count And If _Magnets[_Magnets.Max].X = hPoint.X And If _Magnets[_Magnets.Max].Y = hPoint.Y Then Return
   
@@ -366,80 +468,106 @@ Public Sub AddMagnet(hPoint As Point)
   
 End
 
-Public Sub AddMagnetFromLast()
-  
-  If _Cmd.Count = 0 Then Return
-  
-  Select Case _Cmd[_Cmd.Max]
-    Case CMD_ELLIPSE, CMD_RECTANGLE
-      AddMagnetFromRect(_X[_X.Max - 1], _Y[_Y.Max - 1], _X[_X.Max], _Y[_Y.Max])
-  End Select
+' Private Sub Remove(I As Integer)
+' 
+'   RemoveMagnet(_X[I], _Y[I])
+' 
+'   _Cmd.Remove(I)
+'   _X.Remove(I)
+'   _Y.Remove(I)
+' 
+' End
+
+Public Sub Enlarge((iSize) As Integer, (bDup) As Boolean)
   
 End
 
-Private Sub Remove(I As Integer)
-
-  If _Cmd[I] = CMD_ELLIPSE Or If _Cmd[I] = CMD_RECTANGLE Then
-    RemoveMagnetFromRect(_X[I], _Y[I], _X[I + 1], _Y[I + 1])
-    _Cmd.Remove(I)
-    _X.Remove(I)
-    _Y.Remove(I)
-  Else
-    RemoveMagnet(_X[I], _Y[I])
-  Endif
-
-  _Cmd.Remove(I)
-  _X.Remove(I)
-  _Y.Remove(I)
-
-End
-
-Public Sub Enlarge(iSize As Integer, bDup As Boolean)
+Public Sub Apply(hMatrix As PaintMatrix)
   
+  Dim hPoint As PointF
   Dim I As Integer
   
-  If iSize = 0 Then Return
-  If _Invert Then iSize = - iSize
+  For I = 0 To _Cmd.Max
+    hPoint = hMatrix.Map(PointF(_X[I], _Y[I]))
+    _X[I] = hPoint.X
+    _Y[I] = hPoint.Y
+  Next
   
-  If bDup Then
-    
-    For I = 0 To _Cmd.Max
+  For I = 0 To _Magnets.Max
+    _Magnets[I] = hMatrix.Map(_Magnets[I])
+  Next
+  
+  '_Matrix = hMatrix.Multiply(_Matrix)
+  _Matrix = _Matrix.Multiply(hMatrix)
+  
+End
 
-      Select Case _Cmd[I]
-        
-        Case CMD_ELLIPSE, CMD_RECTANGLE
-          AddRect(_Cmd[I], _X[I] - iSize, _Y[I] - iSize, _X[I + 1] + iSize * 2, _Y[I + 1] + iSize * 2, False)
-          Inc I
-          
-      End Select
-      
-    Next
-    
-  Else
-    
-    I = 0
-    While I < _Cmd.Count
-      
-      Select Case _Cmd[I]
-        
-        Case CMD_ELLIPSE, CMD_RECTANGLE
-          _X[I] -= iSize
-          _Y[I] -= iSize
-          _X[I + 1] += iSize * 2
-          _Y[I + 1] += iSize * 2
-          
-          If _X[I + 1] <= 0 Or If _Y[I + 1] <= 0 Then 
-            Remove(I)
-            Continue
-          Endif
-          Inc I
-        
-      End Select
-      
-      Inc I
-      
-    Wend
-    
-  Endif
+Public Sub HFlip()
+  
+  Dim hExt As Rect = GetExtents()
+  Dim I As Integer
+  Dim X As Float
+  
+  X = (hExt.X + hExt.W / 2) * 2
+  
+  For I = 0 To _Cmd.Max
+    _X[I] = X - _X[I]
+  Next
+  
+  For I = 0 To _Magnets.Max
+    _Magnets[I].X = X - _Magnets[I].X
+  Next
+  
+End
+
+Public Sub VFlip()
+  
+  Dim hExt As Rect = GetExtents()
+  Dim I As Integer
+  Dim Y As Float
+  
+  Y = (hExt.Y + hExt.H / 2) * 2
+  
+  For I = 0 To _Cmd.Max
+    _Y[I] = Y - _Y[I]
+  Next
+  
+  For I = 0 To _Magnets.Max
+    _Magnets[I].Y = Y - _Magnets[I].Y
+  Next
+  
+  
+End
+
+Public Sub Rotate(fAngle As Float)
+
+  Dim hMatrix As New PaintMatrix
+  Dim hExt As Rect = GetExtents()
+  
+  hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
+  hMatrix.Rotate(fAngle)
+  hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  Apply(hMatrix)
+  
+End
+
+Public Sub Scale(SX As Float, SY As Float)
+  
+  Dim hMatrix As New PaintMatrix
+  Dim hExt As Rect = GetExtents()
+  
+  hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
+  hMatrix.Scale(SX, SY)
+  hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  Apply(hMatrix)
+  
+End
+
+Public Sub Translate(DX As Float, DY As Float)
+
+  Dim hMatrix As New PaintMatrix
+  
+  hMatrix.Translate(DX, DY)
+  Apply(hMatrix)
   
 End

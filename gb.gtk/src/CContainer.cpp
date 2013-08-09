@@ -551,7 +551,12 @@ GB_DESC CUserControlDesc[] =
   GB_PROPERTY("_Container", "Container", UserControl_Container),
   GB_PROPERTY("_AutoResize", "b", Container_AutoResize),
 	GB_PROPERTY("_Arrangement", "i", Container_Arrangement),
-  
+	GB_PROPERTY("_Padding", "i", Container_Padding),
+	GB_PROPERTY("_Spacing", "b", Container_Spacing),
+	GB_PROPERTY("_Margin", "b", Container_Margin),
+	GB_PROPERTY("_Indent", "b", Container_Indent),
+	GB_PROPERTY("_Invert", "b", Container_Invert),
+
 	USERCONTROL_DESCRIPTION,
 
 	GB_END_DECLARE

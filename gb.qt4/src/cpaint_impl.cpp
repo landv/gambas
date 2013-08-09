@@ -1203,6 +1203,11 @@ static void TransformCreate(GB_TRANSFORM *matrix)
 	*matrix = (GB_TRANSFORM)(new QTransform());
 }
 
+static void TransformCopy(GB_TRANSFORM *matrix, GB_TRANSFORM copy)
+{
+	*matrix = (GB_TRANSFORM)(new QTransform(*(QTransform *)copy));
+}
+
 static void TransformDelete(GB_TRANSFORM *matrix)
 {
 	delete (QTransform *)*matrix;
@@ -1232,7 +1237,7 @@ static void TransformScale(GB_TRANSFORM matrix, float sx, float sy)
 static void TransformRotate(GB_TRANSFORM matrix, float angle)
 {
 	QTransform *t = (QTransform *)matrix;
-	t->rotate(to_deg(-angle));
+	t->rotateRadians(-angle);
 }
 
 static int TransformInvert(GB_TRANSFORM matrix)
@@ -1255,6 +1260,11 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 	QTransform *t2  = (QTransform *)matrix2;
 	
 	*t = *t * *t2;
+}
+
+static void TransformMap(GB_TRANSFORM matrix, double *x, double *y)
+{
+	((QTransform *)matrix)->map(*x, *y, x, y);
 }
 
 
@@ -1316,17 +1326,21 @@ GB_PAINT_DESC PAINT_Interface =
 		BrushLinearGradient,
 		BrushRadialGradient,
 		BrushMatrix,
-	},
-	{
-		TransformCreate,
-		TransformDelete,
-		TransformInit,
-		TransformTranslate,
-		TransformScale,
-		TransformRotate,
-		TransformInvert,
-		TransformMultiply
 	}
+};
+
+GB_PAINT_MATRIX_DESC PAINT_MATRIX_Interface =
+{
+	TransformCreate,
+	TransformCopy,
+	TransformDelete,
+	TransformInit,
+	TransformTranslate,
+	TransformScale,
+	TransformRotate,
+	TransformInvert,
+	TransformMultiply,
+	TransformMap
 };
 
 void PAINT_begin(void *device)
