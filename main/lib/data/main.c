@@ -24,7 +24,6 @@
 #include "c_list.h"
 #include "c_deque.h"
 #include "c_circular.h"
-#include "c_avltree.h"
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
