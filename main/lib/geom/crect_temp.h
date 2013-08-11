@@ -344,8 +344,8 @@ GB_DESC __name##Desc[] =                                                        
   GB_METHOD("Move", NULL, __name##_Move, "(X)" __sign "(Y)" __sign "[(Width)" __sign "(Height)" __sign "]"),                  \
   GB_METHOD("Resize", NULL, __name##_Resize, "(Width)" __sign "(Height)" __sign ""),                                          \
   GB_METHOD("Translate", NULL, __name##_Translate, "(DX)" __sign "(DY)" __sign ""),                                           \
-  GB_METHOD("Union", #__name, __name##_Union, "(Rect)Rect;"),                                                                 \
-  GB_METHOD("Intersection", #__name, __name##_Intersection, "(Rect)Rect;"),                                                   \
+  GB_METHOD("Union", #__name, __name##_Union, "(Rect)" #__name ";"),                                                                 \
+  GB_METHOD("Intersection", #__name, __name##_Intersection, "(Rect)" #__name ";"),                                                   \
   GB_METHOD("Contains", "b", __name##_Contains, "(X)" __sign "(Y)" __sign ""),                                                \
   GB_METHOD("Adjust", NULL, __name##_Adjust, "(Left)" __sign "[(Top)" __sign "(Right)" __sign "(Bottom)" __sign "]"),         \
   GB_METHOD("Center", #__pname, __name##_Center, NULL),                                                                       \

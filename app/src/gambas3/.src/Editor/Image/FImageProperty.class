@@ -936,12 +936,22 @@ Public Sub GetClipboard() As Image
 
   Dim hImage As Image
   
+  If tabBrush.Index <> 2 Then Return
+  
   Try hImage = $aClipboard[gvwClipboard.Row].Image
   If Not hImage Then Return
   
   Return hImage.Copy().Opacity(txtOpacity.Value / 255)
  
 End
+
+Public Sub GetShape() As CImageSelection
+  
+  If tabBrush.Index <> 3 Then Return
+  Try Return $aShape[gvwShape.Row]
+  
+End
+
 
 Public Sub sldValue_Change()
 
@@ -1280,7 +1290,7 @@ End
 
 Public Sub gvwShape_Activate()
 
-  Try Project.ActiveForm.PasteShape($aShape[gvwShape.Row])
+  Project.ActiveForm.PasteShape($aShape[gvwShape.Row])
 
 End
 
@@ -1288,13 +1298,37 @@ Private Sub InitShapes()
 
   $aShape = New CImageSelection[]
   
-  $aShape.Add(CImageSelection.FromString(("Arrow"), "0,0.5;1,0.5  0.8,0.3;1,0.5;0.8,0.7", [0, 0.5, 1, 0.5, 0.8, 0.3, 0.8, 0.7]))
-  $aShape.Add(CImageSelection.FromString(("Arrow #2"), "0,1;0,2;4,2;4,3;6,1.5;4,0;4,1;0,1", [0.5, 1.5, 6, 1.5]))
-  $aShape.Add(CImageSelection.FromString(("Triangle"), "0,0;0,1;0.86602540378444,0.5;0,0", [0, 0, 0, 1, 0.86602540378444, 0.5, 0, 0, 0.28867513459481, 0.5, 0, 0.5, 0.43301270189222, 0.75, 0.43301270189222, 0.25]))
-  $aShape.Add(CImageSelection.FromString(("Square triangle"), "0,0;1,0;0,1;0,0", [0, 0, 1, 0, 0, 1, 1 / 3, 1 / 3, 0.5, 0, 0.5, 0.5, 0, 0.5]))
-  $aShape.Add(CImageSelection.FromString(("Pentagon"), "1,0;0.3090169944,0.9510565163;-0.8090169944,0.5877852523;-0.8090169944,-0.5877852523;0.3090169944,-0.9510565163;1,0", [1, 0, 0.3090169944, 0.9510565163, -0.8090169944, 0.5877852523, -0.8090169944, -0.5877852523, 0.3090169944, -0.9510565163, 1, 0, 0, 0]))
-  $aShape.Add(CImageSelection.FromString(("Hexagon"), "1,0;0.5,0.8660254038;-0.5,0.8660254038;-1,0;-0.5,-0.8660254038;0.5,-0.8660254038;1,0", [1, 0, 0.5, 0.8660254038, -0.5, 0.8660254038, -1, 0, -0.5, -0.8660254038, 0.5, -0.8660254038, 1, 0, 0, 0]))
+  $aShape.Add(CImageSelection.FromString(("Arrow"), "-0.5,0.5*;1,0.5*  0.8,0.3*;1,0.5*;0.8,0.7*"))
+  $aShape.Add(CImageSelection.FromString(("Arrow #2"), "0,1;0,2;4,2;4,3;6,1.5*;4,0;4,1;0,1;0.5,1.5+"))
+  $aShape.Add(CImageSelection.FromString(("Triangle"), "0,0*;0,1*;0.86602540378444,0.5*;0,0;0.28867513459481,0.5+;0,0.5+;0.43301270189222,0.75+;0.43301270189222,0.25+"))
+  $aShape.Add(CImageSelection.FromString(("Square triangle"), "0,0*;1,0*;0,1*;0,0;1,0+;0,1+;0.333333333333,0.333333333333+;0.5,0+;0.5,0.5+;0,0.5+"))
+  $aShape.Add(CImageSelection.FromString(("Pentagon"), "1,0*;0.3090169944,0.9510565163*;-0.8090169944,0.5877852523*;-0.8090169944,-0.5877852523*;0.3090169944,-0.9510565163*;1,0"))
+  $aShape.Add(CImageSelection.FromString(("Hexagon"), "1,0*;0.5,0.8660254038*;-0.5,0.8660254038*;-1,0*;-0.5,-0.8660254038*;0.5,-0.8660254038*;1,0*"))
   
   gvwShape.Rows.Count = $aShape.Count
 
+End
+
+Public Sub txtGridRes_Change()
+
+  Try Project.ActiveForm.UpdateGrid
+
+End
+
+Public Sub cmbGridSub_Click()
+
+  Try Project.ActiveForm.UpdateGrid
+
+End
+
+Public Sub GetGridResolution() As Integer
+  
+  Return txtGridRes.Value
+  
+End
+
+Public Sub GetGridSubdivision() As Integer
+  
+  Return CInt(cmbGridSub.Text)
+  
 End

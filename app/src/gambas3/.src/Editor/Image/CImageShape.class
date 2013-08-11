@@ -1,0 +1,240 @@
+' Gambas class file
+
+Static Public FindDistance As Float
+
+Public Name As String
+Public Points As New PointF[]
+Public Magnets As New PointF[]
+
+Public _Extents As RectF
+Public _Center As PointF
+
+Public Sub Paint()
+  
+  Dim I As Integer
+  
+  If Points.Count < 2 Then Return
+  
+  Paint.MoveTo(Points[0].X, Points[0].Y)
+  For I = 1 To Points.Max
+    Paint.LineTo(Points[I].X, Points[I].Y)
+  Next
+  
+End
+
+Public Sub PaintCenter()
+
+  With GetCenter()
+    Paint.Arc(.X, .Y, Paint.LineWidth * 2)
+  End With
+  
+End
+
+Public Sub PaintHandle()
+
+  Dim hPoint As PointF
+  Dim W As Float = Paint.LineWidth
+  Dim W2 As Float = W * 2
+  
+  For Each hPoint In Points
+    Paint.Rectangle(hPoint.X - W, hPoint.Y - W, W2, W2)
+  Next
+  
+  PaintCenter
+  
+End
+
+Public Sub PaintMagnet()
+
+  Dim hPoint As PointF
+  Dim W As Float = Paint.LineWidth
+  Dim W2 As Float = W * 2
+  
+  For Each hPoint In Magnets
+    Paint.Rectangle(hPoint.X - W, hPoint.Y - W, W2, W2)
+  Next
+  
+  With GetExtents()
+    Paint.Rectangle(.X - W, .Y - W, W2, W2)
+    Paint.Rectangle(.X + .W - W, .Y - W, W2, W2)
+    Paint.Rectangle(.X - W, .Y + .H - W, W2, W2)
+    Paint.Rectangle(.X + .W - W, .Y + .H - W, W2, W2)
+  End With
+  
+End
+
+
+Public Sub GetCenter() As PointF
+  
+  If Points.Count = 0 Then Return
+  
+  Return GetExtents().Center()
+  
+End
+
+Public Sub Add(hPoint As PointF, Optional I As Integer = -1)
+  
+  Points.Add(hPoint, I)
+  _Extents = Null
+  
+End
+
+Public Sub Remove(I As Integer)
+  
+  Points.Remove(I)
+  _Extents = Null
+  
+End
+
+
+Public Sub Copy() As CImageShape
+  
+  Dim hCopy As New CImageShape
+  Dim I As Integer
+  
+  hCopy.Name = Name
+  
+  hCopy.Points = New PointF[Points.Count]
+  For I = 0 To Points.Max
+    hCopy.Points[I] = Points[I].Copy()
+  Next
+  
+  hCopy.Magnets = New PointF[Magnets.Count]
+  For I = 0 To Magnets.Max
+    hCopy.Magnets[I] = Magnets[I].Copy()
+  Next
+  
+  If _Extents Then hCopy._Extents = _Extents.Copy()
+  
+  Return hCopy
+  
+End
+
+Public Sub FindPoint(hSearch As PointF, D As Float, Optional bMidSegment As Boolean, iIgnore As Integer = -1) As Integer
+  
+  Dim X, Y As Float
+  Dim fDist, fDistMin As Float
+  Dim IMin As Integer
+  Dim I As Integer
+  
+  X = hSearch.X
+  Y = hSearch.Y
+  fDistMin = D
+  IMin = -1
+  
+  If bMidSegment Then
+
+    For I = 0 To Points.Max - 1
+      
+      fDist = Abs((Points[I] + Points[I + 1]) / 2 - hSearch)
+      If fDist < fDistMin Then
+        IMin = I
+        fDistMin = fDist
+      Endif
+      
+    Next
+  
+  Else
+
+    For I = 0 To Points.Max
+      
+      If I = iIgnore Then Continue
+      
+      fDist = Abs(Points[I] - hSearch)
+      If fDist < fDistMin Then
+        IMin = I
+        fDistMin = fDist
+      Endif
+      
+    Next
+  
+  Endif
+  
+  FindDistance = fDistMin
+  Return IMin
+  
+End
+
+Public Sub GetExtents() As RectF
+  
+  Dim X1, Y1, X2, Y2 As Float
+  Dim I As Integer
+
+  If Points.Count = 0 Then Return
+  
+  If Not _Extents Then 
+  
+    X1 = Points[0].X
+    Y1 = Points[0].Y
+    X2 = X1
+    Y2 = Y1
+  
+    For I = 1 To Points.Max
+      
+      With Points[I]
+        X1 = Min(X1, .X)
+        Y1 = Min(Y1, .Y)
+        X2 = Max(X2, .X)
+        Y2 = Max(Y2, .Y)
+      End With
+      
+    Next
+  
+    ' X1 = Floor(X1)
+    ' Y1 = Floor(Y1)
+    ' X2 = Ceil(X2)
+    ' Y2 = Ceil(Y2)
+  
+    _Extents = RectF(X1, Y1, X2 - X1, Y2 - Y1)
+    
+  Endif
+  
+  Return _Extents.Copy()  
+  
+End
+
+Public Sub Apply(hMatrix As PaintMatrix)
+  
+  Dim I As Integer
+  
+  For I = 0 To Points.Max
+    Points[I] = hMatrix.Map(Points[I])
+  Next
+
+  For I = 0 To Magnets.Max
+    Magnets[I] = hMatrix.Map(Magnets[I])
+  Next
+
+  _Extents = Null
+  
+End
+
+Public Sub IsVoid() As Boolean
+  
+  Return Points.Count = 0
+  
+End
+
+Public Sub AddMagnet(hPoint As PointF)
+  
+  If Magnets.Count And If Magnets[Magnets.Max] = hPoint Then Return
+  Magnets.Add(hPoint.Copy())
+  
+End
+
+Public Sub FindMagnet(hPoint As PointF, D As Float, Optional bIgnoreSame As Boolean) As PointF
+
+  Return CImageSelection.FindMagnetFrom(Magnets, hPoint, D, bIgnoreSame)
+  
+  With GetExtents()
+    Return CImageSelection.FindMagnetFrom([PointF(.X, .Y), PointF(.X + .W, .Y), PointF(.X + .W, .Y + .H), PointF(.X, .Y + .H)], hPoint, D, bIgnoreSame)
+  End With
+
+End
+
+Public Sub SetPoint(iPoint As Integer, hPoint As PointF)
+  
+  Points[iPoint] = hPoint.Copy()
+  _Extents = Null
+  
+End

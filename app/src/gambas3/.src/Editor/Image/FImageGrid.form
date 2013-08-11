@@ -3,4 +3,84 @@
 { Form Form
   MoveScaled(0,0,64,64)
   Text = ("Image grid")
+  { chkGrid CheckBox
+    MoveScaled(1,31,36,3)
+    Text = ("Display grid")
+  }
+  { btnSync ToggleButton
+    MoveScaled(33,5,2,9)
+    Picture = Picture["img/32/linked.png"]
+    Border = False
+    Value = True
+  }
+  { btnCancel Button
+    MoveScaled(44,6,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnOK Button
+    MoveScaled(44,1,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { txtHeight2 SpinBox
+    MoveScaled(18,25,7,4)
+    MinValue = 1
+    MaxValue = 65536
+  }
+  { txtWidth2 SpinBox
+    MoveScaled(18,20,7,4)
+    MinValue = 1
+    MaxValue = 65536
+  }
+  { Label8 Label
+    MoveScaled(3,25,15,4)
+    Text = ("Vertical")
+  }
+  { btnSync2 ToggleButton
+    MoveScaled(26,20,2,9)
+    Picture = Picture["img/32/linked.png"]
+    Border = False
+    Value = True
+  }
+  { Label7 Label
+    MoveScaled(3,20,15,4)
+    Text = ("Horizontal")
+  }
+  { Label6 Label
+    MoveScaled(1,15,28,4)
+    Font = Font["Bold"]
+    Text = ("Subdivision")
+  }
+  { Label3 Label
+    MoveScaled(1,1,28,4)
+    Font = Font["Bold"]
+    Text = ("Resolution")
+  }
+  { Label5 Label
+    MoveScaled(30,10,3,4)
+    Text = ("px")
+  }
+  { Label4 Label
+    MoveScaled(30,5,3,4)
+    Text = ("px")
+  }
+  { txtHeight SpinBox
+    MoveScaled(18,10,11,4)
+    MinValue = 1
+    MaxValue = 65536
+  }
+  { txtWidth SpinBox
+    MoveScaled(18,5,11,4)
+    MinValue = 1
+    MaxValue = 65536
+  }
+  { Label2 Label
+    MoveScaled(3,10,15,4)
+    Text = ("Vertical")
+  }
+  { Label1 Label
+    MoveScaled(3,5,15,4)
+    Text = ("Horizontal")
+  }
 }

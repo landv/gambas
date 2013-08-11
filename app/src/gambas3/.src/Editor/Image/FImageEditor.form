@@ -225,7 +225,7 @@
       ToolTip = "Zoom level"
       Action = ".zoom"
       ReadOnly = True
-      List = ["0.25x", "0.33x", "0.5×", "1×", "2×", "3×", "4×", "5x", "6×", "8×", "10×", "12×", "16×", "24×", "32×"]
+      List = ["0.25×", "0.33×", "0.5×", "1×", "2×", "3×", "4×", "5x", "6×", "8×", "10×", "12×", "16×", "24×", "32×"]
     }
     { btnZoomOut ToolButton
       MoveScaled(39,0,4,4)
@@ -247,11 +247,11 @@
     }
     { btnGrid ToolButton
       MoveScaled(49,0,4,4)
-      Visible = False
       ToolTip = ("Drawing grid")
       Action = ".grid"
       AutoResize = True
       Picture = Picture["icon:/small/grid"]
+      Toggle = True
     }
     { Separator2 Separator
       MoveScaled(52,0,1.1429,4)
@@ -632,6 +632,6 @@
   { Toolbar image
     Text = "Image editor"
     List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,resize-selection,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-change,invert,|,stroke,fill,clear,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
+    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-change,invert,|,stroke,fill,clear,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
   }
 }
