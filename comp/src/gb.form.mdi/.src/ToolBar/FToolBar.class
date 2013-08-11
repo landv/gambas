@@ -22,6 +22,7 @@ Private $bPressed As Boolean
 Private $sDropAction As String
 Private $iIconSize As Integer
 Private $iButtonWidth As Integer
+Private $nRow As Integer
 
 Private $bOpened As Boolean
 
@@ -42,6 +43,11 @@ Public Sub _new()
   
 End
 
+Private Sub GetToolBar() As ToolBar
+
+  Return Me.Parent
+
+End
 
 Public Sub IsVertical() As Boolean
   
@@ -62,7 +68,7 @@ Public Function GetContainer() As Container
   
 End
 
-Private Function GetToolBarWidth(Optional bPadding As Boolean) As Integer
+Private Function GetToolBarWidth(Optional (bPadding) As Boolean) As Integer
   
   Dim hCtrl As Control
   Dim W As Integer
@@ -92,79 +98,57 @@ Private Function GetToolBarWidth(Optional bPadding As Boolean) As Integer
     
   Endif
   
-  If bPadding Then W += panToolBar.Padding * 2 
+  'If bPadding Then W += panToolBar.Padding * 2 
   Return W
   
 End
 
-Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
+Private Sub GetToolBarHeight(Optional WW As Integer, (bPadding) As Boolean) As Integer
   
   Dim hCtrl As Control
-  Dim H As Integer
-  Dim HH As Integer
+  Dim X, W, H As Integer
+  Dim SH As Integer
 
   If $bReallyVertical Then
   
-    If dwgHandle.Visible Then HH = dwgHandle.H
+    If dwgHandle.Visible Then SH = dwgHandle.H
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
-        If hCtrl.Expand Then Return GetFreeHeight() - HH
+        If hCtrl.Expand Then Return GetFreeHeight() - SH
         H += hCtrl.H
       Endif
     Next
     
-    ' If dwgHandle.Visible Then Y = dwgHandle.H * 2
-    ' 
-    ' For Each hCtrl In panToolBar.Children
-    '   If hCtrl.Visible Then 
-    '     If X >= GetMaxWidth() Then
-    '       X = 0
-    '       Y += H
-    '       H = 0
-    '     Endif
-    '     W += hCtrl.W
-    '     H = Max(H, hCtrl.H)
-    '     If hCtrl.Expand Then W = GetMaxWidth()
-    '     X += W
-    '   Endif
-    ' Next
-    ' 
-    ' H = Y + H
-    
   Else
   
-    ' For Each hCtrl In panToolBar.Children
-    '   If hCtrl.Visible Then 
-    '     If X >= GetFreeWidth() Then
-    '       X = 0
-    '       Y += H
-    '       H = 0
-    '     Endif
-    '     W += hCtrl.W
-    '     If Not hCtrl Is Separator Then
-    '       H = Max(H, hCtrl.H)
-    '       Debug hCtrl.Name;; hCtrl.H
-    '     Endif
-    '     If hCtrl.Expand Then 
-    '       X = GetFreeWidth()
-    '     Else
-    '       X += W
-    '     Endif
-    '   Endif
-    ' Next
-    ' 
-    ' H = Y
+    If dwgHandle.Visible Then SH = dwgHandle.W
+  
+    'If ToolBarKey = "image" Then Debug ToolBarKey;; "WW =";; WW
+  
+    $nRow = 1
+    X = SH
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Visible Then 
+        'If ToolBarKey = "image" Then Debug ToolbarKey;; $nRow;; hCtrl.Name;; X;; hCtrl.W;; If(hCtrl.Expand, "E", "")
+        W = hCtrl.W
+        If hCtrl.Expand Then W = Desktop.Scale
+        If (X + W) > WW Then
+          X = SH
+          Inc $nRow
+        Endif
+        X += W
+      Endif
+    Next
 
-    ' For Each hCtrl In panToolBar.Children
-    '   If Not hCtrl.Visible Then Continue
-    '   H = Max(H, hCtrl.H)
-    ' Next
-    H = $iButtonWidth
+    H = $iButtonWidth * $nRow
+    'If ToolBarKey = "image" Then Debug ToolBarKey;; $nRow
     
   Endif
   
-  If bPadding Then H += panToolBar.Padding * 2
+  'If bPadding Then H += panToolBar.Padding * 2
+
+  'If ToolBarKey = "image" Then Debug ToolBarKey;; "H = "; H
   Return H
   
 End
@@ -190,16 +174,96 @@ Private Function GetFreeHeight() As Integer
   
 End
 
+Private Sub GetParentArrangement() As Integer
+
+  Dim hObject As Object = GetToolBar().Parent
+  Dim iArrange As Integer
+
+  Try iArrange = hObject.Arrangement
+  If Not Error Then Return iArrange
+  If hObject Is VBox Then
+    Return Arrange.Vertical
+  Else If hObject Is HBox Then
+    Return Arrange.Horizontal
+  Endif
+
+End
+
 Private Sub SetArrangement()
   
-  Dim hToolbar As ToolBar = Me.Parent
+  Dim hToolbar As ToolBar = GetToolBar()
+  Dim SH As Integer
+  Dim X, Y, W, NX, WT As Integer
+  Dim hCtrl As Control
   
   If $bDesign Then Return
-  hToolBar.Padding = 0
-  'Print panToolBar.H;; "["; hToolbar.Arrangement; "]";;
-  hToolbar.Arrangement = Arrange.None
-  hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
-  'Print "==>";; panToolBar.H;; "["; hToolbar.Arrangement; "]"
+  'If $bInSetArrangement Then Return
+  
+  'If ToolbarKey = "image" Then Debug ToolBarKey;; panToolBar.W; " x "; panToolBar.H;; "["; hToolbar.Arrangement; "]"
+  
+  If Not $bReallyVertical Then
+    
+    If dwgHandle.Visible Then SH = dwgHandle.W
+  
+    If $nRow = 1 Then
+      For Each hCtrl In panToolBar.Children
+        If hCtrl.Visible Then 
+          If hCtrl.Expand Then
+            'Debug ToolbarKey;; "Expand";; hCtrl.Name
+            Inc NX
+          Else
+            WT += hCtrl.W
+          Endif
+        Endif
+      Next
+      WT = Max(0, panToolBar.W - WT)
+      'Debug ToolBarKey;; "WT = "; WT;; NX
+    Endif
+  
+    X = SH
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Visible Then 
+        W = hCtrl.W
+        If hCtrl.Expand Then
+          If $nRow = 1 Then
+            If NX And If WT > 0 Then
+              W = WT \ NX
+              WT -= W
+              Dec NX
+            Else
+              W = Desktop.Scale
+            Endif
+          Else
+            If hCtrl.Next Then
+              W = Desktop.Scale
+            Else
+              W = Max(Desktop.Scale, panToolBar.W - X)
+            Endif
+          Endif
+        Endif
+          'X += hCtrl.W
+        If (X + W) > panToolBar.W Then
+          X = SH
+          Y += $iButtonWidth
+          If hCtrl.Expand And If Not hCtrl.Next Then W = panToolBar.W - X
+        Endif
+        'If ToolbarKey = "editor" Then Debug ToolBarKey;; hCtrl.Name;; X;; Y;; W
+        hCtrl.Move(X, Y, W)
+        X += W
+      Endif
+    Next
+
+  Else
+    
+    If $nRow = 1 Then
+      hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal)
+    Else
+      hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Row) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
+    Endif
+  
+  Endif
+  
+  'If ToolbarKey = "image" Then Debug "==>";; ToolBarKey;; panToolBar.W; " x "; panToolBar.H;; "["; hToolbar.Arrangement; "]"
   
 End
 
@@ -208,14 +272,17 @@ Private Sub Update()
   Dim W, H As Integer
   Dim XH, YH, WH, HH As Integer 
   Dim XP, YP As Integer 
+  Dim hToolbar As ToolBar = GetToolBar()
 
-  If Not Object.IsValid(Me.Parent) Then Return
-  If Not Object.IsValid(Me.Parent.Parent) Then Return
+  If Not Object.IsValid(hToolbar) Then Return
+  If Not Object.IsValid(hToolbar.Parent) Then Return
   If $iLock Then Return
   If $bLock Then Return
   $bLock = True
   
-  ToolBar(Me.Parent).Arrangement = Arrange.None
+  'If ToolBarKey = "image" Then Debug System.Backtrace.Join(" ")
+  
+  'hToolbar.Arrangement = Arrange.None
   CheckSeparators
 
   If Not $bReallyVertical Then
@@ -275,7 +342,8 @@ Private Sub Update()
       Else 
         W = Max($iHandleSize, GetToolBarWidth() + WH)
       Endif
-      H = GetToolBarHeight(True)
+      If GetParentArrangement() = Arrange.Vertical Then W = Max(W, GetToolBar().Parent.ClientW)
+      H = GetToolBarHeight(W, True)
     Else
       If $bAutoResize Then
         'W = Max(GetToolBarWidth(True), GetMaxWidth())
@@ -290,10 +358,11 @@ Private Sub Update()
     
     If dwgHandle.Visible Then dwgHandle.Move(XH, YH, WH, HH)
     If Not $bReallyVertical Then
-      panToolBar.Move(XP, YP, W - WH)
+      panToolBar.Move(XP, YP, W - WH, H)
     Else
       panToolBar.Move(XP, YP, panToolBar.W, H - HH)
     Endif
+    'If ToolBarKey = "image" Then Debug ToolBarKey;; panToolBar.W; " x "; panToolBar.H;; "(";; H;; HH; ")"
 
   Endif
   
@@ -319,6 +388,7 @@ Private Sub Update()
   'If panToolBar.Children.Count Then Debug "=>";; panToolBar.Children[0].X;; panToolBar.Children[0].Y;; panToolBar.Children[0].W;; panToolBar.Children[0].H
   
   If Not $bDesign Then 
+    Me.Resize(W, H)
     Me.Parent.Resize(W, H)
   Endif
   
@@ -343,7 +413,11 @@ End
 Public Sub panToolbar_BeforeArrange()
 
   If $bDesign Then Return
+  
+  'If ToolbarKey = "image" And If panToolBar.H = 630 Then Debug System.Backtrace.Join(" ")
+  
   Update
+  SetArrangement
 
 End
 
@@ -1055,10 +1129,10 @@ End
 
 Public Sub ToolBarExpander_Draw()
   
-  If $bConfigure Then
+  'If $bConfigure Then
     If Not $hExpanderBg Then $hExpanderBg = Picture["img/expander.png"]
     Draw.Tile($hExpanderBg, 0, (Last.H - $hExpanderBg.H) / 2, Last.W, $hExpanderBg.H)
-  Endif
+  'Endif
   
 End
 
@@ -1278,7 +1352,7 @@ End
 
 Public Sub LoadConfig(Optional bInit As Boolean)
   
-  Dim hToolbar As ToolBar = Me.Parent
+  Dim hToolbar As ToolBar = GetToolBar()
   Dim hCtrl As Control
   Dim aConfig As String[]
   Dim sAction As String
@@ -1445,14 +1519,7 @@ End
 
 Private Sub Lock()
   
-  Dim hToolbar As Toolbar 
-  
   Inc $iLock
-  If $iLock = 1 Then
-    '$iArrangement = panToolBar.Arrangement
-    hToolbar = Me.Parent
-    hToolbar.Arrangement = Arrange.None
-  Endif
   
 End
 

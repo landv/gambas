@@ -144,9 +144,12 @@ Public Sub EnsureCurrentVisible_Timer()
           X = $hTabBarContainer.X + .X
           W = .W
           
-          If X < 4 Then
-            $X = $X - X + 4
-          Else If X >= ($hTabBar.W - W - ARROW_WIDTH) Then
+          If X < 4 Then 
+            $X = $X + 4 - X
+            X = $X + .X
+          Endif
+          
+          If X >= ($hTabBar.W - W - ARROW_WIDTH) Then
             $X = $X - (X - ($hTabBar.W - W))
             'If $iCurrent < $aButton.Max Then 
             $X -= ARROW_WIDTH
@@ -181,7 +184,7 @@ Public Sub EnsureCurrentVisible_Timer()
     W -= ARROW_WIDTH
     If System.RightToLeft Then $X += ARROW_WIDTH
   Endif
-  
+
   $hTabBarContainer.Move($X, 0, W, $hTabBar.H)
 
 End

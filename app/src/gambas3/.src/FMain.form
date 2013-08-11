@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,167,86)
+  MoveScaled(0,0,169,86)
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -606,318 +606,314 @@
   { sepMenu Separator
     MoveScaled(0,0,13,0)
   }
-  { HBox1 HPanel
-    MoveScaled(0,0,167,4)
-    AutoResize = True
-    { tlbMain ToolBar
-      MoveScaled(0,0,166,4)
+  { tlbMain ToolBar
+    MoveScaled(0,0,166,4)
+    Visible = False
+    Key = "main"
+    { ToolButton1 ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("New project")
+      Action = "new-project"
+      Picture = Picture["icon:/small/new"]
+    }
+    { ToolButton2 MenuButton
+      MoveScaled(3,0,6,4)
+      ToolTip = ("Open project")
+      Action = "open-project"
+      Picture = Picture["icon:/small/open"]
+      Border = False
+      Menu = "mnuOpenRecent"
+    }
+    { btnSave ToolButton
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Save project")
+      Action = "save-project"
+      Picture = Picture["icon:/small/save"]
+    }
+    { ToolButton15 ToolButton
+      MoveScaled(11,0,4,4)
+      ToolTip = ("Save project as")
+      Action = "save-project-as"
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { btnProperty ToolButton
+      MoveScaled(14,0,4,4)
+      ToolTip = ("Project properties")
+      Action = "project-property"
+      Picture = Picture["icon:/small/edit"]
+    }
+    { btnVersion ToolButton
+      MoveScaled(17,0,4,4)
+      ToolTip = ("Project version control")
+      Action = "project-version"
+      Picture = Picture["icon:/small/calendar"]
+    }
+    { btnComponent ToolButton
+      MoveScaled(20,0,4,4)
+      Action = "component-property"
+      Picture = Picture["icon:/small/component"]
+    }
+    { ToolButton7 ToolButton
+      MoveScaled(22,0,4,4)
       Visible = False
-      Key = "main"
-      { ToolButton1 ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("New project")
-        Action = "new-project"
-        Picture = Picture["icon:/small/new"]
-      }
-      { ToolButton2 MenuButton
-        MoveScaled(3,0,6,4)
-        ToolTip = ("Open project")
-        Action = "open-project"
-        Picture = Picture["icon:/small/open"]
-        Border = False
-        Menu = "mnuOpenRecent"
-      }
-      { btnSave ToolButton
-        MoveScaled(8,0,4,4)
-        ToolTip = ("Save project")
-        Action = "save-project"
-        Picture = Picture["icon:/small/save"]
-      }
-      { ToolButton15 ToolButton
-        MoveScaled(11,0,4,4)
-        ToolTip = ("Save project as")
-        Action = "save-project-as"
-        Picture = Picture["icon:/small/save-as"]
-      }
-      { btnProperty ToolButton
-        MoveScaled(14,0,4,4)
-        ToolTip = ("Project properties")
-        Action = "project-property"
-        Picture = Picture["icon:/small/edit"]
-      }
-      { btnVersion ToolButton
-        MoveScaled(17,0,4,4)
-        ToolTip = ("Project version control")
-        Action = "project-version"
-        Picture = Picture["icon:/small/calendar"]
-      }
-      { btnComponent ToolButton
-        MoveScaled(20,0,4,4)
-        Action = "component-property"
-        Picture = Picture["icon:/small/component"]
-      }
-      { ToolButton7 ToolButton
-        MoveScaled(22,0,4,4)
-        Visible = False
-        ToolTip = ("Refresh project")
-        Action = "refresh-project"
-        Picture = Picture["icon:/small/refresh"]
-      }
-      { ToolButton12 ToolButton
-        MoveScaled(25,0,4,4)
-        ToolTip = ("Preferences")
-        Action = "option"
-        Picture = Picture["icon:/small/tools"]
-        Toggle = True
-      }
-      { ToolButton9 ToolButton
-        MoveScaled(28,0,4,4)
-        Visible = False
-        ToolTip = ("Shortcuts")
-        Action = "shortcut"
-        Picture = Picture["icon:/small/shortcut"]
-      }
-      { Separator3 Separator
-        MoveScaled(31,0,1,4)
-      }
-      { ToolButton5 ToolButton
-        MoveScaled(32,0,4,4)
-        ToolTip = ("Make executable")
-        Action = "exec"
-        Picture = Picture["icon:/small/exec"]
-      }
-      { btnTranslate ToolButton
-        MoveScaled(35,0,4,4)
-        ToolTip = ("Translate")
-        Action = "translate"
-        Picture = Picture["icon:/small/language"]
-      }
-      { ToolButton4 ToolButton
-        MoveScaled(38,0,4,4)
-        Visible = False
-        ToolTip = ("Make source archive")
-        Action = "archive"
-        Picture = Picture["icon:/small/archive"]
-      }
-      { ToolButton14 ToolButton
-        MoveScaled(41,0,4,4)
-        Visible = False
-        ToolTip = ("Make installation package")
-        Action = "install"
-        Picture = Picture["icon:/small/package"]
-      }
-      { Separator2 Separator
-        MoveScaled(44,0,1,4)
-      }
-      { ToolButton3 ToolButton
-        MoveScaled(45,0,4,4)
-        Visible = False
-        ToolTip = ("Project")
-        Action = "project"
-        Picture = Picture["img/16/gambas.png"]
-        Toggle = True
-        Value = True
-      }
-      { ToolButton8 ToolButton
-        MoveScaled(48,0,4,4)
-        Visible = False
-        ToolTip = ("Properties sheet")
-        Action = "property"
-        Picture = Picture["icon:/small/edit"]
-        Toggle = True
-      }
-      { ToolButton10 ToolButton
-        MoveScaled(51,0,4,4)
-        Visible = False
-        ToolTip = ("Toolbox")
-        Action = "control"
-        Picture = Picture["icon:/small/tools"]
-        Toggle = True
-      }
-      { btnShowConsole ToolButton
-        MoveScaled(54,0,4,4)
-        Visible = False
-        ToolTip = ("Console")
-        Action = "console"
-        Picture = Picture["icon:/small/terminal"]
-        Toggle = True
-      }
-      { btnFind ToolButton
-        MoveScaled(57,0,4,4)
-        Visible = False
-        ToolTip = ("Search")
-        Action = "find"
-        Picture = Picture["icon:/small/find"]
-        Toggle = True
-      }
-      { btnHelp ToolButton
-        MoveScaled(60,0,4,4)
-        Visible = False
-        ToolTip = ("Help browser")
-        Action = "help"
-        Picture = Picture["icon:/small/help"]
-        Toggle = True
-      }
-      { btnCompile ToolButton
-        MoveScaled(64,0,4,4)
-        ToolTip = ("Compile")
-        Action = "compile"
-        Picture = Picture["icon:/small/make"]
-      }
-      { btnCompileAll ToolButton
-        MoveScaled(67,0,4,4)
-        ToolTip = ("Compile all")
-        Action = "compile-all"
-        Picture = Picture["icon:/small/make-all"]
-      }
-      { btnGo ToolButton
-        MoveScaled(70,0,4,4)
-        ToolTip = ("Run")
-        Action = "start"
-        Picture = Picture["icon:/small/play"]
-      }
-      { btnPause ToolButton
-        MoveScaled(73,0,4,4)
-        ToolTip = ("Pause")
-        Action = "pause"
-        Picture = Picture["icon:/small/pause"]
-      }
-      { btnStop ToolButton
-        MoveScaled(76,0,4,4)
-        ToolTip = ("Stop")
-        Action = "stop"
-        Picture = Picture["icon:/small/stop"]
-      }
-      { btnStep ToolButton
-        MoveScaled(79,0,4,4)
-        ToolTip = ("Step")
-        Action = "step"
-        Picture = Picture["icon:/small/end"]
-      }
-      { btnForward ToolButton
-        MoveScaled(82,0,4,4)
-        ToolTip = ("Forward")
-        Action = "forward"
-        Picture = Picture["icon:/small/forward"]
-      }
-      { btnFrom ToolButton
-        MoveScaled(85,0,4,4)
-        ToolTip = ("Finish current function")
-        Action = "return"
-        Picture = Picture["icon:/small/eject"]
-      }
-      { btnUntil ToolButton mnuUntil
-        Name = "btnUntil"
-        MoveScaled(88,0,4,4)
-        ToolTip = ("Run until current line")
-        Action = "until"
-        Picture = Picture["icon:/small/jump"]
-      }
-      { Panel3 Panel
-        MoveScaled(93,0,1,4)
-      }
-      { txtSearch ButtonBox
-        MoveScaled(94,0,37,4)
-        ToolTip = ("Browse project...")
-        Action = "find-project"
-        Picture = Picture["icon:/small/find"]
-      }
-      { btnGoBack MenuButton
-        MoveScaled(131,0,6,4)
-        ToolTip = ("Go back")
-        Action = "go-back"
-        Picture = Picture["icon:/small/left"]
-        Border = False
-        Menu = "mnuBackward"
-      }
-      { btnGoForward ToolButton
-        MoveScaled(135,0,4,4)
-        Enabled = False
-        ToolTip = ("Go forward")
-        Action = "go-forward"
-        Picture = Picture["icon:/small/right"]
-      }
-      { ToolButton6 ToolButton
-        MoveScaled(138,0,4,4)
-        Visible = False
-        ToolTip = ("Browse project")
-        Action = "browse-project"
-        Picture = Picture["icon:/small/file-manager"]
-      }
-      { ToolButton11 ToolButton
-        MoveScaled(140,0,4,4)
-        Visible = False
-        ToolTip = ("Open a terminal")
-        Action = "open-terminal"
-        Picture = Picture["icon:/small/terminal"]
-      }
-      { ToolButton13 ToolButton
-        MoveScaled(142,0,4,4)
-        Visible = False
-        ToolTip = ("Send project by mail")
-        Action = "send-mail"
-        Picture = Picture["icon:/small/mail"]
-      }
-      { btnMnuFile MenuButton
-        MoveScaled(145,0,8,4)
-        Visible = False
-        Action = "menu-file"
-        AutoResize = True
-        Text = ("&File")
-        Arrow = False
-        Border = False
-        Menu = "mnuFile"
-      }
-      { btnMnuProject MenuButton
-        MoveScaled(148,0,7,4)
-        Visible = False
-        Action = "menu-project"
-        AutoResize = True
-        Text = ("&Project")
-        Arrow = False
-        Border = False
-        Menu = "mnuProject"
-      }
-      { btnMnuDebug MenuButton
-        MoveScaled(151,0,7,4)
-        Visible = False
-        Action = "menu-debug"
-        AutoResize = True
-        Text = ("&Debug")
-        Arrow = False
-        Border = False
-        Menu = "mnuDebug"
-      }
-      { btnMenuView MenuButton
-        MoveScaled(154,0,7,4)
-        Visible = False
-        Action = "menu-view"
-        AutoResize = True
-        Text = ("&View")
-        Arrow = False
-        Border = False
-        Menu = "mnuView"
-      }
-      { btnMnuTool MenuButton
-        MoveScaled(157,0,7,4)
-        Visible = False
-        Action = "menu-tool"
-        AutoResize = True
-        Text = ("&Tools")
-        Arrow = False
-        Border = False
-        Menu = "mnuTool"
-      }
-      { btnMnuHelp MenuButton
-        MoveScaled(161,0,4,4)
-        Visible = False
-        Action = "menu-help"
-        AutoResize = True
-        Text = ("&?")
-        Arrow = False
-        Border = False
-        Menu = "mnuHelp"
-      }
+      ToolTip = ("Refresh project")
+      Action = "refresh-project"
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { ToolButton12 ToolButton
+      MoveScaled(25,0,4,4)
+      ToolTip = ("Preferences")
+      Action = "option"
+      Picture = Picture["icon:/small/tools"]
+      Toggle = True
+    }
+    { ToolButton9 ToolButton
+      MoveScaled(28,0,4,4)
+      Visible = False
+      ToolTip = ("Shortcuts")
+      Action = "shortcut"
+      Picture = Picture["icon:/small/shortcut"]
+    }
+    { Separator3 Separator
+      MoveScaled(31,0,1,4)
+    }
+    { ToolButton5 ToolButton
+      MoveScaled(32,0,4,4)
+      ToolTip = ("Make executable")
+      Action = "exec"
+      Picture = Picture["icon:/small/exec"]
+    }
+    { btnTranslate ToolButton
+      MoveScaled(35,0,4,4)
+      ToolTip = ("Translate")
+      Action = "translate"
+      Picture = Picture["icon:/small/language"]
+    }
+    { ToolButton4 ToolButton
+      MoveScaled(38,0,4,4)
+      Visible = False
+      ToolTip = ("Make source archive")
+      Action = "archive"
+      Picture = Picture["icon:/small/archive"]
+    }
+    { ToolButton14 ToolButton
+      MoveScaled(41,0,4,4)
+      Visible = False
+      ToolTip = ("Make installation package")
+      Action = "install"
+      Picture = Picture["icon:/small/package"]
+    }
+    { Separator2 Separator
+      MoveScaled(44,0,1,4)
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(45,0,4,4)
+      Visible = False
+      ToolTip = ("Project")
+      Action = "project"
+      Picture = Picture["img/16/gambas.png"]
+      Toggle = True
+      Value = True
+    }
+    { ToolButton8 ToolButton
+      MoveScaled(48,0,4,4)
+      Visible = False
+      ToolTip = ("Properties sheet")
+      Action = "property"
+      Picture = Picture["icon:/small/edit"]
+      Toggle = True
+    }
+    { ToolButton10 ToolButton
+      MoveScaled(51,0,4,4)
+      Visible = False
+      ToolTip = ("Toolbox")
+      Action = "control"
+      Picture = Picture["icon:/small/tools"]
+      Toggle = True
+    }
+    { btnShowConsole ToolButton
+      MoveScaled(54,0,4,4)
+      Visible = False
+      ToolTip = ("Console")
+      Action = "console"
+      Picture = Picture["icon:/small/terminal"]
+      Toggle = True
+    }
+    { btnFind ToolButton
+      MoveScaled(57,0,4,4)
+      Visible = False
+      ToolTip = ("Search")
+      Action = "find"
+      Picture = Picture["icon:/small/find"]
+      Toggle = True
+    }
+    { btnHelp ToolButton
+      MoveScaled(60,0,4,4)
+      Visible = False
+      ToolTip = ("Help browser")
+      Action = "help"
+      Picture = Picture["icon:/small/help"]
+      Toggle = True
+    }
+    { btnCompile ToolButton
+      MoveScaled(64,0,4,4)
+      ToolTip = ("Compile")
+      Action = "compile"
+      Picture = Picture["icon:/small/make"]
+    }
+    { btnCompileAll ToolButton
+      MoveScaled(67,0,4,4)
+      ToolTip = ("Compile all")
+      Action = "compile-all"
+      Picture = Picture["icon:/small/make-all"]
+    }
+    { btnGo ToolButton
+      MoveScaled(70,0,4,4)
+      ToolTip = ("Run")
+      Action = "start"
+      Picture = Picture["icon:/small/play"]
+    }
+    { btnPause ToolButton
+      MoveScaled(73,0,4,4)
+      ToolTip = ("Pause")
+      Action = "pause"
+      Picture = Picture["icon:/small/pause"]
+    }
+    { btnStop ToolButton
+      MoveScaled(76,0,4,4)
+      ToolTip = ("Stop")
+      Action = "stop"
+      Picture = Picture["icon:/small/stop"]
+    }
+    { btnStep ToolButton
+      MoveScaled(79,0,4,4)
+      ToolTip = ("Step")
+      Action = "step"
+      Picture = Picture["icon:/small/end"]
+    }
+    { btnForward ToolButton
+      MoveScaled(82,0,4,4)
+      ToolTip = ("Forward")
+      Action = "forward"
+      Picture = Picture["icon:/small/forward"]
+    }
+    { btnFrom ToolButton
+      MoveScaled(85,0,4,4)
+      ToolTip = ("Finish current function")
+      Action = "return"
+      Picture = Picture["icon:/small/eject"]
+    }
+    { btnUntil ToolButton mnuUntil
+      Name = "btnUntil"
+      MoveScaled(88,0,4,4)
+      ToolTip = ("Run until current line")
+      Action = "until"
+      Picture = Picture["icon:/small/jump"]
+    }
+    { Panel3 Panel
+      MoveScaled(93,0,1,4)
+    }
+    { txtSearch ButtonBox
+      MoveScaled(94,0,37,4)
+      ToolTip = ("Browse project...")
+      Action = "find-project"
+      Picture = Picture["icon:/small/find"]
+    }
+    { btnGoBack MenuButton
+      MoveScaled(131,0,6,4)
+      ToolTip = ("Go back")
+      Action = "go-back"
+      Picture = Picture["icon:/small/left"]
+      Border = False
+      Menu = "mnuBackward"
+    }
+    { btnGoForward ToolButton
+      MoveScaled(135,0,4,4)
+      Enabled = False
+      ToolTip = ("Go forward")
+      Action = "go-forward"
+      Picture = Picture["icon:/small/right"]
+    }
+    { ToolButton6 ToolButton
+      MoveScaled(138,0,4,4)
+      Visible = False
+      ToolTip = ("Browse project")
+      Action = "browse-project"
+      Picture = Picture["icon:/small/file-manager"]
+    }
+    { ToolButton11 ToolButton
+      MoveScaled(140,0,4,4)
+      Visible = False
+      ToolTip = ("Open a terminal")
+      Action = "open-terminal"
+      Picture = Picture["icon:/small/terminal"]
+    }
+    { ToolButton13 ToolButton
+      MoveScaled(142,0,4,4)
+      Visible = False
+      ToolTip = ("Send project by mail")
+      Action = "send-mail"
+      Picture = Picture["icon:/small/mail"]
+    }
+    { btnMnuFile MenuButton
+      MoveScaled(145,0,8,4)
+      Visible = False
+      Action = "menu-file"
+      AutoResize = True
+      Text = ("&File")
+      Arrow = False
+      Border = False
+      Menu = "mnuFile"
+    }
+    { btnMnuProject MenuButton
+      MoveScaled(148,0,7,4)
+      Visible = False
+      Action = "menu-project"
+      AutoResize = True
+      Text = ("&Project")
+      Arrow = False
+      Border = False
+      Menu = "mnuProject"
+    }
+    { btnMnuDebug MenuButton
+      MoveScaled(151,0,7,4)
+      Visible = False
+      Action = "menu-debug"
+      AutoResize = True
+      Text = ("&Debug")
+      Arrow = False
+      Border = False
+      Menu = "mnuDebug"
+    }
+    { btnMenuView MenuButton
+      MoveScaled(154,0,7,4)
+      Visible = False
+      Action = "menu-view"
+      AutoResize = True
+      Text = ("&View")
+      Arrow = False
+      Border = False
+      Menu = "mnuView"
+    }
+    { btnMnuTool MenuButton
+      MoveScaled(157,0,7,4)
+      Visible = False
+      Action = "menu-tool"
+      AutoResize = True
+      Text = ("&Tools")
+      Arrow = False
+      Border = False
+      Menu = "mnuTool"
+    }
+    { btnMnuHelp MenuButton
+      MoveScaled(161,0,4,4)
+      Visible = False
+      Action = "menu-help"
+      AutoResize = True
+      Text = ("&?")
+      Arrow = False
+      Border = False
+      Menu = "mnuHelp"
     }
   }
   { Separator7 Separator
