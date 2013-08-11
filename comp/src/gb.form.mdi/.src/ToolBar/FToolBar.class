@@ -248,7 +248,7 @@ Private Sub SetArrangement()
           If hCtrl.Expand And If Not hCtrl.Next Then W = panToolBar.W - X
         Endif
         'If ToolbarKey = "editor" Then Debug ToolBarKey;; hCtrl.Name;; X;; Y;; W
-        hCtrl.Move(X, Y, W)
+        hCtrl.Move(X, Y, W, $iButtonWidth)
         X += W
       Endif
     Next
@@ -1129,10 +1129,10 @@ End
 
 Public Sub ToolBarExpander_Draw()
   
-  'If $bConfigure Then
+  If $bConfigure Then
     If Not $hExpanderBg Then $hExpanderBg = Picture["img/expander.png"]
     Draw.Tile($hExpanderBg, 0, (Last.H - $hExpanderBg.H) / 2, Last.W, $hExpanderBg.H)
-  'Endif
+  Endif
   
 End
 

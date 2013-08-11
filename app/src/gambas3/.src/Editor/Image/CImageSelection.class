@@ -32,16 +32,12 @@ Public Sub LineTo(X As Float, Y As Float)
   
 End
 
-Public Sub Paint(hImage As Image, iAction As Integer)
+Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
 
   Dim hTemp As Image
   Dim hBrush As PaintBrush
   Dim bExtent As Boolean
-  Dim hShape As CImageShape
   Dim I As Integer
-  Dim hPoint As PointF
-  Dim W As Float
-  Dim W2 As Float
   
   
   'Dim bGradient As Boolean
@@ -131,8 +127,8 @@ Public Sub Paint(hImage As Image, iAction As Integer)
     
   Else
     
-    For Each hShape In Shapes
-      hShape.Paint
+    For I = 0 To Shapes.Max
+      If _Current < 0 Or If _Current = I Or If bAll Then Shapes[I].Paint
     Next
   
     If bExtent Then $hExtents = Paint.PathExtents

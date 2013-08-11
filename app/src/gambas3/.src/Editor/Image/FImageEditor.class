@@ -1270,12 +1270,12 @@ Public Sub imvImage_Draw(hZoom As Image)
     
     Paint.Background = Color.SetAlpha(Color.White, 128)
     Paint.Dash = Null
-    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE)
+    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE, True)
     
     Paint.Background = Color.SetAlpha(Color.Black, 128)
     Paint.Dash = [2.0, 2.0]
     Paint.DashOffset = - $fDashOffset
-    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE)
+    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE, True)
     
     Paint.Restore
     
