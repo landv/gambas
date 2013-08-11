@@ -132,7 +132,7 @@ Public Sub GetColor(Optional bIgnoreOpacity As Boolean) As Integer
 End
 
 
-Public Sub GetBrush(hRect As Rect, Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember As Boolean) As PaintBrush
+Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember As Boolean) As PaintBrush
   
   Dim hImage As Image
   Dim hBrush As CReportBrush
@@ -188,7 +188,7 @@ Public Sub GetBrush(hRect As Rect, Optional bIgnoreOpacity As Boolean, Optional 
   
 End
 
-Public Sub PaintForStroke(Optional hRect As Rect)
+Public Sub PaintForStroke(Optional hRect As RectF)
   
   Dim iSize As Integer = txtSize.Value
   
@@ -203,14 +203,14 @@ Public Sub PaintForStroke(Optional hRect As Rect)
     Paint.LineJoin = Paint.LineJoinRound
   Endif
   
-  If Not hRect Then hRect = Rect(0, 0, Paint.W, Paint.H)
+  If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
   Paint.Brush = GetBrush(hRect)
   
 End
 
-Public Sub PaintForFill(Optional hRect As Rect)
+Public Sub PaintForFill(Optional hRect As RectF)
   
-  If Not hRect Then hRect = Rect(0, 0, Paint.W, Paint.H)
+  If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
   Paint.Brush = GetBrush(hRect)
   
 End

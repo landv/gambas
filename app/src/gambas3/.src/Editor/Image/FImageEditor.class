@@ -710,8 +710,6 @@ Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnore As Boolean) As 
 
   Dim hMagnet As PointF
 
-  If Not $bPress Then Return
-
   If $hSelect Then 
     If $sTool = "change" Then
       If $iChangeAction = CHANGE_MOVE And If $hSelect._Current < 0 Then Goto NO_SELECT
@@ -1507,7 +1505,7 @@ Public Sub btnStroke_Click()
     
     hImage = $hImage.Copy()
     Paint.Begin(hImage)
-    FImageProperty.PaintForStroke($hSelect.GetExtents())
+    FImageProperty.PaintForStroke($hSelect.GetExtents(True))
     $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE)
     Paint.End
     ActionImage(hImage)
@@ -1523,7 +1521,7 @@ Public Sub btnFill_Click()
   hImage = $hImage.Copy()
   Paint.Begin(hImage)
   If $hSelect Then
-    FImageProperty.PaintForFill($hSelect.GetExtents())
+    FImageProperty.PaintForFill($hSelect.GetExtents(True))
     $hSelect.Paint($hImage, CImageSelection.ACTION_FILL)
   Else
     Paint.Rectangle(0, 0, hImage.W, hImage.H)
@@ -2145,3 +2143,17 @@ Public Sub UpdateGrid()
   
 End
 
+
+Public Sub btnDuplicate_Click()
+
+  Dim I As Integer
+  
+  If $hSelect Then
+    
+    AddUndo($hSelect.Copy())
+    $hSelect.Duplicate
+    RefreshSelection
+    
+  Endif
+
+End

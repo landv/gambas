@@ -682,3 +682,33 @@ Public Sub RemoveShape(iShape As Integer)
   Endif
   
 End
+
+Public Sub AddShape(hShape As CImageShape)
+  
+  Shapes.Add(hShape.Copy())
+  
+End
+
+Public Sub Duplicate()
+
+  Dim I As Integer
+  Dim hShape As CImageShape
+  Dim DX, DY As Float
+  Dim hMatrix As New PaintMatrix
+  
+  With GetExtents()
+    DX = .W / 2
+    DY = .H / 2
+  End With
+  hMatrix.Translate(DX, DY)
+  
+  For I = 0 To Shapes.Max
+    If _Current < 0 Or If _Current = I Then
+      hShape = Shapes[I].Copy()
+      hShape.Apply(hMatrix)
+      AddShape(hShape)
+      If _Current >= 0 Then _Current = Shapes.Max
+    Endif
+  Next
+  
+End
