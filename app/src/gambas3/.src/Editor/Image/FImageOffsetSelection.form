@@ -2,7 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,39,12)
-  Text = ("Enlarge selection")
+  Text = ("Offset selection")
   { txtSize SpinBox
     MoveScaled(1,1,10,4)
     MinValue = -256
@@ -24,7 +24,7 @@
   }
   { chkDuplicate CheckBox
     MoveScaled(1,6,16,1)
-    Visible = False
+    AutoResize = True
     Text = ("Duplicate")
   }
 }

@@ -660,7 +660,7 @@ Public Sub imvImage_MouseDown()
         
         If $iChangeAction = CHANGE_INSERT Then
           $vChangeIndex = $hSelect.InsertPoint($hLastPoint, $vChangeIndex)
-          $hLastPoint.X = -1000000 ' Avoid automatic undo at MouseUp
+          AddUndo($hSelect.Copy()) ' Avoid automatic undo at MouseUp
           $iChangeAction = CHANGE_POINT
           RefreshSelection
         Else If $iChangeAction = CHANGE_SELECT Then
@@ -1002,11 +1002,11 @@ Public Sub imvImage_MouseMove()
     Endif
     
     If $iChangeAction = CHANGE_NOTHING Then
-      If Hyp(Abs($hChangeRect.X - $hCurrentPoint.X), Abs($hChangeRect.Y - $hCurrentPoint.Y)) < 16 Then
+      If Hyp(Abs($hChangeRect.X - $hCurrentPoint.X), Abs($hChangeRect.Y - $hCurrentPoint.Y)) < (16 / imvImage.Zoom) Then
         iMouse = Mouse.Cross
         $iChangeAction = CHANGE_ROTATE
         SetMagnet(Null)
-      Else If Hyp(Abs($hChangeRect.X + $hChangeRect.W - $hCurrentPoint.X), Abs($hChangeRect.Y + $hChangeRect.H - $hCurrentPoint.Y)) < 16 Then
+      Else If Hyp(Abs($hChangeRect.X + $hChangeRect.W - $hCurrentPoint.X), Abs($hChangeRect.Y + $hChangeRect.H - $hCurrentPoint.Y)) < (16 / imvImage.Zoom) Then
         iMouse = Mouse.Cross
         $iChangeAction = CHANGE_RESIZE
         SetMagnet(Null)
@@ -1051,7 +1051,6 @@ Public Sub Form_KeyPress()
   $bCtrl = Key.Control
   $bAlt = Key.Alt
   UpdateTool
-  imvImage_MouseMove
   
   If $hSelect And If $hChangeRect Then
     If Key.Code = Key.Delete Or If Key.Code = Key.Backspace Then
@@ -1066,6 +1065,8 @@ Public Sub Form_KeyPress()
       RefreshSelection
     Endif
   Endif
+  
+  imvImage_MouseMove
   
 End
 
@@ -1139,39 +1140,54 @@ End
 Private Sub DrawTool()
   
   Dim I As Integer
+  Dim bDraw As Boolean
   
   Select Case $sTool
   
     Case "draw", "erase"
 
-      $hImage = $hSaveImage.Copy()
-      Paint.Begin($hImage)
-
-      FImageProperty.PaintForStroke
-      'Paint.Brush.Scale(Paint.LineWidth, Paint.LineWidth)
-      
-      If $sTool = "erase" Then 
-        Paint.Operator = Paint.OperatorDestOut
-      Endif
-      
-      If $aStroke.Count = 2 Then
-        If Not Paint.AntiAlias Then
-          Paint.Rectangle($aStroke[0], $aStroke[1], 1, 1)
-          Paint.Fill
-        Else
-          Paint.Arc($aStroke[0], $aStroke[1], Paint.LineWidth / 2)
-          Paint.Fill
+      If $aStroke.Count Then
+        
+        $hImage = $hSaveImage.Copy()
+        Paint.Begin($hImage)
+  
+        FImageProperty.PaintForStroke
+        'Paint.Brush.Scale(Paint.LineWidth, Paint.LineWidth)
+        
+        If $sTool = "erase" Then 
+          Paint.Operator = Paint.OperatorDestOut
         Endif
-      Else
-        Paint.MoveTo($aStroke[0], $aStroke[1])
-        For I = 2 To $aStroke.Max Step 2
-          Paint.LineTo($aStroke[I], $aStroke[I + 1])
-        Next
-        Paint.Stroke
+        
+        If Not Paint.AntiAlias Then
+          Paint.MoveTo(CInt($aStroke[0]), CInt($aStroke[1]))
+          For I = 2 To $aStroke.Max Step 2
+            If CInt($aStroke[I]) = Paint.X And If CInt($aStroke[I + 1]) = Paint.Y Then Continue
+            Paint.LineTo(CInt($aStroke[I]), CInt($aStroke[I + 1]))
+            bDraw = True
+          Next
+          Paint.Stroke
+          If Not bDraw Then 
+            Paint.Rectangle($aStroke[0], $aStroke[1], 1, 1)
+            Paint.Fill
+          Endif
+        Else
+          Paint.MoveTo($aStroke[0], $aStroke[1])
+          For I = 2 To $aStroke.Max Step 2
+            If CInt($aStroke[I]) = CInt(Paint.X) And If CInt($aStroke[I + 1]) = CInt(Paint.Y) Then Continue
+            Paint.LineTo($aStroke[I], $aStroke[I + 1])
+            bDraw = True
+          Next
+          Paint.Stroke
+          If Not bDraw Then
+            Paint.Arc($aStroke[0], $aStroke[1], Paint.LineWidth / 2)
+            Paint.Fill
+          Endif
+        Endif
+        
+        Paint.End
+        Modify
+        
       Endif
-      
-      Paint.End
-      Modify
       
     Case "line", "rectangle"
       
@@ -1193,6 +1209,7 @@ Public Sub imvImage_Draw(hZoom As Image)
   Dim X As Integer
   Dim Y As Integer
   Dim iGrid As Integer
+  Dim W As Float
     
   If Project.ActiveForm = Me And If FImageProperty.HasBalance() Then bBalance = True
   
@@ -1472,6 +1489,24 @@ Public Sub imvImage_Draw(hZoom As Image)
     Paint.Arc($hChangeRect.X + 0.5 / imvImage.Zoom, $hChangeRect.Y + 0.5 / imvImage.Zoom, 7 / imvImage.Zoom)
     Paint.Rectangle($hChangeRect.X + $hChangeRect.W + (0.5 - 6) / imvImage.Zoom, $hChangeRect.Y + $hChangeRect.H + (0.5 - 6) / imvImage.Zoom, 12 / imvImage.Zoom, 12 / imvImage.Zoom)
     Paint.Fill
+    
+    If $iChangeAction = CHANGE_POINT Or If $iChangeAction = CHANGE_INSERT Then
+      
+      Paint.Background = Color.SetAlpha(Color.White, 128)
+      W = 3 / imvImage.Zoom
+      If $iChangeAction = CHANGE_INSERT Then
+        With ($hSelect.Shapes[$vChangeIndex[0]].Points[$vChangeIndex[1]] + $hSelect.Shapes[$vChangeIndex[0]].Points[$vChangeIndex[1] + 1]) / 2
+          Paint.Rectangle(.X - W, .Y - W, W * 2, W * 2)
+          Paint.Fill
+        End With
+      Else
+        With $hSelect.Shapes[$vChangeIndex[0]].Points[$vChangeIndex[1]]
+          Paint.Rectangle(.X - W, .Y - W, W * 2, W * 2)
+          Paint.Fill
+        End With
+      Endif
+      
+    Endif
     
     Paint.Restore
       
@@ -1946,10 +1981,10 @@ Public Sub RefreshSelection()
   
   imvImage.Refresh
   If $sTool = "change" Then 
-    If $hSelect Then
-      $hChangeRect = $hSelect.GetExtents()
+    If Not $hSelect Or If $hSelect.IsVoid() Then 
+      ClearSelection
     Else
-      $hChangeRect = Null
+      $hChangeRect = $hSelect.GetExtents()
     Endif
   Endif
   
@@ -2049,17 +2084,6 @@ Public Sub panToolBar_Configure()
 
 End
 
-Public Sub btnResizeSelection_Click()
-
-  If Not $hSelect Then Return
-  If FImageResizeSelection.Run() Then Return
-  
-  AddUndo($hSelect.Copy())
-  $hSelect.Enlarge(FImageResizeSelection.Size, FImageResizeSelection.Duplicate)
-  RefreshSelection
-
-End
-
 Public Sub btnRotate_Click()
 
   If FImageRotate.Run(Me) Then 
@@ -2146,8 +2170,6 @@ End
 
 Public Sub btnDuplicate_Click()
 
-  Dim I As Integer
-  
   If $hSelect Then
     
     AddUndo($hSelect.Copy())
@@ -2155,5 +2177,17 @@ Public Sub btnDuplicate_Click()
     RefreshSelection
     
   Endif
+
+End
+
+Public Sub btnOffset_Click()
+
+  If Not $hSelect Then Return
+  
+  If FImageOffsetSelection.Run() Then Return
+  
+  AddUndo($hSelect.Copy())
+  $hSelect.Offset(FImageOffsetSelection.Size, FImageOffsetSelection.Duplicate)
+  RefreshSelection
 
 End

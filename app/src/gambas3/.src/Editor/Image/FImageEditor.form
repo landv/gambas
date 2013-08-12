@@ -65,6 +65,14 @@
       Action = ".duplicate"
       Text = ("Duplicate selection")
       Picture = Picture["img/draw/duplicate.png"]
+      Shortcut = "Ctrl+D"
+    }
+    { mnuOffset Menu btnOffset
+      Name = "mnuOffset"
+      Action = ".offset"
+      Text = ("Offset selection")
+      Picture = Picture["img/draw/offset.png"]
+      Shortcut = "Ctrl+*"
     }
     { mnuSep4 Menu
     }
@@ -304,7 +312,7 @@
     }
     { btnRectangle ToolButton btnTool
       Name = "btnRectangle"
-      MoveScaled(70,0,4,4)
+      MoveScaled(69,0,4,4)
       Tag = "rectangle"
       ToolTip = ("Rectangle")
       Action = ".tool-rectangle"
@@ -313,7 +321,7 @@
     }
     { btnEllipse ToolButton btnTool
       Name = "btnEllipse"
-      MoveScaled(74,0,4,4)
+      MoveScaled(72,0,4,4)
       Tag = "ellipse"
       ToolTip = ("Ellipse")
       Action = ".tool-ellipse"
@@ -322,7 +330,7 @@
     }
     { btnMagic ToolButton btnTool
       Name = "btnMagic"
-      MoveScaled(78,0,4,4)
+      MoveScaled(75,0,4,4)
       Visible = False
       Enabled = False
       Tag = "magic"
@@ -333,7 +341,7 @@
     }
     { btnEditSelection ToolButton btnTool
       Name = "btnEditSelection"
-      MoveScaled(82,0,4,4)
+      MoveScaled(79,0,4,4)
       Tag = "change"
       ToolTip = ("Edit selection")
       Action = ".tool-change"
@@ -341,16 +349,22 @@
       Toggle = True
     }
     { btnInvert ToolButton
-      MoveScaled(87,0,4,4)
+      MoveScaled(83,0,4,4)
       ToolTip = ("Invert selection")
       Action = ".invert"
       Picture = Picture["img/draw/invert.png"]
     }
     { btnDuplicate ToolButton
-      MoveScaled(90,0,4,4)
+      MoveScaled(86,0,4,4)
       ToolTip = ("Duplicate selection")
       Action = ".duplicate"
       Picture = Picture["img/draw/duplicate.png"]
+    }
+    { btnOffset ToolButton
+      MoveScaled(90,0,4,4)
+      ToolTip = ("Offset selection")
+      Action = ".offset"
+      Picture = Picture["img/draw/offset.png"]
     }
     { Separator5 Separator
       MoveScaled(95,0,1,4)
@@ -480,7 +494,7 @@
   }
   { Action duplicate
     Text = "Duplicate selection"
-    Shortcut = ""
+    Shortcut = "Ctrl+D"
     Picture = "img/draw/duplicate.png"
   }
   { Action fill
@@ -509,6 +523,11 @@
     Text = "Invert selection"
     Shortcut = "Ctrl+I"
     Picture = "img/draw/invert.png"
+  }
+  { Action offset
+    Text = "Offset selection"
+    Shortcut = "Ctrl+*"
+    Picture = "img/draw/offset.png"
   }
   { Action paste
     Text = "Paste"
@@ -636,7 +655,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-change,invert,duplicate,|,stroke,fill,clear,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
+    List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
+    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-change,invert,duplicate,offset,|,stroke,fill,clear,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
   }
 }

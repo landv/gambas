@@ -1,5 +1,5 @@
 SUBDIRS = . debug eval db compress vb option geom draw image gui gui.opengl \
-	image.effect signal complex data
+	image.effect signal complex data clipper
 
 dist_gblib_DATA = gb.component
 gblib_DATA = gb.component

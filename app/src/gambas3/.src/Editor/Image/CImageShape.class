@@ -238,3 +238,20 @@ Public Sub SetPoint(iPoint As Integer, hPoint As PointF)
   _Extents = Null
   
 End
+
+Public Sub AddMagnetsFromExtent()
+  
+  Dim hExt As RectF = GetExtents()
+  
+  AddMagnet(PointF(hExt.X, hExt.Y))
+  AddMagnet(PointF(hExt.X + hExt.W, hExt.Y))
+  AddMagnet(PointF(hExt.X, hExt.Y + hExt.H))
+  AddMagnet(PointF(hExt.X + hExt.W, hExt.Y + hExt.H))
+  
+End
+
+Public Sub Invert()
+  
+  Points.Reverse
+  
+End

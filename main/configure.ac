@@ -113,6 +113,7 @@ lib/image.effect/Makefile \
 lib/signal/Makefile \
 lib/complex/Makefile \
 lib/data/Makefile \
+lib/clipper/Makefile \
 ])
 AC_OUTPUT
 

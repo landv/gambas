@@ -219,7 +219,11 @@ End
 
 Public Sub Invert()
   
-  _Invert = Not _Invert
+  If _Current >= 0 Then
+    Shapes[_Current].Invert
+  Else
+    _Invert = Not _Invert
+  Endif
   
 End
 
@@ -233,6 +237,7 @@ End
 Public Sub Clear()
   
   Shapes.Clear
+  _Magnets.Clear
   
 End
 
@@ -706,5 +711,51 @@ Public Sub Duplicate()
       If _Current >= 0 Then _Current = Shapes.Max
     Endif
   Next
+  
+End
+
+Public Sub Offset(fOffset As Float, bDup As Boolean)
+  
+  Dim aPolygons As New PointF[][]
+  Dim hShape As CImageShape
+  Dim I As Integer
+  
+  If _Current < 0 Then
+  
+    For I = 0 To Shapes.Max
+      aPolygons.Add(Shapes[I].Points)
+    Next
+    
+    aPolygons = Clipper.OffsetPolygons(aPolygons, fOffset)
+    
+    If Not bDup Then Clear()
+    
+    For I = 0 To aPolygons.Max
+      hShape = New CImageShape
+      hShape.Points = aPolygons[I]
+      hShape.AddMagnetsFromExtent()
+      AddShape(hShape)
+    Next
+  
+  Else
+    
+    aPolygons.Add(Shapes[_Current].Points)
+    
+    aPolygons = Clipper.OffsetPolygons(aPolygons, fOffset)
+    
+    If aPolygons.Count Then
+      If Not bDup Then
+        Shapes[_Current].Points = aPolygons[0]
+        Shapes[_Current].AddMagnetsFromExtent()
+      Else
+        hShape = New CImageShape
+        hShape.Points = aPolygons[0]
+        hShape.AddMagnetsFromExtent()
+        AddShape(hShape)
+        _Current = Shapes.Max
+      Endif
+    Endif
+    
+  Endif
   
 End

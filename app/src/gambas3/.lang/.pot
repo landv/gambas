@@ -547,7 +547,7 @@ msgstr ""
 #: FEditor.class:2373 FExportData.class:126 FFieldChooser.form:138
 #: FFileProperty.class:140 FFontChooser.form:40 FForm.class:3132
 #: FGotoLine.form:23 FHelpBrowser.form:61 FImageEditor.class:348
-#: FImageResize.form:49 FImageResizeSelection.form:33 FImageRotate.form:32
+#: FImageOffsetSelection.form:33 FImageResize.form:49 FImageRotate.form:32
 #: FInfo.class:263 FList.form:121 FMain.class:212 FMakeInstall.class:350
 #: FMenu.form:377 FNewConnection.form:255 FNewTable.form:86
 #: FNewTranslation.form:21 FOpenProject.form:158 FOption.class:675
@@ -647,7 +647,7 @@ msgstr ""
 
 #: Design.module:428 FColorChooser.form:54 FConnectionEditor.class:452
 #: FCreateFile.form:443 FFieldChooser.form:132 FFontChooser.form:34
-#: FGotoLine.form:17 FImageResize.form:103 FImageResizeSelection.form:27
+#: FGotoLine.form:17 FImageOffsetSelection.form:27 FImageResize.form:103
 #: FImageRotate.form:26 FInfo.form:181 FList.form:115 FMain.class:1839
 #: FMakeInstall.class:299 FMenu.form:372 FNewConnection.form:249
 #: FNewTable.form:80 FNewTranslation.form:15 FOpenProject.form:152
@@ -719,31 +719,31 @@ msgid "Open"
 msgstr ""
 
 #: FConflict.form:53 FConnectionEditor.form:358 FEditor.form:144
-#: FForm.form:239 FImageEditor.form:110 FMenu.form:107 FOutput.form:58
+#: FForm.form:239 FImageEditor.form:112 FMenu.form:107 FOutput.form:58
 #: FProjectVersion.form:234 FTextEditor.form:108
 msgid "Cut"
 msgstr ""
 
 #: FConflict.form:59 FConnectionEditor.form:147 FEditor.form:150
-#: FForm.form:246 FImageEditor.form:118 FMenu.form:113 FOutput.form:65
+#: FForm.form:246 FImageEditor.form:120 FMenu.form:113 FOutput.form:65
 #: FProjectVersion.form:240 FTextEditor.form:115
 msgid "Copy"
 msgstr ""
 
 #: FConflict.form:65 FConnectionEditor.form:379 FEditor.form:157
-#: FForm.form:259 FImageEditor.form:125 FMenu.form:119 FOutput.form:72
+#: FForm.form:259 FImageEditor.form:127 FMenu.form:119 FOutput.form:72
 #: FPasteTable.form:101 FProjectVersion.form:246 FTextEditor.form:122
 msgid "Paste"
 msgstr ""
 
 #: FConflict.form:71 FConnectionEditor.form:386 FEditor.form:128
-#: FForm.form:222 FImageEditor.form:91 FOption.form:561 FOutput.form:41
+#: FForm.form:222 FImageEditor.form:93 FOption.form:561 FOutput.form:41
 #: FProjectVersion.form:252 FTextEditor.form:91
 msgid "Undo"
 msgstr ""
 
 #: FConflict.form:77 FConnectionEditor.form:393 FEditor.form:135
-#: FForm.form:229 FImageEditor.form:99 FOutput.form:48
+#: FForm.form:229 FImageEditor.form:101 FOutput.form:48
 #: FProjectVersion.form:258 FTextEditor.form:98
 msgid "Redo"
 msgstr ""
@@ -788,7 +788,7 @@ msgid "Sol&ve"
 msgstr ""
 
 #: FConflict.form:184 FDebugInfo.form:270 FEditor.form:310
-#: FFileProperty.form:75 FForm.form:408 FImageEditor.form:270
+#: FFileProperty.form:75 FForm.form:408 FImageEditor.form:281
 #: FImportTable.form:217 FProjectVersion.form:323 FSystemInfo.form:83
 #: FTextEditor.form:244 FTips.form:83
 msgid "Close"
@@ -837,12 +837,12 @@ msgid "Connection editor"
 msgstr ""
 
 #: FConnectionEditor.form:100 FEditor.form:323 FForm.form:421
-#: FImageEditor.form:263 FMenu.class:68 FTextEditor.form:237
+#: FImageEditor.form:274 FMenu.class:68 FTextEditor.form:237
 msgid "Save"
 msgstr ""
 
 #: FConnectionEditor.form:108 FEditor.form:317 FForm.form:415
-#: FHelpBrowser.form:67 FImageEditor.form:256 FTextEditor.form:231
+#: FHelpBrowser.form:67 FImageEditor.form:267 FTextEditor.form:231
 #: FTranslate.class:650
 msgid "Reload"
 msgstr ""
@@ -1437,7 +1437,7 @@ msgstr ""
 msgid "Function"
 msgstr ""
 
-#: FDebugInfo.class:55 FImageEditor.form:429 FImportTable.class:66
+#: FDebugInfo.class:55 FImageEditor.form:440 FImportTable.class:66
 #: FOption.form:642
 msgid "Line"
 msgstr ""
@@ -1466,7 +1466,7 @@ msgstr ""
 msgid "Do you want to clear the expression list ?"
 msgstr ""
 
-#: FDebugInfo.class:570 FImageEditor.form:511 FList.class:153
+#: FDebugInfo.class:570 FImageEditor.form:529 FList.class:153
 #: FOption.class:675 FOutput.form:79
 msgid "Clear"
 msgstr ""
@@ -1503,7 +1503,7 @@ msgstr ""
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.form:167 FImageEditor.form:135 FTextEditor.form:132
+#: FEditor.form:167 FImageEditor.form:137 FTextEditor.form:132
 msgid "Select &All"
 msgstr ""
 
@@ -2025,11 +2025,11 @@ msgstr ""
 msgid "Show help tree"
 msgstr ""
 
-#: FHelpBrowser.form:85 FImageEditor.form:222
+#: FHelpBrowser.form:85 FImageEditor.form:233
 msgid "Zoom in"
 msgstr ""
 
-#: FHelpBrowser.form:91 FImageEditor.form:230
+#: FHelpBrowser.form:91 FImageEditor.form:241
 msgid "Zoom out"
 msgstr ""
 
@@ -2049,112 +2049,124 @@ msgstr ""
 msgid "Default language"
 msgstr ""
 
-#: FImageEditor.form:141
+#: FImageEditor.form:143
 msgid "Hide selection"
 msgstr ""
 
-#: FImageEditor.form:148
+#: FImageEditor.form:150
 msgid "Invert selection"
 msgstr ""
 
-#: FImageEditor.form:156
+#: FImageEditor.form:158
 msgid "Duplicate selection"
 msgstr ""
 
-#: FImageEditor.form:164
+#: FImageEditor.form:166 FImageOffsetSelection.form:12
+msgid "Offset selection"
+msgstr ""
+
+#: FImageEditor.form:175
 msgid "Action"
 msgstr ""
 
-#: FImageEditor.form:169
+#: FImageEditor.form:180
 msgid "Crop"
 msgstr ""
 
-#: FImageEditor.form:176 FImageProperty.form:289
+#: FImageEditor.form:187 FImageProperty.form:289
 msgid "Horizontal flip"
 msgstr ""
 
-#: FImageEditor.form:183 FImageProperty.form:283
+#: FImageEditor.form:194 FImageProperty.form:283
 msgid "Vertical flip"
 msgstr ""
 
-#: FImageEditor.form:190 FImageProperty.form:277
+#: FImageEditor.form:201 FImageProperty.form:277
 msgid "Rotate counter-clockwise"
 msgstr ""
 
-#: FImageEditor.form:197 FImageProperty.form:271
+#: FImageEditor.form:208 FImageProperty.form:271
 msgid "Rotate clockwise"
 msgstr ""
 
-#: FImageEditor.form:204
+#: FImageEditor.form:215
 msgid "Resize..."
 msgstr ""
 
-#: FImageEditor.form:211
+#: FImageEditor.form:222
 msgid "Rotate..."
 msgstr ""
 
-#: FImageEditor.form:217
+#: FImageEditor.form:228
 msgid "Zoom"
 msgstr ""
 
-#: FImageEditor.form:238
+#: FImageEditor.form:249
 msgid "Zoom normal"
 msgstr ""
 
-#: FImageEditor.form:245
+#: FImageEditor.form:256
 msgid "Zoom fit"
 msgstr ""
 
-#: FImageEditor.form:279
+#: FImageEditor.form:290
 msgid "Image editor"
 msgstr ""
 
-#: FImageEditor.form:379
+#: FImageEditor.form:390
 msgid "Drawing grid"
 msgstr ""
 
-#: FImageEditor.form:394
+#: FImageEditor.form:405
 msgid "Move"
 msgstr ""
 
-#: FImageEditor.form:405
+#: FImageEditor.form:416
 msgid "Draw"
 msgstr ""
 
-#: FImageEditor.form:415
+#: FImageEditor.form:426
 msgid "Erase"
 msgstr ""
 
-#: FImageEditor.form:439
+#: FImageEditor.form:450
 msgid "Rectangle"
 msgstr ""
 
-#: FImageEditor.form:449
+#: FImageEditor.form:460
 msgid "Ellipse"
 msgstr ""
 
-#: FImageEditor.form:461
+#: FImageEditor.form:472
 msgid "Magic wand"
 msgstr ""
 
-#: FImageEditor.form:471
+#: FImageEditor.form:482
 msgid "Edit selection"
 msgstr ""
 
-#: FImageEditor.form:497
+#: FImageEditor.form:515
 msgid "Stroke"
 msgstr ""
 
-#: FImageEditor.form:504
+#: FImageEditor.form:522
 msgid "Fill"
 msgstr ""
 
-#: FImageEditor.form:557
+#: FImageEditor.form:575
 msgid "Resize or stretch image"
 msgstr ""
 
-#: FImageEditor.form:566 FImageRotate.form:11
+#: FImageEditor.form:584 FImageRotate.form:11
 msgid "Rotate image"
+msgstr ""
+
+#: FImageOffsetSelection.form:22 FImageResize.form:127
+msgid "px"
+msgstr ""
+
+#: FImageOffsetSelection.form:40
+msgid "Duplicate"
 msgstr ""
 
 #: FImageProperty.form:126 FReportBrushChooser.form:49
@@ -2258,7 +2270,7 @@ msgstr ""
 msgid "Grid resolution"
 msgstr ""
 
-#: FImageProperty.form:654
+#: FImageProperty.form:655
 msgid "Subdivision"
 msgstr ""
 
@@ -2316,18 +2328,6 @@ msgstr ""
 
 #: FImageResize.form:116
 msgid "Ratio"
-msgstr ""
-
-#: FImageResize.form:127 FImageResizeSelection.form:22
-msgid "px"
-msgstr ""
-
-#: FImageResizeSelection.form:12
-msgid "Enlarge selection"
-msgstr ""
-
-#: FImageResizeSelection.form:40
-msgid "Duplicate"
 msgstr ""
 
 #: FImageRotate.form:21
