@@ -52,9 +52,10 @@ typedef
     int err;
     int status;
     int watch;
-    volatile sig_atomic_t running;
+		unsigned running : 1;
     unsigned to_string : 1;
 		unsigned process_group : 1;
+		unsigned ignore : 1;
     char *result;
     GB_VARIANT_VALUE tag;
   }

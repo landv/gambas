@@ -71,8 +71,10 @@ DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Kill);
 
-static CPROCESS *RunningProcessList = NULL;
-//static int _pipe_child[2];
+static CPROCESS *_running_process_list = NULL;
+static int _running_process = 0;
+static int _ignore_process = 0;
+
 static SIGNAL_CALLBACK *_SIGCHLD_callback;
 static bool _init = FALSE;
 
@@ -121,15 +123,16 @@ static void close_fd(int *pfd)
 
 static void add_process_to_running_list(CPROCESS *process)
 {
-	if (RunningProcessList)
-		RunningProcessList->prev = process;
+	if (_running_process_list)
+		_running_process_list->prev = process;
 
-	process->next = RunningProcessList;
+	process->next = _running_process_list;
 	process->prev = NULL;
 
-	RunningProcessList = process;
+	_running_process_list = process;
 
 	process->running = TRUE;
+	_running_process++;
 }
 
 static void remove_process_from_running_list(CPROCESS *process)
@@ -140,10 +143,13 @@ static void remove_process_from_running_list(CPROCESS *process)
 	if (process->next)
 		process->next->prev = process->prev;
 
-	if (process == RunningProcessList)
-		RunningProcessList = process->next;
+	if (process == _running_process_list)
+		_running_process_list = process->next;
 
 	process->running = FALSE;
+	_running_process--;
+	if (process->ignore)
+		_ignore_process--;
 }
 
 static void callback_write(int fd, int type, CPROCESS *process)
@@ -349,7 +355,8 @@ static void stop_process(CPROCESS *process)
 
 	OBJECT_UNREF(process);
 
-	if (!RunningProcessList)
+	//if (!_running_process_list)
+	if (_running_process <= _ignore_process)
 		exit_child();
 }
 
@@ -748,7 +755,7 @@ static void callback_child(int signum, intptr_t data)
 	fprintf(stderr, ">> callback_child\n");
 	#endif
 
-	for (process = RunningProcessList; process; )
+	for (process = _running_process_list; process; )
 	{
 		next = process->next;
 
@@ -912,8 +919,8 @@ BEGIN_METHOD_VOID(Process_exit)
 
 	//fprintf(stderr, "Process_exit\n");
 
-	while (RunningProcessList)
-		stop_process(RunningProcessList);
+	while (_running_process_list)
+		stop_process(_running_process_list);
 
 	exit_child();
 	
@@ -1052,6 +1059,19 @@ BEGIN_METHOD(Process_Wait, GB_FLOAT timeout)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Process_Ignore)
+
+	if (!THIS->ignore)
+	{
+		THIS->ignore = TRUE;
+		_ignore_process++;
+
+		if (_running_process <= _ignore_process)
+			exit_child();
+	}
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_Process[] =
@@ -1079,6 +1099,7 @@ GB_DESC NATIVE_Process[] =
 	GB_METHOD("Kill", NULL, Process_Kill, NULL),
 	GB_METHOD("Signal", NULL, Process_Signal, NULL),
 	GB_METHOD("Wait", NULL, Process_Wait, "[(Timeout)f]"),
+	GB_METHOD("Ignore", NULL, Process_Ignore, NULL),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
