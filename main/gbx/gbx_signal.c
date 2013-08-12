@@ -136,26 +136,37 @@ static SIGNAL_HANDLER *_purge_handler;
 static void purge_callbacks(void)
 {
 	SIGNAL_CALLBACK *cb, *next_cb;
-	
+
 	_raising_callback--;
 	if (_raising_callback)
 		return;
 	
-	if (_must_purge_callbacks)
+	#ifdef DEBUG_ME
+	fprintf(stderr, ">> purge_callbacks\n");
+	#endif
+
+	while (_must_purge_callbacks)
 	{
+		_must_purge_callbacks = FALSE;
+
 		cb = _purge_handler->callbacks;
 		while (cb)
 		{
+			#ifdef DEBUG_ME
+			fprintf(stderr, "purge_callbacks: cb = %p\n", cb);
+			#endif
 			next_cb = cb->next;
-			
+
 			if (!cb->callback)
 				SIGNAL_unregister(_purge_signum, cb);
 			
 			cb = next_cb;
 		}
-
-		_must_purge_callbacks = FALSE;
 	}
+
+	#ifdef DEBUG_ME
+	fprintf(stderr, "<< purge_callbacks\n");
+	#endif
 }
 
 void SIGNAL_raise_callbacks(int fd, int type, void *data)
@@ -170,7 +181,13 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 		return;
 	
 	handler = find_handler(signum);
+	if (!handler)
+		return;
 	
+	#ifdef DEBUG_ME
+	fprintf(stderr, ">> SIGNAL_raise_callbacks (%d)\n", _raising_callback);
+	#endif
+
 	_raising_callback++;
 	_purge_signum = signum;
 	_purge_handler = handler;
@@ -180,6 +197,9 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 		cb = handler->callbacks;
 		while (cb)
 		{
+			#ifdef DEBUG_ME
+			fprintf(stderr, "SIGNAL_raise_callbacks: cb = %p cb->callback = %p\n", cb, cb->callback);
+			#endif
 			if (cb->callback)
 				(*cb->callback)((int)signum, cb->data);
 			
@@ -188,7 +208,14 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	}
 	END_ERROR
 	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "SIGNAL_raise_callbacks: purge_callbacks\n");
+	#endif
 	purge_callbacks();
+
+	#ifdef DEBUG_ME
+	fprintf(stderr, "<< SIGNAL_raise_callbacks (%d)\n", _raising_callback);
+	#endif
 }
 
 SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), intptr_t data)
@@ -225,12 +252,27 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 	cb->callback = callback;
 	cb->data = data;
 	
+	if (cb->next)
+		cb->next->prev = cb;
 	handler->callbacks = cb;
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGNAL_register: %d -> %p (%p)\n", signum, cb, cb->callback);
 	#endif
 	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "handler->callbacks %p:", handler);
+	SIGNAL_CALLBACK *save = cb;
+	cb = handler->callbacks;
+	while (cb)
+	{
+		fprintf(stderr, " -> %p (%p)", cb, cb->callback);
+		cb = cb->next;
+	}
+	fprintf(stderr, "\n");
+	cb = save;
+	#endif
+
 	return cb;
 }
 
@@ -264,7 +306,7 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	if (cb == handler->callbacks)
 		handler->callbacks = cb->next;
 	
-	FREE(&cb);
+	IFREE(cb);
 	
 	_count--;
 	
@@ -277,6 +319,16 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 		_pipe[1] = -1;
 	}
 	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "handler->callbacks %p:", handler);
+	cb = handler->callbacks;
+	while (cb)
+	{
+		fprintf(stderr, " -> %p (%p)", cb, cb->callback);
+		cb = cb->next;
+	}
+	fprintf(stderr, "\n");
+	#endif
 }
 
 void SIGNAL_exit(void)

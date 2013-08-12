@@ -745,7 +745,7 @@ static void callback_child(int signum, intptr_t data)
 	}
 #endif
 	#ifdef DEBUG_ME
-	fprintf(stderr, "<< callback_child\n");
+	fprintf(stderr, ">> callback_child\n");
 	#endif
 
 	for (process = RunningProcessList; process; )
@@ -774,7 +774,7 @@ static void callback_child(int signum, intptr_t data)
 	throw_last_child_error();
 	
 	#ifdef DEBUG_ME
-	fprintf(stderr, ">> callback_child\n");
+	fprintf(stderr, "<< callback_child\n");
 	#endif
 }
 
@@ -859,18 +859,22 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	OBJECT_REF(process);
 	
 	sigfd = SIGNAL_get_fd();
-	
+
 	ON_ERROR_1(error_CPROCESS_wait_for, process)
 	{
 		while (process->running)
 		{
 			ret = WATCH_process(sigfd, process->out, timeout);
+
 			if (ret & WP_OUTPUT)
 				callback_write(process->out, GB_WATCH_READ, process);
+
 			if (ret & WP_END)
 				SIGNAL_raise_callbacks(sigfd, GB_WATCH_READ, 0);
+
 			if (ret & WP_TIMEOUT)
 				break;
+
 			if (ret == 0)
 				usleep(1000);
 		}
