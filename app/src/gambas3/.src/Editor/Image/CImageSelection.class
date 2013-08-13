@@ -713,7 +713,7 @@ End
 
 Public Sub Offset(fOffset As Float, bDup As Boolean)
   
-  Dim aPolygons As New PointF[][]
+  Dim aPolygons As New Polygon[]
   Dim hShape As CImageShape
   Dim I As Integer
   
@@ -760,10 +760,11 @@ End
 
 Public Sub CleanLastShape()
   
-  Dim aPolygons As PointF[][]
+  Dim hPolygon As Polygon
   
-  aPolygons = [Shapes[Shapes.Max].Points]
-  Shapes[Shapes.Max].Points = Clipper.Clean(aPolygons)[0]
+  hPolygon = Shapes[Shapes.Max].Points
+  
+  Shapes[Shapes.Max].Points = hPolygon.Clean()
   Shapes[Shapes.Max].Invalidate
   
 End
@@ -772,4 +773,26 @@ Public Sub AddMagnetsLastShape()
   
   Shapes[Shapes.Max].AddMagnetsFromExtent
   
+End
+
+Public Sub Merge()
+  
+  Dim aPolygons As New Polygon[]
+  Dim hShape As CImageShape
+  Dim I As Integer
+  
+  For Each hShape In Shapes
+    aPolygons.Add(hShape.Points)
+  Next
+  
+  aPolygons = Clipper.Union(aPolygons)
+  
+  Clear()
+  For I = 0 To aPolygons.Max
+    hShape = New CImageShape
+    hShape.Points = aPolygons[I]
+    hShape.AddMagnetsFromExtent()
+    AddShape(hShape)
+  Next
+    
 End

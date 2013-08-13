@@ -25,11 +25,23 @@
 #define __C_CLIPPER_H
 
 #include "gambas.h"
+#include "clipper.hpp"
+
+using namespace ClipperLib;
 
 #ifndef __C_CLIPPER_CPP
 
+extern GB_DESC PolygonDesc[];
 extern GB_DESC ClipperDesc[];
 
 #endif
+
+typedef
+	struct {
+		GB_BASE ob;
+		Polygon *poly;
+	}
+	CPOLYGON;
+
 
 #endif

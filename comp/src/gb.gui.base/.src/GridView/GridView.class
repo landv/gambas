@@ -975,6 +975,8 @@ End
 
 Public Sub ScrollArea_DblClick()
   
+  'Debug $bInCell
+  
   If $bInCell Then 
     Raise Activate
   Else If $iColResize >= 0 Then

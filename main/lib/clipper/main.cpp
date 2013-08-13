@@ -40,6 +40,7 @@ GEOM_INTERFACE GEOM EXPORT;
 
 GB_DESC *GB_CLASSES [] EXPORT =
 {
+	PolygonDesc,
 	ClipperDesc,
   NULL
 };

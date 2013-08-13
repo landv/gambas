@@ -7,7 +7,9 @@ Property Read ReadOnly As Boolean
 Private $bReadOnly As Boolean
 Private $hImage As Image
 Private $bModify As Boolean
+
 Private $iMouse As Integer
+Private $hCursor As Cursor
 
 Private $bFirstTime As Boolean
 
@@ -407,6 +409,7 @@ Private Sub SetTool(sAction As String)
   $iChangeAction = CHANGE_NOTHING
 
   $iMouse = Mouse.Arrow
+  $hCursor = Null
 
   Select Case sAction
     
@@ -422,6 +425,11 @@ Private Sub SetTool(sAction As String)
         ClearSelection
       Endif
       imvImage.Refresh
+      
+      If sAction = "magic" Then
+        $iMouse = Mouse.Custom
+        $hCursor = New Cursor(Picture["img/draw/magic.png"], 0, 0)
+      Endif
       
     Case "paste"
       hImage = FImageProperty.GetClipboard()
@@ -823,6 +831,15 @@ FIND_MAGNET:
 
 End
 
+Private Sub SetMouse(iMouse As Integer)
+
+  If iMouse = Mouse.Custom Then
+    imvImage.Cursor = $hCursor
+  Endif
+  imvImage.Mouse = iMouse
+
+End
+
 Public Sub imvImage_MouseMove()
 
   Dim hPos As Point = GetPos()
@@ -1017,14 +1034,14 @@ Public Sub imvImage_MouseMove()
       Endif
     Endif
     
-    imvImage.Mouse = iMouse
+    SetMouse(iMouse)
     
   Else
     
     If $hCurrentPoint.InRect(RectF(0, 0, $hImage.W, $hImage.H)) Or If $bPress Then
-      imvImage.Mouse = $iMouse
+      SetMouse($iMouse)
     Else
-      imvImage.Mouse = Mouse.Default
+      SetMouse(Mouse.Default)
     Endif
   
   Endif
@@ -2460,6 +2477,7 @@ Fast Private Sub MagicWand()
   Wend
   
   CreateSelectionFromMask(hMask)
+  $hSelect.Merge()
   
   Dec Application.Busy
 

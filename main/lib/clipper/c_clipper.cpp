@@ -26,9 +26,6 @@
 #include "main.h"
 #include "gb.geom.h"
 #include "c_clipper.h"
-#include "clipper.hpp"
-
-using namespace ClipperLib;
 
 #define SCALE 1000000.0
 
@@ -42,26 +39,11 @@ static GEOM_POINTF *from_point(IntPoint p)
 	return GEOM.CreatePointF((double)p.X / SCALE, (double)p.Y / SCALE);
 }
 
-/*static bool is_closed(GB_ARRAY p)
-{
-	if (!p)
-		return false;
-
-	int count = GB.Array.Count(p);
-	if (count <= 1)
-		return false;
-
-	GEOM_POINTF **ap = (GEOM_POINTF **)GB.Array.Get(p, 0);
-	return ap[0]->x == ap[count - 1]->x && ap[0]->y == ap[count - 1]->y;
-}*/
-
 static bool to_polygons(Polygons &polygons, GB_ARRAY array)
 {
 	int count;
-	GB_ARRAY a;
-	int i, j;
-	GEOM_POINTF **ap;
-	GEOM_POINTF *pp;
+	CPOLYGON *p;
+	int i;
 
 	if (GB.CheckObject(array))
 		return true;
@@ -70,57 +52,35 @@ static bool to_polygons(Polygons &polygons, GB_ARRAY array)
 	if (count == 0)
 		return false;
 
-	polygons.resize(count);
+	polygons.clear();
 
 	for(i = 0; i < count; i++)
 	{
-		a = *(GB_ARRAY *)GB.Array.Get(array, i);
-		if (!a)
+		p = *(CPOLYGON **)GB.Array.Get(array, i);
+		if (!p)
 			continue;
-		ap = (GEOM_POINTF **)GB.Array.Get(a, 0);
 
-		for (j = 0; j < GB.Array.Count(a); j++)
-		{
-			pp = ap[j];
-			if (!pp)
-				continue;
-			//fprintf(stderr, "<< %d %d: %g %g\n", i, j, pp->x, pp->y);
-			polygons[i].push_back(to_point(pp));
-		}
+		polygons.push_back(*(p->poly));
 	}
 
 	return false;
 }
 
-static GB_ARRAY from_polygons(Polygons &polygons, GB_ARRAY array)
+static GB_ARRAY from_polygons(Polygons &polygons)
 {
 	GB_ARRAY a;
-	GB_ARRAY p;
-	uint i, j, n;
-	GEOM_POINTF *pp;
+	CPOLYGON *p;
+	uint i;
 
-	GB.Array.New(&a, GB.FindClass("PointF[]"), polygons.size());
+	GB.Array.New(&a, GB.FindClass("Polygon"), polygons.size());
+
 	for (i = 0; i < polygons.size(); i++)
 	{
-		n = polygons[i].size();
-		if (n == 0)
+		if (polygons[i].size() == 0)
 			continue;
 		
-		GB.Array.New(&p, GB.FindClass("PointF"), n);
-
-		for (j = 0; j < n; j++)
-		{
-			pp = from_point(polygons[i][j]);
-			//fprintf(stderr, ">> %d %d: %g %g\n", i, j, pp->x, pp->y);
-			*(GEOM_POINTF **)GB.Array.Get(p, j) = pp;
-			GB.Ref(pp);
-		}
-
-		// Close polygon
-		pp = from_point(polygons[i][0]);
-		//fprintf(stderr, ">> %d %d: %g %g\n", i, j, pp->x, pp->y);
-		*(GEOM_POINTF **)GB.Array.Add(p) = pp;
-		GB.Ref(pp);
+		p = (CPOLYGON *)GB.New(GB.FindClass("Polygon"), NULL, NULL);
+		*(p->poly) = polygons[i];
 
 		*(GB_ARRAY *)GB.Array.Get(a, i) = p;
 		GB.Ref(p);
@@ -128,6 +88,155 @@ static GB_ARRAY from_polygons(Polygons &polygons, GB_ARRAY array)
 
 	return a;
 }
+
+//---------------------------------------------------------------------------
+
+#define THIS ((CPOLYGON *)_object)
+#define POLY THIS->poly
+
+static bool _convert_polygon(CPOLYGON *_object, GB_TYPE type, GB_VALUE *conv)
+{
+	if (type != GB.FindClass("PointF[]"))
+		return true;
+
+	if (THIS)
+	{
+		// Polygon --> PointF[]
+		GB_ARRAY a;
+		int i;
+		GEOM_POINTF **data;
+
+		GB.Array.New(&a, GB.FindClass("PointF"), POLY->size() + 1);
+		data = (GEOM_POINTF **)GB.Array.Get(a, 0);
+		for(i = 0; i < (int)POLY->size(); i++)
+		{
+			data[i] = from_point((*POLY)[i]);
+			GB.Ref(data[i]);
+		}
+
+		data[i] = from_point((*POLY)[0]);
+		GB.Ref(data[i]);
+
+		conv->_object.value = a;
+		return false;
+	}
+	else
+	{
+		// PointF[] --> Polygon
+		CPOLYGON *p;
+		GB_ARRAY a = (GB_ARRAY)conv->_object.value;
+		int size = GB.Array.Count(a);
+		int i;
+		GEOM_POINTF **points;
+
+		p = (CPOLYGON *)GB.New(GB.FindClass("Polygon"), NULL, NULL);
+
+		points = (GEOM_POINTF **)GB.Array.Get(a, 0);
+		for (i = 0; i < size; i++)
+		{
+			if (!points[i])
+				continue;
+
+			p->poly->push_back(to_point(points[i]));
+		}
+
+		conv->_object.value = p;
+		return false;
+	}
+}
+
+BEGIN_METHOD(Polygon_new, GB_INTEGER size)
+
+	POLY = new Polygon;
+
+	if (!MISSING(size))
+		POLY->resize(VARG(size));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Polygon_free)
+
+	delete POLY;
+
+END_METHOD
+
+BEGIN_METHOD(Polygon_get, GB_INTEGER index)
+
+	int index = VARG(index);
+
+	if (index < 0 || index >= (int)POLY->size())
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+
+	GB.ReturnObject(from_point((*POLY)[index]));
+
+END_METHOD
+
+BEGIN_METHOD(Polygon_put, GB_OBJECT point; GB_INTEGER index)
+
+	int index = VARG(index);
+	GEOM_POINTF *point = (GEOM_POINTF *)VARG(point);
+
+	if (GB.CheckObject(point))
+		return;
+
+	if (index < 0 || index >= (int)POLY->size())
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+
+	(*POLY)[index] = to_point(point);
+
+END_METHOD
+
+BEGIN_PROPERTY(Polygon_Count)
+
+	GB.ReturnInteger(POLY->size());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Polygon_Max)
+
+	GB.ReturnInteger(POLY->size() - 1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Polygon_Area)
+
+	GB.ReturnFloat(Area(*POLY) / SCALE / SCALE);
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(Polygon_Reverse)
+
+	ReversePolygon(*POLY);
+
+END_METHOD
+
+BEGIN_METHOD(Polygon_Simplify, GB_INTEGER fill)
+
+	Polygons result;
+
+	SimplifyPolygon(*POLY, result, (PolyFillType)VARGOPT(fill, pftNonZero));
+
+	GB.ReturnObject(from_polygons(result));
+
+END_METHOD
+
+BEGIN_METHOD(Polygon_Clean, GB_FLOAT distance)
+
+	CPOLYGON *result = (CPOLYGON *)GB.New(GB.FindClass("Polygon"), NULL, 0);
+
+	result->poly->resize(POLY->size());
+
+	CleanPolygon(*POLY, *(result->poly), VARGOPT(distance, 1.415));
+
+	GB.ReturnObject(result);
+
+END_METHOD
 
 //---------------------------------------------------------------------------
 
@@ -143,7 +252,7 @@ BEGIN_METHOD(Clipper_Offset, GB_OBJECT polygons; GB_FLOAT delta; GB_INTEGER join
 	polygons = result;
 	OffsetPolygons(polygons, result, VARG(delta) * SCALE, (JoinType)VARGOPT(join, jtSquare), VARGOPT(limit, 0.0), !VARGOPT(do_not_fix, false));
 
-	GB.ReturnObject(from_polygons(result, VARG(polygons)));
+	GB.ReturnObject(from_polygons(result));
 
 END_METHOD
 
@@ -158,7 +267,7 @@ BEGIN_METHOD(Clipper_Simplify, GB_OBJECT polygons; GB_INTEGER fill)
 
 	SimplifyPolygons(polygons, result, (PolyFillType)VARGOPT(fill, pftNonZero));
 
-	GB.ReturnObject(from_polygons(result, VARG(polygons)));
+	GB.ReturnObject(from_polygons(result));
 
 END_METHOD
 
@@ -174,11 +283,53 @@ BEGIN_METHOD(Clipper_Clean, GB_OBJECT polygons; GB_FLOAT distance)
 
 	CleanPolygons(polygons, result, VARGOPT(distance, 1.415));
 
-	GB.ReturnObject(from_polygons(result, VARG(polygons)));
+	GB.ReturnObject(from_polygons(result));
+
+END_METHOD
+
+BEGIN_METHOD(Clipper_Union, GB_OBJECT subject; GB_INTEGER fill)
+
+	Clipper c;
+	Polygons subject, result;
+
+	if (to_polygons(subject, VARG(subject)))
+		return;
+
+	//if (VARG(clip) && to_polygons(clip, VARG(clip)))
+	//	return;
+
+	c.AddPolygons(subject, ptSubject);
+	//c.AddPolygons(clip, ptClip);
+	c.Execute(ctUnion, result, (PolyFillType)VARGOPT(fill, pftNonZero), (PolyFillType)VARGOPT(fill, pftNonZero));
+
+	GB.ReturnObject(from_polygons(result));
 
 END_METHOD
 
 //---------------------------------------------------------------------------
+
+GB_DESC PolygonDesc[] =
+{
+	GB_DECLARE("Polygon", sizeof(CPOLYGON)),
+
+	GB_METHOD("_new", NULL, Polygon_new, "[(Size)i]"),
+	GB_METHOD("_free", NULL, Polygon_free, NULL),
+
+	GB_METHOD("_get", "PointF", Polygon_get, "(Index)i"),
+	GB_METHOD("_put", NULL, Polygon_put, "(Index)i(Point)PointF;"),
+
+	GB_PROPERTY_READ("Count", "i", Polygon_Count),
+	GB_PROPERTY_READ("Max", "i", Polygon_Max),
+	GB_PROPERTY_READ("Area", "f", Polygon_Area),
+
+	GB_METHOD("Reverse", NULL, Polygon_Reverse, NULL),
+	GB_METHOD("Simplify", "Polygon[]", Polygon_Simplify, "[(Fill)i]"),
+	GB_METHOD("Clean", "Polygon", Polygon_Clean, "[(Distance)f]"),
+
+	GB_INTERFACE("_convert", &_convert_polygon),
+
+	GB_END_DECLARE
+};
 
 GB_DESC ClipperDesc[] =
 {
@@ -198,9 +349,11 @@ GB_DESC ClipperDesc[] =
 	GB_CONSTANT("FillPositive", "i", pftPositive),
 	GB_CONSTANT("FillNegative", "i", pftNegative),
 
-	GB_STATIC_METHOD("Offset", "PointF[][]", Clipper_Offset, "(Polygons)PointF[][];(Delta)f[(Join)i(Limit)f(DoNotFix)b]"),
-	GB_STATIC_METHOD("Simplify", "PointF[][]", Clipper_Simplify, "(Polygons)PointF[][];[(Fill)i]"),
-	GB_STATIC_METHOD("Clean", "PointF[][]", Clipper_Clean, "(Polygons)PointF[][];[(Distance)f]"),
+	GB_STATIC_METHOD("Offset", "Polygon[]", Clipper_Offset, "(Polygons)Polygon[];(Delta)f[(Join)i(Limit)f(DoNotFix)b]"),
+	GB_STATIC_METHOD("Simplify", "Polygon[]", Clipper_Simplify, "(Polygons)Polygon[];[(Fill)i]"),
+	GB_STATIC_METHOD("Clean", "Polygon[]", Clipper_Clean, "(Polygons)Polygon[];[(Distance)f]"),
+
+	GB_STATIC_METHOD("Union", "Polygon[]", Clipper_Union, "(Polygons)Polygon[];[(Fill)i]"),
 
 	GB_END_DECLARE
 };
