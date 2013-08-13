@@ -33,6 +33,20 @@ Public Sub RemoveAccents(sStr As String) As String
 
 End
 
+Public Sub GetFileSize(iSize As Long) As String
+  
+  If iSize < 1000 Then
+    Return Subst(("&1 B"), CStr(iSize))
+  Else If iSize < 1000000 Then
+    Return Subst(("&1 KiB"), Format(iSize / 1024, "0.#"))
+  Else If iSize < 1000000000 Then
+    Return Subst(("&1 MiB"), Format(iSize / 1048576, "0.#"))
+  Else
+    Return Subst(("&1 GiB"), Format(iSize / 1073741824, "0.#"))
+  Endif
+  
+End
+
 Public Sub Main()
 
   Dim A As Float

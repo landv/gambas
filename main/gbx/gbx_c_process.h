@@ -68,6 +68,7 @@ enum
   PM_TERM = 4,
   PM_STRING = 8,
 	PM_WAIT = 16,
+	PM_CONTINUE = 32,
   PM_SHELL = 128
 };
 

@@ -32,6 +32,13 @@ Private $flY2 As Float = 0.5
 
 'Static Public Value As String  '"radialgradient(0.5,0.5,1,0.5,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])" '"lineargradient(0,0.5,1,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])"
 
+Private Sub GetCurrent() As FImageEditor
+  
+  Try Return Project.ActiveForm
+  
+End
+
+
 Public Sub _new()
   
   'fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
@@ -1024,18 +1031,20 @@ End
 Public Sub OnProjectActivate()
   
   UpdateBalance
+  UpdateInfo
   
 End
 
 Public Sub btnBalanceApply_Click()
 
-  Try Project.ActiveForm.ApplyBalance
+  Try GetCurrent().ApplyBalance
   btnBalanceReset_Click
 
 End
 
-Public Sub UpdateInfo(sInfo As String)
+Public Sub UpdateInfo(Optional sInfo As String)
   
+  If Not sInfo Then Try sInfo = GetCurrent().GetImageInfo()
   lblInfo.Text = sInfo
   
 End

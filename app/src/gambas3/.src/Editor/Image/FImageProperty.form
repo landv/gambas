@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,128)
+  MoveScaled(0,0,68,153)
   Persistent = True
   Arrangement = Arrange.Fill
   { Panel10 ScrollView
-    MoveScaled(1,1,65,125)
+    MoveScaled(1,1,65,146)
     Arrangement = Arrange.Vertical
     Border = False
     ScrollBar = Scroll.Vertical
@@ -203,10 +203,11 @@
       MoveScaled(18,65,15,0)
     }
     { Panel1 VBox
-      MoveScaled(1,66,63,10)
+      MoveScaled(1,66,63,14)
       Margin = True
       { HPanel1 HBox
         MoveScaled(0,0,62,4)
+        Spacing = True
         { Label1 Label
           MoveScaled(0,0,15,4)
           Text = ("Opacity")
@@ -224,7 +225,8 @@
         }
       }
       { HPanel2 HBox
-        MoveScaled(0,5,62,4)
+        MoveScaled(0,4,62,4)
+        Spacing = True
         { Label2 Label
           MoveScaled(0,0,15,4)
           Text = ("Size")
@@ -240,34 +242,35 @@
         }
       }
       { HPanel3 HBox
-        MoveScaled(0,10,62,4)
-        Visible = False
+        MoveScaled(0,8,62,4)
+        Spacing = True
         { Label4 Label
-          MoveScaled(0,0,11,4)
+          MoveScaled(0,0,15,4)
           Text = ("Tolerance")
         }
         { sldTolerance Slider
-          MoveScaled(13,0,24,4)
+          MoveScaled(17,0,24,4)
           Expand = True
-          MaxValue = 128
-          Value = 32
+          MaxValue = 255
+          Value = 64
         }
         { txtTolerance SpinBox
           MoveScaled(47,0,8,4)
-          MaxValue = 128
+          MaxValue = 255
           Step = 16
-          Value = 32
+          Value = 64
         }
       }
     }
     { Separator3 Separator
-      MoveScaled(19,77,15,0)
+      MoveScaled(19,82,26,0)
     }
     { Panel5 VBox
-      MoveScaled(1,78,63,35)
+      MoveScaled(1,84,63,35)
       Margin = True
       { HPanel4 HBox
         MoveScaled(0,0,62,4)
+        Spacing = True
         { Label5 Label
           MoveScaled(0,0,15,4)
           Text = ("Brightness")
@@ -289,6 +292,7 @@
       }
       { HPanel5 HBox
         MoveScaled(0,4,62,4)
+        Spacing = True
         { Label6 Label
           MoveScaled(0,0,15,4)
           Text = ("Contrast")
@@ -310,6 +314,7 @@
       }
       { HPanel8 HBox
         MoveScaled(0,8,62,4)
+        Spacing = True
         { Label9 Label
           MoveScaled(0,0,15,4)
           Text = ("Gamma")
@@ -331,6 +336,7 @@
       }
       { HPanel9 HBox
         MoveScaled(0,12,62,4)
+        Spacing = True
         { Label10 Label
           MoveScaled(0,0,15,4)
           Text = ("Lightness")
@@ -352,6 +358,7 @@
       }
       { HPanel6 HBox
         MoveScaled(0,16,62,4)
+        Spacing = True
         { Label7 Label
           MoveScaled(0,0,15,4)
           Text = ("Hue")
@@ -373,6 +380,7 @@
       }
       { HPanel7 HBox
         MoveScaled(0,20,62,4)
+        Spacing = True
         { Label8 Label
           MoveScaled(0,0,15,4)
           Text = ("Saturation")
@@ -394,6 +402,7 @@
       }
       { HPanel10 HBox
         MoveScaled(0,24,62,4)
+        Spacing = True
         { Label11 Label
           MoveScaled(0,0,15,4)
           Text = ("Blur")
@@ -442,10 +451,10 @@
       }
     }
     { Separator4 Separator
-      MoveScaled(19,116,15,0)
+      MoveScaled(19,123,15,0)
     }
     { HBox4 HBox
-      MoveScaled(2,118,62,6)
+      MoveScaled(2,125,62,6)
       Spacing = True
       Margin = True
       { Label12 Label

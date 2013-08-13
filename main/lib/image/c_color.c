@@ -494,6 +494,26 @@ BEGIN_METHOD(Color_SetAlpha, GB_INTEGER color; GB_INTEGER alpha)
 
 END_METHOD
 
+BEGIN_METHOD(Color_Distance, GB_INTEGER col1; GB_INTEGER col2)
+
+	int r1, g1, b1, a1;
+	int r2, g2, b2, a2;
+
+	gt_color_to_rgba(VARG(col1), &r1, &g1, &b1, &a1);
+	gt_color_to_rgba(VARG(col2), &r2, &g2, &b2, &a2);
+
+	r1 -= r2;
+	g1 -= g2;
+	b1 -= b2;
+	a1 -= a2;
+	r1 *= r1;
+	g1 *= g1;
+	b1 *= b1;
+	a1 *= a1;
+
+	GB.ReturnFloat(sqrt(r1 + b1 + g1 + a1) / 510.0);
+
+END_METHOD
 
 GB_DESC CColorInfoDesc[] =
 {
@@ -550,7 +570,7 @@ GB_DESC CColorDesc[] =
 
   GB_STATIC_METHOD("RGB", "i", Color_RGB, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
   GB_STATIC_METHOD("HSV", "i", Color_HSV, "(Hue)i(Saturation)i(Value)i[(Alpha)i]"),
-  
+
   GB_STATIC_METHOD("Lighter", "i", Color_Lighter, "(Color)i"),
   GB_STATIC_METHOD("Darker", "i", Color_Darker, "(Color)i"),
   GB_STATIC_METHOD("Merge", "i", Color_Merge, "(Color1)i(Color2)i[(Weight)f]"),
@@ -562,7 +582,9 @@ GB_DESC CColorDesc[] =
 	GB_STATIC_METHOD("SetRGB", "i", Color_SetRGB, "(Color)i[(Red)i(Green)i(Blue)i(Alpha)i]"),
 	GB_STATIC_METHOD("SetHSV", "i", Color_SetHSV, "(Color)i[(Hue)i(Saturation)i(Value)i(Alpha)i]"),
 	GB_STATIC_METHOD("GetAlpha", "i", Color_GetAlpha, "(Color)i"),
-	
+
+  GB_STATIC_METHOD("Distance", "f", Color_Distance, "(Color1)i(Color2)i"),
+
   GB_STATIC_METHOD("_get", "ColorInfo", Color_get, "(Color)i"),
   //GB_STATIC_METHOD("_call", "ColorInfo", Color_get, "(Color)i"),
 	

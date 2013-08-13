@@ -241,29 +241,29 @@ Public Sub Clear()
   
 End
 
-Public Sub AddMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer, Optional (iType) As Integer)
-  
-  With Shapes[Shapes.Max]
-  
-    .AddMagnet(PointF(X, Y))
-    .AddMagnet(PointF(X + W / 2, Y))
-    .AddMagnet(PointF(X + W, Y))
-    .AddMagnet(PointF(X + W, Y + H / 2))
-    .AddMagnet(PointF(X + W, Y + H))
-    .AddMagnet(PointF(X + W / 2, Y + H))
-    .AddMagnet(PointF(X, Y + H))
-    .AddMagnet(PointF(X, Y + H / 2))
-    .AddMagnet(PointF(X + W / 2, Y + H / 2))
-  
-  End With
-  
-  ' For I = 1 To 8
-  '   _MagnetTypes.Add(iType)
-  ' Next
-  
-  '_Magnets.Add(PointF(X + W \ 2, Y + H \ 2))
-  
-End
+' Public Sub AddMagnetFromRect(X As Integer, Y As Integer, W As Integer, H As Integer, Optional (iType) As Integer)
+'   
+'   With Shapes[Shapes.Max]
+'   
+'     .AddMagnet(PointF(X, Y))
+'     .AddMagnet(PointF(X + W / 2, Y))
+'     .AddMagnet(PointF(X + W, Y))
+'     .AddMagnet(PointF(X + W, Y + H / 2))
+'     .AddMagnet(PointF(X + W, Y + H))
+'     .AddMagnet(PointF(X + W / 2, Y + H))
+'     .AddMagnet(PointF(X, Y + H))
+'     .AddMagnet(PointF(X, Y + H / 2))
+'     .AddMagnet(PointF(X + W / 2, Y + H / 2))
+'   
+'   End With
+'   
+'   ' For I = 1 To 8
+'   '   _MagnetTypes.Add(iType)
+'   ' Next
+'   
+'   '_Magnets.Add(PointF(X + W \ 2, Y + H \ 2))
+'   
+' End
 
 ' Private Sub RemoveMagnet(X As Integer, Y As Integer)
 ' 
@@ -315,7 +315,7 @@ End
 ' 
 ' End
 
-Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bNoMagnet As Boolean)
+Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   'AddRect(CMD_RECTANGLE, X, Y, W, H, bNoMagnet)
   
@@ -325,11 +325,9 @@ Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer, Opt
   LineTo(X, Y + H)
   LineTo(X, Y)
   
-  If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H, MAGNET_RECTANGLE)
-  
 End
 
-Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bNoMagnet As Boolean)
+Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   Dim A As Integer
   Dim XC, YC, WC, HC As Float
@@ -344,8 +342,6 @@ Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer, Optio
     LineTo(XC + Cos(Rad(A)) * WC, YC + Sin(Rad(A)) * HC)
   Next
   LineTo(XC + WC, YC)
-  
-  If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H, MAGNET_ELLIPSE)
   
 End
 
@@ -619,13 +615,20 @@ Public Sub AddSelection(hSel As CImageSelection) As Integer
   
   For Each hShape In hSel.Shapes
     Shapes.Add(hShape.Copy())
+    AddMagnetsLastShape
   Next
 
   For I = 0 To hSel._Magnets.Max
     _Magnets.Add(hSel._Magnets[I].Copy())
   Next
   
-  AddCenterMagnet()
+  ' With GetExtents()
+  '   _Magnets.Add(PointF(.X, .Y))
+  '   _Magnets.Add(PointF(.X + .W, .Y))
+  '   _Magnets.Add(PointF(.X, .Y + .H))
+  '   _Magnets.Add(PointF(.X + .W, .Y + .H))
+  '   _Magnets.Add(PointF(.X + .W / 2, .Y + .H / 2))
+  ' End With
   
   Return Shapes.Max
   
@@ -654,12 +657,6 @@ Public Sub SetPoint(vWhere As Variant, hPoint As PointF)
   
 End
 
-
-Public Sub AddCenterMagnet()
-
-  AddMagnet(Shapes[Shapes.Max].GetCenter())
-  
-End
 
 Public Sub Select(iShape As Integer)
   
@@ -726,7 +723,7 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
       aPolygons.Add(Shapes[I].Points)
     Next
     
-    aPolygons = Clipper.OffsetPolygons(aPolygons, fOffset)
+    aPolygons = Clipper.Offset(aPolygons, fOffset)
     
     If Not bDup Then Clear()
     
@@ -741,11 +738,12 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
     
     aPolygons.Add(Shapes[_Current].Points)
     
-    aPolygons = Clipper.OffsetPolygons(aPolygons, fOffset)
+    aPolygons = Clipper.Offset(aPolygons, fOffset)
     
     If aPolygons.Count Then
       If Not bDup Then
         Shapes[_Current].Points = aPolygons[0]
+        Shapes[_Current].Invalidate
         Shapes[_Current].AddMagnetsFromExtent()
       Else
         hShape = New CImageShape
@@ -757,5 +755,21 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
     Endif
     
   Endif
+  
+End
+
+Public Sub CleanLastShape()
+  
+  Dim aPolygons As PointF[][]
+  
+  aPolygons = [Shapes[Shapes.Max].Points]
+  Shapes[Shapes.Max].Points = Clipper.Clean(aPolygons)[0]
+  Shapes[Shapes.Max].Invalidate
+  
+End
+
+Public Sub AddMagnetsLastShape()
+  
+  Shapes[Shapes.Max].AddMagnetsFromExtent
   
 End

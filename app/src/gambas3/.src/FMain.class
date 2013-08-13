@@ -1798,10 +1798,12 @@ End
 Public Sub mnuEditWithProg_Click()
   
   Dim sKey As String = tvwProject.Key
+  Dim hProcess As Process
   
   If sKey Then
     If CanEdit(sKey) Then
-      Last.Tag.Run(sKey)
+      hProcess = Last.Tag.Run(sKey)
+      hProcess.Ignore
     Endif
   Endif
   

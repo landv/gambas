@@ -1195,7 +1195,7 @@ msgstr "Requête SQL"
 msgid "Fields"
 msgstr "Champs"
 
-#: FConnectionEditor.form:231 FMain.class:1941
+#: FConnectionEditor.form:231 FMain.class:1943
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1627,7 +1627,7 @@ msgstr "La chaîne recherchée est introuvable."
 msgid "Stack backtrace"
 msgstr "Pile des appels"
 
-#: FEditor.class:2373 FImageEditor.class:348 FTextEditor.class:599
+#: FEditor.class:2373 FImageEditor.class:341 FTextEditor.class:599
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
@@ -2271,27 +2271,27 @@ msgstr "Rectangle"
 msgid "Ellipse"
 msgstr "Ellipse"
 
-#: FImageEditor.form:472
+#: FImageEditor.form:470
 msgid "Magic wand"
-msgstr ""
+msgstr "Baguette magique"
 
-#: FImageEditor.form:482
+#: FImageEditor.form:480
 msgid "Edit selection"
 msgstr "Modifier la sélection"
 
-#: FImageEditor.form:515
+#: FImageEditor.form:514
 msgid "Stroke"
 msgstr "Tracer"
 
-#: FImageEditor.form:522
+#: FImageEditor.form:521
 msgid "Fill"
 msgstr "Remplir"
 
-#: FImageEditor.form:575
+#: FImageEditor.form:577
 msgid "Resize or stretch image"
 msgstr "Redimensionner ou étirer l'image"
 
-#: FImageEditor.form:584 FImageRotate.form:11
+#: FImageEditor.form:586 FImageRotate.form:11
 msgid "Rotate image"
 msgstr "Rotation de l'image"
 
@@ -2303,31 +2303,31 @@ msgstr "px"
 msgid "Duplicate"
 msgstr "Dupliquer"
 
-#: FImageProperty.class:816
+#: FImageProperty.class:823
 msgid "System clipboard"
 msgstr "Presse-papier système"
 
-#: FImageProperty.class:1301
+#: FImageProperty.class:1310
 msgid "Arrow"
 msgstr "Flèche"
 
-#: FImageProperty.class:1302
+#: FImageProperty.class:1311
 msgid "Arrow #2"
 msgstr "Flèche n°2"
 
-#: FImageProperty.class:1303
+#: FImageProperty.class:1312
 msgid "Triangle"
 msgstr "Triangle"
 
-#: FImageProperty.class:1304
+#: FImageProperty.class:1313
 msgid "Square triangle"
 msgstr "Triangle rectangle"
 
-#: FImageProperty.class:1305
+#: FImageProperty.class:1314
 msgid "Pentagon"
 msgstr "Pentagone"
 
-#: FImageProperty.class:1306
+#: FImageProperty.class:1315
 msgid "Hexagon"
 msgstr "Hexagone"
 
@@ -2375,7 +2375,7 @@ msgstr "Presse-papier"
 msgid "Shapes"
 msgstr "Formes"
 
-#: FImageProperty.form:350
+#: FImageProperty.form:351
 msgid "Opacity"
 msgstr "Opacité"
 
@@ -2383,55 +2383,55 @@ msgstr "Opacité"
 msgid "Size"
 msgstr "Taille"
 
-#: FImageProperty.form:393
+#: FImageProperty.form:395
 msgid "Tolerance"
 msgstr "Tolérance"
 
-#: FImageProperty.form:425
+#: FImageProperty.form:428
 msgid "Brightness"
 msgstr "Luminosité"
 
-#: FImageProperty.form:450
+#: FImageProperty.form:454
 msgid "Contrast"
 msgstr "Contraste"
 
-#: FImageProperty.form:475
+#: FImageProperty.form:480
 msgid "Gamma"
 msgstr "Gamma"
 
-#: FImageProperty.form:500
+#: FImageProperty.form:506
 msgid "Lightness"
 msgstr "Clarté"
 
-#: FImageProperty.form:525
+#: FImageProperty.form:532
 msgid "Hue"
 msgstr "Teinte"
 
-#: FImageProperty.form:550
+#: FImageProperty.form:558
 msgid "Saturation"
 msgstr "Saturation"
 
-#: FImageProperty.form:575
+#: FImageProperty.form:584
 msgid "Blur"
 msgstr "Flou"
 
-#: FImageProperty.form:604 FImportTable.form:182
+#: FImageProperty.form:613 FImportTable.form:182
 msgid "Preview"
 msgstr "Aperçu"
 
-#: FImageProperty.form:616 FOption.class:1026
+#: FImageProperty.form:625 FOption.class:1026
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: FImageProperty.form:623 FPatch.form:86
+#: FImageProperty.form:632 FPatch.form:86
 msgid "&Apply"
 msgstr "&Appliquer"
 
-#: FImageProperty.form:641
+#: FImageProperty.form:650
 msgid "Grid resolution"
 msgstr "Résolution de la grille"
 
-#: FImageProperty.form:655
+#: FImageProperty.form:664
 msgid "Subdivision"
 msgstr "Sous-divisions"
 
@@ -2723,19 +2723,19 @@ msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont êt
 msgid "Clean"
 msgstr "Nettoyer"
 
-#: FMain.class:1839
+#: FMain.class:1841
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr "Pour afficher de nouveau la barre de menus, appuyez sur les touches suivantes&nbsp;:<p><b>&1</b>"
 
-#: FMain.class:1941
+#: FMain.class:1943
 msgid "Do you really want to add this file to the repository?"
 msgstr "Désirez-vous réellement ajouter ce fichier au référentiel ?"
 
-#: FMain.class:2080
+#: FMain.class:2082
 msgid "Choose a profile"
 msgstr "Choisissez un profilage"
 
-#: FMain.class:2081
+#: FMain.class:2083
 msgid "Profile for &1 project"
 msgstr "Profilage pour le projet &1"
 
@@ -6658,6 +6658,22 @@ msgstr "Impossible de convertir &1"
 #: Save.module:39
 msgid "Cannot save file !"
 msgstr "Impossible d'enregistrer le fichier !"
+
+#: Util.module:39
+msgid "&1 B"
+msgstr "&1 o"
+
+#: Util.module:41
+msgid "&1 KiB"
+msgstr "&1 Kio"
+
+#: Util.module:43
+msgid "&1 MiB"
+msgstr "&1 Mio"
+
+#: Util.module:45
+msgid "&1 GiB"
+msgstr "&1 Gio"
 
 #: VersionControl.module:115
 msgid "command timeout"

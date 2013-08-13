@@ -131,11 +131,12 @@ Public Sub _new(Path As String)
 End
 
 
-Public Sub Run(sPath As String)
+Public Sub Run(sPath As String) As Process
   
   Dim sExec As String = $sExec
   Dim aExec As String[]
   Dim I As Integer
+  Dim hProcess As Process
   
   aExec = Split(sExec, " ", Chr$(34))
   
@@ -159,7 +160,8 @@ Public Sub Run(sPath As String)
   
   If Not aExec.Exist(sPath) Then aExec.Add(sPath)
   
-  Exec aExec
+  hProcess = Exec aExec
+  Return hProcess
   
 End
 

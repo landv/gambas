@@ -331,12 +331,10 @@
     { btnMagic ToolButton btnTool
       Name = "btnMagic"
       MoveScaled(75,0,4,4)
-      Visible = False
-      Enabled = False
       Tag = "magic"
       ToolTip = ("Magic wand")
       Action = ".tool-magic"
-      Picture = Picture["icon:/small/wizard"]
+      Picture = Picture["img/draw/magic.png"]
       Toggle = True
     }
     { btnEditSelection ToolButton btnTool
@@ -362,6 +360,7 @@
     }
     { btnOffset ToolButton
       MoveScaled(90,0,4,4)
+      Visible = False
       ToolTip = ("Offset selection")
       Action = ".offset"
       Picture = Picture["img/draw/offset.png"]
@@ -392,18 +391,21 @@
     }
     { btnCrop ToolButton
       MoveScaled(118,0,4,4)
+      Visible = False
       ToolTip = ("Crop")
       Action = ".crop"
       Picture = Picture["img/draw/crop.png"]
     }
     { btnFlipH ToolButton
       MoveScaled(121,0,4,4)
+      Visible = False
       ToolTip = ("Horizontal flip")
       Action = ".flip-h"
       Picture = Picture["img/draw/hflip.png"]
     }
     { btnFlipV ToolButton
       MoveScaled(124,0,4,4)
+      Visible = False
       ToolTip = ("Vertical flip")
       Action = ".flip-v"
       Picture = Picture["img/draw/vflip.png"]
@@ -607,7 +609,7 @@
   }
   { Action tool-magic
     Text = "Magic wand"
-    Picture = "icon:/small/wizard"
+    Picture = "img/draw/magic.png"
   }
   { Action tool-move
     Text = "Move"
@@ -656,6 +658,6 @@
   { Toolbar image
     Text = "Image editor"
     List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-change,invert,duplicate,offset,|,stroke,fill,clear,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
+    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
   }
 }

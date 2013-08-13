@@ -103,6 +103,9 @@ static GB_ARRAY from_polygons(Polygons &polygons, GB_ARRAY array)
 	for (i = 0; i < polygons.size(); i++)
 	{
 		n = polygons[i].size();
+		if (n == 0)
+			continue;
+		
 		GB.Array.New(&p, GB.FindClass("PointF"), n);
 
 		for (j = 0; j < n; j++)
@@ -126,7 +129,9 @@ static GB_ARRAY from_polygons(Polygons &polygons, GB_ARRAY array)
 	return a;
 }
 
-BEGIN_METHOD(Clipper_OffsetPolygons, GB_OBJECT polygons; GB_FLOAT delta; GB_INTEGER join; GB_FLOAT limit; GB_BOOLEAN do_not_fix)
+//---------------------------------------------------------------------------
+
+BEGIN_METHOD(Clipper_Offset, GB_OBJECT polygons; GB_FLOAT delta; GB_INTEGER join; GB_FLOAT limit; GB_BOOLEAN do_not_fix)
 
 	Polygons polygons;
 	Polygons result;
@@ -142,17 +147,60 @@ BEGIN_METHOD(Clipper_OffsetPolygons, GB_OBJECT polygons; GB_FLOAT delta; GB_INTE
 
 END_METHOD
 
+
+BEGIN_METHOD(Clipper_Simplify, GB_OBJECT polygons; GB_INTEGER fill)
+
+	Polygons polygons;
+	Polygons result;
+
+	if (to_polygons(polygons, VARG(polygons)))
+		return;
+
+	SimplifyPolygons(polygons, result, (PolyFillType)VARGOPT(fill, pftNonZero));
+
+	GB.ReturnObject(from_polygons(result, VARG(polygons)));
+
+END_METHOD
+
+BEGIN_METHOD(Clipper_Clean, GB_OBJECT polygons; GB_FLOAT distance)
+
+	Polygons polygons;
+	Polygons result;
+
+	if (to_polygons(polygons, VARG(polygons)))
+		return;
+
+	result.resize(polygons.size());
+
+	CleanPolygons(polygons, result, VARGOPT(distance, 1.415));
+
+	GB.ReturnObject(from_polygons(result, VARG(polygons)));
+
+END_METHOD
+
+//---------------------------------------------------------------------------
+
 GB_DESC ClipperDesc[] =
 {
 	GB_DECLARE_VIRTUAL("Clipper"),
 
 	//void OffsetPolygons(const Polygons &in_polys, Polygons &out_polys, double delta, JoinType jointype = jtSquare, double limit = 0.0, bool autoFix = true);
+	//void SimplifyPolygons(const Polygons &in_polys, Polygons &out_polys, PolyFillType fillType = pftEvenOdd);
+	//void CleanPolygons(Polygons &in_polys, Polygon &out_polys, double distance = 1.415);
 
 	GB_CONSTANT("JoinMiter", "i", jtMiter),
 	GB_CONSTANT("JoinSquare", "i", jtSquare),
 	GB_CONSTANT("JoinRound", "i", jtRound),
 
-	GB_STATIC_METHOD("OffsetPolygons", "PointF[][]", Clipper_OffsetPolygons, "(Polygons)PointF[][];(Delta)f[(Join)i(Limit)f(DoNotFix)b]"),
+	GB_CONSTANT("FillEvenOdd", "i", pftEvenOdd),
+	GB_CONSTANT("FillWinding", "i", pftNonZero),
+	GB_CONSTANT("FillNonZero", "i", pftNonZero),
+	GB_CONSTANT("FillPositive", "i", pftPositive),
+	GB_CONSTANT("FillNegative", "i", pftNegative),
+
+	GB_STATIC_METHOD("Offset", "PointF[][]", Clipper_Offset, "(Polygons)PointF[][];(Delta)f[(Join)i(Limit)f(DoNotFix)b]"),
+	GB_STATIC_METHOD("Simplify", "PointF[][]", Clipper_Simplify, "(Polygons)PointF[][];[(Fill)i]"),
+	GB_STATIC_METHOD("Clean", "PointF[][]", Clipper_Clean, "(Polygons)PointF[][];[(Distance)f]"),
 
 	GB_END_DECLARE
 };

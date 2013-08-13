@@ -247,11 +247,24 @@ Public Sub AddMagnetsFromExtent()
   AddMagnet(PointF(hExt.X + hExt.W, hExt.Y))
   AddMagnet(PointF(hExt.X, hExt.Y + hExt.H))
   AddMagnet(PointF(hExt.X + hExt.W, hExt.Y + hExt.H))
+
+  AddMagnet(PointF(hExt.X + hExt.W / 2, hExt.Y))
+  AddMagnet(PointF(hExt.X, hExt.Y + hExt.H / 2))
+  AddMagnet(PointF(hExt.X + hExt.W, hExt.Y + hExt.H / 2))
+  AddMagnet(PointF(hExt.X + hExt.W / 2, hExt.Y + hExt.H))
+  
+  AddMagnet(GetCenter())
   
 End
 
 Public Sub Invert()
   
   Points.Reverse
+  
+End
+
+Public Sub Invalidate()
+  
+  _Extents = Null
   
 End
