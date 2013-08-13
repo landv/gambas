@@ -418,6 +418,7 @@ static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state
 
 static void paint_focus(QPainter *p, int x, int y, int w, int h, int state)
 {
+	//bool do_clip = FALSE;
 	QStyleOptionFocusRect opt;
 	
 	if ((state & GB_DRAW_STATE_DISABLED) || !(state & GB_DRAW_STATE_FOCUS))
@@ -425,7 +426,29 @@ static void paint_focus(QPainter *p, int x, int y, int w, int h, int state)
 	
 	init_option(opt, x, y, w, h, state);
 	
+	/*if (::strcmp(qApp->style()->metaObject()->className(), "QtCurve::Style") == 0)
+	{
+		QPainterPath clip;
+
+		p->save();
+
+		clip.addRect(x, y, w, 1);
+		clip.addRect(x, y, 1, h);
+		clip.addRect(x, y + h - 1, w, 1);
+		clip.addRect(x + w - 1, y, 1, h);
+		p->setClipPath(clip);
+		do_clip = TRUE;
+	}*/
+
+	p->save();
+	p->setBrush(QBrush());
+
 	QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, p);
+
+	p->restore();
+
+	/*if (do_clip)
+		p->restore();*/
 }
 
 static void style_arrow(QPainter *p, int x, int y, int w, int h, int type, int state)
@@ -527,7 +550,7 @@ static void style_button(QPainter *p, int x, int y, int w, int h, int value, int
 		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, p);
 	}
 	
-	paint_focus(p, x + 3, y + 3, w - 6, h - 6, state);
+	paint_focus(p, x, y, w, h, state);
 }
 			
 static void style_panel(QPainter *p, int x, int y, int w, int h, int border, int state)
@@ -638,7 +661,7 @@ BEGIN_PROPERTY(Style_BoxFrameWidth)
 
 	int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
 	
-	if (!::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style"))
+	if (::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style") == 0)
 		w++;
 	
 	GB.ReturnInteger(w);

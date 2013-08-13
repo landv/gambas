@@ -228,13 +228,13 @@
       MoveScaled(25,0,1.1429,4)
     }
     { btnZoomIn ToolButton
-      MoveScaled(28,0,4,4)
+      MoveScaled(27,0,4,4)
       ToolTip = ("Zoom in")
       Action = ".zoom-in"
       Picture = Picture["icon:/small/zoom-in"]
     }
     { cmbZoom ComboBox
-      MoveScaled(31,0,9,4)
+      MoveScaled(30,0,9,4)
       #Translate = False
       ToolTip = "Zoom level"
       Action = ".zoom"
@@ -360,7 +360,6 @@
     }
     { btnOffset ToolButton
       MoveScaled(90,0,4,4)
-      Visible = False
       ToolTip = ("Offset selection")
       Action = ".offset"
       Picture = Picture["img/draw/offset.png"]
@@ -658,6 +657,6 @@
   { Toolbar image
     Text = "Image editor"
     List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
+    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
   }
 }

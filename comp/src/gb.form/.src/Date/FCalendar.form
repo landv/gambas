@@ -86,17 +86,22 @@
           MoveScaled(4,0,4,4)
           Expand = True
           Alignment = Align.Right
+          Border = False
         }
         { txtMinute TextBox
           MoveScaled(8,0,4,4)
           Expand = True
           Alignment = Align.Right
+          Border = False
         }
         { btnOK ToolButton
           MoveScaled(13,0,4,4)
           ToolTip = ("Apply")
           Picture = Picture["icon:/small/ok"]
         }
+      }
+      { Separator2 Separator
+        MoveScaled(2,6,12,0)
       }
       { dwgTime DrawingArea
         MoveScaled(1,14,14,20)
