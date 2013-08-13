@@ -782,7 +782,7 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
         'Print "~ "; hCurrent - $hCurrentPoint
 
         If $hSelect._Current >= 0 Then
-          For Each hPoint In $hSelect.Shapes[$hSelect._Current].Magnets
+          For Each hPoint In $hSelect.Shapes[$hSelect._Current].GetMagnets()
             hPoint += hCurrent - $hCurrentPoint
             hMagnet = FindBestMagnetFor(hPoint, True)
             If hMagnet Then Goto FIND_MAGNET
@@ -1114,11 +1114,9 @@ Public Sub imvImage_MouseUp()
       If $hFirstPoint Then $hSelect.AddMagnet($hFirstPoint)
       $hSelect.AddMagnet($hLastPoint)
       $hSelect.CleanLastShape
-      $hSelect.AddMagnetsLastShape
 
     Case "rectangle"
       If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
-        $hSelect.AddMagnetsLastShape
         imvImage.Refresh
       Else
         ClearSelection
@@ -1126,7 +1124,6 @@ Public Sub imvImage_MouseUp()
     
     Case "ellipse"
       If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
-        $hSelect.AddMagnetsLastShape
         imvImage.Refresh
       Else
         ClearSelection
@@ -2270,10 +2267,11 @@ Public Sub GetImageInfo() As String
   
 End
 
-Fast Private Sub CreateSelectionFromMask(hImage As Image)
+Fast Private Sub CreateSelectionFromMask(hImage As Image) As CImageShape[]
 
   Dim X, Y, XX, YY, X2, Y2 As Integer
   Dim XL, YL, XR, YR As Integer
+  Dim aShape As New CImageShape[]
   Dim hShape As CImageShape
   Dim DX, DY, D As Integer
   Dim bLeft As Boolean
@@ -2386,13 +2384,15 @@ Fast Private Sub CreateSelectionFromMask(hImage As Image)
           
         Loop
         
-        $hSelect.AddShape(hShape)
-        $hSelect.CleanLastShape()
+        hShape.Clean
+        aShape.Add(hShape)
         
       Endif
       
     Next
   Next
+  
+  Return aShape
   
 End
 
@@ -2404,7 +2404,6 @@ Fast Private Sub MagicWand()
   Dim WW, HH As Integer
   Dim C As Integer
   Dim fTolerance As Float
-  Dim I As Integer
   
   WW = $hImage.W
   HH = $hImage.H
@@ -2476,8 +2475,7 @@ Fast Private Sub MagicWand()
     
   Wend
   
-  CreateSelectionFromMask(hMask)
-  $hSelect.Merge()
+  $hSelect.MergeWith(CreateSelectionFromMask(hMask), $bShift)
   
   Dec Application.Busy
 

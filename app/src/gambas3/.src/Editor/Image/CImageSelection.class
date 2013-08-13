@@ -615,7 +615,6 @@ Public Sub AddSelection(hSel As CImageSelection) As Integer
   
   For Each hShape In hSel.Shapes
     Shapes.Add(hShape.Copy())
-    AddMagnetsLastShape
   Next
 
   For I = 0 To hSel._Magnets.Max
@@ -730,7 +729,6 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
     For I = 0 To aPolygons.Max
       hShape = New CImageShape
       hShape.Points = aPolygons[I]
-      hShape.AddMagnetsFromExtent()
       AddShape(hShape)
     Next
   
@@ -744,11 +742,9 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
       If Not bDup Then
         Shapes[_Current].Points = aPolygons[0]
         Shapes[_Current].Invalidate
-        Shapes[_Current].AddMagnetsFromExtent()
       Else
         hShape = New CImageShape
         hShape.Points = aPolygons[0]
-        hShape.AddMagnetsFromExtent()
         AddShape(hShape)
         _Current = Shapes.Max
       Endif
@@ -760,24 +756,14 @@ End
 
 Public Sub CleanLastShape()
   
-  Dim hPolygon As Polygon
-  
-  hPolygon = Shapes[Shapes.Max].Points
-  
-  Shapes[Shapes.Max].Points = hPolygon.Clean()
-  Shapes[Shapes.Max].Invalidate
+  Shapes[Shapes.Max].Clean
   
 End
 
-Public Sub AddMagnetsLastShape()
-  
-  Shapes[Shapes.Max].AddMagnetsFromExtent
-  
-End
-
-Public Sub Merge()
+Public Sub MergeWith(aOther As CImageShape[], Optional bDiff As Boolean)
   
   Dim aPolygons As New Polygon[]
+  Dim aClip As New Polygon[]
   Dim hShape As CImageShape
   Dim I As Integer
   
@@ -785,13 +771,20 @@ Public Sub Merge()
     aPolygons.Add(hShape.Points)
   Next
   
-  aPolygons = Clipper.Union(aPolygons)
+  For Each hShape In aOther
+    aClip.Add(hShape.Points)
+  Next
+  
+  If bDiff Then
+    aPolygons = Clipper.Difference(aPolygons, aClip)
+  Else
+    aPolygons = Clipper.Union(aPolygons, aClip)
+  Endif
   
   Clear()
   For I = 0 To aPolygons.Max
     hShape = New CImageShape
     hShape.Points = aPolygons[I]
-    hShape.AddMagnetsFromExtent()
     AddShape(hShape)
   Next
     

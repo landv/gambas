@@ -54,12 +54,9 @@ Public Sub PaintMagnet()
     Paint.Rectangle(hPoint.X - W, hPoint.Y - W, W2, W2)
   Next
   
-  With GetExtents()
-    Paint.Rectangle(.X - W, .Y - W, W2, W2)
-    Paint.Rectangle(.X + .W - W, .Y - W, W2, W2)
-    Paint.Rectangle(.X - W, .Y + .H - W, W2, W2)
-    Paint.Rectangle(.X + .W - W, .Y + .H - W, W2, W2)
-  End With
+  For Each hPoint In GetExtentsMagnets()
+    Paint.Rectangle(hPoint.X - W, hPoint.Y - W, W2, W2)
+  Next
   
 End
 
@@ -222,12 +219,24 @@ Public Sub AddMagnet(hPoint As PointF)
   
 End
 
-Public Sub FindMagnet(hPoint As PointF, D As Float, Optional bIgnoreSame As Boolean) As PointF
-
-  Return CImageSelection.FindMagnetFrom(Magnets, hPoint, D, bIgnoreSame)
+Private Sub GetExtentsMagnets() As PointF[]
   
   With GetExtents()
-    Return CImageSelection.FindMagnetFrom([PointF(.X, .Y), PointF(.X + .W, .Y), PointF(.X + .W, .Y + .H), PointF(.X, .Y + .H)], hPoint, D, bIgnoreSame)
+    Return [PointF(.X, .Y), PointF(.X + .W, .Y), PointF(.X + .W, .Y + .H), PointF(.X, .Y + .H), PointF(.X + .W / 2, .Y), PointF(.X, .Y + .H / 2), PointF(.X + .W, .Y + .H / 2), PointF(.X + .W / 2, .Y + .H), .Center()]
+  End With
+  
+End
+
+
+Public Sub FindMagnet(hPoint As PointF, D As Float, Optional bIgnoreSame As Boolean) As PointF
+
+  Dim hResult As PointF
+
+  hResult = CImageSelection.FindMagnetFrom(Magnets, hPoint, D, bIgnoreSame)
+  If hResult Then Return hResult
+  
+  With GetExtents()
+    Return CImageSelection.FindMagnetFrom(GetExtentsMagnets(), hPoint, D, bIgnoreSame)
   End With
 
 End
@@ -236,24 +245,6 @@ Public Sub SetPoint(iPoint As Integer, hPoint As PointF)
   
   Points[iPoint] = hPoint.Copy()
   _Extents = Null
-  
-End
-
-Public Sub AddMagnetsFromExtent()
-  
-  Dim hExt As RectF = GetExtents()
-  
-  AddMagnet(PointF(hExt.X, hExt.Y))
-  AddMagnet(PointF(hExt.X + hExt.W, hExt.Y))
-  AddMagnet(PointF(hExt.X, hExt.Y + hExt.H))
-  AddMagnet(PointF(hExt.X + hExt.W, hExt.Y + hExt.H))
-
-  AddMagnet(PointF(hExt.X + hExt.W / 2, hExt.Y))
-  AddMagnet(PointF(hExt.X, hExt.Y + hExt.H / 2))
-  AddMagnet(PointF(hExt.X + hExt.W, hExt.Y + hExt.H / 2))
-  AddMagnet(PointF(hExt.X + hExt.W / 2, hExt.Y + hExt.H))
-  
-  AddMagnet(GetCenter())
   
 End
 
@@ -266,5 +257,21 @@ End
 Public Sub Invalidate()
   
   _Extents = Null
+  
+End
+
+Public Sub Clean()
+  
+  Dim hPolygon As Polygon
+  
+  hPolygon = Points
+  Points = hPolygon.Clean()
+  Invalidate
+  
+End
+
+Public Sub GetMagnets() As PointF[]
+  
+  Return GetExtentsMagnets().Insert(Magnets)
   
 End
