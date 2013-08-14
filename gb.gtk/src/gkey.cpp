@@ -66,14 +66,14 @@ int gKey::code()
 	
 	if (code >= GDK_a && code <= GDK_z)
 		code += GDK_A - GDK_a;
-	else if (code == GDK_KEY_Alt_R)
-		code = GDK_KEY_Alt_L;
-	else if (code == GDK_KEY_Control_R)
-		code = GDK_KEY_Control_L;
-	else if (code == GDK_KEY_Meta_R)
-		code = GDK_KEY_Meta_L;
-	else if (code == GDK_KEY_Shift_R)
-		code = GDK_KEY_Shift_L;
+	else if (code == GDK_Alt_R)
+		code = GDK_Alt_L;
+	else if (code == GDK_Control_R)
+		code = GDK_Control_L;
+	else if (code == GDK_Meta_R)
+		code = GDK_Meta_L;
+	else if (code == GDK_Shift_R)
+		code = GDK_Shift_L;
 
 	return code;
 }
