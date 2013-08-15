@@ -338,7 +338,7 @@ static void analyze_single(int op)
 		add_operator(PATTERN_index(*pattern), 1);
 	}
 
-	/* . symbol | . [] */
+	// . symbol
 
 	else if (PATTERN_is(*current, RS_PT) && PATTERN_is_identifier(current[1]))
 	{
@@ -346,12 +346,25 @@ static void analyze_single(int op)
 		add_pattern(PATTERN_set_flag(current[1], RT_POINT));
 		current += 2;
 	}
+
+	// . [ ... ]
+
 	else if (PATTERN_is(*current, RS_PT) && PATTERN_is(current[1], RS_LSQR))
 	{
 		add_operator(PATTERN_index(current[0]), 0);
 		//add_pattern(PATTERN_set_flag(RS_RSQR, RT_POINT));
 		current += 2;
 		analyze_array();
+	}
+
+	// ! symbol
+
+	else if (PATTERN_is(*current, RS_EXCL) && PATTERN_is_string(current[1]))
+	{
+		add_operator(RS_PT, 0);
+		add_pattern(PATTERN_set_flag(current[1], RT_POINT));
+		add_operator(RS_EXCL, 0);
+		current += 2;
 	}
 
 	/* NULL, TRUE, FALSE, ME, PARENT, LAST, ERROR */
