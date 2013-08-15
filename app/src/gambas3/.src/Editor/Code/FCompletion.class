@@ -669,6 +669,8 @@ Public Function ManageKey() As Boolean
           Endif
           $sText &= Key.Text
           Return FindItem()
+        Else If Key.Text = "[" And If Not $sText Then
+          Me.Hide
         Else If InStr("([.!", Key.Text) > 0 And InStr(". A<", $sMode) > 0 Then
           InsertItem
         Else
