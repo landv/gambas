@@ -1,0 +1,153 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+'Event Validate(Value As Variant)
+Event Click
+
+Property Field As String
+Property Value As Variant
+Property Read Valid As Boolean
+Property Read Modified As Boolean
+Property Text As String
+
+Public Const _Properties As String = "*,Text,Field{Field}"
+Public Const _Group As String = "Data"
+Public Const _DrawWith As String = "CheckBox"
+
+Private $hCtrl As CheckBox
+Private $sKey As String
+
+Private $vVal As Variant
+
+Public Sub _new()
+  
+  Me._AutoResize = True
+  $hCtrl = New CheckBox(Me) As "CheckBox"
+  $hCtrl.Tristate = True
+  Me.Proxy = $hCtrl
+  
+End
+
+
+Public Sub Update()
+  
+  Dim hSource As DataSource
+  Dim hInfo As DataField
+  
+  If Not $sKey Then Return
+  
+  hSource = Common.GetSource(Me)
+  If Not hSource Then Return
+  If hSource._Check() Then Return
+  
+  hInfo = hSource._GetInfo($sKey)
+  If hInfo.Type <> db.Boolean Then Error.Raise(Subst("'&1' field is not a boolean", $sKey))
+
+  $vVal = hSource[$sKey]
+  SetValue($vVal)
+  
+End
+
+
+Private Function Modified_Read() As Boolean
+  
+  Return GetValue() <> $vVal  
+  
+End
+
+
+Private Function Valid_Read() As Boolean
+  
+  Return True
+  ' Dim vVal As Variant
+  ' Dim bCancel As Boolean
+  ' 
+  ' Try vVal = GetValue()
+  ' If Error Then Return False
+  ' bCancel = Raise Validate(vVal)
+  ' Return Not bCancel
+  
+End
+
+
+
+Private Function Value_Read() As Variant
+
+  Dim vVal As Variant
+  
+  Try vVal = GetValue()
+  If Error Then Return $vVal
+  Return vVal
+  
+End
+
+Private Sub Value_Write(vVal As Variant)
+
+  If Not IsNull(vVal) Then vVal = CBool(vVal)
+
+  SetValue(vVal)
+  
+Catch
+  
+End
+
+Private Function Field_Read() As String
+  
+  Return $sKey
+  
+End
+
+Private Sub Field_Write(sKey As String)
+  
+  If sKey = $sKey Then Return
+  $sKey = sKey
+  Update
+  
+End
+
+
+Private Sub SetValue(vVal As Variant)
+  
+  If IsNull(vVal) Then
+    $hCtrl.Value = CheckBox.None
+  Else If vVal Then
+    $hCtrl.Value = CheckBox.True
+  Else
+    $hCtrl.Value = CheckBox.False
+  Endif
+        
+End
+
+Private Function GetValue() As Variant
+  
+  Select Case $hCtrl.Value
+    Case CheckBox.None
+      Return Null
+    Case CheckBox.True
+      Return True
+    Case CheckBox.False
+      Return False
+  End Select
+        
+End
+
+' Public Sub SetFocus()
+'   
+'   If $hCtrl Then $hCtrl.SetFocus
+'   
+' End
+
+Private Function Text_Read() As String
+
+  Return $hCtrl.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hCtrl.Text = Value
+
+End

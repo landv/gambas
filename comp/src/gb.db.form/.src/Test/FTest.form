@@ -23,23 +23,22 @@
     }
   }
   { DataSource1 DataSource
-    MoveScaled(1,6,55,30)
+    MoveScaled(1,6,55,40)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
     Connection = Connections["Connection2"]
     Table = "test"
-    { DataComboView1 DataComboView
-      MoveScaled(2,6,29,4)
-      Table = "test"
-      Field = "idTypeClient"
-      Grid = True
-    }
     { DataBrowser1 DataBrowser
       MoveScaled(2,11,52,18)
-      Visible = False
       Expand = True
       Labels = ["Identificateur", "Type", "Nom", "Téléphone"]
+      Editable = True
+    }
+    { DataCheckBox1 DataCheckBox
+      MoveScaled(3,33,48,5)
+      Text = ("This guy is active")
+      Field = "active"
     }
   }
 }
