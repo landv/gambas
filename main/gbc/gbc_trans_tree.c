@@ -40,9 +40,9 @@ static short level;
 static PATTERN *current;
 static TRANS_TREE tree[MAX_EXPR_PATTERN];
 static int tree_length = 0;
-/*static PATTERN last_pattern;*/
 
 static void analyze_expr(short priority, short op_main);
+static void analyze_array();
 
 
 static void inc_level()
@@ -338,13 +338,20 @@ static void analyze_single(int op)
 		add_operator(PATTERN_index(*pattern), 1);
 	}
 
-	/* . symbol */
+	/* . symbol | . [] */
 
 	else if (PATTERN_is(*current, RS_PT) && PATTERN_is_identifier(current[1]))
 	{
 		add_operator(PATTERN_index(current[0]), 0);
 		add_pattern(PATTERN_set_flag(current[1], RT_POINT));
 		current += 2;
+	}
+	else if (PATTERN_is(*current, RS_PT) && PATTERN_is(current[1], RS_LSQR))
+	{
+		add_operator(PATTERN_index(current[0]), 0);
+		//add_pattern(PATTERN_set_flag(RS_RSQR, RT_POINT));
+		current += 2;
+		analyze_array();
 	}
 
 	/* NULL, TRUE, FALSE, ME, PARENT, LAST, ERROR */

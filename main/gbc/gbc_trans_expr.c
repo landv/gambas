@@ -170,7 +170,7 @@ void TRANS_class(int index)
 	}
 }
 
-static void trans_identifier(int index, bool first, bool point, PATTERN next)
+static void trans_identifier(int index, bool point, PATTERN next)
 {
 	CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
 	bool is_static;
@@ -356,7 +356,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			push_string(PATTERN_index(pattern), TRUE);
 
 		else if (PATTERN_is_identifier(pattern))
-			trans_identifier(PATTERN_index(pattern), PATTERN_is_first(pattern), PATTERN_is_point(pattern), next_pattern);
+			trans_identifier(PATTERN_index(pattern), PATTERN_is_point(pattern), next_pattern);
 
 		else if (PATTERN_is_class(pattern))
 			TRANS_class(PATTERN_index(pattern));
