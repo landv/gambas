@@ -42,6 +42,51 @@
 #define CURLE_CHUNK_FAILED 88
 #endif
 
+#ifndef CURLAUTH_NONE
+#define CURLAUTH_NONE         ((unsigned long)0)       /* nothing */
+#define CURLAUTH_BASIC        (((unsigned long)1)<<0)  /* Basic (default) */
+#define CURLAUTH_DIGEST       (((unsigned long)1)<<1)  /* Digest */
+#define CURLAUTH_GSSNEGOTIATE (((unsigned long)1)<<2)  /* GSS-Negotiate */
+#define CURLAUTH_NTLM         (((unsigned long)1)<<3)  /* NTLM */
+#define CURLAUTH_ANY ~0                                /* all types set */
+#define CURLAUTH_ANYSAFE (~CURLAUTH_BASIC)
+#endif
+
+#ifndef CURLAUTH_DIGEST_IE
+#define CURLAUTH_DIGEST_IE    (((unsigned long)1)<<4)
+#undef CURLAUTH_ANY
+#define CURLAUTH_ANY          (~CURLAUTH_DIGEST_IE)
+#undef CURLAUTH_ANYSAGE
+#define CURLAUTH_ANYSAFE      (~(CURLAUTH_BASIC|CURLAUTH_DIGEST_IE))
+#endif
+
+#ifndef CURLAUTH_NTLM_WB
+#define CURLAUTH_NTLM_WB      (((unsigned long)1)<<5)
+#endif
+
+#if LIBCURL_VERSION_NUM < 0x071202
+#define CURLE_AGAIN 81
+#endif
+
+#if LIBCURL_VERSION_NUM < 0x071300
+#define CURLE_SSL_CRL_BADFILE 82
+#define CURLE_SSL_ISSUER_ERROR 83
+#define CURLE_FTP_PRET_FAILED 84
+#define CURLE_RTSP_CSEQ_ERROR 85
+#define CURLE_RTSP_SESSION_ERROR 86
+#define CURLE_FTP_BAD_FILE_LIST 87
+#define CURLE_CHUNK_FAILED 88
+#endif
+
+#if LIBCURL_VERSION_NUM < 0x071505
+#define CURLE_NOT_BUILT_IN 4
+#endif
+
+#if LIBCURL_VERSION_NUM < 0x071800
+#define CURLE_FTP_ACCEPT_FAILED 10
+#define CURLE_FTP_ACCEPT_TIMEOUT 12
+#endif
+
 GB_DESC CNetDesc[] =
 {
 	GB_DECLARE("Net", 0), GB_VIRTUAL_CLASS(),
@@ -57,24 +102,16 @@ GB_DESC CNetDesc[] =
 	GB_CONSTANT ("ProxyHTTP", "i", CURLPROXY_HTTP),
 	GB_CONSTANT ("ProxySocks5", "i", CURLPROXY_SOCKS5),
 	/* net-curl autohorization */
-	#ifdef CURLAUTH_NONE
 	GB_CONSTANT("AuthNone", "i", CURLAUTH_NONE),
 	GB_CONSTANT("AuthBasic", "i", CURLAUTH_BASIC),
 	GB_CONSTANT("AuthNtlm", "i", CURLAUTH_NTLM),
 	GB_CONSTANT("AuthDigest", "i", CURLAUTH_DIGEST),
 	GB_CONSTANT("AuthDigestIE", "i", CURLAUTH_DIGEST_IE),
+	GB_CONSTANT("AuthNtlmWb", "i", CURLAUTH_NTLM_WB),
 	GB_CONSTANT("AuthGssNegotiate", "i", CURLAUTH_GSSNEGOTIATE),
 	GB_CONSTANT("AuthAny", "i", CURLAUTH_ANY),
-	#else
-	GB_CONSTANT("AuthNone", "i", 0),
-	GB_CONSTANT("AuthBasic", "i", 1),
-	GB_CONSTANT("AuthNtlm", "i", 2),
-	GB_CONSTANT("AuthDigest", "i", 3),
-	GB_CONSTANT("AuthDigestIE", "i", 4),
-	GB_CONSTANT("AuthGssNegotiate", "i", 5),
-	GB_CONSTANT("AuthAny", "i", 6),
-	#endif
-	
+	GB_CONSTANT("AuthAnySafe", "i", CURLAUTH_ANYSAFE),
+
 	GB_CONSTANT("UnsupportedProtocol", "i", GBCURL(CURLE_UNSUPPORTED_PROTOCOL)),
 	GB_CONSTANT("FailedInit", "i", GBCURL(CURLE_FAILED_INIT)),
 	GB_CONSTANT("URLMalformat", "i", GBCURL(CURLE_URL_MALFORMAT)),
