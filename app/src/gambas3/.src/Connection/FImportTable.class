@@ -44,24 +44,14 @@ End
 
 Public Sub Form_Open()
 
-  Dim hFile As File
-  Dim sData As String
-
   fprImport.Path = $sPath
   'txtPath.Text = $sPath
   
   cmbTable.List = $aTable
   cmbTable.Text = File.BaseName($sPath)
 
-  hFile = Open $sPath
-  sData = Read #hFile, -65536
-  If Not Eof(hFile) Then sData &= "..."
-  Close #hFile
-  
   txtPreview.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-  txtPreview.Text = sData
-  txtPreview.Pos = 0
-  
+
   gvwMessage.Columns.Count = 2
   gvwMessage.Columns[0].Text = ("Line")
   gvwMessage.Columns[0].Width = Desktop.Scale * 6
@@ -116,33 +106,43 @@ Private Sub UpdateKey()
   Dim sLig As String
   Dim aData As String[]
   Dim iLine As Integer
+  Dim sData As String
 
-  If Not cmbKey.Enabled Then Return
-  
   UpdateDelim
   
-  hFile = Open $sPath For Input
-  hFile.EndOfLine = $iEndOfLine
+  hFile = Open $sPath
+  sData = Read #hFile, -65536
+  If Not Eof(hFile) Then sData &= "..."
+  Close #hFile
   
-  While Not Eof(hFile)
-    sLig = hFile.ReadLine($sEscape)
-    Inc iLine
-    If iLine > $iIgnore Then Break
-  Wend
+  txtPreview.Text = Conv(sData, $sCharset, "UTF-8")
+  txtPreview.Pos = 0
 
-  If Not Eof(hFile) Then
-    aData = [("(Automatic key)")]
-    aData.Insert(MakeFields(Analyze(sLig)))
-    cmbKey.List = aData
+  If cmbKey.Enabled Then
+  
+    hFile = Open $sPath For Input
+    hFile.EndOfLine = $iEndOfLine
+    
+    While Not Eof(hFile)
+      sLig = hFile.ReadLine($sEscape)
+      Inc iLine
+      If iLine > $iIgnore Then Break
+    Wend
+  
+    If Not Eof(hFile) Then
+      aData = [("(Automatic key)")]
+      aData.Insert(MakeFields(Analyze(sLig)))
+      cmbKey.List = aData
+    Endif
+    
+    Close #hFile
+    
   Endif
-
-Finally
-
-  Close hFile
 
 Catch
 
   Debug Error.Where; ":";; Error.Text
+  Try Close #hFile
 
 End
 

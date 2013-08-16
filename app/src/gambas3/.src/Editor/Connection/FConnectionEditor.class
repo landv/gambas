@@ -1221,7 +1221,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
           If Error Then 
             Try rTable[hCField.Name] = MConnection.Convert(rTemp[hCField.OldName], hCField.Type)
           Endif
-          If IsNull(rTable[hCField.Name]) Then Stop
+          If IsNull(rTable[hCField.Name]) Then Stop ' Why this breakpoint ?
         Endif
       Next
 

@@ -7,137 +7,140 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { tabImport TabStrip
+  { tabImport TabPanel
     MoveScaled(1,1,66,57)
     Expand = True
-    Arrangement = Arrange.Vertical
-    Spacing = True
-    Margin = True
+    Arrangement = Arrange.Fill
     Count = 4
     Index = 0
     Text = ("File properties")
     { fprImport FileProperties
       MoveScaled(2,1,62,50)
-      Expand = True
+      Border = False
     }
     Index = 1
     Text = ("Options")
-    { Label8 Label
-      MoveScaled(1,1,36,3)
-      Font = Font["Bold"]
-      Text = ("Source")
-    }
-    { HPanel1 HPanel
-      MoveScaled(1,4,62,29)
+    { Panel3 VBox
+      MoveScaled(1,1,63,51)
       Spacing = True
-      Indent = True
-      { Label6 Label
-        MoveScaled(0,0,28,3)
-        Text = ("Charset")
+      Margin = True
+      { Label8 Label
+        MoveScaled(0,0,36,3)
+        Font = Font["Bold"]
+        Text = ("Source")
       }
-      { cmbCharset ComboBox
-        MoveScaled(29,0,31,4)
-        #Translate = False
-        Expand = True
-        List = ["UTF-8", "ISO 8859-1", "ISO 8859-15", "WINDOWS-1252"]
+      { HPanel1 HPanel
+        MoveScaled(0,3,62,29)
+        Spacing = True
+        Indent = True
+        { Label6 Label
+          MoveScaled(0,0,28,3)
+          Text = ("Charset")
+        }
+        { cmbCharset ComboBox
+          MoveScaled(29,0,31,4)
+          #Translate = False
+          Expand = True
+          List = ["UTF-8", "ISO 8859-1", "ISO 8859-15", "WINDOWS-1252"]
+        }
+        { Label7 Label
+          MoveScaled(0,5,28,3)
+          Text = ("End of line")
+        }
+        { cmbEndOfLine ComboBox
+          MoveScaled(29,5,31,4)
+          #Translate = False
+          Expand = True
+          ReadOnly = True
+          List = ["Unix", "Windows", "Mac"]
+        }
+        { Label2 Label
+          MoveScaled(0,10,28,3)
+          Text = ("Delimiter character")
+        }
+        { cmbDelim ComboBox
+          MoveScaled(29,10,31,4)
+          #Translate = False
+          Expand = True
+          List = ["Tab", "Space", ",", ";", ":"]
+        }
+        { Label3 Label
+          MoveScaled(0,15,28,3)
+          Text = ("Enclose character")
+        }
+        { cmbEscape ComboBox
+          MoveScaled(29,15,31,4)
+          #Translate = False
+          Expand = True
+          List = ["", "'", "\""]
+        }
+        { chkStrip CheckBox
+          MoveScaled(0,19,47,4)
+          Expand = True
+          Text = ("Strip useless white spaces")
+        }
+        { Label4 Label
+          MoveScaled(0,24,28,3)
+          Text = ("Ignore first lines")
+        }
+        { txtIgnore SpinBox
+          MoveScaled(29,24,9,4)
+        }
+        { Label10 Label
+          MoveScaled(39,24,7,3)
+          Expand = True
+          Text = ("Line(s)")
+        }
       }
-      { Label7 Label
-        MoveScaled(0,5,28,3)
-        Text = ("End of line")
+      { Label9 Label
+        MoveScaled(0,33,36,3)
+        Font = Font["Bold"]
+        Text = ("Destination")
       }
-      { cmbEndOfLine ComboBox
-        MoveScaled(29,5,31,4)
-        #Translate = False
-        Expand = True
-        ReadOnly = True
-        List = ["Unix", "Windows", "Mac"]
-      }
-      { Label2 Label
-        MoveScaled(0,10,28,3)
-        Text = ("Delimiter character")
-      }
-      { cmbDelim ComboBox
-        MoveScaled(29,10,31,4)
-        #Translate = False
-        Expand = True
-        List = ["Tab", "Space", ",", ";", ":"]
-      }
-      { Label3 Label
-        MoveScaled(0,15,28,3)
-        Text = ("Enclose character")
-      }
-      { cmbEscape ComboBox
-        MoveScaled(29,15,31,4)
-        #Translate = False
-        Expand = True
-        List = ["", "'", "\""]
-      }
-      { chkStrip CheckBox
-        MoveScaled(0,19,47,4)
-        Expand = True
-        Text = ("Strip useless white spaces")
-      }
-      { Label4 Label
-        MoveScaled(0,24,28,3)
-        Text = ("Ignore first lines")
-      }
-      { txtIgnore SpinBox
-        MoveScaled(29,24,9,4)
-      }
-      { Label10 Label
-        MoveScaled(39,24,7,3)
-        Expand = True
-        Text = ("Line(s)")
-      }
-    }
-    { Label9 Label
-      MoveScaled(1,34,36,3)
-      Font = Font["Bold"]
-      Text = ("Destination")
-    }
-    { HPanel2 HPanel
-      MoveScaled(1,37,62,14)
-      Spacing = True
-      Indent = True
-      { Label1 Label
-        MoveScaled(0,0,16,4)
-        Text = ("Table")
-      }
-      { cmbTable ComboBox
-        MoveScaled(16,0,44,4)
-        Expand = True
-      }
-      { Panel2 Panel
-        MoveScaled(0,5,16,3)
-      }
-      { chkFirstLine CheckBox
-        MoveScaled(16,5,35,3)
-        Expand = True
-        Text = ("The first line contains field names")
-      }
-      { Label5 Label
-        MoveScaled(0,10,16,3)
-        Text = ("Key field")
-      }
-      { cmbKey ComboBox
-        MoveScaled(16,10,44,4)
-        Enabled = False
-        Expand = True
-        ReadOnly = True
+      { HPanel2 HPanel
+        MoveScaled(0,36,62,14)
+        Spacing = True
+        Indent = True
+        { Label1 Label
+          MoveScaled(0,0,16,4)
+          Text = ("Table")
+        }
+        { cmbTable ComboBox
+          MoveScaled(16,0,44,4)
+          Expand = True
+        }
+        { Panel2 Panel
+          MoveScaled(0,5,16,3)
+        }
+        { chkFirstLine CheckBox
+          MoveScaled(16,5,35,3)
+          Expand = True
+          Text = ("The first line contains field names")
+        }
+        { Label5 Label
+          MoveScaled(0,10,16,3)
+          Text = ("Key field")
+        }
+        { cmbKey ComboBox
+          MoveScaled(16,10,44,4)
+          Enabled = False
+          Expand = True
+          ReadOnly = True
+        }
       }
     }
     Index = 2
     Text = ("Preview")
     { txtPreview TextArea
       MoveScaled(1,1,61,43)
-      Expand = True
       ReadOnly = True
+      Border = False
     }
     Index = 3
     Text = ("Messages")
     { gvwMessage GridView
       MoveScaled(2,1,59,49)
-      Expand = True
+      Border = False
     }
     Index = 0
   }

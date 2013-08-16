@@ -263,9 +263,15 @@ End
 Public Sub Clean()
   
   Dim hPolygon As Polygon
+  Dim bClose As Boolean
+  
+  If Points.Count < 3 Then Return
+  
+  bClose = Abs(Points[0] - Points[Points.Max]) < 1E-6
   
   hPolygon = Points
   Points = hPolygon.Clean()
+  If Not bClose Then Try Points.Remove(Points.Max)
   Invalidate
   
 End

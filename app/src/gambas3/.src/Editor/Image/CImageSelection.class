@@ -19,7 +19,13 @@ Private $hExtents As PaintExtents
 
 Public Sub MoveTo(X As Float, Y As Float)
   
-  Dim hShape As New CImageShape
+  Dim hShape As CImageShape
+  
+  If Shapes.Count And If Shapes[Shapes.Max].Points.Count = 1 Then
+    Shapes.Remove(Shapes.Max)
+  Endif
+  
+  hShape = New CImageShape
   Shapes.Add(hShape)
   
   hShape.Add(PointF(X, Y))
@@ -165,6 +171,8 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
       Paint.LineTo(0, hImage.H)
       Paint.LineTo(0, 0)
     Endif
+    
+    Paint.LineJoin = Paint.LineJoinBevel
   
     Paint.Stroke
     
@@ -369,18 +377,20 @@ Static Public Sub FindMagnetFrom(aPoint As PointF[], hSearch As PointF, D As Flo
 End
 
 
-Public Sub FindMagnet(hSearch As PointF, D As Float, Optional bIgnoreSame As Boolean) As PointF
+Public Sub FindMagnet(hSearch As PointF, D As Float, Optional bIgnoreLast As Boolean) As PointF
 
   Dim hPoint As PointF
-  Dim I As Integer
+  Dim I, N As Integer
   
-  For I = 0 To Shapes.Max
+  N = Shapes.Max
+  If bIgnoreLast Then Dec N
+  For I = 0 To N
     If I = _Current Then Continue
-    hPoint = Shapes[I].FindMagnet(hSearch, D, bIgnoreSame)
+    hPoint = Shapes[I].FindMagnet(hSearch, D)
     If hPoint Then Return hPoint
   Next
 
-  Return FindMagnetFrom(_Magnets, hSearch, D, bIgnoreSame)
+  Return FindMagnetFrom(_Magnets, hSearch, D)
 
 End
 

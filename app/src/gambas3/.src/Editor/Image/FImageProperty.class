@@ -133,7 +133,7 @@ Public Sub GetColor(Optional bIgnoreOpacity As Boolean) As Integer
   
   RememberColor(iColor)
   
-  If Not bIgnoreOpacity Then iColor = Color.SetAlpha(iColor, 255 - txtOpacity.Value)
+  If Not bIgnoreOpacity Then iColor = Color.SetAlpha(iColor, 255 - slbOpacity.Value)
   Return iColor
   
 End
@@ -157,7 +157,7 @@ Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional
       If Not bIgnoreOpacity Then
         For I = 0 To hBrush.Colors.Max
           iCol = hBrush.Colors[I]
-          hBrush.Colors[I] = Color.SetAlpha(iCol, 255 - ((255 - Color.GetAlpha(iCol)) * txtOpacity.Value) \ 255)
+          hBrush.Colors[I] = Color.SetAlpha(iCol, 255 - ((255 - Color.GetAlpha(iCol)) * slbOpacity.Value) \ 255)
         Next
       Endif
       
@@ -177,7 +177,7 @@ Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional
       Endif
       
       If Not hImage Then Return Paint.Color(Color.GetColor())
-      If Not bIgnoreOpacity Then hImage = hImage.Copy().Opacity(txtOpacity.Value / 255)
+      If Not bIgnoreOpacity Then hImage = hImage.Copy().Opacity(slbOpacity.Value / 255)
       hPaintBrush = Paint.Image(hImage)
       
       If hRect Then  
@@ -197,7 +197,7 @@ End
 
 Public Sub PaintForStroke(Optional hRect As RectF)
   
-  Dim iSize As Integer = txtSize.Value
+  Dim iSize As Integer = slbSize.Value
   
   If iSize = 0 Then
     Paint.LineWidth = 1
@@ -259,30 +259,6 @@ Public Sub dwgColorStack_MouseDown()
 
   If I < 0 Or If I > $aColor.Max Then Return
   cchColor.Value = $aColor[I]
-
-End
-
-Public Sub sldOpacity_Change()
-
-  txtOpacity.Value = sldOpacity.Value
-
-End
-
-Public Sub txtOpacity_Change()
-
-  sldOpacity.Value = txtOpacity.Value
-
-End
-
-Public Sub sldSize_Change()
-
-  txtSize.Value = sldSize.Value
-
-End
-
-Public Sub txtSize_Change()
-
-  sldSize.Value = txtSize.Value
 
 End
 
@@ -790,20 +766,8 @@ End
 
 Public Sub GetTolerance() As Integer
 
-  Return txtTolerance.Value
+  Return slbTolerance.Value
   
-End
-
-Public Sub sldTolerance_Change()
-
-  txtTolerance.Value = sldTolerance.Value
-
-End
-
-Public Sub txtTolerance_Change()
-
-  sldTolerance.Value = txtTolerance.Value
-
 End
 
 Public Sub ReadConfig()
@@ -948,7 +912,7 @@ Public Sub GetClipboard() As Image
   Try hImage = $aClipboard[gvwClipboard.Row].Image
   If Not hImage Then Return
   
-  Return hImage.Copy().Opacity(txtOpacity.Value / 255)
+  Return hImage.Copy().Opacity(slbOpacity.Value / 255)
  
 End
 
@@ -960,26 +924,17 @@ Public Sub GetShape() As CImageSelection
 End
 
 
-Public Sub sldValue_Change()
+Public Sub slbValue_Change()
 
-  Dim hCtrl As SpinBox = Me["txt" & Mid$(Last.Name, 4)]
-  hCtrl.Value = Last.Value
-
-End
-
-Public Sub txtValue_Change()
-
-  Dim hCtrl As Slider = Me["sld" & Mid$(Last.Name, 4)]
-  hCtrl.Value = Last.Value
   UpdateBalance
 
 End
 
 Public Sub btnBalanceReset_Click()
 
-  Dim hCtrl As Slider
+  Dim hCtrl As SliderBox
   
-  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness, sldBlur]
+  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur]
     hCtrl.Value = 0
   Next
   
@@ -987,9 +942,9 @@ End
 
 Public Sub HasBalance() As Boolean
   
-  Dim hCtrl As Slider
+  Dim hCtrl As SliderBox
   
-  For Each hCtrl In [sldBrightness, sldContrast, sldGamma, sldHue, sldSaturation, sldLightness, sldBlur]
+  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur]
     If hCtrl.Value Then Return True
   Next
   
@@ -998,14 +953,14 @@ End
 Public Sub ApplyBalance(hImage As Image)
   
   hImage.BeginBalance
-  hImage.Brightness(sldBrightness.Value / sldBrightness.MaxValue)
-  hImage.Contrast(sldContrast.Value / sldContrast.MaxValue)
-  hImage.Gamma(sldGamma.Value / sldGamma.MaxValue)
-  hImage.Hue(sldHue.Value / sldHue.MaxValue)
-  hImage.Saturation(sldSaturation.Value / sldSaturation.MaxValue)
-  hImage.Lightness(sldLightness.Value / sldLightness.MaxValue)
+  hImage.Brightness(slbBrightness.Value / slbBrightness.MaxValue)
+  hImage.Contrast(slbContrast.Value / slbContrast.MaxValue)
+  hImage.Gamma(slbGamma.Value / slbGamma.MaxValue)
+  hImage.Hue(slbHue.Value / slbHue.MaxValue)
+  hImage.Saturation(slbSaturation.Value / slbSaturation.MaxValue)
+  hImage.Lightness(slbLightness.Value / slbLightness.MaxValue)
   hImage.EndBalance
-  If sldBlur.Value Then hImage.Fuzzy(sldBlur.Value)
+  If slbBlur.Value Then hImage.Fuzzy(slbBlur.Value)
   
 End
 
@@ -1183,58 +1138,6 @@ Public Sub btnFlipH_Click()
 
 End
 
-
-Public Sub txtOpacity_MouseWheel()
-
-  txtValue_MouseWheel
-
-End
-
-Public Sub txtSize_MouseWheel()
-
-  txtValue_MouseWheel
-  
-
-End
-
-Public Sub txtValue_MouseWheel()
-
-  Dim hSpinBox As SpinBox = Last
-  Dim iVal As Integer
-  
-  If hSpinBox = txtOpacity Then
-    iVal = 16
-  Else If hSpinBox = txtSize Or If hSpinBox = txtBlur Then
-    iVal = 8
-  Else
-    iVal = 16
-  Endif
-  
-  hSpinBox.Value += If(Mouse.Forward, iVal, - iVal)
-  Stop Event
-  
-
-End
-
-Public Sub sldValue_DblClick()
-
-  Last.Value = 0
-  Stop Event
-
-End
-
-Public Sub sldSize_DblClick()
-
-  sldValue_DblClick
-
-End
-
-Public Sub sldOpacity_DblClick()
-
-  txtOpacity.Value = 255
-  Stop Event
-
-End
 
 Public Sub tabBrush_Click()
 

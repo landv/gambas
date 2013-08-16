@@ -2791,7 +2791,7 @@ Public Sub Activate(hForm As Object)
 
   Try ActiveForm.SetFocus
 
-  If hForm Then FMain.HideDebug(sType = "FConnectionEditor")
+  'If hForm Then FMain.HideDebug(sType = "FConnectionEditor")
 
   FSearch.Update
 

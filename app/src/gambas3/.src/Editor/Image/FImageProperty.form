@@ -212,15 +212,12 @@
           MoveScaled(0,0,15,4)
           Text = ("Opacity")
         }
-        { sldOpacity Slider
-          MoveScaled(16,0,24,4)
+        { slbOpacity SliderBox
+          MoveScaled(18,0,38,4)
           Expand = True
           MaxValue = 255
-          Value = 255
-        }
-        { txtOpacity SpinBox
-          MoveScaled(47,0,8,4)
-          MaxValue = 255
+          Step = 32
+          DefaultValue = 255
           Value = 255
         }
       }
@@ -231,14 +228,11 @@
           MoveScaled(0,0,15,4)
           Text = ("Size")
         }
-        { sldSize Slider
-          MoveScaled(17,0,24,4)
+        { slbSize SliderBox
+          MoveScaled(18,0,38,4)
           Expand = True
           MaxValue = 64
-        }
-        { txtSize SpinBox
-          MoveScaled(47,0,8,4)
-          MaxValue = 64
+          Step = 2
         }
       }
       { HPanel3 HBox
@@ -248,17 +242,12 @@
           MoveScaled(0,0,15,4)
           Text = ("Tolerance")
         }
-        { sldTolerance Slider
-          MoveScaled(17,0,24,4)
+        { slbTolerance SliderBox
+          MoveScaled(18,0,38,4)
           Expand = True
-          MaxValue = 255
-          Value = 64
-        }
-        { txtTolerance SpinBox
-          MoveScaled(47,0,8,4)
-          MaxValue = 255
-          Step = 16
-          Value = 64
+          MaxValue = 128
+          Step = 8
+          DefaultValue = 32
         }
       }
     }
@@ -275,17 +264,10 @@
           MoveScaled(0,0,15,4)
           Text = ("Brightness")
         }
-        { sldBrightness Slider sldValue
-          Name = "sldBrightness"
-          MoveScaled(16,0,24,4)
+        { slbBrightness SliderBox slbValue
+          Name = "slbBrightness"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MinValue = -255
-          MaxValue = 255
-          PageStep = 1
-        }
-        { txtBrightness SpinBox txtValue
-          Name = "txtBrightness"
-          MoveScaled(47,0,8,4)
           MinValue = -255
           MaxValue = 255
         }
@@ -297,17 +279,10 @@
           MoveScaled(0,0,15,4)
           Text = ("Contrast")
         }
-        { sldContrast Slider sldValue
-          Name = "sldContrast"
-          MoveScaled(16,0,24,4)
+        { slbContrast SliderBox slbValue
+          Name = "slbContrast"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MinValue = -255
-          MaxValue = 255
-          PageStep = 1
-        }
-        { txtContrast SpinBox txtValue
-          Name = "txtContrast"
-          MoveScaled(47,0,8,4)
           MinValue = -255
           MaxValue = 255
         }
@@ -319,17 +294,10 @@
           MoveScaled(0,0,15,4)
           Text = ("Gamma")
         }
-        { sldGamma Slider sldValue
-          Name = "sldGamma"
-          MoveScaled(17,0,24,4)
+        { slbGamma SliderBox slbValue
+          Name = "slbGamma"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MinValue = -255
-          MaxValue = 255
-          PageStep = 1
-        }
-        { txtGamma SpinBox txtValue
-          Name = "txtGamma"
-          MoveScaled(47,0,8,4)
           MinValue = -255
           MaxValue = 255
         }
@@ -341,17 +309,10 @@
           MoveScaled(0,0,15,4)
           Text = ("Lightness")
         }
-        { sldLightness Slider sldValue
-          Name = "sldLightness"
-          MoveScaled(18,0,24,4)
+        { slbLightness SliderBox slbValue
+          Name = "slbLightness"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MinValue = -255
-          MaxValue = 255
-          PageStep = 1
-        }
-        { txtLightness SpinBox txtValue
-          Name = "txtLightness"
-          MoveScaled(47,0,8,4)
           MinValue = -255
           MaxValue = 255
         }
@@ -363,19 +324,12 @@
           MoveScaled(0,0,15,4)
           Text = ("Hue")
         }
-        { sldHue Slider sldValue
-          Name = "sldHue"
-          MoveScaled(16,0,24,4)
+        { slbHue SliderBox slbValue
+          Name = "slbHue"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MinValue = -180
-          MaxValue = 180
-          PageStep = 1
-        }
-        { txtHue SpinBox txtValue
-          Name = "txtHue"
-          MoveScaled(47,0,8,4)
-          MinValue = -180
-          MaxValue = 180
+          MinValue = -255
+          MaxValue = 255
         }
       }
       { HPanel7 HBox
@@ -385,17 +339,10 @@
           MoveScaled(0,0,15,4)
           Text = ("Saturation")
         }
-        { sldSaturation Slider sldValue
-          Name = "sldSaturation"
-          MoveScaled(16,0,24,4)
+        { slbSaturation SliderBox slbValue
+          Name = "slbSaturation"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MinValue = -255
-          MaxValue = 255
-          PageStep = 1
-        }
-        { txtSaturation SpinBox txtValue
-          Name = "txtSaturation"
-          MoveScaled(47,0,8,4)
           MinValue = -255
           MaxValue = 255
         }
@@ -407,16 +354,10 @@
           MoveScaled(0,0,15,4)
           Text = ("Blur")
         }
-        { sldBlur Slider sldValue
-          Name = "sldBlur"
-          MoveScaled(16,0,24,4)
+        { slbBlur SliderBox slbValue
+          Name = "slbBlur"
+          MoveScaled(19,0,40,4)
           Expand = True
-          MaxValue = 127
-          PageStep = 1
-        }
-        { txtBlur SpinBox txtValue
-          Name = "txtBlur"
-          MoveScaled(47,0,8,4)
           MaxValue = 127
         }
       }

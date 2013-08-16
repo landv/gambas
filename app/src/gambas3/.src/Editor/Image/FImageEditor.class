@@ -396,12 +396,7 @@ Private Sub SetTool(sAction As String)
   Next
   
   If $sTool = "paste" Then
-    If $hPaste Then
-      $hPaste = Null
-      $hPasteSelect = Null
-      $hPasteCurrent = Null
-      imvImage.Refresh
-    Endif
+    ClearPaste
   Endif
   
   If $hSelect Then $hSelect.SelectAll()
@@ -714,7 +709,7 @@ Private Sub GetRectLimits(hRect As RectF) As PointF[]
 End
 
 
-Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnore As Boolean) As PointF
+Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnoreLast As Boolean) As PointF
 
   Dim hMagnet As PointF
 
@@ -723,7 +718,7 @@ Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnore As Boolean) As 
       If $iChangeAction = CHANGE_MOVE And If $hSelect._Current < 0 Then Goto NO_SELECT
       If $iChangeAction = CHANGE_RESIZE Or If $iChangeAction = CHANGE_ROTATE Then Goto NO_SELECT
     Endif
-    hMagnet = $hSelect.FindMagnet(hPoint, 8 / imvImage.Zoom, bIgnore)
+    hMagnet = $hSelect.FindMagnet(hPoint, 8 / imvImage.Zoom, bIgnoreLast)
     If hMagnet Then Return hMagnet
   Endif
 
@@ -740,6 +735,11 @@ NO_SELECT:
       If hMagnet Then Return hMagnet
     Endif
     hMagnet = CImageSelection.FindMagnetFrom(GetRectLimits($hChangeRect), hPoint, 8 / imvImage.Zoom, True)
+    If hMagnet Then Return hMagnet
+  Endif
+  
+  If $sTool = "line" And If $hSelect Then
+    hMagnet = CImageSelection.FindMagnetFrom($hSelect.Shapes[$hSelect.Shapes.Max].Magnets, hPoint, 8 / imvImage.Zoom, True)
     If hMagnet Then Return hMagnet
   Endif
     
@@ -761,13 +761,18 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
   Dim hMagnet As PointF
   Dim bCurrent As Boolean
   Dim hPoint As PointF
+  Dim bIgnoreLast As Boolean
   
   If $sTool = "move" Then Return hCurrent
-  If $sTool = "change" And If Not $bPress Then Return hCurrent
+  If $sTool = "change" Or $sTool = "paste" And If Not $bPress Then Return hCurrent
+  
+  If $bPress Then
+    bIgnoreLast = $sTool = "rectangle" Or $sTool = "ellipse" Or $sTool = "line"
+  Endif
   
   If $hMagnet And If hCurrent = $hMagnet Then Return hCurrent
   
-  hMagnet = FindBestMagnetFor(hCurrent)
+  hMagnet = FindBestMagnetFor(hCurrent, bIgnoreLast)
   If hMagnet Then
     bCurrent = True
     Goto FIND_MAGNET
@@ -775,24 +780,32 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
   
   If $bPress Then
     
-    If $hChangeRect And If $hSelect And If $iChangeAction <> CHANGE_NOTHING And If $iChangeAction <> CHANGE_POINT Then
+    If $hChangeRect And If $iChangeAction <> CHANGE_NOTHING And If $iChangeAction <> CHANGE_POINT Then
 
       If $iChangeAction <> CHANGE_RESIZE And If $iChangeAction <> CHANGE_ROTATE Then
 
         'Print "~ "; hCurrent - $hCurrentPoint
-
-        If $hSelect._Current >= 0 Then
-          For Each hPoint In $hSelect.Shapes[$hSelect._Current].GetMagnets()
+        
+        If $hSelect Then
+          If $hSelect._Current >= 0 Then
+            For Each hPoint In $hSelect.Shapes[$hSelect._Current].GetMagnets()
+              hPoint += hCurrent - $hCurrentPoint
+              hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
+              If hMagnet Then Goto FIND_MAGNET
+            Next
+          Endif
+          For Each hPoint In GetRectLimits($hSelect.GetExtents())
             hPoint += hCurrent - $hCurrentPoint
-            hMagnet = FindBestMagnetFor(hPoint, True)
+            hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
+            If hMagnet Then Goto FIND_MAGNET
+          Next
+        Else If $hPasteSelect Then
+          For Each hPoint In GetRectLimits($hPasteSelect.GetExtents())
+            hPoint += hCurrent - $hCurrentPoint
+            hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
             If hMagnet Then Goto FIND_MAGNET
           Next
         Endif
-        For Each hPoint In GetRectLimits($hSelect.GetExtents())
-          hPoint += hCurrent - $hCurrentPoint
-          hMagnet = FindBestMagnetFor(hPoint, True)
-          If hMagnet Then Goto FIND_MAGNET
-        Next
         
       Endif
     Endif
@@ -889,7 +902,7 @@ Public Sub imvImage_MouseMove()
           If $bShift Then
             WW = $hCurrentPoint.X - $hLastPoint.X
             HH = $hCurrentPoint.Y - $hLastPoint.Y
-            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2, True)
+            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
           Else
             $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, $hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
           Endif
@@ -901,9 +914,9 @@ Public Sub imvImage_MouseMove()
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect = $aUndo[$aUndo.Max].Copy()
           If $bShift Then
-            WW = Abs($hCurrentPoint.X - $hLastPoint.X)
-            HH = Abs($hCurrentPoint.Y - $hLastPoint.Y)
-            $hSelect.Ellipse($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2, True)
+            WW = Abs($hCurrentPoint.X - $hLastPoint.X) * Sqr(2)
+            HH = Abs($hCurrentPoint.Y - $hLastPoint.Y) * Sqr(2)
+            $hSelect.Ellipse($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
           Else
             $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), Abs($hCurrentPoint.X - $hLastPoint.X), Abs($hCurrentPoint.Y - $hLastPoint.Y))
           Endif
@@ -931,7 +944,7 @@ Public Sub imvImage_MouseMove()
             '$hSelect.Translate($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
           Endif
           
-        Else
+        Else If $iChangeAction Then
         
           XC = $hChangeRect.X + $hChangeRect.W / 2
           YC = $hChangeRect.Y + $hChangeRect.H / 2
@@ -1110,9 +1123,11 @@ Public Sub imvImage_MouseUp()
       $aStroke.Clear
       
     Case "line"
-      $hSelect.LineTo($hLastPoint.X, $hLastPoint.Y)
-      If $hFirstPoint Then $hSelect.AddMagnet($hFirstPoint)
-      $hSelect.AddMagnet($hLastPoint)
+      If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
+        $hSelect.LineTo($hLastPoint.X, $hLastPoint.Y)
+        $hSelect.AddMagnet($hLastPoint)
+        If $hFirstPoint Then $hSelect.AddMagnet($hFirstPoint)
+      Endif
       $hSelect.CleanLastShape
 
     Case "rectangle"
@@ -1574,6 +1589,7 @@ Public Sub btnFill_Click()
     FImageProperty.PaintForFill($hSelect.GetExtents(True))
     $hSelect.Paint($hImage, CImageSelection.ACTION_FILL)
   Else
+    FImageProperty.PaintForFill()
     Paint.Rectangle(0, 0, hImage.W, hImage.H)
     Paint.Fill
   Endif
@@ -1965,10 +1981,12 @@ Public Sub btnCopy_Click()
     
     Inc $iClipboard
     FImageProperty.AddClipboard(hImage, Me.Name & " [" & CStr($iClipboard) & "]")
+    Clipboard.Copy(hImage)
     
   Else
     
     FImageProperty.AddClipboard($hImage.Copy(), Me.Name)
+    Clipboard.Copy($hImage)
     
   Endif
 
@@ -2034,6 +2052,7 @@ Private Sub DoPaste()
   Paint.End
   
   SetImage(hImage)
+  ClearPaste
   
 End
 
@@ -2126,7 +2145,7 @@ Private Sub UpdateMenu()
   mnuAction.Visible = bVisible
   mnuZoom.Visible = bVisible
   
-  Action[".save,.reload,.undo,.redo,.tool-*,.invert,.stroke,.fill,.clear,.cut,.copy,.crop,.flip-h,.flip-v,.rotate-*,.resize,.select-all,.hide-selection", Me].Visible = bVisible
+  Action[".save,.reload,.undo,.redo,.tool-*,.invert,.stroke,.fill,.clear,.cut,.copy,.crop,.flip-h,.flip-v,.rotate-*,.rotate,.resize,.select-all,.hide-selection,.grid,.duplicate,.offset", Me].Visible = bVisible
   
 End
 
@@ -2478,5 +2497,16 @@ Fast Private Sub MagicWand()
   $hSelect.MergeWith(CreateSelectionFromMask(hMask), $bShift)
   
   Dec Application.Busy
+
+End
+
+Private Sub ClearPaste()
+
+  If $hPaste Then
+    $hPaste = Null
+    $hPasteSelect = Null
+    $hPasteCurrent = Null
+    imvImage.Refresh
+  Endif
 
 End
