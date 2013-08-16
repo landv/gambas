@@ -70,21 +70,21 @@ bool STRING_equal_same(const char *str1, const char *str2, int len)
 	
 	while (len >= 8)
 	{
-		if (LIKELY(str1[0] != str2[0]))
+		if (str1[0] != str2[0])
 			return FALSE;
-		if (LIKELY(str1[1] != str2[1]))
+		if (str1[1] != str2[1])
 			return FALSE;
-		if (LIKELY(str1[2] != str2[2]))
+		if (str1[2] != str2[2])
 			return FALSE;
-		if (LIKELY(str1[3] != str2[3]))
+		if (str1[3] != str2[3])
 			return FALSE;
-		if (LIKELY(str1[4] != str2[4]))
+		if (str1[4] != str2[4])
 			return FALSE;
-		if (LIKELY(str1[5] != str2[5]))
+		if (str1[5] != str2[5])
 			return FALSE;
-		if (LIKELY(str1[6] != str2[6]))
+		if (str1[6] != str2[6])
 			return FALSE;
-		if (LIKELY(str1[7] != str2[7]))
+		if (str1[7] != str2[7])
 			return FALSE;
 		str1 += 8;
 		str2 += 8;
@@ -93,16 +93,15 @@ bool STRING_equal_same(const char *str1, const char *str2, int len)
 	
 	#endif
 	
-	//if (UNLIKELY(len < 8))
 	goto *jump[len];
 	
-__LEN_7: if (LIKELY(str1[6] != str2[6])) return FALSE;
-__LEN_6: if (LIKELY(str1[5] != str2[5])) return FALSE;
-__LEN_5: if (LIKELY(str1[4] != str2[4])) return FALSE;
-__LEN_4: if (LIKELY(str1[3] != str2[3])) return FALSE;
-__LEN_3: if (LIKELY(str1[2] != str2[2])) return FALSE;
-__LEN_2: if (LIKELY(str1[1] != str2[1])) return FALSE;
-__LEN_1: if (LIKELY(str1[0] != str2[0])) return FALSE;
+__LEN_7: if (str1[6] != str2[6]) return FALSE;
+__LEN_6: if (str1[5] != str2[5]) return FALSE;
+__LEN_5: if (str1[4] != str2[4]) return FALSE;
+__LEN_4: if (str1[3] != str2[3]) return FALSE;
+__LEN_3: if (str1[2] != str2[2]) return FALSE;
+__LEN_2: if (str1[1] != str2[1]) return FALSE;
+__LEN_1: if (str1[0] != str2[0]) return FALSE;
 __LEN_0: return TRUE;
 }
 
@@ -115,22 +114,14 @@ bool STRING_equal_ignore_case_same(const char *str1, const char *str2, int len)
 	{
 		if (*((int64_t *)str1) != *((int64_t *)str2))
 		{
-			if (LIKELY(toupper(str1[0]) != toupper(str2[0])))
-				return FALSE;
-			if (LIKELY(toupper(str1[1]) != toupper(str2[1])))
-				return FALSE;
-			if (LIKELY(toupper(str1[2]) != toupper(str2[2])))
-				return FALSE;
-			if (LIKELY(toupper(str1[3]) != toupper(str2[3])))
-				return FALSE;
-			if (LIKELY(toupper(str1[4]) != toupper(str2[4])))
-				return FALSE;
-			if (LIKELY(toupper(str1[5]) != toupper(str2[5])))
-				return FALSE;
-			if (LIKELY(toupper(str1[6]) != toupper(str2[6])))
-				return FALSE;
-			if (LIKELY(toupper(str1[7]) != toupper(str2[7])))
-				return FALSE;
+			if (toupper(str1[0]) != toupper(str2[0])) return FALSE;
+			if (toupper(str1[1]) != toupper(str2[1])) return FALSE;
+			if (toupper(str1[2]) != toupper(str2[2])) return FALSE;
+			if (toupper(str1[3]) != toupper(str2[3])) return FALSE;
+			if (toupper(str1[4]) != toupper(str2[4])) return FALSE;
+			if (toupper(str1[5]) != toupper(str2[5])) return FALSE;
+			if (toupper(str1[6]) != toupper(str2[6])) return FALSE;
+			if (toupper(str1[7]) != toupper(str2[7])) return FALSE;
 		}
 		
 		str1 += 8;
@@ -140,22 +131,14 @@ bool STRING_equal_ignore_case_same(const char *str1, const char *str2, int len)
 	#else
 	while (len >= 8)
 	{
-		if (str1[0] != str2[0] && LIKELY(toupper(str1[0]) != toupper(str2[0])))
-			return FALSE;
-		if (str1[1] != str2[1] && LIKELY(toupper(str1[1]) != toupper(str2[1])))
-			return FALSE;
-		if (str1[2] != str2[2] && LIKELY(toupper(str1[2]) != toupper(str2[2])))
-			return FALSE;
-		if (str1[3] != str2[3] && LIKELY(toupper(str1[3]) != toupper(str2[3])))
-			return FALSE;
-		if (str1[4] != str2[4] && LIKELY(toupper(str1[4]) != toupper(str2[4])))
-			return FALSE;
-		if (str1[5] != str2[5] && LIKELY(toupper(str1[5]) != toupper(str2[5])))
-			return FALSE;
-		if (str1[6] != str2[6] && LIKELY(toupper(str1[6]) != toupper(str2[6])))
-			return FALSE;
-		if (str1[7] != str2[7] && LIKELY(toupper(str1[7]) != toupper(str2[7])))
-			return FALSE;
+		if (str1[0] != str2[0] && toupper(str1[0]) != toupper(str2[0])) return FALSE;
+		if (str1[1] != str2[1] && toupper(str1[1]) != toupper(str2[1])) return FALSE;
+		if (str1[2] != str2[2] && toupper(str1[2]) != toupper(str2[2])) return FALSE;
+		if (str1[3] != str2[3] && toupper(str1[3]) != toupper(str2[3])) return FALSE;
+		if (str1[4] != str2[4] && toupper(str1[4]) != toupper(str2[4])) return FALSE;
+		if (str1[5] != str2[5] && toupper(str1[5]) != toupper(str2[5])) return FALSE;
+		if (str1[6] != str2[6] && toupper(str1[6]) != toupper(str2[6])) return FALSE;
+		if (str1[7] != str2[7] && toupper(str1[7]) != toupper(str2[7])) return FALSE;
 		str1 += 8;
 		str2 += 8;
 		len -= 8;
@@ -164,13 +147,13 @@ bool STRING_equal_ignore_case_same(const char *str1, const char *str2, int len)
 	
 	goto *jump[len];
 	
-__LEN_7: if (str1[6] != str2[6] && LIKELY(toupper(str1[6]) != toupper(str2[6]))) return FALSE;
-__LEN_6: if (str1[5] != str2[5] && LIKELY(toupper(str1[5]) != toupper(str2[5]))) return FALSE;
-__LEN_5: if (str1[4] != str2[4] && LIKELY(toupper(str1[4]) != toupper(str2[4]))) return FALSE;
-__LEN_4: if (str1[3] != str2[3] && LIKELY(toupper(str1[3]) != toupper(str2[3]))) return FALSE;
-__LEN_3: if (str1[2] != str2[2] && LIKELY(toupper(str1[2]) != toupper(str2[2]))) return FALSE;
-__LEN_2: if (str1[1] != str2[1] && LIKELY(toupper(str1[1]) != toupper(str2[1]))) return FALSE;
-__LEN_1: if (str1[0] != str2[0] && LIKELY(toupper(str1[0]) != toupper(str2[0]))) return FALSE;
+__LEN_7: if (str1[6] != str2[6] && toupper(str1[6]) != toupper(str2[6])) return FALSE;
+__LEN_6: if (str1[5] != str2[5] && toupper(str1[5]) != toupper(str2[5])) return FALSE;
+__LEN_5: if (str1[4] != str2[4] && toupper(str1[4]) != toupper(str2[4])) return FALSE;
+__LEN_4: if (str1[3] != str2[3] && toupper(str1[3]) != toupper(str2[3])) return FALSE;
+__LEN_3: if (str1[2] != str2[2] && toupper(str1[2]) != toupper(str2[2])) return FALSE;
+__LEN_2: if (str1[1] != str2[1] && toupper(str1[1]) != toupper(str2[1])) return FALSE;
+__LEN_1: if (str1[0] != str2[0] && toupper(str1[0]) != toupper(str2[0])) return FALSE;
 __LEN_0: return TRUE;
 }
 
@@ -185,12 +168,12 @@ int STRING_compare(const char *str1, int len1, const char *str2, int len2)
 	{
 		c1 = str1[i];
 		c2 = str2[i];
-		if (LIKELY(c1 > c2)) return 1;
-		if (LIKELY(c1 < c2)) return -1;
+		if (c1 > c2) return 1;
+		if (c1 < c2) return -1;
 	}
 
 	diff = len1 - len2;
-	return LIKELY(diff < 0) ? (-1) : LIKELY(diff > 0) ? 1 : 0;
+	return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
 }
 
 
@@ -205,10 +188,10 @@ int STRING_compare_ignore_case(const char *str1, int len1, const char *str2, int
 	{
 		c1 = tolower(str1[i]);
 		c2 = tolower(str2[i]);
-		if (LIKELY(c1 > c2)) return 1;
-		if (LIKELY(c1 < c2)) return -1;
+		if (c1 > c2) return 1;
+		if (c1 < c2) return -1;
 	}
 
 	diff = len1 - len2;
-	return LIKELY(diff < 0) ? (-1) : LIKELY(diff > 0) ? 1 : 0;
+	return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
 }

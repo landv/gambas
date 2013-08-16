@@ -23,6 +23,7 @@ Private $bDblClick As Boolean
 Private $bTransparent As Boolean
 
 Private BUTTON_H As Integer = 6
+Private BUTTON_H_TRANS As Integer = 4
 Private BUTTON_W As Integer = 24
 
 Private $hShowPanel As Panel
@@ -312,7 +313,7 @@ Private Sub MoveShowButton()
   If $bVisible Then Return
   If Not $hShowPanel Then Return
 
-  D = If($bTransparent, BUTTON_H, 0)
+  D = If($bTransparent, BUTTON_H_TRANS, 0)
 
   With Me.Parent
   
