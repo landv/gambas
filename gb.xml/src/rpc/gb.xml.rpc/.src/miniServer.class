@@ -345,13 +345,7 @@ Public Sub Socket_Read()
       Wait 0.005
     Next
 
-    ' Content-Length and data size doesn't match
-    If cLen <> hLen[Bucle] Then
-      hError(hS, "413 Request Entity Too Large")
-      RemoveSocket(hS)
-    End If
-
-    If cLen = hLen[Bucle] Then 
+    If cLen = hLen[Bucle] Then
       ProcessQuery(hS, hBuffer[Bucle])
       Return
     Else
