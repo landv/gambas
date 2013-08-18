@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CMenu.cpp
+	CMenu.cpp
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -51,9 +51,12 @@ static CMENU *_popup_menu_clicked = NULL;
 
 static void clear_menu(CMENU *_object);
 
+static GB_FUNCTION _init_shortcut_func;
+
+
 static int check_menu(void *_object)
 {
-  return THIS->deleted || ACTION == 0;
+	return THIS->deleted || ACTION == 0;
 }
 
 static void refresh_menubar(CMENU *menu)
@@ -64,18 +67,18 @@ static void refresh_menubar(CMENU *menu)
 	MyMainWindow *toplevel;
 	CWINDOW *window;
 	QMenuBar *menuBar;
-	
+
 	if (!CMENU_is_toplevel(menu))
 		return;
-	
+
 	toplevel = (MyMainWindow *)(menu->toplevel);
 	window = ((CWINDOW *)(menu->parent));
 	menuBar = window->menuBar;
 	if (!menuBar)
 		return;
-	
+
 	list = menuBar->actions();
-	 
+
 	for (i = 0; i < list.count(); i++)
 	{
 		action = list.at(i);
@@ -85,7 +88,7 @@ static void refresh_menubar(CMENU *menu)
 		if (action->isVisible() && !action->isSeparator())
 			break;
 	}
-	
+
 	window->hideMenuBar = i == list.count();
 
 	toplevel->configure();
@@ -112,20 +115,20 @@ static void delete_menu(CMENU *_object)
 {
 	if (THIS->deleted)
 		return;
-	
+
 	//qDebug("delete_menu: %s %p", THIS->widget.name, THIS);
-	
+
 	THIS->deleted = true;
-	
+
 	clear_menu(THIS);
-	
+
 	if (THIS->menu)
 	{
 		//GB.Post((GB_CALLBACK)delete_later, (intptr_t)THIS->menu);
 		THIS->menu->deleteLater();
 		THIS->menu = 0;
 	}
-	
+
 	if (THIS->accel)
 		delete THIS->accel;
 
@@ -134,7 +137,7 @@ static void delete_menu(CMENU *_object)
 		refresh_menubar(THIS);
 		delete ACTION;
 	}
-	
+
 // 	if (ACTION)
 // 	{
 // 		QAction *action = ACTION;
@@ -145,14 +148,14 @@ static void delete_menu(CMENU *_object)
 
 static void clear_menu(CMENU *_object)
 {
-  int i;
+	int i;
 	CMENU *menu;
 
-  if (THIS->menu)
-  {
-    QList<QAction *> list = THIS->menu->actions();
-    
-    for (i = 0; i < list.count(); i++)
+	if (THIS->menu)
+	{
+		QList<QAction *> list = THIS->menu->actions();
+
+		for (i = 0; i < list.count(); i++)
 		{
 			menu = CMenu::dict[list.at(i)];
 			//GB.Ref(menu);
@@ -161,7 +164,9 @@ static void clear_menu(CMENU *_object)
 				delete_menu(menu);
 			//GB.Unref(POINTER(&menu));
 		}
-  }
+
+		THIS->init_shortcut = FALSE;
+	}
 }
 
 static bool is_fully_enabled(CMENU *_object)
@@ -170,13 +175,13 @@ static bool is_fully_enabled(CMENU *_object)
 	{
 		if (THIS->exec)
 			return true;
-		
+
 		if (THIS->disabled)
 			return false;
-		
+
 		if (CMENU_is_toplevel(THIS))
 			return true;
-		
+
 		_object = (CMENU *)THIS->parent;
 	}
 }
@@ -185,7 +190,7 @@ static void update_accel(CMENU *_object)
 {
 	if (CMENU_is_toplevel(THIS))
 		return;
-	
+
 	if (THIS->accel && !THIS->accel->isEmpty() && is_fully_enabled(THIS))
 	{
 		//if (!qstrcmp(THIS->widget.name, "mnuCopy"))
@@ -204,13 +209,13 @@ static void update_accel_recursive(CMENU *_object)
 {
 	if (THIS->exec)
 		return;
-	
+
 	update_accel(THIS);
-	
+
 	if (THIS->menu)
 	{
 		int i;
-		
+
 		for (i = 0; i < THIS->menu->actions().count(); i++)
 			update_accel_recursive(CMenu::dict[THIS->menu->actions().at(i)]);
 	}
@@ -241,114 +246,116 @@ static void toggle_menu(CMENU *_object)
 	//ACTION->setCheckable(true);
 	ACTION->setChecked(!ACTION->isChecked());
 	//ACTION->setCheckable(false);
-	
+
 	qDebug("--> %d", ACTION->isChecked());
 }
 #endif
 
+//---------------------------------------------------------------------------
+
 BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 	QAction *action;
-  void *parent = VARG(parent);
-  QWidget *topLevel = 0;
-  QMenuBar *menuBar = 0;
+	void *parent = VARG(parent);
+	QWidget *topLevel = 0;
+	QMenuBar *menuBar = 0;
 
-  //printf("Menu_new %p\n", _object);
+	//printf("Menu_new %p\n", _object);
 
-  if (GB.CheckObject(parent))
-    return;
+	if (GB.CheckObject(parent))
+		return;
 
 	//qDebug("Menu_new: (%s %p)", GB.GetClassName(THIS), THIS);
-	
-  if (GB.Is(parent, CLASS_Menu))
-  {
-  	CMENU *menu = (CMENU *)parent;
-  	
-    topLevel = menu->toplevel;
-    
-    if (!menu->menu)
-    {
-    	menu->menu = new QMenu();
-    	menu->menu->setSeparatorsCollapsible(true);
-    	((QAction *)(menu->widget.widget))->setMenu(menu->menu);
-	
+
+	if (GB.Is(parent, CLASS_Menu))
+	{
+		CMENU *menu = (CMENU *)parent;
+
+		topLevel = menu->toplevel;
+
+		if (!menu->menu)
+		{
+			menu->menu = new QMenu();
+			menu->menu->setSeparatorsCollapsible(true);
+			((QAction *)(menu->widget.widget))->setMenu(menu->menu);
+
 			QObject::connect(menu->menu, SIGNAL(triggered(QAction *)), &CMenu::manager, SLOT(slotTriggered(QAction *)));
 			QObject::connect(menu->menu, SIGNAL(aboutToShow()), &CMenu::manager, SLOT(slotShown()));
 			QObject::connect(menu->menu, SIGNAL(aboutToHide()), &CMenu::manager, SLOT(slotHidden()));
-    }
-    
+		}
+
 		action = new QAction(menu->menu);
 		action->setSeparator(true);
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
-    
-    menu->menu->addAction(action);
-    //qDebug("New action %p for Menu %p", action, THIS);
-  }
-  else if (GB.Is(parent, CLASS_Window))
-  {
-    CWINDOW *window = (CWINDOW *)parent;
-  	
-    topLevel = QWIDGET(CWidget::getWindow((CWIDGET *)parent));
-    menuBar = window->menuBar;
-    if (!menuBar)
-    {
-      menuBar = new QMenuBar(topLevel);
-      window->menuBar = menuBar;
-    }
-    
+
+		menu->menu->addAction(action);
+		//qDebug("New action %p for Menu %p", action, THIS);
+	}
+	else if (GB.Is(parent, CLASS_Window))
+	{
+		CWINDOW *window = (CWINDOW *)parent;
+
+		topLevel = QWIDGET(CWidget::getWindow((CWIDGET *)parent));
+		menuBar = window->menuBar;
+		if (!menuBar)
+		{
+			menuBar = new QMenuBar(topLevel);
+			window->menuBar = menuBar;
+		}
+
 		action = new QAction(menuBar);
-    menuBar->addAction(action);
+		menuBar->addAction(action);
 
 		action->setSeparator(true);
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
-    
-    //qDebug("New action %p for top level Menu %p", action, THIS);
-  }
-  else
-  {
-    GB.Error("Type mismatch. The parent control of a Menu must be a Window or another Menu.");
-    return;
-  }
-	
-  THIS->widget.widget = (QWidget *)action;
-  CMenu::dict.insert(action, THIS);
+
+		//qDebug("New action %p for top level Menu %p", action, THIS);
+	}
+	else
+	{
+		GB.Error("Type mismatch. The parent control of a Menu must be a Window or another Menu.");
+		return;
+	}
+
+	THIS->widget.widget = (QWidget *)action;
+	CMenu::dict.insert(action, THIS);
 	set_menu_visible(THIS, !VARGOPT(hidden, FALSE));
 
 	THIS->parent = parent;
-  THIS->widget.name = NULL;
-  THIS->picture = NULL;
-  THIS->deleted = false;
-	
+	THIS->widget.name = NULL;
+	THIS->picture = NULL;
+	THIS->deleted = false;
+
 	CWIDGET_init_name((CWIDGET *)THIS);
-  
+
 #ifdef DEBUG_MENU
-  //qDebug("Menu_new: item = %p (%d) parent = %p (%d) toplevel = %p", item, item->id, item->parent, item->parent ? item->parent->id : 0, item->toplevel);
+	//qDebug("Menu_new: item = %p (%d) parent = %p (%d) toplevel = %p", item, item->id, item->parent, item->parent ? item->parent->id : 0, item->toplevel);
 #endif
 
 	THIS->toplevel = topLevel;
 	refresh_menubar(THIS);
-  //qDebug("*** Menu_new %p", _object);
-  GB.Ref(THIS);
+	//qDebug("*** Menu_new %p", _object);
+	GB.Ref(THIS);
 
 	//qDebug("Menu_new: (%s %p)", THIS->widget.name, THIS);
-	
+
 END_METHOD
 
 
 BEGIN_METHOD_VOID(Menu_free)
 
 #ifdef DEBUG_MENU
-  qDebug("Menu_free: item = %p", THIS);
+	qDebug("Menu_free: item = %p", THIS);
 #endif
 
 	//qDebug("Menu_free: (%s %p)", THIS->widget.name, THIS);
-	
+
 	delete_menu(THIS);
 
-  GB.StoreObject(NULL, POINTER(&(THIS->picture)));
+	GB.StoreObject(NULL, POINTER(&(THIS->picture)));
 
 #ifdef DEBUG_MENU
-  qDebug("*** Menu_free: free tag");
+	qDebug("*** Menu_free: free tag");
 #endif
 
 	if (THIS->widget.ext)
@@ -356,47 +363,50 @@ BEGIN_METHOD_VOID(Menu_free)
 		GB.StoreVariant(NULL, &THIS->widget.ext->tag);
 		GB.Free(POINTER(&THIS->widget.ext));
 	}
-	
+
 	//qDebug("free_name: %s %p (Menu_free)", THIS->widget.name, THIS->widget.name);
 	//if (!strcmp(THIS->widget.name, "mnuCut"))
 	//	BREAKPOINT();
 	GB.FreeString(&THIS->widget.name);
 
-  #ifdef DEBUG_MENU
-    qDebug("Menu_free: item = %p is freed!", THIS);
-  #endif
+	#ifdef DEBUG_MENU
+		qDebug("Menu_free: item = %p is freed!", THIS);
+	#endif
 
 END_METHOD
 
 
 BEGIN_PROPERTY(Menu_Text)
 
-  if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(ACTION->text()));
-  else
-  {
-  	QString text = QSTRING_PROP();
-  	ACTION->setText(text);
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(ACTION->text()));
+	else
+	{
+		QString text = QSTRING_PROP();
+		ACTION->setText(text);
 		ACTION->setSeparator(text.isEmpty());
 		refresh_menubar(THIS);
-  }
+
+		if (!CMENU_is_toplevel(THIS))
+			((CMENU *)THIS->parent)->init_shortcut = FALSE;
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Menu_Picture)
 
-  if (READ_PROPERTY)
-    GB.ReturnObject(THIS->picture);
-  else
-  {
-  	QIcon icon;
-  	
-    GB.StoreObject(PROP(GB_OBJECT), POINTER(&(THIS->picture)));
-    if (THIS->picture)
-    	icon = QIcon(*THIS->picture->pixmap);
-    ACTION->setIcon(icon);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->picture);
+	else
+	{
+		QIcon icon;
+
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&(THIS->picture)));
+		if (THIS->picture)
+			icon = QIcon(*THIS->picture->pixmap);
+		ACTION->setIcon(icon);
+	}
 
 END_PROPERTY
 
@@ -410,7 +420,7 @@ BEGIN_PROPERTY(Menu_Enabled)
 		bool b = VPROP(GB_BOOLEAN);
 		THIS->disabled = !b;
 		ACTION->setEnabled(b);
-  	//CMenu::enableAccel(THIS, b && !THIS->noshortcut);
+		//CMenu::enableAccel(THIS, b && !THIS->noshortcut);
 		update_accel_recursive(THIS);
 	}
 
@@ -433,7 +443,7 @@ BEGIN_PROPERTY(Menu_Checked)
 			update_check(THIS);
 		}
 	}
-  	
+
 END_PROPERTY
 
 
@@ -454,45 +464,45 @@ static void send_click_event(CMENU *_object);
 
 BEGIN_PROPERTY(Menu_Value)
 
-  if (THIS->toggle)
-  {
-    Menu_Checked(_object, _param);
-    return;
-  }
+	if (THIS->toggle)
+	{
+		Menu_Checked(_object, _param);
+		return;
+	}
 
-  if (READ_PROPERTY)
-  {
-    GB.ReturnBoolean(0);
-  }
-  else if (!CMENU_is_toplevel(THIS))
-  {
+	if (READ_PROPERTY)
+	{
+		GB.ReturnBoolean(0);
+	}
+	else if (!CMENU_is_toplevel(THIS))
+	{
 		//qDebug("Menu_Value: %s", THIS->widget.name);
-    GB.Ref(THIS);
-    send_click_event(THIS);
-  }
-  
+		GB.Ref(THIS);
+		send_click_event(THIS);
+	}
+
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Menu_Shortcut)
 
-  if (CMENU_is_toplevel(THIS) || THIS->menu)
-  {
-    if (READ_PROPERTY)
-      GB.ReturnVoidString();
+	if (CMENU_is_toplevel(THIS) || THIS->menu)
+	{
+		if (READ_PROPERTY)
+			GB.ReturnVoidString();
 
-    return;
-  }
+		return;
+	}
 
-  if (READ_PROPERTY)
-  	GB.ReturnNewZeroString(THIS->accel ? (const char *)THIS->accel->toString().toUtf8() : NULL);
-  else
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(THIS->accel ? (const char *)THIS->accel->toString().toUtf8() : NULL);
+	else
 	{
 		if (THIS->accel)
 			delete THIS->accel;
 		THIS->accel = new QKeySequence;
 		*(THIS->accel) = QKeySequence::fromString(QSTRING_PROP());
-		
+
 		update_accel(THIS);
 	}
 
@@ -505,7 +515,7 @@ BEGIN_PROPERTY(Menu_Visible)
 		GB.ReturnBoolean(THIS->visible);
 	else
 		set_menu_visible(THIS, VPROP(GB_BOOLEAN));
-	
+
 END_PROPERTY
 
 
@@ -532,50 +542,50 @@ END_METHOD
 
 BEGIN_PROPERTY(MenuChildren_Count)
 
-  if (THIS->menu)
-    GB.ReturnInteger(THIS->menu->actions().count());
-  else
-    GB.ReturnInteger(0);
+	if (THIS->menu)
+		GB.ReturnInteger(THIS->menu->actions().count());
+	else
+		GB.ReturnInteger(0);
 
 END_PROPERTY
 
 
 BEGIN_METHOD_VOID(MenuChildren_next)
 
-  int index;
+	int index;
 
-  if (!THIS->menu)
-  {
-    GB.StopEnum();
-    return;
-  }
+	if (!THIS->menu)
+	{
+		GB.StopEnum();
+		return;
+	}
 
-  index = ENUM(int);
+	index = ENUM(int);
 
-  if (index >= THIS->menu->actions().count())
-  {
-    GB.StopEnum();
-    return;
-  }
+	if (index >= THIS->menu->actions().count())
+	{
+		GB.StopEnum();
+		return;
+	}
 
-  GB.ReturnObject(CMenu::dict[THIS->menu->actions().at(index)]);
+	GB.ReturnObject(CMenu::dict[THIS->menu->actions().at(index)]);
 
-  ENUM(int) = index + 1;
+	ENUM(int) = index + 1;
 
 END_METHOD
 
 
 BEGIN_METHOD(MenuChildren_get, GB_INTEGER index)
 
-  int index = VARG(index);
+	int index = VARG(index);
 
-  if (!THIS->menu || index < 0 || index >= THIS->menu->actions().count())
-  {
-    GB.Error(GB_ERR_BOUND);
-    return;
-  }
+	if (!THIS->menu || index < 0 || index >= THIS->menu->actions().count())
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
 
-  GB.ReturnObject(CMenu::dict[THIS->menu->actions().at(index)]);
+	GB.ReturnObject(CMenu::dict[THIS->menu->actions().at(index)]);
 
 END_METHOD
 
@@ -600,7 +610,7 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 			update_accel_recursive(THIS);
 			THIS->disabled = true;
 		}
-		
+
 		// The Click event is posted, it does not occur immediately.
 		save = CWIDGET_enter_popup();
 		THIS->exec = true;
@@ -609,18 +619,18 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 		_popup_immediate = false;
 		THIS->exec = false;
 		CWIDGET_leave_popup(save);
-		
+
 		//qDebug("_popup_menu_clicked = %p", _popup_menu_clicked);
 		update_accel_recursive(THIS);
-		
+
 		//CWIDGET_check_hovered();
-		
+
 		if (_popup_menu_clicked)
 		{
 			send_click_event(_popup_menu_clicked);
 			_popup_menu_clicked = NULL;
 		}
-		
+
 		//MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
 		//CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
 	}
@@ -629,20 +639,20 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
 
 	QPoint pos;
-	
+
 	if (MISSING(x) || MISSING(y))
 		pos = QCursor::pos();
 	else
 		pos = QPoint(VARG(x), VARG(y));
-	
+
 	CMENU_popup(THIS, pos);
-	
+
 END_METHOD
 
 
 BEGIN_PROPERTY(Menu_Window)
 
-  GB.ReturnObject(CWidget::get(THIS->toplevel));
+	GB.ReturnObject(CWidget::get(THIS->toplevel));
 
 END_PROPERTY
 
@@ -675,65 +685,54 @@ END_PROPERTY*/
 
 GB_DESC CMenuChildrenDesc[] =
 {
-  GB_DECLARE(".Menu.Children", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Menu.Children", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Menu", MenuChildren_next, NULL),
-  GB_METHOD("_get", "Menu", MenuChildren_get, "(Index)i"),
-  GB_METHOD("Clear", NULL, MenuChildren_Clear, NULL),
-  GB_PROPERTY_READ("Count", "i", MenuChildren_Count),
+	GB_METHOD("_next", "Menu", MenuChildren_next, NULL),
+	GB_METHOD("_get", "Menu", MenuChildren_get, "(Index)i"),
+	GB_METHOD("Clear", NULL, MenuChildren_Clear, NULL),
+	GB_PROPERTY_READ("Count", "i", MenuChildren_Count),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CMenuDesc[] =
 {
-  GB_DECLARE("Menu", sizeof(CMENU)), //GB_HOOK_CHECK(CWIDGET_check),
-  GB_HOOK_CHECK(check_menu),
+	GB_DECLARE("Menu", sizeof(CMENU)), //GB_HOOK_CHECK(CWIDGET_check),
+	GB_HOOK_CHECK(check_menu),
 
-  //GB_STATIC_METHOD("_init", NULL, CMENU_init, NULL),
-  GB_METHOD("_new", NULL, Menu_new, "(Parent)o[(Hidden)b]"),
-  //GB_METHOD("_new", NULL, Menu_new, "(Parent)o[(Visible)b]"),
-  GB_METHOD("_free", NULL, Menu_free, NULL),
+	GB_METHOD("_new", NULL, Menu_new, "(Parent)o[(Hidden)b]"),
+	GB_METHOD("_free", NULL, Menu_free, NULL),
 
-  //GB_PROPERTY("Name", "s", CWIDGET_name),
+	GB_PROPERTY("Name", "s", Control_Name),
+	GB_PROPERTY("Caption", "s", Menu_Text),
+	GB_PROPERTY("Text", "s", Menu_Text),
+	GB_PROPERTY("Enabled", "b", Menu_Enabled),
+	GB_PROPERTY("Checked", "b", Menu_Checked),
+	GB_PROPERTY("Tag", "v", Control_Tag),
+	GB_PROPERTY("Picture", "Picture", Menu_Picture),
+	GB_PROPERTY("Shortcut", "s", Menu_Shortcut),
+	GB_PROPERTY("Visible", "b", Menu_Visible),
+	GB_PROPERTY("Toggle", "b", Menu_Toggle),
+	GB_PROPERTY("Value", "b", Menu_Value),
+	GB_PROPERTY("Action", "s", Menu_Action),
+	GB_PROPERTY_READ("Window", "Window", Menu_Window),
 
-  //GB_PROPERTY_READ("Count", "i", MenuChildren_Count),
-
-  //GB_PROPERTY_READ("Parent", "Control", CWIDGET_parent),
-
-  GB_PROPERTY("Name", "s", Control_Name),
-  GB_PROPERTY("Caption", "s", Menu_Text),
-  GB_PROPERTY("Text", "s", Menu_Text),
-  GB_PROPERTY("Enabled", "b", Menu_Enabled),
-  GB_PROPERTY("Checked", "b", Menu_Checked),
-  GB_PROPERTY("Tag", "v", Control_Tag),
-  GB_PROPERTY("Picture", "Picture", Menu_Picture),
-  //GB_PROPERTY("Stretch", "b", CMENU_stretch),
-  GB_PROPERTY("Shortcut", "s", Menu_Shortcut),
-  GB_PROPERTY("Visible", "b", Menu_Visible),
-  GB_PROPERTY("Toggle", "b", Menu_Toggle),
-  GB_PROPERTY("Value", "b", Menu_Value),
-  //GB_PROPERTY("TearOff", "b", CMENU_tear_off),
-  GB_PROPERTY("Action", "s", Menu_Action),
-  GB_PROPERTY_READ("Window", "Window", Menu_Window),
-
-  GB_PROPERTY_SELF("Children", ".Menu.Children"),
-  //GB_PROPERTY_READ("Index", "i", CMENU_item_index),
+	GB_PROPERTY_SELF("Children", ".Menu.Children"),
 
 	MENU_DESCRIPTION,
 
-  GB_METHOD("Popup", NULL, Menu_Popup, "[(X)i(Y)i]"),
-  GB_METHOD("Delete", NULL, Menu_Delete, NULL),
-  GB_METHOD("Show", NULL, Menu_Show, NULL),
-  GB_METHOD("Hide", NULL, Menu_Hide, NULL),
+	GB_METHOD("Popup", NULL, Menu_Popup, "[(X)i(Y)i]"),
+	GB_METHOD("Delete", NULL, Menu_Delete, NULL),
+	GB_METHOD("Show", NULL, Menu_Show, NULL),
+	GB_METHOD("Hide", NULL, Menu_Hide, NULL),
 
-  //GB_EVENT("Delete", NULL, NULL, &EVENT_Destroy), // Must be first
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Show", NULL, NULL, &EVENT_Show),
-  GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
+	//GB_EVENT("Delete", NULL, NULL, &EVENT_Destroy), // Must be first
+	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("Show", NULL, NULL, &EVENT_Show),
+	GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
@@ -750,22 +749,22 @@ static void send_click_event(CMENU *_object)
 		THIS->checked = !THIS->checked;
 		update_check(THIS);
 	}
-	
-  GB.Raise(THIS, EVENT_Click, 0);
+
+	GB.Raise(THIS, EVENT_Click, 0);
 	CACTION_raise((CWIDGET *)THIS);
-  GB.Unref(POINTER(&_object));
+	GB.Unref(POINTER(&_object));
 }
 
 static void send_menu_event(CMENU *_object, intptr_t event)
 {
-  GB.Raise(THIS, event, 0);
-  GB.Unref(POINTER(&_object));
+	GB.Raise(THIS, event, 0);
+	GB.Unref(POINTER(&_object));
 }
 
 void CMenu::slotTriggered(QAction *action)
 {
-  GET_MENU_SENDER(parent);
-  CMENU *menu = CMenu::dict[action];
+	GET_MENU_SENDER(parent);
+	CMENU *menu = CMenu::dict[action];
 
 	if (menu->parent != parent)
 		return;
@@ -780,19 +779,38 @@ void CMenu::slotTriggered(QAction *action)
 
 void CMenu::slotShown(void)
 {
-  GET_MENU_SENDER(menu);
-	
+	static bool init = FALSE;
+
+	GET_MENU_SENDER(menu);
+
+	GB.Ref(menu);
+
 	GB.Raise(menu, EVENT_Show, 0);
+
+	if (!menu->init_shortcut)
+	{
+		if (!init)
+		{
+			GB.GetFunction(&_init_shortcut_func, (void *)GB.FindClass("_Gui"), "_DefineShortcut", NULL, NULL);
+			init = TRUE;
+		}
+
+		menu->init_shortcut = TRUE;
+		GB.Push(1, GB_T_OBJECT, menu);
+		GB.Call(&_init_shortcut_func, 1, FALSE);
+	}
+
+	GB.Unref(POINTER(&menu));
 }
 
 void CMenu::slotHidden(void)
 {
-  GET_MENU_SENDER(menu);
+	GET_MENU_SENDER(menu);
 
 	if (GB.CanRaise(menu, EVENT_Hide))
 	{
-	  GB.Ref(menu);
-  	GB.Post2((GB_CALLBACK)send_menu_event, (intptr_t)menu, EVENT_Hide);
+		GB.Ref(menu);
+		GB.Post2((GB_CALLBACK)send_menu_event, (intptr_t)menu, EVENT_Hide);
 	}
 }
 
@@ -806,14 +824,14 @@ void CMenu::enableAccel(CMENU *item, bool enable, bool rec)
 
 	if (!rec)
 		qDebug("CMenu::enableAccel: %s: %s", item->widget.name, enable ? "ON" : "OFF");
-	
+
 	item->noshortcut = !enable;
 	update_accel(item);
 
 	if (item->menu)
 	{
 		int i;
-		
+
 		for (i = 0; i < item->menu->actions().count(); i++)
 			CMenu::enableAccel(CMenu::dict[item->menu->actions().at(i)], enable, true);
 	}
@@ -824,7 +842,7 @@ void CMenu::hideSeparators(CMENU *item)
 {
 	if (!item->menu)
 		return;
-		
+
 	#if 0
 	CMENU *child;
 	CMENU *last_child;
@@ -838,11 +856,11 @@ void CMenu::hideSeparators(CMENU *item)
 
 	last_sep = true;
 	last_child = 0;
-	
+
 	for(i = 0; i < children.count(); i++)
-	{	
+	{
 		child = children.at(i);
-		
+
 		is_sep = CMENU_is_separator(child);
 
 		//qDebug("separator = %d  visible = %d  (%p -> %p)", is_sep, CMENU_is_visible(child), child, it.current());
@@ -866,7 +884,7 @@ void CMenu::hideSeparators(CMENU *item)
 				last_sep = false;
 		}
 	}
-	
+
 	if (last_sep && last_child)
 		hide_menu(last_child);
 	#endif
@@ -879,7 +897,7 @@ void CMenu::unrefChildren(QWidget *w)
 	int i;
 	QList<QAction *> list = w->actions();
 	CMENU *child;
-	
+
 	for (i = 0; i < list.count(); i++)
 	{
 		child = dict[list.at(i)];
@@ -893,35 +911,35 @@ void CMenu::unrefChildren(QWidget *w)
 
 void CMenu::slotDestroyed(void)
 {
-  CMENU *_object = dict[(QAction *)sender()];
+	CMENU *_object = dict[(QAction *)sender()];
 
-  #ifdef DEBUG_MENU
-  qDebug("*** { CMenu::destroy %p", THIS);
-  #endif
+	#ifdef DEBUG_MENU
+	qDebug("*** { CMenu::destroy %p", THIS);
+	#endif
 
 	//qDebug("CMenu::slotDestroyed: action = %p  THIS = %p", sender(), _object);
-	
+
 	if (!_object)
 		return;
 
-  CMenu::dict.remove(ACTION);
+	CMenu::dict.remove(ACTION);
 	//qDebug("CMenu::slotDestroyed: (%s %p)", GB.GetClassName(THIS), THIS);
 
 	//if (THIS->menu)
-  //	unrefChildren(THIS->menu);
+	//	unrefChildren(THIS->menu);
 
-  #ifdef DEBUG_MENU
-  qDebug("UNREF (%s %p)", THIS->widget.name, THIS);
-  #endif
-	
+	#ifdef DEBUG_MENU
+	qDebug("UNREF (%s %p)", THIS->widget.name, THIS);
+	#endif
+
 	unregister_menu(THIS);
 	THIS->widget.widget = NULL;
-  GB.Unref(POINTER(&_object));
+	GB.Unref(POINTER(&_object));
 
-  //menu->dict = dict;
+	//menu->dict = dict;
 
-  #ifdef DEBUG_MENU
-  qDebug("*** } CMenu::destroy: %p", THIS);
-  #endif
+	#ifdef DEBUG_MENU
+	qDebug("*** } CMenu::destroy: %p", THIS);
+	#endif
 }
 

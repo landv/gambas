@@ -56,6 +56,7 @@ public:
 	char *name() const { return _name; }
 	bool topLevel() const { return top_level; }
 	bool isSeparator() const { return _style == SEPARATOR; }
+	void *parent() const { return pr; }
 
 	void setChecked(bool vl);
 	void setToggle(bool vl);

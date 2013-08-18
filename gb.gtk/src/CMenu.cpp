@@ -36,6 +36,8 @@ DECLARE_EVENT(EVENT_Show);
 DECLARE_EVENT(EVENT_Hide);
 
 static CMENU *_popup_menu_clicked = NULL;
+static GB_FUNCTION _init_shortcut_func;
+
 
 static void send_click_event(void *_object)
 {
@@ -98,8 +100,28 @@ static void cb_click(gMenu *sender)
 
 static void cb_show(gMenu *sender)
 {
+	static bool init = FALSE;
+
 	void *_object = sender->hFree;
+
+	GB.Ref(THIS);
+
 	GB.Raise(THIS, EVENT_Show, 0);
+
+// 	if (!THIS->init_shortcut)
+// 	{
+// 		if (!init)
+// 		{
+// 			GB.GetFunction(&_init_shortcut_func, (void *)GB.FindClass("_Gui"), "_DefineShortcut", NULL, NULL);
+// 			init = TRUE;
+// 		}
+//
+// 		THIS->init_shortcut = TRUE;
+// 		GB.Push(1, GB_T_OBJECT, THIS);
+// 		GB.Call(&_init_shortcut_func, 1, FALSE);
+// 	}
+
+	GB.Unref(POINTER(&_object));
 }
 
 static void cb_hide(gMenu *sender)
@@ -185,6 +207,9 @@ BEGIN_PROPERTY(CMENU_text)
 		return;
 	}
 	MENU->setText(GB.ToZeroString(PROP(GB_STRING)));
+
+	if (!MENU->topLevel())
+		((CMENU *)GetObject((gMenu *)MENU->parent()))->init_shortcut = FALSE;
 
 END_PROPERTY
 
@@ -334,6 +359,8 @@ BEGIN_METHOD_VOID(CMENU_clear)
 		mn = MENU->childMenu(i);
 		delete_menu(mn);
 	}
+
+	THIS->init_shortcut = FALSE;
 
 END_PROPERTY
 

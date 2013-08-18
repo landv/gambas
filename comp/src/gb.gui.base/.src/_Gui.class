@@ -1,0 +1,39 @@
+' Gambas class file
+
+Export
+
+Static Public Sub _DefineShortcut(hParent As Menu)
+
+  Dim hMenu As Menu
+  Dim sText As String
+  Dim cShortcut As New Collection
+  Dim I As Integer
+  Dim sCar As String
+  Dim iPos As Integer
+  
+  For Each hMenu In hParent.Children
+    
+    sText = hMenu.Text
+    If Not sText Then Continue
+    
+    iPos = String.InStr(sText, "&")
+    If iPos Then 
+      cShortcut[String.UCase(String.Mid$(sText, iPos + 1, 1))] = True
+      Continue
+    Endif
+    
+    For I = 1 To String.Len(sText)
+      sCar = String.UCase(String.Mid$(sText, I, 1))
+      If Len(sCar) = 1 And If Not IsLetter(sCar) And If Not IsDigit(sCar) Then Continue
+      If Not cShortcut.Exist(sCar) Then
+        hMenu.Text = String.Left(sText, I - 1) & "&" & String.Mid$(sText, I)
+        cShortcut[sCar] = True
+        Break
+      Endif
+    Next
+    
+    'If hMenu.Children.Count Then _DefineShortcut(hMenu)
+    
+  Next
+  
+End
