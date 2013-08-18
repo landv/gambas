@@ -279,7 +279,6 @@ End
 Public Sub Clean()
   
   Dim hPolygon As Polygon
-  Dim bClose As Boolean
   
   If Points.Count < 3 Then Return
   
@@ -292,5 +291,12 @@ End
 Public Sub GetMagnets() As PointF[]
   
   Return GetExtentsMagnets().Insert(Magnets)
+  
+End
+
+Public Sub GetOrientation() As Boolean
+  
+  Dim hPolygon As Polygon = Points
+  Return hPolygon.Orientation
   
 End

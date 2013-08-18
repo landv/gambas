@@ -617,7 +617,7 @@ Private Sub AddStroke(hPoint As PointF)
   If iSize = 0 Then
     hPoint.X = CInt(hPoint.X)
     hPoint.Y = CInt(hPoint.Y)
-    $hStrokeExtents = $hStrokeExtents.Union(Rect($hLastPoint.X, $hLastPoint.Y, 1, 1))
+    $hStrokeExtents = $hStrokeExtents.Union(Rect($hLastPoint.X - 1, $hLastPoint.Y - 1, 3, 3))
   Else
     $hStrokeExtents = $hStrokeExtents.Union(Rect($hLastPoint.X - iSize \ 2 - 1, $hLastPoint.Y - iSize \ 2 - 1, iSize * 2, iSize * 2))
   Endif
@@ -753,7 +753,11 @@ Public Sub imvImage_MouseDown()
           $iChangeAction = CHANGE_POINT
           RefreshSelection
         Else If $iChangeAction = CHANGE_SELECT Then
-          $hSelect.Select($vChangeIndex[0])
+          If $vChangeIndex And If $vChangeIndex[0] = $hSelect.Current Then
+            $hSelect.SelectNext(8 / imvImage.Zoom)
+          Else
+            $hSelect.Select($vChangeIndex[0])
+          Endif
           RefreshSelection
         Endif
         
@@ -801,7 +805,7 @@ Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnoreLast As Boolean)
 
   If $hSelect Then 
     If $sTool = "change" Then
-      If $iChangeAction = CHANGE_MOVE And If $hSelect._Current < 0 Then Goto NO_SELECT
+      If $iChangeAction = CHANGE_MOVE And If $hSelect.Current < 0 Then Goto NO_SELECT
       If $iChangeAction = CHANGE_RESIZE Or If $iChangeAction = CHANGE_ROTATE Then Goto NO_SELECT
     Endif
     hMagnet = $hSelect.FindMagnet(hPoint, 8 / imvImage.Zoom, bIgnoreLast)
@@ -824,7 +828,7 @@ NO_SELECT:
     If hMagnet Then Return hMagnet
   Endif
   
-  If $sTool = "line" And If $hSelect Then
+  If $sTool = "line" And If $hSelect And If $hSelect.Shapes.Count Then
     hMagnet = CImageSelection.FindMagnetFrom($hSelect.Shapes[$hSelect.Shapes.Max].Magnets, hPoint, 8 / imvImage.Zoom, True)
     If hMagnet Then Return hMagnet
   Endif
@@ -873,8 +877,8 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
         'Print "~ "; hCurrent - $hCurrentPoint
         
         If $hSelect Then
-          If $hSelect._Current >= 0 Then
-            For Each hPoint In $hSelect.Shapes[$hSelect._Current].GetMagnets()
+          If $hSelect.Current >= 0 Then
+            For Each hPoint In $hSelect.Shapes[$hSelect.Current].GetMagnets()
               hPoint += hCurrent - $hCurrentPoint
               hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
               If hMagnet Then Goto FIND_MAGNET
@@ -1097,7 +1101,7 @@ Public Sub imvImage_MouseMove()
       I = $hSelect.FindShape($hCurrentPoint, 8 / imvImage.Zoom)
       If I >= 0 Then
         iMouse = Mouse.SizeAll
-        If $vChangeIndex And If $vChangeIndex[0] = $hSelect._Current Then
+        If $vChangeIndex And If $vChangeIndex[0] = $hSelect.Current Then
           $iChangeAction = CHANGE_MOVE
         Else
           $iChangeAction = CHANGE_SELECT
@@ -1736,7 +1740,7 @@ Public Sub btnInvert_Click()
 
   CreateSelection
   AddUndo($hSelect.Copy())
-  $hSelect.Invert()
+  $hSelect.Invert
   If $hSelect.IsVoid() Then ClearSelection
   RefreshSelection
 
@@ -1755,9 +1759,9 @@ Public Sub imvImage_Menu()
 
   Me.SetFocus
   
-  If $hSelect And If $hSelect._Current >= 0 Then
+  If $hSelect And If $hSelect.Current >= 0 Then
     mnuShapeGrid.Visible = True
-    iGrid = $hSelect.Shapes[$hSelect._Current].Grid
+    iGrid = $hSelect.Shapes[$hSelect.Current].Grid
     For Each hMenu In mnuShapeGrid.Children
       hMenu.Checked = CInt(hMenu.Tag) = iGrid
     Next
@@ -2661,7 +2665,7 @@ End
 
 Public Sub mnuDivide_Click()
   
-  $hSelect.Shapes[$hSelect._Current].Grid = CInt(Last.Tag)
+  $hSelect.Shapes[$hSelect.Current].Grid = CInt(Last.Tag)
   imvImage.Refresh
   
 End

@@ -92,7 +92,7 @@ static bool to_polygons(Polygons &polygons, GB_ARRAY array)
 	return false;
 }
 
-static GB_ARRAY from_polygons(Polygons &polygons)
+static GB_ARRAY from_polygons(Polygons &polygons, bool closed)
 {
 	GB_ARRAY a;
 	CPOLYGON *p;
@@ -105,6 +105,8 @@ static GB_ARRAY from_polygons(Polygons &polygons)
 		if (polygons[i].size() == 0)
 			continue;
 		
+		set_polygon_closed(polygons[i], closed);
+
 		p = (CPOLYGON *)GB.New(GB.FindClass("Polygon"), NULL, NULL);
 		*(p->poly) = polygons[i];
 
@@ -251,7 +253,7 @@ BEGIN_METHOD(Polygon_Simplify, GB_INTEGER fill)
 
 	SimplifyPolygon(*POLY, result, (PolyFillType)VARGOPT(fill, pftNonZero));
 
-	GB.ReturnObject(from_polygons(result));
+	GB.ReturnObject(from_polygons(result, is_polygon_closed(*POLY)));
 
 END_METHOD
 
@@ -316,6 +318,11 @@ BEGIN_METHOD(Polygon_Remove, GB_INTEGER index; GB_INTEGER count)
 
 END_METHOD
 
+BEGIN_PROPERTY(Polygon_Orientation)
+
+	GB.ReturnBoolean(Orientation(*POLY));
+
+END_PROPERTY
 
 //---------------------------------------------------------------------------
 
@@ -331,7 +338,7 @@ BEGIN_METHOD(Clipper_Offset, GB_OBJECT polygons; GB_FLOAT delta; GB_INTEGER join
 	polygons = result;
 	OffsetPolygons(polygons, result, VARG(delta) * SCALE, (JoinType)VARGOPT(join, jtSquare), VARGOPT(limit, 0.0), !VARGOPT(do_not_fix, false));
 
-	GB.ReturnObject(from_polygons(result));
+	GB.ReturnObject(from_polygons(result, true));
 
 END_METHOD
 
@@ -346,7 +353,7 @@ BEGIN_METHOD(Clipper_Simplify, GB_OBJECT polygons; GB_INTEGER fill)
 
 	SimplifyPolygons(polygons, result, (PolyFillType)VARGOPT(fill, pftNonZero));
 
-	GB.ReturnObject(from_polygons(result));
+	GB.ReturnObject(from_polygons(result, true));
 
 END_METHOD
 
@@ -362,7 +369,7 @@ BEGIN_METHOD(Clipper_Clean, GB_OBJECT polygons; GB_FLOAT distance)
 
 	CleanPolygons(polygons, result, VARGOPT(distance, 1.415));
 
-	GB.ReturnObject(from_polygons(result));
+	GB.ReturnObject(from_polygons(result, true));
 
 END_METHOD
 
@@ -382,7 +389,7 @@ static void execute(ClipType action, PolyFillType fill, void *subject, void *cli
 
 	c.Execute(action, result, fill, fill);
 
-	GB.ReturnObject(from_polygons(result));
+	GB.ReturnObject(from_polygons(result, true));
 }
 
 BEGIN_METHOD(Clipper_Union, GB_OBJECT subject; GB_OBJECT clip; GB_INTEGER fill)
@@ -424,6 +431,7 @@ GB_DESC PolygonDesc[] =
 	GB_PROPERTY_READ("Count", "i", Polygon_Count),
 	GB_PROPERTY_READ("Max", "i", Polygon_Max),
 	GB_PROPERTY_READ("Area", "f", Polygon_Area),
+	GB_PROPERTY_READ("Orientation", "b", Polygon_Orientation),
 
 	GB_METHOD("Reverse", NULL, Polygon_Reverse, NULL),
 	GB_METHOD("Simplify", "Polygon[]", Polygon_Simplify, "[(Fill)i]"),

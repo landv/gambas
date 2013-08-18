@@ -11,7 +11,7 @@ Public Shapes As New CImageShape[]
 Public _Invert As Boolean
 Public _Magnets As New PointF[]
 Public _Matrix As New PaintMatrix
-Public _Current As Integer = -1
+Public Current As Integer = -1
 
 Static Public FindIndex As Variant
 
@@ -118,7 +118,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   If iAction = ACTION_HANDLE Then
     
     For I = 0 To Shapes.Max
-      If I = _Current Then
+      If I = Current Then
         Shapes[I].PaintHandle
       Else
         Shapes[I].PaintCenter
@@ -128,13 +128,13 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   Else If iAction = ACTION_MAGNET Then
   
     For I = 0 To Shapes.Max
-      If I = _Current Then Shapes[I].PaintMagnet
+      If I = Current Then Shapes[I].PaintMagnet
     Next
     
   Else
     
     For I = 0 To Shapes.Max
-      If _Current < 0 Or If _Current = I Or If bAll Then Shapes[I].Paint
+      If Current < 0 Or If Current = I Or If bAll Then Shapes[I].Paint
     Next
   
     If bExtent Then $hExtents = Paint.PathExtents
@@ -166,13 +166,13 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
 
     If _Invert Then
       Paint.MoveTo(0, 0)
-      Paint.LineTo(hImage.W, 0)
-      Paint.LineTo(hImage.W, hImage.H)
       Paint.LineTo(0, hImage.H)
+      Paint.LineTo(hImage.W, hImage.H)
+      Paint.LineTo(hImage.W, 0)
       Paint.LineTo(0, 0)
     Endif
     
-    Paint.LineJoin = Paint.LineJoinBevel
+    Paint.LineJoin = Paint.LineJoinMiter
   
     Paint.Stroke
     
@@ -219,7 +219,7 @@ Public Sub Copy() As CImageSelection
 
   hSelect._Matrix = _Matrix.Copy()
   
-  hSelect._Current = _Current
+  hSelect.Current = Current
   
   Return hSelect
   
@@ -227,8 +227,8 @@ End
 
 Public Sub Invert()
   
-  If _Current >= 0 Then
-    Shapes[_Current].Invert
+  If Current >= 0 Then
+    Shapes[Current].Invert
   Else
     _Invert = Not _Invert
   Endif
@@ -308,24 +308,16 @@ End
 ' End
 
 
-' Private Sub AddRect(iCmd As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, bNoMagnet As Boolean)
-' 
-'   If W = 0 Or If H = 0 Then Return
-'   
-'   _Cmd.Add(iCmd)
-'   _Cmd.Add(iCmd)
-'   _X.Add(X)
-'   _Y.Add(Y)
-'   _X.Add(W)
-'   _Y.Add(H)
-'   
-'   If Not bNoMagnet Then AddMagnetFromRect(X, Y, W, H)
-' 
-' End
-
 Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer)
   
-  'AddRect(CMD_RECTANGLE, X, Y, W, H, bNoMagnet)
+  ' If W < 0 Then
+  '   X += W
+  '   W = - W
+  ' Endif
+  ' If H < 0 Then
+  '   Y += H
+  '   H = - H
+  ' Endif
   
   MoveTo(X, Y)
   LineTo(X + W, Y)
@@ -339,6 +331,15 @@ Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   Dim A As Integer
   Dim XC, YC, WC, HC As Float
+  
+  ' If W < 0 Then
+  '   X += W
+  '   W = - W
+  ' Endif
+  ' If H < 0 Then
+  '   Y += H
+  '   H = - H
+  ' Endif
   
   WC = W / 2
   HC = H / 2
@@ -385,7 +386,7 @@ Public Sub FindMagnet(hSearch As PointF, D As Float, Optional bIgnoreLast As Boo
   N = Shapes.Max
   If bIgnoreLast Then Dec N
   For I = 0 To N
-    If I = _Current Then Continue
+    If I = Current Then Continue
     hPoint = Shapes[I].FindMagnet(hSearch, D)
     If hPoint Then Return hPoint
   Next
@@ -394,23 +395,31 @@ Public Sub FindMagnet(hSearch As PointF, D As Float, Optional bIgnoreLast As Boo
 
 End
 
-Public Sub FindShape(hSearch As PointF, D As Float, Optional iAfter As Integer = -1) As Integer
+Public Sub FindShape(hSearch As PointF, D As Float, Optional bIgnoreCurrent As Boolean) As Integer
   
-  Dim I As Integer
+  Dim I, iStart As Integer
   Dim hShape As CImageShape
   Dim hCenter As PointF
   
-  For I = iAfter + 1 To Shapes.Max
+  iStart = Max(0, Current)
+  I = iStart
+  
+  Do
     
+    If bIgnoreCurrent And If I = Current Then Goto NEXT_SHAPE
+      
     hShape = Shapes[I]
     
     hCenter = hShape.GetCenter()
     If Abs(hCenter - hSearch) <= D Then Return I
     
-  Next
+  NEXT_SHAPE:
+    Inc I
+    If I > Shapes.Max Then I = 0
+    If I = iStart Then Return -1
+    
+  Loop
   
-  Return -1
-
 End
 
 Public Sub FindPoint(hSearch As PointF, D As Float, Optional bMidSegment As Boolean, Optional vIgnore As Variant) As PointF
@@ -429,7 +438,7 @@ Public Sub FindPoint(hSearch As PointF, D As Float, Optional bMidSegment As Bool
     '   Return hCenter.Copy()
     ' Endif
     
-    If I = _Current Then
+    If I = Current Then
       iIgnore = -1
       If vIgnore And If vIgnore[0] = I Then iIgnore = vIgnore[1]
       J = hShape.FindPoint(hSearch, D, bMidSegment, iIgnore)
@@ -457,7 +466,7 @@ Public Sub GetExtents(Optional bAll As Boolean) As RectF
   
   If Shapes.Count = 0 Then Return New RectF
   
-  If _Current >= 0 And If Not bAll Then Return Shapes[_Current].GetExtents()
+  If Current >= 0 And If Not bAll Then Return Shapes[Current].GetExtents()
   
   hRect = Shapes[0].GetExtents()
   For I = 1 To Shapes.Max
@@ -500,8 +509,8 @@ Public Sub Apply(hMatrix As PaintMatrix)
   Dim I As Integer
   Dim hShape As CImageShape
   
-  If _Current >= 0 Then
-    Shapes[_Current].Apply(hMatrix)
+  If Current >= 0 Then
+    Shapes[Current].Apply(hMatrix)
   Else
     For Each hShape In Shapes
       hShape.Apply(hMatrix)
@@ -669,23 +678,23 @@ End
 
 Public Sub Select(iShape As Integer)
   
-  _Current = iShape
+  Current = iShape
   
 End
 
 Public Sub SelectAll()
   
-  _Current = -1
+  Current = -1
   
 End
 
 Public Sub RemoveShape(iShape As Integer)
   
   Shapes.Remove(iShape)
-  If _Current = iShape Then 
-    _Current = -1
-  Else If _Current > iShape Then
-    Dec _Current
+  If Current = iShape Then 
+    Current = -1
+  Else If Current > iShape Then
+    Dec Current
   Endif
   
 End
@@ -710,11 +719,11 @@ Public Sub Duplicate()
   hMatrix.Translate(DX, DY)
   
   For I = 0 To Shapes.Max
-    If _Current < 0 Or If _Current = I Then
+    If Current < 0 Or If Current = I Then
       hShape = Shapes[I].Copy()
       hShape.Apply(hMatrix)
       AddShape(hShape)
-      If _Current >= 0 Then _Current = Shapes.Max
+      If Current >= 0 Then Current = Shapes.Max
     Endif
   Next
   
@@ -726,7 +735,7 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
   Dim hShape As CImageShape
   Dim I As Integer
   
-  If _Current < 0 Then
+  If Current < 0 Then
   
     For I = 0 To Shapes.Max
       aPolygons.Add(Shapes[I].Points)
@@ -744,19 +753,19 @@ Public Sub Offset(fOffset As Float, bDup As Boolean)
   
   Else
     
-    aPolygons.Add(Shapes[_Current].Points)
+    aPolygons.Add(Shapes[Current].Points)
     
     aPolygons = Clipper.Offset(aPolygons, fOffset)
     
     If aPolygons.Count Then
       If Not bDup Then
-        Shapes[_Current].Points = aPolygons[0]
-        Shapes[_Current].Invalidate
+        Shapes[Current].Points = aPolygons[0]
+        Shapes[Current].Invalidate
       Else
         hShape = New CImageShape
         hShape.Points = aPolygons[0]
         AddShape(hShape)
-        _Current = Shapes.Max
+        Current = Shapes.Max
       Endif
     Endif
     
@@ -766,7 +775,9 @@ End
 
 Public Sub CleanLastShape()
   
-  Shapes[Shapes.Max].Clean
+  With Shapes[Shapes.Max]
+    .Clean
+  End With
   
 End
 
@@ -798,4 +809,14 @@ Public Sub MergeWith(aOther As CImageShape[], Optional bDiff As Boolean)
     AddShape(hShape)
   Next
     
+End
+
+Public Sub SelectNext(D As Float)
+  
+  Dim hCenter As PointF = Shapes[Current].GetCenter()
+  Dim I As Integer
+  
+  I = FindShape(hCenter, D, True)
+  If I >= 0 Then Select(I)
+  
 End
