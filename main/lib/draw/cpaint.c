@@ -1303,6 +1303,7 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	GB_COLOR borderColor;
 	int antialias = FALSE;
 	GB_RECT rect;
+	float opacity = 1.0; //VARGOPT(opacity, 1.0);
 
 	CHECK_DEVICE();
 
@@ -1348,7 +1349,7 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	rect.w = sw;
 	rect.h = sh;
 	
-	PAINT->DrawImage(THIS, image, x, y, sw * zoom, sh * zoom, 1.0, &rect);
+	PAINT->DrawImage(THIS, image, x, y, sw * zoom, sh * zoom, opacity, &rect);
 	
 	if (border && zoom >= 3)
 	{

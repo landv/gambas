@@ -5,7 +5,7 @@ Static Public FindDistance As Float
 Public Name As String
 Public Points As New PointF[]
 Public Magnets As New PointF[]
-
+Public Grid As Integer = 2
 Public _Extents As RectF
 Public _Center As PointF
 
@@ -102,6 +102,8 @@ Public Sub Copy() As CImageShape
   Next
   
   If _Extents Then hCopy._Extents = _Extents.Copy()
+  
+  hCopy.Grid = Grid
   
   Return hCopy
   
@@ -221,9 +223,23 @@ End
 
 Private Sub GetExtentsMagnets() As PointF[]
   
+  Dim aPoint As New PointF[]
+  Dim X, Y As Float
+  
   With GetExtents()
-    Return [PointF(.X, .Y), PointF(.X + .W, .Y), PointF(.X + .W, .Y + .H), PointF(.X, .Y + .H), PointF(.X + .W / 2, .Y), PointF(.X, .Y + .H / 2), PointF(.X + .W, .Y + .H / 2), PointF(.X + .W / 2, .Y + .H), .Center()]
+    If .W > 0 And If .H > 0 Then
+      Repeat
+        X = 0
+        Repeat
+          aPoint.Add(PointF(.X + X, .Y + Y))
+          X += .W / Grid
+        Until X > .W
+        Y += .H / Grid
+      Until Y > .H
+    Endif
   End With
+  
+  Return aPoint
   
 End
 
@@ -267,11 +283,8 @@ Public Sub Clean()
   
   If Points.Count < 3 Then Return
   
-  bClose = Abs(Points[0] - Points[Points.Max]) < 1E-6
-  
   hPolygon = Points
   Points = hPolygon.Clean()
-  If Not bClose Then Try Points.Remove(Points.Max)
   Invalidate
   
 End

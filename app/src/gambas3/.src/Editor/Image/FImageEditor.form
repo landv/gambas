@@ -53,26 +53,54 @@
       Text = ("Hide selection")
       Shortcut = "Esc"
     }
-    { mnuInvert Menu btnInvert
-      Name = "mnuInvert"
-      Action = ".invert"
-      Text = ("Invert selection")
-      Picture = Picture["img/draw/invert.png"]
-      Shortcut = "Ctrl+I"
+    { Menu3 Menu
+      Text = ("Selection")
+      { mnuInvert Menu btnInvert
+        Name = "mnuInvert"
+        Action = ".invert"
+        Text = ("Invert selection")
+        Picture = Picture["img/draw/invert.png"]
+        Shortcut = "Ctrl+I"
+      }
+      { mnuDuplicate Menu btnDuplicate
+        Name = "mnuDuplicate"
+        Action = ".duplicate"
+        Text = ("Duplicate selection")
+        Picture = Picture["img/draw/duplicate.png"]
+        Shortcut = "Ctrl+D"
+      }
+      { mnuOffset Menu btnOffset
+        Name = "mnuOffset"
+        Action = ".offset"
+        Text = ("Offset selection")
+        Picture = Picture["img/draw/offset.png"]
+        Shortcut = "Ctrl+*"
+      }
     }
-    { mnuDuplicate Menu btnDuplicate
-      Name = "mnuDuplicate"
-      Action = ".duplicate"
-      Text = ("Duplicate selection")
-      Picture = Picture["img/draw/duplicate.png"]
-      Shortcut = "Ctrl+D"
-    }
-    { mnuOffset Menu btnOffset
-      Name = "mnuOffset"
-      Action = ".offset"
-      Text = ("Offset selection")
-      Picture = Picture["img/draw/offset.png"]
-      Shortcut = "Ctrl+*"
+    { mnuShapeGrid Menu
+      Text = ("Shape grid")
+      Visible = False
+      { mnuDivide2 Menu mnuDivide
+        Name = "mnuDivide2"
+        Text = ("2 × 2")
+        Checked = True
+        Tag = "2"
+      }
+      { mnuDivide3 Menu mnuDivide
+        Name = "mnuDivide3"
+        Text = ("3 × 3")
+        Tag = "3"
+      }
+      { mnuDivide4 Menu mnuDivide
+        Name = "mnuDivide4"
+        Text = ("4 × 4")
+        Tag = "4"
+      }
+      { mnuDivide5 Menu mnuDivide
+        Name = "mnuDivide5"
+        Text = ("5 × 5")
+        Tag = "5"
+      }
     }
     { mnuSep4 Menu
     }

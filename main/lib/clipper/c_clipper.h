@@ -40,6 +40,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		Polygon *poly;
+		//bool closed;
 	}
 	CPOLYGON;
 

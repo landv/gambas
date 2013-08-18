@@ -138,6 +138,13 @@ Public Sub GetColor(Optional bIgnoreOpacity As Boolean) As Integer
   
 End
 
+Public Sub GetSize() As Integer
+  
+  Return slbSize.Value
+  
+End
+
+
 
 Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember As Boolean) As PaintBrush
   
@@ -176,7 +183,7 @@ Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional
         hImage = $aClipboard[gvwClipboard.Row].Image
       Endif
       
-      If Not hImage Then Return Paint.Color(Color.GetColor())
+      If Not hImage Then Return Paint.Color(GetColor())
       If Not bIgnoreOpacity Then hImage = hImage.Copy().Opacity(slbOpacity.Value / 255)
       hPaintBrush = Paint.Image(hImage)
       
@@ -187,7 +194,7 @@ Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional
       
     Case Else
       
-      hPaintBrush = Paint.Color(GetColor())
+      hPaintBrush = Paint.Color(GetColor(bIgnoreOpacity))
       
   End Select
 
@@ -195,7 +202,7 @@ Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional
   
 End
 
-Public Sub PaintForStroke(Optional hRect As RectF)
+Public Sub PaintForStroke(Optional hRect As RectF, Optional bIgnoreOpacity As Boolean)
   
   Dim iSize As Integer = slbSize.Value
   
@@ -203,6 +210,7 @@ Public Sub PaintForStroke(Optional hRect As RectF)
     Paint.LineWidth = 1
     Paint.AntiAlias = False
     Paint.LineCap = Paint.LineCapSquare
+    Paint.LineJoin = Paint.LineJoinRound
   Else
     Paint.LineWidth = iSize
     Paint.AntiAlias = True
@@ -211,7 +219,7 @@ Public Sub PaintForStroke(Optional hRect As RectF)
   Endif
   
   If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
-  Paint.Brush = GetBrush(hRect)
+  Paint.Brush = GetBrush(hRect, bIgnoreOpacity)
   
 End
 
@@ -1242,5 +1250,11 @@ End
 Public Sub GetGridSubdivision() As Integer
   
   Return CInt(cmbGridSub.Text)
+  
+End
+
+Public Sub GetOpacity() As Integer
+  
+  Return slbOpacity.Value
   
 End

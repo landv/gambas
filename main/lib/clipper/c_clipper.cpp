@@ -29,14 +29,40 @@
 
 #define SCALE 1000000.0
 
+static IntPoint to_point_xy(double x, double y)
+{
+	return IntPoint(x * SCALE + 0.5, y * SCALE + 0.5);
+}
+
 static IntPoint to_point(GEOM_POINTF *point)
 {
-	return IntPoint(point->x * SCALE + 0.5, point->y * SCALE + 0.5);
+	return to_point_xy(point->x, point->y);
 }
 
 static GEOM_POINTF *from_point(IntPoint p)
 {
 	return GEOM.CreatePointF((double)p.X / SCALE, (double)p.Y / SCALE);
+}
+
+static bool is_polygon_closed(Polygon &p)
+{
+	int n = p.size() - 1;
+
+	if (n <= 1)
+		return false;
+
+	return p[0].X == p[n].X && p[0].Y == p[n].Y;
+}
+
+static void set_polygon_closed(Polygon &p, bool closed)
+{
+	if (is_polygon_closed(p) == closed)
+		return;
+
+	if (closed)
+		p.push_back(p[0]);
+	else
+		p.erase(p.begin() + p.size() - 1);
 }
 
 static bool to_polygons(Polygons &polygons, GB_ARRAY array)
@@ -106,7 +132,7 @@ static bool _convert_polygon(CPOLYGON *_object, GB_TYPE type, GB_VALUE *conv)
 		int i;
 		GEOM_POINTF **data;
 
-		GB.Array.New(&a, GB.FindClass("PointF"), POLY->size() + 1);
+		GB.Array.New(&a, GB.FindClass("PointF"), POLY->size()); // + THIS->closed);
 		data = (GEOM_POINTF **)GB.Array.Get(a, 0);
 		for(i = 0; i < (int)POLY->size(); i++)
 		{
@@ -114,8 +140,11 @@ static bool _convert_polygon(CPOLYGON *_object, GB_TYPE type, GB_VALUE *conv)
 			GB.Ref(data[i]);
 		}
 
-		data[i] = from_point((*POLY)[0]);
-		GB.Ref(data[i]);
+		/*if (closed)
+		{
+			data[i] = from_point((*POLY)[0]);
+			GB.Ref(data[i]);
+		}*/
 
 		conv->_object.value = a;
 		return false;
@@ -228,15 +257,65 @@ END_METHOD
 
 BEGIN_METHOD(Polygon_Clean, GB_FLOAT distance)
 
+	bool closed;
 	CPOLYGON *result = (CPOLYGON *)GB.New(GB.FindClass("Polygon"), NULL, 0);
 
 	result->poly->resize(POLY->size());
 
+	closed = is_polygon_closed(*POLY);
+
 	CleanPolygon(*POLY, *(result->poly), VARGOPT(distance, 1.415));
+
+	set_polygon_closed(*(result->poly), closed);
 
 	GB.ReturnObject(result);
 
 END_METHOD
+
+BEGIN_METHOD(Polygon_Add, GB_FLOAT x; GB_FLOAT y)
+
+	POLY->push_back(to_point_xy(VARG(x), VARG(y)));
+
+END_METHOD
+
+BEGIN_METHOD(Polygon_AddPoint, GB_OBJECT point)
+
+	GEOM_POINTF *point = (GEOM_POINTF *)VARG(point);
+
+	if (GB.CheckObject(point))
+		return;
+
+	POLY->push_back(to_point(point));
+
+END_METHOD
+
+BEGIN_METHOD(Polygon_Remove, GB_INTEGER index; GB_INTEGER count)
+
+	int index = VARG(index);
+	int count = VARGOPT(count, 1);
+	int index2;
+
+	if (index < 0 || index >= (int)POLY->size())
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+
+	if (count < 0)
+		count = (int)POLY->size() - index;
+
+	index2 = index + count;
+
+	if (index2 > (int)POLY->size())
+		index2 = POLY->size();
+
+	if (count == 1)
+		POLY->erase(POLY->begin() + index);
+	else
+		POLY->erase(POLY->begin() + index, POLY->begin() + index2);
+
+END_METHOD
+
 
 //---------------------------------------------------------------------------
 
@@ -349,6 +428,10 @@ GB_DESC PolygonDesc[] =
 	GB_METHOD("Reverse", NULL, Polygon_Reverse, NULL),
 	GB_METHOD("Simplify", "Polygon[]", Polygon_Simplify, "[(Fill)i]"),
 	GB_METHOD("Clean", "Polygon", Polygon_Clean, "[(Distance)f]"),
+
+	GB_METHOD("Add", NULL, Polygon_Add, "(X)f(Y)f"),
+	GB_METHOD("AddPoint", NULL, Polygon_AddPoint, "(Point)Point;"),
+	GB_METHOD("Remove", NULL, Polygon_Remove, "(Index)i[Count)i]"),
 
 	GB_INTERFACE("_convert", &_convert_polygon),
 

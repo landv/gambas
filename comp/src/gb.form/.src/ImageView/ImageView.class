@@ -154,21 +154,21 @@ Public Sub ImageToView(ImagePoint As Point) As Point
   
 End
 
-Public Sub _Paint(hImage As Image, X As Float, Y As Float)
-  
-  Dim hRect As Rect
+Public Sub _Paint(hImage As Image, X As Float, Y As Float, Optional hRect As Rect)
   
   If Not hImage Then Return
   
-  If $bZoom Then
-    If $bFastZoom Then
-      Paint.ZoomImage(hImage, $fZoom, X, Y, If($bGrid, Color.LightForeground, Color.Default))
-    Else
-      hRect = GetViewRect()
-      Paint.DrawImage(hImage, X, Y, hImage.W * $fZoom, hImage.H * $fZoom) 'hRect.W, hRect.H)
-    Endif
+  If hRect Then 
+    X += hRect.X * $fZoom
+    Y += hRect.Y * $fZoom
   Else
-    Paint.DrawImage(hImage, X, Y)
+    hRect = Rect(0, 0, hImage.W, hImage.H)
+  Endif
+  
+  If $bFastZoom Then
+    Paint.ZoomImage(hImage, $fZoom, X, Y, If($bGrid, Color.LightForeground, Color.Default), hRect)
+  Else
+    Paint.DrawImage(hImage, X, Y, hImage.W * $fZoom, hImage.H * $fZoom,, hRect)
   Endif
   
 End
@@ -176,9 +176,14 @@ End
 
 Public Sub View_Draw()
   
-  Dim hRect As Rect = GetViewRect()
-  If hRect Then _Paint($hZoom, hRect.X, hRect.Y)
-  Raise Draw($hZoom)
+  Dim hRect As Rect 
+  
+  If Not Object.CanRaise(Me, "Draw") Then
+    hRect = GetViewRect()
+    If hRect Then _Paint($hZoom, hRect.X, hRect.Y)
+  Else
+    Raise Draw($hZoom)
+  Endif
   
 End
 

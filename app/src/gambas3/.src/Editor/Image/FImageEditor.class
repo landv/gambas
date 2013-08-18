@@ -32,8 +32,10 @@ Private $fDashOffset As Float
 Private $SX As Integer
 Private $SY As Integer
 
-Private $aStroke As New Integer[]
-Private $hSaveImage As Image
+Private $hStrokeImage As Image
+'Private $aStroke As New PointF[]
+Private $hStrokeExtents As Rect
+'Private $hStrokeOrigin As Point
 
 Private $hSelect As CImageSelection
 
@@ -55,6 +57,7 @@ Private $vChangeIndex As Variant
 Private Enum CHANGE_NOTHING, CHANGE_MOVE, CHANGE_RESIZE, CHANGE_ROTATE, CHANGE_POINT, CHANGE_INSERT, CHANGE_SELECT
 
 Private $bShowGrid As Boolean
+
 
 Public Sub _new(sPath As String)
   
@@ -579,6 +582,89 @@ Private Sub GetImagePos() As PointF
 End
 
 
+Private Sub StartStroke()
+
+  Dim iSize As Integer = FImageProperty.GetSize()
+
+  $hStrokeImage = New Image($hImage.W, $hImage.H, Color.Transparent)
+
+  Paint.Begin($hStrokeImage)
+
+  FImageProperty.PaintForStroke(Null, True)
+  
+  If iSize = 0 Then
+    $hLastPoint.X = CInt($hLastPoint.X)
+    $hLastPoint.Y = CInt($hLastPoint.Y)
+    Paint.Rectangle($hLastPoint.X, $hLastPoint.Y, 1, 1)
+    $hStrokeExtents = Rect($hLastPoint.X, $hLastPoint.Y, 1, 1)
+  Else
+    Paint.Arc($hLastPoint.X, $hLastPoint.Y, iSize / 2)
+    $hStrokeExtents = Rect($hLastPoint.X - iSize \ 2 - 1, $hLastPoint.Y - iSize \ 2 - 1, iSize * 2, iSize * 2)
+  Endif
+  
+  Paint.Fill
+  
+  Paint.End
+  
+  imvImage.Refresh
+
+End
+
+Private Sub AddStroke(hPoint As PointF)
+
+  Dim iSize As Integer = FImageProperty.GetSize()
+
+  If iSize = 0 Then
+    hPoint.X = CInt(hPoint.X)
+    hPoint.Y = CInt(hPoint.Y)
+    $hStrokeExtents = $hStrokeExtents.Union(Rect($hLastPoint.X, $hLastPoint.Y, 1, 1))
+  Else
+    $hStrokeExtents = $hStrokeExtents.Union(Rect($hLastPoint.X - iSize \ 2 - 1, $hLastPoint.Y - iSize \ 2 - 1, iSize * 2, iSize * 2))
+  Endif
+
+  If hPoint = $hLastPoint Then Return
+  
+  Paint.Begin($hStrokeImage)
+ 
+  FImageProperty.PaintForStroke(Null, True)
+  
+  Paint.MoveTo($hLastPoint.X, $hLastPoint.Y)
+  Paint.LineTo(hPoint.X, hPoint.Y)
+  
+  Paint.Stroke
+  
+  Paint.End
+  
+  $hLastPoint = hPoint
+  
+  imvImage.Refresh
+  
+End
+
+' Public Sub timStroke_Timer()
+' 
+'   Dim iSize As Integer
+'   
+'   If $aStroke.Count = 0 Then Return
+'   
+'   iSize = Max(1, FImageProperty.GetSize())
+' 
+'   With $hStrokeExtents.Copy()
+'     .Adjust(- iSize)
+'     .Left = Max(0, .Left)
+'     .Top = Max(0, .Top)
+'     $hStrokeOrigin = Point(.X, .Y)
+'     $hStrokeImage = $hImage.Copy(.X, .Y, .W, .H)
+'     Paint.Begin($hStrokeImage)
+'     Paint.Translate(- .X, - .Y)
+'     DrawTool
+'     Paint.End
+'   End With
+'   
+'   imvImage.Refresh
+'     
+' End
+
 Public Sub imvImage_MouseDown()
 
   Me.SetFocus
@@ -588,20 +674,19 @@ Public Sub imvImage_MouseDown()
   Select Case $sTool
     
     Case "move"
+      
       $SX = imvImage.ScrollX
       $SY = imvImage.ScrollY
     
     Case "draw", "erase"
-      AddUndo($hImage)
-      $hSaveImage = $hImage.Copy()
+      
       If Not Mouse.Shift Then 
         $hLastPoint = GetImagePos()
         If $hMagnet Then $hLastPoint = $hMagnet
       Endif
-      $aStroke.Clear
-      $aStroke.Add($hLastPoint.X)
-      $aStroke.Add($hLastPoint.Y)
-      DrawTool
+      
+      StartStroke()
+      'AddStroke($hLastPoint)
       
     Case "line"
       
@@ -638,6 +723,7 @@ Public Sub imvImage_MouseDown()
       MagicWand
     
     Case "paste"
+      
       If $hPaste Then
         $hLastPoint = GetImagePos()
         If $hMagnet Then $hLastPoint = $hMagnet
@@ -873,17 +959,17 @@ Public Sub imvImage_MouseMove()
     Select Case $sTool
       
       Case "move"
+        
         imvImage.Scroll($SX - (Mouse.X - Mouse.StartX), $SY - (Mouse.Y - Mouse.StartY))
       
       Case "draw", "erase"
+        
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
-          $aStroke.Add($hCurrentPoint.X)
-          $aStroke.Add($hCurrentPoint.Y)
-          DrawTool
-          $hLastPoint = $hCurrentPoint
+          AddStroke($hCurrentPoint)
         Endif
       
       Case "line"
+        
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect.LineTo($hCurrentPoint.X, $hCurrentPoint.Y)
           imvImage.Refresh
@@ -896,6 +982,7 @@ Public Sub imvImage_MouseMove()
         Endif
         
       Case "rectangle"
+        
         If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect = $aUndo[$aUndo.Max].Copy()
@@ -910,6 +997,7 @@ Public Sub imvImage_MouseMove()
         Endif
       
       Case "ellipse"
+        
         If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect = $aUndo[$aUndo.Max].Copy()
@@ -1112,6 +1200,8 @@ End
 
 Public Sub imvImage_MouseUp()
 
+  Dim hImage As Image
+
   If Not $bPress Then Return
 
   imvImage_MouseMove()
@@ -1119,8 +1209,14 @@ Public Sub imvImage_MouseUp()
   Select Case $sTool
     
     Case "draw", "erase"
-      $hSaveImage = Null
-      $aStroke.Clear
+      
+      hImage = $hImage.Copy()
+      Paint.Begin(hImage)
+      If $sTool = "erase" Then Paint.Operator = Paint.OperatorDestOut
+      Paint.DrawImage($hStrokeImage, 0, 0,,, FImageProperty.GetOpacity() / 255)
+      Paint.End
+      SetImage(hImage)
+      $hStrokeImage = Null
       
     Case "line"
       If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
@@ -1167,63 +1263,77 @@ Public Sub imvImage_MouseUp()
 
 End
 
-Private Sub DrawTool()
-  
-  Dim I As Integer
-  Dim bDraw As Boolean
-  
-  Select Case $sTool
-  
-    Case "draw", "erase"
+' Private Sub DrawTool()
+'   
+'   Dim I As Integer
+'   Dim bDraw As Boolean
+'   
+'   FImageProperty.PaintForStroke
+'   
+'   If $sTool = "erase" Then Paint.Operator = Paint.OperatorDestOut
+'   
+'   If Not Paint.AntiAlias Then
+'     Paint.MoveTo(CInt($aStroke[0].X), CInt($aStroke[0].Y))
+'     For I = 1 To $aStroke.Max
+'       'If CInt($aStroke[I].X) = Paint.X And If CInt($aStroke[I].Y) = Paint.Y Then Continue
+'       Paint.LineTo(CInt($aStroke[I].X), CInt($aStroke[I].Y))
+'       bDraw = True
+'     Next
+'     Paint.Stroke
+'     If Not bDraw Then 
+'       Paint.Rectangle($aStroke[0].X, $aStroke[0].Y, 1, 1)
+'       Paint.Fill
+'     Endif
+'   Else
+'     Paint.MoveTo($aStroke[0].X, $aStroke[0].Y)
+'     For I = 1 To $aStroke.Max
+'       'If CInt($aStroke[I].X) = CInt(Paint.X) And If CInt($aStroke[I].Y) = CInt(Paint.Y) Then Continue
+'       Paint.LineTo($aStroke[I].X, $aStroke[I].Y)
+'       bDraw = True
+'     Next
+'     Paint.Stroke
+'     If Not bDraw Then
+'       Paint.Arc($aStroke[0].X, $aStroke[0].Y, Paint.LineWidth / 2)
+'       Paint.Fill
+'     Endif
+'   Endif
+'   
+' End
 
-      If $aStroke.Count Then
-        
-        $hImage = $hSaveImage.Copy()
-        Paint.Begin($hImage)
+Private Sub PaintImage(hImage As Image, X As Float, Y As Float, Optional fOpacity As Float = 1.0, Optional hRect As Rect)
+
+  Dim fZoom As Float = imvImage.Zoom
+  Dim iZoom As Integer = CInt(fZoom)
+  Dim I, P, S As Integer
+
+  If Not hImage Then Return
   
-        FImageProperty.PaintForStroke
-        'Paint.Brush.Scale(Paint.LineWidth, Paint.LineWidth)
-        
-        If $sTool = "erase" Then 
-          Paint.Operator = Paint.OperatorDestOut
-        Endif
-        
-        If Not Paint.AntiAlias Then
-          Paint.MoveTo(CInt($aStroke[0]), CInt($aStroke[1]))
-          For I = 2 To $aStroke.Max Step 2
-            If CInt($aStroke[I]) = Paint.X And If CInt($aStroke[I + 1]) = Paint.Y Then Continue
-            Paint.LineTo(CInt($aStroke[I]), CInt($aStroke[I + 1]))
-            bDraw = True
-          Next
-          Paint.Stroke
-          If Not bDraw Then 
-            Paint.Rectangle($aStroke[0], $aStroke[1], 1, 1)
-            Paint.Fill
-          Endif
-        Else
-          Paint.MoveTo($aStroke[0], $aStroke[1])
-          For I = 2 To $aStroke.Max Step 2
-            If CInt($aStroke[I]) = CInt(Paint.X) And If CInt($aStroke[I + 1]) = CInt(Paint.Y) Then Continue
-            Paint.LineTo($aStroke[I], $aStroke[I + 1])
-            bDraw = True
-          Next
-          Paint.Stroke
-          If Not bDraw Then
-            Paint.Arc($aStroke[0], $aStroke[1], Paint.LineWidth / 2)
-            Paint.Fill
-          Endif
-        Endif
-        
-        Paint.End
-        Modify
-        
-      Endif
-      
-    Case "line", "rectangle"
-      
-  End Select
+  If hRect Then
+    X += hRect.X * fZoom
+    Y += hRect.Y * fZoom
+  Else
+    hRect = Rect(0, 0, hImage.W, hImage.H)
+  Endif
   
-  imvImage.Update($hImage)
+  Paint.DrawImage(hImage, X, Y, hRect.W * fZoom, hRect.H * fZoom, fOpacity, hRect) 'hRect.W, hRect.H)
+  
+  If iZoom > 8 Then
+    
+    P = X
+    S = hRect.H * iZoom
+    For I = 0 To hRect.W - 1
+      Paint.FillRect(P, Y, 1, S, Color.LightForeground)
+      P += iZoom
+    Next
+    
+    P = Y
+    S = hRect.W * iZoom
+    For I = 0 To hRect.H - 1
+      Paint.FillRect(X, P, S, 1, Color.LightForeground)
+      P += iZoom
+    Next
+    
+  Endif
   
 End
 
@@ -1244,6 +1354,30 @@ Public Sub imvImage_Draw(hZoom As Image)
   If Project.ActiveForm = Me And If FImageProperty.HasBalance() Then bBalance = True
   
   hOffset = imvImage.ImageToView(Point(0, 0))
+  
+  If $hStrokeImage Then
+    Paint.Save
+    If $sTool = "erase" Then
+      PaintImage(hZoom, hOffset.X, hOffset.Y,, Rect(0, 0, hZoom.Width, $hStrokeExtents.Y))
+      PaintImage(hZoom, hOffset.X, hOffset.Y,, Rect(0, $hStrokeExtents.Y, $hStrokeExtents.X, $hStrokeExtents.H))
+      PaintImage(hZoom, hOffset.X, hOffset.Y,, Rect($hStrokeExtents.X + $hStrokeExtents.W, $hStrokeExtents.Y, hZoom.W - $hStrokeExtents.X - $hStrokeExtents.W, $hStrokeExtents.H))
+      PaintImage(hZoom, hOffset.X, hOffset.Y,, Rect(0, $hStrokeExtents.Y + $hStrokeExtents.H, hZoom.Width, hZoom.H - $hStrokeExtents.Y - $hStrokeExtents.H))
+      
+      hImage = hZoom.Copy($hStrokeExtents.X, $hStrokeExtents.Y, $hStrokeExtents.W, $hStrokeExtents.H)
+      Paint.Begin(hImage)
+      Paint.Operator = Paint.OperatorDestOut
+      Paint.DrawImage($hStrokeImage, 0, 0, $hStrokeExtents.W, $hStrokeExtents.H, FImageProperty.GetOpacity() / 255, $hStrokeExtents)
+      Paint.End
+      imvImage._Paint(hImage, hOffset.X + $hStrokeExtents.X * imvImage.Zoom, hOffset.Y + $hStrokeExtents.Y * imvImage.Zoom)
+    Else
+      imvImage._Paint(hZoom, hOffset.X, hOffset.Y)
+      'imvImage._Paint($hStrokeImage, hOffset.X, hOffset.Y, FImageProperty.GetOpacity() / 255)
+      PaintImage($hStrokeImage, hOffset.X, hOffset.Y, FImageProperty.GetOpacity() / 255, $hStrokeExtents)
+    Endif
+    Paint.Restore
+  Else
+    imvImage._Paint(hZoom, hOffset.X, hOffset.Y)
+  Endif
   
   If bBalance And If Not $hSelect Then
     
@@ -1616,7 +1750,21 @@ End
 
 Public Sub imvImage_Menu()
 
+  Dim iGrid As Integer
+  Dim hMenu As Menu
+
   Me.SetFocus
+  
+  If $hSelect And If $hSelect._Current >= 0 Then
+    mnuShapeGrid.Visible = True
+    iGrid = $hSelect.Shapes[$hSelect._Current].Grid
+    For Each hMenu In mnuShapeGrid.Children
+      hMenu.Checked = CInt(hMenu.Tag) = iGrid
+    Next
+  Else
+    mnuShapeGrid.Visible = False
+  Endif
+  
   mnuEditor.Popup
 
 End
@@ -2510,3 +2658,11 @@ Private Sub ClearPaste()
   Endif
 
 End
+
+Public Sub mnuDivide_Click()
+  
+  $hSelect.Shapes[$hSelect._Current].Grid = CInt(Last.Tag)
+  imvImage.Refresh
+  
+End
+
