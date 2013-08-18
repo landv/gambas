@@ -120,6 +120,7 @@ Private Sub CreateMenu(hCCtrl As CControl)
     .Picture = hCCtrl.GetPropertyDefault("Picture")
     .Tag = hCCtrl.GetPropertyDefault("Tag")
     .Group = hCCtrl.GetPropertyDefault(CPropertyInfo.EVENT_NAME)
+    .Translate = hCCtrl.GetPropertyDefault(CPropertyInfo.TRANSLATE_NAME)
     
   End With
 
@@ -247,6 +248,7 @@ Private Sub SaveAllMenu()
         hCtrl.SetProperty("Picture", .Picture)
         hCtrl.SetProperty("Tag", .Tag)
         hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, .Group)
+        hCtrl.SetProperty(CPropertyInfo.TRANSLATE_NAME, .Translate)
       
       End With
       
@@ -329,6 +331,7 @@ Private Sub WriteMenu() As Boolean
     .Enabled = chkEnabled.Value
     .Checked = chkChecked.Value
     .Toggle = chkToggle.Value
+    .Translate = chkTranslate.Value
     .Ctrl = chkCtrl.Value
     .Shift = chkShift.Value
     .Alt = chkAlt.Value
@@ -369,6 +372,7 @@ Private Sub ReadMenu()
       chkEnabled.Value = .Enabled
       chkChecked.Value = .Checked
       chkToggle.Value = .Toggle
+      chkTranslate.Value = .Translate
       chkCtrl.Value = .Ctrl
       chkShift.Value = .Shift
       chkAlt.Value = .Alt
@@ -537,6 +541,7 @@ Private Sub LoadShortcut()
 
   Dim iInd As Integer
   Dim aShortcut As String[]
+  Dim sCar As String
 
   aShortcut = ["(None)"]
 
@@ -544,7 +549,17 @@ Private Sub LoadShortcut()
     aShortcut.Add(Chr$(iInd))
   Next
 
-  aShortcut.Insert(["+", "-", "*", "/"])
+  For iInd = Asc("0") To Asc("9")
+    aShortcut.Add(Chr$(iInd))
+  Next
+
+  For iInd = 33 To 126
+    sCar = Chr$(iInd)
+    If IsDigit(sCar) Or If IsLetter(sCar) Then Continue
+    aShortcut.Add(sCar)
+  Next
+
+  'aShortcut.Insert(["+", "-", "*", "/", "(", ")", "[", "]", "{", "}", "@", "=", ".", "!", "\\", "%", "#", "$", "~"].Sort())
 
   aShortcut.Insert(["Backspace", "Del", "Down", "End", "Enter", "Esc", "Home", "Ins", "Left", "Pause", "PgDown", "PgUp", "Return", "Space", "Right", "Up"])
 
@@ -724,7 +739,7 @@ Private Sub SetPicture(sPict As String)
   txtPicture.Text = sPict
   hPict = Project.GetPicture(sPict)
   If hPict Then hPict = hPict.Image.Stretch(48, 48).Picture
-  btnIcon.Picture = hPict
+  'btnIcon.Picture = hPict
   WriteMenu
   
 Catch
@@ -767,17 +782,17 @@ Public Sub btnShortcut_Click()
 
 End
 
-Public Sub panIcon_Arrange()
-
-  btnIcon.H = btnIcon.W
-
-End
+' Public Sub panIcon_Arrange()
+' 
+'   btnIcon.H = btnIcon.W
+' 
+' End
 
 Private Sub GetMenu(hMenu As CMenu) As String
   
   With hMenu
     
-    Return .Name & "," & .Level & "," & Quote(.Caption) & "," & .Action & "," & .Group & "," & .Visible & "," & .Enabled & "," & .Checked & "," & .Toggle & "," &
+    Return .Name & "," & .Level & "," & Quote(.Caption) & "," & .Action & "," & .Group & "," & .Visible & "," & .Enabled & "," & .Checked & "," & .Toggle & "," & .Translate & "," &
       .Ctrl & "," & .Shift & "," & .Alt & "," & Quote(.Shortcut) & "," & Quote(.Picture) & "," & Quote(.Tag)
     
   End With
@@ -839,12 +854,13 @@ Public Sub btnPaste_Click()
     chkEnabled.Value = CBool(aMenu[6])
     chkChecked.Value = CBool(aMenu[7])
     chkToggle.Value = CBool(aMenu[8])
-    chkCtrl.Value = CBool(aMenu[9])
-    chkShift.Value = CBool(aMenu[10])
-    chkAlt.Value = CBool(aMenu[11])
-    cmbShortcut.Text = aMenu[12]
-    SetPicture(aMenu[13])
-    txtTag.Text = aMenu[14]
+    chkTranslate.Value = CBool(aMenu[9])
+    chkCtrl.Value = CBool(aMenu[10])
+    chkShift.Value = CBool(aMenu[11])
+    chkAlt.Value = CBool(aMenu[12])
+    cmbShortcut.Text = aMenu[13]
+    SetPicture(aMenu[14])
+    txtTag.Text = aMenu[15]
     WriteMenu
     gvwMenu.Rows[$iCurrent].Selected = True
     Inc $iCurrent

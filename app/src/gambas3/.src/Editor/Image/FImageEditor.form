@@ -83,24 +83,32 @@
       Visible = False
       { mnuDivide2 Menu mnuDivide
         Name = "mnuDivide2"
-        Text = ("2 × 2")
+        #Translate = False
+        Text = "2 × 2"
         Checked = True
         Tag = "2"
+        Shortcut = "Ctrl+2"
       }
       { mnuDivide3 Menu mnuDivide
         Name = "mnuDivide3"
-        Text = ("3 × 3")
+        #Translate = False
+        Text = "3 × 3"
         Tag = "3"
+        Shortcut = "Ctrl+3"
       }
       { mnuDivide4 Menu mnuDivide
         Name = "mnuDivide4"
-        Text = ("4 × 4")
+        #Translate = False
+        Text = "4 × 4"
         Tag = "4"
+        Shortcut = "Ctrl+4"
       }
       { mnuDivide5 Menu mnuDivide
         Name = "mnuDivide5"
-        Text = ("5 × 5")
+        #Translate = False
+        Text = "5 × 5"
         Tag = "5"
+        Shortcut = "Ctrl+5"
       }
     }
     { mnuSep4 Menu
@@ -112,6 +120,7 @@
         Action = ".crop"
         Text = ("Crop")
         Picture = Picture["img/draw/crop.png"]
+        Shortcut = "Ctrl+K"
       }
       { mnuFlipH Menu btnFlipH
         Name = "mnuFlipH"
@@ -130,12 +139,14 @@
         Action = ".rotate-left"
         Text = ("Rotate counter-clockwise")
         Picture = Picture["img/draw/rotate-left.png"]
+        Shortcut = "Ctrl+<"
       }
       { mnuRotateR Menu btnRotateR
         Name = "mnuRotateR"
         Action = ".rotate-right"
         Text = ("Rotate clockwise")
         Picture = Picture["img/draw/rotate-right.png"]
+        Shortcut = "Ctrl+>"
       }
       { mnuResize Menu btnResize
         Name = "mnuResize"
@@ -171,6 +182,7 @@
         Action = ".zoom-normal"
         Text = ("Zoom normal")
         Picture = Picture["icon:/small/zoom-normal"]
+        Shortcut = "Ctrl+0"
       }
       { mnuZoomFit Menu btnZoomFit
         Name = "mnuZoomFit"
@@ -514,7 +526,7 @@
   }
   { Action crop
     Text = "Crop"
-    Shortcut = ""
+    Shortcut = "Ctrl+K"
     Picture = "img/draw/crop.png"
   }
   { Action cut
@@ -590,7 +602,7 @@
   }
   { Action rotate-left
     Text = "Rotate counter-clockwise"
-    Shortcut = ""
+    Shortcut = "Ctrl+<"
     Picture = "img/draw/rotate-left.png"
   }
   { Action rotate-r
@@ -599,7 +611,7 @@
   }
   { Action rotate-right
     Text = "Rotate clockwise"
-    Shortcut = ""
+    Shortcut = "Ctrl+>"
     Picture = "img/draw/rotate-right.png"
   }
   { Action save
@@ -672,7 +684,7 @@
   }
   { Action zoom-normal
     Text = "Zoom normal"
-    Shortcut = ""
+    Shortcut = "Ctrl+0"
     Picture = "icon:/small/zoom-normal"
   }
   { Action zoom-out

@@ -2665,6 +2665,9 @@ End
 
 Public Sub mnuDivide_Click()
   
+  If Not $hSelect Then Return
+  If $hSelect.Current < 0 Then Return
+  
   $hSelect.Shapes[$hSelect.Current].Grid = CInt(Last.Tag)
   imvImage.Refresh
   

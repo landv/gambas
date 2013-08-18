@@ -15,6 +15,7 @@ Public Level As Integer
 Public Picture As String
 Public Tag As String
 Public Action As String
+Public Translate As Boolean
 
 Public Sub _new()
 
@@ -72,6 +73,6 @@ End
 
 Public Sub ToString() As String
   
-  Return [Name, Caption, Shortcut, Group, CStr(Ctrl), CStr(Shift), CStr(Alt), CStr(Enabled), CStr(Visible), CStr(Checked), CStr(Toggle), CStr(Level), Picture, Tag, Action].Join(":")
+  Return [Name, Caption, Shortcut, Group, CStr(Ctrl), CStr(Shift), CStr(Alt), CStr(Enabled), CStr(Visible), CStr(Checked), CStr(Translate), CStr(Toggle), CStr(Level), Picture, Tag, Action].Join(":")
   
 End

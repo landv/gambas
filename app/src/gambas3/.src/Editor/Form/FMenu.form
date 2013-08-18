@@ -88,23 +88,23 @@
     { gvwMenu GridView
       MoveScaled(4,7,54,21)
       Expand = True
+      Border = False
       Mode = Select.Multiple
       Grid = False
-      Border = False
     }
   }
   { Separator5 Separator
     MoveScaled(1,32,16,0)
   }
   { VBox3 VBox
-    MoveScaled(1,33,75,37)
+    MoveScaled(1,33,80,37)
     Spacing = True
     Margin = True
     { frmMenu HBox
-      MoveScaled(0,0,72,37)
+      MoveScaled(0,0,78,37)
       Spacing = True
       { panMenu HPanel
-        MoveScaled(1,1,56,35)
+        MoveScaled(1,1,59,35)
         Expand = True
         Spacing = True
         { Label1 Label
@@ -204,7 +204,7 @@
         }
       }
       { panIcon VBox
-        MoveScaled(58,1,13,34)
+        MoveScaled(61,1,13,34)
         { chkVisible CheckBox
           MoveScaled(0,0,12,4)
           #Translate = False
@@ -225,17 +225,10 @@
           #Translate = False
           Text = "Checked"
         }
-        { Panel3 Panel
-          MoveScaled(2,16,5,3)
-          Expand = True
-        }
-        { btnIcon Button btnPicture
-          Name = "btnIcon"
-          MoveScaled(0,18,10,11)
-          Visible = False
-        }
-        { Panel1 Panel
-          MoveScaled(3,31,5,3)
+        { chkTranslate CheckBox
+          MoveScaled(0,16,12,4)
+          #Translate = False
+          Text = "Translate"
         }
       }
     }

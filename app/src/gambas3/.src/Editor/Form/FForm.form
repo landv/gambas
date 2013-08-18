@@ -255,7 +255,6 @@
   }
   { tlbForm ToolBar
     MoveScaled(0,0,177,4)
-    Font = Font["-2"]
     Key = "form"
     Text = ("Form")
     Separator = True
@@ -337,6 +336,8 @@
       MoveScaled(40,0,4,4)
       ToolTip = ("Menu editor")
       Action = ".menu"
+      AutoResize = True
+      Text = ("Menu editor...")
       Picture = Picture["icon:/small/menu"]
     }
     { ToolButton2 ToolButton

@@ -1491,6 +1491,10 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim X, Y, W, H As Integer
   Dim bHasSize As Boolean
   Dim bTranslate As Boolean
+  ' Dim sVal As String
+  ' Dim bThreeDots As Boolean
+  ' Dim iPos As Integer
+  ' Dim sShortcut As String
 
   cProp = CComponent.Classes[Kind].Properties
   'If Not CComponent.Classes[Kind].PropertyList Then Stop
@@ -1541,12 +1545,36 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
       Case "s", "v", "List", "Path", "Table", "Menu", "ReportCoord", "Field"
 
-        vVal = Quote(vVal)
-
         If bTranslate Then
-          sLine = sLine & "(" & vVal & ")"
+          
+          ' If hProp.Shortcut Then
+          '   
+          '   sVal = vVal
+          '   
+          '   If Right(sVal, 3) = "..." Then
+          '     sVal = Left(sVal, -3)
+          '     bThreeDots = True
+          '   Else If sVal Ends "…" Then
+          '     sVal = String.Left(sVal, -1)
+          '     bThreeDots = True
+          '   Endif
+          '   
+          '   iPos = String.InStr(sVal, "&")
+          '   If iPos Then
+          '     sShortcut = String.Mid$(sVal, iPos + 1, 1)
+          '     sLine &= "Shortcut((" & Quote(String.Left(sVal, iPos - 1) & String.Mid$(sVal, iPos + 1)) & "), " & Quote(sShortcut) & ")"
+          '   Else
+          '     sLine &= "(" & Quote(sVal) & ")"
+          '   Endif
+          '   
+          '   If bThreeDots Then sLine &= " & \"…\""
+          '   
+          ' Else
+            sLine &= "(" & Quote(vVal) & ")"
+          'Endif
+          
         Else
-          sLine = sLine & vVal
+          sLine &= Quote$(vVal)
         Endif
         
       Case "String[]", "Fields", "Field[]"
