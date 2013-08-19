@@ -256,18 +256,21 @@ void STREAM_release(STREAM *stream)
 	STREAM_cancel(stream);
 }
 
+static void stop_watching(STREAM *stream, int mode)
+{
+	int fd = STREAM_handle(stream);
+	if (fd >= 0)
+		GB_Watch(fd, mode, NULL, 0);
+}
+
 void STREAM_close(STREAM *stream)
 {
-	int fd;
-
 	STREAM_release(stream);
 
 	if (!stream->type)
 		return;
 
-	fd = STREAM_handle(stream);
-	if (fd >= 0)
-		GB_Watch(fd, GB_WATCH_NONE, NULL, 0);
+	stop_watching(stream, GB_WATCH_NONE);
 
 	if (stream->common.standard || !(*(stream->type->close))(stream))
 		stream->type = NULL;
@@ -319,10 +322,13 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 	
 	while ((*(stream->type->read))(stream, addr, len))
 	{
+		if (errno == EINTR)
+			continue;
+
+		stop_watching(stream, GB_WATCH_READ);
+
 		switch(errno)
 		{
-			case EINTR:
-				break;
 			case 0:
 			case EAGAIN:
 				THROW(E_EOF);
@@ -355,10 +361,13 @@ char STREAM_getchar(STREAM *stream)
 		if (!ret)
 			break;
 		
+		if (errno == EINTR)
+			continue;
+
+		stop_watching(stream, GB_WATCH_READ);
+
 		switch(errno)
 		{
-			case EINTR:
-				continue;
 			case 0:
 			case EAGAIN:
 				THROW(E_EOF);
@@ -417,11 +426,14 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 		
 			if (!err)
 				break;
-				
+
+			if (errno == EINTR)
+				continue;
+
+			stop_watching(stream, GB_WATCH_READ);
+
 			switch(errno)
 			{
-				case EINTR:
-					continue;
 				case 0:
 				case EAGAIN:
 					return STREAM_eff_read;
@@ -549,11 +561,14 @@ static void fill_buffer(STREAM *stream, char *addr)
 	
 		if (!err)
 			break;
-			
+
+		if (errno == EINTR)
+			continue;
+
+		stop_watching(stream, GB_WATCH_READ);
+
 		switch(errno)
 		{
-			case EINTR:
-				continue;
 			case 0:
 			case EAGAIN:
 			case EINPROGRESS:
