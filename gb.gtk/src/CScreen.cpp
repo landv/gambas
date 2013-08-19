@@ -789,6 +789,12 @@ static void style_box(int x, int y, int w, int h, int state)
 	GtkStateType st = get_state(state);
 	GtkStyle *style = get_style("GtkEntry", GTK_TYPE_ENTRY);
 
+	if (strcmp(gApplication::getStyleName(), "oxygen-gtk") == 0)
+	{
+		x -= 3;
+		w += 6;
+	}
+
 	//_dr->offset(&x, &y);
 	
 	//if (!widget)

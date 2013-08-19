@@ -1,15 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,707,483)
+  Move(0,0,476,336)
   #Scaled = False
+  Resizable = False
   Spacing = True
   Margin = True
-  { DateBox1 DateBox
-    Move(91,56,168,28)
-    #Translate = False
-    Foreground = &HFF0000&
-  }
   { Button1 Button
     Move(175,21,112,28)
     #Translate = False
@@ -17,9 +13,20 @@
     Text = "Button1"
   }
   { DateChooser1 DateChooser
-    Move(91,105,294,182)
+    Move(49,126,294,182)
     #Translate = False
     Foreground = &HFF0000&
     Border = False
+  }
+  { Panel1 Panel
+    Move(28,63,154,28)
+    Border = Border.Plain
+    { ButtonBox1 ButtonBox
+      Move(0,0,154,28)
+      Text = ("ButtonBox1")
+    }
+  }
+  { DateBox1 DateBox
+    Move(224,70,168,28)
   }
 }

@@ -65,8 +65,14 @@
           Picture = Picture["icon:/small/view-detail"]
           Toggle = True
         }
+        { btnProperty ToolButton mnuProperty
+          Name = "btnProperty"
+          MoveScaled(59,0,4,4)
+          ToolTip = ("File properties")
+          Picture = Picture["icon:/small/info"]
+        }
         { btnView ToolButton
-          MoveScaled(62,0,4,4)
+          MoveScaled(63,0,4,4)
           ToolTip = ("Show files")
           Picture = Picture["icon:/small/view-split-h"]
         }

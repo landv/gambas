@@ -78,8 +78,9 @@ public:
 //"Methods"
 	void popup();
 	void popup(int x, int y);
-	static bool insidePopup();
 	void destroy();
+	static bool insidePopup() { return _in_popup > 0; }
+	static gMenu *currentPopup() { return _current_popup; }
 
 // "Signals"
 	void (*onFinish)(gMenu *sender); // Special
@@ -119,6 +120,9 @@ private:
 	unsigned top_level : 1;
 	unsigned _action : 1;
 	unsigned _visible : 1;
+
+	static gMenu *_current_popup;
+	static int _in_popup;
   
 	void doPopup(bool move, int x = 0, int y = 0);
   void update();

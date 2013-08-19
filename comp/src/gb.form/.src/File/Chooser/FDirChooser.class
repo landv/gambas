@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Class Desktop
+
 Public DirView As DirView 
 Public FileView As FileView
 
@@ -157,6 +159,8 @@ Public Sub Form_Open()
 
   'DirView = dvwChoose
   'FileView = fvwChoose
+
+  btnProperty.Visible = Component.IsLoaded("gb.desktop") 
 
   UpdateLabelDir
   'If $bFile Then txtFile.SetFocus
@@ -948,7 +952,7 @@ Private Sub FillMenu()
     
     hMenu = New Menu(mnuPopup) As "mnuProperty"
     hMenu.Text = ("&Properties")
-    hMenu.Picture = Picture["icon:/small/properties"]
+    hMenu.Picture = Picture["icon:/small/info"]
     mnuProperty = hMenu
     
   Endif

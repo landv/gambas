@@ -222,7 +222,7 @@ static void gambas_handle_event(GdkEvent *event)
 	
 	if (!((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_FOCUS_CHANGE) || event->type == GDK_SCROLL))
 		goto __HANDLE_EVENT;
-	
+
 	widget = gtk_get_event_widget(event);
 	if (!widget)
 		goto __HANDLE_EVENT;
@@ -239,13 +239,28 @@ static void gambas_handle_event(GdkEvent *event)
 		goto __FOUND_WIDGET;
 	}
 
-	grab = gtk_window_group_get_current_grab(get_window_group(widget));
-	//fprintf(stderr, "search grab for widget %p -> group = %p -> grab = %p WINDOW = %d\n", widget, get_window_group(widget), grab, GTK_IS_WINDOW(grab));
-	if (grab && grab != widget && !GTK_IS_WINDOW(grab))
-		goto __HANDLE_EVENT;
-
-	if (!grab && gApplication::_popup_grab)
+	if (gMenu::currentPopup())
+	{
+		grab = GTK_WIDGET(gMenu::currentPopup()->child);
+		//fprintf(stderr, "popup menu: grab = %p\n", grab);
+		if (get_window_group(grab) != get_window_group(widget) && (event->type == GDK_ENTER_NOTIFY || event->type == GDK_LEAVE_NOTIFY))
+			return;
+	}
+	else if (gApplication::_popup_grab)
+	{
 		grab = gApplication::_popup_grab;
+		//fprintf(stderr, "popup: grab = %p\n", grab);
+	}
+	else
+	{
+		grab = gtk_window_group_get_current_grab(get_window_group(widget));
+		//fprintf(stderr, "search grab for widget %p -> group = %p -> grab = %p WINDOW = %d\n", widget, get_window_group(widget), grab, GTK_IS_WINDOW(grab));
+		//if (grab && grab != widget && !GTK_IS_WINDOW(grab))
+		//	goto __HANDLE_EVENT;
+
+		//if (!grab && gApplication::_popup_grab)
+		//	grab = gApplication::_popup_grab;
+	}
 		//gdk_window_get_user_data(gApplication::_popup_grab_window, (gpointer *)&grab);
 	
 	//if (grab && !gApplication::_popup_grab && !gApplication::_button_grab)
@@ -875,6 +890,8 @@ void gApplication::init(int *argc, char ***argv)
 	
 	onEnterEventLoop = do_nothing;
 	onLeaveEventLoop = do_nothing;
+
+	_group = gtk_window_group_new();
 	
 	_loop_owner = 0;
 }
@@ -1061,7 +1078,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	
 	// Remove possible current button grab
 	_button_grab = NULL;
-	
+//
 	//oldGroup = enterGroup();
 	
 	gtk_window_set_modal(window, true);
@@ -1237,21 +1254,15 @@ int gApplication::getScrollbarSpacing()
 
 int gApplication::getFrameWidth()
 {
-  GtkSettings *settings;
-	char *theme;
-
-  settings = gtk_settings_get_default();
-  g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
-	
-	if (!strcmp(theme, "oxygen-gtk"))
-		return 2;
+	if (strcmp(getStyleName(), "oxygen-gtk") == 0)
+		return 3;
 	else
 		return 2;
 }
 
 int gApplication::getInnerWidth()
 {
-	if (!strcmp(getStyleName(), "oxygen-gtk"))
+	if (strcmp(getStyleName(), "oxygen-gtk") == 0)
 		return 2;
 	else
 		return 0;

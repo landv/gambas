@@ -505,8 +505,12 @@ void gMainWindow::setVisible(bool vl)
 			if (!_title || !*_title)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
 			
-			if (!_xembed)
+			/*if (!_xembed)
+			{
+				fprintf(stderr, "gtk_window_group_add_window: %p -> %p\n", border, gApplication::currentGroup());
 				gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
+				fprintf(stderr, "-> %p\n", gtk_window_get_group(GTK_WINDOW(border)));
+			}*/
 			
 			// Thanks for Ubuntu's GTK+ patching :-(
 			#if GTK_CHECK_VERSION(3,0,0)
@@ -793,8 +797,6 @@ void gMainWindow::setResizable(bool b)
 	
 	if (b == isResizable())
 		return;
-	
-	//fprintf(stderr, "setResizable: %d %d %d\n", b, bufW, bufH);
 	
 	if (b)
 		gtk_widget_set_size_request(border, 1, 1);
