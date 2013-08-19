@@ -1,7 +1,7 @@
 /*
- * main.c - gb.adt glue
+ * main.c - gb.data glue
  *
- * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "c_list.h"
 #include "c_deque.h"
 #include "c_circular.h"
+#include "c_avltree.h"
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
@@ -40,7 +41,7 @@ GB_DESC *GB_CLASSES[] EXPORT = {
 
 	CCircular,
 
-//	CAvlTree,
+	CAvlTree,
 
 	NULL
 };

@@ -1,7 +1,7 @@
 /*
  * c_list.c - Circular doubly-linked lists
  *
- * Copyright (C) 2012 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -659,8 +659,9 @@ END_METHOD
  * (L) Least Copy. Rearrangement for any non-aligned chunk shall strive for
  *     the least copy operations.
  *
- * (O) Order. Values get never reordered within a chunk or rearranged into
- *     other chunks. They always keep their relative position to each other.
+ * (O) Order. Values get never reordered with respect to the list. It is
+ *     possible, however, to move elements to other chunks as long as the
+ *     order persists.
  *
  * Note that if (O) would not apply, on the one hand, we could make more
  * intelligent algorithms, but on the other hand, the first posulates must

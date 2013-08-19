@@ -1,7 +1,7 @@
 /*
- * main.h
+ * c_avltree.h
  *
- * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2013 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __C_AVLTREE_H
+#define __C_AVLTREE_H
 
-#include "gb_common.h"
 #include "gambas.h"
 
-#ifndef __MAIN_C
 extern GB_INTERFACE GB;
+
+#ifndef __C_AVLTREE_C
+extern GB_DESC CAvlTree[];
 #endif
 
-#endif /* !__MAIN_H */
+#endif /* !__C_AVLTREE_H */

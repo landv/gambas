@@ -8,8 +8,9 @@ gb_data_la_CPPFLAGS  = -I$(top_srcdir)/share
 gb_data_la_CFLAGS = $(AM_CFLAGS)
 
 gb_data_la_SOURCES = \
- main.h main.c list.h \
+ main.h main.c list.h lookup3.h my_common_string_temp.h \
  c_list.h c_list.c \
  c_deque.h c_deque.c \
- c_circular.h c_circular.c
+ c_circular.h c_circular.c \
+ c_avltree.h c_avltree.c
 
