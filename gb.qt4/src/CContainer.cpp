@@ -1239,17 +1239,30 @@ BEGIN_PROPERTY(UserContainer_Design)
 END_PROPERTY
 
 
-BEGIN_METHOD(Container_Find, GB_INTEGER x; GB_INTEGER y)
+BEGIN_METHOD(Container_FindChild, GB_INTEGER x; GB_INTEGER y)
 
+	QObjectList list = CONTAINER->children();
+	int index = 0;
 	QWidget *w;
 	void *control;
 	
-	w = CONTAINER->childAt(VARG(x), VARG(y));
-	control = CWidget::get(w);
-	if (control == THIS)
-		control = NULL;
-	
-	GB.ReturnObject(control);
+	for(;;)
+	{
+		w = get_next_widget(list, index);
+		if (!w)
+			break;
+		if (w->geometry().contains(VARG(x), VARG(y)))
+		{
+			control = CWidget::get(w);
+			if (control)
+			{
+				GB.ReturnObject(control);
+				return;
+			}
+		}
+	}
+
+	GB.ReturnNull();
 
 END_METHOD
 
@@ -1281,7 +1294,7 @@ BEGIN_METHOD(Container_unknown, GB_VALUE x; GB_VALUE y)
 	if (GB.Conv(ARG(x), GB_T_INTEGER) || GB.Conv(ARG(y), GB_T_INTEGER))
 		return;
 	
-	Container_Find(_object, _param);
+	Container_FindChild(_object, _param);
 	
 	GB.ReturnConvVariant();
 
@@ -1318,7 +1331,7 @@ GB_DESC CContainerDesc[] =
 	GB_PROPERTY_READ("ClientHeight", "i", Container_Height),
 	
 	GB_METHOD("_unknown", "v", Container_unknown, "."),
-	GB_METHOD("FindChild", "Control", Container_Find, "(X)i(Y)i"),
+	GB_METHOD("FindChild", "Control", Container_FindChild, "(X)i(Y)i"),
 	
 	CONTAINER_DESCRIPTION,
 
