@@ -971,7 +971,7 @@ fType GetFieldType(const char *Type, unsigned int *length)
 
 	if (strstr(Type, "CHAR(")			/* note the opening bracket */
 			|| strstr(Type, "CLOB") || strstr(Type, "TEXT")	/* also catches TINYTEXT */
-			|| strstr(Type, "VARCHAR")
+			|| strstr(Type, "VARCHAR") || strstr(Type, "VARYING CHAR")
 			|| strstr(Type, "ENUM") || strstr(Type, "SET") || strstr(Type, "YEAR"))
 	{															/* MySQL 2 or 4 digit year (string) */
 		rType = ft_String;
