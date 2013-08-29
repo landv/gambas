@@ -566,7 +566,7 @@ static void fill_buffer(STREAM *stream, char *addr)
 		if (errno == EINTR)
 			continue;
 
-		if (errno == 0)
+		if (STREAM_eff_read == 0)
 			stop_watching(stream, GB_WATCH_READ);
 
 		switch(errno)
