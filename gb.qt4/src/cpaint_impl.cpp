@@ -1264,7 +1264,15 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 
 static void TransformMap(GB_TRANSFORM matrix, double *x, double *y)
 {
-	((QTransform *)matrix)->map(*x, *y, x, y);
+	qreal xx, yy;
+
+	xx = *x;
+	yy = *y;
+
+	((QTransform *)matrix)->map(xx, yy, &xx, &yy);
+
+	*x = xx;
+	*y = yy;
 }
 
 
