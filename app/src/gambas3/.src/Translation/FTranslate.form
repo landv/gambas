@@ -45,7 +45,7 @@
     Index = 0
     Text = ("Translation")
     { panTranslate VBox
-      MoveScaled(1,1,96,11)
+      MoveScaled(1,1,96,6)
       Spacing = True
       Margin = True
       { HBox2 HBox
@@ -77,62 +77,65 @@
           Sorted = True
         }
       }
-      { HBox5 HBox
-        MoveScaled(1,5,91,4)
-        { btnSave ToolButton
-          MoveScaled(0,0,4,4)
-          ToolTip = ("Save translation")
-          Picture = Picture["icon:/small/save"]
-        }
-        { btnClear ToolButton
-          MoveScaled(4,0,4,4)
-          ToolTip = ("Clear this translation")
-          Picture = Picture["icon:/small/clear"]
-        }
-        { btnDoNotTranslate ToolButton
-          MoveScaled(10,0,4,4)
-          ToolTip = ("This string must not be translated")
-          Picture = Picture["icon:/small/warning"]
-        }
-        { btnCopy ToolButton
-          MoveScaled(14,0,4,4)
-          ToolTip = ("Copy untranslated string")
-          Picture = Picture["icon:/small/paste"]
-        }
-        { btnVerify ToolButton
-          MoveScaled(18,0,4,4)
-          ToolTip = ("Verify the translation")
-          Picture = Picture["icon:/small/watch"]
-        }
-        { btnNext ToolButton
-          MoveScaled(22,0,4,4)
-          ToolTip = ("Find next untranslated string")
-          Picture = Picture["icon:/small/down"]
-        }
-        { btnPrevious ToolButton
-          MoveScaled(26,0,4,4)
-          ToolTip = ("Find previous untranslated string")
-          Picture = Picture["icon:/small/up"]
-        }
-        { Panel2 Panel
-          MoveScaled(31,0,1,4)
-        }
-        { txtFind ButtonBox
-          MoveScaled(33,0,16,4)
-          Expand = True
-          Picture = Picture["icon:/16/find"]
-        }
-        { Panel6 Panel
-          MoveScaled(51,0,1,4)
-        }
-        { cmbFileChoice ComboBox
-          MoveScaled(56,0,34,4)
-          ReadOnly = True
-        }
+    }
+    { Separator6 Separator
+      MoveScaled(30,8,10,0)
+    }
+    { HBox5 HBox
+      MoveScaled(3,10,91,4)
+      { btnSave ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Save translation")
+        Picture = Picture["icon:/small/save"]
+      }
+      { btnClear ToolButton
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Clear this translation")
+        Picture = Picture["icon:/small/clear"]
+      }
+      { btnDoNotTranslate ToolButton
+        MoveScaled(10,0,4,4)
+        ToolTip = ("This string must not be translated")
+        Picture = Picture["icon:/small/warning"]
+      }
+      { btnCopy ToolButton
+        MoveScaled(14,0,4,4)
+        ToolTip = ("Copy untranslated string")
+        Picture = Picture["icon:/small/paste"]
+      }
+      { btnVerify ToolButton
+        MoveScaled(18,0,4,4)
+        ToolTip = ("Verify the translation")
+        Picture = Picture["icon:/small/watch"]
+      }
+      { btnNext ToolButton
+        MoveScaled(22,0,4,4)
+        ToolTip = ("Find next untranslated string")
+        Picture = Picture["icon:/small/down"]
+      }
+      { btnPrevious ToolButton
+        MoveScaled(26,0,4,4)
+        ToolTip = ("Find previous untranslated string")
+        Picture = Picture["icon:/small/up"]
+      }
+      { Panel2 Panel
+        MoveScaled(31,0,1,4)
+      }
+      { txtFind ButtonBox
+        MoveScaled(33,0,16,4)
+        Expand = True
+        Picture = Picture["icon:/16/find"]
+      }
+      { Panel6 Panel
+        MoveScaled(51,0,1,4)
+      }
+      { cmbFileChoice ComboBox
+        MoveScaled(56,0,34,4)
+        ReadOnly = True
       }
     }
     { Separator2 Separator
-      MoveScaled(21,13,11,0)
+      MoveScaled(21,15,11,0)
     }
     { VSplit1 VSplit
       MoveScaled(1,17,98,44)
@@ -178,7 +181,6 @@
     }
     { HBox6 Panel
       MoveScaled(1,63,102,5)
-      Background = Color.LightBackground
       Arrangement = Arrange.Horizontal
       AutoResize = True
       Spacing = True
