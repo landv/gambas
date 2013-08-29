@@ -430,6 +430,9 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 			if (errno == EINTR)
 				continue;
 
+			if (errno == 0)
+				stop_watching(stream, GB_WATCH_READ);
+
 			switch(errno)
 			{
 				case 0:
@@ -563,7 +566,8 @@ static void fill_buffer(STREAM *stream, char *addr)
 		if (errno == EINTR)
 			continue;
 
-		stop_watching(stream, GB_WATCH_READ);
+		if (errno == 0)
+			stop_watching(stream, GB_WATCH_READ);
 
 		switch(errno)
 		{
