@@ -53,7 +53,7 @@
       Text = ("Hide selection")
       Shortcut = "Esc"
     }
-    { Menu3 Menu
+    { mnuSelection Menu
       Text = ("Selection")
       { mnuInvert Menu btnInvert
         Name = "mnuInvert"
@@ -213,52 +213,80 @@
       Shortcut = "Ctrl+W"
     }
   }
+  { mnuFormat Menu
+    #Translate = False
+    { mnuFormatJPEG Menu mnuSaveAs
+      Name = "mnuFormatJPEG"
+      #Translate = False
+      Text = "Save as JPEG"
+      Tag = "jpeg"
+    }
+    { mnuFormatPNG Menu mnuSaveAs
+      Name = "mnuFormatPNG"
+      #Translate = False
+      Text = "Save as PNG"
+      Tag = "png"
+    }
+    { mnuFormatBMP Menu
+      #Translate = False
+      Text = "Save as BMP"
+      Tag = "bmp"
+    }
+    { mnuFormatTIFF Menu mnuSaveAs
+      Name = "mnuFormatTIFF"
+      #Translate = False
+      Action = "tiff"
+      Text = "Save as TIFF"
+    }
+  }
   { panToolBar ToolBar
     MoveScaled(0,0,156,4)
     Key = "image"
     Text = ("Image editor")
-    { btnSave ToolButton
-      MoveScaled(0,0,4,4)
+    { btnSave MenuButton
+      MoveScaled(0,0,6,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
+      Border = False
+      Menu = "mnuFormat"
     }
     { btnReload ToolButton
-      MoveScaled(3,0,4,4)
+      MoveScaled(6,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/refresh"]
     }
     { btnUndo ToolButton
-      MoveScaled(6,0,4,4)
+      MoveScaled(9,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton
-      MoveScaled(9,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { Separator4 Separator
-      MoveScaled(13,0,1.1429,4)
+      MoveScaled(15,0,1.1429,4)
     }
     { btnCopy ToolButton
-      MoveScaled(15,0,4,4)
+      MoveScaled(16,0,4,4)
       ToolTip = ("Copy")
       Action = ".copy"
       Picture = Picture["icon:/small/copy"]
     }
     { btnCut ToolButton
-      MoveScaled(18,0,4,4)
+      MoveScaled(19,0,4,4)
       ToolTip = ("Cut")
       Action = ".cut"
       Picture = Picture["icon:/small/cut"]
     }
     { btnPaste ToolButton btnTool
       Name = "btnPaste"
-      MoveScaled(21,0,4,4)
+      MoveScaled(22,0,4,4)
       Tag = "paste"
       ToolTip = ("Paste")
       Action = ".tool-paste"
@@ -266,7 +294,7 @@
       Toggle = True
     }
     { Separator3 Separator
-      MoveScaled(25,0,1.1429,4)
+      MoveScaled(26,0,1.1429,4)
     }
     { btnZoomIn ToolButton
       MoveScaled(27,0,4,4)
@@ -626,6 +654,10 @@
   { Action stroke
     Text = "Stroke"
     Picture = "img/draw/draw-brush.png"
+  }
+  { Action tiff
+    Text = "Save as TIFF"
+    Shortcut = ""
   }
   { Action tool-change
     Text = "Edit selection"

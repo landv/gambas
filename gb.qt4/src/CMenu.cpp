@@ -787,18 +787,14 @@ void CMenu::slotShown(void)
 
 	GB.Raise(menu, EVENT_Show, 0);
 
-	if (!menu->init_shortcut)
+	if (!init)
 	{
-		if (!init)
-		{
-			GB.GetFunction(&_init_shortcut_func, (void *)GB.FindClass("_Gui"), "_DefineShortcut", NULL, NULL);
-			init = TRUE;
-		}
-
-		menu->init_shortcut = TRUE;
-		GB.Push(1, GB_T_OBJECT, menu);
-		GB.Call(&_init_shortcut_func, 1, FALSE);
+		GB.GetFunction(&_init_shortcut_func, (void *)GB.FindClass("_Gui"), "_DefineShortcut", NULL, NULL);
+		init = TRUE;
 	}
+
+	GB.Push(1, GB_T_OBJECT, menu);
+	GB.Call(&_init_shortcut_func, 1, FALSE);
 
 	GB.Unref(POINTER(&menu));
 }

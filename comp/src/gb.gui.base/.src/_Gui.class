@@ -2,6 +2,8 @@
 
 Export
 
+'Static Private $cMenu As New Collection
+
 Static Public Sub _DefineShortcut(hParent As Menu)
 
   Dim hMenu As Menu
@@ -10,6 +12,10 @@ Static Public Sub _DefineShortcut(hParent As Menu)
   Dim I As Integer
   Dim sCar As String
   Dim iPos As Integer
+  Dim hObs As Observer
+  Dim cText As Collection
+  
+  Return
   
   For Each hMenu In hParent.Children
     
@@ -23,11 +29,24 @@ Static Public Sub _DefineShortcut(hParent As Menu)
     Endif
     
     For I = 1 To String.Len(sText)
+      
       sCar = String.UCase(String.Mid$(sText, I, 1))
+      
       If Len(sCar) = 1 And If Not IsLetter(sCar) And If Not IsDigit(sCar) Then Continue
+      
       If Not cShortcut.Exist(sCar) Then
+        
+        If Not hObs Then
+          hObs = New Observer(hParent) As "Menu"
+          cText = New Collection
+          '$cMenu[Object.Address(hParent)] = cText
+        Endif
+        
+        cText[Object.Address(hMenu)] = hMenu.Text
+        
         hMenu.Text = String.Left(sText, I - 1) & "&" & String.Mid$(sText, I)
         cShortcut[sCar] = True
+        
         Break
       Endif
     Next
@@ -37,3 +56,21 @@ Static Public Sub _DefineShortcut(hParent As Menu)
   Next
   
 End
+
+' Static Public Sub Menu_Hide()
+'   
+'   Dim hParent As Menu = Last
+'   Dim cText As Collection = $cMenu[Object.Address(Last)]
+'   Dim hMenu As Menu
+'   Dim sText As Variant
+'   
+'   If Not cText Then Return
+'   
+'   For Each hMenu In hParent.Children
+'     
+'     sText = cText[Object.Address(hMenu)]
+'     If sText Then hMenu.Text = sText
+'     
+'   Next
+'   
+' End

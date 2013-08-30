@@ -4,10 +4,10 @@
 
 '' Represent a patch hunk
 Public Struct Hunk
-  Command As String
+  Command As String '' Hunk command
   FromFile As String
   ToFile As String
-  LineInfo As String
+  LineInfo As String  '' Line information
   Active As Boolean
   Text As String
 End Struct

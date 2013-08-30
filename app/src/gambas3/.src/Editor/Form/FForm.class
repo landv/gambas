@@ -3490,7 +3490,7 @@ Public Sub mnuChange_Click()
 
   $hUndo.Begin
 
-  sNewClass = Last.Text
+  sNewClass = Replace(Last.Text, "&", "")
 
   sStr = GetSelection(True)
 

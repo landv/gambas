@@ -264,18 +264,20 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     aLib.Add(File.Name(sLib))
   Next
   
+  aLib.Add(CComponent.PROJECT_NAME, 0)
   aLib.Add("gb", 0)
 
   For Each sLib In aLib
     
-    If Not CComponent.All.Exist(sLib) Then Continue
-    
-    CComponent.All[sLib].Load
+    If sLib <> CComponent.PROJECT_NAME Then
+      If Not CComponent.All.Exist(sLib) Then Continue
+      CComponent.All[sLib].Load
+    Endif
     
     For Each sClass In CComponent.All[sLib].ClassList
       
       If IsLetter(Left$(sClass)) Then
-        If sClass Like sBegin & "*" Then 
+        If sClass Begins sBegin Then 
           
           Do
             iPos = aClass.Find(Replace(sClass, "[", "[[]") & " *", gb.Like)

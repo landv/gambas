@@ -401,6 +401,8 @@ Public Sub FindShape(hSearch As PointF, D As Float, Optional bIgnoreCurrent As B
   Dim hShape As CImageShape
   Dim hCenter As PointF
   
+  If Shapes.Count = 0 Then Return -1
+  
   iStart = Max(0, Current)
   I = iStart
   

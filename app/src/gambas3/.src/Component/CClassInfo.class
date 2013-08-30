@@ -23,6 +23,7 @@ Public Family As String
 Public Similars As String[]
 Public Structure As Boolean
 Public DeclareIn As String
+Public DeclareAtLine As Integer
 Public Help As String
 
 Public Sub _new(sName As String, sComp As String, Optional sParent As String)
@@ -431,22 +432,35 @@ Public Sub GetHelpMarkup() As String
   If Help Then Return Help
   If Component And If Component <> CComponent.PROJECT_NAME Then Return
   
-  hForm = Project.LoadFile(Project.FindPath(Name))
-  Try hEdit = hForm.Editor
+  If Structure Then
+    
+    hForm = Project.LoadFile(Project.FindPath(DeclareIn))
+    Try hEdit = hForm.Editor
+    
+    If Not hEdit Then Return  
   
-  If Not hEdit Then Return  
+    Return MHelp.FindMarkup(hEdit, DeclareAtLine)
+  
+  Else
+  
+    hForm = Project.LoadFile(Project.FindPath(Name))
+    Try hEdit = hForm.Editor
+    
+    If Not hEdit Then Return  
+  
+    For I = 0 To hEdit.Lines.Count - 1
+      sLine = Trim(hEdit.Lines[I].Text)
+      If sLine Begins "''' " Then
+        sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
+      Else
+        If sMarkup Then Break
+        If Not sLine Then Continue
+        If sLine Not Begins "'" Then Break
+      Endif
+    Next
+    
+  Endif
 
-  For I = 0 To hEdit.Lines.Count - 1
-    sLine = Trim(hEdit.Lines[I].Text)
-    If sLine Begins "''' " Then
-      sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
-    Else
-      If sMarkup Then Break
-      If Not sLine Then Continue
-      If sLine Not Begins "'" Then Break
-    Endif
-  Next
-  
   Return sMarkup
   
 End

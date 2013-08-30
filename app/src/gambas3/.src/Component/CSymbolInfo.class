@@ -951,36 +951,7 @@ Public Sub GetHelpMarkup() As String
   iLine = Me.LineNumber - 1
   If iLine < 0 Then Return
   
-  ' Try to find help on the line of the declaration
-  
-  Highlight.Analyze(hEdit.Lines[iLine].Text)
-  i = Highlight.Symbols.Max
-  If i >= 1 Then
-    If Highlight.Types[i] = Highlight.Help Then
-      sLine = Trim(Highlight.Symbols[i])
-      'If sLine Begins "''" Then
-        sHelp = Trim(Mid$(sLine, 3))
-      'Endif
-    Endif
-  Endif
-
-  ' Find help just above
-  
-  If Not sHelp Then
-  
-    For i = iLine - 1 To 0 Step -1
-      sLine = Trim(hEdit.Lines[i].Text)
-      If sLine Begins "'' " Or If sLine = "''" Then 
-        sHelp = RTrim(Mid(sLine, 4)) & "\n" & sHelp
-      Else
-        If sLine = "" Then Continue
-        Break
-      Endif
-    Next
-    
-  Endif
-  
-  Return sHelp
+  Return MHelp.FindMarkup(hEdit, iLine)
   
 End
 

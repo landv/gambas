@@ -243,6 +243,7 @@ Private Sub FillTree()
       sComponent = hClass.Component
     Endif
     sClass = hClass.Name
+    If sClass = "Hunk" Then Stop
     
     If Not tvwClasses.Exist(sComponent) Then 
       tvwClasses.Add(sComponent, sComponent, Picture["img/16/component.png"])

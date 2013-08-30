@@ -783,6 +783,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   Dim hEditor As Editor
   Dim aSym As String[]
   Dim iInd As Integer
+  Dim iLineDecl As Integer
   Dim sClass As String
   Dim hSymbol As CSymbolInfo
   Dim cSymbol As New Collection
@@ -797,6 +798,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   Next
   If iInd = aSym.Max Then Return iLine
   
+  iLineDecl = iLine
   sClass = aSym[iInd + 1]
   
   Do
@@ -826,13 +828,11 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   hClass = Classes[sClass]
   If hClass And If Not hClass.Structure Then Return
   
-  hClass = New CClassInfo(sClass, PROJECT_NAME)
-  'hClass.Component = hModuleClass.Component
+  hClass = CreateClass(sClass, "", PROJECT_NAME)
   hClass.Structure = True
   hClass.Symbols = cSymbol
   hClass.DeclareIn = hModule.Name
-  
-  Classes[sClass] = hClass
+  hClass.DeclareAtLine = iLineDecl
   
   Return iLine
   

@@ -308,11 +308,11 @@ Public Sub btnFlipV_Click()
 End
 
 
-Public Function Save() As Boolean
+Public Function Save(Optional bForce As Boolean) As Boolean
 
   If Project.ReadOnly Then Return
   If $bReadOnly Then Return
-  If Not $bModify Then Return
+  If Not $bModify And If Not bForce Then Return
 
   'PRINT "Picture not saved"
 
@@ -2167,7 +2167,11 @@ Public Sub btnCut_Click()
     
   Endif
 
+  ClearSelection
+
   EndUndo
+  
+  btnPaste.Value = True
 
 End
 
@@ -2670,6 +2674,44 @@ Public Sub mnuDivide_Click()
   
   $hSelect.Shapes[$hSelect.Current].Grid = CInt(Last.Tag)
   imvImage.Refresh
+  
+End
+
+Private Sub GetCurrentFormat() As String
+
+  Dim sFormat As String = Lower(File.Ext(Path))
+  
+  Select Case sFormat
+    Case "jpg"
+      Return "jpeg"
+    Default
+      Return sFormat
+  End Select
+
+End
+
+Public Sub mnuFormat_Show()
+  
+  Dim sFormat As String = GetCurrentFormat()
+  Dim hMenu As Menu
+  
+  For Each hMenu In mnuFormat.Children
+    hMenu.Checked = hMenu.Tag = sFormat
+  Next
+  
+End
+
+
+Public Sub mnuSaveAs_Click()
+  
+  Dim sFormat As String = Last.Tag
+  
+  If sFormat <> GetCurrentFormat() Then
+    
+    Project.RenameFile(Path, File.SetExt(File.Name(Path), sFormat))
+    Me.Save(True)
+    
+  Endif
   
 End
 
