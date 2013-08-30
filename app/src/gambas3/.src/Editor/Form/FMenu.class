@@ -455,6 +455,7 @@ Public Sub btnInsert_Click()
   hCMenu = New CMenu
   hCMenu.Name = GetName()
   hCMenu.Caption = hCMenu.Name
+  hCMenu.Translate = True
   If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
 
   $cName[hCMenu.Name] = True

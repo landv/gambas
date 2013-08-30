@@ -1254,8 +1254,10 @@ Public Sub imvImage_MouseUp()
       SetMagnet(Null)
       
     Case "paste"
-      $hPasteCurrent = $hPasteSelect.Copy()
-      $hChangeRect = $hPasteCurrent.GetExtents()
+      If $hPaste Then
+        $hPasteCurrent = $hPasteSelect.Copy()
+        $hChangeRect = $hPasteCurrent.GetExtents()
+      Endif
       
   End Select
   

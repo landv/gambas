@@ -217,26 +217,22 @@
     #Translate = False
     { mnuFormatJPEG Menu mnuSaveAs
       Name = "mnuFormatJPEG"
-      #Translate = False
-      Text = "Save as JPEG"
+      Text = ("Save as JPEG")
       Tag = "jpeg"
     }
     { mnuFormatPNG Menu mnuSaveAs
       Name = "mnuFormatPNG"
-      #Translate = False
-      Text = "Save as PNG"
+      Text = ("Save as PNG")
       Tag = "png"
     }
     { mnuFormatBMP Menu
-      #Translate = False
-      Text = "Save as BMP"
+      Text = ("Save as BMP")
       Tag = "bmp"
     }
     { mnuFormatTIFF Menu mnuSaveAs
       Name = "mnuFormatTIFF"
-      #Translate = False
       Action = "tiff"
-      Text = "Save as TIFF"
+      Text = ("Save as TIFF")
     }
   }
   { panToolBar ToolBar
@@ -331,9 +327,9 @@
     { btnGrid ToolButton
       MoveScaled(49,0,4,4)
       ToolTip = ("Drawing grid")
-      Action = ".grid"
+      Action = ".draw-grid"
       AutoResize = True
-      Picture = Picture["icon:/small/grid"]
+      Picture = Picture["img/draw/grid.png"]
       Toggle = True
     }
     { Separator2 Separator
@@ -562,6 +558,10 @@
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
+  { Action draw-grid
+    Text = "Drawing grid"
+    Picture = "img/draw/grid.png"
+  }
   { Action duplicate
     Text = "Duplicate selection"
     Shortcut = "Ctrl+D"
@@ -580,10 +580,6 @@
     Text = "Vertical flip"
     Shortcut = ""
     Picture = "img/draw/vflip.png"
-  }
-  { Action grid
-    Text = "Drawing grid"
-    Picture = "icon:/small/grid"
   }
   { Action hide-selection
     Text = "Hide selection"
@@ -729,7 +725,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
+    List = "save,reload,undo,redo,copy,cut,tool-paste,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,draw-grid,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
+    Default = "save,reload,undo,redo,|,copy,cut,tool-paste,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,draw-grid,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
   }
 }
