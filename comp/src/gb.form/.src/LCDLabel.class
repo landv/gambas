@@ -13,6 +13,7 @@ Property Sheared As Boolean
 Property Padding As Integer
 Property Border As Boolean
 Property HighlightColor As Integer
+Property Value As Float
 
 Private $hView As DrawingArea
 Private $sText As String
@@ -122,8 +123,8 @@ Public Sub _new()
   $hView = New DrawingArea(Me) As "View"
   Me.Proxy = $hView
   
-  GetRealForeground()
-  GetRealForeground()
+  'GetRealForeground()
+  'GetRealForeground()
 
 End
 
@@ -248,10 +249,9 @@ End
 Private Sub GetRealForeground() As Integer
   
   Dim hCtrl As Control = Me
-  Dim iComp As Integer = -1
   
   Repeat
-    If hCtrl.Foreground <> iComp Then Return hCtrl.Foreground
+    If hCtrl.Foreground <> Color.Default Then Return hCtrl.Foreground
     hCtrl = hCtrl.Parent
   Until IsNull(hCtrl)
   
@@ -432,5 +432,17 @@ Private Sub HighlightColor_Write(Value As Integer)
 
   $iHighlightColor = Value
   $hView.Refresh
+
+End
+
+Private Function Value_Read() As Float
+
+  Return CFloat($sText)
+
+End
+
+Private Sub Value_Write(Value As Float)
+
+  Try Me.Text = CStr(Value)
 
 End

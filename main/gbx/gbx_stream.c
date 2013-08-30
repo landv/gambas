@@ -557,7 +557,11 @@ static void fill_buffer(STREAM *stream, char *addr)
 			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
 			
 			if ((flags & O_NONBLOCK) == 0)
+			{
+				int save_errno = errno;
 				fcntl(fd, F_SETFL, flags);
+				errno = save_errno;
+			}
 		}
 	
 		if (!err)
