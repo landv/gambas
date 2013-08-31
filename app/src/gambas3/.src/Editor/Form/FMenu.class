@@ -16,27 +16,27 @@ Static Public Sub Run(hForm As FForm)
 
 End
 
-Public Sub _new()
-  
-  'Dim hCont As Container
-  Dim hCtrl As Control
-  Dim hLabel As Label
-  
-  ' Hack for having non-translatable labels
-  
-  'For Each hCont In panMenu.Children
-    For Each hCtrl In panMenu.Children
-      Try hLabel = hCtrl
-      If Not Error Then
-        If hLabel.Tag Then
-          hLabel.Text = hLabel.Tag
-          hLabel.Tag = Null
-        Endif
-      Endif
-    Next
-  'Next
-  
-End
+' Public Sub _new()
+'   
+'   'Dim hCont As Container
+'   Dim hCtrl As Control
+'   Dim hLabel As Label
+'   
+'   ' Hack for having non-translatable labels
+'   
+'   'For Each hCont In panMenu.Children
+'     For Each hCtrl In panMenu.Children
+'       Try hLabel = hCtrl
+'       If Not Error Then
+'         If hLabel.Tag Then
+'           hLabel.Text = hLabel.Tag
+'           hLabel.Tag = Null
+'         Endif
+'       Endif
+'     Next
+'   'Next
+'   
+' End
 
 
 Public Sub Form_Open()
@@ -59,6 +59,8 @@ Public Sub Form_Open()
   LoadShortcut
   LoadAllMenu
   UpdatePaste
+  
+  gvwMenu.SetFocus
   
 End
 
@@ -185,7 +187,7 @@ Private Sub LoadAllMenu()
   ' 
   ' lstMenu.Index = 0
   
-  $aMenu.Add(Null)
+  '$aMenu.Add(Null)
   gvwMenu.Rows.Count = $aMenu.Count
   gvwMenu.Rows.Height = Max(18, gvwMenu.Font.Height)
   
@@ -218,41 +220,39 @@ Private Sub SaveAllMenu()
 
   For Each hCMenu In $aMenu
   
-    If hCMenu Then 
-  
-      With hCMenu
+    If Not hCMenu Then Continue
     
-        If .Level > iLevel Then
-        
-          hParent = hCtrl
-          iLevel = .Level
-          
-        Else
-        
-          While .Level < iLevel
-            hParent = hParent.Parent
-            iLevel = iLevel - 1
-          Wend
-        
-        Endif
-        
-        hCtrl = $hForm.CreateControl("Menu", hParent, .Name)
-        
-        hCtrl.SetProperty("Text", .Caption)
-        hCtrl.SetProperty("Action", .Action)
-        hCtrl.SetProperty("Visible", .Visible)
-        hCtrl.SetProperty("Enabled", .Enabled)
-        hCtrl.SetProperty("Checked", .Checked)
-        hCtrl.SetProperty("Toggle", .Toggle)
-        hCtrl.SetProperty("Shortcut", .GetShortcut())
-        hCtrl.SetProperty("Picture", .Picture)
-        hCtrl.SetProperty("Tag", .Tag)
-        hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, .Group)
-        hCtrl.SetProperty(CPropertyInfo.TRANSLATE_NAME, .Translate)
+    With hCMenu
+  
+      If .Level > iLevel Then
       
-      End With
+        hParent = hCtrl
+        iLevel = .Level
+        
+      Else
       
-    Endif
+        While .Level < iLevel
+          hParent = hParent.Parent
+          iLevel = iLevel - 1
+        Wend
+      
+      Endif
+      
+      hCtrl = $hForm.CreateControl("Menu", hParent, .Name)
+      
+      hCtrl.SetProperty("Text", .Caption)
+      hCtrl.SetProperty("Action", .Action)
+      hCtrl.SetProperty("Visible", .Visible)
+      hCtrl.SetProperty("Enabled", .Enabled)
+      hCtrl.SetProperty("Checked", .Checked)
+      hCtrl.SetProperty("Toggle", .Toggle)
+      hCtrl.SetProperty("Shortcut", .GetShortcut())
+      hCtrl.SetProperty("Picture", .Picture)
+      hCtrl.SetProperty("Tag", .Tag)
+      hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, .Group)
+      hCtrl.SetProperty(CPropertyInfo.TRANSLATE_NAME, .Translate)
+    
+    End With
   
   Next
   
@@ -290,7 +290,7 @@ Private Sub WriteMenu() As Boolean
 
   iInd = $iCurrent
 
-  If iInd < 0 Or iInd >= $aMenu.Max Then Return 
+  If iInd < 0 Or iInd > $aMenu.Max Then Return 
 
   With $aMenu[iInd]
     
@@ -360,7 +360,7 @@ Private Sub ReadMenu()
   
   iInd = $iCurrent
 
-  If iInd >= 0 And iInd < $aMenu.Max Then
+  If iInd >= 0 And iInd <= $aMenu.Max Then
   
     With $aMenu[iInd]
     
@@ -420,21 +420,23 @@ Public Sub btnDelete_Click()
 
   $bFreeze = True
   
-  For iInd = 0 To $aMenu.Max - 1
+  For iInd = 0 To $aMenu.Max
     If gvwMenu.Rows[iInd].Selected Then aDelete.Add(iInd)
   Next
 
   For iInd = aDelete.Max DownTo 0
     DeleteMenu(aDelete[iInd])
-    If aDelete[iInd] <= $iCurrent Then Dec $iCurrent
+    If aDelete[iInd] < $iCurrent Then Dec $iCurrent
   Next
 
+  $iCurrent = Min($iCurrent, $aMenu.Max)
+  
   gvwMenu.Rows.Count = $aMenu.Count
   gvwMenu.Refresh
+  gvwMenu.UnSelectAll
   
   $bFreeze = False
   
-  gvwMenu.UnSelectAll
   SetCurrent($iCurrent)
 
 End
@@ -451,6 +453,7 @@ Public Sub btnInsert_Click()
 
   iIndex = $iCurrent
   If iIndex < 0 Then iIndex = $aMenu.Max
+  Inc iIndex
 
   hCMenu = New CMenu
   hCMenu.Name = GetName()
@@ -466,6 +469,7 @@ Public Sub btnInsert_Click()
   Inc gvwMenu.Rows.Count
   gvwMenu.Refresh
 
+  gvwMenu.UnSelectAll
   $bFreeze = False
 
   SetCurrent(iIndex)
@@ -483,7 +487,7 @@ Private Function GetName() As String
 
   Do
 
-    iCpt = iCpt + 1
+    Inc iCpt
     sName = "Menu" & CStr(iCpt)
     If Not $cName.Exist(sName) Then Return sName
 
@@ -543,6 +547,8 @@ Private Sub LoadShortcut()
   Dim iInd As Integer
   Dim aShortcut As String[]
   Dim sCar As String
+
+  If cmbShortcut.Count Then Return
 
   aShortcut = ["(None)"]
 
@@ -906,7 +912,7 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
   Dim hPict As Picture
   Dim sElt As String
   
-  If Row >= $aMenu.Max Then Return
+  'If Row >= $aMenu.Max Then Return
   
   With $aMenu[Row]
   
@@ -985,3 +991,17 @@ Public Sub chkChecked_Click()
   WriteMenu
 
 End
+
+' Public Sub Form_KeyPress()
+' 
+'   If Key.Code = Key.Up Then
+'     Try Dec gvwMenu.Row
+'   Else If Key.Code = Key.Down Then
+'     Try Inc gvwMenu.Row
+'   Else If Key.Code = Key.Home And If Key.Control Then
+'     gvwMenu.Row = 0
+'   Else If Key.Code = Key.End And If Key.Control Then
+'     gvwMenu.Row = $aMenu.Max
+'   Endif
+' 
+' End

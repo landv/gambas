@@ -225,7 +225,8 @@
       Text = ("Save as PNG")
       Tag = "png"
     }
-    { mnuFormatBMP Menu
+    { mnuFormatBMP Menu mnuSaveAs
+      Name = "mnuFormatBMP"
       Text = ("Save as BMP")
       Tag = "bmp"
     }
@@ -507,7 +508,7 @@
     MoveScaled(68,9,18,0)
   }
   { HBox2 HBox
-    MoveScaled(1,12,141,74)
+    MoveScaled(2,13,141,74)
     Expand = True
     { panBackground Panel
       MoveScaled(7,5,62,37)
