@@ -12,12 +12,12 @@ Private hPicture As Picture
 Public Sub _new()
 
   Dim o As Object
-  
+  Dim hmp As MapPoint
   'Dim hShapes As Shapes = Shapes.LoadKml("parcellaire.kml")
 
   hPicture = New Picture(200, 200)
   
-  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "134"]).SubDomains = ["0", "1", "2"]
   MapView1.Map["GoogleMap"].Visible = False
   
   With MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
@@ -33,7 +33,10 @@ Public Sub _new()
   hmap.Resize(200, 200)
   
   MapView1.Map.AddShape("NewShape")
-  
+  hmp = Proj("epsg:3946").TransformMPoint(Proj("epsg:4326"), MapPoint(5152182, 1442096))
+  'hmp = Proj("epsg:3946").TransformMPoint(Proj("epsg:4326"), MapPoint(-2.4500, 45.0000))
+  MapView1.Map!NewShape.AddPoint("archiac", hmp)
+  MapView1.Map!NewShape.AddPoint("archiac2", MapPoint(0, 0))
   'MapView1.Map["NewShape"].Points = LoadShapes()
 'MapView1.ShowControls = False
   
@@ -180,3 +183,9 @@ Public Sub Panel3_MouseDown()
 
 End
 
+
+Public Sub Panel1_MouseDown()
+
+  
+
+End

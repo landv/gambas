@@ -110,3 +110,17 @@ Public Function DecToSex(Value As Float, Type As Integer) As String
   Return sret
 
 End
+
+Public Function TileBounds(X As Integer, Y As Integer, Zoom As Integer) As MapBounds
+  
+  Return MapBounds(PixelToMapPoint(Point(x * $tileSize, y * $tileSize), zoom), PixelToMapPoint(Point((x + 1) * $tileSize, (y + 1) * $tileSize), zoom))
+  
+End
+
+Public Function TileToMapPoint(X As Integer, Y As Integer, Zoom As Integer) As MapPoint
+  
+  Return PixelToMapPoint(x * $tileSize, y * $tileSize, zoom)
+  
+End
+
+

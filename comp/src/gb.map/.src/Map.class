@@ -325,3 +325,19 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
   Return hImg
 
 End
+''Return a Point relative to the view from a MapPoint
+Public Function MapPointToPixelRel(hMapPoint As MapPoint) As Point
+  Dim hPoint As Point
+  hPoint = Geo.MapPointToPixel(hMapPoint, $iZoom)
+  hPoint.X -= $PixelBox.X
+  hPoint.Y -= $PixelBox.Y
+  Return hPoint
+End
+
+''Return a MapPoint from a point relative to the view
+Public Function PixelToMapPointRel(hPoint As Point) As MapPoint
+  Dim pt As Point = hPoint.Copy()
+  pt.X += $PixelBox.X
+  pt.Y += $PixelBox.Y
+  Return Geo.PixelToMapPoint(pt, $iZoom)
+End

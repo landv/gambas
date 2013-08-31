@@ -11,7 +11,8 @@ Property Border As Integer
 Property Read {Map} As Map
 Property AllowEffect As Boolean
 Property ShowControls As Boolean
-
+Property Mode As Integer
+Private $iMode As Integer
 Private $bShowControls As Boolean = True
 
 Private $hCenter As MapPoint
@@ -204,6 +205,7 @@ Public Sub View_MouseUp()
     If Abs($fSpeedx) > 4 Or If Abs($fSpeedY) > 4 Then $tmrOnMove.Start
   Endif
   If $bShowControls Then $hViewLayer._MouseUp()
+  
   'Raise MouseUp
   
 End
@@ -322,4 +324,16 @@ Private Sub ShowControls_Write(Value As Boolean)
   
   $bShowControls = Value
   
+End
+
+Private Function Mode_Read() As Integer
+
+  
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  
+
 End

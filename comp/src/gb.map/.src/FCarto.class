@@ -1,0 +1,133 @@
+' Gambas class file
+
+' Static Public $prjWGS84 As Proj
+' Static Public $prjLamb93 As Proj
+' Static Public $prjLatLon As Proj
+' 
+' Static Public Sub _init()
+'   
+'   $prjWGS84 = New Proj("+init=epsg:4326")
+'   $prjLamb93 = New Proj("+init=epsg:2154")
+'   $prjLatLon = New Proj("init=epsg:3857") 
+'   '$prjMerc = New Proj("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs")
+' 
+' End
+
+Public Sub _new()
+  'LoadFromPac
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "128"], "gm").SubDomains = ["0", "1", "2"]
+  MapView1.Map.AddTile("GoogleRoad", "https://mts{s}.google.com/vt/lyrs=h@215000000&hl=fr&src=app&x={x}&y={y}&z={z}&s=Galile").SubDomains = ["0", "1"]
+  MapView1.Map.AddShape("MyShape").Color = Color.green
+  LoadFromFile(MapView1.Map!MyShape)
+  
+ ' PictureBox1.Picture = MapView1.Map.Grab(MapView1.Map!MyShape["110"].Bounds, 100, 100, 5).Picture
+  
+  MapView1.Map.Center = MapPoint(45.525934, -0.312252)
+  MapView1.Map.Zoom = 17
+  
+  
+  
+End
+
+Public Sub LoadFromFile(hShape As Object) 
+  
+  'Dim hShape As New Shapes
+  Dim hmappoints As New MapPoint[][]
+  Dim hpoints As New MapPoint[]
+  Dim s, t As String
+  Dim i As Integer
+  Dim c As Integer
+  s = File.Load("./pointsparcelle")
+  hshape.Color = Color.Green
+  For Each t In Split(s, "\n")
+    If t = "" Then 
+      hmappoints.Add(hpoints)
+      hshape.AddPolygon(i, hmappoints)
+
+      Inc i
+      hmappoints = New MapPoint[][]
+    hpoints = New MapPoint[]
+    Else
+      hpoints.Add(MapPoint(Scan(t, "* *")[1], Scan(t, "* *")[0]))
+    Endif
+    
+    
+  Next
+  'Return hshape
+End
+
+
+' Public Function LoadFromPac() 
+' 
+'   Dim hDoc As New XmlDocument
+'   Dim el As XmlElement
+'   'Dim hshape As New Shapes
+'   Dim s As String
+'   Dim haPoly As New MapPoint[][]
+'   Dim hPoly As New MapPoint[]
+'   Dim hpoint As MapPoint
+'   Dim fp As New Pointf
+'   hDoc.Open("parcellaire.xml")
+'   
+'   For Each el In hDoc.GetElementsByTagName("gml:coordinates")
+'     haPoly = New MapPoint[][]
+'     hPoly = New MapPoint[]
+'     For Each s In Split(Replace(el.TextContent, "\n", " "), " ")
+'       hpoint = New MapPoint
+'       If s = "" Then Continue
+'       fp = New Pointf
+'       fp.X = Split(s)[0]
+'       fp.Y = Split(s)[1]
+'       
+'       fp = $prjLamb93.TransformFp($prjWGS84, fp)
+'       'fp = $prjWGS84.TransformFp($prjLatLon, fp)
+'             'fp = $prjMerc.Transformfp($prjLatLon, fp)
+'       Print fp.x, fp.y
+'       'fp = $prjLamb93.Transform($prjLatLon, Split(s)[0], Split(s)[1])
+'       
+'       hpoint.Lat = fp.y
+'       hpoint.Lon = fp.x
+'       hPoly.Add(hpoint)
+'     Next
+'     haPoly.Add(hpoly)
+'     
+'     'hshape.AddPolygon(haPoly)
+'   Next
+'   
+'   
+'   'Return hShape
+' End
+
+Public Sub Form_Open()
+
+  
+
+End
+
+Public Sub MapView1_Draw()
+
+  'Me.Text = MapView1.Map.Center.Lat
+
+End
+
+Public Sub MapView1_MouseDown()
+Dim i As Integer
+Dim hmappoints As MapPoint 
+  'Me.Text = Geo.PixelToMapPoint(Point(Mouse.x, Mouse.y), MapView1.Map.Zoom).Lat
+  With MapView1.Map
+    hmappoints = Geo.PixelToMapPoint(Point(.PixelBox.X + Mouse.X, .PixelBox.Y + Mouse.Y), .Zoom)
+  
+  For i = 0 To MapView1.Map["MyShape"].Max
+    'Print MapView1.Map["MyShape"].Data[i].Box.X, MapView1.Map["MyShape"].Data[i].Box.Y, MapView1.Map["MyShape"].Data[i].Box.Right, MapView1.Map["MyShape"].Data[i].Box.BOTTOM, hmappoints.lon, hmappoints.Lat
+    If MapView1.Map["MyShape"][i].Contains(hmappoints) Then
+      
+      MapView1.Map["MyShape"][i].Selected = True
+      MapView1.Refresh
+          
+ 
+      Endif
+    'Endif
+    
+  Next
+  End With
+End

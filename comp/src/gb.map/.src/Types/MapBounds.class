@@ -85,7 +85,7 @@ End
 Public Function Contain(Bound As MapBounds) As Boolean
   
   If Bound.Lon > $mpTopLeft.Lon And If Bound.Lon2 < $mpBottomRight.Lon Then
-    If Bound.Lat > $mpTopLeft And If Bound.Lat2 < $mpBottomRight.Lat Then
+    If Bound.Lat > $mpTopLeft.Lat And If Bound.Lat2 < $mpBottomRight.Lat Then
       Return True
     Endif
   Endif
@@ -101,6 +101,18 @@ Public Function Merge(Bound As MapBounds) As MapBounds
   Return hBound
   
 End
+
+
+Public Sub Collide(Bound As MapBounds) As Boolean
+  
+  'If Abs(Me.Left - Bound.Left) < (Abs((Me.Right - Me.Left) + (Bound.Right - Bound.Left)) / 2) And Abs(Me.Top - Bound.top) < (Abs(Me.Bottom - Me.Top + Bound.Bottom - Bound.Top) / 2) Then
+Dim xIntersect, yIntersect As Boolean
+    If Not (Min(Me.Left, Me.Right) > Max(Bound.Left, Bound.Right) Or Max(Me.Left, Me.Right) < Min(Bound.Left, Bound.Right)) Then xIntersect = True
+    If Not (Min(Me.Top, Me.Bottom) > Max(Bound.Top, Bound.Bottom) Or Max(Me.Top, Me.Bottom) < Min(Bound.Top, Bound.Bottom)) Then yIntersect = True
+    Return xIntersect And yIntersect 
+  
+End
+
 
 Private Sub TopLeft_Write(Value As MapPoint)
 
@@ -122,3 +134,10 @@ Static Public Function _Call(NorthEast As MapPoint, SouthWest As MapPoint) As Ma
     hBounds.BottomRight = SouthWest
   Return hBounds
 End
+  
+Public Function ToString() As String
+  Dim as As String[] = [Me.lat, Me.lon, Me.lat2, Me.lon2]
+  Return as.join()
+  
+End
+
