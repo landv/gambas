@@ -435,12 +435,18 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
           .Font.Italic = True
         Else If hComp.State = CComponent.DEPRECATED Then
           .Foreground = Color.LightForeground
-          .Font.Strikeout = True
+          '.Font.Strikeout = True
         Endif
         
       Case 2
         .WordWrap = True
         .RichText = hCompItem.GetDescription()
+        If hComp.State = CComponent.UNSTABLE Then 
+          .Font.Italic = True
+        Else If hComp.State = CComponent.DEPRECATED Then
+          .Foreground = Color.LightForeground
+          '.Font.Strikeout = True
+        Endif
         
       Case 3
         Select Case hComp.State

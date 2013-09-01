@@ -926,9 +926,7 @@ Public Sub GetHelpMarkup() As String
   Dim hClass As CClassInfo
   Dim hForm As Object
   Dim hEdit As Editor
-  Dim sHelp As String
-  Dim iLine, i As Integer
-  Dim sLine As String
+  Dim iLine As Integer
   
   If Help Then
     Return Help
