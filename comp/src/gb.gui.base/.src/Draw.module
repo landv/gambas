@@ -630,21 +630,17 @@ End
 
 Public Sub Image((Image) As Image, X As Integer, Y As Integer, Optional Width As Integer = -1, Height As Integer = -1, SrcX As Integer, SrcY As Integer, SrcWidth As Integer, SrcHeight As Integer)
   
-  If SrcWidth <= 0 Or If SrcHeight <= 0 Then
-    Paint.DrawImage(Image, X, Y, Width, Height)
-  Else
-    Paint.DrawImage(Image, X, Y, Width, Height, 1.0, Rect(SrcX, SrcY, SrcWidth, SrcHeight))
-  Endif
+  Dim hRect As Rect
+  If SrcWidth > 0 And If SrcHeight > 0 Then hRect = New Rect(SrcX, SrcY, SrcWidth, SrcHeight)
+  Paint.DrawImage(Image, X, Y, Width, Height, 1.0, hRect)
   
 End
 
 Public Sub Picture((Picture) As Picture, X As Integer, Y As Integer, Optional Width As Integer = -1, Height As Integer = -1, SrcX As Integer, SrcY As Integer, SrcWidth As Integer, SrcHeight As Integer)
 
-  If SrcWidth <= 0 Or If SrcHeight <= 0 Then
-    Paint.DrawPicture(Picture, X, Y, Width, Height)
-  Else
-    Paint.DrawPicture(Picture, X, Y, Width, Height, Rect(SrcX, SrcY, SrcWidth, SrcHeight))
-  Endif
+  Dim hRect As Rect
+  If SrcWidth > 0 And If SrcHeight > 0 Then hRect = New Rect(SrcX, SrcY, SrcWidth, SrcHeight)
+  Paint.DrawPicture(Picture, X, Y, Width, Height, hRect)
   
 End
 
