@@ -304,6 +304,7 @@ __END:
 	return result;
 }
 
+#if 0
 void EXEC_operator_object_abs(VALUE *P1)
 {
 	if (P1->_object.object)
@@ -323,6 +324,7 @@ void EXEC_operator_object_abs(VALUE *P1)
 		PROPAGATE();
 	}
 }
+#endif
 
 void EXEC_operator_object_single(uchar op, VALUE *P1)
 {

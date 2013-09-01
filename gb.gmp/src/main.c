@@ -26,3 +26,55 @@
 #define __MAIN_C
 
 #include "main.h"
+
+#include "c_bigint.h"
+
+GB_INTERFACE GB EXPORT;
+
+GB_DESC *GB_CLASSES[] EXPORT =
+{
+	BigIntDesc,
+  NULL // Must have a null entry for the end of the structure
+};
+
+GB_CLASS CLASS_BigInt;
+
+/*static void error_handler(const char *reason, const char *file, int line, int gsl_errno)
+{
+	//fprintf(stderr, "gb.gsl: error: %s: %s\n", gsl_strerror(gsl_errno), reason);
+	GB.Error("&1: &2", gsl_strerror(gsl_errno), reason);
+}*/
+
+static void *my_malloc(size_t n)
+{
+	void *p;
+	GB.Alloc(&p, n);
+	return p;
+}
+
+static void my_free(void *p, size_t n)
+{
+	GB.Free(&p);
+}
+
+static void *my_realloc(void *p, size_t old, size_t n)
+{
+	GB.Realloc(&p, n);
+	return p;
+}
+
+int EXPORT GB_INIT(void)
+{
+	CLASS_BigInt = GB.FindClass("BigInt");
+
+	mp_set_memory_functions(my_malloc, my_realloc, my_free);
+
+	//gsl_set_error_handler(error_handler);
+
+	return 0;
+}
+
+void EXPORT GB_EXIT()
+{
+
+}

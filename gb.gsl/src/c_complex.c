@@ -172,9 +172,14 @@ static CCOMPLEX *_neg(CCOMPLEX *a)
 	return COMPLEX_create(gsl_complex_negative(a->number));
 }
 
-static double _abs(CCOMPLEX *a)
+static CCOMPLEX *_abs(CCOMPLEX *a)
 {
-	return gsl_complex_abs(a->number);
+	gsl_complex n;
+
+	n.dat[0] = gsl_complex_abs(a->number);
+	n.dat[1] = 0;
+
+	return COMPLEX_create(n);
 }
 
 /*static CCOMPLEX *_powi(CCOMPLEX *a, int i)

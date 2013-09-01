@@ -27,9 +27,12 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb_common.h"
+#include <gmp.h>
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern GB_CLASS CLASS_BigInt;
 #endif
 
 #endif /* __MAIN_H */

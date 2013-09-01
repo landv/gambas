@@ -157,9 +157,9 @@ static int _equalf(CCOMPLEX *a, double f, bool invert)
 	return RE(a) == f && IM(a) == 0;
 }
 
-static double _abs(CCOMPLEX *a)
+static CCOMPLEX *_abs(CCOMPLEX *a)
 {
-	return ABS(a);
+	return COMPLEX_make(a, ABS(a), 0);
 }
 
 static CCOMPLEX *_neg(CCOMPLEX *a)

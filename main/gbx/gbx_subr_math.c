@@ -764,7 +764,7 @@ __FLOAT:
 
 __OBJECT:
 
-	EXEC_operator_object_abs(P1);
+	EXEC_operator_object_single(CO_ABS, P1);
 	return;
 	
 __VARIANT:

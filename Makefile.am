@@ -28,6 +28,7 @@ SUBDIRS = \
  @imageimlib_dir@ \
  @dbus_dir@ \
  @gsl_dir@ \
+ @gmp_dir@ \
  @ncurses_dir@ \
  @media_dir@ \
  @jit_dir@ \

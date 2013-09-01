@@ -311,6 +311,7 @@ typedef
 /* Predefined errors constants */
 
 #define GB_ERR_TYPE       ((char *)6)
+#define GB_ERR_OVERFLOW   ((char *)7)
 #define GB_ERR_NSYMBOL    ((char *)11)
 #define GB_ERR_NPROPERTY  ((char *)17)
 #define GB_ERR_ARG        ((char *)20)
@@ -852,7 +853,7 @@ typedef
 		void *(*powf)(void *, double, bool);
 		void *(*powo)(void *, void *, bool);
 		void *(*neg)(void *);
-		double (*abs)(void *);
+		void *(*abs)(void *);
 		intptr_t _reserved;
 	}
 	PACKED
