@@ -837,6 +837,9 @@ typedef
 		int (*equal)(void *, void *, bool);
 		int (*equalf)(void *, double);
 		int (*equalo)(void *, void *, bool);
+		int (*comp)(void *, void *, bool);
+		int (*compf)(void *, double);
+		int (*compo)(void *, void *, bool);
 		void *(*add)(void *, void *, bool);
 		void *(*addf)(void *, double, bool);
 		void *(*addo)(void *, void *, bool);
@@ -854,6 +857,7 @@ typedef
 		void *(*powo)(void *, void *, bool);
 		void *(*neg)(void *);
 		void *(*abs)(void *);
+		int (*sgn)(void *);
 		intptr_t _reserved;
 	}
 	PACKED

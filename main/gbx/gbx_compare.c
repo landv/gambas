@@ -485,34 +485,47 @@ int COMPARE_object(void **a, void **b)
 	ca = OBJECT_class_null(*a);
 	cb = OBJECT_class_null(*b);
 
-	if (ca && cb && ca->special[SPEC_COMPARE] != NO_SYMBOL)
+	if (ca && cb)
 	{
-	  STACK_check(1);
-		SP->_object.class = cb;
-		SP->_object.object = *b;
-		OBJECT_REF(*b);
-		SP++;
-		EXEC_special(SPEC_COMPARE, ca, *a, 1, FALSE);
-		VALUE_conv_integer(&SP[-1]);
-		SP--;
-		comp = SP->_integer.value;
+		if (ca->has_operators && CLASS_has_operator(ca, CO_COMP) && ca == cb)
+		{
+			void *func = ca->operators[CO_COMP];
+			comp = (*(int (*)(void *, void *))func)(*a, *b);
+			goto __RETURN;
+		}
+
+		if (ca->special[SPEC_COMPARE] != NO_SYMBOL)
+		{
+			STACK_check(1);
+			SP->_object.class = cb;
+			SP->_object.object = *b;
+			OBJECT_REF(*b);
+			SP++;
+			EXEC_special(SPEC_COMPARE, ca, *a, 1, FALSE);
+			VALUE_conv_integer(&SP[-1]);
+			SP--;
+			comp = SP->_integer.value;
+			goto __RETURN;
+		}
+
+		if (cb->special[SPEC_COMPARE] != NO_SYMBOL)
+		{
+			STACK_check(1);
+			SP->_object.class = ca;
+			SP->_object.object = *a;
+			OBJECT_REF(*a);
+			SP++;
+			EXEC_special(SPEC_COMPARE, cb, *b, 1, FALSE);
+			VALUE_conv_integer(&SP[-1]);
+			SP--;
+			comp = (- SP->_integer.value);
+			goto __RETURN;
+		}
 	}
-	else if (ca && cb && cb->special[SPEC_COMPARE] != NO_SYMBOL)
-	{
-	  STACK_check(1);
-		SP->_object.class = ca;
-		SP->_object.object = *a;
-		OBJECT_REF(*a);
-		SP++;
-		EXEC_special(SPEC_COMPARE, cb, *b, 1, FALSE);
-		VALUE_conv_integer(&SP[-1]);
-		SP--;
-		comp = (- SP->_integer.value);
-	}
-	else
-	{
-		comp = (*a == *b) ? 0 : (*a > *b) ? 1 : -1;
-	}
+
+	comp = (*a == *b) ? 0 : (*a > *b) ? 1 : -1;
+
+__RETURN:
 
 	return _descent ? (-comp) : comp;
 }

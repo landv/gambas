@@ -3108,9 +3108,10 @@ __END:
 
 static void _SUBR_compi(ushort code)
 {
-	static void *jump[17] = {
+	static void *jump[] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
+		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT,
+		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT_OBJECT
 		};
 
 	static void *test[] = { &&__GT, &&__LE, &&__LT, &&__GE };
@@ -3193,10 +3194,36 @@ __OBJECT:
 	//RELEASE_OBJECT(P2);
 	goto __END_RELEASE;
 
+__OBJECT_FLOAT:
+
+	result = EXEC_comparator(OP_OBJECT_FLOAT, CO_COMPF, P1, P2);
+	goto __END;
+
+__FLOAT_OBJECT:
+
+	result = EXEC_comparator(OP_FLOAT_OBJECT, CO_COMPF, P1, P2);
+	goto __END;
+
+__OBJECT_OTHER:
+
+	result = EXEC_comparator(OP_OBJECT_OTHER, CO_COMPO, P1, P2);
+	goto __END;
+
+__OTHER_OBJECT:
+
+	result = EXEC_comparator(OP_OTHER_OBJECT, CO_COMPO, P1, P2);
+	goto __END;
+
+__OBJECT_OBJECT:
+
+	result = EXEC_comparator(OP_OBJECT_OBJECT, CO_COMP, P1, P2);
+	goto __END;
+
 __VARIANT:
 
 	{
 		bool variant = FALSE;
+		int op;
 
 		if (TYPE_is_variant(P1->type))
 		{
@@ -3208,6 +3235,15 @@ __VARIANT:
 		{
 			VARIANT_undo(P2);
 			variant = TRUE;
+		}
+
+		op = EXEC_check_operator(P1, P2, CO_COMP);
+		if (op)
+		{
+			op += T_OBJECT;
+			if (!(variant || P1->type == T_OBJECT || P2->type == T_OBJECT))
+				*PC |= op;
+			goto *jump[op];
 		}
 
 		type = Max(P1->type, P2->type);

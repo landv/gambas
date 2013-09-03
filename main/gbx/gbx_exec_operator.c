@@ -44,11 +44,11 @@ typedef
 	void *(*FUNC_O_O)(void *);
 
 typedef
-	double (*FUNC_F_O)(void *);
+	int (*FUNC_I_O)(void *);
 
 static void raise_error(void *o1, void *o2)
 {
-	if (OBJECT_class(o2) == OBJECT_class(o1))
+	if (o2 && OBJECT_class(o2) == OBJECT_class(o1))
 		GB_Error((char *)E_TYPE, "Number", TYPE_get_name((TYPE)OBJECT_class(o1)));
 	else
 		GB_Error((char *)E_TYPE, TYPE_get_name((TYPE)OBJECT_class(o1)), o2 ? TYPE_get_name((TYPE)OBJECT_class(o2)) : "Number");
@@ -221,7 +221,7 @@ void EXEC_operator_object_add_quick(VALUE *P1, double val)
 }
 
 
-bool EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2)
+int EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2)
 {
 	static void *jump[] = { NULL, &&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT_OBJECT };
 	
@@ -243,7 +243,7 @@ __OBJECT_FLOAT:
 	result = (*(FUNC_I_OF)func)(o1, P2->_float.value, FALSE);
 	OBJECT_UNREF(o1);
 
-	if (result < 0)
+	if (result < (-1))
 		raise_error(o1, NULL);
 	
 	goto __END;
@@ -259,7 +259,7 @@ __FLOAT_OBJECT:
 	result = (*(FUNC_I_OF)func)(o2, P1->_float.value, TRUE);
 	OBJECT_UNREF(o2);
 
-	if (result < 0)
+	if (result < (-1))
 		raise_error(o2, NULL);
 	
 	goto __END;
@@ -290,7 +290,7 @@ __OTHER:
 	OBJECT_UNREF(o2);
 	//result = !!result; // result != 0;
 	
-	if (result < 0)
+	if (result < (-1))
 		raise_error(o1, o2);
 	
 __END:
@@ -304,16 +304,15 @@ __END:
 	return result;
 }
 
-#if 0
-void EXEC_operator_object_abs(VALUE *P1)
+void EXEC_operator_object_sgn(VALUE *P1)
 {
 	if (P1->_object.object)
 	{
-		void *func = OBJECT_class(P1->_object.object)->operators[CO_ABS];
-		double result = (*(FUNC_F_O)func)(P1->_object.object);
+		void *func = OBJECT_class(P1->_object.object)->operators[CO_SGN];
+		int result = (*(FUNC_I_O)func)(P1->_object.object);
 		OBJECT_UNREF(P1->_object.object);
-		P1->type = T_FLOAT;
-		P1->_float.value = result;
+		P1->type = T_INTEGER;
+		P1->_integer.value = result;
 	}
 	else
 		THROW(E_NULL);
@@ -324,7 +323,6 @@ void EXEC_operator_object_abs(VALUE *P1)
 		PROPAGATE();
 	}
 }
-#endif
 
 void EXEC_operator_object_single(uchar op, VALUE *P1)
 {

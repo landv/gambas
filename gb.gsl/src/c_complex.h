@@ -65,5 +65,6 @@ char *COMPLEX_to_string(gsl_complex number, bool local);
 #define COMPLEX_get(_c) ((_c) ? (_c)->number : COMPLEX_zero)
 
 int COMPLEX_get_value(GB_VALUE *value, COMPLEX_VALUE *v);
+int COMPLEX_comp(gsl_complex a, gsl_complex b);
 
 #endif /* __C_COMPLEX_H */

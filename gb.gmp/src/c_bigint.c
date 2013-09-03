@@ -58,6 +58,20 @@ CBIGINT *BIGINT_create(mpz_t number)
 	_a; \
 })
 
+#define BIGINT_make_unary(_a, _op) \
+({ \
+	if ((_a)->ob.ref <= 1) \
+		_op((_a)->n, (_a)->n); \
+	else \
+	{ \
+		mpz_t n; \
+		mpz_init(n); \
+		_op(n, (_a)->n); \
+		_a = BIGINT_create(n); \
+	} \
+	_a; \
+})
+
 #define BIGINT_make_int(__a, _f, _op) \
 ({ \
 	CBIGINT *_a = (__a); \
@@ -82,6 +96,21 @@ CBIGINT *BIGINT_create(mpz_t number)
 		mpz_t n; \
 		mpz_init(n); \
 		_op(n, (ulong)(_f), (_a)->n); \
+		_a = BIGINT_create(n); \
+	} \
+	_a; \
+})
+
+#define BIGINT_make_bit(__a, _n, _op) \
+({ \
+	CBIGINT *_a = (__a); \
+	if (_a->ob.ref <= 1) \
+		_op(_a->n, _a->n, (_n)); \
+	else \
+	{ \
+		mpz_t n; \
+		mpz_init(n); \
+		_op(n, _a->n, (_n)); \
 		_a = BIGINT_create(n); \
 	} \
 	_a; \
@@ -188,20 +217,29 @@ static int _equalf(CBIGINT *a, double f, bool invert)
 	return mpz_cmp_d(a->n, f) == 0;
 }
 
+static int _comp(CBIGINT *a, CBIGINT *b, bool invert)
+{
+	return mpz_cmp(a->n, b->n);
+}
+
+static int _compf(CBIGINT *a, double f, bool invert)
+{
+	return mpz_cmp_d(a->n, f);
+}
+
 static CBIGINT *_neg(CBIGINT *a)
 {
-	mpz_t n;
-	mpz_init(n);
-	mpz_neg(n, a->n);
-	return BIGINT_create(n);
+	return BIGINT_make_unary(a, mpz_neg);
 }
 
 static CBIGINT *_abs(CBIGINT *a)
 {
-	mpz_t n;
-	mpz_init(n);
-	mpz_abs(n, a->n);
-	return BIGINT_create(n);
+	return BIGINT_make_unary(a, mpz_abs);
+}
+
+static int _sgn(CBIGINT *a)
+{
+	return mpz_sgn(a->n);
 }
 
 static CBIGINT *_pow(CBIGINT *a, CBIGINT *b, bool invert)
@@ -238,6 +276,8 @@ static GB_OPERATOR_DESC _operator =
 {
 	.equal   = (void *)_equal,
 	.equalf  = (void *)_equalf,
+	.comp    = (void *)_comp,
+	.compf   = (void *)_compf,
 	.add     = (void *)_add,
 	.addf    = (void *)_addf,
 	.sub     = (void *)_sub,
@@ -249,7 +289,8 @@ static GB_OPERATOR_DESC _operator =
 	.pow     = (void *)_pow,
 	.powf    = (void *)_powf,
 	.abs     = (void *)_abs,
-	.neg     = (void *)_neg
+	.neg     = (void *)_neg,
+	.sgn     = (void *)_sgn
 };
 
 //---- Conversions ----------------------------------------------------------
@@ -370,6 +411,17 @@ END_METHOD
 BEGIN_METHOD_VOID(BigInt_free)
 
 	mpz_clear(THIS->n);
+
+END_METHOD
+
+BEGIN_METHOD(BigInt_compare, GB_OBJECT other)
+
+	CBIGINT *other = VARG(other);
+
+	if (GB.CheckObject(other))
+		return;
+
+	GB.ReturnInteger(mpz_cmp(NUMBER, other->n));
 
 END_METHOD
 
@@ -511,6 +563,83 @@ BEGIN_METHOD(BigInt_FromString, GB_STRING str; GB_INTEGER base)
 
 END_METHOD
 
+BEGIN_PROPERTY(BigInt_Odd)
+
+	GB.ReturnBoolean(mpz_odd_p(NUMBER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(BigInt_Even)
+
+	GB.ReturnBoolean(mpz_even_p(NUMBER));
+
+END_PROPERTY
+
+BEGIN_METHOD(BigInt_And, GB_OBJECT a; GB_OBJECT b)
+
+	CBIGINT *a = VARG(a);
+	CBIGINT *b = VARG(b);
+
+	if (GB.CheckObject(a) || GB.CheckObject(b))
+		return;
+
+	GB.ReturnObject(BIGINT_make(a, b, mpz_and));
+
+END_METHOD
+
+BEGIN_METHOD(BigInt_Or, GB_OBJECT a; GB_OBJECT b)
+
+	CBIGINT *a = VARG(a);
+	CBIGINT *b = VARG(b);
+
+	if (GB.CheckObject(a) || GB.CheckObject(b))
+		return;
+
+	GB.ReturnObject(BIGINT_make(a, b, mpz_ior));
+
+END_METHOD
+
+BEGIN_METHOD(BigInt_Xor, GB_OBJECT a; GB_OBJECT b)
+
+	CBIGINT *a = VARG(a);
+	CBIGINT *b = VARG(b);
+
+	if (GB.CheckObject(a) || GB.CheckObject(b))
+		return;
+
+	GB.ReturnObject(BIGINT_make(a, b, mpz_xor));
+
+END_METHOD
+
+BEGIN_METHOD(BigInt_Not, GB_OBJECT a)
+
+	CBIGINT *a = VARG(a);
+
+	if (GB.CheckObject(a))
+		return;
+
+	GB.ReturnObject(BIGINT_make_unary(a, mpz_com));
+
+END_METHOD
+
+#define IMPLEMENT_BIT(_name, _func) \
+BEGIN_METHOD(BigInt_##_name, GB_INTEGER bit) \
+ \
+ _func(NUMBER, VARG(bit)); \
+	RETURN_SELF(); \
+ \
+END_METHOD
+
+IMPLEMENT_BIT(BSet, mpz_setbit)
+IMPLEMENT_BIT(BClr, mpz_clrbit)
+IMPLEMENT_BIT(BChg, mpz_combit)
+
+BEGIN_METHOD(BigInt_BTst, GB_INTEGER bit)
+
+	GB.ReturnBoolean(mpz_tstbit(NUMBER, VARG(bit)));
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 
@@ -520,12 +649,26 @@ GB_DESC BigIntDesc[] =
 
 	GB_METHOD("_new", NULL, BigInt_new, NULL),
 	GB_METHOD("_free", NULL, BigInt_free, NULL),
+	GB_METHOD("_compare", "i", BigInt_compare, "(Other)BigInt;"),
 
 	GB_STATIC_METHOD("Fact", "BigInt", BigInt_Fact, "(N)i"),
 	GB_STATIC_METHOD("Fibonacci", "BigInt", BigInt_Fibonacci, "(N)i"),
 	GB_STATIC_METHOD("GCD", "BigInt", BigInt_GCD, "(A)BigInt;(B)BigInt;"),
 	GB_STATIC_METHOD("LCM", "BigInt", BigInt_LCM, "(A)BigInt;(B)BigInt;"),
 	GB_STATIC_METHOD("FromString", "BigInt", BigInt_FromString, "(String)s[(Base)i]"),
+
+	GB_STATIC_METHOD("And", "BigInt", BigInt_And, "(A)BigInt;(B)BigInt;"),
+	GB_STATIC_METHOD("Or", "BigInt", BigInt_Or, "(A)BigInt;(B)BigInt;"),
+	GB_STATIC_METHOD("Xor", "BigInt", BigInt_Xor, "(A)BigInt;(B)BigInt;"),
+	GB_STATIC_METHOD("Not", "BigInt", BigInt_Not, "(A)BigInt;"),
+
+	GB_METHOD("BSet", "BigInt", BigInt_BSet, "(Bit)i"),
+	GB_METHOD("BClr", "BigInt", BigInt_BClr, "(Bit)i"),
+	GB_METHOD("BTst", "b", BigInt_BTst, "(Bit)i"),
+	GB_METHOD("BChg", "BigInt", BigInt_BChg, "(Bit)i"),
+
+	GB_PROPERTY_READ("Odd", "b", BigInt_Odd),
+	GB_PROPERTY_READ("Even", "b", BigInt_Even),
 
 	GB_METHOD("ToString", "s", BigInt_ToString, "[(Base)i]"),
 	GB_METHOD("Shl", "BigInt", BigInt_Shl, "(Bits)i"),

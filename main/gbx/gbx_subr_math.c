@@ -611,7 +611,7 @@ __END:
 void SUBR_sgn(ushort code)
 {
 	static void *jump[] = {
-		&&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+		&&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
 		};
 
 	VALUE *P1;
@@ -629,6 +629,11 @@ __SINGLE: P1->_integer.value = (P1->_single.value > 0) ? 1 : ((P1->_single.value
 
 __FLOAT: P1->_integer.value = fsgn(P1->_float.value); goto __END;
 
+__OBJECT:
+
+	EXEC_operator_object_sgn(P1);
+	return;
+
 __VARIANT:
 
 	type = P1->type;
@@ -637,6 +642,13 @@ __VARIANT:
 	{
 		*PC |= type;
 		goto *jump[type];
+	}
+
+	if (EXEC_check_operator_single(P1, CO_SGN))
+	{
+		if (P1->type != T_OBJECT)
+			*PC |= T_DATE + 1;
+		goto *jump[T_DATE + 1];
 	}
 
 	if (TYPE_is_variant(type))

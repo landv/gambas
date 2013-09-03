@@ -1346,23 +1346,6 @@ void CLASS_search_special(CLASS *class)
 		class->operators = CLASS_get_desc(class, sym)->constant.value._pointer;
 		_operator_strength++;
 		CLASS_set_operator_strength(class, _operator_strength);
-		//fprintf(stderr, "%s: strength = %ld\n", class->name, CLASS_get_operator_strength(class));
-		
-		/*SET_OPTIONAL_OPERATOR(class, CO_EQUALF, _O_OF);
-		SET_OPTIONAL_OPERATOR(class, CO_EQUALO, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_ADDF, _O_OF);
-		SET_OPTIONAL_OPERATOR(class, CO_ADDO, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_SUBF, _O_OF);
-		SET_OPTIONAL_OPERATOR(class, CO_SUBO, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_MULF, _O_OF);
-		SET_OPTIONAL_OPERATOR(class, CO_MULO, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_DIVF, _O_OF);
-		SET_OPTIONAL_OPERATOR(class, CO_DIVO, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_POW, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_POWF, _O_OF);
-		SET_OPTIONAL_OPERATOR(class, CO_POWO, _O_OO);
-		SET_OPTIONAL_OPERATOR(class, CO_NEG, _O_O);*/
-		//SET_OPTIONAL_OPERATOR(class, CO_ABS, _F_O);
 	}
 	
 	if (class->special[SPEC_NEXT] != NO_SYMBOL)
