@@ -165,6 +165,7 @@ Public Sub dwgMonth_Draw()
   Dim sKey As String
   Dim bToday As Boolean
   Dim hDate As _DateChooser_Date
+  Dim fSize As Float
   
   iForeground = dwgMonth.Foreground 'Draw.Foreground
   iBackground = dwgMonth.Background 'Draw.Background
@@ -181,7 +182,8 @@ Public Sub dwgMonth_Draw()
   Draw.LineStyle = Line.None
   
   Draw.Font = dwgMonth.Font
-  Draw.Font.Size = Draw.Font.Size * H / Draw.Font.Height * 0.7
+  fSize = Draw.Font.Size * H / Draw.Font.Height * 0.7
+  Draw.Font.Size = fSize
   Draw.Font.Bold = True
 
   X = XD
@@ -219,6 +221,7 @@ Public Sub dwgMonth_Draw()
       If iBackground = Color.Default Then iBackground = dwgMonth.Background
       
       Draw.Font = hDate.Font
+      Draw.Font.Size = fSize
 
       If CInt(dDate) = CInt($dDate) Then
         Draw.FillColor = If(dwgMonth.HasFocus, Color.SelectedBackground, Color.LightForeground)
@@ -245,6 +248,7 @@ Public Sub dwgMonth_Draw()
 
       bToday = CInt(Date(Now)) = CInt(Date(dDate))
       Draw.Font.Bold = bToday
+      Draw.Font.Underline = hDate.Text
 
       Draw.Text(Day(dDate), X, Y, W, H, Align.Center)
       
@@ -348,8 +352,9 @@ Public Sub dwgMonth_KeyPress()
 
 End
 
-Private Sub CalcCurrenDate()
+Private Sub CalcCurrentDate()
   
+  Dim hDate As _DateChooser_Date
   Dim W, H As Integer
   Dim XD, YD As Integer
   
@@ -367,12 +372,15 @@ Private Sub CalcCurrenDate()
   
   $dCurrentDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
   
+  hDate = GetParent()[$dCurrentDate]
+  dwgMonth.Tooltip = hDate.Text
+  
 End
 
 
 Public Sub dwgMonth_MouseDown()
 
-  CalcCurrenDate
+  CalcCurrentDate
   If Not $dCurrentDate Then Return
   
   $dDate = $dCurrentDate
@@ -536,7 +544,7 @@ Public Sub dwgTime_Draw()
   
 End
 
-Private Sub CalcCurrenTime()
+Private Sub CalcCurrentTime()
   
   Dim X, Y, DX, DY, DW, DH As Integer
   
@@ -564,7 +572,7 @@ End
 
 Public Sub dwgTime_MouseDown()
 
-  CalcCurrenTime
+  CalcCurrentTime
   If $iCurrentTime >= 0 Then
     SetTime(Time($iCurrentTime \ 2, 30 * ($iCurrentTime Mod 2), 0))
   Endif
@@ -671,14 +679,14 @@ Public Sub dwgTime_MouseMove()
 
   Dim iLast As Integer = $iCurrentTime
   
-  CalcCurrenTime
+  CalcCurrentTime
   If $iCurrentTime <> iLast Then dwgTime.Refresh
 
 End
 
 Public Sub dwgMonth_MouseMove()
 
-  CalcCurrenDate
+  CalcCurrentDate
   dwgMonth.Refresh
 
 End
@@ -686,6 +694,7 @@ End
 Public Sub dwgMonth_Leave()
 
   $dCurrentDate = Null
+  dwgMonth.Tooltip = ""
   dwgMonth.Refresh
 
 End
