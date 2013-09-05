@@ -757,7 +757,8 @@ Private Function MakeDebPackage(sSys As String)
 
   AddLog(("Creating package..."))
   'sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
-  sCmd = "fakeroot dpkg-buildpackage -d"
+  'sCmd = "fakeroot dpkg-buildpackage -d"
+  sCmd = "dpkg-buildpackage -d -rfakeroot"
   'Shell sCmd Wait
   RunCommand(sCmd, sPackagePath)
   
