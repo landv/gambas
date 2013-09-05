@@ -2,7 +2,9 @@
 
 Public Sub Form_Open()
 
-  ImageView1.Image = Image.Load("~/gambas/img/logo/gambas3-512.png")
+  ImageView1.Image = Image.Load("~/gambas/img/logo/gambas3-128.png")
+  ImageView1.Zoom = 4
+  Me.Resize(200, 200)
 
 End
 
