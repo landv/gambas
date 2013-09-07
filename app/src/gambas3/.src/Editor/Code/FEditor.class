@@ -2106,7 +2106,7 @@ Private Sub CheckCompletion(sMode As String)
       
       If sWord Then
         
-        If Left(sWord) = "/" Or If Left(sWord) = "~" Then
+        If FCompletion.IsPath(sWord) Then
           FCompletion.Open(Me, "/", sWord)
           Return
         Endif

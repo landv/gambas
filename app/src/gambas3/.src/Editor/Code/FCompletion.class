@@ -558,24 +558,54 @@ Private Sub FillWithFiles(sWord As String)
   Dim sDir As String
   Dim hPictFile As Picture = Picture["icon:/16/file"]
   Dim hPictDir As Picture = Picture["icon:/16/directory"]
+  Dim aDir As String[]
   
   ClearRows
   
   sDir = sWord
-  If sDir And If Left(sDir) <> "/" And If sDir Not Begins "~/" Then
-    sDir = Project.Dir &/ sDir
+  
+  If sDir = "icon:/" Then
+    
+    aDir = ["small", "medium", "large", "huge", "16", "22", "32", "48", "96", "128", "256"]
+    
+    For Each sName In aDir.Sort(gb.Natural)
+      'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
+      'If Not hPict Then hPict = hPictFile
+      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, hPictDir)
+      $iMaxLen = Max($iMaxLen, String.Len(sName))
+    Next
+    
+  Else If sDir Like "icon:/*/" Then
+    
+    aDir = Stock.Icons
+    
+    For Each sName In aDir.Sort(gb.Natural)
+      'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
+      'If Not hPict Then hPict = hPictFile
+      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, Picture["icon:/small" &/ sName])
+      $iMaxLen = Max($iMaxLen, String.Len(sName))
+    Next
+    
+  Else
+    
+    If sDir And If Left(sDir) <> "/" And If sDir Not Begins "~/" Then
+      sDir = Project.Dir &/ sDir
+    Endif
+    
+    iPos = RInStr(sDir, "/")
+    sDir = Left(sDir, iPos)
+    If Not IsDir(sDir) Then Return
+    
+    aDir = Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
+  
+    For Each sName In aDir
+      'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
+      'If Not hPict Then hPict = hPictFile
+      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPictFile))
+      $iMaxLen = Max($iMaxLen, String.Len(sName))
+    Next
+  
   Endif
-  
-  iPos = RInStr(sDir, "/")
-  sDir = Left(sDir, iPos)
-  If Not IsDir(sDir) Then Return
-  
-  For Each sName In Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
-    'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
-    'If Not hPict Then hPict = hPictFile
-    AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPictFile))
-    $iMaxLen = Max($iMaxLen, String.Len(sName))
-  Next
   
   $bShowHelp = False
   
@@ -941,3 +971,11 @@ Public Sub timHideLater_Timer()
   Me.Hide
   
 End
+ 
+ Static Public Sub IsPath(sWord As String) As Boolean
+  
+   If Left(sWord) = "/" Or If Left(sWord) = "~" Or If Left(sWord, 2) = "./" Or If sWord Begins "icon:/" Then Return True
+  
+End
+
+ 
