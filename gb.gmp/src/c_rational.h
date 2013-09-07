@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_bigint.h
+  c_rational.h
 
   gb.gmp component
 
@@ -23,22 +23,20 @@
 
 ***************************************************************************/
 
-#ifndef __C_BIGINT_H
-#define __C_BIGINT_H
+#ifndef __C_RATIONAL_H
+#define __C_RATIONAL_H
 
 #include <gmp.h>
 
-#ifndef __C_BIGINT_C
-extern GB_DESC BigIntDesc[];
+#ifndef __C_RATIONAL_C
+extern GB_DESC RationalDesc[];
 #endif
 
 typedef
 	struct {
 		GB_BASE ob;
-		mpz_t n;
+		mpq_t n;
 	}
-	CBIGINT;
+	CRATIONAL;
 
-CBIGINT *BIGINT_create(mpz_t number);
-
-#endif /* __C_BIGINT_H */
+#endif /* __C_RATIONAL_H */

@@ -33,6 +33,7 @@
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 extern GB_CLASS CLASS_BigInt;
+extern GB_CLASS CLASS_Rational;
 #endif
 
 #endif /* __MAIN_H */

@@ -28,16 +28,19 @@
 #include "main.h"
 
 #include "c_bigint.h"
+#include "c_rational.h"
 
 GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
 	BigIntDesc,
+	RationalDesc,
   NULL // Must have a null entry for the end of the structure
 };
 
 GB_CLASS CLASS_BigInt;
+GB_CLASS CLASS_Rational;
 
 /*static void error_handler(const char *reason, const char *file, int line, int gsl_errno)
 {
@@ -66,6 +69,7 @@ static void *my_realloc(void *p, size_t old, size_t n)
 int EXPORT GB_INIT(void)
 {
 	CLASS_BigInt = GB.FindClass("BigInt");
+	CLASS_Rational = GB.FindClass("Rational");
 
 	mp_set_memory_functions(my_malloc, my_realloc, my_free);
 

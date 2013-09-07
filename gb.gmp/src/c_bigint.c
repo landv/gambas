@@ -244,13 +244,13 @@ static int _sgn(CBIGINT *a)
 
 static CBIGINT *_pow(CBIGINT *a, CBIGINT *b, bool invert)
 {
-	if (mpz_fits_slong_p(b->n) != 0)
+	if (!mpz_fits_slong_p(b->n))
 	{
 		GB.Error(GB_ERR_OVERFLOW);
 		return NULL;
 	}
 
-	return BIGINT_make_int(a, mpz_get_ui(b->n), mpz_pow_ui);
+	return BIGINT_make_int(a, mpz_get_si(b->n), mpz_pow_ui);
 }
 
 static CBIGINT *_powf(CBIGINT *a, double f, bool invert)
@@ -263,7 +263,7 @@ static CBIGINT *_powf(CBIGINT *a, double f, bool invert)
 			return NULL;
 
 		mpz_init_set_si(b, (long)f);
-		mpz_pow_ui(b, b, mpz_get_ui(a->n));
+		mpz_pow_ui(b, b, mpz_get_si(a->n));
 
 		return BIGINT_create(b);
 	}
