@@ -157,9 +157,9 @@ static int _equalf(CCOMPLEX *a, double f, bool invert)
 	return RE(a) == f && IM(a) == 0;
 }
 
-static CCOMPLEX *_abs(CCOMPLEX *a)
+static double _fabs(CCOMPLEX *a)
 {
-	return COMPLEX_make(a, ABS(a), 0);
+	return ABS(a);
 }
 
 static CCOMPLEX *_neg(CCOMPLEX *a)
@@ -290,7 +290,7 @@ static GB_OPERATOR_DESC _operator =
 	.divf    = (void *)_divf,
 	.pow     = (void *)_pow,
 	.powf    = (void *)_powf,
-	.abs     = (void *)_abs,
+	.fabs    = (void *)_fabs,
 	.neg     = (void *)_neg
 };
 

@@ -46,6 +46,9 @@ typedef
 typedef
 	int (*FUNC_I_O)(void *);
 
+typedef
+	double (*FUNC_F_O)(void *);
+
 static void raise_error(void *o1, void *o2)
 {
 	if (o2 && OBJECT_class(o2) == OBJECT_class(o1))
@@ -313,6 +316,26 @@ void EXEC_operator_object_sgn(VALUE *P1)
 		OBJECT_UNREF(P1->_object.object);
 		P1->type = T_INTEGER;
 		P1->_integer.value = result;
+	}
+	else
+		THROW(E_NULL);
+
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
+}
+
+void EXEC_operator_object_fabs(VALUE *P1)
+{
+	if (P1->_object.object)
+	{
+		void *func = OBJECT_class(P1->_object.object)->operators[CO_FABS];
+		double result = (*(FUNC_F_O)func)(P1->_object.object);
+		OBJECT_UNREF(P1->_object.object);
+		P1->type = T_FLOAT;
+		P1->_float.value = result;
 	}
 	else
 		THROW(E_NULL);

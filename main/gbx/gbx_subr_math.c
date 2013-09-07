@@ -607,6 +607,54 @@ __END:
 	} \
 })
 
+#define MANAGE_VARIANT_OBJECT_2(_func, _op, _op2) \
+({ \
+	type = P1->type; \
+	\
+	if (TYPE_is_number_date(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
+	if (EXEC_check_operator_single(P1, _op)) \
+	{ \
+		if (P1->type != T_OBJECT) \
+			*PC |= T_DATE + 1; \
+		goto *jump[T_DATE + 1]; \
+	} \
+	if (EXEC_check_operator_single(P1, _op2)) \
+	{ \
+		if (P1->type != T_OBJECT) \
+			*PC |= T_DATE + 2; \
+		goto *jump[T_DATE + 2]; \
+	} \
+	\
+	if (TYPE_is_variant(type)) \
+	{ \
+		VARIANT_undo(P1); \
+		type = P1->type; \
+		if (TYPE_is_number_date(type)) \
+		{ \
+			(_func)(code | type); \
+			VALUE_conv_variant(P1); \
+			return; \
+		} \
+		if (EXEC_check_operator_single(P1, _op)) \
+		{ \
+			(_func)(T_DATE + 1); \
+			VALUE_conv_variant(P1); \
+			return; \
+		} \
+		if (EXEC_check_operator_single(P1, _op2)) \
+		{ \
+			(_func)(T_DATE + 2); \
+			VALUE_conv_variant(P1); \
+			return; \
+		} \
+	} \
+})
+
 
 void SUBR_sgn(ushort code)
 {
@@ -734,7 +782,7 @@ __ERROR:
 void SUBR_abs(ushort code)
 {
 	static void *jump[] = {
-		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, &&__OBJECT, &&__OBJECT_FLOAT
 		};
 
 	VALUE *P1;
@@ -778,10 +826,15 @@ __OBJECT:
 
 	EXEC_operator_object_single(CO_ABS, P1);
 	return;
-	
+
+__OBJECT_FLOAT:
+
+	EXEC_operator_object_fabs(P1);
+	return;
+
 __VARIANT:
 
-	MANAGE_VARIANT_OBJECT(SUBR_abs, CO_ABS);
+	MANAGE_VARIANT_OBJECT_2(SUBR_abs, CO_ABS, CO_FABS);
 
 __ERROR:
 

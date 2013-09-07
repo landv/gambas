@@ -163,6 +163,12 @@ Public Sub txtPath_Click()
   Dialog.Filter = ["*.patch;*.diff", ("Patch/Diff files")]
   
   If Dialog.OpenFile() Then Return
+
+  If Not Project.IsTextFile(Dialog.Path) Then
+    Message.Warning(("That file does not look like a patch file!"))
+    Return
+  Endif
+  
   
   txtPath.Text = Dialog.Path
   

@@ -313,6 +313,7 @@ void EXEC_operator(uchar what, uchar op, VALUE *P1, VALUE *P2);
 void EXEC_operator_object_add_quick(VALUE *P1, double val);
 int EXEC_comparator(uchar what, uchar op, VALUE *P1, VALUE *P2);
 void EXEC_operator_object_sgn(VALUE *P1);
+void EXEC_operator_object_fabs(VALUE *P1);
 void EXEC_operator_object_single(uchar op, VALUE *P1);
 
 #endif /* */

@@ -857,6 +857,7 @@ typedef
 		void *(*powo)(void *, void *, bool);
 		void *(*neg)(void *);
 		void *(*abs)(void *);
+		double (*fabs)(void *);
 		int (*sgn)(void *);
 		intptr_t _reserved;
 	}

@@ -972,7 +972,7 @@ Public Sub timHideLater_Timer()
   
 End
  
- Static Public Sub IsPath(sWord As String) As Boolean
+Static Public Sub IsPath(sWord As String) As Boolean
   
    If Left(sWord) = "/" Or If Left(sWord) = "~" Or If Left(sWord, 2) = "./" Or If sWord Begins "icon:/" Then Return True
   

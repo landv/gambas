@@ -33,7 +33,7 @@ Static Private Function PrepareOldSource(sOldSource As String) As String
 
   If IsDir(sOldSource) Then
     If Not Exist(sOldSource &/ ".project") Then
-      Error.Raise(("Not a valid Gambas project"))
+      Error.Raise(("The directory is not a Gambas project"))
       Return Null
     Endif
     Project.MakeSourcePackageFromTo(sOldSource, sOldArchive)
@@ -47,9 +47,10 @@ Static Private Function PrepareOldSource(sOldSource As String) As String
   Else If Right$(sOldSource, 3) = ".xz" Then
     sType = "J"
   Else
-    Error.Raise(("Unsupported source file type"))
+    Error.Raise(("Unsupported source archive format"))
     Return Null
   Endif
+  
   Mkdir sOld
   Shell Subst$("tar -&1xf &2 -C &3 --strip-components=1", sType, Shell$(sOldSource), sOld) Wait
   If Exist(sOldArchive) Then Kill sOldArchive

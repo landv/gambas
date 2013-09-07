@@ -83,7 +83,7 @@ static int _equal_##__name(__struct *a, __struct *b, bool invert)               
   return a->x == b->x && a->y == b->y;                                                                                        \
 }                                                                                                                             \
                                                                                                                               \
-static double _abs_##__name(__struct *a)                                                                                      \
+static double _fabs_##__name(__struct *a)                                                                                     \
 {                                                                                                                             \
   return hypot(a->x, a->y);                                                                                                   \
 }                                                                                                                             \
@@ -102,7 +102,7 @@ static GB_OPERATOR_DESC _operator_##__name =                                    
   .mulo    = (void *)_mulo_##__name,                                                                                          \
   .divf    = (void *)_divf_##__name,                                                                                          \
   .divo    = (void *)_divo_##__name,                                                                                          \
-  .abs     = (void *)_abs_##__name,                                                                                           \
+  .fabs     = (void *)_fabs_##__name,                                                                                         \
   .neg     = (void *)_neg_##__name,                                                                                           \
 };                                                                                                                            \
                                                                                                                               \

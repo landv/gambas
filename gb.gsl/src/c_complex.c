@@ -172,14 +172,9 @@ static CCOMPLEX *_neg(CCOMPLEX *a)
 	return COMPLEX_create(gsl_complex_negative(a->number));
 }
 
-static CCOMPLEX *_abs(CCOMPLEX *a)
+static double _fabs(CCOMPLEX *a)
 {
-	gsl_complex n;
-
-	n.dat[0] = gsl_complex_abs(a->number);
-	n.dat[1] = 0;
-
-	return COMPLEX_create(n);
+	return gsl_complex_abs(a->number);
 }
 
 /*static CCOMPLEX *_powi(CCOMPLEX *a, int i)
@@ -237,7 +232,7 @@ static GB_OPERATOR_DESC _operator =
 	.divf    = (void *)_divf,
 	.pow     = (void *)_pow,
 	.powf    = (void *)_powf,
-	.abs     = (void *)_abs,
+	.fabs    = (void *)_fabs,
 	.neg     = (void *)_neg
 };
 

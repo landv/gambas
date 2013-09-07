@@ -1863,7 +1863,7 @@ Public Function IsForm(hFile As Object) As Boolean
 
 End
 
-Private Sub IsTextFile(sPath As String) As Boolean
+Public Sub IsTextFile(sPath As String) As Boolean
 
   Dim hFile As File
   Dim sStr As String
