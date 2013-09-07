@@ -27,6 +27,8 @@ Private $iMaxY As Integer
 
 Private $hEditor As Editor
 
+Private $bHideLater As Boolean
+
 Public Sub _new()
   
   gvwComp.Columns.Count = 1
@@ -60,6 +62,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   Dim W, H As Integer
 
   If hForm.Editor <> $hEditor Then HideFrom($hEditor)
+  $bHideLater = False
 
   $hEditor = hForm.Editor
   Me.Font = $hEditor.font
@@ -112,12 +115,11 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       iPos = String.RInStr(sClass, "/")
       $sText = String.Mid$(sClass, iPos + 1)
       $iLen = String.Len($sText)
-      If $iLen Then
+      If Key.Code = Key.BackSpace Then
         $iCol -= String.Len($sText) + 2
-        sMode = "<"
-      Else
-        'Inc $iCol
+        'sMode = "<"
       Endif
+      'Debug "$iLen = "; $iLen;; "$iCol = "; $iCol;; ":";; $sText
       FillWithFiles(String.Left(sClass, iPos))
   End Select
 
@@ -139,6 +141,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     Endif 
   Else
     gvwComp.Row = 0
+    FindItem(True)
     'lvwComp.MoveFirst
     'lvwComp.Item.Selected = True
     'lvwComp.Item.EnsureVisible
@@ -571,7 +574,7 @@ Private Sub FillWithFiles(sWord As String)
     'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
     'If Not hPict Then hPict = hPictFile
     AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPictFile))
-    $iMaxLen = Max($iMaxLen, Len(sName))
+    $iMaxLen = Max($iMaxLen, String.Len(sName))
   Next
   
   $bShowHelp = False
@@ -639,11 +642,13 @@ Public Function ManageKey() As Boolean
       Return False 
 
     Case Key.Backspace
+      'Debug $iLen;; $sText
       If String.Len($sText) > $iLen Then
         $sText = String.Left$($sText, -1)
         FindItem
       Else
-        Me.Hide
+        $bHideLater = True
+        timHideLater.Trigger
       Endif
       Return False
       
@@ -673,7 +678,7 @@ Public Function ManageKey() As Boolean
           Return FindItem()
         Else If Key.Text = "[" And If Not $sText Then
           Me.Hide
-        Else If InStr("([.!", Key.Text) > 0 And InStr(". A<", $sMode) > 0 Then
+        Else If InStr("([.!", Key.Text) > 0 And If InStr(". A<", $sMode) Then
           InsertItem
         Else
           Me.Hide
@@ -790,12 +795,12 @@ Private Sub CompleteItem() As Boolean
   If Not sCurrent Then Return
   Try sNext = gvwComp[gvwComp.Row + 1, 0].Text
   
-  For iPos = Len($sText) + 1 To Min(Len(sCurrent), Len(sNext))
-    If Comp(Mid$(sCurrent, iPos, 1), Mid$(sNext, iPos, 1), gb.IgnoreCase) Then Break
+  For iPos = String.Len($sText) + 1 To Min(String.Len(sCurrent), String.Len(sNext))
+    If String.Comp(String.Mid$(sCurrent, iPos, 1), String.Mid$(sNext, iPos, 1), gb.IgnoreCase) Then Break
   Next
 
-  sText = Left$(sCurrent, iPos - 1)    
-  If Comp(sText, $sText, gb.IgnoreCase) = 0 Or Not sText Then 
+  sText = String.Left$(sCurrent, iPos - 1)    
+  If String.Comp(sText, $sText, gb.IgnoreCase) = 0 Or Not sText Then 
     InsertItem
   Else  
     $sText = sText
@@ -902,7 +907,7 @@ End
 
 Public Sub VisibleFrom(hEditor As Editor) As Boolean
   
-  Return Me.Visible And $hEditor = hEditor
+  If $hEditor = hEditor And If Me.Visible And If Not $bHideLater Then Return True
   
 End
 
@@ -928,3 +933,11 @@ Static Public Sub GetSpecialMethods() As String[]
   
 End
 
+Public Sub timHideLater_Timer()
+  
+  'Debug $bHideLater
+  If Not $bHideLater Then Return
+  $bHideLater = False
+  Me.Hide
+  
+End

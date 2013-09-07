@@ -14,9 +14,8 @@
     Background = Color.Background
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
-    { timHelp #Timer
+    { timHideLater #Timer
       #MoveScaled(0,8)
-      Delay = 100
     }
     { gvwComp GridView
       MoveScaled(1,1,7,6)
@@ -31,6 +30,10 @@
     { webHelp WebView
       MoveScaled(10,1,54,13)
       Expand = True
+    }
+    { timHelp #Timer
+      #MoveScaled(24,4)
+      Delay = 100
     }
     { panRight Panel
       MoveScaled(65,1,1,13)

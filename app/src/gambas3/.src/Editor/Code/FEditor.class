@@ -2101,13 +2101,14 @@ Private Sub CheckCompletion(sMode As String)
     
     If Not Editor.Selected And If Editor.Column >= 1 And If Not FCompletion.VisibleFrom(Editor) Then
       
-      sLine = Left(sLine, -1)
+      sLine = String.Left(sLine, -1)
       sWord = GetRightString(sLine)
       
       If sWord Then
         
         If Left(sWord) = "/" Or If Left(sWord) = "~" Then
           FCompletion.Open(Me, "/", sWord)
+          Return
         Endif
         
       Else
@@ -2124,10 +2125,15 @@ Private Sub CheckCompletion(sMode As String)
           Return
         Endif
         
-        If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
+        If Len(sWord) >= 3 Then 
+          FCompletion.Open(Me, sMode, sWord)
+          Return
+        Endif
         
       Endif
-      'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+      
+      HideCompletion
+        
     Endif
     
   Else If sMode = "/" Then
