@@ -57,6 +57,7 @@
 
 #include "gambas.h"
 #include "main.h"
+#include "cmd2object.h"
 
 #ifndef __CMD2MODEL_C
 extern GB_DESC Md2ModelFrameDesc[];
@@ -119,7 +120,7 @@ struct md2_glcmd
 
 
 typedef
-	struct {
+	struct CMD2MODEL {
 		GB_BASE ob;
 		//Header
 		int ident;
@@ -151,21 +152,16 @@ typedef
 		framemd2 *frames;
 		int *glcmds;
 
-		GLuint tex_id;
-
 		//Model specific data
-		float position[3];
 		float scale[3];
-		int f_no;
-		float inter_frame;
 		int frame; // frame being accessed with the [] operator
-		int texture;
-		double pos;
+		GLuint texture;
 		//End model specific data
 		}
 	CMD2MODEL;
 
 
 CMD2MODEL *MD2MODEL_create(void);
-	
+void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *rotate, float *scale);
+
 #endif

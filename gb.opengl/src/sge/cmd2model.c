@@ -202,9 +202,11 @@ CMD2MODEL *MD2MODEL_create(void)
 	return (CMD2MODEL*)GB.New(GB.FindClass("Md2Model"), NULL, NULL);
 };
 
-static void draw_frame_inter(CMD2MODEL *_object, int n, float interp, int texture)
+void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *scale, float *rotate)
 {
 	int i, j;
+	int n;
+	double interp;
 	GLfloat s, t, v_curr[3], v_next[3], v[3], norm[3];
 	float *n_curr, *n_next;
 	framemd2 *pframe1, *pframe2;
@@ -219,9 +221,12 @@ static void draw_frame_inter(CMD2MODEL *_object, int n, float interp, int textur
 	if (texture < 0)
 		return;
 
+	n = (int)frame;
+	interp = frame - n;
+
 	if ((n < 0) || (n >= THIS->num_frames-1))
 	{
-		n=0;
+		n = 0;
 		interp = 0;
 	}
 
@@ -230,10 +235,21 @@ static void draw_frame_inter(CMD2MODEL *_object, int n, float interp, int textur
 		glEnable(GL_TEXTURE_2D);
 
 	glPushMatrix();
-	glTranslatef(THIS->position[0], THIS->position[1], THIS->position[2]);
+
+	if (pos)
+		glTranslatef(pos[0], pos[1], pos[2]);
+
 	glRotatef(-90, 1, 0, 0);
 	glRotatef(-90, 0, 0, 1);
+
+	if (rotate && rotate[0] != 0)
+		glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
+
 	glScalef(THIS->scale[0], THIS->scale[1], THIS->scale[2]);
+
+	if (scale)
+		glScalef(scale[0], scale[1], scale[2]);
+
 	glBindTexture (GL_TEXTURE_2D, texture);
 
 	if (interp == 0)
@@ -246,12 +262,12 @@ static void draw_frame_inter(CMD2MODEL *_object, int n, float interp, int textur
 		{
 			if (i < 0)
 			{
-				glBegin (GL_TRIANGLE_FAN);
+				glBegin(GL_TRIANGLE_FAN);
 				i = -i;
 			}
 			else
 			{
-				glBegin (GL_TRIANGLE_STRIP);
+				glBegin(GL_TRIANGLE_STRIP);
 			}
 
 			// Draw each vertex of this group
@@ -332,21 +348,6 @@ static void draw_frame_inter(CMD2MODEL *_object, int n, float interp, int textur
 
 }
 
-// // Generate one list for each frame
-//
-// static void make_lists(CMD2MODEL *mdl)
-// {
-// 	int i;
-//
-// 	mdl->list = glGenLists(mdl->num_frames);
-//
-// 	for (i = 0; i < mdl->num_frames; i++)
-// 	{
-// 		glNewList(mdl->list + i, GL_COMPILE);
-// 		draw_frame_inter(mdl, i, 0, mdl->texture);
-// 		glEndList();
-// 	}
-// }
 
 //---------------------------------------------------------------------------
 
@@ -431,21 +432,11 @@ BEGIN_METHOD(Md2Model_Load, GB_STRING name)
 
 	// Read model data
 	memcpy(mdl->skins, &addr[mdl->offset_skins], sizeof(skinmd2) * mdl->num_skins);
-
-	//fseek (fp, mdl->offset_st, SEEK_SET);
-	//fi=fread (mdl->texcoords, sizeof (texCoordmd2), mdl->num_st, fp);
 	memcpy(mdl->texcoords, &addr[mdl->offset_st], sizeof(texCoordmd2) * mdl->num_st);
-
-	//fseek (fp, mdl->offset_tris, SEEK_SET);
-	//fi=fread (mdl->triangles, sizeof (trianglemd2), mdl->num_tris, fp);
 	memcpy(mdl->triangles, &addr[mdl->offset_tris], sizeof(trianglemd2) * mdl->num_tris);
-
-	//fseek (fp, mdl->offset_glcmds, SEEK_SET);
-	//fi=fread (mdl->glcmds, sizeof (int), mdl->num_glcmds, fp);
 	memcpy(mdl->glcmds, &addr[mdl->offset_glcmds], sizeof(int) * mdl->num_glcmds);
 
 	// Read frames
-	//fseek (fp, mdl->offset_frames, SEEK_SET);
 	{
 		char *p = &addr[mdl->offset_frames];
 
@@ -459,10 +450,6 @@ BEGIN_METHOD(Md2Model_Load, GB_STRING name)
 			memcpy(mdl->frames[i].translate, p, sizeof(float) * 3); p += sizeof(float) * 3;
 			memcpy(mdl->frames[i].name, p, 16); p += 16;
 			memcpy(mdl->frames[i].verts, p, sizeof(vertexmd2) * mdl->num_vertices); p += sizeof(vertexmd2) * mdl->num_vertices;
-			//fi=fread (mdl->frames[i].scale, sizeof (float)*3, 1, fp);
-			//fi=fread (mdl->frames[i].translate, sizeof (float)*3, 1, fp);
-			//fi=fread (mdl->frames[i].name, sizeof (char), 16, fp);
-			//fi=fread (mdl->frames[i].verts, sizeof (vertexmd2), mdl->num_vertices, fp);
 		}
 	}
 
@@ -481,41 +468,6 @@ __ERROR:
 
 END_METHOD
 
-BEGIN_METHOD(Md2Model_Move, GB_FLOAT x; GB_FLOAT y; GB_FLOAT z)
-
-	THIS->position[0] = VARG(x);
-	THIS->position[1] = VARG(y);
-	THIS->position[2] = VARG(z);
-	
-END_METHOD
-
-BEGIN_PROPERTY(Md2Model_X)
-
-	if (READ_PROPERTY)
-		GB.ReturnFloat(THIS->position[0]);
-	else
-		THIS->position[0] = VPROP(GB_FLOAT);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Md2Model_Y)
-
-	if (READ_PROPERTY)
-		GB.ReturnFloat(THIS->position[1]);
-	else
-		THIS->position[1] = VPROP(GB_FLOAT);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Md2Model_Z)
-
-	if (READ_PROPERTY)
-		GB.ReturnFloat(THIS->position[2]);
-	else
-		THIS->position[2] = VPROP(GB_FLOAT);
-
-END_PROPERTY
-
 BEGIN_METHOD(Md2Model_Scale, GB_FLOAT sx; GB_FLOAT sy; GB_FLOAT sz)
 
 	THIS->scale[0] = VARG(sx);
@@ -523,7 +475,6 @@ BEGIN_METHOD(Md2Model_Scale, GB_FLOAT sx; GB_FLOAT sy; GB_FLOAT sz)
 	THIS->scale[2] = VARG(sz);
 
 END_METHOD
-
 
 BEGIN_PROPERTY(Md2Model_Count)
 
@@ -555,32 +506,11 @@ BEGIN_PROPERTY(Md2Model_Texture)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Md2Model_Pos)
-
-	if (READ_PROPERTY)
-		GB.ReturnFloat(THIS->pos);
-	else
-		THIS->pos = VPROP(GB_FLOAT);
-
-END_PROPERTY
-
-BEGIN_METHOD_VOID(Md2Model_Draw)
-
-	draw_frame_inter(THIS, (int)THIS->pos, THIS->pos - (int)THIS->pos, THIS->texture);
-
-END_METHOD
-
 //---------------------------------------------------------------------------
 
-BEGIN_METHOD(Md2Model_Frame_Draw, GB_INTEGER texture)
+BEGIN_METHOD(Md2Model_Frame_Draw, GB_FLOAT interp; GB_INTEGER texture)
 
-	draw_frame_inter(THIS, THIS->frame, 0, VARG(texture));
-
-END_METHOD
-
-BEGIN_METHOD(Md2Model_Frame_DrawInter, GB_FLOAT inter; GB_INTEGER texture)
-
-	draw_frame_inter(THIS, THIS->frame, VARG(inter), VARG(texture));
+	MD2MODEL_draw(THIS, (double)THIS->frame + VARGOPT(interp, 0.0), VARGOPT(texture, THIS->texture), NULL, NULL, NULL);
 
 END_METHOD
 
@@ -595,9 +525,10 @@ END_METHOD
 GB_DESC Md2ModelFrameDesc[] =
 {
 	GB_DECLARE_VIRTUAL(".Md2Model.Frame"),
+
 	GB_PROPERTY_READ("Name", "s", Md2Model_Frame_Name),
-	GB_METHOD("Draw", NULL, Md2Model_Frame_Draw, "(Texture)i"),
-	GB_METHOD("DrawInter", NULL, Md2Model_Frame_DrawInter, "(InterFrame)f(Texture)i"),
+	GB_METHOD("Draw", NULL, Md2Model_Frame_Draw, "[(Interpolation)f(Texture)i]"),
+
 	GB_END_DECLARE
 };
 
@@ -610,19 +541,12 @@ GB_DESC Md2ModelDesc[] =
 
 	GB_STATIC_METHOD("Load", "Md2Model" , Md2Model_Load, "(Name)s"),
 
-	GB_METHOD("Move", NULL, Md2Model_Move, "(X)f(Y)f(Z)f"),
-	GB_PROPERTY_READ("X", "f", Md2Model_X),
-	GB_PROPERTY_READ("Y", "f", Md2Model_Y),
-	GB_PROPERTY_READ("Z", "f", Md2Model_Z),
-
 	GB_PROPERTY_READ("Count", "i", Md2Model_Count),
 	GB_METHOD("_get", ".Md2Model.Frame", Md2Model_get, "(Frame)i"),
 
-	GB_METHOD("Scale", NULL, Md2Model_Scale, "(ScaleX)f(ScaleY)f(ScaleZ)f" ),
+	GB_METHOD("Scale", NULL, Md2Model_Scale, "(SX)f(SY)f(SZ)f" ),
 
 	GB_PROPERTY("Texture", "i", Md2Model_Texture),
-	GB_PROPERTY("Pos", "f", Md2Model_Pos),
-	GB_METHOD("Draw", NULL, Md2Model_Draw, NULL),
 
 	GB_END_DECLARE
 };

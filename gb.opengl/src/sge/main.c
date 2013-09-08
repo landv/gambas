@@ -27,6 +27,7 @@
 
 #include "main.h"
 #include "cmd2model.h"
+#include "cmd2object.h"
 
 GB_INTERFACE GB EXPORT;
 
@@ -34,7 +35,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
 	Md2ModelFrameDesc,
 	Md2ModelDesc,
-
+	Md2ObjectDesc,
 	NULL
 };
 

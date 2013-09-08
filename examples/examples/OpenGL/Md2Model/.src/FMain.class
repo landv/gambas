@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private $aModel As Md2Model[]
+Private $aObject As Md2Object[]
 Private $iFrames As Integer
 Private $fTime As Single
 Private $fFramerate As Float
@@ -27,7 +28,7 @@ Public Sub glaScreen_Resize()
   Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   Glu.Perspective(45.0, glaScreen.Width / glaScreen.Height, 0.1, 3000.0)   'Calculate The Aspect Ratio Of The Window
-  Glu.Lookat(0, 100, 120, 0, 0, -300, 0, 100, 0)
+  Glu.LookAt(0, 100, 120, 0, 0, -300, 0, 100, 0)
   Gl.MatrixMode(Gl.MODELVIEW)
   
 End
@@ -36,10 +37,18 @@ Public Sub Init()
 
   Dim X, D, Z As Float
   Dim sModel As String
+  Dim hModel As Md2Model
   Dim I As Integer
   Dim aModel As String[] = ["bauul", "goblin", "knight", "ogro", "rat", "rhino"]
+  Dim hObject As Md2Object
   
   $aModel = New Md2Model[]
+  $aObject = New Md2Object[]
+  
+  For Each sModel In aModel
+    $aModel.Add(Md2Model.Load(sModel & ".md2"))
+    $aModel[$aModel.Max].Texture = LoadTexture(sModel & ".jpg")
+  Next
   
   D = 100
   
@@ -48,12 +57,10 @@ Public Sub Init()
   
   For I = 1 To 189
   
-    sModel = aModel[Int(Rnd(0, aModel.Count))]
-      
-    $aModel.Add(Md2Model.Load(sModel & ".md2"))
-    $aModel[$aModel.Max].Texture = LoadTexture(sModel & ".jpg")
-    'Print "Model #"; $aModel.Max; ": "; $aModel[$aModel.Max].Count; " frames"
-    $aModel[$aModel.Max].Move(X, -10, Z)
+    hModel = $aModel[Int(Rnd(0, aModel.Count))]
+    hObject = New Md2Object(hModel)
+    $aObject.Add(hObject)
+    $aObject[$aObject.Max].Move(X, -10, Z)
     X += 50
     If X > D Then
       D += 100
@@ -89,20 +96,18 @@ Public Sub glaScreen_Draw()
   Gl.Vertex3f(- $iEndWidth, -34.2, $iEndZ)
   Gl.End
   
-  'Drawing model is as easy as this - frame number, interpolation between frames (0-1), texture identificator) 
-  '
   Gl.Color3f(1, 1, 1)
-  For I = 0 To $aModel.Max
-    $aModel[I].Draw
+  For I = 0 To $aObject.Max
+    $aObject[I].Draw
   Next
     
-  For I = 0 To $aModel.Max
+  For I = 0 To $aObject.Max
     Glu.Color(Color.Lighter(&HD96800&))
     hQuadric = Glu.NewQuadric()
     Gl.PushMatrix()
-    Gl.Translatef($aModel[I].X, -34, $aModel[I].Z)
+    Gl.Translatef($aObject[I].X, -34, $aObject[I].Z)
     Gl.Rotatef(90, 1, 0, 0)
-    Glu.Disk(hQuadric, 0, 20, 20, 8)
+    Glu.Disk(hQuadric, 0, 20, 30, 1)
     Gl.PopMatrix()
   Next
   
@@ -115,7 +120,7 @@ Public Sub glaScreen_Draw()
     Inc $fTime
   Endif
 
-   lblInfo.Text = Format($aModel[0].Pos, "0.00") & " / " & $aModel[0].Count & " ( " & CInt($fFramerate) & " FPS )"
+   lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " FPS )"
 
    Gl.PopMatrix
    
@@ -145,13 +150,13 @@ Public Sub timAnim_Timer()
   
   Dim I As Integer
    
-   For I = 0 To $aModel.Max
-     $aModel[I].Pos += 0.1
-     If $aModel[I].Pos >= $aModel[I].Count Then $aModel[I].Pos = 0
+   For I = 0 To $aObject.Max
+     $aObject[I].Frame += 0.1
+     If $aObject[I].Frame >= $aObject[I].Model.Count Then $aObject[I].Frame = 0
    Next
    
    Object.Lock(sldFrame)
-   sldFrame.Value = CInt($aModel[0].Pos)
+   sldFrame.Value = CInt($aObject[0].Frame)
    Object.Unlock(sldFrame)
    
    glaScreen.Refresh
