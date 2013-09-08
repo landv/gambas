@@ -134,7 +134,7 @@ static bool _convert_##__name(void *a, GB_TYPE type, GB_VALUE *conv)            
 {                                                                                                                             \
   if (a)                                                                                                                      \
   {                                                                                                                           \
-    double norm = _abs_##__name(a);                                                                                           \
+    double norm = _fabs_##__name(a);                                                                                           \
                                                                                                                               \
     switch (type)                                                                                                             \
     {                                                                                                                         \

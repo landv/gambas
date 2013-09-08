@@ -89,6 +89,7 @@ Private Sub ClearSelection()
   $hMagnet = Null
   $hLastMagnet = Null
   $sMagnet = ""
+    $iChangeAction = CHANGE_NOTHING
   RefreshSelection
 
 End
@@ -2665,6 +2666,7 @@ Private Sub ClearPaste()
     $hPasteSelect = Null
     $hPasteCurrent = Null
     imvImage.Refresh
+    $iChangeAction = CHANGE_NOTHING
   Endif
 
 End

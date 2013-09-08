@@ -475,7 +475,7 @@ static int my_loop()
 	{
 		if (_must_check_quit)
 		{
-			if (CWINDOW_must_quit() && CWatcher::count() == 0)
+			if (CWINDOW_must_quit() && CWatcher::count() == 0 && gTrayIcon::visibleCount() == 0)
 				break;
 			_must_check_quit = false;
 		}

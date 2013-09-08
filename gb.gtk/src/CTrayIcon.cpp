@@ -180,13 +180,20 @@ END_METHOD
 BEGIN_METHOD_VOID(CTRAYICON_hide)
 
 	TRAYICON->hide();
+	MAIN_check_quit();
 
 END_METHOD
 
 BEGIN_PROPERTY(CTRAYICON_visible)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(TRAYICON->isVisible()); return; }
-	TRAYICON->setVisible(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(TRAYICON->isVisible());
+	else
+	{
+		TRAYICON->setVisible(VPROP(GB_BOOLEAN));
+		if (!VPROP(GB_BOOLEAN))
+			MAIN_check_quit();
+	}
 
 END_PROPERTY
 

@@ -3,9 +3,9 @@ include $(top_srcdir)/component.am
 
 gblib_LTLIBRARIES = gb.opengl.sge.la
 
-gb_opengl_sge_la_LIBADD = @OPENGL_SGE_LIB@
-gb_opengl_sge_la_LDFLAGS = -module @LD_FLAGS@ @OPENGL_SGE_LDFLAGS@
-gb_opengl_sge_la_CPPFLAGS = @OPENGL_SGE_INC@
+gb_opengl_sge_la_LIBADD = @SGE_LIB@
+gb_opengl_sge_la_LDFLAGS = -module @LD_FLAGS@ @SGE_LDFLAGS@
+gb_opengl_sge_la_CPPFLAGS = @SGE_INC@
 
 gb_opengl_sge_la_SOURCES = \
 	main.c main.h \

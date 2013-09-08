@@ -63,6 +63,8 @@ DECLARE_EVENT(EVENT_GotFocus);
 DECLARE_EVENT(EVENT_LostFocus);
 DECLARE_EVENT(EVENT_Menu);
 
+int TRAYICON_count = 0;
+
 static int _state;
 static QList<CTRAYICON *> _list;
 static QImage _default_trayicon;
@@ -115,6 +117,8 @@ static void destroy_widget(CTRAYICON *_object)
 	{
 		delete WIDGET;
 		THIS->widget = NULL;
+		TRAYICON_count--;
+		MAIN_check_quit();
 	}
 }
 
@@ -260,6 +264,7 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 		wid->installEventFilter(&CTrayIcon::manager);
 
 		THIS->widget = wid;
+		TRAYICON_count++;
 
 		//QObject::connect(WIDGET, SIGNAL(embedded()), &CTrayIcon::manager, SLOT(embedded()));
 		//QObject::connect(WIDGET, SIGNAL(containerClosed()), &CTrayIcon::manager, SLOT(closed()));

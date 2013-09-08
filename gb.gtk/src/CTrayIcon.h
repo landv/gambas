@@ -28,13 +28,16 @@
 #include "gtrayicon.h"
 #include "CPicture.h"
 
-
 #ifndef __CTRAYICON_CPP
+
 extern GB_DESC CTrayIconDesc[];
 extern GB_DESC CTrayIconsDesc[];
+
 #else
+
 #define THIS ((CTRAYICON *)_object)
 #define TRAYICON ((gTrayIcon *)(THIS->base.widget))
+
 #endif
 
 typedef

@@ -17,11 +17,16 @@ GB_COMPONENT_PKG_CONFIG(
   glu, GLU, gb.opengl.glu, [glu],
   [glu])
 
+GB_COMPONENT_PKG_CONFIG(
+  sge, SGE, gb.opengl.sge, [sge],
+	[gl glew])
+
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
 src/glu/Makefile \
 src/glsl/Makefile \
+src/sge/Makefile
 )
 
 GB_PRINT_MESSAGES

@@ -1,0 +1,183 @@
+' Gambas class file
+
+Private $aModel As Md2Model[]
+Private $iFrames As Integer
+Private $fTime As Single
+Private $fFramerate As Float
+Private $iEndWidth As Integer
+Private $iEndZ As Integer
+
+Public Sub glaScreen_Open()
+ 
+  Init()
+  Gl.ClearDepth(100.0)       ' Enables clearing of the depth buffer
+  Glu.ClearColor(&H3398C3)   ' This will clear the background color to blue
+  Gl.DepthFunc(Gl.LESS)      ' The type of depth test to do
+  Gl.Enable(Gl.DEPTH_TEST)   ' Enables depth testing
+  Gl.ShadeModel(Gl.SMOOTH)   ' Enables smooth color shading
+
+  $fTime = Timer
+  timAnim.Enabled = True
+ 
+End
+
+Public Sub glaScreen_Resize()
+
+  Gl.Viewport(0, 0, glaScreen.Width, glaScreen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  Glu.Perspective(45.0, glaScreen.Width / glaScreen.Height, 0.1, 3000.0)   'Calculate The Aspect Ratio Of The Window
+  Glu.Lookat(0, 100, 120, 0, 0, -300, 0, 100, 0)
+  Gl.MatrixMode(Gl.MODELVIEW)
+  
+End
+
+Public Sub Init()
+
+  Dim X, D, Z As Float
+  Dim sModel As String
+  Dim I As Integer
+  Dim aModel As String[] = ["bauul", "goblin", "knight", "ogro", "rat", "rhino"]
+  
+  $aModel = New Md2Model[]
+  
+  D = 100
+  
+  X = - D
+  Z = -100
+  
+  For I = 1 To 189
+  
+    sModel = aModel[Int(Rnd(0, aModel.Count))]
+      
+    $aModel.Add(Md2Model.Load(sModel & ".md2"))
+    $aModel[$aModel.Max].Texture = LoadTexture(sModel & ".jpg")
+    'Print "Model #"; $aModel.Max; ": "; $aModel[$aModel.Max].Count; " frames"
+    $aModel[$aModel.Max].Move(X, -10, Z)
+    X += 50
+    If X > D Then
+      D += 100
+      X = - D
+      Z -= 100
+    Endif
+  
+  Next
+
+  $iEndWidth = D
+  $iEndZ = Z
+  
+  sldFrame.MinValue = 0
+  sldFrame.MaxValue = $aModel[0].Count
+  
+End
+ 
+ 
+Public Sub glaScreen_Draw()
+
+  Dim I As Integer
+  Dim hQuadric As GluQuadric
+
+  Gl.Clear(Gl.COLOR_BUFFER_BIT Or Gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
+  
+  Gl.PushMatrix
+  
+  Glu.Color(&HD96800&)
+  Gl.Begin(Gl.QUADS)
+  Gl.Vertex3f(-100, -34.2, -100)
+  Gl.Vertex3f(100, -34.2, -100)
+  Gl.Vertex3f($iEndWidth, -34.2, $iEndZ)
+  Gl.Vertex3f(- $iEndWidth, -34.2, $iEndZ)
+  Gl.End
+  
+  'Drawing model is as easy as this - frame number, interpolation between frames (0-1), texture identificator) 
+  '
+  Gl.Color3f(1, 1, 1)
+  For I = 0 To $aModel.Max
+    $aModel[I].Draw
+  Next
+    
+  For I = 0 To $aModel.Max
+    Glu.Color(Color.Lighter(&HD96800&))
+    hQuadric = Glu.NewQuadric()
+    Gl.PushMatrix()
+    Gl.Translatef($aModel[I].X, -34, $aModel[I].Z)
+    Gl.Rotatef(90, 1, 0, 0)
+    Glu.Disk(hQuadric, 0, 20, 20, 8)
+    Gl.PopMatrix()
+  Next
+  
+  ' You can use this code to get FPS printed in terminal 
+  
+  Inc $iFrames
+  If Timer >= ($fTime + 1) Then
+    $fFrameRate = $iFrames / (Timer - $fTime)
+    $iFrames = 0
+    Inc $fTime
+  Endif
+
+   lblInfo.Text = Format($aModel[0].Pos, "0.00") & " / " & $aModel[0].Count & " ( " & CInt($fFramerate) & " FPS )"
+
+   Gl.PopMatrix
+   
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.code = Key.F1 Then 
+    Me.FullScreen = Not Me.FullScreen
+    sldFrame.Visible = Not Me.FullScreen
+  Else If Key.Code = Key.Esc Then 
+    Me.Close
+  Else If Key.code = Key.Space Then 
+    timAnim.Enabled = Not timAnim.Enabled
+  Else If LCase(Key.Text) = "w" Then 
+    Gl.PolygonMode(Gl.FRONT_AND_BACK, Gl.LINE)
+  Else If LCase(Key.Text) = "f" Then 
+    Gl.PolygonMode(Gl.FRONT_AND_BACK, Gl.FILL)
+  Endif
+ 
+End
+
+Public Sub timAnim_Timer()
+
+  ' At every timer call we increase interpolation. It makes Frame number increase every 10 calls.
+  ' You can control frame flow any way you want. The smaller incrementation, the smoother movement.
+  
+  Dim I As Integer
+   
+   For I = 0 To $aModel.Max
+     $aModel[I].Pos += 0.1
+     If $aModel[I].Pos >= $aModel[I].Count Then $aModel[I].Pos = 0
+   Next
+   
+   Object.Lock(sldFrame)
+   sldFrame.Value = CInt($aModel[0].Pos)
+   Object.Unlock(sldFrame)
+   
+   glaScreen.Refresh
+   
+End
+
+' Just the subroutine to load textures for our models
+Private Sub LoadTexture(sPath As String) As Integer
+
+  Dim iTex As Integer
+  Dim hImage As Image
+
+  iTex = Gl.GenTextures(1)[0]
+  hImage = Image.Load(sPath)
+  Gl.BindTexture(Gl.TEXTURE_2D, iTex)
+  Gl.TexImage2D(hImage)
+  Glu.Build2DMipmaps(hImage)
+  Gl.Texparameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_LINEAR)
+  Gl.Texparameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+  Return iTex
+
+End
+
+
+Public Sub sldFrame_Change()
+
+  $aModel[0].Pos = sldFrame.Value
+
+End

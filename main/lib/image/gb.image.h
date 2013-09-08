@@ -111,12 +111,13 @@ typedef
 // Split a color into its component. Uninvert the alpha component
 
 #define GB_COLOR_SPLIT(_color, _r, _g, _b, _a) \
-{ \
-	_b = (_color) & 0xFF; \
-	_g = ((_color) >> 8) & 0xFF; \
-	_r = ((_color) >> 16) & 0xFF; \
-	_a = ((_color) >> 24) ^ 0xFF; \
-}
+({ \
+	uint _c = (uint)(_color); \
+	_b = _c & 0xFF; \
+	_g = (_c >> 8) & 0xFF; \
+	_r = (_c >> 16) & 0xFF; \
+	_a = (_c >> 24) ^ 0xFF; \
+})
 
 // Create a GB_COLOR from rgba components
 

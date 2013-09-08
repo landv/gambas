@@ -1,17 +1,18 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.4.0
-Title=screen
-Startup=MMain
-Version=0.0.1
+# Compiled with Gambas 3.4.90
+Title=Md2Model example
+Startup=FMain
+Icon=icon.png
+Version=3.4.90
+VersionFile=1
 Component=gb.image
+Component=gb.gui
 Component=gb.db
 Component=gb.db.mysql
-Component=gb.image.io
-Component=gb.sdl
+Component=gb.gui.opengl
 Component=gb.opengl
 Component=gb.opengl.glu
 Component=gb.opengl.sge
-Component=gb.sdl.sound
+Environment="GB_GUI=gb.qt4"
 TabSize=2
-Warnings=0
 Packager=1

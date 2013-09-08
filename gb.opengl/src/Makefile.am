@@ -1,7 +1,7 @@
 COMPONENT = gb.opengl
 include $(top_srcdir)/component.am
 
-SUBDIRS = . @GLSL_DIR@ @GLU_DIR@
+SUBDIRS = . @GLSL_DIR@ @GLU_DIR@ @SGE_DIR@
 
 gblib_LTLIBRARIES = gb.opengl.la
 

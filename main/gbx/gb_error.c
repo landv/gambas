@@ -711,7 +711,7 @@ void ERROR_hook(void)
 	if (no_rec)
 		return;
 	
-	if (PROJECT_class)
+	if (PROJECT_class && PROJECT_class->state)
 	{
 		handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
 		

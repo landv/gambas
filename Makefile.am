@@ -33,7 +33,6 @@ SUBDIRS = \
  @media_dir@ \
  @jit_dir@ \
  @httpd_dir@ \
- @opengl_sge_dir@ \
  @openssl_dir@ \
  @openal_dir@ \
  comp \

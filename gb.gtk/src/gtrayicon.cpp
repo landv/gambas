@@ -47,6 +47,7 @@
 
 #define OPCODE "_NET_SYSTEM_TRAY_OPCODE"
 
+int gTrayIcon::_visible_count = 0;
 
 /*****************************************************************************
 
@@ -425,6 +426,8 @@ void gTrayIcon::setVisible(bool vl)
 			
 			updateTooltip();
 			refresh();
+
+			_visible_count++;
 		}
 		
 	}
@@ -433,6 +436,7 @@ void gTrayIcon::setVisible(bool vl)
 		if (plug)
 		{
 			gtk_widget_destroy(plug);
+			_visible_count--;
 		}
 	}
 }

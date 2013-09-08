@@ -176,7 +176,7 @@ void GLarea::paintGL()
 	{
 		// clear to avoid garbage
 		CleanupOnFirstShow = true;
-		qglClearColor(Qt::black);
+		//qglClearColor(Qt::black);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 	

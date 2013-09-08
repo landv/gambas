@@ -66,6 +66,7 @@ public:
 //"Static"
 
 	static int count() { return g_list_length(trayicons); }
+	static int visibleCount() { return _visible_count; }
 	static gTrayIcon *get(int index) { return (gTrayIcon *)g_list_nth_data(trayicons, index); }
 	static void exit();	
 	static gPicture *defaultIcon();
@@ -87,6 +88,7 @@ public:
 
 private:
 
+	static int _visible_count;
 	GtkStyle *_style;
 };
 

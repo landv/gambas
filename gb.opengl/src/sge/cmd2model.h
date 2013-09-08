@@ -58,6 +58,10 @@
 #include "gambas.h"
 #include "main.h"
 
+#ifndef __CMD2MODEL_C
+extern GB_DESC Md2ModelFrameDesc[];
+extern GB_DESC Md2ModelDesc[];
+#endif
 
 /* Vector */
 typedef float vec3[3];
@@ -114,54 +118,54 @@ struct md2_glcmd
 }glcmd;
 
 
-extern GB_DESC Md2ModelDesc[] ;
-
 typedef
 	struct {
 		GB_BASE ob;
 		//Header
 		int ident;
-  		int version;
+		int version;
 
-  		int skinwidth;
-  		int skinheight;
+		int skinwidth;
+		int skinheight;
 
-  		int framesize;
+		int framesize;
 
-  		int num_skins;
-  		int num_vertices;
-  		int num_st;
-  		int num_tris;
-  		int num_glcmds;
-  		int num_frames;
+		int num_skins;
+		int num_vertices;
+		int num_st;
+		int num_tris;
+		int num_glcmds;
+		int num_frames;
 
-  		int offset_skins;
-  		int offset_st;
-  		int offset_tris;
-  		int offset_frames;
-  		int offset_glcmds;
-  		int offset_end;
+		int offset_skins;
+		int offset_st;
+		int offset_tris;
+		int offset_frames;
+		int offset_glcmds;
+		int offset_end;
 		//End header
 
 		skinmd2 *skins;
-  		texCoordmd2 *texcoords;
-  		trianglemd2 *triangles;
-  		framemd2 *frames;
-  		int *glcmds;
+		texCoordmd2 *texcoords;
+		trianglemd2 *triangles;
+		framemd2 *frames;
+		int *glcmds;
 
-  		GLuint tex_id; 
+		GLuint tex_id;
 
 		//Model specific data
 		float position[3];
 		float scale[3];
 		int f_no;
 		float inter_frame;
+		int frame; // frame being accessed with the [] operator
+		int texture;
+		double pos;
 		//End model specific data
 		}
-	MD2MODEL;
+	CMD2MODEL;
 
 
-MD2MODEL *MD2MODEL_create();
-
+CMD2MODEL *MD2MODEL_create(void);
 	
 #endif

@@ -23,6 +23,8 @@
 
 #define __GLU_C
 
+#include "gb.image.h"
+
 #include "GLU.h"
 
 #include "GLUcoordTransf.h"
@@ -31,6 +33,30 @@
 #include "GLUnurb.h"
 #include "GLUproject.h"
 
+//---------------------------------------------------------------------------
+
+BEGIN_METHOD(Glu_Color, GB_INTEGER color)
+
+	int r, g, b, a;
+
+	GB_COLOR_SPLIT(VARG(color), r, g, b, a);
+	//fprintf(stderr, "Glu_Color: %d %d %d %d\n", r, g, b, a);
+	if (a == 0)
+		glColor3d(r / 255.0, g / 255.0, b / 255.0);
+	else
+		glColor4d(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+
+END_METHOD
+
+BEGIN_METHOD(Glu_ClearColor, GB_INTEGER color)
+
+	int r, g, b, a;
+
+	GB_COLOR_SPLIT(VARG(color), r, g, b, a);
+	glClearColor(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+
+END_METHOD
+
 BEGIN_METHOD(GLUERRORSTRING, GB_INTEGER code)
 
 	const GLubyte *errStr = gluErrorString(VARG(code));
@@ -38,7 +64,7 @@ BEGIN_METHOD(GLUERRORSTRING, GB_INTEGER code)
 
 END_METHOD
 
-/**************************************************************************/
+//---------------------------------------------------------------------------
 
 GB_DESC Cglu[] =
 {
@@ -86,6 +112,10 @@ GB_DESC Cglu[] =
 	GB_STATIC_METHOD("UnProject", "Float[]", GLUUNPROJECT, "(WindowX)f(WindowY)f(WindowZ)f(Modelview)Float[];(Projection)Float[];(Viewport)Integer[];"),
 	GB_STATIC_METHOD("UnProject4", "Float[]", GLUUNPROJECT4, "(WindowX)f(WindowY)f(WindowZ)f(ClipW)f(Modelview)Float[];(Projection)Float[];(Viewport)Integer[];(NearValue)f(FarValue)f"),
 	
+	/* Setting a Gambas color */
+	GB_STATIC_METHOD("ClearColor", NULL, Glu_ClearColor, "(Color)i"),
+	GB_STATIC_METHOD("Color", NULL, Glu_Color, "(Color)i"),
+
 	/********************/
 	/* opengl constants */
 	/********************/

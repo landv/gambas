@@ -32,6 +32,7 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	Md2ModelFrameDesc,
 	Md2ModelDesc,
 
 	NULL

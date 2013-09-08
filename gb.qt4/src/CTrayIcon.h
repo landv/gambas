@@ -38,6 +38,7 @@
 #ifndef __CTRAYICON_CPP
 extern GB_DESC CTrayIconDesc[];
 extern GB_DESC CTrayIconsDesc[];
+extern int TRAYICON_count;
 #else
 
 #define THIS  ((CTRAYICON *)_object)
