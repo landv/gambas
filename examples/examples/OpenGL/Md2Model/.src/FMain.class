@@ -8,6 +8,9 @@ Private $fFramerate As Float
 Private $iEndWidth As Integer
 Private $iEndZ As Integer
 
+Private $iDisk As Integer
+Private $hQuadric As GluQuadric
+
 Public Sub glaScreen_Open()
  
   Init()
@@ -55,7 +58,7 @@ Public Sub Init()
   X = - D
   Z = -100
   
-  For I = 1 To 189
+  Do
   
     hModel = $aModel[Int(Rnd(0, aModel.Count))]
     hObject = New Md2Object(hModel)
@@ -66,9 +69,13 @@ Public Sub Init()
       D += 100
       X = - D
       Z -= 100
+      Inc I
+      If I = 10 Then Break
     Endif
-  
-  Next
+    
+  Loop
+
+  Print $aObject.Count; " objects"
 
   $iEndWidth = D
   $iEndZ = Z
@@ -76,17 +83,27 @@ Public Sub Init()
   sldFrame.MinValue = 0
   sldFrame.MaxValue = $aModel[0].Count
   
+  $iDisk = Gl.GenLists(1)
+  $hQuadric = Glu.NewQuadric()
+
+  Gl.NewList($iDisk, Gl.COMPILE)
+  Gl.Rotatef(90, 1, 0, 0)
+  Glu.Disk($hQuadric, 0, 20, 30, 1)
+  Gl.EndList
+  
 End
  
  
 Public Sub glaScreen_Draw()
 
-  Dim I As Integer
-  Dim hQuadric As GluQuadric
+  Dim fTime As Float = Timer
+  Dim I, N As Integer
 
   Gl.Clear(Gl.COLOR_BUFFER_BIT Or Gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
   
   Gl.PushMatrix
+  
+  Gl.Disable(Gl.TEXTURE_2D)
   
   Glu.Color(&HD96800&)
   Gl.Begin(Gl.QUADS)
@@ -96,21 +113,22 @@ Public Sub glaScreen_Draw()
   Gl.Vertex3f(- $iEndWidth, -34.2, $iEndZ)
   Gl.End
   
-  Gl.Color3f(1, 1, 1)
+  Glu.Color(Color.Lighter(&HD96800&))
   For I = 0 To $aObject.Max
-    $aObject[I].Draw
-  Next
     
-  For I = 0 To $aObject.Max
-    Glu.Color(Color.Lighter(&HD96800&))
-    hQuadric = Glu.NewQuadric()
     Gl.PushMatrix()
     Gl.Translatef($aObject[I].X, -34, $aObject[I].Z)
-    Gl.Rotatef(90, 1, 0, 0)
-    Glu.Disk(hQuadric, 0, 20, 30, 1)
+    Gl.CallList($iDisk)
     Gl.PopMatrix()
+    
   Next
   
+  Gl.Enable(Gl.TEXTURE_2D)
+  Gl.Color3f(1, 1, 1)
+  For I = 0 To $aObject.Max
+    N += $aObject[I].Draw()
+  Next
+    
   ' You can use this code to get FPS printed in terminal 
   
   Inc $iFrames
@@ -120,9 +138,11 @@ Public Sub glaScreen_Draw()
     Inc $fTime
   Endif
 
-   lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " FPS )"
+  lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " FPS )"
 
-   Gl.PopMatrix
+  Gl.PopMatrix
+   
+  Print N; " vertices in "; Format(Timer - fTime, "0.000000"); " seconds\r";
    
 End
 
@@ -151,8 +171,10 @@ Public Sub timAnim_Timer()
   Dim I As Integer
    
    For I = 0 To $aObject.Max
-     $aObject[I].Frame += 0.1
-     If $aObject[I].Frame >= $aObject[I].Model.Count Then $aObject[I].Frame = 0
+     With $aObject[I]
+      .Frame += 0.1
+      If .Frame >= .Count Then .Frame = 0
+     End With
    Next
    
    Object.Lock(sldFrame)

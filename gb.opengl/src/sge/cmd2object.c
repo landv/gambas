@@ -129,7 +129,7 @@ BEGIN_METHOD_VOID(Md2Object_Draw)
 	if (texture < 0)
 		texture = THIS->model->texture;
 
-	MD2MODEL_draw(THIS->model, THIS->frame, texture, THIS->pos, THIS->scale, THIS->rotate);
+	GB.ReturnInteger(MD2MODEL_draw(THIS->model, THIS->frame, texture, THIS->pos, THIS->scale, THIS->rotate));
 
 END_METHOD
 
@@ -165,7 +165,7 @@ GB_DESC Md2ObjectDesc[] =
 	GB_PROPERTY("Texture", "i", Md2Object_Texture),
 	GB_PROPERTY("Frame", "f", Md2Object_Frame),
 	GB_PROPERTY_READ("Count", "i", Md2Object_Count),
-	GB_METHOD("Draw", NULL, Md2Object_Draw, NULL),
+	GB_METHOD("Draw", "i", Md2Object_Draw, NULL),
 
 	GB_PROPERTY_READ("Model", "Md2Model", Md2Object_Model),
 

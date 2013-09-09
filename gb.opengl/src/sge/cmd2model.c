@@ -202,29 +202,28 @@ CMD2MODEL *MD2MODEL_create(void)
 	return (CMD2MODEL*)GB.New(GB.FindClass("Md2Model"), NULL, NULL);
 };
 
-void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *scale, float *rotate)
+int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *scale, float *rotate)
 {
-	int i, j;
+	int i;
 	int n;
 	double interp;
-	GLfloat s, t, v_curr[3], v_next[3], v[3], norm[3];
-	float *n_curr, *n_next;
-	framemd2 *pframe1, *pframe2;
-	vertexmd2 *pvert1, *pvert2;
+	GLfloat v_curr[3], v_next[3], v[3], norm[3];
+	GLfloat *n_curr, *n_next;
+	const framemd2 *pframe1, *pframe2;
+	const vertexmd2 *pvert1, *pvert2;
 	bool enabled;
+	int nvert = 0;
 
 	int *pglcmds;
-	framemd2 *pframe;
-	vertexmd2 *pvert;
 	glcmd *packet;
 
 	if (texture < 0)
-		return;
+		return 0;
 
 	n = (int)frame;
 	interp = frame - n;
 
-	if ((n < 0) || (n >= THIS->num_frames-1))
+	if ((n < 0) || (n >= (THIS->num_frames - 1)))
 	{
 		n = 0;
 		interp = 0;
@@ -250,52 +249,73 @@ void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, fl
 	if (scale)
 		glScalef(scale[0], scale[1], scale[2]);
 
-	glBindTexture (GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
-	if (interp == 0)
+#if 1
+	// pglcmds points at the start of the command list
+	pglcmds = THIS->glcmds;
+
+	pframe1 = &THIS->frames[n];
+	pframe2 = &THIS->frames[n + 1];
+
+	// Draw the model
+	while ((i = *(pglcmds++)) != 0)
 	{
-		// pglcmds points at the start of the command list
-		pglcmds = THIS->glcmds;
-
-		// Draw the model
-		while ((i = *(pglcmds++)) != 0)
+		if (i < 0)
 		{
-			if (i < 0)
-			{
-				glBegin(GL_TRIANGLE_FAN);
-				i = -i;
-			}
-			else
-			{
-				glBegin(GL_TRIANGLE_STRIP);
-			}
-
-			// Draw each vertex of this group
-			for (/* Nothing */ ; i > 0; --i, pglcmds += 3)
-			{
-				packet = (glcmd *)pglcmds;
-				pframe = &THIS->frames[n];
-				pvert = &pframe->verts[packet->index];
-
-				// Pass texture coordinates to OpenGL
-				glTexCoord2f (packet->s, packet->t);
-
-				// Normal vector
-				glNormal3fv (anorms_table[pvert->normalIndex]);
-
-				// Calculate vertex real position
-				v[0] = (pframe->scale[0] * pvert->v[0]) + pframe->translate[0];
-				v[1] = (pframe->scale[1] * pvert->v[1]) + pframe->translate[1];
-				v[2] = (pframe->scale[2] * pvert->v[2]) + pframe->translate[2];
-
-				glVertex3fv (v);
-			}
-
-			glEnd ();
+			glBegin(GL_TRIANGLE_FAN);
+			i = -i;
 		}
+		else
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+		}
+
+		// Draw each vertex of this group
+		for (/* Nothing */ ; i > 0; --i, pglcmds += 3)
+		{
+			packet = (glcmd *)pglcmds;
+			pvert1 = &pframe1->verts[packet->index];
+			pvert2 = &pframe2->verts[packet->index];
+
+			// Pass texture coordinates to OpenGL
+			//glTexCoord2f (pGLcmd->s, 1.0f - pGLcmd->t);
+			glTexCoord2f(packet->s, packet->t);
+
+			// Compute interpolated normal vector
+			n_curr = anorms_table[pvert1->normalIndex];
+			n_next = anorms_table[pvert2->normalIndex];
+
+			norm[0] = n_curr[0] + interp * (n_next[0] - n_curr[0]);
+			norm[1] = n_curr[1] + interp * (n_next[1] - n_curr[1]);
+			norm[2] = n_curr[2] + interp * (n_next[2] - n_curr[2]);
+
+			// Normal vector
+			glNormal3fv(norm);
+
+			v_curr[0] = pframe1->scale[0] * pvert1->v[0] + pframe1->translate[0];
+			v_curr[1] = pframe1->scale[1] * pvert1->v[1] + pframe1->translate[1];
+			v_curr[2] = pframe1->scale[2] * pvert1->v[2] + pframe1->translate[2];
+
+			v_next[0] = pframe2->scale[0] * pvert2->v[0] + pframe2->translate[0];
+			v_next[1] = pframe2->scale[1] * pvert2->v[1] + pframe2->translate[1];
+			v_next[2] = pframe2->scale[2] * pvert2->v[2] + pframe2->translate[2];
+
+			v[0] = v_curr[0] + interp * (v_next[0] - v_curr[0]);
+			v[1] = v_curr[1] + interp * (v_next[1] - v_curr[1]);
+			v[2] = v_curr[2] + interp * (v_next[2] - v_curr[2]);
+
+			glVertex3fv(v);
+			nvert++;
+		}
+
+		glEnd();
 	}
-	else
+#else
 	{
+		int j;
+		GLfloat s, t;
+
 		glBegin (GL_TRIANGLES);
 
 		for (i = 0; i < THIS->num_tris; ++i)
@@ -334,11 +354,13 @@ void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, fl
 				v[2] = v_curr[2] + interp * (v_next[2] - v_curr[2]);
 
 				glVertex3fv (v);
+				nvert++;
 			}
 		}
 
 		glEnd();
 	}
+#endif
 
 	//glScalef(1/THIS->scale[0], 1/THIS->scale[1], 1/THIS->scale[2]);
 	glPopMatrix();
@@ -346,6 +368,7 @@ void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, fl
 	if (!enabled)
 		glDisable(GL_TEXTURE_2D);
 
+	return nvert;
 }
 
 

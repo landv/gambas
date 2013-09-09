@@ -162,6 +162,6 @@ typedef
 
 
 CMD2MODEL *MD2MODEL_create(void);
-void MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *rotate, float *scale);
+int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *rotate, float *scale);
 
 #endif
