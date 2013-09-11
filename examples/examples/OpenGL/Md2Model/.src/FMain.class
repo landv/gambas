@@ -11,6 +11,11 @@ Private $iEndZ As Integer
 Private $iDisk As Integer
 Private $hQuadric As GluQuadric
 
+' Private $fRotX As Float
+' Private $fRotY As Float
+' Private $fStartX As Float
+' Private $fStartY As Float
+
 Public Sub glaScreen_Open()
  
   Init()
@@ -208,3 +213,18 @@ Public Sub sldFrame_Change()
   $aModel[0].Pos = sldFrame.Value
 
 End
+
+' Public Sub glaScreen_MouseMove()
+' 
+'   $fRotX = $fStartX + 180 * (Mouse.X - Mouse.StartX) / glaScreen.Width
+'   $fRotY = $fStartY + 180 * (Mouse.Y - Mouse.StartY) / glaScreen.Height
+'   glaScreen.Refresh
+' 
+' End
+' 
+' Public Sub glaScreen_MouseDown()
+' 
+'   $fStartX = $fRotX
+'   $fStartY = $fRotY
+' 
+' End

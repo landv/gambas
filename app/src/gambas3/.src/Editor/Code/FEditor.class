@@ -3628,6 +3628,26 @@ Private Sub AddLocalVariable(sName As String, sType As String)
   
 End
 
+Private Sub AddGlobalVariable(sName As String, sType As String)
+  
+  Dim I, iLast As Integer
+  Dim sLine As String
+  
+  For I = 0 To Editor.Lines.Count - 1
+    
+    sLine = Trim(Highlight.Purge(Editor.Lines[I].Text))
+    If IsProc(sLine) Then Break
+    If sLine And If sLine <> "'" Then iLast = I
+    
+  Next
+  
+  sLine = "Private " & sName & " As " & sType & "\n"
+  If iLast = 0 Then sLine = "\n" & sLine
+  
+  Editor.Insert(sLine, iLast + 1, 0)
+  
+End
+
 
 Private Sub CreateLocalVariable() As Boolean
 
@@ -3643,9 +3663,16 @@ Private Sub CreateLocalVariable() As Boolean
     aSym.Remove(0)
     aType.Remove(0)
   Endif
+  
+  If aSym[0] = "IF" Or If aSym[0] = "ELSE" And aSym[1] = "IF" Then
+    I = aSym.Find("THEN") + 1
+    If I <= 0 Then Return
+    aSym.Remove(0, I)
+    aType.Remove(0, I)
+  Endif
  
   ' Assignment
-  If aSym.Count >= 3 And If aType[0] = Highlight.Symbol And If aSym[1] = "=" Then
+  If aSym.Count >= 3 And If aType[0] = Highlight.Symbol And If Len(aSym[1]) <= 2 And If Right(aSym[1]) = "=" Then
     
     sName = aSym[0]
     sType = GetSymbolType(sName)
@@ -3730,7 +3757,11 @@ Private Sub CreateLocalVariable() As Boolean
   Endif
 
   If sType Then
-    AddLocalVariable(sName, CSymbolInfo.GetType(sType))
+    If Left(sName) = "$" Then
+      AddGlobalVariable(sName, CSymbolInfo.GetType(sType))
+    Else
+      AddLocalVariable(sName, CSymbolInfo.GetType(sType))
+    Endif
     Return True
   Endif
   

@@ -10,6 +10,7 @@ Private $cKeyword As Collection
 Private $cSubst As Collection
 Private $cIdent As Collection
 Private $iSubst As Integer
+Private $iDoNotCompress As Integer
 
 Public Sub CanCompress(sPath As String) As Boolean
   
@@ -50,6 +51,7 @@ Private Sub SubstIdent(sIdent As String)
   Dim sSubst As String
   Dim iIndex As Integer
   
+  If $iDoNotCompress Then Return
   If $cSubst.Exist(sIdent) Then Return
   
   Repeat 
@@ -92,6 +94,7 @@ Public Sub Javascript(sText As String) As String
   Dim bVar As Boolean
   Dim iLevel As Integer
   Dim bKeyword As Boolean
+  Dim iPosMem As Integer
   
   If Not $cKeyword Then InitJavascriptKeywords
 
@@ -99,6 +102,7 @@ Public Sub Javascript(sText As String) As String
 
   $cSubst = New Collection
   $iSubst = 0
+  $iDoNotCompress = 0
   
   iLen = Len(sText)
   sText &= "  "
@@ -186,6 +190,11 @@ Public Sub Javascript(sText As String) As String
     Else If bOneLineComment Then
       If sCar = "\n" Then
         bOneLineComment = False
+        If Mid$(sText, iPosMem, iPos - iPosMem) == "// <VERBATIM>" Then 
+          Inc $iDoNotCompress
+        Else If Mid$(sText, iPosMem, iPos - iPosMem) == "// </VERBATIM>" Then 
+          If $iDoNotCompress > 0 Then Dec $iDoNotCompress
+        Endif
         Dec iPos
       Endif
       Continue
@@ -218,6 +227,7 @@ Public Sub Javascript(sText As String) As String
       Continue
     Else If sCar2 = "//" Then
       bOneLineComment = True
+      iPosMem = iPos
       Inc iPos
       Continue
     Endif
