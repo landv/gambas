@@ -122,6 +122,7 @@ static void destroy_tray_icon(CTRAYICON *_object)
 	{
 		delete TRAYICON;
 		THIS->base.widget = NULL;
+		MAIN_check_quit();
 	}
 }
 
@@ -289,7 +290,7 @@ GB_DESC CTrayIconDesc[] =
 	
 	GB_METHOD("Show", 0, CTRAYICON_show, 0),
 	GB_METHOD("Hide", 0, CTRAYICON_hide, 0),
-	GB_METHOD("Delete",0,CTRAYICON_destroy,0),
+	GB_METHOD("Delete",0, CTRAYICON_destroy,0),
 	
 	GB_PROPERTY("Visible","b",CTRAYICON_visible),
 	GB_PROPERTY("Picture","Picture",CTRAYICON_picture),

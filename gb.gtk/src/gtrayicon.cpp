@@ -288,6 +288,8 @@ gTrayIcon::gTrayIcon()
 
 gTrayIcon::~gTrayIcon()
 {
+	setVisible(false);
+
 	gPicture::assign(&_icon);
 	
 	if (buftext) 
@@ -296,10 +298,6 @@ gTrayIcon::~gTrayIcon()
 		buftext = NULL;
 	}
 	
-	if (plug) 
-		gtk_widget_destroy(plug);
-	
-	setVisible(false);
 	trayicons = g_list_remove(trayicons, (gpointer)this);
 	
 	if (!trayicons && _default_icon)
