@@ -123,14 +123,18 @@ void XMLDocument_SetContent(Document *doc, const char *content, size_t len) thro
         if(posStart)
         {
             posEnd = (char*)memchr(posStart, '>', len - (posStart - content));
-            posEnd += 1;
-        }
-        //if(!posEnd) throw XMLParseException("No valid Doctype found", 0, 0, 0);
 
-        //HTML5 ? (<!DOCTYPE html>)
-        doc->docType = (posEnd - posStart == 98) ? XHTMLDocumentType : HTMLDocumentType;
-        if(doc->docType == HTMLDocumentType) doc->docType = (!memcmp(posStart, "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 98)) ? XHTMLDocumentType : HTMLDocumentType;
-    }
+            if(posEnd)
+            {
+                posEnd += 1;
+                //HTML5 ? (<!DOCTYPE html>)
+                doc->docType = (posEnd - posStart == 98) ? XHTMLDocumentType : HTMLDocumentType;
+                if(doc->docType == HTMLDocumentType) doc->docType = (!memcmp(posStart, "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 98)) ? XHTMLDocumentType : HTMLDocumentType;
+            }
+
+        }
+
+     }
 
     Node** elements = 0;
     size_t elementCount = 0;
@@ -149,7 +153,6 @@ void XMLDocument_SetContent(Document *doc, const char *content, size_t len) thro
     
     XMLNode_clearChildren((Node*)doc);
     doc->root = 0;
-    
     for(size_t i = 0; i < elementCount; i++)
     {
         node = elements[i];
@@ -161,7 +164,10 @@ void XMLDocument_SetContent(Document *doc, const char *content, size_t len) thro
             }
             else
             {
-                throw XMLParseException("Extra root element", 0, 0, 0);
+                if(doc->docType == XMLDocumentType)//Strict document
+                {
+                    throw XMLParseException("Extra root element", 0, 0, 0);
+                }
             }
                 
         }

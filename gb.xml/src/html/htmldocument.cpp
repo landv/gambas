@@ -225,6 +225,11 @@ void HtmlDocument_AddScriptIfNotIE(Document *doc, const char *src, size_t lenSrc
     XML.XMLNode_appendChild(head,comment);
 }
 
+void HtmlDocument_GetElementsByClassName(Document *doc, const char *className, const size_t lenClassName, GB_ARRAY *array, int depth)
+{
+    XML.XMLNode_getGBChildrenByAttributeValue(doc, "class", 5, className, lenClassName, array, 0, depth);
+}
+
 //Some utils
 
 Element* GetElement(Node *parent, const char *tagName, const size_t lenTagName)

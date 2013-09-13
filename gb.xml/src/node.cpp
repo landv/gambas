@@ -378,7 +378,7 @@ void XMLNode_getGBChildrenByAttributeValue(Node *node, const char *attrName, con
                                                  const char *attrValue, const size_t lenAttrValue,
                                                  GB_ARRAY *array, const int mode, const int depth)
 {
-    GB.Array.New(array, GB.FindClass("XmlNode"), 0);
+    GB.Array.New(array, GB.FindClass("XmlElement"), 0);
     XMLNode_addGBChildrenByAttributeValue(node, attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth);
 }
 
@@ -397,13 +397,14 @@ void XMLNode_addGBChildrenByAttributeValue(Node *node, const char *attrName, con
                 GB.Ref(node->GBObject);
             }
         }
-        if(depth == 1) return;
-        for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
+    }
+
+    if(depth == 1) return;
+    for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
+    {
+        if(tNode->type == Node::ElementNode)
         {
-            if(tNode->type == Node::ElementNode)
-            {
-                XMLNode_addGBChildrenByAttributeValue(tNode, attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth - 1);
-            }
+            XMLNode_addGBChildrenByAttributeValue(tNode, attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth - 1);
         }
     }
             

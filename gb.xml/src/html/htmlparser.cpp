@@ -97,15 +97,8 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
         {
             if(ws == '/')//C'est un élément de fin
             {
-                if(!curElement)//Pas d'élément courant
-                {
-                    //ERREUR : CLOSING TAG WHEREAS NONE IS OPEN
-                    XML.ThrowXMLParseException("Closing tag whereas none is open",
-                                            data, lendata, pos - 1);
-
-                }
-
-                do
+                Element *oldCurElement = curElement;
+                while(curElement)
                 {
                     if((endData) >= pos + curElement->lenTagName)
                     {
@@ -115,10 +108,18 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                         }
                     }
                     curElement = (Element*)(curElement->parent);
-                }while(curElement->parent);
+                }
 
-                pos += curElement->lenTagName;
-                curElement = (Element*)(curElement->parent);
+                if(!curElement)
+                {
+                    curElement = oldCurElement;
+                }
+                else
+                {
+                    pos += curElement->lenTagName;
+                    curElement = (Element*)(curElement->parent);
+                }
+
                 tag = (char*)memchr(pos, '>', endData - pos);//On cherche la fin du tag
                 if(tag) pos = tag + 1;//On avance à la fin du tag
 
@@ -257,7 +258,7 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                 {
                     pos++;
 
-                    //curElement = (Element*)(curElement->parent);//Pas d'enfants, on remonte
+                    curElement = (Element*)(curElement->parent);//Pas d'enfants, on remonte
                     break;
                 }
 
@@ -282,9 +283,12 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                         }
                         else
                         {
-                            //ERREUR : INVALID TAG
+                            /*//ERREUR : INVALID TAG
                             XML.ThrowXMLParseException("Invalid tag",
-                            data, lendata, pos - 1);
+                            data, lendata, pos - 1);*/
+                            //Tag not ended correctly ? ...
+                            pos = (char*)memchr(pos, '>', endData - pos);
+                            break;
                         }
                     }
 
