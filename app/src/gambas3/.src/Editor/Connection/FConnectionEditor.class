@@ -15,62 +15,72 @@ Private $sTitle As String
 Private $aField As New CField[]
 Private $cFieldName As New Collection
 Private $aIndexField As New CIndexField[]
+Private $cFieldInfo As New Collection
+
+Private $bAllowDesc As Boolean = False
 
 Public Sub _new(sPath As String)
-
+  
   Path = sPath
   Me.Name = File.BaseName(Path)
-
+  
   With tbvField
-
-    .Columns.Count = 5
-
+    
+    .Columns.Count = IIf($bAllowDesc, 6, 5)
+    
     With tbvField.Columns[0]
       .Text = " "
       .Width = 24
     End With
-
+    
     With tbvField.Columns[1]
       .Text = ("Name")
       .Width = Desktop.Scale * 24
     End With
-
+    
     With tbvField.Columns[2]
       .Text = ("Type")
       .Width = Desktop.Scale * 14
     End With
-
+    
     With tbvField.Columns[3]
       .Text = ("Length")
       .Width = Desktop.Scale * 14
     End With
-
+    
     With tbvField.Columns[4]
       .Text = ("Default value")
       .Width = Desktop.Scale * 24
     End With
-
+    
+    If $bAllowDesc Then
+      With tbvField.Columns[5]
+        .Text = ("Description")
+        .Width = Desktop.Scale * 24
+      End With
+    Endif
+    
   End With
-
+  
   With tbvIndex
-
+    
     .Columns.Count = 3
-
+    
     With tbvIndex.Columns[0]
       .Text = ("Index")
       .Width = Desktop.Scale * 24
     End With
-
+    
     With tbvIndex.Columns[1]
       .Text = ("Unique")
       .Width = Desktop.Scale * 12
     End With
-
+    
     With tbvIndex.Columns[2]
       .Text = ("Field")
       .Width = Desktop.Scale * 24
     End With
-
+    
   End With
   
 End
@@ -88,7 +98,7 @@ Private Sub LoadList(Optional sTable As String)
   Endif
   
   btnRequest_Click
-
+  
 End
 
 Private Sub GetTableList() As String[]
@@ -105,12 +115,10 @@ Private Sub GetTableList() As String[]
   
 End
 
-
-
 Private Function ReadOnly_Read() As Boolean
-
+  
   Return $bReadOnly
-
+  
 End
 
 Private Sub SetReadOnly(bReadOnly As Boolean)
@@ -125,11 +133,10 @@ Private Sub SetReadOnly(bReadOnly As Boolean)
   
 End
 
-
 Public Sub Form_Activate()
-
+  
   DB.Current = $hConn
-
+  
 End
 
 Public Sub GetConnection() As Connection
@@ -144,12 +151,11 @@ Public Sub GetDescription() As String
   
 End
 
-
 Public Sub Reload() As Boolean
   
   Dim hConfig As Settings
   Dim sTitle As String
-
+  
   hConfig = New Settings(Path)
   
   If $hConn Then 
@@ -157,12 +163,12 @@ Public Sub Reload() As Boolean
     'datRequest.Table = ""
     $hConn.Close
   Endif
-
+  
   $hConn = New Connection
   MConnection.InitFrom($hConn, hConfig, Me.Name, True)
-
+  
   Inc Application.Busy
-
+  
   $hConn.Open
   'DB.Current = $hConn
   
@@ -186,7 +192,7 @@ Public Sub Reload() As Boolean
   dvwData.Editable = False
   datData.Connection = $hConn
   datRequest.Connection = $hConn
-
+  
   LoadList($sTable)
   
   DrawTitle
@@ -195,7 +201,7 @@ Public Sub Reload() As Boolean
   Dec Application.Busy
   
 Catch
-
+  
   Application.Busy = 0
   Me.Enabled = False
   Message.Error(("Unable to connect to database.") & "\n\n" & Error.Text)
@@ -203,59 +209,57 @@ Catch
   
 End
 
-
 Public Sub LoadFile() As Boolean
-
+  
   ReadConfig
   Return Reload()
-
+  
 End
 
 Public Function Save() As Boolean
-
+  
   If Not $bModify Then Return
-
+  
   If SaveTable() Then Return True
-
+  
   $bModify = False
   DrawTitle
-
+  
 End
 
 Private Sub DrawTitle()
-
+  
   Project.DrawTitle(Me, True)
-
+  
 End
 
 Public Sub Modify(Optional bReset As Boolean)
-
+  
   If Project.ReadOnly Then Return
   If $bModify <> bReset Then Return
-
+  
   $bModify = Not bReset
   DrawTitle
   If $bModify Then Inc Project.TimeStamp
-
+  
 End
 
-
 Public Function IsModified() As Boolean
-
+  
   Return $bModify
-
+  
 End
 
 Public Sub Form_Close()
-
+  
   Settings.Write(spnTable)
-
+  
   datData.Enabled = False 
   splTable.Hide
   Try $hConn.Close
-
+  
   Project.Files[Path] = Null
-
+  
 End
 
 Public Sub ReadConfig()
@@ -267,7 +271,7 @@ Public Sub ReadConfig()
   edtRequest.Flags[Editor.ShowModifiedLines] = False
   edtRequest.Flags[Editor.HighlightImmediately] = True
   edtRequest.Flags[Editor.HideMargin] = True
-
+  
   For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData, dvwRequest]
     Project.SetSmallFont(hCtrl)
   Next
@@ -283,7 +287,6 @@ Private Sub SelectTable(sTable As String)
   If Error Then Try lvwTable["S" & sTable].Selected = True
   
 End
-
 
 Private Sub CheckCurrent() As Boolean
   
@@ -304,14 +307,14 @@ Private Sub CheckCurrent() As Boolean
   Return
   
 CANCEL:
-
+  
   SelectTable($sTable)
   Return True
   
 End
 
 Private Sub ReloadTable()
-
+  
   Dim hTable As Table
   Dim hField As Field
   Dim hIndex As Index
@@ -319,28 +322,49 @@ Private Sub ReloadTable()
   Dim hCIndexField As CIndexField
   Dim sField As String
   Dim bCreate As Boolean
-
+  Dim hResult As Result
+  
   $aField.Clear
   $cFieldName.Clear
   $aIndexField.Clear
-
+  $cFieldInfo.Clear
+  
+  If $bAllowDesc Then 
+    'create the info table if not exist
+    If Not $hConn.Tables.Exist(MConnection.InfoTableName) Then
+      hTable = $hConn.Tables.Add(MConnection.InfoTableName)
+      hTable.Fields.Add("field", db.String)
+      hTable.Fields.Add("desc", db.String)
+      hTable.Update
+    Endif
+    
+    'Loading bdd infos
+    hResult = $hConn.Find(MConnection.InfoTableName, "field like &1", $sTable &/ "%")
+    
+    If hResult.Available Then
+      For Each hResult
+        $cFieldInfo[hResult!field] = hResult!desc
+      Next
+    Endif
+  Endif 
+  
   hTable = $hConn.Tables[$sTable]
   $sType = hTable.Type
-
+  
   For Each hField In hTable.Fields
     hCField = New CField(hField)
     $aField.Add(hCField)
     $cFieldName[hField.Name] = True
   Next
-
+  
   For Each hIndex In hTable.Indexes
-
+    
     If hIndex.Primary Then Continue
-
+    
     hCIndexField = New CIndexField(hIndex)
     $aIndexField.Add(hCIndexField)
     bCreate = False
-
+    
     For Each sField In hIndex.Fields
       If bCreate Then
         hCIndexField = New CIndexField
@@ -350,22 +374,22 @@ Private Sub ReloadTable()
       Endif
       hCIndexField.Field = sField
     Next
-
+    
   Next
-
+  
   tbvField.Rows.Count = $aField.Count
   tbvField.Refresh
   'tbvField.Columns.Width = -1
   tbvField.Rows.H = -1
   tbvField.MoveTo(0, 1)
   UpdateFieldToolbar
-
+  
   tbvIndex.Rows.Count = $aIndexField.Count
   tbvIndex.Refresh
   tbvIndex.Rows.H = -1
   Try tbvIndex.MoveTo(0, 1)
   UpdateIndexToolbar
-
+  
   $bModify = False
   DrawTitle
   
@@ -373,7 +397,7 @@ Private Sub ReloadTable()
   datData.Refresh
   
   splTable.Enabled = True
-
+  
   panRequest.Hide
   tabTable.Show
   datRequest.Hide
@@ -384,36 +408,33 @@ Private Sub ReloadTable()
   
 End
 
-
 Private Sub LoadTable(Optional sNewTable As String) As Boolean
   
   If CheckCurrent() Then Return True
-
+  
   Try lvwTable["T" & sNewTable].Selected = True
   Try lvwTable["S" & sNewTable].Selected = True
-
+  
   If Not sNewTable Or If sNewTable = $sTable Then Return
-
+  
   Inc Application.Busy
   
   $sTable = sNewTable
-
+  
   ReloadTable
-
+  
   Dec Application.Busy
   
 Catch
-
+  
   splTable.Enabled = False
   Dec Application.Busy
   Message.Error(Subst(("Unable to load table '&1'."), $sTable) & "\n\n" & Error.Text)
   
 End
 
-
-
 Public Sub lvwTable_Select()
-
+  
   Dim sKey As String 
   
   Try sKey = lvwTable.Current.Key
@@ -421,11 +442,11 @@ Public Sub lvwTable_Select()
     lvwTable.Current.Expanded = True
     Return
   Endif
-
+  
 End
 
 Public Sub lvwTable_MouseUp()
-
+  
   Dim sKey As String 
   
   Try sKey = lvwTable.Current.Key
@@ -433,11 +454,11 @@ Public Sub lvwTable_MouseUp()
   If Left(sKey) = ">" Then Return
   
   If LoadTable(Mid$(sKey, 2)) Then Return
-
+  
 End
 
 Public Sub btnRunQuery_Click()
-
+  
   Dim sReq As String = Trim(edtRequest.Text)
   
   If Not sReq Then Return
@@ -457,32 +478,32 @@ Public Sub btnRunQuery_Click()
   Dec Application.Busy
   
   If Error Then Balloon.Error(("Unable to run query.") & "\n\n" & Error.Text, btnRunQuery)
-
+  
 End
 
 Public Sub tbvField_Data(Row As Integer, Column As Integer)
-
+  
   Dim hCField As CField
-
+  
   Try hCField = $aField[Row]
   If Not hCField Then Return
-
+  
   With tbvField.Data
-
+    
     Select Case Column
-
+        
       Case 0
         If hCField.Key Then
           .Picture = Picture["img/16/key.png"]
           .Alignment = Align.Center
         Endif
-
+        
       Case 1
         .Text = hCField.Name
-
+        
       Case 2
         .Text = MConnection.TypeToString(hCField.Type)
-
+        
       Case 3
         If hCField.Type = gb.String Then
           If hCField.Length Then
@@ -491,45 +512,47 @@ Public Sub tbvField_Data(Row As Integer, Column As Integer)
             .Text = ("unlimited")
           Endif
         Endif
-
+        
       Case 4
         .Text = Str(hCField.DefaultValue)
-
+      
+      Case 5
+        .Text = $cFieldInfo[$sTable &/ hCField.Name]
     End Select
     
     .Padding = 4
     
   End With
-
+  
 End
 
 Public Sub tbvIndex_Data(Row As Integer, Column As Integer)
-
+  
   Dim hIndexField As CIndexField
-
+  
   hIndexField = $aIndexField[Row]
   If Not hIndexField Then Return
-
+  
   With tbvIndex.Data
-
+    
     Select Case Column
-
+        
       Case 0
         .Text = hIndexField.Index
-
+        
       Case 1
         If hIndexField.Index Then .Text = Str(hIndexField.Unique)
-
+        
       Case 2
         .Text = hIndexField.Field
-
+        
     End Select
-
+    
     .Padding = 4
     If hIndexField.Index Then .Background = Color.LightBackground
-
+    
   End With
-
+  
 End
 
 Public Sub tbvField_Activate()
@@ -541,9 +564,9 @@ Public Sub tbvField_Activate()
   hField = $aField[tbvField.Row]
   
   Select Case tbvField.Column
-  
+      
     Case 0
-  
+      
       hField.Key = Not hField.Key
       tbvField.Current.Refresh
       Modify
@@ -553,7 +576,7 @@ Public Sub tbvField_Activate()
 End
 
 Public Sub tbvField_Click()
-
+  
   Dim hField As CField
   
   If $bReadOnly Then Return
@@ -561,111 +584,112 @@ Public Sub tbvField_Click()
   hField = $aField[tbvField.Row]
   
   Select Case tbvField.Column
-  
+      
     Case 1
       '.ShowTextBox(True, True)
       tbvField.Edit
-
+      
     Case 2
       '.ShowComboBox([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True, True)
       tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True)
-
+      
     Case 3
       If hField.Type = gb.String Then
         tbvField.Edit(["8", "16", "32", "48", "64", "128", "255", ("unlimited")])
       Else
         'tbvField.Cancel
       Endif
-
+      
     Case 4
       If hField.Type = gb.Boolean Then
         tbvField.Edit(["True", "False"]) ' Non traduisible !
       Else
         tbvField.Edit
       Endif
-  
+    Case 5
+      tbvField.Edit
   End Select
   
 End
 
 Public Sub tbvIndex_Click()
-
+  
   Dim hIndex As CIndexField
-
+  
   If $bReadOnly Then Return
   If tbvIndex.Row < 0 Then Return
-
+  
   hIndex = $aIndexField[tbvIndex.Row]
-
+  
   Select Case tbvIndex.Column
-
+      
     Case 0
       If hIndex.Index Then
         tbvIndex.Edit
       Endif
-
+      
     Case 1
       If hIndex.Index Then
         tbvIndex.Edit(["True", "False"], True)
       Endif
-
+      
     Case 2
       tbvIndex.Edit(FreeIndexFields(True), True)
-
+      
   End Select
-
+  
 End
 
 Private Sub RenameField(hField As CField, sNewName As String)
-
+  
   Dim hCIndex As CIndexField
-
+  
   For Each hCIndex In $aIndexField
     If UCase(hCIndex.Field) = UCase(hField.Name) Then
       hCIndex.Field = sNewName
     Endif
   Next
-
+  
   $cFieldName[hField.Name] = Null
   hField.Name = sNewName
   $cFieldName[sNewName] = True
-
+  
 End
 
 Public Sub tbvField_Save(Row As Integer, Column As Integer, sData As String) 
-
+  
   Dim hField As CField
   Dim iVal As Integer
   Dim vVal As Variant
-
+  
   hField = $aField[Row]
-
+  
   Select Column
-
+      
     Case 1
       sData = Trim(sData)
       If Not sData Then Return
-
+      
       If $cFieldName.Exist(sData) Then
         Balloon.Warning(("This name is already in used."), tbvField.Editor)
         Stop Event
         Return
       Endif
-
+      
       If hField.Name <> sData Then
         RenameField(hField, sData)
       Endif
-
+      
     Case 2
-
+      
       'PRINT sData; " -> "; TypeFromString(sData)
       hField.Type = MConnection.TypeFromString(sData)
       hField.DefaultValue = Null
       hField.Length = 0
-
+      
       tbvField[Row, 3].Refresh
       tbvField[Row, 4].Refresh
-
+      
     Case 3
       If sData = ("unlimited") Then
         hField.Length = 0
@@ -683,13 +707,13 @@ Public Sub tbvField_Save(Row As Integer, Column As Integer, sData As String)
         Endif
         hField.Length = iVal
       Endif
-
+      
     Case 4
       If hField.Type <> gb.String Then
         If sData Then
-
+          
           vVal = Val(sData)
-
+          
           If hField.Type = gb.Float Then
             If TypeOf(vVal) = gb.Integer Or If TypeOf(vVal) = gb.Long Then
               vVal = CFloat(vVal)
@@ -699,44 +723,47 @@ Public Sub tbvField_Save(Row As Integer, Column As Integer, sData As String)
               vVal = CLong(vVal)
             Endif
           Endif
-
+          
           If TypeOf(vVal) <> hField.Type Then
             Balloon.Warning(("Type mismatch."), tbvField.Editor)
             Stop Event
             Return
           Endif
-
+          
         Endif
       Else
         vVal = sData
       Endif
-
+      
       hField.DefaultValue = vVal
-
+    
+    Case 5
+      $cFieldInfo[$sTable &/ hField.Name] = sData
+      
   End Select
-
+  
   Modify
-
+  
 End
 
 Private Function FindIndex(sName As String) As Boolean
-
+  
   Dim hIndexField As CIndexField
-
+  
   For Each hIndexField In $aIndexField
     If sName = hIndexField.Index Then Return True
   Next
-
+  
 End
 
 Public Sub tbvIndex_Save(Row As Integer, Column As Integer, sData As String)
-
+  
   Dim hIndex As CIndexField
-
+  
   hIndex = $aIndexField[Row]
-
+  
   Select Column
-
+      
     Case 0
       sData = Trim(sData)
       If Not sData Then Return
@@ -746,184 +773,182 @@ Public Sub tbvIndex_Save(Row As Integer, Column As Integer, sData As String)
         Return
       Endif
       hIndex.Index = sData
-
+      
     Case 1
-
+      
       hIndex.Unique = sData = "True"
-
+      
     Case 2
-
+      
       hIndex.Field = sData
-
+      
   End Select
-
+  
   Modify
-
+  
 End
 
-
 Public Sub btnNewField_Click()
-
+  
   Dim hField As CField
   Dim iInd As Integer
   Dim iRow As Integer
-
+  
   If $bReadOnly Then Return
-
+  
   If tbvField.Save() Then Return
-
+  
   hField = New CField
-
+  
   With hField
-
+    
     For iInd = 1 To 1000
       .Name = ("Field") & CStr(iInd)
       If Not $cFieldName.Exist(.Name) Then Break
     Next
-
+    
     .Type = gb.Integer
-
+    
     $cFieldName[.Name] = True
-
+    
   End With
-
+  
   iRow = tbvField.Row
   $aField.Add(hField, iRow + 1)
   Inc tbvField.Rows.Count
   tbvField.Rows[tbvField.Rows.Count - 1].H = -1
-
+  
   Modify
-
+  
   tbvField.MoveTo(iRow + 1, 1)
   tbvField_Click
-
+  
 End
 
 Private Function IsFieldUsedInIndex(sField As String) As Boolean
-
+  
   Dim iRow As Integer
-
+  
   For iRow = 0 To $aIndexField.Max
     If sField = $aIndexField[iRow].Field Then Return True
   Next
-
+  
 End
 
 Public Sub btnKillField_Click()
-
+  
   Dim iRow As Integer
-
+  
   If $bReadOnly Then Return
-
+  
   If $aField.Count <= 1 Then Return
-
+  
   If tbvField.Save() Then Return
-
+  
   iRow = tbvField.Row
-
+  
   If IsFieldUsedInIndex($aField[iRow].Name) Then
     Message.Warning(("This field is used in an index."))
     Return
   Endif
-
+  
   $cFieldName[$aField[iRow].Name] = Null
   $aField.Remove(iRow)
   Dec tbvField.Rows.Count
-
+  
   Modify
-
+  
 End
 
-
 Public Sub btnDownField_Click()
-
+  
   If $bReadOnly Then Return
   
   If tbvField.Row = (tbvField.Rows.Count - 1) Then Return
-
+  
   If tbvField.Save() Then Return
-
+  
   Swap $aField[tbvField.Row], $aField[tbvField.Row + 1]
-
+  
   tbvField.Rows[tbvField.Row].Refresh
   tbvField.Rows[tbvField.Row + 1].Refresh
-
+  
   Inc tbvField.Row
-
+  
   Modify
-
+  
 End
 
 Public Sub btnUpField_Click()
-
+  
   If $bReadOnly Then Return
-
+  
   If tbvField.Row = 0 Then Return
-
+  
   If tbvField.Save() Then Return
-
+  
   Swap $aField[tbvField.Row], $aField[tbvField.Row - 1]
-
+  
   tbvField.Rows[tbvField.Row].Refresh
   tbvField.Rows[tbvField.Row - 1].Refresh
-
+  
   Dec tbvField.Row
-
+  
   Modify
-
+  
 End
 
 Public Sub btnNewIndex_Click()
-
+  
   Dim hIndexField As CIndexField
   Dim iInd As Integer
-
+  
   If $bReadOnly Then Return
-
+  
   If tbvIndex.Save() Then Return
-
+  
   hIndexField = New CIndexField
-
+  
   With hIndexField
-
+    
     For iInd = 1 To 1000
       .Index = $sTable & "_" & ("Index") & CStr(iInd)
       If Not FindIndex(.Index) Then Break
     Next
-
+    
     .Field = $aField[0].Name
-
+    
   End With
-
+  
   $aIndexField.Add(hIndexField)
   Inc tbvIndex.Rows.Count
   tbvIndex.Rows[tbvIndex.Rows.Count - 1].H = -1
-
+  
   Modify
-
+  
   tbvIndex.MoveTo(tbvIndex.Rows.Count - 1, 0)
   tbvIndex_Click
-
+  
 End
 
 Private Function FreeIndexFields(Optional bExcept As Boolean) As String[]
-
+  
   Dim iRow As Integer
   Dim hField As CField
   Dim cField As New Collection
   Dim bVal As Boolean
   Dim aField As New String[]
-
+  
   For Each hField In $aField
     cField[hField.Name] = True
   Next
-
+  
   iRow = tbvIndex.row
   Do
     If $aIndexField[iRow].Index Then Break
     Dec iRow
   Loop
-
+  
   Do
     If Not bExcept Or iRow <> tbvIndex.Row Then
       cField[$aIndexField[iRow].Field] = Null
@@ -932,157 +957,155 @@ Private Function FreeIndexFields(Optional bExcept As Boolean) As String[]
     If iRow >= $aIndexField.Count Then Break
     If $aIndexField[iRow].Index Then Break
   Loop
-
+  
   For Each bVal In cField
     aField.Add(cField.Key)
   Next
-
+  
   Return aField
-
+  
 End
 
 Public Sub btnNewIndexField_Click()
-
+  
   Dim hIndexField As CIndexField
   Dim iRow As Integer
   Dim aField As String[]
-
+  
   If $bReadOnly Then Return
   If $aIndexField.Count = 0 Then Return
-
+  
   iRow = tbvIndex.Row
   If iRow < 0 Then Return
-
+  
   If tbvIndex.Save() Then Return
-
+  
   aField = FreeIndexFields(False)
   If aField.Count = 0 Then Return
-
+  
   hIndexField = New CIndexField
-
+  
   With hIndexField
-
+    
     .Field = aField[0]
-
+    
   End With
-
+  
   Do
     Inc iRow
     If iRow >= tbvIndex.Rows.Count Then Break
     If $aIndexField[iRow].Index Then Break
   Loop
-
+  
   $aIndexField.Add(hIndexField, iRow)
   Inc tbvIndex.Rows.Count
   tbvIndex.Rows[tbvIndex.Rows.Count - 1].H = -1
-
+  
   tbvIndex.MoveTo(iRow, 1)
-
+  
   Modify
-
+  
 End
 
 Public Sub btnKillIndex_Click()
-
+  
   Dim sIndex As String
   Dim bUnique As Boolean
   Dim iRow As Integer
-
+  
   If $bReadOnly Then Return
   If $aIndexField.Count = 0 Then Return
-
+  
   iRow = tbvIndex.Row
   If iRow < 0 Then Return
-
+  
   If tbvIndex.Save() Then Return
-
+  
   With $aIndexField[iRow]
     sIndex = .Index
     bUnique = .Unique
   End With
-
+  
   $aIndexField.Remove(iRow)
-
+  
   If iRow < $aIndexField.Count Then
-
+    
     With $aIndexField[iRow]
       If Not .Index Then
         .Index = sIndex
         .Unique = bUnique
       Endif
     End With
-
+    
   Endif
-
+  
   Dec tbvIndex.Rows.Count
   tbvIndex.Refresh
-
+  
   Modify
-
+  
 End
 
 Private Sub CanDownIndex() As Boolean
   
   Dim iRow As Integer
-
+  
   If $bReadOnly Then Return
-
+  
   iRow = tbvIndex.Row
   If iRow < 0 Then Return
-
+  
   If iRow = ($aIndexField.Count - 1) Then Return
   If $aIndexField[iRow + 1].Index Then Return
-
+  
   Return True
   
 End
 
-
 Public Sub btnDownIndex_Click()
-
+  
   Dim iRow As Integer
-
+  
   If Not CanDownIndex() Then Return
   If tbvIndex.Save() Then Return
   
   iRow = tbvIndex.Row
   Swap $aIndexField[iRow].Field, $aIndexField[iRow + 1].Field
   Inc tbvIndex.Row
-
+  
   tbvIndex.Refresh
-
+  
 End
 
 Private Sub CanUpIndex() As Boolean
   
   Dim iRow As Integer
-
+  
   If $bReadOnly Then Return
-
+  
   iRow = tbvIndex.Row
   If iRow < 0 Then Return
-
+  
   If iRow = 0 Then Return
   If $aIndexField[iRow].Index Then Return
-
+  
   Return True
   
 End
 
-
 Public Sub btnUpIndex_Click()
-
+  
   Dim iRow As Integer
-
+  
   If Not CanUpIndex() Then Return
   If tbvIndex.Save() Then Return
-
+  
   iRow = tbvIndex.Row
   Swap $aIndexField[iRow].Field, $aIndexField[iRow - 1].Field
   Dec tbvIndex.Row
-
+  
   tbvIndex.Refresh
-
+  
 End
 
 Private Sub RemoveIndexFromTable(sTable As String)
@@ -1099,30 +1122,29 @@ Private Sub RemoveIndexFromTable(sTable As String)
   
 End
 
-
 Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As String[], Optional bKill As Boolean)
-
+  
   Dim hTable As Table
   Dim hCField As CField
   Dim hCIndex As CIndexField
   Dim hLastCIndex As CIndexField
   Dim sError As String
   Dim sIndex As String
-
+  
   Try $hConn.Tables.Remove(sName)
   hTable = $hConn.Tables.Add(sName, sType)
-
+  
   With hTable
-
+    
     For Each hCField In $aField
       .Fields.Add(hCField.Name, hCField.Type, hCField.Length, hCField.DefaultValue)
     Next
-
+    
     .PrimaryKey = aPrimaryKey
     .Update
-
+    
   End With
-
+  
   For Each hCIndex In $aIndexField
     If hCIndex.Index Then
       hCIndex.List = [hCIndex.Field]
@@ -1131,90 +1153,92 @@ Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As Strin
       hLastCIndex.List.Add(hCIndex.Field)
     Endif
   Next
-
+  
   For Each hCIndex In $aIndexField
     If Not hCIndex.Index Then Continue
     sIndex = hCIndex.Index
     If bKill Then sIndex = "_gambas_" & sIndex
     hTable.Indexes.Add(sIndex, hCIndex.List, hCIndex.Unique)
   Next
-
+  
 Finally
-
+  
   sError = Replace(Error.Text, sName, $sTable)
   If bKill Then
     Try $hConn.Tables.Remove(sName)
   Endif
-
+  
 Catch
-
+  
   Error.Raise(sError)
-
+  
 End
 
 Private Sub WriteTable(Optional sOldTable As String) As Boolean
-
+  
   Dim aPrimaryKey As New String[]
   Dim hCField As CField
-  Dim sTemp As String
+  Dim sTemp, s As String
   Dim rTemp As Result
+  Dim rInfo As Result
   Dim rTable As Result
+  
   Dim sError As String
-
+  
   ' If $hFieldEditor.Hide() Then Return True
   ' If $hIndexEditor.Hide() Then Return True
-
+  
   For Each hCField In $aField
     If hCField.Key Then
       aPrimaryKey.Add(hCField.Name)
     Endif
   Next
-
+  
   If aPrimaryKey.Count = 0 Then
     Message.Warning(Subst(("The table '&1' has no primary key."), If(sOldTable, sOldTable, $sTable)))
     Return True
   Endif
-
+  
   ' If frmData Then
   '   If frmData.IsModified() Then frmData.btnSaveData_Click
   '   frmData.Delete
   '   frmData = Null
   ' Endif
-
-  Inc Application.Busy
-
-  If sOldTable Then
   
+  Inc Application.Busy
+  
+  If sOldTable Then
+    
     If MConnection.CountTableData($hConn, sOldTable) Then
       sTemp = sOldTable 'MConnection.CopyTableData($hConn, sOldName)
     Endif
-  
+    
     'WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
     RemoveIndexFromTable(sOldTable)
     WriteTableDef($sTable, $sType, aPrimaryKey)
-
+    
   Else
-
+    
     If MConnection.CountTableData($hConn, $sTable) Then
       sTemp = MConnection.CopyTableData($hConn, $sTable)
     Endif
-  
+    
     WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
     WriteTableDef($sTable, $sType, aPrimaryKey)
     
   Endif
-
+  
   'hTable = $hConn.Handle.Tables.Add($sName, sType)
-
+  
   If sTemp Then
-
+    
     $hConn.Begin
-
+    
     rTemp = $hConn.Find(sTemp)
     rTable = $hConn.Create($sTable)
     
     For Each rTemp
-    
+      
       For Each hCField In $aField
         If hCField.OldName Then
           Try rTable[hCField.Name] = rTemp[hCField.OldName]
@@ -1224,28 +1248,41 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
           If IsNull(rTable[hCField.Name]) Then Stop ' Why this breakpoint ?
         Endif
       Next
-
+      
       Try rTable.Update
       'IF Error THEN PRINT "Update: "; Error.Text
-
+      
     Next
-
+    
     $hConn.Commit
-
+    
   Endif
-
+  
+  If $bAllowDesc Then 
+    'Save the field Desc
+    $hConn.Delete(MConnection.InfoTableName, "field like &1", $sTable &/ "%")
+    $hConn.Begin
+    For Each s In $cFieldInfo
+      rInfo = $hConn.Create(MConnection.InfoTableName)
+      rInfo!field = $cFieldInfo.Key
+      rInfo!desc = s
+      rInfo.Update
+    Next
+    $hConn.Commit
+  Endif
+  
   datData.Reset
   'datRequest.Reset
-
+  
   Modify(True)
   ReloadTable
-
+  
 Finally
-
+  
   sError = Error.Text
-
+  
   'If Not sOldTable Then
-
+  
   If sTemp Then
     Try $hConn.Tables.Remove(sTemp)
   Else If sOldTable
@@ -1253,108 +1290,108 @@ Finally
   Endif
   
   'Endif
-
+  
   Dec Application.Busy
-
+  
 Catch
-
+  
   Message.Error(Subst(("Cannot write table '&1'."), $sTable) & "\n\n" & sError)
   Return True
-
+  
 End
 
 Private Function SaveTable() As Boolean
-
+  
   If $bReadOnly Then Return
-
+  
   If tbvField.Save() Then Return True
   If tbvIndex.Save() Then Return True
   
   If Not $bModify Then Return
-
+  
   If WriteTable() Then Return True
   
 End
 
 Public Sub btnSaveTable_Click()
-
+  
   Save
-
+  
 End
 
 Public Sub mnuSave_Click()
-
+  
   Save
-
+  
 End
 
 Public Sub mnuReload_Click()
-
+  
   If CheckCurrent() Then Return
   Reload
-
+  
 End
 
 Public Sub btnNewTable_Click()
-
+  
   Dim aType As String[]
   Dim sName As String
-
+  
   If CheckCurrent() Then Return
   
   If $hConn.Type = "mysql" Then
     aType = ["MyISAM", "MERGE", "MEMORY", "InnoDB", "BDB", "ISAM", "ARCHIVE"]
   Endif
-
+  
   If FNewTable.Run($hConn, "", "InnoDB", aType) Then Return
   sName = FNewTable.TableName
-
+  
   If MConnection.CreateTable($hConn, sName, FNewTable.TableType) Then Return
   
   lvwTable.Add("T" & sName, sName, Picture["img/16/table.png"])
   'lvwTable["T" & sName].Selected = True
   LoadTable(sName)
-
+  
 End
 
 Public Sub btnClear_Click()
-
+  
   edtRequest.Clear
-
+  
 End
 
 Public Sub mnuCut_Click()
-
+  
   edtRequest.Cut
-
+  
 End
 
 Public Sub mnuCopy_Click()
-
+  
   edtRequest.Copy
-
+  
 End
 
 Public Sub mnuPaste_Click()
-
+  
   edtRequest.Paste
-
+  
 End
 
 Public Sub mnuUndo_Click()
-
+  
   edtRequest.Undo
-
+  
 End
 
 Public Sub mnuRedo_Click()
-
+  
   edtRequest.Redo
-
+  
 End
 
 Public Sub btnRequest_Click()
-
+  
   If CheckCurrent() Then Return
   Try lvwTable.Current.Selected = False
   $sTable = ""
@@ -1365,56 +1402,56 @@ Public Sub btnRequest_Click()
   datRequest.Show
   tlbData.Hide
   SetReadOnly(True)
-
+  
 End
 
 Public Sub btnKill_Click()
-
+  
   If Message.Warning(Subst(("Do you really want to delete table '&1'?"), $sTable), ("Delete"), ("Cancel")) = 2 Then Return
-
+  
   If CheckCurrent() Then Return
-
+  
   $hConn.Tables.Remove($sTable)
   lvwTable.Remove("T" & $sTable)
   datData.Reset
   btnRequest_Click
-
+  
 Catch
-
+  
   Message(Subst(("Cannot delete table '&1'."), $sTable) & "\n\n" & Error.Text)
-
+  
 End
 
 Public Sub btnRename_Click()
-
+  
   Dim sNewName As String
   Dim sOldName As String
-
+  
   If $bReadOnly Then Return
   If SaveTable() Then Return
-
+  
   If FNewTable.Run($hConn, $sTable, $sType) Then Return
-
+  
   sNewName = FNewTable.TableName
   If Not sNewName Then Return
   If sNewName = $sTable Then Return
-
+  
   sOldName = $sTable
   $sTable = sNewName
-
+  
   ' sOldName table will be deleted by WriteTable
   If WriteTable(sOldName) Then 
     $sTable = sOldName
     Return
   Endif
-
+  
   'Try $hConn.DeleteTable(sOldName)
   LoadList($sTable)
-
+  
 End
 
 Public Sub btnImport_Click()
-
+  
   If SaveTable() Then Return
   
   Dialog.Title = ("Select the CSV file to import")
@@ -1430,25 +1467,25 @@ Public Sub btnImport_Click()
   Else
     LoadList($sTable)
   Endif
-
+  
 End
 
 Public Sub btnTitle_Click()
-
+  
   FNewConnection.Run(Path)
-
+  
 End
 
 Public Sub btnRemoveData_Click()
-
+  
   If Message.Warning(("Do you really want to remove the selected rows?"), ("Remove"), ("Cancel")) = 2 Then Return
-
+  
   dvwData.Remove
-
+  
 End
 
 Public Sub btnCopyFieldList_Click()
-
+  
   Dim iInd As Integer
   Dim aList As New String[]
   
@@ -1457,7 +1494,7 @@ Public Sub btnCopyFieldList_Click()
   Next
   
   Clipboard.Copy(aList.Join("\n") & "\n", MMime.LIST)
-
+  
 End
 
 Private Sub UpdateFieldToolbar()
@@ -1468,11 +1505,10 @@ Private Sub UpdateFieldToolbar()
   
 End
 
-
 Public Sub tbvField_Change()
-
+  
   UpdateFieldToolbar
-
+  
 End
 
 Private Sub UpdateIndexToolbar()
@@ -1483,33 +1519,32 @@ Private Sub UpdateIndexToolbar()
   
 End
 
-
 Public Sub tbvIndex_Change()
-
+  
   UpdateIndexToolbar
-
+  
 End
 
 Public Sub edtRequest_GotFocus()
-
+  
   Project.SetCurrentPopup(Null)
-
+  
 End
 
 Public Sub btnAddData_Click()
-
+  
   dvwData.Create
-
+  
 End
 
 Public Sub btnSaveData_Click()
-
+  
   dvwData.Save
-
+  
 End
 
 Public Sub btnCopyTable_Click()
-
+  
   Dim sTable As String
   
   If CheckCurrent() Then Return
@@ -1518,11 +1553,11 @@ Public Sub btnCopyTable_Click()
   If Not IsLetter(Left(sTable)) Then Return
   sTable = Mid$(sTable, 2)
   Clipboard.Copy(Path & "\n" & sTable, MMime.TABLE)
-
+  
 End
 
 Public Sub btnPasteTable_Click()
-
+  
   Dim sData As String
   Dim aData As String[]
   Dim hForm As FConnectionEditor
@@ -1541,42 +1576,41 @@ Public Sub btnPasteTable_Click()
   If FPasteTable.Run(hForm, aData[1], Me) Then Return
   
   LoadList(FPasteTable.DestTable)
-
+  
 End
 
 Public Sub btnExportData_Click()
-
+  
   If datData.Count Then FExportData.Run(datData, dvwData)
-
+  
 End
 
 Public Sub btnExportRequest_Click()
-
+  
   If datRequest.Count Then FExportData.Run(datRequest, dvwRequest)
-
+  
 End
 
 Public Sub Rename(sNewName As String, sNewPath As String)
-
+  
   Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
   DrawTitle
-
+  
 End
 
-
 Public Sub btnShowSystem_Click()
-
+  
   $bShowSystem = btnShowSystem.Value
   LoadList($sTable)
-
+  
 End
 
 Public Sub btnEditData_Click()
-
+  
   dvwData.Editable = btnEditData.Value
   btnSaveData.Enabled = btnEditData.Value
   btnAddData.Enabled = btnEditData.Value
   btnRemoveData.Enabled = btnEditData.Value
-
+  
 End

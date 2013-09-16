@@ -1,6 +1,7 @@
 ' Gambas module file
 
 Public Password As New Collection
+Public Const InfoTableName As String = "_gbFieldDesc"
 
 Private $bError As Boolean
 
@@ -337,6 +338,10 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSy
     If hTable.System And If Not bShowSystem Then Continue
     
     sName = hTable.Name
+    
+    'NOTE: FABIEN: Mask the Gambas Infos table
+    If sName = InfoTableName Then Continue
+    
     iPos = InStr(sName, ".")
     If iPos Then
       sParent = ">" & Left(sName, iPos - 1)
