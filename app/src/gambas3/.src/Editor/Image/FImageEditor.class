@@ -2703,6 +2703,12 @@ Public Sub mnuFormat_Show()
     hMenu.Checked = hMenu.Tag = sFormat
   Next
   
+  ' If sFormat = "jpeg" Or If sFormat = "png" Then
+  '   mnuQuality.Enabled = True
+  ' Else
+  '   mnuQuality.Enabled = False
+  ' Endif
+  
 End
 
 

@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,55,12)
+  Text = ("Image quality")
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { sldQuality SliderBox
+    MoveScaled(1,1,53,4)
+    Step = 10
+    Value = 80
+  }
+  { btnOK Button
+    MoveScaled(21,7,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(38,7,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+}

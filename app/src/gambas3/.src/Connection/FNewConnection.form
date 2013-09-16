@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,70,69)
+  MoveScaled(0,0,70,75)
   Icon = Picture["img/16/database.png"]
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -156,8 +156,22 @@
       Text = ("Ignore database charset")
     }
   }
+  { HBox8 HBox
+    MoveScaled(1,64,68,3)
+    { Label12 Label
+      MoveScaled(0,0,18,3)
+    }
+    { chkDisplayMetadata CheckBox
+      MoveScaled(27,0,24,3)
+      Expand = True
+      Text = ("Display metadata")
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(38,68,6,1)
+  }
   { HBox1 HBox
-    MoveScaled(1,64,68,4)
+    MoveScaled(1,70,68,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

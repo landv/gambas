@@ -1,7 +1,7 @@
 ' Gambas module file
 
 Public Password As New Collection
-Public Const InfoTableName As String = "_gbFieldDesc"
+Public Const METADATA_TABLE_NAME As String = "__gb_metadata"
 
 Private $bError As Boolean
 
@@ -335,12 +335,11 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSy
   'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
   For Each hTable In hConn.Tables
     
-    If hTable.System And If Not bShowSystem Then Continue
+    If Not bShowSystem Then
+      If hTable.System Or If hTable.Name = METADATA_TABLE_NAME Then Continue
+    Endif
     
     sName = hTable.Name
-    
-    'NOTE: FABIEN: Mask the Gambas Infos table
-    If sName = InfoTableName Then Continue
     
     iPos = InStr(sName, ".")
     If iPos Then

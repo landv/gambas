@@ -28,6 +28,7 @@ Private Sub LoadConnection()
   txtPath.Text = hConfig["Connection/Path"] 
   chkRememberPassword.Value = If(hConfig["Connection/RememberPassword"], 1, 0)
   chkIgnoreCharset.Value = If(hConfig["Connection/IgnoreCharset"], 1, 0)
+  chkDisplayMetadata.Value = If(hConfig["Connection/DisplayMetadata"], 1, 0)
 
   For iInd = 0 To cmbType.Count - 1
     If LCase(cmbType[iInd].Text) = sType Then
@@ -52,6 +53,7 @@ Private Sub FillConfig(hConfig As Object)
   hConfig["Connection/Path"] = txtPath.Text
   hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
   hConfig["Connection/IgnoreCharset"] = CBool(chkIgnoreCharset.Value)
+  hConfig["Connection/DisplayMetadata"] = CBool(chkDisplayMetadata.Value)
   hConfig["Connection/Database"] = txtDatabase.Text
   
 End

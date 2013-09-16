@@ -17,7 +17,7 @@ Private $cFieldName As New Collection
 Private $aIndexField As New CIndexField[]
 Private $cFieldInfo As New Collection
 
-Private $bAllowDesc As Boolean = False
+Private $bMetadata As Boolean
 
 Public Sub _new(sPath As String)
   
@@ -26,7 +26,7 @@ Public Sub _new(sPath As String)
   
   With tbvField
     
-    .Columns.Count = IIf($bAllowDesc, 6, 5)
+    .Columns.Count = 5
     
     With tbvField.Columns[0]
       .Text = " "
@@ -52,13 +52,6 @@ Public Sub _new(sPath As String)
       .Text = ("Default value")
       .Width = Desktop.Scale * 24
     End With
-    
-    If $bAllowDesc Then
-      With tbvField.Columns[5]
-        .Text = ("Description")
-        .Width = Desktop.Scale * 24
-      End With
-    Endif
     
   End With
   
@@ -192,6 +185,18 @@ Public Sub Reload() As Boolean
   dvwData.Editable = False
   datData.Connection = $hConn
   datRequest.Connection = $hConn
+  
+  $bMetadata = hConfig["Connection/DisplayMetadata"]
+  
+  If $bMetadata Then
+    tbvField.Columns.Count = 6
+    With tbvField.Columns[5]
+      .Text = ("Description")
+      .Width = Desktop.Scale * 24
+    End With
+  Else
+    tbvField.Columns.Count = 5
+  Endif
   
   LoadList($sTable)
   
@@ -329,17 +334,19 @@ Private Sub ReloadTable()
   $aIndexField.Clear
   $cFieldInfo.Clear
   
-  If $bAllowDesc Then 
+  If $bMetadata Then 
     'create the info table if not exist
-    If Not $hConn.Tables.Exist(MConnection.InfoTableName) Then
-      hTable = $hConn.Tables.Add(MConnection.InfoTableName)
-      hTable.Fields.Add("field", db.String)
-      hTable.Fields.Add("desc", db.String)
+    If Not $hConn.Tables.Exist(MConnection.METADATA_TABLE_NAME) Then
+      hTable = $hConn.Tables.Add(MConnection.METADATA_TABLE_NAME)
+      hTable.Fields.Add("type", db.Integer)
+      hTable.Fields.Add("key", db.String)
+      hTable.Fields.Add("value", db.String)
+      hTable.PrimaryKey = ["type", "key"]
       hTable.Update
     Endif
     
     'Loading bdd infos
-    hResult = $hConn.Find(MConnection.InfoTableName, "field like &1", $sTable &/ "%")
+    hResult = $hConn.Find(MConnection.METADATA_TABLE_NAME, "field like &1", $sTable &/ "%")
     
     If hResult.Available Then
       For Each hResult
@@ -1258,12 +1265,12 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
     
   Endif
   
-  If $bAllowDesc Then 
+  If $bMetadata Then 
     'Save the field Desc
-    $hConn.Delete(MConnection.InfoTableName, "field like &1", $sTable &/ "%")
+    $hConn.Delete(MConnection.METADATA_TABLE_NAME, "field like &1", $sTable &/ "%")
     $hConn.Begin
     For Each s In $cFieldInfo
-      rInfo = $hConn.Create(MConnection.InfoTableName)
+      rInfo = $hConn.Create(MConnection.METADATA_TABLE_NAME)
       rInfo!field = $cFieldInfo.Key
       rInfo!desc = s
       rInfo.Update
