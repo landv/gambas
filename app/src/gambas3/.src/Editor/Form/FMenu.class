@@ -502,7 +502,7 @@ Public Sub btnRight_Click()
 
   If WriteMenu() Then Return
 
-  For iInd = 0 To $aMenu.Count - 2
+  For iInd = 0 To $aMenu.Count - 1
 
     If gvwMenu.Rows[iInd].Selected Then
       With $aMenu[iInd]
@@ -525,7 +525,7 @@ Public Sub btnLeft_Click()
 
   If WriteMenu() Then Return
 
-  For iInd = 0 To $aMenu.Count - 2
+  For iInd = 0 To $aMenu.Count - 1
 
     If gvwMenu.Rows[iInd].Selected Then
       With $aMenu[iInd]
@@ -656,7 +656,7 @@ Public Sub btnUp_Click()
   If $iCurrent = $aMenu.Max Then Return
   If gvwMenu.Rows[0].Selected Then Return
   
-  For iInd = 1 To $aMenu.Count - 2
+  For iInd = 1 To $aMenu.Count - 1
 
     If gvwMenu.Rows[iInd].Selected Then
       aSel.Add(iInd - 1)
@@ -687,7 +687,7 @@ Public Sub btnDown_Click()
 
   If $iCurrent = $aMenu.Max Then Return
 
-  If gvwMenu.Rows[iCount - 2].Selected Or gvwMenu.Rows[iCount - 1].Selected Then Return
+  If gvwMenu.Rows[iCount - 1].Selected Then Return
 
   For iInd = iCount - 1 DownTo 0
 
@@ -812,7 +812,7 @@ Public Sub btnCopy_Click()
   Dim iInd As Integer
   Dim sData As String
   
-  For iInd = 0 To $aMenu.Count - 2
+  For iInd = 0 To $aMenu.Count - 1
     If gvwMenu.Rows[iInd].Selected Then
       sData &= GetMenu($aMenu[iInd]) & "\n"
     Endif

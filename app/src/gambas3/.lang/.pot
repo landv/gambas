@@ -555,7 +555,7 @@ msgid "This month"
 msgstr ""
 
 #: CWaitingAnimation.class:56 FColorChooser.form:60 FConflict.class:185
-#: FConnectionEditor.class:302 FCreateFile.form:461 FDebugInfo.form:263
+#: FConnectionEditor.class:352 FCreateFile.form:461 FDebugInfo.form:263
 #: FEditor.class:2379 FExportData.class:126 FFieldChooser.form:138
 #: FFileProperty.class:140 FFontChooser.form:40 FForm.class:3141
 #: FGotoLine.form:23 FHelpBrowser.form:61 FImageEditor.class:347
@@ -564,7 +564,7 @@ msgstr ""
 #: FMakeInstall.class:350 FMenu.form:365 FNewConnection.form:277
 #: FNewTable.form:86 FNewTranslation.form:21 FOpenProject.form:158
 #: FOption.class:675 FPasteSpecial.form:77 FPasteTable.form:107
-#: FProjectProperty.form:761 FProjectVersion.class:201
+#: FProjectProperty.form:761 FProjectVersion.class:204
 #: FPropertyComponent.form:267 FProxy.form:57 FReportBorderChooser.form:48
 #: FReportBrushChooser.form:36 FReportCoordChooser.form:26
 #: FReportPaddingChooser.form:75 FSave.form:28 FSaveProjectAs.form:76
@@ -658,7 +658,7 @@ msgid ""
 "the value: &1"
 msgstr ""
 
-#: Design.module:428 FColorChooser.form:54 FConnectionEditor.class:480
+#: Design.module:428 FColorChooser.form:54 FConnectionEditor.class:530
 #: FCreateFile.form:467 FFieldChooser.form:132 FFontChooser.form:34
 #: FGotoLine.form:17 FImageOffsetSelection.form:27 FImageQuality.form:24
 #: FImageResize.form:103 FImageRotate.form:26 FInfo.form:181 FList.form:115
@@ -731,31 +731,31 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: FConflict.form:53 FConnectionEditor.form:358 FEditor.form:144
+#: FConflict.form:53 FConnectionEditor.form:365 FEditor.form:144
 #: FForm.form:239 FImageEditor.form:123 FMenu.form:105 FOutput.form:58
 #: FProjectVersion.form:234 FTextEditor.form:108
 msgid "Cut"
 msgstr ""
 
-#: FConflict.form:59 FConnectionEditor.form:147 FEditor.form:150
+#: FConflict.form:59 FConnectionEditor.form:148 FEditor.form:150
 #: FForm.form:246 FImageEditor.form:131 FMenu.form:111 FOutput.form:65
 #: FProjectVersion.form:240 FTextEditor.form:115
 msgid "Copy"
 msgstr ""
 
-#: FConflict.form:65 FConnectionEditor.form:379 FEditor.form:157
+#: FConflict.form:65 FConnectionEditor.form:386 FEditor.form:157
 #: FForm.form:259 FImageEditor.form:138 FMenu.form:117 FOutput.form:72
 #: FPasteTable.form:101 FProjectVersion.form:246 FTextEditor.form:122
 msgid "Paste"
 msgstr ""
 
-#: FConflict.form:71 FConnectionEditor.form:386 FEditor.form:128
+#: FConflict.form:71 FConnectionEditor.form:393 FEditor.form:128
 #: FForm.form:222 FImageEditor.form:104 FOption.form:561 FOutput.form:41
 #: FProjectVersion.form:252 FTextEditor.form:91
 msgid "Undo"
 msgstr ""
 
-#: FConflict.form:77 FConnectionEditor.form:393 FEditor.form:135
+#: FConflict.form:77 FConnectionEditor.form:400 FEditor.form:135
 #: FForm.form:229 FImageEditor.form:112 FOutput.form:48
 #: FProjectVersion.form:258 FTextEditor.form:98
 msgid "Redo"
@@ -845,265 +845,273 @@ msgstr ""
 msgid "Conflict files"
 msgstr ""
 
-#: FConnectionEditor.form:94
+#: FConnectionEditor.form:95
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.form:100 FEditor.form:323 FForm.form:421
+#: FConnectionEditor.form:101 FEditor.form:323 FForm.form:421
 #: FImageEditor.form:328 FMenu.class:70 FTextEditor.form:237
 msgid "Save"
 msgstr ""
 
-#: FConnectionEditor.form:108 FEditor.form:317 FForm.form:415
+#: FConnectionEditor.form:109 FEditor.form:317 FForm.form:415
 #: FHelpBrowser.form:67 FImageEditor.form:321 FTextEditor.form:231
 #: FTranslate.class:650
 msgid "Reload"
 msgstr ""
 
-#: FConnectionEditor.form:115
+#: FConnectionEditor.form:116
 msgid "Show system tables"
 msgstr ""
 
-#: FConnectionEditor.form:123 FNewTable.form:19
+#: FConnectionEditor.form:124 FNewTable.form:19
 msgid "New table"
 msgstr ""
 
-#: FConnectionEditor.form:129
+#: FConnectionEditor.form:130
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.form:131 FMakeInstall.class:999
+#: FConnectionEditor.form:132 FMakeInstall.class:999
 msgid "Remove"
 msgstr ""
 
-#: FConnectionEditor.form:137 FNewTable.class:30
+#: FConnectionEditor.form:138 FNewTable.class:30
 msgid "Rename table"
 msgstr ""
 
-#: FConnectionEditor.form:139
+#: FConnectionEditor.form:140
 msgid "Rename..."
 msgstr ""
 
-#: FConnectionEditor.form:145
+#: FConnectionEditor.form:146
 msgid "Copy table"
 msgstr ""
 
-#: FConnectionEditor.form:153 FPasteTable.form:22
+#: FConnectionEditor.form:154 FPasteTable.form:22
 msgid "Paste table"
 msgstr ""
 
-#: FConnectionEditor.form:155
+#: FConnectionEditor.form:156
 msgid "Paste..."
 msgstr ""
 
-#: FConnectionEditor.form:161
+#: FConnectionEditor.form:162
 msgid "Import text file"
 msgstr ""
 
-#: FConnectionEditor.form:163
+#: FConnectionEditor.form:164
 msgid "Import..."
 msgstr ""
 
-#: FConnectionEditor.form:169
-msgid "SQL request"
+#: FConnectionEditor.form:170
+msgid "SQL queries"
 msgstr ""
 
-#: FConnectionEditor.form:215
+#: FConnectionEditor.form:216
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.form:231 FMain.class:1943
+#: FConnectionEditor.form:232 FMain.class:1943
 msgid "Add"
 msgstr ""
 
-#: FConnectionEditor.form:245
+#: FConnectionEditor.form:246
 msgid "Down"
 msgstr ""
 
-#: FConnectionEditor.form:252
+#: FConnectionEditor.form:253
 msgid "Up"
 msgstr ""
 
-#: FConnectionEditor.form:260
+#: FConnectionEditor.form:261
 msgid "Copy field list"
 msgstr ""
 
-#: FConnectionEditor.form:277
+#: FConnectionEditor.form:278
 msgid "Indexes"
 msgstr ""
 
-#: FConnectionEditor.form:294
+#: FConnectionEditor.form:295
 msgid "New index"
 msgstr ""
 
-#: FConnectionEditor.form:352
+#: FConnectionEditor.form:353
 msgid "Run query"
 msgstr ""
 
-#: FConnectionEditor.form:427
+#: FConnectionEditor.form:359
+msgid "Remove query"
+msgstr ""
+
+#: FConnectionEditor.form:438
 msgid "Edit"
 msgstr ""
 
-#: FConnectionEditor.form:434 FExportData.form:15
+#: FConnectionEditor.form:445 FExportData.form:15
 msgid "Export to CSV file"
 msgstr ""
 
-#: FConnectionEditor.form:436
+#: FConnectionEditor.form:447
 msgid "Export..."
 msgstr ""
 
-#: FConnectionEditor.form:460 FForm.form:266 FMain.class:212
+#: FConnectionEditor.form:471 FForm.form:266 FMain.class:212
 #: FNewConnection.class:327 FOption.class:858 FTranslate.class:554
 msgid "Delete"
 msgstr ""
 
-#: FConnectionEditor.class:37 FCreateFile.form:313 FDebugInfo.class:38
+#: FConnectionEditor.class:38 FCreateFile.form:313 FDebugInfo.class:38
 #: FMakeInstall.form:162 FNewConnection.form:64 FNewTable.form:33
 #: FOption.form:1038
 msgid "Name"
 msgstr ""
 
-#: FConnectionEditor.class:42 FCreateFile.form:364 FCreateProject.form:97
+#: FConnectionEditor.class:43 FCreateFile.form:364 FCreateProject.form:97
 #: FDebugInfo.class:76 FInfo.form:84 FNewConnection.form:78 FNewTable.form:48
 #: FProxy.form:27
 msgid "Type"
 msgstr ""
 
-#: FConnectionEditor.class:47
+#: FConnectionEditor.class:48
 msgid "Length"
 msgstr ""
 
-#: FConnectionEditor.class:52
+#: FConnectionEditor.class:53
 msgid "Default value"
 msgstr ""
 
-#: FConnectionEditor.class:63 FDebugExpr.class:470 FHelpBrowser.form:53
+#: FConnectionEditor.class:64 FDebugExpr.class:470 FHelpBrowser.form:53
 msgid "Index"
 msgstr ""
 
-#: FConnectionEditor.class:68
+#: FConnectionEditor.class:69
 msgid "Unique"
 msgstr ""
 
-#: FConnectionEditor.class:73 FImportTable.class:357
+#: FConnectionEditor.class:74 FImportTable.class:357
 msgid "Field"
 msgstr ""
 
-#: FConnectionEditor.class:194 FMakeInstall.form:229 FProjectProperty.form:259
+#: FConnectionEditor.class:239 FMakeInstall.form:229 FProjectProperty.form:259
 msgid "Description"
 msgstr ""
 
-#: FConnectionEditor.class:212
+#: FConnectionEditor.class:260
 msgid "Unable to connect to database."
 msgstr ""
 
-#: FConnectionEditor.class:302
+#: FConnectionEditor.class:352
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:302
+#: FConnectionEditor.class:352
 msgid "Do not save"
 msgstr ""
 
-#: FConnectionEditor.class:439
+#: FConnectionEditor.class:489
 msgid "Unable to load table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:487
+#: FConnectionEditor.class:537
 msgid "Unable to run query."
 msgstr ""
 
-#: FConnectionEditor.class:519
+#: FConnectionEditor.class:569
 msgid "unlimited"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:115 MErrorMessage.module:47
+#: FConnectionEditor.class:651 MConnection.module:115 MErrorMessage.module:47
 msgid "Boolean"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:107
+#: FConnectionEditor.class:651 MConnection.module:107
 msgid "Integer"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:109
+#: FConnectionEditor.class:651 MConnection.module:109
 msgid "Long"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:119
+#: FConnectionEditor.class:651 MConnection.module:119
 msgid "Serial"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:111
+#: FConnectionEditor.class:651 MConnection.module:111
 msgid "Float"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:117 MErrorMessage.module:155
+#: FConnectionEditor.class:651 MConnection.module:117 MErrorMessage.module:155
 msgid "String"
 msgstr ""
 
-#: FConnectionEditor.class:601 FProjectVersion.class:280
+#: FConnectionEditor.class:651 FProjectVersion.class:283
 #: MConnection.module:113
 msgid "Date"
 msgstr ""
 
-#: FConnectionEditor.class:601 MConnection.module:121
+#: FConnectionEditor.class:651 MConnection.module:121
 msgid "Blob"
 msgstr ""
 
-#: FConnectionEditor.class:681
+#: FConnectionEditor.class:731
 msgid "This name is already in used."
 msgstr ""
 
-#: FConnectionEditor.class:706
+#: FConnectionEditor.class:756
 msgid "Please enter a number."
 msgstr ""
 
-#: FConnectionEditor.class:711
+#: FConnectionEditor.class:761
 msgid "The length must be greater than 1 and lower than 255."
 msgstr ""
 
-#: FConnectionEditor.class:735
+#: FConnectionEditor.class:785
 msgid "Type mismatch."
 msgstr ""
 
-#: FConnectionEditor.class:778
+#: FConnectionEditor.class:828
 msgid "This name already exists."
 msgstr ""
 
-#: FConnectionEditor.class:858
+#: FConnectionEditor.class:908
 msgid "This field is used in an index."
 msgstr ""
 
-#: FConnectionEditor.class:1205
+#: FConnectionEditor.class:1255
 msgid "The table '&1' has no primary key."
 msgstr ""
 
-#: FConnectionEditor.class:1305
+#: FConnectionEditor.class:1355
 msgid "Cannot write table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:1417
+#: FConnectionEditor.class:1467
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FConnectionEditor.class:1428
+#: FConnectionEditor.class:1478
 msgid "Cannot delete table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:1464
+#: FConnectionEditor.class:1514
 msgid "Select the CSV file to import"
 msgstr ""
 
-#: FConnectionEditor.class:1465 FExportData.class:21
+#: FConnectionEditor.class:1515 FExportData.class:21
 msgid "CSV files"
 msgstr ""
 
-#: FConnectionEditor.class:1465 FTranslate.class:1198
+#: FConnectionEditor.class:1515 FTranslate.class:1198
 msgid "All files"
 msgstr ""
 
-#: FConnectionEditor.class:1488
+#: FConnectionEditor.class:1538
 msgid "Do you really want to remove the selected rows?"
+msgstr ""
+
+#: FConnectionEditor.class:1706
+msgid "Do you really want to remove this query?"
 msgstr ""
 
 #: FConvert.form:10
@@ -1754,12 +1762,12 @@ msgstr ""
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
-#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:201
+#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:204
 msgid "You are going to cancel your changes!"
 msgstr ""
 
 #: FFileProperty.class:140 FInfo.class:263 FMakeInstall.class:350
-#: FProjectVersion.class:201 FSave.form:21 Project.module:3317
+#: FProjectVersion.class:204 FSave.form:21 Project.module:3317
 msgid "Continue"
 msgstr ""
 
@@ -4330,31 +4338,31 @@ msgstr ""
 msgid "Remote"
 msgstr ""
 
-#: FProjectVersion.class:89
+#: FProjectVersion.class:92
 msgid "Please enter a user name."
 msgstr ""
 
-#: FProjectVersion.class:100
+#: FProjectVersion.class:103
 msgid "Please enter the journal."
 msgstr ""
 
-#: FProjectVersion.class:111
+#: FProjectVersion.class:114
 msgid "The project could not be committed."
 msgstr ""
 
-#: FProjectVersion.class:190
+#: FProjectVersion.class:193
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FProjectVersion.class:192
+#: FProjectVersion.class:195
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FProjectVersion.class:274
+#: FProjectVersion.class:277
 msgid "Revision"
 msgstr ""
 
-#: FProjectVersion.class:277 ProjectItem.class:82
+#: FProjectVersion.class:280 ProjectItem.class:82
 msgid "Author"
 msgstr ""
 

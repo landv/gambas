@@ -84,10 +84,10 @@
       Picture = Picture["icon:/small/open"]
     }
     { btnRequest ToolButton
-      MoveScaled(56,0,15,4)
-      ToolTip = ("SQL request")
+      MoveScaled(56,0,16,4)
+      ToolTip = ("SQL queries")
       AutoResize = True
-      Text = ("SQL request")
+      Text = ("SQL queries")
       Picture = Picture["icon:/small/find"]
     }
   }
@@ -232,60 +232,69 @@
             Index = 0
           }
           { panRequest VBox
-            MoveScaled(3,9,61,24)
+            MoveScaled(17,6,61,24)
             Visible = False
             { tlbData2 ToolBar
               MoveScaled(0,0,51,4)
               Separator = True
               { btnRunQuery ToolButton
-                MoveScaled(0,0,13,4)
+                MoveScaled(0,0,12,4)
                 AutoResize = True
                 Text = ("Run query")
                 Picture = Picture["icon:/small/play"]
               }
+              { btnRemoveQuery ToolButton
+                MoveScaled(12,0,4,4)
+                ToolTip = ("Remove query")
+                Picture = Picture["icon:/small/remove"]
+              }
               { btnClear ToolButton
-                MoveScaled(13,0,4,4)
+                MoveScaled(16,0,4,4)
                 ToolTip = ("Cut")
                 Picture = Picture["icon:/small/clear"]
               }
               { btnCut ToolButton mnuCut
                 Name = "btnCut"
-                MoveScaled(17,0,4,4)
+                MoveScaled(20,0,4,4)
                 ToolTip = ("Cut")
                 Picture = Picture["icon:/small/cut"]
               }
               { btnCopy ToolButton mnuCopy
                 Name = "btnCopy"
-                MoveScaled(21,0,4,4)
+                MoveScaled(24,0,4,4)
                 ToolTip = ("Copy")
                 Picture = Picture["icon:/small/copy"]
               }
               { btnPaste ToolButton mnuPaste
                 Name = "btnPaste"
-                MoveScaled(25,0,4,4)
+                MoveScaled(28,0,4,4)
                 ToolTip = ("Paste")
                 Picture = Picture["icon:/small/paste"]
               }
               { btnUndo ToolButton mnuUndo
                 Name = "btnUndo"
-                MoveScaled(29,0,4,4)
+                MoveScaled(32,0,4,4)
                 ToolTip = ("Undo")
                 Picture = Picture["icon:/small/undo"]
               }
               { btnRedo ToolButton mnuRedo
                 Name = "btnRedo"
-                MoveScaled(33,0,4,4)
+                MoveScaled(36,0,4,4)
                 ToolTip = ("Redo")
                 Picture = Picture["icon:/small/redo"]
               }
-              { ToolButton1 ToolButton
-                MoveScaled(38,0,9,4)
-                Visible = False
-              }
+            }
+            { tabRequest TabPanel
+              MoveScaled(3,5,33,16)
+              Expand = True
+              Border = False
+              Index = 0
+              Text = ("")
+              Index = 0
             }
             { edtRequest Editor
-              MoveScaled(3,7,40,7)
-              Expand = True
+              MoveScaled(18,15,40,7)
+              Ignore = True
               Border = False
               Highlight = Highlight.SQL
             }

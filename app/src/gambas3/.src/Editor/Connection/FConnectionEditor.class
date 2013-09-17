@@ -11,6 +11,7 @@ Private $sType As String
 Private $bReadOnly As Boolean
 Private $bShowSystem As Boolean
 Private $sTitle As String
+Private $aRequest As String[]
 
 Private $aField As New CField[]
 Private $cFieldName As New Collection
@@ -144,6 +145,50 @@ Public Sub GetDescription() As String
   
 End
 
+Private Sub GetRequestTitle(sReq As String) As String
+
+  If String.Len(sReq) > 48 Then sReq = String.Left(sReq, 48) & "…"
+  Return sReq
+
+End
+
+Private Sub UpdateRequest()
+  
+  Dim I As Integer
+  
+  tabRequest.Count = $aRequest.Count + 1
+
+  For I = 0 To tabRequest.Count - 2
+    tabRequest[I].Picture = Picture["icon:/small/find"]
+    tabRequest[I].Text = GetRequestTitle($aRequest[I])
+  Next
+  tabRequest[tabRequest.Count - 1].Picture = Picture["icon:/small/add"]
+  
+  tabRequest_Click
+  
+End
+
+Private Sub LoadRequest()
+
+  Dim hConfig As Settings = New Settings(Path)
+  $aRequest = hConfig["Connection/Requests"]
+  If Not $aRequest Or If $aRequest.Count = 0 Then
+    $aRequest = New String[]
+    $aRequest.Add("")
+  Endif
+
+End
+
+Private Sub SaveRequest()
+  
+  Dim hConfig As Settings = New Settings(Path)
+
+  hConfig["Connection/Requests"] = $aRequest
+  hConfig.Save
+  
+End
+
+
 Public Sub Reload() As Boolean
   
   Dim hConfig As Settings
@@ -197,6 +242,9 @@ Public Sub Reload() As Boolean
   Else
     tbvField.Columns.Count = 5
   Endif
+
+  LoadRequest
+  UpdateRequest
   
   LoadList($sTable)
   
@@ -256,6 +304,8 @@ Public Function IsModified() As Boolean
 End
 
 Public Sub Form_Close()
+  
+  SaveRequest
   
   Settings.Write(spnTable)
   
@@ -1620,4 +1670,50 @@ Public Sub btnEditData_Click()
   btnAddData.Enabled = btnEditData.Value
   btnRemoveData.Enabled = btnEditData.Value
   
+End
+
+Public Sub edtRequest_Change()
+
+  $aRequest[tabRequest.Index] = edtRequest.Text
+  tabRequest.Text = GetRequestTitle($aRequest[tabRequest.Index])
+
+End
+
+Public Sub tabRequest_Click()
+
+  If tabRequest.Index = (tabRequest.Count - 1) Then
+    tabRequest[tabRequest.Index].Picture = Picture["icon:/small/find"]
+    Inc tabRequest.Count
+    tabRequest[tabRequest.Count - 1].Picture = Picture["icon:/small/add"]
+    $aRequest.Add("")
+  Endif
+  
+  edtRequest.Text = $aRequest[tabRequest.Index]
+  edtRequest.SetFocus
+  
+End
+
+Public Sub tabRequest_Arrange()
+
+  edtRequest.Move(tabRequest.X + tabRequest.ClientX, tabRequest.Y + tabRequest.ClientY, tabRequest.ClientW, tabRequest.ClientH)
+  edtRequest.Raise
+
+End
+
+Public Sub btnRemoveQuery_Click()
+
+  If Trim($aRequest[tabRequest.Index]) Then
+    If Message.Question(("Do you really want to remove this query?"), ("Remove"), ("Cancel")) = 2 Then Return
+  Endif
+
+  $aRequest.Remove(tabRequest.Index)
+  If tabRequest.Index >= (tabRequest.Count - 2) Then Try Dec tabRequest.Index
+  UpdateRequest
+
+End
+
+Public Sub edtRequest_KeyPress()
+
+  If Key.Code = Key.F4 Then btnRunQuery.Value = True
+
 End

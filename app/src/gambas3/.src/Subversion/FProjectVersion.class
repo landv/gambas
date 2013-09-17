@@ -54,8 +54,11 @@ Public Sub Form_Open()
   Settings.Read(Me)
   
   txtName.Text = Project.Config["/VersionControl/User"]
+  
   chkRemember.Value = Project.Config["/VersionControl/RememberPassword", 0]
-  If chkRemember.Value Then txtPassword.Text = Desktop.Passwords[Project.Name &/ "VersionControl"]
+  chkRemember.Enabled = Desktop.Passwords.Enabled
+  If chkRemember.Value Then Try txtPassword.Text = Desktop.Passwords[Project.Name &/ "VersionControl"]
+  
   If Not txtName.Text Then 
     txtName.SetFocus
   Else 
@@ -231,7 +234,7 @@ Public Sub Form_Close()
   Project.Config["/VersionControl/RememberPassword"] = If(chkRemember.Value, 1, 0)
   
   If chkRemember.Value Then 
-    Desktop.Passwords[Project.Name &/ "VersionControl"] = txtPassword.Text
+    Try Desktop.Passwords[Project.Name &/ "VersionControl"] = txtPassword.Text
   Else
     Try Desktop.Passwords[Project.Name &/ "VersionControl"] = ""
   Endif
