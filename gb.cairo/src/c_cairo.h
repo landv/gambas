@@ -71,6 +71,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		cairo_pattern_t *pattern;
+		void *ref;
 	}
 	CAIRO_PATTERN;
 

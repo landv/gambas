@@ -283,6 +283,8 @@ GB_DESC CairoMatrixDesc[] =
 BEGIN_METHOD_VOID(CAIRO_PATTERN_free)
 
 	cairo_pattern_destroy(THIS_PATTERN->pattern);
+	if (THIS_PATTERN->ref)
+		GB.Unref(POINTER(&THIS_PATTERN->ref));
 
 END_METHOD
 
@@ -816,11 +818,16 @@ END_METHOD
 
 IMPLEMENT_PROPERTY_EXTENTS(CAIRO_path_extents, cairo_path_extents)
 
-static void make_pattern(cairo_pattern_t *pattern)
+static void make_pattern(cairo_pattern_t *pattern, void *ref)
 {
 	CAIRO_PATTERN *pat;
 	pat = GB.New(GB.FindClass("CairoPattern"), NULL, NULL);
 	pat->pattern = pattern;
+	if (ref)
+	{
+		pat->ref = ref;
+		GB.Ref(ref);
+	}
 	GB.ReturnObject(pat);
 }
 
@@ -836,7 +843,7 @@ BEGIN_METHOD(CAIRO_color_pattern, GB_INTEGER color)
 	b = (rgba & 0xFF) / 255.0;
 	
 	pattern = cairo_pattern_create_rgba(r, g, b, a);
-	make_pattern(pattern);
+	make_pattern(pattern, NULL);
 
 END_METHOD
 
@@ -849,7 +856,7 @@ BEGIN_METHOD(CAIRO_solid_pattern, GB_FLOAT r; GB_FLOAT g; GB_FLOAT b; GB_FLOAT a
 	else
 		pattern = cairo_pattern_create_rgba(VARG(r), VARG(g), VARG(b), VARG(a));
 	
-	make_pattern(pattern);
+	make_pattern(pattern, NULL);
 
 END_METHOD
 
@@ -857,11 +864,12 @@ BEGIN_METHOD(CAIRO_image_pattern, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_IN
 
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
+	GB_IMG *image = (GB_IMG *)VARG(image);
 	
-	if (GB.CheckObject(VARG(image)))
+	if (GB.CheckObject(image))
 		return;
 	
-	surface = check_image((GB_IMG *)VARG(image));
+	surface = check_image(image);
 	pattern = cairo_pattern_create_for_surface(surface);
 	
 	if (!MISSING(x) || !MISSING(y))
@@ -876,7 +884,7 @@ BEGIN_METHOD(CAIRO_image_pattern, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_IN
 	if (!MISSING(filter))
 		cairo_pattern_set_filter(pattern, VARG(filter));
 
-	make_pattern(pattern);
+	make_pattern(pattern, image);
 	
 END_METHOD
 
@@ -909,7 +917,7 @@ BEGIN_METHOD(CAIRO_linear_gradient_pattern, GB_FLOAT x0; GB_FLOAT y0; GB_FLOAT x
 		
 	pattern = cairo_pattern_create_linear(VARG(x0), VARG(y0), VARG(x1), VARG(y1));
 	handle_color_stop(pattern, colors);
-	make_pattern(pattern);
+	make_pattern(pattern, NULL);
 
 END_METHOD
 
@@ -924,7 +932,7 @@ BEGIN_METHOD(CAIRO_radial_gradient_pattern, GB_FLOAT cx0; GB_FLOAT cy0; GB_FLOAT
 		
 	pattern = cairo_pattern_create_radial(VARG(cx0), VARG(cy0), VARG(radius0), VARG(cx1), VARG(cy1), VARG(radius1));
 	handle_color_stop(pattern, colors);
-	make_pattern(pattern);
+	make_pattern(pattern, NULL);
 
 END_METHOD
 
