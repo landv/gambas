@@ -54,7 +54,7 @@ public:
 	bool isAncestorOf(gControl *child);
 	gCursor* cursor();
 	bool design();
-	virtual bool enabled();
+	virtual bool isEnabled() const;
 	bool expand() const { return expa; }
 	bool ignore() const { return igno; }
 	bool hovered();

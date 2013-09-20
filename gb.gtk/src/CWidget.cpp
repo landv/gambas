@@ -516,8 +516,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_enabled)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(CONTROL->enabled()); return; }
-	CONTROL->setEnabled(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(CONTROL->isEnabled());
+	else
+		CONTROL->setEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

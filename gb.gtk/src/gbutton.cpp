@@ -362,7 +362,7 @@ void gButton::setFont(gFont *ft)
 	updateSize();
 }
 
-bool gButton::enabled()
+/*bool gButton::enabled()
 {
 	return GTK_WIDGET_SENSITIVE(widget);
 }
@@ -370,7 +370,7 @@ bool gButton::enabled()
 void gButton::setEnabled(bool vl)
 {
 	gtk_widget_set_sensitive(widget, vl);
-}
+}*/
 
 const char* gButton::text()
 {

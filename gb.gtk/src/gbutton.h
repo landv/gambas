@@ -44,13 +44,13 @@ public:
 	bool value();
 	bool isToggle();
 	bool isRadio();
-	bool enabled();
+	//bool isEnabled() const;
 	bool inconsistent();
 	bool isStretch() { return _stretch; }
 	bool isTristate() const { return _tristate; }
 	bool isAutoResize() const { return _autoresize; }
 
-	void setEnabled(bool vl);
+	//void setEnabled(bool vl);
 	void setBorder(bool vl);
 	void setCancel(bool vl);
 	void setDefault(bool vl);

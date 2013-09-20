@@ -309,9 +309,9 @@ void gControl::destroy()
 }
 
 
-bool gControl::enabled()
+bool gControl::isEnabled() const
 {
-	return GTK_WIDGET_SENSITIVE(border);
+	return gtk_widget_is_sensitive(border);
 }
 
 bool gControl::isReallyVisible()
@@ -1510,7 +1510,7 @@ void gControl::setName(char *name)
 gColor gControl::realBackground()
 {
 	if (_bg_set)
-		return use_base ? get_gdk_base_color(widget, enabled()) : get_gdk_bg_color(widget, enabled());
+		return use_base ? get_gdk_base_color(widget, isEnabled()) : get_gdk_bg_color(widget, isEnabled());
 	else if (pr)
 		return pr->realBackground();
 	else
@@ -1558,7 +1558,7 @@ void gControl::setBackground(gColor color)
 gColor gControl::realForeground()
 {
 	if (_fg_set)
-		return use_base ? get_gdk_text_color(widget, enabled()) : get_gdk_fg_color(widget, enabled());
+		return use_base ? get_gdk_text_color(widget, isEnabled()) : get_gdk_fg_color(widget, isEnabled());
 	else if (pr)
 		return pr->realForeground();
 	else

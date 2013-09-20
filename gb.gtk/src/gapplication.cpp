@@ -51,7 +51,7 @@ static bool _focus_change = false;
 
 static bool check_button(gControl *w)
 {
-	return w && w->isVisible() && w->enabled();
+	return w && w->isVisible() && w->isEnabled();
 }
 
 static GtkWindowGroup *get_window_group(GtkWidget *widget)
