@@ -432,6 +432,18 @@ _PaintBrush
 m
 PaintBrush
 (X1)i(Y1)i(X2)i(Y2)i
+Color
+m
+ReportBrush
+(iColor)i
+LinearGradient
+m
+ReportBrush
+(X)f(Y)f(X2)f(Y2)f(aColor)Integer[];(aPos)Float[];
+RadialGradient
+m
+ReportBrush
+(X)f(Y)f(Radius)f(X2)f(Y2)f(aColor)Integer[];(aPos)Float[];
 _get
 M
 ReportBrush
@@ -440,6 +452,10 @@ ToString
 m
 s
 
+ImageBrush
+m
+ReportBrush
+(hImage)Image;
 #ReportContainer
 ReportFrame
 
