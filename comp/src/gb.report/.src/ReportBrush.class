@@ -179,7 +179,7 @@ Static Public Function Color(iColor As Integer) As ReportBrush
   
   Dim hBrush As New ReportBrush
   
-  hBrush._Color[0] = Hex(iColor)
+  hBrush._Color[0] = iColor
   hBrush._Type = 0
   
 End
