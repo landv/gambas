@@ -175,7 +175,7 @@ Public Function ToString() As String
   
 End
 
-Public Function Color(iColor As Integer) As ReportBrush
+Static Public Function Color(iColor As Integer) As ReportBrush
   
   Dim hBrush As New ReportBrush
   
@@ -184,7 +184,7 @@ Public Function Color(iColor As Integer) As ReportBrush
   
 End
 
-Public Function LinearGradient(X As Float, Y As Float, X2 As Float, Y2 As Float, aColor As Integer[], aPos As Float[]) As ReportBrush
+Static Public Function LinearGradient(X As Float, Y As Float, X2 As Float, Y2 As Float, aColor As Integer[], aPos As Float[]) As ReportBrush
   Dim hBrush As New ReportBrush
   
    hBrush._X = X
@@ -197,7 +197,7 @@ Public Function LinearGradient(X As Float, Y As Float, X2 As Float, Y2 As Float,
    Return hBrush
 End
 
-Public Function RadialGradient(X As Float, Y As Float, Radius As Float, X2 As Float, Y2 As Float, aColor As Integer[], aPos As Float[]) As ReportBrush
+Static Public Function RadialGradient(X As Float, Y As Float, Radius As Float, X2 As Float, Y2 As Float, aColor As Integer[], aPos As Float[]) As ReportBrush
   Dim hBrush As New ReportBrush
   
    hBrush._X = X
@@ -211,7 +211,7 @@ Public Function RadialGradient(X As Float, Y As Float, Radius As Float, X2 As Fl
    Return hBrush
 End
 
-Public Function ImageBrush(hImage As Image) As ReportBrush
+Static Public Function ImageBrush(hImage As Image) As ReportBrush
   Dim hBrush As New ReportBrush
   
   hBrush._Image = hImage
