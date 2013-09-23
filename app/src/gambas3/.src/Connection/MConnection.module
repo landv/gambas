@@ -3,6 +3,8 @@
 Public Password As New Collection
 Public Const METADATA_TABLE_NAME As String = "__gb_metadata"
 
+Public Enum MD_VERSION = 0, MD_FIELD = 1, MD_INDEX = 2, MD_TABLE = 3
+
 Private $bError As Boolean
 
 Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean)
@@ -421,4 +423,25 @@ Public Sub Convert(vVal As Variant, iType As Integer) As Variant
 
 End
 
+Public Sub CreateMetadataTable(hConn As Connection) As Boolean
+  
+  Dim hTable As Table
 
+  If hConn.Tables.Exist(METADATA_TABLE_NAME) Then Return
+
+  hTable = hConn.Tables.Add(METADATA_TABLE_NAME)
+  With hTable
+    .Fields.Add("sTable", gb.String)
+    .Fields.Add("iType", gb.Integer)
+    .Fields.Add("sKey", gb.String)
+    .Fields.Add("sValue", gb.String)
+    .PrimaryKey = ["sTable", "iType", "sKey"]
+    .Update
+  End With
+
+Catch
+
+  Message(("Cannot create metadata table.") & "\n\n" & Error.Text)
+  Return True
+
+End

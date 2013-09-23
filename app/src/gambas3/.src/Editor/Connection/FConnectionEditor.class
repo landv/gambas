@@ -5,9 +5,15 @@ Public Path As String
 Property Read ReadOnly As Boolean
 
 Private $hConn As Connection
-Private $bModify As Boolean
+
+'Private $bModify As Boolean
+Private $bModifyTable As Boolean
+Private $bModifyMetadata As Boolean
+
 Private $sTable As String
 Private $sType As String
+Private $sDescription As String
+
 Private $bReadOnly As Boolean
 Private $bShowSystem As Boolean
 Private $sTitle As String
@@ -147,6 +153,17 @@ End
 
 Private Sub GetRequestTitle(sReq As String) As String
 
+  Dim iPos As Integer
+  
+  If Left(sReq, 2) = "/*" Then
+    iPos = InStr(sReq, "\n")
+    If iPos Then sReq = Left(sReq, iPos - 1)
+    sReq = Trim(Mid$(sReq, 3))
+    If Right(sReq, 2) = "*/" Then sReq = Trim(Left(sReq, -2))
+  Else
+    sReq = Trim(Replace(sReq, "\n", " "))
+  Endif
+
   If String.Len(sReq) > 48 Then sReq = String.Left(sReq, 48) & "…"
   Return sReq
 
@@ -156,13 +173,13 @@ Private Sub UpdateRequest()
   
   Dim I As Integer
   
-  tabRequest.Count = $aRequest.Count + 1
+  tabRequest.Count = $aRequest.Count
 
-  For I = 0 To tabRequest.Count - 2
+  For I = 0 To tabRequest.Count - 1
     tabRequest[I].Picture = Picture["icon:/small/find"]
     tabRequest[I].Text = GetRequestTitle($aRequest[I])
   Next
-  tabRequest[tabRequest.Count - 1].Picture = Picture["icon:/small/add"]
+  'tabRequest[tabRequest.Count - 1].Picture = Picture["icon:/small/add"]
   
   tabRequest_Click
   
@@ -239,8 +256,14 @@ Public Sub Reload() As Boolean
       .Text = ("Description")
       .Width = Desktop.Scale * 24
     End With
+    tbvIndex.Columns.Count = 4
+    With tbvIndex.Columns[3]
+      .Text = ("Description")
+      .Width = Desktop.Scale * 24
+    End With
   Else
     tbvField.Columns.Count = 5
+    tbvIndex.Columns.Count = 3
   Endif
 
   LoadRequest
@@ -271,11 +294,12 @@ End
 
 Public Function Save() As Boolean
   
-  If Not $bModify Then Return
+  If Not $bModifyTable And If Not $bModifyMetadata Then Return
   
   If SaveTable() Then Return True
+  $bModifyTable = False
+  $bModifyMetadata = False
   
-  $bModify = False
   DrawTitle
   
 End
@@ -286,20 +310,31 @@ Private Sub DrawTitle()
   
 End
 
-Public Sub Modify(Optional bReset As Boolean)
+Private Sub ModifyTable(Optional bReset As Boolean)
   
   If Project.ReadOnly Then Return
-  If $bModify <> bReset Then Return
+  If $bModifyTable <> bReset Then Return
   
-  $bModify = Not bReset
+  $bModifyTable = Not bReset
   DrawTitle
-  If $bModify Then Inc Project.TimeStamp
+  If $bModifyTable Then Inc Project.TimeStamp
+  
+End
+
+Private Sub ModifyMetadata(Optional bReset As Boolean)
+  
+  If Project.ReadOnly Then Return
+  If $bModifyMetadata <> bReset Then Return
+  
+  $bModifyMetadata = Not bReset
+  DrawTitle
+  If $bModifyMetadata Then Inc Project.TimeStamp
   
 End
 
 Public Function IsModified() As Boolean
   
-  Return $bModify
+  Return $bModifyTable Or $bModifyMetadata
   
 End
 
@@ -348,12 +383,13 @@ Private Sub CheckCurrent() As Boolean
   If tbvField.Save() Then Goto CANCEL
   If tbvIndex.Save() Then Goto CANCEL
   
-  If $bModify Then
+  If IsModified() Then
     Select Case Message.Warning(Subst(("The table '&1' has been modified. Do you want to save it?"), $sTable), ("Save"), ("Do not save"), ("Cancel"))
       Case 1
         If Save() Then Goto CANCEL
       Case 2
-        Modify(True)
+        ModifyTable(True)
+        ModifyMetadata(True)
       Case 3
         Goto CANCEL
     End Select
@@ -378,6 +414,8 @@ Private Sub ReloadTable()
   Dim sField As String
   Dim bCreate As Boolean
   Dim hResult As Result
+  Dim cDescField As Collection
+  Dim cDescIndex As Collection
   
   $aField.Clear
   $cFieldName.Clear
@@ -385,24 +423,33 @@ Private Sub ReloadTable()
   $cFieldInfo.Clear
   
   If $bMetadata Then 
-    'create the info table if not exist
-    If Not $hConn.Tables.Exist(MConnection.METADATA_TABLE_NAME) Then
-      hTable = $hConn.Tables.Add(MConnection.METADATA_TABLE_NAME)
-      hTable.Fields.Add("type", db.Integer)
-      hTable.Fields.Add("key", db.String)
-      hTable.Fields.Add("value", db.String)
-      hTable.PrimaryKey = ["type", "key"]
-      hTable.Update
-    Endif
     
-    'Loading bdd infos
-    hResult = $hConn.Find(MConnection.METADATA_TABLE_NAME, "field like &1", $sTable &/ "%")
+    $sDescription = ""
+    cDescField = New Collection
+    cDescIndex = New Collection
     
-    If hResult.Available Then
+    Try hResult = $hConn.Find(MConnection.METADATA_TABLE_NAME, "sTable = &1", $sTable)
+    If hResult And If hResult.Available Then 
+      
       For Each hResult
-        $cFieldInfo[hResult!field] = hResult!desc
+        
+        Select Case hResult!iType
+          
+          Case MConnection.MD_TABLE
+            $sDescription = hResult!sValue
+          
+          Case MConnection.MD_FIELD
+            cDescField[hResult!sKey] = hResult!sValue
+            
+          Case MConnection.MD_INDEX
+            cDescIndex[hResult!sKey] = hResult!sValue
+          
+        End Select
+        
       Next
+      
     Endif
+    
   Endif 
   
   hTable = $hConn.Tables[$sTable]
@@ -410,6 +457,7 @@ Private Sub ReloadTable()
   
   For Each hField In hTable.Fields
     hCField = New CField(hField)
+    If $bMetadata Then hCField.Description = cDescField[hCField.Name]
     $aField.Add(hCField)
     $cFieldName[hField.Name] = True
   Next
@@ -419,6 +467,7 @@ Private Sub ReloadTable()
     If hIndex.Primary Then Continue
     
     hCIndexField = New CIndexField(hIndex)
+    If $bMetadata Then hCIndexField.Description = cDescIndex[hCIndexField.Index]
     $aIndexField.Add(hCIndexField)
     bCreate = False
     
@@ -447,7 +496,8 @@ Private Sub ReloadTable()
   Try tbvIndex.MoveTo(0, 1)
   UpdateIndexToolbar
   
-  $bModify = False
+  $bModifyTable = False
+  $bModifyMetadata = False
   DrawTitle
   
   datData.Table = $sTable
@@ -517,13 +567,20 @@ End
 Public Sub btnRunQuery_Click()
   
   Dim sReq As String = Trim(edtRequest.Text)
+  Dim iPos As Integer
+  
+  While Left(sReq, 2) = "/*"
+    iPos = InStr(sReq, "*/")
+    If iPos = 0 Then Return
+    sReq = Trim(Mid$(sReq, iPos + 2))
+  Wend
   
   If Not sReq Then Return
   
   Inc Application.Busy
   
   If sReq Like "SELECT *" Then
-    Try datRequest.Table = edtRequest.Text
+    Try datRequest.Table = sReq
   Else
     Try $hConn.Exec(sReq)
     If Not Error Then 
@@ -574,7 +631,8 @@ Public Sub tbvField_Data(Row As Integer, Column As Integer)
         .Text = Str(hCField.DefaultValue)
       
       Case 5
-        .Text = $cFieldInfo[$sTable &/ hCField.Name]
+        .Text = hCField.Description
+        
     End Select
     
     .Padding = 4
@@ -603,10 +661,13 @@ Public Sub tbvIndex_Data(Row As Integer, Column As Integer)
       Case 2
         .Text = hIndexField.Field
         
+      Case 3
+        .Text = hIndexField.Description
+        
     End Select
     
     .Padding = 4
-    If hIndexField.Index Then .Background = Color.LightBackground
+    'If hIndexField.Index Then .Background = Color.Merge(Color.LightBackground, Color.TextBackground)
     
   End With
   
@@ -626,7 +687,7 @@ Public Sub tbvField_Activate()
       
       hField.Key = Not hField.Key
       tbvField.Current.Refresh
-      Modify
+      ModifyTable
       
   End Select
   
@@ -643,28 +704,29 @@ Public Sub tbvField_Click()
   Select Case tbvField.Column
       
     Case 1
-      '.ShowTextBox(True, True)
       tbvField.Edit
       
     Case 2
-      '.ShowComboBox([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True, True)
       tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True)
       
     Case 3
       If hField.Type = gb.String Then
         tbvField.Edit(["8", "16", "32", "48", "64", "128", "255", ("unlimited")])
-      Else
-        'tbvField.Cancel
       Endif
       
     Case 4
       If hField.Type = gb.Boolean Then
-        tbvField.Edit(["True", "False"]) ' Non traduisible !
+        tbvField.Edit(["True", "False"]) ' Don't translate!
       Else
         tbvField.Edit
       Endif
+      
     Case 5
       tbvField.Edit
+
+    Case 6
+      If hField.Index Then tbvField.Edit
+      
   End Select
   
 End
@@ -692,6 +754,9 @@ Public Sub tbvIndex_Click()
       
     Case 2
       tbvIndex.Edit(FreeIndexFields(True), True)
+      
+    Case 3
+      tbvIndex.Edit
       
   End Select
   
@@ -795,11 +860,16 @@ Public Sub tbvField_Save(Row As Integer, Column As Integer, sData As String)
       hField.DefaultValue = vVal
     
     Case 5
-      $cFieldInfo[$sTable &/ hField.Name] = sData
+      
+      hField.Description = sData
       
   End Select
   
-  Modify
+  If Column < 5 Then
+    ModifyTable
+  Else
+    ModifyMetadata
+  Endif
   
 End
 
@@ -839,9 +909,17 @@ Public Sub tbvIndex_Save(Row As Integer, Column As Integer, sData As String)
       
       hIndex.Field = sData
       
+    Case 3
+      
+      hIndex.Description = sData
+      
   End Select
   
-  Modify
+  If Column < 3 Then
+    ModifyTable
+  Else
+    ModifyMetadata
+  Endif
   
 End
 
@@ -875,7 +953,7 @@ Public Sub btnNewField_Click()
   Inc tbvField.Rows.Count
   tbvField.Rows[tbvField.Rows.Count - 1].H = -1
   
-  Modify
+  ModifyTable
   
   tbvField.MoveTo(iRow + 1, 1)
   tbvField_Click
@@ -913,7 +991,7 @@ Public Sub btnKillField_Click()
   $aField.Remove(iRow)
   Dec tbvField.Rows.Count
   
-  Modify
+  ModifyTable
   
 End
 
@@ -932,7 +1010,7 @@ Public Sub btnDownField_Click()
   
   Inc tbvField.Row
   
-  Modify
+  ModifyTable
   
 End
 
@@ -951,7 +1029,7 @@ Public Sub btnUpField_Click()
   
   Dec tbvField.Row
   
-  Modify
+  ModifyTable
   
 End
 
@@ -981,7 +1059,7 @@ Public Sub btnNewIndex_Click()
   Inc tbvIndex.Rows.Count
   tbvIndex.Rows[tbvIndex.Rows.Count - 1].H = -1
   
-  Modify
+  ModifyTable
   
   tbvIndex.MoveTo(tbvIndex.Rows.Count - 1, 0)
   tbvIndex_Click
@@ -1060,7 +1138,7 @@ Public Sub btnNewIndexField_Click()
   
   tbvIndex.MoveTo(iRow, 1)
   
-  Modify
+  ModifyTable
   
 End
 
@@ -1099,7 +1177,7 @@ Public Sub btnKillIndex_Click()
   Dec tbvIndex.Rows.Count
   tbvIndex.Refresh
   
-  Modify
+  ModifyTable
   
 End
 
@@ -1235,7 +1313,8 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   
   Dim aPrimaryKey As New String[]
   Dim hCField As CField
-  Dim sTemp, s As String
+  Dim hCIndexField As CIndexField
+  Dim sTemp As String
   Dim rTemp As Result
   Dim rInfo As Result
   Dim rTable As Result
@@ -1245,93 +1324,118 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   ' If $hFieldEditor.Hide() Then Return True
   ' If $hIndexEditor.Hide() Then Return True
   
-  For Each hCField In $aField
-    If hCField.Key Then
-      aPrimaryKey.Add(hCField.Name)
-    Endif
-  Next
+  If $bModifyTable Then
   
-  If aPrimaryKey.Count = 0 Then
-    Message.Warning(Subst(("The table '&1' has no primary key."), If(sOldTable, sOldTable, $sTable)))
-    Return True
-  Endif
-  
-  ' If frmData Then
-  '   If frmData.IsModified() Then frmData.btnSaveData_Click
-  '   frmData.Delete
-  '   frmData = Null
-  ' Endif
-  
-  Inc Application.Busy
-  
-  If sOldTable Then
-    
-    If MConnection.CountTableData($hConn, sOldTable) Then
-      sTemp = sOldTable 'MConnection.CopyTableData($hConn, sOldName)
-    Endif
-    
-    'WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
-    RemoveIndexFromTable(sOldTable)
-    WriteTableDef($sTable, $sType, aPrimaryKey)
-    
-  Else
-    
-    If MConnection.CountTableData($hConn, $sTable) Then
-      sTemp = MConnection.CopyTableData($hConn, $sTable)
-    Endif
-    
-    WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
-    WriteTableDef($sTable, $sType, aPrimaryKey)
-    
-  Endif
-  
-  'hTable = $hConn.Handle.Tables.Add($sName, sType)
-  
-  If sTemp Then
-    
-    $hConn.Begin
-    
-    rTemp = $hConn.Find(sTemp)
-    rTable = $hConn.Create($sTable)
-    
-    For Each rTemp
-      
-      For Each hCField In $aField
-        If hCField.OldName Then
-          Try rTable[hCField.Name] = rTemp[hCField.OldName]
-          If Error Then 
-            Try rTable[hCField.Name] = MConnection.Convert(rTemp[hCField.OldName], hCField.Type)
-          Endif
-          If IsNull(rTable[hCField.Name]) Then Stop ' Why this breakpoint ?
-        Endif
-      Next
-      
-      Try rTable.Update
-      'IF Error THEN PRINT "Update: "; Error.Text
-      
+    For Each hCField In $aField
+      If hCField.Key Then
+        aPrimaryKey.Add(hCField.Name)
+      Endif
     Next
     
-    $hConn.Commit
+    If aPrimaryKey.Count = 0 Then
+      Message.Warning(Subst(("The table '&1' has no primary key."), If(sOldTable, sOldTable, $sTable)))
+      Return True
+    Endif
+    
+    ' If frmData Then
+    '   If frmData.IsModified() Then frmData.btnSaveData_Click
+    '   frmData.Delete
+    '   frmData = Null
+    ' Endif
+    
+    Inc Application.Busy
+    
+    If sOldTable Then
+      
+      If MConnection.CountTableData($hConn, sOldTable) Then
+        sTemp = sOldTable 'MConnection.CopyTableData($hConn, sOldName)
+      Endif
+      
+      'WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+      RemoveIndexFromTable(sOldTable)
+      WriteTableDef($sTable, $sType, aPrimaryKey)
+      
+    Else
+      
+      If MConnection.CountTableData($hConn, $sTable) Then
+        sTemp = MConnection.CopyTableData($hConn, $sTable)
+      Endif
+      
+      WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+      WriteTableDef($sTable, $sType, aPrimaryKey)
+      
+    Endif
+    
+    'hTable = $hConn.Handle.Tables.Add($sName, sType)
+    
+    If sTemp Then
+      
+      $hConn.Begin
+      
+      rTemp = $hConn.Find(sTemp)
+      rTable = $hConn.Create($sTable)
+      
+      For Each rTemp
+        
+        For Each hCField In $aField
+          If hCField.OldName Then
+            Try rTable[hCField.Name] = rTemp[hCField.OldName]
+            If Error Then 
+              Try rTable[hCField.Name] = MConnection.Convert(rTemp[hCField.OldName], hCField.Type)
+            Endif
+            'If IsNull(rTable[hCField.Name]) Then Stop ' Why this breakpoint ?
+          Endif
+        Next
+        
+        Try rTable.Update
+        'IF Error THEN PRINT "Update: "; Error.Text
+        
+      Next
+      
+      $hConn.Commit
+      
+    Endif
     
   Endif
   
   If $bMetadata Then 
-    'Save the field Desc
-    $hConn.Delete(MConnection.METADATA_TABLE_NAME, "field like &1", $sTable &/ "%")
-    $hConn.Begin
-    For Each s In $cFieldInfo
-      rInfo = $hConn.Create(MConnection.METADATA_TABLE_NAME)
-      rInfo!field = $cFieldInfo.Key
-      rInfo!desc = s
-      rInfo.Update
-    Next
-    $hConn.Commit
+    
+    If Not MConnection.CreateMetadataTable($hConn) Then
+    
+      $hConn.Begin
+      Try $hConn.Delete(MConnection.METADATA_TABLE_NAME, "sTable = &1", $sTable)
+      
+      For Each hCField In $aField
+        If Not hCField.Description Then Continue
+        rInfo = $hConn.Create(MConnection.METADATA_TABLE_NAME)
+        rInfo!sTable = $sTable
+        rInfo!iType = MConnection.MD_FIELD
+        rInfo!sKey = hCField.Name
+        rInfo!sValue = hCField.Description
+        rInfo.Update
+      Next
+      
+      For Each hCIndexField In $aIndexField
+        If Not hCIndexField.Index Then Continue
+        If Not hCIndexField.Description Then Continue
+        rInfo = $hConn.Create(MConnection.METADATA_TABLE_NAME)
+        rInfo!sTable = $sTable
+        rInfo!iType = MConnection.MD_INDEX
+        rInfo!sKey = hCIndexField.Index
+        rInfo!sValue = hCIndexField.Description
+        rInfo.Update
+      Next
+      
+      $hConn.Commit
+      
+    Endif
+      
   Endif
   
   datData.Reset
-  'datRequest.Reset
-  
-  Modify(True)
+    
+  ModifyTable(True)
+  ModifyMetadata(True)
   ReloadTable
   
 Finally
@@ -1364,7 +1468,7 @@ Private Function SaveTable() As Boolean
   If tbvField.Save() Then Return True
   If tbvIndex.Save() Then Return True
   
-  If Not $bModify Then Return
+  If Not IsModified() Then Return
   
   If WriteTable() Then Return True
   
@@ -1413,7 +1517,7 @@ End
 
 Public Sub btnClear_Click()
   
-  edtRequest.Clear
+  edtRequest.Text = ""
   
 End
 
@@ -1454,11 +1558,11 @@ Public Sub btnRequest_Click()
   $sTable = ""
   panRequest.Show
   tabTable.Hide
-  edtRequest.SetFocus
   datData.Hide
   datRequest.Show
   tlbData.Hide
   SetReadOnly(True)
+  edtRequest.SetFocus
   
 End
 
@@ -1681,13 +1785,6 @@ End
 
 Public Sub tabRequest_Click()
 
-  If tabRequest.Index = (tabRequest.Count - 1) Then
-    tabRequest[tabRequest.Index].Picture = Picture["icon:/small/find"]
-    Inc tabRequest.Count
-    tabRequest[tabRequest.Count - 1].Picture = Picture["icon:/small/add"]
-    $aRequest.Add("")
-  Endif
-  
   edtRequest.Text = $aRequest[tabRequest.Index]
   edtRequest.SetFocus
   
@@ -1706,8 +1803,12 @@ Public Sub btnRemoveQuery_Click()
     If Message.Question(("Do you really want to remove this query?"), ("Remove"), ("Cancel")) = 2 Then Return
   Endif
 
-  $aRequest.Remove(tabRequest.Index)
-  If tabRequest.Index >= (tabRequest.Count - 2) Then Try Dec tabRequest.Index
+  If $aRequest.Count = 1 Then
+    $aRequest[0] = ""
+  Else
+    $aRequest.Remove(tabRequest.Index)
+  Endif
+  
   UpdateRequest
 
 End
@@ -1716,4 +1817,15 @@ Public Sub edtRequest_KeyPress()
 
   If Key.Code = Key.F4 Then btnRunQuery.Value = True
 
+End
+
+Public Sub btnAddQuery_Click()
+
+  $aRequest.Add("/* " & ("New query") & " */\n")
+  Inc tabRequest.Count
+  
+  UpdateRequest
+  
+  tabRequest.Index = $aRequest.Max
+  
 End

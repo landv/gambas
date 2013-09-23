@@ -232,10 +232,11 @@
             Index = 0
           }
           { panRequest VBox
-            MoveScaled(17,6,61,24)
+            MoveScaled(10,7,61,24)
             Visible = False
+            Background = Color.Background
             { tlbData2 ToolBar
-              MoveScaled(0,0,51,4)
+              MoveScaled(0,0,57,4)
               Separator = True
               { btnRunQuery ToolButton
                 MoveScaled(0,0,12,4)
@@ -243,43 +244,52 @@
                 Text = ("Run query")
                 Picture = Picture["icon:/small/play"]
               }
+              { btnAddQuery ToolButton
+                MoveScaled(12,0,8,4)
+                ToolTip = ("New query")
+                AutoResize = True
+                Text = ("New")
+                Picture = Picture["icon:/small/new"]
+              }
               { btnRemoveQuery ToolButton
-                MoveScaled(12,0,4,4)
+                MoveScaled(20,0,11,4)
                 ToolTip = ("Remove query")
+                AutoResize = True
+                Text = ("Remove")
                 Picture = Picture["icon:/small/remove"]
               }
               { btnClear ToolButton
-                MoveScaled(16,0,4,4)
+                MoveScaled(32,0,4,4)
                 ToolTip = ("Cut")
                 Picture = Picture["icon:/small/clear"]
               }
               { btnCut ToolButton mnuCut
                 Name = "btnCut"
-                MoveScaled(20,0,4,4)
+                MoveScaled(36,0,4,4)
                 ToolTip = ("Cut")
                 Picture = Picture["icon:/small/cut"]
               }
               { btnCopy ToolButton mnuCopy
                 Name = "btnCopy"
-                MoveScaled(24,0,4,4)
+                MoveScaled(40,0,4,4)
                 ToolTip = ("Copy")
                 Picture = Picture["icon:/small/copy"]
               }
               { btnPaste ToolButton mnuPaste
                 Name = "btnPaste"
-                MoveScaled(28,0,4,4)
+                MoveScaled(44,0,4,4)
                 ToolTip = ("Paste")
                 Picture = Picture["icon:/small/paste"]
               }
               { btnUndo ToolButton mnuUndo
                 Name = "btnUndo"
-                MoveScaled(32,0,4,4)
+                MoveScaled(48,0,4,4)
                 ToolTip = ("Undo")
                 Picture = Picture["icon:/small/undo"]
               }
               { btnRedo ToolButton mnuRedo
                 Name = "btnRedo"
-                MoveScaled(36,0,4,4)
+                MoveScaled(52,0,4,4)
                 ToolTip = ("Redo")
                 Picture = Picture["icon:/small/redo"]
               }
