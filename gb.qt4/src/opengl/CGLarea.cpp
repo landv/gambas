@@ -27,6 +27,7 @@
 
 //#include "gl.h"
 
+
 //#include <iostream>
 
 
@@ -107,11 +108,15 @@ BEGIN_METHOD(CGLAREA_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 
 	QString text;
 	int x, y;
+	#ifdef GL_LIGHTING
 	GLboolean _LIGHTING = glIsEnabled(GL_LIGHTING);
+	#endif
 	GLboolean _TEXTURE_2D = glIsEnabled(GL_TEXTURE_2D);
 
+	#ifdef GL_LIGHTING
 	if (_LIGHTING)
 		glDisable(GL_LIGHTING);
+	#endif
 	if (_TEXTURE_2D)
 		glDisable(GL_TEXTURE_2D);
 
@@ -121,8 +126,10 @@ BEGIN_METHOD(CGLAREA_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 
 	WIDGET->renderText(x, y, text, WIDGET->font());
 
+	#ifdef GL_LIGHTING
 	if (_LIGHTING)
 		glEnable(GL_LIGHTING);
+	#endif
 	if (_TEXTURE_2D)
 		glEnable(GL_TEXTURE_2D);
 
