@@ -30,7 +30,7 @@
 Private Http As ServerSocket
 Private hSocket As Object[]
 Private hBuffer As String[]
-Private hProt As Byte[]
+Private hProt As Short[]
 Private hLen As Integer[]
 Private hConn As Integer[]
 Private hType As Byte[]
@@ -327,6 +327,18 @@ Public Sub Socket_Read()
         Return
       End If
 
+      ' Check for "Expect: 100-continue" option & HTTP/1.1
+      If hProt[Bucle] = 1 And InStr(UCase(Buf), "EXPECT: 100-CONTINUE") > 0 Then
+        ' Do a special check if no body is received - only then reply
+        If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) + 3 = Len(hBuffer[Bucle]) Then
+          hS.Begin
+          hS.EndOfLine = gb.Windows
+          Print #hS, "HTTP/1.1 100 Continue"
+          Print #hS, ""
+          Try hS.Send
+        End If
+      End If
+
     End If
   End If
 
@@ -345,7 +357,9 @@ Public Sub Socket_Read()
       Wait 0.005
     Next
 
-    If cLen = hLen[Bucle] Then
+    ' HTTP/1.0 = looseless checking, some older clients generation wrong length
+    ' HTTP/1.1 = strict checking
+    If (hProt[Bucle] = 1 And hLen[Bucle] = cLen) Or (hProt[Bucle] = 0 And hLen[Bucle] <= cLen) Then
       ProcessQuery(hS, hBuffer[Bucle])
       Return
     Else
@@ -365,7 +379,7 @@ Public Sub Socket_Read()
 
   Else
     If Len(hBuffer[Bucle]) > 4096 Then
-      hError(hS,"413 Request Entity Too Large")
+      hError(hS, "413 Request Entity Too Large")
       RemoveSocket(hS)
       Return
     End If
