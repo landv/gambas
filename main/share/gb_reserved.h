@@ -306,7 +306,7 @@ typedef
 		short flag;
 		unsigned char value;
 		unsigned char read_switch;
-		unsigned char priority;
+		unsigned short priority;
 		short code;
 		short subcode;
 		void (*func)();
