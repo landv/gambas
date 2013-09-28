@@ -132,10 +132,11 @@ typedef
 		int state;
 		short local;
 		short id;
+		short loop_var;
+		short _reserved[3];
 		ushort *pos;
 		ushort *pos_break;
 		ushort *pos_continue;
-		short loop_var;
 		}
 	PACKED
 	TRANS_CTRL;

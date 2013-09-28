@@ -758,6 +758,7 @@ typedef
 		#endif
 		GB_VARIANT_VALUE _reserved4;
 		}
+	PACKED
 	GB_STREAM;
 
 
