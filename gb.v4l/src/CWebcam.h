@@ -85,8 +85,7 @@ typedef
 typedef 
 	struct  
 	{
-		GB_STREAM_DESC *desc;
-		int _reserved;
+		GB_STREAM_BASE stream;
 		void *handle;
 	}
 	VIDEO_STREAM;
