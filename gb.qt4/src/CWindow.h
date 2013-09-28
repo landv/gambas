@@ -37,6 +37,7 @@
 #include <QPushButton>
 #include <QSizeGrip>
 #include <QPoint>
+#include <QPointer>
 
 #include "gambas.h"
 #include "CContainer.h"
@@ -151,7 +152,7 @@ class MyMainWindow;
 
 typedef
 	struct {
-		MyMainWindow *that;
+		QPointer<MyMainWindow> that;
 		QEventLoop *old;
 		CWINDOW *save;
 	}

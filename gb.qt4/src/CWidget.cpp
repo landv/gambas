@@ -2520,8 +2520,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (GB.CanRaise(control, EVENT_Menu))
 		{
 			((QContextMenuEvent *)event)->accept();
-			GB.Raise(control, EVENT_Menu, 0);
-			return true;
+			if (GB.Raise(control, EVENT_Menu, 0))
+				return true;
+			else
+				goto __NEXT;
 		}
 		if (EXT(control) && EXT(control)->popup)
 		{

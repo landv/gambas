@@ -1772,7 +1772,7 @@ void on_error_show_modal(MODAL_INFO *info)
 	MyApplication::eventLoop = info->old;
 	CWINDOW_Current = info->save;
 	
-	if (info->that->isPersistent())
+	if (info->that && info->that->isPersistent())
 	{
 		info->that->setSizeGrip(false);
 		info->that->setWindowModality(Qt::NonModal);
