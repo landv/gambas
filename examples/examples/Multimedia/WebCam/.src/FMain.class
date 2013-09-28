@@ -17,6 +17,7 @@ Public Sub ScanDevices()
   Dim count As Integer
   Dim item As Menu
   Dim status As String
+  Dim sDevice As String
     
   $windows = New Form[]
   count = 0
@@ -24,7 +25,9 @@ Public Sub ScanDevices()
 
   status = "Searching: "
   For i = 0 To 20
-    Try dev = New VideoDevice("/dev/video" & Str(i))
+    sDevice = "/dev/video" & Str(i)
+    Print sDevice
+    Try dev = New VideoDevice(sDevice)
     If Not Error Then
       status &= "!"
       myWin = New FDevice(dev, count)
@@ -48,8 +51,6 @@ Public Sub ScanDevices()
     myWin.Show
   Next
   
-Catch
-
 End
 
 Public Sub menu_scan_Click()
@@ -96,12 +97,12 @@ Public Sub menu_quit_Click()
     $windows.Pop().Close
   Wend
   Me.Close
+  tooltray.Hide
   
 End
 
 Public Sub menu_save_Click()
   
-  Dim key As String
   Dim mywin As FDevice
   
   For Each myWin In $windows

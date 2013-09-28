@@ -46,7 +46,7 @@ Public Sub _new(dev As VideoDevice, i As Integer)
 
 End
 
-Public Sub Resize()
+Public Sub ResizeDevice()
   
   Dim $spacing As Integer
   
@@ -101,7 +101,7 @@ Public Sub Resize()
   
 End
 
-Public Sub form_Show()
+Public Sub Form_Show()
 
   Dim key As String = Subst("Camera_&1", $index)
 
@@ -122,7 +122,7 @@ Public Sub Form_Open()
 
   picture_size.Index = Settings[key & "/size", 1] - 1
   picture_size_Click()
-  Resize()
+  ResizeDevice()
   Wait 0.1
   
   slider_bright.Value = Settings[key & "/brightness", $device.Bright]
@@ -139,17 +139,6 @@ Public Sub Form_Open()
   $device.Whiteness = slider_whiteness.Value
   
 End
-
-Public Sub Close() As Integer
-  
-  Refresh.Stop
-  Me.Hide
-  Wait
-  $device.Close
-  $device = Null
-  
-End
-
 
 Public Sub Refresh_Timer()
 
@@ -190,7 +179,7 @@ Public Sub picture_size_Click()
       $device.Resize(640, 480)
   
   End Select
-  Resize()
+  ResizeDevice()
   
 End
 
@@ -235,7 +224,7 @@ End
 Public Sub button_hide_Click()
 
   tools.Hide()
-  Resize()
+  ResizeDevice()
 
 End
 
@@ -285,7 +274,7 @@ Public Sub buttonSettings_Click()
   Else 
     tools.Show
   Endif
-  Resize()
+  ResizeDevice()
   
   Select $device.Width
       Case 160
@@ -305,5 +294,13 @@ Public Sub button_reset_Click()
   slider_contrast.Value = $device.ContrastDefault
   slider_whiteness.Value = $device.WhitenessDefault
   slider_hue.Value = $device.HueDefault
+
+End
+
+Public Sub Form_Close()
+
+  Refresh.Stop
+  $device.Close
+  $device = Null
 
 End
