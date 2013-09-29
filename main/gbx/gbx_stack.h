@@ -35,7 +35,6 @@ typedef
 		void *fp;
 		void *pc;
 	}
-	PACKED
 	STACK_BACKTRACE;
 
 typedef
@@ -54,7 +53,7 @@ typedef
 		VALUE *tp;        // Stack at the last break in the function
 		VALUE *gp;        // GOSUB stack pointer
 		}
-	PACKED STACK_CONTEXT;
+	STACK_CONTEXT;
 
 #ifndef __GBX_STACK_C
 

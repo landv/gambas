@@ -35,23 +35,11 @@
 typedef
 	int CLASS_ID;
 
-/*
-typedef
-	struct {
-		unsigned char flag;
-		unsigned char id;
-		short value;
-		}
-	PACKED
-	CLASS_TYPE;
-*/
-
 typedef
 	struct {
 		CTYPE type;
 		int pos;
 		}
-	PACKED
 	CLASS_VAR;
 
 typedef
@@ -77,14 +65,12 @@ typedef
 	struct {
 		CTYPE type;
 		}
-	PACKED
 	CLASS_LOCAL;
 
 typedef
 	struct {
 		TYPE type;
 		}
-	PACKED
 	CLASS_PARAM;
 
 typedef

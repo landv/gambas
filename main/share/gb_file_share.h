@@ -30,20 +30,10 @@
 
 #ifdef PROJECT_EXEC
 
+#include "gambas.h"
+
 typedef
-  struct {
-    short type;
-    short mode;
-    int64_t size;
-    int atime;
-    int mtime;
-    int ctime;
-    int uid;
-    int gid;
-    char hidden;
-    }
-  PACKED
-  FILE_STAT;
+	GB_FILE_STAT FILE_STAT;
 
 /* Constants for Stat() function */
 

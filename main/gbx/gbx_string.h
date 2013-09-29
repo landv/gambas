@@ -35,7 +35,6 @@ typedef
     int len;
     char data[0];
   }
-  PACKED
   STRING;
 
 typedef

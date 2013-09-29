@@ -94,7 +94,6 @@ typedef
 		int len_false_str;
     bool rtl;
     }
-  PACKED
   LOCAL_INFO;
 
 #ifndef __GBX_LOCAL_C

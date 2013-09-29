@@ -48,7 +48,6 @@ typedef
 			}
 		value;
   }
-	PACKED
   VARIANT;
 
 #define VARIANT_copy_value(_dst, _src) (_dst)->value.data = (_src)->value.data

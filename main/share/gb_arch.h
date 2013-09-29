@@ -55,7 +55,6 @@ typedef
     	uint name;
     	int len;
     	}
-  	PACKED
 		sym;
     int pos;
     int len;

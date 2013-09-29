@@ -51,7 +51,6 @@ typedef
     unsigned persistent : 1;
     unsigned _reserved: 13;
     }
-  PACKED
   LIBRARY;
 
 #ifndef __GBX_LIBRARY_C

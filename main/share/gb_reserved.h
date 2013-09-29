@@ -311,7 +311,6 @@ typedef
 		short subcode;
 		void (*func)();
 		}
-	PACKED
 	COMP_INFO;
 
 typedef
@@ -322,7 +321,6 @@ typedef
 		short min_param;
 		short max_param;
 		}
-	PACKED
 	SUBR_INFO;
 
 #ifndef __RESERVED_C

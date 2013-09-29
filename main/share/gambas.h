@@ -274,7 +274,6 @@ typedef
 			}
 			value;
 		}
-	PACKED
   GB_VARIANT_VALUE;
 
 typedef
@@ -285,7 +284,6 @@ typedef
 		int64_t _pad;
 		#endif
     }
-	PACKED
   GB_VARIANT;
 
 
@@ -540,7 +538,6 @@ typedef
 		double val4;
 		#endif
 		}
-	PACKED
 	GB_DESC;
 
 
@@ -758,7 +755,6 @@ typedef
 		#endif
 		GB_VARIANT_VALUE _reserved4;
 		}
-	PACKED
 	GB_STREAM;
 
 
@@ -799,7 +795,6 @@ typedef
 		#endif
 		GB_TIMER_CALLBACK callback;
 		}
-	PACKED
 	GB_TIMER;
 
 /* Structure for GB.OnErrorBegin() handler */
@@ -823,7 +818,6 @@ typedef
 		void *old;
 		int level;
 	}
-	PACKED
 	GB_RAISE_HANDLER;
 
 /* A macro for preventing gcc from warning about breaks in the
@@ -862,7 +856,6 @@ typedef
 		int (*sgn)(void *);
 		intptr_t _reserved;
 	}
-	PACKED
 	GB_OPERATOR_DESC;
 
 /* Double-linked list API */
@@ -880,15 +873,14 @@ typedef
 	struct {
 		short type;
 		short mode;
-		int64_t size;
 		int atime;
 		int mtime;
 		int ctime;
+		int64_t size;
 		uid_t uid;
 		gid_t gid;
 		char hidden;
 		}
-	PACKED
 	GB_FILE_STAT;
 
 /* Constants for the GB_FILE_STAT structure */

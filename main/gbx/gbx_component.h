@@ -47,7 +47,6 @@ typedef
     unsigned loading : 1;    // component is being loaded
     unsigned _reserved : 20;
     }
-  PACKED
   COMPONENT;
 
 #ifndef __GBX_COMPONENT_C

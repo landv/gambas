@@ -75,7 +75,6 @@ typedef
 		#endif
     int64_t value;
     }
-  PACKED
   VALUE_LONG;
 
 typedef
@@ -83,7 +82,6 @@ typedef
     TYPE type;
     char *value;
     }
-  PACKED
   VALUE_POINTER;
 
 typedef
@@ -91,7 +89,6 @@ typedef
     TYPE type;
     float value;
     }
-  PACKED
   VALUE_SINGLE;
 
 typedef
@@ -102,7 +99,6 @@ typedef
 		#endif
     double value;
     }
-  PACKED
   VALUE_FLOAT;
 
 typedef
@@ -131,7 +127,6 @@ typedef
     char defined;
     short index;
     }
-  PACKED
   VALUE_FUNCTION;
 
 enum

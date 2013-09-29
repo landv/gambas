@@ -68,7 +68,6 @@ typedef
 		char *buffer;
 		union STREAM *redirect;
 		}
-	PACKED
 	STREAM_COMMON;
 
 typedef
@@ -76,7 +75,6 @@ typedef
 		STREAM_COMMON common;
 		int _reserved[6];
 		}
-	PACKED
 	STREAM_RESERVED;
 
 typedef
@@ -86,7 +84,6 @@ typedef
 		int fd;
 		unsigned watch : 1;
 		}
-	PACKED
 	STREAM_DIRECT;
 
 typedef
@@ -94,7 +91,6 @@ typedef
 		STREAM_COMMON common;
 		FILE *file;
 		}
-	PACKED
 	STREAM_BUFFER;
 
 typedef
@@ -103,7 +99,6 @@ typedef
 		void *addr;
 		intptr_t pos;
 		}
-	PACKED
 	STREAM_MEMORY;
 
 typedef
@@ -114,7 +109,6 @@ typedef
 		int start;
 		int pos;
 		}
-	PACKED
 	STREAM_ARCH;
 
 typedef
@@ -122,7 +116,6 @@ typedef
 		STREAM_COMMON common;
 		void *process;
 		}
-	PACKED
 	STREAM_PROCESS;
 
 typedef
@@ -130,7 +123,6 @@ typedef
 		STREAM_COMMON common;
 		char *buffer;
 		}
-	PACKED
 	STREAM_STRING;
 
 typedef
