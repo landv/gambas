@@ -3,7 +3,6 @@
 { Form Form
   Move(0,0,476,336)
   #Scaled = False
-  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
   { DateChooser1 DateChooser
@@ -11,5 +10,13 @@
     #Translate = False
     Foreground = &HFF0000&
     Border = False
+  }
+  { ButtonBox1 ButtonBox
+    Move(84,56,168,28)
+    Text = ("ButtonBox1")
+  }
+  { MaskBox1 MaskBox
+    Move(273,28,168,28)
+    Text = ("MaskBox1")
   }
 }

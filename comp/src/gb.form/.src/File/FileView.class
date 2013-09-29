@@ -32,7 +32,7 @@ Property Read Count As Integer
 Property Background As Integer
 Property Foreground As Integer
 
-Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
+'Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 Static Private $cExt As New Collection(gb.IgnoreCase)
 
 Private $sDir As String
@@ -49,6 +49,9 @@ Private $hRefresh As Timer
 Private $bRefreshTriggered As Boolean
 Private $iIconSize As Integer = 32
 Private $bDesktopIsLoaded As Boolean
+
+Private $hPreview As CTaskPreview
+'Private $cPreview As New Collection
 
 Static Public Sub _init()
   
@@ -139,8 +142,6 @@ End
 
 Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
-  Dim hImage As Image
-  Dim hIcon As Image
   Dim sIcon As String
   Dim hPict As Picture
   
@@ -150,37 +151,39 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
   If IsDir(sPath) Then Return
   
-  If $bShowPreview And If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
-    If Stat(sPath).Size <= 65536 Then 
-    
-      Try hImage = Image.Load(sPath)
-      If Not Error Then
-        If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
-          If hImage.Width > hImage.Height Then 
-            hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
-          Else
-            hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
-          Endif
-        Endif
-        
-        hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
-        Paint.Begin(hIcon)
-        Paint.AntiAlias = False
-        Paint.LineWidth = 2
-        Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
-        Paint.Background = Color.Merge(GetView().Background, Color.Gray)
-        Paint.Stroke
-        Paint.End
-        hIcon.DrawImage(hImage, 2, 2)
-        
-        Return hIcon.Picture
-      Else
-        Return Picture["icon:/" & iSize & "/image"]  
-      Endif
-    
-    Endif
-    
-  Endif
+  'If $bShowPreview And If $cPreview.Exist(sPath) Then Return $cPreview[sPath].Picture
+  
+  ' If $bShowPreview And If $aImgExt.Exist(File.Ext(sPath), gb.IgnoreCase) < 0 Then
+  '   If Stat(sPath).Size <= 65536 Then 
+  '   
+  '     Try hImage = Image.Load(sPath)
+  '     If Not Error Then
+  '       If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
+  '         If hImage.Width > hImage.Height Then 
+  '           hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
+  '         Else
+  '           hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
+  '         Endif
+  '       Endif
+  '       
+  '       hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
+  '       Paint.Begin(hIcon)
+  '       Paint.AntiAlias = False
+  '       Paint.LineWidth = 2
+  '       Paint.Rectangle(0, 0, hIcon.W, hIcon.H)
+  '       Paint.Background = Color.Merge(GetView().Background, Color.Gray)
+  '       Paint.Stroke
+  '       Paint.End
+  '       hIcon.DrawImage(hImage, 2, 2)
+  '       
+  '       Return hIcon.Picture
+  '     Else
+  '       Return Picture["icon:/" & iSize & "/image"]  
+  '     Endif
+  '   
+  '   Endif
+  '   
+  ' Endif
 
   If $bDesktopIsLoaded Then
     
@@ -227,6 +230,16 @@ Private Sub GetSelection() As String[]
   
 End
 
+Private Sub GetIconSize() As Integer
+
+  If $hColumnView.Visible Then
+    Return 16
+  Else
+    Return $iIconSize
+  Endif
+
+End
+
 Private Sub RefreshView()
   
   Dim sFile As String
@@ -252,14 +265,14 @@ Private Sub RefreshView()
     $hColumnView.Clear
     hPictFile = Picture["icon:/small/file"]
     hPictFolder = Picture["icon:/small/directory"]
-    iSize = 16
   Else
     $hIconView.Clear
     $hIconView._Begin
     hPictFile = Picture["icon:/" & $iIconSize & "/file"]
     hPictFolder = Picture["icon:/" & $iIconSize & "/directory"]
-    iSize = $iIconSize
   Endif
+  
+  iSize = GetIconSize()
   
   sDir = $sDir
   If Not sDir Then sDir = User.Home
@@ -318,6 +331,8 @@ Private Sub RefreshView()
     Try GetView()[sFile].Selected = True
   Next
   
+  If $bShowPreview Then RunPreview
+  
 Finally
   
   If Not $hColumnView.Visible Then $hIconView._End
@@ -328,6 +343,47 @@ Catch
   Error "gb.form: "; Error.Where; ": "; Error.Text 
   
 End
+
+Private Sub RunPreview()
+
+  If $hPreview Then $hPreview.Stop
+  
+  $hPreview = New CTaskPreview($sDir, GetIconSize()) As "TaskPreview"
+
+End
+
+Public Sub TaskPreview_Read(Data As String)
+  
+  Dim iPos As Integer
+  Dim sPath As String
+  Dim sPreview As String
+  Dim sLine As String
+  
+  If Not $bShowPreview Then Return
+  
+  For Each sLine In Split(Data, "\n", "", True)
+  
+    If sLine = "." Then
+      Try $hPreview.Stop
+      Return
+    Endif
+    
+    iPos = InStr(sLine, "\t")
+    sPath = Left(sLine, iPos - 1)
+    sPreview = Mid$(sLine, iPos + 1)
+    
+    Try GetView()["1" & sPath].Picture = Image.Load(sPreview).Picture
+    
+  Next
+  
+End
+
+Public Sub TaskPreview_Kill()
+  
+  If $hPreview = Last Then $hPreview = Null
+  
+End
+
 
 Private Sub RefreshViewLater()
   
@@ -709,7 +765,7 @@ Private Sub IconSize_Write(Value As Integer)
   
   $iIconSize = Value
   RefreshView
-  $hIconView.GridSize = Min(32, Value \ 3)
+  $hIconView.GridSize = Min(40, (Value + 8) \ 3)
   
 End
 
