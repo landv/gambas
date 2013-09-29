@@ -64,6 +64,7 @@ static int _task_count = 0;
 
 //-------------------------------------------------------------------------
 
+static void cleanup_task(CTASK *_object);
 static void stop_task(CTASK *_object);
 static void close_fd(int *pfd);
 
@@ -201,7 +202,7 @@ static bool create_return_directory(void)
 static void init_task(void)
 {
 	_task_count++;
-	
+
 	if (_task_count > 1)
 		return;
 	
@@ -211,7 +212,7 @@ static void init_task(void)
 static void exit_task(void)
 {
 	_task_count--;
-	
+
 	if (_task_count > 0)
 		return;
 	
@@ -239,6 +240,12 @@ static bool start_task(CTASK *_object)
 	
 	if (EXEC_task)
 		return TRUE;
+
+	if (THIS->stopped)
+	{
+		cleanup_task(THIS);
+		return TRUE;
+	}
 	
 	init_task();
 
@@ -408,6 +415,9 @@ static void stop_task(CTASK *_object)
 	
 	THIS->stopped = TRUE;
 	
+	// Remove task temporary files
+	FILE_remove_temp_file_pid(THIS->pid);
+
 	// Flush standard error
 	if (THIS->fd_err >= 0)
 		while (callback_error(THIS->fd_err, 0, THIS) == 0);
@@ -488,7 +498,10 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Task_Stop)
 
-	kill(THIS->pid, SIGKILL);
+	if (THIS->pid > 0)
+		kill(THIS->pid, SIGKILL);
+	else
+		THIS->stopped = TRUE;
 
 END_METHOD
 

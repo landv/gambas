@@ -87,6 +87,7 @@ void FILE_unlink(const char *path);
 
 void FILE_init(void);
 void FILE_remove_temp_file(void);
+void FILE_remove_temp_file_pid(pid_t pid);
 void FILE_exit(void);
 
 bool FILE_exist_follow(const char *path, bool follow);

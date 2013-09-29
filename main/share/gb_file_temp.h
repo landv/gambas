@@ -178,6 +178,13 @@ void FILE_remove_temp_file(void)
 	rmdir(FILE_make_temp(NULL, NULL));
 }
 
+void FILE_remove_temp_file_pid(pid_t pid)
+{
+	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)pid);
+	FILE_recursive_dir(file_buffer, NULL, remove_temp_file, 0, FALSE);
+	rmdir(FILE_make_temp(NULL, NULL));
+}
+
 void FILE_init(void)
 {
 	struct stat info;
