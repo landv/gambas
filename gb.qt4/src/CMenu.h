@@ -39,6 +39,7 @@
 #ifndef __CMENU_CPP
 extern GB_DESC CMenuDesc[];
 extern GB_DESC CMenuChildrenDesc[];
+extern int MENU_popup_count;
 #else
 
 #define THIS  OBJECT(CMENU)

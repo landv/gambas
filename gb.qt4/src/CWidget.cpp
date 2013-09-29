@@ -2519,12 +2519,17 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		//qDebug("Menu event! %p %d", control, EVENT_Menu);
 		if (GB.CanRaise(control, EVENT_Menu))
 		{
+			static int old = MENU_popup_count;
+
 			((QContextMenuEvent *)event)->accept();
-			if (GB.Raise(control, EVENT_Menu, 0))
+
+			GB.Raise(control, EVENT_Menu, 0);
+			if (MENU_popup_count != old)
 				return true;
 			else
 				goto __NEXT;
 		}
+
 		if (EXT(control) && EXT(control)->popup)
 		{
 			CWINDOW *window = CWidget::getWindow(control);

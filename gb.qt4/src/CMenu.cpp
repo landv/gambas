@@ -48,6 +48,7 @@ DECLARE_METHOD(Menu_Hide);
 
 static bool _popup_immediate = false;
 static CMENU *_popup_menu_clicked = NULL;
+int MENU_popup_count = 0;
 
 static void clear_menu(CMENU *_object);
 
@@ -630,6 +631,8 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 			send_click_event(_popup_menu_clicked);
 			_popup_menu_clicked = NULL;
 		}
+
+		MENU_popup_count++;
 
 		//MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
 		//CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
