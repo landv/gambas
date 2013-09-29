@@ -1066,6 +1066,9 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
         Case "htm", "html", "css"
           sIcon = sPrefix &/ "html"
+          
+        Case "js"
+          sIcon = sPrefix &/ "script"
 
         Case "txt", "text"
           sIcon = sPrefix &/ "text"

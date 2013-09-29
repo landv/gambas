@@ -2057,7 +2057,7 @@ Private Sub CheckCompletion(sMode As String)
     
     If GetRightString(sLine) Then Return
     
-    If UCase(Right$(sLine, 3)) = " AS" Or UCase(Right$(sLine, 4)) = " NEW" Or UCase(Right$(sLine, 3)) = " IS" Then
+    If UCase(Right$(sLine, 3)) = " AS" Or If UCase(Right$(sLine, 4)) = " NEW" Or If UCase(Right$(sLine, 3)) = " IS" Or If UCase(sLine) = "INHERITS" Then
       HideCompletion
       FCompletion.Open(Me, sMode)
     Endif

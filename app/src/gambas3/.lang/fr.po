@@ -315,7 +315,7 @@ msgstr "Cette classe se comporte comme un tableau accessible en &1."
 msgid "write-only"
 msgstr "écriture seule"
 
-#: CClassInfo.class:627 Project.module:1630
+#: CClassInfo.class:627 Project.module:1633
 msgid "read-only"
 msgstr "lecture seule"
 
@@ -731,23 +731,23 @@ msgstr "Évaluateur"
 msgid "Event loop"
 msgstr "Boucle d'évènements"
 
-#: Project.module:1732
+#: Project.module:1735
 msgid "Project"
 msgstr "Projet"
 
-#: CProjectTree.class:288 Project.module:1733
+#: CProjectTree.class:288 Project.module:1736
 msgid "Sources"
 msgstr "Sources"
 
-#: CProjectTree.class:290 Project.module:1734
+#: CProjectTree.class:290 Project.module:1737
 msgid "Connections"
 msgstr "Connexions"
 
-#: CProjectTree.class:298 Project.module:1735
+#: CProjectTree.class:298 Project.module:1738
 msgid "Public"
 msgstr "Public"
 
-#: CProjectTree.class:299 Project.module:1736
+#: CProjectTree.class:299 Project.module:1739
 msgid "Data"
 msgstr "Données"
 
@@ -827,19 +827,19 @@ msgstr "Conserver"
 msgid "Remove all"
 msgstr "Tout supprimer"
 
-#: Design.module:159 Project.module:2160
+#: Design.module:159 Project.module:2163
 msgid "first"
 msgstr "premier"
 
-#: Design.module:161 Project.module:2162
+#: Design.module:161 Project.module:2165
 msgid "second"
 msgstr "deuxième"
 
-#: Design.module:163 Project.module:2164
+#: Design.module:163 Project.module:2167
 msgid "third"
 msgstr "troisième"
 
-#: Design.module:257 Project.module:2223
+#: Design.module:257 Project.module:2226
 msgid "in &1:&2."
 msgstr "dans &1:&2."
 
@@ -903,7 +903,7 @@ msgstr "Système"
 msgid "Free"
 msgstr "Libre"
 
-#: FConflict.class:24 FMain.form:721
+#: FConflict.class:24
 msgid "&Edit"
 msgstr "&Éditer"
 
@@ -1895,7 +1895,7 @@ msgstr "Le fichier n'est pas versionné, et doit être ajouté au référentiel.
 msgid "This file has not been modified since the last commit."
 msgstr "Ce fichier est inchangé depuis le dernier envoi vers le réferentiel."
 
-#: FProjectVersion.class:204 FSave.form:21 Project.module:3317
+#: FProjectVersion.class:204 FSave.form:21 Project.module:3320
 msgid "Continue"
 msgstr "Continuer"
 
@@ -2489,7 +2489,7 @@ msgstr "Sous-divisions"
 
 #: FImageQuality.form:10
 msgid "Image quality"
-msgstr ""
+msgstr "-"
 
 #: FImageResize.form:25
 msgid "Resize image"
@@ -3051,9 +3051,13 @@ msgstr "Fichier &Javascript..."
 msgid "&Other..."
 msgstr "&Autre..."
 
+#: FMain.form:721
+msgid "&Open"
+msgstr "&Ouvrir"
+
 #: FMain.form:726
-msgid "Edit &code"
-msgstr "Editer le &code"
+msgid "Open &code"
+msgstr "Ouvrir le &code"
 
 #: FMain.form:730
 msgid "Open with"
@@ -3090,10 +3094,6 @@ msgstr "&Ajouter au référentiel"
 #: FMain.form:834
 msgid "&New connection..."
 msgstr "&Nouvelle connexion..."
-
-#: FMain.form:842
-msgid "&Open"
-msgstr "&Ouvrir"
 
 #: FProjectProperty.form:516 FPropertyComponent.form:236
 msgid "&Remove"
@@ -3551,7 +3551,7 @@ msgstr "Selectionnez l'archive source"
 msgid "*.gz;*.bz2;*.xz"
 msgstr "-"
 
-#: FMakePatch.form:89 Project.module:4371
+#: FMakePatch.form:89 Project.module:4374
 msgid "Source packages"
 msgstr "Paquetages sources"
 
@@ -3595,7 +3595,7 @@ msgstr "Nom de groupe incorrect !"
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FMenu.class:965 Project.module:5170
+#: FMenu.class:965 Project.module:5173
 msgid "modified"
 msgstr "modifié"
 
@@ -4211,7 +4211,7 @@ msgstr "Variable"
 msgid "Snapping value is incorrect."
 msgstr "Le pas de la grille est incorrecte."
 
-#: FProjectProperty.class:408 Project.module:3316
+#: FProjectProperty.class:408 Project.module:3319
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés : &1"
 
@@ -4895,7 +4895,7 @@ msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 chaînes de caractères. &2 ne sont pas traduites. &3% effectué."
 
-#: FTranslate.class:1113 Project.module:4336
+#: FTranslate.class:1113 Project.module:4339
 msgid "The '&1' command has failed."
 msgstr "La commande '&1' a échoué."
 
@@ -6543,179 +6543,179 @@ msgstr "Des bibliothèques utilisées par le projet sont manquantes."
 msgid "Cannot open project file :\n"
 msgstr "Impossible d'ouvrir le projet :\n"
 
-#: Project.module:1462
+#: Project.module:1465
 msgid "The following classes have circular inheritance:"
 msgstr "Les classes suivantes ont un héritage circulaire&nbsp;:"
 
-#: Project.module:1634
+#: Project.module:1637
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr "VERSION EN COURS DE DÉVELOPPEMENT, UTILISEZ-LA À VOS RISQUES ET PÉRILS ! :-)"
 
-#: Project.module:1912
+#: Project.module:1915
 msgid "Loading &1..."
 msgstr "Chargement de &1..."
 
-#: Project.module:1961
+#: Project.module:1964
 msgid "Cannot open a binary file."
 msgstr "Impossible d'ouvrir un fichier binaire."
 
-#: Project.module:1994
+#: Project.module:1997
 msgid "Cannot open file."
 msgstr "Impossible d'ouvrir le fichier."
 
-#: Project.module:2050
+#: Project.module:2053
 msgid "File not found!"
 msgstr "Fichier introuvable !"
 
-#: Project.module:2166
+#: Project.module:2169
 msgid "&1th"
 msgstr "&1ème"
 
-#: Project.module:2219
+#: Project.module:2222
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
-#: Project.module:2226
+#: Project.module:2229
 msgid "in &1."
 msgstr "dans &1."
 
-#: Project.module:2382
+#: Project.module:2385
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Certains fichiers sources du projet sont en conflit.\nVeuillez résoudre ces conflits pour pouvoir compiler le projet."
 
-#: Project.module:2386
+#: Project.module:2389
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: Project.module:2627
+#: Project.module:2630
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: Project.module:2659
+#: Project.module:2662
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: Project.module:2671
+#: Project.module:2674
 msgid "Cannot link template file."
 msgstr "Impossible de créer le lien vers le fichier modèle."
 
-#: Project.module:2677
+#: Project.module:2680
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: Project.module:2888
+#: Project.module:2891
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
-#: Project.module:2932
+#: Project.module:2935
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: Project.module:3507
+#: Project.module:3510
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: Project.module:3549
+#: Project.module:3552
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:3795
+#: Project.module:3798
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:3812
+#: Project.module:3815
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:3843
+#: Project.module:3846
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:3847
+#: Project.module:3850
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:3851
+#: Project.module:3854
 msgid "The name cannot begins with a dot."
 msgstr "Le nom ne peut pas commencer par un point."
 
-#: Project.module:3855
+#: Project.module:3858
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:3891
+#: Project.module:3894
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et être suivi par des lettres ou des chiffres. "
 
-#: Project.module:3939
+#: Project.module:3942
 msgid "Destination already exists."
 msgstr "La destination existe déjà."
 
-#: Project.module:4151
+#: Project.module:4154
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer « &1 »"
 
-#: Project.module:4267
+#: Project.module:4270
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:4275
+#: Project.module:4278
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:4278
+#: Project.module:4281
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:4279
+#: Project.module:4282
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
 
-#: Project.module:4286
+#: Project.module:4289
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:4289
+#: Project.module:4292
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:4291
+#: Project.module:4294
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Le répertoire du projet ne peut être créé car un fichier avec le même nom existe déjà."
 
-#: Project.module:4347
+#: Project.module:4350
 msgid "Unable to create source archive."
 msgstr "Impossible de créer l'archive source."
 
-#: Project.module:4370
+#: Project.module:4373
 msgid "Create source package"
 msgstr "Générer une archive des sources du projet"
 
-#: Project.module:4662
+#: Project.module:4665
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:4710
+#: Project.module:4713
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:4725
+#: Project.module:4728
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:4793
+#: Project.module:4796
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:5325
+#: Project.module:5328
 msgid "Project cleanup..."
 msgstr "Nettoyage du projet..."
 
-#: Project.module:5331
+#: Project.module:5334
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
-#: Project.module:5361
+#: Project.module:5364
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
 

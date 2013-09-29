@@ -74,7 +74,7 @@ Public Sub Run()
             iState = Highlight.Comment
           Endif
           bSingleLineComment = False
-        Else If Not bLastExpr Then ' Regular expression
+        Else If Not bLastExpr And If String.Mid$(sText, iPos + 1, 1) <> " " Then ' Regular expression
         
           sIdent = sCar
           
@@ -193,15 +193,17 @@ Public Sub Run()
           sIdent &= sCar
         Wend
         
+        bLastExpr = False
+
         If $cOperator.Exist(sIdent) Then
           iState = Highlight.Operator
+          If sIdent = ")" Or If sIdent = "]" Then bLastExpr = True
         Else
           iState = Highlight.Error
         Endif
         
         Highlight.Add(iState, String.Len(sIdent))
         iState = Highlight.Normal
-        bLastExpr = False
         
         'Dec iPos
         Continue

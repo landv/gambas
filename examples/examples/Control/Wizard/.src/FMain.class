@@ -22,11 +22,6 @@ Public Sub Wizard1_Change()   ' user clicks next
     
     Case 5
       
-      If txaAddress.Text = "" Then
-        Message.Error(("You didn't enter your address.\nYour order can't be submitted."))
-        Wizard1.Index = 3   ' move back to step 4
-      Endif
-      
       txlOrder.Text = vbCode.Text & "  " & lblCode.Text & "<br>" & vbFrozen.Text & "  " & lblFrozen.Text & "<br>" & vbImg.Text & "  " & lblImg.Text
       txlAddress.Text = Replace(txaAddress.Text, "\n", "<br>")
 
@@ -51,4 +46,20 @@ Public Sub chbSave_Click()    ' user wants (not) to save
 
   Wizard1[4].Enabled = chbSave.Value    ' step 5 is visible or not, according to this decision
   
+End
+
+Public Sub Wizard1_BeforeChange()
+
+  Select Case Wizard1.Index
+    
+    Case 4
+    
+      If txaAddress.Text = "" Then
+        Message.Error(("You didn't enter your address.\nYour order can't be submitted."))
+        Wizard1.Index = 3   ' move back to step 4
+        Stop Event
+      Endif
+      
+  End Select
+
 End
