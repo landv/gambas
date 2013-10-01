@@ -30,10 +30,12 @@
 
 #include "config.h"
 
-#include <signal.h>
 #include <sys/wait.h>
-#include <pwd.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <sys/types.h>
+#include <signal.h>
+#include <pwd.h>
 #include <unistd.h>
 
 #include "gb_common.h"
@@ -221,6 +223,33 @@ BEGIN_PROPERTY(Application_Startup)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Application_Priority)
+
+	int pr;
+
+	if (READ_PROPERTY)
+	{
+		errno = 0;
+		pr = getpriority(PRIO_PROCESS, 0);
+		if (pr == -1 && errno > 0)
+			THROW_SYSTEM(errno, NULL);
+		GB_ReturnInteger(pr);
+	}
+	else
+	{
+		pr = VPROP(GB_INTEGER);
+
+		if (pr < -20)
+			pr = -20;
+		else if (pr > 19)
+			pr = 19;
+
+		if (setpriority(PRIO_PROCESS, 0, VPROP(GB_INTEGER)) < 0)
+			THROW_SYSTEM(errno, NULL);
+	}
+
+END_PROPERTY
+
 #endif
 
 GB_DESC NATIVE_AppArgs[] =
@@ -263,6 +292,7 @@ GB_DESC NATIVE_App[] =
   GB_STATIC_PROPERTY_READ("Dir", "i", Application_Dir),
   GB_STATIC_PROPERTY("Daemon", "b", Application_Daemon),
   GB_STATIC_PROPERTY_READ("Startup", "Class", Application_Startup),
+	GB_STATIC_PROPERTY("Priority", "i", Application_Priority),
 
   GB_END_DECLARE
 };

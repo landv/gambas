@@ -249,7 +249,7 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_PROPERTY("FirstDayOfWeek", "i", System_FirstDayOfWeek),
 	GB_STATIC_PROPERTY("Shell", "s", System_Shell),
 	GB_STATIC_PROPERTY("Profile", "b", System_Profile),
-	
+
 	GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_RightToLeft),
 	GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),
 	GB_STATIC_PROPERTY_READ("Host", "s", System_Host),
