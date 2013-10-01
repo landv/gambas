@@ -31,14 +31,14 @@
 
 typedef struct node NODE;
 
-typedef struct node {
+struct node {
 	char *key;		/* Key string */
 	size_t length;		/* Key length */
 	int balance;		/* Balance value in {-1, 0, 1} */
 	NODE *left, *right;	/* Children or NULL */
 	NODE *parent;		/* Parent */
 	GB_VARIANT_VALUE val;	/* Payload */
-} NODE;
+};
 
 typedef struct {
 	GB_BASE ob;
@@ -98,6 +98,11 @@ BEGIN_METHOD_VOID(AvlTree_new)
 
 END_METHOD
 
+struct enum_state {
+	int started;
+	NODE *next;
+};
+
 static void CAVLTREE_clear(CAVLTREE *tree)
 {
 	NODE *node = CAVLTREE_first(tree), *parent;
@@ -120,6 +125,18 @@ static void CAVLTREE_clear(CAVLTREE *tree)
 		NODE_destroy(node);
 		node = parent;
 	}
+
+	/* Fix enumerators */
+	void *ebuf;
+	struct enum_state *state;
+
+	ebuf = GB.BeginEnum(tree);
+	while (!GB.NextEnum()) {
+		state = GB.GetEnum();
+		state->next = NULL;
+	}
+	GB.EndEnum(ebuf);
+
 	tree->root = tree->last = NULL;
 	tree->count = 0;
 	tree->height = 0;
@@ -161,6 +178,7 @@ BEGIN_METHOD(AvlTree_get, GB_STRING key)
 	NODE *node;
 
 	node = CAVLTREE_find(THIS, STRING(key), LENGTH(key));
+	THIS->last = node;
 	if (!node) {
 		GB.ReturnNull();
 		return;
@@ -251,11 +269,6 @@ static inline void rotate_right(CAVLTREE *tree, NODE *rot)
 		rot->left->parent = rot;
 	left->right = rot;
 }
-
-struct enum_state {
-	int started;
-	NODE *next;
-};
 
 #define sgn(x)				\
 ({					\
@@ -593,7 +606,7 @@ BEGIN_METHOD(AvlTree_put, GB_VARIANT value; GB_STRING key)
 
 	NODE *node;
 
-	if (ARG(value)->value.type == GB_T_NULL) {
+	if (VARG(value).type == GB_T_NULL) {
 		CAVLTREE_remove(THIS, STRING(key), LENGTH(key));
 		return;
 	}

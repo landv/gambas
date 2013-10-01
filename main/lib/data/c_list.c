@@ -750,7 +750,7 @@ static void CLIST_prepend(CLIST *list, GB_VARIANT *var)
 
 static void VAL_append(CLIST *list, VAL *val, GB_VARIANT *var)
 {
-	CHUNK *ck, *next;
+	CHUNK *ck, *next = NULL;
 	int s, n, shifted_to_next = 0;
 	GB_VARIANT_VALUE *buf;
 	VAL back;
@@ -842,7 +842,7 @@ have_buf:
 
 static void VAL_prepend(CLIST *list, VAL *val, GB_VARIANT *var)
 {
-	CHUNK *ck, *prev;
+	CHUNK *ck, *prev = NULL;
 	int s, n, shifted_to_prev = 0;
 	GB_VARIANT_VALUE *buf;
 	VAL back;
