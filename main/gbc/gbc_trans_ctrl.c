@@ -1064,6 +1064,8 @@ void TRANS_for_each(void)
 		if (!CODE_popify_last())
 			THROW("Invalid assignment");
 
+		TRANS_want(RS_IN, "IN");
+
 		JOB->current = save;
 	}
 	else
