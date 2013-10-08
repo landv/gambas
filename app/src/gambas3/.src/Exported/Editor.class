@@ -84,6 +84,7 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
     sLine = Replace(sLine, " ", "&nbsp;")
     hFindResult.Text = "<nobr>" & sLine
   Else
+    Me.Lines[iLine].Expanded = True
     Me.Goto(iLine, iColumn, True)
     Me.Select(iLine, iColumn, iLine, iColumn + hFindResult.Length)
   Endif
