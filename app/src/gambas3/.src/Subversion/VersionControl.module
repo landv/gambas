@@ -213,8 +213,8 @@ Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
   Dim aCmd As String[]
 
   If $bSVN Then
-    aCmd = ["svn", "remove", SvnPath$(sPath)]
-    If bForce Then aCmd.Add("--force", 2)
+    aCmd = ["svn", "remove", SvnPath$(sPath), "--force"]
+    'If bForce Then aCmd.Add("--force", 2)
     Run(aCmd)
   Endif
   If $bCVS Then

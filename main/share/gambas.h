@@ -274,6 +274,7 @@ typedef
 			}
 			value;
 		}
+	PACKED
   GB_VARIANT_VALUE;
 
 typedef

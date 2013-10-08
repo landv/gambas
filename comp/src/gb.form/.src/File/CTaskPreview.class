@@ -39,9 +39,9 @@ Public Sub Main()
   Dim sExt As String
   Dim sPath As String
   Dim hImage As Image
-  Dim hIcon As Image
-  Dim sTemp As String
   Dim hSvgImage As SvgImage
+
+  Application.Priority += 10
 
   For Each sFile In Dir($sDir).Sort(gb.Natural)
     
