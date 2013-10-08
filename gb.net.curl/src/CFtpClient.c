@@ -123,6 +123,8 @@ static void ftp_initialize_curl_handle(void *_object)
 	CURL_user_set(&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
+	curl_easy_setopt(THIS_CURL, CURLOPT_FTP_USE_EPSV, (long)(THIS_FTP->no_epsv ? 0 : 1));
+
 	ftp_reset(THIS_FTP);
 	THIS_STATUS = NET_CONNECTING;
 	
@@ -300,6 +302,15 @@ BEGIN_METHOD_VOID(FtpClient_free)
 
 END_METHOD
 
+BEGIN_PROPERTY(FtpClient_NoEPSV)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS_FTP->no_epsv);
+	else
+		THIS_FTP->no_epsv = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
 
 GB_DESC CFtpClientDesc[] =
 {
@@ -315,6 +326,8 @@ GB_DESC CFtpClientDesc[] =
   GB_METHOD("Exec", NULL, FtpClient_Exec, "(Commands)String[]"),
   GB_METHOD("Put", NULL, FtpClient_Put, "(LocalFile)s"),
   
+  GB_PROPERTY("NoEPSV", "b", FtpClient_NoEPSV),
+
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),
   GB_CONSTANT("_Group", "s", "Network"),

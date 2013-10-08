@@ -47,6 +47,7 @@ typedef
 	struct {
 		CCURL curl;
 		GB_ARRAY commands;
+		unsigned no_epsv : 1;
 	}
 	CFTPCLIENT;
 
