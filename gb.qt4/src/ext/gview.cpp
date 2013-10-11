@@ -1912,8 +1912,11 @@ void GEditor::tab(bool back)
 		{
 			ins.fill(' ', tw - (x % tw));
 			insert(ins);
+			return;
 		}
-		return;
+
+		doc->startSelection(this, y, 0);
+		doc->endSelection(y + 1, 0);
 	}
 
 	doc->getSelection(&y1, &x1, &y2, &x2, _insertMode);
