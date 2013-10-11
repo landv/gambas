@@ -1908,7 +1908,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
         Endif
 
         If $bHelp Then
-          Print "<a href=\"/help/search" & EncodeLink($sLangSuff) & "\">"; ("Search"); "</a>&nbsp;&nbsp;";
+          Print "<a href=\"/help/search" & EncodeLink(sSuff) & "\">"; ("Search"); "</a>&nbsp;&nbsp;";
           Print "<a href=\"/admin" & EncodeLink($sLangSuff) & "\">"; ("Administration"); "</a>&nbsp;&nbsp;";
         Endif
 

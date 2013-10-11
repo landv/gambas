@@ -32,14 +32,14 @@
 
 typedef
   struct {
-    short year;
-    short month;
-    short day;
-    short hour;
-    short min;
-    short sec;
-    short weekday;
-    short msec;
+    int year;
+    int month;
+    int day;
+    int hour;
+    int min;
+    int sec;
+    int weekday;
+    int msec;
     }
   DATE_SERIAL;
 

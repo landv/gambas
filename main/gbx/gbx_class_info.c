@@ -228,8 +228,8 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("Second", "i", NULL, "(Date)d"),
 	GB_METHOD("WeekDay", "i", NULL, "(Date)d"),
 
-	GB_METHOD("Date", "d", NULL, "[(Year)i(Month)i(Day)i(Hour)i(Minute)i(Second)i]"),
-	GB_METHOD("Time", "d", NULL, "[(Hour)i(Minute)i(Second)i]"),
+	GB_METHOD("Date", "d", NULL, "[(DateOrYear)v(Month)i(Day)i(Hour)i(Minute)i(Second)i(MilliSecond)i]"),
+	GB_METHOD("Time", "d", NULL, "[(DateOrHour)v(Minute)i(Second)i(MilliSecond)i]"),
 	GB_METHOD("Week", "i", NULL, "[(Date)d(Mode)i(Plain)b]"),
 
 	GB_METHOD("DateAdd", "d", NULL, "(Date)d(Period)i(Interval)i"),

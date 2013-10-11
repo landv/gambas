@@ -132,7 +132,13 @@ void SUBR_date(ushort code)
       VALUE_conv_integer(&PARAM[5]);
       date.sec = PARAM[5]._integer.value;
     }
-  }
+
+    if (NPARAM >= 7)
+    {
+      VALUE_conv_integer(&PARAM[6]);
+      date.msec = PARAM[6]._integer.value;
+    }
+	}
   else
 		THROW(E_NEPARAM);
 
@@ -153,11 +159,13 @@ void SUBR_time(ushort code)
   {
     if (NPARAM == 0)
       DATE_now(PARAM);
+		else
+			VALUE_conv(PARAM, T_DATE);
 
     date = *DATE_split(PARAM);
     date.year = 0;
   }
-  else if (NPARAM == 3)
+  else if (NPARAM >= 3)
   {
     VALUE_conv_integer(PARAM);
     VALUE_conv_integer(&PARAM[1]);
@@ -167,6 +175,11 @@ void SUBR_time(ushort code)
     date.hour = PARAM->_integer.value;
     date.min = PARAM[1]._integer.value;
     date.sec = PARAM[2]._integer.value;
+		if (NPARAM == 4)
+		{
+			VALUE_conv_integer(&PARAM[3]);
+			date.msec = PARAM[3]._integer.value;
+		}
   }
   else
     THROW(E_NEPARAM);

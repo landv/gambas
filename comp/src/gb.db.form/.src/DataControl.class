@@ -5,6 +5,7 @@ Export
 Inherits UserControl
 
 Event Validate(Value As Variant)
+
 'EVENT GotFocus
 'EVENT LostFocus
 
@@ -12,6 +13,7 @@ Property Field As String
 Property Value As Variant
 Property Read Valid As Boolean
 Property Read Modified As Boolean
+Property Read Control As Control
 
 Public Const _Properties As String = "*,Field{Field}"
 Public Const _Group As String = "Data"
@@ -31,7 +33,6 @@ Public Sub _new()
   Me._AutoResize = True
   
 End
-
 
 Private Sub CreateControl()
   
@@ -131,8 +132,17 @@ Private Sub CreateControl()
     Endif
   Endif
   
-  $hCtrl.Font.Bold = $hInfo.Key
-  $hCtrl.Background = If(bReadOnly, Color.ButtonBackground, Color.Default)
+  ' If Object.Parent(Me) Then
+  '   If Object.CanRaise(Me, "Format") Then
+  '     Debug Me.Name; " Format !"
+  '     Raise Format
+  '   Else
+  '     Debug Me.Name; " No format ?"
+  '     $hCtrl.Font.Bold = $hInfo.Key
+  '     $hCtrl.Background = If(bReadOnly, Color.ButtonBackground, Color.Default)
+  '   Endif
+  ' Endif
+  
   If bFocus Then $hCtrl.SetFocus
   
   Me.Proxy = $hCtrl
@@ -370,4 +380,10 @@ Public Sub ButtonBox_DblClick()
   
   ButtonBox_Click
   
+End
+
+Private Function Control_Read() As Control
+
+  Return $hCtrl
+
 End

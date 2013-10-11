@@ -78,11 +78,12 @@ static int date_is_leap_year(short year)
 
 static bool date_is_valid(DATE_SERIAL *date)
 {
-	return ((date->month >= 1) && (date->month <= 12) &&
-					(date->year >= DATE_YEAR_MIN) && (date->year <= DATE_YEAR_MAX) && (date->year != 0) &&
-					(date->day >= 1) && (date->day <= days_in_months[date_is_leap_year(date->year)][(short)date->month]) &&
-					(date->hour >= 0) && (date->hour <= 23) && (date->min >= 0) && (date->min <= 59) &&
-					(date->sec >= 0) && (date->sec <= 59));
+	return ((date->year == 0
+	         || ((date->month >= 1) && (date->month <= 12) &
+	             (date->year >= DATE_YEAR_MIN) && (date->year <= DATE_YEAR_MAX) && (date->year != 0) &&
+	             (date->day >= 1) && (date->day <= days_in_months[date_is_leap_year(date->year)][(short)date->month])))
+	        && (date->hour >= 0) && (date->hour <= 23) && (date->min >= 0) && (date->min <= 59)
+	        && (date->sec >= 0) && (date->sec <= 59));
 }
 
 static short date_to_julian_year(short year)
@@ -214,6 +215,9 @@ bool DATE_make(DATE_SERIAL *date, VALUE *val)
 	int nday;
 	bool timezone;
 
+	if (!date_is_valid(date))
+		return TRUE;
+
 	if (date->year == 0)
 	{
 		nday = 0; /*(-DATE_NDAY_BC - 1);*/
@@ -221,9 +225,6 @@ bool DATE_make(DATE_SERIAL *date, VALUE *val)
 	}
 	else
 	{
-		if (!date_is_valid(date))
-			return TRUE;
-
 		year = date_to_julian_year(date->year);
 
 		nday = year * 365;

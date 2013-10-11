@@ -420,8 +420,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ "WeekDay",           47,  7,  1     },
 	{ "Week",              48,  0,  0,  3 },
 
-	{ "Date",              49,  0,  0,  6 },
-	{ "Time",              50,  0,  0,  3 },
+	{ "Date",              49,  0,  0,  7 },
+	{ "Time",              50,  0,  0,  4 },
 
 	{ "DateAdd",           51,  0,  3     },
 	{ "DateDiff",          51,  1,  3     },
