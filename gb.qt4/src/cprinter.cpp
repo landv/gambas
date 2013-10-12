@@ -25,6 +25,7 @@
 
 #include <QEventLoop>
 #include <QPrintDialog>
+#include <QPrinterInfo>
 
 #include "gb.form.print.h"
 #include "gb.form.properties.h"
@@ -295,8 +296,12 @@ BEGIN_PROPERTY(Printer_PaperWidth)
 		GB.ReturnFloat(floor((double)size.width() * 1E6) / 1E6);
 	else
 	{
-		size.setWidth((qreal)VPROP(GB_FLOAT));
-		PRINTER->setPaperSize(size, QPrinter::Millimeter);
+		qreal width = (qreal)VPROP(GB_FLOAT);
+		if (width != size.width())
+		{
+			size.setWidth(width);
+			PRINTER->setPaperSize(size, QPrinter::Millimeter);
+		}
 	}
 
 END_PROPERTY
@@ -309,8 +314,12 @@ BEGIN_PROPERTY(Printer_PaperHeight)
 		GB.ReturnFloat(floor((double)size.height() * 1E6) / 1E6);
 	else
 	{
-		size.setHeight((qreal)VPROP(GB_FLOAT));
-		PRINTER->setPaperSize(size, QPrinter::Millimeter);
+		qreal height = (qreal)VPROP(GB_FLOAT);
+		if (height != size.height())
+		{
+			size.setHeight(height);
+			PRINTER->setPaperSize(size, QPrinter::Millimeter);
+		}
 	}
 
 END_PROPERTY
@@ -416,10 +425,36 @@ BEGIN_PROPERTY(Printer_OutputFile)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Printer_Default)
+
+	QPrinterInfo info = QPrinterInfo::defaultPrinter();
+
+	if (info.isNull())
+		GB.ReturnNull();
+	else
+		GB.ReturnNewZeroString(info.printerName());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_List)
+
+	GB_ARRAY array;
+	QList<QPrinterInfo> list = QPrinterInfo::availablePrinters();
+
+	GB.Array.New(&array, GB_T_STRING, list.length());
+	for (int i = 0; i < list.length(); i++)
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(list.at(i).printerName());
+
+	GB.ReturnObject(array);
+
+END_PROPERTY
 
 GB_DESC PrinterDesc[] =
 {
   GB_DECLARE("Printer", sizeof(CPRINTER)),
+
+  GB_STATIC_PROPERTY_READ("Default", "s", Printer_Default),
+  GB_STATIC_PROPERTY_READ("List", "String[]", Printer_List),
 
 	GB_CONSTANT("Portrait", "i", GB_PRINT_PORTRAIT),
 	GB_CONSTANT("Landscape", "i", GB_PRINT_LANDSCAPE),
@@ -476,4 +511,3 @@ GB_DESC PrinterDesc[] =
 
 	GB_END_DECLARE
 };
-

@@ -273,10 +273,52 @@ BEGIN_PROPERTY(Printer_OutputFile)
 
 END_PROPERTY
 
+static bool find_default_printer(const char *name, bool def)
+{
+	if (def)
+	{
+		GB.ReturnNewZeroString(name);
+		return true;
+	}
+	else
+		return false;
+}
+
+BEGIN_PROPERTY(Printer_Default)
+
+	GB.ReturnNull();
+	gPrinter::enumeratePrinters(find_default_printer);
+
+END_PROPERTY
+
+static GB_ARRAY _list = NULL;
+
+static bool add_printer(const char *name, bool def)
+{
+	*((char **)GB.Array.Add(_list)) = GB.NewZeroString(name);
+	return FALSE;
+}
+
+BEGIN_PROPERTY(Printer_List)
+
+	GB_ARRAY array;
+
+	GB.Array.New(&array, GB_T_STRING, 0);
+	_list = array;
+	gPrinter::enumeratePrinters(add_printer);
+	_list = NULL;
+	GB.ReturnObject(array);
+
+END_PROPERTY
+
+
 
 GB_DESC PrinterDesc[] =
 {
   GB_DECLARE("Printer", sizeof(CPRINTER)),
+
+  GB_STATIC_PROPERTY_READ("Default", "s", Printer_Default),
+  GB_STATIC_PROPERTY_READ("List", "String[]", Printer_List),
 
 	GB_CONSTANT("Portrait", "i", GB_PRINT_PORTRAIT),
 	GB_CONSTANT("Landscape", "i", GB_PRINT_LANDSCAPE),

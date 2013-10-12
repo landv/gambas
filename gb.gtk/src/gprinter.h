@@ -96,6 +96,8 @@ public:
 	
 	static void fixPrintDialog(GtkPrintUnixDialog *dialog);
 	static gPrinter *_current;
+
+	static void enumeratePrinters(bool (*callback)(const char *name, bool));
 	
 private:
 	bool run(bool configure);

@@ -702,3 +702,15 @@ void gPrinter::fixPrintDialog(GtkPrintUnixDialog *dialog)
 	dump_tree(GTK_WIDGET(dialog), dialog);
 }
 
+static gboolean find_all_printers(GtkPrinter *gtk_printer, bool (*callback)(const char *, bool))
+{
+	if (strcmp(G_OBJECT_TYPE_NAME(gtk_printer_get_backend(gtk_printer)), "GtkPrintBackendFile"))
+		return (*callback)(gtk_printer_get_name(gtk_printer), gtk_printer_is_default(gtk_printer));
+
+	return FALSE;
+}
+
+void gPrinter::enumeratePrinters(bool (*callback)(const char *, bool))
+{
+	gtk_enumerate_printers((GtkPrinterFunc)find_all_printers, (gpointer)callback, NULL, TRUE);
+}
