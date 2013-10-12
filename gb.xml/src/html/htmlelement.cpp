@@ -73,10 +73,10 @@ void HTMLElement_AddGBChildrenByFilter(Element *elmt, char *filter, size_t lenFi
     {
         if(node->type == Node::ElementNode)
         {
-            if(HTMLElement_MatchFilter(elmt, filter, lenFilter))
+            if(HTMLElement_MatchFilter((Element*)node, filter, lenFilter))
             {
-                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XML.XMLNode_GetGBObject(elmt);
-                GB.Ref(elmt->GBObject);
+                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XML.XMLNode_GetGBObject(node);
+                GB.Ref(node->GBObject);
             }
             HTMLElement_AddGBChildrenByFilter((Element*)(node), filter, lenFilter, array, depth - 1);
         }
