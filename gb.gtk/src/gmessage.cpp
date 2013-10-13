@@ -505,7 +505,7 @@ bool gDialog::saveFile()
 	
 	if (DIALOG_path)
 	{
-		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
+		if (DIALOG_path[strlen(DIALOG_path) - 1] == '/' && g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
 			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
 		else
 			gtk_file_chooser_select_filename((GtkFileChooser*)msg, DIALOG_path);

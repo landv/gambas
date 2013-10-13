@@ -19,7 +19,7 @@
 
 ***************************************************************************/
 
-#include "helement.h"
+#include "htmlelement.h"
 #include "cssfilter.h"
 #include "../gbinterface.h"
 

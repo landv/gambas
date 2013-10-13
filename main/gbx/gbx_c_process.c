@@ -1059,15 +1059,29 @@ BEGIN_METHOD(Process_Wait, GB_FLOAT timeout)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(Process_Ignore)
+BEGIN_PROPERTY(Process_Ignore)
 
-	if (!THIS->ignore)
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(THIS->ignore);
+	else
 	{
-		THIS->ignore = TRUE;
-		_ignore_process++;
-
-		if (_running_process <= _ignore_process)
-			exit_child();
+		bool ignore = VPROP(GB_BOOLEAN);
+		if (THIS->ignore != ignore)
+		{
+			THIS->ignore = ignore;
+			if (ignore)
+			{
+				_ignore_process++;
+				if (_running_process <= _ignore_process)
+					exit_child();
+			}
+			else
+			{
+				_ignore_process--;
+				if (_running_process > _ignore_process)
+					init_child();
+			}
+		}
 	}
 
 END_METHOD
@@ -1099,7 +1113,8 @@ GB_DESC NATIVE_Process[] =
 	GB_METHOD("Kill", NULL, Process_Kill, NULL),
 	GB_METHOD("Signal", NULL, Process_Signal, NULL),
 	GB_METHOD("Wait", NULL, Process_Wait, "[(Timeout)f]"),
-	GB_METHOD("Ignore", NULL, Process_Ignore, NULL),
+
+	GB_PROPERTY("Ignore", "b", Process_Ignore),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),

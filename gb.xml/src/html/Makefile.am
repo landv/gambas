@@ -14,4 +14,5 @@ htmldocument.cpp htmlelement.cpp \
 CHTMLDocument.cpp CHTMLDocument.h CHTMLElement.h CHTMLElement.cpp \
 htmlserializer.cpp htmlserializer.h \
 cssfilter.cpp cssfilter.h \
-htmlparser.cpp htmlparser.h
+htmlparser.cpp htmlparser.h \
+gb.xml.html.h

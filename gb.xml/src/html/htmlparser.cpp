@@ -1,5 +1,5 @@
 #include "htmlparser.h"
-#include "helement.h"
+#include "htmlelement.h"
 #include "../gbinterface.h"
 #include <stdlib.h>
 #include "../main.h"

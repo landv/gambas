@@ -20,8 +20,8 @@
 ***************************************************************************/
 
 
-#include "helement.h"
-#include "hdocument.h"
+#include "htmlelement.h"
+#include "htmldocument.h"
 #include <memory.h>
 #include <stdlib.h>
 
