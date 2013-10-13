@@ -10,7 +10,7 @@ gb_xml_html_la_CPPFLAGS = @XMLHTML_INC@
 gb_xml_html_la_CXXFLAGS = $(AM_CXXFLAGS) -fexceptions
 
 gb_xml_html_la_SOURCES = htmlmain.cpp htmlmain.h \
-htmldocument.cpp htmldocument.h htmlelement.cpp htmlelement.h \
+htmldocument.cpp htmlelement.cpp \
 CHTMLDocument.cpp CHTMLDocument.h CHTMLElement.h CHTMLElement.cpp \
 htmlserializer.cpp htmlserializer.h \
 cssfilter.cpp cssfilter.h \
