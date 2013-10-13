@@ -1,6 +1,6 @@
 #include "cssfilter.h"
 #include "htmlmain.h"
-#include "helement.h"
+#include "htmlelement.h"
 #include <memory.h>
 
 bool HTMLElement_MatchSubFilter(const Element *elmt, const char *filter, size_t lenFilter);

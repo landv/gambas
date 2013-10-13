@@ -9,15 +9,15 @@ INCLUDEPATH += . /usr/include/c++/4.6.1
 
 # Input
 HEADERS += \
-    hdocument.h \
-    helement.h \
     gb.xml.html.h \
     cssfilter.h \
     htmlserializer.h \
     CHTMLDocument.h \
     CHTMLElement.h \
     htmlmain.h \
-    htmlparser.h
+    htmlparser.h \
+    htmldocument.h \
+    htmlelement.h
 SOURCES += \
     cssfilter.cpp \
     CHTMLDocument.cpp \

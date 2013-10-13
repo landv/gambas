@@ -188,7 +188,21 @@ static QStringList my_getOpenFileNames()
 
 static QString my_getSaveFileName()
 {
-	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
+	QString dir, file;
+
+	dir = dialog_path;
+	if (!dialog_path.endsWith('/'))
+	{
+		int pos = dialog_path.lastIndexOf('/');
+		if (pos >= 0)
+		{
+			dir = dialog_path.left(pos);
+			file = dialog_path.mid(pos + 1);
+		}
+	}
+
+	QFileDialog dialog(qApp->activeWindow(), dialog_title, dir, get_filter());
+	dialog.selectFile(file);
 	
   dialog.setAcceptMode(QFileDialog::AcceptSave);
 	dialog.setMode(QFileDialog::AnyFile);

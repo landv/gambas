@@ -81,9 +81,9 @@ Static Public Sub Init()
   'sTemp = Temp$()
   'Copy "snippets" To sTemp
 
-  Load(Settings, False )
+  Load(Settings, False)
   hSettings = New Settings("../snippets")
-  Load(hSettings, True )
+  Load(hSettings, True)
 
   'Kill sTemp
   
@@ -193,7 +193,7 @@ Private Sub Make(Optional iIndent As Integer) As String
         Else If sVar = "$DESCRIPTION" Then
           sCar = Project.Description
         Else If sVar = "$AUTHOR" Or If sVar = "$AUTHORS" Then
-          sCar = Split(Project.Authors, "\n", "", True ).Join(", ")
+          sCar = Split(Project.Authors, "\n", "", True).Join(", ")
         Else
           sCar = sVar
         Endif

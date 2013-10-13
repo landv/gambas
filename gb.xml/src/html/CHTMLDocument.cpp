@@ -20,8 +20,8 @@
 ***************************************************************************/
 
 #include "CHTMLDocument.h"
-#include "hdocument.h"
-#include "helement.h"
+#include "htmldocument.h"
+#include "htmlelement.h"
 
 /*========== Document */
 
