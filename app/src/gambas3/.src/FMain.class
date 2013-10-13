@@ -1803,7 +1803,7 @@ Public Sub mnuEditWithProg_Click()
   If sKey Then
     If CanEdit(sKey) Then
       hProcess = Last.Tag.Run(sKey)
-      hProcess.Ignore
+      hProcess.Ignore = True
     Endif
   Endif
   
