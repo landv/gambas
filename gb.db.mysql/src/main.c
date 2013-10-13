@@ -326,19 +326,19 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 			{
 				case FIELD_TYPE_DATE:
 
-					sscanf(data, "%4hu-%2hu-%2hu", &date.year, &date.month, &date.day);
+					sscanf(data, "%4d-%2d-%2d", &date.year, &date.month, &date.day);
 					break;
 
 				case FIELD_TYPE_TIME:
 
-					sscanf(data, "%4hu:%2hu:%lf", &date.hour, &date.min, &sec);
+					sscanf(data, "%4d:%2d:%lf", &date.hour, &date.min, &sec);
 					date.sec = (short)sec;
 					date.msec = (short)((sec - date.sec) * 1000 + 0.5);
 					break;
 
 				case FIELD_TYPE_DATETIME:
 
-					sscanf(data, "%4hu-%2hu-%2hu %2hu:%2hu:%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+					sscanf(data, "%4d-%2d-%2d %2d:%2d:%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
 					date.sec = (short)sec;
 					date.msec = (short)((sec - date.sec) * 1000 + 0.5);
 					break;
@@ -347,29 +347,29 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 					switch(strlen(data))
 					{
 						case 14:
-							sscanf(data, "%4hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+							sscanf(data, "%4d%2d%2d%2d%2d%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
 							date.sec = (short)sec;
 							date.msec = (short)((sec - date.sec) * 1000 + 0.5);
 							break;
 						case 12:
-							sscanf(data, "%2hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+							sscanf(data, "%2d%2d%2d%2d%2d%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
 							date.sec = (short)sec;
 							date.msec = (short)((sec - date.sec) * 1000 + 0.5);
 							break;
 						case 10:
-							sscanf(data, "%2hu%2hu%2hu%2hu%2hu", &date.year, &date.month, &date.day, &date.hour, &date.min );
+							sscanf(data, "%2d%2d%2d%2d%2d", &date.year, &date.month, &date.day, &date.hour, &date.min );
 							break;
 						case 8:
-							sscanf(data, "%4hu%2hu%2hu", &date.year, &date.month, &date.day);
+							sscanf(data, "%4d%2d%2d", &date.year, &date.month, &date.day);
 							break;
 						case 6:
-							sscanf(data, "%2hu%2hu%2hu", &date.year, &date.month, &date.day);
+							sscanf(data, "%2d%2d%2d", &date.year, &date.month, &date.day);
 							break;
 						case 4:
-							sscanf(data, "%2hu%2hu", &date.year, &date.month);
+							sscanf(data, "%2d%2d", &date.year, &date.month);
 							break;
 						case 2:
-							sscanf(data, "%2hu", &date.year);
+							sscanf(data, "%2d", &date.year);
 							break;
 					}
 					if (date.year < 100)

@@ -393,7 +393,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 				else
 					bc = 0;
 
-				sscanf(data, "%4hu-%2hu-%2hu %2hu:%2hu:%lf", &date.year, &date.month,
+				sscanf(data, "%4d-%2d-%2d %2d:%2d:%lf", &date.year, &date.month,
 							 &date.day, &date.hour, &date.min, &sec);
 				date.sec = (short) sec;
 				date.msec = (short) ((sec - date.sec) * 1000 + 0.5);

@@ -428,12 +428,12 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 				case RELTIMEOID:
 				case DATEOID:
 
-					sscanf(data, "%4hu-%2hu-%2hu", &date.year, &date.month, &date.day);
+					sscanf(data, "%4d-%2d-%2d", &date.year, &date.month, &date.day);
 					break;
 
 				case TIMEOID:
 
-					sscanf(data, "%2hu:%2hu:%lf", &date.hour, &date.min, &sec);
+					sscanf(data, "%2d:%2d:%lf", &date.hour, &date.min, &sec);
 					date.sec = (short)sec;
 					date.msec = (short)((sec - date.sec) * 1000 + 0.5);
 					break;
@@ -446,7 +446,7 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 				case TIMESTAMPTZOID:
 				#endif
 
-					sscanf(data, "%4hu-%2hu-%2hu %2hu:%2hu:%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+					sscanf(data, "%4d-%2d-%2d %2d:%2d:%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
 					date.sec = (short)sec;
 					date.msec = (short)((sec - date.sec) * 1000 + 0.5);
 					break;
