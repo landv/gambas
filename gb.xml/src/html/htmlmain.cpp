@@ -26,7 +26,7 @@
 #include "gb.xml.html.h"
 #include "htmlserializer.h"
 #include "htmlparser.h"
-#include "hdocument.h"
+#include "htmldocument.h"
 
 GB_INTERFACE GB EXPORT;
 XML_INTERFACE XML EXPORT;

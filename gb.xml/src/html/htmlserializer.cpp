@@ -1,5 +1,5 @@
 #include "htmlserializer.h"
-#include "helement.h"
+#include "htmlelement.h"
 #include "../gbinterface.h"
 #include <stdlib.h>
 

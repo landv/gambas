@@ -15,4 +15,4 @@ document.cpp document.h node.cpp node.h textnode.cpp textnode.h element.cpp elem
 CDocument.cpp CDocument.h CNode.cpp CNode.h CElement.h CElement.cpp CTextNode.h CTextNode.cpp \
 CReader.h CReader.cpp reader.cpp reader.h \
 CExplorer.h CExplorer.cpp explorer.cpp explorer.h \
-gb.xml.h
+gb.xml.h gbinterface.h
