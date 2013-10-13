@@ -186,8 +186,7 @@ static void aux_return_date_info(void *_object, const char *key)
 		if (datestr)
 		{
 			if (datestr[0] == 'D' && datestr[1] == ':') datestr += 2;
-			nnum=sscanf(datestr, "%4hd%2hd%2hd%2hd%2hd%2hd",&ds.year, &ds.month, \
-			                                          &ds.day, &ds.hour, &ds.min, &ds.sec);	
+			nnum=sscanf(datestr, "%4d%2d%2d%2d%2d%2d",&ds.year, &ds.month, &ds.day, &ds.hour, &ds.min, &ds.sec);
 			if (nnum == 6)
 			{
 				if (!GB.MakeDate(&ds,&ret))
