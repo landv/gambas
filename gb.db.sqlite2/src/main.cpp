@@ -153,25 +153,25 @@ static void conv_data(const char *data, GB_VARIANT_VALUE *val, fType type)
 			switch (strlen(data))
 			{
 				case 14:
-					sscanf(data, "%4hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month,
+					sscanf(data, "%4d%2d%2d%2d%2d%lf", &date.year, &date.month,
 								&date.day, &date.hour, &date.min, &sec);
 					date.sec = (short) sec;
 					date.msec = (short) ((sec - date.sec) * 1000 + 0.5);
 					break;
 				case 12:
-					sscanf(data, "%2hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month,
+					sscanf(data, "%2d%2d%2d%2d%2d%lf", &date.year, &date.month,
 								&date.day, &date.hour, &date.min, &sec);
 					date.sec = (short) sec;
 					date.msec = (short) ((sec - date.sec) * 1000 + 0.5);
 					break;
 				case 10:
-					if (sscanf(data, "%4hu-%2hu-%2hu", &date.year, &date.month,
+					if (sscanf(data, "%4d-%2d-%2d", &date.year, &date.month,
 										&date.day) != 3)
 					{
-						if (sscanf(data, "%4hu/%2hu/%2hu", &date.year, &date.month,
+						if (sscanf(data, "%4d/%2d/%2d", &date.year, &date.month,
 											&date.day) != 3)
 						{
-							if (sscanf(data, "%4hu:%2hu:%lf", &date.hour, &date.min,
+							if (sscanf(data, "%4d:%2d:%lf", &date.hour, &date.min,
 												&sec) == 3)
 							{
 								date.sec = (short) sec;
@@ -179,7 +179,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE *val, fType type)
 							}
 							else
 							{
-								sscanf(data, "%2hu%2hu%2hu%2hu%2hu", &date.year,
+								sscanf(data, "%2d%2d%2d%2d%2d", &date.year,
 											&date.month, &date.day, &date.hour, &date.min);
 							}
 						}
@@ -187,24 +187,24 @@ static void conv_data(const char *data, GB_VARIANT_VALUE *val, fType type)
 
 					break;
 				case 8:
-					if (sscanf(data, "%4hu%2hu%2hu", &date.year, &date.month,
+					if (sscanf(data, "%4d%2d%2d", &date.year, &date.month,
 										&date.day) != 3)
 					{
-						sscanf(data, "%2hu/%2hu/%2hu", &date.year, &date.month,
+						sscanf(data, "%2d/%2d/%2d", &date.year, &date.month,
 									&date.day);
 					}
 					break;
 				case 6:
-					sscanf(data, "%2hu%2hu%2hu", &date.year, &date.month, &date.day);
+					sscanf(data, "%2d%2d%2d", &date.year, &date.month, &date.day);
 					break;
 				case 4:
-					sscanf(data, "%2hu%2hu", &date.year, &date.month);
+					sscanf(data, "%2d%2d", &date.year, &date.month);
 					break;
 				case 2:
-					sscanf(data, "%2hu", &date.year);
+					sscanf(data, "%2d", &date.year);
 					break;
 				default:
-					sscanf(data, "%4hu-%2hu-%2hu %2hu:%2hu:%lf", &date.year,
+					sscanf(data, "%4d-%2d-%2d %2d:%2d:%lf", &date.year,
 								&date.month, &date.day, &date.hour, &date.min, &sec);
 					date.sec = (short) sec;
 					date.msec = (short) ((sec - date.sec) * 1000 + 0.5);
