@@ -9,10 +9,11 @@ gb_xml_html_la_LDFLAGS = -module  @LD_FLAGS@ @XMLHTML_LDFLAGS@
 gb_xml_html_la_CPPFLAGS = @XMLHTML_INC@
 gb_xml_html_la_CXXFLAGS = $(AM_CXXFLAGS) -fexceptions
 
-gb_xml_html_la_SOURCES = htmlmain.cpp htmlmain.h \
+gb_xml_html_la_SOURCES = *.h \
+htmlmain.cpp \
 htmldocument.cpp htmlelement.cpp \
-CHTMLDocument.cpp CHTMLDocument.h CHTMLElement.h CHTMLElement.cpp \
-htmlserializer.cpp htmlserializer.h \
-cssfilter.cpp cssfilter.h \
-htmlparser.cpp htmlparser.h \
+CHTMLDocument.cpp CHTMLElement.cpp \
+htmlserializer.cpp \
+cssfilter.cpp \
+htmlparser.cpp \
 gb.xml.html.h
