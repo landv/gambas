@@ -401,7 +401,7 @@ Private Sub InitVersion()
   sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
   If sVer Then
     'Version &= " (r" & sVer & ")"
-    FullVersionWithRevision &= " (r" & sVer & ")"
+    FullVersionWithRevision &= " (" & sVer & ")"
   Endif
 
 Catch
