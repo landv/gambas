@@ -4027,3 +4027,15 @@ Public Sub panSelect_DragMove()
   Endif
 
 End
+
+Public Sub ReadConfig()
+  
+  Project.SetSmallFont(tlbForm)
+  
+End
+
+Public Sub Form_Open()
+
+  ReadConfig
+
+End
