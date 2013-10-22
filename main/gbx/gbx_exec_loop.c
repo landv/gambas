@@ -1174,7 +1174,7 @@ _CALL:
 			}
 			
 			if (EXEC.desc && !CLASS_DESC_is_static_method(EXEC.desc) && !EXEC.object)
-				THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), "_call");
+				THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), $("_call"));
 			
 			goto __CALL_SPEC;
 

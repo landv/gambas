@@ -235,25 +235,24 @@ static void gambas_handle_event(GdkEvent *event)
 	{
 		control = gApplication::_control_grab;
 		widget = control->border;
-		//fprintf(stderr, "_control_grab: %s -> widget = %p\n", control->name(), widget);
+		//fprintf(stderr, "[1] _control_grab: %s -> widget = %p\n", control->name(), widget);
 		goto __FOUND_WIDGET;
 	}
 
 	if (gMenu::currentPopup())
 	{
 		grab = GTK_WIDGET(gMenu::currentPopup()->child);
-		//fprintf(stderr, "popup menu: grab = %p\n", grab);
+		//fprintf(stderr, "[2] popup menu: grab = %p\n", grab);
 		if (get_window_group(grab) != get_window_group(widget) && (event->type == GDK_ENTER_NOTIFY || event->type == GDK_LEAVE_NOTIFY))
 			return;
 	}
-	else if (gApplication::_popup_grab)
-	{
-		grab = gApplication::_popup_grab;
-		//fprintf(stderr, "popup: grab = %p\n", grab);
-	}
 	else
 	{
+		//fprintf(stderr, "[3] popup: grab = %p / %p\n", gApplication::_popup_grab, grab);
 		grab = gtk_window_group_get_current_grab(get_window_group(widget));
+		if (!grab)
+			grab = gApplication::_popup_grab;
+		//fprintf(stderr, "[4] grab = %p\n", grab);
 		//fprintf(stderr, "search grab for widget %p -> group = %p -> grab = %p WINDOW = %d\n", widget, get_window_group(widget), grab, GTK_IS_WINDOW(grab));
 		//if (grab && grab != widget && !GTK_IS_WINDOW(grab))
 		//	goto __HANDLE_EVENT;

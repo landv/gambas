@@ -595,6 +595,7 @@ static char *unescape_uri(const char *uri)
 
 const char *gPrinter::outputFileName() const
 {
+	//fprintf(stderr, "outputFileName: %s\n", gtk_print_settings_get(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI));
 	return unescape_uri(gtk_print_settings_get(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI));
 }
 
@@ -672,6 +673,7 @@ static void dump_tree(GtkWidget *wid, GtkPrintUnixDialog *dialog)
 			char *name;
 			
 			path = unescape_uri(gtk_print_settings_get(gPrinter::_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI));
+			//fprintf(stderr, "dump_tree: path = %s\n", path);
 			if (path)
 			{
 				name = g_path_get_basename(path);

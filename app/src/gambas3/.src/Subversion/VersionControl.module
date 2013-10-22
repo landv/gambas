@@ -21,6 +21,8 @@ Public UseTerminal As Boolean
 
 Private $sRealDir As String
 
+Private LANG_ENV As String[] = ["LC_ALL=C.UTF-8", "LANG=C.UTF-8", "LANGUAGE=C.UTF-8"]
+
 Public Sub Enabled() As Boolean
 
   Return $bSVN Or $bCVS
@@ -208,7 +210,7 @@ End
 
 ' Must be called *after* the file has been deleted
 
-Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
+Public Sub RemoveFile(sPath As String, Optional (bForce) As Boolean)
 
   Dim aCmd As String[]
 
@@ -382,7 +384,7 @@ Public Sub Commit(sChange As String) As Boolean
     Print #hFile, sChange;
     Close #hFile
     
-    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$($sRealDir)], True, False, ["LC_ALL=C.UTF-8"])
+    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$($sRealDir)], True, False, LANG_ENV)
     Return Process.LastValue
   Endif
 
@@ -454,9 +456,13 @@ Public Sub GetVersion(sDir As String) As String
   Dim sRes As String
 
   If Exist(sDir &/ ".svn") Then
-    Shell "cd " & Shell$(sDir) & "; LC_ALL=C.UTF-8 svn info" To sRes
+    Shell "cd " & Shell$(sDir) & "; " & LANG_ENV.Join(" ") & " svn info" To sRes
     Try sRes = Scan(sRes, "*\nRevision: *\n*")[1]
-    Return sRes
+    If Error Then 
+      Return "?"
+    Else
+      Return "r" & sRes
+    Endif
   Endif
 
 End
@@ -540,7 +546,7 @@ Public Sub Info(bRemote As Boolean) As Collection
   
   If $bSvn Then
     
-    If Run(["svn", "info", SvnPath$($sRealDir)], False, True, ["LC_ALL=C.UTF-8"]) = 0 Then
+    If Run(["svn", "info", SvnPath$($sRealDir)], False, True, LANG_ENV) = 0 Then
     
       cData.Clear
       For Each sLine In Split($sOutput, "\n", "", True)
@@ -559,7 +565,7 @@ Public Sub Info(bRemote As Boolean) As Collection
     
     If bRemote And If sUrl Then
     
-      If Run(["svn", "info", SvnPath$(sUrl)], True, True, ["LC_ALL=C.UTF-8"]) = 0 Then
+      If Run(["svn", "info", SvnPath$(sUrl)], True, True, LANG_ENV) = 0 Then
       
         cData.Clear
         For Each sLine In Split($sOutput, "\n", "", True)

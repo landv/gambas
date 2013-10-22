@@ -2215,7 +2215,7 @@ Private Sub CreateMenu()
   mnuEvent.Visible = False
   mnuChange.Visible = False
 
-  If Not $bReadOnly Then
+  'If Not $bReadOnly Then
 
     If Master Then
       cCtrl = CComponent.Classes[Master.Kind].Events
@@ -2224,7 +2224,7 @@ Private Sub CreateMenu()
       cCtrl = CComponent.Classes[Family].Events
       sGroup = Family
     Endif
-
+    
     If cCtrl Then
 
       mnuEvent.Children.Clear
@@ -2234,13 +2234,16 @@ Private Sub CreateMenu()
 
         For Each sName In cCtrl
 
+          hSymbol = cSymbol[sGroup & "_" & sName]
+          
+          If $bReadOnly Then
+            If Not hSymbol Or If hSymbol.Kind <> "m" Then Continue
+          Endif
+          
           hMenu = New Menu(mnuEvent) As "mnuEvent"
           hMenu.Text = sName
 
-          hSymbol = cSymbol[sGroup & "_" & sName]
-          If hSymbol Then
-            If hSymbol.Kind = "m" Then hMenu.Checked = True
-          Endif
+          If hSymbol And If hSymbol.Kind = "m" Then hMenu.Checked = True
 
         Next
 
@@ -2252,7 +2255,7 @@ Private Sub CreateMenu()
 
       mnuEvent.Visible = True
 
-    Endif
+    'Endif
 
     mnuChange.Children.Clear
 
@@ -4022,5 +4025,17 @@ Public Sub panSelect_DragMove()
   Else
     Stop Event
   Endif
+
+End
+
+Public Sub ReadConfig()
+  
+  Project.SetSmallFont(tlbForm)
+  
+End
+
+Public Sub Form_Open()
+
+  ReadConfig
 
 End

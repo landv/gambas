@@ -35,6 +35,7 @@ Private $sDirText As String
 
 Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
+
 Public Sub _new(Optional bFile As Boolean)
 
   Dim hChild As Control
@@ -689,6 +690,9 @@ Public Sub SetSettings(aVar As Variant[])
     Endif
     
   Endif
+
+  btnPreview.Value = fvwChoose.ShowPreview
+  btnDetail.Value = fvwChoose.ShowDetailed
 
   UpdateShowHidden
   ShowBookmark($bShowBookmark)

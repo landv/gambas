@@ -309,6 +309,24 @@ if(escapedData != STRING(data)) free(escapedData);
 
 END_METHOD
 
+BEGIN_METHOD(CNode_unEscapeContent, GB_STRING data)
+
+if(!LENGTH(data))
+{
+    GB.ReturnNull();
+    return;
+}
+
+char *unescapedData; size_t lenUnEscapedData;
+
+XMLText_unEscapeContent(STRING(data), LENGTH(data), unescapedData, lenUnEscapedData);
+
+GB.ReturnNewString(unescapedData, lenUnEscapedData);
+
+if(unescapedData != STRING(data)) free(unescapedData);
+
+END_METHOD
+
 GB_DESC CElementAttributeNodeDesc[] =
 {
     GB_DECLARE("_XmlAttrNode", sizeof(CNode)), GB_INHERITS("XmlNode"),
@@ -363,6 +381,7 @@ GB_DESC CNodeDesc[] =
     GB_PROPERTY("Name", "s", CNode_name),
 
     GB_STATIC_METHOD("Serialize", "s", CNode_escapeContent, "(Data)s"),
+    GB_STATIC_METHOD("Deserialize", "s", CNode_unEscapeContent, "(Data)s"),
 
     GB_METHOD("NewElement", "", CNode_newElement, "(Name)s[(Value)s]"),
     GB_METHOD("NewAttribute", "", CNode_setAttribute, "(Name)s(Value)s"),
