@@ -28,6 +28,8 @@
 #include "gbx_string.h"
 #include "gbx_object.h"
 
+// On ARM 32 bits, sizeof(VARIANT) = 12, so it must be packed like GB_VARIANT
+
 typedef
   struct 
 	{
@@ -48,6 +50,7 @@ typedef
 			}
 		value;
   }
+  PACKED
   VARIANT;
 
 #define VARIANT_copy_value(_dst, _src) (_dst)->value.data = (_src)->value.data

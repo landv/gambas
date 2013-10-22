@@ -401,7 +401,7 @@ Private Sub InitVersion()
   sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
   If sVer Then
     'Version &= " (r" & sVer & ")"
-    FullVersionWithRevision &= " (r" & sVer & ")"
+    FullVersionWithRevision &= " (" & sVer & ")"
   Endif
 
 Catch
@@ -4547,11 +4547,13 @@ Public Function GetExamples(Optional sParent As String) As String[]
   Dim sFile2 As String
   Dim aList As New String[]
 
+  If Not IsDir(EXAMPLES_DIR &/ sParent) Then Return aList
+
   If sParent Then
 
     If sParent = "." Then sParent = ""
 
-    If Exist(EXAMPLES_DIR &/ sFile &/ ".project") Then Return
+    'If Exist(EXAMPLES_DIR &/ sFile &/ ".project") Then Return
 
     For Each sFile In Dir(EXAMPLES_DIR &/ sParent)
       If Left(sFile) = "." Then Continue
@@ -4560,7 +4562,7 @@ Public Function GetExamples(Optional sParent As String) As String[]
       'ENDIF
     Next
 
-  Else If IsDir(EXAMPLES_DIR) Then
+  Else 
 
     For Each sFile In Dir(EXAMPLES_DIR, "*", gb.Directory)
       If Left(sFile) = "." Then Continue

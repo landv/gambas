@@ -385,7 +385,8 @@ static void execute(ClipType action, PolyFillType fill, void *subject, void *cli
 		return;
 
 	c.AddPolygons(psubject, ptSubject);
-	c.AddPolygons(pclip, ptClip);
+	if (clip)
+		c.AddPolygons(pclip, ptClip);
 
 	c.Execute(action, result, fill, fill);
 
@@ -439,7 +440,7 @@ GB_DESC PolygonDesc[] =
 
 	GB_METHOD("Add", NULL, Polygon_Add, "(X)f(Y)f"),
 	GB_METHOD("AddPoint", NULL, Polygon_AddPoint, "(Point)Point;"),
-	GB_METHOD("Remove", NULL, Polygon_Remove, "(Index)i[Count)i]"),
+	GB_METHOD("Remove", NULL, Polygon_Remove, "(Index)i[(Count)i]"),
 
 	GB_INTERFACE("_convert", &_convert_polygon),
 
@@ -449,10 +450,6 @@ GB_DESC PolygonDesc[] =
 GB_DESC ClipperDesc[] =
 {
 	GB_DECLARE_VIRTUAL("Clipper"),
-
-	//void OffsetPolygons(const Polygons &in_polys, Polygons &out_polys, double delta, JoinType jointype = jtSquare, double limit = 0.0, bool autoFix = true);
-	//void SimplifyPolygons(const Polygons &in_polys, Polygons &out_polys, PolyFillType fillType = pftEvenOdd);
-	//void CleanPolygons(Polygons &in_polys, Polygon &out_polys, double distance = 1.415);
 
 	GB_CONSTANT("JoinMiter", "i", jtMiter),
 	GB_CONSTANT("JoinSquare", "i", jtSquare),
@@ -468,10 +465,10 @@ GB_DESC ClipperDesc[] =
 	GB_STATIC_METHOD("Simplify", "Polygon[]", Clipper_Simplify, "(Polygons)Polygon[];[(Fill)i]"),
 	GB_STATIC_METHOD("Clean", "Polygon[]", Clipper_Clean, "(Polygons)Polygon[];[(Distance)f]"),
 
-	GB_STATIC_METHOD("Union", "Polygon[]", Clipper_Union, "(Polygons)Polygon[];[(Clip)Polygon[];[(Fill)i]"),
-	GB_STATIC_METHOD("Intersection", "Polygon[]", Clipper_Intersection, "(Polygons)Polygon[];[(Clip)Polygon[];[(Fill)i]"),
-	GB_STATIC_METHOD("Difference", "Polygon[]", Clipper_Difference, "(Polygons)Polygon[];[(Clip)Polygon[];[(Fill)i]"),
-	GB_STATIC_METHOD("ExclusiveOr", "Polygon[]", Clipper_ExclusiveOr, "(Polygons)Polygon[];[(Clip)Polygon[];[(Fill)i]"),
+	GB_STATIC_METHOD("Union", "Polygon[]", Clipper_Union, "(Polygons)Polygon[];[(Clip)Polygon[];(Fill)i]"),
+	GB_STATIC_METHOD("Intersection", "Polygon[]", Clipper_Intersection, "(Polygons)Polygon[];[(Clip)Polygon[];(Fill)i]"),
+	GB_STATIC_METHOD("Difference", "Polygon[]", Clipper_Difference, "(Polygons)Polygon[];[(Clip)Polygon[];(Fill)i]"),
+	GB_STATIC_METHOD("ExclusiveOr", "Polygon[]", Clipper_ExclusiveOr, "(Polygons)Polygon[];[(Clip)Polygon[];(Fill)i]"),
 
 	GB_END_DECLARE
 };

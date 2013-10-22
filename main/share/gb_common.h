@@ -181,4 +181,6 @@ typedef
 #define LIKELY(_x) (_x)
 #define UNLIKELY(_x) (_x)
 
+#define $(_x) _x
+
 #endif /* __COMMON_H */

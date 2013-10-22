@@ -171,6 +171,7 @@ End
 Public Sub Form_Open()
 
   SetReadOnly
+  ReadConfig
 
 End
 
@@ -2325,7 +2326,7 @@ Public Sub mnuPaste_Click()
 End
 
 
-Public Sub panToolBar_Configure()
+Public Sub tlbMain_Configure()
 
   UpdateMenu
 
@@ -2725,3 +2726,8 @@ Public Sub mnuSaveAs_Click()
   
 End
 
+Public Sub ReadConfig()
+  
+  Project.SetSmallFont(tlbMain)
+  
+End

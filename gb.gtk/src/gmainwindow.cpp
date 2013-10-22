@@ -57,7 +57,7 @@ static gboolean cb_show(GtkWidget *widget, gMainWindow *data)
 	{
 		if (data->isTopLevel())
 		{
-			if (data->isModal())
+			if (data->isModal() && data->isResizable())
 			{
 				GdkGeometry geometry;
 				
@@ -797,15 +797,14 @@ void gMainWindow::setResizable(bool b)
 	
 	if (b == isResizable())
 		return;
-	
+
+	gtk_window_set_resizable(GTK_WINDOW(border), b);
+
 	if (b)
 		gtk_widget_set_size_request(border, 1, 1);
 	else
 		gtk_widget_set_size_request(border, bufW, bufH);
-
-	gtk_window_set_resizable(GTK_WINDOW(border), b);
 }
-
 
 
 void gMainWindow::setSkipTaskBar(bool b)
