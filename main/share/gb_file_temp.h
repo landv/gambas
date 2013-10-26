@@ -1138,15 +1138,20 @@ const char *FILE_find_gambas(void)
 {
 	const char *path;
 
-	if (FILE_exist(GAMBAS_LINK_PATH))
+	path = getenv("GB_PATH");
+
+	if (!path || !*path)
 	{
-		path = FILE_readlink(GAMBAS_LINK_PATH);
-		if (!path)
-			path = GAMBAS_LINK_PATH;
-	}
-	else
-	{
-		path = GAMBAS_PATH "/gbx" GAMBAS_VERSION_STRING;
+		if (FILE_exist(GAMBAS_LINK_PATH))
+		{
+			path = FILE_readlink(GAMBAS_LINK_PATH);
+			if (!path)
+				path = GAMBAS_LINK_PATH;
+		}
+		else
+		{
+			path = GAMBAS_PATH "/gbx" GAMBAS_VERSION_STRING;
+		}
 	}
 
 	return path;
