@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,169,86)
+  MoveScaled(0,0,177,86)
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -613,7 +613,7 @@
     MoveScaled(0,0,13,0)
   }
   { tlbMain ToolBar
-    MoveScaled(0,0,166,4)
+    MoveScaled(0,0,175,4)
     Visible = False
     Key = "main"
     { ToolButton1 ToolButton
@@ -862,7 +862,7 @@
       Picture = Picture["icon:/small/mail"]
     }
     { btnMnuFile MenuButton
-      MoveScaled(145,0,8,4)
+      MoveScaled(153,0,8,4)
       Visible = False
       Action = "menu-file"
       AutoResize = True
@@ -872,7 +872,7 @@
       Menu = "mnuFile"
     }
     { btnMnuProject MenuButton
-      MoveScaled(148,0,7,4)
+      MoveScaled(156,0,7,4)
       Visible = False
       Action = "menu-project"
       AutoResize = True
@@ -882,7 +882,7 @@
       Menu = "mnuProject"
     }
     { btnMnuDebug MenuButton
-      MoveScaled(151,0,7,4)
+      MoveScaled(159,0,7,4)
       Visible = False
       Action = "menu-debug"
       AutoResize = True
@@ -892,7 +892,7 @@
       Menu = "mnuDebug"
     }
     { btnMenuView MenuButton
-      MoveScaled(154,0,7,4)
+      MoveScaled(162,0,7,4)
       Visible = False
       Action = "menu-view"
       AutoResize = True
@@ -902,7 +902,7 @@
       Menu = "mnuView"
     }
     { btnMnuTool MenuButton
-      MoveScaled(157,0,7,4)
+      MoveScaled(165,0,7,4)
       Visible = False
       Action = "menu-tool"
       AutoResize = True
@@ -912,7 +912,7 @@
       Menu = "mnuTool"
     }
     { btnMnuHelp MenuButton
-      MoveScaled(161,0,4,4)
+      MoveScaled(169,0,4,4)
       Visible = False
       Action = "menu-help"
       AutoResize = True
@@ -955,9 +955,15 @@
           Border = False
         }
         { btnSearchClear ToolButton
-          MoveScaled(25,0,3,3)
+          MoveScaled(21,0,3,3)
           ToolTip = ("Reset filter")
           Picture = Picture["icon:/small/clear"]
+        }
+        { btnCloseAll ToolButton mnuCloseAll
+          Name = "btnCloseAll"
+          MoveScaled(24,0,3,3)
+          ToolTip = ("Close all windows")
+          Picture = Picture["icon:/small/close"]
         }
       }
       { Separator4 Separator

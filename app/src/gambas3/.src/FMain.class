@@ -2103,7 +2103,7 @@ End
 
 Public Sub txtSearchProject_KeyPress()
 
-  Dim I As Integer
+  Dim H As Integer
 
   If Key.Text = "+" Then
     Try tvwProject.Current.Expanded = True
@@ -2127,12 +2127,14 @@ Public Sub txtSearchProject_KeyPress()
       
     Case Key.PageUp
       tvwProject.MoveCurrent()
-      For I = 1 To tvwProject.ClientHeight \ tvwProject.Item.Height
+      H = tvwProject.ClientHeight
+      While H > 0
         If tvwProject.MoveAbove() Then 
-          GoSub GOTO_TOP
+          tvwProject.MoveBack()
           Break
         Endif
-      Next
+        H -= tvwProject.Item.Height
+      Wend
     
     Case Key.Down
       tvwProject.MoveCurrent()
@@ -2140,12 +2142,14 @@ Public Sub txtSearchProject_KeyPress()
       
     Case Key.PageDown
       tvwProject.MoveCurrent()
-      For I = 1 To tvwProject.ClientHeight \ tvwProject.Item.Height
-        If tvwProject.MoveBelow() Then
-          GoSub GOTO_BOTTOM
+      H = tvwProject.ClientHeight
+      While H > 0
+        If tvwProject.MoveBelow() Then 
+          tvwProject.MoveBack()
           Break
         Endif
-      Next
+        H -= tvwProject.Item.Height
+      Wend
     
     Case Key.Home
       If Key.Control Then GoSub GOTO_TOP
@@ -2167,10 +2171,13 @@ GOTO_TOP:
 GOTO_BOTTOM:
 
   tvwProject.MoveFirst()
+  tvwProject.MoveLast()
   Do
-    tvwProject.MoveLast()
-    If tvwProject.Item.Count = 0 Then Break
-    tvwProject.MoveChild()
+    If tvwProject.MoveBelow() Then
+      tvwProject.MoveBack()
+      Break
+    Endif
+    'tvwProject.MoveLast()
   Loop
   Return
    
@@ -2285,4 +2292,10 @@ Private Sub CompressAll(sPath As String, bUncompress As Boolean)
     If MCompressFile.CanCompress(sPath &/ sFile) Then CompressAll(sPath &/ sFile, bUncompress)
   Next
   
+End
+
+Public Sub btnCloseAll_Click()
+
+  
+
 End
