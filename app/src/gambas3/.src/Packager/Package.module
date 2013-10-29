@@ -9,6 +9,7 @@ Private TAR_1_13_PROG As String
 Private AUTOCONF_PROG As String
 Private AUTOMAKE_PROG As String
 Private MAKEPKG_PROG As String
+Private MAKESELF_PROG As String
 
 Private $sOutput As String
 Private $bEnd As Boolean
@@ -22,7 +23,7 @@ Private $sVersion As String
 Private $sDescription As String
 Private $sSavePath As String
 
-Private Const MIN_VERSION As String = "3.0.90"
+Private MIN_VERSION As String
 Private Const MAX_VERSION As String = "3.99.0"
 
 Private $sFormatSingle As String
@@ -47,6 +48,7 @@ Public Sub CheckProgram()
   If Not Project.CheckProgram("autoconf") Then AUTOCONF_PROG = "autoconf"
   If Not Project.CheckProgram("automake") Then AUTOMAKE_PROG = "automake"
   If Not Project.CheckProgram("makepkg") Then MAKEPKG_PROG = "makepkg"
+  If Not Project.CheckProgram("makeself") Then MAKESELF_PROG = "makeself"
   
 End
 
@@ -70,6 +72,9 @@ Public Sub CheckSystem(sSys As String) As String
       
     Case "archlinux"
       If Not MAKEPKG_PROG Then Return Subst(("'&1' is missing."), "makepkg")
+      
+    Case "self"
+      If Not MAKESELF_PROG Then Return Subst(("'&1' is missing."), "makeself")
 
     Case Else
       Return
@@ -140,6 +145,10 @@ Public Function Make() As Boolean
   Dim sMacro As String
   Dim bAdd As Boolean
   Dim sPath As String
+  Dim aVer As String[]
+  
+  aVer = Split(System.FullVersion, ".")
+  MIN_VERSION = aVer[0] & "." & aVer[1]
 
   If Project.Systems.Exist("slackware") Then 
     If Project.MakeExecutable(True, True) Then Return True

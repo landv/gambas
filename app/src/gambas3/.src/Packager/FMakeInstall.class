@@ -182,7 +182,9 @@ Private Sub GetSystemControls() As Control[]
   Dim hCtrl As Control
   Dim hCont As Container
 
-  For Each hCont In panSystem.Children
+  For Each hCtrl In panSystem.Children
+    If Not hCtrl Is Container Then Continue
+    hCont = hCtrl
     For Each hCtrl In hCont.Children
       If hCtrl Is CheckBox Then
         aObject.Add(hCtrl)
@@ -210,7 +212,10 @@ Private Sub InitSystemControls()
   
   Package.CheckProgram
   
-  For Each hCont In panSystem.Children
+  For Each hCtrl In panSystem.Children
+    
+    If Not hCtrl Is Container Then Continue
+    hCont = hCtrl
   
     hCont.H = Desktop.Scale * 6
     sMsg = Package.CheckSystem(hCont.Tag)
@@ -307,7 +312,7 @@ Private Function CheckSys(cCol As Collection) As Boolean
   Dim sSys As String
 
   For Each sSys In Project.Systems
-    If sSys = "autotools" Then Continue
+    If sSys = "autotools" Or If sSys = "self" Then Continue
     If Not cCol.Exist(sSys) Then Return True
   Next
 
@@ -318,6 +323,8 @@ Public Sub wizInstall_BeforeChange()
 
   Dim sFile As String
   Dim aFile As String[]
+  Dim bEnabled As Boolean
+  Dim sSys As String
 
   Select Case wizInstall.Index
 
@@ -370,17 +377,27 @@ Public Sub wizInstall_BeforeChange()
         Return
       Endif
       
-      If Project.Systems.Count = 1 And If Project.Systems[0] = "autotools" Then 
-        wizInstall[TAB_GROUP].Enabled = False
-        wizInstall[TAB_MENU].Enabled = False
-        wizInstall[TAB_DEP].Enabled = False
-        wizInstall[TAB_FILE].Enabled = False
-      Else
-        wizInstall[TAB_GROUP].Enabled = True
-        wizInstall[TAB_MENU].Enabled = True
-        wizInstall[TAB_DEP].Enabled = True
-        wizInstall[TAB_FILE].Enabled = True
-      Endif
+      bEnabled = False
+      For Each sSys In Project.Systems
+        If sSys <> "autotools" And If sSys <> "self" Then
+          bEnabled = True
+          Break
+        Endif
+      Next
+
+      wizInstall[TAB_GROUP].Enabled = bEnabled
+      wizInstall[TAB_MENU].Enabled = bEnabled
+
+      bEnabled = False
+      For Each sSys In Project.Systems
+        If sSys <> "autotools" Then
+          bEnabled = True
+          Break
+        Endif
+      Next
+
+      wizInstall[TAB_DEP].Enabled = bEnabled
+      wizInstall[TAB_FILE].Enabled = bEnabled
       
       wizInstall[TAB_TEST].Enabled = Project.Systems.Exist("autotools")
       
@@ -530,21 +547,6 @@ Private Function GetSystems() As String[]
 End
 
 
-Private Function GetSystemNames(Optional bRemoveSystemWithoutMenu As Boolean) As String[]
-
-  Dim hCtrl As CheckBox
-  Dim aSys As New String[]
-
-  For Each hCtrl In GetSystemControls()
-    If bRemoveSystemWithoutMenu And If hCtrl.Parent.Tag = "autotools" Then Continue
-    If hCtrl.Value Then aSys.Add(hCtrl.Text)
-  Next
-
-  Return aSys
-
-End
-
-
 
 Private Function GetSystemFromName(sName As String) As String
 
@@ -583,11 +585,18 @@ End
 Private Sub FillComboWithSystems(hCombo As ComboBox)
 
   Dim sSys As String
+  Dim hCtrl As CheckBox
 
   hCombo.Clear
 
-  For Each sSys In GetSystemNames(True)
-    hCombo.Add(sSys)
+  For Each hCtrl In GetSystemControls()
+    sSys = hCtrl.Parent.Tag 
+    If hCombo = cmbDep Or If hCombo = cmbFile Then
+      If sSys = "autotools" Then Continue
+    Else If hCombo = cmbGroup Or If hCombo = cmbMenu Then
+      If sSys = "autotools" Or If sSys = "self" Then Continue
+    Endif
+    If hCtrl.Value Then hCombo.Add(hCtrl.Text)
   Next
 
   hCombo.Index = 0

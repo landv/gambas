@@ -104,6 +104,7 @@ Public Sub Form_Open()
   'txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
   aText.Add("[System]")
+  aText.Add("Gambas=" & System.FullVersion)
   aText.Add("OperatingSystem=" & System.Family)
   
   Exec ["uname", "-r"] To sTemp

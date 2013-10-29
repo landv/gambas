@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,71)
+  MoveScaled(0,0,92,73)
   Text = ("Make installation package")
   Icon = Picture["icon:/small/package"]
   Arrangement = Arrange.Fill
@@ -177,26 +177,9 @@
           Text = "Archlinux"
         }
       }
-      { HBox15 HBox panDistro
-        Name = "HBox15"
-        MoveScaled(0,8,83,8)
-        Tag = "autotools"
-        { ToolButton8 ToolButton
-          MoveScaled(0,0,8,8)
-          Picture = Picture["img/logo/package-gnu.png"]
-          Toggle = True
-        }
-        { CheckBox6 CheckBox chkDistro
-          Name = "CheckBox6"
-          MoveScaled(9,1,26,4)
-          #Translate = False
-          Expand = True
-          Text = "Autotools"
-        }
-      }
       { HBox5 HBox panDistro
         Name = "HBox5"
-        MoveScaled(0,16,83,8)
+        MoveScaled(0,8,83,8)
         Tag = "debian"
         { ToolButton3 ToolButton
           MoveScaled(0,0,8,8)
@@ -213,7 +196,7 @@
       }
       { HBox6 HBox panDistro
         Name = "HBox6"
-        MoveScaled(0,24,83,8)
+        MoveScaled(0,16,83,8)
         Tag = "fedora"
         { ToolButton4 ToolButton
           MoveScaled(0,0,8,7)
@@ -230,7 +213,7 @@
       }
       { HBox3 HBox panDistro
         Name = "HBox3"
-        MoveScaled(0,32,83,8)
+        MoveScaled(0,24,83,8)
         Tag = "mageia"
         { ToolButton2 ToolButton
           MoveScaled(0,0,8,8)
@@ -247,7 +230,7 @@
       }
       { HBox17 HBox panDistro
         Name = "HBox17"
-        MoveScaled(0,40,83,8)
+        MoveScaled(0,32,83,8)
         Tag = "mandriva"
         { ToolButton9 ToolButton
           MoveScaled(0,0,8,8)
@@ -264,7 +247,7 @@
       }
       { HBox7 HBox panDistro
         Name = "HBox7"
-        MoveScaled(0,48,83,8)
+        MoveScaled(0,40,83,8)
         Tag = "suse"
         { ToolButton5 ToolButton
           MoveScaled(0,0,7,7)
@@ -281,7 +264,7 @@
       }
       { HBox4 HBox panDistro
         Name = "HBox4"
-        MoveScaled(0,56,83,8)
+        MoveScaled(0,48,83,8)
         Tag = "slackware"
         { ToolButton1 ToolButton
           MoveScaled(0,0,7,7)
@@ -298,7 +281,7 @@
       }
       { HBox9 HBox panDistro
         Name = "HBox9"
-        MoveScaled(0,64,83,8)
+        MoveScaled(0,56,83,8)
         Tag = "ubuntu"
         { ToolButton6 ToolButton
           MoveScaled(0,0,7,7)
@@ -311,6 +294,44 @@
           #Translate = False
           Expand = True
           Text = "Ubuntu / Mint"
+        }
+      }
+      { Separator1 Separator
+        MoveScaled(30,65,20,1)
+        Visible = False
+      }
+      { HBox15 HBox panDistro
+        Name = "HBox15"
+        MoveScaled(0,67,83,8)
+        Tag = "autotools"
+        { ToolButton8 ToolButton
+          MoveScaled(0,0,8,8)
+          Picture = Picture["img/logo/package-gnu.png"]
+          Toggle = True
+        }
+        { CheckBox6 CheckBox chkDistro
+          Name = "CheckBox6"
+          MoveScaled(9,1,26,4)
+          #Translate = False
+          Expand = True
+          Text = "Autotools"
+        }
+      }
+      { HBox18 HBox panDistro
+        Name = "HBox18"
+        MoveScaled(0,75,83,8)
+        Visible = False
+        Tag = "self"
+        { ToolButton10 ToolButton
+          MoveScaled(0,0,7,7)
+          Picture = Picture["img/logo/self-extractible.png"]
+          Toggle = True
+        }
+        { CheckBox7 CheckBox chkDistro
+          Name = "CheckBox7"
+          MoveScaled(9,1,26,4)
+          Expand = True
+          Text = ("Self-extractible")
         }
       }
     }
