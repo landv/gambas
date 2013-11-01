@@ -86,6 +86,8 @@ Public Sub Form_Open()
     chkPrefix.Value = Settings["FMakeInstall/Prefix", False]
   Endif
 
+  txtPackageVersion.Value = Max(1, Project.PackageVersion)
+
   'InitSystemControls
   InitSystems
 
@@ -350,6 +352,7 @@ Public Sub wizInstall_BeforeChange()
       Project.Description = txtDescribe.Text
       Project.Prefix = chkPrefix.Value
       Project.PackageName = txtPackage.Text
+      Project.PackageVersion = txtPackageVersion.Value
 
     Case 1
       

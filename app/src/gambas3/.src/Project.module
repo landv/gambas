@@ -69,6 +69,7 @@ Public MimeTypes As String[]
 Public ExtraDesktop As String
 Public Prefix As Boolean
 Public PackageName As String
+Public PackageVersion As Integer
 Public Maintainer As String
 Public Address As String
 Public Vendor As String
@@ -3044,6 +3045,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   ExtraAutoconfTest = ""
   Prefix = False
   PackageName = ""
+  PackageVersion = 1
   ExecPath = Project.Name & ".gambas"
   SourcePath = ""
   Type = TYPE_NORMAL
@@ -3265,6 +3267,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "packagename"
         PackageName = sVal
 
+      Case "packageversion"
+        Try PackageVersion = CInt(sVal)
+
       Case "maintainer"
         Maintainer = sVal
 
@@ -3448,6 +3453,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
   If PackageName Then Print #hFic, "PackageName="; PackageName
+  If PackageVersion > 1 Then Print #hFic, "PackageVersion="; PackageVersion
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
   If ExtraDesktop Then Print #hFic, "ExtraDesktop=" & Quote(ExtraDesktop)

@@ -7,7 +7,7 @@
   Arrangement = Arrange.Fill
   Margin = True
   { wizInstall Wizard
-    MoveScaled(1,1,89,69)
+    MoveScaled(1,1,89,71)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 11
@@ -30,22 +30,36 @@
       Padding = 4
       AutoResize = True
     }
-    { VBox1 VBox
+    { Panel3 HBox
       MoveScaled(1,10,70,4)
+      Spacing = True
       { chkPrefix CheckBox
-        MoveScaled(0,0,65,4)
+        MoveScaled(0,0,39,4)
+        AutoResize = True
         Text = ("Prefix package name with the vendor name")
+      }
+      { Label8 Label
+        MoveScaled(41,0,15,4)
+        Expand = True
+        AutoResize = True
+        Text = ("Package version")
+        Alignment = Align.Right
+      }
+      { txtPackageVersion SpinBox
+        MoveScaled(62,0,8,4)
+        MinValue = 1
+        MaxValue = 999
       }
     }
     { TextLabel2 TextLabel
-      MoveScaled(1,15,64,4)
+      MoveScaled(1,19,64,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Maintainer information")
       Alignment = Align.BottomNormal
     }
     { HBox1 HBox
-      MoveScaled(1,20,71,4)
+      MoveScaled(1,24,71,4)
       Spacing = True
       Indent = True
       { Label1 Label
@@ -58,7 +72,7 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(1,25,70,4)
+      MoveScaled(1,29,70,4)
       Spacing = True
       Indent = True
       { Label2 Label
@@ -71,7 +85,7 @@
       }
     }
     { HBox8 HBox
-      MoveScaled(1,30,70,4)
+      MoveScaled(1,34,70,4)
       Spacing = True
       Indent = True
       { Label3 Label
@@ -84,7 +98,7 @@
       }
     }
     { HBox16 HBox
-      MoveScaled(1,35,70,4)
+      MoveScaled(1,39,70,4)
       Spacing = True
       Indent = True
       { Label7 Label
@@ -97,7 +111,7 @@
       }
     }
     { Panel1 HBox
-      MoveScaled(1,40,72,12)
+      MoveScaled(1,44,72,12)
       Spacing = True
       { Panel4 VBox
         MoveScaled(0,0,24,10)
@@ -114,7 +128,7 @@
       }
     }
     { Panel2 HBox
-      MoveScaled(1,53,73,4)
+      MoveScaled(1,57,73,4)
       Spacing = True
       { Label5 Label
         MoveScaled(0,0,24,4)
