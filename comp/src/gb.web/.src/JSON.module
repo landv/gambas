@@ -199,7 +199,7 @@ Private Sub WriteValue(vVal As Variant)
         iPos = InStr(sStr, "\\", iPos + 1)
         If iPos = 0 Then Break
         If Mid$(sStr, iPos + 1, 1) = "x" Then
-          Mid$(sStr, iPos, 4) = "\\u00" & Mid$(sStr, iPos + 1, 2)
+          Mid$(sStr, iPos, 4) = "\\u00" & Mid$(sStr, iPos + 2, 2)
         Else
           Inc iPos
         Endif
