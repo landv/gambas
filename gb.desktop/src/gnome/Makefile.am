@@ -1,3 +1,6 @@
+COMPONENT = gb.desktop.gnome
+include $(top_srcdir)/component.am
+
 gblib_LTLIBRARIES = gb.desktop.gnome.la
 
 gb_desktop_gnome_la_LIBADD = @GNOME_LIB@
