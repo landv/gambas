@@ -23,6 +23,8 @@ Private $sVersion As String
 Private $sDescription As String
 Private $sSavePath As String
 
+Private $bSupportPackage As Boolean
+
 Private MIN_VERSION As String
 Private Const MAX_VERSION As String = "3.99.0"
 
@@ -31,6 +33,11 @@ Private $sFormatMin As String
 Private $sFormatMax As String
 Private $sFormatMinMax As String
 Private $sFormatEqual As String
+
+Private Const QT4_SUPPORT As String = "qt4"
+Private QT4_SUPPORT_PACKAGES As String[] = ["gb.qt4:gb.gui", "gb.qt4.opengl:gb.gui.opengl"]
+Private Const GTK_SUPPORT As String = "gtk"
+Private GTK_SUPPORT_PACKAGES As String[] = ["gb.gtk:gb.gui", "gb.gtk.opengl:gb.gui.opengl"]
 
 Public Sub CheckProgram()
   
@@ -136,6 +143,8 @@ Private Sub InitMake(sSys As String)
   $sVersion = GetVersion()
   
   $sDescription = RemoveEmptyLines(Project.Description)
+  
+  $bSupportPackage = Project.Components.Exist("gb.gui")
 
 End
 
@@ -227,13 +236,26 @@ Private Sub ComponentToPackageName(sComp As String) As String
 
 End
 
-Private Function GetDependencies() As String
+Private Function GetDependencies(Optional aComp As String[]) As String
   
   Dim sRes As String
   Dim sComp As String
+  Dim iPos As Integer
+  Dim sTest As String
   
-  For Each sComp In Project.Components
+  If Not aComp Then aComp = Project.Components
+  
+  For Each sComp In aComp
+    
+    iPos = InStr(sComp, ":")
+    If iPos Then
+      sTest = Mid$(sComp, iPos + 1)
+      If Not Project.Components.Exist(sTest) Then Continue
+      sComp = Left(sComp, iPos - 1)
+    Endif
+    
     If sComp = "gb.debug" Or If sComp = "gb.eval" Then Continue 
+    If sComp = "gb.gui" Or If sComp Begins "gb.gui." Then Continue
     sRes &= GetDependency(sComp)
     'If sComp = "gb.form" Then sRes &= GetDependency("gb.form.stock")
   Next
@@ -526,6 +548,12 @@ Private Function MakePackage(sSys As String) As Boolean
   
     Case "debian", "ubuntu"
       MakeDebPackage(sSys)
+      If $bSupportPackage Then
+        AddLog("\n============ " & ("Making GTK+ support packages"))
+        MakeDebSupportPackage(sSys, GTK_SUPPORT, GTK_SUPPORT_PACKAGES)
+        AddLog("\n============ " & ("Making QT4 support packages"))
+        MakeDebSupportPackage(sSys, QT4_SUPPORT, QT4_SUPPORT_PACKAGES)
+      Endif
       
     Case "slackware"
       MakeTgzPackage(sSys)
@@ -556,6 +584,7 @@ Private Function MakeDebPackage(sSys As String)
   Dim sCmd As String
   Dim sIcon As String
   Dim sArch As String
+  Dim sPackageName As String
   Dim sPackagePath As String
   Dim aLine As String[]
   Dim n As Integer
@@ -568,16 +597,23 @@ Private Function MakeDebPackage(sSys As String)
   $sFormatMinMax = $sFormatMin & $sFormatMax
   $sFormatEqual = $sFormatMinMax
   
+  sPackageName = $sPackageName
+  
   '$sName = Replace$($sName, "_", "-")
-  sIcon = $sPackageName & ".png"
+  sIcon = sPackageName & ".png"
 
   ' Step 1. Create the build directory
 
   AddLog(("Making build directory.")) 
-  sPackagePath = Path &/ Subst("&1-&2", $sPackageName, $sVersion)
-  Try Shell "mkdir -p " & Shell$(sPackagePath &/ "src") Wait
+  sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
+
+  Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
+  Mkdir sPackagePath
+  Mkdir sPackagePath &/ "src"
+  Mkdir sPackagePath &/ "debian"
   
   sArch = sPackagePath &/ "src/raw.tar.gz"
+  ' FIXME: Don't write the icon inside the project! Find another solution!
   Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)
   
   Project.MakeSourcePackageTo(sArch)
@@ -590,12 +626,11 @@ Private Function MakeDebPackage(sSys As String)
   Try Kill sArch
   Try Shell "cp -Rf " & Shell(sPackagePath) & " " & Shell(sPackagePath & ".orig") Wait
 
-  Try Mkdir sPackagePath &/ "debian"
 
   ' Step 2. Make the desktop file
   If Project.Type = Project.TYPE_NORMAL Then
     AddLog(("Creating desktop file..."))
-    hFile = Open sPackagePath &/ "debian/" & $sPackageName & ".desktop" For Create
+    hFile = Open sPackagePath &/ "debian/" & sPackageName & ".desktop" For Create
     PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & sIcon)
     Close #hFile
   Endif 
@@ -616,7 +651,7 @@ Private Function MakeDebPackage(sSys As String)
   
   'debian/changelog
   hFile = Open sPackagePath &/ "debian/changelog" For Create 
-  Print #hFile, ChangelogToDebChangelog()
+  Print #hFile, ChangelogToDebChangelog(sPackageName)
   Close #hFile
 
   'debian/compat
@@ -627,9 +662,9 @@ Private Function MakeDebPackage(sSys As String)
   'debian/menu
   If Project.Type = Project.TYPE_NORMAL Then
     hFile = Open sPackagePath &/ "debian/menu" For Create 
-    Print #hFile, "?package("; $sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
+    Print #hFile, "?package("; sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
     Print #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
-    Print #hFile, "command=\"/usr/bin/"; $sPackageName; "\"\\"
+    Print #hFile, "command=\"/usr/bin/"; sPackageName; "\"\\"
     Print #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
     Close #hFile
   Endif 
@@ -663,7 +698,7 @@ Private Function MakeDebPackage(sSys As String)
     
       Print #hFile, "src/"; $sName; "/"; $sName; " usr/bin"
       Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
-      Print #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
+      Print #hFile, "debian/"; sPackageName; ".desktop usr/share/applications"
 
   End Select
   
@@ -673,7 +708,7 @@ Private Function MakeDebPackage(sSys As String)
  
   'debian/control
   hFile = Open sPackagePath &/ "debian/control" For Create
-  Print #hFile, "Source: "; $sPackageName
+  Print #hFile, "Source: "; sPackageName
   Print #hFile, "Section: contrib/"; Project.Groups[sSys]
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
@@ -689,7 +724,7 @@ Private Function MakeDebPackage(sSys As String)
 
   Print #hFile, "Standards-Version: 3.7.2"
   Print #hFile
-  Print #hFile, "Package: "; $sPackageName
+  Print #hFile, "Package: "; sPackageName
   Print #hFile, "Architecture: all"
   Print #hFile, "Depends: gambas"; System.Version; "-runtime (>= "; MIN_VERSION; "), gambas"; System.Version; "-runtime (<< "; MAX_VERSION; ")";
   
@@ -724,41 +759,59 @@ Private Function MakeDebPackage(sSys As String)
   
   'debian/rules
   hFile = Open sPackagePath &/ "debian/rules" For Create
-  Print #hFile, "#!/usr/bin/make -f"
-  Print #hFile, "build: build-stamp\nbuild-stamp:"
-  Print #hFile, "\tdh_testdir\n\ttouch build-stamp"
-  Print #hFile, "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & " src" &/ $sName
-  Print #hFile, "\tgba"; System.Version;
-  If Project.Type = Project.TYPE_NORMAL Then Print #hFile, " -o " & Shell$("src" &/ $sName &/ $sName);
-  Print #hFile, " src" &/ $sName
+  Output To #hFile
+  Print "#!/usr/bin/make -f"
+  Print "build: build-stamp"
+  Print "build-stamp:"
+  Print "\tdh_testdir"
+  Print "\ttouch build-stamp"
+  Print "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & " src" &/ $sName
+  Print "\tgba"; System.Version;
+  If Project.Type = Project.TYPE_NORMAL Then Print " -o " & Shell$("src" &/ $sName &/ $sName);
+  Print " src" &/ $sName
   'Print #hFile, "\tmv "; Shell$("src" &/ $sName &/ $sName & ".gambas") & " " & Shell$("src" &/ $sName &/ $sName)
   
-  Print #hFile
-  Print #hFile, "clean:"
-  Print #hFile, "\tdh_testdir\n\tdh_testroot\n\trm -Rf `find . -name \".gambas\"`"  
-  Print #hFile, "\trm -Rf `find . -name \"*.gambas\"`\n"
-  Print #hFile, "\trm -f build-stamp install-stamp\n\tdh_clean"
-  Print #hFile 
-  Print #hFile, "install: build\n\tdh_testdir\n\tdh_testroot\n\tdh_clean -k\n"
-  Print #hFile, "\tdh_installdirs\n" 
+  Print 
+  Print "clean:"
+  Print "\tdh_testdir"
+  Print "\tdh_testroot"
+  Print "\trm -Rf `find . -name \".gambas\"`"  
+  Print "\trm -Rf `find . -name \"*.gambas\"`"
+  Print "\trm -f build-stamp install-stamp"
+  Print "\tdh_clean"
+  Print
+  Print "install: build"
+  Print "\tdh_testdir"
+  Print "\tdh_testroot"
+  Print "\tdh_prep"
+  Print "\tdh_installdirs" 
   If Project.Type = Project.TYPE_COMPONENT Then 
-      Print #hFile, "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & $sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sName) & ".component"
-      Print #hFile, "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".info " ""
-      Print #hFile, "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".list"
+      Print "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sName) & ".component"
+      Print "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".info " ""
+      Print "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".list"
   Endif 
-  Print #hFile, "\ttouch install-stamp"
-  Print #hFile
-  Print #hFile, "binary-arch: build install\n\tdh_testdir"
-  Print #hFile
-  Print #hFile, "binary-indep: build install"
-  Print #hFile, "\tdh_testdir -i\n\tdh_testroot -i\n\tdh_installdocs -i"
-  Print #hFile, "\tdh_installchangelogs -i\n\tdh_install -i\n\tdh_installmenu"
-  Print #hFile, "\tdh_compress -i\n\tdh_fixperms -i"
-  Print #hFile, "\tdh_installdeb -i\n\tdh_gencontrol -i"
-  Print #hFile, "\tdh_md5sums -i\n\tdh_builddeb -i"
-  Print #hFile
-  Print #hFile, "binary: binary-indep binary-arch"
-  Print #hFile, ".PHONY: build clean binary-indep binary-arch binary install"
+  Print "\ttouch install-stamp"
+  Print 
+  Print "binary-arch: build install"
+  Print "\tdh_testdir"
+  Print 
+  Print "binary-indep: build install"
+  Print "\tdh_testdir -i"
+  Print "\tdh_testroot -i"
+  Print "\tdh_installdocs -i"
+  Print "\tdh_installchangelogs -i"
+  Print "\tdh_install -i"
+  Print "\tdh_installmenu"
+  Print "\tdh_compress -i"
+  Print "\tdh_fixperms -i"
+  Print "\tdh_installdeb -i"
+  Print "\tdh_gencontrol -i"
+  Print "\tdh_md5sums -i"
+  Print "\tdh_builddeb -i"
+  Print 
+  Print "binary: binary-indep binary-arch"
+  Print ".PHONY: build clean binary-indep binary-arch binary install"
+  Output To Default
   Close #hFile
   Try Shell "chmod +x " & Shell(sPackagePath &/ "debian/rules") Wait
 
@@ -780,7 +833,131 @@ Private Function MakeDebPackage(sSys As String)
 
 End
 
-Private Sub ChangelogToDebChangelog() As String
+Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp As String[])
+
+  Dim hFile As File
+  Dim sCmd As String
+  Dim sPackageName As String
+  Dim sPackagePath As String
+      
+  Inc Application.Busy
+  
+  $sFormatSingle = ", &1"
+  $sFormatMin = ", &1 (>= &2)"
+  $sFormatMax = ", &1 (<< &3)"
+  $sFormatMinMax = $sFormatMin & $sFormatMax
+  $sFormatEqual = $sFormatMinMax
+  
+  sPackageName = $sPackageName & "-" & sSupport
+  
+  ' Step 1. Create the build directory
+
+  AddLog(("Making build directory.")) 
+  sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
+  
+  Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
+  Mkdir sPackagePath
+  Mkdir sPackagePath &/ "debian"
+
+  'Mkdir sPackagePath &/ "debian/source"
+  'File.Save(sPackagePath &/ "debian/source/format", "1.0")
+
+  'Step 3. Create debianization needed files: control, rules
+  'debian/copyright
+  AddLog(("Sources are being debianizated."))
+  hFile = Open sPackagePath &/ "debian/copyright" For Create 
+  Print #hFile, "This package was debianized by " & Project.Maintainer & " <" & Project.Address & "> on"
+  Print #hFile, Format$(Date, "ddd, dd mmm yyyy hh:nn:ss") & "+0000"
+  Print #hFile
+  Print #hFile, "Copyright Holder: " & Project.Maintainer & " <" & Project.Address & ">"
+  Print #hFile
+  Print #hFile, "License:"
+  Print #hFile
+  Print #hFile, If(Project.License, Project.License, "GNU General Public License") 
+  Close #hFile
+  
+  'debian/changelog
+  hFile = Open sPackagePath &/ "debian/changelog" For Create 
+  Print #hFile, ChangelogToDebChangelog(sPackageName)
+  Close #hFile
+
+  'debian/compat
+  hFile = Open sPackagePath &/ "debian/compat" For Create 
+  Print #hFile, "7"
+  Close #hFile
+    
+  'debian/control
+  hFile = Open sPackagePath &/ "debian/control" For Create
+  Print #hFile, "Source: "; sPackageName
+  Print #hFile, "Section: contrib/"; Project.Groups[sSys]
+  Print #hFile, "Priority: optional"
+  Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
+  Print #hFile, "Build-Depends: debhelper (>= 7)"
+  Print #hFile, "Standards-Version: 3.9.2"
+  Print #hFile
+  Print #hFile, "Package: "; sPackageName
+  Print #hFile, "Architecture: all"
+  Print #hFile, "Depends: "; $sPackageName;; "(>=";; $sVersion;; "), "; $sPackageName;; "(<<";; $sVersion; ")"; GetDependencies(aComp)
+  Print #hFile, "Description: This is the "; sSupport; " support for "; Project.Name
+  
+  
+  ' debian/rules
+  hFile = Open sPackagePath &/ "debian/rules" For Create
+  Output To #hFile
+  Print "#!/usr/bin/make -f"
+  Print
+  Print "build build-arch build-indep:"
+  Print
+  Print "clean:"
+  Print "\tdh_testdir"
+  Print "\tdh_clean"
+  Print
+  Print "install: build"
+  Print "\tdh_testdir"
+  Print "\tdh_testroot"
+  Print "\tdh_prep"
+  Print
+  Print "binary-arch: install"
+  Print
+  Print "binary-indep: install"
+  Print "\tdh_testdir"
+  Print "\tdh_testroot"
+  Print "\tdh_install"
+  Print "\tdh_installdocs"
+  Print "\tdh_installchangelogs"
+  Print "\tdh_compress"
+  Print "\tdh_fixperms"
+  Print "\tdh_installdeb"
+  Print "\tdh_gencontrol"
+  Print "\tdh_md5sums"
+  Print "\tdh_builddeb"
+  Print
+  Print "binary: binary-indep binary-arch"
+  Print ".PHONY: build clean binary-indep binary-arch binary install"
+  Print
+  Output To Default
+  Close #hFile
+  Try Shell "chmod +x " & Shell(sPackagePath &/ "debian/rules") Wait
+
+  ' Step 4. Build package
+
+  AddLog(("Creating package..."))
+  'sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
+  'sCmd = "fakeroot dpkg-buildpackage -d"
+  sCmd = "dpkg-buildpackage -d -rfakeroot"
+  'Shell sCmd Wait
+  RunCommand(sCmd, sPackagePath)
+  
+  Dec Application.Busy
+
+  If Process.LastValue > 2 Then Error.Raise(("'dpkg-buildpackage' has failed."))
+
+  Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
+  Try Shell "rm -f " & Shell$(Path) &/ "*.dsc.asc" Wait 
+
+End
+
+Private Sub ChangelogToDebChangelog(sPackageName As String) As String
  
   Dim aLine As String[]
   Dim sLine As String
@@ -795,7 +972,7 @@ Private Sub ChangelogToDebChangelog() As String
     If Left$(sLine, 1) = "*" Then 
       If sDate <> "" Then
         'Debian packages don't accept an empty changelog line for the release:
-        If previousLine = $sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n" Then 
+        If previousLine = sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n" Then 
           debChangelog = debChangelog & "  * New release version\n"
         Endif   
         debChangelog = debChangelog & "\n -- " & Project.Maintainer & " <" & Project.Address & ">  " & sDate & "\n\n"
@@ -804,7 +981,7 @@ Private Sub ChangelogToDebChangelog() As String
       sDate = sbits[1] & ", " & sbits[3] & " " & sbits[2] & " " & sbits[4] & " 12:00:00 +0000"
       'sVersion = GetDebVersion()
       sVersion = $sVersion & "-1"
-      previousLine = $sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n"
+      previousLine = sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n"
       debChangelog = debChangelog & previousLine
     Else 
       If Trim$(sLine) <> "" Then
@@ -821,7 +998,7 @@ Private Sub ChangelogToDebChangelog() As String
 End
 
 
-Private Function MakeRpmPackage(sSys As String) 
+Private Function MakeRpmPackage(sSys As String)
 
   Dim sSrc As String
   Dim sDir As String
