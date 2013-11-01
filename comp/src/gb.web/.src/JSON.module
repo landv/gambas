@@ -2,8 +2,12 @@
 
 Export
 
+'Property UseNull As Boolean
+'Public {Null} As Variant
+
 Private $sStr As String
 Private $iPos As Integer
+'Private $bUseNull As Boolean
 
 Private Sub GetChar() As String
   
@@ -155,7 +159,11 @@ Private Sub ReadValue() As Variant
   Else If sCar = "-" Or If IsDigit(sCar) Then
     Return ReadNumber(sCar)
   Else If sCar = "null" Then
-    Return Null
+    'If $bUseNull Then
+    '  Return {Null}
+    'Else
+      Return Null
+    'Endif
   Else If sCar = "true" Then
     Return True
   Else If sCar = "false" Then
@@ -251,3 +259,16 @@ Public Sub Encode(Value As Variant) As String
   Return $sStr
   
 End
+
+' Private Function UseNull_Read() As Boolean
+' 
+'   Return $bUseNull
+' 
+' End
+' 
+' Private Sub UseNull_Write(Value As Boolean)
+' 
+'   $bUseNull = Value
+'   If Value And If IsNull({Null}) Then {Null} = VarPtr({Null})
+' 
+' End

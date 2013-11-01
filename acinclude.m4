@@ -64,7 +64,7 @@ AC_DEFUN([GB_PRINT_MESSAGES],
 
 AC_DEFUN([GB_INIT_AUTOMAKE],
 [
-  AM_INIT_AUTOMAKE($1, 3.5.0)
+  AM_INIT_AUTOMAKE($1, 3.5.90)
   m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES(yes)])
   ##AM_SILENT_RULES([yes])
   AC_CONFIG_HEADER([config.h])
@@ -80,9 +80,9 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
   AC_DEFINE(GAMBAS_MINOR_VERSION, 5, Gambas minor version)
 
   AC_DEFINE(GAMBAS_VERSION_STRING, "3", Gambas version string)
-  AC_DEFINE(GAMBAS_FULL_VERSION_STRING, "3.4", Gambas full version string)
+  AC_DEFINE(GAMBAS_FULL_VERSION_STRING, "3.5", Gambas full version string)
 
-  AC_DEFINE(GAMBAS_FULL_VERSION, 0x03050000, [Full Gambas version])
+  AC_DEFINE(GAMBAS_FULL_VERSION, 0x03050090, [Full Gambas version])
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x03050000, [Gambas bytecode version])
   AC_DEFINE(GAMBAS_PCODE_VERSION_MIN, 0x03000000, [Minimum Gambas bytecode version])
 

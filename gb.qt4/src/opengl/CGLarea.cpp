@@ -23,6 +23,7 @@
 
 #define __CGLAREA_CPP
 
+#include "gb.image.h"
 #include "CGLarea.h"
 
 //#include "gl.h"
@@ -179,12 +180,18 @@ void GLarea::paintGL()
 {
 	static bool CleanupOnFirstShow = 0;
 	
+	uint color;
 	if (!CleanupOnFirstShow)
 	{
 		// clear to avoid garbage
-		CleanupOnFirstShow = true;
-		//qglClearColor(Qt::black);
+		color = QT.GetBackgroundColor(_area);
+		if (color == GB_COLOR_DEFAULT)
+			color = 0;
+
+		qglClearColor(QColor((QRgb)color));
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		CleanupOnFirstShow = true;
 	}
 	
 	GB.Raise(_area, EVENT_Draw, 0);

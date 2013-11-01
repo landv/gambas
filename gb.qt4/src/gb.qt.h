@@ -131,6 +131,7 @@ typedef
 		void (*Link)(QObject *, void *);
 		void *(*GetLink)(QObject *);
 		QPainter *(*GetCurrentPainter)();
+		uint (*GetBackgroundColor)(void *);
 		void *_null;
 		}
 	QT_INTERFACE;

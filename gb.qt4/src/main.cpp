@@ -1055,6 +1055,7 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)QT_Link,
 	(void *)QT_GetLink,
 	(void *)PAINT_get_current,
+	(void *)CWIDGET_get_background,
 	NULL
 };
 
