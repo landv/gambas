@@ -561,9 +561,8 @@ MAKE_PACKAGE:
       MakeDebSupportPackage(sSys, sSupport, aPackage)
       
     Case "slackware"
+      MakeTgzSupportPackage(sSys, sSupport, aPackage)
    
-    Case "autotools"
-       
     Case "archlinux"
       MakeArchSupportPackage(sSys, sSupport, aPackage)
       
@@ -705,7 +704,7 @@ Private Function MakeDebPackage(sSys As String)
   If Project.Type = Project.TYPE_NORMAL Then
     hFile = Open sPackagePath &/ "debian/menu" For Create 
     Print #hFile, "?package("; sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
-    Print #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
+    Print #hFile, "title=\""; IIf(Project.Title, Project.Title, Project.Name); "\"\\" 
     Print #hFile, "command=\"/usr/bin/"; sPackageName; "\"\\"
     Print #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
     Close #hFile
@@ -1144,7 +1143,7 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "%define release "; sRelease
   
   Print #hFile
-  Print #hFile, "Summary: " & IIf(Project.Title, Project.Title, "Gambas project " & Project.Name)
+  Print #hFile, "Summary: " & IIf(Project.Title, Project.Title, Project.Name)
   Print #hFile, "Name: %{name}"
   Print #hFile, "Version: %{version}"
   Print #hFile, "Release: %{release}"
@@ -1476,7 +1475,7 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "%define release "; sRelease
   
   Print #hFile
-  Print #hFile, "Summary: "; sSupport; " support for "; IIf(Project.Title, Project.Title, "Gambas project " & Project.Name)
+  Print #hFile, "Summary: "; sSupport; " support for "; IIf(Project.Title, Project.Title, Project.Name)
   Print #hFile, "Name: %{name}"
   Print #hFile, "Version: %{version}"
   Print #hFile, "Release: %{release}"
@@ -1564,40 +1563,45 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
 
 End
 
-Private Sub PrintSlackDescRuler(hFile As File)
+Private Sub PrintSlackDescRuler(hFile As File, sPackageName As String)
   
   Dim sLine As String
   
-  sLine = Space(Len($sPackageName)) & "|-----handy-ruler" & String$(76, "-")
+  sLine = Space(Len(sPackageName)) & "|-----handy-ruler" & String$(76, "-")
   sLine = Left(sLine, 75) & "|"
   Print #hFile, sLine
   
 End
 
-Private Sub PrintSlackDesc(hFile As File, sLine As String)
+Private Sub PrintSlackDesc(hFile As File, sLine As String, sPackageName As String)
   
-  sLine = $sPackageName & ": " & sLine
+  sLine = sPackageName & ": " & sLine
   sLine = Left(sLine, 76)
   Print #hFile, sLine
   
 End
 
 
-Private Sub PrintSlackDescContents(hFile As File, sData As String, nLine As Integer)
+Private Sub PrintSlackDescContents(hFile As File, sData As String, nLine As Integer, sPackageName As String)
 
   Dim sLine As String
   Dim iPos As Integer
     
   While nLine
     If sData Then
-      sLine = Left(sData, 76 - Len($sPackageName) - 2)
-      iPos = RInStr(sLine, " ")
-      If iPos Then sLine = RTrim(Left(sLine, iPos - 1))
-      sData = LTrim(Mid$(sData, Len(sLine) + 1))
+      If Len(sData) > (76 - Len(sPackageName) - 2) Then
+        sLine = Left(sData, 76 - Len(sPackageName) - 2)
+        iPos = RInStr(sLine, " ")
+        If iPos Then sLine = RTrim(Left(sLine, iPos - 1))
+        sData = LTrim(Mid$(sData, Len(sLine) + 1))
+      Else
+        sLine = sData
+        sData = ""
+      Endif
     Else
       sLine = ""
     Endif
-    PrintSlackDesc(hFile, sLine)
+    PrintSlackDesc(hFile, sLine, sPackageName)
     Dec nLine
   Wend
   
@@ -1616,6 +1620,7 @@ Private Sub MakeTgzPackage(sSys As String)
   Dim sTempPackage As String
   Dim sPackage As String
   Dim sFile As String 
+  Dim sPackageName As String
       
   Inc Application.Busy
 
@@ -1625,6 +1630,7 @@ Private Sub MakeTgzPackage(sSys As String)
   $sFormatMinMax = $sFormatMin & $sFormatMax
   $sFormatEqual = $sFormatMinMax
 
+  sPackageName = $sPackageName
   sDistribution = "Slackware"
   sVendor = "Slackware"
   
@@ -1699,7 +1705,7 @@ Private Sub MakeTgzPackage(sSys As String)
       
       sIcon = Shell$($sName) & ".png"
     
-      hFile = Open sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" For Create
+      hFile = Open sBuildDir &/ "/usr/share/applications/" & sPackageName & ".desktop" For Create
     
       PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
     
@@ -1714,13 +1720,13 @@ Private Sub MakeTgzPackage(sSys As String)
   hFile = Open sBuildDir &/ "/install/slack-desc" For Create
   
   Print #hFile, File.Load("install/slack-desc-header");    
-  PrintSlackDescRuler(hFile)
-  PrintSlackDesc(hFile, Subst("&1 &2 &3", $sPackageName, $sVersion, Project.Title))
-  PrintSlackDesc(hFile, "")
+  PrintSlackDescRuler(hFile, sPackageName)
+  PrintSlackDesc(hFile, Subst("&1 &2: &3", sPackageName, $sVersion, If(Project.Title, Project.Title, Project.Name)), sPackageName)
+  PrintSlackDesc(hFile, "", sPackageName)
   sData = Replace($sDescription, "\n", " ")
-  PrintSlackDescContents(hFile, sData, 7)
-  PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer)
-  PrintSlackDesc(hFile, "EMail address: " & Project.Address)
+  PrintSlackDescContents(hFile, sData, 7, sPackageName)
+  PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer, sPackageName)
+  PrintSlackDesc(hFile, "EMail address: " & Project.Address, sPackageName)
 
   Close #hFile
   
@@ -1761,7 +1767,93 @@ Private Sub MakeTgzPackage(sSys As String)
   If Process.LastValue Then Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
 
   AddLog("")
-  sPackage = sPrefix & Subst("&1-&2-noarch-1.tgz", $sPackageName, $sVersion)
+  sPackage = sPrefix & Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
+  MoveFile(sTempPackage, Path &/ sPackage)
+  AddLog(sPackage)
+  
+End
+
+Private Sub MakeTgzSupportPackage((sSys) As String, sSupport As String, aComp As String[])
+
+  Dim sDistribution As String
+  Dim sVendor As String
+  Dim sBuildDir As String
+  Dim hFile As File
+  Dim sPrefix As String
+  Dim sCmd As String
+  Dim sData As String
+  Dim sTempPackage As String
+  Dim sPackage As String
+  Dim sPackageName As String
+      
+  Inc Application.Busy
+
+  $sFormatSingle = "&1\n"
+  $sFormatMin = "&1 >= &2\n"
+  $sFormatMax = "&1 < &3\n"
+  $sFormatMinMax = $sFormatMin & $sFormatMax
+  $sFormatEqual = $sFormatMinMax
+
+  sPackageName = $sPackageName & "-" & sSupport
+  sDistribution = "Slackware"
+  sVendor = "Slackware"
+  
+  ' 1. Create the temporary build directory
+
+  AddLog(("Making build directory."))
+
+  sBuildDir = File.SetExt(Temp$("slackware"), "")
+  Shell "rm -rf " & Shell(sBuildDir) Wait
+  Mkdir sBuildDir
+  Try Mkdir sBuildDir &/ "install"
+  
+  ' 5. Description file
+
+  hFile = Open sBuildDir &/ "/install/slack-desc" For Create
+  
+  Print #hFile, File.Load("install/slack-desc-header");    
+  PrintSlackDescRuler(hFile, sPackageName)
+  PrintSlackDesc(hFile, Subst("&1 &2: &3", sPackageName, $sVersion, sSupport & " support for " & IIf(Project.Title, Project.Title, Project.Name)), sPackageName)
+  PrintSlackDesc(hFile, "", sPackageName)
+  sData = sSupport & " support for " & IIf(Project.Title, Project.Title, Project.Name)
+  PrintSlackDescContents(hFile, sData, 7, sPackageName)
+  PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer, sPackageName)
+  PrintSlackDesc(hFile, "EMail address: " & Project.Address, sPackageName)
+
+  Close #hFile
+  
+  ' 6. Dependencies
+  
+  hFile = Open sBuildDir &/ "/install/slack-required" For Create
+  
+  Print #hFile, $sPackageName; " >= "; $sVersion
+  Print #hFile, $sPackageName; " <= "; $sVersion
+  Print #hFile, GetDependencies(aComp);
+  
+  Close #hFile
+  
+  ' 7. Create package
+  
+  AddLog(("Creating package...") & "\n")
+
+  sTempPackage = File.SetExt(Temp$("slackware"), "tgz")
+  sCmd = TAR_1_13_PROG & " --exclude=slackware.tgz --owner=root --group=root -c -z -f " & Shell$(sTempPackage) & " ."
+  RunCommand(sCmd, sBuildDir)
+  ' AddLog(sCmd)
+  ' $sOutput = ""
+  ' $bEnd = FALSE
+  ' SHELL "(cd " & SConv(Shell$(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ 'TO sOutput
+  ' REPEAT
+  '   SLEEP 0.01 
+  '   WAIT
+  ' UNTIL $bEnd
+  
+  Dec Application.Busy
+
+  If Process.LastValue Then Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
+
+  AddLog("")
+  sPackage = sPrefix & Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
   MoveFile(sTempPackage, Path &/ sPackage)
   AddLog(sPackage)
   
