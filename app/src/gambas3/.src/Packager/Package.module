@@ -587,7 +587,7 @@ Private Function MakeDebPackage(sSys As String)
   Dim sPackageName As String
   Dim sPackagePath As String
   Dim aLine As String[]
-  Dim n As Integer
+  Dim N As Integer
       
   Inc Application.Busy
   
@@ -651,7 +651,7 @@ Private Function MakeDebPackage(sSys As String)
   
   'debian/changelog
   hFile = Open sPackagePath &/ "debian/changelog" For Create 
-  Print #hFile, ChangelogToDebChangelog(sPackageName)
+  Print #hFile, ChangelogToDebChangelog(sSys, sPackageName)
   Close #hFile
 
   'debian/compat
@@ -878,7 +878,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   
   'debian/changelog
   hFile = Open sPackagePath &/ "debian/changelog" For Create 
-  Print #hFile, ChangelogToDebChangelog(sPackageName)
+  Print #hFile, ChangelogToDebChangelog(sSys, sPackageName)
   Close #hFile
 
   'debian/compat
@@ -957,7 +957,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
 
 End
 
-Private Sub ChangelogToDebChangelog(sPackageName As String) As String
+Private Sub ChangelogToDebChangelog(sSys As String, sPackageName As String) As String
  
   Dim aLine As String[]
   Dim sLine As String
@@ -980,7 +980,11 @@ Private Sub ChangelogToDebChangelog(sPackageName As String) As String
       sbits = Split(Trim$(sLine), " ")
       sDate = sbits[1] & ", " & sbits[3] & " " & sbits[2] & " " & sbits[4] & " 12:00:00 +0000"
       'sVersion = GetDebVersion()
-      sVersion = $sVersion & "-1"
+      If sSys = "ubuntu" Then
+        sVersion = $sVersion & "-0ubuntu1"
+      Else
+        sVersion = $sVersion & "-1"
+      Endif
       previousLine = sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n"
       debChangelog = debChangelog & previousLine
     Else 
@@ -999,6 +1003,363 @@ End
 
 
 Private Function MakeRpmPackage(sSys As String)
+
+  Dim sSrc As String
+  Dim sDir As String
+  Dim sCmd As String
+  Dim hFile As File
+  Dim sArch As String
+  Dim sOutput As String
+  Dim sLang As String
+  Dim sPackage As String
+  Dim sIcon As String
+  Dim sDistribution As String
+  Dim sVendor As String
+  Dim sRelease As String
+
+  Inc Application.Busy
+
+  $sFormatSingle = ",&1"
+  $sFormatMin = ",&1 >= &2"
+  $sFormatMax = ",&1 < &3"
+  $sFormatMinMax = $sFormatMin & $sFormatMax
+  $sFormatEqual = $sFormatMinMax
+
+  Select Case sSys
+
+    Case "mageia"
+      sDistribution = "Mageia"
+      sVendor = "Mageia"
+      sRelease = "1mga"
+
+    Case "mandriva"
+      sDistribution = "Mandriva"
+      sVendor = "MandrivaSoft"
+      sRelease = "1mdv"
+
+    Case "fedora"
+      sDistribution = "Fedora"
+      sVendor = "Fedora"
+      sRelease = "1"
+
+    Case "suse"
+      sDistribution = "OpenSUSE"
+      sVendor = "Novell"
+      sRelease = "1suse"
+
+  End Select
+  
+    ' step 1, set up RPM dirs and macros if they're not there already
+
+  AddLog(("Initializing ~/RPM directory."))
+
+  For Each sCmd In ["RPM/", "RPM/BUILD/", "RPM/RPMS/", "RPM/SOURCES/", "RPM/SPECS/", "RPM/SRPMS/", "RPM/tmp/"]
+    Try Mkdir $sHome &/ sCmd
+  Next
+
+  hFile = Open $sHome &/ ".rpmmacros" For Create
+  Print #hFile, "%_topdir " & $sHome &/ "RPM"
+  Print #hFile, "%_tmppath " & $sHome &/ "RPM/tmp"
+    'PRINT #hFile, "%_signature gpg"
+    'PRINT #hFile, "%_gpg_name Mandrivalinux"
+    'PRINT #hFile, "%_gpg_path ~/.gnupg"
+  Print #hFile, "%packager "; Project.Maintainer & "<" & SConv(Project.Address) & ">"
+  Print #hFile, "%buildhost "; System.Host
+  Print #hFile, "%distribution "; sDistribution
+  Print #hFile, "%vendor "; If(Project.Vendor, Project.Vendor, sVendor)
+  Close #hFile
+
+    ' step 2, write source tarball (with bzip) to SOURCES dir
+
+  AddLog(("Creating source package."))
+
+  sSrc = $sHome &/ "RPM/SOURCES"
+
+  sDir = Project.Dir &/ ".icon"
+  Shell "rm -rf " & Shell$(sDir) Wait
+  Try Mkdir sDir
+
+    ' IF Project.Icon THEN
+    '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
+    ' ELSE
+    '   hIcon = Image.Load("img/32/gambas.png")
+    ' ENDIF
+
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 16).Save(sDir &/ "16.png")
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 32).Save(sDir &/ "32.png")
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sDir &/ "48.png")
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 64).Save(sDir &/ "64.png")
+
+  sArch = sSrc &/ Subst("&1-&2.tar.bz2", $sPackageName, $sVersion)
+  Project.MakeSourcePackageTo(sArch)
+
+  Shell "rm -rf " & Shell$(sDir) Wait
+
+  AddLog(("Creating .spec file."))
+
+  hFile = Open $sHome &/ "RPM/SPECS" &/ $sPackageName & ".spec" For Create
+
+  Print #hFile, "%define name " & $sPackageName
+  Print #hFile, "%define version " & $sVersion
+  Print #hFile, "%define release "; sRelease
+  
+  Print #hFile
+  Print #hFile, "Summary: " & IIf(Project.Title, Project.Title, "Gambas project " & Project.Name)
+  Print #hFile, "Name: %{name}"
+  Print #hFile, "Version: %{version}"
+  Print #hFile, "Release: %{release}"
+  Print #hFile, "Source0: %{name}-%{version}.tar.bz2"
+  Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
+  Print #hFile, "Group: " & Project.Groups[sSys]
+  Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
+  Print #hFile, "Prefix: %{_prefix}"
+    'PRINT #hFile, "BuildRequires: gambas2-ide"
+  Print #hFile, "BuildArch: noarch"
+
+  Print #hFile, "Requires: gambas"; System.Version; "-runtime >= "; MIN_VERSION; ",gambas"; System.Version; "-runtime < "; MAX_VERSION;
+
+  If Project.Type <> Project.TYPE_COMPONENT Then 
+  
+    Print #hFile, GetDependencies();
+    Print #hFile, GetExtraDependencies(sSys);
+  
+  Endif
+
+  Print #hFile
+
+  Print #hFile, "AutoReqProv: no"
+
+  Print #hFile, "\n%description\n" & $sDescription & "\nThis program is written in Gambas, so you will need Gambas to be installed."
+
+  Print #hFile, "\n%prep"
+  Print #hFile, "rm -rf %{buildroot}"
+
+  Print #hFile, "\n%setup -q -n " & Shell$($sName)
+
+  If Project.Type = Project.TYPE_COMPONENT Then
+
+    ' Components must be installed in Gambas prefix, which is not known at package creation time.
+    ' How can we do that? Hardcode installation path according to the distribution?
+
+    Print #hFile, "\n%build"
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
+     
+    Print #hFile, "\n%install"
+    Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
+    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1", "cp -R --preserve=timestamp .hidden/&1 %{buildroot}/&2/&1")
+    Print #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version
+    Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas" & System.Version; "/"; Shell$($sName); ".gambas"
+    Print #hFile, "install -p .component %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"
+
+    Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/info"
+    Print #hFile, "install -p .info %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
+    Print #hFile, "install -p .list %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
+
+    If Exist(Project.Dir &/ ".hidden/control") Then 
+      Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName)
+      Print #hFile, "install -p "; ".hidden/control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Shell$($sName)
+    Endif
+
+  Else 
+  
+    Print #hFile, "\n%build"
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & "\ngba"; System.Version
+  
+    Print #hFile, "\n%install"
+  
+    Print #hFile, "install -d %{buildroot}/%{_bindir}"
+    If Project.Type = Project.TYPE_NORMAL Then
+      Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
+    Else ' TYPE_LIBRARY
+      Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName) & ".gambas"
+    Endif
+    
+    Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
+    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1", "cp -R --preserve=timestamp .hidden/&1 %{buildroot}/&2/&1")
+    
+    If Project.Type = Project.TYPE_NORMAL
+    
+      sIcon = Shell$($sName) & ".png"
+    
+      ' NOTE: There are explicit references to /usr/share.
+      '       I must find a way to use the rpm macros instead.
+    
+      Select Case sSys
+    
+        Case "mandriva", "mageia"
+    
+          Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
+          Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
+          Print #hFile, "install -d %{buildroot}/%{_liconsdir}"
+          Print #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ sIcon
+          Print #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ sIcon
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ sIcon
+  
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
+        
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
+        
+          Print #hFile, "EOF"
+          Print #hFile, "\n%post"
+          Print #hFile, "%{update_menus}"
+    
+          Print #hFile, "\n%postun"
+          Print #hFile, "%{clean_menus}"
+    
+        Case "fedora"
+    
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+    
+          Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+          
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-RedHat-Extra;")
+          
+          Print #hFile, "EOF"
+    
+        Case "suse"
+    
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+    
+          Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+          
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon)
+          
+          Print #hFile, "EOF"
+          
+      End Select
+      
+    Endif
+    
+  Endif
+
+  Print #hFile, "\n%clean"
+  Print #hFile, "rm -rf %{buildroot}"
+
+  Print #hFile, "\n%files"
+  Print #hFile, "%defattr(-,root,root)"
+  
+  If Project.Type = Project.TYPE_COMPONENT Then
+  
+    Print #hFile, "%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".gambas"
+    Print #hfile, "%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"  
+    
+    Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
+    Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
+
+    If Exist(Project.Dir &/ ".hidden/control") Then 
+      Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName); "/*.png"
+    Endif
+    Print #hFile, GetExtraFilesList(sSys, "", "&2");
+
+  Else
+  
+    If Project.Type = Project.TYPE_NORMAL Then
+      Print #hFile, "%{_bindir}" &/ Shell$($sName)
+    Else ' TYPE_LIBRARY
+      Print #hFile, "%{_bindir}" &/ Shell$($sName) & ".gambas"
+    Endif
+    
+    Print #hFile, GetExtraFilesList(sSys, "", "&2");
+  
+    If Project.Type = Project.TYPE_NORMAL Then
+      
+      Select Case sSys
+    
+        Case "mandriva", "mageia"
+    
+          Print #hFile, "/%{_miconsdir}" &/ sIcon
+          Print #hFile, "/%{_iconsdir}" &/ sIcon
+          Print #hFile, "/%{_liconsdir}" &/ sIcon
+                'PRINT #hFile, "/%{_menudir}" &/ sName
+          Print #hFile, "/%{_datadir}/applications/%{name}.desktop"
+        
+        Case "fedora"
+    
+          Print #hFile, "%{_datadir}/pixmaps" &/ sIcon
+          Print #hFile, "%{_datadir}/applications/%{name}.desktop"
+    
+        Case "suse"
+    
+          Print #hFile, "%{_datadir}/pixmaps" &/ sIcon
+          Print #hFile, "%{_datadir}/applications/%{name}.desktop"
+    
+      End Select
+      
+    Endif
+    
+  Endif
+
+  Print #hFile, "\n%changelog\n"
+  Print #hFile, ChangeLog
+
+  Close #hFile
+
+    ' and step 4.... build that sucker.
+
+  AddLog(("Creating package...") & "\n")
+
+  sLang = System.Language
+  System.Language = "C"
+
+  sCmd = RPMBUILD_PROG & " -ba " & Shell$($sHome &/ "RPM/SPECS" &/ $sPackageName & ".spec")
+  AddLog(sCmd)
+
+    'sTemp = Temp$
+  $sOutput = ""
+  $bEnd = False
+  Shell sCmd & " 2>&1" Wait For Read As "Process" 'TO sOutput
+    ' REPEAT
+    '   SLEEP 0.01
+    '   WAIT
+    ' UNTIL $bEnd
+  
+  AddLog("")
+  
+  sOutput = Replace($sOutput, "\r", "")
+  Try sOutput = DConv(sOutput)
+
+  Try Kill $sHome &/ ".rpmmacros"
+
+  System.Language = sLang
+
+  Dec Application.Busy
+
+  If Process.LastValue Then Error.Raise(("'rpmbuild' has returned the following error code:") & " " & Process.LastValue)
+
+  For Each sCmd In Split(sOutput, "\n")
+    If Left(sCmd, 6) = "Wrote:" And Right$(sCmd, 10) = "noarch.rpm" Then
+
+      sPackage = Subst("&1-&2-&3.noarch.rpm", $sPackageName, $sVersion, sRelease)
+            ' IF sSys = "debian" THEN
+            '   SHELL "cd " & Shell$(sHome &/ "RPM/RPMS/noarch") & "; fakeroot " & ALIEN_PROG & " --to-deb -k " & Shell$(sPackage) WAIT
+            '   sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+            '   IF NOT Exist(sHome &/ "RPM/RPMS/noarch" &/ sPackage) THEN Error.Raise("alien command has failed")
+            ' ENDIF
+      MoveFile($sHome &/ "RPM/RPMS/noarch" &/ sPackage, Path &/ sPackage)
+      AddLog(sPackage)
+
+      sPackage = Subst("&1-&2-&3.src.rpm", $sPackageName, $sVersion, sRelease)
+            ' IF sSys = "debian" THEN
+            '   SHELL "cd " & Shell$(sHome &/ "RPM/SRPMS") & "; fakeroot alien --to-deb -k " & Shell$(sPackage) WAIT
+            '   sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+            '   IF NOT Exist(sHome &/ "RPM/SRPMS" &/ sPackage) THEN Error.Raise("alien command has failed")
+            '   MoveFile(sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ File.BaseName(sPackage) & ".src.deb")
+            ' ELSE
+      MoveFile($sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ sPackage)
+      AddLog(sPackage)
+            ' ENDIF
+
+    End If
+  Next
+
+End
+
+Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp As String[])
 
   Dim sSrc As String
   Dim sDir As String
