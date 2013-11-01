@@ -302,7 +302,7 @@ static void stop_process_after(CPROCESS *_object)
 	{
 		prepare_child_error(THIS);
 		exit_process(THIS);
-		OBJECT_detach((OBJECT *)THIS);
+		//OBJECT_detach((OBJECT *)THIS);
 	}
 
 	/* Vidage du tampon d'erreur */
@@ -326,10 +326,13 @@ static void stop_process_after(CPROCESS *_object)
 					break;
 			}
 		}
+
+		exit_process(THIS);
 	}
 
-	exit_process(THIS);
-
+	#ifdef DEBUG_ME
+	fprintf(stderr, "Raising Kill event for %p: parent = %p  can raise = %d\n", THIS, OBJECT_parent(THIS), GB_CanRaise(THIS, EVENT_Kill));
+	#endif
 	GB_Raise(THIS, EVENT_Kill, 0);
 
 	OBJECT_detach((OBJECT *)THIS);
@@ -860,7 +863,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	int sigfd;
 
 	#ifdef DEBUG_ME
-	printf("Waiting for %d\n", process->pid);
+	fprintf(stderr, "Waiting for %d\n", process->pid);
 	#endif
 
 	OBJECT_REF(process);
@@ -909,7 +912,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	sigprocmask(SIG_SETMASK, &old, NULL);*/
 
 	#ifdef DEBUG_ME
-	printf("Got it !\n");
+	fprintf(stderr, "Waiting for: got it !\n");
 	#endif
 }
 
@@ -939,7 +942,7 @@ END_METHOD
 BEGIN_METHOD_VOID(Process_free)
 
 	#ifdef DEBUG_ME
-	printf("Process_free %p\n", THIS);
+	fprintf(stderr, "Process_free %p\n", THIS);
 	#endif
 
 	exit_process(THIS);
