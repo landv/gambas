@@ -881,21 +881,6 @@ Public Sub MoveBelow() As Boolean
   
 End
 
-
-' BEGIN_METHOD_VOID(CTREEVIEW_above)
-' 
-'   return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->itemAbove()) : 0);
-' 
-' END_METHOD
-' 
-' 
-' BEGIN_METHOD_VOID(CTREEVIEW_below)
-' 
-'   return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->itemBelow()) : 0);
-' 
-' END_METHOD
-' 
-' 
 Public Sub MoveChild() As Boolean
   
   Dim sKey As String

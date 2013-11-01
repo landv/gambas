@@ -388,7 +388,7 @@ Public Sub UpdateSize()
     svwWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     
-    panWorkspace.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground)
+    imgBackground.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground) 
     imgBackground.Show
     panWorkspace.Border = Border.None
 
