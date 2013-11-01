@@ -50,16 +50,9 @@ int EXPORT GB_INIT(void)
 	
 	if (!comp)
 	{
-		comp = "gb.gtk.opengl";
-	
-		env = getenv("KDE_FULL_SESSION");
-	
-		if (env && !strcmp(env, "true"))
-		{
-			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4.opengl";
-		}
+		// GB_GUI should be set by gb.gui
+		fprintf(stderr, "gb.gui.opengl: error: no component specified in GB_GUI environment variable");
+		exit(1);
 	}
 		
 	if (GB.Component.Load(comp))
