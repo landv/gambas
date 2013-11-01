@@ -163,6 +163,7 @@ Private Sub MoveEditor()
     $hEditor.Font = Me.Font
     $hEditor.Show
     $hPanel.Show
+    $hPanel.Raise
     
     'Debug $iRow;; $iCol; " : ";; .Width;; .Height; " / "; $hEditor.Width;; $hEditor.Height
   End With

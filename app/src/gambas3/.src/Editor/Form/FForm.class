@@ -3786,7 +3786,10 @@ Private Sub CheckHovered(Optional hCtrl As Control)
   
   Dim X, Y As Integer
   Dim hCont As Container
+  Dim oCont As Object
   Dim hCCtrl As CControl
+  Dim XX As Integer
+  Dim YY As Integer
   
   If Not hCtrl Then  
     hCont = RootControl.Control
@@ -3800,8 +3803,13 @@ Private Sub CheckHovered(Optional hCtrl As Control)
     Y = Mouse.ScreenY
   
     Do
+      oCont = hCont
       'Debug hCont;; hCont.Tag
-      hCtrl = hCont.FindChild(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY)
+      XX = X - hCont.ScreenX - hCont.ClientX
+      Try XX += oCont.ScrollX
+      YY = Y - hCont.ScreenY - hCont.ClientY
+      Try YY += oCont.ScrollY
+      hCtrl = hCont.FindChild(XX, YY)
       If Not hCtrl Then
         hCtrl = hCont
         Break

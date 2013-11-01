@@ -215,6 +215,7 @@ COMPONENT *COMPONENT_create(const char *name)
 
 		path = FILE_buffer();
 		sprintf(path, LIB_PATTERN, COMPONENT_path, name);
+		//fprintf(stderr, "COMPONENT_create: %s\n", path);
 
 		if (FILE_exist(path))
 			comp->library = LIBRARY_create(name);

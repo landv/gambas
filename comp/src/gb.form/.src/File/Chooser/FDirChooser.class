@@ -1037,7 +1037,7 @@ Public Sub fvwChoose_Menu()
 
   Dim sFile As String = fvwChoose.Current
   
-  If sFile Like "*.tar.gz" Or If sFile Like "*.tar.bz2" Or If sFile Like "*.tgz" Or If sFile Like "*.tar" Then
+  If sFile Like "*.tar.gz" Or If sFile Like "*.tar.bz2" Or If sFile Like "*.tgz" Or If sFile Like "*.tar" Or If sFile Like "*.zip" Then
     mnuUncompress.Show
   Else
     mnuUncompress.Hide
@@ -1103,6 +1103,8 @@ Public Sub mnuUncompress_Click()
   Dim sPath As String
   Dim sShow As String
   Dim hTreeView As TreeView
+  Dim aOutput As String[]
+  Dim iPos As Integer
   
   Inc Application.Busy
   
@@ -1112,6 +1114,46 @@ Public Sub mnuUncompress_Click()
       Shell "cd " & Shell(fvwChoose.Dir) & ";tar tf " & Shell$(fvwChoose.Current) To sOutput
   
       For Each sOutput In Split(Trim(sOutput), "\n")
+        
+        If Right(sOutput) = "/" Then 
+          sOutput = Left$(sOutput, -1)
+          If Not sShow Then sShow = sOutput
+        Endif
+        sPath = fvwChoose.Dir &/ sOutput
+        
+        If Exist(sPath) Then
+          
+          If iMsg <> 1 Then
+            Application.Busy = 0
+            iMsg = Message.Warning("<b>" & sOutput & "</b><p>" & ("This file or directory already exists."), ("Overwrite all"), ("Overwrite"), ("Cancel"))
+            If iMsg = 3 Then Return
+            Inc Application.Busy
+          Endif
+          
+          Shell "rm -rf " & Shell$(fvwChoose.Dir &/ sOutput) Wait
+          
+        Endif
+        
+      Next
+      
+    Case Like "*.zip"
+      
+      Shell "cd " & Shell(fvwChoose.Dir) & ";unzip -l " & Shell$(fvwChoose.Current) To sOutput
+      
+      aOutput = Split(sOutput, "\n")
+      If aOutput.Count > 2 Then iPos = InStr(aOutput[1], "Name")
+      If iPos = 0 Then
+        Application.Busy = 0
+        Message.Warning(("Cannot list archive contents"))
+        Return
+      Endif
+      
+      aOutput.Remove(0, 2)
+      Try aOutput.Remove(aOutput.Max - 1, 2)
+      
+      For Each sOutput In aOutput
+        
+        sOutput = Trim(Mid$(sOutput, iPos))
         
         If Right(sOutput) = "/" Then 
           sOutput = Left$(sOutput, -1)
@@ -1155,6 +1197,9 @@ Public Sub mnuUncompress_Click()
       '
     Case Like "*.tar"
       Shell "cd " & Shell(fvwChoose.Dir) & ";tar xf " & Shell$(fvwChoose.Current) Wait
+      
+    Case Like "*.zip"
+      Shell "cd " & Shell(fvwChoose.Dir) & ";unzip -q " & Shell$(fvwChoose.Current) Wait
       
   End Select
   

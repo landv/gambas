@@ -25,6 +25,10 @@
 
 #include "main.h"
 
+#define USE_NOTHING 0
+#define USE_GB_QT4 1
+#define USE_GB_GTK 2
+
 GB_INTERFACE GB EXPORT;
 
 // Prevents gbi3 from complaining
@@ -38,21 +42,23 @@ char *GB_INCLUDE EXPORT = "gb.qt4";
 
 int EXPORT GB_INIT(void)
 {
-	const char *comp = NULL;
+	int use = USE_NOTHING;
 	char *env;
-	
+	const char *comp;
+	const char *comp2;
+
 	env = getenv("GB_GUI");
 	if (env)
 	{
-		if (!strcmp(env, "gb.qt4"))
-			comp = "gb.qt4";
-		else if (!strcmp(env, "gb.gtk"))
-			comp = "gb.gtk";
+		if (strcmp(env, "gb.qt4") == 0)
+			use = USE_GB_QT4;
+		else if (strcmp(env, "gb.gtk") == 0)
+			use = USE_GB_GTK;
 	}
 	
-	if (!comp)
+	if (use == USE_NOTHING)
 	{
-		comp = "gb.gtk";
+		use = USE_GB_GTK;
 		
 		env = getenv("KDE_FULL_SESSION");
 		
@@ -60,13 +66,28 @@ int EXPORT GB_INIT(void)
 		{
 			env = getenv("KDE_SESSION_VERSION");
 			if (env && !strcmp(env, "4"))
-				comp = "gb.qt4";
+				use = USE_GB_QT4;
 		}
 	}
-		
+
+	comp = use == USE_GB_QT4 ? "gb.qt4" : "gb.gtk";
+
 	if (GB.Component.Load(comp))
-		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
+	{
+		comp2 = use == USE_GB_QT4 ? "gb.gtk" : "gb.qt4";
+
+		if (GB.Component.Load(comp2))
+		{
+			fprintf(stderr, "gb.gui: error: unable to find any GUI component. Please install the 'gb.qt4' or 'gb.gtk' component\n");
+			exit(1);
+		}
+
+		fprintf(stderr, "gb.gui: warning: '%s' component not found, using '%s' instead\n", comp, comp2);
+		comp = comp2;
+	}
   
+  setenv("GB_GUI", comp, TRUE);
+
   return 0;
 }
 
