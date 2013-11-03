@@ -32,8 +32,8 @@
 #include <string>
 #include <ctype.h>
 
-#define DEFAULT_FONT_SIZE 20
-#define DEFAULT_FONT "DejaVuSans.ttf"
+#define DEFAULT_FONT_SIZE 12
+#define DEFAULT_FONT "_default.bdf"
 /*
 #ifndef TTF_STYLE_STRIKETHROUGH
 #define TTF_STYLE_STRIKETHROUGH	0x08
