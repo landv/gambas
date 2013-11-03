@@ -67,12 +67,12 @@ _POP_GENERIC:
 
 	// The first time we access a symbol, we must not be virtual to find it
 	val = &SP[-1];
-	if (LIKELY(defined && object && !VALUE_is_super(val)))
+	if (defined && object && !VALUE_is_super(val))
   	index = CLASS_find_symbol(val->_object.class, name);
 	else
   	index = CLASS_find_symbol(class, name);
 
-  if (UNLIKELY(index == NO_SYMBOL))
+  if (index == NO_SYMBOL)
   {
     if (class->special[SPEC_UNKNOWN] == NO_SYMBOL)
     {
@@ -95,7 +95,7 @@ _POP_GENERIC:
 
       if (object == NULL)
       {
-        if (UNLIKELY(!class->auto_create))
+        if (!class->auto_create)
           THROW(E_DYNAMIC, CLASS_get_name(class), name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 4;
@@ -142,7 +142,7 @@ _POP_GENERIC:
 
       if (object == NULL)
       {
-        if (UNLIKELY(!class->auto_create))
+        if (!class->auto_create)
           THROW(E_DYNAMIC, CLASS_get_name(class), name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 5;
@@ -240,7 +240,7 @@ _POP_PROPERTY_2:
 
   if (desc->property.native)
   {
-    if (UNLIKELY(EXEC_call_native(desc->property.write, object, 0, &SP[-2])))
+    if (EXEC_call_native(desc->property.write, object, 0, &SP[-2]))
       PROPAGATE();
   }
   else
@@ -315,16 +315,9 @@ __POP_GENERIC:
 
 	defined = EXEC_object(val, &class, &object);
 	
-	// The first time we access a symbol, we must not be virtual to find it
-	if (LIKELY(defined && object && !VALUE_is_super(val)))
-	{
-		//fprintf(stderr, "%s -> %s\n", class->name, val->_object.class->name);
-  	class = val->_object.class;
-  }
-	
 	fast = 3;
-	
-	if (LIKELY(defined))
+
+	if (defined)
 	{
 		if (class->quick_array == CQA_ARRAY)
 			fast = 1;
@@ -332,6 +325,13 @@ __POP_GENERIC:
 			fast = 2;
 	}
 
+	// The first time we access a symbol, we must not be virtual to find it
+	if (defined && object && !VALUE_is_super(val))
+	{
+		//fprintf(stderr, "%s -> %s\n", class->name, val->_object.class->name);
+  	class = val->_object.class;
+  }
+	
 	*PC |= fast << 6;
 	
 	goto __POP_ARRAY_2;
@@ -349,7 +349,7 @@ __POP_QUICK_ARRAY:
 	VALUE_conv(&val[0], type);
 	VALUE_conv_integer(&val[1]);
 	
-	if (LIKELY(np == 2))
+	if (np == 2)
 	{
 		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
 	}
@@ -360,7 +360,7 @@ __POP_QUICK_ARRAY:
 		
 		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
 	}
-	if (UNLIKELY(data == NULL))
+	if (data == NULL)
 		PROPAGATE();
 	VALUE_write(val, data, type);
 	
@@ -376,7 +376,7 @@ __POP_QUICK_COLLECTION:
 	VALUE_conv_variant(&val[-1]);
 	VALUE_conv_string(&val[1]);
 	
-	if (UNLIKELY(GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1])))
+	if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
 		PROPAGATE();
 	
 	RELEASE_MANY(SP, 3);
@@ -397,7 +397,7 @@ __POP_ARRAY_2:
 	VALUE_copy(&val[0], &val[-1]);
 	VALUE_copy(&val[-1], &swap);
 
-	if (UNLIKELY(EXEC_special(SPEC_PUT, class, object, np, TRUE)))
+	if (EXEC_special(SPEC_PUT, class, object, np, TRUE))
 		THROW(E_NARRAY, CLASS_get_name(class));
 
 	POP(); /* free the object */
