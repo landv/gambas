@@ -765,7 +765,7 @@ Public Function GetHelpURL(Optional bShowFile As Boolean) As String
   
   If hComp Then
 
-    If hComp.Library Then
+    If hComp.Library Or If hComp.ThirdParty Then
       
       Return Subst("gambas://library/&1/&2/&3", Component, Class, Name)
 

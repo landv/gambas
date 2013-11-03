@@ -364,10 +364,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       hSymbol = hEditor.GetLastSymbolDesc()
     Endif
     If hSymbol Then 
-      If Not hSymbol.Component Or hSymbol.Component = CComponent.PROJECT_NAME Then
+      Try hComp = CComponent.All[hSymbol.Component]
+      If Not hSymbol.Component Or If hSymbol.Component = CComponent.PROJECT_NAME Then
         sHtml = hSymbol.GetHelpHTML()
         sUrl = "-" & sClass & "-" & sSymbol
-      Else If CComponent.All.Exist(hSymbol.Component) And If Not CComponent.All[hSymbol.Component].Library Then 
+      Else If hComp And If Not hComp.Library And If Not hComp.ThirdParty Then 
         sUrl = hSymbol.GetHelpURL()
       Else
         sUrl = hSymbol.Component & "-" & sClass & "-" & sSymbol
@@ -379,7 +380,8 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     Try hClass = CComponent.Classes[sSymbol]
     If hClass Then 
-      If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not CComponent.All[hClass.Component].Library Then
+      Try hComp = CComponent.All[hClass.Component]
+      If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not hComp.Library And If Not hComp.ThirdParty Then
         sUrl = hClass.GetHelpURL()
       Else 'If hClass.Help Then
         sHtml = hClass.GetHelpHTML()
@@ -401,7 +403,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_COMPONENT
     
     Try hComp = CComponent.All[sSymbol]
-    If hComp.Library Then
+    If hComp.Library Or If hComp.ThirdParty Then
       sUrl = sSymbol
       sHtml = hComp.GetHelpHTML()
     Else
