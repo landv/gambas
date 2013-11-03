@@ -2,12 +2,11 @@
 
 Export
 
-'Property UseNull As Boolean
-'Public {Null} As Variant
+Public {Null} As Variant
 
 Private $sStr As String
 Private $iPos As Integer
-'Private $bUseNull As Boolean
+Private $bUseNull As Boolean
 
 Private Sub GetChar() As String
   
@@ -88,8 +87,14 @@ End
 Private Sub ReadObject() As Collection
   
   Dim sCar As String
-  Dim cObject As New Collection
+  Dim cObject As Collection
   Dim sKey As String
+  
+  If $bUseNull Then
+    cObject = New JSONCollection
+  Else
+    cObject = New Collection
+  Endif
   
   Do
     sCar = ReadChar()
@@ -159,11 +164,7 @@ Private Sub ReadValue() As Variant
   Else If sCar = "-" Or If IsDigit(sCar) Then
     Return ReadNumber(sCar)
   Else If sCar = "null" Then
-    'If $bUseNull Then
-    '  Return {Null}
-    'Else
-      Return Null
-    'Endif
+    Return Null
   Else If sCar = "true" Then
     Return True
   Else If sCar = "false" Then
@@ -241,12 +242,15 @@ Private Sub WriteValue(vVal As Variant)
 End
 
 
-Public Sub Decode(JSONString As String) As Variant
+Public Sub Decode(JSONString As String, Optional bUseNull As Boolean) As Variant
   
   Dim vVal As Variant
   $sStr = JSONString
   $iPos = 1
+  $bUseNull = bUseNull
+  If bUseNull And If IsNull({Null}) Then {Null} = VarPtr({Null})
   vVal = ReadValue()
+  $bUseNull = False
   $sStr = ""
   Return vVal
   
@@ -259,16 +263,3 @@ Public Sub Encode(Value As Variant) As String
   Return $sStr
   
 End
-
-' Private Function UseNull_Read() As Boolean
-' 
-'   Return $bUseNull
-' 
-' End
-' 
-' Private Sub UseNull_Write(Value As Boolean)
-' 
-'   $bUseNull = Value
-'   If Value And If IsNull({Null}) Then {Null} = VarPtr({Null})
-' 
-' End

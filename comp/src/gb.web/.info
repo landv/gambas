@@ -59,14 +59,33 @@ M
 #JSON
 
 C
+Null
+V
+v
+
 Decode
 M
 v
-(JSONString)s
+(JSONString)s[(bUseNull)b]
 Encode
 M
 s
 (Value)v
+#JSONCollection
+Collection
+C
+_get
+m
+v
+(Key)s
+_put
+m
+
+(Value)v(Key)s
+_next
+m
+v
+
 #Request
 
 C
