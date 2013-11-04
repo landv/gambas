@@ -1066,7 +1066,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 		
 		case T_STRING:
 
-			if (stream->type == &STREAM_memory)
+			/*if (stream->type == &STREAM_memory)
 			{
 				ssize_t slen;
 				if (CHECK_strlen(stream->memory.addr + stream->memory.pos, &slen))
@@ -1074,9 +1074,8 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 				len = (int)slen;
 			}
 			else
-			{
-				len = read_length(stream);
-			}
+			{*/
+			len = read_length(stream);
 
 			if (len > 0)
 			{
