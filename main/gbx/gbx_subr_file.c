@@ -213,12 +213,19 @@ void SUBR_close(void)
 
 	if (stream->type == &STREAM_string)
 	{
+		char *buffer = stream->string.buffer;
+
 		RETURN->type = T_STRING;
-		RETURN->_string.addr = stream->string.buffer;
+		RETURN->_string.addr = buffer;
 		RETURN->_string.start = 0;
 		RETURN->_string.len = stream->string.size;
 
+		STRING_ref(buffer);
 		STREAM_close(stream);
+		STRING_free_later(buffer);
+
+		//fprintf(stderr, "buffer ref = %d\n", STRING_from_ptr(buffer)->ref);
+
 		SUBR_LEAVE();
 	}
 	else

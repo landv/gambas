@@ -46,15 +46,22 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 {
 	stream->string.buffer = NULL;
 	stream->common.available_now = TRUE;
+	stream->string.size = 0;
+	stream->string.pos = 0;
 
 	if (path && *path)
 	{
-		STRING_ref((char *)path);
-		stream->string.buffer = (char *)path;
+		if (mode & ST_WRITE)
+		{
+			stream->string.buffer = STRING_new(path, STRING_length(path));
+		}
+		else
+		{
+			stream->string.buffer = (char *)path;
+			STRING_ref((char *)path);
+		}
 		stream->string.size = STRING_length(path);
 	}
-
-	stream->string.pos = 0;
 
   return FALSE;
 }
@@ -94,9 +101,14 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
+	if ((stream->common.mode & ST_WRITE) == 0)
+		THROW(E_ACCESS);
+
 	stream->string.buffer = STRING_add(stream->string.buffer, buffer, len);
-	stream->string.pos = stream->string.size + len;
+
 	stream->string.size += len;
+	stream->string.pos = stream->string.size;
+
   return FALSE;
 }
 
