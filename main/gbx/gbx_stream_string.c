@@ -47,20 +47,47 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	stream->string.buffer = NULL;
 	stream->common.available_now = TRUE;
 
+	if (path && *path)
+	{
+		STRING_ref((char *)path);
+		stream->string.buffer = (char *)path;
+		stream->string.size = STRING_length(path);
+	}
+
+	stream->string.pos = 0;
+
   return FALSE;
 }
 
 
 static int stream_close(STREAM *stream)
 {
-	STRING_free(&stream->string.buffer);
+	STRING_unref(&stream->string.buffer);
   return FALSE;
 }
 
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-  return TRUE;
+  bool strip = FALSE;
+  int max;
+
+  max = stream->string.size - stream->string.pos;
+
+  if (len > max)
+  {
+    strip = TRUE;
+    len = max;
+    errno = 0;
+  }
+
+  if (len > 0)
+		memcpy(buffer, stream->string.buffer + stream->string.pos, len);
+
+  stream->string.pos += len;
+  STREAM_eff_read = len;
+
+  return strip;
 }
 
 #define stream_getchar NULL
@@ -68,19 +95,28 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
 	stream->string.buffer = STRING_add(stream->string.buffer, buffer, len);
+	stream->string.pos = stream->string.size + len;
+	stream->string.size += len;
   return FALSE;
 }
 
 
 static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  return TRUE;
+	int ipos = (int)pos;
+
+	if (pos != (int64_t)ipos || ipos < 0 || ipos > stream->string.size)
+		return TRUE;
+
+	stream->string.pos = ipos;
+	return FALSE;
 }
 
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {
-  return TRUE;
+	*pos = (int64_t)stream->string.pos;
+  return FALSE;
 }
 
 
@@ -92,8 +128,7 @@ static int stream_flush(STREAM *stream)
 
 static int stream_eof(STREAM *stream)
 {
-  //return (stream->memory.pos >= stream->memory.size);
-  return FALSE;
+  return (stream->string.pos >= stream->string.size);
 }
 
 

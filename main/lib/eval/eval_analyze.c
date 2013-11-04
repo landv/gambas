@@ -367,8 +367,12 @@ static void analyze(EVAL_ANALYZE *result)
 
 			case EVAL_TYPE_DATATYPE:
 				//state = Datatype;
+				if (PATTERN_is(pattern[-1], RS_OPEN))
+					type = EVAL_TYPE_RESERVED;
+
 				if (old_type != EVAL_TYPE_OPERATOR)
 					space_before = TRUE;
+				
 				break;
 
 			case EVAL_TYPE_IDENTIFIER:

@@ -647,6 +647,7 @@ bool TRANS_affectation(bool dup)
 	static TRANS_STATEMENT statement[] = {
 		//{ RS_NEW, TRANS_new },
 		{ RS_OPEN, TRANS_open },
+		{ RS_CLOSE, TRANS_close },
 		{ RS_SHELL, TRANS_shell },
 		{ RS_EXEC, TRANS_exec },
 		{ RS_RAISE, TRANS_raise },

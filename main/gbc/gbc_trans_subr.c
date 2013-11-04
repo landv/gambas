@@ -395,6 +395,23 @@ void TRANS_open(void)
 {
 	int mode = TS_MODE_READ;
 
+	if (TRANS_is(RS_PIPE))
+	{
+		TRANS_pipe();
+		return;
+	}
+	else if (TRANS_is(RS_MEMORY))
+	{
+		TRANS_memory();
+		return;
+	}
+	else if (TRANS_is(RS_STRING))
+	{
+		TRANS_open_string();
+		return;
+	}
+
+
 	/* Nom du fichier */
 
 	TRANS_expression(FALSE);
@@ -508,6 +525,31 @@ void TRANS_memory(void)
 }
 
 
+void TRANS_open_string(void)
+{
+	int mode = TS_MODE_READ;
+
+	/* Nom du fichier */
+
+	TRANS_expression(FALSE);
+
+	/* mode d'ouverture */
+
+	if (TRANS_is(RS_FOR))
+	{
+		if (TRANS_is(RS_READ))
+			mode |= TS_MODE_READ | TS_MODE_DIRECT;
+
+		if (TRANS_is(RS_WRITE))
+			mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
+	}
+
+	CODE_push_number(mode | TS_MODE_STRING);
+
+	trans_subr(TS_SUBR_OPEN, 2);
+}
+
+
 void TRANS_close(void)
 {
 	if (PATTERN_is_newline(*JOB->current))
@@ -517,7 +559,9 @@ void TRANS_close(void)
 	TRANS_expression(FALSE);
 
 	trans_subr(TS_SUBR_CLOSE, 1);
-	CODE_drop();
+
+	if (TRANS_in_affectation == 0)
+		CODE_drop();
 }
 
 
