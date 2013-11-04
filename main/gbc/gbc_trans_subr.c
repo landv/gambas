@@ -531,7 +531,10 @@ void TRANS_open_string(void)
 
 	/* Nom du fichier */
 
-	TRANS_expression(FALSE);
+	if (!PATTERN_is(*JOB->current, RS_FOR))
+		TRANS_expression(FALSE);
+	else
+		CODE_push_null();
 
 	/* mode d'ouverture */
 

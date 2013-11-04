@@ -188,7 +188,25 @@ void SUBR_open(ushort code)
 	}
 	else if (mode & ST_STRING)
 	{
-		STREAM_open(&stream, SUBR_copy_string(PARAM), mode);
+		char *str;
+
+		STREAM_open(&stream, NULL, mode);
+
+		if (!VALUE_is_null(PARAM))
+		{
+			str = SUBR_get_string(PARAM);
+			
+			if (mode & ST_WRITE)
+			{
+				stream.string.buffer = STRING_new(str, STRING_length(str));
+			}
+			else
+			{
+				stream.string.buffer = str;
+				STRING_ref(str);
+			}
+			stream.string.size = STRING_length(str);
+		}
 	}
 	else
 	{

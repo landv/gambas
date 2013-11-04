@@ -49,20 +49,6 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	stream->string.size = 0;
 	stream->string.pos = 0;
 
-	if (path && *path)
-	{
-		if (mode & ST_WRITE)
-		{
-			stream->string.buffer = STRING_new(path, STRING_length(path));
-		}
-		else
-		{
-			stream->string.buffer = (char *)path;
-			STRING_ref((char *)path);
-		}
-		stream->string.size = STRING_length(path);
-	}
-
   return FALSE;
 }
 
