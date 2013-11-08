@@ -283,6 +283,11 @@ static void class_replace_global(const char *name)
 	//return class;
 }
 
+static void release_class(CLASS *class)
+{
+	OBJECT_release(class, NULL);
+	class->exit = TRUE;
+}
 
 void CLASS_clean_up(bool silent)
 {
@@ -343,13 +348,12 @@ void CLASS_clean_up(bool silent)
 				#if DEBUG_LOAD
 				fprintf(stderr, "Freeing %s\n", class->name);
 				#endif
-				OBJECT_release(class, NULL);
-				class->exit = TRUE;
+				release_class(class);
 				n++;
 			}
 		}
 
-		if (n == nb) /* On n'a rien pu faire */
+		if (n == nb) // nothing could be done
 			break;
 	}
 
@@ -364,16 +368,24 @@ void CLASS_clean_up(bool silent)
 	{
 		if (!silent)
 			ERROR_warning("circular references detected:");
-		for (class = _classes; class; class = class->next)
+
+		for(;;)
 		{
-			if (!CLASS_is_native(class) && class->state && !class->exit)
+			nb = n;
+
+			for (class = _classes; class; class = class->next)
 			{
-				if (!silent)
-					fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 5d %s\n", class->count, class->name);
-				OBJECT_release(class, NULL);
-				class->exit = TRUE;
-				n++;
+				if (!CLASS_is_native(class) && class->state && !class->exit && (!class->array_class || class->array_class->exit)) // && !class->astruct_class)
+				{
+					if (!silent)
+						fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 5d %s\n", class->count, class->name);
+					release_class(class);
+					n++;
+				}
 			}
+
+			if (n == nb) // nothing could be done
+				break;
 		}
 	}
 

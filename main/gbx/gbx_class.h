@@ -460,7 +460,6 @@ CLASS *CLASS_check_global(char *name);
 void CLASS_ref(void *object);
 bool CLASS_unref(void *object, bool can_free);
 void CLASS_free(void *object);
-void CLASS_release(CLASS *class, char *data);
 
 int CLASS_get_inheritance(CLASS *class, CLASS **her);
 
