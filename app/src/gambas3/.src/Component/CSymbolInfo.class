@@ -302,7 +302,7 @@ Private Sub MakeSignature(sSign As String) As String
         iInd += 2
         sDefault = ""
         iPos = Highlight.Positions[iInd]
-        While iInd < aSym.Max
+        While iInd <= aSym.Max
           sSym = aSym[iInd]
           If sSym = "(" Then
             aWait.Push(")")
@@ -317,6 +317,9 @@ Private Sub MakeSignature(sSign As String) As String
               iPos2 = Highlight.Positions[iInd]
               sDefault = Trim(Mid$(sSign, iPos + 1, iPos2 - iPos))
               Dec iInd
+              Break
+            Else If iInd = aSym.Max Then
+              sDefault = Trim(Mid$(sSign, iPos + 1))
               Break
             Endif
           Endif
