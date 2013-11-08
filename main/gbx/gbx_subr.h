@@ -91,7 +91,7 @@ void *SUBR_get_pointer(VALUE *param);
 void *SUBR_get_pointer_or_string(VALUE *param);
 
 char *SUBR_get_string(VALUE *param);
-char *SUBR_copy_string(VALUE *param);
+//char *SUBR_copy_string(VALUE *param);
 void SUBR_get_string_len(VALUE *param, char **str, int *len);
 
 bool SUBR_get_boolean(VALUE *param);

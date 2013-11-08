@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbc_trans.h
+	gbc_trans.h
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -32,84 +32,85 @@
 #include "gbc_trans_common.h"
 
 enum {
-  TT_NOTHING = 0,
-  TT_DO_NOT_CHECK_AS = 1,
-  TT_CAN_EMBED = 2,
-  TT_CAN_ARRAY = 4,
-  TT_CAN_NEW = 8
-  };
+	TT_NOTHING = 0,
+	TT_DO_NOT_CHECK_AS = 1,
+	TT_CAN_EMBED = 2,
+	TT_CAN_ARRAY = 4,
+	TT_CAN_NEW = 8
+	};
 
 enum {
-  TS_MODE_READ = 1,
-  TS_MODE_WRITE = 2,
-  TS_MODE_APPEND = 4,
-  TS_MODE_CREATE = 8,
-  TS_MODE_DIRECT = 16,
-  TS_MODE_LINE = 32,
-  TS_MODE_WATCH = 64,
-  TS_MODE_PIPE = 128,
-	TS_MODE_MEMORY = 256
-  };
+	TS_MODE_READ = 1,
+	TS_MODE_WRITE = 2,
+	TS_MODE_APPEND = 4,
+	TS_MODE_CREATE = 8,
+	TS_MODE_DIRECT = 16,
+	TS_MODE_LINE = 32,
+	TS_MODE_WATCH = 64,
+	TS_MODE_PIPE = 128,
+	TS_MODE_MEMORY = 256,
+	TS_MODE_STRING = 512
+	};
 
 enum {
-  TS_EXEC_NONE = 0,
-  TS_EXEC_READ = 1,
-  TS_EXEC_WRITE = 2,
-  TS_EXEC_TERM = 4,
-  TS_EXEC_STRING = 8,
+	TS_EXEC_NONE = 0,
+	TS_EXEC_READ = 1,
+	TS_EXEC_WRITE = 2,
+	TS_EXEC_TERM = 4,
+	TS_EXEC_STRING = 8,
 	TS_EXEC_WAIT = 16
-  };
+	};
 
 enum {
-  TS_SUBR_PRINT,
-  TS_SUBR_INPUT,
-  TS_SUBR_WRITE,
-  TS_SUBR_WRITE_BYTES,
-  TS_SUBR_READ,
-  TS_SUBR_READ_BYTES,
-  TS_SUBR_OPEN,
-  TS_SUBR_CLOSE,
-  TS_SUBR_SEEK,
-  TS_SUBR_LINE_INPUT,
-  TS_SUBR_FLUSH,
-  TS_SUBR_EXEC,
-  TS_SUBR_SHELL,
-  TS_SUBR_WAIT,
-  TS_SUBR_KILL,
-  TS_SUBR_MOVE,
-  TS_SUBR_MKDIR,
-  TS_SUBR_RMDIR,
-  TS_SUBR_ARRAY,
-  TS_SUBR_COLLECTION,
-  TS_SUBR_COPY,
-  TS_SUBR_LINK,
-  TS_SUBR_ERROR,
-  TS_SUBR_LOCK,
-  TS_SUBR_UNLOCK,
-  TS_SUBR_INPUT_FROM,
-  TS_SUBR_OUTPUT_TO,
-  TS_SUBR_DEBUG,
-  TS_SUBR_SLEEP,
-  TS_SUBR_RANDOMIZE,
-  TS_SUBR_ERROR_TO,
-  TS_SUBR_LEFT,
-  TS_SUBR_MID,
+	TS_SUBR_PRINT,
+	TS_SUBR_INPUT,
+	TS_SUBR_WRITE,
+	TS_SUBR_WRITE_BYTES,
+	TS_SUBR_READ,
+	TS_SUBR_READ_BYTES,
+	TS_SUBR_OPEN,
+	TS_SUBR_CLOSE,
+	TS_SUBR_SEEK,
+	TS_SUBR_LINE_INPUT,
+	TS_SUBR_FLUSH,
+	TS_SUBR_EXEC,
+	TS_SUBR_SHELL,
+	TS_SUBR_WAIT,
+	TS_SUBR_KILL,
+	TS_SUBR_MOVE,
+	TS_SUBR_MKDIR,
+	TS_SUBR_RMDIR,
+	TS_SUBR_ARRAY,
+	TS_SUBR_COLLECTION,
+	TS_SUBR_COPY,
+	TS_SUBR_LINK,
+	TS_SUBR_ERROR,
+	TS_SUBR_LOCK,
+	TS_SUBR_UNLOCK,
+	TS_SUBR_INPUT_FROM,
+	TS_SUBR_OUTPUT_TO,
+	TS_SUBR_DEBUG,
+	TS_SUBR_SLEEP,
+	TS_SUBR_RANDOMIZE,
+	TS_SUBR_ERROR_TO,
+	TS_SUBR_LEFT,
+	TS_SUBR_MID,
 	TS_SUBR_OPEN_MEMORY,
 	TS_SUBR_CHMOD,
 	TS_SUBR_CHOWN,
 	TS_SUBR_CHGRP
-  };
+	};
 
 enum {
-  TSO_SUBR_SCAN
-  };
+	TSO_SUBR_SCAN
+	};
 
 enum {
-  TS_NONE = -1,
-  TS_STDIN = 0,
-  TS_STDOUT = 1,
-  TS_STDERR = 2
-  };
+	TS_NONE = -1,
+	TS_STDIN = 0,
+	TS_STDOUT = 1,
+	TS_STDERR = 2
+	};
 
 #define TS_NO_SUBR ((void (*)())-1)
 
@@ -208,6 +209,7 @@ void TRANS_write(void);
 void TRANS_open(void);
 void TRANS_pipe(void);
 void TRANS_memory(void);
+void TRANS_open_string(void);
 void TRANS_close(void);
 void TRANS_lock(void);
 void TRANS_unlock(void);

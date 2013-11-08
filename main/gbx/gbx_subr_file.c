@@ -186,6 +186,28 @@ void SUBR_open(ushort code)
 		
 		STREAM_open(&stream, (char *)addr, mode | ST_MEMORY);
 	}
+	else if (mode & ST_STRING)
+	{
+		char *str;
+
+		STREAM_open(&stream, NULL, mode);
+
+		if (!VALUE_is_null(PARAM))
+		{
+			str = SUBR_get_string(PARAM);
+			
+			if (mode & ST_WRITE)
+			{
+				stream.string.buffer = STRING_new(str, STRING_length(str));
+			}
+			else
+			{
+				stream.string.buffer = str;
+				STRING_ref(str);
+			}
+			stream.string.size = STRING_length(str);
+		}
+	}
 	else
 	{
 		STREAM_open(&stream, get_path(PARAM), mode);
@@ -201,11 +223,34 @@ void SUBR_open(ushort code)
 
 void SUBR_close(void)
 {
+	STREAM *stream;
+
 	SUBR_ENTER_PARAM(1);
 
-	STREAM_close(get_stream(PARAM, FALSE));
+	stream = get_stream(PARAM, FALSE);
 
-	SUBR_LEAVE_VOID();
+	if (stream->type == &STREAM_string)
+	{
+		char *buffer = stream->string.buffer;
+
+		RETURN->type = T_STRING;
+		RETURN->_string.addr = buffer;
+		RETURN->_string.start = 0;
+		RETURN->_string.len = stream->string.size;
+
+		STRING_ref(buffer);
+		STREAM_close(stream);
+		STRING_free_later(buffer);
+
+		//fprintf(stderr, "buffer ref = %d\n", STRING_from_ptr(buffer)->ref);
+
+		SUBR_LEAVE();
+	}
+	else
+	{
+		STREAM_close(stream);
+		SUBR_LEAVE_VOID();
+	}
 }
 
 

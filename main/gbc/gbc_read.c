@@ -747,7 +747,7 @@ static void add_identifier()
 			}
 			else
 			{
-				if (last_type)
+				if (last_type || PATTERN_is(last_pattern, RS_OPEN))
 					can_be_reserved = TRUE;
 				else
 					can_be_reserved = FALSE;

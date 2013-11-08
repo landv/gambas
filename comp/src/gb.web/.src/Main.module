@@ -75,11 +75,14 @@ End
 
 Public Sub Main()
 
-  Dim aField As New String[]
-  Dim cVal As New Collection
+  Dim vVal As Variant
+  Dim vObject As Variant
   
-  Main.DecodeURL("id=REP%2E000035%2E007&texte+question=Pr%C3%A9sence+d%27affaissement%2C+de+glissement+ou+de+ravinement+des+terrains+avoisinants+%3F&texte+reponse=NON&note=1&commentaire=&classe=reponse", aField, cVal)
+  vObject = JSON.Decode("{\"a\":123,\"b\":\"toto\",\"c\":null,\"d\":true,\"e\":\"\"}", True)
   
-  Print aField.Count
+  For Each vVal In vObject
+    Print vObject.Key; ": "; vVal
+  Next
+  
 
 End

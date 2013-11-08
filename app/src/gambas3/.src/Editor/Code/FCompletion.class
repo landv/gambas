@@ -280,7 +280,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     For Each sClass In CComponent.All[sLib].ClassList
       
       If IsLetter(Left$(sClass)) Then
-        If sClass Begins sBegin Then 
+        If sClass Like sBegin & "*" Then 
           
           Do
             iPos = aClass.Find(Replace(sClass, "[", "[[]") & " *", gb.Like)

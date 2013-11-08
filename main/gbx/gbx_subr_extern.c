@@ -170,10 +170,13 @@ void SUBR_varptr(void)
 	
 	op = (ushort)SUBR_get_integer(PARAM);
 	
-	if ((op & 0xFF00) == C_PUSH_LOCAL)
+	if ((op & 0xFF00) == C_PUSH_LOCAL || (op & 0xFF00) == C_PUSH_PARAM)
 	{
-		val = &BP[op & 0xFF];
-			
+		if ((op & 0xFF00) == C_PUSH_PARAM)
+			val = &PP[(signed char)(op & 0xFF)];
+		else
+			val = &BP[op & 0xFF];
+
 		switch(val->type)
 		{
 			case T_BOOLEAN:

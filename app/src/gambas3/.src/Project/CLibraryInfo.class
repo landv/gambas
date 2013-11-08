@@ -46,6 +46,11 @@ Public Sub _new(sPath As String)
   Dim sData As String
   Dim aData As String[]
   
+  ' Support for third-party components
+  If Left(sPath) <> "/" Then 
+    sPath = Component.Path &/ sPath
+  Endif
+  
   Path = sPath
   Name = File.Name(sPath)
   Classes = New String[]

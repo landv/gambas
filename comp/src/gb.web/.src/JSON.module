@@ -2,8 +2,11 @@
 
 Export
 
+Public {Null} As Variant
+
 Private $sStr As String
 Private $iPos As Integer
+Private $bUseNull As Boolean
 
 Private Sub GetChar() As String
   
@@ -84,8 +87,14 @@ End
 Private Sub ReadObject() As Collection
   
   Dim sCar As String
-  Dim cObject As New Collection
+  Dim cObject As Collection
   Dim sKey As String
+  
+  If $bUseNull Then
+    cObject = New JSONCollection
+  Else
+    cObject = New Collection
+  Endif
   
   Do
     sCar = ReadChar()
@@ -233,12 +242,15 @@ Private Sub WriteValue(vVal As Variant)
 End
 
 
-Public Sub Decode(JSONString As String) As Variant
+Public Sub Decode(JSONString As String, Optional bUseNull As Boolean) As Variant
   
   Dim vVal As Variant
   $sStr = JSONString
   $iPos = 1
+  $bUseNull = bUseNull
+  If bUseNull And If IsNull({Null}) Then {Null} = VarPtr({Null})
   vVal = ReadValue()
+  $bUseNull = False
   $sStr = ""
   Return vVal
   

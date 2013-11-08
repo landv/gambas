@@ -367,7 +367,7 @@ Public Sub GetHelpURL() As String
   
   If hComp Then
 
-    If hComp.Library Then
+    If hComp.Library Or If hComp.ThirdParty Then
       
       Return "gambas://library" &/ hComp.Key &/ Name
       

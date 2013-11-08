@@ -84,6 +84,16 @@ BEGIN_METHOD_VOID(CENUM_free)
 
 END_METHOD
 
+static bool check_enum()
+{
+	if (!EXEC_enum)
+	{
+		GB_Error("No current enumeration");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
 BEGIN_METHOD_VOID(CENUM_stop)
 
@@ -91,6 +101,9 @@ BEGIN_METHOD_VOID(CENUM_stop)
   fprintf(stderr, "CENUM_stop: %p <%p>\n", EXEC_enum, EXEC_enum->enum_object);
   #endif
   
+	if (check_enum())
+		return;
+
   EXEC_enum->stop = TRUE;
 
 END_METHOD
@@ -98,14 +111,11 @@ END_METHOD
 
 BEGIN_PROPERTY(CENUM_index)
 
+	if (check_enum())
+		return;
+
   _object = EXEC_enum;
 
-	if (!THIS)
-	{
-		GB_Error("No current enumeration");
-		return;
-	}
-	
   if (READ_PROPERTY)
   {
     if (!THIS->variant)
@@ -168,6 +178,14 @@ BEGIN_METHOD_VOID(CENUM_next)
 
 END_METHOD
 
+BEGIN_PROPERTY(Enum_Stopped)
+
+	if (check_enum())
+		return;
+
+	GB_ReturnBoolean(EXEC_enum->stop);
+
+END_PROPERTY
 
 #endif
 
@@ -178,6 +196,7 @@ GB_DESC NATIVE_Enum[] =
   GB_METHOD("_free", NULL, CENUM_free, NULL),
   
   GB_STATIC_PROPERTY("Index", "v", CENUM_index),
+  GB_STATIC_PROPERTY_READ("Stopped", "b", Enum_Stopped),
   GB_STATIC_METHOD("Stop", NULL, CENUM_stop, NULL),
   
   GB_STATIC_METHOD("_next", NULL, CENUM_next, NULL),

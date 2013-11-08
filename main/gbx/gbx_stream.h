@@ -122,6 +122,8 @@ typedef
 	struct {
 		STREAM_COMMON common;
 		char *buffer;
+		int pos;
+		int size;
 		}
 	STREAM_STRING;
 

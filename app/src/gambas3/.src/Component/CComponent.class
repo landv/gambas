@@ -506,6 +506,11 @@ Public Sub Load()
       Return
     Endif
     
+    If {ThirdParty} Then
+      hLibraryInfo = CLibraryInfo[Component.Path &/ Key & ".gambas"]
+      Help = hLibraryInfo.GetHelp()
+    Endif
+    
   Endif
   
   For Each sClass In aList
@@ -1477,7 +1482,7 @@ Public Sub GetHelpHTML() As String
 
   If Name = PROJECT_NAME Then
     sHelp = Project.Description
-  Else If {Library} Then 
+  Else If {Library} Or ThirdParty Then 
     sHelp = Help
   Else
     Return
@@ -1497,7 +1502,7 @@ Public Sub GetHelpHTML() As String
   Next
 
   sHtml = Replace(sHtml, "$(classes)", sDesc)
-  sHtml = Replace(sHtml, "$(title)", Name)
+  sHtml = Replace(sHtml, "$(title)", Key)
   
   sHtml = Replace(sHtml, "''Classes''", ("Classes"))
   

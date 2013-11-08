@@ -73,12 +73,12 @@ _PUSH_GENERIC:
 
 	// The first time we access a symbol, we must not be virtual to find it
 	val = &SP[-1];
-	if (LIKELY(defined && object && !VALUE_is_super(val)))
+	if (defined && object && !VALUE_is_super(val))
 		index = CLASS_find_symbol(val->_object.class, name);
 	else
 		index = CLASS_find_symbol(class, name);
 
-	if (UNLIKELY(index == NO_SYMBOL))
+	if (index == NO_SYMBOL)
 	{
 		//index = CLASS_find_symbol(class, name);
 
@@ -223,7 +223,7 @@ _PUSH_GENERIC:
 
 			if (object == NULL)
 			{
-				if (UNLIKELY(!class->auto_create))
+				if (!class->auto_create)
 					THROW(E_DYNAMIC, CLASS_get_name(class), name);
 				object = EXEC_auto_create(class, TRUE);
 				*PC |= 8;
@@ -255,7 +255,7 @@ _PUSH_GENERIC:
 
 			if (object == NULL)
 			{
-				if (UNLIKELY(!class->auto_create))
+				if (!class->auto_create)
 					THROW(E_DYNAMIC, CLASS_get_name(class), name);
 				object = EXEC_auto_create(class, TRUE);
 				*PC |= 9;
@@ -559,13 +559,9 @@ __PUSH_GENERIC:
 
 	defined = EXEC_object(val, &class, &object);
 	
-	// The first time we access a symbol, we must not be virtual to find it
-	if (LIKELY(defined && object && !VALUE_is_super(val)))
-		class = val->_object.class;
-	
 	fast = 3;
-	
-	if (LIKELY(defined))
+
+	if (defined)
 	{
 		if (class->quick_array == CQA_ARRAY)
 			fast = 1;
@@ -573,6 +569,10 @@ __PUSH_GENERIC:
 			fast = 2;
 	}
 
+	// The first time we access a symbol, we must not be virtual to find it
+	if (defined && object && !VALUE_is_super(val))
+		class = val->_object.class;
+	
 	*PC |= fast << 6;
 	
 	goto __PUSH_ARRAY_2;
@@ -601,7 +601,7 @@ __PUSH_QUICK_ARRAY:
 	
 	VALUE_conv_integer(&val[1]);
 	
-	if (LIKELY(np == 1))
+	if (np == 1)
 	{
 		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
 	}
@@ -643,7 +643,7 @@ __PUSH_ARRAY:
 	
 __PUSH_ARRAY_2:
 
-	if (UNLIKELY(EXEC_special(SPEC_GET, class, object, np, FALSE)))
+	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
 		THROW(E_NARRAY, CLASS_get_name(class));
 
 	OBJECT_UNREF(object);
@@ -651,7 +651,7 @@ __PUSH_ARRAY_2:
 	//SP[-1] = SP[0];
 	VALUE_copy(&SP[-1], &SP[0]);
 
-	if (UNLIKELY(!defined))
+	if (!defined)
 		VALUE_conv_variant(&SP[-1]);
 }
 

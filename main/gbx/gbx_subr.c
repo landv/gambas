@@ -147,11 +147,11 @@ char *SUBR_get_string(VALUE *param)
 }
 
 
-char *SUBR_copy_string(VALUE *param)
+/*char *SUBR_copy_string(VALUE *param)
 {
   SUBR_check_string(param);
   return STRING_copy_from_value_temp(param);
-}
+}*/
 
 
 void SUBR_get_string_len(VALUE *param, char **str, int *len)

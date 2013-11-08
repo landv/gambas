@@ -1074,9 +1074,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 				len = (int)slen;
 			}
 			else
-			{
 				len = read_length(stream);
-			}
 
 			if (len > 0)
 			{
@@ -1245,8 +1243,17 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value)
 		case T_STRING:
 		case T_CSTRING:
 
-			write_length(stream, value->_string.len);
-			STREAM_write(stream, value->_string.addr + value->_string.start, value->_string.len);
+			if (stream->type == &STREAM_memory)
+			{
+				STREAM_write(stream, value->_string.addr + value->_string.start, value->_string.len);
+				buffer._byte = 0;
+				STREAM_write(stream, &buffer._byte, 1);
+			}
+			else
+			{
+				write_length(stream, value->_string.len);
+				STREAM_write(stream, value->_string.addr + value->_string.start, value->_string.len);
+			}
 			break;
 			
 		case T_OBJECT:
