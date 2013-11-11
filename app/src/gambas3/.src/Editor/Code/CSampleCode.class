@@ -194,6 +194,12 @@ Private Sub Make(Optional iIndent As Integer) As String
           sCar = Project.Description
         Else If sVar = "$AUTHOR" Or If sVar = "$AUTHORS" Then
           sCar = Split(Project.Authors, "\n", "", True).Join(", ")
+        Else If svar = "$USER" Then 
+          sCar = User.Name
+        Else If svar = "$DATE" Then
+          sCar = Format$(Now(), gb.MediumDate)
+        Else If svar = "$PROJECT" Then 
+          sCar = Project.Name
         Else
           sCar = sVar
         Endif
