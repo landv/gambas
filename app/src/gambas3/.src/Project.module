@@ -1957,6 +1957,9 @@ Public Function LoadFile(sPath As String) As Object
         Case "png", "gif", "jpg", "jpeg", "bmp", "xpm"
           hForm = New FImageEditor(sPath)
 
+        Case "module", "class"
+          hForm = New FEditor(sPath)
+
         Case Else
           ' Check that it is not a binary file
           If Not IsTextFile(sPath) Then
@@ -4502,6 +4505,13 @@ Public Function IsFormPath(sPath As String) As Boolean
   Return Exist(File.SetExt(sPath, "class"))
 
 End
+
+Public Sub IsProjectPath(sPath As String) As Boolean
+  
+  Return sPath Begins Project.Dir &/ "/"
+  
+End
+
 
 Public Function IsImagePath(sPath As String) As Boolean
 

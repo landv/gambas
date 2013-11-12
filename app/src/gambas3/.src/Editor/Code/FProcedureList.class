@@ -6,16 +6,22 @@ Private $iInit As Integer
 Private $sClass As String
 Private $sFind As String
 Private $dFind As Float
+Private $hModule As FEditor
 
-Static Public Sub Popup(sClass As String, aProc As String[], iCurrent As Integer, X As Integer, Y As Integer, W As Integer, H As Integer) As Integer
+Static Public Sub Popup(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, X As Integer, Y As Integer, W As Integer, H As Integer) As Integer
   
-  FProcedureList.Init(sClass, aProc, iCurrent, W, H)
-  Return FProcedureList.ShowPopup(X, Y) - 1
+  Dim iRet As Integer
+  
+  FProcedureList.Init(hModule, sClass, aProc, iCurrent, W, H)
+  iRet = FProcedureList.ShowPopup(X, Y) - 1
+  FProcedureList.Exit
+  Return iRet
   
 End
 
-Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
+Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
   
+  $hModule = hModule
   $sClass = sClass
   ' Copy it, as it can disappear during the Editor_Change() method
   $aProc = aProc.Copy()
@@ -36,9 +42,15 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
   
 End
 
+Public Sub Exit()
+  
+  $hModule = Null
+  
+End
+
+
 Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
   
-  Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim sName As String
   
@@ -51,8 +63,8 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
 
   If $sClass Then
     
-    cSymbol = CComponent.GetClassSymbols($sClass)
-    hSymbol = cSymbol[sName]
+    'cSymbol = CComponent.GetClassSymbols($sClass)
+    hSymbol = $hModule.Scan[sName]
 
     If hSymbol Then
       If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True

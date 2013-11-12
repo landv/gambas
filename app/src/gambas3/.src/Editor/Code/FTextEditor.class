@@ -921,6 +921,7 @@ Private Sub GetProc(sLine As String) As String
   Dim aStr As String[]
   Dim iInd As Integer
   Dim sStr As String
+  Dim sProc As String
 
   sLine = Trim(sLine)
 
@@ -929,18 +930,24 @@ Private Sub GetProc(sLine As String) As String
     Case Highlight.CSS
       
       iPos = InStr(sLine, "{")
-      If iPos Then sLine = Trim(Left(sLine, iPos - 1))
+      If iPos Then sProc = Trim(Left(sLine, iPos - 1))      
       
     Case Highlight.HTML, Highlight.WebPage
       
-      iPos = InStr(sLine, " ")
-      If iPos Then sLine = Left$(sLine, iPos - 1) & ">"
+      If Left(sLine) = "<" Then
+        iPos = InStr(sLine, " ")
+        If iPos Then sProc = Left$(sLine, iPos - 1) & ">"
+      Endif
       
     Case Highlight.JavaScript
       
-      If sLine Begins "function " Then sLine = Mid$(sLine, 10)
-      iPos = InStr(sLine, "(")
-      If iPos Then sLine = Trim(Left$(sLine, iPos - 1))
+      If sLine Begins "function " Then
+        sLine = Mid$(sLine, 10)
+        iPos = InStr(sLine, "(")
+        If iPos Then
+          sProc = Trim(Left$(sLine, iPos - 1))
+        Endif
+      Endif
       
     Case Highlight.C, Highlight.CPlusPlus
       
@@ -949,30 +956,34 @@ Private Sub GetProc(sLine As String) As String
         sStr = aStr[iInd]
         iPos = InStr(sStr, "(") 
         If iPos > 0 Then
-          sLine = Trim(Left$(sStr, iPos - 1))
-          If Not sLine And If iInd > 0 Then sLine = aStr[iInd - 1]
+          sProc = Trim(Left$(sStr, iPos - 1))
+          If Not sProc And If iInd > 0 Then sProc = aStr[iInd - 1]
           Break
         Endif
       Next
       
   End Select 
 
-  Return Trim(sLine)
+  Return Trim(sProc)
 
 End
 
 Private Sub GetCurrentProc(Optional iLine As Integer = Editor.Line) As String
   
+  Dim sProc As String
+  
   While iLine >= 0
     
-    If Editor.Lines[iLine].Limit Then Break
+    If Editor.Lines[iLine].Limit Then 
+      sProc = GetProc(Editor.Lines[iLine].Text)  
+      Break
+    Endif
     Dec iLine
     
   Wend
   
-  If iLine <= 0 Then Return ("(Declarations)")
-  
-  Return GetProc(Editor.Lines[iLine].Text)
+  If Not sProc Then sProc = ("(Declarations)")
+  Return sProc
   
 End
 
@@ -994,6 +1005,7 @@ Private Sub FillProc()
   Dim sText As String
   Dim sProc, sProcNum As String
   Dim iNum As String
+  Dim bDecl As Boolean
 
   If $cProc Then Return
 
@@ -1004,16 +1016,18 @@ Private Sub FillProc()
   'aFunc.Clear
 
   sText = btnProc.Text
-
+  
   'cmbProc.Clear
 
   $cProc = New Collection(gb.IgnoreCase)
   $aProc = New String[]
-  iLine = 0
+  iLine = -1
+  bDecl = True
   Do
     iLine = Editor.FindNextLimit(iLine)
     If iLine < 0 Then Break
     sProc = GetProc(Editor.Lines[iLine].Text)
+    If Not sProc Then Continue
     If $cProc.Exist(sProc) Then
       iNum = 2
       Do
@@ -1027,12 +1041,13 @@ Private Sub FillProc()
     Endif
     $aProc.Add(sProc)
     $cProc[sProc] = iLine
+    If iLine = 0 Then bDecl = False
   Loop
 
   $aProc.Sort(gb.IgnoreCase)
 
-  $aProc.Add(("(Declarations)"), 0)
-  $cProc[0] = 0
+  If bDecl Then $aProc.Add(("(Declarations)"), 0)
+  '$cProc[0] = 0
 
   Dec Application.Busy
 
@@ -1054,7 +1069,7 @@ Private Sub ToggleProcList()
   FillProc
   iCurrent = $aProc.Find(btnProc.Text)
 
-  iCurrent = FProcedureList.Popup("", $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
+  iCurrent = FProcedureList.Popup(Null, "", $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
   If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
     GotoProc(iLine)

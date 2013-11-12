@@ -1270,6 +1270,17 @@ Static Public Sub GetLastClass() As CClassInfo
   
 End
 
+Static Public Sub ScanSingleClass(hPModule As FEditor) As Collection
+  
+  Dim cSymbol As Collection
+
+  cSymbol = New Collection(gb.IgnoreCase)
+  hPModule.Scan = cSymbol
+  ScanClass(hPModule, cSymbol, File.Ext(hPModule.Path) = "module", False)
+  Return cSymbol
+  
+End
+
 
 Static Public Function GetClassSymbols(sClass As String) As Collection
   

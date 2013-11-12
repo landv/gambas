@@ -2847,7 +2847,12 @@ Private Sub FillProcCombo()
   $iFirstProcLine = 1000000
 
   {Scan} = Null
-  cSymbol = CComponent.GetClassSymbols(Me.Name)
+  
+  If Project.IsSourcePath(Path) Then
+    cSymbol = CComponent.GetClassSymbols(Me.Name)
+  Else
+    cSymbol = CComponent.ScanSingleClass(Me)
+  Endif
 
   For Each hSymbol In cSymbol
 
@@ -3159,7 +3164,7 @@ Private Sub ToggleProcList()
   FillProcCombo
   iCurrent = $aProc.Find(btnProc.Text)
 
-  iCurrent = FProcedureList.Popup(Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
+  iCurrent = FProcedureList.Popup(Me, Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
   If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
     GotoFunction(iLine)

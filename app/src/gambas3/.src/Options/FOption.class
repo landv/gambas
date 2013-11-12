@@ -1108,14 +1108,16 @@ Public Sub btnInstallFont_Click()
   Dim sDir As String = "~/.fonts"
   Dim sConf As String
   Dim sData As String
+  Dim sFont As String
 
   If Message.Question(("Do you really want to install the Gambas font to your personal font directory?"), ("Install"), ("Cancel")) <> 1 Then Return
   
   If Not Exist(sDir) Then Mkdir sDir
-  Try Kill sDir &/ "GambasMedium-12.bdf"
-  Try Copy "font/GambasMedium-12.bdf" To sDir &/ "GambasMedium-12.bdf"
-  Try Kill sDir &/ "GambasBold-12.bdf"
-  Try Copy "font/GambasBold-12.bdf" To sDir &/ "GambasBold-12.bdf"
+  
+  For Each sFont In ["GambasMedium-12.bdf", "GambasBold-12.bdf", "GambasMedium-13.bdf", "GambasBold-13.bdf"]
+    Try Kill sDir &/ sFont
+    Try Copy "font" &/ sFont To sDir &/ sFont
+  Next
   
   sConf = "~/.config/fontconfig/.fonts.conf"
   'If Not Exist(sConf) Then sConf = "~/.fonts.conf"
